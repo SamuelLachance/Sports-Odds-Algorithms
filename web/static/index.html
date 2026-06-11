@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sports Odds Algorithms</title>
+  <title>SOA Bet Helper — Daily Picks</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -16,12 +16,12 @@
     <div class="container header-inner">
       <a class="brand" href="#top">
         <span class="brand-mark">SOA</span>
-        <span class="brand-text">Sports Odds Algorithms</span>
+        <span class="brand-text">Bet Helper</span>
       </a>
       <nav class="nav">
-        <a href="#demo">Demo</a>
-        <a href="#algorithms">Algorithms</a>
-        <a href="#about">About</a>
+        <a href="#picks">Top Picks</a>
+        <a href="#slate">Today's Slate</a>
+        <a href="#how">How it works</a>
       </nav>
       <button class="theme-toggle" id="themeToggle" aria-label="Toggle color theme">◐</button>
     </div>
@@ -30,202 +30,93 @@
   <main id="top">
     <section class="hero container">
       <div class="hero-copy">
-        <p class="eyebrow">NBA · NHL · MLB prediction engine</p>
-        <h1>Statistical models that turn team performance into win probabilities.</h1>
+        <p class="eyebrow">NBA · NHL · MLB · Updated daily</p>
+        <h1>Model-driven picks for every game on today's slate.</h1>
         <p class="lead">
-          Originally built for sports betting research, this project compares seasonal records,
-          home/away splits, recent form, and scoring margins to estimate matchup odds.
+          We run the Sports Odds Algorithms on live ESPN schedules, compare model win
+          probabilities against sportsbook moneylines, and surface value bets with the strongest edge.
         </p>
         <div class="hero-actions">
-          <a class="btn btn-primary" href="#demo">Try the demo</a>
-          <a class="btn btn-secondary" href="https://github.com/JamesQuintero/Sports-Odds-Algorithms" target="_blank" rel="noreferrer">Original repo</a>
+          <button class="btn btn-primary" id="refreshBtn" type="button">Refresh today's board</button>
+          <a class="btn btn-secondary" href="https://github.com/SamuelLachance/Sports-Odds-Algorithms" target="_blank" rel="noreferrer">View source</a>
         </div>
       </div>
-      <div class="hero-card">
-        <div class="hero-stat">
-          <span class="stat-label">Example matchup</span>
-          <span class="stat-value">POR @ GSW</span>
-          <span class="stat-meta">2017 playoffs · Algo V2</span>
-        </div>
-        <div class="hero-meter">
-          <div class="meter-row">
-            <span>Warriors win chance</span>
-            <strong>71.3%</strong>
+      <div class="hero-card stats-card">
+        <div class="stat-grid">
+          <div class="stat-box">
+            <span class="stat-label">Games today</span>
+            <strong id="statGames">—</strong>
           </div>
-          <div class="meter-track"><div class="meter-fill" style="width: 71.3%"></div></div>
+          <div class="stat-box">
+            <span class="stat-label">Value bets</span>
+            <strong id="statPicks">—</strong>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">Leagues</span>
+            <strong id="statLeagues">—</strong>
+          </div>
         </div>
-        <ul class="hero-tags">
-          <li>6–7 weighted factors</li>
-          <li>Historical backtests</li>
-          <li>American odds output</li>
-        </ul>
+        <p class="stat-footnote" id="updatedAt">Loading board...</p>
       </div>
     </section>
 
-    <section id="demo" class="section container">
+    <section id="picks" class="section container">
       <div class="section-head">
-        <h2>Interactive prediction demo</h2>
-        <p>Run the original algorithms against bundled historical team CSV data.</p>
+        <h2>Recommended bets</h2>
+        <p>Ranked by edge between model-implied American odds and live sportsbook lines.</p>
       </div>
-
-      <div class="demo-grid">
-        <form class="panel form-panel" id="predictForm">
-          <div class="field-row">
-            <label for="league">League</label>
-            <select id="league" name="league" required></select>
-          </div>
-
-          <div class="field-row two-col">
-            <div>
-              <label for="awayTeam">Away team</label>
-              <select id="awayTeam" name="awayTeam" required></select>
-            </div>
-            <div>
-              <label for="homeTeam">Home team</label>
-              <select id="homeTeam" name="homeTeam" required></select>
-            </div>
-          </div>
-
-          <div class="field-row two-col">
-            <div>
-              <label for="date">Cutoff date</label>
-              <input id="date" name="date" type="text" placeholder="M-D-YYYY" value="4-16-2017" required>
-              <small>Games before this date are included in the model.</small>
-            </div>
-            <div>
-              <label for="seasonYear">Season year</label>
-              <select id="seasonYear" name="seasonYear" required></select>
-            </div>
-          </div>
-
-          <div class="field-row">
-            <label for="algorithm">Algorithm</label>
-            <select id="algorithm" name="algorithm">
-              <option value="Algo_V2" selected>Algo V2 — probability system (recommended)</option>
-              <option value="Algo_V1">Algo V1 — point ranking system</option>
-            </select>
-          </div>
-
-          <button class="btn btn-primary btn-full" type="submit" id="submitBtn">Calculate odds</button>
-          <p class="form-note" id="formError" hidden></p>
-        </form>
-
-        <div class="panel results-panel" id="resultsPanel">
-          <div class="results-empty" id="resultsEmpty">
-            <h3>Ready when you are</h3>
-            <p>Pick a league and matchup, then run the model to see factor breakdowns and implied American odds.</p>
-          </div>
-          <div class="results-content" id="resultsContent" hidden>
-            <div class="matchup-banner">
-              <div class="team away">
-                <span class="team-side">Away</span>
-                <span class="team-name" id="awayName"></span>
-              </div>
-              <span class="vs">@</span>
-              <div class="team home">
-                <span class="team-side">Home</span>
-                <span class="team-name" id="homeName"></span>
-              </div>
-            </div>
-
-            <div class="prediction-card">
-              <div>
-                <p class="prediction-label">Predicted winner</p>
-                <h3 id="favoriteName"></h3>
-                <p class="prediction-meta" id="predictionMeta"></p>
-              </div>
-              <div class="probability-ring">
-                <svg viewBox="0 0 120 120">
-                  <circle class="ring-bg" cx="60" cy="60" r="52"></circle>
-                  <circle class="ring-fill" id="probRing" cx="60" cy="60" r="52"></circle>
-                </svg>
-                <div class="ring-text">
-                  <strong id="winProbability">—</strong>
-                  <span>win chance</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="odds-row">
-              <div class="odds-chip">
-                <span>Favorite</span>
-                <strong id="favoriteOdds">—</strong>
-              </div>
-              <div class="odds-chip">
-                <span>Underdog</span>
-                <strong id="underdogOdds">—</strong>
-              </div>
-              <div class="odds-chip">
-                <span>Total score</span>
-                <strong id="totalScore">—</strong>
-              </div>
-            </div>
-
-            <div class="factor-list" id="factorList"></div>
-          </div>
-        </div>
+      <div class="picks-grid" id="picksGrid">
+        <div class="panel empty-panel" id="picksEmpty">Analyzing today's matchups...</div>
       </div>
     </section>
 
-    <section id="algorithms" class="section container">
-      <div class="section-head">
-        <h2>How the algorithms work</h2>
-        <p>Both versions compare the same underlying team statistics — they differ in how those stats become a final prediction.</p>
+    <section id="slate" class="section container">
+      <div class="section-head slate-head">
+        <div>
+          <h2>Full daily slate</h2>
+          <p>Every upcoming game with model probability, market odds, and factor breakdown.</p>
+        </div>
+        <div class="filter-row">
+          <label for="leagueFilter">League</label>
+          <select id="leagueFilter">
+            <option value="all">All leagues</option>
+            <option value="nba">NBA</option>
+            <option value="nhl">NHL</option>
+            <option value="mlb">MLB</option>
+          </select>
+        </div>
       </div>
+      <div class="slate-list" id="slateList">
+        <div class="panel empty-panel">Loading games...</div>
+      </div>
+      <p class="form-note" id="boardError" hidden></p>
+    </section>
 
+    <section id="how" class="section container">
       <div class="cards-grid">
         <article class="info-card">
-          <h3>Algo V1 — point system</h3>
-          <p>Each stat is normalized into a 1–10 style score, summed into a total, then mapped to win probability with a league-specific curve.</p>
-          <ul>
-            <li>Season record differential</li>
-            <li>Home/away performance gap</li>
-            <li>Recent 10-game form</li>
-            <li>Average scoring margin</li>
-          </ul>
+          <h3>1. Pull today's games</h3>
+          <p>Live schedules and DraftKings moneylines are fetched from ESPN for NBA, NHL, and MLB.</p>
         </article>
         <article class="info-card">
-          <h3>Algo V2 — probability system</h3>
-          <p>Each factor gets its own best-fit curve from backtests, producing percentage contributions that are averaged into a final win chance.</p>
-          <ul>
-            <li>More accurate in original NBA backtests</li>
-            <li>NHL adds home/away win streak signal</li>
-            <li>Outputs American moneyline equivalents</li>
-          </ul>
+          <h3>2. Run Algo V2</h3>
+          <p>Each matchup is scored on records, home/away splits, recent form, and scoring margins using current-season results.</p>
         </article>
         <article class="info-card">
-          <h3>Data & backtesting</h3>
-          <p>The repo ships with years of ESPN-scraped box scores plus OddsPortal lines for historical validation.</p>
-          <ul>
-            <li>NBA/NHL data through 2017</li>
-            <li>MLB data through 2016</li>
-            <li>CLI backtester still available</li>
-          </ul>
+          <h3>3. Find value</h3>
+          <p>Picks appear when the sportsbook offers better American odds than the model's fair line — the same edge logic used in historical backtests.</p>
         </article>
       </div>
-    </section>
-
-    <section id="about" class="section container">
-      <div class="about-panel panel">
-        <h2>About this project</h2>
-        <p>
-          This modern web front-end wraps James Quintero's open-source Sports Odds Algorithms.
-          The core Python engine remains intact; the site exposes its predictions through a FastAPI service
-          and a responsive UI for exploration and demos.
-        </p>
-        <p>
-          Live schedule scraping via ESPN may require updates to the legacy scraper. The demo uses the bundled
-          historical CSV datasets, which are sufficient to reproduce documented examples such as
-          Portland @ Golden State in the 2017 NBA playoffs.
-        </p>
+      <div class="about-panel panel disclaimer">
+        <strong>Disclaimer:</strong> This tool is for research and entertainment. Past model performance does not guarantee future results. Always bet responsibly and verify lines with your sportsbook.
       </div>
     </section>
   </main>
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <span>Sports Odds Algorithms</span>
-      <span>Core engine by James Quintero · Web UI refresh 2026</span>
+      <span>Sports Odds Bet Helper</span>
+      <span>Algorithms by James Quintero · Live board 2026</span>
     </div>
   </footer>
 

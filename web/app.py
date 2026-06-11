@@ -10,6 +10,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
+from web.daily_service import get_daily_slate
 from web.predict_service import (
     get_leagues,
     get_seasons,
@@ -21,8 +22,8 @@ STATIC_DIR = Path(__file__).resolve().parent / "static"
 
 app = FastAPI(
     title="Sports Odds Algorithms",
-    description="Interactive showcase for NBA, NHL, and MLB prediction algorithms.",
-    version="1.0.0",
+    description="Daily betting helper for NBA, NHL, and MLB with model-driven picks.",
+    version="2.0.0",
 )
 
 app.add_middleware(
@@ -63,6 +64,14 @@ def teams(league: str) -> list[dict[str, str]]:
 @app.get("/api/leagues/{league}/seasons")
 def seasons(league: str) -> list[str]:
     return get_seasons(league)
+
+
+@app.get("/api/daily/slate")
+def daily_slate(days_ahead: int = 0) -> dict:
+    try:
+        return get_daily_slate(days_ahead=max(0, min(days_ahead, 3)))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
 @app.post("/api/predict")

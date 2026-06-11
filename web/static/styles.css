@@ -502,11 +502,222 @@ select {
   color: #f87171;
 }
 
+.stats-card .stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.stat-box {
+  padding: 0.9rem;
+  border-radius: 14px;
+  background: var(--bg-soft);
+}
+
+.stat-box strong {
+  display: block;
+  font-size: 1.6rem;
+  margin-top: 0.2rem;
+}
+
+.stat-footnote {
+  margin: 1rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.picks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.pick-card {
+  padding: 1.2rem;
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.pick-card.confidence-high {
+  border-color: rgba(94, 234, 212, 0.45);
+}
+
+.pick-card.confidence-medium {
+  border-color: rgba(251, 191, 36, 0.35);
+}
+
+.pick-top,
+.game-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.league-pill,
+.strategy-pill {
+  display: inline-flex;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.league-pill {
+  background: rgba(94, 234, 212, 0.14);
+  color: var(--accent);
+}
+
+.strategy-pill {
+  background: rgba(251, 191, 36, 0.14);
+  color: var(--accent-warm);
+}
+
+.pick-matchup,
+.pick-time,
+.game-meta {
+  color: var(--text-muted);
+  margin: 0.35rem 0 0;
+}
+
+.pick-odds {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+  margin: 1rem 0;
+}
+
+.pick-odds div {
+  padding: 0.7rem;
+  border-radius: 12px;
+  background: var(--bg-soft);
+}
+
+.pick-odds span,
+.odds-chip span,
+.odds-chip small,
+.win-chip span,
+.win-chip small {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.pick-odds strong,
+.win-chip strong {
+  display: block;
+  margin-top: 0.2rem;
+  font-family: "JetBrains Mono", monospace;
+}
+
+.pick-reason {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.slate-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: end;
+}
+
+.filter-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 160px;
+}
+
+.slate-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.game-card {
+  padding: 1.25rem;
+}
+
+.game-card h3 {
+  margin: 0.45rem 0 0;
+}
+
+.game-card .at {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.win-chip {
+  text-align: right;
+  min-width: 120px;
+}
+
+.game-odds {
+  margin-top: 1rem;
+}
+
+.game-pick {
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  background: var(--bg-soft);
+  border-left: 4px solid var(--accent);
+}
+
+.game-pick.neutral {
+  border-left-color: var(--border);
+}
+
+.game-pick.confidence-high {
+  border-left-color: var(--accent);
+}
+
+.game-pick.confidence-medium {
+  border-left-color: var(--accent-warm);
+}
+
+.game-pick p {
+  margin: 0.45rem 0 0;
+  color: var(--text-muted);
+}
+
+.factor-details {
+  margin-top: 1rem;
+}
+
+.factor-details summary {
+  cursor: pointer;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.factor-item.compact {
+  padding: 0.55rem 0;
+}
+
+.empty-panel {
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.disclaimer {
+  margin-top: 1rem;
+}
+
 @media (max-width: 900px) {
   .hero,
   .demo-grid,
-  .cards-grid {
+  .cards-grid,
+  .stats-card .stat-grid,
+  .pick-odds,
+  .slate-head {
     grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .nav {
@@ -518,8 +729,12 @@ select {
     grid-template-columns: 1fr;
   }
 
-  .prediction-card {
+  .prediction-card,
+  .game-head {
     flex-direction: column;
-    align-items: flex-start;
+  }
+
+  .win-chip {
+    text-align: left;
   }
 }

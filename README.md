@@ -22,11 +22,11 @@ cd C:\Users\ulach5c\Projects\Sports-Odds-Algorithms
 python -m pip install -r requirements.txt
 ```
 
-### Public website (GitHub Pages)
+### Public betting board (GitHub Pages)
 
 **https://samuellachance.github.io/Sports-Odds-Algorithms/**
 
-The live demo is rebuilt automatically on every push to `master` via GitHub Actions.
+Daily NBA/NHL/MLB picks are rebuilt automatically every 6 hours (and on every push) via GitHub Actions. The board pulls live ESPN schedules and moneylines, runs Algo V2 on current-season results, and ranks value bets.
 
 ### Run the website locally
 

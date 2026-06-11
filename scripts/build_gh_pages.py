@@ -135,9 +135,17 @@ def build_prediction_cache() -> tuple[int, int]:
     return built, skipped
 
 
+def build_daily_slate() -> None:
+    from web.daily_service import get_daily_slate
+
+    print("Building daily betting slate...")
+    write_json(DOCS_DIR / "api" / "daily-slate.json", get_daily_slate())
+
+
 def main() -> None:
     copy_static_assets()
     build_api_metadata()
+    build_daily_slate()
     built, skipped = build_prediction_cache()
     print(f"GitHub Pages build complete: {DOCS_DIR}")
     print(f"Prediction cache: {built} files written, {skipped} skipped")

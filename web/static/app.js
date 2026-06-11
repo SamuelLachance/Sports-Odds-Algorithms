@@ -2,52 +2,19 @@ const BASE_PATH = document.querySelector('meta[name="base-path"]')?.content || "
 const USE_STATIC_API =
   Boolean(BASE_PATH) || window.location.hostname.endsWith("github.io");
 
-const leagueSelect = document.getElementById("league");
-const awaySelect = document.getElementById("awayTeam");
-const homeSelect = document.getElementById("homeTeam");
-const seasonSelect = document.getElementById("seasonYear");
-const form = document.getElementById("predictForm");
-const formError = document.getElementById("formError");
-const submitBtn = document.getElementById("submitBtn");
-const resultsEmpty = document.getElementById("resultsEmpty");
-const resultsContent = document.getElementById("resultsContent");
+const refreshBtn = document.getElementById("refreshBtn");
+const picksGrid = document.getElementById("picksGrid");
+const picksEmpty = document.getElementById("picksEmpty");
+const slateList = document.getElementById("slateList");
+const leagueFilter = document.getElementById("leagueFilter");
+const boardError = document.getElementById("boardError");
 const themeToggle = document.getElementById("themeToggle");
+const statGames = document.getElementById("statGames");
+const statPicks = document.getElementById("statPicks");
+const statLeagues = document.getElementById("statLeagues");
+const updatedAt = document.getElementById("updatedAt");
 
-const DEMO_DEFAULTS = {
-  nba: {
-    away: "portland-trail-blazers",
-    home: "golden-state-warriors",
-    date: "4-16-2017",
-    season: "2017",
-  },
-  nhl: {
-    away: "pittsburgh-penguins",
-    home: "washington-capitals",
-    date: "4-12-2017",
-    season: "2017",
-  },
-  mlb: {
-    away: "chicago-cubs",
-    home: "cleveland-indians",
-    date: "10-25-2016",
-    season: "2016",
-  },
-};
-
-function dateForSeason(league, season) {
-  const demo = DEMO_DEFAULTS[league];
-  if (demo?.season === season) {
-    return demo.date;
-  }
-  if (league === "mlb") {
-    return `10-25-${season}`;
-  }
-  return `4-16-${season}`;
-}
-
-function slugToLabel(slug) {
-  return slug.replace(/-/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
-}
+let boardData = null;
 
 function setTheme(theme) {
   document.documentElement.dataset.theme = theme;
@@ -59,31 +26,15 @@ function initTheme() {
   setTheme(saved === "light" ? "light" : "dark");
 }
 
-function resolveApiUrl(path) {
-  if (!USE_STATIC_API) {
-    return path;
+function slateApiUrl() {
+  if (USE_STATIC_API) {
+    return `${BASE_PATH}/api/daily-slate.json`;
   }
-  if (path === "/api/leagues") {
-    return `${BASE_PATH}/api/leagues.json`;
-  }
-  const teamsMatch = path.match(/^\/api\/leagues\/([^/]+)\/teams$/);
-  if (teamsMatch) {
-    return `${BASE_PATH}/api/leagues/${teamsMatch[1]}/teams.json`;
-  }
-  const seasonsMatch = path.match(/^\/api\/leagues\/([^/]+)\/seasons$/);
-  if (seasonsMatch) {
-    return `${BASE_PATH}/api/leagues/${seasonsMatch[1]}/seasons.json`;
-  }
-  return path;
+  return "/api/daily/slate";
 }
 
-function staticPredictUrl(payload) {
-  const date = encodeURIComponent(payload.date);
-  return `${BASE_PATH}/api/predict/${payload.league}/${payload.away_team}/${payload.home_team}/${date}/${payload.season_year}/${payload.algorithm}.json`;
-}
-
-async function fetchJson(url, options) {
-  const response = await fetch(resolveApiUrl(url), options);
+async function fetchJson(url) {
+  const response = await fetch(url, { cache: "no-store" });
   let payload = null;
   try {
     payload = await response.json();
@@ -92,169 +43,231 @@ async function fetchJson(url, options) {
   }
   if (!response.ok) {
     const detail = payload?.detail;
-    const message = typeof detail === "string"
-      ? detail
-      : Array.isArray(detail)
-        ? detail.map((item) => item.msg || JSON.stringify(item)).join(", ")
-        : "Request failed";
+    const message =
+      typeof detail === "string"
+        ? detail
+        : "Unable to load today's betting board.";
     throw new Error(message);
   }
   return payload;
 }
 
-function fillSelect(select, items, valueKey, labelKey) {
-  select.innerHTML = "";
-  for (const item of items) {
-    const option = document.createElement("option");
-    option.value = item[valueKey];
-    option.textContent = item[labelKey];
-    select.appendChild(option);
+function formatTime(iso) {
+  if (!iso) return "TBD";
+  const date = new Date(iso);
+  return date.toLocaleString(undefined, {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+function formatOdds(value) {
+  if (value === null || value === undefined || value === 0) return "—";
+  return value > 0 ? `+${value}` : `${value}`;
+}
+
+function confidenceClass(confidence) {
+  return `confidence-${confidence || "low"}`;
+}
+
+function renderStats(data) {
+  statGames.textContent = String(data.summary?.games_analyzed ?? 0);
+  statPicks.textContent = String(data.summary?.recommended_bets ?? 0);
+  statLeagues.textContent = (data.summary?.leagues || []).join(" · ").toUpperCase() || "—";
+  const stamp = data.generated_at ? new Date(data.generated_at) : new Date();
+  updatedAt.textContent = `Board updated ${stamp.toLocaleString()}`;
+}
+
+function renderPickCard(pick) {
+  const article = document.createElement("article");
+  article.className = `pick-card ${confidenceClass(pick.confidence)}`;
+  article.innerHTML = `
+    <div class="pick-top">
+      <span class="league-pill">${pick.league_name || pick.league?.toUpperCase()}</span>
+      <span class="strategy-pill">${pick.strategy_label || pick.strategy}</span>
+    </div>
+    <h3>${pick.team_name}</h3>
+    <p class="pick-matchup">${pick.matchup}</p>
+    <p class="pick-time">${formatTime(pick.start_time)}</p>
+    <div class="pick-odds">
+      <div><span>Market</span><strong>${formatOdds(pick.market_odds)}</strong></div>
+      <div><span>Model</span><strong>${formatOdds(pick.model_projection)}</strong></div>
+      <div><span>Edge</span><strong>+${pick.edge}</strong></div>
+    </div>
+    <p class="pick-reason">${pick.reason}</p>
+  `;
+  return article;
+}
+
+function renderPicks(data) {
+  picksGrid.innerHTML = "";
+  const picks = data.recommended_bets || [];
+
+  if (!picks.length) {
+    const empty = document.createElement("div");
+    empty.className = "panel empty-panel";
+    empty.textContent =
+      "No clear value bets on today's board. The model didn't find lines beating the sportsbook on current moneylines.";
+    picksGrid.appendChild(empty);
+    return;
+  }
+
+  for (const pick of picks) {
+    picksGrid.appendChild(renderPickCard(pick));
   }
 }
 
-async function loadLeagues() {
-  const leagues = await fetchJson("/api/leagues");
-  fillSelect(leagueSelect, leagues, "id", "name");
+function renderFactorBars(factors) {
+  if (!factors?.length) return "";
+  return factors
+    .map((factor) => {
+      const width = Math.min(Math.abs(factor.value), 100);
+      const direction =
+        factor.favors === "away"
+          ? "away"
+          : factor.favors === "home"
+            ? "home"
+            : "neutral";
+      return `
+        <div class="factor-item compact">
+          <div class="factor-head">
+            <strong>${factor.label}</strong>
+            <span>${factor.value > 0 ? "+" : ""}${factor.value.toFixed(1)}% · ${direction}</span>
+          </div>
+          <div class="factor-bar"><span style="width:${width}%"></span></div>
+        </div>
+      `;
+    })
+    .join("");
 }
 
-async function loadLeagueData() {
-  const league = leagueSelect.value;
-  const [teams, seasons] = await Promise.all([
-    fetchJson(`/api/leagues/${league}/teams`),
-    fetchJson(`/api/leagues/${league}/seasons`),
-  ]);
+function renderGameCard(game) {
+  const article = document.createElement("article");
+  article.className = "game-card panel";
+  article.dataset.league = game.league;
 
-  fillSelect(awaySelect, teams, "slug", "label");
-  fillSelect(homeSelect, teams, "slug", "label");
-  fillSelect(seasonSelect, seasons.map((year) => ({ year })), "year", "year");
+  const away = game.matchup.away;
+  const home = game.matchup.home;
+  const model = game.model;
+  const market = game.market;
+  const topPick = game.top_pick;
+  const favorite =
+    model.favorite_side === "home" ? home.name : away.name;
 
-  const defaults = DEMO_DEFAULTS[league] || DEMO_DEFAULTS.nba;
-  awaySelect.value = defaults.away;
-  homeSelect.value = defaults.home;
-  seasonSelect.value = defaults.season;
-  document.getElementById("date").value = dateForSeason(league, defaults.season);
+  article.innerHTML = `
+    <div class="game-head">
+      <div>
+        <span class="league-pill">${game.league_name}</span>
+        <h3>${away.name} <span class="at">@</span> ${home.name}</h3>
+        <p class="game-meta">${formatTime(game.start_time)} · ${game.status_detail || game.status}</p>
+      </div>
+      <div class="win-chip">
+        <span>Model favorite</span>
+        <strong>${favorite}</strong>
+        <small>${model.win_probability}%</small>
+      </div>
+    </div>
+
+    <div class="odds-row game-odds">
+      <div class="odds-chip">
+        <span>${away.name} ML</span>
+        <strong>${formatOdds(market.away_moneyline)}</strong>
+        <small>Model ${formatOdds(model.away_projection)}</small>
+      </div>
+      <div class="odds-chip">
+        <span>${home.name} ML</span>
+        <strong>${formatOdds(market.home_moneyline)}</strong>
+        <small>Model ${formatOdds(model.home_projection)}</small>
+      </div>
+      <div class="odds-chip">
+        <span>Spread / Total</span>
+        <strong>${market.spread ?? "—"} / ${market.over_under ?? "—"}</strong>
+        <small>${market.provider || "ESPN odds"}</small>
+      </div>
+    </div>
+
+    ${
+      topPick
+        ? `<div class="game-pick ${confidenceClass(topPick.confidence)}">
+            <strong>${topPick.strategy_label}</strong>
+            <span>${topPick.team_name} · ${formatOdds(topPick.market_odds)} vs model ${formatOdds(topPick.model_projection)} (+${topPick.edge})</span>
+            <p>${topPick.reason}</p>
+          </div>`
+        : `<div class="game-pick neutral">
+            <strong>No value flag</strong>
+            <span>Model leans ${favorite} but sportsbook lines are not beating the model price.</span>
+          </div>`
+    }
+
+    <details class="factor-details">
+      <summary>Factor breakdown</summary>
+      <div class="factor-list">${renderFactorBars(model.factors)}</div>
+    </details>
+  `;
+  return article;
+}
+
+function renderSlate(data) {
+  slateList.innerHTML = "";
+  const filter = leagueFilter.value;
+  const games = (data.games || []).filter(
+    (game) => filter === "all" || game.league === filter,
+  );
+
+  if (!games.length) {
+    const empty = document.createElement("div");
+    empty.className = "panel empty-panel";
+    empty.textContent = "No upcoming games found for this filter.";
+    slateList.appendChild(empty);
+    return;
+  }
+
+  for (const game of games) {
+    slateList.appendChild(renderGameCard(game));
+  }
 }
 
 function showError(message) {
-  formError.hidden = false;
-  formError.textContent = message;
+  boardError.hidden = false;
+  boardError.textContent = message;
 }
 
 function clearError() {
-  formError.hidden = true;
-  formError.textContent = "";
+  boardError.hidden = true;
+  boardError.textContent = "";
 }
 
-function updateRing(probability) {
-  const ring = document.getElementById("probRing");
-  const circumference = 326.7;
-  const offset = circumference - (Math.min(probability, 100) / 100) * circumference;
-  ring.style.strokeDashoffset = String(offset);
-}
-
-function renderFactors(factors) {
-  const container = document.getElementById("factorList");
-  container.innerHTML = "";
-
-  for (const factor of factors) {
-    const item = document.createElement("div");
-    item.className = "factor-item";
-
-    const width = Math.min(Math.abs(factor.value), 100);
-    const direction =
-      factor.favors === "away"
-        ? "favors away"
-        : factor.favors === "home"
-          ? "favors home"
-          : "neutral";
-
-    item.innerHTML = `
-      <div class="factor-head">
-        <strong>${factor.label}</strong>
-        <span>${factor.value > 0 ? "+" : ""}${factor.value.toFixed(2)}% · ${direction}</span>
-      </div>
-      <div class="factor-bar"><span style="width:${width}%"></span></div>
-    `;
-    container.appendChild(item);
-  }
-}
-
-function renderResults(data) {
-  resultsEmpty.hidden = true;
-  resultsContent.hidden = false;
-
-  document.getElementById("awayName").textContent = slugToLabel(data.matchup.away.slug);
-  document.getElementById("homeName").textContent = slugToLabel(data.matchup.home.slug);
-  document.getElementById("favoriteName").textContent = slugToLabel(data.prediction.favorite_team);
-  document.getElementById("predictionMeta").textContent =
-    `${data.algorithm} · ${data.date} · ${data.league.toUpperCase()} ${data.season_year}`;
-  document.getElementById("winProbability").textContent = `${data.prediction.win_probability}%`;
-  document.getElementById("favoriteOdds").textContent = data.prediction.american_odds.favorite;
-  document.getElementById("underdogOdds").textContent = data.prediction.american_odds.underdog;
-  document.getElementById("totalScore").textContent = `${data.prediction.total_score}%`;
-
-  updateRing(data.prediction.win_probability);
-  renderFactors(data.factors);
-}
-
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
+async function loadBoard() {
   clearError();
-  submitBtn.disabled = true;
-  submitBtn.textContent = "Calculating...";
+  refreshBtn.disabled = true;
+  refreshBtn.textContent = "Refreshing...";
+  picksGrid.innerHTML = `<div class="panel empty-panel">Analyzing today's matchups...</div>`;
+  slateList.innerHTML = `<div class="panel empty-panel">Loading games...</div>`;
 
   try {
-    const payload = {
-      league: leagueSelect.value,
-      away_team: awaySelect.value,
-      home_team: homeSelect.value,
-      date: document.getElementById("date").value.trim(),
-      season_year: seasonSelect.value,
-      algorithm: document.getElementById("algorithm").value,
-    };
-
-    const result = USE_STATIC_API
-      ? await fetchJson(staticPredictUrl(payload))
-      : await fetchJson("/api/predict", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-
-    renderResults(result);
+    boardData = await fetchJson(slateApiUrl());
+    renderStats(boardData);
+    renderPicks(boardData);
+    renderSlate(boardData);
   } catch (error) {
-    const message = USE_STATIC_API && error.message === "Request failed"
-      ? "No precomputed result for this date on GitHub Pages. Use the default demo date for that season, or run locally with python run_server.py."
-      : error.message;
-    showError(message);
+    showError(error.message);
+    picksGrid.innerHTML = `<div class="panel empty-panel">Could not load recommendations.</div>`;
+    slateList.innerHTML = `<div class="panel empty-panel">Could not load games.</div>`;
   } finally {
-    submitBtn.disabled = false;
-    submitBtn.textContent = "Calculate odds";
+    refreshBtn.disabled = false;
+    refreshBtn.textContent = "Refresh today's board";
   }
+}
+
+refreshBtn.addEventListener("click", () => {
+  loadBoard().catch((error) => showError(error.message));
 });
 
-leagueSelect.addEventListener("change", () => {
-  loadLeagueData().catch((error) => showError(error.message));
-});
-
-const STATIC_DEMO_SEASONS = { nba: "2017", nhl: "2017", mlb: "2016" };
-
-seasonSelect.addEventListener("change", () => {
-  if (USE_STATIC_API) {
-    document.getElementById("date").value = dateForSeason(
-      leagueSelect.value,
-      seasonSelect.value,
-    );
-    const league = leagueSelect.value;
-    const season = seasonSelect.value;
-    if (STATIC_DEMO_SEASONS[league] !== season) {
-      showError(
-        "GitHub Pages demo supports the default season for each league (NBA/NHL 2017, MLB 2016). Run locally for other seasons.",
-      );
-    } else {
-      clearError();
-    }
-  }
+leagueFilter.addEventListener("change", () => {
+  if (boardData) renderSlate(boardData);
 });
 
 themeToggle.addEventListener("click", () => {
@@ -263,7 +276,4 @@ themeToggle.addEventListener("click", () => {
 });
 
 initTheme();
-
-loadLeagues()
-  .then(loadLeagueData)
-  .catch((error) => showError(error.message));
+loadBoard().catch((error) => showError(error.message));
