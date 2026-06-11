@@ -101,19 +101,22 @@ def _predict_job(args: tuple[str, str, str, str, str, str]) -> tuple[str, dict |
 
 
 def build_prediction_cache() -> tuple[int, int]:
+    """Build precomputed predictions. Default: demo seasons only (fast CI deploy)."""
+    full_build = os.environ.get("FULL_BUILD", "").lower() in {"1", "true", "yes"}
     jobs: list[tuple[str, str, str, str, str, str]] = []
 
     for league in SUPPORTED_LEAGUES:
         teams = get_teams(league)
         slugs = [team["slug"] for team in teams]
+        seasons = get_seasons(league) if full_build else [DEMO_SEASONS[league]]
 
-        for season in get_seasons(league):
+        for season in seasons:
             date = _season_date(league, season)
-            algos = ALGO_VERSIONS if season == DEMO_SEASONS[league] else ("Algo_V2",)
-
             for away_slug, home_slug in permutations(slugs, 2):
-                for algo in algos:
+                for algo in ALGO_VERSIONS:
                     jobs.append((league, away_slug, home_slug, date, season, algo))
+
+    print(f"Building {len(jobs)} prediction files (full_build={full_build})")
 
     built = 0
     skipped = 0

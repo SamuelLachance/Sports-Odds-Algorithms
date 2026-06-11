@@ -237,12 +237,23 @@ leagueSelect.addEventListener("change", () => {
   loadLeagueData().catch((error) => showError(error.message));
 });
 
+const STATIC_DEMO_SEASONS = { nba: "2017", nhl: "2017", mlb: "2016" };
+
 seasonSelect.addEventListener("change", () => {
   if (USE_STATIC_API) {
     document.getElementById("date").value = dateForSeason(
       leagueSelect.value,
       seasonSelect.value,
     );
+    const league = leagueSelect.value;
+    const season = seasonSelect.value;
+    if (STATIC_DEMO_SEASONS[league] !== season) {
+      showError(
+        "GitHub Pages demo supports the default season for each league (NBA/NHL 2017, MLB 2016). Run locally for other seasons.",
+      );
+    } else {
+      clearError();
+    }
   }
 });
 
