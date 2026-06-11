@@ -4,8 +4,9 @@ on:
   push:
     branches: [master]
   workflow_dispatch:
+  # Daily algo odds rebuild at 3:00 America/Toronto (EDT = 07:00 UTC; EST = 08:00 UTC)
   schedule:
-    - cron: "0 */6 * * *"
+    - cron: "0 7 * * *"
 
 permissions:
   contents: read

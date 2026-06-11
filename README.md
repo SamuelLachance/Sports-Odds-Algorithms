@@ -26,7 +26,7 @@ python -m pip install -r requirements.txt
 
 **https://samuellachance.github.io/Sports-Odds-Algorithms/**
 
-Daily picks across **NBA, WNBA, CBB, NFL, CFB, NHL, MLB, and soccer (MLS, EPL, La Liga, Bundesliga, Serie A, Ligue 1)** are rebuilt automatically every 6 hours (and on every push) via GitHub Actions. The board pulls live ESPN schedules and moneylines, runs Algo V2 on current-season results, and ranks value bets.
+Daily picks across **NBA, WNBA, CBB, NFL, CFB, NHL, MLB, and soccer (MLS, EPL, La Liga, Bundesliga, Serie A, Ligue 1)** are rebuilt automatically every day at **3:00 AM America/Toronto** (and on every push) via GitHub Actions. The board pulls live ESPN schedules and moneylines, runs Algo V2 on current-season results, and ranks value bets.
 
 ### Run the website locally
 
