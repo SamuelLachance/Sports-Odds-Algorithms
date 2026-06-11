@@ -6,18 +6,21 @@ import io
 import os
 import sys
 from contextlib import redirect_stdout
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 from web.bet_advisor import evaluate_picks, model_moneylines, pick_to_dict  # noqa: E402
-from web.espn_client import LEAGUE_CONFIG, ScheduledGame, fetch_scoreboard, iso_to_project_date  # noqa: E402
+from web.espn_client import ScheduledGame, fetch_scoreboard, iso_to_project_date  # noqa: E402
+from web.league_profiles import (  # noqa: E402
+    LEAGUE_PROFILES,
+    SUPPORTED_LEAGUES,
+    get_algo_league,
+)
 from web.live_data import load_live_team_data, resolve_team  # noqa: E402
 from web.predict_service import FACTOR_LABELS  # noqa: E402
-
-SUPPORTED_LEAGUES = ("nba", "nhl", "mlb")
 
 
 def _ensure_project_root() -> None:
@@ -32,6 +35,16 @@ def _today_cutoff(game: ScheduledGame) -> str:
         return iso_to_project_date(game.start_time)
     today = date.today()
     return f"{today.month}-{today.day}-{today.year}"
+
+
+def _is_actionable_soon(game: ScheduledGame, horizon_days: int = 3) -> bool:
+    if not game.start_time:
+        return True
+    start = datetime.fromisoformat(game.start_time.replace("Z", "+00:00"))
+    if start.tzinfo is None:
+        start = start.replace(tzinfo=timezone.utc)
+    now = datetime.now(timezone.utc)
+    return now - timedelta(days=1) <= start <= now + timedelta(days=horizon_days)
 
 
 def _season_year_from_cutoff(league: str, cutoff_date: str) -> str:
@@ -62,8 +75,9 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             f"Insufficient season data for {away[1]} or {home[1]} before {cutoff}."
         )
 
-    odds_calculator = Odds_Calculator(game.league)
-    algo = Algo(game.league)
+    algo_league = get_algo_league(game.league)
+    odds_calculator = Odds_Calculator(algo_league)
+    algo = Algo(algo_league)
 
     with redirect_stdout(io.StringIO()):
         returned_away = odds_calculator.analyze2(away, home, data_away, "away")
@@ -103,7 +117,7 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
     return {
         "event_id": game.event_id,
         "league": game.league,
-        "league_name": LEAGUE_CONFIG[game.league]["display"],
+        "league_name": LEAGUE_PROFILES[game.league]["name"],
         "name": game.name,
         "start_time": game.start_time,
         "status": game.status,
@@ -149,6 +163,8 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
 
         for game in scheduled:
             if game.status in {"in", "post"}:
+                continue
+            if not _is_actionable_soon(game):
                 continue
             try:
                 all_games.append(predict_live_game(game))

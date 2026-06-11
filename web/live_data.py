@@ -17,8 +17,8 @@ from web.espn_client import (  # noqa: E402
     guess_season_years,
     iso_to_project_date,
 )
-
-NUM_PERIODS = {"nba": 4, "nhl": 3, "mlb": 9}
+from web.league_profiles import NUM_PERIODS  # noqa: E402
+from web.team_registry import load_team_registry  # noqa: E402
 
 
 def _ensure_project_root() -> None:
@@ -34,17 +34,9 @@ def _normalize_abbr(league: str, espn_abbr: str) -> str:
     return aliases.get(upper, upper).lower()
 
 
-@lru_cache(maxsize=8)
+@lru_cache(maxsize=32)
 def _load_team_registry(league: str) -> dict[str, list[str]]:
-    _ensure_project_root()
-    from universal_functions import Universal_Functions
-
-    universal = Universal_Functions(league)
-    registry: dict[str, list[str]] = {}
-    for abbr, slug in universal.load_league_teams():
-        registry[abbr.lower()] = [abbr, slug]
-        registry[slug] = [abbr, slug]
-    return registry
+    return load_team_registry(league)
 
 
 def resolve_team(
@@ -130,8 +122,15 @@ def _build_team_entry(
             opp_abbr = _normalize_abbr(
                 league, (opp_comp.get("team") or {}).get("abbreviation", "")
             )
-            team_score = int((team_comp.get("score") or {}).get("value") or 0)
-            opp_score = int((opp_comp.get("score") or {}).get("value") or 0)
+            def _score_value(comp: dict) -> int:
+                raw = (comp.get("score") or {}).get("value")
+                try:
+                    return int(raw)
+                except (TypeError, ValueError):
+                    return 0
+
+            team_score = _score_value(team_comp)
+            opp_score = _score_value(opp_comp)
             dates.append(iso_to_project_date(event["date"]))
             opponents.append(opp_abbr)
             home_away.append("home" if team_comp.get("homeAway") == "home" else "away")

@@ -32,7 +32,12 @@ class Odds_Calculator:
 	#can be nba, nhl, nfl, mlb
 	league="nba"
 
-	num_periods={'nba': 4, 'nhl': 3, 'nfl': 4, 'mlb': 9}
+	num_periods={
+		'nba': 4, 'wnba': 4, 'cbb': 2,
+		'nfl': 4, 'cfb': 4,
+		'nhl': 3, 'mlb': 9,
+		'mls': 2, 'epl': 2, 'laliga': 2, 'bundesliga': 2, 'seriea': 2, 'ligue1': 2,
+	}
 	
 
 

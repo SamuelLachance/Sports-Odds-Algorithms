@@ -16,23 +16,11 @@ STATIC_SRC = PROJECT_ROOT / "web" / "static"
 REPO_NAME = "Sports-Odds-Algorithms"
 BASE_PATH = f"/{REPO_NAME}"
 
-DEFAULT_DATES = {
-    "nba": "4-16-2017",
-    "nhl": "4-12-2017",
-    "mlb": "10-25-2016",
-}
-
-DEMO_SEASONS = {
-    "nba": "2017",
-    "nhl": "2017",
-    "mlb": "2016",
-}
-
 sys.path.insert(0, str(PROJECT_ROOT))
 
+from web.league_profiles import DEFAULT_DATES, DEMO_SEASONS, SUPPORTED_LEAGUES  # noqa: E402
 from web.predict_service import (  # noqa: E402
     ALGO_VERSIONS,
-    SUPPORTED_LEAGUES,
     get_leagues,
     get_seasons,
     get_teams,
@@ -79,9 +67,17 @@ def build_api_metadata() -> None:
 
 
 def _season_date(league: str, season: str) -> str:
+    if league in DEMO_SEASONS and season == DEMO_SEASONS[league]:
+        return DEFAULT_DATES.get(league, f"4-16-{season}")
     if league == "mlb":
-        return DEFAULT_DATES["mlb"] if season == DEMO_SEASONS["mlb"] else f"10-25-{season}"
-    return DEFAULT_DATES[league] if season == DEMO_SEASONS[league] else f"4-16-{season}"
+        return f"10-25-{season}"
+    if league in {"mls", "epl", "laliga", "bundesliga", "seriea", "ligue1"}:
+        return f"4-15-{season}"
+    if league == "cbb":
+        return f"3-15-{season}"
+    if league == "cfb":
+        return f"12-15-{season}"
+    return DEFAULT_DATES.get(league, f"4-16-{season}")
 
 
 def _predict_job(args: tuple[str, str, str, str, str, str]) -> tuple[str, dict | None]:
@@ -108,7 +104,12 @@ def build_prediction_cache() -> tuple[int, int]:
     for league in SUPPORTED_LEAGUES:
         teams = get_teams(league)
         slugs = [team["slug"] for team in teams]
-        seasons = get_seasons(league) if full_build else [DEMO_SEASONS[league]]
+        if full_build:
+            seasons = get_seasons(league)
+        elif league in DEMO_SEASONS:
+            seasons = [DEMO_SEASONS[league]]
+        else:
+            continue
 
         for season in seasons:
             date = _season_date(league, season)

@@ -11,7 +11,12 @@ from typing import Any
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
-SUPPORTED_LEAGUES = ("nba", "nhl", "mlb")
+from web.league_profiles import (  # noqa: E402
+    SUPPORTED_LEAGUES,
+    get_algo_league,
+    list_leagues_metadata,
+)
+from web.team_registry import fetch_espn_teams  # noqa: E402
 ALGO_VERSIONS = ("Algo_V1", "Algo_V2")
 
 FACTOR_LABELS = {
@@ -33,20 +38,20 @@ def _ensure_project_root() -> None:
 
 
 def get_leagues() -> list[dict[str, str]]:
-    return [
-        {"id": "nba", "name": "NBA", "description": "Most accurate model in the original project."},
-        {"id": "nhl", "name": "NHL", "description": "Includes home/away win streak variable."},
-        {"id": "mlb", "name": "MLB", "description": "Baseball variant tuned for run differential stats."},
-    ]
+    return list_leagues_metadata()
 
 
 def get_teams(league: str) -> list[dict[str, str]]:
-    _ensure_project_root()
-    from universal_functions import Universal_Functions
-
     league = league.lower()
     if league not in SUPPORTED_LEAGUES:
         raise ValueError(f"Unsupported league: {league}")
+
+    teams = fetch_espn_teams(league)
+    if teams:
+        return teams
+
+    _ensure_project_root()
+    from universal_functions import Universal_Functions
 
     universal = Universal_Functions(league)
     return [
@@ -56,15 +61,21 @@ def get_teams(league: str) -> list[dict[str, str]]:
 
 
 def get_seasons(league: str) -> list[str]:
+    from datetime import date
+
     league = league.lower()
     data_dir = PROJECT_ROOT / league / "team_data"
-    if not data_dir.is_dir():
-        return []
-    return sorted(
-        folder.name
-        for folder in data_dir.iterdir()
-        if folder.is_dir() and folder.name.isdigit()
-    )
+    if data_dir.is_dir():
+        seasons = sorted(
+            folder.name
+            for folder in data_dir.iterdir()
+            if folder.is_dir() and folder.name.isdigit()
+        )
+        if seasons:
+            return seasons
+
+    year = date.today().year
+    return [str(year), str(year - 1)]
 
 
 def _find_team(league: str, team_slug: str) -> list[str]:
@@ -114,9 +125,10 @@ def predict_match(
     away = _find_team(league, away_slug)
     home = _find_team(league, home_slug)
 
+    algo_league = get_algo_league(league)
     universal = Universal_Functions(league)
-    odds_calculator = Odds_Calculator(league)
-    algo = Algo(league)
+    odds_calculator = Odds_Calculator(algo_league)
+    algo = Algo(algo_league)
 
     data_away = universal.load_data(away, date, season_year)
     data_home = universal.load_data(home, date, season_year)
