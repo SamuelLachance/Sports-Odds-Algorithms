@@ -4,7 +4,7 @@
 import urllib.request           #script for URL request handling
 import urllib.parse             #script for URL handling
 from urllib import request
-import html.parser              #script for HTML handling
+import html                     #script for HTML handling
 import os.path                  #script for directory/file handling
 import csv                      #script for CSV file handling
 import time                     #scripting timing handling
@@ -1029,8 +1029,7 @@ class ESPN_Scraper:
 			data=data.decode('UTF-8', errors='ignore')
 
 			#decode HTML
-			h=html.parser.HTMLParser()
-			data=h.unescape(data)
+			data=html.unescape(data)
 
 			return data
 		except Exception as exception:

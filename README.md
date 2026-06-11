@@ -1,128 +1,132 @@
-# Sports-Odds-Algorithms
-System that calculates and uses algorithms to predict the outcome of NBA, NHL, and MLB games. Each league has its own unique algorithm to predict winners, with NBA having the most accurate algorithm. The system was originally intended to be used for sports betting. The algorithms are pretty good at predicting winners. With sports betting, it also has to be better at predicting winners than other betters, and the oddsmakers. 
+# Sports Odds Algorithms
 
-
-
+System that calculates and uses algorithms to predict the outcome of NBA, NHL, and MLB games. Each league has its own unique algorithm to predict winners, with NBA having the most accurate algorithm in the original research.
 
 [The NHL algorithm predicted the 2016 Stanley Cup Champion team, and its NHL playoff bracket was in the 99th percentile](http://smartsoftware.technology/sports.php?view=nhl&season=2016)
 
 [Backtest results of betting strategies utilizing the algorithms' predictions](http://smartsoftware.technology/sports.php)
 
+---
 
------
+## Quick start (web demo)
 
-Algorithms to predict NBA, NHL, and MLB games are included. To utilize, run sports_bettor.py
+### Requirements
 
-*sports_bettor.py*  
+- Python 3.10+ (tested on Python 3.12)
+- Bundled historical CSV data in `nba/`, `nhl/`, and `mlb/`
 
-```
-League
-1) NBA
-2) NHL
-3) NFL
-4) MLB
-Choice:
-```
+### Install
 
-If you want to find the winner for an NBA game, pick 1. 
-
-```
-League: nba
-Menu:
-1) Single team analysis
-2) Calculate game odds (Single Game)
-3) Calculate game odds (ALL Games Today)
-4) Backtest algorithm
-5) Test schedule scraper
-Choice: 
+```powershell
+cd C:\Users\ulach5c\Projects\Sports-Odds-Algorithms
+python -m pip install -r requirements.txt
 ```
 
-If you want to find the winner for a single game, choose 2. 
+### Run the website locally
 
-```
-Backtest menu: Algorithm version:
-1) Algo_V1 - Uses a point system
-2) Algo_V2 - Uses a probability system
-Choice:
+```powershell
+python run_server.py
 ```
 
-Algo_V2 tends to be more accurate. It gives a percentage of a team to win a game, while Algo_V1 gives an absolute number of points where the higher number of points for a team, the higher chance of them winning. 
+Or with auto-reload during development:
 
-```
-nba teams:
-0: atlanta-hawks
-1: boston-celtics
-2: brooklyn-nets
-3: charlotte-hornets
-4: chicago-bulls
-5: cleveland-cavaliers
-6: dallas-mavericks
-7: denver-nuggets
-8: detroit-pistons
-9: golden-state-warriors
-10: houston-rockets
-11: indiana-pacers
-12: los-angeles-clippers
-13: los-angeles-lakers
-14: memphis-grizzlies
-15: miami-heat
-16: milwaukee-bucks
-17: minnesota-timberwolves
-18: new-orleans-pelicans
-19: new-york-knicks
-20: oklahoma-city-thunder
-21: orlando-magic
-22: philadelphia-76ers
-23: phoenix-suns
-24: portland-trail-blazers
-25: sacramento-kings
-26: san-antonio-spurs
-27: toronto-raptors
-28: utah-jazz
-29: washington-wizards
-Away Team #:
-Home Team #: 
+```powershell
+python -m uvicorn web.app:app --reload --host 127.0.0.1 --port 8000
 ```
 
-Choose the number corresponding to the away team and home team for the NBA game. The system was scrape the latest game data for the 2 teams, run the algorithm, and then output the data (and save to a file in nba\analyze\team_comparison). 
+### Verify core algorithms
 
-
-```
-Date to test (M-D-YYY): 4-16-2017
-Current season year: 2017
+```powershell
+python smoke_test.py
 ```
 
-"Date to test" means that all games played before that date will be included in the calculation. Typically, this would just be the current date if you want to include all games. 
-The current season year will need to be provided. 
+Open [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser.
 
+The demo uses bundled historical team CSV files (no live scraping required). Try the default example:
 
-Using an example game Portland Trail Blazers @ Golden State Warriors in the 2017 NBA playoffs, the output is 
+- **NBA:** Portland Trail Blazers @ Golden State Warriors on `4-16-2017` (season `2017`)
+- Expected Algo V2 result: ~71% Warriors win probability
 
+---
+
+## Project layout
+
+| Path | Purpose |
+|------|---------|
+| `algo.py` | Core Algo V1/V2 prediction logic |
+| `odds_calculator.py` | Team stat analysis and odds formatting |
+| `backtester.py` | Historical backtesting utilities |
+| `espn_scraper.py` | Legacy ESPN schedule/box score scraper |
+| `sports_bettor.py` | Original interactive CLI entry point |
+| `web/` | FastAPI backend + modern static frontend |
+
+---
+
+## Original CLI usage
+
+Algorithms to predict NBA, NHL, and MLB games are included. To utilize, run:
+
+```powershell
+python sports_bettor.py
 ```
-Away: portland-trail-blazers | Home: golden-state-warriors
-Seasonal Record:      -81.53%
-Home Away:            -91.33%
-Home away 10:         -59.94%
-Last 10 games:        -56.04%
-Avg points:           -78.74%
-Avg points 10:        -60.38%
---------
-Total: -71.32%
---------
-Perc chance to win: 71.32%
-Favorable team odds: -248.6750348675034
-Underdog team odds: +248.6750348675034
+
+Follow the interactive menus for single-team analysis, matchup odds, backtests, and schedule scraping.
+
+---
+
+## Algorithm overview
+
+**Variables:**
+
+1. Record points = (wins − losses) − (opponent wins − opponent losses)
+2. Home/away split differential
+3. Home/away split over last 10 games
+4. Last 10 games win ratio
+5. Average scoring margin
+6. Average scoring margin over last 10 games
+7. Win streak
+8. Home/away win streak (NHL)
+
+**Versions:**
+
+- **Algo V1** — point ranking system summed into a total, mapped to win probability
+- **Algo V2** — each factor converted via backtest-derived curves, averaged into a percentage
+
+See the original README sections below for backtesting and algorithm creation workflows.
+
+---
+
+## Push to your GitHub
+
+1. Create a new empty repository on GitHub (do not initialize with a README if you want a clean push).
+2. From the project folder:
+
+```powershell
+cd C:\Users\ulach5c\Projects\Sports-Odds-Algorithms
+git remote remove origin
+git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
+git add .
+git commit -m "Add modern web UI and Python 3 compatibility fixes"
+git push -u origin main
 ```
 
-A positive total gives favorability to the away team, and a negative Total gives favorability to the home team. The total in this example is -71.32%, so the Golden State Warriors have a supposed 71.32% chance of winning the game. 
+If your default branch is `master`, replace `main` accordingly. The repo already includes a large historical dataset — first push may take several minutes.
 
-Favorable odds are given that are based off the percentage chance to win. In order for a bet to be +Expected Value, whether on the favorite orunderdog team, the odds would have to be higher than the given odds in the output. The favorite team is expected to win 71.23% of the time, so a bet on them should be no less than -248.67. Good bets include -240, -150, +150, etc. Bad bets include -250, -500, etc. Same for the underdog team where good bets would be higher than +248.67, like +250 and +550, while bad bets would be lower, like +200, +150, etc. 
+---
 
+## Notes / limitations
 
+- Historical data coverage: NBA/NHL through 2017, MLB through 2016.
+- Live ESPN scraping may need updates if ESPN HTML/API endpoints changed since the original project.
+- The web demo intentionally uses bundled CSV data for reliable, reproducible predictions.
 
------
+---
 
-### Bare-bones algorithm information:
+## Original documentation
+
+The sections below are preserved from the upstream project.
+
+### Bare-bones algorithm information
 
 **Variables:** 
 1) Record_points = ( wins - losses ) - ( other_wins - other_losses)
@@ -150,7 +154,6 @@ This will run a CSV_output backtest using a hardcoded algo_V1. EX: NBA = [10, 10
 
 *Running sports_bettor.py:* Choose league, Backtest algorith, Algo_V1, stats.
 This will run a stats backtest for passed in algo_v1s that test each variable at a time. 
-
 
 -----
 

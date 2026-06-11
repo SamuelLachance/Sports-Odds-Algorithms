@@ -3,7 +3,7 @@
 import urllib.request           #script for URL request handling
 import urllib.parse             #script for URL handling
 from urllib import request
-import html.parser              #script for HTML handling
+import html                     #script for HTML handling
 import os.path                  #script for directory/file handling
 import csv                      #script for CSV file handling
 import time                     #scripting timing handling
@@ -38,10 +38,15 @@ class Universal_Functions:
 		reached_end=False
 
 		years=os.listdir("./"+str(self.league)+"/team_data/")
+		end_year=str(end_year)
+		end_year_int=int(end_year) if end_year.isdigit() else 0
 		for x in range(0, len(years)):
 			year=years[x]
 
-			if os.path.isdir("./"+str(self.league)+"/team_data/"+year) and reached_end==False and year<=end_year:
+			if not year.isdigit():
+				continue
+
+			if os.path.isdir("./"+str(self.league)+"/team_data/"+year) and reached_end==False and int(year)<=end_year_int:
 				path="./"+str(self.league)+"/team_data/"+year+"/"+team[1]+".csv"
 				contents=self.read_from_csv(path)
 
@@ -216,8 +221,7 @@ class Universal_Functions:
 			data=data.decode('UTF-8', errors='ignore')
 
 			#decode HTML
-			h=html.parser.HTMLParser()
-			data=h.unescape(data)
+			data=html.unescape(data)
 
 			return data
 		except Exception as exception:
@@ -226,7 +230,7 @@ class Universal_Functions:
 
 	#loads list of league teams
 	def load_league_teams(self):
-		file_open=open('./'+str(self.league)+'/'+str(self.league)+'_teams.txt')
+		file_open=open('./'+str(self.league)+'/'+str(self.league)+'_teams.txt', encoding='utf-8')
 
 		teams=[]
 		for line in file_open:
@@ -268,7 +272,7 @@ class Universal_Functions:
 
 	def read_from_csv(self, path):
 		if os.path.isfile(path):
-			with open(path, newline='') as file:
+			with open(path, newline='', encoding='utf-8') as file:
 				contents = csv.reader(file)
 
 				temp_list=[]
@@ -283,12 +287,12 @@ class Universal_Functions:
 			return []
 
 	def save_to_csv(self, path, data):
-		with open(path, 'w', newline='') as file:
+		with open(path, 'w', newline='', encoding='utf-8') as file:
 			contents = csv.writer(file)
 			contents.writerows(data)
 
 	def save_to_txt(self, path, data):
-		with open(path, "w") as file:
+		with open(path, "w", encoding='utf-8') as file:
 			for item in data:
 				file.write(str(item)+"\n\r")
 		

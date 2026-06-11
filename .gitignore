@@ -1,5 +1,29 @@
-#Python
+# Python
 *.pyc
+__pycache__/
+.venv/
+venv/
+.env
+.env.*
+
+# Web
+web/node_modules/
+web/dist/
+
+# IDE
+.vscode/
+.idea/
+__pycache__/
+*.pyo
+.venv/
+venv/
+.env
+.env.*
+
+# Web / tooling
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
 # Windows image file caches
 Thumbs.db
