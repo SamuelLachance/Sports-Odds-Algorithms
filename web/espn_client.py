@@ -221,21 +221,31 @@ def iso_to_project_date(iso_value: str) -> str:
     return f"{local.month}-{local.day}-{local.year}"
 
 
-def guess_season_years(league: str, cutoff: date) -> list[int]:
+def current_season_year(league: str, cutoff: date) -> int:
+    """ESPN season year for the in-progress season on the cutoff date."""
     year = cutoff.year
     month = cutoff.month
 
     if league in {"mlb", "mls", "epl", "laliga", "bundesliga", "seriea", "ligue1"}:
-        return [year, year - 1]
+        return year
 
     if league in {"cbb", "cfb"}:
         if month >= 8:
-            return [year + 1, year]
-        return [year, year - 1]
+            return year + 1
+        return year
 
     if league in {"nba", "nhl", "nfl", "wnba"}:
         if month >= 10:
-            return [year + 1, year]
-        return [year, year - 1]
+            return year + 1
+        return year
 
-    return [year, year - 1]
+    return year
+
+
+def prior_season_year(league: str, cutoff: date) -> int:
+    return current_season_year(league, cutoff) - 1
+
+
+def guess_season_years(league: str, cutoff: date) -> list[int]:
+    """Return [current, prior] ESPN season years (for tests and legacy callers)."""
+    return [current_season_year(league, cutoff), prior_season_year(league, cutoff)]

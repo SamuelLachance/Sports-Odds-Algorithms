@@ -13,12 +13,15 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 from web.espn_client import (  # noqa: E402
     ESPN_ABBR_ALIASES,
+    current_season_year,
     fetch_team_schedule,
-    guess_season_years,
     iso_to_project_date,
+    prior_season_year,
 )
-from web.league_profiles import NUM_PERIODS  # noqa: E402
+from web.league_profiles import MIN_GAMES_FOR_MODEL, NUM_PERIODS  # noqa: E402
 from web.team_registry import load_team_registry  # noqa: E402
+
+GameRows = tuple[list[str], list[str], list[str], list[list[int]], list[list[list[int]]]]
 
 
 def _ensure_project_root() -> None:
@@ -71,6 +74,74 @@ def _event_before_cutoff(event: dict[str, Any], cutoff: datetime) -> bool:
     return event_date < cutoff
 
 
+def _score_value(comp: dict[str, Any]) -> int:
+    raw = (comp.get("score") or {}).get("value")
+    try:
+        return int(raw)
+    except (TypeError, ValueError):
+        return 0
+
+
+def _collect_season_games(
+    league: str,
+    team_abbr: str,
+    espn_team_id: str,
+    season: int,
+    cutoff: datetime,
+) -> GameRows:
+    events = fetch_team_schedule(league, espn_team_id, season)
+
+    dates: list[str] = []
+    opponents: list[str] = []
+    home_away: list[str] = []
+    game_scores: list[list[int]] = []
+    period_scores: list[list[list[int]]] = []
+
+    for event in events:
+        if not _event_before_cutoff(event, cutoff):
+            continue
+
+        competition = (event.get("competitions") or [{}])[0]
+        competitors = competition.get("competitors") or []
+        team_comp = next(
+            (
+                c
+                for c in competitors
+                if _normalize_abbr(league, (c.get("team") or {}).get("abbreviation", ""))
+                == team_abbr.lower()
+            ),
+            None,
+        )
+        opp_comp = next((c for c in competitors if c is not team_comp), None)
+        if not team_comp or not opp_comp:
+            continue
+
+        opp_abbr = _normalize_abbr(
+            league, (opp_comp.get("team") or {}).get("abbreviation", "")
+        )
+        team_score = _score_value(team_comp)
+        opp_score = _score_value(opp_comp)
+        dates.append(iso_to_project_date(event["date"]))
+        opponents.append(opp_abbr)
+        home_away.append("home" if team_comp.get("homeAway") == "home" else "away")
+        game_scores.append([team_score, opp_score])
+
+        periods = NUM_PERIODS[league]
+        period_scores.append([[0] * periods, [0] * periods])
+
+    return dates, opponents, home_away, game_scores, period_scores
+
+
+def _merge_game_rows(left: GameRows, right: GameRows) -> GameRows:
+    return (
+        left[0] + right[0],
+        left[1] + right[1],
+        left[2] + right[2],
+        left[3] + right[3],
+        left[4] + right[4],
+    )
+
+
 def _build_team_entry(
     league: str,
     team_abbr: str,
@@ -79,74 +150,31 @@ def _build_team_entry(
 ) -> list[dict[str, Any]]:
     cutoff = _parse_cutoff(cutoff_date)
     cutoff_day = date(cutoff.year, cutoff.month, cutoff.day)
-    seasons = guess_season_years(league, cutoff_day)
+    current_season = current_season_year(league, cutoff_day)
+    prior_season = prior_season_year(league, cutoff_day)
 
-    dates: list[str] = []
-    opponents: list[str] = []
-    home_away: list[str] = []
-    game_scores: list[list[int]] = []
-    period_scores: list[list[list[int]]] = []
-    years_used: list[str] = []
+    current_rows = _collect_season_games(
+        league, team_abbr, espn_team_id, current_season, cutoff
+    )
+    dates, opponents, home_away, game_scores, period_scores = current_rows
+    seasons_used = [str(current_season)] if dates else []
 
-    for season in seasons:
-        events = fetch_team_schedule(league, espn_team_id, season)
-        year_label = str(season)
-        year_has_games = False
-
-        for event in events:
-            if not _event_before_cutoff(event, cutoff):
-                continue
-
-            competition = (event.get("competitions") or [{}])[0]
-            competitors = competition.get("competitors") or []
-            team_comp = next(
-                (
-                    c
-                    for c in competitors
-                    if _normalize_abbr(league, (c.get("team") or {}).get("abbreviation", ""))
-                    == team_abbr.lower()
-                ),
-                None,
+    if len(dates) < MIN_GAMES_FOR_MODEL:
+        prior_rows = _collect_season_games(
+            league, team_abbr, espn_team_id, prior_season, cutoff
+        )
+        if prior_rows[0]:
+            dates, opponents, home_away, game_scores, period_scores = _merge_game_rows(
+                prior_rows, current_rows
             )
-            opp_comp = next(
-                (
-                    c
-                    for c in competitors
-                    if c is not team_comp
-                ),
-                None,
-            )
-            if not team_comp or not opp_comp:
-                continue
-
-            opp_abbr = _normalize_abbr(
-                league, (opp_comp.get("team") or {}).get("abbreviation", "")
-            )
-            def _score_value(comp: dict) -> int:
-                raw = (comp.get("score") or {}).get("value")
-                try:
-                    return int(raw)
-                except (TypeError, ValueError):
-                    return 0
-
-            team_score = _score_value(team_comp)
-            opp_score = _score_value(opp_comp)
-            dates.append(iso_to_project_date(event["date"]))
-            opponents.append(opp_abbr)
-            home_away.append("home" if team_comp.get("homeAway") == "home" else "away")
-            game_scores.append([team_score, opp_score])
-
-            periods = NUM_PERIODS[league]
-            period_scores.append([[0] * periods, [0] * periods])
-            year_has_games = True
-
-        if year_has_games:
-            years_used.append(year_label)
+            seasons_used = [str(prior_season)]
+            if current_rows[0]:
+                seasons_used.append(str(current_season))
 
     if not dates:
         return []
 
-    year_key = years_used[-1] if years_used else str(cutoff.year)
+    year_key = str(current_season)
     return [
         {
             "year": year_key,
@@ -155,6 +183,9 @@ def _build_team_entry(
             "home_away": home_away,
             "game_scores": game_scores,
             "period_scores": period_scores,
+            "seasons_used": seasons_used,
+            "used_prior_season": len(seasons_used) > 1
+            or (len(seasons_used) == 1 and seasons_used[0] == str(prior_season)),
         }
     ]
 
