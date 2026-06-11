@@ -22,6 +22,12 @@ cd C:\Users\ulach5c\Projects\Sports-Odds-Algorithms
 python -m pip install -r requirements.txt
 ```
 
+### Public website (GitHub Pages)
+
+**https://samuellachance.github.io/Sports-Odds-Algorithms/**
+
+The live demo is rebuilt automatically on every push to `master` via GitHub Actions.
+
 ### Run the website locally
 
 ```powershell

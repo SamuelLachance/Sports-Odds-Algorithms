@@ -8,6 +8,7 @@ venv/
 
 # Web
 web/node_modules/
+docs/
 web/dist/
 
 # IDE

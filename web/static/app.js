@@ -1,3 +1,7 @@
+const BASE_PATH = document.querySelector('meta[name="base-path"]')?.content || "";
+const USE_STATIC_API =
+  Boolean(BASE_PATH) || window.location.hostname.endsWith("github.io");
+
 const leagueSelect = document.getElementById("league");
 const awaySelect = document.getElementById("awayTeam");
 const homeSelect = document.getElementById("homeTeam");
@@ -30,6 +34,17 @@ const DEMO_DEFAULTS = {
   },
 };
 
+function dateForSeason(league, season) {
+  const demo = DEMO_DEFAULTS[league];
+  if (demo?.season === season) {
+    return demo.date;
+  }
+  if (league === "mlb") {
+    return `10-25-${season}`;
+  }
+  return `4-16-${season}`;
+}
+
 function slugToLabel(slug) {
   return slug.replace(/-/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
 }
@@ -44,8 +59,31 @@ function initTheme() {
   setTheme(saved === "light" ? "light" : "dark");
 }
 
+function resolveApiUrl(path) {
+  if (!USE_STATIC_API) {
+    return path;
+  }
+  if (path === "/api/leagues") {
+    return `${BASE_PATH}/api/leagues.json`;
+  }
+  const teamsMatch = path.match(/^\/api\/leagues\/([^/]+)\/teams$/);
+  if (teamsMatch) {
+    return `${BASE_PATH}/api/leagues/${teamsMatch[1]}/teams.json`;
+  }
+  const seasonsMatch = path.match(/^\/api\/leagues\/([^/]+)\/seasons$/);
+  if (seasonsMatch) {
+    return `${BASE_PATH}/api/leagues/${seasonsMatch[1]}/seasons.json`;
+  }
+  return path;
+}
+
+function staticPredictUrl(payload) {
+  const date = encodeURIComponent(payload.date);
+  return `${BASE_PATH}/api/predict/${payload.league}/${payload.away_team}/${payload.home_team}/${date}/${payload.season_year}/${payload.algorithm}.json`;
+}
+
 async function fetchJson(url, options) {
-  const response = await fetch(url, options);
+  const response = await fetch(resolveApiUrl(url), options);
   let payload = null;
   try {
     payload = await response.json();
@@ -93,8 +131,8 @@ async function loadLeagueData() {
   const defaults = DEMO_DEFAULTS[league] || DEMO_DEFAULTS.nba;
   awaySelect.value = defaults.away;
   homeSelect.value = defaults.home;
-  document.getElementById("date").value = defaults.date;
   seasonSelect.value = defaults.season;
+  document.getElementById("date").value = dateForSeason(league, defaults.season);
 }
 
 function showError(message) {
@@ -175,15 +213,20 @@ form.addEventListener("submit", async (event) => {
       algorithm: document.getElementById("algorithm").value,
     };
 
-    const result = await fetchJson("/api/predict", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    const result = USE_STATIC_API
+      ? await fetchJson(staticPredictUrl(payload))
+      : await fetchJson("/api/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
 
     renderResults(result);
   } catch (error) {
-    showError(error.message);
+    const message = USE_STATIC_API && error.message === "Request failed"
+      ? "No precomputed result for this date on GitHub Pages. Use the default demo date for that season, or run locally with python run_server.py."
+      : error.message;
+    showError(message);
   } finally {
     submitBtn.disabled = false;
     submitBtn.textContent = "Calculate odds";
@@ -192,6 +235,15 @@ form.addEventListener("submit", async (event) => {
 
 leagueSelect.addEventListener("change", () => {
   loadLeagueData().catch((error) => showError(error.message));
+});
+
+seasonSelect.addEventListener("change", () => {
+  if (USE_STATIC_API) {
+    document.getElementById("date").value = dateForSeason(
+      leagueSelect.value,
+      seasonSelect.value,
+    );
+  }
 });
 
 themeToggle.addEventListener("click", () => {
