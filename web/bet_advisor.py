@@ -121,9 +121,37 @@ def spread_edge_from_points(point_edge: float) -> float:
     return max(0.0, point_edge * SPREAD_POINT_TO_EDGE)
 
 
-def _odds_edge(model_projection: int, market_odds: int) -> float:
-    if market_odds > model_projection:
-        return float(market_odds - model_projection)
+def _breakeven_american(probability_pct: float, *, as_underdog: bool) -> float:
+    """American odds with zero EV for the given win probability on one side."""
+    probability = min(max(probability_pct, 0.1), 99.9) / 100.0
+    if as_underdog:
+        return ((1.0 - probability) / probability) * 100.0
+    return -((probability / (1.0 - probability)) * 100.0)
+
+
+def _odds_edge(model_projection: int, market_odds: int, model_prob_pct: float) -> float:
+    """American-odds edge when the book price beats the model fair line.
+
+    Same-sign lines (+/+ or -/-) compare directly. When favorite/underdog signs
+    differ, compare the market quote to the model's breakeven line on that side
+    instead of subtracting across zero (e.g. +109 vs -121 is not +230).
+    """
+    fair_odds = _probability_to_american(model_prob_pct)
+    if market_odds <= fair_odds:
+        return 0.0
+
+    if (fair_odds >= 0 and market_odds >= 0) or (fair_odds <= 0 and market_odds <= 0):
+        return float(market_odds - fair_odds)
+
+    if market_odds > 0:
+        breakeven = _breakeven_american(model_prob_pct, as_underdog=True)
+        if market_odds > breakeven:
+            return float(market_odds - breakeven)
+        return 0.0
+
+    breakeven = _breakeven_american(model_prob_pct, as_underdog=False)
+    if market_odds > breakeven:
+        return float(market_odds - breakeven)
     return 0.0
 
 
@@ -148,6 +176,68 @@ def best_pick_only(picks: list[BetPick]) -> list[BetPick]:
     return [picks[0]]
 
 
+def _side_win_probs(total_score: float) -> tuple[float, float]:
+    win_prob = abs(total_score)
+    home_is_favorite = total_score <= 0
+    home_prob = win_prob if home_is_favorite else 100.0 - win_prob
+    away_prob = 100.0 - home_prob
+    return away_prob, home_prob
+
+
+def _moneyline_reason(
+    *,
+    name: str,
+    projection: int,
+    market: int,
+    edge: float,
+    outcome_prob: float,
+    is_model_favorite: bool,
+    is_market_underdog: bool,
+    outcome_label: str | None = None,
+) -> tuple[str, str, str]:
+    label = outcome_label or name
+    strategy = "value"
+    confidence = "medium"
+    fair_underdog = round(_breakeven_american(outcome_prob, as_underdog=True))
+
+    if is_model_favorite and is_market_underdog:
+        strategy = "model_favorite"
+        confidence = "high"
+        reason = (
+            f"Model makes {label} a {projection:+d} favorite ({outcome_prob:.1f}% win) "
+            f"but the book offers underdog odds {market:+d} "
+            f"(fair underdog equivalent +{fair_underdog}, +{edge:.0f} edge)."
+        )
+    elif is_model_favorite and not is_market_underdog and edge >= 15:
+        strategy = "strong_value"
+        confidence = "high"
+        reason = (
+            f"Model favors {label} at {projection:+d}; "
+            f"book line {market:+d} is softer (+{edge:.0f} edge)."
+        )
+    elif not is_model_favorite and not is_market_underdog and edge >= 15:
+        strategy = "strong_value"
+        confidence = "high"
+        reason = (
+            f"Model has {label} as {projection:+d} underdog; "
+            f"book favorite price {market:+d} is too short (+{edge:.0f} edge)."
+        )
+    else:
+        reason = (
+            f"Sportsbook offers {market:+d} vs model fair {projection:+d} "
+            f"on {label} (+{edge:.0f} edge on American odds)."
+        )
+
+    if edge >= 8 and strategy == "value":
+        strategy = "value"
+        confidence = "medium"
+    elif edge < 8:
+        strategy = "lean"
+        confidence = "low"
+
+    return strategy, confidence, reason
+
+
 def evaluate_picks(
     *,
     away_name: str,
@@ -160,54 +250,38 @@ def evaluate_picks(
     home_market: int | None,
 ) -> list[BetPick]:
     away_proj, home_proj = model_moneylines(total_score)
+    away_prob, home_prob = _side_win_probs(total_score)
     picks: list[BetPick] = []
 
-    candidates: list[tuple[str, str, str, int, int | None]] = [
-        ("away", away_name, away_slug, away_proj, away_market),
-        ("home", home_name, home_slug, home_proj, home_market),
+    candidates: list[tuple[str, str, str, float, int, int | None]] = [
+        ("away", away_name, away_slug, away_prob, away_proj, away_market),
+        ("home", home_name, home_slug, home_prob, home_proj, home_market),
     ]
 
-    for side, name, slug, projection, market in candidates:
+    for side, name, slug, outcome_prob, projection, market in candidates:
         if market is None:
             continue
 
-        edge = _odds_edge(projection, market)
+        edge = _odds_edge(projection, market, outcome_prob)
         is_model_favorite = projection < 0
         is_market_underdog = market > 0
-        diff = abs(projection - market)
-        if diff > 200:
-            diff = abs(projection - market) - 200
 
         if edge < MIN_RECOMMENDED_EDGE:
             continue
 
-        strategy = "value"
-        confidence = "medium"
-        reason = (
-            f"Sportsbook offers {market:+d} vs model {projection:+d} "
-            f"(+{edge:.0f} edge on American odds)."
+        strategy, confidence, reason = _moneyline_reason(
+            name=name,
+            projection=projection,
+            market=market,
+            edge=edge,
+            outcome_prob=outcome_prob,
+            is_model_favorite=is_model_favorite,
+            is_market_underdog=is_market_underdog,
         )
 
-        if is_model_favorite and edge >= 15:
-            strategy = "strong_value"
-            confidence = "high"
-            reason = (
-                f"Model favors {name} and the book price ({market:+d}) "
-                f"beats the model line ({projection:+d})."
-            )
-        elif is_model_favorite and is_market_underdog and diff >= 25:
-            strategy = "model_favorite"
-            confidence = "high"
-            reason = (
-                f"Model favorite priced as underdog at {market:+d}; "
-                f"model implies {projection:+d}."
-            )
-        elif edge >= 8:
+        if edge >= 8 and strategy == "lean":
             strategy = "value"
             confidence = "medium"
-        else:
-            strategy = "lean"
-            confidence = "low"
 
         picks.append(
             BetPick(
@@ -219,7 +293,7 @@ def evaluate_picks(
                 edge=edge,
                 model_projection=projection,
                 market_odds=market,
-                win_probability=win_probability,
+                win_probability=outcome_prob,
                 reason=reason,
             )
         )
@@ -258,44 +332,28 @@ def evaluate_soccer_picks(
         if market is None:
             continue
 
-        edge = _odds_edge(projection, market)
+        edge = _odds_edge(projection, market, outcome_prob)
         is_model_favorite = projection < 0
         is_market_underdog = market > 0
-        diff = abs(projection - market)
-        if diff > 200:
-            diff = abs(projection - market) - 200
 
         if edge < MIN_RECOMMENDED_EDGE:
             continue
 
-        strategy = "value"
-        confidence = "medium"
         outcome_label = "Draw" if side == "draw" else name
-        reason = (
-            f"Sportsbook offers {market:+d} vs model {projection:+d} "
-            f"on {outcome_label} (+{edge:.0f} edge on American odds)."
+        strategy, confidence, reason = _moneyline_reason(
+            name=name,
+            projection=projection,
+            market=market,
+            edge=edge,
+            outcome_prob=outcome_prob,
+            is_model_favorite=is_model_favorite,
+            is_market_underdog=is_market_underdog,
+            outcome_label=outcome_label,
         )
 
-        if is_model_favorite and edge >= 15:
-            strategy = "strong_value"
-            confidence = "high"
-            reason = (
-                f"Model favors {outcome_label} and the book price ({market:+d}) "
-                f"beats the model line ({projection:+d})."
-            )
-        elif is_model_favorite and is_market_underdog and diff >= 25:
-            strategy = "model_favorite"
-            confidence = "high"
-            reason = (
-                f"Model favorite priced as underdog at {market:+d}; "
-                f"model implies {projection:+d}."
-            )
-        elif edge >= 8:
+        if edge >= 8 and strategy == "lean":
             strategy = "value"
             confidence = "medium"
-        else:
-            strategy = "lean"
-            confidence = "low"
 
         picks.append(
             BetPick(

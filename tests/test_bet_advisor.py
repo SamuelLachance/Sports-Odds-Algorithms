@@ -9,8 +9,10 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from web.bet_advisor import (  # noqa: E402
+    _breakeven_american,
     _odds_edge,
     evaluate_picks,
+    evaluate_soccer_picks,
     evaluate_spread_picks,
     model_home_margin,
     model_moneylines,
@@ -81,33 +83,70 @@ def test_spread_point_edge_away_favorite_small_margin() -> None:
     assert spread_point_edge(margin, 9.5, "away") < 0
 
 
-def test_moneyline_edge_away_favorite_sign() -> None:
-    """Away favorite: negative away ML; edge positive only when book price beats model."""
+def test_moneyline_edge_same_sign_underdog() -> None:
+    """Same-sign underdog lines compare directly (Bosnia screenshot)."""
+    assert _odds_edge(253, 380, 28.33) == 127.0
+
+
+def test_moneyline_edge_same_sign_favorite() -> None:
+    """Same-sign favorite lines compare directly."""
     away_proj, home_proj = model_moneylines(55.68)
     assert away_proj < 0
     assert home_proj > 0
-    assert _odds_edge(away_proj, -171) == 0
-    assert _odds_edge(away_proj, -110) == float(-110 - away_proj)
-    assert _odds_edge(home_proj, 120) == 0
+    assert _odds_edge(away_proj, -171, 55.68) == 0.0
+    assert _odds_edge(away_proj, -110, 55.68) == float(-110 - away_proj)
+    assert _odds_edge(home_proj, 120, 44.32) == 0.0
 
 
-def test_evaluate_picks_away_favorite_ml_edge_not_inverted() -> None:
-    """Rays @ Angels regression: away fav with soft market ML yields away-side edge."""
+def test_moneyline_edge_cross_sign_not_raw_subtraction() -> None:
+    """Padres screenshot: +109 market vs -121 model is ~+26, not +230."""
+    padres_prob = 54.79
+    edge = _odds_edge(-121, 109, padres_prob)
+    fair_underdog = _breakeven_american(padres_prob, as_underdog=True)
+    assert abs(edge - (109 - fair_underdog)) < 0.5
+    assert edge < 40.0
+    assert edge != 230.0
+
+
+def test_evaluate_picks_cross_sign_below_threshold() -> None:
+    """Model favorite priced as underdog has real value but not +100 edge."""
     picks = evaluate_picks(
-        away_name="Tampa Bay Rays",
-        home_name="Los Angeles Angels",
-        away_slug="tampa-bay-rays",
-        home_slug="los-angeles-angels",
-        total_score=55.68,
-        win_probability=55.68,
+        away_name="San Diego Padres",
+        home_name="Cincinnati Reds",
+        away_slug="san-diego-padres",
+        home_slug="cincinnati-reds",
+        total_score=54.79,
+        win_probability=54.79,
         away_market=109,
         home_market=-130,
+    )
+    assert picks == []
+
+
+def test_evaluate_picks_same_sign_meets_threshold() -> None:
+    """Large same-sign underdog overlay still clears MIN_RECOMMENDED_EDGE."""
+    picks = evaluate_picks(
+        away_name="Bosnia",
+        home_name="Opponent",
+        away_slug="bosnia",
+        home_slug="opponent",
+        total_score=28.33,
+        win_probability=28.33,
+        away_market=380,
+        home_market=-150,
     )
     assert len(picks) == 1
     assert picks[0].side == "away"
     assert picks[0].edge >= MIN_RECOMMENDED_EDGE
-    assert picks[0].model_projection < 0
-    assert picks[0].market_odds > 0
+    assert picks[0].edge == 127.0
+
+
+def test_evaluate_picks_away_favorite_same_sign_soft_line() -> None:
+    """Away favorite with softer same-sign market line yields positive edge."""
+    away_proj, _ = model_moneylines(55.68)
+    edge = _odds_edge(away_proj, -110, 55.68)
+    assert edge == float(-110 - away_proj)
+    assert edge < MIN_RECOMMENDED_EDGE
 
 
 def test_evaluate_spread_picks_favors_underdog_when_market_overlays() -> None:
@@ -127,6 +166,45 @@ def test_evaluate_spread_picks_favors_underdog_when_market_overlays() -> None:
     assert picks[0].side == "home"
     assert picks[0].team_name == "Seattle Storm"
     assert picks[0].spread_line == 9.5
+    # Storm screenshot: ~8.9 pt cushion × 20 ≈ 178 edge
+    assert picks[0].edge >= MIN_RECOMMENDED_EDGE
+
+
+def test_cross_sign_reason_does_not_claim_book_beats_model_line() -> None:
+    picks = evaluate_picks(
+        away_name="San Diego Padres",
+        home_name="Cincinnati Reds",
+        away_slug="san-diego-padres",
+        home_slug="cincinnati-reds",
+        total_score=54.79,
+        win_probability=54.79,
+        away_market=250,
+        home_market=-300,
+    )
+    if picks:
+        assert "beats the model line" not in picks[0].reason.lower()
+        assert "underdog" in picks[0].reason.lower()
+
+
+def test_soccer_same_sign_edge_unchanged() -> None:
+    picks = evaluate_soccer_picks(
+        away_name="Away",
+        home_name="Home",
+        away_slug="away",
+        home_slug="home",
+        total_score=30.0,
+        home_prob=40.0,
+        draw_prob=30.0,
+        away_prob=30.0,
+        away_proj=233,
+        draw_proj=233,
+        home_proj=150,
+        away_market=350,
+        draw_market=None,
+        home_market=None,
+    )
+    assert len(picks) == 1
+    assert picks[0].edge == 117.0
 
 
 if __name__ == "__main__":
@@ -136,7 +214,13 @@ if __name__ == "__main__":
     test_evaluate_spread_picks_skips_without_consensus()
     test_model_home_margin_sign()
     test_spread_point_edge_away_favorite_small_margin()
-    test_moneyline_edge_away_favorite_sign()
-    test_evaluate_picks_away_favorite_ml_edge_not_inverted()
+    test_moneyline_edge_same_sign_underdog()
+    test_moneyline_edge_same_sign_favorite()
+    test_moneyline_edge_cross_sign_not_raw_subtraction()
+    test_evaluate_picks_cross_sign_below_threshold()
+    test_evaluate_picks_same_sign_meets_threshold()
+    test_evaluate_picks_away_favorite_same_sign_soft_line()
     test_evaluate_spread_picks_favors_underdog_when_market_overlays()
+    test_cross_sign_reason_does_not_claim_book_beats_model_line()
+    test_soccer_same_sign_edge_unchanged()
     print("test_bet_advisor.py: all tests passed")
