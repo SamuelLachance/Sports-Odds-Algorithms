@@ -21,6 +21,9 @@ from web.bet_advisor import (  # noqa: E402
     soccer_model_moneylines,
     soccer_threeway_probs,
 )
+from web.baseball_pred_model import get_baseball_pred_context, is_baseball_league  # noqa: E402
+from web.basketball_pred_model import get_basketball_pred_context, is_basketball_league  # noqa: E402
+from web.soccer_pred_model import get_soccer_pred_context  # noqa: E402
 from web.blend_service import blend_predictions  # noqa: E402
 from web.season_games import prewarm_league_power  # noqa: E402
 from web.espn_client import (  # noqa: E402
@@ -157,7 +160,15 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             home_spread_odds=game.market.home_spread_odds,
         )
     elif is_soccer_league(game.league):
-        home_prob, draw_prob, away_prob = soccer_threeway_probs(total, game.league)
+        if blended.get("threeway"):
+            home_prob = float(blended["home_win_probability"])
+            draw_prob = float(blended["draw_probability"])
+            away_prob = float(blended["away_win_probability"])
+            total = float(blended["total_score"])
+            win_probability = float(blended["win_probability"])
+            favorite_side = blended["favorite_side"]
+        else:
+            home_prob, draw_prob, away_prob = soccer_threeway_probs(total, game.league)
         away_proj, draw_proj, home_proj = soccer_model_moneylines(
             home_prob, draw_prob, away_prob
         )
@@ -168,6 +179,9 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
                 "draw_probability": round(draw_prob, 2),
                 "away_win_probability": round(away_prob, 2),
                 "draw_projection": draw_proj,
+                "total_score": round(total, 2),
+                "win_probability": round(win_probability, 2),
+                "favorite_side": favorite_side,
             }
         )
         model_payload["away_projection"] = away_proj
@@ -257,6 +271,36 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
                         "error": f"Power prewarm failed ({cutoff}): {exc}",
                     }
                 )
+            if is_basketball_league(league):
+                try:
+                    get_basketball_pred_context(league, cutoff)
+                except Exception as exc:  # noqa: BLE001
+                    errors.append(
+                        {
+                            "league": league,
+                            "error": f"Basketball matrix prewarm failed ({cutoff}): {exc}",
+                        }
+                    )
+            if is_baseball_league(league):
+                try:
+                    get_baseball_pred_context(league, cutoff)
+                except Exception as exc:  # noqa: BLE001
+                    errors.append(
+                        {
+                            "league": league,
+                            "error": f"Baseball model prewarm failed ({cutoff}): {exc}",
+                        }
+                    )
+            if is_soccer_league(league):
+                try:
+                    get_soccer_pred_context(league, cutoff)
+                except Exception as exc:  # noqa: BLE001
+                    errors.append(
+                        {
+                            "league": league,
+                            "error": f"Soccer model prewarm failed ({cutoff}): {exc}",
+                        }
+                    )
 
         for game in scheduled:
             if game.status in {"in", "post"}:

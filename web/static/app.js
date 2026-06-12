@@ -178,7 +178,11 @@ function algoBreakdown(m) {
   const legacy = m.legacy;
   const power = m.power;
   const basketball = m.basketball_pred;
-  if (!legacy && !power && !basketball) return "";
+  const baseball = m.baseball_pred;
+  const soccer = m.soccer_pred;
+  const legacyThreeway = m.legacy_threeway;
+  const powerThreeway = m.power_threeway;
+  if (!legacy && !power && !basketball && !baseball && !soccer && !legacyThreeway) return "";
   const parts = [];
   const layerTag =
     m.blend_layers === 3 ? "3-layer" : m.blend_layers === 2 ? "2-layer" : "";
@@ -197,6 +201,30 @@ function algoBreakdown(m) {
         ? ` margin ${basketball.predicted_margin}`
         : "";
     parts.push(`Matrix: ${basketball.home_win_probability}% home${margin}`);
+  }
+  if (baseball) {
+    const elo =
+      baseball.elo_exp != null ? ` Elo ${baseball.elo_exp}%` : "";
+    parts.push(`MLB-Model: ${baseball.home_win_probability}% home${elo}`);
+  }
+  if (legacyThreeway) {
+    parts.push(
+      `Legacy 1X2: ${legacyThreeway.home_win_probability}/${legacyThreeway.draw_probability}/${legacyThreeway.away_win_probability}%`
+    );
+  }
+  if (powerThreeway) {
+    parts.push(
+      `Power 1X2: ${powerThreeway.home_win_probability}/${powerThreeway.draw_probability}/${powerThreeway.away_win_probability}%`
+    );
+  }
+  if (soccer) {
+    const xg =
+      soccer.expected_home_goals != null
+        ? ` xG ${soccer.expected_home_goals}-${soccer.expected_away_goals}`
+        : "";
+    parts.push(
+      `Football-predictor: ${soccer.home_win_probability}/${soccer.draw_probability}/${soccer.away_win_probability}%${xg}`
+    );
   }
   if (m.blend_note) {
     parts.push(m.blend_note);

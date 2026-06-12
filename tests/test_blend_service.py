@@ -58,7 +58,8 @@ def test_blend_legacy_only_when_power_unavailable() -> None:
 def test_blend_averages_home_win_probs() -> None:
     import web.blend_service as blend_module
 
-    original = blend_module.run_power_model
+    power_original = blend_module.run_power_model
+    basketball_original = blend_module.run_basketball_pred_model
     try:
         blend_module.run_power_model = lambda *_a, **_k: {
             "algorithm": "PowerRatings",
@@ -67,20 +68,23 @@ def test_blend_averages_home_win_probs() -> None:
             "home_win_probability": 70.0,
             "param": 10.0,
         }
+        blend_module.run_basketball_pred_model = lambda *_a, **_k: None
         result = blend_predictions(
             legacy_total_score=-60.0,
             legacy_win_probability=60.0,
-            league="nba",
+            league="nhl",
             cutoff_date="6-11-2026",
             home_abbr="bos",
             away_abbr="ny",
         )
         assert result["blend_mode"] == "blended"
+        assert result["blend_layers"] == 2
         assert result["blended_home_win_probability"] == 65.0
         assert result["total_score"] == -65.0
         assert result["win_probability"] == 65.0
     finally:
-        blend_module.run_power_model = original
+        blend_module.run_power_model = power_original
+        blend_module.run_basketball_pred_model = basketball_original
 
 
 def test_blend_with_power_integration_when_games_exist() -> None:
@@ -111,10 +115,202 @@ def test_blend_with_power_integration_when_games_exist() -> None:
         get_league_power_context.cache_clear()
 
 
+def test_blend_mlb_three_way_when_layers_available() -> None:
+    import web.blend_service as blend_module
+
+    power_original = blend_module.run_power_model
+    baseball_original = blend_module.run_baseball_pred_model
+    try:
+        blend_module.run_power_model = lambda *_a, **_k: {
+            "algorithm": "PowerRatings",
+            "home_power": 0.5,
+            "away_power": -0.5,
+            "home_win_probability": 58.0,
+            "param": 10.0,
+        }
+        blend_module.run_baseball_pred_model = lambda *_a, **_k: {
+            "algorithm": "BaseballElo",
+            "source": "MLB-Model",
+            "home_win_probability": 64.0,
+        }
+        result = blend_predictions(
+            legacy_total_score=-60.0,
+            legacy_win_probability=60.0,
+            league="mlb",
+            cutoff_date="6-12-2026",
+            home_abbr="nyy",
+            away_abbr="bos",
+        )
+        assert result["blend_mode"] == "blended"
+        assert result["blend_layers"] == 3
+        assert result["baseball_pred"] is not None
+        assert result["baseball_pred"]["source"] == "MLB-Model"
+        assert result["blended_home_win_probability"] == round((60.0 + 58.0 + 64.0) / 3, 2)
+    finally:
+        blend_module.run_power_model = power_original
+        blend_module.run_baseball_pred_model = baseball_original
+
+
+def test_blend_mlb_two_way_fallback_when_baseball_unavailable() -> None:
+    import web.blend_service as blend_module
+
+    power_original = blend_module.run_power_model
+    baseball_original = blend_module.run_baseball_pred_model
+    try:
+        blend_module.run_power_model = lambda *_a, **_k: {
+            "algorithm": "PowerRatings",
+            "home_power": 0.5,
+            "away_power": -0.5,
+            "home_win_probability": 58.0,
+            "param": 10.0,
+        }
+        blend_module.run_baseball_pred_model = lambda *_a, **_k: None
+        result = blend_predictions(
+            legacy_total_score=-60.0,
+            legacy_win_probability=60.0,
+            league="mlb",
+            cutoff_date="6-12-2026",
+            home_abbr="nyy",
+            away_abbr="bos",
+        )
+        assert result["blend_mode"] == "blended"
+        assert result["blend_layers"] == 2
+        assert "baseball_pred" not in result
+        assert result["blended_home_win_probability"] == 59.0
+        assert "MLB-Model layer unavailable" in result.get("blend_note", "")
+    finally:
+        blend_module.run_power_model = power_original
+        blend_module.run_baseball_pred_model = baseball_original
+
+
+def test_blend_nba_three_way_when_basketball_available() -> None:
+    import web.blend_service as blend_module
+
+    power_original = blend_module.run_power_model
+    basketball_original = blend_module.run_basketball_pred_model
+    try:
+        blend_module.run_power_model = lambda *_a, **_k: {
+            "algorithm": "PowerRatings",
+            "home_power": 5.0,
+            "away_power": 1.0,
+            "home_win_probability": 70.0,
+            "param": 10.0,
+        }
+        blend_module.run_basketball_pred_model = lambda *_a, **_k: {
+            "algorithm": "BasketballMatrix",
+            "source": "NBA-prediction",
+            "home_win_probability": 62.0,
+        }
+        result = blend_predictions(
+            legacy_total_score=-60.0,
+            legacy_win_probability=60.0,
+            league="nba",
+            cutoff_date="6-12-2026",
+            home_abbr="bos",
+            away_abbr="ny",
+        )
+        assert result["blend_layers"] == 3
+        assert result["basketball_pred"] is not None
+        assert result["blended_home_win_probability"] == round((60.0 + 70.0 + 62.0) / 3, 2)
+    finally:
+        blend_module.run_power_model = power_original
+        blend_module.run_basketball_pred_model = basketball_original
+
+
+def test_blend_soccer_three_way_when_layers_available() -> None:
+    import web.blend_service as blend_module
+
+    power_original = blend_module.run_power_model
+    soccer_original = blend_module.run_soccer_pred_model
+    try:
+        blend_module.run_power_model = lambda *_a, **_k: {
+            "algorithm": "PowerRatings",
+            "home_power": 0.8,
+            "away_power": -0.4,
+            "home_win_probability": 58.0,
+            "param": 10.0,
+        }
+        blend_module.run_soccer_pred_model = lambda *_a, **_k: {
+            "algorithm": "SoccerRatings",
+            "source": "football-predictor",
+            "home_win_probability": 45.0,
+            "draw_probability": 28.0,
+            "away_win_probability": 27.0,
+        }
+        result = blend_predictions(
+            legacy_total_score=-55.0,
+            legacy_win_probability=55.0,
+            league="epl",
+            cutoff_date="6-12-2026",
+            home_abbr="che",
+            away_abbr="ars",
+        )
+        assert result["blend_mode"] == "blended"
+        assert result["blend_layers"] == 3
+        assert result["threeway"] is True
+        assert result["soccer_pred"] is not None
+        assert result["soccer_pred"]["source"] == "football-predictor"
+        legacy_h, legacy_d, legacy_a = blend_module.soccer_threeway_probs(-55.0, "epl")
+        power_total, _ = blend_module.home_win_prob_to_total_score(58.0)
+        power_h, power_d, power_a = blend_module.soccer_threeway_probs(power_total, "epl")
+        expected_h = round((legacy_h + power_h + 45.0) / 3, 2)
+        expected_d = round((legacy_d + power_d + 28.0) / 3, 2)
+        expected_a = round((legacy_a + power_a + 27.0) / 3, 2)
+        scale = 100.0 / (expected_h + expected_d + expected_a)
+        assert result["home_win_probability"] == round(expected_h * scale, 2)
+        assert result["draw_probability"] == round(expected_d * scale, 2)
+        assert result["away_win_probability"] == round(expected_a * scale, 2)
+        assert abs(
+            result["home_win_probability"]
+            + result["draw_probability"]
+            + result["away_win_probability"]
+            - 100.0
+        ) < 0.05
+    finally:
+        blend_module.run_power_model = power_original
+        blend_module.run_soccer_pred_model = soccer_original
+
+
+def test_blend_soccer_two_way_fallback_when_soccer_unavailable() -> None:
+    import web.blend_service as blend_module
+
+    power_original = blend_module.run_power_model
+    soccer_original = blend_module.run_soccer_pred_model
+    try:
+        blend_module.run_power_model = lambda *_a, **_k: {
+            "algorithm": "PowerRatings",
+            "home_power": 0.8,
+            "away_power": -0.4,
+            "home_win_probability": 58.0,
+            "param": 10.0,
+        }
+        blend_module.run_soccer_pred_model = lambda *_a, **_k: None
+        result = blend_predictions(
+            legacy_total_score=-55.0,
+            legacy_win_probability=55.0,
+            league="epl",
+            cutoff_date="6-12-2026",
+            home_abbr="che",
+            away_abbr="ars",
+        )
+        assert result["blend_layers"] == 2
+        assert result["threeway"] is True
+        assert "soccer_pred" not in result
+        assert "Football-predictor layer unavailable" in result.get("blend_note", "")
+    finally:
+        blend_module.run_power_model = power_original
+        blend_module.run_soccer_pred_model = soccer_original
+
+
 if __name__ == "__main__":
     test_total_score_to_home_win_prob()
     test_home_win_prob_to_total_score()
     test_blend_legacy_only_when_power_unavailable()
     test_blend_averages_home_win_probs()
     test_blend_with_power_integration_when_games_exist()
+    test_blend_mlb_three_way_when_layers_available()
+    test_blend_mlb_two_way_fallback_when_baseball_unavailable()
+    test_blend_nba_three_way_when_basketball_available()
+    test_blend_soccer_three_way_when_layers_available()
+    test_blend_soccer_two_way_fallback_when_soccer_unavailable()
     print("test_blend_service.py: all tests passed")
