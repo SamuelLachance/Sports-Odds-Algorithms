@@ -37,9 +37,9 @@ def test_evaluate_spread_picks_meets_edge_threshold() -> None:
         home_name="Spurs",
         away_slug="new-york-knicks",
         home_slug="san-antonio-spurs",
-        total_score=-95.0,
-        win_probability=95.0,
-        consensus_spread=-3.5,
+        total_score=-99.0,
+        win_probability=99.0,
+        consensus_spread=-1.5,
         away_spread_odds=-110,
         home_spread_odds=-110,
     )
@@ -47,8 +47,8 @@ def test_evaluate_spread_picks_meets_edge_threshold() -> None:
     assert picks[0].bet_type == "spread"
     assert picks[0].side == "home"
     assert picks[0].edge >= MIN_RECOMMENDED_EDGE
-    assert picks[0].consensus_spread == -3.5
-    assert picks[0].spread_line == -3.5
+    assert picks[0].consensus_spread == -1.5
+    assert picks[0].spread_line == -1.5
 
 
 def test_evaluate_spread_picks_skips_without_consensus() -> None:

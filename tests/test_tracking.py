@@ -18,7 +18,7 @@ from web.tracking_service import (  # noqa: E402
 )
 
 
-def _sample_pick(*, edge: float = 55, event_id: str = "401815712") -> dict:
+def _sample_pick(*, edge: float = MIN_RECOMMENDED_EDGE, event_id: str = "401815712") -> dict:
     return {
         "side": "home",
         "team_name": "Pirates",
@@ -59,11 +59,11 @@ def test_record_and_grade() -> None:
     assert response["summary"]["wins"] == 1
 
 
-def test_rejects_sub_fifty_edge() -> None:
+def test_rejects_sub_min_edge() -> None:
     store = {"version": 1, "bets": []}
     slate = {
         "date_label": "2026-06-11",
-        "recommended_bets": [_sample_pick(edge=49)],
+        "recommended_bets": [_sample_pick(edge=99)],
         "games": [],
     }
     store = record_from_slate(store, slate)
@@ -91,7 +91,7 @@ def test_ignores_game_recommendations_not_in_recommended() -> None:
     assert store["bets"] == []
 
 
-def _spread_pick(*, edge: float = 55, event_id: str = "401859967") -> dict:
+def _spread_pick(*, edge: float = MIN_RECOMMENDED_EDGE, event_id: str = "401859967") -> dict:
     return {
         "side": "home",
         "team_name": "Spurs",
@@ -225,6 +225,7 @@ def test_prune_below_min_edge() -> None:
             _sample_pick(edge=55),
             _sample_pick(edge=30, event_id="401815713"),
             _sample_pick(edge=MIN_RECOMMENDED_EDGE, event_id="401815714"),
+            _sample_pick(edge=MIN_RECOMMENDED_EDGE + 10, event_id="401815715"),
         ],
     }
     # record_from_slate expects full bet shape; prune works on stored bets
@@ -251,7 +252,7 @@ def test_prune_below_min_edge() -> None:
 if __name__ == "__main__":
     test_calculate_units()
     test_record_and_grade()
-    test_rejects_sub_fifty_edge()
+    test_rejects_sub_min_edge()
     test_ignores_game_recommendations_not_in_recommended()
     test_grade_spread_cover_win()
     test_grade_spread_push()

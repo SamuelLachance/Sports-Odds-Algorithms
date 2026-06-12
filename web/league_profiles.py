@@ -88,7 +88,7 @@ DEMO_SEASONS: dict[str, str] = {
 MIN_GAMES_FOR_MODEL = 10
 
 # Minimum American-odds edge vs model before a bet is recommended or tracked.
-MIN_RECOMMENDED_EDGE = 50
+MIN_RECOMMENDED_EDGE = 100
 
 # Basketball and American football — recommend spread instead of moneyline.
 SPREAD_BET_CATEGORIES: tuple[str, ...] = ("basketball", "football")

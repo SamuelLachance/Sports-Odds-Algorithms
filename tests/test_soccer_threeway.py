@@ -55,9 +55,9 @@ def test_evaluate_soccer_picks_includes_draw() -> None:
         away_proj=away_ml,
         draw_proj=draw_ml,
         home_proj=home_ml,
-        away_market=away_ml + 80,
-        draw_market=draw_ml + 80,
-        home_market=home_ml + 80,
+        away_market=away_ml + 120,
+        draw_market=draw_ml + 120,
+        home_market=home_ml + 120,
     )
     assert picks
     assert len(picks) == 1
