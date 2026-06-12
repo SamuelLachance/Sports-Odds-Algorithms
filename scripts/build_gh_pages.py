@@ -134,6 +134,15 @@ def build_prediction_cache() -> tuple[int, int]:
     return built, skipped
 
 
+def build_world_cup_hub() -> dict:
+    from web.world_cup_service import get_world_cup_hub
+
+    print("Building FIFA World Cup 2026 hub (full tournament predictions)...")
+    hub = get_world_cup_hub()
+    write_json(DOCS_DIR / "api" / "world-cup.json", hub)
+    return hub
+
+
 def build_daily_slate() -> dict:
     from web.daily_service import get_daily_slate
     from web.team_service import build_team_profiles_for_slate, build_teams_index
@@ -158,6 +167,7 @@ def main() -> None:
     copy_static_assets()
     build_api_metadata()
     build_daily_slate()
+    build_world_cup_hub()
     built, skipped = build_prediction_cache()
     print(f"GitHub Pages build complete: {DOCS_DIR}")
     print(f"Prediction cache: {built} files written, {skipped} skipped")

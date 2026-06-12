@@ -11,6 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from web.daily_service import get_daily_slate
+from web.world_cup_service import get_world_cup_hub
 from web.predict_service import (
     get_leagues,
     get_seasons,
@@ -79,6 +80,14 @@ def team_profile(league: str, abbr: str) -> dict:
         return get_team_profile(league, abbr)
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.get("/api/worldcup")
+def world_cup_hub() -> dict:
+    try:
+        return get_world_cup_hub()
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
 @app.get("/api/daily/slate")
