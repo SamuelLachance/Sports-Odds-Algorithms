@@ -180,21 +180,13 @@ function algoCenter(game) {
 }
 
 function viewDashboard() {
-  const s = state.slate?.summary || {};
-  const t = state.tracking?.all_time || state.tracking?.summary || {};
   const picks = state.slate?.recommended_bets || [];
   appRoot.innerHTML = `
-    <section class="page-head"><h1>Algo betting command center</h1><p>Model-driven picks, live market edges, and full performance tracking across every major league.</p></section>
-    <div class="stat-grid dashboard-stats">
-      <div class="stat-box"><span class="stat-label">Games today</span><strong>${s.games_analyzed ?? 0}</strong></div>
-      <div class="stat-box"><span class="stat-label">Value bets</span><strong>${s.recommended_bets ?? 0}</strong></div>
-      <div class="stat-box"><span class="stat-label">Tracked record</span><strong>${t.record || "0-0"}</strong></div>
-      <div class="stat-box"><span class="stat-label">All-time units</span><strong>${t.units > 0 ? "+" : ""}${t.units ?? 0}u</strong></div>
-    </div>
-    <section class="section"><div class="section-head"><h2>Today's top algo picks</h2><a class="text-link" href="#/picks">View all →</a></div>
-    <div class="picks-grid">${picks.length ? picks.slice(0, 6).map((p) => pickCard(p)).join("") : '<div class="panel empty-panel">No value bets flagged on today\'s board.</div>'}</div></section>
-    <section class="section"><div class="section-head"><h2>Performance snapshot</h2><a class="text-link" href="#/tracking">Full tracking →</a></div>
-    ${renderTrackingSummary()}</section>`;
+    <section class="page-head page-head-lean">
+      <h1>Today's algo picks</h1>
+      <p>Algo V2 value bets with +50 edge or higher. Browse <a class="text-link" href="#/games">games</a>, <a class="text-link" href="#/teams">teams</a>, or <a class="text-link" href="#/tracking">tracking</a>.</p>
+    </section>
+    <div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : '<div class="panel empty-panel">No bets meet the +50 minimum edge threshold today.</div>'}</div>`;
 }
 
 function renderTrackingSummary() {
