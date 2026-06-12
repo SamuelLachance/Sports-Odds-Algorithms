@@ -287,13 +287,66 @@ function algoCenter(game) {
 }
 
 function viewDashboard() {
-  const picks = state.slate?.recommended_bets || [];
+  const slate = state.slate || {};
+  const summary = slate.summary || {};
+  const picks = slate.recommended_bets || [];
+  const games = slate.games || [];
+  const leagues = summary.leagues || [...new Set(games.map((g) => g.league))];
+  const tracking = state.tracking?.all_time || state.tracking?.summary || {};
+  const dateLabel = slate.date_label || "Today";
+  const minEdge = summary.min_edge ?? slate.min_recommended_edge ?? 100;
+  const leagueCounts = games.reduce((acc, g) => {
+    acc[g.league_name || g.league] = (acc[g.league_name || g.league] || 0) + 1;
+    return acc;
+  }, {});
+  const slateBreakdown = Object.entries(leagueCounts)
+    .map(([name, count]) => `${name} (${count})`)
+    .join(" · ");
+
   appRoot.innerHTML = `
-    <section class="page-head page-head-lean">
-      <h1>Today's algo picks</h1>
-      <p>Unified model (Algo V2 + power ratings) value bets with +100 edge or higher. Browse <a class="text-link" href="#/games">games</a>, <a class="text-link" href="#/teams">teams</a>, or <a class="text-link" href="#/tracking">tracking</a>.</p>
+    <section class="tracking-hero panel home-hero">
+      <div class="tracking-hero-top">
+        <div>
+          <h1>Sharp Odds dashboard</h1>
+          <p>Today's slate · ${dateLabel} · Unified model across ${leagues.length || 0} leagues.</p>
+          <p class="muted">${slateBreakdown || "No games on today's slate yet."}</p>
+        </div>
+        <div class="tracking-hero-stats home-stats">
+          <div><span>Games</span><strong>${summary.games_analyzed ?? games.length}</strong></div>
+          <div><span>Algo picks</span><strong>${summary.recommended_bets ?? picks.length}</strong></div>
+          <div><span>Min edge</span><strong>+${minEdge}</strong></div>
+          <div><span>All-time ROI</span><strong>${tracking.roi_percent ?? 0}%</strong></div>
+        </div>
+      </div>
     </section>
-    <div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : '<div class="panel empty-panel">No bets meet the +100 minimum edge threshold today.</div>'}</div>`;
+
+    <div class="rollup-grid home-quick-links">
+      <a class="rollup-card panel home-link-card" href="#/games">
+        <h4>Games</h4>
+        <strong class="rollup-record">${games.length}</strong>
+        <span>Full algo breakdowns for every matchup</span>
+      </a>
+      <a class="rollup-card panel home-link-card" href="#/picks">
+        <h4>Algo picks</h4>
+        <strong class="rollup-record">${picks.length}</strong>
+        <span>Value bets at +${minEdge} edge or higher</span>
+      </a>
+      <a class="rollup-card panel home-link-card" href="#/teams">
+        <h4>Teams</h4>
+        <strong class="rollup-record">${leagues.length}</strong>
+        <span>Season stats and recent form</span>
+      </a>
+      <a class="rollup-card panel home-link-card" href="#/tracking">
+        <h4>Tracking</h4>
+        <strong class="rollup-record">${tracking.record || "0-0"}</strong>
+        <span>${tracking.units > 0 ? "+" : ""}${tracking.units ?? 0}u · ${tracking.pending ?? 0} pending</span>
+      </a>
+    </div>
+
+    <section class="section">
+      <div class="section-head"><h2>Top algo picks</h2><a class="text-link" href="#/picks">View all →</a></div>
+      <div class="picks-grid">${picks.length ? picks.slice(0, 6).map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No bets meet the +${minEdge} minimum edge threshold today.</div>`}</div>
+    </section>`;
 }
 
 function renderTrackingSummary() {
@@ -567,10 +620,6 @@ async function loadPlatform() {
   footerUpdated.textContent = `Updated ${stamp.toLocaleString()}`;
   renderLeagueMenu();
 
-  if (!location.hash || location.hash === "#" || location.hash === "#/") {
-    location.replace("#/tracking");
-    return;
-  }
   await render();
 }
 

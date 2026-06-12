@@ -18,6 +18,7 @@ from web.bet_advisor import (  # noqa: E402
     evaluate_spread_picks,
     model_moneylines,
     pick_to_dict,
+    projections_from_win_probs,
     soccer_model_moneylines,
     soccer_threeway_probs,
 )
@@ -123,7 +124,13 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
     total = float(blended["total_score"])
     win_probability = float(blended["win_probability"])
     favorite_side = blended["favorite_side"]
-    away_proj, home_proj = model_moneylines(total)
+
+    if blended.get("blended_home_win_probability") is not None:
+        home_prob = float(blended["blended_home_win_probability"])
+        away_prob = 100.0 - home_prob
+        away_proj, home_proj = projections_from_win_probs(home_prob, away_prob)
+    else:
+        away_proj, home_proj = model_moneylines(total)
 
     factors = []
     for key, label in FACTOR_LABELS.items():

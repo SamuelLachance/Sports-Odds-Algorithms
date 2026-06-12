@@ -40,32 +40,30 @@ class BetPick:
     extra: dict[str, Any] = field(default_factory=dict)
 
 
-def _american_from_probability(win_probability: float) -> tuple[int, int]:
-    probability = min(max(abs(win_probability), 0.1), 99.9)
-    line = round((100 / (100 - probability) - 1) * 100)
-    return line, line
-
-
-def model_moneylines(total_score: float) -> tuple[int, int]:
-    """Return projected American odds for away and home teams."""
-    odds = abs(total_score)
-    favorite_line, underdog_line = _american_from_probability(odds)
-
-    if total_score < 0:
-        away_proj = underdog_line
-        home_proj = -favorite_line
-    else:
-        away_proj = favorite_line
-        home_proj = -underdog_line
-
-    return away_proj, home_proj
-
-
 def _probability_to_american(probability_pct: float) -> int:
     probability = min(max(probability_pct, 0.1), 99.9)
     if probability >= 50.0:
         return -round((probability / (100.0 - probability)) * 100)
     return round(((100.0 - probability) / probability) * 100)
+
+
+def projections_from_win_probs(
+    home_prob: float, away_prob: float
+) -> tuple[int, int]:
+    """Derive away/home American odds from win probabilities."""
+    return (
+        _probability_to_american(away_prob),
+        _probability_to_american(home_prob),
+    )
+
+
+def model_moneylines(total_score: float) -> tuple[int, int]:
+    """Return projected American odds for away and home teams."""
+    win_prob = abs(total_score)
+    home_is_favorite = total_score <= 0
+    home_prob = win_prob if home_is_favorite else 100.0 - win_prob
+    away_prob = 100.0 - home_prob
+    return projections_from_win_probs(home_prob, away_prob)
 
 
 def soccer_threeway_probs(total_score: float, league: str) -> tuple[float, float, float]:

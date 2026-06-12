@@ -884,6 +884,37 @@ select {
   margin-bottom: 1.5rem;
 }
 
+.home-hero {
+  margin-bottom: 1.25rem;
+}
+
+.home-stats strong {
+  font-size: 1.35rem;
+}
+
+.home-quick-links {
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+
+.home-link-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.home-link-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.home-link-card span {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 0.35rem;
+}
+
 .rollup-card h4 {
   margin: 0 0 0.5rem;
   font-size: 0.8rem;

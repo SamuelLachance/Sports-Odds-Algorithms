@@ -34,9 +34,7 @@ def write_json(path: Path, data: object) -> None:
 
 
 def copy_static_assets() -> None:
-    if DOCS_DIR.exists():
-        shutil.rmtree(DOCS_DIR)
-    DOCS_DIR.mkdir(parents=True)
+    DOCS_DIR.mkdir(parents=True, exist_ok=True)
 
     for name in ("index.html", "styles.css", "app.js"):
         shutil.copy2(STATIC_SRC / name, DOCS_DIR / name)
