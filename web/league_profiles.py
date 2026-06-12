@@ -97,6 +97,7 @@ LARGE_ROSTER_LEAGUES: tuple[str, ...] = ("cbb", "cfb")
 POWER_SCOREBOARD_LOOKBACK: dict[str, int] = {
     "cbb": 150,
     "cfb": 120,
+    "fifa_friendlies": 120,
     "default": 365,
 }
 
