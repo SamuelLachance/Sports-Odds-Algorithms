@@ -70,10 +70,39 @@ def test_model_home_margin_sign() -> None:
     assert model_home_margin(60.0, "nba") < 0
 
 
+def test_spread_point_edge_away_favorite_small_margin() -> None:
+    # Model away by 1.2, book home +9.5 → fade away -9.5, take home +9.5
+    margin = model_home_margin(60.04, "wnba")
+    assert margin < 0
+    assert spread_point_edge(margin, 9.5, "home") > 8.0
+    assert spread_point_edge(margin, 9.5, "away") < 0
+
+
+def test_evaluate_spread_picks_favors_underdog_when_market_overlays() -> None:
+    picks = evaluate_spread_picks(
+        league="wnba",
+        away_name="Golden State Valkyries",
+        home_name="Seattle Storm",
+        away_slug="golden-state-valkyries",
+        home_slug="seattle-storm",
+        total_score=60.04,
+        win_probability=60.04,
+        consensus_spread=9.5,
+        away_spread_odds=-105,
+        home_spread_odds=-115,
+    )
+    assert picks
+    assert picks[0].side == "home"
+    assert picks[0].team_name == "Seattle Storm"
+    assert picks[0].spread_line == 9.5
+
+
 if __name__ == "__main__":
     test_spread_line_for_side()
     test_spread_point_edge_home_favorite()
     test_evaluate_spread_picks_meets_edge_threshold()
     test_evaluate_spread_picks_skips_without_consensus()
     test_model_home_margin_sign()
+    test_spread_point_edge_away_favorite_small_margin()
+    test_evaluate_spread_picks_favors_underdog_when_market_overlays()
     print("test_bet_advisor.py: all tests passed")

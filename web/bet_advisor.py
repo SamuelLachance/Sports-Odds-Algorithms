@@ -115,7 +115,8 @@ def spread_point_edge(model_margin_home: float, home_spread: float, side: str) -
     """Point cushion vs the consensus spread for the bet side."""
     if side == "home":
         return model_margin_home + home_spread
-    return home_spread - model_margin_home
+    # Away covers when model away margin exceeds the number laid (home_spread when home is dog).
+    return -model_margin_home - home_spread
 
 
 def spread_edge_from_points(point_edge: float) -> float:
