@@ -1,4 +1,4 @@
-"""FastAPI application serving the Sports Odds Algorithms web UI."""
+"""FastAPI application serving the Sports Odds betting platform."""
 
 from __future__ import annotations
 
@@ -17,13 +17,15 @@ from web.predict_service import (
     get_teams,
     predict_match,
 )
+from web.team_service import build_teams_index, get_team_profile
+from web.tracking_service import build_tracking_response, load_store, update_tracking
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 
 app = FastAPI(
     title="Sports Odds Algorithms",
-    description="Daily betting helper for NBA, NHL, and MLB with model-driven picks.",
-    version="2.0.0",
+    description="Algo-driven sports betting service with tracking across all major leagues.",
+    version="3.0.0",
 )
 
 app.add_middleware(
@@ -66,10 +68,43 @@ def seasons(league: str) -> list[str]:
     return get_seasons(league)
 
 
+@app.get("/api/teams")
+def teams_index() -> dict:
+    return build_teams_index()
+
+
+@app.get("/api/teams/{league}/{abbr}")
+def team_profile(league: str, abbr: str) -> dict:
+    try:
+        return get_team_profile(league, abbr)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
 @app.get("/api/daily/slate")
 def daily_slate(days_ahead: int = 0) -> dict:
     try:
         return get_daily_slate(days_ahead=max(0, min(days_ahead, 3)))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
+@app.get("/api/tracking")
+def tracking(refresh: bool = False) -> dict:
+    try:
+        if refresh:
+            slate = get_daily_slate()
+            return update_tracking(slate)
+        return build_tracking_response(load_store())
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
+@app.post("/api/tracking/sync")
+def tracking_sync() -> dict:
+    try:
+        slate = get_daily_slate()
+        return update_tracking(slate)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 

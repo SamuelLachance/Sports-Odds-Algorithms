@@ -13,7 +13,12 @@ from typing import Any
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 from web.bet_advisor import evaluate_picks, model_moneylines, pick_to_dict  # noqa: E402
-from web.espn_client import ScheduledGame, fetch_scoreboard, iso_to_project_date  # noqa: E402
+from web.espn_client import (  # noqa: E402
+    ScheduledGame,
+    current_season_year,
+    fetch_scoreboard,
+    iso_to_project_date,
+)
 from web.league_profiles import (  # noqa: E402
     LEAGUE_PROFILES,
     SUPPORTED_LEAGUES,
@@ -48,8 +53,9 @@ def _is_actionable_soon(game: ScheduledGame, horizon_days: int = 3) -> bool:
 
 
 def _season_year_from_cutoff(league: str, cutoff_date: str) -> str:
-    _, _, year = cutoff_date.split("-")
-    return year
+    month, day, year = cutoff_date.split("-")
+    season = current_season_year(league, date(int(year), int(month), int(day)))
+    return str(season)
 
 
 def predict_live_game(game: ScheduledGame) -> dict[str, Any]:

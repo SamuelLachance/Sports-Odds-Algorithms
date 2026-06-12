@@ -2,19 +2,50 @@ const BASE_PATH = document.querySelector('meta[name="base-path"]')?.content || "
 const USE_STATIC_API =
   Boolean(BASE_PATH) || window.location.hostname.endsWith("github.io");
 
-const refreshBtn = document.getElementById("refreshBtn");
-const picksGrid = document.getElementById("picksGrid");
-const picksEmpty = document.getElementById("picksEmpty");
-const slateList = document.getElementById("slateList");
-const leagueFilter = document.getElementById("leagueFilter");
-const boardError = document.getElementById("boardError");
-const themeToggle = document.getElementById("themeToggle");
-const statGames = document.getElementById("statGames");
-const statPicks = document.getElementById("statPicks");
-const statLeagues = document.getElementById("statLeagues");
-const updatedAt = document.getElementById("updatedAt");
+const state = {
+  slate: null,
+  tracking: null,
+  teamsIndex: null,
+  teamProfiles: {},
+  selectedLeague: "all",
+  trackingPeriod: "all_time",
+};
 
-let boardData = null;
+const appRoot = document.getElementById("appRoot");
+const leagueMenu = document.getElementById("leagueMenu");
+const gameMenu = document.getElementById("gameMenu");
+const sidebarGames = document.getElementById("sidebarGames");
+const sidebarGamesTitle = document.getElementById("sidebarGamesTitle");
+const footerUpdated = document.getElementById("footerUpdated");
+const themeToggle = document.getElementById("themeToggle");
+
+function api(path) {
+  if (USE_STATIC_API) {
+    return `${BASE_PATH}/api/${path}`;
+  }
+  return `/api/${path}`;
+}
+
+async function fetchJson(url) {
+  const response = await fetch(url, { cache: "no-store" });
+  const payload = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw new Error(
+      typeof payload?.detail === "string" ? payload.detail : "Request failed",
+    );
+  }
+  return payload;
+}
+
+function parseRoute() {
+  const hash = location.hash.replace(/^#/, "") || "/";
+  const parts = hash.split("/").filter(Boolean);
+  return { path: parts[0] || "", parts };
+}
+
+function navigate(hash) {
+  location.hash = hash;
+}
 
 function setTheme(theme) {
   document.documentElement.dataset.theme = theme;
@@ -22,40 +53,12 @@ function setTheme(theme) {
 }
 
 function initTheme() {
-  const saved = localStorage.getItem("soa-theme");
-  setTheme(saved === "light" ? "light" : "dark");
-}
-
-function slateApiUrl() {
-  if (USE_STATIC_API) {
-    return `${BASE_PATH}/api/daily-slate.json`;
-  }
-  return "/api/daily/slate";
-}
-
-async function fetchJson(url) {
-  const response = await fetch(url, { cache: "no-store" });
-  let payload = null;
-  try {
-    payload = await response.json();
-  } catch {
-    payload = null;
-  }
-  if (!response.ok) {
-    const detail = payload?.detail;
-    const message =
-      typeof detail === "string"
-        ? detail
-        : "Unable to load today's betting board.";
-    throw new Error(message);
-  }
-  return payload;
+  setTheme(localStorage.getItem("soa-theme") === "light" ? "light" : "dark");
 }
 
 function formatTime(iso) {
   if (!iso) return "TBD";
-  const date = new Date(iso);
-  return date.toLocaleString(undefined, {
+  return new Date(iso).toLocaleString(undefined, {
     weekday: "short",
     month: "short",
     day: "numeric",
@@ -64,33 +67,77 @@ function formatTime(iso) {
   });
 }
 
-function formatOdds(value) {
-  if (value === null || value === undefined || value === 0) return "—";
-  return value > 0 ? `+${value}` : `${value}`;
+function formatOdds(v) {
+  if (v == null || v === 0) return "—";
+  return v > 0 ? `+${v}` : `${v}`;
 }
 
-function confidenceClass(confidence) {
-  return `confidence-${confidence || "low"}`;
+function confClass(c) {
+  return `confidence-${c || "low"}`;
 }
 
-function renderStats(data) {
-  statGames.textContent = String(data.summary?.games_analyzed ?? 0);
-  statPicks.textContent = String(data.summary?.recommended_bets ?? 0);
-  statLeagues.textContent = (data.summary?.leagues || []).join(" · ").toUpperCase() || "—";
-  const stamp = data.generated_at ? new Date(data.generated_at) : new Date();
-  updatedAt.textContent = `Board updated ${stamp.toLocaleString()}`;
+function gamesForLeague(league) {
+  const games = state.slate?.games || [];
+  return league === "all" ? games : games.filter((g) => g.league === league);
 }
 
-function renderPickCard(pick) {
-  const article = document.createElement("article");
-  article.className = `pick-card ${confidenceClass(pick.confidence)}`;
-  article.innerHTML = `
-    <div class="pick-top">
-      <span class="league-pill">${pick.league_name || pick.league?.toUpperCase()}</span>
-      <span class="strategy-pill">${pick.strategy_label || pick.strategy}</span>
-    </div>
+function gameById(id) {
+  return (state.slate?.games || []).find((g) => g.event_id === id);
+}
+
+function renderLeagueMenu() {
+  const leagues = state.teamsIndex?.leagues || [];
+  const items = [
+    `<li><a href="#/games" class="league-link ${state.selectedLeague === "all" ? "active" : ""}" data-league="all">All sports</a></li>`,
+    ...leagues.map(
+      (lg) =>
+        `<li><a href="#/games/${lg.id}" class="league-link ${state.selectedLeague === lg.id ? "active" : ""}" data-league="${lg.id}">${lg.name} <span class="count">${lg.team_count}</span></a></li>`,
+    ),
+  ];
+  leagueMenu.innerHTML = items.join("");
+  leagueMenu.querySelectorAll(".league-link").forEach((el) => {
+    el.addEventListener("click", (e) => {
+      e.preventDefault();
+      const lg = el.dataset.league;
+      navigate(lg === "all" ? "#/games" : `#/games/${lg}`);
+    });
+  });
+}
+
+function renderGameSubmenu(league) {
+  const games = gamesForLeague(league);
+  if (!games.length) {
+    sidebarGames.hidden = true;
+    return;
+  }
+  sidebarGames.hidden = false;
+  sidebarGamesTitle.textContent =
+    league === "all" ? "Today's games" : `${league.toUpperCase()} games`;
+  gameMenu.innerHTML = games
+    .map((g) => {
+      const away = g.matchup.away.name;
+      const home = g.matchup.home.name;
+      return `<li><a href="#/game/${g.event_id}" class="game-link">${away} @ ${home}</a></li>`;
+    })
+    .join("");
+}
+
+function factorBars(factors) {
+  if (!factors?.length) return "<p class='muted'>No factor data.</p>";
+  return factors
+    .map((f) => {
+      const w = Math.min(Math.abs(f.value), 100);
+      const dir = f.favors === "away" ? "away" : f.favors === "home" ? "home" : "neutral";
+      return `<div class="factor-item compact"><div class="factor-head"><strong>${f.label}</strong><span>${f.value > 0 ? "+" : ""}${f.value.toFixed(1)} · ${dir}</span></div><div class="factor-bar"><span style="width:${w}%"></span></div></div>`;
+    })
+    .join("");
+}
+
+function pickCard(pick, extra = "") {
+  return `<article class="pick-card ${confClass(pick.confidence)}">
+    <div class="pick-top"><span class="league-pill">${pick.league_name || pick.league}</span><span class="strategy-pill">${pick.strategy_label || pick.strategy}</span></div>
     <h3>${pick.team_name}</h3>
-    <p class="pick-matchup">${pick.matchup}</p>
+    <p class="pick-matchup">${pick.matchup || extra}</p>
     <p class="pick-time">${formatTime(pick.start_time)}</p>
     <div class="pick-odds">
       <div><span>Market</span><strong>${formatOdds(pick.market_odds)}</strong></div>
@@ -98,182 +145,256 @@ function renderPickCard(pick) {
       <div><span>Edge</span><strong>+${pick.edge}</strong></div>
     </div>
     <p class="pick-reason">${pick.reason}</p>
-  `;
-  return article;
+  </article>`;
 }
 
-function renderPicks(data) {
-  picksGrid.innerHTML = "";
-  const picks = data.recommended_bets || [];
-
-  if (!picks.length) {
-    const empty = document.createElement("div");
-    empty.className = "panel empty-panel";
-    empty.textContent =
-      "No clear value bets on today's board. The model didn't find lines beating the sportsbook on current moneylines.";
-    picksGrid.appendChild(empty);
-    return;
-  }
-
-  for (const pick of picks) {
-    picksGrid.appendChild(renderPickCard(pick));
-  }
-}
-
-function renderFactorBars(factors) {
-  if (!factors?.length) return "";
-  return factors
-    .map((factor) => {
-      const width = Math.min(Math.abs(factor.value), 100);
-      const direction =
-        factor.favors === "away"
-          ? "away"
-          : factor.favors === "home"
-            ? "home"
-            : "neutral";
-      return `
-        <div class="factor-item compact">
-          <div class="factor-head">
-            <strong>${factor.label}</strong>
-            <span>${factor.value > 0 ? "+" : ""}${factor.value.toFixed(1)}% · ${direction}</span>
-          </div>
-          <div class="factor-bar"><span style="width:${width}%"></span></div>
-        </div>
-      `;
-    })
-    .join("");
-}
-
-function renderGameCard(game) {
-  const article = document.createElement("article");
-  article.className = "game-card panel";
-  article.dataset.league = game.league;
-
+function algoCenter(game) {
+  const m = game.model;
+  const mk = game.market;
   const away = game.matchup.away;
   const home = game.matchup.home;
-  const model = game.model;
-  const market = game.market;
-  const topPick = game.top_pick;
-  const favorite =
-    model.favorite_side === "home" ? home.name : away.name;
-
-  article.innerHTML = `
-    <div class="game-head">
-      <div>
-        <span class="league-pill">${game.league_name}</span>
-        <h3>${away.name} <span class="at">@</span> ${home.name}</h3>
-        <p class="game-meta">${formatTime(game.start_time)} · ${game.status_detail || game.status}</p>
+  const fav = m.favorite_side === "home" ? home.name : away.name;
+  const top = game.top_pick;
+  return `<section class="algo-hero panel">
+    <div class="algo-hero-head">
+      <span class="league-pill">${game.league_name}</span>
+      <h1>${away.name} <span class="at">@</span> ${home.name}</h1>
+      <p class="game-meta">${formatTime(game.start_time)} · ${game.status_detail || game.status}</p>
+    </div>
+    <div class="algo-core">
+      <div class="algo-probability">
+        <span>Algo V2 win probability</span>
+        <strong class="prob-value">${m.win_probability}%</strong>
+        <small>Model favorite: ${fav}</small>
       </div>
-      <div class="win-chip">
-        <span>Model favorite</span>
-        <strong>${favorite}</strong>
-        <small>${model.win_probability}%</small>
+      <div class="odds-row game-odds">
+        <div class="odds-chip"><span>${away.name}</span><strong>${formatOdds(mk.away_moneyline)}</strong><small>Model ${formatOdds(m.away_projection)}</small></div>
+        <div class="odds-chip"><span>${home.name}</span><strong>${formatOdds(mk.home_moneyline)}</strong><small>Model ${formatOdds(m.home_projection)}</small></div>
+        <div class="odds-chip"><span>Spread / O-U</span><strong>${mk.spread ?? "—"} / ${mk.over_under ?? "—"}</strong><small>${mk.provider || "ESPN"}</small></div>
       </div>
     </div>
-
-    <div class="odds-row game-odds">
-      <div class="odds-chip">
-        <span>${away.name} ML</span>
-        <strong>${formatOdds(market.away_moneyline)}</strong>
-        <small>Model ${formatOdds(model.away_projection)}</small>
-      </div>
-      <div class="odds-chip">
-        <span>${home.name} ML</span>
-        <strong>${formatOdds(market.home_moneyline)}</strong>
-        <small>Model ${formatOdds(model.home_projection)}</small>
-      </div>
-      <div class="odds-chip">
-        <span>Spread / Total</span>
-        <strong>${market.spread ?? "—"} / ${market.over_under ?? "—"}</strong>
-        <small>${market.provider || "ESPN odds"}</small>
-      </div>
-    </div>
-
-    ${
-      topPick
-        ? `<div class="game-pick ${confidenceClass(topPick.confidence)}">
-            <strong>${topPick.strategy_label}</strong>
-            <span>${topPick.team_name} · ${formatOdds(topPick.market_odds)} vs model ${formatOdds(topPick.model_projection)} (+${topPick.edge})</span>
-            <p>${topPick.reason}</p>
-          </div>`
-        : `<div class="game-pick neutral">
-            <strong>No value flag</strong>
-            <span>Model leans ${favorite} but sportsbook lines are not beating the model price.</span>
-          </div>`
-    }
-
-    <details class="factor-details">
-      <summary>Factor breakdown</summary>
-      <div class="factor-list">${renderFactorBars(model.factors)}</div>
-    </details>
-  `;
-  return article;
+    ${top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong><span>${top.team_name} · ${formatOdds(top.market_odds)} vs model ${formatOdds(top.model_projection)} (+${top.edge})</span><p>${top.reason}</p></div>` : `<div class="game-pick neutral"><strong>No value flag</strong><span>Model leans ${fav}; lines do not beat model price today.</span></div>`}
+    <details class="factor-details" open><summary>Algo factor breakdown</summary><div class="factor-list">${factorBars(m.factors)}</div></details>
+    ${(game.recommendations || []).length ? `<div class="rec-list"><h3>All model recommendations</h3>${game.recommendations.map((p) => pickCard({ ...p, league_name: game.league_name, matchup: `${away.name} @ ${home.name}`, start_time: game.start_time })).join("")}</div>` : ""}
+  </section>`;
 }
 
-function renderSlate(data) {
-  slateList.innerHTML = "";
-  const filter = leagueFilter.value;
-  const games = (data.games || []).filter(
-    (game) => filter === "all" || game.league === filter,
-  );
+function viewDashboard() {
+  const s = state.slate?.summary || {};
+  const t = state.tracking?.all_time || state.tracking?.summary || {};
+  const picks = state.slate?.recommended_bets || [];
+  appRoot.innerHTML = `
+    <section class="page-head"><h1>Algo betting command center</h1><p>Model-driven picks, live market edges, and full performance tracking across every major league.</p></section>
+    <div class="stat-grid dashboard-stats">
+      <div class="stat-box"><span class="stat-label">Games today</span><strong>${s.games_analyzed ?? 0}</strong></div>
+      <div class="stat-box"><span class="stat-label">Value bets</span><strong>${s.recommended_bets ?? 0}</strong></div>
+      <div class="stat-box"><span class="stat-label">Tracked record</span><strong>${t.record || "0-0"}</strong></div>
+      <div class="stat-box"><span class="stat-label">All-time units</span><strong>${t.units > 0 ? "+" : ""}${t.units ?? 0}u</strong></div>
+    </div>
+    <section class="section"><div class="section-head"><h2>Today's top algo picks</h2><a class="text-link" href="#/picks">View all →</a></div>
+    <div class="picks-grid">${picks.length ? picks.slice(0, 6).map((p) => pickCard(p)).join("") : '<div class="panel empty-panel">No value bets flagged on today\'s board.</div>'}</div></section>
+    <section class="section"><div class="section-head"><h2>Performance snapshot</h2><a class="text-link" href="#/tracking">Full tracking →</a></div>
+    ${renderTrackingSummary()}</section>`;
+}
 
-  if (!games.length) {
-    const empty = document.createElement("div");
-    empty.className = "panel empty-panel";
-    empty.textContent = "No upcoming games found for this filter.";
-    slateList.appendChild(empty);
+function renderTrackingSummary() {
+  const periods = [
+    ["daily", "Today"],
+    ["weekly", "This week"],
+    ["monthly", "This month"],
+    ["yearly", "This year"],
+    ["all_time", "All time"],
+  ];
+  return `<div class="rollup-grid">${periods
+    .map(([key, label]) => {
+      const row =
+        key === "all_time"
+          ? state.tracking?.all_time
+          : (state.tracking?.[key] || [])[0];
+      if (!row) return `<div class="rollup-card panel"><h4>${label}</h4><p class="muted">No data yet</p></div>`;
+      return `<div class="rollup-card panel"><h4>${label}</h4><strong class="rollup-record">${row.record || "0-0"}</strong><span>${row.units > 0 ? "+" : ""}${row.units ?? 0}u · ROI ${row.roi_percent ?? 0}%</span><small>${row.bets ?? 0} bets · ${row.pending ?? 0} pending</small></div>`;
+    })
+    .join("")}</div>`;
+}
+
+function viewPicks() {
+  const picks = state.slate?.recommended_bets || [];
+  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p>Ranked by edge between sportsbook moneylines and Algo V2 fair prices.</p></section>
+    <div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : '<div class="panel empty-panel">No positive-edge bets today.</div>'}</div>`;
+}
+
+function viewGames(league) {
+  state.selectedLeague = league || "all";
+  renderLeagueMenu();
+  renderGameSubmenu(state.selectedLeague);
+  const games = gamesForLeague(state.selectedLeague);
+  appRoot.innerHTML = `<section class="page-head"><h1>Games</h1><p>Select a matchup for full algo analysis. Use the sidebar for league and game navigation.</p></section>
+    <div class="slate-list">${games.length ? games.map((g) => gameListCard(g)).join("") : '<div class="panel empty-panel">No games for this filter.</div>'}</div>`;
+}
+
+function gameListCard(game) {
+  const away = game.matchup.away;
+  const home = game.matchup.home;
+  const m = game.model;
+  const fav = m.favorite_side === "home" ? home.name : away.name;
+  return `<article class="game-card panel clickable" data-game="${game.event_id}">
+    <div class="game-head"><div><span class="league-pill">${game.league_name}</span><h3>${away.name} @ ${home.name}</h3><p class="game-meta">${formatTime(game.start_time)}</p></div>
+    <div class="win-chip"><span>Algo</span><strong>${fav}</strong><small>${m.win_probability}%</small></div></div>
+    <a class="btn btn-secondary btn-sm" href="#/game/${game.event_id}">Open algo breakdown →</a>
+  </article>`;
+}
+
+function viewGame(eventId) {
+  const game = gameById(eventId);
+  if (!game) {
+    appRoot.innerHTML = '<div class="panel empty-panel">Game not found on today\'s slate.</div>';
     return;
   }
-
-  for (const game of games) {
-    slateList.appendChild(renderGameCard(game));
-  }
+  state.selectedLeague = game.league;
+  renderLeagueMenu();
+  renderGameSubmenu(game.league);
+  appRoot.innerHTML = algoCenter(game);
 }
 
-function showError(message) {
-  boardError.hidden = false;
-  boardError.textContent = message;
+function viewTeams(league) {
+  const leagues = state.teamsIndex?.leagues || [];
+  const filtered = league ? leagues.filter((l) => l.id === league) : leagues;
+  appRoot.innerHTML = `<section class="page-head"><h1>Teams</h1><p>Every team across ${leagues.length} leagues — select for season stats and recent form.</p></section>
+    ${filtered
+      .map(
+        (lg) => `<div class="team-league-block"><h2>${lg.name}</h2><div class="team-grid">${lg.teams
+          .map(
+            (t) =>
+              `<a class="team-tile panel" href="#/team/${lg.id}/${t.abbr}"><strong>${t.label}</strong><span>${t.abbr.toUpperCase()}</span></a>`,
+          )
+          .join("")}</div></div>`,
+      )
+      .join("")}`;
 }
 
-function clearError() {
-  boardError.hidden = true;
-  boardError.textContent = "";
-}
-
-async function loadBoard() {
-  clearError();
-  refreshBtn.disabled = true;
-  refreshBtn.textContent = "Refreshing...";
-  picksGrid.innerHTML = `<div class="panel empty-panel">Analyzing today's matchups...</div>`;
-  slateList.innerHTML = `<div class="panel empty-panel">Loading games...</div>`;
-
+async function loadTeamProfile(league, abbr) {
+  const key = `${league}/${abbr}`;
+  if (state.teamProfiles[key]) return state.teamProfiles[key];
+  const url = USE_STATIC_API
+    ? api(`team-profiles/${league}/${abbr}.json`)
+    : api(`teams/${league}/${abbr}`);
   try {
-    boardData = await fetchJson(slateApiUrl());
-    renderStats(boardData);
-    renderPicks(boardData);
-    renderSlate(boardData);
-  } catch (error) {
-    showError(error.message);
-    picksGrid.innerHTML = `<div class="panel empty-panel">Could not load recommendations.</div>`;
-    slateList.innerHTML = `<div class="panel empty-panel">Could not load games.</div>`;
-  } finally {
-    refreshBtn.disabled = false;
-    refreshBtn.textContent = "Refresh today's board";
+    const profile = await fetchJson(url);
+    state.teamProfiles[key] = profile;
+    return profile;
+  } catch {
+    return null;
   }
 }
 
-refreshBtn.addEventListener("click", () => {
-  loadBoard().catch((error) => showError(error.message));
-});
+async function viewTeam(league, abbr) {
+  appRoot.innerHTML = '<div class="panel empty-panel">Loading team profile…</div>';
+  const profile = await loadTeamProfile(league, abbr);
+  if (!profile) {
+    appRoot.innerHTML = '<div class="panel empty-panel">Team profile unavailable.</div>';
+    return;
+  }
+  const stats = profile.season_stats;
+  appRoot.innerHTML = `<section class="page-head"><span class="league-pill">${profile.league_name}</span><h1>${profile.label}</h1><p>Season ${profile.season_year} · Data through ${profile.cutoff_date}</p></section>
+    <div class="stat-grid dashboard-stats">
+      <div class="stat-box"><span class="stat-label">Record</span><strong>${stats ? `${stats.wins}-${stats.losses}` : "—"}</strong></div>
+      <div class="stat-box"><span class="stat-label">Win %</span><strong>${stats?.win_pct ?? "—"}%</strong></div>
+      <div class="stat-box"><span class="stat-label">Games</span><strong>${stats?.games_played ?? 0}</strong></div>
+      <div class="stat-box"><span class="stat-label">Seasons used</span><strong>${(profile.seasons_used || []).join(" + ") || profile.season_year}</strong></div>
+    </div>
+    <section class="section"><h2>Recent games</h2>
+    <div class="recent-games">${(profile.recent_games || []).length ? profile.recent_games.map((g) => `<div class="recent-row panel"><span class="result-badge ${g.result === "W" ? "win" : "loss"}">${g.result}</span><span>${g.date}</span><span>vs ${g.opponent}</span><strong>${g.score[0]}–${g.score[1]}</strong></div>`).join("") : '<p class="muted">No recent game log.</p>'}</div></section>
+    <a class="btn btn-secondary" href="#/teams/${league}">← ${profile.league_name} teams</a>`;
+}
 
-leagueFilter.addEventListener("change", () => {
-  if (boardData) renderSlate(boardData);
-});
+function statusBadge(status, units) {
+  if (status === "pending") return '<span class="status pending">Pending</span>';
+  if (status === "push") return '<span class="status push">Push</span>';
+  if (status === "win") return `<span class="status win">Win +${units?.toFixed?.(2) ?? units}u</span>`;
+  return `<span class="status loss">Loss ${units?.toFixed?.(2) ?? units}u</span>`;
+}
 
+function viewTracking() {
+  const period = state.trackingPeriod;
+  const rows =
+    period === "all_time"
+      ? [state.tracking?.all_time]
+      : state.tracking?.[period] || [];
+  const bets = state.tracking?.bets || [];
+  appRoot.innerHTML = `<section class="page-head"><h1>Bet tracking</h1><p>Every algo value bet logged day-to-day with win/loss grading at closing moneyline odds (1u flat).</p></section>
+    <div class="period-tabs">${["daily", "weekly", "monthly", "yearly", "all_time"]
+      .map(
+        (p) =>
+          `<button type="button" class="period-tab ${period === p ? "active" : ""}" data-period="${p}">${p.replace("_", " ")}</button>`,
+      )
+      .join("")}</div>
+    <div class="rollup-grid">${renderTrackingSummary()}</div>
+    <section class="section"><h2>Period rollups</h2>
+    <table class="data-table"><thead><tr><th>Period</th><th>Record</th><th>Units</th><th>ROI</th><th>Bets</th></tr></thead>
+    <tbody>${(rows || [])
+      .filter(Boolean)
+      .map(
+        (r) =>
+          `<tr><td>${r.label || r.key}</td><td>${r.record}</td><td>${r.units > 0 ? "+" : ""}${r.units}u</td><td>${r.roi_percent}%</td><td>${r.bets}</td></tr>`,
+      )
+      .join("") || "<tr><td colspan='5'>No settled periods yet.</td></tr>"}</tbody></table></section>
+    <section class="section"><h2>Bet log</h2>
+    <div class="bet-log">${bets.length ? bets.map((b) => `<article class="bet-row panel"><div class="bet-row-top"><div><strong>${b.team_name}</strong><span class="league-pill">${b.league_name}</span>${statusBadge(b.status, b.units)}</div><span class="edge-tag">+${b.edge} edge</span></div>
+    <p class="muted">${b.matchup} · ${b.date}</p>
+    <div class="pick-odds compact"><div><span>Market</span><strong>${formatOdds(b.market_odds)}</strong></div><div><span>Model</span><strong>${formatOdds(b.model_projection)}</strong></div><div><span>Strategy</span><strong>${b.strategy_label}</strong></div></div>
+    ${b.final_score ? `<p class="final-score">Final: ${b.final_score}</p>` : ""}</article>`).join("") : '<div class="panel empty-panel">Tracking starts when value bets are published on the daily slate.</div>'}</div></section>`;
+  appRoot.querySelectorAll(".period-tab").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      state.trackingPeriod = btn.dataset.period;
+      viewTracking();
+    });
+  });
+}
+
+function highlightNav(route) {
+  document.querySelectorAll("#mainNav a").forEach((a) => {
+    const r = a.dataset.route;
+    a.classList.toggle("active", r === `/${route.path}` || (route.path === "" && r === "/"));
+  });
+}
+
+async function render() {
+  const route = parseRoute();
+  highlightNav(route);
+  try {
+    if (route.path === "picks") viewPicks();
+    else if (route.path === "games") viewGames(route.parts[0]);
+    else if (route.path === "game") viewGame(route.parts[0]);
+    else if (route.path === "teams") viewTeams(route.parts[0]);
+    else if (route.path === "team") await viewTeam(route.parts[0], route.parts[1]);
+    else if (route.path === "tracking") viewTracking();
+    else viewDashboard();
+  } catch (err) {
+    appRoot.innerHTML = `<div class="panel empty-panel error-panel">${err.message}</div>`;
+  }
+}
+
+async function loadPlatform() {
+  const [slate, tracking, teamsIndex] = await Promise.all([
+    fetchJson(USE_STATIC_API ? api("daily-slate.json") : api("daily/slate")),
+    fetchJson(USE_STATIC_API ? api("tracking.json") : api("tracking")),
+    fetchJson(USE_STATIC_API ? api("teams-index.json") : api("teams")),
+  ]);
+  state.slate = slate;
+  state.tracking = tracking;
+  state.teamsIndex = teamsIndex;
+  const stamp = slate.generated_at ? new Date(slate.generated_at) : new Date();
+  footerUpdated.textContent = `Updated ${stamp.toLocaleString()}`;
+  renderLeagueMenu();
+  await render();
+}
+
+window.addEventListener("hashchange", () => render());
 themeToggle.addEventListener("click", () => {
-  const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
-  setTheme(next);
+  setTheme(document.documentElement.dataset.theme === "light" ? "dark" : "light");
 });
 
 initTheme();
-loadBoard().catch((error) => showError(error.message));
+loadPlatform().catch((err) => {
+  appRoot.innerHTML = `<div class="panel empty-panel error-panel">${err.message}</div>`;
+});

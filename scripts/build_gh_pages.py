@@ -136,11 +136,24 @@ def build_prediction_cache() -> tuple[int, int]:
     return built, skipped
 
 
-def build_daily_slate() -> None:
+def build_daily_slate() -> dict:
     from web.daily_service import get_daily_slate
+    from web.team_service import build_team_profiles_for_slate, build_teams_index
+    from web.tracking_service import update_tracking
 
     print("Building daily betting slate...")
-    write_json(DOCS_DIR / "api" / "daily-slate.json", get_daily_slate())
+    slate = get_daily_slate()
+    write_json(DOCS_DIR / "api" / "daily-slate.json", slate)
+
+    print("Building teams index and slate team profiles...")
+    write_json(DOCS_DIR / "api" / "teams-index.json", build_teams_index())
+    for rel_key, profile in build_team_profiles_for_slate(slate).items():
+        league, abbr = rel_key.split("/", 1)
+        write_json(DOCS_DIR / "api" / "team-profiles" / league / f"{abbr}.json", profile)
+
+    print("Updating bet tracking rollups...")
+    write_json(DOCS_DIR / "api" / "tracking.json", update_tracking(slate))
+    return slate
 
 
 def main() -> None:

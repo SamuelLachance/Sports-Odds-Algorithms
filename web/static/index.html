@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SOA Bet Helper — Daily Picks</title>
+  <title>Sharp Odds — Algo Sports Betting Service</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
@@ -14,119 +14,42 @@
 
   <header class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="#top">
+      <a class="brand" href="#/">
         <span class="brand-mark">SOA</span>
-        <span class="brand-text">Bet Helper</span>
+        <span class="brand-text">Sharp Odds</span>
       </a>
-      <nav class="nav">
-        <a href="#picks">Top Picks</a>
-        <a href="#slate">Today's Slate</a>
-        <a href="#how">How it works</a>
+      <nav class="nav" id="mainNav">
+        <a href="#/" data-route="/">Dashboard</a>
+        <a href="#/picks" data-route="/picks">Algo Picks</a>
+        <a href="#/games" data-route="/games">Games</a>
+        <a href="#/teams" data-route="/teams">Teams</a>
+        <a href="#/tracking" data-route="/tracking">Tracking</a>
       </nav>
       <button class="theme-toggle" id="themeToggle" aria-label="Toggle color theme">◐</button>
     </div>
   </header>
 
-  <main id="top">
-    <section class="hero container">
-      <div class="hero-copy">
-        <p class="eyebrow">NBA · NFL · NHL · MLB · WNBA · CBB · CFB · Soccer · Daily</p>
-        <h1>Model-driven picks for every game on today's slate.</h1>
-        <p class="lead">
-          We run the Sports Odds Algorithms on live ESPN schedules across major leagues,
-          compare model win probabilities against sportsbook moneylines, and surface value bets with the strongest edge.
-        </p>
-        <div class="hero-actions">
-          <button class="btn btn-primary" id="refreshBtn" type="button">Refresh today's board</button>
-          <a class="btn btn-secondary" href="https://github.com/SamuelLachance/Sports-Odds-Algorithms" target="_blank" rel="noreferrer">View source</a>
-        </div>
+  <div class="layout container">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-block">
+        <h4>Sports</h4>
+        <ul class="league-menu" id="leagueMenu"></ul>
       </div>
-      <div class="hero-card stats-card">
-        <div class="stat-grid">
-          <div class="stat-box">
-            <span class="stat-label">Games today</span>
-            <strong id="statGames">—</strong>
-          </div>
-          <div class="stat-box">
-            <span class="stat-label">Value bets</span>
-            <strong id="statPicks">—</strong>
-          </div>
-          <div class="stat-box">
-            <span class="stat-label">Leagues</span>
-            <strong id="statLeagues">—</strong>
-          </div>
-        </div>
-        <p class="stat-footnote" id="updatedAt">Loading board...</p>
+      <div class="sidebar-block" id="sidebarGames" hidden>
+        <h4 id="sidebarGamesTitle">Games</h4>
+        <ul class="game-menu" id="gameMenu"></ul>
       </div>
-    </section>
+    </aside>
 
-    <section id="picks" class="section container">
-      <div class="section-head">
-        <h2>Recommended bets</h2>
-        <p>Ranked by edge between model-implied American odds and live sportsbook lines.</p>
-      </div>
-      <div class="picks-grid" id="picksGrid">
-        <div class="panel empty-panel" id="picksEmpty">Analyzing today's matchups...</div>
-      </div>
-    </section>
-
-    <section id="slate" class="section container">
-      <div class="section-head slate-head">
-        <div>
-          <h2>Full daily slate</h2>
-          <p>Every upcoming game with model probability, market odds, and factor breakdown.</p>
-        </div>
-        <div class="filter-row">
-          <label for="leagueFilter">League</label>
-          <select id="leagueFilter">
-            <option value="all">All leagues</option>
-            <option value="nba">NBA</option>
-            <option value="wnba">WNBA</option>
-            <option value="cbb">CBB</option>
-            <option value="nfl">NFL</option>
-            <option value="cfb">CFB</option>
-            <option value="nhl">NHL</option>
-            <option value="mlb">MLB</option>
-            <option value="mls">MLS</option>
-            <option value="epl">Premier League</option>
-            <option value="laliga">La Liga</option>
-            <option value="bundesliga">Bundesliga</option>
-            <option value="seriea">Serie A</option>
-            <option value="ligue1">Ligue 1</option>
-          </select>
-        </div>
-      </div>
-      <div class="slate-list" id="slateList">
-        <div class="panel empty-panel">Loading games...</div>
-      </div>
-      <p class="form-note" id="boardError" hidden></p>
-    </section>
-
-    <section id="how" class="section container">
-      <div class="cards-grid">
-        <article class="info-card">
-          <h3>1. Pull today's games</h3>
-          <p>Live schedules and DraftKings moneylines are fetched from ESPN for NBA, NHL, and MLB.</p>
-        </article>
-        <article class="info-card">
-          <h3>2. Run Algo V2</h3>
-          <p>Each matchup is scored on records, home/away splits, recent form, and scoring margins using current-season results.</p>
-        </article>
-        <article class="info-card">
-          <h3>3. Find value</h3>
-          <p>Picks appear when the sportsbook offers better American odds than the model's fair line — the same edge logic used in historical backtests.</p>
-        </article>
-      </div>
-      <div class="about-panel panel disclaimer">
-        <strong>Disclaimer:</strong> This tool is for research and entertainment. Past model performance does not guarantee future results. Always bet responsibly and verify lines with your sportsbook.
-      </div>
-    </section>
-  </main>
+    <main class="main-content" id="appRoot">
+      <div class="panel empty-panel">Loading platform data…</div>
+    </main>
+  </div>
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <span>Sports Odds Bet Helper</span>
-      <span>Algorithms by James Quintero · Live board 2026</span>
+      <span>Sharp Odds · Sports Odds Algorithms V2</span>
+      <span id="footerUpdated">—</span>
     </div>
   </footer>
 
