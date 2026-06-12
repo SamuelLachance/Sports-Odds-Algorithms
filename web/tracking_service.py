@@ -332,14 +332,22 @@ def build_tracking_response(store: dict[str, Any]) -> dict[str, Any]:
         "timezone": TIMEZONE_LABEL,
         "last_updated": datetime.now(timezone.utc).isoformat(),
         "note": (
-            "Tracks algo value bets (positive edge vs model) from each daily slate. "
+            f"Tracks algo bets with +{MIN_RECOMMENDED_EDGE} edge or higher from each daily slate. "
             "Graded at closing moneyline odds; 1u flat stake."
         ),
     }
 
 
+def prune_below_min_edge(store: dict[str, Any]) -> dict[str, Any]:
+    store["bets"] = [
+        b for b in store["bets"] if (b.get("edge") or 0) >= MIN_RECOMMENDED_EDGE
+    ]
+    return store
+
+
 def update_tracking(slate: dict[str, Any]) -> dict[str, Any]:
     store = load_store()
+    store = prune_below_min_edge(store)
     store = record_from_slate(store, slate)
     store = grade_pending(store)
     save_store(store)
