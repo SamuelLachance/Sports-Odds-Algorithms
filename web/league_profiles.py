@@ -276,6 +276,25 @@ SOCCER_LEAGUES: tuple[str, ...] = tuple(
     key for key, profile in LEAGUE_PROFILES.items() if profile["category"] == "soccer"
 )
 
+# Historical draw rate baseline (%), adjusted by model closeness in bet_advisor.
+SOCCER_DRAW_BASE: dict[str, float] = {
+    "default": 26.0,
+    "seriea": 28.5,
+    "ligue1": 27.0,
+    "bundesliga": 24.5,
+    "epl": 25.5,
+    "laliga": 26.5,
+    "mls": 23.0,
+    "worldcup": 25.0,
+    "fifa_friendlies": 27.0,
+    "uefa_euro": 24.0,
+    "copa_america": 25.0,
+}
+
+
+def is_soccer_league(league: str) -> bool:
+    return league.lower() in SOCCER_LEAGUES
+
 
 def uses_spread_bets(league: str) -> bool:
     league = league.lower()

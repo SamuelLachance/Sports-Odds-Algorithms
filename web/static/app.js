@@ -83,6 +83,9 @@ function pickMarketLabel(pick) {
   if (pick.bet_type === "spread") {
     return `Spread ${formatSpread(pick.spread_line)} (${formatOdds(pick.spread_odds ?? pick.market_odds)})`;
   }
+  if (pick.side === "draw") {
+    return `Draw ${formatOdds(pick.market_odds)}`;
+  }
   return formatOdds(pick.market_odds);
 }
 
@@ -177,6 +180,33 @@ function algoCenter(game) {
   const home = game.matchup.home;
   const fav = m.favorite_side === "home" ? home.name : away.name;
   const top = game.top_pick;
+  const isSoccer = Boolean(m.threeway);
+  const probBlock = isSoccer
+    ? `<div class="algo-probability">
+        <span>3-way model probabilities</span>
+        <div class="odds-row game-odds threeway-probs">
+          <div class="odds-chip"><span>${away.name}</span><strong>${m.away_win_probability ?? "—"}%</strong><small>Model ${formatOdds(m.away_projection)}</small></div>
+          <div class="odds-chip"><span>Draw</span><strong>${m.draw_probability ?? "—"}%</strong><small>Model ${formatOdds(m.draw_projection)}</small></div>
+          <div class="odds-chip"><span>${home.name}</span><strong>${m.home_win_probability ?? "—"}%</strong><small>Model ${formatOdds(m.home_projection)}</small></div>
+        </div>
+      </div>`
+    : `<div class="algo-probability">
+        <span>Algo V2 win probability</span>
+        <strong class="prob-value">${m.win_probability}%</strong>
+        <small>Model favorite: ${fav}</small>
+      </div>`;
+  const oddsRow = isSoccer
+    ? `<div class="odds-row game-odds">
+        <div class="odds-chip"><span>${away.name}</span><strong>${formatOdds(mk.away_moneyline)}</strong><small>Model ${formatOdds(m.away_projection)}</small></div>
+        <div class="odds-chip"><span>Draw</span><strong>${formatOdds(mk.draw_moneyline)}</strong><small>Model ${formatOdds(m.draw_projection)}</small></div>
+        <div class="odds-chip"><span>${home.name}</span><strong>${formatOdds(mk.home_moneyline)}</strong><small>Model ${formatOdds(m.home_projection)}</small></div>
+        <div class="odds-chip"><span>O-U</span><strong>${mk.over_under ?? "—"}</strong><small>${mk.provider || "ESPN"}</small></div>
+      </div>`
+    : `<div class="odds-row game-odds">
+        <div class="odds-chip"><span>${away.name}</span><strong>${formatOdds(mk.away_moneyline)}</strong><small>Model ${formatOdds(m.away_projection)}</small></div>
+        <div class="odds-chip"><span>${home.name}</span><strong>${formatOdds(mk.home_moneyline)}</strong><small>Model ${formatOdds(m.home_projection)}</small></div>
+        <div class="odds-chip"><span>Spread / O-U</span><strong>${mk.spread ?? "—"} / ${mk.over_under ?? "—"}</strong><small>${mk.provider || "ESPN"}</small></div>
+      </div>`;
   return `<section class="algo-hero panel">
     <div class="algo-hero-head">
       <span class="league-pill">${game.league_name}</span>
@@ -184,16 +214,8 @@ function algoCenter(game) {
       <p class="game-meta">${formatTime(game.start_time)} · ${game.status_detail || game.status}</p>
     </div>
     <div class="algo-core">
-      <div class="algo-probability">
-        <span>Algo V2 win probability</span>
-        <strong class="prob-value">${m.win_probability}%</strong>
-        <small>Model favorite: ${fav}</small>
-      </div>
-      <div class="odds-row game-odds">
-        <div class="odds-chip"><span>${away.name}</span><strong>${formatOdds(mk.away_moneyline)}</strong><small>Model ${formatOdds(m.away_projection)}</small></div>
-        <div class="odds-chip"><span>${home.name}</span><strong>${formatOdds(mk.home_moneyline)}</strong><small>Model ${formatOdds(m.home_projection)}</small></div>
-        <div class="odds-chip"><span>Spread / O-U</span><strong>${mk.spread ?? "—"} / ${mk.over_under ?? "—"}</strong><small>${mk.provider || "ESPN"}</small></div>
-      </div>
+      ${probBlock}
+      ${oddsRow}
     </div>
     ${top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong><span>${top.team_name} · ${pickMarketLabel(top)} vs model ${pickModelLabel(top)} (+${top.edge})</span><p>${top.reason}</p></div>` : `<div class="game-pick neutral"><strong>No value flag</strong><span>Model leans ${fav}; lines do not beat model price today.</span></div>`}
     <details class="factor-details" open><summary>Algo factor breakdown</summary><div class="factor-list">${factorBars(m.factors)}</div></details>

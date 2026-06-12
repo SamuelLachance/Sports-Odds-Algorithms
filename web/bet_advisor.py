@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from web.league_profiles import DEFAULT_SPREAD_JUICE, MIN_RECOMMENDED_EDGE
+from web.league_profiles import DEFAULT_SPREAD_JUICE, MIN_RECOMMENDED_EDGE, SOCCER_DRAW_BASE
 
 # Approximate points of spread cushion per 1.0 American-odds edge unit.
 SPREAD_POINT_TO_EDGE = 20.0
@@ -59,6 +59,43 @@ def model_moneylines(total_score: float) -> tuple[int, int]:
         home_proj = -underdog_line
 
     return away_proj, home_proj
+
+
+def _probability_to_american(probability_pct: float) -> int:
+    probability = min(max(probability_pct, 0.1), 99.9)
+    if probability >= 50.0:
+        return -round((probability / (100.0 - probability)) * 100)
+    return round(((100.0 - probability) / probability) * 100)
+
+
+def soccer_threeway_probs(total_score: float, league: str) -> tuple[float, float, float]:
+    """Return home win, draw, and away win probabilities (0–100 scale)."""
+    win_prob = abs(total_score)
+    home_is_favorite = total_score <= 0
+    home_binary = win_prob if home_is_favorite else 100.0 - win_prob
+    away_binary = 100.0 - home_binary
+
+    base_draw = SOCCER_DRAW_BASE.get(league.lower(), SOCCER_DRAW_BASE["default"])
+    closeness = 1.0 - abs(win_prob - 50.0) / 50.0
+    draw_prob = min(35.0, max(18.0, base_draw + closeness * 8.0))
+
+    scale = (100.0 - draw_prob) / 100.0
+    home_prob = home_binary * scale
+    away_prob = away_binary * scale
+    return home_prob, draw_prob, away_prob
+
+
+def soccer_model_moneylines(
+    home_prob: float,
+    draw_prob: float,
+    away_prob: float,
+) -> tuple[int, int, int]:
+    """Return projected American odds for away, draw, and home outcomes."""
+    return (
+        _probability_to_american(away_prob),
+        _probability_to_american(draw_prob),
+        _probability_to_american(home_prob),
+    )
 
 
 def model_home_margin(total_score: float, league: str) -> float:
@@ -177,6 +214,94 @@ def evaluate_picks(
                 model_projection=projection,
                 market_odds=market,
                 win_probability=win_probability,
+                reason=reason,
+            )
+        )
+
+    picks.sort(key=lambda item: item.edge, reverse=True)
+    return picks
+
+
+def evaluate_soccer_picks(
+    *,
+    away_name: str,
+    home_name: str,
+    away_slug: str,
+    home_slug: str,
+    total_score: float,
+    home_prob: float,
+    draw_prob: float,
+    away_prob: float,
+    away_proj: int,
+    draw_proj: int,
+    home_proj: int,
+    away_market: int | None,
+    draw_market: int | None,
+    home_market: int | None,
+) -> list[BetPick]:
+    """Evaluate 3-way soccer moneyline outcomes vs the book."""
+    picks: list[BetPick] = []
+
+    candidates: list[tuple[str, str, str, float, int, int | None]] = [
+        ("away", away_name, away_slug, away_prob, away_proj, away_market),
+        ("draw", "Draw", "draw", draw_prob, draw_proj, draw_market),
+        ("home", home_name, home_slug, home_prob, home_proj, home_market),
+    ]
+
+    for side, name, slug, outcome_prob, projection, market in candidates:
+        if market is None:
+            continue
+
+        edge = _odds_edge(projection, market)
+        is_model_favorite = projection < 0
+        is_market_underdog = market > 0
+        diff = abs(projection - market)
+        if diff > 200:
+            diff = abs(projection - market) - 200
+
+        if edge < MIN_RECOMMENDED_EDGE:
+            continue
+
+        strategy = "value"
+        confidence = "medium"
+        outcome_label = "Draw" if side == "draw" else name
+        reason = (
+            f"Sportsbook offers {market:+d} vs model {projection:+d} "
+            f"on {outcome_label} (+{edge:.0f} edge on American odds)."
+        )
+
+        if is_model_favorite and edge >= 15:
+            strategy = "strong_value"
+            confidence = "high"
+            reason = (
+                f"Model favors {outcome_label} and the book price ({market:+d}) "
+                f"beats the model line ({projection:+d})."
+            )
+        elif is_model_favorite and is_market_underdog and diff >= 25:
+            strategy = "model_favorite"
+            confidence = "high"
+            reason = (
+                f"Model favorite priced as underdog at {market:+d}; "
+                f"model implies {projection:+d}."
+            )
+        elif edge >= 8:
+            strategy = "value"
+            confidence = "medium"
+        else:
+            strategy = "lean"
+            confidence = "low"
+
+        picks.append(
+            BetPick(
+                side=side,
+                team_name=name,
+                team_slug=slug,
+                strategy=strategy,
+                confidence=confidence,
+                edge=edge,
+                model_projection=projection,
+                market_odds=market,
+                win_probability=outcome_prob,
                 reason=reason,
             )
         )

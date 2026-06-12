@@ -14,9 +14,12 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 from web.bet_advisor import (  # noqa: E402
     evaluate_picks,
+    evaluate_soccer_picks,
     evaluate_spread_picks,
     model_moneylines,
     pick_to_dict,
+    soccer_model_moneylines,
+    soccer_threeway_probs,
 )
 from web.espn_client import (  # noqa: E402
     ScheduledGame,
@@ -29,6 +32,7 @@ from web.league_profiles import (  # noqa: E402
     MIN_RECOMMENDED_EDGE,
     SUPPORTED_LEAGUES,
     get_algo_league,
+    is_soccer_league,
     uses_spread_bets,
 )
 from web.live_data import load_live_team_data, resolve_team  # noqa: E402
@@ -102,6 +106,16 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
     favorite_side = "home" if total < 0 else "away"
     away_proj, home_proj = model_moneylines(total)
 
+    model_payload: dict[str, Any] = {
+        "algorithm": "Algo_V2",
+        "favorite_side": favorite_side,
+        "win_probability": round(win_probability, 2),
+        "total_score": total,
+        "away_projection": away_proj,
+        "home_projection": home_proj,
+        "factors": [],
+    }
+
     factors = []
     for key, label in FACTOR_LABELS.items():
         if key not in algo_data:
@@ -116,6 +130,8 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             }
         )
 
+    model_payload["factors"] = factors
+
     if uses_spread_bets(game.league):
         picks = evaluate_spread_picks(
             league=game.league,
@@ -128,6 +144,38 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             consensus_spread=game.market.spread,
             away_spread_odds=game.market.away_spread_odds,
             home_spread_odds=game.market.home_spread_odds,
+        )
+    elif is_soccer_league(game.league):
+        home_prob, draw_prob, away_prob = soccer_threeway_probs(total, game.league)
+        away_proj, draw_proj, home_proj = soccer_model_moneylines(
+            home_prob, draw_prob, away_prob
+        )
+        model_payload.update(
+            {
+                "threeway": True,
+                "home_win_probability": round(home_prob, 2),
+                "draw_probability": round(draw_prob, 2),
+                "away_win_probability": round(away_prob, 2),
+                "draw_projection": draw_proj,
+            }
+        )
+        model_payload["away_projection"] = away_proj
+        model_payload["home_projection"] = home_proj
+        picks = evaluate_soccer_picks(
+            away_name=game.away_name,
+            home_name=game.home_name,
+            away_slug=away[1],
+            home_slug=home[1],
+            total_score=total,
+            home_prob=home_prob,
+            draw_prob=draw_prob,
+            away_prob=away_prob,
+            away_proj=away_proj,
+            draw_proj=draw_proj,
+            home_proj=home_proj,
+            away_market=game.market.away_moneyline,
+            draw_market=game.market.draw_moneyline,
+            home_market=game.market.home_moneyline,
         )
     else:
         picks = evaluate_picks(
@@ -159,20 +207,13 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             "provider": game.market.provider,
             "away_moneyline": game.market.away_moneyline,
             "home_moneyline": game.market.home_moneyline,
+            "draw_moneyline": game.market.draw_moneyline,
             "spread": game.market.spread,
             "away_spread_odds": game.market.away_spread_odds,
             "home_spread_odds": game.market.home_spread_odds,
             "over_under": game.market.over_under,
         },
-        "model": {
-            "algorithm": "Algo_V2",
-            "favorite_side": favorite_side,
-            "win_probability": round(win_probability, 2),
-            "total_score": total,
-            "away_projection": away_proj,
-            "home_projection": home_proj,
-            "factors": factors,
-        },
+        "model": model_payload,
         "recommendations": [pick_to_dict(pick) for pick in picks],
         "top_pick": pick_to_dict(picks[0]) if picks else None,
     }

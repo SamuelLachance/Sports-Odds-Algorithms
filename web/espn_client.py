@@ -44,9 +44,10 @@ LEAGUE_CONFIG = {
 class MarketOdds:
     away_moneyline: int | None
     home_moneyline: int | None
-    spread: float | None
-    over_under: float | None
-    provider: str | None
+    draw_moneyline: int | None = None
+    spread: float | None = None
+    over_under: float | None = None
+    provider: str | None = None
     away_spread_odds: int | None = None
     home_spread_odds: int | None = None
 
@@ -139,6 +140,19 @@ def _extract_moneyline(odds_block: dict[str, Any] | None) -> tuple[int | None, i
     return away_ml, home_ml
 
 
+def _extract_draw_moneyline(odds_block: dict[str, Any] | None) -> int | None:
+    if not odds_block:
+        return None
+
+    moneyline = odds_block.get("moneyline") or {}
+    draw_close = (moneyline.get("draw") or {}).get("close") or {}
+    draw_ml = _parse_american_odds(draw_close.get("odds"))
+    if draw_ml is not None:
+        return draw_ml
+
+    return _parse_american_odds((odds_block.get("drawOdds") or {}).get("moneyLine"))
+
+
 def _format_status(competition: dict[str, Any]) -> tuple[str, str]:
     status = competition.get("status") or {}
     status_type = status.get("type") or {}
@@ -158,6 +172,7 @@ def _parse_event(event: dict[str, Any], league: str) -> ScheduledGame | None:
 
     odds_block = (competition.get("odds") or [None])[0]
     away_ml, home_ml = _extract_moneyline(odds_block)
+    draw_ml = _extract_draw_moneyline(odds_block)
     home_spread, away_spread_odds, home_spread_odds = _extract_spread(odds_block)
     state, detail = _format_status(competition)
     away_team = away.get("team") or {}
@@ -179,6 +194,7 @@ def _parse_event(event: dict[str, Any], league: str) -> ScheduledGame | None:
         market=MarketOdds(
             away_moneyline=away_ml,
             home_moneyline=home_ml,
+            draw_moneyline=draw_ml,
             spread=home_spread,
             over_under=(odds_block or {}).get("overUnder"),
             provider=((odds_block or {}).get("provider") or {}).get("name"),

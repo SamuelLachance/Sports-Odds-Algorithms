@@ -9,7 +9,7 @@ from typing import Any, Literal
 
 from web.bet_advisor import spread_line_for_side
 from web.espn_client import fetch_scoreboard
-from web.league_profiles import DEFAULT_SPREAD_JUICE, MIN_RECOMMENDED_EDGE
+from web.league_profiles import DEFAULT_SPREAD_JUICE, MIN_RECOMMENDED_EDGE, is_soccer_league
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 TRACKING_FILE = PROJECT_ROOT / "data" / "tracking.json"
@@ -238,8 +238,13 @@ def grade_bet(
         if spread is None:
             return bet
         status = _grade_spread_bet(side, spread, away_score, home_score)
+    elif side == "draw":
+        status = "win" if away_score == home_score else "loss"
     elif away_score == home_score:
-        status: BetResult = "push"
+        if is_soccer_league(bet.get("league") or ""):
+            status = "loss"
+        else:
+            status = "push"
     elif side == "away":
         status = "win" if away_score > home_score else "loss"
     else:
@@ -375,6 +380,7 @@ def build_tracking_response(store: dict[str, Any]) -> dict[str, Any]:
         "note": (
             f"Tracks algo bets with +{MIN_RECOMMENDED_EDGE} edge or higher from each daily slate. "
             "Basketball/football spread bets graded ATS at consensus book spread; "
+            "soccer 3-way moneyline (home/draw/away); "
             "other sports at closing moneyline. 1u flat stake."
         ),
     }
