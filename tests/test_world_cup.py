@@ -16,9 +16,12 @@ from web.wc_groups import (  # noqa: E402
 from web.wc_simulation import (  # noqa: E402
     derive_scores,
     extract_model_probs,
+    extract_unified_lambdas,
+    extract_unified_probs,
     pick_knockout_outcome,
     pick_outcome,
     resolve_placeholder,
+    sample_poisson_score,
     simulate_tournament,
 )
 from web.world_cup_service import (  # noqa: E402
@@ -210,17 +213,50 @@ def test_mini_tournament_simulation() -> None:
         }
     }
 
-    result = simulate_tournament(matches, predictions)
-    assert result["method"] == "unified_3_layer_deterministic"
+    result = simulate_tournament(matches, predictions, mc_iterations=30, mc_seed=7)
+    assert "monte_carlo" in result
+    assert result["method"] == "unified_3_layer_monte_carlo_poisson"
     assert result["summary"]["total_simulated"] == 7
     assert result["summary"]["group_stage"] == 6
     assert result["summary"]["knockout"] == 1
     assert result["champion"] in teams
     assert result["runner_up"] in teams
     assert result["champion"] != result["runner_up"]
+    assert result["bracket_tree"]
+    assert result["monte_carlo"]["iterations"] == 30
     final = next(m for m in result["matches"] if m["event_id"] == "f1")
     assert final["outcome"] in {"home", "away"}
     assert final["resolved_from_placeholder"] is True
+
+
+def test_extract_unified_lambdas_blends_layers() -> None:
+    pred = {
+        "model": {
+            "threeway": True,
+            "home_win_probability": 45,
+            "draw_probability": 28,
+            "away_win_probability": 27,
+            "legacy_threeway": {"home_win_probability": 50, "draw_probability": 25, "away_win_probability": 25},
+            "power_threeway": {"home_win_probability": 48, "draw_probability": 27, "away_win_probability": 25},
+            "soccer_pred": {
+                "home_win_probability": 46,
+                "draw_probability": 26,
+                "away_win_probability": 28,
+                "expected_home_goals": 1.55,
+                "expected_away_goals": 1.05,
+            },
+        }
+    }
+    lam_h, lam_a = extract_unified_lambdas(pred)
+    assert lam_h > lam_a
+    assert 0.5 <= lam_h <= 3.5
+
+
+def test_poisson_sample_produces_valid_score() -> None:
+    rng = __import__("random").Random(99)
+    home, away, outcome = sample_poisson_score(1.4, 1.0, rng, allow_draw=True, knockout=False)
+    assert home >= 0 and away >= 0
+    assert outcome in {"home", "draw", "away"}
 
 
 def test_extract_model_probs_from_hub_shape() -> None:
@@ -234,6 +270,8 @@ def test_extract_model_probs_from_hub_shape() -> None:
     }
     probs = extract_model_probs(pred)
     assert probs["home"] == 45.2
+    unified = extract_unified_probs(pred)
+    assert unified["home"] == 45.2
     assert probs["draw"] == 28.1
     assert probs["away"] == 26.7
 
@@ -250,6 +288,8 @@ if __name__ == "__main__":
     test_resolve_round_winner_placeholder()
     test_derive_scores_from_expected_goals()
     test_mini_tournament_simulation()
+    test_extract_unified_lambdas_blends_layers()
+    test_poisson_sample_produces_valid_score()
     test_extract_model_probs_from_hub_shape()
     test_fetch_events_count()
     print("test_world_cup.py: all tests passed")

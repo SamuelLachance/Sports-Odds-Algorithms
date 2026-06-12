@@ -657,13 +657,20 @@ function renderKnockoutBracket(hub) {
     .join("")}</div>`;
 }
 
-function wcSimProbChip(probs) {
-  if (!probs) return "";
-  return `<div class="wc-pred-chip"><span>Model 1X2</span><strong>${probs.home}% / ${probs.draw}% / ${probs.away}%</strong><small>H / D / A</small></div>`;
+function wcSimProbChip(probs, xg) {
+  let block = "";
+  if (probs) {
+    block += `<div class="wc-pred-chip"><span>Unified 1X2</span><strong>${probs.home}% / ${probs.draw}% / ${probs.away}%</strong><small>H / D / A</small></div>`;
+  }
+  if (xg) {
+    block += `<div class="wc-pred-chip"><span>Poisson xG</span><strong>${xg.home} – ${xg.away}</strong><small>Blended 3-layer</small></div>`;
+  }
+  return block;
 }
 
 function wcSimMatchCard(match) {
   const probs = match.model_probs;
+  const xg = match.expected_goals;
   const winnerBadge =
     match.winner === "home"
       ? `<span class="wc-sim-winner-badge">${match.home.name}</span>`
@@ -682,8 +689,88 @@ function wcSimMatchCard(match) {
         ${winnerBadge}
       </div>
     </div>
-    <div class="wc-match-foot">${wcSimProbChip(probs)}</div>
+    <div class="wc-match-foot">${wcSimProbChip(probs, xg)}</div>
   </article>`;
+}
+
+function renderBracketTreeNode(node) {
+  if (!node || node.placeholder) {
+    return `<div class="wc-tree-node wc-tree-placeholder panel"><span class="muted">TBD</span></div>`;
+  }
+  const away = node.away?.name || "TBD";
+  const home = node.home?.name || "TBD";
+  const awayScore = node.away?.score ?? "–";
+  const homeScore = node.home?.score ?? "–";
+  const awayWin = node.away?.winner ? " winner" : "";
+  const homeWin = node.home?.winner ? " winner" : "";
+  const children = (node.children || [])
+    .map((child) => renderBracketTreeNode(child))
+    .join("");
+  return `<div class="wc-tree-node panel">
+    <div class="wc-tree-match">
+      <div class="wc-tree-team${awayWin}"><span>${away}</span><strong>${awayScore}</strong></div>
+      <div class="wc-tree-team${homeWin}"><span>${home}</span><strong>${homeScore}</strong></div>
+      ${node.scoreline ? `<div class="wc-tree-scoreline">${node.scoreline}</div>` : ""}
+    </div>
+    ${children ? `<div class="wc-tree-children">${children}</div>` : ""}
+  </div>`;
+}
+
+function renderKnockoutBracketTree(bracketTree) {
+  if (!bracketTree) return "";
+  const columns = (bracketTree.columns || []).filter((c) => c.slug !== "3rd-place-match");
+  const columnsHtml = columns
+    .map(
+      (col) => `<div class="wc-tree-column">
+        <h4>${col.label}</h4>
+        <div class="wc-tree-column-matches">${(col.matches || [])
+          .map(
+            (m) => `<div class="wc-tree-leaf panel">
+              <div class="wc-tree-team${m.away?.winner ? " winner" : ""}"><span>${m.away?.name || "TBD"}</span><strong>${m.away?.score ?? "–"}</strong></div>
+              <div class="wc-tree-team${m.home?.winner ? " winner" : ""}"><span>${m.home?.name || "TBD"}</span><strong>${m.home?.score ?? "–"}</strong></div>
+              <div class="wc-tree-scoreline">${m.scoreline || ""}</div>
+            </div>`,
+          )
+          .join("")}</div>
+      </div>`,
+    )
+    .join("");
+
+  const finalHtml = bracketTree.final
+    ? `<div class="wc-tree-column wc-tree-final-col">
+        <h4>Final</h4>
+        ${renderBracketTreeNode(bracketTree.final)}
+      </div>`
+    : "";
+
+  const thirdHtml = bracketTree.third_place_match
+    ? `<div class="wc-tree-column wc-tree-third-col">
+        <h4>Third place</h4>
+        <div class="wc-tree-leaf panel">
+          <div class="wc-tree-team${bracketTree.third_place_match.away?.winner ? " winner" : ""}"><span>${bracketTree.third_place_match.away?.name}</span><strong>${bracketTree.third_place_match.away?.score}</strong></div>
+          <div class="wc-tree-team${bracketTree.third_place_match.home?.winner ? " winner" : ""}"><span>${bracketTree.third_place_match.home?.name}</span><strong>${bracketTree.third_place_match.home?.score}</strong></div>
+          <div class="wc-tree-scoreline">${bracketTree.third_place_match.scoreline || ""}</div>
+        </div>
+      </div>`
+    : "";
+
+  return `<section class="section panel"><h2>Knockout bracket tree</h2>
+    <p class="muted">Full knockout path from Round of 32 through the Final — scores sampled via Poisson xG from the unified 3-layer model.</p>
+    <div class="wc-bracket-tree">${columnsHtml}${finalHtml}${thirdHtml}</div></section>`;
+}
+
+function renderMonteCarloBlock(mc) {
+  if (!mc) return "";
+  const champRows = (mc.champion_probability || [])
+    .map(
+      (r) =>
+        `<tr><td><strong>${r.team}</strong></td><td>${r.probability}%</td><td>${r.count}/${mc.iterations}</td></tr>`,
+    )
+    .join("");
+  return `<section class="section panel"><h2>Monte Carlo tournament (${mc.iterations} runs)</h2>
+    <p class="muted">Each run simulates all 104 matches using unified 3-layer 1X2 probabilities and Dixon–Coles Poisson scores. Representative path below uses the most common champion (${mc.mode_champion || "—"}).</p>
+    <table class="data-table"><thead><tr><th>Team</th><th>Win %</th><th>Count</th></tr></thead>
+    <tbody>${champRows || '<tr><td colspan="3">No data</td></tr>'}</tbody></table></section>`;
 }
 
 function renderSimulationTab(hub) {
@@ -695,11 +782,12 @@ function renderSimulationTab(hub) {
   const rounds = sim.rounds || [];
   const standings = sim.simulated_standings || {};
 
+  const mc = sim.monte_carlo || {};
   const podium = `
     <section class="wc-sim-hero panel">
-      <p class="wc-sim-label">Predicted champion · unified 3-layer model</p>
+      <p class="wc-sim-label">Representative champion · unified 3-layer + Poisson xG</p>
       <h2 class="wc-sim-champion">${sim.champion || "TBD"}</h2>
-      <p class="wc-sim-final">${sim.final_scoreline ? `Final: ${sim.final_scoreline}` : ""}</p>
+      <p class="wc-sim-final">${sim.final_scoreline ? `Final: ${sim.final_scoreline}` : ""}${mc.mode_champion && mc.mode_champion !== sim.champion ? ` · MC mode: ${mc.mode_champion}` : mc.mode_champion ? ` · ${(mc.champion_probability?.[0]?.probability ?? "—")}% MC win rate` : ""}</p>
       <div class="wc-sim-podium">
         <div><span>Runner-up</span><strong>${sim.runner_up || "—"}</strong></div>
         <div><span>Third place</span><strong>${sim.third_place || "—"}</strong></div>
@@ -709,9 +797,9 @@ function renderSimulationTab(hub) {
 
   const stats = `
     <div class="rollup-grid">
-      <div class="rollup-card panel"><h4>Group stage</h4><strong class="rollup-record">${summary.group_stage ?? 72}</strong><span>Simulated with draws allowed</span></div>
-      <div class="rollup-card panel"><h4>Knockout</h4><strong class="rollup-record">${summary.knockout ?? 32}</strong><span>No draws — highest 1X2 side wins</span></div>
-      <div class="rollup-card panel"><h4>Method</h4><strong class="rollup-record">3-layer</strong><span>Deterministic highest-probability outcome</span></div>
+      <div class="rollup-card panel"><h4>Group stage</h4><strong class="rollup-record">${summary.group_stage ?? 72}</strong><span>Unified 1X2 + Poisson scores</span></div>
+      <div class="rollup-card panel"><h4>Knockout</h4><strong class="rollup-record">${summary.knockout ?? 32}</strong><span>Extra time / pens on ties</span></div>
+      <div class="rollup-card panel"><h4>Monte Carlo</h4><strong class="rollup-record">${mc.iterations ?? summary.mc_iterations ?? 500}</strong><span>Full tournament iterations</span></div>
     </div>`;
 
   const standingsHtml = `<section class="section panel"><h2>Simulated group standings</h2>
@@ -739,7 +827,7 @@ function renderSimulationTab(hub) {
     )
     .join("")}</div>`;
 
-  return `${podium}${stats}${standingsHtml}${roundsHtml}`;
+  return `${podium}${stats}${renderMonteCarloBlock(mc)}${renderKnockoutBracketTree(sim.bracket_tree)}${standingsHtml}${roundsHtml}`;
 }
 
 function viewWorldCup(subPath) {
