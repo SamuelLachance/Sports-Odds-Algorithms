@@ -63,11 +63,23 @@ def test_rejects_sub_min_edge() -> None:
     store = {"version": 1, "bets": []}
     slate = {
         "date_label": "2026-06-11",
-        "recommended_bets": [_sample_pick(edge=99)],
+        "recommended_bets": [_sample_pick(edge=49)],
         "games": [],
     }
     store = record_from_slate(store, slate)
     assert store["bets"] == []
+
+
+def test_accepts_min_edge() -> None:
+    store = {"version": 1, "bets": []}
+    slate = {
+        "date_label": "2026-06-11",
+        "recommended_bets": [_sample_pick(edge=50)],
+        "games": [],
+    }
+    store = record_from_slate(store, slate)
+    assert len(store["bets"]) == 1
+    assert store["bets"][0]["edge"] == 50
 
 
 def test_ignores_game_recommendations_not_in_recommended() -> None:
@@ -222,7 +234,7 @@ def test_prune_below_min_edge() -> None:
     store = {
         "version": 1,
         "bets": [
-            _sample_pick(edge=55),
+            _sample_pick(edge=49, event_id="401815712"),
             _sample_pick(edge=30, event_id="401815713"),
             _sample_pick(edge=MIN_RECOMMENDED_EDGE, event_id="401815714"),
             _sample_pick(edge=MIN_RECOMMENDED_EDGE + 10, event_id="401815715"),
@@ -245,6 +257,7 @@ def test_prune_below_min_edge() -> None:
     pruned = prune_below_min_edge(store)
     edges = [b["edge"] for b in pruned["bets"]]
     assert 30 not in edges
+    assert 49 not in edges
     assert all(e >= MIN_RECOMMENDED_EDGE for e in edges)
     assert len(pruned["bets"]) == 2
 
@@ -253,6 +266,7 @@ if __name__ == "__main__":
     test_calculate_units()
     test_record_and_grade()
     test_rejects_sub_min_edge()
+    test_accepts_min_edge()
     test_ignores_game_recommendations_not_in_recommended()
     test_grade_spread_cover_win()
     test_grade_spread_push()

@@ -102,7 +102,7 @@ POWER_SCOREBOARD_LOOKBACK: dict[str, int] = {
 }
 
 # Minimum American-odds edge vs model before a bet is recommended or tracked.
-MIN_RECOMMENDED_EDGE = 100
+MIN_RECOMMENDED_EDGE = 50
 
 # Basketball and American football — recommend spread instead of moneyline.
 SPREAD_BET_CATEGORIES: tuple[str, ...] = ("basketball", "football")

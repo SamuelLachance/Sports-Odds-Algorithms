@@ -108,8 +108,40 @@ def test_moneyline_edge_cross_sign_not_raw_subtraction() -> None:
     assert edge != 230.0
 
 
+def test_edge_threshold_rejects_49_accepts_50() -> None:
+    """MIN_RECOMMENDED_EDGE is 50 — reject at 49, accept at 50."""
+    away_proj, _ = model_moneylines(28.33)
+    assert _odds_edge(away_proj, 302, 28.33) == 49.0
+    assert _odds_edge(away_proj, 303, 28.33) == 50.0
+
+    below = evaluate_picks(
+        away_name="Bosnia",
+        home_name="Opponent",
+        away_slug="bosnia",
+        home_slug="opponent",
+        total_score=28.33,
+        win_probability=28.33,
+        away_market=302,
+        home_market=None,
+    )
+    assert below == []
+
+    above = evaluate_picks(
+        away_name="Bosnia",
+        home_name="Opponent",
+        away_slug="bosnia",
+        home_slug="opponent",
+        total_score=28.33,
+        win_probability=28.33,
+        away_market=303,
+        home_market=None,
+    )
+    assert len(above) == 1
+    assert above[0].edge == 50.0
+
+
 def test_evaluate_picks_cross_sign_below_threshold() -> None:
-    """Model favorite priced as underdog has real value but not +100 edge."""
+    """Model favorite priced as underdog has real value but not +50 edge."""
     picks = evaluate_picks(
         away_name="San Diego Padres",
         home_name="Cincinnati Reds",
@@ -217,6 +249,7 @@ if __name__ == "__main__":
     test_moneyline_edge_same_sign_underdog()
     test_moneyline_edge_same_sign_favorite()
     test_moneyline_edge_cross_sign_not_raw_subtraction()
+    test_edge_threshold_rejects_49_accepts_50()
     test_evaluate_picks_cross_sign_below_threshold()
     test_evaluate_picks_same_sign_meets_threshold()
     test_evaluate_picks_away_favorite_same_sign_soft_line()

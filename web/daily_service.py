@@ -25,7 +25,7 @@ from web.bet_advisor import (  # noqa: E402
 from web.baseball_pred_model import get_baseball_pred_context, is_baseball_league  # noqa: E402
 from web.basketball_pred_model import get_basketball_pred_context, is_basketball_league  # noqa: E402
 from web.soccer_pred_model import get_soccer_pred_context  # noqa: E402
-from web.blend_service import blend_predictions  # noqa: E402
+from web.blend_service import blend_predictions, compute_model_agreement  # noqa: E402
 from web.season_games import prewarm_league_power  # noqa: E402
 from web.espn_client import (  # noqa: E402
     ScheduledGame,
@@ -146,8 +146,11 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             }
         )
 
+    model_agreement = compute_model_agreement(blended, game.league)
+
     model_payload: dict[str, Any] = {
         **blended,
+        "model_agreement": model_agreement,
         "away_projection": away_proj,
         "home_projection": home_proj,
         "factors": factors,
@@ -220,6 +223,9 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             away_market=game.market.away_moneyline,
             home_market=game.market.home_moneyline,
         )
+
+    if model_agreement.get("required") == 3 and not model_agreement.get("agreed"):
+        picks = []
 
     return {
         "event_id": game.event_id,

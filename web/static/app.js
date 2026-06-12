@@ -7,8 +7,10 @@ const state = {
   tracking: null,
   teamsIndex: null,
   teamProfiles: {},
+  worldCup: null,
   selectedLeague: "all",
   trackingPeriod: "all_time",
+  worldCupTab: "overview",
 };
 
 const appRoot = document.getElementById("appRoot");
@@ -294,7 +296,7 @@ function viewDashboard() {
   const leagues = summary.leagues || [...new Set(games.map((g) => g.league))];
   const tracking = state.tracking?.all_time || state.tracking?.summary || {};
   const dateLabel = slate.date_label || "Today";
-  const minEdge = summary.min_edge ?? slate.min_recommended_edge ?? 100;
+  const minEdge = summary.min_edge ?? slate.min_recommended_edge ?? 50;
   const leagueCounts = games.reduce((acc, g) => {
     acc[g.league_name || g.league] = (acc[g.league_name || g.league] || 0) + 1;
     return acc;
@@ -336,6 +338,11 @@ function viewDashboard() {
         <strong class="rollup-record">${leagues.length}</strong>
         <span>Season stats and recent form</span>
       </a>
+      <a class="rollup-card panel home-link-card" href="#/worldcup">
+        <h4>World Cup</h4>
+        <strong class="rollup-record">${state.worldCup?.summary?.total_matches ?? 104}</strong>
+        <span>2026 hub · groups, bracket, unified preds</span>
+      </a>
       <a class="rollup-card panel home-link-card" href="#/tracking">
         <h4>Tracking</h4>
         <strong class="rollup-record">${tracking.record || "0-0"}</strong>
@@ -371,8 +378,8 @@ function renderTrackingSummary() {
 
 function viewPicks() {
   const picks = state.slate?.recommended_bets || [];
-  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p>Only bets with +100 edge or higher vs the unified fair prices.</p></section>
-    <div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : '<div class="panel empty-panel">No bets meet the +100 minimum edge threshold today.</div>'}</div>`;
+  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p>Only bets with +50 edge or higher vs the unified fair prices.</p></section>
+    <div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : '<div class="panel empty-panel">No bets meet the +50 minimum edge threshold today.</div>'}</div>`;
 }
 
 function viewGames(league) {
@@ -520,7 +527,7 @@ function viewTracking() {
       <div class="tracking-hero-top">
         <div>
           <h1>Performance tracking</h1>
-          <p>Every algo bet with +100 edge is logged, graded at closing odds, and rolled up day → week → month → year → all time.</p>
+          <p>Every algo bet with +50 edge is logged, graded at closing odds, and rolled up day → week → month → year → all time.</p>
           <p class="muted">Tracking since ${since} · ${state.tracking?.timezone || "America/Toronto"}</p>
         </div>
         <div class="tracking-hero-stats">
@@ -552,7 +559,7 @@ function viewTracking() {
       <div class="bet-log">${bets.length ? bets.map((b) => `<article class="bet-row panel"><div class="bet-row-top"><div><strong>${b.team_name}</strong><span class="league-pill">${b.league_name}</span>${statusBadge(b.status, b.units)}</div><span class="edge-tag">+${b.edge} edge</span></div>
       <p class="muted">${b.matchup} · ${b.date}</p>
       <div class="pick-odds compact"><div><span>${b.bet_type === "spread" ? "Spread" : "Market"}</span><strong>${b.bet_type === "spread" ? formatSpread(b.spread_line) + " (" + formatOdds(b.spread_odds ?? b.market_odds) + ")" : formatOdds(b.market_odds)}</strong></div><div><span>Model</span><strong>${b.bet_type === "spread" && b.model_margin != null ? "Margin " + formatSpread(b.side === "home" ? b.model_margin : -b.model_margin) : formatOdds(b.model_projection)}</strong></div><div><span>Strategy</span><strong>${b.strategy_label}</strong></div></div>
-      ${b.final_score ? `<p class="final-score">Final: ${b.final_score}</p>` : ""}</article>`).join("") : '<div class="panel empty-panel">No tracked bets yet. Picks with +100 edge are logged on each daily rebuild.</div>'}</div>
+      ${b.final_score ? `<p class="final-score">Final: ${b.final_score}</p>` : ""}</article>`).join("") : '<div class="panel empty-panel">No tracked bets yet. Picks with +50 edge are logged on each daily rebuild.</div>'}</div>
     </section>`;
 
   appRoot.querySelectorAll(".period-tab").forEach((btn) => {
@@ -563,10 +570,216 @@ function viewTracking() {
   });
 }
 
+function wcPred(eventId) {
+  return state.worldCup?.predictions?.[eventId];
+}
+
+function wcMatchById(eventId) {
+  return (state.worldCup?.matches || []).find((m) => m.event_id === eventId);
+}
+
+function wcThreewayPred(model) {
+  if (!model?.threeway) return "";
+  return `${model.home_win_probability}% / ${model.draw_probability}% / ${model.away_win_probability}%`;
+}
+
+function wcMatchCard(match) {
+  const pred = wcPred(match.event_id);
+  const model = pred?.model;
+  const score = match.completed ? match.scoreline : match.status_detail || "Scheduled";
+  const pick = pred?.top_pick;
+  let predBlock = "";
+  if (model?.threeway) {
+    predBlock = `<div class="wc-pred-chip"><span>Unified 1X2</span><strong>${wcThreewayPred(model)}</strong><small>H / D / A</small></div>`;
+  } else if (model) {
+    const fav = model.favorite_side === "home" ? match.home.name : match.away.name;
+    predBlock = `<div class="wc-pred-chip"><span>Unified</span><strong>${fav}</strong><small>${model.win_probability}%</small></div>`;
+  } else if (match.is_placeholder) {
+    predBlock = `<div class="wc-pred-chip muted-chip"><span>TBD</span><strong>—</strong><small>Teams not set</small></div>`;
+  } else {
+    predBlock = `<div class="wc-pred-chip muted-chip"><span>Model</span><strong>—</strong><small>Unavailable</small></div>`;
+  }
+  const pickBadge = pick
+    ? `<span class="wc-pick-badge">Pick: ${pick.team_name} (+${pick.edge})</span>`
+    : "";
+  return `<article class="wc-match-card panel ${match.completed ? "completed" : ""}">
+    <div class="wc-match-head">
+      <div>
+        <span class="league-pill">${match.round_label}${match.group ? ` · Group ${match.group}` : ""}</span>
+        <h4>${match.away.name} <span class="at">@</span> ${match.home.name}</h4>
+        <p class="game-meta">${formatTime(match.start_time)}${match.venue ? ` · ${match.venue}` : ""}</p>
+      </div>
+      <div class="wc-score-block">
+        <span class="wc-score">${score}</span>
+        ${pickBadge}
+      </div>
+    </div>
+    <div class="wc-match-foot">
+      ${predBlock}
+      <a class="btn btn-secondary btn-sm" href="#/worldcup/match/${match.event_id}">Full breakdown →</a>
+    </div>
+  </article>`;
+}
+
+function renderGroupTable(group) {
+  const rows = group.standings || [];
+  return `<div class="wc-group-panel panel">
+    <h3>Group ${group.id}</h3>
+    <table class="data-table wc-standings-table">
+      <thead><tr><th>#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th><th>Form</th></tr></thead>
+      <tbody>${rows
+        .map(
+          (r) =>
+            `<tr class="zone-${r.zone}"><td>${r.position}</td><td><strong>${r.team}</strong></td><td>${r.played}</td><td>${r.wins}</td><td>${r.draws}</td><td>${r.losses}</td><td>${r.goals_for}</td><td>${r.goals_against}</td><td>${r.goal_diff > 0 ? "+" : ""}${r.goal_diff}</td><td><strong>${r.points}</strong></td><td class="wc-form">${(r.form || []).join("")}</td></tr>`,
+        )
+        .join("")}</tbody>
+    </table>
+    <div class="wc-group-matches">${(group.matches || []).map((m) => wcMatchCard(m)).join("")}</div>
+  </div>`;
+}
+
+function renderKnockoutBracket(hub) {
+  const rounds = (hub.rounds || []).filter((r) => r.slug !== "group-stage");
+  return `<div class="wc-bracket">${rounds
+    .map(
+      (round) => `<section class="wc-bracket-round panel">
+        <h3>${round.label}</h3>
+        <div class="wc-bracket-matches">${(round.matches || []).map((m) => wcMatchCard(m)).join("")}</div>
+      </section>`,
+    )
+    .join("")}</div>`;
+}
+
+function viewWorldCup(subPath) {
+  const hub = state.worldCup;
+  if (!hub) {
+    appRoot.innerHTML = '<div class="panel empty-panel">Loading World Cup 2026 data…</div>';
+    return;
+  }
+  const summary = hub.summary || {};
+  const fmt = hub.format || {};
+  const tab = subPath || state.worldCupTab || "overview";
+  state.worldCupTab = tab;
+
+  const tabs = [
+    ["overview", "Overview"],
+    ["groups", "Groups"],
+    ["knockout", "Knockout"],
+    ["matches", "All matches"],
+  ];
+
+  let body = "";
+  if (tab === "groups") {
+    body = `<div class="wc-groups-grid">${Object.values(hub.groups || {})
+      .map((g) => renderGroupTable(g))
+      .join("")}</div>
+      <section class="section panel"><h2>Best third-placed teams</h2>
+      <p class="muted">Top 8 of 12 third-place finishers advance to the Round of 32.</p>
+      <table class="data-table"><thead><tr><th>Rank</th><th>Group</th><th>Team</th><th>Pts</th><th>GD</th><th>GF</th><th>Status</th></tr></thead>
+      <tbody>${(hub.third_place_ranking || [])
+        .map(
+          (r) =>
+            `<tr class="${r.third_place_qualified ? "zone-qualified" : ""}"><td>${r.third_place_rank}</td><td>${r.group}</td><td><strong>${r.team}</strong></td><td>${r.points}</td><td>${r.goal_diff > 0 ? "+" : ""}${r.goal_diff}</td><td>${r.goals_for}</td><td>${r.third_place_qualified ? "Advances" : "Out"}</td></tr>`,
+        )
+        .join("")}</tbody></table></section>`;
+  } else if (tab === "knockout") {
+    body = `<p class="muted panel">Round of 32 → Round of 16 → Quarter-finals → Semi-finals → Final. Placeholder slots fill in as groups finish.</p>${renderKnockoutBracket(hub)}`;
+  } else if (tab === "matches") {
+    body = `<div class="wc-all-matches">${(hub.matches || []).map((m) => wcMatchCard(m)).join("")}</div>`;
+  } else {
+    const recs = hub.recommended_bets || [];
+    body = `
+      <section class="wc-format panel">
+        <h2>2026 format</h2>
+        <ul class="wc-format-list">
+          <li><strong>48 teams</strong> in <strong>12 groups of 4</strong> — each team plays 3 group matches</li>
+          <li><strong>32 advance:</strong> top 2 per group + 8 best third-placed teams</li>
+          <li><strong>104 matches</strong> total · ${fmt.dates?.start || "Jun 11"} → ${fmt.dates?.final || "Jul 19"}</li>
+          <li>Hosts: ${(fmt.hosts || []).join(", ")}</li>
+        </ul>
+      </section>
+      <div class="rollup-grid">
+        <div class="rollup-card panel"><h4>Matches</h4><strong class="rollup-record">${summary.total_matches ?? 0}</strong><span>${summary.completed ?? 0} completed · ${summary.upcoming ?? 0} upcoming</span></div>
+        <div class="rollup-card panel"><h4>Unified predictions</h4><strong class="rollup-record">${summary.predictions_count ?? 0}</strong><span>3-layer soccer model on every fixed fixture</span></div>
+        <div class="rollup-card panel"><h4>Algo picks</h4><strong class="rollup-record">${summary.recommended_bets ?? 0}</strong><span>Edge + agreement filters</span></div>
+        <div class="rollup-card panel"><h4>Group stage</h4><strong class="rollup-record">${summary.group_stage_matches ?? 72}</strong><span>72 matches · 12 groups</span></div>
+      </div>
+      <section class="section"><div class="section-head"><h2>Recommended World Cup bets</h2></div>
+      <div class="picks-grid">${recs.length ? recs.map((p) => pickCard({ ...p, league_name: "FIFA World Cup" })).join("") : '<div class="panel empty-panel">No World Cup bets meet model agreement and edge thresholds right now.</div>'}</div></section>
+      <section class="section"><div class="section-head"><h2>Latest results & upcoming</h2></div>
+      <div class="wc-all-matches">${(hub.matches || []).slice(0, 12).map((m) => wcMatchCard(m)).join("")}</div></section>`;
+  }
+
+  appRoot.innerHTML = `
+    <section class="wc-hero panel">
+      <div class="wc-hero-inner">
+        <span class="league-pill">FIFA World Cup 2026</span>
+        <h1>World Cup hub</h1>
+        <p>Unified 3-layer predictions for every match · live scores · group tables · full knockout bracket.</p>
+        <p class="muted">Canada · Mexico · United States · ${summary.total_matches ?? 104} matches</p>
+      </div>
+    </section>
+    <div class="wc-subtabs">${tabs
+      .map(
+        ([id, label]) =>
+          `<button type="button" class="wc-subtab ${tab === id ? "active" : ""}" data-wc-tab="${id}">${label}</button>`,
+      )
+      .join("")}</div>
+    ${body}`;
+
+  appRoot.querySelectorAll(".wc-subtab").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      state.worldCupTab = btn.dataset.wcTab;
+      navigate("#/worldcup");
+      viewWorldCup(state.worldCupTab);
+    });
+  });
+}
+
+function viewWorldCupMatch(eventId) {
+  const match = wcMatchById(eventId);
+  const pred = wcPred(eventId);
+  if (!match) {
+    appRoot.innerHTML = '<div class="panel empty-panel">Match not found.</div>';
+    return;
+  }
+  if (pred?.model && pred?.matchup && pred?.market) {
+    const game = {
+      event_id: match.event_id,
+      league: "worldcup",
+      league_name: "FIFA World Cup",
+      name: match.name,
+      start_time: match.start_time,
+      status: match.status,
+      status_detail: match.status_detail,
+      matchup: {
+        away: { ...pred.matchup.away, name: match.away.name },
+        home: { ...pred.matchup.home, name: match.home.name },
+      },
+      market: pred.market,
+      model: pred.model,
+      top_pick: pred.top_pick,
+      recommendations: pred.recommendations || [],
+    };
+    appRoot.innerHTML = `${algoCenter(game)}
+      <p class="muted" style="margin-top:1rem">${match.round_label}${match.group ? ` · Group ${match.group}` : ""}${match.venue ? ` · ${match.venue}` : ""}${match.scoreline ? ` · Final: ${match.scoreline}` : ""}</p>
+      <a class="btn btn-secondary" href="#/worldcup">← World Cup hub</a>`;
+    return;
+  }
+  appRoot.innerHTML = `<section class="page-head"><h1>${match.away.name} @ ${match.home.name}</h1>
+    <p>${match.round_label} · ${formatTime(match.start_time)}</p></section>
+    ${wcMatchCard(match)}
+    <a class="btn btn-secondary" href="#/worldcup">← World Cup hub</a>`;
+}
+
 function highlightNav(route) {
   document.querySelectorAll("#mainNav a").forEach((a) => {
     const r = a.dataset.route;
-    a.classList.toggle("active", r === `/${route.path}` || (route.path === "" && r === "/"));
+    const active =
+      r === `/${route.path}` ||
+      (route.path === "" && r === "/") ||
+      (route.path === "worldcup" && r === "/worldcup");
+    a.classList.toggle("active", active);
   });
 }
 
@@ -580,7 +793,10 @@ async function render() {
     else if (route.path === "teams") viewTeams(route.parts[1]);
     else if (route.path === "team") await viewTeam(route.parts[1], route.parts[2]);
     else if (route.path === "tracking") viewTracking();
-    else viewDashboard();
+    else if (route.path === "worldcup") {
+      if (route.parts[0] === "match") viewWorldCupMatch(route.parts[1]);
+      else viewWorldCup(route.parts[0]);
+    } else viewDashboard();
   } catch (err) {
     appRoot.innerHTML = `<div class="panel empty-panel error-panel">${err.message}</div>`;
   }
@@ -614,6 +830,14 @@ async function loadPlatform() {
     );
   } catch {
     state.teamsIndex = { leagues: [] };
+  }
+
+  try {
+    state.worldCup = await fetchJson(
+      USE_STATIC_API ? api("world-cup.json") : api("worldcup"),
+    );
+  } catch {
+    state.worldCup = null;
   }
 
   const stamp = slate.generated_at ? new Date(slate.generated_at) : new Date();
