@@ -14,16 +14,16 @@
 
   <header class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="#/">
+      <a class="brand" href="#/tracking">
         <span class="brand-mark">SOA</span>
         <span class="brand-text">Sharp Odds</span>
       </a>
       <nav class="nav" id="mainNav">
-        <a href="#/" data-route="/">Dashboard</a>
+        <a href="#/tracking" data-route="/tracking">Tracking</a>
         <a href="#/picks" data-route="/picks">Algo Picks</a>
         <a href="#/games" data-route="/games">Games</a>
         <a href="#/teams" data-route="/teams">Teams</a>
-        <a href="#/tracking" data-route="/tracking">Tracking</a>
+        <a href="#/" data-route="/">Home</a>
       </nav>
       <button class="theme-toggle" id="themeToggle" aria-label="Toggle color theme">◐</button>
     </div>
@@ -34,6 +34,13 @@
       <div class="sidebar-block">
         <h4>Sports</h4>
         <ul class="league-menu" id="leagueMenu"></ul>
+      </div>
+      <div class="sidebar-block">
+        <h4>Service</h4>
+        <ul class="league-menu">
+          <li><a href="#/tracking" class="service-link">Bet tracking</a></li>
+          <li><a href="#/picks" class="service-link">Algo picks</a></li>
+        </ul>
       </div>
       <div class="sidebar-block" id="sidebarGames" hidden>
         <h4 id="sidebarGamesTitle">Games</h4>

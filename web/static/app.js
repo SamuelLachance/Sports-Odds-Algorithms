@@ -306,35 +306,95 @@ function statusBadge(status, units) {
   return `<span class="status loss">Loss ${units?.toFixed?.(2) ?? units}u</span>`;
 }
 
+function periodLabel(key) {
+  const labels = {
+    daily: "Day",
+    weekly: "Week",
+    monthly: "Month",
+    yearly: "Year",
+    all_time: "All time",
+  };
+  return labels[key] || key;
+}
+
+function renderPeriodTable(periodKey) {
+  const rows =
+    periodKey === "all_time"
+      ? state.tracking?.all_time
+        ? [{ ...state.tracking.all_time, label: "All time", key: "all" }]
+        : []
+      : state.tracking?.[periodKey] || [];
+  if (!rows.length) {
+    return `<p class="muted">No ${periodLabel(periodKey).toLowerCase()} data yet — bets are logged each day at 3am.</p>`;
+  }
+  return `<table class="data-table"><thead><tr><th>${periodLabel(periodKey)}</th><th>Record</th><th>Units</th><th>ROI</th><th>Bets</th><th>Pending</th></tr></thead><tbody>${rows
+    .map(
+      (r) =>
+        `<tr><td>${r.label || r.key}</td><td>${r.record || "0-0"}</td><td>${r.units > 0 ? "+" : ""}${r.units ?? 0}u</td><td>${r.roi_percent ?? 0}%</td><td>${r.bets ?? 0}</td><td>${r.pending ?? 0}</td></tr>`,
+    )
+    .join("")}</tbody></table>`;
+}
+
+function renderUnitsChart(periodKey) {
+  const rows = state.tracking?.[periodKey] || [];
+  if (!rows.length) return "";
+  const max = Math.max(...rows.map((r) => Math.abs(r.units || 0)), 1);
+  const bars = [...rows].reverse().slice(-12);
+  return `<div class="units-chart">${bars
+    .map((r) => {
+      const h = Math.max(8, (Math.abs(r.units || 0) / max) * 100);
+      const cls = (r.units || 0) >= 0 ? "up" : "down";
+      return `<div class="units-bar-wrap"><div class="units-bar ${cls}" style="height:${h}%"></div><span>${(r.label || r.key).split(" ")[0]}</span></div>`;
+    })
+    .join("")}</div>`;
+}
+
 function viewTracking() {
   const period = state.trackingPeriod;
-  const rows =
-    period === "all_time"
-      ? [state.tracking?.all_time]
-      : state.tracking?.[period] || [];
+  const all = state.tracking?.all_time || state.tracking?.summary || {};
   const bets = state.tracking?.bets || [];
-  appRoot.innerHTML = `<section class="page-head"><h1>Bet tracking</h1><p>Every algo value bet logged day-to-day with win/loss grading at closing moneyline odds (1u flat).</p></section>
+  const since = state.tracking?.tracking_since || "—";
+
+  appRoot.innerHTML = `
+    <section class="tracking-hero panel">
+      <div class="tracking-hero-top">
+        <div>
+          <h1>Performance tracking</h1>
+          <p>Every algo bet with +50 edge is logged, graded at closing odds, and rolled up day → week → month → year → all time.</p>
+          <p class="muted">Tracking since ${since} · ${state.tracking?.timezone || "America/Toronto"}</p>
+        </div>
+        <div class="tracking-hero-stats">
+          <div><span>Record</span><strong>${all.record || "0-0"}</strong></div>
+          <div><span>Units</span><strong>${all.units > 0 ? "+" : ""}${all.units ?? 0}u</strong></div>
+          <div><span>ROI</span><strong>${all.roi_percent ?? 0}%</strong></div>
+          <div><span>Pending</span><strong>${all.pending ?? 0}</strong></div>
+        </div>
+      </div>
+    </section>
+
     <div class="period-tabs">${["daily", "weekly", "monthly", "yearly", "all_time"]
       .map(
         (p) =>
-          `<button type="button" class="period-tab ${period === p ? "active" : ""}" data-period="${p}">${p.replace("_", " ")}</button>`,
+          `<button type="button" class="period-tab ${period === p ? "active" : ""}" data-period="${p}">${periodLabel(p)}</button>`,
       )
       .join("")}</div>
+
     <div class="rollup-grid">${renderTrackingSummary()}</div>
-    <section class="section"><h2>Period rollups</h2>
-    <table class="data-table"><thead><tr><th>Period</th><th>Record</th><th>Units</th><th>ROI</th><th>Bets</th></tr></thead>
-    <tbody>${(rows || [])
-      .filter(Boolean)
-      .map(
-        (r) =>
-          `<tr><td>${r.label || r.key}</td><td>${r.record}</td><td>${r.units > 0 ? "+" : ""}${r.units}u</td><td>${r.roi_percent}%</td><td>${r.bets}</td></tr>`,
-      )
-      .join("") || "<tr><td colspan='5'>No settled periods yet.</td></tr>"}</tbody></table></section>
-    <section class="section"><h2>Bet log</h2>
-    <div class="bet-log">${bets.length ? bets.map((b) => `<article class="bet-row panel"><div class="bet-row-top"><div><strong>${b.team_name}</strong><span class="league-pill">${b.league_name}</span>${statusBadge(b.status, b.units)}</div><span class="edge-tag">+${b.edge} edge</span></div>
-    <p class="muted">${b.matchup} · ${b.date}</p>
-    <div class="pick-odds compact"><div><span>Market</span><strong>${formatOdds(b.market_odds)}</strong></div><div><span>Model</span><strong>${formatOdds(b.model_projection)}</strong></div><div><span>Strategy</span><strong>${b.strategy_label}</strong></div></div>
-    ${b.final_score ? `<p class="final-score">Final: ${b.final_score}</p>` : ""}</article>`).join("") : '<div class="panel empty-panel">Tracking starts when value bets are published on the daily slate.</div>'}</div></section>`;
+
+    <section class="section panel">
+      <h2>${periodLabel(period)} breakdown</h2>
+      ${period !== "all_time" ? renderUnitsChart(period) : ""}
+      ${renderPeriodTable(period)}
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>Bet log (${bets.length})</h2></div>
+      <div class="bet-log">${bets.length ? bets.map((b) => `<article class="bet-row panel"><div class="bet-row-top"><div><strong>${b.team_name}</strong><span class="league-pill">${b.league_name}</span>${statusBadge(b.status, b.units)}</div><span class="edge-tag">+${b.edge} edge</span></div>
+      <p class="muted">${b.matchup} · ${b.date}</p>
+      <div class="pick-odds compact"><div><span>Market</span><strong>${formatOdds(b.market_odds)}</strong></div><div><span>Model</span><strong>${formatOdds(b.model_projection)}</strong></div><div><span>Strategy</span><strong>${b.strategy_label}</strong></div></div>
+      ${b.final_score ? `<p class="final-score">Final: ${b.final_score}</p>` : ""}</article>`).join("") : '<div class="panel empty-panel">No tracked bets yet. Picks with +50 edge are logged on each daily rebuild.</div>'}</div>
+    </section>`;
+
   appRoot.querySelectorAll(".period-tab").forEach((btn) => {
     btn.addEventListener("click", () => {
       state.trackingPeriod = btn.dataset.period;
@@ -367,17 +427,43 @@ async function render() {
 }
 
 async function loadPlatform() {
-  const [slate, tracking, teamsIndex] = await Promise.all([
-    fetchJson(USE_STATIC_API ? api("daily-slate.json") : api("daily/slate")),
-    fetchJson(USE_STATIC_API ? api("tracking.json") : api("tracking")),
-    fetchJson(USE_STATIC_API ? api("teams-index.json") : api("teams")),
-  ]);
+  const slate = await fetchJson(
+    USE_STATIC_API ? api("daily-slate.json") : api("daily/slate"),
+  );
   state.slate = slate;
-  state.tracking = tracking;
-  state.teamsIndex = teamsIndex;
+
+  try {
+    state.tracking = await fetchJson(
+      USE_STATIC_API ? api("tracking.json") : api("tracking"),
+    );
+  } catch {
+    state.tracking = {
+      bets: [],
+      summary: { record: "0-0", units: 0, roi_percent: 0, pending: 0 },
+      all_time: { record: "0-0", units: 0, roi_percent: 0, pending: 0 },
+      daily: [],
+      weekly: [],
+      monthly: [],
+      yearly: [],
+    };
+  }
+
+  try {
+    state.teamsIndex = await fetchJson(
+      USE_STATIC_API ? api("teams-index.json") : api("teams"),
+    );
+  } catch {
+    state.teamsIndex = { leagues: [] };
+  }
+
   const stamp = slate.generated_at ? new Date(slate.generated_at) : new Date();
   footerUpdated.textContent = `Updated ${stamp.toLocaleString()}`;
   renderLeagueMenu();
+
+  if (!location.hash || location.hash === "#" || location.hash === "#/") {
+    location.replace("#/tracking");
+    return;
+  }
   await render();
 }
 
