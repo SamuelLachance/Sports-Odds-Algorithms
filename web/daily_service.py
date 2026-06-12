@@ -12,7 +12,12 @@ from typing import Any
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
-from web.bet_advisor import evaluate_picks, model_moneylines, pick_to_dict  # noqa: E402
+from web.bet_advisor import (  # noqa: E402
+    evaluate_picks,
+    evaluate_spread_picks,
+    model_moneylines,
+    pick_to_dict,
+)
 from web.espn_client import (  # noqa: E402
     ScheduledGame,
     current_season_year,
@@ -24,6 +29,7 @@ from web.league_profiles import (  # noqa: E402
     MIN_RECOMMENDED_EDGE,
     SUPPORTED_LEAGUES,
     get_algo_league,
+    uses_spread_bets,
 )
 from web.live_data import load_live_team_data, resolve_team  # noqa: E402
 from web.predict_service import FACTOR_LABELS  # noqa: E402
@@ -110,16 +116,30 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             }
         )
 
-    picks = evaluate_picks(
-        away_name=game.away_name,
-        home_name=game.home_name,
-        away_slug=away[1],
-        home_slug=home[1],
-        total_score=total,
-        win_probability=win_probability,
-        away_market=game.market.away_moneyline,
-        home_market=game.market.home_moneyline,
-    )
+    if uses_spread_bets(game.league):
+        picks = evaluate_spread_picks(
+            league=game.league,
+            away_name=game.away_name,
+            home_name=game.home_name,
+            away_slug=away[1],
+            home_slug=home[1],
+            total_score=total,
+            win_probability=win_probability,
+            consensus_spread=game.market.spread,
+            away_spread_odds=game.market.away_spread_odds,
+            home_spread_odds=game.market.home_spread_odds,
+        )
+    else:
+        picks = evaluate_picks(
+            away_name=game.away_name,
+            home_name=game.home_name,
+            away_slug=away[1],
+            home_slug=home[1],
+            total_score=total,
+            win_probability=win_probability,
+            away_market=game.market.away_moneyline,
+            home_market=game.market.home_moneyline,
+        )
 
     return {
         "event_id": game.event_id,
@@ -140,6 +160,8 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             "away_moneyline": game.market.away_moneyline,
             "home_moneyline": game.market.home_moneyline,
             "spread": game.market.spread,
+            "away_spread_odds": game.market.away_spread_odds,
+            "home_spread_odds": game.market.home_spread_odds,
             "over_under": game.market.over_under,
         },
         "model": {

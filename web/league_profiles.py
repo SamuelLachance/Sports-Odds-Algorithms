@@ -19,6 +19,14 @@ ALGO_PROFILE: dict[str, str] = {
     "bundesliga": "nhl",
     "seriea": "nhl",
     "ligue1": "nhl",
+    "worldcup": "nhl",
+    "fifa_friendlies": "nhl",
+    "concacaf_wcq": "nhl",
+    "concacaf_gold": "nhl",
+    "concacaf_nations": "nhl",
+    "uefa_euro": "nhl",
+    "uefa_nations": "nhl",
+    "copa_america": "nhl",
 }
 
 NUM_PERIODS: dict[str, int] = {
@@ -35,6 +43,14 @@ NUM_PERIODS: dict[str, int] = {
     "bundesliga": 2,
     "seriea": 2,
     "ligue1": 2,
+    "worldcup": 2,
+    "fifa_friendlies": 2,
+    "concacaf_wcq": 2,
+    "concacaf_gold": 2,
+    "concacaf_nations": 2,
+    "uefa_euro": 2,
+    "uefa_nations": 2,
+    "copa_america": 2,
 }
 
 DEFAULT_DATES: dict[str, str] = {
@@ -51,6 +67,14 @@ DEFAULT_DATES: dict[str, str] = {
     "bundesliga": "4-15-2025",
     "seriea": "4-15-2025",
     "ligue1": "4-15-2025",
+    "worldcup": "6-12-2026",
+    "fifa_friendlies": "6-12-2026",
+    "concacaf_wcq": "6-12-2026",
+    "concacaf_gold": "6-12-2026",
+    "concacaf_nations": "6-12-2026",
+    "uefa_euro": "6-12-2026",
+    "uefa_nations": "6-12-2026",
+    "copa_america": "6-12-2026",
 }
 
 DEMO_SEASONS: dict[str, str] = {
@@ -65,6 +89,11 @@ MIN_GAMES_FOR_MODEL = 10
 
 # Minimum American-odds edge vs model before a bet is recommended or tracked.
 MIN_RECOMMENDED_EDGE = 50
+
+# Basketball and American football — recommend spread instead of moneyline.
+SPREAD_BET_CATEGORIES: tuple[str, ...] = ("basketball", "football")
+
+DEFAULT_SPREAD_JUICE = -110
 
 
 class LeagueProfile(TypedDict):
@@ -167,12 +196,93 @@ LEAGUE_PROFILES: dict[str, LeagueProfile] = {
         "category": "soccer",
         "coach_code": None,
     },
+    "worldcup": {
+        "id": "worldcup",
+        "name": "FIFA World Cup",
+        "sport_path": "soccer/fifa.world",
+        "category": "soccer",
+        "coach_code": None,
+    },
+    "fifa_friendlies": {
+        "id": "fifa_friendlies",
+        "name": "FIFA Friendlies",
+        "sport_path": "soccer/fifa.friendly",
+        "category": "soccer",
+        "coach_code": None,
+    },
+    "concacaf_wcq": {
+        "id": "concacaf_wcq",
+        "name": "CONCACAF WC Qualifying",
+        "sport_path": "soccer/fifa.worldq.concacaf",
+        "category": "soccer",
+        "coach_code": None,
+    },
+    "concacaf_gold": {
+        "id": "concacaf_gold",
+        "name": "CONCACAF Gold Cup",
+        "sport_path": "soccer/concacaf.gold",
+        "category": "soccer",
+        "coach_code": None,
+    },
+    "concacaf_nations": {
+        "id": "concacaf_nations",
+        "name": "CONCACAF Nations League",
+        "sport_path": "soccer/concacaf.nations.league",
+        "category": "soccer",
+        "coach_code": None,
+    },
+    "uefa_euro": {
+        "id": "uefa_euro",
+        "name": "UEFA European Championship",
+        "sport_path": "soccer/uefa.euro",
+        "category": "soccer",
+        "coach_code": None,
+    },
+    "uefa_nations": {
+        "id": "uefa_nations",
+        "name": "UEFA Nations League",
+        "sport_path": "soccer/uefa.nations",
+        "category": "soccer",
+        "coach_code": None,
+    },
+    "copa_america": {
+        "id": "copa_america",
+        "name": "Copa América",
+        "sport_path": "soccer/conmebol.america",
+        "category": "soccer",
+        "coach_code": None,
+    },
 }
+
+INTERNATIONAL_SOCCER_LEAGUES: tuple[str, ...] = (
+    "worldcup",
+    "fifa_friendlies",
+    "concacaf_wcq",
+    "concacaf_gold",
+    "concacaf_nations",
+    "uefa_euro",
+    "uefa_nations",
+    "copa_america",
+)
+
+# Sparse tournaments can backfill recent form from FIFA friendlies on the same ESPN team id.
+INTERNATIONAL_TOURNAMENT_LEAGUES: tuple[str, ...] = tuple(
+    league for league in INTERNATIONAL_SOCCER_LEAGUES if league != "fifa_friendlies"
+)
+FRIENDLIES_SUPPLEMENT_LEAGUE = "fifa_friendlies"
 
 SUPPORTED_LEAGUES: tuple[str, ...] = tuple(LEAGUE_PROFILES.keys())
 SOCCER_LEAGUES: tuple[str, ...] = tuple(
     key for key, profile in LEAGUE_PROFILES.items() if profile["category"] == "soccer"
 )
+
+
+def uses_spread_bets(league: str) -> bool:
+    league = league.lower()
+    profile = LEAGUE_PROFILES.get(league)
+    if not profile:
+        return False
+    return profile["category"] in SPREAD_BET_CATEGORIES
 
 
 def get_algo_league(league: str) -> str:

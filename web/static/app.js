@@ -72,6 +72,28 @@ function formatOdds(v) {
   return v > 0 ? `+${v}` : `${v}`;
 }
 
+function formatSpread(v) {
+  if (v == null) return "—";
+  const rounded = Number(v);
+  const text = Number.isInteger(rounded) ? `${rounded}` : rounded.toFixed(1);
+  return rounded > 0 ? `+${text}` : text;
+}
+
+function pickMarketLabel(pick) {
+  if (pick.bet_type === "spread") {
+    return `Spread ${formatSpread(pick.spread_line)} (${formatOdds(pick.spread_odds ?? pick.market_odds)})`;
+  }
+  return formatOdds(pick.market_odds);
+}
+
+function pickModelLabel(pick) {
+  if (pick.bet_type === "spread" && pick.model_margin != null) {
+    const sideMargin = pick.side === "home" ? pick.model_margin : -pick.model_margin;
+    return `Margin ${formatSpread(sideMargin)}`;
+  }
+  return formatOdds(pick.model_projection);
+}
+
 function confClass(c) {
   return `confidence-${c || "low"}`;
 }
@@ -140,8 +162,8 @@ function pickCard(pick, extra = "") {
     <p class="pick-matchup">${pick.matchup || extra}</p>
     <p class="pick-time">${formatTime(pick.start_time)}</p>
     <div class="pick-odds">
-      <div><span>Market</span><strong>${formatOdds(pick.market_odds)}</strong></div>
-      <div><span>Model</span><strong>${formatOdds(pick.model_projection)}</strong></div>
+      <div><span>${pick.bet_type === "spread" ? "Spread" : "Market"}</span><strong>${pickMarketLabel(pick)}</strong></div>
+      <div><span>Model</span><strong>${pickModelLabel(pick)}</strong></div>
       <div><span>Edge</span><strong>+${pick.edge}</strong></div>
     </div>
     <p class="pick-reason">${pick.reason}</p>
@@ -173,7 +195,7 @@ function algoCenter(game) {
         <div class="odds-chip"><span>Spread / O-U</span><strong>${mk.spread ?? "—"} / ${mk.over_under ?? "—"}</strong><small>${mk.provider || "ESPN"}</small></div>
       </div>
     </div>
-    ${top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong><span>${top.team_name} · ${formatOdds(top.market_odds)} vs model ${formatOdds(top.model_projection)} (+${top.edge})</span><p>${top.reason}</p></div>` : `<div class="game-pick neutral"><strong>No value flag</strong><span>Model leans ${fav}; lines do not beat model price today.</span></div>`}
+    ${top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong><span>${top.team_name} · ${pickMarketLabel(top)} vs model ${pickModelLabel(top)} (+${top.edge})</span><p>${top.reason}</p></div>` : `<div class="game-pick neutral"><strong>No value flag</strong><span>Model leans ${fav}; lines do not beat model price today.</span></div>`}
     <details class="factor-details" open><summary>Algo factor breakdown</summary><div class="factor-list">${factorBars(m.factors)}</div></details>
     ${(game.recommendations || []).length ? `<div class="rec-list"><h3>All model recommendations</h3>${game.recommendations.map((p) => pickCard({ ...p, league_name: game.league_name, matchup: `${away.name} @ ${home.name}`, start_time: game.start_time })).join("")}</div>` : ""}
   </section>`;
@@ -391,7 +413,7 @@ function viewTracking() {
       <div class="section-head"><h2>Bet log (${bets.length})</h2></div>
       <div class="bet-log">${bets.length ? bets.map((b) => `<article class="bet-row panel"><div class="bet-row-top"><div><strong>${b.team_name}</strong><span class="league-pill">${b.league_name}</span>${statusBadge(b.status, b.units)}</div><span class="edge-tag">+${b.edge} edge</span></div>
       <p class="muted">${b.matchup} · ${b.date}</p>
-      <div class="pick-odds compact"><div><span>Market</span><strong>${formatOdds(b.market_odds)}</strong></div><div><span>Model</span><strong>${formatOdds(b.model_projection)}</strong></div><div><span>Strategy</span><strong>${b.strategy_label}</strong></div></div>
+      <div class="pick-odds compact"><div><span>${b.bet_type === "spread" ? "Spread" : "Market"}</span><strong>${b.bet_type === "spread" ? formatSpread(b.spread_line) + " (" + formatOdds(b.spread_odds ?? b.market_odds) + ")" : formatOdds(b.market_odds)}</strong></div><div><span>Model</span><strong>${b.bet_type === "spread" && b.model_margin != null ? "Margin " + formatSpread(b.side === "home" ? b.model_margin : -b.model_margin) : formatOdds(b.model_projection)}</strong></div><div><span>Strategy</span><strong>${b.strategy_label}</strong></div></div>
       ${b.final_score ? `<p class="final-score">Final: ${b.final_score}</p>` : ""}</article>`).join("") : '<div class="panel empty-panel">No tracked bets yet. Picks with +50 edge are logged on each daily rebuild.</div>'}</div>
     </section>`;
 
@@ -415,10 +437,10 @@ async function render() {
   highlightNav(route);
   try {
     if (route.path === "picks") viewPicks();
-    else if (route.path === "games") viewGames(route.parts[0]);
-    else if (route.path === "game") viewGame(route.parts[0]);
-    else if (route.path === "teams") viewTeams(route.parts[0]);
-    else if (route.path === "team") await viewTeam(route.parts[0], route.parts[1]);
+    else if (route.path === "games") viewGames(route.parts[1]);
+    else if (route.path === "game") viewGame(route.parts[1]);
+    else if (route.path === "teams") viewTeams(route.parts[1]);
+    else if (route.path === "team") await viewTeam(route.parts[1], route.parts[2]);
     else if (route.path === "tracking") viewTracking();
     else viewDashboard();
   } catch (err) {

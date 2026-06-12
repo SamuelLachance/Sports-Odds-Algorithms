@@ -18,7 +18,12 @@ from web.espn_client import (  # noqa: E402
     iso_to_project_date,
     prior_season_year,
 )
-from web.league_profiles import MIN_GAMES_FOR_MODEL, NUM_PERIODS  # noqa: E402
+from web.league_profiles import (  # noqa: E402
+    FRIENDLIES_SUPPLEMENT_LEAGUE,
+    INTERNATIONAL_TOURNAMENT_LEAGUES,
+    MIN_GAMES_FOR_MODEL,
+    NUM_PERIODS,
+)
 from web.team_registry import load_team_registry  # noqa: E402
 
 GameRows = tuple[list[str], list[str], list[str], list[list[int]], list[list[list[int]]]]
@@ -142,6 +147,51 @@ def _merge_game_rows(left: GameRows, right: GameRows) -> GameRows:
     )
 
 
+def _parse_row_date(date_str: str) -> date:
+    month, day, year = date_str.split("-")
+    return date(int(year), int(month), int(day))
+
+
+def _sort_game_rows(rows: GameRows) -> GameRows:
+    dates, opponents, home_away, game_scores, period_scores = rows
+    if not dates:
+        return rows
+    order = sorted(range(len(dates)), key=lambda index: _parse_row_date(dates[index]))
+    return (
+        [dates[index] for index in order],
+        [opponents[index] for index in order],
+        [home_away[index] for index in order],
+        [game_scores[index] for index in order],
+        [period_scores[index] for index in order],
+    )
+
+
+def _walk_back_season_games(
+    league: str,
+    team_abbr: str,
+    espn_team_id: str,
+    current_season: int,
+    cutoff: datetime,
+    *,
+    start_offset: int = 0,
+    max_offset: int = 8,
+) -> tuple[GameRows, list[str]]:
+    merged: GameRows = ([], [], [], [], [])
+    seasons_used: list[str] = []
+    for offset in range(start_offset, max_offset + 1):
+        season = current_season - offset
+        season_rows = _collect_season_games(
+            league, team_abbr, espn_team_id, season, cutoff
+        )
+        if not season_rows[0]:
+            continue
+        merged = _merge_game_rows(season_rows, merged)
+        seasons_used.append(str(season))
+        if len(merged[0]) >= MIN_GAMES_FOR_MODEL:
+            break
+    return merged, seasons_used
+
+
 def _build_team_entry(
     league: str,
     team_abbr: str,
@@ -171,8 +221,46 @@ def _build_team_entry(
             if current_rows[0]:
                 seasons_used.append(str(current_season))
 
+    if league in INTERNATIONAL_TOURNAMENT_LEAGUES and len(dates) < MIN_GAMES_FOR_MODEL:
+        older_rows, older_seasons = _walk_back_season_games(
+            league,
+            team_abbr,
+            espn_team_id,
+            current_season,
+            cutoff,
+            start_offset=2,
+        )
+        if older_seasons:
+            dates, opponents, home_away, game_scores, period_scores = _merge_game_rows(
+                older_rows,
+                (dates, opponents, home_away, game_scores, period_scores),
+            )
+            seasons_used = older_seasons + seasons_used
+
+    if league in INTERNATIONAL_TOURNAMENT_LEAGUES and len(dates) < MIN_GAMES_FOR_MODEL:
+        friendly_rows, friendly_seasons = _walk_back_season_games(
+            FRIENDLIES_SUPPLEMENT_LEAGUE,
+            team_abbr,
+            espn_team_id,
+            current_season,
+            cutoff,
+        )
+        if friendly_seasons:
+            dates, opponents, home_away, game_scores, period_scores = _merge_game_rows(
+                (dates, opponents, home_away, game_scores, period_scores),
+                friendly_rows,
+            )
+            seasons_used = seasons_used + [
+                f"{FRIENDLIES_SUPPLEMENT_LEAGUE}:{season}" for season in friendly_seasons
+            ]
+
     if not dates:
         return []
+
+    if league in INTERNATIONAL_TOURNAMENT_LEAGUES:
+        dates, opponents, home_away, game_scores, period_scores = _sort_game_rows(
+            (dates, opponents, home_away, game_scores, period_scores)
+        )
 
     year_key = str(current_season)
     return [

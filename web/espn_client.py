@@ -9,7 +9,12 @@ from dataclasses import dataclass
 from datetime import date, datetime, timezone
 from typing import Any
 
-from web.league_profiles import LEAGUE_PROFILES, SUPPORTED_LEAGUES, get_league_profile
+from web.league_profiles import (
+    LEAGUE_PROFILES,
+    SOCCER_LEAGUES,
+    SUPPORTED_LEAGUES,
+    get_league_profile,
+)
 
 ESPN_ABBR_ALIASES: dict[str, dict[str, str]] = {
     "nba": {"NY": "ny", "NO": "no", "SA": "sa", "GS": "gs", "UTAH": "utah"},
@@ -42,6 +47,8 @@ class MarketOdds:
     spread: float | None
     over_under: float | None
     provider: str | None
+    away_spread_odds: int | None = None
+    home_spread_odds: int | None = None
 
 
 @dataclass
@@ -84,6 +91,36 @@ def _parse_american_odds(value: str | int | None) -> int | None:
         return None
 
 
+def _parse_spread_line(value: str | int | float | None) -> float | None:
+    if value is None or value == "":
+        return None
+    text = str(value).replace("PK", "0").replace("EVEN", "0").strip()
+    if text.upper() in {"OFF", "N/A", "NA"}:
+        return None
+    try:
+        return float(text)
+    except ValueError:
+        return None
+
+
+def _extract_spread(odds_block: dict[str, Any] | None) -> tuple[float | None, int | None, int | None]:
+    """Return home consensus spread and per-side spread juice from ESPN odds."""
+    if not odds_block:
+        return None, None, None
+
+    home_spread = _parse_spread_line(odds_block.get("spread"))
+    point_spread = odds_block.get("pointSpread") or {}
+    away_close = (point_spread.get("away") or {}).get("close") or {}
+    home_close = (point_spread.get("home") or {}).get("close") or {}
+
+    if home_spread is None:
+        home_spread = _parse_spread_line(home_close.get("line"))
+
+    away_spread_odds = _parse_american_odds(away_close.get("odds"))
+    home_spread_odds = _parse_american_odds(home_close.get("odds"))
+    return home_spread, away_spread_odds, home_spread_odds
+
+
 def _extract_moneyline(odds_block: dict[str, Any] | None) -> tuple[int | None, int | None]:
     if not odds_block:
         return None, None
@@ -121,6 +158,7 @@ def _parse_event(event: dict[str, Any], league: str) -> ScheduledGame | None:
 
     odds_block = (competition.get("odds") or [None])[0]
     away_ml, home_ml = _extract_moneyline(odds_block)
+    home_spread, away_spread_odds, home_spread_odds = _extract_spread(odds_block)
     state, detail = _format_status(competition)
     away_team = away.get("team") or {}
     home_team = home.get("team") or {}
@@ -141,9 +179,11 @@ def _parse_event(event: dict[str, Any], league: str) -> ScheduledGame | None:
         market=MarketOdds(
             away_moneyline=away_ml,
             home_moneyline=home_ml,
-            spread=(odds_block or {}).get("spread"),
+            spread=home_spread,
             over_under=(odds_block or {}).get("overUnder"),
             provider=((odds_block or {}).get("provider") or {}).get("name"),
+            away_spread_odds=away_spread_odds,
+            home_spread_odds=home_spread_odds,
         ),
     )
 
@@ -226,7 +266,7 @@ def current_season_year(league: str, cutoff: date) -> int:
     year = cutoff.year
     month = cutoff.month
 
-    if league in {"mlb", "mls", "epl", "laliga", "bundesliga", "seriea", "ligue1"}:
+    if league == "mlb" or league in SOCCER_LEAGUES:
         return year
 
     if league in {"cbb", "cfb"}:

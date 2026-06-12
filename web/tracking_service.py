@@ -7,8 +7,9 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any, Literal
 
+from web.bet_advisor import spread_line_for_side
 from web.espn_client import fetch_scoreboard
-from web.league_profiles import MIN_RECOMMENDED_EDGE
+from web.league_profiles import DEFAULT_SPREAD_JUICE, MIN_RECOMMENDED_EDGE
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 TRACKING_FILE = PROJECT_ROOT / "data" / "tracking.json"
@@ -45,8 +46,31 @@ def save_store(store: dict[str, Any]) -> None:
     TRACKING_FILE.write_text(json.dumps(store, indent=2), encoding="utf-8")
 
 
-def _bet_key(date_label: str, event_id: str, side: str) -> str:
-    return f"{date_label}:{event_id}:{side}"
+def _bet_key(date_label: str, event_id: str, side: str, bet_type: str = "moneyline") -> str:
+    if bet_type == "moneyline":
+        return f"{date_label}:{event_id}:{side}"
+    return f"{date_label}:{event_id}:{side}:{bet_type}"
+
+
+def _grading_spread_line(bet: dict[str, Any]) -> float | None:
+    consensus = bet.get("consensus_spread")
+    if consensus is not None:
+        return spread_line_for_side(float(consensus), bet["side"])
+    if bet.get("spread_line") is not None:
+        return float(bet["spread_line"])
+    return None
+
+
+def _resolve_grading_odds(bet: dict[str, Any]) -> int:
+    bet_type = bet.get("bet_type") or "moneyline"
+    if bet_type == "spread":
+        return int(
+            bet.get("consensus_odds")
+            or bet.get("spread_odds")
+            or bet.get("market_odds")
+            or DEFAULT_SPREAD_JUICE
+        )
+    return int(bet.get("market_odds") or DEFAULT_SPREAD_JUICE)
 
 
 def _parse_date_label(value: str) -> date:
@@ -57,35 +81,12 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
     """Log recommended bets from the daily slate (edge >= MIN_RECOMMENDED_EDGE)."""
     date_label = slate.get("date_label") or date.today().isoformat()
     now = datetime.now(timezone.utc).isoformat()
-    index = {_bet_key(b["date"], b["event_id"], b["side"]): b for b in store["bets"]}
-
-    seen: set[str] = set()
-    picks: list[dict[str, Any]] = []
+    index = {
+        _bet_key(b["date"], b["event_id"], b["side"], b.get("bet_type") or "moneyline"): b
+        for b in store["bets"]
+    }
 
     for pick in slate.get("recommended_bets") or []:
-        if (pick.get("edge") or 0) >= MIN_RECOMMENDED_EDGE:
-            picks.append(pick)
-
-    for game in slate.get("games") or []:
-        for pick in game.get("recommendations") or []:
-            if (pick.get("edge") or 0) < MIN_RECOMMENDED_EDGE:
-                continue
-            enriched = {
-                **pick,
-                "league": game["league"],
-                "league_name": game["league_name"],
-                "event_id": game["event_id"],
-                "matchup": (
-                    f"{game['matchup']['away']['name']} @ {game['matchup']['home']['name']}"
-                ),
-                "start_time": game.get("start_time"),
-            }
-            key = f"{enriched['event_id']}:{enriched['side']}"
-            if key not in seen:
-                picks.append(enriched)
-                seen.add(key)
-
-    for pick in picks:
         if (pick.get("edge") or 0) < MIN_RECOMMENDED_EDGE:
             continue
         event_id = pick.get("event_id")
@@ -93,7 +94,8 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
         if not event_id or not side:
             continue
 
-        key = _bet_key(date_label, event_id, side)
+        bet_type = pick.get("bet_type") or "moneyline"
+        key = _bet_key(date_label, event_id, side, bet_type)
         existing = index.get(key)
         if existing:
             existing.update(
@@ -108,6 +110,13 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
                     "reason": pick.get("reason"),
                     "team_name": pick.get("team_name"),
                     "team_slug": pick.get("team_slug"),
+                    "bet_type": bet_type,
+                    "spread_line": pick.get("spread_line"),
+                    "spread_odds": pick.get("spread_odds"),
+                    "consensus_spread": pick.get("consensus_spread"),
+                    "consensus_odds": pick.get("consensus_odds"),
+                    "consensus_label": pick.get("consensus_label"),
+                    "model_margin": pick.get("model_margin"),
                 }
             )
             continue
@@ -131,6 +140,13 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
             "market_odds": pick.get("market_odds"),
             "win_probability": pick.get("win_probability"),
             "reason": pick.get("reason"),
+            "bet_type": bet_type,
+            "spread_line": pick.get("spread_line"),
+            "spread_odds": pick.get("spread_odds"),
+            "consensus_spread": pick.get("consensus_spread"),
+            "consensus_odds": pick.get("consensus_odds"),
+            "consensus_label": pick.get("consensus_label"),
+            "model_margin": pick.get("model_margin"),
             "status": "pending",
             "units": 0.0,
             "stake_units": 1.0,
@@ -191,20 +207,45 @@ def _fetch_results_by_event(league: str, on_date: date) -> dict[str, tuple[int, 
     return results
 
 
+def _grade_spread_bet(
+    side: str,
+    spread: float,
+    away_score: int,
+    home_score: int,
+) -> BetResult:
+    if side == "home":
+        adjusted = home_score + spread
+        if adjusted == away_score:
+            return "push"
+        return "win" if adjusted > away_score else "loss"
+
+    adjusted = away_score + spread
+    if adjusted == home_score:
+        return "push"
+    return "win" if adjusted > home_score else "loss"
+
+
 def grade_bet(
     bet: dict[str, Any],
     away_score: int,
     home_score: int,
 ) -> dict[str, Any]:
+    bet_type = bet.get("bet_type") or "moneyline"
     side = bet["side"]
-    if away_score == home_score:
+
+    if bet_type == "spread":
+        spread = _grading_spread_line(bet)
+        if spread is None:
+            return bet
+        status = _grade_spread_bet(side, spread, away_score, home_score)
+    elif away_score == home_score:
         status: BetResult = "push"
     elif side == "away":
         status = "win" if away_score > home_score else "loss"
     else:
         status = "win" if home_score > away_score else "loss"
 
-    odds = int(bet.get("market_odds") or -110)
+    odds = _resolve_grading_odds(bet)
     units = calculate_units(float(bet.get("stake_units") or 1), odds, status)
     return {
         **bet,
@@ -333,7 +374,8 @@ def build_tracking_response(store: dict[str, Any]) -> dict[str, Any]:
         "last_updated": datetime.now(timezone.utc).isoformat(),
         "note": (
             f"Tracks algo bets with +{MIN_RECOMMENDED_EDGE} edge or higher from each daily slate. "
-            "Graded at closing moneyline odds; 1u flat stake."
+            "Basketball/football spread bets graded ATS at consensus book spread; "
+            "other sports at closing moneyline. 1u flat stake."
         ),
     }
 
