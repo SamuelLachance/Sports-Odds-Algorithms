@@ -326,7 +326,7 @@ def list_leagues_metadata() -> list[dict[str, str]]:
                 "name": profile["name"],
                 "category": profile["category"],
                 "description": (
-                    f"Live ESPN data · Algo V2 ({algo.upper()} profile)"
+                    f"Live ESPN data · Unified model (Algo V2 + power ratings, {algo.upper()} profile)"
                 ),
             }
         )

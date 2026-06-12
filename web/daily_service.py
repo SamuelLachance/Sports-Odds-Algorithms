@@ -21,6 +21,7 @@ from web.bet_advisor import (  # noqa: E402
     soccer_model_moneylines,
     soccer_threeway_probs,
 )
+from web.blend_service import blend_predictions  # noqa: E402
 from web.espn_client import (  # noqa: E402
     ScheduledGame,
     current_season_year,
@@ -101,20 +102,22 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
         returned_home = odds_calculator.analyze2(home, away, data_home, "home")
         algo_data = algo.calculate_V2(cutoff, returned_away, returned_home)
 
-    total = float(algo_data["total"])
-    win_probability = abs(total)
-    favorite_side = "home" if total < 0 else "away"
-    away_proj, home_proj = model_moneylines(total)
+    legacy_total = float(algo_data["total"])
+    legacy_win_probability = abs(legacy_total)
 
-    model_payload: dict[str, Any] = {
-        "algorithm": "Algo_V2",
-        "favorite_side": favorite_side,
-        "win_probability": round(win_probability, 2),
-        "total_score": total,
-        "away_projection": away_proj,
-        "home_projection": home_proj,
-        "factors": [],
-    }
+    blended = blend_predictions(
+        legacy_total_score=legacy_total,
+        legacy_win_probability=legacy_win_probability,
+        league=game.league,
+        cutoff_date=cutoff,
+        home_abbr=home[0],
+        away_abbr=away[0],
+    )
+
+    total = float(blended["total_score"])
+    win_probability = float(blended["win_probability"])
+    favorite_side = blended["favorite_side"]
+    away_proj, home_proj = model_moneylines(total)
 
     factors = []
     for key, label in FACTOR_LABELS.items():
@@ -130,7 +133,12 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             }
         )
 
-    model_payload["factors"] = factors
+    model_payload: dict[str, Any] = {
+        **blended,
+        "away_projection": away_proj,
+        "home_projection": home_proj,
+        "factors": factors,
+    }
 
     if uses_spread_bets(game.league):
         picks = evaluate_spread_picks(

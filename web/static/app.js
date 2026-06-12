@@ -173,6 +173,26 @@ function pickCard(pick, extra = "") {
   </article>`;
 }
 
+function algoBreakdown(m) {
+  if (!m) return "";
+  const legacy = m.legacy;
+  const power = m.power;
+  if (!legacy && !power) return "";
+  const parts = [];
+  if (legacy) {
+    parts.push(`Legacy V2: ${legacy.win_probability}% (${legacy.favorite_side})`);
+  }
+  if (power) {
+    parts.push(`Power: ${power.home_win_probability}% home (${power.home_power} vs ${power.away_power})`);
+  }
+  if (m.blend_mode === "legacy_only" && m.blend_note) {
+    parts.push(m.blend_note);
+  }
+  return parts.length
+    ? `<div class="algo-blend panel-sub"><span class="blend-label">Model blend</span><small>${parts.join(" · ")}</small></div>`
+    : "";
+}
+
 function algoCenter(game) {
   const m = game.model;
   const mk = game.market;
@@ -181,9 +201,10 @@ function algoCenter(game) {
   const fav = m.favorite_side === "home" ? home.name : away.name;
   const top = game.top_pick;
   const isSoccer = Boolean(m.threeway);
+  const algoLabel = m.algorithm === "Unified" ? "Unified model" : "Algo V2 win probability";
   const probBlock = isSoccer
     ? `<div class="algo-probability">
-        <span>3-way model probabilities</span>
+        <span>3-way unified probabilities</span>
         <div class="odds-row game-odds threeway-probs">
           <div class="odds-chip"><span>${away.name}</span><strong>${m.away_win_probability ?? "—"}%</strong><small>Model ${formatOdds(m.away_projection)}</small></div>
           <div class="odds-chip"><span>Draw</span><strong>${m.draw_probability ?? "—"}%</strong><small>Model ${formatOdds(m.draw_projection)}</small></div>
@@ -191,7 +212,7 @@ function algoCenter(game) {
         </div>
       </div>`
     : `<div class="algo-probability">
-        <span>Algo V2 win probability</span>
+        <span>${algoLabel}</span>
         <strong class="prob-value">${m.win_probability}%</strong>
         <small>Model favorite: ${fav}</small>
       </div>`;
@@ -215,6 +236,7 @@ function algoCenter(game) {
     </div>
     <div class="algo-core">
       ${probBlock}
+      ${algoBreakdown(m)}
       ${oddsRow}
     </div>
     ${top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong><span>${top.team_name} · ${pickMarketLabel(top)} vs model ${pickModelLabel(top)} (+${top.edge})</span><p>${top.reason}</p></div>` : `<div class="game-pick neutral"><strong>No value flag</strong><span>Model leans ${fav}; lines do not beat model price today.</span></div>`}
@@ -228,7 +250,7 @@ function viewDashboard() {
   appRoot.innerHTML = `
     <section class="page-head page-head-lean">
       <h1>Today's algo picks</h1>
-      <p>Algo V2 value bets with +100 edge or higher. Browse <a class="text-link" href="#/games">games</a>, <a class="text-link" href="#/teams">teams</a>, or <a class="text-link" href="#/tracking">tracking</a>.</p>
+      <p>Unified model (Algo V2 + power ratings) value bets with +100 edge or higher. Browse <a class="text-link" href="#/games">games</a>, <a class="text-link" href="#/teams">teams</a>, or <a class="text-link" href="#/tracking">tracking</a>.</p>
     </section>
     <div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : '<div class="panel empty-panel">No bets meet the +100 minimum edge threshold today.</div>'}</div>`;
 }
@@ -255,7 +277,7 @@ function renderTrackingSummary() {
 
 function viewPicks() {
   const picks = state.slate?.recommended_bets || [];
-  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p>Only bets with +100 edge or higher vs Algo V2 fair prices.</p></section>
+  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p>Only bets with +100 edge or higher vs the unified fair prices.</p></section>
     <div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : '<div class="panel empty-panel">No bets meet the +100 minimum edge threshold today.</div>'}</div>`;
 }
 
@@ -275,7 +297,7 @@ function gameListCard(game) {
   const fav = m.favorite_side === "home" ? home.name : away.name;
   return `<article class="game-card panel clickable" data-game="${game.event_id}">
     <div class="game-head"><div><span class="league-pill">${game.league_name}</span><h3>${away.name} @ ${home.name}</h3><p class="game-meta">${formatTime(game.start_time)}</p></div>
-    <div class="win-chip"><span>Algo</span><strong>${fav}</strong><small>${m.win_probability}%</small></div></div>
+    <div class="win-chip"><span>Unified</span><strong>${fav}</strong><small>${m.win_probability}%</small></div></div>
     <a class="btn btn-secondary btn-sm" href="#/game/${game.event_id}">Open algo breakdown →</a>
   </article>`;
 }
