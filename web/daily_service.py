@@ -261,7 +261,19 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
                 }
             )
 
-    recommendations.sort(key=lambda item: item.get("edge", 0), reverse=True)
+    best_by_event: dict[str, dict[str, Any]] = {}
+    for rec in recommendations:
+        event_id = rec.get("event_id") or ""
+        if not event_id:
+            continue
+        current = best_by_event.get(event_id)
+        if current is None or rec.get("edge", 0) > current.get("edge", 0):
+            best_by_event[event_id] = rec
+    recommendations = sorted(
+        best_by_event.values(),
+        key=lambda item: item.get("edge", 0),
+        reverse=True,
+    )
 
     return {
         "generated_at": generated_at,

@@ -60,10 +60,32 @@ def test_evaluate_soccer_picks_includes_draw() -> None:
         home_market=home_ml + 80,
     )
     assert picks
-    sides = {pick.side for pick in picks}
-    assert "draw" in sides or "home" in sides or "away" in sides
-    assert all(pick.edge >= MIN_RECOMMENDED_EDGE for pick in picks)
-    assert all(pick.bet_type == "moneyline" for pick in picks)
+    assert len(picks) == 1
+    assert picks[0].edge >= MIN_RECOMMENDED_EDGE
+    assert picks[0].bet_type == "moneyline"
+
+
+def test_evaluate_soccer_picks_single_best_when_multiple_qualify() -> None:
+    home, draw, away = soccer_threeway_probs(-52.0, "epl")
+    away_ml, draw_ml, home_ml = soccer_model_moneylines(home, draw, away)
+    picks = evaluate_soccer_picks(
+        away_name="Arsenal",
+        home_name="Chelsea",
+        away_slug="arsenal",
+        home_slug="chelsea",
+        total_score=-52.0,
+        home_prob=home,
+        draw_prob=draw,
+        away_prob=away,
+        away_proj=away_ml,
+        draw_proj=draw_ml,
+        home_proj=home_ml,
+        away_market=away_ml + 120,
+        draw_market=draw_ml + 90,
+        home_market=home_ml + 60,
+    )
+    assert len(picks) == 1
+    assert picks[0].side == "away"
 
 
 def test_extract_draw_moneyline_from_espn_shape() -> None:
@@ -83,5 +105,6 @@ if __name__ == "__main__":
     test_closer_matchups_raise_draw_probability()
     test_soccer_model_moneylines_from_probs()
     test_evaluate_soccer_picks_includes_draw()
+    test_evaluate_soccer_picks_single_best_when_multiple_qualify()
     test_extract_draw_moneyline_from_espn_shape()
     print("test_soccer_threeway.py: all tests passed")

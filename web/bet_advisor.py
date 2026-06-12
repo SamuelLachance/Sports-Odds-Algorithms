@@ -143,6 +143,13 @@ def _format_spread(value: float) -> str:
     return f"{value:+.1f}".replace(".0", "")
 
 
+def best_pick_only(picks: list[BetPick]) -> list[BetPick]:
+    """Return at most one pick per event (highest edge)."""
+    if not picks:
+        return []
+    return [picks[0]]
+
+
 def evaluate_picks(
     *,
     away_name: str,
@@ -220,7 +227,7 @@ def evaluate_picks(
         )
 
     picks.sort(key=lambda item: item.edge, reverse=True)
-    return picks
+    return best_pick_only(picks)
 
 
 def evaluate_soccer_picks(
@@ -308,7 +315,7 @@ def evaluate_soccer_picks(
         )
 
     picks.sort(key=lambda item: item.edge, reverse=True)
-    return picks
+    return best_pick_only(picks)
 
 
 def evaluate_spread_picks(
@@ -385,7 +392,7 @@ def evaluate_spread_picks(
         )
 
     picks.sort(key=lambda item: item.edge, reverse=True)
-    return picks
+    return best_pick_only(picks)
 
 
 def pick_to_dict(pick: BetPick) -> dict[str, Any]:
