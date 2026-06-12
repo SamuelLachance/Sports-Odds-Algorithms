@@ -108,7 +108,7 @@ def build_power_ratings(
 
 def fit_logistic_param(games: list[PowerGame]) -> float | None:
     """Fit sigmoid scale param via log-loss minimization (no scipy)."""
-    if len(games) < 5:
+    if len(games) < 3:
         return None
 
     xpoints: list[float] = []
@@ -183,7 +183,7 @@ def predict_matchup(
     away = teams.get(away_key)
     if not home or not away or param is None:
         return None
-    if len(home.games) < 3 or len(away.games) < 3:
+    if not home.games or not away.games:
         return None
 
     home_win_prob = calc_home_win_probability(home.power, away.power, param)

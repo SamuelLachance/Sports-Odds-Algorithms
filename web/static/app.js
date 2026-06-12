@@ -177,15 +177,28 @@ function algoBreakdown(m) {
   if (!m) return "";
   const legacy = m.legacy;
   const power = m.power;
-  if (!legacy && !power) return "";
+  const basketball = m.basketball_pred;
+  if (!legacy && !power && !basketball) return "";
   const parts = [];
+  const layerTag =
+    m.blend_layers === 3 ? "3-layer" : m.blend_layers === 2 ? "2-layer" : "";
+  if (layerTag) {
+    parts.push(layerTag);
+  }
   if (legacy) {
     parts.push(`Legacy V2: ${legacy.win_probability}% (${legacy.favorite_side})`);
   }
   if (power) {
     parts.push(`Power: ${power.home_win_probability}% home (${power.home_power} vs ${power.away_power})`);
   }
-  if (m.blend_mode === "legacy_only" && m.blend_note) {
+  if (basketball) {
+    const margin =
+      basketball.predicted_margin != null
+        ? ` margin ${basketball.predicted_margin}`
+        : "";
+    parts.push(`Matrix: ${basketball.home_win_probability}% home${margin}`);
+  }
+  if (m.blend_note) {
     parts.push(m.blend_note);
   }
   return parts.length

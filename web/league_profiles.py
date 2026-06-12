@@ -87,6 +87,19 @@ DEMO_SEASONS: dict[str, str] = {
 # Matches the algo's last-10-games window; prior season is prepended only when below this threshold.
 MIN_GAMES_FOR_MODEL = 10
 
+# Minimum league-wide completed games before power ratings + logistic blend can run.
+MIN_GAMES_FOR_POWER = 5
+
+# Leagues with very large ESPN rosters — use scoreboard walks instead of per-team schedules.
+LARGE_ROSTER_LEAGUES: tuple[str, ...] = ("cbb", "cfb")
+
+# Days of scoreboard history to scan when collecting completed games.
+POWER_SCOREBOARD_LOOKBACK: dict[str, int] = {
+    "cbb": 150,
+    "cfb": 120,
+    "default": 365,
+}
+
 # Minimum American-odds edge vs model before a bet is recommended or tracked.
 MIN_RECOMMENDED_EDGE = 100
 

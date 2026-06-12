@@ -80,7 +80,11 @@ def _event_before_cutoff(event: dict[str, Any], cutoff: datetime) -> bool:
 
 
 def _score_value(comp: dict[str, Any]) -> int:
-    raw = (comp.get("score") or {}).get("value")
+    score = comp.get("score")
+    if isinstance(score, dict):
+        raw = score.get("value")
+    else:
+        raw = score
     try:
         return int(raw)
     except (TypeError, ValueError):

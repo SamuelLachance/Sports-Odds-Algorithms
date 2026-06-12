@@ -22,6 +22,7 @@ from web.bet_advisor import (  # noqa: E402
     soccer_threeway_probs,
 )
 from web.blend_service import blend_predictions  # noqa: E402
+from web.season_games import prewarm_league_power  # noqa: E402
 from web.espn_client import (  # noqa: E402
     ScheduledGame,
     current_season_year,
@@ -112,6 +113,8 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
         cutoff_date=cutoff,
         home_abbr=home[0],
         away_abbr=away[0],
+        home_name=game.home_name,
+        away_name=game.away_name,
     )
 
     total = float(blended["total_score"])
@@ -238,6 +241,22 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
         except Exception as exc:  # noqa: BLE001
             errors.append({"league": league, "error": str(exc)})
             continue
+
+        power_cutoffs = {
+            _today_cutoff(game)
+            for game in scheduled
+            if game.status not in {"in", "post"} and _is_actionable_soon(game)
+        }
+        for cutoff in power_cutoffs:
+            try:
+                prewarm_league_power(league, cutoff)
+            except Exception as exc:  # noqa: BLE001
+                errors.append(
+                    {
+                        "league": league,
+                        "error": f"Power prewarm failed ({cutoff}): {exc}",
+                    }
+                )
 
         for game in scheduled:
             if game.status in {"in", "post"}:

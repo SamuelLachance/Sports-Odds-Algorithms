@@ -4,8 +4,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from web.power_model import predict_matchup
-from web.season_games import get_league_power_context
+from web.live_data import resolve_team
+from web.power_model import PowerTeam, predict_matchup
+from web.season_games import get_league_power_context, power_unavailable_reason
 
 LEGACY_BLEND_WEIGHT = 0.5
 POWER_BLEND_WEIGHT = 0.5
@@ -26,11 +27,40 @@ def home_win_prob_to_total_score(home_win_prob: float) -> tuple[float, float]:
     return away_prob, away_prob
 
 
+def _find_team_key(
+    teams: dict[str, PowerTeam],
+    league: str,
+    abbr: str,
+    display_name: str | None = None,
+) -> str | None:
+    """Resolve registry/ESPN abbreviations to power-rating team keys."""
+    candidates: list[str] = []
+    resolved = resolve_team(league, abbr, display_name)
+    if resolved:
+        candidates.append(resolved[0].lower())
+    candidates.append(abbr.lower())
+
+    for key in candidates:
+        if key in teams:
+            return key
+
+    if display_name:
+        target = display_name.lower()
+        for key, team in teams.items():
+            if team.name.lower() == target:
+                return key
+
+    return None
+
+
 def run_power_model(
     league: str,
     cutoff_date: str,
     home_abbr: str,
     away_abbr: str,
+    *,
+    home_name: str | None = None,
+    away_name: str | None = None,
 ) -> dict[str, Any] | None:
     """Run power ratings for a matchup; None if insufficient data."""
     context = get_league_power_context(league, cutoff_date)
@@ -38,8 +68,10 @@ def run_power_model(
         return None
 
     teams, _games, param = context
-    home_key = home_abbr.lower()
-    away_key = away_abbr.lower()
+    home_key = _find_team_key(teams, league, home_abbr, home_name)
+    away_key = _find_team_key(teams, league, away_abbr, away_name)
+    if not home_key or not away_key:
+        return None
 
     prediction = predict_matchup(teams, param, home_key, away_key)
     if not prediction:
@@ -65,6 +97,8 @@ def blend_predictions(
     cutoff_date: str,
     home_abbr: str,
     away_abbr: str,
+    home_name: str | None = None,
+    away_name: str | None = None,
     legacy_weight: float = LEGACY_BLEND_WEIGHT,
     power_weight: float = POWER_BLEND_WEIGHT,
 ) -> dict[str, Any]:
@@ -80,15 +114,23 @@ def blend_predictions(
         "favorite_side": "home" if legacy_total_score < 0 else "away",
     }
 
-    power_payload = run_power_model(league, cutoff_date, home_abbr, away_abbr)
+    power_payload = run_power_model(
+        league,
+        cutoff_date,
+        home_abbr,
+        away_abbr,
+        home_name=home_name,
+        away_name=away_name,
+    )
 
     if not power_payload:
         total = legacy_total_score
         win_prob = legacy_win_probability
+        reason = power_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
         return {
             "algorithm": "Unified",
             "blend_mode": "legacy_only",
-            "blend_note": "Power model unavailable — using Algo V2 only.",
+            "blend_note": f"Power model unavailable — {reason} Using Algo V2 only.",
             "legacy": legacy_payload,
             "power": None,
             "total_score": round(total, 2),
