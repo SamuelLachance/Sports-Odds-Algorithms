@@ -248,6 +248,7 @@ def evaluate_picks(
     win_probability: float,
     away_market: int | None,
     home_market: int | None,
+    min_edge: float = MIN_RECOMMENDED_EDGE,
 ) -> list[BetPick]:
     away_proj, home_proj = model_moneylines(total_score)
     away_prob, home_prob = _side_win_probs(total_score)
@@ -266,7 +267,7 @@ def evaluate_picks(
         is_model_favorite = projection < 0
         is_market_underdog = market > 0
 
-        if edge < MIN_RECOMMENDED_EDGE:
+        if edge < min_edge:
             continue
 
         strategy, confidence, reason = _moneyline_reason(
@@ -318,6 +319,7 @@ def evaluate_soccer_picks(
     away_market: int | None,
     draw_market: int | None,
     home_market: int | None,
+    min_edge: float = MIN_RECOMMENDED_EDGE,
 ) -> list[BetPick]:
     """Evaluate 3-way soccer moneyline outcomes vs the book."""
     picks: list[BetPick] = []
@@ -336,7 +338,7 @@ def evaluate_soccer_picks(
         is_model_favorite = projection < 0
         is_market_underdog = market > 0
 
-        if edge < MIN_RECOMMENDED_EDGE:
+        if edge < min_edge:
             continue
 
         outcome_label = "Draw" if side == "draw" else name
@@ -386,6 +388,7 @@ def evaluate_spread_picks(
     consensus_spread: float | None,
     away_spread_odds: int | None = None,
     home_spread_odds: int | None = None,
+    min_edge: float = MIN_RECOMMENDED_EDGE,
 ) -> list[BetPick]:
     """Recommend spread bets when model margin beats the consensus book line."""
     if consensus_spread is None:
@@ -402,7 +405,7 @@ def evaluate_spread_picks(
     for side, name, slug, spread_odds in candidates:
         point_edge = spread_point_edge(model_margin, consensus_spread, side)
         edge = spread_edge_from_points(point_edge)
-        if edge < MIN_RECOMMENDED_EDGE:
+        if edge < min_edge:
             continue
 
         line = spread_line_for_side(consensus_spread, side)

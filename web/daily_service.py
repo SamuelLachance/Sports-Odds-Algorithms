@@ -146,7 +146,24 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             }
         )
 
-    model_agreement = compute_model_agreement(blended, game.league)
+    market_payload = {
+        "away_moneyline": game.market.away_moneyline,
+        "home_moneyline": game.market.home_moneyline,
+        "draw_moneyline": game.market.draw_moneyline,
+        "spread": game.market.spread,
+    }
+    model_agreement = compute_model_agreement(
+        blended, game.league, market=market_payload
+    )
+    value_agreed = (
+        model_agreement.get("required") == 3 and model_agreement.get("agreed")
+    )
+    pick_min_edge = 0.0 if value_agreed else MIN_RECOMMENDED_EDGE
+    value_sides = set(
+        model_agreement.get("value_sides")
+        or model_agreement.get("value_outcomes")
+        or []
+    )
 
     model_payload: dict[str, Any] = {
         **blended,
@@ -168,6 +185,7 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             consensus_spread=game.market.spread,
             away_spread_odds=game.market.away_spread_odds,
             home_spread_odds=game.market.home_spread_odds,
+            min_edge=pick_min_edge,
         )
     elif is_soccer_league(game.league):
         if blended.get("threeway"):
@@ -211,6 +229,7 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             away_market=game.market.away_moneyline,
             draw_market=game.market.draw_moneyline,
             home_market=game.market.home_moneyline,
+            min_edge=pick_min_edge,
         )
     else:
         picks = evaluate_picks(
@@ -222,10 +241,14 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             win_probability=win_probability,
             away_market=game.market.away_moneyline,
             home_market=game.market.home_moneyline,
+            min_edge=pick_min_edge,
         )
 
     if model_agreement.get("required") == 3 and not model_agreement.get("agreed"):
         picks = []
+    elif value_agreed and value_sides:
+        picks = [pick for pick in picks if pick.side in value_sides]
+        picks = picks[:1] if picks else []
 
     return {
         "event_id": game.event_id,
@@ -353,26 +376,39 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
         current = best_by_event.get(event_id)
         if current is None or rec.get("edge", 0) > current.get("edge", 0):
             best_by_event[event_id] = rec
+    def _meets_recommendation_threshold(game: dict[str, Any], rec: dict[str, Any]) -> bool:
+        edge = rec.get("edge", 0)
+        agreement = (game.get("model") or {}).get("model_agreement") or {}
+        if agreement.get("required") == 3 and agreement.get("agreed"):
+            value_sides = set(
+                agreement.get("value_sides") or agreement.get("value_outcomes") or []
+            )
+            return edge > 0 and rec.get("side") in value_sides
+        return edge >= MIN_RECOMMENDED_EDGE
+
+    games_by_event = {game["event_id"]: game for game in all_games}
     recommendations = sorted(
         best_by_event.values(),
         key=lambda item: item.get("edge", 0),
         reverse=True,
     )
 
+    qualifying = [
+        r
+        for r in recommendations
+        if _meets_recommendation_threshold(games_by_event.get(r.get("event_id", ""), {}), r)
+    ]
+
     return {
         "generated_at": generated_at,
         "date_label": date.today().isoformat(),
         "summary": {
             "games_analyzed": len(all_games),
-            "recommended_bets": len(
-                [r for r in recommendations if r.get("edge", 0) >= MIN_RECOMMENDED_EDGE]
-            ),
+            "recommended_bets": len(qualifying),
             "min_edge": MIN_RECOMMENDED_EDGE,
             "leagues": list({game["league"] for game in all_games}),
         },
-        "recommended_bets": [
-            r for r in recommendations if r.get("edge", 0) >= MIN_RECOMMENDED_EDGE
-        ][:20],
+        "recommended_bets": qualifying[:20],
         "min_recommended_edge": MIN_RECOMMENDED_EDGE,
         "games": all_games,
         "errors": errors,

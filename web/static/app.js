@@ -705,7 +705,7 @@ function viewWorldCup(subPath) {
         <div class="rollup-card panel"><h4>Group stage</h4><strong class="rollup-record">${summary.group_stage_matches ?? 72}</strong><span>72 matches · 12 groups</span></div>
       </div>
       <section class="section"><div class="section-head"><h2>Recommended World Cup bets</h2></div>
-      <div class="picks-grid">${recs.length ? recs.map((p) => pickCard({ ...p, league_name: "FIFA World Cup" })).join("") : '<div class="panel empty-panel">No World Cup bets meet model agreement and edge thresholds right now.</div>'}</div></section>
+      <div class="picks-grid">${recs.length ? recs.map((p) => pickCard({ ...p, league_name: "FIFA World Cup" })).join("") : '<div class="panel empty-panel">No World Cup bets where all 3 layers find value right now.</div>'}</div></section>
       <section class="section"><div class="section-head"><h2>Latest results & upcoming</h2></div>
       <div class="wc-all-matches">${(hub.matches || []).slice(0, 12).map((m) => wcMatchCard(m)).join("")}</div></section>`;
   }

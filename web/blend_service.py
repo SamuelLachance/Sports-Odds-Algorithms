@@ -13,8 +13,15 @@ from web.basketball_pred_model import (
     is_basketball_league,
     run_basketball_pred_model,
 )
-from web.bet_advisor import soccer_threeway_probs
-from web.league_profiles import is_soccer_league
+from web.bet_advisor import (
+    _odds_edge,
+    model_home_margin,
+    model_moneylines,
+    soccer_model_moneylines,
+    soccer_threeway_probs,
+    spread_point_edge,
+)
+from web.league_profiles import is_soccer_league, uses_spread_bets
 from web.live_data import resolve_team
 from web.power_model import PowerTeam, predict_matchup
 from web.season_games import get_league_power_context, power_unavailable_reason
@@ -202,6 +209,144 @@ def _best_threeway_outcome(home: float, draw: float, away: float) -> str:
     return max(outcomes, key=outcomes.get)
 
 
+def _layer_binary_total_score(layer: dict[str, Any]) -> float | None:
+    if layer.get("total_score") is not None:
+        return float(layer["total_score"])
+    if layer.get("home_win_probability") is not None:
+        total, _ = home_win_prob_to_total_score(float(layer["home_win_probability"]))
+        return total
+    return None
+
+
+def _layer_side_win_probs(total_score: float) -> tuple[float, float]:
+    win_prob = abs(total_score)
+    home_is_favorite = total_score <= 0
+    home_prob = win_prob if home_is_favorite else 100.0 - win_prob
+    away_prob = 100.0 - home_prob
+    return away_prob, home_prob
+
+
+def _best_value_side_binary(
+    total_score: float,
+    away_market: int | None,
+    home_market: int | None,
+) -> str | None:
+    away_prob, home_prob = _layer_side_win_probs(total_score)
+    away_proj, home_proj = model_moneylines(total_score)
+    edges: list[tuple[str, float]] = []
+    if away_market is not None:
+        edge = _odds_edge(away_proj, away_market, away_prob)
+        if edge > 0:
+            edges.append(("away", edge))
+    if home_market is not None:
+        edge = _odds_edge(home_proj, home_market, home_prob)
+        if edge > 0:
+            edges.append(("home", edge))
+    if not edges:
+        return None
+    return max(edges, key=lambda item: item[1])[0]
+
+
+def _best_value_outcome_threeway(
+    home_prob: float,
+    draw_prob: float,
+    away_prob: float,
+    away_market: int | None,
+    draw_market: int | None,
+    home_market: int | None,
+) -> str | None:
+    away_proj, draw_proj, home_proj = soccer_model_moneylines(
+        home_prob, draw_prob, away_prob
+    )
+    edges: list[tuple[str, float]] = []
+    for side, prob, proj, market in (
+        ("away", away_prob, away_proj, away_market),
+        ("draw", draw_prob, draw_proj, draw_market),
+        ("home", home_prob, home_proj, home_market),
+    ):
+        if market is None:
+            continue
+        edge = _odds_edge(proj, market, prob)
+        if edge > 0:
+            edges.append((side, edge))
+    if not edges:
+        return None
+    return max(edges, key=lambda item: item[1])[0]
+
+
+def _layer_has_value_on_side_binary(
+    total_score: float,
+    side: str,
+    away_market: int | None,
+    home_market: int | None,
+) -> bool:
+    away_prob, home_prob = _layer_side_win_probs(total_score)
+    away_proj, home_proj = model_moneylines(total_score)
+    if side == "away":
+        return (
+            away_market is not None
+            and _odds_edge(away_proj, away_market, away_prob) > 0
+        )
+    return (
+        home_market is not None
+        and _odds_edge(home_proj, home_market, home_prob) > 0
+    )
+
+
+def _layer_has_value_on_outcome_threeway(
+    home_prob: float,
+    draw_prob: float,
+    away_prob: float,
+    outcome: str,
+    away_market: int | None,
+    draw_market: int | None,
+    home_market: int | None,
+) -> bool:
+    away_proj, draw_proj, home_proj = soccer_model_moneylines(
+        home_prob, draw_prob, away_prob
+    )
+    if outcome == "away":
+        return (
+            away_market is not None
+            and _odds_edge(away_proj, away_market, away_prob) > 0
+        )
+    if outcome == "draw":
+        return (
+            draw_market is not None
+            and _odds_edge(draw_proj, draw_market, draw_prob) > 0
+        )
+    return (
+        home_market is not None
+        and _odds_edge(home_proj, home_market, home_prob) > 0
+    )
+
+
+def _layer_has_spread_value_on_side(
+    total_score: float,
+    league: str,
+    side: str,
+    consensus_spread: float,
+) -> bool:
+    margin = model_home_margin(total_score, league)
+    return spread_point_edge(margin, consensus_spread, side) > 0
+
+
+def _best_value_spread_side(
+    total_score: float,
+    league: str,
+    consensus_spread: float,
+) -> str | None:
+    margin = model_home_margin(total_score, league)
+    edges: list[tuple[str, float]] = []
+    for side in ("away", "home"):
+        point_edge = spread_point_edge(margin, consensus_spread, side)
+        if point_edge > 0:
+            edges.append((side, point_edge))
+    if not edges:
+        return None
+    return max(edges, key=lambda item: item[1])[0]
+
+
 def _third_layer_key(blended: dict[str, Any]) -> str | None:
     for key in ("basketball_pred", "baseball_pred", "soccer_pred"):
         if blended.get(key):
@@ -210,86 +355,187 @@ def _third_layer_key(blended: dict[str, Any]) -> str | None:
 
 
 def compute_model_agreement(
-    blended: dict[str, Any], league: str
+    blended: dict[str, Any],
+    league: str,
+    *,
+    market: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """
-    For 3-layer leagues, all layers must be present and agree before recommending.
+    For 3-layer leagues, all layers must independently find value on the same side.
 
-    Soccer: highest-probability outcome (home/draw/away) must match across layers.
-    Other 3-layer sports: legacy, power, and third-layer favorite_side must match.
+    Soccer: home/draw/away — each layer needs edge > 0 vs market on one shared outcome.
+    Spread leagues: each layer needs spread_point_edge > 0 on one shared side.
+    Other 3-layer sports: each layer needs moneyline edge > 0 on one shared side.
     """
     if not requires_three_layer_agreement(league):
-        return {"required": 0, "agreed": True}
+        return {"required": 0, "agreed": True, "agreement_mode": "value"}
 
     legacy = blended.get("legacy")
     power = blended.get("power")
     third_key = _third_layer_key(blended)
     third_payload = blended.get(third_key) if third_key else None
+    market = market or {}
 
-    if not legacy or not power or not third_payload or blended.get("blend_layers", 0) < 3:
+    away_market = market.get("away_moneyline")
+    home_market = market.get("home_moneyline")
+    draw_market = market.get("draw_moneyline")
+    consensus_spread = market.get("spread")
+    use_spread = uses_spread_bets(league) and consensus_spread is not None
+
+    def _incomplete_payload() -> dict[str, Any]:
+        legacy_total = _layer_binary_total_score(legacy) if legacy else None
+        power_total = _layer_binary_total_score(power) if power else None
+        third_total = (
+            _layer_binary_total_score(third_payload) if third_payload else None
+        )
+        if use_spread and consensus_spread is not None:
+            legacy_side = (
+                _best_value_spread_side(legacy_total, league, float(consensus_spread))
+                if legacy_total is not None
+                else None
+            )
+            power_side = (
+                _best_value_spread_side(power_total, league, float(consensus_spread))
+                if power_total is not None
+                else None
+            )
+            third_side = (
+                _best_value_spread_side(third_total, league, float(consensus_spread))
+                if third_total is not None
+                else None
+            )
+        else:
+            legacy_side = (
+                _best_value_side_binary(legacy_total, away_market, home_market)
+                if legacy_total is not None
+                else None
+            )
+            power_side = (
+                _best_value_side_binary(power_total, away_market, home_market)
+                if power_total is not None
+                else None
+            )
+            third_side = (
+                _best_value_side_binary(third_total, away_market, home_market)
+                if third_total is not None
+                else None
+            )
         return {
             "required": 3,
             "agreed": False,
-            "legacy_side": legacy.get("favorite_side") if legacy else None,
-            "power_side": (
-                _favorite_side_from_home_win_prob(float(power["home_win_probability"]))
-                if power and power.get("home_win_probability") is not None
-                else None
-            ),
-            "third_side": (
-                _favorite_side_from_home_win_prob(
-                    float(third_payload["home_win_probability"])
-                )
-                if third_payload and third_payload.get("home_win_probability") is not None
-                else None
-            ),
+            "legacy_side": legacy_side,
+            "power_side": power_side,
+            "third_side": third_side,
             "third_source": third_key,
+            "agreement_mode": "value",
+            "value_sides": [],
+            "value_outcomes": [],
         }
+
+    if not legacy or not power or not third_payload or blended.get("blend_layers", 0) < 3:
+        return _incomplete_payload()
 
     if is_soccer_league(league):
         legacy_tw = blended.get("legacy_threeway")
         power_tw = blended.get("power_threeway")
         if not legacy_tw or not power_tw:
-            return {
-                "required": 3,
-                "agreed": False,
-                "legacy_side": None,
-                "power_side": None,
-                "third_side": None,
-                "third_source": third_key,
-            }
-        legacy_side = _best_threeway_outcome(
+            return _incomplete_payload()
+
+        legacy_probs = (
             float(legacy_tw["home_win_probability"]),
             float(legacy_tw["draw_probability"]),
             float(legacy_tw["away_win_probability"]),
         )
-        power_side = _best_threeway_outcome(
+        power_probs = (
             float(power_tw["home_win_probability"]),
             float(power_tw["draw_probability"]),
             float(power_tw["away_win_probability"]),
         )
-        third_side = _best_threeway_outcome(
+        third_probs = (
             float(third_payload["home_win_probability"]),
             float(third_payload["draw_probability"]),
             float(third_payload["away_win_probability"]),
         )
-    else:
-        legacy_side = legacy["favorite_side"]
-        power_side = _favorite_side_from_home_win_prob(
-            float(power["home_win_probability"])
+        legacy_side = _best_value_outcome_threeway(
+            *legacy_probs, away_market, draw_market, home_market
         )
-        third_side = _favorite_side_from_home_win_prob(
-            float(third_payload["home_win_probability"])
+        power_side = _best_value_outcome_threeway(
+            *power_probs, away_market, draw_market, home_market
         )
+        third_side = _best_value_outcome_threeway(
+            *third_probs, away_market, draw_market, home_market
+        )
+        value_outcomes = [
+            outcome
+            for outcome in ("home", "draw", "away")
+            if _layer_has_value_on_outcome_threeway(
+                *legacy_probs, outcome, away_market, draw_market, home_market
+            )
+            and _layer_has_value_on_outcome_threeway(
+                *power_probs, outcome, away_market, draw_market, home_market
+            )
+            and _layer_has_value_on_outcome_threeway(
+                *third_probs, outcome, away_market, draw_market, home_market
+            )
+        ]
+        return {
+            "required": 3,
+            "agreed": bool(value_outcomes),
+            "legacy_side": legacy_side,
+            "power_side": power_side,
+            "third_side": third_side,
+            "third_source": third_key,
+            "agreement_mode": "value",
+            "value_outcomes": value_outcomes,
+            "value_sides": value_outcomes,
+        }
 
-    agreed = legacy_side == power_side == third_side
+    legacy_total = _layer_binary_total_score(legacy)
+    power_total = _layer_binary_total_score(power)
+    third_total = _layer_binary_total_score(third_payload)
+    if legacy_total is None or power_total is None or third_total is None:
+        return _incomplete_payload()
+
+    if use_spread:
+        spread_line = float(consensus_spread)
+        legacy_side = _best_value_spread_side(legacy_total, league, spread_line)
+        power_side = _best_value_spread_side(power_total, league, spread_line)
+        third_side = _best_value_spread_side(third_total, league, spread_line)
+        value_sides = [
+            side
+            for side in ("away", "home")
+            if _layer_has_spread_value_on_side(legacy_total, league, side, spread_line)
+            and _layer_has_spread_value_on_side(power_total, league, side, spread_line)
+            and _layer_has_spread_value_on_side(third_total, league, side, spread_line)
+        ]
+    else:
+        legacy_side = _best_value_side_binary(legacy_total, away_market, home_market)
+        power_side = _best_value_side_binary(power_total, away_market, home_market)
+        third_side = _best_value_side_binary(third_total, away_market, home_market)
+        value_sides = [
+            side
+            for side in ("away", "home")
+            if _layer_has_value_on_side_binary(
+                legacy_total, side, away_market, home_market
+            )
+            and _layer_has_value_on_side_binary(
+                power_total, side, away_market, home_market
+            )
+            and _layer_has_value_on_side_binary(
+                third_total, side, away_market, home_market
+            )
+        ]
+
     return {
         "required": 3,
-        "agreed": agreed,
+        "agreed": bool(value_sides),
         "legacy_side": legacy_side,
         "power_side": power_side,
         "third_side": third_side,
         "third_source": third_key,
+        "agreement_mode": "value",
+        "value_sides": value_sides,
+        "value_outcomes": value_sides,
     }
 
 
@@ -596,4 +842,4 @@ def blend_predictions(
         )
 
     return result
-
+
