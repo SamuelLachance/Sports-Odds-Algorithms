@@ -319,7 +319,9 @@ def get_world_cup_hub() -> dict[str, Any]:
                 pick = {**pred["top_pick"], "event_id": event_id, "start_time": start_time}
                 recommended.append(pick)
 
-    # Strip non-serializable scheduled_game from output
+    from web.wc_simulation import simulate_tournament
+
+    simulation = simulate_tournament(matches, predictions, predict_fn=_predict_match)
     for match in matches:
         match.pop("scheduled_game", None)
 
@@ -366,5 +368,6 @@ def get_world_cup_hub() -> dict[str, Any]:
         "matches": matches,
         "predictions": predictions,
         "recommended_bets": recommended,
+        "simulation": simulation,
         "errors": errors,
     }

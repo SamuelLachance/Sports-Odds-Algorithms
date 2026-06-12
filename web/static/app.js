@@ -650,6 +650,91 @@ function renderKnockoutBracket(hub) {
     .join("")}</div>`;
 }
 
+function wcSimProbChip(probs) {
+  if (!probs) return "";
+  return `<div class="wc-pred-chip"><span>Model 1X2</span><strong>${probs.home}% / ${probs.draw}% / ${probs.away}%</strong><small>H / D / A</small></div>`;
+}
+
+function wcSimMatchCard(match) {
+  const probs = match.model_probs;
+  const winnerBadge =
+    match.winner === "home"
+      ? `<span class="wc-sim-winner-badge">${match.home.name}</span>`
+      : match.winner === "away"
+        ? `<span class="wc-sim-winner-badge">${match.away.name}</span>`
+        : `<span class="wc-sim-winner-badge draw">Draw</span>`;
+  return `<article class="wc-match-card wc-sim-match panel">
+    <div class="wc-match-head">
+      <div>
+        <span class="league-pill">${match.round_label}${match.group ? ` · Group ${match.group}` : ""}</span>
+        <h4>${match.away.name} <span class="at">@</span> ${match.home.name}</h4>
+        ${match.resolved_from_placeholder ? '<p class="game-meta muted">Resolved from bracket placeholder</p>' : ""}
+      </div>
+      <div class="wc-score-block">
+        <span class="wc-score wc-sim-score">${match.scoreline}</span>
+        ${winnerBadge}
+      </div>
+    </div>
+    <div class="wc-match-foot">${wcSimProbChip(probs)}</div>
+  </article>`;
+}
+
+function renderSimulationTab(hub) {
+  const sim = hub.simulation;
+  if (!sim) {
+    return '<div class="panel empty-panel">Simulation data not available yet. Rebuild the World Cup hub.</div>';
+  }
+  const summary = sim.summary || {};
+  const rounds = sim.rounds || [];
+  const standings = sim.simulated_standings || {};
+
+  const podium = `
+    <section class="wc-sim-hero panel">
+      <p class="wc-sim-label">Predicted champion · unified 3-layer model</p>
+      <h2 class="wc-sim-champion">${sim.champion || "TBD"}</h2>
+      <p class="wc-sim-final">${sim.final_scoreline ? `Final: ${sim.final_scoreline}` : ""}</p>
+      <div class="wc-sim-podium">
+        <div><span>Runner-up</span><strong>${sim.runner_up || "—"}</strong></div>
+        <div><span>Third place</span><strong>${sim.third_place || "—"}</strong></div>
+        <div><span>Matches simulated</span><strong>${summary.total_simulated ?? 104}</strong></div>
+      </div>
+    </section>`;
+
+  const stats = `
+    <div class="rollup-grid">
+      <div class="rollup-card panel"><h4>Group stage</h4><strong class="rollup-record">${summary.group_stage ?? 72}</strong><span>Simulated with draws allowed</span></div>
+      <div class="rollup-card panel"><h4>Knockout</h4><strong class="rollup-record">${summary.knockout ?? 32}</strong><span>No draws — highest 1X2 side wins</span></div>
+      <div class="rollup-card panel"><h4>Method</h4><strong class="rollup-record">3-layer</strong><span>Deterministic highest-probability outcome</span></div>
+    </div>`;
+
+  const standingsHtml = `<section class="section panel"><h2>Simulated group standings</h2>
+    <div class="wc-groups-grid">${Object.keys(standings)
+      .sort()
+      .map((gid) => {
+        const rows = standings[gid] || [];
+        return `<div class="wc-group-panel"><h3>Group ${gid}</h3>
+          <table class="data-table wc-standings-table"><thead><tr><th>#</th><th>Team</th><th>Pts</th><th>GD</th></tr></thead>
+          <tbody>${rows
+            .map(
+              (r) =>
+                `<tr class="zone-${r.zone}"><td>${r.position}</td><td><strong>${r.team}</strong></td><td>${r.points}</td><td>${r.goal_diff > 0 ? "+" : ""}${r.goal_diff}</td></tr>`,
+            )
+            .join("")}</tbody></table></div>`;
+      })
+      .join("")}</div></section>`;
+
+  const roundsHtml = `<div class="wc-bracket wc-sim-bracket">${rounds
+    .map(
+      (round) => `<section class="wc-bracket-round panel">
+        <h3>${round.label} <span class="muted">(${(round.matches || []).length})</span></h3>
+        <div class="wc-bracket-matches">${(round.matches || []).map((m) => wcSimMatchCard(m)).join("")}</div>
+      </section>`,
+    )
+    .join("")}</div>`;
+
+  return `${podium}${stats}${standingsHtml}${roundsHtml}`;
+}
+
 function viewWorldCup(subPath) {
   const hub = state.worldCup;
   if (!hub) {
@@ -663,13 +748,16 @@ function viewWorldCup(subPath) {
 
   const tabs = [
     ["overview", "Overview"],
+    ["simulation", "Simulation"],
     ["groups", "Groups"],
     ["knockout", "Knockout"],
     ["matches", "All matches"],
   ];
 
   let body = "";
-  if (tab === "groups") {
+  if (tab === "simulation") {
+    body = renderSimulationTab(hub);
+  } else if (tab === "groups") {
     body = `<div class="wc-groups-grid">${Object.values(hub.groups || {})
       .map((g) => renderGroupTable(g))
       .join("")}</div>

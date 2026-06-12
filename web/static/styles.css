@@ -1224,6 +1224,76 @@ select {
   gap: 0.5rem;
 }
 
+.wc-sim-hero {
+  text-align: center;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(26, 26, 46, 0.9));
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  margin-bottom: 1rem;
+}
+
+.wc-sim-label {
+  margin: 0 0 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.wc-sim-champion {
+  margin: 0;
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  color: #d4af37;
+}
+
+.wc-sim-final {
+  margin: 0.35rem 0 1rem;
+  color: var(--muted);
+}
+
+.wc-sim-podium {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  text-align: center;
+}
+
+.wc-sim-podium span {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-bottom: 0.25rem;
+}
+
+.wc-sim-score {
+  color: #d4af37;
+  font-weight: 700;
+}
+
+.wc-sim-winner-badge {
+  display: inline-block;
+  margin-top: 0.35rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(212, 175, 55, 0.2);
+  color: #d4af37;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.wc-sim-winner-badge.draw {
+  background: rgba(148, 163, 184, 0.2);
+  color: var(--muted);
+}
+
+.wc-sim-match .wc-match-foot {
+  border-top: 1px solid var(--border);
+  padding-top: 0.5rem;
+}
+
+.wc-sim-bracket {
+  margin-top: 1rem;
+}
+
 @media (max-width: 900px) {
   .demo-grid,
   .cards-grid,
