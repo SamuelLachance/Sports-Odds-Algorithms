@@ -383,6 +383,7 @@ def build_tracking_response(store: dict[str, Any]) -> dict[str, Any]:
             "soccer 3-way moneyline (home/draw/away); "
             "other sports at closing moneyline. 1u flat stake."
         ),
+        "min_recommended_edge": MIN_RECOMMENDED_EDGE,
     }
 
 

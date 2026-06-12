@@ -296,7 +296,7 @@ function viewDashboard() {
   const leagues = summary.leagues || [...new Set(games.map((g) => g.league))];
   const tracking = state.tracking?.all_time || state.tracking?.summary || {};
   const dateLabel = slate.date_label || "Today";
-  const minEdge = summary.min_edge ?? slate.min_recommended_edge ?? 50;
+  const minEdge = summary.min_edge ?? slate.min_recommended_edge ?? 40;
   const leagueCounts = games.reduce((acc, g) => {
     acc[g.league_name || g.league] = (acc[g.league_name || g.league] || 0) + 1;
     return acc;
@@ -378,8 +378,10 @@ function renderTrackingSummary() {
 
 function viewPicks() {
   const picks = state.slate?.recommended_bets || [];
-  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p>Only bets with +50 edge or higher vs the unified fair prices.</p></section>
-    <div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : '<div class="panel empty-panel">No bets meet the +50 minimum edge threshold today.</div>'}</div>`;
+  const slate = state.slate || {};
+  const minEdge = slate.summary?.min_edge ?? slate.min_recommended_edge ?? 40;
+  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p>Only bets with +${minEdge} edge or higher vs the unified fair prices (3-layer value agreement required where applicable).</p></section>
+    <div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No bets meet the +${minEdge} minimum edge threshold today.</div>`}</div>`;
 }
 
 function viewGames(league) {
@@ -521,13 +523,18 @@ function viewTracking() {
   const all = state.tracking?.all_time || state.tracking?.summary || {};
   const bets = state.tracking?.bets || [];
   const since = state.tracking?.tracking_since || "—";
+  const minEdge =
+    state.slate?.summary?.min_edge ??
+    state.slate?.min_recommended_edge ??
+    state.tracking?.min_recommended_edge ??
+    40;
 
   appRoot.innerHTML = `
     <section class="tracking-hero panel">
       <div class="tracking-hero-top">
         <div>
           <h1>Performance tracking</h1>
-          <p>Every algo bet with +50 edge is logged, graded at closing odds, and rolled up day → week → month → year → all time.</p>
+          <p>Every algo bet with +${minEdge} edge is logged, graded at closing odds, and rolled up day → week → month → year → all time.</p>
           <p class="muted">Tracking since ${since} · ${state.tracking?.timezone || "America/Toronto"}</p>
         </div>
         <div class="tracking-hero-stats">
@@ -559,7 +566,7 @@ function viewTracking() {
       <div class="bet-log">${bets.length ? bets.map((b) => `<article class="bet-row panel"><div class="bet-row-top"><div><strong>${b.team_name}</strong><span class="league-pill">${b.league_name}</span>${statusBadge(b.status, b.units)}</div><span class="edge-tag">+${b.edge} edge</span></div>
       <p class="muted">${b.matchup} · ${b.date}</p>
       <div class="pick-odds compact"><div><span>${b.bet_type === "spread" ? "Spread" : "Market"}</span><strong>${b.bet_type === "spread" ? formatSpread(b.spread_line) + " (" + formatOdds(b.spread_odds ?? b.market_odds) + ")" : formatOdds(b.market_odds)}</strong></div><div><span>Model</span><strong>${b.bet_type === "spread" && b.model_margin != null ? "Margin " + formatSpread(b.side === "home" ? b.model_margin : -b.model_margin) : formatOdds(b.model_projection)}</strong></div><div><span>Strategy</span><strong>${b.strategy_label}</strong></div></div>
-      ${b.final_score ? `<p class="final-score">Final: ${b.final_score}</p>` : ""}</article>`).join("") : '<div class="panel empty-panel">No tracked bets yet. Picks with +50 edge are logged on each daily rebuild.</div>'}</div>
+      ${b.final_score ? `<p class="final-score">Final: ${b.final_score}</p>` : ""}</article>`).join("") : `<div class="panel empty-panel">No tracked bets yet. Picks with +${minEdge} edge are logged on each daily rebuild.</div>`}</div>
     </section>`;
 
   appRoot.querySelectorAll(".period-tab").forEach((btn) => {

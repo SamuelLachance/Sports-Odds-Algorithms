@@ -158,7 +158,7 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
     value_agreed = (
         model_agreement.get("required") == 3 and model_agreement.get("agreed")
     )
-    pick_min_edge = 0.0 if value_agreed else MIN_RECOMMENDED_EDGE
+    pick_min_edge = MIN_RECOMMENDED_EDGE
     value_sides = set(
         model_agreement.get("value_sides")
         or model_agreement.get("value_outcomes")
@@ -378,13 +378,15 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
             best_by_event[event_id] = rec
     def _meets_recommendation_threshold(game: dict[str, Any], rec: dict[str, Any]) -> bool:
         edge = rec.get("edge", 0)
+        if edge < MIN_RECOMMENDED_EDGE:
+            return False
         agreement = (game.get("model") or {}).get("model_agreement") or {}
         if agreement.get("required") == 3 and agreement.get("agreed"):
             value_sides = set(
                 agreement.get("value_sides") or agreement.get("value_outcomes") or []
             )
-            return edge > 0 and rec.get("side") in value_sides
-        return edge >= MIN_RECOMMENDED_EDGE
+            return rec.get("side") in value_sides
+        return True
 
     games_by_event = {game["event_id"]: game for game in all_games}
     recommendations = sorted(
