@@ -9,8 +9,11 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from web.bet_advisor import (  # noqa: E402
+    _odds_edge,
+    evaluate_picks,
     evaluate_spread_picks,
     model_home_margin,
+    model_moneylines,
     spread_line_for_side,
     spread_point_edge,
 )
@@ -78,6 +81,35 @@ def test_spread_point_edge_away_favorite_small_margin() -> None:
     assert spread_point_edge(margin, 9.5, "away") < 0
 
 
+def test_moneyline_edge_away_favorite_sign() -> None:
+    """Away favorite: negative away ML; edge positive only when book price beats model."""
+    away_proj, home_proj = model_moneylines(55.68)
+    assert away_proj < 0
+    assert home_proj > 0
+    assert _odds_edge(away_proj, -171) == 0
+    assert _odds_edge(away_proj, -110) == float(-110 - away_proj)
+    assert _odds_edge(home_proj, 120) == 0
+
+
+def test_evaluate_picks_away_favorite_ml_edge_not_inverted() -> None:
+    """Rays @ Angels regression: away fav with soft market ML yields away-side edge."""
+    picks = evaluate_picks(
+        away_name="Tampa Bay Rays",
+        home_name="Los Angeles Angels",
+        away_slug="tampa-bay-rays",
+        home_slug="los-angeles-angels",
+        total_score=55.68,
+        win_probability=55.68,
+        away_market=109,
+        home_market=-130,
+    )
+    assert len(picks) == 1
+    assert picks[0].side == "away"
+    assert picks[0].edge >= MIN_RECOMMENDED_EDGE
+    assert picks[0].model_projection < 0
+    assert picks[0].market_odds > 0
+
+
 def test_evaluate_spread_picks_favors_underdog_when_market_overlays() -> None:
     picks = evaluate_spread_picks(
         league="wnba",
@@ -104,5 +136,7 @@ if __name__ == "__main__":
     test_evaluate_spread_picks_skips_without_consensus()
     test_model_home_margin_sign()
     test_spread_point_edge_away_favorite_small_margin()
+    test_moneyline_edge_away_favorite_sign()
+    test_evaluate_picks_away_favorite_ml_edge_not_inverted()
     test_evaluate_spread_picks_favors_underdog_when_market_overlays()
     print("test_bet_advisor.py: all tests passed")
