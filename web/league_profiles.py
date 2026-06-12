@@ -63,6 +63,9 @@ DEMO_SEASONS: dict[str, str] = {
 # Matches the algo's last-10-games window; prior season is prepended only when below this threshold.
 MIN_GAMES_FOR_MODEL = 10
 
+# Minimum American-odds edge vs model before a bet is recommended or tracked.
+MIN_RECOMMENDED_EDGE = 50
+
 
 class LeagueProfile(TypedDict):
     id: str

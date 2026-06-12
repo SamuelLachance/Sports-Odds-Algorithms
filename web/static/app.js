@@ -219,8 +219,8 @@ function renderTrackingSummary() {
 
 function viewPicks() {
   const picks = state.slate?.recommended_bets || [];
-  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p>Ranked by edge between sportsbook moneylines and Algo V2 fair prices.</p></section>
-    <div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : '<div class="panel empty-panel">No positive-edge bets today.</div>'}</div>`;
+  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p>Only bets with +50 edge or higher vs Algo V2 fair prices.</p></section>
+    <div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : '<div class="panel empty-panel">No bets meet the +50 minimum edge threshold today.</div>'}</div>`;
 }
 
 function viewGames(league) {

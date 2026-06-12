@@ -21,6 +21,7 @@ from web.espn_client import (  # noqa: E402
 )
 from web.league_profiles import (  # noqa: E402
     LEAGUE_PROFILES,
+    MIN_RECOMMENDED_EDGE,
     SUPPORTED_LEAGUES,
     get_algo_league,
 )
@@ -204,10 +205,16 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
         "date_label": date.today().isoformat(),
         "summary": {
             "games_analyzed": len(all_games),
-            "recommended_bets": len([r for r in recommendations if r.get("edge", 0) > 0]),
+            "recommended_bets": len(
+                [r for r in recommendations if r.get("edge", 0) >= MIN_RECOMMENDED_EDGE]
+            ),
+            "min_edge": MIN_RECOMMENDED_EDGE,
             "leagues": list({game["league"] for game in all_games}),
         },
-        "recommended_bets": [r for r in recommendations if r.get("edge", 0) > 0][:20],
+        "recommended_bets": [
+            r for r in recommendations if r.get("edge", 0) >= MIN_RECOMMENDED_EDGE
+        ][:20],
+        "min_recommended_edge": MIN_RECOMMENDED_EDGE,
         "games": all_games,
         "errors": errors,
     }

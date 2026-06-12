@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 from web.espn_client import fetch_scoreboard
+from web.league_profiles import MIN_RECOMMENDED_EDGE
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 TRACKING_FILE = PROJECT_ROOT / "data" / "tracking.json"
@@ -53,7 +54,7 @@ def _parse_date_label(value: str) -> date:
 
 
 def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str, Any]:
-    """Log value bets from the daily slate (edge > 0)."""
+    """Log recommended bets from the daily slate (edge >= MIN_RECOMMENDED_EDGE)."""
     date_label = slate.get("date_label") or date.today().isoformat()
     now = datetime.now(timezone.utc).isoformat()
     index = {_bet_key(b["date"], b["event_id"], b["side"]): b for b in store["bets"]}
@@ -62,12 +63,12 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
     picks: list[dict[str, Any]] = []
 
     for pick in slate.get("recommended_bets") or []:
-        if (pick.get("edge") or 0) > 0:
+        if (pick.get("edge") or 0) >= MIN_RECOMMENDED_EDGE:
             picks.append(pick)
 
     for game in slate.get("games") or []:
         for pick in game.get("recommendations") or []:
-            if (pick.get("edge") or 0) <= 0:
+            if (pick.get("edge") or 0) < MIN_RECOMMENDED_EDGE:
                 continue
             enriched = {
                 **pick,
@@ -85,7 +86,7 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
                 seen.add(key)
 
     for pick in picks:
-        if (pick.get("edge") or 0) <= 0:
+        if (pick.get("edge") or 0) < MIN_RECOMMENDED_EDGE:
             continue
         event_id = pick.get("event_id")
         side = pick.get("side")

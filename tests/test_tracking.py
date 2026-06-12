@@ -34,7 +34,7 @@ def test_record_and_grade() -> None:
                 "strategy": "value",
                 "strategy_label": "Value bet",
                 "confidence": "medium",
-                "edge": 12,
+                "edge": 55,
                 "model_projection": 120,
                 "market_odds": 141,
                 "win_probability": 55,

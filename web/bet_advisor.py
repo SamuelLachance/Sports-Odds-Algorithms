@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from web.league_profiles import MIN_RECOMMENDED_EDGE
+
 
 @dataclass
 class BetPick:
@@ -87,7 +89,7 @@ def evaluate_picks(
         if diff > 200:
             diff = abs(projection - market) - 200
 
-        if edge <= 0:
+        if edge < MIN_RECOMMENDED_EDGE:
             continue
 
         strategy = "value"
@@ -130,28 +132,6 @@ def evaluate_picks(
                 market_odds=market,
                 win_probability=win_probability,
                 reason=reason,
-            )
-        )
-
-    if not picks and away_market is None and home_market is None:
-        favorite_side = "home" if total_score < 0 else "away"
-        favorite_name = home_name if favorite_side == "home" else away_name
-        favorite_slug = home_slug if favorite_side == "home" else away_slug
-        picks.append(
-            BetPick(
-                side=favorite_side,
-                team_name=favorite_name,
-                team_slug=favorite_slug,
-                strategy="model_favorite",
-                confidence="low",
-                edge=0.0,
-                model_projection=home_proj if favorite_side == "home" else away_proj,
-                market_odds=0,
-                win_probability=win_probability,
-                reason=(
-                    f"No live moneyline available. Model leans {favorite_name} "
-                    f"at {win_probability:.1f}% win probability."
-                ),
             )
         )
 
