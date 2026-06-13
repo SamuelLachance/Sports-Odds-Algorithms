@@ -20,6 +20,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      WC_MC_ITERATIONS: "25"
     steps:
       - uses: actions/checkout@v4
 

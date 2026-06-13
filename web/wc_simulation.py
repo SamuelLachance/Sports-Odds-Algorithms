@@ -36,7 +36,15 @@ ROUND_SLUG_BY_LABEL = {
     "semifinal": "semifinals",
 }
 
-DEFAULT_MC_ITERATIONS = int(os.environ.get("WC_MC_ITERATIONS", "500"))
+def _default_mc_iterations() -> int:
+    if "WC_MC_ITERATIONS" in os.environ:
+        return int(os.environ["WC_MC_ITERATIONS"])
+    if os.environ.get("CI") or os.environ.get("GITHUB_ACTIONS"):
+        return 25
+    return 500
+
+
+DEFAULT_MC_ITERATIONS = _default_mc_iterations()
 DEFAULT_MC_SEED = int(os.environ.get("WC_MC_SEED", "42"))
 WC_AVG_TOTAL_GOALS = 2.65
 THREE_LAYER_WEIGHT = 1.0 / 3.0
@@ -827,6 +835,7 @@ def simulate_tournament(
     champion_counter: Counter[str] = Counter()
     runner_up_counter: Counter[str] = Counter()
     final_counter: Counter[str] = Counter()
+    first_run_by_champion: dict[str, dict[str, Any]] = {}
 
     representative: dict[str, Any] | None = None
     mode_champion: str | None = None
@@ -837,6 +846,7 @@ def simulate_tournament(
         champion = run.get("champion")
         if champion:
             champion_counter[champion] += 1
+            first_run_by_champion.setdefault(champion, run)
             if run.get("runner_up"):
                 runner_up_counter[run["runner_up"]] += 1
             final_counter[champion] += 1
@@ -844,12 +854,7 @@ def simulate_tournament(
 
     if champion_counter:
         mode_champion = champion_counter.most_common(1)[0][0]
-        for i in range(iterations):
-            rng = Random(seed + 10000 + i)
-            run = _run_tournament_once(matches, cache, rng=rng)
-            if run.get("champion") == mode_champion:
-                representative = run
-                break
+        representative = first_run_by_champion.get(mode_champion)
 
     if representative is None:
         representative = _run_tournament_once(matches, cache, rng=Random(seed))

@@ -134,11 +134,15 @@ def build_prediction_cache() -> tuple[int, int]:
     return built, skipped
 
 
-def build_world_cup_hub() -> dict:
+def build_world_cup_hub() -> dict | None:
     from web.world_cup_service import get_world_cup_hub
 
     print("Building FIFA World Cup 2026 hub (full tournament predictions)...")
-    hub = get_world_cup_hub()
+    try:
+        hub = get_world_cup_hub()
+    except Exception as exc:
+        print(f"WARNING: World Cup hub build failed ({exc}); daily slate will still deploy.")
+        return None
     write_json(DOCS_DIR / "api" / "world-cup.json", hub)
     return hub
 
