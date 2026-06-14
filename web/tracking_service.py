@@ -6,6 +6,7 @@ import json
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any, Literal
+from zoneinfo import ZoneInfo
 
 from web.bet_advisor import spread_line_for_side
 from web.espn_client import fetch_scoreboard
@@ -14,6 +15,11 @@ from web.league_profiles import DEFAULT_SPREAD_JUICE, MIN_RECOMMENDED_EDGE, is_s
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 TRACKING_FILE = PROJECT_ROOT / "data" / "tracking.json"
 TIMEZONE_LABEL = "America/Toronto"
+TORONTO = ZoneInfo(TIMEZONE_LABEL)
+
+
+def toronto_today() -> date:
+    return datetime.now(TORONTO).date()
 
 BetResult = Literal["pending", "win", "loss", "push"]
 
@@ -79,7 +85,7 @@ def _parse_date_label(value: str) -> date:
 
 def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str, Any]:
     """Log recommended bets from the daily slate (edge >= MIN_RECOMMENDED_EDGE)."""
-    date_label = slate.get("date_label") or date.today().isoformat()
+    date_label = slate.get("date_label") or toronto_today().isoformat()
     now = datetime.now(timezone.utc).isoformat()
     index = {
         _bet_key(b["date"], b["event_id"], b["side"], b.get("bet_type") or "moneyline"): b

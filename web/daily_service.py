@@ -7,10 +7,16 @@ import os
 import sys
 from contextlib import redirect_stdout
 from datetime import date, datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 from pathlib import Path
 from typing import Any
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+TORONTO = ZoneInfo("America/Toronto")
+
+
+def _toronto_today() -> date:
+    return datetime.now(TORONTO).date()
 
 from web.bet_advisor import (  # noqa: E402
     evaluate_picks,
@@ -55,7 +61,7 @@ def _ensure_project_root() -> None:
 def _today_cutoff(game: ScheduledGame) -> str:
     if game.start_time:
         return iso_to_project_date(game.start_time)
-    today = date.today()
+    today = _toronto_today()
     return f"{today.month}-{today.day}-{today.year}"
 
 
@@ -403,7 +409,7 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
 
     return {
         "generated_at": generated_at,
-        "date_label": date.today().isoformat(),
+        "date_label": _toronto_today().isoformat(),
         "summary": {
             "games_analyzed": len(all_games),
             "recommended_bets": len(qualifying),
