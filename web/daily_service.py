@@ -20,17 +20,13 @@ def _toronto_today() -> date:
 
 from web.bet_advisor import (  # noqa: E402
     evaluate_picks,
-    evaluate_soccer_picks,
     evaluate_spread_picks,
     model_moneylines,
     pick_to_dict,
     projections_from_win_probs,
-    soccer_model_moneylines,
-    soccer_threeway_probs,
 )
 from web.baseball_pred_model import get_baseball_pred_context, is_baseball_league  # noqa: E402
 from web.basketball_pred_model import get_basketball_pred_context, is_basketball_league  # noqa: E402
-from web.soccer_pred_model import get_soccer_pred_context  # noqa: E402
 from web.blend_service import blend_predictions, compute_model_agreement  # noqa: E402
 from web.season_games import prewarm_league_power  # noqa: E402
 from web.espn_client import (  # noqa: E402
@@ -44,7 +40,6 @@ from web.league_profiles import (  # noqa: E402
     MIN_RECOMMENDED_EDGE,
     SUPPORTED_LEAGUES,
     get_algo_league,
-    is_soccer_league,
     uses_spread_bets,
 )
 from web.live_data import load_live_team_data, resolve_team  # noqa: E402
@@ -193,50 +188,6 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             home_spread_odds=game.market.home_spread_odds,
             min_edge=pick_min_edge,
         )
-    elif is_soccer_league(game.league):
-        if blended.get("threeway"):
-            home_prob = float(blended["home_win_probability"])
-            draw_prob = float(blended["draw_probability"])
-            away_prob = float(blended["away_win_probability"])
-            total = float(blended["total_score"])
-            win_probability = float(blended["win_probability"])
-            favorite_side = blended["favorite_side"]
-        else:
-            home_prob, draw_prob, away_prob = soccer_threeway_probs(total, game.league)
-        away_proj, draw_proj, home_proj = soccer_model_moneylines(
-            home_prob, draw_prob, away_prob
-        )
-        model_payload.update(
-            {
-                "threeway": True,
-                "home_win_probability": round(home_prob, 2),
-                "draw_probability": round(draw_prob, 2),
-                "away_win_probability": round(away_prob, 2),
-                "draw_projection": draw_proj,
-                "total_score": round(total, 2),
-                "win_probability": round(win_probability, 2),
-                "favorite_side": favorite_side,
-            }
-        )
-        model_payload["away_projection"] = away_proj
-        model_payload["home_projection"] = home_proj
-        picks = evaluate_soccer_picks(
-            away_name=game.away_name,
-            home_name=game.home_name,
-            away_slug=away[1],
-            home_slug=home[1],
-            total_score=total,
-            home_prob=home_prob,
-            draw_prob=draw_prob,
-            away_prob=away_prob,
-            away_proj=away_proj,
-            draw_proj=draw_proj,
-            home_proj=home_proj,
-            away_market=game.market.away_moneyline,
-            draw_market=game.market.draw_moneyline,
-            home_market=game.market.home_moneyline,
-            min_edge=pick_min_edge,
-        )
     else:
         picks = evaluate_picks(
             away_name=game.away_name,
@@ -331,16 +282,6 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
                         {
                             "league": league,
                             "error": f"Baseball model prewarm failed ({cutoff}): {exc}",
-                        }
-                    )
-            if is_soccer_league(league):
-                try:
-                    get_soccer_pred_context(league, cutoff)
-                except Exception as exc:  # noqa: BLE001
-                    errors.append(
-                        {
-                            "league": league,
-                            "error": f"Soccer model prewarm failed ({cutoff}): {exc}",
                         }
                     )
 

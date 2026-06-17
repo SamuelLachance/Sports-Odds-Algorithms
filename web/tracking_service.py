@@ -386,7 +386,6 @@ def build_tracking_response(store: dict[str, Any]) -> dict[str, Any]:
         "note": (
             f"Tracks algo bets with +{MIN_RECOMMENDED_EDGE} edge or higher from each daily slate. "
             "Basketball/football spread bets graded ATS at consensus book spread; "
-            "soccer 3-way moneyline (home/draw/away); "
             "other sports at closing moneyline. 1u flat stake."
         ),
         "min_recommended_edge": MIN_RECOMMENDED_EDGE,
@@ -400,8 +399,16 @@ def prune_below_min_edge(store: dict[str, Any]) -> dict[str, Any]:
     return store
 
 
+def prune_soccer_bets(store: dict[str, Any]) -> dict[str, Any]:
+    store["bets"] = [
+        b for b in store["bets"] if not is_soccer_league(b.get("league") or "")
+    ]
+    return store
+
+
 def update_tracking(slate: dict[str, Any]) -> dict[str, Any]:
     store = load_store()
+    store = prune_soccer_bets(store)
     store = prune_below_min_edge(store)
     store = record_from_slate(store, slate)
     store = grade_pending(store)

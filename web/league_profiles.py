@@ -285,7 +285,9 @@ INTERNATIONAL_TOURNAMENT_LEAGUES: tuple[str, ...] = tuple(
 )
 FRIENDLIES_SUPPLEMENT_LEAGUE = "fifa_friendlies"
 
-SUPPORTED_LEAGUES: tuple[str, ...] = tuple(LEAGUE_PROFILES.keys())
+SUPPORTED_LEAGUES: tuple[str, ...] = tuple(
+    key for key, profile in LEAGUE_PROFILES.items() if profile["category"] != "soccer"
+)
 SOCCER_LEAGUES: tuple[str, ...] = tuple(
     key for key, profile in LEAGUE_PROFILES.items() if profile["category"] == "soccer"
 )

@@ -86,9 +86,6 @@ function pickMarketLabel(pick) {
   if (pick.bet_type === "spread") {
     return `Spread ${formatSpread(pick.spread_line)} (${formatOdds(pick.spread_odds ?? pick.market_odds)})`;
   }
-  if (pick.side === "draw") {
-    return `Draw ${formatOdds(pick.market_odds)}`;
-  }
   return formatOdds(pick.market_odds);
 }
 
@@ -182,10 +179,7 @@ function algoBreakdown(m) {
   const power = m.power;
   const basketball = m.basketball_pred;
   const baseball = m.baseball_pred;
-  const soccer = m.soccer_pred;
-  const legacyThreeway = m.legacy_threeway;
-  const powerThreeway = m.power_threeway;
-  if (!legacy && !power && !basketball && !baseball && !soccer && !legacyThreeway) return "";
+  if (!legacy && !power && !basketball && !baseball) return "";
   const parts = [];
   const layerTag =
     m.blend_layers === 3 ? "3-layer" : m.blend_layers === 2 ? "2-layer" : "";
@@ -210,25 +204,6 @@ function algoBreakdown(m) {
       baseball.elo_exp != null ? ` Elo ${baseball.elo_exp}%` : "";
     parts.push(`MLB-Model: ${baseball.home_win_probability}% home${elo}`);
   }
-  if (legacyThreeway) {
-    parts.push(
-      `Legacy 1X2: ${legacyThreeway.home_win_probability}/${legacyThreeway.draw_probability}/${legacyThreeway.away_win_probability}%`
-    );
-  }
-  if (powerThreeway) {
-    parts.push(
-      `Power 1X2: ${powerThreeway.home_win_probability}/${powerThreeway.draw_probability}/${powerThreeway.away_win_probability}%`
-    );
-  }
-  if (soccer) {
-    const xg =
-      soccer.expected_home_goals != null
-        ? ` xG ${soccer.expected_home_goals}-${soccer.expected_away_goals}`
-        : "";
-    parts.push(
-      `Football-predictor: ${soccer.home_win_probability}/${soccer.draw_probability}/${soccer.away_win_probability}%${xg}`
-    );
-  }
   if (m.blend_note) {
     parts.push(m.blend_note);
   }
@@ -244,30 +219,13 @@ function algoCenter(game) {
   const home = game.matchup.home;
   const fav = m.favorite_side === "home" ? home.name : away.name;
   const top = game.top_pick;
-  const isSoccer = Boolean(m.threeway);
   const algoLabel = m.algorithm === "Unified" ? "Unified model" : "Algo V2 win probability";
-  const probBlock = isSoccer
-    ? `<div class="algo-probability">
-        <span>3-way unified probabilities</span>
-        <div class="odds-row game-odds threeway-probs">
-          <div class="odds-chip"><span>${away.name}</span><strong>${m.away_win_probability ?? "—"}%</strong><small>Model ${formatOdds(m.away_projection)}</small></div>
-          <div class="odds-chip"><span>Draw</span><strong>${m.draw_probability ?? "—"}%</strong><small>Model ${formatOdds(m.draw_projection)}</small></div>
-          <div class="odds-chip"><span>${home.name}</span><strong>${m.home_win_probability ?? "—"}%</strong><small>Model ${formatOdds(m.home_projection)}</small></div>
-        </div>
-      </div>`
-    : `<div class="algo-probability">
+  const probBlock = `<div class="algo-probability">
         <span>${algoLabel}</span>
         <strong class="prob-value">${m.win_probability}%</strong>
         <small>Model favorite: ${fav}</small>
       </div>`;
-  const oddsRow = isSoccer
-    ? `<div class="odds-row game-odds">
-        <div class="odds-chip"><span>${away.name}</span><strong>${formatOdds(mk.away_moneyline)}</strong><small>Model ${formatOdds(m.away_projection)}</small></div>
-        <div class="odds-chip"><span>Draw</span><strong>${formatOdds(mk.draw_moneyline)}</strong><small>Model ${formatOdds(m.draw_projection)}</small></div>
-        <div class="odds-chip"><span>${home.name}</span><strong>${formatOdds(mk.home_moneyline)}</strong><small>Model ${formatOdds(m.home_projection)}</small></div>
-        <div class="odds-chip"><span>O-U</span><strong>${mk.over_under ?? "—"}</strong><small>${mk.provider || "ESPN"}</small></div>
-      </div>`
-    : `<div class="odds-row game-odds">
+  const oddsRow = `<div class="odds-row game-odds">
         <div class="odds-chip"><span>${away.name}</span><strong>${formatOdds(mk.away_moneyline)}</strong><small>Model ${formatOdds(m.away_projection)}</small></div>
         <div class="odds-chip"><span>${home.name}</span><strong>${formatOdds(mk.home_moneyline)}</strong><small>Model ${formatOdds(m.home_projection)}</small></div>
         <div class="odds-chip"><span>Spread / O-U</span><strong>${mk.spread ?? "—"} / ${mk.over_under ?? "—"}</strong><small>${mk.provider || "ESPN"}</small></div>
