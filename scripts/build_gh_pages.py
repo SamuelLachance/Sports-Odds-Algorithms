@@ -6,6 +6,8 @@ import json
 import os
 import shutil
 import sys
+import urllib.error
+import urllib.request
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from itertools import permutations
 from pathlib import Path
@@ -15,6 +17,10 @@ DOCS_DIR = PROJECT_ROOT / "docs"
 STATIC_SRC = PROJECT_ROOT / "web" / "static"
 REPO_NAME = "Sports-Odds-Algorithms"
 BASE_PATH = f"/{REPO_NAME}"
+PAGES_ORIGIN = os.environ.get(
+    "GH_PAGES_ORIGIN",
+    f"https://samuellachance.github.io{BASE_PATH}",
+)
 
 sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -31,6 +37,35 @@ from web.predict_service import (  # noqa: E402
 def write_json(path: Path, data: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+
+def _env_flag(name: str) -> bool:
+    return os.environ.get(name, "").lower() in {"1", "true", "yes"}
+
+
+def _fast_daily_build() -> bool:
+    """Skip slow World Cup + prediction cache steps (CI daily deploy)."""
+    return _env_flag("FAST_DAILY_BUILD")
+
+
+def preserve_deployed_json(relative_path: str) -> bool:
+    """Reuse JSON from the live site when a slow build step is skipped."""
+    dest = DOCS_DIR / relative_path
+    if dest.exists():
+        return True
+
+    url = f"{PAGES_ORIGIN}/{Path(relative_path).as_posix()}"
+    print(f"Reusing deployed JSON from {url}")
+    try:
+        with urllib.request.urlopen(url, timeout=60) as response:
+            payload = response.read()
+    except (urllib.error.URLError, TimeoutError, OSError) as exc:
+        print(f"WARNING: Could not fetch {url} ({exc})")
+        return False
+
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_bytes(payload)
+    return True
 
 
 def copy_static_assets() -> None:
@@ -168,11 +203,24 @@ def build_daily_slate() -> dict:
 
 
 def main() -> None:
+    fast_build = _fast_daily_build()
+    print(f"GitHub Pages build mode: {'fast daily' if fast_build else 'full'}")
+
     copy_static_assets()
     build_api_metadata()
     build_daily_slate()
-    build_world_cup_hub()
-    built, skipped = build_prediction_cache()
+
+    if fast_build:
+        preserve_deployed_json("api/world-cup.json")
+    else:
+        build_world_cup_hub()
+
+    if fast_build:
+        print("Skipping prediction cache (FAST_DAILY_BUILD)")
+        built, skipped = 0, 0
+    else:
+        built, skipped = build_prediction_cache()
+
     print(f"GitHub Pages build complete: {DOCS_DIR}")
     print(f"Prediction cache: {built} files written, {skipped} skipped")
 

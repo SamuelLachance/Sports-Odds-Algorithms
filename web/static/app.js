@@ -29,7 +29,10 @@ function api(path) {
 }
 
 async function fetchJson(url) {
-  const response = await fetch(url, { cache: "no-store" });
+  const separator = url.includes("?") ? "&" : "?";
+  const response = await fetch(`${url}${separator}_=${Date.now()}`, {
+    cache: "no-store",
+  });
   const payload = await response.json().catch(() => null);
   if (!response.ok) {
     throw new Error(
