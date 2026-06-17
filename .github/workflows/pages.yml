@@ -47,17 +47,25 @@ jobs:
         run: python scripts/build_gh_pages.py
 
       - name: Persist tracking store
+        continue-on-error: true
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/tracking.json
           if git diff --staged --quiet; then
             echo "Tracking store unchanged."
-          else
-            git commit -m "Update bet tracking store after daily sync. [skip ci]"
-            git pull --rebase origin master
-            git push origin HEAD:master
+            exit 0
           fi
+          git commit -m "Update bet tracking store after daily sync. [skip ci]"
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin master && git push origin HEAD:master; then
+              exit 0
+            fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((attempt * 3))
+          done
+          echo "WARNING: Could not push tracking store; deploy will still use built tracking.json."
+          exit 0
 
       - uses: actions/upload-pages-artifact@v3
         with:
