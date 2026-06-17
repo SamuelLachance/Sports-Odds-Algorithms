@@ -6,8 +6,6 @@ import json
 import os
 import shutil
 import sys
-import urllib.error
-import urllib.request
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from itertools import permutations
 from pathlib import Path
@@ -17,10 +15,6 @@ DOCS_DIR = PROJECT_ROOT / "docs"
 STATIC_SRC = PROJECT_ROOT / "web" / "static"
 REPO_NAME = "Sports-Odds-Algorithms"
 BASE_PATH = f"/{REPO_NAME}"
-PAGES_ORIGIN = os.environ.get(
-    "GH_PAGES_ORIGIN",
-    f"https://samuellachance.github.io{BASE_PATH}",
-)
 
 sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -44,28 +38,8 @@ def _env_flag(name: str) -> bool:
 
 
 def _fast_daily_build() -> bool:
-    """Skip slow World Cup + prediction cache steps (CI daily deploy)."""
+    """Skip the precomputed prediction cache (CI daily deploy)."""
     return _env_flag("FAST_DAILY_BUILD")
-
-
-def preserve_deployed_json(relative_path: str) -> bool:
-    """Reuse JSON from the live site when a slow build step is skipped."""
-    dest = DOCS_DIR / relative_path
-    if dest.exists():
-        return True
-
-    url = f"{PAGES_ORIGIN}/{Path(relative_path).as_posix()}"
-    print(f"Reusing deployed JSON from {url}")
-    try:
-        with urllib.request.urlopen(url, timeout=60) as response:
-            payload = response.read()
-    except (urllib.error.URLError, TimeoutError, OSError) as exc:
-        print(f"WARNING: Could not fetch {url} ({exc})")
-        return False
-
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    dest.write_bytes(payload)
-    return True
 
 
 def copy_static_assets() -> None:
@@ -169,19 +143,6 @@ def build_prediction_cache() -> tuple[int, int]:
     return built, skipped
 
 
-def build_world_cup_hub() -> dict | None:
-    from web.world_cup_service import get_world_cup_hub
-
-    print("Building FIFA World Cup 2026 hub (full tournament predictions)...")
-    try:
-        hub = get_world_cup_hub()
-    except Exception as exc:
-        print(f"WARNING: World Cup hub build failed ({exc}); daily slate will still deploy.")
-        return None
-    write_json(DOCS_DIR / "api" / "world-cup.json", hub)
-    return hub
-
-
 def build_daily_slate() -> dict:
     from web.daily_service import get_daily_slate
     from web.team_service import build_team_profiles_for_slate, build_teams_index
@@ -209,11 +170,6 @@ def main() -> None:
     copy_static_assets()
     build_api_metadata()
     build_daily_slate()
-
-    if fast_build:
-        preserve_deployed_json("api/world-cup.json")
-    else:
-        build_world_cup_hub()
 
     if fast_build:
         print("Skipping prediction cache (FAST_DAILY_BUILD)")

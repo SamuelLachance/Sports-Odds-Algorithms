@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       full_build:
-        description: "Run full World Cup + prediction cache rebuild (slow)"
+        description: "Run full precomputed prediction cache rebuild (slow)"
         required: false
         default: "false"
         type: choice
@@ -31,7 +31,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      WC_MC_ITERATIONS: "25"
       FAST_DAILY_BUILD: ${{ (github.event_name == 'schedule' || github.event.inputs.full_build != 'true') && '1' || '' }}
       FULL_BUILD: ${{ github.event.inputs.full_build == 'true' && '1' || '' }}
     steps:
