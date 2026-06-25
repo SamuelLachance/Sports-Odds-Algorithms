@@ -10,6 +10,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from web.blend_service import (  # noqa: E402
+    blended_home_spread_margin,
     blend_predictions,
     compute_model_agreement,
     home_win_prob_to_total_score,
@@ -21,6 +22,7 @@ from web.season_games import get_league_power_context  # noqa: E402
 def test_total_score_to_home_win_prob() -> None:
     assert total_score_to_home_win_prob(-62.0) == 62.0
     assert total_score_to_home_win_prob(55.0) == 45.0
+    assert total_score_to_home_win_prob(0.0) == 50.0
 
 
 def test_home_win_prob_to_total_score() -> None:
@@ -30,6 +32,9 @@ def test_home_win_prob_to_total_score() -> None:
     total, win_prob = home_win_prob_to_total_score(40.0)
     assert total == 60.0
     assert win_prob == 60.0
+    total, win_prob = home_win_prob_to_total_score(50.0)
+    assert total == 0.0
+    assert win_prob == 50.0
 
 
 def test_blend_legacy_only_when_power_unavailable() -> None:

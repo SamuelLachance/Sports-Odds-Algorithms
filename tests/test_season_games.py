@@ -70,7 +70,7 @@ def test_parse_event_to_game_normalizes_abbreviations() -> None:
         cutoff,
     )
     assert parsed is not None
-    _event_id, game = parsed
+    _event_id, _event_date, game = parsed
     assert game[0] == "bos"
     assert game[1] == "ny"
     assert game[4] == 110

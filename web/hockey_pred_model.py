@@ -79,6 +79,15 @@ def calculate_win_probability(
     ot_home_win = tie_prob * home_ot_advantage
     ot_away_win = tie_prob * (1 - home_ot_advantage)
 
+    grid_total = home_reg_win + away_reg_win + tie_prob
+    if grid_total > 0.0 and abs(grid_total - 1.0) > 1e-9:
+        scale = 1.0 / grid_total
+        home_reg_win *= scale
+        away_reg_win *= scale
+        tie_prob *= scale
+        ot_home_win = tie_prob * home_ot_advantage
+        ot_away_win = tie_prob * (1 - home_ot_advantage)
+
     return GameProbabilities(
         home_win=round(home_reg_win + ot_home_win, 4),
         away_win=round(away_reg_win + ot_away_win, 4),

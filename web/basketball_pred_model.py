@@ -49,6 +49,7 @@ def _build_raw_matrices(
     or_matrix = [[0.0] * n for _ in range(n)]
     pace_matrix = [[0.0] * n for _ in range(n)]
     totals: list[float] = []
+    game_rows: list[tuple[int, int, int, int, float]] = []
 
     for home_key, away_key, _hn, _an, home_score, away_score in games:
         if home_key not in index or away_key not in index:
@@ -59,16 +60,22 @@ def _build_raw_matrices(
         totals.append(game_total)
         hi = index[home_key]
         ai = index[away_key]
-        league_avg = sum(totals) / len(totals)
-        pace_val = 100.0 * game_total / league_avg
+        game_rows.append((hi, ai, home_score, away_score, game_total))
+
+    league_avg_total = sum(totals) / len(totals) if totals else 200.0
+    for hi, ai, home_score, away_score, game_total in game_rows:
+        pace_val = 100.0 * game_total / league_avg_total
 
         _update_matrix_cell(or_matrix, hi, ai, float(home_score))
         _update_matrix_cell(or_matrix, ai, hi, float(away_score))
         _update_matrix_cell(pace_matrix, hi, ai, pace_val)
         _update_matrix_cell(pace_matrix, ai, hi, pace_val)
 
-    league_avg_total = sum(totals) / len(totals) if totals else 200.0
     return or_matrix, pace_matrix, league_avg_total
+
+
+def _mat_vec(a: list[list[float]], v: list[float]) -> list[float]:
+    return [sum(a[i][k] * v[k] for k in range(len(v))) for i in range(len(a))]
 
 
 def _mat_mul(a: list[list[float]], b: list[list[float]]) -> list[list[float]]:
@@ -112,14 +119,14 @@ def _top_singular_triplet(
     n_cols = len(matrix[0])
     v = [1.0 / math.sqrt(n_cols) for _ in range(n_cols)]
     for _ in range(SVD_POWER_ITERS):
-        mt = _mat_transpose(matrix)
-        v_new = _mat_mul(mt, [v])[0]
+        u = _mat_vec(matrix, v)
+        v_new = _mat_vec(_mat_transpose(matrix), u)
         norm = _norm(v_new)
         if norm < 1e-12:
             break
         v = _scale_vec(v_new, 1.0 / norm)
 
-    u = _mat_mul(matrix, [v])[0]
+    u = _mat_vec(matrix, v)
     sigma = _norm(u)
     if sigma < 1e-12:
         return 0.0, [0.0] * n_rows, v

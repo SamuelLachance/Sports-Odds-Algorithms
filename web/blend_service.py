@@ -42,14 +42,18 @@ THREE_LAYER_WEIGHT = 1.0 / 3.0
 
 def total_score_to_home_win_prob(total_score: float) -> float:
     """Convert Algo_V2 total_score to home win probability (0–100)."""
-    if total_score <= 0:
+    if abs(total_score) < 1e-9:
+        return 50.0
+    if total_score < 0:
         return abs(total_score)
     return 100.0 - abs(total_score)
 
 
 def home_win_prob_to_total_score(home_win_prob: float) -> tuple[float, float]:
     """Convert home win probability to (total_score, win_probability)."""
-    if home_win_prob >= 50.0:
+    if abs(home_win_prob - 50.0) < 1e-9:
+        return 0.0, 50.0
+    if home_win_prob > 50.0:
         return -home_win_prob, home_win_prob
     away_prob = 100.0 - home_win_prob
     return away_prob, away_prob
@@ -169,6 +173,8 @@ def _layer_binary_total_score(layer: dict[str, Any]) -> float | None:
 
 
 def _layer_side_win_probs(total_score: float) -> tuple[float, float]:
+    if abs(total_score) < 1e-9:
+        return 50.0, 50.0
     win_prob = abs(total_score)
     home_is_favorite = total_score <= 0
     home_prob = win_prob if home_is_favorite else 100.0 - win_prob
@@ -187,6 +193,25 @@ def _layer_home_margin(layer: dict[str, Any], league: str) -> float | None:
     if total is not None:
         return model_home_margin(total, league)
     return None
+
+
+def blended_home_spread_margin(blended: dict[str, Any], league: str) -> float:
+    """Average sport-aware home margins across blend layers for spread picks."""
+    layer_keys = ("legacy", "power", "basketball_pred", "baseball_pred", "hockey_pred", "football_pred")
+    margins: list[float] = []
+    for key in layer_keys:
+        layer = blended.get(key)
+        if not layer:
+            continue
+        margin = _layer_home_margin(layer, league)
+        if margin is not None:
+            margins.append(margin)
+    if margins:
+        return sum(margins) / len(margins)
+    total = blended.get("total_score")
+    if total is not None:
+        return model_home_margin(float(total), league)
+    return 0.0
 
 
 def _best_value_side_binary(
@@ -463,6 +488,7 @@ def run_power_model(
         "home_power": prediction["home_power"],
         "away_power": prediction["away_power"],
         "power_diff": prediction["power_diff"],
+        "predicted_margin": prediction["power_diff"],
         "home_win_probability": prediction["home_win_probability"],
         "param": prediction["param"],
         "home_games": prediction["home_games"],
@@ -533,6 +559,7 @@ def blend_predictions(
             + THREE_LAYER_WEIGHT * power_home
             + THREE_LAYER_WEIGHT * third_home
         )
+        blended_home = min(max(blended_home, 0.0), 100.0)
         total, win_prob = home_win_prob_to_total_score(blended_home)
         result: dict[str, Any] = {
             "algorithm": "Unified",
@@ -557,6 +584,7 @@ def blend_predictions(
     blended_home = (
         legacy_weight * legacy_home + power_weight * power_home
     ) / weight_sum
+    blended_home = min(max(blended_home, 0.0), 100.0)
     total, win_prob = home_win_prob_to_total_score(blended_home)
 
     result = {

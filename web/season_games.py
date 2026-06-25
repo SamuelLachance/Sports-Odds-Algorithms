@@ -23,7 +23,7 @@ from web.league_profiles import (
 from web.live_data import _event_before_cutoff, _parse_cutoff, _score_value
 
 GameTuple = tuple[str, str, str, str, int, int]
-GameMap = dict[str, GameTuple]
+GameMap = dict[str, tuple[str, GameTuple]]
 
 
 def _normalize_abbr(league: str, espn_abbr: str) -> str:
@@ -64,8 +64,9 @@ def _parse_event_to_game(
     home_name = (home_comp.get("team") or {}).get("displayName") or home_abbr
     away_score = _score_value(away_comp)
     home_score = _score_value(home_comp)
+    event_date = str(event.get("date") or "")
 
-    return event_id, (
+    return event_id, event_date, (
         home_abbr,
         away_abbr,
         home_name,
@@ -109,8 +110,8 @@ def _collect_from_scoreboards(
         for event in payload.get("events") or []:
             parsed = _parse_event_to_game(league, event, cutoff)
             if parsed:
-                event_id, game_tuple = parsed
-                games[event_id] = game_tuple
+                event_id, event_date, game_tuple = parsed
+                games[event_id] = (event_date, game_tuple)
 
     return games
 
@@ -166,8 +167,8 @@ def _collect_events_for_season(
     for event in fetch_team_schedule(league, espn_team_id, season):
         parsed = _parse_event_to_game(league, event, cutoff)
         if parsed:
-            event_id, game_tuple = parsed
-            games[event_id] = game_tuple
+            event_id, event_date, game_tuple = parsed
+            games[event_id] = (event_date, game_tuple)
     return games
 
 
@@ -209,7 +210,10 @@ def load_league_completed_games(
     else:
         merged = _collect_from_team_schedules(league, cutoff, cutoff_day)
 
-    return list(merged.values())
+    return [
+        game_tuple
+        for _event_date, game_tuple in sorted(merged.values(), key=lambda item: item[0])
+    ]
 
 
 def power_unavailable_reason(

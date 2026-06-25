@@ -97,6 +97,22 @@ def test_moneyline_edge_same_sign_favorite() -> None:
     assert _odds_edge(home_proj, 120, 44.32) == 0.0
 
 
+def test_moneyline_edge_cross_sign_model_dog_market_fav() -> None:
+    """Model underdog priced as favorite: compare to breakeven, not raw subtraction."""
+    edge = _odds_edge(122, -70, 45.0)
+    fair_underdog = _breakeven_american(45.0, as_underdog=True)
+    breakeven_fav = _breakeven_american(45.0, as_underdog=False)
+    assert edge > 0.0
+    assert edge == float(-70 - breakeven_fav)
+    assert fair_underdog > 0
+
+
+def test_pick_em_win_probs() -> None:
+    away_proj, home_proj = model_moneylines(0.0)
+    assert away_proj == 100
+    assert home_proj == 100
+
+
 def test_moneyline_edge_cross_sign_not_raw_subtraction() -> None:
     """Padres screenshot: +109 market vs -121 model is ~+26, not +230."""
     padres_prob = 54.79

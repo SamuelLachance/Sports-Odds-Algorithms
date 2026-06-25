@@ -43,7 +43,7 @@ class BetPick:
 
 def _probability_to_american(probability_pct: float) -> int:
     probability = min(max(probability_pct, 0.1), 99.9)
-    if probability >= 50.0:
+    if probability > 50.0:
         return -round((probability / (100.0 - probability)) * 100)
     return round(((100.0 - probability) / probability) * 100)
 
@@ -60,10 +60,7 @@ def projections_from_win_probs(
 
 def model_moneylines(total_score: float) -> tuple[int, int]:
     """Return projected American odds for away and home teams."""
-    win_prob = abs(total_score)
-    home_is_favorite = total_score <= 0
-    home_prob = win_prob if home_is_favorite else 100.0 - win_prob
-    away_prob = 100.0 - home_prob
+    away_prob, home_prob = _side_win_probs(total_score)
     return projections_from_win_probs(home_prob, away_prob)
 
 
@@ -122,10 +119,13 @@ def _odds_edge(model_projection: int, market_odds: int, model_prob_pct: float) -
     instead of subtracting across zero (e.g. +109 vs -121 is not +230).
     """
     fair_odds = _probability_to_american(model_prob_pct)
-    if market_odds <= fair_odds:
+    same_sign = (fair_odds >= 0 and market_odds >= 0) or (
+        fair_odds <= 0 and market_odds <= 0
+    )
+    if same_sign and market_odds <= fair_odds:
         return 0.0
 
-    if (fair_odds >= 0 and market_odds >= 0) or (fair_odds <= 0 and market_odds <= 0):
+    if same_sign:
         return float(market_odds - fair_odds)
 
     if market_odds > 0:
@@ -162,6 +162,8 @@ def best_pick_only(picks: list[BetPick]) -> list[BetPick]:
 
 
 def _side_win_probs(total_score: float) -> tuple[float, float]:
+    if abs(total_score) < 1e-9:
+        return 50.0, 50.0
     win_prob = abs(total_score)
     home_is_favorite = total_score <= 0
     home_prob = win_prob if home_is_favorite else 100.0 - win_prob
@@ -300,13 +302,18 @@ def evaluate_spread_picks(
     consensus_spread: float | None,
     away_spread_odds: int | None = None,
     home_spread_odds: int | None = None,
+    model_margin_home: float | None = None,
     min_edge: float = MIN_RECOMMENDED_EDGE,
 ) -> list[BetPick]:
     """Recommend spread bets when model margin beats the consensus book line."""
     if consensus_spread is None:
         return []
 
-    model_margin = model_home_margin(total_score, league)
+    model_margin = (
+        model_margin_home
+        if model_margin_home is not None
+        else model_home_margin(total_score, league)
+    )
     picks: list[BetPick] = []
 
     candidates: list[tuple[str, str, str, int | None]] = [

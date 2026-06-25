@@ -29,7 +29,7 @@ from web.baseball_pred_model import get_baseball_pred_context, is_baseball_leagu
 from web.basketball_pred_model import get_basketball_pred_context, is_basketball_league  # noqa: E402
 from web.football_pred_model import get_football_pred_context, is_football_league  # noqa: E402
 from web.hockey_pred_model import get_hockey_pred_context, is_hockey_league  # noqa: E402
-from web.blend_service import blend_predictions, compute_model_agreement  # noqa: E402
+from web.blend_service import blend_predictions, blended_home_spread_margin, compute_model_agreement  # noqa: E402
 from web.season_games import prewarm_league_power  # noqa: E402
 from web.espn_client import (  # noqa: E402
     ScheduledGame,
@@ -190,6 +190,7 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             consensus_spread=game.market.spread,
             away_spread_odds=game.market.away_spread_odds,
             home_spread_odds=game.market.home_spread_odds,
+            model_margin_home=blended_home_spread_margin(blended, game.league),
             min_edge=pick_min_edge,
         )
     else:

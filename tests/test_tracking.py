@@ -47,6 +47,20 @@ def test_calculate_units() -> None:
     assert calculate_units(1, 140, "win") == 1.4
     assert calculate_units(1, 140, "loss") == -1
     assert calculate_units(1, -110, "push") == 0
+    assert abs(calculate_units(1, -110, "win") - (100 / 110)) < 1e-9
+
+
+def test_roi_excludes_pushes_from_denominator() -> None:
+    from web.tracking_service import _summarize_bets
+
+    summary = _summarize_bets(
+        [
+            {"status": "win", "units": 0.91},
+            {"status": "loss", "units": -1.0},
+            {"status": "push", "units": 0.0},
+        ]
+    )
+    assert summary["roi_percent"] == round(-0.09 / 2 * 100, 2)
 
 
 def test_record_and_grade() -> None:

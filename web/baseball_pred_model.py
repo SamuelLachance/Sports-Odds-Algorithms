@@ -50,11 +50,11 @@ class EloTeam:
         diff = (self.rating_slow + home_adv) - opponent.rating_slow
         return 1.0 / (1.0 + 10 ** (-diff / 400.0))
 
-    def update(self, opponent: EloTeam, won: bool) -> None:
+    def update(self, opponent: EloTeam, won: bool, *, home_adv: float = 0.0) -> None:
         for rating_attr, k in (("rating_fast", ELO_K_FAST), ("rating_slow", ELO_K_SLOW)):
             self_rating = getattr(self, rating_attr)
             opp_rating = getattr(opponent, rating_attr)
-            diff = self_rating - opp_rating
+            diff = self_rating + home_adv - opp_rating
             expected = 1.0 / (1.0 + 10 ** (-diff / 400.0))
             score = 1.0 if won else 0.0
             delta = k * (score - expected)
@@ -182,7 +182,8 @@ def build_baseball_model(
             outcomes.append(0.5)
 
         home_won = home_score > away_score
-        home_elo.update(away_elo, home_won)
+        home_elo.update(away_elo, home_won, home_adv=HOME_ELO_ADV)
+        away_elo.update(home_elo, not home_won, home_adv=-HOME_ELO_ADV)
         home_state.record_game(home_score, away_score)
         away_state.record_game(away_score, home_score)
         team_game_counts[home_key] += 1

@@ -29,6 +29,8 @@ def calculate_units(stake: float, american_odds: int, result: BetResult) -> floa
         return 0.0
     if result == "loss":
         return -stake
+    if american_odds == 0:
+        return stake
     if american_odds > 0:
         return stake * (american_odds / 100)
     return stake * (100 / abs(american_odds))
@@ -67,7 +69,7 @@ def _grading_spread_line(bet: dict[str, Any]) -> float | None:
     return None
 
 
-def _resolve_grading_odds(bet: dict[str, Any]) -> int:
+def _resolve_grading_odds(bet: dict[str, Any]) -> int | None:
     bet_type = bet.get("bet_type") or "moneyline"
     if bet_type == "spread":
         return int(
@@ -76,7 +78,10 @@ def _resolve_grading_odds(bet: dict[str, Any]) -> int:
             or bet.get("market_odds")
             or DEFAULT_SPREAD_JUICE
         )
-    return int(bet.get("market_odds") or DEFAULT_SPREAD_JUICE)
+    market_odds = bet.get("market_odds")
+    if market_odds is None:
+        return None
+    return int(market_odds)
 
 
 def _parse_date_label(value: str) -> date:
@@ -323,6 +328,8 @@ def grade_bet(
         status = "win" if home_score > away_score else "loss"
 
     odds = _resolve_grading_odds(bet)
+    if odds is None:
+        return bet
     units = calculate_units(float(bet.get("stake_units") or 1), odds, status)
     return {
         **bet,
@@ -381,8 +388,8 @@ def _summarize_bets(bets: list[dict[str, Any]]) -> dict[str, Any]:
     pushes = sum(1 for b in bets if b.get("status") == "push")
     pending = sum(1 for b in bets if b.get("status") == "pending")
     settled_units = sum(b.get("units") or 0 for b in bets if b.get("status") != "pending")
-    settled = wins + losses + pushes
-    roi = (settled_units / settled * 100) if settled else 0.0
+    decided = wins + losses
+    roi = (settled_units / decided * 100) if decided else 0.0
     return {
         "bets": len(bets),
         "wins": wins,
