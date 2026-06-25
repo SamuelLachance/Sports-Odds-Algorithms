@@ -13,6 +13,11 @@ from web.basketball_pred_model import (
     is_basketball_league,
     run_basketball_pred_model,
 )
+from web.hockey_pred_model import (
+    hockey_unavailable_reason,
+    is_hockey_league,
+    run_hockey_pred_model,
+)
 from web.bet_advisor import (
     _odds_edge,
     model_home_margin,
@@ -153,6 +158,8 @@ def _sport_pred_unavailable_reason(
         return "Basketball matrix model unavailable."
     if is_baseball_league(league):
         return baseball_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
+    if is_hockey_league(league):
+        return hockey_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
     if is_soccer_league(league):
         return soccer_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
     return "Sport-specific model unavailable."
@@ -174,6 +181,9 @@ def _run_sport_pred_model(
     if is_baseball_league(league):
         payload = run_baseball_pred_model(league, cutoff_date, home_abbr, away_abbr)
         return ("baseball_pred", payload) if payload else (None, None)
+    if is_hockey_league(league):
+        payload = run_hockey_pred_model(league, cutoff_date, home_abbr, away_abbr)
+        return ("hockey_pred", payload) if payload else (None, None)
     if is_soccer_league(league):
         payload = run_soccer_pred_model(
             league,
@@ -191,6 +201,7 @@ def _uses_three_layer_blend(league: str) -> bool:
     return (
         is_basketball_league(league)
         or is_baseball_league(league)
+        or is_hockey_league(league)
         or is_soccer_league(league)
     )
 
@@ -348,7 +359,7 @@ def _best_value_spread_side(
 
 
 def _third_layer_key(blended: dict[str, Any]) -> str | None:
-    for key in ("basketball_pred", "baseball_pred", "soccer_pred"):
+    for key in ("basketball_pred", "baseball_pred", "hockey_pred", "soccer_pred"):
         if blended.get(key):
             return key
     return None
@@ -832,6 +843,8 @@ def blend_predictions(
             layer_name = "Basketball matrix"
         elif is_baseball_league(league):
             layer_name = "MLB-Model"
+        elif is_hockey_league(league):
+            layer_name = "Hockey-predictions"
         else:
             layer_name = "Football-predictor"
         reason = _sport_pred_unavailable_reason(

@@ -191,7 +191,8 @@ function algoBreakdown(m) {
   const power = m.power;
   const basketball = m.basketball_pred;
   const baseball = m.baseball_pred;
-  if (!legacy && !power && !basketball && !baseball) return "";
+  const hockey = m.hockey_pred;
+  if (!legacy && !power && !basketball && !baseball && !hockey) return "";
   const parts = [];
   const layerTag =
     m.blend_layers === 3 ? "3-layer" : m.blend_layers === 2 ? "2-layer" : "";
@@ -215,6 +216,13 @@ function algoBreakdown(m) {
     const elo =
       baseball.elo_exp != null ? ` Elo ${baseball.elo_exp}%` : "";
     parts.push(`MLB-Model: ${baseball.home_win_probability}% home${elo}`);
+  }
+  if (hockey) {
+    const xg =
+      hockey.expected_home_goals != null
+        ? ` xG ${hockey.expected_home_goals}-${hockey.expected_away_goals}`
+        : "";
+    parts.push(`Hockey-predictions: ${hockey.home_win_probability}% home${xg}`);
   }
   if (m.blend_note) {
     parts.push(m.blend_note);

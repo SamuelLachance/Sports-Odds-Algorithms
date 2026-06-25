@@ -184,6 +184,44 @@ def test_blend_mlb_two_way_fallback_when_baseball_unavailable() -> None:
         blend_module.run_baseball_pred_model = baseball_original
 
 
+def test_blend_nhl_three_way_when_hockey_available() -> None:
+    import web.blend_service as blend_module
+
+    power_original = blend_module.run_power_model
+    hockey_original = blend_module.run_hockey_pred_model
+    try:
+        blend_module.run_power_model = lambda *_a, **_k: {
+            "algorithm": "PowerRatings",
+            "home_power": 2.0,
+            "away_power": -1.0,
+            "home_win_probability": 58.0,
+            "param": 10.0,
+        }
+        blend_module.run_hockey_pred_model = lambda *_a, **_k: {
+            "algorithm": "HockeyPoisson",
+            "source": "hockey-predictions",
+            "home_win_probability": 55.0,
+            "expected_home_goals": 3.1,
+            "expected_away_goals": 2.7,
+        }
+        result = blend_predictions(
+            legacy_total_score=-55.0,
+            legacy_win_probability=55.0,
+            league="nhl",
+            cutoff_date="4-12-2017",
+            home_abbr="bos",
+            away_abbr="mtl",
+        )
+        assert result["blend_mode"] == "blended"
+        assert result["blend_layers"] == 3
+        assert result["hockey_pred"] is not None
+        assert result["hockey_pred"]["source"] == "hockey-predictions"
+        assert result["blended_home_win_probability"] == round((55.0 + 58.0 + 55.0) / 3, 2)
+    finally:
+        blend_module.run_power_model = power_original
+        blend_module.run_hockey_pred_model = hockey_original
+
+
 def test_blend_nba_three_way_when_basketball_available() -> None:
     import web.blend_service as blend_module
 
