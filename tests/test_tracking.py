@@ -10,11 +10,16 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from web.league_profiles import MIN_RECOMMENDED_EDGE  # noqa: E402
 from web.tracking_service import (  # noqa: E402
+    _fetch_event_result,
+    _scoreboard_dates_for_bet,
     build_tracking_response,
     calculate_units,
     grade_bet,
+    grade_pending,
+    load_store,
     prune_below_min_edge,
     record_from_slate,
+    save_store,
 )
 
 
@@ -193,6 +198,48 @@ def test_grade_mlb_moneyline_pushes_on_tie() -> None:
     assert graded["status"] == "push"
 
 
+def test_scoreboard_dates_use_start_time_not_record_date() -> None:
+    bet = {
+        "date": "2026-06-12",
+        "start_time": "2026-06-14T00:30:00Z",
+    }
+    dates = _scoreboard_dates_for_bet(bet)
+    iso_dates = [d.isoformat() for d in dates]
+    assert "2026-06-13" in iso_dates
+    assert "2026-06-12" in iso_dates
+
+
+def test_fetch_event_result_grades_completed_nba_final() -> None:
+    scores = _fetch_event_result("nba", "401859967")
+    assert scores == (94, 90)
+
+
+def test_grade_pending_resolves_stale_event_by_id() -> None:
+    store = {
+        "version": 1,
+        "bets": [
+            {
+                "id": "2026-06-12:401859967:away:spread",
+                "date": "2026-06-12",
+                "event_id": "401859967",
+                "league": "nba",
+                "side": "away",
+                "bet_type": "spread",
+                "consensus_spread": -5.5,
+                "spread_odds": -112,
+                "stake_units": 1.0,
+                "status": "pending",
+                "units": 0.0,
+                "start_time": "2026-06-14T00:30:00Z",
+            }
+        ],
+    }
+    graded_store = grade_pending(store)
+    bet = graded_store["bets"][0]
+    assert bet["status"] in {"win", "loss", "push"}
+    assert bet.get("final_score")
+
+
 def test_prune_below_min_edge() -> None:
     store = {
         "version": 1,
@@ -236,5 +283,8 @@ if __name__ == "__main__":
     test_grade_spread_away_cover()
     test_record_spread_bet_fields()
     test_grade_mlb_moneyline_pushes_on_tie()
+    test_scoreboard_dates_use_start_time_not_record_date()
+    test_fetch_event_result_grades_completed_nba_final()
+    test_grade_pending_resolves_stale_event_by_id()
     test_prune_below_min_edge()
     print("test_tracking.py: all tests passed")

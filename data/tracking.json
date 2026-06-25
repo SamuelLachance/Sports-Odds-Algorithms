@@ -185,10 +185,12 @@
       "consensus_odds": -112,
       "consensus_label": "+5.5 (-112)",
       "model_margin": -0.01,
-      "status": "pending",
-      "units": 0.0,
+      "status": "win",
+      "units": 0.8928571428571429,
       "stake_units": 1.0,
-      "recorded_at": "2026-06-12T14:27:24.622137+00:00"
+      "recorded_at": "2026-06-12T14:27:24.622137+00:00",
+      "graded_at": "2026-06-25T18:13:31.690036+00:00",
+      "final_score": "94\u201390"
     },
     {
       "id": "2026-06-12:401815724:away",
@@ -414,10 +416,12 @@
       "consensus_odds": -112,
       "consensus_label": "+8.5 (-112)",
       "model_margin": -2.37,
-      "status": "pending",
-      "units": 0.0,
+      "status": "win",
+      "units": 0.8928571428571429,
       "stake_units": 1.0,
-      "recorded_at": "2026-06-17T01:01:07.886157+00:00"
+      "recorded_at": "2026-06-17T01:01:07.886157+00:00",
+      "graded_at": "2026-06-25T18:13:32.206927+00:00",
+      "final_score": "96\u201395"
     },
     {
       "id": "2026-06-16:401857000:home:spread",
@@ -445,10 +449,12 @@
       "consensus_odds": -115,
       "consensus_label": "+7.5 (-115)",
       "model_margin": -1.41,
-      "status": "pending",
-      "units": 0.0,
+      "status": "loss",
+      "units": -1.0,
       "stake_units": 1.0,
-      "recorded_at": "2026-06-17T01:01:07.886157+00:00"
+      "recorded_at": "2026-06-17T01:01:07.886157+00:00",
+      "graded_at": "2026-06-25T18:13:33.072630+00:00",
+      "final_score": "86\u201376"
     },
     {
       "id": "2026-06-16:401856999:home:spread",
@@ -476,10 +482,12 @@
       "consensus_odds": -105,
       "consensus_label": "+8.5 (-105)",
       "model_margin": -2.92,
-      "status": "pending",
-      "units": 0.0,
+      "status": "loss",
+      "units": -1.0,
       "stake_units": 1.0,
-      "recorded_at": "2026-06-17T01:01:07.886157+00:00"
+      "recorded_at": "2026-06-17T01:01:07.886157+00:00",
+      "graded_at": "2026-06-25T18:13:33.390777+00:00",
+      "final_score": "99\u201383"
     },
     {
       "id": "2026-06-16:401857001:away:spread",
@@ -507,10 +515,12 @@
       "consensus_odds": -110,
       "consensus_label": "+2.5 (-110)",
       "model_margin": -1.52,
-      "status": "pending",
-      "units": 0.0,
+      "status": "loss",
+      "units": -1.0,
       "stake_units": 1.0,
-      "recorded_at": "2026-06-17T01:01:07.886157+00:00"
+      "recorded_at": "2026-06-17T01:01:07.886157+00:00",
+      "graded_at": "2026-06-25T18:13:33.685518+00:00",
+      "final_score": "89\u201394"
     },
     {
       "id": "2026-06-16:401856996:home:spread",
@@ -538,10 +548,12 @@
       "consensus_odds": -115,
       "consensus_label": "+3.5 (-115)",
       "model_margin": -0.47,
-      "status": "pending",
-      "units": 0.0,
+      "status": "loss",
+      "units": -1.0,
       "stake_units": 1.0,
-      "recorded_at": "2026-06-17T01:01:07.886157+00:00"
+      "recorded_at": "2026-06-17T01:01:07.886157+00:00",
+      "graded_at": "2026-06-25T18:13:34.113321+00:00",
+      "final_score": "88\u201381"
     },
     {
       "id": "2026-06-17:401856997:home:spread",

@@ -188,6 +188,77 @@ def _scores_from_event(event: dict[str, Any]) -> tuple[int | None, int | None, b
     return score(away), score(home), completed
 
 
+def _scoreboard_dates_for_bet(bet: dict[str, Any]) -> list[date]:
+    """Dates to scan on ESPN scoreboards when direct event lookup fails."""
+    dates: list[date] = []
+    start_time = bet.get("start_time")
+    if start_time:
+        try:
+            parsed = datetime.fromisoformat(str(start_time).replace("Z", "+00:00"))
+            if parsed.tzinfo is None:
+                parsed = parsed.replace(tzinfo=timezone.utc)
+            center = parsed.astimezone(TORONTO).date()
+            for offset in (-1, 0, 1):
+                candidate = center.fromordinal(center.toordinal() + offset)
+                if candidate not in dates:
+                    dates.append(candidate)
+        except (ValueError, TypeError):
+            pass
+
+    try:
+        recorded = _parse_date_label(bet["date"])
+        if recorded not in dates:
+            dates.append(recorded)
+    except (KeyError, ValueError):
+        pass
+    return dates
+
+
+def _fetch_event_result(league: str, event_id: str) -> tuple[int, int] | None:
+    """Fetch final scores for a single ESPN event (works across calendar dates)."""
+    from web.espn_client import _fetch_json, get_league_profile
+
+    profile = get_league_profile(league)
+    url = (
+        f"https://site.api.espn.com/apis/site/v2/sports/"
+        f"{profile['sport_path']}/summary?event={event_id}"
+    )
+    try:
+        payload = _fetch_json(url)
+    except Exception:
+        return None
+
+    competitions = (payload.get("header") or {}).get("competitions") or []
+    if not competitions:
+        return None
+
+    away_score, home_score, completed = _scores_from_event(
+        {"competitions": competitions}
+    )
+    if not completed or away_score is None or home_score is None:
+        return None
+    return away_score, home_score
+
+
+def _lookup_scoreboard_result(
+    bet: dict[str, Any],
+    cache: dict[tuple[str, date], dict[str, tuple[int, int]]],
+) -> tuple[int, int] | None:
+    league = bet.get("league") or ""
+    event_id = bet.get("event_id") or ""
+    if not league or not event_id:
+        return None
+
+    for on_date in _scoreboard_dates_for_bet(bet):
+        cache_key = (league, on_date)
+        if cache_key not in cache:
+            cache[cache_key] = _fetch_results_by_event(league, on_date)
+        scores = cache[cache_key].get(event_id)
+        if scores:
+            return scores
+    return None
+
+
 def _fetch_results_by_event(league: str, on_date: date) -> dict[str, tuple[int, int]]:
     from web.espn_client import _fetch_json, get_league_profile
 
@@ -267,24 +338,22 @@ def grade_pending(store: dict[str, Any]) -> dict[str, Any]:
     if not pending:
         return store
 
-    by_date_league: dict[tuple[str, str], list[dict[str, Any]]] = {}
+    scoreboard_cache: dict[tuple[str, date], dict[str, tuple[int, int]]] = {}
     for bet in pending:
-        bucket = (bet["date"], bet["league"])
-        by_date_league.setdefault(bucket, []).append(bet)
-
-    for (date_label, league), bets in by_date_league.items():
-        try:
-            on_date = _parse_date_label(date_label)
-        except ValueError:
+        event_id = bet.get("event_id")
+        league = bet.get("league")
+        if not event_id or not league:
             continue
-        results = _fetch_results_by_event(league, on_date)
-        for bet in bets:
-            scores = results.get(bet["event_id"])
-            if not scores:
-                continue
-            graded = grade_bet(bet, scores[0], scores[1])
-            idx = next(i for i, b in enumerate(store["bets"]) if b["id"] == bet["id"])
-            store["bets"][idx] = graded
+
+        scores = _fetch_event_result(league, event_id)
+        if not scores:
+            scores = _lookup_scoreboard_result(bet, scoreboard_cache)
+        if not scores:
+            continue
+
+        graded = grade_bet(bet, scores[0], scores[1])
+        idx = next(i for i, b in enumerate(store["bets"]) if b["id"] == bet["id"])
+        store["bets"][idx] = graded
 
     return store
 
