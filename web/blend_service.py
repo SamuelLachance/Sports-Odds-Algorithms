@@ -493,7 +493,7 @@ def blend_predictions(
         "algorithm": "Algo_V2",
         "total_score": round(legacy_total_score, 2),
         "win_probability": round(legacy_win_probability, 2),
-        "favorite_side": "home" if legacy_total_score < 0 else "away",
+        "favorite_side": "home" if legacy_total_score <= 0 else "away",
     }
 
     power_payload = run_power_model(
@@ -549,7 +549,7 @@ def blend_predictions(
             "blended_home_win_probability": round(blended_home, 2),
             "total_score": round(total, 2),
             "win_probability": round(win_prob, 2),
-            "favorite_side": "home" if total < 0 else "away",
+            "favorite_side": "home" if total <= 0 else "away",
         }
         return result
 
@@ -572,7 +572,7 @@ def blend_predictions(
         "blended_home_win_probability": round(blended_home, 2),
         "total_score": round(total, 2),
         "win_probability": round(win_prob, 2),
-        "favorite_side": "home" if total < 0 else "away",
+        "favorite_side": "home" if total <= 0 else "away",
     }
 
     if _uses_three_layer_blend(league) and not sport_payload:

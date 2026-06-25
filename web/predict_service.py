@@ -154,7 +154,7 @@ def predict_match(
     else:
         winning_odds = abs(total)
 
-    favorite_side = "home" if total < 0 else "away"
+    favorite_side = "home" if total <= 0 else "away"
     favorite_team = home if favorite_side == "home" else away
     underdog_team = away if favorite_side == "home" else home
     favorite_odds, underdog_odds = _american_odds(winning_odds)

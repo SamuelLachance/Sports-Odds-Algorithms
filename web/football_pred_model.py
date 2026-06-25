@@ -199,7 +199,7 @@ def predict_matchup_from_model(
         "home_elo": round(ratings[home].rating, 1),
         "away_elo": round(ratings[away].rating, 1),
         "elo_differential": round(elo_dif, 1),
-        "projected_spread": round(-model_line, 1),
+        "projected_spread": round(model_line, 1),
         "home_win_probability": round(home_prob * 100.0, 2),
         "away_win_probability": round((1.0 - home_prob) * 100.0, 2),
     }

@@ -36,3 +36,26 @@ def test_predict_matchup_from_built_model() -> None:
     result = predict_matchup_from_model(model, "kc", "den")
     assert result is not None
     assert 0 < result["home_win_probability"] < 100
+
+
+def test_projected_spread_uses_book_sign_when_home_favored() -> None:
+    """Negative projected_spread = home favored (matches market spread convention)."""
+    games = []
+    for _ in range(25):
+        games.append(("kc", "den", "Chiefs", "Broncos", 30, 10))
+        games.append(("den", "kc", "Broncos", "Chiefs", 14, 28))
+
+    model = build_football_model(games, "nfl")
+    assert model is not None
+    result = predict_matchup_from_model(model, "kc", "den")
+    assert result is not None
+    assert result["home_win_probability"] > 50
+    assert result["projected_spread"] < 0
+
+
+def test_projected_spread_layer_margin_for_agreement() -> None:
+    """Third-layer spread agreement expects positive home margin from book-sign spread."""
+    from web.blend_service import _layer_home_margin
+
+    layer = {"projected_spread": -3.5}
+    assert _layer_home_margin(layer, "nfl") == 3.5
