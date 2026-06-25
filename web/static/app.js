@@ -1,6 +1,17 @@
-const BASE_PATH = document.querySelector('meta[name="base-path"]')?.content || "";
-const USE_STATIC_API =
-  Boolean(BASE_PATH) || window.location.hostname.endsWith("github.io");
+const META_BASE_PATH =
+  document.querySelector('meta[name="base-path"]')?.content ?? "";
+const IS_GITHUB_IO = window.location.hostname.endsWith("github.io");
+const IS_LOCAL_DEV =
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1";
+
+// GitHub project pages live under /Repo-Name; custom domains serve from /.
+const BASE_PATH = IS_GITHUB_IO
+  ? META_BASE_PATH || "/Sports-Odds-Algorithms"
+  : "";
+
+// Prebuilt JSON in /api unless we're hitting the local FastAPI dev server.
+const USE_STATIC_API = !IS_LOCAL_DEV;
 
 const state = {
   slate: null,
@@ -20,8 +31,9 @@ const footerUpdated = document.getElementById("footerUpdated");
 const themeToggle = document.getElementById("themeToggle");
 
 function api(path) {
+  const prefix = BASE_PATH.replace(/\/$/, "");
   if (USE_STATIC_API) {
-    return `${BASE_PATH}/api/${path}`;
+    return `${prefix}/api/${path}`;
   }
   return `/api/${path}`;
 }
