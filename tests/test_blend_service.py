@@ -222,6 +222,75 @@ def test_blend_nhl_three_way_when_hockey_available() -> None:
         blend_module.run_hockey_pred_model = hockey_original
 
 
+def test_blend_nfl_three_way_when_football_available() -> None:
+    import web.blend_service as blend_module
+
+    power_original = blend_module.run_power_model
+    football_original = blend_module.run_football_pred_model
+    try:
+        blend_module.run_power_model = lambda *_a, **_k: {
+            "algorithm": "PowerRatings",
+            "home_power": 3.0,
+            "away_power": -2.0,
+            "home_win_probability": 62.0,
+            "param": 10.0,
+        }
+        blend_module.run_football_pred_model = lambda *_a, **_k: {
+            "algorithm": "NfeloElo",
+            "source": "nfelo",
+            "home_win_probability": 58.0,
+            "projected_spread": -3.5,
+        }
+        result = blend_predictions(
+            legacy_total_score=-58.0,
+            legacy_win_probability=58.0,
+            league="nfl",
+            cutoff_date="1-15-2025",
+            home_abbr="kc",
+            away_abbr="den",
+        )
+        assert result["blend_layers"] == 3
+        assert result["football_pred"] is not None
+        assert result["football_pred"]["source"] == "nfelo"
+        assert result["blended_home_win_probability"] == round((58.0 + 62.0 + 58.0) / 3, 2)
+    finally:
+        blend_module.run_power_model = power_original
+        blend_module.run_football_pred_model = football_original
+
+
+def test_blend_cfb_three_way_when_football_available() -> None:
+    import web.blend_service as blend_module
+
+    power_original = blend_module.run_power_model
+    football_original = blend_module.run_football_pred_model
+    try:
+        blend_module.run_power_model = lambda *_a, **_k: {
+            "algorithm": "PowerRatings",
+            "home_win_probability": 55.0,
+            "home_power": 1.0,
+            "away_power": 0.0,
+            "param": 10.0,
+        }
+        blend_module.run_football_pred_model = lambda *_a, **_k: {
+            "algorithm": "NfeloElo",
+            "source": "nfelo",
+            "home_win_probability": 57.0,
+        }
+        result = blend_predictions(
+            legacy_total_score=-57.0,
+            legacy_win_probability=57.0,
+            league="cfb",
+            cutoff_date="12-15-2024",
+            home_abbr="ala",
+            away_abbr="ga",
+        )
+        assert result["blend_layers"] == 3
+        assert result["football_pred"] is not None
+    finally:
+        blend_module.run_power_model = power_original
+        blend_module.run_football_pred_model = football_original
+
+
 def test_blend_nba_three_way_when_basketball_available() -> None:
     import web.blend_service as blend_module
 

@@ -27,6 +27,7 @@ from web.bet_advisor import (  # noqa: E402
 )
 from web.baseball_pred_model import get_baseball_pred_context, is_baseball_league  # noqa: E402
 from web.basketball_pred_model import get_basketball_pred_context, is_basketball_league  # noqa: E402
+from web.football_pred_model import get_football_pred_context, is_football_league  # noqa: E402
 from web.hockey_pred_model import get_hockey_pred_context, is_hockey_league  # noqa: E402
 from web.blend_service import blend_predictions, compute_model_agreement  # noqa: E402
 from web.season_games import prewarm_league_power  # noqa: E402
@@ -293,6 +294,16 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
                         {
                             "league": league,
                             "error": f"Hockey model prewarm failed ({cutoff}): {exc}",
+                        }
+                    )
+            if is_football_league(league):
+                try:
+                    get_football_pred_context(league, cutoff)
+                except Exception as exc:  # noqa: BLE001
+                    errors.append(
+                        {
+                            "league": league,
+                            "error": f"Football model prewarm failed ({cutoff}): {exc}",
                         }
                     )
 
