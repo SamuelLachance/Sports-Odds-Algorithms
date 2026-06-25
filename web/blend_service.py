@@ -27,18 +27,12 @@ from web.bet_advisor import (
     _odds_edge,
     model_home_margin,
     model_moneylines,
-    soccer_model_moneylines,
-    soccer_threeway_probs,
     spread_point_edge,
 )
-from web.league_profiles import is_soccer_league, uses_spread_bets
+from web.league_profiles import uses_spread_bets
 from web.live_data import resolve_team
 from web.power_model import PowerTeam, predict_matchup
 from web.season_games import get_league_power_context, power_unavailable_reason
-from web.soccer_pred_model import (
-    run_soccer_pred_model,
-    soccer_unavailable_reason,
-)
 
 LEGACY_BLEND_WEIGHT = 0.5
 POWER_BLEND_WEIGHT = 0.5
@@ -58,51 +52,6 @@ def home_win_prob_to_total_score(home_win_prob: float) -> tuple[float, float]:
         return -home_win_prob, home_win_prob
     away_prob = 100.0 - home_win_prob
     return away_prob, away_prob
-
-
-def threeway_probs_to_total_score(
-    home_prob: float,
-    draw_prob: float,
-    away_prob: float,
-) -> tuple[float, float, str]:
-    """Convert blended 1X2 probabilities back to binary total_score fields."""
-    if draw_prob > home_prob and draw_prob > away_prob:
-        return 0.0, draw_prob, "home"
-    non_draw = home_prob + away_prob
-    if non_draw <= 0:
-        return 0.0, 50.0, "home"
-    home_binary = home_prob / non_draw * 100.0
-    total, win_prob = home_win_prob_to_total_score(home_binary)
-    favorite = "home" if home_prob >= away_prob else "away"
-    return total, win_prob, favorite
-
-
-def _normalize_threeway_blend(
-    home: float, draw: float, away: float
-) -> tuple[float, float, float]:
-    total = home + draw + away
-    if total <= 0:
-        return 33.33, 33.33, 33.34
-    scale = 100.0 / total
-    return round(home * scale, 2), round(draw * scale, 2), round(away * scale, 2)
-
-
-def _blend_threeway_layers(
-    layers: list[tuple[float, float, float]],
-    weights: list[float],
-) -> tuple[float, float, float]:
-    weight_sum = sum(weights)
-    home = sum(w * layer[0] for w, layer in zip(weights, layers)) / weight_sum
-    draw = sum(w * layer[1] for w, layer in zip(weights, layers)) / weight_sum
-    away = sum(w * layer[2] for w, layer in zip(weights, layers)) / weight_sum
-    return _normalize_threeway_blend(home, draw, away)
-
-
-def _power_threeway_probs(
-    power_home: float, league: str
-) -> tuple[float, float, float]:
-    power_total, _ = home_win_prob_to_total_score(power_home)
-    return soccer_threeway_probs(power_total, league)
 
 
 def _find_team_key(
@@ -167,8 +116,6 @@ def _sport_pred_unavailable_reason(
         return hockey_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
     if is_football_league(league):
         return football_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
-    if is_soccer_league(league):
-        return soccer_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
     return "Sport-specific model unavailable."
 
 
@@ -194,16 +141,6 @@ def _run_sport_pred_model(
     if is_football_league(league):
         payload = run_football_pred_model(league, cutoff_date, home_abbr, away_abbr)
         return ("football_pred", payload) if payload else (None, None)
-    if is_soccer_league(league):
-        payload = run_soccer_pred_model(
-            league,
-            cutoff_date,
-            home_abbr,
-            away_abbr,
-            home_name=home_name,
-            away_name=away_name,
-        )
-        return ("soccer_pred", payload) if payload else (None, None)
     return None, None
 
 
@@ -213,22 +150,12 @@ def _uses_three_layer_blend(league: str) -> bool:
         or is_baseball_league(league)
         or is_hockey_league(league)
         or is_football_league(league)
-        or is_soccer_league(league)
     )
 
 
 def requires_three_layer_agreement(league: str) -> bool:
     """Leagues that require unanimous agreement across all three model layers."""
     return _uses_three_layer_blend(league)
-
-
-def _favorite_side_from_home_win_prob(home_win_prob: float) -> str:
-    return "home" if home_win_prob >= 50.0 else "away"
-
-
-def _best_threeway_outcome(home: float, draw: float, away: float) -> str:
-    outcomes = {"home": home, "draw": draw, "away": away}
-    return max(outcomes, key=outcomes.get)
 
 
 def _layer_binary_total_score(layer: dict[str, Any]) -> float | None:
@@ -269,33 +196,6 @@ def _best_value_side_binary(
     return max(edges, key=lambda item: item[1])[0]
 
 
-def _best_value_outcome_threeway(
-    home_prob: float,
-    draw_prob: float,
-    away_prob: float,
-    away_market: int | None,
-    draw_market: int | None,
-    home_market: int | None,
-) -> str | None:
-    away_proj, draw_proj, home_proj = soccer_model_moneylines(
-        home_prob, draw_prob, away_prob
-    )
-    edges: list[tuple[str, float]] = []
-    for side, prob, proj, market in (
-        ("away", away_prob, away_proj, away_market),
-        ("draw", draw_prob, draw_proj, draw_market),
-        ("home", home_prob, home_proj, home_market),
-    ):
-        if market is None:
-            continue
-        edge = _odds_edge(proj, market, prob)
-        if edge > 0:
-            edges.append((side, edge))
-    if not edges:
-        return None
-    return max(edges, key=lambda item: item[1])[0]
-
-
 def _layer_has_value_on_side_binary(
     total_score: float,
     side: str,
@@ -308,34 +208,6 @@ def _layer_has_value_on_side_binary(
         return (
             away_market is not None
             and _odds_edge(away_proj, away_market, away_prob) > 0
-        )
-    return (
-        home_market is not None
-        and _odds_edge(home_proj, home_market, home_prob) > 0
-    )
-
-
-def _layer_has_value_on_outcome_threeway(
-    home_prob: float,
-    draw_prob: float,
-    away_prob: float,
-    outcome: str,
-    away_market: int | None,
-    draw_market: int | None,
-    home_market: int | None,
-) -> bool:
-    away_proj, draw_proj, home_proj = soccer_model_moneylines(
-        home_prob, draw_prob, away_prob
-    )
-    if outcome == "away":
-        return (
-            away_market is not None
-            and _odds_edge(away_proj, away_market, away_prob) > 0
-        )
-    if outcome == "draw":
-        return (
-            draw_market is not None
-            and _odds_edge(draw_proj, draw_market, draw_prob) > 0
         )
     return (
         home_market is not None
@@ -370,7 +242,7 @@ def _best_value_spread_side(
 
 
 def _third_layer_key(blended: dict[str, Any]) -> str | None:
-    for key in ("basketball_pred", "baseball_pred", "hockey_pred", "football_pred", "soccer_pred"):
+    for key in ("basketball_pred", "baseball_pred", "hockey_pred", "football_pred"):
         if blended.get(key):
             return key
     return None
@@ -385,7 +257,6 @@ def compute_model_agreement(
     """
     For 3-layer leagues, all layers must independently find value on the same side.
 
-    Soccer: home/draw/away — each layer needs edge > 0 vs market on one shared outcome.
     Spread leagues: each layer needs spread_point_edge > 0 on one shared side.
     Other 3-layer sports: each layer needs moneyline edge > 0 on one shared side.
     """
@@ -400,7 +271,6 @@ def compute_model_agreement(
 
     away_market = market.get("away_moneyline")
     home_market = market.get("home_moneyline")
-    draw_market = market.get("draw_moneyline")
     consensus_spread = market.get("spread")
     use_spread = uses_spread_bets(league) and consensus_spread is not None
 
@@ -457,61 +327,6 @@ def compute_model_agreement(
     if not legacy or not power or not third_payload or blended.get("blend_layers", 0) < 3:
         return _incomplete_payload()
 
-    if is_soccer_league(league):
-        legacy_tw = blended.get("legacy_threeway")
-        power_tw = blended.get("power_threeway")
-        if not legacy_tw or not power_tw:
-            return _incomplete_payload()
-
-        legacy_probs = (
-            float(legacy_tw["home_win_probability"]),
-            float(legacy_tw["draw_probability"]),
-            float(legacy_tw["away_win_probability"]),
-        )
-        power_probs = (
-            float(power_tw["home_win_probability"]),
-            float(power_tw["draw_probability"]),
-            float(power_tw["away_win_probability"]),
-        )
-        third_probs = (
-            float(third_payload["home_win_probability"]),
-            float(third_payload["draw_probability"]),
-            float(third_payload["away_win_probability"]),
-        )
-        legacy_side = _best_value_outcome_threeway(
-            *legacy_probs, away_market, draw_market, home_market
-        )
-        power_side = _best_value_outcome_threeway(
-            *power_probs, away_market, draw_market, home_market
-        )
-        third_side = _best_value_outcome_threeway(
-            *third_probs, away_market, draw_market, home_market
-        )
-        value_outcomes = [
-            outcome
-            for outcome in ("home", "draw", "away")
-            if _layer_has_value_on_outcome_threeway(
-                *legacy_probs, outcome, away_market, draw_market, home_market
-            )
-            and _layer_has_value_on_outcome_threeway(
-                *power_probs, outcome, away_market, draw_market, home_market
-            )
-            and _layer_has_value_on_outcome_threeway(
-                *third_probs, outcome, away_market, draw_market, home_market
-            )
-        ]
-        return {
-            "required": 3,
-            "agreed": bool(value_outcomes),
-            "legacy_side": legacy_side,
-            "power_side": power_side,
-            "third_side": third_side,
-            "third_source": third_key,
-            "agreement_mode": "value",
-            "value_outcomes": value_outcomes,
-            "value_sides": value_outcomes,
-        }
-
     legacy_total = _layer_binary_total_score(legacy)
     power_total = _layer_binary_total_score(power)
     third_total = _layer_binary_total_score(third_payload)
@@ -558,139 +373,6 @@ def compute_model_agreement(
         "agreement_mode": "value",
         "value_sides": value_sides,
         "value_outcomes": value_sides,
-    }
-
-
-def _blend_soccer_predictions(
-    *,
-    legacy_total_score: float,
-    legacy_win_probability: float,
-    league: str,
-    cutoff_date: str,
-    home_abbr: str,
-    away_abbr: str,
-    home_name: str | None = None,
-    away_name: str | None = None,
-    legacy_payload: dict[str, Any],
-    power_payload: dict[str, Any] | None,
-) -> dict[str, Any]:
-    legacy_threeway = soccer_threeway_probs(legacy_total_score, league)
-    legacy_threeway_payload = {
-        "algorithm": "Algo_V2",
-        "home_win_probability": round(legacy_threeway[0], 2),
-        "draw_probability": round(legacy_threeway[1], 2),
-        "away_win_probability": round(legacy_threeway[2], 2),
-        "total_score": legacy_payload["total_score"],
-        "favorite_side": legacy_payload["favorite_side"],
-    }
-
-    if not power_payload:
-        total = legacy_total_score
-        win_prob = legacy_win_probability
-        reason = power_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
-        home_p, draw_p, away_p = legacy_threeway
-        return {
-            "algorithm": "Unified",
-            "blend_mode": "legacy_only",
-            "blend_note": f"Power model unavailable — {reason} Using Algo V2 only.",
-            "legacy": legacy_payload,
-            "legacy_threeway": legacy_threeway_payload,
-            "power": None,
-            "threeway": True,
-            "home_win_probability": round(home_p, 2),
-            "draw_probability": round(draw_p, 2),
-            "away_win_probability": round(away_p, 2),
-            "total_score": round(total, 2),
-            "win_probability": round(win_prob, 2),
-            "favorite_side": legacy_payload["favorite_side"],
-        }
-
-    power_threeway = _power_threeway_probs(float(power_payload["home_win_probability"]), league)
-    power_threeway_payload = {
-        "algorithm": "PowerRatings",
-        "home_win_probability": round(power_threeway[0], 2),
-        "draw_probability": round(power_threeway[1], 2),
-        "away_win_probability": round(power_threeway[2], 2),
-        "home_power": power_payload["home_power"],
-        "away_power": power_payload["away_power"],
-    }
-
-    sport_key, sport_payload = _run_sport_pred_model(
-        league,
-        cutoff_date,
-        home_abbr,
-        away_abbr,
-        home_name=home_name,
-        away_name=away_name,
-    )
-
-    if sport_payload and sport_key:
-        soccer_threeway = (
-            float(sport_payload["home_win_probability"]),
-            float(sport_payload["draw_probability"]),
-            float(sport_payload["away_win_probability"]),
-        )
-        home_p, draw_p, away_p = _blend_threeway_layers(
-            [legacy_threeway, power_threeway, soccer_threeway],
-            [THREE_LAYER_WEIGHT, THREE_LAYER_WEIGHT, THREE_LAYER_WEIGHT],
-        )
-        total, win_prob, favorite = threeway_probs_to_total_score(home_p, draw_p, away_p)
-        return {
-            "algorithm": "Unified",
-            "blend_mode": "blended",
-            "blend_layers": 3,
-            "blend_weights": {
-                "legacy": THREE_LAYER_WEIGHT,
-                "power": THREE_LAYER_WEIGHT,
-                sport_key: THREE_LAYER_WEIGHT,
-            },
-            "legacy": legacy_payload,
-            "legacy_threeway": legacy_threeway_payload,
-            "power": power_payload,
-            "power_threeway": power_threeway_payload,
-            sport_key: sport_payload,
-            "threeway": True,
-            "home_win_probability": home_p,
-            "draw_probability": draw_p,
-            "away_win_probability": away_p,
-            "blended_threeway": {
-                "home_win_probability": home_p,
-                "draw_probability": draw_p,
-                "away_win_probability": away_p,
-            },
-            "total_score": round(total, 2),
-            "win_probability": round(win_prob, 2),
-            "favorite_side": favorite,
-        }
-
-    home_p, draw_p, away_p = _blend_threeway_layers(
-        [legacy_threeway, power_threeway],
-        [LEGACY_BLEND_WEIGHT, POWER_BLEND_WEIGHT],
-    )
-    total, win_prob, favorite = threeway_probs_to_total_score(home_p, draw_p, away_p)
-    reason = _sport_pred_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
-    return {
-        "algorithm": "Unified",
-        "blend_mode": "blended",
-        "blend_layers": 2,
-        "blend_weights": {
-            "legacy": LEGACY_BLEND_WEIGHT,
-            "power": POWER_BLEND_WEIGHT,
-        },
-        "legacy": legacy_payload,
-        "legacy_threeway": legacy_threeway_payload,
-        "power": power_payload,
-        "power_threeway": power_threeway_payload,
-        "threeway": True,
-        "home_win_probability": home_p,
-        "draw_probability": draw_p,
-        "away_win_probability": away_p,
-        "total_score": round(total, 2),
-        "win_probability": round(win_prob, 2),
-        "favorite_side": favorite,
-        "blend_note": (
-            f"Football-predictor layer unavailable — {reason} Using 2-layer blend."
-        ),
     }
 
 
@@ -746,8 +428,8 @@ def blend_predictions(
     """
     Blend Algo_V2 and power model into unified total_score / win_probability.
 
-    Basketball and baseball use a third layer with equal 1/3 weights on home win
-    probability. Soccer uses equal 1/3 weights on home, draw, and away separately.
+    Basketball, baseball, hockey, and football use a third layer with equal 1/3 weights
+    on home win probability.
     """
     legacy_payload = {
         "algorithm": "Algo_V2",
@@ -764,20 +446,6 @@ def blend_predictions(
         home_name=home_name,
         away_name=away_name,
     )
-
-    if is_soccer_league(league):
-        return _blend_soccer_predictions(
-            legacy_total_score=legacy_total_score,
-            legacy_win_probability=legacy_win_probability,
-            league=league,
-            cutoff_date=cutoff_date,
-            home_abbr=home_abbr,
-            away_abbr=away_abbr,
-            home_name=home_name,
-            away_name=away_name,
-            legacy_payload=legacy_payload,
-            power_payload=power_payload,
-        )
 
     if not power_payload:
         total = legacy_total_score
@@ -856,10 +524,8 @@ def blend_predictions(
             layer_name = "MLB-Model"
         elif is_hockey_league(league):
             layer_name = "Hockey-predictions"
-        elif is_football_league(league):
-            layer_name = "nfelo"
         else:
-            layer_name = "Football-predictor"
+            layer_name = "nfelo"
         reason = _sport_pred_unavailable_reason(
             league, cutoff_date, home_abbr, away_abbr
         )
@@ -868,4 +534,3 @@ def blend_predictions(
         )
 
     return result
-

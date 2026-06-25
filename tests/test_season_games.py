@@ -101,38 +101,12 @@ def test_get_league_power_context_builds_ratings_from_sample_games() -> None:
     assert param is not None
 
 
-def test_worldcup_supplements_friendlies_for_power_context() -> None:
-    get_league_power_context.cache_clear()
-    cutoff = "6-12-2026"
-    tournament_only = [
-        ("usa", "par", "United States", "Paraguay", 2, 1),
-        ("can", "bih", "Canada", "Bosnia-Herzegovina", 1, 0),
-    ]
-    friendly_games = [
-        ("usa", "mex", "United States", "Mexico", 2, 0),
-        ("usa", "crc", "United States", "Costa Rica", 3, 1),
-        ("par", "chi", "Paraguay", "Chile", 1, 1),
-        ("par", "uru", "Paraguay", "Uruguay", 2, 0),
-        ("can", "jam", "Canada", "Jamaica", 2, 1),
-    ]
-    merged = tournament_only + friendly_games
-
-    with patch("web.season_games._collect_from_team_schedules", return_value={}):
-        with patch("web.season_games._load_friendlies_supplement", return_value=friendly_games):
-            with patch(
-                "web.season_games._collect_from_scoreboards",
-                side_effect=lambda league, cutoff, lookback: {},
-            ):
-                games = load_league_completed_games("worldcup", cutoff)
-    assert len(games) >= MIN_GAMES_FOR_POWER
-
-    get_league_power_context.cache_clear()
-    with patch("web.season_games.load_league_completed_games", return_value=merged):
-        context = get_league_power_context("worldcup", cutoff)
-    assert context is not None
-
-
-def test_collect_from_scoreboards_deduplicates_events() -> None:
+if __name__ == "__main__":
+    test_parse_event_to_game_normalizes_abbreviations()
+    test_get_league_power_context_requires_min_games()
+    test_get_league_power_context_builds_ratings_from_sample_games()
+    test_collect_from_scoreboards_deduplicates_events()
+    print("test_season_games.py: all tests passed")
     cutoff = datetime(2026, 6, 12, tzinfo=timezone.utc)
     event = _completed_event(
         "evt-1",
@@ -155,6 +129,5 @@ if __name__ == "__main__":
     test_parse_event_to_game_normalizes_abbreviations()
     test_get_league_power_context_requires_min_games()
     test_get_league_power_context_builds_ratings_from_sample_games()
-    test_worldcup_supplements_friendlies_for_power_context()
     test_collect_from_scoreboards_deduplicates_events()
     print("test_season_games.py: all tests passed")

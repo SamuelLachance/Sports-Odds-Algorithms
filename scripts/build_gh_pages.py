@@ -78,8 +78,6 @@ def _season_date(league: str, season: str) -> str:
         return DEFAULT_DATES.get(league, f"4-16-{season}")
     if league == "mlb":
         return f"10-25-{season}"
-    if league in {"mls", "epl", "laliga", "bundesliga", "seriea", "ligue1"}:
-        return f"4-15-{season}"
     if league == "cbb":
         return f"3-15-{season}"
     if league == "cfb":

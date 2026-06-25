@@ -15,8 +15,6 @@ from web.espn_client import (
     prior_season_year,
 )
 from web.league_profiles import (
-    FRIENDLIES_SUPPLEMENT_LEAGUE,
-    INTERNATIONAL_TOURNAMENT_LEAGUES,
     LARGE_ROSTER_LEAGUES,
     MIN_GAMES_FOR_POWER,
     POWER_SCOREBOARD_LOOKBACK,
@@ -193,13 +191,6 @@ def _scoreboard_lookback_days(league: str) -> int:
     return POWER_SCOREBOARD_LOOKBACK.get(league, POWER_SCOREBOARD_LOOKBACK["default"])
 
 
-def _load_friendlies_supplement(cutoff_date: str) -> list[GameTuple]:
-    """Recent FIFA friendlies for sparse international tournaments."""
-    cutoff = _parse_cutoff(cutoff_date)
-    lookback = _scoreboard_lookback_days(FRIENDLIES_SUPPLEMENT_LEAGUE)
-    return list(_collect_from_scoreboards(FRIENDLIES_SUPPLEMENT_LEAGUE, cutoff, lookback).values())
-
-
 def load_league_completed_games(
     league: str,
     cutoff_date: str,
@@ -217,10 +208,6 @@ def load_league_completed_games(
         merged = _collect_from_scoreboards(league, cutoff, _scoreboard_lookback_days(league))
     else:
         merged = _collect_from_team_schedules(league, cutoff, cutoff_day)
-
-    if league in INTERNATIONAL_TOURNAMENT_LEAGUES:
-        for index, game in enumerate(_load_friendlies_supplement(cutoff_date)):
-            merged[f"friendlies:{index}:{game[0]}:{game[1]}"] = game
 
     return list(merged.values())
 

@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from web.league_profiles import DEFAULT_SPREAD_JUICE, MIN_RECOMMENDED_EDGE, SOCCER_DRAW_BASE
+from web.league_profiles import DEFAULT_SPREAD_JUICE, MIN_RECOMMENDED_EDGE
 
 # Approximate points of spread cushion per 1.0 American-odds edge unit.
 SPREAD_POINT_TO_EDGE = 20.0
@@ -64,36 +64,6 @@ def model_moneylines(total_score: float) -> tuple[int, int]:
     home_prob = win_prob if home_is_favorite else 100.0 - win_prob
     away_prob = 100.0 - home_prob
     return projections_from_win_probs(home_prob, away_prob)
-
-
-def soccer_threeway_probs(total_score: float, league: str) -> tuple[float, float, float]:
-    """Return home win, draw, and away win probabilities (0–100 scale)."""
-    win_prob = abs(total_score)
-    home_is_favorite = total_score <= 0
-    home_binary = win_prob if home_is_favorite else 100.0 - win_prob
-    away_binary = 100.0 - home_binary
-
-    base_draw = SOCCER_DRAW_BASE.get(league.lower(), SOCCER_DRAW_BASE["default"])
-    closeness = 1.0 - abs(win_prob - 50.0) / 50.0
-    draw_prob = min(35.0, max(18.0, base_draw + closeness * 8.0))
-
-    scale = (100.0 - draw_prob) / 100.0
-    home_prob = home_binary * scale
-    away_prob = away_binary * scale
-    return home_prob, draw_prob, away_prob
-
-
-def soccer_model_moneylines(
-    home_prob: float,
-    draw_prob: float,
-    away_prob: float,
-) -> tuple[int, int, int]:
-    """Return projected American odds for away, draw, and home outcomes."""
-    return (
-        _probability_to_american(away_prob),
-        _probability_to_american(draw_prob),
-        _probability_to_american(home_prob),
-    )
 
 
 def model_home_margin(total_score: float, league: str) -> float:
@@ -278,79 +248,6 @@ def evaluate_picks(
             outcome_prob=outcome_prob,
             is_model_favorite=is_model_favorite,
             is_market_underdog=is_market_underdog,
-        )
-
-        if edge >= 8 and strategy == "lean":
-            strategy = "value"
-            confidence = "medium"
-
-        picks.append(
-            BetPick(
-                side=side,
-                team_name=name,
-                team_slug=slug,
-                strategy=strategy,
-                confidence=confidence,
-                edge=edge,
-                model_projection=projection,
-                market_odds=market,
-                win_probability=outcome_prob,
-                reason=reason,
-            )
-        )
-
-    picks.sort(key=lambda item: item.edge, reverse=True)
-    return best_pick_only(picks)
-
-
-def evaluate_soccer_picks(
-    *,
-    away_name: str,
-    home_name: str,
-    away_slug: str,
-    home_slug: str,
-    total_score: float,
-    home_prob: float,
-    draw_prob: float,
-    away_prob: float,
-    away_proj: int,
-    draw_proj: int,
-    home_proj: int,
-    away_market: int | None,
-    draw_market: int | None,
-    home_market: int | None,
-    min_edge: float = MIN_RECOMMENDED_EDGE,
-) -> list[BetPick]:
-    """Evaluate 3-way soccer moneyline outcomes vs the book."""
-    picks: list[BetPick] = []
-
-    candidates: list[tuple[str, str, str, float, int, int | None]] = [
-        ("away", away_name, away_slug, away_prob, away_proj, away_market),
-        ("draw", "Draw", "draw", draw_prob, draw_proj, draw_market),
-        ("home", home_name, home_slug, home_prob, home_proj, home_market),
-    ]
-
-    for side, name, slug, outcome_prob, projection, market in candidates:
-        if market is None:
-            continue
-
-        edge = _odds_edge(projection, market, outcome_prob)
-        is_model_favorite = projection < 0
-        is_market_underdog = market > 0
-
-        if edge < min_edge:
-            continue
-
-        outcome_label = "Draw" if side == "draw" else name
-        strategy, confidence, reason = _moneyline_reason(
-            name=name,
-            projection=projection,
-            market=market,
-            edge=edge,
-            outcome_prob=outcome_prob,
-            is_model_favorite=is_model_favorite,
-            is_market_underdog=is_market_underdog,
-            outcome_label=outcome_label,
         )
 
         if edge >= 8 and strategy == "lean":

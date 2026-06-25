@@ -13,20 +13,6 @@ ALGO_PROFILE: dict[str, str] = {
     "cfb": "nba",
     "nhl": "nhl",
     "mlb": "mlb",
-    "mls": "nhl",
-    "epl": "nhl",
-    "laliga": "nhl",
-    "bundesliga": "nhl",
-    "seriea": "nhl",
-    "ligue1": "nhl",
-    "worldcup": "nhl",
-    "fifa_friendlies": "nhl",
-    "concacaf_wcq": "nhl",
-    "concacaf_gold": "nhl",
-    "concacaf_nations": "nhl",
-    "uefa_euro": "nhl",
-    "uefa_nations": "nhl",
-    "copa_america": "nhl",
 }
 
 NUM_PERIODS: dict[str, int] = {
@@ -37,20 +23,6 @@ NUM_PERIODS: dict[str, int] = {
     "cfb": 4,
     "nhl": 3,
     "mlb": 9,
-    "mls": 2,
-    "epl": 2,
-    "laliga": 2,
-    "bundesliga": 2,
-    "seriea": 2,
-    "ligue1": 2,
-    "worldcup": 2,
-    "fifa_friendlies": 2,
-    "concacaf_wcq": 2,
-    "concacaf_gold": 2,
-    "concacaf_nations": 2,
-    "uefa_euro": 2,
-    "uefa_nations": 2,
-    "copa_america": 2,
 }
 
 DEFAULT_DATES: dict[str, str] = {
@@ -61,20 +33,6 @@ DEFAULT_DATES: dict[str, str] = {
     "wnba": "9-15-2024",
     "cbb": "3-15-2025",
     "cfb": "12-15-2024",
-    "mls": "10-25-2025",
-    "epl": "4-15-2025",
-    "laliga": "4-15-2025",
-    "bundesliga": "4-15-2025",
-    "seriea": "4-15-2025",
-    "ligue1": "4-15-2025",
-    "worldcup": "6-12-2026",
-    "fifa_friendlies": "6-12-2026",
-    "concacaf_wcq": "6-12-2026",
-    "concacaf_gold": "6-12-2026",
-    "concacaf_nations": "6-12-2026",
-    "uefa_euro": "6-12-2026",
-    "uefa_nations": "6-12-2026",
-    "copa_america": "6-12-2026",
 }
 
 DEMO_SEASONS: dict[str, str] = {
@@ -97,7 +55,6 @@ LARGE_ROSTER_LEAGUES: tuple[str, ...] = ("cbb", "cfb")
 POWER_SCOREBOARD_LOOKBACK: dict[str, int] = {
     "cbb": 150,
     "cfb": 120,
-    "fifa_friendlies": 120,
     "default": 365,
 }
 
@@ -168,148 +125,9 @@ LEAGUE_PROFILES: dict[str, LeagueProfile] = {
         "category": "football",
         "coach_code": "CFB",
     },
-    "mls": {
-        "id": "mls",
-        "name": "MLS",
-        "sport_path": "soccer/usa.1",
-        "category": "soccer",
-        "coach_code": None,
-    },
-    "epl": {
-        "id": "epl",
-        "name": "Premier League",
-        "sport_path": "soccer/eng.1",
-        "category": "soccer",
-        "coach_code": None,
-    },
-    "laliga": {
-        "id": "laliga",
-        "name": "La Liga",
-        "sport_path": "soccer/esp.1",
-        "category": "soccer",
-        "coach_code": None,
-    },
-    "bundesliga": {
-        "id": "bundesliga",
-        "name": "Bundesliga",
-        "sport_path": "soccer/ger.1",
-        "category": "soccer",
-        "coach_code": None,
-    },
-    "seriea": {
-        "id": "seriea",
-        "name": "Serie A",
-        "sport_path": "soccer/ita.1",
-        "category": "soccer",
-        "coach_code": None,
-    },
-    "ligue1": {
-        "id": "ligue1",
-        "name": "Ligue 1",
-        "sport_path": "soccer/fra.1",
-        "category": "soccer",
-        "coach_code": None,
-    },
-    "worldcup": {
-        "id": "worldcup",
-        "name": "FIFA World Cup",
-        "sport_path": "soccer/fifa.world",
-        "category": "soccer",
-        "coach_code": None,
-    },
-    "fifa_friendlies": {
-        "id": "fifa_friendlies",
-        "name": "FIFA Friendlies",
-        "sport_path": "soccer/fifa.friendly",
-        "category": "soccer",
-        "coach_code": None,
-    },
-    "concacaf_wcq": {
-        "id": "concacaf_wcq",
-        "name": "CONCACAF WC Qualifying",
-        "sport_path": "soccer/fifa.worldq.concacaf",
-        "category": "soccer",
-        "coach_code": None,
-    },
-    "concacaf_gold": {
-        "id": "concacaf_gold",
-        "name": "CONCACAF Gold Cup",
-        "sport_path": "soccer/concacaf.gold",
-        "category": "soccer",
-        "coach_code": None,
-    },
-    "concacaf_nations": {
-        "id": "concacaf_nations",
-        "name": "CONCACAF Nations League",
-        "sport_path": "soccer/concacaf.nations.league",
-        "category": "soccer",
-        "coach_code": None,
-    },
-    "uefa_euro": {
-        "id": "uefa_euro",
-        "name": "UEFA European Championship",
-        "sport_path": "soccer/uefa.euro",
-        "category": "soccer",
-        "coach_code": None,
-    },
-    "uefa_nations": {
-        "id": "uefa_nations",
-        "name": "UEFA Nations League",
-        "sport_path": "soccer/uefa.nations",
-        "category": "soccer",
-        "coach_code": None,
-    },
-    "copa_america": {
-        "id": "copa_america",
-        "name": "Copa América",
-        "sport_path": "soccer/conmebol.america",
-        "category": "soccer",
-        "coach_code": None,
-    },
 }
 
-INTERNATIONAL_SOCCER_LEAGUES: tuple[str, ...] = (
-    "worldcup",
-    "fifa_friendlies",
-    "concacaf_wcq",
-    "concacaf_gold",
-    "concacaf_nations",
-    "uefa_euro",
-    "uefa_nations",
-    "copa_america",
-)
-
-# Sparse tournaments can backfill recent form from FIFA friendlies on the same ESPN team id.
-INTERNATIONAL_TOURNAMENT_LEAGUES: tuple[str, ...] = tuple(
-    league for league in INTERNATIONAL_SOCCER_LEAGUES if league != "fifa_friendlies"
-)
-FRIENDLIES_SUPPLEMENT_LEAGUE = "fifa_friendlies"
-
-SUPPORTED_LEAGUES: tuple[str, ...] = tuple(
-    key for key, profile in LEAGUE_PROFILES.items() if profile["category"] != "soccer"
-)
-SOCCER_LEAGUES: tuple[str, ...] = tuple(
-    key for key, profile in LEAGUE_PROFILES.items() if profile["category"] == "soccer"
-)
-
-# Historical draw rate baseline (%), adjusted by model closeness in bet_advisor.
-SOCCER_DRAW_BASE: dict[str, float] = {
-    "default": 26.0,
-    "seriea": 28.5,
-    "ligue1": 27.0,
-    "bundesliga": 24.5,
-    "epl": 25.5,
-    "laliga": 26.5,
-    "mls": 23.0,
-    "worldcup": 25.0,
-    "fifa_friendlies": 27.0,
-    "uefa_euro": 24.0,
-    "copa_america": 25.0,
-}
-
-
-def is_soccer_league(league: str) -> bool:
-    return league.lower() in SOCCER_LEAGUES
+SUPPORTED_LEAGUES: tuple[str, ...] = tuple(LEAGUE_PROFILES.keys())
 
 
 def uses_spread_bets(league: str) -> bool:

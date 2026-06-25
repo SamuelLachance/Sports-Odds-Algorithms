@@ -12,7 +12,6 @@ from web.bet_advisor import (  # noqa: E402
     _breakeven_american,
     _odds_edge,
     evaluate_picks,
-    evaluate_soccer_picks,
     evaluate_spread_picks,
     model_home_margin,
     model_moneylines,
@@ -218,26 +217,6 @@ def test_cross_sign_reason_does_not_claim_book_beats_model_line() -> None:
         assert "underdog" in picks[0].reason.lower()
 
 
-def test_soccer_same_sign_edge_unchanged() -> None:
-    picks = evaluate_soccer_picks(
-        away_name="Away",
-        home_name="Home",
-        away_slug="away",
-        home_slug="home",
-        total_score=30.0,
-        home_prob=40.0,
-        draw_prob=30.0,
-        away_prob=30.0,
-        away_proj=233,
-        draw_proj=233,
-        home_proj=150,
-        away_market=350,
-        draw_market=None,
-        home_market=None,
-    )
-    assert len(picks) == 1
-    assert picks[0].edge == 117.0
-
 
 if __name__ == "__main__":
     test_spread_line_for_side()
@@ -255,5 +234,4 @@ if __name__ == "__main__":
     test_evaluate_picks_away_favorite_same_sign_soft_line()
     test_evaluate_spread_picks_favors_underdog_when_market_overlays()
     test_cross_sign_reason_does_not_claim_book_beats_model_line()
-    test_soccer_same_sign_edge_unchanged()
     print("test_bet_advisor.py: all tests passed")

@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 
 from web.bet_advisor import spread_line_for_side
 from web.espn_client import fetch_scoreboard
-from web.league_profiles import DEFAULT_SPREAD_JUICE, MIN_RECOMMENDED_EDGE, is_soccer_league
+from web.league_profiles import DEFAULT_SPREAD_JUICE, MIN_RECOMMENDED_EDGE
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 TRACKING_FILE = PROJECT_ROOT / "data" / "tracking.json"
@@ -244,13 +244,8 @@ def grade_bet(
         if spread is None:
             return bet
         status = _grade_spread_bet(side, spread, away_score, home_score)
-    elif side == "draw":
-        status = "win" if away_score == home_score else "loss"
     elif away_score == home_score:
-        if is_soccer_league(bet.get("league") or ""):
-            status = "loss"
-        else:
-            status = "push"
+        status = "push"
     elif side == "away":
         status = "win" if away_score > home_score else "loss"
     else:
@@ -399,16 +394,8 @@ def prune_below_min_edge(store: dict[str, Any]) -> dict[str, Any]:
     return store
 
 
-def prune_soccer_bets(store: dict[str, Any]) -> dict[str, Any]:
-    store["bets"] = [
-        b for b in store["bets"] if not is_soccer_league(b.get("league") or "")
-    ]
-    return store
-
-
 def update_tracking(slate: dict[str, Any]) -> dict[str, Any]:
     store = load_store()
-    store = prune_soccer_bets(store)
     store = prune_below_min_edge(store)
     store = record_from_slate(store, slate)
     store = grade_pending(store)

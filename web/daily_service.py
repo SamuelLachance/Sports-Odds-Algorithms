@@ -152,7 +152,6 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
     market_payload = {
         "away_moneyline": game.market.away_moneyline,
         "home_moneyline": game.market.home_moneyline,
-        "draw_moneyline": game.market.draw_moneyline,
         "spread": game.market.spread,
     }
     model_agreement = compute_model_agreement(
@@ -227,7 +226,6 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             "provider": game.market.provider,
             "away_moneyline": game.market.away_moneyline,
             "home_moneyline": game.market.home_moneyline,
-            "draw_moneyline": game.market.draw_moneyline,
             "spread": game.market.spread,
             "away_spread_odds": game.market.away_spread_odds,
             "home_spread_odds": game.market.home_spread_odds,
