@@ -2,7 +2,7 @@
 
 **Live site:** [sharpsheettips.com](https://sharpsheettips.com) · **Mirror:** [GitHub Pages](https://samuellachance.github.io/Sports-Odds-Algorithms/)
 
-Daily algorithmic sports betting platform across **NBA, WNBA, CBB, NFL, CFB, NHL, and MLB**. The board pulls live ESPN schedules and moneylines, runs a unified three-layer prediction model, surfaces value bets with a minimum **+40 edge**, and tracks recommended picks with automatic win/loss grading.
+Daily algorithmic sports betting platform across **NBA, WNBA, CBB, NFL, CFB, NHL, NCAA D1 hockey, MLB, NCAA D1 baseball, and international winter baseball leagues** (Dominican, Puerto Rican, Venezuelan, Mexican Pacific, WBC). Leagues are activated automatically once there is enough completed-game data for the full three-layer model.
 
 ---
 
@@ -21,12 +21,12 @@ Daily algorithmic sports betting platform across **NBA, WNBA, CBB, NFL, CFB, NHL
 
 Each matchup blends three independent signals (equal weight when all layers are available):
 
-| Sport | Third layer |
-|-------|-------------|
-| NBA, WNBA, CBB | [NBA-prediction](https://github.com/greerreNFL/NBA-prediction) matrix model |
-| MLB | [MLB-Model](https://github.com/greerreNFL/MLB-Model) Elo ratings |
-| NHL | [hockey-predictions](https://github.com/greerreNFL/hockey-predictions) Poisson xG model |
-| NFL, CFB | [nfelo](https://github.com/greerreNFL/nfelo) Elo ratings |
+| Sport | Leagues | Third layer |
+|-------|---------|-------------|
+| NBA, WNBA, CBB | Basketball | [NBA-prediction](https://github.com/greerreNFL/NBA-prediction) matrix model |
+| MLB, NCAA D1 baseball, winter leagues, WBC | Baseball | [MLB-Model](https://github.com/greerreNFL/MLB-Model) Elo ratings |
+| NHL, NCAA D1 hockey | Hockey | [hockey-predictions](https://github.com/greerreNFL/hockey-predictions) Poisson xG model |
+| NFL, CFB | Football | [nfelo](https://github.com/greerreNFL/nfelo) Elo ratings |
 
 Layers 1 and 2 are the original **Algo V2** (backtest-derived factor curves on current-season results) and **Sports-pred power ratings** (team strength from season performance).
 

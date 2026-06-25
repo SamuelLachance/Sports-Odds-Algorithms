@@ -43,6 +43,16 @@ def test_college_season_rollover() -> None:
     assert current_season_year("cbb", date(2026, 9, 1)) == 2027
 
 
+def test_college_hockey_uses_split_year() -> None:
+    assert current_season_year("ncaah", date(2026, 6, 11)) == 2026
+    assert current_season_year("ncaah", date(2026, 11, 1)) == 2027
+
+
+def test_ncaa_baseball_uses_calendar_year() -> None:
+    assert current_season_year("ncaabb", date(2026, 3, 15)) == 2026
+    assert prior_season_year("ncaabb", date(2026, 3, 15)) == 2025
+
+
 def test_min_games_threshold() -> None:
     assert MIN_GAMES_FOR_MODEL == 10
 

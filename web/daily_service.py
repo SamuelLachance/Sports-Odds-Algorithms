@@ -1,4 +1,4 @@
-"""Daily slate analysis and bet recommendations across NBA, NHL, and MLB."""
+"""Daily slate analysis and bet recommendations across all supported leagues."""
 
 from __future__ import annotations
 
@@ -44,6 +44,7 @@ from web.league_profiles import (  # noqa: E402
     get_algo_league,
     uses_spread_bets,
 )
+from web.league_readiness import is_league_ready_for_daily_slate  # noqa: E402
 from web.live_data import load_live_team_data, resolve_team  # noqa: E402
 from web.predict_service import FACTOR_LABELS  # noqa: E402
 
@@ -237,12 +238,21 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
     }
 
 
+def _slate_cutoff_date() -> str:
+    today = _toronto_today()
+    return f"{today.month}-{today.day}-{today.year}"
+
+
 def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
     generated_at = datetime.now(timezone.utc).isoformat()
     all_games: list[dict[str, Any]] = []
     errors: list[dict[str, str]] = []
+    slate_cutoff = _slate_cutoff_date()
 
     for league in SUPPORTED_LEAGUES:
+        if not is_league_ready_for_daily_slate(league, slate_cutoff):
+            continue
+
         try:
             scheduled = fetch_scoreboard(league, days_ahead=days_ahead)
         except Exception as exc:  # noqa: BLE001

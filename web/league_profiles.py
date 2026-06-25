@@ -12,7 +12,15 @@ ALGO_PROFILE: dict[str, str] = {
     "nfl": "nba",
     "cfb": "nba",
     "nhl": "nhl",
+    "ncaah": "nhl",
+    "ncaawh": "nhl",
     "mlb": "mlb",
+    "ncaabb": "mlb",
+    "dwl": "mlb",
+    "pwl": "mlb",
+    "vwl": "mlb",
+    "lmp": "mlb",
+    "wbc": "mlb",
 }
 
 NUM_PERIODS: dict[str, int] = {
@@ -22,7 +30,15 @@ NUM_PERIODS: dict[str, int] = {
     "nfl": 4,
     "cfb": 4,
     "nhl": 3,
+    "ncaah": 3,
+    "ncaawh": 3,
     "mlb": 9,
+    "ncaabb": 9,
+    "dwl": 9,
+    "pwl": 9,
+    "vwl": 9,
+    "lmp": 9,
+    "wbc": 9,
 }
 
 DEFAULT_DATES: dict[str, str] = {
@@ -33,6 +49,14 @@ DEFAULT_DATES: dict[str, str] = {
     "wnba": "9-15-2024",
     "cbb": "3-15-2025",
     "cfb": "12-15-2024",
+    "ncaabb": "3-15-2026",
+    "ncaah": "3-15-2026",
+    "ncaawh": "3-15-2026",
+    "dwl": "1-15-2026",
+    "pwl": "1-15-2026",
+    "vwl": "1-15-2026",
+    "lmp": "1-15-2026",
+    "wbc": "3-15-2026",
 }
 
 DEMO_SEASONS: dict[str, str] = {
@@ -49,12 +73,14 @@ MIN_GAMES_FOR_MODEL = 10
 MIN_GAMES_FOR_POWER = 5
 
 # Leagues with very large ESPN rosters — use scoreboard walks instead of per-team schedules.
-LARGE_ROSTER_LEAGUES: tuple[str, ...] = ("cbb", "cfb")
+LARGE_ROSTER_LEAGUES: tuple[str, ...] = ("cbb", "cfb", "ncaabb", "ncaah")
 
 # Days of scoreboard history to scan when collecting completed games.
 POWER_SCOREBOARD_LOOKBACK: dict[str, int] = {
     "cbb": 150,
     "cfb": 120,
+    "ncaabb": 120,
+    "ncaah": 120,
     "default": 365,
 }
 
@@ -104,12 +130,68 @@ LEAGUE_PROFILES: dict[str, LeagueProfile] = {
         "category": "hockey",
         "coach_code": "NHL",
     },
+    "ncaah": {
+        "id": "ncaah",
+        "name": "NCAA D1 Men's Hockey",
+        "sport_path": "hockey/mens-college-hockey",
+        "category": "hockey",
+        "coach_code": "NCAH",
+    },
+    "ncaawh": {
+        "id": "ncaawh",
+        "name": "NCAA D1 Women's Hockey",
+        "sport_path": "hockey/womens-college-hockey",
+        "category": "hockey",
+        "coach_code": "NCAWH",
+    },
     "mlb": {
         "id": "mlb",
         "name": "MLB",
         "sport_path": "baseball/mlb",
         "category": "baseball",
         "coach_code": "MLB",
+    },
+    "ncaabb": {
+        "id": "ncaabb",
+        "name": "NCAA D1 Baseball",
+        "sport_path": "baseball/college-baseball",
+        "category": "baseball",
+        "coach_code": "NCABB",
+    },
+    "dwl": {
+        "id": "dwl",
+        "name": "Dominican Winter League (LIDOM)",
+        "sport_path": "baseball/dominican-winter-league",
+        "category": "baseball",
+        "coach_code": "DWL",
+    },
+    "pwl": {
+        "id": "pwl",
+        "name": "Puerto Rican Winter League (LBPRC)",
+        "sport_path": "baseball/puerto-rican-winter-league",
+        "category": "baseball",
+        "coach_code": "PWL",
+    },
+    "vwl": {
+        "id": "vwl",
+        "name": "Venezuelan Winter League (LVBP)",
+        "sport_path": "baseball/venezuelan-winter-league",
+        "category": "baseball",
+        "coach_code": "VWL",
+    },
+    "lmp": {
+        "id": "lmp",
+        "name": "Mexican Pacific League (LMP)",
+        "sport_path": "baseball/mexican-winter-league",
+        "category": "baseball",
+        "coach_code": "LMP",
+    },
+    "wbc": {
+        "id": "wbc",
+        "name": "World Baseball Classic",
+        "sport_path": "baseball/world-baseball-classic",
+        "category": "baseball",
+        "coach_code": "WBC",
     },
     "nfl": {
         "id": "nfl",
@@ -154,14 +236,24 @@ def list_leagues_metadata() -> list[dict[str, str]]:
     rows: list[dict[str, str]] = []
     for league_id, profile in LEAGUE_PROFILES.items():
         algo = get_algo_league(league_id)
+        category = profile["category"]
+        if category in ("baseball", "hockey"):
+            model_note = (
+                f"Unified 3-layer model (Algo V2 + power + "
+                f"{'Elo' if category == 'baseball' else 'Poisson xG'}, "
+                f"{algo.upper()} profile) when season data is sufficient"
+            )
+        else:
+            model_note = (
+                f"Live ESPN data · Unified model (Algo V2 + power ratings, "
+                f"{algo.upper()} profile)"
+            )
         rows.append(
             {
                 "id": league_id,
                 "name": profile["name"],
-                "category": profile["category"],
-                "description": (
-                    f"Live ESPN data · Unified model (Algo V2 + power ratings, {algo.upper()} profile)"
-                ),
+                "category": category,
+                "description": model_note,
             }
         )
     return rows

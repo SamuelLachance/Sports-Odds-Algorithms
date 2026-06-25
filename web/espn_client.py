@@ -265,7 +265,16 @@ def current_season_year(league: str, cutoff: date) -> int:
     year = cutoff.year
     month = cutoff.month
 
-    if league == "mlb":
+    # Spring / calendar-year baseball (MLB, NCAA baseball, winter leagues, WBC).
+    if league in {
+        "mlb",
+        "ncaabb",
+        "dwl",
+        "pwl",
+        "vwl",
+        "lmp",
+        "wbc",
+    }:
         return year
 
     if league in {"cbb", "cfb"}:
@@ -273,7 +282,7 @@ def current_season_year(league: str, cutoff: date) -> int:
             return year + 1
         return year
 
-    if league in {"nba", "nhl", "nfl", "wnba"}:
+    if league in {"nba", "nhl", "nfl", "wnba", "ncaah", "ncaawh"}:
         if month >= 10:
             return year + 1
         return year
