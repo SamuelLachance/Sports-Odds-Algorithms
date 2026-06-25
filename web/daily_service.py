@@ -154,6 +154,8 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
         "away_moneyline": game.market.away_moneyline,
         "home_moneyline": game.market.home_moneyline,
         "spread": game.market.spread,
+        "away_spread_odds": game.market.away_spread_odds,
+        "home_spread_odds": game.market.home_spread_odds,
     }
     model_agreement = compute_model_agreement(
         blended, game.league, market=market_payload

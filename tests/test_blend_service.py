@@ -354,7 +354,7 @@ def test_model_agreement_nba_three_layers_agree() -> None:
         agreement = compute_model_agreement(
             result,
             "nba",
-            market={"away_moneyline": 110, "home_moneyline": -130},
+            market={"away_moneyline": 110, "home_moneyline": -110},
         )
         assert agreement["required"] == 3
         assert agreement["agreed"] is True
@@ -479,7 +479,7 @@ def test_model_agreement_nba_one_layer_lacks_shared_value() -> None:
         agreement = compute_model_agreement(
             result,
             "nba",
-            market={"away_moneyline": 160, "home_moneyline": -190},
+            market={"away_moneyline": 200, "home_moneyline": -230},
         )
         assert agreement["required"] == 3
         assert agreement["agreed"] is False
@@ -522,6 +522,50 @@ def test_model_agreement_two_layer_fallback_not_agreed() -> None:
         blend_module.run_basketball_pred_model = basketball_original
 
 
+def test_model_agreement_nba_spread_three_layers_agree() -> None:
+    import web.blend_service as blend_module
+
+    power_original = blend_module.run_power_model
+    basketball_original = blend_module.run_basketball_pred_model
+    try:
+        blend_module.run_power_model = lambda *_a, **_k: {
+            "algorithm": "PowerRatings",
+            "home_power": 5.0,
+            "away_power": -2.0,
+            "home_win_probability": 97.0,
+            "param": 10.0,
+        }
+        blend_module.run_basketball_pred_model = lambda *_a, **_k: {
+            "algorithm": "BasketballMatrix",
+            "home_win_probability": 96.0,
+            "predicted_margin": 8.0,
+            "source": "matrix",
+        }
+        result = blend_predictions(
+            legacy_total_score=-99.0,
+            legacy_win_probability=99.0,
+            league="nba",
+            cutoff_date="4-16-2017",
+            home_abbr="bos",
+            away_abbr="mia",
+        )
+        agreement = compute_model_agreement(
+            result,
+            "nba",
+            market={
+                "spread": -1.5,
+                "away_spread_odds": -110,
+                "home_spread_odds": -110,
+            },
+        )
+        assert agreement["required"] == 3
+        assert agreement["agreed"] is True
+        assert "home" in agreement["value_sides"]
+    finally:
+        blend_module.run_power_model = power_original
+        blend_module.run_basketball_pred_model = basketball_original
+
+
 def test_model_agreement_nhl_requires_three_layers() -> None:
     agreement = compute_model_agreement({"legacy": {"favorite_side": "home"}}, "nhl")
     assert agreement["required"] == 3
@@ -542,5 +586,6 @@ if __name__ == "__main__":
     test_model_agreement_nba_three_layers_disagree()
     test_model_agreement_nba_one_layer_lacks_shared_value()
     test_model_agreement_two_layer_fallback_not_agreed()
+    test_model_agreement_nba_spread_three_layers_agree()
     test_model_agreement_nhl_requires_three_layers()
     print("test_blend_service.py: all tests passed")

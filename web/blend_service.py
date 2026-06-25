@@ -27,9 +27,10 @@ from web.bet_advisor import (
     _odds_edge,
     model_home_margin,
     model_moneylines,
+    spread_edge_from_points,
     spread_point_edge,
 )
-from web.league_profiles import uses_spread_bets
+from web.league_profiles import DEFAULT_SPREAD_JUICE, MIN_RECOMMENDED_EDGE, uses_spread_bets
 from web.live_data import resolve_team
 from web.power_model import PowerTeam, predict_matchup
 from web.season_games import get_league_power_context, power_unavailable_reason
@@ -175,6 +176,19 @@ def _layer_side_win_probs(total_score: float) -> tuple[float, float]:
     return away_prob, home_prob
 
 
+def _layer_home_margin(layer: dict[str, Any], league: str) -> float | None:
+    """Home scoring margin for spread checks; uses sport-specific projections when present."""
+    if layer.get("predicted_margin") is not None:
+        return float(layer["predicted_margin"])
+    if layer.get("projected_spread") is not None:
+        # nfelo projected_spread uses book sign (negative = home favored).
+        return -float(layer["projected_spread"])
+    total = _layer_binary_total_score(layer)
+    if total is not None:
+        return model_home_margin(total, league)
+    return None
+
+
 def _best_value_side_binary(
     total_score: float,
     away_market: int | None,
@@ -185,11 +199,11 @@ def _best_value_side_binary(
     edges: list[tuple[str, float]] = []
     if away_market is not None:
         edge = _odds_edge(away_proj, away_market, away_prob)
-        if edge > 0:
+        if edge >= MIN_RECOMMENDED_EDGE:
             edges.append(("away", edge))
     if home_market is not None:
         edge = _odds_edge(home_proj, home_market, home_prob)
-        if edge > 0:
+        if edge >= MIN_RECOMMENDED_EDGE:
             edges.append(("home", edge))
     if not edges:
         return None
@@ -207,35 +221,50 @@ def _layer_has_value_on_side_binary(
     if side == "away":
         return (
             away_market is not None
-            and _odds_edge(away_proj, away_market, away_prob) > 0
+            and _odds_edge(away_proj, away_market, away_prob) >= MIN_RECOMMENDED_EDGE
         )
     return (
         home_market is not None
-        and _odds_edge(home_proj, home_market, home_prob) > 0
+        and _odds_edge(home_proj, home_market, home_prob) >= MIN_RECOMMENDED_EDGE
     )
 
 
 def _layer_has_spread_value_on_side(
-    total_score: float,
+    layer: dict[str, Any],
     league: str,
     side: str,
     consensus_spread: float,
+    *,
+    spread_odds: int | None = None,
 ) -> bool:
-    margin = model_home_margin(total_score, league)
-    return spread_point_edge(margin, consensus_spread, side) > 0
+    margin = _layer_home_margin(layer, league)
+    if margin is None:
+        return False
+    point_edge = spread_point_edge(margin, consensus_spread, side)
+    juice = spread_odds if spread_odds is not None else DEFAULT_SPREAD_JUICE
+    return spread_edge_from_points(point_edge, juice) >= MIN_RECOMMENDED_EDGE
 
 
 def _best_value_spread_side(
-    total_score: float,
+    layer: dict[str, Any],
     league: str,
     consensus_spread: float,
+    *,
+    away_spread_odds: int | None = None,
+    home_spread_odds: int | None = None,
 ) -> str | None:
-    margin = model_home_margin(total_score, league)
+    margin = _layer_home_margin(layer, league)
+    if margin is None:
+        return None
     edges: list[tuple[str, float]] = []
-    for side in ("away", "home"):
+    for side, juice in (
+        ("away", away_spread_odds),
+        ("home", home_spread_odds),
+    ):
         point_edge = spread_point_edge(margin, consensus_spread, side)
-        if point_edge > 0:
-            edges.append((side, point_edge))
+        edge = spread_edge_from_points(point_edge, juice)
+        if edge >= MIN_RECOMMENDED_EDGE:
+            edges.append((side, edge))
     if not edges:
         return None
     return max(edges, key=lambda item: item[1])[0]
@@ -257,8 +286,8 @@ def compute_model_agreement(
     """
     For 3-layer leagues, all layers must independently find value on the same side.
 
-    Spread leagues: each layer needs spread_point_edge > 0 on one shared side.
-    Other 3-layer sports: each layer needs moneyline edge > 0 on one shared side.
+    Spread leagues: each layer needs spread edge >= MIN_RECOMMENDED_EDGE on one shared side.
+    Other 3-layer sports: each layer needs moneyline edge >= MIN_RECOMMENDED_EDGE on one shared side.
     """
     if not requires_three_layer_agreement(league):
         return {"required": 0, "agreed": True, "agreement_mode": "value"}
@@ -272,31 +301,41 @@ def compute_model_agreement(
     away_market = market.get("away_moneyline")
     home_market = market.get("home_moneyline")
     consensus_spread = market.get("spread")
+    away_spread_odds = market.get("away_spread_odds")
+    home_spread_odds = market.get("home_spread_odds")
     use_spread = uses_spread_bets(league) and consensus_spread is not None
 
+    def _spread_kwargs() -> dict[str, Any]:
+        return {
+            "away_spread_odds": away_spread_odds,
+            "home_spread_odds": home_spread_odds,
+        }
+
     def _incomplete_payload() -> dict[str, Any]:
-        legacy_total = _layer_binary_total_score(legacy) if legacy else None
-        power_total = _layer_binary_total_score(power) if power else None
-        third_total = (
-            _layer_binary_total_score(third_payload) if third_payload else None
-        )
         if use_spread and consensus_spread is not None:
+            spread_line = float(consensus_spread)
+            sk = _spread_kwargs()
             legacy_side = (
-                _best_value_spread_side(legacy_total, league, float(consensus_spread))
-                if legacy_total is not None
+                _best_value_spread_side(legacy, league, spread_line, **sk)
+                if legacy
                 else None
             )
             power_side = (
-                _best_value_spread_side(power_total, league, float(consensus_spread))
-                if power_total is not None
+                _best_value_spread_side(power, league, spread_line, **sk)
+                if power
                 else None
             )
             third_side = (
-                _best_value_spread_side(third_total, league, float(consensus_spread))
-                if third_total is not None
+                _best_value_spread_side(third_payload, league, spread_line, **sk)
+                if third_payload
                 else None
             )
         else:
+            legacy_total = _layer_binary_total_score(legacy) if legacy else None
+            power_total = _layer_binary_total_score(power) if power else None
+            third_total = (
+                _layer_binary_total_score(third_payload) if third_payload else None
+            )
             legacy_side = (
                 _best_value_side_binary(legacy_total, away_market, home_market)
                 if legacy_total is not None
@@ -335,15 +374,34 @@ def compute_model_agreement(
 
     if use_spread:
         spread_line = float(consensus_spread)
-        legacy_side = _best_value_spread_side(legacy_total, league, spread_line)
-        power_side = _best_value_spread_side(power_total, league, spread_line)
-        third_side = _best_value_spread_side(third_total, league, spread_line)
+        sk = _spread_kwargs()
+        legacy_side = _best_value_spread_side(legacy, league, spread_line, **sk)
+        power_side = _best_value_spread_side(power, league, spread_line, **sk)
+        third_side = _best_value_spread_side(third_payload, league, spread_line, **sk)
         value_sides = [
             side
             for side in ("away", "home")
-            if _layer_has_spread_value_on_side(legacy_total, league, side, spread_line)
-            and _layer_has_spread_value_on_side(power_total, league, side, spread_line)
-            and _layer_has_spread_value_on_side(third_total, league, side, spread_line)
+            if _layer_has_spread_value_on_side(
+                legacy,
+                league,
+                side,
+                spread_line,
+                spread_odds=away_spread_odds if side == "away" else home_spread_odds,
+            )
+            and _layer_has_spread_value_on_side(
+                power,
+                league,
+                side,
+                spread_line,
+                spread_odds=away_spread_odds if side == "away" else home_spread_odds,
+            )
+            and _layer_has_spread_value_on_side(
+                third_payload,
+                league,
+                side,
+                spread_line,
+                spread_odds=away_spread_odds if side == "away" else home_spread_odds,
+            )
         ]
     else:
         legacy_side = _best_value_side_binary(legacy_total, away_market, home_market)

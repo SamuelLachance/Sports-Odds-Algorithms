@@ -201,6 +201,35 @@ def test_evaluate_spread_picks_favors_underdog_when_market_overlays() -> None:
     assert picks[0].edge >= MIN_RECOMMENDED_EDGE
 
 
+def test_spread_edge_juice_adjustment() -> None:
+    from web.bet_advisor import spread_edge_from_points
+
+    base = spread_edge_from_points(2.0, -110)
+    worse_juice = spread_edge_from_points(2.0, -120)
+    better_juice = spread_edge_from_points(2.0, -105)
+    assert base == 40.0
+    assert worse_juice == 30.0
+    assert better_juice == 45.0
+
+
+def test_spread_pick_uses_cover_probability() -> None:
+    picks = evaluate_spread_picks(
+        league="nba",
+        away_name="A",
+        home_name="B",
+        away_slug="a",
+        home_slug="b",
+        total_score=-99.0,
+        win_probability=99.0,
+        consensus_spread=-1.5,
+        away_spread_odds=-110,
+        home_spread_odds=-110,
+    )
+    assert picks
+    assert picks[0].win_probability > 50.0
+    assert picks[0].win_probability != 99.0
+
+
 def test_cross_sign_reason_does_not_claim_book_beats_model_line() -> None:
     picks = evaluate_picks(
         away_name="San Diego Padres",
@@ -233,5 +262,7 @@ if __name__ == "__main__":
     test_evaluate_picks_same_sign_meets_threshold()
     test_evaluate_picks_away_favorite_same_sign_soft_line()
     test_evaluate_spread_picks_favors_underdog_when_market_overlays()
+    test_spread_edge_juice_adjustment()
+    test_spread_pick_uses_cover_probability()
     test_cross_sign_reason_does_not_claim_book_beats_model_line()
     print("test_bet_advisor.py: all tests passed")

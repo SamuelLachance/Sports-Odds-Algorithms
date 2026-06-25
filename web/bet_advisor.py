@@ -9,6 +9,7 @@ from web.league_profiles import DEFAULT_SPREAD_JUICE, MIN_RECOMMENDED_EDGE
 
 # Approximate points of spread cushion per 1.0 American-odds edge unit.
 SPREAD_POINT_TO_EDGE = 20.0
+MIN_SPREAD_POINT_EDGE = MIN_RECOMMENDED_EDGE / SPREAD_POINT_TO_EDGE
 
 # Win-probability → projected home margin (points), calibrated per league.
 LEAGUE_MARGIN_SCALE: dict[str, float] = {
@@ -68,6 +69,8 @@ def model_moneylines(total_score: float) -> tuple[int, int]:
 
 def model_home_margin(total_score: float, league: str) -> float:
     """Projected home scoring margin (positive = home favored)."""
+    if abs(total_score) < 1e-9:
+        return 0.0
     win_prob = abs(total_score)
     scale = LEAGUE_MARGIN_SCALE.get(league.lower(), 0.14)
     margin = (win_prob - 50.0) * scale
@@ -87,8 +90,20 @@ def spread_point_edge(model_margin_home: float, home_spread: float, side: str) -
     return -model_margin_home - home_spread
 
 
-def spread_edge_from_points(point_edge: float) -> float:
-    return max(0.0, point_edge * SPREAD_POINT_TO_EDGE)
+def spread_edge_from_points(
+    point_edge: float,
+    spread_odds: int | None = None,
+) -> float:
+    """Map point cushion to edge units, adjusting for juice vs -110 baseline."""
+    base_edge = max(0.0, point_edge * SPREAD_POINT_TO_EDGE)
+    if spread_odds is None:
+        return base_edge
+    return max(0.0, base_edge + (spread_odds - DEFAULT_SPREAD_JUICE))
+
+
+def spread_cover_probability(point_edge: float) -> float:
+    """Heuristic ATS cover probability from point cushion vs the spread."""
+    return min(max(50.0 + point_edge * 2.5, 5.0), 95.0)
 
 
 def _breakeven_american(probability_pct: float, *, as_underdog: bool) -> float:
@@ -301,13 +316,14 @@ def evaluate_spread_picks(
 
     for side, name, slug, spread_odds in candidates:
         point_edge = spread_point_edge(model_margin, consensus_spread, side)
-        edge = spread_edge_from_points(point_edge)
+        juice = spread_odds if spread_odds is not None else DEFAULT_SPREAD_JUICE
+        edge = spread_edge_from_points(point_edge, juice)
         if edge < min_edge:
             continue
 
         line = spread_line_for_side(consensus_spread, side)
-        juice = spread_odds if spread_odds is not None else DEFAULT_SPREAD_JUICE
         side_margin = model_margin if side == "home" else -model_margin
+        side_cover_prob = spread_cover_probability(point_edge)
 
         strategy = "value"
         confidence = "medium"
@@ -337,7 +353,7 @@ def evaluate_spread_picks(
                 edge=edge,
                 model_projection=round(side_margin * SPREAD_POINT_TO_EDGE),
                 market_odds=juice,
-                win_probability=win_probability,
+                win_probability=side_cover_prob,
                 reason=reason,
                 bet_type="spread",
                 spread_line=line,
