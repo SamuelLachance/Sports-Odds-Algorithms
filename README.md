@@ -1,14 +1,38 @@
-# Sports Odds Algorithms
+# Sharp Odds — Sports Odds Algorithms
 
-System that calculates and uses algorithms to predict the outcome of NBA, NHL, and MLB games. Each league has its own unique algorithm to predict winners, with NBA having the most accurate algorithm in the original research.
+**Live site:** [sharpsheettips.com](https://sharpsheettips.com) · **Mirror:** [GitHub Pages](https://samuellachance.github.io/Sports-Odds-Algorithms/)
 
-[The NHL algorithm predicted the 2016 Stanley Cup Champion team, and its NHL playoff bracket was in the 99th percentile](http://smartsoftware.technology/sports.php?view=nhl&season=2016)
-
-[Backtest results of betting strategies utilizing the algorithms' predictions](http://smartsoftware.technology/sports.php)
+Daily algorithmic sports betting platform across **NBA, WNBA, CBB, NFL, CFB, NHL, and MLB**. The board pulls live ESPN schedules and moneylines, runs a unified three-layer prediction model, surfaces value bets with a minimum **+40 edge**, and tracks recommended picks with automatic win/loss grading.
 
 ---
 
-## Quick start (web demo)
+## What the site does
+
+| Feature | Description |
+|---------|-------------|
+| **Daily slate** | Rebuilt every day at **3:00 AM America/Toronto** (and on every push) via GitHub Actions |
+| **Live data** | ESPN schedules, scores, and consensus moneylines/spreads |
+| **Unified model** | Blends legacy **Algo V2**, **power ratings**, and a sport-specific third layer |
+| **Algo picks** | Ranks moneyline and spread opportunities where the model disagrees with the market |
+| **Bet tracking** | Logs picks at +40 edge or higher and grades them when games finish |
+| **League coverage** | Games, team pages, and picks for all seven supported leagues |
+
+### Three-layer prediction stack
+
+Each matchup blends three independent signals (equal weight when all layers are available):
+
+| Sport | Third layer |
+|-------|-------------|
+| NBA, WNBA, CBB | [NBA-prediction](https://github.com/greerreNFL/NBA-prediction) matrix model |
+| MLB | [MLB-Model](https://github.com/greerreNFL/MLB-Model) Elo ratings |
+| NHL | [hockey-predictions](https://github.com/greerreNFL/hockey-predictions) Poisson xG model |
+| NFL, CFB | [nfelo](https://github.com/greerreNFL/nfelo) Elo ratings |
+
+Layers 1 and 2 are the original **Algo V2** (backtest-derived factor curves on current-season results) and **Sports-pred power ratings** (team strength from season performance).
+
+---
+
+## Quick start (local)
 
 ### Requirements
 
@@ -22,12 +46,6 @@ cd C:\Users\ulach5c\Projects\Sports-Odds-Algorithms
 python -m pip install -r requirements.txt
 ```
 
-### Public betting board (GitHub Pages)
-
-**https://samuellachance.github.io/Sports-Odds-Algorithms/**
-
-Daily picks across **NBA, WNBA, CBB, NFL, CFB, NHL, and MLB** are rebuilt automatically every day at **3:00 AM America/Toronto** (and on every push) via GitHub Actions. The board pulls live ESPN schedules and moneylines, runs Algo V2 on current-season results, and ranks value bets.
-
 ### Run the website locally
 
 ```powershell
@@ -40,18 +58,22 @@ Or with auto-reload during development:
 python -m uvicorn web.app:app --reload --host 127.0.0.1 --port 8000
 ```
 
+Open [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser.
+
 ### Verify core algorithms
 
 ```powershell
 python smoke_test.py
 ```
 
-Open [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser.
-
-The demo uses bundled historical team CSV files (no live scraping required). Try the default example:
+The demo can also use bundled historical team CSV files (no live scraping required). Default example:
 
 - **NBA:** Portland Trail Blazers @ Golden State Warriors on `4-16-2017` (season `2017`)
 - Expected Algo V2 result: ~71% Warriors win probability
+
+### Deploy to GitHub Pages
+
+Static assets are built from `web/static/` into `docs/` by `scripts/build_gh_pages.py`. Pushes to `master` trigger the `.github/workflows/pages.yml` workflow.
 
 ---
 
@@ -64,7 +86,11 @@ The demo uses bundled historical team CSV files (no live scraping required). Try
 | `backtester.py` | Historical backtesting utilities |
 | `espn_scraper.py` | Legacy ESPN schedule/box score scraper |
 | `sports_bettor.py` | Original interactive CLI entry point |
-| `web/` | FastAPI backend + modern static frontend |
+| `web/` | FastAPI backend + static frontend |
+| `web/blend_service.py` | Three-layer unified model blending |
+| `web/daily_service.py` | Daily slate and pick generation |
+| `web/tracking_service.py` | Bet logging and grading |
+| `scripts/build_gh_pages.py` | GitHub Pages static build |
 
 ---
 
@@ -80,7 +106,7 @@ Follow the interactive menus for single-team analysis, matchup odds, backtests, 
 
 ---
 
-## Algorithm overview
+## Algorithm overview (Algo V2)
 
 **Variables:**
 
@@ -98,33 +124,15 @@ Follow the interactive menus for single-team analysis, matchup odds, backtests, 
 - **Algo V1** — point ranking system summed into a total, mapped to win probability
 - **Algo V2** — each factor converted via backtest-derived curves, averaged into a percentage
 
-See the original README sections below for backtesting and algorithm creation workflows.
-
----
-
-## Push to your GitHub
-
-1. Create a new empty repository on GitHub (do not initialize with a README if you want a clean push).
-2. From the project folder:
-
-```powershell
-cd C:\Users\ulach5c\Projects\Sports-Odds-Algorithms
-git remote remove origin
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
-git add .
-git commit -m "Add modern web UI and Python 3 compatibility fixes"
-git push -u origin main
-```
-
-If your default branch is `master`, replace `main` accordingly. The repo already includes a large historical dataset — first push may take several minutes.
+The NHL algorithm predicted the [2016 Stanley Cup champion](http://smartsoftware.technology/sports.php?view=nhl&season=2016) and its playoff bracket was in the 99th percentile. [Backtest results](http://smartsoftware.technology/sports.php) for betting strategies using the original algorithms are on the upstream research site.
 
 ---
 
 ## Notes / limitations
 
-- Historical data coverage: NBA/NHL through 2017, MLB through 2016.
-- Live ESPN scraping may need updates if ESPN HTML/API endpoints changed since the original project.
-- The web demo intentionally uses bundled CSV data for reliable, reproducible predictions.
+- Historical CSV coverage: NBA/NHL through 2017, MLB through 2016 (used for backtests and CLI demos).
+- Live ESPN endpoints may change; the production site uses the `web/espn_client.py` integration.
+- Third-layer models depend on external repos and may be unavailable for some matchups; the blend falls back to two layers when needed.
 
 ---
 
