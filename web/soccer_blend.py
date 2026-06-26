@@ -1,4 +1,4 @@
-"""Three-layer 1X2 blend and value agreement for soccer."""
+"""Three-layer 1X2 blend, optional context layer, and value agreement for soccer."""
 
 from __future__ import annotations
 
@@ -12,6 +12,7 @@ from web.bet_advisor import (
 )
 from web.league_profiles import is_soccer_league
 from web.season_games import power_unavailable_reason
+from web.soccer_context import build_soccer_context_payload
 from web.soccer_pred_model import run_soccer_pred_model, soccer_unavailable_reason
 
 LEGACY_BLEND_WEIGHT = 0.5
@@ -214,6 +215,54 @@ def compute_soccer_model_agreement(
     }
 
 
+def _attach_soccer_context_layer(
+    result: dict[str, Any],
+    *,
+    league: str,
+    cutoff_date: str,
+    home_abbr: str,
+    away_abbr: str,
+    event_id: str | None = None,
+    home_espn_id: str | None = None,
+    away_espn_id: str | None = None,
+) -> dict[str, Any]:
+    context = build_soccer_context_payload(
+        league,
+        cutoff_date,
+        home_abbr,
+        away_abbr,
+        float(result["home_win_probability"]),
+        float(result["draw_probability"]),
+        float(result["away_win_probability"]),
+        event_id=event_id,
+        home_espn_id=home_espn_id,
+        away_espn_id=away_espn_id,
+    )
+    if not context:
+        return result
+
+    home_p = float(context["home_win_probability"])
+    draw_p = float(context["draw_probability"])
+    away_p = float(context["away_win_probability"])
+    total, win_prob, favorite = threeway_probs_to_total_score(home_p, draw_p, away_p)
+    updated = dict(result)
+    updated["home_win_probability"] = home_p
+    updated["draw_probability"] = draw_p
+    updated["away_win_probability"] = away_p
+    updated["total_score"] = round(total, 2)
+    updated["win_probability"] = round(win_prob, 2)
+    updated["favorite_side"] = favorite
+    updated["soccer_context"] = context
+    updated["context_adjusted"] = True
+    if updated.get("blended_threeway"):
+        updated["blended_threeway"] = {
+            "home_win_probability": home_p,
+            "draw_probability": draw_p,
+            "away_win_probability": away_p,
+        }
+    return updated
+
+
 def blend_soccer_predictions(
     *,
     legacy_total_score: float,
@@ -226,6 +275,9 @@ def blend_soccer_predictions(
     away_name: str | None,
     legacy_payload: dict[str, Any],
     power_payload: dict[str, Any] | None,
+    event_id: str | None = None,
+    home_espn_id: str | None = None,
+    away_espn_id: str | None = None,
 ) -> dict[str, Any]:
     legacy_threeway = soccer_threeway_probs(legacy_total_score, league)
     legacy_threeway_payload = {
@@ -242,7 +294,8 @@ def blend_soccer_predictions(
         win_prob = legacy_win_probability
         reason = power_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
         home_p, draw_p, away_p = legacy_threeway
-        return {
+        return _attach_soccer_context_layer(
+            {
             "algorithm": "Unified",
             "blend_mode": "legacy_only",
             "blend_note": f"Power model unavailable — {reason} Using Algo V2 only.",
@@ -258,7 +311,15 @@ def blend_soccer_predictions(
             "total_score": round(total, 2),
             "win_probability": round(win_prob, 2),
             "favorite_side": legacy_payload["favorite_side"],
-        }
+            },
+            league=league,
+            cutoff_date=cutoff_date,
+            home_abbr=home_abbr,
+            away_abbr=away_abbr,
+            event_id=event_id,
+            home_espn_id=home_espn_id,
+            away_espn_id=away_espn_id,
+        )
 
     power_threeway = power_threeway_probs(
         float(power_payload["home_win_probability"]), league
@@ -292,7 +353,8 @@ def blend_soccer_predictions(
             [THREE_LAYER_WEIGHT, THREE_LAYER_WEIGHT, THREE_LAYER_WEIGHT],
         )
         total, win_prob, favorite = threeway_probs_to_total_score(home_p, draw_p, away_p)
-        return {
+        return _attach_soccer_context_layer(
+            {
             "algorithm": "Unified",
             "blend_mode": "blended",
             "blend_layers": 3,
@@ -320,7 +382,15 @@ def blend_soccer_predictions(
             "total_score": round(total, 2),
             "win_probability": round(win_prob, 2),
             "favorite_side": favorite,
-        }
+            },
+            league=league,
+            cutoff_date=cutoff_date,
+            home_abbr=home_abbr,
+            away_abbr=away_abbr,
+            event_id=event_id,
+            home_espn_id=home_espn_id,
+            away_espn_id=away_espn_id,
+        )
 
     home_p, draw_p, away_p = blend_threeway_layers(
         [legacy_threeway, power_threeway],
@@ -328,7 +398,8 @@ def blend_soccer_predictions(
     )
     total, win_prob, favorite = threeway_probs_to_total_score(home_p, draw_p, away_p)
     reason = soccer_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
-    return {
+    return _attach_soccer_context_layer(
+        {
         "algorithm": "Unified",
         "blend_mode": "blended",
         "blend_layers": 2,
@@ -348,7 +419,15 @@ def blend_soccer_predictions(
         "win_probability": round(win_prob, 2),
         "favorite_side": favorite,
         "blend_note": f"Soccer ratings layer unavailable — {reason} Using 2-layer blend.",
-    }
+        },
+        league=league,
+        cutoff_date=cutoff_date,
+        home_abbr=home_abbr,
+        away_abbr=away_abbr,
+        event_id=event_id,
+        home_espn_id=home_espn_id,
+        away_espn_id=away_espn_id,
+    )
 
 
 def is_soccer_blend(league: str) -> bool:

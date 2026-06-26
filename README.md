@@ -33,6 +33,8 @@ Layers 1 and 2 are the original **Algo V2** (backtest-derived factor curves on c
 
 Soccer uses a dedicated **three-way blend**: each layer contributes home/draw/away probabilities independently, then the site surfaces projected scores (`xG`), fair 1X2 prices, and value picks when all three layers agree on the same outcome.
 
+A fourth **context adjustment** (ESPN public data only) nudges the blended 1X2 probabilities when signals are available: recent form, season style proxies (possession, shots, direct play, pressing), listed injuries, and neutral-venue flags. Formations, weather, and coach-change flags are not applied when ESPN does not expose them reliably.
+
 ---
 
 ## Quick start (local)

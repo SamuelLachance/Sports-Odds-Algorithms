@@ -247,6 +247,13 @@ function algoBreakdown(m) {
       `Soccer: ${soccer.home_win_probability}% / ${soccer.draw_probability}% / ${soccer.away_win_probability}%${xg}`,
     );
   }
+  const context = m.soccer_context;
+  if (context?.factors?.length) {
+    const ctxParts = context.factors.map(
+      (f) => `${f.label}${f.detail ? ` (${f.detail})` : ""}`,
+    );
+    parts.push(`Context: ${ctxParts.join("; ")}`);
+  }
   if (m.blend_note) {
     parts.push(m.blend_note);
   }
@@ -277,6 +284,7 @@ function algoCenter(game) {
           <div><small>${home.name}</small><strong>${m.home_win_probability}%</strong></div>
         </div>
         ${m.soccer_pred?.expected_home_goals != null ? `<small>Projected score ${m.soccer_pred.expected_away_goals}-${m.soccer_pred.expected_home_goals}</small>` : ""}
+        ${m.soccer_context?.factors?.length ? `<details class="factor-details"><summary>Context factors (ESPN)</summary><div class="factor-list">${m.soccer_context.factors.map((f) => `<div class="factor-row"><span>${f.label}</span><small>${f.detail || ""}</small></div>`).join("")}</div></details>` : ""}
       </div>`
     : `<div class="algo-probability">
         <span>${algoLabel}</span>

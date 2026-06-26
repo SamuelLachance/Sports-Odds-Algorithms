@@ -544,6 +544,9 @@ def blend_predictions(
     away_name: str | None = None,
     legacy_weight: float = LEGACY_BLEND_WEIGHT,
     power_weight: float = POWER_BLEND_WEIGHT,
+    event_id: str | None = None,
+    home_espn_id: str | None = None,
+    away_espn_id: str | None = None,
 ) -> dict[str, Any]:
     """
     Blend Algo_V2 and power model into unified total_score / win_probability.
@@ -579,6 +582,9 @@ def blend_predictions(
             away_name=away_name,
             legacy_payload=legacy_payload,
             power_payload=power_payload,
+            event_id=event_id,
+            home_espn_id=home_espn_id,
+            away_espn_id=away_espn_id,
         )
 
     if not power_payload:
