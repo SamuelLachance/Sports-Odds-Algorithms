@@ -390,9 +390,8 @@ class Odds_Calculator:
 			to_output.append(indent+"   Last 10 home games: "+str(home_away_records['home_10_games'][-1][0])+"-"+str(home_away_records['home_10_games'][-1][1]))
 		
 
-		win_10_games=0
-		for x in range(len(win_loss)-1, len(win_loss)-11, -1):
-			win_10_games+=win_loss[x][2]
+		recent_win_loss = win_loss[-min(10, len(win_loss)) :]
+		win_10_games = sum(item[2] for item in recent_win_loss)
 
 		temp={'-10': '0-10', '-8': '1-9', '-6': '2-8', '-4': '3-7', '-2': '4-6', '0': '5-5', '2': '6-4', '4': '7-3', '6': '8-2', '8': '9-1', '10': '10-0'}
 		to_output.append(indent+"10 Games: "+temp[str(win_10_games)])
@@ -435,7 +434,8 @@ class Odds_Calculator:
 	def analyze_wins_ranked_teams(self, team, data, end_year):
 
 		total_output=[]
-		for x in range(len(data[-1]['other_team'])-1, len(data[-1]['other_team'])-11, -1):
+		start = max(0, len(data[-1]['other_team']) - 10)
+		for x in range(len(data[-1]['other_team']) - 1, start - 1, -1):
 			other_team=[]
 			other_team.append(data[-1]['other_team'][x])
 			other_team.append("")
@@ -716,15 +716,14 @@ class Odds_Calculator:
 				avg_other_game_points.append(self.universal.convert_number(average_other))
 
 
-				#gets average points for last 10 games
-				total_points=0
-				other_total_points=0
-				for y in range(len(data['other_team'])-1, len(data['other_team'])-11, -1):
-					total_points+=data['game_scores'][y][0]
-					other_total_points+=data['game_scores'][y][1]
-				average=total_points/10
+				#gets average points for last 10 games (or fewer when schedule is short)
+				recent_count = min(10, len(data['other_team']))
+				recent_scores = data['game_scores'][-recent_count:]
+				total_points = sum(score[0] for score in recent_scores)
+				other_total_points = sum(score[1] for score in recent_scores)
+				average=total_points/recent_count
 				avg_10_games.append(self.universal.convert_number(average))
-				average=other_total_points/10
+				average=other_total_points/recent_count
 				avg_other_10_games.append(self.universal.convert_number(average))
 
 

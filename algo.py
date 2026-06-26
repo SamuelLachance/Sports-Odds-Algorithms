@@ -575,13 +575,10 @@ class Algo:
 			points=(returned1['away_10_games'][-1][0]-returned1['away_10_games'][-1][1]) - (returned2['home_10_games'][-1][0]-returned2['home_10_games'][-1][1])
 
 		elif calc_type=="last_10_games":
-			win_10_games1=0
-			for x in range(len(returned1)-1, len(returned1)-11, -1):
-				win_10_games1+=returned1[x][2]
-
-			win_10_games2=0
-			for x in range(len(returned2)-1, len(returned2)-11, -1):
-				win_10_games2+=returned2[x][2]
+			recent1 = returned1[-min(10, len(returned1)) :]
+			recent2 = returned2[-min(10, len(returned2)) :]
+			win_10_games1 = sum(item[2] for item in recent1)
+			win_10_games2 = sum(item[2] for item in recent2)
 
 			points=win_10_games1 - win_10_games2
 
