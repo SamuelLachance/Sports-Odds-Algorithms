@@ -13,6 +13,7 @@ from web.bet_advisor import (
 from web.league_profiles import is_soccer_league
 from web.season_games import power_unavailable_reason
 from web.soccer_context import build_soccer_context_payload
+from web.db_rating_model import apply_db_rating_blend
 from web.soccer_pred_model import run_soccer_pred_model, soccer_unavailable_reason
 
 LEGACY_BLEND_WEIGHT = 0.5
@@ -215,6 +216,45 @@ def compute_soccer_model_agreement(
     }
 
 
+def _finalize_soccer_blend(
+    result: dict[str, Any],
+    *,
+    league: str,
+    cutoff_date: str,
+    home_abbr: str,
+    away_abbr: str,
+    home_slug: str | None = None,
+    away_slug: str | None = None,
+    home_name: str | None = None,
+    away_name: str | None = None,
+    event_id: str | None = None,
+    home_espn_id: str | None = None,
+    away_espn_id: str | None = None,
+) -> dict[str, Any]:
+    if home_slug and away_slug:
+        result = apply_db_rating_blend(
+            result,
+            league=league,
+            cutoff_date=cutoff_date,
+            home_abbr=home_abbr,
+            away_abbr=away_abbr,
+            home_slug=home_slug,
+            away_slug=away_slug,
+            home_name=home_name,
+            away_name=away_name,
+        )
+    return _attach_soccer_context_layer(
+        result,
+        league=league,
+        cutoff_date=cutoff_date,
+        home_abbr=home_abbr,
+        away_abbr=away_abbr,
+        event_id=event_id,
+        home_espn_id=home_espn_id,
+        away_espn_id=away_espn_id,
+    )
+
+
 def _attach_soccer_context_layer(
     result: dict[str, Any],
     *,
@@ -278,6 +318,8 @@ def blend_soccer_predictions(
     event_id: str | None = None,
     home_espn_id: str | None = None,
     away_espn_id: str | None = None,
+    home_slug: str | None = None,
+    away_slug: str | None = None,
 ) -> dict[str, Any]:
     legacy_threeway = soccer_threeway_probs(legacy_total_score, league)
     legacy_threeway_payload = {
@@ -294,7 +336,7 @@ def blend_soccer_predictions(
         win_prob = legacy_win_probability
         reason = power_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
         home_p, draw_p, away_p = legacy_threeway
-        return _attach_soccer_context_layer(
+        return _finalize_soccer_blend(
             {
             "algorithm": "Unified",
             "blend_mode": "legacy_only",
@@ -316,6 +358,10 @@ def blend_soccer_predictions(
             cutoff_date=cutoff_date,
             home_abbr=home_abbr,
             away_abbr=away_abbr,
+            home_name=home_name,
+            away_name=away_name,
+            home_slug=home_slug,
+            away_slug=away_slug,
             event_id=event_id,
             home_espn_id=home_espn_id,
             away_espn_id=away_espn_id,
@@ -353,7 +399,7 @@ def blend_soccer_predictions(
             [THREE_LAYER_WEIGHT, THREE_LAYER_WEIGHT, THREE_LAYER_WEIGHT],
         )
         total, win_prob, favorite = threeway_probs_to_total_score(home_p, draw_p, away_p)
-        return _attach_soccer_context_layer(
+        return _finalize_soccer_blend(
             {
             "algorithm": "Unified",
             "blend_mode": "blended",
@@ -387,6 +433,10 @@ def blend_soccer_predictions(
             cutoff_date=cutoff_date,
             home_abbr=home_abbr,
             away_abbr=away_abbr,
+            home_name=home_name,
+            away_name=away_name,
+            home_slug=home_slug,
+            away_slug=away_slug,
             event_id=event_id,
             home_espn_id=home_espn_id,
             away_espn_id=away_espn_id,
@@ -398,7 +448,7 @@ def blend_soccer_predictions(
     )
     total, win_prob, favorite = threeway_probs_to_total_score(home_p, draw_p, away_p)
     reason = soccer_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
-    return _attach_soccer_context_layer(
+    return _finalize_soccer_blend(
         {
         "algorithm": "Unified",
         "blend_mode": "blended",
@@ -424,6 +474,10 @@ def blend_soccer_predictions(
         cutoff_date=cutoff_date,
         home_abbr=home_abbr,
         away_abbr=away_abbr,
+        home_name=home_name,
+        away_name=away_name,
+        home_slug=home_slug,
+        away_slug=away_slug,
         event_id=event_id,
         home_espn_id=home_espn_id,
         away_espn_id=away_espn_id,

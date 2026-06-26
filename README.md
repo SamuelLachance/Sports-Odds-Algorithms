@@ -35,6 +35,21 @@ Soccer uses a dedicated **three-way blend**: each layer contributes home/draw/aw
 
 A fourth **context adjustment** (ESPN public data only) nudges the blended 1X2 probabilities when signals are available: recent form, season style proxies (possession, shots, direct play, pressing), listed injuries, and neutral-venue flags. Formations, weather, and coach-change flags are not applied when ESPN does not expose them reliably.
 
+### Database player-rating layer (all sports)
+
+A **database ratings** layer blends external player/team ratings (not derived from our stats) into every matchup when a source is available. Weight starts at **12%** and scales up when completed games are sparse (e.g. early season, international tournaments), up to **+28%** when teams have fewer than 15 games.
+
+| Sport category | Rating source |
+|----------------|---------------|
+| Soccer (domestic + international) | [soccer-rating.com](https://www.soccer-rating.com) team ratings |
+| NBA | [2kratings.com](https://www.2kratings.com) top-8 roster OVR |
+| WNBA | [2kratings.com](https://www.2kratings.com) WNBA team pages |
+| NFL | [maddenratings.com](https://www.maddenratings.com) team overall |
+| MLB, NCAA D1 baseball, winter leagues, WBC | [theshowratings.com](https://www.theshowratings.com) top-8 roster OVR |
+| NHL | [nhlratings.net](https://www.nhlratings.net) team overall |
+
+College basketball/football and NCAA hockey/baseball have no stable public rating database in the same mold; those leagues skip this layer when no source resolves. Ratings are cached locally for 12 hours under `data/db_ratings_cache/`.
+
 ---
 
 ## Quick start (local)
@@ -92,7 +107,8 @@ Static assets are built from `web/static/` into `docs/` by `scripts/build_gh_pag
 | `espn_scraper.py` | Legacy ESPN schedule/box score scraper |
 | `sports_bettor.py` | Original interactive CLI entry point |
 | `web/` | FastAPI backend + static frontend |
-| `web/blend_service.py` | Three-layer unified model blending |
+| `web/blend_service.py` | Unified model blending (legacy + power + sport layer + DB ratings) |
+| `web/db_rating_model.py` | External database player/team ratings layer |
 | `web/daily_service.py` | Daily slate and pick generation |
 | `web/tracking_service.py` | Bet logging and grading |
 | `scripts/build_gh_pages.py` | GitHub Pages static build |

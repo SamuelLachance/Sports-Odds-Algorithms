@@ -199,10 +199,17 @@ function algoBreakdown(m) {
   const hockey = m.hockey_pred;
   const football = m.football_pred;
   const soccer = m.soccer_pred;
-  if (!legacy && !power && !basketball && !baseball && !hockey && !football && !soccer) return "";
+  const dbRating = m.db_rating;
+  if (!legacy && !power && !basketball && !baseball && !hockey && !football && !soccer && !dbRating) return "";
   const parts = [];
   const layerTag =
-    m.blend_layers === 3 ? "3-layer" : m.blend_layers === 2 ? "2-layer" : "";
+    m.blend_layers >= 4
+      ? "4-layer"
+      : m.blend_layers === 3
+        ? "3-layer"
+        : m.blend_layers === 2
+          ? "2-layer"
+          : "";
   if (layerTag) {
     parts.push(layerTag);
   }
@@ -245,6 +252,13 @@ function algoBreakdown(m) {
         : "";
     parts.push(
       `Soccer: ${soccer.home_win_probability}% / ${soccer.draw_probability}% / ${soccer.away_win_probability}%${xg}`,
+    );
+  }
+  if (dbRating) {
+    const sparse =
+      dbRating.sparse_schedule_factor > 0.35 ? " · sparse boost" : "";
+    parts.push(
+      `DB Ratings (${dbRating.source_home}): ${dbRating.home_rating} vs ${dbRating.away_rating} → ${dbRating.home_win_probability}% home${sparse}`,
     );
   }
   const context = m.soccer_context;

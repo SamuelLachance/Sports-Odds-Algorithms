@@ -40,11 +40,39 @@ from web.live_data import resolve_team
 from web.power_model import PowerTeam, predict_matchup
 from web.season_games import get_league_power_context, power_unavailable_reason
 from web.soccer_blend import blend_soccer_predictions, compute_soccer_model_agreement
+from web.db_rating_model import apply_db_rating_blend
 from web.soccer_pred_model import run_soccer_pred_model, soccer_unavailable_reason
 
 LEGACY_BLEND_WEIGHT = 0.5
 POWER_BLEND_WEIGHT = 0.5
 THREE_LAYER_WEIGHT = 1.0 / 3.0
+
+
+def _with_db_rating_layer(
+    result: dict[str, Any],
+    *,
+    league: str,
+    cutoff_date: str,
+    home_abbr: str,
+    away_abbr: str,
+    home_slug: str | None,
+    away_slug: str | None,
+    home_name: str | None,
+    away_name: str | None,
+) -> dict[str, Any]:
+    if not home_slug or not away_slug:
+        return result
+    return apply_db_rating_blend(
+        result,
+        league=league,
+        cutoff_date=cutoff_date,
+        home_abbr=home_abbr,
+        away_abbr=away_abbr,
+        home_slug=home_slug,
+        away_slug=away_slug,
+        home_name=home_name,
+        away_name=away_name,
+    )
 
 
 def total_score_to_home_win_prob(total_score: float) -> float:
@@ -547,6 +575,8 @@ def blend_predictions(
     event_id: str | None = None,
     home_espn_id: str | None = None,
     away_espn_id: str | None = None,
+    home_slug: str | None = None,
+    away_slug: str | None = None,
 ) -> dict[str, Any]:
     """
     Blend Algo_V2 and power model into unified total_score / win_probability.
@@ -585,13 +615,16 @@ def blend_predictions(
             event_id=event_id,
             home_espn_id=home_espn_id,
             away_espn_id=away_espn_id,
+            home_slug=home_slug,
+            away_slug=away_slug,
         )
 
     if not power_payload:
         total = legacy_total_score
         win_prob = legacy_win_probability
         reason = power_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
-        return {
+        return _with_db_rating_layer(
+            {
             "algorithm": "Unified",
             "blend_mode": "legacy_only",
             "blend_note": f"Power model unavailable — {reason} Using Algo V2 only.",
@@ -600,7 +633,16 @@ def blend_predictions(
             "total_score": round(total, 2),
             "win_probability": round(win_prob, 2),
             "favorite_side": legacy_payload["favorite_side"],
-        }
+            },
+            league=league,
+            cutoff_date=cutoff_date,
+            home_abbr=home_abbr,
+            away_abbr=away_abbr,
+            home_slug=home_slug,
+            away_slug=away_slug,
+            home_name=home_name,
+            away_name=away_name,
+        )
 
     legacy_home = total_score_to_home_win_prob(legacy_total_score)
     power_home = float(power_payload["home_win_probability"])
@@ -634,7 +676,17 @@ def blend_predictions(
             "win_probability": round(win_prob, 2),
             "favorite_side": "home" if total <= 0 else "away",
         }
-        return result
+        return _with_db_rating_layer(
+            result,
+            league=league,
+            cutoff_date=cutoff_date,
+            home_abbr=home_abbr,
+            away_abbr=away_abbr,
+            home_slug=home_slug,
+            away_slug=away_slug,
+            home_name=home_name,
+            away_name=away_name,
+        )
 
     weight_sum = legacy_weight + power_weight
     blended_home = (
@@ -679,4 +731,14 @@ def blend_predictions(
             f"{layer_name} layer unavailable — {reason} Using 2-layer blend."
         )
 
-    return result
+    return _with_db_rating_layer(
+        result,
+        league=league,
+        cutoff_date=cutoff_date,
+        home_abbr=home_abbr,
+        away_abbr=away_abbr,
+        home_slug=home_slug,
+        away_slug=away_slug,
+        home_name=home_name,
+        away_name=away_name,
+    )

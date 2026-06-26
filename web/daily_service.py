@@ -130,6 +130,8 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
         event_id=game.event_id,
         home_espn_id=game.home_espn_id,
         away_espn_id=game.away_espn_id,
+        home_slug=home[1],
+        away_slug=away[1],
     )
 
     total = float(blended["total_score"])
