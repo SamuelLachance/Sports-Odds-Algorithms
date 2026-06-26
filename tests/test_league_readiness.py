@@ -26,6 +26,11 @@ def test_baseball_leagues_use_readiness_gate() -> None:
     assert uses_three_layer_readiness_gate("ncaabb") is True
 
 
+def test_soccer_leagues_use_readiness_gate() -> None:
+    assert uses_three_layer_readiness_gate("epl") is True
+    assert uses_three_layer_readiness_gate("mls") is True
+
+
 def test_readiness_false_when_insufficient_games(monkeypatch) -> None:
     monkeypatch.setattr(
         readiness_module,

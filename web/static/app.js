@@ -98,6 +98,9 @@ function pickMarketLabel(pick) {
   if (pick.bet_type === "spread") {
     return `Spread ${formatSpread(pick.spread_line)} (${formatOdds(pick.spread_odds ?? pick.market_odds)})`;
   }
+  if (pick.side === "draw") {
+    return `Draw ${formatOdds(pick.market_odds)}`;
+  }
   return formatOdds(pick.market_odds);
 }
 
@@ -195,7 +198,8 @@ function algoBreakdown(m) {
   const baseball = m.baseball_pred;
   const hockey = m.hockey_pred;
   const football = m.football_pred;
-  if (!legacy && !power && !basketball && !baseball && !hockey && !football) return "";
+  const soccer = m.soccer_pred;
+  if (!legacy && !power && !basketball && !baseball && !hockey && !football && !soccer) return "";
   const parts = [];
   const layerTag =
     m.blend_layers === 3 ? "3-layer" : m.blend_layers === 2 ? "2-layer" : "";
@@ -234,6 +238,15 @@ function algoBreakdown(m) {
         : "";
     parts.push(`nfelo: ${football.home_win_probability}% home${spread}`);
   }
+  if (soccer) {
+    const xg =
+      soccer.expected_home_goals != null
+        ? ` xG ${soccer.expected_home_goals}-${soccer.expected_away_goals}`
+        : "";
+    parts.push(
+      `Soccer: ${soccer.home_win_probability}% / ${soccer.draw_probability}% / ${soccer.away_win_probability}%${xg}`,
+    );
+  }
   if (m.blend_note) {
     parts.push(m.blend_note);
   }
@@ -249,16 +262,36 @@ function algoCenter(game) {
   const home = game.matchup.home;
   const fav = m.favorite_side === "home" ? home.name : away.name;
   const top = game.top_pick;
-  const algoLabel = m.algorithm === "Unified" ? "Unified model" : "Algo V2 win probability";
-  const probBlock = `<div class="algo-probability">
+  const threeway = m.threeway;
+  const algoLabel = threeway
+    ? "1X2 model probabilities"
+    : m.algorithm === "Unified"
+      ? "Unified model"
+      : "Algo V2 win probability";
+  const probBlock = threeway
+    ? `<div class="algo-probability threeway">
+        <span>${algoLabel}</span>
+        <div class="threeway-grid">
+          <div><small>${away.name}</small><strong>${m.away_win_probability}%</strong></div>
+          <div><small>Draw</small><strong>${m.draw_probability}%</strong></div>
+          <div><small>${home.name}</small><strong>${m.home_win_probability}%</strong></div>
+        </div>
+        ${m.soccer_pred?.expected_home_goals != null ? `<small>Projected score ${m.soccer_pred.expected_away_goals}-${m.soccer_pred.expected_home_goals}</small>` : ""}
+      </div>`
+    : `<div class="algo-probability">
         <span>${algoLabel}</span>
         <strong class="prob-value">${m.win_probability}%</strong>
         <small>Model favorite: ${fav}</small>
       </div>`;
+  const drawChip =
+    threeway && mk.draw_moneyline != null
+      ? `<div class="odds-chip"><span>Draw</span><strong>${formatOdds(mk.draw_moneyline)}</strong><small>Model ${formatOdds(m.draw_projection)}</small></div>`
+      : "";
   const oddsRow = `<div class="odds-row game-odds">
         <div class="odds-chip"><span>${away.name}</span><strong>${formatOdds(mk.away_moneyline)}</strong><small>Model ${formatOdds(m.away_projection)}</small></div>
+        ${drawChip}
         <div class="odds-chip"><span>${home.name}</span><strong>${formatOdds(mk.home_moneyline)}</strong><small>Model ${formatOdds(m.home_projection)}</small></div>
-        <div class="odds-chip"><span>Spread / O-U</span><strong>${mk.spread ?? "—"} / ${mk.over_under ?? "—"}</strong><small>${mk.provider || "ESPN"}</small></div>
+        ${threeway ? "" : `<div class="odds-chip"><span>Spread / O-U</span><strong>${mk.spread ?? "—"} / ${mk.over_under ?? "—"}</strong><small>${mk.provider || "ESPN"}</small></div>`}
       </div>`;
   return `<section class="algo-hero panel">
     <div class="algo-hero-head">

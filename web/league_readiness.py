@@ -1,4 +1,4 @@
-"""Gate baseball and hockey leagues until the full three-layer model can run."""
+"""Gate baseball, hockey, and soccer leagues until the full three-layer model can run."""
 
 from __future__ import annotations
 
@@ -10,13 +10,19 @@ from web.hockey_pred_model import MIN_LEAGUE_GAMES as HOCKEY_MIN_LEAGUE_GAMES
 from web.hockey_pred_model import get_hockey_pred_context, is_hockey_league
 from web.league_profiles import LEAGUE_PROFILES, MIN_GAMES_FOR_POWER
 from web.season_games import get_league_power_context, load_league_completed_games
+from web.soccer_pred_model import MIN_LEAGUE_GAMES as SOCCER_MIN_LEAGUE_GAMES
+from web.soccer_pred_model import get_soccer_pred_context
 
 THREE_LAYER_MIN_TEAMS = 4
 
 
 def uses_three_layer_readiness_gate(league: str) -> bool:
     profile = LEAGUE_PROFILES.get(league.lower())
-    return profile is not None and profile["category"] in ("baseball", "hockey")
+    return profile is not None and profile["category"] in (
+        "baseball",
+        "hockey",
+        "soccer",
+    )
 
 
 def assess_three_layer_readiness(league: str, cutoff_date: str) -> dict[str, Any]:
@@ -34,7 +40,7 @@ def assess_three_layer_readiness(league: str, cutoff_date: str) -> dict[str, Any
 
     if not uses_three_layer_readiness_gate(league):
         result["ready"] = True
-        result["reason"] = "Not a baseball/hockey league"
+        result["reason"] = "Not a gated three-layer league"
         return result
 
     games = load_league_completed_games(league, cutoff_date)
@@ -57,11 +63,13 @@ def assess_three_layer_readiness(league: str, cutoff_date: str) -> dict[str, Any
         return result
     result["power"] = True
 
-    min_games = (
-        BASEBALL_MIN_LEAGUE_GAMES
-        if is_baseball_league(league)
-        else HOCKEY_MIN_LEAGUE_GAMES
-    )
+    if is_baseball_league(league):
+        min_games = BASEBALL_MIN_LEAGUE_GAMES
+    elif is_hockey_league(league):
+        min_games = HOCKEY_MIN_LEAGUE_GAMES
+    else:
+        min_games = SOCCER_MIN_LEAGUE_GAMES
+
     if len(games) < min_games:
         result["reason"] = (
             f"Need {min_games}+ games for sport model (have {len(games)})"
@@ -70,8 +78,10 @@ def assess_three_layer_readiness(league: str, cutoff_date: str) -> dict[str, Any
 
     if is_baseball_league(league):
         model = get_baseball_pred_context(league, cutoff_date)
-    else:
+    elif is_hockey_league(league):
         model = get_hockey_pred_context(league, cutoff_date)
+    else:
+        model = get_soccer_pred_context(league, cutoff_date)
 
     if not model:
         result["reason"] = "Sport-specific third layer unavailable"
@@ -90,3 +100,4 @@ def assess_three_layer_readiness(league: str, cutoff_date: str) -> dict[str, Any
 
 def is_league_ready_for_daily_slate(league: str, cutoff_date: str) -> bool:
     return assess_three_layer_readiness(league, cutoff_date)["ready"]
+

@@ -18,6 +18,9 @@ from web.league_profiles import (
     LARGE_ROSTER_LEAGUES,
     MIN_GAMES_FOR_POWER,
     POWER_SCOREBOARD_LOOKBACK,
+    FRIENDLIES_SUPPLEMENT_LEAGUE,
+    INTERNATIONAL_TOURNAMENT_LEAGUES,
+    SCOREBOARD_ONLY_LEAGUES,
     get_league_profile,
 )
 from web.live_data import _event_before_cutoff, _parse_cutoff, _score_value
@@ -205,10 +208,19 @@ def load_league_completed_games(
     cutoff = _parse_cutoff(cutoff_date)
     cutoff_day = date(cutoff.year, cutoff.month, cutoff.day)
 
-    if league in LARGE_ROSTER_LEAGUES:
+    if league in LARGE_ROSTER_LEAGUES or league in SCOREBOARD_ONLY_LEAGUES:
         merged = _collect_from_scoreboards(league, cutoff, _scoreboard_lookback_days(league))
     else:
         merged = _collect_from_team_schedules(league, cutoff, cutoff_day)
+
+    if league in INTERNATIONAL_TOURNAMENT_LEAGUES:
+        friendlies = _collect_from_scoreboards(
+            FRIENDLIES_SUPPLEMENT_LEAGUE,
+            cutoff,
+            _scoreboard_lookback_days(FRIENDLIES_SUPPLEMENT_LEAGUE),
+        )
+        for event_id, entry in friendlies.items():
+            merged[f"friendlies:{event_id}"] = entry
 
     return [
         game_tuple

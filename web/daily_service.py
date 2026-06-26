@@ -20,15 +20,19 @@ def _toronto_today() -> date:
 
 from web.bet_advisor import (  # noqa: E402
     evaluate_picks,
+    evaluate_soccer_picks,
     evaluate_spread_picks,
     model_moneylines,
     pick_to_dict,
     projections_from_win_probs,
+    soccer_model_moneylines,
 )
 from web.baseball_pred_model import get_baseball_pred_context, is_baseball_league  # noqa: E402
 from web.basketball_pred_model import get_basketball_pred_context, is_basketball_league  # noqa: E402
 from web.football_pred_model import get_football_pred_context, is_football_league  # noqa: E402
 from web.hockey_pred_model import get_hockey_pred_context, is_hockey_league  # noqa: E402
+from web.league_profiles import is_soccer_league  # noqa: E402
+from web.soccer_pred_model import get_soccer_pred_context  # noqa: E402
 from web.blend_service import blend_predictions, blended_home_spread_margin, compute_model_agreement  # noqa: E402
 from web.season_games import prewarm_league_power  # noqa: E402
 from web.espn_client import (  # noqa: E402
@@ -129,12 +133,21 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
     win_probability = float(blended["win_probability"])
     favorite_side = blended["favorite_side"]
 
-    if blended.get("blended_home_win_probability") is not None:
+    if blended.get("threeway"):
+        home_prob = float(blended["home_win_probability"])
+        draw_prob = float(blended["draw_probability"])
+        away_prob = float(blended["away_win_probability"])
+        away_proj, draw_proj, home_proj = soccer_model_moneylines(
+            home_prob, draw_prob, away_prob
+        )
+    elif blended.get("blended_home_win_probability") is not None:
         home_prob = float(blended["blended_home_win_probability"])
         away_prob = 100.0 - home_prob
         away_proj, home_proj = projections_from_win_probs(home_prob, away_prob)
+        draw_proj = None
     else:
         away_proj, home_proj = model_moneylines(total)
+        draw_proj = None
 
     factors = []
     for key, label in FACTOR_LABELS.items():
@@ -153,6 +166,7 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
     market_payload = {
         "away_moneyline": game.market.away_moneyline,
         "home_moneyline": game.market.home_moneyline,
+        "draw_moneyline": game.market.draw_moneyline,
         "spread": game.market.spread,
         "away_spread_odds": game.market.away_spread_odds,
         "home_spread_odds": game.market.home_spread_odds,
@@ -177,6 +191,8 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
         "home_projection": home_proj,
         "factors": factors,
     }
+    if draw_proj is not None:
+        model_payload["draw_projection"] = draw_proj
 
     if uses_spread_bets(game.league):
         picks = evaluate_spread_picks(
@@ -191,6 +207,23 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             away_spread_odds=game.market.away_spread_odds,
             home_spread_odds=game.market.home_spread_odds,
             model_margin_home=blended_home_spread_margin(blended, game.league),
+            min_edge=pick_min_edge,
+        )
+    elif is_soccer_league(game.league):
+        picks = evaluate_soccer_picks(
+            away_name=game.away_name,
+            home_name=game.home_name,
+            away_slug=away[1],
+            home_slug=home[1],
+            home_prob=home_prob,
+            draw_prob=draw_prob,
+            away_prob=away_prob,
+            away_proj=away_proj,
+            draw_proj=draw_proj,
+            home_proj=home_proj,
+            away_market=game.market.away_moneyline,
+            draw_market=game.market.draw_moneyline,
+            home_market=game.market.home_moneyline,
             min_edge=pick_min_edge,
         )
     else:
@@ -230,6 +263,7 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             "provider": game.market.provider,
             "away_moneyline": game.market.away_moneyline,
             "home_moneyline": game.market.home_moneyline,
+            "draw_moneyline": game.market.draw_moneyline,
             "spread": game.market.spread,
             "away_spread_odds": game.market.away_spread_odds,
             "home_spread_odds": game.market.home_spread_odds,
@@ -315,6 +349,16 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
                         {
                             "league": league,
                             "error": f"Football model prewarm failed ({cutoff}): {exc}",
+                        }
+                    )
+            if is_soccer_league(league):
+                try:
+                    get_soccer_pred_context(league, cutoff)
+                except Exception as exc:  # noqa: BLE001
+                    errors.append(
+                        {
+                            "league": league,
+                            "error": f"Soccer model prewarm failed ({cutoff}): {exc}",
                         }
                     )
 

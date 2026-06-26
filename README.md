@@ -2,7 +2,7 @@
 
 **Live site:** [sharpsheettips.com](https://sharpsheettips.com) · **Mirror:** [GitHub Pages](https://samuellachance.github.io/Sports-Odds-Algorithms/)
 
-Daily algorithmic sports betting platform across **NBA, WNBA, CBB, NFL, CFB, NHL, NCAA D1 hockey, MLB, NCAA D1 baseball, and international winter baseball leagues** (Dominican, Puerto Rican, Venezuelan, Mexican Pacific, WBC). Leagues are activated automatically once there is enough completed-game data for the full three-layer model.
+Daily algorithmic sports betting platform across **NBA, WNBA, CBB, NFL, CFB, NHL, NCAA D1 hockey, MLB, NCAA D1 baseball, international winter baseball leagues**, and **soccer** (Premier League, La Liga, Bundesliga, Serie A, Ligue 1, MLS, Champions League, and major international tournaments). Leagues are activated automatically once there is enough completed-game data for the full three-layer model.
 
 ---
 
@@ -13,7 +13,7 @@ Daily algorithmic sports betting platform across **NBA, WNBA, CBB, NFL, CFB, NHL
 | **Daily slate** | Rebuilt every day at **3:00 AM America/Toronto** (and on every push) via GitHub Actions |
 | **Live data** | ESPN schedules, scores, and consensus moneylines/spreads |
 | **Unified model** | Blends legacy **Algo V2**, **power ratings**, and a sport-specific third layer |
-| **Algo picks** | Ranks moneyline and spread opportunities where the model disagrees with the market |
+| **Algo picks** | Ranks moneyline, 1X2 (soccer), and spread opportunities where the model disagrees with the market |
 | **Bet tracking** | Logs picks at +40 edge or higher and grades them when games finish |
 | **League coverage** | Games, team pages, and picks for all seven supported leagues |
 
@@ -27,8 +27,11 @@ Each matchup blends three independent signals (equal weight when all layers are 
 | MLB, NCAA D1 baseball, winter leagues, WBC | Baseball | [MLB-Model](https://github.com/greerreNFL/MLB-Model) Elo ratings |
 | NHL, NCAA D1 hockey | Hockey | [hockey-predictions](https://github.com/greerreNFL/hockey-predictions) Poisson xG model |
 | NFL, CFB | Football | [nfelo](https://github.com/greerreNFL/nfelo) Elo ratings |
+| EPL, La Liga, Bundesliga, Serie A, Ligue 1, MLS, UCL, international | Soccer | Elo + Pi-ratings + Dixon–Coles Poisson (1X2 and score projections) |
 
 Layers 1 and 2 are the original **Algo V2** (backtest-derived factor curves on current-season results) and **Sports-pred power ratings** (team strength from season performance).
+
+Soccer uses a dedicated **three-way blend**: each layer contributes home/draw/away probabilities independently, then the site surfaces projected scores (`xG`), fair 1X2 prices, and value picks when all three layers agree on the same outcome.
 
 ---
 

@@ -212,6 +212,43 @@ def test_grade_mlb_moneyline_pushes_on_tie() -> None:
     assert graded["status"] == "push"
 
 
+def test_grade_soccer_draw_bet_win() -> None:
+    bet = {
+        "side": "draw",
+        "bet_type": "moneyline",
+        "league": "epl",
+        "market_odds": 250,
+        "stake_units": 1.0,
+    }
+    graded = grade_bet(bet, 1, 1)
+    assert graded["status"] == "win"
+    assert graded["units"] == 2.5
+
+
+def test_grade_soccer_draw_bet_loss() -> None:
+    bet = {
+        "side": "draw",
+        "bet_type": "moneyline",
+        "league": "epl",
+        "market_odds": 250,
+        "stake_units": 1.0,
+    }
+    graded = grade_bet(bet, 0, 2)
+    assert graded["status"] == "loss"
+
+
+def test_grade_soccer_home_ml_loses_on_draw() -> None:
+    bet = {
+        "side": "home",
+        "bet_type": "moneyline",
+        "league": "epl",
+        "market_odds": -120,
+        "stake_units": 1.0,
+    }
+    graded = grade_bet(bet, 1, 1)
+    assert graded["status"] == "loss"
+
+
 def test_scoreboard_dates_use_start_time_not_record_date() -> None:
     bet = {
         "date": "2026-06-12",
@@ -296,6 +333,9 @@ if __name__ == "__main__":
     test_grade_spread_push()
     test_grade_spread_away_cover()
     test_record_spread_bet_fields()
+    test_grade_soccer_draw_bet_win()
+    test_grade_soccer_draw_bet_loss()
+    test_grade_soccer_home_ml_loses_on_draw()
     test_grade_mlb_moneyline_pushes_on_tie()
     test_scoreboard_dates_use_start_time_not_record_date()
     test_fetch_event_result_grades_completed_nba_final()

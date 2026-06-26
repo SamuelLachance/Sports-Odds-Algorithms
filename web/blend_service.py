@@ -30,10 +30,17 @@ from web.bet_advisor import (
     spread_odds_edge,
     spread_point_edge,
 )
-from web.league_profiles import DEFAULT_SPREAD_JUICE, MIN_RECOMMENDED_EDGE, uses_spread_bets
+from web.league_profiles import (
+    DEFAULT_SPREAD_JUICE,
+    MIN_RECOMMENDED_EDGE,
+    is_soccer_league,
+    uses_spread_bets,
+)
 from web.live_data import resolve_team
 from web.power_model import PowerTeam, predict_matchup
 from web.season_games import get_league_power_context, power_unavailable_reason
+from web.soccer_blend import blend_soccer_predictions, compute_soccer_model_agreement
+from web.soccer_pred_model import run_soccer_pred_model, soccer_unavailable_reason
 
 LEGACY_BLEND_WEIGHT = 0.5
 POWER_BLEND_WEIGHT = 0.5
@@ -121,6 +128,8 @@ def _sport_pred_unavailable_reason(
         return hockey_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
     if is_football_league(league):
         return football_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
+    if is_soccer_league(league):
+        return soccer_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
     return "Sport-specific model unavailable."
 
 
@@ -146,6 +155,16 @@ def _run_sport_pred_model(
     if is_football_league(league):
         payload = run_football_pred_model(league, cutoff_date, home_abbr, away_abbr)
         return ("football_pred", payload) if payload else (None, None)
+    if is_soccer_league(league):
+        payload = run_soccer_pred_model(
+            league,
+            cutoff_date,
+            home_abbr,
+            away_abbr,
+            home_name=home_name,
+            away_name=away_name,
+        )
+        return ("soccer_pred", payload) if payload else (None, None)
     return None, None
 
 
@@ -155,6 +174,7 @@ def _uses_three_layer_blend(league: str) -> bool:
         or is_baseball_league(league)
         or is_hockey_league(league)
         or is_football_league(league)
+        or is_soccer_league(league)
     )
 
 
@@ -296,7 +316,13 @@ def _best_value_spread_side(
 
 
 def _third_layer_key(blended: dict[str, Any]) -> str | None:
-    for key in ("basketball_pred", "baseball_pred", "hockey_pred", "football_pred"):
+    for key in (
+        "basketball_pred",
+        "baseball_pred",
+        "hockey_pred",
+        "football_pred",
+        "soccer_pred",
+    ):
         if blended.get(key):
             return key
     return None
@@ -316,6 +342,16 @@ def compute_model_agreement(
     """
     if not requires_three_layer_agreement(league):
         return {"required": 0, "agreed": True, "agreement_mode": "value"}
+
+    if is_soccer_league(league):
+        third_key = _third_layer_key(blended)
+        third_payload = blended.get(third_key) if third_key else None
+        return compute_soccer_model_agreement(
+            blended,
+            market=market or {},
+            third_key=third_key,
+            third_payload=third_payload,
+        )
 
     legacy = blended.get("legacy")
     power = blended.get("power")
@@ -531,6 +567,20 @@ def blend_predictions(
         away_name=away_name,
     )
 
+    if is_soccer_league(league):
+        return blend_soccer_predictions(
+            legacy_total_score=legacy_total_score,
+            legacy_win_probability=legacy_win_probability,
+            league=league,
+            cutoff_date=cutoff_date,
+            home_abbr=home_abbr,
+            away_abbr=away_abbr,
+            home_name=home_name,
+            away_name=away_name,
+            legacy_payload=legacy_payload,
+            power_payload=power_payload,
+        )
+
     if not power_payload:
         total = legacy_total_score
         win_prob = legacy_win_probability
@@ -610,8 +660,12 @@ def blend_predictions(
             layer_name = "MLB-Model"
         elif is_hockey_league(league):
             layer_name = "Hockey-predictions"
-        else:
+        elif is_football_league(league):
             layer_name = "nfelo"
+        elif is_soccer_league(league):
+            layer_name = "Soccer ratings"
+        else:
+            layer_name = "Sport model"
         reason = _sport_pred_unavailable_reason(
             league, cutoff_date, home_abbr, away_abbr
         )
