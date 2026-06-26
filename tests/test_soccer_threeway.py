@@ -11,6 +11,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from web.bet_advisor import (  # noqa: E402
     evaluate_soccer_picks,
     soccer_model_moneylines,
+    soccer_team_pick_blocked_by_projected_score,
     soccer_threeway_probs,
 )
 from web.espn_client import _extract_draw_moneyline  # noqa: E402
@@ -86,6 +87,45 @@ def test_evaluate_soccer_picks_single_best_when_multiple_qualify() -> None:
     assert picks[0].side == "away"
 
 
+def test_soccer_team_pick_blocked_when_projected_score_favors_other_side() -> None:
+    assert soccer_team_pick_blocked_by_projected_score(
+        "home", expected_home_goals=0.8, expected_away_goals=2.5
+    )
+    assert soccer_team_pick_blocked_by_projected_score(
+        "away", expected_home_goals=2.4, expected_away_goals=0.7
+    )
+    assert not soccer_team_pick_blocked_by_projected_score(
+        "home", expected_home_goals=1.1, expected_away_goals=2.4
+    )
+    assert not soccer_team_pick_blocked_by_projected_score(
+        "draw", expected_home_goals=0.5, expected_away_goals=3.0
+    )
+
+
+def test_evaluate_soccer_picks_skips_team_when_projected_score_conflicts() -> None:
+    home, draw, away = soccer_threeway_probs(-52.0, "epl")
+    away_ml, draw_ml, home_ml = soccer_model_moneylines(home, draw, away)
+    picks = evaluate_soccer_picks(
+        away_name="Arsenal",
+        home_name="Chelsea",
+        away_slug="arsenal",
+        home_slug="chelsea",
+        home_prob=home,
+        draw_prob=draw,
+        away_prob=away,
+        away_proj=away_ml,
+        draw_proj=draw_ml,
+        home_proj=home_ml,
+        away_market=away_ml + 120,
+        draw_market=draw_ml + 90,
+        home_market=home_ml + 60,
+        expected_home_goals=0.6,
+        expected_away_goals=2.2,
+    )
+    assert picks
+    assert all(pick.side != "home" for pick in picks)
+
+
 def test_extract_draw_moneyline_from_espn_shape() -> None:
     odds_block = {
         "moneyline": {
@@ -104,5 +144,7 @@ if __name__ == "__main__":
     test_soccer_model_moneylines_from_probs()
     test_evaluate_soccer_picks_includes_draw()
     test_evaluate_soccer_picks_single_best_when_multiple_qualify()
+    test_soccer_team_pick_blocked_when_projected_score_favors_other_side()
+    test_evaluate_soccer_picks_skips_team_when_projected_score_conflicts()
     test_extract_draw_moneyline_from_espn_shape()
     print("test_soccer_threeway.py: all tests passed")

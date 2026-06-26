@@ -14,6 +14,9 @@ MIN_SPREAD_POINT_EDGE = MIN_RECOMMENDED_EDGE / SPREAD_POINT_TO_EDGE
 # Cover-probability boost per point of cushion vs the consensus spread.
 SPREAD_COVER_PROB_PER_POINT = 5.0
 
+# Block home/away soccer picks when projected goals favor the other side by at least this margin.
+SOCCER_PROJECTED_SCORE_CONFLICT_MARGIN = 1.5
+
 # Win-probability → projected home margin (points), calibrated per league.
 LEAGUE_MARGIN_SCALE: dict[str, float] = {
     "nba": 0.14,
@@ -333,6 +336,27 @@ def evaluate_picks(
     return best_pick_only(picks)
 
 
+def soccer_team_pick_blocked_by_projected_score(
+    side: str,
+    *,
+    expected_home_goals: float | None,
+    expected_away_goals: float | None,
+    margin: float = SOCCER_PROJECTED_SCORE_CONFLICT_MARGIN,
+) -> bool:
+    """True when a home/away pick conflicts with the projected goal margin."""
+    if side == "draw":
+        return False
+    if expected_home_goals is None or expected_away_goals is None:
+        return False
+
+    goal_margin = float(expected_home_goals) - float(expected_away_goals)
+    if side == "home" and goal_margin <= -margin:
+        return True
+    if side == "away" and goal_margin >= margin:
+        return True
+    return False
+
+
 def evaluate_soccer_picks(
     *,
     away_name: str,
@@ -348,6 +372,8 @@ def evaluate_soccer_picks(
     away_market: int | None,
     draw_market: int | None,
     home_market: int | None,
+    expected_home_goals: float | None = None,
+    expected_away_goals: float | None = None,
     min_edge: float = MIN_RECOMMENDED_EDGE,
 ) -> list[BetPick]:
     """Evaluate 3-way soccer moneyline outcomes vs the book."""
@@ -368,6 +394,13 @@ def evaluate_soccer_picks(
         is_market_underdog = market > 0
 
         if edge < min_edge:
+            continue
+
+        if soccer_team_pick_blocked_by_projected_score(
+            side,
+            expected_home_goals=expected_home_goals,
+            expected_away_goals=expected_away_goals,
+        ):
             continue
 
         outcome_label = "Draw" if side == "draw" else name

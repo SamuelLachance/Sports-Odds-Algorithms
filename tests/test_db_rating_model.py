@@ -98,11 +98,65 @@ def test_rating_prob_helpers() -> None:
     assert _soccer_rating_prob(2000, 1800) > 50
 
 
+def test_apply_db_rating_blend_includes_legacy_layer() -> None:
+    """DB re-blend must not drop legacy when it only has total_score / win_probability."""
+    blended = {
+        "blend_mode": "blended",
+        "blend_layers": 3,
+        "blend_weights": {
+            "legacy": 1.0 / 3.0,
+            "power": 1.0 / 3.0,
+            "baseball_pred": 1.0 / 3.0,
+        },
+        "legacy": {
+            "algorithm": "Algo_V2",
+            "total_score": -52.41,
+            "win_probability": 52.41,
+            "favorite_side": "home",
+        },
+        "power": {"home_win_probability": 49.18},
+        "baseball_pred": {"home_win_probability": 53.01},
+        "blended_home_win_probability": 51.53,
+        "total_score": -51.53,
+        "win_probability": 51.53,
+        "favorite_side": "home",
+    }
+    db_payload = {
+        "source_home": "theshowratings.com",
+        "source_away": "theshowratings.com",
+        "home_rating": 88.0,
+        "away_rating": 87.33,
+        "home_win_probability": 47.6,
+        "away_win_probability": 52.4,
+        "sparse_schedule_factor": 0.0,
+        "blend_weight_hint": 0.12,
+    }
+    with patch("web.db_rating_model.run_db_rating_model", return_value=db_payload):
+        with patch(
+            "web.db_rating_model.db_rating_blend_weight",
+            return_value=0.12,
+        ):
+            updated = apply_db_rating_blend(
+                blended,
+                league="mlb",
+                cutoff_date="6-26-2026",
+                home_abbr="pit",
+                away_abbr="cin",
+                home_slug="pittsburgh-pirates",
+                away_slug="cincinnati-reds",
+            )
+    # All four layers should contribute; home win prob should stay near ~50%, not flip to ~36%.
+    assert updated["blended_home_win_probability"] > 48.0
+    assert updated["blended_home_win_probability"] < 53.0
+    assert updated["favorite_side"] == "home"
+
+
 if __name__ == "__main__":
     test_redistribute_weights_adds_db_layer()
     test_sparse_schedule_factor_zero_when_enough_games()
     test_sparse_schedule_factor_high_when_few_games()
     test_db_rating_blend_weight_increases_with_sparse_schedule()
     test_apply_db_rating_blend_binary()
+    test_apply_db_rating_blend_includes_legacy_layer()
     test_rating_prob_helpers()
     print("test_db_rating_model.py: all tests passed")

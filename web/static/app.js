@@ -214,7 +214,12 @@ function algoBreakdown(m) {
     parts.push(layerTag);
   }
   if (legacy) {
-    parts.push(`Legacy V2: ${legacy.win_probability}% (${legacy.favorite_side})`);
+    const legacyHome =
+      legacy.home_win_probability ??
+      (legacy.favorite_side === "home"
+        ? legacy.win_probability
+        : 100 - legacy.win_probability);
+    parts.push(`Legacy V2: ${legacyHome}% home`);
   }
   if (power) {
     parts.push(`Power: ${power.home_win_probability}% home (${power.home_power} vs ${power.away_power})`);

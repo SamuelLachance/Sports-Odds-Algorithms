@@ -6,6 +6,8 @@ import sys
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -14,6 +16,7 @@ from web.blend_service import (  # noqa: E402
     blend_predictions,
     compute_model_agreement,
     home_win_prob_to_total_score,
+    layer_home_win_probability,
     total_score_to_home_win_prob,
 )
 from web.season_games import get_league_power_context  # noqa: E402
@@ -37,6 +40,23 @@ def test_home_win_prob_to_total_score() -> None:
     assert win_prob == 50.0
 
 
+def test_layer_home_win_probability_from_legacy_payload() -> None:
+    assert layer_home_win_probability(
+        {
+            "total_score": -52.41,
+            "win_probability": 52.41,
+            "favorite_side": "home",
+        }
+    ) == 52.41
+    assert layer_home_win_probability(
+        {
+            "total_score": 64.31,
+            "win_probability": 64.31,
+            "favorite_side": "away",
+        }
+    ) == pytest.approx(35.69, abs=0.01)
+
+
 def test_blend_legacy_only_when_power_unavailable() -> None:
     import web.blend_service as blend_module
 
@@ -55,6 +75,7 @@ def test_blend_legacy_only_when_power_unavailable() -> None:
         assert result["algorithm"] == "Unified"
         assert result["total_score"] == -60.0
         assert result["legacy"]["algorithm"] == "Algo_V2"
+        assert result["legacy"]["home_win_probability"] == 60.0
         assert result["power"] is None
         assert "Power model unavailable" in result["blend_note"]
     finally:

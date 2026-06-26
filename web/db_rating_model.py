@@ -466,6 +466,29 @@ def _get_layer_threeway(blended: dict[str, Any], key: str) -> tuple[float, float
     )
 
 
+def _infer_blend_weights(result: dict[str, Any]) -> dict[str, float]:
+    """Build equal weights from layers actually present in a blend result."""
+    layer_keys: list[str] = []
+    if result.get("legacy"):
+        layer_keys.append("legacy")
+    if result.get("power"):
+        layer_keys.append("power")
+    for key in (
+        "basketball_pred",
+        "baseball_pred",
+        "hockey_pred",
+        "football_pred",
+        "soccer_pred",
+    ):
+        if result.get(key):
+            layer_keys.append(key)
+            break
+    if not layer_keys:
+        return {"legacy": 1.0}
+    per = 1.0 / len(layer_keys)
+    return {key: per for key in layer_keys}
+
+
 def _get_layer_home_prob(
     blended: dict[str, Any],
     key: str,
@@ -478,6 +501,18 @@ def _get_layer_home_prob(
     layer = blended.get(key) or {}
     if layer.get("home_win_probability") is not None:
         return float(layer["home_win_probability"])
+    if layer.get("total_score") is not None:
+        total = float(layer["total_score"])
+        if abs(total) < 1e-9:
+            return 50.0
+        if total < 0:
+            return abs(total)
+        return 100.0 - abs(total)
+    if layer.get("win_probability") is not None and layer.get("favorite_side"):
+        win_prob = float(layer["win_probability"])
+        if layer["favorite_side"] == "home":
+            return win_prob
+        return 100.0 - win_prob
     return None
 
 
@@ -519,19 +554,7 @@ def apply_db_rating_blend(
     result = dict(blended)
     weights = dict(result.get("blend_weights") or {})
     if not weights:
-        layers = max(int(result.get("blend_layers") or 2), 2)
-        per = 1.0 / layers
-        weights = {"legacy": per, "power": per}
-        for key in (
-            "basketball_pred",
-            "baseball_pred",
-            "hockey_pred",
-            "football_pred",
-            "soccer_pred",
-        ):
-            if result.get(key):
-                weights[key] = per
-                break
+        weights = _infer_blend_weights(result)
 
     result["blend_weights"] = _redistribute_weights(weights, db_weight)
     result["db_rating"] = db_payload
@@ -539,6 +562,7 @@ def apply_db_rating_blend(
 
     if result.get("threeway") and db_payload.get("threeway"):
         home_p = draw_p = away_p = 0.0
+        used_weight = 0.0
         for key, weight in result["blend_weights"].items():
             if key == "db_rating":
                 triple = (
@@ -550,17 +574,15 @@ def apply_db_rating_blend(
                 triple = _get_layer_threeway(result, key)
             if not triple:
                 continue
+            used_weight += weight
             home_p += weight * triple[0]
             draw_p += weight * triple[1]
             away_p += weight * triple[2]
 
-        total = home_p + draw_p + away_p
-        if total > 0:
-            home_p, draw_p, away_p = (
-                home_p / total * 100.0,
-                draw_p / total * 100.0,
-                away_p / total * 100.0,
-            )
+        if used_weight > 0:
+            home_p /= used_weight
+            draw_p /= used_weight
+            away_p /= used_weight
         from web.soccer_blend import threeway_probs_to_total_score
 
         total_score, win_prob, favorite = threeway_probs_to_total_score(
@@ -585,11 +607,15 @@ def apply_db_rating_blend(
         from web.blend_service import home_win_prob_to_total_score
 
         home_prob = 0.0
+        used_weight = 0.0
         for key, weight in result["blend_weights"].items():
             layer_home = _get_layer_home_prob(result, key, db_payload)
             if layer_home is None:
                 continue
+            used_weight += weight
             home_prob += weight * layer_home
+        if used_weight > 0:
+            home_prob /= used_weight
         home_prob = min(max(home_prob, 0.0), 100.0)
         total, win_prob = home_win_prob_to_total_score(home_prob)
         result["blended_home_win_probability"] = round(home_prob, 2)

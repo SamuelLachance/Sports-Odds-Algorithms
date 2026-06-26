@@ -84,6 +84,20 @@ def total_score_to_home_win_prob(total_score: float) -> float:
     return 100.0 - abs(total_score)
 
 
+def layer_home_win_probability(layer: dict[str, Any]) -> float | None:
+    """Resolve a layer payload to home win probability (0–100)."""
+    if layer.get("home_win_probability") is not None:
+        return float(layer["home_win_probability"])
+    if layer.get("total_score") is not None:
+        return total_score_to_home_win_prob(float(layer["total_score"]))
+    if layer.get("win_probability") is not None and layer.get("favorite_side"):
+        win_prob = float(layer["win_probability"])
+        if layer["favorite_side"] == "home":
+            return win_prob
+        return 100.0 - win_prob
+    return None
+
+
 def home_win_prob_to_total_score(home_win_prob: float) -> tuple[float, float]:
     """Convert home win probability to (total_score, win_probability)."""
     if abs(home_win_prob - 50.0) < 1e-9:
@@ -584,10 +598,12 @@ def blend_predictions(
     Basketball, baseball, hockey, and football use a third layer with equal 1/3 weights
     on home win probability.
     """
+    legacy_home = total_score_to_home_win_prob(legacy_total_score)
     legacy_payload = {
         "algorithm": "Algo_V2",
         "total_score": round(legacy_total_score, 2),
         "win_probability": round(legacy_win_probability, 2),
+        "home_win_probability": round(legacy_home, 2),
         "favorite_side": "home" if legacy_total_score <= 0 else "away",
     }
 

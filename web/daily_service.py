@@ -215,6 +215,7 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             min_edge=pick_min_edge,
         )
     elif is_soccer_league(game.league):
+        soccer_pred = blended.get("soccer_pred") or {}
         picks = evaluate_soccer_picks(
             away_name=game.away_name,
             home_name=game.home_name,
@@ -229,6 +230,10 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             away_market=game.market.away_moneyline,
             draw_market=game.market.draw_moneyline,
             home_market=game.market.home_moneyline,
+            expected_home_goals=blended.get("expected_home_goals")
+            or soccer_pred.get("expected_home_goals"),
+            expected_away_goals=blended.get("expected_away_goals")
+            or soccer_pred.get("expected_away_goals"),
             min_edge=pick_min_edge,
         )
     else:
