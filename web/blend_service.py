@@ -27,7 +27,7 @@ from web.bet_advisor import (
     _odds_edge,
     model_home_margin,
     model_moneylines,
-    spread_edge_from_points,
+    spread_odds_edge,
     spread_point_edge,
 )
 from web.league_profiles import DEFAULT_SPREAD_JUICE, MIN_RECOMMENDED_EDGE, uses_spread_bets
@@ -267,7 +267,7 @@ def _layer_has_spread_value_on_side(
         return False
     point_edge = spread_point_edge(margin, consensus_spread, side)
     juice = spread_odds if spread_odds is not None else DEFAULT_SPREAD_JUICE
-    return spread_edge_from_points(point_edge, juice) >= MIN_RECOMMENDED_EDGE
+    return spread_odds_edge(point_edge, juice) >= MIN_RECOMMENDED_EDGE
 
 
 def _best_value_spread_side(
@@ -287,7 +287,7 @@ def _best_value_spread_side(
         ("home", home_spread_odds),
     ):
         point_edge = spread_point_edge(margin, consensus_spread, side)
-        edge = spread_edge_from_points(point_edge, juice)
+        edge = spread_odds_edge(point_edge, juice)
         if edge >= MIN_RECOMMENDED_EDGE:
             edges.append((side, edge))
     if not edges:

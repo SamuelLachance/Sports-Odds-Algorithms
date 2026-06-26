@@ -218,14 +218,41 @@ def test_evaluate_spread_picks_favors_underdog_when_market_overlays() -> None:
 
 
 def test_spread_edge_juice_adjustment() -> None:
-    from web.bet_advisor import spread_edge_from_points
+    from web.bet_advisor import spread_odds_edge
 
-    base = spread_edge_from_points(2.0, -110)
-    worse_juice = spread_edge_from_points(2.0, -120)
-    better_juice = spread_edge_from_points(2.0, -105)
+    base = spread_odds_edge(2.0, -110)
+    worse_juice = spread_odds_edge(2.0, -120)
+    better_juice = spread_odds_edge(2.0, -105)
     assert base == 40.0
     assert worse_juice == 30.0
     assert better_juice == 45.0
+
+
+def test_spread_negative_cushion_with_plus_juice_has_no_edge() -> None:
+    """WNBA bug: -1.8 pt cushion at +100 must not produce +210 edge."""
+    from web.bet_advisor import spread_odds_edge
+
+    assert spread_odds_edge(-1.8, 100) == 0.0
+    assert spread_odds_edge(-1.8, -110) == 0.0
+
+
+def test_wnba_home_favored_line_without_cushion_not_recommended() -> None:
+    """Model home -0.3 vs book home -1.5 should not recommend the home spread."""
+    margin = model_home_margin(-47.5, "wnba")
+    assert abs(margin - (-0.3)) < 0.05
+    picks = evaluate_spread_picks(
+        league="wnba",
+        away_name="Atlanta Dream",
+        home_name="Golden State Valkyries",
+        away_slug="atlanta-dream",
+        home_slug="golden-state-valkyries",
+        total_score=-47.5,
+        win_probability=47.5,
+        consensus_spread=-1.5,
+        away_spread_odds=-110,
+        home_spread_odds=100,
+    )
+    assert all(p.side != "home" for p in picks)
 
 
 def test_spread_pick_uses_cover_probability() -> None:

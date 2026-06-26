@@ -104,7 +104,9 @@ function pickMarketLabel(pick) {
 function pickModelLabel(pick) {
   if (pick.bet_type === "spread" && pick.model_margin != null) {
     const sideMargin = pick.side === "home" ? pick.model_margin : -pick.model_margin;
-    return `Margin ${formatSpread(sideMargin)}`;
+    const fair =
+      pick.model_projection != null ? ` · fair ${formatOdds(pick.model_projection)}` : "";
+    return `Margin ${formatSpread(sideMargin)}${fair}`;
   }
   return formatOdds(pick.model_projection);
 }
