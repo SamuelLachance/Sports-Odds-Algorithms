@@ -54,8 +54,8 @@ def test_projected_spread_uses_book_sign_when_home_favored() -> None:
 
 
 def test_projected_spread_layer_margin_for_agreement() -> None:
-    """Third-layer spread agreement expects positive home margin from book-sign spread."""
+    """Third-layer spread agreement uses book-sign projected_spread directly."""
     from web.blend_service import _layer_home_margin
 
     layer = {"projected_spread": -3.5}
-    assert _layer_home_margin(layer, "nfl") == 3.5
+    assert _layer_home_margin(layer, "nfl") == -3.5

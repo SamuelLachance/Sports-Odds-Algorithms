@@ -27,8 +27,8 @@ def test_spread_line_for_side() -> None:
 
 
 def test_spread_point_edge_home_favorite() -> None:
-    # Model home by 8, book home -5.5 → 2.5 pt cushion
-    margin = 8.0
+    # Model home -8 (home favored), book home -5.5 → 2.5 pt cushion
+    margin = -8.0
     assert spread_point_edge(margin, -5.5, "home") == 2.5
     assert spread_point_edge(margin, -5.5, "away") < 0
 
@@ -70,14 +70,15 @@ def test_evaluate_spread_picks_skips_without_consensus() -> None:
 
 
 def test_model_home_margin_sign() -> None:
-    assert model_home_margin(-60.0, "nba") > 0
-    assert model_home_margin(60.0, "nba") < 0
+    """Spread convention: negative = home favored, positive = away favored."""
+    assert model_home_margin(-60.0, "nba") < 0
+    assert model_home_margin(60.0, "nba") > 0
 
 
 def test_spread_point_edge_away_favorite_small_margin() -> None:
-    # Model away by 1.2, book home +9.5 → fade away -9.5, take home +9.5
+    # Model away favored (+1.2 home margin), book home +9.5 → take home +9.5
     margin = model_home_margin(60.04, "wnba")
-    assert margin < 0
+    assert margin > 0
     assert spread_point_edge(margin, 9.5, "home") > 8.0
     assert spread_point_edge(margin, 9.5, "away") < 0
 
@@ -239,7 +240,7 @@ def test_spread_negative_cushion_with_plus_juice_has_no_edge() -> None:
 def test_wnba_home_favored_line_without_cushion_not_recommended() -> None:
     """Model home -0.3 vs book home -1.5 should not recommend the home spread."""
     margin = model_home_margin(-47.5, "wnba")
-    assert abs(margin - (-0.3)) < 0.05
+    assert abs(margin - 0.3) < 0.05
     picks = evaluate_spread_picks(
         league="wnba",
         away_name="Atlanta Dream",
@@ -287,6 +288,42 @@ def test_cross_sign_reason_does_not_claim_book_beats_model_line() -> None:
     if picks:
         assert "beats the model line" not in picks[0].reason.lower()
         assert "underdog" in picks[0].reason.lower()
+
+
+def test_wnba_spread_margin_aligns_with_unified_away_favorite() -> None:
+    """Atlanta @ Seattle regression: away fav 61% → positive home margin, not home fav."""
+    total = 61.43
+    margin = model_home_margin(total, "wnba")
+    assert margin > 0
+    picks = evaluate_spread_picks(
+        league="wnba",
+        away_name="Atlanta Dream",
+        home_name="Seattle Storm",
+        away_slug="atlanta-dream",
+        home_slug="seattle-storm",
+        total_score=total,
+        win_probability=61.43,
+        consensus_spread=8.5,
+        away_spread_odds=-110,
+        home_spread_odds=-110,
+        model_margin_home=margin,
+    )
+    assert picks
+    assert picks[0].side == "home"
+    assert picks[0].model_margin is not None
+    assert picks[0].model_margin > 0
+    team_margin = (
+        picks[0].model_margin
+        if picks[0].side == "home"
+        else -picks[0].model_margin
+    )
+    assert team_margin > 0
+
+
+def test_nfl_layer_predicted_margin_uses_spread_convention() -> None:
+    from web.blend_service import _layer_home_margin
+
+    assert _layer_home_margin({"predicted_margin": 6.5}, "nfl") == -6.5
 
 
 

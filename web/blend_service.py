@@ -245,12 +245,13 @@ def _layer_side_win_probs(total_score: float) -> tuple[float, float]:
 
 
 def _layer_home_margin(layer: dict[str, Any], league: str) -> float | None:
-    """Home scoring margin for spread checks; uses sport-specific projections when present."""
+    """Home margin in spread convention (negative = home favored)."""
     if layer.get("predicted_margin") is not None:
-        return float(layer["predicted_margin"])
+        # Sport models use points margin (positive = home favored).
+        return -float(layer["predicted_margin"])
     if layer.get("projected_spread") is not None:
-        # nfelo projected_spread uses book sign (negative = home favored).
-        return -float(layer["projected_spread"])
+        # nfelo projected_spread already uses book sign (negative = home favored).
+        return float(layer["projected_spread"])
     total = _layer_binary_total_score(layer)
     if total is not None:
         return model_home_margin(total, league)
@@ -258,18 +259,7 @@ def _layer_home_margin(layer: dict[str, Any], league: str) -> float | None:
 
 
 def blended_home_spread_margin(blended: dict[str, Any], league: str) -> float:
-    """Average sport-aware home margins across blend layers for spread picks."""
-    layer_keys = ("legacy", "power", "basketball_pred", "baseball_pred", "hockey_pred", "football_pred")
-    margins: list[float] = []
-    for key in layer_keys:
-        layer = blended.get(key)
-        if not layer:
-            continue
-        margin = _layer_home_margin(layer, league)
-        if margin is not None:
-            margins.append(margin)
-    if margins:
-        return sum(margins) / len(margins)
+    """Home margin for spread picks, aligned with unified total_score / win%."""
     total = blended.get("total_score")
     if total is not None:
         return model_home_margin(float(total), league)

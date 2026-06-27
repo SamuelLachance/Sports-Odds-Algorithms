@@ -598,6 +598,24 @@ def test_model_agreement_nhl_requires_three_layers() -> None:
     assert agreement["agreed"] is False
 
 
+def test_blended_home_spread_margin_matches_unified_total_score() -> None:
+    """Spread picks use unified total_score margin, not a layer average."""
+    blended = {
+        "total_score": 61.43,
+        "win_probability": 61.43,
+        "favorite_side": "away",
+        "legacy": {"total_score": -55.0, "predicted_margin": -4.0},
+        "power": {"predicted_margin": 10.0},
+        "basketball_pred": {"predicted_margin": 12.0, "home_win_probability": 70.0},
+    }
+    margin = blended_home_spread_margin(blended, "wnba")
+    from web.bet_advisor import model_home_margin
+
+    expected = model_home_margin(61.43, "wnba")
+    assert margin == expected
+    assert margin > 0
+
+
 if __name__ == "__main__":
     test_total_score_to_home_win_prob()
     test_home_win_prob_to_total_score()

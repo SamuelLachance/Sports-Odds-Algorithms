@@ -131,10 +131,11 @@ function pickMarketLabel(pick) {
 
 function pickModelLabel(pick) {
   if (pick.bet_type === "spread" && pick.model_margin != null) {
-    const sideMargin = pick.side === "home" ? pick.model_margin : -pick.model_margin;
+    const teamMargin = pick.side === "home" ? pick.model_margin : -pick.model_margin;
+    const role = pick.side === "home" ? "Home" : "Away";
     const fair =
       pick.model_projection != null ? ` · fair ${formatOdds(pick.model_projection)}` : "";
-    return `Margin ${formatSpread(sideMargin)}${fair}`;
+    return `${role} margin ${formatSpread(teamMargin)}${fair}`;
   }
   return formatOdds(pick.model_projection);
 }
@@ -395,7 +396,7 @@ function algoBreakdown(m) {
   if (basketball) {
     const margin =
       basketball.predicted_margin != null
-        ? ` margin ${basketball.predicted_margin}`
+        ? ` margin ${formatSpread(-basketball.predicted_margin)}`
         : "";
     parts.push(`Matrix: ${basketball.home_win_probability}% home${margin}`);
   }
@@ -957,7 +958,7 @@ function viewTracking() {
       <div class="section-head"><h2>Bet log (${bets.length})</h2></div>
       <div class="bet-log">${bets.length ? bets.map((b) => `<article class="bet-row panel"><div class="bet-row-top"><div><strong>${b.team_name}</strong><span class="league-pill">${b.league_name}</span>${statusBadge(b.status, b.units)}</div><span class="edge-tag">+${b.edge} edge</span></div>
       <p class="muted">${b.matchup} · ${b.date}</p>
-      <div class="pick-odds compact"><div><span>${b.bet_type === "spread" ? "Spread" : "Market"}</span><strong>${b.bet_type === "spread" ? formatSpread(b.spread_line) + " (" + formatOdds(b.spread_odds ?? b.market_odds) + ")" : formatOdds(b.market_odds)}</strong></div><div><span>Model</span><strong>${b.bet_type === "spread" && b.model_margin != null ? "Margin " + formatSpread(b.side === "home" ? b.model_margin : -b.model_margin) : formatOdds(b.model_projection)}</strong></div><div><span>Strategy</span><strong>${b.strategy_label}</strong></div></div>
+      <div class="pick-odds compact"><div><span>${b.bet_type === "spread" ? "Spread" : "Market"}</span><strong>${b.bet_type === "spread" ? formatSpread(b.spread_line) + " (" + formatOdds(b.spread_odds ?? b.market_odds) + ")" : formatOdds(b.market_odds)}</strong></div><div><span>Model</span><strong>${b.bet_type === "spread" && b.model_margin != null ? (b.side === "home" ? "Home" : "Away") + " margin " + formatSpread(b.side === "home" ? b.model_margin : -b.model_margin) : formatOdds(b.model_projection)}</strong></div><div><span>Strategy</span><strong>${b.strategy_label}</strong></div></div>
       ${b.final_score ? `<p class="final-score">Final: ${b.final_score}</p>` : ""}</article>`).join("") : `<div class="panel empty-panel">No tracked bets yet. Picks with +${minEdge} edge are logged on each daily rebuild.</div>`}</div>
     </section>`;
 

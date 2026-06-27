@@ -99,13 +99,13 @@ def soccer_model_moneylines(
 
 
 def model_home_margin(total_score: float, league: str) -> float:
-    """Projected home scoring margin (positive = home favored)."""
+    """Projected home margin in spread convention (negative = home favored)."""
     if abs(total_score) < 1e-9:
         return 0.0
     win_prob = abs(total_score)
     scale = LEAGUE_MARGIN_SCALE.get(league.lower(), 0.14)
     margin = (win_prob - 50.0) * scale
-    return margin if total_score < 0 else -margin
+    return -margin if total_score < 0 else margin
 
 
 def spread_line_for_side(home_spread: float, side: str) -> float:
@@ -114,11 +114,13 @@ def spread_line_for_side(home_spread: float, side: str) -> float:
 
 
 def spread_point_edge(model_margin_home: float, home_spread: float, side: str) -> float:
-    """Point cushion vs the consensus spread for the bet side."""
+    """Point cushion vs the consensus spread for the bet side.
+
+    ``model_margin_home`` uses spread convention (negative = home favored).
+    """
     if side == "home":
-        return model_margin_home + home_spread
-    # Away covers when model away margin exceeds the number laid (home_spread when home is dog).
-    return -model_margin_home - home_spread
+        return -model_margin_home + home_spread
+    return model_margin_home - home_spread
 
 
 def spread_cover_probability(point_edge: float) -> float:
@@ -477,7 +479,6 @@ def evaluate_spread_picks(
             continue
 
         line = spread_line_for_side(consensus_spread, side)
-        side_margin = model_margin if side == "home" else -model_margin
         side_cover_prob = spread_cover_probability(point_edge)
         fair_spread_odds = _probability_to_american(side_cover_prob)
 
@@ -494,9 +495,9 @@ def evaluate_spread_picks(
             confidence = "low"
 
         reason = (
-            f"Model projects {name} by {_format_spread(side_margin)} vs "
-            f"consensus {_format_spread(line)} ({_format_spread(point_edge)} pt cushion, "
-            f"{side_cover_prob:.1f}% cover vs fair {fair_spread_odds:+d}, "
+            f"Model home margin {_format_spread(model_margin)}; "
+            f"{name} {_format_spread(line)} has {_format_spread(point_edge)} pt cushion "
+            f"({side_cover_prob:.1f}% cover vs fair {fair_spread_odds:+d}, "
             f"+{edge:.0f} edge)."
         )
 

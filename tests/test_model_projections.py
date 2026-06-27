@@ -62,6 +62,17 @@ def test_nba_spread_away_favorite_consistent_with_total_score() -> None:
     assert _favorite_side_from_projections(away_proj, home_proj) == "away"
 
 
+def test_home_margin_sign_matches_win_probability() -> None:
+    """Spread convention: home win% > 50 → negative home margin; away fav → positive."""
+    from web.bet_advisor import model_home_margin
+
+    home_margin = model_home_margin(-61.43, "wnba")
+    assert home_margin < 0
+
+    away_margin = model_home_margin(61.43, "wnba")
+    assert away_margin > 0
+
+
 if __name__ == "__main__":
     test_away_favorite_rays_at_angels_regression()
     test_home_favorite_moneylines()
