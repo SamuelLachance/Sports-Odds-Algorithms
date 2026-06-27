@@ -20,6 +20,8 @@ from web.predict_service import (
 from web.team_service import build_teams_index, get_team_profile
 from web.tracking_service import build_tracking_response, load_store, update_tracking
 
+DB_DIR = Path(__file__).resolve().parent.parent / "docs" / "api" / "db"
+
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 
 app = FastAPI(
@@ -98,6 +100,35 @@ def tracking(refresh: bool = False) -> dict:
         return build_tracking_response(load_store())
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
+def _read_db_json(rel: str) -> dict:
+    path = DB_DIR / rel
+    if not path.is_file():
+        raise HTTPException(status_code=404, detail="Database snapshot not found")
+    import json
+
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+@app.get("/api/db/manifest")
+def db_manifest() -> dict:
+    return _read_db_json("manifest.json")
+
+
+@app.get("/api/db/{league}/league")
+def db_league(league: str) -> dict:
+    return _read_db_json(f"{league.lower()}/league.json")
+
+
+@app.get("/api/db/{league}/teams")
+def db_teams_index(league: str) -> dict:
+    return _read_db_json(f"{league.lower()}/teams/index.json")
+
+
+@app.get("/api/db/{league}/teams/{abbr}")
+def db_team(league: str, abbr: str) -> dict:
+    return _read_db_json(f"{league.lower()}/teams/{abbr.lower()}.json")
 
 
 @app.post("/api/tracking/sync")

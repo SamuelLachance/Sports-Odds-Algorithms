@@ -1073,6 +1073,100 @@ select {
   color: var(--text-muted);
 }
 
+.db-league-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.db-league-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.db-league-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.db-grid-two {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.db-table-wrap {
+  overflow-x: auto;
+}
+
+.db-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.db-table th,
+.db-table td {
+  padding: 0.55rem 0.65rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.db-table th {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.db-news-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.db-news h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+}
+
+.db-recent,
+.db-stat-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.db-recent li,
+.db-stat-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.db-roster-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.75rem;
+}
+
+.db-player {
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-soft);
+}
+
+@media (max-width: 900px) {
+  .db-grid-two {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 900px) {
   .demo-grid,
   .cards-grid,

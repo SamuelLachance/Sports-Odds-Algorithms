@@ -18,6 +18,8 @@ const state = {
   tracking: null,
   teamsIndex: null,
   teamProfiles: {},
+  dbManifest: null,
+  dbCache: {},
   selectedLeague: "all",
   trackingPeriod: "all_time",
 };
@@ -639,6 +641,163 @@ function viewTracking() {
   });
 }
 
+function dbApi(path) {
+  return api(`db/${path}`);
+}
+
+async function loadDbManifest() {
+  if (state.dbManifest) return state.dbManifest;
+  state.dbManifest = await fetchJson(
+    USE_STATIC_API ? dbApi("manifest.json") : api("db/manifest"),
+  );
+  return state.dbManifest;
+}
+
+async function loadLeagueDb(league) {
+  const key = `league:${league}`;
+  if (state.dbCache[key]) return state.dbCache[key];
+  const payload = await fetchJson(
+    USE_STATIC_API
+      ? dbApi(`${league}/league.json`)
+      : api(`db/${league}/league`),
+  );
+  state.dbCache[key] = payload;
+  return payload;
+}
+
+async function loadTeamDb(league, abbr) {
+  const key = `team:${league}:${abbr}`;
+  if (state.dbCache[key]) return state.dbCache[key];
+  const payload = await fetchJson(
+    USE_STATIC_API
+      ? dbApi(`${league}/teams/${abbr}.json`)
+      : api(`db/${league}/teams/${abbr}`),
+  );
+  state.dbCache[key] = payload;
+  return payload;
+}
+
+function renderStandingsTable(standings) {
+  const rows = standings?.teams || [];
+  if (!rows.length) return `<div class="panel empty-panel">Standings unavailable for this league.</div>`;
+  return `<div class="db-table-wrap panel"><table class="db-table"><thead><tr>
+    <th>#</th><th>Team</th><th>W-L</th><th>Win%</th><th>GB</th><th>Streak</th><th>Diff</th>
+  </tr></thead><tbody>${rows
+    .map((row) => {
+      const wins = row.wins ?? "—";
+      const losses = row.losses ?? "—";
+      const wp = row.win_percent != null ? `${(row.win_percent * 100).toFixed(1)}%` : "—";
+      return `<tr><td>${row.rank ?? "—"}</td><td><strong>${row.name}</strong></td><td>${wins}-${losses}</td><td>${wp}</td><td>${row.games_behind ?? "—"}</td><td>${row.streak ?? "—"}</td><td>${row.point_differential ?? "—"}</td></tr>`;
+    })
+    .join("")}</tbody></table></div>`;
+}
+
+function renderNewsList(news) {
+  if (!news?.length) return `<div class="panel empty-panel">No recent headlines.</div>`;
+  return `<div class="db-news-list">${news
+    .map(
+      (item) => `<article class="db-news panel"><h3>${item.headline || "Update"}</h3>
+      <p class="muted">${item.published ? new Date(item.published).toLocaleString() : ""}</p>
+      <p>${item.description || ""}</p>
+      ${item.link ? `<a href="${item.link}" target="_blank" rel="noopener">Read on ESPN</a>` : ""}</article>`,
+    )
+    .join("")}</div>`;
+}
+
+async function viewDatabase() {
+  const manifest = await loadDbManifest();
+  const leagues = manifest.leagues || [];
+  appRoot.innerHTML = `<section class="page-head"><h1>Sports Database</h1>
+    <p>Standings, stats, trends, news, ratings, and projections across ${manifest.league_count || leagues.length} leagues.</p></section>
+    <div class="db-league-grid">${leagues
+      .map(
+        (lg) => `<a class="db-league-card panel" href="#/database/${lg.id}">
+          <span class="league-pill">${lg.category}</span>
+          <h3>${lg.name}</h3>
+          <p class="muted">${lg.team_count || 0} teams · ${lg.standings_groups || 0} standing groups · ${lg.news_count || 0} headlines</p>
+        </a>`,
+      )
+      .join("")}</div>`;
+}
+
+async function viewDatabaseLeague(league) {
+  const data = await loadLeagueDb(league);
+  const teams = (data.standings?.teams || []).slice(0, 40);
+  appRoot.innerHTML = `<section class="page-head">
+    <span class="league-pill">${data.league?.category}</span>
+    <h1>${data.league?.name} Database</h1>
+    <p>Season ${data.season_year} · Updated ${new Date(data.generated_at).toLocaleString()}</p>
+  </section>
+  <div class="db-grid-two">
+    <section class="section"><div class="section-head"><h2>Standings</h2></div>${renderStandingsTable(data.standings)}</section>
+    <section class="section"><div class="section-head"><h2>Latest news</h2></div>${renderNewsList(data.news)}</section>
+  </div>
+  <section class="section"><div class="section-head"><h2>Teams</h2></div>
+    <div class="team-grid">${teams
+      .map(
+        (row) => `<a class="team-card panel" href="#/database/${league}/${row.abbr}">
+          <strong>${row.name}</strong>
+          <span class="muted">#${row.rank ?? "—"} · ${row.wins ?? "—"}-${row.losses ?? "—"}</span>
+        </a>`,
+      )
+      .join("")}</div>
+  </section>
+  <a class="btn btn-secondary" href="#/database">← All leagues</a>`;
+}
+
+async function viewDatabaseTeam(league, abbr) {
+  let team;
+  try {
+    team = await loadTeamDb(league, abbr);
+  } catch {
+    appRoot.innerHTML = `<div class="panel empty-panel">Team database snapshot not built yet for ${abbr.toUpperCase()}. Check back after the next daily rebuild.</div>
+      <a class="btn btn-secondary" href="#/database/${league}">← ${league.toUpperCase()}</a>`;
+    return;
+  }
+  const trends = team.trends || {};
+  const projection = team.projection || {};
+  const ratings = team.ratings || {};
+  appRoot.innerHTML = `<section class="page-head">
+    <span class="league-pill">${league.toUpperCase()}</span>
+    <h1>${team.team?.name || abbr.toUpperCase()}</h1>
+    <p>${team.team?.record_summary || ""} ${team.team?.standing_summary ? "· " + team.team.standing_summary : ""}</p>
+    ${team.team?.coach ? `<p class="muted">Head coach: ${team.team.coach}</p>` : ""}
+  </section>
+  <div class="stat-grid">
+    <div class="stat-card panel"><span>Streak</span><strong>${trends.streak || "—"}</strong></div>
+    <div class="stat-card panel"><span>Last 5</span><strong>${trends.last_5 || "—"}</strong></div>
+    <div class="stat-card panel"><span>Power rating</span><strong>${ratings.power?.power ?? projection.power_rating ?? "—"}</strong></div>
+    <div class="stat-card panel"><span>Projected pace</span><strong>${projection.projected_wins_pace ?? "—"} wins</strong></div>
+  </div>
+  <div class="db-grid-two">
+    <section class="section panel"><h2>Recent games</h2>
+      ${(team.recent_games || []).length ? `<ul class="db-recent">${team.recent_games
+        .map((g) => `<li><strong>${g.result}</strong> ${g.date} vs ${g.opponent} (${g.score}) · ${g.location}</li>`)
+        .join("")}</ul>` : `<p class="muted">No recent game log in snapshot.</p>`}
+    </section>
+    <section class="section panel"><h2>Season stats</h2>
+      ${(team.stats?.categories || [])
+        .slice(0, 2)
+        .map(
+          (cat) => `<h3>${cat.name}</h3><ul class="db-stat-list">${(cat.stats || [])
+            .slice(0, 8)
+            .map((s) => `<li><span>${s.name}</span><strong>${s.display ?? s.value}</strong></li>`)
+            .join("")}</ul>`,
+        )
+        .join("") || `<p class="muted">Season stats unavailable.</p>`}
+    </section>
+  </div>
+  <section class="section panel"><h2>Roster (${(team.roster || []).length} players)</h2>
+    <div class="db-roster-grid">${(team.roster || [])
+      .slice(0, 24)
+      .map(
+        (p) => `<div class="db-player"><strong>${p.name}</strong><span class="muted">${p.position || ""}${p.jersey ? " #" + p.jersey : ""}</span></div>`,
+      )
+      .join("")}</div>
+  </section>
+  <a class="btn btn-secondary" href="#/database/${league}">← ${league.toUpperCase()} database</a>`;
+}
+
 function highlightNav(route) {
   document.querySelectorAll("#mainNav a").forEach((a) => {
     const r = a.dataset.route;
@@ -658,6 +817,11 @@ async function render() {
     else if (route.path === "teams") viewTeams(route.parts[1]);
     else if (route.path === "team") await viewTeam(route.parts[1], route.parts[2]);
     else if (route.path === "tracking") viewTracking();
+    else if (route.path === "database") {
+      if (route.parts[1] && route.parts[2]) await viewDatabaseTeam(route.parts[1], route.parts[2]);
+      else if (route.parts[1]) await viewDatabaseLeague(route.parts[1]);
+      else await viewDatabase();
+    }
     else viewDashboard();
   } catch (err) {
     appRoot.innerHTML = `<div class="panel empty-panel error-panel">${err.message}</div>`;
@@ -692,6 +856,14 @@ async function loadPlatform() {
     );
   } catch {
     state.teamsIndex = { leagues: [] };
+  }
+
+  try {
+    state.dbManifest = await fetchJson(
+      USE_STATIC_API ? dbApi("manifest.json") : api("db/manifest"),
+    );
+  } catch {
+    state.dbManifest = null;
   }
 
   const stamp = slate.generated_at ? new Date(slate.generated_at) : new Date();

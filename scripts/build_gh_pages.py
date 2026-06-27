@@ -174,6 +174,17 @@ def build_daily_slate() -> dict:
 
     print("Updating bet tracking rollups...")
     write_json(DOCS_DIR / "api" / "tracking.json", update_tracking(slate))
+
+    from web.sports_db import build_sports_database
+
+    full_build = _env_flag("FULL_BUILD")
+    print(f"Building sports database (fast={not full_build})...")
+    build_sports_database(
+        DOCS_DIR / "api" / "db",
+        slate=slate,
+        fast=not full_build,
+        max_workers=4 if _fast_daily_build() else 6,
+    )
     return slate
 
 
