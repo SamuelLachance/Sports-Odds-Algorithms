@@ -5,9 +5,43 @@ from web.sports_db.normalize import (
     build_player_snapshot,
     parse_news,
     parse_player_game_log,
+    parse_roster,
     parse_standings,
     parse_team_statistics,
 )
+
+
+def test_parse_roster_flattens_grouped_nfl_buckets() -> None:
+    payload = {
+        "athletes": [
+            {
+                "position": "offense",
+                "items": [
+                    {
+                        "id": "1",
+                        "displayName": "Tight End",
+                        "position": {"abbreviation": "TE", "name": "Tight End"},
+                        "jersey": "87",
+                    }
+                ],
+            },
+            {
+                "position": "defense",
+                "items": [
+                    {
+                        "id": "2",
+                        "displayName": "Linebacker",
+                        "position": "LB",
+                        "jersey": "54",
+                    }
+                ],
+            },
+        ]
+    }
+    roster = parse_roster(payload)
+    assert len(roster) == 2
+    assert roster[0]["position"] == "TE"
+    assert roster[1]["position"] == "LB"
 
 
 def test_parse_standings_groups() -> None:

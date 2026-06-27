@@ -124,26 +124,73 @@ def parse_rankings(payload: dict[str, Any] | None) -> list[dict[str, Any]]:
     return rows
 
 
+def _dict_or_str_label(value: Any, *, abbrev_key: str = "abbreviation", name_key: str = "name") -> str | None:
+    if isinstance(value, str):
+        return value or None
+    if isinstance(value, dict):
+        return value.get(abbrev_key) or value.get(name_key) or value.get("displayName")
+    return None
+
+
+def _iter_roster_athletes(athletes: list[Any]) -> list[dict[str, Any]]:
+    """Flatten ESPN roster groups (NFL offense/defense, NHL position buckets)."""
+    rows: list[dict[str, Any]] = []
+    for entry in athletes:
+        if not isinstance(entry, dict):
+            continue
+        items = entry.get("items")
+        if items:
+            group_position = entry.get("position")
+            for athlete in items:
+                if not isinstance(athlete, dict):
+                    continue
+                row = dict(athlete)
+                if group_position and not row.get("position"):
+                    row["position"] = group_position
+                rows.append(row)
+        else:
+            rows.append(entry)
+    return rows
+
+
+def _parse_roster_athlete(athlete: dict[str, Any]) -> dict[str, Any]:
+    experience = athlete.get("experience")
+    if isinstance(experience, dict):
+        experience_years = experience.get("years")
+    elif isinstance(experience, (int, float)):
+        experience_years = experience
+    else:
+        experience_years = None
+
+    status = athlete.get("status")
+    if isinstance(status, dict):
+        status_name = status.get("name")
+    else:
+        status_name = status if isinstance(status, str) else None
+
+    headshot = athlete.get("headshot")
+    if isinstance(headshot, dict):
+        headshot_url = headshot.get("href")
+    else:
+        headshot_url = headshot if isinstance(headshot, str) else None
+
+    return {
+        "id": athlete.get("id"),
+        "name": athlete.get("displayName") or athlete.get("fullName"),
+        "position": _dict_or_str_label(athlete.get("position")),
+        "jersey": athlete.get("jersey"),
+        "age": athlete.get("age"),
+        "height": athlete.get("displayHeight"),
+        "weight": athlete.get("displayWeight"),
+        "experience": experience_years,
+        "status": status_name,
+        "headshot": headshot_url,
+    }
+
+
 def parse_roster(payload: dict[str, Any] | None) -> list[dict[str, Any]]:
-    athletes = (payload or {}).get("athletes") or []
-    players: list[dict[str, Any]] = []
-    for athlete in athletes:
-        pos = athlete.get("position") or {}
-        players.append(
-            {
-                "id": athlete.get("id"),
-                "name": athlete.get("displayName") or athlete.get("fullName"),
-                "position": pos.get("abbreviation") or pos.get("name"),
-                "jersey": athlete.get("jersey"),
-                "age": athlete.get("age"),
-                "height": athlete.get("displayHeight"),
-                "weight": athlete.get("displayWeight"),
-                "experience": (athlete.get("experience") or {}).get("years"),
-                "status": (athlete.get("status") or {}).get("name"),
-                "headshot": (athlete.get("headshot") or {}).get("href"),
-            }
-        )
-    return players
+    athletes = _iter_roster_athletes((payload or {}).get("athletes") or [])
+    return [_parse_roster_athlete(athlete) for athlete in athletes]
 
 
 def parse_team_statistics(payload: dict[str, Any] | None) -> dict[str, Any]:
