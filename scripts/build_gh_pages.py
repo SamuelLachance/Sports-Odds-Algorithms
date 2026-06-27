@@ -68,6 +68,10 @@ def copy_static_assets() -> None:
 def build_api_metadata() -> None:
     write_json(DOCS_DIR / "api" / "leagues.json", get_leagues())
 
+    if _fast_daily_build():
+        print("Skipping per-league teams/seasons cache (FAST_DAILY_BUILD)")
+        return
+
     for league in SUPPORTED_LEAGUES:
         write_json(DOCS_DIR / "api" / "leagues" / league / "teams.json", get_teams(league))
         write_json(DOCS_DIR / "api" / "leagues" / league / "seasons.json", get_seasons(league))
@@ -150,11 +154,14 @@ def build_daily_slate() -> dict:
     slate = get_daily_slate()
     write_json(DOCS_DIR / "api" / "daily-slate.json", slate)
 
-    print("Building teams index and slate team profiles...")
-    write_json(DOCS_DIR / "api" / "teams-index.json", build_teams_index())
-    for rel_key, profile in build_team_profiles_for_slate(slate).items():
-        league, abbr = rel_key.split("/", 1)
-        write_json(DOCS_DIR / "api" / "team-profiles" / league / f"{abbr}.json", profile)
+    if _fast_daily_build():
+        print("Skipping teams index and profiles (FAST_DAILY_BUILD)")
+    else:
+        print("Building teams index and slate team profiles...")
+        write_json(DOCS_DIR / "api" / "teams-index.json", build_teams_index())
+        for rel_key, profile in build_team_profiles_for_slate(slate).items():
+            league, abbr = rel_key.split("/", 1)
+            write_json(DOCS_DIR / "api" / "team-profiles" / league / f"{abbr}.json", profile)
 
     print("Updating bet tracking rollups...")
     write_json(DOCS_DIR / "api" / "tracking.json", update_tracking(slate))
