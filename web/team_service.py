@@ -55,6 +55,35 @@ def fetch_espn_team_ids(league: str) -> dict[str, str]:
     return mapping
 
 
+def build_league_sidebar_index(slate: dict | None = None) -> dict[str, Any]:
+    """Lightweight league list for the sidebar (no per-league ESPN/CSV team fetches)."""
+    game_counts: dict[str, int] = {}
+    if slate:
+        for game in slate.get("games") or []:
+            league_id = game.get("league")
+            if league_id:
+                game_counts[league_id] = game_counts.get(league_id, 0) + 1
+
+    leagues = []
+    for league_id in SUPPORTED_LEAGUES:
+        profile = LEAGUE_PROFILES[league_id]
+        leagues.append(
+            {
+                "id": league_id,
+                "name": profile["name"],
+                "category": profile["category"],
+                "team_count": game_counts.get(league_id, 0),
+                "teams": [],
+            }
+        )
+    return {
+        "generated_at": date.today().isoformat(),
+        "league_count": len(leagues),
+        "leagues": leagues,
+        "sidebar_only": True,
+    }
+
+
 def build_teams_index() -> dict[str, Any]:
     leagues = []
     for league in SUPPORTED_LEAGUES:

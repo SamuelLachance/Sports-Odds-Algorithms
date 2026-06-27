@@ -127,8 +127,26 @@ function gameById(id) {
   return (state.slate?.games || []).find((g) => g.event_id === id);
 }
 
+function leaguesForSidebar() {
+  const fromIndex = state.teamsIndex?.leagues || [];
+  if (fromIndex.length) return fromIndex;
+
+  const games = state.slate?.games || [];
+  const byLeague = new Map();
+  for (const game of games) {
+    const id = game.league;
+    if (!id || byLeague.has(id)) continue;
+    byLeague.set(id, {
+      id,
+      name: game.league_name || id.toUpperCase(),
+      team_count: games.filter((g) => g.league === id).length,
+    });
+  }
+  return [...byLeague.values()].sort((a, b) => a.name.localeCompare(b.name));
+}
+
 function renderLeagueMenu() {
-  const leagues = state.teamsIndex?.leagues || [];
+  const leagues = leaguesForSidebar();
   const items = [
     `<li><a href="#/games" class="league-link ${state.selectedLeague === "all" ? "active" : ""}" data-league="all">All sports</a></li>`,
     ...leagues.map(

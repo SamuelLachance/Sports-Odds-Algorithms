@@ -147,7 +147,11 @@ def build_prediction_cache() -> tuple[int, int]:
 
 def build_daily_slate() -> dict:
     from web.daily_service import get_daily_slate
-    from web.team_service import build_team_profiles_for_slate, build_teams_index
+    from web.team_service import (
+        build_league_sidebar_index,
+        build_team_profiles_for_slate,
+        build_teams_index,
+    )
     from web.tracking_service import update_tracking
 
     print("Building daily betting slate...")
@@ -155,7 +159,12 @@ def build_daily_slate() -> dict:
     write_json(DOCS_DIR / "api" / "daily-slate.json", slate)
 
     if _fast_daily_build():
-        print("Skipping teams index and profiles (FAST_DAILY_BUILD)")
+        print("Building lightweight teams index for sidebar (FAST_DAILY_BUILD)")
+        write_json(
+            DOCS_DIR / "api" / "teams-index.json",
+            build_league_sidebar_index(slate),
+        )
+        print("Skipping slate team profiles (FAST_DAILY_BUILD)")
     else:
         print("Building teams index and slate team profiles...")
         write_json(DOCS_DIR / "api" / "teams-index.json", build_teams_index())
