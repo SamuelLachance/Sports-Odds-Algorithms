@@ -183,7 +183,8 @@ def build_daily_slate() -> dict:
         DOCS_DIR / "api" / "db",
         slate=slate,
         fast=not full_build,
-        max_workers=4 if _fast_daily_build() else 6,
+        max_workers=6 if _fast_daily_build() else 8,
+        team_workers=4 if _fast_daily_build() else 6,
     )
     return slate
 

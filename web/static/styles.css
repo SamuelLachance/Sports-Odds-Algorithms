@@ -1595,6 +1595,281 @@ select:focus {
   margin-bottom: var(--space-2);
 }
 
+/* ── Football Manager–style team & player cards ── */
+.fm-team-hero {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--space-4);
+  margin-bottom: var(--space-3);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--bg-elevated) 92%, var(--accent) 8%),
+    var(--bg-elevated)
+  );
+}
+
+.fm-team-hero-main {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  min-width: min(100%, 320px);
+}
+
+.fm-team-logo {
+  width: 88px;
+  height: 88px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.fm-team-record {
+  font-size: 1.05rem;
+  margin: 0.35rem 0;
+}
+
+.fm-team-hero-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(72px, 1fr));
+  gap: var(--space-2);
+  flex: 1;
+  min-width: 240px;
+}
+
+.fm-hero-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: var(--space-2);
+  background: var(--bg-soft);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  text-align: center;
+}
+
+.fm-hero-stat span {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.fm-hero-stat strong {
+  font-size: 1.15rem;
+}
+
+.fm-team-nav {
+  margin: 0 0 var(--space-3);
+}
+
+.fm-team-stats {
+  margin-bottom: var(--space-3);
+}
+
+.fm-injuries .fm-injury-status {
+  color: var(--warning, #c9a227);
+}
+
+.fm-roster-section .section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: var(--space-3);
+}
+
+.fm-roster-group {
+  margin-bottom: var(--space-3);
+}
+
+.fm-roster-pos {
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 0 0 var(--space-2);
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.fm-roster-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(176px, 1fr));
+  gap: var(--space-2);
+}
+
+.fm-player-card {
+  display: flex;
+  gap: var(--space-2);
+  align-items: stretch;
+  padding: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-soft);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  min-height: 88px;
+}
+
+.fm-player-card:hover {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 12%, transparent);
+  transform: translateY(-2px);
+}
+
+.fm-player-card--deep {
+  border-color: color-mix(in srgb, var(--accent) 25%, var(--border));
+}
+
+.fm-player-photo-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.fm-player-photo {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  display: block;
+  background: var(--bg-elevated);
+}
+
+.fm-player-photo--placeholder {
+  display: grid;
+  place-items: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.fm-player-photo--lg {
+  width: 140px;
+  height: 140px;
+  border-radius: var(--radius-md);
+  font-size: 2.5rem;
+}
+
+.fm-player-jersey {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 0.1rem 0.35rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.fm-player-jersey--lg {
+  bottom: 8px;
+  right: 8px;
+  font-size: 0.875rem;
+  padding: 0.2rem 0.5rem;
+}
+
+.fm-player-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+  justify-content: center;
+}
+
+.fm-player-name {
+  font-size: 0.9375rem;
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fm-player-meta {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.fm-player-status {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  align-self: flex-start;
+  padding: 0.1rem 0.35rem;
+  border-radius: var(--radius-sm);
+}
+
+.fm-player-status--active {
+  color: var(--success, #3d9a5f);
+  background: color-mix(in srgb, var(--success, #3d9a5f) 12%, transparent);
+}
+
+.fm-player-status--injured {
+  color: var(--danger, #c44);
+  background: color-mix(in srgb, var(--danger, #c44) 12%, transparent);
+}
+
+.fm-player-status--inactive,
+.fm-player-status--other {
+  color: var(--text-muted);
+  background: var(--bg-elevated);
+}
+
+.fm-player-hero {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  margin-bottom: var(--space-3);
+}
+
+.fm-player-hero-photo {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.fm-player-hero-photo img {
+  width: 140px;
+  height: 140px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+}
+
+.fm-player-hero-body h1 {
+  margin: 0.25rem 0;
+}
+
+.fm-player-role {
+  font-size: 1.05rem;
+  margin: 0.25rem 0 var(--space-2);
+}
+
+.fm-player-bio {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.fm-player-team-link {
+  display: inline-block;
+  color: var(--accent);
+  font-weight: 500;
+  margin-top: 0.25rem;
+}
+
+.fm-roster-only-note {
+  margin-top: var(--space-2);
+  font-size: 0.875rem;
+}
+
 .db-game-links {
   font-size: 0.875rem;
   margin-top: 0.35rem;

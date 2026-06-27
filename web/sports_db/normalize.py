@@ -374,6 +374,51 @@ def parse_player_news(overview: dict[str, Any] | None, limit: int = 5) -> list[d
     return rows
 
 
+def roster_index_row(player: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "id": player.get("id"),
+        "name": player.get("name"),
+        "position": player.get("position"),
+        "jersey": player.get("jersey"),
+        "status": player.get("status"),
+        "headshot": player.get("headshot"),
+        "age": player.get("age"),
+        "experience": player.get("experience"),
+    }
+
+
+def build_player_roster_snapshot(
+    *,
+    league: str,
+    player_id: str,
+    roster_row: dict[str, Any] | None,
+    team_abbr: str,
+) -> dict[str, Any]:
+    roster_row = roster_row or {}
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "league": league,
+        "team_abbr": team_abbr,
+        "profile_depth": "roster",
+        "player": {
+            "id": player_id,
+            "name": roster_row.get("name"),
+            "position": roster_row.get("position"),
+            "jersey": roster_row.get("jersey"),
+            "age": roster_row.get("age"),
+            "height": roster_row.get("height"),
+            "weight": roster_row.get("weight"),
+            "experience": roster_row.get("experience"),
+            "status": roster_row.get("status"),
+            "headshot": roster_row.get("headshot"),
+        },
+        "season_stats": [],
+        "overview_stats": [],
+        "game_log": [],
+        "news": [],
+    }
+
+
 def build_player_snapshot(
     *,
     league: str,
@@ -388,6 +433,7 @@ def build_player_snapshot(
         "schema_version": SCHEMA_VERSION,
         "league": league,
         "team_abbr": team_abbr,
+        "profile_depth": "full",
         "player": {
             "id": player_id,
             "name": roster_row.get("name"),

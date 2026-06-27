@@ -1,13 +1,18 @@
 """Sports database normalization tests."""
 
+import pytest
+
 from web.sports_db.betting_context import game_betting_sheet, league_betting_context
+from web.sports_db.build import FAST_DEEP_OTHER, deep_player_targets, team_build_targets
 from web.sports_db.normalize import (
+    build_player_roster_snapshot,
     build_player_snapshot,
     parse_news,
     parse_player_game_log,
     parse_roster,
     parse_standings,
     parse_team_statistics,
+    roster_index_row,
 )
 
 
@@ -173,6 +178,60 @@ def test_parse_stat_categories_unwraps_espn_results() -> None:
     rows = _parse_stat_categories(nested)
     assert rows[0]["name"] == "Per Game"
     assert rows[0]["stats"][0]["display"] == "8.1"
+
+
+@pytest.mark.parametrize(
+    ("league", "fast", "expected_all"),
+    [
+        ("nba", True, True),
+        ("cbb", True, False),
+        ("nba", False, True),
+    ],
+)
+def test_team_build_targets(league, fast, expected_all) -> None:
+    team_ids = {"bos": "1", "nyk": "2", "lal": "3"}
+    slate_keys = {"bos", "nyk"}
+    standings = {"teams": [{"abbr": "lal"}, {"abbr": "bos"}]}
+    targets = team_build_targets(league, team_ids, slate_keys, standings, fast=fast)
+    if expected_all:
+        assert targets == set(team_ids.keys())
+    else:
+        assert "bos" in targets
+        assert "lal" in targets
+
+
+def test_deep_player_targets_fast_slate_vs_other() -> None:
+    roster = [{"id": str(i)} for i in range(20)]
+    slate = deep_player_targets(roster, "bos", "nba", {"bos"}, fast=True)
+    other = deep_player_targets(roster, "nyk", "nba", {"bos"}, fast=True)
+    assert len(slate) == 20
+    assert len(other) == FAST_DEEP_OTHER
+
+
+def test_build_player_roster_snapshot_lightweight() -> None:
+    roster = {
+        "id": "99",
+        "name": "Roster Only",
+        "position": "F",
+        "jersey": "11",
+        "headshot": "https://example.com/p.jpg",
+    }
+    snap = build_player_roster_snapshot(
+        league="nba",
+        player_id="99",
+        roster_row=roster,
+        team_abbr="bos",
+    )
+    assert snap["profile_depth"] == "roster"
+    assert snap["player"]["name"] == "Roster Only"
+    assert snap["season_stats"] == []
+
+
+def test_roster_index_row_includes_headshot() -> None:
+    row = roster_index_row(
+        {"id": "1", "name": "A", "position": "G", "headshot": "https://x/y.jpg"}
+    )
+    assert row["headshot"] == "https://x/y.jpg"
 
 
 def test_league_betting_context_counts_games() -> None:

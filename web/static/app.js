@@ -651,7 +651,7 @@ async function viewLeaguesHub() {
   const leagues = manifest?.leagues || leaguesForBrowse();
   appRoot.innerHTML = `${breadcrumbs([{ label: "Home", href: "#/" }, { label: "Leagues" }])}<section class="page-head"><h1>Leagues</h1>
     <p>Browse every league — standings, power ratings, news, rosters, and today's betting board. Pick a league from the sidebar or below.</p>
-    ${manifest ? `<p class="muted">${manifest.players_built || 0} player profiles · ${manifest.teams_built || 0} team sheets · Updated ${new Date(manifest.generated_at).toLocaleString()}</p>` : ""}</section>
+    ${manifest ? `<p class="muted">${manifest.roster_profiles || manifest.players_built || 0} roster profiles · ${manifest.teams_built || 0} team sheets · Updated ${new Date(manifest.generated_at).toLocaleString()}</p>` : ""}</section>
     <div class="db-league-grid">${leagues
       .map(
         (lg) => `<a class="db-league-card panel" href="${leagueHref(lg.id)}">
@@ -701,6 +701,80 @@ async function viewLeaguePage(league) {
   </section>`;
 }
 
+function playerStatusClass(status) {
+  const value = (status || "").toLowerCase();
+  if (!value || value === "active" || value === "starter" || value === "active roster") return "active";
+  if (value.includes("inj") || value.includes("out") || value.includes("doubt")) return "injured";
+  if (value.includes("suspend") || value.includes("inactive")) return "inactive";
+  return "other";
+}
+
+function renderPlayerCard(player, league, deepIds) {
+  const pid = String(player.id || "");
+  const isDeep = !deepIds || deepIds.has(pid);
+  const statusClass = playerStatusClass(player.status);
+  return `<a class="fm-player-card${isDeep ? " fm-player-card--deep" : ""}" href="${playerHref(league, pid)}">
+    <div class="fm-player-photo-wrap">
+      ${player.headshot ? `<img class="fm-player-photo" src="${player.headshot}" alt="" loading="lazy">` : `<span class="fm-player-photo fm-player-photo--placeholder">${(player.name || "?").charAt(0)}</span>`}
+      ${player.jersey ? `<span class="fm-player-jersey">#${player.jersey}</span>` : ""}
+    </div>
+    <div class="fm-player-body">
+      <strong class="fm-player-name">${player.name || "Player"}</strong>
+      <span class="fm-player-meta">${player.position || "—"}${player.experience != null ? ` · ${player.experience} yr` : ""}</span>
+      ${player.status ? `<span class="fm-player-status fm-player-status--${statusClass}">${player.status}</span>` : ""}
+    </div>
+  </a>`;
+}
+
+function renderRosterSection(teamDb, league) {
+  const roster = teamDb?.roster || [];
+  if (!roster.length) return "";
+  const deepIds = new Set((teamDb?.players_built || []).map(String));
+  const positions = [...new Set(roster.map((p) => p.position).filter(Boolean))].sort();
+  const grouped = positions.length > 1 && positions.length <= 12;
+  const cards = grouped
+    ? positions
+        .map((pos) => {
+          const group = roster.filter((p) => p.position === pos);
+          return `<div class="fm-roster-group"><h3 class="fm-roster-pos">${pos}</h3><div class="fm-roster-grid">${group.map((p) => renderPlayerCard(p, league, deepIds)).join("")}</div></div>`;
+        })
+        .join("")
+    : `<div class="fm-roster-grid">${roster.map((p) => renderPlayerCard(p, league, deepIds)).join("")}</div>`;
+  return `<section class="section panel fm-roster-section">
+    <div class="section-head"><h2>Squad · ${roster.length} players</h2>
+      <span class="muted">${deepIds.size ? `${deepIds.size} with full stats` : "Roster profiles"}</span></div>
+    ${cards}
+  </section>`;
+}
+
+function renderTeamHero(teamDb, leagueName, teamName, profile) {
+  const team = teamDb?.team || {};
+  const standing = teamDb?.standing || {};
+  const trends = teamDb?.trends || {};
+  const ratings = teamDb?.ratings || {};
+  const projection = teamDb?.projection || {};
+  return `<section class="fm-team-hero panel">
+    <div class="fm-team-hero-main">
+      ${team.logo ? `<img class="fm-team-logo" src="${team.logo}" alt="">` : ""}
+      <div>
+        <span class="league-pill">${leagueName}</span>
+        <h1>${teamName}</h1>
+        <p class="fm-team-record">${team.record_summary || ""}${team.standing_summary ? " · " + team.standing_summary : ""}</p>
+        ${team.coach ? `<p class="muted">Head coach · ${team.coach}</p>` : ""}
+        ${profile ? `<p class="muted">Season ${profile.season_year} · Through ${profile.cutoff_date}</p>` : ""}
+      </div>
+    </div>
+    <div class="fm-team-hero-stats">
+      <div class="fm-hero-stat"><span>Record</span><strong>${standing.wins != null ? `${standing.wins}-${standing.losses}${standing.ties ? "-" + standing.ties : ""}` : "—"}</strong></div>
+      <div class="fm-hero-stat"><span>Rank</span><strong>${standing.rank ?? projection.rank ?? "—"}</strong></div>
+      <div class="fm-hero-stat"><span>Streak</span><strong>${trends.streak || "—"}</strong></div>
+      <div class="fm-hero-stat"><span>Last 5</span><strong>${trends.last_5 || "—"}</strong></div>
+      <div class="fm-hero-stat"><span>Power</span><strong>${ratings.power?.power ?? projection.power_rating ?? "—"}</strong></div>
+      <div class="fm-hero-stat"><span>Pace</span><strong>${projection.projected_wins_pace ?? "—"}</strong></div>
+    </div>
+  </section>`;
+}
+
 async function loadTeamProfile(league, abbr) {
   const key = `${league}/${abbr}`;
   if (state.teamProfiles[key]) return state.teamProfiles[key];
@@ -728,7 +802,7 @@ async function viewTeam(league, abbr) {
   ]);
 
   if (!teamDb && !profile) {
-    appRoot.innerHTML = `<div class="panel empty-panel">Team sheet not available for ${normalizedAbbr.toUpperCase()} yet. It is built on each daily rebuild when the team is on the slate.</div>
+    appRoot.innerHTML = `<div class="panel empty-panel">Team sheet not available for ${normalizedAbbr.toUpperCase()} yet. Daily rebuilds populate all teams — try again after the next sync.</div>
       <a class="btn btn-secondary" href="${leagueHref(league)}">← ${league.toUpperCase()}</a>`;
     return;
   }
@@ -761,25 +835,16 @@ async function viewTeam(league, abbr) {
     { label: "Leagues", href: "#/teams" },
     { label: leagueName, href: leagueHref(league) },
     { label: teamName },
-  ])}<section class="page-head">
-    ${teamDb?.team?.logo ? `<img class="db-team-logo" src="${teamDb.team.logo}" alt="">` : ""}
-    <span class="league-pill">${leagueName}</span>
-    <h1>${teamName}</h1>
-    <p>${teamDb?.team?.record_summary || ""} ${teamDb?.team?.standing_summary ? "· " + teamDb.team.standing_summary : ""}</p>
-    ${teamDb?.team?.coach ? `<p class="muted">Head coach: ${teamDb.team.coach}</p>` : ""}
-    ${profile ? `<p class="muted">Season ${profile.season_year} · Data through ${profile.cutoff_date}</p>` : ""}
-    <p><a href="${leagueHref(league)}">← ${leagueName} league</a></p>
-  </section>
+  ])}${renderTeamHero(teamDb, leagueName, teamName, profile)}
+  <p class="fm-team-nav"><a href="${leagueHref(league)}">← ${leagueName} league</a></p>
   ${upcoming.length ? `<section class="section"><div class="section-head"><h2>Upcoming — betting context</h2></div>
     <div class="db-bet-grid">${upcoming.map((g) => renderBettingGameCard(g, league)).join("")}</div></section>` : ""}
-  ${(teamDb?.injuries || []).length ? `<section class="section panel"><h2>Injuries / availability</h2><ul class="db-recent">${teamDb.injuries.map((p) => `<li><strong>${p.name}</strong> (${p.position}) — ${p.status}</li>`).join("")}</ul></section>` : ""}
-  <div class="stat-grid">
-    <div class="stat-card panel"><span>Record</span><strong>${profileStats ? `${profileStats.wins}-${profileStats.losses}` : teamDb?.standing ? `${teamDb.standing.wins ?? "—"}-${teamDb.standing.losses ?? "—"}` : "—"}</strong></div>
+  ${(teamDb?.injuries || []).length ? `<section class="section panel fm-injuries"><h2>Injuries & availability</h2><ul class="db-recent">${teamDb.injuries.map((p) => `<li><strong>${p.name}</strong> <span class="muted">(${p.position})</span> — <span class="fm-injury-status">${p.status}</span></li>`).join("")}</ul></section>` : ""}
+  <div class="stat-grid fm-team-stats">
     <div class="stat-card panel"><span>Win %</span><strong>${profileStats?.win_pct != null ? `${profileStats.win_pct}%` : trends.win_percent != null ? `${(trends.win_percent * 100).toFixed(1)}%` : "—"}</strong></div>
-    <div class="stat-card panel"><span>Streak</span><strong>${trends.streak || "—"}</strong></div>
-    <div class="stat-card panel"><span>Power rating</span><strong>${ratings.power?.power ?? projection.power_rating ?? "—"}</strong></div>
-    <div class="stat-card panel"><span>Last 5</span><strong>${trends.last_5 || "—"}</strong></div>
-    <div class="stat-card panel"><span>Projected pace</span><strong>${projection.projected_wins_pace ?? "—"} wins</strong></div>
+    <div class="stat-card panel"><span>GB</span><strong>${trends.games_behind ?? teamDb?.standing?.games_behind ?? "—"}</strong></div>
+    <div class="stat-card panel"><span>Diff</span><strong>${trends.point_differential ?? teamDb?.standing?.point_differential ?? "—"}</strong></div>
+    <div class="stat-card panel"><span>Roster</span><strong>${teamDb?.roster_count ?? (teamDb?.roster || []).length || "—"}</strong></div>
   </div>
   <div class="db-grid-two">
     <section class="section panel"><h2>Recent games</h2>
@@ -799,17 +864,7 @@ async function viewTeam(league, abbr) {
         .join("") || (profileStats ? `<ul class="db-stat-list"><li><span>Games played</span><strong>${profileStats.games_played ?? "—"}</strong></li><li><span>Win %</span><strong>${profileStats.win_pct ?? "—"}%</strong></li></ul>` : `<p class="muted">Season stats unavailable.</p>`)}
     </section>
   </div>
-  ${(teamDb?.roster || teamDb?.players_index || []).length ? `<section class="section panel"><h2>Roster (${(teamDb.roster || []).length} players)</h2>
-    <div class="db-roster-grid">${(teamDb.players_index || teamDb.roster || [])
-      .map(
-        (p) => `<a class="db-player" href="${playerHref(league, p.id)}">
-          ${p.headshot ? `<img src="${p.headshot}" alt="">` : ""}
-          <strong>${p.name}</strong>
-          <span class="muted">${p.position || ""}${p.jersey ? " #" + p.jersey : ""}${p.status ? " · " + p.status : ""}</span>
-        </a>`,
-      )
-      .join("")}</div>
-  </section>` : ""}
+  ${renderRosterSection(teamDb, league)}
   <a class="btn btn-secondary" href="${leagueHref(league)}">← ${leagueName}</a>`;
 }
 
@@ -820,39 +875,50 @@ async function viewPlayer(league, playerId) {
   try {
     player = await loadPlayerDb(league, playerId);
   } catch {
-    appRoot.innerHTML = `<div class="panel empty-panel">Player profile not found. Player sheets are built for slate teams on each daily rebuild.</div>
+    appRoot.innerHTML = `<div class="panel empty-panel">Player profile not found for this id. Roster cards are rebuilt on each daily sync.</div>
       <a class="btn btn-secondary" href="${leagueHref(league)}">← ${league.toUpperCase()}</a>`;
     return;
   }
   const info = player.player || {};
   const teamAbbr = (player.team_abbr || "").toLowerCase();
+  const isRosterOnly = player.profile_depth === "roster";
   const leagueName =
     leaguesForBrowse().find((lg) => lg.id === league)?.name || league.toUpperCase();
+  const statBlocks = (player.season_stats || []).concat(player.overview_stats || []);
   appRoot.innerHTML = `${breadcrumbs([
     { label: "Home", href: "#/" },
     { label: "Leagues", href: "#/teams" },
     { label: leagueName, href: leagueHref(league) },
     ...(teamAbbr ? [{ label: teamAbbr.toUpperCase(), href: teamHref(league, teamAbbr) }] : []),
     { label: info.name || "Player" },
-  ])}<section class="page-head db-player-head">
-    ${info.headshot ? `<img class="db-player-photo" src="${info.headshot}" alt="">` : ""}
-    <div>
+  ])}<section class="fm-player-hero panel">
+    <div class="fm-player-hero-photo">
+      ${info.headshot ? `<img src="${info.headshot}" alt="">` : `<span class="fm-player-photo fm-player-photo--placeholder fm-player-photo--lg">${(info.name || "?").charAt(0)}</span>`}
+      ${info.jersey ? `<span class="fm-player-jersey fm-player-jersey--lg">#${info.jersey}</span>` : ""}
+    </div>
+    <div class="fm-player-hero-body">
       <span class="league-pill">${leagueName}</span>
       <h1>${info.name || "Player"}</h1>
-      <p>${info.position || ""}${info.jersey ? " · #" + info.jersey : ""} · ${info.status || "Active"}</p>
-      <p class="muted">${info.height || ""} ${info.weight || ""} · Age ${info.age ?? "—"} · ${info.experience ?? "—"} yrs exp</p>
-      ${teamAbbr ? `<a href="${teamHref(league, teamAbbr)}">← ${teamAbbr.toUpperCase()}</a>` : ""}
+      <p class="fm-player-role">${info.position || "—"} · ${info.status || "Active"}</p>
+      <div class="fm-player-bio">
+        <span>${info.height || "—"}</span>
+        <span>${info.weight || "—"}</span>
+        <span>Age ${info.age ?? "—"}</span>
+        <span>${info.experience != null ? info.experience + " yrs exp" : "—"}</span>
+      </div>
+      ${teamAbbr ? `<a class="fm-player-team-link" href="${teamHref(league, teamAbbr)}">${teamAbbr.toUpperCase()} squad →</a>` : ""}
+      ${isRosterOnly ? `<p class="muted fm-roster-only-note">Roster profile — full season stats load for featured players on daily rebuild.</p>` : ""}
     </div>
   </section>
   <div class="db-grid-two">
     <section class="section panel"><h2>Season stats</h2>
-      ${(player.season_stats || []).concat(player.overview_stats || []).slice(0, 2).map((cat) =>
-        `<h3>${cat.name}</h3><ul class="db-stat-list">${(cat.stats || []).slice(0, 12).map((s) =>
-          `<li><span>${s.name}</span><strong>${s.display ?? s.value}</strong></li>`).join("")}</ul>`).join("") || `<p class="muted">Stats unavailable.</p>`}
+      ${statBlocks.slice(0, 3).map((cat) =>
+        `<h3>${cat.name}</h3><ul class="db-stat-list">${(cat.stats || []).slice(0, 14).map((s) =>
+          `<li><span>${s.name}</span><strong>${s.display ?? s.value}</strong></li>`).join("")}</ul>`).join("") || `<p class="muted">${isRosterOnly ? "Full stats not loaded for this player yet." : "Stats unavailable."}</p>`}
     </section>
     <section class="section panel"><h2>Recent games</h2>
       ${(player.game_log || []).length ? `<ul class="db-recent">${player.game_log.map((g) =>
-        `<li>${g.date || ""} ${g.opponent || ""} · ${g.score || ""}</li>`).join("")}</ul>` : `<p class="muted">No game log.</p>`}
+        `<li><strong>${g.date || ""}</strong> ${g.opponent || ""} · ${g.score || ""}</li>`).join("")}</ul>` : `<p class="muted">${isRosterOnly ? "Game log loads with full player profile." : "No game log."}</p>`}
     </section>
   </div>
   ${(player.news || []).length ? `<section class="section"><h2>Player news</h2>${renderNewsList(player.news.map((n) => ({ ...n, link: n.link })))}</section>` : ""}
