@@ -131,6 +131,16 @@ def db_team(league: str, abbr: str) -> dict:
     return _read_db_json(f"{league.lower()}/teams/{abbr.lower()}.json")
 
 
+@app.get("/api/db/{league}/teams/{abbr}/players")
+def db_team_players(league: str, abbr: str) -> dict:
+    return _read_db_json(f"{league.lower()}/teams/{abbr.lower()}/players.json")
+
+
+@app.get("/api/db/{league}/players/{player_id}")
+def db_player(league: str, player_id: str) -> dict:
+    return _read_db_json(f"{league.lower()}/players/{player_id}.json")
+
+
 @app.post("/api/tracking/sync")
 def tracking_sync() -> dict:
     try:

@@ -18,7 +18,7 @@
         <span class="brand-mark">SOA</span>
         <span class="brand-text">Sharp Odds</span>
       </a>
-      <nav class="nav" id="mainNav">
+      <nav class="nav" id="mainNav" aria-label="Main navigation">
         <a href="#/" data-route="/">Home</a>
         <a href="#/games" data-route="/games">Games</a>
         <a href="#/teams" data-route="/teams">Teams</a>
@@ -26,7 +26,10 @@
         <a href="#/database" data-route="/database">Database</a>
         <a href="#/tracking" data-route="/tracking">Tracking</a>
       </nav>
-      <button class="theme-toggle" id="themeToggle" aria-label="Toggle color theme">◐</button>
+      <div class="header-actions">
+        <button class="nav-toggle" id="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mainNav">☰</button>
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle color theme">◐</button>
+      </div>
     </div>
   </header>
 
@@ -53,6 +56,14 @@
       <div class="panel empty-panel">Loading platform data…</div>
     </main>
   </div>
+
+  <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Quick navigation">
+    <a href="#/" data-route="/"><span class="nav-icon" aria-hidden="true">⌂</span>Home</a>
+    <a href="#/games" data-route="/games"><span class="nav-icon" aria-hidden="true">◫</span>Games</a>
+    <a href="#/picks" data-route="/picks"><span class="nav-icon" aria-hidden="true">★</span>Picks</a>
+    <a href="#/database" data-route="/database"><span class="nav-icon" aria-hidden="true">▤</span>Data</a>
+    <a href="#/tracking" data-route="/tracking"><span class="nav-icon" aria-hidden="true">◎</span>Track</a>
+  </nav>
 
   <footer class="site-footer">
     <div class="container footer-inner">

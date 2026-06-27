@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 
 def _stat_map(stats: list[dict[str, Any]] | None) -> dict[str, Any]:
@@ -226,4 +226,138 @@ def build_projection(standing_row: dict[str, Any] | None, power_rating: float | 
         "projected_wins_pace": projected_wins,
         "power_rating": power_rating,
         "rank": row.get("rank"),
+    }
+
+
+def _parse_stat_categories(payload: dict[str, Any] | None) -> list[dict[str, Any]]:
+    if not payload:
+        return []
+    categories: list[dict[str, Any]] = []
+    raw_categories = payload.get("categories")
+    if not raw_categories:
+        results = payload.get("results") or {}
+        stats_root = results.get("stats") if isinstance(results.get("stats"), dict) else {}
+        raw_categories = stats_root.get("categories") or []
+    for cat in raw_categories:
+        stats = []
+        for stat in cat.get("stats") or []:
+            stats.append(
+                {
+                    "name": stat.get("displayName") or stat.get("name"),
+                    "short_name": stat.get("shortDisplayName") or stat.get("abbreviation"),
+                    "display": stat.get("displayValue"),
+                    "value": stat.get("value"),
+                    "rank": stat.get("rank"),
+                }
+            )
+        categories.append(
+            {
+                "name": cat.get("displayName") or cat.get("name"),
+                "stats": stats,
+            }
+        )
+    return categories
+
+
+def parse_player_overview_stats(overview: dict[str, Any] | None) -> list[dict[str, Any]]:
+    if not overview:
+        return []
+    statistics = overview.get("statistics") or {}
+    splits = statistics.get("splits") or []
+    categories: list[dict[str, Any]] = []
+    for split in splits:
+        labels = split.get("labels") or split.get("displayNames") or []
+        stats = split.get("stats") or []
+        rows = []
+        if labels and stats and isinstance(stats[0], list):
+            for idx, label in enumerate(labels):
+                value = stats[0][idx] if stats[0] and idx < len(stats[0]) else None
+                rows.append({"name": label, "display": value, "value": value})
+        else:
+            for item in stats:
+                if isinstance(item, dict):
+                    rows.append(
+                        {
+                            "name": item.get("displayName") or item.get("name"),
+                            "display": item.get("displayValue"),
+                            "value": item.get("value"),
+                        }
+                    )
+        categories.append(
+            {
+                "name": split.get("displayName") or statistics.get("displayName") or "Season",
+                "stats": rows,
+            }
+        )
+    return categories
+
+
+def parse_player_game_log(overview: dict[str, Any] | None, limit: int = 10) -> list[dict[str, Any]]:
+    game_log = (overview or {}).get("gameLog") or {}
+    events = game_log.get("events") or {}
+    rows: list[dict[str, Any]] = []
+    for event_id, event in events.items():
+        rows.append(
+            {
+                "event_id": event_id,
+                "date": event.get("gameDate"),
+                "opponent": event.get("atVs"),
+                "score": event.get("score"),
+                "home_score": event.get("homeTeamScore"),
+                "away_score": event.get("awayTeamScore"),
+                "stats": event.get("stats"),
+            }
+        )
+    rows.sort(key=lambda row: row.get("date") or "", reverse=True)
+    return rows[:limit]
+
+
+def parse_player_news(overview: dict[str, Any] | None, limit: int = 5) -> list[dict[str, Any]]:
+    articles = (overview or {}).get("news") or []
+    rows: list[dict[str, Any]] = []
+    for article in articles[:limit]:
+        rows.append(
+            {
+                "headline": article.get("headline"),
+                "description": article.get("description"),
+                "published": article.get("published"),
+                "link": (article.get("links") or {}).get("web", {}).get("href"),
+            }
+        )
+    return rows
+
+
+def build_player_snapshot(
+    *,
+    league: str,
+    player_id: str,
+    roster_row: dict[str, Any] | None,
+    overview: dict[str, Any] | None,
+    stats_payload: dict[str, Any] | None,
+    team_abbr: str,
+) -> dict[str, Any]:
+    roster_row = roster_row or {}
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "league": league,
+        "team_abbr": team_abbr,
+        "player": {
+            "id": player_id,
+            "name": roster_row.get("name"),
+            "position": roster_row.get("position"),
+            "jersey": roster_row.get("jersey"),
+            "age": roster_row.get("age"),
+            "height": roster_row.get("height"),
+            "weight": roster_row.get("weight"),
+            "experience": roster_row.get("experience"),
+            "status": roster_row.get("status"),
+            "headshot": roster_row.get("headshot"),
+        },
+        "season_stats": _parse_stat_categories(stats_payload),
+        "overview_stats": parse_player_overview_stats(overview),
+        "game_log": parse_player_game_log(overview),
+        "news": parse_player_news(overview),
+        "next_game": (overview or {}).get("nextGame"),
+        "fantasy": (overview or {}).get("fantasy"),
+        "awards": (overview or {}).get("awards"),
     }

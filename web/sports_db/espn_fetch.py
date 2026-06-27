@@ -77,3 +77,22 @@ def fetch_team_detail(league: str, espn_team_id: str) -> dict[str, Any] | None:
         )
     except Exception:
         return None
+
+
+def _common_v3_base(league: str) -> str:
+    sport_path = get_league_profile(league)["sport_path"]
+    return f"https://site.api.espn.com/apis/common/v3/sports/{sport_path}"
+
+
+def fetch_athlete_overview(league: str, athlete_id: str) -> dict[str, Any] | None:
+    try:
+        return _fetch_json(f"{_common_v3_base(league)}/athletes/{athlete_id}/overview", timeout=25)
+    except Exception:
+        return None
+
+
+def fetch_athlete_stats(league: str, athlete_id: str) -> dict[str, Any] | None:
+    try:
+        return _fetch_json(f"{_common_v3_base(league)}/athletes/{athlete_id}/stats", timeout=25)
+    except Exception:
+        return None

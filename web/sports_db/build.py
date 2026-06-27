@@ -8,10 +8,12 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from web.espn_client import current_season_year
-from web.league_profiles import LEAGUE_PROFILES, SUPPORTED_LEAGUES
+from web.league_profiles import LEAGUE_PROFILES, SUPPORTED_LEAGUES, list_leagues_metadata
 from web.live_data import load_live_team_data, resolve_team
+from web.sports_db.betting_context import league_betting_context, team_betting_context
 from web.sports_db.espn_fetch import (
+    fetch_athlete_overview,
+    fetch_athlete_stats,
     fetch_league_news,
     fetch_rankings,
     fetch_standings,
@@ -21,6 +23,7 @@ from web.sports_db.espn_fetch import (
 )
 from web.sports_db.normalize import (
     SCHEMA_VERSION,
+    build_player_snapshot,
     build_projection,
     build_trends,
     parse_news,
@@ -33,10 +36,25 @@ from web.sports_db.normalize import (
 from web.sports_db.ratings import league_ratings_snapshot, team_rating_slice
 from web.team_service import fetch_espn_team_ids
 
+FAST_PLAYER_LIMIT = 15
+
 
 def _write_json(path: Path, data: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+
+def _league_profile_meta(league: str) -> dict[str, Any]:
+    for row in list_leagues_metadata():
+        if row.get("id") == league:
+            return row
+    profile = LEAGUE_PROFILES[league]
+    return {
+        "id": league,
+        "name": profile["name"],
+        "category": profile["category"],
+        "description": "",
+    }
 
 
 def _recent_games_from_live(league: str, abbr: str, espn_id: str, cutoff_date: str) -> list[dict[str, Any]]:
@@ -86,15 +104,33 @@ def _standing_row_for_team(standings: dict[str, Any], abbr: str) -> dict[str, An
     return None
 
 
+def _injuries_from_roster(roster: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    injuries: list[dict[str, Any]] = []
+    for player in roster:
+        status = (player.get("status") or "").strip()
+        if status and status.lower() not in {"active", "starter", "active roster"}:
+            injuries.append(
+                {
+                    "id": player.get("id"),
+                    "name": player.get("name"),
+                    "position": player.get("position"),
+                    "status": status,
+                }
+            )
+    return injuries
+
+
 def build_league_snapshot(
     league: str,
     cutoff_date: str,
+    slate: dict[str, Any] | None,
     *,
     team_keys: set[str] | None = None,
     include_all_teams: bool = False,
     include_ratings: bool = True,
 ) -> dict[str, Any]:
     profile = LEAGUE_PROFILES[league]
+    profile_meta = _league_profile_meta(league)
     season_year = season_year_for_league(league)
     standings_raw = fetch_standings(league, season_year)
     standings = parse_standings(standings_raw)
@@ -102,14 +138,13 @@ def build_league_snapshot(
     rankings = parse_rankings(fetch_rankings(league))
     ratings = league_ratings_snapshot(league, cutoff_date) if include_ratings else {"source": [], "skipped": True}
     team_ids = fetch_espn_team_ids(league)
+    betting = league_betting_context(slate, league)
 
-    teams_built: list[str] = []
+    targets: set[str] = set()
     if include_all_teams:
         targets = set(team_ids.keys())
     elif team_keys:
         targets = {k.lower() for k in team_keys if k.lower() in team_ids}
-    else:
-        targets = set()
 
     return {
         "schema_version": SCHEMA_VERSION,
@@ -120,15 +155,59 @@ def build_league_snapshot(
             "category": profile["category"],
             "sport_path": profile["sport_path"],
         },
+        "profile": profile_meta,
         "season_year": season_year,
         "cutoff_date": cutoff_date,
         "standings": standings,
         "news": news,
         "rankings": rankings,
         "ratings": ratings,
+        "betting": betting,
         "team_ids": team_ids,
         "team_targets": sorted(targets),
     }
+
+
+def build_players_for_team(
+    league: str,
+    abbr: str,
+    roster: list[dict[str, Any]],
+    players_dir: Path,
+    *,
+    fast: bool,
+) -> tuple[list[dict[str, Any]], int]:
+    """Write dedicated player JSON files; return index rows and count built."""
+    limit = FAST_PLAYER_LIMIT if fast else len(roster)
+    targets = [p for p in roster if p.get("id")][:limit]
+    index_rows: list[dict[str, Any]] = []
+    built = 0
+
+    for player in targets:
+        player_id = str(player["id"])
+        overview = fetch_athlete_overview(league, player_id)
+        stats_payload = fetch_athlete_stats(league, player_id)
+        payload = build_player_snapshot(
+            league=league,
+            player_id=player_id,
+            roster_row=player,
+            overview=overview,
+            stats_payload=stats_payload,
+            team_abbr=abbr,
+        )
+        payload["generated_at"] = datetime.now(timezone.utc).isoformat()
+        _write_json(players_dir / f"{player_id}.json", payload)
+        index_rows.append(
+            {
+                "id": player_id,
+                "name": player.get("name"),
+                "position": player.get("position"),
+                "jersey": player.get("jersey"),
+                "status": player.get("status"),
+            }
+        )
+        built += 1
+
+    return index_rows, built
 
 
 def build_team_snapshot(
@@ -138,7 +217,11 @@ def build_team_snapshot(
     cutoff_date: str,
     standings: dict[str, Any],
     ratings: dict[str, Any],
-) -> dict[str, Any]:
+    slate: dict[str, Any] | None,
+    *,
+    fast: bool,
+    players_dir: Path,
+) -> tuple[dict[str, Any], int]:
     season_year = season_year_for_league(league)
     roster_raw = fetch_team_roster(league, espn_team_id)
     stats_raw = fetch_team_statistics(league, espn_team_id, season_year)
@@ -149,7 +232,11 @@ def build_team_snapshot(
     recent = _recent_games_from_live(league, abbr, espn_team_id, cutoff_date)
     rating = team_rating_slice(ratings, abbr)
     power = (rating.get("power") or {}).get("power")
-    return {
+    player_index, players_built = build_players_for_team(
+        league, abbr, roster, players_dir, fast=fast
+    )
+
+    payload = {
         "schema_version": SCHEMA_VERSION,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "league": league,
@@ -158,11 +245,16 @@ def build_team_snapshot(
         "standing": standing_row,
         "stats": stats,
         "roster": roster,
+        "injuries": _injuries_from_roster(roster),
         "trends": build_trends(standing_row, recent),
         "recent_games": recent,
         "ratings": rating,
         "projection": build_projection(standing_row, power),
+        "betting": team_betting_context(slate, league, abbr),
+        "players_built": [row["id"] for row in player_index],
+        "players_index": player_index,
     }
+    return payload, players_built
 
 
 def _league_team_keys_from_slate(slate: dict[str, Any] | None, league: str) -> set[str]:
@@ -185,7 +277,7 @@ def build_sports_database(
     *,
     slate: dict[str, Any] | None = None,
     fast: bool = True,
-    max_workers: int = 6,
+    max_workers: int = 4,
 ) -> dict[str, Any]:
     """Write docs/api/db snapshots for all supported leagues."""
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -199,12 +291,14 @@ def build_sports_database(
 
     manifest_leagues: list[dict[str, Any]] = []
     built_teams = 0
+    built_players = 0
 
-    def build_one_league(league: str) -> tuple[str, dict[str, Any], int]:
+    def build_one_league(league: str) -> tuple[str, dict[str, Any], int, int]:
         slate_keys = _league_team_keys_from_slate(slate, league)
         snapshot = build_league_snapshot(
             league,
             cutoff_date,
+            slate,
             team_keys=slate_keys,
             include_all_teams=not fast,
             include_ratings=bool(slate_keys) or league in {"nba", "nfl", "nhl", "mlb", "mls", "epl"},
@@ -219,31 +313,43 @@ def build_sports_database(
             targets = set()
 
         teams_dir = league_dir / "teams"
+        players_dir = league_dir / "players"
         name_by_abbr = {
             (row.get("abbr") or "").lower(): row.get("name")
             for row in snapshot["standings"].get("teams") or []
         }
-        local_built = 0
+        local_teams = 0
+        local_players = 0
+
         for abbr in sorted(targets):
             espn_id = team_ids.get(abbr)
             if not espn_id:
                 continue
-            team_payload = build_team_snapshot(
+            team_payload, player_count = build_team_snapshot(
                 league,
                 abbr,
                 espn_id,
                 cutoff_date,
                 snapshot["standings"],
                 snapshot["ratings"],
+                slate,
+                fast=fast,
+                players_dir=players_dir,
             )
             _write_json(teams_dir / f"{abbr}.json", team_payload)
-            local_built += 1
+            _write_json(
+                teams_dir / abbr / "players.json",
+                {"players": team_payload.get("players_index") or []},
+            )
+            local_teams += 1
+            local_players += player_count
 
         team_index = [
             {
                 "abbr": abbr,
                 "espn_id": team_ids.get(abbr),
                 "name": name_by_abbr.get(abbr, abbr.upper()),
+                "has_sheet": abbr in targets,
             }
             for abbr in sorted(team_ids.keys())
         ]
@@ -254,18 +360,21 @@ def build_sports_database(
             "name": snapshot["league"]["name"],
             "category": snapshot["league"]["category"],
             "team_count": len(team_ids),
-            "teams_built": local_built,
+            "teams_built": local_teams,
+            "players_built": local_players,
+            "games_today": (snapshot.get("betting") or {}).get("game_count", 0),
             "news_count": len(snapshot.get("news") or []),
             "standings_groups": len((snapshot.get("standings") or {}).get("groups") or []),
-        }, local_built
+        }, local_teams, local_players
 
     with ThreadPoolExecutor(max_workers=max_workers) as pool:
         futures = {pool.submit(build_one_league, league): league for league in SUPPORTED_LEAGUES}
         for future in as_completed(futures):
-            league, meta, count = future.result()
+            league, meta, team_count, player_count = future.result()
             manifest_leagues.append(meta)
-            built_teams += count
-            print(f"Sports DB: {league} ({count} teams)")
+            built_teams += team_count
+            built_players += player_count
+            print(f"Sports DB: {league} ({team_count} teams, {player_count} players)")
 
     manifest_leagues.sort(key=lambda row: row["name"])
     manifest = {
@@ -275,6 +384,7 @@ def build_sports_database(
         "fast_build": fast,
         "league_count": len(manifest_leagues),
         "teams_built": built_teams,
+        "players_built": built_players,
         "leagues": manifest_leagues,
     }
     _write_json(output_dir / "manifest.json", manifest)

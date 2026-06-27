@@ -31,6 +31,22 @@ const sidebarGames = document.getElementById("sidebarGames");
 const sidebarGamesTitle = document.getElementById("sidebarGamesTitle");
 const footerUpdated = document.getElementById("footerUpdated");
 const themeToggle = document.getElementById("themeToggle");
+const navToggle = document.getElementById("navToggle");
+const mainNav = document.getElementById("mainNav");
+const mobileBottomNav = document.getElementById("mobileBottomNav");
+
+function breadcrumbs(items) {
+  if (!items?.length) return "";
+  return `<nav class="breadcrumbs" aria-label="Breadcrumb">${items
+    .map((item, i) => {
+      const isLast = i === items.length - 1;
+      if (isLast) {
+        return `<span class="breadcrumb-current" aria-current="page">${item.label}</span>`;
+      }
+      return `<a href="${item.href}">${item.label}</a><span class="breadcrumb-sep" aria-hidden="true">/</span>`;
+    })
+    .join("")}</nav>`;
+}
 
 function api(path) {
   const prefix = BASE_PATH.replace(/\/$/, "");
@@ -70,7 +86,8 @@ function setTheme(theme) {
 }
 
 function initTheme() {
-  setTheme(localStorage.getItem("soa-theme") === "light" ? "light" : "dark");
+  const saved = localStorage.getItem("soa-theme");
+  setTheme(saved === "dark" ? "dark" : "light");
 }
 
 function formatTime(iso) {
@@ -341,10 +358,16 @@ function algoCenter(game) {
         ${threeway ? "" : `<div class="odds-chip"><span>Spread / O-U</span><strong>${mk.spread ?? "—"} / ${mk.over_under ?? "—"}</strong><small>${mk.provider || "ESPN"}</small></div>`}
       </div>`;
   return `<section class="algo-hero panel">
+    ${breadcrumbs([
+      { label: "Home", href: "#/" },
+      { label: "Games", href: "#/games" },
+      { label: `${away.name} @ ${home.name}` },
+    ])}
     <div class="algo-hero-head">
       <span class="league-pill">${game.league_name}</span>
       <h1>${away.name} <span class="at">@</span> ${home.name}</h1>
       <p class="game-meta">${formatTime(game.start_time)} · ${game.status_detail || game.status}</p>
+      <p class="db-game-links"><a href="#/database/${game.league}/${game.matchup?.away?.abbr}">${away.name} sheet</a> · <a href="#/database/${game.league}/${game.matchup?.home?.abbr}">${home.name} sheet</a> · <a href="#/database/${game.league}">League board</a></p>
     </div>
     <div class="algo-core">
       ${probBlock}
@@ -520,7 +543,11 @@ async function viewTeam(league, abbr) {
     return;
   }
   const stats = profile.season_stats;
-  appRoot.innerHTML = `<section class="page-head"><span class="league-pill">${profile.league_name}</span><h1>${profile.label}</h1><p>Season ${profile.season_year} · Data through ${profile.cutoff_date}</p></section>
+  appRoot.innerHTML = `${breadcrumbs([
+    { label: "Home", href: "#/" },
+    { label: "Teams", href: "#/teams" },
+    { label: profile.label },
+  ])}<section class="page-head"><span class="league-pill">${profile.league_name}</span><h1>${profile.label}</h1><p>Season ${profile.season_year} · Data through ${profile.cutoff_date}</p></section>
     <div class="stat-grid dashboard-stats">
       <div class="stat-box"><span class="stat-label">Record</span><strong>${stats ? `${stats.wins}-${stats.losses}` : "—"}</strong></div>
       <div class="stat-box"><span class="stat-label">Win %</span><strong>${stats?.win_pct ?? "—"}%</strong></div>
@@ -677,7 +704,64 @@ async function loadTeamDb(league, abbr) {
   return payload;
 }
 
-function renderStandingsTable(standings) {
+async function loadPlayerDb(league, playerId) {
+  const key = `player:${league}:${playerId}`;
+  if (state.dbCache[key]) return state.dbCache[key];
+  const payload = await fetchJson(
+    USE_STATIC_API
+      ? dbApi(`${league}/players/${playerId}.json`)
+      : api(`db/${league}/players/${playerId}`),
+  );
+  state.dbCache[key] = payload;
+  return payload;
+}
+
+function renderBettingGameCard(sheet, league) {
+  const model = sheet.model || {};
+  const market = sheet.market || {};
+  const matchup = sheet.matchup || {};
+  const away = matchup.away?.name || "Away";
+  const home = matchup.home?.name || "Home";
+  const agreement = model.agreement || {};
+  const picks = sheet.recommendations || [];
+  const top = sheet.top_pick;
+  const official = sheet.eligible_for_official_picks !== false;
+  return `<article class="db-bet-card panel">
+    <div class="db-bet-head">
+      <span class="league-pill">${sheet.league_name || league}</span>
+      <a href="#/game/${sheet.event_id}"><strong>${away} @ ${home}</strong></a>
+      <span class="muted">${formatTime(sheet.start_time)}</span>
+    </div>
+    <div class="odds-row compact">
+      <div class="odds-chip"><span>${away} ML</span><strong>${formatOdds(market.away_moneyline)}</strong><small>Model ${formatOdds(model.away_projection)}</small></div>
+      <div class="odds-chip"><span>${home} ML</span><strong>${formatOdds(market.home_moneyline)}</strong><small>Model ${formatOdds(model.home_projection)}</small></div>
+      ${market.spread != null ? `<div class="odds-chip"><span>Spread</span><strong>${formatSpread(market.spread)}</strong></div>` : ""}
+    </div>
+    <div class="db-bet-model">
+      <span>Unified model</span>
+      <strong>${model.win_probability ?? "—"}%</strong>
+      <small>Fav: ${model.favorite_side || "—"} · Blend ${model.blend_layers || "—"} layers</small>
+      ${agreement.required ? `<small>Agreement: ${agreement.agreed ? "✓ all layers" : "✗ split"} (${(agreement.value_sides || []).join(", ") || "none"})</small>` : ""}
+    </div>
+    ${official && top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong> ${top.team_name} +${top.edge} edge</div>` : !official ? `<div class="game-pick neutral"><strong>Predictions only</strong> (soccer excluded from official picks)</div>` : `<div class="game-pick neutral"><strong>No official pick</strong> — model/market gap below threshold</div>`}
+    <div class="db-bet-links">
+      <a href="#/database/${league}/${matchup.home?.abbr}">${home} sheet</a>
+      <a href="#/database/${league}/${matchup.away?.abbr}">${away} sheet</a>
+      <a href="#/game/${sheet.event_id}">Full analysis →</a>
+    </div>
+  </article>`;
+}
+
+function renderRatingsSummary(ratings) {
+  const power = ratings?.power || {};
+  const teams = Object.entries(power).slice(0, 8);
+  if (!teams.length) return `<p class="muted">Model ratings unavailable for this league snapshot.</p>`;
+  return `<ul class="db-stat-list">${teams
+    .map(([key, row]) => `<li><span>${row.name || key}</span><strong>${row.power}</strong></li>`)
+    .join("")}</ul>`;
+}
+
+function renderStandingsTable(standings, league) {
   const rows = standings?.teams || [];
   if (!rows.length) return `<div class="panel empty-panel">Standings unavailable for this league.</div>`;
   return `<div class="db-table-wrap panel"><table class="db-table"><thead><tr>
@@ -687,7 +771,8 @@ function renderStandingsTable(standings) {
       const wins = row.wins ?? "—";
       const losses = row.losses ?? "—";
       const wp = row.win_percent != null ? `${(row.win_percent * 100).toFixed(1)}%` : "—";
-      return `<tr><td>${row.rank ?? "—"}</td><td><strong>${row.name}</strong></td><td>${wins}-${losses}</td><td>${wp}</td><td>${row.games_behind ?? "—"}</td><td>${row.streak ?? "—"}</td><td>${row.point_differential ?? "—"}</td></tr>`;
+      const abbr = row.abbr || "";
+      return `<tr><td>${row.rank ?? "—"}</td><td><a href="#/database/${league}/${abbr}"><strong>${row.name}</strong></a></td><td>${wins}-${losses}</td><td>${wp}</td><td>${row.games_behind ?? "—"}</td><td>${row.streak ?? "—"}</td><td>${row.point_differential ?? "—"}</td></tr>`;
     })
     .join("")}</tbody></table></div>`;
 }
@@ -707,14 +792,15 @@ function renderNewsList(news) {
 async function viewDatabase() {
   const manifest = await loadDbManifest();
   const leagues = manifest.leagues || [];
-  appRoot.innerHTML = `<section class="page-head"><h1>Sports Database</h1>
-    <p>Standings, stats, trends, news, ratings, and projections across ${manifest.league_count || leagues.length} leagues.</p></section>
+  appRoot.innerHTML = `${breadcrumbs([{ label: "Home", href: "#/" }, { label: "Database" }])}<section class="page-head"><h1>Sports Database</h1>
+    <p>Complete betting research hub — standings, player files, team sheets, model ratings, and today's market edges across ${manifest.league_count || leagues.length} leagues.</p>
+    <p class="muted">${manifest.players_built || 0} player files · ${manifest.teams_built || 0} team sheets · Schema v${manifest.schema_version || 2}</p></section>
     <div class="db-league-grid">${leagues
       .map(
         (lg) => `<a class="db-league-card panel" href="#/database/${lg.id}">
           <span class="league-pill">${lg.category}</span>
           <h3>${lg.name}</h3>
-          <p class="muted">${lg.team_count || 0} teams · ${lg.standings_groups || 0} standing groups · ${lg.news_count || 0} headlines</p>
+          <p class="muted">${lg.team_count || 0} teams · ${lg.games_today || 0} games today · ${lg.players_built || 0} players built</p>
         </a>`,
       )
       .join("")}</div>`;
@@ -723,15 +809,25 @@ async function viewDatabase() {
 async function viewDatabaseLeague(league) {
   const data = await loadLeagueDb(league);
   const teams = (data.standings?.teams || []).slice(0, 40);
-  appRoot.innerHTML = `<section class="page-head">
+  const betting = data.betting || {};
+  const games = betting.games_today || [];
+  appRoot.innerHTML = `${breadcrumbs([
+    { label: "Home", href: "#/" },
+    { label: "Database", href: "#/database" },
+    { label: data.league?.name || league.toUpperCase() },
+  ])}<section class="page-head">
     <span class="league-pill">${data.league?.category}</span>
-    <h1>${data.league?.name} Database</h1>
-    <p>Season ${data.season_year} · Updated ${new Date(data.generated_at).toLocaleString()}</p>
+    <h1>${data.league?.name} — League Sheet</h1>
+    <p>${data.profile?.description || "Full league database for betting decisions."}</p>
+    <p class="muted">Season ${data.season_year} · ${betting.game_count || 0} games today · Updated ${new Date(data.generated_at).toLocaleString()}</p>
   </section>
+  ${games.length ? `<section class="section"><div class="section-head"><h2>Today's betting board (${games.length})</h2></div>
+    <div class="db-bet-grid">${games.map((g) => renderBettingGameCard(g, league)).join("")}</div></section>` : ""}
   <div class="db-grid-two">
-    <section class="section"><div class="section-head"><h2>Standings</h2></div>${renderStandingsTable(data.standings)}</section>
-    <section class="section"><div class="section-head"><h2>Latest news</h2></div>${renderNewsList(data.news)}</section>
+    <section class="section"><div class="section-head"><h2>Standings</h2></div>${renderStandingsTable(data.standings, league)}</section>
+    <section class="section"><div class="section-head"><h2>Power ratings</h2></div><div class="panel">${renderRatingsSummary(data.ratings)}</div></section>
   </div>
+  <section class="section"><div class="section-head"><h2>Latest news</h2></div>${renderNewsList(data.news)}</section>
   <section class="section"><div class="section-head"><h2>Teams</h2></div>
     <div class="team-grid">${teams
       .map(
@@ -750,19 +846,31 @@ async function viewDatabaseTeam(league, abbr) {
   try {
     team = await loadTeamDb(league, abbr);
   } catch {
-    appRoot.innerHTML = `<div class="panel empty-panel">Team database snapshot not built yet for ${abbr.toUpperCase()}. Check back after the next daily rebuild.</div>
+    appRoot.innerHTML = `<div class="panel empty-panel">Team sheet not built yet for ${abbr.toUpperCase()}. It appears after the next daily rebuild when the team is on the slate.</div>
       <a class="btn btn-secondary" href="#/database/${league}">← ${league.toUpperCase()}</a>`;
     return;
   }
   const trends = team.trends || {};
   const projection = team.projection || {};
   const ratings = team.ratings || {};
-  appRoot.innerHTML = `<section class="page-head">
+  const betting = team.betting || {};
+  const upcoming = betting.upcoming_games || [];
+  appRoot.innerHTML = `${breadcrumbs([
+    { label: "Home", href: "#/" },
+    { label: "Database", href: "#/database" },
+    { label: league.toUpperCase(), href: `#/database/${league}` },
+    { label: team.team?.name || abbr.toUpperCase() },
+  ])}<section class="page-head">
+    ${team.team?.logo ? `<img class="db-team-logo" src="${team.team.logo}" alt="">` : ""}
     <span class="league-pill">${league.toUpperCase()}</span>
-    <h1>${team.team?.name || abbr.toUpperCase()}</h1>
+    <h1>${team.team?.name || abbr.toUpperCase()} — Team Sheet</h1>
     <p>${team.team?.record_summary || ""} ${team.team?.standing_summary ? "· " + team.team.standing_summary : ""}</p>
     ${team.team?.coach ? `<p class="muted">Head coach: ${team.team.coach}</p>` : ""}
+    <p><a href="#/teams/${league}/${abbr}">Season profile</a> · <a href="#/database/${league}">League sheet</a></p>
   </section>
+  ${upcoming.length ? `<section class="section"><div class="section-head"><h2>Upcoming — betting context</h2></div>
+    <div class="db-bet-grid">${upcoming.map((g) => renderBettingGameCard(g, league)).join("")}</div></section>` : ""}
+  ${(team.injuries || []).length ? `<section class="section panel"><h2>Injuries / availability</h2><ul class="db-recent">${team.injuries.map((p) => `<li><strong>${p.name}</strong> (${p.position}) — ${p.status}</li>`).join("")}</ul></section>` : ""}
   <div class="stat-grid">
     <div class="stat-card panel"><span>Streak</span><strong>${trends.streak || "—"}</strong></div>
     <div class="stat-card panel"><span>Last 5</span><strong>${trends.last_5 || "—"}</strong></div>
@@ -787,29 +895,87 @@ async function viewDatabaseTeam(league, abbr) {
         .join("") || `<p class="muted">Season stats unavailable.</p>`}
     </section>
   </div>
-  <section class="section panel"><h2>Roster (${(team.roster || []).length} players)</h2>
-    <div class="db-roster-grid">${(team.roster || [])
-      .slice(0, 24)
+  <section class="section panel"><h2>Roster (${(team.roster || []).length} players · ${(team.players_built || []).length} full files)</h2>
+    <div class="db-roster-grid">${(team.players_index || team.roster || [])
       .map(
-        (p) => `<div class="db-player"><strong>${p.name}</strong><span class="muted">${p.position || ""}${p.jersey ? " #" + p.jersey : ""}</span></div>`,
+        (p) => `<a class="db-player" href="#/database/${league}/player/${p.id}">
+          ${p.headshot ? `<img src="${p.headshot}" alt="">` : ""}
+          <strong>${p.name}</strong>
+          <span class="muted">${p.position || ""}${p.jersey ? " #" + p.jersey : ""}${p.status ? " · " + p.status : ""}</span>
+        </a>`,
       )
       .join("")}</div>
   </section>
-  <a class="btn btn-secondary" href="#/database/${league}">← ${league.toUpperCase()} database</a>`;
+  <a class="btn btn-secondary" href="#/database/${league}">← ${league.toUpperCase()} league sheet</a>`;
+}
+
+async function viewDatabasePlayer(league, playerId) {
+  let player;
+  try {
+    player = await loadPlayerDb(league, playerId);
+  } catch {
+    appRoot.innerHTML = `<div class="panel empty-panel">Player file not found. Player sheets are built for slate teams on each daily rebuild.</div>
+      <a class="btn btn-secondary" href="#/database/${league}">← ${league.toUpperCase()}</a>`;
+    return;
+  }
+  const info = player.player || {};
+  const teamAbbr = player.team_abbr || "";
+  appRoot.innerHTML = `${breadcrumbs([
+    { label: "Home", href: "#/" },
+    { label: "Database", href: "#/database" },
+    { label: league.toUpperCase(), href: `#/database/${league}` },
+    ...(teamAbbr ? [{ label: teamAbbr.toUpperCase(), href: `#/database/${league}/${teamAbbr}` }] : []),
+    { label: info.name || "Player" },
+  ])}<section class="page-head db-player-head">
+    ${info.headshot ? `<img class="db-player-photo" src="${info.headshot}" alt="">` : ""}
+    <div>
+      <span class="league-pill">${league.toUpperCase()}</span>
+      <h1>${info.name || "Player"}</h1>
+      <p>${info.position || ""}${info.jersey ? " · #" + info.jersey : ""} · ${info.status || "Active"}</p>
+      <p class="muted">${info.height || ""} ${info.weight || ""} · Age ${info.age ?? "—"} · ${info.experience ?? "—"} yrs exp</p>
+      ${teamAbbr ? `<a href="#/database/${league}/${teamAbbr}">← Team sheet</a>` : ""}
+    </div>
+  </section>
+  <div class="db-grid-two">
+    <section class="section panel"><h2>Season stats</h2>
+      ${(player.season_stats || []).concat(player.overview_stats || []).slice(0, 2).map((cat) =>
+        `<h3>${cat.name}</h3><ul class="db-stat-list">${(cat.stats || []).slice(0, 12).map((s) =>
+          `<li><span>${s.name}</span><strong>${s.display ?? s.value}</strong></li>`).join("")}</ul>`).join("") || `<p class="muted">Stats unavailable.</p>`}
+    </section>
+    <section class="section panel"><h2>Recent games</h2>
+      ${(player.game_log || []).length ? `<ul class="db-recent">${player.game_log.map((g) =>
+        `<li>${g.date || ""} ${g.opponent || ""} · ${g.score || ""}</li>`).join("")}</ul>` : `<p class="muted">No game log.</p>`}
+    </section>
+  </div>
+  ${(player.news || []).length ? `<section class="section"><h2>Player news</h2>${renderNewsList(player.news.map((n) => ({ ...n, link: n.link })))}</section>` : ""}
+  <a class="btn btn-secondary" href="#/database/${league}/${teamAbbr}">← Team sheet</a>`;
 }
 
 function highlightNav(route) {
-  document.querySelectorAll("#mainNav a").forEach((a) => {
-    const r = a.dataset.route;
-    const active =
-      r === `/${route.path}` || (route.path === "" && r === "/");
-    a.classList.toggle("active", active);
+  const isActive = (r) =>
+    r === `/${route.path}` || (route.path === "" && r === "/");
+
+  document.querySelectorAll("#mainNav a, #mobileBottomNav a").forEach((a) => {
+    a.classList.toggle("active", isActive(a.dataset.route));
   });
+}
+
+function closeMobileNav() {
+  mainNav?.classList.remove("open");
+  navToggle?.setAttribute("aria-expanded", "false");
+  navToggle?.setAttribute("aria-label", "Open menu");
+}
+
+function toggleMobileNav() {
+  const open = mainNav?.classList.toggle("open");
+  navToggle?.setAttribute("aria-expanded", open ? "true" : "false");
+  navToggle?.setAttribute("aria-label", open ? "Close menu" : "Open menu");
 }
 
 async function render() {
   const route = parseRoute();
   highlightNav(route);
+  closeMobileNav();
   try {
     if (route.path === "picks") viewPicks();
     else if (route.path === "games") viewGames(route.parts[1]);
@@ -818,8 +984,12 @@ async function render() {
     else if (route.path === "team") await viewTeam(route.parts[1], route.parts[2]);
     else if (route.path === "tracking") viewTracking();
     else if (route.path === "database") {
-      if (route.parts[1] && route.parts[2]) await viewDatabaseTeam(route.parts[1], route.parts[2]);
-      else if (route.parts[1]) await viewDatabaseLeague(route.parts[1]);
+      const league = route.parts[1];
+      const seg = route.parts[2];
+      const third = route.parts[3];
+      if (league && seg === "player" && third) await viewDatabasePlayer(league, third);
+      else if (league && seg && seg !== "player") await viewDatabaseTeam(league, seg);
+      else if (league) await viewDatabaseLeague(league);
       else await viewDatabase();
     }
     else viewDashboard();
@@ -876,6 +1046,10 @@ async function loadPlatform() {
 window.addEventListener("hashchange", () => render());
 themeToggle.addEventListener("click", () => {
   setTheme(document.documentElement.dataset.theme === "light" ? "dark" : "light");
+});
+navToggle?.addEventListener("click", toggleMobileNav);
+mainNav?.querySelectorAll("a").forEach((link) => {
+  link.addEventListener("click", closeMobileNav);
 });
 
 initTheme();
