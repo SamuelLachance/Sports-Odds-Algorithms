@@ -294,6 +294,78 @@ def _slate_cutoff_date() -> str:
     return f"{today.month}-{today.day}-{today.year}"
 
 
+def _actionable_games(scheduled: list[ScheduledGame]) -> list[ScheduledGame]:
+    return [
+        game
+        for game in scheduled
+        if game.status not in {"in", "post"} and _is_actionable_soon(game)
+    ]
+
+
+def _prewarm_league_models(
+    league: str,
+    cutoffs: set[str],
+    errors: list[dict[str, str]],
+) -> None:
+    for cutoff in cutoffs:
+        try:
+            prewarm_league_power(league, cutoff)
+        except Exception as exc:  # noqa: BLE001
+            errors.append(
+                {"league": league, "error": f"Power prewarm failed ({cutoff}): {exc}"}
+            )
+        if is_basketball_league(league):
+            try:
+                get_basketball_pred_context(league, cutoff)
+            except Exception as exc:  # noqa: BLE001
+                errors.append(
+                    {
+                        "league": league,
+                        "error": f"Basketball matrix prewarm failed ({cutoff}): {exc}",
+                    }
+                )
+        if is_baseball_league(league):
+            try:
+                get_baseball_pred_context(league, cutoff)
+            except Exception as exc:  # noqa: BLE001
+                errors.append(
+                    {
+                        "league": league,
+                        "error": f"Baseball model prewarm failed ({cutoff}): {exc}",
+                    }
+                )
+        if is_hockey_league(league):
+            try:
+                get_hockey_pred_context(league, cutoff)
+            except Exception as exc:  # noqa: BLE001
+                errors.append(
+                    {
+                        "league": league,
+                        "error": f"Hockey model prewarm failed ({cutoff}): {exc}",
+                    }
+                )
+        if is_football_league(league):
+            try:
+                get_football_pred_context(league, cutoff)
+            except Exception as exc:  # noqa: BLE001
+                errors.append(
+                    {
+                        "league": league,
+                        "error": f"Football model prewarm failed ({cutoff}): {exc}",
+                    }
+                )
+        if is_soccer_league(league):
+            try:
+                get_soccer_pred_context(league, cutoff)
+            except Exception as exc:  # noqa: BLE001
+                errors.append(
+                    {
+                        "league": league,
+                        "error": f"Soccer model prewarm failed ({cutoff}): {exc}",
+                    }
+                )
+
+
 def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
     generated_at = datetime.now(timezone.utc).isoformat()
     all_games: list[dict[str, Any]] = []
@@ -301,86 +373,23 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
     slate_cutoff = _slate_cutoff_date()
 
     for league in SUPPORTED_LEAGUES:
-        if not is_league_ready_for_daily_slate(league, slate_cutoff):
-            continue
-
         try:
             scheduled = fetch_scoreboard(league, days_ahead=days_ahead)
         except Exception as exc:  # noqa: BLE001
             errors.append({"league": league, "error": str(exc)})
             continue
 
-        power_cutoffs = {
-            _today_cutoff(game)
-            for game in scheduled
-            if game.status not in {"in", "post"} and _is_actionable_soon(game)
-        }
-        for cutoff in power_cutoffs:
-            try:
-                prewarm_league_power(league, cutoff)
-            except Exception as exc:  # noqa: BLE001
-                errors.append(
-                    {
-                        "league": league,
-                        "error": f"Power prewarm failed ({cutoff}): {exc}",
-                    }
-                )
-            if is_basketball_league(league):
-                try:
-                    get_basketball_pred_context(league, cutoff)
-                except Exception as exc:  # noqa: BLE001
-                    errors.append(
-                        {
-                            "league": league,
-                            "error": f"Basketball matrix prewarm failed ({cutoff}): {exc}",
-                        }
-                    )
-            if is_baseball_league(league):
-                try:
-                    get_baseball_pred_context(league, cutoff)
-                except Exception as exc:  # noqa: BLE001
-                    errors.append(
-                        {
-                            "league": league,
-                            "error": f"Baseball model prewarm failed ({cutoff}): {exc}",
-                        }
-                    )
-            if is_hockey_league(league):
-                try:
-                    get_hockey_pred_context(league, cutoff)
-                except Exception as exc:  # noqa: BLE001
-                    errors.append(
-                        {
-                            "league": league,
-                            "error": f"Hockey model prewarm failed ({cutoff}): {exc}",
-                        }
-                    )
-            if is_football_league(league):
-                try:
-                    get_football_pred_context(league, cutoff)
-                except Exception as exc:  # noqa: BLE001
-                    errors.append(
-                        {
-                            "league": league,
-                            "error": f"Football model prewarm failed ({cutoff}): {exc}",
-                        }
-                    )
-            if is_soccer_league(league):
-                try:
-                    get_soccer_pred_context(league, cutoff)
-                except Exception as exc:  # noqa: BLE001
-                    errors.append(
-                        {
-                            "league": league,
-                            "error": f"Soccer model prewarm failed ({cutoff}): {exc}",
-                        }
-                    )
+        actionable = _actionable_games(scheduled)
+        if not actionable:
+            continue
 
-        for game in scheduled:
-            if game.status in {"in", "post"}:
-                continue
-            if not _is_actionable_soon(game):
-                continue
+        if not is_league_ready_for_daily_slate(league, slate_cutoff):
+            continue
+
+        power_cutoffs = {_today_cutoff(game) for game in actionable}
+        _prewarm_league_models(league, power_cutoffs, errors)
+
+        for game in actionable:
             try:
                 all_games.append(predict_live_game(game))
             except Exception as exc:  # noqa: BLE001
