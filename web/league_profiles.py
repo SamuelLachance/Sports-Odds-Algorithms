@@ -412,6 +412,14 @@ def is_soccer_league(league: str) -> bool:
     return league.lower() in SOCCER_LEAGUES
 
 
+def eligible_for_official_picks(league: str) -> bool:
+    """Soccer gets model predictions on the slate but not official algo picks."""
+    profile = LEAGUE_PROFILES.get(league.lower())
+    if not profile:
+        return True
+    return profile.get("category") != "soccer"
+
+
 def uses_spread_bets(league: str) -> bool:
     league = league.lower()
     profile = LEAGUE_PROFILES.get(league)

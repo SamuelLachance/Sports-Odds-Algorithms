@@ -45,6 +45,7 @@ from web.league_profiles import (  # noqa: E402
     LEAGUE_PROFILES,
     MIN_RECOMMENDED_EDGE,
     SUPPORTED_LEAGUES,
+    eligible_for_official_picks,
     get_algo_league,
     uses_spread_bets,
 )
@@ -255,6 +256,8 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
         picks = [pick for pick in picks if pick.side in value_sides]
         picks = picks[:1] if picks else []
 
+    official_picks = picks if eligible_for_official_picks(game.league) else []
+
     return {
         "event_id": game.event_id,
         "league": game.league,
@@ -280,8 +283,9 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             "over_under": game.market.over_under,
         },
         "model": model_payload,
-        "recommendations": [pick_to_dict(pick) for pick in picks],
-        "top_pick": pick_to_dict(picks[0]) if picks else None,
+        "eligible_for_official_picks": eligible_for_official_picks(game.league),
+        "recommendations": [pick_to_dict(pick) for pick in official_picks],
+        "top_pick": pick_to_dict(official_picks[0]) if official_picks else None,
     }
 
 
@@ -390,6 +394,8 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
 
     recommendations = []
     for game in all_games:
+        if not game.get("eligible_for_official_picks", True):
+            continue
         for pick in game.get("recommendations") or []:
             recommendations.append(
                 {

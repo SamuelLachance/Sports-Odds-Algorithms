@@ -10,7 +10,12 @@ from zoneinfo import ZoneInfo
 
 from web.bet_advisor import spread_line_for_side
 from web.espn_client import fetch_scoreboard
-from web.league_profiles import DEFAULT_SPREAD_JUICE, MIN_RECOMMENDED_EDGE, is_soccer_league
+from web.league_profiles import (
+    DEFAULT_SPREAD_JUICE,
+    MIN_RECOMMENDED_EDGE,
+    eligible_for_official_picks,
+    is_soccer_league,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 TRACKING_FILE = PROJECT_ROOT / "data" / "tracking.json"
@@ -88,6 +93,10 @@ def _parse_date_label(value: str) -> date:
     return date.fromisoformat(value)
 
 
+def _official_tracked_bets(bets: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [b for b in bets if eligible_for_official_picks(b.get("league") or "")]
+
+
 def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str, Any]:
     """Log recommended bets from the daily slate (edge >= MIN_RECOMMENDED_EDGE)."""
     date_label = slate.get("date_label") or toronto_today().isoformat()
@@ -98,6 +107,8 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
     }
 
     for pick in slate.get("recommended_bets") or []:
+        if not eligible_for_official_picks(pick.get("league") or ""):
+            continue
         if (pick.get("edge") or 0) < MIN_RECOMMENDED_EDGE:
             continue
         event_id = pick.get("event_id")
@@ -346,7 +357,11 @@ def grade_bet(
 
 
 def grade_pending(store: dict[str, Any]) -> dict[str, Any]:
-    pending = [b for b in store["bets"] if b.get("status") == "pending"]
+    pending = [
+        b
+        for b in store["bets"]
+        if b.get("status") == "pending" and eligible_for_official_picks(b.get("league") or "")
+    ]
     if not pending:
         return store
 
@@ -415,7 +430,7 @@ def build_period_rollups(store: dict[str, Any]) -> dict[str, list[dict[str, Any]
         "yearly": {},
     }
 
-    for bet in store["bets"]:
+    for bet in _official_tracked_bets(store["bets"]):
         try:
             d = _parse_date_label(bet["date"])
         except ValueError:
@@ -439,12 +454,13 @@ def build_period_rollups(store: dict[str, Any]) -> dict[str, list[dict[str, Any]
 
 
 def build_tracking_response(store: dict[str, Any]) -> dict[str, Any]:
+    official_bets = _official_tracked_bets(store["bets"])
     sorted_bets = sorted(
-        store["bets"],
+        official_bets,
         key=lambda b: (b.get("date", ""), -(b.get("edge") or 0)),
         reverse=True,
     )
-    all_time = _summarize_bets(store["bets"])
+    all_time = _summarize_bets(official_bets)
     periods = build_period_rollups(store)
     tracking_since = sorted_bets[-1]["date"] if sorted_bets else None
 
@@ -461,6 +477,7 @@ def build_tracking_response(store: dict[str, Any]) -> dict[str, Any]:
         "last_updated": datetime.now(timezone.utc).isoformat(),
         "note": (
             f"Tracks algo bets with +{MIN_RECOMMENDED_EDGE} edge or higher from each daily slate. "
+            "Soccer predictions are shown on the slate but excluded from official picks and tracking. "
             "Basketball/football spread bets graded ATS at consensus book spread; "
             "other sports at closing moneyline. 1u flat stake."
         ),
