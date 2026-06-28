@@ -1829,10 +1829,12 @@
       "consensus_odds": null,
       "consensus_label": null,
       "model_margin": null,
-      "status": "pending",
-      "units": 0.0,
+      "status": "loss",
+      "units": -1.0,
       "stake_units": 1.0,
-      "recorded_at": "2026-06-27T16:23:45.336278+00:00"
+      "recorded_at": "2026-06-27T16:23:45.336278+00:00",
+      "graded_at": "2026-06-28T12:46:30.991049+00:00",
+      "final_score": "15\u20133"
     },
     {
       "id": "2026-06-27:401815927:away",
@@ -1893,10 +1895,12 @@
       "consensus_odds": -108,
       "consensus_label": "+8.5 (-108)",
       "model_margin": -2.73,
-      "status": "pending",
-      "units": 0.0,
+      "status": "win",
+      "units": 0.9259259259259259,
       "stake_units": 1.0,
-      "recorded_at": "2026-06-27T23:12:20.500855+00:00"
+      "recorded_at": "2026-06-27T23:12:20.500855+00:00",
+      "graded_at": "2026-06-28T12:46:31.058671+00:00",
+      "final_score": "90\u2013105"
     },
     {
       "id": "2026-06-27:401815936:away",
@@ -1928,6 +1932,38 @@
       "units": 0.0,
       "stake_units": 1.0,
       "recorded_at": "2026-06-28T00:20:55.094051+00:00"
+    },
+    {
+      "id": "2026-06-28:401815944:away",
+      "date": "2026-06-28",
+      "event_id": "401815944",
+      "league": "mlb",
+      "league_name": "MLB",
+      "side": "away",
+      "team_name": "Chicago Cubs",
+      "team_slug": "chicago-cubs",
+      "team_abbr": "chc",
+      "matchup": "Chicago Cubs @ Milwaukee Brewers",
+      "start_time": "2026-06-28T18:10Z",
+      "strategy": "value",
+      "strategy_label": "Value bet",
+      "confidence": "medium",
+      "edge": 57.0,
+      "model_projection": 105,
+      "market_odds": 162,
+      "win_probability": 48.85,
+      "reason": "Sportsbook offers +162 vs model fair +105 on Chicago Cubs (+57 edge on American odds).",
+      "bet_type": "moneyline",
+      "spread_line": null,
+      "spread_odds": null,
+      "consensus_spread": null,
+      "consensus_odds": null,
+      "consensus_label": null,
+      "model_margin": null,
+      "status": "pending",
+      "units": 0.0,
+      "stake_units": 1.0,
+      "recorded_at": "2026-06-28T12:46:30.908534+00:00"
     }
   ]
 }
