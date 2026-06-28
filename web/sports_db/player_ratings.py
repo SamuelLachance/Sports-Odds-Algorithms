@@ -172,6 +172,7 @@ def enrich_team_roster_ratings(
                 cutoff_date=cutoff_date,
             ),
         }
+        row.pop("rating_layer", None)
         enriched.append(row)
         if row.get("algo_rating") is not None:
             values.append(float(row["algo_rating"]))

@@ -1,5 +1,7 @@
 """Player algo rating computation tests (external publisher OVR only)."""
 
+import pytest
+
 from web.sports_db.external_ratings import RATING_PRIOR_SOURCE, clear_rating_cache
 from web.sports_db.normalize import build_player_roster_snapshot, build_player_snapshot
 from web.sports_db.player_ratings import (
@@ -142,3 +144,26 @@ def test_player_algo_rating_none_when_missing() -> None:
         )
         is None
     )
+
+
+@pytest.mark.parametrize(
+    ("league", "name", "team", "expected_rating", "expected_source"),
+    [
+        ("nfl", "Patrick Mahomes", "kc", 99.0, "madden"),
+        ("nhl", "Connor McDavid", "edm", 95.0, "nhl"),
+        ("epl", "Erling Haaland", "mci", 91.0, "fc"),
+    ],
+)
+def test_publisher_ratings_across_leagues(
+    league: str, name: str, team: str, expected_rating: float, expected_source: str
+) -> None:
+    clear_rating_cache()
+    snap = resolve_player_rating(
+        league,
+        player_name=name,
+        team_abbr=team,
+        cutoff_date="6-28-2026",
+    )
+    assert snap["algo_rating"] == expected_rating
+    assert snap["rating_source"] == expected_source
+    assert snap.get("rating_layer") is None

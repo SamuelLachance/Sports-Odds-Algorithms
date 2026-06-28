@@ -12,7 +12,6 @@ from web.espn_client import clear_schedule_cache
 from web.league_profiles import (
     LARGE_ROSTER_LEAGUES,
     LEAGUE_PROFILES,
-    SCOREBOARD_ONLY_LEAGUES,
     SUPPORTED_LEAGUES,
     fast_priority_leagues,
     list_leagues_metadata,
@@ -61,8 +60,6 @@ TEAM_BUILD_WORKERS = 6
 PLAYER_FETCH_WORKERS = 4
 
 _RATING_LEAGUES = {"nba", "nfl", "nhl", "mlb", "mls", "epl"}
-# Fast daily builds refresh every team sheet in these leagues (small rosters, public OVR).
-_FAST_FULL_TEAM_SHEET_LEAGUES: tuple[str, ...] = ("wnba",)
 
 
 def _write_json(path: Path, data: object) -> None:
@@ -261,17 +258,13 @@ def team_build_targets(
     fast: bool,
 ) -> set[str]:
     """Teams that receive full team sheets (roster + card JSON)."""
+    del league, slate_keys, standings
     all_abbrs = set(team_ids.keys())
     if not fast:
         return all_abbrs
-    slate_hit = slate_keys & all_abbrs
-    if league in LARGE_ROSTER_LEAGUES or league in SCOREBOARD_ONLY_LEAGUES or league in _FAST_FULL_TEAM_SHEET_LEAGUES:
-        standing_abbrs = {
-            (row.get("abbr") or "").lower()
-            for row in (standings.get("teams") or [])
-        }
-        return slate_hit | (standing_abbrs & all_abbrs)
-    return slate_hit
+    # Fast builds rebuild every team sheet when a league is refreshed so roster
+    # OVR comes from publisher CSV, not stale cached player JSON (model/derived).
+    return all_abbrs
 
 
 def should_fetch_recent_games(*, fast: bool, on_slate: bool) -> bool:
@@ -673,6 +666,83 @@ def _league_lightweight_snapshot(
     }
 
 
+def refresh_team_publisher_ratings(
+    output_dir: Path,
+    *,
+    cutoff_date: str,
+    leagues: tuple[str, ...] | None = None,
+) -> int:
+    """Re-apply publisher OVR on every persisted team sheet (fixes stale model cache)."""
+    updated = 0
+    for league in leagues or SUPPORTED_LEAGUES:
+        teams_dir = output_dir / league / "teams"
+        if not teams_dir.is_dir():
+            continue
+        players_dir = output_dir / league / "players"
+        for team_path in teams_dir.glob("*.json"):
+            if team_path.name == "index.json":
+                continue
+            abbr = team_path.stem
+            try:
+                payload = json.loads(team_path.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError):
+                continue
+            roster = payload.get("roster") or []
+            if not roster:
+                continue
+            team_cutoff = str(payload.get("cutoff_date") or cutoff_date)
+            enriched, avg = enrich_team_roster_ratings(
+                league,
+                roster,
+                team_abbr=abbr,
+                cutoff_date=team_cutoff,
+            )
+            by_id = {str(player.get("id")): player for player in enriched if player.get("id")}
+
+            payload["roster"] = enriched
+            ratings = dict(payload.get("ratings") or {})
+            ratings["avg_player_rating"] = avg
+            if avg is not None:
+                ratings["rating_diff"] = round(avg - 50.0, 1)
+            payload["ratings"] = ratings
+
+            index = payload.get("players_index") or []
+            for row in index:
+                pid = str(row.get("id") or "")
+                if pid not in by_id:
+                    continue
+                src = by_id[pid]
+                row["algo_rating"] = src.get("algo_rating")
+                row["rating_source"] = src.get("rating_source")
+                row["rating_year"] = src.get("rating_year")
+                row.pop("rating_layer", None)
+
+            for pid, player_row in by_id.items():
+                player_path = players_dir / f"{pid}.json"
+                if not player_path.is_file():
+                    continue
+                try:
+                    player_json = json.loads(player_path.read_text(encoding="utf-8"))
+                except (json.JSONDecodeError, OSError):
+                    continue
+                for key in ("algo_rating", "rating_source", "rating_year", "rating_tier", "matched"):
+                    if key in player_row:
+                        player_json[key] = player_row[key]
+                player_json.pop("rating_layer", None)
+                nested = player_json.get("player")
+                if isinstance(nested, dict):
+                    for key in ("algo_rating", "rating_source", "rating_year"):
+                        if key in player_row:
+                            nested[key] = player_row[key]
+                    nested.pop("rating_layer", None)
+                _write_json(player_path, player_json)
+
+            _write_json(team_path, payload)
+            _write_json(teams_dir / abbr / "players.json", {"players": index})
+            updated += 1
+    return updated
+
+
 def build_sports_database(
     output_dir: Path,
     *,
@@ -857,6 +927,10 @@ def build_sports_database(
             )
 
     manifest_leagues.sort(key=lambda row: row["name"])
+    ratings_refreshed = refresh_team_publisher_ratings(output_dir, cutoff_date=cutoff_date)
+    if ratings_refreshed:
+        print(f"Sports DB: refreshed publisher OVR on {ratings_refreshed} team sheets")
+
     rating_coverage: dict[str, Any] = {}
     uncovered_total = 0
     if strict_ratings:
@@ -885,6 +959,7 @@ def build_sports_database(
         "teams_built": built_teams,
         "players_built": built_players,
         "roster_profiles": roster_profiles,
+        "ratings_refreshed": ratings_refreshed,
         "rating_coverage_uncovered": uncovered_total,
         "rating_coverage": rating_coverage,
         "leagues": manifest_leagues,

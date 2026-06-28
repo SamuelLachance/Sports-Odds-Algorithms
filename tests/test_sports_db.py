@@ -1,5 +1,7 @@
 """Sports database normalization tests."""
 
+import json
+
 import pytest
 
 from web.sports_db.betting_context import game_betting_sheet, league_betting_context
@@ -8,10 +10,12 @@ from web.sports_db.build import (
     _recent_games_from_live,
     deep_player_targets,
     enrich_roster_headshots,
+    refresh_team_publisher_ratings,
     should_fetch_recent_games,
     stats_only_player_targets,
     team_build_targets,
 )
+from web.sports_db.external_ratings import clear_rating_cache
 from web.sports_db.normalize import (
     build_player_roster_snapshot,
     build_player_snapshot,
@@ -512,25 +516,79 @@ def test_parse_stat_categories_unwraps_espn_results() -> None:
 
 
 @pytest.mark.parametrize(
-    ("league", "fast", "expected_all"),
+    ("league", "fast"),
     [
-        ("nba", True, False),
-        ("cbb", True, False),
-        ("nba", False, True),
+        ("nba", True),
+        ("cbb", True),
+        ("nba", False),
     ],
 )
-def test_team_build_targets(league, fast, expected_all) -> None:
+def test_team_build_targets(league, fast) -> None:
     team_ids = {"bos": "1", "nyk": "2", "lal": "3"}
     slate_keys = {"bos", "nyk"}
     standings = {"teams": [{"abbr": "lal"}, {"abbr": "bos"}]}
     targets = team_build_targets(league, team_ids, slate_keys, standings, fast=fast)
-    if expected_all:
-        assert targets == set(team_ids.keys())
-    elif league == "nba":
-        assert targets == {"bos", "nyk"}
-    else:
-        assert "bos" in targets
-        assert "lal" in targets
+    assert targets == set(team_ids.keys())
+
+
+def test_refresh_team_publisher_ratings_replaces_stale_model_cache(tmp_path) -> None:
+    clear_rating_cache()
+    teams_dir = tmp_path / "nba" / "teams"
+    players_dir = tmp_path / "nba" / "players"
+    teams_dir.mkdir(parents=True)
+    players_dir.mkdir(parents=True)
+    stale_team = {
+        "cutoff_date": "4-16-2017",
+        "roster": [
+            {
+                "id": "1",
+                "name": "Jayson Tatum",
+                "position": "SF",
+                "algo_rating": 99.0,
+                "rating_source": "model",
+                "rating_layer": "basketball_matrix",
+            }
+        ],
+        "players_index": [
+            {
+                "id": "1",
+                "name": "Jayson Tatum",
+                "algo_rating": 99.0,
+                "rating_source": "model",
+                "rating_layer": "basketball_matrix",
+            }
+        ],
+        "ratings": {"avg_player_rating": 99.0, "rating_diff": 49.0},
+    }
+    team_path = teams_dir / "bos.json"
+    team_path.write_text(json.dumps(stale_team), encoding="utf-8")
+    players_dir.joinpath("1.json").write_text(
+        json.dumps(
+            {
+                "algo_rating": 99.0,
+                "rating_source": "model",
+                "rating_layer": "basketball_matrix",
+                "player": {"algo_rating": 99.0, "rating_layer": "basketball_matrix"},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    updated = refresh_team_publisher_ratings(tmp_path, cutoff_date="4-16-2017", leagues=("nba",))
+    assert updated == 1
+
+    refreshed = json.loads(team_path.read_text(encoding="utf-8"))
+    player = refreshed["roster"][0]
+    assert player["algo_rating"] == 96.0
+    assert player["rating_source"] == "2k"
+    assert "rating_layer" not in player
+    assert refreshed["players_index"][0]["algo_rating"] == 96.0
+    assert refreshed["ratings"]["avg_player_rating"] == 96.0
+
+    player_json = json.loads(players_dir.joinpath("1.json").read_text(encoding="utf-8"))
+    assert player_json["algo_rating"] == 96.0
+    assert player_json["rating_source"] == "2k"
+    assert "rating_layer" not in player_json
 
 
 def test_deep_player_targets_fast_slate_vs_other() -> None:
