@@ -200,79 +200,79 @@ def test_parse_team_statistics_omits_empty_categories() -> None:
 
 
 def test_parse_team_statistics_mlb_espn_payload_sample() -> None:
-  """Representative MLB team statistics payload (Yankees-style ESPN shape)."""
-  payload = {
-      "results": {
-          "stats": {
-              "id": "0",
-              "name": "All stats",
-              "abbreviation": "All",
-              "categories": [
-                  {
-                      "name": "batting",
-                      "displayName": "Batting",
-                      "abbreviation": "batting",
-                      "stats": [
-                          {
-                              "name": "teamGamesPlayed",
-                              "displayName": "Team Games Played",
-                              "abbreviation": "G",
-                              "value": 162.0,
-                              "displayValue": "162",
-                          },
-                          {
-                              "name": "hits",
-                              "displayName": "Hits",
-                              "abbreviation": "H",
-                              "value": 1305.0,
-                              "displayValue": "1305",
-                          },
-                      ],
-                  },
-                  {
-                      "name": "pitching",
-                      "displayName": "Pitching",
-                      "abbreviation": "pitching",
-                      "stats": [
-                          {
-                              "name": "earnedRunAvg",
-                              "displayName": "Earned Run Average",
-                              "abbreviation": "ERA",
-                              "value": 3.42,
-                              "displayValue": "3.42",
-                          },
-                          {
-                              "name": "opponentAvg",
-                              "displayName": "Opponent Batting Average",
-                              "abbreviation": "OBA",
-                              "value": 0.228851,
-                              "displayValue": ".229",
-                          },
-                      ],
-                  },
-                  {
-                      "name": "fielding",
-                      "displayName": "Fielding",
-                      "abbreviation": "fielding",
-                      "stats": [
-                          {
-                              "name": "totalChances",
-                              "displayName": "Total Chances",
-                              "abbreviation": "TC",
-                              "value": 5832.0,
-                              "displayValue": "5832",
-                          }
-                      ],
-                  },
-              ],
-          }
-      }
-  }
-  parsed = parse_team_statistics(payload)
-  assert [cat["name"] for cat in parsed["categories"]] == ["Batting", "Pitching", "Fielding"]
-  pitching = parsed["categories"][1]
-  assert pitching["stats"][0]["display"] == "3.42"
-  assert pitching["stats"][1]["name"] == "Opponent Batting Average"
+    """Representative MLB team statistics payload (Yankees-style ESPN shape)."""
+    payload = {
+        "results": {
+            "stats": {
+                "id": "0",
+                "name": "All stats",
+                "abbreviation": "All",
+                "categories": [
+                    {
+                        "name": "batting",
+                        "displayName": "Batting",
+                        "abbreviation": "batting",
+                        "stats": [
+                            {
+                                "name": "teamGamesPlayed",
+                                "displayName": "Team Games Played",
+                                "abbreviation": "G",
+                                "value": 162.0,
+                                "displayValue": "162",
+                            },
+                            {
+                                "name": "hits",
+                                "displayName": "Hits",
+                                "abbreviation": "H",
+                                "value": 1305.0,
+                                "displayValue": "1305",
+                            },
+                        ],
+                    },
+                    {
+                        "name": "pitching",
+                        "displayName": "Pitching",
+                        "abbreviation": "pitching",
+                        "stats": [
+                            {
+                                "name": "earnedRunAvg",
+                                "displayName": "Earned Run Average",
+                                "abbreviation": "ERA",
+                                "value": 3.42,
+                                "displayValue": "3.42",
+                            },
+                            {
+                                "name": "opponentAvg",
+                                "displayName": "Opponent Batting Average",
+                                "abbreviation": "OBA",
+                                "value": 0.228851,
+                                "displayValue": ".229",
+                            },
+                        ],
+                    },
+                    {
+                        "name": "fielding",
+                        "displayName": "Fielding",
+                        "abbreviation": "fielding",
+                        "stats": [
+                            {
+                                "name": "totalChances",
+                                "displayName": "Total Chances",
+                                "abbreviation": "TC",
+                                "value": 5832.0,
+                                "displayValue": "5832",
+                            }
+                        ],
+                    },
+                ],
+            }
+        }
+    }
+    parsed = parse_team_statistics(payload)
+    assert [cat["name"] for cat in parsed["categories"]] == ["Batting", "Pitching", "Fielding"]
+    pitching = parsed["categories"][1]
+    assert pitching["stats"][0]["display"] == "3.42"
+    assert pitching["stats"][1]["name"] == "Opponent Batting Average"
 
 
 def test_parse_player_game_log_sorts_newest_first() -> None:
