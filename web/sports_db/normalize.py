@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from web.sports_db.player_ratings import player_algo_rating
+from web.sports_db.player_ratings import resolve_player_rating
 
 SCHEMA_VERSION = 2
 
@@ -559,7 +559,30 @@ def roster_index_row(player: dict[str, Any]) -> dict[str, Any]:
     }
     if player.get("algo_rating") is not None:
         row["algo_rating"] = player["algo_rating"]
+    if player.get("rating_source") is not None:
+        row["rating_source"] = player["rating_source"]
+    if player.get("rating_layer") is not None:
+        row["rating_layer"] = player["rating_layer"]
     return row
+
+
+def _player_rating_fields(
+    *,
+    league: str,
+    player_id: str,
+    roster_row: dict[str, Any],
+    team_abbr: str,
+    cutoff_date: str,
+) -> dict[str, Any]:
+    return resolve_player_rating(
+        league,
+        player_name=roster_row.get("name"),
+        team_abbr=team_abbr,
+        espn_id=player_id,
+        position=roster_row.get("position"),
+        roster_meta=roster_row,
+        cutoff_date=cutoff_date,
+    )
 
 
 def build_player_stats_snapshot(
@@ -569,23 +592,25 @@ def build_player_stats_snapshot(
     roster_row: dict[str, Any] | None,
     stats_payload: dict[str, Any] | None,
     team_abbr: str,
+    cutoff_date: str,
 ) -> dict[str, Any]:
     """Season stats without overview/game log (fast-build tier)."""
     roster_row = roster_row or {}
     season_stats = _parse_stat_categories(stats_payload)
-    algo_rating = player_algo_rating(
-        league,
-        season_stats,
-        [],
-        roster_row.get("position"),
-        roster_row,
+    rating_fields = _player_rating_fields(
+        league=league,
+        player_id=player_id,
+        roster_row=roster_row,
+        team_abbr=team_abbr,
+        cutoff_date=cutoff_date,
     )
     return {
         "schema_version": SCHEMA_VERSION,
         "league": league,
         "team_abbr": team_abbr,
+        "cutoff_date": cutoff_date,
         "profile_depth": "stats",
-        "algo_rating": algo_rating,
+        **rating_fields,
         "player": {
             "id": player_id,
             "name": roster_row.get("name"),
@@ -597,7 +622,7 @@ def build_player_stats_snapshot(
             "experience": roster_row.get("experience"),
             "status": roster_row.get("status"),
             "headshot": roster_row.get("headshot"),
-            "algo_rating": algo_rating,
+            **rating_fields,
         },
         "season_stats": season_stats,
         "overview_stats": [],
@@ -612,15 +637,23 @@ def build_player_roster_snapshot(
     player_id: str,
     roster_row: dict[str, Any] | None,
     team_abbr: str,
+    cutoff_date: str,
 ) -> dict[str, Any]:
     roster_row = roster_row or {}
-    algo_rating = player_algo_rating(league, [], [], roster_row.get("position"), roster_row)
+    rating_fields = _player_rating_fields(
+        league=league,
+        player_id=player_id,
+        roster_row=roster_row,
+        team_abbr=team_abbr,
+        cutoff_date=cutoff_date,
+    )
     return {
         "schema_version": SCHEMA_VERSION,
         "league": league,
         "team_abbr": team_abbr,
+        "cutoff_date": cutoff_date,
         "profile_depth": "roster",
-        "algo_rating": algo_rating,
+        **rating_fields,
         "player": {
             "id": player_id,
             "name": roster_row.get("name"),
@@ -632,7 +665,7 @@ def build_player_roster_snapshot(
             "experience": roster_row.get("experience"),
             "status": roster_row.get("status"),
             "headshot": roster_row.get("headshot"),
-            "algo_rating": algo_rating,
+            **rating_fields,
         },
         "season_stats": [],
         "overview_stats": [],
@@ -653,19 +686,18 @@ def build_player_snapshot(
     roster_row = roster_row or {}
     season_stats = _parse_stat_categories(stats_payload)
     overview_stats = parse_player_overview_stats(overview)
-    algo_rating = player_algo_rating(
-        league,
-        season_stats,
-        overview_stats,
-        roster_row.get("position"),
-        roster_row,
+    rating_fields = _player_rating_fields(
+        league=league,
+        player_id=player_id,
+        roster_row=roster_row,
+        team_abbr=team_abbr,
     )
     return {
         "schema_version": SCHEMA_VERSION,
         "league": league,
         "team_abbr": team_abbr,
         "profile_depth": "full",
-        "algo_rating": algo_rating,
+        **rating_fields,
         "player": {
             "id": player_id,
             "name": roster_row.get("name"),
@@ -677,7 +709,7 @@ def build_player_snapshot(
             "experience": roster_row.get("experience"),
             "status": roster_row.get("status"),
             "headshot": roster_row.get("headshot"),
-            "algo_rating": algo_rating,
+            **rating_fields,
         },
         "season_stats": season_stats,
         "overview_stats": overview_stats,

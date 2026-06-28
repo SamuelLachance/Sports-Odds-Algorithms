@@ -388,13 +388,13 @@ def build_players_for_team(
     *,
     fast: bool,
     games_today: int = 1,
-) -> tuple[list[dict[str, Any]], int, int, dict[str, float]]:
+) -> tuple[list[dict[str, Any]], int, int, dict[str, dict[str, Any]]]:
     """Write player JSON for every roster member (deep, stats, or roster tier)."""
     deep_ids = deep_player_targets(
         roster, abbr, league, slate_keys, fast=fast, games_today=games_today
     )
     stats_ids = stats_only_player_targets(roster, deep_ids, fast=fast)
-    ratings_by_id: dict[str, float] = {}
+    ratings_by_id: dict[str, dict[str, Any]] = {}
     index_rows: list[dict[str, Any]] = []
     built_deep = 0
 
@@ -405,7 +405,11 @@ def build_players_for_team(
         try:
             saved = json.loads(player_path.read_text(encoding="utf-8"))
             if saved.get("algo_rating") is not None:
-                ratings_by_id[pid] = saved["algo_rating"]
+                ratings_by_id[pid] = {
+                    "algo_rating": saved["algo_rating"],
+                    "rating_source": saved.get("rating_source"),
+                    "rating_year": saved.get("rating_year"),
+                }
         except (json.JSONDecodeError, OSError):
             pass
 
@@ -454,7 +458,12 @@ def build_players_for_team(
         pid = str(player_id)
         row = roster_index_row(player)
         if pid in ratings_by_id:
-            row["algo_rating"] = ratings_by_id[pid]
+            cached = ratings_by_id[pid]
+            row["algo_rating"] = cached.get("algo_rating")
+            if cached.get("rating_source") is not None:
+                row["rating_source"] = cached["rating_source"]
+            if cached.get("rating_year") is not None:
+                row["rating_year"] = cached["rating_year"]
         index_rows.append(row)
 
     return index_rows, built_deep, len(index_rows), ratings_by_id
@@ -505,7 +514,7 @@ def build_team_snapshot(
         games_today=games_today,
     )
     enriched_roster, avg_player_rating = enrich_team_roster_ratings(
-        league, roster, ratings_by_id
+        league, roster, ratings_by_id, team_abbr=abbr
     )
     deep_ids = deep_player_targets(
         roster, abbr, league, slate_keys, fast=fast, games_today=games_today

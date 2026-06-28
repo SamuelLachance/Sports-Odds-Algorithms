@@ -1,0 +1,327 @@
+"""Third-party game/sim overall ratings (2K, Madden, NHL, MLB The Show, EA FC, FM).
+
+Curated CSV files live in data/ratings/ and are matched to ESPN rosters by name + team.
+Update those CSVs periodically from published game rating lists — do not derive ratings
+from ESPN season stats.
+
+To expand coverage: add rows to the league CSV (player_name, team_abbr, position, overall)
+or drop a new file and register it in LEAGUE_RATING_FILES below.
+"""
+
+from __future__ import annotations
+
+import csv
+import re
+import unicodedata
+from dataclasses import dataclass
+from difflib import SequenceMatcher
+from functools import lru_cache
+from pathlib import Path
+from typing import Any
+
+from web.league_profiles import LEAGUE_PROFILES
+
+RATINGS_DIR = Path(__file__).resolve().parent.parent.parent / "data" / "ratings"
+
+# League → curated rating file (Option A: versioned CSV in repo).
+LEAGUE_RATING_FILES: dict[str, str] = {
+    "nba": "2k_nba_2026.csv",
+    "wnba": "2k_wnba_2026.csv",
+    "cbb": "2k_nba_2026.csv",
+    "nfl": "madden_nfl_2026.csv",
+    "cfb": "madden_nfl_2026.csv",
+    "nhl": "nhl_2026.csv",
+    "ncaah": "nhl_2026.csv",
+    "ncaawh": "nhl_2026.csv",
+    "mlb": "mlb_show_2026.csv",
+    "ncaabb": "mlb_show_2026.csv",
+    "epl": "fc_2026.csv",
+    "mls": "fc_2026.csv",
+    "laliga": "fc_2026.csv",
+    "bundesliga": "fc_2026.csv",
+    "seriea": "fc_2026.csv",
+    "ligue1": "fc_2026.csv",
+    "ucl": "fc_2026.csv",
+}
+
+RATING_BASELINE = 50.0
+RATING_PRIOR_SOURCE = "prior"
+
+SOURCE_LABELS: dict[str, str] = {
+    "2k": "2K",
+    "madden": "Madden",
+    "nhl": "NHL",
+    "mlb_ts": "MLB The Show",
+    "fc": "EA FC",
+    "fm": "FM",
+    RATING_PRIOR_SOURCE: "Estimated",
+}
+
+_FUZZY_TEAM_THRESHOLD = 0.88
+_FUZZY_LEAGUE_THRESHOLD = 0.93
+
+
+@dataclass(frozen=True)
+class PlayerRatingResult:
+    rating: float
+    rating_source: str
+    rating_year: int
+    matched: bool
+
+
+def _strip_accents(text: str) -> str:
+    normalized = unicodedata.normalize("NFKD", text)
+    return "".join(ch for ch in normalized if not unicodedata.combining(ch))
+
+
+def normalize_player_name(name: str) -> str:
+    """Lowercase alphanumeric key for exact lookups."""
+    cleaned = _strip_accents(name or "")
+    return re.sub(r"[^a-z0-9]", "", cleaned.lower())
+
+
+def _name_tokens(name: str) -> list[str]:
+    cleaned = _strip_accents(name or "")
+    parts = re.split(r"[\s.\-'']+", cleaned.strip())
+    return [p.lower() for p in parts if p]
+
+
+def name_signature(name: str) -> str | None:
+    """Last name + first initial, e.g. 'Natasha Howard' → 'howard|n'."""
+    tokens = _name_tokens(name)
+    if len(tokens) < 2:
+        return None
+    first = tokens[0]
+    last = tokens[-1]
+    if len(first) == 1 or (len(first) == 2 and first.endswith(".")):
+        initial = first[0]
+    else:
+        initial = first[0]
+    return f"{last}|{initial}"
+
+
+def normalize_team_abbr(abbr: str | None) -> str:
+    return re.sub(r"[^a-z0-9]", "", (abbr or "").lower())
+
+
+def _parse_overall(raw: str) -> float | None:
+    try:
+        value = float(raw)
+    except (TypeError, ValueError):
+        return None
+    if value <= 0:
+        return None
+    # Game OVR is 0–99; keep on same scale for tier colors (elite ≈ 85+).
+    return round(min(99.0, max(1.0, value)), 1)
+
+
+@dataclass(frozen=True)
+class _RatingRow:
+    player_name: str
+    team_abbr: str
+    position: str
+    overall: float
+    espn_id: str
+    rating_source: str
+    rating_year: int
+    norm_name: str
+    signature: str | None
+
+
+def _load_csv(path: Path) -> list[_RatingRow]:
+    if not path.is_file():
+        return []
+    rows: list[_RatingRow] = []
+    with path.open(encoding="utf-8", newline="") as handle:
+        reader = csv.DictReader(handle)
+        for record in reader:
+            overall = _parse_overall(record.get("overall", ""))
+            if overall is None:
+                continue
+            name = (record.get("player_name") or "").strip()
+            if not name:
+                continue
+            try:
+                year = int(record.get("rating_year") or 0)
+            except ValueError:
+                year = 0
+            rows.append(
+                _RatingRow(
+                    player_name=name,
+                    team_abbr=normalize_team_abbr(record.get("team_abbr")),
+                    position=(record.get("position") or "").strip().upper(),
+                    overall=overall,
+                    espn_id=str(record.get("espn_id") or "").strip(),
+                    rating_source=(record.get("rating_source") or "unknown").strip().lower(),
+                    rating_year=year,
+                    norm_name=normalize_player_name(name),
+                    signature=name_signature(name),
+                )
+            )
+    return rows
+
+
+@lru_cache(maxsize=32)
+def _league_table(league: str) -> tuple[_RatingRow, ...]:
+    league = league.lower()
+    filename = LEAGUE_RATING_FILES.get(league)
+    if not filename:
+        return ()
+    return tuple(_load_csv(RATINGS_DIR / filename))
+
+
+def _fuzzy_ratio(a: str, b: str) -> float:
+    if not a or not b:
+        return 0.0
+    return SequenceMatcher(None, a, b).ratio()
+
+
+def _roster_prior(
+    league: str,
+    position: str | None,
+    roster_meta: dict[str, Any] | None,
+) -> float:
+    """Conservative estimate when no game rating exists — never uses ESPN stats."""
+    category = LEAGUE_PROFILES.get(league.lower(), {}).get("category", "basketball")
+    meta = roster_meta or {}
+    base = RATING_BASELINE
+    try:
+        exp = float(meta.get("experience") or 0)
+    except (TypeError, ValueError):
+        exp = 0.0
+    base += min(4.0, exp * 0.4)
+
+    pos = (position or "").upper()
+    if category == "football" and pos in {"QB", "WR", "RB", "TE", "EDGE", "DE", "CB", "LB"}:
+        base += 1.0
+    elif category == "baseball" and pos in {"P", "SP", "RP", "C"}:
+        base += 0.5
+    elif category == "hockey" and pos in {"C", "LW", "RW", "D"}:
+        base += 0.5
+
+    try:
+        age = float(meta.get("age") or 0)
+        if 24 <= age <= 30:
+            base += 0.5
+        elif age > 0 and age < 22:
+            base -= 0.5
+    except (TypeError, ValueError):
+        pass
+
+    return round(max(42.0, min(58.0, base)), 1)
+
+
+def _default_year_for_league(league: str) -> int:
+    rows = _league_table(league)
+    if rows:
+        return max(row.rating_year for row in rows if row.rating_year)
+    return 2026
+
+
+def _match_row(
+    rows: tuple[_RatingRow, ...],
+    *,
+    player_name: str,
+    team_abbr: str | None,
+    espn_id: str | None,
+) -> _RatingRow | None:
+    if not rows:
+        return None
+
+    norm = normalize_player_name(player_name)
+    sig = name_signature(player_name)
+    team = normalize_team_abbr(team_abbr)
+    pid = str(espn_id or "").strip()
+
+    if pid:
+        for row in rows:
+            if row.espn_id and row.espn_id == pid:
+                return row
+
+    if norm:
+        team_hits = [row for row in rows if row.norm_name == norm and (not team or row.team_abbr == team)]
+        if team_hits:
+            return team_hits[0]
+        any_hits = [row for row in rows if row.norm_name == norm]
+        if any_hits:
+            return any_hits[0]
+
+    if sig and team:
+        sig_hits = [row for row in rows if row.signature == sig and row.team_abbr == team]
+        if len(sig_hits) == 1:
+            return sig_hits[0]
+
+    if norm and team:
+        best: _RatingRow | None = None
+        best_score = 0.0
+        for row in rows:
+            if row.team_abbr != team:
+                continue
+            score = _fuzzy_ratio(norm, row.norm_name)
+            if score > best_score:
+                best_score = score
+                best = row
+        if best and best_score >= _FUZZY_TEAM_THRESHOLD:
+            return best
+
+    if norm:
+        best = None
+        best_score = 0.0
+        for row in rows:
+            score = _fuzzy_ratio(norm, row.norm_name)
+            if score > best_score:
+                best_score = score
+                best = row
+        if best and best_score >= _FUZZY_LEAGUE_THRESHOLD:
+            return best
+
+    return None
+
+
+def lookup_player_rating(
+    league: str,
+    player_name: str | None,
+    team_abbr: str | None = None,
+    espn_id: str | None = None,
+    *,
+    position: str | None = None,
+    roster_meta: dict[str, Any] | None = None,
+) -> PlayerRatingResult:
+    """Resolve a 0–99 game-style overall for an ESPN roster player."""
+    league = (league or "").lower()
+    rows = _league_table(league)
+    row = _match_row(
+        rows,
+        player_name=player_name or "",
+        team_abbr=team_abbr,
+        espn_id=espn_id,
+    )
+    if row:
+        return PlayerRatingResult(
+            rating=row.overall,
+            rating_source=row.rating_source,
+            rating_year=row.rating_year or _default_year_for_league(league),
+            matched=True,
+        )
+
+    prior = _roster_prior(league, position, roster_meta)
+    return PlayerRatingResult(
+        rating=prior,
+        rating_source=RATING_PRIOR_SOURCE,
+        rating_year=_default_year_for_league(league),
+        matched=False,
+    )
+
+
+def rating_source_label(source: str | None, year: int | None = None) -> str:
+    """Human label for UI tooltips, e.g. 2K '26."""
+    key = (source or RATING_PRIOR_SOURCE).lower()
+    label = SOURCE_LABELS.get(key, key.upper())
+    if year:
+        return f"{label} '{str(year)[-2:]}"
+    return label
+
+
+def clear_rating_cache() -> None:
+    """Drop cached CSV tables (for tests)."""
+    _league_table.cache_clear()
