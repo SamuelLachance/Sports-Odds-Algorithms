@@ -113,11 +113,14 @@ def parse_standings(payload: dict[str, Any] | None) -> dict[str, Any]:
         for entry in entries:
             team = entry.get("team") or {}
             stats = _stat_map(entry.get("stats"))
+            rank_val = stats.get("rank", {}).get("value")
+            if rank_val is None:
+                rank_val = stats.get("playoffSeed", {}).get("value")
             row = {
                 "team_id": team.get("id"),
                 "abbr": (team.get("abbreviation") or "").lower(),
                 "name": team.get("displayName") or team.get("name"),
-                "rank": stats.get("rank", {}).get("value"),
+                "rank": rank_val,
                 "wins": stats.get("wins", {}).get("value"),
                 "losses": stats.get("losses", {}).get("value"),
                 "ties": stats.get("ties", {}).get("value"),
@@ -469,12 +472,15 @@ def build_projection(standing_row: dict[str, Any] | None, power_rating: float | 
             projected_wins = round(float(win_pct) * 82, 1)  # default 82-game season proxy
         except (TypeError, ValueError):
             projected_wins = None
+    rank = row.get("rank")
+    if rank is None:
+        rank = row.get("playoff_seed")
     return {
         "playoff_seed": row.get("playoff_seed"),
         "clincher": row.get("clincher"),
         "projected_wins_pace": projected_wins,
         "power_rating": round(float(power_rating), 1) if power_rating is not None else None,
-        "rank": row.get("rank"),
+        "rank": rank,
     }
 
 

@@ -142,6 +142,30 @@ def test_parse_standings_groups() -> None:
     assert parsed["teams"][0]["wins"] == 50.0
 
 
+def test_parse_standings_uses_playoff_seed_when_rank_missing() -> None:
+    payload = {
+        "children": [
+            {
+                "name": "NL Central",
+                "standings": {
+                    "entries": [
+                        {
+                            "team": {"abbreviation": "CHC", "displayName": "Chicago Cubs"},
+                            "stats": [
+                                {"name": "wins", "value": 45.0, "displayValue": "45"},
+                                {"name": "losses", "value": 38.0, "displayValue": "38"},
+                                {"name": "playoffSeed", "value": 2.0, "displayValue": "2"},
+                            ],
+                        }
+                    ]
+                },
+            }
+        ]
+    }
+    parsed = parse_standings(payload)
+    assert parsed["teams"][0]["rank"] == 2.0
+
+
 def test_parse_news_headlines() -> None:
     payload = {
         "articles": [

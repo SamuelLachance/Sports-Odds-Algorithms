@@ -1011,12 +1011,100 @@ function renderRosterSection(teamDb, league) {
   </section>`;
 }
 
-function renderTeamHero(teamDb, leagueName, teamName, profile) {
+function parseRecordFromText(text) {
+  const match = String(text || "").match(/(\d+)\s*[-–]\s*(\d+)/);
+  if (!match) return null;
+  return { wins: Number(match[1]), losses: Number(match[2]) };
+}
+
+function parseRankFromStandingSummary(text) {
+  const match = String(text || "").match(/(\d+)\s*(?:st|nd|rd|th)\b/i);
+  return match ? Number(match[1]) : null;
+}
+
+function formatTeamRecord(standing, team) {
+  if (standing?.wins != null) {
+    const ties = standing.ties ? `-${standing.ties}` : "";
+    return `${standing.wins}-${standing.losses}${ties}`;
+  }
+  const fromSummary = parseRecordFromText(team?.record_summary);
+  if (fromSummary) return `${fromSummary.wins}-${fromSummary.losses}`;
+  return "—";
+}
+
+async function enrichTeamStanding(league, abbr, teamDb) {
+  if (!teamDb) return teamDb;
+  const hasRank = teamDb.standing?.rank != null;
+  const hasRecord = teamDb.standing?.wins != null;
+  if (hasRank && hasRecord) return teamDb;
+
+  try {
+    const leagueData = await loadLeagueDb(league);
+    const row = (leagueData.standings?.teams || []).find(
+      (entry) => (entry.abbr || "").toLowerCase() === abbr,
+    );
+    if (row) {
+      teamDb.standing = { ...row, ...(teamDb.standing || {}) };
+      if (!teamDb.trends) teamDb.trends = {};
+      if (!teamDb.trends.streak && row.streak) teamDb.trends.streak = row.streak;
+      if (teamDb.trends.games_behind == null && row.games_behind != null) {
+        teamDb.trends.games_behind = row.games_behind;
+      }
+      if (teamDb.trends.point_differential == null && row.point_differential != null) {
+        teamDb.trends.point_differential = row.point_differential;
+      }
+      if (!teamDb.projection) teamDb.projection = {};
+      if (teamDb.projection.rank == null) {
+        teamDb.projection.rank = row.rank ?? row.playoff_seed;
+      }
+    }
+  } catch {
+    /* league standings optional */
+  }
+  return teamDb;
+}
+
+function resolveTeamHeroContext(teamDb, profile, recentGames) {
   const team = teamDb?.team || {};
-  const standing = teamDb?.standing || {};
-  const trends = teamDb?.trends || {};
+  const standing = { ...(teamDb?.standing || {}) };
+  const trends = { ...(teamDb?.trends || {}) };
+  const projection = { ...(teamDb?.projection || {}) };
+
+  if (standing.wins == null) {
+    const fromSummary = parseRecordFromText(team.record_summary);
+    if (fromSummary) Object.assign(standing, fromSummary);
+  }
+  if (standing.wins == null && profile?.season_stats?.wins != null) {
+    standing.wins = profile.season_stats.wins;
+    standing.losses = profile.season_stats.losses;
+  }
+
+  if (standing.rank == null) {
+    standing.rank =
+      projection.rank ??
+      projection.playoff_seed ??
+      standing.playoff_seed ??
+      parseRankFromStandingSummary(team.standing_summary);
+  }
+
+  if (!trends.last_5 && recentGames?.length) {
+    trends.last_5 = recentGames
+      .slice(0, 5)
+      .map((game) => game.result || "")
+      .filter(Boolean)
+      .join("");
+  }
+
+  return { team, standing, trends, projection };
+}
+
+function renderTeamHero(teamDb, leagueName, teamName, profile, recentGames) {
+  const { team, standing, trends, projection } = resolveTeamHeroContext(
+    teamDb,
+    profile,
+    recentGames,
+  );
   const ratings = teamDb?.ratings || {};
-  const projection = teamDb?.projection || {};
   const avgRating = ratings.avg_player_rating;
   const ratingDiff =
     ratings.rating_diff ?? (avgRating != null ? Number(avgRating) - 50 : null);
@@ -1033,8 +1121,8 @@ function renderTeamHero(teamDb, leagueName, teamName, profile) {
       </div>
     </div>
     <div class="fm-team-hero-stats">
-      <div class="fm-hero-stat"><span>Record</span><strong>${standing.wins != null ? `${standing.wins}-${standing.losses}${standing.ties ? "-" + standing.ties : ""}` : "—"}</strong></div>
-      <div class="fm-hero-stat"><span>Rank</span><strong>${standing.rank ?? projection.rank ?? "—"}</strong></div>
+      <div class="fm-hero-stat"><span>Record</span><strong>${formatTeamRecord(standing, team)}</strong></div>
+      <div class="fm-hero-stat"><span>Rank</span><strong>${standing.rank ?? "—"}</strong></div>
       <div class="fm-hero-stat"><span>Streak</span><strong>${trends.streak || "—"}</strong></div>
       <div class="fm-hero-stat"><span>Last 5</span><strong>${trends.last_5 || "—"}</strong></div>
       <div class="fm-hero-stat"><span>Power</span><strong>${formatRating(powerValue)}</strong></div>
@@ -1170,10 +1258,9 @@ async function viewTeam(league, abbr) {
   appRoot.innerHTML = '<div class="panel empty-panel">Loading team…</div>';
 
   const normalizedAbbr = (abbr || "").toLowerCase();
-  const [teamDb, profile] = await Promise.all([
-    loadTeamDb(league, normalizedAbbr).catch(() => null),
-    loadTeamProfile(league, normalizedAbbr),
-  ]);
+  let teamDb = await loadTeamDb(league, normalizedAbbr).catch(() => null);
+  const profile = await loadTeamProfile(league, normalizedAbbr);
+  teamDb = await enrichTeamStanding(league, normalizedAbbr, teamDb);
 
   if (!teamDb && !profile) {
     appRoot.innerHTML = `<div class="panel empty-panel">Team sheet not available for ${normalizedAbbr.toUpperCase()} yet. Daily rebuilds populate all teams — try again after the next sync.</div>
@@ -1200,7 +1287,7 @@ async function viewTeam(league, abbr) {
     { label: "Leagues", href: "#/teams" },
     { label: leagueName, href: leagueHref(league) },
     { label: teamName },
-  ])}${renderTeamHero(teamDb, leagueName, teamName, profile)}
+  ])}${renderTeamHero(teamDb, leagueName, teamName, profile, recentGames)}
   <p class="fm-team-nav"><a href="${leagueHref(league)}">← ${leagueName} league</a></p>
   ${upcoming.length ? `<section class="section"><div class="section-head"><h2>Upcoming — betting context</h2></div>
     <div class="db-bet-grid">${upcoming.map((g) => renderBettingGameCard(g, league)).join("")}</div></section>` : ""}

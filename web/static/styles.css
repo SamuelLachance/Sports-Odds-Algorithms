@@ -1748,17 +1748,18 @@ select:focus {
 
 .fm-team-hero-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--space-2);
   flex: 1;
-  min-width: 240px;
+  min-width: min(100%, 420px);
 }
 
 .fm-hero-stat {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
-  padding: var(--space-2);
+  justify-content: center;
+  gap: 0.2rem;
+  padding: var(--space-2) 0.65rem;
   background: var(--bg-soft);
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
@@ -1767,21 +1768,18 @@ select:focus {
 }
 
 .fm-hero-stat span {
-  font-size: 0.75rem;
+  font-size: 0.625rem;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  letter-spacing: 0.05em;
+  line-height: 1.25;
+  word-break: break-word;
 }
 
 .fm-hero-stat strong {
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   font-variant-numeric: tabular-nums;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  line-height: 1.2;
 }
 
 .fm-team-nav {
@@ -2271,6 +2269,11 @@ select:focus {
   .tracking-hero-stats {
     grid-template-columns: repeat(2, 1fr);
     width: 100%;
+  }
+
+  .fm-team-hero-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-width: 0;
   }
 
   .mobile-bottom-nav {
