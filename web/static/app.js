@@ -844,7 +844,7 @@ async function viewTeam(league, abbr) {
     <div class="stat-card panel"><span>Win %</span><strong>${profileStats?.win_pct != null ? `${profileStats.win_pct}%` : trends.win_percent != null ? `${(trends.win_percent * 100).toFixed(1)}%` : "—"}</strong></div>
     <div class="stat-card panel"><span>GB</span><strong>${trends.games_behind ?? teamDb?.standing?.games_behind ?? "—"}</strong></div>
     <div class="stat-card panel"><span>Diff</span><strong>${trends.point_differential ?? teamDb?.standing?.point_differential ?? "—"}</strong></div>
-    <div class="stat-card panel"><span>Roster</span><strong>${teamDb?.roster_count ?? (teamDb?.roster || []).length || "—"}</strong></div>
+    <div class="stat-card panel"><span>Roster</span><strong>${(teamDb?.roster_count ?? (teamDb?.roster || []).length) || "—"}</strong></div>
   </div>
   <div class="db-grid-two">
     <section class="section panel"><h2>Recent games</h2>
@@ -1213,9 +1213,15 @@ async function render() {
 }
 
 async function loadPlatform() {
-  const slate = await fetchJson(
-    USE_STATIC_API ? api("daily-slate.json") : api("daily/slate"),
-  );
+  let slate;
+  try {
+    slate = await fetchJson(
+      USE_STATIC_API ? api("daily-slate.json") : api("daily/slate"),
+    );
+  } catch (err) {
+    appRoot.innerHTML = `<div class="panel empty-panel error-panel">Could not load daily slate: ${err.message}. The site may still be rebuilding — refresh in a few minutes.</div>`;
+    return;
+  }
   state.slate = slate;
 
   try {
@@ -1255,7 +1261,11 @@ async function loadPlatform() {
   renderLeagueMenu();
   renderSidebar(parseRoute());
 
-  await render();
+  try {
+    await render();
+  } catch (err) {
+    appRoot.innerHTML = `<div class="panel empty-panel error-panel">${err.message}</div>`;
+  }
 }
 
 window.addEventListener("hashchange", () => render());
