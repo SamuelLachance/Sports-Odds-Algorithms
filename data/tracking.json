@@ -1897,6 +1897,37 @@
       "units": 0.0,
       "stake_units": 1.0,
       "recorded_at": "2026-06-27T23:12:20.500855+00:00"
+    },
+    {
+      "id": "2026-06-27:401815936:away",
+      "date": "2026-06-27",
+      "event_id": "401815936",
+      "league": "mlb",
+      "league_name": "MLB",
+      "side": "away",
+      "team_name": "Arizona Diamondbacks",
+      "team_slug": "arizona-diamondbacks",
+      "matchup": "Arizona Diamondbacks @ Tampa Bay Rays",
+      "start_time": "2026-06-28T17:40Z",
+      "strategy": "value",
+      "strategy_label": "Value bet",
+      "confidence": "medium",
+      "edge": 44.0,
+      "model_projection": 115,
+      "market_odds": 159,
+      "win_probability": 46.53,
+      "reason": "Sportsbook offers +159 vs model fair +115 on Arizona Diamondbacks (+44 edge on American odds).",
+      "bet_type": "moneyline",
+      "spread_line": null,
+      "spread_odds": null,
+      "consensus_spread": null,
+      "consensus_odds": null,
+      "consensus_label": null,
+      "model_margin": null,
+      "status": "pending",
+      "units": 0.0,
+      "stake_units": 1.0,
+      "recorded_at": "2026-06-28T00:20:55.094051+00:00"
     }
   ]
 }
