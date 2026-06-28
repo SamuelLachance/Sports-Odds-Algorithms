@@ -639,6 +639,8 @@ def roster_index_row(player: dict[str, Any]) -> dict[str, Any]:
         row["algo_rating"] = player["algo_rating"]
     if player.get("rating_source") is not None:
         row["rating_source"] = player["rating_source"]
+    if player.get("rating_year") is not None:
+        row["rating_year"] = player["rating_year"]
     if player.get("rating_layer") is not None:
         row["rating_layer"] = player["rating_layer"]
     return row

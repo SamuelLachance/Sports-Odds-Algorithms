@@ -45,9 +45,9 @@ def test_initial_form_fuzzy_match() -> None:
 def test_unknown_player_gets_prior_not_99() -> None:
     clear_rating_cache()
     result = lookup_player_rating(
-        "nba",
-        "Unknown Player XYZ",
-        "bos",
+        "dwl",
+        "Some Player",
+        "abc",
         position="G",
         roster_meta={"experience": 1},
     )
@@ -55,6 +55,20 @@ def test_unknown_player_gets_prior_not_99() -> None:
     assert result.rating_source == "prior"
     assert 42 <= result.rating <= 58
     assert result.rating < 85
+
+
+def test_unknown_on_team_with_csv_gets_derived() -> None:
+    clear_rating_cache()
+    result = lookup_player_rating(
+        "nba",
+        "Two-Way Callup",
+        "bos",
+        position="G",
+        roster_meta={"experience": 0},
+    )
+    assert result.matched is False
+    assert result.rating_source == "derived"
+    assert 70 <= result.rating <= 90
 
 
 def test_madden_nfl_lookup() -> None:

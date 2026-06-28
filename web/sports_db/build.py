@@ -456,6 +456,7 @@ def build_players_for_team(
                 ratings_by_id[pid] = {
                     "algo_rating": saved["algo_rating"],
                     "rating_source": saved.get("rating_source"),
+                    "rating_year": saved.get("rating_year"),
                     "rating_layer": saved.get("rating_layer"),
                 }
         except (json.JSONDecodeError, OSError):
@@ -510,6 +511,8 @@ def build_players_for_team(
             row["algo_rating"] = cached.get("algo_rating")
             if cached.get("rating_source") is not None:
                 row["rating_source"] = cached["rating_source"]
+            if cached.get("rating_year") is not None:
+                row["rating_year"] = cached["rating_year"]
             if cached.get("rating_layer") is not None:
                 row["rating_layer"] = cached["rating_layer"]
         index_rows.append(row)

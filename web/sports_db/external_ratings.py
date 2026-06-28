@@ -46,6 +46,7 @@ LEAGUE_RATING_FILES: dict[str, str] = {
 
 RATING_BASELINE = 50.0
 RATING_PRIOR_SOURCE = "prior"
+RATING_DERIVED_SOURCE = "derived"
 
 SOURCE_LABELS: dict[str, str] = {
     "2k": "2K",
@@ -54,6 +55,7 @@ SOURCE_LABELS: dict[str, str] = {
     "mlb_ts": "MLB The Show",
     "fc": "EA FC",
     "fm": "FM",
+    RATING_DERIVED_SOURCE: "Estimated",
     RATING_PRIOR_SOURCE: "Estimated",
 }
 
@@ -176,39 +178,98 @@ def _fuzzy_ratio(a: str, b: str) -> float:
     return SequenceMatcher(None, a, b).ratio()
 
 
+def _position_adjustment(
+    league: str,
+    position: str | None,
+    roster_meta: dict[str, Any] | None,
+    *,
+    scale: float = 1.0,
+) -> float:
+    """Small offset from team/league baseline by position and experience — no ESPN stats."""
+    category = LEAGUE_PROFILES.get(league.lower(), {}).get("category", "basketball")
+    meta = roster_meta or {}
+    delta = 0.0
+
+    try:
+        exp = float(meta.get("experience") or 0)
+    except (TypeError, ValueError):
+        exp = 0.0
+    delta += min(4.0, exp * 0.4) * scale
+
+    pos = (position or "").upper()
+    if category == "football":
+        if pos in {"QB"}:
+            delta += 2.5 * scale
+        elif pos in {"WR", "RB", "TE", "EDGE", "DE", "CB", "LB"}:
+            delta += 1.0 * scale
+        elif pos in {"K", "P", "LS"}:
+            delta -= 2.0 * scale
+    elif category == "baseball":
+        if pos in {"SP", "RP", "P"}:
+            delta += 1.0 * scale
+        elif pos in {"C"}:
+            delta += 0.5 * scale
+    elif category == "hockey":
+        if pos in {"G", "GK"}:
+            delta += 1.5 * scale
+        elif pos in {"C", "LW", "RW", "D"}:
+            delta += 0.5 * scale
+    elif category == "basketball":
+        if pos in {"G", "PG", "SG"}:
+            delta += 0.75 * scale
+        elif pos in {"F", "SF", "PF", "C"}:
+            delta += 0.5 * scale
+    elif category == "soccer":
+        if pos in {"F", "FW", "ST", "CF"}:
+            delta += 1.0 * scale
+        elif pos in {"M", "MF", "AM", "CM", "DM"}:
+            delta += 0.5 * scale
+
+    try:
+        age = float(meta.get("age") or 0)
+        if 24 <= age <= 30:
+            delta += 0.5 * scale
+        elif age > 0 and age < 22:
+            delta -= 0.5 * scale
+    except (TypeError, ValueError):
+        pass
+
+    return delta
+
+
 def _roster_prior(
     league: str,
     position: str | None,
     roster_meta: dict[str, Any] | None,
 ) -> float:
     """Conservative estimate when no game rating exists — never uses ESPN stats."""
-    category = LEAGUE_PROFILES.get(league.lower(), {}).get("category", "basketball")
-    meta = roster_meta or {}
-    base = RATING_BASELINE
-    try:
-        exp = float(meta.get("experience") or 0)
-    except (TypeError, ValueError):
-        exp = 0.0
-    base += min(4.0, exp * 0.4)
-
-    pos = (position or "").upper()
-    if category == "football" and pos in {"QB", "WR", "RB", "TE", "EDGE", "DE", "CB", "LB"}:
-        base += 1.0
-    elif category == "baseball" and pos in {"P", "SP", "RP", "C"}:
-        base += 0.5
-    elif category == "hockey" and pos in {"C", "LW", "RW", "D"}:
-        base += 0.5
-
-    try:
-        age = float(meta.get("age") or 0)
-        if 24 <= age <= 30:
-            base += 0.5
-        elif age > 0 and age < 22:
-            base -= 0.5
-    except (TypeError, ValueError):
-        pass
-
+    base = RATING_BASELINE + _position_adjustment(league, position, roster_meta)
     return round(max(42.0, min(58.0, base)), 1)
+
+
+def team_external_roster_stats(
+    league: str,
+    team_abbr: str,
+) -> dict[str, Any] | None:
+    """Average OVR and metadata from curated CSV rows for one team."""
+    league = (league or "").lower()
+    team = normalize_team_abbr(team_abbr)
+    if not team:
+        return None
+    rows = [row for row in _league_table(league) if row.team_abbr == team]
+    if not rows:
+        return None
+    ovrs = [row.overall for row in rows]
+    sources = {row.rating_source for row in rows if row.rating_source}
+    source = next(iter(sources)) if len(sources) == 1 else "curated"
+    year = max((row.rating_year for row in rows if row.rating_year), default=_default_year_for_league(league))
+    return {
+        "team_abbr": team,
+        "average": round(sum(ovrs) / len(ovrs), 1),
+        "count": len(rows),
+        "rating_source": source,
+        "rating_year": year,
+    }
 
 
 def _default_year_for_league(league: str) -> int:
@@ -278,6 +339,95 @@ def _match_row(
     return None
 
 
+def match_external_rating(
+    league: str,
+    player_name: str | None,
+    team_abbr: str | None = None,
+    espn_id: str | None = None,
+) -> PlayerRatingResult | None:
+    """Return a curated game OVR when the CSV roster matches; else None."""
+    league = (league or "").lower()
+    rows = _league_table(league)
+    row = _match_row(
+        rows,
+        player_name=player_name or "",
+        team_abbr=team_abbr,
+        espn_id=espn_id,
+    )
+    if not row:
+        return None
+    return PlayerRatingResult(
+        rating=row.overall,
+        rating_source=row.rating_source,
+        rating_year=row.rating_year or _default_year_for_league(league),
+        matched=True,
+    )
+
+
+def derived_team_rating(
+    league: str,
+    team_abbr: str | None,
+    *,
+    position: str | None = None,
+    roster_meta: dict[str, Any] | None = None,
+) -> PlayerRatingResult | None:
+    """Estimate from curated team roster average plus position offset."""
+    league = (league or "").lower()
+    stats = team_external_roster_stats(league, team_abbr or "")
+    if not stats or stats["count"] < 3:
+        return None
+    team_avg = stats["average"]
+    pos_delta = _position_adjustment(league, position, roster_meta, scale=0.55)
+    rating = round(max(40.0, min(88.0, team_avg - 2.0 + pos_delta)), 1)
+    return PlayerRatingResult(
+        rating=rating,
+        rating_source=RATING_DERIVED_SOURCE,
+        rating_year=stats["rating_year"],
+        matched=False,
+    )
+
+
+def conservative_prior_rating(
+    league: str,
+    position: str | None = None,
+    roster_meta: dict[str, Any] | None = None,
+) -> PlayerRatingResult:
+    """Conservative 50± estimate when no game OVR or team CSV context exists."""
+    league = (league or "").lower()
+    prior = _roster_prior(league, position, roster_meta)
+    return PlayerRatingResult(
+        rating=prior,
+        rating_source=RATING_PRIOR_SOURCE,
+        rating_year=_default_year_for_league(league),
+        matched=False,
+    )
+
+
+def team_csv_ovr(league: str, team_abbr: str, *, top_n: int = 8) -> dict[str, Any] | None:
+    """Top-N average OVR from curated CSV for predictions when roster coverage is sufficient."""
+    league = (league or "").lower()
+    team = normalize_team_abbr(team_abbr)
+    if not team:
+        return None
+    rows = [row for row in _league_table(league) if row.team_abbr == team]
+    if len(rows) < 5:
+        return None
+    ovrs = sorted((row.overall for row in rows), reverse=True)[:top_n]
+    if not ovrs:
+        return None
+    sources = {row.rating_source for row in rows if row.rating_source}
+    source = next(iter(sources)) if len(sources) == 1 else "curated"
+    year = max((row.rating_year for row in rows if row.rating_year), default=_default_year_for_league(league))
+    return {
+        "source": f"data/ratings ({SOURCE_LABELS.get(source, source)})",
+        "team_abbr": team,
+        "rating": round(sum(ovrs) / len(ovrs), 2),
+        "method": f"csv_top{top_n}_ovr",
+        "players_matched": len(rows),
+        "rating_year": year,
+    }
+
+
 def lookup_player_rating(
     league: str,
     player_name: str | None,
@@ -288,29 +438,23 @@ def lookup_player_rating(
     roster_meta: dict[str, Any] | None = None,
 ) -> PlayerRatingResult:
     """Resolve a 0–99 game-style overall for an ESPN roster player."""
-    league = (league or "").lower()
-    rows = _league_table(league)
-    row = _match_row(
-        rows,
-        player_name=player_name or "",
+    hit = match_external_rating(
+        league,
+        player_name,
         team_abbr=team_abbr,
         espn_id=espn_id,
     )
-    if row:
-        return PlayerRatingResult(
-            rating=row.overall,
-            rating_source=row.rating_source,
-            rating_year=row.rating_year or _default_year_for_league(league),
-            matched=True,
-        )
-
-    prior = _roster_prior(league, position, roster_meta)
-    return PlayerRatingResult(
-        rating=prior,
-        rating_source=RATING_PRIOR_SOURCE,
-        rating_year=_default_year_for_league(league),
-        matched=False,
+    if hit:
+        return hit
+    derived = derived_team_rating(
+        league,
+        team_abbr,
+        position=position,
+        roster_meta=roster_meta,
     )
+    if derived:
+        return derived
+    return conservative_prior_rating(league, position, roster_meta)
 
 
 def rating_source_label(source: str | None, year: int | None = None) -> str:

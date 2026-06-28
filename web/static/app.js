@@ -883,7 +883,24 @@ function formatPlayerRating(rating) {
   return formatted === "—" ? null : formatted;
 }
 
-function ratingSourceLabel(source, layer) {
+function ratingSourceLabel(source, layer, year) {
+  const external = {
+    "2k": "2K",
+    madden: "Madden",
+    nhl: "NHL",
+    mlb_ts: "MLB The Show",
+    fc: "EA FC",
+    fm: "FM",
+    prior: "Estimated",
+    derived: "Estimated",
+    cached: "Cached",
+  };
+  const key = String(source || "").toLowerCase();
+  if (key && key !== "model") {
+    const label = external[key] || (key ? key.toUpperCase() : "Rating");
+    if (year) return `${label} '${String(year).slice(-2)}`;
+    return label;
+  }
   const modelLayers = {
     basketball_matrix: "Matrix model",
     hockey_poisson: "Poisson xG",
@@ -892,18 +909,18 @@ function ratingSourceLabel(source, layer) {
     soccer_elo: "Soccer Elo",
     power_ratings: "Power ratings",
   };
-  if (source === "model" && layer) {
+  if (key === "model" && layer) {
     return modelLayers[layer] || String(layer).replace(/_/g, " ");
   }
   return "Model";
 }
 
-function renderPlayerRatingBadge(rating, { large = false, source = null, layer = null } = {}) {
+function renderPlayerRatingBadge(rating, { large = false, source = null, layer = null, year = null } = {}) {
   const formatted = formatPlayerRating(rating);
   if (formatted == null) return "";
   const tier = playerRatingTier(rating);
   const cls = large ? "fm-player-rating fm-player-rating--lg" : "fm-player-rating";
-  const tooltip = ratingSourceLabel(source, layer);
+  const tooltip = ratingSourceLabel(source, layer, year);
   return `<span class="${cls} fm-player-rating--${tier}" title="${tooltip}">${formatted}</span>`;
 }
 
@@ -982,11 +999,12 @@ function renderPlayerCard(player, league, deepIds) {
   const rating = player.algo_rating ?? player.player?.algo_rating;
   const ratingSource = player.rating_source ?? player.player?.rating_source;
   const ratingLayer = player.rating_layer ?? player.player?.rating_layer;
+  const ratingYear = player.rating_year ?? player.player?.rating_year;
   return `<a class="fm-player-card${isDeep ? " fm-player-card--deep" : ""}" href="${playerHref(league, pid)}">
     <div class="fm-player-photo-wrap">
       ${renderPlayerPhoto(player, league)}
       ${player.jersey ? `<span class="fm-player-jersey">#${player.jersey}</span>` : ""}
-      ${renderPlayerRatingBadge(rating, { source: ratingSource, layer: ratingLayer })}
+      ${renderPlayerRatingBadge(rating, { source: ratingSource, layer: ratingLayer, year: ratingYear })}
     </div>
     <div class="fm-player-body">
       <strong class="fm-player-name">${player.name || "Player"}</strong>
@@ -1333,7 +1351,8 @@ async function viewPlayer(league, playerId) {
   const playerRating = player.algo_rating ?? info.algo_rating;
   const ratingLayer = player.rating_layer ?? info.rating_layer;
   const ratingSource = player.rating_source ?? info.rating_source;
-  const ratingTooltip = ratingSourceLabel(ratingSource, ratingLayer);
+  const ratingYear = player.rating_year ?? info.rating_year;
+  const ratingTooltip = ratingSourceLabel(ratingSource, ratingLayer, ratingYear);
   const teamAbbr = (player.team_abbr || "").toLowerCase();
   const profileDepth = player.profile_depth || "full";
   const isRosterOnly = profileDepth === "roster";

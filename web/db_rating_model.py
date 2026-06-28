@@ -19,6 +19,7 @@ from web.league_profiles import (
     is_soccer_league,
 )
 from web.season_games import load_league_completed_games
+from web.sports_db.external_ratings import team_csv_ovr
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 CACHE_DIR = PROJECT_ROOT / "data" / "db_ratings_cache"
@@ -308,9 +309,18 @@ def get_team_db_rating(
     *,
     team_slug: str,
     team_name: str | None = None,
+    team_abbr: str | None = None,
 ) -> dict[str, Any] | None:
     league = league.lower()
     category = _category(league)
+
+    if team_abbr:
+        csv_entry = team_csv_ovr(league, team_abbr)
+        if csv_entry:
+            return {
+                **csv_entry,
+                "fetched_at": datetime.now(timezone.utc).isoformat(),
+            }
 
     if category == "soccer":
         return _scrape_soccer_team_rating(team_name or team_slug.replace("-", " ").title())
@@ -378,10 +388,10 @@ def run_db_rating_model(
     away_name: str | None = None,
 ) -> dict[str, Any] | None:
     home_entry = get_team_db_rating(
-        league, team_slug=home_slug, team_name=home_name
+        league, team_slug=home_slug, team_name=home_name, team_abbr=home_abbr
     )
     away_entry = get_team_db_rating(
-        league, team_slug=away_slug, team_name=away_name
+        league, team_slug=away_slug, team_name=away_name, team_abbr=away_abbr
     )
     if not home_entry or not away_entry:
         return None
