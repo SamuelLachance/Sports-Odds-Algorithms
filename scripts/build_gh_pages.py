@@ -176,6 +176,7 @@ def build_daily_slate() -> dict:
     write_json(DOCS_DIR / "api" / "tracking.json", update_tracking(slate))
 
     from web.sports_db import build_sports_database
+from web.sports_db.build import TEAM_BUILD_WORKERS
 
     full_build = _env_flag("FULL_BUILD")
     print(f"Building sports database (fast={not full_build})...")
@@ -183,10 +184,35 @@ def build_daily_slate() -> dict:
         DOCS_DIR / "api" / "db",
         slate=slate,
         fast=not full_build,
-        max_workers=6 if _fast_daily_build() else 8,
-        team_workers=4 if _fast_daily_build() else 6,
+        max_workers=4,
+        team_workers=TEAM_BUILD_WORKERS if _fast_daily_build() else 6,
     )
     return slate
+
+
+def seed_sports_db_cache() -> bool:
+    """Restore prior sports DB output so fast builds can reuse recent-game rows."""
+    cache_root = PROJECT_ROOT / ".build-cache" / "sports-db" / "db"
+    target = DOCS_DIR / "api" / "db"
+    if not cache_root.is_dir():
+        return False
+    if target.is_dir():
+        shutil.rmtree(target)
+    shutil.copytree(cache_root, target)
+    print(f"Seeded sports DB from cache: {cache_root}")
+    return True
+
+
+def save_sports_db_cache() -> None:
+    """Persist sports DB output for the next CI run."""
+    source = DOCS_DIR / "api" / "db"
+    if not source.is_dir():
+        return
+    cache_root = PROJECT_ROOT / ".build-cache" / "sports-db" / "db"
+    if cache_root.is_dir():
+        shutil.rmtree(cache_root)
+    shutil.copytree(source, cache_root)
+    print(f"Saved sports DB cache: {cache_root}")
 
 
 def main() -> None:
@@ -195,6 +221,8 @@ def main() -> None:
 
     copy_static_assets()
     build_api_metadata()
+    if fast_build:
+        seed_sports_db_cache()
     build_daily_slate()
 
     if fast_build:
@@ -202,6 +230,8 @@ def main() -> None:
         built, skipped = 0, 0
     else:
         built, skipped = build_prediction_cache()
+
+    save_sports_db_cache()
 
     print(f"GitHub Pages build complete: {DOCS_DIR}")
     print(f"Prediction cache: {built} files written, {skipped} skipped")

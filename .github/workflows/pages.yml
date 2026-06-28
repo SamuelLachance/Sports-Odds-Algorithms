@@ -3,6 +3,10 @@ name: Deploy GitHub Pages
 on:
   push:
     branches: [master]
+    paths-ignore:
+      - "tests/**"
+      - "**/*.md"
+      - ".cursor/**"
   workflow_dispatch:
     inputs:
       full_build:
@@ -28,14 +32,14 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
-      FAST_DAILY_BUILD: ${{ github.event.inputs.full_build != 'true' && '1' || '' }}
+      FAST_DAILY_BUILD: ${{ (github.event_name == 'schedule' || github.event.inputs.full_build != 'true') && '1' || '' }}
       FULL_BUILD: ${{ github.event.inputs.full_build == 'true' && '1' || '' }}
     steps:
       - uses: actions/checkout@v4
@@ -45,6 +49,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
+      - name: Restore sports DB cache
+        uses: actions/cache@v4
+        with:
+          path: .build-cache/sports-db
+          key: sports-db-${{ hashFiles('web/sports_db/**', 'web/live_data.py', 'web/espn_client.py') }}-${{ runner.os }}
+          restore-keys: |
+            sports-db-${{ hashFiles('web/sports_db/**', 'web/live_data.py', 'web/espn_client.py') }}-
+            sports-db-
 
       - name: Build static site
         run: python scripts/build_gh_pages.py

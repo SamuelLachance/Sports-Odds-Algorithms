@@ -257,17 +257,29 @@ def fetch_scoreboard(
     return games
 
 
+_SCHEDULE_CACHE: dict[str, list[dict[str, Any]]] = {}
+
+
 def fetch_team_schedule(league: str, espn_team_id: str, season: int) -> list[dict[str, Any]]:
     profile = get_league_profile(league)
     url = (
         f"https://site.api.espn.com/apis/site/v2/sports/"
         f"{profile['sport_path']}/teams/{espn_team_id}/schedule?season={season}"
     )
+    if url in _SCHEDULE_CACHE:
+        return _SCHEDULE_CACHE[url]
     try:
         payload = _fetch_json(url)
     except urllib.error.URLError:
-        return []
-    return payload.get("events") or []
+        events: list[dict[str, Any]] = []
+    else:
+        events = payload.get("events") or []
+    _SCHEDULE_CACHE[url] = events
+    return events
+
+
+def clear_schedule_cache() -> None:
+    _SCHEDULE_CACHE.clear()
 
 
 def iso_to_project_date(iso_value: str) -> str:

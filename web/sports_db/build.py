@@ -8,9 +8,11 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from web.espn_client import clear_schedule_cache
 from web.league_profiles import (
     LARGE_ROSTER_LEAGUES,
     LEAGUE_PROFILES,
+    SCOREBOARD_ONLY_LEAGUES,
     SUPPORTED_LEAGUES,
     list_leagues_metadata,
 )
@@ -47,10 +49,10 @@ from web.team_service import fetch_espn_team_ids
 
 # Deep ESPN athlete fetches (overview + stats) per team in fast daily builds.
 FAST_DEEP_SLATE_CAP = 30
-FAST_DEEP_OTHER = 10
-FAST_DEEP_LARGE_LEAGUE = 5
+FAST_DEEP_OTHER = 5
+FAST_DEEP_LARGE_LEAGUE = 3
 TEAM_BUILD_WORKERS = 4
-PLAYER_FETCH_WORKERS = 3
+PLAYER_FETCH_WORKERS = 4
 
 _RATING_LEAGUES = {"nba", "nfl", "nhl", "mlb", "mls", "epl"}
 
@@ -133,6 +135,33 @@ def _recent_games_from_live(
     return list(reversed(rows[-10:]))
 
 
+def _load_cached_team(path: Path) -> dict[str, Any] | None:
+    if not path.is_file():
+        return None
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return None
+
+
+def _recent_games_for_team(
+    league: str,
+    abbr: str,
+    espn_id: str,
+    cutoff_date: str,
+    team_names: dict[str, str] | None,
+    *,
+    fast: bool,
+    on_slate: bool,
+    cached_team: dict[str, Any] | None,
+) -> list[dict[str, Any]]:
+    if not should_fetch_recent_games(fast=fast, on_slate=on_slate):
+        if cached_team:
+            return cached_team.get("recent_games") or []
+        return []
+    return _recent_games_from_live(league, abbr, espn_id, cutoff_date, team_names)
+
+
 def _standing_row_for_team(standings: dict[str, Any], abbr: str) -> dict[str, Any] | None:
     target = abbr.lower()
     for row in standings.get("teams") or []:
@@ -184,13 +213,18 @@ def team_build_targets(
     all_abbrs = set(team_ids.keys())
     if not fast:
         return all_abbrs
-    if league in LARGE_ROSTER_LEAGUES:
+    if league in LARGE_ROSTER_LEAGUES or league in SCOREBOARD_ONLY_LEAGUES:
         standing_abbrs = {
             (row.get("abbr") or "").lower()
             for row in (standings.get("teams") or [])
         }
         return (slate_keys & all_abbrs) | (standing_abbrs & all_abbrs)
     return all_abbrs
+
+
+def should_fetch_recent_games(*, fast: bool, on_slate: bool) -> bool:
+    """Full-season schedule walks are expensive; limit them on fast daily builds."""
+    return not fast or on_slate
 
 
 def deep_player_targets(
@@ -200,6 +234,7 @@ def deep_player_targets(
     slate_keys: set[str],
     *,
     fast: bool,
+    games_today: int = 1,
 ) -> set[str]:
     """Player ids that receive full ESPN overview/stats enrichment."""
     ids = [str(player["id"]) for player in roster if player.get("id")]
@@ -209,6 +244,9 @@ def deep_player_targets(
         return set(ids)
 
     on_slate = abbr.lower() in slate_keys
+    if games_today == 0 and not on_slate:
+        return set()
+
     large = league in LARGE_ROSTER_LEAGUES
     if on_slate:
         cap = FAST_DEEP_SLATE_CAP if large else len(ids)
@@ -292,9 +330,12 @@ def build_players_for_team(
     slate_keys: set[str],
     *,
     fast: bool,
-) -> tuple[list[dict[str, Any]], int, int]:
-    """Write player JSON for every roster member; deep stats for prioritized ids."""
-    deep_ids = deep_player_targets(roster, abbr, league, slate_keys, fast=fast)
+    games_today: int = 1,
+) -> tuple[list[dict[str, Any]], int, int, dict[str, float]]:
+    """Write deep player JSON only; roster cards live on the team sheet."""
+    deep_ids = deep_player_targets(
+        roster, abbr, league, slate_keys, fast=fast, games_today=games_today
+    )
     ratings_by_id: dict[str, float] = {}
     index_rows: list[dict[str, Any]] = []
     built_deep = 0
@@ -311,9 +352,8 @@ def build_players_for_team(
                 roster_row=player,
                 team_abbr=abbr,
             )
-            payload["generated_at"] = datetime.now(timezone.utc).isoformat()
-            ratings_by_id[pid] = payload["algo_rating"]
-            _write_json(players_dir / f"{pid}.json", payload)
+            if payload.get("algo_rating") is not None:
+                ratings_by_id[pid] = payload["algo_rating"]
 
     deep_players = [player for player in roster if str(player.get("id") or "") in deep_ids]
     if deep_players:
@@ -362,7 +402,9 @@ def build_team_snapshot(
     *,
     fast: bool,
     players_dir: Path,
-) -> tuple[dict[str, Any], int]:
+    games_today: int = 1,
+    cached_team: dict[str, Any] | None = None,
+) -> tuple[dict[str, Any], int, int]:
     season_year = season_year_for_league(league)
     roster_raw = fetch_team_roster(league, espn_team_id)
     stats_raw = fetch_team_statistics(league, espn_team_id, season_year)
@@ -370,8 +412,16 @@ def build_team_snapshot(
     roster = parse_roster(roster_raw)
     stats = parse_team_statistics(stats_raw)
     standing_row = _standing_row_for_team(standings, abbr)
-    recent = _recent_games_from_live(
-        league, abbr, espn_team_id, cutoff_date, _team_name_lookup(standings)
+    on_slate = abbr.lower() in slate_keys
+    recent = _recent_games_for_team(
+        league,
+        abbr,
+        espn_team_id,
+        cutoff_date,
+        _team_name_lookup(standings),
+        fast=fast,
+        on_slate=on_slate,
+        cached_team=cached_team,
     )
     rating = team_rating_slice(ratings, abbr)
     power = (rating.get("power") or {}).get("power")
@@ -382,11 +432,14 @@ def build_team_snapshot(
         players_dir,
         slate_keys,
         fast=fast,
+        games_today=games_today,
     )
     enriched_roster, avg_player_rating = enrich_team_roster_ratings(
         league, roster, ratings_by_id
     )
-    deep_ids = deep_player_targets(roster, abbr, league, slate_keys, fast=fast)
+    deep_ids = deep_player_targets(
+        roster, abbr, league, slate_keys, fast=fast, games_today=games_today
+    )
     rating["avg_player_rating"] = avg_player_rating
     if avg_player_rating is not None:
         rating["rating_diff"] = round(avg_player_rating - 50.0, 1)
@@ -424,6 +477,7 @@ def build_sports_database(
 ) -> dict[str, Any]:
     """Write docs/api/db snapshots for all supported leagues."""
     clear_fetch_cache()
+    clear_schedule_cache()
     output_dir.mkdir(parents=True, exist_ok=True)
     today = date.today()
     cutoff_date = slate.get("date_label") if slate else today.isoformat()
@@ -468,6 +522,7 @@ def build_sports_database(
 
         teams_dir = league_dir / "teams"
         players_dir = league_dir / "players"
+        games_today = (snapshot.get("betting") or {}).get("game_count", 0)
         name_by_abbr = {
             (row.get("abbr") or "").lower(): row.get("name")
             for row in snapshot["standings"].get("teams") or []
@@ -479,6 +534,7 @@ def build_sports_database(
             espn_id = team_ids.get(abbr)
             if not espn_id:
                 return 0, 0, 0
+            cached_team = _load_cached_team(teams_dir / f"{abbr}.json")
             team_payload, player_count, roster_count = build_team_snapshot(
                 league,
                 abbr,
@@ -490,6 +546,8 @@ def build_sports_database(
                 slate_keys,
                 fast=fast,
                 players_dir=players_dir,
+                games_today=games_today,
+                cached_team=cached_team,
             )
             _write_json(teams_dir / f"{abbr}.json", team_payload)
             _write_json(
@@ -562,4 +620,5 @@ def build_sports_database(
     }
     _write_json(output_dir / "manifest.json", manifest)
     clear_fetch_cache()
+    clear_schedule_cache()
     return manifest

@@ -3,7 +3,14 @@
 import pytest
 
 from web.sports_db.betting_context import game_betting_sheet, league_betting_context
-from web.sports_db.build import FAST_DEEP_OTHER, _recent_games_from_live, deep_player_targets, team_build_targets
+from web.sports_db.build import (
+    FAST_DEEP_OTHER,
+    _recent_games_for_team,
+    _recent_games_from_live,
+    deep_player_targets,
+    should_fetch_recent_games,
+    team_build_targets,
+)
 from web.sports_db.normalize import (
     build_player_roster_snapshot,
     build_player_snapshot,
@@ -373,6 +380,33 @@ def test_deep_player_targets_fast_slate_vs_other() -> None:
     other = deep_player_targets(roster, "nyk", "nba", {"bos"}, fast=True)
     assert len(slate) == 20
     assert len(other) == FAST_DEEP_OTHER
+
+
+def test_deep_player_targets_skips_idle_league() -> None:
+    roster = [{"id": str(i)} for i in range(20)]
+    assert deep_player_targets(roster, "nyk", "nba", set(), fast=True, games_today=0) == set()
+    assert len(deep_player_targets(roster, "bos", "nba", {"bos"}, fast=True, games_today=0)) == 20
+
+
+def test_should_fetch_recent_games_fast_mode() -> None:
+    assert should_fetch_recent_games(fast=True, on_slate=False) is False
+    assert should_fetch_recent_games(fast=True, on_slate=True) is True
+    assert should_fetch_recent_games(fast=False, on_slate=False) is True
+
+
+def test_recent_games_for_team_reuses_cache_when_skipping_fetch() -> None:
+    cached = {"recent_games": [{"date": "6-1-2026", "opponent": "NYK", "result": "W"}]}
+    games = _recent_games_for_team(
+        "nba",
+        "bos",
+        "1",
+        "6-27-2026",
+        {},
+        fast=True,
+        on_slate=False,
+        cached_team=cached,
+    )
+    assert games == cached["recent_games"]
 
 
 def test_build_player_roster_snapshot_lightweight() -> None:
