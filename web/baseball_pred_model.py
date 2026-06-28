@@ -200,6 +200,18 @@ def build_baseball_model(
     }
 
 
+def extract_team_elo_strengths(model: dict[str, Any]) -> dict[str, float]:
+    """Composite Elo + Pythagorean strength per team."""
+    elos: dict[str, EloTeam] = model["elos"]
+    states: dict[str, TeamState] = model["states"]
+    strengths: dict[str, float] = {}
+    for key, elo in elos.items():
+        state = states.get(key)
+        pyth = state.pythagorean_win_pct() if state else 0.5
+        strengths[key] = 0.6 * elo.rating_fast + 0.4 * (pyth * 400.0 + 1100.0)
+    return strengths
+
+
 def predict_matchup_from_model(
     model: dict[str, Any],
     home_key: str,

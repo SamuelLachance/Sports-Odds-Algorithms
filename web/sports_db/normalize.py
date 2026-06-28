@@ -682,6 +682,7 @@ def build_player_snapshot(
     overview: dict[str, Any] | None,
     stats_payload: dict[str, Any] | None,
     team_abbr: str,
+    cutoff_date: str,
 ) -> dict[str, Any]:
     roster_row = roster_row or {}
     season_stats = _parse_stat_categories(stats_payload)
@@ -691,11 +692,13 @@ def build_player_snapshot(
         player_id=player_id,
         roster_row=roster_row,
         team_abbr=team_abbr,
+        cutoff_date=cutoff_date,
     )
     return {
         "schema_version": SCHEMA_VERSION,
         "league": league,
         "team_abbr": team_abbr,
+        "cutoff_date": cutoff_date,
         "profile_depth": "full",
         **rating_fields,
         "player": {

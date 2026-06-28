@@ -177,6 +177,12 @@ def build_football_model(games: list[tuple], league: str) -> dict[str, Any] | No
     }
 
 
+def extract_team_nfelo_strengths(model: dict[str, Any]) -> dict[str, float]:
+    """nfelo Elo rating per team."""
+    ratings: dict[str, TeamElo] = model["ratings"]
+    return {abbr: team.rating for abbr, team in ratings.items()}
+
+
 def predict_matchup_from_model(
     model: dict[str, Any],
     home_abbr: str,

@@ -160,6 +160,15 @@ def build_hockey_model(
     }
 
 
+def extract_team_xg_strengths(model: dict[str, Any]) -> dict[str, float]:
+    """Net goals-per-game strength (GF/GP − GA/GP) per team."""
+    metrics: dict[str, TeamMetrics] = model["team_metrics"]
+    return {
+        abbr: round(m.goals_for_pg - m.goals_against_pg, 4)
+        for abbr, m in metrics.items()
+    }
+
+
 def predict_matchup_from_model(
     model: dict[str, Any],
     home_abbr: str,

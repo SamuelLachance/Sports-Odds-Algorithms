@@ -319,6 +319,14 @@ def _dc_threeway(
     return home_p, draw_p, away_p, lam, mu
 
 
+def extract_team_soccer_strengths(model: dict[str, Any]) -> dict[str, float]:
+    """Dixon–Coles attack minus defence log-strength per team."""
+    attack: dict[str, float] = model["attack"]
+    defence: dict[str, float] = model["defence"]
+    keys = set(attack) | set(defence)
+    return {key: attack.get(key, 0.0) - defence.get(key, 0.0) for key in keys}
+
+
 def predict_matchup_from_model(
     model: dict[str, Any],
     home_key: str,

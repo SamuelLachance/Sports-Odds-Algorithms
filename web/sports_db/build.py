@@ -327,6 +327,7 @@ def _build_one_deep_player(
     abbr: str,
     player: dict[str, Any],
     players_dir: Path,
+    cutoff_date: str,
 ) -> str:
     player_id = str(player["id"])
     overview = fetch_athlete_overview(league, player_id)
@@ -338,6 +339,7 @@ def _build_one_deep_player(
         overview=overview,
         stats_payload=stats_payload,
         team_abbr=abbr,
+        cutoff_date=cutoff_date,
     )
     _write_player_json(players_dir, player_id, payload)
     return player_id
@@ -348,6 +350,7 @@ def _build_one_stats_player(
     abbr: str,
     player: dict[str, Any],
     players_dir: Path,
+    cutoff_date: str,
 ) -> str:
     player_id = str(player["id"])
     stats_payload = fetch_athlete_stats(league, player_id)
@@ -357,6 +360,7 @@ def _build_one_stats_player(
         roster_row=player,
         stats_payload=stats_payload,
         team_abbr=abbr,
+        cutoff_date=cutoff_date,
     )
     _write_player_json(players_dir, player_id, payload)
     return player_id
@@ -367,6 +371,7 @@ def _build_one_roster_player(
     abbr: str,
     player: dict[str, Any],
     players_dir: Path,
+    cutoff_date: str,
 ) -> str:
     player_id = str(player["id"])
     payload = build_player_roster_snapshot(
@@ -374,6 +379,7 @@ def _build_one_roster_player(
         player_id=player_id,
         roster_row=player,
         team_abbr=abbr,
+        cutoff_date=cutoff_date,
     )
     _write_player_json(players_dir, player_id, payload)
     return player_id
@@ -388,6 +394,7 @@ def build_players_for_team(
     *,
     fast: bool,
     games_today: int = 1,
+    cutoff_date: str,
 ) -> tuple[list[dict[str, Any]], int, int, dict[str, dict[str, Any]]]:
     """Write player JSON for every roster member (deep, stats, or roster tier)."""
     deep_ids = deep_player_targets(
@@ -408,7 +415,7 @@ def build_players_for_team(
                 ratings_by_id[pid] = {
                     "algo_rating": saved["algo_rating"],
                     "rating_source": saved.get("rating_source"),
-                    "rating_year": saved.get("rating_year"),
+                    "rating_layer": saved.get("rating_layer"),
                 }
         except (json.JSONDecodeError, OSError):
             pass
@@ -420,7 +427,7 @@ def build_players_for_team(
     ]
     for player in roster_only:
         pid = str(player["id"])
-        _build_one_roster_player(league, abbr, player, players_dir)
+        _build_one_roster_player(league, abbr, player, players_dir, cutoff_date)
         _record_rating(pid)
 
     stats_players = [player for player in roster if str(player.get("id") or "") in stats_ids]
@@ -428,7 +435,7 @@ def build_players_for_team(
         workers = min(PLAYER_FETCH_WORKERS, len(stats_players))
         with ThreadPoolExecutor(max_workers=workers) as pool:
             futures = {
-                pool.submit(_build_one_stats_player, league, abbr, player, players_dir): player
+                pool.submit(_build_one_stats_player, league, abbr, player, players_dir, cutoff_date): player
                 for player in stats_players
             }
             for future in as_completed(futures):
@@ -441,7 +448,7 @@ def build_players_for_team(
         workers = min(PLAYER_FETCH_WORKERS, len(deep_players))
         with ThreadPoolExecutor(max_workers=workers) as pool:
             futures = {
-                pool.submit(_build_one_deep_player, league, abbr, player, players_dir): player
+                pool.submit(_build_one_deep_player, league, abbr, player, players_dir, cutoff_date): player
                 for player in deep_players
             }
             for future in as_completed(futures):
@@ -462,8 +469,8 @@ def build_players_for_team(
             row["algo_rating"] = cached.get("algo_rating")
             if cached.get("rating_source") is not None:
                 row["rating_source"] = cached["rating_source"]
-            if cached.get("rating_year") is not None:
-                row["rating_year"] = cached["rating_year"]
+            if cached.get("rating_layer") is not None:
+                row["rating_layer"] = cached["rating_layer"]
         index_rows.append(row)
 
     return index_rows, built_deep, len(index_rows), ratings_by_id
@@ -512,9 +519,10 @@ def build_team_snapshot(
         slate_keys,
         fast=fast,
         games_today=games_today,
+        cutoff_date=cutoff_date,
     )
     enriched_roster, avg_player_rating = enrich_team_roster_ratings(
-        league, roster, ratings_by_id, team_abbr=abbr
+        league, roster, ratings_by_id, team_abbr=abbr, cutoff_date=cutoff_date
     )
     deep_ids = deep_player_targets(
         roster, abbr, league, slate_keys, fast=fast, games_today=games_today

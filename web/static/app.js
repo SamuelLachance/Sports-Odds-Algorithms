@@ -858,28 +858,27 @@ function formatPlayerRating(rating) {
   return formatted === "—" ? null : formatted;
 }
 
-function ratingSourceLabel(source, year) {
-  const labels = {
-    "2k": "2K",
-    madden: "Madden",
-    nhl: "NHL",
-    mlb_ts: "MLB The Show",
-    fc: "EA FC",
-    fm: "FM",
-    prior: "Estimated",
+function ratingSourceLabel(source, layer) {
+  const modelLayers = {
+    basketball_matrix: "Matrix model",
+    hockey_poisson: "Poisson xG",
+    baseball_elo: "Elo",
+    nfelo: "nfelo",
+    soccer_elo: "Soccer Elo",
+    power_ratings: "Power ratings",
   };
-  const key = (source || "prior").toLowerCase();
-  const label = labels[key] || key.toUpperCase();
-  if (year) return `${label} '${String(year).slice(-2)}`;
-  return label;
+  if (source === "model" && layer) {
+    return modelLayers[layer] || String(layer).replace(/_/g, " ");
+  }
+  return "Model";
 }
 
-function renderPlayerRatingBadge(rating, { large = false, source = null, year = null } = {}) {
+function renderPlayerRatingBadge(rating, { large = false, source = null, layer = null } = {}) {
   const formatted = formatPlayerRating(rating);
   if (formatted == null) return "";
   const tier = playerRatingTier(rating);
   const cls = large ? "fm-player-rating fm-player-rating--lg" : "fm-player-rating";
-  const tooltip = ratingSourceLabel(source, year);
+  const tooltip = ratingSourceLabel(source, layer);
   return `<span class="${cls} fm-player-rating--${tier}" title="${tooltip}">${formatted}</span>`;
 }
 
@@ -889,12 +888,12 @@ function renderPlayerCard(player, league, deepIds) {
   const statusClass = playerStatusClass(player.status);
   const rating = player.algo_rating ?? player.player?.algo_rating;
   const ratingSource = player.rating_source ?? player.player?.rating_source;
-  const ratingYear = player.rating_year ?? player.player?.rating_year;
+  const ratingLayer = player.rating_layer ?? player.player?.rating_layer;
   return `<a class="fm-player-card${isDeep ? " fm-player-card--deep" : ""}" href="${playerHref(league, pid)}">
     <div class="fm-player-photo-wrap">
       ${player.headshot ? `<img class="fm-player-photo" src="${player.headshot}" alt="" loading="lazy">` : `<span class="fm-player-photo fm-player-photo--placeholder">${(player.name || "?").charAt(0)}</span>`}
       ${player.jersey ? `<span class="fm-player-jersey">#${player.jersey}</span>` : ""}
-      ${renderPlayerRatingBadge(rating, { source: ratingSource, year: ratingYear })}
+      ${renderPlayerRatingBadge(rating, { source: ratingSource, layer: ratingLayer })}
     </div>
     <div class="fm-player-body">
       <strong class="fm-player-name">${player.name || "Player"}</strong>
@@ -1152,9 +1151,9 @@ async function viewPlayer(league, playerId) {
   }
   const info = player.player || {};
   const playerRating = player.algo_rating ?? info.algo_rating;
+  const ratingLayer = player.rating_layer ?? info.rating_layer;
   const ratingSource = player.rating_source ?? info.rating_source;
-  const ratingYear = player.rating_year ?? info.rating_year;
-  const ratingTooltip = ratingSourceLabel(ratingSource, ratingYear);
+  const ratingTooltip = ratingSourceLabel(ratingSource, ratingLayer);
   const teamAbbr = (player.team_abbr || "").toLowerCase();
   const profileDepth = player.profile_depth || "full";
   const isRosterOnly = profileDepth === "roster";
@@ -1177,7 +1176,7 @@ async function viewPlayer(league, playerId) {
       <span class="league-pill">${leagueName}</span>
       <h1>${info.name || "Player"}</h1>
       <p class="fm-player-role">${info.position || "—"} · ${info.status || "Active"}</p>
-      ${renderPlayerRatingBadge(playerRating, { large: true, source: ratingSource, year: ratingYear }) ? `<div class="fm-player-rating-hero">${renderPlayerRatingBadge(playerRating, { large: true, source: ratingSource, year: ratingYear })}<span class="fm-player-rating-label">${ratingTooltip}</span></div>` : ""}
+      ${renderPlayerRatingBadge(playerRating, { large: true, source: ratingSource, layer: ratingLayer }) ? `<div class="fm-player-rating-hero">${renderPlayerRatingBadge(playerRating, { large: true, source: ratingSource, layer: ratingLayer })}<span class="fm-player-rating-label">${ratingTooltip}</span></div>` : ""}
       <div class="fm-player-bio">
         <span>${info.height || "—"}</span>
         <span>${info.weight || "—"}</span>

@@ -312,6 +312,23 @@ def build_basketball_model(
     }
 
 
+def extract_team_matrix_strengths(model: dict[str, Any]) -> dict[str, float]:
+    """Net offensive strength per team from the completed OR matrix (offense − defense allowed)."""
+    index: dict[str, int] = model["index"]
+    or_matrix: list[list[float]] = model["or_matrix"]
+    n = len(or_matrix)
+    strengths: dict[str, float] = {}
+    for key, idx in index.items():
+        offense = [or_matrix[idx][j] for j in range(n) if j != idx and or_matrix[idx][j] > 0]
+        defense_allowed = [or_matrix[j][idx] for j in range(n) if j != idx and or_matrix[j][idx] > 0]
+        if not offense:
+            continue
+        off_avg = sum(offense) / len(offense)
+        def_avg = sum(defense_allowed) / len(defense_allowed) if defense_allowed else off_avg
+        strengths[key] = off_avg - def_avg
+    return strengths
+
+
 def predict_matchup_from_model(
     model: dict[str, Any],
     home_key: str,

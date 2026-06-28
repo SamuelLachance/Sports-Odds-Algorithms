@@ -143,6 +143,11 @@ def fit_logistic_param(games: list[PowerGame]) -> float | None:
     return best_param
 
 
+def extract_team_power_strengths(teams: dict[str, PowerTeam]) -> dict[str, float]:
+    """Iterative power rating per team."""
+    return {key: team.power for key, team in teams.items()}
+
+
 def _sigmoid_prob(rating_diff: float, param: float) -> float:
     """Home win probability from home_power - away_power (matches Sports-pred fit)."""
     if param <= 0:

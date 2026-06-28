@@ -1,6 +1,7 @@
-"""Player rating integration tests (external game DB, not ESPN stats)."""
+"""Player algo rating computation tests (predictive model source)."""
 
-from web.sports_db.external_ratings import clear_rating_cache
+from unittest.mock import patch
+
 from web.sports_db.normalize import build_player_roster_snapshot, build_player_snapshot
 from web.sports_db.player_ratings import (
     enrich_team_roster_ratings,
@@ -9,80 +10,62 @@ from web.sports_db.player_ratings import (
     team_average_player_rating,
 )
 
-
-def test_nba_star_from_2k_not_stats() -> None:
-    clear_rating_cache()
-    rating = player_algo_rating(
-        "nba",
-        [{"name": "Per Game", "stats": [{"name": "PTS", "value": 99.0}]}],
-        [],
-        "G",
-        {"name": "Jayson Tatum", "experience": 0},
-        team_abbr="bos",
-    )
-    assert rating == 96.0
-    assert rating_tier(rating) == "elite"
+_MODEL_PATCH_TARGET = "web.sports_db.model_player_ratings.league_model_rating_context"
+_MODEL_PATCH_RETURN = ({"bos": 70.0, "lal": 65.0}, "basketball_matrix")
 
 
-def test_stats_do_not_inflate_unknown_player() -> None:
-    clear_rating_cache()
-    rating = player_algo_rating(
-        "nba",
-        [{"name": "Per Game", "stats": [{"name": "PTS", "value": 35.0}]}],
-        [],
-        "G",
-        {"name": "Nobody On Roster", "experience": 0},
-        team_abbr="bos",
-    )
-    assert 42 <= rating <= 58
+def test_nba_star_rates_above_bench() -> None:
+    with patch(_MODEL_PATCH_TARGET, return_value=_MODEL_PATCH_RETURN):
+        star = player_algo_rating(
+            "nba",
+            [],
+            [],
+            "G",
+            {"name": "Star", "experience": 12},
+            team_abbr="bos",
+            cutoff_date="4-16-2017",
+        )
+        bench = player_algo_rating(
+            "nba",
+            [],
+            [],
+            "F",
+            {"name": "Bench", "experience": 1},
+            team_abbr="bos",
+            cutoff_date="4-16-2017",
+        )
+    assert star > bench
+    assert rating_tier(star) in {"elite", "good", "average"}
 
 
-def test_wnba_dream_player_snapshot() -> None:
-    clear_rating_cache()
-    snap = build_player_roster_snapshot(
-        league="wnba",
-        player_id="1",
-        roster_row={"name": "Rhyne Howard", "position": "G"},
-        team_abbr="atl",
-    )
-    assert snap["algo_rating"] == 88.0
-    assert snap["rating_source"] == "2k"
-    assert snap["rating_year"] == 2026
-    assert snap["player"]["algo_rating"] == 88.0
-
-
-def test_roster_only_unknown_gets_prior() -> None:
-    clear_rating_cache()
-    snap = build_player_roster_snapshot(
-        league="nba",
-        player_id="1",
-        roster_row={"name": "Rookie Unknown", "position": "G", "experience": 0},
-        team_abbr="bos",
-    )
+def test_roster_only_snapshot_has_model_rating() -> None:
+    with patch(_MODEL_PATCH_TARGET, return_value=_MODEL_PATCH_RETURN):
+        snap = build_player_roster_snapshot(
+            league="nba",
+            player_id="1",
+            roster_row={"name": "Rookie", "position": "G", "experience": 0},
+            team_abbr="bos",
+            cutoff_date="4-16-2017",
+        )
     assert snap["algo_rating"] is not None
-    assert 42 <= snap["algo_rating"] <= 58
-    assert snap["rating_source"] == "prior"
+    assert snap["rating_source"] == "model"
+    assert snap["rating_layer"] == "basketball_matrix"
+    assert snap["player"]["algo_rating"] == snap["algo_rating"]
 
 
-def test_full_snapshot_uses_external_not_stats() -> None:
-    clear_rating_cache()
-    snap = build_player_snapshot(
-        league="nba",
-        player_id="2",
-        roster_row={"name": "Jaylen Brown", "position": "G"},
-        overview={},
-        stats_payload={
-            "categories": [
-                {
-                    "displayName": "Per Game",
-                    "stats": [{"displayName": "PTS", "value": 5.0}],
-                }
-            ]
-        },
-        team_abbr="bos",
-    )
-    assert snap["algo_rating"] == 89.0
-    assert snap["rating_source"] == "2k"
+def test_full_snapshot_includes_model_rating() -> None:
+    with patch(_MODEL_PATCH_TARGET, return_value=_MODEL_PATCH_RETURN):
+        snap = build_player_snapshot(
+            league="nba",
+            player_id="2",
+            roster_row={"name": "Star", "position": "G", "experience": 8},
+            overview={},
+            stats_payload={"categories": []},
+            team_abbr="bos",
+            cutoff_date="4-16-2017",
+        )
+    assert snap["algo_rating"] is not None
+    assert snap["rating_source"] == "model"
     assert snap["player"]["algo_rating"] == snap["algo_rating"]
 
 
@@ -92,18 +75,19 @@ def test_team_average_player_rating() -> None:
 
 
 def test_enrich_team_roster_ratings() -> None:
-    clear_rating_cache()
     roster = [
-        {"id": "1", "name": "Jayson Tatum", "position": "G", "experience": 5},
-        {"id": "2", "name": "Unknown", "position": "F", "experience": 1},
+        {"id": "1", "name": "A", "position": "G", "experience": 5},
+        {"id": "2", "name": "B", "position": "F", "experience": 1},
     ]
-    enriched, avg = enrich_team_roster_ratings(
-        "nba",
-        roster,
-        {"1": {"algo_rating": 96.0, "rating_source": "2k", "rating_year": 2026}},
-        team_abbr="bos",
-    )
-    assert enriched[0]["algo_rating"] == 96.0
-    assert enriched[0]["rating_source"] == "2k"
-    assert enriched[1]["rating_source"] == "prior"
+    with patch(_MODEL_PATCH_TARGET, return_value=_MODEL_PATCH_RETURN):
+        enriched, avg = enrich_team_roster_ratings(
+            "nba",
+            roster,
+            {"1": 82.0},
+            team_abbr="bos",
+            cutoff_date="4-16-2017",
+        )
+    assert enriched[0]["algo_rating"] == 82.0
+    assert enriched[0]["rating_source"] == "model"
+    assert enriched[1]["algo_rating"] is not None
     assert avg is not None
