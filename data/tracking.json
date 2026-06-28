@@ -1964,6 +1964,38 @@
       "units": 0.0,
       "stake_units": 1.0,
       "recorded_at": "2026-06-28T12:46:30.908534+00:00"
+    },
+    {
+      "id": "2026-06-28:401815943:away",
+      "date": "2026-06-28",
+      "event_id": "401815943",
+      "league": "mlb",
+      "league_name": "MLB",
+      "side": "away",
+      "team_name": "Washington Nationals",
+      "team_slug": "washington-nationals",
+      "team_abbr": "wsh",
+      "matchup": "Washington Nationals @ Baltimore Orioles",
+      "start_time": "2026-06-28T17:35Z",
+      "strategy": "value",
+      "strategy_label": "Value bet",
+      "confidence": "medium",
+      "edge": 40.0,
+      "model_projection": 128,
+      "market_odds": 168,
+      "win_probability": 43.86,
+      "reason": "Sportsbook offers +168 vs model fair +128 on Washington Nationals (+40 edge on American odds).",
+      "bet_type": "moneyline",
+      "spread_line": null,
+      "spread_odds": null,
+      "consensus_spread": null,
+      "consensus_odds": null,
+      "consensus_label": null,
+      "model_margin": null,
+      "status": "pending",
+      "units": 0.0,
+      "stake_units": 1.0,
+      "recorded_at": "2026-06-28T17:08:23.721941+00:00"
     }
   ]
 }
