@@ -636,7 +636,31 @@ select:focus {
   background: var(--bg-elevated);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+a.pick-card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+a.pick-card-link:hover {
+  transform: translateY(-1px);
+}
+
+a.pick-card-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.pick-open-hint {
+  display: block;
+  margin-top: var(--space-2);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--accent-strong);
 }
 
 .pick-card:hover {

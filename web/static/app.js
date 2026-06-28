@@ -487,12 +487,28 @@ function factorBars(factors) {
     .join("");
 }
 
+function pickGameHref(pick) {
+  if (pick?.event_id) return `#/game/${pick.event_id}`;
+  const games = state.slate?.games || [];
+  const match = games.find(
+    (game) =>
+      game.league === pick?.league &&
+      (pick?.matchup === `${game.matchup?.away?.name} @ ${game.matchup?.home?.name}` ||
+        pick?.team_name === game.matchup?.home?.name ||
+        pick?.team_name === game.matchup?.away?.name),
+  );
+  return match ? `#/game/${match.event_id}` : null;
+}
+
 function pickCard(pick, extra = "") {
-  const league = pick.league;
-  const teamHeading = pickTeamNameLink(pick, league, pick.matchup_obj);
-  return `<article class="pick-card ${confClass(pick.confidence)}">
+  const gameHref = pickGameHref(pick);
+  const tag = gameHref ? "a" : "article";
+  const linkAttrs = gameHref
+    ? ` href="${gameHref}" class="pick-card pick-card-link ${confClass(pick.confidence)}"`
+    : ` class="pick-card ${confClass(pick.confidence)}"`;
+  return `<${tag}${linkAttrs}>
     <div class="pick-top"><span class="league-pill">${pick.league_name || pick.league}</span><span class="strategy-pill">${pick.strategy_label || pick.strategy}</span></div>
-    <h3>${teamHeading}</h3>
+    <h3>${pick.team_name || ""}</h3>
     <p class="pick-matchup">${pick.matchup || extra}</p>
     <p class="pick-time">${formatTime(pick.start_time)}</p>
     <div class="pick-odds">
@@ -501,7 +517,8 @@ function pickCard(pick, extra = "") {
       <div><span>Edge</span><strong>+${pick.edge}</strong></div>
     </div>
     <p class="pick-reason">${pick.reason}</p>
-  </article>`;
+    ${gameHref ? `<span class="pick-open-hint">Open game prediction →</span>` : ""}
+  </${tag}>`;
 }
 
 function algoBreakdown(m) {
