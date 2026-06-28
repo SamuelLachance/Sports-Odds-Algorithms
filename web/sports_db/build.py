@@ -33,6 +33,7 @@ from web.sports_db.normalize import (
     SCHEMA_VERSION,
     build_player_roster_snapshot,
     build_player_snapshot,
+    build_player_stats_snapshot,
     build_projection,
     build_trends,
     parse_news,
@@ -257,6 +258,27 @@ def deep_player_targets(
     return set(ids[:cap])
 
 
+def stats_only_player_targets(
+    roster: list[dict[str, Any]],
+    deep_ids: set[str],
+    *,
+    fast: bool,
+) -> set[str]:
+    """Roster players that receive stats-only enrichment (no overview/game log)."""
+    if not fast:
+        return set()
+    return {
+        str(player["id"])
+        for player in roster
+        if player.get("id") and str(player["id"]) not in deep_ids
+    }
+
+
+def _write_player_json(players_dir: Path, player_id: str, payload: dict[str, Any]) -> None:
+    payload["generated_at"] = datetime.now(timezone.utc).isoformat()
+    _write_json(players_dir / f"{player_id}.json", payload)
+
+
 def build_league_snapshot(
     league: str,
     cutoff_date: str,
@@ -317,8 +339,43 @@ def _build_one_deep_player(
         stats_payload=stats_payload,
         team_abbr=abbr,
     )
-    payload["generated_at"] = datetime.now(timezone.utc).isoformat()
-    _write_json(players_dir / f"{player_id}.json", payload)
+    _write_player_json(players_dir, player_id, payload)
+    return player_id
+
+
+def _build_one_stats_player(
+    league: str,
+    abbr: str,
+    player: dict[str, Any],
+    players_dir: Path,
+) -> str:
+    player_id = str(player["id"])
+    stats_payload = fetch_athlete_stats(league, player_id)
+    payload = build_player_stats_snapshot(
+        league=league,
+        player_id=player_id,
+        roster_row=player,
+        stats_payload=stats_payload,
+        team_abbr=abbr,
+    )
+    _write_player_json(players_dir, player_id, payload)
+    return player_id
+
+
+def _build_one_roster_player(
+    league: str,
+    abbr: str,
+    player: dict[str, Any],
+    players_dir: Path,
+) -> str:
+    player_id = str(player["id"])
+    payload = build_player_roster_snapshot(
+        league=league,
+        player_id=player_id,
+        roster_row=player,
+        team_abbr=abbr,
+    )
+    _write_player_json(players_dir, player_id, payload)
     return player_id
 
 
@@ -332,28 +389,48 @@ def build_players_for_team(
     fast: bool,
     games_today: int = 1,
 ) -> tuple[list[dict[str, Any]], int, int, dict[str, float]]:
-    """Write deep player JSON only; roster cards live on the team sheet."""
+    """Write player JSON for every roster member (deep, stats, or roster tier)."""
     deep_ids = deep_player_targets(
         roster, abbr, league, slate_keys, fast=fast, games_today=games_today
     )
+    stats_ids = stats_only_player_targets(roster, deep_ids, fast=fast)
     ratings_by_id: dict[str, float] = {}
     index_rows: list[dict[str, Any]] = []
     built_deep = 0
 
-    for player in roster:
-        player_id = player.get("id")
-        if not player_id:
-            continue
-        pid = str(player_id)
-        if pid not in deep_ids:
-            payload = build_player_roster_snapshot(
-                league=league,
-                player_id=pid,
-                roster_row=player,
-                team_abbr=abbr,
-            )
-            if payload.get("algo_rating") is not None:
-                ratings_by_id[pid] = payload["algo_rating"]
+    def _record_rating(pid: str) -> None:
+        player_path = players_dir / f"{pid}.json"
+        if not player_path.is_file():
+            return
+        try:
+            saved = json.loads(player_path.read_text(encoding="utf-8"))
+            if saved.get("algo_rating") is not None:
+                ratings_by_id[pid] = saved["algo_rating"]
+        except (json.JSONDecodeError, OSError):
+            pass
+
+    roster_only = [
+        player
+        for player in roster
+        if player.get("id") and str(player["id"]) not in deep_ids and str(player["id"]) not in stats_ids
+    ]
+    for player in roster_only:
+        pid = str(player["id"])
+        _build_one_roster_player(league, abbr, player, players_dir)
+        _record_rating(pid)
+
+    stats_players = [player for player in roster if str(player.get("id") or "") in stats_ids]
+    if stats_players:
+        workers = min(PLAYER_FETCH_WORKERS, len(stats_players))
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            futures = {
+                pool.submit(_build_one_stats_player, league, abbr, player, players_dir): player
+                for player in stats_players
+            }
+            for future in as_completed(futures):
+                player = futures[future]
+                future.result()
+                _record_rating(str(player.get("id")))
 
     deep_players = [player for player in roster if str(player.get("id") or "") in deep_ids]
     if deep_players:
@@ -368,14 +445,7 @@ def build_players_for_team(
                 pid = str(player.get("id"))
                 future.result()
                 built_deep += 1
-                player_path = players_dir / f"{pid}.json"
-                if player_path.is_file():
-                    try:
-                        saved = json.loads(player_path.read_text(encoding="utf-8"))
-                        if saved.get("algo_rating") is not None:
-                            ratings_by_id[pid] = saved["algo_rating"]
-                    except (json.JSONDecodeError, OSError):
-                        pass
+                _record_rating(pid)
 
     for player in roster:
         player_id = player.get("id")

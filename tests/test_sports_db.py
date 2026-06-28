@@ -9,6 +9,7 @@ from web.sports_db.build import (
     _recent_games_from_live,
     deep_player_targets,
     should_fetch_recent_games,
+    stats_only_player_targets,
     team_build_targets,
 )
 from web.sports_db.normalize import (
@@ -301,6 +302,80 @@ def test_parse_player_game_log_sorts_newest_first() -> None:
     assert rows[0]["score"] == "110-99"
     assert rows[1]["opponent"] == "BOS"
     assert rows[1]["location"] == "away"
+
+
+def test_parse_player_game_log_wnba_opponent_object() -> None:
+    overview = {
+        "gameLog": {
+            "events": {
+                "1": {
+                    "gameDate": "2026-06-24T23:30:00.000+00:00",
+                    "atVs": "@",
+                    "score": "78-76",
+                    "gameResult": "W",
+                    "opponent": {
+                        "displayName": "Washington Mystics",
+                        "abbreviation": "WSH",
+                    },
+                }
+            }
+        }
+    }
+    rows = parse_player_game_log(overview, limit=5)
+    assert len(rows) == 1
+    assert rows[0]["opponent"] == "Washington Mystics"
+    assert rows[0]["opponent_abbr"] == "wsh"
+    assert rows[0]["location"] == "away"
+    assert rows[0]["result"] == "W"
+    assert rows[0]["score"] == "78-76"
+
+
+def test_parse_wnba_athlete_stats_categories() -> None:
+    from web.sports_db.normalize import _parse_stat_categories, parse_player_overview_stats
+
+    stats_payload = {
+        "categories": [
+            {
+                "displayName": "Regular Season Averages",
+                "labels": ["GP", "MIN", "PTS"],
+                "displayNames": ["Games Played", "Minutes Per Game", "Points Per Game"],
+                "statistics": [
+                    {
+                        "season": {"year": 2025},
+                        "stats": ["10", "20.0", "12.0"],
+                    },
+                    {
+                        "season": {"year": 2026},
+                        "stats": ["18", "29.4", "17.5"],
+                    },
+                ],
+            }
+        ]
+    }
+    rows = _parse_stat_categories(stats_payload)
+    assert rows[0]["name"] == "Regular Season Averages"
+    assert rows[0]["stats"][0]["display"] == "18"
+    assert rows[0]["stats"][2]["name"] == "Points Per Game"
+
+    overview = {
+        "statistics": {
+            "labels": ["GP", "PTS"],
+            "displayNames": ["Games Played", "Points Per Game"],
+            "splits": [{"displayName": "Regular Season", "stats": ["18", "17.5"]}],
+        }
+    }
+    overview_rows = parse_player_overview_stats(overview)
+    assert overview_rows[0]["stats"][1]["name"] == "Points Per Game"
+    assert overview_rows[0]["stats"][1]["display"] == "17.5"
+
+
+def test_stats_only_player_targets_fast_mode() -> None:
+    roster = [{"id": str(i)} for i in range(10)]
+    deep = deep_player_targets(roster, "bos", "nba", {"bos"}, fast=True)
+    stats = stats_only_player_targets(roster, deep, fast=True)
+    assert deep | stats == {str(i) for i in range(10)}
+    assert not (deep & stats)
+    assert stats_only_player_targets(roster, deep, fast=False) == set()
 
 
 def test_build_player_snapshot_merges_roster_and_stats() -> None:

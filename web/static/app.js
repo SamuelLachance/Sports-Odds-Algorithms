@@ -827,10 +827,15 @@ async function viewLeaguePage(league) {
   <section class="section"><div class="section-head"><h2>Teams</h2><a class="text-link" href="#/teams">All leagues →</a></div>
     <div class="team-grid">${teams
       .map(
-        (row) => `<a class="team-card panel" href="${teamHref(league, row.abbr)}">
+        (row) => {
+          const power = powerRatingForAbbr(data.ratings, row.abbr);
+          const record = `${row.wins ?? "—"}-${row.losses ?? "—"}`;
+          const ratingLabel = power != null ? ` · PWR ${formatRating(power)}` : "";
+          return `<a class="team-card panel" href="${teamHref(league, row.abbr)}">
           <strong>${row.name}</strong>
-          <span class="muted">#${row.rank ?? "—"} · ${row.wins ?? "—"}-${row.losses ?? "—"}</span>
-        </a>`,
+          <span class="muted">#${row.rank ?? "—"} · ${record}${ratingLabel}</span>
+        </a>`;
+        },
       )
       .join("")}</div>
   </section>`;
@@ -1013,7 +1018,8 @@ function recentGameOpponentLink(league, game) {
   const fallbackName = abbr ? teamLabelForAbbr(league, abbr) : "";
   const name = game.opponent || fallbackName || "?";
   if (!abbr || name === "?") return name;
-  const displayName = /^[a-z]{2,5}$/i.test(name) ? teamLabelForAbbr(league, name) : name;
+  const displayName =
+    name.length > 5 || /\s/.test(name) ? name : teamLabelForAbbr(league, name) || name;
   return teamNameLink(league, abbr, displayName);
 }
 
@@ -1128,7 +1134,9 @@ async function viewPlayer(league, playerId) {
   const info = player.player || {};
   const playerRating = player.algo_rating ?? info.algo_rating;
   const teamAbbr = (player.team_abbr || "").toLowerCase();
-  const isRosterOnly = player.profile_depth === "roster";
+  const profileDepth = player.profile_depth || "full";
+  const isRosterOnly = profileDepth === "roster";
+  const isStatsOnly = profileDepth === "stats";
   const leagueName =
     leaguesForBrowse().find((lg) => lg.id === league)?.name || league.toUpperCase();
   const statBlocks = (player.season_stats || []).concat(player.overview_stats || []);
@@ -1155,20 +1163,21 @@ async function viewPlayer(league, playerId) {
         <span>${info.experience != null ? info.experience + " yrs exp" : "—"}</span>
       </div>
       ${teamAbbr ? `<a class="fm-player-team-link" href="${teamHref(league, teamAbbr)}">${teamAbbr.toUpperCase()} squad →</a>` : ""}
-      ${isRosterOnly ? `<p class="muted fm-roster-only-note">Roster profile — full season stats load for featured players on daily rebuild.</p>` : ""}
+      ${isRosterOnly ? `<p class="muted fm-roster-only-note">Roster profile — season stats load on daily rebuild.</p>` : ""}
+      ${isStatsOnly ? `<p class="muted fm-roster-only-note">Season stats profile — game log loads for featured slate players.</p>` : ""}
     </div>
   </section>
   <div class="db-grid-two">
     <section class="section panel"><h2>Season stats</h2>
       ${renderSeasonStatsSection(statBlocks, null, {
         emptyMessage: isRosterOnly
-          ? "Full stats not loaded for this player yet."
+          ? "Season stats not loaded for this player yet."
           : "Stats unavailable.",
       })}
     </section>
     <section class="section panel"><h2>Recent games</h2>
       ${(player.game_log || []).length ? `<ul class="db-recent recent-games">${player.game_log.map((g) =>
-        renderRecentGameRow(league, g)).join("")}</ul>` : `<p class="muted">${isRosterOnly ? "Game log loads with full player profile." : "No game log."}</p>`}
+        renderRecentGameRow(league, g)).join("")}</ul>` : `<p class="muted">${isRosterOnly || isStatsOnly ? "Game log loads with full player profile." : "No game log."}</p>`}
     </section>
   </div>
   ${(player.news || []).length ? `<section class="section"><h2>Player news</h2>${renderNewsList(player.news.map((n) => ({ ...n, link: n.link })))}</section>` : ""}
@@ -1370,9 +1379,16 @@ function renderBettingGameCard(sheet, league) {
   </article>`;
 }
 
+function powerRatingForAbbr(ratings, abbr) {
+  const key = (abbr || "").toLowerCase();
+  return ratings?.power?.[key]?.power ?? null;
+}
+
 function renderRatingsSummary(ratings) {
   const power = ratings?.power || {};
-  const teams = Object.entries(power).slice(0, 8);
+  const teams = Object.entries(power)
+    .sort((a, b) => (b[1].power ?? 0) - (a[1].power ?? 0))
+    .slice(0, 12);
   if (!teams.length) return `<p class="muted">Model ratings unavailable for this league snapshot.</p>`;
   return `<ul class="db-stat-list">${teams
     .map(([key, row]) => `<li><span>${row.name || key}</span><strong>${formatRating(row.power)}</strong></li>`)

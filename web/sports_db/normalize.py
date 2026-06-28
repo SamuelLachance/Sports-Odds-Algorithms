@@ -228,19 +228,65 @@ def _parse_stat_row(stat: Any) -> dict[str, Any] | None:
     return row
 
 
+def _rows_from_labels_values(
+    labels: list[Any],
+    values: list[Any],
+    display_names: list[Any] | None = None,
+) -> list[dict[str, Any]]:
+    names = display_names or labels
+    rows: list[dict[str, Any]] = []
+    for idx, label in enumerate(labels):
+        if label is None:
+            continue
+        rows.append(
+            {
+                "displayName": names[idx] if idx < len(names) else label,
+                "displayValue": values[idx] if idx < len(values) else None,
+            }
+        )
+    return rows
+
+
+def _latest_season_stat_rows(category: dict[str, Any]) -> list[dict[str, Any]] | None:
+    """Basketball v3 athlete stats: labels + statistics[{season, stats: [...]}]."""
+    stat_rows = category.get("statistics") or []
+    if not stat_rows or not isinstance(stat_rows[0], dict):
+        return None
+    if not isinstance(stat_rows[0].get("stats"), list):
+        return None
+    labels = category.get("labels") or category.get("displayNames") or []
+    if not labels:
+        return None
+    latest = max(stat_rows, key=lambda row: (row.get("season") or {}).get("year") or 0)
+    values = latest.get("stats") or []
+    return _rows_from_labels_values(labels, values, category.get("displayNames"))
+
+
 def _category_stat_items(category: dict[str, Any]) -> list[Any]:
-    items = category.get("stats") or category.get("statistics") or []
+    latest_rows = _latest_season_stat_rows(category)
+    if latest_rows:
+        return latest_rows
+
+    stat_entries = category.get("statistics") or []
+    if stat_entries and isinstance(stat_entries[0], dict):
+        first = stat_entries[0]
+        if first.get("displayName") or first.get("displayValue") is not None or first.get("value") is not None:
+            if not isinstance(first.get("stats"), list):
+                return stat_entries
+
+    labels = category.get("labels") or category.get("displayNames") or []
+    totals = category.get("totals")
+    if labels and isinstance(totals, list) and totals and not isinstance(totals[0], dict):
+        return _rows_from_labels_values(labels, totals, category.get("displayNames"))
+
+    items = category.get("stats") or []
     if items:
         return items
 
-    labels = category.get("labels") or category.get("displayNames") or []
     values = category.get("values")
     if labels and isinstance(values, list) and values:
         if not isinstance(values[0], dict):
-            return [
-                {"displayName": label, "displayValue": values[idx] if idx < len(values) else None}
-                for idx, label in enumerate(labels)
-            ]
+            return _rows_from_labels_values(labels, values, category.get("displayNames"))
 
     rows: list[Any] = []
     for child in category.get("subcategories") or category.get("children") or []:
@@ -370,16 +416,25 @@ def parse_player_overview_stats(overview: dict[str, Any] | None) -> list[dict[st
     if not overview:
         return []
     statistics = overview.get("statistics") or {}
+    parent_labels = statistics.get("labels") or statistics.get("displayNames") or []
+    parent_display = statistics.get("displayNames") or parent_labels
     splits = statistics.get("splits") or []
     categories: list[dict[str, Any]] = []
     for split in splits:
-        labels = split.get("labels") or split.get("displayNames") or []
+        labels = split.get("labels") or parent_labels
+        display_names = split.get("displayNames") or parent_display
         stats = split.get("stats") or []
         rows = []
-        if labels and stats and isinstance(stats[0], list):
+        if labels and stats and not isinstance(stats[0], dict):
             for idx, label in enumerate(labels):
+                name = display_names[idx] if idx < len(display_names) else label
+                value = stats[idx] if idx < len(stats) else None
+                rows.append({"name": name, "display": value, "value": value})
+        elif labels and stats and isinstance(stats[0], list):
+            for idx, label in enumerate(labels):
+                name = display_names[idx] if idx < len(display_names) else label
                 value = stats[0][idx] if stats[0] and idx < len(stats[0]) else None
-                rows.append({"name": label, "display": value, "value": value})
+                rows.append({"name": name, "display": value, "value": value})
         else:
             for item in stats:
                 if isinstance(item, dict):
@@ -406,13 +461,48 @@ def _parse_at_vs(at_vs: str | None) -> tuple[str, str | None, str]:
         return "", None, ""
     if raw.startswith("@"):
         abbr = raw[1:].strip()
-        return "away", abbr.lower() if abbr else None, abbr
+        return "away", abbr.lower() if abbr else None, abbr.upper() if abbr else ""
     if raw.lower().startswith("vs"):
         abbr = raw[2:].strip().lstrip(".")
-        return "home", abbr.lower() if abbr else None, abbr
+        return "home", abbr.lower() if abbr else None, abbr.upper() if abbr else ""
     if len(raw) <= 5 and raw.isalpha():
         return "", raw.lower(), raw.upper()
     return "", None, raw
+
+
+def _game_log_opponent(event: dict[str, Any]) -> tuple[str, str | None, str]:
+    """Resolve opponent from atVs and/or nested opponent object (WNBA v3)."""
+    location, opp_abbr, opp_label = _parse_at_vs(event.get("atVs"))
+    opponent = event.get("opponent")
+    if isinstance(opponent, dict):
+        abbr = (opponent.get("abbreviation") or "").lower() or opp_abbr
+        name = opponent.get("displayName") or opp_label or (abbr.upper() if abbr else "")
+        if not location:
+            at_vs = (event.get("atVs") or "").strip()
+            if at_vs.startswith("@"):
+                location = "away"
+            elif at_vs.lower().startswith("vs"):
+                location = "home"
+        return location, abbr, name
+    if opp_label:
+        return location, opp_abbr, opp_label
+    return location, opp_abbr, ""
+
+
+def _game_log_result(event: dict[str, Any], score_text: str) -> str | None:
+    game_result = (event.get("gameResult") or "").strip().upper()
+    if game_result in {"W", "L", "T"}:
+        return game_result
+    prefix = score_text[:1].upper() if score_text else ""
+    if prefix in {"W", "L", "T"}:
+        return prefix
+    return None
+
+
+def _game_log_score_display(score_text: str, result: str | None) -> str:
+    if result and len(score_text) > 2 and score_text[:1].upper() == result:
+        return score_text[2:].strip()
+    return score_text
 
 
 def parse_player_game_log(overview: dict[str, Any] | None, limit: int = 10) -> list[dict[str, Any]]:
@@ -420,9 +510,9 @@ def parse_player_game_log(overview: dict[str, Any] | None, limit: int = 10) -> l
     events = game_log.get("events") or {}
     rows: list[dict[str, Any]] = []
     for event_id, event in events.items():
-        location, opp_abbr, opp_label = _parse_at_vs(event.get("atVs"))
+        location, opp_abbr, opp_label = _game_log_opponent(event)
         score_text = (event.get("score") or "").strip()
-        result = score_text[:1].upper() if score_text[:1].upper() in {"W", "L", "T"} else None
+        result = _game_log_result(event, score_text)
         rows.append(
             {
                 "event_id": event_id,
@@ -431,7 +521,7 @@ def parse_player_game_log(overview: dict[str, Any] | None, limit: int = 10) -> l
                 "opponent_abbr": opp_abbr,
                 "location": location,
                 "result": result,
-                "score": score_text[2:].strip() if result and len(score_text) > 2 else score_text,
+                "score": _game_log_score_display(score_text, result),
                 "home_score": event.get("homeTeamScore"),
                 "away_score": event.get("awayTeamScore"),
                 "stats": event.get("stats"),
@@ -470,6 +560,50 @@ def roster_index_row(player: dict[str, Any]) -> dict[str, Any]:
     if player.get("algo_rating") is not None:
         row["algo_rating"] = player["algo_rating"]
     return row
+
+
+def build_player_stats_snapshot(
+    *,
+    league: str,
+    player_id: str,
+    roster_row: dict[str, Any] | None,
+    stats_payload: dict[str, Any] | None,
+    team_abbr: str,
+) -> dict[str, Any]:
+    """Season stats without overview/game log (fast-build tier)."""
+    roster_row = roster_row or {}
+    season_stats = _parse_stat_categories(stats_payload)
+    algo_rating = player_algo_rating(
+        league,
+        season_stats,
+        [],
+        roster_row.get("position"),
+        roster_row,
+    )
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "league": league,
+        "team_abbr": team_abbr,
+        "profile_depth": "stats",
+        "algo_rating": algo_rating,
+        "player": {
+            "id": player_id,
+            "name": roster_row.get("name"),
+            "position": roster_row.get("position"),
+            "jersey": roster_row.get("jersey"),
+            "age": roster_row.get("age"),
+            "height": roster_row.get("height"),
+            "weight": roster_row.get("weight"),
+            "experience": roster_row.get("experience"),
+            "status": roster_row.get("status"),
+            "headshot": roster_row.get("headshot"),
+            "algo_rating": algo_rating,
+        },
+        "season_stats": season_stats,
+        "overview_stats": [],
+        "game_log": [],
+        "news": [],
+    }
 
 
 def build_player_roster_snapshot(
