@@ -893,6 +893,7 @@ function ratingSourceLabel(source, layer, year) {
     fm: "FM",
     prior: "Estimated",
     derived: "Estimated",
+    model: "Model",
     cached: "Cached",
   };
   const key = String(source || "").toLowerCase();

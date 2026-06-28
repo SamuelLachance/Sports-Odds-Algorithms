@@ -1,38 +1,74 @@
-"""Player algo rating computation tests (external game DB source)."""
+"""Player algo rating computation tests (external primary, model fallback)."""
+
+from unittest.mock import patch
 
 from web.sports_db.external_ratings import clear_rating_cache
 from web.sports_db.normalize import build_player_roster_snapshot, build_player_snapshot
 from web.sports_db.player_ratings import (
-    PlayerRatingModel,
     enrich_team_roster_ratings,
     player_algo_rating,
     rating_source_label,
     rating_tier,
+    resolve_player_rating,
     team_average_player_rating,
 )
 
+_MODEL_PATCH_TARGET = "web.sports_db.player_ratings.league_model_rating_context"
+_MODEL_PATCH_RETURN = ({"bos": 70.0, "lal": 65.0}, "basketball_matrix")
 
-def test_nba_2k_star_rates_above_unknown_bench() -> None:
+
+def test_external_match_used_for_known_nba_player() -> None:
     clear_rating_cache()
-    star = player_algo_rating(
+    snap = resolve_player_rating(
         "nba",
-        [],
-        [],
-        "G",
-        {"name": "Jayson Tatum", "experience": 8},
+        player_name="Jayson Tatum",
         team_abbr="bos",
+        cutoff_date="4-16-2017",
     )
-    bench = player_algo_rating(
-        "nba",
-        [],
-        [],
-        "F",
-        {"name": "Unknown Bench Player", "experience": 1},
-        team_abbr="bos",
-    )
-    assert star == 96.0
-    assert bench < star
-    assert rating_tier(star) == "elite"
+    assert snap["algo_rating"] == 96.0
+    assert snap["rating_source"] == "2k"
+    assert snap["rating_year"] == 2026
+    assert snap.get("rating_layer") is None
+
+
+def test_unknown_player_falls_back_to_model_spread() -> None:
+    clear_rating_cache()
+    with patch(_MODEL_PATCH_TARGET, return_value=_MODEL_PATCH_RETURN):
+        star = player_algo_rating(
+            "nba",
+            [],
+            [],
+            "G",
+            {"name": "Unknown Rookie", "experience": 12},
+            team_abbr="bos",
+            cutoff_date="4-16-2017",
+        )
+        bench = player_algo_rating(
+            "nba",
+            [],
+            [],
+            "F",
+            {"name": "Unknown Bench", "experience": 1},
+            team_abbr="bos",
+            cutoff_date="4-16-2017",
+        )
+    assert star > bench
+    assert rating_tier(star) in {"elite", "good", "average"}
+
+
+def test_unknown_player_without_model_gets_prior() -> None:
+    clear_rating_cache()
+    with patch(_MODEL_PATCH_TARGET, return_value=({}, "power_ratings")):
+        snap = resolve_player_rating(
+            "nba",
+            player_name="Nobody Here",
+            team_abbr="bos",
+            position="G",
+            roster_meta={"experience": 1},
+            cutoff_date="4-16-2017",
+        )
+    assert snap["rating_source"] == "prior"
+    assert 42 <= snap["algo_rating"] <= 58
 
 
 def test_roster_only_snapshot_has_external_rating() -> None:
@@ -47,7 +83,6 @@ def test_roster_only_snapshot_has_external_rating() -> None:
     assert snap["algo_rating"] == 96.0
     assert snap["rating_source"] == "2k"
     assert snap["rating_year"] == 2026
-    assert snap["matched"] is True
     assert snap["player"]["algo_rating"] == snap["algo_rating"]
 
 
@@ -67,17 +102,10 @@ def test_full_snapshot_includes_external_rating() -> None:
     assert snap["player"]["algo_rating"] == snap["algo_rating"]
 
 
-def test_unknown_player_derived_from_team_csv() -> None:
-    clear_rating_cache()
-    model = PlayerRatingModel()
-    payload = model.rate_player(
-        "nba",
-        {"name": "Two-Way Callup", "position": "G", "experience": 0},
-        team_abbr="bos",
-    )
-    assert payload["matched"] is False
-    assert payload["rating_source"] == "derived"
-    assert 70 <= payload["algo_rating"] <= 90
+def test_rating_source_label_external() -> None:
+    assert rating_source_label("2k", year=2026) == "2K '26"
+    assert rating_source_label("madden", year=2026) == "Madden '26"
+    assert rating_source_label("model", "basketball_matrix") == "Matrix model"
 
 
 def test_team_average_player_rating() -> None:
@@ -85,23 +113,27 @@ def test_team_average_player_rating() -> None:
     assert team_average_player_rating([]) is None
 
 
-def test_enrich_team_roster_ratings() -> None:
+def test_enrich_team_roster_ratings_external_and_cache() -> None:
     clear_rating_cache()
     roster = [
-        {"id": "1", "name": "Jayson Tatum", "position": "SF", "experience": 8},
-        {"id": "2", "name": "Unknown Bench", "position": "F", "experience": 1},
+        {"id": "1", "name": "Jayson Tatum", "position": "SF", "experience": 5},
+        {"id": "2", "name": "Unknown Bench Guy", "position": "F", "experience": 1},
     ]
-    enriched, avg = enrich_team_roster_ratings(
-        "nba",
-        roster,
-        team_abbr="bos",
-    )
-    assert enriched[0]["algo_rating"] == 96.0
-    assert enriched[0]["rating_source"] == "2k"
-    assert enriched[1]["rating_source"] == "derived"
+    with patch(_MODEL_PATCH_TARGET, return_value=_MODEL_PATCH_RETURN):
+        enriched, avg = enrich_team_roster_ratings(
+            "nba",
+            roster,
+            {
+                "1": {
+                    "algo_rating": 82.0,
+                    "rating_source": "2k",
+                    "rating_year": 2026,
+                }
+            },
+            team_abbr="bos",
+            cutoff_date="4-16-2017",
+        )
+    assert enriched[0]["algo_rating"] == 82.0
+    assert enriched[1]["rating_source"] == "model"
+    assert enriched[1]["algo_rating"] is not None
     assert avg is not None
-
-
-def test_rating_source_label_external() -> None:
-    assert rating_source_label("2k", year=2026) == "2K '26"
-    assert rating_source_label("derived", year=2026) == "Estimated '26"

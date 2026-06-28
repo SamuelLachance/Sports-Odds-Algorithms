@@ -89,3 +89,28 @@ def test_league_without_file_uses_prior() -> None:
     result = lookup_player_rating("dwl", "Some Player", "abc")
     assert result.matched is False
     assert result.rating_source == "prior"
+
+
+def test_match_external_rating_returns_none_when_missing() -> None:
+    clear_rating_cache()
+    from web.sports_db.external_ratings import match_external_rating
+
+    assert match_external_rating("nba", "Nobody", "bos") is None
+
+
+def test_team_csv_ovr_for_nba_bos() -> None:
+    clear_rating_cache()
+    from web.sports_db.external_ratings import team_csv_ovr
+
+    entry = team_csv_ovr("nba", "bos")
+    assert entry is not None
+    assert entry["rating"] >= 80
+    assert entry["method"] == "csv_top8_ovr"
+    assert entry["players_matched"] >= 5
+
+
+def test_team_csv_ovr_sparse_team_returns_none() -> None:
+    clear_rating_cache()
+    from web.sports_db.external_ratings import team_csv_ovr
+
+    assert team_csv_ovr("nba", "zzz") is None

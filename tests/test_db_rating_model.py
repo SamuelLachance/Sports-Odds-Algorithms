@@ -15,8 +15,18 @@ from web.db_rating_model import (  # noqa: E402
     _soccer_rating_prob,
     apply_db_rating_blend,
     db_rating_blend_weight,
+    get_team_db_rating,
     sparse_schedule_factor,
 )
+from web.sports_db.external_ratings import clear_rating_cache
+
+
+def test_get_team_db_rating_prefers_curated_csv() -> None:
+    clear_rating_cache()
+    entry = get_team_db_rating("nba", team_slug="boston-celtics", team_abbr="bos")
+    assert entry is not None
+    assert entry["method"] == "csv_top8_ovr"
+    assert entry["rating"] >= 80
 
 
 def test_redistribute_weights_adds_db_layer() -> None:

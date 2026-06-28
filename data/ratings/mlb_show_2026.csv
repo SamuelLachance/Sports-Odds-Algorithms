@@ -1,11 +1,86 @@
 player_name,team_abbr,position,overall,espn_id,rating_source,rating_year
 Shohei Ohtani,laa,SP,99,,mlb_ts,2026
 Aaron Judge,nyy,OF,98,,mlb_ts,2026
-Mookie Betts,lad,OF,96,,mlb_ts,2026
-Ronald Acuna Jr.,atl,OF,97,,mlb_ts,2026
 Juan Soto,nyy,OF,95,,mlb_ts,2026
 Gerrit Cole,nyy,SP,94,,mlb_ts,2026
-Fernando Tatis Jr.,sd,OF,93,,mlb_ts,2026
-Vladimir Guerrero Jr.,tor,1B,92,,mlb_ts,2026
-Corbin Burnes,bal,SP,91,,mlb_ts,2026
+Anthony Rizzo,nyy,1B,82,,mlb_ts,2026
+Giancarlo Stanton,nyy,DH,87,,mlb_ts,2026
+Mookie Betts,lad,OF,96,,mlb_ts,2026
 Freddie Freeman,lad,1B,91,,mlb_ts,2026
+Will Smith,lad,C,88,,mlb_ts,2026
+Walker Buehler,lad,SP,89,,mlb_ts,2026
+Teoscar Hernandez,lad,OF,86,,mlb_ts,2026
+Ronald Acuna Jr.,atl,OF,97,,mlb_ts,2026
+Matt Olson,atl,1B,90,,mlb_ts,2026
+Spencer Strider,atl,SP,92,,mlb_ts,2026
+Ozzie Albies,atl,2B,87,,mlb_ts,2026
+Michael Harris II,atl,OF,85,,mlb_ts,2026
+Fernando Tatis Jr.,sd,OF,93,,mlb_ts,2026
+Manny Machado,sd,3B,91,,mlb_ts,2026
+Yu Darvish,sd,SP,88,,mlb_ts,2026
+Xander Bogaerts,sd,SS,87,,mlb_ts,2026
+Jake Cronenworth,sd,2B,84,,mlb_ts,2026
+Vladimir Guerrero Jr.,tor,1B,92,,mlb_ts,2026
+Bo Bichette,tor,SS,89,,mlb_ts,2026
+George Springer,tor,OF,86,,mlb_ts,2026
+Kevin Gausman,tor,SP,88,,mlb_ts,2026
+Yusei Kikuchi,tor,SP,84,,mlb_ts,2026
+Corbin Burnes,bal,SP,91,,mlb_ts,2026
+Gunnar Henderson,bal,SS,90,,mlb_ts,2026
+Adley Rutschman,bal,C,89,,mlb_ts,2026
+Ryan Mountcastle,bal,1B,84,,mlb_ts,2026
+Cedric Mullins,bal,OF,85,,mlb_ts,2026
+Bobby Witt Jr.,kc,SS,93,,mlb_ts,2026
+Salvador Perez,kc,C,87,,mlb_ts,2026
+Cole Ragans,kc,SP,88,,mlb_ts,2026
+Vinnie Pasquantino,kc,1B,84,,mlb_ts,2026
+Julio Rodriguez,sea,OF,92,,mlb_ts,2026
+Luis Castillo,sea,SP,89,,mlb_ts,2026
+Cal Raleigh,sea,C,88,,mlb_ts,2026
+J.P. Crawford,sea,SS,85,,mlb_ts,2026
+Ty France,sea,1B,83,,mlb_ts,2026
+Corey Seager,tex,SS,91,,mlb_ts,2026
+Marcus Semien,tex,2B,87,,mlb_ts,2026
+Nathan Eovaldi,tex,SP,88,,mlb_ts,2026
+Adolis Garcia,tex,OF,86,,mlb_ts,2026
+Josh Jung,tex,3B,84,,mlb_ts,2026
+Jose Altuve,hou,2B,89,,mlb_ts,2026
+Yordan Alvarez,hou,DH,94,,mlb_ts,2026
+Kyle Tucker,hou,OF,91,,mlb_ts,2026
+Framber Valdez,hou,SP,90,,mlb_ts,2026
+Alex Bregman,hou,3B,88,,mlb_ts,2026
+Francisco Lindor,ny,SS,90,,mlb_ts,2026
+Pete Alonso,ny,1B,91,,mlb_ts,2026
+Kodai Senga,ny,SP,87,,mlb_ts,2026
+Brandon Nimmo,ny,OF,85,,mlb_ts,2026
+Jeff McNeil,ny,2B,84,,mlb_ts,2026
+Bryce Harper,phi,1B,93,,mlb_ts,2026
+Trea Turner,phi,SS,91,,mlb_ts,2026
+Zack Wheeler,phi,SP,92,,mlb_ts,2026
+Kyle Schwarber,phi,DH,87,,mlb_ts,2026
+Nick Castellanos,phi,OF,85,,mlb_ts,2026
+Elly De La Cruz,cin,SS,90,,mlb_ts,2026
+Spencer Steer,cin,1B,84,,mlb_ts,2026
+Hunter Greene,cin,SP,88,,mlb_ts,2026
+Jonathan India,cin,2B,83,,mlb_ts,2026
+Paul Goldschmidt,stl,1B,87,,mlb_ts,2026
+Nolan Arenado,stl,3B,89,,mlb_ts,2026
+Sonny Gray,stl,SP,88,,mlb_ts,2026
+Brendan Donovan,stl,2B,84,,mlb_ts,2026
+Lars Nootbaar,stl,OF,83,,mlb_ts,2026
+Freddie Freeman,lad,1B,91,,mlb_ts,2026
+Christian Yelich,mil,OF,89,,mlb_ts,2026
+Willy Adames,mil,SS,87,,mlb_ts,2026
+Corbin Burnes,mil,SP,91,,mlb_ts,2026
+Rhys Hoskins,mil,1B,84,,mlb_ts,2026
+William Contreras,mil,C,86,,mlb_ts,2026
+Ketel Marte,ari,2B,88,,mlb_ts,2026
+Corbin Carroll,ari,OF,91,,mlb_ts,2026
+Zac Gallen,ari,SP,89,,mlb_ts,2026
+Eugenio Suarez,ari,3B,86,,mlb_ts,2026
+Christian Walker,ari,1B,85,,mlb_ts,2026
+Rafael Devers,bos,3B,90,,mlb_ts,2026
+Jarren Duran,bos,OF,86,,mlb_ts,2026
+Tanner Houck,bos,SP,87,,mlb_ts,2026
+Triston Casas,bos,1B,85,,mlb_ts,2026
+Connor Wong,bos,C,82,,mlb_ts,2026

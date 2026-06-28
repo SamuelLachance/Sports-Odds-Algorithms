@@ -1,4 +1,9 @@
-"""External database player/team ratings (not derived from our stats)."""
+"""External database player/team ratings (not derived from our stats).
+
+Team OVR for blend predictions prefers curated CSV top-8 averages from
+data/ratings/ when a league file has sufficient roster coverage; otherwise
+falls back to live site scrapes (2kratings, maddenratings, etc.).
+"""
 
 from __future__ import annotations
 
