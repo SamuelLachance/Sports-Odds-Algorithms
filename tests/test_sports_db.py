@@ -8,6 +8,7 @@ from web.sports_db.build import (
     _recent_games_for_team,
     _recent_games_from_live,
     deep_player_targets,
+    enrich_roster_headshots,
     should_fetch_recent_games,
     stats_only_player_targets,
     team_build_targets,
@@ -103,6 +104,16 @@ def test_resolve_player_headshot_prefers_roster_then_overview_then_cdn() -> None
         == "https://example.com/overview.png"
     )
     assert resolve_player_headshot("nba", "4065648") == headshot_cdn_url("nba", "4065648")
+
+
+def test_enrich_roster_headshots_fast_uses_cdn_only() -> None:
+    roster = [
+        {"id": "4065648", "name": "Player A"},
+        {"id": "999", "name": "Player B", "headshot": "https://example.com/existing.png"},
+    ]
+    enrich_roster_headshots("nba", roster, fast=True)
+    assert roster[0]["headshot"] == headshot_cdn_url("nba", "4065648")
+    assert roster[1]["headshot"] == "https://example.com/existing.png"
 
 
 def test_parse_standings_groups() -> None:

@@ -190,8 +190,22 @@ def _enrich_one_roster_headshot(league: str, player: dict[str, Any]) -> None:
         player["headshot"] = headshot
 
 
-def enrich_roster_headshots(league: str, roster: list[dict[str, Any]]) -> None:
+def enrich_roster_headshots(
+    league: str,
+    roster: list[dict[str, Any]],
+    *,
+    fast: bool = False,
+) -> None:
     """Fill missing roster headshots via ESPN overview (cached) and CDN pattern."""
+    if fast:
+        for player in roster:
+            if player.get("headshot") or not player.get("id"):
+                continue
+            cdn = headshot_cdn_url(league, player["id"])
+            if cdn:
+                player["headshot"] = cdn
+        return
+
     missing = [player for player in roster if player.get("id") and not player.get("headshot")]
     if not missing:
         return
@@ -533,7 +547,7 @@ def build_team_snapshot(
     stats_raw = fetch_team_statistics(league, espn_team_id, season_year)
     summary = parse_team_summary(roster_raw, stats_raw)
     roster = parse_roster(roster_raw)
-    enrich_roster_headshots(league, roster)
+    enrich_roster_headshots(league, roster, fast=fast)
     stats = parse_team_statistics(stats_raw)
     standing_row = _standing_row_for_team(standings, abbr)
     on_slate = abbr.lower() in slate_keys
