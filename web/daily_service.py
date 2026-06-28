@@ -84,6 +84,17 @@ def _season_year_from_cutoff(league: str, cutoff_date: str) -> str:
     return str(season)
 
 
+def _enrich_pick_with_team_abbr(
+    pick_dict: dict[str, Any], matchup: dict[str, Any]
+) -> dict[str, Any]:
+    side = pick_dict.get("side")
+    if side in ("away", "home"):
+        abbr = (matchup.get(side) or {}).get("abbr")
+        if abbr:
+            return {**pick_dict, "team_abbr": abbr}
+    return pick_dict
+
+
 def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
     _ensure_project_root()
     from algo import Algo
@@ -258,6 +269,14 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
 
     official_picks = picks if eligible_for_official_picks(game.league) else []
 
+    matchup = {
+        "away": {"abbr": away[0], "slug": away[1], "name": game.away_name},
+        "home": {"abbr": home[0], "slug": home[1], "name": game.home_name},
+    }
+
+    def _enrich_pick(pick_dict: dict[str, Any]) -> dict[str, Any]:
+        return _enrich_pick_with_team_abbr(pick_dict, matchup)
+
     return {
         "event_id": game.event_id,
         "league": game.league,
@@ -268,10 +287,7 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
         "status_detail": game.status_detail,
         "cutoff_date": cutoff,
         "season_year": season_year,
-        "matchup": {
-            "away": {"abbr": away[0], "slug": away[1], "name": game.away_name},
-            "home": {"abbr": home[0], "slug": home[1], "name": game.home_name},
-        },
+        "matchup": matchup,
         "market": {
             "provider": game.market.provider,
             "away_moneyline": game.market.away_moneyline,
@@ -284,8 +300,8 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
         },
         "model": model_payload,
         "eligible_for_official_picks": eligible_for_official_picks(game.league),
-        "recommendations": [pick_to_dict(pick) for pick in official_picks],
-        "top_pick": pick_to_dict(official_picks[0]) if official_picks else None,
+        "recommendations": [_enrich_pick(pick_to_dict(pick)) for pick in official_picks],
+        "top_pick": _enrich_pick(pick_to_dict(official_picks[0])) if official_picks else None,
     }
 
 

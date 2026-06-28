@@ -161,6 +161,33 @@ function teamHref(league, abbr) {
   return `#/team/${league}/${abbr}`;
 }
 
+function pickTeamAbbr(pick, matchup) {
+  if (pick?.team_abbr) return String(pick.team_abbr).toLowerCase();
+  const side = pick?.side;
+  if (side && matchup?.[side]?.abbr) return String(matchup[side].abbr).toLowerCase();
+  return null;
+}
+
+function teamNameLink(league, abbr, name, className = "team-link-inline") {
+  const lg = league || "";
+  const token = (abbr || "").toLowerCase();
+  if (!lg || !token || !name) return name || "";
+  return `<a href="${teamHref(lg, token)}" class="${className}">${name}</a>`;
+}
+
+function pickTeamNameLink(pick, league, matchup) {
+  const abbr = pickTeamAbbr(pick, matchup);
+  return abbr ? teamNameLink(league, abbr, pick.team_name) : pick.team_name || "";
+}
+
+function matchupLinks(league, away, home, className = "team-link-inline") {
+  const awayName = away?.name || away || "Away";
+  const homeName = home?.name || home || "Home";
+  const awayAbbr = away?.abbr || null;
+  const homeAbbr = home?.abbr || null;
+  return `${teamNameLink(league, awayAbbr, awayName, className)} <span class="at">@</span> ${teamNameLink(league, homeAbbr, homeName, className)}`;
+}
+
 function playerHref(league, playerId) {
   return `#/player/${league}/${playerId}`;
 }
@@ -345,9 +372,11 @@ function factorBars(factors) {
 }
 
 function pickCard(pick, extra = "") {
+  const league = pick.league;
+  const teamHeading = pickTeamNameLink(pick, league, pick.matchup_obj);
   return `<article class="pick-card ${confClass(pick.confidence)}">
     <div class="pick-top"><span class="league-pill">${pick.league_name || pick.league}</span><span class="strategy-pill">${pick.strategy_label || pick.strategy}</span></div>
-    <h3>${pick.team_name}</h3>
+    <h3>${teamHeading}</h3>
     <p class="pick-matchup">${pick.matchup || extra}</p>
     <p class="pick-time">${formatTime(pick.start_time)}</p>
     <div class="pick-odds">
@@ -467,9 +496,9 @@ function algoCenter(game) {
     ? `<div class="algo-probability threeway">
         <span>${algoLabel}</span>
         <div class="threeway-grid">
-          <div><small>${away.name}</small><strong>${m.away_win_probability}%</strong></div>
+          <div><small>${teamNameLink(game.league, away.abbr, away.name)}</small><strong>${m.away_win_probability}%</strong></div>
           <div><small>Draw</small><strong>${m.draw_probability}%</strong></div>
-          <div><small>${home.name}</small><strong>${m.home_win_probability}%</strong></div>
+          <div><small>${teamNameLink(game.league, home.abbr, home.name)}</small><strong>${m.home_win_probability}%</strong></div>
         </div>
         ${m.soccer_pred?.expected_home_goals != null ? `<small>Projected score ${m.soccer_pred.expected_away_goals}-${m.soccer_pred.expected_home_goals}</small>` : ""}
         ${m.soccer_context?.factors?.length ? `<details class="factor-details"><summary>Context factors (ESPN)</summary><div class="factor-list">${m.soccer_context.factors.map((f) => `<div class="factor-row"><span>${f.label}</span><small>${f.detail || ""}</small></div>`).join("")}</div></details>` : ""}
@@ -484,9 +513,9 @@ function algoCenter(game) {
       ? `<div class="odds-chip"><span>Draw</span><strong>${formatOdds(mk.draw_moneyline)}</strong><small>Model ${formatOdds(m.draw_projection)}</small></div>`
       : "";
   const oddsRow = `<div class="odds-row game-odds">
-        <div class="odds-chip"><span>${away.name}</span><strong>${formatOdds(mk.away_moneyline)}</strong><small>Model ${formatOdds(m.away_projection)}</small></div>
+        <div class="odds-chip"><span>${teamNameLink(game.league, away.abbr, away.name)}</span><strong>${formatOdds(mk.away_moneyline)}</strong><small>Model ${formatOdds(m.away_projection)}</small></div>
         ${drawChip}
-        <div class="odds-chip"><span>${home.name}</span><strong>${formatOdds(mk.home_moneyline)}</strong><small>Model ${formatOdds(m.home_projection)}</small></div>
+        <div class="odds-chip"><span>${teamNameLink(game.league, home.abbr, home.name)}</span><strong>${formatOdds(mk.home_moneyline)}</strong><small>Model ${formatOdds(m.home_projection)}</small></div>
         ${threeway ? "" : `<div class="odds-chip"><span>Spread / O-U</span><strong>${mk.spread ?? "—"} / ${mk.over_under ?? "—"}</strong><small>${mk.provider || "ESPN"}</small></div>`}
       </div>`;
   return `<section class="algo-hero panel">
@@ -497,7 +526,7 @@ function algoCenter(game) {
     ])}
     <div class="algo-hero-head">
       <span class="league-pill">${game.league_name}</span>
-      <h1>${away.name} <span class="at">@</span> ${home.name}</h1>
+      <h1>${matchupLinks(game.league, away, home)}</h1>
       <p class="game-meta">${formatTime(game.start_time)} · ${game.status_detail || game.status}</p>
       <p class="db-game-links"><a href="${teamHref(game.league, game.matchup?.away?.abbr)}">${away.name}</a> · <a href="${teamHref(game.league, game.matchup?.home?.abbr)}">${home.name}</a> · <a href="${leagueHref(game.league)}">${game.league_name} league</a></p>
     </div>
@@ -506,9 +535,9 @@ function algoCenter(game) {
       ${algoBreakdown(m)}
       ${oddsRow}
     </div>
-    ${game.eligible_for_official_picks === false ? `<div class="game-pick neutral"><strong>Predictions only</strong><span>Soccer 1X2 model and fair prices are shown; official algo picks exclude soccer.</span></div>` : top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong><span>${top.team_name} · ${pickMarketLabel(top)} vs model ${pickModelLabel(top)} (+${top.edge})</span><p>${top.reason}</p></div>` : `<div class="game-pick neutral"><strong>No value flag</strong><span>Model leans ${fav}; lines do not beat model price today.</span></div>`}
+    ${game.eligible_for_official_picks === false ? `<div class="game-pick neutral"><strong>Predictions only</strong><span>Soccer 1X2 model and fair prices are shown; official algo picks exclude soccer.</span></div>` : top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong><span>${pickTeamNameLink(top, game.league, game.matchup)} · ${pickMarketLabel(top)} vs model ${pickModelLabel(top)} (+${top.edge})</span><p>${top.reason}</p></div>` : `<div class="game-pick neutral"><strong>No value flag</strong><span>Model leans ${fav}; lines do not beat model price today.</span></div>`}
     <details class="factor-details" open><summary>Algo factor breakdown</summary><div class="factor-list">${factorBars(m.factors)}</div></details>
-    ${game.eligible_for_official_picks !== false && (game.recommendations || []).length ? `<div class="rec-list"><h3>All model recommendations</h3>${game.recommendations.map((p) => pickCard({ ...p, league_name: game.league_name, matchup: `${away.name} @ ${home.name}`, start_time: game.start_time })).join("")}</div>` : ""}
+    ${game.eligible_for_official_picks !== false && (game.recommendations || []).length ? `<div class="rec-list"><h3>All model recommendations</h3>${game.recommendations.map((p) => pickCard({ ...p, league: game.league, league_name: game.league_name, matchup: `${away.name} @ ${home.name}`, matchup_obj: game.matchup, start_time: game.start_time })).join("")}</div>` : ""}
   </section>`;
 }
 
@@ -624,7 +653,7 @@ function gameListCard(game) {
   const m = game.model;
   const fav = m.favorite_side === "home" ? home.name : away.name;
   return `<article class="game-card panel clickable" data-game="${game.event_id}">
-    <div class="game-head"><div><span class="league-pill">${game.league_name}</span><h3>${away.name} @ ${home.name}</h3><p class="game-meta">${formatTime(game.start_time)}</p></div>
+    <div class="game-head"><div><span class="league-pill">${game.league_name}</span><h3>${matchupLinks(game.league, away, home)}</h3><p class="game-meta">${formatTime(game.start_time)}</p></div>
     <div class="win-chip"><span>Unified</span><strong>${fav}</strong><small>${m.win_probability}%</small></div></div>
     <a class="btn btn-secondary btn-sm" href="#/game/${game.event_id}">Open algo breakdown →</a>
   </article>`;
@@ -1022,7 +1051,7 @@ function viewTracking() {
 
     <section class="section">
       <div class="section-head"><h2>Bet log (${bets.length})</h2></div>
-      <div class="bet-log">${bets.length ? bets.map((b) => `<article class="bet-row panel"><div class="bet-row-top"><div><strong>${b.team_name}</strong><span class="league-pill">${b.league_name}</span>${statusBadge(b.status, b.units)}</div><span class="edge-tag">+${b.edge} edge</span></div>
+      <div class="bet-log">${bets.length ? bets.map((b) => `<article class="bet-row panel"><div class="bet-row-top"><div><strong>${b.team_abbr ? teamNameLink(b.league, b.team_abbr, b.team_name) : b.team_name}</strong><span class="league-pill">${b.league_name}</span>${statusBadge(b.status, b.units)}</div><span class="edge-tag">+${b.edge} edge</span></div>
       <p class="muted">${b.matchup} · ${b.date}</p>
       <div class="pick-odds compact"><div><span>${b.bet_type === "spread" ? "Spread" : "Market"}</span><strong>${b.bet_type === "spread" ? formatSpread(b.spread_line) + " (" + formatOdds(b.spread_odds ?? b.market_odds) + ")" : formatOdds(b.market_odds)}</strong></div><div><span>Model</span><strong>${b.bet_type === "spread" && b.model_margin != null ? (b.side === "home" ? "Home" : "Away") + " margin " + formatSpread(b.side === "home" ? b.model_margin : -b.model_margin) : formatOdds(b.model_projection)}</strong></div><div><span>Strategy</span><strong>${b.strategy_label}</strong></div></div>
       ${b.final_score ? `<p class="final-score">Final: ${b.final_score}</p>` : ""}</article>`).join("") : `<div class="panel empty-panel">No tracked bets yet. Picks with +${minEdge} edge are logged on each daily rebuild.</div>`}</div>
@@ -1097,12 +1126,12 @@ function renderBettingGameCard(sheet, league) {
   return `<article class="db-bet-card panel">
     <div class="db-bet-head">
       <span class="league-pill">${sheet.league_name || league}</span>
-      <a href="#/game/${sheet.event_id}"><strong>${away} @ ${home}</strong></a>
+      <strong>${matchupLinks(league, matchup.away, matchup.home)}</strong>
       <span class="muted">${formatTime(sheet.start_time)}</span>
     </div>
     <div class="odds-row compact">
-      <div class="odds-chip"><span>${away} ML</span><strong>${formatOdds(market.away_moneyline)}</strong><small>Model ${formatOdds(model.away_projection)}</small></div>
-      <div class="odds-chip"><span>${home} ML</span><strong>${formatOdds(market.home_moneyline)}</strong><small>Model ${formatOdds(model.home_projection)}</small></div>
+      <div class="odds-chip"><span>${teamNameLink(league, matchup.away?.abbr, away)} ML</span><strong>${formatOdds(market.away_moneyline)}</strong><small>Model ${formatOdds(model.away_projection)}</small></div>
+      <div class="odds-chip"><span>${teamNameLink(league, matchup.home?.abbr, home)} ML</span><strong>${formatOdds(market.home_moneyline)}</strong><small>Model ${formatOdds(model.home_projection)}</small></div>
       ${market.spread != null ? `<div class="odds-chip"><span>Spread</span><strong>${formatSpread(market.spread)}</strong></div>` : ""}
     </div>
     <div class="db-bet-model">
@@ -1111,7 +1140,7 @@ function renderBettingGameCard(sheet, league) {
       <small>Fav: ${model.favorite_side || "—"} · Blend ${model.blend_layers || "—"} layers</small>
       ${agreement.required ? `<small>Agreement: ${agreement.agreed ? "✓ all layers" : "✗ split"} (${(agreement.value_sides || []).join(", ") || "none"})</small>` : ""}
     </div>
-    ${official && top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong> ${top.team_name} +${top.edge} edge</div>` : !official ? `<div class="game-pick neutral"><strong>Predictions only</strong> (soccer excluded from official picks)</div>` : `<div class="game-pick neutral"><strong>No official pick</strong> — model/market gap below threshold</div>`}
+    ${official && top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong> ${pickTeamNameLink(top, league, matchup)} +${top.edge} edge</div>` : !official ? `<div class="game-pick neutral"><strong>Predictions only</strong> (soccer excluded from official picks)</div>` : `<div class="game-pick neutral"><strong>No official pick</strong> — model/market gap below threshold</div>`}
     <div class="db-bet-links">
       <a href="${teamHref(league, matchup.home?.abbr)}">${home}</a>
       <a href="${teamHref(league, matchup.away?.abbr)}">${away}</a>
