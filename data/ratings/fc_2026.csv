@@ -1,4 +1,32 @@
 player_name,team_abbr,position,overall,espn_id,rating_source,rating_year
+Aaron Bouwman,aja,D,64.0,384127,fc,2026
+Anton Gaaei,aja,D,72.0,333312,fc,2026
+Damián Van Der Vaart,aja,M,65.0,406914,fc,2026
+Davy Klaassen,aja,M,77.0,168993,fc,2026
+Don-Angelo Konadu,aja,F,63.0,386841,fc,2026
+Joeri Heerkens,aja,G,64.0,396040,fc,2026
+Jorthy Mokio,aja,M,70.0,381074,fc,2026
+Josip Sutalo,aja,D,78.0,305552,fc,2026
+Kasper Dolberg,aja,F,77.0,219284,fc,2026
+Kian Fitz-Jim,aja,M,73.0,305589,fc,2026
+Kou Itakura,aja,D,77.0,238033,fc,2026
+Lucas Jetten,aja,D,62.0,386842,fc,2026
+Lucas Rosa,aja,D,71.0,351281,fc,2026
+Maarten Paes,aja,G,72.0,238919,fc,2026
+Maher Carrizo,aja,F,74.1,376476,fc,2026
+Mika Godts,aja,F,74.0,353363,fc,2026
+Mohamed Abdalla,aja,M,61.0,417684,fc,2026
+Oleksandr Zinchenko,aja,D,77.0,217482,fc,2026
+Oliver Edvardsen,aja,F,73.0,295861,fc,2026
+Oscar Gloukh,aja,M,76.0,325609,fc,2026
+Owen Wijndal,aja,D,72.0,241392,fc,2026
+Rayane Bounida,aja,F,63.0,397492,fc,2026
+Sean Steur,aja,M,62.0,384372,fc,2026
+Steven Berghuis,aja,F,78.0,149577,fc,2026
+Vitezslav Jaros,aja,G,70.0,289840,fc,2026
+Wout Weghorst,aja,F,78.0,177042,fc,2026
+Youri Baas,aja,D,75.0,305590,fc,2026
+Youri Regeer,aja,M,73.0,297292,fc,2026
 Abde Rebbach,ala,F,68.6,345991,fc,2026
 Aitor Mañas,ala,F,67.3,379231,fc,2026
 Ander Guevara,ala,M,72.8,260256,fc,2026
@@ -33,6 +61,7 @@ Xanet Oláiz,ala,D,77.7,415276,fc,2026
 Youssef Lekhedim,ala,D,79.0,382532,fc,2026
 Álvaro García,ala,D,81.6,384145,fc,2026
 Ángel Pérez,ala,D,80.9,374621,fc,2026
+Amine Sbaï,ang,F,68.0,314388,fc,2026
 Carlens Arcus,ang,D,71.0,218703,fc,2026
 Emmanuel Biumla,ang,M,70.0,356211,fc,2026
 Haris Belkebla,ang,M,74.0,206993,fc,2026
@@ -47,6 +76,7 @@ Oumar Pona,ang,G,57.0,378976,fc,2026
 Ousmane Camara,ang,D,67.0,412232,fc,2026
 Prosper Peter,ang,F,58.0,403232,fc,2026
 Yassin Belkhdim,ang,M,70.0,338006,fc,2026
+Alexei Rojas,ars,G,69.9,341729,fc,2026
 Ben White,ars,D,83.0,241077,fc,2026
 Bukayo Saka,ars,F,87.0,280555,fc,2026
 Christian Nørgaard,ars,M,80.0,178077,fc,2026
@@ -55,6 +85,7 @@ Declan Rice,ars,M,87.0,238262,fc,2026
 Eberechi Eze,ars,M,83.0,251400,fc,2026
 Gabriel Jesus,ars,F,80.0,217289,fc,2026
 Gabriel Martinelli,ars,F,81.0,269844,fc,2026
+Jaden Dixon,ars,D,56.0,374017,fc,2026
 Jurriën Timber,ars,D,82.0,282716,fc,2026
 Kai Havertz,ars,F,82.0,231182,fc,2026
 Leandro Trossard,ars,F,83.0,174980,fc,2026
@@ -226,6 +257,7 @@ Riley Thomas,atx,D,82.2,308642,fc,2026
 Robert Taylor,atx,F,72.5,237823,fc,2026
 Zan Kolmanic,atx,D,83.5,259805,fc,2026
 Assane Dioussé,aux,M,69.0,214305,fc,2026
+Bryan Okoh,aux,D,64.0,321097,fc,2026
 Clément Akpa,aux,D,74.0,344520,fc,2026
 Donovan Léon,aux,G,76.0,164165,fc,2026
 Elisha Owusu,aux,M,73.0,266057,fc,2026
@@ -238,6 +270,7 @@ Lamine Sy,aux,D,66.0,335320,fc,2026
 Lassine Sinayoko,aux,F,74.0,271137,fc,2026
 Lasso Coulibaly,aux,M,68.0,323175,fc,2026
 Marvin Senaya,aux,D,69.0,309638,fc,2026
+Naouirou Ahamada,aux,M,68.0,297775,fc,2026
 Sinaly Diomande,aux,D,73.0,302862,fc,2026
 Telli Siwe,aux,D,57.0,403125,fc,2026
 Théo De Percin,aux,G,66.0,312151,fc,2026
@@ -251,14 +284,18 @@ Ezri Konsa,avl,D,82.0,231859,fc,2026
 Ian Maatsen,avl,D,79.0,281125,fc,2026
 John McGinn,avl,M,81.0,162843,fc,2026
 Lamare Bogarde,avl,M,71.0,310607,fc,2026
+Leon Bailey,avl,M,79.0,224809,fc,2026
 Lucas Digne,avl,D,80.0,160115,fc,2026
 Marco Bizot,avl,G,78.0,132233,fc,2026
 Matty Cash,avl,D,79.0,234698,fc,2026
 Morgan Rogers,avl,F,82.0,265653,fc,2026
 Ollie Watkins,avl,F,84.0,198825,fc,2026
 Pau Torres,avl,D,80.0,251100,fc,2026
+Ronnie Hollingshead,avl,G,86.1,370724,fc,2026
 Ross Barkley,avl,M,77.0,152469,fc,2026
+Tammy Abraham,avl,F,77.0,236209,fc,2026
 Tyrone Mings,avl,D,78.0,181312,fc,2026
+Victor Lindelöf,avl,D,67.0,204679,fc,2026
 Youri Tielemans,avl,M,85.0,193297,fc,2026
 Aleix García,b04,M,83.0,219294,fc,2026
 Arthur,b04,D,71.0,334374,fc,2026
@@ -266,6 +303,7 @@ Axel Tape,b04,D,65.0,396655,fc,2026
 Christian Kofane,b04,F,68.0,398709,fc,2026
 Edmond Tapsoba,b04,D,81.0,257287,fc,2026
 Eliesse Ben Seghir,b04,F,76.0,346947,fc,2026
+Emmanuel Owen,b04,F,63.0,419917,fc,2026
 Ernest Poku,b04,F,70.0,318534,fc,2026
 Exequiel Palacios,b04,M,84.0,228393,fc,2026
 Ezequiel Fernández,b04,M,75.0,364080,fc,2026
@@ -274,7 +312,9 @@ Janis Blaswich,b04,G,73.0,161825,fc,2026
 Jarell Quansah,b04,D,75.0,298524,fc,2026
 Jeremiah Mensah,b04,M,61.0,403899,fc,2026
 Jonas Hofmann,b04,M,78.0,174617,fc,2026
+Jonas Omlin,b04,G,76.0,238418,fc,2026
 Loïc Badé,b04,D,78.0,300410,fc,2026
+Lucas Vázquez,b04,D,66.6,174967,fc,2026
 Malik Tillman,b04,M,82.0,301416,fc,2026
 Mark Flekken,b04,G,78.0,177821,fc,2026
 Martin Terrier,b04,F,79.0,241662,fc,2026
@@ -282,6 +322,7 @@ Nathan Tella,b04,F,78.0,263134,fc,2026
 Niklas Lomb,b04,G,66.0,175069,fc,2026
 Patrik Schick,b04,F,85.0,212330,fc,2026
 Robert Andrich,b04,M,81.0,180998,fc,2026
+Tim Oermann,b04,D,72.0,346376,fc,2026
 Alejandro Balde,bar,D,80.9,323703,fc,2026
 Andreas Christensen,bar,D,84.2,186430,fc,2026
 Dani Olmo,bar,M,76.7,227765,fc,2026
@@ -354,6 +395,7 @@ Valentín Gómez,bet,D,80.9,336480,fc,2026
 Bart Verbruggen,bha,G,78.0,291609,fc,2026
 Carlos Baleba,bha,M,81.0,338814,fc,2026
 Charalambos Kostoulas,bha,F,72.0,387655,fc,2026
+Costinha,bha,D,75.0,274285,fc,2026
 Danny Welbeck,bha,F,78.0,115271,fc,2026
 Diego Gómez,bha,M,73.0,192278,fc,2026
 Ferdi Kadioglu,bha,D,79.0,238318,fc,2026
@@ -364,8 +406,10 @@ Joël Veltman,bha,D,78.0,170597,fc,2026
 Kaoru Mitoma,bha,M,82.0,274278,fc,2026
 Lewis Dunk,bha,D,77.0,147106,fc,2026
 Mats Wieffer,bha,M,78.0,282186,fc,2026
+Matt O'Riley,bha,M,78.0,261087,fc,2026
 Maxim De Cuyper,bha,D,80.0,301327,fc,2026
 Olivier Boscagli,bha,D,79.0,216017,fc,2026
+Pascal Gross,bha,M,80.0,132659,fc,2026
 Stefanos Tzimas,bha,F,72.0,357165,fc,2026
 Tom McGill,bha,G,62.0,248761,fc,2026
 Yankuba Minteh,bha,F,77.0,348787,fc,2026
@@ -398,6 +442,7 @@ Tobias Sippel,bmg,G,66.0,122273,fc,2026
 Yannick Engelhardt,bmg,M,70.0,337079,fc,2026
 Anders Klynge,bodo,M,68.0,303934,fc,2026
 Andreas Helmersen,bodo,F,66.0,218561,fc,2026
+August Mikkelsen,bodo,F,68.0,285947,fc,2026
 Daniel Bassi,bodo,F,62.0,340237,fc,2026
 Fredrik André Bjørkan,bodo,D,74.0,238088,fc,2026
 Fredrik Sjøvold,bodo,D,69.0,333755,fc,2026
@@ -422,6 +467,7 @@ Villads Nielsen,bodo,D,66.0,387380,fc,2026
 Adam Smith,bou,D,73.0,122268,fc,2026
 Adrien Truffert,bou,D,77.0,305684,fc,2026
 Alex Scott,bou,M,74.0,314790,fc,2026
+Alex Tóth,bou,M,70.0,360149,fc,2026
 Amine Adli,bou,F,78.0,291613,fc,2026
 Bafodé Diakité,bou,D,79.0,282675,fc,2026
 Ben Gannon-Doak,bou,F,71.0,332948,fc,2026
@@ -448,6 +494,7 @@ Carlos Forbs,bru,F,70.0,78836,fc,2026
 Christos Tzolis,bru,F,80.0,303793,fc,2026
 Cisse Sandra,bru,M,65.0,312758,fc,2026
 Dani van den Heuvel,bru,G,60.0,305931,fc,2026
+Felix Lemarechal,bru,M,76.0,324419,fc,2026
 Gustaf Nilsson,bru,F,75.0,238183,fc,2026
 Hans Vanaken,bru,M,80.0,193849,fc,2026
 Hugo Siquet,bru,D,70.0,310023,fc,2026
@@ -517,6 +564,7 @@ João Pedro,che,F,79.0,284960,fc,2026
 Levi Colwill,che,D,80.0,296410,fc,2026
 Liam Delap,che,F,78.0,307114,fc,2026
 Malo Gusto,che,D,79.0,308947,fc,2026
+Mamadou Sarr,che,D,73.0,355433,fc,2026
 Marc Cucurella,che,D,84.0,259910,fc,2026
 Marc Guiu,che,F,71.0,363038,fc,2026
 Moisés Caicedo,che,M,87.0,289877,fc,2026
@@ -524,6 +572,7 @@ Pedro Neto,che,F,80.0,256115,fc,2026
 Reece James,che,D,81.0,189007,fc,2026
 Robert Sánchez,che,G,78.0,108662,fc,2026
 Romeo Lavia,che,M,78.0,308217,fc,2026
+Teddy Sharman-Lowe,che,G,62.0,300049,fc,2026
 Tosin Adarabioyo,che,D,78.0,231198,fc,2026
 Trevoh Chalobah,che,D,79.0,227784,fc,2026
 Wesley Fofana,che,D,79.0,270190,fc,2026
@@ -834,6 +883,7 @@ Urko Gonzalez,esp,M,76.0,307915,fc,2026
 Ángel Fortuño,esp,G,87.9,307419,fc,2026
 Alexis Claude-Maurice,fca,M,77.0,228503,fc,2026
 Anton Kade,fca,M,70.0,333837,fc,2026
+Arthur Chaves,fca,D,74.0,319530,fc,2026
 Chrislain Matsima,fca,D,77.0,297165,fc,2026
 Cédric Zesiger,fca,D,76.0,245808,fc,2026
 Daniel Klein,fca,G,61.0,321060,fc,2026
@@ -850,10 +900,14 @@ Mads Pedersen,fca,D,72.0,162386,fc,2026
 Mahmut Kücüksahin,fca,M,60.0,384502,fc,2026
 Marius Wolf,fca,M,75.0,207623,fc,2026
 Mert Kömür,fca,M,68.0,359207,fc,2026
+Michael Gregoritsch,fca,F,75.0,146804,fc,2026
 Nediljko Labrovic,fca,G,73.0,322693,fc,2026
 Noahkai Banks,fca,D,66.0,376514,fc,2026
 Oliver Sorg,fca,D,58.0,170193,fc,2026
 Robin Fellhauer,fca,D,73.0,306928,fc,2026
+Rodrigo Ribeiro,fca,F,68.0,332689,fc,2026
+Thomas Kastanaras,fca,F,63.0,345393,fc,2026
+Yannik Keitel,fca,M,71.0,266657,fc,2026
 Alex Král,fcu,M,74.0,257085,fc,2026
 Aljoscha Kemlein,fcu,M,70.0,349922,fc,2026
 Andrej Ilic,fcu,F,72.0,341441,fc,2026
@@ -895,6 +949,7 @@ Jorge Cuenca,ful,D,74.0,252031,fc,2026
 Josh King,ful,M,68.0,409541,fc,2026
 Kenny Tete,ful,D,77.0,190974,fc,2026
 Kevin,ful,M,76.0,330764,fc,2026
+Oscar Bobb,ful,M,72.0,307111,fc,2026
 Rodrigo Muniz,ful,F,75.0,301525,fc,2026
 Ryan Sessegnon,ful,M,75.0,241328,fc,2026
 Sander Berge,ful,M,79.0,218998,fc,2026
@@ -919,11 +974,14 @@ Lucas Torreira,gal,M,83.0,212973,fc,2026
 Mario Lemina,gal,M,79.0,181729,fc,2026
 Mauro Icardi,gal,F,81.0,167411,fc,2026
 Metehan Baltaci,gal,D,66.0,345237,fc,2026
+Noa Lang,gal,F,80.0,255344,fc,2026
 Roland Sallai,gal,F,78.0,219444,fc,2026
+Sacha Boey,gal,D,77.0,287225,fc,2026
 Ugurcan Çakir,gal,G,80.0,222922,fc,2026
 Victor Osimhen,gal,F,87.0,228296,fc,2026
 Wilfried Singo,gal,D,80.0,286569,fc,2026
 Yunus Akgün,gal,F,78.0,266575,fc,2026
+Yáser Asprilla,gal,F,75.0,311056,fc,2026
 Abdel Abqar,get,D,82.2,277876,fc,2026
 Abu Kamara,get,F,67.9,275674,fc,2026
 Adrián Liso,get,F,64.7,381682,fc,2026
@@ -1022,12 +1080,16 @@ Adrian Beck,hdh,M,73.0,277999,fc,2026
 Arijon Ibrahimovic,hdh,M,61.0,333400,fc,2026
 Benedikt Gimber,hdh,D,71.0,220716,fc,2026
 Budu Zivzivadze,hdh,F,72.0,237727,fc,2026
+Christian Conteh,hdh,F,66.0,288371,fc,2026
 Diant Ramaj,hdh,G,73.0,287713,fc,2026
+Eren Dinkci,hdh,F,74.0,312112,fc,2026
 Frank Feller,hdh,G,68.0,334262,fc,2026
+Hennes Behrens,hdh,M,62.0,399214,fc,2026
 Jan Schöppner,hdh,M,74.0,291798,fc,2026
 Jonas Föhrenbach,hdh,D,71.0,220815,fc,2026
 Julian Niehues,hdh,M,69.0,322555,fc,2026
 Leart Paqarada,hdh,D,72.0,205972,fc,2026
+Leonidas Stergiou,hdh,D,71.0,285866,fc,2026
 Luca Kerber,hdh,M,70.0,364791,fc,2026
 Marnon Busch,hdh,D,72.0,208176,fc,2026
 Marvin Pieringer,hdh,F,75.0,312389,fc,2026
@@ -1041,6 +1103,7 @@ Paul Tschernuth,hdh,G,59.0,321257,fc,2026
 Sirlord Conteh,hdh,F,69.0,307508,fc,2026
 Stefan Schimmer,hdh,F,68.0,261221,fc,2026
 Tim Siersleben,hdh,D,72.0,290208,fc,2026
+Yannik Wagner,hdh,F,67.0,408999,fc,2026
 Agustín Bouzat,hou,M,77.3,233725,fc,2026
 Agustín Resch,hou,D,81.6,419253,fc,2026
 Antônio Carlos,hou,D,86.1,196842,fc,2026
@@ -1069,9 +1132,11 @@ Ondrej Lingr,hou,M,76.0,257090,fc,2026
 Reese Miller,hou,D,82.2,354162,fc,2026
 Sam Vines,hou,D,84.2,260912,fc,2026
 Vinicius Rodrigues Da Silva,hou,D,80.9,422114,fc,2026
+Albert Grønbaek,hsv,M,74.0,297750,fc,2026
 Albert Sambi Lokonga,hsv,M,75.0,268239,fc,2026
 Alexander Røssing-Lelesiit,hsv,F,60.0,384471,fc,2026
 Bakery Jatta,hsv,M,69.0,238542,fc,2026
+Damion Downs,hsv,F,70.0,359707,fc,2026
 Daniel Elfadli,hsv,M,72.0,343993,fc,2026
 Daniel Heuer Fernandes,hsv,G,74.0,180162,fc,2026
 Fabio Uri Baldé,hsv,F,65.0,388392,fc,2026
@@ -1086,9 +1151,12 @@ Miro Muheim,hsv,D,75.0,243626,fc,2026
 Nicolai Remberg,hsv,M,72.0,321226,fc,2026
 Nicolás Capaldo,hsv,M,73.0,284835,fc,2026
 Noah Katterbach,hsv,D,68.0,283729,fc,2026
+Otto Stange,hsv,F,62.0,376056,fc,2026
+Philip Otele,hsv,F,73.0,289745,fc,2026
 Ransford-Yeboah Königsdörffer,hsv,F,71.0,300961,fc,2026
 Rayan Philippe,hsv,F,72.0,291849,fc,2026
 Robert Glatzel,hsv,F,73.0,246846,fc,2026
+Sander Tangvik,hsv,G,69.0,304258,fc,2026
 Warmed Omari,hsv,D,73.0,309840,fc,2026
 William Mikelbrencis,hsv,D,67.0,313897,fc,2026
 Yussuf Poulsen,hsv,F,74.0,182245,fc,2026
@@ -1112,6 +1180,7 @@ Petar Sucic,int,M,74.0,341494,fc,2026
 Piotr Zielinski,int,M,80.0,177782,fc,2026
 Raffaele Di Gennaro,int,G,68.0,181322,fc,2026
 Stefan de Vrij,int,D,84.0,141443,fc,2026
+Yann Bisseck,int,D,76.0,266660,fc,2026
 Yann Sommer,int,G,87.0,93197,fc,2026
 Andrea Cambiaso,juv,D,79.0,308029,fc,2026
 Arkadiusz Milik,juv,F,79.0,179359,fc,2026
@@ -1119,12 +1188,14 @@ Bremer,juv,D,85.0,258307,fc,2026
 Carlo Pinsoglio,juv,G,69.0,121036,fc,2026
 Dusan Vlahovic,juv,F,82.0,235677,fc,2026
 Edon Zhegrova,juv,F,79.0,260300,fc,2026
+Emil Holm,juv,D,74.0,286814,fc,2026
 Fabio Miretti,juv,M,74.0,323975,fc,2026
 Federico Gatti,juv,D,80.0,323147,fc,2026
 Filip Kostic,juv,M,81.0,174496,fc,2026
 Francisco Conceição,juv,F,79.0,312659,fc,2026
 Jonathan David,juv,F,82.0,273499,fc,2026
 Juan Cabal,juv,D,74.0,24412,fc,2026
+Jérémie Boga,juv,F,76.0,206153,fc,2026
 Kenan Yildiz,juv,F,79.0,366509,fc,2026
 Khéphren Thuram,juv,M,81.0,283139,fc,2026
 Lloyd Kelly,juv,D,74.0,243787,fc,2026
@@ -1136,6 +1207,7 @@ Pierre Kalulu,juv,D,80.0,290129,fc,2026
 Teun Koopmeiners,juv,M,81.0,258968,fc,2026
 Vasilije Adzic,juv,M,62.0,344917,fc,2026
 Weston McKennie,juv,M,78.0,256715,fc,2026
+Amir Richardson,kbh,M,72.0,319285,fc,2026
 Andreas Cornelius,kbh,F,69.0,176668,fc,2026
 Birger Meling,kbh,D,72.0,192115,fc,2026
 Dominik Kotarski,kbh,G,77.0,239411,fc,2026
@@ -1148,6 +1220,7 @@ Liam West,kbh,F,56.0,378954,fc,2026
 Mads Emil Madsen,kbh,M,72.0,242850,fc,2026
 Magnus Mattsson,kbh,M,71.0,262740,fc,2026
 Marcos López,kbh,D,71.0,151053,fc,2026
+Mathias Jørgensen,kbh,D,66.0,111177,fc,2026
 Mohamed Elyounoussi,kbh,M,76.0,162484,fc,2026
 Oliver Højer,kbh,M,58.0,384302,fc,2026
 Oscar Gadeberg-Buur,kbh,G,57.0,380427,fc,2026
@@ -1159,6 +1232,34 @@ Thomas Delaney,kbh,M,75.0,151757,fc,2026
 Viktor Claesson,kbh,M,72.0,172864,fc,2026
 William Clem,kbh,M,68.0,332428,fc,2026
 Youssoufa Moukoko,kbh,F,73.0,305554,fc,2026
+Alessio Castro-Montes,koe,M,77.0,236136,fc,2026
+Cenk Özkacar,koe,D,70.0,301348,fc,2026
+Denis Huseinbasic,koe,M,72.0,343969,fc,2026
+Dominique Heintz,koe,D,73.0,167683,fc,2026
+Eric Martel,koe,M,76.0,290398,fc,2026
+Fayssal Harchaoui,koe,M,60.0,372029,fc,2026
+Felipe Chávez,koe,M,66.0,408344,fc,2026
+Florian Kainz,koe,M,74.0,151464,fc,2026
+Jahmai Simpson-Pusey,koe,D,68.0,357337,fc,2026
+Jakub Kaminski,koe,M,74.0,304933,fc,2026
+Jan Thielmann,koe,M,72.0,300444,fc,2026
+Joel Schmied,koe,D,68.0,306378,fc,2026
+Kristoffer Lund,koe,D,71.0,310466,fc,2026
+Linton Maina,koe,M,73.0,231173,fc,2026
+Luca Kilian,koe,D,69.0,279958,fc,2026
+Luca Waldschmidt,koe,F,72.0,191352,fc,2026
+Malek El Mala,koe,F,59.0,384155,fc,2026
+Marius Bulter,koe,F,76.0,275797,fc,2026
+Marvin Schwäbe,koe,G,77.0,205751,fc,2026
+Matthias Köbbing,koe,G,56.0,258973,fc,2026
+Ragnar Ache,koe,F,73.0,255355,fc,2026
+Rav van den Berg,koe,D,70.0,306161,fc,2026
+Ron-Robert Zieler,koe,G,75.0,121007,fc,2026
+Said El Mala,koe,F,68.0,380795,fc,2026
+Sebastian Sebulonsen,koe,D,70.0,302981,fc,2026
+Timo Hübers,koe,D,73.0,238520,fc,2026
+Tom Krauss,koe,M,75.0,283683,fc,2026
+Youssoupha Niang,koe,F,65.0,417605,fc,2026
 Brady Scott,la,G,87.9,256614,fc,2026
 Carlos Garcés,la,D,85.5,133963,fc,2026
 Chris Rindov,la,D,81.6,294201,fc,2026
@@ -1293,6 +1394,7 @@ Matias Fernandez-Pardo,lill,F,75.0,359651,fc,2026
 Nabil Bentaleb,lill,M,77.0,179187,fc,2026
 Nathan Ngoy,lill,D,67.0,318577,fc,2026
 Ngal'ayel Mukau,lill,M,74.0,345988,fc,2026
+Noah Edjouma,lill,F,66.0,367360,fc,2026
 Olivier Giroud,lill,F,79.0,88965,fc,2026
 Osame Sahraoui,lill,F,76.0,283626,fc,2026
 Romain Perraud,lill,D,74.0,250853,fc,2026
@@ -1311,6 +1413,7 @@ Florian Wirtz,liv,M,89.0,303748,fc,2026
 Freddie Woodman,liv,G,71.0,194121,fc,2026
 Giorgi Mamardashvili,liv,G,84.0,274742,fc,2026
 Giovanni Leoni,liv,D,69.0,380082,fc,2026
+Harvey Davies,liv,G,61.0,315879,fc,2026
 Hugo Ekitike,liv,F,83.0,304901,fc,2026
 Ibrahima Konaté,liv,D,86.0,251634,fc,2026
 Jeremie Frimpong,liv,D,83.0,281119,fc,2026
@@ -1323,7 +1426,9 @@ Ryan Gravenberch,liv,M,85.0,274632,fc,2026
 Stefan Bajcetic,liv,M,73.0,330605,fc,2026
 Trey Nyoni,liv,M,64.0,356075,fc,2026
 Virgil van Dijk,liv,D,88.0,157892,fc,2026
+Víctor Muñoz,liv,F,88.1,397545,fc,2026
 Wataru Endo,liv,M,79.0,152479,fc,2026
+Will Wright,liv,F,64.0,395778,fc,2026
 Ármin Pécsi,liv,G,64.0,345673,fc,2026
 Arsène Kouassi,lor,D,66.0,381626,fc,2026
 Bandiougou Fadiga,lor,M,63.0,307263,fc,2026
@@ -1342,6 +1447,24 @@ Pablo Pagis,lor,F,68.0,334359,fc,2026
 Panos Katseris,lor,D,70.0,364754,fc,2026
 Sambou Soumano,lor,F,71.0,314409,fc,2026
 Théo Le Bris,lor,M,69.0,325992,fc,2026
+Afonso Moreira,lyon,F,67.0,361258,fc,2026
+Ainsley Maitland-Niles,lyon,M,77.0,214402,fc,2026
+Clinton Mata,lyon,D,77.0,214649,fc,2026
+Corentin Tolisso,lyon,M,81.0,192060,fc,2026
+Dominik Greif,lyon,G,78.0,221278,fc,2026
+Ernest Nuamah,lyon,F,75.0,333310,fc,2026
+Khalis Merah,lyon,M,64.0,408345,fc,2026
+Lassine Diarra,lyon,G,64.0,142743,fc,2026
+Malick Fofana,lyon,F,86.1,340645,fc,2026
+Moussa Niakhaté,lyon,D,77.0,213181,fc,2026
+Nicolás Tagliafico,lyon,D,78.0,145190,fc,2026
+Noah Nartey,lyon,M,68.0,365562,fc,2026
+Orel Mangala,lyon,M,77.0,228424,fc,2026
+Pavel Sulc,lyon,M,77.0,305545,fc,2026
+Ruben Kluivert,lyon,D,67.0,301354,fc,2026
+Rémy Descamps,lyon,G,73.0,222175,fc,2026
+Tanner Tessmann,lyon,M,75.0,303308,fc,2026
+Tyler Morton,lyon,M,72.0,298522,fc,2026
 Andreas Hanche-Olsen,m05,D,75.0,218646,fc,2026
 Anthony Caci,m05,D,78.0,241297,fc,2026
 Armindo Sieb,m05,F,71.0,308843,fc,2026
@@ -1360,12 +1483,38 @@ Nadiem Amiri,m05,M,81.0,210818,fc,2026
 Nelson Weiper,m05,F,70.0,351280,fc,2026
 Nikolas Veratschnig,m05,D,69.0,334198,fc,2026
 Paul Nebel,m05,M,78.0,307282,fc,2026
+Phillip Tietz,m05,F,75.0,234376,fc,2026
 Phillipp Mwene,m05,D,76.0,239574,fc,2026
 Robin Zentner,m05,G,78.0,206114,fc,2026
+Sheraldo Becker,m05,F,75.0,195027,fc,2026
 Silvan Widmer,m05,D,72.0,175905,fc,2026
 Sota Kawasaki,m05,M,71.0,333646,fc,2026
 Stefan Bell,m05,D,74.0,144620,fc,2026
+Stefan Posch,m05,D,79.0,238906,fc,2026
 William Bøving,m05,F,71.0,303116,fc,2026
+Altay Bayindir,man,G,75.0,274272,fc,2026
+Amad Diallo,man,M,54.0,291630,fc,2026
+Ayden Heaven,man,D,69.0,356044,fc,2026
+Benjamin Sesko,man,F,80.0,289155,fc,2026
+Bruno Fernandes,man,M,87.0,124091,fc,2026
+Bryan Mbeumo,man,F,85.0,271170,fc,2026
+Chido Obi,man,F,65.0,375738,fc,2026
+Diego León,man,D,76.0,387634,fc,2026
+Diogo Dalot,man,D,79.0,238902,fc,2026
+Harry Maguire,man,D,80.0,157073,fc,2026
+Joshua Zirkzee,man,F,77.0,276327,fc,2026
+Kobbie Mainoo,man,M,77.0,328466,fc,2026
+Leny Yoro,man,D,78.0,340206,fc,2026
+Lisandro Martínez,man,D,88.0,233937,fc,2026
+Luke Shaw,man,D,79.0,167127,fc,2026
+Manuel Ugarte,man,M,79.0,241468,fc,2026
+Mason Mount,man,M,77.0,231167,fc,2026
+Matheus Cunha,man,F,83.0,259902,fc,2026
+Matthijs de Ligt,man,D,82.0,239349,fc,2026
+Noussair Mazraoui,man,D,80.0,239350,fc,2026
+Patrick Dorgu,man,D,74.0,366781,fc,2026
+Senne Lammens,man,G,78.0,301425,fc,2026
+Tyler Fredricson,man,D,65.0,347052,fc,2026
 Erling Haaland,mci,ST,91,,fc,2026
 Rodri,mci,CDM,90,,fc,2026
 Alexander Shaw,mia,M,72.8,406938,fc,2026
@@ -1464,6 +1613,7 @@ Toni Lato,mll,D,80.9,232275,fc,2026
 Vedat Muriqi,mll,F,69.2,240209,fc,2026
 Zito Luvumbo,mll,F,68.6,297035,fc,2026
 Abdukodir Khusanov,mnc,D,77.0,362211,fc,2026
+Antoine Semenyo,mnc,F,80.0,273292,fc,2026
 Bernardo Silva,mnc,M,84.0,199833,fc,2026
 Erling Haaland,mnc,F,90.0,253989,fc,2026
 Gianluigi Donnarumma,mnc,G,89.0,217092,fc,2026
@@ -1471,9 +1621,11 @@ James Trafford,mnc,G,76.0,307118,fc,2026
 John Stones,mnc,D,82.0,157974,fc,2026
 Josko Gvardiol,mnc,D,84.0,299910,fc,2026
 Jérémy Doku,mnc,F,80.0,283672,fc,2026
+Marc Guéhi,mnc,D,82.0,265907,fc,2026
 Marcus Bettinelli,mnc,G,70.0,177545,fc,2026
 Mateo Kovacic,mnc,M,83.0,154595,fc,2026
 Matheus Nunes,mnc,M,79.0,303785,fc,2026
+Max Alleyne,mnc,D,64.0,347046,fc,2026
 Nathan Aké,mnc,D,83.0,159248,fc,2026
 Nico González,mnc,M,79.0,323986,fc,2026
 Nico O'Reilly,mnc,D,73.0,328464,fc,2026
@@ -1485,6 +1637,7 @@ Rico Lewis,mnc,D,77.0,325564,fc,2026
 Rodri,mnc,M,90.0,231828,fc,2026
 Rúben Dias,mnc,D,86.0,234878,fc,2026
 Savinho,mnc,F,82.0,304470,fc,2026
+Sverre Nypan,mnc,M,69.0,334109,fc,2026
 Tijjani Reijnders,mnc,M,86.0,261328,fc,2026
 Alexandre Lauray,mns,D,63.0,287606,fc,2026
 Antoine Rabillard,mns,F,65.0,232335,fc,2026
@@ -1494,6 +1647,7 @@ Erwan Colas,mns,F,62.0,357006,fc,2026
 Ewan Hatfout,mns,G,60.0,299457,fc,2026
 Harold Voyer,mns,D,67.0,393721,fc,2026
 Jean Vercruysse,mns,M,63.0,315460,fc,2026
+Lucas Bretelle,mns,M,58.0,330722,fc,2026
 Lucas Calodat,mns,D,63.0,331636,fc,2026
 Martin Rossignol,mns,M,62.0,397327,fc,2026
 Milan Robin,mns,M,65.0,332827,fc,2026
@@ -1510,6 +1664,7 @@ Christian Mawissa,mon,D,75.0,350525,fc,2026
 Denis Zakaria,mon,M,82.0,222628,fc,2026
 Eric Dier,mon,D,79.0,155532,fc,2026
 Folarin Balogun,mon,F,77.0,282643,fc,2026
+Ilane Touré,mon,M,71.0,411027,fc,2026
 Jordan Teze,mon,D,76.0,240660,fc,2026
 Kassoum Ouattara,mon,D,72.0,345243,fc,2026
 Krépin Diatta,mon,M,74.0,253992,fc,2026
@@ -1522,10 +1677,12 @@ Mohammed Salisu,mon,D,76.0,277718,fc,2026
 Paris Brunner,mon,F,66.0,365789,fc,2026
 Paul Pogba,mon,M,79.0,138860,fc,2026
 Philipp Köhn,mon,G,77.0,258875,fc,2026
+Simon Adingra,mon,F,76.0,317404,fc,2026
 Stanis Idumbo,mon,M,67.0,356925,fc,2026
 Takumi Minamino,mon,M,78.0,159348,fc,2026
 Thilo Kehrer,mon,D,79.0,214401,fc,2026
 Vanderson,mon,D,77.0,310640,fc,2026
+Wout Faes,mon,D,73.0,228421,fc,2026
 Yann Lienard,mon,G,65.0,325600,fc,2026
 Aleksandr Guboglo,mtl,D,80.9,401057,fc,2026
 Bode Hidalgo,mtl,D,84.8,295620,fc,2026
@@ -1559,6 +1716,7 @@ Victor Loturi,mtl,M,75.4,343641,fc,2026
 Wikelman Carmona,mtl,M,76.0,315924,fc,2026
 Aleksandar Pavlovic,mun,M,79.0,359370,fc,2026
 Alphonso Davies,mun,D,84.0,236721,fc,2026
+David Daiber,mun,M,59.0,405585,fc,2026
 Dayot Upamecano,mun,D,85.0,222793,fc,2026
 Harry Kane,mun,F,89.0,142200,fc,2026
 Hiroki Ito,mun,D,78.0,97111,fc,2026
@@ -1582,6 +1740,7 @@ Sven Ulreich,mun,G,73.0,113733,fc,2026
 Tom Bischof,mun,M,76.0,324660,fc,2026
 Alessandro Buongiorno,nap,D,82.0,252605,fc,2026
 Alex Meret,nap,G,82.0,209746,fc,2026
+Alisson Santos,nap,F,80.0,319697,fc,2026
 Amir Rrahmani,nap,D,83.0,205576,fc,2026
 Antonio Vergara,nap,M,65.0,332411,fc,2026
 Billy Gilmour,nap,M,74.0,274217,fc,2026
@@ -1637,6 +1796,7 @@ Shuma Sasaki,ne,F,67.3,382167,fc,2026
 Tanner Beason,ne,D,84.8,231150,fc,2026
 William Sands,ne,D,83.5,334227,fc,2026
 Aaron Ramsdale,new,G,77.0,236015,fc,2026
+Aidan Harris,new,G,73.1,353304,fc,2026
 Alex Murphy,new,D,64.0,346874,fc,2026
 Anthony Elanga,new,F,81.0,296622,fc,2026
 Anthony Gordon,new,F,83.0,268782,fc,2026
@@ -1657,6 +1817,7 @@ Malick Thiaw,new,D,78.0,303444,fc,2026
 Mark Gillespie,new,G,62.0,141705,fc,2026
 Nick Pope,new,G,81.0,161715,fc,2026
 Nick Woltemade,new,F,79.0,298349,fc,2026
+Park Seung-Soo,new,F,71.0,371584,fc,2026
 Sandro Tonali,new,M,86.0,261047,fc,2026
 Sven Botman,new,D,82.0,274633,fc,2026
 Tino Livramento,new,D,80.0,299641,fc,2026
@@ -1742,12 +1903,37 @@ Tayvon Gray,nyc,D,82.9,297380,fc,2026
 Thiago Martins,nyc,D,86.1,185792,fc,2026
 Tomas Romero,nyc,G,88.6,184786,fc,2026
 Zidane Yañez,nyc,F,69.9,378653,fc,2026
+Amine Gouiri,olm,F,79.0,259743,fc,2026
+Arthur Vermeeren,olm,M,77.0,345805,fc,2026
+Benjamin Pavard,olm,D,84.0,215378,fc,2026
+Bilal Nadir,olm,M,71.0,324567,fc,2026
+Emerson,olm,D,65.0,159051,fc,2026
+Ethan Nwaneri,olm,M,76.0,349733,fc,2026
+Facundo Medina,olm,D,79.0,249663,fc,2026
+Geoffrey Kondogbia,olm,M,78.0,152270,fc,2026
+Gerónimo Rulli,olm,G,82.0,167192,fc,2026
+Hamed Traoré,olm,M,79.0,257058,fc,2026
+Himad Abdelli,olm,M,76.0,277525,fc,2026
+Igor Paixão,olm,F,80.0,289114,fc,2026
+Jeffrey de Lange,olm,G,73.0,228707,fc,2026
+Leonardo Balerdi,olm,D,81.0,271555,fc,2026
+Mason Greenwood,olm,F,82.0,276221,fc,2026
+Nayef Aguerd,olm,D,81.0,245243,fc,2026
+Pierre-Emerick Aubameyang,olm,F,81.0,122260,fc,2026
+Pierre-Emile Højbjerg,olm,M,82.0,159543,fc,2026
+Quinten Timber,olm,M,80.0,282230,fc,2026
+Théo Vermot,olm,G,59.0,280650,fc,2026
+Timothy Weah,olm,F,77.0,266027,fc,2026
+Tochukwu Nnadi,olm,M,58.0,343114,fc,2026
+Yanis Sellami,olm,M,61.0,409118,fc,2026
 Alexandros Paschalakis,oly,G,73.0,143223,fc,2026
 Alexios Kalogeropoulos,oly,D,68.0,318799,fc,2026
+André Luiz,oly,F,69.0,324574,fc,2026
 Ayoub El Kaabi,oly,F,80.0,269562,fc,2026
 Bruno Onyemaechi,oly,D,72.0,347628,fc,2026
 Chiquinho,oly,M,78.0,275935,fc,2026
 Christos Mouzakitis,oly,M,71.0,387657,fc,2026
+Clayton,oly,F,75.0,301209,fc,2026
 Costinha,oly,D,75.0,274285,fc,2026
 Dani García,oly,M,75.0,192734,fc,2026
 Daniel Podence,oly,F,77.0,213924,fc,2026
@@ -1764,6 +1950,7 @@ Panagiotis Retsos,oly,D,77.0,233973,fc,2026
 Rodinei,oly,D,79.0,182187,fc,2026
 Rúben Vezo,oly,D,71.0,173401,fc,2026
 Santiago Hezze,oly,M,78.0,290539,fc,2026
+Theofanis Bakoulas,oly,M,63.0,387654,fc,2026
 Yusuf Yazici,oly,F,75.0,236158,fc,2026
 Adrián Marín,orl,D,85.5,210228,fc,2026
 Bernardo Rhein Goncalves,orl,F,69.2,408267,fc,2026
@@ -1869,9 +2056,11 @@ Nicholas Ioannou,paf,D,71.0,205240,fc,2026
 Abdoulaye Ndiaye,par,D,75.0,288540,fc,2026
 Adama Camara,par,M,71.0,364746,fc,2026
 Adrián Bernabé,par,M,74.0,276653,fc,2026
+Alessandro Ciardi,par,M,59.0,388069,fc,2026
 Alessandro Circati,par,D,71.0,332081,fc,2026
 Alimani Gory,par,F,69.0,238392,fc,2026
 Christian Ordoñez,par,M,72.0,339198,fc,2026
+Ciro Immobile,par,F,78.0,130123,fc,2026
 Edoardo Corvi,par,G,65.0,290792,fc,2026
 Emanuele Valeri,par,D,75.0,261274,fc,2026
 Enrico Del Prato,par,D,75.0,272694,fc,2026
@@ -1892,12 +2081,14 @@ Matija Frigan,par,F,73.0,310860,fc,2026
 Maxime López,par,M,76.0,223122,fc,2026
 Moses Simon,par,M,77.0,187647,fc,2026
 Moustapha Mbow,par,D,72.0,287474,fc,2026
+Nesta Elphege,par,F,62.0,361749,fc,2026
 Nhoa Sangui,par,D,67.0,371471,fc,2026
 Obed Nkambadio,par,G,73.0,301770,fc,2026
 Oliver Sørensen,par,M,73.0,297751,fc,2026
 Otavio,par,D,75.0,308195,fc,2026
 Pierre Lees-Melou,par,M,78.0,221527,fc,2026
 Pontus Almqvist,par,F,72.0,253569,fc,2026
+Rudy Matondo,par,M,59.0,402888,fc,2026
 Samir Chergui,par,D,67.0,287572,fc,2026
 Sascha Britschgi,par,D,52.0,396009,fc,2026
 Sofiane Alakouch,par,D,65.0,235768,fc,2026
@@ -1967,6 +2158,7 @@ Trey Muse,por,G,88.6,254340,fc,2026
 Zac McGraw,por,D,82.9,302907,fc,2026
 Achraf Hakimi,psg,D,89.0,240233,fc,2026
 Bradley Barcola,psg,F,84.0,328238,fc,2026
+Dro Fernández,psg,M,66.6,403578,fc,2026
 Désiré Doué,psg,F,85.0,336388,fc,2026
 Fabián Ruiz,psg,M,85.0,214596,fc,2026
 Gonçalo Ramos,psg,F,80.0,288896,fc,2026
@@ -2064,7 +2256,9 @@ Unai López,ray,M,74.7,203711,fc,2026
 Andrija Maksimovic,rbl,M,71.0,372232,fc,2026
 Antonio Nusa,rbl,M,76.0,319368,fc,2026
 Assan Ouédraogo,rbl,M,69.0,364897,fc,2026
+Ayodele Thomas,rbl,F,87.9,380942,fc,2026
 Benjamin Henrichs,rbl,D,80.0,220711,fc,2026
+Brajan Gruda,rbl,F,74.0,357683,fc,2026
 Castello Lukeba,rbl,D,80.0,319100,fc,2026
 Christoph Baumgartner,rbl,M,77.0,274897,fc,2026
 Conrad Harder,rbl,F,74.0,362794,fc,2026
@@ -2117,6 +2311,7 @@ Ronald Donkor,rbny,M,76.7,362442,fc,2026
 Tanner Rosborough,rbny,M,76.0,381248,fc,2026
 Tim Parker,rbny,D,85.5,217009,fc,2026
 Abdallah Sima,rcl,F,74.0,308246,fc,2026
+Amadou Haidara,rcl,M,77.0,228557,fc,2026
 Andrija Bulatovic,rcl,M,64.0,387061,fc,2026
 Florian Sotoca,rcl,F,75.0,215687,fc,2026
 Florian Thauvin,rcl,F,76.0,156898,fc,2026
@@ -2126,6 +2321,7 @@ Kyllian Antonio,rcl,D,64.0,393432,fc,2026
 Malang Sarr,rcl,D,73.0,240438,fc,2026
 Mamadou Sangare,rcl,M,72.0,228547,fc,2026
 Matthieu Udol,rcl,D,74.0,233199,fc,2026
+Michaël Cuisance,rcl,M,72.0,258871,fc,2026
 Nidal Celik,rcl,D,64.0,387044,fc,2026
 Odsonne Édouard,rcl,F,72.0,222180,fc,2026
 Rayan Fofana,rcl,F,64.0,401045,fc,2026
@@ -2142,12 +2338,15 @@ Brice Samba,ren,G,80.0,164126,fc,2026
 Djaoui Cissé,ren,M,73.0,355982,fc,2026
 Esteban Lepaul,ren,F,74.0,323850,fc,2026
 Glen Kamara,ren,M,74.0,175064,fc,2026
+Gonçalo Oliveira,ren,D,63.0,401410,fc,2026
 Lilian Brassier,ren,D,76.0,290141,fc,2026
 Ludovic Blas,ren,F,77.0,223120,fc,2026
 Mahamadou Nagida,ren,D,66.0,372260,fc,2026
 Mahdi Camara,ren,M,78.0,268966,fc,2026
 Mousa Al-Tamari,ren,F,75.0,257489,fc,2026
+Nordan Mukiele,ren,F,79.0,409660,fc,2026
 Quentin Merlin,ren,D,76.0,313890,fc,2026
+Sebastian Szymanski,ren,M,78.0,243844,fc,2026
 Valentin Rongier,ren,M,79.0,207136,fc,2026
 Jude Bellingham,rm,CM,89,,fc,2026
 Kylian Mbappe,rm,ST,91,,fc,2026
@@ -2296,6 +2495,7 @@ Philipp Treu,scf,D,74.0,364596,fc,2026
 Vincenzo Grifo,scf,M,80.0,179571,fc,2026
 Yuito Suzuki,scf,M,71.0,303031,fc,2026
 Daniel Bragança,scp,M,78.0,290592,fc,2026
+David Moreira,scp,D,77.0,402224,fc,2026
 Diego Callai,scp,G,68.0,329031,fc,2026
 Eduardo Quaresma,scp,D,77.0,290590,fc,2026
 Fotis Ioannidis,scp,F,77.0,266318,fc,2026
@@ -2308,6 +2508,7 @@ Gonçalo Inácio,scp,D,81.0,304106,fc,2026
 Hidemasa Morita,scp,M,79.0,270752,fc,2026
 João Simões,scp,M,69.0,392622,fc,2026
 João Virgínia,scp,G,71.0,274284,fc,2026
+Luis Guilherme,scp,F,71.0,361429,fc,2026
 Luis Suárez,scp,F,77.0,272722,fc,2026
 Maxi Araújo,scp,M,77.0,287025,fc,2026
 Morten Hjulmand,scp,M,83.0,274911,fc,2026
@@ -2315,7 +2516,10 @@ Nuno Santos,scp,D,79.0,124204,fc,2026
 Ousmane Diomande,scp,D,80.0,343964,fc,2026
 Pedro Gonçalves,scp,M,83.0,262591,fc,2026
 Ricardo Mangas,scp,D,72.0,259871,fc,2026
+Rodrigo Dias,scp,D,86.0,416643,fc,2026
 Rui Silva,scp,G,81.0,177898,fc,2026
+Rômulo,scp,D,76.0,318189,fc,2026
+Souleymane Faye,scp,F,53.0,297345,fc,2026
 Zeno Debast,scp,D,78.0,314473,fc,2026
 Alejandro Alvarado Jr.,sd,F,70.5,303619,fc,2026
 Alex Mighten,sd,F,71.2,291999,fc,2026
@@ -2412,8 +2616,10 @@ Tanguy Nianzou,sev,D,80.9,290165,fc,2026
 Ørjan Nyland,sev,G,86.6,193610,fc,2026
 Amil Siljevic,sge,G,58.0,397160,fc,2026
 Ansgar Knauff,sge,F,77.0,305555,fc,2026
+Arnaud Kalimuendo,sge,F,78.0,296321,fc,2026
 Arthur Theate,sge,D,80.0,304222,fc,2026
 Aurèle Amenda,sge,D,71.0,319404,fc,2026
+Ayoube Amaimouni,sge,F,63.0,416636,fc,2026
 Can Uzun,sge,M,74.0,355369,fc,2026
 Elias Baum,sge,D,72.0,372788,fc,2026
 Ellyes Skhiri,sge,M,80.0,209595,fc,2026
@@ -2423,6 +2629,8 @@ Jean-Mattéo Bahoya,sge,F,75.0,346662,fc,2026
 Jens Grahl,sge,G,64.0,122396,fc,2026
 Jonathan Burkardt,sge,F,82.0,274887,fc,2026
 Kauã Santos,sge,G,71.0,338950,fc,2026
+Keita Kosugi,sge,D,70.0,371596,fc,2026
+Love Arrhov,sge,M,62.0,399423,fc,2026
 Mahmoud Dahoud,sge,M,73.0,191098,fc,2026
 Mario Götze,sge,M,82.0,143020,fc,2026
 Michael Zetterer,sge,G,76.0,184550,fc,2026
@@ -2434,6 +2642,7 @@ Rasmus Kristensen,sge,D,79.0,234787,fc,2026
 Ritsu Doan,sge,M,82.0,219627,fc,2026
 Robin Koch,sge,D,82.0,208285,fc,2026
 Timothy Chandler,sge,M,64.0,128521,fc,2026
+Younes Ebnoutalib,sge,F,62.0,359793,fc,2026
 Beau Leroux,sj,M,72.8,382638,fc,2026
 Benjamin Kikanovic,sj,F,69.2,302893,fc,2026
 Daniel,sj,G,87.9,243832,fc,2026
@@ -2516,6 +2725,7 @@ Leandro Barreiro,slb,M,77.0,271854,fc,2026
 Manu Silva,slb,M,72.0,358451,fc,2026
 Nicolás Otamendi,slb,D,82.0,119289,fc,2026
 Nuno Félix,slb,M,64.0,364654,fc,2026
+Rafa Silva,slb,M,81.0,192421,fc,2026
 Richard Ríos,slb,M,79.0,301520,fc,2026
 Samuel Dahl,slb,D,73.0,329653,fc,2026
 Samuel Jumpe Soares,slb,G,70.0,307631,fc,2026
@@ -2533,8 +2743,10 @@ Jakub Markovic,slp,G,72.0,291407,fc,2026
 Jan Boril,slp,D,74.0,176738,fc,2026
 Jindrich Stanek,slp,G,76.0,199988,fc,2026
 Lukás Provod,slp,M,78.0,294618,fc,2026
+Martin Kovár,slp,D,75.0,403971,fc,2026
 Michal Sadílek,slp,M,76.0,249525,fc,2026
 Mojmír Chytil,slp,F,74.0,343733,fc,2026
+Ondrej Kolar,slp,G,67.0,159130,fc,2026
 Oscar Dorley,slp,M,78.0,248263,fc,2026
 Stepán Chaloupek,slp,D,70.0,370744,fc,2026
 Tomás Chorý,slp,F,75.0,257336,fc,2026
@@ -2594,6 +2806,7 @@ Manolis Saliakas,stp,D,73.0,202696,fc,2026
 Martijn Kaars,stp,F,71.0,250459,fc,2026
 Marwin Schmitz,stp,M,59.0,394412,fc,2026
 Mathias Pereira Lage,stp,M,75.0,233835,fc,2026
+Mathias Rasmussen,stp,M,71.0,173141,fc,2026
 Nikola Vasilj,stp,G,77.0,79941,fc,2026
 Ricky-Jade Jones,stp,F,65.0,294291,fc,2026
 Simon Spari,stp,G,61.0,386896,fc,2026
@@ -2602,10 +2815,12 @@ Andrew Omobamidele,str,D,73.0,290101,fc,2026
 Ben Chilwell,str,D,77.0,225426,fc,2026
 Diego Moreira,str,F,77.0,340678,fc,2026
 Emmanuel Emegha,str,F,78.0,304871,fc,2026
+Gessime Yassine,str,F,65.0,379012,fc,2026
 Guela Doué,str,D,77.0,346636,fc,2026
 Ismael Doukoure,str,D,76.0,305935,fc,2026
 Joaquín Panichelli,str,F,74.0,350961,fc,2026
 Julio Enciso,str,M,73.0,20975,fc,2026
+Junior Mwanga,str,M,72.0,340583,fc,2026
 Karl-Johan Johnsson,str,G,69.0,183562,fc,2026
 Lucas Høgsberg,str,D,69.0,359934,fc,2026
 Martial Godo,str,F,63.0,348301,fc,2026
@@ -2627,6 +2842,8 @@ Enzo Le Fée,sun,M,76.0,288340,fc,2026
 Granit Xhaka,sun,M,85.0,149981,fc,2026
 Habib Diarra,sun,M,77.0,324991,fc,2026
 Luke O'Nien,sun,M,72.0,191574,fc,2026
+Melker Ellborg,sun,G,62.0,307800,fc,2026
+Nilson Angulo,sun,M,67.0,318090,fc,2026
 Noah Sadiki,sun,M,74.0,340240,fc,2026
 Nordi Mukiele,sun,D,79.0,214188,fc,2026
 Omar Alderete,sun,D,78.0,215401,fc,2026
@@ -2757,6 +2974,7 @@ Dayann Methalie,tou,D,61.0,388070,fc,2026
 Djibril Sidibé,tou,D,74.0,30302,fc,2026
 Emersonn,tou,F,65.0,322654,fc,2026
 Guillaume Restes,tou,G,78.0,324289,fc,2026
+Jacen Russell-Rowe,tou,F,64.0,297121,fc,2026
 Mario Sauer,tou,M,68.0,322205,fc,2026
 Mark McKenzie,tou,D,74.0,77072,fc,2026
 Nicolas Wasbauer,tou,D,62.0,344521,fc,2026
@@ -2772,7 +2990,9 @@ Alexander Prass,tsg,D,74.0,320939,fc,2026
 Andrej Kramaric,tsg,F,81.0,139520,fc,2026
 Bazoumana Touré,tsg,F,70.0,359108,fc,2026
 Bernardo,tsg,D,75.0,218980,fc,2026
+Cole Campbell,tsg,F,67.0,379024,fc,2026
 Fisnik Asllani,tsg,F,73.0,331057,fc,2026
+Florian Micheler,tsg,M,61.0,389264,fc,2026
 Grischa Prömel,tsg,M,75.0,218714,fc,2026
 Ihlas Bebou,tsg,F,75.0,189541,fc,2026
 Kelven Frees,tsg,D,60.0,409506,fc,2026
@@ -2781,6 +3001,7 @@ Koki Machida,tsg,D,76.0,238025,fc,2026
 Leon Avdullahu,tsg,M,70.0,362590,fc,2026
 Luca Erlein,tsg,D,59.0,399218,fc,2026
 Luca Philipp,tsg,G,68.0,304795,fc,2026
+Luis Engelns,tsg,M,62.0,383188,fc,2026
 Luka Djuric,tsg,M,61.0,399219,fc,2026
 Lúkas Petersson,tsg,G,60.0,364646,fc,2026
 Max Moerstedt,tsg,F,67.0,372035,fc,2026
@@ -2955,14 +3176,18 @@ Willy Kambwala,vil,D,80.9,325553,fc,2026
 Aaron Zehnter,wob,D,72.0,323708,fc,2026
 Adam Daghim,wob,F,66.0,338854,fc,2026
 Bence Dárdai,wob,M,72.0,366562,fc,2026
+Christian Eriksen,wob,M,72.0,144130,fc,2026
 Denis Vavro,wob,D,78.0,191176,fc,2026
 Dzenan Pejcinovic,wob,F,65.0,345905,fc,2026
 Jakub Zielinski,wob,G,59.0,380185,fc,2026
+Jeanuël Belocian,wob,D,70.0,333927,fc,2026
 Jenson Seelt,wob,D,66.0,310132,fc,2026
 Jesper Lindstrom,wob,M,75.0,278822,fc,2026
 Joakim Maehle,wob,D,78.0,238870,fc,2026
+Jonas Adjetey,wob,D,70.0,341627,fc,2026
 Jonas Wind,wob,F,78.0,271215,fc,2026
 Kamil Grabara,wob,G,79.0,259474,fc,2026
+Kento Shiogai,wob,F,66.0,362959,fc,2026
 Kevin Paredes,wob,F,73.0,183529,fc,2026
 Kilian Fischer,wob,D,74.0,321247,fc,2026
 Konstantinos Koulierakis,wob,D,77.0,336104,fc,2026

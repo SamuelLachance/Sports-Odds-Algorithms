@@ -27,6 +27,42 @@ USER_AGENT = "Mozilla/5.0 (compatible; Sports-Odds-Algorithms/2.0)"
 REQUEST_DELAY = 0.35
 _FUZZY_NAME_THRESHOLD = 0.86
 
+# ESPN displayName → EA FC team.label (licensed naming differs).
+SOCCER_ESPN_TO_EA_LABEL: dict[str, str] = {
+    "ac milan": "Milano FC",
+    "ajax amsterdam": "Ajax",
+    "arsenal": "Arsenal",
+    "atalanta": "Bergamo Calcio",
+    "athletic club": "Athletic Club",
+    "bayern munich": "FC Bayern München",
+    "borussia monchengladbach": "M'gladbach",
+    "borussia mönchengladbach": "M'gladbach",
+    "brighton & hove albion": "Brighton & Hove Albion",
+    "cf montreal": "CF Montréal",
+    "cf montréal": "CF Montréal",
+    "fc barcelona": "FC Barcelona",
+    "fk qarabag": "Qarabağ FK",
+    "internazionale": "Lombardia FC",
+    "inter miami cf": "Inter Miami CF",
+    "lazio": "Latium",
+    "manchester city": "Manchester City",
+    "manchester united": "Manchester United",
+    "new york red bulls": "Red Bulls",
+    "nottingham forest": "Nott'm Forest",
+    "paris saint-germain": "Paris SG",
+    "psv eindhoven": "PSV",
+    "rb leipzig": "RB Leipzig",
+    "real madrid": "Real Madrid",
+    "red bull new york": "Red Bulls",
+    "slavia prague": "Slavia Praha",
+    "sporting kansas city": "Sporting KC",
+    "tottenham hotspur": "Spurs",
+    "union st.-gilloise": "R. Union St.-G.",
+    "vancouver whitecaps": "Whitecaps FC",
+    "west ham united": "West Ham",
+    "wolverhampton wanderers": "Wolves",
+}
+
 # ESPN abbr → rating-site slug overrides when auto-slug fails.
 TEAM_SLUG_OVERRIDES: dict[str, dict[str, str]] = {
     "nba": {
@@ -167,9 +203,19 @@ def _norm_name(name: str) -> str:
     return re.sub(r"[^a-z0-9]", "", (name or "").lower())
 
 
+def _canonical_soccer_label(label: str) -> str:
+    key = re.sub(r"[^a-z0-9]", "", (label or "").lower())
+    for espn_key, ea_label in SOCCER_ESPN_TO_EA_LABEL.items():
+        if key == re.sub(r"[^a-z0-9]", "", espn_key):
+            return ea_label
+    return label
+
+
 def _team_label_match(a: str, b: str) -> bool:
     if not a or not b:
         return False
+    a = _canonical_soccer_label(a)
+    b = _canonical_soccer_label(b)
     na = re.sub(r"[^a-z0-9]", "", a.lower())
     nb = re.sub(r"[^a-z0-9]", "", b.lower())
     if na == nb or na in nb or nb in na:
@@ -558,7 +604,8 @@ def _espn_team_label(league: str, team_abbr: str) -> str:
     abbr = (team_abbr or "").lower()
     for team in fetch_espn_teams(league):
         if team["abbr"] == abbr:
-            return team.get("label") or team.get("slug") or abbr
+            label = team.get("label") or team.get("slug") or abbr
+            return _canonical_soccer_label(label)
     return abbr
 
 
