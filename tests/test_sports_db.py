@@ -4,7 +4,6 @@ import pytest
 
 from web.sports_db.betting_context import game_betting_sheet, league_betting_context
 from web.sports_db.build import (
-    FAST_DEEP_OTHER,
     _recent_games_for_team,
     _recent_games_from_live,
     deep_player_targets,
@@ -106,13 +105,13 @@ def test_resolve_player_headshot_prefers_roster_then_overview_then_cdn() -> None
     assert resolve_player_headshot("nba", "4065648") == headshot_cdn_url("nba", "4065648")
 
 
-def test_enrich_roster_headshots_fast_uses_cdn_only() -> None:
+def test_enrich_roster_headshots_fast_skips_enrichment() -> None:
     roster = [
         {"id": "4065648", "name": "Player A"},
         {"id": "999", "name": "Player B", "headshot": "https://example.com/existing.png"},
     ]
     enrich_roster_headshots("nba", roster, fast=True)
-    assert roster[0]["headshot"] == headshot_cdn_url("nba", "4065648")
+    assert roster[0].get("headshot") is None
     assert roster[1]["headshot"] == "https://example.com/existing.png"
 
 
@@ -428,12 +427,11 @@ def test_parse_wnba_athlete_stats_categories() -> None:
     assert overview_rows[0]["stats"][1]["display"] == "17.5"
 
 
-def test_stats_only_player_targets_fast_mode() -> None:
+def test_stats_only_player_targets_disabled() -> None:
     roster = [{"id": str(i)} for i in range(10)]
     deep = deep_player_targets(roster, "bos", "nba", {"bos"}, fast=True)
     stats = stats_only_player_targets(roster, deep, fast=True)
-    assert deep | stats == {str(i) for i in range(10)}
-    assert not (deep & stats)
+    assert stats == set()
     assert stats_only_player_targets(roster, deep, fast=False) == set()
 
 
@@ -462,6 +460,7 @@ def test_build_player_snapshot_merges_roster_and_stats() -> None:
         overview={"gameLog": {"events": {}}},
         stats_payload=stats_payload,
         team_abbr="bos",
+        cutoff_date="6-28-2026",
     )
     assert snapshot["player"]["name"] == "Test Player"
     assert snapshot["team_abbr"] == "bos"
@@ -491,7 +490,7 @@ def test_parse_stat_categories_unwraps_espn_results() -> None:
 @pytest.mark.parametrize(
     ("league", "fast", "expected_all"),
     [
-        ("nba", True, True),
+        ("nba", True, False),
         ("cbb", True, False),
         ("nba", False, True),
     ],
@@ -503,6 +502,8 @@ def test_team_build_targets(league, fast, expected_all) -> None:
     targets = team_build_targets(league, team_ids, slate_keys, standings, fast=fast)
     if expected_all:
         assert targets == set(team_ids.keys())
+    elif league == "nba":
+        assert targets == {"bos", "nyk"}
     else:
         assert "bos" in targets
         assert "lal" in targets
@@ -512,14 +513,23 @@ def test_deep_player_targets_fast_slate_vs_other() -> None:
     roster = [{"id": str(i)} for i in range(20)]
     slate = deep_player_targets(roster, "bos", "nba", {"bos"}, fast=True)
     other = deep_player_targets(roster, "nyk", "nba", {"bos"}, fast=True)
-    assert len(slate) == 20
-    assert len(other) == FAST_DEEP_OTHER
+    assert len(slate) == 15
+    assert len(other) == 0
 
 
 def test_deep_player_targets_skips_idle_league() -> None:
     roster = [{"id": str(i)} for i in range(20)]
     assert deep_player_targets(roster, "nyk", "nba", set(), fast=True, games_today=0) == set()
-    assert len(deep_player_targets(roster, "bos", "nba", {"bos"}, fast=True, games_today=0)) == 20
+    assert len(deep_player_targets(roster, "bos", "nba", {"bos"}, fast=True, games_today=0)) == 15
+
+
+def test_fast_priority_leagues_includes_core_and_slate() -> None:
+    from web.league_profiles import FAST_CORE_LEAGUES, fast_priority_leagues
+
+    slate = {"games": [{"league": "ucl"}, {"league": "nba"}]}
+    leagues = fast_priority_leagues(slate)
+    assert FAST_CORE_LEAGUES <= leagues
+    assert "ucl" in leagues
 
 
 def test_should_fetch_recent_games_fast_mode() -> None:
@@ -556,6 +566,7 @@ def test_build_player_roster_snapshot_lightweight() -> None:
         player_id="99",
         roster_row=roster,
         team_abbr="bos",
+        cutoff_date="6-28-2026",
     )
     assert snap["profile_depth"] == "roster"
     assert snap["player"]["name"] == "Roster Only"

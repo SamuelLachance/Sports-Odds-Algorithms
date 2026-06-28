@@ -14,6 +14,7 @@ from web.league_profiles import (
     LEAGUE_PROFILES,
     SCOREBOARD_ONLY_LEAGUES,
     SUPPORTED_LEAGUES,
+    fast_priority_leagues,
     list_leagues_metadata,
 )
 from web.live_data import load_live_team_data, resolve_team
@@ -51,10 +52,10 @@ from web.sports_db.ratings import league_ratings_snapshot, team_rating_slice
 from web.team_service import fetch_espn_team_ids
 
 # Deep ESPN athlete fetches (overview + stats) per team in fast daily builds.
-FAST_DEEP_SLATE_CAP = 30
-FAST_DEEP_OTHER = 5
-FAST_DEEP_LARGE_LEAGUE = 3
-TEAM_BUILD_WORKERS = 4
+FAST_DEEP_SLATE_CAP = 15
+FAST_DEEP_OTHER = 0
+FAST_DEEP_LARGE_LEAGUE = 0
+TEAM_BUILD_WORKERS = 6
 PLAYER_FETCH_WORKERS = 4
 
 _RATING_LEAGUES = {"nba", "nfl", "nhl", "mlb", "mls", "epl"}
@@ -198,12 +199,6 @@ def enrich_roster_headshots(
 ) -> None:
     """Fill missing roster headshots via ESPN overview (cached) and CDN pattern."""
     if fast:
-        for player in roster:
-            if player.get("headshot") or not player.get("id"):
-                continue
-            cdn = headshot_cdn_url(league, player["id"])
-            if cdn:
-                player["headshot"] = cdn
         return
 
     missing = [player for player in roster if player.get("id") and not player.get("headshot")]
@@ -265,13 +260,14 @@ def team_build_targets(
     all_abbrs = set(team_ids.keys())
     if not fast:
         return all_abbrs
+    slate_hit = slate_keys & all_abbrs
     if league in LARGE_ROSTER_LEAGUES or league in SCOREBOARD_ONLY_LEAGUES:
         standing_abbrs = {
             (row.get("abbr") or "").lower()
             for row in (standings.get("teams") or [])
         }
-        return (slate_keys & all_abbrs) | (standing_abbrs & all_abbrs)
-    return all_abbrs
+        return slate_hit | (standing_abbrs & all_abbrs)
+    return slate_hit
 
 
 def should_fetch_recent_games(*, fast: bool, on_slate: bool) -> bool:
@@ -301,7 +297,7 @@ def deep_player_targets(
 
     large = league in LARGE_ROSTER_LEAGUES
     if on_slate:
-        cap = FAST_DEEP_SLATE_CAP if large else len(ids)
+        cap = min(len(ids), FAST_DEEP_SLATE_CAP)
     elif large:
         cap = FAST_DEEP_LARGE_LEAGUE
     else:
@@ -316,13 +312,7 @@ def stats_only_player_targets(
     fast: bool,
 ) -> set[str]:
     """Roster players that receive stats-only enrichment (no overview/game log)."""
-    if not fast:
-        return set()
-    return {
-        str(player["id"])
-        for player in roster
-        if player.get("id") and str(player["id"]) not in deep_ids
-    }
+    return set()
 
 
 def _write_player_json(players_dir: Path, player_id: str, payload: dict[str, Any]) -> None:
@@ -606,6 +596,77 @@ def build_team_snapshot(
     return payload, players_built, roster_profiles
 
 
+def _load_cached_league_meta(league_dir: Path, league: str) -> dict[str, Any] | None:
+    league_path = league_dir / "league.json"
+    if not league_path.is_file():
+        return None
+    try:
+        snapshot = json.loads(league_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return None
+    teams_dir = league_dir / "teams"
+    team_index_path = teams_dir / "index.json"
+    teams_built = 0
+    if team_index_path.is_file():
+        try:
+            index = json.loads(team_index_path.read_text(encoding="utf-8"))
+            teams_built = sum(1 for row in index.get("teams") or [] if row.get("has_sheet"))
+        except (json.JSONDecodeError, OSError):
+            teams_built = 0
+    return {
+        "id": league,
+        "name": snapshot.get("league", {}).get("name") or league.upper(),
+        "category": snapshot.get("league", {}).get("category") or "Other",
+        "team_count": len(snapshot.get("team_ids") or {}),
+        "teams_built": teams_built,
+        "players_built": 0,
+        "roster_profiles": 0,
+        "games_today": (snapshot.get("betting") or {}).get("game_count", 0),
+        "news_count": len(snapshot.get("news") or []),
+        "standings_groups": len((snapshot.get("standings") or {}).get("groups") or []),
+        "cached": True,
+    }
+
+
+def _league_lightweight_snapshot(
+    league: str,
+    cutoff_date: str,
+    slate: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Standings/news only — no team sheets (off-slate leagues in fast builds)."""
+    profile = LEAGUE_PROFILES[league]
+    profile_meta = _league_profile_meta(league)
+    season_year = season_year_for_league(league)
+    standings_raw = fetch_standings(league, season_year)
+    standings = parse_standings(standings_raw)
+    news = parse_news(fetch_league_news(league))
+    rankings = parse_rankings(fetch_rankings(league))
+    team_ids = fetch_espn_team_ids(league)
+    betting = league_betting_context(slate, league)
+    include_ratings = bool(_league_team_keys_from_slate(slate, league)) or league in _RATING_LEAGUES
+    ratings = league_ratings_snapshot(league, cutoff_date) if include_ratings else {"source": [], "skipped": True}
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "league": {
+            "id": league,
+            "name": profile["name"],
+            "category": profile["category"],
+            "sport_path": profile["sport_path"],
+        },
+        "profile": profile_meta,
+        "season_year": season_year,
+        "cutoff_date": cutoff_date,
+        "standings": standings,
+        "news": news,
+        "rankings": rankings,
+        "ratings": ratings,
+        "betting": betting,
+        "team_ids": team_ids,
+        "team_targets": [],
+    }
+
+
 def build_sports_database(
     output_dir: Path,
     *,
@@ -630,8 +691,50 @@ def build_sports_database(
     built_teams = 0
     built_players = 0
     roster_profiles = 0
+    priority_leagues = fast_priority_leagues(slate) if fast else set(SUPPORTED_LEAGUES)
 
     def build_one_league(league: str) -> tuple[str, dict[str, Any], int, int, int]:
+        league_dir = output_dir / league
+        if fast and league not in priority_leagues:
+            cached_meta = _load_cached_league_meta(league_dir, league)
+            if cached_meta:
+                print(f"Sports DB: {league} (cached, skipped refresh)")
+                return league, cached_meta, 0, 0, 0
+            snapshot = _league_lightweight_snapshot(league, cutoff_date, slate)
+            league_dir.mkdir(parents=True, exist_ok=True)
+            _write_json(league_dir / "league.json", snapshot)
+            team_ids = snapshot.get("team_ids") or {}
+            teams_dir = league_dir / "teams"
+            teams_dir.mkdir(parents=True, exist_ok=True)
+            name_by_abbr = {
+                (row.get("abbr") or "").lower(): row.get("name")
+                for row in snapshot["standings"].get("teams") or []
+            }
+            team_index = [
+                {
+                    "abbr": abbr,
+                    "espn_id": team_ids.get(abbr),
+                    "name": name_by_abbr.get(abbr, abbr.upper()),
+                    "has_sheet": False,
+                }
+                for abbr in sorted(team_ids.keys())
+            ]
+            _write_json(teams_dir / "index.json", {"teams": team_index})
+            meta = {
+                "id": league,
+                "name": snapshot["league"]["name"],
+                "category": snapshot["league"]["category"],
+                "team_count": len(team_ids),
+                "teams_built": 0,
+                "players_built": 0,
+                "roster_profiles": 0,
+                "games_today": (snapshot.get("betting") or {}).get("game_count", 0),
+                "news_count": len(snapshot.get("news") or []),
+                "standings_groups": len((snapshot.get("standings") or {}).get("groups") or []),
+            }
+            print(f"Sports DB: {league} (league-only, 0 teams)")
+            return league, meta, 0, 0, 0
+
         slate_keys = _league_team_keys_from_slate(slate, league)
         season_year = season_year_for_league(league)
         standings_raw = fetch_standings(league, season_year)
@@ -670,6 +773,8 @@ def build_sports_database(
         local_players = 0
 
         def build_one_team(abbr: str) -> tuple[int, int, int]:
+            if abbr not in targets:
+                return 0, 0, 0
             espn_id = team_ids.get(abbr)
             if not espn_id:
                 return 0, 0, 0

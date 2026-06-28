@@ -41,6 +41,7 @@ jobs:
     env:
       FAST_DAILY_BUILD: ${{ (github.event_name == 'schedule' || github.event.inputs.full_build != 'true') && '1' || '' }}
       FULL_BUILD: ${{ github.event.inputs.full_build == 'true' && '1' || '' }}
+      PYTHONUNBUFFERED: "1"
     steps:
       - uses: actions/checkout@v4
         with:

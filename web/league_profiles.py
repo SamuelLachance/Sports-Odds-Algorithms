@@ -407,6 +407,22 @@ SOCCER_DRAW_BASE: dict[str, float] = {
 
 SUPPORTED_LEAGUES: tuple[str, ...] = tuple(LEAGUE_PROFILES.keys())
 
+# Pro leagues always refreshed on FAST_DAILY_BUILD; others reuse cache unless on today's slate.
+FAST_CORE_LEAGUES: frozenset[str] = frozenset(
+    {"nba", "nfl", "nhl", "mlb", "wnba", "mls", "epl"}
+)
+
+
+def fast_priority_leagues(slate: dict | None) -> set[str]:
+    """Leagues that receive a full sports-DB refresh during fast CI builds."""
+    leagues = set(FAST_CORE_LEAGUES)
+    if slate:
+        for game in slate.get("games") or []:
+            league = game.get("league")
+            if league:
+                leagues.add(league)
+    return leagues
+
 
 def is_soccer_league(league: str) -> bool:
     return league.lower() in SOCCER_LEAGUES

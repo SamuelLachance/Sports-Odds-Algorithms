@@ -217,7 +217,7 @@ def save_sports_db_cache() -> None:
 
 def main() -> None:
     fast_build = _fast_daily_build()
-    print(f"GitHub Pages build mode: {'fast daily' if fast_build else 'full'}")
+    print(f"GitHub Pages build mode: {'fast daily' if fast_build else 'full'}", flush=True)
 
     copy_static_assets()
     build_api_metadata()
@@ -226,15 +226,15 @@ def main() -> None:
     build_daily_slate()
 
     if fast_build:
-        print("Skipping prediction cache (FAST_DAILY_BUILD)")
+        print("Skipping prediction cache (FAST_DAILY_BUILD)", flush=True)
         built, skipped = 0, 0
     else:
         built, skipped = build_prediction_cache()
 
     save_sports_db_cache()
 
-    print(f"GitHub Pages build complete: {DOCS_DIR}")
-    print(f"Prediction cache: {built} files written, {skipped} skipped")
+    print(f"GitHub Pages build complete: {DOCS_DIR}", flush=True)
+    print(f"Prediction cache: {built} files written, {skipped} skipped", flush=True)
 
 
 if __name__ == "__main__":

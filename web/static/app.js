@@ -62,18 +62,30 @@ function api(path) {
   return `/api/${path}`;
 }
 
-async function fetchJson(url) {
+async function fetchJson(url, { timeoutMs = 30000 } = {}) {
   const separator = url.includes("?") ? "&" : "?";
-  const response = await fetch(`${url}${separator}_=${Date.now()}`, {
-    cache: "no-store",
-  });
-  const payload = await response.json().catch(() => null);
-  if (!response.ok) {
-    throw new Error(
-      typeof payload?.detail === "string" ? payload.detail : "Request failed",
-    );
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(`${url}${separator}_=${Date.now()}`, {
+      cache: "no-store",
+      signal: controller.signal,
+    });
+    const payload = await response.json().catch(() => null);
+    if (!response.ok) {
+      throw new Error(
+        typeof payload?.detail === "string" ? payload.detail : "Request failed",
+      );
+    }
+    return payload;
+  } catch (err) {
+    if (err.name === "AbortError") {
+      throw new Error("Request timed out — the site may still be rebuilding.");
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
   }
-  return payload;
 }
 
 function parseRoute() {
@@ -801,7 +813,14 @@ async function viewLeaguesHub() {
 async function viewLeaguePage(league) {
   state.sidebarLeague = league;
   renderSidebar(parseRoute());
-  const data = await loadLeagueDb(league);
+  let data;
+  try {
+    data = await loadLeagueDb(league);
+  } catch {
+    appRoot.innerHTML = `<div class="panel empty-panel">League data for ${league.toUpperCase()} is not available yet. Try again after the next daily sync.</div>
+      <a class="btn btn-secondary" href="#/teams">← All leagues</a>`;
+    return;
+  }
   renderSidebar(parseRoute());
   const teams = (data.standings?.teams || []).slice(0, 60);
   const betting = data.betting || {};
@@ -899,12 +918,46 @@ function playerSilhouetteClass(league) {
   return "fm-player-photo--silhouette";
 }
 
+function headshotCdnUrl(league, athleteId) {
+  if (athleteId == null || athleteId === "") return null;
+  const sportPaths = {
+    nba: "nba",
+    wnba: "wnba",
+    cbb: "mens-college-basketball",
+    nfl: "nfl",
+    cfb: "college-football",
+    nhl: "nhl",
+    ncaah: "hockey",
+    ncaawh: "hockey",
+    mlb: "mlb",
+    ncaabb: "baseball",
+    mls: "soccer",
+    epl: "soccer",
+    laliga: "soccer",
+    bundesliga: "soccer",
+    seriea: "soccer",
+    ligue1: "soccer",
+    ucl: "soccer",
+    worldcup: "soccer",
+    fifa_friendlies: "soccer",
+    concacaf_wcq: "soccer",
+    concacaf_gold: "soccer",
+    concacaf_nations: "soccer",
+    uefa_euro: "soccer",
+    uefa_nations: "soccer",
+    copa_america: "soccer",
+  };
+  const sport = sportPaths[league];
+  if (!sport) return null;
+  return `https://a.espncdn.com/i/headshots/${sport}/players/full/${athleteId}.png`;
+}
+
 function renderPlayerPhoto(player, league, { large = false } = {}) {
   const name = player.name || player.displayName || "Player";
   const alt = htmlAttr(name);
   const sizeClass = large ? " fm-player-photo--lg" : "";
   const silhouetteCls = `fm-player-photo fm-player-photo--silhouette${sizeClass} ${playerSilhouetteClass(league)}`.trim();
-  const headshot = player.headshot;
+  const headshot = player.headshot || headshotCdnUrl(league, player.id);
   if (headshot) {
     const src = htmlAttr(headshot);
     return `<span class="fm-player-photo-slot${sizeClass}">
@@ -1377,13 +1430,17 @@ async function loadLeagueDb(league) {
 async function loadTeamDb(league, abbr) {
   const key = `team:${league}:${abbr}`;
   if (state.dbCache[key]) return state.dbCache[key];
-  const payload = await fetchJson(
-    USE_STATIC_API
-      ? dbApi(`${league}/teams/${abbr}.json`)
-      : api(`db/${league}/teams/${abbr}`),
-  );
-  state.dbCache[key] = payload;
-  return payload;
+  try {
+    const payload = await fetchJson(
+      USE_STATIC_API
+        ? dbApi(`${league}/teams/${abbr}.json`)
+        : api(`db/${league}/teams/${abbr}`),
+    );
+    state.dbCache[key] = payload;
+    return payload;
+  } catch {
+    return null;
+  }
 }
 
 async function loadPlayerDb(league, playerId) {
