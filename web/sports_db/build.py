@@ -48,6 +48,7 @@ from web.sports_db.normalize import (
     roster_index_row,
 )
 from web.sports_db.player_ratings import enrich_team_roster_ratings
+from web.sports_db.external_ratings import is_publisher_rating_source
 from web.sports_db.rating_coverage import audit_league_ratings, format_coverage_summary
 from web.sports_db.ratings import league_ratings_snapshot, team_rating_slice
 from web.team_service import fetch_espn_team_ids
@@ -60,6 +61,8 @@ TEAM_BUILD_WORKERS = 6
 PLAYER_FETCH_WORKERS = 4
 
 _RATING_LEAGUES = {"nba", "nfl", "nhl", "mlb", "mls", "epl"}
+# Fast daily builds refresh every team sheet in these leagues (small rosters, public OVR).
+_FAST_FULL_TEAM_SHEET_LEAGUES: tuple[str, ...] = ("wnba",)
 
 
 def _write_json(path: Path, data: object) -> None:
@@ -262,7 +265,7 @@ def team_build_targets(
     if not fast:
         return all_abbrs
     slate_hit = slate_keys & all_abbrs
-    if league in LARGE_ROSTER_LEAGUES or league in SCOREBOARD_ONLY_LEAGUES:
+    if league in LARGE_ROSTER_LEAGUES or league in SCOREBOARD_ONLY_LEAGUES or league in _FAST_FULL_TEAM_SHEET_LEAGUES:
         standing_abbrs = {
             (row.get("abbr") or "").lower()
             for row in (standings.get("teams") or [])
@@ -453,12 +456,13 @@ def build_players_for_team(
             return
         try:
             saved = json.loads(player_path.read_text(encoding="utf-8"))
-            if saved.get("algo_rating") is not None:
+            if saved.get("algo_rating") is not None and is_publisher_rating_source(
+                saved.get("rating_source")
+            ):
                 ratings_by_id[pid] = {
                     "algo_rating": saved["algo_rating"],
                     "rating_source": saved.get("rating_source"),
                     "rating_year": saved.get("rating_year"),
-                    "rating_layer": saved.get("rating_layer"),
                 }
         except (json.JSONDecodeError, OSError):
             pass
@@ -514,8 +518,6 @@ def build_players_for_team(
                 row["rating_source"] = cached["rating_source"]
             if cached.get("rating_year") is not None:
                 row["rating_year"] = cached["rating_year"]
-            if cached.get("rating_layer") is not None:
-                row["rating_layer"] = cached["rating_layer"]
         index_rows.append(row)
 
     return index_rows, built_deep, len(index_rows), ratings_by_id

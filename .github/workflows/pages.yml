@@ -55,9 +55,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .build-cache/sports-db
-          key: sports-db-${{ hashFiles('web/sports_db/**', 'web/live_data.py', 'web/espn_client.py') }}-${{ runner.os }}
+          key: sports-db-${{ hashFiles('web/sports_db/**', 'web/live_data.py', 'web/espn_client.py', 'data/ratings/**') }}-${{ runner.os }}
           restore-keys: |
-            sports-db-${{ hashFiles('web/sports_db/**', 'web/live_data.py', 'web/espn_client.py') }}-
+            sports-db-${{ hashFiles('web/sports_db/**', 'web/live_data.py', 'web/espn_client.py', 'data/ratings/**') }}-
             sports-db-
 
       - name: Build static site

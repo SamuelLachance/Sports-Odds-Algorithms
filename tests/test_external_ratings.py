@@ -87,6 +87,17 @@ def test_team_csv_ovr_for_nba_bos() -> None:
     assert entry["players_matched"] >= 5
 
 
+def test_derived_rating_not_publisher_source() -> None:
+    from web.sports_db.external_ratings import (
+        RATING_DERIVED_SOURCE,
+        is_publisher_rating_source,
+    )
+
+    assert is_publisher_rating_source("2k")
+    assert not is_publisher_rating_source("model")
+    assert not is_publisher_rating_source(RATING_DERIVED_SOURCE)
+
+
 def test_team_csv_ovr_sparse_team_returns_none() -> None:
     clear_rating_cache()
     assert team_csv_ovr("nba", "zzz") is None

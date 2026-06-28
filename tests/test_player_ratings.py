@@ -81,7 +81,7 @@ def test_team_average_player_rating() -> None:
     assert team_average_player_rating([]) is None
 
 
-def test_enrich_team_roster_ratings_external_and_cache() -> None:
+def test_enrich_team_roster_ratings_uses_fresh_external_only() -> None:
     clear_rating_cache()
     roster = [
         {"id": "1", "name": "Jayson Tatum", "position": "SF", "experience": 5},
@@ -92,18 +92,40 @@ def test_enrich_team_roster_ratings_external_and_cache() -> None:
         roster,
         {
             "1": {
-                "algo_rating": 82.0,
-                "rating_source": "2k",
-                "rating_year": 2026,
+                "algo_rating": 99.0,
+                "rating_source": "model",
+                "rating_layer": "basketball_matrix",
             }
         },
         team_abbr="bos",
         cutoff_date="4-16-2017",
     )
-    assert enriched[0]["algo_rating"] == 82.0
+    assert enriched[0]["algo_rating"] == 96.0
+    assert enriched[0]["rating_source"] == "2k"
     assert enriched[1]["algo_rating"] is None
     assert enriched[1]["rating_source"] == RATING_PRIOR_SOURCE
-    assert avg == 82.0
+    assert avg == 96.0
+
+
+def test_wnba_seattle_storm_external_ratings() -> None:
+    clear_rating_cache()
+    roster = [
+        {"id": "2529183", "name": "Stefanie Dolson", "position": "C"},
+        {"id": "2529122", "name": "Jewell Loyd", "position": "G"},
+        {"id": "2529130", "name": "Nneka Ogwumike", "position": "F"},
+    ]
+    enriched, avg = enrich_team_roster_ratings(
+        "wnba",
+        roster,
+        team_abbr="sea",
+        cutoff_date="6-28-2026",
+    )
+    by_name = {row["name"]: row for row in enriched}
+    assert by_name["Stefanie Dolson"]["algo_rating"] == 73.0
+    assert by_name["Jewell Loyd"]["algo_rating"] == 89.0
+    assert by_name["Nneka Ogwumike"]["algo_rating"] == 83.0
+    assert all(row["rating_source"] == "2k" for row in enriched)
+    assert avg == round((73.0 + 89.0 + 83.0) / 3, 1)
 
 
 def test_player_algo_rating_none_when_missing() -> None:

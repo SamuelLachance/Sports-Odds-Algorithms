@@ -11,6 +11,7 @@ from typing import Any
 from web.sports_db.external_ratings import (
     RATING_PRIOR_SOURCE,
     clear_rating_cache,
+    is_publisher_rating_source,
     match_external_rating,
     rating_source_label as external_rating_source_label,
 )
@@ -63,7 +64,10 @@ def _external_payload(result: Any) -> dict[str, Any]:
         "rating_year": result.rating_year,
         "matched": result.matched,
     }
-    if result.rating_source != RATING_PRIOR_SOURCE and result.rating is not None:
+    if (
+        is_publisher_rating_source(result.rating_source)
+        and result.rating is not None
+    ):
         payload["algo_rating"] = result.rating
         payload["rating_tier"] = rating_tier(result.rating)
     else:
@@ -147,41 +151,27 @@ def enrich_team_roster_ratings(
     team_abbr: str | None = None,
     cutoff_date: str | None = None,
 ) -> tuple[list[dict[str, Any]], float | None]:
-    """Attach algo_rating to each roster row and compute team average."""
+    """Attach publisher OVR to each roster row and compute team average."""
+    del ratings_by_id
     if not cutoff_date:
         cutoff_date = "12-31-2099"
-
-    cached_by_id: dict[str, dict[str, Any]] = {}
-    if ratings_by_id:
-        for pid, cached in ratings_by_id.items():
-            if isinstance(cached, dict) and cached.get("algo_rating") is not None:
-                cached_by_id[pid] = cached
-            elif not isinstance(cached, dict):
-                cached_by_id[pid] = {
-                    "algo_rating": float(cached),
-                    "rating_source": "cached",
-                }
 
     enriched: list[dict[str, Any]] = []
     values: list[float] = []
     for player in roster:
         pid = str(player.get("id") or "")
-        if pid and pid in cached_by_id:
-            fields = {k: v for k, v in cached_by_id[pid].items() if v is not None}
-            row = {**player, **fields}
-        else:
-            row = {
-                **player,
-                **resolve_player_rating(
-                    league,
-                    player_name=player.get("name"),
-                    team_abbr=team_abbr,
-                    espn_id=pid or None,
-                    position=player.get("position"),
-                    roster_meta=player,
-                    cutoff_date=cutoff_date,
-                ),
-            }
+        row = {
+            **player,
+            **resolve_player_rating(
+                league,
+                player_name=player.get("name"),
+                team_abbr=team_abbr,
+                espn_id=pid or None,
+                position=player.get("position"),
+                roster_meta=player,
+                cutoff_date=cutoff_date,
+            ),
+        }
         enriched.append(row)
         if row.get("algo_rating") is not None:
             values.append(float(row["algo_rating"]))

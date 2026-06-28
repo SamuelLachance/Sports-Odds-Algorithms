@@ -79,6 +79,16 @@ RATING_BASELINE = 50.0
 RATING_PRIOR_SOURCE = "prior"
 RATING_DERIVED_SOURCE = "derived"
 
+# Publisher OVR sources allowed on roster cards and in the sports DB.
+PUBLISHER_RATING_SOURCES: frozenset[str] = frozenset(
+    {"2k", "madden", "nhl", "mlb_ts", "fc", "fm", "cfb", "cbb"}
+)
+
+
+def is_publisher_rating_source(source: str | None) -> bool:
+    """True when rating_source is a curated game/sim publisher (not model/derived/prior)."""
+    return (source or "").lower() in PUBLISHER_RATING_SOURCES
+
 SOURCE_LABELS: dict[str, str] = {
     "2k": "2K",
     "madden": "Madden",
