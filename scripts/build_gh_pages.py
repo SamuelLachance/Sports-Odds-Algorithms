@@ -49,13 +49,18 @@ def copy_static_assets() -> None:
         shutil.copy2(STATIC_SRC / name, DOCS_DIR / name)
 
     index_path = DOCS_DIR / "index.html"
+    app_path = DOCS_DIR / "app.js"
+    css_path = DOCS_DIR / "styles.css"
+    asset_version = str(
+        max(app_path.stat().st_mtime_ns, css_path.stat().st_mtime_ns) % 10_000_000_000
+    )
     html = index_path.read_text(encoding="utf-8")
     html = html.replace(
         '<meta name="viewport"',
         f'<meta name="base-path" content="{BASE_PATH}">\n  <meta name="viewport"',
     )
-    html = html.replace('href="/static/styles.css"', 'href="styles.css"')
-    html = html.replace('src="/static/app.js"', 'src="app.js"')
+    html = html.replace('href="/static/styles.css"', f'href="styles.css?v={asset_version}"')
+    html = html.replace('src="/static/app.js"', f'src="app.js?v={asset_version}"')
     html = html.replace(
         "https://github.com/JamesQuintero/Sports-Odds-Algorithms",
         "https://github.com/SamuelLachance/Sports-Odds-Algorithms",
