@@ -98,15 +98,17 @@ function navigate(hash) {
   location.hash = hash;
 }
 
+const THEME_STORAGE_KEY = "soa-theme-v2";
+
 function setTheme(theme) {
   document.documentElement.dataset.theme = theme;
-  localStorage.setItem("soa-theme", theme);
+  localStorage.setItem(THEME_STORAGE_KEY, theme);
   const themeColor = document.querySelector('meta[name="theme-color"]');
   if (themeColor) themeColor.content = theme === "light" ? "#f8fafc" : "#151a28";
 }
 
 function initTheme() {
-  const saved = localStorage.getItem("soa-theme");
+  const saved = localStorage.getItem(THEME_STORAGE_KEY);
   setTheme(saved === "light" ? "light" : "dark");
 }
 
