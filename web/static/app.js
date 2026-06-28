@@ -101,11 +101,13 @@ function navigate(hash) {
 function setTheme(theme) {
   document.documentElement.dataset.theme = theme;
   localStorage.setItem("soa-theme", theme);
+  const themeColor = document.querySelector('meta[name="theme-color"]');
+  if (themeColor) themeColor.content = theme === "light" ? "#f8fafc" : "#151a28";
 }
 
 function initTheme() {
   const saved = localStorage.getItem("soa-theme");
-  setTheme(saved === "dark" ? "dark" : "light");
+  setTheme(saved === "light" ? "light" : "dark");
 }
 
 function formatTime(iso) {
