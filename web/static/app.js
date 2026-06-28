@@ -166,6 +166,63 @@ function ratingTierClass(rating) {
   return "low";
 }
 
+function titleCaseCategory(name) {
+  if (!name) return "Stats";
+  const text = String(name).trim();
+  if (!text) return "Stats";
+  return text
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/[_-]+/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function formatStatValue(stat) {
+  const raw = stat?.display ?? stat?.displayValue ?? stat?.value;
+  if (raw == null || raw === "") return "—";
+  return String(raw);
+}
+
+function renderSeasonStatsSection(categories, profileStats, options = {}) {
+  const blocks = (categories || [])
+    .map((cat) => ({
+      name: titleCaseCategory(cat.name),
+      stats: (cat.stats || []).filter(
+        (stat) =>
+          stat &&
+          (stat.name ||
+            stat.display != null ||
+            stat.displayValue != null ||
+            stat.value != null),
+      ),
+    }))
+    .filter((cat) => cat.stats.length > 0);
+
+  const rowCount = blocks.reduce((total, cat) => total + cat.stats.length, 0);
+  if (!rowCount) {
+    if (profileStats?.games_played != null || profileStats?.win_pct != null) {
+      return `<ul class="db-stat-list">
+        <li><span>Games played</span><strong>${profileStats.games_played ?? "—"}</strong></li>
+        <li><span>Win %</span><strong>${profileStats.win_pct ?? "—"}%</strong></li>
+      </ul>`;
+    }
+    return `<p class="muted">${options.emptyMessage || "Season stats unavailable."}</p>`;
+  }
+
+  return `<div class="fm-season-stats">${blocks
+    .map(
+      (cat, index) => `<details class="fm-stat-details"${index === 0 ? " open" : ""}>
+        <summary>${cat.name}<span class="fm-stat-count">${cat.stats.length}</span></summary>
+        <ul class="db-stat-list">${cat.stats
+          .map(
+            (stat) =>
+              `<li><span>${stat.name || "—"}</span><strong>${formatStatValue(stat)}</strong></li>`,
+          )
+          .join("")}</ul>
+      </details>`,
+    )
+    .join("")}</div>`;
+}
+
 function pickMarketLabel(pick) {
   if (pick.bet_type === "spread") {
     return `Spread ${formatSpread(pick.spread_line)} (${formatOdds(pick.spread_odds ?? pick.market_odds)})`;
@@ -1050,15 +1107,7 @@ async function viewTeam(league, abbr) {
         .join("")}</ul>` : `<p class="muted">No recent game log.</p>`}
     </section>
     <section class="section panel"><h2>Season stats</h2>
-      ${(teamDb?.stats?.categories || [])
-        .slice(0, 2)
-        .map(
-          (cat) => `<h3>${cat.name}</h3><ul class="db-stat-list">${(cat.stats || [])
-            .slice(0, 8)
-            .map((s) => `<li><span>${s.name}</span><strong>${s.display ?? s.value}</strong></li>`)
-            .join("")}</ul>`,
-        )
-        .join("") || (profileStats ? `<ul class="db-stat-list"><li><span>Games played</span><strong>${profileStats.games_played ?? "—"}</strong></li><li><span>Win %</span><strong>${profileStats.win_pct ?? "—"}%</strong></li></ul>` : `<p class="muted">Season stats unavailable.</p>`)}
+      ${renderSeasonStatsSection(teamDb?.stats?.categories, profileStats)}
     </section>
   </div>
   ${renderRosterSection(teamDb, league)}
@@ -1111,9 +1160,11 @@ async function viewPlayer(league, playerId) {
   </section>
   <div class="db-grid-two">
     <section class="section panel"><h2>Season stats</h2>
-      ${statBlocks.slice(0, 3).map((cat) =>
-        `<h3>${cat.name}</h3><ul class="db-stat-list">${(cat.stats || []).slice(0, 14).map((s) =>
-          `<li><span>${s.name}</span><strong>${s.display ?? s.value}</strong></li>`).join("")}</ul>`).join("") || `<p class="muted">${isRosterOnly ? "Full stats not loaded for this player yet." : "Stats unavailable."}</p>`}
+      ${renderSeasonStatsSection(statBlocks, null, {
+        emptyMessage: isRosterOnly
+          ? "Full stats not loaded for this player yet."
+          : "Stats unavailable.",
+      })}
     </section>
     <section class="section panel"><h2>Recent games</h2>
       ${(player.game_log || []).length ? `<ul class="db-recent recent-games">${player.game_log.map((g) =>

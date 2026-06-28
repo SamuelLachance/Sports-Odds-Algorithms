@@ -196,29 +196,110 @@ def parse_roster(payload: dict[str, Any] | None) -> list[dict[str, Any]]:
     return [_parse_roster_athlete(athlete) for athlete in athletes]
 
 
+def _format_category_name(name: str | None, display_name: str | None = None) -> str | None:
+    if display_name:
+        return display_name
+    if not name:
+        return None
+    spaced = re.sub(r"([a-z])([A-Z])", r"\1 \2", str(name))
+    spaced = spaced.replace("_", " ").replace("-", " ")
+    return spaced.title()
+
+
+def _parse_stat_row(stat: Any) -> dict[str, Any] | None:
+    if not isinstance(stat, dict):
+        return None
+    name = stat.get("displayName") or stat.get("name")
+    display = stat.get("displayValue")
+    if display is None:
+        display = stat.get("display")
+    value = stat.get("value")
+    if not name and display is None and value is None:
+        return None
+    row: dict[str, Any] = {
+        "name": name,
+        "display": display,
+        "value": value,
+        "rank": stat.get("rank"),
+    }
+    short_name = stat.get("shortDisplayName") or stat.get("abbreviation")
+    if short_name:
+        row["short_name"] = short_name
+    return row
+
+
+def _category_stat_items(category: dict[str, Any]) -> list[Any]:
+    items = category.get("stats") or category.get("statistics") or []
+    if items:
+        return items
+
+    labels = category.get("labels") or category.get("displayNames") or []
+    values = category.get("values")
+    if labels and isinstance(values, list) and values:
+        if not isinstance(values[0], dict):
+            return [
+                {"displayName": label, "displayValue": values[idx] if idx < len(values) else None}
+                for idx, label in enumerate(labels)
+            ]
+
+    rows: list[Any] = []
+    for child in category.get("subcategories") or category.get("children") or []:
+        rows.extend(_category_stat_items(child))
+    return rows
+
+
+def _categories_from_splits(results: dict[str, Any]) -> list[dict[str, Any]]:
+    splits = results.get("splits") or []
+    if not isinstance(splits, list):
+        return []
+    for split in splits:
+        categories = split.get("categories") or []
+        if categories and any(_category_stat_items(cat) for cat in categories):
+            return categories
+    return []
+
+
+def _extract_raw_stat_categories(payload: dict[str, Any]) -> list[dict[str, Any]]:
+    top_level = payload.get("categories")
+    if top_level:
+        return top_level
+
+    results = payload.get("results") or {}
+    if not isinstance(results, dict):
+        return []
+
+    stats_root = results.get("stats")
+    if isinstance(stats_root, dict):
+        categories = stats_root.get("categories") or []
+        if categories:
+            return categories
+
+    return _categories_from_splits(results)
+
+
+def _build_stat_categories(raw_categories: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    categories: list[dict[str, Any]] = []
+    for category in raw_categories:
+        stats = []
+        for stat in _category_stat_items(category):
+            row = _parse_stat_row(stat)
+            if row:
+                stats.append(row)
+        if not stats:
+            continue
+        categories.append(
+            {
+                "name": _format_category_name(category.get("name"), category.get("displayName")),
+                "stats": stats,
+            }
+        )
+    return categories
+
+
 def parse_team_statistics(payload: dict[str, Any] | None) -> dict[str, Any]:
     if not payload:
         return {"categories": []}
-    categories: list[dict[str, Any]] = []
-
-    results = payload.get("results") or {}
-    stats_root = results.get("stats") if isinstance(results.get("stats"), dict) else {}
-    raw_categories = stats_root.get("categories") or []
-
-    for split in raw_categories:
-        stats = []
-        for stat in split.get("stats") or []:
-            stats.append(
-                {
-                    "name": stat.get("displayName") or stat.get("name"),
-                    "display": stat.get("displayValue"),
-                    "value": stat.get("value"),
-                    "rank": stat.get("rank"),
-                }
-            )
-        categories.append({"name": split.get("displayName") or split.get("name"), "stats": stats})
-
-    return {"categories": categories}
+    return {"categories": _build_stat_categories(_extract_raw_stat_categories(payload))}
 
 
 def parse_team_summary(
@@ -282,31 +363,7 @@ def build_projection(standing_row: dict[str, Any] | None, power_rating: float | 
 def _parse_stat_categories(payload: dict[str, Any] | None) -> list[dict[str, Any]]:
     if not payload:
         return []
-    categories: list[dict[str, Any]] = []
-    raw_categories = payload.get("categories")
-    if not raw_categories:
-        results = payload.get("results") or {}
-        stats_root = results.get("stats") if isinstance(results.get("stats"), dict) else {}
-        raw_categories = stats_root.get("categories") or []
-    for cat in raw_categories:
-        stats = []
-        for stat in cat.get("stats") or []:
-            stats.append(
-                {
-                    "name": stat.get("displayName") or stat.get("name"),
-                    "short_name": stat.get("shortDisplayName") or stat.get("abbreviation"),
-                    "display": stat.get("displayValue"),
-                    "value": stat.get("value"),
-                    "rank": stat.get("rank"),
-                }
-            )
-        categories.append(
-            {
-                "name": cat.get("displayName") or cat.get("name"),
-                "stats": stats,
-            }
-        )
-    return categories
+    return _build_stat_categories(_extract_raw_stat_categories(payload))
 
 
 def parse_player_overview_stats(overview: dict[str, Any] | None) -> list[dict[str, Any]]:
