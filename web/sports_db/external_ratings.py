@@ -11,6 +11,7 @@ or drop a new file and register it in LEAGUE_RATING_FILES below.
 from __future__ import annotations
 
 import csv
+import html
 import re
 import unicodedata
 from dataclasses import dataclass
@@ -19,22 +20,28 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-from web.league_profiles import LEAGUE_PROFILES
+from web.league_profiles import LEAGUE_PROFILES, SUPPORTED_LEAGUES
+from web.sports_db.rating_scrape import ScrapedPlayer, fuzzy_search_external_player, scrape_league_team_players
 
 RATINGS_DIR = Path(__file__).resolve().parent.parent.parent / "data" / "ratings"
 
-# League → curated rating file (Option A: versioned CSV in repo).
+# League → curated rating file (versioned CSV in data/ratings/).
 LEAGUE_RATING_FILES: dict[str, str] = {
     "nba": "2k_nba_2026.csv",
     "wnba": "2k_wnba_2026.csv",
-    "cbb": "2k_nba_2026.csv",
+    "cbb": "2k_cbb_2026.csv",
     "nfl": "madden_nfl_2026.csv",
-    "cfb": "madden_nfl_2026.csv",
+    "cfb": "cfb_2026.csv",
     "nhl": "nhl_2026.csv",
-    "ncaah": "nhl_2026.csv",
-    "ncaawh": "nhl_2026.csv",
+    "ncaah": "nhl_ncaa_2026.csv",
+    "ncaawh": "nhl_ncaa_2026.csv",
     "mlb": "mlb_show_2026.csv",
-    "ncaabb": "mlb_show_2026.csv",
+    "ncaabb": "mlb_ncaa_2026.csv",
+    "dwl": "mlb_winter_2026.csv",
+    "pwl": "mlb_winter_2026.csv",
+    "vwl": "mlb_winter_2026.csv",
+    "lmp": "mlb_winter_2026.csv",
+    "wbc": "mlb_wbc_2026.csv",
     "epl": "fc_2026.csv",
     "mls": "fc_2026.csv",
     "laliga": "fc_2026.csv",
@@ -42,7 +49,31 @@ LEAGUE_RATING_FILES: dict[str, str] = {
     "seriea": "fc_2026.csv",
     "ligue1": "fc_2026.csv",
     "ucl": "fc_2026.csv",
+    "worldcup": "fc_intl_2026.csv",
+    "fifa_friendlies": "fc_intl_2026.csv",
+    "concacaf_wcq": "fc_intl_2026.csv",
+    "concacaf_gold": "fc_intl_2026.csv",
+    "concacaf_nations": "fc_intl_2026.csv",
+    "uefa_euro": "fc_intl_2026.csv",
+    "uefa_nations": "fc_intl_2026.csv",
+    "copa_america": "fc_intl_2026.csv",
 }
+
+# ESPN abbr aliases → canonical abbr used in CSV rows.
+TEAM_ABBR_ALIASES: dict[str, dict[str, str]] = {
+    "nba": {"gsw": "gs", "sas": "sa", "nop": "no", "nyk": "ny", "was": "wsh", "utah": "utah"},
+    "nfl": {"lar": "la", "lv": "lv"},
+    "mlb": {"az": "az", "chw": "chw", "tb": "tb", "sf": "sf", "sd": "sd", "stl": "stl", "wsh": "wsh", "oak": "oak"},
+    "nhl": {"njd": "nj", "tbl": "tb", "sjs": "sj", "lak": "la", "nyr": "nyr", "nyi": "nyi", "wsh": "wsh"},
+    "wnba": {"gsv": "gs", "lv": "lv", "conn": "conn", "phx": "phx", "ny": "ny"},
+    "epl": {"manu": "mun", "manc": "mci", "tot": "tot", "new": "new"},
+    "mls": {"la": "la", "lafc": "lafc", "atl": "atl", "mia": "mia"},
+}
+
+_NAME_SUFFIXES = re.compile(
+    r"\b(jr\.?|sr\.?|ii+|iii+|iv|v)\.?\s*$",
+    re.I,
+)
 
 RATING_BASELINE = 50.0
 RATING_PRIOR_SOURCE = "prior"
@@ -55,12 +86,15 @@ SOURCE_LABELS: dict[str, str] = {
     "mlb_ts": "MLB The Show",
     "fc": "EA FC",
     "fm": "FM",
-    RATING_DERIVED_SOURCE: "Estimated",
-    RATING_PRIOR_SOURCE: "Estimated",
+    "cfb": "CFB 25",
+    "cbb": "2K",
+    RATING_DERIVED_SOURCE: "Team est.",
+    RATING_PRIOR_SOURCE: "Missing",
 }
 
-_FUZZY_TEAM_THRESHOLD = 0.88
-_FUZZY_LEAGUE_THRESHOLD = 0.93
+_FUZZY_TEAM_THRESHOLD = 0.86
+_FUZZY_LEAGUE_THRESHOLD = 0.90
+_FUZZY_SOCCER_THRESHOLD = 0.88
 
 
 @dataclass(frozen=True)
@@ -78,7 +112,9 @@ def _strip_accents(text: str) -> str:
 
 def normalize_player_name(name: str) -> str:
     """Lowercase alphanumeric key for exact lookups."""
-    cleaned = _strip_accents(name or "")
+    cleaned = html.unescape(name or "")
+    cleaned = _strip_accents(cleaned)
+    cleaned = _NAME_SUFFIXES.sub("", cleaned.strip())
     return re.sub(r"[^a-z0-9]", "", cleaned.lower())
 
 
@@ -102,8 +138,12 @@ def name_signature(name: str) -> str | None:
     return f"{last}|{initial}"
 
 
-def normalize_team_abbr(abbr: str | None) -> str:
-    return re.sub(r"[^a-z0-9]", "", (abbr or "").lower())
+def normalize_team_abbr(abbr: str | None, league: str | None = None) -> str:
+    team = re.sub(r"[^a-z0-9]", "", (abbr or "").lower())
+    if league:
+        aliases = TEAM_ABBR_ALIASES.get(league.lower(), {})
+        team = aliases.get(team, team)
+    return team
 
 
 def _parse_overall(raw: str) -> float | None:
@@ -170,6 +210,63 @@ def _league_table(league: str) -> tuple[_RatingRow, ...]:
     if not filename:
         return ()
     return tuple(_load_csv(RATINGS_DIR / filename))
+
+
+def _scraped_to_rows(
+    league: str,
+    team_abbr: str,
+    scraped: list[ScrapedPlayer],
+) -> tuple[_RatingRow, ...]:
+    team = normalize_team_abbr(team_abbr, league)
+    rows: list[_RatingRow] = []
+    for player in scraped:
+        rows.append(
+            _RatingRow(
+                player_name=player.name,
+                team_abbr=team,
+                position=player.position,
+                overall=player.overall,
+                espn_id="",
+                rating_source=player.rating_source,
+                rating_year=player.rating_year,
+                norm_name=normalize_player_name(player.name),
+                signature=name_signature(player.name),
+            )
+        )
+    return tuple(rows)
+
+
+@lru_cache(maxsize=256)
+def _team_scraped_table(league: str, team_abbr: str) -> tuple[_RatingRow, ...]:
+    league = league.lower()
+    if league not in SUPPORTED_LEAGUES:
+        return ()
+    scraped = scrape_league_team_players(league, team_abbr or "")
+    return _scraped_to_rows(league, team_abbr, scraped)
+
+
+def _combined_team_rows(league: str, team_abbr: str | None) -> tuple[_RatingRow, ...]:
+    league = league.lower()
+    team = normalize_team_abbr(team_abbr, league)
+    csv_rows = _league_table(league)
+    if team:
+        team_rows = [row for row in csv_rows if row.team_abbr == team]
+    else:
+        team_rows = list(csv_rows)
+    scraped = _team_scraped_table(league, team) if team else ()
+    if not scraped:
+        return tuple(team_rows) if team else tuple(csv_rows)
+    seen = {row.norm_name for row in team_rows}
+    merged = list(team_rows)
+    for row in scraped:
+        if row.norm_name not in seen:
+            merged.append(row)
+            seen.add(row.norm_name)
+    return tuple(merged)
+
+
+def _combined_league_rows(league: str) -> tuple[_RatingRow, ...]:
+    return _league_table(league)
 
 
 def _fuzzy_ratio(a: str, b: str) -> float:
@@ -251,12 +348,12 @@ def team_external_roster_stats(
     league: str,
     team_abbr: str,
 ) -> dict[str, Any] | None:
-    """Average OVR and metadata from curated CSV rows for one team."""
+    """Average OVR and metadata from CSV + live-scraped rows for one team."""
     league = (league or "").lower()
-    team = normalize_team_abbr(team_abbr)
+    team = normalize_team_abbr(team_abbr, league)
     if not team:
         return None
-    rows = [row for row in _league_table(league) if row.team_abbr == team]
+    rows = list(_combined_team_rows(league, team))
     if not rows:
         return None
     ovrs = [row.overall for row in rows]
@@ -285,14 +382,17 @@ def _match_row(
     player_name: str,
     team_abbr: str | None,
     espn_id: str | None,
+    league: str | None = None,
 ) -> _RatingRow | None:
     if not rows:
         return None
 
     norm = normalize_player_name(player_name)
     sig = name_signature(player_name)
-    team = normalize_team_abbr(team_abbr)
+    team = normalize_team_abbr(team_abbr, league)
     pid = str(espn_id or "").strip()
+    category = LEAGUE_PROFILES.get((league or "").lower(), {}).get("category", "")
+    league_threshold = _FUZZY_SOCCER_THRESHOLD if category == "soccer" else _FUZZY_LEAGUE_THRESHOLD
 
     if pid:
         for row in rows:
@@ -311,6 +411,10 @@ def _match_row(
         sig_hits = [row for row in rows if row.signature == sig and row.team_abbr == team]
         if len(sig_hits) == 1:
             return sig_hits[0]
+        if not sig_hits:
+            sig_hits = [row for row in rows if row.signature == sig]
+            if len(sig_hits) == 1:
+                return sig_hits[0]
 
     if norm and team:
         best: _RatingRow | None = None
@@ -333,7 +437,7 @@ def _match_row(
             if score > best_score:
                 best_score = score
                 best = row
-        if best and best_score >= _FUZZY_LEAGUE_THRESHOLD:
+        if best and best_score >= league_threshold:
             return best
 
     return None
@@ -344,16 +448,45 @@ def match_external_rating(
     player_name: str | None,
     team_abbr: str | None = None,
     espn_id: str | None = None,
+    *,
+    nationality: str = "",
 ) -> PlayerRatingResult | None:
-    """Return a curated game OVR when the CSV roster matches; else None."""
+    """Return a game OVR when CSV or live-scraped roster matches."""
     league = (league or "").lower()
-    rows = _league_table(league)
     row = _match_row(
-        rows,
+        _combined_team_rows(league, team_abbr),
         player_name=player_name or "",
         team_abbr=team_abbr,
         espn_id=espn_id,
+        league=league,
     )
+    if not row:
+        row = _match_row(
+            _combined_league_rows(league),
+            player_name=player_name or "",
+            team_abbr=team_abbr,
+            espn_id=espn_id,
+            league=league,
+        )
+    if not row:
+        fuzzy = fuzzy_search_external_player(
+            league,
+            player_name or "",
+            team_abbr=team_abbr,
+            nationality=nationality,
+        )
+        if fuzzy:
+            row = _RatingRow(
+                player_name=fuzzy.name,
+                team_abbr=normalize_team_abbr(team_abbr, league),
+                position=fuzzy.position,
+                overall=fuzzy.overall,
+                espn_id="",
+                rating_source=fuzzy.rating_source,
+                rating_year=fuzzy.rating_year,
+                norm_name=normalize_player_name(fuzzy.name),
+                signature=name_signature(fuzzy.name),
+            )
     if not row:
         return None
     return PlayerRatingResult(
@@ -404,12 +537,12 @@ def conservative_prior_rating(
 
 
 def team_csv_ovr(league: str, team_abbr: str, *, top_n: int = 8) -> dict[str, Any] | None:
-    """Top-N average OVR from curated CSV for predictions when roster coverage is sufficient."""
+    """Top-N average OVR from CSV + scrape for predictions."""
     league = (league or "").lower()
-    team = normalize_team_abbr(team_abbr)
+    team = normalize_team_abbr(team_abbr, league)
     if not team:
         return None
-    rows = [row for row in _league_table(league) if row.team_abbr == team]
+    rows = list(_combined_team_rows(league, team))
     if len(rows) < 5:
         return None
     ovrs = sorted((row.overall for row in rows), reverse=True)[:top_n]
@@ -436,25 +569,30 @@ def lookup_player_rating(
     *,
     position: str | None = None,
     roster_meta: dict[str, Any] | None = None,
+    nationality: str = "",
 ) -> PlayerRatingResult:
-    """Resolve a 0–99 game-style overall for an ESPN roster player."""
+    """Resolve a 0–99 game-style overall from external publisher data only."""
+    league = (league or "").lower()
+    meta = roster_meta or {}
+    nat = nationality or str(meta.get("nationality") or meta.get("country") or "")
     hit = match_external_rating(
         league,
         player_name,
         team_abbr=team_abbr,
         espn_id=espn_id,
+        nationality=nat,
     )
     if hit:
         return hit
     derived = derived_team_rating(
         league,
         team_abbr,
-        position=position,
-        roster_meta=roster_meta,
+        position=meta.get("position"),
+        roster_meta=meta,
     )
     if derived:
         return derived
-    return conservative_prior_rating(league, position, roster_meta)
+    return conservative_prior_rating(league, meta.get("position"), meta)
 
 
 def rating_source_label(source: str | None, year: int | None = None) -> str:
@@ -467,5 +605,6 @@ def rating_source_label(source: str | None, year: int | None = None) -> str:
 
 
 def clear_rating_cache() -> None:
-    """Drop cached CSV tables (for tests)."""
+    """Drop cached CSV/scrape tables (for tests)."""
     _league_table.cache_clear()
+    _team_scraped_table.cache_clear()

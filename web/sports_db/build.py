@@ -48,6 +48,7 @@ from web.sports_db.normalize import (
     roster_index_row,
 )
 from web.sports_db.player_ratings import enrich_team_roster_ratings
+from web.sports_db.rating_coverage import audit_league_ratings, format_coverage_summary
 from web.sports_db.ratings import league_ratings_snapshot, team_rating_slice
 from web.team_service import fetch_espn_team_ids
 
@@ -677,6 +678,7 @@ def build_sports_database(
     fast: bool = True,
     max_workers: int = 4,
     team_workers: int = TEAM_BUILD_WORKERS,
+    strict_ratings: bool = True,
 ) -> dict[str, Any]:
     """Write docs/api/db snapshots for all supported leagues."""
     clear_fetch_cache()
@@ -853,6 +855,24 @@ def build_sports_database(
             )
 
     manifest_leagues.sort(key=lambda row: row["name"])
+    rating_coverage: dict[str, Any] = {}
+    uncovered_total = 0
+    if strict_ratings:
+        audit_leagues = list(SUPPORTED_LEAGUES) if not fast else sorted(priority_leagues)
+        coverage_reports = {}
+        for league in audit_leagues:
+            report = audit_league_ratings(league)
+            coverage_reports[league] = report
+            rating_coverage[league] = report.to_dict()
+            uncovered_total += report.uncovered
+        if uncovered_total:
+            print(format_coverage_summary(coverage_reports), flush=True)
+            raise RuntimeError(
+                f"Player rating coverage failed: {uncovered_total} roster players "
+                f"without external publisher OVR. "
+                f"Run scripts/fetch_external_ratings.py to refresh data/ratings/."
+            )
+
     manifest = {
         "schema_version": SCHEMA_VERSION,
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -863,6 +883,8 @@ def build_sports_database(
         "teams_built": built_teams,
         "players_built": built_players,
         "roster_profiles": roster_profiles,
+        "rating_coverage_uncovered": uncovered_total,
+        "rating_coverage": rating_coverage,
         "leagues": manifest_leagues,
     }
     _write_json(output_dir / "manifest.json", manifest)
