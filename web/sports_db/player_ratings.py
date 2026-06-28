@@ -55,19 +55,134 @@ def _flatten_player_stats(
     return out
 
 
+def _stat_match_score(alias_index: int, alias: str, stat_key: str) -> int:
+    """Higher score = better match (prefer per-game keys over season totals)."""
+    norm_alias = _normalize_key(alias)
+    score = 0
+    if stat_key == norm_alias:
+        score += 200
+    if "pergame" in stat_key:
+        score += 120
+    elif stat_key.endswith("pg"):
+        score += 100
+    if "percentage" in stat_key or stat_key.endswith("pct"):
+        score += 30
+    if stat_key in {
+        "points",
+        "rebounds",
+        "assists",
+        "steals",
+        "blocks",
+        "turnovers",
+        "offensiverebounds",
+        "defensiverebounds",
+        "fouls",
+    }:
+        score -= 80
+    score -= alias_index
+    score += min(len(stat_key), 40)
+    return score
+
+
 def _find_stat(stats: dict[str, float], *aliases: str) -> float | None:
-    for alias in aliases:
+    best: tuple[int, float] | None = None
+    for alias_index, alias in enumerate(aliases):
         key = _normalize_key(alias)
         if key in stats:
-            return stats[key]
-    for alias in aliases:
-        key = _normalize_key(alias)
+            score = _stat_match_score(alias_index, alias, key) + 250
+            if best is None or score > best[0]:
+                best = (score, stats[key])
         if len(key) < 2:
             continue
         for stat_key, value in stats.items():
             if key == stat_key or (len(key) >= 3 and (key in stat_key or stat_key in key)):
-                return value
-    return None
+                score = _stat_match_score(alias_index, alias, stat_key)
+                if best is None or score > best[0]:
+                    best = (score, value)
+    return best[1] if best else None
+
+
+def _normalize_rate_stat(value: float) -> float:
+    """ESPN often returns shooting % as 0–100 instead of 0–1."""
+    if value > 1.0 and value <= 100.0:
+        return value / 100.0
+    return value
+
+
+_PER_GAME_TOTAL_PAIRS: tuple[tuple[str, str], ...] = (
+    ("pointspergame", "points"),
+    ("ppg", "points"),
+    ("reboundspergame", "rebounds"),
+    ("rpg", "rebounds"),
+    ("assistspergame", "assists"),
+    ("apg", "assists"),
+    ("stealspergame", "steals"),
+    ("spg", "steals"),
+    ("blockspergame", "blocks"),
+    ("bpg", "blocks"),
+    ("turnoverspergame", "turnovers"),
+    ("topg", "turnovers"),
+    ("offensivereboundspergame", "offensiverebounds"),
+    ("defensivereboundspergame", "defensiverebounds"),
+)
+
+_RATE_STAT_KEYS = frozenset(
+    {
+        "fg",
+        "fgpct",
+        "fieldgoalpct",
+        "fieldgoalpercentage",
+        "3pointfieldgoalpercentage",
+        "freethrowpercentage",
+    }
+)
+
+
+def _prefer_per_game_basketball_stats(stats: dict[str, float]) -> dict[str, float]:
+    """Drop season totals when per-game equivalents are present."""
+    out = dict(stats)
+    for per_game_key, total_key in _PER_GAME_TOTAL_PAIRS:
+        if per_game_key in out:
+            out.pop(total_key, None)
+    for key, value in list(out.items()):
+        if "percentage" in key or key.endswith("pct") or key in _RATE_STAT_KEYS:
+            out[key] = _normalize_rate_stat(value)
+    return out
+
+
+_BASKETBALL_BASELINES: dict[str, dict[str, tuple[float, float]]] = {
+    "nba": {
+        "pts": (12.0, 8.0),
+        "reb": (4.5, 2.5),
+        "ast": (3.0, 2.5),
+        "stl": (0.8, 0.5),
+        "blk": (0.5, 0.5),
+        "fg": (0.45, 0.06),
+        "tov": (1.5, 1.0),
+    },
+    "wnba": {
+        "pts": (9.0, 5.5),
+        "reb": (3.5, 2.0),
+        "ast": (2.2, 1.8),
+        "stl": (0.7, 0.4),
+        "blk": (0.4, 0.4),
+        "fg": (0.44, 0.06),
+        "tov": (1.2, 0.8),
+    },
+    "cbb": {
+        "pts": (10.0, 7.0),
+        "reb": (4.0, 2.5),
+        "ast": (2.5, 2.0),
+        "stl": (0.7, 0.5),
+        "blk": (0.4, 0.4),
+        "fg": (0.44, 0.06),
+        "tov": (1.4, 1.0),
+    },
+}
+
+
+def _basketball_baselines(league: str) -> dict[str, tuple[float, float]]:
+    return _BASKETBALL_BASELINES.get(league.lower(), _BASKETBALL_BASELINES["nba"])
 
 
 def _z_score(value: float, mean: float, std: float) -> float:
@@ -159,23 +274,71 @@ def _basketball_rating(
     stats: dict[str, float],
     position: str | None,
     roster_meta: dict[str, Any] | None,
+    *,
+    league: str = "nba",
 ) -> float:
+    stats = _prefer_per_game_basketball_stats(stats)
+    base = _basketball_baselines(league)
     z = _weighted_z(
         stats,
         [
-            (0.35, ("pts", "points", "ppg", "avgpoints", "pointspergame"), 12.0, 8.0, False),
-            (0.20, ("reb", "rebounds", "rpg", "avgrebounds", "reboundspergame"), 4.5, 2.5, False),
-            (0.20, ("ast", "assists", "apg", "avgassists", "assistspergame"), 3.0, 2.5, False),
-            (0.10, ("stl", "steals", "spg", "avgsteals"), 0.8, 0.5, False),
-            (0.10, ("blk", "blocks", "bpg", "avgblocks"), 0.5, 0.5, False),
-            (0.05, ("fgpct", "fg", "fieldgoalpct", "fieldgoalpercentage"), 0.45, 0.06, False),
+            (
+                0.35,
+                ("pointspergame", "ppg", "avgpoints", "pts", "points"),
+                base["pts"][0],
+                base["pts"][1],
+                False,
+            ),
+            (
+                0.20,
+                ("reboundspergame", "rpg", "avgrebounds", "reb", "rebounds"),
+                base["reb"][0],
+                base["reb"][1],
+                False,
+            ),
+            (
+                0.20,
+                ("assistspergame", "apg", "avgassists", "ast", "assists"),
+                base["ast"][0],
+                base["ast"][1],
+                False,
+            ),
+            (
+                0.10,
+                ("stealspergame", "spg", "avgsteals", "stl", "steals"),
+                base["stl"][0],
+                base["stl"][1],
+                False,
+            ),
+            (
+                0.10,
+                ("blockspergame", "bpg", "avgblocks", "blk", "blocks"),
+                base["blk"][0],
+                base["blk"][1],
+                False,
+            ),
+            (
+                0.05,
+                ("fieldgoalpercentage", "fgpct", "fieldgoalpct", "fg"),
+                base["fg"][0],
+                base["fg"][1],
+                False,
+            ),
         ],
     )
     if z is None:
         return _roster_fallback("basketball", position, roster_meta)
-    tov = _find_stat(stats, "tov", "turnovers", "topg", "avgturnovers")
+    tov = _find_stat(
+        stats,
+        "turnoverspergame",
+        "topg",
+        "avgturnovers",
+        "tov",
+        "turnovers",
+    )
     if tov is not None:
-        z -= 0.08 * _z_score(tov, 1.5, 1.0)
+        tov_mean, tov_std = base["tov"]
+        z -= 0.08 * _z_score(tov, tov_mean, tov_std)
     return _composite_to_rating(z)
 
 
@@ -319,7 +482,7 @@ def player_algo_rating(
     stats = _flatten_player_stats(season_stats, overview_stats)
 
     if category == "basketball":
-        return _basketball_rating(stats, position, roster_meta)
+        return _basketball_rating(stats, position, roster_meta, league=league)
     if category == "baseball":
         return _baseball_rating(stats, position, roster_meta)
     if category == "hockey":
