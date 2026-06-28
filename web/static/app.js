@@ -141,6 +141,31 @@ function formatSpread(v) {
   return rounded > 0 ? `+${text}` : text;
 }
 
+/** Round algo/model ratings for display (avoids JS float artifacts like 11.399999…). */
+function formatRating(value, decimals = 1) {
+  if (value == null || value === "" || Number.isNaN(Number(value))) return "—";
+  const factor = 10 ** decimals;
+  const rounded = Math.round(Number(value) * factor) / factor;
+  if (decimals === 0 || Number.isInteger(rounded)) return String(Math.round(rounded));
+  return rounded.toFixed(decimals);
+}
+
+function formatRatingDiff(value, decimals = 1) {
+  const text = formatRating(value, decimals);
+  if (text === "—") return text;
+  const num = Number(text);
+  return num > 0 ? `+${text}` : text;
+}
+
+function ratingTierClass(rating) {
+  if (rating == null || Number.isNaN(Number(rating))) return "unknown";
+  const n = Number(rating);
+  if (n >= 85) return "elite";
+  if (n >= 75) return "good";
+  if (n >= 55) return "average";
+  return "low";
+}
+
 function pickMarketLabel(pick) {
   if (pick.bet_type === "spread") {
     return `Spread ${formatSpread(pick.spread_line)} (${formatOdds(pick.spread_odds ?? pick.market_odds)})`;
@@ -442,7 +467,9 @@ function algoBreakdown(m) {
     parts.push(`Legacy V2: ${legacyHome}% home`);
   }
   if (power) {
-    parts.push(`Power: ${power.home_win_probability}% home (${power.home_power} vs ${power.away_power})`);
+    parts.push(
+      `Power: ${power.home_win_probability}% home (${formatRating(power.home_power)} vs ${formatRating(power.away_power)})`,
+    );
   }
   if (basketball) {
     const margin =
@@ -483,7 +510,7 @@ function algoBreakdown(m) {
     const sparse =
       dbRating.sparse_schedule_factor > 0.35 ? " · sparse boost" : "";
     parts.push(
-      `DB Ratings (${dbRating.source_home}): ${dbRating.home_rating} vs ${dbRating.away_rating} → ${dbRating.home_win_probability}% home${sparse}`,
+      `DB Ratings (${dbRating.source_home}): ${formatRating(dbRating.home_rating)} vs ${formatRating(dbRating.away_rating)} → ${dbRating.home_win_probability}% home${sparse}`,
     );
   }
   const context = m.soccer_context;
@@ -760,14 +787,33 @@ function playerStatusClass(status) {
   return "other";
 }
 
+function playerRatingTier(rating) {
+  return ratingTierClass(rating);
+}
+
+function formatPlayerRating(rating) {
+  const formatted = formatRating(rating, 0);
+  return formatted === "—" ? null : formatted;
+}
+
+function renderPlayerRatingBadge(rating, { large = false } = {}) {
+  const formatted = formatPlayerRating(rating);
+  if (formatted == null) return "";
+  const tier = playerRatingTier(rating);
+  const cls = large ? "fm-player-rating fm-player-rating--lg" : "fm-player-rating";
+  return `<span class="${cls} fm-player-rating--${tier}" title="Algo rating">${formatted}</span>`;
+}
+
 function renderPlayerCard(player, league, deepIds) {
   const pid = String(player.id || "");
   const isDeep = !deepIds || deepIds.has(pid);
   const statusClass = playerStatusClass(player.status);
+  const rating = player.algo_rating ?? player.player?.algo_rating;
   return `<a class="fm-player-card${isDeep ? " fm-player-card--deep" : ""}" href="${playerHref(league, pid)}">
     <div class="fm-player-photo-wrap">
       ${player.headshot ? `<img class="fm-player-photo" src="${player.headshot}" alt="" loading="lazy">` : `<span class="fm-player-photo fm-player-photo--placeholder">${(player.name || "?").charAt(0)}</span>`}
       ${player.jersey ? `<span class="fm-player-jersey">#${player.jersey}</span>` : ""}
+      ${renderPlayerRatingBadge(rating)}
     </div>
     <div class="fm-player-body">
       <strong class="fm-player-name">${player.name || "Player"}</strong>
@@ -804,6 +850,10 @@ function renderTeamHero(teamDb, leagueName, teamName, profile) {
   const trends = teamDb?.trends || {};
   const ratings = teamDb?.ratings || {};
   const projection = teamDb?.projection || {};
+  const avgRating = ratings.avg_player_rating;
+  const ratingDiff =
+    ratings.rating_diff ?? (avgRating != null ? Number(avgRating) - 50 : null);
+  const powerValue = ratings.power?.power ?? projection.power_rating;
   return `<section class="fm-team-hero panel">
     <div class="fm-team-hero-main">
       ${team.logo ? `<img class="fm-team-logo" src="${team.logo}" alt="">` : ""}
@@ -820,8 +870,10 @@ function renderTeamHero(teamDb, leagueName, teamName, profile) {
       <div class="fm-hero-stat"><span>Rank</span><strong>${standing.rank ?? projection.rank ?? "—"}</strong></div>
       <div class="fm-hero-stat"><span>Streak</span><strong>${trends.streak || "—"}</strong></div>
       <div class="fm-hero-stat"><span>Last 5</span><strong>${trends.last_5 || "—"}</strong></div>
-      <div class="fm-hero-stat"><span>Power</span><strong>${ratings.power?.power ?? projection.power_rating ?? "—"}</strong></div>
-      <div class="fm-hero-stat"><span>Pace</span><strong>${projection.projected_wins_pace ?? "—"}</strong></div>
+      <div class="fm-hero-stat"><span>Power</span><strong>${formatRating(powerValue)}</strong></div>
+      <div class="fm-hero-stat"><span>Avg player</span><strong class="fm-hero-rating fm-hero-rating--${playerRatingTier(avgRating)}">${formatRating(avgRating)}</strong></div>
+      <div class="fm-hero-stat"><span>Diff</span><strong>${formatRatingDiff(ratingDiff)}</strong></div>
+      <div class="fm-hero-stat"><span>Pace</span><strong>${formatRating(projection.projected_wins_pace)}</strong></div>
     </div>
   </section>`;
 }
@@ -988,7 +1040,7 @@ async function viewTeam(league, abbr) {
   <div class="stat-grid fm-team-stats">
     <div class="stat-card panel"><span>Win %</span><strong>${profileStats?.win_pct != null ? `${profileStats.win_pct}%` : trends.win_percent != null ? `${(trends.win_percent * 100).toFixed(1)}%` : "—"}</strong></div>
     <div class="stat-card panel"><span>GB</span><strong>${trends.games_behind ?? teamDb?.standing?.games_behind ?? "—"}</strong></div>
-    <div class="stat-card panel"><span>Diff</span><strong>${trends.point_differential ?? teamDb?.standing?.point_differential ?? "—"}</strong></div>
+    <div class="stat-card panel"><span>Pt diff</span><strong>${formatRating(trends.point_differential ?? teamDb?.standing?.point_differential, 0)}</strong></div>
     <div class="stat-card panel"><span>Roster</span><strong>${(teamDb?.roster_count ?? (teamDb?.roster || []).length) || "—"}</strong></div>
   </div>
   <div class="db-grid-two">
@@ -1025,6 +1077,7 @@ async function viewPlayer(league, playerId) {
     return;
   }
   const info = player.player || {};
+  const playerRating = player.algo_rating ?? info.algo_rating;
   const teamAbbr = (player.team_abbr || "").toLowerCase();
   const isRosterOnly = player.profile_depth === "roster";
   const leagueName =
@@ -1045,6 +1098,7 @@ async function viewPlayer(league, playerId) {
       <span class="league-pill">${leagueName}</span>
       <h1>${info.name || "Player"}</h1>
       <p class="fm-player-role">${info.position || "—"} · ${info.status || "Active"}</p>
+      ${renderPlayerRatingBadge(playerRating, { large: true }) ? `<div class="fm-player-rating-hero">${renderPlayerRatingBadge(playerRating, { large: true })}<span class="fm-player-rating-label">Algo rating</span></div>` : ""}
       <div class="fm-player-bio">
         <span>${info.height || "—"}</span>
         <span>${info.weight || "—"}</span>
@@ -1270,7 +1324,7 @@ function renderRatingsSummary(ratings) {
   const teams = Object.entries(power).slice(0, 8);
   if (!teams.length) return `<p class="muted">Model ratings unavailable for this league snapshot.</p>`;
   return `<ul class="db-stat-list">${teams
-    .map(([key, row]) => `<li><span>${row.name || key}</span><strong>${row.power}</strong></li>`)
+    .map(([key, row]) => `<li><span>${row.name || key}</span><strong>${formatRating(row.power)}</strong></li>`)
     .join("")}</ul>`;
 }
 
@@ -1285,7 +1339,7 @@ function renderStandingsTable(standings, league) {
       const losses = row.losses ?? "—";
       const wp = row.win_percent != null ? `${(row.win_percent * 100).toFixed(1)}%` : "—";
       const abbr = row.abbr || "";
-      return `<tr><td>${row.rank ?? "—"}</td><td><a href="${teamHref(league, abbr)}"><strong>${row.name}</strong></a></td><td>${wins}-${losses}</td><td>${wp}</td><td>${row.games_behind ?? "—"}</td><td>${row.streak ?? "—"}</td><td>${row.point_differential ?? "—"}</td></tr>`;
+      return `<tr><td>${row.rank ?? "—"}</td><td><a href="${teamHref(league, abbr)}"><strong>${row.name}</strong></a></td><td>${wins}-${losses}</td><td>${wp}</td><td>${row.games_behind ?? "—"}</td><td>${row.streak ?? "—"}</td><td>${formatRating(row.point_differential, 0)}</td></tr>`;
     })
     .join("")}</tbody></table></div>`;
 }

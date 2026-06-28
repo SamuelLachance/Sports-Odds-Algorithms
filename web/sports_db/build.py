@@ -41,6 +41,7 @@ from web.sports_db.normalize import (
     parse_team_summary,
     roster_index_row,
 )
+from web.sports_db.player_ratings import enrich_team_roster_ratings
 from web.sports_db.ratings import league_ratings_snapshot, team_rating_slice
 from web.team_service import fetch_espn_team_ids
 
@@ -294,7 +295,8 @@ def build_players_for_team(
 ) -> tuple[list[dict[str, Any]], int, int]:
     """Write player JSON for every roster member; deep stats for prioritized ids."""
     deep_ids = deep_player_targets(roster, abbr, league, slate_keys, fast=fast)
-    index_rows = [roster_index_row(player) for player in roster if player.get("id")]
+    ratings_by_id: dict[str, float] = {}
+    index_rows: list[dict[str, Any]] = []
     built_deep = 0
 
     for player in roster:
@@ -310,21 +312,42 @@ def build_players_for_team(
                 team_abbr=abbr,
             )
             payload["generated_at"] = datetime.now(timezone.utc).isoformat()
+            ratings_by_id[pid] = payload["algo_rating"]
             _write_json(players_dir / f"{pid}.json", payload)
 
     deep_players = [player for player in roster if str(player.get("id") or "") in deep_ids]
     if deep_players:
         workers = min(PLAYER_FETCH_WORKERS, len(deep_players))
         with ThreadPoolExecutor(max_workers=workers) as pool:
-            futures = [
-                pool.submit(_build_one_deep_player, league, abbr, player, players_dir)
+            futures = {
+                pool.submit(_build_one_deep_player, league, abbr, player, players_dir): player
                 for player in deep_players
-            ]
+            }
             for future in as_completed(futures):
+                player = futures[future]
+                pid = str(player.get("id"))
                 future.result()
                 built_deep += 1
+                player_path = players_dir / f"{pid}.json"
+                if player_path.is_file():
+                    try:
+                        saved = json.loads(player_path.read_text(encoding="utf-8"))
+                        if saved.get("algo_rating") is not None:
+                            ratings_by_id[pid] = saved["algo_rating"]
+                    except (json.JSONDecodeError, OSError):
+                        pass
 
-    return index_rows, built_deep, len(index_rows)
+    for player in roster:
+        player_id = player.get("id")
+        if not player_id:
+            continue
+        pid = str(player_id)
+        row = roster_index_row(player)
+        if pid in ratings_by_id:
+            row["algo_rating"] = ratings_by_id[pid]
+        index_rows.append(row)
+
+    return index_rows, built_deep, len(index_rows), ratings_by_id
 
 
 def build_team_snapshot(
@@ -352,7 +375,7 @@ def build_team_snapshot(
     )
     rating = team_rating_slice(ratings, abbr)
     power = (rating.get("power") or {}).get("power")
-    player_index, players_built, roster_profiles = build_players_for_team(
+    player_index, players_built, roster_profiles, ratings_by_id = build_players_for_team(
         league,
         abbr,
         roster,
@@ -360,7 +383,13 @@ def build_team_snapshot(
         slate_keys,
         fast=fast,
     )
+    enriched_roster, avg_player_rating = enrich_team_roster_ratings(
+        league, roster, ratings_by_id
+    )
     deep_ids = deep_player_targets(roster, abbr, league, slate_keys, fast=fast)
+    rating["avg_player_rating"] = avg_player_rating
+    if avg_player_rating is not None:
+        rating["rating_diff"] = round(avg_player_rating - 50.0, 1)
 
     payload = {
         "schema_version": SCHEMA_VERSION,
@@ -370,7 +399,7 @@ def build_team_snapshot(
         "team": summary,
         "standing": standing_row,
         "stats": stats,
-        "roster": roster,
+        "roster": enriched_roster,
         "injuries": _injuries_from_roster(roster),
         "trends": build_trends(standing_row, recent),
         "recent_games": recent,
