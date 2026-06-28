@@ -3,7 +3,7 @@
 import pytest
 
 from web.sports_db.betting_context import game_betting_sheet, league_betting_context
-from web.sports_db.build import FAST_DEEP_OTHER, deep_player_targets, team_build_targets
+from web.sports_db.build import FAST_DEEP_OTHER, _recent_games_from_live, deep_player_targets, team_build_targets
 from web.sports_db.normalize import (
     build_player_roster_snapshot,
     build_player_snapshot,
@@ -126,7 +126,13 @@ def test_parse_player_game_log_sorts_newest_first() -> None:
     rows = parse_player_game_log(overview, limit=5)
     assert len(rows) == 2
     assert rows[0]["date"] == "2026-06-20"
-    assert rows[0]["opponent"] == "vs NYK"
+    assert rows[0]["opponent"] == "NYK"
+    assert rows[0]["opponent_abbr"] == "nyk"
+    assert rows[0]["location"] == "home"
+    assert rows[0]["result"] == "W"
+    assert rows[0]["score"] == "110-99"
+    assert rows[1]["opponent"] == "BOS"
+    assert rows[1]["location"] == "away"
 
 
 def test_build_player_snapshot_merges_roster_and_stats() -> None:
@@ -258,3 +264,40 @@ def test_league_betting_context_counts_games() -> None:
     sheet = game_betting_sheet(slate["games"][0])
     assert sheet["model"]["win_probability"] == 62
     assert sheet["top_pick"]["edge"] == 45
+
+
+def test_recent_games_from_live_extracts_opponents(monkeypatch) -> None:
+    sample_entry = [
+        {
+            "dates": ["6-20-2026", "6-25-2026"],
+            "other_team": ["nyy", "tor"],
+            "home_away": ["home", "away"],
+            "game_scores": [[5, 3], [2, 4]],
+        }
+    ]
+
+    monkeypatch.setattr(
+        "web.sports_db.build.load_live_team_data",
+        lambda *args, **kwargs: sample_entry,
+    )
+    monkeypatch.setattr(
+        "web.sports_db.build.resolve_team",
+        lambda *args, **kwargs: ["bos", "boston-red-sox"],
+    )
+
+    games = _recent_games_from_live(
+        "mlb",
+        "bos",
+        "2",
+        "6-27-2026",
+        {"nyy": "New York Yankees", "tor": "Toronto Blue Jays"},
+    )
+    assert len(games) == 2
+    assert games[0]["opponent_abbr"] == "tor"
+    assert games[0]["opponent"] == "Toronto Blue Jays"
+    assert games[0]["result"] == "L"
+    assert games[0]["location"] == "away"
+    assert games[0]["score"] == "2-4"
+    assert games[1]["opponent_abbr"] == "nyy"
+    assert games[1]["opponent"] == "New York Yankees"
+    assert games[1]["result"] == "W"

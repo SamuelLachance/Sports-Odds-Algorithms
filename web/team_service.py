@@ -144,11 +144,17 @@ def get_team_profile(league: str, abbr: str) -> dict[str, Any]:
                 wins += 1
             else:
                 losses += 1
+        home_away = entry.get("home_away") or []
+        team_labels = {t["abbr"]: t["label"] for t in teams}
         for i in range(max(0, len(scores) - 5), len(scores)):
+            opp_abbr = opponents[i] if i < len(opponents) else ""
+            opp_name = team_labels.get(opp_abbr.lower(), opp_abbr.upper() if opp_abbr else "")
             recent.append(
                 {
                     "date": dates[i] if i < len(dates) else "",
-                    "opponent": opponents[i] if i < len(opponents) else "",
+                    "opponent": opp_name,
+                    "opponent_abbr": opp_abbr.lower() if opp_abbr else None,
+                    "location": home_away[i] if i < len(home_away) else "",
                     "score": scores[i],
                     "result": "W" if scores[i][0] > scores[i][1] else "L",
                 }

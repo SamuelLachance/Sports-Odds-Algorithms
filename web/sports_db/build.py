@@ -72,7 +72,23 @@ def _league_profile_meta(league: str) -> dict[str, Any]:
     }
 
 
-def _recent_games_from_live(league: str, abbr: str, espn_id: str, cutoff_date: str) -> list[dict[str, Any]]:
+def _team_name_lookup(standings: dict[str, Any] | None) -> dict[str, str]:
+    lookup: dict[str, str] = {}
+    for row in (standings or {}).get("teams") or []:
+        abbr = (row.get("abbr") or "").lower()
+        name = row.get("name")
+        if abbr and name:
+            lookup[abbr] = name
+    return lookup
+
+
+def _recent_games_from_live(
+    league: str,
+    abbr: str,
+    espn_id: str,
+    cutoff_date: str,
+    team_names: dict[str, str] | None = None,
+) -> list[dict[str, Any]]:
     resolved = resolve_team(league, abbr)
     if not resolved:
         return []
@@ -84,25 +100,30 @@ def _recent_games_from_live(league: str, abbr: str, espn_id: str, cutoff_date: s
     if not entry:
         return []
 
+    names = team_names or {}
     rows: list[dict[str, Any]] = []
     dates = entry.get("dates") or []
     scores = entry.get("game_scores") or []
     home_away = entry.get("home_away") or []
-    opponents = entry.get("opponents") or []
+    opponents = entry.get("other_team") or entry.get("opponents") or []
     for idx in range(min(len(dates), len(scores))):
         scored, allowed = scores[idx]
         loc = home_away[idx] if idx < len(home_away) else "home"
-        opp = opponents[idx] if idx < len(opponents) else "?"
+        opp_abbr = opponents[idx] if idx < len(opponents) else ""
         if scored > allowed:
             result = "W"
         elif scored < allowed:
             result = "L"
         else:
             result = "T"
+        opp_name = names.get(opp_abbr.lower()) if opp_abbr else None
+        if not opp_name and opp_abbr:
+            opp_name = opp_abbr.upper()
         rows.append(
             {
                 "date": dates[idx],
-                "opponent": opp,
+                "opponent": opp_name or "?",
+                "opponent_abbr": opp_abbr.lower() if opp_abbr else None,
                 "location": loc,
                 "score": f"{scored}-{allowed}",
                 "result": result,
@@ -326,7 +347,9 @@ def build_team_snapshot(
     roster = parse_roster(roster_raw)
     stats = parse_team_statistics(stats_raw)
     standing_row = _standing_row_for_team(standings, abbr)
-    recent = _recent_games_from_live(league, abbr, espn_team_id, cutoff_date)
+    recent = _recent_games_from_live(
+        league, abbr, espn_team_id, cutoff_date, _team_name_lookup(standings)
+    )
     rating = team_rating_slice(ratings, abbr)
     power = (rating.get("power") or {}).get("power")
     player_index, players_built, roster_profiles = build_players_for_team(

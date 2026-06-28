@@ -107,6 +107,28 @@ function formatTime(iso) {
   });
 }
 
+function formatGameDate(value) {
+  if (!value) return "—";
+  if (value.includes("T")) {
+    const parsed = new Date(value);
+    if (!Number.isNaN(parsed.getTime())) {
+      return parsed.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    }
+  }
+  const mdy = String(value).match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+  if (mdy) {
+    const parsed = new Date(Number(mdy[3]), Number(mdy[1]) - 1, Number(mdy[2]));
+    if (!Number.isNaN(parsed.getTime())) {
+      return parsed.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    }
+  }
+  const parsed = new Date(value);
+  if (!Number.isNaN(parsed.getTime())) {
+    return parsed.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  }
+  return value;
+}
+
 function formatOdds(v) {
   if (v == null || v === 0) return "—";
   return v > 0 ? `+${v}` : `${v}`;
@@ -804,6 +826,109 @@ function renderTeamHero(teamDb, leagueName, teamName, profile) {
   </section>`;
 }
 
+function teamLabelForAbbr(league, abbr) {
+  const token = (abbr || "").toLowerCase();
+  if (!token) return "";
+  const team = teamsForLeague(league).find((row) => (row.abbr || "").toLowerCase() === token);
+  return team?.label || team?.name || token.toUpperCase();
+}
+
+function gameLocationPrefix(location) {
+  const loc = (location || "").toLowerCase();
+  if (loc === "away" || loc === "@") return "@";
+  if (loc === "home" || loc === "vs") return "vs";
+  return loc || "vs";
+}
+
+function normalizeRecentGameScore(score) {
+  if (Array.isArray(score)) return `${score[0]}–${score[1]}`;
+  return score || "";
+}
+
+function parseAtVsOpponent(raw, location) {
+  const text = (raw || "").trim();
+  if (!text) return { opponent: "", opponent_abbr: null, location: location || "" };
+  if (text.startsWith("@")) {
+    const abbr = text.slice(1).trim();
+    return { opponent: abbr, opponent_abbr: abbr.toLowerCase(), location: location || "away" };
+  }
+  if (text.toLowerCase().startsWith("vs")) {
+    const abbr = text.replace(/^vs\.?\s*/i, "").trim();
+    return { opponent: abbr, opponent_abbr: abbr.toLowerCase(), location: location || "home" };
+  }
+  if (/^[a-z]{2,5}$/i.test(text)) {
+    return { opponent: text, opponent_abbr: text.toLowerCase(), location: location || "" };
+  }
+  return { opponent: text, opponent_abbr: null, location: location || "" };
+}
+
+function normalizeProfileRecentGame(g) {
+  const parsed = parseAtVsOpponent(g.opponent, g.location);
+  const oppAbbr =
+    g.opponent_abbr ||
+    parsed.opponent_abbr ||
+    (g.opponent && /^[a-z]{2,5}$/i.test(g.opponent) ? g.opponent.toLowerCase() : null);
+  return {
+    result: g.result,
+    date: g.date,
+    opponent: g.opponent && g.opponent !== parsed.opponent ? g.opponent : parsed.opponent || g.opponent,
+    opponent_abbr: oppAbbr,
+    score: normalizeRecentGameScore(g.score),
+    location: g.location || parsed.location || "",
+  };
+}
+
+function mergeRecentGames(dbGames, profileGames) {
+  const fromDb = dbGames || [];
+  const fromProfile = (profileGames || []).map(normalizeProfileRecentGame);
+  if (!fromDb.length) return fromProfile;
+  if (!fromProfile.length) return fromDb;
+
+  const profileByDate = new Map(fromProfile.map((g) => [g.date, g]));
+  return fromDb.map((g) => {
+    const missingOpp = !g.opponent || g.opponent === "?";
+    if (!missingOpp && g.opponent_abbr) return g;
+    const fallback = profileByDate.get(g.date);
+    if (!fallback) return g;
+    return {
+      ...g,
+      opponent: missingOpp ? fallback.opponent || g.opponent : g.opponent,
+      opponent_abbr: g.opponent_abbr || fallback.opponent_abbr || null,
+      location: g.location || fallback.location || "",
+    };
+  });
+}
+
+function recentGameOpponentLink(league, game) {
+  const abbr = game.opponent_abbr || null;
+  const fallbackName = abbr ? teamLabelForAbbr(league, abbr) : "";
+  const name = game.opponent || fallbackName || "?";
+  if (!abbr || name === "?") return name;
+  const displayName = /^[a-z]{2,5}$/i.test(name) ? teamLabelForAbbr(league, name) : name;
+  return teamNameLink(league, abbr, displayName);
+}
+
+function renderRecentGameRow(league, game) {
+  const parsed = parseAtVsOpponent(game.opponent, game.location);
+  const abbr = game.opponent_abbr || parsed.opponent_abbr || null;
+  const location = game.location || parsed.location || "";
+  const result = game.result || "";
+  const badgeClass = result === "W" ? "win" : result === "L" ? "loss" : "";
+  const score = normalizeRecentGameScore(game.score);
+  const prefix = gameLocationPrefix(location);
+  const opponentMarkup = recentGameOpponentLink(league, {
+    ...game,
+    opponent_abbr: abbr,
+    opponent: game.opponent || parsed.opponent,
+  });
+  return `<li class="recent-row">
+    <span class="result-badge ${badgeClass}">${result || "—"}</span>
+    <span class="recent-date">${formatGameDate(game.date)}</span>
+    <span class="recent-matchup"><span class="recent-loc">${prefix}</span> ${opponentMarkup}</span>
+    <span class="recent-score">${score}</span>
+  </li>`;
+}
+
 async function loadTeamProfile(league, abbr) {
   const key = `${league}/${abbr}`;
   if (state.teamProfiles[key]) return state.teamProfiles[key];
@@ -848,16 +973,7 @@ async function viewTeam(league, abbr) {
   const betting = teamDb?.betting || {};
   const upcoming = betting.upcoming_games || [];
   const profileStats = profile?.season_stats;
-  const recentGames =
-    (teamDb?.recent_games || []).length
-      ? teamDb.recent_games
-      : (profile?.recent_games || []).map((g) => ({
-          result: g.result,
-          date: g.date,
-          opponent: g.opponent,
-          score: Array.isArray(g.score) ? `${g.score[0]}–${g.score[1]}` : g.score,
-          location: g.location || "",
-        }));
+  const recentGames = mergeRecentGames(teamDb?.recent_games, profile?.recent_games);
 
   appRoot.innerHTML = `${breadcrumbs([
     { label: "Home", href: "#/" },
@@ -877,8 +993,8 @@ async function viewTeam(league, abbr) {
   </div>
   <div class="db-grid-two">
     <section class="section panel"><h2>Recent games</h2>
-      ${recentGames.length ? `<ul class="db-recent">${recentGames
-        .map((g) => `<li><strong>${g.result}</strong> ${g.date} vs ${g.opponent} (${g.score})${g.location ? " · " + g.location : ""}</li>`)
+      ${recentGames.length ? `<ul class="db-recent recent-games">${recentGames
+        .map((g) => renderRecentGameRow(league, g))
         .join("")}</ul>` : `<p class="muted">No recent game log.</p>`}
     </section>
     <section class="section panel"><h2>Season stats</h2>
@@ -946,8 +1062,8 @@ async function viewPlayer(league, playerId) {
           `<li><span>${s.name}</span><strong>${s.display ?? s.value}</strong></li>`).join("")}</ul>`).join("") || `<p class="muted">${isRosterOnly ? "Full stats not loaded for this player yet." : "Stats unavailable."}</p>`}
     </section>
     <section class="section panel"><h2>Recent games</h2>
-      ${(player.game_log || []).length ? `<ul class="db-recent">${player.game_log.map((g) =>
-        `<li><strong>${g.date || ""}</strong> ${g.opponent || ""} · ${g.score || ""}</li>`).join("")}</ul>` : `<p class="muted">${isRosterOnly ? "Game log loads with full player profile." : "No game log."}</p>`}
+      ${(player.game_log || []).length ? `<ul class="db-recent recent-games">${player.game_log.map((g) =>
+        renderRecentGameRow(league, g)).join("")}</ul>` : `<p class="muted">${isRosterOnly ? "Game log loads with full player profile." : "No game log."}</p>`}
     </section>
   </div>
   ${(player.news || []).length ? `<section class="section"><h2>Player news</h2>${renderNewsList(player.news.map((n) => ({ ...n, link: n.link })))}</section>` : ""}

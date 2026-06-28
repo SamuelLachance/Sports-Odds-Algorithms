@@ -339,17 +339,39 @@ def parse_player_overview_stats(overview: dict[str, Any] | None) -> list[dict[st
     return categories
 
 
+def _parse_at_vs(at_vs: str | None) -> tuple[str, str | None, str]:
+    """Return (location, opponent_abbr, opponent_label) from ESPN atVs text."""
+    raw = (at_vs or "").strip()
+    if not raw:
+        return "", None, ""
+    if raw.startswith("@"):
+        abbr = raw[1:].strip()
+        return "away", abbr.lower() if abbr else None, abbr
+    if raw.lower().startswith("vs"):
+        abbr = raw[2:].strip().lstrip(".")
+        return "home", abbr.lower() if abbr else None, abbr
+    if len(raw) <= 5 and raw.isalpha():
+        return "", raw.lower(), raw.upper()
+    return "", None, raw
+
+
 def parse_player_game_log(overview: dict[str, Any] | None, limit: int = 10) -> list[dict[str, Any]]:
     game_log = (overview or {}).get("gameLog") or {}
     events = game_log.get("events") or {}
     rows: list[dict[str, Any]] = []
     for event_id, event in events.items():
+        location, opp_abbr, opp_label = _parse_at_vs(event.get("atVs"))
+        score_text = (event.get("score") or "").strip()
+        result = score_text[:1].upper() if score_text[:1].upper() in {"W", "L", "T"} else None
         rows.append(
             {
                 "event_id": event_id,
                 "date": event.get("gameDate"),
-                "opponent": event.get("atVs"),
-                "score": event.get("score"),
+                "opponent": opp_label,
+                "opponent_abbr": opp_abbr,
+                "location": location,
+                "result": result,
+                "score": score_text[2:].strip() if result and len(score_text) > 2 else score_text,
                 "home_score": event.get("homeTeamScore"),
                 "away_score": event.get("awayTeamScore"),
                 "stats": event.get("stats"),

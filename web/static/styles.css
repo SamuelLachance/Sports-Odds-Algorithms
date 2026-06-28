@@ -1514,7 +1514,22 @@ select:focus {
   padding: 0;
 }
 
-.db-recent li,
+.db-recent.recent-games {
+  display: flex;
+  flex-direction: column;
+}
+
+.db-recent .recent-row {
+  display: grid;
+  grid-template-columns: 2.25rem 4.75rem minmax(0, 1fr) auto;
+  gap: var(--space-2);
+  align-items: center;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--border);
+  line-height: 1.45;
+}
+
+.db-recent li:not(.recent-row),
 .db-stat-list li {
   display: flex;
   justify-content: space-between;
@@ -1522,6 +1537,29 @@ select:focus {
   padding: 0.65rem 0;
   border-bottom: 1px solid var(--border);
   line-height: 1.45;
+}
+
+.recent-date {
+  white-space: nowrap;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.recent-score {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.recent-matchup {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recent-loc {
+  color: var(--text-muted);
 }
 
 .db-roster-grid {
@@ -2033,7 +2071,19 @@ select:focus {
     max-height: none;
   }
 
-  .recent-row {
+  .db-recent .recent-row {
+    grid-template-columns: 2rem 1fr auto;
+    grid-template-areas:
+      "badge matchup score"
+      "badge date score";
+  }
+
+  .db-recent .recent-row .result-badge { grid-area: badge; }
+  .db-recent .recent-row .recent-date { grid-area: date; }
+  .db-recent .recent-row .recent-matchup { grid-area: matchup; }
+  .db-recent .recent-row .recent-score { grid-area: score; align-self: center; }
+
+  .recent-games:not(.db-recent) .recent-row {
     grid-template-columns: 1fr 1fr;
   }
 
