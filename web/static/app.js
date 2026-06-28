@@ -882,6 +882,40 @@ function renderPlayerRatingBadge(rating, { large = false, source = null, layer =
   return `<span class="${cls} fm-player-rating--${tier}" title="${tooltip}">${formatted}</span>`;
 }
 
+function htmlAttr(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;");
+}
+
+function playerSilhouetteClass(league) {
+  const meta = leaguesForBrowse().find((lg) => lg.id === league);
+  const category = (meta?.category || "").toLowerCase();
+  if (category.includes("soccer")) return "fm-player-photo--silhouette-soccer";
+  if (category.includes("hockey")) return "fm-player-photo--silhouette-hockey";
+  if (category.includes("baseball")) return "fm-player-photo--silhouette-baseball";
+  if (category.includes("football")) return "fm-player-photo--silhouette-football";
+  return "fm-player-photo--silhouette";
+}
+
+function renderPlayerPhoto(player, league, { large = false } = {}) {
+  const name = player.name || player.displayName || "Player";
+  const alt = htmlAttr(name);
+  const sizeClass = large ? " fm-player-photo--lg" : "";
+  const silhouetteCls = `fm-player-photo fm-player-photo--silhouette${sizeClass} ${playerSilhouetteClass(league)}`.trim();
+  const headshot = player.headshot;
+  if (headshot) {
+    const src = htmlAttr(headshot);
+    return `<span class="fm-player-photo-slot${sizeClass}">
+      <img class="fm-player-photo${sizeClass}" src="${src}" alt="${alt}" loading="lazy"
+        onerror="this.classList.add('fm-player-photo--hidden');this.nextElementSibling?.classList.remove('fm-player-photo--hidden')">
+      <span class="${silhouetteCls} fm-player-photo--hidden" role="img" aria-label="${alt}"></span>
+    </span>`;
+  }
+  return `<span class="${silhouetteCls}" role="img" aria-label="${alt}"></span>`;
+}
+
 function renderPlayerCard(player, league, deepIds) {
   const pid = String(player.id || "");
   const isDeep = !deepIds || deepIds.has(pid);
@@ -891,7 +925,7 @@ function renderPlayerCard(player, league, deepIds) {
   const ratingLayer = player.rating_layer ?? player.player?.rating_layer;
   return `<a class="fm-player-card${isDeep ? " fm-player-card--deep" : ""}" href="${playerHref(league, pid)}">
     <div class="fm-player-photo-wrap">
-      ${player.headshot ? `<img class="fm-player-photo" src="${player.headshot}" alt="" loading="lazy">` : `<span class="fm-player-photo fm-player-photo--placeholder">${(player.name || "?").charAt(0)}</span>`}
+      ${renderPlayerPhoto(player, league)}
       ${player.jersey ? `<span class="fm-player-jersey">#${player.jersey}</span>` : ""}
       ${renderPlayerRatingBadge(rating, { source: ratingSource, layer: ratingLayer })}
     </div>
@@ -1169,7 +1203,7 @@ async function viewPlayer(league, playerId) {
     { label: info.name || "Player" },
   ])}<section class="fm-player-hero panel">
     <div class="fm-player-hero-photo">
-      ${info.headshot ? `<img src="${info.headshot}" alt="">` : `<span class="fm-player-photo fm-player-photo--placeholder fm-player-photo--lg">${(info.name || "?").charAt(0)}</span>`}
+      ${renderPlayerPhoto(info, league, { large: true })}
       ${info.jersey ? `<span class="fm-player-jersey fm-player-jersey--lg">#${info.jersey}</span>` : ""}
     </div>
     <div class="fm-player-hero-body">

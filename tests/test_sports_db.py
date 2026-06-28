@@ -15,11 +15,14 @@ from web.sports_db.build import (
 from web.sports_db.normalize import (
     build_player_roster_snapshot,
     build_player_snapshot,
+    extract_headshot_url,
+    headshot_cdn_url,
     parse_news,
     parse_player_game_log,
     parse_roster,
     parse_standings,
     parse_team_statistics,
+    resolve_player_headshot,
     roster_index_row,
 )
 
@@ -55,6 +58,51 @@ def test_parse_roster_flattens_grouped_nfl_buckets() -> None:
     assert len(roster) == 2
     assert roster[0]["position"] == "TE"
     assert roster[1]["position"] == "LB"
+
+
+def test_extract_headshot_url_dict_and_string() -> None:
+    assert extract_headshot_url({"href": "https://cdn.example/a.png"}) == "https://cdn.example/a.png"
+    assert extract_headshot_url("https://cdn.example/b.jpg") == "https://cdn.example/b.jpg"
+    assert extract_headshot_url({"href": ""}) is None
+    assert extract_headshot_url(None) is None
+
+
+def test_parse_roster_extracts_headshot_dict_and_string() -> None:
+    payload = {
+        "athletes": [
+            {
+                "id": "1",
+                "displayName": "Dict Headshot",
+                "headshot": {"href": "https://example.com/dict.png", "alt": "Dict Headshot"},
+            },
+            {
+                "id": "2",
+                "displayName": "String Headshot",
+                "headshot": "https://example.com/string.png",
+            },
+        ]
+    }
+    roster = parse_roster(payload)
+    assert roster[0]["headshot"] == "https://example.com/dict.png"
+    assert roster[1]["headshot"] == "https://example.com/string.png"
+
+
+def test_resolve_player_headshot_prefers_roster_then_overview_then_cdn() -> None:
+    overview = {"athlete": {"headshot": {"href": "https://example.com/overview.png"}}}
+    assert (
+        resolve_player_headshot(
+            "nba",
+            "99",
+            roster_headshot="https://example.com/roster.png",
+            overview=overview,
+        )
+        == "https://example.com/roster.png"
+    )
+    assert (
+        resolve_player_headshot("nba", "99", overview=overview)
+        == "https://example.com/overview.png"
+    )
+    assert resolve_player_headshot("nba", "4065648") == headshot_cdn_url("nba", "4065648")
 
 
 def test_parse_standings_groups() -> None:

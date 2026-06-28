@@ -36,12 +36,14 @@ from web.sports_db.normalize import (
     build_player_stats_snapshot,
     build_projection,
     build_trends,
+    headshot_cdn_url,
     parse_news,
     parse_rankings,
     parse_roster,
     parse_standings,
     parse_team_statistics,
     parse_team_summary,
+    resolve_player_headshot,
     roster_index_row,
 )
 from web.sports_db.player_ratings import enrich_team_roster_ratings
@@ -169,6 +171,41 @@ def _standing_row_for_team(standings: dict[str, Any], abbr: str) -> dict[str, An
         if (row.get("abbr") or "").lower() == target:
             return row
     return None
+
+
+def _enrich_one_roster_headshot(league: str, player: dict[str, Any]) -> None:
+    if player.get("headshot"):
+        return
+    player_id = player.get("id")
+    if not player_id:
+        return
+    overview = fetch_athlete_overview(league, str(player_id))
+    headshot = resolve_player_headshot(
+        league,
+        player_id,
+        overview=overview,
+        allow_cdn=True,
+    )
+    if headshot:
+        player["headshot"] = headshot
+
+
+def enrich_roster_headshots(league: str, roster: list[dict[str, Any]]) -> None:
+    """Fill missing roster headshots via ESPN overview (cached) and CDN pattern."""
+    missing = [player for player in roster if player.get("id") and not player.get("headshot")]
+    if not missing:
+        return
+    workers = min(PLAYER_FETCH_WORKERS, len(missing))
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        futures = [pool.submit(_enrich_one_roster_headshot, league, player) for player in missing]
+        for future in as_completed(futures):
+            future.result()
+    for player in roster:
+        if player.get("headshot") or not player.get("id"):
+            continue
+        cdn = headshot_cdn_url(league, player["id"])
+        if cdn:
+            player["headshot"] = cdn
 
 
 def _injuries_from_roster(roster: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -496,6 +533,7 @@ def build_team_snapshot(
     stats_raw = fetch_team_statistics(league, espn_team_id, season_year)
     summary = parse_team_summary(roster_raw, stats_raw)
     roster = parse_roster(roster_raw)
+    enrich_roster_headshots(league, roster)
     stats = parse_team_statistics(stats_raw)
     standing_row = _standing_row_for_team(standings, abbr)
     on_slate = abbr.lower() in slate_keys

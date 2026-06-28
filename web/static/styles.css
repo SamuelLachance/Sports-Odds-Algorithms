@@ -1854,6 +1854,12 @@ select:focus {
   flex-shrink: 0;
 }
 
+.fm-player-photo-slot {
+  display: block;
+  position: relative;
+  flex-shrink: 0;
+}
+
 .fm-player-photo {
   width: 56px;
   height: 56px;
@@ -1861,6 +1867,32 @@ select:focus {
   object-fit: cover;
   display: block;
   background: var(--bg-elevated);
+}
+
+.fm-player-photo--hidden {
+  display: none !important;
+}
+
+.fm-player-photo--silhouette {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-sm);
+  display: block;
+  background-color: var(--bg-elevated);
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: 78%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='%238b95a8'%3E%3Ccircle cx='32' cy='18' r='11'/%3E%3Cpath d='M12 58c2.5-14 12.5-22 20-22s17.5 8 20 22z'/%3E%3C/svg%3E");
+}
+
+.fm-player-photo--silhouette-soccer {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='%238b95a8'%3E%3Ccircle cx='32' cy='18' r='11'/%3E%3Cpath d='M12 58c2.5-14 12.5-22 20-22s17.5 8 20 22z'/%3E%3Ccircle cx='48' cy='50' r='7' fill='none' stroke='%238b95a8' stroke-width='2'/%3E%3C/svg%3E");
+}
+
+.fm-player-photo--silhouette-hockey,
+.fm-player-photo--silhouette-baseball,
+.fm-player-photo--silhouette-football {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='%238b95a8'%3E%3Ccircle cx='32' cy='18' r='11'/%3E%3Cpath d='M12 58c2.5-14 12.5-22 20-22s17.5 8 20 22z'/%3E%3C/svg%3E");
 }
 
 .fm-player-photo--placeholder {
@@ -1876,6 +1908,13 @@ select:focus {
   height: 140px;
   border-radius: var(--radius-md);
   font-size: 2.5rem;
+}
+
+.fm-player-photo--lg.fm-player-photo--silhouette,
+.fm-player-photo-slot.fm-player-photo--lg .fm-player-photo {
+  width: 140px;
+  height: 140px;
+  border-radius: var(--radius-md);
 }
 
 .fm-player-jersey {

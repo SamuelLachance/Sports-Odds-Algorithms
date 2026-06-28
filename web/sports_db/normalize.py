@@ -5,9 +5,85 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from web.league_profiles import get_league_profile
 from web.sports_db.player_ratings import resolve_player_rating
 
 SCHEMA_VERSION = 2
+
+
+def extract_headshot_url(value: Any) -> str | None:
+    """Normalize ESPN headshot dict or plain URL string."""
+    if isinstance(value, dict):
+        href = value.get("href")
+        return href.strip() if isinstance(href, str) and href.strip() else None
+    if isinstance(value, str) and value.strip():
+        return value.strip()
+    return None
+
+
+def parse_athlete_headshot(athlete: dict[str, Any] | None) -> str | None:
+    if not athlete:
+        return None
+    return extract_headshot_url(athlete.get("headshot"))
+
+
+def parse_overview_headshot(overview: dict[str, Any] | None) -> str | None:
+    if not overview:
+        return None
+    athlete = overview.get("athlete")
+    if isinstance(athlete, dict):
+        found = parse_athlete_headshot(athlete)
+        if found:
+            return found
+    return parse_athlete_headshot(overview)
+
+
+def headshot_cdn_sport(league: str) -> str | None:
+    """ESPN CDN folder segment for constructed headshot URLs."""
+    sport_path = get_league_profile(league)["sport_path"]
+    root, _, leaf = sport_path.partition("/")
+    if root == "soccer":
+        return "soccer"
+    if root == "basketball":
+        return leaf or "nba"
+    if root == "hockey":
+        return "nhl" if leaf == "nhl" else "hockey"
+    if root == "baseball":
+        return "mlb" if leaf == "mlb" else "baseball"
+    if root == "football":
+        return "nfl" if leaf == "nfl" else "college-football"
+    return None
+
+
+def headshot_cdn_url(league: str, athlete_id: str | int | None) -> str | None:
+    if athlete_id is None:
+        return None
+    pid = str(athlete_id).strip()
+    if not pid:
+        return None
+    sport = headshot_cdn_sport(league)
+    if not sport:
+        return None
+    return f"https://a.espncdn.com/i/headshots/{sport}/players/full/{pid}.png"
+
+
+def resolve_player_headshot(
+    league: str,
+    athlete_id: str | int | None,
+    *,
+    roster_headshot: str | None = None,
+    overview: dict[str, Any] | None = None,
+    allow_cdn: bool = True,
+) -> str | None:
+    """Best-effort headshot: roster → overview → ESPN CDN pattern."""
+    for candidate in (
+        roster_headshot,
+        parse_overview_headshot(overview),
+        headshot_cdn_url(league, athlete_id) if allow_cdn else None,
+    ):
+        if candidate:
+            return candidate
+    return None
 
 
 def _stat_map(stats: list[dict[str, Any]] | None) -> dict[str, Any]:
@@ -171,11 +247,7 @@ def _parse_roster_athlete(athlete: dict[str, Any]) -> dict[str, Any]:
     else:
         status_name = status if isinstance(status, str) else None
 
-    headshot = athlete.get("headshot")
-    if isinstance(headshot, dict):
-        headshot_url = headshot.get("href")
-    else:
-        headshot_url = headshot if isinstance(headshot, str) else None
+    headshot_url = parse_athlete_headshot(athlete)
 
     return {
         "id": athlete.get("id"),
@@ -597,6 +669,11 @@ def build_player_stats_snapshot(
     """Season stats without overview/game log (fast-build tier)."""
     roster_row = roster_row or {}
     season_stats = _parse_stat_categories(stats_payload)
+    headshot = resolve_player_headshot(
+        league,
+        player_id,
+        roster_headshot=roster_row.get("headshot"),
+    )
     rating_fields = _player_rating_fields(
         league=league,
         player_id=player_id,
@@ -621,7 +698,7 @@ def build_player_stats_snapshot(
             "weight": roster_row.get("weight"),
             "experience": roster_row.get("experience"),
             "status": roster_row.get("status"),
-            "headshot": roster_row.get("headshot"),
+            "headshot": headshot,
             **rating_fields,
         },
         "season_stats": season_stats,
@@ -640,6 +717,11 @@ def build_player_roster_snapshot(
     cutoff_date: str,
 ) -> dict[str, Any]:
     roster_row = roster_row or {}
+    headshot = resolve_player_headshot(
+        league,
+        player_id,
+        roster_headshot=roster_row.get("headshot"),
+    )
     rating_fields = _player_rating_fields(
         league=league,
         player_id=player_id,
@@ -664,7 +746,7 @@ def build_player_roster_snapshot(
             "weight": roster_row.get("weight"),
             "experience": roster_row.get("experience"),
             "status": roster_row.get("status"),
-            "headshot": roster_row.get("headshot"),
+            "headshot": headshot,
             **rating_fields,
         },
         "season_stats": [],
@@ -687,6 +769,12 @@ def build_player_snapshot(
     roster_row = roster_row or {}
     season_stats = _parse_stat_categories(stats_payload)
     overview_stats = parse_player_overview_stats(overview)
+    headshot = resolve_player_headshot(
+        league,
+        player_id,
+        roster_headshot=roster_row.get("headshot"),
+        overview=overview,
+    )
     rating_fields = _player_rating_fields(
         league=league,
         player_id=player_id,
@@ -711,7 +799,7 @@ def build_player_snapshot(
             "weight": roster_row.get("weight"),
             "experience": roster_row.get("experience"),
             "status": roster_row.get("status"),
-            "headshot": roster_row.get("headshot"),
+            "headshot": headshot,
             **rating_fields,
         },
         "season_stats": season_stats,
