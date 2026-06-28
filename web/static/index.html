@@ -1,20 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#151a28">
-  <script>
-    (function () {
-      var key = "soa-theme-v2";
-      var theme = "dark";
-      try {
-        var saved = localStorage.getItem(key);
-        if (saved === "light" || saved === "dark") theme = saved;
-      } catch (e) {}
-      document.documentElement.setAttribute("data-theme", theme);
-    })();
-  </script>
   <title>Sharp Odds — Algo Sports Betting Service</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,7 +28,6 @@
       </nav>
       <div class="header-actions">
         <button class="nav-toggle" id="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mainNav">☰</button>
-        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle color theme">◐</button>
       </div>
     </div>
   </header>

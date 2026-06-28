@@ -36,7 +36,6 @@ const gameMenu = document.getElementById("gameMenu");
 const sidebarGames = document.getElementById("sidebarGames");
 const sidebarGamesTitle = document.getElementById("sidebarGamesTitle");
 const footerUpdated = document.getElementById("footerUpdated");
-const themeToggle = document.getElementById("themeToggle");
 const navToggle = document.getElementById("navToggle");
 const mainNav = document.getElementById("mainNav");
 const mobileBottomNav = document.getElementById("mobileBottomNav");
@@ -96,20 +95,6 @@ function parseRoute() {
 
 function navigate(hash) {
   location.hash = hash;
-}
-
-const THEME_STORAGE_KEY = "soa-theme-v2";
-
-function setTheme(theme) {
-  document.documentElement.dataset.theme = theme;
-  localStorage.setItem(THEME_STORAGE_KEY, theme);
-  const themeColor = document.querySelector('meta[name="theme-color"]');
-  if (themeColor) themeColor.content = theme === "light" ? "#f8fafc" : "#151a28";
-}
-
-function initTheme() {
-  const saved = localStorage.getItem(THEME_STORAGE_KEY);
-  setTheme(saved === "light" ? "light" : "dark");
 }
 
 function formatTime(iso) {
@@ -1755,15 +1740,11 @@ async function loadPlatform() {
 }
 
 window.addEventListener("hashchange", () => render());
-themeToggle.addEventListener("click", () => {
-  setTheme(document.documentElement.dataset.theme === "light" ? "dark" : "light");
-});
 navToggle?.addEventListener("click", toggleMobileNav);
 mainNav?.querySelectorAll("a").forEach((link) => {
   link.addEventListener("click", closeMobileNav);
 });
 
-initTheme();
 loadPlatform().catch((err) => {
   appRoot.innerHTML = `<div class="panel empty-panel error-panel">${err.message}</div>`;
 });
