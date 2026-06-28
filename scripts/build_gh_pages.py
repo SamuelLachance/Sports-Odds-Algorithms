@@ -176,7 +176,7 @@ def build_daily_slate() -> dict:
     write_json(DOCS_DIR / "api" / "tracking.json", update_tracking(slate))
 
     from web.sports_db import build_sports_database
-from web.sports_db.build import TEAM_BUILD_WORKERS
+    from web.sports_db.build import TEAM_BUILD_WORKERS
 
     full_build = _env_flag("FULL_BUILD")
     print(f"Building sports database (fast={not full_build})...")
