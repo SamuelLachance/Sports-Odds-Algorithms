@@ -2002,6 +2002,38 @@
       "recorded_at": "2026-06-28T17:08:23.721941+00:00",
       "graded_at": "2026-06-28T23:02:09.090053+00:00",
       "final_score": "6\u20134"
+    },
+    {
+      "id": "2026-06-29:401815961:away",
+      "date": "2026-06-29",
+      "event_id": "401815961",
+      "league": "mlb",
+      "league_name": "MLB",
+      "side": "away",
+      "team_name": "Los Angeles Angels",
+      "team_slug": "los-angeles-angels",
+      "team_abbr": "laa",
+      "matchup": "Los Angeles Angels @ Seattle Mariners",
+      "start_time": "2026-06-30T01:40Z",
+      "strategy": "value",
+      "strategy_label": "Value bet",
+      "confidence": "medium",
+      "edge": 62.0,
+      "model_projection": 120,
+      "market_odds": 182,
+      "win_probability": 45.46,
+      "reason": "Sportsbook offers +182 vs model fair +120 on Los Angeles Angels (+62 edge on American odds).",
+      "bet_type": "moneyline",
+      "spread_line": null,
+      "spread_odds": null,
+      "consensus_spread": null,
+      "consensus_odds": null,
+      "consensus_label": null,
+      "model_margin": null,
+      "status": "pending",
+      "units": 0.0,
+      "stake_units": 1.0,
+      "recorded_at": "2026-06-29T09:03:29.204876+00:00"
     }
   ]
 }
