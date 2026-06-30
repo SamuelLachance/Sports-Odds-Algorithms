@@ -22,6 +22,25 @@ from web.blend_service import (  # noqa: E402
 from web.season_games import get_league_power_context  # noqa: E402
 
 
+@pytest.fixture(autouse=True)
+def _neutral_sports_meta_weights(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Keep blend unit tests deterministic (equal layers, no temperature shift)."""
+    from web import sports_meta_model
+
+    def _equal_config(league: str) -> dict:
+        return {
+            "blend_weights": {
+                "legacy": 1.0 / 3.0,
+                "power": 1.0 / 3.0,
+                "sport_pred": 1.0 / 3.0,
+            },
+            "temperature": 1.0,
+            "two_layer": False,
+        }
+
+    monkeypatch.setattr(sports_meta_model, "get_sports_meta_config", _equal_config)
+
+
 def test_total_score_to_home_win_prob() -> None:
     assert total_score_to_home_win_prob(-62.0) == 62.0
     assert total_score_to_home_win_prob(55.0) == 45.0

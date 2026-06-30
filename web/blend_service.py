@@ -42,6 +42,11 @@ from web.season_games import get_league_power_context, power_unavailable_reason
 from web.soccer_blend import blend_soccer_predictions, compute_soccer_model_agreement
 from web.db_rating_model import apply_db_rating_blend
 from web.soccer_pred_model import run_soccer_pred_model, soccer_unavailable_reason
+from web.sports_meta_model import (
+    apply_binary_calibration_to_blend,
+    get_sports_meta_config,
+    stack_binary_blend_layers,
+)
 
 LEGACY_BLEND_WEIGHT = 0.5
 POWER_BLEND_WEIGHT = 0.5
@@ -60,19 +65,21 @@ def _with_db_rating_layer(
     home_name: str | None,
     away_name: str | None,
 ) -> dict[str, Any]:
-    if not home_slug or not away_slug:
+    if home_slug and away_slug:
+        result = apply_db_rating_blend(
+            result,
+            league=league,
+            cutoff_date=cutoff_date,
+            home_abbr=home_abbr,
+            away_abbr=away_abbr,
+            home_slug=home_slug,
+            away_slug=away_slug,
+            home_name=home_name,
+            away_name=away_name,
+        )
+    if is_soccer_league(league):
         return result
-    return apply_db_rating_blend(
-        result,
-        league=league,
-        cutoff_date=cutoff_date,
-        home_abbr=home_abbr,
-        away_abbr=away_abbr,
-        home_slug=home_slug,
-        away_slug=away_slug,
-        home_name=home_name,
-        away_name=away_name,
-    )
+    return apply_binary_calibration_to_blend(result, league)
 
 
 def total_score_to_home_win_prob(total_score: float) -> float:
@@ -658,22 +665,32 @@ def blend_predictions(
 
     if _uses_three_layer_blend(league) and sport_payload and sport_key:
         third_home = float(sport_payload["home_win_probability"])
-        blended_home = (
-            THREE_LAYER_WEIGHT * legacy_home
-            + THREE_LAYER_WEIGHT * power_home
-            + THREE_LAYER_WEIGHT * third_home
+        blended_home = stack_binary_blend_layers(
+            legacy_home=legacy_home,
+            power_home=power_home,
+            sport_home=third_home,
+            league=league,
+            sport_key=sport_key,
         )
+        if blended_home is None:
+            blended_home = (
+                THREE_LAYER_WEIGHT * legacy_home
+                + THREE_LAYER_WEIGHT * power_home
+                + THREE_LAYER_WEIGHT * third_home
+            )
         blended_home = min(max(blended_home, 0.0), 100.0)
         total, win_prob = home_win_prob_to_total_score(blended_home)
+        meta = get_sports_meta_config(league)
+        blend_weights = {
+            "legacy": meta["blend_weights"].get("legacy", THREE_LAYER_WEIGHT),
+            "power": meta["blend_weights"].get("power", THREE_LAYER_WEIGHT),
+            sport_key: meta["blend_weights"].get("sport_pred", THREE_LAYER_WEIGHT),
+        }
         result: dict[str, Any] = {
             "algorithm": "Unified",
             "blend_mode": "blended",
             "blend_layers": 3,
-            "blend_weights": {
-                "legacy": THREE_LAYER_WEIGHT,
-                "power": THREE_LAYER_WEIGHT,
-                sport_key: THREE_LAYER_WEIGHT,
-            },
+            "blend_weights": blend_weights,
             "legacy": legacy_payload,
             "power": power_payload,
             sport_key: sport_payload,
@@ -695,9 +712,17 @@ def blend_predictions(
         )
 
     weight_sum = legacy_weight + power_weight
-    blended_home = (
-        legacy_weight * legacy_home + power_weight * power_home
-    ) / weight_sum
+    meta_weights = get_sports_meta_config(league)["blend_weights"]
+    blended_home = stack_binary_blend_layers(
+        legacy_home=legacy_home,
+        power_home=power_home,
+        sport_home=None,
+        league=league,
+    )
+    if blended_home is None:
+        blended_home = (
+            legacy_weight * legacy_home + power_weight * power_home
+        ) / weight_sum
     blended_home = min(max(blended_home, 0.0), 100.0)
     total, win_prob = home_win_prob_to_total_score(blended_home)
 
@@ -706,8 +731,8 @@ def blend_predictions(
         "blend_mode": "blended",
         "blend_layers": 2,
         "blend_weights": {
-            "legacy": legacy_weight,
-            "power": power_weight,
+            "legacy": meta_weights.get("legacy", legacy_weight),
+            "power": meta_weights.get("power", power_weight),
         },
         "legacy": legacy_payload,
         "power": power_payload,
