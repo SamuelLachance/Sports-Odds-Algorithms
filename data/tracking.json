@@ -2052,11 +2052,11 @@
       "strategy": "value",
       "strategy_label": "Value bet",
       "confidence": "medium",
-      "edge": 62.0,
+      "edge": 57.0,
       "model_projection": 134,
-      "market_odds": 196,
+      "market_odds": 191,
       "win_probability": 42.7,
-      "reason": "Sportsbook offers +196 vs model fair +134 on Pittsburgh Pirates (+62 edge on American odds).",
+      "reason": "Sportsbook offers +191 vs model fair +134 on Pittsburgh Pirates (+57 American edge, +24.3% EV).",
       "bet_type": "moneyline",
       "spread_line": null,
       "spread_odds": null,
@@ -2067,7 +2067,8 @@
       "status": "pending",
       "units": 0.0,
       "stake_units": 1.0,
-      "recorded_at": "2026-06-30T07:56:31.904072+00:00"
+      "recorded_at": "2026-06-30T07:56:31.904072+00:00",
+      "ev_pct": 24.26
     }
   ]
 }
