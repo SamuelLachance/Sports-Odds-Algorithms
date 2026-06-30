@@ -583,11 +583,18 @@ select:focus {
 /* ── Picks & games ── */
 .picks-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
   gap: var(--space-3);
 }
 
+@media (min-width: 901px) {
+  .picks-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 .pick-card {
+  min-width: 0;
   padding: var(--space-3);
   border-radius: var(--radius);
   background: var(--bg-elevated);
@@ -699,13 +706,15 @@ a.pick-card-link:focus-visible {
 
 .pick-odds {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-2);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-1) var(--space-2);
   margin: var(--space-3) 0;
+  width: 100%;
 }
 
-.pick-odds div {
-  padding: var(--space-2);
+.pick-odds > div {
+  min-width: 0;
+  padding: 0.65rem 0.5rem;
   border-radius: var(--radius-sm);
   background: var(--bg-soft);
   border: 1px solid var(--border);
@@ -725,6 +734,13 @@ a.pick-card-link:focus-visible {
   display: block;
   margin-top: 0.35rem;
   font-family: "JetBrains Mono", monospace;
+}
+
+.pick-odds strong {
+  font-size: 0.75rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .pick-reason {
@@ -1357,7 +1373,7 @@ a.pick-card-link:focus-visible {
 .status.push { background: color-mix(in srgb, var(--accent-warm) 15%, transparent); color: var(--accent-warm); }
 
 .pick-odds.compact {
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-top: var(--space-2);
 }
 
@@ -2160,11 +2176,14 @@ a.pick-card-link:focus-visible {
 
   .demo-grid,
   .cards-grid,
-  .pick-odds,
   .slate-head {
     grid-template-columns: 1fr;
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .pick-odds {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .nav-toggle {
@@ -2272,6 +2291,6 @@ a.pick-card-link:focus-visible {
   }
 
   .pick-odds {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
