@@ -550,11 +550,7 @@ function algoBreakdown(m) {
     );
   }
   if (basketball) {
-    const margin =
-      basketball.predicted_margin != null
-        ? ` margin ${formatSpread(-basketball.predicted_margin)}`
-        : "";
-    parts.push(`Matrix: ${basketball.home_win_probability}% home${margin}`);
+    parts.push(`Matrix: ${basketball.home_win_probability}% home`);
   }
   if (baseball) {
     const elo =
@@ -569,11 +565,7 @@ function algoBreakdown(m) {
     parts.push(`Hockey-predictions: ${hockey.home_win_probability}% home${xg}`);
   }
   if (football) {
-    const spread =
-      football.projected_spread != null
-        ? ` spread ${football.projected_spread > 0 ? "+" : ""}${football.projected_spread}`
-        : "";
-    parts.push(`nfelo: ${football.home_win_probability}% home${spread}`);
+    parts.push(`nfelo: ${football.home_win_probability}% home`);
   }
   if (soccer) {
     const xg =
@@ -600,6 +592,9 @@ function algoBreakdown(m) {
   }
   if (m.blend_note) {
     parts.push(m.blend_note);
+  }
+  if (m.home_spread_margin != null) {
+    parts.push(`Unified spread: home margin ${formatSpread(m.home_spread_margin)}`);
   }
   return parts.length
     ? `<div class="algo-blend panel-sub"><span class="blend-label">Model blend</span><small>${parts.join(" · ")}</small></div>`
@@ -633,7 +628,7 @@ function algoCenter(game) {
     : `<div class="algo-probability">
         <span>${algoLabel}</span>
         <strong class="prob-value">${m.win_probability}%</strong>
-        <small>Model favorite: ${fav}</small>
+        <small>Model favorite: ${fav}${m.home_spread_margin != null ? ` · spread margin ${formatSpread(m.home_spread_margin)}` : ""}</small>
       </div>`;
   const drawChip =
     threeway && mk.draw_moneyline != null
@@ -762,7 +757,7 @@ function viewPicks() {
   const slate = state.slate || {};
   const minEdge = slate.summary?.min_edge ?? slate.min_recommended_edge ?? 40;
   const minEv = slate.summary?.min_ev_pct ?? slate.min_expected_value_pct ?? 5;
-  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p>Official picks maximize expected profit per sport: <strong>spread</strong> (basketball/football) and <strong>moneyline</strong> (hockey/baseball). Thresholds are walk-forward tuned on our blend model using EV, Kelly criterion, and profit score — no layer-agreement filter.</p></section>
+  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p>Official picks maximize expected profit per sport: <strong>spread</strong> (basketball/football) and <strong>moneyline</strong> (hockey/baseball). Thresholds are walk-forward tuned on our blend model over maximum ESPN history (5 pro seasons / 730-day college window) using EV, Kelly, and profit score.</p></section>
     <div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No bets meet the +${minEv}% EV threshold today.</div>`}</div>`;
 }
 

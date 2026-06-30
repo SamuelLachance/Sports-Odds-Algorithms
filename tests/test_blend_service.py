@@ -635,6 +635,31 @@ def test_blended_home_spread_margin_matches_unified_total_score() -> None:
     assert margin > 0
 
 
+def test_attach_home_spread_margin_exposes_pick_margin() -> None:
+    from web.blend_service import _attach_home_spread_margin
+
+    blended = {
+        "total_score": -76.74,
+        "win_probability": 76.74,
+        "favorite_side": "home",
+        "basketball_pred": {"predicted_margin": 8.8, "home_win_probability": 71.94},
+    }
+    attached = _attach_home_spread_margin(dict(blended), "wnba")
+    assert attached["home_spread_margin"] == round(
+        blended_home_spread_margin(blended, "wnba"), 2
+    )
+    assert attached["home_spread_margin"] == -3.21
+    assert blended_home_spread_margin(attached, "wnba") == attached["home_spread_margin"]
+
+
+def test_attach_home_spread_margin_skips_moneyline_leagues() -> None:
+    from web.blend_service import _attach_home_spread_margin
+
+    blended = {"total_score": -60.0, "win_probability": 60.0}
+    attached = _attach_home_spread_margin(dict(blended), "nhl")
+    assert "home_spread_margin" not in attached
+
+
 if __name__ == "__main__":
     test_total_score_to_home_win_prob()
     test_home_win_prob_to_total_score()

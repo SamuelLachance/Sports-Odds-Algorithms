@@ -79,7 +79,8 @@ def _with_db_rating_layer(
         )
     if is_soccer_league(league):
         return result
-    return apply_binary_calibration_to_blend(result, league)
+    result = apply_binary_calibration_to_blend(result, league)
+    return _attach_home_spread_margin(result, league)
 
 
 def total_score_to_home_win_prob(total_score: float) -> float:
@@ -267,10 +268,20 @@ def _layer_home_margin(layer: dict[str, Any], league: str) -> float | None:
 
 def blended_home_spread_margin(blended: dict[str, Any], league: str) -> float:
     """Home margin for spread picks, aligned with unified total_score / win%."""
+    cached = blended.get("home_spread_margin")
+    if cached is not None:
+        return float(cached)
     total = blended.get("total_score")
     if total is not None:
         return model_home_margin(float(total), league)
     return 0.0
+
+
+def _attach_home_spread_margin(result: dict[str, Any], league: str) -> dict[str, Any]:
+    """Expose the canonical spread margin used by official picks and UI."""
+    if uses_spread_bets(league):
+        result["home_spread_margin"] = round(blended_home_spread_margin(result, league), 2)
+    return result
 
 
 def _best_value_side_binary(
