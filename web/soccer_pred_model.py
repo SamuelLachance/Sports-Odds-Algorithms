@@ -1,8 +1,8 @@
 """Football-predictor style Elo + Pi-ratings + Dixon-Coles 1X2 probabilities.
 
 Lightweight port of https://github.com/jdgoated1/football-predictor rating core
-(Elo, Pi-rating, Dixon-Coles). XGBoost/LightGBM meta-learner omitted for static
-GH Pages build — equal blend of the three statistical layers only.
+(Elo, Pi-rating, Dixon-Coles). Layer weights and temperature are log-loss tuned
+via ``web.soccer_meta_model`` (see ``data/soccer_meta_weights.json``).
 """
 
 from __future__ import annotations
@@ -15,6 +15,10 @@ from typing import Any
 from web.league_profiles import SOCCER_DRAW_BASE, is_soccer_league
 from web.live_data import resolve_team
 from web.season_games import load_league_completed_games
+from web.soccer_meta_model import (
+    blend_weighted_threeway,
+    get_league_meta_config,
+)
 
 MIN_LEAGUE_GAMES = 15
 MIN_TEAM_GAMES = 2
@@ -349,10 +353,11 @@ def predict_matchup_from_model(
     pi_probs = _pi_threeway(pi, home, away)
     dc_home, dc_draw, dc_away, lam, mu = _dc_threeway(attack, defence, home_adv, home, away)
 
-    home_p = (elo_probs[0] + pi_probs[0] + dc_home) / 3.0
-    draw_p = (elo_probs[1] + pi_probs[1] + dc_draw) / 3.0
-    away_p = (elo_probs[2] + pi_probs[2] + dc_away) / 3.0
-    home_p, draw_p, away_p = _normalize_threeway(home_p, draw_p, away_p)
+    stat_weights = get_league_meta_config(league)["stat_weights"]
+    home_p, draw_p, away_p = blend_weighted_threeway(
+        [elo_probs, pi_probs, (dc_home, dc_draw, dc_away)],
+        list(stat_weights),
+    )
 
     return SoccerPredResult(
         home_win_probability=round(home_p, 2),

@@ -14,6 +14,11 @@ from web.league_profiles import is_soccer_league
 from web.season_games import power_unavailable_reason
 from web.soccer_context import build_soccer_context_payload
 from web.db_rating_model import apply_db_rating_blend
+from web.soccer_meta_model import (
+    apply_threeway_calibration,
+    get_league_meta_config,
+    stack_soccer_blend_layers,
+)
 from web.soccer_pred_model import run_soccer_pred_model, soccer_unavailable_reason
 
 LEGACY_BLEND_WEIGHT = 0.5
@@ -216,6 +221,39 @@ def compute_soccer_model_agreement(
     }
 
 
+def _apply_final_threeway_calibration(
+    result: dict[str, Any],
+    league: str,
+) -> dict[str, Any]:
+    if not result.get("threeway"):
+        return result
+    home_p, draw_p, away_p = apply_threeway_calibration(
+        float(result["home_win_probability"]),
+        float(result["draw_probability"]),
+        float(result["away_win_probability"]),
+        league,
+    )
+    total, win_prob, favorite = threeway_probs_to_total_score(home_p, draw_p, away_p)
+    updated = dict(result)
+    updated.update(
+        {
+            "home_win_probability": home_p,
+            "draw_probability": draw_p,
+            "away_win_probability": away_p,
+            "total_score": round(total, 2),
+            "win_probability": round(win_prob, 2),
+            "favorite_side": favorite,
+        }
+    )
+    if updated.get("blended_threeway"):
+        updated["blended_threeway"] = {
+            "home_win_probability": home_p,
+            "draw_probability": draw_p,
+            "away_win_probability": away_p,
+        }
+    return updated
+
+
 def _finalize_soccer_blend(
     result: dict[str, Any],
     *,
@@ -243,7 +281,8 @@ def _finalize_soccer_blend(
             home_name=home_name,
             away_name=away_name,
         )
-    return _attach_soccer_context_layer(
+    return _apply_final_threeway_calibration(
+        _attach_soccer_context_layer(
         result,
         league=league,
         cutoff_date=cutoff_date,
@@ -252,6 +291,8 @@ def _finalize_soccer_blend(
         event_id=event_id,
         home_espn_id=home_espn_id,
         away_espn_id=away_espn_id,
+        ),
+        league,
     )
 
 
@@ -394,21 +435,27 @@ def blend_soccer_predictions(
             float(sport_payload["draw_probability"]),
             float(sport_payload["away_win_probability"]),
         )
-        home_p, draw_p, away_p = blend_threeway_layers(
-            [legacy_threeway, power_threeway, soccer_threeway],
-            [THREE_LAYER_WEIGHT, THREE_LAYER_WEIGHT, THREE_LAYER_WEIGHT],
+        stacked = stack_soccer_blend_layers(
+            legacy=legacy_threeway,
+            power=power_threeway,
+            soccer_pred=soccer_threeway,
+            league=league,
         )
+        if stacked:
+            home_p, draw_p, away_p = stacked
+        else:
+            home_p, draw_p, away_p = blend_threeway_layers(
+                [legacy_threeway, power_threeway, soccer_threeway],
+                [THREE_LAYER_WEIGHT, THREE_LAYER_WEIGHT, THREE_LAYER_WEIGHT],
+            )
+        blend_weights = get_league_meta_config(league)["blend_weights"]
         total, win_prob, favorite = threeway_probs_to_total_score(home_p, draw_p, away_p)
         return _finalize_soccer_blend(
             {
             "algorithm": "Unified",
             "blend_mode": "blended",
             "blend_layers": 3,
-            "blend_weights": {
-                "legacy": THREE_LAYER_WEIGHT,
-                "power": THREE_LAYER_WEIGHT,
-                "soccer_pred": THREE_LAYER_WEIGHT,
-            },
+            "blend_weights": blend_weights,
             "legacy": legacy_payload,
             "legacy_threeway": legacy_threeway_payload,
             "power": power_payload,
@@ -446,6 +493,14 @@ def blend_soccer_predictions(
         [legacy_threeway, power_threeway],
         [LEGACY_BLEND_WEIGHT, POWER_BLEND_WEIGHT],
     )
+    stacked = stack_soccer_blend_layers(
+        legacy=legacy_threeway,
+        power=power_threeway,
+        soccer_pred=None,
+        league=league,
+    )
+    if stacked:
+        home_p, draw_p, away_p = stacked
     total, win_prob, favorite = threeway_probs_to_total_score(home_p, draw_p, away_p)
     reason = soccer_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
     return _finalize_soccer_blend(
