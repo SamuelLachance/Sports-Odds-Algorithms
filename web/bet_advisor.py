@@ -563,6 +563,7 @@ def evaluate_spread_picks(
     home_spread_odds: int | None = None,
     model_margin_home: float | None = None,
     min_edge: float = MIN_RECOMMENDED_EDGE,
+    min_point_edge: float | None = None,
 ) -> list[BetPick]:
     """Recommend spread bets when model margin beats the consensus book line."""
     if consensus_spread is None:
@@ -585,6 +586,8 @@ def evaluate_spread_picks(
         juice = spread_odds if spread_odds is not None else DEFAULT_SPREAD_JUICE
         edge = spread_odds_edge(point_edge, juice)
         if edge < min_edge:
+            continue
+        if min_point_edge is not None and point_edge < min_point_edge:
             continue
 
         line = spread_line_for_side(consensus_spread, side)

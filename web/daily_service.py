@@ -18,10 +18,8 @@ TORONTO = ZoneInfo("America/Toronto")
 def _toronto_today() -> date:
     return datetime.now(TORONTO).date()
 
-from web.bet_advisor import (  # noqa: E402
-    evaluate_picks,
+from web.bet_advisor import (
     evaluate_soccer_picks,
-    evaluate_spread_picks,
     model_moneylines,
     pick_to_dict,
     projections_from_win_probs,
@@ -34,7 +32,7 @@ from web.football_pred_model import get_football_pred_context, is_football_leagu
 from web.hockey_pred_model import get_hockey_pred_context, is_hockey_league  # noqa: E402
 from web.league_profiles import is_soccer_league  # noqa: E402
 from web.soccer_pred_model import get_soccer_pred_context  # noqa: E402
-from web.blend_service import blend_predictions, blended_home_spread_margin, compute_model_agreement  # noqa: E402
+from web.blend_service import blend_predictions, compute_model_agreement  # noqa: E402
 from web.season_games import prewarm_league_power  # noqa: E402
 from web.espn_client import (  # noqa: E402
     ScheduledGame,
@@ -49,10 +47,10 @@ from web.league_profiles import (  # noqa: E402
     SUPPORTED_LEAGUES,
     eligible_for_official_picks,
     get_algo_league,
-    uses_spread_bets,
 )
 from web.league_readiness import is_league_ready_for_daily_slate  # noqa: E402
 from web.live_data import load_live_team_data, resolve_team  # noqa: E402
+from web.pick_strategy import evaluate_official_picks_for_game, get_pick_thresholds
 from web.predict_service import FACTOR_LABELS  # noqa: E402
 
 
@@ -196,16 +194,19 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
     value_agreed = (
         model_agreement.get("required") == 3 and model_agreement.get("agreed")
     )
-    pick_min_edge = MIN_RECOMMENDED_EDGE
+    pick_thresholds = get_pick_thresholds(game.league)
+    pick_min_edge = pick_thresholds["min_edge"]
     value_sides = set(
         model_agreement.get("value_sides")
         or model_agreement.get("value_outcomes")
         or []
     )
+    ml_away_prob, ml_home_prob = resolve_binary_win_probs(blended, total)
 
     model_payload: dict[str, Any] = {
         **blended,
         "model_agreement": model_agreement,
+        "pick_strategy": pick_thresholds,
         "away_projection": away_proj,
         "home_projection": home_proj,
         "factors": factors,
@@ -213,37 +214,7 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
     if draw_proj is not None:
         model_payload["draw_projection"] = draw_proj
 
-    if uses_spread_bets(game.league):
-        picks = evaluate_spread_picks(
-            league=game.league,
-            away_name=game.away_name,
-            home_name=game.home_name,
-            away_slug=away[1],
-            home_slug=home[1],
-            total_score=total,
-            win_probability=win_probability,
-            consensus_spread=game.market.spread,
-            away_spread_odds=game.market.away_spread_odds,
-            home_spread_odds=game.market.home_spread_odds,
-            model_margin_home=blended_home_spread_margin(blended, game.league),
-            min_edge=pick_min_edge,
-        )
-        if not picks:
-            ml_away_prob, ml_home_prob = resolve_binary_win_probs(blended, total)
-            picks = evaluate_picks(
-                away_name=game.away_name,
-                home_name=game.home_name,
-                away_slug=away[1],
-                home_slug=home[1],
-                total_score=total,
-                win_probability=win_probability,
-                away_market=game.market.away_moneyline,
-                home_market=game.market.home_moneyline,
-                away_prob=ml_away_prob,
-                home_prob=ml_home_prob,
-                min_edge=pick_min_edge,
-            )
-    elif is_soccer_league(game.league):
+    if is_soccer_league(game.league):
         soccer_pred = blended.get("soccer_pred") or {}
         picks = evaluate_soccer_picks(
             away_name=game.away_name,
@@ -264,28 +235,35 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             expected_away_goals=blended.get("expected_away_goals")
             or soccer_pred.get("expected_away_goals"),
             min_edge=pick_min_edge,
+            min_ev_pct=pick_thresholds["min_ev_pct"],
         )
-    else:
-        ml_away_prob, ml_home_prob = resolve_binary_win_probs(blended, total)
-        picks = evaluate_picks(
+    elif eligible_for_official_picks(game.league):
+        picks = evaluate_official_picks_for_game(
+            league=game.league,
             away_name=game.away_name,
             home_name=game.home_name,
             away_slug=away[1],
             home_slug=home[1],
             total_score=total,
             win_probability=win_probability,
+            blended=blended,
             away_market=game.market.away_moneyline,
             home_market=game.market.home_moneyline,
-            away_prob=ml_away_prob,
+            consensus_spread=game.market.spread,
+            away_spread_odds=game.market.away_spread_odds,
+            home_spread_odds=game.market.home_spread_odds,
             home_prob=ml_home_prob,
-            min_edge=pick_min_edge,
+            away_prob=ml_away_prob,
         )
-
-    if model_agreement.get("required") == 3 and not model_agreement.get("agreed"):
+    else:
         picks = []
-    elif value_agreed and value_sides:
-        picks = [pick for pick in picks if pick.side in value_sides]
-        picks = picks[:1] if picks else []
+
+    if pick_thresholds.get("require_model_agreement", True):
+        if model_agreement.get("required") == 3 and not model_agreement.get("agreed"):
+            picks = []
+        elif value_agreed and value_sides:
+            picks = [pick for pick in picks if pick.side in value_sides]
+            picks = picks[:1] if picks else []
 
     official_picks = picks if eligible_for_official_picks(game.league) else []
 
@@ -468,16 +446,22 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
         ):
             best_by_event[event_id] = rec
     def _meets_recommendation_threshold(game: dict[str, Any], rec: dict[str, Any]) -> bool:
+        league = str(game.get("league") or rec.get("league") or "")
+        thresholds = get_pick_thresholds(league)
         edge = rec.get("edge", 0)
         ev_pct = rec.get("ev_pct", 0)
-        if ev_pct < MIN_EXPECTED_VALUE_PCT and edge < MIN_RECOMMENDED_EDGE:
+        if thresholds["bet_type"] == "moneyline":
+            if ev_pct < thresholds["min_ev_pct"] and edge < thresholds["min_edge"]:
+                return False
+        elif edge < thresholds["min_edge"]:
             return False
         agreement = (game.get("model") or {}).get("model_agreement") or {}
-        if agreement.get("required") == 3 and agreement.get("agreed"):
-            value_sides = set(
-                agreement.get("value_sides") or agreement.get("value_outcomes") or []
-            )
-            return rec.get("side") in value_sides
+        if thresholds.get("require_model_agreement", True):
+            if agreement.get("required") == 3 and agreement.get("agreed"):
+                value_sides = set(
+                    agreement.get("value_sides") or agreement.get("value_outcomes") or []
+                )
+                return rec.get("side") in value_sides
         return True
 
     games_by_event = {game["event_id"]: game for game in all_games}
