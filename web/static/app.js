@@ -505,6 +505,8 @@ function pickCard(pick, extra = "") {
       <div><span>Model</span><strong>${pickModelLabel(pick)}</strong></div>
       <div><span>Edge</span><strong>+${pick.edge}</strong></div>
       ${pick.ev_pct != null ? `<div><span>EV</span><strong>+${pick.ev_pct}%</strong></div>` : ""}
+      ${pick.profit_score != null ? `<div><span>Profit</span><strong>${pick.profit_score}</strong></div>` : ""}
+      ${pick.kelly_pct != null ? `<div><span>Kelly</span><strong>${pick.kelly_pct}%</strong></div>` : ""}
     </div>
     <p class="pick-reason">${pick.reason}</p>
     ${gameHref ? `<span class="pick-open-hint">Open game prediction →</span>` : ""}
@@ -760,7 +762,7 @@ function viewPicks() {
   const slate = state.slate || {};
   const minEdge = slate.summary?.min_edge ?? slate.min_recommended_edge ?? 40;
   const minEv = slate.summary?.min_ev_pct ?? slate.min_expected_value_pct ?? 5;
-  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p>Official picks use backtest-tuned thresholds per sport: <strong>spread</strong> for basketball and football, <strong>moneyline</strong> for hockey and baseball. Soccer is predictions-only. Basketball/football need +edge vs spread juice; hockey/baseball need ≥${minEv}% EV (or +${minEdge} edge on cross-sign favorites). 3-layer model agreement required where applicable.</p></section>
+  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p>Official picks maximize expected profit per sport: <strong>spread</strong> (basketball/football) and <strong>moneyline</strong> (hockey/baseball). Thresholds are walk-forward tuned on our blend model using EV, Kelly criterion, and profit score — no layer-agreement filter.</p></section>
     <div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No bets meet the +${minEv}% EV threshold today.</div>`}</div>`;
 }
 

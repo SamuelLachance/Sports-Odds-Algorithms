@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 import json
-import math
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Literal
 
 from web.bet_advisor import (
     BetPick,
+    enrich_pick_profit_metrics,
     evaluate_picks,
     evaluate_spread_picks,
     model_home_margin,
@@ -36,13 +36,14 @@ DEFAULT_THRESHOLDS: dict[str, Any] = {
     "min_edge": MIN_RECOMMENDED_EDGE,
     "min_ev_pct": MIN_EXPECTED_VALUE_PCT,
     "min_spread_point_edge": 2.0,
-    "require_model_agreement": True,
+    "min_profit_score": 0.0,
+    "min_kelly_pct": 0.0,
 }
 
 MARKET_SHRINK = 0.55
 DEFAULT_SPREAD_JUICE = -110
-BACKTEST_WINDOW = 100
-MIN_TUNE_BETS = 12
+BACKTEST_WINDOW = 120
+MIN_TUNE_BETS = 10
 
 
 def official_bet_type(league: str) -> OfficialBetType:
@@ -97,12 +98,25 @@ def get_pick_thresholds(league: str) -> dict[str, Any]:
         "min_spread_point_edge": float(
             entry.get("min_spread_point_edge", DEFAULT_THRESHOLDS["min_spread_point_edge"])
         ),
-        "require_model_agreement": bool(
-            entry.get("require_model_agreement", DEFAULT_THRESHOLDS["require_model_agreement"])
+        "min_profit_score": float(
+            entry.get("min_profit_score", DEFAULT_THRESHOLDS["min_profit_score"])
         ),
+        "min_kelly_pct": float(entry.get("min_kelly_pct", DEFAULT_THRESHOLDS["min_kelly_pct"])),
         "backtest_roi_pct": entry.get("backtest_roi_pct"),
         "backtest_bets": entry.get("backtest_bets", 0),
+        "backtest_units": entry.get("backtest_units"),
     }
+
+
+def passes_profit_gate(pick: BetPick, thresholds: dict[str, Any]) -> bool:
+    """Kelly + profit-score gate after edge/EV thresholds (backtest-tuned)."""
+    enriched = enrich_pick_profit_metrics(pick)
+    if enriched.profit_score < thresholds.get("min_profit_score", 0.0):
+        return False
+    kelly_pct = float(enriched.extra.get("kelly_pct") or 0.0)
+    if kelly_pct < thresholds.get("min_kelly_pct", 0.0):
+        return False
+    return True
 
 
 def _round_spread(value: float) -> float:
@@ -258,7 +272,9 @@ def _evaluate_backtest_pick(
         )
         if not picks:
             return None
-        pick = picks[0]
+        pick = enrich_pick_profit_metrics(picks[0])
+        if not passes_profit_gate(pick, thresholds):
+            return None
         result = grade_spread_bet(pick.side, home_goals, away_goals, market_spread)
         odds = pick.spread_odds or DEFAULT_SPREAD_JUICE
     else:
@@ -283,7 +299,9 @@ def _evaluate_backtest_pick(
         )
         if not picks:
             return None
-        pick = picks[0]
+        pick = enrich_pick_profit_metrics(picks[0])
+        if not passes_profit_gate(pick, thresholds):
+            return None
         result = grade_moneyline_bet(pick.side, home_goals, away_goals)
         odds = pick.market_odds
 
@@ -390,44 +408,122 @@ def backtest_league_strategy(
     return _backtest_samples(league, samples, thresholds, bet_type)  # type: ignore[arg-type]
 
 
+def _strategy_objective(result: dict[str, Any]) -> float:
+    """Maximize walk-forward units; require minimum bet volume for stability."""
+    if result["bets"] < MIN_TUNE_BETS:
+        return float("-inf")
+    units = float(result["units"])
+    if units <= 0:
+        return units
+    return units + result["bets"] * 0.02
+
+
+def _threshold_grid(bet_type: OfficialBetType) -> list[dict[str, float]]:
+    if bet_type == "spread":
+        return [
+            {
+                "min_edge": edge,
+                "min_spread_point_edge": pts,
+                "min_ev_pct": MIN_EXPECTED_VALUE_PCT,
+                "min_profit_score": profit,
+                "min_kelly_pct": kelly,
+            }
+            for edge in (35, 40, 45)
+            for pts in (2.0, 2.5, 3.0)
+            for profit in (0.0, 5.0)
+            for kelly in (0.0, 2.0)
+        ]
+    return [
+        {
+            "min_edge": edge,
+            "min_ev_pct": ev,
+            "min_spread_point_edge": 2.0,
+            "min_profit_score": profit,
+            "min_kelly_pct": kelly,
+        }
+        for edge in (30, 35, 40)
+        for ev in (4.0, 5.0, 6.0)
+        for profit in (0.0, 5.0)
+        for kelly in (0.0, 2.0)
+    ]
+
+
+def _refine_thresholds(
+    league: str,
+    samples: list[dict[str, Any]],
+    bet_type: OfficialBetType,
+    base: dict[str, Any],
+) -> dict[str, Any]:
+    current = dict(base)
+    best = _backtest_samples(league, samples, current, bet_type)
+    best_score = _strategy_objective(best)
+
+    if bet_type == "spread":
+        specs: list[tuple[str, float, float, float]] = [
+            ("min_edge", 25.0, 55.0, 2.5),
+            ("min_spread_point_edge", 1.0, 4.0, 0.25),
+            ("min_profit_score", 0.0, 12.0, 1.0),
+            ("min_kelly_pct", 0.0, 6.0, 0.5),
+        ]
+    else:
+        specs = [
+            ("min_edge", 20.0, 50.0, 2.5),
+            ("min_ev_pct", 2.0, 10.0, 0.5),
+            ("min_profit_score", 0.0, 12.0, 1.0),
+            ("min_kelly_pct", 0.0, 6.0, 0.5),
+        ]
+
+    for _ in range(2):
+        improved = True
+        while improved:
+            improved = False
+            for key, low, high, step in specs:
+                value = float(current[key])
+                for trial in (value - step, value + step):
+                    if trial < low or trial > high:
+                        continue
+                    trial_thresholds = {**current, key: round(trial, 2)}
+                    result = _backtest_samples(league, samples, trial_thresholds, bet_type)
+                    score = _strategy_objective(result)
+                    if score > best_score:
+                        best_score = score
+                        best = result
+                        current = trial_thresholds
+                        improved = True
+    return best
+
+
 def tune_league_thresholds(league: str, cutoff: str) -> dict[str, Any]:
     bet_type = official_bet_type(league)
     if bet_type == "none":
         return _default_entry("none")
 
-    best: dict[str, Any] | None = None
     samples = _collect_backtest_samples(league, cutoff)
-    if bet_type == "spread":
-        grid = [
-            {"min_edge": edge, "min_spread_point_edge": pts, "min_ev_pct": MIN_EXPECTED_VALUE_PCT}
-            for edge in (40, 45)
-            for pts in (2.0, 2.5, 3.0)
-        ]
-    else:
-        grid = [
-            {"min_edge": edge, "min_ev_pct": ev, "min_spread_point_edge": 2.0}
-            for edge in (35, 40, 45)
-            for ev in (5.0, 6.0, 7.0)
-        ]
+    best: dict[str, Any] | None = None
+    best_score = float("-inf")
 
-    for params in grid:
+    for params in _threshold_grid(bet_type):
         thresholds = {**DEFAULT_THRESHOLDS, **params, "bet_type": bet_type}
-        result = backtest_league_strategy(league, cutoff, thresholds, samples=samples)
-        if result["bets"] < MIN_TUNE_BETS:
-            continue
-        if best is None or result["roi_pct"] > best["roi_pct"]:
+        result = _backtest_samples(league, samples, thresholds, bet_type)  # type: ignore[arg-type]
+        score = _strategy_objective(result)
+        if score > best_score:
+            best_score = score
             best = result
 
-    if not best:
+    if not best or best_score == float("-inf"):
         thresholds = {**DEFAULT_THRESHOLDS, "bet_type": bet_type}
-        best = backtest_league_strategy(league, cutoff, thresholds, samples=samples)
+        best = _backtest_samples(league, samples, thresholds, bet_type)  # type: ignore[arg-type]
+    else:
+        best = _refine_thresholds(league, samples, bet_type, best["thresholds"])  # type: ignore[arg-type]
 
+    th = best["thresholds"]
     return {
         "bet_type": bet_type,
-        "min_edge": best["thresholds"]["min_edge"],
-        "min_ev_pct": best["thresholds"]["min_ev_pct"],
-        "min_spread_point_edge": best["thresholds"]["min_spread_point_edge"],
-        "require_model_agreement": True,
+        "min_edge": th["min_edge"],
+        "min_ev_pct": th["min_ev_pct"],
+        "min_spread_point_edge": th["min_spread_point_edge"],
+        "min_profit_score": th.get("min_profit_score", 0.0),
+        "min_kelly_pct": th.get("min_kelly_pct", 0.0),
         "backtest_roi_pct": best["roi_pct"],
         "backtest_bets": best["bets"],
         "backtest_wins": best["wins"],
@@ -463,7 +559,7 @@ def evaluate_official_picks_for_game(
     if bet_type == "spread":
         if consensus_spread is None:
             return []
-        return evaluate_spread_picks(
+        picks = evaluate_spread_picks(
             league=league,
             away_name=away_name,
             home_name=home_name,
@@ -478,12 +574,13 @@ def evaluate_official_picks_for_game(
             min_edge=thresholds["min_edge"],
             min_point_edge=thresholds["min_spread_point_edge"],
         )
+        return [p for p in picks if passes_profit_gate(p, thresholds)]
 
     if bet_type == "moneyline":
         ml_away, ml_home = resolve_binary_win_probs(blended, total_score)
         if away_prob is not None and home_prob is not None:
             ml_away, ml_home = away_prob, home_prob
-        return evaluate_picks(
+        picks = evaluate_picks(
             away_name=away_name,
             home_name=home_name,
             away_slug=away_slug,
@@ -497,5 +594,6 @@ def evaluate_official_picks_for_game(
             min_edge=thresholds["min_edge"],
             min_ev_pct=thresholds["min_ev_pct"],
         )
+        return [p for p in picks if passes_profit_gate(p, thresholds)]
 
     return []

@@ -51,6 +51,7 @@ class BetPick:
     consensus_spread: float | None = None
     model_margin: float | None = None
     ev_pct: float = 0.0
+    profit_score: float = 0.0
     market_implied_prob: float | None = None
     extra: dict[str, Any] = field(default_factory=dict)
 
@@ -244,6 +245,64 @@ def expected_value_pct(model_prob_pct: float, american_odds: int) -> float:
     return (probability * payout - 1.0) * 100.0
 
 
+def kelly_fraction(
+    model_prob_pct: float,
+    american_odds: int,
+    *,
+    max_fraction: float = 1.0,
+) -> float:
+    """Kelly criterion stake fraction for a +EV bet (capped)."""
+    probability = min(max(model_prob_pct, 0.1), 99.9) / 100.0
+    decimal_odds = american_to_decimal(american_odds)
+    edge = probability * decimal_odds - 1.0
+    if edge <= 0:
+        return 0.0
+    b = decimal_odds - 1.0
+    if b <= 0:
+        return 0.0
+    fraction = edge / b
+    return max(0.0, min(fraction, max_fraction))
+
+
+def expected_units_per_bet(model_prob_pct: float, american_odds: int) -> float:
+    """Expected units won/lost per 1u flat bet."""
+    return expected_value_pct(model_prob_pct, american_odds) / 100.0
+
+
+def pick_profit_score(
+    *,
+    model_prob_pct: float,
+    american_odds: int,
+    edge: float = 0.0,
+) -> float:
+    """Composite score for ranking picks: EV + Kelly growth heuristic."""
+    ev_pct = expected_value_pct(model_prob_pct, american_odds)
+    if ev_pct <= 0 and edge <= 0:
+        return 0.0
+    kelly = kelly_fraction(model_prob_pct, american_odds)
+    # Weight EV heavily; Kelly rewards asymmetric +EV spots (longshots/favorites).
+    return ev_pct * (1.0 + 2.5 * kelly) + edge * 0.15
+
+
+def enrich_pick_profit_metrics(pick: BetPick) -> BetPick:
+    """Attach EV%, Kelly, and profit_score used for official pick ranking."""
+    if pick.bet_type == "spread":
+        odds = int(pick.spread_odds if pick.spread_odds is not None else DEFAULT_SPREAD_JUICE)
+        prob = float(pick.win_probability)
+    else:
+        odds = int(pick.market_odds)
+        prob = float(pick.win_probability)
+    pick.ev_pct = round(expected_value_pct(prob, odds), 2)
+    kelly = kelly_fraction(prob, odds)
+    pick.profit_score = round(
+        pick_profit_score(model_prob_pct=prob, american_odds=odds, edge=pick.edge),
+        4,
+    )
+    pick.extra["kelly_pct"] = round(kelly * 100.0, 2)
+    pick.extra["expected_units"] = round(expected_units_per_bet(prob, odds), 4)
+    return pick
+
+
 def model_vs_market_prob_edge(model_prob_pct: float, market_implied_pct: float) -> float:
     """Model probability minus de-vigged market implied probability."""
     return model_prob_pct - market_implied_pct
@@ -282,11 +341,15 @@ def resolve_binary_win_probs(
 
 
 def best_pick_only(picks: list[BetPick]) -> list[BetPick]:
-    """Return at most one pick per event (highest EV, then American edge)."""
+    """Return at most one pick per event (highest profit score, then EV, then edge)."""
     if not picks:
         return []
-    picks.sort(key=lambda item: (item.ev_pct, item.edge), reverse=True)
-    return [picks[0]]
+    enriched = [enrich_pick_profit_metrics(pick) for pick in picks]
+    enriched.sort(
+        key=lambda item: (item.profit_score, item.ev_pct, item.edge),
+        reverse=True,
+    )
+    return [enriched[0]]
 
 
 def _side_win_probs(total_score: float) -> tuple[float, float]:
@@ -621,6 +684,7 @@ def evaluate_spread_picks(
                 strategy=strategy,
                 confidence=confidence,
                 edge=edge,
+                ev_pct=round(expected_value_pct(side_cover_prob, juice), 2),
                 model_projection=fair_spread_odds,
                 market_odds=juice,
                 win_probability=side_cover_prob,
@@ -647,6 +711,9 @@ def pick_to_dict(pick: BetPick) -> dict[str, Any]:
         "confidence": pick.confidence,
         "edge": round(pick.edge, 1),
         "ev_pct": round(pick.ev_pct, 2),
+        "profit_score": round(pick.profit_score, 2),
+        "kelly_pct": pick.extra.get("kelly_pct"),
+        "expected_units": pick.extra.get("expected_units"),
         "model_projection": pick.model_projection,
         "market_odds": pick.market_odds,
         "win_probability": round(pick.win_probability, 2),

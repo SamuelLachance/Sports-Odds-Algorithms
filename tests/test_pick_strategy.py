@@ -8,6 +8,10 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
+from web.bet_advisor import (  # noqa: E402
+    kelly_fraction,
+    pick_profit_score,
+)
 from web.pick_strategy import (  # noqa: E402
     DEFAULT_THRESHOLDS,
     grade_moneyline_bet,
@@ -44,3 +48,10 @@ def test_simulate_market_helpers() -> None:
     away_ml, home_ml = simulate_market_moneylines(62.0)
     assert away_ml != home_ml
     assert "min_edge" in DEFAULT_THRESHOLDS
+
+
+def test_kelly_and_profit_score_positive_ev() -> None:
+    kelly = kelly_fraction(55.0, -110)
+    assert kelly > 0
+    score = pick_profit_score(model_prob_pct=55.0, american_odds=-110, edge=20.0)
+    assert score > 0

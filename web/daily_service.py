@@ -191,16 +191,8 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
     model_agreement = compute_model_agreement(
         blended, game.league, market=market_payload
     )
-    value_agreed = (
-        model_agreement.get("required") == 3 and model_agreement.get("agreed")
-    )
     pick_thresholds = get_pick_thresholds(game.league)
     pick_min_edge = pick_thresholds["min_edge"]
-    value_sides = set(
-        model_agreement.get("value_sides")
-        or model_agreement.get("value_outcomes")
-        or []
-    )
     ml_away_prob, ml_home_prob = resolve_binary_win_probs(blended, total)
 
     model_payload: dict[str, Any] = {
@@ -257,13 +249,6 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
         )
     else:
         picks = []
-
-    if pick_thresholds.get("require_model_agreement", True):
-        if model_agreement.get("required") == 3 and not model_agreement.get("agreed"):
-            picks = []
-        elif value_agreed and value_sides:
-            picks = [pick for pick in picks if pick.side in value_sides]
-            picks = picks[:1] if picks else []
 
     official_picks = picks if eligible_for_official_picks(game.league) else []
 
@@ -438,36 +423,39 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
             continue
         current = best_by_event.get(event_id)
         if current is None or (
+            rec.get("profit_score", 0),
             rec.get("ev_pct", 0),
             rec.get("edge", 0),
         ) > (
+            current.get("profit_score", 0),
             current.get("ev_pct", 0),
             current.get("edge", 0),
         ):
             best_by_event[event_id] = rec
+
     def _meets_recommendation_threshold(game: dict[str, Any], rec: dict[str, Any]) -> bool:
         league = str(game.get("league") or rec.get("league") or "")
         thresholds = get_pick_thresholds(league)
+        profit_score = rec.get("profit_score", 0)
+        kelly_pct = rec.get("kelly_pct", 0) or 0
         edge = rec.get("edge", 0)
         ev_pct = rec.get("ev_pct", 0)
-        if thresholds["bet_type"] == "moneyline":
-            if ev_pct < thresholds["min_ev_pct"] and edge < thresholds["min_edge"]:
-                return False
-        elif edge < thresholds["min_edge"]:
+        if profit_score < thresholds.get("min_profit_score", 0.0):
             return False
-        agreement = (game.get("model") or {}).get("model_agreement") or {}
-        if thresholds.get("require_model_agreement", True):
-            if agreement.get("required") == 3 and agreement.get("agreed"):
-                value_sides = set(
-                    agreement.get("value_sides") or agreement.get("value_outcomes") or []
-                )
-                return rec.get("side") in value_sides
-        return True
+        if kelly_pct < thresholds.get("min_kelly_pct", 0.0):
+            return False
+        if thresholds["bet_type"] == "moneyline":
+            return not (ev_pct < thresholds["min_ev_pct"] and edge < thresholds["min_edge"])
+        return edge >= thresholds["min_edge"]
 
     games_by_event = {game["event_id"]: game for game in all_games}
     recommendations = sorted(
         best_by_event.values(),
-        key=lambda item: (item.get("ev_pct", 0), item.get("edge", 0)),
+        key=lambda item: (
+            item.get("profit_score", 0),
+            item.get("ev_pct", 0),
+            item.get("edge", 0),
+        ),
         reverse=True,
     )
 

@@ -56,10 +56,13 @@ def main() -> int:
         payload[league] = entry
         print(
             f"  bets={entry.get('backtest_bets')} "
+            f"units={entry.get('backtest_units')} "
             f"roi={entry.get('backtest_roi_pct')}% "
             f"edge>={entry.get('min_edge')} "
             f"ev>={entry.get('min_ev_pct')} "
-            f"pts>={entry.get('min_spread_point_edge')}",
+            f"pts>={entry.get('min_spread_point_edge')} "
+            f"profit>={entry.get('min_profit_score')} "
+            f"kelly>={entry.get('min_kelly_pct')}%",
             flush=True,
         )
 
