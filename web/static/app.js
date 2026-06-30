@@ -504,6 +504,7 @@ function pickCard(pick, extra = "") {
       <div><span>${pick.bet_type === "spread" ? "Spread" : "Market"}</span><strong>${pickMarketLabel(pick)}</strong></div>
       <div><span>Model</span><strong>${pickModelLabel(pick)}</strong></div>
       <div><span>Edge</span><strong>+${pick.edge}</strong></div>
+      ${pick.ev_pct != null ? `<div><span>EV</span><strong>+${pick.ev_pct}%</strong></div>` : ""}
     </div>
     <p class="pick-reason">${pick.reason}</p>
     ${gameHref ? `<span class="pick-open-hint">Open game prediction →</span>` : ""}
@@ -659,7 +660,7 @@ function algoCenter(game) {
       ${algoBreakdown(m)}
       ${oddsRow}
     </div>
-    ${game.eligible_for_official_picks === false ? `<div class="game-pick neutral"><strong>Predictions only</strong><span>Soccer 1X2 model and fair prices are shown; official algo picks exclude soccer.</span></div>` : top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong><span>${pickTeamNameLink(top, game.league, game.matchup)} · ${pickMarketLabel(top)} vs model ${pickModelLabel(top)} (+${top.edge})</span><p>${top.reason}</p></div>` : `<div class="game-pick neutral"><strong>No value flag</strong><span>Model leans ${fav}; lines do not beat model price today.</span></div>`}
+    ${game.eligible_for_official_picks === false ? `<div class="game-pick neutral"><strong>Predictions only</strong><span>Soccer 1X2 model and fair prices are shown; official algo picks exclude soccer.</span></div>` : top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong><span>${pickTeamNameLink(top, game.league, game.matchup)} · ${pickMarketLabel(top)} vs model ${pickModelLabel(top)} (+${top.ev_pct != null ? top.ev_pct + "% EV, " : ""}+${top.edge} edge)</span><p>${top.reason}</p></div>` : `<div class="game-pick neutral"><strong>No value flag</strong><span>Model leans ${fav}; book price does not clear +EV threshold today.</span></div>`}
     <details class="factor-details" open><summary>Algo factor breakdown</summary><div class="factor-list">${factorBars(m.factors)}</div></details>
     ${game.eligible_for_official_picks !== false && (game.recommendations || []).length ? `<div class="rec-list"><h3>All model recommendations</h3>${game.recommendations.map((p) => pickCard({ ...p, league: game.league, league_name: game.league_name, matchup: `${away.name} @ ${home.name}`, matchup_obj: game.matchup, start_time: game.start_time })).join("")}</div>` : ""}
   </section>`;
@@ -676,6 +677,7 @@ function viewDashboard() {
   const tracking = state.tracking?.all_time || state.tracking?.summary || {};
   const dateLabel = slate.date_label || "Today";
   const minEdge = summary.min_edge ?? slate.min_recommended_edge ?? 40;
+  const minEv = summary.min_ev_pct ?? slate.min_expected_value_pct ?? 5;
   const leagueCounts = games.reduce((acc, g) => {
     acc[g.league_name || g.league] = (acc[g.league_name || g.league] || 0) + 1;
     return acc;
@@ -695,6 +697,7 @@ function viewDashboard() {
         <div class="tracking-hero-stats home-stats">
           <div><span>Games</span><strong>${summary.games_analyzed ?? games.length}</strong></div>
           <div><span>Algo picks</span><strong>${summary.recommended_bets ?? picks.length}</strong></div>
+          <div><span>Min EV</span><strong>+${minEv}%</strong></div>
           <div><span>Min edge</span><strong>+${minEdge}</strong></div>
           <div><span>All-time ROI</span><strong>${tracking.roi_percent ?? 0}%</strong></div>
         </div>
@@ -710,7 +713,7 @@ function viewDashboard() {
       <a class="rollup-card panel home-link-card" href="#/picks">
         <h4>Algo picks</h4>
         <strong class="rollup-record">${picks.length}</strong>
-        <span>Value bets at +${minEdge} edge or higher</span>
+        <span>+EV moneyline/spread bets vs the book (≥${minEv}% EV)</span>
       </a>
       <a class="rollup-card panel home-link-card" href="#/teams">
         <h4>Leagues</h4>
@@ -726,7 +729,7 @@ function viewDashboard() {
 
     <section class="section">
       <div class="section-head"><h2>Top algo picks</h2><a class="text-link" href="#/picks">View all →</a></div>
-      <div class="picks-grid">${picks.length ? picks.slice(0, 6).map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No bets meet the +${minEdge} minimum edge threshold today.</div>`}</div>
+      <div class="picks-grid">${picks.length ? picks.slice(0, 6).map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No bets meet the +${minEv}% EV threshold today.</div>`}</div>
     </section>`;
 }
 
@@ -756,8 +759,9 @@ function viewPicks() {
   const picks = state.slate?.recommended_bets || [];
   const slate = state.slate || {};
   const minEdge = slate.summary?.min_edge ?? slate.min_recommended_edge ?? 40;
-  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p>Only bets with +${minEdge} edge or higher vs the unified fair prices (3-layer value agreement required where applicable).</p></section>
-    <div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No bets meet the +${minEdge} minimum edge threshold today.</div>`}</div>`;
+  const minEv = slate.summary?.min_ev_pct ?? slate.min_expected_value_pct ?? 5;
+  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p>Official bets require ≥${minEv}% expected value vs the book (and +${minEdge} American edge unless model-favorite cross-sign). 3-layer agreement required where applicable.</p></section>
+    <div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No bets meet the +${minEv}% EV threshold today.</div>`}</div>`;
 }
 
 function viewGames(league) {

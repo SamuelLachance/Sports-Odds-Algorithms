@@ -25,6 +25,7 @@ from web.bet_advisor import (  # noqa: E402
     model_moneylines,
     pick_to_dict,
     projections_from_win_probs,
+    resolve_binary_win_probs,
     soccer_model_moneylines,
 )
 from web.baseball_pred_model import get_baseball_pred_context, is_baseball_league  # noqa: E402
@@ -43,6 +44,7 @@ from web.espn_client import (  # noqa: E402
 )
 from web.league_profiles import (  # noqa: E402
     LEAGUE_PROFILES,
+    MIN_EXPECTED_VALUE_PCT,
     MIN_RECOMMENDED_EDGE,
     SUPPORTED_LEAGUES,
     eligible_for_official_picks,
@@ -226,6 +228,21 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             model_margin_home=blended_home_spread_margin(blended, game.league),
             min_edge=pick_min_edge,
         )
+        if not picks:
+            ml_away_prob, ml_home_prob = resolve_binary_win_probs(blended, total)
+            picks = evaluate_picks(
+                away_name=game.away_name,
+                home_name=game.home_name,
+                away_slug=away[1],
+                home_slug=home[1],
+                total_score=total,
+                win_probability=win_probability,
+                away_market=game.market.away_moneyline,
+                home_market=game.market.home_moneyline,
+                away_prob=ml_away_prob,
+                home_prob=ml_home_prob,
+                min_edge=pick_min_edge,
+            )
     elif is_soccer_league(game.league):
         soccer_pred = blended.get("soccer_pred") or {}
         picks = evaluate_soccer_picks(
@@ -249,6 +266,7 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             min_edge=pick_min_edge,
         )
     else:
+        ml_away_prob, ml_home_prob = resolve_binary_win_probs(blended, total)
         picks = evaluate_picks(
             away_name=game.away_name,
             home_name=game.home_name,
@@ -258,6 +276,8 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             win_probability=win_probability,
             away_market=game.market.away_moneyline,
             home_market=game.market.home_moneyline,
+            away_prob=ml_away_prob,
+            home_prob=ml_home_prob,
             min_edge=pick_min_edge,
         )
 
@@ -439,11 +459,18 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
         if not event_id:
             continue
         current = best_by_event.get(event_id)
-        if current is None or rec.get("edge", 0) > current.get("edge", 0):
+        if current is None or (
+            rec.get("ev_pct", 0),
+            rec.get("edge", 0),
+        ) > (
+            current.get("ev_pct", 0),
+            current.get("edge", 0),
+        ):
             best_by_event[event_id] = rec
     def _meets_recommendation_threshold(game: dict[str, Any], rec: dict[str, Any]) -> bool:
         edge = rec.get("edge", 0)
-        if edge < MIN_RECOMMENDED_EDGE:
+        ev_pct = rec.get("ev_pct", 0)
+        if ev_pct < MIN_EXPECTED_VALUE_PCT and edge < MIN_RECOMMENDED_EDGE:
             return False
         agreement = (game.get("model") or {}).get("model_agreement") or {}
         if agreement.get("required") == 3 and agreement.get("agreed"):
@@ -456,7 +483,7 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
     games_by_event = {game["event_id"]: game for game in all_games}
     recommendations = sorted(
         best_by_event.values(),
-        key=lambda item: item.get("edge", 0),
+        key=lambda item: (item.get("ev_pct", 0), item.get("edge", 0)),
         reverse=True,
     )
 
@@ -473,10 +500,12 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
             "games_analyzed": len(all_games),
             "recommended_bets": len(qualifying),
             "min_edge": MIN_RECOMMENDED_EDGE,
+            "min_ev_pct": MIN_EXPECTED_VALUE_PCT,
             "leagues": list({game["league"] for game in all_games}),
         },
         "recommended_bets": qualifying[:20],
         "min_recommended_edge": MIN_RECOMMENDED_EDGE,
+        "min_expected_value_pct": MIN_EXPECTED_VALUE_PCT,
         "games": all_games,
         "errors": errors,
     }

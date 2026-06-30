@@ -13,12 +13,14 @@ from web.bet_advisor import (  # noqa: E402
     _odds_edge,
     evaluate_picks,
     evaluate_spread_picks,
+    expected_value_pct,
     model_home_margin,
     model_moneylines,
+    passes_moneyline_pick_gate,
     spread_line_for_side,
     spread_point_edge,
 )
-from web.league_profiles import MIN_RECOMMENDED_EDGE  # noqa: E402
+from web.league_profiles import MIN_EXPECTED_VALUE_PCT, MIN_RECOMMENDED_EDGE  # noqa: E402
 
 
 def test_spread_line_for_side() -> None:
@@ -156,8 +158,8 @@ def test_edge_threshold_rejects_39_accepts_40() -> None:
     assert above[0].edge == 40.0
 
 
-def test_evaluate_picks_cross_sign_below_threshold() -> None:
-    """Model favorite priced as underdog has real value but not +50 edge."""
+def test_evaluate_picks_cross_sign_positive_ev_qualifies() -> None:
+    """Model favorite priced as underdog: +EV even when American edge < 40."""
     picks = evaluate_picks(
         away_name="San Diego Padres",
         home_name="Cincinnati Reds",
@@ -168,7 +170,19 @@ def test_evaluate_picks_cross_sign_below_threshold() -> None:
         away_market=109,
         home_market=-130,
     )
-    assert picks == []
+    assert len(picks) == 1
+    assert picks[0].ev_pct >= MIN_EXPECTED_VALUE_PCT
+    assert picks[0].strategy == "model_favorite"
+
+
+def test_expected_value_pct_favorite() -> None:
+    ev = expected_value_pct(54.79, 109)
+    assert ev > MIN_EXPECTED_VALUE_PCT
+
+
+def test_passes_moneyline_pick_gate_model_favorite() -> None:
+    assert passes_moneyline_pick_gate(edge=20, ev_pct=4, strategy="model_favorite")
+    assert not passes_moneyline_pick_gate(edge=20, ev_pct=2, strategy="model_favorite")
 
 
 def test_evaluate_picks_same_sign_meets_threshold() -> None:
@@ -338,7 +352,9 @@ if __name__ == "__main__":
     test_moneyline_edge_same_sign_favorite()
     test_moneyline_edge_cross_sign_not_raw_subtraction()
     test_edge_threshold_rejects_39_accepts_40()
-    test_evaluate_picks_cross_sign_below_threshold()
+    test_evaluate_picks_cross_sign_positive_ev_qualifies()
+    test_expected_value_pct_favorite()
+    test_passes_moneyline_pick_gate_model_favorite()
     test_evaluate_picks_same_sign_meets_threshold()
     test_evaluate_picks_away_favorite_same_sign_soft_line()
     test_evaluate_spread_picks_favors_underdog_when_market_overlays()

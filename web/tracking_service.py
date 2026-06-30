@@ -12,6 +12,7 @@ from web.bet_advisor import spread_line_for_side
 from web.espn_client import fetch_scoreboard
 from web.league_profiles import (
     DEFAULT_SPREAD_JUICE,
+    MIN_EXPECTED_VALUE_PCT,
     MIN_RECOMMENDED_EDGE,
     eligible_for_official_picks,
     is_soccer_league,
@@ -109,7 +110,9 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
     for pick in slate.get("recommended_bets") or []:
         if not eligible_for_official_picks(pick.get("league") or ""):
             continue
-        if (pick.get("edge") or 0) < MIN_RECOMMENDED_EDGE:
+        edge = pick.get("edge") or 0
+        ev_pct = pick.get("ev_pct") or 0
+        if ev_pct < MIN_EXPECTED_VALUE_PCT and edge < MIN_RECOMMENDED_EDGE:
             continue
         event_id = pick.get("event_id")
         side = pick.get("side")
@@ -123,6 +126,7 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
             existing.update(
                 {
                     "edge": pick.get("edge"),
+                    "ev_pct": pick.get("ev_pct"),
                     "strategy": pick.get("strategy"),
                     "strategy_label": pick.get("strategy_label"),
                     "confidence": pick.get("confidence"),
@@ -160,6 +164,7 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
             "strategy_label": pick.get("strategy_label"),
             "confidence": pick.get("confidence"),
             "edge": pick.get("edge"),
+            "ev_pct": pick.get("ev_pct"),
             "model_projection": pick.get("model_projection"),
             "market_odds": pick.get("market_odds"),
             "win_probability": pick.get("win_probability"),

@@ -140,6 +140,12 @@ POWER_SCOREBOARD_LOOKBACK: dict[str, int] = {
 # Minimum American-odds edge vs model before a bet is recommended or tracked.
 MIN_RECOMMENDED_EDGE = 40
 
+# Minimum expected value (% of stake) vs book price for official moneyline picks.
+MIN_EXPECTED_VALUE_PCT = 5.0
+
+# Cross-sign model-favorite spots (model fav priced as underdog) may clear a lower EV bar.
+MIN_CROSS_SIGN_EV_PCT = 3.0
+
 # Basketball and American football — recommend spread instead of moneyline.
 SPREAD_BET_CATEGORIES: tuple[str, ...] = ("basketball", "football")
 

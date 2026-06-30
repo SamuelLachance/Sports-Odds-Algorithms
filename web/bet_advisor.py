@@ -5,7 +5,13 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from web.league_profiles import DEFAULT_SPREAD_JUICE, MIN_RECOMMENDED_EDGE, SOCCER_DRAW_BASE
+from web.league_profiles import (
+    DEFAULT_SPREAD_JUICE,
+    MIN_CROSS_SIGN_EV_PCT,
+    MIN_EXPECTED_VALUE_PCT,
+    MIN_RECOMMENDED_EDGE,
+    SOCCER_DRAW_BASE,
+)
 
 # Legacy display scale (margin → pseudo-units); spread edge uses cover probability.
 SPREAD_POINT_TO_EDGE = 20.0
@@ -44,6 +50,8 @@ class BetPick:
     spread_odds: int | None = None
     consensus_spread: float | None = None
     model_margin: float | None = None
+    ev_pct: float = 0.0
+    market_implied_prob: float | None = None
     extra: dict[str, Any] = field(default_factory=dict)
 
 
@@ -202,10 +210,82 @@ def _format_spread(value: float) -> str:
     return f"{value:+.1f}".replace(".0", "")
 
 
+def american_to_decimal(american_odds: int) -> float:
+    if american_odds >= 0:
+        return 1.0 + american_odds / 100.0
+    return 1.0 + 100.0 / abs(american_odds)
+
+
+def american_implied_prob(american_odds: int) -> float:
+    if american_odds >= 0:
+        return 100.0 / (american_odds + 100.0)
+    return abs(american_odds) / (abs(american_odds) + 100.0)
+
+
+def devig_two_way_probs(
+    away_odds: int | None,
+    home_odds: int | None,
+) -> tuple[float | None, float | None]:
+    """Remove book vig from a two-way moneyline (0–100 scale)."""
+    if away_odds is None or home_odds is None:
+        return None, None
+    away_raw = american_implied_prob(away_odds)
+    home_raw = american_implied_prob(home_odds)
+    total = away_raw + home_raw
+    if total <= 0:
+        return None, None
+    return away_raw / total * 100.0, home_raw / total * 100.0
+
+
+def expected_value_pct(model_prob_pct: float, american_odds: int) -> float:
+    """Expected profit per $1 staked, as a percentage (positive = +EV)."""
+    probability = min(max(model_prob_pct, 0.1), 99.9) / 100.0
+    payout = american_to_decimal(american_odds)
+    return (probability * payout - 1.0) * 100.0
+
+
+def model_vs_market_prob_edge(model_prob_pct: float, market_implied_pct: float) -> float:
+    """Model probability minus de-vigged market implied probability."""
+    return model_prob_pct - market_implied_pct
+
+
+def passes_moneyline_pick_gate(
+    *,
+    edge: float,
+    ev_pct: float,
+    strategy: str,
+    min_edge: float = MIN_RECOMMENDED_EDGE,
+    min_ev_pct: float = MIN_EXPECTED_VALUE_PCT,
+) -> bool:
+    """Official moneyline gate: +EV required; American edge OR model-favorite cross-sign."""
+    if strategy == "model_favorite":
+        return ev_pct >= MIN_CROSS_SIGN_EV_PCT
+    if ev_pct < min_ev_pct:
+        return False
+    return edge >= min_edge
+
+
+def resolve_binary_win_probs(
+    blended: dict[str, Any] | None,
+    total_score: float,
+) -> tuple[float, float]:
+    """Prefer calibrated blend probabilities over legacy total_score conversion."""
+    if blended:
+        if blended.get("threeway"):
+            home_prob = float(blended.get("home_win_probability", 50.0))
+            away_prob = float(blended.get("away_win_probability", 50.0))
+            return away_prob, home_prob
+        if blended.get("blended_home_win_probability") is not None:
+            home_prob = float(blended["blended_home_win_probability"])
+            return 100.0 - home_prob, home_prob
+    return _side_win_probs(total_score)
+
+
 def best_pick_only(picks: list[BetPick]) -> list[BetPick]:
-    """Return at most one pick per event (highest edge)."""
+    """Return at most one pick per event (highest EV, then American edge)."""
     if not picks:
         return []
+    picks.sort(key=lambda item: (item.ev_pct, item.edge), reverse=True)
     return [picks[0]]
 
 
@@ -225,7 +305,9 @@ def _moneyline_reason(
     projection: int,
     market: int,
     edge: float,
+    ev_pct: float,
     outcome_prob: float,
+    market_implied_prob: float | None,
     is_model_favorite: bool,
     is_market_underdog: bool,
     outcome_label: str | None = None,
@@ -241,26 +323,27 @@ def _moneyline_reason(
         reason = (
             f"Model makes {label} a {projection:+d} favorite ({outcome_prob:.1f}% win) "
             f"but the book offers underdog odds {market:+d} "
-            f"(fair underdog equivalent +{fair_underdog}, +{edge:.0f} edge)."
+            f"(fair underdog +{fair_underdog}, +{ev_pct:.1f}% EV, +{edge:.0f} American edge)."
         )
     elif is_model_favorite and not is_market_underdog and edge >= 15:
         strategy = "strong_value"
         confidence = "high"
         reason = (
             f"Model favors {label} at {projection:+d}; "
-            f"book line {market:+d} is softer (+{edge:.0f} edge)."
+            f"book line {market:+d} is softer (+{ev_pct:.1f}% EV, +{edge:.0f} American edge)."
         )
     elif not is_model_favorite and not is_market_underdog and edge >= 15:
         strategy = "strong_value"
         confidence = "high"
         reason = (
             f"Model has {label} as {projection:+d} underdog; "
-            f"book favorite price {market:+d} is too short (+{edge:.0f} edge)."
+            f"book favorite price {market:+d} is too short "
+            f"(+{ev_pct:.1f}% EV, +{edge:.0f} American edge)."
         )
     else:
         reason = (
             f"Sportsbook offers {market:+d} vs model fair {projection:+d} "
-            f"on {label} (+{edge:.0f} edge on American odds)."
+            f"on {label} (+{edge:.0f} American edge, +{ev_pct:.1f}% EV)."
         )
 
     if edge >= 8 and strategy == "value":
@@ -283,37 +366,51 @@ def evaluate_picks(
     win_probability: float,
     away_market: int | None,
     home_market: int | None,
+    away_prob: float | None = None,
+    home_prob: float | None = None,
     min_edge: float = MIN_RECOMMENDED_EDGE,
+    min_ev_pct: float = MIN_EXPECTED_VALUE_PCT,
 ) -> list[BetPick]:
-    away_proj, home_proj = model_moneylines(total_score)
-    away_prob, home_prob = _side_win_probs(total_score)
+    if away_prob is None or home_prob is None:
+        away_prob, home_prob = _side_win_probs(total_score)
+    away_proj, home_proj = projections_from_win_probs(home_prob, away_prob)
+    devig_away, devig_home = devig_two_way_probs(away_market, home_market)
     picks: list[BetPick] = []
 
-    candidates: list[tuple[str, str, str, float, int, int | None]] = [
-        ("away", away_name, away_slug, away_prob, away_proj, away_market),
-        ("home", home_name, home_slug, home_prob, home_proj, home_market),
+    candidates: list[tuple[str, str, str, float, int, int | None, float | None]] = [
+        ("away", away_name, away_slug, away_prob, away_proj, away_market, devig_away),
+        ("home", home_name, home_slug, home_prob, home_proj, home_market, devig_home),
     ]
 
-    for side, name, slug, outcome_prob, projection, market in candidates:
+    for side, name, slug, outcome_prob, projection, market, market_implied in candidates:
         if market is None:
             continue
 
         edge = _odds_edge(projection, market, outcome_prob)
+        ev_pct = expected_value_pct(outcome_prob, market)
         is_model_favorite = projection < 0
         is_market_underdog = market > 0
-
-        if edge < min_edge:
-            continue
 
         strategy, confidence, reason = _moneyline_reason(
             name=name,
             projection=projection,
             market=market,
             edge=edge,
+            ev_pct=ev_pct,
             outcome_prob=outcome_prob,
+            market_implied_prob=market_implied,
             is_model_favorite=is_model_favorite,
             is_market_underdog=is_market_underdog,
         )
+
+        if not passes_moneyline_pick_gate(
+            edge=edge,
+            ev_pct=ev_pct,
+            strategy=strategy,
+            min_edge=min_edge,
+            min_ev_pct=min_ev_pct,
+        ):
+            continue
 
         if edge >= 8 and strategy == "lean":
             strategy = "value"
@@ -327,14 +424,15 @@ def evaluate_picks(
                 strategy=strategy,
                 confidence=confidence,
                 edge=edge,
+                ev_pct=round(ev_pct, 2),
                 model_projection=projection,
                 market_odds=market,
                 win_probability=outcome_prob,
+                market_implied_prob=round(market_implied, 2) if market_implied is not None else None,
                 reason=reason,
             )
         )
 
-    picks.sort(key=lambda item: item.edge, reverse=True)
     return best_pick_only(picks)
 
 
@@ -377,6 +475,7 @@ def evaluate_soccer_picks(
     expected_home_goals: float | None = None,
     expected_away_goals: float | None = None,
     min_edge: float = MIN_RECOMMENDED_EDGE,
+    min_ev_pct: float = MIN_EXPECTED_VALUE_PCT,
 ) -> list[BetPick]:
     """Evaluate 3-way soccer moneyline outcomes vs the book."""
     picks: list[BetPick] = []
@@ -392,11 +491,9 @@ def evaluate_soccer_picks(
             continue
 
         edge = _odds_edge(projection, market, outcome_prob)
+        ev_pct = expected_value_pct(outcome_prob, market)
         is_model_favorite = projection < 0
         is_market_underdog = market > 0
-
-        if edge < min_edge:
-            continue
 
         if soccer_team_pick_blocked_by_projected_score(
             side,
@@ -411,11 +508,22 @@ def evaluate_soccer_picks(
             projection=projection,
             market=market,
             edge=edge,
+            ev_pct=ev_pct,
             outcome_prob=outcome_prob,
+            market_implied_prob=american_implied_prob(market),
             is_model_favorite=is_model_favorite,
             is_market_underdog=is_market_underdog,
             outcome_label=outcome_label,
         )
+
+        if not passes_moneyline_pick_gate(
+            edge=edge,
+            ev_pct=ev_pct,
+            strategy=strategy,
+            min_edge=min_edge,
+            min_ev_pct=min_ev_pct,
+        ):
+            continue
 
         if edge >= 8 and strategy == "lean":
             strategy = "value"
@@ -429,14 +537,15 @@ def evaluate_soccer_picks(
                 strategy=strategy,
                 confidence=confidence,
                 edge=edge,
+                ev_pct=round(ev_pct, 2),
                 model_projection=projection,
                 market_odds=market,
                 win_probability=outcome_prob,
+                market_implied_prob=round(american_implied_prob(market), 2),
                 reason=reason,
             )
         )
 
-    picks.sort(key=lambda item: item.edge, reverse=True)
     return best_pick_only(picks)
 
 
@@ -534,9 +643,11 @@ def pick_to_dict(pick: BetPick) -> dict[str, Any]:
         "strategy_label": _strategy_label(pick.strategy),
         "confidence": pick.confidence,
         "edge": round(pick.edge, 1),
+        "ev_pct": round(pick.ev_pct, 2),
         "model_projection": pick.model_projection,
         "market_odds": pick.market_odds,
         "win_probability": round(pick.win_probability, 2),
+        "market_implied_prob": pick.market_implied_prob,
         "reason": pick.reason,
         "bet_type": pick.bet_type,
     }
