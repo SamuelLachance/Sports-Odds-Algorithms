@@ -527,7 +527,7 @@ def _collect_soccer_backtest_samples(
             away,
             teams,
             power_games,
-            use_sport_layer=False,
+            use_sport_layer=use_sport_layer,
         )
         if not prediction:
             _append_power_game(
@@ -540,7 +540,9 @@ def _collect_soccer_backtest_samples(
         if use_sport_layer:
             model = build_soccer_model(games[:index], league)
             soccer = (
-                predict_matchup_from_model(model, home, away)
+                predict_matchup_from_model(
+                    model, home, away, include_club_elo=False
+                )
                 if model and home in model["team_keys"] and away in model["team_keys"]
                 else None
             )
@@ -913,7 +915,7 @@ def tune_league_thresholds(league: str, cutoff: str) -> dict[str, Any]:
         return _default_entry("none")
 
     samples = _tune_samples(
-        _collect_backtest_samples(league, cutoff, use_sport_layer=False)
+        _collect_backtest_samples(league, cutoff, use_sport_layer=True)
     )
     best: dict[str, Any] | None = None
     best_score = float("-inf")

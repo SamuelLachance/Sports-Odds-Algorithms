@@ -386,6 +386,8 @@ def compute_sharp_stat_layers(
     model: dict[str, Any],
     home: str,
     away: str,
+    *,
+    include_club_elo: bool = True,
 ) -> tuple[dict[str, tuple[float, float, float] | None], float, float]:
     league = model["league"]
     dc_home, dc_draw, dc_away, lam, mu = _dc_threeway(
@@ -395,12 +397,13 @@ def compute_sharp_stat_layers(
         home,
         away,
     )
+    club_elo = _club_elo_threeway(league, home, away) if include_club_elo else None
     layers = {
         "elo": _elo_threeway(model["elo"], home, away, league),
         "pi": _pi_threeway(model["pi"], home, away),
         "dc": (dc_home, dc_draw, dc_away),
         "form": _form_threeway(model["form"], home, away, league),
-        "club_elo": _club_elo_threeway(league, home, away),
+        "club_elo": club_elo,
     }
     return layers, lam, mu
 
@@ -409,6 +412,8 @@ def predict_matchup_from_model(
     model: dict[str, Any],
     home_key: str,
     away_key: str,
+    *,
+    include_club_elo: bool = True,
 ) -> SoccerPredResult | None:
     home = home_key.lower()
     away = away_key.lower()
@@ -417,7 +422,9 @@ def predict_matchup_from_model(
         return None
 
     league = model["league"]
-    layers, lam, mu = compute_sharp_stat_layers(model, home, away)
+    layers, lam, mu = compute_sharp_stat_layers(
+        model, home, away, include_club_elo=include_club_elo
+    )
     stat_weights = get_league_meta_config(league)["stat_weights"]
 
     active_layers: list[tuple[float, float, float]] = []

@@ -169,8 +169,11 @@ def _fetch_json(url: str) -> Any:
     request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     try:
         with urllib.request.urlopen(request, timeout=15) as response:
-            return json.loads(response.read().decode("utf-8"))
-    except OSError:
+            raw = response.read().decode("utf-8")
+            if not raw.strip():
+                return None
+            return json.loads(raw)
+    except (OSError, json.JSONDecodeError, ValueError):
         return None
 
 
