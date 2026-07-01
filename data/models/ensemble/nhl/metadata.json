@@ -1,0 +1,22 @@
+{
+  "league": "nhl",
+  "model_type": "binary_moneyline",
+  "train_rows": 450,
+  "holdout_logloss": 0.6831,
+  "holdout_brier": 0.245,
+  "margin_sigma": 2.5,
+  "trained_at": "2026-07-01",
+  "features": [
+    "legacy_home_prob",
+    "power_home_prob",
+    "sport_home_prob",
+    "meta_stacked_home_prob",
+    "legacy_margin",
+    "power_margin",
+    "sport_margin",
+    "market_devig_home_prob",
+    "market_spread",
+    "market_home_ml",
+    "market_away_ml"
+  ]
+}

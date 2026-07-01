@@ -142,7 +142,7 @@ BACKTEST_PRO_SEASONS = 7
 BACKTEST_SCOREBOARD_LOOKBACK_DAYS = 900
 
 # Minimum American-odds edge vs model before a bet is recommended or tracked.
-MIN_RECOMMENDED_EDGE = 40
+MIN_RECOMMENDED_EDGE = 25
 
 # Minimum expected value (% of stake) vs book price for official moneyline picks.
 MIN_EXPECTED_VALUE_PCT = 5.0

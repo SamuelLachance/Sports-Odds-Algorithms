@@ -122,17 +122,21 @@ def test_moneyline_edge_cross_sign_not_raw_subtraction() -> None:
     edge = _odds_edge(-121, 109, padres_prob)
     fair_underdog = _breakeven_american(padres_prob, as_underdog=True)
     assert abs(edge - (109 - fair_underdog)) < 0.5
-    assert edge < 40.0
+    assert edge >= MIN_RECOMMENDED_EDGE
     assert edge != 230.0
 
 
-def test_edge_threshold_rejects_39_accepts_40() -> None:
-    """MIN_RECOMMENDED_EDGE is 40 — reject at 39, accept at 40."""
+def test_edge_threshold_official_minimum() -> None:
+    """Official picks require min_edge=25 on the American odds scale."""
+    from web.pick_strategy import OFFICIAL_MIN_EDGE, get_pick_thresholds
+
+    assert OFFICIAL_MIN_EDGE == 25.0
+    assert get_pick_thresholds("nba")["min_edge"] == 25.0
+
     away_proj, _ = model_moneylines(28.33)
     assert _odds_edge(away_proj, 292, 28.33) == 39.0
-    assert _odds_edge(away_proj, 293, 28.33) == 40.0
 
-    below = evaluate_picks(
+    picks = evaluate_picks(
         away_name="Bosnia",
         home_name="Opponent",
         away_slug="bosnia",
@@ -141,25 +145,15 @@ def test_edge_threshold_rejects_39_accepts_40() -> None:
         win_probability=28.33,
         away_market=292,
         home_market=None,
+        min_edge=25.0,
+        min_ev_pct=0.0,
     )
-    assert below == []
-
-    above = evaluate_picks(
-        away_name="Bosnia",
-        home_name="Opponent",
-        away_slug="bosnia",
-        home_slug="opponent",
-        total_score=28.33,
-        win_probability=28.33,
-        away_market=293,
-        home_market=None,
-    )
-    assert len(above) == 1
-    assert above[0].edge == 40.0
+    assert len(picks) == 1
+    assert picks[0].edge == 39.0
 
 
 def test_evaluate_picks_cross_sign_positive_ev_qualifies() -> None:
-    """Model favorite priced as underdog: +EV even when American edge < 40."""
+    """Model favorite priced as underdog: clears gate when edge >= 25."""
     picks = evaluate_picks(
         away_name="San Diego Padres",
         home_name="Cincinnati Reds",
@@ -169,9 +163,11 @@ def test_evaluate_picks_cross_sign_positive_ev_qualifies() -> None:
         win_probability=54.79,
         away_market=109,
         home_market=-130,
+        min_edge=25.0,
+        min_ev_pct=0.0,
     )
     assert len(picks) == 1
-    assert picks[0].ev_pct >= MIN_EXPECTED_VALUE_PCT
+    assert picks[0].edge >= 25.0
     assert picks[0].strategy == "model_favorite"
 
 
@@ -387,7 +383,7 @@ if __name__ == "__main__":
     test_moneyline_edge_same_sign_underdog()
     test_moneyline_edge_same_sign_favorite()
     test_moneyline_edge_cross_sign_not_raw_subtraction()
-    test_edge_threshold_rejects_39_accepts_40()
+    test_edge_threshold_official_minimum()
     test_evaluate_picks_cross_sign_positive_ev_qualifies()
     test_expected_value_pct_favorite()
     test_passes_moneyline_pick_gate_model_favorite()

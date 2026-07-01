@@ -323,12 +323,12 @@ def passes_moneyline_pick_gate(
     min_edge: float = MIN_RECOMMENDED_EDGE,
     min_ev_pct: float = MIN_EXPECTED_VALUE_PCT,
 ) -> bool:
-    """Official moneyline gate: +EV required; American edge OR model-favorite cross-sign."""
-    if strategy == "model_favorite":
+    """Moneyline gate: primary rule is American edge vs the book; optional +EV bar."""
+    if edge >= min_edge:
+        return min_ev_pct <= 0 or ev_pct >= min_ev_pct
+    if strategy == "model_favorite" and min_ev_pct > 0:
         return ev_pct >= MIN_CROSS_SIGN_EV_PCT
-    if ev_pct < min_ev_pct:
-        return False
-    return edge >= min_edge
+    return False
 
 
 def resolve_binary_win_probs(

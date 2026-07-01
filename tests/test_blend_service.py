@@ -535,7 +535,8 @@ def test_model_agreement_nba_one_layer_lacks_shared_value() -> None:
         assert agreement["required"] == 3
         assert agreement["agreed"] is False
         assert agreement["legacy_side"] == "away"
-        assert agreement["power_side"] is None
+        # 25+ edge threshold: power finds away value; basketball still lacks ML edge.
+        assert agreement["power_side"] == "away"
         assert agreement["third_side"] is None
     finally:
         blend_module.run_power_model = power_original

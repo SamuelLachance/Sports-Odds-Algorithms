@@ -1,0 +1,22 @@
+{
+  "league": "nba",
+  "model_type": "binary_spread",
+  "train_rows": 7106,
+  "holdout_logloss": 0.6315,
+  "holdout_brier": 0.2224,
+  "margin_sigma": 13.09513250044741,
+  "trained_at": "2026-07-01",
+  "features": [
+    "legacy_home_prob",
+    "power_home_prob",
+    "sport_home_prob",
+    "meta_stacked_home_prob",
+    "legacy_margin",
+    "power_margin",
+    "sport_margin",
+    "market_devig_home_prob",
+    "market_spread",
+    "market_home_ml",
+    "market_away_ml"
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "league": "laliga",
+  "model_type": "soccer_threeway",
+  "train_rows": 250,
+  "holdout_home_logloss": 0.3165,
+  "trained_at": "2026-07-01",
+  "features": [
+    "legacy_home_prob",
+    "legacy_draw_prob",
+    "legacy_away_prob",
+    "power_home_prob",
+    "power_draw_prob",
+    "power_away_prob",
+    "sport_home_prob",
+    "sport_draw_prob",
+    "sport_away_prob",
+    "meta_home_prob",
+    "meta_draw_prob",
+    "meta_away_prob",
+    "market_devig_home_prob",
+    "market_devig_draw_prob",
+    "market_devig_away_prob"
+  ]
+}

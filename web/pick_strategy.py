@@ -1,4 +1,4 @@
-"""Backtest-tuned official pick rules per sport (spread vs moneyline)."""
+"""Official pick rules per sport (spread vs moneyline) with a uniform edge gate."""
 
 from __future__ import annotations
 
@@ -36,10 +36,15 @@ STRATEGY_PATH = PROJECT_ROOT / "data" / "pick_strategy.json"
 
 OfficialBetType = Literal["spread", "moneyline", "soccer_1x2", "none"]
 
+# Official picks: model edge vs sportsbook on the American-odds scale (not ROI gates).
+OFFICIAL_MIN_EDGE = 25.0
+OFFICIAL_MIN_EV_PCT = 0.0
+OFFICIAL_MIN_SPREAD_POINT_EDGE = 0.0
+
 DEFAULT_THRESHOLDS: dict[str, Any] = {
-    "min_edge": MIN_RECOMMENDED_EDGE,
-    "min_ev_pct": MIN_EXPECTED_VALUE_PCT,
-    "min_spread_point_edge": 2.0,
+    "min_edge": OFFICIAL_MIN_EDGE,
+    "min_ev_pct": OFFICIAL_MIN_EV_PCT,
+    "min_spread_point_edge": OFFICIAL_MIN_SPREAD_POINT_EDGE,
     "min_profit_score": 0.0,
     "min_kelly_pct": 0.0,
     "enabled": True,
@@ -95,22 +100,19 @@ def _default_entry(bet_type: str) -> dict[str, Any]:
 
 
 def get_pick_thresholds(league: str) -> dict[str, Any]:
+    """Live official-pick thresholds: 25+ edge vs the book; spread vs ML by sport."""
     config = load_pick_strategy()
     league = league.lower()
     entry = config.get(league) or config.get(_category_for_league(league)) or config["default"]
     bet_type = entry.get("bet_type") or official_bet_type(league)
     return {
         "bet_type": bet_type,
-        "min_edge": float(entry.get("min_edge", DEFAULT_THRESHOLDS["min_edge"])),
-        "min_ev_pct": float(entry.get("min_ev_pct", DEFAULT_THRESHOLDS["min_ev_pct"])),
-        "min_spread_point_edge": float(
-            entry.get("min_spread_point_edge", DEFAULT_THRESHOLDS["min_spread_point_edge"])
-        ),
-        "min_profit_score": float(
-            entry.get("min_profit_score", DEFAULT_THRESHOLDS["min_profit_score"])
-        ),
-        "min_kelly_pct": float(entry.get("min_kelly_pct", DEFAULT_THRESHOLDS["min_kelly_pct"])),
-        "enabled": bool(entry.get("enabled", DEFAULT_THRESHOLDS["enabled"])),
+        "min_edge": OFFICIAL_MIN_EDGE,
+        "min_ev_pct": OFFICIAL_MIN_EV_PCT,
+        "min_spread_point_edge": OFFICIAL_MIN_SPREAD_POINT_EDGE,
+        "min_profit_score": 0.0,
+        "min_kelly_pct": 0.0,
+        "enabled": True,
         "backtest_roi_pct": entry.get("backtest_roi_pct"),
         "backtest_bets": entry.get("backtest_bets", 0),
         "backtest_units": entry.get("backtest_units"),
@@ -1026,10 +1028,8 @@ def evaluate_soccer_official_picks_for_game(
     expected_home_goals: float | None = None,
     expected_away_goals: float | None = None,
 ) -> list[BetPick]:
-    """Official 1X2 soccer picks using backtest-tuned thresholds and profit gates."""
+    """Official 1X2 soccer picks when edge vs the book is >= 25."""
     thresholds = get_pick_thresholds(league)
-    if not thresholds.get("enabled", True):
-        return []
     picks = evaluate_soccer_picks(
         away_name=away_name,
         home_name=home_name,
@@ -1049,10 +1049,9 @@ def evaluate_soccer_official_picks_for_game(
         min_edge=thresholds["min_edge"],
         min_ev_pct=thresholds["min_ev_pct"],
     )
-    filtered = [p for p in picks if passes_profit_gate(p, thresholds)]
-    for pick in filtered:
+    for pick in picks:
         pick.bet_type = "soccer_1x2"
-    return filtered
+    return picks
 
 
 def evaluate_official_picks_for_game(
@@ -1073,12 +1072,10 @@ def evaluate_official_picks_for_game(
     home_prob: float | None = None,
     away_prob: float | None = None,
 ) -> list[BetPick]:
-    """Route to spread or moneyline picks using backtest-tuned thresholds."""
+    """Route to spread or moneyline picks when edge vs the book is >= 25."""
     from web.bet_advisor import resolve_binary_win_probs
 
     thresholds = get_pick_thresholds(league)
-    if not thresholds.get("enabled", True):
-        return []
     bet_type = thresholds["bet_type"]
 
     if bet_type == "spread":
@@ -1099,7 +1096,7 @@ def evaluate_official_picks_for_game(
             min_edge=thresholds["min_edge"],
             min_point_edge=thresholds["min_spread_point_edge"],
         )
-        return [p for p in picks if passes_profit_gate(p, thresholds)]
+        return picks
 
     if bet_type == "moneyline":
         ml_away, ml_home = resolve_binary_win_probs(blended, total_score)
@@ -1119,6 +1116,6 @@ def evaluate_official_picks_for_game(
             min_edge=thresholds["min_edge"],
             min_ev_pct=thresholds["min_ev_pct"],
         )
-        return [p for p in picks if passes_profit_gate(p, thresholds)]
+        return picks
 
     return []

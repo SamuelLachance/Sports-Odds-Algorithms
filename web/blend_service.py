@@ -220,6 +220,10 @@ def _run_nba_ml_layer(
     cutoff_date: str,
     home_abbr: str,
     away_abbr: str,
+    *,
+    market_spread: float | None = None,
+    home_ml: int | None = None,
+    away_ml: int | None = None,
 ) -> dict[str, Any] | None:
     """NBA XGBoost layer (opt-in via NBA_ML_ENABLED). Safe no-op otherwise."""
     from web.nba_ml.config import nba_ml_enabled
@@ -229,7 +233,14 @@ def _run_nba_ml_layer(
     try:
         from web.nba_ml.predict import predict_nba
 
-        return predict_nba(home_abbr, away_abbr, cutoff_date=cutoff_date)
+        return predict_nba(
+            home_abbr,
+            away_abbr,
+            cutoff_date=cutoff_date,
+            market_spread=market_spread,
+            home_ml=home_ml,
+            away_ml=away_ml,
+        )
     except Exception:  # noqa: BLE001 - never break the blend on ML failure
         return None
 
@@ -242,11 +253,21 @@ def _run_sport_pred_model(
     *,
     home_name: str | None = None,
     away_name: str | None = None,
+    market_spread: float | None = None,
+    home_ml: int | None = None,
+    away_ml: int | None = None,
 ) -> tuple[str | None, dict[str, Any] | None]:
     """Return (payload_key, payload) for sport-specific third layer."""
     if is_basketball_league(league):
         if league.lower() == "nba":
-            ml_payload = _run_nba_ml_layer(cutoff_date, home_abbr, away_abbr)
+            ml_payload = _run_nba_ml_layer(
+                cutoff_date,
+                home_abbr,
+                away_abbr,
+                market_spread=market_spread,
+                home_ml=home_ml,
+                away_ml=away_ml,
+            )
             if ml_payload:
                 return ("basketball_pred", ml_payload)
         payload = run_basketball_pred_model(league, cutoff_date, home_abbr, away_abbr)
@@ -654,6 +675,9 @@ def blend_predictions(
     away_espn_id: str | None = None,
     home_slug: str | None = None,
     away_slug: str | None = None,
+    consensus_spread: float | None = None,
+    home_moneyline: int | None = None,
+    away_moneyline: int | None = None,
 ) -> dict[str, Any]:
     """
     Blend Algo_V2 and power model into unified total_score / win_probability.
@@ -728,7 +752,13 @@ def blend_predictions(
     legacy_home = total_score_to_home_win_prob(legacy_total_score)
     power_home = float(power_payload["home_win_probability"])
     sport_key, sport_payload = _run_sport_pred_model(
-        league, cutoff_date, home_abbr, away_abbr
+        league,
+        cutoff_date,
+        home_abbr,
+        away_abbr,
+        market_spread=consensus_spread,
+        home_ml=home_moneyline,
+        away_ml=away_moneyline,
     )
     if is_baseball_league(league):
         meta = get_sports_meta_config(league)

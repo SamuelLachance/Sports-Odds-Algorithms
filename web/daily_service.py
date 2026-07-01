@@ -32,6 +32,7 @@ from web.hockey_pred_model import get_hockey_pred_context, is_hockey_league  # n
 from web.league_profiles import is_soccer_league  # noqa: E402
 from web.soccer_pred_model import get_soccer_pred_context  # noqa: E402
 from web.blend_service import blend_predictions, compute_model_agreement  # noqa: E402
+from web.ensemble_ml import apply_ensemble_ml  # noqa: E402
 from web.season_games import prewarm_league_power  # noqa: E402
 from web.espn_client import (  # noqa: E402
     ScheduledGame,
@@ -147,6 +148,17 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
         away_espn_id=game.away_espn_id,
         home_slug=home[1],
         away_slug=away[1],
+        consensus_spread=game.market.spread,
+        home_moneyline=game.market.home_moneyline,
+        away_moneyline=game.market.away_moneyline,
+    )
+    blended = apply_ensemble_ml(
+        blended,
+        game.league,
+        consensus_spread=game.market.spread,
+        home_moneyline=game.market.home_moneyline,
+        away_moneyline=game.market.away_moneyline,
+        draw_moneyline=game.market.draw_moneyline,
     )
 
     total = float(blended["total_score"])
@@ -282,8 +294,7 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             "over_under": game.market.over_under,
         },
         "model": model_payload,
-        "eligible_for_official_picks": eligible_for_official_picks(game.league)
-        and get_pick_thresholds(game.league).get("enabled", True),
+        "eligible_for_official_picks": eligible_for_official_picks(game.league),
         "recommendations": [_enrich_pick(pick_to_dict(pick)) for pick in official_picks],
         "top_pick": _enrich_pick(pick_to_dict(official_picks[0])) if official_picks else None,
     }
