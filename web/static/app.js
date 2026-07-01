@@ -555,7 +555,7 @@ function algoBreakdown(m) {
   if (baseball) {
     const elo =
       baseball.elo_exp != null ? ` Elo ${baseball.elo_exp}%` : "";
-    parts.push(`MLB-Model: ${baseball.home_win_probability}% home${elo}`);
+    parts.push(`SharpBaseball: ${baseball.home_win_probability}% home${elo}`);
   }
   if (hockey) {
     const xg =

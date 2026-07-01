@@ -128,7 +128,7 @@ def tune_league(league: str, cutoff: str) -> dict | None:
     blend_weights = fit_binary_blend_weights_grid(
         blend_samples,
         two_layer=two_layer,
-        max_sport_step=0 if league == "mlb" else 10,
+        max_sport_step=10,
     )
 
     def _blend_sample(

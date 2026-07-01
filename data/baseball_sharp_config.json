@@ -1,0 +1,38 @@
+{
+  "mlb": {
+    "signal_weights": {
+      "elo": 0.32,
+      "pyth": 0.22,
+      "form": 0.13,
+      "mlb_api": 0.28,
+      "rest": 0.05
+    },
+    "prob_shrink": 0.86,
+    "home_elo_adv": 24.0,
+    "use_mlb_stats_api": true
+  },
+  "ncaabb": {
+    "signal_weights": {
+      "elo": 0.42,
+      "pyth": 0.33,
+      "form": 0.25,
+      "mlb_api": 0.0,
+      "rest": 0.0
+    },
+    "prob_shrink": 0.84,
+    "home_elo_adv": 28.0,
+    "use_mlb_stats_api": false
+  },
+  "default_winter": {
+    "signal_weights": {
+      "elo": 0.4,
+      "pyth": 0.35,
+      "form": 0.25,
+      "mlb_api": 0.0,
+      "rest": 0.0
+    },
+    "prob_shrink": 0.82,
+    "home_elo_adv": 26.0,
+    "use_mlb_stats_api": false
+  }
+}

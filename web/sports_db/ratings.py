@@ -58,7 +58,7 @@ def league_ratings_snapshot(league: str, cutoff_date: str) -> dict[str, Any]:
             model = get_baseball_pred_context(league, cutoff_date)
             if model and model.get("elos"):
                 snapshot["source"].append("baseball_elo")
-                snapshot["sport_model"]["algorithm"] = "BaseballElo"
+                snapshot["sport_model"]["algorithm"] = "SharpBaseball"
                 for key, elo in model["elos"].items():
                     snapshot["sport_model"].setdefault("teams", {})[key] = {
                         "elo_fast": round(elo.rating_fast, 1),

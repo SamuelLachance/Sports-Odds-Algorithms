@@ -166,6 +166,7 @@ def test_blend_mlb_power_only_when_sport_layer_disabled() -> None:
 
     power_original = blend_module.run_power_model
     baseball_original = blend_module.run_baseball_pred_model
+    meta_original = blend_module.get_sports_meta_config
     try:
         blend_module.run_power_model = lambda *_a, **_k: {
             "algorithm": "PowerRatings",
@@ -175,9 +176,14 @@ def test_blend_mlb_power_only_when_sport_layer_disabled() -> None:
             "param": 10.0,
         }
         blend_module.run_baseball_pred_model = lambda *_a, **_k: {
-            "algorithm": "BaseballElo",
+            "algorithm": "SharpBaseball",
             "source": "MLB-Model",
             "home_win_probability": 64.0,
+        }
+        blend_module.get_sports_meta_config = lambda _league: {
+            "blend_weights": {"legacy": 0.0, "power": 1.0, "sport_pred": 0.0},
+            "temperature": 1.0,
+            "two_layer": False,
         }
         result = blend_predictions(
             legacy_total_score=-60.0,
@@ -194,6 +200,7 @@ def test_blend_mlb_power_only_when_sport_layer_disabled() -> None:
     finally:
         blend_module.run_power_model = power_original
         blend_module.run_baseball_pred_model = baseball_original
+        blend_module.get_sports_meta_config = meta_original
 
 
 def test_blend_mlb_two_way_fallback_when_baseball_unavailable() -> None:
@@ -222,7 +229,7 @@ def test_blend_mlb_two_way_fallback_when_baseball_unavailable() -> None:
         assert result["blend_layers"] == 2
         assert "baseball_pred" not in result
         assert result["blended_home_win_probability"] == 59.0
-        assert "MLB-Model layer unavailable" in result.get("blend_note", "")
+        assert "SharpBaseball layer unavailable" in result.get("blend_note", "")
     finally:
         blend_module.run_power_model = power_original
         blend_module.run_baseball_pred_model = baseball_original

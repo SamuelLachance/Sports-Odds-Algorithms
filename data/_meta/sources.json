@@ -11,6 +11,12 @@
       "usage": "soccer meta tuning, pick-strategy walk-forward, calibration samples",
       "cache": "data/supplemental/football-data-uk/"
     },
+    "mlb_stats_api": {
+      "url": "https://statsapi.mlb.com/api/v1",
+      "leagues": ["mlb"],
+      "fields": ["season standings", "runs per game", "win%"],
+      "usage": "SharpBaseball live enrichment layer"
+    },
     "team_data_csv": {
       "leagues": ["nba", "nhl", "mlb"],
       "paths": ["nba/team_data/", "nhl/team_data/", "mlb/team_data/"],

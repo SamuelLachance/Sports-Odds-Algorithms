@@ -761,7 +761,7 @@ def blend_predictions(
         if is_basketball_league(league):
             layer_name = "Basketball matrix"
         elif is_baseball_league(league):
-            layer_name = "MLB-Model"
+            layer_name = "SharpBaseball"
         elif is_hockey_league(league):
             layer_name = "Hockey-predictions"
         elif is_football_league(league):

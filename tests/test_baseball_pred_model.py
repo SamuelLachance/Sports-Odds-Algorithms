@@ -55,13 +55,21 @@ def test_is_baseball_league() -> None:
 def test_build_baseball_model_favors_stronger_team() -> None:
     model = build_baseball_model(_sample_games(), "mlb")
     assert model is not None
-    strong_home = predict_matchup_from_model(model, "a", "c")
-    weak_home = predict_matchup_from_model(model, "c", "a")
+    strong_home = predict_matchup_from_model(model, "a", "c", season=2025)
+    weak_home = predict_matchup_from_model(model, "c", "a", season=2025)
     assert strong_home is not None
     assert weak_home is not None
     assert strong_home["home_win_probability"] > 50.0
     assert weak_home["home_win_probability"] < 50.0
     assert strong_home["home_win_probability"] > weak_home["home_win_probability"]
+
+
+def test_sharp_baseball_algorithm_name() -> None:
+    model = build_baseball_model(_sample_games(), "mlb")
+    assert model is not None
+    payload = predict_matchup_from_model(model, "a", "b", season=2025)
+    assert payload is not None
+    assert "mlb_api_component" in payload
 
 
 if __name__ == "__main__":
