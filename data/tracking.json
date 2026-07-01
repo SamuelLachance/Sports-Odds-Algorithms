@@ -2141,10 +2141,12 @@
       "consensus_odds": null,
       "consensus_label": null,
       "model_margin": null,
-      "status": "pending",
-      "units": 0.0,
+      "status": "loss",
+      "units": -1.0,
       "stake_units": 1.0,
-      "recorded_at": "2026-06-30T22:28:41.387564+00:00"
+      "recorded_at": "2026-06-30T22:28:41.387564+00:00",
+      "graded_at": "2026-07-01T05:24:18.095219+00:00",
+      "final_score": "3\u20138"
     },
     {
       "id": "2026-06-30:401815970:home",
