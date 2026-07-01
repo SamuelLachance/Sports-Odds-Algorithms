@@ -24,7 +24,7 @@ from web.league_profiles import (
 )
 from web.power_model import PowerGame, PowerTeam, build_power_ratings, fit_logistic_param, predict_matchup
 from web.season_games import load_league_completed_games_for_backtest
-from web.sports_meta_model import stack_binary_blend_layers
+from web.sports_meta_model import apply_binary_calibration, stack_binary_blend_layers
 from web.tracking_service import calculate_units
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -189,6 +189,26 @@ def grade_moneyline_bet(side: str, home_goals: int, away_goals: int) -> str:
     return "win" if not home_won else "loss"
 
 
+def _stack_and_calibrate_home_prob(
+    *,
+    league: str,
+    power_home: float,
+    sport_home: float | None,
+) -> float:
+    """Match production blend: meta stack then temperature calibration."""
+    if sport_home is None:
+        blended = power_home
+    else:
+        stacked = stack_binary_blend_layers(
+            legacy_home=power_home,
+            power_home=power_home,
+            sport_home=sport_home,
+            league=league,
+        )
+        blended = stacked if stacked is not None else (0.35 * power_home + 0.65 * sport_home)
+    return apply_binary_calibration(blended, league)
+
+
 def _run_sport_home_prob(
     league: str,
     cutoff: str,
@@ -219,21 +239,14 @@ def _predict_blend_home_prob(
         return None
     power_home = float(power["home_win_probability"])
     sport_home = _run_sport_home_prob(league, cutoff, home, away, train_games)
-    if sport_home is None:
-        blended = power_home
-    else:
-        stacked = stack_binary_blend_layers(
-            legacy_home=power_home,
-            power_home=power_home,
-            sport_home=sport_home,
-            league=league,
-        )
-        blended = stacked if stacked is not None else (0.35 * power_home + 0.65 * sport_home)
+    blended = _stack_and_calibrate_home_prob(
+        league=league, power_home=power_home, sport_home=sport_home
+    )
     total, win_prob = home_win_prob_to_total_score(blended)
     margin = model_home_margin(total, league)
     power_total, _power_win = home_win_prob_to_total_score(power_home)
     power_margin = model_home_margin(power_total, league)
-    return blended, margin, power_margin, power_home
+    return blended, margin, power_margin, power_home, sport_home
 
 
 def _evaluate_backtest_pick(
@@ -368,21 +381,14 @@ def _predict_blend_from_power_state(
         return None
     power_home = float(power["home_win_probability"])
     sport_home = _run_sport_home_prob(league, cutoff, home, away, [])
-    if sport_home is None:
-        blended = power_home
-    else:
-        stacked = stack_binary_blend_layers(
-            legacy_home=power_home,
-            power_home=power_home,
-            sport_home=sport_home,
-            league=league,
-        )
-        blended = stacked if stacked is not None else (0.35 * power_home + 0.65 * sport_home)
+    blended = _stack_and_calibrate_home_prob(
+        league=league, power_home=power_home, sport_home=sport_home
+    )
     total, _win_prob = home_win_prob_to_total_score(blended)
     margin = model_home_margin(total, league)
     power_total, _power_win = home_win_prob_to_total_score(power_home)
     power_margin = model_home_margin(power_total, league)
-    return blended, margin, power_margin, power_home
+    return blended, margin, power_margin, power_home, sport_home
 
 
 def _collect_backtest_samples(
@@ -413,13 +419,14 @@ def _collect_backtest_samples(
             league, cutoff, home, away, teams, power_games
         )
         if prediction:
-            blended_home, model_margin, power_margin, power_home = prediction
+            blended_home, model_margin, power_margin, power_home, sport_home = prediction
             samples.append(
                 {
                     "blended_home": blended_home,
                     "model_margin": model_margin,
                     "power_margin": power_margin,
                     "power_home": power_home,
+                    "sport_home": sport_home,
                     "home_goals": hg,
                     "away_goals": ag,
                 }
@@ -505,7 +512,7 @@ def _strategy_objective(result: dict[str, Any]) -> float:
     return units + result["bets"] * 0.02
 
 
-def _threshold_grid(bet_type: OfficialBetType) -> list[dict[str, float]]:
+def _threshold_grid(bet_type: OfficialBetType, league: str | None = None) -> list[dict[str, float]]:
     if bet_type == "spread":
         return [
             {
@@ -519,6 +526,20 @@ def _threshold_grid(bet_type: OfficialBetType) -> list[dict[str, float]]:
             for pts in (2.0, 2.5, 3.0)
             for profit in (0.0, 5.0)
             for kelly in (0.0, 2.0)
+        ]
+    if league == "mlb":
+        return [
+            {
+                "min_edge": edge,
+                "min_ev_pct": ev,
+                "min_spread_point_edge": 2.0,
+                "min_profit_score": profit,
+                "min_kelly_pct": kelly,
+            }
+            for edge in (35, 40, 45, 50)
+            for ev in (5.0, 6.0, 7.0, 8.0)
+            for profit in (0.0, 3.0, 5.0, 8.0)
+            for kelly in (0.0, 1.0, 2.0, 3.0)
         ]
     return [
         {
@@ -551,6 +572,13 @@ def _refine_thresholds(
             ("min_spread_point_edge", 1.0, 4.0, 0.25),
             ("min_profit_score", 0.0, 12.0, 1.0),
             ("min_kelly_pct", 0.0, 6.0, 0.5),
+        ]
+    elif league == "mlb":
+        specs = [
+            ("min_edge", 35.0, 62.5, 2.5),
+            ("min_ev_pct", 4.0, 12.0, 0.5),
+            ("min_profit_score", 0.0, 15.0, 1.0),
+            ("min_kelly_pct", 0.0, 8.0, 0.5),
         ]
     else:
         specs = [
@@ -589,7 +617,7 @@ def tune_league_thresholds(league: str, cutoff: str) -> dict[str, Any]:
     best: dict[str, Any] | None = None
     best_score = float("-inf")
 
-    for params in _threshold_grid(bet_type):
+    for params in _threshold_grid(bet_type, league):
         thresholds = {**DEFAULT_THRESHOLDS, **params, "bet_type": bet_type}
         result = _backtest_samples(league, samples, thresholds, bet_type)  # type: ignore[arg-type]
         score = _strategy_objective(result)

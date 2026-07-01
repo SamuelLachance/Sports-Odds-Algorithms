@@ -11,9 +11,13 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from web.bet_advisor import soccer_threeway_probs  # noqa: E402
-from web.league_profiles import SOCCER_LEAGUES  # noqa: E402
+from web.league_profiles import (  # noqa: E402
+    BACKTEST_PRO_SEASONS,
+    BACKTEST_SCOREBOARD_LOOKBACK_DAYS,
+    SOCCER_LEAGUES,
+)
 from web.power_model import build_power_ratings, predict_matchup  # noqa: E402
-from web.season_games import load_league_completed_games  # noqa: E402
+from web.season_games import load_league_completed_games_for_backtest  # noqa: E402
 from web.soccer_blend import power_threeway_probs  # noqa: E402
 from web.soccer_meta_model import (  # noqa: E402
     META_WEIGHTS_PATH,
@@ -33,20 +37,8 @@ from web.soccer_pred_model import (  # noqa: E402
 )
 
 MIN_CALIBRATION_GAMES = 40
-CALIBRATION_WINDOW = 80
+CALIBRATION_WINDOW = 120
 MIN_LEAGUE_GAMES = 60
-CORE_LEAGUES = (
-    "epl",
-    "bundesliga",
-    "laliga",
-    "seriea",
-    "ligue1",
-    "mls",
-    "ucl",
-    "worldcup",
-    "uefa_euro",
-    "copa_america",
-)
 
 
 def _cutoff_today() -> str:
@@ -54,10 +46,26 @@ def _cutoff_today() -> str:
     return f"{today.month}-{today.day}-{today.year}"
 
 
-def _collect_stat_samples(league: str, cutoff: str) -> list[tuple]:
-    games = load_league_completed_games(league, cutoff)
+def _calibration_start(game_count: int) -> int:
+    window = min(CALIBRATION_WINDOW, max(80, game_count // 3))
+    return max(30, game_count - window)
+
+
+def _data_depth_metadata(game_count: int) -> dict[str, int]:
+    return {
+        "games_loaded": game_count,
+        "pro_seasons": BACKTEST_PRO_SEASONS,
+        "scoreboard_days": BACKTEST_SCOREBOARD_LOOKBACK_DAYS,
+    }
+
+
+def _collect_stat_samples(
+    league: str,
+    cutoff: str,
+    games: list[tuple],
+) -> list[tuple]:
     samples = []
-    start = max(30, len(games) - CALIBRATION_WINDOW)
+    start = _calibration_start(len(games))
     for index in range(start, len(games)):
         game = games[index]
         home, away, _hn, _an, home_goals, away_goals = game
@@ -79,10 +87,13 @@ def _collect_stat_samples(league: str, cutoff: str) -> list[tuple]:
     return samples
 
 
-def _collect_blend_samples(league: str, cutoff: str) -> list[tuple]:
-    games = load_league_completed_games(league, cutoff)
+def _collect_blend_samples(
+    league: str,
+    cutoff: str,
+    games: list[tuple],
+) -> list[tuple]:
     samples = []
-    start = max(40, len(games) - CALIBRATION_WINDOW)
+    start = max(40, _calibration_start(len(games)))
     for index in range(start, len(games)):
         game = games[index]
         home, away, _hn, _an, home_goals, away_goals = game
@@ -115,11 +126,11 @@ def _collect_blend_samples(league: str, cutoff: str) -> list[tuple]:
 
 
 def tune_league(league: str, cutoff: str) -> dict | None:
-    games = load_league_completed_games(league, cutoff)
+    games = load_league_completed_games_for_backtest(league, cutoff)
     if len(games) < MIN_LEAGUE_GAMES:
         return None
 
-    stat_samples = _collect_stat_samples(league, cutoff)
+    stat_samples = _collect_stat_samples(league, cutoff, games)
     if len(stat_samples) < MIN_CALIBRATION_GAMES:
         return None
 
@@ -132,7 +143,7 @@ def tune_league(league: str, cutoff: str) -> dict | None:
         temp_samples.append((home, draw, away, outcome))
     temperature = fit_temperature_grid(temp_samples)
 
-    blend_samples = _collect_blend_samples(league, cutoff)
+    blend_samples = _collect_blend_samples(league, cutoff, games)
     blend_weights = (
         fit_blend_weights_grid(blend_samples)
         if len(blend_samples) >= MIN_CALIBRATION_GAMES
@@ -165,6 +176,7 @@ def tune_league(league: str, cutoff: str) -> dict | None:
         "log_loss_baseline_equal": round(baseline, 4),
         "log_loss_tuned_stat": round(tuned_stat_loss, 4),
         "samples": len(stat_samples),
+        "data_depth": _data_depth_metadata(len(games)),
     }
     if blend_weights:
         entry["blend"] = {key: round(value, 3) for key, value in blend_weights.items()}
@@ -177,13 +189,19 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Tune soccer 1X2 meta weights.")
     parser.add_argument(
         "--leagues",
-        default=",".join(CORE_LEAGUES),
-        help="Comma-separated league keys (default: core soccer leagues).",
+        default=",".join(SOCCER_LEAGUES),
+        help="Comma-separated league keys (default: all soccer leagues).",
     )
     args = parser.parse_args()
     leagues = [league.strip() for league in args.leagues.split(",") if league.strip()]
     cutoff = _cutoff_today()
-    payload: dict[str, dict] = {}
+    existing: dict[str, dict] = {}
+    if META_WEIGHTS_PATH.is_file():
+        try:
+            existing = json.loads(META_WEIGHTS_PATH.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            existing = {}
+    payload: dict[str, dict] = dict(existing)
     tuned_leagues = 0
 
     for league in leagues:
@@ -194,17 +212,18 @@ def main() -> int:
             tuned_leagues += 1
             print(
                 f"  stat={entry['stat']} temp={entry['temperature']} "
-                f"loss {entry['log_loss_baseline_equal']} -> {entry['log_loss_tuned_stat']}"
+                f"loss {entry['log_loss_baseline_equal']} -> {entry['log_loss_tuned_stat']} "
+                f"(games={entry['data_depth']['games_loaded']})",
+                flush=True,
             )
         else:
-            print("  skipped (insufficient games)")
+            print("  skipped (insufficient games)", flush=True)
 
     if tuned_leagues:
-        # Derive a default from medians across tuned leagues.
-        elos = [entry["stat"]["elo"] for entry in payload.values()]
-        pis = [entry["stat"]["pi"] for entry in payload.values()]
-        dcs = [entry["stat"]["dc"] for entry in payload.values()]
-        temps = [entry["temperature"] for entry in payload.values()]
+        elos = [entry["stat"]["elo"] for entry in payload.values() if isinstance(entry, dict) and "stat" in entry]
+        pis = [entry["stat"]["pi"] for entry in payload.values() if isinstance(entry, dict) and "stat" in entry]
+        dcs = [entry["stat"]["dc"] for entry in payload.values() if isinstance(entry, dict) and "stat" in entry]
+        temps = [entry["temperature"] for entry in payload.values() if isinstance(entry, dict) and "temperature" in entry]
         payload["default"] = {
             "stat": {
                 "elo": round(sum(elos) / len(elos), 3),
@@ -213,7 +232,19 @@ def main() -> int:
             },
             "blend": {"legacy": 0.05, "power": 0.15, "soccer_pred": 0.80},
             "temperature": round(sum(temps) / len(temps), 3),
+            "data_depth": {
+                "pro_seasons": BACKTEST_PRO_SEASONS,
+                "scoreboard_days": BACKTEST_SCOREBOARD_LOOKBACK_DAYS,
+            },
         }
+
+    payload["_meta"] = {
+        "tuned_at": date.today().isoformat(),
+        "calibration_window": CALIBRATION_WINDOW,
+        "pro_seasons": BACKTEST_PRO_SEASONS,
+        "scoreboard_days": BACKTEST_SCOREBOARD_LOOKBACK_DAYS,
+        "leagues_tuned": tuned_leagues,
+    }
 
     META_WEIGHTS_PATH.parent.mkdir(parents=True, exist_ok=True)
     META_WEIGHTS_PATH.write_text(

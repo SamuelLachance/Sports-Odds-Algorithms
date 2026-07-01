@@ -29,6 +29,8 @@ ELO_MARGIN_WEIGHT = 10.0
 PYTH_MARGIN_WEIGHT = 6.0
 FORM_MARGIN_WEIGHT = 4.0
 HOME_MARGIN_ADV = 0.35
+# Shrink raw probabilities toward 50% to reduce overconfidence vs closing lines.
+BASEBALL_PROB_SHRINK = 0.82
 
 
 def is_baseball_league(league: str) -> bool:
@@ -229,7 +231,7 @@ def predict_matchup_from_model(
     )
     param = float(model["param"])
     prob = 1.0 / (1.0 + math.exp(-margin / param))
-    home_win_prob = prob * 100.0
+    home_win_prob = 50.0 + (prob * 100.0 - 50.0) * BASEBALL_PROB_SHRINK
 
     away_pyth = states[away].pythagorean_win_pct()
     predicted_home_runs = 4.5 + margin * 0.15

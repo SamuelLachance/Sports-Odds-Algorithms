@@ -153,6 +153,7 @@ def fit_binary_blend_weights_grid(
     samples: list[tuple[float | None, float | None, float | None, bool]],
     *,
     two_layer: bool = False,
+    max_sport_step: int = 10,
 ) -> dict[str, float]:
     if not samples:
         return dict(DEFAULT_TWO_LAYER_WEIGHTS if two_layer else DEFAULT_BLEND_WEIGHTS)
@@ -175,7 +176,7 @@ def fit_binary_blend_weights_grid(
                 }
             else:
                 sport_step = 10 - legacy_step - power_step
-                if sport_step < 3:
+                if sport_step < 3 or sport_step > max_sport_step:
                     continue
                 weights = {
                     "legacy": legacy_step / 10.0,
@@ -219,13 +220,16 @@ def fit_binary_blend_weights_grid(
 
 def fit_binary_temperature_grid(
     samples: list[tuple[float, bool]],
+    *,
+    min_step: int = 7,
+    max_step: int = 15,
 ) -> float:
     if not samples:
         return DEFAULT_TEMPERATURE
 
     best_loss = float("inf")
     best_temperature = DEFAULT_TEMPERATURE
-    for step in range(7, 16):
+    for step in range(min_step, max_step + 1):
         temperature = step / 10.0
         total_loss = 0.0
         for home_prob, home_won in samples:

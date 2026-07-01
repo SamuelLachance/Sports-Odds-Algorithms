@@ -22,6 +22,8 @@ MIN_TEAM_GAMES = 3
 HOME_ADVANTAGE = 0.15
 HOME_OT_ADVANTAGE = 0.52
 MAX_GOALS = 10
+RECENT_WINDOW = 5
+RECENT_BLEND = 0.35
 
 
 class GameProbabilities(NamedTuple):
@@ -115,6 +117,7 @@ def calculate_expected_goals(
 
 def _build_team_metrics(games: list[tuple]) -> dict[str, TeamMetrics]:
     stats: dict[str, dict[str, float]] = {}
+    recent: dict[str, list[tuple[int, int]]] = {}
 
     for home_abbr, away_abbr, _home_name, _away_name, home_score, away_score in games:
         for abbr, scored, allowed in (
@@ -125,16 +128,28 @@ def _build_team_metrics(games: list[tuple]) -> dict[str, TeamMetrics]:
             bucket["gf"] += scored
             bucket["ga"] += allowed
             bucket["gp"] += 1
+            recent.setdefault(abbr, []).append((scored, allowed))
 
     metrics: dict[str, TeamMetrics] = {}
     for abbr, bucket in stats.items():
         gp = int(bucket["gp"])
         if gp <= 0:
             continue
+        season_gf = bucket["gf"] / gp
+        season_ga = bucket["ga"] / gp
+        recent_games = recent.get(abbr, [])[-RECENT_WINDOW:]
+        if recent_games:
+            recent_gf = sum(s for s, _ in recent_games) / len(recent_games)
+            recent_ga = sum(a for _, a in recent_games) / len(recent_games)
+            goals_for_pg = (1 - RECENT_BLEND) * season_gf + RECENT_BLEND * recent_gf
+            goals_against_pg = (1 - RECENT_BLEND) * season_ga + RECENT_BLEND * recent_ga
+        else:
+            goals_for_pg = season_gf
+            goals_against_pg = season_ga
         metrics[abbr] = TeamMetrics(
             team=abbr,
-            goals_for_pg=round(bucket["gf"] / gp, 3),
-            goals_against_pg=round(bucket["ga"] / gp, 3),
+            goals_for_pg=round(goals_for_pg, 3),
+            goals_against_pg=round(goals_against_pg, 3),
             games_played=gp,
         )
     return metrics

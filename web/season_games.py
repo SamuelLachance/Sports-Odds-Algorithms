@@ -221,8 +221,8 @@ def load_league_completed_games(
     Load deduplicated completed games for a league before cutoff.
 
     Returns list of (home_key, away_key, home_name, away_name, home_score, away_score).
-    When ``for_backtest`` is True, loads the maximum ESPN history available (5 pro
-    seasons or 730-day scoreboard walk) instead of the live-slate default window.
+    When ``for_backtest`` is True, loads the maximum ESPN history available (7 pro
+    seasons or 900-day scoreboard walk) instead of the live-slate default window.
     """
     league = league.lower()
     cutoff = _parse_cutoff(cutoff_date)
