@@ -673,6 +673,10 @@ def blend_predictions(
     sport_key, sport_payload = _run_sport_pred_model(
         league, cutoff_date, home_abbr, away_abbr
     )
+    if is_baseball_league(league):
+        meta = get_sports_meta_config(league)
+        if meta["blend_weights"].get("sport_pred", 0.0) <= 0:
+            sport_key, sport_payload = None, None
 
     if _uses_three_layer_blend(league) and sport_payload and sport_key:
         third_home = float(sport_payload["home_win_probability"])

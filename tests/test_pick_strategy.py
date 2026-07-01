@@ -27,7 +27,7 @@ def test_official_bet_type_by_sport() -> None:
     assert official_bet_type("nfl") == "spread"
     assert official_bet_type("nhl") == "moneyline"
     assert official_bet_type("mlb") == "moneyline"
-    assert official_bet_type("epl") == "none"
+    assert official_bet_type("epl") == "soccer_1x2"
 
 
 def test_grade_spread_home_covers() -> None:

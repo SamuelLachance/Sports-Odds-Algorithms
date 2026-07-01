@@ -161,7 +161,7 @@ def test_blend_with_power_integration_when_games_exist() -> None:
         get_league_power_context.cache_clear()
 
 
-def test_blend_mlb_three_way_when_layers_available() -> None:
+def test_blend_mlb_power_only_when_sport_layer_disabled() -> None:
     import web.blend_service as blend_module
 
     power_original = blend_module.run_power_model
@@ -188,10 +188,9 @@ def test_blend_mlb_three_way_when_layers_available() -> None:
             away_abbr="bos",
         )
         assert result["blend_mode"] == "blended"
-        assert result["blend_layers"] == 3
-        assert result["baseball_pred"] is not None
-        assert result["baseball_pred"]["source"] == "MLB-Model"
-        assert result["blended_home_win_probability"] == round((60.0 + 58.0 + 64.0) / 3, 2)
+        assert result["blend_layers"] == 2
+        assert "baseball_pred" not in result
+        assert 57.0 <= result["blended_home_win_probability"] <= 59.0
     finally:
         blend_module.run_power_model = power_original
         blend_module.run_baseball_pred_model = baseball_original
@@ -666,7 +665,7 @@ if __name__ == "__main__":
     test_blend_legacy_only_when_power_unavailable()
     test_blend_averages_home_win_probs()
     test_blend_with_power_integration_when_games_exist()
-    test_blend_mlb_three_way_when_layers_available()
+    test_blend_mlb_power_only_when_sport_layer_disabled()
     test_blend_mlb_two_way_fallback_when_baseball_unavailable()
     test_blend_nba_three_way_when_basketball_available()
     test_model_agreement_nba_three_layers_agree()

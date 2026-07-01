@@ -11,8 +11,10 @@ from web.bet_advisor import (
     BetPick,
     enrich_pick_profit_metrics,
     evaluate_picks,
+    evaluate_soccer_picks,
     evaluate_spread_picks,
     model_home_margin,
+    soccer_model_moneylines,
     spread_line_for_side,
 )
 from web.blend_service import blended_home_spread_margin, home_win_prob_to_total_score
@@ -24,13 +26,14 @@ from web.league_profiles import (
 )
 from web.power_model import PowerGame, PowerTeam, build_power_ratings, fit_logistic_param, predict_matchup
 from web.season_games import load_league_completed_games_for_backtest
+from web.supplemental_games import soccer_backtest_odds
 from web.sports_meta_model import apply_binary_calibration, stack_binary_blend_layers
 from web.tracking_service import calculate_units
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 STRATEGY_PATH = PROJECT_ROOT / "data" / "pick_strategy.json"
 
-OfficialBetType = Literal["spread", "moneyline", "none"]
+OfficialBetType = Literal["spread", "moneyline", "soccer_1x2", "none"]
 
 DEFAULT_THRESHOLDS: dict[str, Any] = {
     "min_edge": MIN_RECOMMENDED_EDGE,
@@ -38,19 +41,22 @@ DEFAULT_THRESHOLDS: dict[str, Any] = {
     "min_spread_point_edge": 2.0,
     "min_profit_score": 0.0,
     "min_kelly_pct": 0.0,
+    "enabled": True,
 }
 
 MARKET_SHRINK = 0.55
 DEFAULT_SPREAD_JUICE = -110
 BACKTEST_MIN_TRAIN = 40
 MIN_TUNE_BETS = 10
+DRAWDOWN_PENALTY = 0.35
+PROFIT_SCORE_QUARTILE_FRACTION = 0.25
 
 
 def official_bet_type(league: str) -> OfficialBetType:
-    """Spread for basketball/football; moneyline for hockey/baseball; none for soccer."""
+    """Spread for basketball/football; moneyline for hockey/baseball; 1X2 for soccer."""
     league = league.lower()
     if is_soccer_league(league):
-        return "none"
+        return "soccer_1x2"
     profile = get_league_profile(league)
     category = profile["category"]
     if category in ("basketball", "football"):
@@ -83,6 +89,7 @@ def _default_entry(bet_type: str) -> dict[str, Any]:
         **DEFAULT_THRESHOLDS,
         "backtest_roi_pct": None,
         "backtest_bets": 0,
+        "enabled": bet_type != "none",
     }
 
 
@@ -102,6 +109,7 @@ def get_pick_thresholds(league: str) -> dict[str, Any]:
             entry.get("min_profit_score", DEFAULT_THRESHOLDS["min_profit_score"])
         ),
         "min_kelly_pct": float(entry.get("min_kelly_pct", DEFAULT_THRESHOLDS["min_kelly_pct"])),
+        "enabled": bool(entry.get("enabled", DEFAULT_THRESHOLDS["enabled"])),
         "backtest_roi_pct": entry.get("backtest_roi_pct"),
         "backtest_bets": entry.get("backtest_bets", 0),
         "backtest_units": entry.get("backtest_units"),
@@ -189,6 +197,46 @@ def grade_moneyline_bet(side: str, home_goals: int, away_goals: int) -> str:
     return "win" if not home_won else "loss"
 
 
+def grade_soccer_1x2_bet(side: str, home_goals: int, away_goals: int) -> str:
+    if side == "draw":
+        return "win" if home_goals == away_goals else "loss"
+    if side == "home":
+        return "win" if home_goals > away_goals else "loss"
+    return "win" if away_goals > home_goals else "loss"
+
+
+def simulate_market_threeway(
+    home_prob: float,
+    draw_prob: float,
+    away_prob: float,
+    *,
+    market_home: float | None = None,
+    market_draw: float | None = None,
+    market_away: float | None = None,
+) -> tuple[int, int, int]:
+    """Synthetic 3-way market with vig from regressed model probabilities."""
+    base_home = market_home if market_home is not None else home_prob
+    base_draw = market_draw if market_draw is not None else draw_prob
+    base_away = market_away if market_away is not None else away_prob
+    shrink = 1.0 - MARKET_SHRINK
+    reg_home = 33.33 + (base_home - 33.33) * shrink
+    reg_draw = 33.33 + (base_draw - 33.33) * shrink
+    reg_away = 33.33 + (base_away - 33.33) * shrink
+    away_ml, draw_ml, home_ml = soccer_model_moneylines(reg_home, reg_draw, reg_away)
+    return away_ml, draw_ml, home_ml
+
+
+def _max_drawdown(unit_deltas: list[float]) -> float:
+    peak = 0.0
+    cumulative = 0.0
+    worst = 0.0
+    for delta in unit_deltas:
+        cumulative += delta
+        peak = max(peak, cumulative)
+        worst = max(worst, peak - cumulative)
+    return worst
+
+
 def _stack_and_calibrate_home_prob(
     *,
     league: str,
@@ -260,8 +308,58 @@ def _evaluate_backtest_pick(
     home_goals: int,
     away_goals: int,
     thresholds: dict[str, Any],
+    home_prob: float | None = None,
+    draw_prob: float | None = None,
+    away_prob: float | None = None,
+    market_home_odds: int | None = None,
+    market_draw_odds: int | None = None,
+    market_away_odds: int | None = None,
 ) -> tuple[float, str] | None:
-    if bet_type == "spread":
+    if bet_type == "soccer_1x2":
+        if home_prob is None or draw_prob is None or away_prob is None:
+            return None
+        away_ml, draw_ml, home_ml = simulate_market_threeway(
+            home_prob,
+            draw_prob,
+            away_prob,
+            market_home=power_home,
+            market_draw=draw_prob,
+            market_away=100.0 - home_prob - draw_prob if power_home is not None else None,
+        )
+        if market_home_odds is not None:
+            home_ml = market_home_odds
+        if market_draw_odds is not None:
+            draw_ml = market_draw_odds
+        if market_away_odds is not None:
+            away_ml = market_away_odds
+        away_proj, draw_proj, home_proj = soccer_model_moneylines(
+            home_prob, draw_prob, away_prob
+        )
+        picks = evaluate_soccer_picks(
+            away_name="Away",
+            home_name="Home",
+            away_slug="away",
+            home_slug="home",
+            home_prob=home_prob,
+            draw_prob=draw_prob,
+            away_prob=away_prob,
+            away_proj=away_proj,
+            draw_proj=draw_proj,
+            home_proj=home_proj,
+            away_market=away_ml,
+            draw_market=draw_ml,
+            home_market=home_ml,
+            min_edge=thresholds["min_edge"],
+            min_ev_pct=thresholds["min_ev_pct"],
+        )
+        if not picks:
+            return None
+        pick = enrich_pick_profit_metrics(picks[0])
+        if not passes_profit_gate(pick, thresholds):
+            return None
+        result = grade_soccer_1x2_bet(pick.side, home_goals, away_goals)
+        odds = pick.market_odds
+    elif bet_type == "spread":
         market_spread = simulate_market_spread(
             model_margin,
             league,
@@ -391,6 +489,76 @@ def _predict_blend_from_power_state(
     return blended, margin, power_margin, power_home, sport_home
 
 
+def _collect_soccer_backtest_samples(
+    league: str,
+    cutoff: str,
+    *,
+    min_train: int = BACKTEST_MIN_TRAIN,
+) -> list[dict[str, Any]]:
+    from web.bet_advisor import soccer_threeway_probs
+    from web.power_model import build_power_ratings, predict_matchup
+    from web.soccer_blend import power_threeway_probs
+    from web.soccer_meta_model import apply_threeway_calibration, stack_soccer_blend_layers
+    from web.soccer_pred_model import build_soccer_model, predict_matchup_from_model
+
+    games = load_league_completed_games_for_backtest(league, cutoff)
+    samples: list[dict[str, Any]] = []
+    for index, (home, away, home_name, away_name, hg, ag) in enumerate(games):
+        if index < min_train:
+            continue
+        train = games[:index]
+        teams, _total, param = build_power_ratings(train)
+        power = predict_matchup(teams, param, home, away) if param else None
+        model = build_soccer_model(train, league)
+        soccer = (
+            predict_matchup_from_model(model, home, away)
+            if model and home in model["team_keys"] and away in model["team_keys"]
+            else None
+        )
+        if not power or not soccer:
+            continue
+        power_tw = power_threeway_probs(float(power["home_win_probability"]), league)
+        soccer_tw = (
+            soccer.home_win_probability,
+            soccer.draw_probability,
+            soccer.away_win_probability,
+        )
+        total = (
+            -float(power["home_win_probability"])
+            if float(power["home_win_probability"]) > 50
+            else float(power["home_win_probability"])
+        )
+        legacy_tw = soccer_threeway_probs(total, league)
+        stacked = stack_soccer_blend_layers(
+            legacy=legacy_tw,
+            power=power_tw,
+            soccer_pred=soccer_tw,
+            league=league,
+        )
+        if stacked:
+            home_p, draw_p, away_p = stacked
+        else:
+            home_p, draw_p, away_p = soccer_tw
+        home_p, draw_p, away_p = apply_threeway_calibration(home_p, draw_p, away_p, league)
+        game_date = ""
+        odds = soccer_backtest_odds(league, game_date, home, away) or {}
+        samples.append(
+            {
+                "blended_home": home_p,
+                "home_prob": home_p,
+                "draw_prob": draw_p,
+                "away_prob": away_p,
+                "power_home": power_tw[0],
+                "home_goals": hg,
+                "away_goals": ag,
+                "market_home_odds": odds.get("home_odds"),
+                "market_draw_odds": odds.get("draw_odds"),
+                "market_away_odds": odds.get("away_odds"),
+            }
+        )
+    return samples
+
+
 def _collect_backtest_samples(
     league: str,
     cutoff: str,
@@ -399,6 +567,8 @@ def _collect_backtest_samples(
 ) -> list[dict[str, Any]]:
     """Walk-forward samples using all available backtest history after min_train."""
     bet_type = official_bet_type(league)
+    if bet_type == "soccer_1x2":
+        return _collect_soccer_backtest_samples(league, cutoff, min_train=min_train)
     games = load_league_completed_games_for_backtest(league, cutoff)
     teams: dict[str, PowerTeam] = {}
     power_games: list[PowerGame] = []
@@ -445,23 +615,37 @@ def _backtest_samples(
 ) -> dict[str, Any]:
     units_total = 0.0
     wins = losses = pushes = bets = 0
+    unit_deltas: list[float] = []
     for sample in samples:
-        graded = _evaluate_backtest_pick(
-            league=league,
-            bet_type=bet_type,
-            blended_home=sample["blended_home"],
-            model_margin=sample["model_margin"],
-            power_margin=sample.get("power_margin"),
-            power_home=sample.get("power_home"),
-            home_goals=sample["home_goals"],
-            away_goals=sample["away_goals"],
-            thresholds=thresholds,
-        )
+        kwargs: dict[str, Any] = {
+            "league": league,
+            "bet_type": bet_type,
+            "blended_home": sample.get("blended_home", sample.get("home_prob", 50.0)),
+            "model_margin": sample.get("model_margin", 0.0),
+            "power_margin": sample.get("power_margin"),
+            "power_home": sample.get("power_home"),
+            "home_goals": sample["home_goals"],
+            "away_goals": sample["away_goals"],
+            "thresholds": thresholds,
+        }
+        if bet_type == "soccer_1x2":
+            kwargs.update(
+                {
+                    "home_prob": sample["home_prob"],
+                    "draw_prob": sample["draw_prob"],
+                    "away_prob": sample["away_prob"],
+                    "market_home_odds": sample.get("market_home_odds"),
+                    "market_draw_odds": sample.get("market_draw_odds"),
+                    "market_away_odds": sample.get("market_away_odds"),
+                }
+            )
+        graded = _evaluate_backtest_pick(**kwargs)
         if graded is None:
             continue
         unit_delta, result = graded
         bets += 1
         units_total += unit_delta
+        unit_deltas.append(unit_delta)
         if result == "win":
             wins += 1
         elif result == "loss":
@@ -478,6 +662,7 @@ def _backtest_samples(
         "pushes": pushes,
         "units": round(units_total, 2),
         "roi_pct": round(roi_pct, 2),
+        "max_drawdown": round(_max_drawdown(unit_deltas), 2),
         "thresholds": thresholds,
     }
 
@@ -503,13 +688,15 @@ def backtest_league_strategy(
 
 
 def _strategy_objective(result: dict[str, Any]) -> float:
-    """Maximize walk-forward units; require minimum bet volume for stability."""
+    """Risk-adjusted walk-forward score: units minus drawdown penalty."""
     if result["bets"] < MIN_TUNE_BETS:
         return float("-inf")
     units = float(result["units"])
-    if units <= 0:
-        return units
-    return units + result["bets"] * 0.02
+    max_dd = float(result.get("max_drawdown", 0.0))
+    score = units - DRAWDOWN_PENALTY * max_dd
+    if score <= 0:
+        return score
+    return score + result["bets"] * 0.02
 
 
 def _threshold_grid(bet_type: OfficialBetType, league: str | None = None) -> list[dict[str, float]]:
@@ -536,10 +723,24 @@ def _threshold_grid(bet_type: OfficialBetType, league: str | None = None) -> lis
                 "min_profit_score": profit,
                 "min_kelly_pct": kelly,
             }
+            for edge in (35, 40, 45, 50, 55)
+            for ev in (5.0, 6.0, 7.0, 8.0, 10.0)
+            for profit in (0.0, 3.0, 5.0, 8.0, 12.0)
+            for kelly in (0.0, 1.0, 2.0, 3.0, 5.0)
+        ]
+    if bet_type == "soccer_1x2":
+        return [
+            {
+                "min_edge": edge,
+                "min_ev_pct": ev,
+                "min_spread_point_edge": 2.0,
+                "min_profit_score": profit,
+                "min_kelly_pct": kelly,
+            }
             for edge in (35, 40, 45, 50)
             for ev in (5.0, 6.0, 7.0, 8.0)
-            for profit in (0.0, 3.0, 5.0, 8.0)
-            for kelly in (0.0, 1.0, 2.0, 3.0)
+            for profit in (0.0, 5.0, 8.0)
+            for kelly in (0.0, 2.0, 3.0)
         ]
     return [
         {
@@ -575,7 +776,14 @@ def _refine_thresholds(
         ]
     elif league == "mlb":
         specs = [
-            ("min_edge", 35.0, 62.5, 2.5),
+            ("min_edge", 35.0, 70.0, 2.5),
+            ("min_ev_pct", 4.0, 14.0, 0.5),
+            ("min_profit_score", 0.0, 20.0, 1.0),
+            ("min_kelly_pct", 0.0, 10.0, 0.5),
+        ]
+    elif bet_type == "soccer_1x2":
+        specs = [
+            ("min_edge", 30.0, 60.0, 2.5),
             ("min_ev_pct", 4.0, 12.0, 0.5),
             ("min_profit_score", 0.0, 15.0, 1.0),
             ("min_kelly_pct", 0.0, 8.0, 0.5),
@@ -608,6 +816,48 @@ def _refine_thresholds(
     return best
 
 
+def _enforce_positive_roi(
+    league: str,
+    samples: list[dict[str, Any]],
+    bet_type: OfficialBetType,
+    best: dict[str, Any],
+) -> dict[str, Any]:
+    """Tighten gates until walk-forward ROI is non-negative, or disable official picks."""
+    if best["roi_pct"] >= 0 and float(best["units"]) >= 0:
+        th = dict(best["thresholds"])
+        th["enabled"] = True
+        best["thresholds"] = th
+        return best
+
+    current = dict(best["thresholds"])
+    best_result = best
+    for edge in (50, 55, 60, 65):
+        for ev in (7.0, 9.0, 11.0, 13.0):
+            for profit in (8.0, 12.0, 16.0, 20.0):
+                for kelly in (2.0, 4.0, 6.0):
+                    trial = {
+                        **current,
+                        "min_edge": float(edge),
+                        "min_ev_pct": float(ev),
+                        "min_profit_score": float(profit),
+                        "min_kelly_pct": float(kelly),
+                        "bet_type": bet_type,
+                    }
+                    result = _backtest_samples(league, samples, trial, bet_type)
+                    if result["roi_pct"] >= 0 and float(result["units"]) >= 0:
+                        th = dict(result["thresholds"])
+                        th["enabled"] = True
+                        result["thresholds"] = th
+                        return result
+                    if _strategy_objective(result) > _strategy_objective(best_result):
+                        best_result = result
+
+    th = dict(best_result["thresholds"])
+    th["enabled"] = best_result["roi_pct"] >= 0 and float(best_result["units"]) >= 0
+    best_result["thresholds"] = th
+    return best_result
+
+
 def tune_league_thresholds(league: str, cutoff: str) -> dict[str, Any]:
     bet_type = official_bet_type(league)
     if bet_type == "none":
@@ -631,6 +881,7 @@ def tune_league_thresholds(league: str, cutoff: str) -> dict[str, Any]:
     else:
         best = _refine_thresholds(league, samples, bet_type, best["thresholds"])  # type: ignore[arg-type]
 
+    best = _enforce_positive_roi(league, samples, bet_type, best)  # type: ignore[arg-type]
     th = best["thresholds"]
     return {
         "bet_type": bet_type,
@@ -639,6 +890,7 @@ def tune_league_thresholds(league: str, cutoff: str) -> dict[str, Any]:
         "min_spread_point_edge": th["min_spread_point_edge"],
         "min_profit_score": th.get("min_profit_score", 0.0),
         "min_kelly_pct": th.get("min_kelly_pct", 0.0),
+        "enabled": bool(th.get("enabled", True)),
         "backtest_games": len(samples),
         "backtest_samples": len(samples),
         "backtest_roi_pct": best["roi_pct"],
@@ -646,7 +898,56 @@ def tune_league_thresholds(league: str, cutoff: str) -> dict[str, Any]:
         "backtest_wins": best["wins"],
         "backtest_losses": best["losses"],
         "backtest_units": best["units"],
+        "backtest_max_drawdown": best.get("max_drawdown"),
     }
+
+
+def evaluate_soccer_official_picks_for_game(
+    *,
+    league: str,
+    away_name: str,
+    home_name: str,
+    away_slug: str,
+    home_slug: str,
+    home_prob: float,
+    draw_prob: float,
+    away_prob: float,
+    away_proj: int,
+    draw_proj: int,
+    home_proj: int,
+    away_market: int | None,
+    draw_market: int | None,
+    home_market: int | None,
+    expected_home_goals: float | None = None,
+    expected_away_goals: float | None = None,
+) -> list[BetPick]:
+    """Official 1X2 soccer picks using backtest-tuned thresholds and profit gates."""
+    thresholds = get_pick_thresholds(league)
+    if not thresholds.get("enabled", True):
+        return []
+    picks = evaluate_soccer_picks(
+        away_name=away_name,
+        home_name=home_name,
+        away_slug=away_slug,
+        home_slug=home_slug,
+        home_prob=home_prob,
+        draw_prob=draw_prob,
+        away_prob=away_prob,
+        away_proj=away_proj,
+        draw_proj=draw_proj,
+        home_proj=home_proj,
+        away_market=away_market,
+        draw_market=draw_market,
+        home_market=home_market,
+        expected_home_goals=expected_home_goals,
+        expected_away_goals=expected_away_goals,
+        min_edge=thresholds["min_edge"],
+        min_ev_pct=thresholds["min_ev_pct"],
+    )
+    filtered = [p for p in picks if passes_profit_gate(p, thresholds)]
+    for pick in filtered:
+        pick.bet_type = "soccer_1x2"
+    return filtered
 
 
 def evaluate_official_picks_for_game(
@@ -671,6 +972,8 @@ def evaluate_official_picks_for_game(
     from web.bet_advisor import resolve_binary_win_probs
 
     thresholds = get_pick_thresholds(league)
+    if not thresholds.get("enabled", True):
+        return []
     bet_type = thresholds["bet_type"]
 
     if bet_type == "spread":

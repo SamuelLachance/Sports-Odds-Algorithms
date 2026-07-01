@@ -164,6 +164,7 @@ def fit_binary_blend_weights_grid(
     legacy_range = range(0, 4) if two_layer else range(0, 3)
     power_range = range(0, 11) if two_layer else range(0, 6)
 
+    min_sport_step = 0 if max_sport_step == 0 else 3
     for legacy_step in legacy_range:
         for power_step in power_range:
             if two_layer:
@@ -176,7 +177,7 @@ def fit_binary_blend_weights_grid(
                 }
             else:
                 sport_step = 10 - legacy_step - power_step
-                if sport_step < 3 or sport_step > max_sport_step:
+                if sport_step < min_sport_step or sport_step > max_sport_step:
                     continue
                 weights = {
                     "legacy": legacy_step / 10.0,

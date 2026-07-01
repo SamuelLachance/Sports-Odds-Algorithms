@@ -107,18 +107,18 @@
   },
   "mlb": {
     "bet_type": "moneyline",
-    "min_edge": 35,
-    "min_ev_pct": 5.0,
+    "min_edge": 20,
+    "min_ev_pct": 3.0,
     "min_spread_point_edge": 2.0,
-    "min_profit_score": 12.0,
+    "min_profit_score": 0.0,
     "min_kelly_pct": 0.0,
-    "backtest_games": 10938,
-    "backtest_samples": 10938,
-    "backtest_roi_pct": -6.94,
-    "backtest_bets": 912,
-    "backtest_wins": 421,
-    "backtest_losses": 491,
-    "backtest_units": -63.28
+    "backtest_games": 14265,
+    "backtest_samples": 14265,
+    "backtest_roi_pct": 18.2,
+    "backtest_bets": 353,
+    "backtest_wins": 231,
+    "backtest_losses": 122,
+    "backtest_units": 64.23
   },
   "ncaah": {
     "bet_type": "moneyline",
@@ -197,17 +197,17 @@
   },
   "baseball": {
     "bet_type": "moneyline",
-    "min_edge": 35,
-    "min_ev_pct": 5.0,
+    "min_edge": 20,
+    "min_ev_pct": 3.0,
     "min_spread_point_edge": 2.0,
-    "min_profit_score": 12.0,
+    "min_profit_score": 0.0,
     "min_kelly_pct": 0.0,
-    "backtest_games": 10938,
-    "backtest_samples": 10938,
-    "backtest_roi_pct": -6.94,
-    "backtest_bets": 912,
-    "backtest_wins": 421,
-    "backtest_losses": 491,
-    "backtest_units": -63.28
+    "backtest_games": 14265,
+    "backtest_samples": 14265,
+    "backtest_roi_pct": 18.2,
+    "backtest_bets": 353,
+    "backtest_wins": 231,
+    "backtest_losses": 122,
+    "backtest_units": 64.23
   }
 }
