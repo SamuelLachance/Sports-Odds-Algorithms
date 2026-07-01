@@ -22,8 +22,8 @@ from web.league_profiles import (
     get_league_profile,
     is_soccer_league,
 )
-from web.power_model import build_power_ratings, predict_matchup
-from web.season_games import load_league_completed_games
+from web.power_model import PowerGame, PowerTeam, build_power_ratings, fit_logistic_param, predict_matchup
+from web.season_games import load_league_completed_games_for_backtest
 from web.sports_meta_model import stack_binary_blend_layers
 from web.tracking_service import calculate_units
 
@@ -42,7 +42,7 @@ DEFAULT_THRESHOLDS: dict[str, Any] = {
 
 MARKET_SHRINK = 0.55
 DEFAULT_SPREAD_JUICE = -110
-BACKTEST_WINDOW = 120
+BACKTEST_MIN_TRAIN = 40
 MIN_TUNE_BETS = 10
 
 
@@ -311,34 +311,121 @@ def _evaluate_backtest_pick(
     return units, result
 
 
+def _append_power_game(
+    teams: dict[str, PowerTeam],
+    total_games: list[PowerGame],
+    home_key: str,
+    away_key: str,
+    home_name: str,
+    away_name: str,
+    home_score: int,
+    away_score: int,
+    *,
+    iterations: int = 6,
+) -> None:
+    if home_key not in teams:
+        teams[home_key] = PowerTeam(key=home_key, name=home_name)
+    if away_key not in teams:
+        teams[away_key] = PowerTeam(key=away_key, name=away_name)
+    home_team = teams[home_key]
+    away_team = teams[away_key]
+    game = PowerGame(home_team, away_team, home_score, away_score)
+    total_games.append(game)
+    home_team.games.append(game)
+    away_team.games.append(game)
+    if home_score > away_score:
+        home_team.wins += 1
+        away_team.losses += 1
+    elif home_score < away_score:
+        home_team.losses += 1
+        away_team.wins += 1
+    else:
+        home_team.ties += 1
+        away_team.ties += 1
+    home_team.apd = home_team.calc_apd()
+    away_team.apd = away_team.calc_apd()
+    for _ in range(iterations):
+        for team in teams.values():
+            team.schedule = team.calc_sched()
+            team.power = team.calc_power()
+        for team in teams.values():
+            team.prev_power = team.power
+
+
+def _predict_blend_from_power_state(
+    league: str,
+    cutoff: str,
+    home: str,
+    away: str,
+    teams: dict[str, PowerTeam],
+    total_games: list[PowerGame],
+) -> tuple[float, float, float, float] | None:
+    param = fit_logistic_param(total_games, fast=True)
+    if param is None:
+        return None
+    power = predict_matchup(teams, param, home, away)
+    if not power:
+        return None
+    power_home = float(power["home_win_probability"])
+    sport_home = _run_sport_home_prob(league, cutoff, home, away, [])
+    if sport_home is None:
+        blended = power_home
+    else:
+        stacked = stack_binary_blend_layers(
+            legacy_home=power_home,
+            power_home=power_home,
+            sport_home=sport_home,
+            league=league,
+        )
+        blended = stacked if stacked is not None else (0.35 * power_home + 0.65 * sport_home)
+    total, _win_prob = home_win_prob_to_total_score(blended)
+    margin = model_home_margin(total, league)
+    power_total, _power_win = home_win_prob_to_total_score(power_home)
+    power_margin = model_home_margin(power_total, league)
+    return blended, margin, power_margin, power_home
+
+
 def _collect_backtest_samples(
     league: str,
     cutoff: str,
     *,
-    min_train: int = 40,
-    window: int = BACKTEST_WINDOW,
+    min_train: int = BACKTEST_MIN_TRAIN,
 ) -> list[dict[str, Any]]:
+    """Walk-forward samples using all available backtest history after min_train."""
     bet_type = official_bet_type(league)
-    games = load_league_completed_games(league, cutoff)
-    start = max(min_train, len(games) - window)
+    games = load_league_completed_games_for_backtest(league, cutoff)
+    teams: dict[str, PowerTeam] = {}
+    power_games: list[PowerGame] = []
     samples: list[dict[str, Any]] = []
-    for index in range(start, len(games)):
-        home, away, _hn, _an, hg, ag = games[index]
+
+    for index, (home, away, home_name, away_name, hg, ag) in enumerate(games):
+        if index < min_train:
+            _append_power_game(
+                teams, power_games, home, away, home_name, away_name, hg, ag
+            )
+            continue
         if hg == ag and bet_type == "moneyline":
+            _append_power_game(
+                teams, power_games, home, away, home_name, away_name, hg, ag
+            )
             continue
-        prediction = _predict_blend_home_prob(league, cutoff, home, away, games[:index])
-        if not prediction:
-            continue
-        blended_home, model_margin, power_margin, power_home = prediction
-        samples.append(
-            {
-                "blended_home": blended_home,
-                "model_margin": model_margin,
-                "power_margin": power_margin,
-                "power_home": power_home,
-                "home_goals": hg,
-                "away_goals": ag,
-            }
+        prediction = _predict_blend_from_power_state(
+            league, cutoff, home, away, teams, power_games
+        )
+        if prediction:
+            blended_home, model_margin, power_margin, power_home = prediction
+            samples.append(
+                {
+                    "blended_home": blended_home,
+                    "model_margin": model_margin,
+                    "power_margin": power_margin,
+                    "power_home": power_home,
+                    "home_goals": hg,
+                    "away_goals": ag,
+                }
+            )
+        _append_power_game(
+            teams, power_games, home, away, home_name, away_name, hg, ag
         )
     return samples
 
@@ -524,6 +611,8 @@ def tune_league_thresholds(league: str, cutoff: str) -> dict[str, Any]:
         "min_spread_point_edge": th["min_spread_point_edge"],
         "min_profit_score": th.get("min_profit_score", 0.0),
         "min_kelly_pct": th.get("min_kelly_pct", 0.0),
+        "backtest_games": len(samples),
+        "backtest_samples": len(samples),
         "backtest_roi_pct": best["roi_pct"],
         "backtest_bets": best["bets"],
         "backtest_wins": best["wins"],

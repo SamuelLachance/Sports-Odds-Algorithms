@@ -57,6 +57,7 @@ def build_power_ratings(
     games: list[tuple[str, str, str, str, int, int]],
     *,
     iterations: int = 10,
+    fast_fit: bool = False,
 ) -> tuple[dict[str, PowerTeam], list[PowerGame], float | None]:
     """
     Build team power ratings from completed games.
@@ -102,11 +103,15 @@ def build_power_ratings(
         for team in teams.values():
             team.prev_power = team.power
 
-    param = fit_logistic_param(total_games)
+    param = fit_logistic_param(total_games, fast=fast_fit)
     return teams, total_games, param
 
 
-def fit_logistic_param(games: list[PowerGame]) -> float | None:
+def fit_logistic_param(
+    games: list[PowerGame],
+    *,
+    fast: bool = False,
+) -> float | None:
     """Fit sigmoid scale param via log-loss minimization (no scipy)."""
     if len(games) < 3:
         return None
@@ -124,17 +129,18 @@ def fit_logistic_param(games: list[PowerGame]) -> float | None:
 
     best_param = 10.0
     best_loss = float("inf")
-    for trial in range(50, 500):
+    coarse_start, coarse_end, coarse_step = (50, 500, 10) if not fast else (80, 320, 20)
+    for trial in range(coarse_start, coarse_end, coarse_step):
         param = trial / 10.0
         loss = _log_loss(xpoints, ypoints, param)
         if loss < best_loss:
             best_loss = loss
             best_param = param
 
-    # Refine around best coarse value
     coarse = best_param
-    for trial in range(-20, 21):
-        param = max(0.5, coarse + trial * 0.1)
+    fine_span, fine_step = (20, 0.1) if not fast else (5, 0.2)
+    for trial in range(-fine_span, fine_span + 1):
+        param = max(0.5, coarse + trial * fine_step)
         loss = _log_loss(xpoints, ypoints, param)
         if loss < best_loss:
             best_loss = loss

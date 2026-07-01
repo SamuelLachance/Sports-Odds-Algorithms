@@ -15,6 +15,8 @@ from web.espn_client import (
     prior_season_year,
 )
 from web.league_profiles import (
+    BACKTEST_PRO_SEASONS,
+    BACKTEST_SCOREBOARD_LOOKBACK_DAYS,
     LARGE_ROSTER_LEAGUES,
     MIN_GAMES_FOR_POWER,
     POWER_SCOREBOARD_LOOKBACK,
@@ -179,16 +181,30 @@ def _collect_from_team_schedules(
     league: str,
     cutoff: datetime,
     cutoff_day: date,
+    *,
+    season_years: list[int] | None = None,
 ) -> GameMap:
     """Collect games from per-team schedules (efficient for small pro leagues)."""
-    current_season = current_season_year(league, cutoff_day)
-    prior_season = prior_season_year(league, cutoff_day)
+    if season_years is None:
+        current_season = current_season_year(league, cutoff_day)
+        prior_season = prior_season_year(league, cutoff_day)
+        season_years = [current_season, prior_season]
 
     merged: GameMap = {}
     for espn_id, _abbr, _label in _load_espn_team_ids(league):
-        for season in (current_season, prior_season):
+        for season in season_years:
             merged.update(_collect_events_for_season(league, espn_id, season, cutoff))
     return merged
+
+
+def _backtest_season_years(league: str, cutoff_day: date) -> list[int]:
+    current = current_season_year(league, cutoff_day)
+    return [current - offset for offset in range(BACKTEST_PRO_SEASONS)]
+
+
+def _backtest_scoreboard_lookback_days(league: str) -> int:
+    base = POWER_SCOREBOARD_LOOKBACK.get(league, POWER_SCOREBOARD_LOOKBACK["default"])
+    return max(base, BACKTEST_SCOREBOARD_LOOKBACK_DAYS)
 
 
 def _scoreboard_lookback_days(league: str) -> int:
@@ -198,26 +214,43 @@ def _scoreboard_lookback_days(league: str) -> int:
 def load_league_completed_games(
     league: str,
     cutoff_date: str,
+    *,
+    for_backtest: bool = False,
 ) -> list[GameTuple]:
     """
     Load deduplicated completed games for a league before cutoff.
 
     Returns list of (home_key, away_key, home_name, away_name, home_score, away_score).
+    When ``for_backtest`` is True, loads the maximum ESPN history available (5 pro
+    seasons or 730-day scoreboard walk) instead of the live-slate default window.
     """
     league = league.lower()
     cutoff = _parse_cutoff(cutoff_date)
     cutoff_day = date(cutoff.year, cutoff.month, cutoff.day)
 
     if league in LARGE_ROSTER_LEAGUES or league in SCOREBOARD_ONLY_LEAGUES:
-        merged = _collect_from_scoreboards(league, cutoff, _scoreboard_lookback_days(league))
+        lookback = (
+            _backtest_scoreboard_lookback_days(league)
+            if for_backtest
+            else _scoreboard_lookback_days(league)
+        )
+        merged = _collect_from_scoreboards(league, cutoff, lookback)
     else:
-        merged = _collect_from_team_schedules(league, cutoff, cutoff_day)
+        season_years = _backtest_season_years(league, cutoff_day) if for_backtest else None
+        merged = _collect_from_team_schedules(
+            league, cutoff, cutoff_day, season_years=season_years
+        )
 
     if league in INTERNATIONAL_TOURNAMENT_LEAGUES:
+        friendlies_lookback = (
+            BACKTEST_SCOREBOARD_LOOKBACK_DAYS
+            if for_backtest
+            else _scoreboard_lookback_days(FRIENDLIES_SUPPLEMENT_LEAGUE)
+        )
         friendlies = _collect_from_scoreboards(
             FRIENDLIES_SUPPLEMENT_LEAGUE,
             cutoff,
-            _scoreboard_lookback_days(FRIENDLIES_SUPPLEMENT_LEAGUE),
+            friendlies_lookback,
         )
         for event_id, entry in friendlies.items():
             merged[f"friendlies:{event_id}"] = entry
@@ -226,6 +259,14 @@ def load_league_completed_games(
         game_tuple
         for _event_date, game_tuple in sorted(merged.values(), key=lambda item: item[0])
     ]
+
+
+def load_league_completed_games_for_backtest(
+    league: str,
+    cutoff_date: str,
+) -> list[GameTuple]:
+    """Maximum completed-game history for walk-forward pick-strategy backtests."""
+    return load_league_completed_games(league, cutoff_date, for_backtest=True)
 
 
 def power_unavailable_reason(

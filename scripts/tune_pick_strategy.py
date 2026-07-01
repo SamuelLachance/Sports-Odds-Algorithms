@@ -55,7 +55,8 @@ def main() -> int:
         tuned[league] = entry
         payload[league] = entry
         print(
-            f"  bets={entry.get('backtest_bets')} "
+            f"  pool={entry.get('backtest_games')} samples={entry.get('backtest_samples')} "
+            f"bets={entry.get('backtest_bets')} "
             f"units={entry.get('backtest_units')} "
             f"roi={entry.get('backtest_roi_pct')}% "
             f"edge>={entry.get('min_edge')} "

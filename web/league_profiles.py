@@ -137,6 +137,10 @@ POWER_SCOREBOARD_LOOKBACK: dict[str, int] = {
     "default": 365,
 }
 
+# Extended history for walk-forward pick-strategy backtests (not used on live slate).
+BACKTEST_PRO_SEASONS = 5
+BACKTEST_SCOREBOARD_LOOKBACK_DAYS = 730
+
 # Minimum American-odds edge vs model before a bet is recommended or tracked.
 MIN_RECOMMENDED_EDGE = 40
 
