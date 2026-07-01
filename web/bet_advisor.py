@@ -23,6 +23,9 @@ SPREAD_COVER_PROB_PER_POINT = 5.0
 # Block home/away soccer picks when projected goals favor the other side by at least this margin.
 SOCCER_PROJECTED_SCORE_CONFLICT_MARGIN = 1.5
 
+# Fractional Kelly cap for pick ranking and backtest gates (25% of full Kelly).
+MAX_KELLY_FRACTION = 0.25
+
 # Win-probability → projected home margin (points), calibrated per league.
 LEAGUE_MARGIN_SCALE: dict[str, float] = {
     "nba": 0.14,
@@ -249,7 +252,7 @@ def kelly_fraction(
     model_prob_pct: float,
     american_odds: int,
     *,
-    max_fraction: float = 1.0,
+    max_fraction: float = MAX_KELLY_FRACTION,
 ) -> float:
     """Kelly criterion stake fraction for a +EV bet (capped)."""
     probability = min(max(model_prob_pct, 0.1), 99.9) / 100.0

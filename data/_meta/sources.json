@@ -1,0 +1,20 @@
+{
+  "updated": "2026-06-30",
+  "live_slate": {
+    "provider": "ESPN public API",
+    "note": "Schedules, scores, and market odds for daily picks"
+  },
+  "supplemental": {
+    "football-data.co.uk": {
+      "leagues": ["epl", "bundesliga", "laliga", "seriea", "ligue1"],
+      "fields": ["results", "closing 1X2 odds (B365/Avg)"],
+      "usage": "soccer meta tuning, pick-strategy walk-forward, calibration samples",
+      "cache": "data/supplemental/football-data-uk/"
+    },
+    "team_data_csv": {
+      "leagues": ["nba", "nhl", "mlb"],
+      "paths": ["nba/team_data/", "nhl/team_data/", "mlb/team_data/"],
+      "usage": "extended history for binary meta tuning and pick backtests only"
+    }
+  }
+}

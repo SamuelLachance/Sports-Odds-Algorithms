@@ -609,6 +609,7 @@ function algoCenter(game) {
   const fav = m.favorite_side === "home" ? home.name : away.name;
   const top = game.top_pick;
   const threeway = m.threeway;
+  const isSoccer = Boolean(threeway);
   const algoLabel = threeway
     ? "1X2 model probabilities"
     : m.algorithm === "Unified"
@@ -657,7 +658,7 @@ function algoCenter(game) {
       ${algoBreakdown(m)}
       ${oddsRow}
     </div>
-    ${game.eligible_for_official_picks === false ? `<div class="game-pick neutral"><strong>Predictions only</strong><span>Soccer 1X2 model and fair prices are shown; official algo picks exclude soccer.</span></div>` : top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong><span>${pickTeamNameLink(top, game.league, game.matchup)} · ${pickMarketLabel(top)} vs model ${pickModelLabel(top)} (+${top.ev_pct != null ? top.ev_pct + "% EV, " : ""}+${top.edge} edge)</span><p>${top.reason}</p></div>` : `<div class="game-pick neutral"><strong>No value flag</strong><span>Model leans ${fav}; book price does not clear +EV threshold today.</span></div>`}
+    ${game.eligible_for_official_picks === false ? `<div class="game-pick neutral"><strong>Official picks paused</strong><span>Walk-forward ROI gate disabled official picks for this league until thresholds recover.</span></div>` : top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong><span>${pickTeamNameLink(top, game.league, game.matchup)} · ${pickMarketLabel(top)} vs model ${pickModelLabel(top)} (+${top.ev_pct != null ? top.ev_pct + "% EV, " : ""}+${top.edge} edge)</span><p>${top.reason}</p></div>` : isSoccer ? `<div class="game-pick neutral"><strong>No +EV 1X2 pick</strong><span>Soccer official picks require home/draw/away moneyline value above tuned thresholds.</span></div>` : `<div class="game-pick neutral"><strong>No value flag</strong><span>Model leans ${fav}; book price does not clear +EV threshold today.</span></div>`}
     <details class="factor-details" open><summary>Algo factor breakdown</summary><div class="factor-list">${factorBars(m.factors)}</div></details>
     ${game.eligible_for_official_picks !== false && (game.recommendations || []).length ? `<div class="rec-list"><h3>All model recommendations</h3>${game.recommendations.map((p) => pickCard({ ...p, league: game.league, league_name: game.league_name, matchup: `${away.name} @ ${home.name}`, matchup_obj: game.matchup, start_time: game.start_time })).join("")}</div>` : ""}
   </section>`;
@@ -1596,7 +1597,7 @@ function renderBettingGameCard(sheet, league) {
       <small>Fav: ${model.favorite_side || "—"} · Blend ${model.blend_layers || "—"} layers</small>
       ${agreement.required ? `<small>Agreement: ${agreement.agreed ? "✓ all layers" : "✗ split"} (${(agreement.value_sides || []).join(", ") || "none"})</small>` : ""}
     </div>
-    ${official && top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong> ${pickTeamNameLink(top, league, matchup)} +${top.edge} edge</div>` : !official ? `<div class="game-pick neutral"><strong>Predictions only</strong> (soccer excluded from official picks)</div>` : `<div class="game-pick neutral"><strong>No official pick</strong> — model/market gap below threshold</div>`}
+    ${official && top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong> ${pickTeamNameLink(top, league, matchup)} +${top.edge} edge</div>` : !official ? `<div class="game-pick neutral"><strong>Official picks paused</strong> — league ROI gate</div>` : `<div class="game-pick neutral"><strong>No official pick</strong> — model/market gap below threshold</div>`}
     <div class="db-bet-links">
       <a href="${teamHref(league, matchup.home?.abbr)}">${home}</a>
       <a href="${teamHref(league, matchup.away?.abbr)}">${away}</a>

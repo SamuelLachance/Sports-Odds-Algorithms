@@ -470,6 +470,8 @@ def _predict_blend_from_power_state(
     away: str,
     teams: dict[str, PowerTeam],
     total_games: list[PowerGame],
+    *,
+    use_sport_layer: bool = True,
 ) -> tuple[float, float, float, float] | None:
     param = fit_logistic_param(total_games, fast=True)
     if param is None:
@@ -478,7 +480,11 @@ def _predict_blend_from_power_state(
     if not power:
         return None
     power_home = float(power["home_win_probability"])
-    sport_home = _run_sport_home_prob(league, cutoff, home, away, [])
+    sport_home = (
+        _run_sport_home_prob(league, cutoff, home, away, [])
+        if use_sport_layer
+        else None
+    )
     blended = _stack_and_calibrate_home_prob(
         league=league, power_home=power_home, sport_home=sport_home
     )
@@ -494,45 +500,62 @@ def _collect_soccer_backtest_samples(
     cutoff: str,
     *,
     min_train: int = BACKTEST_MIN_TRAIN,
+    use_sport_layer: bool = True,
 ) -> list[dict[str, Any]]:
     from web.bet_advisor import soccer_threeway_probs
-    from web.power_model import build_power_ratings, predict_matchup
     from web.soccer_blend import power_threeway_probs
     from web.soccer_meta_model import apply_threeway_calibration, stack_soccer_blend_layers
     from web.soccer_pred_model import build_soccer_model, predict_matchup_from_model
 
     games = load_league_completed_games_for_backtest(league, cutoff)
+    if len(games) > 2200:
+        games = games[-2200:]
+    teams: dict[str, PowerTeam] = {}
+    power_games: list[PowerGame] = []
     samples: list[dict[str, Any]] = []
+
     for index, (home, away, home_name, away_name, hg, ag) in enumerate(games):
         if index < min_train:
+            _append_power_game(
+                teams, power_games, home, away, home_name, away_name, hg, ag
+            )
             continue
-        train = games[:index]
-        teams, _total, param = build_power_ratings(train)
-        power = predict_matchup(teams, param, home, away) if param else None
-        model = build_soccer_model(train, league)
-        soccer = (
-            predict_matchup_from_model(model, home, away)
-            if model and home in model["team_keys"] and away in model["team_keys"]
-            else None
+        prediction = _predict_blend_from_power_state(
+            league,
+            cutoff,
+            home,
+            away,
+            teams,
+            power_games,
+            use_sport_layer=False,
         )
-        if not power or not soccer:
+        if not prediction:
+            _append_power_game(
+                teams, power_games, home, away, home_name, away_name, hg, ag
+            )
             continue
-        power_tw = power_threeway_probs(float(power["home_win_probability"]), league)
-        soccer_tw = (
-            soccer.home_win_probability,
-            soccer.draw_probability,
-            soccer.away_win_probability,
-        )
-        total = (
-            -float(power["home_win_probability"])
-            if float(power["home_win_probability"]) > 50
-            else float(power["home_win_probability"])
-        )
+        _blended_home, _margin, _power_margin, power_home, _sport_home = prediction
+        power_tw = power_threeway_probs(power_home, league)
+        soccer_tw = power_tw
+        if use_sport_layer:
+            model = build_soccer_model(games[:index], league)
+            soccer = (
+                predict_matchup_from_model(model, home, away)
+                if model and home in model["team_keys"] and away in model["team_keys"]
+                else None
+            )
+            if soccer:
+                soccer_tw = (
+                    soccer.home_win_probability,
+                    soccer.draw_probability,
+                    soccer.away_win_probability,
+                )
+        total = -power_home if power_home > 50 else power_home
         legacy_tw = soccer_threeway_probs(total, league)
         stacked = stack_soccer_blend_layers(
             legacy=legacy_tw,
             power=power_tw,
-            soccer_pred=soccer_tw,
+            soccer_pred=soccer_tw if use_sport_layer else None,
             league=league,
         )
         if stacked:
@@ -540,8 +563,7 @@ def _collect_soccer_backtest_samples(
         else:
             home_p, draw_p, away_p = soccer_tw
         home_p, draw_p, away_p = apply_threeway_calibration(home_p, draw_p, away_p, league)
-        game_date = ""
-        odds = soccer_backtest_odds(league, game_date, home, away) or {}
+        odds = soccer_backtest_odds(league, "", home, away) or {}
         samples.append(
             {
                 "blended_home": home_p,
@@ -556,6 +578,9 @@ def _collect_soccer_backtest_samples(
                 "market_away_odds": odds.get("away_odds"),
             }
         )
+        _append_power_game(
+            teams, power_games, home, away, home_name, away_name, hg, ag
+        )
     return samples
 
 
@@ -564,12 +589,17 @@ def _collect_backtest_samples(
     cutoff: str,
     *,
     min_train: int = BACKTEST_MIN_TRAIN,
+    use_sport_layer: bool = True,
 ) -> list[dict[str, Any]]:
     """Walk-forward samples using all available backtest history after min_train."""
     bet_type = official_bet_type(league)
     if bet_type == "soccer_1x2":
-        return _collect_soccer_backtest_samples(league, cutoff, min_train=min_train)
+        return _collect_soccer_backtest_samples(
+            league, cutoff, min_train=min_train, use_sport_layer=use_sport_layer
+        )
     games = load_league_completed_games_for_backtest(league, cutoff)
+    if len(games) > 2200:
+        games = games[-2200:]
     teams: dict[str, PowerTeam] = {}
     power_games: list[PowerGame] = []
     samples: list[dict[str, Any]] = []
@@ -586,7 +616,7 @@ def _collect_backtest_samples(
             )
             continue
         prediction = _predict_blend_from_power_state(
-            league, cutoff, home, away, teams, power_games
+            league, cutoff, home, away, teams, power_games, use_sport_layer=use_sport_layer
         )
         if prediction:
             blended_home, model_margin, power_margin, power_home, sport_home = prediction
@@ -796,7 +826,7 @@ def _refine_thresholds(
             ("min_kelly_pct", 0.0, 6.0, 0.5),
         ]
 
-    for _ in range(2):
+    for _ in range(1):
         improved = True
         while improved:
             improved = False
@@ -823,7 +853,11 @@ def _enforce_positive_roi(
     best: dict[str, Any],
 ) -> dict[str, Any]:
     """Tighten gates until walk-forward ROI is non-negative, or disable official picks."""
-    if best["roi_pct"] >= 0 and float(best["units"]) >= 0:
+    if (
+        best["roi_pct"] >= 0
+        and float(best["units"]) >= 0
+        and best["bets"] >= MIN_TUNE_BETS
+    ):
         th = dict(best["thresholds"])
         th["enabled"] = True
         best["thresholds"] = th
@@ -831,10 +865,10 @@ def _enforce_positive_roi(
 
     current = dict(best["thresholds"])
     best_result = best
-    for edge in (50, 55, 60, 65):
-        for ev in (7.0, 9.0, 11.0, 13.0):
-            for profit in (8.0, 12.0, 16.0, 20.0):
-                for kelly in (2.0, 4.0, 6.0):
+    for edge in (55, 60, 65):
+        for ev in (8.0, 11.0, 14.0):
+            for profit in (10.0, 15.0, 20.0):
+                for kelly in (3.0, 6.0):
                     trial = {
                         **current,
                         "min_edge": float(edge),
@@ -844,7 +878,11 @@ def _enforce_positive_roi(
                         "bet_type": bet_type,
                     }
                     result = _backtest_samples(league, samples, trial, bet_type)
-                    if result["roi_pct"] >= 0 and float(result["units"]) >= 0:
+                    if (
+                        result["roi_pct"] >= 0
+                        and float(result["units"]) >= 0
+                        and result["bets"] >= MIN_TUNE_BETS
+                    ):
                         th = dict(result["thresholds"])
                         th["enabled"] = True
                         result["thresholds"] = th
@@ -853,9 +891,20 @@ def _enforce_positive_roi(
                         best_result = result
 
     th = dict(best_result["thresholds"])
-    th["enabled"] = best_result["roi_pct"] >= 0 and float(best_result["units"]) >= 0
+    th["enabled"] = (
+        best_result["roi_pct"] >= 0
+        and float(best_result["units"]) >= 0
+        and best_result["bets"] >= MIN_TUNE_BETS
+    )
     best_result["thresholds"] = th
     return best_result
+
+
+def _tune_samples(samples: list[dict[str, Any]], max_samples: int = 1200) -> list[dict[str, Any]]:
+    """Cap walk-forward pool for tuning speed while keeping recent history."""
+    if len(samples) <= max_samples:
+        return samples
+    return samples[-max_samples:]
 
 
 def tune_league_thresholds(league: str, cutoff: str) -> dict[str, Any]:
@@ -863,7 +912,9 @@ def tune_league_thresholds(league: str, cutoff: str) -> dict[str, Any]:
     if bet_type == "none":
         return _default_entry("none")
 
-    samples = _collect_backtest_samples(league, cutoff)
+    samples = _tune_samples(
+        _collect_backtest_samples(league, cutoff, use_sport_layer=False)
+    )
     best: dict[str, Any] | None = None
     best_score = float("-inf")
 

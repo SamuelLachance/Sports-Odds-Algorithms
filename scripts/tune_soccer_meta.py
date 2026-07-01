@@ -56,6 +56,7 @@ def _data_depth_metadata(game_count: int) -> dict[str, int]:
         "games_loaded": game_count,
         "pro_seasons": BACKTEST_PRO_SEASONS,
         "scoreboard_days": BACKTEST_SCOREBOARD_LOOKBACK_DAYS,
+        "supplemental": 1,
     }
 
 

@@ -266,7 +266,9 @@ def load_league_completed_games_for_backtest(
     cutoff_date: str,
 ) -> list[GameTuple]:
     """Maximum completed-game history for walk-forward pick-strategy backtests."""
-    return load_league_completed_games(league, cutoff_date, for_backtest=True)
+    from web.supplemental_games import load_supplemental_completed_games
+
+    return load_supplemental_completed_games(league, cutoff_date, for_backtest=True)
 
 
 def power_unavailable_reason(

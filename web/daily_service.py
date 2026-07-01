@@ -19,7 +19,6 @@ def _toronto_today() -> date:
     return datetime.now(TORONTO).date()
 
 from web.bet_advisor import (
-    evaluate_soccer_picks,
     model_moneylines,
     pick_to_dict,
     projections_from_win_probs,
@@ -50,7 +49,11 @@ from web.league_profiles import (  # noqa: E402
 )
 from web.league_readiness import is_league_ready_for_daily_slate  # noqa: E402
 from web.live_data import load_live_team_data, resolve_team  # noqa: E402
-from web.pick_strategy import evaluate_official_picks_for_game, get_pick_thresholds
+from web.pick_strategy import (
+    evaluate_official_picks_for_game,
+    evaluate_soccer_official_picks_for_game,
+    get_pick_thresholds,
+)
 from web.predict_service import FACTOR_LABELS  # noqa: E402
 
 
@@ -208,7 +211,8 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
 
     if is_soccer_league(game.league):
         soccer_pred = blended.get("soccer_pred") or {}
-        picks = evaluate_soccer_picks(
+        picks = evaluate_soccer_official_picks_for_game(
+            league=game.league,
             away_name=game.away_name,
             home_name=game.home_name,
             away_slug=away[1],
@@ -226,10 +230,8 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             or soccer_pred.get("expected_home_goals"),
             expected_away_goals=blended.get("expected_away_goals")
             or soccer_pred.get("expected_away_goals"),
-            min_edge=pick_min_edge,
-            min_ev_pct=pick_thresholds["min_ev_pct"],
         )
-    elif eligible_for_official_picks(game.league):
+    else:
         picks = evaluate_official_picks_for_game(
             league=game.league,
             away_name=game.away_name,
@@ -247,10 +249,8 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             home_prob=ml_home_prob,
             away_prob=ml_away_prob,
         )
-    else:
-        picks = []
 
-    official_picks = picks if eligible_for_official_picks(game.league) else []
+    official_picks = picks
 
     matchup = {
         "away": {"abbr": away[0], "slug": away[1], "name": game.away_name},
@@ -282,7 +282,8 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             "over_under": game.market.over_under,
         },
         "model": model_payload,
-        "eligible_for_official_picks": eligible_for_official_picks(game.league),
+        "eligible_for_official_picks": eligible_for_official_picks(game.league)
+        and get_pick_thresholds(game.league).get("enabled", True),
         "recommendations": [_enrich_pick(pick_to_dict(pick)) for pick in official_picks],
         "top_pick": _enrich_pick(pick_to_dict(official_picks[0])) if official_picks else None,
     }
@@ -464,6 +465,12 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
         for r in recommendations
         if _meets_recommendation_threshold(games_by_event.get(r.get("event_id", ""), {}), r)
     ]
+
+    if qualifying:
+        scores = sorted((r.get("profit_score", 0) for r in qualifying), reverse=True)
+        quartile_index = max(0, int(len(scores) * 0.75) - 1)
+        quartile_cutoff = scores[quartile_index]
+        qualifying = [r for r in qualifying if r.get("profit_score", 0) >= quartile_cutoff]
 
     return {
         "generated_at": generated_at,

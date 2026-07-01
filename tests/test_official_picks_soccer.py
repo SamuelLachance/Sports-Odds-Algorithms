@@ -1,4 +1,4 @@
-"""Official picks exclude soccer while predictions remain on the slate."""
+"""Official soccer 1X2 picks are enabled with league ROI gates."""
 
 from __future__ import annotations
 
@@ -9,6 +9,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from web.league_profiles import MIN_RECOMMENDED_EDGE, eligible_for_official_picks  # noqa: E402
+from web.pick_strategy import evaluate_soccer_official_picks_for_game, get_pick_thresholds  # noqa: E402
 from web.tracking_service import (  # noqa: E402
     _official_tracked_bets,
     build_tracking_response,
@@ -25,10 +26,14 @@ def _soccer_pick(*, edge: float = MIN_RECOMMENDED_EDGE) -> dict:
         "strategy_label": "Value bet",
         "confidence": "medium",
         "edge": edge,
+        "ev_pct": 8.0,
+        "profit_score": 12.0,
+        "kelly_pct": 3.0,
         "model_projection": 120,
         "market_odds": 141,
         "win_probability": 55,
         "reason": "Edge",
+        "bet_type": "soccer_1x2",
         "league": "epl",
         "league_name": "Premier League",
         "event_id": "401999001",
@@ -37,16 +42,14 @@ def _soccer_pick(*, edge: float = MIN_RECOMMENDED_EDGE) -> dict:
 
 
 def test_eligible_for_official_picks() -> None:
-    assert not eligible_for_official_picks("epl")
-    assert not eligible_for_official_picks("mls")
+    assert eligible_for_official_picks("epl")
+    assert eligible_for_official_picks("mls")
     assert eligible_for_official_picks("nba")
     assert eligible_for_official_picks("mlb")
 
 
-def test_soccer_game_keeps_model_clears_official_picks() -> None:
-    """Soccer slate games keep predictions but expose no official pick fields."""
-    picks = [_soccer_pick(edge=55)]
-    official = picks if eligible_for_official_picks("epl") else []
+def test_soccer_game_exposes_official_picks_when_enabled() -> None:
+    pick = _soccer_pick(edge=55)
     game = {
         "league": "epl",
         "eligible_for_official_picks": eligible_for_official_picks("epl"),
@@ -57,21 +60,21 @@ def test_soccer_game_keeps_model_clears_official_picks() -> None:
             "away_win_probability": 25.0,
             "soccer_pred": {"expected_home_goals": 1.6, "expected_away_goals": 1.1},
         },
-        "recommendations": official,
-        "top_pick": official[0] if official else None,
+        "recommendations": [pick],
+        "top_pick": pick,
     }
     assert game["model"]["threeway"] is True
-    assert game["eligible_for_official_picks"] is False
-    assert game["recommendations"] == []
-    assert game["top_pick"] is None
+    assert game["eligible_for_official_picks"] is True
+    assert game["recommendations"]
+    assert game["top_pick"]["bet_type"] == "soccer_1x2"
 
 
-def test_slate_recommendation_rollup_skips_soccer() -> None:
+def test_slate_recommendation_rollup_includes_soccer() -> None:
     soccer_game = {
         "league": "epl",
         "league_name": "Premier League",
         "event_id": "401999001",
-        "eligible_for_official_picks": False,
+        "eligible_for_official_picks": True,
         "recommendations": [_soccer_pick(edge=60)],
         "matchup": {"away": {"name": "Chelsea"}, "home": {"name": "Arsenal"}},
         "start_time": "2026-06-27T19:00Z",
@@ -88,6 +91,7 @@ def test_slate_recommendation_rollup_skips_soccer() -> None:
                 "league": "mlb",
                 "league_name": "MLB",
                 "event_id": "401815712",
+                "bet_type": "moneyline",
             }
         ],
         "matchup": {"away": {"name": "Dodgers"}, "home": {"name": "Pirates"}},
@@ -108,11 +112,11 @@ def test_slate_recommendation_rollup_skips_soccer() -> None:
                 }
             )
 
-    assert len(recommendations) == 1
-    assert recommendations[0]["league"] == "mlb"
+    assert len(recommendations) == 2
+    assert {r["league"] for r in recommendations} == {"epl", "mlb"}
 
 
-def test_record_from_slate_skips_soccer() -> None:
+def test_record_from_slate_tracks_soccer_when_present() -> None:
     store = {"version": 1, "bets": []}
     slate = {
         "date_label": "2026-06-27",
@@ -120,10 +124,11 @@ def test_record_from_slate_skips_soccer() -> None:
         "games": [],
     }
     store = record_from_slate(store, slate)
-    assert store["bets"] == []
+    assert len(store["bets"]) == 1
+    assert store["bets"][0]["league"] == "epl"
 
 
-def test_tracking_rollups_exclude_soccer() -> None:
+def test_tracking_rollups_include_soccer() -> None:
     soccer_bet = {
         "id": "2026-06-01:401999001:home",
         "date": "2026-06-01",
@@ -145,18 +150,42 @@ def test_tracking_rollups_exclude_soccer() -> None:
         "edge": MIN_RECOMMENDED_EDGE,
     }
     store = {"version": 1, "bets": [soccer_bet, mlb_bet]}
-    assert len(_official_tracked_bets(store["bets"])) == 1
+    assert len(_official_tracked_bets(store["bets"])) == 2
     response = build_tracking_response(store)
-    assert response["summary"]["bets"] == 1
-    assert response["summary"]["record"] == "0-1"
+    assert response["summary"]["bets"] == 2
+    assert response["summary"]["record"] == "1-1"
+
+
+def test_evaluate_soccer_official_picks_respects_disabled_league() -> None:
+    thresholds = get_pick_thresholds("epl")
+    if thresholds.get("enabled", True):
+        return
+    picks = evaluate_soccer_official_picks_for_game(
+        league="epl",
+        away_name="Chelsea",
+        home_name="Arsenal",
+        away_slug="che",
+        home_slug="ars",
+        home_prob=62.0,
+        draw_prob=22.0,
+        away_prob=16.0,
+        away_proj=220,
+        draw_proj=280,
+        home_proj=-150,
+        away_market=180,
+        draw_market=260,
+        home_market=120,
+    )
+    assert picks == []
 
 
 def run_all() -> None:
     test_eligible_for_official_picks()
-    test_soccer_game_keeps_model_clears_official_picks()
-    test_slate_recommendation_rollup_skips_soccer()
-    test_record_from_slate_skips_soccer()
-    test_tracking_rollups_exclude_soccer()
+    test_soccer_game_exposes_official_picks_when_enabled()
+    test_slate_recommendation_rollup_includes_soccer()
+    test_record_from_slate_tracks_soccer_when_present()
+    test_tracking_rollups_include_soccer()
+    test_evaluate_soccer_official_picks_respects_disabled_league()
     print("test_official_picks_soccer.py: all tests passed")
 
 

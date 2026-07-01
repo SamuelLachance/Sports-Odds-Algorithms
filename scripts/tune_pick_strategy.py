@@ -29,11 +29,21 @@ CORE_LEAGUES = (
     "ncaabb",
 )
 
+SOCCER_LEAGUES = (
+    "epl",
+    "bundesliga",
+    "laliga",
+    "seriea",
+    "ligue1",
+    "mls",
+)
+
 CATEGORY_ANCHORS = {
     "basketball": "nba",
     "football": "nfl",
     "hockey": "nhl",
     "baseball": "mlb",
+    "soccer": "epl",
 }
 
 
@@ -47,7 +57,7 @@ def main() -> int:
     payload: dict[str, object] = {"default": None, "generated_at": date.today().isoformat()}
 
     tuned: dict[str, dict] = {}
-    for league in CORE_LEAGUES:
+    for league in (*CORE_LEAGUES, *SOCCER_LEAGUES):
         if league not in LEAGUE_PROFILES or not eligible_for_official_picks(league):
             continue
         print(f"Tuning {league} ({official_bet_type(league)})...", flush=True)
@@ -59,6 +69,8 @@ def main() -> int:
             f"bets={entry.get('backtest_bets')} "
             f"units={entry.get('backtest_units')} "
             f"roi={entry.get('backtest_roi_pct')}% "
+            f"dd={entry.get('backtest_max_drawdown')} "
+            f"enabled={entry.get('enabled')} "
             f"edge>={entry.get('min_edge')} "
             f"ev>={entry.get('min_ev_pct')} "
             f"pts>={entry.get('min_spread_point_edge')} "
