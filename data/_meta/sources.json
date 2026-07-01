@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-27",
+  "updated": "2026-07-01",
   "live_slate": {
     "provider": "ESPN public API",
     "note": "Schedules, scores, and market odds for daily picks"
@@ -9,7 +9,8 @@
       "url": "http://api.clubelo.com",
       "leagues": ["epl", "bundesliga", "laliga", "seriea", "ligue1", "mls"],
       "fields": ["team Elo ratings"],
-      "usage": "SharpSoccer live ClubElo layer"
+      "usage": "SharpSoccer live ClubElo layer",
+      "cache": "data/supplemental/clubelo/"
     },
     "football-data.co.uk": {
       "leagues": ["epl", "bundesliga", "laliga", "seriea", "ligue1"],
@@ -20,8 +21,14 @@
     "mlb_stats_api": {
       "url": "https://statsapi.mlb.com/api/v1",
       "leagues": ["mlb"],
-      "fields": ["season standings", "runs per game", "win%"],
-      "usage": "SharpBaseball live enrichment layer"
+      "fields": ["season standings", "runs per game", "win%", "probable pitchers"],
+      "usage": "SharpBaseball live enrichment + pitcher layer"
+    },
+    "nhl_web_api": {
+      "url": "https://api-web.nhle.com/v1",
+      "leagues": ["nhl"],
+      "fields": ["team save rate"],
+      "usage": "HockeyPoisson goalie xG adjustment"
     },
     "team_data_csv": {
       "leagues": ["nba", "nhl", "mlb"],

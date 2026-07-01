@@ -188,6 +188,8 @@ def predict_matchup_from_model(
     model: dict[str, Any],
     home_abbr: str,
     away_abbr: str,
+    *,
+    use_goalie_edge: bool = False,
 ) -> dict[str, float | str] | None:
     home = home_abbr.lower()
     away = away_abbr.lower()
@@ -196,6 +198,15 @@ def predict_matchup_from_model(
         return None
 
     home_xg, away_xg = calculate_expected_goals(metrics[home], metrics[away])
+    league = str(model.get("league") or "nhl").lower()
+    if use_goalie_edge and league == "nhl":
+        from web.nhl_goalie_edge import goalie_xg_adjustment
+
+        adjustment = goalie_xg_adjustment(home, away)
+        if adjustment:
+            home_mult, away_mult = adjustment
+            home_xg = round(home_xg * home_mult, 2)
+            away_xg = round(away_xg * away_mult, 2)
     probs = calculate_win_probability(home_xg, away_xg)
     home_win_prob = probs.home_win * 100.0
 
@@ -260,7 +271,9 @@ def run_hockey_pred_model(
     if not context:
         return None
 
-    prediction = predict_matchup_from_model(context, home_abbr, away_abbr)
+    prediction = predict_matchup_from_model(
+        context, home_abbr, away_abbr, use_goalie_edge=league.lower() == "nhl"
+    )
     if not prediction:
         return None
 
@@ -272,7 +285,7 @@ def run_hockey_pred_model(
 
     return {
         "algorithm": "HockeyPoisson",
-        "source": "hockey-predictions",
+        "source": "hockey-predictions+NHL-goalie" if league.lower() == "nhl" else "hockey-predictions",
         "home_win_probability": prediction["home_win_probability"],
         "away_win_probability": prediction["away_win_probability"],
         "expected_home_goals": prediction["expected_home_goals"],

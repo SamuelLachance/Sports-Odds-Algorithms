@@ -64,7 +64,38 @@ def _with_db_rating_layer(
     away_slug: str | None,
     home_name: str | None,
     away_name: str | None,
+    home_espn_id: str | None = None,
+    away_espn_id: str | None = None,
 ) -> dict[str, Any]:
+    if not is_soccer_league(league) and home_espn_id and away_espn_id:
+        from web.availability_signals import (
+            availability_home_prob_shift,
+            fetch_availability_snapshot,
+        )
+
+        snapshot = fetch_availability_snapshot(
+            league,
+            home_espn_id=home_espn_id,
+            away_espn_id=away_espn_id,
+        )
+        shift = availability_home_prob_shift(snapshot)
+        if abs(shift) >= 0.05:
+            home_prob = layer_home_win_probability(result)
+            if home_prob is not None:
+                adjusted = min(max(home_prob + shift, 5.0), 95.0)
+                total, win_prob = home_win_prob_to_total_score(adjusted)
+                result = dict(result)
+                result["availability"] = {
+                    "shift_pp": shift,
+                    "home_injuries": snapshot.home_injuries,
+                    "away_injuries": snapshot.away_injuries,
+                    "sources": snapshot.sources or [],
+                }
+                result["win_probability"] = round(win_prob, 2)
+                result["total_score"] = round(total, 2)
+                result["favorite_side"] = "home" if total <= 0 else "away"
+                if result.get("blended_home_win_probability") is not None:
+                    result["blended_home_win_probability"] = round(adjusted, 2)
     if home_slug and away_slug:
         result = apply_db_rating_blend(
             result,
@@ -76,6 +107,8 @@ def _with_db_rating_layer(
             away_slug=away_slug,
             home_name=home_name,
             away_name=away_name,
+            home_espn_id=home_espn_id,
+            away_espn_id=away_espn_id,
         )
     if is_soccer_league(league):
         return result
@@ -213,6 +246,8 @@ def _run_sport_pred_model(
             away_abbr,
             home_name=home_name,
             away_name=away_name,
+            home_espn_id=home_espn_id,
+            away_espn_id=away_espn_id,
         )
         return ("soccer_pred", payload) if payload else (None, None)
     return None, None
@@ -666,6 +701,8 @@ def blend_predictions(
             away_slug=away_slug,
             home_name=home_name,
             away_name=away_name,
+            home_espn_id=home_espn_id,
+            away_espn_id=away_espn_id,
         )
 
     legacy_home = total_score_to_home_win_prob(legacy_total_score)
@@ -724,6 +761,8 @@ def blend_predictions(
             away_slug=away_slug,
             home_name=home_name,
             away_name=away_name,
+            home_espn_id=home_espn_id,
+            away_espn_id=away_espn_id,
         )
 
     weight_sum = legacy_weight + power_weight

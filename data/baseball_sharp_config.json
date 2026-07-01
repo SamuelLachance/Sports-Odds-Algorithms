@@ -1,10 +1,11 @@
 {
   "mlb": {
     "signal_weights": {
-      "elo": 0.32,
-      "pyth": 0.22,
-      "form": 0.13,
-      "mlb_api": 0.28,
+      "elo": 0.28,
+      "pyth": 0.18,
+      "form": 0.1,
+      "mlb_api": 0.22,
+      "pitcher": 0.17,
       "rest": 0.05
     },
     "prob_shrink": 0.86,

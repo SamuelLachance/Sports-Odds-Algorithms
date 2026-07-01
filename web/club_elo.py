@@ -4,11 +4,14 @@ from __future__ import annotations
 
 import json
 import urllib.request
+from datetime import date
 from functools import lru_cache
+from pathlib import Path
 from typing import Any
 
 USER_AGENT = "Sports-Odds-Algorithms/2.0"
 CLUB_ELO_API = "http://api.clubelo.com"
+CACHE_DIR = Path(__file__).resolve().parent.parent / "data" / "supplemental" / "clubelo"
 
 # ESPN abbr -> ClubElo team slug (http://clubelo.com/{slug})
 CLUB_ELO_SLUGS: dict[str, dict[str, str]] = {
@@ -180,6 +183,17 @@ def _fetch_json(url: str) -> Any:
 @lru_cache(maxsize=256)
 def fetch_team_elo(club_slug: str) -> float | None:
     """Latest ClubElo rating for a team slug (e.g. Arsenal)."""
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    cache_path = CACHE_DIR / f"{club_slug.lower()}.json"
+    today = date.today().isoformat()
+    if cache_path.is_file():
+        try:
+            cached = json.loads(cache_path.read_text(encoding="utf-8"))
+            if cached.get("date") == today and cached.get("elo") is not None:
+                return float(cached["elo"])
+        except (json.JSONDecodeError, OSError, TypeError, ValueError):
+            pass
+
     payload = _fetch_json(f"{CLUB_ELO_API}/{club_slug}")
     if not payload or not isinstance(payload, list):
         return None
@@ -189,7 +203,12 @@ def fetch_team_elo(club_slug: str) -> float | None:
         elo = row.get("Elo")
         if elo is not None:
             try:
-                return float(elo)
+                rating = float(elo)
+                cache_path.write_text(
+                    json.dumps({"date": today, "elo": rating}, indent=2),
+                    encoding="utf-8",
+                )
+                return rating
             except (TypeError, ValueError):
                 continue
     return None

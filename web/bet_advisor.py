@@ -303,6 +303,10 @@ def enrich_pick_profit_metrics(pick: BetPick) -> BetPick:
     )
     pick.extra["kelly_pct"] = round(kelly * 100.0, 2)
     pick.extra["expected_units"] = round(expected_units_per_bet(prob, odds), 4)
+    if pick.market_implied_prob is not None:
+        pick.extra["model_market_gap_pp"] = round(
+            pick.win_probability - pick.market_implied_prob, 2
+        )
     return pick
 
 
@@ -721,6 +725,7 @@ def pick_to_dict(pick: BetPick) -> dict[str, Any]:
         "market_odds": pick.market_odds,
         "win_probability": round(pick.win_probability, 2),
         "market_implied_prob": pick.market_implied_prob,
+        "model_market_gap_pp": pick.extra.get("model_market_gap_pp"),
         "reason": pick.reason,
         "bet_type": pick.bet_type,
     }

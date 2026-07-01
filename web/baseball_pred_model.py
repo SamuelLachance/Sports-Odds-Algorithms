@@ -195,6 +195,7 @@ def _weighted_margin(
     away_abbr: str,
     season: int,
     use_api: bool = True,
+    game_date: str | None = None,
 ) -> tuple[float, dict[str, float]]:
     cfg = _league_sharp_config(league)
     weights = cfg.get("signal_weights") or {
@@ -203,6 +204,7 @@ def _weighted_margin(
         "form": 0.15,
         "mlb_api": 0.2,
         "rest": 0.05,
+        "pitcher": 0.12,
     }
     home_adv = float(cfg.get("home_elo_adv", 24.0)) / 70.0
 
@@ -214,12 +216,21 @@ def _weighted_margin(
         if edge is not None:
             mlb_api_signal = edge / 6.0
 
+    pitcher_signal = 0.0
+    if use_api and league == "mlb" and game_date:
+        from web.mlb_pitcher_edge import pitcher_matchup_margin
+
+        pitcher_edge = pitcher_matchup_margin(home_abbr, away_abbr, game_date=game_date)
+        if pitcher_edge is not None:
+            pitcher_signal = pitcher_edge
+
     components = {
         "elo": ELO_MARGIN_WEIGHT * signals["elo"],
         "pyth": PYTH_MARGIN_WEIGHT * signals["pyth"],
         "form": FORM_MARGIN_WEIGHT * signals["form"],
         "rest": FORM_MARGIN_WEIGHT * signals["rest"],
         "mlb_api": 5.0 * mlb_api_signal,
+        "pitcher": 6.0 * pitcher_signal,
     }
 
     margin = (
@@ -228,6 +239,7 @@ def _weighted_margin(
         + weights.get("form", 0.15) * components["form"]
         + weights.get("rest", 0.05) * components["rest"]
         + weights.get("mlb_api", 0.0) * components["mlb_api"]
+        + weights.get("pitcher", 0.0) * components["pitcher"]
         + home_adv
     )
     return margin, components
@@ -324,6 +336,7 @@ def predict_matchup_from_model(
     away_key: str,
     *,
     season: int | None = None,
+    game_date: str | None = None,
 ) -> dict[str, float | str] | None:
     home = home_key.lower()
     away = away_key.lower()
@@ -352,6 +365,7 @@ def predict_matchup_from_model(
         home_abbr=home,
         away_abbr=away,
         season=season or 2025,
+        game_date=game_date,
     )
     param = float(model["param"])
     prob = 1.0 / (1.0 + math.exp(-margin / param))
@@ -373,6 +387,7 @@ def predict_matchup_from_model(
         "predicted_away_runs": round(predicted_away_runs, 1),
         "param": round(param, 3),
         "mlb_api_component": round(components.get("mlb_api", 0.0), 3),
+        "pitcher_component": round(components.get("pitcher", 0.0), 3),
         "rest_component": round(components.get("rest", 0.0), 3),
     }
 
@@ -415,6 +430,14 @@ def get_baseball_pred_context(league: str, cutoff_date: str) -> dict[str, Any] |
     return build_baseball_model(games, league)
 
 
+def _cutoff_to_iso(cutoff_date: str) -> str | None:
+    parts = cutoff_date.split("-")
+    if len(parts) != 3:
+        return None
+    month, day, year = int(parts[0]), int(parts[1]), int(parts[2])
+    return f"{year:04d}-{month:02d}-{day:02d}"
+
+
 def _season_from_cutoff(cutoff_date: str, league: str) -> int:
     from datetime import date
 
@@ -437,8 +460,9 @@ def run_baseball_pred_model(
         return None
 
     season = _season_from_cutoff(cutoff_date, league)
+    game_date = _cutoff_to_iso(cutoff_date)
     prediction = predict_matchup_from_model(
-        context, home_abbr, away_abbr, season=season
+        context, home_abbr, away_abbr, season=season, game_date=game_date
     )
     if not prediction:
         return None
@@ -452,6 +476,7 @@ def run_baseball_pred_model(
     sources = ["ESPN", "SharpBaseball-Elo"]
     if league == "mlb":
         sources.append("MLB-StatsAPI")
+        sources.append("MLB-probable-pitcher")
 
     return {
         "algorithm": "SharpBaseball",

@@ -144,6 +144,7 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
                     "consensus_odds": pick.get("consensus_odds"),
                     "consensus_label": pick.get("consensus_label"),
                     "model_margin": pick.get("model_margin"),
+                    "model_market_gap_pp": pick.get("model_market_gap_pp"),
                 }
             )
             continue
@@ -176,6 +177,7 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
             "consensus_odds": pick.get("consensus_odds"),
             "consensus_label": pick.get("consensus_label"),
             "model_margin": pick.get("model_margin"),
+            "model_market_gap_pp": pick.get("model_market_gap_pp"),
             "status": "pending",
             "units": 0.0,
             "stake_units": 1.0,
