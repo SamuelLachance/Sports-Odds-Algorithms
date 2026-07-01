@@ -1736,10 +1736,12 @@
       "consensus_odds": null,
       "consensus_label": null,
       "model_margin": null,
-      "status": "pending",
-      "units": 0.0,
+      "status": "loss",
+      "units": -1.0,
       "stake_units": 1.0,
-      "recorded_at": "2026-06-26T21:02:14.812360+00:00"
+      "recorded_at": "2026-06-26T21:02:14.812360+00:00",
+      "graded_at": "2026-07-01T04:11:51.511793+00:00",
+      "final_score": "5\u20131"
     },
     {
       "id": "2026-06-26:760479:home",
@@ -1767,10 +1769,12 @@
       "consensus_odds": null,
       "consensus_label": null,
       "model_margin": null,
-      "status": "pending",
-      "units": 0.0,
+      "status": "loss",
+      "units": -1.0,
       "stake_units": 1.0,
-      "recorded_at": "2026-06-26T21:02:14.812360+00:00"
+      "recorded_at": "2026-06-26T21:02:14.812360+00:00",
+      "graded_at": "2026-07-01T04:11:51.594707+00:00",
+      "final_score": "1\u20130"
     },
     {
       "id": "2026-06-26:760477:draw",
@@ -1798,10 +1802,12 @@
       "consensus_odds": null,
       "consensus_label": null,
       "model_margin": null,
-      "status": "pending",
-      "units": 0.0,
+      "status": "loss",
+      "units": -1.0,
       "stake_units": 1.0,
-      "recorded_at": "2026-06-26T21:50:00.161309+00:00"
+      "recorded_at": "2026-06-26T21:50:00.161309+00:00",
+      "graded_at": "2026-07-01T04:11:51.647524+00:00",
+      "final_score": "5\u20131"
     },
     {
       "id": "2026-06-27:401815935:home",
@@ -2064,11 +2070,13 @@
       "consensus_odds": null,
       "consensus_label": null,
       "model_margin": null,
-      "status": "pending",
-      "units": 0.0,
+      "status": "loss",
+      "units": -1.0,
       "stake_units": 1.0,
       "recorded_at": "2026-06-30T07:56:31.904072+00:00",
-      "ev_pct": 24.26
+      "ev_pct": 24.26,
+      "graded_at": "2026-07-01T04:11:51.721795+00:00",
+      "final_score": "0\u20138"
     },
     {
       "id": "2026-06-30:401857321:away:spread",
@@ -2098,10 +2106,12 @@
       "consensus_odds": -110,
       "consensus_label": "+6.5 (-110)",
       "model_margin": -3.21,
-      "status": "pending",
-      "units": 0.0,
+      "status": "loss",
+      "units": -1.0,
       "stake_units": 1.0,
-      "recorded_at": "2026-06-30T22:28:41.387564+00:00"
+      "recorded_at": "2026-06-30T22:28:41.387564+00:00",
+      "graded_at": "2026-07-01T04:11:51.794673+00:00",
+      "final_score": "85\u201393"
     },
     {
       "id": "2026-06-30:401815976:away",
@@ -2164,33 +2174,35 @@
       "consensus_odds": null,
       "consensus_label": null,
       "model_margin": null,
-      "status": "pending",
-      "units": 0.0,
+      "status": "loss",
+      "units": -1.0,
       "stake_units": 1.0,
-      "recorded_at": "2026-06-30T22:28:41.387564+00:00"
+      "recorded_at": "2026-06-30T22:28:41.387564+00:00",
+      "graded_at": "2026-07-01T04:11:52.098019+00:00",
+      "final_score": "8\u20131"
     },
     {
-      "id": "2026-06-30:401815980:away",
-      "date": "2026-06-30",
-      "event_id": "401815980",
-      "league": "mlb",
-      "league_name": "MLB",
+      "id": "2026-07-01:760495:away:soccer_1x2",
+      "date": "2026-07-01",
+      "event_id": "760495",
+      "league": "worldcup",
+      "league_name": "FIFA World Cup",
       "side": "away",
-      "team_name": "Detroit Tigers",
-      "team_slug": "detroit-tigers",
-      "team_abbr": "det",
-      "matchup": "Detroit Tigers @ New York Yankees",
-      "start_time": "2026-07-01T17:35Z",
-      "strategy": "model_favorite",
-      "strategy_label": "Model favorite",
-      "confidence": "high",
-      "edge": 29.3,
-      "ev_pct": 15.43,
-      "model_projection": -111,
-      "market_odds": 119,
-      "win_probability": 52.71,
-      "reason": "Model makes Detroit Tigers a -111 favorite (52.7% win) but the book offers underdog odds +119 (fair underdog +90, +15.4% EV, +29 American edge).",
-      "bet_type": "moneyline",
+      "team_name": "Congo DR",
+      "team_slug": "congo-dr",
+      "team_abbr": "cod",
+      "matchup": "Congo DR @ England",
+      "start_time": "2026-07-01T16:00Z",
+      "strategy": "value",
+      "strategy_label": "Value bet",
+      "confidence": "medium",
+      "edge": 724.0,
+      "ev_pct": 125.81,
+      "model_projection": 476,
+      "market_odds": 1200,
+      "win_probability": 17.37,
+      "reason": "Sportsbook offers +1200 vs model fair +476 on Congo DR (+724 American edge, +125.8% EV).",
+      "bet_type": "soccer_1x2",
       "spread_line": null,
       "spread_odds": null,
       "consensus_spread": null,
@@ -2200,7 +2212,7 @@
       "status": "pending",
       "units": 0.0,
       "stake_units": 1.0,
-      "recorded_at": "2026-07-01T00:32:19.738297+00:00"
+      "recorded_at": "2026-07-01T04:11:51.453795+00:00"
     }
   ]
 }
