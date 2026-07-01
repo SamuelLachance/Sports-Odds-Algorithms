@@ -216,6 +216,24 @@ def _sport_pred_unavailable_reason(
     return "Sport-specific model unavailable."
 
 
+def _run_nba_ml_layer(
+    cutoff_date: str,
+    home_abbr: str,
+    away_abbr: str,
+) -> dict[str, Any] | None:
+    """NBA XGBoost layer (opt-in via NBA_ML_ENABLED). Safe no-op otherwise."""
+    from web.nba_ml.config import nba_ml_enabled
+
+    if not nba_ml_enabled():
+        return None
+    try:
+        from web.nba_ml.predict import predict_nba
+
+        return predict_nba(home_abbr, away_abbr, cutoff_date=cutoff_date)
+    except Exception:  # noqa: BLE001 - never break the blend on ML failure
+        return None
+
+
 def _run_sport_pred_model(
     league: str,
     cutoff_date: str,
@@ -227,6 +245,10 @@ def _run_sport_pred_model(
 ) -> tuple[str | None, dict[str, Any] | None]:
     """Return (payload_key, payload) for sport-specific third layer."""
     if is_basketball_league(league):
+        if league.lower() == "nba":
+            ml_payload = _run_nba_ml_layer(cutoff_date, home_abbr, away_abbr)
+            if ml_payload:
+                return ("basketball_pred", ml_payload)
         payload = run_basketball_pred_model(league, cutoff_date, home_abbr, away_abbr)
         return ("basketball_pred", payload) if payload else (None, None)
     if is_baseball_league(league):

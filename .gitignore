@@ -29,6 +29,15 @@ venv/
 .mypy_cache/
 .ruff_cache/
 
+# Build/data caches and logs
+.build-cache/
+*.log
+
+# NBA ML derived feature matrix (rebuildable from the odds table via
+# scripts/train_nba_ml.py); the odds CSV + code are the source of truth.
+data/supplemental/nba-ml/feature_matrix.csv
+data/supplemental/nba-ml/feature_matrix.parquet
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db

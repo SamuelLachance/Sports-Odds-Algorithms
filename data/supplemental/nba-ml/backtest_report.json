@@ -1,0 +1,159 @@
+{
+  "generated_at": "2026-07-01T20:29:35.421560Z",
+  "dataset_rows": 13112,
+  "date_range": [
+    "2016-10-25",
+    "2026-06-13"
+  ],
+  "oos_seasons": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "ats": {
+    "bets": 2781,
+    "wins": 1415,
+    "losses": 1332,
+    "pushes": 34,
+    "win_pct": 51.51,
+    "units": -40.71,
+    "roi_pct": -1.46
+  },
+  "moneyline": {
+    "bets": 5587,
+    "wins": 2253,
+    "losses": 3334,
+    "pushes": 0,
+    "win_pct": 40.33,
+    "units": -174.92,
+    "roi_pct": -3.13
+  },
+  "clv": {
+    "n_with_open": 1322,
+    "mean_clv_points": -0.344,
+    "pct_positive_clv": 34.3
+  },
+  "calibration": {
+    "model_log_loss": 0.6216,
+    "model_brier": 0.214,
+    "market_log_loss": 0.604,
+    "market_brier": 0.2084,
+    "reliability": [
+      {
+        "bin": "0.0-0.1",
+        "n": 100,
+        "pred_mean": 0.0502,
+        "actual_rate": 0.12
+      },
+      {
+        "bin": "0.1-0.2",
+        "n": 190,
+        "pred_mean": 0.1626,
+        "actual_rate": 0.1579
+      },
+      {
+        "bin": "0.2-0.3",
+        "n": 870,
+        "pred_mean": 0.2393,
+        "actual_rate": 0.308
+      },
+      {
+        "bin": "0.3-0.4",
+        "n": 564,
+        "pred_mean": 0.3448,
+        "actual_rate": 0.3014
+      },
+      {
+        "bin": "0.4-0.5",
+        "n": 1658,
+        "pred_mean": 0.4368,
+        "actual_rate": 0.421
+      },
+      {
+        "bin": "0.5-0.6",
+        "n": 1674,
+        "pred_mean": 0.5394,
+        "actual_rate": 0.5406
+      },
+      {
+        "bin": "0.6-0.7",
+        "n": 1607,
+        "pred_mean": 0.6552,
+        "actual_rate": 0.6546
+      },
+      {
+        "bin": "0.7-0.8",
+        "n": 1870,
+        "pred_mean": 0.752,
+        "actual_rate": 0.7455
+      },
+      {
+        "bin": "0.8-0.9",
+        "n": 483,
+        "pred_mean": 0.8488,
+        "actual_rate": 0.8323
+      },
+      {
+        "bin": "0.9-1.0",
+        "n": 142,
+        "pred_mean": 0.965,
+        "actual_rate": 0.9155
+      }
+    ]
+  },
+  "folds": [
+    {
+      "test_season": 2019,
+      "train_games": 3808,
+      "test_games": 971,
+      "ats_ev_threshold": 0.09,
+      "ml_ev_threshold": 0.07
+    },
+    {
+      "test_season": 2020,
+      "train_games": 4779,
+      "test_games": 1253,
+      "ats_ev_threshold": 0.09,
+      "ml_ev_threshold": 0.05
+    },
+    {
+      "test_season": 2021,
+      "train_games": 6032,
+      "test_games": 1389,
+      "ats_ev_threshold": 0.09,
+      "ml_ev_threshold": 0.09
+    },
+    {
+      "test_season": 2022,
+      "train_games": 7421,
+      "test_games": 1385,
+      "ats_ev_threshold": 0.09,
+      "ml_ev_threshold": 0.0
+    },
+    {
+      "test_season": 2023,
+      "train_games": 8806,
+      "test_games": 1383,
+      "ats_ev_threshold": 0.07,
+      "ml_ev_threshold": 0.02
+    },
+    {
+      "test_season": 2024,
+      "train_games": 10189,
+      "test_games": 1390,
+      "ats_ev_threshold": 0.07,
+      "ml_ev_threshold": 0.02
+    },
+    {
+      "test_season": 2025,
+      "train_games": 11579,
+      "test_games": 1387,
+      "ats_ev_threshold": 0.05,
+      "ml_ev_threshold": 0.05
+    }
+  ]
+}
