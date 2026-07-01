@@ -21,6 +21,8 @@ from web.season_games import load_league_completed_games_for_backtest  # noqa: E
 from web.soccer_blend import power_threeway_probs  # noqa: E402
 from web.soccer_meta_model import (  # noqa: E402
     META_WEIGHTS_PATH,
+    STAT_LAYER_KEYS,
+    _blend_sharp_sample,
     blend_weighted_threeway,
     fit_blend_weights_grid,
     fit_stat_weights_grid,
@@ -29,10 +31,8 @@ from web.soccer_meta_model import (  # noqa: E402
     outcome_from_score,
 )
 from web.soccer_pred_model import (  # noqa: E402
-    _dc_threeway,
-    _elo_threeway,
-    _pi_threeway,
     build_soccer_model,
+    compute_sharp_stat_layers,
     predict_matchup_from_model,
 )
 
@@ -75,16 +75,17 @@ def _collect_stat_samples(
             continue
         if home not in model["team_keys"] or away not in model["team_keys"]:
             continue
-        elo = _elo_threeway(model["elo"], home, away, league)
-        pi = _pi_threeway(model["pi"], home, away)
-        dc = _dc_threeway(
-            model["attack"],
-            model["defence"],
-            model["home_adv"],
-            home,
-            away,
-        )[:3]
-        samples.append((elo, pi, dc, outcome_from_score(home_goals, away_goals)))
+        layers, _lam, _mu = compute_sharp_stat_layers(model, home, away)
+        samples.append(
+            (
+                layers["elo"],
+                layers["pi"],
+                layers["dc"],
+                layers["form"],
+                layers["club_elo"],
+                outcome_from_score(home_goals, away_goals),
+            )
+        )
     return samples
 
 
@@ -137,10 +138,15 @@ def tune_league(league: str, cutoff: str) -> dict | None:
 
     stat_weights = fit_stat_weights_grid(stat_samples)
     temp_samples = []
-    for elo, pi, dc, outcome in stat_samples:
-        home, draw, away = blend_weighted_threeway(
-            [elo, pi, dc], list(stat_weights)
-        )
+    for elo, pi, dc, form, club, outcome in stat_samples:
+        layers = {
+            "elo": elo,
+            "pi": pi,
+            "dc": dc,
+            "form": form,
+            "club_elo": club,
+        }
+        home, draw, away = _blend_sharp_sample(layers, stat_weights)
         temp_samples.append((home, draw, away, outcome))
     temperature = fit_temperature_grid(temp_samples)
 
@@ -153,10 +159,19 @@ def tune_league(league: str, cutoff: str) -> dict | None:
 
     baseline = sum(
         multiclass_log_loss(
-            *blend_weighted_threeway([elo, pi, dc], [1 / 3, 1 / 3, 1 / 3]),
+            *_blend_sharp_sample(
+                {
+                    "elo": elo,
+                    "pi": pi,
+                    "dc": dc,
+                    "form": form,
+                    "club_elo": club,
+                },
+                {key: 1.0 / 5.0 for key in STAT_LAYER_KEYS},
+            ),
             outcome,
         )
-        for elo, pi, dc, outcome in stat_samples
+        for elo, pi, dc, form, club, outcome in stat_samples
     ) / len(stat_samples)
 
     from web.soccer_meta_model import temperature_scale
@@ -168,11 +183,7 @@ def tune_league(league: str, cutoff: str) -> dict | None:
     tuned_stat_loss /= len(temp_samples)
 
     entry = {
-        "stat": {
-            "elo": round(stat_weights[0], 3),
-            "pi": round(stat_weights[1], 3),
-            "dc": round(stat_weights[2], 3),
-        },
+        "stat": {key: round(stat_weights[key], 3) for key in STAT_LAYER_KEYS},
         "temperature": round(temperature, 3),
         "log_loss_baseline_equal": round(baseline, 4),
         "log_loss_tuned_stat": round(tuned_stat_loss, 4),
@@ -221,18 +232,23 @@ def main() -> int:
             print("  skipped (insufficient games)", flush=True)
 
     if tuned_leagues:
-        elos = [entry["stat"]["elo"] for entry in payload.values() if isinstance(entry, dict) and "stat" in entry]
-        pis = [entry["stat"]["pi"] for entry in payload.values() if isinstance(entry, dict) and "stat" in entry]
-        dcs = [entry["stat"]["dc"] for entry in payload.values() if isinstance(entry, dict) and "stat" in entry]
-        temps = [entry["temperature"] for entry in payload.values() if isinstance(entry, dict) and "temperature" in entry]
+        stat_avgs: dict[str, list[float]] = {key: [] for key in STAT_LAYER_KEYS}
+        temps = []
+        for entry in payload.values():
+            if not isinstance(entry, dict) or "stat" not in entry:
+                continue
+            for key in STAT_LAYER_KEYS:
+                if key in entry["stat"]:
+                    stat_avgs[key].append(float(entry["stat"][key]))
+            if "temperature" in entry:
+                temps.append(float(entry["temperature"]))
         payload["default"] = {
             "stat": {
-                "elo": round(sum(elos) / len(elos), 3),
-                "pi": round(sum(pis) / len(pis), 3),
-                "dc": round(sum(dcs) / len(dcs), 3),
+                key: round(sum(values) / len(values), 3) if values else 0.0
+                for key, values in stat_avgs.items()
             },
             "blend": {"legacy": 0.05, "power": 0.15, "soccer_pred": 0.80},
-            "temperature": round(sum(temps) / len(temps), 3),
+            "temperature": round(sum(temps) / len(temps), 3) if temps else 1.0,
             "data_depth": {
                 "pro_seasons": BACKTEST_PRO_SEASONS,
                 "scoreboard_days": BACKTEST_SCOREBOARD_LOOKBACK_DAYS,

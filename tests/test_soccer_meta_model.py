@@ -42,7 +42,7 @@ def test_fit_stat_weights_prefers_informative_layer() -> None:
     for _ in range(10):
         samples.append(((10.0, 20.0, 70.0), (40.0, 30.0, 30.0), (80.0, 15.0, 5.0), OUTCOME_AWAY))
     weights = fit_stat_weights_grid(samples)
-    assert weights[0] > weights[2]
+    assert weights["elo"] > weights["dc"]
 
 
 def test_fit_temperature_reduces_overconfidence_loss() -> None:

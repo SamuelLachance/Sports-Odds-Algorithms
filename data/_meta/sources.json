@@ -1,14 +1,20 @@
 {
-  "updated": "2026-06-30",
+  "updated": "2026-06-27",
   "live_slate": {
     "provider": "ESPN public API",
     "note": "Schedules, scores, and market odds for daily picks"
   },
   "supplemental": {
+    "clubelo.com": {
+      "url": "http://api.clubelo.com",
+      "leagues": ["epl", "bundesliga", "laliga", "seriea", "ligue1", "mls"],
+      "fields": ["team Elo ratings"],
+      "usage": "SharpSoccer live ClubElo layer"
+    },
     "football-data.co.uk": {
       "leagues": ["epl", "bundesliga", "laliga", "seriea", "ligue1"],
       "fields": ["results", "closing 1X2 odds (B365/Avg)"],
-      "usage": "soccer meta tuning, pick-strategy walk-forward, calibration samples",
+      "usage": "SharpSoccer walk-forward calibration and pick-strategy backtests",
       "cache": "data/supplemental/football-data-uk/"
     },
     "mlb_stats_api": {

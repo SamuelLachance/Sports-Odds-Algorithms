@@ -1,17 +1,18 @@
-"""Football-predictor style Elo + Pi-ratings + Dixon-Coles 1X2 probabilities.
+"""SharpSoccer multi-signal 1X2 model (Elo + Pi + Dixon-Coles + form + ClubElo).
 
-Lightweight port of https://github.com/jdgoated1/football-predictor rating core
-(Elo, Pi-rating, Dixon-Coles). Layer weights and temperature are log-loss tuned
-via ``web.soccer_meta_model`` (see ``data/soccer_meta_weights.json``).
+Layers are log-loss tuned via ``web.soccer_meta_model`` (``data/soccer_meta_weights.json``).
+Supplemental football-data.co.uk history enriches walk-forward calibration.
 """
 
 from __future__ import annotations
 
 import math
+from collections import defaultdict, deque
 from dataclasses import dataclass
 from functools import lru_cache
 from typing import Any
 
+from web.club_elo import elo_binary_home_win_pct, get_team_elo_rating, supports_club_elo
 from web.league_profiles import SOCCER_DRAW_BASE, is_soccer_league
 from web.live_data import resolve_team
 from web.season_games import load_league_completed_games
@@ -47,8 +48,8 @@ class SoccerPredResult:
     elo_home: float
     elo_away: float
     pi_expected_gd: float
-    source: str = "football-predictor"
-    algorithm: str = "SoccerRatings"
+    source: str = "SharpSoccer"
+    algorithm: str = "SharpSoccer"
 
 
 GameTuple = tuple[str, str, str, str, int, int]
@@ -95,6 +96,27 @@ def _draw_from_closeness(home_win: float, league: str) -> tuple[float, float, fl
     draw = min(35.0, max(18.0, base_draw + closeness * 8.0))
     scale = (100.0 - draw) / 100.0
     return _normalize_threeway(home_binary * scale, draw, away_binary * scale)
+
+
+class _FormTracker:
+    def __init__(self) -> None:
+        self.recent: dict[str, deque[int]] = defaultdict(lambda: deque(maxlen=5))
+
+    def update(self, home: str, away: str, hg: int, ag: int) -> None:
+        if hg > ag:
+            home_pts, away_pts = 3, 0
+        elif hg < ag:
+            home_pts, away_pts = 0, 3
+        else:
+            home_pts, away_pts = 1, 1
+        self.recent[home].append(home_pts)
+        self.recent[away].append(away_pts)
+
+    def form_score(self, team: str) -> float:
+        points = self.recent.get(team)
+        if not points:
+            return 1.5
+        return sum(points) / len(points)
 
 
 class _EloEngine:
@@ -264,6 +286,7 @@ def build_soccer_model(
 
     elo = _EloEngine()
     pi = _PiRating()
+    form = _FormTracker()
     team_game_counts: dict[str, int] = {key: 0 for key in team_keys}
 
     for home, away, _hn, _an, hg, ag in games:
@@ -271,6 +294,7 @@ def build_soccer_model(
             continue
         elo.update(home, away, hg, ag)
         pi.update(home, away, hg, ag)
+        form.update(home, away, hg, ag)
         team_game_counts[home] += 1
         team_game_counts[away] += 1
 
@@ -281,6 +305,7 @@ def build_soccer_model(
         "team_keys": team_keys,
         "elo": elo,
         "pi": pi,
+        "form": form,
         "attack": attack,
         "defence": defence,
         "home_adv": home_adv,
@@ -331,6 +356,55 @@ def extract_team_soccer_strengths(model: dict[str, Any]) -> dict[str, float]:
     return {key: attack.get(key, 0.0) - defence.get(key, 0.0) for key in keys}
 
 
+def _form_threeway(
+    form: _FormTracker,
+    home: str,
+    away: str,
+    league: str,
+) -> tuple[float, float, float]:
+    diff = form.form_score(home) - form.form_score(away)
+    home_win = min(max(50.0 + diff * 8.0, 5.0), 95.0)
+    return _draw_from_closeness(home_win, league)
+
+
+def _club_elo_threeway(
+    league: str,
+    home: str,
+    away: str,
+) -> tuple[float, float, float] | None:
+    if not supports_club_elo(league):
+        return None
+    home_elo = get_team_elo_rating(league, home)
+    away_elo = get_team_elo_rating(league, away)
+    if home_elo is None or away_elo is None:
+        return None
+    home_win = elo_binary_home_win_pct(home_elo, away_elo)
+    return _draw_from_closeness(home_win, league)
+
+
+def compute_sharp_stat_layers(
+    model: dict[str, Any],
+    home: str,
+    away: str,
+) -> tuple[dict[str, tuple[float, float, float] | None], float, float]:
+    league = model["league"]
+    dc_home, dc_draw, dc_away, lam, mu = _dc_threeway(
+        model["attack"],
+        model["defence"],
+        float(model["home_adv"]),
+        home,
+        away,
+    )
+    layers = {
+        "elo": _elo_threeway(model["elo"], home, away, league),
+        "pi": _pi_threeway(model["pi"], home, away),
+        "dc": (dc_home, dc_draw, dc_away),
+        "form": _form_threeway(model["form"], home, away, league),
+        "club_elo": _club_elo_threeway(league, home, away),
+    }
+    return layers, lam, mu
+
+
 def predict_matchup_from_model(
     model: dict[str, Any],
     home_key: str,
@@ -343,21 +417,23 @@ def predict_matchup_from_model(
         return None
 
     league = model["league"]
-    elo = model["elo"]
-    pi = model["pi"]
-    attack = model["attack"]
-    defence = model["defence"]
-    home_adv = float(model["home_adv"])
-
-    elo_probs = _elo_threeway(elo, home, away, league)
-    pi_probs = _pi_threeway(pi, home, away)
-    dc_home, dc_draw, dc_away, lam, mu = _dc_threeway(attack, defence, home_adv, home, away)
-
+    layers, lam, mu = compute_sharp_stat_layers(model, home, away)
     stat_weights = get_league_meta_config(league)["stat_weights"]
-    home_p, draw_p, away_p = blend_weighted_threeway(
-        [elo_probs, pi_probs, (dc_home, dc_draw, dc_away)],
-        list(stat_weights),
-    )
+
+    active_layers: list[tuple[float, float, float]] = []
+    active_weights: list[float] = []
+    for key in ("elo", "pi", "dc", "form", "club_elo"):
+        triple = layers.get(key)
+        weight = float(stat_weights.get(key, 0.0))
+        if triple is None or weight <= 0:
+            continue
+        active_layers.append(triple)
+        active_weights.append(weight)
+
+    if not active_layers:
+        return None
+
+    home_p, draw_p, away_p = blend_weighted_threeway(active_layers, active_weights)
 
     return SoccerPredResult(
         home_win_probability=round(home_p, 2),
@@ -365,9 +441,10 @@ def predict_matchup_from_model(
         away_win_probability=round(away_p, 2),
         expected_home_goals=round(lam, 2),
         expected_away_goals=round(mu, 2),
-        elo_home=round(elo.rating(home), 1),
-        elo_away=round(elo.rating(away), 1),
-        pi_expected_gd=round(pi.expected_gd(home, away), 2),
+        elo_home=round(model["elo"].rating(home), 1),
+        elo_away=round(model["elo"].rating(away), 1),
+        pi_expected_gd=round(model["pi"].expected_gd(home, away), 2),
+        source="ClubElo+ESPN+football-data",
     )
 
 

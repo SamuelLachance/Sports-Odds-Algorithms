@@ -573,7 +573,7 @@ function algoBreakdown(m) {
         ? ` xG ${soccer.expected_home_goals}-${soccer.expected_away_goals}`
         : "";
     parts.push(
-      `Soccer: ${soccer.home_win_probability}% / ${soccer.draw_probability}% / ${soccer.away_win_probability}%${xg}`,
+      `SharpSoccer: ${soccer.home_win_probability}% / ${soccer.draw_probability}% / ${soccer.away_win_probability}%${xg}`,
     );
   }
   if (dbRating) {
@@ -909,7 +909,7 @@ function ratingSourceLabel(source, layer, year) {
     hockey_poisson: "Poisson xG",
     baseball_elo: "Elo",
     nfelo: "nfelo",
-    soccer_elo: "Soccer Elo",
+    soccer_elo: "SharpSoccer",
     power_ratings: "Power ratings",
   };
   if (key === "model" && layer) {

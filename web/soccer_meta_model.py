@@ -19,6 +19,14 @@ OUTCOME_DRAW = 1
 OUTCOME_AWAY = 2
 
 DEFAULT_STAT_WEIGHTS: tuple[float, float, float] = (1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0)
+STAT_LAYER_KEYS = ("elo", "pi", "dc", "form", "club_elo")
+DEFAULT_SHARP_STAT_WEIGHTS: dict[str, float] = {
+    "elo": 0.35,
+    "pi": 0.15,
+    "dc": 0.35,
+    "form": 0.1,
+    "club_elo": 0.05,
+}
 DEFAULT_BLEND_WEIGHTS: dict[str, float] = {
     "legacy": 0.05,
     "power": 0.15,
@@ -73,19 +81,24 @@ def temperature_scale(home: float, draw: float, away: float, temperature: float)
     return tuple(100.0 * value / total for value in exponentials)
 
 
-def _coerce_stat_weights(raw: Any) -> tuple[float, float, float]:
+def _coerce_stat_weights(raw: Any) -> dict[str, float]:
+    merged = dict(DEFAULT_SHARP_STAT_WEIGHTS)
     if isinstance(raw, dict):
-        elo = float(raw.get("elo", DEFAULT_STAT_WEIGHTS[0]))
-        pi = float(raw.get("pi", DEFAULT_STAT_WEIGHTS[1]))
-        dc = float(raw.get("dc", DEFAULT_STAT_WEIGHTS[2]))
+        for key in STAT_LAYER_KEYS:
+            if key in raw:
+                merged[key] = float(raw[key])
     elif isinstance(raw, (list, tuple)) and len(raw) == 3:
-        elo, pi, dc = (float(raw[0]), float(raw[1]), float(raw[2]))
-    else:
-        return DEFAULT_STAT_WEIGHTS
-    total = elo + pi + dc
+        merged["elo"], merged["pi"], merged["dc"] = (
+            float(raw[0]),
+            float(raw[1]),
+            float(raw[2]),
+        )
+        merged["form"] = 0.0
+        merged["club_elo"] = 0.0
+    total = sum(merged.values())
     if total <= 0:
-        return DEFAULT_STAT_WEIGHTS
-    return elo / total, pi / total, dc / total
+        return dict(DEFAULT_SHARP_STAT_WEIGHTS)
+    return {key: value / total for key, value in merged.items()}
 
 
 def _coerce_blend_weights(raw: Any) -> dict[str, float]:
@@ -116,11 +129,7 @@ def load_soccer_meta_config() -> dict[str, Any]:
 
 def _default_league_entry() -> dict[str, Any]:
     return {
-        "stat": {
-            "elo": DEFAULT_STAT_WEIGHTS[0],
-            "pi": DEFAULT_STAT_WEIGHTS[1],
-            "dc": DEFAULT_STAT_WEIGHTS[2],
-        },
+        "stat": dict(DEFAULT_SHARP_STAT_WEIGHTS),
         "blend": dict(DEFAULT_BLEND_WEIGHTS),
         "temperature": DEFAULT_TEMPERATURE,
     }
@@ -176,34 +185,107 @@ def stack_soccer_blend_layers(
     return blended
 
 
+def _blend_sharp_sample(
+    layers: dict[str, Threeway | None],
+    weights: dict[str, float],
+) -> Threeway:
+    active_layers: list[Threeway] = []
+    active_weights: list[float] = []
+    for key in STAT_LAYER_KEYS:
+        triple = layers.get(key)
+        weight = weights.get(key, 0.0)
+        if triple is None or weight <= 0:
+            continue
+        active_layers.append(triple)
+        active_weights.append(weight)
+    if not active_layers:
+        return normalize_threeway(33.33, 33.33, 33.34)
+    return blend_weighted_threeway(active_layers, active_weights)
+
+
 def fit_stat_weights_grid(
-    samples: list[tuple[Threeway, Threeway, Threeway, int]],
-) -> tuple[float, float, float]:
-    """Grid-search Elo / Pi / Dixon-Coles blend weights to minimize log-loss."""
+    samples: list[tuple],
+) -> dict[str, float]:
+    """Grid-search SharpSoccer stat layers to minimize log-loss."""
     if not samples:
-        return DEFAULT_STAT_WEIGHTS
+        return dict(DEFAULT_SHARP_STAT_WEIGHTS)
+
+    legacy_3 = samples and len(samples[0]) == 4
+    if legacy_3:
+        best_loss = float("inf")
+        best_weights = DEFAULT_STAT_WEIGHTS
+        for elo_step in range(0, 11):
+            for pi_step in range(0, 11):
+                dc_step = 10 - elo_step - pi_step
+                if dc_step < 0:
+                    continue
+                weights = (elo_step / 10.0, pi_step / 10.0, dc_step / 10.0)
+                if weights[2] < 0.05 and pi_step > 0:
+                    continue
+                total_loss = 0.0
+                for elo, pi, dc, outcome in samples:
+                    home, draw, away = blend_weighted_threeway(
+                        [elo, pi, dc], list(weights)
+                    )
+                    total_loss += multiclass_log_loss(home, draw, away, outcome)
+                avg_loss = total_loss / len(samples)
+                if avg_loss < best_loss:
+                    best_loss = avg_loss
+                    best_weights = weights
+        return {
+            "elo": best_weights[0],
+            "pi": best_weights[1],
+            "dc": best_weights[2],
+            "form": 0.0,
+            "club_elo": 0.0,
+        }
 
     best_loss = float("inf")
-    best_weights = DEFAULT_STAT_WEIGHTS
-    for elo_step in range(0, 11):
-        for pi_step in range(0, 11):
-            dc_step = 10 - elo_step - pi_step
-            if dc_step < 0:
+    best_weights = dict(DEFAULT_SHARP_STAT_WEIGHTS)
+    form_steps = (0.0, 0.05, 0.1, 0.15, 0.2)
+    club_steps = (0.0, 0.05, 0.1, 0.15, 0.2)
+    for form_w in form_steps:
+        for club_w in club_steps:
+            remainder = 1.0 - form_w - club_w
+            if remainder < 0.25:
                 continue
-            weights = (elo_step / 10.0, pi_step / 10.0, dc_step / 10.0)
-            if weights[2] < 0.05 and pi_step > 0:
-                continue
-            total_loss = 0.0
-            for elo, pi, dc, outcome in samples:
-                home, draw, away = blend_weighted_threeway(
-                    [elo, pi, dc], list(weights)
-                )
-                total_loss += multiclass_log_loss(home, draw, away, outcome)
-            avg_loss = total_loss / len(samples)
-            if avg_loss < best_loss:
-                best_loss = avg_loss
-                best_weights = weights
-    return best_weights
+            for elo_step in range(0, 11):
+                for pi_step in range(0, 11):
+                    dc_step = 10 - elo_step - pi_step
+                    if dc_step < 0:
+                        continue
+                    core = (elo_step / 10.0, pi_step / 10.0, dc_step / 10.0)
+                    if core[2] < 0.05 and pi_step > 0:
+                        continue
+                    weights = {
+                        "elo": core[0] * remainder,
+                        "pi": core[1] * remainder,
+                        "dc": core[2] * remainder,
+                        "form": form_w,
+                        "club_elo": club_w,
+                    }
+                    total_loss = 0.0
+                    count = 0
+                    for sample in samples:
+                        elo, pi, dc, form, club, outcome = sample
+                        layers = {
+                            "elo": elo,
+                            "pi": pi,
+                            "dc": dc,
+                            "form": form,
+                            "club_elo": club,
+                        }
+                        home, draw, away = _blend_sharp_sample(layers, weights)
+                        total_loss += multiclass_log_loss(home, draw, away, outcome)
+                        count += 1
+                    if count == 0:
+                        continue
+                    avg_loss = total_loss / count
+                    if avg_loss < best_loss:
+                        best_loss = avg_loss
+                        best_weights = weights
+    total = sum(best_weights.values()) or 1.0
+    return {key: value / total for key, value in best_weights.items()}
 
 
 def fit_temperature_grid(
