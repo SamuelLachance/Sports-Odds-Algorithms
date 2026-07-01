@@ -2211,10 +2211,12 @@
       "consensus_odds": null,
       "consensus_label": null,
       "model_margin": null,
-      "status": "pending",
-      "units": 0.0,
+      "status": "loss",
+      "units": -1.0,
       "stake_units": 1.0,
-      "recorded_at": "2026-07-01T04:11:51.453795+00:00"
+      "recorded_at": "2026-07-01T04:11:51.453795+00:00",
+      "graded_at": "2026-07-01T19:54:06.627257+00:00",
+      "final_score": "1\u20132"
     },
     {
       "id": "2026-07-01:401857035:home:spread",
@@ -2261,15 +2263,15 @@
       "team_abbr": "bel",
       "matchup": "Senegal @ Belgium",
       "start_time": "2026-07-01T20:00Z",
-      "strategy": "model_favorite",
-      "strategy_label": "Model favorite",
+      "strategy": "strong_value",
+      "strategy_label": "Strong value",
       "confidence": "high",
-      "edge": 68.9,
-      "ev_pct": 47.17,
+      "edge": 112.0,
+      "ev_pct": 33.64,
       "model_projection": -217,
-      "market_odds": 115,
+      "market_odds": -105,
       "win_probability": 68.45,
-      "reason": "Model makes Belgium a -217 favorite (68.5% win) but the book offers underdog odds +115 (fair underdog +46, +47.2% EV, +69 American edge).",
+      "reason": "Model favors Belgium at -217; book line -105 is softer (+33.6% EV, +112 American edge).",
       "bet_type": "soccer_1x2",
       "spread_line": null,
       "spread_odds": null,
@@ -2280,7 +2282,8 @@
       "status": "pending",
       "units": 0.0,
       "stake_units": 1.0,
-      "recorded_at": "2026-07-01T16:34:43.783817+00:00"
+      "recorded_at": "2026-07-01T16:34:43.783817+00:00",
+      "model_market_gap_pp": 67.94
     }
   ]
 }
