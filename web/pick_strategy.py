@@ -24,9 +24,10 @@ from web.league_profiles import (
     get_league_profile,
     is_soccer_league,
 )
+from web.closing_odds_db import closing_odds_lookup
 from web.power_model import PowerGame, PowerTeam, build_power_ratings, fit_logistic_param, predict_matchup
 from web.season_games import load_league_completed_games_for_backtest
-from web.supplemental_games import soccer_backtest_odds
+from web.supplemental_games import load_supplemental_dated_games_for_backtest, soccer_backtest_odds
 from web.sports_meta_model import apply_binary_calibration, stack_binary_blend_layers
 from web.tracking_service import calculate_units
 
@@ -297,6 +298,30 @@ def _predict_blend_home_prob(
     return blended, margin, power_margin, power_home, sport_home
 
 
+def _closing_market_fields(
+    league: str,
+    game_date: str,
+    home: str,
+    away: str,
+) -> dict[str, Any]:
+    """Real closing lines when cached locally; empty dict otherwise."""
+    odds = closing_odds_lookup(league, game_date, home, away)
+    if not odds:
+        return {}
+    fields: dict[str, Any] = {}
+    if odds.get("home_close_ml") is not None:
+        fields["market_home_odds"] = odds["home_close_ml"]
+    if odds.get("away_close_ml") is not None:
+        fields["market_away_odds"] = odds["away_close_ml"]
+    if odds.get("home_close_spread") is not None:
+        fields["market_spread"] = float(odds["home_close_spread"])
+    if odds.get("home_spread_odds") is not None:
+        fields["home_spread_odds"] = odds["home_spread_odds"]
+    if odds.get("away_spread_odds") is not None:
+        fields["away_spread_odds"] = odds["away_spread_odds"]
+    return fields
+
+
 def _evaluate_backtest_pick(
     *,
     league: str,
@@ -314,6 +339,9 @@ def _evaluate_backtest_pick(
     market_home_odds: int | None = None,
     market_draw_odds: int | None = None,
     market_away_odds: int | None = None,
+    market_spread: float | None = None,
+    home_spread_odds: int | None = None,
+    away_spread_odds: int | None = None,
 ) -> tuple[float, str] | None:
     if bet_type == "soccer_1x2":
         if home_prob is None or draw_prob is None or away_prob is None:
@@ -360,10 +388,14 @@ def _evaluate_backtest_pick(
         result = grade_soccer_1x2_bet(pick.side, home_goals, away_goals)
         odds = pick.market_odds
     elif bet_type == "spread":
-        market_spread = simulate_market_spread(
-            model_margin,
-            league,
-            market_margin_home=power_margin,
+        market_spread_line = (
+            market_spread
+            if market_spread is not None
+            else simulate_market_spread(
+                model_margin,
+                league,
+                market_margin_home=power_margin,
+            )
         )
         total, win_prob = home_win_prob_to_total_score(blended_home)
         picks = evaluate_spread_picks(
@@ -374,9 +406,9 @@ def _evaluate_backtest_pick(
             home_slug="home",
             total_score=total,
             win_probability=win_prob,
-            consensus_spread=market_spread,
-            away_spread_odds=DEFAULT_SPREAD_JUICE,
-            home_spread_odds=DEFAULT_SPREAD_JUICE,
+            consensus_spread=market_spread_line,
+            away_spread_odds=away_spread_odds or DEFAULT_SPREAD_JUICE,
+            home_spread_odds=home_spread_odds or DEFAULT_SPREAD_JUICE,
             model_margin_home=model_margin,
             min_edge=thresholds["min_edge"],
             min_point_edge=thresholds["min_spread_point_edge"],
@@ -386,13 +418,17 @@ def _evaluate_backtest_pick(
         pick = enrich_pick_profit_metrics(picks[0])
         if not passes_profit_gate(pick, thresholds):
             return None
-        result = grade_spread_bet(pick.side, home_goals, away_goals, market_spread)
-        odds = pick.spread_odds or DEFAULT_SPREAD_JUICE
+        result = grade_spread_bet(pick.side, home_goals, away_goals, market_spread_line)
+        odds = pick.spread_odds or home_spread_odds or away_spread_odds or DEFAULT_SPREAD_JUICE
     else:
         away_ml, home_ml = simulate_market_moneylines(
             blended_home,
             market_home_prob=power_home,
         )
+        if market_home_odds is not None:
+            home_ml = market_home_odds
+        if market_away_odds is not None:
+            away_ml = market_away_odds
         total, win_prob = home_win_prob_to_total_score(blended_home)
         picks = evaluate_picks(
             away_name="Away",
@@ -507,14 +543,14 @@ def _collect_soccer_backtest_samples(
     from web.soccer_meta_model import apply_threeway_calibration, stack_soccer_blend_layers
     from web.soccer_pred_model import build_soccer_model, predict_matchup_from_model
 
-    games = load_league_completed_games_for_backtest(league, cutoff)
+    games = load_supplemental_dated_games_for_backtest(league, cutoff)
     if len(games) > 2200:
         games = games[-2200:]
     teams: dict[str, PowerTeam] = {}
     power_games: list[PowerGame] = []
     samples: list[dict[str, Any]] = []
 
-    for index, (home, away, home_name, away_name, hg, ag) in enumerate(games):
+    for index, (game_date, (home, away, home_name, away_name, hg, ag)) in enumerate(games):
         if index < min_train:
             _append_power_game(
                 teams, power_games, home, away, home_name, away_name, hg, ag
@@ -538,7 +574,8 @@ def _collect_soccer_backtest_samples(
         power_tw = power_threeway_probs(power_home, league)
         soccer_tw = power_tw
         if use_sport_layer:
-            model = build_soccer_model(games[:index], league)
+            game_tuples = [game for _date, game in games]
+            model = build_soccer_model(game_tuples[:index], league)
             soccer = (
                 predict_matchup_from_model(
                     model, home, away, include_club_elo=False
@@ -565,7 +602,7 @@ def _collect_soccer_backtest_samples(
         else:
             home_p, draw_p, away_p = soccer_tw
         home_p, draw_p, away_p = apply_threeway_calibration(home_p, draw_p, away_p, league)
-        odds = soccer_backtest_odds(league, "", home, away) or {}
+        odds = soccer_backtest_odds(league, game_date, home, away) or {}
         samples.append(
             {
                 "blended_home": home_p,
@@ -599,14 +636,14 @@ def _collect_backtest_samples(
         return _collect_soccer_backtest_samples(
             league, cutoff, min_train=min_train, use_sport_layer=use_sport_layer
         )
-    games = load_league_completed_games_for_backtest(league, cutoff)
+    games = load_supplemental_dated_games_for_backtest(league, cutoff)
     if len(games) > 2200:
         games = games[-2200:]
     teams: dict[str, PowerTeam] = {}
     power_games: list[PowerGame] = []
     samples: list[dict[str, Any]] = []
 
-    for index, (home, away, home_name, away_name, hg, ag) in enumerate(games):
+    for index, (game_date, (home, away, home_name, away_name, hg, ag)) in enumerate(games):
         if index < min_train:
             _append_power_game(
                 teams, power_games, home, away, home_name, away_name, hg, ag
@@ -622,17 +659,17 @@ def _collect_backtest_samples(
         )
         if prediction:
             blended_home, model_margin, power_margin, power_home, sport_home = prediction
-            samples.append(
-                {
-                    "blended_home": blended_home,
-                    "model_margin": model_margin,
-                    "power_margin": power_margin,
-                    "power_home": power_home,
-                    "sport_home": sport_home,
-                    "home_goals": hg,
-                    "away_goals": ag,
-                }
-            )
+            sample: dict[str, Any] = {
+                "blended_home": blended_home,
+                "model_margin": model_margin,
+                "power_margin": power_margin,
+                "power_home": power_home,
+                "sport_home": sport_home,
+                "home_goals": hg,
+                "away_goals": ag,
+            }
+            sample.update(_closing_market_fields(league, game_date, home, away))
+            samples.append(sample)
         _append_power_game(
             teams, power_games, home, away, home_name, away_name, hg, ag
         )
@@ -668,6 +705,21 @@ def _backtest_samples(
                     "away_prob": sample["away_prob"],
                     "market_home_odds": sample.get("market_home_odds"),
                     "market_draw_odds": sample.get("market_draw_odds"),
+                    "market_away_odds": sample.get("market_away_odds"),
+                }
+            )
+        elif bet_type == "spread":
+            kwargs.update(
+                {
+                    "market_spread": sample.get("market_spread"),
+                    "home_spread_odds": sample.get("home_spread_odds"),
+                    "away_spread_odds": sample.get("away_spread_odds"),
+                }
+            )
+        else:
+            kwargs.update(
+                {
+                    "market_home_odds": sample.get("market_home_odds"),
                     "market_away_odds": sample.get("market_away_odds"),
                 }
             )

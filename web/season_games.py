@@ -211,19 +211,18 @@ def _scoreboard_lookback_days(league: str) -> int:
     return POWER_SCOREBOARD_LOOKBACK.get(league, POWER_SCOREBOARD_LOOKBACK["default"])
 
 
-def load_league_completed_games(
+def _event_date_iso(event_date: str) -> str:
+    raw = str(event_date or "").strip()
+    return raw[:10] if raw else ""
+
+
+def _load_league_game_map(
     league: str,
     cutoff_date: str,
     *,
     for_backtest: bool = False,
-) -> list[GameTuple]:
-    """
-    Load deduplicated completed games for a league before cutoff.
-
-    Returns list of (home_key, away_key, home_name, away_name, home_score, away_score).
-    When ``for_backtest`` is True, loads the maximum ESPN history available (7 pro
-    seasons or 900-day scoreboard walk) instead of the live-slate default window.
-    """
+) -> GameMap:
+    """Collect ESPN completed games before cutoff as event_id -> (date, GameTuple)."""
     league = league.lower()
     cutoff = _parse_cutoff(cutoff_date)
     cutoff_day = date(cutoff.year, cutoff.month, cutoff.day)
@@ -255,9 +254,38 @@ def load_league_completed_games(
         for event_id, entry in friendlies.items():
             merged[f"friendlies:{event_id}"] = entry
 
+    return merged
+
+
+def load_league_completed_games(
+    league: str,
+    cutoff_date: str,
+    *,
+    for_backtest: bool = False,
+) -> list[GameTuple]:
+    """
+    Load deduplicated completed games for a league before cutoff.
+
+    Returns list of (home_key, away_key, home_name, away_name, home_score, away_score).
+    When ``for_backtest`` is True, loads the maximum ESPN history available (7 pro
+    seasons or 900-day scoreboard walk) instead of the live-slate default window.
+    """
+    merged = _load_league_game_map(league, cutoff_date, for_backtest=for_backtest)
     return [
         game_tuple
         for _event_date, game_tuple in sorted(merged.values(), key=lambda item: item[0])
+    ]
+
+
+def load_league_dated_games_for_backtest(
+    league: str,
+    cutoff_date: str,
+) -> list[tuple[str, GameTuple]]:
+    """ESPN completed games with ISO dates for closing-odds backtest matching."""
+    merged = _load_league_game_map(league, cutoff_date, for_backtest=True)
+    return [
+        (_event_date_iso(event_date), game_tuple)
+        for event_date, game_tuple in sorted(merged.values(), key=lambda item: item[0])
     ]
 
 

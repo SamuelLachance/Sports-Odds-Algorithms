@@ -34,6 +34,32 @@
       "leagues": ["nba", "nhl", "mlb"],
       "paths": ["nba/team_data/", "nhl/team_data/", "mlb/team_data/"],
       "usage": "extended history for binary meta tuning and pick backtests only"
+    },
+    "closing_odds": {
+      "nflverse": {
+        "url": "https://github.com/nflverse/nfldata",
+        "leagues": ["nfl"],
+        "fields": ["closing spread", "moneyline", "spread juice"],
+        "cache": "data/supplemental/closing-odds/nfl.csv"
+      },
+      "sbr-online": {
+        "url": "https://www.sportsbookreviewsonline.com/scoresoddsarchives/",
+        "leagues": ["nba", "nhl", "mlb"],
+        "fields": ["closing spread", "moneyline", "spread juice"],
+        "cache": "data/supplemental/closing-odds/{league}.csv"
+      },
+      "sbr-archive": {
+        "url": "https://github.com/flancast90/sportsbookreview-scraper",
+        "leagues": ["nba", "nhl", "mlb"],
+        "fields": ["closing spread", "moneyline"],
+        "note": "Fallback JSON archive when SBR HTML pages are empty"
+      },
+      "football-data.co.uk": {
+        "leagues": ["epl", "bundesliga", "laliga", "seriea", "ligue1"],
+        "fields": ["closing 1X2 odds"],
+        "usage": "soccer walk-forward backtests via closing_odds_db"
+      },
+      "usage": "Real closing lines for pick-strategy backtests and CLV grading; falls back to simulated markets when missing"
     }
   }
 }

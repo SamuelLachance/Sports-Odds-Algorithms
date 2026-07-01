@@ -1,0 +1,39 @@
+{
+  "nfl": {
+    "ARI": "ari", "ATL": "atl", "BAL": "bal", "BUF": "buf", "CAR": "car", "CHI": "chi",
+    "CIN": "cin", "CLE": "cle", "DAL": "dal", "DEN": "den", "DET": "det", "GB": "gb",
+    "HOU": "hou", "IND": "ind", "JAX": "jax", "KC": "kc", "LA": "la", "LAC": "lac",
+    "LAR": "lar", "LV": "lv", "MIA": "mia", "MIN": "min", "NE": "ne", "NO": "no",
+    "NYG": "nyg", "NYJ": "nyj", "PHI": "phi", "PIT": "pit", "SEA": "sea", "SF": "sf",
+    "TB": "tb", "TEN": "ten", "WAS": "wsh", "WSH": "wsh", "OAK": "oak", "SD": "sd",
+    "STL": "stl"
+  },
+  "nba": {
+    "Hawks": "atl", "Celtics": "bos", "Nets": "bkn", "Hornets": "cha", "Bulls": "chi",
+    "Cavaliers": "cle", "Mavericks": "dal", "Nuggets": "den", "Pistons": "det",
+    "Warriors": "gs", "Rockets": "hou", "Pacers": "ind", "Clippers": "lac", "Lakers": "lal",
+    "Grizzlies": "mem", "Heat": "mia", "Bucks": "mil", "Timberwolves": "min",
+    "Pelicans": "no", "Knicks": "ny", "Thunder": "okc", "Magic": "orl",
+    "Seventysixers": "phi", "76ers": "phi", "Suns": "phx", "Trailblazers": "por",
+    "Blazers": "por", "Kings": "sac", "Spurs": "sa", "Raptors": "tor", "Jazz": "utah",
+    "Wizards": "wsh"
+  },
+  "nhl": {
+    "Ducks": "ana", "Coyotes": "ari", "Bruins": "bos", "Sabres": "buf", "Flames": "cgy",
+    "Hurricanes": "car", "Blackhawks": "chi", "Avalanche": "col", "Blue Jackets": "cbj",
+    "Stars": "dal", "Red Wings": "det", "Oilers": "edm", "Panthers": "fla", "Kings": "la",
+    "Wild": "min", "Canadiens": "mtl", "Predators": "nsh", "Devils": "nj", "Islanders": "nyi",
+    "Rangers": "nyr", "Senators": "ott", "Flyers": "phi", "Penguins": "pit", "Sharks": "sj",
+    "Kraken": "sea", "Blues": "stl", "Lightning": "tb", "Maple Leafs": "tor", "Canucks": "van",
+    "Golden Knights": "vgk", "Capitals": "wsh", "Jets": "wpg", "Utah Hockey Club": "uta"
+  },
+  "mlb": {
+    "Diamondbacks": "ari", "Braves": "atl", "Orioles": "bal", "Red Sox": "bos", "Cubs": "chc",
+    "White Sox": "chw", "Reds": "cin", "Indians": "cle", "Guardians": "cle", "Rockies": "col",
+    "Tigers": "det", "Astros": "hou", "Royals": "kc", "Angels": "laa", "Dodgers": "lad",
+    "Marlins": "mia", "Brewers": "mil", "Twins": "min", "Mets": "nym", "Yankees": "nyy",
+    "Athletics": "oak", "Phillies": "phi", "Pirates": "pit", "Padres": "sd", "Mariners": "sea",
+    "Giants": "sf", "Cardinals": "stl", "Rays": "tb", "Rangers": "tex", "Blue Jays": "tor",
+    "Nationals": "wsh"
+  }
+}

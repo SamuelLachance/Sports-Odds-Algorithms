@@ -246,8 +246,6 @@ def _run_sport_pred_model(
             away_abbr,
             home_name=home_name,
             away_name=away_name,
-            home_espn_id=home_espn_id,
-            away_espn_id=away_espn_id,
         )
         return ("soccer_pred", payload) if payload else (None, None)
     return None, None

@@ -13,9 +13,11 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from web.league_profiles import MIN_GAMES_FOR_POWER  # noqa: E402
 from web.season_games import (  # noqa: E402
     _collect_from_scoreboards,
+    _load_league_game_map,
     _parse_event_to_game,
     get_league_power_context,
     load_league_completed_games,
+    load_league_dated_games_for_backtest,
 )
 
 
@@ -75,6 +77,19 @@ def test_parse_event_to_game_normalizes_abbreviations() -> None:
     assert game[1] == "ny"
     assert game[4] == 110
     assert game[5] == 99
+
+
+def test_load_league_dated_games_for_backtest_preserves_iso_dates() -> None:
+    sample_map = {
+        "1": ("2024-11-01T19:00Z", ("bos", "ny", "Boston", "New York", 110, 100)),
+        "2": ("2024-11-03T19:00Z", ("lal", "gs", "Lakers", "Warriors", 105, 108)),
+    }
+    with patch("web.season_games._load_league_game_map", return_value=sample_map):
+        dated = load_league_dated_games_for_backtest("nba", "11-10-2024")
+    assert dated == [
+        ("2024-11-01", sample_map["1"][1]),
+        ("2024-11-03", sample_map["2"][1]),
+    ]
 
 
 def test_get_league_power_context_requires_min_games() -> None:

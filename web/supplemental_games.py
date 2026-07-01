@@ -3,14 +3,13 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from functools import lru_cache
 from typing import Any
 
 from web.archive_csv_games import load_archive_csv_games
 from web.football_data_uk import load_football_data_uk_games
 from web.league_profiles import is_soccer_league
 from web.live_data import _parse_cutoff
-from web.season_games import GameTuple, load_league_completed_games
+from web.season_games import GameTuple, load_league_dated_games_for_backtest
 
 # Optional closing odds keyed by (date, home, away) for soccer backtests
 _soccer_odds_cache: dict[str, dict[tuple[str, str, str], dict[str, int | None]]] = {}
@@ -30,9 +29,11 @@ def _espn_games_with_dates(
     *,
     for_backtest: bool,
 ) -> list[tuple[str, GameTuple]]:
-    """Attach approximate dates to ESPN-only tuples (date unknown -> empty)."""
-    games = load_league_completed_games(league, cutoff_date, for_backtest=for_backtest)
-    return [("", game) for game in games]
+    if for_backtest:
+        return load_league_dated_games_for_backtest(league, cutoff_date)
+    from web.season_games import load_league_completed_games
+
+    return [("", game) for game in load_league_completed_games(league, cutoff_date)]
 
 
 def _supplemental_only_games(league: str, cutoff_date: str) -> list[tuple[str, GameTuple]]:
@@ -76,6 +77,8 @@ def _supplemental_only_games(league: str, cutoff_date: str) -> list[tuple[str, G
             }
         _soccer_odds_cache[league] = odds_map
     elif league in ("nba", "nhl", "mlb"):
+        from web.season_games import load_league_completed_games
+
         espn_games = load_league_completed_games(league, cutoff_date, for_backtest=True)
         if len(espn_games) >= 2000:
             return rows
@@ -96,6 +99,33 @@ def soccer_backtest_odds(
     return league_map.get((game_date, home_key, away_key))
 
 
+def load_supplemental_dated_games_for_backtest(
+    league: str,
+    cutoff_date: str,
+) -> list[tuple[str, GameTuple]]:
+    """ESPN + supplemental history with ISO dates when known."""
+    league = league.lower()
+    merged: list[tuple[str, GameTuple]] = []
+    seen: set[tuple[str, str, int, int]] = set()
+
+    def _append(game_date: str, game: GameTuple) -> None:
+        signature = (game[0], game[1], game[4], game[5])
+        if signature in seen:
+            return
+        seen.add(signature)
+        merged.append((game_date, game))
+
+    for game_date, game_tuple in _espn_games_with_dates(
+        league, cutoff_date, for_backtest=True
+    ):
+        _append(game_date, game_tuple)
+
+    for game_date, game_tuple in _supplemental_only_games(league, cutoff_date):
+        _append(game_date, game_tuple)
+
+    return merged
+
+
 def load_supplemental_completed_games(
     league: str,
     cutoff_date: str,
@@ -107,26 +137,8 @@ def load_supplemental_completed_games(
 
     Live slate still uses ESPN directly; this is for calibration and walk-forward tuning.
     """
-    league = league.lower()
-    merged: list[GameTuple] = []
-    seen: set[tuple[str, str, int, int]] = set()
-
-    def _append(game: GameTuple) -> None:
-        signature = (game[0], game[1], game[4], game[5])
-        if signature in seen:
-            return
-        seen.add(signature)
-        merged.append(game)
-
-    for _game_date, game_tuple in _espn_games_with_dates(
-        league, cutoff_date, for_backtest=for_backtest
-    ):
-        _append(game_tuple)
-
-    for _game_date, game_tuple in _supplemental_only_games(league, cutoff_date):
-        _append(game_tuple)
-
-    return merged
+    dated = load_supplemental_dated_games_for_backtest(league, cutoff_date)
+    return [game for _game_date, game in dated]
 
 
 def supplemental_metadata(league: str) -> dict[str, Any]:
@@ -140,6 +152,8 @@ def supplemental_metadata(league: str) -> dict[str, Any]:
         "ligue1",
     }:
         sources.append("football-data.co.uk")
+    if league in ("nba", "nhl", "mlb", "nfl"):
+        sources.append("data/supplemental/closing-odds/")
     if league in ("nba", "nhl", "mlb"):
         sources.append(f"{league}/team_data CSV archives")
     return {"league": league, "sources": sources}

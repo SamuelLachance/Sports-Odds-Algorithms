@@ -14,6 +14,8 @@ from web.bet_advisor import (  # noqa: E402
 )
 from web.pick_strategy import (  # noqa: E402
     DEFAULT_THRESHOLDS,
+    _closing_market_fields,
+    _evaluate_backtest_pick,
     grade_moneyline_bet,
     grade_spread_bet,
     official_bet_type,
@@ -48,6 +50,45 @@ def test_simulate_market_helpers() -> None:
     away_ml, home_ml = simulate_market_moneylines(62.0)
     assert away_ml != home_ml
     assert "min_edge" in DEFAULT_THRESHOLDS
+
+
+def test_evaluate_backtest_pick_uses_real_spread_when_provided() -> None:
+    thresholds = {
+        **DEFAULT_THRESHOLDS,
+        "min_edge": 0.0,
+        "min_ev_pct": 0.0,
+        "min_spread_point_edge": 0.0,
+        "min_profit_score": -999.0,
+        "min_kelly_pct": 0.0,
+    }
+    simulated = _evaluate_backtest_pick(
+        league="nba",
+        bet_type="spread",
+        blended_home=85.0,
+        model_margin=-15.0,
+        power_margin=-12.0,
+        power_home=80.0,
+        home_goals=105,
+        away_goals=100,
+        thresholds=thresholds,
+    )
+    real_line = _evaluate_backtest_pick(
+        league="nba",
+        bet_type="spread",
+        blended_home=85.0,
+        model_margin=-15.0,
+        power_margin=-12.0,
+        power_home=80.0,
+        home_goals=105,
+        away_goals=100,
+        thresholds=thresholds,
+        market_spread=-1.5,
+        home_spread_odds=-110,
+        away_spread_odds=-110,
+    )
+    assert simulated is not None
+    assert real_line is not None
+    assert real_line[1] == "win"
 
 
 def test_kelly_and_profit_score_positive_ev() -> None:
