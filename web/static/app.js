@@ -720,7 +720,7 @@ function viewDashboard() {
       <a class="rollup-card panel home-link-card" href="#/picks">
         <h4>Algo picks</h4>
         <strong class="rollup-record">${picks.length}</strong>
-        <span>+EV moneyline/spread bets vs the book (≥${minEv}% EV)</span>
+        <span>Official picks with +${minEdge} edge vs the book</span>
       </a>
       <a class="rollup-card panel home-link-card" href="#/teams">
         <h4>Leagues</h4>
@@ -736,7 +736,7 @@ function viewDashboard() {
 
     <section class="section">
       <div class="section-head"><h2>Top algo picks</h2><a class="text-link" href="#/picks">View all →</a></div>
-      <div class="picks-grid">${picks.length ? picks.slice(0, 6).map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No bets meet the +${minEv}% EV threshold today.</div>`}</div>
+      <div class="picks-grid">${picks.length ? picks.slice(0, 6).map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No bets meet the +${minEdge} edge threshold today.</div>`}</div>
     </section>`;
 }
 
@@ -767,7 +767,7 @@ function viewPicks() {
   const slate = state.slate || {};
   const minEdge = slate.summary?.min_edge ?? slate.min_recommended_edge ?? 25;
   appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p>Official picks fire when our per-sport <strong>EnsembleML</strong> mega-model shows <strong>25+ points of edge</strong> vs the sportsbook on the recommended market: <strong>spread</strong> (basketball/football), <strong>moneyline</strong> (hockey/baseball), or <strong>1X2</strong> (soccer). That is the only gate.</p></section>
-    <div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No bets meet the +${minEv}% EV threshold today.</div>`}</div>`;
+    <div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No bets meet the +${minEdge} edge threshold today.</div>`}</div>`;
 }
 
 function viewGames(league) {
