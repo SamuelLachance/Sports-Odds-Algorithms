@@ -2279,11 +2279,13 @@
       "consensus_odds": null,
       "consensus_label": null,
       "model_margin": null,
-      "status": "pending",
-      "units": 0.0,
+      "status": "win",
+      "units": 0.9523809523809523,
       "stake_units": 1.0,
       "recorded_at": "2026-07-01T16:34:43.783817+00:00",
-      "model_market_gap_pp": 67.94
+      "model_market_gap_pp": 67.94,
+      "graded_at": "2026-07-02T00:02:23.834585+00:00",
+      "final_score": "2\u20133"
     }
   ]
 }
