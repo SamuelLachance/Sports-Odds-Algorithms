@@ -17,7 +17,8 @@ from web.league_profiles import (  # noqa: E402
     SOCCER_LEAGUES,
 )
 from web.power_model import build_power_ratings, predict_matchup  # noqa: E402
-from web.season_games import load_league_completed_games_for_backtest  # noqa: E402
+from web.ensemble_ml.config import MIN_TRAIN_ROWS, get_dataset_profile  # noqa: E402
+from web.walkforward import calibration_indices  # noqa: E402
 from web.soccer_blend import power_threeway_probs  # noqa: E402
 from web.soccer_meta_model import (  # noqa: E402
     META_WEIGHTS_PATH,
@@ -37,7 +38,6 @@ from web.soccer_pred_model import (  # noqa: E402
 )
 
 MIN_CALIBRATION_GAMES = 40
-CALIBRATION_WINDOW = 120
 MIN_LEAGUE_GAMES = 60
 
 
@@ -46,9 +46,25 @@ def _cutoff_today() -> str:
     return f"{today.month}-{today.day}-{today.year}"
 
 
-def _calibration_start(game_count: int) -> int:
-    window = min(CALIBRATION_WINDOW, max(80, game_count // 3))
-    return max(30, game_count - window)
+def _load_dated_games(league: str, cutoff: str) -> list:
+    profile = get_dataset_profile(league)
+    if profile.get("dated_source") == "supplemental":
+        from web.supplemental_games import load_supplemental_dated_games_for_backtest
+
+        return load_supplemental_dated_games_for_backtest(league, cutoff)
+    from web.season_games import load_league_dated_games_for_backtest
+
+    return load_league_dated_games_for_backtest(league, cutoff)
+
+
+def _calibration_indices(game_count: int, league: str) -> range:
+    profile = get_dataset_profile(league)
+    return calibration_indices(
+        game_count,
+        warmup=MIN_TRAIN_ROWS // 2,
+        max_calibration_games=profile.get("max_calibration_games"),
+        target_rows=profile.get("target_rows"),
+    )
 
 
 def _data_depth_metadata(game_count: int) -> dict[str, int]:
@@ -66,8 +82,8 @@ def _collect_stat_samples(
     games: list[tuple],
 ) -> list[tuple]:
     samples = []
-    start = _calibration_start(len(games))
-    for index in range(start, len(games)):
+    indices = list(_calibration_indices(len(games), league))
+    for index in indices:
         game = games[index]
         home, away, _hn, _an, home_goals, away_goals = game
         model = build_soccer_model(games[:index], league)
@@ -95,8 +111,8 @@ def _collect_blend_samples(
     games: list[tuple],
 ) -> list[tuple]:
     samples = []
-    start = max(40, _calibration_start(len(games)))
-    for index in range(start, len(games)):
+    indices = list(_calibration_indices(len(games), league))
+    for index in indices:
         game = games[index]
         home, away, _hn, _an, home_goals, away_goals = game
         teams, _total, param = build_power_ratings(games[:index])
@@ -128,9 +144,12 @@ def _collect_blend_samples(
 
 
 def tune_league(league: str, cutoff: str) -> dict | None:
-    games = load_league_completed_games_for_backtest(league, cutoff)
+    dated_games = _load_dated_games(league, cutoff)
+    games = [g for _d, g in dated_games]
     if len(games) < MIN_LEAGUE_GAMES:
         return None
+
+    print(f"  walk-forward: {len(games)} games loaded", flush=True)
 
     stat_samples = _collect_stat_samples(league, cutoff, games)
     if len(stat_samples) < MIN_CALIBRATION_GAMES:
@@ -257,7 +276,7 @@ def main() -> int:
 
     payload["_meta"] = {
         "tuned_at": date.today().isoformat(),
-        "calibration_window": CALIBRATION_WINDOW,
+        "calibration_window": "full",
         "pro_seasons": BACKTEST_PRO_SEASONS,
         "scoreboard_days": BACKTEST_SCOREBOARD_LOOKBACK_DAYS,
         "leagues_tuned": tuned_leagues,

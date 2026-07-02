@@ -17,8 +17,11 @@ from web.league_profiles import (  # noqa: E402
     LEAGUE_PROFILES,
     is_soccer_league,
 )
+from web.backtest_algo_v2 import TeamHistoryBuilder, legacy_home_win_probability  # noqa: E402
+from web.ensemble_ml.config import MIN_TRAIN_ROWS, get_dataset_profile  # noqa: E402
 from web.power_model import build_power_ratings, predict_matchup  # noqa: E402
-from web.season_games import load_league_completed_games_for_backtest  # noqa: E402
+from web.supplemental_games import load_supplemental_dated_games_for_backtest  # noqa: E402
+from web.walkforward import calibration_indices  # noqa: E402
 from web.sports_meta_model import (  # noqa: E402
     META_WEIGHTS_PATH,
     binary_log_loss,
@@ -27,7 +30,7 @@ from web.sports_meta_model import (  # noqa: E402
     fit_binary_temperature_grid,
 )
 
-CALIBRATION_WINDOW = 120
+CALIBRATION_WINDOW = None  # full walk-forward after warmup
 MIN_CALIBRATION_GAMES = 40
 MIN_LEAGUE_GAMES = 60
 
@@ -53,17 +56,14 @@ def _cutoff_today() -> str:
     return f"{today.month}-{today.day}-{today.year}"
 
 
-def _calibration_start(game_count: int) -> int:
-    window = min(CALIBRATION_WINDOW, max(80, game_count // 3))
-    return max(40, game_count - window)
-
-
-def _data_depth_metadata(game_count: int) -> dict[str, int]:
+def _data_depth_metadata(game_count: int, calibration_games: int) -> dict[str, int]:
     return {
         "games_loaded": game_count,
+        "calibration_games": calibration_games,
         "pro_seasons": BACKTEST_PRO_SEASONS,
         "scoreboard_days": BACKTEST_SCOREBOARD_LOOKBACK_DAYS,
         "supplemental": 1,
+        "full_walkforward": 1,
     }
 
 
@@ -71,27 +71,68 @@ def _home_won(home_goals: int, away_goals: int) -> bool:
     return home_goals > away_goals
 
 
+def _load_dated_games(league: str, cutoff: str) -> list:
+    profile = get_dataset_profile(league)
+    if profile.get("dated_source") == "supplemental":
+        return load_supplemental_dated_games_for_backtest(league, cutoff)
+    from web.season_games import load_league_dated_games_for_backtest
+
+    return load_league_dated_games_for_backtest(league, cutoff)
+
+
 def _collect_samples(
     league: str,
     cutoff: str,
-    games: list[tuple],
+    dated_games: list[tuple[str, tuple]],
 ) -> list[tuple[float | None, float | None, float | None, bool]]:
     samples: list[tuple[float | None, float | None, float | None, bool]] = []
-    start = _calibration_start(len(games))
-    for index in range(start, len(games)):
-        game = games[index]
+    warmup = MIN_TRAIN_ROWS // 2
+    profile = get_dataset_profile(league)
+    indices = list(
+        calibration_indices(
+            len(dated_games),
+            warmup=warmup,
+            max_calibration_games=profile.get("max_calibration_games"),
+            target_rows=profile.get("target_rows"),
+        )
+    )
+    print(f"  walk-forward samples: {len(indices)} of {len(dated_games)} games", flush=True)
+
+    history = TeamHistoryBuilder(league)
+    cursor = 0
+    for index in indices:
+        while cursor < index:
+            game_date, game = dated_games[cursor]
+            home, away, _hn, _an, home_goals, away_goals = game
+            if home_goals != away_goals:
+                history.add_game(game_date, home, away, home_goals, away_goals)
+            cursor += 1
+
+        game_date, game = dated_games[index]
         home, away, _hn, _an, home_goals, away_goals = game
         if home_goals == away_goals:
             continue
-        teams, _total, param = build_power_ratings(games[:index])
+
+        train = [g for _d, g in dated_games[:index]]
+        teams, _total, param = build_power_ratings(train)
         power = predict_matchup(teams, param, home, away) if param else None
         if not power:
             continue
         power_home = float(power["home_win_probability"])
-        legacy_home = power_home
-        _sport_key, sport_payload = _run_sport_pred_model(
-            league, cutoff, home, away
+
+        legacy_home = legacy_home_win_probability(
+            league,
+            history,
+            home_abbr=home,
+            away_abbr=away,
+            home_team=[home, home],
+            away_team=[away, away],
+            game_date_iso=game_date,
         )
+        if legacy_home is None:
+            legacy_home = power_home
+
+        _sport_key, sport_payload = _run_sport_pred_model(league, cutoff, home, away)
         sport_home = (
             float(sport_payload["home_win_probability"]) if sport_payload else None
         )
@@ -105,11 +146,11 @@ def tune_league(league: str, cutoff: str) -> dict | None:
     if is_soccer_league(league):
         return None
 
-    games = load_league_completed_games_for_backtest(league, cutoff)
-    if len(games) < MIN_LEAGUE_GAMES:
+    dated_games = _load_dated_games(league, cutoff)
+    if len(dated_games) < MIN_LEAGUE_GAMES:
         return None
 
-    samples = _collect_samples(league, cutoff, games)
+    samples = _collect_samples(league, cutoff, dated_games)
     if len(samples) < MIN_CALIBRATION_GAMES:
         return None
 
@@ -182,7 +223,7 @@ def tune_league(league: str, cutoff: str) -> dict | None:
         "log_loss_baseline_equal": round(equal_loss / count, 4),
         "log_loss_tuned": round(tuned_loss / count, 4),
         "samples": count,
-        "data_depth": _data_depth_metadata(len(games)),
+        "data_depth": _data_depth_metadata(len(dated_games), count),
     }
 
 
@@ -267,7 +308,7 @@ def main() -> int:
 
     payload["_meta"] = {
         "tuned_at": date.today().isoformat(),
-        "calibration_window": CALIBRATION_WINDOW,
+        "calibration_window": "full",
         "pro_seasons": BACKTEST_PRO_SEASONS,
         "scoreboard_days": BACKTEST_SCOREBOARD_LOOKBACK_DAYS,
         "leagues_tuned": tuned,

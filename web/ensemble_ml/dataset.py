@@ -17,11 +17,8 @@ from web.ensemble_ml.config import (
     dataset_cache_path,
     get_dataset_profile,
 )
-from web.ensemble_ml.features import (
-    legacy_home_from_total,
-    market_devig_home,
-    market_devig_threeway,
-)
+from web.backtest_algo_v2 import TeamHistoryBuilder, legacy_home_win_probability
+from web.walkforward import calibration_indices
 from web.league_profiles import is_soccer_league
 from web.power_model import build_power_ratings, predict_matchup
 from web.season_games import load_league_dated_games_for_backtest
@@ -53,18 +50,12 @@ def _calibration_indices(
     warmup: int,
     profile: dict[str, int | None | str],
 ) -> range:
-    max_cal = profile.get("max_calibration_games")
-    if max_cal is None:
-        start = warmup
-    else:
-        start = max(warmup, total - int(max_cal))
-    span = total - start
-    target_rows = profile.get("target_rows")
-    if target_rows is None or span <= int(target_rows):
-        step = 1
-    else:
-        step = max(1, span // int(target_rows))
-    return range(start, total, step)
+    return calibration_indices(
+        total,
+        warmup=warmup,
+        max_calibration_games=profile.get("max_calibration_games"),
+        target_rows=profile.get("target_rows"),
+    )
 
 
 def _training_games(
@@ -99,9 +90,18 @@ def collect_binary_rows(
     if len(indices) > 500:
         print(f"  walk-forward: {len(indices)} games (of {len(dated_games)} total)", flush=True)
 
+    history = TeamHistoryBuilder(league)
+    cursor = 0
     for step_i, index in enumerate(indices):
         if len(indices) > 500 and step_i > 0 and step_i % 500 == 0:
             print(f"  ... {step_i}/{len(indices)} games processed", flush=True)
+        while cursor < index:
+            game_date, game = dated_games[cursor]
+            home, away, _hn, _an, home_score, away_score = game
+            if home_score != away_score:
+                history.add_game(game_date, home, away, home_score, away_score)
+            cursor += 1
+
         game_date, game = dated_games[index]
         home, away, _hn, _an, home_score, away_score = game
         if home_score == away_score:
@@ -153,8 +153,19 @@ def collect_binary_rows(
         if expected_home_goals is not None and expected_away_goals is not None:
             sport_xg_diff = expected_home_goals - expected_away_goals
 
-        legacy_home = legacy_home_from_total(power_total)
-        legacy_margin = power_margin
+        legacy_home = legacy_home_win_probability(
+            league,
+            history,
+            home_abbr=home,
+            away_abbr=away,
+            home_team=[home, home],
+            away_team=[away, away],
+            game_date_iso=game_date,
+        )
+        if legacy_home is None:
+            legacy_home = power_home
+        legacy_total, _ = home_win_prob_to_total_score(legacy_home)
+        legacy_margin = model_home_margin(legacy_total, league)
         meta_stacked = stack_binary_blend_layers(
             legacy_home=legacy_home,
             power_home=power_home,

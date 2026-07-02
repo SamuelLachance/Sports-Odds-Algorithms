@@ -175,9 +175,9 @@ def main() -> int:
     parser.add_argument("--leagues", default=",".join(CORE_LEAGUES))
     parser.add_argument("--cutoff", default=_cutoff_today())
     parser.add_argument(
-        "--full-history",
+        "--fast",
         action="store_true",
-        help="Train on every walk-forward game with full prior history (overrides league defaults).",
+        help="Use legacy 250-game subsample caps (not recommended).",
     )
     parser.add_argument(
         "--rebuild-dataset",
@@ -187,27 +187,22 @@ def main() -> int:
     args = parser.parse_args()
     leagues = [item.strip().lower() for item in args.leagues.split(",") if item.strip()]
 
-    full_profile = {
-        "max_calibration_games": None,
-        "target_rows": None,
-        "power_train_window": None,
-        "dated_source": "espn",
-    }
-
     summary: dict[str, dict] = {}
     trained = 0
     for league in leagues:
         if league not in TRAIN_LEAGUES:
             print(f"Skipping unknown league {league}", flush=True)
             continue
-        profile = full_profile if args.full_history else get_dataset_profile(league)
-        if league in {"nhl", "nba", "wnba", "cbb"} or args.full_history:
-            from web.season_games import load_league_dated_games_for_backtest
+        profile = dict(get_dataset_profile(league, fast=args.fast))
+        from web.ensemble_ml.dataset import _load_dated_games
 
-            profile = dict(profile)
-            profile["games_available"] = len(
-                load_league_dated_games_for_backtest(league, args.cutoff)
+        profile["games_available"] = len(
+            _load_dated_games(
+                league,
+                args.cutoff,
+                dated_source=str(profile.get("dated_source", "espn")),
             )
+        )
         entry = train_league(
             league,
             args.cutoff,

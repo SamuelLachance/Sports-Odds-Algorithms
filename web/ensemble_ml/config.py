@@ -84,38 +84,30 @@ DEFAULT_MARGIN_SIGMA: dict[str, float] = {
 MIN_TRAIN_ROWS = 80
 CALIBRATION_FRACTION = 0.2
 
-# Per-league dataset build settings (defaults keep training fast for most sports).
-DEFAULT_MAX_CALIBRATION_GAMES = 250
-DEFAULT_TARGET_ROWS = 250
-DEFAULT_POWER_TRAIN_WINDOW = 900
+# Full walk-forward history by default (no 250-game subsample cap).
+DEFAULT_MAX_CALIBRATION_GAMES: int | None = None
+DEFAULT_TARGET_ROWS: int | None = None
+DEFAULT_POWER_TRAIN_WINDOW: int | None = None
 
-# Full walk-forward history (max training rows) for selected leagues.
-LEAGUE_DATASET_OVERRIDES: dict[str, dict[str, int | None | str]] = {
-    "nba": {
-        "max_calibration_games": None,
-        "target_rows": None,
-        "power_train_window": None,
-        "dated_source": "espn",
-    },
-    "wnba": {
-        "max_calibration_games": None,
-        "target_rows": None,
-        "power_train_window": None,
-        "dated_source": "espn",
-    },
-    "cbb": {
-        "max_calibration_games": None,
-        "target_rows": None,
-        "power_train_window": None,
-        "dated_source": "espn",
-    },
-    "nhl": {
-        "max_calibration_games": None,
-        "target_rows": None,
-        "power_train_window": None,
-        "dated_source": "espn",
-    },
-}
+# Legacy fast-training caps (opt-in via get_dataset_profile(fast=True)).
+FAST_MAX_CALIBRATION_GAMES = 250
+FAST_TARGET_ROWS = 250
+FAST_POWER_TRAIN_WINDOW = 900
+
+# Leagues that merge supplemental public history (archive CSV, football-data.co.uk).
+SUPPLEMENTAL_DATED_LEAGUES: frozenset[str] = frozenset(
+    {
+        "nba",
+        "nhl",
+        "mlb",
+        "nfl",
+        "epl",
+        "bundesliga",
+        "laliga",
+        "seriea",
+        "ligue1",
+    }
+)
 
 
 def get_stacking_features(league: str) -> tuple[str, ...]:
@@ -126,16 +118,27 @@ def dataset_cache_path(league: str) -> Path:
     return DATASET_CACHE_DIR / f"{league.lower()}_dataset.csv"
 
 
-def get_dataset_profile(league: str) -> dict[str, int | None | str]:
+def get_dataset_profile(league: str, *, fast: bool = False) -> dict[str, int | None | str]:
     league = league.lower()
-    base = {
-        "max_calibration_games": DEFAULT_MAX_CALIBRATION_GAMES,
-        "target_rows": DEFAULT_TARGET_ROWS,
-        "power_train_window": DEFAULT_POWER_TRAIN_WINDOW,
-        "dated_source": "espn",
-    }
-    override = LEAGUE_DATASET_OVERRIDES.get(league, {})
-    return {**base, **override}
+    if fast:
+        base = {
+            "max_calibration_games": FAST_MAX_CALIBRATION_GAMES,
+            "target_rows": FAST_TARGET_ROWS,
+            "power_train_window": FAST_POWER_TRAIN_WINDOW,
+            "dated_source": "espn",
+        }
+    else:
+        base = {
+            "max_calibration_games": DEFAULT_MAX_CALIBRATION_GAMES,
+            "target_rows": DEFAULT_TARGET_ROWS,
+            "power_train_window": DEFAULT_POWER_TRAIN_WINDOW,
+            "dated_source": (
+                "supplemental"
+                if league in SUPPLEMENTAL_DATED_LEAGUES
+                else "espn"
+            ),
+        }
+    return base
 
 
 def model_dir(league: str) -> Path:
