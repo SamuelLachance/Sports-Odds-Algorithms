@@ -107,8 +107,6 @@ def _with_db_rating_layer(
             away_slug=away_slug,
             home_name=home_name,
             away_name=away_name,
-            home_espn_id=home_espn_id,
-            away_espn_id=away_espn_id,
         )
     if is_soccer_league(league):
         return result

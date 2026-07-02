@@ -76,6 +76,39 @@ def test_layer_home_win_probability_from_legacy_payload() -> None:
     ) == pytest.approx(35.69, abs=0.01)
 
 
+def test_blend_with_espn_ids_and_slugs_calls_db_rating_without_espn_kwargs() -> None:
+    import web.blend_service as blend_module
+
+    power_original = blend_module.run_power_model
+    captured: dict[str, object] = {}
+
+    def _capture_db_blend(blended: dict, **kwargs: object) -> dict:
+        captured.update(kwargs)
+        return blended
+
+    try:
+        blend_module.run_power_model = lambda *_a, **_k: None
+        with patch("web.blend_service.apply_db_rating_blend", side_effect=_capture_db_blend):
+            result = blend_predictions(
+                legacy_total_score=-60.0,
+                legacy_win_probability=60.0,
+                league="wnba",
+                cutoff_date="6-12-2026",
+                home_abbr="las",
+                away_abbr="sea",
+                home_slug="las-aces",
+                away_slug="seattle-storm",
+                home_espn_id="123",
+                away_espn_id="456",
+            )
+        assert result["blend_mode"] == "legacy_only"
+        assert "home_espn_id" not in captured
+        assert "away_espn_id" not in captured
+        assert captured.get("home_slug") == "las-aces"
+    finally:
+        blend_module.run_power_model = power_original
+
+
 def test_blend_legacy_only_when_power_unavailable() -> None:
     import web.blend_service as blend_module
 
