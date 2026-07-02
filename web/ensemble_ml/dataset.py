@@ -10,14 +10,11 @@ import pandas as pd
 from web.blend_service import _run_sport_pred_model, home_win_prob_to_total_score
 from web.bet_advisor import model_home_margin
 from web.closing_odds_db import closing_odds_lookup
-from web.ensemble_ml.config import MIN_TRAIN_ROWS, TRAIN_LEAGUES
-
-# Cap walk-forward rows so training finishes in reasonable time on full histories.
-MAX_CALIBRATION_GAMES = 250
-POWER_TRAIN_WINDOW = 900
-# College leagues: sport matrix rebuild is too slow per walk-forward step; proxy at train time.
-# Live inference still uses the real sport layer from the blend payload.
-SPORT_TRAIN_PROXY_LEAGUES = frozenset({"cbb", "ncaabb"})
+from web.ensemble_ml.config import (
+    MIN_TRAIN_ROWS,
+    TRAIN_LEAGUES,
+    get_dataset_profile,
+)
 from web.ensemble_ml.features import (
     legacy_home_from_total,
     market_devig_home,
@@ -30,10 +27,8 @@ from web.soccer_blend import power_threeway_probs, soccer_threeway_probs
 from web.soccer_meta_model import stack_soccer_blend_layers
 from web.sports_meta_model import stack_binary_blend_layers
 
-
-def _cutoff_from_iso(game_date: str) -> str:
-    year, month, day = game_date.split("-")
-    return f"{int(month)}-{int(day)}-{year}"
+# College leagues: sport matrix rebuild is too slow per walk-forward step; proxy at train time.
+SPORT_TRAIN_PROXY_LEAGUES = frozenset({"cbb", "ncaabb"})
 
 
 def _sport_cutoff_bucket(game_date: str) -> str:
@@ -42,31 +37,74 @@ def _sport_cutoff_bucket(game_date: str) -> str:
     return f"{parsed.month}-1-{parsed.year}"
 
 
-def _layer_margin_from_prob(home_prob: float, league: str) -> float:
-    total, _ = home_win_prob_to_total_score(home_prob)
-    return model_home_margin(total, league)
+def _load_dated_games(league: str, cutoff: str, *, dated_source: str) -> list:
+    if dated_source == "supplemental":
+        from web.supplemental_games import load_supplemental_dated_games_for_backtest
+
+        return load_supplemental_dated_games_for_backtest(league, cutoff)
+    return load_league_dated_games_for_backtest(league, cutoff)
 
 
-def _calibration_indices(total: int, *, warmup: int) -> range:
-    start = max(warmup, total - MAX_CALIBRATION_GAMES)
+def _calibration_indices(
+    total: int,
+    *,
+    warmup: int,
+    profile: dict[str, int | None | str],
+) -> range:
+    max_cal = profile.get("max_calibration_games")
+    if max_cal is None:
+        start = warmup
+    else:
+        start = max(warmup, total - int(max_cal))
     span = total - start
-    step = 1 if span <= 250 else max(1, span // 250)
+    target_rows = profile.get("target_rows")
+    if target_rows is None or span <= int(target_rows):
+        step = 1
+    else:
+        step = max(1, span // int(target_rows))
     return range(start, total, step)
 
 
-def collect_binary_rows(league: str, cutoff: str) -> pd.DataFrame:
+def _training_games(
+    dated_games: list,
+    index: int,
+    *,
+    profile: dict[str, int | None | str],
+) -> list:
+    window = profile.get("power_train_window")
+    if window is None:
+        return [item[1] for item in dated_games[:index]]
+    window = int(window)
+    return [item[1] for item in dated_games[max(0, index - window) : index]]
+
+
+def collect_binary_rows(
+    league: str,
+    cutoff: str,
+    *,
+    profile: dict[str, int | None | str] | None = None,
+) -> pd.DataFrame:
     """Point-in-time layer features for non-soccer leagues."""
     league = league.lower()
-    dated_games = load_league_dated_games_for_backtest(league, cutoff)
+    profile = profile or get_dataset_profile(league)
+    dated_games = _load_dated_games(
+        league, cutoff, dated_source=str(profile.get("dated_source", "espn"))
+    )
     rows: list[dict[str, Any]] = []
     warmup = MIN_TRAIN_ROWS // 2
 
-    for index in _calibration_indices(len(dated_games), warmup=warmup):
+    indices = list(_calibration_indices(len(dated_games), warmup=warmup, profile=profile))
+    if len(indices) > 500:
+        print(f"  walk-forward: {len(indices)} games (of {len(dated_games)} total)", flush=True)
+
+    for step_i, index in enumerate(indices):
+        if len(indices) > 500 and step_i > 0 and step_i % 500 == 0:
+            print(f"  ... {step_i}/{len(indices)} games processed", flush=True)
         game_date, game = dated_games[index]
         home, away, _hn, _an, home_score, away_score = game
         if home_score == away_score:
             continue
-        train = [item[1] for item in dated_games[max(0, index - POWER_TRAIN_WINDOW) : index]]
+        train = _training_games(dated_games, index, profile=profile)
         if len(train) < warmup:
             continue
 
@@ -108,7 +146,9 @@ def collect_binary_rows(league: str, cutoff: str) -> pd.DataFrame:
             league=league,
         )
         if meta_stacked is None:
-            meta_stacked = power_home if sport_home is None else 0.35 * power_home + 0.65 * sport_home
+            meta_stacked = (
+                power_home if sport_home is None else 0.35 * power_home + 0.65 * sport_home
+            )
 
         odds = closing_odds_lookup(league, game_date, home, away) or {}
         market_spread = odds.get("home_close_spread")
@@ -147,16 +187,30 @@ def collect_binary_rows(league: str, cutoff: str) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def collect_soccer_rows(league: str, cutoff: str) -> pd.DataFrame:
+def collect_soccer_rows(
+    league: str,
+    cutoff: str,
+    *,
+    profile: dict[str, int | None | str] | None = None,
+) -> pd.DataFrame:
     league = league.lower()
-    dated_games = load_league_dated_games_for_backtest(league, cutoff)
+    profile = profile or get_dataset_profile(league)
+    dated_games = _load_dated_games(
+        league, cutoff, dated_source=str(profile.get("dated_source", "espn"))
+    )
     rows: list[dict[str, Any]] = []
     warmup = MIN_TRAIN_ROWS // 2
 
-    for index in _calibration_indices(len(dated_games), warmup=warmup):
+    indices = list(_calibration_indices(len(dated_games), warmup=warmup, profile=profile))
+    if len(indices) > 500:
+        print(f"  walk-forward: {len(indices)} games (of {len(dated_games)} total)", flush=True)
+
+    for step_i, index in enumerate(indices):
+        if len(indices) > 500 and step_i > 0 and step_i % 500 == 0:
+            print(f"  ... {step_i}/{len(indices)} games processed", flush=True)
         game_date, game = dated_games[index]
         home, away, _hn, _an, home_score, away_score = game
-        train = [item[1] for item in dated_games[max(0, index - POWER_TRAIN_WINDOW) : index]]
+        train = _training_games(dated_games, index, profile=profile)
         if len(train) < warmup:
             continue
 
@@ -233,7 +287,12 @@ def collect_soccer_rows(league: str, cutoff: str) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def build_league_dataset(league: str, cutoff: str | None = None) -> pd.DataFrame:
+def build_league_dataset(
+    league: str,
+    cutoff: str | None = None,
+    *,
+    profile: dict[str, int | None | str] | None = None,
+) -> pd.DataFrame:
     league = league.lower()
     if league not in TRAIN_LEAGUES:
         raise ValueError(f"Unsupported league: {league}")
@@ -241,5 +300,5 @@ def build_league_dataset(league: str, cutoff: str | None = None) -> pd.DataFrame
         today = date.today()
         cutoff = f"{today.month}-{today.day}-{today.year}"
     if is_soccer_league(league):
-        return collect_soccer_rows(league, cutoff)
-    return collect_binary_rows(league, cutoff)
+        return collect_soccer_rows(league, cutoff, profile=profile)
+    return collect_binary_rows(league, cutoff, profile=profile)

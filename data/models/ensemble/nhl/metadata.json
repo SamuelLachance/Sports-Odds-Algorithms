@@ -1,8 +1,15 @@
 {
   "league": "nhl",
   "model_type": "binary_moneyline",
-  "train_rows": 450,
-  "holdout_logloss": 0.6831,
+  "train_rows": 8467,
+  "games_available": 8510,
+  "dataset_profile": {
+    "max_calibration_games": null,
+    "target_rows": null,
+    "power_train_window": null,
+    "dated_source": "espn"
+  },
+  "holdout_logloss": 0.6824,
   "holdout_brier": 0.245,
   "margin_sigma": 2.5,
   "trained_at": "2026-07-01",

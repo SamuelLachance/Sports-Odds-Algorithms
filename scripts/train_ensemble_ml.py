@@ -10,7 +10,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from web.ensemble_ml.config import MIN_TRAIN_ROWS, TRAIN_LEAGUES  # noqa: E402
+from web.ensemble_ml.config import MIN_TRAIN_ROWS, TRAIN_LEAGUES, get_dataset_profile  # noqa: E402
 from web.ensemble_ml.dataset import build_league_dataset  # noqa: E402
 from web.ensemble_ml.model import (  # noqa: E402
     save_ensemble,
@@ -44,10 +44,16 @@ def _cutoff_today() -> str:
     return f"{today.month}-{today.day}-{today.year}"
 
 
-def train_league(league: str, cutoff: str) -> dict | None:
+def train_league(
+    league: str,
+    cutoff: str,
+    *,
+    profile: dict | None = None,
+) -> dict | None:
     league = league.lower()
+    profile = profile or get_dataset_profile(league)
     print(f"Building dataset for {league}...", flush=True)
-    frame = build_league_dataset(league, cutoff)
+    frame = build_league_dataset(league, cutoff, profile=profile)
     if len(frame) < MIN_TRAIN_ROWS:
         print(f"  skipped ({len(frame)} rows < {MIN_TRAIN_ROWS})", flush=True)
         return None
@@ -103,6 +109,17 @@ def train_league(league: str, cutoff: str) -> dict | None:
         "league": league,
         "model_type": "binary_spread" if model.spread_league else "binary_moneyline",
         "train_rows": len(frame),
+        "games_available": profile.get("games_available"),
+        "dataset_profile": {
+            key: profile[key]
+            for key in (
+                "max_calibration_games",
+                "target_rows",
+                "power_train_window",
+                "dated_source",
+            )
+            if key in profile
+        },
         "holdout_logloss": round(log_loss(prob_arr, out_arr), 4),
         "holdout_brier": round(brier(prob_arr, out_arr), 4),
         "margin_sigma": model.margin_sigma,
@@ -124,8 +141,20 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Train per-sport ensemble ML mega-models.")
     parser.add_argument("--leagues", default=",".join(CORE_LEAGUES))
     parser.add_argument("--cutoff", default=_cutoff_today())
+    parser.add_argument(
+        "--full-history",
+        action="store_true",
+        help="Train on every walk-forward game with full prior history (overrides league defaults).",
+    )
     args = parser.parse_args()
     leagues = [item.strip().lower() for item in args.leagues.split(",") if item.strip()]
+
+    full_profile = {
+        "max_calibration_games": None,
+        "target_rows": None,
+        "power_train_window": None,
+        "dated_source": "espn",
+    }
 
     summary: dict[str, dict] = {}
     trained = 0
@@ -133,7 +162,15 @@ def main() -> int:
         if league not in TRAIN_LEAGUES:
             print(f"Skipping unknown league {league}", flush=True)
             continue
-        entry = train_league(league, args.cutoff)
+        profile = full_profile if args.full_history else get_dataset_profile(league)
+        if league == "nhl" or args.full_history:
+            from web.season_games import load_league_dated_games_for_backtest
+
+            profile = dict(profile)
+            profile["games_available"] = len(
+                load_league_dated_games_for_backtest(league, args.cutoff)
+            )
+        entry = train_league(league, args.cutoff, profile=profile)
         if entry:
             summary[league] = entry
             trained += 1

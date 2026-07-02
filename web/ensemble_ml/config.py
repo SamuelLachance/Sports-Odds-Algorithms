@@ -61,6 +61,33 @@ DEFAULT_MARGIN_SIGMA: dict[str, float] = {
 MIN_TRAIN_ROWS = 80
 CALIBRATION_FRACTION = 0.2
 
+# Per-league dataset build settings (defaults keep training fast for most sports).
+DEFAULT_MAX_CALIBRATION_GAMES = 250
+DEFAULT_TARGET_ROWS = 250
+DEFAULT_POWER_TRAIN_WINDOW = 900
+
+# NHL: use every walk-forward game with full prior history (max training rows).
+LEAGUE_DATASET_OVERRIDES: dict[str, dict[str, int | None | str]] = {
+    "nhl": {
+        "max_calibration_games": None,
+        "target_rows": None,
+        "power_train_window": None,
+        "dated_source": "espn",
+    },
+}
+
+
+def get_dataset_profile(league: str) -> dict[str, int | None | str]:
+    league = league.lower()
+    base = {
+        "max_calibration_games": DEFAULT_MAX_CALIBRATION_GAMES,
+        "target_rows": DEFAULT_TARGET_ROWS,
+        "power_train_window": DEFAULT_POWER_TRAIN_WINDOW,
+        "dated_source": "espn",
+    }
+    override = LEAGUE_DATASET_OVERRIDES.get(league, {})
+    return {**base, **override}
+
 
 def model_dir(league: str) -> Path:
     return MODEL_ROOT / league.lower()
