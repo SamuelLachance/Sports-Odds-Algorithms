@@ -1,3 +1,4 @@
+const APP_BUILD_VERSION = "2026-07-02-edge25";
 const META_BASE_PATH =
   document.querySelector('meta[name="base-path"]')?.content ?? "";
 const IS_GITHUB_IO = window.location.hostname.endsWith("github.io");

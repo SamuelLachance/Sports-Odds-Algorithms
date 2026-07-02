@@ -51,9 +51,7 @@ def copy_static_assets() -> None:
     index_path = DOCS_DIR / "index.html"
     app_path = DOCS_DIR / "app.js"
     css_path = DOCS_DIR / "styles.css"
-    asset_version = str(
-        max(app_path.stat().st_mtime_ns, css_path.stat().st_mtime_ns) % 10_000_000_000
-    )
+    asset_version = str(int(app_path.stat().st_mtime_ns // 1_000_000))
     html = index_path.read_text(encoding="utf-8")
     html = html.replace(
         '<meta name="viewport"',
