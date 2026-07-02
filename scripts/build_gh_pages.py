@@ -148,7 +148,7 @@ def build_prediction_cache() -> tuple[int, int]:
     return built, skipped
 
 
-def build_daily_slate() -> dict:
+def build_daily_slate(*, refresh_sports_db: bool = True) -> dict:
     from web.daily_service import get_daily_slate
     from web.team_service import (
         build_league_sidebar_index,
@@ -182,15 +182,43 @@ def build_daily_slate() -> dict:
     from web.sports_db.build import TEAM_BUILD_WORKERS
 
     full_build = _env_flag("FULL_BUILD")
-    print(f"Building sports database (fast={not full_build})...")
-    build_sports_database(
-        DOCS_DIR / "api" / "db",
-        slate=slate,
-        fast=not full_build,
-        max_workers=4,
-        team_workers=TEAM_BUILD_WORKERS if _fast_daily_build() else 6,
-    )
+    if refresh_sports_db:
+        print(f"Building sports database (fast={not full_build})...")
+        build_sports_database(
+            DOCS_DIR / "api" / "db",
+            slate=slate,
+            fast=not full_build,
+            max_workers=4,
+            team_workers=TEAM_BUILD_WORKERS if _fast_daily_build() else 6,
+        )
+    else:
+        print("Skipping sports DB rebuild (restored API cache)", flush=True)
     return slate
+
+
+PAGES_API_CACHE = PROJECT_ROOT / ".build-cache" / "pages-api"
+
+
+def seed_pages_api_cache() -> bool:
+    """Restore prior docs/api tree (teams, db, predict cache) for fast CI deploys."""
+    if not PAGES_API_CACHE.is_dir():
+        return False
+    target = DOCS_DIR / "api"
+    if target.is_dir():
+        shutil.rmtree(target)
+    shutil.copytree(PAGES_API_CACHE, target)
+    print(f"Seeded Pages API from cache: {PAGES_API_CACHE}", flush=True)
+    return True
+
+
+def save_pages_api_cache() -> None:
+    source = DOCS_DIR / "api"
+    if not source.is_dir():
+        return
+    if PAGES_API_CACHE.is_dir():
+        shutil.rmtree(PAGES_API_CACHE)
+    shutil.copytree(source, PAGES_API_CACHE)
+    print(f"Saved Pages API cache: {PAGES_API_CACHE}", flush=True)
 
 
 def seed_sports_db_cache() -> bool:
@@ -223,10 +251,17 @@ def main() -> None:
     print(f"GitHub Pages build mode: {'fast daily' if fast_build else 'full'}", flush=True)
 
     copy_static_assets()
-    build_api_metadata()
-    if fast_build:
-        seed_sports_db_cache()
-    build_daily_slate()
+
+    api_cached = seed_pages_api_cache() if fast_build else False
+    if api_cached:
+        print("Using cached Pages API; refreshing slate + tracking only", flush=True)
+    else:
+        build_api_metadata()
+        if fast_build:
+            seed_sports_db_cache()
+
+    refresh_sports_db = not (fast_build and api_cached)
+    build_daily_slate(refresh_sports_db=refresh_sports_db)
 
     if fast_build:
         print("Skipping prediction cache (FAST_DAILY_BUILD)", flush=True)
@@ -235,6 +270,7 @@ def main() -> None:
         built, skipped = build_prediction_cache()
 
     save_sports_db_cache()
+    save_pages_api_cache()
 
     print(f"GitHub Pages build complete: {DOCS_DIR}", flush=True)
     print(f"Prediction cache: {built} files written, {skipped} skipped", flush=True)
