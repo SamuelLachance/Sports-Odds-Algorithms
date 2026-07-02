@@ -89,8 +89,26 @@ DEFAULT_MAX_CALIBRATION_GAMES = 250
 DEFAULT_TARGET_ROWS = 250
 DEFAULT_POWER_TRAIN_WINDOW = 900
 
-# NHL: use every walk-forward game with full prior history (max training rows).
+# Full walk-forward history (max training rows) for selected leagues.
 LEAGUE_DATASET_OVERRIDES: dict[str, dict[str, int | None | str]] = {
+    "nba": {
+        "max_calibration_games": None,
+        "target_rows": None,
+        "power_train_window": None,
+        "dated_source": "espn",
+    },
+    "wnba": {
+        "max_calibration_games": None,
+        "target_rows": None,
+        "power_train_window": None,
+        "dated_source": "espn",
+    },
+    "cbb": {
+        "max_calibration_games": None,
+        "target_rows": None,
+        "power_train_window": None,
+        "dated_source": "espn",
+    },
     "nhl": {
         "max_calibration_games": None,
         "target_rows": None,

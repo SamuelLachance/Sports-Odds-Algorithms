@@ -122,6 +122,7 @@ def collect_binary_rows(
         power_margin = model_home_margin(power_total, league)
 
         game_cutoff = _sport_cutoff_bucket(game_date)
+        sport_payload = None
         if league in SPORT_TRAIN_PROXY_LEAGUES:
             sport_home = power_home
             sport_margin = power_margin
@@ -132,7 +133,7 @@ def collect_binary_rows(
             sport_home = (
                 float(sport_payload["home_win_probability"]) if sport_payload else None
             )
-        sport_margin = None
+            sport_margin = None
         expected_home_goals = None
         expected_away_goals = None
         overtime_probability = None

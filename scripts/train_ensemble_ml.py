@@ -201,7 +201,7 @@ def main() -> int:
             print(f"Skipping unknown league {league}", flush=True)
             continue
         profile = full_profile if args.full_history else get_dataset_profile(league)
-        if league == "nhl" or args.full_history:
+        if league in {"nhl", "nba", "wnba", "cbb"} or args.full_history:
             from web.season_games import load_league_dated_games_for_backtest
 
             profile = dict(profile)
