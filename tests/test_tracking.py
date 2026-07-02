@@ -8,7 +8,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from web.league_profiles import MIN_RECOMMENDED_EDGE  # noqa: E402
+from web.league_profiles import OFFICIAL_MIN_EV_PCT  # noqa: E402
 from web.tracking_service import (  # noqa: E402
     _fetch_event_result,
     _scoreboard_dates_for_bet,
@@ -23,7 +23,12 @@ from web.tracking_service import (  # noqa: E402
 )
 
 
-def _sample_pick(*, edge: float = MIN_RECOMMENDED_EDGE, event_id: str = "401815712") -> dict:
+def _sample_pick(
+    *,
+    edge: float = 30.0,
+    ev_pct: float = OFFICIAL_MIN_EV_PCT,
+    event_id: str = "401815712",
+) -> dict:
     return {
         "side": "home",
         "team_name": "Pirates",
@@ -32,6 +37,7 @@ def _sample_pick(*, edge: float = MIN_RECOMMENDED_EDGE, event_id: str = "4018157
         "strategy_label": "Value bet",
         "confidence": "medium",
         "edge": edge,
+        "ev_pct": ev_pct,
         "model_projection": 120,
         "market_odds": 141,
         "win_probability": 55,
@@ -78,27 +84,27 @@ def test_record_and_grade() -> None:
     assert response["summary"]["wins"] == 1
 
 
-def test_rejects_sub_min_edge() -> None:
+def test_rejects_sub_min_ev() -> None:
     store = {"version": 1, "bets": []}
     slate = {
         "date_label": "2026-06-11",
-        "recommended_bets": [_sample_pick(edge=MIN_RECOMMENDED_EDGE - 1)],
+        "recommended_bets": [_sample_pick(ev_pct=OFFICIAL_MIN_EV_PCT - 1)],
         "games": [],
     }
     store = record_from_slate(store, slate)
     assert store["bets"] == []
 
 
-def test_accepts_min_edge() -> None:
+def test_accepts_min_ev() -> None:
     store = {"version": 1, "bets": []}
     slate = {
         "date_label": "2026-06-11",
-        "recommended_bets": [_sample_pick(edge=MIN_RECOMMENDED_EDGE)],
+        "recommended_bets": [_sample_pick(ev_pct=OFFICIAL_MIN_EV_PCT)],
         "games": [],
     }
     store = record_from_slate(store, slate)
     assert len(store["bets"]) == 1
-    assert store["bets"][0]["edge"] == MIN_RECOMMENDED_EDGE
+    assert store["bets"][0]["ev_pct"] == OFFICIAL_MIN_EV_PCT
 
 
 def test_ignores_game_recommendations_not_in_recommended() -> None:
@@ -114,7 +120,7 @@ def test_ignores_game_recommendations_not_in_recommended() -> None:
                 "event_id": "401815712",
                 "matchup": {"away": {"name": "Dodgers"}, "home": {"name": "Pirates"}},
                 "start_time": "2026-06-11T23:40Z",
-                "recommendations": [_sample_pick(edge=60)],
+                "recommendations": [_sample_pick(ev_pct=60)],
             }
         ],
     }
@@ -122,7 +128,12 @@ def test_ignores_game_recommendations_not_in_recommended() -> None:
     assert store["bets"] == []
 
 
-def _spread_pick(*, edge: float = MIN_RECOMMENDED_EDGE, event_id: str = "401859967") -> dict:
+def _spread_pick(
+    *,
+    edge: float = 30.0,
+    ev_pct: float = OFFICIAL_MIN_EV_PCT,
+    event_id: str = "401859967",
+) -> dict:
     return {
         "side": "home",
         "team_name": "Spurs",
@@ -131,6 +142,7 @@ def _spread_pick(*, edge: float = MIN_RECOMMENDED_EDGE, event_id: str = "4018599
         "strategy_label": "Value bet",
         "confidence": "medium",
         "edge": edge,
+        "ev_pct": ev_pct,
         "model_projection": 60,
         "market_odds": -108,
         "win_probability": 72,
@@ -291,14 +303,14 @@ def test_grade_pending_resolves_stale_event_by_id() -> None:
     assert bet.get("final_score")
 
 
-def test_prune_below_min_edge() -> None:
+def test_prune_below_min_ev() -> None:
     store = {
         "version": 1,
         "bets": [
-            _sample_pick(edge=MIN_RECOMMENDED_EDGE - 5, event_id="401815712"),
-            _sample_pick(edge=MIN_RECOMMENDED_EDGE - 1, event_id="401815713"),
-            _sample_pick(edge=MIN_RECOMMENDED_EDGE, event_id="401815714"),
-            _sample_pick(edge=MIN_RECOMMENDED_EDGE + 10, event_id="401815715"),
+            _sample_pick(ev_pct=OFFICIAL_MIN_EV_PCT - 5, event_id="401815712"),
+            _sample_pick(ev_pct=OFFICIAL_MIN_EV_PCT - 1, event_id="401815713"),
+            _sample_pick(ev_pct=OFFICIAL_MIN_EV_PCT, event_id="401815714"),
+            _sample_pick(ev_pct=OFFICIAL_MIN_EV_PCT + 10, event_id="401815715"),
         ],
     }
     # record_from_slate expects full bet shape; prune works on stored bets
@@ -309,6 +321,7 @@ def test_prune_below_min_edge() -> None:
             "event_id": p["event_id"],
             "side": p["side"],
             "edge": p["edge"],
+            "ev_pct": p["ev_pct"],
             "status": "pending",
             "units": 0.0,
             "stake_units": 1.0,
@@ -316,18 +329,18 @@ def test_prune_below_min_edge() -> None:
         for p in store["bets"]
     ]
     pruned = prune_below_min_edge(store)
-    edges = [b["edge"] for b in pruned["bets"]]
-    assert (MIN_RECOMMENDED_EDGE - 5) not in edges
-    assert (MIN_RECOMMENDED_EDGE - 1) not in edges
-    assert all(e >= MIN_RECOMMENDED_EDGE for e in edges)
+    ev_values = [b["ev_pct"] for b in pruned["bets"]]
+    assert (OFFICIAL_MIN_EV_PCT - 5) not in ev_values
+    assert (OFFICIAL_MIN_EV_PCT - 1) not in ev_values
+    assert all(e >= OFFICIAL_MIN_EV_PCT for e in ev_values)
     assert len(pruned["bets"]) == 2
 
 
 if __name__ == "__main__":
     test_calculate_units()
     test_record_and_grade()
-    test_rejects_sub_min_edge()
-    test_accepts_min_edge()
+    test_rejects_sub_min_ev()
+    test_accepts_min_ev()
     test_ignores_game_recommendations_not_in_recommended()
     test_grade_spread_cover_win()
     test_grade_spread_push()

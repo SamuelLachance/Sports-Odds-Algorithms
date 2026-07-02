@@ -1,8 +1,8 @@
 {
-  "policy": "Official picks when model edge vs sportsbook is >= 25 (American odds scale) and expected value is >= 25% of stake.",
+  "policy": "Official picks when expected value vs the sportsbook is >= 25% of stake.",
   "generated_at": "2026-07-02",
   "default": {
-    "min_edge": 25,
+    "min_edge": 0,
     "min_ev_pct": 25.0,
     "min_spread_point_edge": 0.0,
     "enabled": true

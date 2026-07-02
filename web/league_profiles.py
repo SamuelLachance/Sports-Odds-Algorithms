@@ -147,6 +147,9 @@ MIN_RECOMMENDED_EDGE = 25
 # Minimum expected value (% of stake) vs book price (legacy; official picks use edge-only).
 MIN_EXPECTED_VALUE_PCT = 5.0
 
+# Official algo picks and tracking: minimum +EV vs the book (% of stake).
+OFFICIAL_MIN_EV_PCT = 25.0
+
 # Cross-sign model-favorite spots (model fav priced as underdog) may clear a lower EV bar.
 MIN_CROSS_SIGN_EV_PCT = 3.0
 

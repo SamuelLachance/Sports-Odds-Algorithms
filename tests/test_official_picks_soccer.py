@@ -8,7 +8,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from web.league_profiles import MIN_RECOMMENDED_EDGE, eligible_for_official_picks  # noqa: E402
+from web.league_profiles import OFFICIAL_MIN_EV_PCT, eligible_for_official_picks  # noqa: E402
 from web.pick_strategy import evaluate_soccer_official_picks_for_game, get_pick_thresholds  # noqa: E402
 from web.tracking_service import (  # noqa: E402
     _official_tracked_bets,
@@ -17,7 +17,7 @@ from web.tracking_service import (  # noqa: E402
 )
 
 
-def _soccer_pick(*, edge: float = MIN_RECOMMENDED_EDGE) -> dict:
+def _soccer_pick(*, edge: float = 30.0, ev_pct: float = OFFICIAL_MIN_EV_PCT) -> dict:
     return {
         "side": "home",
         "team_name": "Arsenal",
@@ -26,7 +26,7 @@ def _soccer_pick(*, edge: float = MIN_RECOMMENDED_EDGE) -> dict:
         "strategy_label": "Value bet",
         "confidence": "medium",
         "edge": edge,
-        "ev_pct": 8.0,
+        "ev_pct": ev_pct,
         "profit_score": 12.0,
         "kelly_pct": 3.0,
         "model_projection": 120,
@@ -137,7 +137,8 @@ def test_tracking_rollups_include_soccer() -> None:
         "side": "home",
         "status": "win",
         "units": 1.4,
-        "edge": MIN_RECOMMENDED_EDGE,
+        "edge": 30.0,
+        "ev_pct": OFFICIAL_MIN_EV_PCT,
     }
     mlb_bet = {
         "id": "2026-06-01:401815712:home",
@@ -147,7 +148,8 @@ def test_tracking_rollups_include_soccer() -> None:
         "side": "home",
         "status": "loss",
         "units": -1.0,
-        "edge": MIN_RECOMMENDED_EDGE,
+        "edge": 30.0,
+        "ev_pct": OFFICIAL_MIN_EV_PCT,
     }
     store = {"version": 1, "bets": [soccer_bet, mlb_bet]}
     assert len(_official_tracked_bets(store["bets"])) == 2

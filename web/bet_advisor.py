@@ -323,7 +323,9 @@ def passes_moneyline_pick_gate(
     min_edge: float = MIN_RECOMMENDED_EDGE,
     min_ev_pct: float = MIN_EXPECTED_VALUE_PCT,
 ) -> bool:
-    """Moneyline gate: primary rule is American edge vs the book; optional +EV bar."""
+    """Moneyline gate: EV% when min_edge is 0; otherwise edge with optional EV bar."""
+    if min_edge <= 0:
+        return min_ev_pct <= 0 or ev_pct >= min_ev_pct
     if edge >= min_edge:
         return min_ev_pct <= 0 or ev_pct >= min_ev_pct
     if strategy == "model_favorite" and min_ev_pct > 0:
@@ -654,10 +656,10 @@ def evaluate_spread_picks(
 
     for side, name, slug, spread_odds in candidates:
         point_edge = spread_point_edge(model_margin, consensus_spread, side)
+        if point_edge <= 0:
+            continue
         juice = spread_odds if spread_odds is not None else DEFAULT_SPREAD_JUICE
         edge = spread_odds_edge(point_edge, juice)
-        if edge < min_edge:
-            continue
         if min_point_edge is not None and point_edge < min_point_edge:
             continue
 
@@ -665,6 +667,8 @@ def evaluate_spread_picks(
         side_cover_prob = spread_cover_probability(point_edge)
         ev_pct = expected_value_pct(side_cover_prob, juice)
         if min_ev_pct > 0 and ev_pct < min_ev_pct:
+            continue
+        if min_edge > 0 and edge < min_edge:
             continue
         fair_spread_odds = _probability_to_american(side_cover_prob)
 

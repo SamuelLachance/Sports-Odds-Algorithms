@@ -12,7 +12,7 @@ from web.bet_advisor import spread_line_for_side
 from web.espn_client import fetch_scoreboard
 from web.league_profiles import (
     DEFAULT_SPREAD_JUICE,
-    MIN_RECOMMENDED_EDGE,
+    OFFICIAL_MIN_EV_PCT,
     eligible_for_official_picks,
     is_soccer_league,
 )
@@ -98,7 +98,7 @@ def _official_tracked_bets(bets: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str, Any]:
-    """Log recommended bets from the daily slate (edge >= MIN_RECOMMENDED_EDGE)."""
+    """Log recommended bets from the daily slate (EV% >= OFFICIAL_MIN_EV_PCT)."""
     date_label = slate.get("date_label") or toronto_today().isoformat()
     now = datetime.now(timezone.utc).isoformat()
     index = {
@@ -109,8 +109,8 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
     for pick in slate.get("recommended_bets") or []:
         if not eligible_for_official_picks(pick.get("league") or ""):
             continue
-        edge = pick.get("edge") or 0
-        if edge < MIN_RECOMMENDED_EDGE:
+        ev_pct = pick.get("ev_pct") or 0
+        if ev_pct < OFFICIAL_MIN_EV_PCT:
             continue
         event_id = pick.get("event_id")
         side = pick.get("side")
@@ -483,20 +483,25 @@ def build_tracking_response(store: dict[str, Any]) -> dict[str, Any]:
         "timezone": TIMEZONE_LABEL,
         "last_updated": datetime.now(timezone.utc).isoformat(),
         "note": (
-            f"Tracks official algo bets with +{MIN_RECOMMENDED_EDGE} edge vs the sportsbook "
-            "from each daily slate. Basketball/football spread bets graded ATS at consensus "
-            "book spread; hockey/baseball at closing moneyline; soccer at 1X2 closing odds. "
-            "1u flat stake."
+            f"Tracks official algo bets with +{OFFICIAL_MIN_EV_PCT:.0f}% expected value "
+            "vs the sportsbook from each daily slate. Basketball/football spread bets "
+            "graded ATS at consensus book spread; hockey/baseball at closing moneyline; "
+            "soccer at 1X2 closing odds. 1u flat stake."
         ),
-        "min_recommended_edge": MIN_RECOMMENDED_EDGE,
+        "min_recommended_ev_pct": OFFICIAL_MIN_EV_PCT,
     }
 
 
-def prune_below_min_edge(store: dict[str, Any]) -> dict[str, Any]:
+def prune_below_min_ev(store: dict[str, Any]) -> dict[str, Any]:
     store["bets"] = [
-        b for b in store["bets"] if (b.get("edge") or 0) >= MIN_RECOMMENDED_EDGE
+        b for b in store["bets"] if (b.get("ev_pct") or 0) >= OFFICIAL_MIN_EV_PCT
     ]
     return store
+
+
+def prune_below_min_edge(store: dict[str, Any]) -> dict[str, Any]:
+    """Backward-compatible alias."""
+    return prune_below_min_ev(store)
 
 
 def update_tracking(slate: dict[str, Any]) -> dict[str, Any]:

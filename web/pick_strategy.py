@@ -21,6 +21,7 @@ from web.blend_service import blended_home_spread_margin, home_win_prob_to_total
 from web.league_profiles import (
     MIN_EXPECTED_VALUE_PCT,
     MIN_RECOMMENDED_EDGE,
+    OFFICIAL_MIN_EV_PCT,
     get_league_profile,
     is_soccer_league,
 )
@@ -36,9 +37,8 @@ STRATEGY_PATH = PROJECT_ROOT / "data" / "pick_strategy.json"
 
 OfficialBetType = Literal["spread", "moneyline", "soccer_1x2", "none"]
 
-# Official picks: model edge vs sportsbook on the American-odds scale (not ROI gates).
-OFFICIAL_MIN_EDGE = 25.0
-OFFICIAL_MIN_EV_PCT = 25.0
+# Official picks: +EV gate only (expected value % of stake vs book price).
+OFFICIAL_MIN_EDGE = 0.0
 OFFICIAL_MIN_SPREAD_POINT_EDGE = 0.0
 
 DEFAULT_THRESHOLDS: dict[str, Any] = {
@@ -100,7 +100,7 @@ def _default_entry(bet_type: str) -> dict[str, Any]:
 
 
 def get_pick_thresholds(league: str) -> dict[str, Any]:
-    """Live official-pick thresholds: 25+ edge vs the book; spread vs ML by sport."""
+    """Live official-pick thresholds: 25%+ EV; spread vs ML by sport."""
     config = load_pick_strategy()
     league = league.lower()
     entry = config.get(league) or config.get(_category_for_league(league)) or config["default"]
@@ -1028,7 +1028,7 @@ def evaluate_soccer_official_picks_for_game(
     expected_home_goals: float | None = None,
     expected_away_goals: float | None = None,
 ) -> list[BetPick]:
-    """Official 1X2 soccer picks when edge vs the book is >= 25."""
+    """Official 1X2 soccer picks when expected value is >= 25%."""
     thresholds = get_pick_thresholds(league)
     picks = evaluate_soccer_picks(
         away_name=away_name,
@@ -1072,7 +1072,7 @@ def evaluate_official_picks_for_game(
     home_prob: float | None = None,
     away_prob: float | None = None,
 ) -> list[BetPick]:
-    """Route to spread or moneyline picks when edge vs the book is >= 25."""
+    """Route to spread or moneyline picks when expected value is >= 25%."""
     from web.bet_advisor import resolve_binary_win_probs
 
     thresholds = get_pick_thresholds(league)

@@ -126,14 +126,15 @@ def test_moneyline_edge_cross_sign_not_raw_subtraction() -> None:
     assert edge != 230.0
 
 
-def test_edge_threshold_official_minimum() -> None:
-    """Official picks require min_edge=25 and min_ev_pct=25 on the American odds scale."""
-    from web.pick_strategy import OFFICIAL_MIN_EDGE, OFFICIAL_MIN_EV_PCT, get_pick_thresholds
+def test_official_pick_threshold_is_ev_only() -> None:
+    """Official picks require 25%+ EV; American edge is not a gate."""
+    from web.league_profiles import OFFICIAL_MIN_EV_PCT
+    from web.pick_strategy import OFFICIAL_MIN_EDGE, get_pick_thresholds
 
-    assert OFFICIAL_MIN_EDGE == 25.0
+    assert OFFICIAL_MIN_EDGE == 0.0
     assert OFFICIAL_MIN_EV_PCT == 25.0
     thresholds = get_pick_thresholds("nba")
-    assert thresholds["min_edge"] == 25.0
+    assert thresholds["min_edge"] == 0.0
     assert thresholds["min_ev_pct"] == 25.0
     assert thresholds["enabled"] is True
 
@@ -428,7 +429,7 @@ def test_spread_picks_require_min_ev_pct() -> None:
         away_spread_odds=-110,
         home_spread_odds=-110,
         model_margin_home=-1.6,
-        min_edge=25.0,
+        min_edge=0.0,
         min_ev_pct=25.0,
     )
     assert picks == []
@@ -444,7 +445,7 @@ if __name__ == "__main__":
     test_moneyline_edge_same_sign_underdog()
     test_moneyline_edge_same_sign_favorite()
     test_moneyline_edge_cross_sign_not_raw_subtraction()
-    test_edge_threshold_official_minimum()
+    test_official_pick_threshold_is_ev_only()
     test_evaluate_picks_cross_sign_positive_ev_qualifies()
     test_expected_value_pct_favorite()
     test_passes_moneyline_pick_gate_model_favorite()

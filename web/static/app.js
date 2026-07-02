@@ -670,7 +670,7 @@ function algoCenter(game) {
       ${algoBreakdown(m)}
       ${oddsRow}
     </div>
-    ${game.eligible_for_official_picks === false ? `<div class="game-pick neutral"><strong>Official picks unavailable</strong><span>This league is not enabled for official pick tracking.</span></div>` : top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong><span>${pickTeamNameLink(top, game.league, game.matchup)} · ${pickMarketLabel(top)} vs model ${pickModelLabel(top)} (+${top.ev_pct != null ? top.ev_pct + "% EV, " : ""}+${top.edge} edge)</span><p>${top.reason}</p></div>` : isSoccer ? `<div class="game-pick neutral"><strong>No official 1X2 pick</strong><span>Model edge vs the sportsbook is below 25 or expected value is below 25% on home/draw/away moneylines.</span></div>` : `<div class="game-pick neutral"><strong>No official pick</strong><span>Model edge vs the sportsbook is below 25 or expected value is below 25% on today's ${game.market && game.market.spread != null ? "spread" : "moneyline"} line.</span></div>`}
+    ${game.eligible_for_official_picks === false ? `<div class="game-pick neutral"><strong>Official picks unavailable</strong><span>This league is not enabled for official pick tracking.</span></div>` : top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong><span>${pickTeamNameLink(top, game.league, game.matchup)} · ${pickMarketLabel(top)} vs model ${pickModelLabel(top)} (+${top.ev_pct != null ? top.ev_pct + "% EV" : ""}${top.edge != null ? ", +" + top.edge + " edge" : ""})</span><p>${top.reason}</p></div>` : isSoccer ? `<div class="game-pick neutral"><strong>No official 1X2 pick</strong><span>Expected value is below 25% on home/draw/away moneylines.</span></div>` : `<div class="game-pick neutral"><strong>No official pick</strong><span>Expected value is below 25% on today's ${game.market && game.market.spread != null ? "spread" : "moneyline"} line.</span></div>`}
     <details class="factor-details" open><summary>Algo factor breakdown</summary><div class="factor-list">${factorBars(m.factors)}</div></details>
     ${game.eligible_for_official_picks !== false && (game.recommendations || []).length ? `<div class="rec-list"><h3>All model recommendations</h3>${game.recommendations.map((p) => pickCard({ ...p, league: game.league, league_name: game.league_name, matchup: `${away.name} @ ${home.name}`, matchup_obj: game.matchup, start_time: game.start_time })).join("")}</div>` : ""}
   </section>`;
@@ -686,7 +686,7 @@ function viewDashboard() {
   const leagues = summary.leagues || [...new Set(games.map((g) => g.league))];
   const tracking = state.tracking?.all_time || state.tracking?.summary || {};
   const dateLabel = slate.date_label || "Today";
-  const minEdge = summary.min_edge ?? slate.min_recommended_edge ?? 25;
+  const minEvPct = summary.min_ev_pct ?? slate.min_recommended_ev_pct ?? 25;
   const leagueCounts = games.reduce((acc, g) => {
     acc[g.league_name || g.league] = (acc[g.league_name || g.league] || 0) + 1;
     return acc;
@@ -706,7 +706,7 @@ function viewDashboard() {
         <div class="tracking-hero-stats home-stats">
           <div><span>Games</span><strong>${summary.games_analyzed ?? games.length}</strong></div>
           <div><span>Algo picks</span><strong>${summary.recommended_bets ?? picks.length}</strong></div>
-          <div><span>Min edge</span><strong>+${minEdge}</strong></div>
+          <div><span>Min EV</span><strong>${minEvPct}%+</strong></div>
           <div><span>All-time ROI</span><strong>${tracking.roi_percent ?? 0}%</strong></div>
         </div>
       </div>
@@ -721,7 +721,7 @@ function viewDashboard() {
       <a class="rollup-card panel home-link-card" href="#/picks">
         <h4>Algo picks</h4>
         <strong class="rollup-record">${picks.length}</strong>
-        <span>Official picks with +${minEdge} edge vs the book</span>
+        <span>Official picks with ${minEvPct}%+ expected value vs the book</span>
       </a>
       <a class="rollup-card panel home-link-card" href="#/teams">
         <h4>Leagues</h4>
@@ -737,7 +737,7 @@ function viewDashboard() {
 
     <section class="section">
       <div class="section-head"><h2>Top algo picks</h2><a class="text-link" href="#/picks">View all →</a></div>
-      <div class="picks-grid">${picks.length ? picks.slice(0, 6).map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No bets meet the +${minEdge} edge threshold today.</div>`}</div>
+      <div class="picks-grid">${picks.length ? picks.slice(0, 6).map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No bets meet the ${minEvPct}%+ EV threshold today.</div>`}</div>
     </section>`;
 }
 
@@ -766,9 +766,9 @@ function viewPicks() {
   renderSidebar(parseRoute());
   const picks = state.slate?.recommended_bets || [];
   const slate = state.slate || {};
-  const minEdge = slate.summary?.min_edge ?? slate.min_recommended_edge ?? 25;
-  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p>Official picks fire when our per-sport <strong>EnsembleML</strong> mega-model shows <strong>25+ points of edge</strong> and <strong>25%+ expected value</strong> vs the sportsbook on the recommended market: <strong>spread</strong> (basketball/football), <strong>moneyline</strong> (hockey/baseball), or <strong>1X2</strong> (soccer). Picks must also align with the model's projected margin or win probability.</p></section>
-    <div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No bets meet the +${minEdge} edge threshold today.</div>`}</div>`;
+  const minEvPct = slate.summary?.min_ev_pct ?? slate.min_recommended_ev_pct ?? 25;
+  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p>Official picks fire when our per-sport <strong>EnsembleML</strong> mega-model shows <strong>25%+ expected value</strong> vs the sportsbook on the recommended market: <strong>spread</strong> (basketball/football), <strong>moneyline</strong> (hockey/baseball), or <strong>1X2</strong> (soccer). Picks must align with the model's projected margin or win probability.</p></section>
+    <div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No bets meet the ${minEvPct}%+ EV threshold today.</div>`}</div>`;
 }
 
 function viewGames(league) {
@@ -1473,10 +1473,10 @@ function viewTracking() {
   const all = state.tracking?.all_time || state.tracking?.summary || {};
   const bets = state.tracking?.bets || [];
   const since = state.tracking?.tracking_since || "—";
-  const minEdge =
-    state.slate?.summary?.min_edge ??
-    state.slate?.min_recommended_edge ??
-    state.tracking?.min_recommended_edge ??
+  const minEvPct =
+    state.slate?.summary?.min_ev_pct ??
+    state.slate?.min_recommended_ev_pct ??
+    state.tracking?.min_recommended_ev_pct ??
     25;
 
   appRoot.innerHTML = `
@@ -1484,7 +1484,7 @@ function viewTracking() {
       <div class="tracking-hero-top">
         <div>
           <h1>Performance tracking</h1>
-          <p>Every algo bet with +${minEdge} edge is logged, graded at closing odds, and rolled up day → week → month → year → all time.</p>
+          <p>Every algo bet with ${minEvPct}%+ expected value is logged, graded at closing odds, and rolled up day → week → month → year → all time.</p>
           <p class="muted">Tracking since ${since} · ${state.tracking?.timezone || "America/Toronto"}</p>
         </div>
         <div class="tracking-hero-stats">
@@ -1516,7 +1516,7 @@ function viewTracking() {
       <div class="bet-log">${bets.length ? bets.map((b) => `<article class="bet-row panel"><div class="bet-row-top"><div><strong>${b.team_abbr ? teamNameLink(b.league, b.team_abbr, b.team_name) : b.team_name}</strong><span class="league-pill">${b.league_name}</span>${statusBadge(b.status, b.units)}</div><span class="edge-tag">+${b.edge} edge</span></div>
       <p class="muted">${b.matchup} · ${b.date}</p>
       <div class="pick-odds compact"><div><span>${b.bet_type === "spread" ? "Spread" : "Market"}</span><strong>${b.bet_type === "spread" ? formatSpread(b.spread_line) + " (" + formatOdds(b.spread_odds ?? b.market_odds) + ")" : formatOdds(b.market_odds)}</strong></div><div><span>Model</span><strong>${b.bet_type === "spread" && b.model_margin != null ? (b.side === "home" ? "Home" : "Away") + " margin " + formatSpread(b.side === "home" ? b.model_margin : -b.model_margin) : formatOdds(b.model_projection)}</strong></div><div><span>Strategy</span><strong>${b.strategy_label}</strong></div></div>
-      ${b.final_score ? `<p class="final-score">Final: ${b.final_score}</p>` : ""}</article>`).join("") : `<div class="panel empty-panel">No tracked bets yet. Picks with +${minEdge} edge are logged on each daily rebuild.</div>`}</div>
+      ${b.final_score ? `<p class="final-score">Final: ${b.final_score}</p>` : ""}</article>`).join("") : `<div class="panel empty-panel">No tracked bets yet. Picks with ${minEvPct}%+ EV are logged on each daily rebuild.</div>`}</div>
     </section>`;
 
   appRoot.querySelectorAll(".period-tab").forEach((btn) => {
@@ -1606,7 +1606,7 @@ function renderBettingGameCard(sheet, league) {
       <small>Fav: ${model.favorite_side || "—"} · Blend ${model.blend_layers || "—"} layers</small>
       ${agreement.required ? `<small>Agreement: ${agreement.agreed ? "✓ all layers" : "✗ split"} (${(agreement.value_sides || []).join(", ") || "none"})</small>` : ""}
     </div>
-    ${official && top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong> ${pickTeamNameLink(top, league, matchup)} +${top.edge} edge</div>` : !official ? `<div class="game-pick neutral"><strong>Official picks unavailable</strong></div>` : `<div class="game-pick neutral"><strong>No official pick</strong> — need 25+ edge and 25%+ EV vs the book</div>`}
+    ${official && top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong> ${pickTeamNameLink(top, league, matchup)} +${top.ev_pct}% EV</div>` : !official ? `<div class="game-pick neutral"><strong>Official picks unavailable</strong></div>` : `<div class="game-pick neutral"><strong>No official pick</strong> — need 25%+ EV vs the book</div>`}
     <div class="db-bet-links">
       <a href="${teamHref(league, matchup.home?.abbr)}">${home}</a>
       <a href="${teamHref(league, matchup.away?.abbr)}">${away}</a>
