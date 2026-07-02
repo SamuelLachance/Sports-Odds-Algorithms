@@ -686,7 +686,6 @@ function viewDashboard() {
   const tracking = state.tracking?.all_time || state.tracking?.summary || {};
   const dateLabel = slate.date_label || "Today";
   const minEdge = summary.min_edge ?? slate.min_recommended_edge ?? 25;
-  const minEv = summary.min_ev_pct ?? slate.min_expected_value_pct ?? 5;
   const leagueCounts = games.reduce((acc, g) => {
     acc[g.league_name || g.league] = (acc[g.league_name || g.league] || 0) + 1;
     return acc;
@@ -706,7 +705,6 @@ function viewDashboard() {
         <div class="tracking-hero-stats home-stats">
           <div><span>Games</span><strong>${summary.games_analyzed ?? games.length}</strong></div>
           <div><span>Algo picks</span><strong>${summary.recommended_bets ?? picks.length}</strong></div>
-          <div><span>Min EV</span><strong>+${minEv}%</strong></div>
           <div><span>Min edge</span><strong>+${minEdge}</strong></div>
           <div><span>All-time ROI</span><strong>${tracking.roi_percent ?? 0}%</strong></div>
         </div>
@@ -768,8 +766,7 @@ function viewPicks() {
   const picks = state.slate?.recommended_bets || [];
   const slate = state.slate || {};
   const minEdge = slate.summary?.min_edge ?? slate.min_recommended_edge ?? 25;
-  const minEv = slate.summary?.min_ev_pct ?? slate.min_expected_value_pct ?? 5;
-  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p>Official picks fire when our per-sport <strong>EnsembleML</strong> mega-model (all layers + market) shows <strong>25+ points of edge</strong> vs the sportsbook on the recommended market: <strong>spread</strong> (basketball/football), <strong>moneyline</strong> (hockey/baseball), or <strong>1X2</strong> (soccer).</p></section>
+  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p>Official picks fire when our per-sport <strong>EnsembleML</strong> mega-model shows <strong>25+ points of edge</strong> vs the sportsbook on the recommended market: <strong>spread</strong> (basketball/football), <strong>moneyline</strong> (hockey/baseball), or <strong>1X2</strong> (soccer). That is the only gate.</p></section>
     <div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No bets meet the +${minEv}% EV threshold today.</div>`}</div>`;
 }
 

@@ -14,7 +14,7 @@ from web.blend_service import (
     layer_home_win_probability,
     total_score_to_home_win_prob,
 )
-from web.ensemble_ml.config import SOCCER_STACKING_FEATURES, STACKING_FEATURES
+from web.ensemble_ml.config import SOCCER_STACKING_FEATURES, get_stacking_features
 from web.sports_meta_model import stack_binary_blend_layers
 from web.soccer_meta_model import stack_soccer_blend_layers
 
@@ -98,12 +98,26 @@ def extract_binary_features(
             meta_stacked = 0.35 * power_home + 0.65 * sport_home
         else:
             meta_stacked = power_home
+    if league.lower() == "nhl" and meta_stacked is not None:
+        from web.sports_meta_model import apply_binary_calibration
+
+        meta_stacked = apply_binary_calibration(float(meta_stacked), league)
 
     legacy_margin = _layer_home_margin(legacy, league) if legacy else None
     power_margin = _layer_home_margin(power, league) if power else None
     sport_margin = _layer_home_margin(sport, league) if sport else None
 
     market_home = market_devig_home(home_moneyline, away_moneyline)
+    sport_minus_market = None
+    if sport_home is not None and market_home is not None:
+        sport_minus_market = sport_home - market_home
+
+    expected_home_goals = _safe_float(sport.get("expected_home_goals")) if sport else None
+    expected_away_goals = _safe_float(sport.get("expected_away_goals")) if sport else None
+    overtime_probability = _safe_float(sport.get("overtime_probability")) if sport else None
+    sport_xg_diff = None
+    if expected_home_goals is not None and expected_away_goals is not None:
+        sport_xg_diff = expected_home_goals - expected_away_goals
 
     return {
         "legacy_home_prob": legacy_home,
@@ -113,6 +127,11 @@ def extract_binary_features(
         "legacy_margin": legacy_margin,
         "power_margin": power_margin,
         "sport_margin": sport_margin,
+        "sport_minus_market": sport_minus_market,
+        "expected_home_goals": expected_home_goals,
+        "expected_away_goals": expected_away_goals,
+        "sport_xg_diff": sport_xg_diff,
+        "overtime_probability": overtime_probability,
         "market_devig_home_prob": market_home,
         "market_spread": _safe_float(consensus_spread),
         "market_home_ml": _safe_float(home_moneyline),

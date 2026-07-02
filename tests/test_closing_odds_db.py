@@ -17,7 +17,15 @@ def test_normalize_team_key_maps_espn_abbreviations() -> None:
     assert closing_odds_db.normalize_team_key("nba", "Celtics") == "bos"
 
 
-def test_closing_odds_lookup_from_us_csv(tmp_path: Path, monkeypatch) -> None:
+def test_nhl_odds_key_alias_resolves_st_louis() -> None:
+    assert closing_odds_db.closing_odds_lookup is not None
+    from web.closing_odds_db import _canonical_odds_team_key
+
+    assert _canonical_odds_team_key("nhl", "st.louis") == "stl"
+    assert _canonical_odds_team_key("nhl", "winnipegjets") == "wpg"
+
+
+def test_closing_odds_lookup_fuzzy_date_and_swap(tmp_path: Path, monkeypatch) -> None:
     odds_dir = tmp_path / "closing-odds"
     odds_dir.mkdir()
     csv_path = odds_dir / "nba.csv"
@@ -62,7 +70,7 @@ def test_closing_odds_lookup_from_us_csv(tmp_path: Path, monkeypatch) -> None:
     assert row["home_close_spread"] == -3.5
     assert row["home_spread_odds"] == -110
 
-    missing = closing_odds_db.closing_odds_lookup("nba", "2024-01-16", "bos", "ny")
+    missing = closing_odds_db.closing_odds_lookup("nba", "2024-01-20", "bos", "ny")
     assert missing is None
 
 

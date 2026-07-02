@@ -131,7 +131,10 @@ def test_edge_threshold_official_minimum() -> None:
     from web.pick_strategy import OFFICIAL_MIN_EDGE, get_pick_thresholds
 
     assert OFFICIAL_MIN_EDGE == 25.0
-    assert get_pick_thresholds("nba")["min_edge"] == 25.0
+    thresholds = get_pick_thresholds("nba")
+    assert thresholds["min_edge"] == 25.0
+    assert thresholds["min_ev_pct"] == 0.0
+    assert thresholds["enabled"] is True
 
     away_proj, _ = model_moneylines(28.33)
     assert _odds_edge(away_proj, 292, 28.33) == 39.0

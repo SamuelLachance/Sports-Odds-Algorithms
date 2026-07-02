@@ -42,7 +42,6 @@ from web.espn_client import (  # noqa: E402
 )
 from web.league_profiles import (  # noqa: E402
     LEAGUE_PROFILES,
-    MIN_EXPECTED_VALUE_PCT,
     MIN_RECOMMENDED_EDGE,
     SUPPORTED_LEAGUES,
     eligible_for_official_picks,
@@ -445,20 +444,10 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
         ):
             best_by_event[event_id] = rec
 
-    def _meets_recommendation_threshold(game: dict[str, Any], rec: dict[str, Any]) -> bool:
-        league = str(game.get("league") or rec.get("league") or "")
+    def _meets_recommendation_threshold(_game: dict[str, Any], rec: dict[str, Any]) -> bool:
+        league = str(rec.get("league") or _game.get("league") or "")
         thresholds = get_pick_thresholds(league)
-        profit_score = rec.get("profit_score", 0)
-        kelly_pct = rec.get("kelly_pct", 0) or 0
-        edge = rec.get("edge", 0)
-        ev_pct = rec.get("ev_pct", 0)
-        if profit_score < thresholds.get("min_profit_score", 0.0):
-            return False
-        if kelly_pct < thresholds.get("min_kelly_pct", 0.0):
-            return False
-        if thresholds["bet_type"] == "moneyline":
-            return not (ev_pct < thresholds["min_ev_pct"] and edge < thresholds["min_edge"])
-        return edge >= thresholds["min_edge"]
+        return (rec.get("edge") or 0) >= thresholds["min_edge"]
 
     games_by_event = {game["event_id"]: game for game in all_games}
     recommendations = sorted(
@@ -477,12 +466,6 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
         if _meets_recommendation_threshold(games_by_event.get(r.get("event_id", ""), {}), r)
     ]
 
-    if qualifying:
-        scores = sorted((r.get("profit_score", 0) for r in qualifying), reverse=True)
-        quartile_index = max(0, int(len(scores) * 0.75) - 1)
-        quartile_cutoff = scores[quartile_index]
-        qualifying = [r for r in qualifying if r.get("profit_score", 0) >= quartile_cutoff]
-
     return {
         "generated_at": generated_at,
         "date_label": _toronto_today().isoformat(),
@@ -490,12 +473,10 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
             "games_analyzed": len(all_games),
             "recommended_bets": len(qualifying),
             "min_edge": MIN_RECOMMENDED_EDGE,
-            "min_ev_pct": MIN_EXPECTED_VALUE_PCT,
             "leagues": list({game["league"] for game in all_games}),
         },
         "recommended_bets": qualifying[:20],
         "min_recommended_edge": MIN_RECOMMENDED_EDGE,
-        "min_expected_value_pct": MIN_EXPECTED_VALUE_PCT,
         "games": all_games,
         "errors": errors,
     }

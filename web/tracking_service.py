@@ -12,7 +12,6 @@ from web.bet_advisor import spread_line_for_side
 from web.espn_client import fetch_scoreboard
 from web.league_profiles import (
     DEFAULT_SPREAD_JUICE,
-    MIN_EXPECTED_VALUE_PCT,
     MIN_RECOMMENDED_EDGE,
     eligible_for_official_picks,
     is_soccer_league,
@@ -111,8 +110,7 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
         if not eligible_for_official_picks(pick.get("league") or ""):
             continue
         edge = pick.get("edge") or 0
-        ev_pct = pick.get("ev_pct") or 0
-        if ev_pct < MIN_EXPECTED_VALUE_PCT and edge < MIN_RECOMMENDED_EDGE:
+        if edge < MIN_RECOMMENDED_EDGE:
             continue
         event_id = pick.get("event_id")
         side = pick.get("side")
@@ -485,10 +483,10 @@ def build_tracking_response(store: dict[str, Any]) -> dict[str, Any]:
         "timezone": TIMEZONE_LABEL,
         "last_updated": datetime.now(timezone.utc).isoformat(),
         "note": (
-            f"Tracks algo bets with +{MIN_RECOMMENDED_EDGE} edge or higher from each daily slate. "
-            "Soccer predictions are shown on the slate but excluded from official picks and tracking. "
-            "Basketball/football spread bets graded ATS at consensus book spread; "
-            "other sports at closing moneyline. 1u flat stake."
+            f"Tracks official algo bets with +{MIN_RECOMMENDED_EDGE} edge vs the sportsbook "
+            "from each daily slate. Basketball/football spread bets graded ATS at consensus "
+            "book spread; hockey/baseball at closing moneyline; soccer at 1X2 closing odds. "
+            "1u flat stake."
         ),
         "min_recommended_edge": MIN_RECOMMENDED_EDGE,
     }

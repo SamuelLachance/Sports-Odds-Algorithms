@@ -29,6 +29,29 @@ STACKING_FEATURES: tuple[str, ...] = (
     "market_away_ml",
 )
 
+# NHL: lean on Poisson xG + market (meta stack is 100% sport_pred for NHL).
+NHL_STACKING_FEATURES: tuple[str, ...] = (
+    "sport_home_prob",
+    "meta_stacked_home_prob",
+    "market_devig_home_prob",
+    "sport_minus_market",
+    "expected_home_goals",
+    "expected_away_goals",
+    "sport_xg_diff",
+    "overtime_probability",
+    "power_home_prob",
+    "market_home_ml",
+    "market_away_ml",
+)
+
+NHL_TARGET_LOGLOSS = 0.65943
+
+LEAGUE_STACKING_FEATURES: dict[str, tuple[str, ...]] = {
+    "nhl": NHL_STACKING_FEATURES,
+}
+
+DATASET_CACHE_DIR = PROJECT_ROOT / "data" / "supplemental" / "ensemble-ml"
+
 SOCCER_STACKING_FEATURES: tuple[str, ...] = (
     "legacy_home_prob",
     "legacy_draw_prob",
@@ -75,6 +98,14 @@ LEAGUE_DATASET_OVERRIDES: dict[str, dict[str, int | None | str]] = {
         "dated_source": "espn",
     },
 }
+
+
+def get_stacking_features(league: str) -> tuple[str, ...]:
+    return LEAGUE_STACKING_FEATURES.get(league.lower(), STACKING_FEATURES)
+
+
+def dataset_cache_path(league: str) -> Path:
+    return DATASET_CACHE_DIR / f"{league.lower()}_dataset.csv"
 
 
 def get_dataset_profile(league: str) -> dict[str, int | None | str]:

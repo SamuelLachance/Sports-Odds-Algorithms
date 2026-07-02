@@ -11,8 +11,10 @@ from web.blend_service import _run_sport_pred_model, home_win_prob_to_total_scor
 from web.bet_advisor import model_home_margin
 from web.closing_odds_db import closing_odds_lookup
 from web.ensemble_ml.config import (
+    DATASET_CACHE_DIR,
     MIN_TRAIN_ROWS,
     TRAIN_LEAGUES,
+    dataset_cache_path,
     get_dataset_profile,
 )
 from web.ensemble_ml.features import (
@@ -130,12 +132,25 @@ def collect_binary_rows(
             sport_home = (
                 float(sport_payload["home_win_probability"]) if sport_payload else None
             )
-            sport_margin = None
-            if sport_payload:
-                if sport_payload.get("predicted_margin") is not None:
-                    sport_margin = -float(sport_payload["predicted_margin"])
-                elif sport_payload.get("projected_spread") is not None:
-                    sport_margin = float(sport_payload["projected_spread"])
+        sport_margin = None
+        expected_home_goals = None
+        expected_away_goals = None
+        overtime_probability = None
+        if sport_payload:
+            if sport_payload.get("predicted_margin") is not None:
+                sport_margin = -float(sport_payload["predicted_margin"])
+            elif sport_payload.get("projected_spread") is not None:
+                sport_margin = float(sport_payload["projected_spread"])
+            if sport_payload.get("expected_home_goals") is not None:
+                expected_home_goals = float(sport_payload["expected_home_goals"])
+            if sport_payload.get("expected_away_goals") is not None:
+                expected_away_goals = float(sport_payload["expected_away_goals"])
+            if sport_payload.get("overtime_probability") is not None:
+                overtime_probability = float(sport_payload["overtime_probability"])
+
+        sport_xg_diff = None
+        if expected_home_goals is not None and expected_away_goals is not None:
+            sport_xg_diff = expected_home_goals - expected_away_goals
 
         legacy_home = legacy_home_from_total(power_total)
         legacy_margin = power_margin
@@ -149,12 +164,19 @@ def collect_binary_rows(
             meta_stacked = (
                 power_home if sport_home is None else 0.35 * power_home + 0.65 * sport_home
             )
+        if league == "nhl":
+            from web.sports_meta_model import apply_binary_calibration
+
+            meta_stacked = apply_binary_calibration(float(meta_stacked), league)
 
         odds = closing_odds_lookup(league, game_date, home, away) or {}
         market_spread = odds.get("home_close_spread")
         home_ml = odds.get("home_close_ml")
         away_ml = odds.get("away_close_ml")
         market_home = market_devig_home(home_ml, away_ml)
+        sport_minus_market = None
+        if sport_home is not None and market_home is not None:
+            sport_minus_market = sport_home - market_home
 
         home_margin_actual = float(home_score - away_score)
         home_win = int(home_score > away_score)
@@ -174,6 +196,11 @@ def collect_binary_rows(
                 "legacy_margin": legacy_margin,
                 "power_margin": power_margin,
                 "sport_margin": sport_margin,
+                "sport_minus_market": sport_minus_market,
+                "expected_home_goals": expected_home_goals,
+                "expected_away_goals": expected_away_goals,
+                "sport_xg_diff": sport_xg_diff,
+                "overtime_probability": overtime_probability,
                 "market_devig_home_prob": market_home,
                 "market_spread": market_spread,
                 "market_home_ml": home_ml,
@@ -292,6 +319,7 @@ def build_league_dataset(
     cutoff: str | None = None,
     *,
     profile: dict[str, int | None | str] | None = None,
+    rebuild: bool = False,
 ) -> pd.DataFrame:
     league = league.lower()
     if league not in TRAIN_LEAGUES:
@@ -299,6 +327,22 @@ def build_league_dataset(
     if cutoff is None:
         today = date.today()
         cutoff = f"{today.month}-{today.day}-{today.year}"
+
+    cache = dataset_cache_path(league)
+    if not rebuild and cache.is_file():
+        try:
+            cached = pd.read_csv(cache)
+            if len(cached) >= MIN_TRAIN_ROWS:
+                return cached
+        except Exception:  # noqa: BLE001
+            pass
+
     if is_soccer_league(league):
-        return collect_soccer_rows(league, cutoff, profile=profile)
-    return collect_binary_rows(league, cutoff, profile=profile)
+        frame = collect_soccer_rows(league, cutoff, profile=profile)
+    else:
+        frame = collect_binary_rows(league, cutoff, profile=profile)
+
+    if not frame.empty:
+        DATASET_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        frame.to_csv(cache, index=False)
+    return frame

@@ -10,9 +10,15 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from web.ensemble_ml.config import MIN_TRAIN_ROWS, TRAIN_LEAGUES, get_dataset_profile  # noqa: E402
+from web.ensemble_ml.config import (  # noqa: E402
+    MIN_TRAIN_ROWS,
+    NHL_TARGET_LOGLOSS,
+    TRAIN_LEAGUES,
+    get_dataset_profile,
+)
 from web.ensemble_ml.dataset import build_league_dataset  # noqa: E402
 from web.ensemble_ml.model import (  # noqa: E402
+    evaluate_holdout_logloss,
     save_ensemble,
     train_binary_ensemble,
     train_soccer_ensemble,
@@ -49,11 +55,14 @@ def train_league(
     cutoff: str,
     *,
     profile: dict | None = None,
+    rebuild_dataset: bool = False,
 ) -> dict | None:
     league = league.lower()
     profile = profile or get_dataset_profile(league)
     print(f"Building dataset for {league}...", flush=True)
-    frame = build_league_dataset(league, cutoff, profile=profile)
+    frame = build_league_dataset(
+        league, cutoff, profile=profile, rebuild=rebuild_dataset
+    )
     if len(frame) < MIN_TRAIN_ROWS:
         print(f"  skipped ({len(frame)} rows < {MIN_TRAIN_ROWS})", flush=True)
         return None
@@ -105,11 +114,15 @@ def train_league(
 
     prob_arr = np.asarray(probs, dtype=float)
     out_arr = np.asarray(outcomes, dtype=float)
+    metrics = evaluate_holdout_logloss(model, frame, league=league)
+    nhl_score = metrics.get("all_market_logloss", metrics.get("nhl_market_holdout_logloss"))
     meta = {
         "league": league,
         "model_type": "binary_spread" if model.spread_league else "binary_moneyline",
         "train_rows": len(frame),
         "games_available": profile.get("games_available"),
+        "market_blend_weight": model.market_blend_weight,
+        "temperature": model.temperature,
         "dataset_profile": {
             key: profile[key]
             for key in (
@@ -120,7 +133,20 @@ def train_league(
             )
             if key in profile
         },
-        "holdout_logloss": round(log_loss(prob_arr, out_arr), 4),
+        "holdout_logloss": round(metrics.get("holdout_logloss", log_loss(prob_arr, out_arr)), 5),
+        "market_holdout_logloss": metrics.get("market_holdout_logloss"),
+        "holdout_logloss_market_games": metrics.get("holdout_logloss_market_games"),
+        "nhl_market_holdout_logloss": metrics.get("nhl_market_holdout_logloss"),
+        "nhl_market_baseline_logloss": metrics.get("nhl_market_baseline_logloss"),
+        "all_market_logloss": metrics.get("all_market_logloss"),
+        "all_market_baseline_logloss": metrics.get("all_market_baseline_logloss"),
+        "all_market_games": metrics.get("all_market_games"),
+        "target_logloss": NHL_TARGET_LOGLOSS if league == "nhl" else None,
+        "beats_market_target": (
+            nhl_score < NHL_TARGET_LOGLOSS
+            if league == "nhl" and nhl_score is not None
+            else None
+        ),
         "holdout_brier": round(brier(prob_arr, out_arr), 4),
         "margin_sigma": model.margin_sigma,
         "trained_at": date.today().isoformat(),
@@ -129,7 +155,14 @@ def train_league(
     save_ensemble(league, model, meta)
     print(
         f"  saved ({meta['model_type']}) logloss={meta['holdout_logloss']} "
-        f"brier={meta['holdout_brier']}",
+        f"market={meta.get('market_holdout_logloss')} "
+        f"brier={meta['holdout_brier']}"
+        + (
+            f" all_market={meta.get('all_market_logloss')}"
+            f" beats_target={meta.get('beats_market_target')}"
+            if league == "nhl"
+            else ""
+        ),
         flush=True,
     )
     return meta
@@ -145,6 +178,11 @@ def main() -> int:
         "--full-history",
         action="store_true",
         help="Train on every walk-forward game with full prior history (overrides league defaults).",
+    )
+    parser.add_argument(
+        "--rebuild-dataset",
+        action="store_true",
+        help="Ignore cached walk-forward dataset and rebuild from scratch.",
     )
     args = parser.parse_args()
     leagues = [item.strip().lower() for item in args.leagues.split(",") if item.strip()]
@@ -170,7 +208,12 @@ def main() -> int:
             profile["games_available"] = len(
                 load_league_dated_games_for_backtest(league, args.cutoff)
             )
-        entry = train_league(league, args.cutoff, profile=profile)
+        entry = train_league(
+            league,
+            args.cutoff,
+            profile=profile,
+            rebuild_dataset=args.rebuild_dataset,
+        )
         if entry:
             summary[league] = entry
             trained += 1

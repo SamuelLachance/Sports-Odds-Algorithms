@@ -144,7 +144,7 @@ BACKTEST_SCOREBOARD_LOOKBACK_DAYS = 900
 # Minimum American-odds edge vs model before a bet is recommended or tracked.
 MIN_RECOMMENDED_EDGE = 25
 
-# Minimum expected value (% of stake) vs book price for official moneyline picks.
+# Minimum expected value (% of stake) vs book price (legacy; official picks use edge-only).
 MIN_EXPECTED_VALUE_PCT = 5.0
 
 # Cross-sign model-favorite spots (model fav priced as underdog) may clear a lower EV bar.

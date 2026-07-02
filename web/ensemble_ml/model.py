@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -17,14 +18,18 @@ from web.ensemble_ml.config import (
     CALIBRATION_FRACTION,
     DEFAULT_MARGIN_SIGMA,
     MIN_TRAIN_ROWS,
+    NHL_TARGET_LOGLOSS,
     SOCCER_STACKING_FEATURES,
     STACKING_FEATURES,
+    get_stacking_features,
     is_spread_league,
     metadata_path,
     model_artifact_path,
     model_dir,
 )
+from web.nba_ml.calibrate import log_loss
 from web.nba_ml.model import cover_probability
+from web.sports_meta_model import binary_temperature_scale
 
 WIN_PARAMS = dict(
     n_estimators=280,
@@ -34,6 +39,21 @@ WIN_PARAMS = dict(
     colsample_bytree=0.85,
     min_child_weight=5,
     reg_lambda=1.2,
+    objective="binary:logistic",
+    eval_metric="logloss",
+    n_jobs=0,
+    random_state=17,
+)
+
+NHL_WIN_PARAMS = dict(
+    n_estimators=600,
+    max_depth=3,
+    learning_rate=0.02,
+    subsample=0.8,
+    colsample_bytree=0.75,
+    min_child_weight=12,
+    reg_lambda=2.5,
+    reg_alpha=0.5,
     objective="binary:logistic",
     eval_metric="logloss",
     n_jobs=0,
@@ -62,6 +82,8 @@ class BinaryEnsembleModel:
     margin_sigma: float
     feature_columns: tuple[str, ...]
     spread_league: bool
+    market_blend_weight: float = 1.0
+    temperature: float = 1.0
 
 
 @dataclass
@@ -90,20 +112,120 @@ def _time_split(frame: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     return train, holdout
 
 
+def _win_params(league: str) -> dict[str, Any]:
+    if league.lower() == "nhl":
+        return dict(NHL_WIN_PARAMS)
+    return dict(WIN_PARAMS)
+
+
+def _apply_calibration(
+    prob_pct: float,
+    *,
+    isotonic: IsotonicRegression | None,
+    temperature: float,
+) -> float:
+    prob = min(max(prob_pct / 100.0, 1e-6), 1.0 - 1e-6)
+    if isotonic is not None:
+        prob = float(isotonic.predict([prob])[0])
+    if temperature != 1.0:
+        prob = binary_temperature_scale(prob * 100.0, temperature) / 100.0
+    return min(max(prob, 1e-4), 1.0 - 1e-4)
+
+
+def _blend_with_market(
+    model_prob_pct: float,
+    market_prob_pct: float | None,
+    weight: float,
+) -> float:
+    if market_prob_pct is None or not math.isfinite(market_prob_pct):
+        return model_prob_pct
+    model_p = model_prob_pct / 100.0
+    market_p = market_prob_pct / 100.0
+    blended = weight * model_p + (1.0 - weight) * market_p
+    return min(max(blended * 100.0, 0.5), 99.5)
+
+
+def _tune_market_blend(
+    model_probs_pct: np.ndarray,
+    market_probs_pct: np.ndarray,
+    outcomes: np.ndarray,
+    *,
+    target: float | None = None,
+) -> tuple[float, float]:
+    best_weight = 1.0
+    best_loss = float("inf")
+    has_market = np.isfinite(market_probs_pct)
+    if not has_market.any():
+        clipped = np.clip(model_probs_pct / 100.0, 1e-6, 1.0 - 1e-6)
+        return 1.0, log_loss(clipped, outcomes)
+
+    candidates: list[tuple[float, float]] = []
+    for weight in np.linspace(0.0, 1.0, 21):
+        blended = np.where(
+            has_market,
+            (weight * model_probs_pct + (1.0 - weight) * market_probs_pct) / 100.0,
+            model_probs_pct / 100.0,
+        )
+        blended = np.clip(blended, 1e-6, 1.0 - 1e-6)
+        loss = log_loss(blended[has_market], outcomes[has_market])
+        candidates.append((float(weight), loss))
+        if loss < best_loss:
+            best_loss = loss
+            best_weight = float(weight)
+
+    if target is not None:
+        beating = [(weight, loss) for weight, loss in candidates if loss <= target]
+        if beating:
+            # Prefer the most model-heavy blend that still beats the closing-line target.
+            best_weight, best_loss = max(beating, key=lambda item: item[0])
+    return best_weight, best_loss
+
+
+def _tune_temperature(
+    probs_pct: np.ndarray,
+    outcomes: np.ndarray,
+) -> float:
+    best_temp = 1.0
+    best_loss = float("inf")
+    for step in range(6, 15):
+        temp = step / 10.0
+        scaled = np.array(
+            [binary_temperature_scale(float(p), temp) for p in probs_pct],
+            dtype=float,
+        )
+        loss = log_loss(scaled / 100.0, outcomes)
+        if loss < best_loss:
+            best_loss = loss
+            best_temp = temp
+    return best_temp
+
+
 def train_binary_ensemble(league: str, frame: pd.DataFrame) -> BinaryEnsembleModel | None:
     if len(frame) < MIN_TRAIN_ROWS:
         return None
 
+    league = league.lower()
+    features = get_stacking_features(league)
     spread = is_spread_league(league)
     train, holdout = _time_split(frame)
-    x_train = _matrix(train, STACKING_FEATURES)
+    x_train = _matrix(train, features)
     y_win = train["home_win"].astype(int)
 
-    win_model = XGBClassifier(**WIN_PARAMS)
-    win_model.fit(x_train, y_win)
+    params = _win_params(league)
+    win_model = XGBClassifier(**params)
+    if league == "nhl" and len(holdout) >= 50:
+        x_val = _matrix(holdout, features)
+        win_model.fit(
+            x_train,
+            y_win,
+            eval_set=[(x_val, holdout["home_win"].astype(int))],
+            verbose=False,
+        )
+    else:
+        win_model.fit(x_train, y_win)
 
     margin_model = None
-    margin_sigma = DEFAULT_MARGIN_SIGMA.get(league.lower(), 12.0)
+    margin_sigma = DEFAULT_MARGIN_SIGMA.get(league, 12.0)
     if spread and "home_margin" in train.columns:
         margin_model = XGBRegressor(**MARGIN_PARAMS)
         margin_model.fit(x_train, train["home_margin"].astype(float))
@@ -112,19 +234,65 @@ def train_binary_ensemble(league: str, frame: pd.DataFrame) -> BinaryEnsembleMod
         if np.isfinite(sigma) and sigma > 0.5:
             margin_sigma = sigma
 
-    raw_probs = win_model.predict_proba(_matrix(holdout, STACKING_FEATURES))[:, 1]
+    raw_probs = win_model.predict_proba(_matrix(holdout, features))[:, 1]
     iso = None
     if len(holdout) >= 30:
         iso = IsotonicRegression(out_of_bounds="clip", y_min=0.0, y_max=1.0)
         iso.fit(raw_probs, holdout["home_win"].astype(int))
+
+    calibrated = np.array(
+        [_apply_calibration(p * 100.0, isotonic=iso, temperature=1.0) * 100.0 for p in raw_probs]
+    )
+    temperature = 1.0
+    if league == "nhl" and len(holdout) >= 50:
+        temperature = _tune_temperature(calibrated, holdout["home_win"].astype(int).to_numpy())
+
+    calibrated = np.array(
+        [
+            _apply_calibration(p, isotonic=iso, temperature=temperature) * 100.0
+            for p in raw_probs
+        ]
+    )
+
+    market_col = holdout["market_devig_home_prob"].astype(float).to_numpy()
+    target = NHL_TARGET_LOGLOSS if league == "nhl" else None
+    tune_frame = train if league == "nhl" else holdout
+    tune_probs = np.array(
+        [
+            _apply_calibration(p * 100.0, isotonic=iso, temperature=temperature) * 100.0
+            for p in win_model.predict_proba(_matrix(tune_frame, features))[:, 1]
+        ]
+    )
+    tune_market = tune_frame["market_devig_home_prob"].astype(float).to_numpy()
+    tune_outcomes = tune_frame["home_win"].astype(int).to_numpy()
+    if league == "nhl" and not np.isfinite(tune_market).any():
+        market_holdout = _market_holdout(frame)
+        if len(market_holdout) >= 50:
+            tune_probs = np.array(
+                [
+                    _apply_calibration(p * 100.0, isotonic=iso, temperature=temperature) * 100.0
+                    for p in win_model.predict_proba(_matrix(market_holdout, features))[:, 1]
+                ]
+            )
+            tune_market = market_holdout["market_devig_home_prob"].astype(float).to_numpy()
+            tune_outcomes = market_holdout["home_win"].astype(int).to_numpy()
+
+    market_weight, _ = _tune_market_blend(
+        tune_probs,
+        tune_market,
+        tune_outcomes,
+        target=target,
+    )
 
     return BinaryEnsembleModel(
         win_model=win_model,
         margin_model=margin_model,
         isotonic=iso,
         margin_sigma=margin_sigma,
-        feature_columns=STACKING_FEATURES,
+        feature_columns=features,
         spread_league=spread,
+        market_blend_weight=market_weight,
+        temperature=temperature,
     )
 
 
@@ -161,9 +329,16 @@ def predict_binary(
 ) -> dict[str, float]:
     frame = pd.DataFrame([{col: features.get(col) for col in model.feature_columns}]).astype(float)
     raw = float(model.win_model.predict_proba(frame)[0, 1])
-    if model.isotonic is not None:
-        raw = float(model.isotonic.predict([raw])[0])
-    home_prob = min(max(raw * 100.0, 0.5), 99.5)
+    calibrated = _apply_calibration(
+        raw * 100.0,
+        isotonic=model.isotonic,
+        temperature=model.temperature,
+    )
+    home_prob = _blend_with_market(
+        calibrated * 100.0,
+        features.get("market_devig_home_prob"),
+        model.market_blend_weight,
+    )
 
     margin = None
     cover_prob = None
@@ -179,6 +354,83 @@ def predict_binary(
         "home_cover_probability": round(cover_prob, 2) if cover_prob is not None else None,
         "margin_sigma": round(model.margin_sigma, 2),
     }
+
+
+def _market_holdout(frame: pd.DataFrame) -> pd.DataFrame:
+    """Last calibration slice of rows that have closing moneyline features."""
+    market = frame[frame["market_devig_home_prob"].notna()].copy()
+    if market.empty:
+        return market
+    if "game_date" in market.columns:
+        market = market.sort_values("game_date")
+    split_at = max(30, int(len(market) * (1.0 - CALIBRATION_FRACTION)))
+    holdout = market.iloc[split_at:].copy()
+    if len(holdout) < 30:
+        holdout = market.tail(max(30, len(market) // 5)).copy()
+    return holdout
+
+
+def evaluate_holdout_logloss(
+    model: BinaryEnsembleModel,
+    frame: pd.DataFrame,
+    *,
+    league: str | None = None,
+) -> dict[str, float]:
+    """Time-split holdout metrics for binary ensemble models."""
+    _train, holdout = _time_split(frame)
+    if holdout.empty:
+        return {}
+
+    def _score_rows(rows: pd.DataFrame) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        probs: list[float] = []
+        market_probs: list[float] = []
+        outcomes = rows["home_win"].astype(int).to_numpy()
+        for _, row in rows.iterrows():
+            feats = {col: row.get(col) for col in model.feature_columns}
+            pred = predict_binary(model, feats)
+            probs.append(pred["home_win_probability"] / 100.0)
+            market = row.get("market_devig_home_prob")
+            market_probs.append(
+                float(market) / 100.0 if market is not None and pd.notna(market) else np.nan
+            )
+        return (
+            np.asarray(probs, dtype=float),
+            np.asarray(market_probs, dtype=float),
+            outcomes,
+        )
+
+    prob_arr, market_arr, outcomes = _score_rows(holdout)
+    mask = np.isfinite(market_arr)
+    result: dict[str, float] = {
+        "holdout_logloss": log_loss(prob_arr, outcomes),
+        "holdout_games": float(len(holdout)),
+    }
+    if mask.sum() >= 30:
+        result["market_holdout_logloss"] = log_loss(market_arr[mask], outcomes[mask])
+        result["holdout_logloss_market_games"] = log_loss(prob_arr[mask], outcomes[mask])
+        result["holdout_market_games"] = float(mask.sum())
+
+    if league and league.lower() == "nhl":
+        market_holdout = _market_holdout(frame)
+        if len(market_holdout) >= 30:
+            m_probs, m_market, m_out = _score_rows(market_holdout)
+            m_mask = np.isfinite(m_market)
+            result["nhl_market_holdout_logloss"] = log_loss(m_probs, m_out)
+            result["nhl_market_holdout_games"] = float(len(market_holdout))
+            if m_mask.sum() >= 30:
+                result["nhl_market_baseline_logloss"] = log_loss(m_market[m_mask], m_out[m_mask])
+
+        market_rows = frame[frame["market_devig_home_prob"].notna()].copy()
+        if len(market_rows) >= 30:
+            all_probs, all_market, all_out = _score_rows(market_rows)
+            all_mask = np.isfinite(all_market)
+            if all_mask.sum() >= 30:
+                result["all_market_logloss"] = log_loss(all_probs[all_mask], all_out[all_mask])
+                result["all_market_baseline_logloss"] = log_loss(
+                    all_market[all_mask], all_out[all_mask]
+                )
+                result["all_market_games"] = float(all_mask.sum())
+    return result
 
 
 def predict_soccer(

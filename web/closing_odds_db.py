@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 import json
+from datetime import date as date_cls, timedelta
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -16,6 +17,27 @@ ODDS_DIR = PROJECT_ROOT / "data" / "supplemental" / "closing-odds"
 TEAM_MAP_PATH = PROJECT_ROOT / "data" / "_meta" / "closing_odds_teams.json"
 
 US_ODDS_LEAGUES = frozenset({"nba", "nfl", "nhl", "mlb", "wnba", "cbb", "cfb", "ncaah", "ncaabb"})
+
+# SBR / legacy NHL CSV keys -> ESPN abbreviations used in scoreboards.
+NHL_ODDS_KEY_ALIASES: dict[str, str] = {
+    "st.louis": "stl",
+    "phoenix": "ari",
+    "arizonas": "ari",
+    "winnipegjets": "wpg",
+    "tampabay": "tb",
+    "tampa": "tb",
+    "nyislanders": "nyi",
+    "seattlekraken": "sea",
+    "uta": "uta",
+}
+
+
+def _canonical_odds_team_key(league: str, key: str) -> str:
+    league = league.lower()
+    key = str(key or "").strip().lower()
+    if league == "nhl":
+        return NHL_ODDS_KEY_ALIASES.get(key, key)
+    return key
 
 
 def _parse_int(value: Any) -> int | None:
@@ -76,6 +98,49 @@ def _iso_date(raw: str) -> str:
     return raw[:10]
 
 
+def _flip_two_way_odds(row: dict[str, Any]) -> dict[str, Any]:
+    """Swap home/away orientation for a matched odds row."""
+    flipped = dict(row)
+    flipped["home_close_ml"] = row.get("away_close_ml")
+    flipped["away_close_ml"] = row.get("home_close_ml")
+    home_spread = row.get("home_close_spread")
+    away_spread = row.get("away_close_spread")
+    if home_spread is not None:
+        flipped["home_close_spread"] = -float(home_spread)
+    if away_spread is not None:
+        flipped["away_close_spread"] = -float(away_spread)
+    flipped["home_spread_odds"] = row.get("away_spread_odds")
+    flipped["away_spread_odds"] = row.get("home_spread_odds")
+    return flipped
+
+
+def _lookup_us_odds_row(
+    index: dict[tuple[str, str, str], dict[str, Any]],
+    game_date: str,
+    home: str,
+    away: str,
+) -> dict[str, Any] | None:
+    """Exact or +/-1 day match; tolerate swapped home/away in source feeds."""
+    try:
+        base_date = date_cls.fromisoformat(game_date)
+    except ValueError:
+        base_date = None
+
+    date_candidates: list[str] = [game_date]
+    if base_date is not None:
+        for offset in (-1, 1):
+            date_candidates.append((base_date + timedelta(days=offset)).isoformat())
+
+    for candidate_date in date_candidates:
+        direct = index.get((candidate_date, home, away))
+        if direct:
+            return dict(direct)
+        swapped = index.get((candidate_date, away, home))
+        if swapped:
+            return _flip_two_way_odds(swapped)
+    return None
+
+
 @lru_cache(maxsize=16)
 def _load_us_odds_index(league: str) -> dict[tuple[str, str, str], dict[str, Any]]:
     league = league.lower()
@@ -86,8 +151,8 @@ def _load_us_odds_index(league: str) -> dict[tuple[str, str, str], dict[str, Any
     with path.open(encoding="utf-8", newline="") as handle:
         for row in csv.DictReader(handle):
             game_date = _iso_date(row.get("date", ""))
-            home = str(row.get("home_key", "")).lower()
-            away = str(row.get("away_key", "")).lower()
+            home = _canonical_odds_team_key(league, row.get("home_key", ""))
+            away = _canonical_odds_team_key(league, row.get("away_key", ""))
             if not game_date or not home or not away:
                 continue
             index[(game_date, home, away)] = {
@@ -129,12 +194,12 @@ def closing_odds_lookup(
 ) -> dict[str, Any] | None:
     """Return closing market lines for a completed game when cached locally."""
     league = league.lower()
-    home = home_key.lower()
-    away = away_key.lower()
+    home = _canonical_odds_team_key(league, home_key)
+    away = _canonical_odds_team_key(league, away_key)
     game_date = _iso_date(game_date)
     if is_soccer_league(league):
         return _load_soccer_odds_index(league).get((game_date, home, away))
-    return _load_us_odds_index(league).get((game_date, home, away))
+    return _lookup_us_odds_row(_load_us_odds_index(league), game_date, home, away)
 
 
 def closing_odds_coverage(league: str) -> dict[str, Any]:
