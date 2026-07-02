@@ -340,11 +340,21 @@ def _layer_home_margin(layer: dict[str, Any], league: str) -> float | None:
     return None
 
 
+def _normalize_spread_margin_sign(margin: float, favorite_side: str | None) -> float:
+    """Spread convention: negative = home favored, positive = away favored."""
+    if favorite_side == "home" and margin > 0:
+        return -margin
+    if favorite_side == "away" and margin < 0:
+        return -margin
+    return margin
+
+
 def blended_home_spread_margin(blended: dict[str, Any], league: str) -> float:
     """Home margin for spread picks, aligned with unified total_score / win%."""
+    favorite_side = blended.get("favorite_side")
     cached = blended.get("home_spread_margin")
     if cached is not None:
-        return float(cached)
+        return _normalize_spread_margin_sign(float(cached), favorite_side)
     total = blended.get("total_score")
     if total is not None:
         return model_home_margin(float(total), league)

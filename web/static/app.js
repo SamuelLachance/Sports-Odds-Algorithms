@@ -670,7 +670,7 @@ function algoCenter(game) {
       ${algoBreakdown(m)}
       ${oddsRow}
     </div>
-    ${game.eligible_for_official_picks === false ? `<div class="game-pick neutral"><strong>Official picks unavailable</strong><span>This league is not enabled for official pick tracking.</span></div>` : top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong><span>${pickTeamNameLink(top, game.league, game.matchup)} · ${pickMarketLabel(top)} vs model ${pickModelLabel(top)} (+${top.ev_pct != null ? top.ev_pct + "% EV, " : ""}+${top.edge} edge)</span><p>${top.reason}</p></div>` : isSoccer ? `<div class="game-pick neutral"><strong>No official 1X2 pick</strong><span>Model edge vs the sportsbook is below the 25-point threshold on home/draw/away moneylines.</span></div>` : `<div class="game-pick neutral"><strong>No official pick</strong><span>Model edge vs the sportsbook is below 25 on today's ${game.market && game.market.spread != null ? "spread" : "moneyline"} line.</span></div>`}
+    ${game.eligible_for_official_picks === false ? `<div class="game-pick neutral"><strong>Official picks unavailable</strong><span>This league is not enabled for official pick tracking.</span></div>` : top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong><span>${pickTeamNameLink(top, game.league, game.matchup)} · ${pickMarketLabel(top)} vs model ${pickModelLabel(top)} (+${top.ev_pct != null ? top.ev_pct + "% EV, " : ""}+${top.edge} edge)</span><p>${top.reason}</p></div>` : isSoccer ? `<div class="game-pick neutral"><strong>No official 1X2 pick</strong><span>Model edge vs the sportsbook is below 25 or expected value is below 25% on home/draw/away moneylines.</span></div>` : `<div class="game-pick neutral"><strong>No official pick</strong><span>Model edge vs the sportsbook is below 25 or expected value is below 25% on today's ${game.market && game.market.spread != null ? "spread" : "moneyline"} line.</span></div>`}
     <details class="factor-details" open><summary>Algo factor breakdown</summary><div class="factor-list">${factorBars(m.factors)}</div></details>
     ${game.eligible_for_official_picks !== false && (game.recommendations || []).length ? `<div class="rec-list"><h3>All model recommendations</h3>${game.recommendations.map((p) => pickCard({ ...p, league: game.league, league_name: game.league_name, matchup: `${away.name} @ ${home.name}`, matchup_obj: game.matchup, start_time: game.start_time })).join("")}</div>` : ""}
   </section>`;
@@ -767,7 +767,7 @@ function viewPicks() {
   const picks = state.slate?.recommended_bets || [];
   const slate = state.slate || {};
   const minEdge = slate.summary?.min_edge ?? slate.min_recommended_edge ?? 25;
-  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p>Official picks fire when our per-sport <strong>EnsembleML</strong> mega-model shows <strong>25+ points of edge</strong> vs the sportsbook on the recommended market: <strong>spread</strong> (basketball/football), <strong>moneyline</strong> (hockey/baseball), or <strong>1X2</strong> (soccer). That is the only gate.</p></section>
+  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p>Official picks fire when our per-sport <strong>EnsembleML</strong> mega-model shows <strong>25+ points of edge</strong> and <strong>25%+ expected value</strong> vs the sportsbook on the recommended market: <strong>spread</strong> (basketball/football), <strong>moneyline</strong> (hockey/baseball), or <strong>1X2</strong> (soccer). Picks must also align with the model's projected margin or win probability.</p></section>
     <div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No bets meet the +${minEdge} edge threshold today.</div>`}</div>`;
 }
 
@@ -1606,7 +1606,7 @@ function renderBettingGameCard(sheet, league) {
       <small>Fav: ${model.favorite_side || "—"} · Blend ${model.blend_layers || "—"} layers</small>
       ${agreement.required ? `<small>Agreement: ${agreement.agreed ? "✓ all layers" : "✗ split"} (${(agreement.value_sides || []).join(", ") || "none"})</small>` : ""}
     </div>
-    ${official && top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong> ${pickTeamNameLink(top, league, matchup)} +${top.edge} edge</div>` : !official ? `<div class="game-pick neutral"><strong>Official picks unavailable</strong></div>` : `<div class="game-pick neutral"><strong>No official pick</strong> — need 25+ edge vs the book</div>`}
+    ${official && top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong> ${pickTeamNameLink(top, league, matchup)} +${top.edge} edge</div>` : !official ? `<div class="game-pick neutral"><strong>Official picks unavailable</strong></div>` : `<div class="game-pick neutral"><strong>No official pick</strong> — need 25+ edge and 25%+ EV vs the book</div>`}
     <div class="db-bet-links">
       <a href="${teamHref(league, matchup.home?.abbr)}">${home}</a>
       <a href="${teamHref(league, matchup.away?.abbr)}">${away}</a>

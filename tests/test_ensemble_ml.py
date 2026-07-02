@@ -82,6 +82,58 @@ def test_train_and_predict_binary_ensemble(tmp_path, monkeypatch) -> None:
     assert pred["predicted_home_margin"] is not None
 
 
+def test_apply_ensemble_ml_margin_uses_spread_convention(tmp_path, monkeypatch) -> None:
+    import web.ensemble_ml.config as config
+    import web.ensemble_ml.model as model_module
+
+    monkeypatch.setattr(config, "MODEL_ROOT", tmp_path)
+    monkeypatch.setattr(config, "model_dir", lambda league: tmp_path / league.lower())
+    monkeypatch.setattr(
+        config,
+        "model_artifact_path",
+        lambda league: tmp_path / league.lower() / "ensemble.joblib",
+    )
+    monkeypatch.setattr(
+        config,
+        "metadata_path",
+        lambda league: tmp_path / league.lower() / "metadata.json",
+    )
+    monkeypatch.setattr(model_module, "model_dir", config.model_dir)
+    monkeypatch.setattr(model_module, "model_artifact_path", config.model_artifact_path)
+    monkeypatch.setattr(model_module, "metadata_path", config.metadata_path)
+
+    frame = _synthetic_binary_frame()
+    trained = train_binary_ensemble("nba", frame)
+    assert trained
+    save_ensemble("nba", trained, {"league": "nba"})
+    clear_ensemble_caches()
+
+    blended = {
+        "blend_mode": "blended",
+        "legacy": {"home_win_probability": 58.0, "total_score": -58.0},
+        "power": {"home_win_probability": 60.0},
+        "basketball_pred": {"home_win_probability": 62.0, "predicted_margin": 4.0},
+        "total_score": -59.0,
+        "win_probability": 59.0,
+    }
+    updated = apply_ensemble_ml(
+        blended,
+        "nba",
+        consensus_spread=-5.5,
+        home_moneyline=-220,
+        away_moneyline=180,
+    )
+    assert updated["blend_mode"] == "ensemble_ml"
+    assert updated.get("ensemble_ml")
+    margin = updated.get("home_spread_margin")
+    assert margin is not None
+    pred_margin = updated["ensemble_ml"]["predicted_home_margin"]
+    assert pred_margin is not None
+    assert margin == round(-float(pred_margin), 2)
+    assert updated["favorite_side"] == "home"
+    assert margin < 0
+
+
 def test_apply_ensemble_ml_updates_blend(tmp_path, monkeypatch) -> None:
     import web.ensemble_ml.config as config
     import web.ensemble_ml.model as model_module

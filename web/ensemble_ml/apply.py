@@ -65,7 +65,9 @@ def apply_ensemble_ml(
     if is_spread_league(league):
         margin = preds.get("predicted_home_margin")
         if margin is not None:
-            updated["home_spread_margin"] = round(float(margin), 2)
+            # Ensemble margin is score diff (positive = home favored); spread picks use
+            # book convention (negative = home favored), same as sport layer margins.
+            updated["home_spread_margin"] = round(-float(margin), 2)
         else:
             updated["home_spread_margin"] = round(model_home_margin(total, league), 2)
 

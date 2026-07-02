@@ -38,7 +38,7 @@ OfficialBetType = Literal["spread", "moneyline", "soccer_1x2", "none"]
 
 # Official picks: model edge vs sportsbook on the American-odds scale (not ROI gates).
 OFFICIAL_MIN_EDGE = 25.0
-OFFICIAL_MIN_EV_PCT = 0.0
+OFFICIAL_MIN_EV_PCT = 25.0
 OFFICIAL_MIN_SPREAD_POINT_EDGE = 0.0
 
 DEFAULT_THRESHOLDS: dict[str, Any] = {
@@ -1095,6 +1095,7 @@ def evaluate_official_picks_for_game(
             model_margin_home=blended_home_spread_margin(blended, league),
             min_edge=thresholds["min_edge"],
             min_point_edge=thresholds["min_spread_point_edge"],
+            min_ev_pct=thresholds["min_ev_pct"],
         )
         return picks
 

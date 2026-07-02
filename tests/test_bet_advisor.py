@@ -127,13 +127,14 @@ def test_moneyline_edge_cross_sign_not_raw_subtraction() -> None:
 
 
 def test_edge_threshold_official_minimum() -> None:
-    """Official picks require min_edge=25 on the American odds scale."""
-    from web.pick_strategy import OFFICIAL_MIN_EDGE, get_pick_thresholds
+    """Official picks require min_edge=25 and min_ev_pct=25 on the American odds scale."""
+    from web.pick_strategy import OFFICIAL_MIN_EDGE, OFFICIAL_MIN_EV_PCT, get_pick_thresholds
 
     assert OFFICIAL_MIN_EDGE == 25.0
+    assert OFFICIAL_MIN_EV_PCT == 25.0
     thresholds = get_pick_thresholds("nba")
     assert thresholds["min_edge"] == 25.0
-    assert thresholds["min_ev_pct"] == 0.0
+    assert thresholds["min_ev_pct"] == 25.0
     assert thresholds["enabled"] is True
 
     away_proj, _ = model_moneylines(28.33)
@@ -376,6 +377,63 @@ def test_official_spread_pick_uses_blended_home_spread_margin() -> None:
     assert "Model home margin -3.2" in picks[0].reason
 
 
+def test_ensemble_home_margin_sign_does_not_flip_spread_pick() -> None:
+    """Storm @ Mercury: home favored by ~7.7 must not recommend away +3.5."""
+    from web.pick_strategy import evaluate_official_picks_for_game
+
+    blended = {
+        "total_score": -63.01,
+        "win_probability": 63.01,
+        "favorite_side": "home",
+        "blended_home_win_probability": 63.01,
+        # EnsembleML stores score-diff margin; blended_home_spread_margin negates it.
+        "home_spread_margin": -7.7,
+        "ensemble_ml": {
+            "home_win_probability": 63.01,
+            "predicted_home_margin": 7.66,
+        },
+    }
+    picks = evaluate_official_picks_for_game(
+        league="wnba",
+        away_name="Seattle Storm",
+        home_name="Phoenix Mercury",
+        away_slug="seattle-storm",
+        home_slug="phoenix-mercury",
+        total_score=-63.01,
+        win_probability=63.01,
+        blended=blended,
+        away_market=145,
+        home_market=-175,
+        consensus_spread=-3.5,
+        away_spread_odds=-105,
+        home_spread_odds=-115,
+    )
+    assert not picks or picks[0].side == "home"
+    if picks:
+        assert picks[0].side == "home"
+        assert picks[0].spread_line == -3.5
+
+
+def test_spread_picks_require_min_ev_pct() -> None:
+    """Low-EV spread spots clear edge but fail the official EV gate."""
+    picks = evaluate_spread_picks(
+        league="wnba",
+        away_name="A",
+        home_name="B",
+        away_slug="a",
+        home_slug="b",
+        total_score=-55.0,
+        win_probability=55.0,
+        consensus_spread=-1.5,
+        away_spread_odds=-110,
+        home_spread_odds=-110,
+        model_margin_home=-1.6,
+        min_edge=25.0,
+        min_ev_pct=25.0,
+    )
+    assert picks == []
+
+
 if __name__ == "__main__":
     test_spread_line_for_side()
     test_spread_point_edge_home_favorite()
@@ -395,5 +453,8 @@ if __name__ == "__main__":
     test_evaluate_spread_picks_favors_underdog_when_market_overlays()
     test_spread_edge_juice_adjustment()
     test_spread_pick_uses_cover_probability()
+    test_official_spread_pick_uses_blended_home_spread_margin()
+    test_ensemble_home_margin_sign_does_not_flip_spread_pick()
+    test_spread_picks_require_min_ev_pct()
     test_cross_sign_reason_does_not_claim_book_beats_model_line()
     print("test_bet_advisor.py: all tests passed")

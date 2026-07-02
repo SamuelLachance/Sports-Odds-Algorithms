@@ -634,6 +634,7 @@ def evaluate_spread_picks(
     model_margin_home: float | None = None,
     min_edge: float = MIN_RECOMMENDED_EDGE,
     min_point_edge: float | None = None,
+    min_ev_pct: float = MIN_EXPECTED_VALUE_PCT,
 ) -> list[BetPick]:
     """Recommend spread bets when model margin beats the consensus book line."""
     if consensus_spread is None:
@@ -662,6 +663,9 @@ def evaluate_spread_picks(
 
         line = spread_line_for_side(consensus_spread, side)
         side_cover_prob = spread_cover_probability(point_edge)
+        ev_pct = expected_value_pct(side_cover_prob, juice)
+        if min_ev_pct > 0 and ev_pct < min_ev_pct:
+            continue
         fair_spread_odds = _probability_to_american(side_cover_prob)
 
         strategy = "value"
@@ -691,7 +695,7 @@ def evaluate_spread_picks(
                 strategy=strategy,
                 confidence=confidence,
                 edge=edge,
-                ev_pct=round(expected_value_pct(side_cover_prob, juice), 2),
+                ev_pct=round(ev_pct, 2),
                 model_projection=fair_spread_odds,
                 market_odds=juice,
                 win_probability=side_cover_prob,
@@ -706,6 +710,15 @@ def evaluate_spread_picks(
 
     picks.sort(key=lambda item: item.edge, reverse=True)
     return best_pick_only(picks)
+
+
+def spread_pick_blocked_by_model_margin(
+    side: str,
+    model_margin_home: float,
+    consensus_spread: float,
+) -> bool:
+    """Block spread picks that contradict the model's projected margin vs the line."""
+    return spread_point_edge(model_margin_home, consensus_spread, side) <= 0
 
 
 def pick_to_dict(pick: BetPick) -> dict[str, Any]:
