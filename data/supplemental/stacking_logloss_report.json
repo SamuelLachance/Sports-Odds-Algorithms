@@ -1,0 +1,605 @@
+{
+  "generated_at": "2026-07-03",
+  "cutoff": "7-3-2026",
+  "leagues": [
+    {
+      "league": "bundesliga",
+      "category": "soccer",
+      "games_available": 2081,
+      "dataset_profile": {
+        "max_calibration_games": null,
+        "target_rows": null,
+        "power_train_window": null,
+        "dated_source": "supplemental"
+      },
+      "meta_log_loss_tuned": null,
+      "meta_log_loss_baseline": 1.0019,
+      "meta_calibration_samples": 2029,
+      "meta_blend": {
+        "legacy": 0.0,
+        "power": 0.0,
+        "soccer_pred": 1.0
+      },
+      "meta_temperature": 1.0,
+      "ensemble_train_rows": 2029,
+      "ensemble_holdout_logloss": null,
+      "ensemble_market_logloss": null,
+      "ensemble_trained_at": "2026-07-03"
+    },
+    {
+      "league": "cbb",
+      "category": "basketball",
+      "games_available": 2597,
+      "dataset_profile": {
+        "max_calibration_games": null,
+        "target_rows": null,
+        "power_train_window": null,
+        "dated_source": "espn"
+      },
+      "meta_log_loss_tuned": 0.5567,
+      "meta_log_loss_baseline": 0.5612,
+      "meta_calibration_samples": 948,
+      "meta_blend": {
+        "legacy": 0.2,
+        "power": 0.3,
+        "sport_pred": 0.5
+      },
+      "meta_temperature": 1.1,
+      "ensemble_train_rows": 2235,
+      "ensemble_holdout_logloss": 0.54981,
+      "ensemble_market_logloss": null,
+      "ensemble_trained_at": "2026-07-02"
+    },
+    {
+      "league": "cfb",
+      "category": "football",
+      "games_available": 1923,
+      "dataset_profile": {
+        "max_calibration_games": null,
+        "target_rows": null,
+        "power_train_window": null,
+        "dated_source": "espn"
+      },
+      "meta_log_loss_tuned": 0.5809,
+      "meta_log_loss_baseline": 0.618,
+      "meta_calibration_samples": 1778,
+      "meta_blend": {
+        "legacy": 0.3,
+        "power": 0.7
+      },
+      "meta_temperature": 1.5,
+      "ensemble_train_rows": 1778,
+      "ensemble_holdout_logloss": 0.56755,
+      "ensemble_market_logloss": null,
+      "ensemble_trained_at": "2026-07-03"
+    },
+    {
+      "league": "concacaf_gold",
+      "category": "soccer",
+      "games_available": 818,
+      "dataset_profile": {
+        "max_calibration_games": null,
+        "target_rows": null,
+        "power_train_window": null,
+        "dated_source": "espn"
+      },
+      "meta_log_loss_tuned": null,
+      "meta_log_loss_baseline": 1.0187,
+      "meta_calibration_samples": 675,
+      "meta_blend": {
+        "legacy": 0.3,
+        "power": 0.1,
+        "soccer_pred": 0.6
+      },
+      "meta_temperature": 0.8,
+      "ensemble_train_rows": null,
+      "ensemble_holdout_logloss": null,
+      "ensemble_market_logloss": null,
+      "ensemble_trained_at": null
+    },
+    {
+      "league": "concacaf_nations",
+      "category": "soccer",
+      "games_available": 903,
+      "dataset_profile": {
+        "max_calibration_games": null,
+        "target_rows": null,
+        "power_train_window": null,
+        "dated_source": "espn"
+      },
+      "meta_log_loss_tuned": null,
+      "meta_log_loss_baseline": 1.0149,
+      "meta_calibration_samples": 760,
+      "meta_blend": {
+        "legacy": 0.3,
+        "power": 0.2,
+        "soccer_pred": 0.5
+      },
+      "meta_temperature": 0.9,
+      "ensemble_train_rows": null,
+      "ensemble_holdout_logloss": null,
+      "ensemble_market_logloss": null,
+      "ensemble_trained_at": null
+    },
+    {
+      "league": "concacaf_wcq",
+      "category": "soccer",
+      "games_available": 887,
+      "dataset_profile": {
+        "max_calibration_games": null,
+        "target_rows": null,
+        "power_train_window": null,
+        "dated_source": "espn"
+      },
+      "meta_log_loss_tuned": null,
+      "meta_log_loss_baseline": 1.015,
+      "meta_calibration_samples": 744,
+      "meta_blend": {
+        "legacy": 0.3,
+        "power": 0.1,
+        "soccer_pred": 0.6
+      },
+      "meta_temperature": 0.9,
+      "ensemble_train_rows": null,
+      "ensemble_holdout_logloss": null,
+      "ensemble_market_logloss": null,
+      "ensemble_trained_at": null
+    },
+    {
+      "league": "copa_america",
+      "category": "soccer",
+      "games_available": 819,
+      "dataset_profile": {
+        "max_calibration_games": null,
+        "target_rows": null,
+        "power_train_window": null,
+        "dated_source": "espn"
+      },
+      "meta_log_loss_tuned": null,
+      "meta_log_loss_baseline": 1.0176,
+      "meta_calibration_samples": 677,
+      "meta_blend": {
+        "legacy": 0.3,
+        "power": 0.1,
+        "soccer_pred": 0.6
+      },
+      "meta_temperature": 0.9,
+      "ensemble_train_rows": null,
+      "ensemble_holdout_logloss": null,
+      "ensemble_market_logloss": null,
+      "ensemble_trained_at": null
+    },
+    {
+      "league": "epl",
+      "category": "soccer",
+      "games_available": 2064,
+      "dataset_profile": {
+        "max_calibration_games": null,
+        "target_rows": null,
+        "power_train_window": null,
+        "dated_source": "supplemental"
+      },
+      "meta_log_loss_tuned": null,
+      "meta_log_loss_baseline": 1.0025,
+      "meta_calibration_samples": 2015,
+      "meta_blend": {
+        "legacy": 0.0,
+        "power": 0.0,
+        "soccer_pred": 1.0
+      },
+      "meta_temperature": 0.9,
+      "ensemble_train_rows": 2015,
+      "ensemble_holdout_logloss": null,
+      "ensemble_market_logloss": null,
+      "ensemble_trained_at": "2026-07-03"
+    },
+    {
+      "league": "fifa_friendlies",
+      "category": "soccer",
+      "games_available": 1851,
+      "dataset_profile": {
+        "max_calibration_games": null,
+        "target_rows": null,
+        "power_train_window": null,
+        "dated_source": "espn"
+      },
+      "meta_log_loss_tuned": null,
+      "meta_log_loss_baseline": 1.0059,
+      "meta_calibration_samples": 1683,
+      "meta_blend": {
+        "legacy": 0.3,
+        "power": 0.1,
+        "soccer_pred": 0.6
+      },
+      "meta_temperature": 1.0,
+      "ensemble_train_rows": null,
+      "ensemble_holdout_logloss": null,
+      "ensemble_market_logloss": null,
+      "ensemble_trained_at": null
+    },
+    {
+      "league": "laliga",
+      "category": "soccer",
+      "games_available": 2105,
+      "dataset_profile": {
+        "max_calibration_games": null,
+        "target_rows": null,
+        "power_train_window": null,
+        "dated_source": "supplemental"
+      },
+      "meta_log_loss_tuned": null,
+      "meta_log_loss_baseline": 1.0177,
+      "meta_calibration_samples": 2056,
+      "meta_blend": {
+        "legacy": 0.0,
+        "power": 0.0,
+        "soccer_pred": 1.0
+      },
+      "meta_temperature": 0.9,
+      "ensemble_train_rows": 2056,
+      "ensemble_holdout_logloss": null,
+      "ensemble_market_logloss": null,
+      "ensemble_trained_at": "2026-07-03"
+    },
+    {
+      "league": "ligue1",
+      "category": "soccer",
+      "games_available": 3136,
+      "dataset_profile": {
+        "max_calibration_games": null,
+        "target_rows": null,
+        "power_train_window": null,
+        "dated_source": "supplemental"
+      },
+      "meta_log_loss_tuned": null,
+      "meta_log_loss_baseline": 1.021,
+      "meta_calibration_samples": 3076,
+      "meta_blend": {
+        "legacy": 0.0,
+        "power": 0.0,
+        "soccer_pred": 1.0
+      },
+      "meta_temperature": 0.9,
+      "ensemble_train_rows": 3076,
+      "ensemble_holdout_logloss": null,
+      "ensemble_market_logloss": null,
+      "ensemble_trained_at": "2026-07-03"
+    },
+    {
+      "league": "mlb",
+      "category": "baseball",
+      "games_available": 12496,
+      "dataset_profile": {
+        "max_calibration_games": null,
+        "target_rows": null,
+        "power_train_window": null,
+        "dated_source": "supplemental"
+      },
+      "meta_log_loss_tuned": 0.685,
+      "meta_log_loss_baseline": 0.6853,
+      "meta_calibration_samples": 11817,
+      "meta_blend": {
+        "legacy": 0.2,
+        "power": 0.5,
+        "sport_pred": 0.3
+      },
+      "meta_temperature": 1.0,
+      "ensemble_train_rows": 12446,
+      "ensemble_holdout_logloss": 0.68776,
+      "ensemble_market_logloss": null,
+      "ensemble_trained_at": "2026-07-03"
+    },
+    {
+      "league": "mls",
+      "category": "soccer",
+      "games_available": 3086,
+      "dataset_profile": {
+        "max_calibration_games": null,
+        "target_rows": null,
+        "power_train_window": null,
+        "dated_source": "espn"
+      },
+      "meta_log_loss_tuned": null,
+      "meta_log_loss_baseline": 1.0529,
+      "meta_calibration_samples": 3042,
+      "meta_blend": {
+        "legacy": 0.0,
+        "power": 0.0,
+        "soccer_pred": 1.0
+      },
+      "meta_temperature": 0.9,
+      "ensemble_train_rows": null,
+      "ensemble_holdout_logloss": null,
+      "ensemble_market_logloss": null,
+      "ensemble_trained_at": null
+    },
+    {
+      "league": "nba",
+      "category": "basketball",
+      "games_available": 7132,
+      "dataset_profile": {
+        "max_calibration_games": null,
+        "target_rows": null,
+        "power_train_window": null,
+        "dated_source": "supplemental"
+      },
+      "meta_log_loss_tuned": 0.6519,
+      "meta_log_loss_baseline": 0.6509,
+      "meta_calibration_samples": 7092,
+      "meta_blend": {
+        "legacy": 0.2,
+        "power": 0.5,
+        "sport_pred": 0.3
+      },
+      "meta_temperature": 1.0,
+      "ensemble_train_rows": 7092,
+      "ensemble_holdout_logloss": 0.57758,
+      "ensemble_market_logloss": 0.5838100549742149,
+      "ensemble_trained_at": "2026-07-02"
+    },
+    {
+      "league": "ncaabb",
+      "category": "baseball",
+      "games_available": 11434,
+      "dataset_profile": {
+        "max_calibration_games": null,
+        "target_rows": null,
+        "power_train_window": null,
+        "dated_source": "espn"
+      },
+      "meta_log_loss_tuned": 0.6093,
+      "meta_log_loss_baseline": 0.6242,
+      "meta_calibration_samples": 10823,
+      "meta_blend": {
+        "legacy": 0.0,
+        "power": 0.5,
+        "sport_pred": 0.5
+      },
+      "meta_temperature": 0.7,
+      "ensemble_train_rows": 11163,
+      "ensemble_holdout_logloss": 0.63624,
+      "ensemble_market_logloss": null,
+      "ensemble_trained_at": "2026-07-03"
+    },
+    {
+      "league": "ncaah",
+      "category": "hockey",
+      "games_available": 2819,
+      "dataset_profile": {
+        "max_calibration_games": null,
+        "target_rows": null,
+        "power_train_window": null,
+        "dated_source": "espn"
+      },
+      "meta_log_loss_tuned": 0.6435,
+      "meta_log_loss_baseline": 0.6556,
+      "meta_calibration_samples": 1081,
+      "meta_blend": {
+        "legacy": 0.2,
+        "power": 0.5,
+        "sport_pred": 0.3
+      },
+      "meta_temperature": 0.7,
+      "ensemble_train_rows": 2542,
+      "ensemble_holdout_logloss": 0.62473,
+      "ensemble_market_logloss": null,
+      "ensemble_trained_at": "2026-07-03"
+    },
+    {
+      "league": "ncaawh",
+      "category": "hockey",
+      "games_available": 864,
+      "dataset_profile": {
+        "max_calibration_games": null,
+        "target_rows": null,
+        "power_train_window": null,
+        "dated_source": "espn"
+      },
+      "meta_log_loss_tuned": 0.5225,
+      "meta_log_loss_baseline": 0.5683,
+      "meta_calibration_samples": 748,
+      "meta_blend": {
+        "legacy": 0.0,
+        "power": 0.4,
+        "sport_pred": 0.6
+      },
+      "meta_temperature": 0.7,
+      "ensemble_train_rows": null,
+      "ensemble_holdout_logloss": null,
+      "ensemble_market_logloss": null,
+      "ensemble_trained_at": null
+    },
+    {
+      "league": "nfl",
+      "category": "football",
+      "games_available": 1608,
+      "dataset_profile": {
+        "max_calibration_games": null,
+        "target_rows": null,
+        "power_train_window": null,
+        "dated_source": "supplemental"
+      },
+      "meta_log_loss_tuned": 0.6558,
+      "meta_log_loss_baseline": 0.656,
+      "meta_calibration_samples": 1564,
+      "meta_blend": {
+        "legacy": 0.2,
+        "power": 0.4,
+        "sport_pred": 0.4
+      },
+      "meta_temperature": 0.9,
+      "ensemble_train_rows": 1564,
+      "ensemble_holdout_logloss": 0.59471,
+      "ensemble_market_logloss": 0.6026117115305473,
+      "ensemble_trained_at": "2026-07-03"
+    },
+    {
+      "league": "nhl",
+      "category": "hockey",
+      "games_available": 7383,
+      "dataset_profile": {
+        "max_calibration_games": null,
+        "target_rows": null,
+        "power_train_window": null,
+        "dated_source": "supplemental"
+      },
+      "meta_log_loss_tuned": 0.6765,
+      "meta_log_loss_baseline": 0.6786,
+      "meta_calibration_samples": 7011,
+      "meta_blend": {
+        "legacy": 0.2,
+        "power": 0.5,
+        "sport_pred": 0.3
+      },
+      "meta_temperature": 0.7,
+      "ensemble_train_rows": 7340,
+      "ensemble_holdout_logloss": 0.67135,
+      "ensemble_market_logloss": 0.6714156327831966,
+      "ensemble_trained_at": "2026-07-02"
+    },
+    {
+      "league": "seriea",
+      "category": "soccer",
+      "games_available": 2248,
+      "dataset_profile": {
+        "max_calibration_games": null,
+        "target_rows": null,
+        "power_train_window": null,
+        "dated_source": "supplemental"
+      },
+      "meta_log_loss_tuned": null,
+      "meta_log_loss_baseline": 1.006,
+      "meta_calibration_samples": 2197,
+      "meta_blend": {
+        "legacy": 0.0,
+        "power": 0.2,
+        "soccer_pred": 0.8
+      },
+      "meta_temperature": 0.9,
+      "ensemble_train_rows": 2197,
+      "ensemble_holdout_logloss": null,
+      "ensemble_market_logloss": null,
+      "ensemble_trained_at": "2026-07-03"
+    },
+    {
+      "league": "ucl",
+      "category": "soccer",
+      "games_available": 407,
+      "dataset_profile": {
+        "max_calibration_games": null,
+        "target_rows": null,
+        "power_train_window": null,
+        "dated_source": "espn"
+      },
+      "meta_log_loss_tuned": null,
+      "meta_log_loss_baseline": 0.9838,
+      "meta_calibration_samples": 349,
+      "meta_blend": {
+        "legacy": 0.1,
+        "power": 0.0,
+        "soccer_pred": 0.9
+      },
+      "meta_temperature": 0.9,
+      "ensemble_train_rows": null,
+      "ensemble_holdout_logloss": null,
+      "ensemble_market_logloss": null,
+      "ensemble_trained_at": null
+    },
+    {
+      "league": "uefa_euro",
+      "category": "soccer",
+      "games_available": 838,
+      "dataset_profile": {
+        "max_calibration_games": null,
+        "target_rows": null,
+        "power_train_window": null,
+        "dated_source": "espn"
+      },
+      "meta_log_loss_tuned": null,
+      "meta_log_loss_baseline": 1.0231,
+      "meta_calibration_samples": 696,
+      "meta_blend": {
+        "legacy": 0.3,
+        "power": 0.2,
+        "soccer_pred": 0.5
+      },
+      "meta_temperature": 0.9,
+      "ensemble_train_rows": null,
+      "ensemble_holdout_logloss": null,
+      "ensemble_market_logloss": null,
+      "ensemble_trained_at": null
+    },
+    {
+      "league": "uefa_nations",
+      "category": "soccer",
+      "games_available": 977,
+      "dataset_profile": {
+        "max_calibration_games": null,
+        "target_rows": null,
+        "power_train_window": null,
+        "dated_source": "espn"
+      },
+      "meta_log_loss_tuned": null,
+      "meta_log_loss_baseline": 1.0206,
+      "meta_calibration_samples": 835,
+      "meta_blend": {
+        "legacy": 0.3,
+        "power": 0.2,
+        "soccer_pred": 0.5
+      },
+      "meta_temperature": 1.0,
+      "ensemble_train_rows": null,
+      "ensemble_holdout_logloss": null,
+      "ensemble_market_logloss": null,
+      "ensemble_trained_at": null
+    },
+    {
+      "league": "wnba",
+      "category": "basketball",
+      "games_available": 1649,
+      "dataset_profile": {
+        "max_calibration_games": null,
+        "target_rows": null,
+        "power_train_window": null,
+        "dated_source": "espn"
+      },
+      "meta_log_loss_tuned": 0.6384,
+      "meta_log_loss_baseline": 0.6387,
+      "meta_calibration_samples": 1596,
+      "meta_blend": {
+        "legacy": 0.2,
+        "power": 0.5,
+        "sport_pred": 0.3
+      },
+      "meta_temperature": 0.8,
+      "ensemble_train_rows": 1599,
+      "ensemble_holdout_logloss": 0.63901,
+      "ensemble_market_logloss": null,
+      "ensemble_trained_at": "2026-07-02"
+    },
+    {
+      "league": "worldcup",
+      "category": "soccer",
+      "games_available": 871,
+      "dataset_profile": {
+        "max_calibration_games": null,
+        "target_rows": null,
+        "power_train_window": null,
+        "dated_source": "espn"
+      },
+      "meta_log_loss_tuned": null,
+      "meta_log_loss_baseline": 1.0114,
+      "meta_calibration_samples": 726,
+      "meta_blend": {
+        "legacy": 0.3,
+        "power": 0.2,
+        "soccer_pred": 0.5
+      },
+      "meta_temperature": 0.9,
+      "ensemble_train_rows": null,
+      "ensemble_holdout_logloss": null,
+      "ensemble_market_logloss": null,
+      "ensemble_trained_at": null
+    }
+  ]
+}

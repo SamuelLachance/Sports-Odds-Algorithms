@@ -11,7 +11,7 @@
     "power_train_window": null,
     "dated_source": "espn"
   },
-  "holdout_logloss": 0.65065,
+  "holdout_logloss": 0.63901,
   "market_holdout_logloss": null,
   "holdout_logloss_market_games": null,
   "nhl_market_holdout_logloss": null,
@@ -21,8 +21,8 @@
   "all_market_games": null,
   "target_logloss": null,
   "beats_market_target": null,
-  "holdout_brier": 0.231,
-  "margin_sigma": 10.737818174203767,
+  "holdout_brier": 0.2253,
+  "margin_sigma": 10.051074960086542,
   "trained_at": "2026-07-02",
   "features": [
     "legacy_home_prob",

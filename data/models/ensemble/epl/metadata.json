@@ -1,9 +1,9 @@
 {
   "league": "epl",
   "model_type": "soccer_threeway",
-  "train_rows": 250,
-  "holdout_home_logloss": 0.516,
-  "trained_at": "2026-07-01",
+  "train_rows": 2015,
+  "holdout_home_logloss": 0.3105,
+  "trained_at": "2026-07-03",
   "features": [
     "legacy_home_prob",
     "legacy_draw_prob",

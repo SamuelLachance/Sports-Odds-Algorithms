@@ -1,10 +1,10 @@
 {
   "_meta": {
-    "calibration_window": 120,
+    "calibration_window": "full",
     "leagues_tuned": 15,
     "pro_seasons": 7,
     "scoreboard_days": 900,
-    "tuned_at": "2026-07-01"
+    "tuned_at": "2026-07-02"
   },
   "bundesliga": {
     "blend": {
@@ -13,114 +13,114 @@
       "soccer_pred": 1.0
     },
     "data_depth": {
-      "games_loaded": 2115,
+      "games_loaded": 2081,
       "pro_seasons": 7,
       "scoreboard_days": 900,
       "supplemental": 1
     },
-    "log_loss_baseline_equal": 0.9544,
-    "log_loss_tuned_stat": 0.9408,
-    "samples": 120,
+    "log_loss_baseline_equal": 1.0019,
+    "log_loss_tuned_stat": 0.9925,
+    "samples": 2029,
     "stat": {
-      "club_elo": 0.0,
-      "dc": 0.45,
-      "elo": 0.45,
-      "form": 0.1,
-      "pi": 0.0
+      "club_elo": 0.05,
+      "dc": 0.475,
+      "elo": 0.285,
+      "form": 0.0,
+      "pi": 0.19
     },
-    "temperature": 0.9
+    "temperature": 1.0
   },
   "concacaf_gold": {
     "blend": {
-      "legacy": 0.0,
-      "power": 0.0,
-      "soccer_pred": 1.0
+      "legacy": 0.3,
+      "power": 0.1,
+      "soccer_pred": 0.6
     },
     "data_depth": {
-      "games_loaded": 815,
+      "games_loaded": 818,
       "pro_seasons": 7,
       "scoreboard_days": 900,
       "supplemental": 1
     },
-    "log_loss_baseline_equal": 0.9635,
-    "log_loss_tuned_stat": 0.8985,
-    "samples": 119,
+    "log_loss_baseline_equal": 1.0187,
+    "log_loss_tuned_stat": 0.9992,
+    "samples": 675,
     "stat": {
       "club_elo": 0.0,
-      "dc": 0.8,
-      "elo": 0.2,
+      "dc": 0.4,
+      "elo": 0.6,
+      "form": 0.0,
+      "pi": 0.0
+    },
+    "temperature": 0.8
+  },
+  "concacaf_nations": {
+    "blend": {
+      "legacy": 0.3,
+      "power": 0.2,
+      "soccer_pred": 0.5
+    },
+    "data_depth": {
+      "games_loaded": 903,
+      "pro_seasons": 7,
+      "scoreboard_days": 900,
+      "supplemental": 1
+    },
+    "log_loss_baseline_equal": 1.0149,
+    "log_loss_tuned_stat": 0.9973,
+    "samples": 760,
+    "stat": {
+      "club_elo": 0.0,
+      "dc": 0.5,
+      "elo": 0.3,
+      "form": 0.0,
+      "pi": 0.2
+    },
+    "temperature": 0.9
+  },
+  "concacaf_wcq": {
+    "blend": {
+      "legacy": 0.3,
+      "power": 0.1,
+      "soccer_pred": 0.6
+    },
+    "data_depth": {
+      "games_loaded": 887,
+      "pro_seasons": 7,
+      "scoreboard_days": 900,
+      "supplemental": 1
+    },
+    "log_loss_baseline_equal": 1.015,
+    "log_loss_tuned_stat": 0.9927,
+    "samples": 744,
+    "stat": {
+      "club_elo": 0.05,
+      "dc": 0.475,
+      "elo": 0.475,
       "form": 0.0,
       "pi": 0.0
     },
     "temperature": 0.9
   },
-  "concacaf_nations": {
-    "blend": {
-      "legacy": 0.0,
-      "power": 0.0,
-      "soccer_pred": 1.0
-    },
-    "data_depth": {
-      "games_loaded": 900,
-      "pro_seasons": 7,
-      "scoreboard_days": 900,
-      "supplemental": 1
-    },
-    "log_loss_baseline_equal": 0.9655,
-    "log_loss_tuned_stat": 0.8975,
-    "samples": 119,
-    "stat": {
-      "club_elo": 0.0,
-      "dc": 0.9,
-      "elo": 0.1,
-      "form": 0.0,
-      "pi": 0.0
-    },
-    "temperature": 1.0
-  },
-  "concacaf_wcq": {
-    "blend": {
-      "legacy": 0.0,
-      "power": 0.0,
-      "soccer_pred": 1.0
-    },
-    "data_depth": {
-      "games_loaded": 883,
-      "pro_seasons": 7,
-      "scoreboard_days": 900,
-      "supplemental": 1
-    },
-    "log_loss_baseline_equal": 0.9646,
-    "log_loss_tuned_stat": 0.888,
-    "samples": 119,
-    "stat": {
-      "club_elo": 0.0,
-      "dc": 0.9,
-      "elo": 0.1,
-      "form": 0.0,
-      "pi": 0.0
-    },
-    "temperature": 1.0
-  },
   "copa_america": {
     "blend": {
-      "legacy": 0.0,
-      "power": 0.0,
-      "soccer_pred": 1.0
+      "legacy": 0.3,
+      "power": 0.1,
+      "soccer_pred": 0.6
     },
     "data_depth": {
-      "games_loaded": 815,
+      "games_loaded": 819,
       "pro_seasons": 7,
       "scoreboard_days": 900,
       "supplemental": 1
     },
-    "log_loss_baseline_equal": 0.962,
-    "log_loss_tuned_stat": 0.9018,
-    "samples": 119,
+    "log_loss_baseline_equal": 1.0176,
+    "log_loss_tuned_stat": 0.9986,
+    "samples": 677,
     "stat": {
       "club_elo": 0.0,
-      "dc": 0.8,
-      "elo": 0.2,
+      "dc": 0.4,
+      "elo": 0.6,
       "form": 0.0,
       "pi": 0.0
     },
@@ -138,12 +138,12 @@
     },
     "stat": {
       "club_elo": 0.03,
-      "dc": 0.661,
-      "elo": 0.164,
-      "form": 0.023,
-      "pi": 0.125
+      "dc": 0.471,
+      "elo": 0.368,
+      "form": 0.001,
+      "pi": 0.129
     },
-    "temperature": 0.941
+    "temperature": 0.915
   },
   "epl": {
     "blend": {
@@ -157,37 +157,37 @@
       "scoreboard_days": 900,
       "supplemental": 1
     },
-    "log_loss_baseline_equal": 0.9965,
-    "log_loss_tuned_stat": 0.9834,
-    "samples": 119,
+    "log_loss_baseline_equal": 1.0025,
+    "log_loss_tuned_stat": 0.9895,
+    "samples": 2015,
     "stat": {
-      "club_elo": 0.0,
-      "dc": 0.665,
-      "elo": 0.0,
-      "form": 0.05,
-      "pi": 0.285
+      "club_elo": 0.15,
+      "dc": 0.425,
+      "elo": 0.17,
+      "form": 0.0,
+      "pi": 0.255
     },
     "temperature": 0.9
   },
   "fifa_friendlies": {
     "blend": {
-      "legacy": 0.0,
-      "power": 0.0,
-      "soccer_pred": 1.0
+      "legacy": 0.3,
+      "power": 0.1,
+      "soccer_pred": 0.6
     },
     "data_depth": {
-      "games_loaded": 1822,
+      "games_loaded": 1851,
       "pro_seasons": 7,
       "scoreboard_days": 900,
       "supplemental": 1
     },
-    "log_loss_baseline_equal": 0.9405,
-    "log_loss_tuned_stat": 0.8403,
-    "samples": 120,
+    "log_loss_baseline_equal": 1.0059,
+    "log_loss_tuned_stat": 0.978,
+    "samples": 1683,
     "stat": {
-      "club_elo": 0.0,
-      "dc": 1.0,
-      "elo": 0.0,
+      "club_elo": 0.1,
+      "dc": 0.54,
+      "elo": 0.36,
       "form": 0.0,
       "pi": 0.0
     },
@@ -205,23 +205,23 @@
       "scoreboard_days": 900,
       "supplemental": 1
     },
-    "log_loss_baseline_equal": 1.0219,
-    "log_loss_tuned_stat": 0.9773,
-    "samples": 120,
+    "log_loss_baseline_equal": 1.0177,
+    "log_loss_tuned_stat": 1.0045,
+    "samples": 2056,
     "stat": {
       "club_elo": 0.0,
-      "dc": 0.0,
-      "elo": 1.0,
+      "dc": 0.4,
+      "elo": 0.5,
       "form": 0.0,
-      "pi": 0.0
+      "pi": 0.1
     },
-    "temperature": 0.7
+    "temperature": 0.9
   },
   "ligue1": {
     "blend": {
       "legacy": 0.0,
-      "power": 0.1,
-      "soccer_pred": 0.9
+      "power": 0.0,
+      "soccer_pred": 1.0
     },
     "data_depth": {
       "games_loaded": 3136,
@@ -229,17 +229,17 @@
       "scoreboard_days": 900,
       "supplemental": 1
     },
-    "log_loss_baseline_equal": 1.0565,
-    "log_loss_tuned_stat": 1.0524,
-    "samples": 120,
+    "log_loss_baseline_equal": 1.021,
+    "log_loss_tuned_stat": 1.0097,
+    "samples": 3076,
     "stat": {
       "club_elo": 0.0,
-      "dc": 0.1,
+      "dc": 0.5,
       "elo": 0.1,
       "form": 0.0,
-      "pi": 0.8
+      "pi": 0.4
     },
-    "temperature": 1.0
+    "temperature": 0.9
   },
   "mls": {
     "blend": {
@@ -248,28 +248,28 @@
       "soccer_pred": 1.0
     },
     "data_depth": {
-      "games_loaded": 2682,
+      "games_loaded": 3086,
       "pro_seasons": 7,
       "scoreboard_days": 900,
       "supplemental": 1
     },
-    "log_loss_baseline_equal": 1.0624,
-    "log_loss_tuned_stat": 1.0609,
-    "samples": 120,
+    "log_loss_baseline_equal": 1.0529,
+    "log_loss_tuned_stat": 1.0485,
+    "samples": 3042,
     "stat": {
-      "club_elo": 0.2,
-      "dc": 0.24,
-      "elo": 0.0,
-      "form": 0.2,
-      "pi": 0.36
+      "club_elo": 0.0,
+      "dc": 0.2,
+      "elo": 0.6,
+      "form": 0.0,
+      "pi": 0.2
     },
-    "temperature": 1.0
+    "temperature": 0.9
   },
   "seriea": {
     "blend": {
       "legacy": 0.0,
-      "power": 0.0,
-      "soccer_pred": 1.0
+      "power": 0.2,
+      "soccer_pred": 0.8
     },
     "data_depth": {
       "games_loaded": 2248,
@@ -277,13 +277,13 @@
       "scoreboard_days": 900,
       "supplemental": 1
     },
-    "log_loss_baseline_equal": 0.9945,
-    "log_loss_tuned_stat": 0.9694,
-    "samples": 119,
+    "log_loss_baseline_equal": 1.006,
+    "log_loss_tuned_stat": 0.9914,
+    "samples": 2197,
     "stat": {
       "club_elo": 0.0,
-      "dc": 0.9,
-      "elo": 0.0,
+      "dc": 0.6,
+      "elo": 0.3,
       "form": 0.0,
       "pi": 0.1
     },
@@ -291,98 +291,98 @@
   },
   "ucl": {
     "blend": {
-      "legacy": 0.0,
+      "legacy": 0.1,
       "power": 0.0,
-      "soccer_pred": 1.0
+      "soccer_pred": 0.9
     },
     "data_depth": {
-      "games_loaded": 405,
+      "games_loaded": 407,
       "pro_seasons": 7,
       "scoreboard_days": 900,
       "supplemental": 1
     },
-    "log_loss_baseline_equal": 0.9833,
-    "log_loss_tuned_stat": 0.9446,
-    "samples": 120,
+    "log_loss_baseline_equal": 0.9838,
+    "log_loss_tuned_stat": 0.9582,
+    "samples": 349,
     "stat": {
-      "club_elo": 0.15,
-      "dc": 0.595,
+      "club_elo": 0.0,
+      "dc": 0.6,
       "elo": 0.0,
       "form": 0.0,
-      "pi": 0.255
+      "pi": 0.4
     },
     "temperature": 0.9
   },
   "uefa_euro": {
     "blend": {
-      "legacy": 0.0,
-      "power": 0.0,
-      "soccer_pred": 1.0
+      "legacy": 0.3,
+      "power": 0.2,
+      "soccer_pred": 0.5
     },
     "data_depth": {
-      "games_loaded": 835,
+      "games_loaded": 838,
       "pro_seasons": 7,
       "scoreboard_days": 900,
       "supplemental": 1
     },
-    "log_loss_baseline_equal": 0.9645,
-    "log_loss_tuned_stat": 0.9087,
-    "samples": 119,
+    "log_loss_baseline_equal": 1.0231,
+    "log_loss_tuned_stat": 1.0059,
+    "samples": 696,
     "stat": {
-      "club_elo": 0.0,
-      "dc": 0.8,
-      "elo": 0.2,
+      "club_elo": 0.1,
+      "dc": 0.36,
+      "elo": 0.54,
       "form": 0.0,
       "pi": 0.0
     },
-    "temperature": 1.0
+    "temperature": 0.9
   },
   "uefa_nations": {
     "blend": {
-      "legacy": 0.0,
-      "power": 0.0,
-      "soccer_pred": 1.0
+      "legacy": 0.3,
+      "power": 0.2,
+      "soccer_pred": 0.5
     },
     "data_depth": {
-      "games_loaded": 973,
+      "games_loaded": 976,
       "pro_seasons": 7,
       "scoreboard_days": 900,
       "supplemental": 1
     },
-    "log_loss_baseline_equal": 0.9618,
-    "log_loss_tuned_stat": 0.8908,
-    "samples": 119,
+    "log_loss_baseline_equal": 1.0206,
+    "log_loss_tuned_stat": 1.0047,
+    "samples": 835,
     "stat": {
-      "club_elo": 0.05,
-      "dc": 0.855,
-      "elo": 0.095,
+      "club_elo": 0.0,
+      "dc": 0.5,
+      "elo": 0.4,
       "form": 0.0,
-      "pi": 0.0
+      "pi": 0.1
     },
     "temperature": 1.0
   },
   "worldcup": {
     "blend": {
-      "legacy": 0.0,
-      "power": 0.0,
-      "soccer_pred": 1.0
+      "legacy": 0.3,
+      "power": 0.2,
+      "soccer_pred": 0.5
     },
     "data_depth": {
-      "games_loaded": 862,
+      "games_loaded": 868,
       "pro_seasons": 7,
       "scoreboard_days": 900,
       "supplemental": 1
     },
-    "log_loss_baseline_equal": 0.9489,
-    "log_loss_tuned_stat": 0.8483,
-    "samples": 120,
+    "log_loss_baseline_equal": 1.0114,
+    "log_loss_tuned_stat": 0.9907,
+    "samples": 726,
     "stat": {
-      "club_elo": 0.05,
-      "dc": 0.95,
-      "elo": 0.0,
+      "club_elo": 0.0,
+      "dc": 0.5,
+      "elo": 0.5,
       "form": 0.0,
       "pi": 0.0
     },
-    "temperature": 1.0
+    "temperature": 0.9
   }
 }

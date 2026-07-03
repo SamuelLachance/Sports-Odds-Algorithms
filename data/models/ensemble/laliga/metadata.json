@@ -1,9 +1,9 @@
 {
   "league": "laliga",
   "model_type": "soccer_threeway",
-  "train_rows": 250,
-  "holdout_home_logloss": 0.3165,
-  "trained_at": "2026-07-01",
+  "train_rows": 2056,
+  "holdout_home_logloss": 0.3097,
+  "trained_at": "2026-07-03",
   "features": [
     "legacy_home_prob",
     "legacy_draw_prob",

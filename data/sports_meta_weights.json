@@ -1,27 +1,29 @@
 {
   "_meta": {
-    "calibration_window": 120,
+    "calibration_window": "full",
     "leagues_tuned": 10,
     "pro_seasons": 7,
     "scoreboard_days": 900,
-    "tuned_at": "2026-07-01"
+    "tuned_at": "2026-07-02"
   },
   "cbb": {
     "blend": {
-      "legacy": 0.0,
-      "power": 0.0,
-      "sport_pred": 1.0
+      "legacy": 0.2,
+      "power": 0.3,
+      "sport_pred": 0.5
     },
     "data_depth": {
-      "games_loaded": 2616,
+      "calibration_games": 948,
+      "full_walkforward": 1,
+      "games_loaded": 2601,
       "pro_seasons": 7,
       "scoreboard_days": 900,
       "supplemental": 1
     },
-    "log_loss_baseline_equal": 0.4306,
-    "log_loss_tuned": 0.2497,
-    "samples": 98,
-    "temperature": 1.0,
+    "log_loss_baseline_equal": 0.5612,
+    "log_loss_tuned": 0.5567,
+    "samples": 948,
+    "temperature": 1.1,
     "two_layer": false
   },
   "cfb": {
@@ -30,172 +32,190 @@
       "power": 0.7
     },
     "data_depth": {
+      "calibration_games": 1778,
+      "full_walkforward": 1,
       "games_loaded": 1923,
       "pro_seasons": 7,
       "scoreboard_days": 900,
       "supplemental": 1
     },
-    "log_loss_baseline_equal": 0.5893,
-    "log_loss_tuned": 0.5838,
-    "samples": 120,
-    "temperature": 1.3,
+    "log_loss_baseline_equal": 0.618,
+    "log_loss_tuned": 0.5809,
+    "samples": 1778,
+    "temperature": 1.5,
     "two_layer": true
   },
   "default": {
     "blend": {
-      "legacy": 0.041,
-      "power": 0.145,
-      "sport_pred": 0.814
+      "legacy": 0.158,
+      "power": 0.45,
+      "sport_pred": 0.392
     },
     "data_depth": {
       "pro_seasons": 7,
       "scoreboard_days": 900
     },
-    "temperature": 0.88,
+    "temperature": 0.907,
     "two_layer": false
   },
   "mlb": {
     "blend": {
-      "legacy": 0.0,
-      "power": 0.0,
-      "sport_pred": 1.0
+      "legacy": 0.2,
+      "power": 0.5,
+      "sport_pred": 0.3
     },
     "data_depth": {
-      "games_loaded": 12475,
+      "calibration_games": 11817,
+      "full_walkforward": 1,
+      "games_loaded": 12487,
       "pro_seasons": 7,
       "scoreboard_days": 900,
       "supplemental": 1
     },
-    "log_loss_baseline_equal": 0.6854,
-    "log_loss_tuned": 0.6665,
-    "samples": 120,
+    "log_loss_baseline_equal": 0.6853,
+    "log_loss_tuned": 0.685,
+    "samples": 11817,
     "temperature": 1.0,
     "two_layer": false
   },
   "nba": {
     "blend": {
-      "legacy": 0.0,
-      "power": 0.2,
-      "sport_pred": 0.8
+      "legacy": 0.2,
+      "power": 0.5,
+      "sport_pred": 0.3
     },
     "data_depth": {
+      "calibration_games": 7092,
+      "full_walkforward": 1,
       "games_loaded": 7132,
       "pro_seasons": 7,
       "scoreboard_days": 900,
       "supplemental": 1
     },
-    "log_loss_baseline_equal": 0.5945,
-    "log_loss_tuned": 0.5414,
-    "samples": 120,
+    "log_loss_baseline_equal": 0.6509,
+    "log_loss_tuned": 0.6519,
+    "samples": 7092,
     "temperature": 1.0,
     "two_layer": false
   },
   "ncaabb": {
     "blend": {
-      "legacy": 0.1,
+      "legacy": 0.0,
       "power": 0.5,
-      "sport_pred": 0.4
+      "sport_pred": 0.5
     },
     "data_depth": {
-      "games_loaded": 11352,
+      "calibration_games": 10823,
+      "full_walkforward": 1,
+      "games_loaded": 11434,
       "pro_seasons": 7,
       "scoreboard_days": 900,
       "supplemental": 1
     },
-    "log_loss_baseline_equal": 0.5965,
-    "log_loss_tuned": 0.5803,
-    "samples": 120,
+    "log_loss_baseline_equal": 0.6242,
+    "log_loss_tuned": 0.6093,
+    "samples": 10823,
     "temperature": 0.7,
     "two_layer": false
   },
   "ncaah": {
     "blend": {
-      "legacy": 0.0,
-      "power": 0.0,
-      "sport_pred": 1.0
+      "legacy": 0.2,
+      "power": 0.5,
+      "sport_pred": 0.3
     },
     "data_depth": {
-      "games_loaded": 2715,
+      "calibration_games": 1081,
+      "full_walkforward": 1,
+      "games_loaded": 2819,
       "pro_seasons": 7,
       "scoreboard_days": 900,
       "supplemental": 1
     },
-    "log_loss_baseline_equal": 0.6397,
-    "log_loss_tuned": 0.591,
-    "samples": 78,
-    "temperature": 0.9,
+    "log_loss_baseline_equal": 0.6556,
+    "log_loss_tuned": 0.6435,
+    "samples": 1081,
+    "temperature": 0.7,
     "two_layer": false
   },
   "ncaawh": {
     "blend": {
       "legacy": 0.0,
-      "power": 0.0,
-      "sport_pred": 1.0
+      "power": 0.4,
+      "sport_pred": 0.6
     },
     "data_depth": {
-      "games_loaded": 845,
+      "calibration_games": 748,
+      "full_walkforward": 1,
+      "games_loaded": 864,
       "pro_seasons": 7,
       "scoreboard_days": 900,
       "supplemental": 1
     },
-    "log_loss_baseline_equal": 0.5494,
-    "log_loss_tuned": 0.5259,
-    "samples": 117,
+    "log_loss_baseline_equal": 0.5683,
+    "log_loss_tuned": 0.5225,
+    "samples": 748,
     "temperature": 0.7,
     "two_layer": false
   },
   "nfl": {
     "blend": {
-      "legacy": 0.0,
-      "power": 0.0,
-      "sport_pred": 1.0
+      "legacy": 0.2,
+      "power": 0.4,
+      "sport_pred": 0.4
     },
     "data_depth": {
+      "calibration_games": 1564,
+      "full_walkforward": 1,
       "games_loaded": 1608,
       "pro_seasons": 7,
       "scoreboard_days": 900,
       "supplemental": 1
     },
-    "log_loss_baseline_equal": 0.6631,
-    "log_loss_tuned": 0.5554,
-    "samples": 120,
-    "temperature": 0.7,
+    "log_loss_baseline_equal": 0.656,
+    "log_loss_tuned": 0.6558,
+    "samples": 1564,
+    "temperature": 0.9,
     "two_layer": false
   },
   "nhl": {
     "blend": {
-      "legacy": 0.0,
-      "power": 0.0,
-      "sport_pred": 1.0
+      "legacy": 0.2,
+      "power": 0.5,
+      "sport_pred": 0.3
     },
     "data_depth": {
+      "calibration_games": 7011,
+      "full_walkforward": 1,
       "games_loaded": 7383,
       "pro_seasons": 7,
       "scoreboard_days": 900,
       "supplemental": 1
     },
-    "log_loss_baseline_equal": 0.6633,
-    "log_loss_tuned": 0.6386,
-    "samples": 120,
-    "temperature": 0.8,
+    "log_loss_baseline_equal": 0.6786,
+    "log_loss_tuned": 0.6765,
+    "samples": 7011,
+    "temperature": 0.7,
     "two_layer": false
   },
   "wnba": {
     "blend": {
-      "legacy": 0.0,
-      "power": 0.0,
-      "sport_pred": 1.0
+      "legacy": 0.2,
+      "power": 0.5,
+      "sport_pred": 0.3
     },
     "data_depth": {
-      "games_loaded": 1641,
+      "calibration_games": 1596,
+      "full_walkforward": 1,
+      "games_loaded": 1648,
       "pro_seasons": 7,
       "scoreboard_days": 900,
       "supplemental": 1
     },
-    "log_loss_baseline_equal": 0.6109,
-    "log_loss_tuned": 0.4197,
-    "samples": 120,
-    "temperature": 0.7,
+    "log_loss_baseline_equal": 0.6387,
+    "log_loss_tuned": 0.6384,
+    "samples": 1596,
+    "temperature": 0.8,
     "two_layer": false
   }
 }

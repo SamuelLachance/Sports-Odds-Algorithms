@@ -1,19 +1,19 @@
 {
   "league": "nba",
   "model_type": "binary_spread",
-  "train_rows": 7106,
-  "games_available": 7146,
-  "market_blend_weight": 0.6000000000000001,
+  "train_rows": 7092,
+  "games_available": 7132,
+  "market_blend_weight": 0.75,
   "temperature": 1.0,
   "dataset_profile": {
     "max_calibration_games": null,
     "target_rows": null,
     "power_train_window": null,
-    "dated_source": "espn"
+    "dated_source": "supplemental"
   },
-  "holdout_logloss": 0.57937,
-  "market_holdout_logloss": 0.5835504603601878,
-  "holdout_logloss_market_games": 0.5793694076020808,
+  "holdout_logloss": 0.57758,
+  "market_holdout_logloss": 0.5838100549742149,
+  "holdout_logloss_market_games": 0.5775803193575947,
   "nhl_market_holdout_logloss": null,
   "nhl_market_baseline_logloss": null,
   "all_market_logloss": null,
@@ -21,8 +21,8 @@
   "all_market_games": null,
   "target_logloss": null,
   "beats_market_target": null,
-  "holdout_brier": 0.1989,
-  "margin_sigma": 12.211935758373448,
+  "holdout_brier": 0.1986,
+  "margin_sigma": 12.116626022472772,
   "trained_at": "2026-07-02",
   "features": [
     "legacy_home_prob",
