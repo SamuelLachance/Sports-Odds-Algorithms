@@ -32,11 +32,11 @@ permissions:
   pages: write
   id-token: write
 
-# Only one Pages deploy at a time; cancel stale runs so deploy does not sit in
-# deployment_queued until actions/deploy-pages hits its 10-minute timeout.
+# Only one Pages deploy at a time. Do not cancel in-flight deploys — aborting
+# during syncing_files causes "Deployment failed, try again later."
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -115,13 +115,38 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 45
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          # Default is 10 minutes; allow queue drain when Pages is busy.
-          timeout: 1800000
+        continue-on-error: true
+
+      - name: Wait before deploy retry
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 120
+
+      - id: deployment_retry_2
+        if: steps.deployment.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+
+      - name: Wait before deploy retry
+        if: steps.deployment.outcome == 'failure' && steps.deployment_retry_2.outcome == 'failure'
+        run: sleep 120
+
+      - id: deployment_retry_3
+        if: steps.deployment.outcome == 'failure' && steps.deployment_retry_2.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+
+      - name: Verify deploy succeeded
+        if: >-
+          steps.deployment.outcome != 'success' &&
+          steps.deployment_retry_2.outcome != 'success' &&
+          steps.deployment_retry_3.outcome != 'success'
+        run: |
+          echo "GitHub Pages deploy failed after 3 attempts."
+          exit 1
