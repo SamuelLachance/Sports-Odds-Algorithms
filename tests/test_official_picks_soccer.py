@@ -69,6 +69,8 @@ def test_soccer_game_not_eligible_for_official_picks() -> None:
         "top_pick": pick,
     }
     assert game["eligible_for_official_picks"] is False
+    assert game["recommendations"], "Soccer keeps model recommendations on the game card"
+    assert game["top_pick"] is not None
 
 
 def test_slate_recommendation_rollup_skips_non_official_leagues() -> None:
@@ -101,21 +103,25 @@ def test_slate_recommendation_rollup_skips_non_official_leagues() -> None:
         "model": {"model_agreement": {}},
     }
 
-    recommendations = []
+    official = []
+    model_analysis = []
     for game in [soccer_game, mlb_game]:
-        if not game.get("eligible_for_official_picks", True):
-            continue
+        bucket = official if game.get("eligible_for_official_picks", True) else model_analysis
         for pick in game.get("recommendations") or []:
-            recommendations.append(
+            bucket.append(
                 {
                     **pick,
                     "league": game["league"],
                     "event_id": game["event_id"],
+                    "tracked": game.get("eligible_for_official_picks", True),
                 }
             )
 
-    assert len(recommendations) == 1
-    assert recommendations[0]["league"] == "mlb"
+    assert len(official) == 1
+    assert official[0]["league"] == "mlb"
+    assert len(model_analysis) == 1
+    assert model_analysis[0]["league"] == "epl"
+    assert model_analysis[0]["tracked"] is False
 
 
 def test_record_from_slate_skips_non_official_leagues() -> None:

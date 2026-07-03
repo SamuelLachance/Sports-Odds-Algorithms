@@ -536,8 +536,12 @@ function pickCard(pick, extra = "") {
   const linkAttrs = gameHref
     ? ` href="${gameHref}" class="pick-card pick-card-link ${confClass(pick.confidence)}"`
     : ` class="pick-card ${confClass(pick.confidence)}"`;
+  const trackedPill =
+    pick.tracked === false
+      ? `<span class="strategy-pill muted">Not tracked</span>`
+      : "";
   return `<${tag}${linkAttrs}>
-    <div class="pick-top"><span class="league-pill">${pick.league_name || pick.league}</span><span class="strategy-pill">${pick.strategy_label || pick.strategy}</span></div>
+    <div class="pick-top"><span class="league-pill">${pick.league_name || pick.league}</span><span class="strategy-pill">${pick.strategy_label || pick.strategy}</span>${trackedPill}</div>
     <h3>${pick.team_name || ""}</h3>
     <p class="pick-matchup">${pick.matchup || extra}</p>
     <p class="pick-time">${formatTime(pick.start_time)}</p>
@@ -678,6 +682,47 @@ function factorsSectionTitle(m) {
   return (m?.blend_layers || 0) === 1 ? "Model inputs" : "Algo factor breakdown";
 }
 
+function isPredictionsOnlyGame(game) {
+  return game?.eligible_for_official_picks === false;
+}
+
+function gameValuePickBlock(game, top, isSoccer) {
+  const predictionsOnly = isPredictionsOnlyGame(game);
+  if (predictionsOnly) {
+    if (top) {
+      return `<div class="game-pick neutral"><strong>Model value analysis</strong><span>${pickTeamNameLink(top, game.league, game.matchup)} · ${pickMarketLabel(top)} vs model ${pickModelLabel(top)} (+${top.ev_pct != null ? top.ev_pct + "% EV" : ""}${top.edge != null ? ", +" + top.edge + " edge" : ""}) — not an official tracked pick</span><p>${top.reason}</p></div>`;
+    }
+    return `<div class="game-pick neutral"><strong>Predictions only</strong><span>${isSoccer ? "Full 1X2 model probabilities and fair prices are shown below. Soccer value spots appear under Model predictions on the picks page but are not tracked as official bets." : "Model probabilities and fair prices are shown; this league is not tracked as an official pick."}</span></div>`;
+  }
+  if (top) {
+    return `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong><span>${pickTeamNameLink(top, game.league, game.matchup)} · ${pickMarketLabel(top)} vs model ${pickModelLabel(top)} (+${top.ev_pct != null ? top.ev_pct + "% EV" : ""}${top.edge != null ? ", +" + top.edge + " edge" : ""})</span><p>${top.reason}</p></div>`;
+  }
+  if (isSoccer) {
+    return `<div class="game-pick neutral"><strong>No official 1X2 pick</strong><span>Expected value is below 25% on home/draw/away moneylines.</span></div>`;
+  }
+  return `<div class="game-pick neutral"><strong>No official pick</strong><span>Expected value is below 25% on today's ${game.market && game.market.spread != null ? "spread" : "moneyline"} line.</span></div>`;
+}
+
+function gameRecommendationsList(game, away, home) {
+  const recs = game.recommendations || [];
+  if (!recs.length) return "";
+  const title = isPredictionsOnlyGame(game)
+    ? "Model analysis (not tracked)"
+    : "All model recommendations";
+  return `<div class="rec-list"><h3>${title}</h3>${recs
+    .map((p) =>
+      pickCard({
+        ...p,
+        league: game.league,
+        league_name: game.league_name,
+        matchup: `${away.name} @ ${home.name}`,
+        matchup_obj: game.matchup,
+        start_time: game.start_time,
+      }),
+    )
+    .join("")}</div>`;
+}
+
 function algoCenter(game) {
   const m = game.model;
   const mk = game.market;
@@ -731,9 +776,9 @@ function algoCenter(game) {
       ${algoBreakdown(m)}
       ${oddsRow}
     </div>
-    ${game.eligible_for_official_picks === false ? `<div class="game-pick neutral"><strong>Official picks unavailable</strong><span>This league is not enabled for official pick tracking.</span></div>` : top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong><span>${pickTeamNameLink(top, game.league, game.matchup)} · ${pickMarketLabel(top)} vs model ${pickModelLabel(top)} (+${top.ev_pct != null ? top.ev_pct + "% EV" : ""}${top.edge != null ? ", +" + top.edge + " edge" : ""})</span><p>${top.reason}</p></div>` : isSoccer ? `<div class="game-pick neutral"><strong>No official 1X2 pick</strong><span>Expected value is below 25% on home/draw/away moneylines.</span></div>` : `<div class="game-pick neutral"><strong>No official pick</strong><span>Expected value is below 25% on today's ${game.market && game.market.spread != null ? "spread" : "moneyline"} line.</span></div>`}
+    ${gameValuePickBlock(game, top, isSoccer)}
     <details class="factor-details" open><summary>${factorsSectionTitle(m)}</summary><div class="factor-list">${factorBars(m.factors)}</div></details>
-    ${game.eligible_for_official_picks !== false && (game.recommendations || []).length ? `<div class="rec-list"><h3>All model recommendations</h3>${game.recommendations.map((p) => pickCard({ ...p, league: game.league, league_name: game.league_name, matchup: `${away.name} @ ${home.name}`, matchup_obj: game.matchup, start_time: game.start_time })).join("")}</div>` : ""}
+    ${gameRecommendationsList(game, away, home)}
   </section>`;
 }
 
@@ -743,6 +788,7 @@ function viewDashboard() {
   const slate = state.slate || {};
   const summary = slate.summary || {};
   const picks = slate.recommended_bets || [];
+  const modelAnalysis = slate.model_analysis_bets || [];
   const games = slate.games || [];
   const leagues = summary.leagues || [...new Set(games.map((g) => g.league))];
   const tracking = state.tracking?.all_time || state.tracking?.summary || {};
@@ -797,9 +843,10 @@ function viewDashboard() {
     </div>
 
     <section class="section">
-      <div class="section-head"><h2>Top algo picks</h2><a class="text-link" href="#/picks">View all →</a></div>
-      <div class="picks-grid">${picks.length ? picks.slice(0, 6).map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No bets meet the ${minEvPct}%+ EV threshold today.</div>`}</div>
-    </section>`;
+      <div class="section-head"><h2>Top official picks</h2><a class="text-link" href="#/picks">View all →</a></div>
+      <div class="picks-grid">${picks.length ? picks.slice(0, 6).map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No official bets meet the ${minEvPct}%+ EV threshold today.</div>`}</div>
+    </section>
+    ${modelAnalysis.length ? `<section class="section"><div class="section-head"><h2>Soccer &amp; other model predictions</h2><a class="text-link" href="#/picks#model-predictions">View all →</a></div><p class="muted section-intro">Same model analysis as on game pages — shown for reference, not tracked in official bet history.</p><div class="picks-grid">${modelAnalysis.slice(0, 6).map((p) => pickCard(p)).join("")}</div></section>` : ""}`;
 }
 
 function renderTrackingSummary() {
@@ -826,10 +873,12 @@ function viewPicks() {
   state.sidebarLeague = null;
   renderSidebar(parseRoute());
   const picks = state.slate?.recommended_bets || [];
+  const modelAnalysis = state.slate?.model_analysis_bets || [];
   const slate = state.slate || {};
   const minEvPct = slate.summary?.min_ev_pct ?? slate.min_recommended_ev_pct ?? 25;
-  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p>Official picks fire when our per-sport model shows <strong>25%+ expected value</strong> vs the sportsbook on the recommended market: <strong>spread</strong> (NBA/CBB), <strong>moneyline</strong> (MLB/NHL/WNBA), or <strong>1X2</strong> (soccer). Picks must align with the model's projected margin or win probability.</p></section>
-    <div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No bets meet the ${minEvPct}%+ EV threshold today.</div>`}</div>`;
+  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p><strong>Official picks</strong> (NBA, CBB, WNBA, NHL, MLB) fire when our model shows <strong>${minEvPct}%+ expected value</strong> vs the sportsbook. <strong>Model predictions</strong> below include soccer and other leagues with the same analysis, but those bets are not tracked officially.</p></section>
+    <section class="section"><div class="section-head"><h2>Official picks</h2></div><div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No official bets meet the ${minEvPct}%+ EV threshold today.</div>`}</div></section>
+    <section class="section" id="model-predictions"><div class="section-head"><h2>Model predictions (not tracked)</h2></div><p class="muted section-intro">Soccer 1X2 and other non-official leagues. Full probabilities and fair prices are always on each game page.</p><div class="picks-grid">${modelAnalysis.length ? modelAnalysis.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No model value spots meet the ${minEvPct}%+ EV threshold today.</div>`}</div></section>`;
 }
 
 function viewGames(league) {
@@ -1649,7 +1698,7 @@ function renderBettingGameCard(sheet, league) {
   const agreement = model.agreement || {};
   const picks = sheet.recommendations || [];
   const top = sheet.top_pick;
-  const official = sheet.eligible_for_official_picks !== false;
+  const predictionsOnly = sheet.eligible_for_official_picks === false;
   return `<article class="db-bet-card panel">
     <div class="db-bet-head">
       <span class="league-pill">${sheet.league_name || league}</span>
@@ -1667,7 +1716,7 @@ function renderBettingGameCard(sheet, league) {
       <small>Fav: ${model.favorite_side || "—"} · Blend ${model.blend_layers || "—"} layers</small>
       ${agreement.required ? `<small>Agreement: ${agreement.agreed ? "✓ all layers" : "✗ split"} (${(agreement.value_sides || []).join(", ") || "none"})</small>` : ""}
     </div>
-    ${official && top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong> ${pickTeamNameLink(top, league, matchup)} +${top.ev_pct}% EV</div>` : !official ? `<div class="game-pick neutral"><strong>Official picks unavailable</strong></div>` : `<div class="game-pick neutral"><strong>No official pick</strong> — need 25%+ EV vs the book</div>`}
+    ${predictionsOnly && top ? `<div class="game-pick neutral"><strong>Model value analysis</strong> ${pickTeamNameLink(top, league, matchup)} +${top.ev_pct}% EV — not tracked</div>` : predictionsOnly ? `<div class="game-pick neutral"><strong>Predictions only</strong> — model shown, not an official tracked pick</div>` : top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong> ${pickTeamNameLink(top, league, matchup)} +${top.ev_pct}% EV</div>` : `<div class="game-pick neutral"><strong>No official pick</strong> — need 25%+ EV vs the book</div>`}
     <div class="db-bet-links">
       <a href="${teamHref(league, matchup.home?.abbr)}">${home}</a>
       <a href="${teamHref(league, matchup.away?.abbr)}">${away}</a>

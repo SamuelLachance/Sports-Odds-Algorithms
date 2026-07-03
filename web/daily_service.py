@@ -345,7 +345,9 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             away_prob=ml_away_prob,
         )
 
-    official_picks = picks
+    # Full model picks stay on the game card for every league. Official tracking
+    # and the slate recommended_bets rollup still gate on eligible_for_official_picks.
+    model_picks = picks
 
     matchup = {
         "away": {"abbr": away[0], "slug": away[1], "name": game.away_name},
@@ -378,8 +380,8 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
         },
         "model": model_payload,
         "eligible_for_official_picks": eligible_for_official_picks(game.league),
-        "recommendations": [_enrich_pick(pick_to_dict(pick)) for pick in official_picks],
-        "top_pick": _enrich_pick(pick_to_dict(official_picks[0])) if official_picks else None,
+        "recommendations": [_enrich_pick(pick_to_dict(pick)) for pick in model_picks],
+        "top_pick": _enrich_pick(pick_to_dict(model_picks[0])) if model_picks else None,
     }
 
 
@@ -508,25 +510,53 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
                     "event_id": game["event_id"],
                     "matchup": f"{game['matchup']['away']['name']} @ {game['matchup']['home']['name']}",
                     "start_time": game["start_time"],
+                    "tracked": True,
                 }
             )
 
-    best_by_event: dict[str, dict[str, Any]] = {}
-    for rec in recommendations:
-        event_id = rec.get("event_id") or ""
-        if not event_id:
+    model_analysis = []
+    for game in all_games:
+        if game.get("eligible_for_official_picks", True):
             continue
-        current = best_by_event.get(event_id)
-        if current is None or (
-            rec.get("profit_score", 0),
-            rec.get("ev_pct", 0),
-            rec.get("edge", 0),
-        ) > (
-            current.get("profit_score", 0),
-            current.get("ev_pct", 0),
-            current.get("edge", 0),
-        ):
-            best_by_event[event_id] = rec
+        for pick in game.get("recommendations") or []:
+            model_analysis.append(
+                {
+                    **pick,
+                    "league": game["league"],
+                    "league_name": game["league_name"],
+                    "event_id": game["event_id"],
+                    "matchup": f"{game['matchup']['away']['name']} @ {game['matchup']['home']['name']}",
+                    "start_time": game["start_time"],
+                    "tracked": False,
+                }
+            )
+
+    def _best_picks_by_event(candidates: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        best_by_event: dict[str, dict[str, Any]] = {}
+        for rec in candidates:
+            event_id = rec.get("event_id") or ""
+            if not event_id:
+                continue
+            current = best_by_event.get(event_id)
+            if current is None or (
+                rec.get("profit_score", 0),
+                rec.get("ev_pct", 0),
+                rec.get("edge", 0),
+            ) > (
+                current.get("profit_score", 0),
+                current.get("ev_pct", 0),
+                current.get("edge", 0),
+            ):
+                best_by_event[event_id] = rec
+        return sorted(
+            best_by_event.values(),
+            key=lambda item: (
+                item.get("profit_score", 0),
+                item.get("ev_pct", 0),
+                item.get("edge", 0),
+            ),
+            reverse=True,
+        )
 
     def _meets_recommendation_threshold(_game: dict[str, Any], rec: dict[str, Any]) -> bool:
         league = str(rec.get("league") or _game.get("league") or "")
@@ -534,19 +564,17 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
         return (rec.get("ev_pct") or 0) >= thresholds["min_ev_pct"]
 
     games_by_event = {game["event_id"]: game for game in all_games}
-    recommendations = sorted(
-        best_by_event.values(),
-        key=lambda item: (
-            item.get("profit_score", 0),
-            item.get("ev_pct", 0),
-            item.get("edge", 0),
-        ),
-        reverse=True,
-    )
+    recommendations = _best_picks_by_event(recommendations)
+    model_analysis = _best_picks_by_event(model_analysis)
 
     qualifying = [
         r
         for r in recommendations
+        if _meets_recommendation_threshold(games_by_event.get(r.get("event_id", ""), {}), r)
+    ]
+    model_analysis_qualifying = [
+        r
+        for r in model_analysis
         if _meets_recommendation_threshold(games_by_event.get(r.get("event_id", ""), {}), r)
     ]
 
@@ -556,10 +584,12 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
         "summary": {
             "games_analyzed": len(all_games),
             "recommended_bets": len(qualifying),
+            "model_analysis_bets": len(model_analysis_qualifying),
             "min_ev_pct": OFFICIAL_MIN_EV_PCT,
             "leagues": list({game["league"] for game in all_games}),
         },
         "recommended_bets": qualifying[:20],
+        "model_analysis_bets": model_analysis_qualifying[:20],
         "min_recommended_ev_pct": OFFICIAL_MIN_EV_PCT,
         "games": all_games,
         "errors": errors,
