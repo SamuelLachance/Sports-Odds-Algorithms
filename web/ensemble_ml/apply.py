@@ -73,6 +73,10 @@ def apply_ensemble_ml(
     updated["total_score"] = round(total, 2)
     updated["win_probability"] = round(win_prob, 2)
     updated["favorite_side"] = "home" if total <= 0 else "away"
+    if home_moneyline is not None and away_moneyline is not None:
+        updated["market_decorrelated"] = True
+    elif consensus_spread is not None:
+        updated["market_decorrelated"] = True
 
     if is_spread_league(league):
         margin = preds.get("predicted_home_margin")

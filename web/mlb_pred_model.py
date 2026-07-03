@@ -353,6 +353,7 @@ def run_mlb_pred_model(
     return {
         "algorithm": "MLBRunCast",
         "source": "run-sim-xgb-calibrated",
+        "market_decorrelated": market_spread is not None,
         "home_win_probability": calibrated_prob,
         "predicted_home_runs": prediction["predicted_home_runs"],
         "predicted_away_runs": prediction["predicted_away_runs"],

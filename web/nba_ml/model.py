@@ -115,13 +115,17 @@ def cover_probability(pred_margin, home_spread, sigma: float = DEFAULT_MARGIN_SI
     return _normal_cdf(z)
 
 
-def ensemble_home_prob(model_prob, market_prob, weight: float = 0.5):
-    """Market-aware blend for a stable displayed probability."""
+def ensemble_home_prob(model_prob, market_prob, weight: float = 0.12):
+    """Hubáček-style push away from market (replaces legacy blend-toward-market)."""
+    from web.market_decorrelation import DEFAULT_BINARY_DECORRELATION_WEIGHT, decorrelate_binary
+
     model_prob = np.asarray(model_prob, dtype=float)
     market_prob = np.asarray(market_prob, dtype=float)
-    blended = np.where(
-        np.isnan(market_prob),
-        model_prob,
-        weight * model_prob + (1.0 - weight) * market_prob,
-    )
-    return blended
+    decor_weight = weight if weight != 0.5 else DEFAULT_BINARY_DECORRELATION_WEIGHT
+    adjusted = []
+    for mp, mk in zip(model_prob.flat, market_prob.flat):
+        if not np.isfinite(mk):
+            adjusted.append(float(mp))
+        else:
+            adjusted.append(decorrelate_binary(float(mp), float(mk), weight=decor_weight) / 100.0)
+    return np.asarray(adjusted, dtype=float).reshape(model_prob.shape)

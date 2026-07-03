@@ -112,10 +112,17 @@ def predict_nba(
     market_prob = devig_home_prob(home_ml, away_ml)
     if market_prob is None:
         market_prob = spread_to_home_prob(market_spread)
+    from web.market_decorrelation import DEFAULT_BINARY_DECORRELATION_WEIGHT
+
+    decor_weight = float(meta.get("decorrelation_weight", DEFAULT_BINARY_DECORRELATION_WEIGHT))
     ensemble = float(
-        ensemble_home_prob(win_prob, market_prob if market_prob is not None else float("nan"),
-                           weight=float(meta.get("ensemble_weight", 0.5)))
+        ensemble_home_prob(
+            win_prob,
+            market_prob if market_prob is not None else float("nan"),
+            weight=decor_weight,
+        )
     )
+    market_decorrelated = market_prob is not None
 
     cover_prob = None
     if market_spread is not None:
@@ -129,6 +136,7 @@ def predict_nba(
         "algorithm": "NBA-ML (XGBoost)",
         "source": "nba_ml",
         "home_win_probability": round(ensemble * 100.0, 2),
+        "market_decorrelated": market_decorrelated,
         "model_home_win_probability": round(win_prob * 100.0, 2),
         "predicted_home_margin": round(pred_margin, 2),
         "home_cover_probability": round(cover_prob * 100.0, 2) if cover_prob is not None else None,

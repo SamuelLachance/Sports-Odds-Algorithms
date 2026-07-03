@@ -280,6 +280,7 @@ def run_cbb_pred_model(
     return {
         "algorithm": "CBBTorvik",
         "source": "torvik-efficiency-calibrated",
+        "market_decorrelated": market_spread is not None,
         "home_win_probability": calibrated_prob,
         "predicted_home_score": prediction["predicted_home_score"],
         "predicted_away_score": prediction["predicted_away_score"],

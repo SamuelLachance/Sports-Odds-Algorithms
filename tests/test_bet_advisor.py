@@ -341,41 +341,52 @@ def test_nfl_layer_predicted_margin_uses_spread_convention() -> None:
     assert _layer_home_margin({"predicted_margin": 6.5}, "nfl") == -6.5
 
 
-def test_official_spread_pick_uses_blended_home_spread_margin() -> None:
-    from web.blend_service import _attach_home_spread_margin
+def test_official_spread_pick_requires_hubacek_decorrelation() -> None:
     from web.pick_strategy import evaluate_official_picks_for_game
 
-    blended = _attach_home_spread_margin(
-        {
-            "total_score": -76.74,
-            "win_probability": 76.74,
-            "favorite_side": "home",
-            "blended_home_win_probability": 76.74,
-            "basketball_pred": {
-                "predicted_margin": 8.8,
-                "home_win_probability": 71.94,
-            },
-        },
-        "wnba",
-    )
-    picks = evaluate_official_picks_for_game(
+    base = {
+        "total_score": -72.0,
+        "win_probability": 72.0,
+        "favorite_side": "home",
+        "blended_home_win_probability": 72.0,
+        "home_spread_margin": -9.5,
+    }
+    without_decor = evaluate_official_picks_for_game(
         league="wnba",
-        away_name="Las Vegas Aces",
-        home_name="New York Liberty",
-        away_slug="las-vegas-aces",
-        home_slug="new-york-liberty",
-        total_score=-76.74,
-        win_probability=76.74,
-        blended=blended,
-        away_market=220,
-        home_market=-270,
-        consensus_spread=-6.5,
+        away_name="Away",
+        home_name="Home",
+        away_slug="away",
+        home_slug="home",
+        total_score=-72.0,
+        win_probability=72.0,
+        blended=base,
+        away_market=145,
+        home_market=-165,
+        consensus_spread=-3.5,
         away_spread_odds=-110,
         home_spread_odds=-110,
     )
-    assert picks
-    assert picks[0].model_margin == blended["home_spread_margin"]
-    assert "Model home margin -3.2" in picks[0].reason
+    assert without_decor == []
+
+    with_decor = evaluate_official_picks_for_game(
+        league="wnba",
+        away_name="Away",
+        home_name="Home",
+        away_slug="away",
+        home_slug="home",
+        total_score=-72.0,
+        win_probability=72.0,
+        blended={**base, "market_decorrelated": True},
+        away_market=145,
+        home_market=-165,
+        consensus_spread=-3.5,
+        away_spread_odds=-110,
+        home_spread_odds=-110,
+    )
+    assert with_decor
+    for pick in with_decor:
+        assert pick.strategy == "hubacek"
+        assert (pick.extra.get("model_market_gap_pp") or 0) > 0
 
 
 def test_ensemble_home_margin_sign_does_not_flip_spread_pick() -> None:
@@ -387,6 +398,7 @@ def test_ensemble_home_margin_sign_does_not_flip_spread_pick() -> None:
         "win_probability": 63.01,
         "favorite_side": "home",
         "blended_home_win_probability": 63.01,
+        "market_decorrelated": True,
         # EnsembleML stores score-diff margin; blended_home_spread_margin negates it.
         "home_spread_margin": -7.7,
         "ensemble_ml": {

@@ -19,10 +19,11 @@ def _toronto_today() -> date:
     return datetime.now(TORONTO).date()
 
 from web.bet_advisor import (
+    ensure_hubacek_in_blend,
     model_moneylines,
+    official_pick_binary_probs,
     pick_to_dict,
     projections_from_win_probs,
-    resolve_binary_win_probs,
     soccer_model_moneylines,
 )
 from web.baseball_pred_model import get_baseball_pred_context, is_baseball_league  # noqa: E402
@@ -107,6 +108,8 @@ def _sport_layer_factors(blended: dict[str, Any], league: str) -> list[dict[str,
                     float(calibrated) - float(raw),
                 )
             )
+        if pred.get("market_decorrelated") or blended.get("market_decorrelated"):
+            factors.append(_factor_entry("decorrelation", "Market decorrelation applied", 1.0))
         return factors
 
     if league == "nhl":
@@ -117,6 +120,8 @@ def _sport_layer_factors(blended: dict[str, Any], league: str) -> list[dict[str,
             factors.append(
                 _factor_entry("xg_margin", "Expected goals (home − away)", float(home_xg) - float(away_xg))
             )
+        if pred.get("market_decorrelated") or blended.get("market_decorrelated"):
+            factors.append(_factor_entry("decorrelation", "Market decorrelation applied", 1.0))
         return factors
 
     if league == "cbb":
@@ -124,6 +129,8 @@ def _sport_layer_factors(blended: dict[str, Any], league: str) -> list[dict[str,
         margin = pred.get("predicted_margin")
         if margin is not None:
             factors.append(_factor_entry("eff_margin", "Efficiency margin (home)", float(margin)))
+        if pred.get("market_decorrelated") or blended.get("market_decorrelated"):
+            factors.append(_factor_entry("decorrelation", "Market decorrelation applied", 1.0))
         return factors
 
     if league == "wnba":
@@ -134,6 +141,13 @@ def _sport_layer_factors(blended: dict[str, Any], league: str) -> list[dict[str,
         avail = pred.get("availability_shift_pp")
         if avail is not None:
             factors.append(_factor_entry("availability", "Availability shift (pp)", float(avail)))
+        if pred.get("market_decorrelated") or blended.get("market_decorrelated"):
+            factors.append(_factor_entry("decorrelation", "Market decorrelation applied", 1.0))
+        return factors
+
+    if league == "nba":
+        if blended.get("market_decorrelated"):
+            factors.append(_factor_entry("decorrelation", "Market decorrelation applied", 1.0))
         return factors
 
     if is_soccer_league(league):
@@ -282,6 +296,13 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
         away_moneyline=game.market.away_moneyline,
         draw_moneyline=game.market.draw_moneyline,
     )
+    blended = ensure_hubacek_in_blend(
+        blended,
+        league=game.league,
+        away_market=game.market.away_moneyline,
+        home_market=game.market.home_moneyline,
+        consensus_spread=game.market.spread,
+    )
 
     total = float(blended["total_score"])
     win_probability = float(blended["win_probability"])
@@ -317,7 +338,14 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
         blended, game.league, market=market_payload
     )
     pick_thresholds = get_pick_thresholds(game.league)
-    ml_away_prob, ml_home_prob = resolve_binary_win_probs(blended, total)
+    ml_away_prob, ml_home_prob = official_pick_binary_probs(
+        blended,
+        total,
+        league=game.league,
+        away_market=game.market.away_moneyline,
+        home_market=game.market.home_moneyline,
+        consensus_spread=game.market.spread,
+    )
 
     model_payload: dict[str, Any] = {
         **blended,
@@ -587,7 +615,14 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
     def _meets_recommendation_threshold(_game: dict[str, Any], rec: dict[str, Any]) -> bool:
         league = str(rec.get("league") or _game.get("league") or "")
         thresholds = get_pick_thresholds(league)
-        return (rec.get("ev_pct") or 0) >= thresholds["min_ev_pct"]
+        if (rec.get("ev_pct") or 0) < thresholds["min_ev_pct"]:
+            return False
+        gap = rec.get("model_market_gap_pp")
+        if gap is not None and gap <= 0:
+            return False
+        if rec.get("strategy") != "hubacek":
+            return False
+        return True
 
     games_by_event = {game["event_id"]: game for game in all_games}
     recommendations = _best_picks_by_event(recommendations)

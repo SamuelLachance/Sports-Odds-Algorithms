@@ -14,6 +14,7 @@ from web.bet_advisor import (
     evaluate_soccer_picks,
     evaluate_spread_picks,
     model_home_margin,
+    official_pick_binary_probs,
     soccer_model_moneylines,
     spread_line_for_side,
 )
@@ -37,7 +38,7 @@ STRATEGY_PATH = PROJECT_ROOT / "data" / "pick_strategy.json"
 
 OfficialBetType = Literal["spread", "moneyline", "soccer_1x2", "none"]
 
-# Official picks: +EV gate only (expected value % of stake vs book price).
+# Official picks: Hubáček decorrelated model vs market, +25% EV minimum.
 OFFICIAL_MIN_EDGE = 0.0
 OFFICIAL_MIN_SPREAD_POINT_EDGE = 0.0
 
@@ -1028,7 +1029,7 @@ def evaluate_soccer_official_picks_for_game(
     expected_home_goals: float | None = None,
     expected_away_goals: float | None = None,
 ) -> list[BetPick]:
-    """Official 1X2 soccer picks when expected value is >= 25%."""
+    """Official 1X2 picks: Hubáček decorrelated prob vs market, +25% EV minimum."""
     thresholds = get_pick_thresholds(league)
     picks = evaluate_soccer_picks(
         away_name=away_name,
@@ -1044,10 +1045,9 @@ def evaluate_soccer_official_picks_for_game(
         away_market=away_market,
         draw_market=draw_market,
         home_market=home_market,
-        expected_home_goals=expected_home_goals,
-        expected_away_goals=expected_away_goals,
         min_edge=thresholds["min_edge"],
         min_ev_pct=thresholds["min_ev_pct"],
+        hubacek_only=True,
     )
     for pick in picks:
         pick.bet_type = "soccer_1x2"
@@ -1072,34 +1072,13 @@ def evaluate_official_picks_for_game(
     home_prob: float | None = None,
     away_prob: float | None = None,
 ) -> list[BetPick]:
-    """Route to spread or moneyline picks when expected value is >= 25%."""
-    from web.bet_advisor import resolve_binary_win_probs
-
+    """Official picks: Hubáček decorrelated model vs market, +25% EV minimum."""
     thresholds = get_pick_thresholds(league)
     bet_type = thresholds["bet_type"]
 
     if bet_type == "spread":
         if consensus_spread is None:
             return []
-        min_point_edge = thresholds["min_spread_point_edge"]
-        if league.lower() == "cbb":
-            signals = blended.get("cbb_pick_signals") or blended.get("basketball_pred", {}).get(
-                "cbb_pick_signals"
-            )
-            if signals and signals.get("disagreement_signal"):
-                min_point_edge = max(0.0, min_point_edge - 0.5)
-        elif league.lower() == "wnba":
-            signals = blended.get("wnba_pick_signals") or blended.get("basketball_pred", {}).get(
-                "wnba_pick_signals"
-            )
-            if signals and signals.get("disagreement_signal"):
-                min_point_edge = max(0.0, min_point_edge - 0.5)
-        elif league.lower() == "mlb":
-            signals = blended.get("mlb_pick_signals") or blended.get("baseball_pred", {}).get(
-                "mlb_pick_signals"
-            )
-            if signals and signals.get("disagreement_signal"):
-                min_point_edge = max(0.0, min_point_edge - 0.5)
         picks = evaluate_spread_picks(
             league=league,
             away_name=away_name,
@@ -1113,15 +1092,21 @@ def evaluate_official_picks_for_game(
             home_spread_odds=home_spread_odds,
             model_margin_home=blended_home_spread_margin(blended, league),
             min_edge=thresholds["min_edge"],
-            min_point_edge=min_point_edge,
             min_ev_pct=thresholds["min_ev_pct"],
+            hubacek_only=True,
+            blended=blended,
         )
         return picks
 
     if bet_type == "moneyline":
-        ml_away, ml_home = resolve_binary_win_probs(blended, total_score)
-        if away_prob is not None and home_prob is not None:
-            ml_away, ml_home = away_prob, home_prob
+        ml_away, ml_home = official_pick_binary_probs(
+            blended,
+            total_score,
+            league=league,
+            away_market=away_market,
+            home_market=home_market,
+            consensus_spread=consensus_spread,
+        )
         picks = evaluate_picks(
             away_name=away_name,
             home_name=home_name,
@@ -1135,6 +1120,7 @@ def evaluate_official_picks_for_game(
             home_prob=ml_home,
             min_edge=thresholds["min_edge"],
             min_ev_pct=thresholds["min_ev_pct"],
+            hubacek_only=True,
         )
         return picks
 

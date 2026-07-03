@@ -1,0 +1,134 @@
+"""Official pick selection must use Hubáček decorrelated probabilities."""
+
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from web.bet_advisor import (  # noqa: E402
+    blend_outputs_are_market_decorrelated,
+    ensure_hubacek_in_blend,
+    expected_value_pct,
+    official_pick_binary_probs,
+    passes_hubacek_official_pick_gate,
+)
+from web.league_profiles import OFFICIAL_MIN_EV_PCT  # noqa: E402
+from web.market_decorrelation import decorrelate_binary  # noqa: E402
+from web.pick_strategy import evaluate_official_picks_for_game, get_pick_thresholds  # noqa: E402
+
+
+def test_blend_outputs_are_market_decorrelated_flags() -> None:
+    assert blend_outputs_are_market_decorrelated({"market_decorrelated": True})
+    assert blend_outputs_are_market_decorrelated(
+        {"blend_mode": "ensemble_ml", "ensemble_ml": {"home_win_probability": 60.0}}
+    )
+    assert blend_outputs_are_market_decorrelated(
+        {"hockey_pred": {"market_decorrelated": True}}
+    )
+    assert not blend_outputs_are_market_decorrelated(
+        {"blended_home_win_probability": 62.0, "total_score": -62.0}
+    )
+
+
+def test_ensure_hubacek_in_blend_pushes_away_from_market() -> None:
+    blended = {
+        "total_score": -60.0,
+        "win_probability": 60.0,
+        "favorite_side": "home",
+        "blended_home_win_probability": 60.0,
+    }
+    updated = ensure_hubacek_in_blend(
+        blended,
+        league="nhl",
+        away_market=130,
+        home_market=-150,
+    )
+    assert updated["market_decorrelated"] is True
+    assert updated["blended_home_win_probability"] > 60.0
+
+
+def test_official_moneyline_ev_differs_from_raw_model_prob() -> None:
+    """Official path must not grade +EV using pre-decorrelation win %."""
+    raw_home = 62.0
+    market_home = 50.0
+    decor_home = decorrelate_binary(raw_home, market_home)
+    assert decor_home != raw_home
+
+    _, pick_home = official_pick_binary_probs(
+        {
+            "blended_home_win_probability": decor_home,
+            "total_score": -decor_home,
+            "hockey_pred": {"market_decorrelated": True, "home_win_probability": decor_home},
+            "market_decorrelated": True,
+        },
+        -decor_home,
+        league="nhl",
+        away_market=110,
+        home_market=-130,
+    )
+    assert pick_home == decor_home
+    assert pick_home != raw_home
+
+    ev_decor = expected_value_pct(decor_home, -130)
+    ev_raw = expected_value_pct(raw_home, -130)
+    assert ev_decor != ev_raw
+
+
+def test_official_pick_binary_probs_applies_hubacek_when_missing() -> None:
+    away, home = official_pick_binary_probs(
+        {"blended_home_win_probability": 58.0, "total_score": -58.0},
+        -58.0,
+        league="mlb",
+        away_market=120,
+        home_market=-140,
+    )
+    assert home > 58.0
+    assert away == 100.0 - home
+
+
+def test_hubacek_gate_rejects_market_agreement() -> None:
+    assert not passes_hubacek_official_pick_gate(
+        model_prob_pct=55.0,
+        market_implied_pct=55.0,
+        ev_pct=30.0,
+        min_ev_pct=OFFICIAL_MIN_EV_PCT,
+    )
+    assert not passes_hubacek_official_pick_gate(
+        model_prob_pct=52.0,
+        market_implied_pct=55.0,
+        ev_pct=30.0,
+        min_ev_pct=OFFICIAL_MIN_EV_PCT,
+    )
+
+
+def test_official_picks_use_hubacek_strategy_when_qualifying() -> None:
+    decor_home = decorrelate_binary(62.0, 50.0)
+    blended = {
+        "total_score": -decor_home,
+        "win_probability": decor_home,
+        "favorite_side": "home",
+        "blended_home_win_probability": decor_home,
+        "market_decorrelated": True,
+    }
+    picks = evaluate_official_picks_for_game(
+        league="nhl",
+        away_name="Away",
+        home_name="Home",
+        away_slug="away",
+        home_slug="home",
+        total_score=-decor_home,
+        win_probability=decor_home,
+        blended=blended,
+        away_market=110,
+        home_market=-130,
+        consensus_spread=None,
+        away_spread_odds=None,
+        home_spread_odds=None,
+    )
+    if picks:
+        assert picks[0].strategy == "hubacek"
+        assert (picks[0].extra.get("model_market_gap_pp") or 0) > 0
