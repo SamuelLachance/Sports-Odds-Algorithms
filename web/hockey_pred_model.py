@@ -16,7 +16,9 @@ from web.hockey_features import (
 )
 from web.hockey_goalie import goalie_xg_multipliers
 from web.hockey_xg import matchup_expected_goals, team_xg_rates_from_metrics
+from web.bet_advisor import devig_two_way_probs
 from web.league_profiles import LEAGUE_PROFILES
+from web.market_decorrelation import decorrelate_binary
 from web.season_games import (
     GameTuple,
     _event_date_iso,
@@ -366,6 +368,9 @@ def run_hockey_pred_model(
     cutoff_date: str,
     home_abbr: str,
     away_abbr: str,
+    *,
+    home_moneyline: int | None = None,
+    away_moneyline: int | None = None,
 ) -> dict[str, Any] | None:
     """Run PuckCast-style hockey model for any hockey league matchup."""
     context = get_hockey_pred_context(league, cutoff_date)
@@ -388,15 +393,26 @@ def run_hockey_pred_model(
     if home_games < MIN_TEAM_GAMES or away_games < MIN_TEAM_GAMES:
         return None
 
+    home_prob = float(prediction["home_win_probability"])
+    market_decorrelated = False
+    if home_moneyline is not None and away_moneyline is not None:
+        _away, market_home = devig_two_way_probs(away_moneyline, home_moneyline)
+        if market_home is not None:
+            home_prob = decorrelate_binary(home_prob, market_home)
+            market_decorrelated = True
+
+    away_prob = round(100.0 - home_prob, 2)
+
     return {
         "algorithm": "HockeyPuckCast",
         "source": "puckcast-xg-goalie",
-        "home_win_probability": prediction["home_win_probability"],
-        "away_win_probability": prediction["away_win_probability"],
+        "home_win_probability": round(home_prob, 2),
+        "away_win_probability": away_prob,
         "expected_home_goals": prediction["expected_home_goals"],
         "expected_away_goals": prediction["expected_away_goals"],
         "expected_total_goals": prediction["expected_total_goals"],
         "overtime_probability": prediction["overtime_probability"],
         "home_games": home_games,
         "away_games": away_games,
+        "market_decorrelated": market_decorrelated,
     }

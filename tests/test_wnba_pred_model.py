@@ -81,7 +81,7 @@ def test_margin_to_home_win_prob() -> None:
 
 def test_decorrelate_from_market() -> None:
     adjusted = decorrelate_from_market(0.68, 0.55, weight=0.12)
-    assert adjusted < 0.68
+    assert adjusted > 0.68
     assert adjusted > 0.55
 
 

@@ -30,13 +30,16 @@ def decorrelate_from_market(
     model_p: float,
     market_p: float,
     *,
-    weight: float = 0.12,
+    weight: float | None = None,
 ) -> float:
     """Hubáček-style push away from market-correlated component."""
-    model_p = min(max(model_p, 0.01), 0.99)
-    market_p = min(max(market_p, 0.01), 0.99)
-    adjusted = model_p - weight * (model_p - market_p)
-    return min(max(adjusted, 0.01), 0.99)
+    from web.market_decorrelation import (
+        DEFAULT_BINARY_DECORRELATION_WEIGHT,
+        decorrelate_binary,
+    )
+
+    w = DEFAULT_BINARY_DECORRELATION_WEIGHT if weight is None else weight
+    return decorrelate_binary(model_p, market_p, weight=w)
 
 
 def _fit_isotonic(probs: np.ndarray, outcomes: np.ndarray) -> IsotonicRegression:

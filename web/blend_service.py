@@ -727,9 +727,18 @@ def _blend_hockey_puckcast_only(
     cutoff_date: str,
     home_abbr: str,
     away_abbr: str,
+    home_moneyline: int | None = None,
+    away_moneyline: int | None = None,
 ) -> dict[str, Any]:
     """Hockey uses HockeyPuckCast only — no Algo V2, power, meta, or EnsembleML."""
-    sport_payload = run_hockey_pred_model(league, cutoff_date, home_abbr, away_abbr)
+    sport_payload = run_hockey_pred_model(
+        league,
+        cutoff_date,
+        home_abbr,
+        away_abbr,
+        home_moneyline=home_moneyline,
+        away_moneyline=away_moneyline,
+    )
     if not sport_payload:
         reason = hockey_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
         return {
@@ -1041,6 +1050,8 @@ def blend_predictions(
             cutoff_date=cutoff_date,
             home_abbr=home_abbr,
             away_abbr=away_abbr,
+            home_moneyline=home_moneyline,
+            away_moneyline=away_moneyline,
         )
 
     if is_cbb_league(league):

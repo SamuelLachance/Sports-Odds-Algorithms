@@ -24,7 +24,7 @@ def test_decorrelate_moves_away_from_market() -> None:
     model = (55.0, 25.0, 20.0)
     market = (45.0, 30.0, 25.0)
     adjusted = decorrelate_threeway_from_market(model, market)
-    assert adjusted[0] < model[0]
+    assert adjusted[0] > model[0]
     assert abs(sum(adjusted) - 100.0) < 0.05
 
 

@@ -89,7 +89,7 @@ def test_expected_margin_favors_stronger_team() -> None:
 
 def test_decorrelate_from_market() -> None:
     adjusted = decorrelate_from_market(0.70, 0.55, weight=0.12)
-    assert adjusted < 0.70
+    assert adjusted > 0.70
     assert adjusted > 0.55
 
 

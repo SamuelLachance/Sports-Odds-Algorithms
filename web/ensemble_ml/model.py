@@ -18,6 +18,7 @@ from web.ensemble_ml.config import (
     CALIBRATION_FRACTION,
     CBB_MARKET_BLEND_MAX,
     DEFAULT_MARGIN_SIGMA,
+    MAX_DECORRELATION_WEIGHT,
     MIN_TRAIN_ROWS,
     MLB_MARKET_BLEND_MAX,
     SOCCER_STACKING_FEATURES,
@@ -30,6 +31,7 @@ from web.ensemble_ml.config import (
     model_dir,
     sportsbook_logloss_benchmark,
 )
+from web.market_decorrelation import decorrelate_binary
 from web.nba_ml.calibrate import log_loss
 from web.nba_ml.model import cover_probability
 from web.sports_meta_model import binary_temperature_scale
@@ -179,17 +181,15 @@ def _apply_calibration(
     return min(max(prob, 1e-4), 1.0 - 1e-4)
 
 
-def _blend_with_market(
+def _decorrelate_with_market(
     model_prob_pct: float,
     market_prob_pct: float | None,
-    weight: float,
+    weight: float = MAX_DECORRELATION_WEIGHT,
 ) -> float:
     if market_prob_pct is None or not math.isfinite(market_prob_pct):
         return model_prob_pct
-    model_p = model_prob_pct / 100.0
-    market_p = market_prob_pct / 100.0
-    blended = weight * model_p + (1.0 - weight) * market_p
-    return min(max(blended * 100.0, 0.5), 99.5)
+    adjusted = decorrelate_binary(model_prob_pct, market_prob_pct, weight=weight)
+    return min(max(adjusted, 0.5), 99.5)
 
 
 def _min_model_weight_for_league(league: str) -> float:
@@ -404,10 +404,9 @@ def predict_binary(
         isotonic=model.isotonic,
         temperature=model.temperature,
     )
-    home_prob = _blend_with_market(
+    home_prob = _decorrelate_with_market(
         calibrated * 100.0,
         features.get("market_devig_home_prob"),
-        model.market_blend_weight,
     )
 
     margin = None
