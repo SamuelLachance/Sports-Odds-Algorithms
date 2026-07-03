@@ -143,6 +143,46 @@ function formatSpread(v) {
   return rounded > 0 ? `+${text}` : text;
 }
 
+const SPORT_ALGO_LABELS = {
+  MLBRunCast: "MLB RunCast win probability",
+  HockeyPuckCast: "Hockey PuckCast win probability",
+  CBBTorvik: "CBB Torvik win probability",
+  WNBAEloXGB: "WNBA Elo+XGB win probability",
+  Unified: "Unified model",
+};
+
+const SPORT_LAYER_LABELS = {
+  MLBRunCast: "MLB RunCast",
+  SharpBaseball: "SharpBaseball",
+  HockeyPuckCast: "Hockey PuckCast",
+  CBBTorvik: "CBB Torvik",
+  WNBAEloXGB: "WNBA Elo+XGB",
+};
+
+function primaryAlgoLabel(model) {
+  if (!model) return "Model win probability";
+  if (model.threeway) return "1X2 model probabilities";
+  return SPORT_ALGO_LABELS[model.algorithm] || "Algo V2 win probability";
+}
+
+function primaryAlgoShort(model) {
+  if (!model) return "Model";
+  if (model.threeway) return "1X2";
+  const short = {
+    MLBRunCast: "MLB RunCast",
+    HockeyPuckCast: "PuckCast",
+    CBBTorvik: "CBB Torvik",
+    WNBAEloXGB: "WNBA Elo+XGB",
+    Unified: "Unified",
+  };
+  return short[model.algorithm] || model.algorithm || "Algo V2";
+}
+
+function sportLayerDisplayName(layer) {
+  if (!layer?.algorithm) return null;
+  return SPORT_LAYER_LABELS[layer.algorithm] || layer.algorithm;
+}
+
 /** Round algo/model ratings for display (avoids JS float artifacts like 11.399999…). */
 function formatRating(value, decimals = 1) {
   if (value == null || value === "" || Number.isNaN(Number(value))) return "—";
@@ -525,7 +565,20 @@ function algoBreakdown(m) {
   const soccer = m.soccer_pred;
   const dbRating = m.db_rating;
   const ensemble = m.ensemble_ml;
-  if (!legacy && !power && !basketball && !baseball && !hockey && !football && !soccer && !dbRating && !ensemble) return "";
+  const singleModel = (m.blend_layers || 0) === 1;
+  if (
+    !legacy &&
+    !power &&
+    !basketball &&
+    !baseball &&
+    !hockey &&
+    !football &&
+    !soccer &&
+    !dbRating &&
+    !ensemble
+  ) {
+    return "";
+  }
   const parts = [];
   if (m.blend_mode === "ensemble_ml" || ensemble) {
     parts.push("EnsembleML");
@@ -538,10 +591,10 @@ function algoBreakdown(m) {
         : m.blend_layers === 2
           ? "2-layer"
           : "";
-  if (layerTag) {
+  if (layerTag && !singleModel) {
     parts.push(layerTag);
   }
-  if (legacy) {
+  if (!singleModel && legacy) {
     const legacyHome =
       legacy.home_win_probability ??
       (legacy.favorite_side === "home"
@@ -549,39 +602,47 @@ function algoBreakdown(m) {
         : 100 - legacy.win_probability);
     parts.push(`Legacy V2: ${legacyHome}% home`);
   }
-  if (power) {
+  if (!singleModel && power) {
     parts.push(
       `Power: ${power.home_win_probability}% home (${formatRating(power.home_power)} vs ${formatRating(power.away_power)})`,
     );
   }
   if (basketball) {
-    parts.push(`Matrix: ${basketball.home_win_probability}% home`);
+    const name = sportLayerDisplayName(basketball) || "Matrix";
+    parts.push(`${name}: ${basketball.home_win_probability}% home`);
   }
   if (baseball) {
-    const elo =
-      baseball.elo_exp != null ? ` Elo ${baseball.elo_exp}%` : "";
-    parts.push(`SharpBaseball: ${baseball.home_win_probability}% home${elo}`);
+    const name = sportLayerDisplayName(baseball) || "SharpBaseball";
+    const runs =
+      baseball.predicted_home_runs != null && baseball.predicted_away_runs != null
+        ? ` · ${baseball.predicted_away_runs}-${baseball.predicted_home_runs} runs`
+        : baseball.elo_exp != null
+          ? ` · Elo ${baseball.elo_exp}%`
+          : "";
+    parts.push(`${name}: ${baseball.home_win_probability}% home${runs}`);
   }
   if (hockey) {
+    const name = sportLayerDisplayName(hockey) || "Hockey";
     const xg =
       hockey.expected_home_goals != null
-        ? ` xG ${hockey.expected_home_goals}-${hockey.expected_away_goals}`
+        ? ` · xG ${hockey.expected_away_goals}-${hockey.expected_home_goals}`
         : "";
-    parts.push(`Hockey-predictions: ${hockey.home_win_probability}% home${xg}`);
+    parts.push(`${name}: ${hockey.home_win_probability}% home${xg}`);
   }
-  if (football) {
+  if (!singleModel && football) {
     parts.push(`nfelo: ${football.home_win_probability}% home`);
   }
   if (soccer) {
+    const name = sportLayerDisplayName(soccer) || "SharpSoccer";
     const xg =
       soccer.expected_home_goals != null
-        ? ` xG ${soccer.expected_home_goals}-${soccer.expected_away_goals}`
+        ? ` · xG ${soccer.expected_away_goals}-${soccer.expected_home_goals}`
         : "";
     parts.push(
-      `SharpSoccer: ${soccer.home_win_probability}% / ${soccer.draw_probability}% / ${soccer.away_win_probability}%${xg}`,
+      `${name}: ${soccer.home_win_probability}% / ${soccer.draw_probability}% / ${soccer.away_win_probability}%${xg}`,
     );
   }
-  if (dbRating) {
+  if (!singleModel && dbRating) {
     const sparse =
       dbRating.sparse_schedule_factor > 0.35 ? " · sparse boost" : "";
     parts.push(
@@ -602,15 +663,19 @@ function algoBreakdown(m) {
     );
     parts.push(`Context: ${ctxParts.join("; ")}`);
   }
-  if (m.blend_note) {
+  if (m.blend_note && !singleModel) {
     parts.push(m.blend_note);
   }
   if (m.home_spread_margin != null) {
-    parts.push(`Unified spread: home margin ${formatSpread(m.home_spread_margin)}`);
+    parts.push(`Spread margin: home ${formatSpread(m.home_spread_margin)}`);
   }
   return parts.length
-    ? `<div class="algo-blend panel-sub"><span class="blend-label">Model blend</span><small>${parts.join(" · ")}</small></div>`
+    ? `<div class="algo-blend panel-sub"><span class="blend-label">${singleModel ? "Sport model" : "Model blend"}</span><small>${parts.join(" · ")}</small></div>`
     : "";
+}
+
+function factorsSectionTitle(m) {
+  return (m?.blend_layers || 0) === 1 ? "Model inputs" : "Algo factor breakdown";
 }
 
 function algoCenter(game) {
@@ -622,11 +687,7 @@ function algoCenter(game) {
   const top = game.top_pick;
   const threeway = m.threeway;
   const isSoccer = Boolean(threeway);
-  const algoLabel = threeway
-    ? "1X2 model probabilities"
-    : m.algorithm === "Unified"
-      ? "Unified model"
-      : "Algo V2 win probability";
+  const algoLabel = threeway ? "1X2 model probabilities" : primaryAlgoLabel(m);
   const probBlock = threeway
     ? `<div class="algo-probability threeway">
         <span>${algoLabel}</span>
@@ -671,7 +732,7 @@ function algoCenter(game) {
       ${oddsRow}
     </div>
     ${game.eligible_for_official_picks === false ? `<div class="game-pick neutral"><strong>Official picks unavailable</strong><span>This league is not enabled for official pick tracking.</span></div>` : top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong><span>${pickTeamNameLink(top, game.league, game.matchup)} · ${pickMarketLabel(top)} vs model ${pickModelLabel(top)} (+${top.ev_pct != null ? top.ev_pct + "% EV" : ""}${top.edge != null ? ", +" + top.edge + " edge" : ""})</span><p>${top.reason}</p></div>` : isSoccer ? `<div class="game-pick neutral"><strong>No official 1X2 pick</strong><span>Expected value is below 25% on home/draw/away moneylines.</span></div>` : `<div class="game-pick neutral"><strong>No official pick</strong><span>Expected value is below 25% on today's ${game.market && game.market.spread != null ? "spread" : "moneyline"} line.</span></div>`}
-    <details class="factor-details" open><summary>Algo factor breakdown</summary><div class="factor-list">${factorBars(m.factors)}</div></details>
+    <details class="factor-details" open><summary>${factorsSectionTitle(m)}</summary><div class="factor-list">${factorBars(m.factors)}</div></details>
     ${game.eligible_for_official_picks !== false && (game.recommendations || []).length ? `<div class="rec-list"><h3>All model recommendations</h3>${game.recommendations.map((p) => pickCard({ ...p, league: game.league, league_name: game.league_name, matchup: `${away.name} @ ${home.name}`, matchup_obj: game.matchup, start_time: game.start_time })).join("")}</div>` : ""}
   </section>`;
 }
@@ -700,7 +761,7 @@ function viewDashboard() {
       <div class="tracking-hero-top">
         <div>
           <h1>Sharp Odds dashboard</h1>
-          <p>Today's slate · ${dateLabel} · Per-sport EnsembleML mega-models across ${leagues.length || 0} leagues.</p>
+          <p>Today's slate · ${dateLabel} · Per-sport models across ${leagues.length || 0} leagues (NBA uses EnsembleML; MLB, NHL, CBB, and WNBA use dedicated sport models).</p>
           <p class="muted">${slateBreakdown || "No games on today's slate yet."}</p>
         </div>
         <div class="tracking-hero-stats home-stats">
@@ -767,7 +828,7 @@ function viewPicks() {
   const picks = state.slate?.recommended_bets || [];
   const slate = state.slate || {};
   const minEvPct = slate.summary?.min_ev_pct ?? slate.min_recommended_ev_pct ?? 25;
-  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p>Official picks fire when our per-sport <strong>EnsembleML</strong> mega-model shows <strong>25%+ expected value</strong> vs the sportsbook on the recommended market: <strong>spread</strong> (basketball/football), <strong>moneyline</strong> (hockey/baseball), or <strong>1X2</strong> (soccer). Picks must align with the model's projected margin or win probability.</p></section>
+  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p>Official picks fire when our per-sport model shows <strong>25%+ expected value</strong> vs the sportsbook on the recommended market: <strong>spread</strong> (NBA/CBB), <strong>moneyline</strong> (MLB/NHL/WNBA), or <strong>1X2</strong> (soccer). Picks must align with the model's projected margin or win probability.</p></section>
     <div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No bets meet the ${minEvPct}%+ EV threshold today.</div>`}</div>`;
 }
 
@@ -789,7 +850,7 @@ function gameListCard(game) {
   const fav = m.favorite_side === "home" ? home.name : away.name;
   return `<article class="game-card panel clickable" data-game="${game.event_id}">
     <div class="game-head"><div><span class="league-pill">${game.league_name}</span><h3>${matchupLinks(game.league, away, home)}</h3><p class="game-meta">${formatTime(game.start_time)}</p></div>
-    <div class="win-chip"><span>Unified</span><strong>${fav}</strong><small>${m.win_probability}%</small></div></div>
+    <div class="win-chip"><span>${primaryAlgoShort(m)}</span><strong>${fav}</strong><small>${m.win_probability}%</small></div></div>
     <a class="btn btn-secondary btn-sm" href="#/game/${game.event_id}">Open algo breakdown →</a>
   </article>`;
 }

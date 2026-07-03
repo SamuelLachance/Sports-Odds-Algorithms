@@ -56,6 +56,103 @@ from web.pick_strategy import (
 )
 from web.predict_service import FACTOR_LABELS  # noqa: E402
 
+SINGLE_MODEL_BLEND_MODES = frozenset(
+    {"hockey_puckcast", "cbb_torvik", "wnba_elo_xgb", "mlb_runcast"}
+)
+
+
+def _factor_entry(key: str, label: str, value: float) -> dict[str, Any]:
+    return {
+        "key": key,
+        "label": label,
+        "value": value,
+        "favors": "away" if value > 0 else "home" if value < 0 else "neutral",
+    }
+
+
+def _sport_layer_factors(blended: dict[str, Any], league: str) -> list[dict[str, Any]]:
+    """Factors from the active sport model (not legacy Algo V2)."""
+    league = league.lower()
+    factors: list[dict[str, Any]] = []
+
+    if league == "mlb":
+        pred = blended.get("baseball_pred") or {}
+        margin = pred.get("predicted_margin")
+        if margin is not None:
+            factors.append(
+                _factor_entry("run_margin", "Projected run margin (home)", float(margin))
+            )
+        pitcher = pred.get("pitcher_margin")
+        if pitcher is not None:
+            factors.append(
+                _factor_entry("starter_edge", "Probable starter edge", float(pitcher) * 12.0)
+            )
+        home_runs = pred.get("predicted_home_runs")
+        away_runs = pred.get("predicted_away_runs")
+        if home_runs is not None and away_runs is not None:
+            factors.append(
+                _factor_entry(
+                    "projected_runs",
+                    "Projected runs (home − away)",
+                    float(home_runs) - float(away_runs),
+                )
+            )
+        raw = pred.get("raw_home_win_probability")
+        calibrated = pred.get("home_win_probability")
+        if raw is not None and calibrated is not None:
+            factors.append(
+                _factor_entry(
+                    "calibration_shift",
+                    "Calibration shift (pp)",
+                    float(calibrated) - float(raw),
+                )
+            )
+        return factors
+
+    if league == "nhl":
+        pred = blended.get("hockey_pred") or {}
+        home_xg = pred.get("expected_home_goals")
+        away_xg = pred.get("expected_away_goals")
+        if home_xg is not None and away_xg is not None:
+            factors.append(
+                _factor_entry("xg_margin", "Expected goals (home − away)", float(home_xg) - float(away_xg))
+            )
+        return factors
+
+    if league == "cbb":
+        pred = blended.get("basketball_pred") or {}
+        margin = pred.get("predicted_margin")
+        if margin is not None:
+            factors.append(_factor_entry("eff_margin", "Efficiency margin (home)", float(margin)))
+        return factors
+
+    if league == "wnba":
+        pred = blended.get("basketball_pred") or {}
+        margin = pred.get("predicted_margin")
+        if margin is not None:
+            factors.append(_factor_entry("elo_eff_margin", "Elo + efficiency margin", float(margin)))
+        avail = pred.get("availability_shift_pp")
+        if avail is not None:
+            factors.append(_factor_entry("availability", "Availability shift (pp)", float(avail)))
+        return factors
+
+    return factors
+
+
+def _build_model_factors(
+    blended: dict[str, Any],
+    algo_data: dict[str, Any],
+    league: str,
+) -> list[dict[str, Any]]:
+    if (blended.get("blend_mode") or "") in SINGLE_MODEL_BLEND_MODES:
+        return _sport_layer_factors(blended, league)
+    factors: list[dict[str, Any]] = []
+    for key, label in FACTOR_LABELS.items():
+        if key not in algo_data:
+            continue
+        factors.append(_factor_entry(key, label, float(algo_data[key])))
+    return factors
+
 
 def _ensure_project_root() -> None:
     os.chdir(PROJECT_ROOT)
@@ -180,19 +277,7 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
         away_proj, home_proj = model_moneylines(total)
         draw_proj = None
 
-    factors = []
-    for key, label in FACTOR_LABELS.items():
-        if key not in algo_data:
-            continue
-        value = float(algo_data[key])
-        factors.append(
-            {
-                "key": key,
-                "label": label,
-                "value": value,
-                "favors": "away" if value > 0 else "home" if value < 0 else "neutral",
-            }
-        )
+    factors = _build_model_factors(blended, algo_data, game.league)
 
     market_payload = {
         "away_moneyline": game.market.away_moneyline,
