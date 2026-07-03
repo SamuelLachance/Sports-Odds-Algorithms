@@ -12,9 +12,9 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from web.ensemble_ml.config import (  # noqa: E402
     MIN_TRAIN_ROWS,
-    NHL_TARGET_LOGLOSS,
     TRAIN_LEAGUES,
     get_dataset_profile,
+    sportsbook_logloss_benchmark,
 )
 from web.ensemble_ml.dataset import build_league_dataset  # noqa: E402
 from web.ensemble_ml.model import (  # noqa: E402
@@ -115,7 +115,8 @@ def train_league(
     prob_arr = np.asarray(probs, dtype=float)
     out_arr = np.asarray(outcomes, dtype=float)
     metrics = evaluate_holdout_logloss(model, frame, league=league)
-    nhl_score = metrics.get("all_market_logloss", metrics.get("nhl_market_holdout_logloss"))
+    benchmark = sportsbook_logloss_benchmark(league)
+    beats_market = metrics.get("beats_market")
     meta = {
         "league": league,
         "model_type": "binary_spread" if model.spread_league else "binary_moneyline",
@@ -134,19 +135,16 @@ def train_league(
             if key in profile
         },
         "holdout_logloss": round(metrics.get("holdout_logloss", log_loss(prob_arr, out_arr)), 5),
-        "market_holdout_logloss": metrics.get("market_holdout_logloss"),
+        "holdout_market_logloss": metrics.get("holdout_market_logloss"),
         "holdout_logloss_market_games": metrics.get("holdout_logloss_market_games"),
-        "nhl_market_holdout_logloss": metrics.get("nhl_market_holdout_logloss"),
-        "nhl_market_baseline_logloss": metrics.get("nhl_market_baseline_logloss"),
-        "all_market_logloss": metrics.get("all_market_logloss"),
-        "all_market_baseline_logloss": metrics.get("all_market_baseline_logloss"),
-        "all_market_games": metrics.get("all_market_games"),
-        "target_logloss": NHL_TARGET_LOGLOSS if league == "nhl" else None,
-        "beats_market_target": (
-            nhl_score < NHL_TARGET_LOGLOSS
-            if league == "nhl" and nhl_score is not None
-            else None
-        ),
+        "holdout_market_games": metrics.get("holdout_market_games"),
+        "closing_market_logloss": metrics.get("closing_market_logloss"),
+        "closing_market_games": metrics.get("closing_market_games"),
+        "market_holdout_model_logloss": metrics.get("market_holdout_model_logloss"),
+        "market_holdout_market_logloss": metrics.get("market_holdout_market_logloss"),
+        "market_holdout_games": metrics.get("market_holdout_games"),
+        "target_logloss": benchmark,
+        "beats_market": bool(beats_market) if beats_market is not None else None,
         "holdout_brier": round(brier(prob_arr, out_arr), 4),
         "margin_sigma": model.margin_sigma,
         "trained_at": date.today().isoformat(),
@@ -155,12 +153,11 @@ def train_league(
     save_ensemble(league, model, meta)
     print(
         f"  saved ({meta['model_type']}) logloss={meta['holdout_logloss']} "
-        f"market={meta.get('market_holdout_logloss')} "
+        f"market={meta.get('holdout_market_logloss') or meta.get('closing_market_logloss')} "
         f"brier={meta['holdout_brier']}"
         + (
-            f" all_market={meta.get('all_market_logloss')}"
-            f" beats_target={meta.get('beats_market_target')}"
-            if league == "nhl"
+            f" benchmark={benchmark} beats_market={meta.get('beats_market')}"
+            if benchmark is not None
             else ""
         ),
         flush=True,

@@ -177,7 +177,7 @@ def collect_binary_rows(
             meta_stacked = (
                 power_home if sport_home is None else 0.35 * power_home + 0.65 * sport_home
             )
-        if league == "nhl":
+        if league in ("nhl", "mlb"):
             from web.sports_meta_model import apply_binary_calibration
 
             meta_stacked = apply_binary_calibration(float(meta_stacked), league)

@@ -8,6 +8,10 @@ from web.bet_advisor import model_home_margin
 from web.blend_service import home_win_prob_to_total_score
 from web.ensemble_ml.config import ensemble_model_available, is_spread_league
 from web.ensemble_ml.predict import predict_ensemble_for_blend
+from web.hockey_pred_model import is_hockey_league
+from web.cbb_pred_model import is_cbb_league
+from web.mlb_pred_model import is_mlb_league
+from web.wnba_pred_model import is_wnba_league
 from web.league_profiles import is_soccer_league
 
 
@@ -22,6 +26,13 @@ def apply_ensemble_ml(
 ) -> dict[str, Any]:
     """Replace unified probabilities with the per-sport ensemble ML head when available."""
     league = league.lower()
+    if (
+        is_hockey_league(league)
+        or is_cbb_league(league)
+        or is_wnba_league(league)
+        or is_mlb_league(league)
+    ):
+        return result
     if not ensemble_model_available(league):
         return result
 

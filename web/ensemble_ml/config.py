@@ -5,6 +5,10 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+from web.hockey_pred_model import is_hockey_league
+from web.cbb_pred_model import is_cbb_league
+from web.wnba_pred_model import is_wnba_league
+from web.mlb_pred_model import is_mlb_league
 from web.league_profiles import LEAGUE_PROFILES, is_soccer_league, uses_spread_bets
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -44,10 +48,58 @@ NHL_STACKING_FEATURES: tuple[str, ...] = (
     "market_away_ml",
 )
 
-NHL_TARGET_LOGLOSS = 0.65943
+# Authoritative closing-line sportsbook log-loss benchmarks (devigged moneyline).
+SPORTSBOOK_LOGLOSS_BENCHMARKS: dict[str, float] = {
+    "nba": 0.60166,
+    "cbb": 0.53720,
+    "wnba": 0.58730,
+    "nhl": 0.66040,
+    "mlb": 0.67374,
+}
+
+# Back-compat aliases used by market-blend tuning.
+NBA_TARGET_LOGLOSS = SPORTSBOOK_LOGLOSS_BENCHMARKS["nba"]
+NHL_TARGET_LOGLOSS = SPORTSBOOK_LOGLOSS_BENCHMARKS["nhl"]
+CBB_TARGET_LOGLOSS = SPORTSBOOK_LOGLOSS_BENCHMARKS["cbb"]
+CBB_MARKET_BLEND_MAX = 0.35
+WNBA_MARKET_BLEND_MAX = 0.35
+MLB_MARKET_BLEND_MAX = 0.35
+
+CBB_STACKING_FEATURES: tuple[str, ...] = (
+    "sport_home_prob",
+    "meta_stacked_home_prob",
+    "market_devig_home_prob",
+    "sport_minus_market",
+    "sport_margin",
+    "market_spread",
+    "market_home_ml",
+    "market_away_ml",
+)
+
+# MLB: lean on sport/meta + closing line (same pattern as NHL).
+MLB_STACKING_FEATURES: tuple[str, ...] = (
+    "sport_home_prob",
+    "meta_stacked_home_prob",
+    "market_devig_home_prob",
+    "sport_minus_market",
+    "power_home_prob",
+    "legacy_home_prob",
+    "market_home_ml",
+    "market_away_ml",
+)
+
+MLB_TARGET_LOGLOSS = SPORTSBOOK_LOGLOSS_BENCHMARKS["mlb"]
+
+
+def sportsbook_logloss_benchmark(league: str) -> float | None:
+    """Return the authoritative closing-line sportsbook log-loss target, if known."""
+    return SPORTSBOOK_LOGLOSS_BENCHMARKS.get(league.lower())
+
 
 LEAGUE_STACKING_FEATURES: dict[str, tuple[str, ...]] = {
     "nhl": NHL_STACKING_FEATURES,
+    "mlb": MLB_STACKING_FEATURES,
+    "cbb": CBB_STACKING_FEATURES,
 }
 
 DATASET_CACHE_DIR = PROJECT_ROOT / "data" / "supplemental" / "ensemble-ml"
@@ -170,6 +222,13 @@ def ensemble_model_available(league: str) -> bool:
     if not ensemble_enabled():
         return False
     league = league.lower()
+    if (
+        is_hockey_league(league)
+        or is_cbb_league(league)
+        or is_wnba_league(league)
+        or is_mlb_league(league)
+    ):
+        return False
     if is_soccer_league(league):
         return metadata_path(league).is_file() and model_artifact_path(league).is_file()
     return model_artifact_path(league).is_file()

@@ -13,6 +13,9 @@ from web.basketball_pred_model import (
     is_basketball_league,
     run_basketball_pred_model,
 )
+from web.cbb_pred_model import cbb_unavailable_reason, is_cbb_league, run_cbb_pred_model
+from web.mlb_pred_model import is_mlb_league, mlb_unavailable_reason, run_mlb_pred_model
+from web.wnba_pred_model import is_wnba_league, run_wnba_pred_model, wnba_unavailable_reason
 from web.football_pred_model import (
     football_unavailable_reason,
     is_football_league,
@@ -179,6 +182,12 @@ def _sport_pred_unavailable_reason(
     home_abbr: str,
     away_abbr: str,
 ) -> str:
+    if is_basketball_league(league) and is_cbb_league(league):
+        return cbb_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
+    if is_wnba_league(league):
+        return wnba_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
+    if is_mlb_league(league):
+        return mlb_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
     if is_basketball_league(league):
         from web.basketball_pred_model import MIN_LEAGUE_GAMES, MIN_TEAM_GAMES
         from web.season_games import load_league_completed_games
@@ -254,9 +263,41 @@ def _run_sport_pred_model(
     market_spread: float | None = None,
     home_ml: int | None = None,
     away_ml: int | None = None,
+    home_espn_id: str | None = None,
+    away_espn_id: str | None = None,
 ) -> tuple[str | None, dict[str, Any] | None]:
     """Return (payload_key, payload) for sport-specific third layer."""
     if is_basketball_league(league):
+        if is_cbb_league(league):
+            payload = run_cbb_pred_model(
+                league,
+                cutoff_date,
+                home_abbr,
+                away_abbr,
+                home_espn_id=home_espn_id,
+                away_espn_id=away_espn_id,
+                home_name=home_name,
+                away_name=away_name,
+                market_spread=market_spread,
+                home_ml=home_ml,
+                away_ml=away_ml,
+            )
+            return ("basketball_pred", payload) if payload else (None, None)
+        if is_wnba_league(league):
+            payload = run_wnba_pred_model(
+                league,
+                cutoff_date,
+                home_abbr,
+                away_abbr,
+                home_espn_id=home_espn_id,
+                away_espn_id=away_espn_id,
+                home_name=home_name,
+                away_name=away_name,
+                market_spread=market_spread,
+                home_ml=home_ml,
+                away_ml=away_ml,
+            )
+            return ("basketball_pred", payload) if payload else (None, None)
         if league.lower() == "nba":
             ml_payload = _run_nba_ml_layer(
                 cutoff_date,
@@ -270,6 +311,21 @@ def _run_sport_pred_model(
                 return ("basketball_pred", ml_payload)
         payload = run_basketball_pred_model(league, cutoff_date, home_abbr, away_abbr)
         return ("basketball_pred", payload) if payload else (None, None)
+    if is_mlb_league(league):
+        payload = run_mlb_pred_model(
+            league,
+            cutoff_date,
+            home_abbr,
+            away_abbr,
+            home_espn_id=home_espn_id,
+            away_espn_id=away_espn_id,
+            home_name=home_name,
+            away_name=away_name,
+            market_spread=market_spread,
+            home_ml=home_ml,
+            away_ml=away_ml,
+        )
+        return ("baseball_pred", payload) if payload else (None, None)
     if is_baseball_league(league):
         payload = run_baseball_pred_model(league, cutoff_date, home_abbr, away_abbr)
         return ("baseball_pred", payload) if payload else (None, None)
@@ -293,10 +349,16 @@ def _run_sport_pred_model(
 
 
 def _uses_three_layer_blend(league: str) -> bool:
+    if (
+        is_hockey_league(league)
+        or is_cbb_league(league)
+        or is_wnba_league(league)
+        or is_mlb_league(league)
+    ):
+        return False
     return (
         is_basketball_league(league)
         or is_baseball_league(league)
-        or is_hockey_league(league)
         or is_football_league(league)
         or is_soccer_league(league)
     )
@@ -666,6 +728,227 @@ def run_power_model(
     }
 
 
+def _blend_hockey_puckcast_only(
+    *,
+    league: str,
+    cutoff_date: str,
+    home_abbr: str,
+    away_abbr: str,
+) -> dict[str, Any]:
+    """Hockey uses HockeyPuckCast only — no Algo V2, power, meta, or EnsembleML."""
+    sport_payload = run_hockey_pred_model(league, cutoff_date, home_abbr, away_abbr)
+    if not sport_payload:
+        reason = hockey_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
+        return {
+            "algorithm": "HockeyPuckCast",
+            "blend_mode": "hockey_puckcast_unavailable",
+            "blend_layers": 0,
+            "blend_note": reason,
+            "hockey_pred": None,
+            "total_score": 0.0,
+            "win_probability": 50.0,
+            "favorite_side": "neutral",
+        }
+
+    home_prob = float(sport_payload["home_win_probability"])
+    total, win_prob = home_win_prob_to_total_score(home_prob)
+    return {
+        "algorithm": "HockeyPuckCast",
+        "blend_mode": "hockey_puckcast",
+        "blend_layers": 1,
+        "blend_weights": {"hockey_pred": 1.0},
+        "hockey_pred": sport_payload,
+        "blended_home_win_probability": round(home_prob, 2),
+        "total_score": round(total, 2),
+        "win_probability": round(win_prob, 2),
+        "favorite_side": "home" if total <= 0 else "away",
+        "expected_home_goals": sport_payload.get("expected_home_goals"),
+        "expected_away_goals": sport_payload.get("expected_away_goals"),
+        "expected_total_goals": sport_payload.get("expected_total_goals"),
+        "overtime_probability": sport_payload.get("overtime_probability"),
+    }
+
+
+def _blend_cbb_torvik_only(
+    *,
+    league: str,
+    cutoff_date: str,
+    home_abbr: str,
+    away_abbr: str,
+    home_espn_id: str | None = None,
+    away_espn_id: str | None = None,
+    home_name: str | None = None,
+    away_name: str | None = None,
+    consensus_spread: float | None = None,
+    home_moneyline: int | None = None,
+    away_moneyline: int | None = None,
+) -> dict[str, Any]:
+    """CBB uses CBBTorvik only — no Algo V2, power, meta, db_rating, or EnsembleML."""
+    sport_payload = run_cbb_pred_model(
+        league,
+        cutoff_date,
+        home_abbr,
+        away_abbr,
+        home_espn_id=home_espn_id,
+        away_espn_id=away_espn_id,
+        home_name=home_name,
+        away_name=away_name,
+        market_spread=consensus_spread,
+        home_ml=home_moneyline,
+        away_ml=away_moneyline,
+    )
+    if not sport_payload:
+        reason = cbb_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
+        return {
+            "algorithm": "CBBTorvik",
+            "blend_mode": "cbb_torvik_unavailable",
+            "blend_layers": 0,
+            "blend_note": reason,
+            "basketball_pred": None,
+            "total_score": 0.0,
+            "win_probability": 50.0,
+            "favorite_side": "neutral",
+        }
+
+    home_prob = float(sport_payload["home_win_probability"])
+    total, win_prob = home_win_prob_to_total_score(home_prob)
+    result = {
+        "algorithm": "CBBTorvik",
+        "blend_mode": "cbb_torvik",
+        "blend_layers": 1,
+        "blend_weights": {"basketball_pred": 1.0},
+        "basketball_pred": sport_payload,
+        "blended_home_win_probability": round(home_prob, 2),
+        "total_score": round(total, 2),
+        "win_probability": round(win_prob, 2),
+        "favorite_side": "home" if total <= 0 else "away",
+        "cbb_pick_signals": sport_payload.get("cbb_pick_signals"),
+    }
+    if sport_payload.get("predicted_margin") is not None:
+        result["home_spread_margin"] = round(-float(sport_payload["predicted_margin"]), 2)
+    return result
+
+
+def _blend_wnba_elo_xgb_only(
+    *,
+    league: str,
+    cutoff_date: str,
+    home_abbr: str,
+    away_abbr: str,
+    home_espn_id: str | None = None,
+    away_espn_id: str | None = None,
+    home_name: str | None = None,
+    away_name: str | None = None,
+    consensus_spread: float | None = None,
+    home_moneyline: int | None = None,
+    away_moneyline: int | None = None,
+) -> dict[str, Any]:
+    """WNBA uses WNBAEloXGB only — no Algo V2, power, meta, db_rating, or EnsembleML."""
+    sport_payload = run_wnba_pred_model(
+        league,
+        cutoff_date,
+        home_abbr,
+        away_abbr,
+        home_espn_id=home_espn_id,
+        away_espn_id=away_espn_id,
+        home_name=home_name,
+        away_name=away_name,
+        market_spread=consensus_spread,
+        home_ml=home_moneyline,
+        away_ml=away_moneyline,
+    )
+    if not sport_payload:
+        reason = wnba_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
+        return {
+            "algorithm": "WNBAEloXGB",
+            "blend_mode": "wnba_elo_xgb_unavailable",
+            "blend_layers": 0,
+            "blend_note": reason,
+            "basketball_pred": None,
+            "total_score": 0.0,
+            "win_probability": 50.0,
+            "favorite_side": "neutral",
+        }
+
+    home_prob = float(sport_payload["home_win_probability"])
+    total, win_prob = home_win_prob_to_total_score(home_prob)
+    result = {
+        "algorithm": "WNBAEloXGB",
+        "blend_mode": "wnba_elo_xgb",
+        "blend_layers": 1,
+        "blend_weights": {"basketball_pred": 1.0},
+        "basketball_pred": sport_payload,
+        "blended_home_win_probability": round(home_prob, 2),
+        "total_score": round(total, 2),
+        "win_probability": round(win_prob, 2),
+        "favorite_side": "home" if total <= 0 else "away",
+        "wnba_pick_signals": sport_payload.get("wnba_pick_signals"),
+    }
+    if sport_payload.get("predicted_margin") is not None:
+        result["home_spread_margin"] = round(-float(sport_payload["predicted_margin"]), 2)
+    return result
+
+
+def _blend_mlb_runcast_only(
+    *,
+    league: str,
+    cutoff_date: str,
+    home_abbr: str,
+    away_abbr: str,
+    home_espn_id: str | None = None,
+    away_espn_id: str | None = None,
+    home_name: str | None = None,
+    away_name: str | None = None,
+    consensus_spread: float | None = None,
+    home_moneyline: int | None = None,
+    away_moneyline: int | None = None,
+) -> dict[str, Any]:
+    """MLB uses MLBRunCast only — no Algo V2, power, meta, db_rating, or EnsembleML."""
+    sport_payload = run_mlb_pred_model(
+        league,
+        cutoff_date,
+        home_abbr,
+        away_abbr,
+        home_espn_id=home_espn_id,
+        away_espn_id=away_espn_id,
+        home_name=home_name,
+        away_name=away_name,
+        market_spread=consensus_spread,
+        home_ml=home_moneyline,
+        away_ml=away_moneyline,
+    )
+    if not sport_payload:
+        reason = mlb_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
+        return {
+            "algorithm": "MLBRunCast",
+            "blend_mode": "mlb_runcast_unavailable",
+            "blend_layers": 0,
+            "blend_note": reason,
+            "baseball_pred": None,
+            "total_score": 0.0,
+            "win_probability": 50.0,
+            "favorite_side": "neutral",
+        }
+
+    home_prob = float(sport_payload["home_win_probability"])
+    total, win_prob = home_win_prob_to_total_score(home_prob)
+    result = {
+        "algorithm": "MLBRunCast",
+        "blend_mode": "mlb_runcast",
+        "blend_layers": 1,
+        "blend_weights": {"baseball_pred": 1.0},
+        "baseball_pred": sport_payload,
+        "blended_home_win_probability": round(home_prob, 2),
+        "total_score": round(total, 2),
+        "win_probability": round(win_prob, 2),
+        "favorite_side": "home" if total <= 0 else "away",
+        "mlb_pick_signals": sport_payload.get("mlb_pick_signals"),
+    }
+    if sport_payload.get("predicted_margin") is not None:
+        result["home_spread_margin"] = round(-float(sport_payload["predicted_margin"]), 2)
+    return result
+
+
 def blend_predictions(
     *,
     legacy_total_score: float,
@@ -690,9 +973,62 @@ def blend_predictions(
     """
     Blend Algo_V2 and power model into unified total_score / win_probability.
 
-    Basketball, baseball, hockey, and football use a third layer with equal 1/3 weights
-    on home win probability.
+    Hockey leagues use HockeyPuckCast only. Basketball, baseball, and football use
+    a third sport layer blended via meta weights on home win probability.
     """
+    if is_hockey_league(league):
+        return _blend_hockey_puckcast_only(
+            league=league,
+            cutoff_date=cutoff_date,
+            home_abbr=home_abbr,
+            away_abbr=away_abbr,
+        )
+
+    if is_cbb_league(league):
+        return _blend_cbb_torvik_only(
+            league=league,
+            cutoff_date=cutoff_date,
+            home_abbr=home_abbr,
+            away_abbr=away_abbr,
+            home_espn_id=home_espn_id,
+            away_espn_id=away_espn_id,
+            home_name=home_name,
+            away_name=away_name,
+            consensus_spread=consensus_spread,
+            home_moneyline=home_moneyline,
+            away_moneyline=away_moneyline,
+        )
+
+    if is_wnba_league(league):
+        return _blend_wnba_elo_xgb_only(
+            league=league,
+            cutoff_date=cutoff_date,
+            home_abbr=home_abbr,
+            away_abbr=away_abbr,
+            home_espn_id=home_espn_id,
+            away_espn_id=away_espn_id,
+            home_name=home_name,
+            away_name=away_name,
+            consensus_spread=consensus_spread,
+            home_moneyline=home_moneyline,
+            away_moneyline=away_moneyline,
+        )
+
+    if is_mlb_league(league):
+        return _blend_mlb_runcast_only(
+            league=league,
+            cutoff_date=cutoff_date,
+            home_abbr=home_abbr,
+            away_abbr=away_abbr,
+            home_espn_id=home_espn_id,
+            away_espn_id=away_espn_id,
+            home_name=home_name,
+            away_name=away_name,
+            consensus_spread=consensus_spread,
+            home_moneyline=home_moneyline,
+            away_moneyline=away_moneyline,
+        )
+
     legacy_home = total_score_to_home_win_prob(legacy_total_score)
     legacy_payload = {
         "algorithm": "Algo_V2",

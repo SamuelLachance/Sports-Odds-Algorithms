@@ -369,6 +369,10 @@ def get_basketball_pred_context(league: str, cutoff_date: str) -> dict[str, Any]
     league = league.lower()
     if not is_basketball_league(league):
         return None
+    if league == "cbb":
+        return None
+    if league == "wnba":
+        return None
     games = load_league_completed_games(league, cutoff_date)
     return build_basketball_model(games, league)
 
@@ -378,8 +382,31 @@ def run_basketball_pred_model(
     cutoff_date: str,
     home_abbr: str,
     away_abbr: str,
+    **kwargs: Any,
 ) -> dict[str, Any] | None:
-    """Run NBA-prediction matrix model for a basketball matchup."""
+    """Run NBA-prediction matrix model for NBA/WNBA; CBB uses Torvik stack."""
+    league = league.lower()
+    if league == "cbb":
+        from web.cbb_pred_model import run_cbb_pred_model
+
+        return run_cbb_pred_model(
+            league,
+            cutoff_date,
+            home_abbr,
+            away_abbr,
+            **kwargs,
+        )
+    if league == "wnba":
+        from web.wnba_pred_model import run_wnba_pred_model
+
+        return run_wnba_pred_model(
+            league,
+            cutoff_date,
+            home_abbr,
+            away_abbr,
+            **kwargs,
+        )
+
     context = get_basketball_pred_context(league, cutoff_date)
     if not context:
         return None

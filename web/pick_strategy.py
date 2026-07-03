@@ -1081,6 +1081,25 @@ def evaluate_official_picks_for_game(
     if bet_type == "spread":
         if consensus_spread is None:
             return []
+        min_point_edge = thresholds["min_spread_point_edge"]
+        if league.lower() == "cbb":
+            signals = blended.get("cbb_pick_signals") or blended.get("basketball_pred", {}).get(
+                "cbb_pick_signals"
+            )
+            if signals and signals.get("disagreement_signal"):
+                min_point_edge = max(0.0, min_point_edge - 0.5)
+        elif league.lower() == "wnba":
+            signals = blended.get("wnba_pick_signals") or blended.get("basketball_pred", {}).get(
+                "wnba_pick_signals"
+            )
+            if signals and signals.get("disagreement_signal"):
+                min_point_edge = max(0.0, min_point_edge - 0.5)
+        elif league.lower() == "mlb":
+            signals = blended.get("mlb_pick_signals") or blended.get("baseball_pred", {}).get(
+                "mlb_pick_signals"
+            )
+            if signals and signals.get("disagreement_signal"):
+                min_point_edge = max(0.0, min_point_edge - 0.5)
         picks = evaluate_spread_picks(
             league=league,
             away_name=away_name,
@@ -1094,7 +1113,7 @@ def evaluate_official_picks_for_game(
             home_spread_odds=home_spread_odds,
             model_margin_home=blended_home_spread_margin(blended, league),
             min_edge=thresholds["min_edge"],
-            min_point_edge=thresholds["min_spread_point_edge"],
+            min_point_edge=min_point_edge,
             min_ev_pct=thresholds["min_ev_pct"],
         )
         return picks

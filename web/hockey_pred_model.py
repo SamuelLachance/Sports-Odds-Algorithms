@@ -1,9 +1,4 @@
-"""NHL win probability via Poisson xG model (ported from gmalbert/hockey-predictions).
-
-Source: https://github.com/gmalbert/hockey-predictions
-- expected_goals.calculate_expected_goals
-- win_probability.calculate_win_probability
-"""
+"""Hockey win probability: PuckCast features + xG + goalie blend."""
 
 from __future__ import annotations
 
@@ -12,18 +7,37 @@ from dataclasses import dataclass
 from functools import lru_cache
 from typing import Any, NamedTuple
 
-from web.league_profiles import LEAGUE_PROFILES
-from web.season_games import load_league_completed_games
+from sklearn.linear_model import LogisticRegression
 
-HOCKEY_LEAGUES: tuple[str, ...] = ("nhl",)
+from web.hockey_features import (
+    FEATURE_NAMES,
+    build_matchup_features,
+    build_training_matrix,
+)
+from web.hockey_goalie import goalie_xg_multipliers
+from web.hockey_xg import matchup_expected_goals, team_xg_rates_from_metrics
+from web.league_profiles import LEAGUE_PROFILES
+from web.season_games import (
+    GameTuple,
+    _event_date_iso,
+    _load_league_game_map,
+    load_league_completed_games,
+)
+
+HOCKEY_LEAGUES: tuple[str, ...] = tuple(
+    key for key, profile in LEAGUE_PROFILES.items() if profile.get("category") == "hockey"
+)
 
 MIN_LEAGUE_GAMES = 20
 MIN_TEAM_GAMES = 3
+MIN_LOGISTIC_SAMPLES = 30
 HOME_ADVANTAGE = 0.15
 HOME_OT_ADVANTAGE = 0.52
 MAX_GOALS = 10
 RECENT_WINDOW = 5
 RECENT_BLEND = 0.42
+LOGISTIC_BLEND = 0.65
+POISSON_BLEND = 0.35
 
 
 class GameProbabilities(NamedTuple):
@@ -48,6 +62,18 @@ def is_hockey_league(league: str) -> bool:
     return profile is not None and profile["category"] == "hockey"
 
 
+def load_league_dated_games(
+    league: str,
+    cutoff_date: str,
+) -> list[tuple[str, GameTuple]]:
+    """Completed games with ISO dates for walk-forward feature building."""
+    merged = _load_league_game_map(league, cutoff_date, for_backtest=False)
+    return [
+        (_event_date_iso(event_date), game_tuple)
+        for event_date, game_tuple in sorted(merged.values(), key=lambda item: item[0])
+    ]
+
+
 def _poisson_prob(expected: float, actual: int) -> float:
     if actual < 0:
         return 0.0
@@ -61,7 +87,7 @@ def calculate_win_probability(
     home_ot_advantage: float = HOME_OT_ADVANTAGE,
     max_goals: int = MAX_GOALS,
 ) -> GameProbabilities:
-    """Poisson regulation + OT split (hockey-predictions win_probability.py)."""
+    """Poisson regulation + OT split."""
     home_reg_win = 0.0
     away_reg_win = 0.0
     tie_prob = 0.0
@@ -105,7 +131,7 @@ def calculate_expected_goals(
     *,
     home_advantage: float = HOME_ADVANTAGE,
 ) -> tuple[float, float]:
-    """Blend offense vs opponent defense with home ice (expected_goals.py)."""
+    """Blend offense vs opponent defense with home ice (gmalbert Poisson layer)."""
     home_xg = (home_team.goals_for_pg + away_team.goals_against_pg) / 2
     home_xg *= 1 + home_advantage
 
@@ -155,10 +181,29 @@ def _build_team_metrics(games: list[tuple]) -> dict[str, TeamMetrics]:
     return metrics
 
 
-def build_hockey_model(
-    games: list[tuple],
+def _build_xg_rate_map(
     league: str,
+    team_metrics: dict[str, TeamMetrics],
+    dated_games: list[tuple[str, GameTuple]],
+) -> dict[str, tuple[float, float]]:
+    rates: dict[str, tuple[float, float]] = {}
+    for abbr, metrics in team_metrics.items():
+        rates[abbr] = team_xg_rates_from_metrics(
+            league,
+            abbr,
+            metrics,
+            team_metrics=team_metrics,
+            dated_games=dated_games,
+        )
+    return rates
+
+
+def build_hockey_model(
+    dated_games: list[tuple[str, GameTuple]],
+    league: str,
+    cutoff_date: str,
 ) -> dict[str, Any] | None:
+    games = [game for _date, game in dated_games]
     if len(games) < MIN_LEAGUE_GAMES:
         return None
 
@@ -166,17 +211,32 @@ def build_hockey_model(
     if not team_metrics:
         return None
 
+    x_rows, y_rows, feature_names = build_training_matrix(dated_games, cutoff_date, league)
+    classifier: LogisticRegression | None = None
+    if len(x_rows) >= MIN_LOGISTIC_SAMPLES and len(set(y_rows)) > 1:
+        classifier = LogisticRegression(C=0.01, max_iter=2000)
+        classifier.fit(x_rows, y_rows)
+
+    xg_rates = _build_xg_rate_map(league, team_metrics, dated_games)
     team_game_counts = {abbr: m.games_played for abbr, m in team_metrics.items()}
     return {
         "league": league.lower(),
         "team_metrics": team_metrics,
         "team_game_counts": team_game_counts,
+        "xg_rates": xg_rates,
+        "classifier": classifier,
+        "feature_names": feature_names,
+        "cutoff_date": cutoff_date,
+        "dated_games": dated_games,
         "games_sampled": len(games),
     }
 
 
 def extract_team_xg_strengths(model: dict[str, Any]) -> dict[str, float]:
-    """Net goals-per-game strength (GF/GP − GA/GP) per team."""
+    """Net xG strength (xGF/GP − xGA/GP) per team."""
+    xg_rates: dict[str, tuple[float, float]] = model.get("xg_rates") or {}
+    if xg_rates:
+        return {abbr: round(xgf - xga, 4) for abbr, (xgf, xga) in xg_rates.items()}
     metrics: dict[str, TeamMetrics] = model["team_metrics"]
     return {
         abbr: round(m.goals_for_pg - m.goals_against_pg, 4)
@@ -184,12 +244,22 @@ def extract_team_xg_strengths(model: dict[str, Any]) -> dict[str, float]:
     }
 
 
+def _blend_home_win_probability(
+    logistic_prob: float | None,
+    poisson_prob: float,
+) -> float:
+    if logistic_prob is None:
+        return poisson_prob
+    return LOGISTIC_BLEND * logistic_prob + POISSON_BLEND * poisson_prob
+
+
 def predict_matchup_from_model(
     model: dict[str, Any],
     home_abbr: str,
     away_abbr: str,
     *,
-    use_goalie_edge: bool = False,
+    use_goalie_edge: bool = True,
+    game_date: str | None = None,
 ) -> dict[str, float | str] | None:
     home = home_abbr.lower()
     away = away_abbr.lower()
@@ -197,18 +267,46 @@ def predict_matchup_from_model(
     if home not in metrics or away not in metrics:
         return None
 
-    home_xg, away_xg = calculate_expected_goals(metrics[home], metrics[away])
     league = str(model.get("league") or "nhl").lower()
-    if use_goalie_edge and league == "nhl":
-        from web.nhl_goalie_edge import goalie_xg_adjustment
+    dated_games: list[tuple[str, GameTuple]] = model.get("dated_games") or []
+    cutoff_date = str(model.get("cutoff_date") or "")
+    xg_rates: dict[str, tuple[float, float]] = model.get("xg_rates") or {}
 
-        adjustment = goalie_xg_adjustment(home, away)
-        if adjustment:
-            home_mult, away_mult = adjustment
-            home_xg = round(home_xg * home_mult, 2)
-            away_xg = round(away_xg * away_mult, 2)
-    probs = calculate_win_probability(home_xg, away_xg)
-    home_win_prob = probs.home_win * 100.0
+    home_xg, away_xg = matchup_expected_goals(
+        home,
+        away,
+        league,
+        metrics,
+        xg_rates,
+        dated_games=dated_games,
+    )
+
+    team_ga_rates = {abbr: m.goals_against_pg for abbr, m in metrics.items()}
+    goalie_meta: dict[str, Any] = {}
+    if use_goalie_edge:
+        home_mult, away_mult, goalie_meta = goalie_xg_multipliers(
+            league,
+            home,
+            away,
+            game_date or cutoff_date,
+            team_ga_rates=team_ga_rates,
+        )
+        home_xg = round(home_xg * home_mult, 2)
+        away_xg = round(away_xg * away_mult, 2)
+
+    poisson_probs = calculate_win_probability(home_xg, away_xg)
+    poisson_home = poisson_probs.home_win
+
+    logistic_home: float | None = None
+    classifier: LogisticRegression | None = model.get("classifier")
+    if classifier is not None and cutoff_date:
+        features = build_matchup_features(dated_games, cutoff_date, home, away, league)
+        vector = [[float(features.get(name, 0.0)) for name in FEATURE_NAMES]]
+        logistic_home = float(classifier.predict_proba(vector)[0][1])
+
+    blended_home = _blend_home_win_probability(logistic_home, poisson_home)
+    home_win_prob = blended_home * 100.0
+    away_win_prob = (1.0 - blended_home) * 100.0
 
     return {
         "home_key": home,
@@ -217,8 +315,11 @@ def predict_matchup_from_model(
         "expected_away_goals": away_xg,
         "expected_total_goals": round(home_xg + away_xg, 2),
         "home_win_probability": round(home_win_prob, 2),
-        "away_win_probability": round(probs.away_win * 100.0, 2),
-        "overtime_probability": round(probs.overtime * 100.0, 2),
+        "away_win_probability": round(away_win_prob, 2),
+        "overtime_probability": round(poisson_probs.overtime * 100.0, 2),
+        "logistic_home_probability": round(logistic_home * 100.0, 2) if logistic_home is not None else None,
+        "poisson_home_probability": round(poisson_home * 100.0, 2),
+        "goalie_metadata": goalie_meta,
     }
 
 
@@ -229,16 +330,16 @@ def hockey_unavailable_reason(
     away_abbr: str,
 ) -> str:
     league = league.lower()
-    games = load_league_completed_games(league, cutoff_date)
-    if len(games) < MIN_LEAGUE_GAMES:
+    dated_games = load_league_dated_games(league, cutoff_date)
+    if len(dated_games) < MIN_LEAGUE_GAMES:
         return (
-            f"Insufficient completed games ({len(games)} < {MIN_LEAGUE_GAMES}) "
+            f"Insufficient completed games ({len(dated_games)} < {MIN_LEAGUE_GAMES}) "
             "— likely off-season or sparse schedule."
         )
 
-    model = build_hockey_model(games, league)
+    model = build_hockey_model(dated_games, league, cutoff_date)
     if not model:
-        return "Could not build hockey Poisson model on available games."
+        return "Could not build hockey PuckCast model on available games."
 
     counts = model["team_game_counts"]
     home = home_abbr.lower()
@@ -248,7 +349,7 @@ def hockey_unavailable_reason(
         return f"Teams not found in hockey model: {', '.join(missing)}."
     if counts.get(home, 0) < MIN_TEAM_GAMES or counts.get(away, 0) < MIN_TEAM_GAMES:
         return "Teams have insufficient games in the hockey model sample."
-    return "Hockey-predictions model unavailable."
+    return "Hockey PuckCast model unavailable."
 
 
 @lru_cache(maxsize=32)
@@ -256,8 +357,8 @@ def get_hockey_pred_context(league: str, cutoff_date: str) -> dict[str, Any] | N
     league = league.lower()
     if not is_hockey_league(league):
         return None
-    games = load_league_completed_games(league, cutoff_date)
-    return build_hockey_model(games, league)
+    dated_games = load_league_dated_games(league, cutoff_date)
+    return build_hockey_model(dated_games, league, cutoff_date)
 
 
 def run_hockey_pred_model(
@@ -266,13 +367,17 @@ def run_hockey_pred_model(
     home_abbr: str,
     away_abbr: str,
 ) -> dict[str, Any] | None:
-    """Run Poisson xG hockey model for an NHL matchup."""
+    """Run PuckCast-style hockey model for any hockey league matchup."""
     context = get_hockey_pred_context(league, cutoff_date)
     if not context:
         return None
 
     prediction = predict_matchup_from_model(
-        context, home_abbr, away_abbr, use_goalie_edge=league.lower() == "nhl"
+        context,
+        home_abbr,
+        away_abbr,
+        use_goalie_edge=True,
+        game_date=cutoff_date,
     )
     if not prediction:
         return None
@@ -284,8 +389,8 @@ def run_hockey_pred_model(
         return None
 
     return {
-        "algorithm": "HockeyPoisson",
-        "source": "hockey-predictions+NHL-goalie" if league.lower() == "nhl" else "hockey-predictions",
+        "algorithm": "HockeyPuckCast",
+        "source": "puckcast-xg-goalie",
         "home_win_probability": prediction["home_win_probability"],
         "away_win_probability": prediction["away_win_probability"],
         "expected_home_goals": prediction["expected_home_goals"],

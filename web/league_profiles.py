@@ -150,6 +150,11 @@ MIN_EXPECTED_VALUE_PCT = 5.0
 # Official algo picks and tracking: minimum +EV vs the book (% of stake).
 OFFICIAL_MIN_EV_PCT = 25.0
 
+# Leagues that publish and track official recommended bets on GitHub Pages.
+OFFICIAL_PICK_LEAGUES: frozenset[str] = frozenset(
+    {"nba", "cbb", "wnba", "nhl", "mlb"}
+)
+
 # Cross-sign model-favorite spots (model fav priced as underdog) may clear a lower EV bar.
 MIN_CROSS_SIGN_EV_PCT = 3.0
 
@@ -442,8 +447,8 @@ def is_soccer_league(league: str) -> bool:
 
 
 def eligible_for_official_picks(league: str) -> bool:
-    """All supported leagues may publish official picks when strategy gates pass."""
-    return league.lower() in LEAGUE_PROFILES
+    """Only core US major leagues track official picks on the public board."""
+    return league.lower() in OFFICIAL_PICK_LEAGUES
 
 
 def uses_spread_bets(league: str) -> bool:

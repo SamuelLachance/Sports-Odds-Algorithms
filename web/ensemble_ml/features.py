@@ -102,6 +102,10 @@ def extract_binary_features(
         from web.sports_meta_model import apply_binary_calibration
 
         meta_stacked = apply_binary_calibration(float(meta_stacked), league)
+    if league.lower() == "mlb" and meta_stacked is not None:
+        from web.sports_meta_model import apply_binary_calibration
+
+        meta_stacked = apply_binary_calibration(float(meta_stacked), league)
 
     legacy_margin = _layer_home_margin(legacy, league) if legacy else None
     power_margin = _layer_home_margin(power, league) if power else None

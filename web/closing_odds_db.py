@@ -31,12 +31,29 @@ NHL_ODDS_KEY_ALIASES: dict[str, str] = {
     "uta": "uta",
 }
 
+# SBR archive keys -> ESPN abbreviations used in scoreboards / datasets.
+MLB_ODDS_KEY_ALIASES: dict[str, str] = {
+    "sfo": "sf",
+    "sdg": "sd",
+    "sfg": "sf",
+    "kan": "kc",
+    "los": "lad",
+    "cub": "chc",
+    "brs": "bos",
+    "tam": "tb",
+    "ath": "oak",
+    "cws": "chw",
+    "was": "wsh",
+}
+
 
 def _canonical_odds_team_key(league: str, key: str) -> str:
     league = league.lower()
     key = str(key or "").strip().lower()
     if league == "nhl":
         return NHL_ODDS_KEY_ALIASES.get(key, key)
+    if league == "mlb":
+        return MLB_ODDS_KEY_ALIASES.get(key, key)
     return key
 
 

@@ -92,19 +92,19 @@ def test_blend_with_espn_ids_and_slugs_calls_db_rating_without_espn_kwargs() -> 
             result = blend_predictions(
                 legacy_total_score=-60.0,
                 legacy_win_probability=60.0,
-                league="wnba",
+                league="nba",
                 cutoff_date="6-12-2026",
-                home_abbr="las",
-                away_abbr="sea",
-                home_slug="las-aces",
-                away_slug="seattle-storm",
+                home_abbr="bos",
+                away_abbr="mia",
+                home_slug="boston-celtics",
+                away_slug="miami-heat",
                 home_espn_id="123",
                 away_espn_id="456",
             )
         assert result["blend_mode"] == "legacy_only"
         assert "home_espn_id" not in captured
         assert "away_espn_id" not in captured
-        assert captured.get("home_slug") == "las-aces"
+        assert captured.get("home_slug") == "boston-celtics"
     finally:
         blend_module.run_power_model = power_original
 
@@ -151,7 +151,7 @@ def test_blend_averages_home_win_probs() -> None:
         result = blend_predictions(
             legacy_total_score=-60.0,
             legacy_win_probability=60.0,
-            league="nhl",
+            league="nba",
             cutoff_date="6-11-2026",
             home_abbr="bos",
             away_abbr="ny",
@@ -194,96 +194,153 @@ def test_blend_with_power_integration_when_games_exist() -> None:
         get_league_power_context.cache_clear()
 
 
-def test_blend_mlb_power_only_when_sport_layer_disabled() -> None:
+def test_blend_mlb_runcast_only_when_available() -> None:
     import web.blend_service as blend_module
 
-    power_original = blend_module.run_power_model
-    baseball_original = blend_module.run_baseball_pred_model
-    meta_original = blend_module.get_sports_meta_config
+    mlb_original = blend_module.run_mlb_pred_model
     try:
-        blend_module.run_power_model = lambda *_a, **_k: {
-            "algorithm": "PowerRatings",
-            "home_power": 0.5,
-            "away_power": -0.5,
-            "home_win_probability": 58.0,
-            "param": 10.0,
-        }
-        blend_module.run_baseball_pred_model = lambda *_a, **_k: {
-            "algorithm": "SharpBaseball",
-            "source": "MLB-Model",
-            "home_win_probability": 64.0,
-        }
-        blend_module.get_sports_meta_config = lambda _league: {
-            "blend_weights": {"legacy": 0.0, "power": 1.0, "sport_pred": 0.0},
-            "temperature": 1.0,
-            "two_layer": False,
+        blend_module.run_mlb_pred_model = lambda *_a, **_k: {
+            "algorithm": "MLBRunCast",
+            "source": "run-sim-xgb-calibrated",
+            "home_win_probability": 56.0,
+            "predicted_margin": 0.8,
+            "mlb_pick_signals": {"disagreement_signal": True},
         }
         result = blend_predictions(
-            legacy_total_score=-60.0,
-            legacy_win_probability=60.0,
+            legacy_total_score=-56.0,
+            legacy_win_probability=56.0,
             league="mlb",
-            cutoff_date="6-12-2026",
+            cutoff_date="06-15-2024",
             home_abbr="nyy",
             away_abbr="bos",
         )
-        assert result["blend_mode"] == "blended"
-        assert result["blend_layers"] == 2
-        assert "baseball_pred" not in result
-        assert 57.0 <= result["blended_home_win_probability"] <= 59.0
+        assert result["blend_mode"] == "mlb_runcast"
+        assert result["blend_layers"] == 1
+        assert result["algorithm"] == "MLBRunCast"
+        assert result["baseball_pred"] is not None
+        assert result["baseball_pred"]["source"] == "run-sim-xgb-calibrated"
+        assert result["blended_home_win_probability"] == 56.0
+        assert result.get("legacy") is None
+        assert result.get("power") is None
+        assert result.get("home_spread_margin") == -0.8
+        assert result.get("mlb_pick_signals", {}).get("disagreement_signal") is True
     finally:
-        blend_module.run_power_model = power_original
-        blend_module.run_baseball_pred_model = baseball_original
-        blend_module.get_sports_meta_config = meta_original
+        blend_module.run_mlb_pred_model = mlb_original
 
 
-def test_blend_mlb_two_way_fallback_when_baseball_unavailable() -> None:
+def test_model_agreement_mlb_single_model() -> None:
+    agreement = compute_model_agreement({"legacy": {"favorite_side": "home"}}, "mlb")
+    assert agreement["required"] == 0
+    assert agreement["agreed"] is True
+
+
+def test_blend_mlb_runcast_unavailable_fallback() -> None:
     import web.blend_service as blend_module
 
-    power_original = blend_module.run_power_model
-    baseball_original = blend_module.run_baseball_pred_model
+    mlb_original = blend_module.run_mlb_pred_model
     try:
-        blend_module.run_power_model = lambda *_a, **_k: {
-            "algorithm": "PowerRatings",
-            "home_power": 0.5,
-            "away_power": -0.5,
-            "home_win_probability": 58.0,
-            "param": 10.0,
-        }
-        blend_module.run_baseball_pred_model = lambda *_a, **_k: None
+        blend_module.run_mlb_pred_model = lambda *_a, **_k: None
         result = blend_predictions(
-            legacy_total_score=-60.0,
-            legacy_win_probability=60.0,
+            legacy_total_score=-52.0,
+            legacy_win_probability=52.0,
             league="mlb",
-            cutoff_date="6-12-2026",
+            cutoff_date="06-15-2024",
             home_abbr="nyy",
             away_abbr="bos",
         )
-        assert result["blend_mode"] == "blended"
-        assert result["blend_layers"] == 2
-        assert "baseball_pred" not in result
-        assert result["blended_home_win_probability"] == 59.0
-        assert "SharpBaseball layer unavailable" in result.get("blend_note", "")
+        assert result["blend_mode"] == "mlb_runcast_unavailable"
+        assert result["algorithm"] == "MLBRunCast"
+        assert result.get("baseball_pred") is None
     finally:
-        blend_module.run_power_model = power_original
-        blend_module.run_baseball_pred_model = baseball_original
+        blend_module.run_mlb_pred_model = mlb_original
 
 
-def test_blend_nhl_three_way_when_hockey_available() -> None:
+def test_blend_cbb_torvik_only_when_available() -> None:
     import web.blend_service as blend_module
 
-    power_original = blend_module.run_power_model
+    cbb_original = blend_module.run_cbb_pred_model
+    try:
+        blend_module.run_cbb_pred_model = lambda *_a, **_k: {
+            "algorithm": "CBBTorvik",
+            "source": "torvik-efficiency-calibrated",
+            "home_win_probability": 58.0,
+            "predicted_margin": 4.5,
+            "cbb_pick_signals": {"disagreement_signal": True},
+        }
+        result = blend_predictions(
+            legacy_total_score=-58.0,
+            legacy_win_probability=58.0,
+            league="cbb",
+            cutoff_date="11-15-2024",
+            home_abbr="duke",
+            away_abbr="unc",
+        )
+        assert result["blend_mode"] == "cbb_torvik"
+        assert result["blend_layers"] == 1
+        assert result["algorithm"] == "CBBTorvik"
+        assert result["basketball_pred"] is not None
+        assert result["basketball_pred"]["source"] == "torvik-efficiency-calibrated"
+        assert result["blended_home_win_probability"] == 58.0
+        assert result.get("legacy") is None
+        assert result.get("power") is None
+    finally:
+        blend_module.run_cbb_pred_model = cbb_original
+
+
+def test_blend_wnba_elo_xgb_only_when_available() -> None:
+    import web.blend_service as blend_module
+
+    wnba_original = blend_module.run_wnba_pred_model
+    try:
+        blend_module.run_wnba_pred_model = lambda *_a, **_k: {
+            "algorithm": "WNBAEloXGB",
+            "source": "elo-efficiency-xgb-calibrated",
+            "home_win_probability": 57.0,
+            "predicted_margin": 3.5,
+            "wnba_pick_signals": {"disagreement_signal": True},
+        }
+        result = blend_predictions(
+            legacy_total_score=-57.0,
+            legacy_win_probability=57.0,
+            league="wnba",
+            cutoff_date="06-15-2025",
+            home_abbr="sea",
+            away_abbr="lv",
+        )
+        assert result["blend_mode"] == "wnba_elo_xgb"
+        assert result["blend_layers"] == 1
+        assert result["algorithm"] == "WNBAEloXGB"
+        assert result["basketball_pred"] is not None
+        assert result["basketball_pred"]["source"] == "elo-efficiency-xgb-calibrated"
+        assert result["blended_home_win_probability"] == 57.0
+        assert result.get("legacy") is None
+        assert result.get("power") is None
+        assert result.get("home_spread_margin") == -3.5
+        assert result.get("wnba_pick_signals", {}).get("disagreement_signal") is True
+    finally:
+        blend_module.run_wnba_pred_model = wnba_original
+
+
+def test_model_agreement_wnba_single_model() -> None:
+    agreement = compute_model_agreement({"legacy": {"favorite_side": "home"}}, "wnba")
+    assert agreement["required"] == 0
+    assert agreement["agreed"] is True
+
+
+def test_model_agreement_cbb_single_model() -> None:
+    agreement = compute_model_agreement({"legacy": {"favorite_side": "home"}}, "cbb")
+    assert agreement["required"] == 0
+    assert agreement["agreed"] is True
+
+
+def test_blend_nhl_puckcast_only_when_hockey_available() -> None:
+    import web.blend_service as blend_module
+
     hockey_original = blend_module.run_hockey_pred_model
     try:
-        blend_module.run_power_model = lambda *_a, **_k: {
-            "algorithm": "PowerRatings",
-            "home_power": 2.0,
-            "away_power": -1.0,
-            "home_win_probability": 58.0,
-            "param": 10.0,
-        }
         blend_module.run_hockey_pred_model = lambda *_a, **_k: {
-            "algorithm": "HockeyPoisson",
-            "source": "hockey-predictions",
+            "algorithm": "HockeyPuckCast",
+            "source": "puckcast-xg-goalie",
             "home_win_probability": 55.0,
             "expected_home_goals": 3.1,
             "expected_away_goals": 2.7,
@@ -296,13 +353,15 @@ def test_blend_nhl_three_way_when_hockey_available() -> None:
             home_abbr="bos",
             away_abbr="mtl",
         )
-        assert result["blend_mode"] == "blended"
-        assert result["blend_layers"] == 3
+        assert result["blend_mode"] == "hockey_puckcast"
+        assert result["blend_layers"] == 1
+        assert result["algorithm"] == "HockeyPuckCast"
         assert result["hockey_pred"] is not None
-        assert result["hockey_pred"]["source"] == "hockey-predictions"
-        assert result["blended_home_win_probability"] == round((55.0 + 58.0 + 55.0) / 3, 2)
+        assert result["hockey_pred"]["source"] == "puckcast-xg-goalie"
+        assert result["blended_home_win_probability"] == 55.0
+        assert result.get("legacy") is None
+        assert result.get("power") is None
     finally:
-        blend_module.run_power_model = power_original
         blend_module.run_hockey_pred_model = hockey_original
 
 
@@ -651,10 +710,10 @@ def test_model_agreement_nba_spread_three_layers_agree() -> None:
         blend_module.run_basketball_pred_model = basketball_original
 
 
-def test_model_agreement_nhl_requires_three_layers() -> None:
+def test_model_agreement_nhl_single_model() -> None:
     agreement = compute_model_agreement({"legacy": {"favorite_side": "home"}}, "nhl")
-    assert agreement["required"] == 3
-    assert agreement["agreed"] is False
+    assert agreement["required"] == 0
+    assert agreement["agreed"] is True
 
 
 def test_blended_home_spread_margin_matches_unified_total_score() -> None:
@@ -706,8 +765,8 @@ if __name__ == "__main__":
     test_blend_legacy_only_when_power_unavailable()
     test_blend_averages_home_win_probs()
     test_blend_with_power_integration_when_games_exist()
-    test_blend_mlb_power_only_when_sport_layer_disabled()
-    test_blend_mlb_two_way_fallback_when_baseball_unavailable()
+    test_blend_mlb_runcast_only_when_available()
+    test_blend_mlb_runcast_unavailable_fallback()
     test_blend_nba_three_way_when_basketball_available()
     test_model_agreement_nba_three_layers_agree()
     test_model_agreement_nba_value_on_underdog_despite_favorite_disagreement()
@@ -715,5 +774,5 @@ if __name__ == "__main__":
     test_model_agreement_nba_one_layer_lacks_shared_value()
     test_model_agreement_two_layer_fallback_not_agreed()
     test_model_agreement_nba_spread_three_layers_agree()
-    test_model_agreement_nhl_requires_three_layers()
+    test_model_agreement_nhl_single_model()
     print("test_blend_service.py: all tests passed")

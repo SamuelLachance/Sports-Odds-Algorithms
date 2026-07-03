@@ -16,16 +16,19 @@ from xgboost import XGBClassifier, XGBRegressor
 
 from web.ensemble_ml.config import (
     CALIBRATION_FRACTION,
+    CBB_MARKET_BLEND_MAX,
     DEFAULT_MARGIN_SIGMA,
     MIN_TRAIN_ROWS,
-    NHL_TARGET_LOGLOSS,
+    MLB_MARKET_BLEND_MAX,
     SOCCER_STACKING_FEATURES,
     STACKING_FEATURES,
+    WNBA_MARKET_BLEND_MAX,
     get_stacking_features,
     is_spread_league,
     metadata_path,
     model_artifact_path,
     model_dir,
+    sportsbook_logloss_benchmark,
 )
 from web.nba_ml.calibrate import log_loss
 from web.nba_ml.model import cover_probability
@@ -59,6 +62,23 @@ NHL_WIN_PARAMS = dict(
     n_jobs=0,
     random_state=17,
 )
+
+MLB_WIN_PARAMS = dict(
+    n_estimators=500,
+    max_depth=3,
+    learning_rate=0.025,
+    subsample=0.82,
+    colsample_bytree=0.78,
+    min_child_weight=10,
+    reg_lambda=2.0,
+    reg_alpha=0.35,
+    objective="binary:logistic",
+    eval_metric="logloss",
+    n_jobs=0,
+    random_state=17,
+)
+
+MARKET_TUNED_LEAGUES = frozenset({"nhl", "mlb"})
 
 MARGIN_PARAMS = dict(
     n_estimators=280,
@@ -113,9 +133,36 @@ def _time_split(frame: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
 
 
 def _win_params(league: str) -> dict[str, Any]:
-    if league.lower() == "nhl":
+    league = league.lower()
+    if league == "nhl":
         return dict(NHL_WIN_PARAMS)
+    if league == "mlb":
+        return dict(MLB_WIN_PARAMS)
     return dict(WIN_PARAMS)
+
+
+def _market_target_logloss(league: str) -> float | None:
+    return sportsbook_logloss_benchmark(league)
+
+
+def _closing_market_probs(frame: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
+    """Devigged closing home-win probabilities (0–1) and binary outcomes."""
+    market_rows = frame[frame["market_devig_home_prob"].notna()].copy()
+    probs = market_rows["market_devig_home_prob"].astype(float).to_numpy() / 100.0
+    outcomes = market_rows["home_win"].astype(int).to_numpy()
+    return probs, outcomes
+
+
+def _closing_market_logloss(frame: pd.DataFrame) -> tuple[float | None, int]:
+    """Sportsbook log-loss from devigged closing moneylines only (no model)."""
+    probs, outcomes = _closing_market_probs(frame)
+    if len(outcomes) < 30:
+        return None, len(outcomes)
+    return log_loss(probs, outcomes), len(outcomes)
+
+
+def _uses_market_tuning(league: str) -> bool:
+    return league.lower() in MARKET_TUNED_LEAGUES
 
 
 def _apply_calibration(
@@ -145,12 +192,25 @@ def _blend_with_market(
     return min(max(blended * 100.0, 0.5), 99.5)
 
 
+def _min_model_weight_for_league(league: str) -> float:
+    """Floor on model weight when tuning market blend (caps market share)."""
+    league = league.lower()
+    if league == "cbb":
+        return 1.0 - CBB_MARKET_BLEND_MAX
+    if league == "wnba":
+        return 1.0 - WNBA_MARKET_BLEND_MAX
+    if league == "mlb":
+        return 1.0 - MLB_MARKET_BLEND_MAX
+    return 0.0
+
+
 def _tune_market_blend(
     model_probs_pct: np.ndarray,
     market_probs_pct: np.ndarray,
     outcomes: np.ndarray,
     *,
     target: float | None = None,
+    min_model_weight: float = 0.0,
 ) -> tuple[float, float]:
     best_weight = 1.0
     best_loss = float("inf")
@@ -160,7 +220,7 @@ def _tune_market_blend(
         return 1.0, log_loss(clipped, outcomes)
 
     candidates: list[tuple[float, float]] = []
-    for weight in np.linspace(0.0, 1.0, 21):
+    for weight in np.linspace(min_model_weight, 1.0, 21):
         blended = np.where(
             has_market,
             (weight * model_probs_pct + (1.0 - weight) * market_probs_pct) / 100.0,
@@ -205,6 +265,15 @@ def train_binary_ensemble(league: str, frame: pd.DataFrame) -> BinaryEnsembleMod
         return None
 
     league = league.lower()
+    if league == "mlb" and "meta_stacked_home_prob" in frame.columns:
+        from web.sports_meta_model import apply_binary_calibration
+
+        frame = frame.copy()
+        frame["meta_stacked_home_prob"] = frame["meta_stacked_home_prob"].apply(
+            lambda p: apply_binary_calibration(float(p), league)
+            if p is not None and pd.notna(p)
+            else p
+        )
     features = get_stacking_features(league)
     spread = is_spread_league(league)
     train, holdout = _time_split(frame)
@@ -213,7 +282,7 @@ def train_binary_ensemble(league: str, frame: pd.DataFrame) -> BinaryEnsembleMod
 
     params = _win_params(league)
     win_model = XGBClassifier(**params)
-    if league == "nhl" and len(holdout) >= 50:
+    if _uses_market_tuning(league) and len(holdout) >= 50:
         x_val = _matrix(holdout, features)
         win_model.fit(
             x_train,
@@ -244,7 +313,7 @@ def train_binary_ensemble(league: str, frame: pd.DataFrame) -> BinaryEnsembleMod
         [_apply_calibration(p * 100.0, isotonic=iso, temperature=1.0) * 100.0 for p in raw_probs]
     )
     temperature = 1.0
-    if league == "nhl" and len(holdout) >= 50:
+    if _uses_market_tuning(league) and len(holdout) >= 50:
         temperature = _tune_temperature(calibrated, holdout["home_win"].astype(int).to_numpy())
 
     calibrated = np.array(
@@ -255,8 +324,8 @@ def train_binary_ensemble(league: str, frame: pd.DataFrame) -> BinaryEnsembleMod
     )
 
     market_col = holdout["market_devig_home_prob"].astype(float).to_numpy()
-    target = NHL_TARGET_LOGLOSS if league == "nhl" else None
-    tune_frame = train if league == "nhl" else holdout
+    target = _market_target_logloss(league)
+    tune_frame = train if _uses_market_tuning(league) else holdout
     tune_probs = np.array(
         [
             _apply_calibration(p * 100.0, isotonic=iso, temperature=temperature) * 100.0
@@ -265,7 +334,7 @@ def train_binary_ensemble(league: str, frame: pd.DataFrame) -> BinaryEnsembleMod
     )
     tune_market = tune_frame["market_devig_home_prob"].astype(float).to_numpy()
     tune_outcomes = tune_frame["home_win"].astype(int).to_numpy()
-    if league == "nhl" and not np.isfinite(tune_market).any():
+    if _uses_market_tuning(league) and not np.isfinite(tune_market).any():
         market_holdout = _market_holdout(frame)
         if len(market_holdout) >= 50:
             tune_probs = np.array(
@@ -282,6 +351,7 @@ def train_binary_ensemble(league: str, frame: pd.DataFrame) -> BinaryEnsembleMod
         tune_market,
         tune_outcomes,
         target=target,
+        min_model_weight=_min_model_weight_for_league(league),
     )
 
     return BinaryEnsembleModel(
@@ -376,60 +446,73 @@ def evaluate_holdout_logloss(
     *,
     league: str | None = None,
 ) -> dict[str, float]:
-    """Time-split holdout metrics for binary ensemble models."""
+    """Out-of-sample holdout metrics and closing-line sportsbook baselines."""
     _train, holdout = _time_split(frame)
     if holdout.empty:
         return {}
 
-    def _score_rows(rows: pd.DataFrame) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    def _score_model_rows(rows: pd.DataFrame) -> np.ndarray:
         probs: list[float] = []
-        market_probs: list[float] = []
-        outcomes = rows["home_win"].astype(int).to_numpy()
         for _, row in rows.iterrows():
             feats = {col: row.get(col) for col in model.feature_columns}
             pred = predict_binary(model, feats)
             probs.append(pred["home_win_probability"] / 100.0)
-            market = row.get("market_devig_home_prob")
-            market_probs.append(
-                float(market) / 100.0 if market is not None and pd.notna(market) else np.nan
-            )
-        return (
-            np.asarray(probs, dtype=float),
-            np.asarray(market_probs, dtype=float),
-            outcomes,
+        return np.asarray(probs, dtype=float)
+
+    prob_arr = _score_model_rows(holdout)
+    outcomes = holdout["home_win"].astype(int).to_numpy()
+    market_mask = holdout["market_devig_home_prob"].notna().to_numpy()
+    market_arr = np.full(len(holdout), np.nan, dtype=float)
+    if market_mask.any():
+        market_arr[market_mask] = (
+            holdout.loc[market_mask, "market_devig_home_prob"].astype(float).to_numpy() / 100.0
         )
 
-    prob_arr, market_arr, outcomes = _score_rows(holdout)
-    mask = np.isfinite(market_arr)
     result: dict[str, float] = {
         "holdout_logloss": log_loss(prob_arr, outcomes),
         "holdout_games": float(len(holdout)),
     }
-    if mask.sum() >= 30:
-        result["market_holdout_logloss"] = log_loss(market_arr[mask], outcomes[mask])
-        result["holdout_logloss_market_games"] = log_loss(prob_arr[mask], outcomes[mask])
-        result["holdout_market_games"] = float(mask.sum())
 
-    if league and league.lower() == "nhl":
-        market_holdout = _market_holdout(frame)
-        if len(market_holdout) >= 30:
-            m_probs, m_market, m_out = _score_rows(market_holdout)
-            m_mask = np.isfinite(m_market)
-            result["nhl_market_holdout_logloss"] = log_loss(m_probs, m_out)
-            result["nhl_market_holdout_games"] = float(len(market_holdout))
-            if m_mask.sum() >= 30:
-                result["nhl_market_baseline_logloss"] = log_loss(m_market[m_mask], m_out[m_mask])
+    paired_mask = np.isfinite(market_arr)
+    if paired_mask.sum() >= 30:
+        result["holdout_market_logloss"] = log_loss(market_arr[paired_mask], outcomes[paired_mask])
+        result["holdout_logloss_market_games"] = log_loss(
+            prob_arr[paired_mask], outcomes[paired_mask]
+        )
+        result["holdout_market_games"] = float(paired_mask.sum())
 
-        market_rows = frame[frame["market_devig_home_prob"].notna()].copy()
-        if len(market_rows) >= 30:
-            all_probs, all_market, all_out = _score_rows(market_rows)
-            all_mask = np.isfinite(all_market)
-            if all_mask.sum() >= 30:
-                result["all_market_logloss"] = log_loss(all_probs[all_mask], all_out[all_mask])
-                result["all_market_baseline_logloss"] = log_loss(
-                    all_market[all_mask], all_out[all_mask]
-                )
-                result["all_market_games"] = float(all_mask.sum())
+    closing_ll, closing_n = _closing_market_logloss(frame)
+    if closing_ll is not None:
+        result["closing_market_logloss"] = closing_ll
+        result["closing_market_games"] = float(closing_n)
+
+    market_holdout = _market_holdout(frame)
+    if len(market_holdout) >= 30:
+        m_probs = _score_model_rows(market_holdout)
+        m_out = market_holdout["home_win"].astype(int).to_numpy()
+        result["market_holdout_model_logloss"] = log_loss(m_probs, m_out)
+        result["market_holdout_games"] = float(len(market_holdout))
+        m_market_probs, _ = _closing_market_probs(market_holdout)
+        if len(m_out) >= 30:
+            result["market_holdout_market_logloss"] = log_loss(m_market_probs, m_out)
+
+    benchmark = sportsbook_logloss_benchmark(league) if league else None
+    if benchmark is not None:
+        result["sportsbook_benchmark_logloss"] = benchmark
+        result["beats_market"] = float(result["holdout_logloss"] < benchmark)
+
+    # Deprecated aliases kept for one release cycle (do not use for beats_market).
+    if "holdout_market_logloss" in result:
+        result["market_holdout_logloss"] = result["holdout_market_logloss"]
+    if "closing_market_logloss" in result:
+        result["all_market_baseline_logloss"] = result["closing_market_logloss"]
+        result["all_market_games"] = result["closing_market_games"]
+    if league and league.lower() == "nhl" and "market_holdout_model_logloss" in result:
+        result["nhl_market_holdout_logloss"] = result["market_holdout_model_logloss"]
+        result["nhl_market_holdout_games"] = result.get("market_holdout_games", 0.0)
+        if "market_holdout_market_logloss" in result:
+            result["nhl_market_baseline_logloss"] = result["market_holdout_market_logloss"]
+
     return result
 
 

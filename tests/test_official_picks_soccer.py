@@ -1,4 +1,4 @@
-"""Official soccer 1X2 picks are enabled with league ROI gates."""
+"""Official pick eligibility and tracking for enabled leagues only."""
 
 from __future__ import annotations
 
@@ -8,7 +8,11 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from web.league_profiles import OFFICIAL_MIN_EV_PCT, eligible_for_official_picks  # noqa: E402
+from web.league_profiles import (  # noqa: E402
+    OFFICIAL_MIN_EV_PCT,
+    OFFICIAL_PICK_LEAGUES,
+    eligible_for_official_picks,
+)
 from web.pick_strategy import evaluate_soccer_official_picks_for_game, get_pick_thresholds  # noqa: E402
 from web.tracking_service import (  # noqa: E402
     _official_tracked_bets,
@@ -42,13 +46,14 @@ def _soccer_pick(*, edge: float = 30.0, ev_pct: float = OFFICIAL_MIN_EV_PCT) -> 
 
 
 def test_eligible_for_official_picks() -> None:
-    assert eligible_for_official_picks("epl")
-    assert eligible_for_official_picks("mls")
-    assert eligible_for_official_picks("nba")
-    assert eligible_for_official_picks("mlb")
+    for league in OFFICIAL_PICK_LEAGUES:
+        assert eligible_for_official_picks(league)
+    assert not eligible_for_official_picks("epl")
+    assert not eligible_for_official_picks("mls")
+    assert not eligible_for_official_picks("nfl")
 
 
-def test_soccer_game_exposes_official_picks_when_enabled() -> None:
+def test_soccer_game_not_eligible_for_official_picks() -> None:
     pick = _soccer_pick(edge=55)
     game = {
         "league": "epl",
@@ -63,18 +68,15 @@ def test_soccer_game_exposes_official_picks_when_enabled() -> None:
         "recommendations": [pick],
         "top_pick": pick,
     }
-    assert game["model"]["threeway"] is True
-    assert game["eligible_for_official_picks"] is True
-    assert game["recommendations"]
-    assert game["top_pick"]["bet_type"] == "soccer_1x2"
+    assert game["eligible_for_official_picks"] is False
 
 
-def test_slate_recommendation_rollup_includes_soccer() -> None:
+def test_slate_recommendation_rollup_skips_non_official_leagues() -> None:
     soccer_game = {
         "league": "epl",
         "league_name": "Premier League",
         "event_id": "401999001",
-        "eligible_for_official_picks": True,
+        "eligible_for_official_picks": False,
         "recommendations": [_soccer_pick(edge=60)],
         "matchup": {"away": {"name": "Chelsea"}, "home": {"name": "Arsenal"}},
         "start_time": "2026-06-27T19:00Z",
@@ -112,11 +114,11 @@ def test_slate_recommendation_rollup_includes_soccer() -> None:
                 }
             )
 
-    assert len(recommendations) == 2
-    assert {r["league"] for r in recommendations} == {"epl", "mlb"}
+    assert len(recommendations) == 1
+    assert recommendations[0]["league"] == "mlb"
 
 
-def test_record_from_slate_tracks_soccer_when_present() -> None:
+def test_record_from_slate_skips_non_official_leagues() -> None:
     store = {"version": 1, "bets": []}
     slate = {
         "date_label": "2026-06-27",
@@ -124,11 +126,10 @@ def test_record_from_slate_tracks_soccer_when_present() -> None:
         "games": [],
     }
     store = record_from_slate(store, slate)
-    assert len(store["bets"]) == 1
-    assert store["bets"][0]["league"] == "epl"
+    assert len(store["bets"]) == 0
 
 
-def test_tracking_rollups_include_soccer() -> None:
+def test_tracking_rollups_filter_non_official_leagues() -> None:
     soccer_bet = {
         "id": "2026-06-01:401999001:home",
         "date": "2026-06-01",
@@ -152,10 +153,10 @@ def test_tracking_rollups_include_soccer() -> None:
         "ev_pct": OFFICIAL_MIN_EV_PCT,
     }
     store = {"version": 1, "bets": [soccer_bet, mlb_bet]}
-    assert len(_official_tracked_bets(store["bets"])) == 2
+    assert len(_official_tracked_bets(store["bets"])) == 1
     response = build_tracking_response(store)
-    assert response["summary"]["bets"] == 2
-    assert response["summary"]["record"] == "1-1"
+    assert response["summary"]["bets"] == 1
+    assert response["summary"]["record"] == "0-1"
 
 
 def test_evaluate_soccer_official_picks_respects_disabled_league() -> None:
@@ -179,17 +180,3 @@ def test_evaluate_soccer_official_picks_respects_disabled_league() -> None:
         home_market=120,
     )
     assert picks == []
-
-
-def run_all() -> None:
-    test_eligible_for_official_picks()
-    test_soccer_game_exposes_official_picks_when_enabled()
-    test_slate_recommendation_rollup_includes_soccer()
-    test_record_from_slate_tracks_soccer_when_present()
-    test_tracking_rollups_include_soccer()
-    test_evaluate_soccer_official_picks_respects_disabled_league()
-    print("test_official_picks_soccer.py: all tests passed")
-
-
-if __name__ == "__main__":
-    run_all()
