@@ -193,6 +193,16 @@ def build_daily_slate(*, refresh_sports_db: bool = True) -> dict:
         )
     else:
         print("Skipping sports DB rebuild (restored API cache)", flush=True)
+        from web.sports_db.build import patch_betting_from_slate
+
+        patch_stats = patch_betting_from_slate(DOCS_DIR / "api" / "db", slate)
+        print(
+            "Patched betting.games_today from fresh slate: "
+            f"{patch_stats['leagues_patched']} leagues, "
+            f"{patch_stats['teams_patched']} team sheets, "
+            f"manifest={'updated' if patch_stats['manifest_updated'] else 'skipped'}",
+            flush=True,
+        )
     return slate
 
 

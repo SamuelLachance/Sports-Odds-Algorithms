@@ -41,9 +41,13 @@ from web.espn_client import (  # noqa: E402
     fetch_scoreboard,
     iso_to_project_date,
 )
+from web.hubacek_picks import (
+    HUBACEK_MIN_MARKET_GAP_PP,
+    official_hubacek_thresholds,
+    passes_hubacek_tracked_pick,
+)
 from web.league_profiles import (  # noqa: E402
     LEAGUE_PROFILES,
-    OFFICIAL_MIN_EV_PCT,
     SUPPORTED_LEAGUES,
     eligible_for_official_picks,
     get_algo_league,
@@ -613,16 +617,7 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
         )
 
     def _meets_recommendation_threshold(_game: dict[str, Any], rec: dict[str, Any]) -> bool:
-        league = str(rec.get("league") or _game.get("league") or "")
-        thresholds = get_pick_thresholds(league)
-        if (rec.get("ev_pct") or 0) < thresholds["min_ev_pct"]:
-            return False
-        gap = rec.get("model_market_gap_pp")
-        if gap is not None and gap <= 0:
-            return False
-        if rec.get("strategy") != "hubacek":
-            return False
-        return True
+        return passes_hubacek_tracked_pick(rec)
 
     games_by_event = {game["event_id"]: game for game in all_games}
     recommendations = _best_picks_by_event(recommendations)
@@ -646,12 +641,13 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
             "games_analyzed": len(all_games),
             "recommended_bets": len(qualifying),
             "model_analysis_bets": len(model_analysis_qualifying),
-            "min_ev_pct": OFFICIAL_MIN_EV_PCT,
+            **official_hubacek_thresholds(),
             "leagues": list({game["league"] for game in all_games}),
         },
         "recommended_bets": qualifying[:20],
         "model_analysis_bets": model_analysis_qualifying[:20],
-        "min_recommended_ev_pct": OFFICIAL_MIN_EV_PCT,
+        "min_market_gap_pp": HUBACEK_MIN_MARKET_GAP_PP,
+        "pick_system": "hubacek",
         "games": all_games,
         "errors": errors,
     }

@@ -10,9 +10,13 @@ from zoneinfo import ZoneInfo
 
 from web.bet_advisor import spread_line_for_side
 from web.espn_client import fetch_scoreboard
+from web.hubacek_picks import (
+    HUBACEK_MIN_MARKET_GAP_PP,
+    official_hubacek_thresholds,
+    passes_hubacek_tracked_pick,
+)
 from web.league_profiles import (
     DEFAULT_SPREAD_JUICE,
-    OFFICIAL_MIN_EV_PCT,
     eligible_for_official_picks,
     is_soccer_league,
 )
@@ -98,7 +102,7 @@ def _official_tracked_bets(bets: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str, Any]:
-    """Log recommended bets from the daily slate (EV% >= OFFICIAL_MIN_EV_PCT)."""
+    """Log Hubáček official picks from the daily slate."""
     date_label = slate.get("date_label") or toronto_today().isoformat()
     now = datetime.now(timezone.utc).isoformat()
     index = {
@@ -109,8 +113,7 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
     for pick in slate.get("recommended_bets") or []:
         if not eligible_for_official_picks(pick.get("league") or ""):
             continue
-        ev_pct = pick.get("ev_pct") or 0
-        if ev_pct < OFFICIAL_MIN_EV_PCT:
+        if not passes_hubacek_tracked_pick(pick):
             continue
         event_id = pick.get("event_id")
         side = pick.get("side")
@@ -483,19 +486,18 @@ def build_tracking_response(store: dict[str, Any]) -> dict[str, Any]:
         "timezone": TIMEZONE_LABEL,
         "last_updated": datetime.now(timezone.utc).isoformat(),
         "note": (
-            f"Tracks official algo bets with +{OFFICIAL_MIN_EV_PCT:.0f}% expected value "
-            "vs the sportsbook from each daily slate. Basketball/football spread bets "
-            "graded ATS at consensus book spread; hockey/baseball at closing moneyline; "
-            "soccer at 1X2 closing odds. 1u flat stake."
+            f"Tracks Hubáček official picks (decorrelated model ≥ market + "
+            f"{HUBACEK_MIN_MARKET_GAP_PP:.0f} pp, +EV at book price) from each daily slate. "
+            "Basketball/football spread bets graded ATS at consensus book spread; "
+            "hockey/baseball at closing moneyline. 1u flat stake."
         ),
-        "min_recommended_ev_pct": OFFICIAL_MIN_EV_PCT,
+        **official_hubacek_thresholds(),
+        "min_market_gap_pp": HUBACEK_MIN_MARKET_GAP_PP,
     }
 
 
 def prune_below_min_ev(store: dict[str, Any]) -> dict[str, Any]:
-    store["bets"] = [
-        b for b in store["bets"] if (b.get("ev_pct") or 0) >= OFFICIAL_MIN_EV_PCT
-    ]
+    store["bets"] = [b for b in store["bets"] if passes_hubacek_tracked_pick(b)]
     return store
 
 

@@ -144,11 +144,12 @@ BACKTEST_SCOREBOARD_LOOKBACK_DAYS = 900
 # Minimum American-odds edge vs model before a bet is recommended or tracked.
 MIN_RECOMMENDED_EDGE = 25
 
-# Minimum expected value (% of stake) vs book price (legacy; official picks use edge-only).
+# Minimum expected value (% of stake) vs book price (legacy backtests / non-official).
 MIN_EXPECTED_VALUE_PCT = 5.0
 
-# Official algo picks and tracking: minimum +EV vs the book (% of stake).
-OFFICIAL_MIN_EV_PCT = 25.0
+# Official picks use Hubáček decorrelation gap (see web.hubacek_picks) — not a flat EV%.
+# Kept at 0 for API backward compatibility; do not use as an official pick gate.
+OFFICIAL_MIN_EV_PCT = 0.0
 
 # Leagues that publish and track official recommended bets on GitHub Pages.
 OFFICIAL_PICK_LEAGUES: frozenset[str] = frozenset(

@@ -19,10 +19,10 @@ from web.bet_advisor import (
     spread_line_for_side,
 )
 from web.blend_service import blended_home_spread_margin, home_win_prob_to_total_score
+from web.hubacek_picks import HUBACEK_MIN_MARKET_GAP_PP, official_hubacek_thresholds
 from web.league_profiles import (
     MIN_EXPECTED_VALUE_PCT,
     MIN_RECOMMENDED_EDGE,
-    OFFICIAL_MIN_EV_PCT,
     get_league_profile,
     is_soccer_league,
 )
@@ -38,13 +38,12 @@ STRATEGY_PATH = PROJECT_ROOT / "data" / "pick_strategy.json"
 
 OfficialBetType = Literal["spread", "moneyline", "soccer_1x2", "none"]
 
-# Official picks: Hubáček decorrelated model vs market, +25% EV minimum.
+# Official picks: Hubáček decorrelation gap only (see web.hubacek_picks).
 OFFICIAL_MIN_EDGE = 0.0
 OFFICIAL_MIN_SPREAD_POINT_EDGE = 0.0
 
 DEFAULT_THRESHOLDS: dict[str, Any] = {
-    "min_edge": OFFICIAL_MIN_EDGE,
-    "min_ev_pct": OFFICIAL_MIN_EV_PCT,
+    **official_hubacek_thresholds(),
     "min_spread_point_edge": OFFICIAL_MIN_SPREAD_POINT_EDGE,
     "min_profit_score": 0.0,
     "min_kelly_pct": 0.0,
@@ -101,15 +100,15 @@ def _default_entry(bet_type: str) -> dict[str, Any]:
 
 
 def get_pick_thresholds(league: str) -> dict[str, Any]:
-    """Live official-pick thresholds: 25%+ EV; spread vs ML by sport."""
+    """Live official-pick thresholds: Hubáček decorrelation gap vs market."""
     config = load_pick_strategy()
     league = league.lower()
     entry = config.get(league) or config.get(_category_for_league(league)) or config["default"]
     bet_type = entry.get("bet_type") or official_bet_type(league)
+    hubacek = official_hubacek_thresholds()
     return {
         "bet_type": bet_type,
-        "min_edge": OFFICIAL_MIN_EDGE,
-        "min_ev_pct": OFFICIAL_MIN_EV_PCT,
+        **hubacek,
         "min_spread_point_edge": OFFICIAL_MIN_SPREAD_POINT_EDGE,
         "min_profit_score": 0.0,
         "min_kelly_pct": 0.0,
@@ -1029,7 +1028,7 @@ def evaluate_soccer_official_picks_for_game(
     expected_home_goals: float | None = None,
     expected_away_goals: float | None = None,
 ) -> list[BetPick]:
-    """Official 1X2 picks: Hubáček decorrelated prob vs market, +25% EV minimum."""
+    """Official 1X2 picks: Hubáček decorrelation gap vs market."""
     thresholds = get_pick_thresholds(league)
     picks = evaluate_soccer_picks(
         away_name=away_name,
@@ -1045,9 +1044,8 @@ def evaluate_soccer_official_picks_for_game(
         away_market=away_market,
         draw_market=draw_market,
         home_market=home_market,
-        min_edge=thresholds["min_edge"],
-        min_ev_pct=thresholds["min_ev_pct"],
         hubacek_only=True,
+        min_market_gap_pp=thresholds["min_market_gap_pp"],
     )
     for pick in picks:
         pick.bet_type = "soccer_1x2"
@@ -1072,7 +1070,7 @@ def evaluate_official_picks_for_game(
     home_prob: float | None = None,
     away_prob: float | None = None,
 ) -> list[BetPick]:
-    """Official picks: Hubáček decorrelated model vs market, +25% EV minimum."""
+    """Official picks: Hubáček decorrelation gap vs market (no flat EV% bar)."""
     thresholds = get_pick_thresholds(league)
     bet_type = thresholds["bet_type"]
 
@@ -1091,10 +1089,9 @@ def evaluate_official_picks_for_game(
             away_spread_odds=away_spread_odds,
             home_spread_odds=home_spread_odds,
             model_margin_home=blended_home_spread_margin(blended, league),
-            min_edge=thresholds["min_edge"],
-            min_ev_pct=thresholds["min_ev_pct"],
             hubacek_only=True,
             blended=blended,
+            min_cover_gap_pp=thresholds["min_spread_cover_gap_pp"],
         )
         return picks
 
@@ -1118,9 +1115,8 @@ def evaluate_official_picks_for_game(
             home_market=home_market,
             away_prob=ml_away,
             home_prob=ml_home,
-            min_edge=thresholds["min_edge"],
-            min_ev_pct=thresholds["min_ev_pct"],
             hubacek_only=True,
+            min_market_gap_pp=thresholds["min_market_gap_pp"],
         )
         return picks
 

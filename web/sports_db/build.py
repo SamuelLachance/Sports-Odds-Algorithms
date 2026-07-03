@@ -743,6 +743,73 @@ def refresh_team_publisher_ratings(
     return updated
 
 
+def patch_betting_from_slate(output_dir: Path, slate: dict[str, Any]) -> dict[str, Any]:
+    """Refresh betting.games_today on cached league/team JSON without a full DB rebuild."""
+    stats = {"leagues_patched": 0, "teams_patched": 0, "manifest_updated": False}
+    league_game_counts: dict[str, int] = {}
+
+    for league in SUPPORTED_LEAGUES:
+        league_dir = output_dir / league
+        league_path = league_dir / "league.json"
+        betting = league_betting_context(slate, league)
+        league_game_counts[league] = int(betting.get("game_count") or 0)
+
+        if league_path.is_file():
+            try:
+                payload = json.loads(league_path.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError):
+                payload = None
+            if payload is not None:
+                payload["betting"] = betting
+                payload["generated_at"] = datetime.now(timezone.utc).isoformat()
+                _write_json(league_path, payload)
+                stats["leagues_patched"] += 1
+
+        teams_dir = league_dir / "teams"
+        if not teams_dir.is_dir():
+            continue
+
+        slate_keys = _league_team_keys_from_slate(slate, league)
+        for team_path in teams_dir.glob("*.json"):
+            if team_path.name == "index.json":
+                continue
+            abbr = team_path.stem.lower()
+            try:
+                team_payload = json.loads(team_path.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError):
+                continue
+            had_betting = int((team_payload.get("betting") or {}).get("game_count") or 0) > 0
+            if abbr not in slate_keys and not had_betting:
+                continue
+            team_payload["betting"] = team_betting_context(slate, league, abbr)
+            team_payload["generated_at"] = datetime.now(timezone.utc).isoformat()
+            _write_json(team_path, team_payload)
+            stats["teams_patched"] += 1
+
+    manifest_path = output_dir / "manifest.json"
+    if manifest_path.is_file():
+        try:
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            manifest = None
+        if manifest is not None:
+            manifest["generated_at"] = datetime.now(timezone.utc).isoformat()
+            date_label = slate.get("date_label")
+            if date_label and "-" in str(date_label):
+                parts = str(date_label).split("-")
+                if len(parts) == 3 and len(parts[0]) == 4:
+                    y, m, d = parts
+                    manifest["cutoff_date"] = f"{int(m)}-{int(d)}-{y}"
+            for row in manifest.get("leagues") or []:
+                league_id = row.get("id")
+                if league_id in league_game_counts:
+                    row["games_today"] = league_game_counts[league_id]
+            _write_json(manifest_path, manifest)
+            stats["manifest_updated"] = True
+
+    return stats
+
+
 def build_sports_database(
     output_dir: Path,
     *,

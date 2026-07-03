@@ -339,16 +339,24 @@ def passes_hubacek_official_pick_gate(
     model_prob_pct: float,
     market_implied_pct: float | None,
     ev_pct: float,
-    min_ev_pct: float,
+    min_ev_pct: float = 0.0,
+    min_market_gap_pp: float | None = None,
 ) -> bool:
-    """Official picks: decorrelated model must exceed market and clear +EV bar."""
-    if market_implied_pct is None:
-        return False
-    if model_prob_pct <= market_implied_pct:
-        return False
-    if min_ev_pct > 0 and ev_pct < min_ev_pct:
-        return False
-    return True
+    """Official Hubáček moneyline gate (decorrelation gap, not flat EV%)."""
+    from web.hubacek_picks import (
+        HUBACEK_MIN_MARKET_GAP_PP,
+        passes_hubacek_moneyline_gate,
+    )
+
+    gap_floor = (
+        HUBACEK_MIN_MARKET_GAP_PP if min_market_gap_pp is None else min_market_gap_pp
+    )
+    return passes_hubacek_moneyline_gate(
+        model_prob_pct=model_prob_pct,
+        market_implied_pct=market_implied_pct,
+        ev_pct=ev_pct,
+        min_market_gap_pp=gap_floor,
+    )
 
 
 def _hubacek_pick_reason(
@@ -379,31 +387,31 @@ def passes_hubacek_spread_pick_gate(
     side_cover_prob: float,
     spread_odds: int,
     ev_pct: float,
-    min_ev_pct: float,
+    min_ev_pct: float = 0.0,
     consensus_spread: float,
+    min_cover_gap_pp: float | None = None,
 ) -> bool:
-    """Spread official picks: decorrelated margin must disagree with the market line."""
-    if blended is None or not blend_outputs_are_market_decorrelated(blended):
-        return False
-    if point_edge <= 0:
-        return False
-    decor_home = blended.get("blended_home_win_probability")
-    if decor_home is not None:
-        from web.cbb_calibrate import spread_to_home_prob
+    """Spread official pick: decorrelated margin vs line + cover gap vs juice."""
+    from web.hubacek_picks import (
+        HUBACEK_MIN_SPREAD_COVER_GAP_PP,
+        passes_hubacek_spread_gate,
+    )
 
-        spread_implied_home = spread_to_home_prob(float(consensus_spread))
-        decor_side = float(decor_home) if side == "home" else 100.0 - float(decor_home)
-        market_side = (
-            spread_implied_home if side == "home" else 100.0 - spread_implied_home
-        )
-        if decor_side <= market_side:
-            return False
-    market_cover = american_implied_prob(spread_odds)
-    if side_cover_prob <= market_cover:
-        return False
-    if min_ev_pct > 0 and ev_pct < min_ev_pct:
-        return False
-    return True
+    cover_floor = (
+        HUBACEK_MIN_SPREAD_COVER_GAP_PP
+        if min_cover_gap_pp is None
+        else min_cover_gap_pp
+    )
+    return passes_hubacek_spread_gate(
+        blended=blended,
+        side=side,
+        point_edge=point_edge,
+        side_cover_prob=side_cover_prob,
+        spread_odds=spread_odds,
+        ev_pct=ev_pct,
+        consensus_spread=consensus_spread,
+        min_cover_gap_pp=cover_floor,
+    )
 
 
 def resolve_binary_win_probs(
@@ -627,6 +635,7 @@ def evaluate_picks(
     min_edge: float = MIN_RECOMMENDED_EDGE,
     min_ev_pct: float = MIN_EXPECTED_VALUE_PCT,
     hubacek_only: bool = False,
+    min_market_gap_pp: float | None = None,
 ) -> list[BetPick]:
     if away_prob is None or home_prob is None:
         away_prob, home_prob = _side_win_probs(total_score)
@@ -655,7 +664,7 @@ def evaluate_picks(
                 model_prob_pct=outcome_prob,
                 market_implied_pct=market_implied,
                 ev_pct=ev_pct,
-                min_ev_pct=min_ev_pct,
+                min_market_gap_pp=min_market_gap_pp,
             ):
                 continue
             strategy = "hubacek"
@@ -760,6 +769,7 @@ def evaluate_soccer_picks(
     min_edge: float = MIN_RECOMMENDED_EDGE,
     min_ev_pct: float = MIN_EXPECTED_VALUE_PCT,
     hubacek_only: bool = False,
+    min_market_gap_pp: float | None = None,
 ) -> list[BetPick]:
     """Evaluate 3-way soccer moneyline outcomes vs the book."""
     picks: list[BetPick] = []
@@ -806,7 +816,7 @@ def evaluate_soccer_picks(
                 model_prob_pct=outcome_prob,
                 market_implied_pct=market_implied,
                 ev_pct=ev_pct,
-                min_ev_pct=min_ev_pct,
+                min_market_gap_pp=min_market_gap_pp,
             ):
                 continue
             strategy = "hubacek"
@@ -889,6 +899,7 @@ def evaluate_spread_picks(
     min_ev_pct: float = MIN_EXPECTED_VALUE_PCT,
     hubacek_only: bool = False,
     blended: dict[str, Any] | None = None,
+    min_cover_gap_pp: float | None = None,
 ) -> list[BetPick]:
     """Recommend spread bets when decorrelated margin disagrees with the book line."""
     if consensus_spread is None:
@@ -930,8 +941,8 @@ def evaluate_spread_picks(
                 side_cover_prob=side_cover_prob,
                 spread_odds=juice,
                 ev_pct=ev_pct,
-                min_ev_pct=min_ev_pct,
                 consensus_spread=consensus_spread,
+                min_cover_gap_pp=min_cover_gap_pp,
             ):
                 continue
             strategy = "hubacek"

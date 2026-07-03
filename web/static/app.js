@@ -1,4 +1,4 @@
-const APP_BUILD_VERSION = "2026-07-02-edge25";
+const APP_BUILD_VERSION = "2026-07-03-hubacek-gap";
 const META_BASE_PATH =
   document.querySelector('meta[name="base-path"]')?.content ?? "";
 const IS_GITHUB_IO = window.location.hostname.endsWith("github.io");
@@ -38,6 +38,16 @@ const sidebarGames = document.getElementById("sidebarGames");
 const sidebarGamesTitle = document.getElementById("sidebarGamesTitle");
 const footerUpdated = document.getElementById("footerUpdated");
 const navToggle = document.getElementById("navToggle");
+
+function minHubacekGap(source) {
+  const s = source?.summary || source || state.tracking || {};
+  return s.min_market_gap_pp ?? source?.min_market_gap_pp ?? 8;
+}
+
+function hubacekPickRule(source) {
+  const gap = minHubacekGap(source);
+  return `Hubáček spot: decorrelated model ≥ market by ${gap}+ pp with +EV`;
+}
 const mainNav = document.getElementById("mainNav");
 const mobileBottomNav = document.getElementById("mobileBottomNav");
 
@@ -702,9 +712,9 @@ function gameValuePickBlock(game, top, isSoccer) {
     return `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong><span>${pickTeamNameLink(top, game.league, game.matchup)} · ${pickMarketLabel(top)} vs model ${pickModelLabel(top)} (+${top.ev_pct != null ? top.ev_pct + "% EV" : ""}${top.edge != null ? ", +" + top.edge + " edge" : ""})</span><p>${top.reason}</p></div>`;
   }
   if (isSoccer) {
-    return `<div class="game-pick neutral"><strong>No official 1X2 pick</strong><span>Expected value is below 25% on home/draw/away moneylines.</span></div>`;
+    return `<div class="game-pick neutral"><strong>No official 1X2 pick</strong><span>${hubacekPickRule(state.slate)} not met on home/draw/away lines.</span></div>`;
   }
-  return `<div class="game-pick neutral"><strong>No official pick</strong><span>Expected value is below 25% on today's ${game.market && game.market.spread != null ? "spread" : "moneyline"} line.</span></div>`;
+  return `<div class="game-pick neutral"><strong>No official pick</strong><span>${hubacekPickRule(state.slate)} not met on today's ${game.market && game.market.spread != null ? "spread" : "moneyline"} line.</span></div>`;
 }
 
 function gameRecommendationsList(game, away, home) {
@@ -797,7 +807,8 @@ function viewDashboard() {
   const leagues = summary.leagues || [...new Set(games.map((g) => g.league))];
   const tracking = state.tracking?.all_time || state.tracking?.summary || {};
   const dateLabel = slate.date_label || "Today";
-  const minEvPct = summary.min_ev_pct ?? slate.min_recommended_ev_pct ?? 25;
+  const minGap = minHubacekGap(slate);
+  const hubacekRule = hubacekPickRule(slate);
   const leagueCounts = games.reduce((acc, g) => {
     acc[g.league_name || g.league] = (acc[g.league_name || g.league] || 0) + 1;
     return acc;
@@ -817,7 +828,7 @@ function viewDashboard() {
         <div class="tracking-hero-stats home-stats">
           <div><span>Games</span><strong>${summary.games_analyzed ?? games.length}</strong></div>
           <div><span>Algo picks</span><strong>${summary.recommended_bets ?? picks.length}</strong></div>
-          <div><span>Min EV</span><strong>${minEvPct}%+</strong></div>
+          <div><span>Min gap</span><strong>${minGap}+ pp</strong></div>
           <div><span>All-time ROI</span><strong>${tracking.roi_percent ?? 0}%</strong></div>
         </div>
       </div>
@@ -832,7 +843,7 @@ function viewDashboard() {
       <a class="rollup-card panel home-link-card" href="#/picks">
         <h4>Algo picks</h4>
         <strong class="rollup-record">${picks.length}</strong>
-        <span>Official picks with ${minEvPct}%+ expected value vs the book</span>
+        <span>${hubacekRule}</span>
       </a>
       <a class="rollup-card panel home-link-card" href="#/teams">
         <h4>Leagues</h4>
@@ -848,7 +859,7 @@ function viewDashboard() {
 
     <section class="section">
       <div class="section-head"><h2>Top official picks</h2><a class="text-link" href="#/picks">View all →</a></div>
-      <div class="picks-grid">${picks.length ? picks.slice(0, 6).map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No official bets meet the ${minEvPct}%+ EV threshold today.</div>`}</div>
+      <div class="picks-grid">${picks.length ? picks.slice(0, 6).map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No official bets meet ${hubacekRule} today.</div>`}</div>
     </section>
     ${modelAnalysis.length ? `<section class="section"><div class="section-head"><h2>Soccer &amp; other model predictions</h2><a class="text-link" href="#/picks#model-predictions">View all →</a></div><p class="muted section-intro">Same model analysis as on game pages — shown for reference, not tracked in official bet history.</p><div class="picks-grid">${modelAnalysis.slice(0, 6).map((p) => pickCard(p)).join("")}</div></section>` : ""}`;
 }
@@ -879,10 +890,11 @@ function viewPicks() {
   const picks = state.slate?.recommended_bets || [];
   const modelAnalysis = state.slate?.model_analysis_bets || [];
   const slate = state.slate || {};
-  const minEvPct = slate.summary?.min_ev_pct ?? slate.min_recommended_ev_pct ?? 25;
-  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p><strong>Official picks</strong> (NBA, CBB, WNBA, NHL, MLB) fire when our model shows <strong>${minEvPct}%+ expected value</strong> vs the sportsbook. <strong>Model predictions</strong> below include soccer and other leagues with the same analysis, but those bets are not tracked officially.</p></section>
-    <section class="section"><div class="section-head"><h2>Official picks</h2></div><div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No official bets meet the ${minEvPct}%+ EV threshold today.</div>`}</div></section>
-    <section class="section" id="model-predictions"><div class="section-head"><h2>Model predictions (not tracked)</h2></div><p class="muted section-intro">Soccer 1X2 and other non-official leagues. Full probabilities and fair prices are always on each game page.</p><div class="picks-grid">${modelAnalysis.length ? modelAnalysis.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No model value spots meet the ${minEvPct}%+ EV threshold today.</div>`}</div></section>`;
+  const minGap = minHubacekGap(slate);
+  const hubacekRule = hubacekPickRule(slate);
+  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p><strong>Official picks</strong> (NBA, CBB, WNBA, NHL, MLB) fire only on <strong>Hubáček spots</strong>: decorrelated model ≥ market by <strong>${minGap}+ percentage points</strong> with positive EV. <strong>Model predictions</strong> below include soccer and other leagues with the same analysis, but those bets are not tracked officially.</p></section>
+    <section class="section"><div class="section-head"><h2>Official picks</h2></div><div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No official bets meet ${hubacekRule} today.</div>`}</div></section>
+    <section class="section" id="model-predictions"><div class="section-head"><h2>Model predictions (not tracked)</h2></div><p class="muted section-intro">Soccer 1X2 and other non-official leagues. Full probabilities and fair prices are always on each game page.</p><div class="picks-grid">${modelAnalysis.length ? modelAnalysis.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No model value spots on today's slate.</div>`}</div></section>`;
 }
 
 function viewGames(league) {
@@ -1587,18 +1599,15 @@ function viewTracking() {
   const all = state.tracking?.all_time || state.tracking?.summary || {};
   const bets = state.tracking?.bets || [];
   const since = state.tracking?.tracking_since || "—";
-  const minEvPct =
-    state.slate?.summary?.min_ev_pct ??
-    state.slate?.min_recommended_ev_pct ??
-    state.tracking?.min_recommended_ev_pct ??
-    25;
+  const minGap = minHubacekGap(state.slate);
+  const hubacekRule = hubacekPickRule(state.slate);
 
   appRoot.innerHTML = `
     <section class="tracking-hero panel">
       <div class="tracking-hero-top">
         <div>
           <h1>Performance tracking</h1>
-          <p>Every algo bet with ${minEvPct}%+ expected value is logged, graded at closing odds, and rolled up day → week → month → year → all time.</p>
+          <p>Official Hubáček bets (${hubacekRule}) are logged, graded at closing odds, and rolled up day → week → month → year → all time.</p>
           <p class="muted">Tracking since ${since} · ${state.tracking?.timezone || "America/Toronto"}</p>
         </div>
         <div class="tracking-hero-stats">
@@ -1630,7 +1639,7 @@ function viewTracking() {
       <div class="bet-log">${bets.length ? bets.map((b) => `<article class="bet-row panel"><div class="bet-row-top"><div><strong>${b.team_abbr ? teamNameLink(b.league, b.team_abbr, b.team_name) : b.team_name}</strong><span class="league-pill">${b.league_name}</span>${statusBadge(b.status, b.units)}</div><span class="edge-tag">+${b.edge} edge</span></div>
       <p class="muted">${b.matchup} · ${b.date}</p>
       <div class="pick-odds compact"><div><span>${b.bet_type === "spread" ? "Spread" : "Market"}</span><strong>${b.bet_type === "spread" ? formatSpread(b.spread_line) + " (" + formatOdds(b.spread_odds ?? b.market_odds) + ")" : formatOdds(b.market_odds)}</strong></div><div><span>Model</span><strong>${b.bet_type === "spread" && b.model_margin != null ? (b.side === "home" ? "Home" : "Away") + " margin " + formatSpread(b.side === "home" ? b.model_margin : -b.model_margin) : formatOdds(b.model_projection)}</strong></div><div><span>Strategy</span><strong>${b.strategy_label}</strong></div></div>
-      ${b.final_score ? `<p class="final-score">Final: ${b.final_score}</p>` : ""}</article>`).join("") : `<div class="panel empty-panel">No tracked bets yet. Picks with ${minEvPct}%+ EV are logged on each daily rebuild.</div>`}</div>
+      ${b.final_score ? `<p class="final-score">Final: ${b.final_score}</p>` : ""}</article>`).join("") : `<div class="panel empty-panel">No tracked bets yet. Official picks need ${minGap}+ pp decorrelation vs market with +EV.</div>`}</div>
     </section>`;
 
   appRoot.querySelectorAll(".period-tab").forEach((btn) => {
@@ -1720,7 +1729,7 @@ function renderBettingGameCard(sheet, league) {
       <small>Fav: ${model.favorite_side || "—"} · Blend ${model.blend_layers || "—"} layers</small>
       ${agreement.required ? `<small>Agreement: ${agreement.agreed ? "✓ all layers" : "✗ split"} (${(agreement.value_sides || []).join(", ") || "none"})</small>` : ""}
     </div>
-    ${predictionsOnly && top ? `<div class="game-pick neutral"><strong>Model value analysis</strong> ${pickTeamNameLink(top, league, matchup)} +${top.ev_pct}% EV — not tracked</div>` : predictionsOnly ? `<div class="game-pick neutral"><strong>Predictions only</strong> — model shown, not an official tracked pick</div>` : top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong> ${pickTeamNameLink(top, league, matchup)} +${top.ev_pct}% EV</div>` : `<div class="game-pick neutral"><strong>No official pick</strong> — need 25%+ EV vs the book</div>`}
+    ${predictionsOnly && top ? `<div class="game-pick neutral"><strong>Model value analysis</strong> ${pickTeamNameLink(top, league, matchup)} +${top.ev_pct}% EV — not tracked</div>` : predictionsOnly ? `<div class="game-pick neutral"><strong>Predictions only</strong> — model shown, not an official tracked pick</div>` : top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong> ${pickTeamNameLink(top, league, matchup)} +${top.ev_pct}% EV</div>` : `<div class="game-pick neutral"><strong>No official pick</strong> — ${hubacekPickRule(state.slate)} not met</div>`}
     <div class="db-bet-links">
       <a href="${teamHref(league, matchup.home?.abbr)}">${home}</a>
       <a href="${teamHref(league, matchup.away?.abbr)}">${away}</a>

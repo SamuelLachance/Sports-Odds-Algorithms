@@ -126,16 +126,19 @@ def test_moneyline_edge_cross_sign_not_raw_subtraction() -> None:
     assert edge != 230.0
 
 
-def test_official_pick_threshold_is_ev_only() -> None:
-    """Official picks require 25%+ EV; American edge is not a gate."""
+def test_official_pick_threshold_is_hubacek_gap() -> None:
+    """Official picks require Hubáček decorrelation gap, not a flat EV%."""
+    from web.hubacek_picks import HUBACEK_MIN_MARKET_GAP_PP
     from web.league_profiles import OFFICIAL_MIN_EV_PCT
     from web.pick_strategy import OFFICIAL_MIN_EDGE, get_pick_thresholds
 
     assert OFFICIAL_MIN_EDGE == 0.0
-    assert OFFICIAL_MIN_EV_PCT == 25.0
+    assert OFFICIAL_MIN_EV_PCT == 0.0
     thresholds = get_pick_thresholds("nba")
     assert thresholds["min_edge"] == 0.0
-    assert thresholds["min_ev_pct"] == 25.0
+    assert thresholds["min_ev_pct"] == 0.0
+    assert thresholds["pick_system"] == "hubacek"
+    assert thresholds["min_market_gap_pp"] == HUBACEK_MIN_MARKET_GAP_PP
     assert thresholds["enabled"] is True
 
     away_proj, _ = model_moneylines(28.33)
@@ -427,8 +430,12 @@ def test_ensemble_home_margin_sign_does_not_flip_spread_pick() -> None:
         assert picks[0].spread_line == -3.5
 
 
-def test_spread_picks_require_min_ev_pct() -> None:
-    """Low-EV spread spots clear edge but fail the official EV gate."""
+def test_spread_picks_require_hubacek_decorrelation_gap() -> None:
+    """Small decorrelation vs line fails Hubáček spread gate even with positive edge."""
+    blended = {
+        "blended_home_win_probability": 55.0,
+        "market_decorrelated": True,
+    }
     picks = evaluate_spread_picks(
         league="wnba",
         away_name="A",
@@ -441,8 +448,8 @@ def test_spread_picks_require_min_ev_pct() -> None:
         away_spread_odds=-110,
         home_spread_odds=-110,
         model_margin_home=-1.6,
-        min_edge=0.0,
-        min_ev_pct=25.0,
+        hubacek_only=True,
+        blended=blended,
     )
     assert picks == []
 
@@ -457,7 +464,7 @@ if __name__ == "__main__":
     test_moneyline_edge_same_sign_underdog()
     test_moneyline_edge_same_sign_favorite()
     test_moneyline_edge_cross_sign_not_raw_subtraction()
-    test_official_pick_threshold_is_ev_only()
+    test_official_pick_threshold_is_hubacek_gap()
     test_evaluate_picks_cross_sign_positive_ev_qualifies()
     test_expected_value_pct_favorite()
     test_passes_moneyline_pick_gate_model_favorite()
@@ -468,6 +475,6 @@ if __name__ == "__main__":
     test_spread_pick_uses_cover_probability()
     test_official_spread_pick_uses_blended_home_spread_margin()
     test_ensemble_home_margin_sign_does_not_flip_spread_pick()
-    test_spread_picks_require_min_ev_pct()
+    test_spread_picks_require_hubacek_decorrelation_gap()
     test_cross_sign_reason_does_not_claim_book_beats_model_line()
     print("test_bet_advisor.py: all tests passed")

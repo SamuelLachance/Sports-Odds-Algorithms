@@ -10,6 +10,7 @@ from web.sports_db.build import (
     _recent_games_from_live,
     deep_player_targets,
     enrich_roster_headshots,
+    patch_betting_from_slate,
     refresh_team_publisher_ratings,
     should_fetch_recent_games,
     stats_only_player_targets,
@@ -660,6 +661,93 @@ def test_roster_index_row_includes_headshot() -> None:
         {"id": "1", "name": "A", "position": "G", "headshot": "https://x/y.jpg"}
     )
     assert row["headshot"] == "https://x/y.jpg"
+
+
+def test_patch_betting_from_slate_updates_league_manifest_and_clears_stale_teams(
+    tmp_path,
+) -> None:
+    db_root = tmp_path / "db"
+    nba_dir = db_root / "nba" / "teams"
+    nba_dir.mkdir(parents=True)
+
+    stale_betting = {
+        "games_today": [{"event_id": "old"}],
+        "game_count": 1,
+        "official_pick_count": 0,
+    }
+    (db_root / "nba" / "league.json").write_text(
+        json.dumps(
+            {
+                "league": {"id": "nba", "name": "NBA", "category": "basketball"},
+                "betting": stale_betting,
+            }
+        ),
+        encoding="utf-8",
+    )
+    (nba_dir / "bos.json").write_text(
+        json.dumps(
+            {
+                "team": {"abbr": "bos"},
+                "betting": {
+                    "upcoming_games": [{"event_id": "old"}],
+                    "game_count": 1,
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    (nba_dir / "lal.json").write_text(
+        json.dumps({"team": {"abbr": "lal"}, "betting": {"game_count": 0}}),
+        encoding="utf-8",
+    )
+    (db_root / "manifest.json").write_text(
+        json.dumps(
+            {
+                "leagues": [
+                    {"id": "nba", "name": "NBA", "games_today": 1},
+                    {"id": "nhl", "name": "NHL", "games_today": 3},
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    slate = {
+        "date_label": "2026-07-03",
+        "games": [
+            {
+                "league": "nba",
+                "event_id": "401",
+                "name": "NYK @ BOS",
+                "matchup": {
+                    "home": {"abbr": "bos", "name": "Celtics"},
+                    "away": {"abbr": "nyk", "name": "Knicks"},
+                },
+                "market": {},
+                "model": {"win_probability": 58},
+            }
+        ],
+    }
+
+    stats = patch_betting_from_slate(db_root, slate)
+    assert stats["leagues_patched"] == 1
+    assert stats["teams_patched"] == 1
+    assert stats["manifest_updated"] is True
+
+    league = json.loads((db_root / "nba" / "league.json").read_text(encoding="utf-8"))
+    assert league["betting"]["game_count"] == 1
+    assert league["betting"]["games_today"][0]["event_id"] == "401"
+
+    bos = json.loads((nba_dir / "bos.json").read_text(encoding="utf-8"))
+    assert bos["betting"]["game_count"] == 1
+    assert bos["betting"]["upcoming_games"][0]["event_id"] == "401"
+
+    manifest = json.loads((db_root / "manifest.json").read_text(encoding="utf-8"))
+    nba_row = next(row for row in manifest["leagues"] if row["id"] == "nba")
+    nhl_row = next(row for row in manifest["leagues"] if row["id"] == "nhl")
+    assert nba_row["games_today"] == 1
+    assert nhl_row["games_today"] == 0
+    assert manifest["cutoff_date"] == "7-3-2026"
 
 
 def test_league_betting_context_counts_games() -> None:

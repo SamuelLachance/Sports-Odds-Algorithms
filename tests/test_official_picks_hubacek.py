@@ -16,7 +16,7 @@ from web.bet_advisor import (  # noqa: E402
     official_pick_binary_probs,
     passes_hubacek_official_pick_gate,
 )
-from web.league_profiles import OFFICIAL_MIN_EV_PCT  # noqa: E402
+from web.hubacek_picks import HUBACEK_MIN_MARKET_GAP_PP  # noqa: E402
 from web.market_decorrelation import decorrelate_binary  # noqa: E402
 from web.pick_strategy import evaluate_official_picks_for_game, get_pick_thresholds  # noqa: E402
 
@@ -95,13 +95,16 @@ def test_hubacek_gate_rejects_market_agreement() -> None:
         model_prob_pct=55.0,
         market_implied_pct=55.0,
         ev_pct=30.0,
-        min_ev_pct=OFFICIAL_MIN_EV_PCT,
     )
     assert not passes_hubacek_official_pick_gate(
         model_prob_pct=52.0,
         market_implied_pct=55.0,
         ev_pct=30.0,
-        min_ev_pct=OFFICIAL_MIN_EV_PCT,
+    )
+    assert passes_hubacek_official_pick_gate(
+        model_prob_pct=55.0 + HUBACEK_MIN_MARKET_GAP_PP,
+        market_implied_pct=55.0,
+        ev_pct=5.0,
     )
 
 

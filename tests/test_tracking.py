@@ -8,7 +8,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from web.league_profiles import OFFICIAL_MIN_EV_PCT  # noqa: E402
+from web.hubacek_picks import HUBACEK_MIN_MARKET_GAP_PP  # noqa: E402
 from web.tracking_service import (  # noqa: E402
     _fetch_event_result,
     _scoreboard_dates_for_bet,
@@ -26,22 +26,24 @@ from web.tracking_service import (  # noqa: E402
 def _sample_pick(
     *,
     edge: float = 30.0,
-    ev_pct: float = OFFICIAL_MIN_EV_PCT,
+    ev_pct: float = 5.0,
+    gap_pp: float = HUBACEK_MIN_MARKET_GAP_PP,
     event_id: str = "401815712",
 ) -> dict:
     return {
         "side": "home",
         "team_name": "Pirates",
         "team_slug": "pittsburgh-pirates",
-        "strategy": "value",
-        "strategy_label": "Value bet",
+        "strategy": "hubacek",
+        "strategy_label": "Hubáček spot",
         "confidence": "medium",
         "edge": edge,
         "ev_pct": ev_pct,
+        "model_market_gap_pp": gap_pp,
         "model_projection": 120,
         "market_odds": 141,
         "win_probability": 55,
-        "reason": "Edge",
+        "reason": "Hubáček decorrelation gap",
         "league": "mlb",
         "league_name": "MLB",
         "event_id": event_id,
@@ -84,27 +86,38 @@ def test_record_and_grade() -> None:
     assert response["summary"]["wins"] == 1
 
 
-def test_rejects_sub_min_ev() -> None:
+def test_rejects_non_hubacek_gap() -> None:
     store = {"version": 1, "bets": []}
     slate = {
         "date_label": "2026-06-11",
-        "recommended_bets": [_sample_pick(ev_pct=OFFICIAL_MIN_EV_PCT - 1)],
+        "recommended_bets": [_sample_pick(gap_pp=HUBACEK_MIN_MARKET_GAP_PP - 1)],
         "games": [],
     }
     store = record_from_slate(store, slate)
     assert store["bets"] == []
 
 
-def test_accepts_min_ev() -> None:
+def test_rejects_non_positive_ev() -> None:
     store = {"version": 1, "bets": []}
     slate = {
         "date_label": "2026-06-11",
-        "recommended_bets": [_sample_pick(ev_pct=OFFICIAL_MIN_EV_PCT)],
+        "recommended_bets": [_sample_pick(ev_pct=0)],
+        "games": [],
+    }
+    store = record_from_slate(store, slate)
+    assert store["bets"] == []
+
+
+def test_accepts_hubacek_pick() -> None:
+    store = {"version": 1, "bets": []}
+    slate = {
+        "date_label": "2026-06-11",
+        "recommended_bets": [_sample_pick()],
         "games": [],
     }
     store = record_from_slate(store, slate)
     assert len(store["bets"]) == 1
-    assert store["bets"][0]["ev_pct"] == OFFICIAL_MIN_EV_PCT
+    assert store["bets"][0]["strategy"] == "hubacek"
 
 
 def test_ignores_game_recommendations_not_in_recommended() -> None:
@@ -131,18 +144,20 @@ def test_ignores_game_recommendations_not_in_recommended() -> None:
 def _spread_pick(
     *,
     edge: float = 30.0,
-    ev_pct: float = OFFICIAL_MIN_EV_PCT,
+    ev_pct: float = 5.0,
+    gap_pp: float = HUBACEK_MIN_MARKET_GAP_PP,
     event_id: str = "401859967",
 ) -> dict:
     return {
         "side": "home",
         "team_name": "Spurs",
         "team_slug": "san-antonio-spurs",
-        "strategy": "value",
-        "strategy_label": "Value bet",
+        "strategy": "hubacek",
+        "strategy_label": "Hubáček spot",
         "confidence": "medium",
         "edge": edge,
         "ev_pct": ev_pct,
+        "model_market_gap_pp": gap_pp,
         "model_projection": 60,
         "market_odds": -108,
         "win_probability": 72,
@@ -303,17 +318,15 @@ def test_grade_pending_resolves_stale_event_by_id() -> None:
     assert bet.get("final_score")
 
 
-def test_prune_below_min_ev() -> None:
+def test_prune_below_hubacek_threshold() -> None:
+    qualifying = _sample_pick(event_id="401815714")
+    sub_gap = _sample_pick(gap_pp=HUBACEK_MIN_MARKET_GAP_PP - 1, event_id="401815712")
+    legacy = _sample_pick(gap_pp=HUBACEK_MIN_MARKET_GAP_PP, event_id="401815713")
+    legacy["strategy"] = "value"
     store = {
         "version": 1,
-        "bets": [
-            _sample_pick(ev_pct=OFFICIAL_MIN_EV_PCT - 5, event_id="401815712"),
-            _sample_pick(ev_pct=OFFICIAL_MIN_EV_PCT - 1, event_id="401815713"),
-            _sample_pick(ev_pct=OFFICIAL_MIN_EV_PCT, event_id="401815714"),
-            _sample_pick(ev_pct=OFFICIAL_MIN_EV_PCT + 10, event_id="401815715"),
-        ],
+        "bets": [qualifying, sub_gap, legacy],
     }
-    # record_from_slate expects full bet shape; prune works on stored bets
     store["bets"] = [
         {
             "id": f"2026-06-11:{p['event_id']}:{p['side']}",
@@ -322,6 +335,8 @@ def test_prune_below_min_ev() -> None:
             "side": p["side"],
             "edge": p["edge"],
             "ev_pct": p["ev_pct"],
+            "strategy": p["strategy"],
+            "model_market_gap_pp": p.get("model_market_gap_pp"),
             "status": "pending",
             "units": 0.0,
             "stake_units": 1.0,
@@ -329,18 +344,16 @@ def test_prune_below_min_ev() -> None:
         for p in store["bets"]
     ]
     pruned = prune_below_min_edge(store)
-    ev_values = [b["ev_pct"] for b in pruned["bets"]]
-    assert (OFFICIAL_MIN_EV_PCT - 5) not in ev_values
-    assert (OFFICIAL_MIN_EV_PCT - 1) not in ev_values
-    assert all(e >= OFFICIAL_MIN_EV_PCT for e in ev_values)
-    assert len(pruned["bets"]) == 2
+    assert len(pruned["bets"]) == 1
+    assert pruned["bets"][0]["event_id"] == "401815714"
 
 
 if __name__ == "__main__":
     test_calculate_units()
     test_record_and_grade()
-    test_rejects_sub_min_ev()
-    test_accepts_min_ev()
+    test_rejects_non_hubacek_gap()
+    test_rejects_non_positive_ev()
+    test_accepts_hubacek_pick()
     test_ignores_game_recommendations_not_in_recommended()
     test_grade_spread_cover_win()
     test_grade_spread_push()
@@ -353,5 +366,5 @@ if __name__ == "__main__":
     test_scoreboard_dates_use_start_time_not_record_date()
     test_fetch_event_result_grades_completed_nba_final()
     test_grade_pending_resolves_stale_event_by_id()
-    test_prune_below_min_edge()
+    test_prune_below_hubacek_threshold()
     print("test_tracking.py: all tests passed")
