@@ -14,7 +14,7 @@ from web.mlb_pred_model import MIN_LEAGUE_GAMES as MLB_MIN_LEAGUE_GAMES
 from web.mlb_pred_model import get_mlb_pred_context, is_mlb_league
 from web.wnba_pred_model import MIN_LEAGUE_GAMES as WNBA_MIN_LEAGUE_GAMES
 from web.wnba_pred_model import get_wnba_pred_context, is_wnba_league
-from web.league_profiles import LEAGUE_PROFILES, MIN_GAMES_FOR_POWER
+from web.league_profiles import LEAGUE_PROFILES, MIN_GAMES_FOR_POWER, is_soccer_league
 from web.season_games import get_league_power_context, load_league_completed_games
 from web.soccer_pred_model import MIN_LEAGUE_GAMES as SOCCER_MIN_LEAGUE_GAMES
 from web.soccer_pred_model import get_soccer_pred_context
@@ -24,12 +24,11 @@ THREE_LAYER_MIN_TEAMS = 4
 
 def uses_three_layer_readiness_gate(league: str) -> bool:
     league = league.lower()
-    if is_mlb_league(league):
+    if is_mlb_league(league) or is_soccer_league(league):
         return False
     profile = LEAGUE_PROFILES.get(league)
     return profile is not None and profile["category"] in (
         "baseball",
-        "soccer",
     )
 
 
@@ -258,6 +257,44 @@ def assess_mlb_readiness(league: str, cutoff_date: str) -> dict[str, Any]:
     return result
 
 
+def assess_soccer_readiness(league: str, cutoff_date: str) -> dict[str, Any]:
+    """Soccer slate readiness — SoccerPathA only (no power / legacy stack)."""
+    league = league.lower()
+    result: dict[str, Any] = {
+        "league": league,
+        "ready": False,
+        "game_count": 0,
+        "team_count": 0,
+        "reason": "",
+    }
+    if not is_soccer_league(league):
+        result["reason"] = "Not a soccer league"
+        return result
+
+    games = load_league_completed_games(league, cutoff_date)
+    result["game_count"] = len(games)
+    if len(games) < SOCCER_MIN_LEAGUE_GAMES:
+        result["reason"] = (
+            f"Need {SOCCER_MIN_LEAGUE_GAMES}+ completed games (have {len(games)})"
+        )
+        return result
+
+    model = get_soccer_pred_context(league, cutoff_date)
+    if not model:
+        result["reason"] = "SoccerPathA model unavailable"
+        return result
+
+    team_counts = model.get("team_game_counts") or {}
+    result["team_count"] = len(team_counts)
+    if len(team_counts) < THREE_LAYER_MIN_TEAMS:
+        result["reason"] = "SoccerPathA needs 4+ teams with game history"
+        return result
+
+    result["ready"] = True
+    result["reason"] = "SoccerPathA ready"
+    return result
+
+
 def is_league_ready_for_daily_slate(league: str, cutoff_date: str) -> bool:
     if is_hockey_league(league):
         return assess_hockey_readiness(league, cutoff_date)["ready"]
@@ -267,5 +304,7 @@ def is_league_ready_for_daily_slate(league: str, cutoff_date: str) -> bool:
         return assess_wnba_readiness(league, cutoff_date)["ready"]
     if is_mlb_league(league):
         return assess_mlb_readiness(league, cutoff_date)["ready"]
+    if is_soccer_league(league):
+        return assess_soccer_readiness(league, cutoff_date)["ready"]
     return assess_three_layer_readiness(league, cutoff_date)["ready"]
 

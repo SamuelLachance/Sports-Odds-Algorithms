@@ -292,9 +292,15 @@ def load_football_data_uk_games(league: str) -> list[dict[str, Any]]:
                     parsed = None
             if parsed is None:
                 continue
-            odds_home = _parse_american_odds(record.get("B365H") or record.get("AvgH"))
-            odds_draw = _parse_american_odds(record.get("B365D") or record.get("AvgD"))
-            odds_away = _parse_american_odds(record.get("B365A") or record.get("AvgA"))
+            odds_home = _parse_american_odds(
+                record.get("PSH") or record.get("B365H") or record.get("AvgH")
+            )
+            odds_draw = _parse_american_odds(
+                record.get("PSD") or record.get("B365D") or record.get("AvgD")
+            )
+            odds_away = _parse_american_odds(
+                record.get("PSA") or record.get("B365A") or record.get("AvgA")
+            )
             rows.append(
                 {
                     "date": parsed.strftime("%Y-%m-%d"),

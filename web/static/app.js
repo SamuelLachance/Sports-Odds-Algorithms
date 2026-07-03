@@ -148,6 +148,7 @@ const SPORT_ALGO_LABELS = {
   HockeyPuckCast: "Hockey PuckCast win probability",
   CBBTorvik: "CBB Torvik win probability",
   WNBAEloXGB: "WNBA Elo+XGB win probability",
+  SoccerPathA: "Soccer Path A 1X2 probabilities",
   Unified: "Unified model",
 };
 
@@ -157,6 +158,8 @@ const SPORT_LAYER_LABELS = {
   HockeyPuckCast: "Hockey PuckCast",
   CBBTorvik: "CBB Torvik",
   WNBAEloXGB: "WNBA Elo+XGB",
+  SoccerPathA: "Soccer Path A",
+  SharpSoccer: "Soccer Path A",
 };
 
 function primaryAlgoLabel(model) {
@@ -173,6 +176,7 @@ function primaryAlgoShort(model) {
     HockeyPuckCast: "PuckCast",
     CBBTorvik: "CBB Torvik",
     WNBAEloXGB: "WNBA Elo+XGB",
+    SoccerPathA: "Soccer Path A",
     Unified: "Unified",
   };
   return short[model.algorithm] || model.algorithm || "Algo V2";
@@ -637,7 +641,7 @@ function algoBreakdown(m) {
     parts.push(`nfelo: ${football.home_win_probability}% home`);
   }
   if (soccer) {
-    const name = sportLayerDisplayName(soccer) || "SharpSoccer";
+    const name = sportLayerDisplayName(soccer) || "Soccer Path A";
     const xg =
       soccer.expected_home_goals != null
         ? ` · xG ${soccer.expected_away_goals}-${soccer.expected_home_goals}`
@@ -1028,7 +1032,7 @@ function ratingSourceLabel(source, layer, year) {
     hockey_poisson: "Poisson xG",
     baseball_elo: "Elo",
     nfelo: "nfelo",
-    soccer_elo: "SharpSoccer",
+    soccer_elo: "Soccer Path A",
     power_ratings: "Power ratings",
   };
   if (key === "model" && layer) {

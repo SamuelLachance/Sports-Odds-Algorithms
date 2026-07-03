@@ -31,6 +31,7 @@ def apply_ensemble_ml(
         or is_cbb_league(league)
         or is_wnba_league(league)
         or is_mlb_league(league)
+        or is_soccer_league(league)
     ):
         return result
     if not ensemble_model_available(league):

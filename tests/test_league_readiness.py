@@ -11,6 +11,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from web import league_readiness as readiness_module  # noqa: E402
 from web.league_readiness import (  # noqa: E402
     assess_mlb_readiness,
+    assess_soccer_readiness,
     assess_three_layer_readiness,
     is_league_ready_for_daily_slate,
     uses_three_layer_readiness_gate,
@@ -27,9 +28,33 @@ def test_baseball_leagues_use_readiness_gate() -> None:
     assert uses_three_layer_readiness_gate("ncaabb") is True
 
 
-def test_soccer_leagues_use_readiness_gate() -> None:
-    assert uses_three_layer_readiness_gate("epl") is True
-    assert uses_three_layer_readiness_gate("mls") is True
+def test_soccer_leagues_use_path_a_readiness() -> None:
+    assert uses_three_layer_readiness_gate("epl") is False
+    assert uses_three_layer_readiness_gate("mls") is False
+
+
+def test_soccer_readiness_when_path_a_available(monkeypatch) -> None:
+    games = [
+        ("ars", "liv", "Arsenal", "Liverpool", 2, 1),
+        ("liv", "ars", "Liverpool", "Arsenal", 1, 1),
+    ] * 10
+
+    monkeypatch.setattr(
+        readiness_module,
+        "load_league_completed_games",
+        lambda *_a, **_k: games,
+    )
+    monkeypatch.setattr(
+        readiness_module,
+        "get_soccer_pred_context",
+        lambda *_a, **_k: {
+            "team_game_counts": {"ars": 10, "liv": 10, "che": 8, "mun": 8},
+        },
+    )
+
+    result = assess_soccer_readiness("epl", "6-11-2026")
+    assert result["ready"] is True
+    assert is_league_ready_for_daily_slate("epl", "6-11-2026") is True
 
 
 def test_readiness_false_when_insufficient_games(monkeypatch) -> None:

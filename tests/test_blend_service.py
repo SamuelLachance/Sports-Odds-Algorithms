@@ -333,6 +333,75 @@ def test_model_agreement_cbb_single_model() -> None:
     assert agreement["agreed"] is True
 
 
+def test_blend_soccer_path_a_only_when_available() -> None:
+    import web.blend_service as blend_module
+
+    soccer_original = blend_module.run_soccer_pred_model
+    try:
+        blend_module.run_soccer_pred_model = lambda *_a, **_k: {
+            "algorithm": "SoccerPathA",
+            "source": "path-a-xgb-decorrelated",
+            "home_win_probability": 48.0,
+            "draw_probability": 27.0,
+            "away_win_probability": 25.0,
+            "expected_home_goals": 1.6,
+            "expected_away_goals": 1.1,
+            "soccer_pick_signals": {"disagreement_signal": True},
+        }
+        result = blend_predictions(
+            legacy_total_score=-48.0,
+            legacy_win_probability=48.0,
+            league="epl",
+            cutoff_date="11-15-2024",
+            home_abbr="ars",
+            away_abbr="liv",
+            home_moneyline=-120,
+            draw_moneyline=260,
+            away_moneyline=320,
+        )
+        assert result["blend_mode"] == "soccer_path_a"
+        assert result["blend_layers"] == 1
+        assert result["algorithm"] == "SoccerPathA"
+        assert result["threeway"] is True
+        assert result["soccer_pred"] is not None
+        assert result["home_win_probability"] == 48.0
+        assert result["draw_probability"] == 27.0
+        assert result["away_win_probability"] == 25.0
+        assert result.get("legacy") is None
+        assert result.get("power") is None
+        assert result.get("soccer_pick_signals", {}).get("disagreement_signal") is True
+    finally:
+        blend_module.run_soccer_pred_model = soccer_original
+
+
+def test_blend_soccer_path_a_unavailable_fallback() -> None:
+    import web.blend_service as blend_module
+
+    soccer_original = blend_module.run_soccer_pred_model
+    try:
+        blend_module.run_soccer_pred_model = lambda *_a, **_k: None
+        result = blend_predictions(
+            legacy_total_score=-52.0,
+            legacy_win_probability=52.0,
+            league="epl",
+            cutoff_date="11-15-2024",
+            home_abbr="ars",
+            away_abbr="liv",
+        )
+        assert result["blend_mode"] == "soccer_path_a_unavailable"
+        assert result["algorithm"] == "SoccerPathA"
+        assert result.get("soccer_pred") is None
+        assert result["threeway"] is True
+    finally:
+        blend_module.run_soccer_pred_model = soccer_original
+
+
+def test_model_agreement_soccer_single_model() -> None:
+    agreement = compute_model_agreement({"legacy": {"favorite_side": "home"}}, "epl")
+    assert agreement["required"] == 0
+    assert agreement["agreed"] is True
+
+
 def test_blend_nhl_puckcast_only_when_hockey_available() -> None:
     import web.blend_service as blend_module
 

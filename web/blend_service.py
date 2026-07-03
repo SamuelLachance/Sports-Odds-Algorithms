@@ -42,7 +42,7 @@ from web.league_profiles import (
 from web.live_data import resolve_team
 from web.power_model import PowerTeam, predict_matchup
 from web.season_games import get_league_power_context, power_unavailable_reason
-from web.soccer_blend import blend_soccer_predictions, compute_soccer_model_agreement
+from web.soccer_blend import threeway_probs_to_total_score
 from web.db_rating_model import apply_db_rating_blend
 from web.soccer_pred_model import run_soccer_pred_model, soccer_unavailable_reason
 from web.sports_meta_model import (
@@ -354,13 +354,13 @@ def _uses_three_layer_blend(league: str) -> bool:
         or is_cbb_league(league)
         or is_wnba_league(league)
         or is_mlb_league(league)
+        or is_soccer_league(league)
     ):
         return False
     return (
         is_basketball_league(league)
         or is_baseball_league(league)
         or is_football_league(league)
-        or is_soccer_league(league)
     )
 
 
@@ -540,14 +540,7 @@ def compute_model_agreement(
         return {"required": 0, "agreed": True, "agreement_mode": "value"}
 
     if is_soccer_league(league):
-        third_key = _third_layer_key(blended)
-        third_payload = blended.get(third_key) if third_key else None
-        return compute_soccer_model_agreement(
-            blended,
-            market=market or {},
-            third_key=third_key,
-            third_payload=third_payload,
-        )
+        return {"required": 0, "agreed": True, "agreement_mode": "value"}
 
     legacy = blended.get("legacy")
     power = blended.get("power")
@@ -949,6 +942,71 @@ def _blend_mlb_runcast_only(
     return result
 
 
+def _blend_soccer_path_a_only(
+    *,
+    league: str,
+    cutoff_date: str,
+    home_abbr: str,
+    away_abbr: str,
+    home_name: str | None = None,
+    away_name: str | None = None,
+    home_moneyline: int | None = None,
+    away_moneyline: int | None = None,
+    draw_moneyline: int | None = None,
+) -> dict[str, Any]:
+    """Soccer uses SoccerPathA only — no Algo V2, power, meta, db_rating, or EnsembleML."""
+    sport_payload = run_soccer_pred_model(
+        league,
+        cutoff_date,
+        home_abbr,
+        away_abbr,
+        home_name=home_name,
+        away_name=away_name,
+        home_ml=home_moneyline,
+        draw_ml=draw_moneyline,
+        away_ml=away_moneyline,
+    )
+    if not sport_payload:
+        reason = soccer_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
+        return {
+            "algorithm": "SoccerPathA",
+            "blend_mode": "soccer_path_a_unavailable",
+            "blend_layers": 0,
+            "blend_note": reason,
+            "soccer_pred": None,
+            "total_score": 0.0,
+            "win_probability": 50.0,
+            "favorite_side": "neutral",
+            "threeway": True,
+        }
+
+    home_p = float(sport_payload["home_win_probability"])
+    draw_p = float(sport_payload["draw_probability"])
+    away_p = float(sport_payload["away_win_probability"])
+    total, win_prob, favorite = threeway_probs_to_total_score(home_p, draw_p, away_p)
+    return {
+        "algorithm": "SoccerPathA",
+        "blend_mode": "soccer_path_a",
+        "blend_layers": 1,
+        "blend_weights": {"soccer_pred": 1.0},
+        "soccer_pred": sport_payload,
+        "blended_home_win_probability": round(home_p, 2),
+        "home_win_probability": round(home_p, 2),
+        "draw_probability": round(draw_p, 2),
+        "away_win_probability": round(away_p, 2),
+        "blended_threeway": {
+            "home_win_probability": round(home_p, 2),
+            "draw_probability": round(draw_p, 2),
+            "away_win_probability": round(away_p, 2),
+        },
+        "total_score": round(total, 2),
+        "win_probability": round(win_prob, 2),
+        "favorite_side": favorite,
+        "threeway": True,
+        "soccer_pick_signals": sport_payload.get("soccer_pick_signals"),
+    }
+
+
 def blend_predictions(
     *,
     legacy_total_score: float,
@@ -969,6 +1027,7 @@ def blend_predictions(
     consensus_spread: float | None = None,
     home_moneyline: int | None = None,
     away_moneyline: int | None = None,
+    draw_moneyline: int | None = None,
 ) -> dict[str, Any]:
     """
     Blend Algo_V2 and power model into unified total_score / win_probability.
@@ -1029,6 +1088,19 @@ def blend_predictions(
             away_moneyline=away_moneyline,
         )
 
+    if is_soccer_league(league):
+        return _blend_soccer_path_a_only(
+            league=league,
+            cutoff_date=cutoff_date,
+            home_abbr=home_abbr,
+            away_abbr=away_abbr,
+            home_name=home_name,
+            away_name=away_name,
+            home_moneyline=home_moneyline,
+            away_moneyline=away_moneyline,
+            draw_moneyline=draw_moneyline,
+        )
+
     legacy_home = total_score_to_home_win_prob(legacy_total_score)
     legacy_payload = {
         "algorithm": "Algo_V2",
@@ -1046,25 +1118,6 @@ def blend_predictions(
         home_name=home_name,
         away_name=away_name,
     )
-
-    if is_soccer_league(league):
-        return blend_soccer_predictions(
-            legacy_total_score=legacy_total_score,
-            legacy_win_probability=legacy_win_probability,
-            league=league,
-            cutoff_date=cutoff_date,
-            home_abbr=home_abbr,
-            away_abbr=away_abbr,
-            home_name=home_name,
-            away_name=away_name,
-            legacy_payload=legacy_payload,
-            power_payload=power_payload,
-            event_id=event_id,
-            home_espn_id=home_espn_id,
-            away_espn_id=away_espn_id,
-            home_slug=home_slug,
-            away_slug=away_slug,
-        )
 
     if not power_payload:
         total = legacy_total_score

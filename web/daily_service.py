@@ -57,7 +57,7 @@ from web.pick_strategy import (
 from web.predict_service import FACTOR_LABELS  # noqa: E402
 
 SINGLE_MODEL_BLEND_MODES = frozenset(
-    {"hockey_puckcast", "cbb_torvik", "wnba_elo_xgb", "mlb_runcast"}
+    {"hockey_puckcast", "cbb_torvik", "wnba_elo_xgb", "mlb_runcast", "soccer_path_a"}
 )
 
 
@@ -134,6 +134,31 @@ def _sport_layer_factors(blended: dict[str, Any], league: str) -> list[dict[str,
         avail = pred.get("availability_shift_pp")
         if avail is not None:
             factors.append(_factor_entry("availability", "Availability shift (pp)", float(avail)))
+        return factors
+
+    if is_soccer_league(league):
+        pred = blended.get("soccer_pred") or {}
+        home_xg = pred.get("expected_home_goals")
+        away_xg = pred.get("expected_away_goals")
+        if home_xg is not None and away_xg is not None:
+            factors.append(
+                _factor_entry("xg_margin", "Expected goals (home − away)", float(home_xg) - float(away_xg))
+            )
+        pi_gd = pred.get("pi_expected_gd")
+        if pi_gd is not None:
+            factors.append(_factor_entry("pi_edge", "Pi-rating expected GD", float(pi_gd)))
+        if pred.get("market_decorrelated"):
+            factors.append(_factor_entry("decorrelation", "Market decorrelation applied", 1.0))
+        raw_home = pred.get("raw_home_win_probability")
+        calibrated = pred.get("home_win_probability")
+        if raw_home is not None and calibrated is not None:
+            factors.append(
+                _factor_entry(
+                    "calibration_shift",
+                    "Calibration shift home (pp)",
+                    float(calibrated) - float(raw_home),
+                )
+            )
         return factors
 
     return factors
@@ -247,6 +272,7 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
         consensus_spread=game.market.spread,
         home_moneyline=game.market.home_moneyline,
         away_moneyline=game.market.away_moneyline,
+        draw_moneyline=game.market.draw_moneyline,
     )
     blended = apply_ensemble_ml(
         blended,

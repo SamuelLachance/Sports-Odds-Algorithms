@@ -1,7 +1,7 @@
-"""SharpSoccer multi-signal 1X2 model (Elo + Pi + Dixon-Coles + form + ClubElo).
+"""Soccer Path A: Hubáček-style 1X2 model (Elo + Pi + Dixon-Coles + form + XGB + decorrelation).
 
-Layers are log-loss tuned via ``web.soccer_meta_model`` (``data/soccer_meta_weights.json``).
-Supplemental football-data.co.uk history enriches walk-forward calibration.
+Stat layers are log-loss tuned via ``web.soccer_meta_model`` (``data/soccer_meta_weights.json``).
+Walk-forward XGB 3-way classifier, temperature calibration, and capped market decorrelation.
 """
 
 from __future__ import annotations
@@ -12,18 +12,38 @@ from dataclasses import dataclass
 from functools import lru_cache
 from typing import Any
 
+import numpy as np
+
 from web.club_elo import elo_binary_home_win_pct, get_team_elo_rating, supports_club_elo
 from web.league_profiles import SOCCER_DRAW_BASE, is_soccer_league
 from web.live_data import resolve_team
-from web.season_games import load_league_completed_games
+from web.season_games import (
+    GameTuple,
+    _event_date_iso,
+    _load_league_game_map,
+    load_league_completed_games,
+)
+from web.soccer_decorrelation import blend_with_market_cap, devig_threeway_from_odds
+from web.soccer_features import (
+    blend_stat_and_xgb,
+    build_matchup_features,
+    features_to_vector,
+)
 from web.soccer_meta_model import (
     blend_weighted_threeway,
+    fit_temperature_grid,
     get_league_meta_config,
+    outcome_from_score,
+    temperature_scale,
 )
+from web.soccer_pick_signals import build_soccer_pick_signals
 
 MIN_LEAGUE_GAMES = 15
 MIN_TEAM_GAMES = 2
 MAX_GOALS = 6
+WALK_FORWARD_MIN_TRAIN = 12
+XGB_MIN_ROWS = 40
+MIN_CALIBRATION_GAMES = 20
 
 # football-predictor defaults
 ELO_HOME_ADV = 65.0
@@ -48,11 +68,16 @@ class SoccerPredResult:
     elo_home: float
     elo_away: float
     pi_expected_gd: float
-    source: str = "SharpSoccer"
-    algorithm: str = "SharpSoccer"
+    source: str = "SoccerPathA"
+    algorithm: str = "SoccerPathA"
 
 
-GameTuple = tuple[str, str, str, str, int, int]
+def load_soccer_dated_games(league: str, cutoff_date: str) -> list[tuple[str, GameTuple]]:
+    merged = _load_league_game_map(league, cutoff_date, for_backtest=False)
+    return [
+        (_event_date_iso(event_date), game_tuple)
+        for event_date, game_tuple in sorted(merged.values(), key=lambda item: item[0])
+    ]
 
 
 def _poisson_pmf(k: int, lam: float) -> float:
@@ -273,10 +298,42 @@ def _resolve_model_key(
     return None
 
 
-def build_soccer_model(
+def _train_xgb_threeway(
+    x_rows: list[np.ndarray],
+    y_rows: list[int],
+) -> Any | None:
+    if len(x_rows) < XGB_MIN_ROWS:
+        return None
+    try:
+        from xgboost import XGBClassifier
+    except ImportError:
+        return None
+
+    x_mat = np.vstack(x_rows)
+    y = np.array(y_rows, dtype=int)
+    model = XGBClassifier(
+        n_estimators=120,
+        max_depth=4,
+        learning_rate=0.07,
+        subsample=0.85,
+        colsample_bytree=0.85,
+        objective="multi:softprob",
+        num_class=3,
+        eval_metric="mlogloss",
+        random_state=42,
+    )
+    try:
+        model.fit(x_mat, y)
+        return model
+    except ValueError:
+        return None
+
+
+def _snapshot_stat_model(
     games: list[GameTuple],
     league: str,
 ) -> dict[str, Any] | None:
+    """Build stat-layer state without walk-forward artifacts."""
     if len(games) < MIN_LEAGUE_GAMES:
         return None
 
@@ -311,6 +368,98 @@ def build_soccer_model(
         "home_adv": home_adv,
         "team_game_counts": team_game_counts,
     }
+
+
+def build_soccer_path_a_model(
+    dated_games: list[tuple[str, GameTuple]],
+    league: str,
+) -> dict[str, Any] | None:
+    """Walk-forward Path A model with XGB 3-way head and temperature calibration."""
+    games_only = [game for _date, game in dated_games]
+    base = _snapshot_stat_model(games_only, league)
+    if not base:
+        return None
+
+    team_keys = list(base["team_keys"])
+    elo = _EloEngine()
+    pi = _PiRating()
+    form = _FormTracker()
+    team_game_counts: dict[str, int] = {key: 0 for key in team_keys}
+    partial_games: list[GameTuple] = []
+
+    x_rows: list[np.ndarray] = []
+    y_rows: list[int] = []
+    raw_samples: list[tuple[float, float, float, int]] = []
+
+    for idx, (_game_date, game) in enumerate(dated_games):
+        home, away, _hn, _an, hg, ag = game
+        if home not in team_game_counts or away not in team_game_counts:
+            continue
+
+        if idx >= WALK_FORWARD_MIN_TRAIN and len(partial_games) >= MIN_LEAGUE_GAMES:
+            attack, defence, home_adv = _fit_dixon_coles_params(partial_games, team_keys)
+            snap = {
+                **base,
+                "elo": elo,
+                "pi": pi,
+                "form": form,
+                "team_game_counts": dict(team_game_counts),
+                "attack": attack,
+                "defence": defence,
+                "home_adv": home_adv,
+            }
+            stat = predict_matchup_from_model(snap, home, away, include_club_elo=True)
+            if stat:
+                stat_probs = (
+                    stat.home_win_probability,
+                    stat.draw_probability,
+                    stat.away_win_probability,
+                )
+                form_diff = form.form_score(home) - form.form_score(away)
+                feats = build_matchup_features(
+                    elo_home=snap["elo"].rating(home),
+                    elo_away=snap["elo"].rating(away),
+                    pi_expected_gd=snap["pi"].expected_gd(home, away),
+                    dc_lam=stat.expected_home_goals,
+                    dc_mu=stat.expected_away_goals,
+                    form_diff=form_diff,
+                    stat_home=stat_probs[0],
+                    stat_draw=stat_probs[1],
+                    stat_away=stat_probs[2],
+                    home_games=team_game_counts.get(home, 0),
+                    away_games=team_game_counts.get(away, 0),
+                )
+                x_rows.append(features_to_vector(feats))
+                y_rows.append(outcome_from_score(hg, ag))
+                raw_samples.append((*stat_probs, outcome_from_score(hg, ag)))
+
+        elo.update(home, away, hg, ag)
+        pi.update(home, away, hg, ag)
+        form.update(home, away, hg, ag)
+        team_game_counts[home] += 1
+        team_game_counts[away] += 1
+        partial_games.append(game)
+
+    xgb_model = _train_xgb_threeway(x_rows, y_rows)
+    temperature = (
+        fit_temperature_grid(raw_samples)
+        if len(raw_samples) >= MIN_CALIBRATION_GAMES
+        else get_league_meta_config(league)["temperature"]
+    )
+
+    final = _snapshot_stat_model(games_only, league)
+    if not final:
+        return None
+    final["xgb_model"] = xgb_model
+    final["temperature"] = temperature
+    return final
+
+
+def build_soccer_model(
+    games: list[GameTuple],
+    league: str,
+) -> dict[str, Any] | None:
+    return _snapshot_stat_model(games, league)
 
 
 def _elo_threeway(elo: _EloEngine, home: str, away: str, league: str) -> tuple[float, float, float]:
@@ -441,6 +590,30 @@ def predict_matchup_from_model(
         return None
 
     home_p, draw_p, away_p = blend_weighted_threeway(active_layers, active_weights)
+    stat_probs = (home_p, draw_p, away_p)
+
+    xgb_model = model.get("xgb_model")
+    if xgb_model is not None:
+        try:
+            form_diff = model["form"].form_score(home) - model["form"].form_score(away)
+            feats = build_matchup_features(
+                elo_home=model["elo"].rating(home),
+                elo_away=model["elo"].rating(away),
+                pi_expected_gd=model["pi"].expected_gd(home, away),
+                dc_lam=lam,
+                dc_mu=mu,
+                form_diff=form_diff,
+                stat_home=stat_probs[0],
+                stat_draw=stat_probs[1],
+                stat_away=stat_probs[2],
+                home_games=model["team_game_counts"].get(home, 0),
+                away_games=model["team_game_counts"].get(away, 0),
+            )
+            xgb_row = xgb_model.predict_proba(features_to_vector(feats).reshape(1, -1))[0]
+            xgb_probs = (float(xgb_row[0]) * 100.0, float(xgb_row[1]) * 100.0, float(xgb_row[2]) * 100.0)
+            home_p, draw_p, away_p = blend_stat_and_xgb(stat_probs, xgb_probs)
+        except (ValueError, IndexError, AttributeError):
+            pass
 
     return SoccerPredResult(
         home_win_probability=round(home_p, 2),
@@ -451,7 +624,7 @@ def predict_matchup_from_model(
         elo_home=round(model["elo"].rating(home), 1),
         elo_away=round(model["elo"].rating(away), 1),
         pi_expected_gd=round(model["pi"].expected_gd(home, away), 2),
-        source="ClubElo+ESPN+football-data",
+        source="path-a-xgb-decorrelated",
     )
 
 
@@ -490,6 +663,10 @@ def get_soccer_pred_context(league: str, cutoff_date: str) -> dict[str, Any] | N
     league = league.lower()
     if not is_soccer_league(league):
         return None
+    dated = load_soccer_dated_games(league, cutoff_date)
+    model = build_soccer_path_a_model(dated, league)
+    if model:
+        return model
     games = load_league_completed_games(league, cutoff_date)
     return build_soccer_model(games, league)
 
@@ -502,6 +679,9 @@ def run_soccer_pred_model(
     *,
     home_name: str | None = None,
     away_name: str | None = None,
+    home_ml: int | None = None,
+    draw_ml: int | None = None,
+    away_ml: int | None = None,
 ) -> dict[str, Any] | None:
     context = get_soccer_pred_context(league, cutoff_date)
     if not context:
@@ -521,12 +701,39 @@ def run_soccer_pred_model(
     if counts.get(home_key, 0) < MIN_TEAM_GAMES or counts.get(away_key, 0) < MIN_TEAM_GAMES:
         return None
 
+    raw_probs = (
+        prediction.home_win_probability,
+        prediction.draw_probability,
+        prediction.away_win_probability,
+    )
+    market_probs = devig_threeway_from_odds(home_ml, draw_ml, away_ml)
+    decorrelated = blend_with_market_cap(raw_probs, market_probs)
+    temperature = float(
+        context.get("temperature") or get_league_meta_config(league)["temperature"]
+    )
+    calibrated = temperature_scale(*decorrelated, temperature)
+    calibrated = tuple(round(v, 2) for v in calibrated)
+
+    pick_signals = build_soccer_pick_signals(
+        home_prob=calibrated[0],
+        draw_prob=calibrated[1],
+        away_prob=calibrated[2],
+        home_ml=home_ml,
+        draw_ml=draw_ml,
+        away_ml=away_ml,
+        home_games=counts.get(home_key, 0),
+        away_games=counts.get(away_key, 0),
+    )
+
     return {
-        "algorithm": prediction.algorithm,
+        "algorithm": "SoccerPathA",
         "source": prediction.source,
-        "home_win_probability": prediction.home_win_probability,
-        "draw_probability": prediction.draw_probability,
-        "away_win_probability": prediction.away_win_probability,
+        "home_win_probability": calibrated[0],
+        "draw_probability": calibrated[1],
+        "away_win_probability": calibrated[2],
+        "raw_home_win_probability": raw_probs[0],
+        "raw_draw_probability": raw_probs[1],
+        "raw_away_win_probability": raw_probs[2],
         "expected_home_goals": prediction.expected_home_goals,
         "expected_away_goals": prediction.expected_away_goals,
         "elo_home": prediction.elo_home,
@@ -534,4 +741,6 @@ def run_soccer_pred_model(
         "pi_expected_gd": prediction.pi_expected_gd,
         "home_games": counts.get(home_key, 0),
         "away_games": counts.get(away_key, 0),
+        "market_decorrelated": market_probs is not None,
+        "soccer_pick_signals": pick_signals,
     }

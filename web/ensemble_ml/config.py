@@ -64,6 +64,7 @@ CBB_TARGET_LOGLOSS = SPORTSBOOK_LOGLOSS_BENCHMARKS["cbb"]
 CBB_MARKET_BLEND_MAX = 0.35
 WNBA_MARKET_BLEND_MAX = 0.35
 MLB_MARKET_BLEND_MAX = 0.35
+SOCCER_MARKET_BLEND_MAX = 0.35
 
 CBB_STACKING_FEATURES: tuple[str, ...] = (
     "sport_home_prob",
@@ -227,8 +228,7 @@ def ensemble_model_available(league: str) -> bool:
         or is_cbb_league(league)
         or is_wnba_league(league)
         or is_mlb_league(league)
+        or is_soccer_league(league)
     ):
         return False
-    if is_soccer_league(league):
-        return metadata_path(league).is_file() and model_artifact_path(league).is_file()
     return model_artifact_path(league).is_file()
