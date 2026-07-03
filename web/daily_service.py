@@ -58,6 +58,7 @@ from web.pick_strategy import (
     evaluate_official_picks_for_game,
     evaluate_soccer_official_picks_for_game,
     get_pick_thresholds,
+    official_bet_type,
 )
 from web.predict_service import FACTOR_LABELS  # noqa: E402
 
@@ -438,6 +439,7 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
         },
         "model": model_payload,
         "eligible_for_official_picks": eligible_for_official_picks(game.league),
+        "official_bet_type": official_bet_type(game.league),
         "recommendations": [_enrich_pick(pick_to_dict(pick)) for pick in model_picks],
         "top_pick": _enrich_pick(pick_to_dict(model_picks[0])) if model_picks else None,
     }

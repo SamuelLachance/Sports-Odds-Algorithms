@@ -47,6 +47,7 @@ def game_betting_sheet(game: dict[str, Any]) -> dict[str, Any]:
         "recommendations": game.get("recommendations") or [],
         "top_pick": game.get("top_pick"),
         "eligible_for_official_picks": game.get("eligible_for_official_picks", True),
+        "official_bet_type": game.get("official_bet_type"),
         "factors": (game.get("model") or {}).get("factors") or game.get("factors"),
     }
 

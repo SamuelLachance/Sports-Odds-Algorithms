@@ -1,4 +1,4 @@
-const APP_BUILD_VERSION = "2026-07-03-hubacek-phi20";
+const APP_BUILD_VERSION = "2026-07-03-ml-moneyline-ui";
 const META_BASE_PATH =
   document.querySelector('meta[name="base-path"]')?.content ?? "";
 const IS_GITHUB_IO = window.location.hostname.endsWith("github.io");
@@ -47,6 +47,48 @@ function minHubacekConfidence(source) {
 function hubacekPickRule(source) {
   const conf = minHubacekConfidence(source);
   return `Hubáček spot: decorrelated model beats the book (+EV) with |p−50| ≥ ${conf} pp`;
+}
+
+function officialBetTypeForLeague(league) {
+  const id = (league || "").toLowerCase();
+  if (["nba", "wnba", "cbb", "ncaabb", "nfl", "cfb"].includes(id)) return "spread";
+  if (
+    [
+      "mls",
+      "epl",
+      "laliga",
+      "bundesliga",
+      "seriea",
+      "ligue1",
+      "ucl",
+      "worldcup",
+      "fifa_friendlies",
+      "concacaf_wcq",
+      "concacaf_gold",
+      "concacaf_nations",
+      "uefa_euro",
+      "uefa_nations",
+      "copa_america",
+    ].includes(id)
+  ) {
+    return "soccer_1x2";
+  }
+  return "moneyline";
+}
+
+function officialBetType(game) {
+  return game?.official_bet_type || officialBetTypeForLeague(game?.league);
+}
+
+function usesSpreadOfficialPicks(game) {
+  return officialBetType(game) === "spread";
+}
+
+function officialMarketPhrase(game) {
+  const t = officialBetType(game);
+  if (t === "spread") return "spread";
+  if (t === "soccer_1x2") return "1X2";
+  return "moneyline";
 }
 const mainNav = document.getElementById("mainNav");
 const mobileBottomNav = document.getElementById("mobileBottomNav");
@@ -572,7 +614,7 @@ function pickCard(pick, extra = "") {
   </${tag}>`;
 }
 
-function algoBreakdown(m) {
+function algoBreakdown(m, game) {
   if (!m) return "";
   const legacy = m.legacy;
   const power = m.power;
@@ -684,7 +726,7 @@ function algoBreakdown(m) {
   if (m.blend_note && !singleModel) {
     parts.push(m.blend_note);
   }
-  if (m.home_spread_margin != null) {
+  if (m.home_spread_margin != null && game && usesSpreadOfficialPicks(game)) {
     parts.push(`Spread margin: home ${formatSpread(m.home_spread_margin)}`);
   }
   return parts.length
@@ -714,7 +756,7 @@ function gameValuePickBlock(game, top, isSoccer) {
   if (isSoccer) {
     return `<div class="game-pick neutral"><strong>No official 1X2 pick</strong><span>${hubacekPickRule(state.slate)} not met on home/draw/away lines.</span></div>`;
   }
-  return `<div class="game-pick neutral"><strong>No official pick</strong><span>${hubacekPickRule(state.slate)} not met on today's ${game.market && game.market.spread != null ? "spread" : "moneyline"} line.</span></div>`;
+  return `<div class="game-pick neutral"><strong>No official pick</strong><span>${hubacekPickRule(state.slate)} not met on today's ${officialMarketPhrase(game)} line.</span></div>`;
 }
 
 function gameRecommendationsList(game, away, home) {
@@ -761,7 +803,7 @@ function algoCenter(game) {
     : `<div class="algo-probability">
         <span>${algoLabel}</span>
         <strong class="prob-value">${m.win_probability}%</strong>
-        <small>Model favorite: ${fav}${m.home_spread_margin != null ? ` · spread margin ${formatSpread(m.home_spread_margin)}` : ""}</small>
+        <small>Model favorite: ${fav}${m.home_spread_margin != null && usesSpreadOfficialPicks(game) ? ` · spread margin ${formatSpread(m.home_spread_margin)}` : ""}</small>
       </div>`;
   const drawChip =
     threeway && mk.draw_moneyline != null
@@ -771,7 +813,7 @@ function algoCenter(game) {
         <div class="odds-chip"><span>${teamNameLink(game.league, away.abbr, away.name)}</span><strong>${formatOdds(mk.away_moneyline)}</strong><small>Model ${formatOdds(m.away_projection)}</small></div>
         ${drawChip}
         <div class="odds-chip"><span>${teamNameLink(game.league, home.abbr, home.name)}</span><strong>${formatOdds(mk.home_moneyline)}</strong><small>Model ${formatOdds(m.home_projection)}</small></div>
-        ${threeway ? "" : `<div class="odds-chip"><span>Spread / O-U</span><strong>${mk.spread ?? "—"} / ${mk.over_under ?? "—"}</strong><small>${mk.provider || "ESPN"}</small></div>`}
+        ${threeway ? "" : usesSpreadOfficialPicks(game) ? `<div class="odds-chip"><span>Spread / O-U</span><strong>${mk.spread ?? "—"} / ${mk.over_under ?? "—"}</strong><small>${mk.provider || "ESPN"}</small></div>` : mk.over_under != null ? `<div class="odds-chip"><span>O-U</span><strong>${mk.over_under}</strong><small>${mk.provider || "ESPN"}</small></div>` : ""}
       </div>`;
   return `<section class="algo-hero panel">
     ${breadcrumbs([
@@ -787,7 +829,7 @@ function algoCenter(game) {
     </div>
     <div class="algo-core">
       ${probBlock}
-      ${algoBreakdown(m)}
+      ${algoBreakdown(m, game)}
       ${oddsRow}
     </div>
     ${gameValuePickBlock(game, top, isSoccer)}
@@ -1721,7 +1763,7 @@ function renderBettingGameCard(sheet, league) {
     <div class="odds-row compact">
       <div class="odds-chip"><span>${teamNameLink(league, matchup.away?.abbr, away)} ML</span><strong>${formatOdds(market.away_moneyline)}</strong><small>Model ${formatOdds(model.away_projection)}</small></div>
       <div class="odds-chip"><span>${teamNameLink(league, matchup.home?.abbr, home)} ML</span><strong>${formatOdds(market.home_moneyline)}</strong><small>Model ${formatOdds(model.home_projection)}</small></div>
-      ${market.spread != null ? `<div class="odds-chip"><span>Spread</span><strong>${formatSpread(market.spread)}</strong></div>` : ""}
+      ${usesSpreadOfficialPicks({ league, official_bet_type: sheet.official_bet_type }) && market.spread != null ? `<div class="odds-chip"><span>Spread</span><strong>${formatSpread(market.spread)}</strong></div>` : ""}
     </div>
     <div class="db-bet-model">
       <span>Unified model</span>
