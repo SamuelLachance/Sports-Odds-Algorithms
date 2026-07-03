@@ -11,7 +11,7 @@ from zoneinfo import ZoneInfo
 from web.bet_advisor import spread_line_for_side
 from web.espn_client import fetch_scoreboard
 from web.hubacek_picks import (
-    HUBACEK_MIN_MARKET_GAP_PP,
+    HUBACEK_MIN_WIN_CONFIDENCE_PP,
     official_hubacek_thresholds,
     passes_hubacek_tracked_pick,
 )
@@ -486,13 +486,12 @@ def build_tracking_response(store: dict[str, Any]) -> dict[str, Any]:
         "timezone": TIMEZONE_LABEL,
         "last_updated": datetime.now(timezone.utc).isoformat(),
         "note": (
-            f"Tracks Hubáček official picks (decorrelated model ≥ market + "
-            f"{HUBACEK_MIN_MARKET_GAP_PP:.0f} pp, +EV at book price) from each daily slate. "
+            "Tracks Hubáček official picks (decorrelated model beats the book with +EV "
+            f"and |p−50| ≥ {HUBACEK_MIN_WIN_CONFIDENCE_PP:.0f} pp confidence) from each daily slate. "
             "Basketball/football spread bets graded ATS at consensus book spread; "
             "hockey/baseball at closing moneyline. 1u flat stake."
         ),
         **official_hubacek_thresholds(),
-        "min_market_gap_pp": HUBACEK_MIN_MARKET_GAP_PP,
     }
 
 

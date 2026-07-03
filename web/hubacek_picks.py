@@ -1,17 +1,17 @@
-"""Hubáček-only official pick policy — decorrelation gap, not flat EV%."""
+"""Hubáček-only official pick policy — +EV and paper confidence (φ), not flat EV%."""
 
 from __future__ import annotations
 
 from typing import Any
 
-# Minimum decorrelated model − market gap (percentage points) to bet officially.
-HUBACEK_MIN_MARKET_GAP_PP = 8.0
+# Hubáček et al. (2019): bet when p̂ > book implied (+EV); no fixed pp gap vs market.
+HUBACEK_MIN_MARKET_GAP_PP = 0.0
 
-# Spread: minimum cover-probability gap vs book juice-implied cover.
-HUBACEK_MIN_SPREAD_COVER_GAP_PP = 6.0
+# Spread cover: +EV at juice is sufficient (same as moneyline p̂ > 1/o).
+HUBACEK_MIN_SPREAD_COVER_GAP_PP = 0.0
 
-# Paper-style confidence: outcome prob must be at least this far from a coin flip.
-HUBACEK_MIN_WIN_CONFIDENCE_PP = 5.0
+# Section 5.2 confidence threshold φ ≤ 0.2 → |p̂ − 0.5| > 20 pp.
+HUBACEK_MIN_WIN_CONFIDENCE_PP = 20.0
 
 _SPORT_PRED_KEYS = ("hockey_pred", "basketball_pred", "baseball_pred", "soccer_pred")
 
@@ -40,6 +40,11 @@ def official_hubacek_thresholds() -> dict[str, Any]:
     }
 
 
+def passes_hubacek_confidence(model_prob_pct: float, *, min_pp: float = HUBACEK_MIN_WIN_CONFIDENCE_PP) -> bool:
+    """|p̂ − 50| ≥ φ (paper Section 5.2, φ = 0.2)."""
+    return abs(model_prob_pct - 50.0) >= min_pp
+
+
 def passes_hubacek_moneyline_gate(
     *,
     model_prob_pct: float,
@@ -48,13 +53,13 @@ def passes_hubacek_moneyline_gate(
     min_market_gap_pp: float = HUBACEK_MIN_MARKET_GAP_PP,
     min_win_confidence_pp: float = HUBACEK_MIN_WIN_CONFIDENCE_PP,
 ) -> bool:
-    """Bet only when decorrelated model meaningfully disagrees with the market."""
+    """Bet when decorrelated p̂ beats the book (+EV) with high-confidence φ filter."""
     if market_implied_pct is None:
         return False
     gap = model_prob_pct - market_implied_pct
-    if gap < min_market_gap_pp:
+    if gap <= min_market_gap_pp:
         return False
-    if abs(model_prob_pct - 50.0) < min_win_confidence_pp:
+    if not passes_hubacek_confidence(model_prob_pct, min_pp=min_win_confidence_pp):
         return False
     if ev_pct <= 0:
         return False
@@ -72,8 +77,9 @@ def passes_hubacek_spread_gate(
     consensus_spread: float,
     min_cover_gap_pp: float = HUBACEK_MIN_SPREAD_COVER_GAP_PP,
     min_win_gap_pp: float = HUBACEK_MIN_MARKET_GAP_PP,
+    min_win_confidence_pp: float = HUBACEK_MIN_WIN_CONFIDENCE_PP,
 ) -> bool:
-    """Spread official pick: decorrelated margin vs line + cover gap vs juice."""
+    """Spread official pick: decorrelated model, +EV cover, paper confidence."""
     if blended is None or not _blend_is_decorrelated(blended):
         return False
     if point_edge <= 0:
@@ -84,11 +90,11 @@ def passes_hubacek_spread_gate(
     else:
         market_cover = abs(spread_odds) / (abs(spread_odds) + 100.0) * 100.0
     cover_gap = side_cover_prob - market_cover
-    if cover_gap < min_cover_gap_pp:
+    if cover_gap <= min_cover_gap_pp:
         return False
 
     decor_home = blended.get("blended_home_win_probability") if blended else None
-    if decor_home is not None:
+    if decor_home is not None and min_win_gap_pp > 0:
         from web.cbb_calibrate import spread_to_home_prob
 
         spread_implied_home = spread_to_home_prob(float(consensus_spread))
@@ -99,6 +105,9 @@ def passes_hubacek_spread_gate(
         if decor_side - market_side < min_win_gap_pp:
             return False
 
+    if not passes_hubacek_confidence(side_cover_prob, min_pp=min_win_confidence_pp):
+        return False
+
     if ev_pct <= 0:
         return False
     return True
@@ -108,9 +117,12 @@ def passes_hubacek_tracked_pick(pick: dict[str, Any]) -> bool:
     """Whether a slate/tracking pick qualifies under Hubáček official rules."""
     if pick.get("strategy") != "hubacek":
         return False
-    gap = pick.get("model_market_gap_pp")
-    if gap is None or float(gap) < HUBACEK_MIN_MARKET_GAP_PP:
-        return False
     if (pick.get("ev_pct") or 0) <= 0:
+        return False
+    win_prob = pick.get("win_probability")
+    if win_prob is not None and not passes_hubacek_confidence(float(win_prob)):
+        return False
+    gap = pick.get("model_market_gap_pp")
+    if gap is not None and float(gap) <= HUBACEK_MIN_MARKET_GAP_PP:
         return False
     return True

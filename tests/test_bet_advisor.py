@@ -127,8 +127,8 @@ def test_moneyline_edge_cross_sign_not_raw_subtraction() -> None:
 
 
 def test_official_pick_threshold_is_hubacek_gap() -> None:
-    """Official picks require Hubáček decorrelation gap, not a flat EV%."""
-    from web.hubacek_picks import HUBACEK_MIN_MARKET_GAP_PP
+    """Official picks follow Hubáček +EV and φ confidence, not a flat EV%."""
+    from web.hubacek_picks import HUBACEK_MIN_WIN_CONFIDENCE_PP
     from web.league_profiles import OFFICIAL_MIN_EV_PCT
     from web.pick_strategy import OFFICIAL_MIN_EDGE, get_pick_thresholds
 
@@ -138,7 +138,8 @@ def test_official_pick_threshold_is_hubacek_gap() -> None:
     assert thresholds["min_edge"] == 0.0
     assert thresholds["min_ev_pct"] == 0.0
     assert thresholds["pick_system"] == "hubacek"
-    assert thresholds["min_market_gap_pp"] == HUBACEK_MIN_MARKET_GAP_PP
+    assert thresholds["min_market_gap_pp"] == 0.0
+    assert thresholds["min_win_confidence_pp"] == HUBACEK_MIN_WIN_CONFIDENCE_PP
     assert thresholds["enabled"] is True
 
     away_proj, _ = model_moneylines(28.33)

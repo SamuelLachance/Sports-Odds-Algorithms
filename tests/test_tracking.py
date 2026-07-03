@@ -8,7 +8,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from web.hubacek_picks import HUBACEK_MIN_MARKET_GAP_PP  # noqa: E402
+from web.hubacek_picks import HUBACEK_MIN_WIN_CONFIDENCE_PP  # noqa: E402
 from web.tracking_service import (  # noqa: E402
     _fetch_event_result,
     _scoreboard_dates_for_bet,
@@ -27,7 +27,8 @@ def _sample_pick(
     *,
     edge: float = 30.0,
     ev_pct: float = 5.0,
-    gap_pp: float = HUBACEK_MIN_MARKET_GAP_PP,
+    gap_pp: float = 5.0,
+    win_probability: float = 72.0,
     event_id: str = "401815712",
 ) -> dict:
     return {
@@ -42,7 +43,7 @@ def _sample_pick(
         "model_market_gap_pp": gap_pp,
         "model_projection": 120,
         "market_odds": 141,
-        "win_probability": 55,
+        "win_probability": win_probability,
         "reason": "Hubáček decorrelation gap",
         "league": "mlb",
         "league_name": "MLB",
@@ -86,11 +87,11 @@ def test_record_and_grade() -> None:
     assert response["summary"]["wins"] == 1
 
 
-def test_rejects_non_hubacek_gap() -> None:
+def test_rejects_low_confidence() -> None:
     store = {"version": 1, "bets": []}
     slate = {
         "date_label": "2026-06-11",
-        "recommended_bets": [_sample_pick(gap_pp=HUBACEK_MIN_MARKET_GAP_PP - 1)],
+        "recommended_bets": [_sample_pick(win_probability=55)],
         "games": [],
     }
     store = record_from_slate(store, slate)
@@ -145,7 +146,8 @@ def _spread_pick(
     *,
     edge: float = 30.0,
     ev_pct: float = 5.0,
-    gap_pp: float = HUBACEK_MIN_MARKET_GAP_PP,
+    gap_pp: float = 5.0,
+    win_probability: float = 72.0,
     event_id: str = "401859967",
 ) -> dict:
     return {
@@ -160,7 +162,7 @@ def _spread_pick(
         "model_market_gap_pp": gap_pp,
         "model_projection": 60,
         "market_odds": -108,
-        "win_probability": 72,
+        "win_probability": win_probability,
         "reason": "Spread edge",
         "bet_type": "spread",
         "spread_line": -5.5,
@@ -320,12 +322,12 @@ def test_grade_pending_resolves_stale_event_by_id() -> None:
 
 def test_prune_below_hubacek_threshold() -> None:
     qualifying = _sample_pick(event_id="401815714")
-    sub_gap = _sample_pick(gap_pp=HUBACEK_MIN_MARKET_GAP_PP - 1, event_id="401815712")
-    legacy = _sample_pick(gap_pp=HUBACEK_MIN_MARKET_GAP_PP, event_id="401815713")
+    low_conf = _sample_pick(win_probability=55, event_id="401815712")
+    legacy = _sample_pick(event_id="401815713")
     legacy["strategy"] = "value"
     store = {
         "version": 1,
-        "bets": [qualifying, sub_gap, legacy],
+        "bets": [qualifying, low_conf, legacy],
     }
     store["bets"] = [
         {
@@ -336,6 +338,7 @@ def test_prune_below_hubacek_threshold() -> None:
             "edge": p["edge"],
             "ev_pct": p["ev_pct"],
             "strategy": p["strategy"],
+            "win_probability": p.get("win_probability"),
             "model_market_gap_pp": p.get("model_market_gap_pp"),
             "status": "pending",
             "units": 0.0,
@@ -351,7 +354,7 @@ def test_prune_below_hubacek_threshold() -> None:
 if __name__ == "__main__":
     test_calculate_units()
     test_record_and_grade()
-    test_rejects_non_hubacek_gap()
+    test_rejects_low_confidence()
     test_rejects_non_positive_ev()
     test_accepts_hubacek_pick()
     test_ignores_game_recommendations_not_in_recommended()
