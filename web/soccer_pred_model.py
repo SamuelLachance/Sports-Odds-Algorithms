@@ -73,6 +73,11 @@ class SoccerPredResult:
 
 
 def load_soccer_dated_games(league: str, cutoff_date: str) -> list[tuple[str, GameTuple]]:
+    league = league.lower()
+    if league in {"epl", "bundesliga", "laliga", "seriea", "ligue1"}:
+        from web.supplemental_games import load_supplemental_dated_games_for_backtest
+
+        return load_supplemental_dated_games_for_backtest(league, cutoff_date)
     merged = _load_league_game_map(league, cutoff_date, for_backtest=False)
     return [
         (_event_date_iso(event_date), game_tuple)
@@ -711,13 +716,18 @@ def run_soccer_pred_model(
     temperature = float(
         context.get("temperature") or get_league_meta_config(league)["temperature"]
     )
-    calibrated = temperature_scale(*decorrelated, temperature)
-    calibrated = tuple(round(v, 2) for v in calibrated)
+    display_probs = tuple(
+        round(v, 2) for v in temperature_scale(*raw_probs, temperature)
+    )
+    pick_source = decorrelated if market_probs is not None else raw_probs
+    pick_probs = tuple(
+        round(v, 2) for v in temperature_scale(*pick_source, temperature)
+    )
 
     pick_signals = build_soccer_pick_signals(
-        home_prob=calibrated[0],
-        draw_prob=calibrated[1],
-        away_prob=calibrated[2],
+        home_prob=pick_probs[0],
+        draw_prob=pick_probs[1],
+        away_prob=pick_probs[2],
         home_ml=home_ml,
         draw_ml=draw_ml,
         away_ml=away_ml,
@@ -728,9 +738,12 @@ def run_soccer_pred_model(
     return {
         "algorithm": "SoccerPathA",
         "source": prediction.source,
-        "home_win_probability": calibrated[0],
-        "draw_probability": calibrated[1],
-        "away_win_probability": calibrated[2],
+        "home_win_probability": display_probs[0],
+        "draw_probability": display_probs[1],
+        "away_win_probability": display_probs[2],
+        "pick_home_win_probability": pick_probs[0],
+        "pick_draw_probability": pick_probs[1],
+        "pick_away_win_probability": pick_probs[2],
         "raw_home_win_probability": raw_probs[0],
         "raw_draw_probability": raw_probs[1],
         "raw_away_win_probability": raw_probs[2],

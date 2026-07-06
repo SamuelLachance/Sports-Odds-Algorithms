@@ -72,7 +72,7 @@ def _factor_entry(key: str, label: str, value: float) -> dict[str, Any]:
         "key": key,
         "label": label,
         "value": value,
-        "favors": "away" if value > 0 else "home" if value < 0 else "neutral",
+        "favors": "home" if value > 0 else "away" if value < 0 else "neutral",
     }
 
 
@@ -365,18 +365,28 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
 
     if is_soccer_league(game.league):
         soccer_pred = blended.get("soccer_pred") or {}
+        pick_home = float(
+            soccer_pred.get("pick_home_win_probability", home_prob)
+        )
+        pick_draw = float(soccer_pred.get("pick_draw_probability", draw_prob))
+        pick_away = float(
+            soccer_pred.get("pick_away_win_probability", away_prob)
+        )
+        pick_away_proj, pick_draw_proj, pick_home_proj = soccer_model_moneylines(
+            pick_home, pick_draw, pick_away
+        )
         picks = evaluate_soccer_official_picks_for_game(
             league=game.league,
             away_name=game.away_name,
             home_name=game.home_name,
             away_slug=away[1],
             home_slug=home[1],
-            home_prob=home_prob,
-            draw_prob=draw_prob,
-            away_prob=away_prob,
-            away_proj=away_proj,
-            draw_proj=draw_proj,
-            home_proj=home_proj,
+            home_prob=pick_home,
+            draw_prob=pick_draw,
+            away_prob=pick_away,
+            away_proj=pick_away_proj,
+            draw_proj=pick_draw_proj,
+            home_proj=pick_home_proj,
             away_market=game.market.away_moneyline,
             draw_market=game.market.draw_moneyline,
             home_market=game.market.home_moneyline,

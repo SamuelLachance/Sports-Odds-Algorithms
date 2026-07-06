@@ -15,10 +15,16 @@ from web.bet_advisor import (  # noqa: E402
     soccer_threeway_probs,
 )
 from web.espn_client import _extract_draw_moneyline  # noqa: E402
-from web.league_profiles import MIN_RECOMMENDED_EDGE  # noqa: E402
+from web.soccer_blend import threeway_probs_to_total_score  # noqa: E402
 
 
-def test_soccer_threeway_probs_sum_to_100() -> None:
+def test_threeway_probs_to_total_score_draw_favorite() -> None:
+    total, win_prob, favorite = threeway_probs_to_total_score(28.0, 44.0, 28.0)
+    assert favorite == "draw"
+    assert win_prob == 44.0
+    assert total == 0.0
+
+
     for total in (-75.0, -55.0, 0.0, 45.0, 80.0):
         home, draw, away = soccer_threeway_probs(total, "epl")
         total_prob = round(home + draw + away, 4)

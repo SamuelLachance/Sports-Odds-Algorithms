@@ -1008,6 +1008,8 @@ def _blend_soccer_path_a_only(
             "draw_probability": round(draw_p, 2),
             "away_win_probability": round(away_p, 2),
         },
+        "expected_home_goals": sport_payload.get("expected_home_goals"),
+        "expected_away_goals": sport_payload.get("expected_away_goals"),
         "total_score": round(total, 2),
         "win_probability": round(win_prob, 2),
         "favorite_side": favorite,

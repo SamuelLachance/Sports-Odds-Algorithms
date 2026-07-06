@@ -41,7 +41,7 @@ def threeway_probs_to_total_score(
     away_prob: float,
 ) -> tuple[float, float, str]:
     if draw_prob > home_prob and draw_prob > away_prob:
-        return 0.0, draw_prob, "home"
+        return 0.0, draw_prob, "draw"
     non_draw = home_prob + away_prob
     if non_draw <= 0:
         return 0.0, 50.0, "home"
