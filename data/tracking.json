@@ -210,10 +210,12 @@
       "consensus_label": "-4.5 (-110)",
       "model_margin": -14.21,
       "model_market_gap_pp": 94.48,
-      "status": "pending",
-      "units": 0.0,
+      "status": "loss",
+      "units": -1.0,
       "stake_units": 1.0,
-      "recorded_at": "2026-07-06T08:24:48.655844+00:00"
+      "recorded_at": "2026-07-06T08:24:48.655844+00:00",
+      "graded_at": "2026-07-07T07:37:45.560314+00:00",
+      "final_score": "82\u201364"
     },
     {
       "id": "2026-07-06:401857044:home:spread",
