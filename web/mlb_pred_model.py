@@ -7,6 +7,7 @@ from typing import Any
 
 import numpy as np
 
+from web.bet_advisor import devig_two_way_probs
 from web.cbb_calibrate import (
     CalibratorState,
     apply_cbb_calibration,
@@ -14,6 +15,7 @@ from web.cbb_calibrate import (
     fit_best_calibrator,
     spread_to_home_prob,
 )
+from web.market_decorrelation import decorrelate_binary
 from web.mlb_efficiency import (
     DEFAULT_HCA_RUNS,
     DEFAULT_SIGMA,
@@ -318,7 +320,6 @@ def run_mlb_pred_model(
     if home_games < MIN_TEAM_GAMES or away_games < MIN_TEAM_GAMES:
         return None
 
-    raw_prob = float(prediction["home_win_probability"])
     margin = float(prediction["predicted_margin"])
 
     opening_spread = fetch_opening_spread_proxy(
@@ -332,13 +333,25 @@ def run_mlb_pred_model(
         market_spread,
         opening_spread=opening_spread,
     )
-    raw_prob = margin_to_home_win_prob(margin, sigma=float(context.get("sigma", DEFAULT_SIGMA)))
+    model_prob = margin_to_home_win_prob(margin, sigma=float(context.get("sigma", DEFAULT_SIGMA)))
+    calibrated_prob = apply_cbb_calibration(model_prob, context.get("calibrator"))
 
-    if market_spread is not None:
+    home_prob = calibrated_prob
+    market_decorrelated = False
+    market_decorrelation_source: str | None = None
+    if home_ml is not None and away_ml is not None:
+        _away_mkt, market_home = devig_two_way_probs(away_ml, home_ml)
+        if market_home is not None:
+            home_prob = decorrelate_binary(calibrated_prob, market_home)
+            market_decorrelated = True
+            market_decorrelation_source = "moneyline"
+    elif market_spread is not None:
         market_prob = spread_to_home_prob(float(market_spread), sigma=float(context["sigma"]))
-        raw_prob = decorrelate_from_market(raw_prob / 100.0, market_prob / 100.0) * 100.0
-
-    calibrated_prob = apply_cbb_calibration(raw_prob, context.get("calibrator"))
+        home_prob = decorrelate_from_market(
+            calibrated_prob / 100.0, market_prob / 100.0
+        ) * 100.0
+        market_decorrelated = True
+        market_decorrelation_source = "spread"
 
     pick_signals = build_mlb_pick_signals(
         model_margin=margin,
@@ -353,15 +366,17 @@ def run_mlb_pred_model(
     return {
         "algorithm": "MLBRunCast",
         "source": "run-sim-xgb-calibrated",
-        "market_decorrelated": market_spread is not None,
-        "home_win_probability": calibrated_prob,
+        "market_decorrelated": market_decorrelated,
+        "market_decorrelation_source": market_decorrelation_source,
+        "pre_decorrelation_home_win_probability": round(calibrated_prob, 2),
+        "home_win_probability": round(home_prob, 2),
         "predicted_home_runs": prediction["predicted_home_runs"],
         "predicted_away_runs": prediction["predicted_away_runs"],
         "predicted_margin": round(margin, 2),
         "param": prediction["param"],
         "home_games": home_games,
         "away_games": away_games,
-        "raw_home_win_probability": round(raw_prob, 2),
+        "raw_home_win_probability": round(model_prob, 2),
         "pitcher_margin": round(pitcher_margin, 3),
         "mlb_pick_signals": pick_signals,
         "opening_steam": steam_meta,

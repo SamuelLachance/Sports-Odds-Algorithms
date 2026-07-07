@@ -135,3 +135,39 @@ def test_official_picks_use_hubacek_strategy_when_qualifying() -> None:
     if picks:
         assert picks[0].strategy == "hubacek"
         assert (picks[0].extra.get("model_market_gap_pp") or 0) > 0
+
+
+def test_mlb_official_picks_use_moneyline_decorrelation() -> None:
+    pre_home = 70.0
+    decor_home = decorrelate_binary(pre_home, 55.0)
+    assert abs(decor_home - 50.0) >= HUBACEK_MIN_WIN_CONFIDENCE_PP
+    blended = {
+        "total_score": -decor_home,
+        "win_probability": decor_home,
+        "favorite_side": "home",
+        "blended_home_win_probability": decor_home,
+        "baseball_pred": {
+            "market_decorrelated": True,
+            "market_decorrelation_source": "moneyline",
+            "pre_decorrelation_home_win_probability": pre_home,
+            "home_win_probability": decor_home,
+        },
+    }
+    picks = evaluate_official_picks_for_game(
+        league="mlb",
+        away_name="Away",
+        home_name="Home",
+        away_slug="away",
+        home_slug="home",
+        total_score=-decor_home,
+        win_probability=decor_home,
+        blended=blended,
+        away_market=130,
+        home_market=-150,
+        consensus_spread=-1.5,
+        away_spread_odds=-110,
+        home_spread_odds=-110,
+    )
+    assert picks
+    assert picks[0].strategy == "hubacek"
+    assert picks[0].bet_type == "moneyline"

@@ -16,6 +16,7 @@ from web.mlb_pred_model import (  # noqa: E402
     predict_matchup_from_mlb_model,
     run_mlb_pred_model,
 )
+from web.bet_advisor import official_pick_binary_probs  # noqa: E402
 from web.mlb_runs import simulate_home_win_probability  # noqa: E402
 
 
@@ -88,3 +89,49 @@ def test_mlb_runcast_algorithm_name() -> None:
     assert payload["algorithm"] == "MLBRunCast"
     assert payload["source"] == "run-sim-xgb-calibrated"
     assert "mlb_pick_signals" in payload
+
+
+def test_mlb_runcast_decorrelates_from_moneyline_not_spread() -> None:
+    dated = _sample_dated_games()
+    with patch("web.mlb_pred_model.get_mlb_pred_context") as mock_ctx:
+        model = build_mlb_model(dated, "2024-06-01")
+        mock_ctx.return_value = model
+        with patch("web.mlb_pred_model.pitcher_matchup_margin", return_value=0.0):
+            payload = run_mlb_pred_model(
+                "mlb",
+                "06-01-2024",
+                "a",
+                "b",
+                market_spread=-1.5,
+                home_ml=-140,
+                away_ml=120,
+            )
+    assert payload is not None
+    assert payload["market_decorrelated"] is True
+    assert payload["market_decorrelation_source"] == "moneyline"
+    pre = float(payload["pre_decorrelation_home_win_probability"])
+    final = float(payload["home_win_probability"])
+    assert final != pre
+    assert payload["home_win_probability"] != payload["pre_decorrelation_home_win_probability"]
+
+
+def test_official_pick_binary_probs_ignores_spread_decor_for_mlb() -> None:
+    away, home = official_pick_binary_probs(
+        {
+            "blended_home_win_probability": 61.0,
+            "total_score": -61.0,
+            "baseball_pred": {
+                "market_decorrelated": True,
+                "market_decorrelation_source": "spread",
+                "pre_decorrelation_home_win_probability": 61.0,
+                "home_win_probability": 61.5,
+            },
+        },
+        -61.0,
+        league="mlb",
+        away_market=130,
+        home_market=-150,
+        consensus_spread=-1.5,
+    )
+    assert home != 61.5
+    assert away == 100.0 - home

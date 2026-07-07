@@ -486,18 +486,24 @@ def official_pick_binary_probs(
 
     pred = _sport_pred_payload(blended)
     if pred and pred.get("market_decorrelated") and pred.get("home_win_probability") is not None:
-        home_prob = float(pred["home_win_probability"])
-        return 100.0 - home_prob, home_prob
+        source = pred.get("market_decorrelation_source", "moneyline")
+        if source != "spread":
+            home_prob = float(pred["home_win_probability"])
+            return 100.0 - home_prob, home_prob
 
     market_home = market_home_prob_pct(
         away_market=away_market,
         home_market=home_market,
-        consensus_spread=consensus_spread,
+        consensus_spread=None if away_market is not None and home_market is not None else consensus_spread,
     )
     if market_home is None:
         return away_prob, home_prob
 
-    home_decor = decorrelate_binary(home_prob, market_home)
+    base_home = home_prob
+    if pred and pred.get("pre_decorrelation_home_win_probability") is not None:
+        base_home = float(pred["pre_decorrelation_home_win_probability"])
+
+    home_decor = decorrelate_binary(base_home, market_home)
     return 100.0 - home_decor, home_decor
 
 
