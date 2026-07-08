@@ -9,6 +9,7 @@ from __future__ import annotations
 import math
 from collections import defaultdict, deque
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from functools import lru_cache
 from typing import Any
 
@@ -28,7 +29,9 @@ from web.soccer_features import (
     blend_stat_and_xgb,
     build_matchup_features,
     features_to_vector,
+    market_probs_to_features,
 )
+from web.soccer_opening import fetch_soccer_opening_moneylines, soccer_opening_steam_meta
 from web.soccer_meta_model import (
     blend_weighted_threeway,
     fit_temperature_grid,
@@ -117,6 +120,76 @@ def _normalize_threeway(
     return home * scale, draw * scale, away * scale
 
 
+FORM_WINDOW = 10
+FORM_DECAY = 0.85
+DEFAULT_REST_DAYS = 7.0
+
+
+def _parse_game_date(game_date: str) -> datetime | None:
+    if not game_date:
+        return None
+    try:
+        return datetime.strptime(game_date[:10], "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    except ValueError:
+        return None
+
+
+def _game_time_weight(
+    game_date: str,
+    reference: datetime,
+    *,
+    xi: float = DC_XI,
+) -> float:
+    parsed = _parse_game_date(game_date)
+    if parsed is None:
+        return 1.0
+    days_ago = max((reference - parsed).days, 0)
+    return math.exp(-xi * days_ago)
+
+
+def _rest_days_since(
+    last_match_date: dict[str, str],
+    team: str,
+    match_date: str,
+    *,
+    default: float = DEFAULT_REST_DAYS,
+) -> float:
+    prior = last_match_date.get(team)
+    if not prior:
+        return default
+    start = _parse_game_date(prior)
+    end = _parse_game_date(match_date)
+    if start is None or end is None:
+        return default
+    return float(max((end - start).days, 1))
+
+
+def _league_dc_rho(league: str) -> float:
+    return float(get_league_meta_config(league)["path_a"]["dc_rho"])
+
+
+def _gd_to_poisson_rates(expected_gd: float) -> tuple[float, float]:
+    lam = max(0.3, 1.35 + expected_gd * 0.35)
+    mu = max(0.3, 1.35 - expected_gd * 0.35)
+    return lam, mu
+
+
+def _strength_to_dc_threeway(
+    strength_gd: float,
+    base_lam: float,
+    base_mu: float,
+    *,
+    rho: float,
+) -> tuple[float, float, float]:
+    """Map a goal-difference edge into 1X2 via Poisson/Dixon–Coles."""
+    lam, mu = _gd_to_poisson_rates(strength_gd)
+    blend = min(max(abs(strength_gd) / 2.5, 0.15), 0.65)
+    lam = (1.0 - blend) * base_lam + blend * lam
+    mu = (1.0 - blend) * base_mu + blend * mu
+    matrix = _dc_score_matrix(lam, mu, rho=rho)
+    return _matrix_to_threeway(matrix)
+
+
 def _draw_from_closeness(home_win: float, league: str) -> tuple[float, float, float]:
     """Split binary home win % into 1X2 using league draw base (Algo V2 style)."""
     home_binary = min(max(home_win, 0.1), 99.9)
@@ -130,23 +203,40 @@ def _draw_from_closeness(home_win: float, league: str) -> tuple[float, float, fl
 
 class _FormTracker:
     def __init__(self) -> None:
-        self.recent: dict[str, deque[int]] = defaultdict(lambda: deque(maxlen=5))
+        self.recent: dict[str, deque[tuple[float, float]]] = defaultdict(
+            lambda: deque(maxlen=FORM_WINDOW)
+        )
 
-    def update(self, home: str, away: str, hg: int, ag: int) -> None:
+    def update(
+        self,
+        home: str,
+        away: str,
+        hg: int,
+        ag: int,
+        *,
+        elo: _EloEngine,
+    ) -> None:
         if hg > ag:
-            home_pts, away_pts = 3, 0
+            home_pts, away_pts = 3.0, 0.0
         elif hg < ag:
-            home_pts, away_pts = 0, 3
+            home_pts, away_pts = 0.0, 3.0
         else:
-            home_pts, away_pts = 1, 1
-        self.recent[home].append(home_pts)
-        self.recent[away].append(away_pts)
+            home_pts, away_pts = 1.0, 1.0
+        self.recent[home].append((home_pts, elo.rating(away)))
+        self.recent[away].append((away_pts, elo.rating(home)))
 
     def form_score(self, team: str) -> float:
-        points = self.recent.get(team)
-        if not points:
+        entries = self.recent.get(team)
+        if not entries:
             return 1.5
-        return sum(points) / len(points)
+        total_weight = 0.0
+        total_points = 0.0
+        for index, (points, opponent_elo) in enumerate(reversed(entries)):
+            weight = FORM_DECAY**index
+            opponent_factor = 1.0 + (opponent_elo - ELO_INIT) / 2000.0
+            total_points += weight * points * opponent_factor
+            total_weight += weight
+        return total_points / total_weight if total_weight else 1.5
 
 
 class _EloEngine:
@@ -224,6 +314,9 @@ def _matrix_to_threeway(matrix: list[list[float]]) -> tuple[float, float, float]
 def _fit_dixon_coles_params(
     games: list[GameTuple],
     team_keys: list[str],
+    *,
+    game_weights: list[float] | None = None,
+    rho: float = DC_RHO,
 ) -> tuple[dict[str, float], dict[str, float], float]:
     """Iterative attack/defence strengths (log-scale) without scipy."""
     index = {key: idx for idx, key in enumerate(team_keys)}
@@ -232,31 +325,38 @@ def _fit_dixon_coles_params(
     defence = [0.0] * n
     home_goals = [0.0] * n
     away_goals = [0.0] * n
-    home_matches = [0] * n
-    away_matches = [0] * n
+    home_matches = [0.0] * n
+    away_matches = [0.0] * n
 
-    for home, away, _hn, _an, hg, ag in games:
+    weights = game_weights or [1.0] * len(games)
+    total_weight = sum(weights) or float(len(games))
+
+    for (home, away, _hn, _an, hg, ag), weight in zip(games, weights):
         if home not in index or away not in index:
             continue
         hi, ai = index[home], index[away]
-        home_goals[hi] += hg
-        away_goals[ai] += ag
-        home_matches[hi] += 1
-        away_matches[ai] += 1
+        home_goals[hi] += hg * weight
+        away_goals[ai] += ag * weight
+        home_matches[hi] += weight
+        away_matches[ai] += weight
 
-    league_home_avg = sum(hg for *_, hg, _ in games) / max(len(games), 1)
-    league_away_avg = sum(ag for *_, _, ag in games) / max(len(games), 1)
+    league_home_avg = sum(hg * w for (*_, hg, _), w in zip(games, weights)) / total_weight
+    league_away_avg = sum(ag * w for (*_, _, ag), w in zip(games, weights)) / total_weight
     league_home_avg = max(league_home_avg, 0.5)
     league_away_avg = max(league_away_avg, 0.5)
 
     for i, key in enumerate(team_keys):
         if home_matches[i]:
-            attack[i] = math.log(max(home_goals[i] / home_matches[i], 0.2) / league_home_avg)
+            attack[i] = math.log(
+                max(home_goals[i] / home_matches[i], 0.2) / league_home_avg
+            )
         if away_matches[i]:
-            defence[i] = math.log(max(away_goals[i] / away_matches[i], 0.2) / league_away_avg)
+            defence[i] = math.log(
+                max(away_goals[i] / away_matches[i], 0.2) / league_away_avg
+            )
 
-    for _ in range(8):
-        for home, away, _hn, _an, hg, ag in games:
+    for _ in range(12):
+        for (home, away, _hn, _an, hg, ag), weight in zip(games, weights):
             if home not in index or away not in index:
                 continue
             hi, ai = index[home], index[away]
@@ -264,8 +364,9 @@ def _fit_dixon_coles_params(
             mu = math.exp(attack[ai] - defence[hi])
             lam = max(min(lam, 5.0), 0.05)
             mu = max(min(mu, 5.0), 0.05)
-            err_h = (hg - lam) * 0.05
-            err_a = (ag - mu) * 0.05
+            step = 0.05 * weight
+            err_h = (hg - lam) * step
+            err_a = (ag - mu) * step
             attack[hi] += err_h
             defence[ai] -= err_h
             attack[ai] += err_a
@@ -337,6 +438,8 @@ def _train_xgb_threeway(
 def _snapshot_stat_model(
     games: list[GameTuple],
     league: str,
+    *,
+    dated_games: list[tuple[str, GameTuple]] | None = None,
 ) -> dict[str, Any] | None:
     """Build stat-layer state without walk-forward artifacts."""
     if len(games) < MIN_LEAGUE_GAMES:
@@ -350,17 +453,34 @@ def _snapshot_stat_model(
     pi = _PiRating()
     form = _FormTracker()
     team_game_counts: dict[str, int] = {key: 0 for key in team_keys}
+    last_match_date: dict[str, str] = {}
 
-    for home, away, _hn, _an, hg, ag in games:
+    dated = dated_games or [("", game) for game in games]
+    reference = _parse_game_date(dated[-1][0]) or datetime.now(timezone.utc)
+    dc_weights = [
+        _game_time_weight(game_date, reference) for game_date, _game in dated
+    ]
+
+    for (game_date, game) in dated:
+        home, away, _hn, _an, hg, ag = game
         if home not in team_game_counts or away not in team_game_counts:
             continue
+        form.update(home, away, hg, ag, elo=elo)
         elo.update(home, away, hg, ag)
         pi.update(home, away, hg, ag)
-        form.update(home, away, hg, ag)
         team_game_counts[home] += 1
         team_game_counts[away] += 1
+        if game_date:
+            last_match_date[home] = game_date
+            last_match_date[away] = game_date
 
-    attack, defence, home_adv = _fit_dixon_coles_params(games, team_keys)
+    rho = _league_dc_rho(league)
+    attack, defence, home_adv = _fit_dixon_coles_params(
+        games,
+        team_keys,
+        game_weights=dc_weights,
+        rho=rho,
+    )
 
     return {
         "league": league,
@@ -372,7 +492,56 @@ def _snapshot_stat_model(
         "defence": defence,
         "home_adv": home_adv,
         "team_game_counts": team_game_counts,
+        "last_match_date": last_match_date,
+        "dc_rho": rho,
     }
+
+
+def _build_feature_row(
+    model: dict[str, Any],
+    home: str,
+    away: str,
+    stat_probs: tuple[float, float, float],
+    dc_lam: float,
+    dc_mu: float,
+    *,
+    match_date: str = "",
+    market_probs: tuple[float, float, float] | None = None,
+) -> np.ndarray | None:
+    form_diff = model["form"].form_score(home) - model["form"].form_score(away)
+    last_dates = model.get("last_match_date") or {}
+    market_home, market_draw, market_away = market_probs_to_features(market_probs)
+    rho = float(model.get("dc_rho", DC_RHO))
+    _home, dc_draw, _away = _dc_threeway(
+        model["attack"],
+        model["defence"],
+        float(model["home_adv"]),
+        home,
+        away,
+        rho=rho,
+    )
+    feats = build_matchup_features(
+        elo_home=model["elo"].rating(home),
+        elo_away=model["elo"].rating(away),
+        pi_expected_gd=model["pi"].expected_gd(home, away),
+        dc_lam=dc_lam,
+        dc_mu=dc_mu,
+        form_diff=form_diff,
+        stat_home=stat_probs[0],
+        stat_draw=stat_probs[1],
+        stat_away=stat_probs[2],
+        home_games=model["team_game_counts"].get(home, 0),
+        away_games=model["team_game_counts"].get(away, 0),
+        dc_draw_prob=dc_draw,
+        rest_days_home=_rest_days_since(last_dates, home, match_date),
+        rest_days_away=_rest_days_since(last_dates, away, match_date),
+        home_attack=float(model["attack"].get(home, 0.0)),
+        away_attack=float(model["attack"].get(away, 0.0)),
+        market_home=market_home,
+        market_draw=market_draw,
+        market_away=market_away,
+    )
+    return features_to_vector(feats)
 
 
 def build_soccer_path_a_model(
@@ -381,28 +550,43 @@ def build_soccer_path_a_model(
 ) -> dict[str, Any] | None:
     """Walk-forward Path A model with XGB 3-way head and temperature calibration."""
     games_only = [game for _date, game in dated_games]
-    base = _snapshot_stat_model(games_only, league)
+    base = _snapshot_stat_model(games_only, league, dated_games=dated_games)
     if not base:
         return None
+
+    from web.supplemental_games import soccer_backtest_odds
 
     team_keys = list(base["team_keys"])
     elo = _EloEngine()
     pi = _PiRating()
     form = _FormTracker()
     team_game_counts: dict[str, int] = {key: 0 for key in team_keys}
+    last_match_date: dict[str, str] = {}
     partial_games: list[GameTuple] = []
+    partial_dates: list[str] = []
+    rho = _league_dc_rho(league)
 
     x_rows: list[np.ndarray] = []
     y_rows: list[int] = []
     raw_samples: list[tuple[float, float, float, int]] = []
 
-    for idx, (_game_date, game) in enumerate(dated_games):
+    for idx, (game_date, game) in enumerate(dated_games):
         home, away, _hn, _an, hg, ag = game
         if home not in team_game_counts or away not in team_game_counts:
             continue
 
         if idx >= WALK_FORWARD_MIN_TRAIN and len(partial_games) >= MIN_LEAGUE_GAMES:
-            attack, defence, home_adv = _fit_dixon_coles_params(partial_games, team_keys)
+            reference = _parse_game_date(game_date) or datetime.now(timezone.utc)
+            dc_weights = [
+                _game_time_weight(prior_date, reference)
+                for prior_date in partial_dates
+            ]
+            attack, defence, home_adv = _fit_dixon_coles_params(
+                partial_games,
+                team_keys,
+                game_weights=dc_weights,
+                rho=rho,
+            )
             snap = {
                 **base,
                 "elo": elo,
@@ -412,51 +596,71 @@ def build_soccer_path_a_model(
                 "attack": attack,
                 "defence": defence,
                 "home_adv": home_adv,
+                "last_match_date": dict(last_match_date),
+                "dc_rho": rho,
             }
-            stat = predict_matchup_from_model(snap, home, away, include_club_elo=True)
+            odds_row = soccer_backtest_odds(league, game_date, home, away) or {}
+            market_probs = devig_threeway_from_odds(
+                odds_row.get("home_odds"),
+                odds_row.get("draw_odds"),
+                odds_row.get("away_odds"),
+            )
+            stat = predict_matchup_from_model(
+                snap,
+                home,
+                away,
+                include_club_elo=True,
+                match_date=game_date,
+                market_probs=market_probs,
+                use_xgb=False,
+            )
             if stat:
                 stat_probs = (
                     stat.home_win_probability,
                     stat.draw_probability,
                     stat.away_win_probability,
                 )
-                form_diff = form.form_score(home) - form.form_score(away)
-                feats = build_matchup_features(
-                    elo_home=snap["elo"].rating(home),
-                    elo_away=snap["elo"].rating(away),
-                    pi_expected_gd=snap["pi"].expected_gd(home, away),
-                    dc_lam=stat.expected_home_goals,
-                    dc_mu=stat.expected_away_goals,
-                    form_diff=form_diff,
-                    stat_home=stat_probs[0],
-                    stat_draw=stat_probs[1],
-                    stat_away=stat_probs[2],
-                    home_games=team_game_counts.get(home, 0),
-                    away_games=team_game_counts.get(away, 0),
-                )
-                x_rows.append(features_to_vector(feats))
-                y_rows.append(outcome_from_score(hg, ag))
                 raw_samples.append((*stat_probs, outcome_from_score(hg, ag)))
+                if xgb_model_rows := _build_feature_row(
+                    snap,
+                    home,
+                    away,
+                    stat_probs,
+                    stat.expected_home_goals,
+                    stat.expected_away_goals,
+                    match_date=game_date,
+                    market_probs=market_probs,
+                ):
+                    x_rows.append(xgb_model_rows)
+                    y_rows.append(outcome_from_score(hg, ag))
 
+        form.update(home, away, hg, ag, elo=elo)
         elo.update(home, away, hg, ag)
         pi.update(home, away, hg, ag)
-        form.update(home, away, hg, ag)
         team_game_counts[home] += 1
         team_game_counts[away] += 1
+        if game_date:
+            last_match_date[home] = game_date
+            last_match_date[away] = game_date
         partial_games.append(game)
+        partial_dates.append(game_date)
 
     xgb_model = _train_xgb_threeway(x_rows, y_rows)
+    meta_config = get_league_meta_config(league)
     temperature = (
         fit_temperature_grid(raw_samples)
         if len(raw_samples) >= MIN_CALIBRATION_GAMES
-        else get_league_meta_config(league)["temperature"]
+        else meta_config["temperature"]
     )
 
-    final = _snapshot_stat_model(games_only, league)
+    path_a = meta_config["path_a"]
+    final = _snapshot_stat_model(games_only, league, dated_games=dated_games)
     if not final:
         return None
     final["xgb_model"] = xgb_model
     final["temperature"] = temperature
+    final["path_a_stat_weight"] = path_a["stat_weight"]
+    final["path_a_decorrelation_weight"] = path_a["decorrelation_weight"]
     return final
 
 
@@ -467,17 +671,25 @@ def build_soccer_model(
     return _snapshot_stat_model(games, league)
 
 
-def _elo_threeway(elo: _EloEngine, home: str, away: str, league: str) -> tuple[float, float, float]:
+def _elo_threeway(
+    elo: _EloEngine,
+    home: str,
+    away: str,
+    league: str,
+    *,
+    base_lam: float,
+    base_mu: float,
+    rho: float,
+) -> tuple[float, float, float]:
     ra = elo.rating(home) + ELO_HOME_ADV
     rb = elo.rating(away)
-    home_win = _elo_expected(ra, rb) * 100.0
-    return _draw_from_closeness(home_win, league)
+    strength_gd = (ra - rb) / 400.0 * 2.5
+    return _strength_to_dc_threeway(strength_gd, base_lam, base_mu, rho=rho)
 
 
 def _pi_threeway(pi: _PiRating, home: str, away: str) -> tuple[float, float, float]:
     expected_gd = pi.expected_gd(home, away)
-    lam = max(0.3, 1.35 + expected_gd * 0.35)
-    mu = max(0.3, 1.35 - expected_gd * 0.35)
+    lam, mu = _gd_to_poisson_rates(expected_gd)
     matrix = _dc_score_matrix(lam, mu, rho=0.0)
     return _matrix_to_threeway(matrix)
 
@@ -488,6 +700,8 @@ def _dc_threeway(
     home_adv: float,
     home: str,
     away: str,
+    *,
+    rho: float = DC_RHO,
 ) -> tuple[float, float, float, float, float]:
     a_h = attack.get(home, 0.0)
     d_h = defence.get(home, 0.0)
@@ -497,7 +711,7 @@ def _dc_threeway(
     mu = float(math.exp(a_a - d_h))
     lam = max(min(lam, 5.0), 0.05)
     mu = max(min(mu, 5.0), 0.05)
-    matrix = _dc_score_matrix(lam, mu)
+    matrix = _dc_score_matrix(lam, mu, rho=rho)
     home_p, draw_p, away_p = _matrix_to_threeway(matrix)
     return home_p, draw_p, away_p, lam, mu
 
@@ -515,16 +729,24 @@ def _form_threeway(
     home: str,
     away: str,
     league: str,
+    *,
+    base_lam: float,
+    base_mu: float,
+    rho: float,
 ) -> tuple[float, float, float]:
     diff = form.form_score(home) - form.form_score(away)
-    home_win = min(max(50.0 + diff * 8.0, 5.0), 95.0)
-    return _draw_from_closeness(home_win, league)
+    strength_gd = diff * 0.35
+    return _strength_to_dc_threeway(strength_gd, base_lam, base_mu, rho=rho)
 
 
 def _club_elo_threeway(
     league: str,
     home: str,
     away: str,
+    *,
+    base_lam: float,
+    base_mu: float,
+    rho: float,
 ) -> tuple[float, float, float] | None:
     if not supports_club_elo(league):
         return None
@@ -533,7 +755,8 @@ def _club_elo_threeway(
     if home_elo is None or away_elo is None:
         return None
     home_win = elo_binary_home_win_pct(home_elo, away_elo)
-    return _draw_from_closeness(home_win, league)
+    strength_gd = (home_win - 50.0) / 50.0 * 1.5
+    return _strength_to_dc_threeway(strength_gd, base_lam, base_mu, rho=rho)
 
 
 def compute_sharp_stat_layers(
@@ -544,19 +767,29 @@ def compute_sharp_stat_layers(
     include_club_elo: bool = True,
 ) -> tuple[dict[str, tuple[float, float, float] | None], float, float]:
     league = model["league"]
+    rho = float(model.get("dc_rho", _league_dc_rho(league)))
     dc_home, dc_draw, dc_away, lam, mu = _dc_threeway(
         model["attack"],
         model["defence"],
         float(model["home_adv"]),
         home,
         away,
+        rho=rho,
     )
-    club_elo = _club_elo_threeway(league, home, away) if include_club_elo else None
+    club_elo = (
+        _club_elo_threeway(league, home, away, base_lam=lam, base_mu=mu, rho=rho)
+        if include_club_elo
+        else None
+    )
     layers = {
-        "elo": _elo_threeway(model["elo"], home, away, league),
+        "elo": _elo_threeway(
+            model["elo"], home, away, league, base_lam=lam, base_mu=mu, rho=rho
+        ),
         "pi": _pi_threeway(model["pi"], home, away),
         "dc": (dc_home, dc_draw, dc_away),
-        "form": _form_threeway(model["form"], home, away, league),
+        "form": _form_threeway(
+            model["form"], home, away, league, base_lam=lam, base_mu=mu, rho=rho
+        ),
         "club_elo": club_elo,
     }
     return layers, lam, mu
@@ -568,6 +801,9 @@ def predict_matchup_from_model(
     away_key: str,
     *,
     include_club_elo: bool = True,
+    match_date: str = "",
+    market_probs: tuple[float, float, float] | None = None,
+    use_xgb: bool = True,
 ) -> SoccerPredResult | None:
     home = home_key.lower()
     away = away_key.lower()
@@ -597,26 +833,33 @@ def predict_matchup_from_model(
     home_p, draw_p, away_p = blend_weighted_threeway(active_layers, active_weights)
     stat_probs = (home_p, draw_p, away_p)
 
-    xgb_model = model.get("xgb_model")
+    xgb_model = model.get("xgb_model") if use_xgb else None
+    stat_weight = float(
+        model.get("path_a_stat_weight")
+        or get_league_meta_config(league)["path_a"]["stat_weight"]
+    )
     if xgb_model is not None:
         try:
-            form_diff = model["form"].form_score(home) - model["form"].form_score(away)
-            feats = build_matchup_features(
-                elo_home=model["elo"].rating(home),
-                elo_away=model["elo"].rating(away),
-                pi_expected_gd=model["pi"].expected_gd(home, away),
-                dc_lam=lam,
-                dc_mu=mu,
-                form_diff=form_diff,
-                stat_home=stat_probs[0],
-                stat_draw=stat_probs[1],
-                stat_away=stat_probs[2],
-                home_games=model["team_game_counts"].get(home, 0),
-                away_games=model["team_game_counts"].get(away, 0),
+            feature_row = _build_feature_row(
+                model,
+                home,
+                away,
+                stat_probs,
+                lam,
+                mu,
+                match_date=match_date,
+                market_probs=market_probs,
             )
-            xgb_row = xgb_model.predict_proba(features_to_vector(feats).reshape(1, -1))[0]
-            xgb_probs = (float(xgb_row[0]) * 100.0, float(xgb_row[1]) * 100.0, float(xgb_row[2]) * 100.0)
-            home_p, draw_p, away_p = blend_stat_and_xgb(stat_probs, xgb_probs)
+            if feature_row is not None:
+                xgb_row = xgb_model.predict_proba(feature_row.reshape(1, -1))[0]
+                xgb_probs = (
+                    float(xgb_row[0]) * 100.0,
+                    float(xgb_row[1]) * 100.0,
+                    float(xgb_row[2]) * 100.0,
+                )
+                home_p, draw_p, away_p = blend_stat_and_xgb(
+                    stat_probs, xgb_probs, stat_weight=stat_weight
+                )
         except (ValueError, IndexError, AttributeError):
             pass
 
@@ -687,6 +930,8 @@ def run_soccer_pred_model(
     home_ml: int | None = None,
     draw_ml: int | None = None,
     away_ml: int | None = None,
+    event_id: str | None = None,
+    match_date: str = "",
 ) -> dict[str, Any] | None:
     context = get_soccer_pred_context(league, cutoff_date)
     if not context:
@@ -698,7 +943,14 @@ def run_soccer_pred_model(
     if not home_key or not away_key:
         return None
 
-    prediction = predict_matchup_from_model(context, home_key, away_key)
+    market_probs = devig_threeway_from_odds(home_ml, draw_ml, away_ml)
+    prediction = predict_matchup_from_model(
+        context,
+        home_key,
+        away_key,
+        match_date=match_date,
+        market_probs=market_probs,
+    )
     if not prediction:
         return None
 
@@ -711,8 +963,15 @@ def run_soccer_pred_model(
         prediction.draw_probability,
         prediction.away_win_probability,
     )
-    market_probs = devig_threeway_from_odds(home_ml, draw_ml, away_ml)
-    decorrelated = blend_with_market_cap(raw_probs, market_probs)
+    decorrelation_weight = float(
+        context.get("path_a_decorrelation_weight")
+        or get_league_meta_config(league)["path_a"]["decorrelation_weight"]
+    )
+    decorrelated = blend_with_market_cap(
+        raw_probs,
+        market_probs,
+        max_blend=decorrelation_weight,
+    )
     temperature = float(
         context.get("temperature") or get_league_meta_config(league)["temperature"]
     )
@@ -724,6 +983,19 @@ def run_soccer_pred_model(
         round(v, 2) for v in temperature_scale(*pick_source, temperature)
     )
 
+    open_home, open_draw, open_away = fetch_soccer_opening_moneylines(league, event_id)
+    steam_meta = soccer_opening_steam_meta(
+        home_ml=home_ml,
+        draw_ml=draw_ml,
+        away_ml=away_ml,
+        open_home_ml=open_home,
+        open_draw_ml=open_draw,
+        open_away_ml=open_away,
+        model_home=pick_probs[0],
+        model_draw=pick_probs[1],
+        model_away=pick_probs[2],
+    )
+
     pick_signals = build_soccer_pick_signals(
         home_prob=pick_probs[0],
         draw_prob=pick_probs[1],
@@ -733,6 +1005,7 @@ def run_soccer_pred_model(
         away_ml=away_ml,
         home_games=counts.get(home_key, 0),
         away_games=counts.get(away_key, 0),
+        steam_meta=steam_meta,
     )
 
     return {
@@ -755,5 +1028,8 @@ def run_soccer_pred_model(
         "home_games": counts.get(home_key, 0),
         "away_games": counts.get(away_key, 0),
         "market_decorrelated": market_probs is not None,
+        "decorrelation_weight": decorrelation_weight,
+        "path_a_stat_weight": context.get("path_a_stat_weight"),
         "soccer_pick_signals": pick_signals,
+        "opening_steam": steam_meta,
     }

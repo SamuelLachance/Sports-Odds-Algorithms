@@ -33,6 +33,9 @@ DEFAULT_BLEND_WEIGHTS: dict[str, float] = {
     "soccer_pred": 0.80,
 }
 DEFAULT_TEMPERATURE = 1.0
+DEFAULT_PATH_A_STAT_WEIGHT = 0.45
+DEFAULT_PATH_A_DECORRELATION_WEIGHT = 0.28
+DEFAULT_PATH_A_DC_RHO = -0.05
 
 Threeway = tuple[float, float, float]
 
@@ -132,6 +135,23 @@ def _default_league_entry() -> dict[str, Any]:
         "stat": dict(DEFAULT_SHARP_STAT_WEIGHTS),
         "blend": dict(DEFAULT_BLEND_WEIGHTS),
         "temperature": DEFAULT_TEMPERATURE,
+        "path_a": {
+            "stat_weight": DEFAULT_PATH_A_STAT_WEIGHT,
+            "decorrelation_weight": DEFAULT_PATH_A_DECORRELATION_WEIGHT,
+            "dc_rho": DEFAULT_PATH_A_DC_RHO,
+        },
+    }
+
+
+def _coerce_path_a_config(raw: Any) -> dict[str, float]:
+    if not isinstance(raw, dict):
+        raw = {}
+    return {
+        "stat_weight": float(raw.get("stat_weight", DEFAULT_PATH_A_STAT_WEIGHT)),
+        "decorrelation_weight": float(
+            raw.get("decorrelation_weight", DEFAULT_PATH_A_DECORRELATION_WEIGHT)
+        ),
+        "dc_rho": float(raw.get("dc_rho", DEFAULT_PATH_A_DC_RHO)),
     }
 
 
@@ -143,6 +163,7 @@ def get_league_meta_config(league: str) -> dict[str, Any]:
         "stat_weights": _coerce_stat_weights(entry.get("stat")),
         "blend_weights": _coerce_blend_weights(entry.get("blend")),
         "temperature": float(entry.get("temperature", DEFAULT_TEMPERATURE)),
+        "path_a": _coerce_path_a_config(entry.get("path_a")),
     }
 
 
@@ -286,6 +307,88 @@ def fit_stat_weights_grid(
                         best_weights = weights
     total = sum(best_weights.values()) or 1.0
     return {key: value / total for key, value in best_weights.items()}
+
+
+def fit_scalar_grid(
+    samples: list[tuple[float, float, float, int]],
+    *,
+    apply_fn,
+    value_range: tuple[float, float, float],
+) -> float:
+    """Grid-search a scalar hyperparameter to minimize multiclass log-loss."""
+    if not samples:
+        return value_range[1]
+
+    start, end, step = value_range
+    steps = int(round((end - start) / step)) + 1
+    best_loss = float("inf")
+    best_value = value_range[1]
+    for idx in range(steps):
+        value = start + idx * step
+        total_loss = 0.0
+        for home, draw, away, outcome in samples:
+            adjusted = apply_fn(home, draw, away, value)
+            total_loss += multiclass_log_loss(*adjusted, outcome)
+        avg_loss = total_loss / len(samples)
+        if avg_loss < best_loss:
+            best_loss = avg_loss
+            best_value = value
+    return best_value
+
+
+def fit_stat_weight_grid(
+    samples: list[tuple[tuple[float, float, float], tuple[float, float, float], int]],
+) -> float:
+    if not samples:
+        return DEFAULT_PATH_A_STAT_WEIGHT
+
+    def _blend(
+        stat: tuple[float, float, float],
+        xgb: tuple[float, float, float],
+        weight: float,
+    ) -> Threeway:
+        w = min(max(weight, 0.0), 1.0)
+        home = w * stat[0] + (1.0 - w) * xgb[0]
+        draw = w * stat[1] + (1.0 - w) * xgb[1]
+        away = w * stat[2] + (1.0 - w) * xgb[2]
+        return normalize_threeway(home, draw, away)
+
+    best_loss = float("inf")
+    best_weight = DEFAULT_PATH_A_STAT_WEIGHT
+    for step in range(0, 11):
+        weight = step / 10.0
+        total_loss = 0.0
+        for stat, xgb, outcome in samples:
+            blended = _blend(stat, xgb, weight)
+            total_loss += multiclass_log_loss(*blended, outcome)
+        avg_loss = total_loss / len(samples)
+        if avg_loss < best_loss:
+            best_loss = avg_loss
+            best_weight = weight
+    return best_weight
+
+
+def fit_decorrelation_weight_grid(
+    samples: list[tuple[tuple[float, float, float], tuple[float, float, float], int]],
+) -> float:
+    if not samples:
+        return DEFAULT_PATH_A_DECORRELATION_WEIGHT
+
+    from web.market_decorrelation import decorrelate_three_way
+
+    best_loss = float("inf")
+    best_weight = DEFAULT_PATH_A_DECORRELATION_WEIGHT
+    for step in range(0, 8):
+        weight = step / 20.0
+        total_loss = 0.0
+        for model_probs, market_probs, outcome in samples:
+            adjusted = decorrelate_three_way(model_probs, market_probs, weight=weight)
+            total_loss += multiclass_log_loss(*adjusted, outcome)
+        avg_loss = total_loss / len(samples)
+        if avg_loss < best_loss:
+            best_loss = avg_loss
+            best_weight = weight
+    return best_weight
 
 
 def fit_temperature_grid(

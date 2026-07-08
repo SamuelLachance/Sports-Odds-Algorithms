@@ -136,6 +136,11 @@
       "pro_seasons": 7,
       "scoreboard_days": 900
     },
+    "path_a": {
+      "dc_rho": -0.05,
+      "decorrelation_weight": 0.28,
+      "stat_weight": 0.45
+    },
     "stat": {
       "club_elo": 0.03,
       "dc": 0.471,

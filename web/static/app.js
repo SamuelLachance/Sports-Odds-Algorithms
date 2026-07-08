@@ -199,7 +199,7 @@ const SPORT_ALGO_LABELS = {
   Algo_V1: "Algo V1 win probability",
   BasketballMatrix: "Matrix completion win probability",
   MLBRunCast: "MLB RunCast win probability",
-  SoccerPathA: "Soccer Path A 1X2 probabilities",
+  SoccerPathA: "Soccer Path A 1X2 (Elo + Pi + Dixon–Coles + XGB + context)",
   Unified: "Unified model",
 };
 
@@ -718,11 +718,16 @@ function algoBreakdown(m, game) {
       soccer.expected_home_goals != null
         ? ` · xG ${soccer.expected_away_goals}-${soccer.expected_home_goals}`
         : "";
+    const enrich = [];
+    if (soccer.market_decorrelated) enrich.push("market decorr");
+    if (soccer.opening_steam?.steam_signal) enrich.push("opening steam");
+    if (m.context_adjusted) enrich.push("ESPN context");
+    const suffix = enrich.length ? ` · ${enrich.join(", ")}` : "";
     parts.push(
-      `${name}: ${soccer.home_win_probability}% / ${soccer.draw_probability}% / ${soccer.away_win_probability}%${xg}`,
+      `${name}: ${soccer.home_win_probability}% / ${soccer.draw_probability}% / ${soccer.away_win_probability}%${xg}${suffix}`,
     );
   }
-  if (!singleModel && dbRating) {
+  if (dbRating) {
     const sparse =
       dbRating.sparse_schedule_factor > 0.35 ? " · sparse boost" : "";
     parts.push(

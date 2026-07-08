@@ -37,7 +37,7 @@ from web.league_profiles import (
 from web.live_data import resolve_team
 from web.power_model import PowerTeam, predict_matchup
 from web.season_games import get_league_power_context, power_unavailable_reason
-from web.soccer_blend import threeway_probs_to_total_score
+from web.soccer_blend import finalize_soccer_path_a, threeway_probs_to_total_score
 from web.db_rating_model import apply_db_rating_blend
 from web.soccer_pred_model import run_soccer_pred_model, soccer_unavailable_reason
 from web.sports_meta_model import (
@@ -795,8 +795,14 @@ def _blend_soccer_path_a_only(
     home_moneyline: int | None = None,
     away_moneyline: int | None = None,
     draw_moneyline: int | None = None,
+    home_slug: str | None = None,
+    away_slug: str | None = None,
+    event_id: str | None = None,
+    home_espn_id: str | None = None,
+    away_espn_id: str | None = None,
+    match_date: str = "",
 ) -> dict[str, Any]:
-    """Soccer uses SoccerPathA only — no Algo V2, power, meta, db_rating, or EnsembleML."""
+    """Soccer Path A with db_rating + ESPN context enrichment."""
     sport_payload = run_soccer_pred_model(
         league,
         cutoff_date,
@@ -807,6 +813,8 @@ def _blend_soccer_path_a_only(
         home_ml=home_moneyline,
         draw_ml=draw_moneyline,
         away_ml=away_moneyline,
+        event_id=event_id,
+        match_date=match_date,
     )
     if not sport_payload:
         reason = soccer_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
@@ -826,7 +834,7 @@ def _blend_soccer_path_a_only(
     draw_p = float(sport_payload["draw_probability"])
     away_p = float(sport_payload["away_win_probability"])
     total, win_prob, favorite = threeway_probs_to_total_score(home_p, draw_p, away_p)
-    return {
+    result = {
         "algorithm": "SoccerPathA",
         "blend_mode": "soccer_path_a",
         "blend_layers": 1,
@@ -849,6 +857,20 @@ def _blend_soccer_path_a_only(
         "threeway": True,
         "soccer_pick_signals": sport_payload.get("soccer_pick_signals"),
     }
+    return finalize_soccer_path_a(
+        result,
+        league=league,
+        cutoff_date=cutoff_date,
+        home_abbr=home_abbr,
+        away_abbr=away_abbr,
+        home_slug=home_slug,
+        away_slug=away_slug,
+        home_name=home_name,
+        away_name=away_name,
+        event_id=event_id,
+        home_espn_id=home_espn_id,
+        away_espn_id=away_espn_id,
+    )
 
 
 def blend_predictions(
@@ -919,6 +941,11 @@ def blend_predictions(
             home_moneyline=home_moneyline,
             away_moneyline=away_moneyline,
             draw_moneyline=draw_moneyline,
+            home_slug=home_slug,
+            away_slug=away_slug,
+            event_id=event_id,
+            home_espn_id=home_espn_id,
+            away_espn_id=away_espn_id,
         )
 
     legacy_home = total_score_to_home_win_prob(legacy_total_score)

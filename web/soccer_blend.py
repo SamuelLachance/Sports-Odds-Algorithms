@@ -254,6 +254,62 @@ def _apply_final_threeway_calibration(
     return updated
 
 
+def finalize_soccer_path_a(
+    result: dict[str, Any],
+    *,
+    league: str,
+    cutoff_date: str,
+    home_abbr: str,
+    away_abbr: str,
+    home_slug: str | None = None,
+    away_slug: str | None = None,
+    home_name: str | None = None,
+    away_name: str | None = None,
+    event_id: str | None = None,
+    home_espn_id: str | None = None,
+    away_espn_id: str | None = None,
+) -> dict[str, Any]:
+    """Apply soccer-rating.com + ESPN context layers on top of SoccerPathA."""
+    if not result.get("soccer_pred"):
+        return result
+    enriched = dict(result)
+    enriched["threeway"] = True
+    enriched.setdefault("blend_weights", {"soccer_pred": 1.0})
+    enriched.setdefault("blend_layers", 1)
+    if home_slug and away_slug:
+        enriched = apply_db_rating_blend(
+            enriched,
+            league=league,
+            cutoff_date=cutoff_date,
+            home_abbr=home_abbr,
+            away_abbr=away_abbr,
+            home_slug=home_slug,
+            away_slug=away_slug,
+            home_name=home_name,
+            away_name=away_name,
+        )
+        soccer_pred = dict(enriched.get("soccer_pred") or {})
+        soccer_pred.update(
+            {
+                "home_win_probability": enriched["home_win_probability"],
+                "draw_probability": enriched["draw_probability"],
+                "away_win_probability": enriched["away_win_probability"],
+            }
+        )
+        enriched["soccer_pred"] = soccer_pred
+        enriched["blend_layers"] = int(enriched.get("blend_layers") or 1)
+    return _attach_soccer_context_layer(
+        enriched,
+        league=league,
+        cutoff_date=cutoff_date,
+        home_abbr=home_abbr,
+        away_abbr=away_abbr,
+        event_id=event_id,
+        home_espn_id=home_espn_id,
+        away_espn_id=away_espn_id,
+    )
+
+
 def _finalize_soccer_blend(
     result: dict[str, Any],
     *,
@@ -335,6 +391,16 @@ def _attach_soccer_context_layer(
     updated["favorite_side"] = favorite
     updated["soccer_context"] = context
     updated["context_adjusted"] = True
+    if updated.get("soccer_pred"):
+        soccer_pred = dict(updated["soccer_pred"])
+        soccer_pred.update(
+            {
+                "home_win_probability": home_p,
+                "draw_probability": draw_p,
+                "away_win_probability": away_p,
+            }
+        )
+        updated["soccer_pred"] = soccer_pred
     if updated.get("blended_threeway"):
         updated["blended_threeway"] = {
             "home_win_probability": home_p,

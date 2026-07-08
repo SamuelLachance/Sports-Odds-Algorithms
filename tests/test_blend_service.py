@@ -304,6 +304,7 @@ def test_blend_soccer_path_a_only_when_available() -> None:
     import web.blend_service as blend_module
 
     soccer_original = blend_module.run_soccer_pred_model
+    finalize_original = blend_module.finalize_soccer_path_a
     try:
         blend_module.run_soccer_pred_model = lambda *_a, **_k: {
             "algorithm": "SoccerPathA",
@@ -315,6 +316,7 @@ def test_blend_soccer_path_a_only_when_available() -> None:
             "expected_away_goals": 1.1,
             "soccer_pick_signals": {"disagreement_signal": True},
         }
+        blend_module.finalize_soccer_path_a = lambda result, **_kwargs: result
         result = blend_predictions(
             legacy_total_score=-48.0,
             legacy_win_probability=48.0,
@@ -339,6 +341,7 @@ def test_blend_soccer_path_a_only_when_available() -> None:
         assert result.get("soccer_pick_signals", {}).get("disagreement_signal") is True
     finally:
         blend_module.run_soccer_pred_model = soccer_original
+        blend_module.finalize_soccer_path_a = finalize_original
 
 
 def test_blend_soccer_path_a_unavailable_fallback() -> None:

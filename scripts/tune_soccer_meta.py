@@ -26,16 +26,23 @@ from web.soccer_meta_model import (  # noqa: E402
     _blend_sharp_sample,
     blend_weighted_threeway,
     fit_blend_weights_grid,
+    fit_decorrelation_weight_grid,
+    fit_stat_weight_grid,
     fit_stat_weights_grid,
     fit_temperature_grid,
     multiclass_log_loss,
     outcome_from_score,
+    temperature_scale,
 )
 from web.soccer_pred_model import (  # noqa: E402
+    build_soccer_path_a_model,
     build_soccer_model,
     compute_sharp_stat_layers,
     predict_matchup_from_model,
 )
+from web.soccer_decorrelation import devig_threeway_from_odds  # noqa: E402
+from web.supplemental_games import soccer_backtest_odds  # noqa: E402
+from web.ensemble_ml.config import sportsbook_logloss_benchmark  # noqa: E402
 
 MIN_CALIBRATION_GAMES = 40
 MIN_LEAGUE_GAMES = 60
@@ -201,11 +208,96 @@ def tune_league(league: str, cutoff: str) -> dict | None:
         tuned_stat_loss += multiclass_log_loss(*calibrated, outcome)
     tuned_stat_loss /= len(temp_samples)
 
+    path_a_samples: list[tuple[tuple[float, float, float], tuple[float, float, float], int]] = []
+    market_samples: list[tuple[tuple[float, float, float], int]] = []
+    decor_samples: list[tuple[tuple[float, float, float], tuple[float, float, float], int]] = []
+    dated_games = _load_dated_games(league, cutoff)
+    path_a_model = build_soccer_path_a_model(dated_games, league)
+    for index in indices:
+        game = games[index]
+        home, away, _hn, _an, home_goals, away_goals = game
+        if not path_a_model:
+            continue
+        if home not in path_a_model["team_keys"] or away not in path_a_model["team_keys"]:
+            continue
+        game_date = dated_games[index][0] if index < len(dated_games) else ""
+        odds_row = soccer_backtest_odds(league, game_date, home, away) or {}
+        market_probs = devig_threeway_from_odds(
+            odds_row.get("home_odds"),
+            odds_row.get("draw_odds"),
+            odds_row.get("away_odds"),
+        )
+        stat_only = predict_matchup_from_model(
+            path_a_model,
+            home,
+            away,
+            match_date=game_date,
+            market_probs=market_probs,
+            use_xgb=False,
+        )
+        full_pred = predict_matchup_from_model(
+            path_a_model,
+            home,
+            away,
+            match_date=game_date,
+            market_probs=market_probs,
+            use_xgb=True,
+        )
+        if not stat_only or not full_pred:
+            continue
+        outcome = outcome_from_score(home_goals, away_goals)
+        stat_probs = (
+            stat_only.home_win_probability,
+            stat_only.draw_probability,
+            stat_only.away_win_probability,
+        )
+        full_probs = (
+            full_pred.home_win_probability,
+            full_pred.draw_probability,
+            full_pred.away_win_probability,
+        )
+        path_a_samples.append((stat_probs, full_probs, outcome))
+        if market_probs is not None:
+            market_samples.append((market_probs, outcome))
+            decor_samples.append((full_probs, market_probs, outcome))
+
+    stat_weight = fit_stat_weight_grid(path_a_samples) if path_a_samples else 0.45
+    decorrelation_weight = 0.28
+    if decor_samples:
+        decorrelation_weight = fit_decorrelation_weight_grid(decor_samples)
+
+    tuned_path_a_loss = None
+    if path_a_samples:
+        tuned_path_a_loss = 0.0
+        for _stat, full, outcome in path_a_samples:
+            calibrated = temperature_scale(*full, temperature)
+            tuned_path_a_loss += multiclass_log_loss(*calibrated, outcome)
+        tuned_path_a_loss /= len(path_a_samples)
+
+    market_log_loss = None
+    if market_samples:
+        market_log_loss = sum(
+            multiclass_log_loss(*market_probs, outcome)
+            for market_probs, outcome in market_samples
+        ) / len(market_samples)
+
     entry = {
         "stat": {key: round(stat_weights[key], 3) for key in STAT_LAYER_KEYS},
         "temperature": round(temperature, 3),
+        "path_a": {
+            "stat_weight": round(stat_weight, 3),
+            "decorrelation_weight": round(decorrelation_weight, 3),
+            "dc_rho": -0.05,
+        },
         "log_loss_baseline_equal": round(baseline, 4),
         "log_loss_tuned_stat": round(tuned_stat_loss, 4),
+        "log_loss_tuned_path_a": round(tuned_path_a_loss, 4)
+        if tuned_path_a_loss is not None
+        else None,
+        "log_loss_market_closing": round(market_log_loss, 4)
+        if market_log_loss is not None
+        else None,
+        "log_loss_market_benchmark": sportsbook_logloss_benchmark(league),
         "samples": len(stat_samples),
         "data_depth": _data_depth_metadata(len(games)),
     }
@@ -268,6 +360,11 @@ def main() -> int:
             },
             "blend": {"legacy": 0.05, "power": 0.15, "soccer_pred": 0.80},
             "temperature": round(sum(temps) / len(temps), 3) if temps else 1.0,
+            "path_a": {
+                "stat_weight": 0.45,
+                "decorrelation_weight": 0.28,
+                "dc_rho": -0.05,
+            },
             "data_depth": {
                 "pro_seasons": BACKTEST_PRO_SEASONS,
                 "scoreboard_days": BACKTEST_SCOREBOARD_LOOKBACK_DAYS,

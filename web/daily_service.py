@@ -309,6 +309,23 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
         consensus_spread=game.market.spread,
     )
 
+    if is_soccer_league(game.league):
+        from web.soccer_paper_tracking import maybe_record_from_blend
+
+        maybe_record_from_blend(
+            blended,
+            league=game.league,
+            event_id=game.event_id,
+            home_abbr=home[0],
+            away_abbr=away[0],
+            home_name=game.home_name,
+            away_name=game.away_name,
+            game_date=cutoff,
+            home_ml=game.market.home_moneyline,
+            draw_ml=game.market.draw_moneyline,
+            away_ml=game.market.away_moneyline,
+        )
+
     total = float(blended["total_score"])
     win_probability = float(blended["win_probability"])
     favorite_side = blended["favorite_side"]

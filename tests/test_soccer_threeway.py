@@ -9,6 +9,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from web.bet_advisor import (  # noqa: E402
+    MIN_RECOMMENDED_EDGE,
     evaluate_soccer_picks,
     soccer_model_moneylines,
     soccer_team_pick_blocked_by_projected_score,
