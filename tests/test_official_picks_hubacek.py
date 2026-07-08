@@ -27,7 +27,7 @@ def test_blend_outputs_are_market_decorrelated_flags() -> None:
         {"blend_mode": "ensemble_ml", "ensemble_ml": {"home_win_probability": 60.0}}
     )
     assert blend_outputs_are_market_decorrelated(
-        {"hockey_pred": {"market_decorrelated": True}}
+        {"blend_mode": "algo_v1", "market_decorrelated": True}
     )
     assert not blend_outputs_are_market_decorrelated(
         {"blended_home_win_probability": 62.0, "total_score": -62.0}
@@ -62,7 +62,7 @@ def test_official_moneyline_ev_differs_from_raw_model_prob() -> None:
         {
             "blended_home_win_probability": decor_home,
             "total_score": -decor_home,
-            "hockey_pred": {"market_decorrelated": True, "home_win_probability": decor_home},
+            "blend_mode": "algo_v1",
             "market_decorrelated": True,
         },
         -decor_home,

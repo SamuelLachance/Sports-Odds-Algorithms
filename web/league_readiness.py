@@ -11,8 +11,7 @@ from web.basketball_pred_model import (
     get_basketball_pred_context,
     is_basketball_league,
 )
-from web.hockey_pred_model import MIN_LEAGUE_GAMES as HOCKEY_MIN_LEAGUE_GAMES
-from web.hockey_pred_model import get_hockey_pred_context, is_hockey_league
+from web.hockey_pred_model import is_hockey_league
 from web.mlb_pred_model import MIN_LEAGUE_GAMES as MLB_MIN_LEAGUE_GAMES
 from web.mlb_pred_model import get_mlb_pred_context, is_mlb_league
 from web.league_profiles import LEAGUE_PROFILES, MIN_GAMES_FOR_POWER, is_soccer_league
@@ -106,8 +105,11 @@ def assess_three_layer_readiness(league: str, cutoff_date: str) -> dict[str, Any
     return result
 
 
+ALGO_V1_MIN_LEAGUE_GAMES = 10
+
+
 def assess_hockey_readiness(league: str, cutoff_date: str) -> dict[str, Any]:
-    """Hockey slate readiness — HockeyPuckCast only (no power / legacy stack)."""
+    """Hockey slate readiness — Algo V1 only (legacy weighted-factor model)."""
     league = league.lower()
     result: dict[str, Any] = {
         "league": league,
@@ -122,25 +124,20 @@ def assess_hockey_readiness(league: str, cutoff_date: str) -> dict[str, Any]:
 
     games = load_league_completed_games(league, cutoff_date)
     result["game_count"] = len(games)
-    if len(games) < HOCKEY_MIN_LEAGUE_GAMES:
+    if len(games) < ALGO_V1_MIN_LEAGUE_GAMES:
         result["reason"] = (
-            f"Need {HOCKEY_MIN_LEAGUE_GAMES}+ completed games (have {len(games)})"
+            f"Need {ALGO_V1_MIN_LEAGUE_GAMES}+ completed games (have {len(games)})"
         )
         return result
 
-    model = get_hockey_pred_context(league, cutoff_date)
-    if not model:
-        result["reason"] = "HockeyPuckCast model unavailable"
-        return result
-
-    team_counts = model.get("team_game_counts") or {}
-    result["team_count"] = len(team_counts)
-    if len(team_counts) < THREE_LAYER_MIN_TEAMS:
-        result["reason"] = "HockeyPuckCast needs 4+ teams with game history"
+    team_keys = {home for home, away, *_ in games} | {away for home, away, *_ in games}
+    result["team_count"] = len(team_keys)
+    if len(team_keys) < THREE_LAYER_MIN_TEAMS:
+        result["reason"] = "Algo V1 needs 4+ teams with game history"
         return result
 
     result["ready"] = True
-    result["reason"] = "HockeyPuckCast ready"
+    result["reason"] = "Algo V1 ready"
     return result
 
 

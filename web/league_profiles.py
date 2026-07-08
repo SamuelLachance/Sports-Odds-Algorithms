@@ -482,10 +482,14 @@ def list_leagues_metadata() -> list[dict[str, str]]:
                 "Unified 3-layer 1X2 model (Algo V2 + power + Elo/Pi/Dixon-Coles) "
                 "with score projections when season data is sufficient"
             )
-        elif category in ("baseball", "hockey"):
+        elif category == "hockey":
             model_note = (
-                f"Unified 3-layer model (Algo V2 + power + "
-                f"{'Elo' if category == 'baseball' else 'Poisson xG'}, "
+                "Algo V1 weighted-factor model (James Quintero NHL profile) "
+                "when season data is sufficient"
+            )
+        elif category == "baseball":
+            model_note = (
+                f"Unified 3-layer model (Algo V2 + power + Elo, "
                 f"{algo.upper()} profile) when season data is sufficient"
             )
         else:

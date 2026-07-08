@@ -28,8 +28,8 @@ from web.bet_advisor import (
 )
 from web.baseball_pred_model import get_baseball_pred_context, is_baseball_league  # noqa: E402
 from web.basketball_pred_model import get_basketball_pred_context, is_basketball_league  # noqa: E402
+from web.hockey_pred_model import is_hockey_league  # noqa: E402
 from web.football_pred_model import get_football_pred_context, is_football_league  # noqa: E402
-from web.hockey_pred_model import get_hockey_pred_context, is_hockey_league  # noqa: E402
 from web.league_profiles import is_soccer_league  # noqa: E402
 from web.soccer_pred_model import get_soccer_pred_context  # noqa: E402
 from web.blend_service import blend_predictions, compute_model_agreement  # noqa: E402
@@ -63,7 +63,7 @@ from web.pick_strategy import (
 from web.predict_service import FACTOR_LABELS  # noqa: E402
 
 SINGLE_MODEL_BLEND_MODES = frozenset(
-    {"hockey_puckcast", "basketball_matrix", "mlb_runcast", "soccer_path_a"}
+    {"basketball_matrix", "mlb_runcast", "soccer_path_a"}
 )
 
 
@@ -112,18 +112,6 @@ def _sport_layer_factors(blended: dict[str, Any], league: str) -> list[dict[str,
                     "Calibration shift (pp)",
                     float(calibrated) - float(raw),
                 )
-            )
-        if pred.get("market_decorrelated") or blended.get("market_decorrelated"):
-            factors.append(_factor_entry("decorrelation", "Market decorrelation applied", 1.0))
-        return factors
-
-    if league == "nhl":
-        pred = blended.get("hockey_pred") or {}
-        home_xg = pred.get("expected_home_goals")
-        away_xg = pred.get("expected_away_goals")
-        if home_xg is not None and away_xg is not None:
-            factors.append(
-                _factor_entry("xg_margin", "Expected goals (home − away)", float(home_xg) - float(away_xg))
             )
         if pred.get("market_decorrelated") or blended.get("market_decorrelated"):
             factors.append(_factor_entry("decorrelation", "Market decorrelation applied", 1.0))
@@ -275,10 +263,16 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
     with redirect_stdout(io.StringIO()):
         returned_away = odds_calculator.analyze2(away, home, data_away, "away")
         returned_home = odds_calculator.analyze2(home, away, data_home, "home")
-        algo_data = algo.calculate_V2(cutoff, returned_away, returned_home)
+        if is_hockey_league(game.league):
+            algo_data = algo.calculate(cutoff, returned_away, returned_home)
+        else:
+            algo_data = algo.calculate_V2(cutoff, returned_away, returned_home)
 
     legacy_total = float(algo_data["total"])
-    legacy_win_probability = abs(legacy_total)
+    if is_hockey_league(game.league):
+        legacy_win_probability = float(odds_calculator.get_odds(legacy_total))
+    else:
+        legacy_win_probability = abs(legacy_total)
 
     blended = blend_predictions(
         legacy_total_score=legacy_total,
@@ -504,16 +498,6 @@ def _prewarm_league_models(
                     {
                         "league": league,
                         "error": f"Baseball model prewarm failed ({cutoff}): {exc}",
-                    }
-                )
-        if is_hockey_league(league):
-            try:
-                get_hockey_pred_context(league, cutoff)
-            except Exception as exc:  # noqa: BLE001
-                errors.append(
-                    {
-                        "league": league,
-                        "error": f"Hockey model prewarm failed ({cutoff}): {exc}",
                     }
                 )
         if is_football_league(league):

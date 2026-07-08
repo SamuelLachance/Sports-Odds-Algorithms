@@ -369,36 +369,38 @@ def test_model_agreement_soccer_single_model() -> None:
     assert agreement["agreed"] is True
 
 
-def test_blend_nhl_puckcast_only_when_hockey_available() -> None:
-    import web.blend_service as blend_module
+def test_blend_nhl_algo_v1_only() -> None:
+    result = blend_predictions(
+        legacy_total_score=-4.5,
+        legacy_win_probability=58.0,
+        league="nhl",
+        cutoff_date="4-12-2017",
+        home_abbr="bos",
+        away_abbr="mtl",
+    )
+    assert result["blend_mode"] == "algo_v1"
+    assert result["blend_layers"] == 1
+    assert result["algorithm"] == "Algo_V1"
+    assert result["legacy"] is not None
+    assert result["legacy"]["algorithm"] == "Algo_V1"
+    assert result["blended_home_win_probability"] == 58.0
+    assert result.get("hockey_pred") is None
+    assert result.get("power") is None
 
-    hockey_original = blend_module.run_hockey_pred_model
-    try:
-        blend_module.run_hockey_pred_model = lambda *_a, **_k: {
-            "algorithm": "HockeyPuckCast",
-            "source": "puckcast-xg-goalie",
-            "home_win_probability": 55.0,
-            "expected_home_goals": 3.1,
-            "expected_away_goals": 2.7,
-        }
+
+def test_blend_hockey_algo_v1_all_leagues() -> None:
+    for league in ("nhl", "ncaah", "ncaawh"):
         result = blend_predictions(
-            legacy_total_score=-55.0,
+            legacy_total_score=3.0,
             legacy_win_probability=55.0,
-            league="nhl",
-            cutoff_date="4-12-2017",
+            league=league,
+            cutoff_date="1-15-2025",
             home_abbr="bos",
-            away_abbr="mtl",
+            away_abbr="tor",
         )
-        assert result["blend_mode"] == "hockey_puckcast"
-        assert result["blend_layers"] == 1
-        assert result["algorithm"] == "HockeyPuckCast"
-        assert result["hockey_pred"] is not None
-        assert result["hockey_pred"]["source"] == "puckcast-xg-goalie"
-        assert result["blended_home_win_probability"] == 55.0
-        assert result.get("legacy") is None
-        assert result.get("power") is None
-    finally:
-        blend_module.run_hockey_pred_model = hockey_original
+        assert result["blend_mode"] == "algo_v1"
+        assert result["algorithm"] == "Algo_V1"
+        assert result["blended_home_win_probability"] == 45.0
 
 
 def test_blend_nfl_three_way_when_football_available() -> None:

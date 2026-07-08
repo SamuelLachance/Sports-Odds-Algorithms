@@ -25,11 +25,11 @@ Each matchup blends three independent signals (equal weight when all layers are 
 |-------|---------|-------|
 | NBA, WNBA, CBB | Basketball | **BasketballMatrix** — soft-impute SVD on offensive-rating × pace matrices |
 | MLB, NCAA D1 baseball, winter leagues, WBC | Baseball | [MLB-Model](https://github.com/greerreNFL/MLB-Model) Elo ratings |
-| NHL, NCAA D1 hockey | Hockey | [hockey-predictions](https://github.com/greerreNFL/hockey-predictions) Poisson xG model |
+| NHL, NCAA D1 hockey | Hockey | **Algo V1** — weighted factor model (James Quintero NHL profile) |
 | NFL, CFB | Football | [nfelo](https://github.com/greerreNFL/nfelo) Elo ratings |
 | EPL, La Liga, Bundesliga, Serie A, Ligue 1, MLS, UCL, international | Soccer | Elo + Pi-ratings + Dixon–Coles Poisson (1X2 and score projections) |
 
-Layers 1 and 2 (Algo V2 and power ratings) still apply to **baseball** and **football** leagues. **Basketball** (NBA, WNBA, CBB) uses a dedicated **BasketballMatrix** model only: completed-game scores build offensive-rating and pace matrices, missing matchups are imputed via Mazumder et al. soft-impute (nuclear-norm SVD), and projected scores drive win probability and spread picks.
+Layers 1 and 2 (Algo V2 and power ratings) still apply to **baseball** and **football** leagues. **Basketball** (NBA, WNBA, CBB) uses **BasketballMatrix** only. **Hockey** (NHL, NCAA D1 men's and women's) uses **Algo V1** only — eight weighted season factors summed into a signed total, converted to win probability via the original parabolic curve.
 
 Soccer uses a dedicated **three-way blend**: each layer contributes home/draw/away probabilities independently, then the site surfaces projected scores (`xG`), fair 1X2 prices, and value picks when all three layers agree on the same outcome.
 

@@ -196,18 +196,18 @@ function formatSpread(v) {
 }
 
 const SPORT_ALGO_LABELS = {
+  Algo_V1: "Algo V1 win probability",
   BasketballMatrix: "Matrix completion win probability",
   MLBRunCast: "MLB RunCast win probability",
-  HockeyPuckCast: "Hockey PuckCast win probability",
   SoccerPathA: "Soccer Path A 1X2 probabilities",
   Unified: "Unified model",
 };
 
 const SPORT_LAYER_LABELS = {
+  Algo_V1: "Algo V1",
   BasketballMatrix: "BasketballMatrix",
   MLBRunCast: "MLB RunCast",
   SharpBaseball: "SharpBaseball",
-  HockeyPuckCast: "Hockey PuckCast",
   SoccerPathA: "Soccer Path A",
   SharpSoccer: "Soccer Path A",
 };
@@ -222,9 +222,9 @@ function primaryAlgoShort(model) {
   if (!model) return "Model";
   if (model.threeway) return "1X2";
   const short = {
+    Algo_V1: "Algo V1",
     BasketballMatrix: "Matrix",
     MLBRunCast: "MLB RunCast",
-    HockeyPuckCast: "PuckCast",
     SoccerPathA: "Soccer Path A",
     Unified: "Unified",
   };
@@ -659,6 +659,14 @@ function algoBreakdown(m, game) {
         : 100 - legacy.win_probability);
     parts.push(`Legacy V2: ${legacyHome}% home`);
   }
+  if (singleModel && legacy?.algorithm === "Algo_V1") {
+    const legacyHome =
+      legacy.home_win_probability ??
+      (legacy.favorite_side === "home"
+        ? legacy.win_probability
+        : 100 - legacy.win_probability);
+    parts.push(`Algo V1: ${legacyHome}% home · total ${formatRating(legacy.total_score, 2)}`);
+  }
   if (!singleModel && power) {
     parts.push(
       `Power: ${power.home_win_probability}% home (${formatRating(power.home_power)} vs ${formatRating(power.away_power)})`,
@@ -693,7 +701,7 @@ function algoBreakdown(m, game) {
           : "";
     parts.push(`${name}: ${baseball.home_win_probability}% home${runs}`);
   }
-  if (hockey) {
+  if (hockey && m.algorithm !== "Algo_V1") {
     const name = sportLayerDisplayName(hockey) || "Hockey";
     const xg =
       hockey.expected_home_goals != null
@@ -747,6 +755,7 @@ function algoBreakdown(m, game) {
 }
 
 function factorsSectionTitle(m) {
+  if (m?.algorithm === "Algo_V1") return "Algo V1 factor breakdown";
   return (m?.blend_layers || 0) === 1 ? "Model inputs" : "Algo factor breakdown";
 }
 
@@ -876,7 +885,7 @@ function viewDashboard() {
       <div class="tracking-hero-top">
         <div>
           <h1>Sharp Odds dashboard</h1>
-          <p>Today's slate · ${dateLabel} · Per-sport models across ${leagues.length || 0} leagues (NBA uses EnsembleML; MLB, NHL, CBB, and WNBA use dedicated sport models).</p>
+          <p>Today's slate · ${dateLabel} · Per-sport models across ${leagues.length || 0} leagues (NBA uses EnsembleML; basketball, MLB, and soccer use dedicated sport models; hockey uses Algo V1).</p>
           <p class="muted">${slateBreakdown || "No games on today's slate yet."}</p>
         </div>
         <div class="tracking-hero-stats home-stats">

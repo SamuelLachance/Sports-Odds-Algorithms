@@ -18,6 +18,28 @@ from web.league_readiness import (  # noqa: E402
 )
 
 
+def test_hockey_readiness_when_algo_v1_data_available(monkeypatch) -> None:
+    games = [
+        ("bos", "mtl", "Boston", "Montreal", 4, 2),
+        ("mtl", "bos", "Montreal", "Boston", 3, 4),
+        ("bos", "tor", "Boston", "Toronto", 5, 3),
+        ("tor", "mtl", "Toronto", "Montreal", 2, 3),
+        ("bos", "nyr", "Boston", "New York", 4, 4),
+        ("nyr", "tor", "New York", "Toronto", 3, 2),
+    ] * 2
+
+    monkeypatch.setattr(
+        readiness_module,
+        "load_league_completed_games",
+        lambda *_a, **_k: games,
+    )
+
+    for league in ("nhl", "ncaah", "ncaawh"):
+        result = readiness_module.assess_hockey_readiness(league, "4-12-2017")
+        assert result["ready"] is True
+        assert is_league_ready_for_daily_slate(league, "4-12-2017") is True
+
+
 def test_basketball_leagues_use_matrix_readiness(monkeypatch) -> None:
     games = [
         ("bos", "mia", "Boston", "Miami", 110, 100),

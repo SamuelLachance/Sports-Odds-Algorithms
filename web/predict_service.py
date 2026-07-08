@@ -26,6 +26,7 @@ FACTOR_LABELS = {
     "last_10_games_points": "Last 10 games",
     "avg_points": "Average scoring margin",
     "avg_points_10_games": "Scoring margin (last 10)",
+    "win_streak": "Win streak",
     "win_streak_home_away": "Home/away win streak",
 }
 

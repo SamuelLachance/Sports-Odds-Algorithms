@@ -65,12 +65,7 @@ def league_ratings_snapshot(league: str, cutoff_date: str) -> dict[str, Any]:
                         "elo_slow": round(elo.rating_slow, 1),
                     }
         elif is_hockey_league(league):
-            from web.hockey_pred_model import get_hockey_pred_context
-
-            model = get_hockey_pred_context(league, cutoff_date)
-            if model:
-                snapshot["source"].append("hockey_poisson")
-                snapshot["sport_model"]["algorithm"] = "HockeyPoisson"
+            pass
         elif is_football_league(league):
             from web.football_pred_model import get_football_pred_context
 

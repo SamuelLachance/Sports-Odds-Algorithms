@@ -20,11 +20,7 @@ from web.football_pred_model import (
     is_football_league,
     run_football_pred_model,
 )
-from web.hockey_pred_model import (
-    hockey_unavailable_reason,
-    is_hockey_league,
-    run_hockey_pred_model,
-)
+from web.hockey_pred_model import is_hockey_league
 from web.bet_advisor import (
     _odds_edge,
     model_home_margin,
@@ -188,7 +184,7 @@ def _sport_pred_unavailable_reason(
     if is_baseball_league(league):
         return baseball_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
     if is_hockey_league(league):
-        return hockey_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
+        return "Algo V1 unavailable — insufficient season data for factor inputs."
     if is_football_league(league):
         return football_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
     if is_soccer_league(league):
@@ -262,8 +258,7 @@ def _run_sport_pred_model(
         payload = run_baseball_pred_model(league, cutoff_date, home_abbr, away_abbr)
         return ("baseball_pred", payload) if payload else (None, None)
     if is_hockey_league(league):
-        payload = run_hockey_pred_model(league, cutoff_date, home_abbr, away_abbr)
-        return ("hockey_pred", payload) if payload else (None, None)
+        return None, None
     if is_football_league(league):
         payload = run_football_pred_model(league, cutoff_date, home_abbr, away_abbr)
         return ("football_pred", payload) if payload else (None, None)
@@ -648,53 +643,39 @@ def run_power_model(
     }
 
 
-def _blend_hockey_puckcast_only(
-    *,
-    league: str,
-    cutoff_date: str,
-    home_abbr: str,
-    away_abbr: str,
-    home_moneyline: int | None = None,
-    away_moneyline: int | None = None,
-) -> dict[str, Any]:
-    """Hockey uses HockeyPuckCast only — no Algo V2, power, meta, or EnsembleML."""
-    sport_payload = run_hockey_pred_model(
-        league,
-        cutoff_date,
-        home_abbr,
-        away_abbr,
-        home_moneyline=home_moneyline,
-        away_moneyline=away_moneyline,
-    )
-    if not sport_payload:
-        reason = hockey_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
-        return {
-            "algorithm": "HockeyPuckCast",
-            "blend_mode": "hockey_puckcast_unavailable",
-            "blend_layers": 0,
-            "blend_note": reason,
-            "hockey_pred": None,
-            "total_score": 0.0,
-            "win_probability": 50.0,
-            "favorite_side": "neutral",
-        }
+def algo_v1_home_win_probability(total: float, favorite_win_probability: float) -> float:
+    """Map Algo V1 signed total + favorite win% to home win probability."""
+    if total <= 0:
+        return favorite_win_probability
+    return 100.0 - favorite_win_probability
 
-    home_prob = float(sport_payload["home_win_probability"])
+
+def _blend_algo_v1_hockey_only(
+    *,
+    legacy_total_score: float,
+    legacy_win_probability: float,
+) -> dict[str, Any]:
+    """Hockey uses legacy Algo V1 only — weighted factor sum + parabolic win curve."""
+    home_prob = algo_v1_home_win_probability(legacy_total_score, legacy_win_probability)
     total, win_prob = home_win_prob_to_total_score(home_prob)
+    legacy_payload = {
+        "algorithm": "Algo_V1",
+        "total_score": round(legacy_total_score, 2),
+        "win_probability": round(legacy_win_probability, 2),
+        "home_win_probability": round(home_prob, 2),
+        "favorite_side": "home" if legacy_total_score <= 0 else "away",
+        "source": "james-quintero-algo-v1",
+    }
     return {
-        "algorithm": "HockeyPuckCast",
-        "blend_mode": "hockey_puckcast",
+        "algorithm": "Algo_V1",
+        "blend_mode": "algo_v1",
         "blend_layers": 1,
-        "blend_weights": {"hockey_pred": 1.0},
-        "hockey_pred": sport_payload,
+        "blend_weights": {"legacy": 1.0},
+        "legacy": legacy_payload,
         "blended_home_win_probability": round(home_prob, 2),
         "total_score": round(total, 2),
         "win_probability": round(win_prob, 2),
         "favorite_side": "home" if total <= 0 else "away",
-        "expected_home_goals": sport_payload.get("expected_home_goals"),
-        "expected_away_goals": sport_payload.get("expected_away_goals"),
-        "expected_total_goals": sport_payload.get("expected_total_goals"),
-        "overtime_probability": sport_payload.get("overtime_probability"),
     }
 
 
@@ -895,7 +876,7 @@ def blend_predictions(
     """
     Blend Algo_V2 and power model into unified total_score / win_probability.
 
-    Hockey leagues use HockeyPuckCast only. Basketball uses BasketballMatrix only.
+    Hockey leagues use Algo V1 only. Basketball uses BasketballMatrix only.
     Baseball and football use a third sport layer blended via meta weights.
     """
     if is_basketball_league(league):
@@ -907,13 +888,9 @@ def blend_predictions(
         )
 
     if is_hockey_league(league):
-        return _blend_hockey_puckcast_only(
-            league=league,
-            cutoff_date=cutoff_date,
-            home_abbr=home_abbr,
-            away_abbr=away_abbr,
-            home_moneyline=home_moneyline,
-            away_moneyline=away_moneyline,
+        return _blend_algo_v1_hockey_only(
+            legacy_total_score=legacy_total_score,
+            legacy_win_probability=legacy_win_probability,
         )
 
     if is_mlb_league(league):
