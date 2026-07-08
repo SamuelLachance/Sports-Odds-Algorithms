@@ -19,7 +19,7 @@ from web.bet_advisor import (
     spread_line_for_side,
 )
 from web.blend_service import blended_home_spread_margin, home_win_prob_to_total_score
-from web.hubacek_picks import HUBACEK_MIN_MARKET_GAP_PP, official_hubacek_thresholds
+from web.hubacek_picks import HUBACEK_MIN_MARKET_GAP_PP, hubacek_min_win_confidence_pp, official_hubacek_thresholds
 from web.league_profiles import (
     MIN_EXPECTED_VALUE_PCT,
     MIN_RECOMMENDED_EDGE,
@@ -106,6 +106,7 @@ def get_pick_thresholds(league: str) -> dict[str, Any]:
     entry = config.get(league) or config.get(_category_for_league(league)) or config["default"]
     bet_type = entry.get("bet_type") or official_bet_type(league)
     hubacek = official_hubacek_thresholds()
+    hubacek["min_win_confidence_pp"] = hubacek_min_win_confidence_pp(league)
     return {
         "bet_type": bet_type,
         **hubacek,
@@ -1092,6 +1093,7 @@ def evaluate_official_picks_for_game(
             hubacek_only=True,
             blended=blended,
             min_cover_gap_pp=thresholds["min_spread_cover_gap_pp"],
+            min_win_confidence_pp=thresholds["min_win_confidence_pp"],
         )
         return picks
 
@@ -1117,6 +1119,7 @@ def evaluate_official_picks_for_game(
             home_prob=ml_home,
             hubacek_only=True,
             min_market_gap_pp=thresholds["min_market_gap_pp"],
+            min_win_confidence_pp=thresholds["min_win_confidence_pp"],
         )
         return picks
 

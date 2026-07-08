@@ -10,8 +10,11 @@ HUBACEK_MIN_MARKET_GAP_PP = 0.0
 # Spread cover: +EV at juice is sufficient (same as moneyline p̂ > 1/o).
 HUBACEK_MIN_SPREAD_COVER_GAP_PP = 0.0
 
-# Section 5.2 confidence threshold φ ≤ 0.2 → |p̂ − 0.5| > 20 pp.
+# Section 5.2 confidence threshold φ ≤ 0.2 → |p̂ − 0.5| > 20 pp (default sports).
 HUBACEK_MIN_WIN_CONFIDENCE_PP = 20.0
+
+# Baseball moneylines cluster tighter — use a lower φ bar for all baseball leagues.
+HUBACEK_BASEBALL_MIN_WIN_CONFIDENCE_PP = 10.0
 
 _SPORT_PRED_KEYS = ("hockey_pred", "basketball_pred", "baseball_pred", "soccer_pred")
 
@@ -113,6 +116,16 @@ def passes_hubacek_spread_gate(
     return True
 
 
+def hubacek_min_win_confidence_pp(league: str | None = None) -> float:
+    """Per-league Hubáček φ threshold (10 pp for baseball, 20 pp elsewhere)."""
+    if league:
+        from web.baseball_pred_model import is_baseball_league
+
+        if is_baseball_league(league.lower()):
+            return HUBACEK_BASEBALL_MIN_WIN_CONFIDENCE_PP
+    return HUBACEK_MIN_WIN_CONFIDENCE_PP
+
+
 def passes_hubacek_tracked_pick(pick: dict[str, Any]) -> bool:
     """Whether a slate/tracking pick qualifies under Hubáček official rules."""
     if pick.get("strategy") != "hubacek":
@@ -120,7 +133,8 @@ def passes_hubacek_tracked_pick(pick: dict[str, Any]) -> bool:
     if (pick.get("ev_pct") or 0) <= 0:
         return False
     win_prob = pick.get("win_probability")
-    if win_prob is not None and not passes_hubacek_confidence(float(win_prob)):
+    min_pp = hubacek_min_win_confidence_pp(pick.get("league"))
+    if win_prob is not None and not passes_hubacek_confidence(float(win_prob), min_pp=min_pp):
         return False
     gap = pick.get("model_market_gap_pp")
     if gap is not None and float(gap) <= HUBACEK_MIN_MARKET_GAP_PP:

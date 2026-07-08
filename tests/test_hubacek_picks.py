@@ -80,6 +80,24 @@ def test_spread_gate_requires_decorrelated_blend_and_confidence() -> None:
     )
 
 
+def test_baseball_moneyline_gate_uses_lower_confidence_bar() -> None:
+    from web.hubacek_picks import HUBACEK_BASEBALL_MIN_WIN_CONFIDENCE_PP
+
+    assert HUBACEK_BASEBALL_MIN_WIN_CONFIDENCE_PP == 10.0
+    assert passes_hubacek_moneyline_gate(
+        model_prob_pct=62.0,
+        market_implied_pct=55.0,
+        ev_pct=4.0,
+        min_win_confidence_pp=HUBACEK_BASEBALL_MIN_WIN_CONFIDENCE_PP,
+    )
+    assert not passes_hubacek_moneyline_gate(
+        model_prob_pct=62.0,
+        market_implied_pct=55.0,
+        ev_pct=4.0,
+        min_win_confidence_pp=20.0,
+    )
+
+
 def test_tracked_pick_requires_hubacek_strategy_ev_and_confidence() -> None:
     assert passes_hubacek_tracked_pick(
         {
@@ -95,6 +113,16 @@ def test_tracked_pick_requires_hubacek_strategy_ev_and_confidence() -> None:
             "model_market_gap_pp": 3.0,
             "ev_pct": 1.0,
             "win_probability": 55,
+            "league": "mlb",
+        }
+    )
+    assert passes_hubacek_tracked_pick(
+        {
+            "strategy": "hubacek",
+            "model_market_gap_pp": 3.0,
+            "ev_pct": 1.0,
+            "win_probability": 62,
+            "league": "mlb",
         }
     )
     assert not passes_hubacek_tracked_pick(

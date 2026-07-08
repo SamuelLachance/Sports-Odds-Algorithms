@@ -137,10 +137,19 @@ def test_official_picks_use_hubacek_strategy_when_qualifying() -> None:
         assert (picks[0].extra.get("model_market_gap_pp") or 0) > 0
 
 
+def test_mlb_pick_thresholds_use_baseball_confidence() -> None:
+    thresholds = get_pick_thresholds("mlb")
+    assert thresholds["min_win_confidence_pp"] == 10.0
+    thresholds_ncaabb = get_pick_thresholds("ncaabb")
+    assert thresholds_ncaabb["min_win_confidence_pp"] == 10.0
+
+
 def test_mlb_official_picks_use_moneyline_decorrelation() -> None:
-    pre_home = 70.0
+    from web.hubacek_picks import HUBACEK_BASEBALL_MIN_WIN_CONFIDENCE_PP
+
+    pre_home = 62.0
     decor_home = decorrelate_binary(pre_home, 55.0)
-    assert abs(decor_home - 50.0) >= HUBACEK_MIN_WIN_CONFIDENCE_PP
+    assert abs(decor_home - 50.0) >= HUBACEK_BASEBALL_MIN_WIN_CONFIDENCE_PP
     blended = {
         "total_score": -decor_home,
         "win_probability": decor_home,
