@@ -1,4 +1,39 @@
 {
   "version": 1,
-  "bets": []
+  "bets": [
+    {
+      "id": "2026-07-08:401857050:away:spread",
+      "date": "2026-07-08",
+      "event_id": "401857050",
+      "league": "wnba",
+      "league_name": "WNBA",
+      "side": "away",
+      "team_name": "Indiana Fever",
+      "team_slug": "indiana-fever",
+      "team_abbr": "ind",
+      "matchup": "Indiana Fever @ Los Angeles Sparks",
+      "start_time": "2026-07-09T02:00Z",
+      "strategy": "hubacek",
+      "strategy_label": "Hub\u00e1\u010dek spot",
+      "confidence": "high",
+      "edge": 307.0,
+      "ev_pct": 49.55,
+      "model_projection": -425,
+      "market_odds": -118,
+      "win_probability": 80.95,
+      "reason": "Hub\u00e1\u010dek spot on Indiana Fever -6.5: decorrelated cover 80.9% vs market 0.5% (+80.4 pp, +49.6% EV).",
+      "bet_type": "spread",
+      "spread_line": -6.5,
+      "spread_odds": -118,
+      "consensus_spread": 6.5,
+      "consensus_odds": -118,
+      "consensus_label": "-6.5 (-118)",
+      "model_margin": 12.69,
+      "model_market_gap_pp": 80.41,
+      "status": "pending",
+      "units": 0.0,
+      "stake_units": 1.0,
+      "recorded_at": "2026-07-08T13:45:23.242662+00:00"
+    }
+  ]
 }
