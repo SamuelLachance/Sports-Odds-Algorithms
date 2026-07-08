@@ -18,9 +18,29 @@ from web.league_readiness import (  # noqa: E402
 )
 
 
-def test_basketball_leagues_skip_readiness_gate() -> None:
-    assert uses_three_layer_readiness_gate("nba") is False
-    assert is_league_ready_for_daily_slate("nba", "6-11-2026") is True
+def test_basketball_leagues_use_matrix_readiness(monkeypatch) -> None:
+    games = [
+        ("bos", "mia", "Boston", "Miami", 110, 100),
+        ("mia", "bos", "Miami", "Boston", 98, 105),
+    ] * 12
+
+    monkeypatch.setattr(
+        readiness_module,
+        "load_league_completed_games",
+        lambda *_a, **_k: games,
+    )
+    monkeypatch.setattr(
+        readiness_module,
+        "get_basketball_pred_context",
+        lambda *_a, **_k: {
+            "team_game_counts": {"bos": 10, "mia": 10, "lal": 8, "gsw": 8},
+        },
+    )
+
+    for league in ("nba", "wnba", "cbb"):
+        result = readiness_module.assess_basketball_readiness(league, "6-11-2026")
+        assert result["ready"] is True
+        assert is_league_ready_for_daily_slate(league, "6-11-2026") is True
 
 
 def test_baseball_leagues_use_readiness_gate() -> None:

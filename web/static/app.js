@@ -196,20 +196,18 @@ function formatSpread(v) {
 }
 
 const SPORT_ALGO_LABELS = {
+  BasketballMatrix: "Matrix completion win probability",
   MLBRunCast: "MLB RunCast win probability",
   HockeyPuckCast: "Hockey PuckCast win probability",
-  CBBTorvik: "CBB Torvik win probability",
-  WNBAEloXGB: "WNBA Elo+XGB win probability",
   SoccerPathA: "Soccer Path A 1X2 probabilities",
   Unified: "Unified model",
 };
 
 const SPORT_LAYER_LABELS = {
+  BasketballMatrix: "BasketballMatrix",
   MLBRunCast: "MLB RunCast",
   SharpBaseball: "SharpBaseball",
   HockeyPuckCast: "Hockey PuckCast",
-  CBBTorvik: "CBB Torvik",
-  WNBAEloXGB: "WNBA Elo+XGB",
   SoccerPathA: "Soccer Path A",
   SharpSoccer: "Soccer Path A",
 };
@@ -224,10 +222,9 @@ function primaryAlgoShort(model) {
   if (!model) return "Model";
   if (model.threeway) return "1X2";
   const short = {
+    BasketballMatrix: "Matrix",
     MLBRunCast: "MLB RunCast",
     HockeyPuckCast: "PuckCast",
-    CBBTorvik: "CBB Torvik",
-    WNBAEloXGB: "WNBA Elo+XGB",
     SoccerPathA: "Soccer Path A",
     Unified: "Unified",
   };
@@ -668,8 +665,23 @@ function algoBreakdown(m, game) {
     );
   }
   if (basketball) {
-    const name = sportLayerDisplayName(basketball) || "Matrix";
-    parts.push(`${name}: ${basketball.home_win_probability}% home`);
+    const name = sportLayerDisplayName(basketball) || "BasketballMatrix";
+    const scores =
+      basketball.predicted_home_score != null && basketball.predicted_away_score != null
+        ? ` · ${basketball.predicted_away_score}-${basketball.predicted_home_score}`
+        : "";
+    const orPace =
+      basketball.predicted_home_offensive_rating != null &&
+      basketball.predicted_away_offensive_rating != null
+        ? ` · OR ${formatRating(basketball.predicted_home_offensive_rating)}/${formatRating(basketball.predicted_away_offensive_rating)}`
+        : "";
+    const pace =
+      basketball.predicted_pace != null
+        ? ` pace ${formatRating(basketball.predicted_pace)}`
+        : "";
+    parts.push(
+      `${name}: ${basketball.home_win_probability}% home${scores}${orPace}${pace}`,
+    );
   }
   if (baseball) {
     const name = sportLayerDisplayName(baseball) || "SharpBaseball";

@@ -1,4 +1,4 @@
-"""NBA-prediction style matrix completion for basketball win probability."""
+"""Basketball win probability via offensive-rating × pace matrix completion (soft-impute SVD)."""
 
 from __future__ import annotations
 
@@ -347,6 +347,9 @@ def predict_matchup_from_model(
     home_adv = float(model["home_adv"])
     param = float(model["param"])
 
+    home_or = or_matrix[hi][ai]
+    away_or = or_matrix[ai][hi]
+    matchup_pace = pace_matrix[hi][ai]
     home_points = _predict_points(or_matrix, pace_matrix, hi, ai) + home_adv
     away_points = _predict_points(or_matrix, pace_matrix, ai, hi)
     margin = home_points - away_points
@@ -356,6 +359,9 @@ def predict_matchup_from_model(
     return {
         "home_key": home,
         "away_key": away,
+        "predicted_home_offensive_rating": round(home_or, 2),
+        "predicted_away_offensive_rating": round(away_or, 2),
+        "predicted_pace": round(matchup_pace, 2),
         "predicted_home_score": round(home_points, 1),
         "predicted_away_score": round(away_points, 1),
         "predicted_margin": round(margin, 2),
@@ -364,14 +370,40 @@ def predict_matchup_from_model(
     }
 
 
+def basketball_unavailable_reason(
+    league: str,
+    cutoff_date: str,
+    home_abbr: str,
+    away_abbr: str,
+) -> str:
+    """Human-readable reason when the matrix model cannot predict a matchup."""
+    league = league.lower()
+    if not is_basketball_league(league):
+        return "Not a basketball league"
+    games = load_league_completed_games(league, cutoff_date)
+    if len(games) < MIN_LEAGUE_GAMES:
+        return (
+            f"Insufficient completed games ({len(games)} < {MIN_LEAGUE_GAMES}) "
+            "— likely off-season or sparse schedule."
+        )
+    model = build_basketball_model(games, league)
+    if not model:
+        return "Could not build offensive-rating matrix on available games."
+    counts = model["team_game_counts"]
+    home = home_abbr.lower()
+    away = away_abbr.lower()
+    if home not in counts or away not in counts:
+        missing = [key for key in (home, away) if key not in counts]
+        return f"Teams not found in matrix model: {', '.join(missing)}."
+    if counts.get(home, 0) < MIN_TEAM_GAMES or counts.get(away, 0) < MIN_TEAM_GAMES:
+        return "Teams have insufficient games for matrix completion."
+    return "Basketball matrix model unavailable."
+
+
 @lru_cache(maxsize=32)
 def get_basketball_pred_context(league: str, cutoff_date: str) -> dict[str, Any] | None:
     league = league.lower()
     if not is_basketball_league(league):
-        return None
-    if league == "cbb":
-        return None
-    if league == "wnba":
         return None
     games = load_league_completed_games(league, cutoff_date)
     return build_basketball_model(games, league)
@@ -384,28 +416,11 @@ def run_basketball_pred_model(
     away_abbr: str,
     **kwargs: Any,
 ) -> dict[str, Any] | None:
-    """Run NBA-prediction matrix model for NBA/WNBA; CBB uses Torvik stack."""
+    """Predict a basketball matchup from soft-impute OR × pace matrices (NBA, WNBA, CBB)."""
+    del kwargs  # single-model path; no market-decorrelation hooks
     league = league.lower()
-    if league == "cbb":
-        from web.cbb_pred_model import run_cbb_pred_model
-
-        return run_cbb_pred_model(
-            league,
-            cutoff_date,
-            home_abbr,
-            away_abbr,
-            **kwargs,
-        )
-    if league == "wnba":
-        from web.wnba_pred_model import run_wnba_pred_model
-
-        return run_wnba_pred_model(
-            league,
-            cutoff_date,
-            home_abbr,
-            away_abbr,
-            **kwargs,
-        )
+    if not is_basketball_league(league):
+        return None
 
     context = get_basketball_pred_context(league, cutoff_date)
     if not context:
@@ -421,13 +436,25 @@ def run_basketball_pred_model(
     if home_games < MIN_TEAM_GAMES or away_games < MIN_TEAM_GAMES:
         return None
 
+    config = LEAGUE_SOFT_IMPUTE.get(league, LEAGUE_SOFT_IMPUTE["nba"])
+
     return {
         "algorithm": "BasketballMatrix",
-        "source": "NBA-prediction",
+        "source": "soft-impute-svd",
+        "model_theory": (
+            "Offensive rating × pace matrix completion "
+            "(Mazumder et al. soft-impute / nuclear-norm SVD)"
+        ),
         "home_win_probability": prediction["home_win_probability"],
         "predicted_home_score": prediction["predicted_home_score"],
         "predicted_away_score": prediction["predicted_away_score"],
         "predicted_margin": prediction["predicted_margin"],
+        "predicted_home_offensive_rating": prediction["predicted_home_offensive_rating"],
+        "predicted_away_offensive_rating": prediction["predicted_away_offensive_rating"],
+        "predicted_pace": prediction["predicted_pace"],
+        "home_adv": config["home_adv"],
+        "or_lambda": config["or_lambda"],
+        "pace_lambda": config["pace_lambda"],
         "param": prediction["param"],
         "home_games": home_games,
         "away_games": away_games,

@@ -92,7 +92,7 @@ def test_blend_with_espn_ids_and_slugs_calls_db_rating_without_espn_kwargs() -> 
             result = blend_predictions(
                 legacy_total_score=-60.0,
                 legacy_win_probability=60.0,
-                league="nba",
+                league="nfl",
                 cutoff_date="6-12-2026",
                 home_abbr="bos",
                 away_abbr="mia",
@@ -118,7 +118,7 @@ def test_blend_legacy_only_when_power_unavailable() -> None:
         result = blend_predictions(
             legacy_total_score=-60.0,
             legacy_win_probability=60.0,
-            league="nba",
+            league="nfl",
             cutoff_date="6-11-2026",
             home_abbr="bos",
             away_abbr="ny",
@@ -138,7 +138,7 @@ def test_blend_averages_home_win_probs() -> None:
     import web.blend_service as blend_module
 
     power_original = blend_module.run_power_model
-    basketball_original = blend_module.run_basketball_pred_model
+    football_original = blend_module.run_football_pred_model
     try:
         blend_module.run_power_model = lambda *_a, **_k: {
             "algorithm": "PowerRatings",
@@ -147,11 +147,11 @@ def test_blend_averages_home_win_probs() -> None:
             "home_win_probability": 70.0,
             "param": 10.0,
         }
-        blend_module.run_basketball_pred_model = lambda *_a, **_k: None
+        blend_module.run_football_pred_model = lambda *_a, **_k: None
         result = blend_predictions(
             legacy_total_score=-60.0,
             legacy_win_probability=60.0,
-            league="nba",
+            league="nfl",
             cutoff_date="6-11-2026",
             home_abbr="bos",
             away_abbr="ny",
@@ -163,7 +163,7 @@ def test_blend_averages_home_win_probs() -> None:
         assert result["win_probability"] == 65.0
     finally:
         blend_module.run_power_model = power_original
-        blend_module.run_basketball_pred_model = basketball_original
+        blend_module.run_football_pred_model = football_original
 
 
 def test_blend_with_power_integration_when_games_exist() -> None:
@@ -180,7 +180,7 @@ def test_blend_with_power_integration_when_games_exist() -> None:
             result = blend_predictions(
                 legacy_total_score=-60.0,
                 legacy_win_probability=60.0,
-                league="nba",
+                league="nfl",
                 cutoff_date="6-12-2026",
                 home_abbr="bos",
                 away_abbr="ny",
@@ -255,82 +255,49 @@ def test_blend_mlb_runcast_unavailable_fallback() -> None:
         blend_module.run_mlb_pred_model = mlb_original
 
 
-def test_blend_cbb_torvik_only_when_available() -> None:
+def test_blend_basketball_matrix_only_when_available() -> None:
     import web.blend_service as blend_module
 
-    cbb_original = blend_module.run_cbb_pred_model
+    basketball_original = blend_module.run_basketball_pred_model
     try:
-        blend_module.run_cbb_pred_model = lambda *_a, **_k: {
-            "algorithm": "CBBTorvik",
-            "source": "torvik-efficiency-calibrated",
+        blend_module.run_basketball_pred_model = lambda *_a, **_k: {
+            "algorithm": "BasketballMatrix",
+            "source": "soft-impute-svd",
             "home_win_probability": 58.0,
             "predicted_margin": 4.5,
-            "cbb_pick_signals": {"disagreement_signal": True},
+            "predicted_home_score": 112.3,
+            "predicted_away_score": 107.8,
+            "predicted_home_offensive_rating": 115.2,
+            "predicted_away_offensive_rating": 110.1,
+            "predicted_pace": 98.5,
         }
-        result = blend_predictions(
-            legacy_total_score=-58.0,
-            legacy_win_probability=58.0,
-            league="cbb",
-            cutoff_date="11-15-2024",
-            home_abbr="duke",
-            away_abbr="unc",
-        )
-        assert result["blend_mode"] == "cbb_torvik"
-        assert result["blend_layers"] == 1
-        assert result["algorithm"] == "CBBTorvik"
-        assert result["basketball_pred"] is not None
-        assert result["basketball_pred"]["source"] == "torvik-efficiency-calibrated"
-        assert result["blended_home_win_probability"] == 58.0
-        assert result.get("legacy") is None
-        assert result.get("power") is None
+        for league in ("nba", "wnba", "cbb"):
+            result = blend_predictions(
+                legacy_total_score=-58.0,
+                legacy_win_probability=58.0,
+                league=league,
+                cutoff_date="11-15-2024",
+                home_abbr="duke",
+                away_abbr="unc",
+            )
+            assert result["blend_mode"] == "basketball_matrix"
+            assert result["blend_layers"] == 1
+            assert result["algorithm"] == "BasketballMatrix"
+            assert result["basketball_pred"] is not None
+            assert result["basketball_pred"]["source"] == "soft-impute-svd"
+            assert result["blended_home_win_probability"] == 58.0
+            assert result.get("legacy") is None
+            assert result.get("power") is None
+            assert result.get("home_spread_margin") == -4.5
     finally:
-        blend_module.run_cbb_pred_model = cbb_original
+        blend_module.run_basketball_pred_model = basketball_original
 
 
-def test_blend_wnba_elo_xgb_only_when_available() -> None:
-    import web.blend_service as blend_module
-
-    wnba_original = blend_module.run_wnba_pred_model
-    try:
-        blend_module.run_wnba_pred_model = lambda *_a, **_k: {
-            "algorithm": "WNBAEloXGB",
-            "source": "elo-efficiency-xgb-calibrated",
-            "home_win_probability": 57.0,
-            "predicted_margin": 3.5,
-            "wnba_pick_signals": {"disagreement_signal": True},
-        }
-        result = blend_predictions(
-            legacy_total_score=-57.0,
-            legacy_win_probability=57.0,
-            league="wnba",
-            cutoff_date="06-15-2025",
-            home_abbr="sea",
-            away_abbr="lv",
-        )
-        assert result["blend_mode"] == "wnba_elo_xgb"
-        assert result["blend_layers"] == 1
-        assert result["algorithm"] == "WNBAEloXGB"
-        assert result["basketball_pred"] is not None
-        assert result["basketball_pred"]["source"] == "elo-efficiency-xgb-calibrated"
-        assert result["blended_home_win_probability"] == 57.0
-        assert result.get("legacy") is None
-        assert result.get("power") is None
-        assert result.get("home_spread_margin") == -3.5
-        assert result.get("wnba_pick_signals", {}).get("disagreement_signal") is True
-    finally:
-        blend_module.run_wnba_pred_model = wnba_original
-
-
-def test_model_agreement_wnba_single_model() -> None:
-    agreement = compute_model_agreement({"legacy": {"favorite_side": "home"}}, "wnba")
-    assert agreement["required"] == 0
-    assert agreement["agreed"] is True
-
-
-def test_model_agreement_cbb_single_model() -> None:
-    agreement = compute_model_agreement({"legacy": {"favorite_side": "home"}}, "cbb")
-    assert agreement["required"] == 0
-    assert agreement["agreed"] is True
+def test_model_agreement_basketball_single_model() -> None:
+    for league in ("nba", "wnba", "cbb"):
+        agreement = compute_model_agreement({"legacy": {"favorite_side": "home"}}, league)
+        assert agreement["required"] == 0
+        assert agreement["agreed"] is True
 
 
 def test_blend_soccer_path_a_only_when_available() -> None:
@@ -503,23 +470,16 @@ def test_blend_cfb_three_way_when_football_available() -> None:
         blend_module.run_football_pred_model = football_original
 
 
-def test_blend_nba_three_way_when_basketball_available() -> None:
+def test_blend_nba_matrix_only_ignores_legacy_layers() -> None:
     import web.blend_service as blend_module
 
-    power_original = blend_module.run_power_model
     basketball_original = blend_module.run_basketball_pred_model
     try:
-        blend_module.run_power_model = lambda *_a, **_k: {
-            "algorithm": "PowerRatings",
-            "home_power": 5.0,
-            "away_power": 1.0,
-            "home_win_probability": 70.0,
-            "param": 10.0,
-        }
         blend_module.run_basketball_pred_model = lambda *_a, **_k: {
             "algorithm": "BasketballMatrix",
-            "source": "NBA-prediction",
+            "source": "soft-impute-svd",
             "home_win_probability": 62.0,
+            "predicted_margin": 3.0,
         }
         result = blend_predictions(
             legacy_total_score=-60.0,
@@ -529,19 +489,21 @@ def test_blend_nba_three_way_when_basketball_available() -> None:
             home_abbr="bos",
             away_abbr="ny",
         )
-        assert result["blend_layers"] == 3
+        assert result["blend_mode"] == "basketball_matrix"
+        assert result["blend_layers"] == 1
         assert result["basketball_pred"] is not None
-        assert result["blended_home_win_probability"] == round((60.0 + 70.0 + 62.0) / 3, 2)
+        assert result["blended_home_win_probability"] == 62.0
+        assert result.get("legacy") is None
+        assert result.get("power") is None
     finally:
-        blend_module.run_power_model = power_original
         blend_module.run_basketball_pred_model = basketball_original
 
 
-def test_model_agreement_nba_three_layers_agree() -> None:
+def test_model_agreement_nfl_three_layers_agree() -> None:
     import web.blend_service as blend_module
 
     power_original = blend_module.run_power_model
-    basketball_original = blend_module.run_basketball_pred_model
+    football_original = blend_module.run_football_pred_model
     try:
         blend_module.run_power_model = lambda *_a, **_k: {
             "algorithm": "PowerRatings",
@@ -550,22 +512,22 @@ def test_model_agreement_nba_three_layers_agree() -> None:
             "home_win_probability": 62.0,
             "param": 10.0,
         }
-        blend_module.run_basketball_pred_model = lambda *_a, **_k: {
-            "algorithm": "BasketballMatrix",
+        blend_module.run_football_pred_model = lambda *_a, **_k: {
+            "algorithm": "NfeloElo",
             "home_win_probability": 64.0,
-            "source": "matrix",
+            "source": "nfelo",
         }
         result = blend_predictions(
             legacy_total_score=-60.0,
             legacy_win_probability=60.0,
-            league="nba",
+            league="nfl",
             cutoff_date="4-16-2017",
             home_abbr="bos",
             away_abbr="mia",
         )
         agreement = compute_model_agreement(
             result,
-            "nba",
+            "nfl",
             market={"away_moneyline": 110, "home_moneyline": -110},
         )
         assert agreement["required"] == 3
@@ -575,17 +537,17 @@ def test_model_agreement_nba_three_layers_agree() -> None:
         assert agreement["legacy_side"] == "home"
         assert agreement["power_side"] == "home"
         assert agreement["third_side"] == "home"
-        assert agreement["third_source"] == "basketball_pred"
+        assert agreement["third_source"] == "football_pred"
     finally:
         blend_module.run_power_model = power_original
-        blend_module.run_basketball_pred_model = basketball_original
+        blend_module.run_football_pred_model = football_original
 
 
-def test_model_agreement_nba_value_on_underdog_despite_favorite_disagreement() -> None:
+def test_model_agreement_nfl_value_on_underdog_despite_favorite_disagreement() -> None:
     import web.blend_service as blend_module
 
     power_original = blend_module.run_power_model
-    basketball_original = blend_module.run_basketball_pred_model
+    football_original = blend_module.run_football_pred_model
     try:
         blend_module.run_power_model = lambda *_a, **_k: {
             "algorithm": "PowerRatings",
@@ -594,22 +556,22 @@ def test_model_agreement_nba_value_on_underdog_despite_favorite_disagreement() -
             "home_win_probability": 42.0,
             "param": 10.0,
         }
-        blend_module.run_basketball_pred_model = lambda *_a, **_k: {
-            "algorithm": "BasketballMatrix",
+        blend_module.run_football_pred_model = lambda *_a, **_k: {
+            "algorithm": "NfeloElo",
             "home_win_probability": 64.0,
-            "source": "matrix",
+            "source": "nfelo",
         }
         result = blend_predictions(
             legacy_total_score=-60.0,
             legacy_win_probability=60.0,
-            league="nba",
+            league="nfl",
             cutoff_date="4-16-2017",
             home_abbr="bos",
             away_abbr="mia",
         )
         agreement = compute_model_agreement(
             result,
-            "nba",
+            "nfl",
             market={"away_moneyline": 220, "home_moneyline": -260},
         )
         assert agreement["required"] == 3
@@ -620,14 +582,14 @@ def test_model_agreement_nba_value_on_underdog_despite_favorite_disagreement() -
         assert agreement["third_side"] == "away"
     finally:
         blend_module.run_power_model = power_original
-        blend_module.run_basketball_pred_model = basketball_original
+        blend_module.run_football_pred_model = football_original
 
 
-def test_model_agreement_nba_three_layers_disagree() -> None:
+def test_model_agreement_nfl_three_layers_disagree() -> None:
     import web.blend_service as blend_module
 
     power_original = blend_module.run_power_model
-    basketball_original = blend_module.run_basketball_pred_model
+    football_original = blend_module.run_football_pred_model
     try:
         blend_module.run_power_model = lambda *_a, **_k: {
             "algorithm": "PowerRatings",
@@ -636,22 +598,22 @@ def test_model_agreement_nba_three_layers_disagree() -> None:
             "home_win_probability": 42.0,
             "param": 10.0,
         }
-        blend_module.run_basketball_pred_model = lambda *_a, **_k: {
-            "algorithm": "BasketballMatrix",
+        blend_module.run_football_pred_model = lambda *_a, **_k: {
+            "algorithm": "NfeloElo",
             "home_win_probability": 64.0,
-            "source": "matrix",
+            "source": "nfelo",
         }
         result = blend_predictions(
             legacy_total_score=-60.0,
             legacy_win_probability=60.0,
-            league="nba",
+            league="nfl",
             cutoff_date="4-16-2017",
             home_abbr="bos",
             away_abbr="mia",
         )
         agreement = compute_model_agreement(
             result,
-            "nba",
+            "nfl",
             market={"away_moneyline": 70, "home_moneyline": -110},
         )
         assert agreement["required"] == 3
@@ -659,14 +621,14 @@ def test_model_agreement_nba_three_layers_disagree() -> None:
         assert agreement["value_sides"] == []
     finally:
         blend_module.run_power_model = power_original
-        blend_module.run_basketball_pred_model = basketball_original
+        blend_module.run_football_pred_model = football_original
 
 
-def test_model_agreement_nba_one_layer_lacks_shared_value() -> None:
+def test_model_agreement_nfl_one_layer_lacks_shared_value() -> None:
     import web.blend_service as blend_module
 
     power_original = blend_module.run_power_model
-    basketball_original = blend_module.run_basketball_pred_model
+    football_original = blend_module.run_football_pred_model
     try:
         blend_module.run_power_model = lambda *_a, **_k: {
             "algorithm": "PowerRatings",
@@ -675,40 +637,39 @@ def test_model_agreement_nba_one_layer_lacks_shared_value() -> None:
             "home_win_probability": 62.0,
             "param": 10.0,
         }
-        blend_module.run_basketball_pred_model = lambda *_a, **_k: {
-            "algorithm": "BasketballMatrix",
+        blend_module.run_football_pred_model = lambda *_a, **_k: {
+            "algorithm": "NfeloElo",
             "home_win_probability": 64.0,
-            "source": "matrix",
+            "source": "nfelo",
         }
         result = blend_predictions(
             legacy_total_score=-60.0,
             legacy_win_probability=60.0,
-            league="nba",
+            league="nfl",
             cutoff_date="4-16-2017",
             home_abbr="bos",
             away_abbr="mia",
         )
         agreement = compute_model_agreement(
             result,
-            "nba",
+            "nfl",
             market={"away_moneyline": 200, "home_moneyline": -230},
         )
         assert agreement["required"] == 3
         assert agreement["agreed"] is False
         assert agreement["legacy_side"] == "away"
-        # 25+ edge threshold: power finds away value; basketball still lacks ML edge.
         assert agreement["power_side"] == "away"
         assert agreement["third_side"] is None
     finally:
         blend_module.run_power_model = power_original
-        blend_module.run_basketball_pred_model = basketball_original
+        blend_module.run_football_pred_model = football_original
 
 
 def test_model_agreement_two_layer_fallback_not_agreed() -> None:
     import web.blend_service as blend_module
 
     power_original = blend_module.run_power_model
-    basketball_original = blend_module.run_basketball_pred_model
+    football_original = blend_module.run_football_pred_model
     try:
         blend_module.run_power_model = lambda *_a, **_k: {
             "algorithm": "PowerRatings",
@@ -717,29 +678,29 @@ def test_model_agreement_two_layer_fallback_not_agreed() -> None:
             "home_win_probability": 62.0,
             "param": 10.0,
         }
-        blend_module.run_basketball_pred_model = lambda *_a, **_k: None
+        blend_module.run_football_pred_model = lambda *_a, **_k: None
         result = blend_predictions(
             legacy_total_score=-60.0,
             legacy_win_probability=60.0,
-            league="nba",
+            league="nfl",
             cutoff_date="4-16-2017",
             home_abbr="bos",
             away_abbr="mia",
         )
-        agreement = compute_model_agreement(result, "nba")
+        agreement = compute_model_agreement(result, "nfl")
         assert agreement["required"] == 3
         assert agreement["agreed"] is False
         assert result["blend_layers"] == 2
     finally:
         blend_module.run_power_model = power_original
-        blend_module.run_basketball_pred_model = basketball_original
+        blend_module.run_football_pred_model = football_original
 
 
-def test_model_agreement_nba_spread_three_layers_agree() -> None:
+def test_model_agreement_nfl_spread_three_layers_agree() -> None:
     import web.blend_service as blend_module
 
     power_original = blend_module.run_power_model
-    basketball_original = blend_module.run_basketball_pred_model
+    football_original = blend_module.run_football_pred_model
     try:
         blend_module.run_power_model = lambda *_a, **_k: {
             "algorithm": "PowerRatings",
@@ -747,24 +708,25 @@ def test_model_agreement_nba_spread_three_layers_agree() -> None:
             "away_power": -2.0,
             "home_win_probability": 97.0,
             "param": 10.0,
-        }
-        blend_module.run_basketball_pred_model = lambda *_a, **_k: {
-            "algorithm": "BasketballMatrix",
-            "home_win_probability": 96.0,
             "predicted_margin": 8.0,
-            "source": "matrix",
+        }
+        blend_module.run_football_pred_model = lambda *_a, **_k: {
+            "algorithm": "NfeloElo",
+            "home_win_probability": 96.0,
+            "projected_spread": -8.0,
+            "source": "nfelo",
         }
         result = blend_predictions(
             legacy_total_score=-99.0,
             legacy_win_probability=99.0,
-            league="nba",
+            league="nfl",
             cutoff_date="4-16-2017",
             home_abbr="bos",
             away_abbr="mia",
         )
         agreement = compute_model_agreement(
             result,
-            "nba",
+            "nfl",
             market={
                 "spread": -1.5,
                 "away_spread_odds": -110,
@@ -776,7 +738,7 @@ def test_model_agreement_nba_spread_three_layers_agree() -> None:
         assert "home" in agreement["value_sides"]
     finally:
         blend_module.run_power_model = power_original
-        blend_module.run_basketball_pred_model = basketball_original
+        blend_module.run_football_pred_model = football_original
 
 
 def test_model_agreement_nhl_single_model() -> None:
@@ -836,12 +798,13 @@ if __name__ == "__main__":
     test_blend_with_power_integration_when_games_exist()
     test_blend_mlb_runcast_only_when_available()
     test_blend_mlb_runcast_unavailable_fallback()
-    test_blend_nba_three_way_when_basketball_available()
-    test_model_agreement_nba_three_layers_agree()
-    test_model_agreement_nba_value_on_underdog_despite_favorite_disagreement()
-    test_model_agreement_nba_three_layers_disagree()
-    test_model_agreement_nba_one_layer_lacks_shared_value()
+    test_blend_basketball_matrix_only_when_available()
+    test_blend_nba_matrix_only_ignores_legacy_layers()
+    test_model_agreement_nfl_three_layers_agree()
+    test_model_agreement_nfl_value_on_underdog_despite_favorite_disagreement()
+    test_model_agreement_nfl_three_layers_disagree()
+    test_model_agreement_nfl_one_layer_lacks_shared_value()
     test_model_agreement_two_layer_fallback_not_agreed()
-    test_model_agreement_nba_spread_three_layers_agree()
+    test_model_agreement_nfl_spread_three_layers_agree()
     test_model_agreement_nhl_single_model()
     print("test_blend_service.py: all tests passed")

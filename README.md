@@ -21,15 +21,15 @@ Daily algorithmic sports betting platform across **NBA, WNBA, CBB, NFL, CFB, NHL
 
 Each matchup blends three independent signals (equal weight when all layers are available):
 
-| Sport | Leagues | Third layer |
-|-------|---------|-------------|
-| NBA, WNBA, CBB | Basketball | [NBA-prediction](https://github.com/greerreNFL/NBA-prediction) matrix model |
+| Sport | Leagues | Model |
+|-------|---------|-------|
+| NBA, WNBA, CBB | Basketball | **BasketballMatrix** — soft-impute SVD on offensive-rating × pace matrices |
 | MLB, NCAA D1 baseball, winter leagues, WBC | Baseball | [MLB-Model](https://github.com/greerreNFL/MLB-Model) Elo ratings |
 | NHL, NCAA D1 hockey | Hockey | [hockey-predictions](https://github.com/greerreNFL/hockey-predictions) Poisson xG model |
 | NFL, CFB | Football | [nfelo](https://github.com/greerreNFL/nfelo) Elo ratings |
 | EPL, La Liga, Bundesliga, Serie A, Ligue 1, MLS, UCL, international | Soccer | Elo + Pi-ratings + Dixon–Coles Poisson (1X2 and score projections) |
 
-Layers 1 and 2 are the original **Algo V2** (backtest-derived factor curves on current-season results) and **Sports-pred power ratings** (team strength from season performance).
+Layers 1 and 2 (Algo V2 and power ratings) still apply to **baseball** and **football** leagues. **Basketball** (NBA, WNBA, CBB) uses a dedicated **BasketballMatrix** model only: completed-game scores build offensive-rating and pace matrices, missing matchups are imputed via Mazumder et al. soft-impute (nuclear-norm SVD), and projected scores drive win probability and spread picks.
 
 Soccer uses a dedicated **three-way blend**: each layer contributes home/draw/away probabilities independently, then the site surfaces projected scores (`xG`), fair 1X2 prices, and value picks when all three layers agree on the same outcome.
 

@@ -63,7 +63,7 @@ from web.pick_strategy import (
 from web.predict_service import FACTOR_LABELS  # noqa: E402
 
 SINGLE_MODEL_BLEND_MODES = frozenset(
-    {"hockey_puckcast", "cbb_torvik", "wnba_elo_xgb", "mlb_runcast", "soccer_path_a"}
+    {"hockey_puckcast", "basketball_matrix", "mlb_runcast", "soccer_path_a"}
 )
 
 
@@ -129,30 +129,36 @@ def _sport_layer_factors(blended: dict[str, Any], league: str) -> list[dict[str,
             factors.append(_factor_entry("decorrelation", "Market decorrelation applied", 1.0))
         return factors
 
-    if league == "cbb":
+    if is_basketball_league(league):
         pred = blended.get("basketball_pred") or {}
+        home_or = pred.get("predicted_home_offensive_rating")
+        away_or = pred.get("predicted_away_offensive_rating")
+        pace = pred.get("predicted_pace")
+        if home_or is not None and away_or is not None:
+            factors.append(
+                _factor_entry(
+                    "offensive_rating",
+                    "Offensive rating (home − away)",
+                    float(home_or) - float(away_or),
+                )
+            )
+        if pace is not None:
+            factors.append(_factor_entry("pace", "Projected pace (possessions)", float(pace)))
         margin = pred.get("predicted_margin")
         if margin is not None:
-            factors.append(_factor_entry("eff_margin", "Efficiency margin (home)", float(margin)))
-        if pred.get("market_decorrelated") or blended.get("market_decorrelated"):
-            factors.append(_factor_entry("decorrelation", "Market decorrelation applied", 1.0))
-        return factors
-
-    if league == "wnba":
-        pred = blended.get("basketball_pred") or {}
-        margin = pred.get("predicted_margin")
-        if margin is not None:
-            factors.append(_factor_entry("elo_eff_margin", "Elo + efficiency margin", float(margin)))
-        avail = pred.get("availability_shift_pp")
-        if avail is not None:
-            factors.append(_factor_entry("availability", "Availability shift (pp)", float(avail)))
-        if pred.get("market_decorrelated") or blended.get("market_decorrelated"):
-            factors.append(_factor_entry("decorrelation", "Market decorrelation applied", 1.0))
-        return factors
-
-    if league == "nba":
-        if blended.get("market_decorrelated"):
-            factors.append(_factor_entry("decorrelation", "Market decorrelation applied", 1.0))
+            factors.append(
+                _factor_entry("score_margin", "Projected score margin (home)", float(margin))
+            )
+        home_score = pred.get("predicted_home_score")
+        away_score = pred.get("predicted_away_score")
+        if home_score is not None and away_score is not None:
+            factors.append(
+                _factor_entry(
+                    "projected_total",
+                    "Projected total points",
+                    float(home_score) + float(away_score),
+                )
+            )
         return factors
 
     if is_soccer_league(league):

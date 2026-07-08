@@ -10,12 +10,11 @@ from web.baseball_pred_model import (
     run_baseball_pred_model,
 )
 from web.basketball_pred_model import (
+    basketball_unavailable_reason,
     is_basketball_league,
     run_basketball_pred_model,
 )
-from web.cbb_pred_model import cbb_unavailable_reason, is_cbb_league, run_cbb_pred_model
 from web.mlb_pred_model import is_mlb_league, mlb_unavailable_reason, run_mlb_pred_model
-from web.wnba_pred_model import is_wnba_league, run_wnba_pred_model, wnba_unavailable_reason
 from web.football_pred_model import (
     football_unavailable_reason,
     is_football_league,
@@ -182,36 +181,10 @@ def _sport_pred_unavailable_reason(
     home_abbr: str,
     away_abbr: str,
 ) -> str:
-    if is_basketball_league(league) and is_cbb_league(league):
-        return cbb_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
-    if is_wnba_league(league):
-        return wnba_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
+    if is_basketball_league(league):
+        return basketball_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
     if is_mlb_league(league):
         return mlb_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
-    if is_basketball_league(league):
-        from web.basketball_pred_model import MIN_LEAGUE_GAMES, MIN_TEAM_GAMES
-        from web.season_games import load_league_completed_games
-
-        games = load_league_completed_games(league, cutoff_date)
-        if len(games) < MIN_LEAGUE_GAMES:
-            return (
-                f"Insufficient completed games ({len(games)} < {MIN_LEAGUE_GAMES}) "
-                "— likely off-season or sparse schedule."
-            )
-        from web.basketball_pred_model import build_basketball_model
-
-        model = build_basketball_model(games, league)
-        if not model:
-            return "Could not build basketball matrix model on available games."
-        counts = model["team_game_counts"]
-        home = home_abbr.lower()
-        away = away_abbr.lower()
-        if home not in counts or away not in counts:
-            missing = [k for k in (home, away) if k not in counts]
-            return f"Teams not found in basketball model: {', '.join(missing)}."
-        if counts.get(home, 0) < MIN_TEAM_GAMES or counts.get(away, 0) < MIN_TEAM_GAMES:
-            return "Teams have insufficient games in the basketball model sample."
-        return "Basketball matrix model unavailable."
     if is_baseball_league(league):
         return baseball_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
     if is_hockey_league(league):
@@ -268,47 +241,6 @@ def _run_sport_pred_model(
 ) -> tuple[str | None, dict[str, Any] | None]:
     """Return (payload_key, payload) for sport-specific third layer."""
     if is_basketball_league(league):
-        if is_cbb_league(league):
-            payload = run_cbb_pred_model(
-                league,
-                cutoff_date,
-                home_abbr,
-                away_abbr,
-                home_espn_id=home_espn_id,
-                away_espn_id=away_espn_id,
-                home_name=home_name,
-                away_name=away_name,
-                market_spread=market_spread,
-                home_ml=home_ml,
-                away_ml=away_ml,
-            )
-            return ("basketball_pred", payload) if payload else (None, None)
-        if is_wnba_league(league):
-            payload = run_wnba_pred_model(
-                league,
-                cutoff_date,
-                home_abbr,
-                away_abbr,
-                home_espn_id=home_espn_id,
-                away_espn_id=away_espn_id,
-                home_name=home_name,
-                away_name=away_name,
-                market_spread=market_spread,
-                home_ml=home_ml,
-                away_ml=away_ml,
-            )
-            return ("basketball_pred", payload) if payload else (None, None)
-        if league.lower() == "nba":
-            ml_payload = _run_nba_ml_layer(
-                cutoff_date,
-                home_abbr,
-                away_abbr,
-                market_spread=market_spread,
-                home_ml=home_ml,
-                away_ml=away_ml,
-            )
-            if ml_payload:
-                return ("basketball_pred", ml_payload)
         payload = run_basketball_pred_model(league, cutoff_date, home_abbr, away_abbr)
         return ("basketball_pred", payload) if payload else (None, None)
     if is_mlb_league(league):
@@ -351,17 +283,12 @@ def _run_sport_pred_model(
 def _uses_three_layer_blend(league: str) -> bool:
     if (
         is_hockey_league(league)
-        or is_cbb_league(league)
-        or is_wnba_league(league)
+        or is_basketball_league(league)
         or is_mlb_league(league)
         or is_soccer_league(league)
     ):
         return False
-    return (
-        is_basketball_league(league)
-        or is_baseball_league(league)
-        or is_football_league(league)
-    )
+    return is_baseball_league(league) or is_football_league(league)
 
 
 def requires_three_layer_agreement(league: str) -> bool:
@@ -771,39 +698,25 @@ def _blend_hockey_puckcast_only(
     }
 
 
-def _blend_cbb_torvik_only(
+def _blend_basketball_matrix_only(
     *,
     league: str,
     cutoff_date: str,
     home_abbr: str,
     away_abbr: str,
-    home_espn_id: str | None = None,
-    away_espn_id: str | None = None,
-    home_name: str | None = None,
-    away_name: str | None = None,
-    consensus_spread: float | None = None,
-    home_moneyline: int | None = None,
-    away_moneyline: int | None = None,
 ) -> dict[str, Any]:
-    """CBB uses CBBTorvik only — no Algo V2, power, meta, db_rating, or EnsembleML."""
-    sport_payload = run_cbb_pred_model(
+    """Basketball uses BasketballMatrix only — soft-impute OR × pace, no legacy blend."""
+    sport_payload = run_basketball_pred_model(
         league,
         cutoff_date,
         home_abbr,
         away_abbr,
-        home_espn_id=home_espn_id,
-        away_espn_id=away_espn_id,
-        home_name=home_name,
-        away_name=away_name,
-        market_spread=consensus_spread,
-        home_ml=home_moneyline,
-        away_ml=away_moneyline,
     )
     if not sport_payload:
-        reason = cbb_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
+        reason = basketball_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
         return {
-            "algorithm": "CBBTorvik",
-            "blend_mode": "cbb_torvik_unavailable",
+            "algorithm": "BasketballMatrix",
+            "blend_mode": "basketball_matrix_unavailable",
             "blend_layers": 0,
             "blend_note": reason,
             "basketball_pred": None,
@@ -815,8 +728,8 @@ def _blend_cbb_torvik_only(
     home_prob = float(sport_payload["home_win_probability"])
     total, win_prob = home_win_prob_to_total_score(home_prob)
     result = {
-        "algorithm": "CBBTorvik",
-        "blend_mode": "cbb_torvik",
+        "algorithm": "BasketballMatrix",
+        "blend_mode": "basketball_matrix",
         "blend_layers": 1,
         "blend_weights": {"basketball_pred": 1.0},
         "basketball_pred": sport_payload,
@@ -824,67 +737,6 @@ def _blend_cbb_torvik_only(
         "total_score": round(total, 2),
         "win_probability": round(win_prob, 2),
         "favorite_side": "home" if total <= 0 else "away",
-        "cbb_pick_signals": sport_payload.get("cbb_pick_signals"),
-    }
-    if sport_payload.get("predicted_margin") is not None:
-        result["home_spread_margin"] = round(-float(sport_payload["predicted_margin"]), 2)
-    return result
-
-
-def _blend_wnba_elo_xgb_only(
-    *,
-    league: str,
-    cutoff_date: str,
-    home_abbr: str,
-    away_abbr: str,
-    home_espn_id: str | None = None,
-    away_espn_id: str | None = None,
-    home_name: str | None = None,
-    away_name: str | None = None,
-    consensus_spread: float | None = None,
-    home_moneyline: int | None = None,
-    away_moneyline: int | None = None,
-) -> dict[str, Any]:
-    """WNBA uses WNBAEloXGB only — no Algo V2, power, meta, db_rating, or EnsembleML."""
-    sport_payload = run_wnba_pred_model(
-        league,
-        cutoff_date,
-        home_abbr,
-        away_abbr,
-        home_espn_id=home_espn_id,
-        away_espn_id=away_espn_id,
-        home_name=home_name,
-        away_name=away_name,
-        market_spread=consensus_spread,
-        home_ml=home_moneyline,
-        away_ml=away_moneyline,
-    )
-    if not sport_payload:
-        reason = wnba_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
-        return {
-            "algorithm": "WNBAEloXGB",
-            "blend_mode": "wnba_elo_xgb_unavailable",
-            "blend_layers": 0,
-            "blend_note": reason,
-            "basketball_pred": None,
-            "total_score": 0.0,
-            "win_probability": 50.0,
-            "favorite_side": "neutral",
-        }
-
-    home_prob = float(sport_payload["home_win_probability"])
-    total, win_prob = home_win_prob_to_total_score(home_prob)
-    result = {
-        "algorithm": "WNBAEloXGB",
-        "blend_mode": "wnba_elo_xgb",
-        "blend_layers": 1,
-        "blend_weights": {"basketball_pred": 1.0},
-        "basketball_pred": sport_payload,
-        "blended_home_win_probability": round(home_prob, 2),
-        "total_score": round(total, 2),
-        "win_probability": round(win_prob, 2),
-        "favorite_side": "home" if total <= 0 else "away",
-        "wnba_pick_signals": sport_payload.get("wnba_pick_signals"),
     }
     if sport_payload.get("predicted_margin") is not None:
         result["home_spread_margin"] = round(-float(sport_payload["predicted_margin"]), 2)
@@ -1043,45 +895,23 @@ def blend_predictions(
     """
     Blend Algo_V2 and power model into unified total_score / win_probability.
 
-    Hockey leagues use HockeyPuckCast only. Basketball, baseball, and football use
-    a third sport layer blended via meta weights on home win probability.
+    Hockey leagues use HockeyPuckCast only. Basketball uses BasketballMatrix only.
+    Baseball and football use a third sport layer blended via meta weights.
     """
+    if is_basketball_league(league):
+        return _blend_basketball_matrix_only(
+            league=league,
+            cutoff_date=cutoff_date,
+            home_abbr=home_abbr,
+            away_abbr=away_abbr,
+        )
+
     if is_hockey_league(league):
         return _blend_hockey_puckcast_only(
             league=league,
             cutoff_date=cutoff_date,
             home_abbr=home_abbr,
             away_abbr=away_abbr,
-            home_moneyline=home_moneyline,
-            away_moneyline=away_moneyline,
-        )
-
-    if is_cbb_league(league):
-        return _blend_cbb_torvik_only(
-            league=league,
-            cutoff_date=cutoff_date,
-            home_abbr=home_abbr,
-            away_abbr=away_abbr,
-            home_espn_id=home_espn_id,
-            away_espn_id=away_espn_id,
-            home_name=home_name,
-            away_name=away_name,
-            consensus_spread=consensus_spread,
-            home_moneyline=home_moneyline,
-            away_moneyline=away_moneyline,
-        )
-
-    if is_wnba_league(league):
-        return _blend_wnba_elo_xgb_only(
-            league=league,
-            cutoff_date=cutoff_date,
-            home_abbr=home_abbr,
-            away_abbr=away_abbr,
-            home_espn_id=home_espn_id,
-            away_espn_id=away_espn_id,
-            home_name=home_name,
-            away_name=away_name,
-            consensus_spread=consensus_spread,
             home_moneyline=home_moneyline,
             away_moneyline=away_moneyline,
         )
