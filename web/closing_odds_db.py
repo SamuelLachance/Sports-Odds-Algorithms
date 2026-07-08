@@ -10,6 +10,8 @@ from pathlib import Path
 from typing import Any
 
 from web.football_data_uk import load_football_data_uk_games
+from web.international_soccer_odds import load_international_odds_index
+from web.league_profiles import INTERNATIONAL_SOCCER_LEAGUES, is_soccer_league
 from web.league_profiles import is_soccer_league
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -184,12 +186,22 @@ def _load_us_odds_index(league: str) -> dict[tuple[str, str, str], dict[str, Any
     return index
 
 
-@lru_cache(maxsize=8)
+@lru_cache(maxsize=16)
 def _load_soccer_odds_index(league: str) -> dict[tuple[str, str, str], dict[str, Any]]:
     league = league.lower()
+    if league in INTERNATIONAL_SOCCER_LEAGUES or league == "fifa_friendlies":
+        index: dict[tuple[str, str, str], dict[str, Any]] = {}
+        for (game_date, home, away), odds in load_international_odds_index().items():
+            index[(game_date, home, away)] = {
+                "home_close_ml": odds.get("home_odds"),
+                "draw_close_ml": odds.get("draw_odds"),
+                "away_close_ml": odds.get("away_odds"),
+                "source": "football-data.co.uk/international",
+            }
+        return index
     if league not in {"epl", "bundesliga", "laliga", "seriea", "ligue1"}:
         return {}
-    index: dict[tuple[str, str, str], dict[str, Any]] = {}
+    index = {}
     for record in load_football_data_uk_games(league):
         game_date = record["date"]
         home = record["home_key"]

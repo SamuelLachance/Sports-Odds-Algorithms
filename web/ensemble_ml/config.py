@@ -60,6 +60,14 @@ SPORTSBOOK_LOGLOSS_BENCHMARKS: dict[str, float] = {
     "laliga": 0.9938,
     "seriea": 0.9449,
     "ligue1": 0.9740,
+    "worldcup": 0.7500,
+    "fifa_friendlies": 0.7608,
+    "uefa_euro": 0.7500,
+    "uefa_nations": 0.7500,
+    "copa_america": 0.8027,
+    "concacaf_wcq": 0.7861,
+    "concacaf_gold": 0.7356,
+    "concacaf_nations": 0.7761,
 }
 
 # Back-compat aliases used by market-blend tuning.
@@ -165,6 +173,14 @@ SUPPLEMENTAL_DATED_LEAGUES: frozenset[str] = frozenset(
         "laliga",
         "seriea",
         "ligue1",
+        "worldcup",
+        "fifa_friendlies",
+        "concacaf_wcq",
+        "concacaf_gold",
+        "concacaf_nations",
+        "uefa_euro",
+        "uefa_nations",
+        "copa_america",
     }
 )
 

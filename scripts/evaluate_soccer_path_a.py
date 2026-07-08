@@ -11,7 +11,10 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from web.soccer_meta_model import META_WEIGHTS_PATH  # noqa: E402
 
+from web.league_profiles import INTERNATIONAL_SOCCER_LEAGUES  # noqa: E402
+
 TOP_LEAGUES = ("epl", "bundesliga", "laliga", "seriea", "ligue1")
+INTERNATIONAL_LEAGUES = INTERNATIONAL_SOCCER_LEAGUES
 
 
 def grade_entry(entry: dict) -> str:
@@ -34,7 +37,22 @@ def grade_entry(entry: dict) -> str:
 def main() -> int:
     payload = json.loads(META_WEIGHTS_PATH.read_text(encoding="utf-8"))
     print("Soccer Path A calibration grades\n")
+    print("Top domestic leagues:")
     for league in TOP_LEAGUES:
+        entry = payload.get(league) or {}
+        if not entry:
+            print(f"  {league}: missing")
+            continue
+        grade = grade_entry(entry)
+        print(
+            f"  {league}: {grade} "
+            f"(calibrated={entry.get('log_loss_calibrated')} "
+            f"market={entry.get('log_loss_market_closing')} "
+            f"path_a={entry.get('log_loss_tuned_path_a')} "
+            f"beats_market={entry.get('beats_market_closing')})"
+        )
+    print("\nInternational:")
+    for league in INTERNATIONAL_LEAGUES:
         entry = payload.get(league) or {}
         if not entry:
             print(f"  {league}: missing")
