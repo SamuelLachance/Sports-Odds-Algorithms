@@ -25,6 +25,7 @@ from web.season_games import (
     load_league_completed_games,
 )
 from web.soccer_decorrelation import blend_with_market_cap, devig_threeway_from_odds
+from web.soccer_market_blend import blend_model_with_market
 from web.soccer_features import (
     blend_stat_and_xgb,
     build_matchup_features,
@@ -47,6 +48,9 @@ MAX_GOALS = 6
 WALK_FORWARD_MIN_TRAIN = 12
 XGB_MIN_ROWS = 40
 MIN_CALIBRATION_GAMES = 20
+DC_REFIT_INTERVAL = 12
+WALK_FORWARD_SAMPLE_EVERY = 2
+MAX_XGB_TRAIN_ROWS = 1200
 
 # football-predictor defaults
 ELO_HOME_ADV = 65.0
@@ -569,24 +573,34 @@ def build_soccer_path_a_model(
     x_rows: list[np.ndarray] = []
     y_rows: list[int] = []
     raw_samples: list[tuple[float, float, float, int]] = []
+    cached_dc: tuple[dict[str, float], dict[str, float], float] | None = None
 
     for idx, (game_date, game) in enumerate(dated_games):
         home, away, _hn, _an, hg, ag = game
         if home not in team_game_counts or away not in team_game_counts:
             continue
 
-        if idx >= WALK_FORWARD_MIN_TRAIN and len(partial_games) >= MIN_LEAGUE_GAMES:
-            reference = _parse_game_date(game_date) or datetime.now(timezone.utc)
-            dc_weights = [
-                _game_time_weight(prior_date, reference)
-                for prior_date in partial_dates
-            ]
-            attack, defence, home_adv = _fit_dixon_coles_params(
-                partial_games,
-                team_keys,
-                game_weights=dc_weights,
-                rho=rho,
-            )
+        collect_sample = idx % WALK_FORWARD_SAMPLE_EVERY == 0 or len(x_rows) < 250
+
+        if (
+            collect_sample
+            and idx >= WALK_FORWARD_MIN_TRAIN
+            and len(partial_games) >= MIN_LEAGUE_GAMES
+        ):
+            if cached_dc is None or idx % DC_REFIT_INTERVAL == 0:
+                reference = _parse_game_date(game_date) or datetime.now(timezone.utc)
+                dc_weights = [
+                    _game_time_weight(prior_date, reference)
+                    for prior_date in partial_dates
+                ]
+                attack, defence, home_adv = _fit_dixon_coles_params(
+                    partial_games,
+                    team_keys,
+                    game_weights=dc_weights,
+                    rho=rho,
+                )
+                cached_dc = (attack, defence, home_adv)
+            attack, defence, home_adv = cached_dc
             snap = {
                 **base,
                 "elo": elo,
@@ -646,6 +660,11 @@ def build_soccer_path_a_model(
         partial_games.append(game)
         partial_dates.append(game_date)
 
+    if len(x_rows) > MAX_XGB_TRAIN_ROWS:
+        step = max(len(x_rows) // MAX_XGB_TRAIN_ROWS, 1)
+        x_rows = x_rows[::step][:MAX_XGB_TRAIN_ROWS]
+        y_rows = y_rows[::step][:MAX_XGB_TRAIN_ROWS]
+
     xgb_model = _train_xgb_threeway(x_rows, y_rows)
     meta_config = get_league_meta_config(league)
     temperature = (
@@ -662,7 +681,48 @@ def build_soccer_path_a_model(
     final["temperature"] = temperature
     final["path_a_stat_weight"] = path_a["stat_weight"]
     final["path_a_decorrelation_weight"] = path_a["decorrelation_weight"]
+    final["path_a_market_model_weight"] = path_a["market_model_weight"]
     return final
+
+
+def apply_path_a_output_calibration(
+    raw_probs: tuple[float, float, float],
+    *,
+    league: str,
+    context: dict[str, Any],
+    market_probs: tuple[float, float, float] | None,
+) -> tuple[tuple[float, float, float], tuple[float, float, float]]:
+    """Temperature-scale, market-calibrate display probs; decorrelate picks."""
+    meta = get_league_meta_config(league)
+    path_a = meta["path_a"]
+    temperature = float(context.get("temperature") or meta["temperature"])
+    decorrelation_weight = float(
+        context.get("path_a_decorrelation_weight") or path_a["decorrelation_weight"]
+    )
+    market_model_weight = float(
+        context.get("path_a_market_model_weight") or path_a["market_model_weight"]
+    )
+    temp_scaled = temperature_scale(*raw_probs, temperature)
+    display_probs = tuple(
+        round(v, 2)
+        for v in blend_model_with_market(
+            temp_scaled,
+            market_probs,
+            model_weight=market_model_weight,
+        )
+    )
+    if market_probs is None:
+        pick_probs = display_probs
+    else:
+        pick_probs = tuple(
+            round(v, 2)
+            for v in blend_with_market_cap(
+                display_probs,
+                market_probs,
+                max_blend=decorrelation_weight,
+            )
+        )
+    return display_probs, pick_probs
 
 
 def build_soccer_model(
@@ -964,24 +1024,19 @@ def run_soccer_pred_model(
         prediction.draw_probability,
         prediction.away_win_probability,
     )
+    display_probs, pick_probs = apply_path_a_output_calibration(
+        raw_probs,
+        league=league,
+        context=context,
+        market_probs=market_probs,
+    )
+    market_model_weight = float(
+        context.get("path_a_market_model_weight")
+        or get_league_meta_config(league)["path_a"]["market_model_weight"]
+    )
     decorrelation_weight = float(
         context.get("path_a_decorrelation_weight")
         or get_league_meta_config(league)["path_a"]["decorrelation_weight"]
-    )
-    decorrelated = blend_with_market_cap(
-        raw_probs,
-        market_probs,
-        max_blend=decorrelation_weight,
-    )
-    temperature = float(
-        context.get("temperature") or get_league_meta_config(league)["temperature"]
-    )
-    display_probs = tuple(
-        round(v, 2) for v in temperature_scale(*raw_probs, temperature)
-    )
-    pick_source = decorrelated if market_probs is not None else raw_probs
-    pick_probs = tuple(
-        round(v, 2) for v in temperature_scale(*pick_source, temperature)
     )
 
     open_home, open_draw, open_away = fetch_soccer_opening_moneylines(league, event_id)
@@ -1030,6 +1085,8 @@ def run_soccer_pred_model(
         "away_games": counts.get(away_key, 0),
         "market_decorrelated": market_probs is not None,
         "decorrelation_weight": decorrelation_weight,
+        "market_model_weight": market_model_weight,
+        "market_calibrated": market_probs is not None,
         "path_a_stat_weight": context.get("path_a_stat_weight"),
         "soccer_pick_signals": pick_signals,
         "opening_steam": steam_meta,

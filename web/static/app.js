@@ -719,7 +719,8 @@ function algoBreakdown(m, game) {
         ? ` · xG ${soccer.expected_away_goals}-${soccer.expected_home_goals}`
         : "";
     const enrich = [];
-    if (soccer.market_decorrelated) enrich.push("market decorr");
+    if (soccer.market_calibrated) enrich.push("market-calibrated");
+    if (soccer.market_decorrelated) enrich.push("pick decorr");
     if (soccer.opening_steam?.steam_signal) enrich.push("opening steam");
     if (m.context_adjusted) enrich.push("ESPN context");
     const suffix = enrich.length ? ` · ${enrich.join(", ")}` : "";

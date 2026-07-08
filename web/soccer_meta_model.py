@@ -36,6 +36,7 @@ DEFAULT_TEMPERATURE = 1.0
 DEFAULT_PATH_A_STAT_WEIGHT = 0.45
 DEFAULT_PATH_A_DECORRELATION_WEIGHT = 0.28
 DEFAULT_PATH_A_DC_RHO = -0.05
+DEFAULT_PATH_A_MARKET_MODEL_WEIGHT = 0.22
 
 Threeway = tuple[float, float, float]
 
@@ -139,6 +140,7 @@ def _default_league_entry() -> dict[str, Any]:
             "stat_weight": DEFAULT_PATH_A_STAT_WEIGHT,
             "decorrelation_weight": DEFAULT_PATH_A_DECORRELATION_WEIGHT,
             "dc_rho": DEFAULT_PATH_A_DC_RHO,
+            "market_model_weight": DEFAULT_PATH_A_MARKET_MODEL_WEIGHT,
         },
     }
 
@@ -152,6 +154,9 @@ def _coerce_path_a_config(raw: Any) -> dict[str, float]:
             raw.get("decorrelation_weight", DEFAULT_PATH_A_DECORRELATION_WEIGHT)
         ),
         "dc_rho": float(raw.get("dc_rho", DEFAULT_PATH_A_DC_RHO)),
+        "market_model_weight": float(
+            raw.get("market_model_weight", DEFAULT_PATH_A_MARKET_MODEL_WEIGHT)
+        ),
     }
 
 
@@ -384,6 +389,32 @@ def fit_decorrelation_weight_grid(
         for model_probs, market_probs, outcome in samples:
             adjusted = decorrelate_three_way(model_probs, market_probs, weight=weight)
             total_loss += multiclass_log_loss(*adjusted, outcome)
+        avg_loss = total_loss / len(samples)
+        if avg_loss < best_loss:
+            best_loss = avg_loss
+            best_weight = weight
+    return best_weight
+
+
+def fit_market_blend_weight_grid(
+    samples: list[tuple[tuple[float, float, float], tuple[float, float, float], int]],
+) -> float:
+    """Tune model share in model+market convex blend (minimize log-loss)."""
+    if not samples:
+        return DEFAULT_PATH_A_MARKET_MODEL_WEIGHT
+
+    from web.soccer_market_blend import blend_model_with_market
+
+    best_loss = float("inf")
+    best_weight = DEFAULT_PATH_A_MARKET_MODEL_WEIGHT
+    for step in range(0, 21):
+        weight = step / 20.0
+        total_loss = 0.0
+        for model_probs, market_probs, outcome in samples:
+            blended = blend_model_with_market(
+                model_probs, market_probs, model_weight=weight
+            )
+            total_loss += multiclass_log_loss(*blended, outcome)
         avg_loss = total_loss / len(samples)
         if avg_loss < best_loss:
             best_loss = avg_loss

@@ -7,6 +7,8 @@ import sys
 from datetime import date
 from pathlib import Path
 
+from typing import Any
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -27,6 +29,7 @@ from web.soccer_meta_model import (  # noqa: E402
     blend_weighted_threeway,
     fit_blend_weights_grid,
     fit_decorrelation_weight_grid,
+    fit_market_blend_weight_grid,
     fit_stat_weight_grid,
     fit_stat_weights_grid,
     fit_temperature_grid,
@@ -35,6 +38,7 @@ from web.soccer_meta_model import (  # noqa: E402
     temperature_scale,
 )
 from web.soccer_pred_model import (  # noqa: E402
+    apply_path_a_output_calibration,
     build_soccer_path_a_model,
     build_soccer_model,
     compute_sharp_stat_layers,
@@ -150,7 +154,67 @@ def _collect_blend_samples(
     return samples
 
 
-def tune_league(league: str, cutoff: str) -> dict | None:
+def _calibrated_loss_for_rows(
+    rows: list[dict[str, Any]],
+    *,
+    league: str,
+    tune_context: dict[str, Any],
+    market_only: bool = False,
+) -> float | None:
+    if not rows:
+        return None
+    total = 0.0
+    count = 0
+    for row in rows:
+        if market_only and row["market_probs"] is None:
+            continue
+        display, _pick = apply_path_a_output_calibration(
+            row["raw_probs"],
+            league=league,
+            context=tune_context,
+            market_probs=row["market_probs"],
+        )
+        total += multiclass_log_loss(*display, row["outcome"])
+        count += 1
+    return total / count if count else None
+
+
+def _optimize_market_model_weight(
+    rows: list[dict[str, Any]],
+    *,
+    league: str,
+    tune_context: dict[str, Any],
+    market_only: bool = True,
+) -> tuple[float, float | None]:
+    best_weight = float(tune_context.get("path_a_market_model_weight", 0.22))
+    best_loss = _calibrated_loss_for_rows(
+        rows,
+        league=league,
+        tune_context=tune_context,
+        market_only=market_only,
+    )
+    tie_eps = 1e-4
+    for step in range(0, 21):
+        weight = step / 20.0
+        trial_context = dict(tune_context)
+        trial_context["path_a_market_model_weight"] = weight
+        loss = _calibrated_loss_for_rows(
+            rows,
+            league=league,
+            tune_context=trial_context,
+            market_only=market_only,
+        )
+        if loss is None:
+            continue
+        if best_loss is None or loss < best_loss - tie_eps:
+            best_loss = loss
+            best_weight = weight
+        elif abs(loss - best_loss) <= tie_eps and weight > best_weight:
+            best_weight = weight
+    return best_weight, best_loss
+
+
+def tune_league(league: str, cutoff: str, *, path_a_only: bool = False) -> dict | None:
     dated_games = _load_dated_games(league, cutoff)
     games = [g for _d, g in dated_games]
     if len(games) < MIN_LEAGUE_GAMES:
@@ -158,59 +222,84 @@ def tune_league(league: str, cutoff: str) -> dict | None:
 
     print(f"  walk-forward: {len(games)} games loaded", flush=True)
 
-    stat_samples = _collect_stat_samples(league, cutoff, games)
-    if len(stat_samples) < MIN_CALIBRATION_GAMES:
-        return None
+    existing_entry: dict = {}
+    if META_WEIGHTS_PATH.is_file():
+        try:
+            existing_payload = json.loads(META_WEIGHTS_PATH.read_text(encoding="utf-8"))
+            existing_entry = existing_payload.get(league) or {}
+        except (json.JSONDecodeError, OSError):
+            existing_entry = {}
 
-    stat_weights = fit_stat_weights_grid(stat_samples)
-    temp_samples = []
-    for elo, pi, dc, form, club, outcome in stat_samples:
-        layers = {
-            "elo": elo,
-            "pi": pi,
-            "dc": dc,
-            "form": form,
-            "club_elo": club,
-        }
-        home, draw, away = _blend_sharp_sample(layers, stat_weights)
-        temp_samples.append((home, draw, away, outcome))
-    temperature = fit_temperature_grid(temp_samples)
+    if path_a_only and existing_entry.get("stat"):
+        stat_weights = existing_entry["stat"]
+        temperature = float(existing_entry.get("temperature", 1.0))
+        baseline = float(existing_entry.get("log_loss_baseline_equal", 1.0))
+        tuned_stat_loss = float(existing_entry.get("log_loss_tuned_stat", baseline))
+        blend_weights = existing_entry.get("blend")
+        stat_samples = []
+        temp_samples = []
+    else:
+        stat_samples = _collect_stat_samples(league, cutoff, games)
+        if len(stat_samples) < MIN_CALIBRATION_GAMES:
+            return None
 
-    blend_samples = _collect_blend_samples(league, cutoff, games)
-    blend_weights = (
-        fit_blend_weights_grid(blend_samples)
-        if len(blend_samples) >= MIN_CALIBRATION_GAMES
-        else None
-    )
+        stat_weights = fit_stat_weights_grid(stat_samples)
+        temp_samples = []
+        for elo, pi, dc, form, club, outcome in stat_samples:
+            layers = {
+                "elo": elo,
+                "pi": pi,
+                "dc": dc,
+                "form": form,
+                "club_elo": club,
+            }
+            home, draw, away = _blend_sharp_sample(layers, stat_weights)
+            temp_samples.append((home, draw, away, outcome))
+        temperature = fit_temperature_grid(temp_samples)
 
-    baseline = sum(
-        multiclass_log_loss(
-            *_blend_sharp_sample(
-                {
-                    "elo": elo,
-                    "pi": pi,
-                    "dc": dc,
-                    "form": form,
-                    "club_elo": club,
-                },
-                {key: 1.0 / 5.0 for key in STAT_LAYER_KEYS},
-            ),
-            outcome,
+        blend_samples = _collect_blend_samples(league, cutoff, games)
+        blend_weights = (
+            fit_blend_weights_grid(blend_samples)
+            if len(blend_samples) >= MIN_CALIBRATION_GAMES
+            else None
         )
-        for elo, pi, dc, form, club, outcome in stat_samples
-    ) / len(stat_samples)
 
-    from web.soccer_meta_model import temperature_scale
+        baseline = sum(
+            multiclass_log_loss(
+                *_blend_sharp_sample(
+                    {
+                        "elo": elo,
+                        "pi": pi,
+                        "dc": dc,
+                        "form": form,
+                        "club_elo": club,
+                    },
+                    {key: 1.0 / 5.0 for key in STAT_LAYER_KEYS},
+                ),
+                outcome,
+            )
+            for elo, pi, dc, form, club, outcome in stat_samples
+        ) / len(stat_samples)
 
-    tuned_stat_loss = 0.0
-    for home, draw, away, outcome in temp_samples:
-        calibrated = temperature_scale(home, draw, away, temperature)
-        tuned_stat_loss += multiclass_log_loss(*calibrated, outcome)
-    tuned_stat_loss /= len(temp_samples)
+        tuned_stat_loss = 0.0
+        for home, draw, away, outcome in temp_samples:
+            calibrated = temperature_scale(home, draw, away, temperature)
+            tuned_stat_loss += multiclass_log_loss(*calibrated, outcome)
+        tuned_stat_loss /= len(temp_samples)
 
-    path_a_samples: list[tuple[tuple[float, float, float], tuple[float, float, float], int]] = []
+    indices = list(_calibration_indices(len(games), league))
+    if path_a_only and len(indices) > 500:
+        step = max(1, len(indices) // 500)
+        indices = indices[::step]
+
+    path_a_eval_rows: list[dict[str, Any]] = []
+    market_calib_samples: list[
+        tuple[tuple[float, float, float], tuple[float, float, float], int]
+    ] = []
     market_samples: list[tuple[tuple[float, float, float], int]] = []
-    decor_samples: list[tuple[tuple[float, float, float], tuple[float, float, float], int]] = []
+    stat_xgb_samples: list[
+        tuple[tuple[float, float, float], tuple[float, float, float], int]
+    ] = []
     dated_games = _load_dated_games(league, cutoff)
     path_a_model = build_soccer_path_a_model(dated_games, league)
     for index in indices:
@@ -256,23 +345,72 @@ def tune_league(league: str, cutoff: str) -> dict | None:
             full_pred.draw_probability,
             full_pred.away_win_probability,
         )
-        path_a_samples.append((stat_probs, full_probs, outcome))
+        stat_xgb_samples.append((stat_probs, full_probs, outcome))
+        temp_full = temperature_scale(*full_probs, temperature)
         if market_probs is not None:
             market_samples.append((market_probs, outcome))
-            decor_samples.append((full_probs, market_probs, outcome))
+            market_calib_samples.append((temp_full, market_probs, outcome))
+        path_a_eval_rows.append(
+            {
+                "raw_probs": full_probs,
+                "market_probs": market_probs,
+                "outcome": outcome,
+            }
+        )
 
-    stat_weight = fit_stat_weight_grid(path_a_samples) if path_a_samples else 0.45
-    decorrelation_weight = 0.28
-    if decor_samples:
-        decorrelation_weight = fit_decorrelation_weight_grid(decor_samples)
+    stat_weight = (
+        fit_stat_weight_grid(stat_xgb_samples) if stat_xgb_samples else 0.45
+    )
+    if path_a_model:
+        path_a_model["path_a_stat_weight"] = stat_weight
+    market_model_weight = (
+        fit_market_blend_weight_grid(market_calib_samples)
+        if market_calib_samples
+        else 0.22
+    )
+    tune_context = {
+        "temperature": temperature,
+        "path_a_stat_weight": stat_weight,
+        "path_a_market_model_weight": market_model_weight,
+        "path_a_decorrelation_weight": 0.28,
+    }
+    market_model_weight, calibrated_loss = _optimize_market_model_weight(
+        path_a_eval_rows,
+        league=league,
+        tune_context=tune_context,
+    )
+    tune_context["path_a_market_model_weight"] = market_model_weight
+
+    decor_samples: list[tuple[tuple[float, float, float], tuple[float, float, float], int]] = []
+    for row in path_a_eval_rows:
+        display, _pick = apply_path_a_output_calibration(
+            row["raw_probs"],
+            league=league,
+            context=tune_context,
+            market_probs=row["market_probs"],
+        )
+        if row["market_probs"] is not None:
+            decor_samples.append((display, row["market_probs"], row["outcome"]))
+
+    decorrelation_weight = (
+        fit_decorrelation_weight_grid(decor_samples) if decor_samples else 0.28
+    )
+    tune_context["path_a_decorrelation_weight"] = decorrelation_weight
 
     tuned_path_a_loss = None
-    if path_a_samples:
+    calibrated_loss = None
+    if path_a_eval_rows:
         tuned_path_a_loss = 0.0
-        for _stat, full, outcome in path_a_samples:
-            calibrated = temperature_scale(*full, temperature)
-            tuned_path_a_loss += multiclass_log_loss(*calibrated, outcome)
-        tuned_path_a_loss /= len(path_a_samples)
+        for row in path_a_eval_rows:
+            temp_full = temperature_scale(*row["raw_probs"], temperature)
+            tuned_path_a_loss += multiclass_log_loss(*temp_full, row["outcome"])
+        tuned_path_a_loss /= len(path_a_eval_rows)
+        calibrated_loss = _calibrated_loss_for_rows(
+            path_a_eval_rows,
+            league=league,
+            tune_context=tune_context,
+            market_only=bool(market_samples),
+        )
 
     market_log_loss = None
     if market_samples:
@@ -281,6 +419,12 @@ def tune_league(league: str, cutoff: str) -> dict | None:
             for market_probs, outcome in market_samples
         ) / len(market_samples)
 
+    beats_market = (
+        calibrated_loss is not None
+        and market_log_loss is not None
+        and calibrated_loss <= market_log_loss
+    )
+
     entry = {
         "stat": {key: round(stat_weights[key], 3) for key in STAT_LAYER_KEYS},
         "temperature": round(temperature, 3),
@@ -288,17 +432,22 @@ def tune_league(league: str, cutoff: str) -> dict | None:
             "stat_weight": round(stat_weight, 3),
             "decorrelation_weight": round(decorrelation_weight, 3),
             "dc_rho": -0.05,
+            "market_model_weight": round(market_model_weight, 3),
         },
         "log_loss_baseline_equal": round(baseline, 4),
         "log_loss_tuned_stat": round(tuned_stat_loss, 4),
         "log_loss_tuned_path_a": round(tuned_path_a_loss, 4)
         if tuned_path_a_loss is not None
         else None,
+        "log_loss_calibrated": round(calibrated_loss, 4)
+        if calibrated_loss is not None
+        else None,
         "log_loss_market_closing": round(market_log_loss, 4)
         if market_log_loss is not None
         else None,
         "log_loss_market_benchmark": sportsbook_logloss_benchmark(league),
-        "samples": len(stat_samples),
+        "beats_market_closing": beats_market,
+        "samples": len(stat_samples) if stat_samples else existing_entry.get("samples", 0),
         "data_depth": _data_depth_metadata(len(games)),
     }
     if blend_weights:
@@ -315,6 +464,11 @@ def main() -> int:
         default=",".join(SOCCER_LEAGUES),
         help="Comma-separated league keys (default: all soccer leagues).",
     )
+    parser.add_argument(
+        "--path-a-only",
+        action="store_true",
+        help="Reuse stored stat weights; tune Path A market calibration only (faster).",
+    )
     args = parser.parse_args()
     leagues = [league.strip() for league in args.leagues.split(",") if league.strip()]
     cutoff = _cutoff_today()
@@ -329,13 +483,16 @@ def main() -> int:
 
     for league in leagues:
         print(f"Tuning {league}...", flush=True)
-        entry = tune_league(league, cutoff)
+        entry = tune_league(league, cutoff, path_a_only=args.path_a_only)
         if entry:
             payload[league] = entry
             tuned_leagues += 1
             print(
                 f"  stat={entry['stat']} temp={entry['temperature']} "
-                f"loss {entry['log_loss_baseline_equal']} -> {entry['log_loss_tuned_stat']} "
+                f"path_a={entry['path_a']} "
+                f"calibrated={entry.get('log_loss_calibrated')} "
+                f"market={entry.get('log_loss_market_closing')} "
+                f"beats_market={entry.get('beats_market_closing')} "
                 f"(games={entry['data_depth']['games_loaded']})",
                 flush=True,
             )
@@ -364,6 +521,7 @@ def main() -> int:
                 "stat_weight": 0.45,
                 "decorrelation_weight": 0.28,
                 "dc_rho": -0.05,
+                "market_model_weight": 0.22,
             },
             "data_depth": {
                 "pro_seasons": BACKTEST_PRO_SEASONS,

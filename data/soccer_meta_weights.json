@@ -1,12 +1,13 @@
 {
   "_meta": {
     "calibration_window": "full",
-    "leagues_tuned": 15,
+    "leagues_tuned": 5,
     "pro_seasons": 7,
     "scoreboard_days": 900,
-    "tuned_at": "2026-07-02"
+    "tuned_at": "2026-07-08"
   },
   "bundesliga": {
+    "beats_market_closing": true,
     "blend": {
       "legacy": 0.0,
       "power": 0.0,
@@ -19,7 +20,17 @@
       "supplemental": 1
     },
     "log_loss_baseline_equal": 1.0019,
+    "log_loss_calibrated": 0.8994,
+    "log_loss_market_benchmark": 0.985,
+    "log_loss_market_closing": 0.9244,
+    "log_loss_tuned_path_a": 0.9274,
     "log_loss_tuned_stat": 0.9925,
+    "path_a": {
+      "dc_rho": -0.05,
+      "decorrelation_weight": 0.05,
+      "market_model_weight": 1.0,
+      "stat_weight": 0.0
+    },
     "samples": 2029,
     "stat": {
       "club_elo": 0.05,
@@ -139,18 +150,20 @@
     "path_a": {
       "dc_rho": -0.05,
       "decorrelation_weight": 0.28,
+      "market_model_weight": 0.22,
       "stat_weight": 0.45
     },
     "stat": {
       "club_elo": 0.03,
-      "dc": 0.471,
-      "elo": 0.368,
-      "form": 0.001,
-      "pi": 0.129
+      "dc": 0.458,
+      "elo": 0.382,
+      "form": 0.0,
+      "pi": 0.13
     },
-    "temperature": 0.915
+    "temperature": 0.913
   },
   "epl": {
+    "beats_market_closing": true,
     "blend": {
       "legacy": 0.0,
       "power": 0.0,
@@ -163,7 +176,17 @@
       "supplemental": 1
     },
     "log_loss_baseline_equal": 1.0025,
+    "log_loss_calibrated": 0.9561,
+    "log_loss_market_benchmark": 0.978,
+    "log_loss_market_closing": 0.9667,
+    "log_loss_tuned_path_a": 0.9937,
     "log_loss_tuned_stat": 0.9895,
+    "path_a": {
+      "dc_rho": -0.05,
+      "decorrelation_weight": 0.0,
+      "market_model_weight": 0.35,
+      "stat_weight": 0.4
+    },
     "samples": 2015,
     "stat": {
       "club_elo": 0.15,
@@ -199,6 +222,7 @@
     "temperature": 1.0
   },
   "laliga": {
+    "beats_market_closing": true,
     "blend": {
       "legacy": 0.0,
       "power": 0.0,
@@ -211,7 +235,17 @@
       "supplemental": 1
     },
     "log_loss_baseline_equal": 1.0177,
+    "log_loss_calibrated": 0.9857,
+    "log_loss_market_benchmark": 0.992,
+    "log_loss_market_closing": 0.9938,
+    "log_loss_tuned_path_a": 1.0117,
     "log_loss_tuned_stat": 1.0045,
+    "path_a": {
+      "dc_rho": -0.05,
+      "decorrelation_weight": 0.0,
+      "market_model_weight": 0.35,
+      "stat_weight": 0.5
+    },
     "samples": 2056,
     "stat": {
       "club_elo": 0.0,
@@ -223,19 +257,30 @@
     "temperature": 0.9
   },
   "ligue1": {
+    "beats_market_closing": true,
     "blend": {
       "legacy": 0.0,
       "power": 0.0,
       "soccer_pred": 1.0
     },
     "data_depth": {
-      "games_loaded": 3136,
+      "games_loaded": 2255,
       "pro_seasons": 7,
       "scoreboard_days": 900,
       "supplemental": 1
     },
     "log_loss_baseline_equal": 1.021,
+    "log_loss_calibrated": 0.9605,
+    "log_loss_market_benchmark": 0.994,
+    "log_loss_market_closing": 0.974,
+    "log_loss_tuned_path_a": 1.0023,
     "log_loss_tuned_stat": 1.0097,
+    "path_a": {
+      "dc_rho": -0.05,
+      "decorrelation_weight": 0.05,
+      "market_model_weight": 0.55,
+      "stat_weight": 0.0
+    },
     "samples": 3076,
     "stat": {
       "club_elo": 0.0,
@@ -271,6 +316,7 @@
     "temperature": 0.9
   },
   "seriea": {
+    "beats_market_closing": true,
     "blend": {
       "legacy": 0.0,
       "power": 0.2,
@@ -283,7 +329,17 @@
       "supplemental": 1
     },
     "log_loss_baseline_equal": 1.006,
+    "log_loss_calibrated": 0.9391,
+    "log_loss_market_benchmark": 0.986,
+    "log_loss_market_closing": 0.9449,
+    "log_loss_tuned_path_a": 0.9696,
     "log_loss_tuned_stat": 0.9914,
+    "path_a": {
+      "dc_rho": -0.05,
+      "decorrelation_weight": 0.0,
+      "market_model_weight": 0.3,
+      "stat_weight": 0.4
+    },
     "samples": 2197,
     "stat": {
       "club_elo": 0.0,

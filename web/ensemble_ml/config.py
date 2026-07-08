@@ -55,11 +55,11 @@ SPORTSBOOK_LOGLOSS_BENCHMARKS: dict[str, float] = {
     "wnba": 0.58730,
     "nhl": 0.66040,
     "mlb": 0.67374,
-    "epl": 0.9780,
-    "bundesliga": 0.9850,
-    "laliga": 0.9920,
-    "seriea": 0.9860,
-    "ligue1": 0.9940,
+    "epl": 0.9667,
+    "bundesliga": 0.9244,
+    "laliga": 0.9938,
+    "seriea": 0.9449,
+    "ligue1": 0.9740,
 }
 
 # Back-compat aliases used by market-blend tuning.
