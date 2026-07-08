@@ -512,7 +512,7 @@ def _build_feature_row(
     last_dates = model.get("last_match_date") or {}
     market_home, market_draw, market_away = market_probs_to_features(market_probs)
     rho = float(model.get("dc_rho", DC_RHO))
-    _home, dc_draw, _away = _dc_threeway(
+    _home, dc_draw, _away, _lam, _mu = _dc_threeway(
         model["attack"],
         model["defence"],
         float(model["home_adv"]),
@@ -621,7 +621,7 @@ def build_soccer_path_a_model(
                     stat.away_win_probability,
                 )
                 raw_samples.append((*stat_probs, outcome_from_score(hg, ag)))
-                if xgb_model_rows := _build_feature_row(
+                feature_row = _build_feature_row(
                     snap,
                     home,
                     away,
@@ -630,8 +630,9 @@ def build_soccer_path_a_model(
                     stat.expected_away_goals,
                     match_date=game_date,
                     market_probs=market_probs,
-                ):
-                    x_rows.append(xgb_model_rows)
+                )
+                if feature_row is not None:
+                    x_rows.append(feature_row)
                     y_rows.append(outcome_from_score(hg, ag))
 
         form.update(home, away, hg, ag, elo=elo)
