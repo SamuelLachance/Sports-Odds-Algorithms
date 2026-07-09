@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
+import json
 import time
+import urllib.error
+import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any
-
-import requests
 
 BASE_URL = "https://statsapi.mlb.com/api/v1"
 USER_AGENT = "Sports-Odds-Algorithms/2.0 (mlb-v2)"
@@ -14,14 +15,14 @@ PITCHER_CHUNK = 40
 
 
 def get_json(url: str, *, retries: int = 4, timeout: int = 90) -> dict[str, Any]:
+    # stdlib urllib (not requests) so CI needs no extra dependency.
     last_error: Exception | None = None
     for attempt in range(retries):
+        request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
         try:
-            response = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=timeout)
-            if response.status_code == 200:
-                return response.json()
-            last_error = OSError(f"HTTP {response.status_code} for {url}")
-        except (requests.RequestException, ValueError) as exc:
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                return json.loads(response.read().decode("utf-8"))
+        except (urllib.error.URLError, TimeoutError, ValueError, OSError) as exc:
             last_error = exc
         time.sleep(1.5 * (attempt + 1))
     raise OSError(f"Failed after {retries} tries: {url}") from last_error
