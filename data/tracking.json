@@ -70,7 +70,11 @@
       "status": "pending",
       "units": 0.0,
       "stake_units": 3.0,
-      "recorded_at": "2026-07-09T15:21:00.575940+00:00"
+      "recorded_at": "2026-07-09T15:21:00.575940+00:00",
+      "closing_market_odds": -105,
+      "closing_spread_odds": -105,
+      "closing_consensus_spread": -10.5,
+      "closing_snapshot_at": "2026-07-09T18:04:18.755475+00:00"
     },
     {
       "id": "2026-07-09:401857053:away:spread",
@@ -105,7 +109,11 @@
       "status": "pending",
       "units": 0.0,
       "stake_units": 3.0,
-      "recorded_at": "2026-07-09T15:21:00.575940+00:00"
+      "recorded_at": "2026-07-09T15:21:00.575940+00:00",
+      "closing_market_odds": -115,
+      "closing_spread_odds": -115,
+      "closing_consensus_spread": 8.5,
+      "closing_snapshot_at": "2026-07-09T18:04:18.755475+00:00"
     },
     {
       "id": "2026-07-09:760510:away:soccer_1x2",
@@ -140,7 +148,11 @@
       "status": "pending",
       "units": 0.0,
       "stake_units": 2.5,
-      "recorded_at": "2026-07-09T15:21:00.575940+00:00"
+      "recorded_at": "2026-07-09T15:21:00.575940+00:00",
+      "closing_market_odds": 500,
+      "closing_spread_odds": null,
+      "closing_consensus_spread": null,
+      "closing_snapshot_at": "2026-07-09T18:04:18.755475+00:00"
     },
     {
       "id": "2026-07-09:401857052:home:spread",
@@ -175,7 +187,11 @@
       "status": "pending",
       "units": 0.0,
       "stake_units": 3.0,
-      "recorded_at": "2026-07-09T15:21:00.575940+00:00"
+      "recorded_at": "2026-07-09T15:21:00.575940+00:00",
+      "closing_market_odds": -102,
+      "closing_spread_odds": -102,
+      "closing_consensus_spread": -1.5,
+      "closing_snapshot_at": "2026-07-09T18:04:18.755475+00:00"
     }
   ]
 }
