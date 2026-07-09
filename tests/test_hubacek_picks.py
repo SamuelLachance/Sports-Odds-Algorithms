@@ -165,22 +165,33 @@ def test_tracked_pick_requires_hubacek_strategy_ev_and_confidence() -> None:
             "win_probability": 72,
         }
     )
-    # MLB uses the 10 pp confidence bar.
+    # MLB uses the backtested 6.7 pp gap floor (no confidence bar).
     assert not passes_hubacek_tracked_pick(
         {
             "strategy": "hubacek",
             "model_market_gap_pp": 3.0,
             "ev_pct": 3.0,
-            "win_probability": 55,
+            "win_probability": 62,
             "league": "mlb",
         }
     )
     assert passes_hubacek_tracked_pick(
         {
             "strategy": "hubacek",
-            "model_market_gap_pp": 3.0,
+            "model_market_gap_pp": 7.0,
             "ev_pct": 3.0,
-            "win_probability": 62,
+            "win_probability": 55,
+            "league": "mlb",
+        }
+    )
+    # MLB moneyline picks outside the [-200, +200] price window are rejected.
+    assert not passes_hubacek_tracked_pick(
+        {
+            "strategy": "hubacek",
+            "model_market_gap_pp": 7.0,
+            "ev_pct": 3.0,
+            "win_probability": 55,
+            "market_odds": 240,
             "league": "mlb",
         }
     )

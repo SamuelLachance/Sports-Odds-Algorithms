@@ -27,7 +27,7 @@ def _sample_pick(
     *,
     edge: float = 30.0,
     ev_pct: float = 5.0,
-    gap_pp: float = 5.0,
+    gap_pp: float = 7.0,
     win_probability: float = 72.0,
     event_id: str = "401815712",
 ) -> dict:
@@ -88,10 +88,12 @@ def test_record_and_grade() -> None:
 
 
 def test_rejects_low_confidence() -> None:
+    """Confidence bar applies in leagues that keep one (MLB's is 0 by backtest)."""
+    low_conf_nhl = {**_sample_pick(win_probability=55), "league": "nhl", "league_name": "NHL"}
     store = {"version": 1, "bets": []}
     slate = {
         "date_label": "2026-06-11",
-        "recommended_bets": [_sample_pick(win_probability=55)],
+        "recommended_bets": [low_conf_nhl],
         "games": [],
     }
     store = record_from_slate(store, slate)
