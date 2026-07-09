@@ -74,7 +74,7 @@
       "closing_market_odds": -115,
       "closing_spread_odds": -115,
       "closing_consensus_spread": -12.5,
-      "closing_snapshot_at": "2026-07-09T21:25:46.521780+00:00"
+      "closing_snapshot_at": "2026-07-09T23:11:14.170347+00:00"
     },
     {
       "id": "2026-07-09:401857053:away:spread",
@@ -110,10 +110,10 @@
       "units": 0.0,
       "stake_units": 3.0,
       "recorded_at": "2026-07-09T15:21:00.575940+00:00",
-      "closing_market_odds": -110,
-      "closing_spread_odds": -110,
+      "closing_market_odds": -115,
+      "closing_spread_odds": -115,
       "closing_consensus_spread": 8.5,
-      "closing_snapshot_at": "2026-07-09T21:25:46.521780+00:00"
+      "closing_snapshot_at": "2026-07-09T23:11:14.170347+00:00"
     },
     {
       "id": "2026-07-09:760510:away:soccer_1x2",
@@ -145,14 +145,17 @@
       "model_margin": null,
       "model_market_gap_pp": 6.64,
       "kelly_pct": 10.0,
-      "status": "pending",
-      "units": 0.0,
+      "status": "loss",
+      "units": -2.5,
       "stake_units": 2.5,
       "recorded_at": "2026-07-09T15:21:00.575940+00:00",
       "closing_market_odds": 500,
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
-      "closing_snapshot_at": "2026-07-09T18:04:18.755475+00:00"
+      "closing_snapshot_at": "2026-07-09T18:04:18.755475+00:00",
+      "graded_at": "2026-07-09T23:11:14.544030+00:00",
+      "final_score": "0\u20132",
+      "clv_pct": 0.0
     },
     {
       "id": "2026-07-09:401857052:home:spread",
@@ -188,10 +191,10 @@
       "units": 0.0,
       "stake_units": 3.0,
       "recorded_at": "2026-07-09T15:21:00.575940+00:00",
-      "closing_market_odds": -102,
-      "closing_spread_odds": -102,
+      "closing_market_odds": 100,
+      "closing_spread_odds": 100,
       "closing_consensus_spread": -1.5,
-      "closing_snapshot_at": "2026-07-09T21:25:46.521780+00:00"
+      "closing_snapshot_at": "2026-07-09T23:11:14.170347+00:00"
     },
     {
       "id": "2026-07-09:401816088:home",
