@@ -45,8 +45,11 @@ function minHubacekConfidence(source) {
 }
 
 function hubacekPickRule(source) {
+  const s = source?.summary || source || state.tracking || {};
+  const gap = s.min_market_gap_pp ?? source?.min_market_gap_pp ?? 2;
+  const ev = s.min_ev_pct ?? source?.min_ev_pct ?? 2;
   const conf = minHubacekConfidence(source);
-  return `Hubáček spot: decorrelated model beats the book (+EV) with |p−50| ≥ ${conf} pp`;
+  return `Hubáček spot: decorrelated model beats the book by ≥ ${gap} pp with ≥ ${ev}% EV and |p−50| ≥ ${conf} pp`;
 }
 
 function officialBetTypeForLeague(league) {
@@ -961,9 +964,9 @@ function viewPicks() {
   const slate = state.slate || {};
   const minConf = minHubacekConfidence(slate);
   const hubacekRule = hubacekPickRule(slate);
-  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p><strong>Official picks</strong> (NBA, CBB, WNBA, NHL, MLB) fire on <strong>Hubáček spots</strong>: decorrelated model beats the book with <strong>+EV</strong> and <strong>|p−50| ≥ ${minConf} pp</strong> confidence (paper φ = 0.2). <strong>Model predictions</strong> below include soccer and other leagues with the same analysis, but those bets are not tracked officially.</p></section>
+  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p><strong>Official picks</strong> (NBA, CBB, WNBA, NHL, MLB, plus soccer leagues whose calibrated model beats the closing line) fire on <strong>Hubáček spots</strong>: decorrelated model beats the de-vigged book by <strong>≥ 2 pp</strong> with <strong>≥ 2% honest EV</strong> and a per-bet-type confidence bar (<strong>|p−50| ≥ ${minConf} pp</strong> on moneylines). Stakes are quarter-Kelly (0.25–3u). <strong>Model predictions</strong> below cover the remaining leagues with the same analysis, but those bets are not tracked officially.</p></section>
     <section class="section"><div class="section-head"><h2>Official picks</h2></div><div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No official bets meet ${hubacekRule} today.</div>`}</div></section>
-    <section class="section" id="model-predictions"><div class="section-head"><h2>Model predictions (not tracked)</h2></div><p class="muted section-intro">Soccer 1X2 and other non-official leagues. Full probabilities and fair prices are always on each game page.</p><div class="picks-grid">${modelAnalysis.length ? modelAnalysis.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No model value spots on today's slate.</div>`}</div></section>`;
+    <section class="section" id="model-predictions"><div class="section-head"><h2>Model predictions (not tracked)</h2></div><p class="muted section-intro">Leagues without official tracking (MLS, UCL, NFL/CFB, and others). Full probabilities and fair prices are always on each game page.</p><div class="picks-grid">${modelAnalysis.length ? modelAnalysis.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No model value spots on today's slate.</div>`}</div></section>`;
 }
 
 function viewGames(league) {
@@ -1676,7 +1679,7 @@ function viewTracking() {
       <div class="tracking-hero-top">
         <div>
           <h1>Performance tracking</h1>
-          <p>Official Hubáček bets (${hubacekRule}) are logged, graded at closing odds, and rolled up day → week → month → year → all time.</p>
+          <p>Official Hubáček bets (${hubacekRule}) are logged with odds frozen at record time, graded on ESPN finals with closing-line value (CLV), staked at quarter-Kelly (0.25–3u), and rolled up day → week → month → year → all time.</p>
           <p class="muted">Tracking since ${since} · ${state.tracking?.timezone || "America/Toronto"}</p>
         </div>
         <div class="tracking-hero-stats">
@@ -1706,7 +1709,7 @@ function viewTracking() {
     <section class="section">
       <div class="section-head"><h2>Bet log (${bets.length})</h2></div>
       <div class="bet-log">${bets.length ? bets.map((b) => `<article class="bet-row panel"><div class="bet-row-top"><div><strong>${b.team_abbr ? teamNameLink(b.league, b.team_abbr, b.team_name) : b.team_name}</strong><span class="league-pill">${b.league_name}</span>${statusBadge(b.status, b.units)}</div><span class="edge-tag">+${b.edge} edge</span></div>
-      <p class="muted">${b.matchup} · ${b.date}</p>
+      <p class="muted">${b.matchup} · ${b.date}${b.stake_units ? ` · ${b.stake_units}u stake` : ""}${b.clv_pct != null ? ` · CLV ${b.clv_pct > 0 ? "+" : ""}${b.clv_pct}%` : ""}</p>
       <div class="pick-odds compact"><div><span>${b.bet_type === "spread" ? "Spread" : "Market"}</span><strong>${b.bet_type === "spread" ? formatSpread(b.spread_line) + " (" + formatOdds(b.spread_odds ?? b.market_odds) + ")" : formatOdds(b.market_odds)}</strong></div><div><span>Model</span><strong>${b.bet_type === "spread" && b.model_margin != null ? (b.side === "home" ? "Home" : "Away") + " margin " + formatSpread(b.side === "home" ? b.model_margin : -b.model_margin) : formatOdds(b.model_projection)}</strong></div><div><span>Strategy</span><strong>${b.strategy_label}</strong></div></div>
       ${b.final_score ? `<p class="final-score">Final: ${b.final_score}</p>` : ""}</article>`).join("") : `<div class="panel empty-panel">No tracked bets yet. Official picks need +EV and |p−50| ≥ ${minConf} pp (Hubáček φ).</div>`}</div>
     </section>`;

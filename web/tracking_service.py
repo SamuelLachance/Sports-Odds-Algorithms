@@ -11,7 +11,6 @@ from zoneinfo import ZoneInfo
 from web.bet_advisor import spread_line_for_side
 from web.espn_client import fetch_scoreboard
 from web.hubacek_picks import (
-    HUBACEK_MIN_WIN_CONFIDENCE_PP,
     official_hubacek_thresholds,
     passes_hubacek_tracked_pick,
 )
@@ -31,6 +30,24 @@ def toronto_today() -> date:
     return datetime.now(TORONTO).date()
 
 BetResult = Literal["pending", "win", "loss", "push"]
+
+# Stake sizing: quarter-Kelly, expressed in units where 1u = 1% of bankroll.
+MIN_STAKE_UNITS = 0.25
+MAX_STAKE_UNITS = 3.0
+DEFAULT_STAKE_UNITS = 1.0
+
+
+def stake_units_from_kelly(kelly_pct: float | None) -> float:
+    """Quarter-Kelly stake in units (1u = 1% bankroll), clamped to 0.25–3u."""
+    if kelly_pct is None:
+        return DEFAULT_STAKE_UNITS
+    try:
+        quarter = float(kelly_pct) / 4.0
+    except (TypeError, ValueError):
+        return DEFAULT_STAKE_UNITS
+    if quarter <= 0:
+        return DEFAULT_STAKE_UNITS
+    return round(min(MAX_STAKE_UNITS, max(MIN_STAKE_UNITS, quarter)), 2)
 
 
 def calculate_units(stake: float, american_odds: int, result: BetResult) -> float:
@@ -102,7 +119,11 @@ def _official_tracked_bets(bets: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str, Any]:
-    """Log Hubáček official picks from the daily slate."""
+    """Log Hubáček official picks from the daily slate.
+
+    Odds and model numbers are frozen at record time; later slate runs only
+    refresh a closing-line snapshot on still-pending bets (for CLV grading).
+    """
     date_label = slate.get("date_label") or toronto_today().isoformat()
     now = datetime.now(timezone.utc).isoformat()
     index = {
@@ -124,30 +145,15 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
         key = _bet_key(date_label, event_id, side, bet_type)
         existing = index.get(key)
         if existing:
-            existing.update(
-                {
-                    "edge": pick.get("edge"),
-                    "ev_pct": pick.get("ev_pct"),
-                    "strategy": pick.get("strategy"),
-                    "strategy_label": pick.get("strategy_label"),
-                    "confidence": pick.get("confidence"),
-                    "model_projection": pick.get("model_projection"),
-                    "market_odds": pick.get("market_odds"),
-                    "win_probability": pick.get("win_probability"),
-                    "reason": pick.get("reason"),
-                    "team_name": pick.get("team_name"),
-                    "team_slug": pick.get("team_slug"),
-                    "team_abbr": pick.get("team_abbr"),
-                    "bet_type": bet_type,
-                    "spread_line": pick.get("spread_line"),
-                    "spread_odds": pick.get("spread_odds"),
-                    "consensus_spread": pick.get("consensus_spread"),
-                    "consensus_odds": pick.get("consensus_odds"),
-                    "consensus_label": pick.get("consensus_label"),
-                    "model_margin": pick.get("model_margin"),
-                    "model_market_gap_pp": pick.get("model_market_gap_pp"),
-                }
-            )
+            if existing.get("status") == "pending":
+                existing.update(
+                    {
+                        "closing_market_odds": pick.get("market_odds"),
+                        "closing_spread_odds": pick.get("spread_odds"),
+                        "closing_consensus_spread": pick.get("consensus_spread"),
+                        "closing_snapshot_at": now,
+                    }
+                )
             continue
 
         bet = {
@@ -179,9 +185,10 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
             "consensus_label": pick.get("consensus_label"),
             "model_margin": pick.get("model_margin"),
             "model_market_gap_pp": pick.get("model_market_gap_pp"),
+            "kelly_pct": pick.get("kelly_pct"),
             "status": "pending",
             "units": 0.0,
-            "stake_units": 1.0,
+            "stake_units": stake_units_from_kelly(pick.get("kelly_pct")),
             "recorded_at": now,
         }
         store["bets"].append(bet)
@@ -328,6 +335,29 @@ def _grade_spread_bet(
     return "win" if adjusted > home_score else "loss"
 
 
+def _clv_pct(bet: dict[str, Any]) -> float | None:
+    """Closing-line value: recorded price payout vs last-seen (closing) price."""
+    from web.bet_advisor import american_to_decimal
+
+    bet_type = bet.get("bet_type") or "moneyline"
+    if bet_type == "spread":
+        recorded = bet.get("spread_odds") or bet.get("consensus_odds")
+        closing = bet.get("closing_spread_odds")
+    else:
+        recorded = bet.get("market_odds")
+        closing = bet.get("closing_market_odds")
+    if recorded is None or closing is None:
+        return None
+    try:
+        recorded_decimal = american_to_decimal(int(recorded))
+        closing_decimal = american_to_decimal(int(closing))
+    except (TypeError, ValueError):
+        return None
+    if closing_decimal <= 1.0:
+        return None
+    return round((recorded_decimal / closing_decimal - 1.0) * 100.0, 2)
+
+
 def grade_bet(
     bet: dict[str, Any],
     away_score: int,
@@ -357,13 +387,17 @@ def grade_bet(
     if odds is None:
         return bet
     units = calculate_units(float(bet.get("stake_units") or 1), odds, status)
-    return {
+    graded = {
         **bet,
         "status": status,
         "units": units,
         "graded_at": datetime.now(timezone.utc).isoformat(),
         "final_score": f"{away_score}–{home_score}",
     }
+    clv = _clv_pct(bet)
+    if clv is not None:
+        graded["clv_pct"] = clv
+    return graded
 
 
 def grade_pending(store: dict[str, Any]) -> dict[str, Any]:
@@ -486,17 +520,24 @@ def build_tracking_response(store: dict[str, Any]) -> dict[str, Any]:
         "timezone": TIMEZONE_LABEL,
         "last_updated": datetime.now(timezone.utc).isoformat(),
         "note": (
-            "Tracks Hubáček official picks (decorrelated model beats the book with +EV "
-            f"and |p−50| ≥ {HUBACEK_MIN_WIN_CONFIDENCE_PP:.0f} pp confidence) from each daily slate. "
-            "Basketball/football spread bets graded ATS at consensus book spread; "
-            "hockey/baseball at closing moneyline. 1u flat stake."
+            "Tracks Hubáček official picks (decorrelated model beats the book by "
+            "≥2 pp with ≥2% honest EV and a per-bet-type confidence bar) from each "
+            "daily slate. Basketball/football spreads graded ATS at the recorded "
+            "book spread; hockey/baseball at the recorded moneyline; soccer 1X2 at "
+            "the recorded price. Odds are frozen at record time and CLV is logged "
+            "at grading. Stakes are quarter-Kelly (0.25–3u, 1u = 1% bankroll)."
         ),
         **official_hubacek_thresholds(),
     }
 
 
 def prune_below_min_ev(store: dict[str, Any]) -> dict[str, Any]:
-    store["bets"] = [b for b in store["bets"] if passes_hubacek_tracked_pick(b)]
+    """Drop still-pending bets that no longer qualify. Graded bets are immutable."""
+    store["bets"] = [
+        b
+        for b in store["bets"]
+        if b.get("status") not in (None, "pending") or passes_hubacek_tracked_pick(b)
+    ]
     return store
 
 

@@ -320,6 +320,75 @@ def test_grade_pending_resolves_stale_event_by_id() -> None:
     assert bet.get("final_score")
 
 
+def test_recorded_odds_frozen_and_closing_snapshot_updates() -> None:
+    """Re-running the slate must not rewrite recorded odds, only the closing snapshot."""
+    store = {"version": 1, "bets": []}
+    slate = {
+        "date_label": "2026-06-11",
+        "recommended_bets": [_sample_pick()],
+        "games": [],
+    }
+    store = record_from_slate(store, slate)
+    assert store["bets"][0]["market_odds"] == 141
+
+    moved = _sample_pick()
+    moved["market_odds"] = 120
+    moved["ev_pct"] = 9.9
+    store = record_from_slate(
+        store,
+        {"date_label": "2026-06-11", "recommended_bets": [moved], "games": []},
+    )
+    bet = store["bets"][0]
+    assert len(store["bets"]) == 1
+    assert bet["market_odds"] == 141  # frozen at record time
+    assert bet["ev_pct"] == 5.0  # frozen at record time
+    assert bet["closing_market_odds"] == 120
+
+
+def test_clv_computed_at_grading() -> None:
+    bet = {
+        "side": "home",
+        "bet_type": "moneyline",
+        "league": "mlb",
+        "market_odds": 141,
+        "closing_market_odds": 120,
+        "stake_units": 1.0,
+    }
+    graded = grade_bet(bet, 2, 5)
+    assert graded["status"] == "win"
+    # +141 (2.41 decimal) vs closing +120 (2.20) → ~+9.5% CLV.
+    assert graded["clv_pct"] == round((2.41 / 2.20 - 1.0) * 100.0, 2)
+
+
+def test_stake_units_quarter_kelly() -> None:
+    from web.tracking_service import stake_units_from_kelly
+
+    assert stake_units_from_kelly(None) == 1.0
+    assert stake_units_from_kelly(0.0) == 1.0
+    assert stake_units_from_kelly(4.0) == 1.0
+    assert stake_units_from_kelly(0.5) == 0.25
+    assert stake_units_from_kelly(25.0) == 3.0
+
+
+def test_prune_keeps_graded_bets() -> None:
+    """Graded bets are immutable history even if thresholds change."""
+    graded = {
+        "id": "2026-06-11:401:home",
+        "date": "2026-06-11",
+        "event_id": "401",
+        "side": "home",
+        "strategy": "value",
+        "ev_pct": 0.5,
+        "win_probability": 51,
+        "status": "loss",
+        "units": -1.0,
+        "stake_units": 1.0,
+    }
+    store = {"version": 1, "bets": [graded]}
+    pruned = prune_below_min_edge(store)
+    assert len(pruned["bets"]) == 1
+
+
 def test_prune_below_hubacek_threshold() -> None:
     qualifying = _sample_pick(event_id="401815714")
     low_conf = _sample_pick(win_probability=55, event_id="401815712")
@@ -369,5 +438,9 @@ if __name__ == "__main__":
     test_scoreboard_dates_use_start_time_not_record_date()
     test_fetch_event_result_grades_completed_nba_final()
     test_grade_pending_resolves_stale_event_by_id()
+    test_recorded_odds_frozen_and_closing_snapshot_updates()
+    test_clv_computed_at_grading()
+    test_stake_units_quarter_kelly()
+    test_prune_keeps_graded_bets()
     test_prune_below_hubacek_threshold()
     print("test_tracking.py: all tests passed")

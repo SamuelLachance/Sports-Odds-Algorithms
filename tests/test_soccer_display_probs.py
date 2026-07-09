@@ -61,7 +61,10 @@ def test_display_probs_use_raw_not_decorrelated_pick_probs() -> None:
         )
 
     assert payload is not None
-    assert payload["home_win_probability"] == 40.0
+    # Display probs are market-calibrated raw model output (between the raw 40%
+    # and the market-implied 60%), never the decorrelated pick probabilities.
+    assert 40.0 <= payload["home_win_probability"] <= 60.0
+    assert payload["home_win_probability"] != payload["pick_home_win_probability"]
     assert payload["pick_home_win_probability"] == 20.0
     assert payload["pick_away_win_probability"] == 55.0
     assert payload["market_decorrelated"] is True

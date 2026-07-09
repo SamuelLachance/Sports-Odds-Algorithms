@@ -72,6 +72,68 @@ def record_soccer_paper_pick(
     )
 
 
+def _save_paper_log(payload: dict[str, Any]) -> None:
+    PAPER_TRACKING_PATH.parent.mkdir(parents=True, exist_ok=True)
+    PAPER_TRACKING_PATH.write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _grade_outcome(pick_outcome: str, away_score: int, home_score: int) -> str:
+    if pick_outcome == "draw":
+        return "win" if away_score == home_score else "loss"
+    if pick_outcome == "home":
+        return "win" if home_score > away_score else "loss"
+    return "win" if away_score > home_score else "loss"
+
+
+def grade_paper_picks() -> dict[str, Any]:
+    """Grade pending paper picks against ESPN finals; returns a summary."""
+    from web.tracking_service import _fetch_event_result, calculate_units
+
+    payload = _load_paper_log()
+    graded = 0
+    for bet in payload["bets"]:
+        if bet.get("status") in {"win", "loss"}:
+            continue
+        league = bet.get("league")
+        event_id = bet.get("event_id")
+        if not league or not event_id:
+            continue
+        scores = _fetch_event_result(league, str(event_id))
+        if not scores:
+            continue
+        away_score, home_score = scores
+        status = _grade_outcome(bet.get("pick_outcome") or "", away_score, home_score)
+        bet["status"] = status
+        bet["final_score"] = f"{away_score}–{home_score}"
+        bet["graded_at"] = datetime.now(timezone.utc).isoformat()
+        market_ml = bet.get("market_ml")
+        if market_ml is not None:
+            bet["units"] = round(calculate_units(1.0, int(market_ml), status), 3)
+        graded += 1
+
+    if graded:
+        _save_paper_log(payload)
+
+    settled = [b for b in payload["bets"] if b.get("status") in {"win", "loss"}]
+    wins = sum(1 for b in settled if b["status"] == "win")
+    units = sum(b.get("units") or 0.0 for b in settled)
+    summary = {
+        "picks": len(payload["bets"]),
+        "settled": len(settled),
+        "wins": wins,
+        "losses": len(settled) - wins,
+        "units": round(units, 3),
+        "newly_graded": graded,
+    }
+    payload["summary"] = summary
+    if graded:
+        _save_paper_log(payload)
+    return summary
+
+
 def maybe_record_from_blend(
     blended: dict[str, Any],
     *,

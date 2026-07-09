@@ -2,15 +2,27 @@
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
 from unittest.mock import patch
 
-from web.basketball_pred_model import build_basketball_model, extract_team_matrix_strengths
-from web.sports_db.model_player_ratings import (
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+TESTS_DIR = Path(__file__).resolve().parent
+if str(TESTS_DIR) not in sys.path:
+    sys.path.insert(0, str(TESTS_DIR))
+
+from web.basketball_pred_model import (  # noqa: E402
+    build_basketball_model,
+    extract_team_matrix_strengths,
+)
+from web.sports_db.model_player_ratings import (  # noqa: E402
     enrich_team_roster_model_ratings,
     league_model_rating_context,
     player_model_rating,
 )
-from tests.test_basketball_pred_model import _sample_games
+from test_basketball_pred_model import _sample_games  # noqa: E402
 
 
 def test_extract_team_matrix_strengths_ranks_stronger_offense() -> None:

@@ -48,16 +48,21 @@ def _soccer_pick(*, edge: float = 30.0, ev_pct: float = OFFICIAL_MIN_EV_PCT) -> 
 def test_eligible_for_official_picks() -> None:
     for league in OFFICIAL_PICK_LEAGUES:
         assert eligible_for_official_picks(league)
-    assert not eligible_for_official_picks("epl")
+    # A+ soccer leagues (calibrated model beats the closing line) are official.
+    assert eligible_for_official_picks("epl")
+    assert eligible_for_official_picks("worldcup")
+    # Leagues without a closing-line-beating model stay untracked.
     assert not eligible_for_official_picks("mls")
+    assert not eligible_for_official_picks("ucl")
     assert not eligible_for_official_picks("nfl")
 
 
 def test_soccer_game_not_eligible_for_official_picks() -> None:
-    pick = _soccer_pick(edge=55)
+    """Soccer leagues without an A+ model (e.g. MLS) stay off official tracking."""
+    pick = {**_soccer_pick(edge=55), "league": "mls", "league_name": "MLS"}
     game = {
-        "league": "epl",
-        "eligible_for_official_picks": eligible_for_official_picks("epl"),
+        "league": "mls",
+        "eligible_for_official_picks": eligible_for_official_picks("mls"),
         "model": {
             "threeway": True,
             "home_win_probability": 48.0,
@@ -75,11 +80,11 @@ def test_soccer_game_not_eligible_for_official_picks() -> None:
 
 def test_slate_recommendation_rollup_skips_non_official_leagues() -> None:
     soccer_game = {
-        "league": "epl",
-        "league_name": "Premier League",
+        "league": "mls",
+        "league_name": "MLS",
         "event_id": "401999001",
         "eligible_for_official_picks": False,
-        "recommendations": [_soccer_pick(edge=60)],
+        "recommendations": [{**_soccer_pick(edge=60), "league": "mls"}],
         "matchup": {"away": {"name": "Chelsea"}, "home": {"name": "Arsenal"}},
         "start_time": "2026-06-27T19:00Z",
         "model": {"model_agreement": {}},
@@ -120,7 +125,7 @@ def test_slate_recommendation_rollup_skips_non_official_leagues() -> None:
     assert len(official) == 1
     assert official[0]["league"] == "mlb"
     assert len(model_analysis) == 1
-    assert model_analysis[0]["league"] == "epl"
+    assert model_analysis[0]["league"] == "mls"
     assert model_analysis[0]["tracked"] is False
 
 
@@ -128,11 +133,31 @@ def test_record_from_slate_skips_non_official_leagues() -> None:
     store = {"version": 1, "bets": []}
     slate = {
         "date_label": "2026-06-27",
-        "recommended_bets": [_soccer_pick()],
+        "recommended_bets": [{**_soccer_pick(), "league": "mls"}],
         "games": [],
     }
     store = record_from_slate(store, slate)
     assert len(store["bets"]) == 0
+
+
+def test_record_from_slate_accepts_official_soccer_hubacek_pick() -> None:
+    store = {"version": 1, "bets": []}
+    pick = {
+        **_soccer_pick(),
+        "strategy": "hubacek",
+        "ev_pct": 4.0,
+        "model_market_gap_pp": 3.5,
+        "win_probability": 62.0,
+    }
+    slate = {
+        "date_label": "2026-06-27",
+        "recommended_bets": [pick],
+        "games": [],
+    }
+    store = record_from_slate(store, slate)
+    assert len(store["bets"]) == 1
+    assert store["bets"][0]["league"] == "epl"
+    assert store["bets"][0]["bet_type"] == "soccer_1x2"
 
 
 def test_tracking_rollups_filter_non_official_leagues() -> None:
@@ -140,7 +165,7 @@ def test_tracking_rollups_filter_non_official_leagues() -> None:
         "id": "2026-06-01:401999001:home",
         "date": "2026-06-01",
         "event_id": "401999001",
-        "league": "epl",
+        "league": "mls",
         "side": "home",
         "status": "win",
         "units": 1.4,

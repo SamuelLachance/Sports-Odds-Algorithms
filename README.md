@@ -13,9 +13,9 @@ Daily algorithmic sports betting platform across **NBA, WNBA, CBB, NFL, CFB, NHL
 | **Daily slate** | Rebuilt every day at **3:00 AM America/Toronto** (and on every push) via GitHub Actions |
 | **Live data** | ESPN schedules, scores, and consensus moneylines/spreads |
 | **Unified model** | Blends legacy **Algo V2**, **power ratings**, and a sport-specific third layer |
-| **Algo picks** | Ranks moneyline, 1X2 (soccer), and spread opportunities where the model disagrees with the market |
-| **Bet tracking** | Logs picks at +40 edge or higher and grades them when games finish |
-| **League coverage** | Games, team pages, and picks for all seven supported leagues |
+| **Algo picks** | Hubáček-style official picks: decorrelated model must beat the de-vigged market by ≥2 pp with ≥2% honest EV and a per-bet-type confidence bar |
+| **Bet tracking** | Freezes odds at record time, grades against ESPN finals, logs closing-line value (CLV), and sizes stakes with quarter-Kelly (0.25–3u) |
+| **League coverage** | Games, team pages, and picks for all supported leagues; official tracked picks cover NBA, WNBA, CBB, NHL, MLB, and the soccer leagues whose calibrated model beats the closing line |
 
 ### Three-layer prediction stack
 
@@ -23,13 +23,15 @@ Each matchup blends three independent signals (equal weight when all layers are 
 
 | Sport | Leagues | Model |
 |-------|---------|-------|
-| NBA, WNBA, CBB | Basketball | **BasketballMatrix** — soft-impute SVD on offensive-rating × pace matrices |
-| MLB, NCAA D1 baseball, winter leagues, WBC | Baseball | [MLB-Model](https://github.com/greerreNFL/MLB-Model) Elo ratings |
+| NBA | Basketball | **EnsembleML** — XGBoost stack over all layers + market features (beats the closing line on holdout) |
+| WNBA, CBB | Basketball | **BasketballMatrix** — soft-impute SVD on offensive-rating × pace matrices |
+| MLB | Baseball | **MLB RunCast** — EWMA run efficiency + Monte Carlo + XGBoost with probable-pitcher edge |
+| NCAA D1 baseball, winter leagues, WBC | Baseball | [MLB-Model](https://github.com/greerreNFL/MLB-Model) Elo ratings |
 | NHL, NCAA D1 hockey | Hockey | **Algo V1** — weighted factor model (James Quintero NHL profile) |
-| NFL, CFB | Football | [nfelo](https://github.com/greerreNFL/nfelo) Elo ratings |
-| EPL, La Liga, Bundesliga, Serie A, Ligue 1, MLS, UCL, international | Soccer | Elo + Pi-ratings + Dixon–Coles Poisson (1X2 and score projections) |
+| NFL, CFB | Football | [nfelo](https://github.com/greerreNFL/nfelo) Elo ratings + EnsembleML head when trained |
+| EPL, La Liga, Bundesliga, Serie A, Ligue 1, MLS, UCL, international | Soccer | **Path A** — Dixon–Coles + XGBoost with market-calibrated display probabilities (beats the closing line on the top 5 leagues and 8 international competitions) |
 
-Layers 1 and 2 (Algo V2 and power ratings) still apply to **baseball** and **football** leagues. **Basketball** (NBA, WNBA, CBB) uses **BasketballMatrix** only. **Hockey** (NHL, NCAA D1 men's and women's) uses **Algo V1** only — eight weighted season factors summed into a signed total, converted to win probability via the original parabolic curve.
+Layers 1 and 2 (Algo V2 and power ratings) still apply to **baseball** and **football** leagues. **NBA** routes to the trained **EnsembleML** head; WNBA/CBB use **BasketballMatrix** only. **Hockey** (NHL, NCAA D1 men's and women's) uses **Algo V1** only — eight weighted season factors summed into a signed total, converted to win probability via the original parabolic curve.
 
 Soccer uses a dedicated **three-way blend**: each layer contributes home/draw/away probabilities independently, then the site surfaces projected scores (`xG`), fair 1X2 prices, and value picks when all three layers agree on the same outcome.
 

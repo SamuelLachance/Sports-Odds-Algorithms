@@ -411,6 +411,9 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
             or soccer_pred.get("expected_home_goals"),
             expected_away_goals=blended.get("expected_away_goals")
             or soccer_pred.get("expected_away_goals"),
+            base_home_prob=home_prob,
+            base_draw_prob=draw_prob,
+            base_away_prob=away_prob,
         )
     else:
         picks = evaluate_official_picks_for_game(

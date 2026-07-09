@@ -8,9 +8,6 @@ from web.bet_advisor import model_home_margin
 from web.blend_service import home_win_prob_to_total_score
 from web.ensemble_ml.config import ensemble_model_available, is_spread_league
 from web.ensemble_ml.predict import predict_ensemble_for_blend
-from web.basketball_pred_model import is_basketball_league
-from web.hockey_pred_model import is_hockey_league
-from web.mlb_pred_model import is_mlb_league
 from web.league_profiles import is_soccer_league
 
 
@@ -23,15 +20,15 @@ def apply_ensemble_ml(
     away_moneyline: int | None = None,
     draw_moneyline: int | None = None,
 ) -> dict[str, Any]:
-    """Replace unified probabilities with the per-sport ensemble ML head when available."""
+    """Replace unified probabilities with the per-sport ensemble ML head when available.
+
+    League routing lives in ensemble_model_available(): leagues whose dedicated
+    sport model already beats the ensemble on holdout (NHL, CBB, WNBA, MLB,
+    soccer Path A) are excluded there. NBA is routed here because the trained
+    ensemble beats the closing-line log-loss on holdout while BasketballMatrix
+    does not.
+    """
     league = league.lower()
-    if (
-        is_basketball_league(league)
-        or is_hockey_league(league)
-        or is_mlb_league(league)
-        or is_soccer_league(league)
-    ):
-        return result
     if not ensemble_model_available(league):
         return result
 
@@ -68,6 +65,10 @@ def apply_ensemble_ml(
     home_prob = float(preds["home_win_probability"])
     total, win_prob = home_win_prob_to_total_score(home_prob)
     updated["blended_home_win_probability"] = round(home_prob, 2)
+    if preds.get("pre_decorrelation_home_win_probability") is not None:
+        updated["pre_decorrelation_home_win_probability"] = preds[
+            "pre_decorrelation_home_win_probability"
+        ]
     updated["total_score"] = round(total, 2)
     updated["win_probability"] = round(win_prob, 2)
     updated["favorite_side"] = "home" if total <= 0 else "away"

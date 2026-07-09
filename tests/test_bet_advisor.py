@@ -127,8 +127,13 @@ def test_moneyline_edge_cross_sign_not_raw_subtraction() -> None:
 
 
 def test_official_pick_threshold_is_hubacek_gap() -> None:
-    """Official picks follow Hubáček +EV and φ confidence, not a flat EV%."""
-    from web.hubacek_picks import HUBACEK_MIN_WIN_CONFIDENCE_PP
+    """Official picks follow Hubáček gates with real gap/EV/confidence floors."""
+    from web.hubacek_picks import (
+        HUBACEK_MIN_EV_PCT,
+        HUBACEK_MIN_MARKET_GAP_PP,
+        HUBACEK_MIN_WIN_CONFIDENCE_PP,
+        HUBACEK_SPREAD_MIN_WIN_CONFIDENCE_PP,
+    )
     from web.league_profiles import OFFICIAL_MIN_EV_PCT
     from web.pick_strategy import OFFICIAL_MIN_EDGE, get_pick_thresholds
 
@@ -136,10 +141,11 @@ def test_official_pick_threshold_is_hubacek_gap() -> None:
     assert OFFICIAL_MIN_EV_PCT == 0.0
     thresholds = get_pick_thresholds("nba")
     assert thresholds["min_edge"] == 0.0
-    assert thresholds["min_ev_pct"] == 0.0
+    assert thresholds["min_ev_pct"] == HUBACEK_MIN_EV_PCT
     assert thresholds["pick_system"] == "hubacek"
-    assert thresholds["min_market_gap_pp"] == 0.0
+    assert thresholds["min_market_gap_pp"] == HUBACEK_MIN_MARKET_GAP_PP
     assert thresholds["min_win_confidence_pp"] == HUBACEK_MIN_WIN_CONFIDENCE_PP
+    assert thresholds["min_spread_confidence_pp"] == HUBACEK_SPREAD_MIN_WIN_CONFIDENCE_PP
     assert thresholds["enabled"] is True
 
     away_proj, _ = model_moneylines(28.33)
@@ -243,9 +249,33 @@ def test_spread_edge_juice_adjustment() -> None:
     base = spread_odds_edge(2.0, -110)
     worse_juice = spread_odds_edge(2.0, -120)
     better_juice = spread_odds_edge(2.0, -105)
-    assert base == 40.0
-    assert worse_juice == 30.0
-    assert better_juice == 45.0
+    assert base > 0
+    assert worse_juice < base < better_juice
+
+
+def test_spread_cover_probability_uses_empirical_sigma() -> None:
+    """Cover probability follows Φ(edge/σ), not the old 5 pp/point line."""
+    import math
+
+    from web.bet_advisor import (
+        SPREAD_MARGIN_SIGMA,
+        spread_cover_probability,
+        spread_margin_sigma,
+    )
+
+    assert spread_margin_sigma("nba") == SPREAD_MARGIN_SIGMA["nba"]
+    sigma = spread_margin_sigma("nba")
+    expected = 0.5 * (1.0 + math.erf(3.0 / (sigma * math.sqrt(2.0)))) * 100.0
+    assert abs(spread_cover_probability(3.0, "nba") - expected) < 1e-9
+    # A 2-point cushion is ~56% cover in the NBA, far below the old 60%.
+    assert spread_cover_probability(2.0, "nba") < 57.0
+    assert spread_cover_probability(0.0, "nba") == 50.0
+    # Monotonic in point edge.
+    assert (
+        spread_cover_probability(1.0, "nba")
+        < spread_cover_probability(4.0, "nba")
+        < spread_cover_probability(10.0, "nba")
+    )
 
 
 def test_spread_negative_cushion_with_plus_juice_has_no_edge() -> None:

@@ -419,6 +419,7 @@ def predict_binary(
 
     return {
         "home_win_probability": round(home_prob, 2),
+        "pre_decorrelation_home_win_probability": round(calibrated * 100.0, 2),
         "predicted_home_margin": round(margin, 2) if margin is not None else None,
         "home_cover_probability": round(cover_prob, 2) if cover_prob is not None else None,
         "margin_sigma": round(model.margin_sigma, 2),

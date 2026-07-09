@@ -178,6 +178,18 @@ def build_daily_slate(*, refresh_sports_db: bool = True) -> dict:
     print("Updating bet tracking rollups...")
     write_json(DOCS_DIR / "api" / "tracking.json", update_tracking(slate))
 
+    print("Grading soccer paper picks...")
+    try:
+        from web.soccer_paper_tracking import grade_paper_picks
+
+        paper_summary = grade_paper_picks()
+        print(
+            f"Soccer paper record: {paper_summary['wins']}-{paper_summary['losses']} "
+            f"({paper_summary['units']:+.2f}u, {paper_summary['newly_graded']} newly graded)"
+        )
+    except Exception as exc:  # noqa: BLE001
+        print(f"Soccer paper grading skipped: {exc}")
+
     from web.sports_db import build_sports_database
     from web.sports_db.build import TEAM_BUILD_WORKERS
 

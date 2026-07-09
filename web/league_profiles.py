@@ -152,8 +152,29 @@ MIN_EXPECTED_VALUE_PCT = 5.0
 OFFICIAL_MIN_EV_PCT = 0.0
 
 # Leagues that publish and track official recommended bets on GitHub Pages.
+# Soccer leagues are included only where the Path A calibrated model beats the
+# closing line (A+ grade in data/soccer_meta_weights.json).
 OFFICIAL_PICK_LEAGUES: frozenset[str] = frozenset(
-    {"nba", "cbb", "wnba", "nhl", "mlb"}
+    {
+        "nba",
+        "cbb",
+        "wnba",
+        "nhl",
+        "mlb",
+        "epl",
+        "bundesliga",
+        "laliga",
+        "seriea",
+        "ligue1",
+        "worldcup",
+        "fifa_friendlies",
+        "uefa_euro",
+        "uefa_nations",
+        "copa_america",
+        "concacaf_wcq",
+        "concacaf_gold",
+        "concacaf_nations",
+    }
 )
 
 # Cross-sign model-favorite spots (model fav priced as underdog) may clear a lower EV bar.

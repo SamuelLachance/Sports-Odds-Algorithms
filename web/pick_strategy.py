@@ -14,7 +14,7 @@ from web.bet_advisor import (
     evaluate_soccer_picks,
     evaluate_spread_picks,
     model_home_margin,
-    official_pick_binary_probs,
+    official_pick_binary_prob_sets,
     soccer_model_moneylines,
     spread_line_for_side,
 )
@@ -1028,8 +1028,11 @@ def evaluate_soccer_official_picks_for_game(
     home_market: int | None,
     expected_home_goals: float | None = None,
     expected_away_goals: float | None = None,
+    base_home_prob: float | None = None,
+    base_draw_prob: float | None = None,
+    base_away_prob: float | None = None,
 ) -> list[BetPick]:
-    """Official 1X2 picks: Hubáček decorrelation gap vs market."""
+    """Official 1X2 picks: Hubáček decorrelation gap vs market, honest EV."""
     thresholds = get_pick_thresholds(league)
     picks = evaluate_soccer_picks(
         away_name=away_name,
@@ -1045,8 +1048,12 @@ def evaluate_soccer_official_picks_for_game(
         away_market=away_market,
         draw_market=draw_market,
         home_market=home_market,
+        base_home_prob=base_home_prob,
+        base_draw_prob=base_draw_prob,
+        base_away_prob=base_away_prob,
         hubacek_only=True,
         min_market_gap_pp=thresholds["min_market_gap_pp"],
+        min_win_confidence_pp=thresholds["min_win_confidence_pp"],
     )
     for pick in picks:
         pick.bet_type = "soccer_1x2"
@@ -1093,12 +1100,12 @@ def evaluate_official_picks_for_game(
             hubacek_only=True,
             blended=blended,
             min_cover_gap_pp=thresholds["min_spread_cover_gap_pp"],
-            min_win_confidence_pp=thresholds["min_win_confidence_pp"],
+            min_win_confidence_pp=thresholds["min_spread_confidence_pp"],
         )
         return picks
 
     if bet_type == "moneyline":
-        ml_away, ml_home = official_pick_binary_probs(
+        ml_away, ml_home, base_away, base_home = official_pick_binary_prob_sets(
             blended,
             total_score,
             league=league,
@@ -1117,6 +1124,8 @@ def evaluate_official_picks_for_game(
             home_market=home_market,
             away_prob=ml_away,
             home_prob=ml_home,
+            base_away_prob=base_away,
+            base_home_prob=base_home,
             hubacek_only=True,
             min_market_gap_pp=thresholds["min_market_gap_pp"],
             min_win_confidence_pp=thresholds["min_win_confidence_pp"],

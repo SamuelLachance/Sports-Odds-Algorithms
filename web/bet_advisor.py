@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -17,8 +18,17 @@ from web.league_profiles import (
 SPREAD_POINT_TO_EDGE = 20.0
 MIN_SPREAD_POINT_EDGE = MIN_RECOMMENDED_EDGE / SPREAD_POINT_TO_EDGE
 
-# Cover-probability boost per point of cushion vs the consensus spread.
-SPREAD_COVER_PROB_PER_POINT = 5.0
+# Std dev of (actual home margin − closing-spread-implied margin), per league.
+# NBA fitted on 13k closing lines (data/supplemental/closing-odds/nba.csv);
+# others use published market-residual values.
+SPREAD_MARGIN_SIGMA: dict[str, float] = {
+    "nba": 13.26,
+    "wnba": 11.0,
+    "cbb": 12.0,
+    "nfl": 13.5,
+    "cfb": 15.5,
+}
+DEFAULT_SPREAD_MARGIN_SIGMA = 13.0
 
 # Block home/away soccer picks when projected goals favor the other side by at least this margin.
 SOCCER_PROJECTED_SCORE_CONFLICT_MARGIN = 1.5
@@ -135,21 +145,32 @@ def spread_point_edge(model_margin_home: float, home_spread: float, side: str) -
     return model_margin_home - home_spread
 
 
-def spread_cover_probability(point_edge: float) -> float:
-    """Heuristic ATS cover probability from point cushion vs the spread."""
+def spread_margin_sigma(league: str | None = None) -> float:
+    """Empirical std dev of final margin around the closing spread."""
+    if league:
+        return SPREAD_MARGIN_SIGMA.get(league.lower(), DEFAULT_SPREAD_MARGIN_SIGMA)
+    return DEFAULT_SPREAD_MARGIN_SIGMA
+
+
+def spread_cover_probability(point_edge: float, league: str | None = None) -> float:
+    """ATS cover probability from point cushion, via the empirical margin model.
+
+    P(cover) = Φ(point_edge / σ) where σ is the league's margin-vs-closing-spread
+    residual std dev (e.g. ~13.3 points for NBA). Replaces the old linear
+    5 pp/point heuristic that badly overstated cover probability and EV.
+    """
     if point_edge <= 0:
         return 50.0
-    return min(
-        max(50.0 + point_edge * SPREAD_COVER_PROB_PER_POINT, 5.0),
-        95.0,
-    )
+    sigma = spread_margin_sigma(league)
+    prob = 0.5 * (1.0 + math.erf(point_edge / (sigma * math.sqrt(2.0))))
+    return min(max(prob * 100.0, 5.0), 95.0)
 
 
-def spread_odds_edge(point_edge: float, spread_odds: int) -> float:
+def spread_odds_edge(point_edge: float, spread_odds: int, league: str | None = None) -> float:
     """American-odds edge for a spread bet from model cover probability vs book price."""
     if point_edge < MIN_SPREAD_POINT_EDGE:
         return 0.0
-    cover_prob = spread_cover_probability(point_edge)
+    cover_prob = spread_cover_probability(point_edge, league)
     fair_odds = _probability_to_american(cover_prob)
     return _odds_edge(fair_odds, spread_odds, cover_prob)
 
@@ -157,10 +178,11 @@ def spread_odds_edge(point_edge: float, spread_odds: int) -> float:
 def spread_edge_from_points(
     point_edge: float,
     spread_odds: int | None = None,
+    league: str | None = None,
 ) -> float:
     """Backward-compatible alias for spread_odds_edge."""
     juice = spread_odds if spread_odds is not None else DEFAULT_SPREAD_JUICE
-    return spread_odds_edge(point_edge, juice)
+    return spread_odds_edge(point_edge, juice, league)
 
 
 def _breakeven_american(probability_pct: float, *, as_underdog: bool) -> float:
@@ -292,10 +314,12 @@ def enrich_pick_profit_metrics(pick: BetPick) -> BetPick:
     """Attach EV%, Kelly, and profit_score used for official pick ranking."""
     if pick.bet_type == "spread":
         odds = int(pick.spread_odds if pick.spread_odds is not None else DEFAULT_SPREAD_JUICE)
-        prob = float(pick.win_probability)
     else:
         odds = int(pick.market_odds)
-        prob = float(pick.win_probability)
+    # EV/Kelly use the calibrated (pre-decorrelation) probability when available;
+    # the decorrelated win_probability only drives the gap/confidence gates.
+    base_prob = pick.extra.get("base_win_probability")
+    prob = float(base_prob) if base_prob is not None else float(pick.win_probability)
     pick.ev_pct = round(expected_value_pct(prob, odds), 2)
     kelly = kelly_fraction(prob, odds)
     pick.profit_score = round(
@@ -339,12 +363,13 @@ def passes_hubacek_official_pick_gate(
     model_prob_pct: float,
     market_implied_pct: float | None,
     ev_pct: float,
-    min_ev_pct: float = 0.0,
+    min_ev_pct: float | None = None,
     min_market_gap_pp: float | None = None,
     min_win_confidence_pp: float | None = None,
 ) -> bool:
-    """Official Hubáček moneyline gate (decorrelation gap, not flat EV%)."""
+    """Official Hubáček moneyline gate (decorrelation gap with real floors)."""
     from web.hubacek_picks import (
+        HUBACEK_MIN_EV_PCT,
         HUBACEK_MIN_MARKET_GAP_PP,
         HUBACEK_MIN_WIN_CONFIDENCE_PP,
         passes_hubacek_moneyline_gate,
@@ -358,12 +383,14 @@ def passes_hubacek_official_pick_gate(
         if min_win_confidence_pp is None
         else min_win_confidence_pp
     )
+    ev_floor = HUBACEK_MIN_EV_PCT if min_ev_pct is None else min_ev_pct
     return passes_hubacek_moneyline_gate(
         model_prob_pct=model_prob_pct,
         market_implied_pct=market_implied_pct,
         ev_pct=ev_pct,
         min_market_gap_pp=gap_floor,
         min_win_confidence_pp=confidence_floor,
+        min_ev_pct=ev_floor,
     )
 
 
@@ -403,7 +430,7 @@ def passes_hubacek_spread_pick_gate(
     """Spread official pick: decorrelated margin vs line + cover gap vs juice."""
     from web.hubacek_picks import (
         HUBACEK_MIN_SPREAD_COVER_GAP_PP,
-        HUBACEK_MIN_WIN_CONFIDENCE_PP,
+        HUBACEK_SPREAD_MIN_WIN_CONFIDENCE_PP,
         passes_hubacek_spread_gate,
     )
 
@@ -413,7 +440,7 @@ def passes_hubacek_spread_pick_gate(
         else min_cover_gap_pp
     )
     confidence_floor = (
-        HUBACEK_MIN_WIN_CONFIDENCE_PP
+        HUBACEK_SPREAD_MIN_WIN_CONFIDENCE_PP
         if min_win_confidence_pp is None
         else min_win_confidence_pp
     )
@@ -484,6 +511,57 @@ def market_home_prob_pct(
     return None
 
 
+def official_pick_binary_prob_sets(
+    blended: dict[str, Any],
+    total_score: float,
+    *,
+    league: str,
+    away_market: int | None = None,
+    home_market: int | None = None,
+    consensus_spread: float | None = None,
+) -> tuple[float, float, float, float]:
+    """Decorrelated and calibrated (pre-decorrelation) home/away win %.
+
+    Returns (away_decor, home_decor, away_base, home_base). The decorrelated
+    pair drives the Hubáček gap/confidence gates; the calibrated pair is the
+    honest probability used for EV and Kelly.
+    """
+    from web.market_decorrelation import decorrelate_binary
+
+    away_prob, home_prob = resolve_binary_win_probs(blended, total_score)
+    pred = _sport_pred_payload(blended)
+
+    def _base_home(default: float) -> float:
+        if blended.get("pre_decorrelation_home_win_probability") is not None:
+            return float(blended["pre_decorrelation_home_win_probability"])
+        if pred and pred.get("pre_decorrelation_home_win_probability") is not None:
+            return float(pred["pre_decorrelation_home_win_probability"])
+        return default
+
+    if blended.get("market_decorrelated"):
+        base_home = _base_home(home_prob)
+        return away_prob, home_prob, 100.0 - base_home, base_home
+
+    if pred and pred.get("market_decorrelated") and pred.get("home_win_probability") is not None:
+        source = pred.get("market_decorrelation_source", "moneyline")
+        if source != "spread":
+            home_decor = float(pred["home_win_probability"])
+            base_home = _base_home(home_decor)
+            return 100.0 - home_decor, home_decor, 100.0 - base_home, base_home
+
+    market_home = market_home_prob_pct(
+        away_market=away_market,
+        home_market=home_market,
+        consensus_spread=None if away_market is not None and home_market is not None else consensus_spread,
+    )
+    if market_home is None:
+        return away_prob, home_prob, away_prob, home_prob
+
+    base_home = _base_home(home_prob)
+    home_decor = decorrelate_binary(base_home, market_home)
+    return 100.0 - home_decor, home_decor, 100.0 - base_home, base_home
+
+
 def official_pick_binary_probs(
     blended: dict[str, Any],
     total_score: float,
@@ -493,34 +571,16 @@ def official_pick_binary_probs(
     home_market: int | None = None,
     consensus_spread: float | None = None,
 ) -> tuple[float, float]:
-    """Hubáček-adjusted home/away win % for official moneyline EV, Kelly, and edge."""
-    from web.market_decorrelation import decorrelate_binary
-
-    away_prob, home_prob = resolve_binary_win_probs(blended, total_score)
-    if blended.get("market_decorrelated"):
-        return away_prob, home_prob
-
-    pred = _sport_pred_payload(blended)
-    if pred and pred.get("market_decorrelated") and pred.get("home_win_probability") is not None:
-        source = pred.get("market_decorrelation_source", "moneyline")
-        if source != "spread":
-            home_prob = float(pred["home_win_probability"])
-            return 100.0 - home_prob, home_prob
-
-    market_home = market_home_prob_pct(
+    """Hubáček-adjusted home/away win % (decorrelated pair only)."""
+    away_decor, home_decor, _away_base, _home_base = official_pick_binary_prob_sets(
+        blended,
+        total_score,
+        league=league,
         away_market=away_market,
         home_market=home_market,
-        consensus_spread=None if away_market is not None and home_market is not None else consensus_spread,
+        consensus_spread=consensus_spread,
     )
-    if market_home is None:
-        return away_prob, home_prob
-
-    base_home = home_prob
-    if pred and pred.get("pre_decorrelation_home_win_probability") is not None:
-        base_home = float(pred["pre_decorrelation_home_win_probability"])
-
-    home_decor = decorrelate_binary(base_home, market_home)
-    return 100.0 - home_decor, home_decor
+    return away_decor, home_decor
 
 
 def ensure_hubacek_in_blend(
@@ -555,6 +615,7 @@ def ensure_hubacek_in_blend(
     dec_home = decorrelate_binary(float(home_prob), market_home)
     total, win_prob = home_win_prob_to_total_score(dec_home)
     updated = dict(blended)
+    updated["pre_decorrelation_home_win_probability"] = round(float(home_prob), 2)
     updated["blended_home_win_probability"] = round(dec_home, 2)
     updated["total_score"] = round(total, 2)
     updated["win_probability"] = round(win_prob, 2)
@@ -654,6 +715,8 @@ def evaluate_picks(
     home_market: int | None,
     away_prob: float | None = None,
     home_prob: float | None = None,
+    base_away_prob: float | None = None,
+    base_home_prob: float | None = None,
     min_edge: float = MIN_RECOMMENDED_EDGE,
     min_ev_pct: float = MIN_EXPECTED_VALUE_PCT,
     hubacek_only: bool = False,
@@ -666,17 +729,21 @@ def evaluate_picks(
     devig_away, devig_home = devig_two_way_probs(away_market, home_market)
     picks: list[BetPick] = []
 
-    candidates: list[tuple[str, str, str, float, int, int | None, float | None]] = [
-        ("away", away_name, away_slug, away_prob, away_proj, away_market, devig_away),
-        ("home", home_name, home_slug, home_prob, home_proj, home_market, devig_home),
+    # Honest EV uses calibrated (pre-decorrelation) probabilities when supplied.
+    ev_away_prob = base_away_prob if base_away_prob is not None else away_prob
+    ev_home_prob = base_home_prob if base_home_prob is not None else home_prob
+
+    candidates: list[tuple[str, str, str, float, float, int, int | None, float | None]] = [
+        ("away", away_name, away_slug, away_prob, ev_away_prob, away_proj, away_market, devig_away),
+        ("home", home_name, home_slug, home_prob, ev_home_prob, home_proj, home_market, devig_home),
     ]
 
-    for side, name, slug, outcome_prob, projection, market, market_implied in candidates:
+    for side, name, slug, outcome_prob, ev_prob, projection, market, market_implied in candidates:
         if market is None:
             continue
 
         edge = _odds_edge(projection, market, outcome_prob)
-        ev_pct = expected_value_pct(outcome_prob, market)
+        ev_pct = expected_value_pct(ev_prob, market)
         is_model_favorite = projection < 0
         is_market_underdog = market > 0
 
@@ -739,6 +806,11 @@ def evaluate_picks(
                 win_probability=outcome_prob,
                 market_implied_prob=round(market_implied, 2) if market_implied is not None else None,
                 reason=reason,
+                extra=(
+                    {"base_win_probability": round(ev_prob, 2)}
+                    if ev_prob != outcome_prob
+                    else {}
+                ),
             )
         )
 
@@ -790,10 +862,14 @@ def evaluate_soccer_picks(
     home_market: int | None,
     expected_home_goals: float | None = None,
     expected_away_goals: float | None = None,
+    base_home_prob: float | None = None,
+    base_draw_prob: float | None = None,
+    base_away_prob: float | None = None,
     min_edge: float = MIN_RECOMMENDED_EDGE,
     min_ev_pct: float = MIN_EXPECTED_VALUE_PCT,
     hubacek_only: bool = False,
     min_market_gap_pp: float | None = None,
+    min_win_confidence_pp: float | None = None,
 ) -> list[BetPick]:
     """Evaluate 3-way soccer moneyline outcomes vs the book."""
     picks: list[BetPick] = []
@@ -805,6 +881,12 @@ def evaluate_soccer_picks(
         mkt_h, mkt_d, mkt_a = devig_threeway_from_odds(home_market, draw_market, away_market)
         devig_probs = {"home": mkt_h, "draw": mkt_d, "away": mkt_a}
 
+    base_probs: dict[str, float | None] = {
+        "home": base_home_prob,
+        "draw": base_draw_prob,
+        "away": base_away_prob,
+    }
+
     candidates: list[tuple[str, str, str, float, int, int | None]] = [
         ("away", away_name, away_slug, away_prob, away_proj, away_market),
         ("draw", "Draw", "draw", draw_prob, draw_proj, draw_market),
@@ -815,8 +897,10 @@ def evaluate_soccer_picks(
         if market is None:
             continue
 
+        base_prob = base_probs.get(side)
+        ev_prob = float(base_prob) if base_prob is not None else outcome_prob
         edge = _odds_edge(projection, market, outcome_prob)
-        ev_pct = expected_value_pct(outcome_prob, market)
+        ev_pct = expected_value_pct(ev_prob, market)
         is_model_favorite = projection < 0
         is_market_underdog = market > 0
         market_implied = (
@@ -841,6 +925,7 @@ def evaluate_soccer_picks(
                 market_implied_pct=market_implied,
                 ev_pct=ev_pct,
                 min_market_gap_pp=min_market_gap_pp,
+                min_win_confidence_pp=min_win_confidence_pp,
             ):
                 continue
             strategy = "hubacek"
@@ -892,6 +977,11 @@ def evaluate_soccer_picks(
                 win_probability=outcome_prob,
                 market_implied_prob=round(market_implied, 2) if market_implied is not None else None,
                 reason=reason,
+                extra=(
+                    {"base_win_probability": round(ev_prob, 2)}
+                    if ev_prob != outcome_prob
+                    else {}
+                ),
             )
         )
 
@@ -949,12 +1039,12 @@ def evaluate_spread_picks(
         if point_edge <= 0:
             continue
         juice = spread_odds if spread_odds is not None else DEFAULT_SPREAD_JUICE
-        edge = spread_odds_edge(point_edge, juice)
+        edge = spread_odds_edge(point_edge, juice, league)
         if not hubacek_only and min_point_edge is not None and point_edge < min_point_edge:
             continue
 
         line = spread_line_for_side(consensus_spread, side)
-        side_cover_prob = spread_cover_probability(point_edge)
+        side_cover_prob = spread_cover_probability(point_edge, league)
         ev_pct = expected_value_pct(side_cover_prob, juice)
         market_cover = american_implied_prob(juice)
 
