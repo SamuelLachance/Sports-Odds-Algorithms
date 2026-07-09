@@ -685,8 +685,29 @@ def _blend_basketball_matrix_only(
     cutoff_date: str,
     home_abbr: str,
     away_abbr: str,
+    legacy_total_score: float = 0.0,
+    legacy_win_probability: float = 50.0,
+    home_name: str | None = None,
+    away_name: str | None = None,
 ) -> dict[str, Any]:
-    """Basketball uses BasketballMatrix only — soft-impute OR × pace, no legacy blend."""
+    """Basketball display uses BasketballMatrix only; legacy/power feed ensemble features."""
+    legacy_home = total_score_to_home_win_prob(legacy_total_score)
+    legacy_payload = {
+        "algorithm": "Algo_V2",
+        "total_score": round(legacy_total_score, 2),
+        "win_probability": round(legacy_win_probability, 2),
+        "home_win_probability": round(legacy_home, 2),
+        "favorite_side": "home" if legacy_total_score <= 0 else "away",
+    }
+    power_payload = run_power_model(
+        league,
+        cutoff_date,
+        home_abbr,
+        away_abbr,
+        home_name=home_name,
+        away_name=away_name,
+    )
+
     sport_payload = run_basketball_pred_model(
         league,
         cutoff_date,
@@ -700,6 +721,8 @@ def _blend_basketball_matrix_only(
             "blend_mode": "basketball_matrix_unavailable",
             "blend_layers": 0,
             "blend_note": reason,
+            "legacy": legacy_payload,
+            "power": power_payload,
             "basketball_pred": None,
             "total_score": 0.0,
             "win_probability": 50.0,
@@ -708,11 +731,14 @@ def _blend_basketball_matrix_only(
 
     home_prob = float(sport_payload["home_win_probability"])
     total, win_prob = home_win_prob_to_total_score(home_prob)
+    feature_layers = 1 + int(power_payload is not None)
     result = {
         "algorithm": "BasketballMatrix",
         "blend_mode": "basketball_matrix",
-        "blend_layers": 1,
+        "blend_layers": feature_layers,
         "blend_weights": {"basketball_pred": 1.0},
+        "legacy": legacy_payload,
+        "power": power_payload,
         "basketball_pred": sport_payload,
         "blended_home_win_probability": round(home_prob, 2),
         "total_score": round(total, 2),
@@ -907,6 +933,10 @@ def blend_predictions(
             cutoff_date=cutoff_date,
             home_abbr=home_abbr,
             away_abbr=away_abbr,
+            legacy_total_score=legacy_total_score,
+            legacy_win_probability=legacy_win_probability,
+            home_name=home_name,
+            away_name=away_name,
         )
 
     if is_hockey_league(league):

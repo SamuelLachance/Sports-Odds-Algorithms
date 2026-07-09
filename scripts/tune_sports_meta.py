@@ -132,7 +132,7 @@ def _collect_samples(
         if legacy_home is None:
             legacy_home = power_home
 
-        _sport_key, sport_payload = _run_sport_pred_model(league, cutoff, home, away)
+        _sport_key, sport_payload = _run_sport_pred_model(league, game_date, home, away)
         sport_home = (
             float(sport_payload["home_win_probability"]) if sport_payload else None
         )
@@ -254,6 +254,21 @@ def main() -> int:
         print(f"Tuning {league}...", flush=True)
         entry = tune_league(league, args.cutoff)
         if entry:
+            baseline = float(entry.get("log_loss_baseline_equal", float("inf")))
+            tuned_loss = float(entry.get("log_loss_tuned", float("inf")))
+            if tuned_loss > baseline:
+                prior = existing.get(league)
+                if prior:
+                    print(
+                        f"  keeping prior weights (tuned {tuned_loss} > baseline {baseline})",
+                        flush=True,
+                    )
+                    continue
+                print(
+                    f"  skipped (tuned {tuned_loss} > baseline {baseline}, no prior weights)",
+                    flush=True,
+                )
+                continue
             payload[league] = entry
             tuned += 1
             print(

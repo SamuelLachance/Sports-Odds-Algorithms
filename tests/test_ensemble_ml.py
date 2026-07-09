@@ -70,7 +70,16 @@ def test_train_and_predict_binary_ensemble(tmp_path, monkeypatch) -> None:
     frame = _synthetic_binary_frame()
     trained = train_binary_ensemble("nba", frame)
     assert trained is not None
-    save_ensemble("nba", trained, {"league": "nba", "train_rows": len(frame)})
+    save_ensemble(
+        "nba",
+        trained,
+        {
+            "league": "nba",
+            "train_rows": len(frame),
+            "holdout_logloss": 0.55,
+            "market_holdout_logloss": 0.60,
+        },
+    )
     clear_ensemble_caches()
 
     assert ensemble_model_available("nba")
@@ -105,7 +114,15 @@ def test_apply_ensemble_ml_margin_uses_spread_convention(tmp_path, monkeypatch) 
     frame = _synthetic_binary_frame()
     trained = train_binary_ensemble("nba", frame)
     assert trained
-    save_ensemble("nba", trained, {"league": "nba"})
+    save_ensemble(
+        "nba",
+        trained,
+        {
+            "league": "nba",
+            "holdout_logloss": 0.55,
+            "market_holdout_logloss": 0.60,
+        },
+    )
     clear_ensemble_caches()
 
     blended = {
@@ -157,7 +174,15 @@ def test_apply_ensemble_ml_updates_blend(tmp_path, monkeypatch) -> None:
     frame = _synthetic_binary_frame()
     trained = train_binary_ensemble("nba", frame)
     assert trained
-    save_ensemble("nba", trained, {"league": "nba"})
+    save_ensemble(
+        "nba",
+        trained,
+        {
+            "league": "nba",
+            "holdout_logloss": 0.55,
+            "market_holdout_logloss": 0.60,
+        },
+    )
     clear_ensemble_caches()
 
     blended = {
@@ -178,3 +203,33 @@ def test_apply_ensemble_ml_updates_blend(tmp_path, monkeypatch) -> None:
     assert updated["blend_mode"] == "ensemble_ml"
     assert updated.get("ensemble_ml")
     assert updated.get("home_spread_margin") is not None
+
+
+def test_basketball_blend_populates_ensemble_feature_layers() -> None:
+    from web.blend_service import blend_predictions
+    from web.ensemble_ml.features import extract_binary_features
+
+    blended = blend_predictions(
+        legacy_total_score=-58.0,
+        legacy_win_probability=58.0,
+        league="nba",
+        cutoff_date="11-15-2024",
+        home_abbr="BOS",
+        away_abbr="LAL",
+        home_moneyline=-150,
+        away_moneyline=130,
+    )
+    features = extract_binary_features(
+        blended,
+        "nba",
+        consensus_spread=-4.5,
+        home_moneyline=-150,
+        away_moneyline=130,
+    )
+    assert features["legacy_home_prob"] is not None
+    assert features["sport_home_prob"] is not None
+    assert all(
+        features.get(col) is not None and not np.isnan(features[col])
+        for col in ("legacy_home_prob", "sport_home_prob", "market_devig_home_prob")
+        if features.get(col) is not None
+    )

@@ -404,9 +404,18 @@ def predict_binary(
         isotonic=model.isotonic,
         temperature=model.temperature,
     )
+    calibrated_pct = calibrated * 100.0
+    market_home = features.get("market_devig_home_prob")
+    blend_w = float(model.market_blend_weight)
+    if (
+        market_home is not None
+        and np.isfinite(float(market_home))
+        and blend_w < 1.0
+    ):
+        calibrated_pct = blend_w * calibrated_pct + (1.0 - blend_w) * float(market_home)
     home_prob = _decorrelate_with_market(
-        calibrated * 100.0,
-        features.get("market_devig_home_prob"),
+        calibrated_pct,
+        market_home,
     )
 
     margin = None
@@ -419,7 +428,7 @@ def predict_binary(
 
     return {
         "home_win_probability": round(home_prob, 2),
-        "pre_decorrelation_home_win_probability": round(calibrated * 100.0, 2),
+        "pre_decorrelation_home_win_probability": round(calibrated_pct, 2),
         "predicted_home_margin": round(margin, 2) if margin is not None else None,
         "home_cover_probability": round(cover_prob, 2) if cover_prob is not None else None,
         "margin_sigma": round(model.margin_sigma, 2),

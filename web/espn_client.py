@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import time
 import urllib.error
 import urllib.request
 from dataclasses import dataclass
@@ -68,13 +69,23 @@ class ScheduledGame:
     market: MarketOdds
 
 
-def _fetch_json(url: str, timeout: int = 20) -> dict[str, Any]:
-    request = urllib.request.Request(
-        url,
-        headers={"User-Agent": "Sports-Odds-Algorithms/2.0"},
-    )
-    with urllib.request.urlopen(request, timeout=timeout) as response:
-        return json.loads(response.read().decode("utf-8"))
+def _fetch_json(url: str, timeout: int = 20, retries: int = 3) -> dict[str, Any]:
+    last_error: urllib.error.URLError | None = None
+    for attempt in range(max(1, retries)):
+        request = urllib.request.Request(
+            url,
+            headers={"User-Agent": "Sports-Odds-Algorithms/2.0"},
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                return json.loads(response.read().decode("utf-8"))
+        except urllib.error.URLError as exc:
+            last_error = exc
+            if attempt + 1 < retries:
+                time.sleep(0.5 * (attempt + 1))
+    if last_error is not None:
+        raise last_error
+    raise urllib.error.URLError("ESPN request failed")
 
 
 def _parse_american_odds(value: str | int | None) -> int | None:
@@ -271,9 +282,8 @@ def fetch_team_schedule(league: str, espn_team_id: str, season: int) -> list[dic
     try:
         payload = _fetch_json(url)
     except urllib.error.URLError:
-        events: list[dict[str, Any]] = []
-    else:
-        events = payload.get("events") or []
+        return []
+    events = payload.get("events") or []
     _SCHEDULE_CACHE[url] = events
     return events
 

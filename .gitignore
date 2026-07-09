@@ -31,7 +31,15 @@ venv/
 
 # Build/data caches and logs
 .build-cache/
+data/db_ratings_cache/
+docs_old_*/
 *.log
+
+# Scratch / probe scripts (local diagnostics only)
+scripts/_diag_*.py
+scripts/_probe_*.py
+scripts/soccer_probe_out.txt
+scripts/wc_sample.json
 
 # NBA ML derived feature matrix (rebuildable from the odds table via
 # scripts/train_nba_ml.py); the odds CSV + code are the source of truth.

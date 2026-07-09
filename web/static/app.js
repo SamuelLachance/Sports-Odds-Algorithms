@@ -39,6 +39,15 @@ const sidebarGamesTitle = document.getElementById("sidebarGamesTitle");
 const footerUpdated = document.getElementById("footerUpdated");
 const navToggle = document.getElementById("navToggle");
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function minHubacekConfidence(source) {
   const s = source?.summary || source || state.tracking || {};
   return s.min_win_confidence_pp ?? source?.min_win_confidence_pp ?? 20;
@@ -373,13 +382,13 @@ function pickTeamAbbr(pick, matchup) {
 function teamNameLink(league, abbr, name, className = "team-link-inline") {
   const lg = league || "";
   const token = (abbr || "").toLowerCase();
-  if (!lg || !token || !name) return name || "";
-  return `<a href="${teamHref(lg, token)}" class="${className}">${name}</a>`;
+  if (!lg || !token || !name) return escapeHtml(name || "");
+  return `<a href="${teamHref(lg, token)}" class="${className}">${escapeHtml(name)}</a>`;
 }
 
 function pickTeamNameLink(pick, league, matchup) {
   const abbr = pickTeamAbbr(pick, matchup);
-  return abbr ? teamNameLink(league, abbr, pick.team_name) : pick.team_name || "";
+  return abbr ? teamNameLink(league, abbr, pick.team_name) : escapeHtml(pick.team_name || "");
 }
 
 function matchupLinks(league, away, home, className = "team-link-inline") {
@@ -1032,7 +1041,7 @@ async function viewLeaguePage(league) {
   try {
     data = await loadLeagueDb(league);
   } catch {
-    appRoot.innerHTML = `<div class="panel empty-panel">League data for ${league.toUpperCase()} is not available yet. Try again after the next daily sync.</div>
+    appRoot.innerHTML = `<div class="panel empty-panel">League data for ${escapeHtml(league.toUpperCase())} is not available yet. Try again after the next daily sync.</div>
       <a class="btn btn-secondary" href="#/teams">← All leagues</a>`;
     return;
   }
@@ -1497,7 +1506,7 @@ async function viewTeam(league, abbr) {
   teamDb = await enrichTeamStanding(league, normalizedAbbr, teamDb);
 
   if (!teamDb && !profile) {
-    appRoot.innerHTML = `<div class="panel empty-panel">Team sheet not available for ${normalizedAbbr.toUpperCase()} yet. Daily rebuilds populate all teams — try again after the next sync.</div>
+    appRoot.innerHTML = `<div class="panel empty-panel">Team sheet not available for ${escapeHtml(normalizedAbbr.toUpperCase())} yet. Daily rebuilds populate all teams — try again after the next sync.</div>
       <a class="btn btn-secondary" href="${leagueHref(league)}">← ${league.toUpperCase()}</a>`;
     return;
   }
@@ -1905,7 +1914,7 @@ async function render() {
     else if (route.path === "tracking") viewTracking();
     else viewDashboard();
   } catch (err) {
-    appRoot.innerHTML = `<div class="panel empty-panel error-panel">${err.message}</div>`;
+    appRoot.innerHTML = `<div class="panel empty-panel error-panel">${escapeHtml(err.message)}</div>`;
   }
 }
 
@@ -1916,7 +1925,7 @@ async function loadPlatform() {
       USE_STATIC_API ? api("daily-slate.json") : api("daily/slate"),
     );
   } catch (err) {
-    appRoot.innerHTML = `<div class="panel empty-panel error-panel">Could not load daily slate: ${err.message}. The site may still be rebuilding — refresh in a few minutes.</div>`;
+    appRoot.innerHTML = `<div class="panel empty-panel error-panel">Could not load daily slate: ${escapeHtml(err.message)}. The site may still be rebuilding — refresh in a few minutes.</div>`;
     return;
   }
   state.slate = slate;
@@ -1961,7 +1970,7 @@ async function loadPlatform() {
   try {
     await render();
   } catch (err) {
-    appRoot.innerHTML = `<div class="panel empty-panel error-panel">${err.message}</div>`;
+    appRoot.innerHTML = `<div class="panel empty-panel error-panel">${escapeHtml(err.message)}</div>`;
   }
 }
 
@@ -1972,5 +1981,5 @@ mainNav?.querySelectorAll("a").forEach((link) => {
 });
 
 loadPlatform().catch((err) => {
-  appRoot.innerHTML = `<div class="panel empty-panel error-panel">${err.message}</div>`;
+  appRoot.innerHTML = `<div class="panel empty-panel error-panel">${escapeHtml(err.message)}</div>`;
 });

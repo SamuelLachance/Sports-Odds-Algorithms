@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 
@@ -241,6 +242,29 @@ def ensemble_enabled() -> bool:
     }
 
 
+def ensemble_beats_market(league: str) -> bool:
+    """Serve-time gate: only serve heads whose holdout beat the paired closing line.
+
+    Requires metadata with both a model holdout log-loss and the paired market
+    holdout log-loss on the same games. Leagues without a market benchmark
+    (e.g. no closing-odds history) are not served.
+    """
+    path = metadata_path(league.lower())
+    if not path.is_file():
+        return False
+    try:
+        meta = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    model_ll = meta.get("holdout_logloss_market_games")
+    if model_ll is None:
+        model_ll = meta.get("holdout_logloss")
+    market_ll = meta.get("market_holdout_logloss")
+    if model_ll is None or market_ll is None:
+        return False
+    return float(model_ll) < float(market_ll)
+
+
 def ensemble_model_available(league: str) -> bool:
     if not ensemble_enabled():
         return False
@@ -253,4 +277,6 @@ def ensemble_model_available(league: str) -> bool:
         or is_soccer_league(league)
     ):
         return False
-    return model_artifact_path(league).is_file()
+    if not model_artifact_path(league).is_file():
+        return False
+    return ensemble_beats_market(league)

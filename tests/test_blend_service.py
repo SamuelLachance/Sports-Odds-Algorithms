@@ -281,13 +281,13 @@ def test_blend_basketball_matrix_only_when_available() -> None:
                 away_abbr="unc",
             )
             assert result["blend_mode"] == "basketball_matrix"
-            assert result["blend_layers"] == 1
+            assert result["blend_layers"] >= 1
             assert result["algorithm"] == "BasketballMatrix"
             assert result["basketball_pred"] is not None
             assert result["basketball_pred"]["source"] == "soft-impute-svd"
             assert result["blended_home_win_probability"] == 58.0
-            assert result.get("legacy") is None
-            assert result.get("power") is None
+            assert result.get("legacy") is not None
+            assert result["legacy"]["home_win_probability"] is not None
             assert result.get("home_spread_margin") == -4.5
     finally:
         blend_module.run_basketball_pred_model = basketball_original
@@ -475,7 +475,7 @@ def test_blend_cfb_three_way_when_football_available() -> None:
         blend_module.run_football_pred_model = football_original
 
 
-def test_blend_nba_matrix_only_ignores_legacy_layers() -> None:
+def test_blend_nba_matrix_only_keeps_legacy_layers_for_ensemble() -> None:
     import web.blend_service as blend_module
 
     basketball_original = blend_module.run_basketball_pred_model
@@ -495,11 +495,11 @@ def test_blend_nba_matrix_only_ignores_legacy_layers() -> None:
             away_abbr="ny",
         )
         assert result["blend_mode"] == "basketball_matrix"
-        assert result["blend_layers"] == 1
+        assert result["blend_layers"] >= 1
         assert result["basketball_pred"] is not None
         assert result["blended_home_win_probability"] == 62.0
-        assert result.get("legacy") is None
-        assert result.get("power") is None
+        assert result.get("legacy") is not None
+        assert result["legacy"]["home_win_probability"] == 60.0
     finally:
         blend_module.run_basketball_pred_model = basketball_original
 
@@ -804,7 +804,7 @@ if __name__ == "__main__":
     test_blend_mlb_runcast_only_when_available()
     test_blend_mlb_runcast_unavailable_fallback()
     test_blend_basketball_matrix_only_when_available()
-    test_blend_nba_matrix_only_ignores_legacy_layers()
+    test_blend_nba_matrix_only_keeps_legacy_layers_for_ensemble()
     test_model_agreement_nfl_three_layers_agree()
     test_model_agreement_nfl_value_on_underdog_despite_favorite_disagreement()
     test_model_agreement_nfl_three_layers_disagree()
