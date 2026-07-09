@@ -1,4 +1,44 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "away_abbr": "mar",
+      "away_name": "Morocco",
+      "edge_pp": 153.0,
+      "event_id": "760510",
+      "game_date": "7-9-2026",
+      "home_abbr": "fra",
+      "home_name": "France",
+      "key": "worldcup:760510:home",
+      "league": "worldcup",
+      "market_ml": -170,
+      "model_prob": 54.96,
+      "paper": true,
+      "pick_outcome": "home",
+      "recorded_at": "2026-07-09T15:21:00.108952+00:00",
+      "signals": {
+        "away_games": 10,
+        "disagreement_signal": true,
+        "high_confidence_disagreement": true,
+        "home_games": 9,
+        "max_edge_pp": 153.0,
+        "model_best_outcome": "home",
+        "opening_steam": {
+          "implied_shifts_pp": {
+            "away": 0.0,
+            "draw": 0.34,
+            "home": -0.67
+          },
+          "model_best_outcome": "home",
+          "model_edge_pp": -4.47,
+          "opening_away_ml": 500,
+          "opening_draw_ml": 285,
+          "opening_home_ml": -175,
+          "steam_direction": null,
+          "steam_signal": false
+        },
+        "steam_signal": false
+      }
+    }
+  ],
   "version": 1
 }
