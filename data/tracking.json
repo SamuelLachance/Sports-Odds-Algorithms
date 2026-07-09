@@ -74,7 +74,7 @@
       "closing_market_odds": -115,
       "closing_spread_odds": -115,
       "closing_consensus_spread": -12.5,
-      "closing_snapshot_at": "2026-07-09T21:19:54.021650+00:00"
+      "closing_snapshot_at": "2026-07-09T21:25:46.521780+00:00"
     },
     {
       "id": "2026-07-09:401857053:away:spread",
@@ -113,7 +113,7 @@
       "closing_market_odds": -110,
       "closing_spread_odds": -110,
       "closing_consensus_spread": 8.5,
-      "closing_snapshot_at": "2026-07-09T21:19:54.021650+00:00"
+      "closing_snapshot_at": "2026-07-09T21:25:46.521780+00:00"
     },
     {
       "id": "2026-07-09:760510:away:soccer_1x2",
@@ -191,7 +191,7 @@
       "closing_market_odds": -102,
       "closing_spread_odds": -102,
       "closing_consensus_spread": -1.5,
-      "closing_snapshot_at": "2026-07-09T21:19:54.021650+00:00"
+      "closing_snapshot_at": "2026-07-09T21:25:46.521780+00:00"
     },
     {
       "id": "2026-07-09:401816088:home",
