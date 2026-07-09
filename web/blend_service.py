@@ -793,8 +793,9 @@ def _blend_mlb_runcast_only(
 
     home_prob = float(sport_payload["home_win_probability"])
     total, win_prob = home_win_prob_to_total_score(home_prob)
+    algorithm = str(sport_payload.get("algorithm") or "MLBRunCast")
     result = {
-        "algorithm": "MLBRunCast",
+        "algorithm": algorithm,
         "blend_mode": "mlb_runcast",
         "blend_layers": 1,
         "blend_weights": {"baseball_pred": 1.0},
@@ -805,6 +806,8 @@ def _blend_mlb_runcast_only(
         "favorite_side": "home" if total <= 0 else "away",
         "mlb_pick_signals": sport_payload.get("mlb_pick_signals"),
     }
+    if sport_payload.get("model_version"):
+        result["model_version"] = sport_payload["model_version"]
     if sport_payload.get("predicted_margin") is not None:
         result["home_spread_margin"] = round(-float(sport_payload["predicted_margin"]), 2)
     return result

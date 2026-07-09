@@ -211,6 +211,8 @@ const SPORT_ALGO_LABELS = {
   Algo_V1: "Algo V1 win probability",
   BasketballMatrix: "Matrix completion win probability",
   MLBRunCast: "MLB RunCast win probability",
+  MLBGradientBoost:
+    "MLB GradientBoost v2 (statsapi features + XGB/LR ensemble, isotonic-calibrated)",
   SoccerPathA: "Soccer Path A 1X2 (Elo + Pi + Dixon–Coles + XGB + context)",
   Unified: "Unified model",
 };
@@ -219,6 +221,7 @@ const SPORT_LAYER_LABELS = {
   Algo_V1: "Algo V1",
   BasketballMatrix: "BasketballMatrix",
   MLBRunCast: "MLB RunCast",
+  MLBGradientBoost: "MLB GradientBoost v2",
   SharpBaseball: "SharpBaseball",
   SoccerPathA: "Soccer Path A",
   SharpSoccer: "Soccer Path A",
@@ -237,6 +240,7 @@ function primaryAlgoShort(model) {
     Algo_V1: "Algo V1",
     BasketballMatrix: "Matrix",
     MLBRunCast: "MLB RunCast",
+    MLBGradientBoost: "MLB GB v2",
     SoccerPathA: "Soccer Path A",
     Unified: "Unified",
   };
@@ -711,7 +715,26 @@ function algoBreakdown(m, game) {
         : baseball.elo_exp != null
           ? ` · Elo ${baseball.elo_exp}%`
           : "";
-    parts.push(`${name}: ${baseball.home_win_probability}% home${runs}`);
+    const pitchers =
+      baseball.away_probable_pitcher || baseball.home_probable_pitcher
+        ? ` · SP ${baseball.away_probable_pitcher || "TBD"} vs ${baseball.home_probable_pitcher || "TBD"}`
+        : "";
+    const fip =
+      baseball.away_sp_fip != null && baseball.home_sp_fip != null
+        ? ` (FIP ${formatRating(baseball.away_sp_fip, 2)}/${formatRating(baseball.home_sp_fip, 2)})`
+        : "";
+    const elo =
+      baseball.home_elo != null && baseball.away_elo != null
+        ? ` · Elo ${formatRating(baseball.away_elo, 0)}-${formatRating(baseball.home_elo, 0)}`
+        : "";
+    const park =
+      baseball.park_factor != null && Math.abs(baseball.park_factor - 1) >= 0.03
+        ? ` · park ${formatRating(baseball.park_factor, 2)}x`
+        : "";
+    const decorr = baseball.market_decorrelated ? " · pick decorr" : "";
+    parts.push(
+      `${name}: ${baseball.home_win_probability}% home${runs}${pitchers}${fip}${elo}${park}${decorr}`,
+    );
   }
   if (hockey && m.algorithm !== "Algo_V1") {
     const name = sportLayerDisplayName(hockey) || "Hockey";

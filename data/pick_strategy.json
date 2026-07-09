@@ -1,5 +1,5 @@
 {
-  "policy": "Official picks use Hubáček gates: decorrelated model beats the de-vigged market by >= 2 pp, honest EV >= 2% (calibrated pre-decorrelation probability), and a per-bet-type confidence bar (20 pp moneyline, 10 pp baseball/soccer, 5 pp spread cover). Live thresholds live in web/hubacek_picks.py; this file only stores per-league bet-type overrides and backtest metadata.",
+  "policy": "Official picks use Hubáček gates: decorrelated model beats the de-vigged market by >= 2 pp, honest EV >= 2% (calibrated pre-decorrelation probability), and a per-bet-type confidence bar (20 pp moneyline, 10 pp baseball/soccer, 5 pp spread cover). Live thresholds live in web/hubacek_picks.py; per-league overrides (min_market_gap_pp, min_win_confidence_pp, min_ev_pct, ml_lo/ml_hi) are stored here from walk-forward bet backtests.",
   "generated_at": "2026-07-09",
   "default": {
     "min_edge": 0,
@@ -11,5 +11,17 @@
     "bet_type": "moneyline",
     "min_win_confidence_pp": 10.0,
     "enabled": true
+  },
+  "mlb": {
+    "bet_type": "moneyline",
+    "min_market_gap_pp": 6.7,
+    "min_win_confidence_pp": 0.0,
+    "min_ev_pct": 2.0,
+    "ml_lo": -200,
+    "ml_hi": 200,
+    "enabled": true,
+    "note": "MLB v2 walk-forward backtest (scripts/backtest_mlb_bets.py): raw model-market gap >= 6 pp (6.7 pp after 1.12x decorrelation), prices -200..+200. Opening-line ROI +35% (2024-2026, CLV +21.8%); closing-line floor -3.2%. Bets recorded in the morning sit between those brackets.",
+    "backtest_roi_pct": 35.23,
+    "backtest_bets": 1048
   }
 }

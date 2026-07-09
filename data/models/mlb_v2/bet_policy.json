@@ -1,0 +1,113 @@
+{
+  "bet_type": "moneyline",
+  "stake_mode": "kelly",
+  "kelly_fraction": 0.25,
+  "min_edge_pp": 6.0,
+  "min_ev_pct": 0.0,
+  "ml_lo": -200,
+  "ml_hi": 200,
+  "backtest_close": {
+    "bets": 3698,
+    "staked_units": 10045.2,
+    "profit_units": -319.2,
+    "roi_pct": -3.18,
+    "win_rate": 0.4481,
+    "avg_ml": 52.0,
+    "max_drawdown_units": 421.7,
+    "seasons_positive": 3,
+    "seasons_total": 11,
+    "worst_season_roi": -11.22,
+    "median_season_roi": -2.81,
+    "avg_clv_pct": null,
+    "clv_positive_rate": null
+  },
+  "backtest_close_per_season": {
+    "2016": {
+      "bets": 397,
+      "roi_pct": 2.38,
+      "profit_units": 26.9
+    },
+    "2017": {
+      "bets": 401,
+      "roi_pct": -0.05,
+      "profit_units": -0.6
+    },
+    "2018": {
+      "bets": 420,
+      "roi_pct": -1.2,
+      "profit_units": -14.0
+    },
+    "2019": {
+      "bets": 371,
+      "roi_pct": -6.63,
+      "profit_units": -68.1
+    },
+    "2020": {
+      "bets": 279,
+      "roi_pct": -8.01,
+      "profit_units": -63.6
+    },
+    "2021": {
+      "bets": 356,
+      "roi_pct": -6.77,
+      "profit_units": -66.2
+    },
+    "2022": {
+      "bets": 385,
+      "roi_pct": -6.07,
+      "profit_units": -63.3
+    },
+    "2023": {
+      "bets": 302,
+      "roi_pct": 4.33,
+      "profit_units": 33.8
+    },
+    "2024": {
+      "bets": 331,
+      "roi_pct": 0.38,
+      "profit_units": 3.2
+    },
+    "2025": {
+      "bets": 345,
+      "roi_pct": -11.22,
+      "profit_units": -99.4
+    },
+    "2026": {
+      "bets": 111,
+      "roi_pct": -2.81,
+      "profit_units": -7.8
+    }
+  },
+  "backtest_open": {
+    "bets": 1048,
+    "staked_units": 2812.9,
+    "profit_units": 991.0,
+    "roi_pct": 35.23,
+    "win_rate": 0.5057,
+    "avg_ml": 35.0,
+    "max_drawdown_units": 115.0,
+    "seasons_positive": 3,
+    "seasons_total": 3,
+    "worst_season_roi": 6.33,
+    "median_season_roi": 18.28,
+    "avg_clv_pct": 21.756,
+    "clv_positive_rate": 0.7796
+  },
+  "backtest_open_per_season": {
+    "2024": {
+      "bets": 374,
+      "roi_pct": 85.83,
+      "profit_units": 839.2
+    },
+    "2025": {
+      "bets": 556,
+      "roi_pct": 6.33,
+      "profit_units": 97.3
+    },
+    "2026": {
+      "bets": 118,
+      "roi_pct": 18.28,
+      "profit_units": 54.5
+    }
+  }
+}

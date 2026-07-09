@@ -4,11 +4,22 @@ Hubáček et al. (2019) bet on +EV decorrelated spots with a confidence filter.
 Live gates add non-zero floors so vig noise and rounding jitter cannot qualify:
 a minimum decorrelation gap vs the de-vigged market, a minimum honest EV%, and
 a per-bet-type confidence bar.
+
+Per-league overrides (backtest-tuned) are read from data/pick_strategy.json:
+``min_market_gap_pp``, ``min_win_confidence_pp``, ``min_ev_pct``, ``ml_lo``,
+``ml_hi``. MLB uses a 6.7 pp decorrelated gap (≈6 pp raw), no confidence bar,
+and a [-200, +200] price window from the walk-forward bet backtest.
 """
 
 from __future__ import annotations
 
+import json
+from functools import lru_cache
+from pathlib import Path
 from typing import Any
+
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+_STRATEGY_PATH = _PROJECT_ROOT / "data" / "pick_strategy.json"
 
 # Minimum decorrelated model edge vs the de-vigged market price (pp).
 HUBACEK_MIN_MARKET_GAP_PP = 2.0
@@ -34,6 +45,71 @@ HUBACEK_SOCCER_MIN_WIN_CONFIDENCE_PP = 10.0
 HUBACEK_SPREAD_MIN_WIN_CONFIDENCE_PP = 5.0
 
 _SPORT_PRED_KEYS = ("hockey_pred", "basketball_pred", "baseball_pred", "soccer_pred")
+
+
+@lru_cache(maxsize=1)
+def _strategy_config() -> dict[str, Any]:
+    if not _STRATEGY_PATH.is_file():
+        return {}
+    try:
+        payload = json.loads(_STRATEGY_PATH.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def _league_category(league: str) -> str | None:
+    try:
+        from web.league_profiles import get_league_profile
+
+        return get_league_profile(league.lower())["category"]
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def league_pick_overrides(league: str | None) -> dict[str, Any]:
+    """Backtest-tuned per-league gate overrides from data/pick_strategy.json."""
+    if not league:
+        return {}
+    config = _strategy_config()
+    league = league.lower()
+    entry = config.get(league)
+    if not isinstance(entry, dict):
+        category = _league_category(league)
+        entry = config.get(category) if category else None
+    return entry if isinstance(entry, dict) else {}
+
+
+def clear_strategy_cache() -> None:
+    _strategy_config.cache_clear()
+
+
+def hubacek_min_market_gap_pp(league: str | None = None) -> float:
+    override = league_pick_overrides(league).get("min_market_gap_pp")
+    return float(override) if override is not None else HUBACEK_MIN_MARKET_GAP_PP
+
+
+def hubacek_min_ev_pct(league: str | None = None) -> float:
+    override = league_pick_overrides(league).get("min_ev_pct")
+    return float(override) if override is not None else HUBACEK_MIN_EV_PCT
+
+
+def hubacek_ml_range(league: str | None = None) -> tuple[float, float] | None:
+    overrides = league_pick_overrides(league)
+    lo = overrides.get("ml_lo")
+    hi = overrides.get("ml_hi")
+    if lo is None or hi is None:
+        return None
+    return float(lo), float(hi)
+
+
+def within_hubacek_ml_range(league: str | None, american_odds: float | None) -> bool:
+    if american_odds is None:
+        return True
+    ml_range = hubacek_ml_range(league)
+    if ml_range is None:
+        return True
+    return ml_range[0] <= float(american_odds) <= ml_range[1]
 
 
 def _blend_is_decorrelated(blended: dict[str, Any]) -> bool:
@@ -125,7 +201,10 @@ def passes_hubacek_spread_gate(
 
 
 def hubacek_min_win_confidence_pp(league: str | None = None) -> float:
-    """Per-league Hubáček φ threshold (10 pp baseball/soccer, 20 pp elsewhere)."""
+    """Per-league Hubáček φ threshold (override > baseball/soccer default > 20 pp)."""
+    override = league_pick_overrides(league).get("min_win_confidence_pp")
+    if override is not None:
+        return float(override)
     if league:
         from web.baseball_pred_model import is_baseball_league
         from web.league_profiles import is_soccer_league
@@ -141,16 +220,21 @@ def passes_hubacek_tracked_pick(pick: dict[str, Any]) -> bool:
     """Whether a slate/tracking pick qualifies under Hubáček official rules."""
     if pick.get("strategy") != "hubacek":
         return False
-    if (pick.get("ev_pct") or 0) < HUBACEK_MIN_EV_PCT:
+    league = pick.get("league")
+    if (pick.get("ev_pct") or 0) < hubacek_min_ev_pct(league):
         return False
     win_prob = pick.get("win_probability")
     if (pick.get("bet_type") or "moneyline") == "spread":
         min_pp = HUBACEK_SPREAD_MIN_WIN_CONFIDENCE_PP
     else:
-        min_pp = hubacek_min_win_confidence_pp(pick.get("league"))
+        min_pp = hubacek_min_win_confidence_pp(league)
     if win_prob is not None and not passes_hubacek_confidence(float(win_prob), min_pp=min_pp):
         return False
     gap = pick.get("model_market_gap_pp")
-    if gap is not None and float(gap) < HUBACEK_MIN_MARKET_GAP_PP:
+    if gap is not None and float(gap) < hubacek_min_market_gap_pp(league):
+        return False
+    if (pick.get("bet_type") or "moneyline") == "moneyline" and not within_hubacek_ml_range(
+        league, pick.get("market_odds")
+    ):
         return False
     return True

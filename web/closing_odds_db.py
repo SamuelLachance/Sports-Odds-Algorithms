@@ -122,6 +122,8 @@ def _flip_two_way_odds(row: dict[str, Any]) -> dict[str, Any]:
     flipped = dict(row)
     flipped["home_close_ml"] = row.get("away_close_ml")
     flipped["away_close_ml"] = row.get("home_close_ml")
+    flipped["home_open_ml"] = row.get("away_open_ml")
+    flipped["away_open_ml"] = row.get("home_open_ml")
     home_spread = row.get("home_close_spread")
     away_spread = row.get("away_close_spread")
     if home_spread is not None:
@@ -177,10 +179,14 @@ def _load_us_odds_index(league: str) -> dict[tuple[str, str, str], dict[str, Any
             index[(game_date, home, away)] = {
                 "home_close_ml": _parse_int(row.get("home_close_ml")),
                 "away_close_ml": _parse_int(row.get("away_close_ml")),
+                "home_open_ml": _parse_int(row.get("home_open_ml")),
+                "away_open_ml": _parse_int(row.get("away_open_ml")),
                 "home_close_spread": _parse_float(row.get("home_close_spread")),
                 "away_close_spread": _parse_float(row.get("away_close_spread")),
                 "home_spread_odds": _parse_int(row.get("home_spread_odds")),
                 "away_spread_odds": _parse_int(row.get("away_spread_odds")),
+                "close_total": _parse_float(row.get("close_total")),
+                "open_total": _parse_float(row.get("open_total")),
                 "source": row.get("source") or "closing-odds-db",
             }
     return index

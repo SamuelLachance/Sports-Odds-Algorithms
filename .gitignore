@@ -35,6 +35,12 @@ data/db_ratings_cache/
 docs_old_*/
 *.log
 
+# MLB v2 raw history + rebuildable outputs (fetch via scripts/fetch_mlb_history.py,
+# rebuild via scripts/build_mlb_training_table.py). Model artifacts in
+# data/models/mlb_v2/ ARE tracked; the large OOS prediction dump is not.
+data/mlb_history/
+data/models/mlb_v2/oos_predictions.csv
+
 # Scratch / probe scripts (local diagnostics only)
 scripts/_diag_*.py
 scripts/_probe_*.py

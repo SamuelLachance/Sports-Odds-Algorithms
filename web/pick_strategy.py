@@ -19,7 +19,14 @@ from web.bet_advisor import (
     spread_line_for_side,
 )
 from web.blend_service import blended_home_spread_margin, home_win_prob_to_total_score
-from web.hubacek_picks import HUBACEK_MIN_MARKET_GAP_PP, hubacek_min_win_confidence_pp, official_hubacek_thresholds
+from web.hubacek_picks import (
+    HUBACEK_MIN_MARKET_GAP_PP,
+    hubacek_min_ev_pct,
+    hubacek_min_market_gap_pp,
+    hubacek_min_win_confidence_pp,
+    hubacek_ml_range,
+    official_hubacek_thresholds,
+)
 from web.league_profiles import (
     MIN_EXPECTED_VALUE_PCT,
     MIN_RECOMMENDED_EDGE,
@@ -100,16 +107,21 @@ def _default_entry(bet_type: str) -> dict[str, Any]:
 
 
 def get_pick_thresholds(league: str) -> dict[str, Any]:
-    """Live official-pick thresholds: Hubáček decorrelation gap vs market."""
+    """Live official-pick thresholds: Hubáček gates with per-league overrides."""
     config = load_pick_strategy()
     league = league.lower()
     entry = config.get(league) or config.get(_category_for_league(league)) or config["default"]
     bet_type = entry.get("bet_type") or official_bet_type(league)
     hubacek = official_hubacek_thresholds()
+    hubacek["min_market_gap_pp"] = hubacek_min_market_gap_pp(league)
     hubacek["min_win_confidence_pp"] = hubacek_min_win_confidence_pp(league)
+    hubacek["min_ev_pct"] = hubacek_min_ev_pct(league)
+    ml_range = hubacek_ml_range(league)
     return {
         "bet_type": bet_type,
         **hubacek,
+        "ml_lo": ml_range[0] if ml_range else None,
+        "ml_hi": ml_range[1] if ml_range else None,
         "min_spread_point_edge": OFFICIAL_MIN_SPREAD_POINT_EDGE,
         "min_profit_score": 0.0,
         "min_kelly_pct": 0.0,
@@ -1127,8 +1139,11 @@ def evaluate_official_picks_for_game(
             base_away_prob=base_away,
             base_home_prob=base_home,
             hubacek_only=True,
+            min_ev_pct=thresholds["min_ev_pct"],
             min_market_gap_pp=thresholds["min_market_gap_pp"],
             min_win_confidence_pp=thresholds["min_win_confidence_pp"],
+            ml_lo=thresholds.get("ml_lo"),
+            ml_hi=thresholds.get("ml_hi"),
         )
         return picks
 

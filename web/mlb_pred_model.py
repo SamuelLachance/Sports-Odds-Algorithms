@@ -278,6 +278,98 @@ def _cutoff_to_iso(cutoff_date: str) -> str | None:
     return f"{year:04d}-{month:02d}-{day:02d}"
 
 
+def _run_mlb_v2(
+    league: str,
+    cutoff_date: str,
+    home_abbr: str,
+    away_abbr: str,
+    *,
+    market_spread: float | None = None,
+    home_ml: int | None = None,
+    away_ml: int | None = None,
+) -> dict[str, Any] | None:
+    """Persisted MLB v2 (statsapi feature engine + gradient boost ensemble)."""
+    if not is_mlb_league(league):
+        return None
+    game_date = _cutoff_to_iso(cutoff_date)
+    if not game_date:
+        return None
+    try:
+        from web.mlb_v2.live import predict_matchup_v2
+
+        v2 = predict_matchup_v2(game_date, home_abbr, away_abbr)
+    except Exception:  # noqa: BLE001 - any v2 failure falls back to legacy RunCast
+        return None
+    if not v2:
+        return None
+
+    calibrated_prob = float(v2["home_win_probability"])  # 0-100, calibrated
+    margin = float(v2.get("predicted_margin") or 0.0)
+    if not margin:
+        margin = DEFAULT_SIGMA * np.log(
+            max(calibrated_prob / 100.0, 1e-6) / max(1.0 - calibrated_prob / 100.0, 1e-6)
+        )
+
+    home_prob = calibrated_prob
+    market_decorrelated = False
+    market_decorrelation_source: str | None = None
+    if home_ml is not None and away_ml is not None:
+        _away_mkt, market_home = devig_two_way_probs(away_ml, home_ml)
+        if market_home is not None:
+            home_prob = decorrelate_binary(calibrated_prob, market_home)
+            market_decorrelated = True
+            market_decorrelation_source = "moneyline"
+    elif market_spread is not None:
+        market_prob = spread_to_home_prob(float(market_spread), sigma=DEFAULT_SIGMA)
+        home_prob = decorrelate_from_market(
+            calibrated_prob / 100.0, market_prob / 100.0
+        ) * 100.0
+        market_decorrelated = True
+        market_decorrelation_source = "spread"
+
+    home_games = int(v2.get("home_games") or 0)
+    away_games = int(v2.get("away_games") or 0)
+    pick_signals = build_mlb_pick_signals(
+        model_margin=margin,
+        market_spread=market_spread,
+        home_ml=home_ml,
+        away_ml=away_ml,
+        home_games=home_games,
+        away_games=away_games,
+        steam_meta=None,
+    )
+
+    return {
+        "algorithm": "MLBGradientBoost",
+        "model_version": "v2",
+        "source": "statsapi-xgb-lr-isotonic",
+        "market_decorrelated": market_decorrelated,
+        "market_decorrelation_source": market_decorrelation_source,
+        "pre_decorrelation_home_win_probability": round(calibrated_prob, 2),
+        "home_win_probability": round(home_prob, 2),
+        "predicted_home_runs": v2.get("predicted_home_runs"),
+        "predicted_away_runs": v2.get("predicted_away_runs"),
+        "predicted_margin": round(margin, 2),
+        "param": DEFAULT_SIGMA,
+        "home_games": home_games,
+        "away_games": away_games,
+        "raw_home_win_probability": round(calibrated_prob, 2),
+        "pitcher_margin": round(
+            (float(v2.get("away_sp_fip") or 4.2) - float(v2.get("home_sp_fip") or 4.2)) * 0.35,
+            3,
+        ),
+        "mlb_pick_signals": pick_signals,
+        "opening_steam": None,
+        "home_probable_pitcher": v2.get("home_probable_pitcher"),
+        "away_probable_pitcher": v2.get("away_probable_pitcher"),
+        "home_sp_fip": v2.get("home_sp_fip"),
+        "away_sp_fip": v2.get("away_sp_fip"),
+        "home_elo": v2.get("home_elo"),
+        "away_elo": v2.get("away_elo"),
+        "park_factor": v2.get("park_factor"),
+    }
+
+
 def run_mlb_pred_model(
     league: str,
     cutoff_date: str,
@@ -293,6 +385,19 @@ def run_mlb_pred_model(
     away_ml: int | None = None,
 ) -> dict[str, Any] | None:
     _ = home_espn_id, away_espn_id, home_name, away_name
+
+    v2_payload = _run_mlb_v2(
+        league,
+        cutoff_date,
+        home_abbr,
+        away_abbr,
+        market_spread=market_spread,
+        home_ml=home_ml,
+        away_ml=away_ml,
+    )
+    if v2_payload is not None:
+        return v2_payload
+
     context = get_mlb_pred_context(league, cutoff_date)
     if not context:
         return None

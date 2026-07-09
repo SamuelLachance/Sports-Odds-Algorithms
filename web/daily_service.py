@@ -520,6 +520,21 @@ def _prewarm_league_models(
                         "error": f"Baseball model prewarm failed ({cutoff}): {exc}",
                     }
                 )
+        if league.lower() == "mlb":
+            try:
+                from web.mlb_pred_model import _cutoff_to_iso
+                from web.mlb_v2.live import get_live_context
+
+                day_iso = _cutoff_to_iso(cutoff)
+                if day_iso:
+                    get_live_context(day_iso)
+            except Exception as exc:  # noqa: BLE001
+                errors.append(
+                    {
+                        "league": league,
+                        "error": f"MLB v2 prewarm failed ({cutoff}): {exc}",
+                    }
+                )
         if is_football_league(league):
             try:
                 get_football_pred_context(league, cutoff)

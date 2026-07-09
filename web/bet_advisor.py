@@ -722,6 +722,8 @@ def evaluate_picks(
     hubacek_only: bool = False,
     min_market_gap_pp: float | None = None,
     min_win_confidence_pp: float | None = None,
+    ml_lo: float | None = None,
+    ml_hi: float | None = None,
 ) -> list[BetPick]:
     if away_prob is None or home_prob is None:
         away_prob, home_prob = _side_win_probs(total_score)
@@ -750,10 +752,15 @@ def evaluate_picks(
         if hubacek_only:
             if market_implied is None:
                 continue
+            if ml_lo is not None and float(market) < ml_lo:
+                continue
+            if ml_hi is not None and float(market) > ml_hi:
+                continue
             if not passes_hubacek_official_pick_gate(
                 model_prob_pct=outcome_prob,
                 market_implied_pct=market_implied,
                 ev_pct=ev_pct,
+                min_ev_pct=min_ev_pct,
                 min_market_gap_pp=min_market_gap_pp,
                 min_win_confidence_pp=min_win_confidence_pp,
             ):
