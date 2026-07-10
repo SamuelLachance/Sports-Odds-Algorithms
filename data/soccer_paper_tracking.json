@@ -48,7 +48,9 @@
       "away_name": "Belgium",
       "edge_pp": 244.0,
       "event_id": "760511",
+      "final_score": "1\u20132",
       "game_date": "7-10-2026",
+      "graded_at": "2026-07-10T22:59:24.432819+00:00",
       "home_abbr": "esp",
       "home_name": "Spain",
       "key": "worldcup:760511:home",
@@ -80,16 +82,18 @@
           "steam_signal": false
         },
         "steam_signal": false
-      }
+      },
+      "status": "win",
+      "units": 0.645
     }
   ],
   "summary": {
     "losses": 0,
     "newly_graded": 1,
-    "picks": 1,
-    "settled": 1,
-    "units": 0.588,
-    "wins": 1
+    "picks": 2,
+    "settled": 2,
+    "units": 1.233,
+    "wins": 2
   },
   "version": 1
 }

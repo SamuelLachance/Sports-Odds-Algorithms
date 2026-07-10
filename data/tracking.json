@@ -31,10 +31,12 @@
       "model_margin": null,
       "model_market_gap_pp": 18.63,
       "kelly_pct": 21.05,
-      "status": "pending",
-      "units": 0.0,
+      "status": "loss",
+      "units": -3.0,
       "stake_units": 3.0,
-      "recorded_at": "2026-07-10T17:56:10.463499+00:00"
+      "recorded_at": "2026-07-10T17:56:10.463499+00:00",
+      "graded_at": "2026-07-10T22:59:23.940017+00:00",
+      "final_score": "1\u20132"
     },
     {
       "id": "2026-07-10:401816104:home",
@@ -70,10 +72,10 @@
       "units": 0.0,
       "stake_units": 3.0,
       "recorded_at": "2026-07-10T17:56:10.463499+00:00",
-      "closing_market_odds": -149,
+      "closing_market_odds": -163,
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
-      "closing_snapshot_at": "2026-07-10T19:31:42.605429+00:00"
+      "closing_snapshot_at": "2026-07-10T22:59:23.881902+00:00"
     },
     {
       "id": "2026-07-10:401816106:home",
@@ -109,10 +111,10 @@
       "units": 0.0,
       "stake_units": 3.0,
       "recorded_at": "2026-07-10T17:56:10.463499+00:00",
-      "closing_market_odds": 139,
+      "closing_market_odds": 135,
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
-      "closing_snapshot_at": "2026-07-10T19:31:42.605429+00:00"
+      "closing_snapshot_at": "2026-07-10T22:59:23.881902+00:00"
     },
     {
       "id": "2026-07-10:401816107:home",
@@ -151,7 +153,7 @@
       "closing_market_odds": 119,
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
-      "closing_snapshot_at": "2026-07-10T19:31:42.605429+00:00"
+      "closing_snapshot_at": "2026-07-10T22:59:23.881902+00:00"
     },
     {
       "id": "2026-07-10:401816105:home",
