@@ -561,7 +561,7 @@
       "closing_market_odds": 475,
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
-      "closing_snapshot_at": "2026-07-10T15:22:33.935079+00:00"
+      "closing_snapshot_at": "2026-07-10T17:44:22.957142+00:00"
     },
     {
       "id": "2026-07-10:401857054:away:spread",
@@ -636,10 +636,10 @@
       "units": 0.0,
       "stake_units": 3.0,
       "recorded_at": "2026-07-10T07:36:42.876353+00:00",
-      "closing_market_odds": -148,
+      "closing_market_odds": -149,
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
-      "closing_snapshot_at": "2026-07-10T15:22:33.935079+00:00"
+      "closing_snapshot_at": "2026-07-10T17:44:22.957142+00:00"
     },
     {
       "id": "2026-07-10:401857055:away:spread",
@@ -717,7 +717,7 @@
       "closing_market_odds": 139,
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
-      "closing_snapshot_at": "2026-07-10T15:22:33.935079+00:00"
+      "closing_snapshot_at": "2026-07-10T17:44:22.957142+00:00"
     },
     {
       "id": "2026-07-10:401816107:home",
@@ -756,7 +756,7 @@
       "closing_market_odds": 119,
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
-      "closing_snapshot_at": "2026-07-10T15:22:33.935079+00:00"
+      "closing_snapshot_at": "2026-07-10T17:44:22.957142+00:00"
     },
     {
       "id": "2026-07-10:401857056:away:spread",
@@ -796,6 +796,41 @@
       "closing_spread_odds": -112,
       "closing_consensus_spread": -1.5,
       "closing_snapshot_at": "2026-07-10T15:22:33.935079+00:00"
+    },
+    {
+      "id": "2026-07-10:401816105:home",
+      "date": "2026-07-10",
+      "event_id": "401816105",
+      "league": "mlb",
+      "league_name": "MLB",
+      "side": "home",
+      "team_name": "Chicago White Sox",
+      "team_slug": "chicago-white-sox",
+      "team_abbr": "chw",
+      "matchup": "Athletics @ Chicago White Sox",
+      "start_time": "2026-07-10T23:40Z",
+      "strategy": "hubacek",
+      "strategy_label": "Hub\u00e1\u010dek spot",
+      "confidence": "high",
+      "edge": 44.0,
+      "ev_pct": 7.78,
+      "model_projection": -201,
+      "market_odds": -157,
+      "win_probability": 66.73,
+      "reason": "Hub\u00e1\u010dek spot on Chicago White Sox: decorrelated model 66.7% vs market 58.4% (+8.3 pp, +7.8% EV).",
+      "bet_type": "moneyline",
+      "spread_line": null,
+      "spread_odds": null,
+      "consensus_spread": null,
+      "consensus_odds": null,
+      "consensus_label": null,
+      "model_margin": null,
+      "model_market_gap_pp": 8.31,
+      "kelly_pct": 12.21,
+      "status": "pending",
+      "units": 0.0,
+      "stake_units": 3.0,
+      "recorded_at": "2026-07-10T17:44:22.957142+00:00"
     }
   ]
 }
