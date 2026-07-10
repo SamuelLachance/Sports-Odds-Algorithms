@@ -561,15 +561,33 @@ def _prewarm_league_models(
                     }
                 )
         if is_soccer_league(league):
-            try:
-                get_soccer_pred_context(league, cutoff)
-            except Exception as exc:  # noqa: BLE001
-                errors.append(
-                    {
-                        "league": league,
-                        "error": f"Soccer model prewarm failed ({cutoff}): {exc}",
-                    }
-                )
+            soccer_v2_ready = False
+            if league.lower() in ("epl", "bundesliga", "laliga", "seriea", "ligue1"):
+                try:
+                    from web.soccer_pred_model import _cutoff_to_iso as _soc_cutoff_to_iso
+                    from web.soccer_v2.live import artifacts_available
+                    from web.soccer_v2.live import get_live_context as _soc_live_context
+
+                    day_iso = _soc_cutoff_to_iso(cutoff)
+                    if day_iso and artifacts_available():
+                        soccer_v2_ready = _soc_live_context(day_iso) is not None
+                except Exception as exc:  # noqa: BLE001
+                    errors.append(
+                        {
+                            "league": league,
+                            "error": f"Soccer v2 prewarm failed ({cutoff}): {exc}",
+                        }
+                    )
+            if not soccer_v2_ready:
+                try:
+                    get_soccer_pred_context(league, cutoff)
+                except Exception as exc:  # noqa: BLE001
+                    errors.append(
+                        {
+                            "league": league,
+                            "error": f"Soccer model prewarm failed ({cutoff}): {exc}",
+                        }
+                    )
 
 
 def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:

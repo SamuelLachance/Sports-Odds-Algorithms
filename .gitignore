@@ -47,6 +47,15 @@ data/models/mlb_v2/oos_predictions.csv
 data/nhl_history/
 data/models/nhl_v2/oos_predictions.csv
 
+# Soccer v2 raw history + rebuildable outputs (fetch via scripts/fetch_soccer_history.py,
+# rebuild via scripts/build_soccer_training_table.py). Model artifacts in
+# data/models/soccer_v2/ ARE tracked; the large OOS prediction dump is not.
+data/soccer_history/
+data/models/soccer_v2/oos_predictions.csv
+
+# Scratch probes
+scripts/tmp_probe_*.py
+
 # Scratch / probe scripts (local diagnostics only)
 scripts/_diag_*.py
 scripts/_probe_*.py

@@ -122,6 +122,7 @@ def get_pick_thresholds(league: str) -> dict[str, Any]:
         **hubacek,
         "ml_lo": ml_range[0] if ml_range else None,
         "ml_hi": ml_range[1] if ml_range else None,
+        "allowed_sides": entry.get("allowed_sides"),
         "min_spread_point_edge": OFFICIAL_MIN_SPREAD_POINT_EDGE,
         "min_profit_score": 0.0,
         "min_kelly_pct": 0.0,
@@ -1066,7 +1067,12 @@ def evaluate_soccer_official_picks_for_game(
         hubacek_only=True,
         min_market_gap_pp=thresholds["min_market_gap_pp"],
         min_win_confidence_pp=thresholds["min_win_confidence_pp"],
+        min_ev_pct=thresholds["min_ev_pct"],
     )
+    allowed_sides = thresholds.get("allowed_sides")
+    if allowed_sides:
+        allowed = {str(side).lower() for side in allowed_sides}
+        picks = [pick for pick in picks if pick.side in allowed]
     for pick in picks:
         pick.bet_type = "soccer_1x2"
     return picks

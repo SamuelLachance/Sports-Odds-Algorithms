@@ -366,6 +366,60 @@ def test_blend_soccer_path_a_unavailable_fallback() -> None:
         blend_module.run_soccer_pred_model = soccer_original
 
 
+def test_blend_soccer_v2_payload_skips_path_a_enrichment() -> None:
+    """v2 payloads keep their calibrated probs (no db_rating/context layers)."""
+    import web.blend_service as blend_module
+
+    soccer_original = blend_module.run_soccer_pred_model
+    finalize_original = blend_module.finalize_soccer_path_a
+
+    def _fail_finalize(result, **_kwargs):
+        raise AssertionError("finalize_soccer_path_a must not run for v2 payloads")
+
+    try:
+        blend_module.run_soccer_pred_model = lambda *_a, **_k: {
+            "algorithm": "SoccerGradientBoost v2",
+            "model_version": "soccer_v2.2026.07",
+            "source": "soccer-v2-xgb-ensemble",
+            "home_win_probability": 51.2,
+            "draw_probability": 26.4,
+            "away_win_probability": 22.4,
+            "pick_home_win_probability": 52.0,
+            "pick_draw_probability": 26.1,
+            "pick_away_win_probability": 21.9,
+            "expected_home_goals": 1.9,
+            "expected_away_goals": 1.1,
+            "elo_home": 1760.0,
+            "elo_away": 1655.0,
+            "market_decorrelated": True,
+            "market_calibrated": True,
+            "soccer_pick_signals": {"disagreement_signal": False},
+        }
+        blend_module.finalize_soccer_path_a = _fail_finalize
+        result = blend_predictions(
+            legacy_total_score=-48.0,
+            legacy_win_probability=48.0,
+            league="epl",
+            cutoff_date="11-15-2025",
+            home_abbr="ars",
+            away_abbr="liv",
+            home_moneyline=-120,
+            draw_moneyline=260,
+            away_moneyline=320,
+        )
+        assert result["algorithm"] == "SoccerGradientBoost v2"
+        assert result["blend_mode"] == "soccer_v2"
+        assert result["blend_layers"] == 1
+        assert result["threeway"] is True
+        assert result["market_decorrelated"] is True
+        assert result["model_version"] == "soccer_v2.2026.07"
+        assert result["home_win_probability"] == 51.2
+        assert result["soccer_pred"]["pick_home_win_probability"] == 52.0
+    finally:
+        blend_module.run_soccer_pred_model = soccer_original
+        blend_module.finalize_soccer_path_a = finalize_original
+
+
 def test_model_agreement_soccer_single_model() -> None:
     agreement = compute_model_agreement({"legacy": {"favorite_side": "home"}}, "epl")
     assert agreement["required"] == 0

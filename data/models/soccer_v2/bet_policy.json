@@ -1,0 +1,92 @@
+{
+  "bet_type": "soccer_1x2",
+  "stake_mode": "kelly",
+  "kelly_fraction": 0.25,
+  "model_variant": "market_aware",
+  "exec_price": "max",
+  "min_gap_pp": 4.0,
+  "min_ev_pct": 5.0,
+  "max_decimal_odds": 11.0,
+  "outcomes": [
+    "home"
+  ],
+  "backtest": {
+    "bets": 1834,
+    "staked_units": 466.9,
+    "profit_units": 20.3,
+    "roi_pct": 4.34,
+    "win_rate": 0.3719,
+    "avg_clv_pct": 3.999,
+    "clv_positive_rate": 0.6521,
+    "per_season": {
+      "2015": {
+        "bets": 238,
+        "roi_pct": 13.45,
+        "profit_units": 8.5
+      },
+      "2016": {
+        "bets": 167,
+        "roi_pct": -6.04,
+        "profit_units": -3.3
+      },
+      "2017": {
+        "bets": 292,
+        "roi_pct": 0.86,
+        "profit_units": 0.7
+      },
+      "2018": {
+        "bets": 211,
+        "roi_pct": 0.35,
+        "profit_units": 0.2
+      },
+      "2019": {
+        "bets": 202,
+        "roi_pct": 9.99,
+        "profit_units": 5.0
+      },
+      "2020": {
+        "bets": 281,
+        "roi_pct": 0.44,
+        "profit_units": 0.3
+      },
+      "2021": {
+        "bets": 97,
+        "roi_pct": 0.72,
+        "profit_units": 0.2
+      },
+      "2022": {
+        "bets": 96,
+        "roi_pct": 14.37,
+        "profit_units": 3.0
+      },
+      "2023": {
+        "bets": 115,
+        "roi_pct": 1.68,
+        "profit_units": 0.4
+      },
+      "2024": {
+        "bets": 77,
+        "roi_pct": 4.12,
+        "profit_units": 0.6
+      },
+      "2025": {
+        "bets": 58,
+        "roi_pct": 42.99,
+        "profit_units": 4.7
+      }
+    },
+    "seasons_positive": 10,
+    "seasons_total": 11,
+    "worst_season_roi": -6.04,
+    "median_season_roi": 1.68
+  },
+  "backtest_sharp_open": {
+    "bets": 1726,
+    "roi_pct": 0.65,
+    "worst_season_roi": -9.76,
+    "seasons_positive": 5,
+    "seasons_total": 11,
+    "avg_clv_pct": 0.683,
+    "clv_positive_rate": 0.5122
+  }
+}

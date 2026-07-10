@@ -915,13 +915,17 @@ def _blend_soccer_path_a_only(
             "threeway": True,
         }
 
+    is_v2 = sport_payload.get("algorithm") == "SoccerGradientBoost v2"
+    algorithm = "SoccerGradientBoost v2" if is_v2 else "SoccerPathA"
+    blend_mode = "soccer_v2" if is_v2 else "soccer_path_a"
+
     home_p = float(sport_payload["home_win_probability"])
     draw_p = float(sport_payload["draw_probability"])
     away_p = float(sport_payload["away_win_probability"])
     total, win_prob, favorite = threeway_probs_to_total_score(home_p, draw_p, away_p)
     result = {
-        "algorithm": "SoccerPathA",
-        "blend_mode": "soccer_path_a",
+        "algorithm": algorithm,
+        "blend_mode": blend_mode,
         "blend_layers": 1,
         "blend_weights": {"soccer_pred": 1.0},
         "soccer_pred": sport_payload,
@@ -942,6 +946,14 @@ def _blend_soccer_path_a_only(
         "threeway": True,
         "soccer_pick_signals": sport_payload.get("soccer_pick_signals"),
     }
+    if is_v2:
+        # v2 display probabilities are already market-calibrated and the pick
+        # probabilities are decorrelated; keep them untouched (no db_rating /
+        # ESPN-context layers, which are Path-A-tuned).
+        result["market_decorrelated"] = bool(sport_payload.get("market_decorrelated"))
+        if sport_payload.get("model_version"):
+            result["model_version"] = sport_payload["model_version"]
+        return result
     return finalize_soccer_path_a(
         result,
         league=league,

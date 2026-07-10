@@ -145,8 +145,8 @@ def test_record_from_slate_accepts_official_soccer_hubacek_pick() -> None:
     pick = {
         **_soccer_pick(),
         "strategy": "hubacek",
-        "ev_pct": 4.0,
-        "model_market_gap_pp": 3.5,
+        "ev_pct": 6.0,
+        "model_market_gap_pp": 5.2,
         "win_probability": 62.0,
     }
     slate = {
@@ -211,3 +211,67 @@ def test_evaluate_soccer_official_picks_respects_disabled_league() -> None:
         home_market=120,
     )
     assert picks == []
+
+
+def test_top5_soccer_thresholds_use_backtested_v2_policy() -> None:
+    """Top-5 club leagues read the soccer v2 backtest gates from pick_strategy.json."""
+    for league in ("epl", "bundesliga", "laliga", "seriea", "ligue1"):
+        thresholds = get_pick_thresholds(league)
+        assert thresholds["bet_type"] == "soccer_1x2"
+        assert thresholds["min_market_gap_pp"] >= 4.0, league
+        assert thresholds["min_ev_pct"] >= 5.0, league
+        assert thresholds["min_win_confidence_pp"] == 0.0, league
+        assert thresholds["allowed_sides"] == ["home"], league
+        assert thresholds["enabled"] is True, league
+    # Internationals keep default Hubáček soccer gates (no side restriction).
+    worldcup = get_pick_thresholds("worldcup")
+    assert worldcup["allowed_sides"] is None
+    assert worldcup["min_win_confidence_pp"] == 10.0
+
+
+def test_top5_soccer_official_picks_home_side_only() -> None:
+    """Qualifying home edges pass; away/draw edges are filtered by allowed_sides."""
+    home_pick = evaluate_soccer_official_picks_for_game(
+        league="epl",
+        away_name="Chelsea",
+        home_name="Arsenal",
+        away_slug="che",
+        home_slug="ars",
+        home_prob=52.0,  # devig home ~45.3% at +120/+270/+260 -> gap ~6.7 pp
+        draw_prob=26.0,
+        away_prob=22.0,
+        away_proj=250,
+        draw_proj=300,
+        home_proj=-110,
+        away_market=260,
+        draw_market=270,
+        home_market=120,
+        base_home_prob=51.0,  # EV at +120: 0.51*2.2-1 = +12.2%
+        base_draw_prob=26.0,
+        base_away_prob=23.0,
+    )
+    assert len(home_pick) == 1
+    assert home_pick[0].side == "home"
+    assert home_pick[0].bet_type == "soccer_1x2"
+    assert home_pick[0].strategy == "hubacek"
+
+    away_edge_only = evaluate_soccer_official_picks_for_game(
+        league="epl",
+        away_name="Chelsea",
+        home_name="Arsenal",
+        away_slug="che",
+        home_slug="ars",
+        home_prob=38.0,
+        draw_prob=24.0,
+        away_prob=38.0,  # devig away ~27.7% at +260 -> gap ~10 pp, but away-side
+        away_proj=150,
+        draw_proj=320,
+        home_proj=140,
+        away_market=260,
+        draw_market=270,
+        home_market=120,
+        base_home_prob=38.0,
+        base_draw_prob=24.0,
+        base_away_prob=38.0,
+    )
+    assert away_edge_only == []

@@ -980,6 +980,85 @@ def get_soccer_pred_context(league: str, cutoff_date: str) -> dict[str, Any] | N
     return build_soccer_model(games, league)
 
 
+def _cutoff_to_iso(cutoff_date: str) -> str | None:
+    parts = str(cutoff_date).split("-")
+    if len(parts) != 3:
+        return None
+    try:
+        first, second, third = (int(part) for part in parts)
+    except ValueError:
+        return None
+    if first > 1900:  # already YYYY-MM-DD
+        return f"{first:04d}-{second:02d}-{third:02d}"
+    return f"{third:04d}-{first:02d}-{second:02d}"
+
+
+def _run_soccer_v2(
+    league: str,
+    cutoff_date: str,
+    home_abbr: str,
+    away_abbr: str,
+    *,
+    home_name: str | None,
+    away_name: str | None,
+    home_ml: int | None,
+    draw_ml: int | None,
+    away_ml: int | None,
+    event_id: str | None,
+    match_date: str,
+) -> dict[str, Any] | None:
+    """Soccer GradientBoost v2 (top-5 club leagues); None -> Path A fallback."""
+    cutoff_iso = _cutoff_to_iso(cutoff_date)
+    if not cutoff_iso:
+        return None
+    try:
+        from web.soccer_v2.live import predict_matchup_v2
+
+        v2 = predict_matchup_v2(
+            league,
+            cutoff_iso,
+            home_abbr=home_abbr,
+            away_abbr=away_abbr,
+            home_name=home_name,
+            away_name=away_name,
+            home_ml=home_ml,
+            draw_ml=draw_ml,
+            away_ml=away_ml,
+            match_date=match_date or None,
+        )
+    except Exception:  # noqa: BLE001 - v2 failures fall back to Path A
+        return None
+    if not v2:
+        return None
+
+    open_home, open_draw, open_away = fetch_soccer_opening_moneylines(league, event_id)
+    steam_meta = soccer_opening_steam_meta(
+        home_ml=home_ml,
+        draw_ml=draw_ml,
+        away_ml=away_ml,
+        open_home_ml=open_home,
+        open_draw_ml=open_draw,
+        open_away_ml=open_away,
+        model_home=v2["pick_home_win_probability"],
+        model_draw=v2["pick_draw_probability"],
+        model_away=v2["pick_away_win_probability"],
+    )
+    pick_signals = build_soccer_pick_signals(
+        home_prob=v2["pick_home_win_probability"],
+        draw_prob=v2["pick_draw_probability"],
+        away_prob=v2["pick_away_win_probability"],
+        home_ml=home_ml,
+        draw_ml=draw_ml,
+        away_ml=away_ml,
+        home_games=int(v2.get("home_games") or 0),
+        away_games=int(v2.get("away_games") or 0),
+        steam_meta=steam_meta,
+    )
+    v2["soccer_pick_signals"] = pick_signals
+    v2["opening_steam"] = steam_meta
+    return v2
+
+
 def run_soccer_pred_model(
     league: str,
     cutoff_date: str,
@@ -994,6 +1073,22 @@ def run_soccer_pred_model(
     event_id: str | None = None,
     match_date: str = "",
 ) -> dict[str, Any] | None:
+    v2_payload = _run_soccer_v2(
+        league,
+        cutoff_date,
+        home_abbr,
+        away_abbr,
+        home_name=home_name,
+        away_name=away_name,
+        home_ml=home_ml,
+        draw_ml=draw_ml,
+        away_ml=away_ml,
+        event_id=event_id,
+        match_date=match_date,
+    )
+    if v2_payload:
+        return v2_payload
+
     context = get_soccer_pred_context(league, cutoff_date)
     if not context:
         return None

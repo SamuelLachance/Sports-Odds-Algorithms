@@ -133,7 +133,10 @@ def test_soccer_confidence_uses_lower_bar() -> None:
     )
 
     assert HUBACEK_SOCCER_MIN_WIN_CONFIDENCE_PP == 10.0
-    assert hubacek_min_win_confidence_pp("epl") == 10.0
+    # Top-5 club leagues run the backtested soccer v2 policy: no confidence
+    # bar (home-only + gap/EV floors carry the selection).
+    assert hubacek_min_win_confidence_pp("epl") == 0.0
+    # Internationals keep the Path A soccer default.
     assert hubacek_min_win_confidence_pp("worldcup") == 10.0
     assert hubacek_min_win_confidence_pp("nba") == 20.0
 

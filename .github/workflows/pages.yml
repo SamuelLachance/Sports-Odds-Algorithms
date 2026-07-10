@@ -97,6 +97,15 @@ jobs:
             nhl-v2-live-${{ steps.cache_date.outputs.today }}-
             nhl-v2-live-
 
+      - name: Restore soccer v2 live cache (football-data current-season CSVs)
+        uses: actions/cache@v4
+        with:
+          path: .build-cache/soccer-v2-live
+          key: soccer-v2-live-${{ steps.cache_date.outputs.today }}-${{ github.run_id }}
+          restore-keys: |
+            soccer-v2-live-${{ steps.cache_date.outputs.today }}-
+            soccer-v2-live-
+
       - name: Build static site
         run: python scripts/build_gh_pages.py
 

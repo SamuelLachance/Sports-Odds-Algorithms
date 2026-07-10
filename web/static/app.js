@@ -217,6 +217,8 @@ const SPORT_ALGO_LABELS = {
     "NHL GradientBoost v2 (MoneyPuck xG + goalie GSAx + XGB/LR ensemble, isotonic-calibrated)",
   HockeyPuckCast: "PuckCast xG win probability",
   SoccerPathA: "Soccer Path A 1X2 (Elo + Pi + Dixon–Coles + XGB + context)",
+  "SoccerGradientBoost v2":
+    "Soccer GradientBoost v2 1X2 (25-season top-5 history, Elo + Dixon–Coles + SoT xG + XGB/LR ensemble, isotonic-calibrated)",
   Unified: "Unified model",
 };
 
@@ -230,6 +232,7 @@ const SPORT_LAYER_LABELS = {
   SharpBaseball: "SharpBaseball",
   SoccerPathA: "Soccer Path A",
   SharpSoccer: "Soccer Path A",
+  "SoccerGradientBoost v2": "Soccer GradientBoost v2",
 };
 
 function primaryAlgoLabel(model) {
@@ -249,6 +252,7 @@ function primaryAlgoShort(model) {
     NHLGradientBoost: "NHL GB v2",
     HockeyPuckCast: "PuckCast",
     SoccerPathA: "Soccer Path A",
+    "SoccerGradientBoost v2": "Soccer GB v2",
     Unified: "Unified",
   };
   return short[model.algorithm] || model.algorithm || "Algo V2";
@@ -783,6 +787,24 @@ function algoBreakdown(m, game) {
       soccer.expected_home_goals != null
         ? ` · xG ${soccer.expected_away_goals}-${soccer.expected_home_goals}`
         : "";
+    const elo =
+      soccer.elo_home != null && soccer.elo_away != null
+        ? ` · Elo ${formatRating(soccer.elo_away, 0)} vs ${formatRating(soccer.elo_home, 0)}`
+        : "";
+    const promoted = [];
+    if (soccer.away_promoted) promoted.push("away promoted");
+    if (soccer.home_promoted) promoted.push("home promoted");
+    const promotedTag = promoted.length ? ` · ${promoted.join(", ")}` : "";
+    const restParts = [];
+    if (soccer.home_rest_days != null && soccer.away_rest_days != null) {
+      const restGap = Number(soccer.home_rest_days) - Number(soccer.away_rest_days);
+      if (Math.abs(restGap) >= 3) {
+        restParts.push(
+          `rest ${formatRating(soccer.away_rest_days, 0)}d vs ${formatRating(soccer.home_rest_days, 0)}d`,
+        );
+      }
+    }
+    const restTag = restParts.length ? ` · ${restParts.join(", ")}` : "";
     const enrich = [];
     if (soccer.market_calibrated) enrich.push("market-calibrated");
     if (soccer.market_decorrelated) enrich.push("pick decorr");
@@ -790,7 +812,7 @@ function algoBreakdown(m, game) {
     if (m.context_adjusted) enrich.push("ESPN context");
     const suffix = enrich.length ? ` · ${enrich.join(", ")}` : "";
     parts.push(
-      `${name}: ${soccer.home_win_probability}% / ${soccer.draw_probability}% / ${soccer.away_win_probability}%${xg}${suffix}`,
+      `${name}: ${soccer.home_win_probability}% / ${soccer.draw_probability}% / ${soccer.away_win_probability}%${xg}${elo}${promotedTag}${restTag}${suffix}`,
     );
   }
   if (dbRating) {
@@ -1026,7 +1048,7 @@ function viewPicks() {
   const slate = state.slate || {};
   const minConf = minHubacekConfidence(slate);
   const hubacekRule = hubacekPickRule(slate);
-  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p><strong>Official picks</strong> (NBA, CBB, WNBA, NHL, MLB, plus soccer leagues whose calibrated model beats the closing line) fire on <strong>Hubáček spots</strong>: decorrelated model beats the de-vigged book by <strong>≥ 2 pp</strong> with <strong>≥ 2% honest EV</strong> and a per-bet-type confidence bar (<strong>|p−50| ≥ ${minConf} pp</strong> on moneylines). Stakes are quarter-Kelly (0.25–3u). <strong>Model predictions</strong> below cover the remaining leagues with the same analysis, but those bets are not tracked officially.</p></section>
+  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p><strong>Official picks</strong> (NBA, CBB, WNBA, NHL, MLB, plus soccer leagues whose calibrated model beats the closing line) fire on <strong>Hubáček spots</strong>: decorrelated model beats the de-vigged book by a <strong>backtested per-league gap</strong> (2–7.8 pp; top-5 soccer bets home outcomes only at ≥ 4.6 pp with ≥ 5% EV) with <strong>honest-EV</strong> and confidence floors (<strong>|p−50| ≥ ${minConf} pp</strong> on moneylines). Stakes are quarter-Kelly (0.25–3u). <strong>Model predictions</strong> below cover the remaining leagues with the same analysis, but those bets are not tracked officially.</p></section>
     <section class="section"><div class="section-head"><h2>Official picks</h2></div><div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No official bets meet ${hubacekRule} today.</div>`}</div></section>
     <section class="section" id="model-predictions"><div class="section-head"><h2>Model predictions (not tracked)</h2></div><p class="muted section-intro">Leagues without official tracking (MLS, UCL, NFL/CFB, and others). Full probabilities and fair prices are always on each game page.</p><div class="picks-grid">${modelAnalysis.length ? modelAnalysis.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No model value spots on today's slate.</div>`}</div></section>`;
 }

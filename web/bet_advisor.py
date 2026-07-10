@@ -933,6 +933,7 @@ def evaluate_soccer_picks(
                 ev_pct=ev_pct,
                 min_market_gap_pp=min_market_gap_pp,
                 min_win_confidence_pp=min_win_confidence_pp,
+                min_ev_pct=min_ev_pct,
             ):
                 continue
             strategy = "hubacek"
