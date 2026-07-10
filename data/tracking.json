@@ -75,7 +75,7 @@
       "closing_market_odds": -163,
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
-      "closing_snapshot_at": "2026-07-10T23:54:48.593746+00:00"
+      "closing_snapshot_at": "2026-07-10T23:57:44.329850+00:00"
     },
     {
       "id": "2026-07-10:401816106:home",
@@ -114,7 +114,7 @@
       "closing_market_odds": 135,
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
-      "closing_snapshot_at": "2026-07-10T23:54:48.593746+00:00"
+      "closing_snapshot_at": "2026-07-10T23:57:44.329850+00:00"
     },
     {
       "id": "2026-07-10:401816107:home",
@@ -150,10 +150,10 @@
       "units": 0.0,
       "stake_units": 3.0,
       "recorded_at": "2026-07-10T17:56:10.463499+00:00",
-      "closing_market_odds": 119,
+      "closing_market_odds": 114,
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
-      "closing_snapshot_at": "2026-07-10T23:54:48.593746+00:00"
+      "closing_snapshot_at": "2026-07-10T23:57:44.329850+00:00"
     },
     {
       "id": "2026-07-10:401816105:home",
