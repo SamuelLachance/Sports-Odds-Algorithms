@@ -115,6 +115,15 @@ jobs:
             wnba-v2-live-${{ steps.cache_date.outputs.today }}-
             wnba-v2-live-
 
+      - name: Restore NBA v2 live cache (ESPN current-season events + boxes)
+        uses: actions/cache@v4
+        with:
+          path: .build-cache/nba-v2-live
+          key: nba-v2-live-${{ steps.cache_date.outputs.today }}-${{ github.run_id }}
+          restore-keys: |
+            nba-v2-live-${{ steps.cache_date.outputs.today }}-
+            nba-v2-live-
+
       - name: Build static site
         run: python scripts/build_gh_pages.py
 

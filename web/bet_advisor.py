@@ -23,7 +23,7 @@ MIN_SPREAD_POINT_EDGE = MIN_RECOMMENDED_EDGE / SPREAD_POINT_TO_EDGE
 # WNBA fitted on v2 walk-forward margin residuals (scripts/train_wnba_model.py,
 # 2010-2026 OOS); others use published market-residual values.
 SPREAD_MARGIN_SIGMA: dict[str, float] = {
-    "nba": 13.26,
+    "nba": 12.98,
     "wnba": 12.58,
     "cbb": 12.0,
     "nfl": 13.5,
@@ -1049,7 +1049,7 @@ def evaluate_spread_picks(
             continue
         juice = spread_odds if spread_odds is not None else DEFAULT_SPREAD_JUICE
         edge = spread_odds_edge(point_edge, juice, league)
-        if not hubacek_only and min_point_edge is not None and point_edge < min_point_edge:
+        if min_point_edge is not None and point_edge < min_point_edge:
             continue
 
         line = spread_line_for_side(consensus_spread, side)

@@ -221,6 +221,8 @@ const SPORT_ALGO_LABELS = {
     "Soccer GradientBoost v2 1X2 (25-season top-5 history, Elo + Dixon–Coles + SoT xG + XGB/LR ensemble, isotonic-calibrated)",
   "WNBAGradientBoost v2":
     "WNBA GradientBoost v2 (30-season history, Elo + four factors + pace + rest/travel, XGB/LR ensemble, isotonic-calibrated)",
+  "NBAGradientBoost v2":
+    "NBA GradientBoost v2 (30-season history, Elo + four factors + pace + rest/travel, XGB/LR ensemble, isotonic-calibrated)",
   Unified: "Unified model",
 };
 
@@ -236,6 +238,7 @@ const SPORT_LAYER_LABELS = {
   SharpSoccer: "Soccer Path A",
   "SoccerGradientBoost v2": "Soccer GradientBoost v2",
   "WNBAGradientBoost v2": "WNBA GradientBoost v2",
+  "NBAGradientBoost v2": "NBA GradientBoost v2",
 };
 
 function primaryAlgoLabel(model) {
@@ -257,6 +260,7 @@ function primaryAlgoShort(model) {
     SoccerPathA: "Soccer Path A",
     "SoccerGradientBoost v2": "Soccer GB v2",
     "WNBAGradientBoost v2": "WNBA GB v2",
+    "NBAGradientBoost v2": "NBA GB v2",
     Unified: "Unified",
   };
   return short[model.algorithm] || model.algorithm || "Algo V2";

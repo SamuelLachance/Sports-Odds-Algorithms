@@ -121,13 +121,16 @@ def get_pick_thresholds(league: str) -> dict[str, Any]:
     if entry.get("min_spread_confidence_pp") is not None:
         hubacek["min_spread_confidence_pp"] = float(entry["min_spread_confidence_pp"])
     ml_range = hubacek_ml_range(league)
+    min_spread_point_edge = OFFICIAL_MIN_SPREAD_POINT_EDGE
+    if entry.get("min_spread_point_edge") is not None:
+        min_spread_point_edge = float(entry["min_spread_point_edge"])
     return {
         "bet_type": bet_type,
         **hubacek,
         "ml_lo": ml_range[0] if ml_range else None,
         "ml_hi": ml_range[1] if ml_range else None,
         "allowed_sides": entry.get("allowed_sides"),
-        "min_spread_point_edge": OFFICIAL_MIN_SPREAD_POINT_EDGE,
+        "min_spread_point_edge": min_spread_point_edge,
         "min_profit_score": 0.0,
         "min_kelly_pct": 0.0,
         "enabled": True,
@@ -1123,6 +1126,7 @@ def evaluate_official_picks_for_game(
             blended=blended,
             min_cover_gap_pp=thresholds["min_spread_cover_gap_pp"],
             min_win_confidence_pp=thresholds["min_spread_confidence_pp"],
+            min_point_edge=thresholds.get("min_spread_point_edge"),
         )
         return picks
 

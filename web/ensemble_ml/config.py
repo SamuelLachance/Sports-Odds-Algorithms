@@ -277,6 +277,15 @@ def ensemble_model_available(league: str) -> bool:
         or is_soccer_league(league)
     ):
         return False
+    # NBA GradientBoost v2 replaces EnsembleML when artifacts are present.
+    if league == "nba":
+        try:
+            from web.nba_v2.live import artifacts_available
+
+            if artifacts_available():
+                return False
+        except Exception:  # noqa: BLE001
+            pass
     if not model_artifact_path(league).is_file():
         return False
     return ensemble_beats_market(league)

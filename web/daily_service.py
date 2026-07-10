@@ -63,7 +63,7 @@ from web.pick_strategy import (
 from web.predict_service import FACTOR_LABELS  # noqa: E402
 
 SINGLE_MODEL_BLEND_MODES = frozenset(
-    {"basketball_matrix", "mlb_runcast", "soccer_path_a", "wnba_v2"}
+    {"basketball_matrix", "mlb_runcast", "soccer_path_a", "wnba_v2", "nba_v2"}
 )
 
 
@@ -537,7 +537,7 @@ def _prewarm_league_models(
                 {"league": league, "error": f"Power prewarm failed ({cutoff}): {exc}"}
             )
         if is_basketball_league(league):
-            wnba_v2_ready = False
+            v2_ready = False
             if league.lower() == "wnba":
                 try:
                     from web.hockey_pred_model import _cutoff_to_iso as _wnba_cutoff_to_iso
@@ -546,7 +546,7 @@ def _prewarm_league_models(
 
                     day_iso = _wnba_cutoff_to_iso(cutoff)
                     if day_iso and _wnba_v2_available():
-                        wnba_v2_ready = _wnba_live_context(day_iso) is not None
+                        v2_ready = _wnba_live_context(day_iso) is not None
                 except Exception as exc:  # noqa: BLE001
                     errors.append(
                         {
@@ -554,7 +554,23 @@ def _prewarm_league_models(
                             "error": f"WNBA v2 prewarm failed ({cutoff}): {exc}",
                         }
                     )
-            if not wnba_v2_ready:
+            elif league.lower() == "nba":
+                try:
+                    from web.hockey_pred_model import _cutoff_to_iso as _nba_cutoff_to_iso
+                    from web.nba_v2.live import artifacts_available as _nba_v2_available
+                    from web.nba_v2.live import get_live_context as _nba_live_context
+
+                    day_iso = _nba_cutoff_to_iso(cutoff)
+                    if day_iso and _nba_v2_available():
+                        v2_ready = _nba_live_context(day_iso) is not None
+                except Exception as exc:  # noqa: BLE001
+                    errors.append(
+                        {
+                            "league": league,
+                            "error": f"NBA v2 prewarm failed ({cutoff}): {exc}",
+                        }
+                    )
+            if not v2_ready:
                 try:
                     get_basketball_pred_context(league, cutoff)
                 except Exception as exc:  # noqa: BLE001

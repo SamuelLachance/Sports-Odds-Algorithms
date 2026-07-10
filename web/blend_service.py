@@ -338,9 +338,9 @@ def blended_home_spread_margin(blended: dict[str, Any], league: str) -> float:
     favorite_side = blended.get("favorite_side")
     cached = blended.get("home_spread_margin")
     if cached is not None:
-        if blended.get("blend_mode") == "wnba_v2":
-            # WNBA v2 bet policy was backtested on the dedicated margin head;
-            # never flip its sign to match the win-probability favorite.
+        if blended.get("blend_mode") in {"wnba_v2", "nba_v2"}:
+            # Dedicated margin head was backtested as-is; never flip its sign
+            # to match the win-probability favorite.
             return float(cached)
         return _normalize_spread_margin_sign(float(cached), favorite_side)
     total = blended.get("total_score")
@@ -755,6 +755,22 @@ def _run_wnba_v2(cutoff_date: str, home_abbr: str, away_abbr: str) -> dict[str, 
         return None
 
 
+def _run_nba_v2(cutoff_date: str, home_abbr: str, away_abbr: str) -> dict[str, Any] | None:
+    """NBAGradientBoost v2 payload when artifacts + season context exist."""
+    try:
+        from web.hockey_pred_model import _cutoff_to_iso
+        from web.nba_v2.live import artifacts_available, predict_matchup_v2
+
+        if not artifacts_available():
+            return None
+        day_iso = _cutoff_to_iso(cutoff_date)
+        if not day_iso:
+            return None
+        return predict_matchup_v2(day_iso, home_abbr, away_abbr)
+    except Exception:  # noqa: BLE001 - v2 layer must never break the slate
+        return None
+
+
 def _blend_basketball_matrix_only(
     *,
     league: str,
@@ -768,15 +784,38 @@ def _blend_basketball_matrix_only(
 ) -> dict[str, Any]:
     """Basketball display uses BasketballMatrix only; legacy/power feed ensemble features.
 
-    WNBA routes to WNBAGradientBoost v2 (full-history walk-forward model) when
-    artifacts are available, keeping BasketballMatrix as the fallback.
+    NBA/WNBA route to GradientBoost v2 when artifacts are available, keeping
+    BasketballMatrix as the fallback.
     """
-    if league.lower() == "wnba":
-        v2_payload = _run_wnba_v2(cutoff_date, home_abbr, away_abbr)
+    league_key = league.lower()
+    if league_key == "nba":
+        v2_payload = _run_nba_v2(cutoff_date, home_abbr, away_abbr)
         if v2_payload and v2_payload.get("model_version") == "v2":
             home_prob = float(v2_payload["home_win_probability"])
             total, win_prob = home_win_prob_to_total_score(home_prob)
             result: dict[str, Any] = {
+                "algorithm": str(v2_payload.get("algorithm") or "NBAGradientBoost v2"),
+                "blend_mode": "nba_v2",
+                "blend_layers": 1,
+                "blend_weights": {"basketball_pred": 1.0},
+                "basketball_pred": v2_payload,
+                "blended_home_win_probability": round(home_prob, 2),
+                "total_score": round(total, 2),
+                "win_probability": round(win_prob, 2),
+                "favorite_side": "home" if total <= 0 else "away",
+                "model_version": "v2",
+            }
+            if v2_payload.get("predicted_margin") is not None:
+                result["home_spread_margin"] = round(
+                    -float(v2_payload["predicted_margin"]), 2
+                )
+            return result
+    if league_key == "wnba":
+        v2_payload = _run_wnba_v2(cutoff_date, home_abbr, away_abbr)
+        if v2_payload and v2_payload.get("model_version") == "v2":
+            home_prob = float(v2_payload["home_win_probability"])
+            total, win_prob = home_win_prob_to_total_score(home_prob)
+            result = {
                 "algorithm": str(v2_payload.get("algorithm") or "WNBAGradientBoost v2"),
                 "blend_mode": "wnba_v2",
                 "blend_layers": 1,
