@@ -40,12 +40,13 @@ class Universal_Functions:
 		years=os.listdir("./"+str(self.league)+"/team_data/")
 		end_year=str(end_year)
 		end_year_int=int(end_year) if end_year.isdigit() else 0
-		for x in range(0, len(years)):
-			year=years[x]
-
-			if not year.isdigit():
-				continue
-
+		# Sort ascending so earlier seasons always load before the cutoff year.
+		# Unsorted os.listdir order differs across OS/filesystems and can skip history.
+		years = sorted(
+			(year for year in years if year.isdigit()),
+			key=lambda value: int(value),
+		)
+		for year in years:
 			if os.path.isdir("./"+str(self.league)+"/team_data/"+year) and reached_end==False and int(year)<=end_year_int:
 				path="./"+str(self.league)+"/team_data/"+year+"/"+team[1]+".csv"
 				contents=self.read_from_csv(path)
