@@ -535,6 +535,21 @@ def _prewarm_league_models(
                         "error": f"MLB v2 prewarm failed ({cutoff}): {exc}",
                     }
                 )
+        if league.lower() == "nhl":
+            try:
+                from web.hockey_pred_model import _cutoff_to_iso as _nhl_cutoff_to_iso
+                from web.nhl_v2.live import get_live_context as _nhl_live_context
+
+                day_iso = _nhl_cutoff_to_iso(cutoff)
+                if day_iso:
+                    _nhl_live_context(day_iso)
+            except Exception as exc:  # noqa: BLE001
+                errors.append(
+                    {
+                        "league": league,
+                        "error": f"NHL v2 prewarm failed ({cutoff}): {exc}",
+                    }
+                )
         if is_football_league(league):
             try:
                 get_football_pred_context(league, cutoff)

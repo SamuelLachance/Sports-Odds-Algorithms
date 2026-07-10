@@ -23,5 +23,17 @@
     "note": "MLB v2 walk-forward backtest (scripts/backtest_mlb_bets.py): raw model-market gap >= 6 pp (6.7 pp after 1.12x decorrelation), prices -200..+200. Opening-line ROI +35% (2024-2026, CLV +21.8%); closing-line floor -3.2%. Bets recorded in the morning sit between those brackets.",
     "backtest_roi_pct": 35.23,
     "backtest_bets": 1048
+  },
+  "nhl": {
+    "bet_type": "moneyline",
+    "min_market_gap_pp": 7.8,
+    "min_win_confidence_pp": 0.0,
+    "min_ev_pct": 2.0,
+    "ml_lo": -250,
+    "ml_hi": 250,
+    "enabled": true,
+    "note": "NHL v2 walk-forward backtest (scripts/backtest_nhl_bets.py): raw model-market gap >= 7 pp (7.8 pp after 1.12x decorrelation), prices -250..+250. Opening-line ROI +5.7% with all 3 open-odds seasons positive (2023-2025, CLV +3.96%, 71% positive-CLV bets); closing-line 12-season ROI +1.96%. Bets recorded in the morning sit between the open and close.",
+    "backtest_roi_pct": 5.67,
+    "backtest_bets": 649
   }
 }

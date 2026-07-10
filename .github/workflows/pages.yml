@@ -84,6 +84,19 @@ jobs:
             pages-api-${{ hashFiles('web/sports_db/**', 'web/daily_service.py', 'web/tracking_service.py', 'web/predict_service.py', 'data/ratings/**') }}-
             pages-api-
 
+      - name: Compute cache date
+        id: cache_date
+        run: echo "today=$(date -u +%Y%m%d)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore NHL v2 live cache (MoneyPuck daily slices)
+        uses: actions/cache@v4
+        with:
+          path: .build-cache/nhl-v2-live
+          key: nhl-v2-live-${{ steps.cache_date.outputs.today }}-${{ github.run_id }}
+          restore-keys: |
+            nhl-v2-live-${{ steps.cache_date.outputs.today }}-
+            nhl-v2-live-
+
       - name: Build static site
         run: python scripts/build_gh_pages.py
 

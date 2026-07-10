@@ -1,16 +1,16 @@
-"""Build NHL closing moneylines from ESPN's core odds API (median consensus)."""
+"""Build NHL open/close moneylines + totals from ESPN's core odds API (median consensus)."""
 
 from __future__ import annotations
 
 import json
+import statistics
 import time
-import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, timedelta
 from pathlib import Path
 from typing import Any, Iterator
 
-from web.nba_odds_espn import _consensus, _get_json, _valid_american
+from web.nba_odds_espn import _get_json, _nested_american, _to_float, _valid_american
 from web.season_games import _normalize_abbr
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -34,12 +34,90 @@ CLOSING_FIELDS = (
     "away_key",
     "home_close_ml",
     "away_close_ml",
+    "home_open_ml",
+    "away_open_ml",
     "home_close_spread",
     "away_close_spread",
     "home_spread_odds",
     "away_spread_odds",
+    "close_total",
+    "open_total",
+    "n_books",
     "source",
 )
+
+
+def _median(values: list[float | None]) -> float | None:
+    clean = [v for v in values if v is not None]
+    return statistics.median(clean) if clean else None
+
+
+def _provider_line_nhl(item: dict[str, Any]) -> dict[str, float | None]:
+    """One book's home-oriented NHL lines: open/close ML, puck line, totals."""
+    home = item.get("homeTeamOdds") or {}
+    away = item.get("awayTeamOdds") or {}
+
+    home_close_ml = _valid_american(_nested_american(home, "close", "moneyLine"))
+    if home_close_ml is None:
+        home_close_ml = _valid_american(_to_float(home.get("moneyLine")))
+    away_close_ml = _valid_american(_nested_american(away, "close", "moneyLine"))
+    if away_close_ml is None:
+        away_close_ml = _valid_american(_to_float(away.get("moneyLine")))
+
+    home_open_ml = _valid_american(_nested_american(home, "open", "moneyLine"))
+    away_open_ml = _valid_american(_nested_american(away, "open", "moneyLine"))
+
+    home_close_spread = _nested_american(home, "close", "pointSpread")
+    if home_close_spread is None:
+        raw_spread = _to_float(item.get("spread"))
+        if raw_spread is not None:
+            magnitude = abs(raw_spread)
+            if home.get("favorite"):
+                home_close_spread = -magnitude
+            elif away.get("favorite"):
+                home_close_spread = magnitude
+            else:
+                home_close_spread = raw_spread
+    away_close_spread = _nested_american(away, "close", "pointSpread")
+    if away_close_spread is None and home_close_spread is not None:
+        away_close_spread = -home_close_spread
+
+    close_total = _to_float(((item.get("close") or {}) or {}).get("total"))
+    if close_total is None:
+        close_total = _to_float(item.get("overUnder"))
+    open_total = _to_float(((item.get("open") or {}) or {}).get("total"))
+
+    return {
+        "home_close_ml": home_close_ml,
+        "away_close_ml": away_close_ml,
+        "home_open_ml": home_open_ml,
+        "away_open_ml": away_open_ml,
+        "home_close_spread": home_close_spread,
+        "away_close_spread": away_close_spread,
+        "home_spread_odds": _valid_american(_nested_american(home, "close", "spread")),
+        "away_spread_odds": _valid_american(_nested_american(away, "close", "spread")),
+        "close_total": close_total,
+        "open_total": open_total,
+    }
+
+
+def _consensus_nhl(items: list[dict[str, Any]]) -> dict[str, Any]:
+    lines = [_provider_line_nhl(item) for item in items]
+    keys = (
+        "home_close_ml",
+        "away_close_ml",
+        "home_open_ml",
+        "away_open_ml",
+        "home_close_spread",
+        "away_close_spread",
+        "home_spread_odds",
+        "away_spread_odds",
+        "close_total",
+        "open_total",
+    )
+    consensus: dict[str, Any] = {key: _median([line[key] for line in lines]) for key in keys}
+    consensus["n_books"] = len(items)
+    return consensus
 
 
 def _iter_completed_events(start: date, end: date) -> Iterator[dict[str, Any]]:
@@ -89,7 +167,10 @@ def collect_day_rows(day: date, *, use_cache: bool = True) -> list[dict[str, Any
     cache_file = _cache_path(datestr)
     if use_cache and cache_file.is_file():
         try:
-            return json.loads(cache_file.read_text(encoding="utf-8"))
+            cached = json.loads(cache_file.read_text(encoding="utf-8"))
+            # Older cache entries predate the open/close format.
+            if not cached or "home_open_ml" in cached[0]:
+                return cached
         except (json.JSONDecodeError, OSError):
             pass
 
@@ -107,21 +188,30 @@ def collect_day_rows(day: date, *, use_cache: bool = True) -> list[dict[str, Any
         ]
         if not items:
             return None
-        consensus = _consensus(items)
+        consensus = _consensus_nhl(items)
         home_ml = _valid_american(consensus.get("home_close_ml"))
         away_ml = _valid_american(consensus.get("away_close_ml"))
         if home_ml is None and away_ml is None:
             return None
+
+        def _int_or_none(value: Any) -> int | None:
+            return int(round(value)) if value is not None else None
+
         return {
             "date": event["date"],
             "home_key": event["home_key"],
             "away_key": event["away_key"],
-            "home_close_ml": int(round(home_ml)) if home_ml is not None else None,
-            "away_close_ml": int(round(away_ml)) if away_ml is not None else None,
+            "home_close_ml": _int_or_none(home_ml),
+            "away_close_ml": _int_or_none(away_ml),
+            "home_open_ml": _int_or_none(consensus.get("home_open_ml")),
+            "away_open_ml": _int_or_none(consensus.get("away_open_ml")),
             "home_close_spread": consensus.get("home_close_spread"),
             "away_close_spread": consensus.get("away_close_spread"),
             "home_spread_odds": int(round(consensus["home_spread_odds"] or -110)),
             "away_spread_odds": int(round(consensus["away_spread_odds"] or -110)),
+            "close_total": consensus.get("close_total"),
+            "open_total": consensus.get("open_total"),
+            "n_books": consensus.get("n_books"),
             "source": "espn-core",
         }
 
@@ -135,6 +225,7 @@ def collect_day_rows(day: date, *, use_cache: bool = True) -> list[dict[str, Any
 
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     cache_file.write_text(json.dumps(rows), encoding="utf-8")
+    time.sleep(0.05)
     return rows
 
 

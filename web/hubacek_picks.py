@@ -8,7 +8,9 @@ a per-bet-type confidence bar.
 Per-league overrides (backtest-tuned) are read from data/pick_strategy.json:
 ``min_market_gap_pp``, ``min_win_confidence_pp``, ``min_ev_pct``, ``ml_lo``,
 ``ml_hi``. MLB uses a 6.7 pp decorrelated gap (≈6 pp raw), no confidence bar,
-and a [-200, +200] price window from the walk-forward bet backtest.
+and a [-200, +200] price window; NHL uses a 7.8 pp decorrelated gap (≈7 pp
+raw), no confidence bar, and a [-250, +250] window — both from walk-forward
+bet backtests against opening/closing lines.
 """
 
 from __future__ import annotations

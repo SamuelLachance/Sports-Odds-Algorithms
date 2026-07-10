@@ -372,7 +372,8 @@ def test_model_agreement_soccer_single_model() -> None:
     assert agreement["agreed"] is True
 
 
-def test_blend_nhl_algo_v1_only() -> None:
+def test_blend_nhl_algo_v1_fallback_when_v2_unavailable() -> None:
+    """Historic cutoffs predate the v2 snapshots -> Algo V1 fallback."""
     result = blend_predictions(
         legacy_total_score=-4.5,
         legacy_win_probability=58.0,
@@ -389,6 +390,74 @@ def test_blend_nhl_algo_v1_only() -> None:
     assert result["blended_home_win_probability"] == 58.0
     assert result.get("hockey_pred") is None
     assert result.get("power") is None
+
+
+def test_blend_nhl_v2_single_layer_when_available() -> None:
+    import web.blend_service as blend_module
+
+    original = blend_module.run_hockey_pred_model
+    try:
+        blend_module.run_hockey_pred_model = lambda *_a, **_k: {
+            "algorithm": "NHLGradientBoost",
+            "model_version": "v2",
+            "market_decorrelated": True,
+            "market_decorrelation_source": "moneyline",
+            "pre_decorrelation_home_win_probability": 60.0,
+            "home_win_probability": 63.5,
+            "away_win_probability": 36.5,
+            "expected_home_goals": 3.4,
+            "expected_away_goals": 2.6,
+            "predicted_margin": 0.8,
+            "home_goalie": "Starter A",
+            "away_goalie": "Starter B",
+        }
+        result = blend_predictions(
+            legacy_total_score=-4.5,
+            legacy_win_probability=58.0,
+            league="nhl",
+            cutoff_date="1-15-2026",
+            home_abbr="tor",
+            away_abbr="bos",
+            home_moneyline=-140,
+            away_moneyline=120,
+        )
+    finally:
+        blend_module.run_hockey_pred_model = original
+
+    assert result["algorithm"] == "NHLGradientBoost"
+    assert result["blend_mode"] == "nhl_v2"
+    assert result["blend_layers"] == 1
+    assert result["blended_home_win_probability"] == 63.5
+    assert result["market_decorrelated"] is True
+    assert result["hockey_pred"]["home_goalie"] == "Starter A"
+    assert result["home_spread_margin"] == -0.8
+    assert result.get("legacy") is None
+
+
+def test_blend_nhl_puckcast_payload_falls_back_to_algo_v1() -> None:
+    """Non-v2 hockey payloads (PuckCast) keep NHL on Algo V1 for the blend."""
+    import web.blend_service as blend_module
+
+    original = blend_module.run_hockey_pred_model
+    try:
+        blend_module.run_hockey_pred_model = lambda *_a, **_k: {
+            "algorithm": "HockeyPuckCast",
+            "home_win_probability": 61.0,
+            "away_win_probability": 39.0,
+        }
+        result = blend_predictions(
+            legacy_total_score=-4.5,
+            legacy_win_probability=58.0,
+            league="nhl",
+            cutoff_date="1-15-2026",
+            home_abbr="tor",
+            away_abbr="bos",
+        )
+    finally:
+        blend_module.run_hockey_pred_model = original
+
+    assert result["blend_mode"] == "algo_v1"
+    assert result["algorithm"] == "Algo_V1"
 
 
 def test_blend_hockey_algo_v1_all_leagues() -> None:

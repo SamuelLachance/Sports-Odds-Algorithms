@@ -213,6 +213,9 @@ const SPORT_ALGO_LABELS = {
   MLBRunCast: "MLB RunCast win probability",
   MLBGradientBoost:
     "MLB GradientBoost v2 (statsapi features + XGB/LR ensemble, isotonic-calibrated)",
+  NHLGradientBoost:
+    "NHL GradientBoost v2 (MoneyPuck xG + goalie GSAx + XGB/LR ensemble, isotonic-calibrated)",
+  HockeyPuckCast: "PuckCast xG win probability",
   SoccerPathA: "Soccer Path A 1X2 (Elo + Pi + Dixon–Coles + XGB + context)",
   Unified: "Unified model",
 };
@@ -222,6 +225,8 @@ const SPORT_LAYER_LABELS = {
   BasketballMatrix: "BasketballMatrix",
   MLBRunCast: "MLB RunCast",
   MLBGradientBoost: "MLB GradientBoost v2",
+  NHLGradientBoost: "NHL GradientBoost v2",
+  HockeyPuckCast: "PuckCast",
   SharpBaseball: "SharpBaseball",
   SoccerPathA: "Soccer Path A",
   SharpSoccer: "Soccer Path A",
@@ -241,6 +246,8 @@ function primaryAlgoShort(model) {
     BasketballMatrix: "Matrix",
     MLBRunCast: "MLB RunCast",
     MLBGradientBoost: "MLB GB v2",
+    NHLGradientBoost: "NHL GB v2",
+    HockeyPuckCast: "PuckCast",
     SoccerPathA: "Soccer Path A",
     Unified: "Unified",
   };
@@ -740,9 +747,32 @@ function algoBreakdown(m, game) {
     const name = sportLayerDisplayName(hockey) || "Hockey";
     const xg =
       hockey.expected_home_goals != null
-        ? ` · xG ${hockey.expected_away_goals}-${hockey.expected_home_goals}`
+        ? ` · proj goals ${hockey.expected_away_goals}-${hockey.expected_home_goals}`
         : "";
-    parts.push(`${name}: ${hockey.home_win_probability}% home${xg}`);
+    const goalies =
+      hockey.away_goalie || hockey.home_goalie
+        ? ` · G: ${hockey.away_goalie || "TBD"}${hockey.away_goalie_confirmed ? " ✓" : ""} vs ${hockey.home_goalie || "TBD"}${hockey.home_goalie_confirmed ? " ✓" : ""}`
+        : "";
+    const gsax =
+      hockey.home_goalie_gsax100 != null && hockey.away_goalie_gsax100 != null
+        ? ` · GSAx/100 ${formatRatingDiff(hockey.away_goalie_gsax100, 2)} vs ${formatRatingDiff(hockey.home_goalie_gsax100, 2)}`
+        : "";
+    const elo =
+      hockey.home_elo != null && hockey.away_elo != null
+        ? ` · Elo ${formatRating(hockey.away_elo, 0)} vs ${formatRating(hockey.home_elo, 0)}`
+        : "";
+    const xgRates =
+      hockey.home_xgf_pg != null && hockey.away_xgf_pg != null
+        ? ` · xGF/gm ${formatRating(hockey.away_xgf_pg, 2)} vs ${formatRating(hockey.home_xgf_pg, 2)}`
+        : "";
+    const rest = [];
+    if (hockey.away_b2b) rest.push("away B2B");
+    if (hockey.home_b2b) rest.push("home B2B");
+    const restTag = rest.length ? ` · ${rest.join(", ")}` : "";
+    const decorr = hockey.market_decorrelated ? " · pick decorr" : "";
+    parts.push(
+      `${name}: ${hockey.home_win_probability}% home${xg}${goalies}${gsax}${elo}${xgRates}${restTag}${decorr}`,
+    );
   }
   if (!singleModel && football) {
     parts.push(`nfelo: ${football.home_win_probability}% home`);
@@ -926,7 +956,7 @@ function viewDashboard() {
       <div class="tracking-hero-top">
         <div>
           <h1>Sharp Odds dashboard</h1>
-          <p>Today's slate · ${dateLabel} · Per-sport models across ${leagues.length || 0} leagues (NBA uses EnsembleML; basketball, MLB, and soccer use dedicated sport models; hockey uses Algo V1).</p>
+          <p>Today's slate · ${dateLabel} · Per-sport models across ${leagues.length || 0} leagues (NBA uses EnsembleML; basketball, MLB, NHL, and soccer use dedicated sport models; college hockey uses Algo V1).</p>
           <p class="muted">${slateBreakdown || "No games on today's slate yet."}</p>
         </div>
         <div class="tracking-hero-stats home-stats">

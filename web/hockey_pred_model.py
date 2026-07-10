@@ -363,6 +363,94 @@ def get_hockey_pred_context(league: str, cutoff_date: str) -> dict[str, Any] | N
     return build_hockey_model(dated_games, league, cutoff_date)
 
 
+def _cutoff_to_iso(cutoff_date: str) -> str | None:
+    """Accepts MM-DD-YYYY (legacy cutoff) or YYYY-MM-DD; returns ISO date."""
+    parts = str(cutoff_date).split("-")
+    if len(parts) != 3:
+        return None
+    try:
+        a, b, c = int(parts[0]), int(parts[1]), int(parts[2])
+    except ValueError:
+        return None
+    if a >= 1900:  # already ISO
+        return f"{a:04d}-{b:02d}-{c:02d}"
+    return f"{c:04d}-{a:02d}-{b:02d}"
+
+
+def _run_nhl_v2(
+    league: str,
+    cutoff_date: str,
+    home_abbr: str,
+    away_abbr: str,
+    *,
+    home_moneyline: int | None = None,
+    away_moneyline: int | None = None,
+) -> dict[str, Any] | None:
+    """Persisted NHL v2 (MoneyPuck xG feature engine + gradient boost ensemble)."""
+    if league.lower() != "nhl":
+        return None
+    game_date = _cutoff_to_iso(cutoff_date)
+    if not game_date:
+        return None
+    try:
+        from web.nhl_v2.live import predict_matchup_v2
+
+        v2 = predict_matchup_v2(game_date, home_abbr, away_abbr)
+    except Exception:  # noqa: BLE001 - any v2 failure falls back to PuckCast
+        return None
+    if not v2:
+        return None
+
+    calibrated_prob = float(v2["home_win_probability"])  # 0-100, calibrated
+    home_prob = calibrated_prob
+    market_decorrelated = False
+    if home_moneyline is not None and away_moneyline is not None:
+        _away_mkt, market_home = devig_two_way_probs(away_moneyline, home_moneyline)
+        if market_home is not None:
+            home_prob = decorrelate_binary(calibrated_prob, market_home)
+            market_decorrelated = True
+
+    payload: dict[str, Any] = {
+        "algorithm": "NHLGradientBoost",
+        "model_version": "v2",
+        "source": "moneypuck-xgb-lr-isotonic",
+        "market_decorrelated": market_decorrelated,
+        "pre_decorrelation_home_win_probability": round(calibrated_prob, 2),
+        "raw_home_win_probability": round(calibrated_prob, 2),
+        "home_win_probability": round(home_prob, 2),
+        "away_win_probability": round(100.0 - home_prob, 2),
+        "expected_home_goals": v2.get("predicted_home_goals"),
+        "expected_away_goals": v2.get("predicted_away_goals"),
+        "predicted_margin": v2.get("predicted_margin"),
+        "home_games": v2.get("home_games"),
+        "away_games": v2.get("away_games"),
+        "home_elo": v2.get("home_elo"),
+        "away_elo": v2.get("away_elo"),
+        "home_xgf_pg": v2.get("home_xgf_pg"),
+        "home_xga_pg": v2.get("home_xga_pg"),
+        "away_xgf_pg": v2.get("away_xgf_pg"),
+        "away_xga_pg": v2.get("away_xga_pg"),
+        "home_goalie": v2.get("home_goalie"),
+        "away_goalie": v2.get("away_goalie"),
+        "home_goalie_confirmed": v2.get("home_goalie_confirmed"),
+        "away_goalie_confirmed": v2.get("away_goalie_confirmed"),
+        "home_goalie_gsax100": v2.get("home_goalie_gsax100"),
+        "away_goalie_gsax100": v2.get("away_goalie_gsax100"),
+        "home_rest_days": v2.get("home_rest_days"),
+        "away_rest_days": v2.get("away_rest_days"),
+        "home_b2b": v2.get("home_b2b"),
+        "away_b2b": v2.get("away_b2b"),
+        "features_used": v2.get("features_used"),
+    }
+    total_goals = None
+    if v2.get("predicted_home_goals") is not None and v2.get("predicted_away_goals") is not None:
+        total_goals = round(
+            float(v2["predicted_home_goals"]) + float(v2["predicted_away_goals"]), 2
+        )
+    payload["expected_total_goals"] = total_goals
+    return payload
+
+
 def run_hockey_pred_model(
     league: str,
     cutoff_date: str,
@@ -372,7 +460,18 @@ def run_hockey_pred_model(
     home_moneyline: int | None = None,
     away_moneyline: int | None = None,
 ) -> dict[str, Any] | None:
-    """Run PuckCast-style hockey model for any hockey league matchup."""
+    """Run NHL v2 when artifacts exist; PuckCast otherwise (college, fallback)."""
+    v2_payload = _run_nhl_v2(
+        league,
+        cutoff_date,
+        home_abbr,
+        away_abbr,
+        home_moneyline=home_moneyline,
+        away_moneyline=away_moneyline,
+    )
+    if v2_payload is not None:
+        return v2_payload
+
     context = get_hockey_pred_context(league, cutoff_date)
     if not context:
         return None

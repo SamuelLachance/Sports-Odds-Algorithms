@@ -41,6 +41,12 @@ docs_old_*/
 data/mlb_history/
 data/models/mlb_v2/oos_predictions.csv
 
+# NHL v2 raw history + rebuildable outputs (fetch via scripts/fetch_nhl_history.py,
+# rebuild via scripts/build_nhl_training_table.py). Model artifacts in
+# data/models/nhl_v2/ ARE tracked; the large OOS prediction dump is not.
+data/nhl_history/
+data/models/nhl_v2/oos_predictions.csv
+
 # Scratch / probe scripts (local diagnostics only)
 scripts/_diag_*.py
 scripts/_probe_*.py

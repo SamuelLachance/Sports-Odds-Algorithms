@@ -188,6 +188,93 @@ def test_mlb_official_picks_use_moneyline_decorrelation() -> None:
     assert picks[0].bet_type == "moneyline"
 
 
+def test_nhl_pick_thresholds_use_backtested_policy() -> None:
+    """NHL gates come from data/pick_strategy.json (walk-forward backtest)."""
+    thresholds = get_pick_thresholds("nhl")
+    assert thresholds["min_market_gap_pp"] >= 7.0
+    assert thresholds["min_win_confidence_pp"] == 0.0
+    assert thresholds["ml_lo"] == -250
+    assert thresholds["ml_hi"] == 250
+    assert thresholds["bet_type"] == "moneyline"
+
+
+def test_nhl_official_picks_use_moneyline_decorrelation() -> None:
+    min_gap = get_pick_thresholds("nhl")["min_market_gap_pp"]
+    pre_home = 70.0
+    decor_home = decorrelate_binary(pre_home, 55.0)
+    # devig(130/-150) home ≈ 58.0% -> ensure the scenario clears the NHL gap gate
+    assert decor_home - 58.0 >= min_gap
+    blended = {
+        "total_score": -decor_home,
+        "win_probability": decor_home,
+        "favorite_side": "home",
+        "blended_home_win_probability": decor_home,
+        "hockey_pred": {
+            "algorithm": "NHLGradientBoost",
+            "model_version": "v2",
+            "market_decorrelated": True,
+            "market_decorrelation_source": "moneyline",
+            "pre_decorrelation_home_win_probability": pre_home,
+            "home_win_probability": decor_home,
+        },
+    }
+    picks = evaluate_official_picks_for_game(
+        league="nhl",
+        away_name="Away",
+        home_name="Home",
+        away_slug="away",
+        home_slug="home",
+        total_score=-decor_home,
+        win_probability=decor_home,
+        blended=blended,
+        away_market=130,
+        home_market=-150,
+        consensus_spread=None,
+        away_spread_odds=None,
+        home_spread_odds=None,
+    )
+    assert picks
+    assert picks[0].strategy == "hubacek"
+    assert picks[0].bet_type == "moneyline"
+    assert picks[0].side == "home"
+
+
+def test_nhl_official_picks_respect_ml_price_window() -> None:
+    """NHL moneyline picks outside [-250, +250] are rejected."""
+    pre_home = 85.0
+    decor_home = decorrelate_binary(pre_home, 72.0)
+    blended = {
+        "total_score": -decor_home,
+        "win_probability": decor_home,
+        "favorite_side": "home",
+        "blended_home_win_probability": decor_home,
+        "hockey_pred": {
+            "algorithm": "NHLGradientBoost",
+            "model_version": "v2",
+            "market_decorrelated": True,
+            "market_decorrelation_source": "moneyline",
+            "pre_decorrelation_home_win_probability": pre_home,
+            "home_win_probability": decor_home,
+        },
+    }
+    picks = evaluate_official_picks_for_game(
+        league="nhl",
+        away_name="Away",
+        home_name="Home",
+        away_slug="away",
+        home_slug="home",
+        total_score=-decor_home,
+        win_probability=decor_home,
+        blended=blended,
+        away_market=240,
+        home_market=-290,
+        consensus_spread=None,
+        away_spread_odds=None,
+        home_spread_odds=None,
+    )
+    assert not [p for p in picks if p.side == "home"]
+
+
 def test_mlb_official_picks_respect_ml_price_window() -> None:
     """MLB moneyline picks outside [-200, +200] are rejected."""
     pre_home = 80.0

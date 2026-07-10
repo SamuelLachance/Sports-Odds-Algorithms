@@ -20,7 +20,7 @@ from web.football_pred_model import (
     is_football_league,
     run_football_pred_model,
 )
-from web.hockey_pred_model import is_hockey_league
+from web.hockey_pred_model import is_hockey_league, run_hockey_pred_model
 from web.bet_advisor import (
     _odds_edge,
     model_home_margin,
@@ -679,6 +679,62 @@ def _blend_algo_v1_hockey_only(
     }
 
 
+def _blend_hockey_pred_or_algo_v1(
+    *,
+    league: str,
+    cutoff_date: str,
+    home_abbr: str,
+    away_abbr: str,
+    legacy_total_score: float,
+    legacy_win_probability: float,
+    home_moneyline: int | None = None,
+    away_moneyline: int | None = None,
+) -> dict[str, Any]:
+    """NHL uses NHLGradientBoost v2 when artifacts exist; Algo V1 otherwise.
+
+    College hockey always stays on Algo V1 (no v2 artifacts for those leagues).
+    """
+    sport_payload: dict[str, Any] | None = None
+    if league.lower() == "nhl":
+        try:
+            sport_payload = run_hockey_pred_model(
+                league,
+                cutoff_date,
+                home_abbr,
+                away_abbr,
+                home_moneyline=home_moneyline,
+                away_moneyline=away_moneyline,
+            )
+        except Exception:  # noqa: BLE001 - hockey layer must never break the slate
+            sport_payload = None
+    if not sport_payload or sport_payload.get("model_version") != "v2":
+        return _blend_algo_v1_hockey_only(
+            legacy_total_score=legacy_total_score,
+            legacy_win_probability=legacy_win_probability,
+        )
+
+    home_prob = float(sport_payload["home_win_probability"])
+    total, win_prob = home_win_prob_to_total_score(home_prob)
+    algorithm = str(sport_payload.get("algorithm") or "NHLGradientBoost")
+    result: dict[str, Any] = {
+        "algorithm": algorithm,
+        "blend_mode": "nhl_v2",
+        "blend_layers": 1,
+        "blend_weights": {"hockey_pred": 1.0},
+        "hockey_pred": sport_payload,
+        "blended_home_win_probability": round(home_prob, 2),
+        "total_score": round(total, 2),
+        "win_probability": round(win_prob, 2),
+        "favorite_side": "home" if total <= 0 else "away",
+        "model_version": "v2",
+    }
+    if sport_payload.get("market_decorrelated"):
+        result["market_decorrelated"] = True
+    if sport_payload.get("predicted_margin") is not None:
+        result["home_spread_margin"] = round(-float(sport_payload["predicted_margin"]), 2)
+    return result
+
+
 def _blend_basketball_matrix_only(
     *,
     league: str,
@@ -943,9 +999,15 @@ def blend_predictions(
         )
 
     if is_hockey_league(league):
-        return _blend_algo_v1_hockey_only(
+        return _blend_hockey_pred_or_algo_v1(
+            league=league,
+            cutoff_date=cutoff_date,
+            home_abbr=home_abbr,
+            away_abbr=away_abbr,
             legacy_total_score=legacy_total_score,
             legacy_win_probability=legacy_win_probability,
+            home_moneyline=home_moneyline,
+            away_moneyline=away_moneyline,
         )
 
     if is_mlb_league(league):
