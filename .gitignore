@@ -53,6 +53,16 @@ data/models/nhl_v2/oos_predictions.csv
 data/soccer_history/
 data/models/soccer_v2/oos_predictions.csv
 
+# WNBA v2 raw history + rebuildable outputs (fetch via scripts/fetch_wnba_history.py,
+# rebuild via scripts/build_wnba_training_table.py). Model artifacts in
+# data/models/wnba_v2/ ARE tracked; the large OOS prediction dump is not.
+data/wnba_history/
+data/models/wnba_v2/oos_predictions.csv
+
+# football-data.co.uk runtime cache (auto-downloaded on demand by
+# web/football_data_uk.py)
+data/supplemental/football-data-uk/
+
 # Scratch probes
 scripts/tmp_probe_*.py
 

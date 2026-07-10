@@ -219,6 +219,8 @@ const SPORT_ALGO_LABELS = {
   SoccerPathA: "Soccer Path A 1X2 (Elo + Pi + Dixon–Coles + XGB + context)",
   "SoccerGradientBoost v2":
     "Soccer GradientBoost v2 1X2 (25-season top-5 history, Elo + Dixon–Coles + SoT xG + XGB/LR ensemble, isotonic-calibrated)",
+  "WNBAGradientBoost v2":
+    "WNBA GradientBoost v2 (30-season history, Elo + four factors + pace + rest/travel, XGB/LR ensemble, isotonic-calibrated)",
   Unified: "Unified model",
 };
 
@@ -233,6 +235,7 @@ const SPORT_LAYER_LABELS = {
   SoccerPathA: "Soccer Path A",
   SharpSoccer: "Soccer Path A",
   "SoccerGradientBoost v2": "Soccer GradientBoost v2",
+  "WNBAGradientBoost v2": "WNBA GradientBoost v2",
 };
 
 function primaryAlgoLabel(model) {
@@ -253,6 +256,7 @@ function primaryAlgoShort(model) {
     HockeyPuckCast: "PuckCast",
     SoccerPathA: "Soccer Path A",
     "SoccerGradientBoost v2": "Soccer GB v2",
+    "WNBAGradientBoost v2": "WNBA GB v2",
     Unified: "Unified",
   };
   return short[model.algorithm] || model.algorithm || "Algo V2";
@@ -714,8 +718,26 @@ function algoBreakdown(m, game) {
       basketball.predicted_pace != null
         ? ` pace ${formatRating(basketball.predicted_pace)}`
         : "";
+    const elo =
+      basketball.home_elo != null && basketball.away_elo != null
+        ? ` · Elo ${formatRating(basketball.away_elo, 0)}-${formatRating(basketball.home_elo, 0)}`
+        : "";
+    const netRtg =
+      basketball.home_net_rtg != null && basketball.away_net_rtg != null
+        ? ` · net rtg ${formatRatingDiff(basketball.away_net_rtg)}/${formatRatingDiff(basketball.home_net_rtg)}`
+        : "";
+    const teamPace =
+      basketball.predicted_pace == null &&
+      basketball.home_pace != null &&
+      basketball.away_pace != null
+        ? ` · pace ${formatRating((Number(basketball.home_pace) + Number(basketball.away_pace)) / 2)}`
+        : "";
+    const b2b =
+      basketball.home_b2b || basketball.away_b2b
+        ? ` · B2B ${[basketball.away_b2b ? "away" : null, basketball.home_b2b ? "home" : null].filter(Boolean).join("+")}`
+        : "";
     parts.push(
-      `${name}: ${basketball.home_win_probability}% home${scores}${orPace}${pace}`,
+      `${name}: ${basketball.home_win_probability}% home${scores}${orPace}${pace}${elo}${netRtg}${teamPace}${b2b}`,
     );
   }
   if (baseball) {

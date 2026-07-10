@@ -63,7 +63,7 @@ from web.pick_strategy import (
 from web.predict_service import FACTOR_LABELS  # noqa: E402
 
 SINGLE_MODEL_BLEND_MODES = frozenset(
-    {"basketball_matrix", "mlb_runcast", "soccer_path_a"}
+    {"basketball_matrix", "mlb_runcast", "soccer_path_a", "wnba_v2"}
 )
 
 
@@ -147,6 +147,42 @@ def _sport_layer_factors(blended: dict[str, Any], league: str) -> list[dict[str,
                     float(home_score) + float(away_score),
                 )
             )
+        home_elo = pred.get("home_elo")
+        away_elo = pred.get("away_elo")
+        if home_elo is not None and away_elo is not None:
+            factors.append(
+                _factor_entry(
+                    "elo_edge",
+                    "Elo edge (home − away)",
+                    round(float(home_elo) - float(away_elo), 1),
+                )
+            )
+        home_net = pred.get("home_net_rtg")
+        away_net = pred.get("away_net_rtg")
+        if home_net is not None and away_net is not None:
+            factors.append(
+                _factor_entry(
+                    "net_rating",
+                    "Net rating edge (home − away)",
+                    round(float(home_net) - float(away_net), 2),
+                )
+            )
+        if pace is None and pred.get("home_pace") is not None and pred.get("away_pace") is not None:
+            factors.append(
+                _factor_entry(
+                    "pace",
+                    "Projected pace (possessions)",
+                    round((float(pred["home_pace"]) + float(pred["away_pace"])) / 2.0, 1),
+                )
+            )
+        home_rest = pred.get("home_rest_days")
+        away_rest = pred.get("away_rest_days")
+        if home_rest is not None and away_rest is not None:
+            rest_edge = float(home_rest) - float(away_rest)
+            if abs(rest_edge) >= 1.0 or pred.get("home_b2b") or pred.get("away_b2b"):
+                factors.append(
+                    _factor_entry("rest_edge", "Rest days edge (home − away)", rest_edge)
+                )
         return factors
 
     if is_soccer_league(league):
@@ -501,15 +537,33 @@ def _prewarm_league_models(
                 {"league": league, "error": f"Power prewarm failed ({cutoff}): {exc}"}
             )
         if is_basketball_league(league):
-            try:
-                get_basketball_pred_context(league, cutoff)
-            except Exception as exc:  # noqa: BLE001
-                errors.append(
-                    {
-                        "league": league,
-                        "error": f"Basketball matrix prewarm failed ({cutoff}): {exc}",
-                    }
-                )
+            wnba_v2_ready = False
+            if league.lower() == "wnba":
+                try:
+                    from web.hockey_pred_model import _cutoff_to_iso as _wnba_cutoff_to_iso
+                    from web.wnba_v2.live import artifacts_available as _wnba_v2_available
+                    from web.wnba_v2.live import get_live_context as _wnba_live_context
+
+                    day_iso = _wnba_cutoff_to_iso(cutoff)
+                    if day_iso and _wnba_v2_available():
+                        wnba_v2_ready = _wnba_live_context(day_iso) is not None
+                except Exception as exc:  # noqa: BLE001
+                    errors.append(
+                        {
+                            "league": league,
+                            "error": f"WNBA v2 prewarm failed ({cutoff}): {exc}",
+                        }
+                    )
+            if not wnba_v2_ready:
+                try:
+                    get_basketball_pred_context(league, cutoff)
+                except Exception as exc:  # noqa: BLE001
+                    errors.append(
+                        {
+                            "league": league,
+                            "error": f"Basketball matrix prewarm failed ({cutoff}): {exc}",
+                        }
+                    )
         if is_baseball_league(league):
             try:
                 get_baseball_pred_context(league, cutoff)

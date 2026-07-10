@@ -20,10 +20,11 @@ MIN_SPREAD_POINT_EDGE = MIN_RECOMMENDED_EDGE / SPREAD_POINT_TO_EDGE
 
 # Std dev of (actual home margin − closing-spread-implied margin), per league.
 # NBA fitted on 13k closing lines (data/supplemental/closing-odds/nba.csv);
-# others use published market-residual values.
+# WNBA fitted on v2 walk-forward margin residuals (scripts/train_wnba_model.py,
+# 2010-2026 OOS); others use published market-residual values.
 SPREAD_MARGIN_SIGMA: dict[str, float] = {
     "nba": 13.26,
-    "wnba": 11.0,
+    "wnba": 12.58,
     "cbb": 12.0,
     "nfl": 13.5,
     "cfb": 15.5,
@@ -1054,7 +1055,7 @@ def evaluate_spread_picks(
         line = spread_line_for_side(consensus_spread, side)
         side_cover_prob = spread_cover_probability(point_edge, league)
         ev_pct = expected_value_pct(side_cover_prob, juice)
-        market_cover = american_implied_prob(juice)
+        market_cover = american_implied_prob(juice) * 100.0
 
         if hubacek_only:
             if not passes_hubacek_spread_pick_gate(

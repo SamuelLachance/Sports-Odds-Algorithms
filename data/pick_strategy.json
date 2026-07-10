@@ -1,5 +1,5 @@
 {
-  "policy": "Official picks use Hubáček gates: decorrelated model beats the de-vigged market by >= 2 pp, honest EV >= 2% (calibrated pre-decorrelation probability), and a per-bet-type confidence bar (20 pp moneyline, 10 pp baseball/soccer, 5 pp spread cover). Live thresholds live in web/hubacek_picks.py; per-league overrides (min_market_gap_pp, min_win_confidence_pp, min_ev_pct, ml_lo/ml_hi, allowed_sides) are stored here from walk-forward bet backtests.",
+  "policy": "Official picks use Hubáček gates: decorrelated model beats the de-vigged market by >= 2 pp, honest EV >= 2% (calibrated pre-decorrelation probability), and a per-bet-type confidence bar (20 pp moneyline, 10 pp baseball/soccer, 5 pp spread cover). Live thresholds live in web/hubacek_picks.py; per-league overrides (min_market_gap_pp, min_win_confidence_pp, min_ev_pct, ml_lo/ml_hi, allowed_sides, min_spread_cover_gap_pp, min_spread_confidence_pp) are stored here from walk-forward bet backtests.",
   "generated_at": "2026-07-10",
   "default": {
     "min_edge": 0,
@@ -23,6 +23,16 @@
     "note": "MLB v2 walk-forward backtest (scripts/backtest_mlb_bets.py): raw model-market gap >= 6 pp (6.7 pp after 1.12x decorrelation), prices -200..+200. Opening-line ROI +35% (2024-2026, CLV +21.8%); closing-line floor -3.2%. Bets recorded in the morning sit between those brackets.",
     "backtest_roi_pct": 35.23,
     "backtest_bets": 1048
+  },
+  "wnba": {
+    "bet_type": "spread",
+    "min_spread_cover_gap_pp": 8.0,
+    "min_spread_confidence_pp": 5.0,
+    "min_ev_pct": 2.0,
+    "enabled": true,
+    "note": "WNBA v2 walk-forward backtest (scripts/backtest_wnba_bets.py): pure margin model (sigma 12.58) cover probability vs the juice-implied break-even. At the opening spread a 10 pp gap returned +5.2% ROI (321 bets, all 3 open-odds seasons 2024-2026 positive) and an 8 pp gap +5.6% (405 bets, 4/4 seasons); consensus-close floor +1.6% at best book price (2018-2026). Live gate is 8 pp with a 5 pp confidence floor because morning bets are placed between the open and the close.",
+    "backtest_roi_pct": 5.22,
+    "backtest_bets": 321
   },
   "nhl": {
     "bet_type": "moneyline",

@@ -1,0 +1,40 @@
+{
+  "stake_mode": "kelly",
+  "kelly_fraction": 0.25,
+  "bet_type": "spread",
+  "margin_col": "model_margin",
+  "exec_price": "open",
+  "sigma": 12.579,
+  "min_cover_gap_pp": 10.0,
+  "min_point_edge": 0.0,
+  "model_variant": "pure",
+  "backtest": {
+    "bets": 321,
+    "staked_units": 963.0,
+    "profit_units": 50.3,
+    "roi_pct": 5.22,
+    "win_rate": 0.5483,
+    "max_drawdown_units": 40.9,
+    "seasons_positive": 3,
+    "seasons_total": 3,
+    "worst_season_roi": 2.8,
+    "median_season_roi": 3.19
+  },
+  "backtest_per_season": {
+    "2024": {
+      "bets": 112,
+      "roi_pct": 2.8,
+      "profit_units": 9.4
+    },
+    "2025": {
+      "bets": 138,
+      "roi_pct": 8.23,
+      "profit_units": 34.1
+    },
+    "2026": {
+      "bets": 71,
+      "roi_pct": 3.19,
+      "profit_units": 6.8
+    }
+  }
+}

@@ -116,6 +116,10 @@ def get_pick_thresholds(league: str) -> dict[str, Any]:
     hubacek["min_market_gap_pp"] = hubacek_min_market_gap_pp(league)
     hubacek["min_win_confidence_pp"] = hubacek_min_win_confidence_pp(league)
     hubacek["min_ev_pct"] = hubacek_min_ev_pct(league)
+    if entry.get("min_spread_cover_gap_pp") is not None:
+        hubacek["min_spread_cover_gap_pp"] = float(entry["min_spread_cover_gap_pp"])
+    if entry.get("min_spread_confidence_pp") is not None:
+        hubacek["min_spread_confidence_pp"] = float(entry["min_spread_confidence_pp"])
     ml_range = hubacek_ml_range(league)
     return {
         "bet_type": bet_type,

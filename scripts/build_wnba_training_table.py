@@ -1,0 +1,175 @@
+"""Build the WNBA v2 training table from cached history.
+
+Replays 1997-2026 chronologically through WnbaFeatureEngine and writes one
+row per game from --emit-from onward (default 2002: five Elo warm-up years,
+box-score features begin 2003) to data/wnba_history/training_table.csv,
+including consensus market odds (median across pre-game books) when cached.
+"""
+
+from __future__ import annotations
+
+import argparse
+import csv
+import json
+import statistics
+import sys
+from pathlib import Path
+from typing import Any
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from web.wnba_v2.data import CACHE_ROOT  # noqa: E402
+from web.wnba_v2.feature_engine import FEATURE_COLUMNS, WnbaFeatureEngine  # noqa: E402
+from web.wnba_v2.replay import merge_season_games, replay_season  # noqa: E402
+
+OUT_DIR = PROJECT_ROOT / "data" / "wnba_history"
+
+META_COLUMNS = (
+    "season", "date", "event_id", "home", "away",
+    "home_score", "away_score", "home_win", "margin", "total_points",
+    "season_type", "has_box",
+    "home_ml", "away_ml", "home_spread", "spread_home_odds", "spread_away_odds",
+    "total_line", "books", "home_ml_open", "away_ml_open", "home_spread_open",
+    "best_home_ml", "best_away_ml", "best_spread_home_odds", "best_spread_away_odds",
+)
+
+
+def _median(values: list[float]) -> float | None:
+    clean = [v for v in values if v is not None]
+    if not clean:
+        return None
+    return float(statistics.median(clean))
+
+
+def consensus_odds(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    """Median market across pre-game books for one event."""
+    if not rows:
+        return {}
+    home_mls = [r.get("home_ml") for r in rows if r.get("home_ml") is not None]
+    away_mls = [r.get("away_ml") for r in rows if r.get("away_ml") is not None]
+    spreads = [r.get("home_spread") for r in rows if r.get("home_spread") is not None]
+    home_so = [r.get("home_spread_odds") for r in rows if r.get("home_spread_odds") is not None]
+    away_so = [r.get("away_spread_odds") for r in rows if r.get("away_spread_odds") is not None]
+    totals = [r.get("total") for r in rows if r.get("total") is not None]
+    ml_open_h = [r.get("home_ml_open") for r in rows if r.get("home_ml_open") is not None]
+    ml_open_a = [r.get("away_ml_open") for r in rows if r.get("away_ml_open") is not None]
+    sp_open = [r.get("home_spread_open") for r in rows if r.get("home_spread_open") is not None]
+    # drop degenerate medians from mixed +/- books
+    home_ml = _median(home_mls)
+    away_ml = _median(away_mls)
+    if home_ml is not None and abs(home_ml) < 100:
+        home_ml = None
+    if away_ml is not None and abs(away_ml) < 100:
+        away_ml = None
+
+    def _best(values: list[float]) -> float | None:
+        """Best price for the bettor: highest decimal payout."""
+        priced = [v for v in values if v is not None and abs(v) >= 100]
+        if not priced:
+            return None
+        return max(priced, key=lambda ml: ml if ml > 0 else 10000.0 / abs(ml))
+
+    return {
+        "home_ml": home_ml,
+        "away_ml": away_ml,
+        "home_spread": _median(spreads),
+        "spread_home_odds": _median(home_so),
+        "spread_away_odds": _median(away_so),
+        "total_line": _median(totals),
+        "books": len(rows),
+        "home_ml_open": _median(ml_open_h),
+        "away_ml_open": _median(ml_open_a),
+        "home_spread_open": _median(sp_open),
+        "best_home_ml": _best(home_mls),
+        "best_away_ml": _best(away_mls),
+        "best_spread_home_odds": _best(home_so),
+        "best_spread_away_odds": _best(away_so),
+    }
+
+
+def load_season(season: int) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    season_dir = CACHE_ROOT / str(season)
+
+    def read(name: str) -> Any:
+        path = season_dir / name
+        if not path.is_file():
+            return None
+        return json.loads(path.read_text(encoding="utf-8"))
+
+    results = (read("results.json") or {}).get("results", [])
+    events = (read("events.json") or {}).get("events", [])
+    boxes = read("boxes.json") or {}
+    odds = read("odds.json") or {}
+    games = merge_season_games(results, events, boxes, season=season)
+    return games, odds
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Build WNBA v2 training table")
+    parser.add_argument("--start-season", type=int, default=1997)
+    parser.add_argument("--end-season", type=int, default=2026)
+    parser.add_argument("--emit-from", type=int, default=2002)
+    args = parser.parse_args()
+
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    out_path = OUT_DIR / "training_table.csv"
+
+    engine = WnbaFeatureEngine()
+    rows_written = 0
+
+    with out_path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.writer(handle)
+        writer.writerow(list(META_COLUMNS) + list(FEATURE_COLUMNS))
+
+        for season in range(args.start_season, args.end_season + 1):
+            games, odds = load_season(season)
+            if not games:
+                print(f"season {season}: no games cached", flush=True)
+                continue
+            emitted = 0
+
+            def emit(game: dict[str, Any], features: dict[str, float]) -> None:
+                nonlocal emitted, rows_written
+                if int(game.get("season") or 0) < args.emit_from:
+                    return
+                market = consensus_odds(odds.get(str(game.get("event_id") or "")) or [])
+                home_score = int(game["home_score"])
+                away_score = int(game["away_score"])
+                meta = [
+                    game.get("season"), game.get("date"), game.get("event_id") or "",
+                    game.get("home"), game.get("away"),
+                    home_score, away_score, int(home_score > away_score),
+                    home_score - away_score, home_score + away_score,
+                    game.get("season_type"),
+                    int(bool(game.get("home_box"))),
+                    market.get("home_ml"), market.get("away_ml"),
+                    market.get("home_spread"),
+                    market.get("spread_home_odds"), market.get("spread_away_odds"),
+                    market.get("total_line"), market.get("books", 0),
+                    market.get("home_ml_open"), market.get("away_ml_open"),
+                    market.get("home_spread_open"),
+                    market.get("best_home_ml"), market.get("best_away_ml"),
+                    market.get("best_spread_home_odds"), market.get("best_spread_away_odds"),
+                ]
+                writer.writerow(
+                    [v if v is not None else "" for v in meta]
+                    + [round(float(features[c]), 5) for c in FEATURE_COLUMNS]
+                )
+                emitted += 1
+                rows_written += 1
+
+            replay_season(engine, games, emit=emit)
+            boxed = sum(1 for g in games if g.get("home_box"))
+            print(
+                f"season {season}: {len(games)} games ({boxed} with box), "
+                f"{emitted} rows emitted",
+                flush=True,
+            )
+
+    print(f"training table: {rows_written} rows -> {out_path}", flush=True)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
