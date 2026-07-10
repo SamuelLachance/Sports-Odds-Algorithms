@@ -42,6 +42,45 @@
       },
       "status": "win",
       "units": 0.588
+    },
+    {
+      "away_abbr": "bel",
+      "away_name": "Belgium",
+      "edge_pp": 244.0,
+      "event_id": "760511",
+      "game_date": "7-10-2026",
+      "home_abbr": "esp",
+      "home_name": "Spain",
+      "key": "worldcup:760511:home",
+      "league": "worldcup",
+      "market_ml": -155,
+      "model_prob": 49.5,
+      "paper": true,
+      "pick_outcome": "home",
+      "recorded_at": "2026-07-10T03:12:01.418541+00:00",
+      "signals": {
+        "away_games": 9,
+        "disagreement_signal": true,
+        "high_confidence_disagreement": true,
+        "home_games": 9,
+        "max_edge_pp": 244.0,
+        "model_best_outcome": "home",
+        "opening_steam": {
+          "implied_shifts_pp": {
+            "away": 0.87,
+            "draw": 0.0,
+            "home": -0.75
+          },
+          "model_best_outcome": "home",
+          "model_edge_pp": -8.13,
+          "opening_away_ml": 450,
+          "opening_draw_ml": 290,
+          "opening_home_ml": -160,
+          "steam_direction": null,
+          "steam_signal": false
+        },
+        "steam_signal": false
+      }
     }
   ],
   "summary": {
