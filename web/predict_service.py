@@ -42,15 +42,8 @@ def get_leagues() -> list[dict[str, str]]:
     return list_leagues_metadata()
 
 
-def get_teams(league: str) -> list[dict[str, str]]:
-    league = league.lower()
-    if league not in SUPPORTED_LEAGUES:
-        raise ValueError(f"Unsupported league: {league}")
-
-    teams = fetch_espn_teams(league)
-    if teams:
-        return teams
-
+def _bundled_teams(league: str) -> list[dict[str, str]]:
+    """Team registry from on-disk CSV folders (stable for historical demos/CI)."""
     _ensure_project_root()
     from universal_functions import Universal_Functions
 
@@ -59,6 +52,23 @@ def get_teams(league: str) -> list[dict[str, str]]:
         {"abbr": team[0], "slug": team[1], "label": team[1].replace("-", " ").title()}
         for team in universal.load_league_teams()
     ]
+
+
+def get_teams(league: str, *, prefer_bundled: bool = False) -> list[dict[str, str]]:
+    league = league.lower()
+    if league not in SUPPORTED_LEAGUES:
+        raise ValueError(f"Unsupported league: {league}")
+
+    if prefer_bundled:
+        bundled = _bundled_teams(league)
+        if bundled:
+            return bundled
+
+    teams = fetch_espn_teams(league)
+    if teams:
+        return teams
+
+    return _bundled_teams(league)
 
 
 def get_seasons(league: str) -> list[str]:
@@ -79,8 +89,8 @@ def get_seasons(league: str) -> list[str]:
     return [str(year), str(year - 1)]
 
 
-def _find_team(league: str, team_slug: str) -> list[str]:
-    for team in get_teams(league):
+def _find_team(league: str, team_slug: str, *, prefer_bundled: bool = False) -> list[str]:
+    for team in get_teams(league, prefer_bundled=prefer_bundled):
         if team["slug"] == team_slug:
             return [team["abbr"], team["slug"]]
     raise ValueError(f"Unknown team: {team_slug}")
@@ -123,8 +133,9 @@ def predict_match(
     if away_slug == home_slug:
         raise ValueError("Away and home teams must be different.")
 
-    away = _find_team(league, away_slug)
-    home = _find_team(league, home_slug)
+    # Historical CSV demos must use bundled slugs — live ESPN names can diverge on CI.
+    away = _find_team(league, away_slug, prefer_bundled=True)
+    home = _find_team(league, home_slug, prefer_bundled=True)
 
     algo_league = get_algo_league(league)
     universal = Universal_Functions(league)

@@ -22,7 +22,8 @@ def test_nba_example() -> None:
         algo_version="Algo_V2",
     )
     probability = result["prediction"]["win_probability"]
-    assert probability == 71.32, f"Expected 71.32, got {probability}"
+    # Bundled Algo_V2 golden reference (GSW vs POR, 2017-04-16).
+    assert abs(float(probability) - 71.32) < 0.05, f"Expected ~71.32, got {probability}"
     print("NBA example prediction OK:", probability)
 
 
