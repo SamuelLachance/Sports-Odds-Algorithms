@@ -10,12 +10,12 @@ Daily algorithmic sports betting platform across **NBA, WNBA, CBB, NFL, CFB, NHL
 
 | Feature | Description |
 |---------|-------------|
-| **Daily slate** | Rebuilt every day at **3:00 AM America/Toronto** (and on every push) via GitHub Actions |
-| **Live data** | ESPN schedules, scores, and consensus moneylines/spreads |
+| **Daily slate** | Rebuilt **4×/day** America/Toronto (midnight, 6 AM, noon, 6 PM EDT) and on every push via GitHub Actions |
+| **Live data** | ESPN schedules, scores, and consensus moneylines/spreads; multi-book enrichment for NBA/NHL/MLB/WNBA when available |
 | **Unified model** | Blends legacy **Algo V2**, **power ratings**, and a sport-specific third layer |
-| **Algo picks** | Hubáček-style official picks: decorrelated model must beat the de-vigged market by ≥2 pp with ≥2% honest EV and a per-bet-type confidence bar |
-| **Bet tracking** | Freezes odds at record time, grades against ESPN finals, logs closing-line value (CLV), and sizes stakes with quarter-Kelly (0.25–3u) |
-| **League coverage** | Games, team pages, and picks for all supported leagues; official tracked picks cover NBA, WNBA, CBB, NHL, MLB, and the soccer leagues whose calibrated model beats the closing line |
+| **Algo picks** | Hubáček-style official picks: decorrelated model must beat the de-vigged market by ≥2 pp with ≥2% honest EV and a per-bet-type confidence bar (stricter per-league overrides where walk-forward backtests exist) |
+| **Bet tracking** | Freezes odds at record time, grades against ESPN finals, logs implied-probability CLV vs the ESPN consensus closing snapshot, and sizes stakes with portfolio-aware quarter-Kelly (0.25–3u) |
+| **League coverage** | Games and team pages for all supported leagues; official tracked picks cover NBA, WNBA, CBB, NHL, MLB, **NFL**, **CFB**, and soccer leagues whose calibrated model beats the closing line |
 
 ### Three-layer prediction stack
 
@@ -23,19 +23,28 @@ Each matchup blends three independent signals (equal weight when all layers are 
 
 | Sport | Leagues | Model |
 |-------|---------|-------|
-| NBA | Basketball | **EnsembleML** — XGBoost stack over all layers + market features (beats the closing line on holdout) |
-| WNBA, CBB | Basketball | **BasketballMatrix** — soft-impute SVD on offensive-rating × pace matrices |
+| NBA | Basketball | **EnsembleML** / NBA v2 margin stack — market-aware; holdout log-loss can beat the consensus market, but that is **not** the same as profitable closing-line ROI |
+| WNBA | Basketball | **BasketballMatrix** / WNBA v2 — soft-impute SVD + margin model |
+| CBB | Basketball | **CBB Torvik** efficiency + calibration when Torvik ratings resolve; falls back to BasketballMatrix |
 | MLB | Baseball | **MLB RunCast** — EWMA run efficiency + Monte Carlo + XGBoost with probable-pitcher edge |
 | NCAA D1 baseball, winter leagues, WBC | Baseball | [MLB-Model](https://github.com/greerreNFL/MLB-Model) Elo ratings |
-| NHL, NCAA D1 hockey | Hockey | **Algo V1** — weighted factor model (James Quintero NHL profile) |
-| NFL, CFB | Football | [nfelo](https://github.com/greerreNFL/nfelo) Elo ratings + EnsembleML head when trained |
-| EPL, La Liga, Bundesliga, Serie A, Ligue 1, MLS, UCL, international | Soccer | **Path A** — Dixon–Coles + XGBoost with market-calibrated display probabilities (beats the closing line on the top 5 leagues and 8 international competitions) |
+| NHL, NCAA D1 hockey | Hockey | **Algo V1** / NHL v2 — weighted factor / margin model |
+| NFL, CFB | Football | [nfelo](https://github.com/greerreNFL/nfelo) Elo ratings + EnsembleML head when trained; official picks use **conservative Hubáček gates** pending larger OOS |
+| EPL, La Liga, Bundesliga, Serie A, Ligue 1, MLS, UCL, international | Soccer | **Path A** — Dixon–Coles + XGBoost with market-calibrated display probabilities (selected leagues beat the closing line on calibrated holdout) |
 
-Layers 1 and 2 (Algo V2 and power ratings) still apply to **baseball** and **football** leagues. **NBA** routes to the trained **EnsembleML** head; WNBA/CBB use **BasketballMatrix** only. **Hockey** (NHL, NCAA D1 men's and women's) uses **Algo V1** only — eight weighted season factors summed into a signed total, converted to win probability via the original parabolic curve.
+Layers 1 and 2 (Algo V2 and power ratings) still apply to **baseball** and **football** leagues. **Hockey** (NHL, NCAA D1 men's and women's) uses **Algo V1** / NHL v2 — eight weighted season factors summed into a signed total, converted to win probability via the original parabolic curve.
 
 Soccer uses a dedicated **three-way blend**: each layer contributes home/draw/away probabilities independently, then the site surfaces projected scores (`xG`), fair 1X2 prices, and value picks when all three layers agree on the same outcome.
 
-A fourth **context adjustment** (ESPN public data only) nudges the blended 1X2 probabilities when signals are available: recent form, season style proxies (possession, shots, direct play, pressing), listed injuries, and neutral-venue flags. Formations, weather, and coach-change flags are not applied when ESPN does not expose them reliably.
+A **context layer** (research-grounded, conservative) can nudge blended probabilities when signals are available: favorite-longshot bias (FLB) at open-like prices, news/injury keyword heuristics, steam/line-movement proxies, and **sparse-sample EV caps** for thin international tournaments. Soccer also applies ESPN form/style/injury/neutral-venue context when present. Formations, weather, and coach-change flags are not applied when ESPN does not expose them reliably.
+
+### Opening vs closing ROI (honest brackets)
+
+Walk-forward bet backtests report **opening-line ROI** and, where available, a **closing-line floor**. Morning recorded bets sit between those brackets — opening ROI is an upper bound if you always get the open; closing ROI is closer to what you get if the market moves against you. Do **not** treat opening-line backtests as guaranteed live edge. See `data/pick_strategy.json` notes per league.
+
+### NBA ML pilot (opt-in, not the public default)
+
+A separate leak-free NBA ML pilot (`web/nba_ml/`) was graded out-of-sample against **real closing lines** (2016–2026). Honest result: roughly **−1.5% ATS / −3% ML ROI** with **negative CLV**. The model is well-calibrated but **does not beat the NBA close**; it stays off unless `NBA_ML_ENABLED=1`. Nothing here claims guaranteed profits.
 
 ### Database player-rating layer (all sports)
 
@@ -64,7 +73,7 @@ College basketball/football and NCAA hockey/baseball have no stable public ratin
 ### Install
 
 ```powershell
-cd C:\Users\ulach5c\Projects\Sports-Odds-Algorithms
+cd C:\Users\Admin\Projects\Sports-Odds-Algorithms
 python -m pip install -r requirements.txt
 ```
 
@@ -85,6 +94,7 @@ Open [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser.
 ### Verify core algorithms
 
 ```powershell
+python -m pytest tests/test_hubacek_picks.py tests/test_tracking.py tests/test_clv_service.py tests/test_context_signals.py tests/test_portfolio_sizing.py tests/test_live_odds_enrichment.py tests/test_pick_strategy.py tests/test_bet_advisor.py tests/test_official_picks_hubacek.py tests/test_cbb_pred_model.py -q --tb=short
 python smoke_test.py
 ```
 
@@ -109,11 +119,16 @@ Static assets are built from `web/static/` into `docs/` by `scripts/build_gh_pag
 | `espn_scraper.py` | Legacy ESPN schedule/box score scraper |
 | `sports_bettor.py` | Original interactive CLI entry point |
 | `web/` | FastAPI backend + static frontend |
-| `web/blend_service.py` | Unified model blending (legacy + power + sport layer + DB ratings) |
+| `web/blend_service.py` | Unified model blending (legacy + power + sport layer + DB ratings + context) |
+| `web/context_signals.py` | FLB / news heuristics / steam proxies / sparse EV caps |
+| `web/portfolio_sizing.py` | Portfolio-aware quarter-Kelly stake sizing |
+| `web/live_odds_enrichment.py` | Multi-book odds enrichment (NBA/NHL/MLB/WNBA) |
+| `web/clv_service.py` | Implied-probability CLV helpers |
 | `web/db_rating_model.py` | External database player/team ratings layer |
 | `web/daily_service.py` | Daily slate and pick generation |
-| `web/tracking_service.py` | Bet logging and grading |
+| `web/tracking_service.py` | Bet logging, grading, CLV vs ESPN consensus close |
 | `scripts/build_gh_pages.py` | GitHub Pages static build |
+| `.github/workflows/test.yml` | CI: core pytest + smoke_test on push/PR to master |
 
 ---
 
@@ -156,6 +171,9 @@ The NHL algorithm predicted the [2016 Stanley Cup champion](http://smartsoftware
 - Historical CSV coverage: NBA/NHL through 2017, MLB through 2016 (used for backtests and CLI demos).
 - Live ESPN endpoints may change; the production site uses the `web/espn_client.py` integration.
 - Third-layer models depend on external repos and may be unavailable for some matchups; the blend falls back to two layers when needed.
+- **CLV** is industry-standard implied-probability move vs the recorded price and the ESPN consensus closing snapshot (not a multi-book true close everywhere). Multi-book enrichment improves live prices for NBA/NHL/MLB/WNBA when ESPN exposes providers.
+- Opening-line backtest ROI ≠ live closing-line edge. The NBA ML pilot’s honest close ROI is negative; do not advertise “beats the close” for NBA.
+- No guaranteed profits. Markets are efficient; gates and sizing are deliberately conservative.
 
 ---
 

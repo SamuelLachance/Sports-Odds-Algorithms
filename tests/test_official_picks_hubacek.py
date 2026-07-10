@@ -307,3 +307,43 @@ def test_mlb_official_picks_respect_ml_price_window() -> None:
         home_spread_odds=-110,
     )
     assert not [p for p in picks if p.side == "home"]
+
+
+def test_nfl_cfb_official_picks_use_spread_gates() -> None:
+    """Football leagues route to spread Hubáček gates from pick_strategy.json."""
+    from web.hubacek_picks import clear_strategy_cache
+    from web.pick_strategy import load_pick_strategy
+
+    clear_strategy_cache()
+    load_pick_strategy.cache_clear()
+
+    for league in ("nfl", "cfb"):
+        thresholds = get_pick_thresholds(league)
+        assert thresholds["bet_type"] == "spread"
+        assert thresholds["min_ev_pct"] >= 2.5
+        blended = {
+            "total_score": -72.0,
+            "win_probability": 72.0,
+            "favorite_side": "home",
+            "blended_home_win_probability": 72.0,
+            "home_spread_margin": -9.5,
+            "market_decorrelated": True,
+        }
+        picks = evaluate_official_picks_for_game(
+            league=league,
+            away_name="Away",
+            home_name="Home",
+            away_slug="away",
+            home_slug="home",
+            total_score=-72.0,
+            win_probability=72.0,
+            blended=blended,
+            away_market=145,
+            home_market=-165,
+            consensus_spread=-3.5,
+            away_spread_odds=-110,
+            home_spread_odds=-110,
+        )
+        assert picks, league
+        assert picks[0].bet_type == "spread"
+        assert picks[0].strategy == "hubacek"

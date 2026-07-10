@@ -51,10 +51,11 @@ def test_eligible_for_official_picks() -> None:
     # A+ soccer leagues (calibrated model beats the closing line) are official.
     assert eligible_for_official_picks("epl")
     assert eligible_for_official_picks("worldcup")
+    assert eligible_for_official_picks("nfl")
+    assert eligible_for_official_picks("cfb")
     # Leagues without a closing-line-beating model stay untracked.
     assert not eligible_for_official_picks("mls")
     assert not eligible_for_official_picks("ucl")
-    assert not eligible_for_official_picks("nfl")
 
 
 def test_soccer_game_not_eligible_for_official_picks() -> None:
@@ -223,10 +224,12 @@ def test_top5_soccer_thresholds_use_backtested_v2_policy() -> None:
         assert thresholds["min_win_confidence_pp"] == 0.0, league
         assert thresholds["allowed_sides"] == ["home"], league
         assert thresholds["enabled"] is True, league
-    # Internationals keep default Hubáček soccer gates (no side restriction).
+    # Internationals use sparse-sample EV caps (home only).
     worldcup = get_pick_thresholds("worldcup")
-    assert worldcup["allowed_sides"] is None
+    assert worldcup["allowed_sides"] == ["home"]
     assert worldcup["min_win_confidence_pp"] == 10.0
+    assert worldcup["min_ev_pct"] >= 8.0
+    assert worldcup["min_market_gap_pp"] >= 8.0
 
 
 def test_top5_soccer_official_picks_home_side_only() -> None:

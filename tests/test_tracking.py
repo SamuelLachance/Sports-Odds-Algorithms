@@ -348,6 +348,8 @@ def test_recorded_odds_frozen_and_closing_snapshot_updates() -> None:
 
 
 def test_clv_computed_at_grading() -> None:
+    from web.clv_service import clv_vs_market_pct
+
     bet = {
         "side": "home",
         "bet_type": "moneyline",
@@ -358,8 +360,10 @@ def test_clv_computed_at_grading() -> None:
     }
     graded = grade_bet(bet, 2, 5)
     assert graded["status"] == "win"
-    # +141 (2.41 decimal) vs closing +120 (2.20) → ~+9.5% CLV.
-    assert graded["clv_pct"] == round((2.41 / 2.20 - 1.0) * 100.0, 2)
+    # Implied-prob CLV is the industry standard (positive = better than close).
+    assert graded["clv_pct"] == clv_vs_market_pct(141, 120)
+    # Legacy decimal-payout ratio kept for backward compatibility.
+    assert graded["clv_payout_pct"] == round((2.41 / 2.20 - 1.0) * 100.0, 2)
 
 
 def test_stake_units_quarter_kelly() -> None:

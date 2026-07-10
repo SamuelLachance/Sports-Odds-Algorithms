@@ -262,12 +262,15 @@ def run_cbb_pred_model(
         opening_spread=opening_spread,
     )
     raw_prob = margin_to_home_win_prob(margin, sigma=float(context.get("sigma", DEFAULT_SIGMA)))
-
+    calibrated_prob = apply_cbb_calibration(raw_prob, context.get("calibrator"))
+    pre_decorrelation = float(calibrated_prob)
+    market_decorrelated = False
     if market_spread is not None:
         market_prob = spread_to_home_prob(float(market_spread))
-        raw_prob = decorrelate_from_market(raw_prob / 100.0, market_prob / 100.0) * 100.0
-
-    calibrated_prob = apply_cbb_calibration(raw_prob, context.get("calibrator"))
+        calibrated_prob = (
+            decorrelate_from_market(calibrated_prob / 100.0, market_prob / 100.0) * 100.0
+        )
+        market_decorrelated = True
 
     pick_signals = build_cbb_pick_signals(
         model_margin=margin,
@@ -280,7 +283,7 @@ def run_cbb_pred_model(
     return {
         "algorithm": "CBBTorvik",
         "source": "torvik-efficiency-calibrated",
-        "market_decorrelated": market_spread is not None,
+        "market_decorrelated": market_decorrelated,
         "home_win_probability": calibrated_prob,
         "predicted_home_score": prediction["predicted_home_score"],
         "predicted_away_score": prediction["predicted_away_score"],
@@ -289,6 +292,7 @@ def run_cbb_pred_model(
         "home_games": home_games,
         "away_games": away_games,
         "raw_home_win_probability": round(raw_prob, 2),
+        "pre_decorrelation_home_win_probability": round(pre_decorrelation, 2),
         "availability_shift_pp": avail_shift,
         "cbb_pick_signals": pick_signals,
         "opening_steam": steam_meta,

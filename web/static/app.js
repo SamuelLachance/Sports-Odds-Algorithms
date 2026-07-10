@@ -1,4 +1,4 @@
-const APP_BUILD_VERSION = "2026-07-03-ml-moneyline-ui";
+const APP_BUILD_VERSION = "2026-07-10-ux-a-plus";
 const META_BASE_PATH =
   document.querySelector('meta[name="base-path"]')?.content ?? "";
 const IS_GITHUB_IO = window.location.hostname.endsWith("github.io");
@@ -363,6 +363,340 @@ function pickMarketLabel(pick) {
   return formatOdds(pick.market_odds);
 }
 
+function pickBestPriceHint(pick) {
+  if (pick.best_available_odds == null) return "";
+  const espn = pick.bet_type === "spread" ? pick.spread_odds ?? pick.market_odds : pick.market_odds;
+  if (espn != null && Number(pick.best_available_odds) === Number(espn)) return "";
+  const edge =
+    pick.best_vs_espn_pp != null
+      ? ` · +${pick.best_vs_espn_pp}pp vs ESPN`
+      : pick.n_books
+        ? ` · ${pick.n_books} books`
+        : "";
+  return `<div><span>Best book</span><strong>${formatOdds(pick.best_available_odds)}${edge}</strong></div>`;
+}
+
+/** Thin-sample international / tournament leagues (mirrors context_signals). */
+const SPARSE_SAMPLE_LEAGUES = new Set([
+  "worldcup",
+  "fifa_friendlies",
+  "copa_america",
+  "concacaf_wcq",
+  "concacaf_gold",
+  "concacaf_nations",
+  "uefa_euro",
+  "uefa_nations",
+]);
+
+function isSparseSampleLeague(league) {
+  const key = String(league || "").toLowerCase();
+  if (!key) return false;
+  return SPARSE_SAMPLE_LEAGUES.has(key) || key.startsWith("concacaf_");
+}
+
+function formatSignedPct(value, digits = 1) {
+  if (value == null || Number.isNaN(Number(value))) return "—";
+  const n = Number(value);
+  const text = Math.abs(n) < 10 && digits > 0 ? n.toFixed(digits) : String(Math.round(n * 10) / 10);
+  return n > 0 ? `+${text}` : text;
+}
+
+function formatUnits(value) {
+  if (value == null || Number.isNaN(Number(value))) return "—";
+  const n = Number(value);
+  const text = Number.isInteger(n) ? String(n) : n.toFixed(2).replace(/\.?0+$/, "");
+  return `${n > 0 ? "+" : ""}${text}u`;
+}
+
+/** Quarter-Kelly stake (0.25–3u) from pick kelly_pct / stake_units when present. */
+function stakeUnitsFromPick(pick) {
+  if (pick?.stake_units != null && !Number.isNaN(Number(pick.stake_units))) {
+    return Number(pick.stake_units);
+  }
+  const kellyPct = pick?.kelly_pct;
+  if (kellyPct == null || Number(kellyPct) <= 0) return null;
+  const kellyFrac = Number(kellyPct) / 100;
+  let base = (kellyFrac / 4) * 100;
+  const ev = Number(pick?.ev_pct);
+  if (!Number.isNaN(ev)) {
+    if (ev > 40) base *= 0.85;
+    else if (ev > 25) base *= 0.92;
+  }
+  return Math.round(Math.min(3, Math.max(0.25, base)) * 100) / 100;
+}
+
+function openingSteamMeta(model) {
+  if (!model || typeof model !== "object") return null;
+  if (model.opening_steam?.steam_signal) return model.opening_steam;
+  for (const key of [
+    "soccer_pred",
+    "basketball_pred",
+    "baseball_pred",
+    "hockey_pred",
+    "football_pred",
+  ]) {
+    const steam = model[key]?.opening_steam;
+    if (steam?.steam_signal) return steam;
+  }
+  return null;
+}
+
+function edgeQualityBadges(pick, game) {
+  const badges = [];
+  const league = pick?.league || game?.league;
+  const model = game?.model || {};
+  const steam = openingSteamMeta(model);
+  const sparseFactor = model?.db_rating?.sparse_schedule_factor;
+  const gamesProxy =
+    pick?.games_played_proxy ?? model?.context_signals?.games_played_proxy;
+
+  if (
+    steam ||
+    pick?.opening_edge ||
+    (pick?.best_vs_espn_pp != null && Number(pick.best_vs_espn_pp) > 0)
+  ) {
+    badges.push({
+      key: "opening",
+      label: "Opening-edge",
+      title: "Early-line or shopped price edge — bet early before the close",
+    });
+  }
+
+  const isOfficial =
+    pick?.tracked === true ||
+    pick?.strategy === "hubacek" ||
+    String(pick?.strategy_label || "")
+      .toLowerCase()
+      .includes("hubáček") ||
+    String(pick?.strategy_label || "")
+      .toLowerCase()
+      .includes("hubacek");
+  if (isOfficial && pick?.tracked !== false) {
+    badges.push({
+      key: "close",
+      label: "Close-floor",
+      title: "Clears Hubáček floors sized to beat the closing line",
+    });
+  }
+
+  if (
+    isSparseSampleLeague(league) ||
+    (gamesProxy != null && Number(gamesProxy) < 8) ||
+    (sparseFactor != null && Number(sparseFactor) > 0.35)
+  ) {
+    badges.push({
+      key: "sparse",
+      label: "Sparse-sample",
+      title: "Thin sample — EV is capped; treat size and confidence cautiously",
+    });
+  }
+
+  return badges;
+}
+
+function renderEdgeBadges(pick, game) {
+  const badges = edgeQualityBadges(pick, game);
+  if (!badges.length) return "";
+  return `<div class="edge-badge-row">${badges
+    .map(
+      (b) =>
+        `<span class="edge-badge edge-badge--${b.key}" title="${escapeHtml(b.title)}">${escapeHtml(b.label)}</span>`,
+    )
+    .join("")}</div>`;
+}
+
+function sparseLeaguePill(league) {
+  if (!isSparseSampleLeague(league)) return "";
+  return `<span class="edge-badge edge-badge--sparse" title="International / tournament slate — thin sample">Sparse sample</span>`;
+}
+
+function disclaimerBar(extra = "") {
+  return `<aside class="disclaimer-bar" role="note">
+    <strong>Research decision-support</strong>
+    <span>Bet early, shop lines, size to units.${extra ? ` ${extra}` : ""}</span>
+  </aside>`;
+}
+
+function contextCallout(model) {
+  const adj = model?.context_adjustment_pp;
+  const signals = model?.context_signals;
+  if (adj == null && !signals) return "";
+  const total = adj ?? signals?.total_pp;
+  if (total == null && !signals) return "";
+  const parts = [];
+  if (signals?.flb_pp != null && Math.abs(Number(signals.flb_pp)) >= 0.05) {
+    parts.push(`FLB ${formatSignedPct(signals.flb_pp)} pp`);
+  }
+  if (signals?.steam_pp != null && Math.abs(Number(signals.steam_pp)) >= 0.05) {
+    parts.push(`Steam ${formatSignedPct(signals.steam_pp)} pp`);
+  }
+  if (signals?.news_pp != null && Math.abs(Number(signals.news_pp)) >= 0.05) {
+    parts.push(`News ${formatSignedPct(signals.news_pp)} pp`);
+  }
+  const detail = parts.length ? parts.join(" · ") : "Context layer applied";
+  const signed = total != null ? formatSignedPct(total) : "—";
+  return `<div class="context-panel">
+    <div class="context-panel-head">
+      <span class="panel-kicker">Context layer</span>
+      <strong>${signed} pp home</strong>
+    </div>
+    <p class="muted">${escapeHtml(detail)}</p>
+  </div>`;
+}
+
+function lineShoppingPanel(market, pick) {
+  const mk = market || {};
+  const nBooks = mk.n_books ?? pick?.n_books;
+  const bestPick = pick?.best_available_odds;
+  const hasBest =
+    bestPick != null ||
+    mk.best_home_ml != null ||
+    mk.best_away_ml != null ||
+    mk.best_home_spread != null ||
+    mk.best_away_spread != null;
+  if (!nBooks && !hasBest) return "";
+
+  const rows = [];
+  if (bestPick != null) {
+    const vs =
+      pick?.best_vs_espn_pp != null
+        ? ` · +${pick.best_vs_espn_pp}pp vs ESPN`
+        : "";
+    rows.push(
+      `<div><span>Best for pick</span><strong>${formatOdds(bestPick)}${vs}</strong></div>`,
+    );
+  }
+  if (mk.best_away_ml != null) {
+    rows.push(
+      `<div><span>Best away ML</span><strong>${formatOdds(mk.best_away_ml)}</strong></div>`,
+    );
+  }
+  if (mk.best_home_ml != null) {
+    rows.push(
+      `<div><span>Best home ML</span><strong>${formatOdds(mk.best_home_ml)}</strong></div>`,
+    );
+  }
+  if (mk.best_away_spread != null) {
+    rows.push(
+      `<div><span>Best away spread</span><strong>${formatOdds(mk.best_away_spread)}</strong></div>`,
+    );
+  }
+  if (mk.best_home_spread != null) {
+    rows.push(
+      `<div><span>Best home spread</span><strong>${formatOdds(mk.best_home_spread)}</strong></div>`,
+    );
+  }
+  if (!rows.length && nBooks) {
+    rows.push(`<div><span>Books scanned</span><strong>${nBooks}</strong></div>`);
+  }
+
+  return `<div class="line-shop-panel">
+    <div class="line-shop-head">
+      <span class="panel-kicker">Line shopping</span>
+      ${nBooks ? `<span class="muted">${nBooks} books</span>` : ""}
+    </div>
+    <div class="line-shop-grid">${rows.join("")}</div>
+    <p class="muted line-shop-caption">Shop the best available price — ESPN quote is a reference, not always the best book.</p>
+  </div>`;
+}
+
+function hubacekThreeTrackPanel(game, pick) {
+  const m = game?.model || {};
+  const top = pick || game?.top_pick;
+  if (!m && !top) return "";
+
+  const displayProb = m.threeway
+    ? null
+    : m.win_probability;
+  const displayLabel = m.threeway
+    ? `1X2 ${m.home_win_probability ?? "—"} / ${m.draw_probability ?? "—"} / ${m.away_win_probability ?? "—"}`
+    : displayProb != null
+      ? `${displayProb}%`
+      : "—";
+
+  const pickProb = top?.win_probability;
+  const evProb =
+    top?.base_win_probability ??
+    m.pre_decorrelation_home_win_probability ??
+    m.pre_context_home_win_probability ??
+    null;
+
+  return `<div class="three-track-panel">
+    <div class="three-track-head">
+      <span class="panel-kicker">Hubáček 3-track</span>
+      <span class="muted">Display · Pick gate · Honest EV</span>
+    </div>
+    <div class="three-track-grid">
+      <div>
+        <span>Display</span>
+        <strong>${displayLabel}</strong>
+        <small>Blended model shown on the board</small>
+      </div>
+      <div>
+        <span>Pick gate</span>
+        <strong>${pickProb != null ? `${pickProb}%` : "—"}</strong>
+        <small>Decorrelated prob for gap / confidence</small>
+      </div>
+      <div>
+        <span>Honest EV</span>
+        <strong>${evProb != null ? `${evProb}%` : pickProb != null ? `${pickProb}%` : "—"}</strong>
+        <small>Calibrated pre-decorrelation for EV &amp; Kelly</small>
+      </div>
+    </div>
+  </div>`;
+}
+
+function fairOddsBetStrip(game, pick) {
+  const top = pick || game?.top_pick;
+  if (!top) return "";
+  const stake = stakeUnitsFromPick(top);
+  const fair = pickModelLabel(top);
+  const best =
+    top.best_available_odds != null
+      ? formatOdds(top.best_available_odds)
+      : null;
+  const market = pickMarketLabel(top);
+  return `<div class="fair-bet-strip">
+    <div><span>Fair / model</span><strong>${fair}</strong></div>
+    <div><span>Market</span><strong>${market}</strong></div>
+    ${best ? `<div><span>Best book</span><strong>${best}</strong></div>` : ""}
+    ${stake != null ? `<div><span>Suggested stake</span><strong>${stake}u</strong></div>` : ""}
+    ${top.ev_pct != null ? `<div><span>Honest EV</span><strong>+${top.ev_pct}%</strong></div>` : ""}
+  </div>`;
+}
+
+function clvCaption() {
+  return `<p class="clv-caption muted">CLV (closing-line value): positive = you beat the close on implied probability. Primary metric is implied-prob CLV; payout CLV is shown when available as a secondary check.</p>`;
+}
+
+function formatClvBlock(bet) {
+  if (bet?.clv_pct == null && bet?.clv_payout_pct == null) return "";
+  const implied = bet.clv_pct;
+  const payout = bet.clv_payout_pct;
+  const impliedCls =
+    implied == null ? "" : Number(implied) >= 0 ? "clv-positive" : "clv-negative";
+  const payoutCls =
+    payout == null ? "" : Number(payout) >= 0 ? "clv-positive" : "clv-negative";
+  return `<div class="clv-metrics">
+    ${implied != null ? `<span class="${impliedCls}">CLV ${formatSignedPct(implied)}%</span>` : ""}
+    ${payout != null ? `<span class="clv-secondary ${payoutCls}">Payout CLV ${formatSignedPct(payout)}%</span>` : ""}
+  </div>`;
+}
+
+function pickBetTypeLabel(pick) {
+  if (pick?.bet_type === "spread") return "Spread";
+  if (pick?.side === "draw" || pick?.bet_type === "soccer_1x2") return "1X2";
+  return "Moneyline";
+}
+
+function pickSideLabel(pick) {
+  if (!pick) return "";
+  if (pick.side === "draw") return "Draw";
+  if (pick.side === "home") return "Home";
+  if (pick.side === "away") return "Away";
+  return pick.side || "";
+}
+
 function pickModelLabel(pick) {
   if (pick.bet_type === "spread" && pick.model_margin != null) {
     const teamMargin = pick.side === "home" ? pick.model_margin : -pick.model_margin;
@@ -465,7 +799,7 @@ function renderSidebarNav(route) {
     { href: "#/games", label: "Games", active: path === "games" || path === "game" },
     { href: "#/teams", label: "Leagues", active: path === "teams" || path === "team" || path === "player" },
     { href: "#/picks", label: "Algo picks", active: path === "picks" },
-    { href: "#/tracking", label: "Tracking", active: path === "tracking" },
+    { href: "#/tracking", label: "CLV tracking", active: path === "tracking" },
   ];
   sidebarNav.innerHTML = items
     .map(
@@ -618,7 +952,7 @@ function pickGameHref(pick) {
   return match ? `#/game/${match.event_id}` : null;
 }
 
-function pickCard(pick, extra = "") {
+function pickCard(pick, extra = "", game = null) {
   const gameHref = pickGameHref(pick);
   const tag = gameHref ? "a" : "article";
   const linkAttrs = gameHref
@@ -626,22 +960,41 @@ function pickCard(pick, extra = "") {
     : ` class="pick-card ${confClass(pick.confidence)}"`;
   const trackedPill =
     pick.tracked === false
-      ? `<span class="strategy-pill muted">Not tracked</span>`
-      : "";
+      ? `<span class="strategy-pill strategy-pill--muted">Not tracked</span>`
+      : pick.tracked === true
+        ? `<span class="strategy-pill strategy-pill--official">Official</span>`
+        : "";
+  const stake = stakeUnitsFromPick(pick);
+  const gap = pick.model_market_gap_pp;
+  const confLabel = pick.confidence
+    ? String(pick.confidence).charAt(0).toUpperCase() + String(pick.confidence).slice(1)
+    : "—";
   return `<${tag}${linkAttrs}>
-    <div class="pick-top"><span class="league-pill">${pick.league_name || pick.league}</span><span class="strategy-pill">${pick.strategy_label || pick.strategy}</span>${trackedPill}</div>
-    <h3>${pick.team_name || ""}</h3>
-    <p class="pick-matchup">${pick.matchup || extra}</p>
+    <div class="pick-top">
+      <span class="league-pill">${escapeHtml(pick.league_name || pick.league || "")}</span>
+      <span class="strategy-pill">${escapeHtml(pick.strategy_label || pick.strategy || "")}</span>
+      ${trackedPill}
+      ${sparseLeaguePill(pick.league)}
+    </div>
+    ${renderEdgeBadges(pick, game)}
+    <div class="pick-side-row">
+      <span class="pick-side-tag">${escapeHtml(pickSideLabel(pick))} · ${escapeHtml(pickBetTypeLabel(pick))}</span>
+      ${stake != null ? `<span class="pick-stake">${stake}u</span>` : ""}
+    </div>
+    <h3>${escapeHtml(pick.team_name || "")}</h3>
+    <p class="pick-matchup">${escapeHtml(pick.matchup || extra || "")}</p>
     <p class="pick-time">${formatTime(pick.start_time)}</p>
     <div class="pick-odds">
       <div><span>${pick.bet_type === "spread" ? "Spread" : "Market"}</span><strong>${pickMarketLabel(pick)}</strong></div>
+      ${pickBestPriceHint(pick)}
       <div><span>Model</span><strong>${pickModelLabel(pick)}</strong></div>
-      <div><span>Edge</span><strong>+${pick.edge}</strong></div>
-      ${pick.ev_pct != null ? `<div><span>EV</span><strong>+${pick.ev_pct}%</strong></div>` : ""}
-      ${pick.profit_score != null ? `<div><span>Profit</span><strong>${pick.profit_score}</strong></div>` : ""}
+      ${gap != null ? `<div><span>Market gap</span><strong>${formatSignedPct(gap)} pp</strong></div>` : pick.edge != null ? `<div><span>Edge</span><strong>+${pick.edge}</strong></div>` : ""}
+      ${pick.ev_pct != null ? `<div><span>Honest EV</span><strong>+${pick.ev_pct}%</strong></div>` : ""}
+      ${pick.expected_units != null ? `<div><span>CLV / EV units</span><strong>${formatUnits(pick.expected_units)}</strong></div>` : ""}
+      <div><span>Confidence</span><strong>${escapeHtml(confLabel)}</strong></div>
       ${pick.kelly_pct != null ? `<div><span>Kelly</span><strong>${pick.kelly_pct}%</strong></div>` : ""}
     </div>
-    <p class="pick-reason">${pick.reason}</p>
+    <p class="pick-reason">${escapeHtml(pick.reason || "")}</p>
     ${gameHref ? `<span class="pick-open-hint">Open game prediction →</span>` : ""}
   </${tag}>`;
 }
@@ -884,14 +1237,28 @@ function isPredictionsOnlyGame(game) {
 
 function gameValuePickBlock(game, top, isSoccer) {
   const predictionsOnly = isPredictionsOnlyGame(game);
+  const stake = top ? stakeUnitsFromPick(top) : null;
+  const stakeBit = stake != null ? ` · ${stake}u` : "";
   if (predictionsOnly) {
     if (top) {
-      return `<div class="game-pick neutral"><strong>Model value analysis</strong><span>${pickTeamNameLink(top, game.league, game.matchup)} · ${pickMarketLabel(top)} vs model ${pickModelLabel(top)} (+${top.ev_pct != null ? top.ev_pct + "% EV" : ""}${top.edge != null ? ", +" + top.edge + " edge" : ""}) — not an official tracked pick</span><p>${top.reason}</p></div>`;
+      return `<div class="game-pick neutral">
+        <strong>Model value analysis</strong>
+        ${renderEdgeBadges(top, game)}
+        <span>${pickTeamNameLink(top, game.league, game.matchup)} · ${pickSideLabel(top)} ${pickBetTypeLabel(top)} · ${pickMarketLabel(top)} vs model ${pickModelLabel(top)} (+${top.ev_pct != null ? top.ev_pct + "% EV" : ""}${top.edge != null ? ", +" + top.edge + " edge" : ""})${stakeBit} — not an official tracked pick</span>
+        <p>${escapeHtml(top.reason || "")}</p>
+        ${fairOddsBetStrip(game, top)}
+      </div>`;
     }
-    return `<div class="game-pick neutral"><strong>Predictions only</strong><span>${isSoccer ? "Full 1X2 model probabilities and fair prices are shown below. Soccer value spots appear under Model predictions on the picks page but are not tracked as official bets." : "Model probabilities and fair prices are shown; this league is not tracked as an official pick."}</span></div>`;
+    return `<div class="game-pick neutral"><strong>Predictions only</strong><span>${isSoccer ? "Full 1X2 model probabilities and fair prices are shown below. Value spots appear under Model predictions on the picks page but are not tracked as official bets." : "Model probabilities and fair prices are shown; this league is not tracked as an official pick."}</span></div>`;
   }
   if (top) {
-    return `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong><span>${pickTeamNameLink(top, game.league, game.matchup)} · ${pickMarketLabel(top)} vs model ${pickModelLabel(top)} (+${top.ev_pct != null ? top.ev_pct + "% EV" : ""}${top.edge != null ? ", +" + top.edge + " edge" : ""})</span><p>${top.reason}</p></div>`;
+    return `<div class="game-pick ${confClass(top.confidence)}">
+      <strong>${escapeHtml(top.strategy_label || "Official pick")}</strong>
+      ${renderEdgeBadges(top, game)}
+      <span>${pickTeamNameLink(top, game.league, game.matchup)} · ${pickSideLabel(top)} ${pickBetTypeLabel(top)} · ${pickMarketLabel(top)} vs model ${pickModelLabel(top)} (+${top.ev_pct != null ? top.ev_pct + "% EV" : ""}${top.edge != null ? ", +" + top.edge + " edge" : ""})${stakeBit}</span>
+      <p>${escapeHtml(top.reason || "")}</p>
+      ${fairOddsBetStrip(game, top)}
+    </div>`;
   }
   if (isSoccer) {
     return `<div class="game-pick neutral"><strong>No official 1X2 pick</strong><span>${hubacekPickRule(state.slate)} not met on home/draw/away lines.</span></div>`;
@@ -962,16 +1329,21 @@ function algoCenter(game) {
       { label: `${away.name} @ ${home.name}` },
     ])}
     <div class="algo-hero-head">
-      <span class="league-pill">${game.league_name}</span>
+      <span class="league-pill">${escapeHtml(game.league_name || "")}</span>
+      ${sparseLeaguePill(game.league)}
       <h1>${matchupLinks(game.league, away, home)}</h1>
-      <p class="game-meta">${formatTime(game.start_time)} · ${game.status_detail || game.status}</p>
-      <p class="db-game-links"><a href="${teamHref(game.league, game.matchup?.away?.abbr)}">${away.name}</a> · <a href="${teamHref(game.league, game.matchup?.home?.abbr)}">${home.name}</a> · <a href="${leagueHref(game.league)}">${game.league_name} league</a></p>
+      <p class="game-meta">${formatTime(game.start_time)} · ${escapeHtml(game.status_detail || game.status || "")}</p>
+      <p class="db-game-links"><a href="${teamHref(game.league, game.matchup?.away?.abbr)}">${escapeHtml(away.name)}</a> · <a href="${teamHref(game.league, game.matchup?.home?.abbr)}">${escapeHtml(home.name)}</a> · <a href="${leagueHref(game.league)}">${escapeHtml(game.league_name || "")} league</a></p>
     </div>
+    ${disclaimerBar("Fair odds below are model prices — shop the best book before staking.")}
     <div class="algo-core">
       ${probBlock}
       ${algoBreakdown(m, game)}
       ${oddsRow}
     </div>
+    ${hubacekThreeTrackPanel(game, top)}
+    ${contextCallout(m)}
+    ${lineShoppingPanel(mk, top)}
     ${gameValuePickBlock(game, top, isSoccer)}
     <details class="factor-details" open><summary>${factorsSectionTitle(m)}</summary><div class="factor-list">${factorBars(m.factors)}</div></details>
     ${gameRecommendationsList(game, away, home)}
@@ -998,14 +1370,17 @@ function viewDashboard() {
   const slateBreakdown = Object.entries(leagueCounts)
     .map(([name, count]) => `${name} (${count})`)
     .join(" · ");
+  const contextGames = games.filter(
+    (g) => g.model?.context_adjustment_pp != null && Number(g.model.context_adjustment_pp) !== 0,
+  );
 
   appRoot.innerHTML = `
     <section class="tracking-hero panel home-hero">
       <div class="tracking-hero-top">
         <div>
           <h1>Sharp Odds dashboard</h1>
-          <p>Today's slate · ${dateLabel} · Per-sport models across ${leagues.length || 0} leagues (NBA uses EnsembleML; basketball, MLB, NHL, and soccer use dedicated sport models; college hockey uses Algo V1).</p>
-          <p class="muted">${slateBreakdown || "No games on today's slate yet."}</p>
+          <p>Today's slate · ${escapeHtml(dateLabel)} · Official Hubáček picks first — stake units, honest EV, and shopped prices when available.</p>
+          <p class="muted">${escapeHtml(slateBreakdown || "No games on today's slate yet.")}</p>
         </div>
         <div class="tracking-hero-stats home-stats">
           <div><span>Games</span><strong>${summary.games_analyzed ?? games.length}</strong></div>
@@ -1014,18 +1389,19 @@ function viewDashboard() {
           <div><span>All-time ROI</span><strong>${tracking.roi_percent ?? 0}%</strong></div>
         </div>
       </div>
+      ${disclaimerBar()}
     </section>
 
     <div class="rollup-grid home-quick-links">
+      <a class="rollup-card panel home-link-card" href="#/picks">
+        <h4>Algo picks</h4>
+        <strong class="rollup-record">${picks.length}</strong>
+        <span>Official Hubáček spots with stake &amp; EV</span>
+      </a>
       <a class="rollup-card panel home-link-card" href="#/games">
         <h4>Games</h4>
         <strong class="rollup-record">${games.length}</strong>
         <span>Full algo breakdowns for every matchup</span>
-      </a>
-      <a class="rollup-card panel home-link-card" href="#/picks">
-        <h4>Algo picks</h4>
-        <strong class="rollup-record">${picks.length}</strong>
-        <span>${hubacekRule}</span>
       </a>
       <a class="rollup-card panel home-link-card" href="#/teams">
         <h4>Leagues</h4>
@@ -1039,11 +1415,30 @@ function viewDashboard() {
       </a>
     </div>
 
+    ${contextGames.length ? `<section class="section"><div class="section-head"><h2>Context layer active</h2></div>
+      <div class="context-callout-list">${contextGames.slice(0, 4).map((g) => {
+        const away = g.matchup?.away?.name || "Away";
+        const home = g.matchup?.home?.name || "Home";
+        return `<a class="context-panel context-panel--link" href="#/game/${g.event_id}">
+          <div class="context-panel-head"><span class="panel-kicker">${escapeHtml(g.league_name || g.league || "")}</span><strong>${formatSignedPct(g.model.context_adjustment_pp)} pp</strong></div>
+          <p>${escapeHtml(away)} @ ${escapeHtml(home)}</p>
+        </a>`;
+      }).join("")}</div></section>` : ""}
+
     <section class="section">
-      <div class="section-head"><h2>Top official picks</h2><a class="text-link" href="#/picks">View all →</a></div>
-      <div class="picks-grid">${picks.length ? picks.slice(0, 6).map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No official bets meet ${hubacekRule} today.</div>`}</div>
+      <div class="section-head">
+        <div>
+          <h2>Top official picks</h2>
+          <p class="muted section-intro">${escapeHtml(hubacekRule)}. Stake = quarter-Kelly (0.25–3u). Bet early for CLV.</p>
+        </div>
+        <a class="text-link" href="#/picks">View all →</a>
+      </div>
+      <div class="picks-grid">${picks.length ? picks.slice(0, 6).map((p) => {
+        const g = gameById(p.event_id);
+        return pickCard(p, "", g);
+      }).join("") : `<div class="panel empty-panel">No official bets meet ${escapeHtml(hubacekRule)} today.</div>`}</div>
     </section>
-    ${modelAnalysis.length ? `<section class="section"><div class="section-head"><h2>Soccer &amp; other model predictions</h2><a class="text-link" href="#/picks#model-predictions">View all →</a></div><p class="muted section-intro">Same model analysis as on game pages — shown for reference, not tracked in official bet history.</p><div class="picks-grid">${modelAnalysis.slice(0, 6).map((p) => pickCard(p)).join("")}</div></section>` : ""}`;
+    ${modelAnalysis.length ? `<section class="section"><div class="section-head"><h2>Model predictions (not tracked)</h2><a class="text-link" href="#/picks#model-predictions">View all →</a></div><p class="muted section-intro">Same analysis as game pages — reference only, not logged in official bet history.</p><div class="picks-grid">${modelAnalysis.slice(0, 6).map((p) => pickCard(p)).join("")}</div></section>` : ""}`;
 }
 
 function renderTrackingSummary() {
@@ -1054,14 +1449,18 @@ function renderTrackingSummary() {
     ["yearly", "This year"],
     ["all_time", "All time"],
   ];
-  return `<div class="rollup-grid">${periods
+  return `<div class="rollup-grid rollup-grid--tracking">${periods
     .map(([key, label]) => {
       const row =
         key === "all_time"
           ? state.tracking?.all_time
           : (state.tracking?.[key] || [])[0];
-      if (!row) return `<div class="rollup-card panel"><h4>${label}</h4><p class="muted">No data yet</p></div>`;
-      return `<div class="rollup-card panel"><h4>${label}</h4><strong class="rollup-record">${row.record || "0-0"}</strong><span>${row.units > 0 ? "+" : ""}${row.units ?? 0}u · ROI ${row.roi_percent ?? 0}%</span><small>${row.bets ?? 0} bets · ${row.pending ?? 0} pending</small></div>`;
+      if (!row) {
+        return `<div class="rollup-card panel rollup-card--empty"><h4>${label}</h4><p class="muted">No graded bets yet</p><small class="muted">Rollups fill as official picks settle</small></div>`;
+      }
+      const unitsCls =
+        Number(row.units) > 0 ? "clv-positive" : Number(row.units) < 0 ? "clv-negative" : "";
+      return `<div class="rollup-card panel"><h4>${label}</h4><strong class="rollup-record">${row.record || "0-0"}</strong><span class="${unitsCls}">${row.units > 0 ? "+" : ""}${row.units ?? 0}u · ROI ${row.roi_percent ?? 0}%</span><small>${row.bets ?? 0} bets · ${row.pending ?? 0} pending</small></div>`;
     })
     .join("")}</div>`;
 }
@@ -1074,9 +1473,33 @@ function viewPicks() {
   const slate = state.slate || {};
   const minConf = minHubacekConfidence(slate);
   const hubacekRule = hubacekPickRule(slate);
-  appRoot.innerHTML = `<section class="page-head"><h1>Algo picks</h1><p><strong>Official picks</strong> (NBA, CBB, WNBA, NHL, MLB, plus soccer leagues whose calibrated model beats the closing line) fire on <strong>Hubáček spots</strong>: decorrelated model beats the de-vigged book by a <strong>backtested per-league gap</strong> (2–7.8 pp; top-5 soccer bets home outcomes only at ≥ 4.6 pp with ≥ 5% EV) with <strong>honest-EV</strong> and confidence floors (<strong>|p−50| ≥ ${minConf} pp</strong> on moneylines). Stakes are quarter-Kelly (0.25–3u). <strong>Model predictions</strong> below cover the remaining leagues with the same analysis, but those bets are not tracked officially.</p></section>
-    <section class="section"><div class="section-head"><h2>Official picks</h2></div><div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No official bets meet ${hubacekRule} today.</div>`}</div></section>
-    <section class="section" id="model-predictions"><div class="section-head"><h2>Model predictions (not tracked)</h2></div><p class="muted section-intro">Leagues without official tracking (MLS, UCL, NFL/CFB, and others). Full probabilities and fair prices are always on each game page.</p><div class="picks-grid">${modelAnalysis.length ? modelAnalysis.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No model value spots on today's slate.</div>`}</div></section>`;
+  appRoot.innerHTML = `
+    <section class="page-head">
+      <h1>Algo picks</h1>
+      <p><strong>Official picks</strong> cover NBA, WNBA, CBB, NHL, MLB, <strong>NFL</strong>, <strong>CFB</strong>, and calibrated soccer leagues. They fire on Hubáček spots: decorrelated model beats the de-vigged book by a backtested per-league gap with honest EV and confidence floors (|p−50| ≥ ${minConf} pp on moneylines). Stakes are quarter-Kelly (0.25–3u).</p>
+      <p class="muted">${escapeHtml(hubacekRule)}</p>
+    </section>
+    ${disclaimerBar()}
+    <section class="section picks-section-official">
+      <div class="section-head">
+        <div>
+          <h2>Official picks</h2>
+          <p class="muted section-intro">Tracked in performance history. Each card shows side, market, stake, honest EV, market gap, and best available odds when line shopping is present.</p>
+        </div>
+        <span class="section-count">${picks.length}</span>
+      </div>
+      <div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p, "", gameById(p.event_id))).join("") : `<div class="panel empty-panel">No official bets meet ${escapeHtml(hubacekRule)} today.</div>`}</div>
+    </section>
+    <section class="section picks-section-reference" id="model-predictions">
+      <div class="section-head">
+        <div>
+          <h2>Model predictions (not tracked)</h2>
+          <p class="muted section-intro">Reference-only value spots (MLS, UCL, and other non-tracked or secondary analysis). Full probabilities stay on each game page.</p>
+        </div>
+        <span class="section-count">${modelAnalysis.length}</span>
+      </div>
+      <div class="picks-grid">${modelAnalysis.length ? modelAnalysis.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No model value spots on today's slate.</div>`}</div>
+    </section>`;
 }
 
 function viewGames(league) {
@@ -1095,9 +1518,30 @@ function gameListCard(game) {
   const home = game.matchup.home;
   const m = game.model;
   const fav = m.favorite_side === "home" ? home.name : away.name;
+  const top = game.top_pick;
+  const stake = top ? stakeUnitsFromPick(top) : null;
+  const predictionsOnly = isPredictionsOnlyGame(game);
+  let betStrip = "";
+  if (top) {
+    betStrip = `<div class="game-bet-strip ${predictionsOnly ? "game-bet-strip--ref" : confClass(top.confidence)}">
+      <div class="game-bet-strip-main">
+        <strong>${predictionsOnly ? "Model value" : escapeHtml(top.strategy_label || "Pick")}</strong>
+        <span>${escapeHtml(top.team_name || "")} · ${pickSideLabel(top)} ${pickBetTypeLabel(top)}</span>
+      </div>
+      <div class="game-bet-strip-metrics">
+        ${top.ev_pct != null ? `<span>+${top.ev_pct}% EV</span>` : ""}
+        ${stake != null ? `<span>${stake}u</span>` : ""}
+        ${top.best_available_odds != null ? `<span>Best ${formatOdds(top.best_available_odds)}</span>` : ""}
+      </div>
+      ${renderEdgeBadges(top, game)}
+    </div>`;
+  } else if (m?.context_adjustment_pp != null && Number(m.context_adjustment_pp) !== 0) {
+    betStrip = contextCallout(m);
+  }
   return `<article class="game-card panel clickable" data-game="${game.event_id}">
-    <div class="game-head"><div><span class="league-pill">${game.league_name}</span><h3>${matchupLinks(game.league, away, home)}</h3><p class="game-meta">${formatTime(game.start_time)}</p></div>
-    <div class="win-chip"><span>${primaryAlgoShort(m)}</span><strong>${fav}</strong><small>${m.win_probability}%</small></div></div>
+    <div class="game-head"><div><span class="league-pill">${escapeHtml(game.league_name || "")}</span>${sparseLeaguePill(game.league)}<h3>${matchupLinks(game.league, away, home)}</h3><p class="game-meta">${formatTime(game.start_time)}</p></div>
+    <div class="win-chip"><span>${primaryAlgoShort(m)}</span><strong>${escapeHtml(fav)}</strong><small>${m.win_probability}%</small></div></div>
+    ${betStrip}
     <a class="btn btn-secondary btn-sm" href="#/game/${game.event_id}">Open algo breakdown →</a>
   </article>`;
 }
@@ -1625,6 +2069,25 @@ async function viewTeam(league, abbr) {
   const upcoming = betting.upcoming_games || [];
   const profileStats = profile?.season_stats;
   const recentGames = mergeRecentGames(teamDb?.recent_games, profile?.recent_games);
+  const injuries = teamDb?.injuries || [];
+  let leagueNewsSource = teamDb?.news || state.dbCache[`league:${league}`]?.news || [];
+  if (!leagueNewsSource.length) {
+    try {
+      const leagueData = await loadLeagueDb(league);
+      leagueNewsSource = leagueData?.news || [];
+    } catch {
+      /* league news optional */
+    }
+  }
+  const teamNews = leagueNewsSource
+    .filter((item) => {
+      const blob = `${item.headline || ""} ${item.description || ""}`.toLowerCase();
+      const tokens = [teamName, normalizedAbbr, teamDb?.team?.abbr]
+        .filter(Boolean)
+        .map((t) => String(t).toLowerCase());
+      return tokens.some((t) => t.length >= 2 && blob.includes(t));
+    })
+    .slice(0, 6);
 
   appRoot.innerHTML = `${breadcrumbs([
     { label: "Home", href: "#/" },
@@ -1635,7 +2098,14 @@ async function viewTeam(league, abbr) {
   <p class="fm-team-nav"><a href="${leagueHref(league)}">← ${leagueName} league</a></p>
   ${upcoming.length ? `<section class="section"><div class="section-head"><h2>Upcoming — betting context</h2></div>
     <div class="db-bet-grid">${upcoming.map((g) => renderBettingGameCard(g, league)).join("")}</div></section>` : ""}
-  ${(teamDb?.injuries || []).length ? `<section class="section panel fm-injuries"><h2>Injuries & availability</h2><ul class="db-recent">${teamDb.injuries.map((p) => `<li><strong>${p.name}</strong> <span class="muted">(${p.position})</span> — <span class="fm-injury-status">${p.status}</span></li>`).join("")}</ul></section>` : ""}
+  ${injuries.length || teamNews.length ? `<section class="section panel availability-risk">
+    <div class="section-head"><h2>Availability risk</h2><span class="edge-badge edge-badge--sparse">Research</span></div>
+    <p class="muted section-intro">Injuries and recent news that can move lines — check before staking.</p>
+    <div class="availability-grid">
+      <div class="availability-block"><h3>Injuries</h3>${injuries.length ? `<ul class="db-recent">${injuries.map((p) => `<li><strong>${escapeHtml(p.name || "")}</strong> <span class="muted">(${escapeHtml(p.position || "")})</span> — <span class="fm-injury-status">${escapeHtml(p.status || "")}</span></li>`).join("")}</ul>` : `<p class="muted">No injury report in this snapshot.</p>`}</div>
+      ${teamNews.length ? `<div class="availability-block"><h3>News</h3>${renderNewsList(teamNews)}</div>` : `<div class="availability-block"><h3>News</h3><p class="muted">No team-tagged headlines in the league snapshot. <a class="text-link" href="${leagueHref(league)}">Browse league news →</a></p></div>`}
+    </div>
+  </section>` : ""}
   <div class="stat-grid fm-team-stats">
     <div class="stat-card panel"><span>Win %</span><strong>${profileStats?.win_pct != null ? `${profileStats.win_pct}%` : trends.win_percent != null ? `${(trends.win_percent * 100).toFixed(1)}%` : "—"}</strong></div>
     <div class="stat-card panel"><span>GB</span><strong>${trends.games_behind ?? teamDb?.standing?.games_behind ?? "—"}</strong></div>
@@ -1783,23 +2253,33 @@ function viewTracking() {
   const since = state.tracking?.tracking_since || "—";
   const minConf = minHubacekConfidence(state.slate);
   const hubacekRule = hubacekPickRule(state.slate);
+  const graded = bets.filter((b) => b.status && b.status !== "pending");
+  const youngBook = bets.length > 0 && graded.length < 30;
 
   appRoot.innerHTML = `
     <section class="tracking-hero panel">
       <div class="tracking-hero-top">
         <div>
           <h1>Performance tracking</h1>
-          <p>Official Hubáček bets (${hubacekRule}) are logged with odds frozen at record time, graded on ESPN finals with closing-line value (CLV), staked at quarter-Kelly (0.25–3u), and rolled up day → week → month → year → all time.</p>
-          <p class="muted">Tracking since ${since} · ${state.tracking?.timezone || "America/Toronto"}</p>
+          <p>Official Hubáček bets are logged with odds frozen at record time, graded on ESPN finals with closing-line value (CLV), staked at quarter-Kelly (0.25–3u), and rolled up day → week → month → year → all time.</p>
+          <p class="muted">Tracking since ${escapeHtml(String(since))} · ${escapeHtml(state.tracking?.timezone || "America/Toronto")}</p>
+          <p class="muted tracking-rule">${escapeHtml(hubacekRule)}</p>
         </div>
         <div class="tracking-hero-stats">
           <div><span>Record</span><strong>${all.record || "0-0"}</strong></div>
-          <div><span>Units</span><strong>${all.units > 0 ? "+" : ""}${all.units ?? 0}u</strong></div>
+          <div><span>Units</span><strong class="${Number(all.units) > 0 ? "clv-positive" : Number(all.units) < 0 ? "clv-negative" : ""}">${all.units > 0 ? "+" : ""}${all.units ?? 0}u</strong></div>
           <div><span>ROI</span><strong>${all.roi_percent ?? 0}%</strong></div>
           <div><span>Pending</span><strong>${all.pending ?? 0}</strong></div>
         </div>
       </div>
+      ${disclaimerBar("CLV and ROI need sample size — treat early results as provisional.")}
+      ${clvCaption()}
     </section>
+
+    ${youngBook ? `<div class="panel empty-panel tracking-empty-expect">
+      <strong>Young track record</strong>
+      <p class="muted">Only ${graded.length} graded official bets so far. Expect noisy ROI until dozens of Hubáček spots settle. Focus on process: bet early, shop lines, and size to units — not short-term win rate.</p>
+    </div>` : ""}
 
     <div class="period-tabs">${["daily", "weekly", "monthly", "yearly", "all_time"]
       .map(
@@ -1808,7 +2288,10 @@ function viewTracking() {
       )
       .join("")}</div>
 
-    <div class="rollup-grid">${renderTrackingSummary()}</div>
+    <section class="section">
+      <div class="section-head"><h2>Period rollups</h2></div>
+      ${renderTrackingSummary()}
+    </section>
 
     <section class="section panel">
       <h2>${periodLabel(period)} breakdown</h2>
@@ -1818,10 +2301,28 @@ function viewTracking() {
 
     <section class="section">
       <div class="section-head"><h2>Bet log (${bets.length})</h2></div>
-      <div class="bet-log">${bets.length ? bets.map((b) => `<article class="bet-row panel"><div class="bet-row-top"><div><strong>${b.team_abbr ? teamNameLink(b.league, b.team_abbr, b.team_name) : b.team_name}</strong><span class="league-pill">${b.league_name}</span>${statusBadge(b.status, b.units)}</div><span class="edge-tag">+${b.edge} edge</span></div>
-      <p class="muted">${b.matchup} · ${b.date}${b.stake_units ? ` · ${b.stake_units}u stake` : ""}${b.clv_pct != null ? ` · CLV ${b.clv_pct > 0 ? "+" : ""}${b.clv_pct}%` : ""}</p>
-      <div class="pick-odds compact"><div><span>${b.bet_type === "spread" ? "Spread" : "Market"}</span><strong>${b.bet_type === "spread" ? formatSpread(b.spread_line) + " (" + formatOdds(b.spread_odds ?? b.market_odds) + ")" : formatOdds(b.market_odds)}</strong></div><div><span>Model</span><strong>${b.bet_type === "spread" && b.model_margin != null ? (b.side === "home" ? "Home" : "Away") + " margin " + formatSpread(b.side === "home" ? b.model_margin : -b.model_margin) : formatOdds(b.model_projection)}</strong></div><div><span>Strategy</span><strong>${b.strategy_label}</strong></div></div>
-      ${b.final_score ? `<p class="final-score">Final: ${b.final_score}</p>` : ""}</article>`).join("") : `<div class="panel empty-panel">No tracked bets yet. Official picks need +EV and |p−50| ≥ ${minConf} pp (Hubáček φ).</div>`}</div>
+      <div class="bet-log">${bets.length ? bets.map((b) => `<article class="bet-row panel">
+        <div class="bet-row-top">
+          <div>
+            <strong>${b.team_abbr ? teamNameLink(b.league, b.team_abbr, b.team_name) : escapeHtml(b.team_name || "")}</strong>
+            <span class="league-pill">${escapeHtml(b.league_name || b.league || "")}</span>
+            ${sparseLeaguePill(b.league)}
+            ${statusBadge(b.status, b.units)}
+          </div>
+          <span class="edge-tag">+${b.edge ?? "—"} edge</span>
+        </div>
+        <p class="muted">${escapeHtml(b.matchup || "")} · ${escapeHtml(b.date || "")}${b.stake_units ? ` · ${b.stake_units}u stake` : ""}</p>
+        ${formatClvBlock(b)}
+        <div class="pick-odds compact">
+          <div><span>${b.bet_type === "spread" ? "Spread" : "Market"}</span><strong>${b.bet_type === "spread" ? formatSpread(b.spread_line) + " (" + formatOdds(b.spread_odds ?? b.market_odds) + ")" : formatOdds(b.market_odds)}</strong></div>
+          <div><span>Model</span><strong>${b.bet_type === "spread" && b.model_margin != null ? (b.side === "home" ? "Home" : "Away") + " margin " + formatSpread(b.side === "home" ? b.model_margin : -b.model_margin) : formatOdds(b.model_projection)}</strong></div>
+          <div><span>Strategy</span><strong>${escapeHtml(b.strategy_label || "")}</strong></div>
+        </div>
+        ${b.final_score ? `<p class="final-score">Final: ${escapeHtml(b.final_score)}</p>` : ""}
+      </article>`).join("") : `<div class="panel empty-panel">
+        <strong>No tracked bets yet</strong>
+        <p class="muted">Official picks need +EV and |p−50| ≥ ${minConf} pp (Hubáček). Once logged, this log shows stake, implied-prob CLV, and payout CLV when closing odds are available.</p>
+      </div>`}</div>
     </section>`;
 
   appRoot.querySelectorAll(".period-tab").forEach((btn) => {
@@ -1891,12 +2392,13 @@ function renderBettingGameCard(sheet, league) {
   const away = matchup.away?.name || "Away";
   const home = matchup.home?.name || "Home";
   const agreement = model.agreement || {};
-  const picks = sheet.recommendations || [];
   const top = sheet.top_pick;
   const predictionsOnly = sheet.eligible_for_official_picks === false;
+  const stake = top ? stakeUnitsFromPick(top) : null;
   return `<article class="db-bet-card panel">
     <div class="db-bet-head">
-      <span class="league-pill">${sheet.league_name || league}</span>
+      <span class="league-pill">${escapeHtml(sheet.league_name || league || "")}</span>
+      ${sparseLeaguePill(league)}
       <strong>${matchupLinks(league, matchup.away, matchup.home)}</strong>
       <span class="muted">${formatTime(sheet.start_time)}</span>
     </div>
@@ -1909,12 +2411,19 @@ function renderBettingGameCard(sheet, league) {
       <span>Unified model</span>
       <strong>${model.win_probability ?? "—"}%</strong>
       <small>Fav: ${model.favorite_side || "—"} · Blend ${model.blend_layers || "—"} layers</small>
-      ${agreement.required ? `<small>Agreement: ${agreement.agreed ? "✓ all layers" : "✗ split"} (${(agreement.value_sides || []).join(", ") || "none"})</small>` : ""}
+      ${agreement.required ? `<small>Agreement: ${agreement.agreed ? "all layers" : "split"} (${(agreement.value_sides || []).join(", ") || "none"})</small>` : ""}
     </div>
-    ${predictionsOnly && top ? `<div class="game-pick neutral"><strong>Model value analysis</strong> ${pickTeamNameLink(top, league, matchup)} +${top.ev_pct}% EV — not tracked</div>` : predictionsOnly ? `<div class="game-pick neutral"><strong>Predictions only</strong> — model shown, not an official tracked pick</div>` : top ? `<div class="game-pick ${confClass(top.confidence)}"><strong>${top.strategy_label}</strong> ${pickTeamNameLink(top, league, matchup)} +${top.ev_pct}% EV</div>` : `<div class="game-pick neutral"><strong>No official pick</strong> — ${hubacekPickRule(state.slate)} not met</div>`}
+    ${top ? `<div class="game-bet-strip ${predictionsOnly ? "game-bet-strip--ref" : confClass(top.confidence)}">
+      <div class="game-bet-strip-main">
+        <strong>${predictionsOnly ? "Model value" : escapeHtml(top.strategy_label || "Pick")}</strong>
+        <span>${pickTeamNameLink(top, league, matchup)} · ${pickSideLabel(top)} ${pickBetTypeLabel(top)}${top.ev_pct != null ? ` · +${top.ev_pct}% EV` : ""}${stake != null ? ` · ${stake}u` : ""}${predictionsOnly ? " — not tracked" : ""}</span>
+      </div>
+      ${renderEdgeBadges(top, sheet)}
+    </div>` : predictionsOnly ? `<div class="game-pick neutral"><strong>Predictions only</strong> — model shown, not an official tracked pick</div>` : `<div class="game-pick neutral"><strong>No official pick</strong> — ${hubacekPickRule(state.slate)} not met</div>`}
+    ${lineShoppingPanel(market, top)}
     <div class="db-bet-links">
-      <a href="${teamHref(league, matchup.home?.abbr)}">${home}</a>
-      <a href="${teamHref(league, matchup.away?.abbr)}">${away}</a>
+      <a href="${teamHref(league, matchup.home?.abbr)}">${escapeHtml(home)}</a>
+      <a href="${teamHref(league, matchup.away?.abbr)}">${escapeHtml(away)}</a>
       <a href="#/game/${sheet.event_id}">Full analysis →</a>
     </div>
   </article>`;

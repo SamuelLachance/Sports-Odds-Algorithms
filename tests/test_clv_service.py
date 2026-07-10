@@ -11,6 +11,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from web.clv_service import (  # noqa: E402
     american_to_implied_prob,
     clv_vs_market_pct,
+    clv_vs_market_pct_threeway,
     devig_two_way,
 )
 
@@ -29,3 +30,37 @@ def test_clv_positive_when_better_price() -> None:
     clv = clv_vs_market_pct(150, 130)
     assert clv is not None
     assert clv > 0
+
+
+def test_clv_implied_prob_formula() -> None:
+    # +141 vs close +120: pick implied lower than close → positive CLV.
+    pick_p = american_to_implied_prob(141)
+    close_p = american_to_implied_prob(120)
+    assert pick_p is not None and close_p is not None
+    expected = round((close_p - pick_p) / close_p * 100.0, 2)
+    assert clv_vs_market_pct(141, 120) == expected
+
+
+def test_clv_threeway_soccer_draw() -> None:
+    clv = clv_vs_market_pct_threeway(
+        250,
+        side="draw",
+        market_home=-120,
+        market_draw=220,
+        market_away=300,
+    )
+    assert clv == clv_vs_market_pct(250, 220)
+    assert clv is not None and clv > 0
+
+
+def test_clv_threeway_missing_side() -> None:
+    assert (
+        clv_vs_market_pct_threeway(
+            150,
+            side="draw",
+            market_home=-110,
+            market_draw=None,
+            market_away=140,
+        )
+        is None
+    )

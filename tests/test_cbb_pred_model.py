@@ -148,6 +148,9 @@ def test_run_cbb_pred_model_payload(mock_games, mock_dated, mock_torvik) -> None
     assert payload["source"] == "torvik-efficiency-calibrated"
     assert "cbb_pick_signals" in payload
     assert payload["home_win_probability"] > 50.0
+    assert payload["market_decorrelated"] is True
+    assert "pre_decorrelation_home_win_probability" in payload
+    assert payload["pre_decorrelation_home_win_probability"] != payload["home_win_probability"]
 
 
 def test_fallback_efficiency_from_games() -> None:

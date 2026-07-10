@@ -14,6 +14,7 @@ from web.basketball_pred_model import (
     is_basketball_league,
     run_basketball_pred_model,
 )
+from web.cbb_pred_model import is_cbb_league, run_cbb_pred_model
 from web.mlb_pred_model import is_mlb_league, mlb_unavailable_reason, run_mlb_pred_model
 from web.football_pred_model import (
     football_unavailable_reason,
@@ -51,6 +52,36 @@ POWER_BLEND_WEIGHT = 0.5
 THREE_LAYER_WEIGHT = 1.0 / 3.0
 
 
+def _apply_context_layer(
+    result: dict[str, Any],
+    *,
+    league: str,
+    home_name: str | None,
+    away_name: str | None,
+    home_moneyline: int | None = None,
+    away_moneyline: int | None = None,
+    headlines: list[str] | None = None,
+) -> dict[str, Any]:
+    """Fourth-layer context (FLB / steam / news) after DB rating + calibration."""
+    from web.context_signals import apply_context_to_blend
+
+    market: dict[str, Any] = {}
+    if home_moneyline is not None:
+        market["home_moneyline"] = home_moneyline
+    if away_moneyline is not None:
+        market["away_moneyline"] = away_moneyline
+    home_names = [home_name] if home_name else []
+    away_names = [away_name] if away_name else []
+    return apply_context_to_blend(
+        result,
+        market=market,
+        headlines=headlines,
+        home_names=home_names,
+        away_names=away_names,
+        league=league,
+    )
+
+
 def _with_db_rating_layer(
     result: dict[str, Any],
     *,
@@ -64,6 +95,9 @@ def _with_db_rating_layer(
     away_name: str | None,
     home_espn_id: str | None = None,
     away_espn_id: str | None = None,
+    home_moneyline: int | None = None,
+    away_moneyline: int | None = None,
+    headlines: list[str] | None = None,
 ) -> dict[str, Any]:
     if not is_soccer_league(league) and home_espn_id and away_espn_id:
         from web.availability_signals import (
@@ -107,9 +141,26 @@ def _with_db_rating_layer(
             away_name=away_name,
         )
     if is_soccer_league(league):
-        return result
+        return _apply_context_layer(
+            result,
+            league=league,
+            home_name=home_name,
+            away_name=away_name,
+            home_moneyline=home_moneyline,
+            away_moneyline=away_moneyline,
+            headlines=headlines,
+        )
     result = apply_binary_calibration_to_blend(result, league)
-    return _attach_home_spread_margin(result, league)
+    result = _attach_home_spread_margin(result, league)
+    return _apply_context_layer(
+        result,
+        league=league,
+        home_name=home_name,
+        away_name=away_name,
+        home_moneyline=home_moneyline,
+        away_moneyline=away_moneyline,
+        headlines=headlines,
+    )
 
 
 def total_score_to_home_win_prob(total_score: float) -> float:
@@ -781,11 +832,16 @@ def _blend_basketball_matrix_only(
     legacy_win_probability: float = 50.0,
     home_name: str | None = None,
     away_name: str | None = None,
+    home_espn_id: str | None = None,
+    away_espn_id: str | None = None,
+    consensus_spread: float | None = None,
+    home_moneyline: int | None = None,
+    away_moneyline: int | None = None,
 ) -> dict[str, Any]:
-    """Basketball display uses BasketballMatrix only; legacy/power feed ensemble features.
+    """Basketball display prefers sport-specific models; BasketballMatrix is fallback.
 
-    NBA/WNBA route to GradientBoost v2 when artifacts are available, keeping
-    BasketballMatrix as the fallback.
+    NBA/WNBA route to GradientBoost v2 when artifacts are available.
+    CBB prefers Torvik efficiency + calibration, falling back to BasketballMatrix.
     """
     league_key = league.lower()
     if league_key == "nba":
@@ -832,6 +888,7 @@ def _blend_basketball_matrix_only(
                     -float(v2_payload["predicted_margin"]), 2
                 )
             return result
+
     legacy_home = total_score_to_home_win_prob(legacy_total_score)
     legacy_payload = {
         "algorithm": "Algo_V2",
@@ -849,12 +906,32 @@ def _blend_basketball_matrix_only(
         away_name=away_name,
     )
 
-    sport_payload = run_basketball_pred_model(
-        league,
-        cutoff_date,
-        home_abbr,
-        away_abbr,
-    )
+    sport_payload: dict[str, Any] | None = None
+    if is_cbb_league(league):
+        try:
+            sport_payload = run_cbb_pred_model(
+                league,
+                cutoff_date,
+                home_abbr,
+                away_abbr,
+                home_espn_id=home_espn_id,
+                away_espn_id=away_espn_id,
+                home_name=home_name,
+                away_name=away_name,
+                market_spread=consensus_spread,
+                home_ml=home_moneyline,
+                away_ml=away_moneyline,
+            )
+        except Exception:  # noqa: BLE001 - Torvik must never break the slate
+            sport_payload = None
+
+    if not sport_payload:
+        sport_payload = run_basketball_pred_model(
+            league,
+            cutoff_date,
+            home_abbr,
+            away_abbr,
+        )
     if not sport_payload:
         reason = basketball_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
         return {
@@ -873,9 +950,11 @@ def _blend_basketball_matrix_only(
     home_prob = float(sport_payload["home_win_probability"])
     total, win_prob = home_win_prob_to_total_score(home_prob)
     feature_layers = 1 + int(power_payload is not None)
+    algorithm = str(sport_payload.get("algorithm") or "BasketballMatrix")
+    is_torvik = algorithm == "CBBTorvik"
     result = {
-        "algorithm": "BasketballMatrix",
-        "blend_mode": "basketball_matrix",
+        "algorithm": algorithm,
+        "blend_mode": "cbb_torvik" if is_torvik else "basketball_matrix",
         "blend_layers": feature_layers,
         "blend_weights": {"basketball_pred": 1.0},
         "legacy": legacy_payload,
@@ -886,6 +965,14 @@ def _blend_basketball_matrix_only(
         "win_probability": round(win_prob, 2),
         "favorite_side": "home" if total <= 0 else "away",
     }
+    if sport_payload.get("market_decorrelated"):
+        result["market_decorrelated"] = True
+    if sport_payload.get("pre_decorrelation_home_win_probability") is not None:
+        result["pre_decorrelation_home_win_probability"] = sport_payload[
+            "pre_decorrelation_home_win_probability"
+        ]
+    if sport_payload.get("cbb_pick_signals") is not None:
+        result["cbb_pick_signals"] = sport_payload["cbb_pick_signals"]
     if sport_payload.get("predicted_margin") is not None:
         result["home_spread_margin"] = round(-float(sport_payload["predicted_margin"]), 2)
     return result
@@ -1080,7 +1167,8 @@ def blend_predictions(
     """
     Blend Algo_V2 and power model into unified total_score / win_probability.
 
-    Hockey leagues use Algo V1 only. Basketball uses BasketballMatrix only.
+    Hockey leagues use Algo V1 only. Basketball prefers sport models
+    (NBA/WNBA v2, CBB Torvik) with BasketballMatrix fallback.
     Baseball and football use a third sport layer blended via meta weights.
     """
     if is_basketball_league(league):
@@ -1093,6 +1181,11 @@ def blend_predictions(
             legacy_win_probability=legacy_win_probability,
             home_name=home_name,
             away_name=away_name,
+            home_espn_id=home_espn_id,
+            away_espn_id=away_espn_id,
+            consensus_spread=consensus_spread,
+            home_moneyline=home_moneyline,
+            away_moneyline=away_moneyline,
         )
 
     if is_hockey_league(league):
@@ -1183,6 +1276,8 @@ def blend_predictions(
             away_name=away_name,
             home_espn_id=home_espn_id,
             away_espn_id=away_espn_id,
+            home_moneyline=home_moneyline,
+            away_moneyline=away_moneyline,
         )
 
     legacy_home = total_score_to_home_win_prob(legacy_total_score)
@@ -1249,6 +1344,8 @@ def blend_predictions(
             away_name=away_name,
             home_espn_id=home_espn_id,
             away_espn_id=away_espn_id,
+            home_moneyline=home_moneyline,
+            away_moneyline=away_moneyline,
         )
 
     weight_sum = legacy_weight + power_weight
@@ -1312,4 +1409,8 @@ def blend_predictions(
         away_slug=away_slug,
         home_name=home_name,
         away_name=away_name,
+        home_espn_id=home_espn_id,
+        away_espn_id=away_espn_id,
+        home_moneyline=home_moneyline,
+        away_moneyline=away_moneyline,
     )

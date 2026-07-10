@@ -259,7 +259,14 @@ def test_blend_basketball_matrix_only_when_available() -> None:
     import web.blend_service as blend_module
 
     basketball_original = blend_module.run_basketball_pred_model
+    cbb_original = blend_module.run_cbb_pred_model
+    power_original = blend_module.run_power_model
+    nba_v2_original = blend_module._run_nba_v2
+    wnba_v2_original = blend_module._run_wnba_v2
     try:
+        blend_module.run_power_model = lambda *_a, **_k: None
+        blend_module._run_nba_v2 = lambda *_a, **_k: None
+        blend_module._run_wnba_v2 = lambda *_a, **_k: None
         blend_module.run_basketball_pred_model = lambda *_a, **_k: {
             "algorithm": "BasketballMatrix",
             "source": "soft-impute-svd",
@@ -271,6 +278,8 @@ def test_blend_basketball_matrix_only_when_available() -> None:
             "predicted_away_offensive_rating": 110.1,
             "predicted_pace": 98.5,
         }
+        # Force CBB Torvik unavailable so matrix fallback is exercised.
+        blend_module.run_cbb_pred_model = lambda *_a, **_k: None
         for league in ("nba", "wnba", "cbb"):
             result = blend_predictions(
                 legacy_total_score=-58.0,
@@ -291,6 +300,91 @@ def test_blend_basketball_matrix_only_when_available() -> None:
             assert result.get("home_spread_margin") == -4.5
     finally:
         blend_module.run_basketball_pred_model = basketball_original
+        blend_module.run_cbb_pred_model = cbb_original
+        blend_module.run_power_model = power_original
+        blend_module._run_nba_v2 = nba_v2_original
+        blend_module._run_wnba_v2 = wnba_v2_original
+
+
+def test_blend_cbb_prefers_torvik_when_available() -> None:
+    import web.blend_service as blend_module
+
+    basketball_original = blend_module.run_basketball_pred_model
+    cbb_original = blend_module.run_cbb_pred_model
+    power_original = blend_module.run_power_model
+    try:
+        blend_module.run_power_model = lambda *_a, **_k: None
+        blend_module.run_basketball_pred_model = lambda *_a, **_k: {
+            "algorithm": "BasketballMatrix",
+            "source": "soft-impute-svd",
+            "home_win_probability": 55.0,
+            "predicted_margin": 3.0,
+        }
+        blend_module.run_cbb_pred_model = lambda *_a, **_k: {
+            "algorithm": "CBBTorvik",
+            "source": "torvik-efficiency-calibrated",
+            "market_decorrelated": True,
+            "home_win_probability": 62.0,
+            "pre_decorrelation_home_win_probability": 64.5,
+            "predicted_margin": 7.5,
+            "cbb_pick_signals": {"steam": False},
+        }
+        result = blend_predictions(
+            legacy_total_score=-58.0,
+            legacy_win_probability=58.0,
+            league="cbb",
+            cutoff_date="11-15-2024",
+            home_abbr="duke",
+            away_abbr="unc",
+            consensus_spread=-6.5,
+        )
+        assert result["blend_mode"] == "cbb_torvik"
+        assert result["algorithm"] == "CBBTorvik"
+        assert result["market_decorrelated"] is True
+        assert result["pre_decorrelation_home_win_probability"] == 64.5
+        assert result["blended_home_win_probability"] == 62.0
+        assert result["home_spread_margin"] == -7.5
+        assert result["cbb_pick_signals"] == {"steam": False}
+        assert result["basketball_pred"]["source"] == "torvik-efficiency-calibrated"
+    finally:
+        blend_module.run_basketball_pred_model = basketball_original
+        blend_module.run_cbb_pred_model = cbb_original
+        blend_module.run_power_model = power_original
+
+
+def test_blend_cbb_falls_back_to_matrix_when_torvik_fails() -> None:
+    import web.blend_service as blend_module
+
+    basketball_original = blend_module.run_basketball_pred_model
+    cbb_original = blend_module.run_cbb_pred_model
+    power_original = blend_module.run_power_model
+    try:
+        def _boom(*_a, **_k):
+            raise RuntimeError("torvik down")
+
+        blend_module.run_power_model = lambda *_a, **_k: None
+        blend_module.run_cbb_pred_model = _boom
+        blend_module.run_basketball_pred_model = lambda *_a, **_k: {
+            "algorithm": "BasketballMatrix",
+            "source": "soft-impute-svd",
+            "home_win_probability": 57.0,
+            "predicted_margin": 4.0,
+        }
+        result = blend_predictions(
+            legacy_total_score=-57.0,
+            legacy_win_probability=57.0,
+            league="cbb",
+            cutoff_date="11-15-2024",
+            home_abbr="duke",
+            away_abbr="unc",
+        )
+        assert result["blend_mode"] == "basketball_matrix"
+        assert result["algorithm"] == "BasketballMatrix"
+        assert result["blended_home_win_probability"] == 57.0
+    finally:
+        blend_module.run_basketball_pred_model = basketball_original
+        blend_module.run_cbb_pred_model = cbb_original
+        blend_module.run_power_model = power_original
 
 
 def test_model_agreement_basketball_single_model() -> None:
@@ -602,7 +696,10 @@ def test_blend_nba_matrix_only_keeps_legacy_layers_for_ensemble() -> None:
     import web.blend_service as blend_module
 
     basketball_original = blend_module.run_basketball_pred_model
+    nba_v2_original = blend_module._run_nba_v2
     try:
+        # Force matrix fallback path (v2 artifacts may exist in the repo).
+        blend_module._run_nba_v2 = lambda *_a, **_k: None
         blend_module.run_basketball_pred_model = lambda *_a, **_k: {
             "algorithm": "BasketballMatrix",
             "source": "soft-impute-svd",
@@ -625,6 +722,7 @@ def test_blend_nba_matrix_only_keeps_legacy_layers_for_ensemble() -> None:
         assert result["legacy"]["home_win_probability"] == 60.0
     finally:
         blend_module.run_basketball_pred_model = basketball_original
+        blend_module._run_nba_v2 = nba_v2_original
 
 
 def test_model_agreement_nfl_three_layers_agree() -> None:

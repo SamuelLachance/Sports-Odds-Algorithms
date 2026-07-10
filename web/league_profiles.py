@@ -161,6 +161,8 @@ OFFICIAL_PICK_LEAGUES: frozenset[str] = frozenset(
         "wnba",
         "nhl",
         "mlb",
+        "nfl",
+        "cfb",
         "epl",
         "bundesliga",
         "laliga",

@@ -45,6 +45,33 @@
     "backtest_roi_pct": 5.22,
     "backtest_bets": 321
   },
+  "cbb": {
+    "bet_type": "spread",
+    "min_spread_cover_gap_pp": 7.0,
+    "min_spread_point_edge": 5.0,
+    "min_spread_confidence_pp": 5.0,
+    "min_ev_pct": 2.0,
+    "enabled": true,
+    "note": "Torvik+Hubáček conservative policy pending larger OOS: cover gap >= 7 pp and point cushion >= 5 at the live spread. CBB markets are thinner than NBA but noisier than NFL; gates sit between NBA (6/6) and WNBA (8) until a full walk-forward bet backtest lands."
+  },
+  "nfl": {
+    "bet_type": "spread",
+    "min_spread_cover_gap_pp": 5.5,
+    "min_spread_point_edge": 3.0,
+    "min_spread_confidence_pp": 5.0,
+    "min_ev_pct": 2.5,
+    "enabled": true,
+    "note": "NFL market is highly efficient — stricter EV floor (2.5%) with a moderate cover gap (5.5 pp) and 3-point cushion. Conservative Hubáček-style gates grounded in football theory pending a dedicated walk-forward bet backtest."
+  },
+  "cfb": {
+    "bet_type": "spread",
+    "min_spread_cover_gap_pp": 6.5,
+    "min_spread_point_edge": 4.0,
+    "min_spread_confidence_pp": 5.0,
+    "min_ev_pct": 2.5,
+    "enabled": true,
+    "note": "CFB spreads are less efficient than NFL but higher variance — cover gap 6.5 pp, 4-point cushion, EV >= 2.5%. Conservative Hubáček-style gates pending larger OOS."
+  },
   "nhl": {
     "bet_type": "moneyline",
     "min_market_gap_pp": 7.8,
@@ -111,5 +138,77 @@
     "note": "Shares the pooled soccer v2 policy (see epl entry).",
     "backtest_roi_pct": 4.34,
     "backtest_bets": 1834
+  },
+  "worldcup": {
+    "bet_type": "soccer_1x2",
+    "min_market_gap_pp": 8.0,
+    "min_win_confidence_pp": 10.0,
+    "min_ev_pct": 8.0,
+    "allowed_sides": ["home"],
+    "enabled": true,
+    "note": "Sparse-sample international: EV capped at >= 8% and market gap >= 8 pp; home only. Tournament samples are thin vs club leagues — avoid over-fitting short OOS windows."
+  },
+  "fifa_friendlies": {
+    "bet_type": "soccer_1x2",
+    "min_market_gap_pp": 8.0,
+    "min_win_confidence_pp": 10.0,
+    "min_ev_pct": 8.0,
+    "allowed_sides": ["home"],
+    "enabled": true,
+    "note": "Sparse-sample international friendlies: EV >= 8%, market gap >= 8 pp, home only. Motivation/rotation noise is high — sparse-sample EV caps apply."
+  },
+  "uefa_euro": {
+    "bet_type": "soccer_1x2",
+    "min_market_gap_pp": 8.0,
+    "min_win_confidence_pp": 10.0,
+    "min_ev_pct": 8.0,
+    "allowed_sides": ["home"],
+    "enabled": true,
+    "note": "Sparse-sample international: EV >= 8%, market gap >= 8 pp, home only pending larger OOS."
+  },
+  "uefa_nations": {
+    "bet_type": "soccer_1x2",
+    "min_market_gap_pp": 8.0,
+    "min_win_confidence_pp": 10.0,
+    "min_ev_pct": 8.0,
+    "allowed_sides": ["home"],
+    "enabled": true,
+    "note": "Sparse-sample international: EV >= 8%, market gap >= 8 pp, home only pending larger OOS."
+  },
+  "copa_america": {
+    "bet_type": "soccer_1x2",
+    "min_market_gap_pp": 8.0,
+    "min_win_confidence_pp": 10.0,
+    "min_ev_pct": 8.0,
+    "allowed_sides": ["home"],
+    "enabled": true,
+    "note": "Sparse-sample international: EV >= 8%, market gap >= 8 pp, home only pending larger OOS."
+  },
+  "concacaf_wcq": {
+    "bet_type": "soccer_1x2",
+    "min_market_gap_pp": 8.0,
+    "min_win_confidence_pp": 10.0,
+    "min_ev_pct": 8.0,
+    "allowed_sides": ["home"],
+    "enabled": true,
+    "note": "Sparse-sample international: EV >= 8%, market gap >= 8 pp, home only pending larger OOS."
+  },
+  "concacaf_gold": {
+    "bet_type": "soccer_1x2",
+    "min_market_gap_pp": 8.0,
+    "min_win_confidence_pp": 10.0,
+    "min_ev_pct": 8.0,
+    "allowed_sides": ["home"],
+    "enabled": true,
+    "note": "Sparse-sample international: EV >= 8%, market gap >= 8 pp, home only pending larger OOS."
+  },
+  "concacaf_nations": {
+    "bet_type": "soccer_1x2",
+    "min_market_gap_pp": 8.0,
+    "min_win_confidence_pp": 10.0,
+    "min_ev_pct": 8.0,
+    "allowed_sides": ["home"],
+    "enabled": true,
+    "note": "Sparse-sample international: EV >= 8%, market gap >= 8 pp, home only pending larger OOS."
   }
 }

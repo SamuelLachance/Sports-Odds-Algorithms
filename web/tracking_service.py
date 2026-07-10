@@ -37,17 +37,37 @@ MAX_STAKE_UNITS = 3.0
 DEFAULT_STAKE_UNITS = 1.0
 
 
-def stake_units_from_kelly(kelly_pct: float | None) -> float:
-    """Quarter-Kelly stake in units (1u = 1% bankroll), clamped to 0.25–3u."""
+def stake_units_from_kelly(
+    kelly_pct: float | None,
+    *,
+    ev_pct: float | None = None,
+    correlation_penalty: float = 0.0,
+) -> float:
+    """Quarter-Kelly stake in units (1u = 1% bankroll), clamped to 0.25–3u.
+
+    Optionally routes through ``portfolio_stake_units`` for a correlation haircut
+    and EV soft dampener. Default ``correlation_penalty=0`` preserves classic
+    quarter-Kelly sizing; pass ~0.15 when sizing many same-slate correlated bets.
+    """
     if kelly_pct is None:
         return DEFAULT_STAKE_UNITS
     try:
-        quarter = float(kelly_pct) / 4.0
+        kelly_frac = float(kelly_pct) / 100.0
     except (TypeError, ValueError):
         return DEFAULT_STAKE_UNITS
-    if quarter <= 0:
+    if kelly_frac <= 0:
         return DEFAULT_STAKE_UNITS
-    return round(min(MAX_STAKE_UNITS, max(MIN_STAKE_UNITS, quarter)), 2)
+
+    from web.portfolio_sizing import portfolio_stake_units
+
+    return portfolio_stake_units(
+        float(ev_pct) if ev_pct is not None else 0.0,
+        kelly_frac,
+        bankroll_units=100.0,
+        max_units=MAX_STAKE_UNITS,
+        min_units=MIN_STAKE_UNITS,
+        correlation_penalty=correlation_penalty,
+    )
 
 
 def calculate_units(stake: float, american_odds: int, result: BetResult) -> float:
@@ -188,7 +208,10 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
             "kelly_pct": pick.get("kelly_pct"),
             "status": "pending",
             "units": 0.0,
-            "stake_units": stake_units_from_kelly(pick.get("kelly_pct")),
+            "stake_units": stake_units_from_kelly(
+                pick.get("kelly_pct"),
+                ev_pct=pick.get("ev_pct"),
+            ),
             "recorded_at": now,
         }
         store["bets"].append(bet)
@@ -335,10 +358,7 @@ def _grade_spread_bet(
     return "win" if adjusted > home_score else "loss"
 
 
-def _clv_pct(bet: dict[str, Any]) -> float | None:
-    """Closing-line value: recorded price payout vs last-seen (closing) price."""
-    from web.bet_advisor import american_to_decimal
-
+def _recorded_and_closing_odds(bet: dict[str, Any]) -> tuple[int | None, int | None]:
     bet_type = bet.get("bet_type") or "moneyline"
     if bet_type == "spread":
         recorded = bet.get("spread_odds") or bet.get("consensus_odds")
@@ -346,8 +366,18 @@ def _clv_pct(bet: dict[str, Any]) -> float | None:
     else:
         recorded = bet.get("market_odds")
         closing = bet.get("closing_market_odds")
-    if recorded is None or closing is None:
-        return None
+    try:
+        rec = int(recorded) if recorded is not None else None
+        close = int(closing) if closing is not None else None
+    except (TypeError, ValueError):
+        return None, None
+    return rec, close
+
+
+def _clv_payout_pct(recorded: int, closing: int) -> float | None:
+    """Legacy decimal-payout CLV: (recorded_dec / closing_dec - 1) * 100."""
+    from web.bet_advisor import american_to_decimal
+
     try:
         recorded_decimal = american_to_decimal(int(recorded))
         closing_decimal = american_to_decimal(int(closing))
@@ -356,6 +386,33 @@ def _clv_pct(bet: dict[str, Any]) -> float | None:
     if closing_decimal <= 1.0:
         return None
     return round((recorded_decimal / closing_decimal - 1.0) * 100.0, 2)
+
+
+def _clv_pct(bet: dict[str, Any]) -> float | None:
+    """Industry-standard implied-probability CLV vs closing price."""
+    from web.clv_service import clv_vs_market_pct
+
+    recorded, closing = _recorded_and_closing_odds(bet)
+    if recorded is None or closing is None:
+        return None
+    return clv_vs_market_pct(recorded, closing)
+
+
+def _clv_fields(bet: dict[str, Any]) -> dict[str, float]:
+    """Return clv_pct (implied-prob) and clv_payout_pct (legacy decimal ratio)."""
+    recorded, closing = _recorded_and_closing_odds(bet)
+    if recorded is None or closing is None:
+        return {}
+    from web.clv_service import clv_vs_market_pct
+
+    fields: dict[str, float] = {}
+    implied = clv_vs_market_pct(recorded, closing)
+    if implied is not None:
+        fields["clv_pct"] = implied
+    payout = _clv_payout_pct(recorded, closing)
+    if payout is not None:
+        fields["clv_payout_pct"] = payout
+    return fields
 
 
 def grade_bet(
@@ -394,9 +451,7 @@ def grade_bet(
         "graded_at": datetime.now(timezone.utc).isoformat(),
         "final_score": f"{away_score}–{home_score}",
     }
-    clv = _clv_pct(bet)
-    if clv is not None:
-        graded["clv_pct"] = clv
+    graded.update(_clv_fields(bet))
     return graded
 
 

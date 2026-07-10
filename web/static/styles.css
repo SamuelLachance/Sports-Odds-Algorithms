@@ -307,6 +307,11 @@ small {
   margin-bottom: var(--space-3);
 }
 
+.section-head > div {
+  min-width: 0;
+  flex: 1;
+}
+
 .section-head h2 {
   font-size: clamp(1.35rem, 2.5vw, 1.65rem);
   margin: 0 0 0.25rem;
@@ -314,10 +319,21 @@ small {
   letter-spacing: -0.01em;
 }
 
-.section-head p {
+.section-head p,
+.section-intro {
   color: var(--text-muted);
-  max-width: 60ch;
-  margin: 0;
+  max-width: 70ch;
+  margin: 0.35rem 0 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.section-count {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--accent-strong);
+  flex-shrink: 0;
 }
 
 .section h2 {
@@ -712,6 +728,12 @@ a.pick-card-link:focus-visible {
   width: 100%;
 }
 
+@media (min-width: 481px) and (max-width: 900px) {
+  .pick-odds {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .pick-odds > div {
   min-width: 0;
   padding: 0.65rem 0.5rem;
@@ -849,6 +871,340 @@ a.pick-card-link:focus-visible {
 
 .disclaimer {
   margin-top: var(--space-2);
+}
+
+/* ── A+ betting UX utilities ── */
+.panel-kicker {
+  display: inline-block;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.disclaimer-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+  margin-top: var(--space-3);
+  padding: 0.85rem 1.1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid color-mix(in srgb, var(--accent-warm) 28%, var(--border));
+  background: color-mix(in srgb, var(--accent-warm) 8%, var(--bg-soft));
+  font-size: 0.9375rem;
+  line-height: 1.45;
+}
+
+.disclaimer-bar strong {
+  color: var(--accent-warm);
+  font-weight: 700;
+}
+
+.disclaimer-bar span {
+  color: var(--text-muted);
+}
+
+.edge-badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.65rem 0 0.25rem;
+}
+
+.edge-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.22rem 0.55rem;
+  border-radius: 6px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text-muted);
+}
+
+.edge-badge--opening {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent-strong);
+}
+
+.edge-badge--close {
+  border-color: color-mix(in srgb, var(--accent-warm) 40%, var(--border));
+  background: color-mix(in srgb, var(--accent-warm) 12%, transparent);
+  color: var(--accent-warm);
+}
+
+.edge-badge--sparse {
+  border-color: color-mix(in srgb, #f87171 35%, var(--border));
+  background: rgba(248, 113, 113, 0.1);
+  color: #fca5a5;
+}
+
+.strategy-pill--official {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--accent-strong);
+}
+
+.strategy-pill--muted {
+  background: var(--ring-bg);
+  color: var(--text-muted);
+}
+
+.pick-side-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.pick-side-tag {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.pick-stake {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--accent-strong);
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.line-shop-panel,
+.context-panel,
+.three-track-panel,
+.fair-bet-strip {
+  margin-top: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+}
+
+.line-shop-head,
+.context-panel-head,
+.three-track-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.line-shop-grid,
+.three-track-grid,
+.fair-bet-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--space-2);
+}
+
+.line-shop-grid > div,
+.three-track-grid > div,
+.fair-bet-strip > div {
+  min-width: 0;
+  padding: 0.55rem 0.65rem;
+  border-radius: 8px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+}
+
+.line-shop-grid span,
+.three-track-grid span,
+.fair-bet-strip span,
+.three-track-grid small {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.line-shop-grid strong,
+.three-track-grid strong,
+.fair-bet-strip strong {
+  display: block;
+  margin-top: 0.25rem;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.9375rem;
+}
+
+.three-track-grid small {
+  margin-top: 0.35rem;
+  line-height: 1.35;
+}
+
+.line-shop-caption,
+.context-panel p {
+  margin: var(--space-2) 0 0;
+  font-size: 0.8125rem;
+}
+
+.context-panel--link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.context-panel--link:hover {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  transform: translateY(-1px);
+}
+
+.context-callout-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-2);
+}
+
+.context-panel-head strong {
+  font-family: "JetBrains Mono", monospace;
+  color: var(--accent-strong);
+}
+
+.fair-bet-strip {
+  margin-top: var(--space-2);
+  padding: var(--space-2);
+}
+
+.game-bet-strip {
+  margin-top: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--bg-soft);
+  border-left: 4px solid var(--accent);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.game-bet-strip--ref {
+  border-left-color: var(--border);
+}
+
+.game-bet-strip.confidence-high {
+  border-left-color: var(--accent);
+}
+
+.game-bet-strip.confidence-medium {
+  border-left-color: var(--accent-warm);
+}
+
+.game-bet-strip-main {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  align-items: baseline;
+}
+
+.game-bet-strip-main span {
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+}
+
+.game-bet-strip-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.85rem;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--accent-strong);
+}
+
+.clv-caption {
+  margin: var(--space-2) 0 0;
+  font-size: 0.875rem;
+  max-width: 70ch;
+}
+
+.clv-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin: 0.5rem 0;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.clv-positive {
+  color: var(--accent-strong);
+}
+
+.clv-negative {
+  color: #f87171;
+}
+
+.clv-secondary {
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.tracking-rule {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.tracking-empty-expect {
+  text-align: left;
+  margin-bottom: var(--space-3);
+}
+
+.tracking-empty-expect strong {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--text);
+}
+
+.rollup-grid--tracking .rollup-card small {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.rollup-card--empty {
+  opacity: 0.85;
+}
+
+.picks-section-official {
+  padding-top: var(--space-2);
+}
+
+.picks-section-reference {
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border);
+}
+
+.availability-risk {
+  padding: var(--space-3);
+  border-color: color-mix(in srgb, var(--accent-warm) 25%, var(--border));
+}
+
+.availability-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.availability-block h3 {
+  margin: 0 0 var(--space-2);
+  font-size: 1rem;
+}
+
+.pick-top {
+  flex-wrap: wrap;
 }
 
 /* ── Platform layout ── */
@@ -2276,6 +2632,22 @@ a.pick-card-link:focus-visible {
     min-width: 0;
   }
 
+  .line-shop-grid,
+  .three-track-grid,
+  .fair-bet-strip {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .disclaimer-bar {
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .section-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   .mobile-bottom-nav {
     display: flex;
   }
@@ -2292,5 +2664,16 @@ a.pick-card-link:focus-visible {
 
   .pick-odds {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .line-shop-grid,
+  .three-track-grid,
+  .fair-bet-strip,
+  .availability-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .game-bet-strip-main {
+    flex-direction: column;
   }
 }

@@ -1,0 +1,428 @@
+"""Fourth-layer context adjustments grounded in market-bias research.
+
+Pure math only in the core helpers (no network). Optional fetch helpers may
+live elsewhere; this module consumes already-fetched headlines / odds.
+
+Signals:
+- Favorite-longshot bias (FLB) nudge from open-like moneylines
+  (Harvard MLB thesis 2026: FLB concentrated in opening prices)
+- Public sentiment / steam proxies from line movement when available
+- News/injury keyword heuristics from ESPN-style headlines
+- Sparse-sample EV caps for thin international tournaments
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
+# Max signed home-prob nudge from favorite-longshot bias (percentage points).
+MAX_FLB_SHIFT_PP = 1.5
+
+# Max signed home-prob nudge from headline keyword heuristics.
+MAX_NEWS_SHIFT_PP = 2.0
+
+# Max signed home-prob nudge from steam / line-movement proxy.
+MAX_STEAM_SHIFT_PP = 1.0
+
+# Combined context layer clamp (keeps A+ upgrades conservative).
+MAX_TOTAL_CONTEXT_PP = 3.0
+
+# American odds at/through which FLB is considered present at open-like prices.
+FLB_FAVORITE_ML_THRESHOLD = -150
+FLB_HEAVY_FAVORITE_ML = -250
+
+# Leagues with thin samples (World Cup, friendlies, confederation tournaments).
+SPARSE_SAMPLE_LEAGUES = frozenset(
+    {
+        "worldcup",
+        "fifa_friendlies",
+        "copa_america",
+        "concacaf_wcq",
+        "concacaf_gold",
+        "concacaf_nations",
+        "uefa_euro",
+        "uefa_nations",
+    }
+)
+
+# Soft EV caps (honest EV% after vig) when sample is thin.
+_SPARSE_EV_CAP_STRICT = 18.0
+_SPARSE_EV_CAP_MODERATE = 28.0
+_SPARSE_EV_CAP_RELAXED = 40.0
+_DEFAULT_EV_CAP_THIN = 55.0
+
+_INJURY_NEG_KEYWORDS = (
+    "injur",
+    "out for",
+    "sidelined",
+    "questionable",
+    "doubtful",
+    "ruled out",
+    "suspended",
+    "suspension",
+    "rest day",
+    "sitting out",
+    "will miss",
+    "day-to-day",
+    "day to day",
+)
+
+_HOT_POS_KEYWORDS = (
+    "hot streak",
+    "winning streak",
+    "unbeaten",
+    "in form",
+    "on fire",
+    "dominant",
+    "rolling",
+)
+
+
+def _clamp(value: float, lo: float, hi: float) -> float:
+    return min(max(value, lo), hi)
+
+
+def _american_to_implied_pct(american: int) -> float:
+    if american == 0:
+        return 50.0
+    if american < 0:
+        return abs(american) / (abs(american) + 100.0) * 100.0
+    return 100.0 / (american + 100.0) * 100.0
+
+
+def favorite_longshot_adjustment(
+    home_ml: int | None,
+    away_ml: int | None,
+    model_home_prob_pct: float,
+) -> float:
+    """Signed pp shift to home win probability toward the underdog when FLB is present.
+
+    Opening-like heavy favorites are slightly overbet (favorite-longshot bias).
+    When both the book and the model lean the same favorite at open-like prices,
+    nudge a small amount toward the dog. Magnitude capped at ±1.5 pp.
+    """
+    if home_ml is None or away_ml is None:
+        return 0.0
+    try:
+        home_ml_i = int(home_ml)
+        away_ml_i = int(away_ml)
+    except (TypeError, ValueError):
+        return 0.0
+
+    if home_ml_i == away_ml_i:
+        return 0.0
+
+    home_is_fav = home_ml_i < away_ml_i
+    fav_ml = home_ml_i if home_is_fav else away_ml_i
+    if fav_ml > FLB_FAVORITE_ML_THRESHOLD:
+        return 0.0
+
+    model_home = float(model_home_prob_pct)
+    model_favors_home = model_home >= 50.0
+    if home_is_fav != model_favors_home:
+        # Model already disagrees with the chalk — no FLB correction.
+        return 0.0
+
+    # Scale 0→1 from threshold to heavy favorite.
+    span = abs(FLB_HEAVY_FAVORITE_ML - FLB_FAVORITE_ML_THRESHOLD)
+    intensity = _clamp(abs(fav_ml - FLB_FAVORITE_ML_THRESHOLD) / max(span, 1.0), 0.0, 1.0)
+    # Mild base even at the threshold so open-like -150 still gets a tiny nudge.
+    magnitude = MAX_FLB_SHIFT_PP * (0.35 + 0.65 * intensity)
+
+    # Toward underdog: if home is favorite, reduce home prob (negative shift).
+    shift = -magnitude if home_is_fav else magnitude
+    return round(_clamp(shift, -MAX_FLB_SHIFT_PP, MAX_FLB_SHIFT_PP), 3)
+
+
+def steam_line_movement_shift(
+    home_ml: int | None,
+    away_ml: int | None,
+    *,
+    open_home_ml: int | None = None,
+    open_away_ml: int | None = None,
+) -> float:
+    """Signed pp home-prob nudge from open→close moneyline steam (public/sharp proxy).
+
+    Positive = steam toward home. Capped at ±1.0 pp. Returns 0 when opens missing.
+    """
+    if (
+        home_ml is None
+        or away_ml is None
+        or open_home_ml is None
+        or open_away_ml is None
+    ):
+        return 0.0
+    try:
+        close_home = _american_to_implied_pct(int(home_ml))
+        open_home = _american_to_implied_pct(int(open_home_ml))
+    except (TypeError, ValueError):
+        return 0.0
+
+    move_pp = close_home - open_home
+    # Ignore noise under ~1.5 pp implied; scale gently above that.
+    if abs(move_pp) < 1.5:
+        return 0.0
+    # 1.5→6 pp move maps into ~0.25→1.0 pp model nudge.
+    scaled = _clamp(abs(move_pp) / 6.0, 0.0, 1.0) * MAX_STEAM_SHIFT_PP
+    shift = scaled if move_pp > 0 else -scaled
+    return round(_clamp(shift, -MAX_STEAM_SHIFT_PP, MAX_STEAM_SHIFT_PP), 3)
+
+
+def _headline_mentions_side(headline: str, names: list[str]) -> bool:
+    text = headline.lower()
+    for name in names:
+        token = (name or "").strip().lower()
+        if len(token) >= 3 and token in text:
+            return True
+    return False
+
+
+def _keyword_hit(text: str, keywords: tuple[str, ...]) -> bool:
+    return any(key in text for key in keywords)
+
+
+def news_sentiment_shift(
+    headlines: list[str],
+    home_names: list[str],
+    away_names: list[str],
+) -> float:
+    """Keyword heuristic (±2 pp max) for injury/suspension/rest/hot-streak language.
+
+    Negative keywords on a side hurt that side; hot-streak language helps.
+    Returns signed pp shift to home win probability.
+    """
+    if not headlines:
+        return 0.0
+    home_names = [n for n in (home_names or []) if n]
+    away_names = [n for n in (away_names or []) if n]
+    if not home_names and not away_names:
+        return 0.0
+
+    home_score = 0.0
+    away_score = 0.0
+    for raw in headlines:
+        if not raw or not isinstance(raw, str):
+            continue
+        text = raw.lower()
+        home_hit = _headline_mentions_side(text, home_names)
+        away_hit = _headline_mentions_side(text, away_names)
+        if not home_hit and not away_hit:
+            continue
+        injury = _keyword_hit(text, _INJURY_NEG_KEYWORDS)
+        hot = _keyword_hit(text, _HOT_POS_KEYWORDS)
+        if injury:
+            if home_hit and not away_hit:
+                home_score -= 1.0
+            elif away_hit and not home_hit:
+                away_score -= 1.0
+            elif home_hit and away_hit:
+                # Ambiguous dual mention — skip.
+                pass
+        if hot:
+            if home_hit and not away_hit:
+                home_score += 0.75
+            elif away_hit and not home_hit:
+                away_score += 0.75
+
+    # Net home advantage from relative sentiment.
+    raw_shift = (home_score - away_score) * 0.85
+    return round(_clamp(raw_shift, -MAX_NEWS_SHIFT_PP, MAX_NEWS_SHIFT_PP), 3)
+
+
+def is_sparse_sample_league(league: str | None) -> bool:
+    if not league:
+        return False
+    key = league.lower().strip()
+    if key in SPARSE_SAMPLE_LEAGUES:
+        return True
+    return key.startswith("concacaf_")
+
+
+def sparse_sample_ev_cap(
+    league: str,
+    games_played_proxy: int | None,
+    ev_pct: float,
+) -> float:
+    """Cap absurd EV% when the league/sample is thin (e.g. World Cup 99% EV).
+
+    International tournaments and friendlies get stricter caps. Regular leagues
+    only soft-cap when ``games_played_proxy`` is explicitly very small.
+    """
+    try:
+        ev = float(ev_pct)
+    except (TypeError, ValueError):
+        return 0.0
+
+    sparse = is_sparse_sample_league(league)
+    games = games_played_proxy
+    if games is not None:
+        try:
+            games = int(games)
+        except (TypeError, ValueError):
+            games = None
+
+    if sparse:
+        if games is None or games < 8:
+            cap = _SPARSE_EV_CAP_STRICT
+        elif games < 16:
+            cap = _SPARSE_EV_CAP_MODERATE
+        else:
+            cap = _SPARSE_EV_CAP_RELAXED
+        return round(min(ev, cap), 4)
+
+    if games is not None and games < 6:
+        return round(min(ev, _DEFAULT_EV_CAP_THIN), 4)
+    return round(ev, 4)
+
+
+def _resolve_home_prob(blended: dict[str, Any]) -> float | None:
+    if blended.get("blended_home_win_probability") is not None:
+        return float(blended["blended_home_win_probability"])
+    if blended.get("home_win_probability") is not None and blended.get("threeway"):
+        return float(blended["home_win_probability"])
+    if blended.get("home_win_probability") is not None and not blended.get("draw_probability"):
+        return float(blended["home_win_probability"])
+    if blended.get("total_score") is not None:
+        total = float(blended["total_score"])
+        if abs(total) < 1e-9:
+            return 50.0
+        win_prob = abs(total)
+        return win_prob if total <= 0 else 100.0 - win_prob
+    if blended.get("win_probability") is not None and blended.get("favorite_side"):
+        win_prob = float(blended["win_probability"])
+        return win_prob if blended["favorite_side"] == "home" else 100.0 - win_prob
+    return None
+
+
+def _games_played_proxy_from_blend(blended: dict[str, Any]) -> int | None:
+    for key in ("hockey_pred", "basketball_pred", "baseball_pred", "soccer_pred", "mlb_pred"):
+        pred = blended.get(key)
+        if not isinstance(pred, dict):
+            continue
+        home_g = pred.get("home_games")
+        away_g = pred.get("away_games")
+        if home_g is None and away_g is None:
+            continue
+        try:
+            values = [int(v) for v in (home_g, away_g) if v is not None]
+        except (TypeError, ValueError):
+            continue
+        if values:
+            return min(values)
+    return None
+
+
+def apply_context_to_blend(
+    blended: dict[str, Any],
+    *,
+    market: dict[str, Any] | None = None,
+    headlines: list[str] | None = None,
+    home_names: list[str] | None = None,
+    away_names: list[str] | None = None,
+    league: str | None = None,
+) -> dict[str, Any]:
+    """Apply context layer to a blend payload; returns updated dict.
+
+    Stores ``pre_context_*`` copies, sets ``context_adjustment_pp``, and updates
+    home/away (or binary) probabilities. Soccer three-way blends adjust home/away
+    mass while holding draw fixed, then renormalize.
+    """
+    home_prob = _resolve_home_prob(blended)
+    if home_prob is None:
+        return blended
+
+    market = market or {}
+    home_ml = market.get("home_moneyline")
+    away_ml = market.get("away_moneyline")
+    open_home = market.get("open_home_moneyline") or market.get("opening_home_ml")
+    open_away = market.get("open_away_moneyline") or market.get("opening_away_ml")
+
+    flb = favorite_longshot_adjustment(home_ml, away_ml, home_prob)
+    steam = steam_line_movement_shift(
+        home_ml,
+        away_ml,
+        open_home_ml=open_home if open_home is not None else None,
+        open_away_ml=open_away if open_away is not None else None,
+    )
+    news = news_sentiment_shift(
+        list(headlines or []),
+        list(home_names or []),
+        list(away_names or []),
+    )
+    # Prefer steam already computed by sport models when present.
+    opening_steam = blended.get("opening_steam")
+    if isinstance(opening_steam, dict) and opening_steam.get("steam_signal"):
+        direction = str(opening_steam.get("steam_direction") or "").lower()
+        if direction == "home":
+            steam = max(steam, 0.5)
+        elif direction == "away":
+            steam = min(steam, -0.5)
+
+    total_shift = _clamp(flb + steam + news, -MAX_TOTAL_CONTEXT_PP, MAX_TOTAL_CONTEXT_PP)
+    if abs(total_shift) < 1e-9:
+        updated = dict(blended)
+        updated["context_adjustment_pp"] = 0.0
+        updated["context_signals"] = {
+            "flb_pp": flb,
+            "steam_pp": steam,
+            "news_pp": news,
+            "total_pp": 0.0,
+        }
+        return updated
+
+    from web.blend_service import home_win_prob_to_total_score
+
+    updated = dict(blended)
+    updated["pre_context_home_win_probability"] = round(home_prob, 2)
+    if updated.get("blended_home_win_probability") is not None:
+        updated["pre_context_blended_home_win_probability"] = round(
+            float(updated["blended_home_win_probability"]), 2
+        )
+    if updated.get("win_probability") is not None:
+        updated["pre_context_win_probability"] = round(float(updated["win_probability"]), 2)
+    if updated.get("total_score") is not None:
+        updated["pre_context_total_score"] = round(float(updated["total_score"]), 2)
+
+    if updated.get("threeway") and updated.get("draw_probability") is not None:
+        draw_p = float(updated["draw_probability"])
+        away_p = float(updated.get("away_win_probability") or (100.0 - home_prob - draw_p))
+        updated["pre_context_away_win_probability"] = round(away_p, 2)
+        updated["pre_context_draw_probability"] = round(draw_p, 2)
+        new_home = _clamp(home_prob + total_shift, 1.0, 97.0)
+        # Hold draw; shift mass between home and away, then renormalize.
+        new_away = _clamp(away_p - total_shift, 1.0, 97.0)
+        total = new_home + draw_p + new_away
+        if total <= 0:
+            return blended
+        new_home = new_home / total * 100.0
+        draw_p = draw_p / total * 100.0
+        new_away = new_away / total * 100.0
+        updated["home_win_probability"] = round(new_home, 2)
+        updated["draw_probability"] = round(draw_p, 2)
+        updated["away_win_probability"] = round(new_away, 2)
+        if updated.get("blended_home_win_probability") is not None:
+            updated["blended_home_win_probability"] = round(new_home, 2)
+        binary_home = new_home / max(new_home + new_away, 1e-9) * 100.0
+        total_score, win_prob = home_win_prob_to_total_score(binary_home)
+        updated["total_score"] = round(total_score, 2)
+        updated["win_probability"] = round(win_prob, 2)
+        updated["favorite_side"] = "home" if total_score <= 0 else "away"
+    else:
+        adjusted = _clamp(home_prob + total_shift, 5.0, 95.0)
+        total_score, win_prob = home_win_prob_to_total_score(adjusted)
+        updated["blended_home_win_probability"] = round(adjusted, 2)
+        updated["home_win_probability"] = round(adjusted, 2)
+        updated["total_score"] = round(total_score, 2)
+        updated["win_probability"] = round(win_prob, 2)
+        updated["favorite_side"] = "home" if total_score <= 0 else "away"
+
+    updated["context_adjustment_pp"] = round(total_shift, 3)
+    updated["context_signals"] = {
+        "flb_pp": flb,
+        "steam_pp": steam,
+        "news_pp": news,
+        "total_pp": round(total_shift, 3),
+        "league": league,
+        "games_played_proxy": _games_played_proxy_from_blend(blended),
+    }
+    return updated

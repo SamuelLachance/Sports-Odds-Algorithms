@@ -311,6 +311,23 @@ def pick_profit_score(
     return ev_pct * (1.0 + 2.5 * kelly) + edge * 0.15
 
 
+def _pick_extra_with_league(
+    *,
+    base_ev_prob: float,
+    outcome_prob: float,
+    league: str | None = None,
+    games_played_proxy: int | None = None,
+) -> dict[str, Any]:
+    extra: dict[str, Any] = {}
+    if base_ev_prob != outcome_prob:
+        extra["base_win_probability"] = round(base_ev_prob, 2)
+    if league:
+        extra["league"] = league
+    if games_played_proxy is not None:
+        extra["games_played_proxy"] = games_played_proxy
+    return extra
+
+
 def enrich_pick_profit_metrics(pick: BetPick) -> BetPick:
     """Attach EV%, Kelly, and profit_score used for official pick ranking."""
     if pick.bet_type == "spread":
@@ -321,7 +338,18 @@ def enrich_pick_profit_metrics(pick: BetPick) -> BetPick:
     # the decorrelated win_probability only drives the gap/confidence gates.
     base_prob = pick.extra.get("base_win_probability")
     prob = float(base_prob) if base_prob is not None else float(pick.win_probability)
-    pick.ev_pct = round(expected_value_pct(prob, odds), 2)
+    ev_pct = expected_value_pct(prob, odds)
+    league = pick.extra.get("league")
+    if league:
+        from web.context_signals import sparse_sample_ev_cap
+
+        games_proxy = pick.extra.get("games_played_proxy")
+        try:
+            games_i = int(games_proxy) if games_proxy is not None else None
+        except (TypeError, ValueError):
+            games_i = None
+        ev_pct = sparse_sample_ev_cap(str(league), games_i, ev_pct)
+    pick.ev_pct = round(ev_pct, 2)
     kelly = kelly_fraction(prob, odds)
     pick.profit_score = round(
         pick_profit_score(model_prob_pct=prob, american_odds=odds, edge=pick.edge),
@@ -423,13 +451,14 @@ def passes_hubacek_spread_pick_gate(
     side_cover_prob: float,
     spread_odds: int,
     ev_pct: float,
-    min_ev_pct: float = 0.0,
+    min_ev_pct: float | None = None,
     consensus_spread: float,
     min_cover_gap_pp: float | None = None,
     min_win_confidence_pp: float | None = None,
 ) -> bool:
     """Spread official pick: decorrelated margin vs line + cover gap vs juice."""
     from web.hubacek_picks import (
+        HUBACEK_MIN_EV_PCT,
         HUBACEK_MIN_SPREAD_COVER_GAP_PP,
         HUBACEK_SPREAD_MIN_WIN_CONFIDENCE_PP,
         passes_hubacek_spread_gate,
@@ -445,6 +474,7 @@ def passes_hubacek_spread_pick_gate(
         if min_win_confidence_pp is None
         else min_win_confidence_pp
     )
+    ev_floor = HUBACEK_MIN_EV_PCT if min_ev_pct is None else min_ev_pct
     return passes_hubacek_spread_gate(
         blended=blended,
         side=side,
@@ -455,6 +485,7 @@ def passes_hubacek_spread_pick_gate(
         consensus_spread=consensus_spread,
         min_cover_gap_pp=cover_floor,
         min_win_confidence_pp=confidence_floor,
+        min_ev_pct=ev_floor,
     )
 
 
@@ -725,6 +756,8 @@ def evaluate_picks(
     min_win_confidence_pp: float | None = None,
     ml_lo: float | None = None,
     ml_hi: float | None = None,
+    league: str | None = None,
+    games_played_proxy: int | None = None,
 ) -> list[BetPick]:
     if away_prob is None or home_prob is None:
         away_prob, home_prob = _side_win_probs(total_score)
@@ -747,6 +780,10 @@ def evaluate_picks(
 
         edge = _odds_edge(projection, market, outcome_prob)
         ev_pct = expected_value_pct(ev_prob, market)
+        if league:
+            from web.context_signals import sparse_sample_ev_cap
+
+            ev_pct = sparse_sample_ev_cap(league, games_played_proxy, ev_pct)
         is_model_favorite = projection < 0
         is_market_underdog = market > 0
 
@@ -800,6 +837,14 @@ def evaluate_picks(
                 strategy = "value"
                 confidence = "medium"
 
+        extra: dict[str, Any] = {}
+        if ev_prob != outcome_prob:
+            extra["base_win_probability"] = round(ev_prob, 2)
+        if league:
+            extra["league"] = league
+        if games_played_proxy is not None:
+            extra["games_played_proxy"] = games_played_proxy
+
         picks.append(
             BetPick(
                 side=side,
@@ -814,11 +859,7 @@ def evaluate_picks(
                 win_probability=outcome_prob,
                 market_implied_prob=round(market_implied, 2) if market_implied is not None else None,
                 reason=reason,
-                extra=(
-                    {"base_win_probability": round(ev_prob, 2)}
-                    if ev_prob != outcome_prob
-                    else {}
-                ),
+                extra=extra,
             )
         )
 
@@ -878,6 +919,8 @@ def evaluate_soccer_picks(
     hubacek_only: bool = False,
     min_market_gap_pp: float | None = None,
     min_win_confidence_pp: float | None = None,
+    league: str | None = None,
+    games_played_proxy: int | None = None,
 ) -> list[BetPick]:
     """Evaluate 3-way soccer moneyline outcomes vs the book."""
     picks: list[BetPick] = []
@@ -909,6 +952,10 @@ def evaluate_soccer_picks(
         ev_prob = float(base_prob) if base_prob is not None else outcome_prob
         edge = _odds_edge(projection, market, outcome_prob)
         ev_pct = expected_value_pct(ev_prob, market)
+        if league:
+            from web.context_signals import sparse_sample_ev_cap
+
+            ev_pct = sparse_sample_ev_cap(league, games_played_proxy, ev_pct)
         is_model_favorite = projection < 0
         is_market_underdog = market > 0
         market_implied = (
@@ -986,10 +1033,11 @@ def evaluate_soccer_picks(
                 win_probability=outcome_prob,
                 market_implied_prob=round(market_implied, 2) if market_implied is not None else None,
                 reason=reason,
-                extra=(
-                    {"base_win_probability": round(ev_prob, 2)}
-                    if ev_prob != outcome_prob
-                    else {}
+                extra=_pick_extra_with_league(
+                    base_ev_prob=ev_prob,
+                    outcome_prob=outcome_prob,
+                    league=league,
+                    games_played_proxy=games_played_proxy,
                 ),
             )
         )
@@ -1055,6 +1103,9 @@ def evaluate_spread_picks(
         line = spread_line_for_side(consensus_spread, side)
         side_cover_prob = spread_cover_probability(point_edge, league)
         ev_pct = expected_value_pct(side_cover_prob, juice)
+        from web.context_signals import sparse_sample_ev_cap
+
+        ev_pct = sparse_sample_ev_cap(league, None, ev_pct)
         market_cover = american_implied_prob(juice) * 100.0
 
         if hubacek_only:
@@ -1065,6 +1116,7 @@ def evaluate_spread_picks(
                 side_cover_prob=side_cover_prob,
                 spread_odds=juice,
                 ev_pct=ev_pct,
+                min_ev_pct=min_ev_pct,
                 consensus_spread=consensus_spread,
                 min_cover_gap_pp=min_cover_gap_pp,
                 min_win_confidence_pp=min_win_confidence_pp,
@@ -1125,6 +1177,7 @@ def evaluate_spread_picks(
                 model_margin=round(model_margin, 2),
                 extra={
                     "model_market_gap_pp": round(side_cover_prob - market_cover, 2),
+                    "league": league,
                 },
             )
         )

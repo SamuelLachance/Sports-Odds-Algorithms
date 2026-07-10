@@ -329,6 +329,22 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
         away_moneyline=game.market.away_moneyline,
         draw_moneyline=game.market.draw_moneyline,
     )
+    # Context layer hook: specialized blend paths (NBA/MLB/NHL/soccer) skip
+    # `_with_db_rating_layer`; apply once here when not already attached.
+    if blended.get("context_adjustment_pp") is None:
+        from web.context_signals import apply_context_to_blend
+
+        blended = apply_context_to_blend(
+            blended,
+            market={
+                "home_moneyline": game.market.home_moneyline,
+                "away_moneyline": game.market.away_moneyline,
+                "draw_moneyline": game.market.draw_moneyline,
+            },
+            home_names=[game.home_name, home[0]],
+            away_names=[game.away_name, away[0]],
+            league=game.league,
+        )
     blended = apply_ensemble_ml(
         blended,
         game.league,
@@ -479,8 +495,33 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
         "home": {"abbr": home[0], "slug": home[1], "name": game.home_name},
     }
 
+    market_dict: dict[str, Any] = {
+        "provider": game.market.provider,
+        "away_moneyline": game.market.away_moneyline,
+        "home_moneyline": game.market.home_moneyline,
+        "draw_moneyline": game.market.draw_moneyline,
+        "spread": game.market.spread,
+        "away_spread_odds": game.market.away_spread_odds,
+        "home_spread_odds": game.market.home_spread_odds,
+        "over_under": game.market.over_under,
+    }
+    try:
+        from web.live_odds_enrichment import enrich_market_dict
+
+        market_dict = enrich_market_dict(market_dict, game.league, game.event_id)
+    except Exception:  # noqa: BLE001 — never block slate on books
+        pass
+
     def _enrich_pick(pick_dict: dict[str, Any]) -> dict[str, Any]:
-        return _enrich_pick_with_team_abbr(pick_dict, matchup)
+        from web.live_odds_enrichment import line_shopping_fields_for_pick
+
+        enriched = _enrich_pick_with_team_abbr(pick_dict, matchup)
+        shopping = line_shopping_fields_for_pick(
+            market_dict,
+            side=str(enriched.get("side") or ""),
+            bet_type=str(enriched.get("bet_type") or "moneyline"),
+        )
+        return {**enriched, **shopping} if shopping else enriched
 
     return {
         "event_id": game.event_id,
@@ -493,16 +534,7 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
         "cutoff_date": cutoff,
         "season_year": season_year,
         "matchup": matchup,
-        "market": {
-            "provider": game.market.provider,
-            "away_moneyline": game.market.away_moneyline,
-            "home_moneyline": game.market.home_moneyline,
-            "draw_moneyline": game.market.draw_moneyline,
-            "spread": game.market.spread,
-            "away_spread_odds": game.market.away_spread_odds,
-            "home_spread_odds": game.market.home_spread_odds,
-            "over_under": game.market.over_under,
-        },
+        "market": market_dict,
         "model": model_payload,
         "eligible_for_official_picks": eligible_for_official_picks(game.league),
         "official_bet_type": official_bet_type(game.league),

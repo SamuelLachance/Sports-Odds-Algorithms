@@ -1075,6 +1075,7 @@ def evaluate_soccer_official_picks_for_game(
         min_market_gap_pp=thresholds["min_market_gap_pp"],
         min_win_confidence_pp=thresholds["min_win_confidence_pp"],
         min_ev_pct=thresholds["min_ev_pct"],
+        league=league,
     )
     allowed_sides = thresholds.get("allowed_sides")
     if allowed_sides:
@@ -1127,6 +1128,7 @@ def evaluate_official_picks_for_game(
             min_cover_gap_pp=thresholds["min_spread_cover_gap_pp"],
             min_win_confidence_pp=thresholds["min_spread_confidence_pp"],
             min_point_edge=thresholds.get("min_spread_point_edge"),
+            min_ev_pct=thresholds["min_ev_pct"],
         )
         return picks
 
@@ -1158,6 +1160,7 @@ def evaluate_official_picks_for_game(
             min_win_confidence_pp=thresholds["min_win_confidence_pp"],
             ml_lo=thresholds.get("ml_lo"),
             ml_hi=thresholds.get("ml_hi"),
+            league=league,
         )
         return picks
 

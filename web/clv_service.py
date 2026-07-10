@@ -24,12 +24,39 @@ def devig_two_way(home_odds: int, away_odds: int) -> tuple[float, float]:
 
 
 def clv_vs_market_pct(pick_odds: int, market_odds: int) -> float | None:
-    """Positive CLV = pick price better than reference market (higher payout)."""
+    """Implied-probability CLV (industry standard).
+
+    Positive = pick price better than reference market (lower implied prob /
+    higher payout than the closing/reference price).
+    """
     pick_prob = american_to_implied_prob(pick_odds)
     market_prob = american_to_implied_prob(market_odds)
     if pick_prob is None or market_prob is None or market_prob <= 0:
         return None
     return round((market_prob - pick_prob) / market_prob * 100.0, 2)
+
+
+def clv_vs_market_pct_threeway(
+    pick_odds: int,
+    *,
+    side: str,
+    market_home: int | None,
+    market_draw: int | None,
+    market_away: int | None,
+) -> float | None:
+    """Soccer 1X2 CLV: recorded pick price vs closing price on the same outcome."""
+    market_by_side = {
+        "home": market_home,
+        "draw": market_draw,
+        "away": market_away,
+    }
+    market_odds = market_by_side.get(side)
+    if market_odds is None:
+        return None
+    try:
+        return clv_vs_market_pct(int(pick_odds), int(market_odds))
+    except (TypeError, ValueError):
+        return None
 
 
 def model_edge_vs_devigged_market(
