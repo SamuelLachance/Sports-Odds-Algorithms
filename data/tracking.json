@@ -557,7 +557,11 @@
       "status": "pending",
       "units": 0.0,
       "stake_units": 3.0,
-      "recorded_at": "2026-07-10T07:36:42.876353+00:00"
+      "recorded_at": "2026-07-10T07:36:42.876353+00:00",
+      "closing_market_odds": 450,
+      "closing_spread_odds": null,
+      "closing_consensus_spread": null,
+      "closing_snapshot_at": "2026-07-10T12:34:33.708570+00:00"
     },
     {
       "id": "2026-07-10:401857054:away:spread",
@@ -592,7 +596,11 @@
       "status": "pending",
       "units": 0.0,
       "stake_units": 3.0,
-      "recorded_at": "2026-07-10T07:36:42.876353+00:00"
+      "recorded_at": "2026-07-10T07:36:42.876353+00:00",
+      "closing_market_odds": -108,
+      "closing_spread_odds": -108,
+      "closing_consensus_spread": 7.5,
+      "closing_snapshot_at": "2026-07-10T12:34:33.708570+00:00"
     },
     {
       "id": "2026-07-10:401816104:home",
@@ -627,7 +635,11 @@
       "status": "pending",
       "units": 0.0,
       "stake_units": 3.0,
-      "recorded_at": "2026-07-10T07:36:42.876353+00:00"
+      "recorded_at": "2026-07-10T07:36:42.876353+00:00",
+      "closing_market_odds": -132,
+      "closing_spread_odds": null,
+      "closing_consensus_spread": null,
+      "closing_snapshot_at": "2026-07-10T12:34:33.708570+00:00"
     },
     {
       "id": "2026-07-10:401857055:away:spread",
@@ -662,7 +674,11 @@
       "status": "pending",
       "units": 0.0,
       "stake_units": 3.0,
-      "recorded_at": "2026-07-10T07:36:42.876353+00:00"
+      "recorded_at": "2026-07-10T07:36:42.876353+00:00",
+      "closing_market_odds": -115,
+      "closing_spread_odds": -115,
+      "closing_consensus_spread": 6.5,
+      "closing_snapshot_at": "2026-07-10T12:34:33.708570+00:00"
     },
     {
       "id": "2026-07-10:401816106:home",
@@ -697,7 +713,11 @@
       "status": "pending",
       "units": 0.0,
       "stake_units": 3.0,
-      "recorded_at": "2026-07-10T07:36:42.876353+00:00"
+      "recorded_at": "2026-07-10T07:36:42.876353+00:00",
+      "closing_market_odds": 139,
+      "closing_spread_odds": null,
+      "closing_consensus_spread": null,
+      "closing_snapshot_at": "2026-07-10T12:34:33.708570+00:00"
     },
     {
       "id": "2026-07-10:401816107:home",
@@ -732,7 +752,11 @@
       "status": "pending",
       "units": 0.0,
       "stake_units": 3.0,
-      "recorded_at": "2026-07-10T07:36:42.876353+00:00"
+      "recorded_at": "2026-07-10T07:36:42.876353+00:00",
+      "closing_market_odds": 119,
+      "closing_spread_odds": null,
+      "closing_consensus_spread": null,
+      "closing_snapshot_at": "2026-07-10T12:34:33.708570+00:00"
     },
     {
       "id": "2026-07-10:401857056:away:spread",
