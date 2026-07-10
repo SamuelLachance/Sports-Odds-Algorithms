@@ -69,7 +69,11 @@
       "status": "pending",
       "units": 0.0,
       "stake_units": 3.0,
-      "recorded_at": "2026-07-10T17:56:10.463499+00:00"
+      "recorded_at": "2026-07-10T17:56:10.463499+00:00",
+      "closing_market_odds": -149,
+      "closing_spread_odds": null,
+      "closing_consensus_spread": null,
+      "closing_snapshot_at": "2026-07-10T19:31:42.605429+00:00"
     },
     {
       "id": "2026-07-10:401816106:home",
@@ -104,7 +108,11 @@
       "status": "pending",
       "units": 0.0,
       "stake_units": 3.0,
-      "recorded_at": "2026-07-10T17:56:10.463499+00:00"
+      "recorded_at": "2026-07-10T17:56:10.463499+00:00",
+      "closing_market_odds": 139,
+      "closing_spread_odds": null,
+      "closing_consensus_spread": null,
+      "closing_snapshot_at": "2026-07-10T19:31:42.605429+00:00"
     },
     {
       "id": "2026-07-10:401816107:home",
@@ -139,7 +147,11 @@
       "status": "pending",
       "units": 0.0,
       "stake_units": 3.0,
-      "recorded_at": "2026-07-10T17:56:10.463499+00:00"
+      "recorded_at": "2026-07-10T17:56:10.463499+00:00",
+      "closing_market_odds": 119,
+      "closing_spread_odds": null,
+      "closing_consensus_spread": null,
+      "closing_snapshot_at": "2026-07-10T19:31:42.605429+00:00"
     },
     {
       "id": "2026-07-10:401816105:home",
@@ -174,7 +186,46 @@
       "status": "pending",
       "units": 0.0,
       "stake_units": 2.62,
-      "recorded_at": "2026-07-10T17:56:10.463499+00:00"
+      "recorded_at": "2026-07-10T17:56:10.463499+00:00",
+      "closing_market_odds": -162,
+      "closing_spread_odds": null,
+      "closing_consensus_spread": null,
+      "closing_snapshot_at": "2026-07-10T19:31:42.605429+00:00"
+    },
+    {
+      "id": "2026-07-10:401816096:away",
+      "date": "2026-07-10",
+      "event_id": "401816096",
+      "league": "mlb",
+      "league_name": "MLB",
+      "side": "away",
+      "team_name": "Boston Red Sox",
+      "team_slug": "boston-red-sox",
+      "team_abbr": "bos",
+      "matchup": "Boston Red Sox @ New York Mets",
+      "start_time": "2026-07-10T23:15Z",
+      "strategy": "hubacek",
+      "strategy_label": "Hub\u00e1\u010dek spot",
+      "confidence": "high",
+      "edge": 24.0,
+      "ev_pct": 9.99,
+      "model_projection": 105,
+      "market_odds": 129,
+      "win_probability": 48.78,
+      "reason": "Hub\u00e1\u010dek spot on Boston Red Sox: decorrelated model 48.8% vs market 41.7% (+7.0 pp, +10.0% EV).",
+      "bet_type": "moneyline",
+      "spread_line": null,
+      "spread_odds": null,
+      "consensus_spread": null,
+      "consensus_odds": null,
+      "consensus_label": null,
+      "model_margin": null,
+      "model_market_gap_pp": 7.03,
+      "kelly_pct": 7.74,
+      "status": "pending",
+      "units": 0.0,
+      "stake_units": 1.94,
+      "recorded_at": "2026-07-10T19:31:42.605429+00:00"
     }
   ]
 }
