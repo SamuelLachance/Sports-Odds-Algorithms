@@ -146,6 +146,44 @@ def test_apply_context_stores_pre_context_and_updates_probs() -> None:
     assert out["blended_home_win_probability"] < 62.0
 
 
+def test_apply_context_steam_activates_from_market_opens() -> None:
+    """Multi-book opens in the market dict switch on the steam signal."""
+    blended = {
+        "blended_home_win_probability": 55.0,
+        "total_score": -55.0,
+        "win_probability": 55.0,
+        "favorite_side": "home",
+    }
+    # -140 close (~58.3% implied) vs +115 open (~46.5%) → strong home steam.
+    # -140 is above the FLB threshold so steam is the only active signal.
+    market = {
+        "home_moneyline": -140,
+        "away_moneyline": 120,
+        "open_home_moneyline": 115,
+        "open_away_moneyline": -135,
+    }
+    out = apply_context_to_blend(blended, market=market, league="nba")
+    signals = out["context_signals"]
+    assert signals["steam_pp"] > 0
+    assert signals["flb_pp"] == 0.0
+    assert signals["news_pp"] == 0.0
+    assert out["context_adjustment_pp"] == signals["steam_pp"]
+    assert out["blended_home_win_probability"] > 55.0
+
+
+def test_apply_context_steam_inactive_without_opens() -> None:
+    blended = {
+        "blended_home_win_probability": 55.0,
+        "total_score": -55.0,
+        "win_probability": 55.0,
+        "favorite_side": "home",
+    }
+    market = {"home_moneyline": -140, "away_moneyline": 120}
+    out = apply_context_to_blend(blended, market=market, league="nba")
+    assert out["context_signals"]["steam_pp"] == 0.0
+    assert out["blended_home_win_probability"] == 55.0
+
+
 def test_apply_context_noop_without_signals() -> None:
     blended = {
         "blended_home_win_probability": 55.0,

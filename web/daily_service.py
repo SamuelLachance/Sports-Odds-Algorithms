@@ -269,7 +269,10 @@ def _enrich_pick_with_team_abbr(
     return pick_dict
 
 
-def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
+def predict_live_game(
+    game: ScheduledGame,
+    headlines: list[str] | None = None,
+) -> dict[str, Any]:
     _ensure_project_root()
     from algo import Algo
     from odds_calculator import Odds_Calculator
@@ -291,6 +294,17 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
         raise ValueError(
             f"Insufficient season data for {away[1]} or {home[1]} before {cutoff}."
         )
+
+    # Multi-book enrichment fetched ONCE per game (needs only league +
+    # event_id). Opens feed the steam context signal below and the same
+    # payload is reused for the final market dict — never fetched twice.
+    book_enrichment: dict[str, Any] = {}
+    try:
+        from web.live_odds_enrichment import fetch_multi_book_odds
+
+        book_enrichment = fetch_multi_book_odds(game.league, game.event_id) or {}
+    except Exception:  # noqa: BLE001 — never block slate on books
+        book_enrichment = {}
 
     algo_league = get_algo_league(game.league)
     odds_calculator = Odds_Calculator(algo_league)
@@ -328,19 +342,27 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
         home_moneyline=game.market.home_moneyline,
         away_moneyline=game.market.away_moneyline,
         draw_moneyline=game.market.draw_moneyline,
+        headlines=headlines,
     )
     # Context layer hook: specialized blend paths (NBA/MLB/NHL/soccer) skip
     # `_with_db_rating_layer`; apply once here when not already attached.
     if blended.get("context_adjustment_pp") is None:
         from web.context_signals import apply_context_to_blend
 
+        context_market: dict[str, Any] = {
+            "home_moneyline": game.market.home_moneyline,
+            "away_moneyline": game.market.away_moneyline,
+            "draw_moneyline": game.market.draw_moneyline,
+        }
+        # Multi-book consensus opens activate steam_line_movement_shift.
+        if book_enrichment.get("open_home_moneyline") is not None:
+            context_market["open_home_moneyline"] = book_enrichment["open_home_moneyline"]
+        if book_enrichment.get("open_away_moneyline") is not None:
+            context_market["open_away_moneyline"] = book_enrichment["open_away_moneyline"]
         blended = apply_context_to_blend(
             blended,
-            market={
-                "home_moneyline": game.market.home_moneyline,
-                "away_moneyline": game.market.away_moneyline,
-                "draw_moneyline": game.market.draw_moneyline,
-            },
+            market=context_market,
+            headlines=headlines,
             home_names=[game.home_name, home[0]],
             away_names=[game.away_name, away[0]],
             league=game.league,
@@ -506,9 +528,10 @@ def predict_live_game(game: ScheduledGame) -> dict[str, Any]:
         "over_under": game.market.over_under,
     }
     try:
-        from web.live_odds_enrichment import enrich_market_dict
+        from web.live_odds_enrichment import apply_enrichment_to_market
 
-        market_dict = enrich_market_dict(market_dict, game.league, game.event_id)
+        # Reuse the enrichment fetched at the top of this function.
+        market_dict = apply_enrichment_to_market(market_dict, book_enrichment)
     except Exception:  # noqa: BLE001 — never block slate on books
         pass
 
@@ -692,6 +715,47 @@ def _prewarm_league_models(
                     )
 
 
+# Max headlines fed into the news context signal per league.
+_NEWS_HEADLINES_PER_LEAGUE = 40
+
+
+def _news_signals_enabled() -> bool:
+    """NEWS_SIGNALS env flag; default on, "0"/"false"/"no"/"off" disables."""
+    flag = (os.environ.get("NEWS_SIGNALS") or "").strip().lower()
+    return flag not in {"0", "false", "no", "off"}
+
+
+def _league_news_headlines(
+    league: str,
+    limit: int = _NEWS_HEADLINES_PER_LEAGUE,
+) -> list[str]:
+    """One soft-fail ESPN news fetch per league; plain headline strings.
+
+    Returns [] on any error or when NEWS_SIGNALS is disabled — league news
+    must never break or noticeably slow the slate build.
+    """
+    if not _news_signals_enabled():
+        return []
+    try:
+        from web.sports_db.espn_fetch import fetch_league_news
+
+        payload = fetch_league_news(league, limit=limit)
+    except Exception:  # noqa: BLE001 — news never blocks the slate
+        return []
+    if not payload:
+        return []
+    headlines: list[str] = []
+    for article in payload.get("articles") or []:
+        if not isinstance(article, dict):
+            continue
+        headline = article.get("headline") or article.get("title")
+        if isinstance(headline, str) and headline.strip():
+            headlines.append(headline.strip())
+        if len(headlines) >= limit:
+            break
+    return headlines
+
+
 def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
     generated_at = datetime.now(timezone.utc).isoformat()
     all_games: list[dict[str, Any]] = []
@@ -715,9 +779,11 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
         power_cutoffs = {_today_cutoff(game) for game in actionable}
         _prewarm_league_models(league, power_cutoffs, errors)
 
+        headlines = _league_news_headlines(league)
+
         for game in actionable:
             try:
-                all_games.append(predict_live_game(game))
+                all_games.append(predict_live_game(game, headlines=headlines))
             except Exception as exc:  # noqa: BLE001
                 errors.append(
                     {

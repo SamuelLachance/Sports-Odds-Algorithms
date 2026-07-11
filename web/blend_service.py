@@ -1163,6 +1163,7 @@ def blend_predictions(
     home_moneyline: int | None = None,
     away_moneyline: int | None = None,
     draw_moneyline: int | None = None,
+    headlines: list[str] | None = None,
 ) -> dict[str, Any]:
     """
     Blend Algo_V2 and power model into unified total_score / win_probability.
@@ -1170,6 +1171,10 @@ def blend_predictions(
     Hockey leagues use Algo V1 only. Basketball prefers sport models
     (NBA/WNBA v2, CBB Torvik) with BasketballMatrix fallback.
     Baseball and football use a third sport layer blended via meta weights.
+
+    ``headlines`` feed the news context signal for leagues whose context
+    layer runs inside this blend (football/generic); specialized paths get
+    context applied by the caller instead.
     """
     if is_basketball_league(league):
         return _blend_basketball_matrix_only(
@@ -1278,6 +1283,7 @@ def blend_predictions(
             away_espn_id=away_espn_id,
             home_moneyline=home_moneyline,
             away_moneyline=away_moneyline,
+            headlines=headlines,
         )
 
     legacy_home = total_score_to_home_win_prob(legacy_total_score)
@@ -1346,6 +1352,7 @@ def blend_predictions(
             away_espn_id=away_espn_id,
             home_moneyline=home_moneyline,
             away_moneyline=away_moneyline,
+            headlines=headlines,
         )
 
     weight_sum = legacy_weight + power_weight
@@ -1413,4 +1420,5 @@ def blend_predictions(
         away_espn_id=away_espn_id,
         home_moneyline=home_moneyline,
         away_moneyline=away_moneyline,
+        headlines=headlines,
     )

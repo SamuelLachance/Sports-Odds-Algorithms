@@ -2,17 +2,24 @@
 
 Soft-fails on network/parse errors so the slate build never blocks on books.
 Enable with LIVE_MULTI_BOOK=1 (default ON for NBA/NHL/MLB/WNBA).
+
+A global wall-time budget (LIVE_MULTI_BOOK_BUDGET_S, default 120s) caps the
+cumulative time spent fetching books per build; once exceeded, enrichment
+becomes a no-op for the remaining games.
 """
 
 from __future__ import annotations
 
 import os
+import time
 from typing import Any
 
 from web.clv_service import american_to_implied_prob
 from web.nba_odds_espn import (
     _consensus,
     _get_json,
+    _median,
+    _nested_american,
     _provider_line,
     _valid_american,
 )
@@ -28,6 +35,36 @@ _ODDS_PATH: dict[str, str] = {
 }
 
 _DEFAULT_TIMEOUT_S = 5
+
+# Global wall-time budget for book fetches across one build (env override).
+_DEFAULT_BUDGET_S = 120.0
+_budget_spent_s: float = 0.0
+
+
+def _budget_limit_s() -> float:
+    raw = (os.environ.get("LIVE_MULTI_BOOK_BUDGET_S") or "").strip()
+    if not raw:
+        return _DEFAULT_BUDGET_S
+    try:
+        return max(float(raw), 0.0)
+    except ValueError:
+        return _DEFAULT_BUDGET_S
+
+
+def enrichment_budget_exhausted() -> bool:
+    """True once cumulative fetch wall-time has used up the build budget."""
+    return _budget_spent_s >= _budget_limit_s()
+
+
+def reset_enrichment_budget() -> None:
+    """Reset the cumulative fetch-time accumulator (tests / new builds)."""
+    global _budget_spent_s
+    _budget_spent_s = 0.0
+
+
+def _charge_budget(elapsed_s: float) -> None:
+    global _budget_spent_s
+    _budget_spent_s += max(float(elapsed_s), 0.0)
 
 
 def multi_book_enabled(league: str) -> bool:
@@ -94,8 +131,32 @@ def shopping_edge_pp(espn_odds: int | None, best_odds: int | None) -> float | No
     return round((espn_p - best_p) * 100.0, 2)
 
 
+def _provider_open_moneylines(item: dict[str, Any]) -> tuple[float | None, float | None]:
+    """One book's opening moneylines (items[].homeTeamOdds.open.moneyLine.american)."""
+    home = item.get("homeTeamOdds") or {}
+    away = item.get("awayTeamOdds") or {}
+    open_home = _valid_american(_nested_american(home, "open", "moneyLine"))
+    open_away = _valid_american(_nested_american(away, "open", "moneyLine"))
+    return open_home, open_away
+
+
+_LINE_FIELDS = (
+    "home_close_ml",
+    "away_close_ml",
+    "home_close_spread",
+    "away_close_spread",
+    "home_spread_odds",
+    "away_spread_odds",
+)
+
+
 def summarize_book_items(items: list[dict[str, Any]]) -> dict[str, Any]:
-    """Build consensus + best-price fields from ESPN core odds items."""
+    """Build consensus + best-price + opening-line fields from ESPN core odds items.
+
+    ``n_books`` counts only provider items that yielded at least one parsed
+    market number; ``book_providers`` lists their names. Median consensus opens
+    (``open_home_moneyline`` / ``open_away_moneyline``) feed the steam signal.
+    """
     filtered = [
         item
         for item in items
@@ -104,7 +165,28 @@ def summarize_book_items(items: list[dict[str, Any]]) -> dict[str, Any]:
     if not filtered:
         return {}
 
-    lines = [_provider_line(item) for item in filtered]
+    lines: list[dict[str, float | None]] = []
+    providers: list[str] = []
+    open_home_values: list[float] = []
+    open_away_values: list[float] = []
+    for item in filtered:
+        line = _provider_line(item)
+        open_home, open_away = _provider_open_moneylines(item)
+        has_close = any(line.get(field) is not None for field in _LINE_FIELDS)
+        if not has_close and open_home is None and open_away is None:
+            continue
+        lines.append(line)
+        name = ((item.get("provider") or {}).get("name") or "").strip()
+        if name and name not in providers:
+            providers.append(name)
+        if open_home is not None:
+            open_home_values.append(open_home)
+        if open_away is not None:
+            open_away_values.append(open_away)
+
+    if not lines:
+        return {}
+
     consensus = _consensus(filtered)
 
     best_home_ml = best_american_odds([line.get("home_close_ml") for line in lines])
@@ -115,8 +197,9 @@ def summarize_book_items(items: list[dict[str, Any]]) -> dict[str, Any]:
     consensus_home_ml = _as_int_odds(consensus.get("home_close_ml"))
     consensus_away_ml = _as_int_odds(consensus.get("away_close_ml"))
 
-    return {
-        "n_books": int(consensus.get("n_books") or len(filtered)),
+    summary: dict[str, Any] = {
+        "n_books": len(lines),
+        "book_providers": providers,
         "best_home_ml": best_home_ml,
         "best_away_ml": best_away_ml,
         "best_home_spread": best_home_spread,
@@ -126,6 +209,13 @@ def summarize_book_items(items: list[dict[str, Any]]) -> dict[str, Any]:
         "consensus_home_spread": consensus.get("home_close_spread"),
         "consensus_away_spread": consensus.get("away_close_spread"),
     }
+    open_home_ml = _as_int_odds(_median(open_home_values)) if open_home_values else None
+    open_away_ml = _as_int_odds(_median(open_away_values)) if open_away_values else None
+    if open_home_ml is not None:
+        summary["open_home_moneyline"] = open_home_ml
+    if open_away_ml is not None:
+        summary["open_away_moneyline"] = open_away_ml
+    return summary
 
 
 def line_shopping_edge_from_market(
@@ -152,11 +242,18 @@ def fetch_multi_book_odds(
     competition_id: str | None = None,
     timeout: int | None = None,
 ) -> dict[str, Any]:
-    """Fetch multi-book consensus for one event. Empty dict on failure."""
+    """Fetch multi-book consensus for one event. Empty dict on failure.
+
+    Fetch wall-time (success or failure) is charged against the global
+    LIVE_MULTI_BOOK_BUDGET_S budget; once exhausted, returns {} immediately.
+    """
     if not multi_book_enabled(league) or not event_id:
+        return {}
+    if enrichment_budget_exhausted():
         return {}
     comp = competition_id or event_id
     timeout_s = timeout if timeout is not None else _DEFAULT_TIMEOUT_S
+    started = time.monotonic()
     try:
         payload = _get_json(
             _odds_url(league, event_id, comp),
@@ -165,6 +262,8 @@ def fetch_multi_book_odds(
         )
     except Exception:  # noqa: BLE001 — soft-fail
         return {}
+    finally:
+        _charge_budget(time.monotonic() - started)
     items = payload.get("items") or []
     if not items and competition_id is None and event_id:
         # Rare: competition id differs; nothing else to try without scoreboard.
@@ -172,27 +271,13 @@ def fetch_multi_book_odds(
     return summarize_book_items(items)
 
 
-def enrich_market_dict(
+def apply_enrichment_to_market(
     market: dict[str, Any],
-    league: str,
-    event_id: str,
-    *,
-    competition_id: str | None = None,
+    enrichment: dict[str, Any],
 ) -> dict[str, Any]:
-    """Attach multi-book fields onto a game market dict. Soft-fail preserves input."""
-    if not multi_book_enabled(league):
-        return market
-    try:
-        enrichment = fetch_multi_book_odds(
-            league,
-            event_id,
-            competition_id=competition_id,
-        )
-    except Exception:  # noqa: BLE001
-        return market
+    """Pure merge of a summarize_book_items payload onto a market dict."""
     if not enrichment:
         return market
-
     edge = line_shopping_edge_from_market(
         enrichment,
         espn_home_ml=market.get("home_moneyline"),
@@ -205,6 +290,33 @@ def enrich_market_dict(
     if edge is not None:
         updated["line_shopping_edge_pp"] = edge
     return updated
+
+
+def enrich_market_dict(
+    market: dict[str, Any],
+    league: str,
+    event_id: str,
+    *,
+    competition_id: str | None = None,
+) -> dict[str, Any]:
+    """Attach multi-book fields onto a game market dict. Soft-fail preserves input.
+
+    Returns the input unchanged once the global fetch budget is exhausted so a
+    slow book API can never stall the rest of the slate build.
+    """
+    if not multi_book_enabled(league):
+        return market
+    if enrichment_budget_exhausted():
+        return market
+    try:
+        enrichment = fetch_multi_book_odds(
+            league,
+            event_id,
+            competition_id=competition_id,
+        )
+    except Exception:  # noqa: BLE001
+        return market
+    return apply_enrichment_to_market(market, enrichment)
 
 
 def best_available_for_pick(
