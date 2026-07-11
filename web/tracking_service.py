@@ -134,6 +134,36 @@ def _parse_date_label(value: str) -> date:
     return date.fromisoformat(value)
 
 
+def _parse_start_time(value: Any) -> datetime | None:
+    """Parse an ISO 8601 kickoff time ("2026-07-10T19:00Z") to aware UTC, else None."""
+    if not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
+
+
+def _consensus_closing_ml(game: dict[str, Any] | None, side: str) -> int | None:
+    """Multi-book consensus closing moneyline from a slate game's market dict."""
+    if not isinstance(game, dict):
+        return None
+    market = game.get("market")
+    if not isinstance(market, dict):
+        return None
+    key = {"home": "consensus_home_ml", "away": "consensus_away_ml"}.get(side)
+    value = market.get(key) if key else None
+    if value is None:
+        return None
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
 def _official_tracked_bets(bets: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return [b for b in bets if eligible_for_official_picks(b.get("league") or "")]
 
@@ -143,12 +173,20 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
 
     Odds and model numbers are frozen at record time; later slate runs only
     refresh a closing-line snapshot on still-pending bets (for CLV grading).
+    New bets are only created pre-kickoff — a pick first seen after its game
+    started was never actionable and is skipped (pending bets still update).
     """
     date_label = slate.get("date_label") or toronto_today().isoformat()
-    now = datetime.now(timezone.utc).isoformat()
+    now_dt = datetime.now(timezone.utc)
+    now = now_dt.isoformat()
     index = {
         _bet_key(b["date"], b["event_id"], b["side"], b.get("bet_type") or "moneyline"): b
         for b in store["bets"]
+    }
+    games_by_event = {
+        str(g.get("event_id")): g
+        for g in slate.get("games") or []
+        if isinstance(g, dict) and g.get("event_id")
     }
 
     for pick in slate.get("recommended_bets") or []:
@@ -166,14 +204,26 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
         existing = index.get(key)
         if existing:
             if existing.get("status") == "pending":
+                closing_ml = pick.get("market_odds")
+                closing_source = "espn"
+                consensus_ml = _consensus_closing_ml(games_by_event.get(str(event_id)), side)
+                if bet_type != "spread" and consensus_ml is not None:
+                    closing_ml = consensus_ml
+                    closing_source = "consensus"
                 existing.update(
                     {
-                        "closing_market_odds": pick.get("market_odds"),
+                        "closing_market_odds": closing_ml,
                         "closing_spread_odds": pick.get("spread_odds"),
                         "closing_consensus_spread": pick.get("consensus_spread"),
+                        "closing_source": closing_source,
                         "closing_snapshot_at": now,
                     }
                 )
+            continue
+
+        start_time = _parse_start_time(pick.get("start_time"))
+        if start_time is not None and start_time <= now_dt:
+            # First seen post-kickoff: never actionable, no closing snapshot possible.
             continue
 
         bet = {
@@ -213,6 +263,7 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
                 ev_pct=pick.get("ev_pct"),
             ),
             "recorded_at": now,
+            "recorded_pre_start": True,
         }
         store["bets"].append(bet)
         index[key] = bet
@@ -501,14 +552,23 @@ def _rollup_label_yearly(d: date) -> str:
     return str(d.year)
 
 
+def _bet_stake_units(bet: dict[str, Any]) -> float:
+    """Stake in units for a bet, defaulting to 1u on missing/bad data."""
+    try:
+        return float(bet.get("stake_units") or DEFAULT_STAKE_UNITS)
+    except (TypeError, ValueError):
+        return DEFAULT_STAKE_UNITS
+
+
 def _summarize_bets(bets: list[dict[str, Any]]) -> dict[str, Any]:
     wins = sum(1 for b in bets if b.get("status") == "win")
     losses = sum(1 for b in bets if b.get("status") == "loss")
     pushes = sum(1 for b in bets if b.get("status") == "push")
     pending = sum(1 for b in bets if b.get("status") == "pending")
     settled_units = sum(b.get("units") or 0 for b in bets if b.get("status") != "pending")
-    decided = wins + losses
-    roi = (settled_units / decided * 100) if decided else 0.0
+    # ROI per staked unit: pushes return the stake, so only win/loss stakes count.
+    staked_units = sum(_bet_stake_units(b) for b in bets if b.get("status") in ("win", "loss"))
+    roi = (settled_units / staked_units * 100) if staked_units else 0.0
     return {
         "bets": len(bets),
         "wins": wins,
@@ -516,6 +576,7 @@ def _summarize_bets(bets: list[dict[str, Any]]) -> dict[str, Any]:
         "pushes": pushes,
         "pending": pending,
         "units": round(settled_units, 3),
+        "staked_units": round(staked_units, 2),
         "roi_percent": round(roi, 2),
         "record": f"{wins}-{losses}" + (f"-{pushes}" if pushes else ""),
     }

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sys
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -70,6 +71,31 @@ def test_roi_excludes_pushes_from_denominator() -> None:
         ]
     )
     assert summary["roi_percent"] == round(-0.09 / 2 * 100, 2)
+
+
+def test_roi_is_stake_weighted() -> None:
+    """A single 3u loss at 3u staked is −100% ROI, not −300%."""
+    from web.tracking_service import _summarize_bets
+
+    summary = _summarize_bets([{"status": "loss", "units": -3.0, "stake_units": 3.0}])
+    assert summary["roi_percent"] == -100.0
+    assert summary["staked_units"] == 3.0
+
+
+def test_roi_stake_weighted_mixed_stakes() -> None:
+    """ROI divides settled units by staked units of decided bets only."""
+    from web.tracking_service import _summarize_bets
+
+    summary = _summarize_bets(
+        [
+            {"status": "win", "units": 1.41, "stake_units": 1.0},
+            {"status": "loss", "units": -3.0, "stake_units": 3.0},
+            {"status": "push", "units": 0.0, "stake_units": 2.0},
+            {"status": "pending", "units": 0.0, "stake_units": 1.5},
+        ]
+    )
+    assert summary["staked_units"] == 4.0  # pushes/pending excluded
+    assert summary["roi_percent"] == round((1.41 - 3.0) / 4.0 * 100, 2)
 
 
 def test_record_and_grade() -> None:
@@ -142,6 +168,110 @@ def test_ignores_game_recommendations_not_in_recommended() -> None:
     }
     store = record_from_slate(store, slate)
     assert store["bets"] == []
+
+
+def _future_start() -> str:
+    return (datetime.now(timezone.utc) + timedelta(hours=6)).strftime("%Y-%m-%dT%H:%MZ")
+
+
+def _past_start() -> str:
+    return (datetime.now(timezone.utc) - timedelta(hours=4)).strftime("%Y-%m-%dT%H:%MZ")
+
+
+def test_new_bet_skipped_when_game_already_started() -> None:
+    """A pick first seen post-kickoff was never actionable — do not record it."""
+    store = {"version": 1, "bets": []}
+    pick = {**_sample_pick(), "start_time": _past_start()}
+    store = record_from_slate(
+        store, {"date_label": "2026-07-10", "recommended_bets": [pick], "games": []}
+    )
+    assert store["bets"] == []
+
+
+def test_new_bet_recorded_pre_start_with_flag() -> None:
+    store = {"version": 1, "bets": []}
+    pick = {**_sample_pick(), "start_time": _future_start()}
+    store = record_from_slate(
+        store, {"date_label": "2026-07-10", "recommended_bets": [pick], "games": []}
+    )
+    assert len(store["bets"]) == 1
+    assert store["bets"][0]["recorded_pre_start"] is True
+
+
+def test_new_bet_recorded_when_start_time_unparseable() -> None:
+    """Defensive parsing: a bad start_time must not block recording."""
+    store = {"version": 1, "bets": []}
+    pick = {**_sample_pick(), "start_time": "TBD"}
+    store = record_from_slate(
+        store, {"date_label": "2026-07-10", "recommended_bets": [pick], "games": []}
+    )
+    assert len(store["bets"]) == 1
+
+
+def test_pending_bet_still_updated_after_start() -> None:
+    """Post-start slate runs still refresh closing odds on existing pending bets."""
+    store = {"version": 1, "bets": []}
+    pick = {**_sample_pick(), "start_time": _future_start()}
+    store = record_from_slate(
+        store, {"date_label": "2026-07-10", "recommended_bets": [pick], "games": []}
+    )
+    assert len(store["bets"]) == 1
+
+    started = {**_sample_pick(), "start_time": _past_start(), "market_odds": 120}
+    store = record_from_slate(
+        store, {"date_label": "2026-07-10", "recommended_bets": [started], "games": []}
+    )
+    assert len(store["bets"]) == 1
+    bet = store["bets"][0]
+    assert bet["market_odds"] == 141  # frozen at record time
+    assert bet["closing_market_odds"] == 120
+    assert bet["closing_source"] == "espn"
+
+
+def test_closing_snapshot_prefers_consensus_moneyline() -> None:
+    """Multi-book consensus beats the single ESPN price for the closing snapshot."""
+    store = {"version": 1, "bets": []}
+    slate = {
+        "date_label": "2026-06-11",
+        "recommended_bets": [_sample_pick()],
+        "games": [],
+    }
+    store = record_from_slate(store, slate)
+
+    moved = _sample_pick()
+    moved["market_odds"] = 120
+    game = {
+        "event_id": "401815712",
+        "market": {"consensus_home_ml": 112, "consensus_away_ml": -125},
+    }
+    store = record_from_slate(
+        store,
+        {"date_label": "2026-06-11", "recommended_bets": [moved], "games": [game]},
+    )
+    bet = store["bets"][0]
+    assert bet["closing_market_odds"] == 112  # home-side consensus, not ESPN 120
+    assert bet["closing_source"] == "consensus"
+
+
+def test_closing_snapshot_falls_back_to_espn_without_consensus() -> None:
+    store = {"version": 1, "bets": []}
+    slate = {
+        "date_label": "2026-06-11",
+        "recommended_bets": [_sample_pick()],
+        "games": [],
+    }
+    store = record_from_slate(store, slate)
+
+    moved = _sample_pick()
+    moved["market_odds"] = 120
+    game = {"event_id": "401815712", "market": {"provider": "espn"}}
+    store = record_from_slate(
+        store,
+        {"date_label": "2026-06-11", "recommended_bets": [moved], "games": [game]},
+    )
+    bet = store["bets"][0]
+    assert bet["closing_market_odds"] == 120
+    assert bet["closing_source"] == "espn"
 
 
 def _spread_pick(
@@ -428,6 +558,15 @@ def test_prune_below_hubacek_threshold() -> None:
 
 if __name__ == "__main__":
     test_calculate_units()
+    test_roi_excludes_pushes_from_denominator()
+    test_roi_is_stake_weighted()
+    test_roi_stake_weighted_mixed_stakes()
+    test_new_bet_skipped_when_game_already_started()
+    test_new_bet_recorded_pre_start_with_flag()
+    test_new_bet_recorded_when_start_time_unparseable()
+    test_pending_bet_still_updated_after_start()
+    test_closing_snapshot_prefers_consensus_moneyline()
+    test_closing_snapshot_falls_back_to_espn_without_consensus()
     test_record_and_grade()
     test_rejects_low_confidence()
     test_rejects_non_positive_ev()

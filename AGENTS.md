@@ -26,7 +26,7 @@ python -m uvicorn web.app:app --reload --host 127.0.0.1 --port 8000
 - Remote : `https://github.com/SamuelLachance/Sports-Odds-Algorithms`
 - Site : `https://samuellachance.github.io/Sports-Odds-Algorithms/`
 - Rebuild : **4×/jour** America/Toronto (minuit, 6h, midi, 18h EDT via GitHub Actions `pages.yml`)
-- CI tests : `.github/workflows/test.yml` (pytest core + `smoke_test.py` on push/PR to `master`)
+- CI tests : `.github/workflows/test.yml` (suite pytest complète + `smoke_test.py` on push/PR to `master`)
 
 ## Conventions
 

@@ -2524,6 +2524,44 @@ a.pick-card-link:focus-visible {
   line-height: 1;
 }
 
+/* ── Methodology page ── */
+.methodology-body {
+  max-width: 78ch;
+}
+
+.methodology-body h2 {
+  margin: 0 0 var(--space-2);
+}
+
+.methodology-body p,
+.methodology-body li {
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+}
+
+.methodology-body strong {
+  color: var(--text);
+}
+
+.methodology-body ul {
+  margin: 0.5rem 0;
+  padding-left: 1.25rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.methodology-cite {
+  margin-top: var(--space-2);
+  font-size: 0.875rem;
+}
+
+.three-track-link {
+  display: inline-block;
+  margin-top: var(--space-2);
+  font-size: 0.875rem;
+}
+
 /* ── Responsive ── */
 @media (max-width: 900px) {
   .db-grid-two {

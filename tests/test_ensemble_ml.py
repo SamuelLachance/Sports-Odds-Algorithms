@@ -66,6 +66,9 @@ def test_train_and_predict_binary_ensemble(tmp_path, monkeypatch) -> None:
     monkeypatch.setattr(model_module, "model_dir", config.model_dir)
     monkeypatch.setattr(model_module, "model_artifact_path", config.model_artifact_path)
     monkeypatch.setattr(model_module, "metadata_path", config.metadata_path)
+    # Repo ships NBA v2 artifacts, which supersede EnsembleML for NBA in
+    # ensemble_model_available(). Force the gate off to test the ensemble itself.
+    monkeypatch.setattr("web.nba_v2.live.artifacts_available", lambda: False)
 
     frame = _synthetic_binary_frame()
     trained = train_binary_ensemble("nba", frame)
@@ -95,6 +98,7 @@ def test_apply_ensemble_ml_margin_uses_spread_convention(tmp_path, monkeypatch) 
     import web.ensemble_ml.config as config
     import web.ensemble_ml.model as model_module
 
+    monkeypatch.setattr("web.nba_v2.live.artifacts_available", lambda: False)
     monkeypatch.setattr(config, "MODEL_ROOT", tmp_path)
     monkeypatch.setattr(config, "model_dir", lambda league: tmp_path / league.lower())
     monkeypatch.setattr(
@@ -155,6 +159,7 @@ def test_apply_ensemble_ml_updates_blend(tmp_path, monkeypatch) -> None:
     import web.ensemble_ml.config as config
     import web.ensemble_ml.model as model_module
 
+    monkeypatch.setattr("web.nba_v2.live.artifacts_available", lambda: False)
     monkeypatch.setattr(config, "MODEL_ROOT", tmp_path)
     monkeypatch.setattr(config, "model_dir", lambda league: tmp_path / league.lower())
     monkeypatch.setattr(
@@ -205,9 +210,27 @@ def test_apply_ensemble_ml_updates_blend(tmp_path, monkeypatch) -> None:
     assert updated.get("home_spread_margin") is not None
 
 
-def test_basketball_blend_populates_ensemble_feature_layers() -> None:
+def test_basketball_blend_populates_ensemble_feature_layers(monkeypatch) -> None:
+    import web.blend_service as blend_module
     from web.blend_service import blend_predictions
     from web.ensemble_ml.features import extract_binary_features
+
+    # NBA v2 artifacts (shipped in the repo) route blend_predictions to a
+    # v2-only payload without a legacy layer. Force the BasketballMatrix
+    # fallback path with a deterministic sport payload so the ensemble
+    # feature layers this test asserts on are populated.
+    monkeypatch.setattr(blend_module, "_run_nba_v2", lambda *_a, **_k: None)
+    monkeypatch.setattr(blend_module, "run_power_model", lambda *_a, **_k: None)
+    monkeypatch.setattr(
+        blend_module,
+        "run_basketball_pred_model",
+        lambda *_a, **_k: {
+            "algorithm": "BasketballMatrix",
+            "source": "soft-impute-svd",
+            "home_win_probability": 62.0,
+            "predicted_margin": 4.0,
+        },
+    )
 
     blended = blend_predictions(
         legacy_total_score=-58.0,

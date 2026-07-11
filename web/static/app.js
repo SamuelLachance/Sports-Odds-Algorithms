@@ -643,6 +643,7 @@ function hubacekThreeTrackPanel(game, pick) {
         <small>Calibrated pre-decorrelation for EV &amp; Kelly</small>
       </div>
     </div>
+    <a class="text-link three-track-link" href="#/methodology">How this works →</a>
   </div>`;
 }
 
@@ -666,7 +667,7 @@ function fairOddsBetStrip(game, pick) {
 }
 
 function clvCaption() {
-  return `<p class="clv-caption muted">CLV (closing-line value): positive = you beat the close on implied probability. Primary metric is implied-prob CLV; payout CLV is shown when available as a secondary check.</p>`;
+  return `<p class="clv-caption muted">CLV (closing-line value): positive = you beat the close on implied probability. Primary metric is implied-prob CLV; payout CLV is shown when available as a secondary check. <a class="text-link" href="#/methodology">How this works →</a></p>`;
 }
 
 function formatClvBlock(bet) {
@@ -800,6 +801,7 @@ function renderSidebarNav(route) {
     { href: "#/teams", label: "Leagues", active: path === "teams" || path === "team" || path === "player" },
     { href: "#/picks", label: "Algo picks", active: path === "picks" },
     { href: "#/tracking", label: "CLV tracking", active: path === "tracking" },
+    { href: "#/methodology", label: "Methodology", active: path === "methodology" },
   ];
   sidebarNav.innerHTML = items
     .map(
@@ -1386,7 +1388,7 @@ function viewDashboard() {
           <div><span>Games</span><strong>${summary.games_analyzed ?? games.length}</strong></div>
           <div><span>Algo picks</span><strong>${summary.recommended_bets ?? picks.length}</strong></div>
           <div><span>Min conf</span><strong>${minConf}+ pp</strong></div>
-          <div><span>All-time ROI</span><strong>${tracking.roi_percent ?? 0}%</strong></div>
+          <div title="ROI (per staked unit)"><span>All-time ROI</span><strong>${tracking.roi_percent ?? 0}%</strong></div>
         </div>
       </div>
       ${disclaimerBar()}
@@ -1460,7 +1462,7 @@ function renderTrackingSummary() {
       }
       const unitsCls =
         Number(row.units) > 0 ? "clv-positive" : Number(row.units) < 0 ? "clv-negative" : "";
-      return `<div class="rollup-card panel"><h4>${label}</h4><strong class="rollup-record">${row.record || "0-0"}</strong><span class="${unitsCls}">${row.units > 0 ? "+" : ""}${row.units ?? 0}u · ROI ${row.roi_percent ?? 0}%</span><small>${row.bets ?? 0} bets · ${row.pending ?? 0} pending</small></div>`;
+      return `<div class="rollup-card panel"><h4>${label}</h4><strong class="rollup-record">${row.record || "0-0"}</strong><span class="${unitsCls}" title="ROI (per staked unit)">${row.units > 0 ? "+" : ""}${row.units ?? 0}u · ROI ${row.roi_percent ?? 0}%</span><small>${row.bets ?? 0} bets · ${row.pending ?? 0} pending</small></div>`;
     })
     .join("")}</div>`;
 }
@@ -2222,7 +2224,7 @@ function renderPeriodTable(periodKey) {
   if (!rows.length) {
     return `<p class="muted">No ${periodLabel(periodKey).toLowerCase()} data yet — bets are logged each day at 3am.</p>`;
   }
-  return `<table class="data-table"><thead><tr><th>${periodLabel(periodKey)}</th><th>Record</th><th>Units</th><th>ROI</th><th>Bets</th><th>Pending</th></tr></thead><tbody>${rows
+  return `<table class="data-table"><thead><tr><th>${periodLabel(periodKey)}</th><th>Record</th><th>Units</th><th>ROI (per staked unit)</th><th>Bets</th><th>Pending</th></tr></thead><tbody>${rows
     .map(
       (r) =>
         `<tr><td>${r.label || r.key}</td><td>${r.record || "0-0"}</td><td>${r.units > 0 ? "+" : ""}${r.units ?? 0}u</td><td>${r.roi_percent ?? 0}%</td><td>${r.bets ?? 0}</td><td>${r.pending ?? 0}</td></tr>`,
@@ -2255,6 +2257,8 @@ function viewTracking() {
   const hubacekRule = hubacekPickRule(state.slate);
   const graded = bets.filter((b) => b.status && b.status !== "pending");
   const youngBook = bets.length > 0 && graded.length < 30;
+  const decidedCount = (Number(all.wins) || 0) + (Number(all.losses) || 0);
+  const provisionalSample = decidedCount < 30;
 
   appRoot.innerHTML = `
     <section class="tracking-hero panel">
@@ -2266,9 +2270,9 @@ function viewTracking() {
           <p class="muted tracking-rule">${escapeHtml(hubacekRule)}</p>
         </div>
         <div class="tracking-hero-stats">
-          <div><span>Record</span><strong>${all.record || "0-0"}</strong></div>
+          <div><span>Record</span><strong>${all.record || "0-0"}</strong>${provisionalSample ? `<small class="edge-badge edge-badge--sparse" title="Fewer than 30 decided bets — treat results as provisional">Provisional — small sample</small>` : ""}</div>
           <div><span>Units</span><strong class="${Number(all.units) > 0 ? "clv-positive" : Number(all.units) < 0 ? "clv-negative" : ""}">${all.units > 0 ? "+" : ""}${all.units ?? 0}u</strong></div>
-          <div><span>ROI</span><strong>${all.roi_percent ?? 0}%</strong></div>
+          <div><span>ROI (per staked unit)</span><strong>${all.roi_percent ?? 0}%</strong></div>
           <div><span>Pending</span><strong>${all.pending ?? 0}</strong></div>
         </div>
       </div>
@@ -2331,6 +2335,77 @@ function viewTracking() {
       viewTracking();
     });
   });
+}
+
+function viewMethodology() {
+  state.sidebarLeague = null;
+  renderSidebar(parseRoute());
+  appRoot.innerHTML = `
+    ${breadcrumbs([{ label: "Home", href: "#/" }, { label: "Methodology" }])}
+    <section class="page-head">
+      <h1>Methodology &amp; research</h1>
+      <p>How the board turns model output into tracked picks: the prediction stack, the decorrelation gate behind official bets, closing-line value, the context layer, and stake sizing — plus an honest list of what is still unproven.</p>
+    </section>
+    ${disclaimerBar()}
+
+    <section class="section panel methodology-body">
+      <h2>Three-layer prediction stack</h2>
+      <p>Every win probability on the board is blended from three layers, weighted per league:</p>
+      <ul>
+        <li><strong>Legacy Algo V2</strong> — the original efficiency engine over season stats and situational splits; the stable baseline for every league.</li>
+        <li><strong>Power ratings</strong> — margin-based team ratings with recency weighting and a home-edge adjustment, mapped to win probability.</li>
+        <li><strong>Sport-specific v2 models</strong> — GradientBoost ensembles (NBA, WNBA, NHL, MLB, soccer), MLB RunCast, Dixon–Coles goal models for soccer, BasketballMatrix matrix completion, and nfelo-style ratings for NFL/CFB.</li>
+      </ul>
+      <p>A per-league <strong>meta-stack</strong> decides how much to trust each layer, and a <strong>temperature calibration</strong> pass rescales the blended probability so that, against history, "60%" actually means about 60%.</p>
+    </section>
+
+    <section class="section panel methodology-body">
+      <h2>Hubáček decorrelation</h2>
+      <p>An accurate model is not enough to win. If the model mostly agrees with the bookmaker, its value spots cluster on prices where the vig exceeds the tiny disagreement, and the strategy grinds to a loss. Hubáček, Šourek &amp; Železný showed that training a model to <em>decorrelate</em> from the bookmaker — while staying accurate — is what turns predictions into a profitable betting strategy.</p>
+      <p>The site applies this as a 3-track split, shown on every game page:</p>
+      <ul>
+        <li><strong>Display probability</strong> — the full blended model, shown on the board.</li>
+        <li><strong>Pick gate probability</strong> — a decorrelated probability that must beat the de-vigged market by a backtested per-league gap (with a confidence floor) before a pick becomes official.</li>
+        <li><strong>Honest EV</strong> — expected value computed from the calibrated <em>pre-decorrelation</em> probability, so the decorrelation shove never inflates the printed edge or the Kelly stake.</li>
+      </ul>
+      <p class="muted methodology-cite">Hubáček, O., Šourek, G., &amp; Železný, F. (2019). “Exploiting sports-betting market using machine learning.” <em>International Journal of Forecasting</em>, 35(2). <a class="text-link" href="https://doi.org/10.1016/j.ijforecast.2019.01.001" target="_blank" rel="noopener">doi:10.1016/j.ijforecast.2019.01.001</a></p>
+    </section>
+
+    <section class="section panel methodology-body">
+      <h2>Closing Line Value (CLV)</h2>
+      <p>CLV compares the implied probability of the odds you took against the implied probability of the closing odds: <strong>positive CLV means you beat the close</strong>. Because the closing line aggregates all late information and sharp money, consistently beating it is the best available predictor of long-run profit — far more informative than a short-run win–loss record, which is mostly variance at small sample sizes.</p>
+      <p>Every official pick is logged with odds frozen at record time and graded for implied-probability CLV once closing odds land. One caveat: the closing reference here is the <strong>ESPN consensus feed, not a sharp book</strong>, so CLV on this site is an approximation of true closing value.</p>
+    </section>
+
+    <section class="section panel methodology-body">
+      <h2>Context layer</h2>
+      <p>A small fourth layer nudges probabilities by at most ±3 percentage points in total, based on market-bias research rather than model output:</p>
+      <ul>
+        <li><strong>Favorite–longshot bias (FLB)</strong> — bettors systematically overpay for longshots and underpay for heavy favorites. Recent work on MLB moneyline markets finds the bias present in <em>opening</em> odds and gone by the close, so a capped nudge (≤1.5 pp) toward strong favorites is applied at open-like prices only.</li>
+        <li><strong>Steam signal</strong> — open→current line movement as a proxy for informed money (≤1 pp).</li>
+        <li><strong>News keywords</strong> — injury/suspension and hot-streak heuristics from headlines (≤2 pp).</li>
+        <li><strong>Sparse-sample EV caps</strong> — printed EV is capped for thin international tournaments (World Cup, friendlies, continental qualifiers) where the sample is too small to trust extreme edges.</li>
+      </ul>
+    </section>
+
+    <section class="section panel methodology-body">
+      <h2>Stake sizing</h2>
+      <p>Stakes are <strong>quarter-Kelly</strong>, clamped to <strong>0.25–3 units</strong> (1u ≈ 1% of bankroll), with two conservative adjustments on top:</p>
+      <ul>
+        <li><strong>Correlation haircut</strong> — same-slate bets share leagues, sides, and market regimes, so stakes are shrunk about 15% versus raw quarter-Kelly.</li>
+        <li><strong>EV dampener</strong> — printed EV above 25% is scaled ×0.92 and above 40% ×0.85, because extreme printed EV is usually sample noise and should never size a bet up.</li>
+      </ul>
+    </section>
+
+    <section class="section panel methodology-body">
+      <h2>Honest limitations</h2>
+      <ul>
+        <li><strong>Beating the close is unproven for NBA.</strong> A pilot of the NBA model graded at real closing lines returned −1.5% ATS with negative CLV. Whatever edge exists lives earlier in the day, not at the close.</li>
+        <li><strong>MLB edge concentrates at the open.</strong> Walk-forward testing showed roughly +35% ROI against opening lines versus −3.2% at the close — consistent with the finding that FLB mispricing disappears as the market matures.</li>
+        <li><strong>The live tracked sample is very young.</strong> Until dozens of graded bets settle, record, units, and ROI are noise; process metrics (CLV, stake discipline) matter more.</li>
+        <li><strong>This is research, not investment advice.</strong> Nothing here guarantees profit; treat the board as decision support for studying betting markets.</li>
+      </ul>
+    </section>`;
 }
 
 function dbApi(path) {
@@ -2522,6 +2597,7 @@ async function render() {
     else if (route.path === "team") await viewTeam(route.parts[1], route.parts[2]);
     else if (route.path === "player") await viewPlayer(route.parts[1], route.parts[2]);
     else if (route.path === "tracking") viewTracking();
+    else if (route.path === "methodology") viewMethodology();
     else viewDashboard();
   } catch (err) {
     appRoot.innerHTML = `<div class="panel empty-panel error-panel">${escapeHtml(err.message)}</div>`;
