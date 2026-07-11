@@ -31,9 +31,19 @@ _DEFAULT_TIMEOUT_S = 5
 
 
 def multi_book_enabled(league: str) -> bool:
-    """LIVE_MULTI_BOOK defaults ON; set 0/false/no to disable."""
-    flag = (os.environ.get("LIVE_MULTI_BOOK") or "1").strip().lower()
+    """LIVE_MULTI_BOOK defaults ON for interactive use; OFF during fast CI builds.
+
+    Set LIVE_MULTI_BOOK=1 to force on (even in FAST_DAILY_BUILD).
+    Set LIVE_MULTI_BOOK=0/false/no/off to force off.
+    """
+    flag = (os.environ.get("LIVE_MULTI_BOOK") or "").strip().lower()
     if flag in {"0", "false", "no", "off"}:
+        return False
+    if flag in {"1", "true", "yes", "on"}:
+        return league.lower() in MULTI_BOOK_LEAGUES
+    # Default: skip multi-book during fast Pages builds (timeout risk).
+    fast = (os.environ.get("FAST_DAILY_BUILD") or "").strip().lower()
+    if fast in {"1", "true", "yes", "on"}:
         return False
     return league.lower() in MULTI_BOOK_LEAGUES
 

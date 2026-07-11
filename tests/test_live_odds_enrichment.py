@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 from unittest.mock import patch
@@ -135,8 +136,22 @@ def test_line_shopping_fields_for_pick() -> None:
 
 
 def test_multi_book_disabled_via_env() -> None:
-    with patch.dict("os.environ", {"LIVE_MULTI_BOOK": "0"}):
+    with patch.dict("os.environ", {"LIVE_MULTI_BOOK": "0"}, clear=False):
         assert multi_book_enabled("nba") is False
-    with patch.dict("os.environ", {"LIVE_MULTI_BOOK": "1"}):
+    with patch.dict("os.environ", {"LIVE_MULTI_BOOK": "1"}, clear=False):
         assert multi_book_enabled("nba") is True
         assert multi_book_enabled("epl") is False
+
+
+def test_multi_book_skipped_during_fast_daily_build() -> None:
+    env = {"FAST_DAILY_BUILD": "1"}
+    # Clear LIVE_MULTI_BOOK so the fast-build default applies.
+    with patch.dict("os.environ", env, clear=False):
+        os.environ.pop("LIVE_MULTI_BOOK", None)
+        assert multi_book_enabled("nba") is False
+    with patch.dict(
+        "os.environ",
+        {"FAST_DAILY_BUILD": "1", "LIVE_MULTI_BOOK": "1"},
+        clear=False,
+    ):
+        assert multi_book_enabled("nba") is True
