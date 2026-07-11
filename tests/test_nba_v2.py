@@ -193,6 +193,126 @@ def test_signed_spread_and_devig() -> None:
     assert devig_two_way(-50, 130) is None
 
 
+def _box(players: list[list] | None = None) -> dict:
+    box = {
+        "fgm": 40.0, "fga": 88.0, "tpm": 12.0, "tpa": 32.0,
+        "ftm": 15.0, "fta": 20.0, "orb": 10.0, "drb": 32.0,
+        "tov": 13.0, "ast": 24.0,
+    }
+    if players is not None:
+        box["players"] = players
+    return box
+
+
+def test_schedule_run_features_track_stands_and_trips() -> None:
+    engine = NbaFeatureEngine()
+    for day in (10, 12, 14):
+        engine.update_after_game(_game(f"2025-01-{day:02d}", "bos", "ny", 110, 100))
+    features = engine.features_for_game(_game("2025-01-16", "bos", "ny", 0, 0))
+    assert features["home_stand_len"] == 4.0  # 3 prior home games + this one
+    assert features["away_trip_len"] == 4.0
+    flipped = engine.features_for_game(_game("2025-01-16", "ny", "bos", 0, 0))
+    assert flipped["home_stand_len"] == 1.0  # ny was away, bos was home
+    assert flipped["away_trip_len"] == 1.0
+
+
+def test_3in4_flag_and_tz_altitude() -> None:
+    engine = NbaFeatureEngine()
+    engine.update_after_game(_game("2025-01-13", "bos", "ny", 110, 100))
+    engine.update_after_game(_game("2025-01-15", "bos", "ny", 110, 100))
+    features = engine.features_for_game(_game("2025-01-16", "bos", "ny", 0, 0))
+    assert features["home_3in4"] == 1.0
+    # bos hosting den: venue altitude ~0, den comes from altitude
+    features = engine.features_for_game(_game("2025-01-20", "bos", "den", 0, 0))
+    assert features["venue_altitude_km"] < 0.1
+    assert features["away_altitude_gap"] < -1.0  # downhill for Denver
+    den_home = engine.features_for_game(_game("2025-01-22", "den", "bos", 0, 0))
+    assert den_home["venue_altitude_km"] > 1.5
+    assert den_home["away_altitude_gap"] > 1.5
+    # bos (last in Boston) visiting lal shifts ~3 timezones west
+    lal_host = engine.features_for_game(_game("2025-01-24", "lal", "bos", 0, 0))
+    assert lal_host["away_tz_shift"] < -2.5
+
+
+def test_close_game_and_blowout_and_margin_volatility() -> None:
+    engine = NbaFeatureEngine()
+    for day in range(10, 16):
+        engine.update_after_game(_game(f"2025-01-{day:02d}", "bos", "ny", 103, 100))
+    features = engine.features_for_game(_game("2025-01-20", "bos", "ny", 0, 0))
+    assert features["close_win_ewma_diff"] > 0.3  # bos wins all close games
+    assert features["blowout_net_ewma_diff"] == 0.0  # no blowouts yet
+    assert features["margin_vol_diff"] == 0.0  # symmetric 3-point games
+    engine.update_after_game(_game("2025-01-20", "bos", "ny", 130, 100))
+    features = engine.features_for_game(_game("2025-01-24", "bos", "ny", 0, 0))
+    assert features["blowout_net_ewma_diff"] > 0.15
+    assert features["h2h_margin_ewma"] > 3.0
+    assert features["elo_mom5_diff"] > 0.0
+
+
+def test_availability_proxies_from_player_rows() -> None:
+    engine = NbaFeatureEngine()
+    full = [["a", 36], ["b", 34], ["c", 30], ["d", 28], ["e", 25],
+            ["f", 22], ["g", 18], ["h", 15]]
+    ny_full = [["x", 36], ["y", 34], ["z", 30], ["w", 28], ["v", 25],
+               ["u", 22], ["t", 18], ["s", 15]]
+    for day in range(2, 8):  # six games: stars build a cumulative-minutes lead
+        game = _game(f"2025-01-{day:02d}", "bos", "ny", 110, 100)
+        game["home_box"] = _box(full)
+        game["away_box"] = _box(ny_full)
+        engine.update_after_game(game)
+    even = engine.features_for_game(_game("2025-01-09", "bos", "ny", 0, 0))
+    assert even["roster_continuity_diff"] == 0.0
+    assert even["star_avail_diff"] == 0.0
+    # ny loses its top-2 stars; replacements soak the minutes
+    ny_short = [["z", 34], ["w", 32], ["v", 30], ["u", 26], ["t", 24],
+                ["s", 20], ["q", 18], ["r", 16]]
+    game_short = _game("2025-01-09", "bos", "ny", 110, 100)
+    game_short["home_box"] = _box(full)
+    game_short["away_box"] = _box(ny_short)
+    engine.update_after_game(game_short)
+    hurt = engine.features_for_game(_game("2025-01-11", "bos", "ny", 0, 0))
+    assert hurt["star_avail_diff"] > 0.5  # bos 3/3 vs ny 1/3
+    assert hurt["roster_continuity_diff"] > 0.1
+
+
+def test_shooting_profile_updates_from_boxes() -> None:
+    engine = NbaFeatureEngine()
+    game = _game("2025-01-10", "bos", "ny", 110, 100)
+    game["home_box"] = dict(_box(), tpa=45.0, tpm=20.0)
+    game["away_box"] = dict(_box(), tpa=18.0, tpm=4.0)
+    engine.update_after_game(game)
+    features = engine.features_for_game(_game("2025-01-12", "bos", "ny", 0, 0))
+    assert features["tpa_rate_diff"] > 0.04
+    assert features["tp_pct_diff"] > 0.02
+    assert features["tp_pct_against_diff"] < -0.02
+
+
+def test_from_dict_defaults_new_fields_for_old_snapshots() -> None:
+    engine = NbaFeatureEngine()
+    game = _game("2025-01-10", "bos", "ny", 110, 100)
+    game["home_box"] = _box([["a", 36], ["b", 30]])
+    game["away_box"] = _box([["x", 36], ["y", 30]])
+    engine.update_after_game(game)
+    payload = engine.to_dict()
+    legacy_keys = (
+        "efg_for_slow", "tpa_rate", "tp_pct", "ft_pct", "tp_pct_against",
+        "close_win_ewma", "blowout_net_ewma", "recent_margins", "elo_pre_hist",
+        "loc_streak", "last_players", "prev_player_ids", "season_minutes",
+        "h2h_margin",
+    )
+    for team_payload in payload["teams"].values():
+        for key in legacy_keys:
+            team_payload.pop(key, None)
+    restored = NbaFeatureEngine.from_dict(payload)
+    features = restored.features_for_game(_game("2025-01-12", "bos", "ny", 0, 0))
+    assert set(features.keys()) == set(FEATURE_COLUMNS)
+    assert features["roster_continuity_diff"] == 0.0
+    assert features["star_avail_diff"] == 0.0
+    assert features["margin_vol_diff"] == 0.0
+    assert features["h2h_margin_ewma"] == 0.0
+    assert features["elo_mom5_diff"] == 0.0
+
+
 def test_live_prediction_when_artifacts_present() -> None:
     from web.nba_v2.live import artifacts_available, predict_matchup_v2, nba_season_for_date
 

@@ -45,7 +45,7 @@ def _save(path: Path, payload: dict) -> None:
     path.write_text(json.dumps(payload, separators=(",", ":")), encoding="utf-8")
 
 
-def fetch_season(season: int, refresh_events: bool) -> None:
+def fetch_season(season: int, refresh_events: bool, retry_missing: bool = False) -> None:
     season_dir = CACHE_ROOT / str(season)
     season_dir.mkdir(parents=True, exist_ok=True)
     events_path = season_dir / "events.json"
@@ -64,7 +64,10 @@ def fetch_season(season: int, refresh_events: bool) -> None:
     if season >= BOX_FIRST_SEASON:
         boxes_path = season_dir / "boxes.json"
         boxes = _load(boxes_path)
-        todo = [e for e in completed if e["event_id"] not in boxes]
+        if retry_missing:
+            todo = [e for e in completed if not boxes.get(e["event_id"])]
+        else:
+            todo = [e for e in completed if e["event_id"] not in boxes]
         if todo:
             t0 = time.time()
 
@@ -97,10 +100,15 @@ def main() -> int:
         default=datetime.now(timezone.utc).year + (1 if datetime.now(timezone.utc).month >= 10 else 0),
     )
     parser.add_argument("--refresh-events", action="store_true")
+    parser.add_argument(
+        "--retry-missing",
+        action="store_true",
+        help="re-fetch events whose cached box entry is null (transient failures)",
+    )
     args = parser.parse_args()
     CACHE_ROOT.mkdir(parents=True, exist_ok=True)
     for season in range(args.start, args.end + 1):
-        fetch_season(season, args.refresh_events)
+        fetch_season(season, args.refresh_events, args.retry_missing)
     return 0
 
 

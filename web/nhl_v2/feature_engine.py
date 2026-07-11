@@ -34,18 +34,39 @@ ALPHA_SPECIAL = 0.10
 ALPHA_GOALIE = 0.12
 ALPHA_LEAGUE = 0.01
 
-LEAGUE_GPG = 3.05          # goals per team per game
+LEAGUE_GPG = 3.05
 LEAGUE_XGPG = 2.90
 LEAGUE_SOG = 30.5
 LEAGUE_SV_PCT = 0.905
 LEAGUE_SH_PCT = 0.095
-LEAGUE_PP_XG = 0.85        # 5on4 xGF per game
+LEAGUE_PP_XG = 0.85
 LEAGUE_PK_XGA = 0.85
 LEAGUE_FO_PCT = 0.50
+LEAGUE_PP_ICE = 300.0       # seconds of 5on4 ice time per game
+LEAGUE_PK_ICE = 300.0
+LEAGUE_HITS = 23.0
+LEAGUE_BLOCK_RATE = 0.25
+LEAGUE_REB_XG_SHARE = 0.17
+LEAGUE_PEN = 3.9
 
-GOALIE_PRIOR_SHOTS = 600.0  # shrink goalie sv% toward league over ~20 starts
+GOALIE_PRIOR_SHOTS = 600.0
+GOALIE_HD_PRIOR = 80.0
+HD_XG_THRESHOLD = 0.20
+
+# Approximate NHL divisions (2021+ alignment; historical franchises mapped).
+TEAM_DIVISION: dict[str, str] = {
+    "BOS": "A", "BUF": "A", "DET": "A", "FLA": "A", "MTL": "A",
+    "OTT": "A", "TBL": "A", "TOR": "A",
+    "CAR": "M", "CBJ": "M", "NJD": "M", "NYI": "M", "NYR": "M",
+    "PHI": "M", "PIT": "M", "WSH": "M",
+    "ARI": "C", "CHI": "C", "COL": "C", "DAL": "C", "MIN": "C",
+    "NSH": "C", "STL": "C", "WPG": "C", "UTA": "C", "ATL": "C",
+    "ANA": "P", "CGY": "P", "EDM": "P", "LAK": "P", "SJS": "P",
+    "SEA": "P", "VAN": "P", "VGK": "P",
+}
 
 FEATURE_COLUMNS: tuple[str, ...] = (
+    # baseline core
     "elo_diff",
     "gf_fast_diff",
     "ga_fast_diff",
@@ -104,12 +125,42 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     "away_goalie_starts",
     "home_goalie_rest",
     "away_goalie_rest",
-    "home_goalie_b2b",
-    "away_goalie_b2b",
-    "home_goalie_known",
-    "away_goalie_known",
     "home_goalie_workload10",
     "away_goalie_workload10",
+    # MoneyPuck depth
+    "flurry_xg_pct_fast_diff",
+    "flurry_xg_pct_slow_diff",
+    "rebound_xg_share_for_diff",
+    "rebound_xg_share_against_diff",
+    "hits_for_diff",
+    "block_rate_diff",
+    "pp_ice_time_diff",
+    "pk_ice_time_diff",
+    "pen_diff",
+    # schedule / geography
+    "home_3in4",
+    "away_3in4",
+    "home_road_trip",
+    "away_road_trip",
+    "timezone_shift",
+    # luck / regression
+    "ot_points_luck_diff",
+    "one_goal_win_pct_diff",
+    "pdo_gap_scaled_diff",
+    # form / matchup
+    "elo_momentum_diff",
+    "h2h_season_diff",
+    "is_divisional",
+    "xgf_trend_diff",
+    "corsi_trend_diff",
+    # goalie depth
+    "home_goalie_starts6",
+    "away_goalie_starts6",
+    "goalie_career_recent_gap_diff",
+    "goalie_hd_gsax_diff",
+    # interactions
+    "goalie_gsax_x_soga",
+    "rest_x_travel",
 )
 
 
@@ -132,8 +183,21 @@ def _travel_km(a: tuple[float, float] | None, b: tuple[float, float] | None) -> 
     return 6371.0 * 2.0 * math.asin(min(1.0, math.sqrt(h)))
 
 
+def _tz_hours(coords: tuple[float, float] | None) -> float:
+    """Rough UTC offset hours from longitude (15 deg ≈ 1 hour)."""
+    if not coords:
+        return -5.0
+    return coords[1] / 15.0
+
+
 def _ewma(current: float, observation: float, alpha: float) -> float:
     return (1.0 - alpha) * current + alpha * observation
+
+
+def _safe_share(numer: float, denom: float, default: float = 0.5) -> float:
+    if denom <= 1e-6:
+        return default
+    return numer / denom
 
 
 class TeamState:
@@ -158,6 +222,17 @@ class TeamState:
         "last_game_date", "recent_dates",
         "last_venue",
         "games_played",
+        # new fields (defaulted in from_dict for old snapshots)
+        "flurry_xg_pct_fast", "flurry_xg_pct_slow",
+        "reb_xg_share_for", "reb_xg_share_against",
+        "hits_for", "block_rate",
+        "pp_ice_time", "pk_ice_time",
+        "pen_taken", "pen_drawn",
+        "ot_points_luck",
+        "one_goal_wins", "one_goal_games",
+        "elo_history",
+        "road_streak",
+        "h2h",
     )
 
     def __init__(self) -> None:
@@ -200,8 +275,22 @@ class TeamState:
         self.recent_dates: list[str] = []
         self.last_venue: str | None = None
         self.games_played = 0
-
-    # -- season aggregates ------------------------------------------------
+        self.flurry_xg_pct_fast = 0.5
+        self.flurry_xg_pct_slow = 0.5
+        self.reb_xg_share_for = LEAGUE_REB_XG_SHARE
+        self.reb_xg_share_against = LEAGUE_REB_XG_SHARE
+        self.hits_for = LEAGUE_HITS
+        self.block_rate = LEAGUE_BLOCK_RATE
+        self.pp_ice_time = LEAGUE_PP_ICE
+        self.pk_ice_time = LEAGUE_PK_ICE
+        self.pen_taken = LEAGUE_PEN
+        self.pen_drawn = LEAGUE_PEN
+        self.ot_points_luck = 0.5
+        self.one_goal_wins = 0
+        self.one_goal_games = 0
+        self.elo_history: list[float] = []
+        self.road_streak = 0
+        self.h2h: dict[str, list[int]] = {}
 
     def points_pct(self) -> float:
         games = self.season_wins + self.season_losses + self.season_ot_losses
@@ -234,16 +323,48 @@ class TeamState:
             return 3.0
         return float(min((current - previous).days, 10))
 
-    def games_last6(self, game_date: str) -> int:
+    def games_last_n(self, game_date: str, days: int) -> int:
         current = _parse_date(game_date)
         if not current:
             return 0
         count = 0
         for iso in self.recent_dates:
             past = _parse_date(iso)
-            if past and 0 < (current - past).days <= 6:
+            if past and 0 < (current - past).days <= days:
                 count += 1
         return count
+
+    def games_last6(self, game_date: str) -> int:
+        return self.games_last_n(game_date, 6)
+
+    def is_3in4(self, game_date: str) -> bool:
+        """True if this would be a 3rd game in a 4-day window (incl. today)."""
+        return self.games_last_n(game_date, 3) >= 2
+
+    def one_goal_win_pct(self) -> float:
+        if self.one_goal_games < 5:
+            return 0.5
+        return self.one_goal_wins / float(self.one_goal_games)
+
+    def elo_momentum(self) -> float:
+        if len(self.elo_history) < 2:
+            return 0.0
+        window = self.elo_history[-8:]
+        return (window[-1] - window[0]) / 100.0
+
+    def h2h_record(self, opponent: str) -> float:
+        """Season H2H: wins - losses vs opponent, scaled to [-1, 1]."""
+        hist = self.h2h.get(opponent) or []
+        if not hist:
+            return 0.0
+        wins = sum(hist)
+        return (2.0 * wins - len(hist)) / max(len(hist), 1)
+
+    def pdo_gap_scaled(self) -> float:
+        """(PDO - 1.0) shrunk by games played."""
+        pdo = self.sh_pct + self.sv_pct
+        weight = min(self.games_played / 40.0, 1.0)
+        return (pdo - 1.0) * weight
 
     def to_dict(self) -> dict[str, Any]:
         return {slot: getattr(self, slot) for slot in self.__slots__}
@@ -259,12 +380,16 @@ class TeamState:
 
 class GoalieState:
     __slots__ = (
-        "sv_delta",          # shrunk save% above league, per-shot units
+        "sv_delta",
         "shots_seen",
         "starts",
         "last_start_date",
         "recent_start_dates",
         "team",
+        "hd_sv_delta",
+        "hd_shots_seen",
+        "recent_gsax",
+        "career_gsax_ewma",
     )
 
     def __init__(self) -> None:
@@ -274,11 +399,22 @@ class GoalieState:
         self.last_start_date: str | None = None
         self.recent_start_dates: list[str] = []
         self.team: str | None = None
+        self.hd_sv_delta = 0.0
+        self.hd_shots_seen = 0.0
+        self.recent_gsax = 0.0
+        self.career_gsax_ewma = 0.0
 
     def quality(self) -> float:
-        """Save% above league expectation, shrunk by career shot volume."""
         weight = self.shots_seen / (self.shots_seen + GOALIE_PRIOR_SHOTS)
         return self.sv_delta * weight
+
+    def hd_quality(self) -> float:
+        weight = self.hd_shots_seen / (self.hd_shots_seen + GOALIE_HD_PRIOR)
+        return self.hd_sv_delta * weight
+
+    def career_recent_gap(self) -> float:
+        """Positive = recent form above career baseline."""
+        return self.recent_gsax - self.career_gsax_ewma
 
     def rest_days(self, game_date: str) -> float:
         if not self.last_start_date:
@@ -289,16 +425,22 @@ class GoalieState:
             return 4.0
         return float(min((current - previous).days, 14))
 
-    def starts_last10(self, game_date: str) -> int:
+    def starts_last_n(self, game_date: str, days: int) -> int:
         current = _parse_date(game_date)
         if not current:
             return 0
         count = 0
         for iso in self.recent_start_dates:
             past = _parse_date(iso)
-            if past and 0 < (current - past).days <= 10:
+            if past and 0 < (current - past).days <= days:
                 count += 1
         return count
+
+    def starts_last10(self, game_date: str) -> int:
+        return self.starts_last_n(game_date, 10)
+
+    def starts_last6(self, game_date: str) -> int:
+        return self.starts_last_n(game_date, 6)
 
     def to_dict(self) -> dict[str, Any]:
         return {slot: getattr(self, slot) for slot in self.__slots__}
@@ -319,8 +461,6 @@ class NhlFeatureEngine:
         self.league_gpg = LEAGUE_GPG
         self.league_sv = LEAGUE_SV_PCT
         self.current_season: int | None = None
-
-    # -- persistence -------------------------------------------------------
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -347,15 +487,11 @@ class NhlFeatureEngine:
         engine.current_season = payload.get("current_season")
         return engine
 
-    # -- accessors ----------------------------------------------------------
-
     def team(self, abbr: str) -> TeamState:
         return self.teams.setdefault(abbr, TeamState())
 
     def goalie(self, goalie_id: Any) -> GoalieState:
         return self.goalies.setdefault(str(goalie_id), GoalieState())
-
-    # -- season boundaries ---------------------------------------------------
 
     def start_season(self, season: int) -> None:
         if self.current_season == season:
@@ -377,8 +513,11 @@ class NhlFeatureEngine:
             state.last_game_date = None
             state.recent_dates = []
             state.last_venue = None
-
-    # -- features -------------------------------------------------------------
+            state.one_goal_wins = 0
+            state.one_goal_games = 0
+            state.road_streak = 0
+            state.h2h = {}
+            state.elo_history = []
 
     def features_for_game(self, game: dict[str, Any]) -> dict[str, float]:
         home = self.team(game["home"])
@@ -391,9 +530,10 @@ class NhlFeatureEngine:
         home_coords = ARENA_COORDS.get(game["home"])
         home_prev = ARENA_COORDS.get(home.last_venue or game["home"])
         away_prev = ARENA_COORDS.get(away.last_venue or game["away"])
+        home_travel = _travel_km(home_prev, home_coords) / 1000.0
+        away_travel = _travel_km(away_prev, home_coords) / 1000.0
 
         month = _parse_date(game_date).month if _parse_date(game_date) else 1
-        # NHL season runs Oct(10) -> Jun(6)
         season_frac = {10: 0.0, 11: 0.12, 12: 0.25, 1: 0.4, 2: 0.55, 3: 0.7,
                        4: 0.85, 5: 0.95, 6: 1.0}.get(month, 0.5)
 
@@ -411,6 +551,25 @@ class NhlFeatureEngine:
         ag_gsax = away_goalie.quality() if away_goalie else 0.0
         hg_rest = home_goalie.rest_days(game_date) if home_goalie else 4.0
         ag_rest = away_goalie.rest_days(game_date) if away_goalie else 4.0
+        hg_hd = home_goalie.hd_quality() if home_goalie else 0.0
+        ag_hd = away_goalie.hd_quality() if away_goalie else 0.0
+        hg_gap = home_goalie.career_recent_gap() if home_goalie else 0.0
+        ag_gap = away_goalie.career_recent_gap() if away_goalie else 0.0
+
+        home_div = TEAM_DIVISION.get(game["home"], "")
+        away_div = TEAM_DIVISION.get(game["away"], "")
+        is_div = 1.0 if home_div and home_div == away_div else 0.0
+
+        # Away road-trip length entering this game (consecutive prior away games).
+        away_road = float(away.road_streak) if away.last_venue and away.last_venue != game["away"] else 0.0
+        home_road = 0.0  # home team is at home tonight
+
+        tz_shift = _tz_hours(away_prev) - _tz_hours(home_coords)
+
+        sog_against_diff = home.sog_against - away.sog_against
+        goalie_gsax_diff = (hg_gsax - ag_gsax) * 100.0
+        rest_diff = home_rest - away_rest
+        travel_diff = home_travel - away_travel
 
         features: dict[str, float] = {
             "elo_diff": (home.elo + ELO_HOME_ADV - away.elo) / 100.0,
@@ -434,7 +593,7 @@ class NhlFeatureEngine:
             "sv_pct_ewma_diff": home.sv_pct - away.sv_pct,
             "pdo_ewma_diff": (home.sh_pct + home.sv_pct) - (away.sh_pct + away.sv_pct),
             "sog_for_diff": home.sog_for - away.sog_for,
-            "sog_against_diff": home.sog_against - away.sog_against,
+            "sog_against_diff": sog_against_diff,
             "pp_xgf_diff": home.pp_xgf - away.pp_xgf,
             "pk_xga_diff": home.pk_xga - away.pk_xga,
             "home_pp_vs_away_pk": home.pp_xgf - away.pk_xga,
@@ -451,13 +610,13 @@ class NhlFeatureEngine:
             "prev_gd_pg_diff": home.prev_gd_pg - away.prev_gd_pg,
             "home_rest_days": home_rest,
             "away_rest_days": away_rest,
-            "rest_diff": home_rest - away_rest,
+            "rest_diff": rest_diff,
             "home_b2b": 1.0 if home_rest <= 1.0 else 0.0,
             "away_b2b": 1.0 if away_rest <= 1.0 else 0.0,
             "home_games_last6": float(home.games_last6(game_date)),
             "away_games_last6": float(away.games_last6(game_date)),
-            "home_travel_km": _travel_km(home_prev, home_coords) / 1000.0,
-            "away_travel_km": _travel_km(away_prev, home_coords) / 1000.0,
+            "home_travel_km": home_travel,
+            "away_travel_km": away_travel,
             "home_games_played": float(home.games_played),
             "away_games_played": float(away.games_played),
             "season_frac": season_frac,
@@ -466,23 +625,54 @@ class NhlFeatureEngine:
             "exp_total_env": env_total,
             "home_goalie_gsax": hg_gsax * 100.0,
             "away_goalie_gsax": ag_gsax * 100.0,
-            "goalie_gsax_diff": (hg_gsax - ag_gsax) * 100.0,
+            "goalie_gsax_diff": goalie_gsax_diff,
             "home_goalie_starts": float(home_goalie.starts) if home_goalie else 0.0,
             "away_goalie_starts": float(away_goalie.starts) if away_goalie else 0.0,
             "home_goalie_rest": hg_rest,
             "away_goalie_rest": ag_rest,
-            "home_goalie_b2b": 1.0 if (home_goalie and hg_rest <= 1.0) else 0.0,
-            "away_goalie_b2b": 1.0 if (away_goalie and ag_rest <= 1.0) else 0.0,
-            "home_goalie_known": 1.0 if home_goalie else 0.0,
-            "away_goalie_known": 1.0 if away_goalie else 0.0,
             "home_goalie_workload10": float(
                 home_goalie.starts_last10(game_date)) if home_goalie else 0.0,
             "away_goalie_workload10": float(
                 away_goalie.starts_last10(game_date)) if away_goalie else 0.0,
+            "flurry_xg_pct_fast_diff": home.flurry_xg_pct_fast - away.flurry_xg_pct_fast,
+            "flurry_xg_pct_slow_diff": home.flurry_xg_pct_slow - away.flurry_xg_pct_slow,
+            "rebound_xg_share_for_diff": home.reb_xg_share_for - away.reb_xg_share_for,
+            "rebound_xg_share_against_diff": (
+                home.reb_xg_share_against - away.reb_xg_share_against
+            ),
+            "hits_for_diff": home.hits_for - away.hits_for,
+            "block_rate_diff": home.block_rate - away.block_rate,
+            "pp_ice_time_diff": (home.pp_ice_time - away.pp_ice_time) / 60.0,
+            "pk_ice_time_diff": (home.pk_ice_time - away.pk_ice_time) / 60.0,
+            "pen_diff": (home.pen_drawn - home.pen_taken) - (away.pen_drawn - away.pen_taken),
+            "home_3in4": 1.0 if home.is_3in4(game_date) else 0.0,
+            "away_3in4": 1.0 if away.is_3in4(game_date) else 0.0,
+            "home_road_trip": home_road,
+            "away_road_trip": away_road,
+            "timezone_shift": tz_shift,
+            "ot_points_luck_diff": home.ot_points_luck - away.ot_points_luck,
+            "one_goal_win_pct_diff": home.one_goal_win_pct() - away.one_goal_win_pct(),
+            "pdo_gap_scaled_diff": home.pdo_gap_scaled() - away.pdo_gap_scaled(),
+            "elo_momentum_diff": home.elo_momentum() - away.elo_momentum(),
+            "h2h_season_diff": home.h2h_record(game["away"]),
+            "is_divisional": is_div,
+            "xgf_trend_diff": (
+                (home.xgf_fast - home.xgf_slow) - (away.xgf_fast - away.xgf_slow)
+            ),
+            "corsi_trend_diff": (
+                (home.corsi_pct_fast - home.corsi_pct_slow)
+                - (away.corsi_pct_fast - away.corsi_pct_slow)
+            ),
+            "home_goalie_starts6": float(
+                home_goalie.starts_last6(game_date)) if home_goalie else 0.0,
+            "away_goalie_starts6": float(
+                away_goalie.starts_last6(game_date)) if away_goalie else 0.0,
+            "goalie_career_recent_gap_diff": (hg_gap - ag_gap) * 100.0,
+            "goalie_hd_gsax_diff": (hg_hd - ag_hd) * 100.0,
+            "goalie_gsax_x_soga": goalie_gsax_diff * sog_against_diff,
+            "rest_x_travel": rest_diff * travel_diff,
         }
         return features
-
-    # -- state updates -----------------------------------------------------------
 
     def update_after_game(self, game: dict[str, Any]) -> None:
         home = self.team(game["home"])
@@ -493,7 +683,6 @@ class NhlFeatureEngine:
         away_goals = int(game.get("away_goals") or 0)
         home_win = int(game.get("home_win") or (1 if home_goals > away_goals else 0))
 
-        # Elo with margin multiplier
         expected_home = 1.0 / (
             1.0 + 10.0 ** (-((home.elo + ELO_HOME_ADV) - away.elo) / 400.0)
         )
@@ -504,6 +693,8 @@ class NhlFeatureEngine:
         shift = ELO_K * margin_mult * (home_win - expected_home)
         home.elo += shift
         away.elo -= shift
+        home.elo_history = (home.elo_history + [home.elo])[-12:]
+        away.elo_history = (away.elo_history + [away.elo])[-12:]
 
         mp = game.get("mp") or {}
         home_mp = mp.get(game["home"]) or {}
@@ -544,6 +735,57 @@ class NhlFeatureEngine:
                         state.xgf_away_venue, float(xgf), ALPHA_FAST
                     )
 
+            fsva_f = own_mp.get("all_flurryScoreVenueAdjustedxGoalsFor")
+            fsva_a = own_mp.get("all_flurryScoreVenueAdjustedxGoalsAgainst")
+            if fsva_f is not None and fsva_a is not None:
+                total_f = float(fsva_f) + float(fsva_a)
+                if total_f > 0.2:
+                    pct = float(fsva_f) / total_f
+                    state.flurry_xg_pct_fast = _ewma(
+                        state.flurry_xg_pct_fast, pct, ALPHA_FAST
+                    )
+                    state.flurry_xg_pct_slow = _ewma(
+                        state.flurry_xg_pct_slow, pct, ALPHA_SLOW
+                    )
+
+            reb_f = own_mp.get("all_reboundxGoalsFor")
+            reb_a = own_mp.get("all_reboundxGoalsAgainst")
+            raw_xgf = own_mp.get("all_xGoalsFor")
+            raw_xga = own_mp.get("all_xGoalsAgainst")
+            if reb_f is not None and raw_xgf is not None and float(raw_xgf) > 0.1:
+                state.reb_xg_share_for = _ewma(
+                    state.reb_xg_share_for,
+                    float(reb_f) / float(raw_xgf),
+                    ALPHA_SLOW,
+                )
+            if reb_a is not None and raw_xga is not None and float(raw_xga) > 0.1:
+                state.reb_xg_share_against = _ewma(
+                    state.reb_xg_share_against,
+                    float(reb_a) / float(raw_xga),
+                    ALPHA_SLOW,
+                )
+
+            hits = own_mp.get("all_hitsFor")
+            if hits is not None:
+                state.hits_for = _ewma(state.hits_for, float(hits), ALPHA_FAST)
+
+            blocked = own_mp.get("all_blockedShotAttemptsFor")
+            attempts_against = own_mp.get("all_shotAttemptsAgainst")
+            if blocked is not None and attempts_against is not None:
+                aa = float(attempts_against)
+                if aa > 10:
+                    # blockedShotAttemptsFor = blocks by this team (of opp attempts)
+                    state.block_rate = _ewma(
+                        state.block_rate, float(blocked) / aa, ALPHA_FAST
+                    )
+
+            pen_t = own_mp.get("all_penaltiesFor")
+            pen_d = own_mp.get("all_penaltiesAgainst")
+            if pen_t is not None:
+                state.pen_taken = _ewma(state.pen_taken, float(pen_t), ALPHA_SPECIAL)
+            if pen_d is not None:
+                state.pen_drawn = _ewma(state.pen_drawn, float(pen_d), ALPHA_SPECIAL)
+
             xgf55 = own_mp.get("5on5_xGoalsFor")
             xga55 = own_mp.get("5on5_xGoalsAgainst")
             if xgf55 is not None and xga55 is not None:
@@ -578,6 +820,13 @@ class NhlFeatureEngine:
             if pk is not None:
                 state.pk_xga = _ewma(state.pk_xga, float(pk), ALPHA_SPECIAL)
 
+            pp_ice = own_mp.get("5on4_iceTime")
+            if pp_ice is not None:
+                state.pp_ice_time = _ewma(state.pp_ice_time, float(pp_ice), ALPHA_SPECIAL)
+            pk_ice = own_mp.get("4on5_iceTime")
+            if pk_ice is not None:
+                state.pk_ice_time = _ewma(state.pk_ice_time, float(pk_ice), ALPHA_SPECIAL)
+
             sog_for = float(sog_f or own_mp.get("all_shotsOnGoalFor") or LEAGUE_SOG)
             sog_against = float(sog_a or own_mp.get("all_shotsOnGoalAgainst") or LEAGUE_SOG)
             state.sog_for = _ewma(state.sog_for, sog_for, ALPHA_FAST)
@@ -599,10 +848,35 @@ class NhlFeatureEngine:
         home.home_win_ewma = _ewma(home.home_win_ewma, float(home_win), ALPHA_WIN)
         away.away_win_ewma = _ewma(away.away_win_ewma, float(1 - home_win), ALPHA_WIN)
 
+        # OT/SO points luck: regulation win = 1.0 for winner; OT/SO win = 0.6
+        home_ot_loss = int(game.get("home_ot_loss") or 0)
+        away_ot_loss = int(game.get("away_ot_loss") or 0)
+        went_extra = bool(home_ot_loss or away_ot_loss)
+        if home_win:
+            home_ot_obs = 0.6 if went_extra else 1.0
+            away_ot_obs = 0.4 if went_extra else 0.0
+        else:
+            home_ot_obs = 0.4 if went_extra else 0.0
+            away_ot_obs = 0.6 if went_extra else 1.0
+        home.ot_points_luck = _ewma(home.ot_points_luck, home_ot_obs, ALPHA_WIN)
+        away.ot_points_luck = _ewma(away.ot_points_luck, away_ot_obs, ALPHA_WIN)
+
+        if abs(home_goals - away_goals) == 1:
+            home.one_goal_games += 1
+            away.one_goal_games += 1
+            if home_win:
+                home.one_goal_wins += 1
+            else:
+                away.one_goal_wins += 1
+
+        # H2H season record
+        home.h2h.setdefault(game["away"], []).append(home_win)
+        away.h2h.setdefault(game["home"], []).append(1 - home_win)
+        home.h2h[game["away"]] = home.h2h[game["away"]][-8:]
+        away.h2h[game["home"]] = away.h2h[game["home"]][-8:]
+
         is_regular = int(game.get("game_type") or 2) == 2
         if is_regular:
-            home_ot_loss = int(game.get("home_ot_loss") or 0)
-            away_ot_loss = int(game.get("away_ot_loss") or 0)
             if home_win:
                 home.season_wins += 1
                 if away_ot_loss:
@@ -620,19 +894,22 @@ class NhlFeatureEngine:
             away.season_gf += away_goals
             away.season_ga += home_goals
 
+        # Road streak after this game: consecutive finishes away from own arena.
+        home.road_streak = 0
+        away.road_streak = (
+            (away.road_streak if away.last_venue and away.last_venue != game["away"] else 0) + 1
+        )
+
         for state in (home, away):
             state.games_played += 1
             state.last_game_date = game_date
-            state.recent_dates = (state.recent_dates + [game_date])[-8:]
+            state.recent_dates = (state.recent_dates + [game_date])[-10:]
             state.last_venue = game["home"]
 
         self.league_gpg = _ewma(
             self.league_gpg, (home_goals + away_goals) / 2.0, ALPHA_LEAGUE
         )
 
-        # goalie updates (starters only). Preferred observation: per-shot GSAx
-        # from MoneyPuck shot xG (xg_faced - goals_allowed) / shots; fallback:
-        # save% above league average.
         for goalie_id, team_key, shots_key, goals_allowed in (
             (game.get("home_goalie_id"), game["home"], "away_shots", away_goals),
             (game.get("away_goalie_id"), game["away"], "home_shots", home_goals),
@@ -644,6 +921,9 @@ class NhlFeatureEngine:
             xg_faced = game.get(f"{team_key}_goalie_xg")
             xg_shots = game.get(f"{team_key}_goalie_xg_shots")
             xg_goals = game.get(f"{team_key}_goalie_xg_goals")
+            hd_shots = game.get(f"{team_key}_goalie_hd_shots")
+            hd_xg = game.get(f"{team_key}_goalie_hd_xg")
+            hd_goals = game.get(f"{team_key}_goalie_hd_goals")
             if shots_against is None:
                 shots_against = game.get(shots_key)
             state = self.goalie(goalie_id)
@@ -680,3 +960,20 @@ class NhlFeatureEngine:
                     state.sv_delta, observed_delta, min(ALPHA_GOALIE * weight, 0.35)
                 )
                 state.shots_seen += shots_f
+                state.recent_gsax = _ewma(state.recent_gsax, observed_delta, 0.25)
+                state.career_gsax_ewma = _ewma(
+                    state.career_gsax_ewma, observed_delta, 0.05
+                )
+
+            if hd_xg is not None and hd_shots:
+                try:
+                    hd_s = float(hd_shots)
+                    hd_g = float(hd_goals if hd_goals is not None else 0.0)
+                    if hd_s >= 1.0:
+                        hd_delta = (float(hd_xg) - hd_g) / max(hd_s, 1.0)
+                        state.hd_sv_delta = _ewma(
+                            state.hd_sv_delta, hd_delta, min(ALPHA_GOALIE * 1.2, 0.4)
+                        )
+                        state.hd_shots_seen += hd_s
+                except (TypeError, ValueError):
+                    pass

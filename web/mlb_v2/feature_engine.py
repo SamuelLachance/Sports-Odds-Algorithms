@@ -32,6 +32,9 @@ ALPHA_SP_FORM = 0.25
 LEAGUE_RPG_DEFAULT = 4.45
 LEAGUE_OBP = 0.315
 LEAGUE_SLG = 0.405
+LEAGUE_BA = 0.245
+LEAGUE_ISO = LEAGUE_SLG - LEAGUE_BA  # ~0.160
+LEAGUE_XBH_RATE = 0.078
 LEAGUE_HR_PG = 1.15
 LEAGUE_BB_RATE = 0.082
 LEAGUE_SO_RATE = 0.222
@@ -116,6 +119,14 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     "sp_outs_per_start_diff",
     "home_sp_outs_per_start",
     "away_sp_outs_per_start",
+    # minimal high-signal additions (leakage-free, no kitchen sink)
+    "iso_diff",
+    "xbh_rate_diff",
+    "elo_momentum_5_diff",
+    "home_bullpen_outs_last5",
+    "away_bullpen_outs_last5",
+    "sp_fip_trend_diff",
+    "sp_last_outs_diff",
 )
 
 
@@ -170,6 +181,9 @@ class TeamState:
         "recent_opponents",
         "adj_rs",
         "adj_ra",
+        "iso",
+        "xbh_rate",
+        "elo_deltas",
     )
 
     def __init__(self) -> None:
@@ -202,9 +216,22 @@ class TeamState:
         self.recent_opponents: list[int] = []  # most recent last
         self.adj_rs = 0.0  # runs scored vs opponent-allowed baseline (EWMA)
         self.adj_ra = 0.0  # runs allowed vs opponent-scored baseline (EWMA)
+        self.iso = LEAGUE_ISO
+        self.xbh_rate = LEAGUE_XBH_RATE
+        self.elo_deltas: list[float] = []  # post-game elo deltas, most recent last
 
     def bullpen_outs_since(self, floor_date: str) -> float:
         return float(sum(outs for d, outs in self.bullpen_recent if d >= floor_date))
+
+    def bullpen_outs_last_n(self, n: int = 5) -> float:
+        if not self.bullpen_recent:
+            return 0.0
+        return float(sum(outs for _, outs in self.bullpen_recent[-n:]))
+
+    def elo_momentum(self, n: int = 5) -> float:
+        if not self.elo_deltas:
+            return 0.0
+        return float(sum(self.elo_deltas[-n:]))
 
     def season_win_pct(self) -> float:
         games = self.season_wins + self.season_losses
@@ -250,6 +277,7 @@ class PitcherState:
         "prior_outs",
         "prior_k_pct",
         "prior_bb_pct",
+        "last_start_outs",
     )
 
     def __init__(self, hand: str = "R") -> None:
@@ -269,6 +297,7 @@ class PitcherState:
         self.prior_outs = 0.0
         self.prior_k_pct = LEAGUE_SP_K_PCT
         self.prior_bb_pct = LEAGUE_SP_BB_PCT
+        self.last_start_outs = 16.0
 
     def to_dict(self) -> dict[str, Any]:
         return {slot: getattr(self, slot) for slot in self.__slots__}
@@ -342,6 +371,7 @@ class PitcherState:
         if int(log.get("gs") or 0) >= 1:
             self.starts += 1
             self.last_start_date = str(log.get("date") or self.last_start_date or "")
+            self.last_start_outs = float(outs)
             if outs >= 3:
                 ip = outs / 3.0
                 game_fip = (
@@ -371,6 +401,7 @@ class PitcherState:
         self.starts = 0
         self.fip_form = 0.5 * self.fip_form + 0.5 * self.prior_fip
         self.last_start_date = None
+        self.last_start_outs = 16.0
 
 
 class VenueState:
@@ -448,6 +479,7 @@ class MlbFeatureEngine:
                 team.bullpen_recent = []
                 team.last_venue_id = None
                 team.recent_opponents = []
+                team.elo_deltas = []
                 team.adj_rs = 0.6 * team.adj_rs
                 team.adj_ra = 0.6 * team.adj_ra
                 # partial mean-reversion of form EWMAs toward league between seasons
@@ -463,6 +495,8 @@ class MlbFeatureEngine:
                     ("so_rate", LEAGUE_SO_RATE),
                     ("bullpen_ra9", LEAGUE_BULLPEN_RA9),
                     ("bullpen_k9", LEAGUE_BULLPEN_K9),
+                    ("iso", LEAGUE_ISO),
+                    ("xbh_rate", LEAGUE_XBH_RATE),
                 ):
                     setattr(team, attr, 0.6 * getattr(team, attr) + 0.4 * league_value)
                 team.win_ewma = 0.5 + 0.5 * (team.win_ewma - 0.5)
@@ -512,6 +546,8 @@ class MlbFeatureEngine:
                 "hr_bf": 0.032,
                 "whip_bf": 0.30,
                 "outs_start": 16.0,
+                "last_outs": 16.0,
+                "fip_trend": 0.0,
             }
         state = self.pitchers[pitcher_id]
         if state.last_start_date:
@@ -526,9 +562,11 @@ class MlbFeatureEngine:
                 days_rest = 5.0
         else:
             days_rest = 8.0
+        fip_blend = state.fip_blend()
+        fip_form = state.fip_form
         return {
-            "fip_blend": state.fip_blend(),
-            "fip_form": state.fip_form,
+            "fip_blend": fip_blend,
+            "fip_form": fip_form,
             "k_pct": state.k_pct(),
             "bb_pct": state.bb_pct(),
             "ip_season": state.outs / 3.0,
@@ -539,6 +577,8 @@ class MlbFeatureEngine:
             "hr_bf": state.hr_per_bf(),
             "whip_bf": state.whip_per_bf(),
             "outs_start": state.outs_per_start(),
+            "last_outs": float(state.last_start_outs),
+            "fip_trend": fip_form - fip_blend,
         }
 
     def features_for_game(self, game: dict[str, Any]) -> dict[str, float]:
@@ -645,6 +685,13 @@ class MlbFeatureEngine:
             "sp_outs_per_start_diff": home_sp["outs_start"] - away_sp["outs_start"],
             "home_sp_outs_per_start": home_sp["outs_start"],
             "away_sp_outs_per_start": away_sp["outs_start"],
+            "iso_diff": home.iso - away.iso,
+            "xbh_rate_diff": home.xbh_rate - away.xbh_rate,
+            "elo_momentum_5_diff": home.elo_momentum(5) - away.elo_momentum(5),
+            "home_bullpen_outs_last5": home.bullpen_outs_last_n(5),
+            "away_bullpen_outs_last5": away.bullpen_outs_last_n(5),
+            "sp_fip_trend_diff": home_sp["fip_trend"] - away_sp["fip_trend"],
+            "sp_last_outs_diff": home_sp["last_outs"] - away_sp["last_outs"],
         }
 
     @staticmethod
@@ -667,6 +714,11 @@ class MlbFeatureEngine:
         delta = ELO_K * mov_mult * (actual_home - expected_home)
         home.elo += delta
         away.elo -= delta
+        home.elo_deltas.append(delta)
+        away.elo_deltas.append(-delta)
+        for team in (home, away):
+            if len(team.elo_deltas) > 8:
+                team.elo_deltas.pop(0)
 
     def update_after_game(
         self,
@@ -740,12 +792,23 @@ class MlbFeatureEngine:
             if not hit_log:
                 continue
             pa = float(hit_log.get("pa") or 0)
+            ab = float(hit_log.get("ab") or 0)
             if pa >= 10:
                 team.obp = _ewma(team.obp, float(hit_log.get("obp") or LEAGUE_OBP), ALPHA_BATTING)
                 team.slg = _ewma(team.slg, float(hit_log.get("slg") or LEAGUE_SLG), ALPHA_BATTING)
                 team.hr_pg = _ewma(team.hr_pg, float(hit_log.get("hr") or 0), ALPHA_BATTING)
                 team.bb_rate = _ewma(team.bb_rate, float(hit_log.get("bb") or 0) / pa, ALPHA_BATTING)
                 team.so_rate = _ewma(team.so_rate, float(hit_log.get("so") or 0) / pa, ALPHA_BATTING)
+            if ab >= 10:
+                ba = float(hit_log.get("h") or 0) / ab
+                slg = float(hit_log.get("slg") or LEAGUE_SLG)
+                team.iso = _ewma(team.iso, max(slg - ba, -0.05), ALPHA_BATTING)
+                xbh = (
+                    float(hit_log.get("d2") or 0)
+                    + float(hit_log.get("d3") or 0)
+                    + float(hit_log.get("hr") or 0)
+                )
+                team.xbh_rate = _ewma(team.xbh_rate, xbh / ab, ALPHA_BATTING)
 
         for team, pen in ((home, home_bullpen), (away, away_bullpen)):
             if not pen:

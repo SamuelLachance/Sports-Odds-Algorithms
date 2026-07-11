@@ -41,6 +41,42 @@ FRANCHISE_MARKETS: dict[str, list[tuple[int, float, float]]] = {
 }
 
 
+# franchise -> list of (first_season_ending_year, arena altitude in km).
+# Only Denver/Utah are materially high; era splits follow relocations.
+FRANCHISE_ALTITUDE_KM: dict[str, list[tuple[int, float]]] = {
+    "atl": [(1949, 0.32)],
+    "bos": [(1946, 0.01)],
+    "bkn": [(1976, 0.01)],
+    "cha": [(2005, 0.23)],
+    "chi": [(1966, 0.18)],
+    "cle": [(1970, 0.20)],
+    "dal": [(1980, 0.13)],
+    "den": [(1976, 1.61)],
+    "det": [(1957, 0.19)],
+    "gs": [(1962, 0.01)],
+    "hou": [(1971, 0.01)],
+    "ind": [(1976, 0.22)],
+    "lac": [(1984, 0.03)],
+    "lal": [(1960, 0.03)],
+    "mem": [(1995, 0.0), (2001, 0.08)],  # Vancouver -> Memphis
+    "mia": [(1988, 0.0)],
+    "mil": [(1968, 0.19)],
+    "min": [(1989, 0.25)],
+    "no": [(2002, 0.0)],
+    "ny": [(1946, 0.01)],
+    "okc": [(1967, 0.0), (2008, 0.37)],  # Seattle -> OKC
+    "orl": [(1989, 0.03)],
+    "phi": [(1963, 0.01)],
+    "phx": [(1968, 0.33)],
+    "por": [(1970, 0.02)],
+    "sac": [(1985, 0.01)],
+    "sa": [(1976, 0.20)],
+    "tor": [(1995, 0.08)],
+    "uta": [(1979, 1.29)],
+    "wsh": [(1973, 0.01)],
+}
+
+
 def market_coords(franchise: str, season: int) -> tuple[float, float] | None:
     markets = FRANCHISE_MARKETS.get(franchise)
     if not markets:
@@ -50,3 +86,15 @@ def market_coords(franchise: str, season: int) -> tuple[float, float] | None:
         if season >= first_season:
             best = (lat, lon)
     return best or (markets[0][1], markets[0][2])
+
+
+def market_altitude_km(franchise: str, season: int) -> float:
+    """Arena altitude (km) for the franchise's market in the given season."""
+    eras = FRANCHISE_ALTITUDE_KM.get(franchise)
+    if not eras:
+        return 0.0
+    best = eras[0][1]
+    for first_season, alt in eras:
+        if season >= first_season:
+            best = alt
+    return best

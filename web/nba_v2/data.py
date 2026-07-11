@@ -196,16 +196,55 @@ def _parse_made_attempted(display: str) -> tuple[float, float] | None:
     return made, att
 
 
-def fetch_box_score(event_id: str) -> dict[str, dict[str, float]] | None:
-    """Team box stats keyed by ESPN team id. None when unavailable."""
+def _player_minutes(data: Any) -> dict[str, list[list[Any]]]:
+    """Per-team ``[[athlete_id, minutes], ...]`` rows from boxscore.players.
+
+    Only athletes who logged positive minutes are kept; used downstream for
+    rotation-continuity / star-availability features.
+    """
+    out: dict[str, list[list[Any]]] = {}
+    for group in (data.get("boxscore") or {}).get("players") or []:
+        team_id = str((group.get("team") or {}).get("id") or "")
+        rows: list[list[Any]] = []
+        for block in group.get("statistics") or []:
+            names = [str(n).upper() for n in block.get("names") or []]
+            try:
+                min_idx = names.index("MIN")
+            except ValueError:
+                continue
+            for athlete in block.get("athletes") or []:
+                if athlete.get("didNotPlay"):
+                    continue
+                row = athlete.get("stats") or []
+                if min_idx >= len(row):
+                    continue
+                raw = str(row[min_idx]).strip()
+                minutes = _to_float(raw.split(":")[0]) if raw else None
+                if minutes is None or minutes <= 0:
+                    continue
+                athlete_id = str((athlete.get("athlete") or {}).get("id") or "")
+                if athlete_id:
+                    rows.append([athlete_id, minutes])
+        if team_id and rows:
+            out[team_id] = rows
+    return out
+
+
+def fetch_box_score(event_id: str) -> dict[str, dict[str, Any]] | None:
+    """Team box stats keyed by ESPN team id. None when unavailable.
+
+    Each team dict may also carry ``players``: ``[[athlete_id, minutes], ...]``
+    for athletes who logged minutes (availability features).
+    """
     data = get_json(SUMMARY_URL.format(event_id=event_id), timeout=45)
     teams = (data.get("boxscore") or {}).get("teams") or []
     if len(teams) != 2:
         return None
-    out: dict[str, dict[str, float]] = {}
+    players_by_team = _player_minutes(data)
+    out: dict[str, dict[str, Any]] = {}
     for side in teams:
         team_id = str((side.get("team") or {}).get("id") or "")
-        stats: dict[str, float] = {}
+        stats: dict[str, Any] = {}
         for item in side.get("statistics") or []:
             name = item.get("name") or ""
             display = item.get("displayValue") or ""
@@ -243,6 +282,9 @@ def fetch_box_score(event_id: str) -> dict[str, dict[str, float]] | None:
                     stats["ast"] = value
         if "fga" not in stats:
             return None
+        players = players_by_team.get(team_id)
+        if players:
+            stats["players"] = players
         out[team_id] = stats
     return out
 

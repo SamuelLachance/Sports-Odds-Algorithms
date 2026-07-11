@@ -42,10 +42,13 @@ def build_goalie_index(
     return index
 
 
+GoalieXgRow = tuple[float, float, float, float, float, float]
+
+
 def attach_goalies(
     game: dict[str, Any],
     goalie_index: dict[tuple[int, str], dict[str, Any]],
-    goalie_xg: dict[tuple[int, int], tuple[float, float, float]] | None = None,
+    goalie_xg: dict[tuple[int, int], GoalieXgRow] | None = None,
 ) -> None:
     game_id = int(game["gameId"])
     for side in ("home", "away"):
@@ -60,10 +63,13 @@ def attach_goalies(
         if goalie_xg and goalie_id:
             xg_row = goalie_xg.get((game_id, int(goalie_id)))
             if xg_row:
-                shots, xg, goals = xg_row
+                shots, xg, goals, hd_shots, hd_xg, hd_goals = xg_row
                 game[f"{game[side]}_goalie_xg_shots"] = shots
                 game[f"{game[side]}_goalie_xg"] = xg
                 game[f"{game[side]}_goalie_xg_goals"] = goals
+                game[f"{game[side]}_goalie_hd_shots"] = hd_shots
+                game[f"{game[side]}_goalie_hd_xg"] = hd_xg
+                game[f"{game[side]}_goalie_hd_goals"] = hd_goals
 
 
 def replay_season(
@@ -73,7 +79,7 @@ def replay_season(
     mp_games: dict[int, dict[str, dict[str, float]]],
     goalie_index: dict[tuple[int, str], dict[str, Any]],
     *,
-    goalie_xg: dict[tuple[int, int], tuple[float, float, float]] | None = None,
+    goalie_xg: dict[tuple[int, int], GoalieXgRow] | None = None,
     stop_before_date: str | None = None,
     on_row: OnRow | None = None,
 ) -> None:
@@ -94,15 +100,15 @@ def replay_season(
         engine.update_after_game(game)
 
 
-def load_goalie_xg_csv(path: Any) -> dict[tuple[int, int], tuple[float, float, float]]:
-    """goalie_xg_games.csv -> (gameId, goalieId) -> (shots, xg_faced, goals)."""
+def load_goalie_xg_csv(path: Any) -> dict[tuple[int, int], GoalieXgRow]:
+    """goalie_xg_games.csv -> (gameId, goalieId) -> (shots, xg, goals, hd_shots, hd_xg, hd_goals)."""
     import csv
     from pathlib import Path
 
     path = Path(path)
     if not path.is_file():
         return {}
-    out: dict[tuple[int, int], tuple[float, float, float]] = {}
+    out: dict[tuple[int, int], GoalieXgRow] = {}
     with path.open(encoding="utf-8", newline="") as handle:
         for row in csv.DictReader(handle):
             try:
@@ -111,6 +117,9 @@ def load_goalie_xg_csv(path: Any) -> dict[tuple[int, int], tuple[float, float, f
                     float(row["shots_faced"]),
                     float(row["xg_faced"]),
                     float(row["goals_allowed"]),
+                    float(row.get("hd_shots_faced") or 0.0),
+                    float(row.get("hd_xg_faced") or 0.0),
+                    float(row.get("hd_goals_allowed") or 0.0),
                 )
             except (KeyError, TypeError, ValueError):
                 continue

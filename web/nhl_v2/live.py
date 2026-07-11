@@ -232,7 +232,9 @@ def _fetch_goalie_xg_slice(season: int) -> dict[str, list[float]]:
     except OSError:
         stale = _read_cache(path, 30 * 86400)
         return stale or {}
-    out: dict[str, list[float]] = defaultdict(lambda: [0.0, 0.0, 0.0])
+    # [shots, xg, goals, hd_shots, hd_xg, hd_goals]
+    out: dict[str, list[float]] = defaultdict(lambda: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+    hd_threshold = 0.20
     try:
         with zipfile.ZipFile(io.BytesIO(payload)) as archive:
             name = next(
@@ -267,6 +269,10 @@ def _fetch_goalie_xg_slice(season: int) -> dict[str, list[float]]:
                         bucket[0] += 1.0
                         bucket[1] += xg
                         bucket[2] += goal
+                        if xg >= hd_threshold:
+                            bucket[3] += 1.0
+                            bucket[4] += xg
+                            bucket[5] += goal
     except (zipfile.BadZipFile, OSError):
         return {}
     result = dict(out)
@@ -362,12 +368,20 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
     goalie_xg_raw = _fetch_goalie_xg_slice(season) if season_has_games else {}
 
     mp_games = {int(gid): teams for gid, teams in (mp_slice or {}).items()}
-    goalie_xg: dict[tuple[int, int], tuple[float, float, float]] = {}
-    for key, (shots, xg, goals) in (goalie_xg_raw or {}).items():
+    goalie_xg: dict[tuple[int, int], tuple[float, float, float, float, float, float]] = {}
+    for key, vals in (goalie_xg_raw or {}).items():
         try:
             gid_str, goalie_str = key.split(":")
-            goalie_xg[(int(gid_str), int(goalie_str))] = (shots, xg, goals)
-        except ValueError:
+            shots = float(vals[0]) if len(vals) > 0 else 0.0
+            xg = float(vals[1]) if len(vals) > 1 else 0.0
+            goals = float(vals[2]) if len(vals) > 2 else 0.0
+            hd_shots = float(vals[3]) if len(vals) > 3 else 0.0
+            hd_xg = float(vals[4]) if len(vals) > 4 else 0.0
+            hd_goals = float(vals[5]) if len(vals) > 5 else 0.0
+            goalie_xg[(int(gid_str), int(goalie_str))] = (
+                shots, xg, goals, hd_shots, hd_xg, hd_goals
+            )
+        except (ValueError, TypeError, IndexError):
             continue
 
     engine = NhlFeatureEngine.from_dict(state)

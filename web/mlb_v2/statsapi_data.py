@@ -154,6 +154,8 @@ def fetch_team_logs(season: int, team_ids: list[int], group: str) -> dict[str, A
                             "r": int(stat.get("runs") or 0),
                             "h": int(stat.get("hits") or 0),
                             "hr": int(stat.get("homeRuns") or 0),
+                            "d2": int(stat.get("doubles") or 0),
+                            "d3": int(stat.get("triples") or 0),
                             "bb": int(stat.get("baseOnBalls") or 0),
                             "so": int(stat.get("strikeOuts") or 0),
                             "ab": int(stat.get("atBats") or 0),

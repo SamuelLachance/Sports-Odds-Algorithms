@@ -4,37 +4,32 @@
   "bet_type": "spread",
   "margin_col": "model_margin",
   "exec_price": "open",
-  "sigma": 12.579,
-  "min_cover_gap_pp": 10.0,
+  "sigma": 12.532,
+  "min_cover_gap_pp": 12.0,
   "min_point_edge": 0.0,
   "model_variant": "pure",
   "backtest": {
-    "bets": 321,
-    "staked_units": 963.0,
-    "profit_units": 50.3,
-    "roi_pct": 5.22,
-    "win_rate": 0.5483,
-    "max_drawdown_units": 40.9,
-    "seasons_positive": 3,
-    "seasons_total": 3,
-    "worst_season_roi": 2.8,
-    "median_season_roi": 3.19
+    "bets": 194,
+    "staked_units": 582.0,
+    "profit_units": 10.7,
+    "roi_pct": 1.84,
+    "win_rate": 0.5309,
+    "max_drawdown_units": 40.2,
+    "seasons_positive": 2,
+    "seasons_total": 2,
+    "worst_season_roi": 1.74,
+    "median_season_roi": 1.85
   },
   "backtest_per_season": {
     "2024": {
-      "bets": 112,
-      "roi_pct": 2.8,
-      "profit_units": 9.4
+      "bets": 81,
+      "roi_pct": 1.97,
+      "profit_units": 4.8
     },
     "2025": {
-      "bets": 138,
-      "roi_pct": 8.23,
-      "profit_units": 34.1
-    },
-    "2026": {
-      "bets": 71,
-      "roi_pct": 3.19,
-      "profit_units": 6.8
+      "bets": 113,
+      "roi_pct": 1.74,
+      "profit_units": 5.9
     }
   }
 }

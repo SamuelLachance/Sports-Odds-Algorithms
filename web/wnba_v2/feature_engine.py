@@ -8,7 +8,8 @@ end-of-season state and the live path replays only the current season.
 Game dict schema (merged from data.wnba.com results + ESPN boxes):
   date (ISO), season, season_type (2 reg / 3 post), home, away (franchise keys),
   home_score, away_score, neutral_site (optional),
-  home_box / away_box (optional dicts: fgm fga tpm tpa ftm fta orb drb tov ast).
+  home_box / away_box (optional dicts: fgm fga tpm tpa ftm fta orb drb tov ast,
+  plus optional "players": [[athlete_id, minutes], ...] from ~2006).
 """
 
 from __future__ import annotations
@@ -17,17 +18,22 @@ import math
 from datetime import date as date_cls
 from typing import Any
 
-from web.wnba_v2.arenas import market_coords
+from web.wnba_v2.arenas import market_altitude_m, market_coords
 
 LEAGUE_ELO = 1500.0
 ELO_K = 24.0
 ELO_HOME_ADV = 70.0
 ELO_SEASON_CARRYOVER = 0.70
+ELO_PER_POINT = 28.0  # ~70 Elo home edge ~ 2.5 pts
 
 ALPHA_FAST = 0.22
 ALPHA_SLOW = 0.08
 ALPHA_WIN = 0.12
 ALPHA_LEAGUE = 0.02
+ALPHA_SHOOT = 0.10
+ALPHA_H2H_MARGIN = 0.30
+PLAYER_ALPHA_FAST = 0.30
+PLAYER_ALPHA_SLOW = 0.12
 
 LEAGUE_PPG = 78.0
 LEAGUE_PACE = 78.0
@@ -36,8 +42,15 @@ LEAGUE_EFG = 0.47
 LEAGUE_TOV_RATE = 0.155
 LEAGUE_ORB_PCT = 0.28
 LEAGUE_FT_RATE = 0.22
+LEAGUE_TPA_RATE = 0.25
+LEAGUE_TP_PCT = 0.335
+LEAGUE_FT_PCT = 0.77
 
 SEASON_GAMES_NOMINAL = 40.0
+CLOSE_MARGIN = 5.0
+BLOWOUT_MARGIN = 15.0
+DEFAULT_MARGIN_VOL = 11.0
+HOME_ADV_POINTS = 2.5
 
 FEATURE_COLUMNS: tuple[str, ...] = (
     "elo_diff",
@@ -93,6 +106,20 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     "exp_total_env",
     "elo_x_season_frac",
     "h2h_home_win_rate",
+    # v2.1 additions
+    "net_rtg_trend_diff",
+    "ortg_trend_diff",
+    "drtg_trend_diff",
+    "efg_trend_diff",
+    "elo_mom5_diff",
+    "blowout_rate_diff",
+    "home_stand_len",
+    "away_road_trip_len",
+    "home_tz_shift",
+    "tp_pct_diff",
+    "top8_continuity_diff",
+    "h2h_margin_ewma",
+    "adj_margin_ewma_diff",
 )
 
 
@@ -122,6 +149,19 @@ def _possessions(box: dict[str, float], opp_box: dict[str, float]) -> float | No
     return float(fga) - float(orb) + float(tov) + 0.44 * float(fta)
 
 
+def _std(values: list[float]) -> float:
+    n = len(values)
+    if n < 2:
+        return 0.0
+    mean = sum(values) / n
+    return math.sqrt(sum((v - mean) ** 2 for v in values) / n)
+
+
+def _top_players(minutes: dict[str, float], count: int, floor: float) -> list[str]:
+    ranked = sorted(minutes.items(), key=lambda kv: (-kv[1], kv[0]))
+    return [pid for pid, mins in ranked[:count] if mins >= floor]
+
+
 class TeamState:
     __slots__ = (
         "franchise", "elo", "pf_fast", "pa_fast", "pf_slow", "pa_slow",
@@ -133,6 +173,11 @@ class TeamState:
         "prev_win_pct", "prev_net_rtg", "sos_elo_sum",
         "last_game_date", "recent_dates", "last_market", "streak",
         "games_played", "season_seen", "first_season", "h2h",
+        # v2.1 state
+        "efg_for_slow", "tpa_rate", "tp_pct", "ft_pct",
+        "elo_hist", "close_win_ewma", "blowout_ewma", "recent_margins",
+        "venue_streak", "adj_margin_ewma", "last_altitude",
+        "player_min_fast", "player_min_slow", "last_players", "h2h_margin",
     )
 
     def __init__(self, franchise: str):
@@ -173,6 +218,21 @@ class TeamState:
         self.season_seen = -1
         self.first_season = -1
         self.h2h: dict[str, list[int]] = {}
+        self.efg_for_slow = LEAGUE_EFG
+        self.tpa_rate = LEAGUE_TPA_RATE
+        self.tp_pct = LEAGUE_TP_PCT
+        self.ft_pct = LEAGUE_FT_PCT
+        self.elo_hist: list[float] = []
+        self.close_win_ewma = 0.5
+        self.blowout_ewma = 0.0
+        self.recent_margins: list[float] = []
+        self.venue_streak = 0
+        self.adj_margin_ewma = 0.0
+        self.last_altitude: float | None = None
+        self.player_min_fast: dict[str, float] = {}
+        self.player_min_slow: dict[str, float] = {}
+        self.last_players: list[str] = []
+        self.h2h_margin: dict[str, float] = {}
 
     # -- season lifecycle ---------------------------------------------------
 
@@ -186,6 +246,7 @@ class TeamState:
             self.prev_win_pct = self.wins / total if total else 0.5
             self.prev_net_rtg = self.ortg_slow - self.drtg_slow
             self.elo = LEAGUE_ELO + ELO_SEASON_CARRYOVER * (self.elo - LEAGUE_ELO)
+            self.adj_margin_ewma *= ELO_SEASON_CARRYOVER
         self.wins = 0
         self.losses = 0
         self.points_for = 0.0
@@ -196,6 +257,17 @@ class TeamState:
         self.streak = 0
         self.games_played = 0
         self.season_seen = season
+        self.elo_hist = []
+        self.recent_margins = []
+        self.venue_streak = 0
+        # offseason roster churn: fade minutes credit, forget last lineup
+        self.player_min_fast = {
+            pid: mins * 0.5 for pid, mins in self.player_min_fast.items() if mins * 0.5 >= 1.0
+        }
+        self.player_min_slow = {
+            pid: mins * 0.5 for pid, mins in self.player_min_slow.items() if mins * 0.5 >= 1.0
+        }
+        self.last_players = []
 
     # -- helpers -------------------------------------------------------------
 
@@ -232,6 +304,45 @@ class TeamState:
                 count += 1
         return count
 
+    def is_3in4(self, game_date: date_cls) -> bool:
+        count = 0
+        for iso in self.recent_dates:
+            played = _parse_date(iso)
+            if played and 0 < (game_date - played).days <= 3:
+                count += 1
+        return count >= 2
+
+    def elo_momentum5(self) -> float:
+        if not self.elo_hist:
+            return 0.0
+        anchor = self.elo_hist[-6] if len(self.elo_hist) >= 6 else self.elo_hist[0]
+        return self.elo - anchor
+
+    def margin_volatility(self) -> float:
+        if len(self.recent_margins) < 4:
+            return DEFAULT_MARGIN_VOL
+        return _std(self.recent_margins)
+
+    def top8_continuity(self) -> float:
+        """Share of the recent-minutes core that appeared in the last game."""
+        if not self.last_players:
+            return 1.0
+        pool = _top_players(self.player_min_fast, 8, 3.0)
+        if len(pool) < 5:
+            return 1.0
+        present = set(self.last_players)
+        return sum(1 for pid in pool if pid in present) / len(pool)
+
+    def star_availability(self) -> float:
+        """Share of the slow-decay top-3 stars that appeared in the last game."""
+        if not self.last_players:
+            return 1.0
+        pool = _top_players(self.player_min_slow, 3, 8.0)
+        if not pool:
+            return 1.0
+        present = set(self.last_players)
+        return sum(1 for pid in pool if pid in present) / len(pool)
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "franchise": self.franchise,
@@ -259,6 +370,21 @@ class TeamState:
             "season_seen": self.season_seen,
             "first_season": self.first_season,
             "h2h": {k: list(v) for k, v in self.h2h.items()},
+            "efg_for_slow": self.efg_for_slow,
+            "tpa_rate": self.tpa_rate,
+            "tp_pct": self.tp_pct,
+            "ft_pct": self.ft_pct,
+            "elo_hist": list(self.elo_hist[-8:]),
+            "close_win_ewma": self.close_win_ewma,
+            "blowout_ewma": self.blowout_ewma,
+            "recent_margins": list(self.recent_margins[-10:]),
+            "venue_streak": self.venue_streak,
+            "adj_margin_ewma": self.adj_margin_ewma,
+            "last_altitude": self.last_altitude,
+            "player_min_fast": dict(self.player_min_fast),
+            "player_min_slow": dict(self.player_min_slow),
+            "last_players": list(self.last_players),
+            "h2h_margin": dict(self.h2h_margin),
         }
 
     @classmethod
@@ -271,6 +397,18 @@ class TeamState:
                 state.h2h = {str(k): [int(x) for x in v] for k, v in dict(value).items()}
             elif key == "last_market":
                 state.last_market = (float(value[0]), float(value[1])) if value else None
+            elif key == "elo_hist":
+                state.elo_hist = [float(v) for v in value]
+            elif key == "recent_margins":
+                state.recent_margins = [float(v) for v in value]
+            elif key == "last_players":
+                state.last_players = [str(v) for v in value]
+            elif key in ("player_min_fast", "player_min_slow"):
+                setattr(state, key, {str(k): float(v) for k, v in dict(value).items()})
+            elif key == "h2h_margin":
+                state.h2h_margin = {str(k): float(v) for k, v in dict(value).items()}
+            elif key == "last_altitude":
+                state.last_altitude = float(value) if value is not None else None
             elif hasattr(state, key):
                 setattr(state, key, value)
         return state
@@ -310,13 +448,22 @@ class WnbaFeatureEngine:
         venue = home_market
         home_travel = 0.0
         away_travel = 0.0
+        home_tz_shift = 0.0
+        away_tz_shift = 0.0
         if venue:
             home_from = home.last_market or home_market
             away_from = away.last_market or away_market
             if home_from:
                 home_travel = _haversine_km(home_from, venue)
+                home_tz_shift = (venue[1] - home_from[1]) / 15.0
             if away_from:
                 away_travel = _haversine_km(away_from, venue)
+                away_tz_shift = (venue[1] - away_from[1]) / 15.0
+
+        venue_alt = market_altitude_m(home.franchise, season) or 0.0
+        away_alt_from = away.last_altitude
+        if away_alt_from is None:
+            away_alt_from = market_altitude_m(away.franchise, season) or venue_alt
 
         h2h_record = home.h2h.get(away.franchise) or [0, 0]
         h2h_total = h2h_record[0] + h2h_record[1]
@@ -324,6 +471,10 @@ class WnbaFeatureEngine:
 
         season_frac = min(home.games_played, away.games_played) / SEASON_GAMES_NOMINAL
         elo_diff = home.elo - away.elo + (0.0 if neutral else ELO_HOME_ADV)
+        rest_diff = home_rest - away_rest
+
+        home_stand = float(min(home.venue_streak, 7) + 1) if home.venue_streak > 0 else 1.0
+        road_trip = float(min(-away.venue_streak, 7) + 1) if away.venue_streak < 0 else 1.0
 
         features: dict[str, float] = {
             "elo_diff": elo_diff,
@@ -360,7 +511,7 @@ class WnbaFeatureEngine:
             "sos_elo_diff": home.sos_elo() - away.sos_elo(),
             "home_rest_days": home_rest,
             "away_rest_days": away_rest,
-            "rest_diff": home_rest - away_rest,
+            "rest_diff": rest_diff,
             "home_b2b": 1.0 if home_rest <= 1.0 else 0.0,
             "away_b2b": 1.0 if away_rest <= 1.0 else 0.0,
             "home_games_last7": float(home.games_in_last7(game_date)),
@@ -382,6 +533,25 @@ class WnbaFeatureEngine:
             / 2.0,
             "elo_x_season_frac": elo_diff * season_frac,
             "h2h_home_win_rate": h2h_rate,
+            "net_rtg_trend_diff": (
+                (home.ortg_fast - home.drtg_fast) - (home.ortg_slow - home.drtg_slow)
+            )
+            - ((away.ortg_fast - away.drtg_fast) - (away.ortg_slow - away.drtg_slow)),
+            "ortg_trend_diff": (home.ortg_fast - home.ortg_slow)
+            - (away.ortg_fast - away.ortg_slow),
+            "drtg_trend_diff": (home.drtg_fast - home.drtg_slow)
+            - (away.drtg_fast - away.drtg_slow),
+            "efg_trend_diff": (home.efg_for - home.efg_for_slow)
+            - (away.efg_for - away.efg_for_slow),
+            "elo_mom5_diff": home.elo_momentum5() - away.elo_momentum5(),
+            "blowout_rate_diff": home.blowout_ewma - away.blowout_ewma,
+            "home_stand_len": home_stand,
+            "away_road_trip_len": road_trip,
+            "home_tz_shift": home_tz_shift,
+            "tp_pct_diff": home.tp_pct - away.tp_pct,
+            "top8_continuity_diff": home.top8_continuity() - away.top8_continuity(),
+            "h2h_margin_ewma": home.h2h_margin.get(away.franchise, 0.0),
+            "adj_margin_ewma_diff": home.adj_margin_ewma - away.adj_margin_ewma,
         }
         return features
 
@@ -399,6 +569,7 @@ class WnbaFeatureEngine:
         away_score = float(game["away_score"])
         home_win = home_score > away_score
         margin = abs(home_score - away_score)
+        signed_margin = home_score - away_score
         neutral = bool(game.get("neutral_site"))
 
         # Elo with margin-of-victory multiplier (538 style)
@@ -413,6 +584,10 @@ class WnbaFeatureEngine:
         pre_away_elo = away.elo
         home.elo += delta
         away.elo -= delta
+        for team in (home, away):
+            team.elo_hist.append(team.elo)
+            if len(team.elo_hist) > 8:
+                team.elo_hist = team.elo_hist[-8:]
 
         # score EWMAs
         for team, pf, pa in ((home, home_score, away_score), (away, away_score, home_score)):
@@ -445,8 +620,22 @@ class WnbaFeatureEngine:
                     if fga > 0:
                         efg = (float(box.get("fgm") or 0.0) + 0.5 * float(box.get("tpm") or 0.0)) / fga
                         team.efg_for += ALPHA_FAST * (efg - team.efg_for)
+                        team.efg_for_slow += ALPHA_SLOW * (efg - team.efg_for_slow)
                         team.ftr_for += ALPHA_FAST * (
                             float(box.get("fta") or 0.0) / fga - team.ftr_for
+                        )
+                        team.tpa_rate += ALPHA_FAST * (
+                            float(box.get("tpa") or 0.0) / fga - team.tpa_rate
+                        )
+                    tpa = float(box.get("tpa") or 0.0)
+                    if tpa >= 5:
+                        team.tp_pct += ALPHA_SHOOT * (
+                            float(box.get("tpm") or 0.0) / tpa - team.tp_pct
+                        )
+                    fta = float(box.get("fta") or 0.0)
+                    if fta >= 5:
+                        team.ft_pct += ALPHA_SHOOT * (
+                            float(box.get("ftm") or 0.0) / fta - team.ft_pct
                         )
                     opp_fga = float(opp_box.get("fga") or 0.0)
                     if opp_fga > 0:
@@ -477,6 +666,33 @@ class WnbaFeatureEngine:
                             opp_orb / (opp_orb + drb) - team.orb_against
                         )
 
+        # player minutes -> availability/continuity state (data from ~2006)
+        for team, box in ((home, home_box), (away, away_box)):
+            players = box.get("players") if isinstance(box, dict) else None
+            minutes_map: dict[str, float] = {}
+            if players:
+                for entry in players:
+                    try:
+                        pid, mins = str(entry[0]), float(entry[1])
+                    except (IndexError, TypeError, ValueError):
+                        continue
+                    if pid and mins > 0:
+                        minutes_map[pid] = mins
+            if minutes_map:
+                for store, alpha in (
+                    (team.player_min_fast, PLAYER_ALPHA_FAST),
+                    (team.player_min_slow, PLAYER_ALPHA_SLOW),
+                ):
+                    for pid in list(store):
+                        store[pid] *= 1.0 - alpha
+                    for pid, mins in minutes_map.items():
+                        store[pid] = store.get(pid, 0.0) + alpha * mins
+                    for pid in [p for p, v in store.items() if v < 0.5]:
+                        del store[pid]
+                team.last_players = list(minutes_map)
+            else:
+                team.last_players = []
+
         # win EWMAs / records / streaks / rest bookkeeping
         for team, won, was_home, opp_pre_elo in (
             (home, home_win, True, pre_away_elo),
@@ -494,12 +710,32 @@ class WnbaFeatureEngine:
             else:
                 team.losses += 1
                 team.streak = team.streak - 1 if team.streak <= 0 else -1
+            if margin <= CLOSE_MARGIN:
+                team.close_win_ewma += ALPHA_WIN * (result - team.close_win_ewma)
+            blowout_signal = 0.0
+            if margin >= BLOWOUT_MARGIN:
+                blowout_signal = 1.0 if won else -1.0
+            team.blowout_ewma += ALPHA_WIN * (blowout_signal - team.blowout_ewma)
+            team_margin = signed_margin if was_home else -signed_margin
+            team.recent_margins.append(team_margin)
+            if len(team.recent_margins) > 10:
+                team.recent_margins = team.recent_margins[-10:]
+            hca = 0.0 if neutral else (HOME_ADV_POINTS if was_home else -HOME_ADV_POINTS)
+            adj_margin = team_margin - hca + (opp_pre_elo - LEAGUE_ELO) / ELO_PER_POINT
+            team.adj_margin_ewma += ALPHA_WIN * (adj_margin - team.adj_margin_ewma)
             team.sos_elo_sum += opp_pre_elo
             team.last_game_date = str(game.get("date") or "")
             team.recent_dates.append(str(game.get("date") or ""))
             if len(team.recent_dates) > 12:
                 team.recent_dates = team.recent_dates[-12:]
             team.games_played += 1
+
+        if neutral:
+            home.venue_streak = 0
+            away.venue_streak = 0
+        else:
+            home.venue_streak = home.venue_streak + 1 if home.venue_streak > 0 else 1
+            away.venue_streak = away.venue_streak - 1 if away.venue_streak < 0 else -1
 
         home.points_for += home_score
         home.points_against += away_score
@@ -510,6 +746,10 @@ class WnbaFeatureEngine:
         if venue:
             home.last_market = venue
             away.last_market = venue
+        venue_alt = market_altitude_m(home.franchise, season)
+        if venue_alt is not None:
+            home.last_altitude = venue_alt
+            away.last_altitude = venue_alt
 
         # head-to-head (recency-capped)
         record = home.h2h.setdefault(away.franchise, [0, 0])
@@ -524,6 +764,12 @@ class WnbaFeatureEngine:
             scale = 12.0 / (rev[0] + rev[1])
             rev[0] = int(round(rev[0] * scale))
             rev[1] = int(round(rev[1] * scale))
+
+        # head-to-head margin EWMA (signed, from each side's perspective)
+        prior_h = home.h2h_margin.get(away.franchise, 0.0)
+        home.h2h_margin[away.franchise] = prior_h + ALPHA_H2H_MARGIN * (signed_margin - prior_h)
+        prior_a = away.h2h_margin.get(home.franchise, 0.0)
+        away.h2h_margin[home.franchise] = prior_a + ALPHA_H2H_MARGIN * (-signed_margin - prior_a)
 
         # league scoring environment
         game_total = (home_score + away_score) / 2.0

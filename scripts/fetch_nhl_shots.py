@@ -1,10 +1,11 @@
 """Fetch MoneyPuck shot-level data and aggregate per-goalie per-game xG faced.
 
 Produces .build-cache/nhl-history/goalie_xg_games.csv with columns:
-  gameId, goalieId, team, shots_faced, xg_faced, goals_allowed
+  gameId, goalieId, team, shots_faced, xg_faced, goals_allowed,
+  hd_shots_faced, hd_xg_faced, hd_goals_allowed
 
-gameId matches NHL Stats API ids (e.g. 2023020001), so rows join the goalie
-starter logs exactly. Empty-net and goalie-less rows are excluded.
+High-danger shots are those with xGoal >= HD_XG_THRESHOLD (MoneyPuck proxy).
+gameId matches NHL Stats API ids (e.g. 2023020001). Empty-net rows excluded.
 """
 
 from __future__ import annotations
@@ -26,6 +27,7 @@ from web.nhl_v2.data import CACHE_ROOT, get_bytes  # noqa: E402
 SHOTS_URL = "https://peter-tanner.com/moneypuck/downloads/shots_{season}.zip"
 OUT_PATH = CACHE_ROOT / "goalie_xg_games.csv"
 ZIP_DIR = CACHE_ROOT / "shots"
+HD_XG_THRESHOLD = 0.20
 
 
 def season_game_id(season: int, mp_game_id: str, is_playoff: int) -> int | None:
@@ -39,13 +41,14 @@ def season_game_id(season: int, mp_game_id: str, is_playoff: int) -> int | None:
         return None
     if value > 2000000000:
         return value
-    # 5-digit form: leading digit 2=regular, 3=playoffs
     return int(f"{season}0{value:05d}") if value < 100000 else None
 
 
 def aggregate_zip(payload: bytes, season: int) -> dict[tuple[int, int, str], list[float]]:
-    """(gameId, goalieId, team) -> [shots, xg, goals]."""
-    out: dict[tuple[int, int, str], list[float]] = defaultdict(lambda: [0.0, 0.0, 0.0])
+    """(gameId, goalieId, team) -> [shots, xg, goals, hd_shots, hd_xg, hd_goals]."""
+    out: dict[tuple[int, int, str], list[float]] = defaultdict(
+        lambda: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    )
     with zipfile.ZipFile(io.BytesIO(payload)) as archive:
         name = next(
             (n for n in archive.namelist() if n.lower().endswith(".csv")), None
@@ -71,7 +74,6 @@ def aggregate_zip(payload: bytes, season: int) -> dict[tuple[int, int, str], lis
                 )
                 if not game_id:
                     continue
-                # goalie defends against the shooting team; his team is the other one
                 shooter_team = str(row.get("teamCode") or "")
                 home_team = str(row.get("homeTeamCode") or "")
                 away_team = str(row.get("awayTeamCode") or "")
@@ -86,6 +88,10 @@ def aggregate_zip(payload: bytes, season: int) -> dict[tuple[int, int, str], lis
                 bucket[0] += 1.0
                 bucket[1] += xg
                 bucket[2] += goal
+                if xg >= HD_XG_THRESHOLD:
+                    bucket[3] += 1.0
+                    bucket[4] += xg
+                    bucket[5] += goal
     return out
 
 
@@ -113,9 +119,18 @@ def main() -> int:
 
     with OUT_PATH.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.writer(handle)
-        writer.writerow(["gameId", "goalieId", "team", "shots_faced", "xg_faced", "goals_allowed"])
-        for (game_id, goalie_id, team), (shots, xg, goals) in sorted(totals.items()):
-            writer.writerow([game_id, goalie_id, team, int(shots), round(xg, 4), int(goals)])
+        writer.writerow([
+            "gameId", "goalieId", "team",
+            "shots_faced", "xg_faced", "goals_allowed",
+            "hd_shots_faced", "hd_xg_faced", "hd_goals_allowed",
+        ])
+        for (game_id, goalie_id, team), vals in sorted(totals.items()):
+            shots, xg, goals, hd_shots, hd_xg, hd_goals = vals
+            writer.writerow([
+                game_id, goalie_id, team,
+                int(shots), round(xg, 4), int(goals),
+                int(hd_shots), round(hd_xg, 4), int(hd_goals),
+            ])
     print(f"wrote {OUT_PATH} ({len(totals)} rows)")
     return 0
 

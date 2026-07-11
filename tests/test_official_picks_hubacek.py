@@ -193,8 +193,8 @@ def test_nhl_pick_thresholds_use_backtested_policy() -> None:
     thresholds = get_pick_thresholds("nhl")
     assert thresholds["min_market_gap_pp"] >= 7.0
     assert thresholds["min_win_confidence_pp"] == 0.0
-    assert thresholds["ml_lo"] == -250
-    assert thresholds["ml_hi"] == 250
+    assert thresholds["ml_lo"] == -350
+    assert thresholds["ml_hi"] == 300
     assert thresholds["bet_type"] == "moneyline"
 
 
@@ -240,7 +240,7 @@ def test_nhl_official_picks_use_moneyline_decorrelation() -> None:
 
 
 def test_nhl_official_picks_respect_ml_price_window() -> None:
-    """NHL moneyline picks outside [-250, +250] are rejected."""
+    """NHL moneyline picks outside [-350, +300] are rejected."""
     pre_home = 85.0
     decor_home = decorrelate_binary(pre_home, 72.0)
     blended = {
@@ -266,8 +266,8 @@ def test_nhl_official_picks_respect_ml_price_window() -> None:
         total_score=-decor_home,
         win_probability=decor_home,
         blended=blended,
-        away_market=240,
-        home_market=-290,
+        away_market=280,
+        home_market=-400,
         consensus_spread=None,
         away_spread_odds=None,
         home_spread_odds=None,
