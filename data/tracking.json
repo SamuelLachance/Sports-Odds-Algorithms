@@ -397,15 +397,19 @@
       "model_margin": null,
       "model_market_gap_pp": 6.8,
       "kelly_pct": 7.73,
-      "status": "pending",
-      "units": 0.0,
+      "status": "win",
+      "units": 1.838095238095238,
       "stake_units": 1.93,
       "recorded_at": "2026-07-11T00:52:59.847013+00:00",
       "closing_market_odds": -105,
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
       "closing_snapshot_at": "2026-07-11T03:59:05.922195+00:00",
-      "closing_source": "consensus"
+      "closing_source": "consensus",
+      "graded_at": "2026-07-11T22:52:28.387520+00:00",
+      "final_score": "0\u20131",
+      "clv_pct": 0.0,
+      "clv_payout_pct": 0.0
     },
     {
       "id": "2026-07-10:401816116:home",
@@ -519,11 +523,11 @@
       "stake_units": 3.0,
       "recorded_at": "2026-07-11T06:18:50.403364+00:00",
       "recorded_pre_start": true,
-      "closing_market_odds": -107,
+      "closing_market_odds": -110,
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
       "closing_source": "consensus",
-      "closing_snapshot_at": "2026-07-11T17:06:07.322569+00:00"
+      "closing_snapshot_at": "2026-07-11T22:52:27.914761+00:00"
     },
     {
       "id": "2026-07-11:401816117:home",
@@ -637,8 +641,8 @@
       "model_margin": null,
       "model_market_gap_pp": 8.62,
       "kelly_pct": 11.07,
-      "status": "pending",
-      "units": 0.0,
+      "status": "win",
+      "units": 2.638095238095238,
       "stake_units": 2.77,
       "recorded_at": "2026-07-11T06:18:50.403364+00:00",
       "recorded_pre_start": true,
@@ -646,7 +650,11 @@
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
       "closing_source": "consensus",
-      "closing_snapshot_at": "2026-07-11T11:16:11.058733+00:00"
+      "closing_snapshot_at": "2026-07-11T11:16:11.058733+00:00",
+      "graded_at": "2026-07-11T22:52:28.700642+00:00",
+      "final_score": "0\u20131",
+      "clv_pct": 1.36,
+      "clv_payout_pct": 1.37
     },
     {
       "id": "2026-07-11:401816111:away",
