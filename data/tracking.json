@@ -266,7 +266,8 @@
       "closing_market_odds": -110,
       "closing_spread_odds": -110,
       "closing_consensus_spread": -9.5,
-      "closing_snapshot_at": "2026-07-11T01:49:33.838716+00:00"
+      "closing_snapshot_at": "2026-07-11T02:14:05.408866+00:00",
+      "closing_source": "espn"
     },
     {
       "id": "2026-07-10:401816125:away",
@@ -305,7 +306,8 @@
       "closing_market_odds": 104,
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
-      "closing_snapshot_at": "2026-07-11T01:49:33.838716+00:00"
+      "closing_snapshot_at": "2026-07-11T02:14:05.408866+00:00",
+      "closing_source": "consensus"
     },
     {
       "id": "2026-07-10:401816117:home",
@@ -344,7 +346,8 @@
       "closing_market_odds": 119,
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
-      "closing_snapshot_at": "2026-07-11T01:49:33.838716+00:00"
+      "closing_snapshot_at": "2026-07-11T02:14:05.408866+00:00",
+      "closing_source": "consensus"
     },
     {
       "id": "2026-07-10:401816120:home",
@@ -383,7 +386,8 @@
       "closing_market_odds": -105,
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
-      "closing_snapshot_at": "2026-07-11T01:49:33.838716+00:00"
+      "closing_snapshot_at": "2026-07-11T02:14:05.408866+00:00",
+      "closing_source": "consensus"
     }
   ]
 }
