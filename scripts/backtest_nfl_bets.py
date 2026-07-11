@@ -1,21 +1,19 @@
-"""Backtest NFL official-pick spread gates on walk-forward nfelo predictions.
+"""Backtest NFL official-pick spread gates on walk-forward predictions.
 
-Replays every nflverse game chronologically, rebuilding the production nfelo
-Elo model (web/football_pred_model.py) per game day on the same two-season
-window the live pipeline sees (prior season + current season to date). The
-model margin is compared to the historical closing spread
-(data/supplemental/closing-odds/nflverse_games.csv — nflverse has no opening
-lines, so the close is the only executable price) and the Hubáček spread gate
-grid (cover gap, point cushion, EV floor) is swept with the repo's
-quarter-Kelly staking. Policies are ranked by worst-season ROI, then overall
-ROI, as in scripts/backtest_nba_bets.py.
+Prefers NFL v2 OOS margins from data/models/nfl_v2/oos_predictions.csv when
+present; otherwise rebuilds the production nfelo model
+(web/football_pred_model.py) per game day. Sweeps the Hubáček spread gate
+grid and ranks by worst-season ROI. Use --write-policy only when the best
+policy has positive worst-season ROI (writes data/models/nfl_v2/bet_policy.json).
+
+nflverse has no opening lines, so the close is the only executable price.
 """
 
 from __future__ import annotations
 
 import argparse
-import math
 import json
+import math
 import sys
 from pathlib import Path
 
@@ -33,7 +31,10 @@ from web.football_pred_model import (  # noqa: E402
 )
 
 GAMES_CSV = PROJECT_ROOT / "data" / "supplemental" / "closing-odds" / "nflverse_games.csv"
-OOS_PATH = PROJECT_ROOT / "data" / "models" / "nfl_backtest" / "oos_predictions.csv"
+ELO_OOS_PATH = PROJECT_ROOT / "data" / "models" / "nfl_backtest" / "oos_predictions.csv"
+V2_DIR = PROJECT_ROOT / "data" / "models" / "nfl_v2"
+V2_OOS_PATH = V2_DIR / "oos_predictions.csv"
+V2_META_PATH = V2_DIR / "metadata.json"
 
 LEAGUE = "nfl"
 SIGMA = SPREAD_MARGIN_SIGMA[LEAGUE]
@@ -42,7 +43,7 @@ KELLY_FRACTION = 0.25
 KELLY_CAP_UNITS = 3.0
 KELLY_MIN_UNITS = 0.25
 DEFAULT_SPREAD_JUICE = -110.0
-MIN_SPREAD_CONFIDENCE_PP = 5.0  # live min_spread_confidence_pp floor
+MIN_SPREAD_CONFIDENCE_PP = 5.0
 
 
 def american_to_decimal(ml: float) -> float:
@@ -62,7 +63,7 @@ def kelly_units(prob: float, ml: float) -> float:
 
 def load_games() -> pd.DataFrame:
     frame = pd.read_csv(GAMES_CSV)
-    frame = frame[frame.game_type.isin(["REG", "POST"])]
+    frame = frame[frame.game_type.isin(["REG", "POST", "WC", "DIV", "CON", "SB"])]
     frame = frame.dropna(subset=["result", "spread_line", "home_score", "away_score"])
     frame = frame.sort_values(["gameday", "game_id"]).reset_index(drop=True)
     frame["home_key"] = frame.home_team.str.lower()
@@ -73,12 +74,7 @@ def load_games() -> pd.DataFrame:
 
 
 def build_walk_forward_predictions(frame: pd.DataFrame) -> pd.DataFrame:
-    """Model margin per game from the production nfelo model, walk-forward.
-
-    For every game day, the model is rebuilt from scratch on prior-season plus
-    current-season-to-date games — exactly the window the live pipeline feeds
-    ``build_football_model`` — so no game ever sees its own result.
-    """
+    """Model margin per game from the production nfelo model, walk-forward."""
     rows: list[dict] = []
     seasons = sorted(frame.season.unique())
     for season in seasons:
@@ -131,19 +127,35 @@ def build_walk_forward_predictions(frame: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def build_side_table(preds: pd.DataFrame, sigma: float) -> pd.DataFrame:
-    """Expand per-game predictions into per-side candidates with fixed metrics.
+def load_v2_predictions() -> pd.DataFrame | None:
+    if not V2_OOS_PATH.is_file():
+        return None
+    preds = pd.read_csv(V2_OOS_PATH)
+    rename = {}
+    if "home_spread" not in preds.columns and "home_close_spread" in preds.columns:
+        rename["home_close_spread"] = "home_spread"
+    if "spread_home_odds" not in preds.columns and "home_spread_odds" in preds.columns:
+        rename["home_spread_odds"] = "spread_home_odds"
+    if "spread_away_odds" not in preds.columns and "away_spread_odds" in preds.columns:
+        rename["away_spread_odds"] = "spread_away_odds"
+    if rename:
+        preds = preds.rename(columns=rename)
+    if "model_margin" not in preds.columns or "margin" not in preds.columns:
+        return None
+    if "home_spread" not in preds.columns:
+        return None
+    preds = preds.dropna(subset=["home_spread", "model_margin", "margin"])
+    return preds.reset_index(drop=True)
 
-    The cover probability, devigged market gap, point cushion, EV, and Kelly
-    stake are threshold-independent, so precomputing them lets the gate grid
-    run as pure boolean masks.
-    """
+
+def build_side_table(preds: pd.DataFrame, sigma: float) -> pd.DataFrame:
+    """Expand per-game predictions into per-side candidates with fixed metrics."""
     home_odds = preds.spread_home_odds.fillna(DEFAULT_SPREAD_JUICE)
     away_odds = preds.spread_away_odds.fillna(DEFAULT_SPREAD_JUICE)
     home_odds = home_odds.where(home_odds.abs() >= 100, DEFAULT_SPREAD_JUICE)
     away_odds = away_odds.where(away_odds.abs() >= 100, DEFAULT_SPREAD_JUICE)
 
-    edge = preds.model_margin + preds.home_spread  # home point cushion
+    edge = preds.model_margin + preds.home_spread
     z = edge / sigma
     p_home_cover = 0.5 * (1.0 + np.vectorize(math.erf)(z / math.sqrt(2.0)))
 
@@ -244,35 +256,56 @@ def simulate_spread(
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Backtest NFL nfelo spread gates")
+    parser = argparse.ArgumentParser(description="Backtest NFL spread gates")
     parser.add_argument("--min-bets", type=int, default=80)
-    parser.add_argument("--rebuild", action="store_true", help="Recompute walk-forward predictions")
+    parser.add_argument("--rebuild", action="store_true", help="Recompute Elo walk-forward")
+    parser.add_argument(
+        "--force-elo",
+        action="store_true",
+        help="Ignore v2 OOS and use Elo baseline predictions",
+    )
+    parser.add_argument(
+        "--write-policy",
+        action="store_true",
+        help="Write bet_policy.json only if best worst-season ROI > 0",
+    )
     args = parser.parse_args()
 
-    if OOS_PATH.is_file() and not args.rebuild:
-        preds = pd.read_csv(OOS_PATH)
+    source = "elo"
+    sigma = SIGMA
+    preds = None if args.force_elo else load_v2_predictions()
+    if preds is not None:
+        source = "nfl_v2"
+        if V2_META_PATH.is_file():
+            meta = json.loads(V2_META_PATH.read_text(encoding="utf-8"))
+            sigma = float(meta.get("margin_sigma") or SIGMA)
+        print(f"using NFL v2 OOS margins ({len(preds)} rows, sigma={sigma:.2f})")
+    elif ELO_OOS_PATH.is_file() and not args.rebuild:
+        preds = pd.read_csv(ELO_OOS_PATH)
+        print(f"using cached Elo OOS ({len(preds)} rows)")
     else:
         print("building walk-forward nfelo predictions (per-gameday rebuild)...", flush=True)
         preds = build_walk_forward_predictions(load_games())
-        OOS_PATH.parent.mkdir(parents=True, exist_ok=True)
-        preds.to_csv(OOS_PATH, index=False)
-        print(f"wrote {OOS_PATH}")
+        ELO_OOS_PATH.parent.mkdir(parents=True, exist_ok=True)
+        preds.to_csv(ELO_OOS_PATH, index=False)
+        print(f"wrote {ELO_OOS_PATH}")
 
     residual = preds.margin - preds.model_margin
     print(
-        f"walk-forward games: {len(preds)} ({int(preds.season.min())}-{int(preds.season.max())}), "
+        f"source={source} games: {len(preds)} ({int(preds.season.min())}-{int(preds.season.max())}), "
         f"model-vs-actual margin sigma {residual.std():.2f} "
-        f"(gate sigma {SIGMA}), MAE {residual.abs().mean():.2f} "
+        f"(gate sigma {sigma}), MAE {residual.abs().mean():.2f} "
         f"vs closing-spread MAE {(preds.margin + preds.home_spread).abs().mean():.2f}\n"
     )
 
-    sides = build_side_table(preds, SIGMA)
+    sides = build_side_table(preds, sigma)
 
     results: list[tuple[tuple, dict, dict]] = []
     for min_gap in (4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0):
         for min_pt in (2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0):
             for min_ev in (2.0, 2.5, 3.0):
                 params = {
+                    "exec_price": "close",
                     "min_spread_cover_gap_pp": min_gap,
                     "min_spread_point_edge": min_pt,
                     "min_ev_pct": min_ev,
@@ -295,7 +328,7 @@ def main() -> int:
     results.sort(key=lambda item: item[0], reverse=True)
     print("top policies (ranked by worst-season ROI, then overall ROI, at the CLOSE):")
     for score, params, res in results[:15]:
-        desc = ", ".join(f"{k}={v}" for k, v in params.items())
+        desc = ", ".join(f"{k}={v}" for k, v in params.items() if k != "exec_price")
         print(
             f"  [worst={score[0]:7.2f} roi={score[1]:6.2f}] {desc}: bets={res['bets']} "
             f"win={res['win_rate']:.3f} pos={res['seasons_positive']}/{res['seasons_total']}"
@@ -312,6 +345,30 @@ def main() -> int:
         print("\nbest policy by overall ROI:")
         print(json.dumps(by_roi[1], indent=1))
         print(json.dumps({k: v for k, v in by_roi[2].items() if k != "per_season"}, indent=1))
+
+    enable_picks = float(best_res["worst_season_roi"]) > 0
+    print(
+        f"\npicks_enable_gate: worst_season_roi={best_res['worst_season_roi']} "
+        f"-> {'ENABLE' if enable_picks else 'KEEP DISABLED'}"
+    )
+    if args.write_policy:
+        if not enable_picks:
+            print("--write-policy requested but worst-season ROI <= 0; not writing")
+        else:
+            V2_DIR.mkdir(parents=True, exist_ok=True)
+            policy = {
+                "stake_mode": "kelly",
+                "kelly_fraction": KELLY_FRACTION,
+                "bet_type": "spread",
+                "source": source,
+                "sigma": round(sigma, 3),
+                **best_params,
+                "backtest": {k: v for k, v in best_res.items() if k != "per_season"},
+                "backtest_per_season": best_res["per_season"],
+            }
+            path = V2_DIR / "bet_policy.json"
+            path.write_text(json.dumps(policy, indent=2), encoding="utf-8")
+            print(f"wrote {path}")
     return 0
 
 

@@ -389,7 +389,7 @@ def blended_home_spread_margin(blended: dict[str, Any], league: str) -> float:
     favorite_side = blended.get("favorite_side")
     cached = blended.get("home_spread_margin")
     if cached is not None:
-        if blended.get("blend_mode") in {"wnba_v2", "nba_v2"}:
+        if blended.get("blend_mode") in {"wnba_v2", "nba_v2", "cbb_v2", "cfb_v2", "nfl_v2"}:
             # Dedicated margin head was backtested as-is; never flip its sign
             # to match the win-probability favorite.
             return float(cached)
@@ -822,6 +822,125 @@ def _run_nba_v2(cutoff_date: str, home_abbr: str, away_abbr: str) -> dict[str, A
         return None
 
 
+def _run_cbb_v2(
+    cutoff_date: str,
+    home_abbr: str,
+    away_abbr: str,
+    *,
+    home_espn_id: str | None = None,
+    away_espn_id: str | None = None,
+) -> dict[str, Any] | None:
+    """CBBGradientBoost v2 payload when PIT-safe artifacts + season context exist."""
+    try:
+        from web.cbb_v2.live import artifacts_available, predict_matchup_v2
+        from web.hockey_pred_model import _cutoff_to_iso
+
+        if not artifacts_available():
+            return None
+        day_iso = _cutoff_to_iso(cutoff_date)
+        if not day_iso:
+            return None
+        return predict_matchup_v2(
+            day_iso,
+            home_abbr,
+            away_abbr,
+            home_espn_id=home_espn_id,
+            away_espn_id=away_espn_id,
+        )
+    except Exception:  # noqa: BLE001 - v2 layer must never break the slate
+        return None
+
+
+def _run_cfb_v2(cutoff_date: str, home_abbr: str, away_abbr: str) -> dict[str, Any] | None:
+    """CFBGradientBoost v2 payload when artifacts + season context exist."""
+    try:
+        from web.hockey_pred_model import _cutoff_to_iso
+        from web.cfb_v2.live import artifacts_available, predict_matchup_v2
+
+        if not artifacts_available():
+            return None
+        day_iso = _cutoff_to_iso(cutoff_date)
+        if not day_iso:
+            return None
+        return predict_matchup_v2(day_iso, home_abbr, away_abbr)
+    except Exception:  # noqa: BLE001 - v2 layer must never break the slate
+        return None
+
+
+def _run_nfl_v2(cutoff_date: str, home_abbr: str, away_abbr: str) -> dict[str, Any] | None:
+    """NFLGradientBoost v2 payload when shipped artifacts + season context exist."""
+    try:
+        from web.hockey_pred_model import _cutoff_to_iso
+        from web.nfl_v2.live import artifacts_available, predict_matchup_v2
+
+        if not artifacts_available():
+            return None
+        day_iso = _cutoff_to_iso(cutoff_date)
+        if not day_iso:
+            return None
+        return predict_matchup_v2(day_iso, home_abbr, away_abbr)
+    except Exception:  # noqa: BLE001 - v2 layer must never break the slate
+        return None
+
+
+def _blend_cfb_v2_only(
+    *,
+    cutoff_date: str,
+    home_abbr: str,
+    away_abbr: str,
+) -> dict[str, Any] | None:
+    """Prefer CFB v2 when shipped artifacts are available."""
+    v2_payload = _run_cfb_v2(cutoff_date, home_abbr, away_abbr)
+    if not v2_payload or v2_payload.get("model_version") != "v2":
+        return None
+    home_prob = float(v2_payload["home_win_probability"])
+    total, win_prob = home_win_prob_to_total_score(home_prob)
+    result: dict[str, Any] = {
+        "algorithm": str(v2_payload.get("algorithm") or "CFBGradientBoost v2"),
+        "blend_mode": "cfb_v2",
+        "blend_layers": 1,
+        "blend_weights": {"football_pred": 1.0},
+        "football_pred": v2_payload,
+        "blended_home_win_probability": round(home_prob, 2),
+        "total_score": round(total, 2),
+        "win_probability": round(win_prob, 2),
+        "favorite_side": "home" if total <= 0 else "away",
+        "model_version": "v2",
+    }
+    if v2_payload.get("predicted_margin") is not None:
+        result["home_spread_margin"] = round(-float(v2_payload["predicted_margin"]), 2)
+    return result
+
+
+def _blend_nfl_v2_only(
+    *,
+    cutoff_date: str,
+    home_abbr: str,
+    away_abbr: str,
+) -> dict[str, Any] | None:
+    """Prefer NFL v2 when shipped artifacts are available."""
+    v2_payload = _run_nfl_v2(cutoff_date, home_abbr, away_abbr)
+    if not v2_payload or v2_payload.get("model_version") != "v2":
+        return None
+    home_prob = float(v2_payload["home_win_probability"])
+    total, win_prob = home_win_prob_to_total_score(home_prob)
+    result: dict[str, Any] = {
+        "algorithm": str(v2_payload.get("algorithm") or "NFLGradientBoost v2"),
+        "blend_mode": "nfl_v2",
+        "blend_layers": 1,
+        "blend_weights": {"football_pred": 1.0},
+        "football_pred": v2_payload,
+        "blended_home_win_probability": round(home_prob, 2),
+        "total_score": round(total, 2),
+        "win_probability": round(win_prob, 2),
+        "favorite_side": "home" if total <= 0 else "away",
+        "model_version": "v2",
+    }
+    if v2_payload.get("predicted_margin") is not None:
+        result["home_spread_margin"] = round(-float(v2_payload["predicted_margin"]), 2)
+    return result
+
+
 def _blend_basketball_matrix_only(
     *,
     league: str,
@@ -840,8 +959,8 @@ def _blend_basketball_matrix_only(
 ) -> dict[str, Any]:
     """Basketball display prefers sport-specific models; BasketballMatrix is fallback.
 
-    NBA/WNBA route to GradientBoost v2 when artifacts are available.
-    CBB prefers Torvik efficiency + calibration, falling back to BasketballMatrix.
+    NBA/WNBA/CBB route to GradientBoost v2 when artifacts are available.
+    CBB falls back to Torvik efficiency + calibration, then BasketballMatrix.
     """
     league_key = league.lower()
     if league_key == "nba":
@@ -874,6 +993,34 @@ def _blend_basketball_matrix_only(
             result = {
                 "algorithm": str(v2_payload.get("algorithm") or "WNBAGradientBoost v2"),
                 "blend_mode": "wnba_v2",
+                "blend_layers": 1,
+                "blend_weights": {"basketball_pred": 1.0},
+                "basketball_pred": v2_payload,
+                "blended_home_win_probability": round(home_prob, 2),
+                "total_score": round(total, 2),
+                "win_probability": round(win_prob, 2),
+                "favorite_side": "home" if total <= 0 else "away",
+                "model_version": "v2",
+            }
+            if v2_payload.get("predicted_margin") is not None:
+                result["home_spread_margin"] = round(
+                    -float(v2_payload["predicted_margin"]), 2
+                )
+            return result
+    if league_key == "cbb":
+        v2_payload = _run_cbb_v2(
+            cutoff_date,
+            home_abbr,
+            away_abbr,
+            home_espn_id=home_espn_id,
+            away_espn_id=away_espn_id,
+        )
+        if v2_payload and v2_payload.get("model_version") == "v2":
+            home_prob = float(v2_payload["home_win_probability"])
+            total, win_prob = home_win_prob_to_total_score(home_prob)
+            result = {
+                "algorithm": str(v2_payload.get("algorithm") or "CBBGradientBoost v2"),
+                "blend_mode": "cbb_v2",
                 "blend_layers": 1,
                 "blend_weights": {"basketball_pred": 1.0},
                 "basketball_pred": v2_payload,
@@ -1237,6 +1384,24 @@ def blend_predictions(
             home_espn_id=home_espn_id,
             away_espn_id=away_espn_id,
         )
+
+    if league.lower() == "cfb":
+        cfb_v2 = _blend_cfb_v2_only(
+            cutoff_date=cutoff_date,
+            home_abbr=home_abbr,
+            away_abbr=away_abbr,
+        )
+        if cfb_v2 is not None:
+            return cfb_v2
+
+    if league.lower() == "nfl":
+        nfl_v2 = _blend_nfl_v2_only(
+            cutoff_date=cutoff_date,
+            home_abbr=home_abbr,
+            away_abbr=away_abbr,
+        )
+        if nfl_v2 is not None:
+            return nfl_v2
 
     legacy_home = total_score_to_home_win_prob(legacy_total_score)
     legacy_payload = {

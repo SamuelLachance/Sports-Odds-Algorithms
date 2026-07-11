@@ -196,24 +196,48 @@ def _parse_made_attempted(display: str) -> tuple[float, float] | None:
     return made, att
 
 
-def _player_minutes(data: Any) -> dict[str, list[list[Any]]]:
-    """Per-team ``[[athlete_id, minutes], ...]`` rows from boxscore.players.
+def _parse_fg_attempts(raw: Any) -> float | None:
+    """Parse ESPN ``7-15`` made-attempted strings; return attempts."""
+    text = str(raw or "").strip()
+    if "-" not in text:
+        return _to_float(text)
+    pair = _parse_made_attempted(text)
+    return float(pair[1]) if pair else None
 
-    Only athletes who logged positive minutes are kept; used downstream for
-    rotation-continuity / star-availability features.
+
+def _player_box_rows(
+    data: Any,
+) -> tuple[dict[str, list[list[Any]]], dict[str, list[str]]]:
+    """Per-team player rows + DNP ids from boxscore.players.
+
+    Each played row is
+    ``[athlete_id, minutes, fga, ast, tov, pf, plus_minus]`` (legacy caches
+    may only have the first two fields). DNP athletes are listed separately
+    for availability / foul-trouble proxies.
     """
-    out: dict[str, list[list[Any]]] = {}
+    players_out: dict[str, list[list[Any]]] = {}
+    dnp_out: dict[str, list[str]] = {}
     for group in (data.get("boxscore") or {}).get("players") or []:
         team_id = str((group.get("team") or {}).get("id") or "")
         rows: list[list[Any]] = []
+        dnp_ids: list[str] = []
         for block in group.get("statistics") or []:
             names = [str(n).upper() for n in block.get("names") or []]
-            try:
-                min_idx = names.index("MIN")
-            except ValueError:
+            idx = {name: i for i, name in enumerate(names)}
+            min_idx = idx.get("MIN")
+            if min_idx is None:
                 continue
+            fga_idx = idx.get("FG")
+            ast_idx = idx.get("AST")
+            tov_idx = idx.get("TO") if "TO" in idx else idx.get("TOV")
+            pf_idx = idx.get("PF")
+            pm_idx = idx.get("+/-")
             for athlete in block.get("athletes") or []:
+                athlete_id = str((athlete.get("athlete") or {}).get("id") or "")
+                if not athlete_id:
+                    continue
                 if athlete.get("didNotPlay"):
+                    dnp_ids.append(athlete_id)
                     continue
                 row = athlete.get("stats") or []
                 if min_idx >= len(row):
@@ -222,25 +246,58 @@ def _player_minutes(data: Any) -> dict[str, list[list[Any]]]:
                 minutes = _to_float(raw.split(":")[0]) if raw else None
                 if minutes is None or minutes <= 0:
                     continue
-                athlete_id = str((athlete.get("athlete") or {}).get("id") or "")
-                if athlete_id:
-                    rows.append([athlete_id, minutes])
+                fga = (
+                    _parse_fg_attempts(row[fga_idx])
+                    if fga_idx is not None and fga_idx < len(row)
+                    else None
+                )
+                ast = (
+                    _to_float(row[ast_idx])
+                    if ast_idx is not None and ast_idx < len(row)
+                    else None
+                )
+                tov = (
+                    _to_float(row[tov_idx])
+                    if tov_idx is not None and tov_idx < len(row)
+                    else None
+                )
+                pf = (
+                    _to_float(row[pf_idx])
+                    if pf_idx is not None and pf_idx < len(row)
+                    else None
+                )
+                plus_minus = None
+                if pm_idx is not None and pm_idx < len(row):
+                    pm_raw = str(row[pm_idx]).strip().replace("+", "")
+                    plus_minus = _to_float(pm_raw)
+                rows.append([
+                    athlete_id,
+                    minutes,
+                    fga if fga is not None else 0.0,
+                    ast if ast is not None else 0.0,
+                    tov if tov is not None else 0.0,
+                    pf if pf is not None else 0.0,
+                    plus_minus if plus_minus is not None else 0.0,
+                ])
         if team_id and rows:
-            out[team_id] = rows
-    return out
+            players_out[team_id] = rows
+        if team_id and dnp_ids:
+            dnp_out[team_id] = dnp_ids
+    return players_out, dnp_out
 
 
 def fetch_box_score(event_id: str) -> dict[str, dict[str, Any]] | None:
     """Team box stats keyed by ESPN team id. None when unavailable.
 
-    Each team dict may also carry ``players``: ``[[athlete_id, minutes], ...]``
-    for athletes who logged minutes (availability features).
+    Each team dict may also carry:
+      players: ``[[athlete_id, minutes, fga, ast, tov, pf, plus_minus], ...]``
+      dnp_ids: athlete ids listed as DNP in the box (coach's decision / injury).
     """
     data = get_json(SUMMARY_URL.format(event_id=event_id), timeout=45)
     teams = (data.get("boxscore") or {}).get("teams") or []
     if len(teams) != 2:
         return None
-    players_by_team = _player_minutes(data)
+    players_by_team, dnp_by_team = _player_box_rows(data)
     out: dict[str, dict[str, Any]] = {}
     for side in teams:
         team_id = str((side.get("team") or {}).get("id") or "")
@@ -285,6 +342,9 @@ def fetch_box_score(event_id: str) -> dict[str, dict[str, Any]] | None:
         players = players_by_team.get(team_id)
         if players:
             stats["players"] = players
+        dnp_ids = dnp_by_team.get(team_id)
+        if dnp_ids:
+            stats["dnp_ids"] = dnp_ids
         out[team_id] = stats
     return out
 

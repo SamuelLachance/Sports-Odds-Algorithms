@@ -1,0 +1,6 @@
+{
+  "enabled": false,
+  "reason": "Official CBB picks remain disabled until a positive worst-season walk-forward backtest on historical closing odds is available.",
+  "gate_pass_vs_ensemble_ll": true,
+  "oos_model_logloss": 0.50738
+}

@@ -263,10 +263,12 @@ def test_blend_basketball_matrix_only_when_available() -> None:
     power_original = blend_module.run_power_model
     nba_v2_original = blend_module._run_nba_v2
     wnba_v2_original = blend_module._run_wnba_v2
+    cbb_v2_original = blend_module._run_cbb_v2
     try:
         blend_module.run_power_model = lambda *_a, **_k: None
         blend_module._run_nba_v2 = lambda *_a, **_k: None
         blend_module._run_wnba_v2 = lambda *_a, **_k: None
+        blend_module._run_cbb_v2 = lambda *_a, **_k: None
         blend_module.run_basketball_pred_model = lambda *_a, **_k: {
             "algorithm": "BasketballMatrix",
             "source": "soft-impute-svd",
@@ -304,6 +306,7 @@ def test_blend_basketball_matrix_only_when_available() -> None:
         blend_module.run_power_model = power_original
         blend_module._run_nba_v2 = nba_v2_original
         blend_module._run_wnba_v2 = wnba_v2_original
+        blend_module._run_cbb_v2 = cbb_v2_original
 
 
 def test_blend_cbb_prefers_torvik_when_available() -> None:
@@ -312,8 +315,10 @@ def test_blend_cbb_prefers_torvik_when_available() -> None:
     basketball_original = blend_module.run_basketball_pred_model
     cbb_original = blend_module.run_cbb_pred_model
     power_original = blend_module.run_power_model
+    cbb_v2_original = blend_module._run_cbb_v2
     try:
         blend_module.run_power_model = lambda *_a, **_k: None
+        blend_module._run_cbb_v2 = lambda *_a, **_k: None
         blend_module.run_basketball_pred_model = lambda *_a, **_k: {
             "algorithm": "BasketballMatrix",
             "source": "soft-impute-svd",
@@ -350,6 +355,7 @@ def test_blend_cbb_prefers_torvik_when_available() -> None:
         blend_module.run_basketball_pred_model = basketball_original
         blend_module.run_cbb_pred_model = cbb_original
         blend_module.run_power_model = power_original
+        blend_module._run_cbb_v2 = cbb_v2_original
 
 
 def test_blend_cbb_falls_back_to_matrix_when_torvik_fails() -> None:
@@ -358,11 +364,13 @@ def test_blend_cbb_falls_back_to_matrix_when_torvik_fails() -> None:
     basketball_original = blend_module.run_basketball_pred_model
     cbb_original = blend_module.run_cbb_pred_model
     power_original = blend_module.run_power_model
+    cbb_v2_original = blend_module._run_cbb_v2
     try:
         def _boom(*_a, **_k):
             raise RuntimeError("torvik down")
 
         blend_module.run_power_model = lambda *_a, **_k: None
+        blend_module._run_cbb_v2 = lambda *_a, **_k: None
         blend_module.run_cbb_pred_model = _boom
         blend_module.run_basketball_pred_model = lambda *_a, **_k: {
             "algorithm": "BasketballMatrix",
@@ -385,6 +393,7 @@ def test_blend_cbb_falls_back_to_matrix_when_torvik_fails() -> None:
         blend_module.run_basketball_pred_model = basketball_original
         blend_module.run_cbb_pred_model = cbb_original
         blend_module.run_power_model = power_original
+        blend_module._run_cbb_v2 = cbb_v2_original
 
 
 def test_model_agreement_basketball_single_model() -> None:
@@ -628,7 +637,9 @@ def test_blend_nfl_three_way_when_football_available() -> None:
 
     power_original = blend_module.run_power_model
     football_original = blend_module.run_football_pred_model
+    nfl_v2_original = blend_module._run_nfl_v2
     try:
+        blend_module._run_nfl_v2 = lambda *_a, **_k: None
         blend_module.run_power_model = lambda *_a, **_k: {
             "algorithm": "PowerRatings",
             "home_power": 3.0,
@@ -657,6 +668,7 @@ def test_blend_nfl_three_way_when_football_available() -> None:
     finally:
         blend_module.run_power_model = power_original
         blend_module.run_football_pred_model = football_original
+        blend_module._run_nfl_v2 = nfl_v2_original
 
 
 def test_blend_cfb_three_way_when_football_available() -> None:
@@ -664,7 +676,9 @@ def test_blend_cfb_three_way_when_football_available() -> None:
 
     power_original = blend_module.run_power_model
     football_original = blend_module.run_football_pred_model
+    cfb_v2_original = blend_module._run_cfb_v2
     try:
+        blend_module._run_cfb_v2 = lambda *_a, **_k: None
         blend_module.run_power_model = lambda *_a, **_k: {
             "algorithm": "PowerRatings",
             "home_win_probability": 55.0,
@@ -690,6 +704,7 @@ def test_blend_cfb_three_way_when_football_available() -> None:
     finally:
         blend_module.run_power_model = power_original
         blend_module.run_football_pred_model = football_original
+        blend_module._run_cfb_v2 = cfb_v2_original
 
 
 def test_blend_nba_matrix_only_keeps_legacy_layers_for_ensemble() -> None:

@@ -193,7 +193,7 @@ def test_signed_spread_and_devig() -> None:
     assert devig_two_way(-50, 130) is None
 
 
-def _box(players: list[list] | None = None) -> dict:
+def _box(players: list[list] | None = None, *, dnp_ids: list[str] | None = None) -> dict:
     box = {
         "fgm": 40.0, "fga": 88.0, "tpm": 12.0, "tpa": 32.0,
         "ftm": 15.0, "fta": 20.0, "orb": 10.0, "drb": 32.0,
@@ -201,7 +201,36 @@ def _box(players: list[list] | None = None) -> dict:
     }
     if players is not None:
         box["players"] = players
+    if dnp_ids is not None:
+        box["dnp_ids"] = dnp_ids
     return box
+
+
+def _rich_players(prefix: str, *, star_out: bool = False) -> list[list]:
+    """Synthetic rich rows: [id, min, fga, ast, tov, pf, +/-]."""
+    base = [
+        [f"{prefix}a", 38, 22, 6, 3, 2, 8],
+        [f"{prefix}b", 36, 18, 5, 2, 3, 4],
+        [f"{prefix}c", 32, 14, 4, 2, 4, 2],
+        [f"{prefix}d", 28, 10, 3, 1, 2, -1],
+        [f"{prefix}e", 24, 8, 2, 1, 3, -2],
+        [f"{prefix}f", 20, 6, 2, 2, 2, -3],
+        [f"{prefix}g", 16, 4, 1, 1, 1, -4],
+        [f"{prefix}h", 12, 3, 1, 1, 2, -5],
+    ]
+    if star_out:
+        # drop top-2 stars; replacements soak minutes
+        return [
+            [f"{prefix}c", 36, 16, 4, 2, 5, -6],
+            [f"{prefix}d", 34, 14, 3, 2, 4, -4],
+            [f"{prefix}e", 30, 12, 3, 1, 3, -2],
+            [f"{prefix}f", 26, 10, 2, 2, 3, -3],
+            [f"{prefix}g", 22, 8, 2, 1, 2, -2],
+            [f"{prefix}h", 18, 6, 1, 1, 2, -1],
+            [f"{prefix}q", 16, 5, 1, 1, 1, 0],
+            [f"{prefix}r", 14, 4, 1, 1, 1, 0],
+        ]
+    return base
 
 
 def test_schedule_run_features_track_stands_and_trips() -> None:
@@ -263,6 +292,8 @@ def test_availability_proxies_from_player_rows() -> None:
     even = engine.features_for_game(_game("2025-01-09", "bos", "ny", 0, 0))
     assert even["roster_continuity_diff"] == 0.0
     assert even["star_avail_diff"] == 0.0
+    assert even["top1_min_share_diff"] == 0.0
+    assert even["rotation_depth_diff"] == 0.0
     # ny loses its top-2 stars; replacements soak the minutes
     ny_short = [["z", 34], ["w", 32], ["v", 30], ["u", 26], ["t", 24],
                 ["s", 20], ["q", 18], ["r", 16]]
@@ -273,6 +304,41 @@ def test_availability_proxies_from_player_rows() -> None:
     hurt = engine.features_for_game(_game("2025-01-11", "bos", "ny", 0, 0))
     assert hurt["star_avail_diff"] > 0.5  # bos 3/3 vs ny 1/3
     assert hurt["roster_continuity_diff"] > 0.1
+    assert hurt["dnp_star_rate_diff"] < 0.0  # ny missing more stars
+    assert hurt["star_min_gap_diff"] > 0.0  # bos stars still logging minutes
+
+
+def test_rich_player_rotation_features() -> None:
+    engine = NbaFeatureEngine()
+    for day in range(2, 10):
+        game = _game(f"2025-01-{day:02d}", "bos", "ny", 110, 100)
+        game["home_box"] = _box(_rich_players("h"))
+        game["away_box"] = _box(_rich_players("a"))
+        engine.update_after_game(game)
+    even = engine.features_for_game(_game("2025-01-12", "bos", "ny", 0, 0))
+    assert abs(even["top1_usage_diff"]) < 1e-6
+    assert abs(even["bench_pm_diff"]) < 1e-6
+    assert abs(even["high_min_ast_tov_diff"]) < 1e-6
+    concentrated = [
+        ["ha", 42, 28, 8, 4, 8, 12],
+        ["hb", 30, 12, 3, 2, 6, 2],
+        ["hc", 24, 8, 2, 1, 5, 0],
+        ["hd", 20, 6, 2, 1, 4, -1],
+        ["he", 16, 4, 1, 1, 1, -2],
+        ["hf", 12, 3, 1, 1, 1, -3],
+        ["hg", 10, 2, 0, 1, 1, -4],
+        ["hh", 8, 2, 0, 0, 1, -5],
+    ]
+    game = _game("2025-01-12", "bos", "ny", 110, 100)
+    game["home_box"] = _box(concentrated)
+    game["away_box"] = _box(_rich_players("a", star_out=True), dnp_ids=["aa", "ab"])
+    engine.update_after_game(game)
+    feat = engine.features_for_game(_game("2025-01-14", "bos", "ny", 0, 0))
+    assert feat["top1_min_share_diff"] > 0.0
+    assert feat["top1_usage_diff"] > 0.0
+    assert feat["min_hhi_diff"] > 0.0
+    assert feat["bench_pm_diff"] != 0.0
+    assert feat["dnp_star_rate_diff"] < 0.0
 
 
 def test_shooting_profile_updates_from_boxes() -> None:
@@ -299,6 +365,10 @@ def test_from_dict_defaults_new_fields_for_old_snapshots() -> None:
         "close_win_ewma", "blowout_net_ewma", "recent_margins", "elo_pre_hist",
         "loc_streak", "last_players", "prev_player_ids", "season_minutes",
         "h2h_margin",
+        "top1_min_share", "top3_min_share", "top1_usage", "top3_usage",
+        "high_min_ast_tov", "high_min_foul_rate", "star_min_ewma",
+        "star_min_season_avg", "bench_pm", "dnp_star_rate", "rotation_depth",
+        "min_hhi", "bench_min_share",
     )
     for team_payload in payload["teams"].values():
         for key in legacy_keys:
@@ -308,9 +378,12 @@ def test_from_dict_defaults_new_fields_for_old_snapshots() -> None:
     assert set(features.keys()) == set(FEATURE_COLUMNS)
     assert features["roster_continuity_diff"] == 0.0
     assert features["star_avail_diff"] == 0.0
+    assert features["top1_min_share_diff"] == 0.0
+    assert features["star_min_gap_diff"] == 0.0
     assert features["margin_vol_diff"] == 0.0
     assert features["h2h_margin_ewma"] == 0.0
     assert features["elo_mom5_diff"] == 0.0
+    assert len(FEATURE_COLUMNS) == 89
 
 
 def test_live_prediction_when_artifacts_present() -> None:

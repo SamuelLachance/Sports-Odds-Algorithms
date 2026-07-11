@@ -65,6 +65,15 @@ data/models/wnba_v2/oos_predictions.csv
 data/nba_history/
 data/models/nba_v2/oos_predictions.csv
 
+# NFL / CFB / CBB v2 rebuildable training tables + OOS dumps.
+# Model artifacts in data/models/{nfl,cfb,cbb}_v2/ ARE tracked.
+data/nfl_history/
+data/cfb_history/
+data/cbb_history/
+data/models/nfl_v2/oos_predictions.csv
+data/models/cfb_v2/oos_predictions.csv
+data/models/cbb_v2/oos_predictions.csv
+
 # football-data.co.uk runtime cache (auto-downloaded on demand by
 # web/football_data_uk.py)
 data/supplemental/football-data-uk/

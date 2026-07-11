@@ -9,7 +9,8 @@ Game dict schema (merged from ESPN events + boxes):
   date (ISO), season (ending year), season_type (2 reg / 3 post),
   home, away (franchise keys), home_score, away_score, neutral_site (optional),
   home_box / away_box (optional dicts: fgm fga tpm tpa ftm fta orb drb tov ast,
-  plus optional players: [[athlete_id, minutes], ...]).
+  plus optional players: [[athlete_id, minutes, fga, ast, tov, pf, plus_minus], ...]
+  and optional dnp_ids: [athlete_id, ...]).
 """
 
 from __future__ import annotations
@@ -30,6 +31,7 @@ ALPHA_SLOW = 0.06
 ALPHA_WIN = 0.10
 ALPHA_H2H = 0.30
 ALPHA_LEAGUE = 0.015
+ALPHA_PLAYER = 0.20
 
 LEAGUE_PPG = 110.0
 LEAGUE_PACE = 100.0
@@ -41,6 +43,22 @@ LEAGUE_FT_RATE = 0.25
 LEAGUE_TPA_RATE = 0.30
 LEAGUE_TP_PCT = 0.355
 LEAGUE_FT_PCT = 0.77
+
+# player-box priors (minutes-only caches still update share / depth / HHI)
+LEAGUE_TOP1_MIN_SHARE = 0.16
+LEAGUE_TOP3_MIN_SHARE = 0.42
+LEAGUE_TOP1_USAGE = 0.18
+LEAGUE_TOP3_USAGE = 0.45
+LEAGUE_HIGH_MIN_AST_TOV = 1.6
+LEAGUE_HIGH_MIN_FOUL36 = 3.4
+LEAGUE_STAR_MIN = 33.0
+LEAGUE_BENCH_PM = 0.0
+LEAGUE_DNP_STAR_RATE = 0.05
+LEAGUE_ROTATION_DEPTH = 9.0
+LEAGUE_MIN_HHI = 0.12
+LEAGUE_BENCH_MIN_SHARE = 0.35
+HIGH_MIN_FLOOR = 20.0
+BENCH_TOP_N = 5
 
 CLOSE_GAME_MARGIN = 5.0
 BLOWOUT_MARGIN = 15.0
@@ -131,6 +149,19 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     # availability proxies (player minutes)
     "roster_continuity_diff",
     "star_avail_diff",
+    # richer player / rotation proxies (prior boxes only)
+    "top1_min_share_diff",
+    "top3_min_share_diff",
+    "top1_usage_diff",
+    "top3_usage_diff",
+    "high_min_ast_tov_diff",
+    "high_min_foul_rate_diff",
+    "star_min_gap_diff",
+    "bench_pm_diff",
+    "dnp_star_rate_diff",
+    "rotation_depth_diff",
+    "min_hhi_diff",
+    "bench_min_share_diff",
     # matchup history / interactions
     "h2h_margin_ewma",
     "net_x_pace",
@@ -163,6 +194,126 @@ def _possessions(box: dict[str, float], opp_box: dict[str, float]) -> float | No
     return float(fga) - float(orb) + float(tov) + 0.44 * float(fta)
 
 
+def _parse_player_row(row: Any) -> tuple[str, float, float, float, float, float, float] | None:
+    """Normalize legacy [id, min] or rich [id, min, fga, ast, tov, pf, +/-] rows."""
+    if not isinstance(row, (list, tuple)) or len(row) < 2:
+        return None
+    pid = str(row[0] or "")
+    try:
+        mins = float(row[1])
+    except (TypeError, ValueError):
+        return None
+    if not pid or mins <= 0:
+        return None
+
+    def _at(idx: int) -> float:
+        if idx >= len(row):
+            return 0.0
+        try:
+            return float(row[idx])
+        except (TypeError, ValueError):
+            return 0.0
+
+    return pid, mins, _at(2), _at(3), _at(4), _at(5), _at(6)
+
+
+def _player_rotation_metrics(
+    rows: list[Any],
+    *,
+    dnp_ids: list[str] | None = None,
+    season_minutes: dict[str, float] | None = None,
+    games_played: int = 0,
+) -> dict[str, float]:
+    """Instantaneous rotation/usage metrics from one prior box (leak-free inputs)."""
+    parsed = []
+    for row in rows:
+        item = _parse_player_row(row)
+        if item is not None:
+            parsed.append(item)
+    if not parsed:
+        return {}
+    parsed.sort(key=lambda r: -r[1])
+    total_min = sum(r[1] for r in parsed)
+    total_fga = sum(r[2] for r in parsed)
+    if total_min <= 0:
+        return {}
+
+    top1 = parsed[0]
+    top3 = parsed[:3]
+    top1_min_share = top1[1] / total_min
+    top3_min_share = sum(r[1] for r in top3) / total_min
+    if total_fga > 0:
+        top1_usage = top1[2] / total_fga
+        top3_usage = sum(r[2] for r in top3) / total_fga
+    else:
+        # minutes-only caches: usage proxy = minutes share
+        top1_usage = top1_min_share
+        top3_usage = top3_min_share
+
+    high = [r for r in parsed if r[1] >= HIGH_MIN_FLOOR] or parsed[:5]
+    high_ast = sum(r[3] for r in high)
+    high_tov = sum(r[4] for r in high)
+    high_pf = sum(r[5] for r in high)
+    high_min = sum(r[1] for r in high)
+    high_min_ast_tov = high_ast / max(high_tov, 0.5)
+    high_min_foul_rate = (high_pf / high_min) * 36.0 if high_min > 0 else LEAGUE_HIGH_MIN_FOUL36
+
+    bench = parsed[BENCH_TOP_N:]
+    bench_min = sum(r[1] for r in bench)
+    bench_min_share = bench_min / total_min
+    # only trust plus/minus when any non-zero (rich boxes); else prior stays
+    has_pm = any(abs(r[6]) > 1e-9 for r in parsed)
+    bench_pm = sum(r[6] for r in bench) if has_pm else LEAGUE_BENCH_PM
+
+    shares = [r[1] / total_min for r in parsed]
+    min_hhi = sum(s * s for s in shares)
+    rotation_depth = float(sum(1 for r in parsed if r[1] >= 10.0))
+
+    season_minutes = season_minutes or {}
+    played_ids = {r[0] for r in parsed}
+    dnp_set = set(dnp_ids or [])
+    top_season = sorted(season_minutes, key=lambda k: -season_minutes[k])[:8]
+    if top_season:
+        absent = sum(
+            1 for pid in top_season if pid not in played_ids or pid in dnp_set
+        )
+        dnp_star_rate = absent / len(top_season)
+    else:
+        dnp_star_rate = LEAGUE_DNP_STAR_RATE
+
+    star_ids = sorted(season_minutes, key=lambda k: -season_minutes[k])[:3]
+    if star_ids and games_played > 0:
+        last_mins = []
+        season_mpg = []
+        for pid in star_ids:
+            matched = next((r[1] for r in parsed if r[0] == pid), 0.0)
+            last_mins.append(matched)
+            season_mpg.append(season_minutes.get(pid, 0.0) / max(games_played, 1))
+        star_min_last = sum(last_mins) / len(last_mins)
+        star_min_season_avg = sum(season_mpg) / len(season_mpg)
+    else:
+        star_min_last = LEAGUE_STAR_MIN
+        star_min_season_avg = LEAGUE_STAR_MIN
+
+    return {
+        "top1_min_share": top1_min_share,
+        "top3_min_share": top3_min_share,
+        "top1_usage": top1_usage,
+        "top3_usage": top3_usage,
+        "high_min_ast_tov": high_min_ast_tov,
+        "high_min_foul_rate": high_min_foul_rate,
+        "star_min_last": star_min_last,
+        "star_min_season_avg": star_min_season_avg,
+        "bench_pm": bench_pm,
+        "dnp_star_rate": dnp_star_rate,
+        "rotation_depth": rotation_depth,
+        "min_hhi": min_hhi,
+        "bench_min_share": bench_min_share,
+        "has_pm": 1.0 if has_pm else 0.0,
+        "has_usage": 1.0 if total_fga > 0 else 0.0,
+    }
+
+
 class TeamState:
     __slots__ = (
         "franchise", "elo", "pf_fast", "pa_fast", "pf_slow", "pa_slow",
@@ -178,6 +329,10 @@ class TeamState:
         "close_win_ewma", "blowout_net_ewma", "recent_margins",
         "elo_pre_hist", "loc_streak",
         "last_players", "prev_player_ids", "season_minutes", "h2h_margin",
+        "top1_min_share", "top3_min_share", "top1_usage", "top3_usage",
+        "high_min_ast_tov", "high_min_foul_rate",
+        "star_min_ewma", "star_min_season_avg", "bench_pm",
+        "dnp_star_rate", "rotation_depth", "min_hhi", "bench_min_share",
     )
 
     def __init__(self, franchise: str):
@@ -232,6 +387,19 @@ class TeamState:
         self.prev_player_ids: list[str] = []
         self.season_minutes: dict[str, float] = {}
         self.h2h_margin: dict[str, float] = {}
+        self.top1_min_share = LEAGUE_TOP1_MIN_SHARE
+        self.top3_min_share = LEAGUE_TOP3_MIN_SHARE
+        self.top1_usage = LEAGUE_TOP1_USAGE
+        self.top3_usage = LEAGUE_TOP3_USAGE
+        self.high_min_ast_tov = LEAGUE_HIGH_MIN_AST_TOV
+        self.high_min_foul_rate = LEAGUE_HIGH_MIN_FOUL36
+        self.star_min_ewma = LEAGUE_STAR_MIN
+        self.star_min_season_avg = LEAGUE_STAR_MIN
+        self.bench_pm = LEAGUE_BENCH_PM
+        self.dnp_star_rate = LEAGUE_DNP_STAR_RATE
+        self.rotation_depth = LEAGUE_ROTATION_DEPTH
+        self.min_hhi = LEAGUE_MIN_HHI
+        self.bench_min_share = LEAGUE_BENCH_MIN_SHARE
 
     # -- season lifecycle ---------------------------------------------------
 
@@ -262,6 +430,8 @@ class TeamState:
         self.last_players = []
         self.prev_player_ids = []
         self.season_minutes = {}
+        # keep EWMA rotation priors across seasons (gentle carry); reset DNP noise
+        self.dnp_star_rate = LEAGUE_DNP_STAR_RATE
 
     # -- helpers -------------------------------------------------------------
 
@@ -324,7 +494,10 @@ class TeamState:
         """Minutes-weighted share of last game's top-8 seen in the game before."""
         if not self.last_players or not self.prev_player_ids:
             return 1.0
-        top8 = sorted(self.last_players, key=lambda row: -float(row[1]))[:8]
+        parsed = [
+            row for row in (_parse_player_row(r) for r in self.last_players) if row
+        ]
+        top8 = sorted(parsed, key=lambda row: -row[1])[:8]
         total = sum(float(row[1]) for row in top8)
         if total <= 0:
             return 1.0
@@ -337,8 +510,50 @@ class TeamState:
         if len(self.season_minutes) < 3 or not self.last_players:
             return 1.0
         top3 = sorted(self.season_minutes, key=lambda k: -self.season_minutes[k])[:3]
-        played = {str(row[0]) for row in self.last_players}
+        played = {
+            str(row[0])
+            for row in self.last_players
+            if isinstance(row, (list, tuple)) and row
+        }
         return sum(1 for pid in top3 if pid in played) / 3.0
+
+    def star_min_gap(self) -> float:
+        """Recent star minutes EWMA minus season-average MPG of those stars."""
+        return self.star_min_ewma - self.star_min_season_avg
+
+    def apply_player_metrics(self, metrics: dict[str, float]) -> None:
+        """Fold one game's rotation metrics into team EWMAs (call after features)."""
+        if not metrics:
+            return
+        a = ALPHA_PLAYER
+
+        def _ew(attr: str, key: str) -> None:
+            cur = getattr(self, attr)
+            setattr(self, attr, cur + a * (float(metrics[key]) - cur))
+
+        for attr, key in (
+            ("top1_min_share", "top1_min_share"),
+            ("top3_min_share", "top3_min_share"),
+            ("rotation_depth", "rotation_depth"),
+            ("min_hhi", "min_hhi"),
+            ("bench_min_share", "bench_min_share"),
+            ("dnp_star_rate", "dnp_star_rate"),
+            ("star_min_ewma", "star_min_last"),
+            ("star_min_season_avg", "star_min_season_avg"),
+        ):
+            if key in metrics:
+                _ew(attr, key)
+        if metrics.get("has_usage", 0.0) > 0:
+            _ew("top1_usage", "top1_usage")
+            _ew("top3_usage", "top3_usage")
+            _ew("high_min_ast_tov", "high_min_ast_tov")
+            _ew("high_min_foul_rate", "high_min_foul_rate")
+        else:
+            # minutes-only: still update usage proxies from minute shares
+            _ew("top1_usage", "top1_usage")
+            _ew("top3_usage", "top3_usage")
+        if metrics.get("has_pm", 0.0) > 0:
+            _ew("bench_pm", "bench_pm")
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -375,7 +590,7 @@ class TeamState:
             "recent_margins": list(self.recent_margins[-MARGIN_HIST_LEN:]),
             "elo_pre_hist": list(self.elo_pre_hist[-5:]),
             "loc_streak": self.loc_streak,
-            "last_players": [[str(pid), float(mins)] for pid, mins in self.last_players],
+            "last_players": [list(row) for row in self.last_players],
             "prev_player_ids": [str(pid) for pid in self.prev_player_ids],
             "season_minutes": {
                 pid: round(mins, 1)
@@ -384,6 +599,19 @@ class TeamState:
                 )[:15]
             },
             "h2h_margin": dict(self.h2h_margin),
+            "top1_min_share": self.top1_min_share,
+            "top3_min_share": self.top3_min_share,
+            "top1_usage": self.top1_usage,
+            "top3_usage": self.top3_usage,
+            "high_min_ast_tov": self.high_min_ast_tov,
+            "high_min_foul_rate": self.high_min_foul_rate,
+            "star_min_ewma": self.star_min_ewma,
+            "star_min_season_avg": self.star_min_season_avg,
+            "bench_pm": self.bench_pm,
+            "dnp_star_rate": self.dnp_star_rate,
+            "rotation_depth": self.rotation_depth,
+            "min_hhi": self.min_hhi,
+            "bench_min_share": self.bench_min_share,
         }
 
     @classmethod
@@ -402,7 +630,7 @@ class TeamState:
             elif key == "elo_pre_hist":
                 state.elo_pre_hist = [float(v) for v in value]
             elif key == "last_players":
-                state.last_players = [[str(row[0]), float(row[1])] for row in value]
+                state.last_players = [list(row) for row in value]
             elif key == "prev_player_ids":
                 state.prev_player_ids = [str(v) for v in value]
             elif key == "season_minutes":
@@ -568,6 +796,18 @@ class NbaFeatureEngine:
             "tp_pct_against_diff": home.tp_pct_against - away.tp_pct_against,
             "roster_continuity_diff": home.roster_continuity() - away.roster_continuity(),
             "star_avail_diff": home.star_availability() - away.star_availability(),
+            "top1_min_share_diff": home.top1_min_share - away.top1_min_share,
+            "top3_min_share_diff": home.top3_min_share - away.top3_min_share,
+            "top1_usage_diff": home.top1_usage - away.top1_usage,
+            "top3_usage_diff": home.top3_usage - away.top3_usage,
+            "high_min_ast_tov_diff": home.high_min_ast_tov - away.high_min_ast_tov,
+            "high_min_foul_rate_diff": home.high_min_foul_rate - away.high_min_foul_rate,
+            "star_min_gap_diff": home.star_min_gap() - away.star_min_gap(),
+            "bench_pm_diff": home.bench_pm - away.bench_pm,
+            "dnp_star_rate_diff": home.dnp_star_rate - away.dnp_star_rate,
+            "rotation_depth_diff": home.rotation_depth - away.rotation_depth,
+            "min_hhi_diff": home.min_hhi - away.min_hhi,
+            "bench_min_share_diff": home.bench_min_share - away.bench_min_share,
             "h2h_margin_ewma": home.h2h_margin.get(away.franchise, 0.0),
             "net_x_pace": net_rtg_fast_diff * pace_sum / 100.0,
         }
@@ -741,17 +981,40 @@ class NbaFeatureEngine:
             home.last_market = venue
             away.last_market = venue
 
-        # player availability bookkeeping (skipped when player rows absent,
-        # leaving the previous rotation state in place)
+        # player availability / rotation bookkeeping (skipped when player rows
+        # absent, leaving the previous rotation state in place)
         for team, box in ((home, home_box), (away, away_box)):
-            rows = box.get("players") if isinstance(box, dict) else None
+            if not isinstance(box, dict):
+                continue
+            rows = box.get("players")
             if not isinstance(rows, list) or not rows:
                 continue
-            players = [[str(row[0]), float(row[1])] for row in rows]
-            team.prev_player_ids = [str(row[0]) for row in team.last_players]
+            # metrics use pre-game season minutes / games_played (already
+            # incremented above — subtract one for MPG denom of prior games)
+            prior_gp = max(team.games_played - 1, 0)
+            metrics = _player_rotation_metrics(
+                rows,
+                dnp_ids=list(box.get("dnp_ids") or []),
+                season_minutes=dict(team.season_minutes),
+                games_played=prior_gp,
+            )
+            players = []
+            for row in rows:
+                parsed = _parse_player_row(row)
+                if parsed is None:
+                    continue
+                players.append(list(parsed))
+            if not players:
+                continue
+            team.prev_player_ids = [
+                str(row[0]) for row in team.last_players
+                if isinstance(row, (list, tuple)) and row
+            ]
             team.last_players = players
-            for pid, mins in players:
+            for parsed in players:
+                pid, mins = str(parsed[0]), float(parsed[1])
                 team.season_minutes[pid] = team.season_minutes.get(pid, 0.0) + mins
+            team.apply_player_metrics(metrics)
 
         # head-to-head (recency-capped)
         record = home.h2h.setdefault(away.franchise, [0, 0])

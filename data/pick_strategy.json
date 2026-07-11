@@ -26,14 +26,14 @@
   },
   "nba": {
     "bet_type": "spread",
-    "min_spread_cover_gap_pp": 8.0,
+    "min_spread_cover_gap_pp": 10.0,
     "min_spread_confidence_pp": 5.0,
-    "min_spread_point_edge": 3.0,
+    "min_spread_point_edge": 0.0,
     "min_ev_pct": 2.0,
     "enabled": true,
-    "note": "NBA v2 (77 features) walk-forward backtest (scripts/backtest_nba_bets.py): market-aware margin model (sigma 12.81) cover gap >= 8 pp and point cushion >= 3 at the opening spread. Opening-line ROI +22.8% with all 3 open-odds seasons positive (2024-2026, 728 bets, worst-season +19.7%). Bets recorded in the morning sit between the open and close.",
-    "backtest_roi_pct": 22.78,
-    "backtest_bets": 728
+    "note": "NBA v2 (89 features: team four-factors + schedule/context + player minutes/usage/AST-TOV/DNP/bench proxies) walk-forward backtest (scripts/backtest_nba_bets.py): market-aware margin model cover gap >= 10 pp at the opening spread. Opening-line ROI +24.6% with all 3 open-odds seasons positive (2024-2026, 627 bets, worst-season +15.3%). Bets recorded in the morning sit between the open and close.",
+    "backtest_roi_pct": 24.57,
+    "backtest_bets": 627
   },
   "wnba": {
     "bet_type": "spread",
@@ -52,7 +52,7 @@
     "min_spread_confidence_pp": 5.0,
     "min_ev_pct": 2.0,
     "enabled": false,
-    "note": "Official tracking paused until a proper walk-forward validation lands before the 2026-27 season. A leakage-free CBB backtest needs date-stamped Torvik archives plus per-event historical odds that are not cached locally yet; gate parameters are kept in place for when the league re-enables."
+    "note": "Official tracking stays disabled. CBBGradientBoost v2 ships with PIT-safe ESPN walk-forward features (OOS logloss ~0.507 vs ensemble ~0.55 gate) and Torvik as live fallback only — not used in training. ESPN core odds are fetchable (scripts/fetch_cbb_odds.py) but only a smoke week is cached; enable picks only after a full historical closing-odds pull plus a positive worst-season spread backtest."
   },
   "nfl": {
     "bet_type": "spread",
@@ -61,7 +61,7 @@
     "min_spread_confidence_pp": 5.0,
     "min_ev_pct": 2.5,
     "enabled": false,
-    "note": "Disabled by NFL walk-forward bet backtest (scripts/backtest_nfl_bets.py): nfelo margins vs nflverse closing spreads, 1999-2025 (6906 games; nflverse has no opening lines). No gate in the cover-gap 4-8 pp / point-edge 2-5 / EV 2-3% grid achieved positive worst-season ROI at the close — best worst-season config (7.5 pp / 2.0 pts) returned -1.29% ROI over 3368 bets (worst season -15.0%); best overall config (4.0 pp / 5.0 pts) returned +0.61% over 1188 bets but with a -19.9% worst season. The pure nfelo margin (MAE 10.69) does not beat the closing spread (MAE 10.25). Gate parameters kept for reference only."
+    "note": "NFLGradientBoost v2 is live for predictions (63 features: team Elo/EWMA + QB/coach Elo + rest/weather/roof/div context; OOS margin MAE 10.41 beats nfelo 10.69). Official picks stay disabled: close-only Hubacek sweep still has negative worst-season ROI (best about -12.6%). nflverse has no opening lines. Gate parameters kept for reference only."
   },
   "cfb": {
     "bet_type": "spread",
@@ -70,7 +70,7 @@
     "min_spread_confidence_pp": 5.0,
     "min_ev_pct": 2.5,
     "enabled": false,
-    "note": "Disabled by CFB walk-forward bet backtest (scripts/backtest_cfb_bets.py): production Elo margins vs ESPN consensus FBS spreads fetched by scripts/fetch_cfb_odds.py (2022-2025, 2549 games with a close, 1700 with an open). No gate in the cover-gap 4-8 pp / point-edge 2-5 / EV 2-3% grid achieved positive worst-season ROI — best at the close -1.27% ROI over 1747 bets (worst season -4.69%), best at the open -2.53% over 955 bets (worst -4.64%); an extended sweep topped out at -0.87% worst-season at the open. The pure Elo margin (MAE 14.15) does not beat the closing spread (MAE 12.11). Gate parameters kept for reference only."
+    "note": "CFBGradientBoost v2 is live for predictions (48 features; OOS margin MAE 13.75 beats Elo 14.15, logloss 0.534 vs Elo 0.560). Official picks stay disabled: best spread policy worst-season ROI remains negative (~-5%). Gate parameters kept for reference only."
   },
   "nhl": {
     "bet_type": "moneyline",

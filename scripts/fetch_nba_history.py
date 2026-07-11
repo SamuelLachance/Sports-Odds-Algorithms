@@ -45,7 +45,29 @@ def _save(path: Path, payload: dict) -> None:
     path.write_text(json.dumps(payload, separators=(",", ":")), encoding="utf-8")
 
 
-def fetch_season(season: int, refresh_events: bool, retry_missing: bool = False) -> None:
+def _box_needs_player_refresh(box: dict | None) -> bool:
+    """True when a cached box lacks rich player rows (pre-upgrade minutes-only)."""
+    if not isinstance(box, dict):
+        return True
+    for team_stats in box.values():
+        if not isinstance(team_stats, dict):
+            continue
+        players = team_stats.get("players")
+        if not isinstance(players, list) or not players:
+            continue
+        # Rich rows are [id, min, fga, ast, tov, pf, +/-]
+        if any(isinstance(row, (list, tuple)) and len(row) >= 7 for row in players):
+            return False
+        return True
+    return True
+
+
+def fetch_season(
+    season: int,
+    refresh_events: bool,
+    retry_missing: bool = False,
+    refresh_players: bool = False,
+) -> None:
     season_dir = CACHE_ROOT / str(season)
     season_dir.mkdir(parents=True, exist_ok=True)
     events_path = season_dir / "events.json"
@@ -64,7 +86,12 @@ def fetch_season(season: int, refresh_events: bool, retry_missing: bool = False)
     if season >= BOX_FIRST_SEASON:
         boxes_path = season_dir / "boxes.json"
         boxes = _load(boxes_path)
-        if retry_missing:
+        if refresh_players:
+            todo = [
+                e for e in completed
+                if _box_needs_player_refresh(boxes.get(e["event_id"]))
+            ]
+        elif retry_missing:
             todo = [e for e in completed if not boxes.get(e["event_id"])]
         else:
             todo = [e for e in completed if e["event_id"] not in boxes]
@@ -82,6 +109,11 @@ def fetch_season(season: int, refresh_events: bool, retry_missing: bool = False)
                     boxes[event_id] = box
                     if (i + 1) % 100 == 0:
                         _save(boxes_path, boxes)
+                        print(
+                            f"  boxes progress {i + 1}/{len(todo)} "
+                            f"[{time.time() - t0:.0f}s]",
+                            flush=True,
+                        )
             _save(boxes_path, boxes)
             ok = sum(1 for v in boxes.values() if v)
             print(
@@ -89,6 +121,8 @@ def fetch_season(season: int, refresh_events: bool, retry_missing: bool = False)
                 f"[{time.time() - t0:.0f}s]",
                 flush=True,
             )
+        elif refresh_players:
+            print("  boxes: player rows already rich", flush=True)
 
 
 def main() -> int:
@@ -105,10 +139,20 @@ def main() -> int:
         action="store_true",
         help="re-fetch events whose cached box entry is null (transient failures)",
     )
+    parser.add_argument(
+        "--refresh-players",
+        action="store_true",
+        help="re-fetch boxes whose player rows lack FGA/AST/TOV/PF/+/- fields",
+    )
     args = parser.parse_args()
     CACHE_ROOT.mkdir(parents=True, exist_ok=True)
     for season in range(args.start, args.end + 1):
-        fetch_season(season, args.refresh_events, args.retry_missing)
+        fetch_season(
+            season,
+            args.refresh_events,
+            args.retry_missing,
+            args.refresh_players,
+        )
     return 0
 
 
