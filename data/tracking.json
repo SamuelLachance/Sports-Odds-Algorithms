@@ -478,11 +478,11 @@
       "stake_units": 3.0,
       "recorded_at": "2026-07-11T06:18:50.403364+00:00",
       "recorded_pre_start": true,
-      "closing_market_odds": -115,
-      "closing_spread_odds": -115,
+      "closing_market_odds": -105,
+      "closing_spread_odds": -105,
       "closing_consensus_spread": -9.5,
       "closing_source": "espn",
-      "closing_snapshot_at": "2026-07-11T11:16:11.058733+00:00"
+      "closing_snapshot_at": "2026-07-11T17:06:07.322569+00:00"
     },
     {
       "id": "2026-07-11:401816125:away",
@@ -519,11 +519,11 @@
       "stake_units": 3.0,
       "recorded_at": "2026-07-11T06:18:50.403364+00:00",
       "recorded_pre_start": true,
-      "closing_market_odds": -101,
+      "closing_market_odds": -107,
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
       "closing_source": "consensus",
-      "closing_snapshot_at": "2026-07-11T11:16:11.058733+00:00"
+      "closing_snapshot_at": "2026-07-11T17:06:07.322569+00:00"
     },
     {
       "id": "2026-07-11:401816117:home",
@@ -559,7 +559,12 @@
       "units": 0.0,
       "stake_units": 2.46,
       "recorded_at": "2026-07-11T06:18:50.403364+00:00",
-      "recorded_pre_start": true
+      "recorded_pre_start": true,
+      "closing_market_odds": 119,
+      "closing_spread_odds": null,
+      "closing_consensus_spread": null,
+      "closing_source": "consensus",
+      "closing_snapshot_at": "2026-07-11T17:06:07.322569+00:00"
     },
     {
       "id": "2026-07-11:401816116:home",
@@ -600,7 +605,7 @@
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
       "closing_source": "consensus",
-      "closing_snapshot_at": "2026-07-11T11:16:11.058733+00:00"
+      "closing_snapshot_at": "2026-07-11T17:06:07.322569+00:00"
     },
     {
       "id": "2026-07-11:401816120:home",
@@ -642,6 +647,42 @@
       "closing_consensus_spread": null,
       "closing_source": "consensus",
       "closing_snapshot_at": "2026-07-11T11:16:11.058733+00:00"
+    },
+    {
+      "id": "2026-07-11:401816111:away",
+      "date": "2026-07-11",
+      "event_id": "401816111",
+      "league": "mlb",
+      "league_name": "MLB",
+      "side": "away",
+      "team_name": "Boston Red Sox",
+      "team_slug": "boston-red-sox",
+      "team_abbr": "bos",
+      "matchup": "Boston Red Sox @ New York Mets",
+      "start_time": "2026-07-11T20:10Z",
+      "strategy": "hubacek",
+      "strategy_label": "Hub\u00e1\u010dek spot",
+      "confidence": "high",
+      "edge": 30.0,
+      "ev_pct": 12.68,
+      "model_projection": 100,
+      "market_odds": 130,
+      "win_probability": 49.88,
+      "reason": "Hub\u00e1\u010dek spot on Boston Red Sox: decorrelated model 49.9% vs market 41.6% (+8.3 pp, +12.7% EV).",
+      "bet_type": "moneyline",
+      "spread_line": null,
+      "spread_odds": null,
+      "consensus_spread": null,
+      "consensus_odds": null,
+      "consensus_label": null,
+      "model_margin": null,
+      "model_market_gap_pp": 8.3,
+      "kelly_pct": 9.75,
+      "status": "pending",
+      "units": 0.0,
+      "stake_units": 2.44,
+      "recorded_at": "2026-07-11T17:06:07.322569+00:00",
+      "recorded_pre_start": true
     }
   ]
 }
