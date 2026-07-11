@@ -63,6 +63,46 @@ def test_pick_thresholds_cbb_nfl_cfb() -> None:
     assert cfb["min_ev_pct"] == 2.5
 
 
+def test_disabled_leagues_produce_no_official_picks() -> None:
+    """NFL/CFB failed walk-forward validation; CBB paused — enabled flag enforced."""
+    from web.hubacek_picks import clear_strategy_cache
+    from web.pick_strategy import (
+        evaluate_official_picks_for_game,
+        get_pick_thresholds,
+        load_pick_strategy,
+    )
+
+    clear_strategy_cache()
+    load_pick_strategy.cache_clear()
+
+    for league in ("nfl", "cfb", "cbb"):
+        assert get_pick_thresholds(league)["enabled"] is False, league
+        picks = evaluate_official_picks_for_game(
+            league=league,
+            away_name="Away Team",
+            home_name="Home Team",
+            away_slug="away-team",
+            home_slug="home-team",
+            total_score=-70.0,
+            win_probability=70.0,
+            blended={
+                "blended_home_win_probability": 70.0,
+                "market_decorrelated": True,
+                "home_spread_margin": -9.0,
+            },
+            away_market=200,
+            home_market=-240,
+            consensus_spread=-3.0,
+            away_spread_odds=-110,
+            home_spread_odds=-110,
+        )
+        assert picks == [], league
+
+    # Validated leagues stay enabled.
+    assert get_pick_thresholds("mlb")["enabled"] is True
+    assert get_pick_thresholds("nba")["enabled"] is True
+
+
 def test_grade_spread_home_covers() -> None:
     assert grade_spread_bet("home", 110, 100, -5.5) == "win"
     assert grade_spread_bet("home", 105, 100, -5.5) == "loss"

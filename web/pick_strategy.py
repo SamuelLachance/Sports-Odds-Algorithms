@@ -133,7 +133,9 @@ def get_pick_thresholds(league: str) -> dict[str, Any]:
         "min_spread_point_edge": min_spread_point_edge,
         "min_profit_score": 0.0,
         "min_kelly_pct": 0.0,
-        "enabled": True,
+        # Walk-forward validation gate: leagues whose backtests failed (or are
+        # pending) carry enabled=false in data/pick_strategy.json.
+        "enabled": bool(entry.get("enabled", True)),
         "backtest_roi_pct": entry.get("backtest_roi_pct"),
         "backtest_bets": entry.get("backtest_bets", 0),
         "backtest_units": entry.get("backtest_units"),
@@ -1054,6 +1056,8 @@ def evaluate_soccer_official_picks_for_game(
 ) -> list[BetPick]:
     """Official 1X2 picks: Hubáček decorrelation gap vs market, honest EV."""
     thresholds = get_pick_thresholds(league)
+    if not thresholds.get("enabled", True):
+        return []
     picks = evaluate_soccer_picks(
         away_name=away_name,
         home_name=home_name,
@@ -1106,6 +1110,8 @@ def evaluate_official_picks_for_game(
 ) -> list[BetPick]:
     """Official picks: Hubáček decorrelation gap vs market (no flat EV% bar)."""
     thresholds = get_pick_thresholds(league)
+    if not thresholds.get("enabled", True):
+        return []
     bet_type = thresholds["bet_type"]
 
     if bet_type == "spread":

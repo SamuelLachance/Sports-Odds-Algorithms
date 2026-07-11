@@ -15,7 +15,7 @@ Daily algorithmic sports betting platform across **NBA, WNBA, CBB, NFL, CFB, NHL
 | **Unified model** | Blends legacy **Algo V2**, **power ratings**, and a sport-specific third layer |
 | **Algo picks** | Hubáček-style official picks: decorrelated model must beat the de-vigged market by ≥2 pp with ≥2% honest EV and a per-bet-type confidence bar (stricter per-league overrides where walk-forward backtests exist) |
 | **Bet tracking** | Freezes odds at record time, grades against ESPN finals, logs implied-probability CLV vs the ESPN consensus closing snapshot, and sizes stakes with portfolio-aware quarter-Kelly (0.25–3u) |
-| **League coverage** | Games and team pages for all supported leagues; official tracked picks cover NBA, WNBA, CBB, NHL, MLB, **NFL**, **CFB**, and soccer leagues whose calibrated model beats the closing line |
+| **League coverage** | Games and team pages for all supported leagues; official tracked picks cover NBA, WNBA, NHL, MLB, and soccer leagues whose calibrated model beats the closing line. **NFL and CFB are disabled** (walk-forward spread backtests found no gate with positive worst-season ROI) and **CBB is paused** pending a proper walk-forward validation before the 2026-27 season |
 
 ### Three-layer prediction stack
 
@@ -25,11 +25,11 @@ Each matchup blends three independent signals (equal weight when all layers are 
 |-------|---------|-------|
 | NBA | Basketball | **EnsembleML** / NBA v2 margin stack — market-aware; holdout log-loss can beat the consensus market, but that is **not** the same as profitable closing-line ROI |
 | WNBA | Basketball | **BasketballMatrix** / WNBA v2 — soft-impute SVD + margin model |
-| CBB | Basketball | **CBB Torvik** efficiency + calibration when Torvik ratings resolve; falls back to BasketballMatrix |
+| CBB | Basketball | **CBB Torvik** efficiency + calibration when Torvik ratings resolve; falls back to BasketballMatrix. Official picks **paused** until a leakage-free walk-forward validation (date-stamped Torvik archives + historical odds) lands before the 2026-27 season |
 | MLB | Baseball | **MLB RunCast** — EWMA run efficiency + Monte Carlo + XGBoost with probable-pitcher edge |
 | NCAA D1 baseball, winter leagues, WBC | Baseball | [MLB-Model](https://github.com/greerreNFL/MLB-Model) Elo ratings |
 | NHL, NCAA D1 hockey | Hockey | **Algo V1** / NHL v2 — weighted factor / margin model |
-| NFL, CFB | Football | [nfelo](https://github.com/greerreNFL/nfelo) Elo ratings + EnsembleML head when trained; official picks use **conservative Hubáček gates** pending larger OOS |
+| NFL, CFB | Football | [nfelo](https://github.com/greerreNFL/nfelo) Elo ratings + EnsembleML head when trained; official picks **disabled** — walk-forward spread backtests (`scripts/backtest_nfl_bets.py` vs nflverse closes 1999–2025, `scripts/backtest_cfb_bets.py` vs ESPN consensus lines 2022–2025) found no gate with positive worst-season ROI (best NFL −1.3%, best CFB −1.3% close / −2.5% open) |
 | EPL, La Liga, Bundesliga, Serie A, Ligue 1, MLS, UCL, international | Soccer | **Path A** — Dixon–Coles + XGBoost with market-calibrated display probabilities (selected leagues beat the closing line on calibrated holdout) |
 
 Layers 1 and 2 (Algo V2 and power ratings) still apply to **baseball** and **football** leagues. **Hockey** (NHL, NCAA D1 men's and women's) uses **Algo V1** / NHL v2 — eight weighted season factors summed into a signed total, converted to win probability via the original parabolic curve.

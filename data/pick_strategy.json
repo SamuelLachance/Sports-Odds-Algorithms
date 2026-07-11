@@ -51,8 +51,8 @@
     "min_spread_point_edge": 5.0,
     "min_spread_confidence_pp": 5.0,
     "min_ev_pct": 2.0,
-    "enabled": true,
-    "note": "Torvik+Hubáček conservative policy pending larger OOS: cover gap >= 7 pp and point cushion >= 5 at the live spread. CBB markets are thinner than NBA but noisier than NFL; gates sit between NBA (6/6) and WNBA (8) until a full walk-forward bet backtest lands."
+    "enabled": false,
+    "note": "Official tracking paused until a proper walk-forward validation lands before the 2026-27 season. A leakage-free CBB backtest needs date-stamped Torvik archives plus per-event historical odds that are not cached locally yet; gate parameters are kept in place for when the league re-enables."
   },
   "nfl": {
     "bet_type": "spread",
@@ -60,8 +60,8 @@
     "min_spread_point_edge": 3.0,
     "min_spread_confidence_pp": 5.0,
     "min_ev_pct": 2.5,
-    "enabled": true,
-    "note": "NFL market is highly efficient — stricter EV floor (2.5%) with a moderate cover gap (5.5 pp) and 3-point cushion. Conservative Hubáček-style gates grounded in football theory pending a dedicated walk-forward bet backtest."
+    "enabled": false,
+    "note": "Disabled by NFL walk-forward bet backtest (scripts/backtest_nfl_bets.py): nfelo margins vs nflverse closing spreads, 1999-2025 (6906 games; nflverse has no opening lines). No gate in the cover-gap 4-8 pp / point-edge 2-5 / EV 2-3% grid achieved positive worst-season ROI at the close — best worst-season config (7.5 pp / 2.0 pts) returned -1.29% ROI over 3368 bets (worst season -15.0%); best overall config (4.0 pp / 5.0 pts) returned +0.61% over 1188 bets but with a -19.9% worst season. The pure nfelo margin (MAE 10.69) does not beat the closing spread (MAE 10.25). Gate parameters kept for reference only."
   },
   "cfb": {
     "bet_type": "spread",
@@ -69,8 +69,8 @@
     "min_spread_point_edge": 4.0,
     "min_spread_confidence_pp": 5.0,
     "min_ev_pct": 2.5,
-    "enabled": true,
-    "note": "CFB spreads are less efficient than NFL but higher variance — cover gap 6.5 pp, 4-point cushion, EV >= 2.5%. Conservative Hubáček-style gates pending larger OOS."
+    "enabled": false,
+    "note": "Disabled by CFB walk-forward bet backtest (scripts/backtest_cfb_bets.py): production Elo margins vs ESPN consensus FBS spreads fetched by scripts/fetch_cfb_odds.py (2022-2025, 2549 games with a close, 1700 with an open). No gate in the cover-gap 4-8 pp / point-edge 2-5 / EV 2-3% grid achieved positive worst-season ROI — best at the close -1.27% ROI over 1747 bets (worst season -4.69%), best at the open -2.53% over 955 bets (worst -4.64%); an extended sweep topped out at -0.87% worst-season at the open. The pure Elo margin (MAE 14.15) does not beat the closing spread (MAE 12.11). Gate parameters kept for reference only."
   },
   "nhl": {
     "bet_type": "moneyline",

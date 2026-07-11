@@ -309,8 +309,9 @@ def test_mlb_official_picks_respect_ml_price_window() -> None:
     assert not [p for p in picks if p.side == "home"]
 
 
-def test_nfl_cfb_official_picks_use_spread_gates() -> None:
-    """Football leagues route to spread Hubáček gates from pick_strategy.json."""
+def test_nfl_cfb_official_picks_disabled_by_backtest() -> None:
+    """NFL/CFB spread gates exist for reference but walk-forward backtests
+    found no positive worst-season policy, so official picks are disabled."""
     from web.hubacek_picks import clear_strategy_cache
     from web.pick_strategy import load_pick_strategy
 
@@ -321,6 +322,7 @@ def test_nfl_cfb_official_picks_use_spread_gates() -> None:
         thresholds = get_pick_thresholds(league)
         assert thresholds["bet_type"] == "spread"
         assert thresholds["min_ev_pct"] >= 2.5
+        assert thresholds["enabled"] is False
         blended = {
             "total_score": -72.0,
             "win_probability": 72.0,
@@ -344,6 +346,4 @@ def test_nfl_cfb_official_picks_use_spread_gates() -> None:
             away_spread_odds=-110,
             home_spread_odds=-110,
         )
-        assert picks, league
-        assert picks[0].bet_type == "spread"
-        assert picks[0].strategy == "hubacek"
+        assert picks == [], league
