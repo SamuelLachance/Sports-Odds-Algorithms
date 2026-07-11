@@ -68,14 +68,18 @@
       "model_margin": null,
       "model_market_gap_pp": 13.39,
       "kelly_pct": 23.38,
-      "status": "pending",
-      "units": 0.0,
+      "status": "loss",
+      "units": -3.0,
       "stake_units": 3.0,
       "recorded_at": "2026-07-10T17:56:10.463499+00:00",
       "closing_market_odds": -163,
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
-      "closing_snapshot_at": "2026-07-10T23:57:44.329850+00:00"
+      "closing_snapshot_at": "2026-07-10T23:57:44.329850+00:00",
+      "graded_at": "2026-07-11T03:59:05.999243+00:00",
+      "final_score": "4\u20133",
+      "clv_pct": 3.45,
+      "clv_payout_pct": 3.57
     },
     {
       "id": "2026-07-10:401816106:home",
@@ -146,14 +150,18 @@
       "model_margin": null,
       "model_market_gap_pp": 12.66,
       "kelly_pct": 17.17,
-      "status": "pending",
-      "units": 0.0,
+      "status": "win",
+      "units": 3.57,
       "stake_units": 3.0,
       "recorded_at": "2026-07-10T17:56:10.463499+00:00",
       "closing_market_odds": 114,
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
-      "closing_snapshot_at": "2026-07-10T23:57:44.329850+00:00"
+      "closing_snapshot_at": "2026-07-10T23:57:44.329850+00:00",
+      "graded_at": "2026-07-11T03:59:06.269641+00:00",
+      "final_score": "3\u20137",
+      "clv_pct": 2.28,
+      "clv_payout_pct": 2.34
     },
     {
       "id": "2026-07-10:401816105:home",
@@ -185,14 +193,18 @@
       "model_margin": null,
       "model_market_gap_pp": 7.52,
       "kelly_pct": 10.5,
-      "status": "pending",
-      "units": 0.0,
+      "status": "win",
+      "units": 1.617283950617284,
       "stake_units": 2.62,
       "recorded_at": "2026-07-10T17:56:10.463499+00:00",
       "closing_market_odds": -162,
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
-      "closing_snapshot_at": "2026-07-10T19:31:42.605429+00:00"
+      "closing_snapshot_at": "2026-07-10T19:31:42.605429+00:00",
+      "graded_at": "2026-07-11T03:59:06.329845+00:00",
+      "final_score": "1\u201314",
+      "clv_pct": 0.0,
+      "clv_payout_pct": 0.0
     },
     {
       "id": "2026-07-10:401816096:away",
@@ -224,10 +236,12 @@
       "model_margin": null,
       "model_market_gap_pp": 7.03,
       "kelly_pct": 7.74,
-      "status": "pending",
-      "units": 0.0,
+      "status": "win",
+      "units": 2.5026,
       "stake_units": 1.94,
-      "recorded_at": "2026-07-10T19:31:42.605429+00:00"
+      "recorded_at": "2026-07-10T19:31:42.605429+00:00",
+      "graded_at": "2026-07-11T03:59:06.408260+00:00",
+      "final_score": "6\u20132"
     },
     {
       "id": "2026-07-10:401857058:away:spread",
@@ -266,7 +280,7 @@
       "closing_market_odds": -110,
       "closing_spread_odds": -110,
       "closing_consensus_spread": -9.5,
-      "closing_snapshot_at": "2026-07-11T02:14:05.408866+00:00",
+      "closing_snapshot_at": "2026-07-11T03:59:05.922195+00:00",
       "closing_source": "espn"
     },
     {
@@ -303,10 +317,10 @@
       "units": 0.0,
       "stake_units": 3.0,
       "recorded_at": "2026-07-11T00:52:59.847013+00:00",
-      "closing_market_odds": 104,
+      "closing_market_odds": 101,
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
-      "closing_snapshot_at": "2026-07-11T02:14:05.408866+00:00",
+      "closing_snapshot_at": "2026-07-11T03:59:05.922195+00:00",
       "closing_source": "consensus"
     },
     {
@@ -346,7 +360,7 @@
       "closing_market_odds": 119,
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
-      "closing_snapshot_at": "2026-07-11T02:14:05.408866+00:00",
+      "closing_snapshot_at": "2026-07-11T03:59:05.922195+00:00",
       "closing_source": "consensus"
     },
     {
@@ -386,8 +400,44 @@
       "closing_market_odds": -105,
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
-      "closing_snapshot_at": "2026-07-11T02:14:05.408866+00:00",
+      "closing_snapshot_at": "2026-07-11T03:59:05.922195+00:00",
       "closing_source": "consensus"
+    },
+    {
+      "id": "2026-07-10:401816116:home",
+      "date": "2026-07-10",
+      "event_id": "401816116",
+      "league": "mlb",
+      "league_name": "MLB",
+      "side": "home",
+      "team_name": "Washington Nationals",
+      "team_slug": "washington-nationals",
+      "team_abbr": "wsh",
+      "matchup": "New York Yankees @ Washington Nationals",
+      "start_time": "2026-07-11T20:05Z",
+      "strategy": "hubacek",
+      "strategy_label": "Hub\u00e1\u010dek spot",
+      "confidence": "high",
+      "edge": 31.0,
+      "ev_pct": 11.54,
+      "model_projection": 132,
+      "market_odds": 163,
+      "win_probability": 43.14,
+      "reason": "Hub\u00e1\u010dek spot on Washington Nationals: decorrelated model 43.1% vs market 36.4% (+6.8 pp, +11.5% EV).",
+      "bet_type": "moneyline",
+      "spread_line": null,
+      "spread_odds": null,
+      "consensus_spread": null,
+      "consensus_odds": null,
+      "consensus_label": null,
+      "model_margin": null,
+      "model_market_gap_pp": 6.78,
+      "kelly_pct": 7.08,
+      "status": "pending",
+      "units": 0.0,
+      "stake_units": 1.77,
+      "recorded_at": "2026-07-11T03:59:05.922195+00:00",
+      "recorded_pre_start": true
     }
   ]
 }
