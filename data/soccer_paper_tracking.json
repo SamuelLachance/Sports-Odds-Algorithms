@@ -85,6 +85,84 @@
       },
       "status": "win",
       "units": 0.645
+    },
+    {
+      "away_abbr": "eng",
+      "away_name": "England",
+      "edge_pp": 79.0,
+      "event_id": "760512",
+      "game_date": "7-11-2026",
+      "home_abbr": "nor",
+      "home_name": "Norway",
+      "key": "worldcup:760512:away",
+      "league": "worldcup",
+      "market_ml": -110,
+      "model_prob": 46.45,
+      "paper": true,
+      "pick_outcome": "away",
+      "recorded_at": "2026-07-11T00:46:52.137656+00:00",
+      "signals": {
+        "away_games": 9,
+        "disagreement_signal": true,
+        "high_confidence_disagreement": true,
+        "home_games": 9,
+        "max_edge_pp": 79.0,
+        "model_best_outcome": "away",
+        "opening_steam": {
+          "implied_shifts_pp": {
+            "away": 1.16,
+            "draw": -1.17,
+            "home": -1.32
+          },
+          "model_best_outcome": "away",
+          "model_edge_pp": -3.54,
+          "opening_away_ml": -105,
+          "opening_draw_ml": 250,
+          "opening_home_ml": 280,
+          "steam_direction": null,
+          "steam_signal": false
+        },
+        "steam_signal": false
+      }
+    },
+    {
+      "away_abbr": "sui",
+      "away_name": "Switzerland",
+      "edge_pp": 59.0,
+      "event_id": "760513",
+      "game_date": "7-12-2026",
+      "home_abbr": "arg",
+      "home_name": "Argentina",
+      "key": "worldcup:760513:home",
+      "league": "worldcup",
+      "market_ml": -145,
+      "model_prob": 61.19,
+      "paper": true,
+      "pick_outcome": "home",
+      "recorded_at": "2026-07-11T00:52:58.375713+00:00",
+      "signals": {
+        "away_games": 9,
+        "disagreement_signal": true,
+        "high_confidence_disagreement": true,
+        "home_games": 9,
+        "max_edge_pp": 59.0,
+        "model_best_outcome": "home",
+        "opening_steam": {
+          "implied_shifts_pp": {
+            "away": -1.82,
+            "draw": 0.39,
+            "home": 0.85
+          },
+          "model_best_outcome": "home",
+          "model_edge_pp": 5.11,
+          "opening_away_ml": 400,
+          "opening_draw_ml": 260,
+          "opening_home_ml": -140,
+          "steam_direction": null,
+          "steam_signal": false
+        },
+        "steam_signal": false
+      }
     }
   ],
   "summary": {
