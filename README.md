@@ -2,7 +2,7 @@
 
 **Live site:** [sharpsheettips.com](https://sharpsheettips.com) · **Mirror:** [GitHub Pages](https://samuellachance.github.io/Sports-Odds-Algorithms/)
 
-Daily algorithmic sports betting platform across **NBA, WNBA, CBB, NFL, CFB, NHL, NCAA D1 hockey, MLB, NCAA D1 baseball, international winter baseball leagues**, and **soccer** (Premier League, La Liga, Bundesliga, Serie A, Ligue 1, MLS, Champions League, and major international tournaments). Leagues are activated automatically once there is enough completed-game data for the full three-layer model.
+Daily algorithmic sports betting platform across **NBA, WNBA, CBB, NFL, CFB, NHL, NCAA D1 hockey, MLB, NCAA D1 baseball, international winter baseball leagues**, and **soccer** (Premier League, La Liga, Bundesliga, Serie A, Ligue 1, MLS, Champions League, and major international tournaments). Major leagues often use a single-model **GradientBoost v2** (`web/{nba,wnba,nhl,mlb,soccer,nfl,cfb,cbb}_v2`) rather than three equal layers on every board; leagues activate once there is enough completed-game data for the available stack.
 
 ---
 
@@ -12,27 +12,27 @@ Daily algorithmic sports betting platform across **NBA, WNBA, CBB, NFL, CFB, NHL
 |---------|-------------|
 | **Daily slate** | Rebuilt **4×/day** America/Toronto (midnight, 6 AM, noon, 6 PM EDT) and on every push via GitHub Actions |
 | **Live data** | ESPN schedules, scores, and consensus moneylines/spreads; multi-book enrichment for NBA/NHL/MLB/WNBA when available |
-| **Unified model** | Blends legacy **Algo V2**, **power ratings**, and a sport-specific third layer |
+| **Unified model** | Prefer sport-specific **GradientBoost v2** when trained; otherwise blend legacy **Algo V2**, **power ratings**, and supporting sport layers |
 | **Algo picks** | Hubáček-style official picks: decorrelated model must beat the de-vigged market by ≥2 pp with ≥2% honest EV and a per-bet-type confidence bar (stricter per-league overrides where walk-forward backtests exist) |
 | **Bet tracking** | Freezes odds at record time, grades against ESPN finals, logs implied-probability CLV vs the ESPN consensus closing snapshot, and sizes stakes with portfolio-aware quarter-Kelly (0.25–3u) |
-| **League coverage** | Games and team pages for all supported leagues; official tracked picks cover NBA, WNBA, NHL, MLB, and soccer leagues whose calibrated model beats the closing line. **NFL and CFB are disabled** (walk-forward spread backtests found no gate with positive worst-season ROI) and **CBB is paused** pending a proper walk-forward validation before the 2026-27 season |
+| **League coverage** | Games and team pages for all supported leagues; official Hubáček tracking covers NBA, WNBA, NHL, MLB, and calibrated soccer. **NFL, CFB, and CBB are predictions-only** — `nfl_v2` / `cfb_v2` / `cbb_v2` are live, official picks disabled until walk-forward backtests clear |
 
-### Three-layer prediction stack
+### Prediction stack
 
-Each matchup blends three independent signals (equal weight when all layers are available):
+Major leagues often use a **single-model GradientBoost v2** (`web/{nba,wnba,nhl,mlb,soccer,nfl,cfb,cbb}_v2`) as the primary signal. Where a blend still applies, layers are weighted per league — not always three equal votes:
 
 | Sport | Leagues | Model |
 |-------|---------|-------|
-| NBA | Basketball | **EnsembleML** / NBA v2 margin stack — market-aware; holdout log-loss can beat the consensus market, but that is **not** the same as profitable closing-line ROI |
-| WNBA | Basketball | **BasketballMatrix** / WNBA v2 — soft-impute SVD + margin model |
-| CBB | Basketball | **CBB Torvik** efficiency + calibration when Torvik ratings resolve; falls back to BasketballMatrix. Official picks **paused** until a leakage-free walk-forward validation (date-stamped Torvik archives + historical odds) lands before the 2026-27 season |
-| MLB | Baseball | **MLB RunCast** — EWMA run efficiency + Monte Carlo + XGBoost with probable-pitcher edge |
+| NBA | Basketball | **NBAGradientBoost v2** (`web/nba_v2`) — market-aware margin stack; holdout log-loss can beat the consensus market, but that is **not** the same as profitable closing-line ROI |
+| WNBA | Basketball | **WNBAGradientBoost v2** (`web/wnba_v2`) — Elo + four factors + pace; BasketballMatrix remains a supporting/fallback layer |
+| CBB | Basketball | **CBBGradientBoost v2** (`web/cbb_v2`) primary; **Torvik** efficiency as live fallback only. Official picks **disabled** until a full historical closing-odds pull plus a positive worst-season spread backtest |
+| MLB | Baseball | **MLBGradientBoost v2** (`web/mlb_v2`) + **MLB RunCast** — EWMA run efficiency + Monte Carlo + XGBoost with probable-pitcher edge |
 | NCAA D1 baseball, winter leagues, WBC | Baseball | [MLB-Model](https://github.com/greerreNFL/MLB-Model) Elo ratings |
-| NHL, NCAA D1 hockey | Hockey | **Algo V1** / NHL v2 — weighted factor / margin model |
-| NFL, CFB | Football | [nfelo](https://github.com/greerreNFL/nfelo) Elo ratings + EnsembleML head when trained; official picks **disabled** — walk-forward spread backtests (`scripts/backtest_nfl_bets.py` vs nflverse closes 1999–2025, `scripts/backtest_cfb_bets.py` vs ESPN consensus lines 2022–2025) found no gate with positive worst-season ROI (best NFL −1.3%, best CFB −1.3% close / −2.5% open) |
-| EPL, La Liga, Bundesliga, Serie A, Ligue 1, MLS, UCL, international | Soccer | **Path A** — Dixon–Coles + XGBoost with market-calibrated display probabilities (selected leagues beat the closing line on calibrated holdout) |
+| NHL, NCAA D1 hockey | Hockey | **NHLGradientBoost v2** (`web/nhl_v2`) / Algo V1 — weighted factor / margin model |
+| NFL, CFB | Football | **NFLGradientBoost v2** / **CFBGradientBoost v2** (`web/nfl_v2`, `web/cfb_v2`) live for predictions; nfelo-style Elo as supporting signal. Official picks **disabled** — walk-forward spread backtests found no gate with positive worst-season ROI |
+| EPL, La Liga, Bundesliga, Serie A, Ligue 1, MLS, UCL, international | Soccer | **SoccerGradientBoost v2** (`web/soccer_v2`) — Dixon–Coles + XGBoost with market-calibrated display probabilities (selected leagues beat the closing line on calibrated holdout) |
 
-Layers 1 and 2 (Algo V2 and power ratings) still apply to **baseball** and **football** leagues. **Hockey** (NHL, NCAA D1 men's and women's) uses **Algo V1** / NHL v2 — eight weighted season factors summed into a signed total, converted to win probability via the original parabolic curve.
+Legacy Algo V2 and power ratings still apply as baselines/fallbacks for **baseball** and **football** when needed. **Hockey** (NHL, NCAA D1 men's and women's) uses **Algo V1** / NHL v2 — eight weighted season factors summed into a signed total, converted to win probability via the original parabolic curve.
 
 Soccer uses a dedicated **three-way blend**: each layer contributes home/draw/away probabilities independently, then the site surfaces projected scores (`xG`), fair 1X2 prices, and value picks when all three layers agree on the same outcome.
 
@@ -119,7 +119,8 @@ Static assets are built from `web/static/` into `docs/` by `scripts/build_gh_pag
 | `espn_scraper.py` | Legacy ESPN schedule/box score scraper |
 | `sports_bettor.py` | Original interactive CLI entry point |
 | `web/` | FastAPI backend + static frontend |
-| `web/blend_service.py` | Unified model blending (legacy + power + sport layer + DB ratings + context) |
+| `web/{nba,wnba,nhl,mlb,soccer,nfl,cfb,cbb}_v2/` | Sport-specific GradientBoost v2 models (CBB: Torvik fallback; NFL/CFB: predictions live, official picks disabled) |
+| `web/blend_service.py` | Unified model blending (v2 primary when present + legacy + power + DB ratings + context) |
 | `web/context_signals.py` | FLB / news heuristics / steam proxies / sparse EV caps |
 | `web/portfolio_sizing.py` | Portfolio-aware quarter-Kelly stake sizing |
 | `web/live_odds_enrichment.py` | Multi-book odds enrichment (NBA/NHL/MLB/WNBA) |

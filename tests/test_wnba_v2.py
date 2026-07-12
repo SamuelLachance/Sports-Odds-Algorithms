@@ -206,6 +206,43 @@ def test_live_prediction_when_artifacts_present() -> None:
     assert 0.0 <= result["home_win_probability"] <= 100.0
     assert result["home_elo"] > 1000
     assert "predicted_margin" in result
+    assert result.get("model_variant") == "pure"
+
+
+def test_devig_home_prob_and_market_variant_helpers() -> None:
+    from web.wnba_v2.live import _devig_home_prob
+
+    assert _devig_home_prob(None, -110) is None
+    assert _devig_home_prob(-110, 100) is not None
+    p = _devig_home_prob(-110, -110)
+    assert p is not None and abs(p - 0.5) < 0.02
+    fav = _devig_home_prob(-200, 170)
+    assert fav is not None and fav > 0.6
+
+
+def test_live_market_aware_when_odds_provided() -> None:
+    from web.wnba_v2.live import artifacts_available, predict_matchup_v2
+
+    if not artifacts_available():
+        return
+    pure = predict_matchup_v2("2026-07-10", "lva", "sea")
+    mkt = predict_matchup_v2(
+        "2026-07-10",
+        "lva",
+        "sea",
+        home_moneyline=-150,
+        away_moneyline=130,
+        home_spread=-4.5,
+    )
+    if pure is None or mkt is None:
+        return
+    assert mkt["model_variant"] == "market_aware"
+    assert mkt["has_market"] is True
+    assert mkt["has_spread"] is True
+    assert "predicted_margin" in mkt
+    assert mkt["home_win_probability"] != pure["home_win_probability"] or mkt[
+        "predicted_margin"
+    ] != pure["predicted_margin"]
 
 
 if __name__ == "__main__":
@@ -220,4 +257,6 @@ if __name__ == "__main__":
     test_replay_season_respects_cutoff()
     test_signed_spread_and_devig()
     test_live_prediction_when_artifacts_present()
+    test_devig_home_prob_and_market_variant_helpers()
+    test_live_market_aware_when_odds_provided()
     print("test_wnba_v2.py: all tests passed")

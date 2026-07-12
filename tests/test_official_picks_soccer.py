@@ -46,13 +46,31 @@ def _soccer_pick(*, edge: float = 30.0, ev_pct: float = OFFICIAL_MIN_EV_PCT) -> 
 
 
 def test_eligible_for_official_picks() -> None:
+    from web.hubacek_picks import clear_strategy_cache
+    from web.pick_strategy import get_pick_thresholds, load_pick_strategy
+
+    clear_strategy_cache()
+    load_pick_strategy.cache_clear()
+
+    # Membership alone is not enough — enabled=false leagues are not official-eligible.
     for league in OFFICIAL_PICK_LEAGUES:
-        assert eligible_for_official_picks(league)
-    # A+ soccer leagues (calibrated model beats the closing line) are official.
+        enabled = bool(get_pick_thresholds(league).get("enabled", True))
+        assert eligible_for_official_picks(league) is enabled, league
+
+    # Validated / enabled official leagues.
     assert eligible_for_official_picks("epl")
     assert eligible_for_official_picks("worldcup")
-    assert eligible_for_official_picks("nfl")
-    assert eligible_for_official_picks("cfb")
+    assert eligible_for_official_picks("nba")
+    assert eligible_for_official_picks("mlb")
+
+    # In OFFICIAL_PICK_LEAGUES but pick_strategy enabled=false — not UI/tracking eligible.
+    assert "nfl" in OFFICIAL_PICK_LEAGUES
+    assert "cfb" in OFFICIAL_PICK_LEAGUES
+    assert "cbb" in OFFICIAL_PICK_LEAGUES
+    assert not eligible_for_official_picks("nfl")
+    assert not eligible_for_official_picks("cfb")
+    assert not eligible_for_official_picks("cbb")
+
     # Leagues without a closing-line-beating model stay untracked.
     assert not eligible_for_official_picks("mls")
     assert not eligible_for_official_picks("ucl")

@@ -471,8 +471,19 @@ def is_soccer_league(league: str) -> bool:
 
 
 def eligible_for_official_picks(league: str) -> bool:
-    """Only core US major leagues track official picks on the public board."""
-    return league.lower() in OFFICIAL_PICK_LEAGUES
+    """Official-eligible when listed in OFFICIAL_PICK_LEAGUES and pick_strategy enabled=True.
+
+    Leagues like nfl/cfb/cbb remain in OFFICIAL_PICK_LEAGUES for metadata but carry
+    enabled=false until walk-forward validation passes — they must not show as
+    official-eligible in UI messaging or tracking rollups.
+    """
+    league = league.lower()
+    if league not in OFFICIAL_PICK_LEAGUES:
+        return False
+    # Lazy import avoids circular dependency with web.pick_strategy.
+    from web.pick_strategy import get_pick_thresholds
+
+    return bool(get_pick_thresholds(league).get("enabled", True))
 
 
 def uses_spread_bets(league: str) -> bool:

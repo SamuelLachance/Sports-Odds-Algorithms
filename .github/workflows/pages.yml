@@ -128,6 +128,33 @@ jobs:
             nba-v2-live-${{ steps.cache_date.outputs.today }}-
             nba-v2-live-
 
+      - name: Restore NFL v2 live cache (ESPN current-season events)
+        uses: actions/cache@v4
+        with:
+          path: .build-cache/nfl-v2-live
+          key: nfl-v2-live-${{ steps.cache_date.outputs.today }}-${{ github.run_id }}
+          restore-keys: |
+            nfl-v2-live-${{ steps.cache_date.outputs.today }}-
+            nfl-v2-live-
+
+      - name: Restore CFB v2 live cache (ESPN current-season events)
+        uses: actions/cache@v4
+        with:
+          path: .build-cache/cfb-v2-live
+          key: cfb-v2-live-${{ steps.cache_date.outputs.today }}-${{ github.run_id }}
+          restore-keys: |
+            cfb-v2-live-${{ steps.cache_date.outputs.today }}-
+            cfb-v2-live-
+
+      - name: Restore CBB v2 live cache (ESPN current-season events)
+        uses: actions/cache@v4
+        with:
+          path: .build-cache/cbb-v2-live
+          key: cbb-v2-live-${{ steps.cache_date.outputs.today }}-${{ github.run_id }}
+          restore-keys: |
+            cbb-v2-live-${{ steps.cache_date.outputs.today }}-
+            cbb-v2-live-
+
       - name: Build static site
         run: python scripts/build_gh_pages.py
 

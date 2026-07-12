@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from web.baseball_pred_model import MIN_LEAGUE_GAMES as BASEBALL_MIN_LEAGUE_GAMES
-from web.baseball_pred_model import get_baseball_pred_context, is_baseball_league
+from web.baseball_pred_model import get_baseball_pred_context
 from web.basketball_pred_model import (
     MIN_LEAGUE_GAMES as BASKETBALL_MIN_LEAGUE_GAMES,
     get_basketball_pred_context,
@@ -70,26 +70,15 @@ def assess_three_layer_readiness(league: str, cutoff_date: str) -> dict[str, Any
         return result
     result["power"] = True
 
-    if is_baseball_league(league):
-        min_games = BASEBALL_MIN_LEAGUE_GAMES
-    elif is_hockey_league(league):
-        min_games = HOCKEY_MIN_LEAGUE_GAMES
-    else:
-        min_games = SOCCER_MIN_LEAGUE_GAMES
-
-    if len(games) < min_games:
+    # Only non-MLB baseball reaches this gate (hockey/soccer/MLB use assess_* helpers).
+    # Do not branch on hockey/soccer here — those names were never imported and are unreachable.
+    if len(games) < BASEBALL_MIN_LEAGUE_GAMES:
         result["reason"] = (
-            f"Need {min_games}+ games for sport model (have {len(games)})"
+            f"Need {BASEBALL_MIN_LEAGUE_GAMES}+ games for sport model (have {len(games)})"
         )
         return result
 
-    if is_baseball_league(league):
-        model = get_baseball_pred_context(league, cutoff_date)
-    elif is_hockey_league(league):
-        model = get_hockey_pred_context(league, cutoff_date)
-    else:
-        model = get_soccer_pred_context(league, cutoff_date)
-
+    model = get_baseball_pred_context(league, cutoff_date)
     if not model:
         result["reason"] = "Sport-specific third layer unavailable"
         return result

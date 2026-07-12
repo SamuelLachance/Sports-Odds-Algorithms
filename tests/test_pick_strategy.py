@@ -66,6 +66,7 @@ def test_pick_thresholds_cbb_nfl_cfb() -> None:
 def test_disabled_leagues_produce_no_official_picks() -> None:
     """NFL/CFB failed walk-forward validation; CBB paused — enabled flag enforced."""
     from web.hubacek_picks import clear_strategy_cache
+    from web.league_profiles import OFFICIAL_PICK_LEAGUES, eligible_for_official_picks
     from web.pick_strategy import (
         evaluate_official_picks_for_game,
         get_pick_thresholds,
@@ -76,7 +77,9 @@ def test_disabled_leagues_produce_no_official_picks() -> None:
     load_pick_strategy.cache_clear()
 
     for league in ("nfl", "cfb", "cbb"):
+        assert league in OFFICIAL_PICK_LEAGUES
         assert get_pick_thresholds(league)["enabled"] is False, league
+        assert eligible_for_official_picks(league) is False, league
         picks = evaluate_official_picks_for_game(
             league=league,
             away_name="Away Team",
@@ -98,9 +101,11 @@ def test_disabled_leagues_produce_no_official_picks() -> None:
         )
         assert picks == [], league
 
-    # Validated leagues stay enabled.
+    # Validated leagues stay enabled and official-eligible.
     assert get_pick_thresholds("mlb")["enabled"] is True
     assert get_pick_thresholds("nba")["enabled"] is True
+    assert eligible_for_official_picks("mlb") is True
+    assert eligible_for_official_picks("nba") is True
 
 
 def test_grade_spread_home_covers() -> None:

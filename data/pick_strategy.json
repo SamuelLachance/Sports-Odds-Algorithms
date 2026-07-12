@@ -41,7 +41,7 @@
     "min_spread_confidence_pp": 5.0,
     "min_ev_pct": 2.0,
     "enabled": true,
-    "note": "WNBA v2 (66 features; OOS LL 0.62462) walk-forward backtest (scripts/backtest_wnba_bets.py): pure margin model cover probability vs the juice-implied break-even. Live gate kept at 8 pp cover gap with a 5 pp confidence floor (prior open-line +5.2% ROI / 321 bets). Retrain improved OOS logloss; morning bets sit between open and close.",
+    "note": "WNBA v2 (66 features; OOS LL 0.62462) walk-forward backtest (scripts/backtest_wnba_bets.py): pure margin model cover probability vs the juice-implied break-even. Live Hubáček gate in this file stays at 8 pp cover gap with a 5 pp confidence floor (prior open-line backtest at that gate: +5.2% ROI / 321 bets). data/models/wnba_v2/bet_policy.json may use a different grid for research (e.g. 12 pp) — that is not the live site gate and its ROI should not be treated as the live policy. Retrain improved OOS logloss; morning bets sit between open and close.",
     "backtest_roi_pct": 5.22,
     "backtest_bets": 321
   },

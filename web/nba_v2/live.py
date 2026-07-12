@@ -77,6 +77,12 @@ def _load_artifacts() -> dict[str, Any] | None:
         except (IndexError, ValueError):
             continue
 
+    def _optional_json(name: str) -> dict[str, Any] | None:
+        path = MODEL_DIR / name
+        if not path.is_file():
+            return None
+        return json.loads(path.read_text(encoding="utf-8"))
+
     return {
         "clf": _booster("model_clf.json"),
         "lr": json.loads((MODEL_DIR / "model_lr.json").read_text(encoding="utf-8")),
@@ -84,9 +90,19 @@ def _load_artifacts() -> dict[str, Any] | None:
         "margin": _booster("model_margin.json"),
         "score_home": _booster("model_score_home.json"),
         "score_away": _booster("model_score_away.json"),
+        "clf_market": _booster("model_clf_market.json"),
+        "lr_market": _optional_json("model_lr_market.json"),
+        "calibrator_market": _optional_json("calibrator_market.json"),
+        "margin_market": _booster("model_margin_market.json"),
         "metadata": metadata,
         "snapshots": snapshots,
         "feature_columns": metadata.get("feature_columns") or list(FEATURE_COLUMNS),
+        "clf_market_features": list(
+            metadata.get("clf_market_features") or ("mkt_home_prob", "has_market")
+        ),
+        "margin_market_features": list(
+            metadata.get("margin_market_features") or ("mkt_home_spread", "has_spread")
+        ),
     }
 
 
@@ -256,14 +272,45 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
     }
 
 
-def _predict_probability(art: dict[str, Any], features: dict[str, float]) -> float:
+def _devig_home_prob(home_ml: float | None, away_ml: float | None) -> float | None:
+    def implied(american: float) -> float | None:
+        try:
+            american = float(american)
+        except (TypeError, ValueError):
+            return None
+        if american >= 100:
+            return 100.0 / (american + 100.0)
+        if american <= -100:
+            return -american / (-american + 100.0)
+        return None
+
+    if home_ml is None or away_ml is None:
+        return None
+    ph = implied(home_ml)
+    pa = implied(away_ml)
+    if ph is None or pa is None or ph + pa <= 0:
+        return None
+    return ph / (ph + pa)
+
+
+def _predict_probability(
+    art: dict[str, Any],
+    features: dict[str, float],
+    *,
+    cols: list[str] | None = None,
+    clf=None,
+    lr: dict[str, Any] | None = None,
+    calibrator: dict[str, Any] | None = None,
+) -> float:
     from xgboost import DMatrix
 
-    cols = art["feature_columns"]
+    cols = list(cols or art["feature_columns"])
+    clf = clf if clf is not None else art["clf"]
+    lr = lr if lr is not None else art["lr"]
+    calibrator = calibrator if calibrator is not None else art["calibrator"]
     vector = np.array([[float(features.get(c, 0.0)) for c in cols]], dtype=float)
-    xgb_p = float(art["clf"].predict(DMatrix(vector, feature_names=list(cols)))[0])
+    xgb_p = float(clf.predict(DMatrix(vector, feature_names=list(cols)))[0])
 
-    lr = art["lr"]
     mean = np.asarray(lr["mean"], dtype=float)
     scale = np.asarray(lr["scale"], dtype=float)
     coef = np.asarray(lr["coef"], dtype=float)
@@ -275,17 +322,22 @@ def _predict_probability(art: dict[str, Any], features: dict[str, float]) -> flo
     weight = float(lr.get("xgb_weight", 0.5))
     raw = weight * xgb_p + (1.0 - weight) * lr_p
 
-    cal = art["calibrator"]
-    calibrated = float(np.interp(raw, cal["x"], cal["y"]))
+    calibrated = float(np.interp(raw, calibrator["x"], calibrator["y"]))
     return float(min(max(calibrated, 0.02), 0.98))
 
 
-def _predict_regressor(booster, art: dict[str, Any], features: dict[str, float]) -> float | None:
+def _predict_regressor(
+    booster,
+    art: dict[str, Any],
+    features: dict[str, float],
+    *,
+    cols: list[str] | None = None,
+) -> float | None:
     if booster is None:
         return None
     from xgboost import DMatrix
 
-    cols = art["feature_columns"]
+    cols = list(cols or art["feature_columns"])
     vector = np.array([[float(features.get(c, 0.0)) for c in cols]], dtype=float)
     return float(booster.predict(DMatrix(vector, feature_names=list(cols)))[0])
 
@@ -294,8 +346,17 @@ def predict_matchup_v2(
     day_iso: str,
     home_abbr: str,
     away_abbr: str,
+    *,
+    home_moneyline: int | float | None = None,
+    away_moneyline: int | float | None = None,
+    home_spread: float | None = None,
 ) -> dict[str, Any] | None:
-    """Predict a NBA matchup by ESPN abbreviations for a given slate date."""
+    """Predict a NBA matchup by ESPN abbreviations for a given slate date.
+
+    When live moneylines and/or spreads are available and market-aware artifacts
+    exist, scores the market heads used by ``bet_policy.json`` (model_margin_mkt).
+    Falls back to the pure head when odds are missing.
+    """
     context = get_live_context(day_iso)
     if context is None:
         return None
@@ -317,10 +378,50 @@ def predict_matchup_v2(
     }
 
     features = engine.features_for_game(game)
-    prob_home = _predict_probability(art, features)
-    margin = _predict_regressor(art["margin"], art, features)
-    score_home = _predict_regressor(art["score_home"], art, features)
-    score_away = _predict_regressor(art["score_away"], art, features)
+    mkt_prob = _devig_home_prob(home_moneyline, away_moneyline)
+    has_market = mkt_prob is not None
+    has_spread = home_spread is not None
+    features["mkt_home_prob"] = float(mkt_prob) if has_market else 0.5
+    features["has_market"] = 1.0 if has_market else 0.0
+    features["mkt_home_spread"] = float(home_spread) if has_spread else 0.0
+    features["has_spread"] = 1.0 if has_spread else 0.0
+
+    use_market_clf = bool(
+        has_market
+        and art.get("clf_market") is not None
+        and art.get("lr_market") is not None
+        and art.get("calibrator_market") is not None
+    )
+    use_market_margin = bool(has_spread and art.get("margin_market") is not None)
+    model_variant = "market_aware" if (use_market_clf or use_market_margin) else "pure"
+
+    pure_cols = list(art["feature_columns"])
+    clf_cols = pure_cols + list(art["clf_market_features"]) if use_market_clf else pure_cols
+    margin_cols = (
+        pure_cols + list(art["margin_market_features"]) if use_market_margin else pure_cols
+    )
+
+    if use_market_clf:
+        prob_home = _predict_probability(
+            art,
+            features,
+            cols=clf_cols,
+            clf=art["clf_market"],
+            lr=art["lr_market"],
+            calibrator=art["calibrator_market"],
+        )
+    else:
+        prob_home = _predict_probability(art, features, cols=pure_cols)
+
+    if use_market_margin:
+        margin = _predict_regressor(
+            art["margin_market"], art, features, cols=margin_cols
+        )
+    else:
+        margin = _predict_regressor(art["margin"], art, features, cols=pure_cols)
+
+    score_home = _predict_regressor(art["score_home"], art, features, cols=pure_cols)
+    score_away = _predict_regressor(art["score_away"], art, features, cols=pure_cols)
 
     home_team = engine.team(home)
     away_team = engine.team(away)
@@ -328,8 +429,9 @@ def predict_matchup_v2(
     payload: dict[str, Any] = {
         "model_version": "v2",
         "algorithm": "NBAGradientBoost v2",
+        "model_variant": model_variant,
         "home_win_probability": round(prob_home * 100.0, 2),
-        "features_used": len(art["feature_columns"]),
+        "features_used": len(clf_cols if use_market_clf else pure_cols),
         "home_games": int(home_team.games_played),
         "away_games": int(away_team.games_played),
         "home_elo": round(home_team.elo, 1),
@@ -346,6 +448,8 @@ def predict_matchup_v2(
         "away_win_pct": round(away_team.win_pct(), 3),
         "home_expansion": bool(features["home_expansion"]),
         "away_expansion": bool(features["away_expansion"]),
+        "has_market": has_market,
+        "has_spread": has_spread,
     }
     if margin is not None:
         payload["predicted_margin"] = round(margin, 2)

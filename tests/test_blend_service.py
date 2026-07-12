@@ -470,14 +470,26 @@ def test_blend_soccer_path_a_unavailable_fallback() -> None:
 
 
 def test_blend_soccer_v2_payload_skips_path_a_enrichment() -> None:
-    """v2 payloads keep their calibrated probs (no db_rating/context layers)."""
+    """v2 keeps calibrated probs; ESPN context attaches for display only."""
     import web.blend_service as blend_module
 
     soccer_original = blend_module.run_soccer_pred_model
     finalize_original = blend_module.finalize_soccer_path_a
+    display_original = blend_module.attach_soccer_context_display
 
     def _fail_finalize(result, **_kwargs):
         raise AssertionError("finalize_soccer_path_a must not run for v2 payloads")
+
+    def _fake_display(result, **_kwargs):
+        updated = dict(result)
+        updated["soccer_context"] = {
+            "algorithm": "SoccerContext",
+            "factors": [{"label": "Home injury", "detail": "key midfielder out"}],
+            "home_win_probability": 48.0,
+            "draw_probability": 28.0,
+            "away_win_probability": 24.0,
+        }
+        return updated
 
     try:
         blend_module.run_soccer_pred_model = lambda *_a, **_k: {
@@ -499,6 +511,7 @@ def test_blend_soccer_v2_payload_skips_path_a_enrichment() -> None:
             "soccer_pick_signals": {"disagreement_signal": False},
         }
         blend_module.finalize_soccer_path_a = _fail_finalize
+        blend_module.attach_soccer_context_display = _fake_display
         result = blend_predictions(
             legacy_total_score=-48.0,
             legacy_win_probability=48.0,
@@ -516,11 +529,17 @@ def test_blend_soccer_v2_payload_skips_path_a_enrichment() -> None:
         assert result["threeway"] is True
         assert result["market_decorrelated"] is True
         assert result["model_version"] == "soccer_v2.2026.07"
+        # calibrated blend probs unchanged despite context payload
         assert result["home_win_probability"] == 51.2
+        assert result["draw_probability"] == 26.4
+        assert result["away_win_probability"] == 22.4
         assert result["soccer_pred"]["pick_home_win_probability"] == 52.0
+        assert result.get("context_adjusted") is not True
+        assert result["soccer_context"]["factors"][0]["label"] == "Home injury"
     finally:
         blend_module.run_soccer_pred_model = soccer_original
         blend_module.finalize_soccer_path_a = finalize_original
+        blend_module.attach_soccer_context_display = display_original
 
 
 def test_model_agreement_soccer_single_model() -> None:
@@ -737,6 +756,56 @@ def test_blend_nba_matrix_only_keeps_legacy_layers_for_ensemble() -> None:
         assert result["legacy"]["home_win_probability"] == 60.0
     finally:
         blend_module.run_basketball_pred_model = basketball_original
+        blend_module._run_nba_v2 = nba_v2_original
+
+
+def test_nba_v2_availability_shift_moves_win_pct_keeps_margin() -> None:
+    """ESPN availability nudge applies after nba_v2 payload; margin head stays put."""
+    import web.blend_service as blend_module
+    from web.availability_signals import AvailabilitySnapshot
+
+    nba_v2_original = blend_module._run_nba_v2
+    try:
+        blend_module._run_nba_v2 = lambda *_a, **_k: {
+            "algorithm": "NBAGradientBoost v2",
+            "model_version": "v2",
+            "model_variant": "market",
+            "home_win_probability": 58.0,
+            "predicted_margin": 4.5,
+        }
+        with (
+            patch(
+                "web.availability_signals.fetch_availability_snapshot",
+                return_value=AvailabilitySnapshot(
+                    home_injuries=0,
+                    away_injuries=3,
+                    home_out=0,
+                    away_out=2,
+                    sources=["espn_injuries_away"],
+                ),
+            ),
+            patch(
+                "web.availability_signals.availability_home_prob_shift",
+                return_value=0.7,
+            ),
+        ):
+            result = blend_predictions(
+                legacy_total_score=-55.0,
+                legacy_win_probability=55.0,
+                league="nba",
+                cutoff_date="6-12-2026",
+                home_abbr="bos",
+                away_abbr="ny",
+                home_espn_id="2",
+                away_espn_id="18",
+            )
+        assert result["blend_mode"] == "nba_v2"
+        assert result["availability"]["shift_pp"] == 0.7
+        assert result["blended_home_win_probability"] == 58.7
+        assert result["win_probability"] == 58.7
+        assert result["home_spread_margin"] == -4.5
+        assert blended_home_spread_margin(result, "nba") == -4.5
+    finally:
         blend_module._run_nba_v2 = nba_v2_original
 
 
@@ -1041,6 +1110,7 @@ if __name__ == "__main__":
     test_blend_mlb_runcast_unavailable_fallback()
     test_blend_basketball_matrix_only_when_available()
     test_blend_nba_matrix_only_keeps_legacy_layers_for_ensemble()
+    test_nba_v2_availability_shift_moves_win_pct_keeps_margin()
     test_model_agreement_nfl_three_layers_agree()
     test_model_agreement_nfl_value_on_underdog_despite_favorite_disagreement()
     test_model_agreement_nfl_three_layers_disagree()

@@ -352,6 +352,41 @@ def _finalize_soccer_blend(
     )
 
 
+def attach_soccer_context_display(
+    result: dict[str, Any],
+    *,
+    league: str,
+    cutoff_date: str,
+    home_abbr: str,
+    away_abbr: str,
+    event_id: str | None = None,
+    home_espn_id: str | None = None,
+    away_espn_id: str | None = None,
+) -> dict[str, Any]:
+    """Attach ESPN injury/form context for UI display without mutating win probs.
+
+    Used by SoccerGradientBoost v2 where calibrated / market-decorrelated
+    probabilities must stay intact for official picks.
+    """
+    context = build_soccer_context_payload(
+        league,
+        cutoff_date,
+        home_abbr,
+        away_abbr,
+        float(result["home_win_probability"]),
+        float(result["draw_probability"]),
+        float(result["away_win_probability"]),
+        event_id=event_id,
+        home_espn_id=home_espn_id,
+        away_espn_id=away_espn_id,
+    )
+    if not context:
+        return result
+    updated = dict(result)
+    updated["soccer_context"] = context
+    return updated
+
+
 def _attach_soccer_context_layer(
     result: dict[str, Any],
     *,

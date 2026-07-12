@@ -38,7 +38,11 @@ from web.league_profiles import (
 from web.live_data import resolve_team
 from web.power_model import PowerTeam, predict_matchup
 from web.season_games import get_league_power_context, power_unavailable_reason
-from web.soccer_blend import finalize_soccer_path_a, threeway_probs_to_total_score
+from web.soccer_blend import (
+    attach_soccer_context_display,
+    finalize_soccer_path_a,
+    threeway_probs_to_total_score,
+)
 from web.db_rating_model import apply_db_rating_blend
 from web.soccer_pred_model import run_soccer_pred_model, soccer_unavailable_reason
 from web.sports_meta_model import (
@@ -82,6 +86,49 @@ def _apply_context_layer(
     )
 
 
+def _apply_availability_layer(
+    result: dict[str, Any],
+    *,
+    league: str,
+    home_espn_id: str | None,
+    away_espn_id: str | None,
+) -> dict[str, Any]:
+    """ESPN injury nudge on win% only; leave dedicated margin heads untouched."""
+    if is_soccer_league(league) or not home_espn_id or not away_espn_id:
+        return result
+    from web.availability_signals import (
+        availability_home_prob_shift,
+        fetch_availability_snapshot,
+    )
+
+    snapshot = fetch_availability_snapshot(
+        league,
+        home_espn_id=home_espn_id,
+        away_espn_id=away_espn_id,
+    )
+    shift = availability_home_prob_shift(snapshot)
+    if abs(shift) < 0.05:
+        return result
+    home_prob = layer_home_win_probability(result)
+    if home_prob is None:
+        return result
+    adjusted = min(max(home_prob + shift, 5.0), 95.0)
+    total, win_prob = home_win_prob_to_total_score(adjusted)
+    result = dict(result)
+    result["availability"] = {
+        "shift_pp": shift,
+        "home_injuries": snapshot.home_injuries,
+        "away_injuries": snapshot.away_injuries,
+        "sources": snapshot.sources or [],
+    }
+    result["win_probability"] = round(win_prob, 2)
+    result["total_score"] = round(total, 2)
+    result["favorite_side"] = "home" if total <= 0 else "away"
+    if result.get("blended_home_win_probability") is not None:
+        result["blended_home_win_probability"] = round(adjusted, 2)
+    return result
+
+
 def _with_db_rating_layer(
     result: dict[str, Any],
     *,
@@ -99,35 +146,12 @@ def _with_db_rating_layer(
     away_moneyline: int | None = None,
     headlines: list[str] | None = None,
 ) -> dict[str, Any]:
-    if not is_soccer_league(league) and home_espn_id and away_espn_id:
-        from web.availability_signals import (
-            availability_home_prob_shift,
-            fetch_availability_snapshot,
-        )
-
-        snapshot = fetch_availability_snapshot(
-            league,
-            home_espn_id=home_espn_id,
-            away_espn_id=away_espn_id,
-        )
-        shift = availability_home_prob_shift(snapshot)
-        if abs(shift) >= 0.05:
-            home_prob = layer_home_win_probability(result)
-            if home_prob is not None:
-                adjusted = min(max(home_prob + shift, 5.0), 95.0)
-                total, win_prob = home_win_prob_to_total_score(adjusted)
-                result = dict(result)
-                result["availability"] = {
-                    "shift_pp": shift,
-                    "home_injuries": snapshot.home_injuries,
-                    "away_injuries": snapshot.away_injuries,
-                    "sources": snapshot.sources or [],
-                }
-                result["win_probability"] = round(win_prob, 2)
-                result["total_score"] = round(total, 2)
-                result["favorite_side"] = "home" if total <= 0 else "away"
-                if result.get("blended_home_win_probability") is not None:
-                    result["blended_home_win_probability"] = round(adjusted, 2)
+    result = _apply_availability_layer(
+        result,
+        league=league,
+        home_espn_id=home_espn_id,
+        away_espn_id=away_espn_id,
+    )
     if home_slug and away_slug:
         result = apply_db_rating_blend(
             result,
@@ -790,7 +814,15 @@ def _blend_hockey_pred_or_algo_v1(
     return result
 
 
-def _run_wnba_v2(cutoff_date: str, home_abbr: str, away_abbr: str) -> dict[str, Any] | None:
+def _run_wnba_v2(
+    cutoff_date: str,
+    home_abbr: str,
+    away_abbr: str,
+    *,
+    home_moneyline: int | None = None,
+    away_moneyline: int | None = None,
+    consensus_spread: float | None = None,
+) -> dict[str, Any] | None:
     """WNBAGradientBoost v2 payload when artifacts + season context exist."""
     try:
         from web.hockey_pred_model import _cutoff_to_iso
@@ -801,12 +833,27 @@ def _run_wnba_v2(cutoff_date: str, home_abbr: str, away_abbr: str) -> dict[str, 
         day_iso = _cutoff_to_iso(cutoff_date)
         if not day_iso:
             return None
-        return predict_matchup_v2(day_iso, home_abbr, away_abbr)
+        return predict_matchup_v2(
+            day_iso,
+            home_abbr,
+            away_abbr,
+            home_moneyline=home_moneyline,
+            away_moneyline=away_moneyline,
+            home_spread=consensus_spread,
+        )
     except Exception:  # noqa: BLE001 - v2 layer must never break the slate
         return None
 
 
-def _run_nba_v2(cutoff_date: str, home_abbr: str, away_abbr: str) -> dict[str, Any] | None:
+def _run_nba_v2(
+    cutoff_date: str,
+    home_abbr: str,
+    away_abbr: str,
+    *,
+    home_moneyline: int | None = None,
+    away_moneyline: int | None = None,
+    consensus_spread: float | None = None,
+) -> dict[str, Any] | None:
     """NBAGradientBoost v2 payload when artifacts + season context exist."""
     try:
         from web.hockey_pred_model import _cutoff_to_iso
@@ -817,7 +864,14 @@ def _run_nba_v2(cutoff_date: str, home_abbr: str, away_abbr: str) -> dict[str, A
         day_iso = _cutoff_to_iso(cutoff_date)
         if not day_iso:
             return None
-        return predict_matchup_v2(day_iso, home_abbr, away_abbr)
+        return predict_matchup_v2(
+            day_iso,
+            home_abbr,
+            away_abbr,
+            home_moneyline=home_moneyline,
+            away_moneyline=away_moneyline,
+            home_spread=consensus_spread,
+        )
     except Exception:  # noqa: BLE001 - v2 layer must never break the slate
         return None
 
@@ -888,6 +942,8 @@ def _blend_cfb_v2_only(
     cutoff_date: str,
     home_abbr: str,
     away_abbr: str,
+    home_espn_id: str | None = None,
+    away_espn_id: str | None = None,
 ) -> dict[str, Any] | None:
     """Prefer CFB v2 when shipped artifacts are available."""
     v2_payload = _run_cfb_v2(cutoff_date, home_abbr, away_abbr)
@@ -909,7 +965,12 @@ def _blend_cfb_v2_only(
     }
     if v2_payload.get("predicted_margin") is not None:
         result["home_spread_margin"] = round(-float(v2_payload["predicted_margin"]), 2)
-    return result
+    return _apply_availability_layer(
+        result,
+        league="cfb",
+        home_espn_id=home_espn_id,
+        away_espn_id=away_espn_id,
+    )
 
 
 def _blend_nfl_v2_only(
@@ -917,6 +978,8 @@ def _blend_nfl_v2_only(
     cutoff_date: str,
     home_abbr: str,
     away_abbr: str,
+    home_espn_id: str | None = None,
+    away_espn_id: str | None = None,
 ) -> dict[str, Any] | None:
     """Prefer NFL v2 when shipped artifacts are available."""
     v2_payload = _run_nfl_v2(cutoff_date, home_abbr, away_abbr)
@@ -938,7 +1001,12 @@ def _blend_nfl_v2_only(
     }
     if v2_payload.get("predicted_margin") is not None:
         result["home_spread_margin"] = round(-float(v2_payload["predicted_margin"]), 2)
-    return result
+    return _apply_availability_layer(
+        result,
+        league="nfl",
+        home_espn_id=home_espn_id,
+        away_espn_id=away_espn_id,
+    )
 
 
 def _blend_basketball_matrix_only(
@@ -964,7 +1032,14 @@ def _blend_basketball_matrix_only(
     """
     league_key = league.lower()
     if league_key == "nba":
-        v2_payload = _run_nba_v2(cutoff_date, home_abbr, away_abbr)
+        v2_payload = _run_nba_v2(
+            cutoff_date,
+            home_abbr,
+            away_abbr,
+            home_moneyline=home_moneyline,
+            away_moneyline=away_moneyline,
+            consensus_spread=consensus_spread,
+        )
         if v2_payload and v2_payload.get("model_version") == "v2":
             home_prob = float(v2_payload["home_win_probability"])
             total, win_prob = home_win_prob_to_total_score(home_prob)
@@ -979,14 +1054,27 @@ def _blend_basketball_matrix_only(
                 "win_probability": round(win_prob, 2),
                 "favorite_side": "home" if total <= 0 else "away",
                 "model_version": "v2",
+                "model_variant": v2_payload.get("model_variant") or "pure",
             }
             if v2_payload.get("predicted_margin") is not None:
                 result["home_spread_margin"] = round(
                     -float(v2_payload["predicted_margin"]), 2
                 )
-            return result
+            return _apply_availability_layer(
+                result,
+                league=league,
+                home_espn_id=home_espn_id,
+                away_espn_id=away_espn_id,
+            )
     if league_key == "wnba":
-        v2_payload = _run_wnba_v2(cutoff_date, home_abbr, away_abbr)
+        v2_payload = _run_wnba_v2(
+            cutoff_date,
+            home_abbr,
+            away_abbr,
+            home_moneyline=home_moneyline,
+            away_moneyline=away_moneyline,
+            consensus_spread=consensus_spread,
+        )
         if v2_payload and v2_payload.get("model_version") == "v2":
             home_prob = float(v2_payload["home_win_probability"])
             total, win_prob = home_win_prob_to_total_score(home_prob)
@@ -1001,12 +1089,18 @@ def _blend_basketball_matrix_only(
                 "win_probability": round(win_prob, 2),
                 "favorite_side": "home" if total <= 0 else "away",
                 "model_version": "v2",
+                "model_variant": v2_payload.get("model_variant") or "pure",
             }
             if v2_payload.get("predicted_margin") is not None:
                 result["home_spread_margin"] = round(
                     -float(v2_payload["predicted_margin"]), 2
                 )
-            return result
+            return _apply_availability_layer(
+                result,
+                league=league,
+                home_espn_id=home_espn_id,
+                away_espn_id=away_espn_id,
+            )
     if league_key == "cbb":
         v2_payload = _run_cbb_v2(
             cutoff_date,
@@ -1034,7 +1128,12 @@ def _blend_basketball_matrix_only(
                 result["home_spread_margin"] = round(
                     -float(v2_payload["predicted_margin"]), 2
                 )
-            return result
+            return _apply_availability_layer(
+                result,
+                league=league,
+                home_espn_id=home_espn_id,
+                away_espn_id=away_espn_id,
+            )
 
     legacy_home = total_score_to_home_win_prob(legacy_total_score)
     legacy_payload = {
@@ -1266,13 +1365,22 @@ def _blend_soccer_path_a_only(
         "soccer_pick_signals": sport_payload.get("soccer_pick_signals"),
     }
     if is_v2:
-        # v2 display probabilities are already market-calibrated and the pick
-        # probabilities are decorrelated; keep them untouched (no db_rating /
-        # ESPN-context layers, which are Path-A-tuned).
+        # v2 win probs are already market-calibrated / decorrelated for picks;
+        # skip Path-A db_rating + probability-shifting context. Still attach
+        # ESPN injury/form factors for board display only.
         result["market_decorrelated"] = bool(sport_payload.get("market_decorrelated"))
         if sport_payload.get("model_version"):
             result["model_version"] = sport_payload["model_version"]
-        return result
+        return attach_soccer_context_display(
+            result,
+            league=league,
+            cutoff_date=cutoff_date,
+            home_abbr=home_abbr,
+            away_abbr=away_abbr,
+            event_id=event_id,
+            home_espn_id=home_espn_id,
+            away_espn_id=away_espn_id,
+        )
     return finalize_soccer_path_a(
         result,
         league=league,
@@ -1390,6 +1498,8 @@ def blend_predictions(
             cutoff_date=cutoff_date,
             home_abbr=home_abbr,
             away_abbr=away_abbr,
+            home_espn_id=home_espn_id,
+            away_espn_id=away_espn_id,
         )
         if cfb_v2 is not None:
             return cfb_v2
@@ -1399,6 +1509,8 @@ def blend_predictions(
             cutoff_date=cutoff_date,
             home_abbr=home_abbr,
             away_abbr=away_abbr,
+            home_espn_id=home_espn_id,
+            away_espn_id=away_espn_id,
         )
         if nfl_v2 is not None:
             return nfl_v2

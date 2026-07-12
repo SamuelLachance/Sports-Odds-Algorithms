@@ -1478,7 +1478,7 @@ function viewPicks() {
   appRoot.innerHTML = `
     <section class="page-head">
       <h1>Algo picks</h1>
-      <p><strong>Official picks</strong> cover NBA, WNBA, CBB, NHL, MLB, <strong>NFL</strong>, <strong>CFB</strong>, and calibrated soccer leagues. They fire on Hubáček spots: decorrelated model beats the de-vigged book by a backtested per-league gap with honest EV and confidence floors (|p−50| ≥ ${minConf} pp on moneylines). Stakes are quarter-Kelly (0.25–3u).</p>
+      <p><strong>Official Hubáček tracking</strong> covers NBA, WNBA, NHL, MLB, and calibrated soccer leagues. <strong>NFL, CFB, and CBB</strong> are predictions-only — GradientBoost v2 models are live, but official picks stay disabled until walk-forward backtests clear. Official spots fire when the decorrelated model beats the de-vigged book by a backtested per-league gap with honest EV and confidence floors (|p−50| ≥ ${minConf} pp on moneylines). Stakes are quarter-Kelly (0.25–3u).</p>
       <p class="muted">${escapeHtml(hubacekRule)}</p>
     </section>
     ${disclaimerBar()}
@@ -1496,7 +1496,7 @@ function viewPicks() {
       <div class="section-head">
         <div>
           <h2>Model predictions (not tracked)</h2>
-          <p class="muted section-intro">Reference-only value spots (MLS, UCL, and other non-tracked or secondary analysis). Full probabilities stay on each game page.</p>
+          <p class="muted section-intro">Reference-only value spots — including NFL/CFB/CBB (models live, official picks disabled) plus MLS, UCL, and other non-tracked analysis. Full probabilities stay on each game page.</p>
         </div>
         <span class="section-count">${modelAnalysis.length}</span>
       </div>
@@ -2268,6 +2268,7 @@ function viewTracking() {
           <p>Official Hubáček bets are logged with odds frozen at record time, graded on ESPN finals with closing-line value (CLV), staked at quarter-Kelly (0.25–3u), and rolled up day → week → month → year → all time.</p>
           <p class="muted">Tracking since ${escapeHtml(String(since))} · ${escapeHtml(state.tracking?.timezone || "America/Toronto")}</p>
           <p class="muted tracking-rule">${escapeHtml(hubacekRule)}</p>
+          <p class="muted">Opening-line backtest ROI is an upper bound versus live morning tracking, which usually locks later consensus prices.</p>
         </div>
         <div class="tracking-hero-stats">
           <div><span>Record</span><strong>${all.record || "0-0"}</strong>${provisionalSample ? `<small class="edge-badge edge-badge--sparse" title="Fewer than 30 decided bets — treat results as provisional">Provisional — small sample</small>` : ""}</div>
@@ -2349,14 +2350,14 @@ function viewMethodology() {
     ${disclaimerBar()}
 
     <section class="section panel methodology-body">
-      <h2>Three-layer prediction stack</h2>
-      <p>Every win probability on the board is blended from three layers, weighted per league:</p>
+      <h2>Prediction stack</h2>
+      <p>Major leagues often run a <strong>single-model GradientBoost v2</strong> as the primary signal — <code>nba_v2</code>, <code>wnba_v2</code>, <code>nhl_v2</code>, <code>mlb_v2</code>, <code>soccer_v2</code>, plus <code>nfl_v2</code>, <code>cfb_v2</code>, and <code>cbb_v2</code> for predictions — rather than three equal layers on every board. Where a blend still applies, layers are weighted per league:</p>
       <ul>
-        <li><strong>Legacy Algo V2</strong> — the original efficiency engine over season stats and situational splits; the stable baseline for every league.</li>
-        <li><strong>Power ratings</strong> — margin-based team ratings with recency weighting and a home-edge adjustment, mapped to win probability.</li>
-        <li><strong>Sport-specific v2 models</strong> — GradientBoost ensembles (NBA, WNBA, NHL, MLB, soccer), MLB RunCast, Dixon–Coles goal models for soccer, BasketballMatrix matrix completion, and nfelo-style ratings for NFL/CFB.</li>
+        <li><strong>GradientBoost v2</strong> — sport-specific ensembles under <code>web/{nba,wnba,nhl,mlb,soccer,nfl,cfb,cbb}_v2</code>; the main live model for those leagues when trained weights are present.</li>
+        <li><strong>Legacy Algo V2 / power ratings</strong> — efficiency engine and margin-based ratings used as baselines or fallbacks, especially where v2 is thin or absent.</li>
+        <li><strong>Other sport layers</strong> — MLB RunCast, Dixon–Coles for soccer, BasketballMatrix / Torvik fallback for CBB, and nfelo-style ratings as supporting football signals.</li>
       </ul>
-      <p>A per-league <strong>meta-stack</strong> decides how much to trust each layer, and a <strong>temperature calibration</strong> pass rescales the blended probability so that, against history, "60%" actually means about 60%.</p>
+      <p>A per-league <strong>meta-stack</strong> decides how much to trust each available layer, and a <strong>temperature calibration</strong> pass rescales the probability so that, against history, "60%" actually means about 60%. Official Hubáček tracking is enabled only for NBA, WNBA, NHL, MLB, and calibrated soccer; NFL/CFB/CBB remain predictions-only until backtests clear.</p>
     </section>
 
     <section class="section panel methodology-body">
@@ -2402,6 +2403,7 @@ function viewMethodology() {
       <ul>
         <li><strong>Beating the close is unproven for NBA.</strong> A pilot of the NBA model graded at real closing lines returned −1.5% ATS with negative CLV. Whatever edge exists lives earlier in the day, not at the close.</li>
         <li><strong>MLB edge concentrates at the open.</strong> Walk-forward testing showed roughly +35% ROI against opening lines versus −3.2% at the close — consistent with the finding that FLB mispricing disappears as the market matures.</li>
+        <li><strong>Opening-line backtests overstate live ROI.</strong> Historical ROI vs opening prices is an upper bound; live morning tracking locks later consensus prices and usually grades worse than the open-line study.</li>
         <li><strong>The live tracked sample is very young.</strong> Until dozens of graded bets settle, record, units, and ROI are noise; process metrics (CLV, stake discipline) matter more.</li>
         <li><strong>This is research, not investment advice.</strong> Nothing here guarantees profit; treat the board as decision support for studying betting markets.</li>
       </ul>

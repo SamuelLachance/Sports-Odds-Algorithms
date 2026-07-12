@@ -7,6 +7,7 @@ Algorithme de prédiction sportive (NBA, NHL, MLB et autres ligues) avec démo w
 - Python 3.10+ (`requirements.txt`)
 - Core : `algo.py`, `odds_calculator.py`, `backtester.py`
 - Web : `web/` (FastAPI + frontend statique)
+- Sport models : `web/{nba,wnba,nhl,mlb,soccer,nfl,cfb,cbb}_v2` (GradientBoost v2; CBB primary = GB v2 with Torvik fallback; NFL/CFB v2 live for predictions, official picks disabled until backtest clears)
 - Données historiques : CSV dans `nba/`, `nhl/`, `mlb/`
 - Modules récents : `web/context_signals.py` (FLB / news / sparse EV caps), `web/portfolio_sizing.py` (stake sizing corrélé), `web/live_odds_enrichment.py` (multi-book NBA/NHL/MLB/WNBA)
 
