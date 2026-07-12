@@ -250,13 +250,14 @@ def test_mlb_official_picks_use_moneyline_decorrelation() -> None:
 
 
 def test_nhl_pick_thresholds_use_backtested_policy() -> None:
-    """NHL gates come from data/pick_strategy.json (walk-forward backtest)."""
+    """NHL research gates come from data/pick_strategy.json; official tracking paused."""
     thresholds = get_pick_thresholds("nhl")
-    assert thresholds["min_market_gap_pp"] >= 7.0
+    assert thresholds["min_market_gap_pp"] >= 2.5
     assert thresholds["min_win_confidence_pp"] == 0.0
     assert thresholds["ml_lo"] == -350
     assert thresholds["ml_hi"] == 300
     assert thresholds["bet_type"] == "moneyline"
+    assert thresholds["enabled"] is False
 
 
 def test_nhl_official_picks_use_moneyline_decorrelation() -> None:
@@ -383,7 +384,7 @@ def test_nfl_cfb_official_picks_disabled_by_backtest() -> None:
     for league in ("nfl", "cfb"):
         thresholds = get_pick_thresholds(league)
         assert thresholds["bet_type"] == "spread"
-        assert thresholds["min_ev_pct"] >= 2.5
+        assert thresholds["min_ev_pct"] >= 2.0
         assert thresholds["enabled"] is False
         assert eligible_for_official_picks(league) is False
         blended = {

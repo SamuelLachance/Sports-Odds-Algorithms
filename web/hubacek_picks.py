@@ -11,11 +11,13 @@ Default live thresholds live in this module; per-league overrides are read from
 ``min_market_gap_pp``, ``min_win_confidence_pp``, ``min_ev_pct``, ``ml_lo``,
 ``ml_hi``, ``allowed_sides``, ``min_spread_cover_gap_pp``,
 ``min_spread_confidence_pp``, ``min_spread_point_edge``. MLB uses a 6.7 pp
-decorrelated gap (≈6 pp raw), no confidence bar, and a [-200, +200] price
-window; NHL uses a 7.8 pp decorrelated gap (≈7 pp raw), no confidence bar, and
-a [-250, +250] window — both from walk-forward bet backtests against
-opening/closing lines. Spread leagues (NBA/WNBA/…) override cover-gap /
-confidence / point-edge here via the same JSON.
+decorrelated gap (≈6 pp raw), no confidence bar, EV >= 0%, and a [-200, +200]
+price window from the latest walk-forward open-line backtest. NHL research
+gates use a 2.8 pp decorrelated gap (≈2.5 pp raw) with [-350, +300], but
+official NHL tracking stays off while worst-season open ROI is negative.
+Spread leagues (NBA/WNBA/…) override cover-gap / confidence / point-edge via
+the same JSON; WNBA official tracking is likewise paused on a negative
+worst-season open.
 """
 
 from __future__ import annotations

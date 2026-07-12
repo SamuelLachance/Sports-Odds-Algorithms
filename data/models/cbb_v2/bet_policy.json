@@ -1,6 +1,32 @@
 {
+  "stake_mode": "kelly",
+  "kelly_fraction": 0.25,
+  "bet_type": "spread",
+  "source": "cbb_v2",
+  "sigma": 12.412,
   "enabled": false,
-  "reason": "Official CBB picks remain disabled until a positive worst-season walk-forward backtest on historical closing odds is available.",
-  "gate_pass_vs_ensemble_ll": true,
-  "oos_model_logloss": 0.50712
+  "enabled_note": "Single-season odds sample \u2014 policy recorded for research; official picks stay disabled until multi-season confirmation.",
+  "exec_price": "open",
+  "min_spread_cover_gap_pp": 10.0,
+  "min_spread_point_edge": 3.0,
+  "min_ev_pct": 2.0,
+  "backtest": {
+    "bets": 1640,
+    "staked_units": 4920.0,
+    "profit_units": 167.7,
+    "roi_pct": 3.41,
+    "win_rate": 0.5396,
+    "max_drawdown_units": 58.7,
+    "seasons_positive": 1,
+    "seasons_total": 1,
+    "worst_season_roi": 3.41,
+    "median_season_roi": 3.41
+  },
+  "backtest_per_season": {
+    "2025": {
+      "bets": 1640,
+      "roi_pct": 3.41,
+      "profit_units": 167.7
+    }
+  }
 }

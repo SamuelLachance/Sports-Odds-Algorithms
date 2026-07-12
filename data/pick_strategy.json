@@ -1,5 +1,5 @@
 {
-  "policy": "Official picks use Hubáček gates: decorrelated model beats the de-vigged market by >= 2 pp, honest EV >= 2% (calibrated pre-decorrelation probability), and a per-bet-type confidence bar (20 pp moneyline, 10 pp baseball/soccer, 5 pp spread cover). Live thresholds live in web/hubacek_picks.py; per-league overrides (min_market_gap_pp, min_win_confidence_pp, min_ev_pct, ml_lo/ml_hi, allowed_sides, min_spread_cover_gap_pp, min_spread_confidence_pp, min_spread_point_edge) are stored here from walk-forward bet backtests.",
+  "policy": "Official picks use Hubáček gates: decorrelated model beats the de-vigged market by a backtested per-league gap, honest EV floor (calibrated pre-decorrelation probability), and a per-bet-type confidence bar (defaults 20 pp moneyline, 10 pp baseball/soccer, 5 pp spread cover). Live thresholds live in web/hubacek_picks.py; per-league overrides are stored here from walk-forward bet backtests. Enable bar: positive worst-season ROI at the execution price we would actually take (prefer multi-season).",
   "generated_at": "2026-07-12",
   "default": {
     "min_edge": 0,
@@ -16,77 +16,80 @@
     "bet_type": "moneyline",
     "min_market_gap_pp": 6.7,
     "min_win_confidence_pp": 0.0,
-    "min_ev_pct": 2.0,
+    "min_ev_pct": 0.0,
     "ml_lo": -200,
     "ml_hi": 200,
     "enabled": true,
-    "note": "MLB v2 (75 features: ISO/XBH, bullpen outs-5, SP FIP trend, platoon K/OBP matchups, market-aware ML head + open→close steam) walk-forward backtest (scripts/backtest_mlb_bets.py): raw model-market gap >= 6 pp (6.7 pp after 1.12x decorrelation), prices -200..+200. Opening-line ROI +34.3% (2024-2026, CLV +21.8%); closing-line floor -2.2% — prior gate study; re-run backtest after feature expansion before treating as live ROI. Bets recorded in the morning sit between those brackets.",
-    "backtest_roi_pct": 34.32,
-    "backtest_bets": 1035
+    "note": "MLB v2 (75 features) walk-forward backtest 2026-07-12 (scripts/backtest_mlb_bets.py): raw model-market gap >= 6 pp (6.7 pp after 1.12x decorrelation), EV >= 0%, prices -200..+200. Opening-line ROI +5.93% (1030 bets, 2024-2026, all 3 seasons positive, worst +4.01%, CLV +8.13%); closing-line floor -2.61%. Morning bets sit between open and close.",
+    "backtest_roi_pct": 5.93,
+    "backtest_bets": 1030,
+    "backtest_close_roi_pct": -2.61
   },
   "nba": {
     "bet_type": "spread",
     "min_spread_cover_gap_pp": 10.0,
     "min_spread_confidence_pp": 5.0,
-    "min_spread_point_edge": 0.0,
+    "min_spread_point_edge": 3.0,
     "min_ev_pct": 2.0,
     "enabled": true,
-    "note": "NBA v2 (90 features: team four-factors + schedule/context + player minutes/usage/AST-TOV/DNP/bench + starter-rest; market heads add spread/ML + open→close steam) walk-forward backtest (scripts/backtest_nba_bets.py): market-aware margin model cover gap >= 10 pp at the opening spread. Opening-line ROI +24.6% with all 3 open-odds seasons positive (2024-2026, 627 bets, worst-season +15.3%) — prior gate study on 89-feature stack; re-run after expansion before treating as live ROI. Bets recorded in the morning sit between the open and close.",
-    "backtest_roi_pct": 24.57,
-    "backtest_bets": 627
+    "note": "NBA v2 (90 features) walk-forward backtest 2026-07-12 (scripts/backtest_nba_bets.py): market-aware margin cover gap >= 10 pp and point edge >= 3 at the opening spread. Opening-line ROI +20.77% (451 bets, 2024-2025 open-odds window, both seasons positive, worst +15.63%). Bets recorded in the morning sit between the open and close.",
+    "backtest_roi_pct": 20.77,
+    "backtest_bets": 451
   },
   "wnba": {
     "bet_type": "spread",
-    "min_spread_cover_gap_pp": 8.0,
+    "min_spread_cover_gap_pp": 10.0,
     "min_spread_confidence_pp": 5.0,
+    "min_spread_point_edge": 0.0,
     "min_ev_pct": 2.0,
-    "enabled": true,
-    "note": "WNBA v2 (79 features incl. NBA-parity rotation/DNP/usage; OOS LL ~0.623) walk-forward backtest (scripts/backtest_wnba_bets.py): pure margin model cover probability vs the juice-implied break-even. Live Hubáček gate in this file stays at 8 pp cover gap with a 5 pp confidence floor (prior open-line backtest at that gate: +5.2% ROI / 321 bets on the thinner 66-feature stack). data/models/wnba_v2/bet_policy.json may use a different grid for research — that is not the live site gate. Morning bets sit between open and close.",
-    "backtest_roi_pct": 5.22,
-    "backtest_bets": 321
+    "enabled": false,
+    "note": "Official tracking disabled after 2026-07-12 re-backtest. Best open-line pure-margin policy (cover gap >= 10 pp) has ROI +4.33% / 259 bets but worst-season ROI -0.97% (2024) — fails the positive worst-season enable bar. Gate parameters kept for research; re-enable only after a multi-season positive worst-season open (or non-terrible close floor).",
+    "backtest_roi_pct": 4.33,
+    "backtest_bets": 259
   },
   "cbb": {
+    "bet_type": "spread",
+    "min_spread_cover_gap_pp": 10.0,
+    "min_spread_point_edge": 3.0,
+    "min_spread_confidence_pp": 5.0,
+    "min_ev_pct": 2.0,
+    "enabled": false,
+    "note": "Official tracking stays disabled. CBBGradientBoost v2 (70 features). 2026-07-12 close-line Hubacek sweep still catastrophic (−57.62% best / 3994 bets on 2024–25 window). Open-line research best +3.41% / 1640 bets is single-season only — does not clear the enable bar. Expand odds: python scripts/fetch_cbb_odds.py --start-season 2022 --end-season 2026.",
+    "backtest_roi_pct": -57.62,
+    "backtest_bets": 3994,
+    "backtest_open_roi_pct": 3.41,
+    "backtest_open_bets": 1640
+  },
+  "nfl": {
+    "bet_type": "spread",
+    "min_spread_cover_gap_pp": 4.0,
+    "min_spread_point_edge": 5.0,
+    "min_spread_confidence_pp": 5.0,
+    "min_ev_pct": 2.0,
+    "enabled": false,
+    "note": "NFLGradientBoost v2 is live for predictions (65 features; live nflverse QB/coach/weather). Official picks stay disabled: 2026-07-12 close-only Hubacek sweep best worst-season ROI −16.22% (overall +2.45% / 563 bets, 8/16 seasons positive). nflverse has no opening lines. Gate parameters are research-best only."
+  },
+  "cfb": {
     "bet_type": "spread",
     "min_spread_cover_gap_pp": 7.0,
     "min_spread_point_edge": 5.0,
     "min_spread_confidence_pp": 5.0,
     "min_ev_pct": 2.0,
     "enabled": false,
-    "note": "Official tracking stays disabled. CBBGradientBoost v2 now has 70 pure features (four-factor/pace when ESPN boxes available; market heads soft-skip until odds coverage grows). Prior close-line Hubacek sweep still catastrophic (−57.9% best / −71.7% at live gates on 2024–25 window) — feature expansion alone does not clear the enable bar. Re-enable only after multi-season positive worst-season close (or open with non-terrible close floor). Expand odds: python scripts/fetch_cbb_odds.py --start-season 2022 --end-season 2026.",
-    "backtest_roi_pct": -57.89,
-    "backtest_bets": 3993,
-    "backtest_open_roi_pct": 2.48,
-    "backtest_open_bets": 608
-  },
-  "nfl": {
-    "bet_type": "spread",
-    "min_spread_cover_gap_pp": 5.5,
-    "min_spread_point_edge": 3.0,
-    "min_spread_confidence_pp": 5.0,
-    "min_ev_pct": 2.5,
-    "enabled": false,
-    "note": "NFLGradientBoost v2 is live for predictions (65 features: team Elo/EWMA + QB/coach Elo + coach streaks + rest/weather/roof/div; live now injects nflverse QB/coach/weather for train/serve parity; market-aware heads when MLs present). OOS margin MAE ~10.45. Official picks stay disabled: close-only Hubacek sweep still has negative worst-season ROI (best about -12.6% on prior stack). nflverse has no opening lines. Gate parameters kept for reference only."
-  },
-  "cfb": {
-    "bet_type": "spread",
-    "min_spread_cover_gap_pp": 6.5,
-    "min_spread_point_edge": 4.0,
-    "min_spread_confidence_pp": 5.0,
-    "min_ev_pct": 2.5,
-    "enabled": false,
-    "note": "CFBGradientBoost v2 is live for predictions (60 features: short-week/bye, power-conf, QB EntityElo stub, luck proxies; OOS LL ~0.526 / margin MAE ~13.50). Official picks stay disabled: best spread policy worst-season ROI remains negative (~-5% on prior stack). Gate parameters kept for reference only."
+    "note": "CFBGradientBoost v2 is live for predictions (60 features). Official picks stay disabled: 2026-07-12 best close policy worst-season ROI −4.97% (overall −2.81%); best open worst −5.44%. Gate parameters kept for research only."
   },
   "nhl": {
     "bet_type": "moneyline",
-    "min_market_gap_pp": 7.8,
+    "min_market_gap_pp": 2.8,
     "min_win_confidence_pp": 0.0,
-    "min_ev_pct": 2.0,
+    "min_ev_pct": 0.0,
     "ml_lo": -350,
     "ml_hi": 300,
-    "enabled": true,
-    "note": "NHL v2 (93 features: flurry/rebound xG, PP/PK ice, goalie HD GSAx, giveaways/hits-against/corsi-all/EV-xG-share/PP-TOI share, schedule density; market-aware ML head) walk-forward backtest (scripts/backtest_nhl_bets.py): raw model-market gap >= 7 pp (7.8 pp after 1.12x decorrelation), prices -350..+300. Opening-line ROI +9.4% with all 3 open-odds seasons positive (CLV +3.95%); closing-line 12-season ROI +6.1% — prior gate study; re-run after feature expansion before treating as live ROI. Bets recorded in the morning sit between the open and close.",
-    "backtest_roi_pct": 9.41,
-    "backtest_bets": 675
+    "enabled": false,
+    "note": "Official tracking disabled after 2026-07-12 re-backtest. Best open-line policy (raw gap >= 2.5 pp → 2.8 pp after 1.12x decorrelation, EV >= 0%, ML −350..+300) has overall ROI +5.93% / 2432 bets and CLV +2.38%, but worst-season open ROI −1.26% (2024) — fails the positive worst-season enable bar. Close 12-season ROI +4.7% also has negative worst (−3.86%). Prior 7 pp gate is worse on this OOS (open worst −6.77%). Re-enable only after positive worst-season at execution price.",
+    "backtest_roi_pct": 5.93,
+    "backtest_bets": 2432,
+    "backtest_close_roi_pct": 4.7
   },
   "epl": {
     "bet_type": "soccer_1x2",
@@ -95,9 +98,9 @@
     "min_ev_pct": 5.0,
     "allowed_sides": ["home"],
     "enabled": true,
-    "note": "Soccer v2 pooled top-5 walk-forward backtest (scripts/backtest_soccer_bets.py): market-aware calibrated home prob beats the devigged opening line by >= 4 pp raw (4.6 pp after 1.15x decorrelation), EV >= 5% — home outcomes only (draw/away legs were not profitable). Engine now 57 pure features (+yellow/red burden, corners against). Best-price execution ROI +4.3% across 2015-2025 with 10/11 seasons positive, CLV +4.0% (65% positive-CLV bets) — prior gate study; re-run after expansion before treating as live ROI.",
-    "backtest_roi_pct": 4.34,
-    "backtest_bets": 1834
+    "note": "Soccer v2 pooled top-5 walk-forward backtest 2026-07-12 (scripts/backtest_soccer_bets.py): market-aware calibrated home prob beats the devigged opening line by >= 4 pp raw (4.6 pp after 1.15x decorrelation), EV >= 5% — home outcomes only. Best-price execution ROI +8.6% across 2015-2025 (1771 bets, 9/11 seasons positive, worst −4.35%, CLV +4.16%).",
+    "backtest_roi_pct": 8.6,
+    "backtest_bets": 1771
   },
   "bundesliga": {
     "bet_type": "soccer_1x2",
@@ -107,8 +110,8 @@
     "allowed_sides": ["home"],
     "enabled": true,
     "note": "Shares the pooled soccer v2 policy (see epl entry).",
-    "backtest_roi_pct": 4.34,
-    "backtest_bets": 1834
+    "backtest_roi_pct": 8.6,
+    "backtest_bets": 1771
   },
   "laliga": {
     "bet_type": "soccer_1x2",
@@ -118,8 +121,8 @@
     "allowed_sides": ["home"],
     "enabled": true,
     "note": "Shares the pooled soccer v2 policy (see epl entry).",
-    "backtest_roi_pct": 4.34,
-    "backtest_bets": 1834
+    "backtest_roi_pct": 8.6,
+    "backtest_bets": 1771
   },
   "seriea": {
     "bet_type": "soccer_1x2",
@@ -129,8 +132,8 @@
     "allowed_sides": ["home"],
     "enabled": true,
     "note": "Shares the pooled soccer v2 policy (see epl entry).",
-    "backtest_roi_pct": 4.34,
-    "backtest_bets": 1834
+    "backtest_roi_pct": 8.6,
+    "backtest_bets": 1771
   },
   "ligue1": {
     "bet_type": "soccer_1x2",
@@ -140,8 +143,8 @@
     "allowed_sides": ["home"],
     "enabled": true,
     "note": "Shares the pooled soccer v2 policy (see epl entry).",
-    "backtest_roi_pct": 4.34,
-    "backtest_bets": 1834
+    "backtest_roi_pct": 8.6,
+    "backtest_bets": 1771
   },
   "worldcup": {
     "bet_type": "soccer_1x2",

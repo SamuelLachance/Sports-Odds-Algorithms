@@ -1,35 +1,42 @@
 {
   "stake_mode": "kelly",
   "kelly_fraction": 0.25,
+  "enabled": false,
+  "enabled_note": "Open-line best policy has worst-season ROI -0.97% (2024) — fails positive worst-season enable bar. Official picks stay disabled.",
   "bet_type": "spread",
   "margin_col": "model_margin",
   "exec_price": "open",
-  "sigma": 12.532,
-  "min_cover_gap_pp": 12.0,
+  "sigma": 12.508,
+  "min_cover_gap_pp": 10.0,
   "min_point_edge": 0.0,
   "model_variant": "pure",
   "backtest": {
-    "bets": 194,
-    "staked_units": 582.0,
-    "profit_units": 10.7,
-    "roi_pct": 1.84,
-    "win_rate": 0.5309,
-    "max_drawdown_units": 40.2,
+    "bets": 259,
+    "staked_units": 777.0,
+    "profit_units": 33.6,
+    "roi_pct": 4.33,
+    "win_rate": 0.5444,
+    "max_drawdown_units": 45.7,
     "seasons_positive": 2,
-    "seasons_total": 2,
-    "worst_season_roi": 1.74,
-    "median_season_roi": 1.85
+    "seasons_total": 3,
+    "worst_season_roi": -0.97,
+    "median_season_roi": 8.19
   },
   "backtest_per_season": {
+    "2023": {
+      "bets": 1,
+      "roi_pct": 89.29,
+      "profit_units": 2.7
+    },
     "2024": {
-      "bets": 81,
-      "roi_pct": 1.97,
-      "profit_units": 4.8
+      "bets": 118,
+      "roi_pct": -0.97,
+      "profit_units": -3.4
     },
     "2025": {
-      "bets": 113,
-      "roi_pct": 1.74,
-      "profit_units": 5.9
+      "bets": 140,
+      "roi_pct": 8.19,
+      "profit_units": 34.4
     }
   }
 }

@@ -297,13 +297,31 @@ def test_rejects_low_confidence() -> None:
 
 
 def test_rejects_non_positive_ev() -> None:
+    """Negative EV must never enter the book (MLB backtested floor is EV >= 0%)."""
     store = {"version": 1, "bets": []}
     slate = {
         "date_label": "2026-06-11",
-        "recommended_bets": [_sample_pick(ev_pct=0)],
+        "recommended_bets": [_sample_pick(ev_pct=-0.01)],
         "games": [],
     }
     store = record_from_slate(store, slate)
+    assert store["bets"] == []
+
+    # NBA still requires EV >= 2%; a zero-EV NBA pick is rejected.
+    nba_zero = {
+        **_sample_pick(ev_pct=0, gap_pp=12.0, win_probability=62.0),
+        "league": "nba",
+        "league_name": "NBA",
+        "bet_type": "spread",
+        "spread_line": -3.5,
+        "spread_odds": -110,
+        "market_odds": -110,
+    }
+    store = record_from_slate({"version": 1, "bets": []}, {
+        "date_label": "2026-06-11",
+        "recommended_bets": [nba_zero],
+        "games": [],
+    })
     assert store["bets"] == []
 
 

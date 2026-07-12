@@ -311,9 +311,9 @@ def test_app_js_mlb_nhl_frontend_contracts() -> None:
     assert "trackingLoadFailed" in summary_fn
     assert "Tracking unavailable" in summary_fn
     assert "formatRoiPercent" in summary_fn
-    # Methodology MLB close ROI must match bet_policy / pick_strategy (−2.2%, not −3.2%).
-    assert "−2.2% at the close" in js
-    assert "+34.3% ROI" in js
+    # Methodology MLB close ROI must match bet_policy / pick_strategy (−2.6%, not stale −2.2% / −3.2%).
+    assert "−2.6% at the close" in js
+    assert "+5.9% ROI" in js
     assert "−3.2% at the close" not in js
     # expected_units is model EV per 1u flat — never label it as CLV.
     assert "CLV / EV units" not in js

@@ -70,6 +70,9 @@ def test_cbb_bet_policy_disabled_with_reason() -> None:
     assert POLICY_PATH.is_file()
     policy = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
     assert policy.get("enabled") is False
-    assert "reason" in policy
-    close = policy.get("research_best_close") or {}
-    assert (close.get("backtest") or {}).get("roi_pct", 0) < 0
+    assert policy.get("enabled_note") or policy.get("reason")
+    # Close-line research remains catastrophic; open-line research is recorded
+    # on the chosen (disabled) open policy backtest block.
+    open_bt = policy.get("backtest") or {}
+    assert open_bt.get("seasons_total", 0) <= 1
+    assert policy.get("exec_price") == "open"
