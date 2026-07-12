@@ -1,4 +1,4 @@
-const APP_BUILD_VERSION = "2026-07-12-wave6-dx";
+const APP_BUILD_VERSION = "2026-07-12-wave7-dx";
 const META_BASE_PATH =
   document.querySelector('meta[name="base-path"]')?.content ?? "";
 const IS_GITHUB_IO = window.location.hostname.endsWith("github.io");
@@ -27,6 +27,7 @@ const state = {
   selectedLeague: "all",
   sidebarLeague: null,
   trackingPeriod: "all_time",
+  trackingLoadFailed: false,
 };
 
 const appRoot = document.getElementById("appRoot");
@@ -738,7 +739,13 @@ function slateStatusBanners(slate) {
   if (staleLive) {
     parts.push(`<aside class="status-banner status-banner--stale" role="status">
       <strong>Stale live inputs</strong>
-      <span>At least one model reused cached NHL/soccer feeds after a fetch failure — projections may lag.</span>
+      <span>At least one model reused cached NHL/MLB/soccer feeds after a fetch failure — projections may lag.</span>
+    </aside>`);
+  }
+  if (state.trackingLoadFailed) {
+    parts.push(`<aside class="status-banner status-banner--warn" role="status">
+      <strong>Tracking unavailable</strong>
+      <span>Could not load bet history for this build — ROI and record cards may show empty placeholders until the next refresh.</span>
     </aside>`);
   }
   return parts.join("");
@@ -848,12 +855,25 @@ function hubacekThreeTrackPanel(game, pick) {
     m.pre_context_home_win_probability ??
     null;
   let evProb = top?.base_win_probability ?? null;
-  if (evProb == null && homeEvFallback != null) {
-    // Home-only model fields must be inverted for away moneylines.
-    evProb =
-      top?.side === "away"
-        ? Math.round((100 - Number(homeEvFallback)) * 100) / 100
-        : homeEvFallback;
+  if (evProb == null) {
+    const betType = top?.bet_type || "moneyline";
+    if (betType === "spread") {
+      // Cover % already drives EV; do not fall back to ML home %.
+      evProb = pickProb ?? null;
+    } else if (betType === "moneyline" && homeEvFallback != null) {
+      // Home-only model fields must be inverted for away moneylines.
+      evProb =
+        top?.side === "away"
+          ? Math.round((100 - Number(homeEvFallback)) * 100) / 100
+          : homeEvFallback;
+    } else if (top?.side === "draw") {
+      evProb =
+        m.pre_decorrelation_draw_probability ??
+        m.pre_context_draw_probability ??
+        m.draw_probability ??
+        null;
+    }
+    // Other bet types / missing tracks: leave null → "—"
   }
 
   const kicker = predictionsOnly ? "Model probability tracks" : "Hubáček 3-track";
@@ -2906,7 +2926,10 @@ function highlightNav(route) {
     path === "" ? "/" : path === "team" || path === "player" ? "/teams" : `/${path}`;
 
   document.querySelectorAll("#mainNav a, #mobileBottomNav a").forEach((a) => {
-    a.classList.toggle("active", a.dataset.route === activeRoute);
+    const isActive = a.dataset.route === activeRoute;
+    a.classList.toggle("active", isActive);
+    if (isActive) a.setAttribute("aria-current", "page");
+    else a.removeAttribute("aria-current");
   });
 }
 
@@ -2920,6 +2943,10 @@ function toggleMobileNav() {
   const open = mainNav?.classList.toggle("open");
   navToggle?.setAttribute("aria-expanded", open ? "true" : "false");
   navToggle?.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+}
+
+function isMobileNavOpen() {
+  return Boolean(mainNav?.classList.contains("open"));
 }
 
 async function render() {
@@ -2956,7 +2983,7 @@ async function render() {
     else if (route.path === "methodology") viewMethodology();
     else viewDashboard();
   } catch (err) {
-    appRoot.innerHTML = `<div class="panel empty-panel error-panel">${escapeHtml(err.message)}</div>`;
+    appRoot.innerHTML = `<div class="panel empty-panel error-panel" role="alert">${escapeHtml(err.message)}</div>`;
   }
 }
 
@@ -2982,7 +3009,9 @@ async function loadPlatform() {
 
   if (trackingResult.status === "fulfilled") {
     state.tracking = trackingResult.value;
+    state.trackingLoadFailed = false;
   } else {
+    state.trackingLoadFailed = true;
     state.tracking = {
       bets: [],
       summary: { record: "0-0", units: 0, roi_percent: 0, pending: 0 },
@@ -3010,7 +3039,7 @@ async function loadPlatform() {
   try {
     await render();
   } catch (err) {
-    appRoot.innerHTML = `<div class="panel empty-panel error-panel">${escapeHtml(err.message)}</div>`;
+    appRoot.innerHTML = `<div class="panel empty-panel error-panel" role="alert">${escapeHtml(err.message)}</div>`;
   }
 }
 
@@ -3018,6 +3047,10 @@ window.addEventListener("hashchange", () => render());
 navToggle?.addEventListener("click", toggleMobileNav);
 mainNav?.querySelectorAll("a").forEach((link) => {
   link.addEventListener("click", closeMobileNav);
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape" || !isMobileNavOpen()) return;
+  closeMobileNav();
 });
 
 // Game list cards look clickable — navigate unless the user hit an inner link/button.
@@ -3038,5 +3071,5 @@ appRoot?.addEventListener("keydown", (event) => {
 });
 
 loadPlatform().catch((err) => {
-  appRoot.innerHTML = `<div class="panel empty-panel error-panel">${escapeHtml(err.message)}</div>`;
+  appRoot.innerHTML = `<div class="panel empty-panel error-panel" role="alert">${escapeHtml(err.message)}</div>`;
 });

@@ -560,9 +560,11 @@ def predict_live_game(
     }
     if draw_proj is not None:
         model_payload["draw_projection"] = draw_proj
-    if (blended.get("hockey_pred") or {}).get("live_inputs_stale") or (
-        blended.get("soccer_pred") or {}
-    ).get("live_inputs_stale"):
+    if (
+        (blended.get("hockey_pred") or {}).get("live_inputs_stale")
+        or (blended.get("soccer_pred") or {}).get("live_inputs_stale")
+        or (blended.get("baseball_pred") or {}).get("live_inputs_stale")
+    ):
         model_payload["live_inputs_stale"] = True
 
     if is_soccer_league(game.league):

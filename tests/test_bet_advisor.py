@@ -9,8 +9,10 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from web.bet_advisor import (  # noqa: E402
+    BetPick,
     _breakeven_american,
     _odds_edge,
+    best_pick_only,
     evaluate_picks,
     evaluate_spread_picks,
     expected_value_pct,
@@ -55,6 +57,7 @@ def test_evaluate_spread_picks_meets_edge_threshold() -> None:
     assert picks[0].edge >= MIN_RECOMMENDED_EDGE
     assert picks[0].consensus_spread == -1.5
     assert picks[0].spread_line == -1.5
+    assert picks[0].extra.get("base_win_probability") == round(picks[0].win_probability, 2)
 
 
 def test_evaluate_spread_picks_skips_without_consensus() -> None:
@@ -485,6 +488,42 @@ def test_spread_picks_require_hubacek_decorrelation_gap() -> None:
     assert picks == []
 
 
+def test_best_pick_only_selects_highest_profit_score() -> None:
+    weak = BetPick(
+        side="away",
+        team_name="Away",
+        team_slug="away",
+        strategy="value",
+        confidence="medium",
+        edge=3.0,
+        model_projection=110,
+        market_odds=120,
+        win_probability=48.0,
+        reason="weak",
+        ev_pct=1.5,
+        profit_score=1.0,
+    )
+    strong = BetPick(
+        side="home",
+        team_name="Home",
+        team_slug="home",
+        strategy="value",
+        confidence="high",
+        edge=5.0,
+        model_projection=-130,
+        market_odds=-110,
+        win_probability=58.0,
+        reason="strong",
+        ev_pct=4.0,
+        profit_score=9.0,
+    )
+    assert best_pick_only([]) == []
+    chosen = best_pick_only([weak, strong])
+    assert len(chosen) == 1
+    assert chosen[0].side == "home"
+    assert chosen[0].profit_score >= strong.profit_score
+
+
 if __name__ == "__main__":
     test_spread_line_for_side()
     test_spread_point_edge_home_favorite()
@@ -508,4 +547,5 @@ if __name__ == "__main__":
     test_ensemble_home_margin_sign_does_not_flip_spread_pick()
     test_spread_picks_require_hubacek_decorrelation_gap()
     test_cross_sign_reason_does_not_claim_book_beats_model_line()
+    test_best_pick_only_selects_highest_profit_score()
     print("test_bet_advisor.py: all tests passed")

@@ -265,8 +265,8 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
         if prior is None:
             index[key] = b
             continue
-        # Prefer an existing pending row when legacy date-keyed duplicates exist.
-        if prior.get("status") != "pending" and b.get("status") == "pending":
+        # Prefer settled over pending so a graded row is never reopened.
+        if _bet_preference_rank(b) > _bet_preference_rank(prior):
             index[key] = b
     games_by_event = {
         str(g.get("event_id")): g

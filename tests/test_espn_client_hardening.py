@@ -58,6 +58,40 @@ def test_fetch_scoreboard_raises_when_all_requests_fail() -> None:
     assert raised
 
 
+def test_fetch_scoreboard_soft_fails_timeout_error() -> None:
+    """TimeoutError after retries must soft-fail like URLError (not abort the date loop)."""
+    from datetime import date
+    from unittest.mock import patch
+
+    def boom(_url: str):
+        raise TimeoutError("espn timed out")
+
+    with patch("web.espn_client._fetch_json", side_effect=boom):
+        try:
+            espn_client.fetch_scoreboard("nba", on_date=date(2026, 7, 12))
+            raised = False
+        except espn_client.ScoreboardFetchError:
+            raised = True
+    assert raised
+
+
+def test_fetch_scoreboard_soft_fails_json_decode_error() -> None:
+    import json
+    from datetime import date
+    from unittest.mock import patch
+
+    def boom(_url: str):
+        raise json.JSONDecodeError("bad", "doc", 0)
+
+    with patch("web.espn_client._fetch_json", side_effect=boom):
+        try:
+            espn_client.fetch_scoreboard("nhl", on_date=date(2026, 7, 12))
+            raised = False
+        except espn_client.ScoreboardFetchError:
+            raised = True
+    assert raised
+
+
 def test_fetch_scoreboard_empty_payload_is_not_a_fetch_error() -> None:
     """A successful empty scoreboard is a real empty slate, not ScoreboardFetchError."""
     from datetime import date

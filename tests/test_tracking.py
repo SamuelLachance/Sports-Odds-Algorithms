@@ -331,6 +331,74 @@ def test_normalize_store_collapses_legacy_duplicate_keys() -> None:
     assert summary["roi_percent"] == 140.0
 
 
+def test_record_from_slate_does_not_reopen_settled_when_pending_dupe_present() -> None:
+    """Settled wins must stay settled even if a legacy pending twin is still in the file."""
+    from unittest.mock import patch
+
+    from web.tracking_service import record_from_slate
+
+    settled = {
+        "id": "401815712:home",
+        "event_id": "401815712",
+        "side": "home",
+        "bet_type": "moneyline",
+        "status": "win",
+        "units": 1.2,
+        "stake_units": 1.0,
+        "market_odds": -120,
+        "recorded_at": "2026-07-11T18:00:00+00:00",
+        "league": "mlb",
+        "league_name": "MLB",
+        "team_name": "Yankees",
+        "team_slug": "nyy",
+        "matchup": "BOS @ NYY",
+        "strategy": "hubacek",
+        "ev_pct": 8.0,
+        "kelly_pct": 2.0,
+    }
+    pending_twin = {
+        **settled,
+        "id": "401815712:home:legacy",
+        "status": "pending",
+        "units": 0.0,
+        "recorded_at": "2026-07-10T12:00:00+00:00",
+    }
+    # Bypass normalize so both rows exist in the working list; index must prefer settled.
+    store = {"version": 1, "bets": [pending_twin, settled]}
+    slate = {
+        "date_label": "2026-07-12",
+        "recommended_bets": [
+            {
+                "event_id": "401815712",
+                "side": "home",
+                "bet_type": "moneyline",
+                "league": "mlb",
+                "league_name": "MLB",
+                "team_name": "Yankees",
+                "team_slug": "nyy",
+                "matchup": "BOS @ NYY",
+                "strategy": "hubacek",
+                "market_odds": -110,
+                "ev_pct": 9.0,
+                "kelly_pct": 2.5,
+                "start_time": "2099-07-12T23:00:00+00:00",
+            }
+        ],
+    }
+    with patch("web.tracking_service.eligible_for_official_picks", return_value=True), patch(
+        "web.tracking_service.passes_hubacek_tracked_pick", return_value=True
+    ), patch(
+        "web.tracking_service._normalize_store",
+        side_effect=lambda s: {"version": 1, "bets": list(s.get("bets") or [])},
+    ):
+        out = record_from_slate(store, slate)
+    wins = [b for b in out["bets"] if b.get("event_id") == "401815712"]
+    assert any(b.get("status") == "win" for b in wins)
+    assert not any(
+        b.get("status") == "pending" and b.get("closing_market_odds") == -110 for b in wins
+    )
+
+
 def test_closing_snapshot_prefers_consensus_moneyline() -> None:
     """Multi-book consensus beats the single ESPN price for the closing snapshot."""
     store = {"version": 1, "bets": []}

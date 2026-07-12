@@ -49,6 +49,8 @@ def test_cors_origins_default_to_pages_and_localhost() -> None:
     from web.app import cors_allow_origins
 
     origins = cors_allow_origins()
+    assert "https://sharpsheettips.com" in origins
+    assert "https://www.sharpsheettips.com" in origins
     assert "https://samuellachance.github.io" in origins
     assert "http://127.0.0.1:8000" in origins
     assert "*" not in origins

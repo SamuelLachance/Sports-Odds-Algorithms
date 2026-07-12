@@ -295,7 +295,8 @@ def fetch_scoreboard(
         attempts += 1
         try:
             payload = _fetch_json(url)
-        except urllib.error.URLError:
+        except (urllib.error.URLError, TimeoutError, json.JSONDecodeError):
+            # Soft-fail per date so a timeout on day 0 does not abort days_ahead.
             failures += 1
             continue
 
@@ -313,7 +314,7 @@ def fetch_scoreboard(
         attempts += 1
         try:
             payload = _fetch_json(url)
-        except urllib.error.URLError:
+        except (urllib.error.URLError, TimeoutError, json.JSONDecodeError):
             failures += 1
             payload = None
 
@@ -347,7 +348,7 @@ def fetch_team_schedule(league: str, espn_team_id: str, season: int) -> list[dic
         return _SCHEDULE_CACHE[url]
     try:
         payload = _fetch_json(url)
-    except urllib.error.URLError:
+    except (urllib.error.URLError, TimeoutError, json.JSONDecodeError):
         return []
     events = payload.get("events") or []
     _SCHEDULE_CACHE[url] = events

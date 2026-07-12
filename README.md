@@ -10,7 +10,7 @@ Daily algorithmic sports betting platform across **NBA, WNBA, CBB, NFL, CFB, NHL
 
 | Feature | Description |
 |---------|-------------|
-| **Daily slate** | Rebuilt **4×/day** America/Toronto (midnight, 6 AM, noon, 6 PM EDT) and on every push via GitHub Actions |
+| **Daily slate** | Rebuilt **4×/day** via UTC crons `0 4/10/16/22` (midnight / 6 AM / noon / 6 PM **EDT**; +1h during EST) and on every push via GitHub Actions |
 | **Live data** | ESPN schedules, scores, and consensus moneylines/spreads; multi-book enrichment for NBA/NHL/MLB/WNBA when available |
 | **Unified model** | Prefer sport-specific **GradientBoost v2** when trained; otherwise blend legacy **Algo V2**, **power ratings**, and supporting sport layers |
 | **Algo picks** | Hubáček-style official picks: decorrelated model must beat the de-vigged market by ≥2 pp with ≥2% honest EV and a per-bet-type confidence bar (stricter per-league overrides where walk-forward backtests exist) |
@@ -91,11 +91,15 @@ python -m uvicorn web.app:app --reload --host 127.0.0.1 --port 8000
 
 Open [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser.
 
-### Verify core algorithms
+### Verify (local DX gate)
+
+Prefer the single gate used by agents and CI-adjacent checks:
 
 ```powershell
-python -m pytest tests/test_hubacek_picks.py tests/test_tracking.py tests/test_clv_service.py tests/test_context_signals.py tests/test_portfolio_sizing.py tests/test_live_odds_enrichment.py tests/test_pick_strategy.py tests/test_bet_advisor.py tests/test_official_picks_hubacek.py tests/test_cbb_pred_model.py -q --tb=short
-python smoke_test.py
+python scripts/dev_check.py              # pytest -m "not slow" + smoke_test
+python scripts/dev_check.py --quick-only # pytest only
+python scripts/dev_check.py --full       # full suite + smoke
+python scripts/dev_check.py --fail-fast  # stop on first failing step
 ```
 
 The demo can also use bundled historical team CSV files (no live scraping required). Default example:
@@ -129,7 +133,8 @@ Static assets are built from `web/static/` into `docs/` by `scripts/build_gh_pag
 | `web/daily_service.py` | Daily slate and pick generation |
 | `web/tracking_service.py` | Bet logging, grading, CLV vs ESPN consensus close |
 | `scripts/build_gh_pages.py` | GitHub Pages static build |
-| `.github/workflows/test.yml` | CI: core pytest + smoke_test on push/PR to master |
+| `scripts/dev_check.py` | Local DX gate (fast pytest + smoke; `--full` / `--compile` / `--with-v2` / `--fail-fast`) |
+| `.github/workflows/test.yml` | CI: compileall + full pytest suite + smoke_test on push/PR to master |
 
 ---
 

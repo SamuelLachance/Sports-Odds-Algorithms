@@ -416,7 +416,11 @@ def _attach_soccer_context_layer(
         away_espn_id=away_espn_id,
     )
     if not context:
-        return result
+        # Lock daily FLB/news re-apply even when ESPN context is unavailable,
+        # matching attach_soccer_context_display (v2) so Path A is symmetric.
+        updated = dict(result)
+        updated["context_adjustment_pp"] = 0.0
+        return updated
 
     home_p = float(context["home_win_probability"])
     draw_p = float(context["draw_probability"])

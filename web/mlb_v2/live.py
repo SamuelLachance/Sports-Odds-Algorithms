@@ -22,7 +22,7 @@ import numpy as np
 
 from web.mlb_stats_api import ESPN_TO_MLB_TEAM_ID
 from web.mlb_v2.feature_engine import FEATURE_COLUMNS, MlbFeatureEngine
-from web.mlb_v2.replay import replay_season
+from web.mlb_v2.replay import is_final_game, replay_season
 from web.mlb_v2.statsapi_data import (
     fetch_pitcher_logs,
     fetch_season_games,
@@ -253,7 +253,8 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
         gap_bundle, gap_stale = _fetch_current_season_bundle(gap_season, day_iso)
         live_inputs_stale = live_inputs_stale or gap_stale
         if gap_bundle is None:
-            continue
+            # Missing intermediate season would skip Elo/form/SP state — fail closed.
+            return None
         replay_season(
             engine,
             gap_season,
@@ -279,10 +280,14 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
     )
 
     todays_games: dict[tuple[int, int], dict[str, Any]] = {}
+    todays_finals: list[dict[str, Any]] = []
     for game in bundle["games"]:
-        if str(game.get("date")) == day_iso:
-            key = (int(game["home_id"]), int(game["away_id"]))
-            todays_games[key] = _prefer_todays_game(todays_games.get(key), game)
+        if str(game.get("date")) != day_iso:
+            continue
+        key = (int(game["home_id"]), int(game["away_id"]))
+        todays_games[key] = _prefer_todays_game(todays_games.get(key), game)
+        if is_final_game(game):
+            todays_finals.append(game)
 
     pitcher_names: dict[int, str] = {}
     for game in bundle["games"]:
@@ -296,6 +301,7 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
         "engine": engine,
         "artifacts": art,
         "todays_games": todays_games,
+        "todays_finals": todays_finals,
         "pitcher_names": pitcher_names,
         "season": season,
         "day_iso": day_iso,
@@ -336,6 +342,22 @@ def predict_matchup_v2(
 
     engine: MlbFeatureEngine = context["engine"]
     art = context["artifacts"]
+
+    # Afternoon DH: morning-of replay stops before day_iso, so apply earlier
+    # same-day finals for this matchup on a cloned engine before scoring game 2+.
+    selected_gn = int(game.get("game_number") or 1)
+    earlier_finals = [
+        prior
+        for prior in context.get("todays_finals") or []
+        if int(prior.get("home_id") or 0) == home_id
+        and int(prior.get("away_id") or 0) == away_id
+        and int(prior.get("game_number") or 1) < selected_gn
+    ]
+    if earlier_finals:
+        engine = MlbFeatureEngine.from_dict(engine.to_dict())
+        for prior in sorted(earlier_finals, key=lambda g: int(g.get("game_number") or 1)):
+            engine.update_after_game(prior)
+
     features = engine.features_for_game(game)
     prob_home = _predict_probability(art, features)
     runs = _predict_runs(art, features)

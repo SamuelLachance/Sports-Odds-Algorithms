@@ -29,9 +29,11 @@ STATIC_DIR = Path(__file__).resolve().parent / "static"
 
 logger = logging.getLogger(__name__)
 
-# Public Pages origin + local API/dev hosts. Override with CORS_ALLOW_ORIGINS
+# Public site origins + local API/dev hosts. Override with CORS_ALLOW_ORIGINS
 # (comma-separated) or set CORS_ALLOW_ORIGINS=* for an open local sandbox.
 _DEFAULT_CORS_ORIGINS = (
+    "https://sharpsheettips.com",
+    "https://www.sharpsheettips.com",
     "https://samuellachance.github.io",
     "http://127.0.0.1:8000",
     "http://localhost:8000",

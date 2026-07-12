@@ -185,6 +185,45 @@ def test_assess_league_readiness_routes_by_sport(monkeypatch) -> None:
     assert assess_league_readiness("mlb", "6-11-2026")["reason"] == "Need more games"
 
 
+def test_v2_artifacts_short_circuit_readiness_without_completed_games(monkeypatch) -> None:
+    """Live v2 artifacts should mark NHL/MLB/NBA ready even early season."""
+    monkeypatch.setattr(
+        readiness_module,
+        "load_league_completed_games",
+        lambda *_a, **_k: [],
+    )
+    monkeypatch.setattr(readiness_module, "_v2_artifacts_ready", lambda path: True)
+
+    nhl = readiness_module.assess_hockey_readiness("nhl", "4-01-2026")
+    assert nhl["ready"] is True
+    assert "v2" in nhl["reason"].lower()
+    assert nhl["game_count"] == 0
+
+    mlb = assess_mlb_readiness("mlb", "4-01-2026")
+    assert mlb["ready"] is True
+    assert "v2" in mlb["reason"].lower()
+
+    nba = readiness_module.assess_basketball_readiness("nba", "10-01-2025")
+    assert nba["ready"] is True
+    assert "v2" in nba["reason"].lower()
+
+    soccer = assess_soccer_readiness("epl", "8-01-2025")
+    assert soccer["ready"] is True
+    assert "v2" in soccer["reason"].lower()
+
+
+def test_hockey_college_still_requires_algo_v1_games(monkeypatch) -> None:
+    monkeypatch.setattr(
+        readiness_module,
+        "load_league_completed_games",
+        lambda *_a, **_k: [],
+    )
+    monkeypatch.setattr(readiness_module, "_v2_artifacts_ready", lambda path: True)
+    result = readiness_module.assess_hockey_readiness("ncaah", "4-01-2026")
+    assert result["ready"] is False
+    assert "completed games" in result["reason"]
+
+
 def test_list_leagues_metadata_matches_live_stacks() -> None:
     from web.league_profiles import list_leagues_metadata
 
@@ -193,7 +232,10 @@ def test_list_leagues_metadata_matches_live_stacks() -> None:
     assert "BasketballMatrix" in by_id["nba"]
     assert "predictions only" in by_id["nfl"].lower()
     assert "predictions only" in by_id["cbb"].lower()
+    assert "SoccerGradientBoost v2" in by_id["epl"]
     assert "SoccerPathA" in by_id["epl"]
+    assert "MLBGradientBoost v2" in by_id["mlb"]
     assert "MLBRunCast" in by_id["mlb"]
+    assert "NHLGradientBoost v2" in by_id["nhl"]
     assert "Algo V1" in by_id["nhl"]
     assert "Algo V2 + power ratings" not in by_id["nba"]

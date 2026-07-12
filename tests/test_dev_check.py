@@ -99,3 +99,49 @@ def test_dev_check_full_runs_full_pytest_then_smoke(monkeypatch) -> None:
     joined = [" ".join(c) for c in calls]
     assert any("pytest" in j and "--durations=12" in j and "not slow" not in j for j in joined)
     assert any("smoke_test.py" in j for j in joined)
+
+
+def test_dev_check_default_pytest_includes_durations(monkeypatch) -> None:
+    mod = _load_dev_check()
+    calls: list[list[str]] = []
+
+    def fake_run(label: str, argv: list[str]) -> int:
+        calls.append(argv)
+        return 0
+
+    monkeypatch.setattr(mod, "_run", fake_run)
+    assert mod.main(["--quick-only"]) == 0
+    assert any("pytest" in c and "--durations=12" in c and "not slow" in c for c in calls)
+
+
+def test_dev_check_fail_fast_stops_after_first_failure(monkeypatch) -> None:
+    mod = _load_dev_check()
+    calls: list[list[str]] = []
+
+    def fake_run(label: str, argv: list[str]) -> int:
+        calls.append(argv)
+        if "compileall" in argv:
+            return 1
+        return 0
+
+    monkeypatch.setattr(mod, "_run", fake_run)
+    assert mod.main(["--compile", "--quick-only", "--fail-fast"]) == 1
+    assert len(calls) == 1
+    assert "compileall" in calls[0]
+
+
+def test_dev_check_without_fail_fast_continues_after_failure(monkeypatch) -> None:
+    mod = _load_dev_check()
+    calls: list[list[str]] = []
+
+    def fake_run(label: str, argv: list[str]) -> int:
+        calls.append(argv)
+        if any("pytest" in part for part in argv):
+            return 1
+        return 0
+
+    monkeypatch.setattr(mod, "_run", fake_run)
+    assert mod.main([]) == 1
+    joined = [" ".join(c) for c in calls]
+    assert any("pytest" in j for j in joined)
+    assert any("smoke_test.py" in j for j in joined)

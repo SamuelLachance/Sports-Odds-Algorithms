@@ -513,17 +513,25 @@ def list_leagues_metadata() -> list[dict[str, str]]:
         category = profile["category"]
         if category == "soccer":
             model_note = (
-                "Live ESPN · SoccerPathA (Dixon–Coles path) when season data is sufficient"
+                "Live ESPN · SoccerGradientBoost v2 when artifacts ship, "
+                "else SoccerPathA (Dixon–Coles) when season data is sufficient"
             )
         elif category == "hockey":
-            model_note = (
-                "Live ESPN · Algo V1 weighted-factor model (NHL profile) "
-                "when season data is sufficient"
-            )
+            if league_id == "nhl":
+                model_note = (
+                    "Live ESPN · NHLGradientBoost v2 when artifacts ship, "
+                    "else Algo V1 weighted-factor model when season data is sufficient"
+                )
+            else:
+                model_note = (
+                    "Live ESPN · Algo V1 weighted-factor model (NHL profile) "
+                    "when season data is sufficient"
+                )
         elif category == "baseball":
             if league_id == "mlb":
                 model_note = (
-                    "Live ESPN · MLBRunCast when season data is sufficient"
+                    "Live ESPN · MLBGradientBoost v2 when artifacts ship, "
+                    "else MLBRunCast when season data is sufficient"
                 )
             else:
                 model_note = (

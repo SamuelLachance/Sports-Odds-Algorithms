@@ -629,6 +629,10 @@ def ensure_hubacek_in_blend(
 
     if blend_outputs_are_market_decorrelated(blended):
         return blended
+    # Binary Hubáček must not rewrite three-way (1X2) blends — it ignores draw
+    # and would set a false market_decorrelated flag over home/draw/away probs.
+    if blended.get("threeway") or blended.get("draw_probability") is not None:
+        return blended
 
     home_prob = blended.get("blended_home_win_probability")
     if home_prob is None and blended.get("total_score") is not None:
@@ -1178,6 +1182,8 @@ def evaluate_spread_picks(
                 extra={
                     "model_market_gap_pp": round(side_cover_prob - market_cover, 2),
                     "league": league,
+                    # Cover % is the EV probability; expose for Honest EV UI.
+                    "base_win_probability": round(side_cover_prob, 2),
                 },
             )
         )

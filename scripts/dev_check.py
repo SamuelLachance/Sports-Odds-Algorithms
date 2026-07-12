@@ -6,6 +6,7 @@ Usage:
   python scripts/dev_check.py --with-v2
   python scripts/dev_check.py --full
   python scripts/dev_check.py --compile
+  python scripts/dev_check.py --fail-fast
 """
 
 from __future__ import annotations
@@ -13,6 +14,7 @@ from __future__ import annotations
 import argparse
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -21,7 +23,10 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 def _run(label: str, argv: list[str]) -> int:
     print(f"\n==> {label}")
     print(" ".join(argv))
+    started = time.perf_counter()
     completed = subprocess.run(argv, cwd=PROJECT_ROOT)
+    elapsed = time.perf_counter() - started
+    print(f"    ({elapsed:.1f}s)")
     return int(completed.returncode)
 
 
@@ -49,6 +54,11 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Also run python -m compileall on web/, scripts/, and root modules (mirrors CI).",
     )
+    parser.add_argument(
+        "--fail-fast",
+        action="store_true",
+        help="Stop after the first failing step (default runs remaining steps then summarizes).",
+    )
     args = parser.parse_args(argv)
 
     if args.full and args.quick_only:
@@ -56,9 +66,20 @@ def main(argv: list[str] | None = None) -> int:
 
     py = sys.executable
     failures: list[str] = []
+    gate_started = time.perf_counter()
+
+    def _step(label: str, argv: list[str], name: str) -> bool:
+        code = _run(label, argv)
+        if code == 0:
+            return True
+        failures.append(name)
+        if args.fail_fast:
+            print(f"\nFAILED (fail-fast): {name}", file=sys.stderr)
+            return False
+        return True
 
     if args.compile:
-        code = _run(
+        if not _step(
             "compileall",
             [
                 py,
@@ -73,17 +94,18 @@ def main(argv: list[str] | None = None) -> int:
                 "smoke_test.py",
                 "run_server.py",
             ],
-        )
-        if code != 0:
-            failures.append("compileall")
+            "compileall",
+        ):
+            return 1
 
     if args.full:
-        code = _run(
+        ok = _step(
             "pytest (full suite)",
             [py, "-m", "pytest", "tests/", "-q", "--tb=short", "--durations=12"],
+            "pytest",
         )
     else:
-        code = _run(
+        ok = _step(
             "pytest (not slow)",
             [
                 py,
@@ -92,30 +114,32 @@ def main(argv: list[str] | None = None) -> int:
                 "tests/",
                 "-q",
                 "--tb=short",
+                "--durations=12",
                 "-m",
                 "not slow",
             ],
+            "pytest",
         )
-    if code != 0:
-        failures.append("pytest")
+    if not ok:
+        return 1
 
     if not args.quick_only:
-        code = _run("smoke_test", [py, "smoke_test.py"])
-        if code != 0:
-            failures.append("smoke_test")
+        if not _step("smoke_test", [py, "smoke_test.py"], "smoke_test"):
+            return 1
 
     if args.with_v2:
-        code = _run(
+        if not _step(
             "check_v2_data",
             [py, str(PROJECT_ROOT / "scripts" / "check_v2_data.py")],
-        )
-        if code != 0:
-            failures.append("check_v2_data")
+            "check_v2_data",
+        ):
+            return 1
 
+    total = time.perf_counter() - gate_started
     if failures:
-        print(f"\nFAILED: {', '.join(failures)}", file=sys.stderr)
+        print(f"\nFAILED: {', '.join(failures)} ({total:.1f}s total)", file=sys.stderr)
         return 1
-    print("\nAll requested checks passed.")
+    print(f"\nAll requested checks passed. ({total:.1f}s total)")
     return 0
 
 

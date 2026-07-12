@@ -51,6 +51,31 @@ def test_ensure_hubacek_in_blend_pushes_away_from_market() -> None:
     assert updated["blended_home_win_probability"] > 60.0
 
 
+def test_ensure_hubacek_in_blend_skips_threeway_soccer() -> None:
+    """Path A / 1X2 blends must not be rewritten by binary Hubáček."""
+    blended = {
+        "threeway": True,
+        "total_score": -42.0,
+        "win_probability": 42.0,
+        "favorite_side": "home",
+        "blended_home_win_probability": 42.0,
+        "home_win_probability": 42.0,
+        "draw_probability": 28.0,
+        "away_win_probability": 30.0,
+    }
+    updated = ensure_hubacek_in_blend(
+        blended,
+        league="epl",
+        away_market=160,
+        home_market=170,
+    )
+    assert updated is blended or updated == blended
+    assert updated.get("market_decorrelated") is not True
+    assert updated["blended_home_win_probability"] == 42.0
+    assert updated["draw_probability"] == 28.0
+    assert updated["away_win_probability"] == 30.0
+
+
 def test_official_moneyline_ev_differs_from_raw_model_prob() -> None:
     """Official path must not grade +EV using pre-decorrelation win %."""
     raw_home = 62.0

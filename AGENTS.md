@@ -20,14 +20,16 @@ python -m pytest tests/ -q -m "not slow"
 python smoke_test.py
 python scripts/dev_check.py
 python scripts/dev_check.py --quick-only
+python scripts/dev_check.py --full
 python scripts/dev_check.py --with-v2
 python scripts/dev_check.py --compile
+python scripts/dev_check.py --fail-fast
 python run_server.py
 python -m uvicorn web.app:app --reload --host 127.0.0.1 --port 8000
 python scripts/check_v2_data.py
 ```
 
-`scripts/dev_check.py` is the local DX gate: pytest with `-m "not slow"` plus `smoke_test.py` by default (`--quick-only` skips smoke; `--full` runs the entire suite; `--with-v2` also runs `check_v2_data.py`; `--compile` mirrors CI `compileall`). `--full` and `--quick-only` are mutually exclusive.
+`scripts/dev_check.py` is the local DX gate: pytest with `-m "not slow"` plus `smoke_test.py` by default (`--quick-only` skips smoke; `--full` runs the entire suite; `--with-v2` also runs `check_v2_data.py`; `--compile` mirrors CI `compileall`; `--fail-fast` stops on the first failing step). Prints per-step and total elapsed time. `--full` and `--quick-only` are mutually exclusive.
 
 ## Training NFL / CFB / CBB v2
 
@@ -57,8 +59,8 @@ Official NFL/CFB/CBB picks stay gated until spread backtests clear; training sti
 - Branche : `master`
 - Remote : `https://github.com/SamuelLachance/Sports-Odds-Algorithms`
 - Site : `https://samuellachance.github.io/Sports-Odds-Algorithms/`
-- Rebuild : **4×/jour** America/Toronto (minuit, 6h, midi, 18h EDT via GitHub Actions `pages.yml`)
-- CI tests : `.github/workflows/test.yml` (compileall + suite pytest + `smoke_test.py` on push/PR to `master`; pytest cache restored between runs)
+- Rebuild : **4×/jour** via GitHub Actions `pages.yml` crons `0 4/10/16/22` UTC (midnight / 6h / midi / 18h **EDT**; during EST those local times shift +1h)
+- CI tests : `.github/workflows/test.yml` (compileall + **full** pytest suite + `smoke_test.py` on push/PR to `master`; pytest cache restored between runs)
 
 ## Conventions
 
@@ -72,7 +74,7 @@ Official NFL/CFB/CBB picks stay gated until spread backtests clear; training sti
 
 FastAPI CORS is configured in `web/app.py` via `cors_allow_origins()`.
 
-- **Default** (env unset): public Pages origin `https://samuellachance.github.io` plus local API/dev hosts (`127.0.0.1` / `localhost` on ports `8000` and `5173`).
+- **Default** (env unset): live brand `https://sharpsheettips.com` (+ `www`), Pages mirror `https://samuellachance.github.io`, plus local API/dev hosts (`127.0.0.1` / `localhost` on ports `8000` and `5173`).
 - **Comma-separated allowlist**: `CORS_ALLOW_ORIGINS=https://example.com,http://127.0.0.1:3000`
 - **Open sandbox** (local only): `CORS_ALLOW_ORIGINS=*`
 
@@ -84,10 +86,12 @@ Used by `web/daily_service.py` / `web/live_odds_enrichment.py` / Pages `build_gh
 
 | Variable | Default | Effect |
 |---|---|---|
-| `FAST_DAILY_BUILD` | unset / off | When `1`/`true`, skips multi-book fetches (and other slow paths) so CI/Pages stays under timeout. |
-| `LIVE_MULTI_BOOK` | on interactively; off under `FAST_DAILY_BUILD` | Set `1` to force multi-book on; `0`/`false` to force off. Slate `summary.line_shopping` reports `on` / `skipped_fast_build` / `off`. |
+| `FAST_DAILY_BUILD` | unset / off | When `1`/`true`, skips heavy paths (prediction caches, etc.) so CI/Pages stays under timeout. Multi-book still follows `LIVE_MULTI_BOOK`. |
+| `LIVE_MULTI_BOOK` | on interactively; off under `FAST_DAILY_BUILD` when unset | Set `1` to force multi-book on (**Pages does this** even with `FAST_DAILY_BUILD=1`); `0`/`false` to force off. Slate `summary.line_shopping` reports `on` / `skipped_fast_build` / `off`. |
 | `LIVE_MULTI_BOOK_BUDGET_S` | `120` | Wall-time budget (seconds) for cumulative book fetches per build. |
 | `NEWS_SIGNALS` | league defaults | Set `0`/`false` to disable headline keyword nudges in the context layer. |
+
+Pages (`pages.yml`) typically sets `FAST_DAILY_BUILD=1` **and** `LIVE_MULTI_BOOK=1`, so production line shopping stays on; the UI “line shopping skipped” banner only appears when multi-book is actually skipped.
 
 Soccer paper tracking (`web/soccer_paper_tracking.py`) is an **internal** research log graded during Pages deploy — not Hubáček official tracking and not shown as site performance.
 

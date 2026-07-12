@@ -123,6 +123,31 @@ def test_path_a_context_layer_syncs_blended_home_and_locks_daily_hook() -> None:
     assert out["context_adjustment_pp"] == 0.0
 
 
+def test_path_a_null_context_still_locks_daily_hook() -> None:
+    """Missing ESPN context must still set context_adjustment_pp so daily FLB cannot re-shift."""
+    from unittest.mock import patch
+
+    from web.soccer_blend import _attach_soccer_context_layer
+
+    base = {
+        "home_win_probability": 45.0,
+        "draw_probability": 28.0,
+        "away_win_probability": 27.0,
+        "blended_home_win_probability": 45.0,
+    }
+    with patch("web.soccer_blend.build_soccer_context_payload", return_value=None):
+        out = _attach_soccer_context_layer(
+            base,
+            league="epl",
+            cutoff_date="7-10-2026",
+            home_abbr="ars",
+            away_abbr="liv",
+        )
+    assert out["home_win_probability"] == 45.0
+    assert out["context_adjustment_pp"] == 0.0
+    assert "soccer_context" not in out
+
+
 def test_soccer_v2_display_context_locks_daily_hook_without_mutating_probs() -> None:
     from unittest.mock import patch
 

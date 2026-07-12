@@ -97,8 +97,23 @@ def assess_three_layer_readiness(league: str, cutoff_date: str) -> dict[str, Any
 ALGO_V1_MIN_LEAGUE_GAMES = 10
 
 
+def _completed_game_stats(league: str, cutoff_date: str) -> tuple[int, int]:
+    games = load_league_completed_games(league, cutoff_date)
+    team_keys = {home for home, away, *_ in games} | {away for home, away, *_ in games}
+    return len(games), len(team_keys)
+
+
+def _v2_artifacts_ready(import_path: str) -> bool:
+    """Best-effort check that a live v2 stack has on-disk artifacts."""
+    try:
+        module = __import__(import_path, fromlist=["artifacts_available"])
+        return bool(module.artifacts_available())
+    except Exception:
+        return False
+
+
 def assess_hockey_readiness(league: str, cutoff_date: str) -> dict[str, Any]:
-    """Hockey slate readiness — Algo V1 only (legacy weighted-factor model)."""
+    """Hockey slate readiness — prefer NHLGradientBoost v2, else Algo V1."""
     league = league.lower()
     result: dict[str, Any] = {
         "league": league,
@@ -111,17 +126,22 @@ def assess_hockey_readiness(league: str, cutoff_date: str) -> dict[str, Any]:
         result["reason"] = "Not a hockey league"
         return result
 
-    games = load_league_completed_games(league, cutoff_date)
-    result["game_count"] = len(games)
-    if len(games) < ALGO_V1_MIN_LEAGUE_GAMES:
+    game_count, team_count = _completed_game_stats(league, cutoff_date)
+    result["game_count"] = game_count
+    result["team_count"] = team_count
+
+    if league == "nhl" and _v2_artifacts_ready("web.nhl_v2.live"):
+        result["ready"] = True
+        result["reason"] = "NHLGradientBoost v2 ready"
+        return result
+
+    if game_count < ALGO_V1_MIN_LEAGUE_GAMES:
         result["reason"] = (
-            f"Need {ALGO_V1_MIN_LEAGUE_GAMES}+ completed games (have {len(games)})"
+            f"Need {ALGO_V1_MIN_LEAGUE_GAMES}+ completed games (have {game_count})"
         )
         return result
 
-    team_keys = {home for home, away, *_ in games} | {away for home, away, *_ in games}
-    result["team_count"] = len(team_keys)
-    if len(team_keys) < THREE_LAYER_MIN_TEAMS:
+    if team_count < THREE_LAYER_MIN_TEAMS:
         result["reason"] = "Algo V1 needs 4+ teams with game history"
         return result
 
@@ -131,7 +151,7 @@ def assess_hockey_readiness(league: str, cutoff_date: str) -> dict[str, Any]:
 
 
 def assess_basketball_readiness(league: str, cutoff_date: str) -> dict[str, Any]:
-    """Basketball slate readiness — BasketballMatrix only (soft-impute OR × pace)."""
+    """Basketball slate readiness — prefer GB v2 stacks, else BasketballMatrix."""
     league = league.lower()
     result: dict[str, Any] = {
         "league": league,
@@ -144,11 +164,25 @@ def assess_basketball_readiness(league: str, cutoff_date: str) -> dict[str, Any]
         result["reason"] = "Not a basketball league"
         return result
 
-    games = load_league_completed_games(league, cutoff_date)
-    result["game_count"] = len(games)
-    if len(games) < BASKETBALL_MIN_LEAGUE_GAMES:
+    game_count, team_count = _completed_game_stats(league, cutoff_date)
+    result["game_count"] = game_count
+    result["team_count"] = team_count
+
+    v2_paths = {
+        "nba": ("web.nba_v2.live", "NBAGradientBoost v2 ready"),
+        "wnba": ("web.wnba_v2.live", "WNBAGradientBoost v2 ready"),
+        "cbb": ("web.cbb_v2.live", "CBBGradientBoost v2 ready"),
+        "ncaab": ("web.cbb_v2.live", "CBBGradientBoost v2 ready"),
+    }
+    v2 = v2_paths.get(league)
+    if v2 and _v2_artifacts_ready(v2[0]):
+        result["ready"] = True
+        result["reason"] = v2[1]
+        return result
+
+    if game_count < BASKETBALL_MIN_LEAGUE_GAMES:
         result["reason"] = (
-            f"Need {BASKETBALL_MIN_LEAGUE_GAMES}+ completed games (have {len(games)})"
+            f"Need {BASKETBALL_MIN_LEAGUE_GAMES}+ completed games (have {game_count})"
         )
         return result
 
@@ -169,7 +203,7 @@ def assess_basketball_readiness(league: str, cutoff_date: str) -> dict[str, Any]
 
 
 def assess_mlb_readiness(league: str, cutoff_date: str) -> dict[str, Any]:
-    """MLB slate readiness — MLBRunCast only (no power / legacy stack)."""
+    """MLB slate readiness — prefer MLBGradientBoost v2, else MLBRunCast."""
     league = league.lower()
     result: dict[str, Any] = {
         "league": league,
@@ -182,11 +216,18 @@ def assess_mlb_readiness(league: str, cutoff_date: str) -> dict[str, Any]:
         result["reason"] = "Not an MLB league"
         return result
 
-    games = load_league_completed_games(league, cutoff_date)
-    result["game_count"] = len(games)
-    if len(games) < MLB_MIN_LEAGUE_GAMES:
+    game_count, team_count = _completed_game_stats(league, cutoff_date)
+    result["game_count"] = game_count
+    result["team_count"] = team_count
+
+    if _v2_artifacts_ready("web.mlb_v2.live"):
+        result["ready"] = True
+        result["reason"] = "MLBGradientBoost v2 ready"
+        return result
+
+    if game_count < MLB_MIN_LEAGUE_GAMES:
         result["reason"] = (
-            f"Need {MLB_MIN_LEAGUE_GAMES}+ completed games (have {len(games)})"
+            f"Need {MLB_MIN_LEAGUE_GAMES}+ completed games (have {game_count})"
         )
         return result
 
@@ -207,7 +248,7 @@ def assess_mlb_readiness(league: str, cutoff_date: str) -> dict[str, Any]:
 
 
 def assess_soccer_readiness(league: str, cutoff_date: str) -> dict[str, Any]:
-    """Soccer slate readiness — SoccerPathA only (no power / legacy stack)."""
+    """Soccer slate readiness — prefer SoccerGradientBoost v2, else SoccerPathA."""
     league = league.lower()
     result: dict[str, Any] = {
         "league": league,
@@ -220,11 +261,18 @@ def assess_soccer_readiness(league: str, cutoff_date: str) -> dict[str, Any]:
         result["reason"] = "Not a soccer league"
         return result
 
-    games = load_league_completed_games(league, cutoff_date)
-    result["game_count"] = len(games)
-    if len(games) < SOCCER_MIN_LEAGUE_GAMES:
+    game_count, team_count = _completed_game_stats(league, cutoff_date)
+    result["game_count"] = game_count
+    result["team_count"] = team_count
+
+    if _v2_artifacts_ready("web.soccer_v2.live"):
+        result["ready"] = True
+        result["reason"] = "SoccerGradientBoost v2 ready"
+        return result
+
+    if game_count < SOCCER_MIN_LEAGUE_GAMES:
         result["reason"] = (
-            f"Need {SOCCER_MIN_LEAGUE_GAMES}+ completed games (have {len(games)})"
+            f"Need {SOCCER_MIN_LEAGUE_GAMES}+ completed games (have {game_count})"
         )
         return result
 

@@ -189,3 +189,150 @@ def test_fetch_season_games_merges_regular_and_playoff(monkeypatch) -> None:
     pks = {g["gamePk"] for g in games}
     assert pks == {1, 2}
     assert any(g["game_type"] == "F" for g in games)
+
+
+def test_get_live_context_fails_closed_on_missing_gap_season(monkeypatch) -> None:
+    """Hard-missing intermediate seasons must not silently skip Elo/form state."""
+    from unittest.mock import MagicMock
+
+    import web.mlb_v2.live as live
+
+    live.get_live_context.cache_clear()
+    art = {
+        "snapshots": {2023: MagicMock()},
+        "feature_columns": [],
+        "clf": None,
+        "lr": {},
+        "calibrator": {"x": [0.0, 1.0], "y": [0.0, 1.0]},
+        "runs_home": None,
+        "runs_away": None,
+    }
+    monkeypatch.setattr(live, "_load_artifacts", lambda: art)
+    monkeypatch.setattr(
+        live,
+        "_load_snapshot_state",
+        lambda _art, _season: (2023, {"teams": {}, "pitchers": {}, "venues": {}}),
+    )
+    monkeypatch.setattr(
+        live.MlbFeatureEngine,
+        "from_dict",
+        classmethod(lambda cls, _payload: MagicMock()),
+    )
+
+    calls: list[int] = []
+
+    def fake_bundle(season: int, _day: str):
+        calls.append(season)
+        if season == 2024:
+            return None, False
+        return (
+            {
+                "games": [],
+                "pitchers": {},
+                "team_hitting": {},
+                "team_pitching": {},
+            },
+            False,
+        )
+
+    monkeypatch.setattr(live, "_fetch_current_season_bundle", fake_bundle)
+    assert live.get_live_context("2025-07-12") is None
+    assert 2024 in calls
+
+
+def test_predict_matchup_applies_earlier_dh_final(monkeypatch) -> None:
+    """Game-2 prediction must fold same-day game-1 final into a cloned engine."""
+    from unittest.mock import MagicMock
+
+    import web.mlb_v2.live as live
+
+    home_id = 147  # NYY
+    away_id = 111  # BOS
+    game1 = {
+        "gamePk": 1,
+        "date": "2026-07-12",
+        "status": "F",
+        "game_number": 1,
+        "home_id": home_id,
+        "away_id": away_id,
+        "home_score": 5,
+        "away_score": 2,
+        "home_pp_id": 100,
+        "away_pp_id": 200,
+    }
+    game2 = {
+        "gamePk": 2,
+        "date": "2026-07-12",
+        "status": "S",
+        "game_number": 2,
+        "home_id": home_id,
+        "away_id": away_id,
+        "home_pp_id": 101,
+        "away_pp_id": 201,
+        "day_night": "night",
+        "double_header": "Y",
+        "venue_id": 1,
+    }
+
+    engine = MagicMock()
+    engine.to_dict.return_value = {"cloned": True}
+    engine.features_for_game.return_value = {
+        "home_sp_fip_blend": 3.5,
+        "away_sp_fip_blend": 4.0,
+        "park_factor": 1.0,
+    }
+    engine.team.return_value = MagicMock(
+        season_wins=40, season_losses=40, elo=1500.0
+    )
+    cloned = MagicMock()
+    cloned.features_for_game.return_value = engine.features_for_game.return_value
+    cloned.team.return_value = engine.team.return_value
+
+    art = {
+        "feature_columns": ["home_sp_fip_blend", "away_sp_fip_blend", "park_factor"],
+        "clf": MagicMock(),
+        "lr": {
+            "mean": [0.0, 0.0, 0.0],
+            "scale": [1.0, 1.0, 1.0],
+            "coef": [0.0, 0.0, 0.0],
+            "intercept": 0.0,
+            "xgb_weight": 0.5,
+        },
+        "calibrator": {"x": [0.0, 1.0], "y": [0.0, 1.0]},
+        "runs_home": None,
+        "runs_away": None,
+    }
+
+    monkeypatch.setattr(
+        live,
+        "get_live_context",
+        lambda _day: {
+            "engine": engine,
+            "artifacts": art,
+            "todays_games": {(home_id, away_id): game2},
+            "todays_finals": [game1],
+            "pitcher_names": {},
+            "season": 2026,
+            "day_iso": "2026-07-12",
+            "live_inputs_stale": False,
+        },
+    )
+    monkeypatch.setattr(
+        live.MlbFeatureEngine,
+        "from_dict",
+        classmethod(lambda cls, _payload: cloned),
+    )
+    monkeypatch.setattr(live, "_predict_probability", lambda _art, _feat: 0.55)
+    monkeypatch.setattr(live, "_predict_runs", lambda _art, _feat: None)
+
+    # ESPN abbrs map via ESPN_TO_MLB_TEAM_ID — use known keys
+    from web.mlb_stats_api import ESPN_TO_MLB_TEAM_ID
+
+    home_abbr = next(k for k, v in ESPN_TO_MLB_TEAM_ID.items() if v == home_id)
+    away_abbr = next(k for k, v in ESPN_TO_MLB_TEAM_ID.items() if v == away_id)
+
+    out = live.predict_matchup_v2("2026-07-12", home_abbr, away_abbr)
+    assert out is not None
+    cloned.update_after_game.assert_called_once_with(game1)
+    engine.update_after_game.assert_not_called()
+    cloned.features_for_game.assert_called_once_with(game2)

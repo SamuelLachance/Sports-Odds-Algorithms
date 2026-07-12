@@ -119,7 +119,16 @@ def test_agents_md_documents_dev_check() -> None:
     assert "--quick-only" in text
     assert "--with-v2" in text
     assert "--compile" in text
+    assert "--full" in text
+    assert "--fail-fast" in text
     assert "mutually exclusive" in text
+
+
+def test_agents_md_documents_pages_multi_book_override() -> None:
+    text = AGENTS_MD.read_text(encoding="utf-8")
+    assert "LIVE_MULTI_BOOK=1" in text
+    assert "sharpsheettips.com" in text
+    assert "EST" in text or "est" in text.lower()
 
 
 def test_pytest_ini_defines_slow_marker() -> None:
@@ -185,8 +194,10 @@ def test_app_js_mlb_nhl_frontend_contracts() -> None:
     # Nested hash fragments must not poison the router path.
     assert 'raw.split("#")[0]' in js
     assert 'href="#/picks#model-predictions"' not in js
-    # Honest EV must invert home-only fallbacks for away picks.
+    # Honest EV must invert home-only fallbacks for away moneylines only.
     assert 'top?.side === "away"' in js
+    assert 'betType === "moneyline"' in js
+    assert 'betType === "spread"' in js
     assert "base_win_probability" in js
     # Games sidebar must not leak onto non-games routes.
     assert 'route?.path !== "games"' in js
@@ -197,3 +208,8 @@ def test_app_js_mlb_nhl_frontend_contracts() -> None:
     # Null-safe matchup access on dense MLB/NHL slates.
     assert "game.matchup?.away" in js
     assert "game.model || {}" in js
+    # Wave7 a11y / soft-fail contracts.
+    assert 'aria-current", "page"' in js or 'setAttribute("aria-current", "page")' in js
+    assert 'event.key !== "Escape"' in js
+    assert "trackingLoadFailed" in js
+    assert "NHL/MLB/soccer" in js

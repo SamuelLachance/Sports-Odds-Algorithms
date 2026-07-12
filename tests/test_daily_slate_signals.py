@@ -588,3 +588,163 @@ def test_iso_match_date_and_algo_factor_favors() -> None:
     )
     assert any(f["key"] == "xg_margin" for f in nhl_factors)
     assert any(f["key"] == "decorrelation" for f in nhl_factors)
+
+
+def test_public_error_known_and_unknown_kinds() -> None:
+    from web.daily_service import _PUBLIC_SLATE_ERRORS, _public_error
+
+    row = _public_error("nba", "scoreboard")
+    assert row == {"league": "nba", "error": _PUBLIC_SLATE_ERRORS["scoreboard"]}
+
+    with_game = _public_error("nhl", "predict", game="A at B")
+    assert with_game["league"] == "nhl"
+    assert with_game["game"] == "A at B"
+    assert with_game["error"] == _PUBLIC_SLATE_ERRORS["predict"]
+
+    unknown = _public_error("mlb", "not-a-real-kind")
+    assert unknown == {"league": "mlb", "error": "Processing failed."}
+
+
+def test_actionable_games_filters_status_and_horizon(monkeypatch) -> None:
+    from datetime import datetime, timezone
+
+    from web.daily_service import _actionable_games, _is_actionable_soon
+
+    frozen = datetime(2026, 7, 12, 16, 0, tzinfo=timezone.utc)
+
+    class _FrozenDatetime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            if tz is None:
+                return frozen.replace(tzinfo=None)
+            return frozen.astimezone(tz)
+
+    monkeypatch.setattr("web.daily_service.datetime", _FrozenDatetime)
+
+    soon = ScheduledGame(
+        league="nba",
+        event_id="1",
+        name="Soon",
+        start_time="2026-07-13T20:00:00Z",
+        status="pre",
+        status_detail="",
+        away_abbr="A",
+        home_abbr="B",
+        away_name="A",
+        home_name="B",
+        away_espn_id="1",
+        home_espn_id="2",
+        market=MarketOdds(away_moneyline=100, home_moneyline=-110),
+    )
+    far = ScheduledGame(
+        league="nba",
+        event_id="2",
+        name="Far",
+        start_time="2026-07-20T20:00:00Z",
+        status="pre",
+        status_detail="",
+        away_abbr="C",
+        home_abbr="D",
+        away_name="C",
+        home_name="D",
+        away_espn_id="3",
+        home_espn_id="4",
+        market=MarketOdds(away_moneyline=100, home_moneyline=-110),
+    )
+    live = ScheduledGame(
+        league="nba",
+        event_id="3",
+        name="Live",
+        start_time="2026-07-12T15:00:00Z",
+        status="in",
+        status_detail="",
+        away_abbr="E",
+        home_abbr="F",
+        away_name="E",
+        home_name="F",
+        away_espn_id="5",
+        home_espn_id="6",
+        market=MarketOdds(away_moneyline=100, home_moneyline=-110),
+    )
+    no_start = ScheduledGame(
+        league="nba",
+        event_id="4",
+        name="TBD",
+        start_time="",
+        status="pre",
+        status_detail="",
+        away_abbr="G",
+        home_abbr="H",
+        away_name="G",
+        home_name="H",
+        away_espn_id="7",
+        home_espn_id="8",
+        market=MarketOdds(away_moneyline=100, home_moneyline=-110),
+    )
+
+    assert _is_actionable_soon(soon) is True
+    assert _is_actionable_soon(far) is False
+    assert _is_actionable_soon(no_start) is True
+    actionable = _actionable_games([soon, far, live, no_start])
+    assert [g.event_id for g in actionable] == ["1", "4"]
+
+
+def test_predict_live_game_promotes_baseball_live_inputs_stale() -> None:
+    """MLB v2 stores stale under baseball_pred; board banner reads model.live_inputs_stale."""
+    game = ScheduledGame(
+        league="mlb",
+        event_id="401888",
+        name="Yankees at Red Sox",
+        start_time="2026-07-10T23:00Z",
+        status="pre",
+        status_detail="7:00 PM ET",
+        away_abbr="NYY",
+        home_abbr="BOS",
+        away_name="New York Yankees",
+        home_name="Boston Red Sox",
+        away_espn_id="10",
+        home_espn_id="2",
+        market=MarketOdds(away_moneyline=105, home_moneyline=-115),
+    )
+    blended_stub = {
+        "algorithm": "Unified",
+        "blend_mode": "mlb_v2",
+        "total_score": -55.0,
+        "win_probability": 55.0,
+        "favorite_side": "home",
+        "blended_home_win_probability": 55.0,
+        "baseball_pred": {"live_inputs_stale": True, "home_win_probability": 55.0},
+    }
+    algo_instance = MagicMock()
+    algo_instance.calculate_V2.return_value = {"total": -10.0}
+    odds_instance = MagicMock()
+    odds_instance.analyze2.return_value = {}
+
+    with (
+        patch(
+            "web.daily_service.resolve_team",
+            side_effect=lambda league, abbr, name: (
+                ["bos", "boston-red-sox"] if abbr == "BOS" else ["nyy", "new-york-yankees"]
+            ),
+        ),
+        patch("web.daily_service.load_live_team_data", return_value=[{"seed": 1}]),
+        patch("algo.Algo", return_value=algo_instance),
+        patch("odds_calculator.Odds_Calculator", return_value=odds_instance),
+        patch("web.live_odds_enrichment.fetch_multi_book_odds", return_value={}),
+        patch("web.daily_service.blend_predictions", return_value=dict(blended_stub)),
+        patch(
+            "web.daily_service.apply_ensemble_ml",
+            side_effect=lambda blended, league, **kw: blended,
+        ),
+        patch(
+            "web.daily_service.ensure_hubacek_in_blend",
+            side_effect=lambda blended, **kw: blended,
+        ),
+        patch("web.daily_service.compute_model_agreement", return_value={}),
+        patch("web.daily_service.get_pick_thresholds", return_value={}),
+        patch("web.daily_service.official_pick_binary_probs", return_value=(45.0, 55.0)),
+        patch("web.daily_service.evaluate_official_picks_for_game", return_value=[]),
+    ):
+        result = predict_live_game(game)
+
+    assert result["model"]["live_inputs_stale"] is True
