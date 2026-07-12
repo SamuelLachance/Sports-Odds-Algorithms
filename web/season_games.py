@@ -70,6 +70,8 @@ def _parse_event_to_game(
     home_name = (home_comp.get("team") or {}).get("displayName") or home_abbr
     away_score = _score_value(away_comp)
     home_score = _score_value(home_comp)
+    if away_score is None or home_score is None:
+        return None
     event_date = str(event.get("date") or "")
 
     return event_id, event_date, (

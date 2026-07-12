@@ -23,8 +23,17 @@ from web.pick_strategy import evaluate_official_picks_for_game, get_pick_thresho
 
 def test_blend_outputs_are_market_decorrelated_flags() -> None:
     assert blend_outputs_are_market_decorrelated({"market_decorrelated": True})
-    assert blend_outputs_are_market_decorrelated(
+    # Ensemble blend_mode alone is not enough — apply_ensemble_ml only sets
+    # market_decorrelated on the moneyline path.
+    assert not blend_outputs_are_market_decorrelated(
         {"blend_mode": "ensemble_ml", "ensemble_ml": {"home_win_probability": 60.0}}
+    )
+    assert blend_outputs_are_market_decorrelated(
+        {
+            "blend_mode": "ensemble_ml",
+            "ensemble_ml": {"home_win_probability": 60.0},
+            "market_decorrelated": True,
+        }
     )
     assert blend_outputs_are_market_decorrelated(
         {"blend_mode": "algo_v1", "market_decorrelated": True}

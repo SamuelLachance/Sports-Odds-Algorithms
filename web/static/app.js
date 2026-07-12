@@ -1310,7 +1310,7 @@ function pickCard(pick, extra = "", game = null) {
       <div><span>Model</span><strong>${pickModelLabel(pick)}</strong></div>
       ${gap != null ? `<div><span>Market gap</span><strong>${formatSignedPct(gap)} pp</strong></div>` : pick.edge != null ? `<div><span>Edge</span><strong>+${pick.edge}</strong></div>` : ""}
       ${pick.ev_pct != null ? `<div><span>Honest EV</span><strong>+${pick.ev_pct}%</strong></div>` : ""}
-      ${pick.expected_units != null ? `<div><span>CLV / EV units</span><strong>${formatUnits(pick.expected_units)}</strong></div>` : ""}
+      ${pick.expected_units != null ? `<div><span>Expected units</span><strong>${formatUnits(pick.expected_units)}</strong></div>` : ""}
       <div><span>Confidence</span><strong>${escapeHtml(confLabel)}</strong></div>
       ${pick.kelly_pct != null ? `<div><span>Kelly</span><strong>${pick.kelly_pct}%</strong></div>` : ""}
     </div>

@@ -335,3 +335,44 @@ def test_apply_ensemble_ml_valid_ml_flags_decorrelated(monkeypatch) -> None:
         away_moneyline=130,
     )
     assert updated.get("market_decorrelated") is True
+
+
+def test_market_devig_soft_fails_invalid_and_even_text() -> None:
+    """Ensemble feature de-vig must not raise on garbage / text EVEN juice."""
+    from web.ensemble_ml.features import market_devig_home, market_devig_threeway
+
+    assert market_devig_home(50, 130) is None
+    assert market_devig_home("EVEN", 200) is not None
+    assert market_devig_threeway(50, 250, 200) == (None, None, None)
+    # Text EVEN must normalize like numeric 0, not raise via int("EVEN").
+    text_even = market_devig_threeway("EVEN", 250, 200)
+    assert text_even[0] is not None
+    assert abs(sum(text_even) - 100.0) < 0.05
+    even = market_devig_threeway(0, 250, 200)
+    assert even[0] is not None
+    assert abs(sum(even) - 100.0) < 0.05
+
+
+def test_ensure_hubacek_still_runs_on_spread_only_ensemble() -> None:
+    """Without market_decorrelated, ensemble blend_mode must not skip Hubáček."""
+    from web.bet_advisor import (
+        blend_outputs_are_market_decorrelated,
+        ensure_hubacek_in_blend,
+    )
+
+    blended = {
+        "blend_mode": "ensemble_ml",
+        "ensemble_ml": {"home_win_probability": 60.0},
+        "blended_home_win_probability": 60.0,
+        "total_score": -60.0,
+        "win_probability": 60.0,
+    }
+    assert not blend_outputs_are_market_decorrelated(blended)
+    updated = ensure_hubacek_in_blend(
+        blended,
+        league="nfl",
+        away_market=130,
+        home_market=-150,
+    )
+    assert updated.get("market_decorrelated") is True
+    assert updated["blended_home_win_probability"] != 60.0

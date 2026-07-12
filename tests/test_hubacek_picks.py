@@ -386,6 +386,28 @@ def test_blend_is_decorrelated_reads_football_pred() -> None:
     )
 
 
+def test_blend_is_decorrelated_ignores_ensemble_mode_without_flag() -> None:
+    """Spread-only ensemble must not fake Hubáček decorrelation."""
+    from web.hubacek_picks import _blend_is_decorrelated, passes_hubacek_spread_gate
+
+    spread_only = {
+        "blend_mode": "ensemble_ml",
+        "ensemble_ml": {"home_win_probability": 58.0, "predicted_home_margin": 3.0},
+    }
+    assert not _blend_is_decorrelated(spread_only)
+    assert not passes_hubacek_spread_gate(
+        blended=spread_only,
+        side="home",
+        point_edge=2.0,
+        side_cover_prob=58.0,
+        spread_odds=-110,
+        ev_pct=5.0,
+        consensus_spread=-3.5,
+    )
+    flagged = {**spread_only, "market_decorrelated": True}
+    assert _blend_is_decorrelated(flagged)
+
+
 if __name__ == "__main__":
     test_official_thresholds_have_real_floors()
     test_moneyline_gate_requires_gap_ev_and_phi_confidence()

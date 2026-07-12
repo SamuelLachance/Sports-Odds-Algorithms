@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
@@ -59,9 +60,24 @@ def _injury_status_text(item: dict[str, Any]) -> str:
 
 
 def _status_means_out(status: str) -> bool:
+    """True for Out / injured / suspended — not negations or incidental substrings."""
     if not status:
         return False
-    return "out" in status or "injured" in status or "suspended" in status
+    s = status.strip().lower()
+    # Negated phrases must not count as OUT (substring "injured"/"out" would).
+    if "not injured" in s or "not out" in s or "no longer injured" in s:
+        return False
+    # ESPN short codes / enum tails (word-boundary alone misses injury_status_out).
+    if s in {"o", "out", "ir", "sus", "suspended", "injured"}:
+        return True
+    if s.endswith("_out") or "status_out" in s:
+        return True
+    # Word-boundary match: avoid "timeout", "about", "scout", etc.
+    return bool(
+        re.search(r"\bout\b", s)
+        or re.search(r"\binjured\b", s)
+        or re.search(r"\bsuspended\b", s)
+    )
 
 
 def _resolve_injury_item(item: Any) -> dict[str, Any] | None:

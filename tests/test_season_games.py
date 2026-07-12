@@ -80,6 +80,54 @@ def test_parse_event_to_game_normalizes_abbreviations() -> None:
     assert game[5] == 99
 
 
+def test_parse_event_to_game_skips_missing_scores_instead_of_inventing_zero() -> None:
+    """Completed events with null scores must not enter power history as 0–0."""
+    from web.live_data import _score_value
+
+    cutoff = datetime(2026, 6, 12, tzinfo=timezone.utc)
+    event = _completed_event(
+        "2",
+        home_abbr="BOS",
+        away_abbr="NY",
+        home_score=110,
+        away_score=99,
+    )
+    event["competitions"][0]["competitors"][0]["score"] = {"value": None}
+    event["competitions"][0]["competitors"][1]["score"] = None
+
+    assert _score_value(event["competitions"][0]["competitors"][0]) is None
+    assert _score_value(event["competitions"][0]["competitors"][1]) is None
+    assert _parse_event_to_game("nba", event, cutoff) is None
+
+    # Genuine 0–0 (or 0–N) still parses.
+    zero = _completed_event(
+        "3",
+        home_abbr="BOS",
+        away_abbr="NY",
+        home_score=0,
+        away_score=0,
+    )
+    parsed = _parse_event_to_game("nba", zero, cutoff)
+    assert parsed is not None
+    assert parsed[2][4] == 0
+    assert parsed[2][5] == 0
+
+    # ESPN sometimes sends numeric strings / floats.
+    floaty = _completed_event(
+        "4",
+        home_abbr="BOS",
+        away_abbr="NY",
+        home_score=110,
+        away_score=99,
+    )
+    floaty["competitions"][0]["competitors"][0]["score"] = {"value": "110.0"}
+    floaty["competitions"][0]["competitors"][1]["score"] = 99.0
+    parsed_f = _parse_event_to_game("nba", floaty, cutoff)
+    assert parsed_f is not None
+    assert parsed_f[2][4] == 110
+    assert parsed_f[2][5] == 99
+
+
 def test_load_league_dated_games_for_backtest_preserves_iso_dates() -> None:
     sample_map = {
         "1": ("2024-11-01T19:00Z", ("bos", "ny", "Boston", "New York", 110, 100)),

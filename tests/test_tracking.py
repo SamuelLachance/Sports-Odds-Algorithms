@@ -98,12 +98,12 @@ def test_roi_stake_weighted_mixed_stakes() -> None:
     assert summary["roi_percent"] == round((1.41 - 3.0) / 4.0 * 100, 2)
 
 
-def test_empty_store_and_push_only_roi_is_zero() -> None:
-    """Empty seasons / push-only windows must not divide by zero."""
+def test_empty_store_and_push_only_roi_is_null() -> None:
+    """Empty seasons / push-only windows must not invent a flat 0% ROI book."""
     from web.tracking_service import _normalize_store, _summarize_bets
 
     empty = _summarize_bets([])
-    assert empty["roi_percent"] == 0.0
+    assert empty["roi_percent"] is None
     assert empty["staked_units"] == 0.0
     assert empty["bets"] == 0
     assert empty["record"] == "0-0"
@@ -111,12 +111,12 @@ def test_empty_store_and_push_only_roi_is_zero() -> None:
     push_only = _summarize_bets(
         [{"status": "push", "units": 0.0, "stake_units": 2.0}]
     )
-    assert push_only["roi_percent"] == 0.0
+    assert push_only["roi_percent"] is None
     assert push_only["staked_units"] == 0.0
 
     response = build_tracking_response(_normalize_store({"version": 1}))
     assert response["tracking_since"] is None
-    assert response["all_time"]["roi_percent"] == 0.0
+    assert response["all_time"]["roi_percent"] is None
     assert response["yearly"] == []
     assert response["daily"] == []
     note = response.get("note") or ""
@@ -640,6 +640,27 @@ def test_soccer_aet_uses_regulation_linescores() -> None:
     assert completed is True
     assert away == 1
     assert home == 1
+
+
+def test_scores_from_event_parses_float_string_board_scores() -> None:
+    """ESPN float/string scores must grade; int('1.0') previously failed closed."""
+    from web.tracking_service import _scores_from_event
+
+    event = {
+        "competitions": [
+            {
+                "status": {"type": {"completed": True}},
+                "competitors": [
+                    {"homeAway": "away", "score": {"value": "98.0"}},
+                    {"homeAway": "home", "score": 110.0},
+                ],
+            }
+        ]
+    }
+    away, home, completed = _scores_from_event(event)
+    assert completed is True
+    assert away == 98
+    assert home == 110
 
 
 def test_soccer_aet_without_linescores_leaves_ungraded() -> None:
@@ -1204,7 +1225,7 @@ if __name__ == "__main__":
     test_roi_excludes_pushes_from_denominator()
     test_roi_is_stake_weighted()
     test_roi_stake_weighted_mixed_stakes()
-    test_empty_store_and_push_only_roi_is_zero()
+    test_empty_store_and_push_only_roi_is_null()
     test_normalize_store_tolerates_corrupt_payload()
     test_calculate_units_guards_bad_odds()
     test_new_bet_skipped_when_game_already_started()

@@ -458,8 +458,10 @@ def _linescore_regulation_total(comp: dict[str, Any]) -> int | None:
         raw = period.get("value")
         if raw is None:
             raw = period.get("displayValue")
+        if raw is None or raw == "":
+            return None
         try:
-            total += int(raw)
+            total += int(float(raw))
         except (TypeError, ValueError):
             return None
     return total
@@ -505,8 +507,10 @@ def _scores_from_event(
             raw = block.get("value")
         else:
             raw = block
+        if raw is None or raw == "":
+            return None
         try:
-            return int(raw)
+            return int(float(raw))
         except (TypeError, ValueError):
             return None
 
@@ -820,7 +824,7 @@ def _bet_units(bet: dict[str, Any]) -> float:
 
 
 def _summarize_bets(bets: list[dict[str, Any]]) -> dict[str, Any]:
-    """Roll up a bet list. Empty seasons / push-only windows yield ROI 0, never /0."""
+    """Roll up a bet list. Empty / push-only windows yield ROI null (undefined), never /0 or fake 0%."""
     bets = [b for b in bets if isinstance(b, dict)]
     wins = sum(1 for b in bets if b.get("status") == "win")
     losses = sum(1 for b in bets if b.get("status") == "loss")
@@ -830,9 +834,10 @@ def _summarize_bets(bets: list[dict[str, Any]]) -> dict[str, Any]:
     # ROI per staked unit: pushes return the stake, so only win/loss stakes count.
     staked_units = sum(_bet_stake_units(b) for b in bets if b.get("status") in ("win", "loss"))
     if staked_units > 0:
-        roi = settled_units / staked_units * 100.0
+        roi_percent: float | None = round(settled_units / staked_units * 100.0, 2)
     else:
-        roi = 0.0
+        # No decided risk → ROI is undefined; UI renders "—" (not a flat 0% book).
+        roi_percent = None
     return {
         "bets": len(bets),
         "wins": wins,
@@ -841,7 +846,7 @@ def _summarize_bets(bets: list[dict[str, Any]]) -> dict[str, Any]:
         "pending": pending,
         "units": round(settled_units, 3),
         "staked_units": round(staked_units, 2),
-        "roi_percent": round(roi, 2),
+        "roi_percent": roi_percent,
         "record": f"{wins}-{losses}" + (f"-{pushes}" if pushes else ""),
     }
 

@@ -30,3 +30,26 @@ def test_opening_steam_nudges_toward_market_when_model_too_away() -> None:
     assert meta["steam_signal"] is True
     assert meta["steam_direction"] == "home"
     assert adj > model_margin
+
+
+def test_soccer_implied_shift_soft_fails_invalid_odds() -> None:
+    """|odds| < 100 must return None, not raise into slate steam meta."""
+    from web.soccer_opening import _implied_shift_pp, soccer_opening_steam_meta
+
+    assert _implied_shift_pp(50, -110) is None
+    assert _implied_shift_pp(-110, 75) is None
+    assert _implied_shift_pp(0, -110) is not None  # ESPN EVEN → +100
+
+    meta = soccer_opening_steam_meta(
+        home_ml=-120,
+        draw_ml=250,
+        away_ml=320,
+        open_home_ml=50,  # invalid open — shift skipped, no crash
+        open_draw_ml=250,
+        open_away_ml=320,
+        model_home=48.0,
+        model_draw=28.0,
+        model_away=24.0,
+    )
+    assert meta["steam_signal"] is False
+    assert meta["implied_shifts_pp"]["home"] is None

@@ -36,6 +36,19 @@ def test_injury_status_text_reads_type_dict_not_str_repr() -> None:
     assert _status_means_out(text)
 
 
+def test_status_means_out_rejects_negations_and_incidental_substrings() -> None:
+    """Bare ``in`` matching treated 'not injured' / 'timeout' as OUT."""
+    assert _status_means_out("out") is True
+    assert _status_means_out("o") is True
+    assert _status_means_out("injury_status_out") is True
+    assert _status_means_out("Injured Reserve") is True
+    assert _status_means_out("suspended") is True
+    assert _status_means_out("not injured") is False
+    assert _status_means_out("timeout") is False
+    assert _status_means_out("day-to-day") is False
+    assert _status_means_out("questionable") is False
+
+
 def test_count_team_injuries_resolves_ref_stubs_for_out() -> None:
     """ESPN list endpoints return {$ref} stubs with no inline status — must fetch."""
     list_payload = {

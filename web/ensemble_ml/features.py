@@ -40,35 +40,28 @@ def _safe_float(value: Any) -> float | None:
 
 
 def market_devig_home(
-    home_ml: int | float | None,
-    away_ml: int | float | None,
+    home_ml: int | float | str | None,
+    away_ml: int | float | str | None,
 ) -> float | None:
-    _away, home = devig_two_way_probs(
-        int(away_ml) if away_ml is not None else None,
-        int(home_ml) if home_ml is not None else None,
-    )
+    """De-vig two-way home win %; soft-fail on missing/invalid/EVEN text juice."""
+    # Pass through normalize via devig_two_way_probs — do not int() first
+    # (``EVEN`` / float strings / |odds|<100 must return None, not raise).
+    _away, home = devig_two_way_probs(away_ml, home_ml)
     return home
 
 
 def market_devig_threeway(
-    home_ml: int | float | None,
-    draw_ml: int | float | None,
-    away_ml: int | float | None,
+    home_ml: int | float | str | None,
+    draw_ml: int | float | str | None,
+    away_ml: int | float | str | None,
 ) -> tuple[float | None, float | None, float | None]:
-    if home_ml is None or draw_ml is None or away_ml is None:
-        return None, None, None
-    from web.bet_advisor import american_implied_prob
+    """De-vig 1X2 probs; soft-fail like ``devig_threeway_from_odds`` (no raise)."""
+    from web.soccer_decorrelation import devig_threeway_from_odds
 
-    raw = [
-        american_implied_prob(int(away_ml)),
-        american_implied_prob(int(draw_ml)),
-        american_implied_prob(int(home_ml)),
-    ]
-    total = sum(raw)
-    if total <= 0:
+    probs = devig_threeway_from_odds(home_ml, draw_ml, away_ml)
+    if probs is None:
         return None, None, None
-    away_p, draw_p, home_p = (value / total * 100.0 for value in raw)
-    return home_p, draw_p, away_p
+    return probs
 
 
 def extract_binary_features(

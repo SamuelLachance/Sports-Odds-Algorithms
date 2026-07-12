@@ -160,9 +160,13 @@ def within_hubacek_ml_range(league: str | None, american_odds: float | None) -> 
 
 
 def _blend_is_decorrelated(blended: dict[str, Any]) -> bool:
+    """True only when Hubáček market decorrelation actually ran.
+
+    Ensemble ML sets ``market_decorrelated`` only for the moneyline path
+    (see ``apply_ensemble_ml``). Spread-only / invalid-juice ensemble runs must
+    not short-circuit official gates via ``blend_mode`` alone.
+    """
     if blended.get("market_decorrelated"):
-        return True
-    if blended.get("blend_mode") == "ensemble_ml" and blended.get("ensemble_ml"):
         return True
     for key in _SPORT_PRED_KEYS:
         pred = blended.get(key)

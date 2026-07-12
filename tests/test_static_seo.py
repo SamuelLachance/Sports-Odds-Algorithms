@@ -267,6 +267,10 @@ def test_app_js_mlb_nhl_frontend_contracts() -> None:
     assert "−2.2% at the close" in js
     assert "+34.3% ROI" in js
     assert "−3.2% at the close" not in js
+    # expected_units is model EV per 1u flat — never label it as CLV.
+    assert "CLV / EV units" not in js
+    assert "<span>Expected units</span>" in js
+    assert "formatUnits(pick.expected_units)" in js
 
 
 def test_agents_md_cron_uses_comma_list_not_step_slash() -> None:

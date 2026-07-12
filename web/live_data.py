@@ -83,16 +83,20 @@ def _event_before_cutoff(event: dict[str, Any], cutoff: datetime) -> bool:
     return event_day < cutoff_day
 
 
-def _score_value(comp: dict[str, Any]) -> int:
+def _score_value(comp: dict[str, Any]) -> int | None:
+    """Parse ESPN competitor score; None when missing/unparseable (never invent 0)."""
     score = comp.get("score")
     if isinstance(score, dict):
         raw = score.get("value")
     else:
         raw = score
+    if raw is None or raw == "":
+        return None
     try:
-        return int(raw)
+        # ESPN may send int, float, or numeric strings ("110" / "110.0").
+        return int(float(raw))
     except (TypeError, ValueError):
-        return 0
+        return None
 
 
 def _collect_season_games(
@@ -134,6 +138,8 @@ def _collect_season_games(
         )
         team_score = _score_value(team_comp)
         opp_score = _score_value(opp_comp)
+        if team_score is None or opp_score is None:
+            continue
         dates.append(iso_to_project_date(event["date"]))
         opponents.append(opp_abbr)
         home_away.append("home" if team_comp.get("homeAway") == "home" else "away")

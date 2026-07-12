@@ -28,7 +28,6 @@ OOS_PATH = OUT_DIR / "oos_predictions.csv"
 KELLY_FRACTION = 0.25
 KELLY_CAP_UNITS = 3.0
 KELLY_MIN_UNITS = 0.25
-DEFAULT_SPREAD_JUICE = -110.0
 
 
 def american_to_decimal(ml: float) -> float:
@@ -38,6 +37,18 @@ def american_to_decimal(ml: float) -> float:
     if abs(ml) < 100:
         return float("nan")
     return 1.0 + (ml / 100.0 if ml > 0 else 100.0 / abs(ml))
+
+
+def _valid_spread_juice(raw: object) -> float | None:
+    """American juice or None when missing/garbage. EVEN 0 → +100. Never invent −110."""
+    if raw is None or pd.isna(raw):
+        return None
+    odds = float(raw)
+    if odds == 0:
+        return 100.0
+    if abs(odds) < 100:
+        return None
+    return odds
 
 
 def devig(home_ml: float, away_ml: float) -> tuple[float, float]:
@@ -165,23 +176,22 @@ def simulate_spread(
         spread = float(spread)
         pred_margin = float(getattr(row, margin_col))
         actual_margin = float(row.margin)
-        home_odds = float(row.spread_home_odds) if pd.notna(row.spread_home_odds) else DEFAULT_SPREAD_JUICE
-        away_odds = float(row.spread_away_odds) if pd.notna(row.spread_away_odds) else DEFAULT_SPREAD_JUICE
-        if abs(home_odds) < 100:
-            home_odds = DEFAULT_SPREAD_JUICE
-        if abs(away_odds) < 100:
-            away_odds = DEFAULT_SPREAD_JUICE
+        # Fail closed on missing/garbage juice — never invent −110 like live gates.
+        home_odds = _valid_spread_juice(row.spread_home_odds)
+        away_odds = _valid_spread_juice(row.spread_away_odds)
         if exec_price == "open":
             if pd.isna(row.home_spread_open):
                 continue
             spread = float(row.home_spread_open)
         if exec_price == "best":
-            best_home = row.best_spread_home_odds
-            best_away = row.best_spread_away_odds
-            if pd.notna(best_home) and abs(float(best_home)) >= 100:
-                home_odds = float(best_home)
-            if pd.notna(best_away) and abs(float(best_away)) >= 100:
-                away_odds = float(best_away)
+            best_home = _valid_spread_juice(getattr(row, "best_spread_home_odds", None))
+            best_away = _valid_spread_juice(getattr(row, "best_spread_away_odds", None))
+            if best_home is not None:
+                home_odds = best_home
+            if best_away is not None:
+                away_odds = best_away
+        if home_odds is None or away_odds is None:
+            continue
 
         # P(home covers) = P(margin + spread > 0)
         z = (pred_margin + spread) / sigma

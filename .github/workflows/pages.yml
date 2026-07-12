@@ -51,8 +51,9 @@ jobs:
     timeout-minutes: 45
     env:
       # Fast path unless an operator explicitly requests a full rebuild.
-      FAST_DAILY_BUILD: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.full_build == 'true' && '' || '1' }}
-      FULL_BUILD: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.full_build == 'true' && '1' || '' }}
+      # Use '0' (truthy in JS) — not '' — so `&& … || '1'` does not always force fast mode.
+      FAST_DAILY_BUILD: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.full_build == 'true') && '0' || '1' }}
+      FULL_BUILD: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.full_build == 'true') && '1' || '' }}
       # Multi-book line shopping + opening lines, capped by a global fetch
       # time budget so the fast build cannot stall on the books API.
       LIVE_MULTI_BOOK: "1"

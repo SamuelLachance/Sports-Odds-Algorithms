@@ -595,10 +595,13 @@ def _sport_pred_payload(blended: dict[str, Any]) -> dict[str, Any] | None:
 
 
 def blend_outputs_are_market_decorrelated(blended: dict[str, Any]) -> bool:
-    """True when unified or sport-layer probabilities already use Hubáček decorrelation."""
+    """True when unified or sport-layer probabilities already use Hubáček decorrelation.
+
+    Ensemble ML is decorrelated only when ``apply_ensemble_ml`` set
+    ``market_decorrelated`` (moneyline path). Do not treat ``blend_mode`` alone
+    as proof — spread-only ensemble must still run ``ensure_hubacek_in_blend``.
+    """
     if blended.get("market_decorrelated"):
-        return True
-    if blended.get("blend_mode") == "ensemble_ml" and blended.get("ensemble_ml"):
         return True
     pred = _sport_pred_payload(blended)
     return bool(pred and pred.get("market_decorrelated"))

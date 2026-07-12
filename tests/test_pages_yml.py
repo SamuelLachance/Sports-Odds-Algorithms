@@ -66,6 +66,13 @@ def test_pages_yml_is_valid_yaml() -> None:
     assert '"0 16 * * *"' in text
     assert '"0 22 * * *"' in text
     assert "4/10/16/22" not in text
+    # Empty-string off-value is falsy in JS, so `&& '' || '1'` always stays fast.
+    assert "&& '' || '1'" not in text
+    assert "&& \"\" || '1'" not in text
+    assert "FAST_DAILY_BUILD:" in text
+    assert "&& '0' || '1'" in text
+    assert "FULL_BUILD:" in text
+    assert "full_build == 'true'" in text
 
 
 def test_test_yml_is_valid_and_lean() -> None:

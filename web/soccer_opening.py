@@ -82,11 +82,19 @@ def fetch_soccer_opening_moneylines(
 
 
 def _implied_shift_pp(open_ml: int | None, close_ml: int | None) -> float | None:
+    """Implied-prob move (pp) from open → close; None on missing/invalid juice."""
+    from web.bet_advisor import normalize_american_odds
+
     if open_ml is None or close_ml is None:
         return None
-    open_prob = american_implied_prob(open_ml)
-    close_prob = american_implied_prob(close_ml)
-    if open_prob is None or close_prob is None:
+    open_n = normalize_american_odds(open_ml)
+    close_n = normalize_american_odds(close_ml)
+    if open_n is None or close_n is None:
+        return None
+    try:
+        open_prob = american_implied_prob(open_n)
+        close_prob = american_implied_prob(close_n)
+    except ValueError:
         return None
     return (close_prob - open_prob) * 100.0
 

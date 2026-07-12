@@ -27,6 +27,21 @@ def test_resolve_club_elo_slug() -> None:
     assert resolve_club_elo_slug("epl", "zzz") is None
 
 
+def test_laliga_club_elo_abbrs_match_football_data_keys() -> None:
+    """atm = Atlético Madrid, ath = Athletic Bilbao — not swapped/missing."""
+    assert resolve_club_elo_slug("laliga", "atm") == "Atletico"
+    assert resolve_club_elo_slug("laliga", "ath") == "Athletic"
+    assert resolve_club_elo_slug("laliga", "atl") == "Atletico"
+    assert resolve_club_elo_slug("laliga", "rso") == "Sociedad"
+
+
+def test_ligue1_club_elo_aliases_cover_football_data_abbrs() -> None:
+    assert resolve_club_elo_slug("ligue1", "olm") == "Marseille"
+    assert resolve_club_elo_slug("ligue1", "lyon") == "Lyon"
+    assert resolve_club_elo_slug("ligue1", "rcl") == "Lens"
+    assert resolve_club_elo_slug("ligue1", "nice") == "Nice"
+
+
 def test_elo_binary_home_win_pct_favors_stronger_home() -> None:
     strong = elo_binary_home_win_pct(1900.0, 1600.0)
     weak = elo_binary_home_win_pct(1600.0, 1900.0)
