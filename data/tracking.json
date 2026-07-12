@@ -540,8 +540,8 @@
       "model_margin": null,
       "model_market_gap_pp": 11.05,
       "kelly_pct": 17.09,
-      "status": "pending",
-      "units": 0.0,
+      "status": "win",
+      "units": 2.290076335877863,
       "stake_units": 3.0,
       "recorded_at": "2026-07-12T06:36:02.954809+00:00",
       "recorded_pre_start": true,
@@ -549,7 +549,11 @@
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
       "closing_source": "consensus",
-      "closing_snapshot_at": "2026-07-12T16:53:05.630808+00:00"
+      "closing_snapshot_at": "2026-07-12T16:53:05.630808+00:00",
+      "graded_at": "2026-07-12T22:47:06.115613+00:00",
+      "final_score": "5\u20136",
+      "clv_pct": 3.63,
+      "clv_payout_pct": 3.77
     },
     {
       "id": "2026-07-12:401816139:home",
@@ -581,8 +585,8 @@
       "model_margin": null,
       "model_market_gap_pp": 7.54,
       "kelly_pct": 10.36,
-      "status": "pending",
-      "units": 0.0,
+      "status": "win",
+      "units": 1.738255033557047,
       "stake_units": 2.59,
       "recorded_at": "2026-07-12T06:36:02.954809+00:00",
       "recorded_pre_start": true,
@@ -590,7 +594,11 @@
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
       "closing_source": "consensus",
-      "closing_snapshot_at": "2026-07-12T07:57:22.480439+00:00"
+      "closing_snapshot_at": "2026-07-12T07:57:22.480439+00:00",
+      "graded_at": "2026-07-12T22:47:06.206351+00:00",
+      "final_score": "1\u20133",
+      "clv_pct": -1.39,
+      "clv_payout_pct": -1.38
     },
     {
       "id": "401816126:away",
@@ -622,14 +630,18 @@
       "model_margin": null,
       "model_market_gap_pp": 7.89,
       "kelly_pct": 10.09,
-      "status": "pending",
-      "units": 0.0,
+      "status": "win",
+      "units": 1.910714285714286,
       "stake_units": 2.14,
       "recorded_at": "2026-07-12T14:09:25.697023+00:00",
       "recorded_pre_start": true,
       "closing_market_odds": -112,
       "closing_source": "consensus",
-      "closing_snapshot_at": "2026-07-12T16:53:05.630808+00:00"
+      "closing_snapshot_at": "2026-07-12T16:53:05.630808+00:00",
+      "graded_at": "2026-07-12T22:47:06.354120+00:00",
+      "final_score": "3\u20132",
+      "clv_pct": 0.0,
+      "clv_payout_pct": 0.0
     }
   ]
 }
