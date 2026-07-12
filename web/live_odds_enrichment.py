@@ -16,7 +16,7 @@ import time
 from typing import Any
 
 from web.clv_service import american_to_implied_prob
-from web.mlb_odds_espn import MAX_MLB_RUN_LINE, _provider_line_mlb
+from web.mlb_odds_espn import MAX_MLB_RUN_LINE, _consensus_mlb, _provider_line_mlb
 from web.nba_odds_espn import (
     MAX_NBA_SPREAD,
     _consensus,
@@ -26,7 +26,7 @@ from web.nba_odds_espn import (
     _provider_line,
     _valid_american,
 )
-from web.nhl_odds_espn import MAX_NHL_PUCK_LINE, _provider_line_nhl
+from web.nhl_odds_espn import MAX_NHL_PUCK_LINE, _consensus_nhl, _provider_line_nhl
 
 MULTI_BOOK_LEAGUES = frozenset({"nba", "nhl", "mlb", "wnba"})
 
@@ -259,13 +259,13 @@ def summarize_book_items(
         return {}
 
     if lines:
-        # Prefer league-aware line parse for consensus medians (MLB/NHL validate
-        # run/puck lines; NBA path validates with MAX_NBA_SPREAD).
-        if league_key in {"mlb", "nhl"}:
-            consensus = {
-                field: _median([line.get(field) for line in lines])  # type: ignore[arg-type]
-                for field in _LINE_FIELDS
-            }
+        # Prefer league-aware consensus (MLB/NHL validate run/puck lines and
+        # reject mixed-sign / even-book dead-zone medians; NBA path uses
+        # MAX_NBA_SPREAD / raised college caps via max_handicap_abs).
+        if league_key == "mlb":
+            consensus = _consensus_mlb(filtered)
+        elif league_key == "nhl":
+            consensus = _consensus_nhl(filtered)
         else:
             consensus = _consensus(filtered, max_handicap_abs=max_handicap)
 

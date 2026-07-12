@@ -186,11 +186,18 @@ def get_pick_thresholds(league: str) -> dict[str, Any]:
 
 def passes_profit_gate(pick: BetPick, thresholds: dict[str, Any]) -> bool:
     """Kelly + profit-score gate after edge/EV thresholds (backtest-tuned)."""
+    import math
+
     enriched = enrich_pick_profit_metrics(pick)
-    if enriched.profit_score < thresholds.get("min_profit_score", 0.0):
+    score = enriched.profit_score
+    # NaN comparisons are always False — fail closed on non-finite scores.
+    if not math.isfinite(score) or score < thresholds.get("min_profit_score", 0.0):
         return False
-    kelly_pct = float(enriched.extra.get("kelly_pct") or 0.0)
-    if kelly_pct < thresholds.get("min_kelly_pct", 0.0):
+    try:
+        kelly_pct = float(enriched.extra.get("kelly_pct") or 0.0)
+    except (TypeError, ValueError):
+        return False
+    if not math.isfinite(kelly_pct) or kelly_pct < thresholds.get("min_kelly_pct", 0.0):
         return False
     return True
 

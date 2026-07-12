@@ -187,6 +187,12 @@ def test_closing_odds_parse_int_rejects_invalid_magnitude() -> None:
     assert closing_odds_db._parse_int(150) == 150
     assert closing_odds_db._parse_int(float("inf")) is None
     assert closing_odds_db._parse_int("nan") is None
+    # String EVEN/PK must match live/SBR (+100), not drop as None.
+    assert closing_odds_db._parse_int("EVEN") == 100
+    assert closing_odds_db._parse_int("even") == 100
+    assert closing_odds_db._parse_int("PK") == 100
+    assert closing_odds_db._parse_int("Pk") == 100
+    assert closing_odds_db._parse_int(False) is None  # type: ignore[arg-type]
 
 
 def test_closing_odds_parse_float_rejects_non_finite() -> None:
@@ -195,6 +201,10 @@ def test_closing_odds_parse_float_rejects_non_finite() -> None:
     assert closing_odds_db._parse_float("inf") is None
     assert closing_odds_db._parse_float("-inf") is None
     assert closing_odds_db._parse_float("") is None
+    assert closing_odds_db._parse_float("PK") == 0.0
+    assert closing_odds_db._parse_float("Pk") == 0.0
+    assert closing_odds_db._parse_float("EVEN") == 0.0
+    assert closing_odds_db._parse_float(False) is None  # type: ignore[arg-type]
 
 
 def test_closing_odds_even_zero_maps_to_plus_100(tmp_path: Path, monkeypatch) -> None:

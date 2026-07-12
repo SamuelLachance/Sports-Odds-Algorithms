@@ -126,15 +126,14 @@ def _clean_number(value: str) -> float:
 def _optional_number(value: str) -> float | None:
     """Parse a numeric cell; return None for blank/blacklist (not 0.0)."""
     text = str(value).strip()
-    if not text or text in BLACKLIST:
-        # Pick'em spreads are encoded as PK — keep as 0.0.
-        # EVEN sometimes appears in juice/ML cells — treat as 0 for American map.
-        lowered = text.lower()
-        if lowered in {"pk", "even"}:
-            return 0.0
+    if not text:
         return None
-    if text.upper() == "EVEN":
+    # Case-insensitive PK/EVEN (HTML often emits ``Pk``); match archive parsers.
+    upper = text.upper()
+    if upper in {"PK", "EVEN"}:
         return 0.0
+    if text in BLACKLIST:
+        return None
     try:
         parsed = float(text)
     except ValueError:
@@ -303,6 +302,7 @@ def _rows_from_nhl_html(sport: str, season: int, html: str, translated: dict[str
     body = table_rows[1:]
     output: list[dict[str, Any]] = []
     for away_row, home_row in _pairwise(body):
+        # Need ML [9] + spread [10]; juice [11] is optional (sparse HTML).
         if len(away_row) < 10 or len(home_row) < 10:
             continue
         away_name = _translate_name(sport, away_row[3], translated)
@@ -341,8 +341,12 @@ def _rows_from_nhl_html(sport: str, season: int, html: str, translated: dict[str
                 "away_close_ml": away_close_ml,
                 "home_close_spread": home_spread,
                 "away_close_spread": away_spread,
-                "home_spread_odds": _spread_juice_cell(home_row[11]),
-                "away_spread_odds": _spread_juice_cell(away_row[11]),
+                "home_spread_odds": (
+                    _spread_juice_cell(home_row[11]) if len(home_row) > 11 else None
+                ),
+                "away_spread_odds": (
+                    _spread_juice_cell(away_row[11]) if len(away_row) > 11 else None
+                ),
                 "source": "sbr-online",
             }
         )
@@ -565,6 +569,7 @@ def fetch_sbr_season_rows(sport: str, season: int, translated: dict[str, dict[st
         output: list[dict[str, Any]] = []
         for index in range(1, len(body) - 1, 2):
             away_row, home_row = body[index], body[index + 1]
+            # Need ML [16] + spread [17]; juice [18] is optional (sparse xlsx).
             if len(away_row) < 17 or len(home_row) < 17:
                 continue
             away_name = _translate_name("mlb", away_row[3], translated)
@@ -597,8 +602,12 @@ def fetch_sbr_season_rows(sport: str, season: int, translated: dict[str, dict[st
                     "away_close_ml": away_close_ml,
                     "home_close_spread": home_spread,
                     "away_close_spread": away_spread,
-                    "home_spread_odds": _spread_juice_cell(home_row[18]),
-                    "away_spread_odds": _spread_juice_cell(away_row[18]),
+                    "home_spread_odds": (
+                        _spread_juice_cell(home_row[18]) if len(home_row) > 18 else None
+                    ),
+                    "away_spread_odds": (
+                        _spread_juice_cell(away_row[18]) if len(away_row) > 18 else None
+                    ),
                     "source": "sbr-online",
                 }
             )

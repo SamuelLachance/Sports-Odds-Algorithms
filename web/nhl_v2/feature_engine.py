@@ -672,12 +672,24 @@ class NhlFeatureEngine:
         home_goals = int(game.get("home_goals") or 0)
         away_goals = int(game.get("away_goals") or 0)
         # Do not use `or` — home_win=0 is a valid away win and must not fall
-        # through to the score-based fallback.
+        # through to the score-based fallback. Equal scores with no explicit
+        # winner are pre-shootout regulation ties (half Elo), not away wins.
         raw_home_win = game.get("home_win")
+        tied = False
         if raw_home_win is None:
-            home_win = 1 if home_goals > away_goals else 0
+            if home_goals > away_goals:
+                home_win = 1
+                home_score = 1.0
+            elif home_goals < away_goals:
+                home_win = 0
+                home_score = 0.0
+            else:
+                tied = True
+                home_win = 0
+                home_score = 0.5
         else:
             home_win = int(raw_home_win)
+            home_score = float(home_win)
 
         expected_home = 1.0 / (
             1.0 + 10.0 ** (-((home.elo + ELO_HOME_ADV) - away.elo) / 400.0)
@@ -686,7 +698,9 @@ class NhlFeatureEngine:
         margin_mult = math.log1p(max(margin, 1)) * (
             2.2 / ((abs(home.elo - away.elo) * 0.001) + 2.2)
         )
-        shift = ELO_K * margin_mult * (home_win - expected_home)
+        if tied:
+            margin_mult = 1.0
+        shift = ELO_K * margin_mult * (home_score - expected_home)
         home.elo += shift
         away.elo -= shift
         home.elo_history = (home.elo_history + [home.elo])[-12:]
@@ -849,16 +863,19 @@ class NhlFeatureEngine:
         if away_fo is not None:
             away.faceoff = _ewma(away.faceoff, float(away_fo), ALPHA_SPECIAL)
 
-        home.win_ewma = _ewma(home.win_ewma, float(home_win), ALPHA_WIN)
-        away.win_ewma = _ewma(away.win_ewma, float(1 - home_win), ALPHA_WIN)
-        home.home_win_ewma = _ewma(home.home_win_ewma, float(home_win), ALPHA_WIN)
-        away.away_win_ewma = _ewma(away.away_win_ewma, float(1 - home_win), ALPHA_WIN)
+        home.win_ewma = _ewma(home.win_ewma, home_score, ALPHA_WIN)
+        away.win_ewma = _ewma(away.win_ewma, 1.0 - home_score, ALPHA_WIN)
+        home.home_win_ewma = _ewma(home.home_win_ewma, home_score, ALPHA_WIN)
+        away.away_win_ewma = _ewma(away.away_win_ewma, 1.0 - home_score, ALPHA_WIN)
 
         # OT/SO points luck: regulation win = 1.0 for winner; OT/SO win = 0.6
         home_ot_loss = int(game.get("home_ot_loss") or 0)
         away_ot_loss = int(game.get("away_ot_loss") or 0)
         went_extra = bool(home_ot_loss or away_ot_loss)
-        if home_win:
+        if tied:
+            home_ot_obs = 0.5
+            away_ot_obs = 0.5
+        elif home_win:
             home_ot_obs = 0.6 if went_extra else 1.0
             away_ot_obs = 0.4 if went_extra else 0.0
         else:
@@ -875,14 +892,15 @@ class NhlFeatureEngine:
             else:
                 away.one_goal_wins += 1
 
-        # H2H season record
-        home.h2h.setdefault(game["away"], []).append(home_win)
-        away.h2h.setdefault(game["home"], []).append(1 - home_win)
-        home.h2h[game["away"]] = home.h2h[game["away"]][-8:]
-        away.h2h[game["home"]] = away.h2h[game["home"]][-8:]
+        # H2H season record (ties do not count as wins for either side).
+        if not tied:
+            home.h2h.setdefault(game["away"], []).append(home_win)
+            away.h2h.setdefault(game["home"], []).append(1 - home_win)
+            home.h2h[game["away"]] = home.h2h[game["away"]][-8:]
+            away.h2h[game["home"]] = away.h2h[game["home"]][-8:]
 
         is_regular = int(game.get("game_type") or 2) == 2
-        if is_regular:
+        if is_regular and not tied:
             if home_win:
                 home.season_wins += 1
                 if away_ot_loss:

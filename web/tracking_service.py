@@ -95,6 +95,9 @@ def calculate_units(stake: float, american_odds: int, result: BetResult) -> floa
         return 0.0
     if result == "loss":
         return -stake_f
+    # Only settled wins pay; pending / unknown must not fall through as a win.
+    if result != "win":
+        return 0.0
     # bool is a subclass of int; int(False)==0 must not pay EVEN.
     if isinstance(american_odds, bool):
         return 0.0

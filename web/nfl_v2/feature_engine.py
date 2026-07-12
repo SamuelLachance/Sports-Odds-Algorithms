@@ -132,14 +132,17 @@ def _parse_date(value: str) -> date_cls | None:
 
 
 def _safe_float(value: Any, default: float) -> float:
-    if value is None:
+    if value is None or isinstance(value, bool):
         return default
     try:
         if isinstance(value, float) and math.isnan(value):
             return default
-        return float(value)
+        parsed = float(value)
     except (TypeError, ValueError):
         return default
+    if not math.isfinite(parsed):
+        return default
+    return parsed
 
 
 def _is_missing_id(value: Any) -> bool:
@@ -149,9 +152,28 @@ def _is_missing_id(value: Any) -> bool:
     return text in ("", "nan", "none", "null")
 
 
+def _coerce_flag(value: Any) -> bool | None:
+    """Parse explicit neutral/flag fields; reject stringy ``\"false\"`` / ``\"0\"``."""
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        if isinstance(value, float) and not math.isfinite(value):
+            return None
+        return bool(value)
+    text = str(value).strip().lower()
+    if text in {"1", "true", "yes", "y", "t"}:
+        return True
+    if text in {"0", "false", "no", "n", "f"}:
+        return False
+    return None
+
+
 def infer_neutral_site(game: dict[str, Any]) -> bool:
-    if game.get("neutral_site") is not None:
-        return bool(game["neutral_site"])
+    flagged = _coerce_flag(game.get("neutral_site"))
+    if flagged is not None:
+        return flagged
     location = str(game.get("location") or "").strip().lower()
     if location:
         return location != "home"

@@ -880,9 +880,8 @@ def test_nba_consensus_rejects_even_book_median_in_dead_zone() -> None:
 
 
 def test_mlb_nhl_open_ml_rejects_invalid_even_median() -> None:
-    """Open ML packing used ``_int_or_none`` without ``_valid_american``."""
+    """Even-book open ML medians must not survive as |x| < 100 garbage."""
     from web.mlb_odds_espn import _consensus_mlb
-    from web.nba_odds_espn import _valid_american
     from web.nhl_odds_espn import _consensus_nhl
 
     items = [
@@ -928,10 +927,163 @@ def test_mlb_nhl_open_ml_rejects_invalid_even_median() -> None:
     for consensus_fn in (_consensus_mlb, _consensus_nhl):
         consensus = consensus_fn(items)
         assert consensus["home_close_ml"] == -150.0
-        # Even median of -110 and +100 lands in the dead zone.
-        assert consensus["home_open_ml"] == -5.0
-        assert _valid_american(consensus["home_open_ml"]) is None
-        assert _valid_american(consensus["away_open_ml"]) is None
+        # Even median of -110 and +100 must fail closed (was -5.0).
+        assert consensus["home_open_ml"] is None
+        assert consensus["away_open_ml"] is None
+
+
+def test_consensus_rejects_mixed_sign_spread_median_pickem() -> None:
+    """Opposite-sign equal-magnitude spreads must not median to a fake PK."""
+    from web.mlb_odds_espn import _consensus_mlb
+    from web.nba_odds_espn import _consensus
+    from web.nhl_odds_espn import _consensus_nhl
+
+    nba_items = [
+        {
+            "provider": {"name": "A"},
+            "spread": -3.5,
+            "homeTeamOdds": {
+                "favorite": True,
+                "close": {
+                    "moneyLine": {"american": -150},
+                    "pointSpread": {"american": -3.5},
+                    "spread": {"american": -110},
+                },
+            },
+            "awayTeamOdds": {
+                "favorite": False,
+                "close": {
+                    "moneyLine": {"american": 130},
+                    "pointSpread": {"american": 3.5},
+                    "spread": {"american": -110},
+                },
+            },
+        },
+        {
+            "provider": {"name": "B"},
+            "spread": 3.5,
+            "homeTeamOdds": {
+                "favorite": False,
+                "close": {
+                    "moneyLine": {"american": 130},
+                    "pointSpread": {"american": 3.5},
+                    "spread": {"american": -110},
+                },
+            },
+            "awayTeamOdds": {
+                "favorite": True,
+                "close": {
+                    "moneyLine": {"american": -150},
+                    "pointSpread": {"american": -3.5},
+                    "spread": {"american": -110},
+                },
+            },
+        },
+    ]
+    nba = _consensus(nba_items)
+    assert nba["home_close_spread"] is None
+    assert nba["away_close_spread"] is None
+
+    run_line_items = [
+        {
+            "provider": {"name": "A"},
+            "homeTeamOdds": {
+                "close": {
+                    "moneyLine": {"american": -150},
+                    "pointSpread": {"american": -1.5},
+                    "spread": {"american": -110},
+                },
+            },
+            "awayTeamOdds": {
+                "close": {
+                    "moneyLine": {"american": 130},
+                    "pointSpread": {"american": 1.5},
+                    "spread": {"american": -110},
+                },
+            },
+        },
+        {
+            "provider": {"name": "B"},
+            "homeTeamOdds": {
+                "close": {
+                    "moneyLine": {"american": 130},
+                    "pointSpread": {"american": 1.5},
+                    "spread": {"american": -110},
+                },
+            },
+            "awayTeamOdds": {
+                "close": {
+                    "moneyLine": {"american": -150},
+                    "pointSpread": {"american": -1.5},
+                    "spread": {"american": -110},
+                },
+            },
+        },
+    ]
+    for consensus_fn in (_consensus_mlb, _consensus_nhl):
+        consensus = consensus_fn(run_line_items)
+        assert consensus["home_close_spread"] is None
+        assert consensus["away_close_spread"] is None
+
+    live = summarize_book_items(nba_items, league="nba")
+    assert live.get("consensus_home_spread") is None
+    assert live.get("consensus_away_spread") is None
+
+
+def test_espn_provider_rejects_even_pk_as_total() -> None:
+    """EVEN/pk map to 0.0 in ``_to_float`` and must not become O/U 0."""
+    from web.mlb_odds_espn import _provider_line_mlb
+    from web.nba_odds_espn import _provider_line, _valid_total
+    from web.nhl_odds_espn import _provider_line_nhl
+
+    assert _valid_total(0.0) is None
+    assert _valid_total(-5.0) is None
+    assert _valid_total(220.5) == 220.5
+
+    base = {
+        "provider": {"name": "A"},
+        "overUnder": "EVEN",
+        "open": {"total": "pk"},
+        "homeTeamOdds": {
+            "close": {
+                "moneyLine": {"american": -150},
+                "pointSpread": {"american": -3.5},
+                "spread": {"american": -110},
+            },
+        },
+        "awayTeamOdds": {
+            "close": {
+                "moneyLine": {"american": 130},
+                "pointSpread": {"american": 3.5},
+                "spread": {"american": -110},
+            },
+        },
+    }
+    nba = _provider_line(base)
+    assert nba["close_total"] is None
+    assert nba["open_total"] is None
+
+    mlb_item = {
+        **base,
+        "close": {"total": "EVEN"},
+        "homeTeamOdds": {
+            "close": {
+                "moneyLine": {"american": -150},
+                "pointSpread": {"american": -1.5},
+                "spread": {"american": -110},
+            },
+        },
+        "awayTeamOdds": {
+            "close": {
+                "moneyLine": {"american": 130},
+                "pointSpread": {"american": 1.5},
+                "spread": {"american": -110},
+            },
+        },
+    }
+    assert _provider_line_mlb(mlb_item)["close_total"] is None
+    assert _provider_line_nhl(mlb_item)["close_total"] is None
+    assert _provider_line_nhl(mlb_item)["open_total"] is None
 
 
 def test_summarize_all_unparsed_returns_empty() -> None:

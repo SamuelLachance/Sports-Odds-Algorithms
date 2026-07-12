@@ -63,8 +63,14 @@ def _canonical_odds_team_key(league: str, key: str) -> str:
 def _parse_int(value: Any) -> int | None:
     if value is None or value == "":
         return None
+    if isinstance(value, bool):
+        return None
+    text = str(value).strip()
+    # String EVEN/PK from books must match live/SBR paths (+100), not drop.
+    if text.upper() in {"EVEN", "PK"}:
+        return 100
     try:
-        parsed = float(str(value).strip())
+        parsed = float(text)
         if not math.isfinite(parsed):
             return None
         number = int(parsed)
@@ -82,8 +88,14 @@ def _parse_int(value: Any) -> int | None:
 def _parse_float(value: Any) -> float | None:
     if value is None or value == "":
         return None
+    if isinstance(value, bool):
+        return None
+    text = str(value).strip()
+    # Pick'em / EVEN spreads stay 0.0 (parity with SBR HTML + archive parsers).
+    if text.upper() in {"PK", "EVEN"}:
+        return 0.0
     try:
-        parsed = float(str(value).strip())
+        parsed = float(text)
     except (TypeError, ValueError):
         return None
     if not math.isfinite(parsed):

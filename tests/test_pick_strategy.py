@@ -556,3 +556,27 @@ def test_soccer_hubacek_legacy_proxy_uses_total_score_convention() -> None:
     assert buggy_tw[0] > legacy_tw[0]
     assert legacy_tw[0] < 35.0
     assert buggy_tw[0] > 35.0
+
+
+def test_passes_profit_gate_rejects_non_finite_score() -> None:
+    """NaN profit_score must fail closed (nan < threshold is False in IEEE)."""
+    from web.bet_advisor import BetPick, enrich_pick_profit_metrics
+    from web.pick_strategy import passes_profit_gate
+
+    pick = enrich_pick_profit_metrics(
+        BetPick(
+            side="home",
+            team_name="A",
+            team_slug="a",
+            strategy="value",
+            confidence="high",
+            edge=10.0,
+            model_projection=-110,
+            market_odds=-110,
+            win_probability=float("nan"),
+            reason="t",
+        )
+    )
+    assert passes_profit_gate(
+        pick, {"min_profit_score": 1.0, "min_kelly_pct": 0.0}
+    ) is False

@@ -12,10 +12,12 @@ from typing import Any, Iterator
 
 from web.nba_odds_espn import (
     _get_json,
+    _median_handicap,
     _nested_american,
     _to_float,
     _valid_american,
     _valid_handicap_line,
+    _valid_total,
 )
 from web.sbr_odds import _repair_same_sign_spreads
 from web.season_games import _event_date_iso, _normalize_abbr
@@ -106,10 +108,10 @@ def _provider_line_nhl(item: dict[str, Any]) -> dict[str, float | None]:
         away_ml=away_close_ml,
     )
 
-    close_total = _to_float(((item.get("close") or {}) or {}).get("total"))
+    close_total = _valid_total(_to_float(((item.get("close") or {}) or {}).get("total")))
     if close_total is None:
-        close_total = _to_float(item.get("overUnder"))
-    open_total = _to_float(((item.get("open") or {}) or {}).get("total"))
+        close_total = _valid_total(_to_float(item.get("overUnder")))
+    open_total = _valid_total(_to_float(((item.get("open") or {}) or {}).get("total")))
 
     return {
         "home_close_ml": home_close_ml,
@@ -137,11 +139,32 @@ def _consensus_nhl(items: list[dict[str, Any]]) -> dict[str, Any]:
         "close_total",
     )
     keys = close_keys + ("home_open_ml", "away_open_ml", "open_total")
+    american_keys = frozenset(
+        {
+            "home_close_ml",
+            "away_close_ml",
+            "home_open_ml",
+            "away_open_ml",
+            "home_spread_odds",
+            "away_spread_odds",
+        }
+    )
+    handicap_keys = frozenset({"home_close_spread", "away_close_spread"})
+    total_keys = frozenset({"close_total", "open_total"})
     # Medians may still use open fields; empty shells stay out of both pools.
     parsed = [line for line in lines if any(line.get(key) is not None for key in keys)]
-    consensus: dict[str, Any] = {
-        key: _median([line[key] for line in parsed]) for key in keys
-    }
+    consensus: dict[str, Any] = {}
+    for key in keys:
+        raw_values = [line[key] for line in parsed]
+        if key in handicap_keys:
+            value = _median_handicap(raw_values)
+        else:
+            value = _median(raw_values)
+            if key in american_keys:
+                value = _valid_american(value)
+            elif key in total_keys:
+                value = _valid_total(value)
+        consensus[key] = value
     # Count only providers with at least one parsed *close* market — open-only
     # shells still feed open medians but must not inflate n_books (NBA parity).
     consensus["n_books"] = sum(

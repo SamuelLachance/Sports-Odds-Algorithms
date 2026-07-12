@@ -117,6 +117,26 @@ def test_infer_playoff_and_neutral() -> None:
     assert infer_playoff({"game_type": "SB"}) is True
     assert infer_neutral_site({"location": "Home"}) is False
     assert infer_neutral_site({"location": "Neutral"}) is True
+    # Stringy false/0 must not strip HFA via bool("false") is True.
+    assert infer_neutral_site({"neutral_site": "false", "location": "Home"}) is False
+    assert infer_neutral_site({"neutral_site": "0", "location": "Home"}) is False
+    assert infer_neutral_site({"neutral_site": False, "location": "Home"}) is False
+    assert infer_neutral_site({"neutral_site": "true"}) is True
+    assert infer_neutral_site({"neutral_site": True}) is True
+
+
+def test_false_rest_falls_back_to_computed_days() -> None:
+    """bool False must not coerce to 0.0 rest (false short-week signal)."""
+    engine = NflFeatureEngine()
+    engine.update_after_game(_game("2024-09-08", "kc", "den", 24, 17))
+    bad = _game("2024-09-15", "kc", "buf", 0, 0)
+    bad["home_rest"] = False
+    bad["away_rest"] = False
+    ok = _game("2024-09-15", "kc", "buf", 0, 0)
+    bad_feats = engine.features_for_game(bad)
+    ok_feats = engine.features_for_game(ok)
+    assert bad_feats["home_rest_days"] == ok_feats["home_rest_days"] == 7.0
+    assert bad_feats["short_week"] == 0.0
 
 
 def test_short_week_and_rest_from_nflverse_fields() -> None:

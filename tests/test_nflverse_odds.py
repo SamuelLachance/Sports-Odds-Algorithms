@@ -21,6 +21,10 @@ def test_nflverse_parse_int_matches_closing_odds_rules() -> None:
     assert _parse_int(150) == 150
     assert _parse_int(None) is None
     assert _parse_int("") is None
+    # inf used to raise OverflowError and abort the CSV import mid-file.
+    assert _parse_int("inf") is None
+    assert _parse_int("-inf") is None
+    assert _parse_int("nan") is None
 
 
 def test_nflverse_rows_flip_spread_line_to_betting_convention(tmp_path: Path) -> None:
@@ -42,6 +46,23 @@ def test_nflverse_rows_flip_spread_line_to_betting_convention(tmp_path: Path) ->
     # Underdog home: nflverse -4 → betting +4
     assert float(rows[1]["home_close_spread"]) == 4.0
     assert float(rows[1]["away_close_spread"]) == -4.0
+
+
+def test_nflverse_drops_non_finite_spread_line(tmp_path: Path) -> None:
+    """NaN spread_line must not poison the closing-odds cache CSV."""
+    from web.nflverse_odds import rows_from_nflverse_csv
+
+    csv_path = tmp_path / "games.csv"
+    csv_path.write_text(
+        "game_type,gameday,home_team,away_team,spread_line,"
+        "home_moneyline,away_moneyline,home_spread_odds,away_spread_odds\n"
+        "REG,2024-09-08,KC,BAL,nan,-150,130,-110,-110\n",
+        encoding="utf-8",
+    )
+    row = rows_from_nflverse_csv(csv_path)[0]
+    assert row["home_close_spread"] == ""
+    assert row["away_close_spread"] == ""
+    assert row["home_close_ml"] == -150
 
 
 def test_nflverse_keeps_playoff_game_types(tmp_path: Path) -> None:

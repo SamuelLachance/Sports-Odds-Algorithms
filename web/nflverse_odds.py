@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import math
 from pathlib import Path
 from typing import Any
 
@@ -16,8 +17,11 @@ def _parse_int(value: Any) -> int | None:
     if value is None or value == "":
         return None
     try:
-        number = int(float(str(value).strip()))
-    except (TypeError, ValueError):
+        parsed = float(str(value).strip())
+        if not math.isfinite(parsed):
+            return None
+        number = int(parsed)
+    except (TypeError, ValueError, OverflowError):
         return None
     if number == 0:
         return 100
@@ -54,6 +58,8 @@ def rows_from_nflverse_csv(path: Path) -> list[dict[str, Any]]:
             try:
                 spread_num = float(str(spread).strip()) if spread not in (None, "") else None
             except (TypeError, ValueError):
+                spread_num = None
+            if spread_num is not None and not math.isfinite(spread_num):
                 spread_num = None
             home_close_spread = -spread_num if spread_num is not None else ""
             away_close_spread = spread_num if spread_num is not None else ""

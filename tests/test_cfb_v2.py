@@ -80,6 +80,11 @@ def test_infer_bowl_neutral_from_date() -> None:
     assert infer_neutral_site({"date": "2025-01-01"}) is True
     assert infer_neutral_site({"date": "2024-12-20"}) is True
     assert infer_neutral_site({"date": "2024-09-14"}) is False
+    # Stringy false/0 must not strip HFA via bool("false") is True.
+    assert infer_neutral_site({"neutral_site": "false", "date": "2024-09-14"}) is False
+    assert infer_neutral_site({"neutral_site": "0", "date": "2024-09-14"}) is False
+    assert infer_neutral_site({"neutral_site": False, "date": "2024-09-14"}) is False
+    assert infer_neutral_site({"neutral_site": "true", "date": "2024-09-14"}) is True
 
 
 def test_conference_game_feature() -> None:

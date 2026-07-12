@@ -443,3 +443,30 @@ def test_sog_ewma_updates_on_zero_shots() -> None:
     expected = (1.0 - ALPHA_FAST) * LEAGUE_SOG + ALPHA_FAST * 0.0
     assert engine.team("bos").sog_for == pytest.approx(expected)
     assert engine.team("bos").sog_for != LEAGUE_SOG
+
+
+def test_equal_score_without_home_win_is_regulation_tie() -> None:
+    """Missing home_win + equal goals must not count as a full away regulation win."""
+    from web.nhl_v2.feature_engine import NhlFeatureEngine
+
+    engine = NhlFeatureEngine()
+    elo_before_home = engine.team("TOR").elo
+    elo_before_away = engine.team("MTL").elo
+    engine.update_after_game(
+        {
+            "home": "TOR",
+            "away": "MTL",
+            "date": "2003-11-01",
+            "home_goals": 2,
+            "away_goals": 2,
+            "game_type": 2,
+        }
+    )
+    assert engine.team("TOR").season_wins == 0
+    assert engine.team("TOR").season_losses == 0
+    assert engine.team("MTL").season_wins == 0
+    assert engine.team("MTL").season_losses == 0
+    # Half-credit Elo: home (with HFA) should lose a little Elo vs even opponent.
+    assert engine.team("TOR").elo < elo_before_home
+    assert engine.team("MTL").elo > elo_before_away
+    assert engine.team("TOR").h2h.get("MTL") in (None, [])

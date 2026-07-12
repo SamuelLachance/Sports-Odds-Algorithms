@@ -166,8 +166,22 @@ def _week_number(game_date: date_cls, season: int) -> float:
 
 
 def infer_neutral_site(game: dict[str, Any]) -> bool:
-    if game.get("neutral_site") is not None:
-        return bool(game["neutral_site"])
+    raw = game.get("neutral_site")
+    if raw is not None:
+        if isinstance(raw, bool):
+            return raw
+        if isinstance(raw, (int, float)):
+            if isinstance(raw, float) and not math.isfinite(raw):
+                pass  # fall through to date heuristic
+            else:
+                return bool(raw)
+        else:
+            text = str(raw).strip().lower()
+            if text in {"1", "true", "yes", "y", "t"}:
+                return True
+            if text in {"0", "false", "no", "n", "f"}:
+                return False
+            # Unknown string — do not treat truthy garbage as neutral.
     day = _parse_date(str(game.get("date") or ""))
     if day is None:
         return False

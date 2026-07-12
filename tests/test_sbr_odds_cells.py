@@ -137,8 +137,67 @@ def test_sbr_spread_line_keeps_pickem_zero() -> None:
     assert _spread_line_cell("0") == 0.0
     assert _spread_line_cell("pk") == 0.0
     assert _spread_line_cell("PK") == 0.0
+    assert _spread_line_cell("Pk") == 0.0  # mixed-case HTML cells
+    assert _american_ml_cell("Pk") == 100
+    assert _parse_optional_float("Pk") == 0.0
+    assert _parse_optional_int("Pk") == 100
     assert _spread_line_cell("-3.5") == -3.5
     assert _spread_line_cell("") is None
+
+
+def test_nhl_html_sparse_row_missing_juice_does_not_crash() -> None:
+    """Length guard used to be <10 while indexing [11] → IndexError."""
+    from unittest.mock import patch
+
+    from web.sbr_odds import _rows_from_nhl_html
+
+    cells = lambda *vals: "".join(f"<td>{v}</td>" for v in vals)
+    # 11 cells → indices 0..10 (ML + spread), no juice at [11].
+    html = (
+        "<table>"
+        f"<tr>{cells(*([f'h{i}' for i in range(11)]))}</tr>"
+        f"<tr>{cells(*(['sub'] * 11))}</tr>"
+        f"<tr>{cells('1015', '', '', 'Boston', '', '', '', '', '', '130', '-1.5')}</tr>"
+        f"<tr>{cells('1015', '', '', 'Montreal', '', '', '', '', '', '-150', '1.5')}</tr>"
+        "</table>"
+    )
+    with (
+        patch("web.sbr_odds._translate_name", side_effect=lambda s, n, t: n),
+        patch("web.sbr_odds.normalize_team_key", side_effect=lambda s, n: n.lower()[:3]),
+    ):
+        rows = _rows_from_nhl_html("nhl", 2023, html, {})
+    assert len(rows) == 1
+    assert rows[0]["home_close_ml"] == -150
+    assert rows[0]["home_close_spread"] == 1.5
+    assert rows[0]["home_spread_odds"] is None
+    assert rows[0]["away_spread_odds"] is None
+
+
+def test_mlb_xlsx_sparse_row_missing_juice_does_not_crash() -> None:
+    """Length guard used to be <17 while indexing [18] → IndexError."""
+    from unittest.mock import patch
+
+    from web.sbr_odds import fetch_sbr_season_rows
+
+    # 18 cells → indices 0..17 (ML [16] + spread [17]), no juice at [18].
+    sheet = [
+        [str(i) for i in range(18)],
+        [str(i) for i in range(18)],
+        ["0415", "", "", "Boston"] + [""] * 12 + ["130", "1.5"],
+        ["0415", "", "", "New York"] + [""] * 12 + ["-150", "-1.5"],
+    ]
+    with (
+        patch("web.sbr_odds._fetch_bytes", return_value=b"x"),
+        patch("web.sbr_odds._xlsx_rows", return_value=sheet),
+        patch("web.sbr_odds._translate_name", side_effect=lambda s, n, t: n),
+        patch("web.sbr_odds.normalize_team_key", side_effect=lambda s, n: n.lower()[:3]),
+    ):
+        rows = fetch_sbr_season_rows("mlb", 2024, {})
+    assert len(rows) == 1
+    assert rows[0]["home_close_ml"] == -150
+    assert rows[0]["home_close_spread"] == -1.5
+    assert rows[0]["home_spread_odds"] is None
+    assert rows[0]["away_spread_odds"] is None
 
 
 def test_sbr_spread_juice_maps_even_zero() -> None:

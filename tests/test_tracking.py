@@ -63,6 +63,13 @@ def test_calculate_units() -> None:
     assert abs(calculate_units(1, -110, "win") - (100 / 110)) < 1e-9
 
 
+def test_calculate_units_pending_does_not_pay() -> None:
+    """Pending / unknown results must not fall through as wins."""
+    assert calculate_units(1, 140, "pending") == 0.0
+    assert calculate_units(1, -110, "pending") == 0.0
+    assert calculate_units(1, 140, "foo") == 0.0  # type: ignore[arg-type]
+
+
 def test_roi_excludes_pushes_from_denominator() -> None:
     from web.tracking_service import _summarize_bets
 

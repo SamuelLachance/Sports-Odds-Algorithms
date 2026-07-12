@@ -142,6 +142,25 @@ def _valid_handicap_line(value: float | None, *, max_abs: float) -> float | None
     return number
 
 
+def _valid_total(value: float | None, *, max_total: float = 500.0) -> float | None:
+    """Keep real over/under totals; drop EVEN/pk→0 and non-positive garbage.
+
+    ``_to_float`` maps EVEN/pk to 0.0 for ML/spread cells — that must not become
+    a closing total of 0.
+    """
+    if value is None or isinstance(value, bool):
+        return None
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(number):
+        return None
+    if number <= 0.0 or number > max_total:
+        return None
+    return number
+
+
 def _provider_line(
     item: dict[str, Any],
     *,
@@ -200,8 +219,8 @@ def _provider_line(
         max_abs=max_handicap_abs,
     )
 
-    total = _to_float(item.get("overUnder"))
-    open_total = _to_float(((item.get("open") or {}) or {}).get("total"))
+    total = _valid_total(_to_float(item.get("overUnder")))
+    open_total = _valid_total(_to_float(((item.get("open") or {}) or {}).get("total")))
 
     home_spread_odds = _valid_american(_nested_american(home, "close", "spread"))
     away_spread_odds = _valid_american(_nested_american(away, "close", "spread"))
@@ -224,6 +243,21 @@ def _median(values: list[float]) -> float | None:
     return statistics.median(clean) if clean else None
 
 
+def _median_handicap(values: list[float | None]) -> float | None:
+    """Median handicap; fail closed when books disagree on favorite side.
+
+    Opposite-sign lines of equal magnitude median to 0.0 and invent a fake
+    pick'em — reject mixed-sign pools instead.
+    """
+    clean = [v for v in values if v is not None and math.isfinite(v)]
+    if not clean:
+        return None
+    nonzero = [v for v in clean if v != 0.0]
+    if nonzero and len({v > 0 for v in nonzero}) > 1:
+        return None
+    return statistics.median(clean)
+
+
 def _consensus(
     items: list[dict[str, Any]],
     *,
@@ -243,14 +277,24 @@ def _consensus(
     american_keys = frozenset(
         {"home_close_ml", "away_close_ml", "home_spread_odds", "away_spread_odds"}
     )
+    handicap_keys = frozenset(
+        {"home_close_spread", "away_close_spread", "home_open_spread"}
+    )
+    total_keys = frozenset({"close_total", "open_total"})
     # Medians may still use open fields; empty shells stay out of both pools.
     parsed = [line for line in lines if any(line.get(key) is not None for key in keys)]
     consensus: dict[str, Any] = {}
     for key in keys:
-        value = _median([line[key] for line in parsed])
-        # Even-book medians can average into the invalid |x| < 100 band.
-        if key in american_keys:
-            value = _valid_american(value)
+        raw_values = [line[key] for line in parsed]
+        if key in handicap_keys:
+            value = _median_handicap(raw_values)
+        else:
+            value = _median(raw_values)
+            # Even-book medians can average into the invalid |x| < 100 band.
+            if key in american_keys:
+                value = _valid_american(value)
+            elif key in total_keys:
+                value = _valid_total(value)
         consensus[key] = value
     if consensus.get("away_open_spread") is None and consensus.get("home_open_spread") is not None:
         consensus["away_open_spread"] = -consensus["home_open_spread"]
