@@ -200,8 +200,14 @@ def _odds_row(event: dict[str, Any]) -> dict[str, Any]:
     return row
 
 
-def fetch_days(days: list[date]) -> list[dict[str, Any]]:
+def fetch_days(
+    days: list[date],
+    *,
+    checkpoint_every: int = 14,
+) -> list[dict[str, Any]]:
+    """Fetch odds day-by-day; optionally merge+write every ``checkpoint_every`` days."""
     events: list[dict[str, Any]] = []
+    since_checkpoint = 0
     for day in days:
         day_events = list(_iter_completed_events(day))
         if not day_events:
@@ -210,11 +216,22 @@ def fetch_days(days: list[date]) -> list[dict[str, Any]]:
         with ThreadPoolExecutor(max_workers=ODDS_WORKERS) as pool:
             rows = list(pool.map(_odds_row, day_events))
         events.extend(rows)
+        since_checkpoint += 1
         with_odds = sum(1 for r in rows if int(r.get("n_books") or 0) > 0)
         print(
             f"  {day.isoformat()}: games={len(day_events)} odds={with_odds}",
             flush=True,
         )
+        if checkpoint_every > 0 and since_checkpoint >= checkpoint_every:
+            existing = _load_existing(OUTPUT_CSV)
+            merged = merge_rows(existing, events)
+            write_csv(merged)
+            print(
+                f"  checkpoint: wrote {len(merged)} rows "
+                f"(+{len(events)} this run so far)",
+                flush=True,
+            )
+            since_checkpoint = 0
     return events
 
 
