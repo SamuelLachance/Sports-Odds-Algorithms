@@ -469,8 +469,10 @@ class NhlFeatureEngine:
             key: GoalieState.from_dict(value)
             for key, value in (payload.get("goalies") or {}).items()
         }
-        engine.league_gpg = float(payload.get("league_gpg") or LEAGUE_GPG)
-        engine.league_sv = float(payload.get("league_sv") or LEAGUE_SV_PCT)
+        league_gpg = payload.get("league_gpg")
+        engine.league_gpg = float(league_gpg) if league_gpg is not None else LEAGUE_GPG
+        league_sv = payload.get("league_sv")
+        engine.league_sv = float(league_sv) if league_sv is not None else LEAGUE_SV_PCT
         engine.current_season = payload.get("current_season")
         return engine
 

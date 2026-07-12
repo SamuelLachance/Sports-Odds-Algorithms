@@ -10,7 +10,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-from web.football_data_uk import _parse_american_odds
+from web.football_data_uk import _first_parseable_odds
 from web.league_profiles import INTERNATIONAL_SOCCER_LEAGUES
 from web.season_games import _load_espn_team_ids
 
@@ -124,12 +124,22 @@ def _espn_country_to_abbr() -> dict[str, str]:
 def country_to_espn_abbr(label: str) -> str | None:
     mapping = _espn_country_to_abbr()
     normalized = _normalize_country_label(label)
+    if not normalized:
+        return None
     if normalized in mapping:
         return mapping[normalized]
+    # Forward extension only: "korea republic" may extend "korea" *if* that key
+    # exists — never the reverse (``key.startswith(normalized)``), which maps
+    # ambiguous stems like "korea" onto the first of "korea dpr" / "korea republic".
+    best_key: str | None = None
+    best_abbr: str | None = None
     for key, abbr in mapping.items():
-        if normalized.startswith(key) or key.startswith(normalized):
-            return abbr
-    return None
+        if not key or key == normalized:
+            continue
+        if normalized.startswith(key + " ") or normalized.startswith(key + "-"):
+            if best_key is None or len(key) > len(best_key):
+                best_key, best_abbr = key, abbr
+    return best_abbr
 
 
 def _parse_fd_date(raw: str) -> str | None:
@@ -194,15 +204,10 @@ def load_international_fd_games() -> list[dict[str, Any]]:
                 away_goals = int(record.get("AG") or record.get("FTAG") or "")
             except ValueError:
                 continue
-            home_odds = _parse_american_odds(
-                record.get("H_Avg") or record.get("AvgH") or record.get("H_Max")
-            )
-            draw_odds = _parse_american_odds(
-                record.get("D_Avg") or record.get("AvgD") or record.get("D_Max")
-            )
-            away_odds = _parse_american_odds(
-                record.get("A_Avg") or record.get("AvgA") or record.get("A_Max")
-            )
+            # Parse-then-fallback: truthy placeholders must not block later columns.
+            home_odds = _first_parseable_odds(record, "H_Avg", "AvgH", "H_Max")
+            draw_odds = _first_parseable_odds(record, "D_Avg", "AvgD", "D_Max")
+            away_odds = _first_parseable_odds(record, "A_Avg", "AvgA", "A_Max")
             if home_odds is None or draw_odds is None or away_odds is None:
                 continue
             signature = (game_date, home_key, away_key, home_goals, away_goals)

@@ -32,6 +32,19 @@ def test_mauritius_not_aliased_to_mauritania() -> None:
     assert country_to_espn_abbr("Mauritius") != country_to_espn_abbr("Mauritania")
 
 
+def test_country_to_espn_abbr_rejects_ambiguous_korea_stem() -> None:
+    """Bare 'Korea' must not prefix-match Korea DPR / Republic."""
+    from web.international_soccer_odds import _espn_country_to_abbr
+
+    _espn_country_to_abbr.cache_clear()
+    assert country_to_espn_abbr("Korea") is None
+    assert country_to_espn_abbr("South Korea") == "kor"
+    assert country_to_espn_abbr("North Korea") == "prk"
+    assert country_to_espn_abbr("Guinea") == "gui"
+    assert country_to_espn_abbr("Guinea-Bissau") == "gnb"
+    assert country_to_espn_abbr("Guinea") != country_to_espn_abbr("Guinea-Bissau")
+
+
 def test_international_fd_games_include_scores_and_odds() -> None:
     games = load_international_fd_games()
     assert len(games) >= 400

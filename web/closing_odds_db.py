@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 import json
+import math
 from datetime import date as date_cls, timedelta
 from functools import lru_cache
 from pathlib import Path
@@ -63,8 +64,11 @@ def _parse_int(value: Any) -> int | None:
     if value is None or value == "":
         return None
     try:
-        number = int(float(str(value).strip()))
-    except (TypeError, ValueError):
+        parsed = float(str(value).strip())
+        if not math.isfinite(parsed):
+            return None
+        number = int(parsed)
+    except (TypeError, ValueError, OverflowError):
         return None
     # ESPN/SBR EVEN money arrives as 0 — normalize like live odds paths.
     if number == 0:

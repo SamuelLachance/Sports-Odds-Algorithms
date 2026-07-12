@@ -1175,6 +1175,17 @@ def evaluate_official_picks_for_game(
     thresholds = get_pick_thresholds(league)
     if not thresholds.get("enabled", True):
         return []
+    # Unavailable sport stubs invent coin-flip probs for UI — never official-pick them.
+    blend_mode = str((blended or {}).get("blend_mode") or "")
+    if blend_mode.endswith("_unavailable"):
+        return []
+    layers = (blended or {}).get("blend_layers")
+    if layers is not None:
+        try:
+            if int(layers) <= 0:
+                return []
+        except (TypeError, ValueError):
+            return []
     bet_type = thresholds["bet_type"]
     if games_played_proxy is None:
         from web.context_signals import games_played_proxy_from_blend
@@ -1183,6 +1194,10 @@ def evaluate_official_picks_for_game(
 
     if bet_type == "spread":
         if consensus_spread is None:
+            return []
+        model_margin = blended_home_spread_margin(blended, league)
+        # Fail closed: no inventable pick'em margin from an empty blend.
+        if model_margin is None:
             return []
         picks = evaluate_spread_picks(
             league=league,
@@ -1195,7 +1210,7 @@ def evaluate_official_picks_for_game(
             consensus_spread=consensus_spread,
             away_spread_odds=away_spread_odds,
             home_spread_odds=home_spread_odds,
-            model_margin_home=blended_home_spread_margin(blended, league),
+            model_margin_home=model_margin,
             hubacek_only=True,
             blended=blended,
             min_cover_gap_pp=thresholds["min_spread_cover_gap_pp"],

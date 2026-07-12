@@ -136,5 +136,30 @@ def test_availability_shift_weights_out_heavier_than_generic() -> None:
     assert heavy < 0
 
 
+def test_count_team_injuries_cap_does_not_skip_inline_outs() -> None:
+    """MAX_INJURY_DETAIL_FETCHES must not truncate inline-status OUT scans."""
+    import web.availability_signals as avail
+
+    # Many inline rows (no $ref) plus a late OUT beyond the old item-index cap.
+    items = [{"status": "Day-To-Day"} for _ in range(avail.MAX_INJURY_DETAIL_FETCHES)]
+    items.append({"status": "Out"})
+    list_payload = {"count": len(items), "items": items}
+    fetch_calls = {"n": 0}
+
+    def fake_fetch(url: str):
+        fetch_calls["n"] += 1
+        if "/teams/13/injuries" in url:
+            return list_payload
+        raise AssertionError(f"unexpected detail fetch: {url}")
+
+    with patch("web.availability_signals.get_league_profile", return_value={"sport_path": "basketball/nba"}):
+        with patch("web.availability_signals._fetch_json", side_effect=fake_fetch):
+            total, out = _count_team_injuries("nba", "13")
+
+    assert total == len(items)
+    assert out == 1
+    assert fetch_calls["n"] == 1  # list only; no detail $ref fetches
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-q"])

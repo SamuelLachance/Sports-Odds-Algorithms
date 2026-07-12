@@ -1014,6 +1014,9 @@ def _run_soccer_v2(
     try:
         from web.soccer_v2.live import predict_matchup_v2
 
+        open_home, open_draw, open_away = fetch_soccer_opening_moneylines(
+            league, event_id
+        )
         v2 = predict_matchup_v2(
             league,
             cutoff_iso,
@@ -1024,6 +1027,9 @@ def _run_soccer_v2(
             home_ml=home_ml,
             draw_ml=draw_ml,
             away_ml=away_ml,
+            open_home_ml=open_home,
+            open_draw_ml=open_draw,
+            open_away_ml=open_away,
             match_date=match_date or None,
         )
     except Exception:  # noqa: BLE001 - v2 failures fall back to Path A
@@ -1031,7 +1037,6 @@ def _run_soccer_v2(
     if not v2:
         return None
 
-    open_home, open_draw, open_away = fetch_soccer_opening_moneylines(league, event_id)
     steam_meta = soccer_opening_steam_meta(
         home_ml=home_ml,
         draw_ml=draw_ml,

@@ -123,10 +123,17 @@ def _count_team_injuries(league: str, team_espn_id: str) -> tuple[int, int]:
     out = 0
     fetched = 0
     for item in items:
-        if fetched >= MAX_INJURY_DETAIL_FETCHES:
-            break
+        if not isinstance(item, dict):
+            continue
+        # Cap only remote detail fetches; inline-status rows are free to scan.
+        needs_fetch = not _injury_status_text(item) and isinstance(
+            item.get("$ref"), str
+        ) and bool(str(item.get("$ref") or "").strip())
+        if needs_fetch and fetched >= MAX_INJURY_DETAIL_FETCHES:
+            continue
+        if needs_fetch:
+            fetched += 1
         resolved = _resolve_injury_item(item)
-        fetched += 1
         if not isinstance(resolved, dict):
             continue
         if _status_means_out(_injury_status_text(resolved)):

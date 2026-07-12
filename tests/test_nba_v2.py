@@ -448,6 +448,15 @@ def test_from_dict_defaults_new_fields_for_old_snapshots() -> None:
     assert len(FEATURE_COLUMNS) == 89
 
 
+def test_from_dict_preserves_explicit_zero_league_avgs() -> None:
+    """``0.0 or LEAGUE_*`` must not wipe intentional zero pace/ppg snapshots."""
+    restored = NbaFeatureEngine.from_dict(
+        {"league_ppg": 0.0, "league_pace": 0.0, "teams": {}}
+    )
+    assert restored.league_ppg == 0.0
+    assert restored.league_pace == 0.0
+
+
 @pytest.mark.slow
 def test_live_prediction_when_artifacts_present() -> None:
     from web.nba_v2.live import artifacts_available, predict_matchup_v2, nba_season_for_date

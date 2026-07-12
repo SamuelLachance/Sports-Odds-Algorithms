@@ -436,6 +436,9 @@ def predict_matchup_v2(
     home_ml: int | None = None,
     draw_ml: int | None = None,
     away_ml: int | None = None,
+    open_home_ml: int | None = None,
+    open_draw_ml: int | None = None,
+    open_away_ml: int | None = None,
     match_date: str | None = None,
 ) -> dict[str, Any] | None:
     league = (league or "").lower()
@@ -474,17 +477,31 @@ def predict_matchup_v2(
     }
     features = engine.features_for_match(row, league)
 
-    market = None
+    # Market-aware head was trained on *opening* 1X2 features (mkt_open_*).
+    # Prefer open juice for that head; fall back to live only when open is missing.
+    feat_h = open_home_ml if open_home_ml is not None else home_ml
+    feat_d = open_draw_ml if open_draw_ml is not None else draw_ml
+    feat_a = open_away_ml if open_away_ml is not None else away_ml
+    market_features = None
+    if feat_h is not None and feat_d is not None and feat_a is not None:
+        market_features = devig_decimal(
+            american_to_decimal(feat_h),
+            american_to_decimal(feat_d),
+            american_to_decimal(feat_a),
+        )
+
+    # Hubáček decorrelation pushes away from *current* market, not open.
+    live_market = None
     if home_ml is not None and draw_ml is not None and away_ml is not None:
-        market = devig_decimal(
+        live_market = devig_decimal(
             american_to_decimal(home_ml),
             american_to_decimal(draw_ml),
             american_to_decimal(away_ml),
         )
 
-    pure, market_aware = _predict_probs(artifacts, features, market)
-    display = market_aware if market is not None else pure
-    pick = _decorrelate(display, market)
+    pure, market_aware = _predict_probs(artifacts, features, market_features)
+    display = market_aware if market_features is not None else pure
+    pick = _decorrelate(display, live_market)
 
     exp_home, exp_away = _predict_goals(artifacts, features)
 
@@ -517,8 +534,8 @@ def predict_matchup_v2(
         "away_rest_days": features.get("away_rest_days"),
         "home_promoted": bool(features.get("home_promoted")),
         "away_promoted": bool(features.get("away_promoted")),
-        "market_decorrelated": market is not None,
-        "market_calibrated": market is not None,
+        "market_decorrelated": live_market is not None,
+        "market_calibrated": market_features is not None,
         "decorrelation_weight": PICK_DECORRELATION_WEIGHT,
         "snapshot_season": context["snapshot_season"],
     }

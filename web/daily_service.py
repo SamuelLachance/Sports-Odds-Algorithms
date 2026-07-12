@@ -618,23 +618,36 @@ def predict_live_game(
                 games_played_proxy=games_played_proxy_from_blend(blended),
             )
     else:
-        picks = evaluate_official_picks_for_game(
-            league=game.league,
-            away_name=game.away_name,
-            home_name=game.home_name,
-            away_slug=away[1],
-            home_slug=home[1],
-            total_score=total,
-            win_probability=win_probability,
-            blended=blended,
-            away_market=game.market.away_moneyline,
-            home_market=game.market.home_moneyline,
-            consensus_spread=game.market.spread,
-            away_spread_odds=game.market.away_spread_odds,
-            home_spread_odds=game.market.home_spread_odds,
-            home_prob=ml_home_prob,
-            away_prob=ml_away_prob,
-        )
+        # Unavailable sport stubs invent 50/50 for UI only — never emit Hubáček
+        # official picks from a null model (decorrelation can fake a gap vs book).
+        blend_mode = str(blended.get("blend_mode") or "")
+        layers = blended.get("blend_layers")
+        unavailable = blend_mode.endswith("_unavailable")
+        if not unavailable and layers is not None:
+            try:
+                unavailable = int(layers) <= 0
+            except (TypeError, ValueError):
+                unavailable = True
+        if unavailable:
+            picks = []
+        else:
+            picks = evaluate_official_picks_for_game(
+                league=game.league,
+                away_name=game.away_name,
+                home_name=game.home_name,
+                away_slug=away[1],
+                home_slug=home[1],
+                total_score=total,
+                win_probability=win_probability,
+                blended=blended,
+                away_market=game.market.away_moneyline,
+                home_market=game.market.home_moneyline,
+                consensus_spread=game.market.spread,
+                away_spread_odds=game.market.away_spread_odds,
+                home_spread_odds=game.market.home_spread_odds,
+                home_prob=ml_home_prob,
+                away_prob=ml_away_prob,
+            )
 
     # Full model picks stay on the game card for every league. Official tracking
     # and the slate recommended_bets rollup still gate on eligible_for_official_picks.

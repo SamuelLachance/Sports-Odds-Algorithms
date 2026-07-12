@@ -783,6 +783,11 @@ def test_normalize_american_odds_maps_even_and_rejects_garbage() -> None:
     assert normalize_american_odds("OFF") is None
     assert normalize_american_odds(True) is None
     assert normalize_american_odds(False) is None
+    # Non-finite floats must fail closed as None — never OverflowError.
+    assert normalize_american_odds(float("inf")) is None
+    assert normalize_american_odds(float("-inf")) is None
+    assert normalize_american_odds(float("nan")) is None
+    assert normalize_american_odds("inf") is None
 
 
 def test_american_helpers_reject_sub_100_odds() -> None:

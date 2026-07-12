@@ -784,8 +784,10 @@ class WnbaFeatureEngine:
     @classmethod
     def from_dict(cls, payload: dict[str, Any]) -> "WnbaFeatureEngine":
         engine = cls()
-        engine.league_ppg = float(payload.get("league_ppg") or LEAGUE_PPG)
-        engine.league_pace = float(payload.get("league_pace") or LEAGUE_PACE)
+        league_ppg = payload.get("league_ppg")
+        engine.league_ppg = float(league_ppg) if league_ppg is not None else LEAGUE_PPG
+        league_pace = payload.get("league_pace")
+        engine.league_pace = float(league_pace) if league_pace is not None else LEAGUE_PACE
         for key, team_payload in dict(payload.get("teams") or {}).items():
             engine.teams[str(key)] = TeamState.from_dict(team_payload)
         return engine

@@ -292,7 +292,11 @@ def collect_soccer_rows(
         meta = stack_soccer_blend_layers(
             legacy=legacy_tw,
             power=power_tw,
-            soccer_pred=(sport_h, sport_d, sport_a) if sport_h is not None else None,
+            soccer_pred=(
+                (sport_h, sport_d, sport_a)
+                if sport_h is not None and sport_d is not None and sport_a is not None
+                else None
+            ),
             league=league,
         )
         meta_h, meta_d, meta_a = meta if meta else (None, None, None)

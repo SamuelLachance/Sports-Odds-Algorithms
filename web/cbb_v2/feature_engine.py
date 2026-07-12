@@ -682,8 +682,10 @@ class CbbFeatureEngine:
     @classmethod
     def from_dict(cls, payload: dict[str, Any]) -> "CbbFeatureEngine":
         engine = cls()
-        engine.league_ppg = float(payload.get("league_ppg") or LEAGUE_PPG)
-        engine.league_pace = float(payload.get("league_pace") or LEAGUE_PACE)
+        league_ppg = payload.get("league_ppg")
+        engine.league_ppg = float(league_ppg) if league_ppg is not None else LEAGUE_PPG
+        league_pace = payload.get("league_pace")
+        engine.league_pace = float(league_pace) if league_pace is not None else LEAGUE_PACE
         engine.abbr_to_id = {
             str(k): str(v) for k, v in dict(payload.get("abbr_to_id") or {}).items()
         }

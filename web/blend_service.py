@@ -433,13 +433,16 @@ def _layer_home_margin(layer: dict[str, Any], league: str) -> float | None:
     return None
 
 
-def blended_home_spread_margin(blended: dict[str, Any], league: str) -> float:
+def blended_home_spread_margin(blended: dict[str, Any], league: str) -> float | None:
     """Home margin for spread picks, aligned with unified total_score / win%.
 
     A dedicated ``home_spread_margin`` (sport / ensemble head) is returned as-is.
     Never flip its sign to match ``favorite_side``: Hubáček / context can nudge
     win% across 50% while the points head still favors the other side; flipping
     invents the opposite ATS edge.
+
+    Returns ``None`` when neither margin nor total_score is present — never invent
+    a pick'em ``0.0`` that fabricates ATS edge vs a non-zero consensus line.
     """
     cached = blended.get("home_spread_margin")
     if cached is not None:
@@ -447,13 +450,15 @@ def blended_home_spread_margin(blended: dict[str, Any], league: str) -> float:
     total = blended.get("total_score")
     if total is not None:
         return model_home_margin(float(total), league)
-    return 0.0
+    return None
 
 
 def _attach_home_spread_margin(result: dict[str, Any], league: str) -> dict[str, Any]:
     """Expose the canonical spread margin used by official picks and UI."""
     if uses_spread_bets(league):
-        result["home_spread_margin"] = round(blended_home_spread_margin(result, league), 2)
+        margin = blended_home_spread_margin(result, league)
+        if margin is not None:
+            result["home_spread_margin"] = round(margin, 2)
     return result
 
 

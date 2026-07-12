@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 import threading
 import time
 import urllib.error
@@ -159,9 +160,12 @@ def _parse_american_odds(value: str | int | float | None) -> int | None:
     if isinstance(value, bool):
         return None
     if isinstance(value, (int, float)):
-        if value != value:  # NaN
+        if isinstance(value, float) and not math.isfinite(value):
             return None
-        odds = int(value)
+        try:
+            odds = int(value)
+        except (ValueError, OverflowError):
+            return None
         if odds == 0:
             return 100
         if abs(odds) < 100:
@@ -174,8 +178,11 @@ def _parse_american_odds(value: str | int | float | None) -> int | None:
     if upper in {"OFF", "N/A", "NA"}:
         return None
     try:
-        odds = int(float(text))
-    except ValueError:
+        parsed = float(text)
+        if not math.isfinite(parsed):
+            return None
+        odds = int(parsed)
+    except (ValueError, OverflowError):
         return None
     # ESPN often encodes even money as numeric 0; American odds require |x| >= 100.
     if odds == 0:

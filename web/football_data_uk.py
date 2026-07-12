@@ -215,6 +215,18 @@ def _parse_american_odds(value: str | None) -> int | None:
     return int(round(-100 / (decimal - 1.0)))
 
 
+def _first_parseable_odds(record: dict[str, str], *keys: str) -> int | None:
+    """Parse columns in preference order; skip truthy but unparseable cells.
+
+    A placeholder like ``-`` / ``NA`` must not block AvgCH / B365 fallbacks.
+    """
+    for key in keys:
+        parsed = _parse_american_odds(record.get(key))
+        if parsed is not None:
+            return parsed
+    return None
+
+
 def _team_abbr(league: str, label: str) -> str | None:
     mapping = TEAM_TO_ABBR.get(league, {})
     if label in mapping:
@@ -293,29 +305,15 @@ def load_football_data_uk_games(league: str) -> list[dict[str, Any]]:
             if parsed is None:
                 continue
             # Prefer Pinnacle/Bet365/Avg *closing* columns; fall back to open/pre-close.
-            odds_home = _parse_american_odds(
-                record.get("PSCH")
-                or record.get("AvgCH")
-                or record.get("B365CH")
-                or record.get("PSH")
-                or record.get("B365H")
-                or record.get("AvgH")
+            # Parse each column — do not `or`-chain raw cells (``-`` blocks fallbacks).
+            odds_home = _first_parseable_odds(
+                record, "PSCH", "AvgCH", "B365CH", "PSH", "B365H", "AvgH"
             )
-            odds_draw = _parse_american_odds(
-                record.get("PSCD")
-                or record.get("AvgCD")
-                or record.get("B365CD")
-                or record.get("PSD")
-                or record.get("B365D")
-                or record.get("AvgD")
+            odds_draw = _first_parseable_odds(
+                record, "PSCD", "AvgCD", "B365CD", "PSD", "B365D", "AvgD"
             )
-            odds_away = _parse_american_odds(
-                record.get("PSCA")
-                or record.get("AvgCA")
-                or record.get("B365CA")
-                or record.get("PSA")
-                or record.get("B365A")
-                or record.get("AvgA")
+            odds_away = _first_parseable_odds(
+                record, "PSCA", "AvgCA", "B365CA", "PSA", "B365A", "AvgA"
             )
             rows.append(
                 {

@@ -171,6 +171,33 @@ def test_official_picks_use_hubacek_strategy_when_qualifying() -> None:
         assert (picks[0].extra.get("model_market_gap_pp") or 0) > 0
 
 
+def test_unavailable_blend_stub_never_emits_official_picks() -> None:
+    """Coin-flip unavailable stubs must not qualify via market decorrelation."""
+    blended = {
+        "blend_mode": "mlb_runcast_unavailable",
+        "blend_layers": 0,
+        "total_score": 0.0,
+        "win_probability": 50.0,
+        "favorite_side": "neutral",
+    }
+    picks = evaluate_official_picks_for_game(
+        league="mlb",
+        away_name="Away",
+        home_name="Home",
+        away_slug="away",
+        home_slug="home",
+        total_score=0.0,
+        win_probability=50.0,
+        blended=blended,
+        away_market=-150,
+        home_market=130,
+        consensus_spread=None,
+        away_spread_odds=None,
+        home_spread_odds=None,
+    )
+    assert picks == []
+
+
 def test_mlb_pick_thresholds_use_backtested_policy() -> None:
     """MLB gates come from data/pick_strategy.json (walk-forward backtest)."""
     thresholds = get_pick_thresholds("mlb")

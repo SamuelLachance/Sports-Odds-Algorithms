@@ -130,6 +130,11 @@ def test_parse_american_odds_rejects_invalid_magnitude() -> None:
     assert espn_client._parse_american_odds("+75") is None
     assert espn_client._parse_american_odds(100) == 100
     assert espn_client._parse_american_odds(-100) == -100
+    # Non-finite must fail closed — never OverflowError into the slate.
+    assert espn_client._parse_american_odds(float("inf")) is None
+    assert espn_client._parse_american_odds(float("-inf")) is None
+    assert espn_client._parse_american_odds(float("nan")) is None
+    assert espn_client._parse_american_odds("inf") is None
 
 
 def test_parse_spread_line_accepts_lowercase_pk() -> None:

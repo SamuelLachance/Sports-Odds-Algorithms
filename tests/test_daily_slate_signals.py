@@ -631,6 +631,72 @@ def test_predict_live_game_skips_official_picks_when_soccer_unavailable() -> Non
     assert result["recommendations"] == []
 
 
+def test_predict_live_game_skips_official_picks_when_mlb_unavailable() -> None:
+    """50/50 MLB RunCast stub must not emit Hubáček picks via market decorrelation."""
+    game = ScheduledGame(
+        league="mlb",
+        event_id="401801",
+        name="Yankees at Red Sox",
+        start_time="2026-07-10T23:00Z",
+        status="pre",
+        status_detail="Scheduled",
+        away_abbr="nyy",
+        home_abbr="bos",
+        away_name="Yankees",
+        home_name="Red Sox",
+        away_espn_id="10",
+        home_espn_id="2",
+        market=MarketOdds(
+            home_moneyline=130,
+            away_moneyline=-150,
+        ),
+    )
+    blended_stub = {
+        "algorithm": "MLBRunCast",
+        "blend_mode": "mlb_runcast_unavailable",
+        "blend_layers": 0,
+        "baseball_pred": None,
+        "total_score": 0.0,
+        "win_probability": 50.0,
+        "favorite_side": "neutral",
+        "blend_note": "insufficient history",
+    }
+    algo_instance = MagicMock()
+    algo_instance.calculate_V2.return_value = {"total": 0.0}
+    odds_instance = MagicMock()
+    odds_instance.analyze2.return_value = {}
+
+    with (
+        patch(
+            "web.daily_service.resolve_team",
+            side_effect=lambda league, abbr, name: (
+                ["bos", "redsox"] if abbr == "bos" else ["nyy", "yankees"]
+            ),
+        ),
+        patch("web.daily_service.load_live_team_data", return_value=[{"seed": 1}]),
+        patch("algo.Algo", return_value=algo_instance),
+        patch("odds_calculator.Odds_Calculator", return_value=odds_instance),
+        patch("web.live_odds_enrichment.fetch_multi_book_odds", return_value={}),
+        patch("web.daily_service.blend_predictions", return_value=dict(blended_stub)),
+        patch(
+            "web.daily_service.apply_ensemble_ml",
+            side_effect=lambda blended, league, **kw: blended,
+        ),
+        patch(
+            "web.daily_service.ensure_hubacek_in_blend",
+            side_effect=lambda blended, **kw: blended,
+        ),
+        patch("web.daily_service.compute_model_agreement", return_value={}),
+        patch("web.daily_service.get_pick_thresholds", return_value={"enabled": True}),
+        patch("web.daily_service.official_pick_binary_probs", return_value=(50.0, 50.0)),
+        patch("web.daily_service.evaluate_official_picks_for_game") as mock_eval,
+    ):
+        result = predict_live_game(game)
+
+    mock_eval.assert_not_called()
+    assert result["recommendations"] == []
+
+
 def test_iso_match_date_and_algo_factor_favors() -> None:
     from web.daily_service import _build_model_factors, _iso_match_date
     from web.espn_client import iso_to_project_date

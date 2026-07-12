@@ -122,6 +122,33 @@ def test_engine_snapshot_round_trip() -> None:
     assert original == round_trip
 
 
+def test_from_dict_preserves_explicit_zero_priors() -> None:
+    """``0.0 or PRIOR`` must not wipe intentional zero league_gpg / home_adv."""
+    restored = SoccerFeatureEngine.from_dict(
+        {
+            "country": "E",
+            "current_season": 2024,
+            "league_gpg": 0.0,
+            "home_adv": 0.0,
+            "teams": {},
+            "h2h": {},
+        }
+    )
+    assert restored.league_gpg == 0.0
+    assert restored.home_adv == 0.0
+
+
+def test_rest_days_floors_at_zero_for_same_day() -> None:
+    """Same-day / inverted dates must not invent a 1-day rest floor."""
+    from web.soccer_v2.feature_engine import TeamState
+
+    state = TeamState()
+    state.last_date = "2024-08-10"
+    assert state.rest_days("2024-08-10") == 0.0
+    assert state.rest_days("2024-08-09") == 0.0
+    assert state.rest_days("2024-08-12") == 2.0
+
+
 def test_promoted_flag_via_tier_change() -> None:
     engine = SoccerFeatureEngine("E")
     engine.start_season(2023)
@@ -346,6 +373,87 @@ def test_american_to_decimal_rejects_invalid_magnitude() -> None:
     assert american_to_decimal(-50) is None
     assert american_to_decimal(50) is None
     assert american_to_decimal(75) is None
+
+
+def test_predict_matchup_v2_uses_open_odds_for_market_features() -> None:
+    """Market head was trained on open 1X2; live juice is only for decorrelation."""
+    from unittest.mock import MagicMock, patch
+
+    import web.soccer_v2.live as live
+    from web.soccer_v2.data import devig_decimal
+
+    home = MagicMock()
+    home.games_played = 20
+    home.elo = 1600.0
+    away = MagicMock()
+    away.games_played = 20
+    away.elo = 1500.0
+
+    engine = MagicMock()
+    engine.teams = {"Arsenal": home, "Liverpool": away}
+    engine.features_for_match = MagicMock(
+        return_value={"elo_diff": 60.0, "home_rest_days": 3.0, "away_rest_days": 3.0}
+    )
+
+    open_ml = (-110, 260, 280)
+    live_ml = (-200, 350, 450)
+    open_devig = devig_decimal(
+        american_to_decimal(open_ml[0]),
+        american_to_decimal(open_ml[1]),
+        american_to_decimal(open_ml[2]),
+    )
+    live_devig = devig_decimal(
+        american_to_decimal(live_ml[0]),
+        american_to_decimal(live_ml[1]),
+        american_to_decimal(live_ml[2]),
+    )
+    assert open_devig is not None and live_devig is not None
+    assert open_devig[0] != pytest.approx(live_devig[0], abs=1e-6)
+
+    captured: dict[str, object] = {}
+
+    def fake_predict_probs(_art, _feats, market):
+        captured["market_features"] = market
+        return (0.4, 0.3, 0.3), (0.45, 0.28, 0.27)
+
+    def fake_decorrelate(probs, market, weight=0.35):
+        captured["decorrelate_market"] = market
+        return probs
+
+    with (
+        patch.object(live, "_load_artifacts", return_value={"ok": True}),
+        patch.object(
+            live,
+            "get_live_context",
+            return_value={
+                "pools": {"E": engine},
+                "snapshot_season": 2026,
+                "live_inputs_stale": False,
+            },
+        ),
+        patch.object(live, "resolve_team", side_effect=["Arsenal", "Liverpool"]),
+        patch.object(live, "_predict_probs", side_effect=fake_predict_probs),
+        patch.object(live, "_predict_goals", return_value=(1.6, 1.2)),
+        patch.object(live, "_decorrelate", side_effect=fake_decorrelate),
+    ):
+        result = live.predict_matchup_v2(
+            "epl",
+            "2026-07-10",
+            home_abbr="ars",
+            away_abbr="liv",
+            home_ml=live_ml[0],
+            draw_ml=live_ml[1],
+            away_ml=live_ml[2],
+            open_home_ml=open_ml[0],
+            open_draw_ml=open_ml[1],
+            open_away_ml=open_ml[2],
+        )
+
+    assert result is not None
+    assert captured["market_features"] == pytest.approx(open_devig)
+    assert captured["decorrelate_market"] == pytest.approx(live_devig)
+    assert result["market_calibrated"] is True
+    assert result["market_decorrelated"] is True
 
 
 if __name__ == "__main__":

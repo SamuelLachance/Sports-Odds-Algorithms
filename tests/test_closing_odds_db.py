@@ -141,6 +141,8 @@ def test_closing_odds_parse_int_rejects_invalid_magnitude() -> None:
     assert closing_odds_db._parse_int(-75) is None
     assert closing_odds_db._parse_int(-110) == -110
     assert closing_odds_db._parse_int(150) == 150
+    assert closing_odds_db._parse_int(float("inf")) is None
+    assert closing_odds_db._parse_int("nan") is None
 
 
 def test_closing_odds_even_zero_maps_to_plus_100(tmp_path: Path, monkeypatch) -> None:

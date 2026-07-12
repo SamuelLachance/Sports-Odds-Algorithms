@@ -373,6 +373,37 @@ def test_tracked_pick_requires_hubacek_strategy_ev_and_confidence() -> None:
             "market_odds": 140,
         }
     )
+    # NaN comparisons are always false — must fail closed, not approve.
+    assert not passes_hubacek_tracked_pick(
+        {
+            "strategy": "hubacek",
+            "model_market_gap_pp": float("nan"),
+            "ev_pct": 5.0,
+            "win_probability": 72.0,
+            "market_odds": -150,
+            "league": "nba",
+        }
+    )
+    assert not passes_hubacek_tracked_pick(
+        {
+            "strategy": "hubacek",
+            "model_market_gap_pp": 5.0,
+            "ev_pct": float("nan"),
+            "win_probability": 72.0,
+            "market_odds": -150,
+            "league": "nba",
+        }
+    )
+    assert not passes_hubacek_moneyline_gate(
+        model_prob_pct=72.0,
+        market_implied_pct=55.0,
+        ev_pct=float("nan"),
+    )
+    assert not passes_hubacek_moneyline_gate(
+        model_prob_pct=float("nan"),
+        market_implied_pct=55.0,
+        ev_pct=5.0,
+    )
 
 
 def test_blend_is_decorrelated_reads_football_pred() -> None:

@@ -163,10 +163,18 @@ def extract_soccer_features(
     sport_d = _safe_float(sport.get("draw_probability"))
     sport_a = _safe_float(sport.get("away_win_probability"))
 
+    def _complete_triple(
+        h: float | None, d: float | None, a: float | None
+    ) -> tuple[float, float, float] | None:
+        # Partial 1X2 layers crash blend_weighted_threeway (None * weight).
+        if h is None or d is None or a is None:
+            return None
+        return (h, d, a)
+
     meta = stack_soccer_blend_layers(
-        legacy=(legacy_h, legacy_d, legacy_a) if legacy_h is not None else None,
-        power=(power_h, power_d, power_a) if power_h is not None else None,
-        soccer_pred=(sport_h, sport_d, sport_a) if sport_h is not None else None,
+        legacy=_complete_triple(legacy_h, legacy_d, legacy_a),
+        power=_complete_triple(power_h, power_d, power_a),
+        soccer_pred=_complete_triple(sport_h, sport_d, sport_a),
         league=league,
     )
     meta_h, meta_d, meta_a = (None, None, None)

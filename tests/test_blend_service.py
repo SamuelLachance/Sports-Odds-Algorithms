@@ -1211,6 +1211,12 @@ def test_cached_home_spread_margin_not_flipped_when_favorite_crosses_50() -> Non
     assert blended_home_spread_margin(mlb, "mlb") == -1.2
 
 
+def test_blended_home_spread_margin_fail_closed_without_score() -> None:
+    """Empty blend must not invent pick'em 0.0 ATS edge."""
+    assert blended_home_spread_margin({}, "nba") is None
+    assert blended_home_spread_margin({"favorite_side": "neutral"}, "wnba") is None
+
+
 def test_attach_home_spread_margin_exposes_pick_margin() -> None:
     from web.blend_service import _attach_home_spread_margin
 

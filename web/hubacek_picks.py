@@ -21,11 +21,23 @@ confidence / point-edge here via the same JSON.
 from __future__ import annotations
 
 import json
+import math
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
 from web.pick_strategy_schema import validate_pick_strategy_payload
+
+
+def _finite_float(value: Any) -> float | None:
+    """Parse a float; reject NaN/±inf so inequality gates stay fail-closed."""
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(number):
+        return None
+    return number
 
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent
 _STRATEGY_PATH = _PROJECT_ROOT / "data" / "pick_strategy.json"
@@ -191,6 +203,8 @@ def official_hubacek_thresholds() -> dict[str, Any]:
 
 def passes_hubacek_confidence(model_prob_pct: float, *, min_pp: float = HUBACEK_MIN_WIN_CONFIDENCE_PP) -> bool:
     """|p̂ − 50| ≥ φ (paper Section 5.2, φ = 0.2)."""
+    if not math.isfinite(model_prob_pct) or not math.isfinite(min_pp):
+        return False
     return abs(model_prob_pct - 50.0) >= min_pp
 
 
@@ -205,6 +219,19 @@ def passes_hubacek_moneyline_gate(
 ) -> bool:
     """Bet when decorrelated p̂ beats the book with real gap/EV/confidence floors."""
     if market_implied_pct is None:
+        return False
+    # NaN comparisons are always false — reject non-finite inputs fail-closed.
+    if not all(
+        math.isfinite(v)
+        for v in (
+            model_prob_pct,
+            market_implied_pct,
+            ev_pct,
+            min_market_gap_pp,
+            min_win_confidence_pp,
+            min_ev_pct,
+        )
+    ):
         return False
     gap = model_prob_pct - market_implied_pct
     if gap < min_market_gap_pp:
@@ -232,6 +259,19 @@ def passes_hubacek_spread_gate(
 ) -> bool:
     """Spread official pick: decorrelated model, +EV cover with real floors."""
     if blended is None or not _blend_is_decorrelated(blended):
+        return False
+    if not all(
+        math.isfinite(v)
+        for v in (
+            point_edge,
+            side_cover_prob,
+            ev_pct,
+            consensus_spread,
+            min_cover_gap_pp,
+            min_win_confidence_pp,
+            min_ev_pct,
+        )
+    ):
         return False
     if point_edge <= 0:
         return False
@@ -277,21 +317,15 @@ def passes_hubacek_tracked_pick(pick: dict[str, Any]) -> bool:
     if pick.get("strategy") != "hubacek":
         return False
     league = pick.get("league")
-    try:
-        ev_pct = float(pick.get("ev_pct") if pick.get("ev_pct") is not None else 0)
-    except (TypeError, ValueError):
+    ev_pct = _finite_float(pick.get("ev_pct") if pick.get("ev_pct") is not None else 0)
+    if ev_pct is None:
         return False
     if ev_pct < hubacek_min_ev_pct(league):
         return False
     # Fail closed: gap and win probability are required official-book fields.
-    win_prob = pick.get("win_probability")
-    gap = pick.get("model_market_gap_pp")
-    if win_prob is None or gap is None:
-        return False
-    try:
-        win_prob_f = float(win_prob)
-        gap_f = float(gap)
-    except (TypeError, ValueError):
+    win_prob_f = _finite_float(pick.get("win_probability"))
+    gap_f = _finite_float(pick.get("model_market_gap_pp"))
+    if win_prob_f is None or gap_f is None:
         return False
     bet_type = str(pick.get("bet_type") or "moneyline").lower()
     allowed = hubacek_allowed_sides(league)

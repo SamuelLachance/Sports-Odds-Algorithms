@@ -383,6 +383,31 @@ def test_extract_binary_features_normalizes_even_zero_ml() -> None:
     )
 
 
+def test_extract_soccer_features_ignores_incomplete_1x2_layers() -> None:
+    """Partial legacy/sport triples must not reach blend_weighted_threeway."""
+    from web.ensemble_ml.features import extract_soccer_features
+
+    feats = extract_soccer_features(
+        {
+            "legacy_threeway": {
+                "home_win_probability": 45.0,
+                # missing draw / away — previously crashed meta blend
+            },
+            "soccer_pred": {
+                "home_win_probability": 40.0,
+                "draw_probability": 28.0,
+                "away_win_probability": 32.0,
+            },
+        },
+        "epl",
+    )
+    assert feats["legacy_home_prob"] == 45.0
+    assert feats["legacy_draw_prob"] is None
+    assert feats["meta_home_prob"] is not None
+    assert feats["meta_draw_prob"] is not None
+    assert abs(feats["meta_home_prob"] + feats["meta_draw_prob"] + feats["meta_away_prob"] - 100.0) < 0.05
+
+
 def test_ensure_hubacek_still_runs_on_spread_only_ensemble() -> None:
     """Without market_decorrelated, ensemble blend_mode must not skip Hubáček."""
     from web.bet_advisor import (

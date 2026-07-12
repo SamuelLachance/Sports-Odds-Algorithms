@@ -249,7 +249,10 @@ def normalize_american_odds(american_odds: int | float | str | None) -> int | No
     to pre-coerce; bool is rejected (``True`` is a subclass of ``int``).
     Text labels match ``espn_client._parse_american_odds`` so raw book text
     does not silently fail closed on EV / Kelly / grading paths.
+    Non-finite floats (±inf / NaN) fail closed as ``None`` (never raise).
     """
+    import math
+
     if american_odds is None or isinstance(american_odds, bool):
         return None
     try:
@@ -262,10 +265,15 @@ def normalize_american_odds(american_odds: int | float | str | None) -> int | No
                 return 100
             if upper in {"OFF", "N/A", "NA"}:
                 return None
-            odds = int(float(text))
+            parsed = float(text)
+            if not math.isfinite(parsed):
+                return None
+            odds = int(parsed)
         else:
+            if isinstance(american_odds, float) and not math.isfinite(american_odds):
+                return None
             odds = int(american_odds)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, OverflowError):
         return None
     if odds == 0:
         return 100

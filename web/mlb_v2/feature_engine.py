@@ -845,7 +845,10 @@ class MlbFeatureEngine:
     def from_dict(cls, payload: dict[str, Any]) -> "MlbFeatureEngine":
         engine = cls()
         engine.season = payload.get("season")
-        engine.league_rpg = float(payload.get("league_rpg") or LEAGUE_RPG_DEFAULT)
+        league_rpg = payload.get("league_rpg")
+        engine.league_rpg = (
+            float(league_rpg) if league_rpg is not None else LEAGUE_RPG_DEFAULT
+        )
         engine.teams = {
             int(k): TeamState.from_dict(v) for k, v in (payload.get("teams") or {}).items()
         }

@@ -229,7 +229,8 @@ class TeamState:
         d1 = _parse_date(on_date)
         if d0 is None or d1 is None:
             return default
-        return float(min(max((d1 - d0).days, 1), 21))
+        # Floor at 0: same-day / inverted dates must not invent a rest day.
+        return float(min(max((d1 - d0).days, 0), 21))
 
     def congestion(self, on_date: str) -> float:
         """Matches in the previous 21 days."""
@@ -527,8 +528,10 @@ class SoccerFeatureEngine:
     def from_dict(cls, payload: dict[str, Any]) -> "SoccerFeatureEngine":
         engine = cls(str(payload.get("country") or ""))
         engine.current_season = int(payload.get("current_season") or -1)
-        engine.league_gpg = float(payload.get("league_gpg") or PRIOR_GPG)
-        engine.home_adv = float(payload.get("home_adv") or PRIOR_HOME_EDGE)
+        league_gpg = payload.get("league_gpg")
+        engine.league_gpg = float(league_gpg) if league_gpg is not None else PRIOR_GPG
+        home_adv = payload.get("home_adv")
+        engine.home_adv = float(home_adv) if home_adv is not None else PRIOR_HOME_EDGE
         engine.teams = {
             name: TeamState.from_dict(state)
             for name, state in (payload.get("teams") or {}).items()
