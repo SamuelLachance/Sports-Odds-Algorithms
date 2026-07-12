@@ -172,6 +172,43 @@ def test_mlb_provider_line_keeps_real_run_line() -> None:
     assert line["home_spread_odds"] == -115.0
 
 
+def test_espn_provider_lines_repair_same_sign_nested_spreads() -> None:
+    """Live multi-book ESPN parsers must mirror same-sign dumps like SBR."""
+    from web.mlb_odds_espn import _provider_line_mlb
+    from web.nba_odds_espn import _provider_line
+    from web.nhl_odds_espn import _provider_line_nhl
+
+    item = {
+        "homeTeamOdds": {
+            "favorite": True,
+            "close": {
+                "moneyLine": {"american": -150},
+                "pointSpread": {"american": -1.5},
+                "spread": {"american": -110},
+            },
+        },
+        "awayTeamOdds": {
+            "favorite": False,
+            "close": {
+                "moneyLine": {"american": 130},
+                "pointSpread": {"american": -1.5},
+                "spread": {"american": -110},
+            },
+        },
+    }
+    nba = _provider_line(item)
+    assert nba["home_close_spread"] == -1.5
+    assert nba["away_close_spread"] == 1.5
+
+    mlb = _provider_line_mlb(item)
+    assert mlb["home_close_spread"] == -1.5
+    assert mlb["away_close_spread"] == 1.5
+
+    nhl = _provider_line_nhl(item)
+    assert nhl["home_close_spread"] == -1.5
+    assert nhl["away_close_spread"] == 1.5
+
+
 def test_nhl_provider_line_drops_moneyline_as_puck_line() -> None:
     from web.nhl_odds_espn import _provider_line_nhl
 

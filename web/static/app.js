@@ -670,6 +670,22 @@ function disclaimerBar(extra = "") {
   </aside>`;
 }
 
+/** Null/undefined must render as em dash — never coerce to a fake 0% / 0u book. */
+function formatRoiPercent(pct) {
+  return pct == null || Number.isNaN(Number(pct)) ? "—" : `${pct}%`;
+}
+
+function formatUnitsDisplay(units) {
+  if (units == null || Number.isNaN(Number(units))) return "—";
+  const n = Number(units);
+  return `${n > 0 ? "+" : ""}${n}u`;
+}
+
+function formatRecordDisplay(record) {
+  if (record == null || record === "") return "0-0";
+  return String(record);
+}
+
 function slateAgeHours(iso, nowMs = Date.now()) {
   if (!iso) return null;
   const stamp = new Date(iso).getTime();
@@ -1667,6 +1683,7 @@ function viewDashboard() {
   const games = slate.games || [];
   const leagues = summary.leagues || [...new Set(games.map((g) => g.league))];
   const tracking = state.tracking?.all_time || state.tracking?.summary || {};
+  const trackingFailed = Boolean(state.trackingLoadFailed);
   const dateLabel = slate.date_label || "Today";
   const minConf = minHubacekConfidence(slate);
   const hubacekRule = hubacekPickRule(slate);
@@ -1680,6 +1697,10 @@ function viewDashboard() {
   const contextGames = games.filter(
     (g) => g.model?.context_adjustment_pp != null && Number(g.model.context_adjustment_pp) !== 0,
   );
+  const homeRoi = trackingFailed ? "—" : formatRoiPercent(tracking.roi_percent);
+  const homeRecord = trackingFailed ? "—" : formatRecordDisplay(tracking.record);
+  const homeUnits = trackingFailed ? "—" : formatUnitsDisplay(tracking.units);
+  const homePending = trackingFailed ? "—" : `${tracking.pending ?? 0}`;
 
   appRoot.innerHTML = `
     <section class="tracking-hero panel home-hero">
@@ -1693,7 +1714,7 @@ function viewDashboard() {
           <div><span>Games</span><strong>${summary.games_analyzed ?? games.length}</strong></div>
           <div><span>Algo picks</span><strong>${summary.recommended_bets ?? picks.length}</strong></div>
           <div><span>Min conf</span><strong>${minConf}+ pp</strong></div>
-          <div title="ROI (per staked unit)"><span>All-time ROI</span><strong>${tracking.roi_percent ?? 0}%</strong></div>
+          <div title="ROI (per staked unit)"><span>All-time ROI</span><strong>${escapeHtml(homeRoi)}</strong></div>
         </div>
       </div>
       ${disclaimerBar()}
@@ -1718,8 +1739,8 @@ function viewDashboard() {
       </a>
       <a class="rollup-card panel home-link-card" href="#/tracking">
         <h4>Tracking</h4>
-        <strong class="rollup-record">${tracking.record || "0-0"}</strong>
-        <span>${tracking.units > 0 ? "+" : ""}${tracking.units ?? 0}u · ${tracking.pending ?? 0} pending</span>
+        <strong class="rollup-record">${escapeHtml(homeRecord)}</strong>
+        <span>${escapeHtml(homeUnits)} · ${escapeHtml(homePending)} pending</span>
       </a>
     </div>
 
@@ -1752,6 +1773,9 @@ function viewDashboard() {
 }
 
 function renderTrackingSummary() {
+  if (state.trackingLoadFailed) {
+    return `<div class="panel empty-panel"><strong>Tracking unavailable</strong><p class="muted">Period rollups cannot load until bet history is available.</p></div>`;
+  }
   const periods = [
     ["daily", "Today"],
     ["weekly", "This week"],
@@ -1770,7 +1794,11 @@ function renderTrackingSummary() {
       }
       const unitsCls =
         Number(row.units) > 0 ? "clv-positive" : Number(row.units) < 0 ? "clv-negative" : "";
-      return `<div class="rollup-card panel"><h4>${label}</h4><strong class="rollup-record">${row.record || "0-0"}</strong><span class="${unitsCls}" title="ROI (per staked unit)">${row.units > 0 ? "+" : ""}${row.units ?? 0}u · ROI ${row.roi_percent ?? 0}%</span><small>${row.bets ?? 0} bets · ${row.pending ?? 0} pending</small></div>`;
+      const record = escapeHtml(formatRecordDisplay(row.record));
+      const unitsRoi = escapeHtml(
+        `${formatUnitsDisplay(row.units)} · ROI ${formatRoiPercent(row.roi_percent)}`,
+      );
+      return `<div class="rollup-card panel"><h4>${label}</h4><strong class="rollup-record">${record}</strong><span class="${unitsCls}" title="ROI (per staked unit)">${unitsRoi}</span><small>${row.bets ?? 0} bets · ${row.pending ?? 0} pending</small></div>`;
     })
     .join("")}</div>`;
 }
@@ -2542,6 +2570,9 @@ function periodLabel(key) {
 }
 
 function renderPeriodTable(periodKey) {
+  if (state.trackingLoadFailed) {
+    return `<p class="muted">Tracking unavailable — period table hidden until bet history loads.</p>`;
+  }
   const rows =
     periodKey === "all_time"
       ? state.tracking?.all_time
@@ -2554,7 +2585,7 @@ function renderPeriodTable(periodKey) {
   return `<table class="data-table"><thead><tr><th>${periodLabel(periodKey)}</th><th>Record</th><th>Units</th><th>ROI (per staked unit)</th><th>Bets</th><th>Pending</th></tr></thead><tbody>${rows
     .map(
       (r) =>
-        `<tr><td>${r.label || r.key}</td><td>${r.record || "0-0"}</td><td>${r.units > 0 ? "+" : ""}${r.units ?? 0}u</td><td>${r.roi_percent ?? 0}%</td><td>${r.bets ?? 0}</td><td>${r.pending ?? 0}</td></tr>`,
+        `<tr><td>${escapeHtml(String(r.label || r.key))}</td><td>${escapeHtml(formatRecordDisplay(r.record))}</td><td>${escapeHtml(formatUnitsDisplay(r.units))}</td><td>${escapeHtml(formatRoiPercent(r.roi_percent))}</td><td>${r.bets ?? 0}</td><td>${r.pending ?? 0}</td></tr>`,
     )
     .join("")}</tbody></table>`;
 }
@@ -2587,11 +2618,9 @@ function viewTracking(options = {}) {
   const youngBook = !loadFailed && bets.length > 0 && graded.length < 30;
   const decidedCount = (Number(all.wins) || 0) + (Number(all.losses) || 0);
   const provisionalSample = !loadFailed && decidedCount < 30;
-  const recordDisplay = loadFailed ? "—" : all.record || "0-0";
-  const unitsDisplay = loadFailed
-    ? "—"
-    : `${all.units > 0 ? "+" : ""}${all.units ?? 0}u`;
-  const roiDisplay = loadFailed ? "—" : `${all.roi_percent ?? 0}%`;
+  const recordDisplay = loadFailed ? "—" : formatRecordDisplay(all.record);
+  const unitsDisplay = loadFailed ? "—" : formatUnitsDisplay(all.units);
+  const roiDisplay = loadFailed ? "—" : formatRoiPercent(all.roi_percent);
   const pendingDisplay = loadFailed ? "—" : `${all.pending ?? 0}`;
 
   appRoot.innerHTML = `

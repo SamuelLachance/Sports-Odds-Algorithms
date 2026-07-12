@@ -10,6 +10,13 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 
+def test_grade_outcome_title_case_draw() -> None:
+    import web.soccer_paper_tracking as paper
+
+    assert paper._grade_outcome("Draw", 1, 1) == "win"
+    assert paper._grade_outcome("HOME", 1, 2) == "win"
+
+
 def test_load_paper_log_tolerates_corrupt_and_non_list_bets(tmp_path, monkeypatch) -> None:
     import web.soccer_paper_tracking as paper
 

@@ -119,6 +119,13 @@ def test_empty_store_and_push_only_roi_is_zero() -> None:
     assert response["all_time"]["roi_percent"] == 0.0
     assert response["yearly"] == []
     assert response["daily"] == []
+    note = response.get("note") or ""
+    # Do not hardcode a flat ≥2 pp rule — live gates are per-league (MLB 6.7, etc.).
+    assert "≥2 pp" not in note
+    assert ">=2 pp" not in note
+    assert "per-league" in note
+    assert "NFL/CFB/CBB" in note
+    assert response.get("thresholds_scope") == "global_baseline"
 
 
 def test_normalize_store_tolerates_corrupt_payload() -> None:
@@ -579,6 +586,80 @@ def test_grade_spread_cover_win() -> None:
     }
     graded = grade_bet(bet, 98, 110)
     assert graded["status"] == "win"
+
+
+def test_grade_spread_legacy_title_case_side_still_home() -> None:
+    """Dedupe can keep side='Home'; must not invert ATS grading to away."""
+    bet = {
+        "side": "Home",
+        "bet_type": "spread",
+        "consensus_spread": -5.5,
+        "spread_odds": -110,
+        "stake_units": 1.0,
+    }
+    graded = grade_bet(bet, 98, 110)
+    assert graded["status"] == "win"
+
+
+def test_grade_soccer_draw_title_case_side() -> None:
+    bet = {
+        "side": "Draw",
+        "bet_type": "soccer_1x2",
+        "league": "ucl",
+        "market_odds": 320,
+        "stake_units": 1.0,
+    }
+    graded = grade_bet(bet, 1, 1)
+    assert graded["status"] == "win"
+
+
+def test_soccer_aet_uses_regulation_linescores() -> None:
+    """1X2 must settle on FT, not ESPN board score after extra time."""
+    from web.tracking_service import _scores_from_event
+
+    event = {
+        "competitions": [
+            {
+                "status": {"type": {"completed": True, "detail": "FT-AET"}},
+                "competitors": [
+                    {
+                        "homeAway": "away",
+                        "score": "1",
+                        "linescores": [{"value": 1}, {"value": 0}, {"value": 0}],
+                    },
+                    {
+                        "homeAway": "home",
+                        "score": "2",
+                        "linescores": [{"value": 1}, {"value": 0}, {"value": 1}],
+                    },
+                ],
+            }
+        ]
+    }
+    away, home, completed = _scores_from_event(event, soccer_regulation=True)
+    assert completed is True
+    assert away == 1
+    assert home == 1
+
+
+def test_soccer_aet_without_linescores_leaves_ungraded() -> None:
+    from web.tracking_service import _scores_from_event
+
+    event = {
+        "competitions": [
+            {
+                "status": {"type": {"completed": True, "description": "After Extra Time"}},
+                "competitors": [
+                    {"homeAway": "away", "score": "1"},
+                    {"homeAway": "home", "score": "2"},
+                ],
+            }
+        ]
+    }
+    away, home, completed = _scores_from_event(event, soccer_regulation=True)
+    assert completed is True
+    assert away is None
+    assert home is None
 
 
 def test_grade_spread_without_juice_leaves_ungraded() -> None:

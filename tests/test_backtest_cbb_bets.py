@@ -41,6 +41,29 @@ def test_backtest_cbb_bets_helpers() -> None:
     assert module.kelly_units(0.40, -110) == 0.0
 
 
+def test_build_side_table_rejects_garbage_juice_instead_of_inventing_minus_110() -> None:
+    """Missing / |odds|<100 must drop the side — not coerce to −110 EV."""
+    import pandas as pd
+
+    module = _load_module()
+    preds = pd.DataFrame(
+        {
+            "season": [2024, 2024],
+            "model_margin": [3.0, -2.0],
+            "margin": [7.0, -4.0],
+            "home_spread": [-3.5, 2.5],
+            "home_spread_open": [-3.0, 2.0],
+            "spread_home_odds": [5.0, -110.0],  # garbage juice on row 0
+            "spread_away_odds": [float("nan"), -105.0],
+        }
+    )
+    sides = module.build_side_table(preds, sigma=12.0, exec_price="close")
+    # Row 0: both sides invalid/missing → dropped. Row 1: both valid → 2 sides.
+    assert len(sides) == 2
+    assert set(sides["odds"].tolist()) == {-110.0, -105.0}
+    assert bool((sides.odds.abs() >= 100).all())
+
+
 def test_cbb_bet_policy_disabled_with_reason() -> None:
     import json
 

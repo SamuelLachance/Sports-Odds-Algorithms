@@ -72,9 +72,12 @@ def apply_ensemble_ml(
     updated["total_score"] = round(total, 2)
     updated["win_probability"] = round(win_prob, 2)
     updated["favorite_side"] = "home" if total <= 0 else "away"
-    if home_moneyline is not None and away_moneyline is not None:
-        updated["market_decorrelated"] = True
-    elif consensus_spread is not None:
+    # Binary ensemble decorrelates only when market_devig_home_prob is finite
+    # (moneyline path). Spread alone does not decorrelate win probs — do not
+    # set a false market_decorrelated flag that short-circuits Hubáček.
+    from web.ensemble_ml.features import market_devig_home
+
+    if market_devig_home(home_moneyline, away_moneyline) is not None:
         updated["market_decorrelated"] = True
 
     if is_spread_league(league):

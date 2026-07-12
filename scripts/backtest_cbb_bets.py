@@ -177,10 +177,13 @@ def build_side_table(preds: pd.DataFrame, sigma: float, *, exec_price: str) -> p
     else:
         spread = preds.home_spread.astype(float)
 
-    home_odds = preds.spread_home_odds.fillna(DEFAULT_SPREAD_JUICE)
-    away_odds = preds.spread_away_odds.fillna(DEFAULT_SPREAD_JUICE)
-    home_odds = home_odds.where(home_odds.abs() >= 100, DEFAULT_SPREAD_JUICE)
-    away_odds = away_odds.where(away_odds.abs() >= 100, DEFAULT_SPREAD_JUICE)
+    home_raw = preds.spread_home_odds.astype(float)
+    away_raw = preds.spread_away_odds.astype(float)
+    # Fail closed on missing/garbage juice — never invent −110 like live gates.
+    home_odds = home_raw.where((home_raw == 0) | (home_raw.abs() >= 100))
+    away_odds = away_raw.where((away_raw == 0) | (away_raw.abs() >= 100))
+    home_odds = home_odds.mask(home_odds == 0, 100.0)
+    away_odds = away_odds.mask(away_odds == 0, 100.0)
 
     edge = preds.model_margin + spread
     z = edge / sigma
@@ -224,6 +227,7 @@ def build_side_table(preds: pd.DataFrame, sigma: float, *, exec_price: str) -> p
         )
         sides.append(table)
     out = pd.concat(sides, ignore_index=True)
+    out = out.dropna(subset=["odds", "dec"]).reset_index(drop=True)
     out["units"] = [
         kelly_units(prob, ml) for prob, ml in zip(out.cover_prob, out.odds)
     ]

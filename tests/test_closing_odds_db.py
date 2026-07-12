@@ -168,3 +168,88 @@ def test_flip_two_way_odds_swaps_sparse_spreads() -> None:
     assert flipped["away_close_spread"] is None
     assert flipped["home_spread_odds"] == -110
     assert flipped["away_spread_odds"] is None
+
+
+def test_closing_odds_fuzzy_refuses_consecutive_same_matchup_series() -> None:
+    """±1 fuzzy must not pick a neighbor when both adjacent days have the series."""
+    from web.closing_odds_db import _lookup_us_odds_row
+
+    index = {
+        ("2025-06-30", "bos", "nyy"): {"home_close_ml": -110},
+        ("2025-07-02", "bos", "nyy"): {"home_close_ml": -145},
+    }
+    # Query day missing; both ±1 neighbors exist → refuse rather than guess.
+    assert _lookup_us_odds_row(index, "2025-07-01", "bos", "nyy") is None
+
+    # Exact match still wins when the tip day is present.
+    index[("2025-07-01", "bos", "nyy")] = {"home_close_ml": -120}
+    assert _lookup_us_odds_row(index, "2025-07-01", "bos", "nyy")["home_close_ml"] == -120
+
+
+def test_mlb_doubleheader_conflicting_odds_fail_closed(tmp_path: Path, monkeypatch) -> None:
+    """Same (date, home, away) with different odds must not silently overwrite."""
+    odds_dir = tmp_path / "closing-odds"
+    odds_dir.mkdir()
+    (odds_dir / "mlb.csv").write_text(
+        "date,home_key,away_key,home_close_ml,away_close_ml,"
+        "home_close_spread,away_close_spread,home_spread_odds,away_spread_odds,source\n"
+        "2024-07-04,nyy,bos,-150,130,-1.5,1.5,-110,-110,dh-g1\n"
+        "2024-07-04,nyy,bos,-120,100,-1.5,1.5,-115,-105,dh-g2\n"
+        "2024-07-04,nyy,bos,-150,130,-1.5,1.5,-110,-110,dh-g1-dup\n"
+        "2024-07-05,bos,tor,-140,120,-1.5,1.5,-110,-110,single\n"
+        "2024-07-05,bos,tor,-140,120,-1.5,1.5,-110,-110,single-dup\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(closing_odds_db, "ODDS_DIR", odds_dir)
+    closing_odds_db.clear_closing_odds_cache()
+
+    # Conflicting DH lines → fail closed (None), not last-row-wins.
+    assert closing_odds_db.closing_odds_lookup("mlb", "2024-07-04", "nyy", "bos") is None
+    assert closing_odds_db.closing_odds_lookup("mlb", "2024-07-04", "bos", "nyy") is None
+
+    # Identical same-day duplicates still resolve to one row.
+    single = closing_odds_db.closing_odds_lookup("mlb", "2024-07-05", "bos", "tor")
+    assert single is not None
+    assert single["home_close_ml"] == -140
+
+    coverage = closing_odds_db.closing_odds_coverage("mlb")
+    assert coverage["rows"] == 1
+
+
+def test_espn_odds_collector_stamps_toronto_tip_date() -> None:
+    """Scoreboard query day must not override Toronto tip for closing-odds keys."""
+    from web.mlb_odds_espn import _iter_completed_events
+    from datetime import date
+    from unittest.mock import patch
+
+    payload = {
+        "events": [
+            {
+                "id": "401",
+                "date": "2025-07-02T02:00:00Z",  # Toronto still 2025-07-01
+                "competitions": [
+                    {
+                        "id": "401c",
+                        "date": "2025-07-02T02:00:00Z",
+                        "status": {"type": {"completed": True}},
+                        "competitors": [
+                            {
+                                "homeAway": "home",
+                                "score": "5",
+                                "team": {"abbreviation": "NYY"},
+                            },
+                            {
+                                "homeAway": "away",
+                                "score": "3",
+                                "team": {"abbreviation": "BOS"},
+                            },
+                        ],
+                    }
+                ],
+            }
+        ]
+    }
+    with patch("web.mlb_odds_espn._get_json", return_value=payload):
+        rows = list(_iter_completed_events(date(2025, 7, 2), date(2025, 7, 2)))
+    assert len(rows) == 1
+    assert rows[0]["date"] == "2025-07-01"

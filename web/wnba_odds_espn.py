@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any, Iterator
 
 from web.nba_odds_espn import _consensus, _get_json, _valid_american
-from web.season_games import _normalize_abbr
+from web.season_games import _event_date_iso, _normalize_abbr
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 CACHE_DIR = PROJECT_ROOT / ".build-cache" / "wnba-odds"
@@ -68,8 +68,11 @@ def _iter_completed_events(start: date, end: date) -> Iterator[dict[str, Any]]:
                 int(away.get("score"))
             except (TypeError, ValueError):
                 continue
+            tip_date = _event_date_iso(
+                str(event.get("date") or competition.get("date") or "")
+            ) or day.isoformat()
             yield {
-                "date": day.isoformat(),
+                "date": tip_date,
                 "event": str(event.get("id") or ""),
                 "comp": str(competition.get("id") or ""),
                 "home_key": home_abbr,

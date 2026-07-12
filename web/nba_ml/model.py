@@ -116,7 +116,12 @@ def cover_probability(pred_margin, home_spread, sigma: float = DEFAULT_MARGIN_SI
 
 
 def ensemble_home_prob(model_prob, market_prob, weight: float = 0.12):
-    """Hubáček-style push away from market (replaces legacy blend-toward-market)."""
+    """Hubáček-style push away from market (replaces legacy blend-toward-market).
+
+    ``model_prob`` / ``market_prob`` are 0–1 fractions (same scale as
+    ``devig_home_prob``). ``decorrelate_binary`` preserves that scale when
+    both inputs are fractions — do not divide by 100.
+    """
     from web.market_decorrelation import DEFAULT_BINARY_DECORRELATION_WEIGHT, decorrelate_binary
 
     model_prob = np.asarray(model_prob, dtype=float)
@@ -127,5 +132,9 @@ def ensemble_home_prob(model_prob, market_prob, weight: float = 0.12):
         if not np.isfinite(mk):
             adjusted.append(float(mp))
         else:
-            adjusted.append(decorrelate_binary(float(mp), float(mk), weight=decor_weight) / 100.0)
+            # Pass percent so decorrelate_binary returns percent, then back to 0–1.
+            adj_pct = decorrelate_binary(
+                float(mp) * 100.0, float(mk) * 100.0, weight=decor_weight
+            )
+            adjusted.append(adj_pct / 100.0)
     return np.asarray(adjusted, dtype=float).reshape(model_prob.shape)

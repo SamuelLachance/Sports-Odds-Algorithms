@@ -53,6 +53,21 @@ def test_pages_yml_is_valid_yaml() -> None:
         assert sport_cache in joined
 
 
+    assert "cancel-in-progress: false" in text or "cancel-in-progress:false" in text
+    # Bot sync commits both stores; ignoring only tracking.json still retriggers deploy.
+    assert 'data/tracking.json' in text
+    assert 'data/soccer_paper_tracking.json' in text
+    paths_ignore_block = text.split("paths-ignore:")[1].split("workflow_dispatch:")[0]
+    assert "data/tracking.json" in paths_ignore_block
+    assert "data/soccer_paper_tracking.json" in paths_ignore_block
+    # Four explicit EDT-aligned hours (not bogus step syntax like 4/10/16/22).
+    assert '"0 4 * * *"' in text
+    assert '"0 10 * * *"' in text
+    assert '"0 16 * * *"' in text
+    assert '"0 22 * * *"' in text
+    assert "4/10/16/22" not in text
+
+
 def test_test_yml_is_valid_and_lean() -> None:
     yaml = pytest.importorskip("yaml")
     assert TEST_YML.is_file()

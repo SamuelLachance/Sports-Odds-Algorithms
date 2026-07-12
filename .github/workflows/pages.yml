@@ -9,6 +9,7 @@ on:
       - ".cursor/**"
       # Bot tracking sync must not enqueue a second Pages deploy mid-flight.
       - "data/tracking.json"
+      - "data/soccer_paper_tracking.json"
   workflow_dispatch:
     inputs:
       full_build:

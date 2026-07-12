@@ -133,7 +133,7 @@ def model_home_margin(total_score: float, league: str) -> float:
 
 def spread_line_for_side(home_spread: float, side: str) -> float:
     """Spread line for the given side (home_spread is the book's home line)."""
-    return home_spread if side == "home" else -home_spread
+    return home_spread if str(side).lower() == "home" else -home_spread
 
 
 def spread_point_edge(model_margin_home: float, home_spread: float, side: str) -> float:
@@ -141,7 +141,7 @@ def spread_point_edge(model_margin_home: float, home_spread: float, side: str) -
 
     ``model_margin_home`` uses spread convention (negative = home favored).
     """
-    if side == "home":
+    if str(side).lower() == "home":
         return -model_margin_home + home_spread
     return model_margin_home - home_spread
 

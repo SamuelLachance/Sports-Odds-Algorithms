@@ -143,18 +143,47 @@ def _flip_two_way_odds(row: dict[str, Any]) -> dict[str, Any]:
     return flipped
 
 
+def _us_odds_signature(row: dict[str, Any]) -> tuple[Any, ...]:
+    """Comparable odds fields only (ignore source) for duplicate detection."""
+    return (
+        row.get("home_close_ml"),
+        row.get("away_close_ml"),
+        row.get("home_open_ml"),
+        row.get("away_open_ml"),
+        row.get("home_close_spread"),
+        row.get("away_close_spread"),
+        row.get("home_spread_odds"),
+        row.get("away_spread_odds"),
+        row.get("close_total"),
+        row.get("open_total"),
+    )
+
+
 def _lookup_us_odds_row(
     index: dict[tuple[str, str, str], dict[str, Any]],
     game_date: str,
     home: str,
     away: str,
+    *,
+    ambiguous: frozenset[tuple[str, str, str]] | None = None,
 ) -> dict[str, Any] | None:
     """Exact or +/-1 day match; tolerate same-day home/away swaps only.
 
     Fuzzy ±1 day is for timezone/date-label drift on the *same* matchup.
     Combining a fuzzy date with a home/away flip can attach the wrong game's
     line on back-to-backs (adjacent day, flipped venue).
+
+    Fuzzy also refuses when the same matchup appears on *both* adjacent days
+    (consecutive same-venue series) — otherwise a drifted stamp can return the
+    neighboring game's close.
+
+    Keys marked ambiguous (e.g. MLB doubleheader rows with different odds under
+    the same date/home/away) fail closed — lookup returns None.
     """
+    ambiguous = ambiguous or frozenset()
+    if (game_date, home, away) in ambiguous or (game_date, away, home) in ambiguous:
+        return None
+
     try:
         base_date = date_cls.fromisoformat(game_date)
     except ValueError:
@@ -169,21 +198,35 @@ def _lookup_us_odds_row(
 
     if base_date is None:
         return None
+    neighbors: list[dict[str, Any]] = []
     for offset in (-1, 1):
         candidate_date = (base_date + timedelta(days=offset)).isoformat()
+        if (candidate_date, home, away) in ambiguous:
+            continue
         fuzzy = index.get((candidate_date, home, away))
         if fuzzy:
-            return dict(fuzzy)
+            neighbors.append(fuzzy)
+    if len(neighbors) == 1:
+        return dict(neighbors[0])
     return None
 
 
 @lru_cache(maxsize=16)
-def _load_us_odds_index(league: str) -> dict[tuple[str, str, str], dict[str, Any]]:
+def _load_us_odds_index(
+    league: str,
+) -> tuple[dict[tuple[str, str, str], dict[str, Any]], frozenset[tuple[str, str, str]]]:
+    """Load US closing-odds CSV keyed by (date, home, away).
+
+    Same-day duplicates with identical odds keep one row. Conflicting odds for
+    the same key (typical MLB doubleheader) mark the key ambiguous and omit it
+    from the index so lookups fail closed.
+    """
     league = league.lower()
     path = ODDS_DIR / f"{league}.csv"
     if not path.is_file():
-        return {}
+        return {}, frozenset()
     index: dict[tuple[str, str, str], dict[str, Any]] = {}
+    ambiguous: set[tuple[str, str, str]] = set()
     with path.open(encoding="utf-8", newline="") as handle:
         for row in csv.DictReader(handle):
             game_date = _iso_date(row.get("date", ""))
@@ -191,7 +234,10 @@ def _load_us_odds_index(league: str) -> dict[tuple[str, str, str], dict[str, Any
             away = _canonical_odds_team_key(league, row.get("away_key", ""))
             if not game_date or not home or not away:
                 continue
-            index[(game_date, home, away)] = {
+            key = (game_date, home, away)
+            if key in ambiguous:
+                continue
+            payload = {
                 "home_close_ml": _parse_int(row.get("home_close_ml")),
                 "away_close_ml": _parse_int(row.get("away_close_ml")),
                 "home_open_ml": _parse_int(row.get("home_open_ml")),
@@ -204,7 +250,15 @@ def _load_us_odds_index(league: str) -> dict[tuple[str, str, str], dict[str, Any
                 "open_total": _parse_float(row.get("open_total")),
                 "source": row.get("source") or "closing-odds-db",
             }
-    return index
+            existing = index.get(key)
+            if existing is not None:
+                if _us_odds_signature(existing) == _us_odds_signature(payload):
+                    continue
+                del index[key]
+                ambiguous.add(key)
+                continue
+            index[key] = payload
+    return index, frozenset(ambiguous)
 
 
 @lru_cache(maxsize=16)
@@ -249,7 +303,10 @@ def closing_odds_lookup(
     game_date = _iso_date(game_date)
     if is_soccer_league(league):
         return _load_soccer_odds_index(league).get((game_date, home, away))
-    return _lookup_us_odds_row(_load_us_odds_index(league), game_date, home, away)
+    index, ambiguous = _load_us_odds_index(league)
+    return _lookup_us_odds_row(
+        index, game_date, home, away, ambiguous=ambiguous
+    )
 
 
 def closing_odds_coverage(league: str) -> dict[str, Any]:
@@ -258,7 +315,8 @@ def closing_odds_coverage(league: str) -> dict[str, Any]:
         count = len(_load_soccer_odds_index(league))
         source = "football-data.co.uk"
     else:
-        count = len(_load_us_odds_index(league))
+        index, _ambiguous = _load_us_odds_index(league)
+        count = len(index)
         source = f"data/supplemental/closing-odds/{league}.csv"
     return {"league": league, "rows": count, "source": source}
 

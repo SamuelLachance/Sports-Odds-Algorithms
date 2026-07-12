@@ -59,7 +59,7 @@ Official NFL/CFB/CBB picks stay gated until spread backtests clear; training sti
 - Branche : `master`
 - Remote : `https://github.com/SamuelLachance/Sports-Odds-Algorithms`
 - Site : `https://samuellachance.github.io/Sports-Odds-Algorithms/`
-- Rebuild : **4×/jour** via GitHub Actions `pages.yml` crons `0 4/10/16/22` UTC (midnight / 6h / midi / 18h **EDT**; during EST those local times shift +1h)
+- Rebuild : **4×/jour** via GitHub Actions `pages.yml` crons `0 4,10,16,22` UTC (midnight / 6h / midi / 18h **EDT**; during EST those local times shift +1h)
 - CI tests : `.github/workflows/test.yml` (compileall + **full** pytest suite + `smoke_test.py` on push/PR to `master`; pytest cache restored between runs)
 
 ## Conventions

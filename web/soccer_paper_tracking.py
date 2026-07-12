@@ -103,11 +103,12 @@ def _save_paper_log(payload: dict[str, Any]) -> None:
 
 
 def _grade_outcome(pick_outcome: str, away_score: int, home_score: int) -> str | None:
-    if pick_outcome == "draw":
+    outcome = str(pick_outcome).lower()
+    if outcome == "draw":
         return "win" if away_score == home_score else "loss"
-    if pick_outcome == "home":
+    if outcome == "home":
         return "win" if home_score > away_score else "loss"
-    if pick_outcome == "away":
+    if outcome == "away":
         return "win" if away_score > home_score else "loss"
     return None
 

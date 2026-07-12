@@ -324,13 +324,15 @@ def _run_mlb_v2(
     home_prob = calibrated_prob
     market_decorrelated = False
     market_decorrelation_source: str | None = None
+    market_home = None
     if home_ml is not None and away_ml is not None:
         _away_mkt, market_home = devig_two_way_probs(away_ml, home_ml)
-        if market_home is not None:
-            home_prob = decorrelate_binary(calibrated_prob, market_home)
-            market_decorrelated = True
-            market_decorrelation_source = "moneyline"
+    if market_home is not None:
+        home_prob = decorrelate_binary(calibrated_prob, market_home)
+        market_decorrelated = True
+        market_decorrelation_source = "moneyline"
     elif market_spread is not None:
+        # Invalid/garbage ML must not block spread-based decorrelation.
         market_prob = spread_to_home_prob(float(market_spread), sigma=DEFAULT_SIGMA)
         home_prob = decorrelate_from_market(
             calibrated_prob / 100.0, market_prob / 100.0
@@ -459,13 +461,15 @@ def run_mlb_pred_model(
     home_prob = calibrated_prob
     market_decorrelated = False
     market_decorrelation_source: str | None = None
+    market_home = None
     if home_ml is not None and away_ml is not None:
         _away_mkt, market_home = devig_two_way_probs(away_ml, home_ml)
-        if market_home is not None:
-            home_prob = decorrelate_binary(calibrated_prob, market_home)
-            market_decorrelated = True
-            market_decorrelation_source = "moneyline"
+    if market_home is not None:
+        home_prob = decorrelate_binary(calibrated_prob, market_home)
+        market_decorrelated = True
+        market_decorrelation_source = "moneyline"
     elif market_spread is not None:
+        # Invalid/garbage ML must not block spread-based decorrelation.
         market_prob = spread_to_home_prob(float(market_spread), sigma=float(context["sigma"]))
         home_prob = decorrelate_from_market(
             calibrated_prob / 100.0, market_prob / 100.0

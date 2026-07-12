@@ -255,7 +255,9 @@ def _consensus_closing_ml(game: dict[str, Any] | None, side: str) -> int | None:
     market = game.get("market")
     if not isinstance(market, dict):
         return None
-    key = {"home": "consensus_home_ml", "away": "consensus_away_ml"}.get(side)
+    key = {"home": "consensus_home_ml", "away": "consensus_away_ml"}.get(
+        str(side).lower()
+    )
     value = market.get(key) if key else None
     if value is None:
         return None
@@ -444,7 +446,50 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
     return store
 
 
-def _scores_from_event(event: dict[str, Any]) -> tuple[int | None, int | None, bool]:
+def _linescore_regulation_total(comp: dict[str, Any]) -> int | None:
+    """Sum first two period linescores (soccer FT); None if unavailable."""
+    lines = comp.get("linescores")
+    if not isinstance(lines, list) or len(lines) < 2:
+        return None
+    total = 0
+    for period in lines[:2]:
+        if not isinstance(period, dict):
+            return None
+        raw = period.get("value")
+        if raw is None:
+            raw = period.get("displayValue")
+        try:
+            total += int(raw)
+        except (TypeError, ValueError):
+            return None
+    return total
+
+
+def _status_indicates_extra_time(status: dict[str, Any]) -> bool:
+    blob = " ".join(
+        str(status.get(key) or "")
+        for key in ("detail", "description", "shortDetail", "name", "altDetail")
+    ).lower()
+    return any(
+        token in blob
+        for token in (
+            "aet",
+            "after extra",
+            "extra time",
+            "ft-pens",
+            "ft pens",
+            "penalty",
+            "penalties",
+            "shootout",
+        )
+    )
+
+
+def _scores_from_event(
+    event: dict[str, Any],
+    *,
+    soccer_regulation: bool = False,
+) -> tuple[int | None, int | None, bool]:
     competition = (event.get("competitions") or [{}])[0]
     status = (competition.get("status") or {}).get("type") or {}
     completed = bool(status.get("completed")) or status.get("state") in {"post"}
@@ -465,7 +510,22 @@ def _scores_from_event(event: dict[str, Any]) -> tuple[int | None, int | None, b
         except (TypeError, ValueError):
             return None
 
-    return score(away), score(home), completed
+    away_score, home_score = score(away), score(home)
+    # 1X2 settles on 90' FT. ESPN board scores often include AET/pens —
+    # prefer regulation linescores, else leave ungraded (fail closed).
+    if soccer_regulation and (
+        _status_indicates_extra_time(status)
+        or (
+            isinstance(away.get("linescores"), list)
+            and len(away.get("linescores") or []) > 2
+        )
+    ):
+        away_ft = _linescore_regulation_total(away)
+        home_ft = _linescore_regulation_total(home)
+        if away_ft is None or home_ft is None:
+            return None, None, completed
+        return away_ft, home_ft, completed
+    return away_score, home_score, completed
 
 
 def _scoreboard_dates_for_bet(bet: dict[str, Any]) -> list[date]:
@@ -513,7 +573,8 @@ def _fetch_event_result(league: str, event_id: str) -> tuple[int, int] | None:
         return None
 
     away_score, home_score, completed = _scores_from_event(
-        {"competitions": competitions}
+        {"competitions": competitions},
+        soccer_regulation=is_soccer_league(league),
     )
     if not completed or away_score is None or home_score is None:
         return None
@@ -554,8 +615,11 @@ def _fetch_results_by_event(league: str, on_date: date) -> dict[str, tuple[int, 
         return {}
 
     results: dict[str, tuple[int, int]] = {}
+    soccer = is_soccer_league(league)
     for event in payload.get("events") or []:
-        away_score, home_score, completed = _scores_from_event(event)
+        away_score, home_score, completed = _scores_from_event(
+            event, soccer_regulation=soccer
+        )
         if not completed or away_score is None or home_score is None:
             continue
         event_id = str(event.get("id") or "")
@@ -570,7 +634,7 @@ def _grade_spread_bet(
     away_score: int,
     home_score: int,
 ) -> BetResult:
-    if side == "home":
+    if str(side).lower() == "home":
         adjusted = home_score + spread
         if adjusted == away_score:
             return "push"
@@ -643,7 +707,7 @@ def grade_bet(
     home_score: int,
 ) -> dict[str, Any]:
     bet_type = bet.get("bet_type") or "moneyline"
-    side = bet["side"]
+    side = str(bet["side"]).lower()
 
     if bet_type == "spread":
         spread = _grading_spread_line(bet)
@@ -842,12 +906,14 @@ def build_tracking_response(store: dict[str, Any]) -> dict[str, Any]:
         "timezone": TIMEZONE_LABEL,
         "last_updated": datetime.now(timezone.utc).isoformat(),
         "note": (
-            "Tracks Hubáček official picks (decorrelated model beats the book by "
-            "≥2 pp with ≥2% honest EV and a per-bet-type confidence bar) from each "
-            "daily slate. Basketball/football spreads graded ATS at the recorded "
-            "book spread; hockey/baseball at the recorded moneyline; soccer 1X2 at "
-            "the recorded price. Odds are frozen at record time and CLV is logged "
-            "at grading. Stakes are quarter-Kelly (0.25–3u, 1u = 1% bankroll)."
+            "Tracks Hubáček official picks only (NBA, WNBA, NHL, MLB, calibrated "
+            "soccer). Gates use backtested per-league market/cover gaps with honest "
+            "EV floors and a confidence bar — live thresholds are not a single global "
+            "gap for every sport. Basketball/football spreads graded ATS at the "
+            "recorded book spread; hockey/baseball at the recorded moneyline; soccer "
+            "1X2 at the recorded price. Odds are frozen at record time and CLV is "
+            "logged at grading. Stakes are quarter-Kelly (0.25–3u, 1u = 1% bankroll). "
+            "NFL/CFB/CBB never enter this book while official picks stay disabled."
         ),
         **official_hubacek_thresholds(),
     }

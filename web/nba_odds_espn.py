@@ -27,7 +27,8 @@ SKIP_MONTHS = frozenset({7, 8})
 # Real NBA spreads are rarely beyond ~30; larger values are usually ML/juice dumps.
 MAX_NBA_SPREAD = 40.0
 
-from web.season_games import _normalize_abbr
+from web.sbr_odds import _repair_same_sign_spreads
+from web.season_games import _event_date_iso, _normalize_abbr
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 CACHE_DIR = PROJECT_ROOT / ".build-cache" / "nba-odds"
@@ -178,6 +179,13 @@ def _provider_line(
     home_ml = _valid_american(home_ml)
     away_ml = _valid_american(away_ml)
 
+    home_close_spread, away_close_spread = _repair_same_sign_spreads(
+        home_close_spread,
+        away_close_spread,
+        home_ml=home_ml,
+        away_ml=away_ml,
+    )
+
     home_open_spread = _valid_handicap_line(
         _nested_american(home, "open", "pointSpread"),
         max_abs=max_handicap_abs,
@@ -266,8 +274,11 @@ def _iter_completed_events(start: date, end: date) -> Iterator[dict[str, Any]]:
                 away_score = int(away.get("score"))
             except (TypeError, ValueError):
                 continue
+            tip_date = _event_date_iso(
+                str(event.get("date") or competition.get("date") or "")
+            ) or day.isoformat()
             yield {
-                "date": day.isoformat(),
+                "date": tip_date,
                 "event": str(event.get("id") or ""),
                 "comp": str(competition.get("id") or ""),
                 "home_key": home_abbr,

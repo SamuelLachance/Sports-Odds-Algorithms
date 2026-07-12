@@ -93,6 +93,21 @@ def test_flag_default_off_but_artifacts_present():
     assert nba_ml_artifacts_present() is True
 
 
+def test_ensemble_home_prob_keeps_fraction_scale():
+    """decorrelate_binary on 0–1 inputs returns 0–1; must not /100 again."""
+    from web.market_decorrelation import decorrelate_binary
+    from web.nba_ml.model import ensemble_home_prob
+
+    model_p = 0.62
+    market_p = 0.55
+    expected = decorrelate_binary(model_p * 100.0, market_p * 100.0, weight=0.12) / 100.0
+    out = float(ensemble_home_prob(model_p, market_p, weight=0.12))
+    assert out == pytest.approx(expected, abs=1e-9)
+    # Bug regression: old path returned ~0.006 instead of ~0.63.
+    assert out == pytest.approx(0.6284, abs=1e-3)
+    assert out > 0.5
+
+
 def test_predict_nba_smoke():
     if not nba_ml_artifacts_present():
         pytest.skip("NBA ML artifacts not present")
@@ -102,5 +117,8 @@ def test_predict_nba_smoke():
                       home_ml=-260, away_ml=210)
     assert out is not None
     assert 0.0 <= out["home_win_probability"] <= 100.0
+    # With live books attached, decorrelated win% must stay on a real 0–100 scale
+    # (not collapsed to ~0.6% by a double /100).
+    assert out["home_win_probability"] >= 5.0
     assert out["model_market_edge_pp"] is not None
     assert predict_nba("zzz", "lal") is None

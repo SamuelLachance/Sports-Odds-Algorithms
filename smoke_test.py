@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import sys
+from pathlib import Path
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 os.chdir(ROOT)
@@ -62,6 +63,30 @@ def test_toronto_event_date_helper() -> None:
     assert _event_date_iso("2026-01-15") == "2026-01-15"
 
 
+def test_docs_do_not_overstate_nba_ml_close_roi() -> None:
+    """Honesty guard: NBA ML pilot close ROI is negative; docs must not flip the sign."""
+    readme = Path(ROOT) / "README.md"
+    agents = Path(ROOT) / "AGENTS.md"
+    report = Path(ROOT) / "data" / "supplemental" / "nba-ml" / "backtest_report.md"
+    for path in (readme, agents, report):
+        assert path.is_file(), path
+    report_text = report.read_text(encoding="utf-8")
+    assert "ROI: -1.46%" in report_text or "ROI: -1.5" in report_text
+    assert "ROI: -3.13%" in report_text or "ROI: -3%" in report_text
+    readme_text = readme.read_text(encoding="utf-8")
+    assert "−1.5%" in readme_text or "-1.5%" in readme_text
+    assert "does not beat the NBA close" in readme_text
+    # Forbid upside-down claims that the pilot is a closing-line winner.
+    lowered = readme_text.lower()
+    assert "beats the nba close" not in lowered
+    assert "positive closing-line roi" not in lowered
+    # AGENTS cron must use comma hours, not step syntax that misstates deploy times.
+    agents_text = agents.read_text(encoding="utf-8")
+    assert "0 4,10,16,22" in agents_text
+    assert "0 4/10/16/22" not in agents_text
+    assert "ROI close négatif" in agents_text or "roi close négatif" in agents_text.lower()
+
+
 def test_core_v2_artifacts_optional() -> None:
     """Report nba/wnba/nhl/mlb/soccer v2 presence; never fail when absent."""
     checks = (
@@ -85,6 +110,7 @@ if __name__ == "__main__":
     test_api_import()
     test_nba_example()
     test_toronto_event_date_helper()
+    test_docs_do_not_overstate_nba_ml_close_roi()
     test_football_cbb_v2_artifacts_optional()
     test_core_v2_artifacts_optional()
     print("All smoke tests passed.")

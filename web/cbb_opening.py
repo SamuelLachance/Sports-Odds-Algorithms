@@ -59,13 +59,15 @@ def opening_steam_adjustment(
 
     if abs(diff) >= STEAM_MARGIN_THRESHOLD:
         meta["steam_signal"] = True
-        meta["steam_direction"] = "home" if diff < 0 else "away"
-        # Nudge margin slightly toward market steam (conservative).
+        # diff < 0 ⇒ model more home-favored than the book ⇒ pull toward market
+        # (away). steam_direction is the side we nudge toward for context floors.
+        meta["steam_direction"] = "away" if diff < 0 else "home"
+        # Nudge margin slightly toward market (conservative).
         nudge = min(abs(diff) * 0.15, 1.5)
         if diff < 0:
-            model_margin += nudge
-        else:
             model_margin -= nudge
+        else:
+            model_margin += nudge
 
     meta["adjusted_margin"] = round(model_margin, 2)
     return model_margin, meta

@@ -268,3 +268,70 @@ def test_optional_prob_does_not_coerce_missing_to_zero() -> None:
     # Explicit 0.0 is allowed; only missing/invalid stay None.
     assert optional_prob({"home_win_probability": 0.0}, "home_win_probability") == 0.0
     assert float(payload.get("home_win_probability") or 0) == 0.0  # old bug
+
+
+def test_apply_ensemble_ml_spread_only_does_not_flag_decorrelated(monkeypatch) -> None:
+    """Spread alone does not decorrelate binary ensemble win probs."""
+    monkeypatch.setattr(
+        "web.ensemble_ml.apply.ensemble_model_available", lambda _league: True
+    )
+    monkeypatch.setattr(
+        "web.ensemble_ml.apply.predict_ensemble_for_blend",
+        lambda *_a, **_k: {
+            "home_win_probability": 58.0,
+            "pre_decorrelation_home_win_probability": 58.0,
+            "predicted_home_margin": 3.0,
+        },
+    )
+    updated = apply_ensemble_ml(
+        {"total_score": -55.0, "win_probability": 55.0},
+        "nfl",
+        consensus_spread=-3.5,
+        home_moneyline=None,
+        away_moneyline=None,
+    )
+    assert updated.get("market_decorrelated") is not True
+
+
+def test_apply_ensemble_ml_invalid_ml_does_not_flag_decorrelated(monkeypatch) -> None:
+    """Garbage juice must not set market_decorrelated (Hubáček short-circuit)."""
+    monkeypatch.setattr(
+        "web.ensemble_ml.apply.ensemble_model_available", lambda _league: True
+    )
+    monkeypatch.setattr(
+        "web.ensemble_ml.apply.predict_ensemble_for_blend",
+        lambda *_a, **_k: {
+            "home_win_probability": 58.0,
+            "pre_decorrelation_home_win_probability": 58.0,
+            "predicted_home_margin": 3.0,
+        },
+    )
+    updated = apply_ensemble_ml(
+        {"total_score": -55.0, "win_probability": 55.0},
+        "nfl",
+        consensus_spread=-3.5,
+        home_moneyline=-50,  # |odds| < 100
+        away_moneyline=130,
+    )
+    assert updated.get("market_decorrelated") is not True
+
+
+def test_apply_ensemble_ml_valid_ml_flags_decorrelated(monkeypatch) -> None:
+    monkeypatch.setattr(
+        "web.ensemble_ml.apply.ensemble_model_available", lambda _league: True
+    )
+    monkeypatch.setattr(
+        "web.ensemble_ml.apply.predict_ensemble_for_blend",
+        lambda *_a, **_k: {
+            "home_win_probability": 59.0,
+            "pre_decorrelation_home_win_probability": 58.0,
+            "predicted_home_margin": 3.0,
+        },
+    )
+    updated = apply_ensemble_ml(
+        {"total_score": -55.0, "win_probability": 55.0},
+        "nfl",
+        home_moneyline=-150,
+        away_moneyline=130,
+    )
+    assert updated.get("market_decorrelated") is True

@@ -115,6 +115,30 @@ def test_mlb_runcast_decorrelates_from_moneyline_not_spread() -> None:
     assert payload["home_win_probability"] != payload["pre_decorrelation_home_win_probability"]
 
 
+def test_mlb_runcast_invalid_ml_falls_back_to_spread_decorrelation() -> None:
+    """Garbage ML must not block spread-based Hubáček decorrelation."""
+    dated = _sample_dated_games()
+    with patch("web.mlb_pred_model.get_mlb_pred_context") as mock_ctx:
+        model = build_mlb_model(dated, "2024-06-01")
+        mock_ctx.return_value = model
+        with patch("web.mlb_pred_model.pitcher_matchup_margin", return_value=0.0):
+            payload = run_mlb_pred_model(
+                "mlb",
+                "06-01-2024",
+                "a",
+                "b",
+                market_spread=-1.5,
+                home_ml=-50,  # |odds| < 100 → reject
+                away_ml=120,
+            )
+    assert payload is not None
+    assert payload["market_decorrelated"] is True
+    assert payload["market_decorrelation_source"] == "spread"
+    assert float(payload["home_win_probability"]) != float(
+        payload["pre_decorrelation_home_win_probability"]
+    )
+
+
 def test_official_pick_binary_probs_ignores_spread_decor_for_mlb() -> None:
     away, home = official_pick_binary_probs(
         {

@@ -247,13 +247,34 @@ def test_app_js_mlb_nhl_frontend_contracts() -> None:
     assert "trackingLoadFailed" in tracking_fn
     assert 'record: "—"' in js
     assert 'roi_percent: null' in js
+    # Home + rollups must not coerce null ROI/units to a fake break-even 0%.
+    assert "function formatRoiPercent(pct)" in js
+    assert "function formatUnitsDisplay(units)" in js
+    assert "roi_percent ?? 0" not in js
+    assert "units ?? 0" not in js
+    assert "function viewDashboard" in js
+    home_fn = js.split("function viewDashboard")[1].split("function ")[0]
+    assert "trackingFailed" in home_fn or "trackingLoadFailed" in home_fn
+    assert "formatRoiPercent" in home_fn
+    assert "formatUnitsDisplay" in home_fn
+    assert "roi_percent ?? 0" not in home_fn
+    assert "function renderTrackingSummary" in js
+    summary_fn = js.split("function renderTrackingSummary")[1].split("function ")[0]
+    assert "trackingLoadFailed" in summary_fn
+    assert "Tracking unavailable" in summary_fn
+    assert "formatRoiPercent" in summary_fn
     # Methodology MLB close ROI must match bet_policy / pick_strategy (−2.2%, not −3.2%).
     assert "−2.2% at the close" in js
     assert "+34.3% ROI" in js
     assert "−3.2% at the close" not in js
 
 
-def test_format_odds_treats_even_zero_like_plus_100() -> None:
+def test_agents_md_cron_uses_comma_list_not_step_slash() -> None:
+    """Cron step syntax 4/10 ≠ hours 4,10,16,22 — docs must not misstate deploy times."""
+    text = AGENTS_MD.read_text(encoding="utf-8")
+    assert "0 4,10,16,22" in text
+    assert "0 4/10/16/22" not in text
+    assert "negative" in text.lower() or "ROI close négatif" in text
     """ESPN EVEN (0) must display as +100, not an em dash."""
     js = (STATIC_DIR / "app.js").read_text(encoding="utf-8")
     # Guard the formatOdds contract in source (no JS runtime in pytest).

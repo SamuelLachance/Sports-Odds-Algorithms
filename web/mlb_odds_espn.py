@@ -17,7 +17,8 @@ from web.nba_odds_espn import (
     _valid_american,
     _valid_handicap_line,
 )
-from web.season_games import _normalize_abbr
+from web.sbr_odds import _repair_same_sign_spreads
+from web.season_games import _event_date_iso, _normalize_abbr
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 CACHE_DIR = PROJECT_ROOT / ".build-cache" / "mlb-odds"
@@ -99,6 +100,13 @@ def _provider_line_mlb(item: dict[str, Any]) -> dict[str, float | None]:
     if away_close_spread is None and home_close_spread is not None:
         away_close_spread = -home_close_spread
 
+    home_close_spread, away_close_spread = _repair_same_sign_spreads(
+        home_close_spread,
+        away_close_spread,
+        home_ml=home_close_ml,
+        away_ml=away_close_ml,
+    )
+
     close_total = _to_float(((item.get("close") or {}) or {}).get("total"))
     if close_total is None:
         close_total = _to_float(item.get("overUnder"))
@@ -170,8 +178,11 @@ def _iter_completed_events(start: date, end: date) -> Iterator[dict[str, Any]]:
                 int(away.get("score"))
             except (TypeError, ValueError):
                 continue
+            tip_date = _event_date_iso(
+                str(event.get("date") or competition.get("date") or "")
+            ) or day.isoformat()
             yield {
-                "date": day.isoformat(),
+                "date": tip_date,
                 "event": str(event.get("id") or ""),
                 "comp": str(competition.get("id") or ""),
                 "home_key": home_abbr,
