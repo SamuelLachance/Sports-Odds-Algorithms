@@ -1,4 +1,4 @@
-const APP_BUILD_VERSION = "2026-07-12-wave2-ux";
+const APP_BUILD_VERSION = "2026-07-12-wave3-a11y";
 const META_BASE_PATH =
   document.querySelector('meta[name="base-path"]')?.content ?? "";
 const IS_GITHUB_IO = window.location.hostname.endsWith("github.io");
@@ -88,12 +88,35 @@ function modelAnalysisEmptyPanel() {
   </div>`;
 }
 
+function slateEmptyPanel() {
+  return `<div class="panel empty-panel empty-panel--slate" role="status">
+    <strong>Today's slate is empty</strong>
+    <p class="muted">No games are scheduled across tracked leagues right now. Rebuilds run four times daily — check back after the next sync, or browse leagues and tracking while you wait.</p>
+    <div class="empty-panel-actions">
+      <a class="btn btn-secondary btn-sm" href="#/teams">Browse leagues</a>
+      <a class="btn btn-secondary btn-sm" href="#/tracking">View tracking</a>
+      <a class="btn btn-secondary btn-sm" href="#/methodology">Methodology</a>
+    </div>
+  </div>`;
+}
+
 function gamesFilterEmptyPanel(league) {
+  const allGames = state.slate?.games || [];
+  if ((!league || league === "all") && !allGames.length) {
+    return slateEmptyPanel();
+  }
   if (league && league !== "all" && isPredictionsOnlyLeague(league)) {
     const label = String(league).toUpperCase();
     return `<div class="panel empty-panel empty-panel--ref">
       <strong>No ${escapeHtml(label)} games on today's slate</strong>
       <p class="muted">${escapeHtml(label)} is predictions-only — GradientBoost v2 is live when games appear, but spots are not logged as official Hubáček picks.</p>
+    </div>`;
+  }
+  if (league && league !== "all") {
+    const label = String(league).toUpperCase();
+    return `<div class="panel empty-panel">
+      <strong>No ${escapeHtml(label)} games today</strong>
+      <p class="muted">Nothing scheduled for this league on the current slate. Try <a class="text-link" href="#/games">All games</a> or another league in the sidebar.</p>
     </div>`;
   }
   return `<div class="panel empty-panel">No games for this filter.</div>`;
@@ -1512,6 +1535,8 @@ function viewDashboard() {
       </a>
     </div>
 
+    ${!games.length ? `<section class="section"><div class="section-head"><h2>Today's slate</h2></div>${slateEmptyPanel()}</section>` : ""}
+
     ${contextGames.length ? `<section class="section"><div class="section-head"><h2>Context layer active</h2></div>
       <div class="context-callout-list">${contextGames.slice(0, 4).map((g) => {
         const away = g.matchup?.away?.name || "Away";
@@ -1533,7 +1558,7 @@ function viewDashboard() {
       <div class="picks-grid">${picks.length ? picks.slice(0, 6).map((p) => {
         const g = gameById(p.event_id);
         return pickCard(p, "", g);
-      }).join("") : officialEmptyPanel(hubacekRule)}</div>
+      }).join("") : !games.length ? slateEmptyPanel() : officialEmptyPanel(hubacekRule)}</div>
     </section>
     ${modelAnalysis.length ? `<section class="section"><div class="section-head"><h2>Model predictions (not tracked)</h2><a class="text-link" href="#/picks#model-predictions">View all →</a></div><p class="muted section-intro">Same analysis as game pages — reference only, not logged in official bet history. NFL/CFB/CBB never appear as official Hubáček picks.</p><div class="picks-grid">${modelAnalysis.slice(0, 6).map((p) => pickCard(p)).join("")}</div></section>` : ""}`;
 }
@@ -2354,7 +2379,7 @@ function renderUnitsChart(periodKey) {
     .join("")}</div>`;
 }
 
-function viewTracking() {
+function viewTracking(options = {}) {
   state.sidebarLeague = null;
   renderSidebar(parseRoute());
   const period = state.trackingPeriod;
@@ -2402,10 +2427,10 @@ function viewTracking() {
       <p class="muted">Only ${graded.length} graded official bets so far. Expect noisy ROI until dozens of Hubáček spots settle. Focus on process: bet early, shop lines, and size to units — not short-term win rate.</p>
     </div>` : ""}
 
-    <div class="period-tabs">${["daily", "weekly", "monthly", "yearly", "all_time"]
+    <div class="period-tabs" role="tablist" aria-label="Tracking period">${["daily", "weekly", "monthly", "yearly", "all_time"]
       .map(
         (p) =>
-          `<button type="button" class="period-tab ${period === p ? "active" : ""}" data-period="${p}">${periodLabel(p)}</button>`,
+          `<button type="button" role="tab" class="period-tab ${period === p ? "active" : ""}" data-period="${p}" aria-selected="${period === p ? "true" : "false"}" tabindex="${period === p ? "0" : "-1"}">${periodLabel(p)}</button>`,
       )
       .join("")}</div>
 
@@ -2452,12 +2477,37 @@ function viewTracking() {
       </div>`}</div>
     </section>`;
 
-  appRoot.querySelectorAll(".period-tab").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      state.trackingPeriod = btn.dataset.period;
-      viewTracking();
+  const periodTabs = [...appRoot.querySelectorAll(".period-tab")];
+  const selectPeriod = (nextPeriod, { focus = false } = {}) => {
+    if (!nextPeriod || nextPeriod === state.trackingPeriod) {
+      if (focus) {
+        appRoot.querySelector(`.period-tab[data-period="${nextPeriod}"]`)?.focus();
+      }
+      return;
+    }
+    state.trackingPeriod = nextPeriod;
+    viewTracking({ focusPeriodTab: focus });
+  };
+
+  periodTabs.forEach((btn, index) => {
+    btn.addEventListener("click", () => selectPeriod(btn.dataset.period));
+    btn.addEventListener("keydown", (event) => {
+      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+      event.preventDefault();
+      let nextIndex = index;
+      if (event.key === "ArrowRight") nextIndex = (index + 1) % periodTabs.length;
+      if (event.key === "ArrowLeft") nextIndex = (index - 1 + periodTabs.length) % periodTabs.length;
+      if (event.key === "Home") nextIndex = 0;
+      if (event.key === "End") nextIndex = periodTabs.length - 1;
+      selectPeriod(periodTabs[nextIndex].dataset.period, { focus: true });
     });
   });
+
+  if (options.focusPeriodTab) {
+    requestAnimationFrame(() => {
+      appRoot.querySelector(`.period-tab[data-period="${state.trackingPeriod}"]`)?.focus();
+    });
+  }
 }
 
 function viewMethodology() {

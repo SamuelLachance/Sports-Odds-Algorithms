@@ -79,6 +79,77 @@ def test_news_empty_or_unmatched_is_zero() -> None:
     assert news_sentiment_shift(["Random league news"], ["Celtics"], ["Heat"]) == 0.0
 
 
+def test_news_ignores_looking_out_for_false_positive() -> None:
+    """Former 'out for' stem matched 'looking out for' draft copy."""
+    assert (
+        news_sentiment_shift(
+            ["Celtics looking out for young talent in the draft"],
+            home_names=["Celtics"],
+            away_names=["Heat"],
+        )
+        == 0.0
+    )
+
+
+def test_news_ignores_rolling_and_dominant_false_positives() -> None:
+    assert (
+        news_sentiment_shift(
+            ["Heat rolling out new uniforms ahead of tip"],
+            home_names=["Celtics"],
+            away_names=["Heat"],
+        )
+        == 0.0
+    )
+    assert (
+        news_sentiment_shift(
+            ["Historically dominant Celtics franchise since 2008"],
+            home_names=["Celtics"],
+            away_names=["Heat"],
+        )
+        == 0.0
+    )
+
+
+def test_news_ignores_injury_report_header_without_availability() -> None:
+    assert (
+        news_sentiment_shift(
+            ["Celtics injury report: no changes ahead of tip-off"],
+            home_names=["Celtics"],
+            away_names=["Heat"],
+        )
+        == 0.0
+    )
+
+
+def test_news_injury_report_still_counts_sidelined() -> None:
+    shift = news_sentiment_shift(
+        ["Celtics injury report: star sidelined for tonight"],
+        home_names=["Celtics"],
+        away_names=["Heat"],
+    )
+    assert shift < 0
+
+
+def test_news_team_token_requires_word_boundary() -> None:
+    """Short nicknames must not match substrings (Heat⊂heating, Sun⊂Sunday)."""
+    assert (
+        news_sentiment_shift(
+            ["Rivalry heating up ahead of Sunday night"],
+            home_names=["Heat"],
+            away_names=["Sun"],
+        )
+        == 0.0
+    )
+    assert (
+        news_sentiment_shift(
+            ["Heat star sidelined with ankle sprain"],
+            home_names=["Heat"],
+            away_names=["Sun"],
+        )
+        < 0
+    )
+
+
 def test_steam_zero_without_opens() -> None:
     assert steam_line_movement_shift(-150, 130) == 0.0
 

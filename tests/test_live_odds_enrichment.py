@@ -17,9 +17,12 @@ from web.live_odds_enrichment import (  # noqa: E402
     best_available_for_pick,
     enrich_market_dict,
     enrichment_budget_exhausted,
+    enrichment_budget_remaining_s,
+    fetch_multi_book_odds,
     line_shopping_edge_from_market,
     line_shopping_fields_for_pick,
     multi_book_enabled,
+    odds_path_for_league,
     reset_enrichment_budget,
     shopping_edge_pp,
     summarize_book_items,
@@ -258,3 +261,57 @@ def test_reset_enrichment_budget_restores_fetching() -> None:
         assert enrichment_budget_exhausted() is True
         reset_enrichment_budget()
         assert enrichment_budget_exhausted() is False
+
+
+def test_odds_path_for_league_known_and_unknown() -> None:
+    assert odds_path_for_league("nba") == "basketball/leagues/nba"
+    assert odds_path_for_league("NHL") == "hockey/leagues/nhl"
+    assert odds_path_for_league("epl") is None
+    assert odds_path_for_league("") is None
+
+
+def test_fetch_skips_network_when_path_or_budget_blocks() -> None:
+    """Clear failure paths must not call ESPN or charge budget."""
+    reset_enrichment_budget()
+    calls = {"n": 0}
+
+    def _boom(*_a, **_k):
+        calls["n"] += 1
+        raise AssertionError("network should not be reached")
+
+    with patch("web.live_odds_enrichment._get_json", side_effect=_boom):
+        with patch.dict("os.environ", {"LIVE_MULTI_BOOK": "1"}, clear=False):
+            assert fetch_multi_book_odds("nba", "") == {}
+            assert fetch_multi_book_odds("epl", "401") == {}
+        with patch.dict(
+            "os.environ",
+            {"LIVE_MULTI_BOOK": "1", "LIVE_MULTI_BOOK_BUDGET_S": "0"},
+            clear=False,
+        ):
+            assert enrichment_budget_remaining_s() == 0.0
+            assert fetch_multi_book_odds("nba", "401") == {}
+    assert calls["n"] == 0
+    reset_enrichment_budget()
+
+
+def test_fetch_network_failure_charges_budget_then_soft_fails() -> None:
+    reset_enrichment_budget()
+    env = {"LIVE_MULTI_BOOK": "1", "LIVE_MULTI_BOOK_BUDGET_S": "0.05"}
+
+    def _slow_fail(*_a, **_k):
+        time.sleep(0.06)
+        raise OSError("espn down")
+
+    try:
+        with patch.dict("os.environ", env, clear=False):
+            with patch("web.live_odds_enrichment._get_json", side_effect=_slow_fail):
+                assert fetch_multi_book_odds("nba", "401") == {}
+                assert enrichment_budget_exhausted()
+                # Second call is a clear budget no-op (no network).
+                with patch(
+                    "web.live_odds_enrichment._get_json",
+                    side_effect=AssertionError("should not fetch"),
+                ):
+                    assert fetch_multi_book_odds("nba", "402") == {}
+    finally:
+        reset_enrichment_budget()

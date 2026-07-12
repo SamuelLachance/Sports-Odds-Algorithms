@@ -9,7 +9,6 @@ from typing import Any, Literal
 from zoneinfo import ZoneInfo
 
 from web.bet_advisor import spread_line_for_side
-from web.espn_client import fetch_scoreboard
 from web.hubacek_picks import (
     official_hubacek_thresholds,
     passes_hubacek_tracked_pick,

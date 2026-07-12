@@ -13,6 +13,7 @@ Signals:
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 # Max signed home-prob nudge from favorite-longshot bias (percentage points).
@@ -51,9 +52,10 @@ _SPARSE_EV_CAP_MODERATE = 28.0
 _SPARSE_EV_CAP_RELAXED = 40.0
 _DEFAULT_EV_CAP_THIN = 55.0
 
-_INJURY_NEG_KEYWORDS = (
-    "injur",
-    "out for",
+# Prefer whole words / specific phrases — bare stems like "injur" or "out for"
+# false-positive on "looking out for" and loose copy.
+_INJURY_STRONG_KEYWORDS = (
+    "injured",
     "sidelined",
     "questionable",
     "doubtful",
@@ -65,16 +67,40 @@ _INJURY_NEG_KEYWORDS = (
     "will miss",
     "day-to-day",
     "day to day",
+    "out indefinitely",
+    "out for the season",
+    "out for game",
 )
 
+# Alone these are too weak inside "injury report" headers; require no false alarm.
+_INJURY_WEAK_KEYWORDS = (
+    "injury",
+    "injuries",
+)
+
+# Suppress weak injury hits (and pure "all clear" copy) when these appear.
+_INJURY_FALSE_ALARM = (
+    "no injury",
+    "no injuries",
+    "injury-free",
+    "injury free",
+    "injury report",
+    "cleared to play",
+    "returns from injury",
+    "returned from injury",
+    "avoided injury",
+    "escaped injury",
+)
+
+# Avoid loose single tokens ("dominant", "rolling") that fire on non-form copy.
 _HOT_POS_KEYWORDS = (
     "hot streak",
     "winning streak",
     "unbeaten",
     "in form",
     "on fire",
-    "dominant",
-    "rolling",
+    "on a roll",
+    "red hot",
 )
 
 
@@ -173,17 +199,31 @@ def steam_line_movement_shift(
     return round(_clamp(shift, -MAX_STEAM_SHIFT_PP, MAX_STEAM_SHIFT_PP), 3)
 
 
+def _token_in_text(text: str, token: str) -> bool:
+    """Whole-token match so short nicknames (Heat/Sun) do not hit substrings."""
+    if not token:
+        return False
+    return re.search(rf"(?<![a-z0-9]){re.escape(token)}(?![a-z0-9])", text) is not None
+
+
 def _headline_mentions_side(headline: str, names: list[str]) -> bool:
     text = headline.lower()
     for name in names:
         token = (name or "").strip().lower()
-        if len(token) >= 3 and token in text:
+        if len(token) >= 3 and _token_in_text(text, token):
             return True
     return False
 
 
 def _keyword_hit(text: str, keywords: tuple[str, ...]) -> bool:
-    return any(key in text for key in keywords)
+    """Phrase substring for multi-word keys; whole-token match for single words."""
+    for key in keywords:
+        if " " in key or "-" in key:
+            if key in text:
+                return True
+        elif _token_in_text(text, key):
+            return True
+    return False
 
 
 def news_sentiment_shift(
@@ -194,7 +234,8 @@ def news_sentiment_shift(
     """Keyword heuristic (±2 pp max) for injury/suspension/rest/hot-streak language.
 
     Negative keywords on a side hurt that side; hot-streak language helps.
-    Returns signed pp shift to home win probability.
+    Returns signed pp shift to home win probability. Skips injury false alarms
+    (e.g. "injury report", "no injuries", "cleared to play").
     """
     if not headlines:
         return 0.0
@@ -213,7 +254,12 @@ def news_sentiment_shift(
         away_hit = _headline_mentions_side(text, away_names)
         if not home_hit and not away_hit:
             continue
-        injury = _keyword_hit(text, _INJURY_NEG_KEYWORDS)
+        injury_alarm = _keyword_hit(text, _INJURY_FALSE_ALARM)
+        strong_injury = _keyword_hit(text, _INJURY_STRONG_KEYWORDS)
+        weak_injury = _keyword_hit(text, _INJURY_WEAK_KEYWORDS)
+        # Strong availability verbs always count; weak "injury" alone is skipped
+        # inside report/all-clear copy so headers do not nudge probabilities.
+        injury = strong_injury or (weak_injury and not injury_alarm)
         hot = _keyword_hit(text, _HOT_POS_KEYWORDS)
         if injury:
             if home_hit and not away_hit:

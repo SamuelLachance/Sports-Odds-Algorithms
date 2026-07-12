@@ -8,6 +8,7 @@ import pytest
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 PAGES_YML = PROJECT_ROOT / ".github" / "workflows" / "pages.yml"
+TEST_YML = PROJECT_ROOT / ".github" / "workflows" / "test.yml"
 
 
 def test_pages_yml_is_valid_yaml() -> None:
@@ -49,3 +50,29 @@ def test_pages_yml_is_valid_yaml() -> None:
         "soccer-v2-live",
     ):
         assert sport_cache in joined
+
+
+def test_test_yml_is_valid_and_lean() -> None:
+    yaml = pytest.importorskip("yaml")
+    assert TEST_YML.is_file()
+    text = TEST_YML.read_text(encoding="utf-8")
+    payload = yaml.safe_load(text)
+    assert isinstance(payload, dict)
+    assert payload.get("name") == "Tests"
+    env = payload.get("env") or {}
+    assert env.get("PYTHONDONTWRITEBYTECODE") == "1"
+    assert env.get("PIP_DISABLE_PIP_VERSION_CHECK") == "1"
+    jobs = payload.get("jobs") or {}
+    test_job = jobs["test"]
+    assert test_job.get("timeout-minutes") == 20
+    steps = test_job.get("steps") or []
+    step_names = [step.get("name") for step in steps if isinstance(step, dict)]
+    assert "Install Python dependencies" in step_names
+    assert "Pytest (full suite)" in step_names
+    assert "Smoke test (core algo)" in step_names
+    install = next(step for step in steps if step.get("name") == "Install Python dependencies")
+    # Skip slow pip self-upgrade; rely on setup-python + pip cache.
+    assert "--upgrade pip" not in str(install.get("run", ""))
+    pytest_step = next(step for step in steps if step.get("name") == "Pytest (full suite)")
+    assert "--durations=12" in str(pytest_step.get("run", ""))
+    assert "cancel-in-progress: true" in text

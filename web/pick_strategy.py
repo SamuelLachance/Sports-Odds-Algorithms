@@ -20,7 +20,6 @@ from web.bet_advisor import (
 )
 from web.blend_service import blended_home_spread_margin, home_win_prob_to_total_score
 from web.hubacek_picks import (
-    HUBACEK_MIN_MARKET_GAP_PP,
     hubacek_min_ev_pct,
     hubacek_min_market_gap_pp,
     hubacek_min_win_confidence_pp,
@@ -29,13 +28,12 @@ from web.hubacek_picks import (
 )
 from web.league_profiles import (
     MIN_EXPECTED_VALUE_PCT,
-    MIN_RECOMMENDED_EDGE,
     get_league_profile,
     is_soccer_league,
 )
 from web.closing_odds_db import closing_odds_lookup
 from web.power_model import PowerGame, PowerTeam, build_power_ratings, fit_logistic_param, predict_matchup
-from web.season_games import load_league_completed_games_for_backtest
+from web.pick_strategy_schema import validate_pick_strategy_payload
 from web.supplemental_games import load_supplemental_dated_games_for_backtest, soccer_backtest_odds
 from web.sports_meta_model import apply_binary_calibration, stack_binary_blend_layers
 from web.tracking_service import calculate_units
@@ -88,9 +86,10 @@ def load_pick_strategy() -> dict[str, Any]:
     if not STRATEGY_PATH.is_file():
         return {"default": _default_entry("moneyline")}
     try:
-        payload = json.loads(STRATEGY_PATH.read_text(encoding="utf-8"))
+        raw = json.loads(STRATEGY_PATH.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
         return {"default": _default_entry("moneyline")}
+    payload = validate_pick_strategy_payload(raw)
     if "default" not in payload:
         payload["default"] = _default_entry("moneyline")
     return payload

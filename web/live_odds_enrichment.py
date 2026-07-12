@@ -56,6 +56,11 @@ def enrichment_budget_exhausted() -> bool:
     return _budget_spent_s >= _budget_limit_s()
 
 
+def enrichment_budget_remaining_s() -> float:
+    """Seconds left in the build's multi-book fetch budget (never negative)."""
+    return max(_budget_limit_s() - _budget_spent_s, 0.0)
+
+
 def reset_enrichment_budget() -> None:
     """Reset the cumulative fetch-time accumulator (tests / new builds)."""
     global _budget_spent_s
@@ -65,6 +70,11 @@ def reset_enrichment_budget() -> None:
 def _charge_budget(elapsed_s: float) -> None:
     global _budget_spent_s
     _budget_spent_s += max(float(elapsed_s), 0.0)
+
+
+def odds_path_for_league(league: str) -> str | None:
+    """ESPN core odds path segment for a multi-book league, or None if unknown."""
+    return _ODDS_PATH.get((league or "").lower())
 
 
 def multi_book_enabled(league: str) -> bool:
@@ -85,8 +95,10 @@ def multi_book_enabled(league: str) -> bool:
     return league.lower() in MULTI_BOOK_LEAGUES
 
 
-def _odds_url(league: str, event_id: str, competition_id: str) -> str:
-    path = _ODDS_PATH[league.lower()]
+def _odds_url(league: str, event_id: str, competition_id: str) -> str | None:
+    path = odds_path_for_league(league)
+    if not path:
+        return None
     return (
         f"https://sports.core.api.espn.com/v2/sports/{path}/"
         f"events/{event_id}/competitions/{competition_id}/odds"
@@ -244,29 +256,30 @@ def fetch_multi_book_odds(
 ) -> dict[str, Any]:
     """Fetch multi-book consensus for one event. Empty dict on failure.
 
-    Fetch wall-time (success or failure) is charged against the global
-    LIVE_MULTI_BOOK_BUDGET_S budget; once exhausted, returns {} immediately.
+    Clear no-op paths (disabled league, missing event id, unknown odds path,
+    or exhausted LIVE_MULTI_BOOK_BUDGET_S) return {} without touching the
+    network. Network/parse failures also return {}; only attempted fetches
+    charge wall-time against the budget.
     """
     if not multi_book_enabled(league) or not event_id:
         return {}
     if enrichment_budget_exhausted():
         return {}
-    comp = competition_id or event_id
+    url = _odds_url(league, event_id, competition_id or event_id)
+    if not url:
+        # League allowed by flag but missing from _ODDS_PATH — do not KeyError.
+        return {}
     timeout_s = timeout if timeout is not None else _DEFAULT_TIMEOUT_S
     started = time.monotonic()
+    payload: dict[str, Any] = {}
     try:
-        payload = _get_json(
-            _odds_url(league, event_id, comp),
-            timeout=timeout_s,
-            retries=1,
-        )
+        payload = _get_json(url, timeout=timeout_s, retries=1) or {}
     except Exception:  # noqa: BLE001 — soft-fail
-        return {}
+        payload = {}
     finally:
         _charge_budget(time.monotonic() - started)
     items = payload.get("items") or []
-    if not items and competition_id is None and event_id:
-        # Rare: competition id differs; nothing else to try without scoreboard.
+    if not items:
         return {}
     return summarize_book_items(items)
 

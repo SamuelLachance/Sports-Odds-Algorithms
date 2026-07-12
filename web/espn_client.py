@@ -13,7 +13,6 @@ from typing import Any
 
 from web.league_profiles import (
     LEAGUE_PROFILES,
-    SUPPORTED_LEAGUES,
     get_league_profile,
 )
 

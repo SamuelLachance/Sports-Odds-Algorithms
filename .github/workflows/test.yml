@@ -13,23 +13,30 @@ concurrency:
   group: test-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PIP_NO_INPUT: "1"
+
 jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: "pip"
 
-      - name: Install dependencies
-        run: python -m pip install --upgrade pip && python -m pip install -r requirements.txt
+      - name: Install Python dependencies
+        run: python -m pip install -r requirements.txt
 
-      - name: Full pytest suite
-        run: python -m pytest tests/ -q --tb=short
+      - name: Pytest (full suite)
+        run: python -m pytest tests/ -q --tb=short --durations=12
 
-      - name: Smoke test
+      - name: Smoke test (core algo)
         run: python smoke_test.py

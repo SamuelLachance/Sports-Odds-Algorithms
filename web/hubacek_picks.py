@@ -3,14 +3,19 @@
 Hubáček et al. (2019) bet on +EV decorrelated spots with a confidence filter.
 Live gates add non-zero floors so vig noise and rounding jitter cannot qualify:
 a minimum decorrelation gap vs the de-vigged market, a minimum honest EV%, and
-a per-bet-type confidence bar.
+a per-bet-type confidence bar (defaults: 20 pp moneyline, 10 pp baseball/soccer,
+5 pp spread cover).
 
-Per-league overrides (backtest-tuned) are read from data/pick_strategy.json:
+Default live thresholds live in this module; per-league overrides are read from
+``data/pick_strategy.json`` (same keys as that file's policy note):
 ``min_market_gap_pp``, ``min_win_confidence_pp``, ``min_ev_pct``, ``ml_lo``,
-``ml_hi``. MLB uses a 6.7 pp decorrelated gap (≈6 pp raw), no confidence bar,
-and a [-200, +200] price window; NHL uses a 7.8 pp decorrelated gap (≈7 pp
-raw), no confidence bar, and a [-250, +250] window — both from walk-forward
-bet backtests against opening/closing lines.
+``ml_hi``, ``allowed_sides``, ``min_spread_cover_gap_pp``,
+``min_spread_confidence_pp``, ``min_spread_point_edge``. MLB uses a 6.7 pp
+decorrelated gap (≈6 pp raw), no confidence bar, and a [-200, +200] price
+window; NHL uses a 7.8 pp decorrelated gap (≈7 pp raw), no confidence bar, and
+a [-250, +250] window — both from walk-forward bet backtests against
+opening/closing lines. Spread leagues (NBA/WNBA/…) override cover-gap /
+confidence / point-edge here via the same JSON.
 """
 
 from __future__ import annotations
@@ -19,6 +24,8 @@ import json
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
+
+from web.pick_strategy_schema import validate_pick_strategy_payload
 
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent
 _STRATEGY_PATH = _PROJECT_ROOT / "data" / "pick_strategy.json"
@@ -57,7 +64,7 @@ def _strategy_config() -> dict[str, Any]:
         payload = json.loads(_STRATEGY_PATH.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
         return {}
-    return payload if isinstance(payload, dict) else {}
+    return validate_pick_strategy_payload(payload)
 
 
 def _league_category(league: str) -> str | None:

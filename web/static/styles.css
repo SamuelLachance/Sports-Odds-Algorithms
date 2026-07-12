@@ -424,6 +424,28 @@ select:focus {
   outline-offset: 1px;
 }
 
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.nav a:focus-visible,
+.sidebar-nav-link:focus-visible,
+.mobile-bottom-nav a:focus-visible,
+.brand:focus-visible,
+.btn:focus-visible,
+.nav-toggle:focus-visible,
+.text-link:focus-visible,
+.home-link-card:focus-visible,
+.period-tab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.period-tab:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .results-empty {
   min-height: 360px;
   display: grid;
@@ -900,6 +922,18 @@ a.pick-card-link:focus-visible {
 
 .empty-panel--official {
   border-left: 4px solid color-mix(in srgb, var(--accent) 45%, var(--border));
+}
+
+.empty-panel--slate {
+  border-left: 4px solid color-mix(in srgb, var(--accent-warm) 50%, var(--border));
+}
+
+.empty-panel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-1);
+  margin-top: var(--space-3);
 }
 
 .loading-panel {
@@ -1789,6 +1823,10 @@ a.pick-card-link:focus-visible {
   color: #042f2e;
   border-color: var(--accent);
   font-weight: 600;
+}
+
+.period-tab:focus-visible {
+  outline-offset: 3px;
 }
 
 .data-table {
