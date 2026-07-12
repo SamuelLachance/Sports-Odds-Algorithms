@@ -510,6 +510,37 @@ def test_apply_context_syncs_nested_soccer_pred_threeway() -> None:
     assert out["soccer_pred"]["away_win_probability"] == out["away_win_probability"]
 
 
+def test_apply_context_syncs_blended_threeway() -> None:
+    """Context shift must rewrite blended_threeway, not leave pre-shift probs."""
+    blended = {
+        "threeway": True,
+        "home_win_probability": 40.0,
+        "draw_probability": 28.0,
+        "away_win_probability": 32.0,
+        "blended_home_win_probability": 40.0,
+        "total_score": -55.56,
+        "win_probability": 55.56,
+        "favorite_side": "home",
+        "blended_threeway": {
+            "home_win_probability": 40.0,
+            "draw_probability": 28.0,
+            "away_win_probability": 32.0,
+        },
+    }
+    market = {
+        "home_moneyline": 180,
+        "away_moneyline": -210,
+        "open_home_moneyline": 130,
+        "open_away_moneyline": -150,
+    }
+    out = apply_context_to_blend(blended, market=market, league="epl")
+    assert out["context_adjustment_pp"] != 0.0
+    assert out["blended_threeway"]["home_win_probability"] == out["home_win_probability"]
+    assert out["blended_threeway"]["draw_probability"] == out["draw_probability"]
+    assert out["blended_threeway"]["away_win_probability"] == out["away_win_probability"]
+    assert out["blended_threeway"]["home_win_probability"] != 40.0
+
+
 def test_steam_open_even_zero_not_skipped_by_falsy_or() -> None:
     """American open ML 0 (EVEN) must not fall through via falsy `or`."""
     blended = {

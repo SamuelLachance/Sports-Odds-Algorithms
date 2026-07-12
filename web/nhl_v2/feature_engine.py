@@ -322,7 +322,8 @@ class TeamState:
         previous = _parse_date(self.last_game_date)
         if not current or not previous:
             return 3.0
-        return float(min((current - previous).days, 10))
+        # Floor at 0: inverted/out-of-order dates must not invent negative rest.
+        return float(min(max((current - previous).days, 0), 10))
 
     def games_last_n(self, game_date: str, days: int) -> int:
         return count_games_in_last_n_days(self.recent_dates, game_date, days=days)
@@ -416,7 +417,8 @@ class GoalieState:
         previous = _parse_date(self.last_start_date)
         if not current or not previous:
             return 4.0
-        return float(min((current - previous).days, 14))
+        # Floor at 0: inverted/out-of-order dates must not invent negative rest.
+        return float(min(max((current - previous).days, 0), 14))
 
     def starts_last_n(self, game_date: str, days: int) -> int:
         return count_games_in_last_n_days(self.recent_start_dates, game_date, days=days)
@@ -667,7 +669,13 @@ class NhlFeatureEngine:
 
         home_goals = int(game.get("home_goals") or 0)
         away_goals = int(game.get("away_goals") or 0)
-        home_win = int(game.get("home_win") or (1 if home_goals > away_goals else 0))
+        # Do not use `or` — home_win=0 is a valid away win and must not fall
+        # through to the score-based fallback.
+        raw_home_win = game.get("home_win")
+        if raw_home_win is None:
+            home_win = 1 if home_goals > away_goals else 0
+        else:
+            home_win = int(raw_home_win)
 
         expected_home = 1.0 / (
             1.0 + 10.0 ** (-((home.elo + ELO_HOME_ADV) - away.elo) / 400.0)

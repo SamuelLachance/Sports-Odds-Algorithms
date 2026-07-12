@@ -27,6 +27,20 @@ from web.soccer_blend import power_threeway_probs, soccer_threeway_probs
 from web.soccer_meta_model import stack_soccer_blend_layers
 from web.sports_meta_model import stack_binary_blend_layers
 
+
+def optional_prob(payload: dict[str, Any] | None, key: str) -> float | None:
+    """Parse a probability field; missing/invalid stay None (never coerce via ``or 0``)."""
+    if not isinstance(payload, dict):
+        return None
+    raw = payload.get(key)
+    if raw is None:
+        return None
+    try:
+        return float(raw)
+    except (TypeError, ValueError):
+        return None
+
+
 # College leagues: sport matrix rebuild is too slow per walk-forward step; proxy at train time.
 SPORT_TRAIN_PROXY_LEAGUES = frozenset({"cbb", "ncaabb"})
 
@@ -271,9 +285,9 @@ def collect_soccer_rows(
         )
         sport_h = sport_d = sport_a = None
         if sport_payload:
-            sport_h = float(sport_payload.get("home_win_probability") or 0)
-            sport_d = float(sport_payload.get("draw_probability") or 0)
-            sport_a = float(sport_payload.get("away_win_probability") or 0)
+            sport_h = optional_prob(sport_payload, "home_win_probability")
+            sport_d = optional_prob(sport_payload, "draw_probability")
+            sport_a = optional_prob(sport_payload, "away_win_probability")
 
         meta = stack_soccer_blend_layers(
             legacy=legacy_tw,

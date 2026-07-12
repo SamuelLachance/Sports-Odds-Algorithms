@@ -262,3 +262,17 @@ def test_format_odds_treats_even_zero_like_plus_100() -> None:
     assert "v == null || v === 0" not in js.split("function formatOdds(v)")[1].split(
         "function "
     )[0]
+
+
+def test_predict_job_swallows_unexpected_errors(monkeypatch) -> None:
+    """One TypeError/RuntimeError matchup must not abort the Pages prediction pool."""
+    pages = _load_build_gh_pages()
+    import web.predict_service as predict_service
+
+    def boom(*_args, **_kwargs):
+        raise TypeError("synthetic predict failure")
+
+    monkeypatch.setattr(predict_service, "predict_match", boom)
+    rel, result = pages._predict_job(("nba", "bos", "lal", "1-1-2024", "2024", "Algo_V2"))
+    assert rel == ""
+    assert result is None

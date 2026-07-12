@@ -123,6 +123,9 @@ def _devig_home_prob(home_ml: float, away_ml: float) -> float | None:
             american = float(american)
         except (TypeError, ValueError):
             return None
+        # ESPN/SBR EVEN money arrives as 0 — treat as +100 (same as live paths).
+        if american == 0:
+            american = 100.0
         if abs(american) < 100:
             return None
         if american > 0:

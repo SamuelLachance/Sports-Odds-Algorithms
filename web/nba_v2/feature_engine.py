@@ -463,7 +463,9 @@ class TeamState:
         prior = _parse_date(self.last_game_date)
         if prior is None:
             return 5.0
-        return float(min((game_date - prior).days, 10))
+        # Floor at 0: inverted/out-of-order dates must not invent negative rest
+        # (which also falsely trips B2B via rest <= 1).
+        return float(min(max((game_date - prior).days, 0), 10))
 
     def games_in_last7(self, game_date: date_cls) -> int:
         return count_games_in_last_n_days(self.recent_dates, game_date, days=7)

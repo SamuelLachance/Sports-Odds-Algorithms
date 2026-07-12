@@ -984,6 +984,39 @@ def test_pending_closing_rejects_garbage_american_overwrite() -> None:
     assert store["bets"][0]["market_odds"] == -120
 
 
+def test_record_from_slate_skips_invalid_american_odds() -> None:
+    """New official rows must never store raw |odds| < 100 garbage juice."""
+    store = record_from_slate(
+        {"version": 1, "bets": []},
+        {
+            "date_label": "2026-07-12",
+            "recommended_bets": [
+                {**_sample_pick(), "start_time": _future_start(), "market_odds": 50}
+            ],
+            "games": [],
+        },
+    )
+    assert store["bets"] == []
+
+    spread = {
+        **_sample_pick(),
+        "start_time": _future_start(),
+        "bet_type": "spread",
+        "league": "nba",
+        "spread_odds": 50,
+        "spread_line": -3.5,
+        "consensus_spread": -3.5,
+        "model_market_gap_pp": 10.0,
+        "win_probability": 56.0,
+        "market_odds": -110,
+    }
+    store = record_from_slate(
+        {"version": 1, "bets": []},
+        {"date_label": "2026-07-12", "recommended_bets": [spread], "games": []},
+    )
+    assert store["bets"] == []
+
+
 def test_pending_refresh_updates_start_time_when_postponed() -> None:
     """Postponed tip-offs must refresh stored start_time for scoreboard dating."""
     store = {"version": 1, "bets": []}
@@ -1073,6 +1106,7 @@ def test_prune_below_hubacek_threshold() -> None:
             "strategy": p["strategy"],
             "win_probability": p.get("win_probability"),
             "model_market_gap_pp": p.get("model_market_gap_pp"),
+            "market_odds": p.get("market_odds", -150),
             "status": "pending",
             "units": 0.0,
             "stake_units": 1.0,

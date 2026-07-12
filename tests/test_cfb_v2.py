@@ -242,3 +242,31 @@ def test_espn_local_date_uses_toronto_not_fixed_utc_minus_5() -> None:
     iso = "2024-06-15T04:30:00Z"
     assert _espn_local_date({"date": iso}) == _event_date_iso(iso) == "2024-06-15"
     assert _espn_local_date({"date": "2024-09-01"}) == "2024-09-01"
+
+
+def test_sos_elo_uses_pre_update_opponent_elo() -> None:
+    from web.cfb_v2.feature_engine import LEAGUE_ELO
+
+    engine = CfbFeatureEngine()
+    engine.update_after_game(_game("2024-09-07", "ala", "uga", 34, 24))
+    assert engine.teams["ala"].sos_elo() == LEAGUE_ELO
+    assert engine.teams["uga"].sos_elo() == LEAGUE_ELO
+    assert engine.teams["ala"].elo != engine.teams["uga"].elo
+    assert engine.teams["ala"].sos_elo_sum == LEAGUE_ELO
+    assert engine.teams["uga"].sos_elo_sum == LEAGUE_ELO
+
+
+def test_tie_is_not_treated_as_away_win() -> None:
+    engine = CfbFeatureEngine()
+    engine.update_after_game(_game("1995-11-18", "ala", "aub", 17, 17, season=1995))
+    home = engine.teams["ala"]
+    away = engine.teams["aub"]
+    assert home.wins == 0 and home.losses == 0 and home.ties == 1
+    assert away.wins == 0 and away.losses == 0 and away.ties == 1
+    assert home.streak == 0 and away.streak == 0
+    assert home.win_pct() == 0.5
+    # Home was favored by HFA; a tie pulls home Elo down and away Elo up.
+    assert home.elo < 1500.0
+    assert away.elo > 1500.0
+    # Neither side should record an H2H win on a tie.
+    assert home.h2h.get("aub", [0, 0]) == [0, 0]

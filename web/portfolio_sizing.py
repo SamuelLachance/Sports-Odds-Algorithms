@@ -31,18 +31,24 @@ def portfolio_stake_units(
     try:
         kelly = float(kelly_fraction)
         ev = float(ev_pct)
+        bankroll = max(float(bankroll_units), 1.0)
+        penalty_raw = float(correlation_penalty)
+        lo = float(min_units)
+        hi = float(max_units)
     except (TypeError, ValueError):
-        return float(min_units)
+        try:
+            return float(min_units)
+        except (TypeError, ValueError):
+            return 0.25
 
     # Do not Kelly-size a non-positive edge or a non-positive Kelly fraction.
     if kelly <= 0 or ev < 0:
-        return float(min_units)
+        return lo
 
-    bankroll = max(float(bankroll_units), 1.0)
     # Quarter-Kelly in units (bankroll_units=100 → 1u = 1% bankroll).
     base = (kelly / 4.0) * bankroll
 
-    penalty = min(max(float(correlation_penalty), 0.0), 0.5)
+    penalty = min(max(penalty_raw, 0.0), 0.5)
     base *= 1.0 - penalty
 
     # Soft dampener: extreme printed EV is often sample noise; do not size up.
@@ -52,5 +58,5 @@ def portfolio_stake_units(
         base *= 0.92
 
     if base <= 0:
-        return float(min_units)
-    return round(min(float(max_units), max(float(min_units), base)), 2)
+        return lo
+    return round(min(hi, max(lo, base)), 2)

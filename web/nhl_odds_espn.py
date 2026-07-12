@@ -132,8 +132,13 @@ def _consensus_nhl(items: list[dict[str, Any]]) -> dict[str, Any]:
         "close_total",
         "open_total",
     )
-    consensus: dict[str, Any] = {key: _median([line[key] for line in lines]) for key in keys}
-    consensus["n_books"] = len(items)
+    # Count only providers that yielded at least one parsed market number —
+    # empty shells must not inflate n_books (fail-open on consensus quality).
+    parsed = [line for line in lines if any(line.get(key) is not None for key in keys)]
+    consensus: dict[str, Any] = {
+        key: _median([line[key] for line in parsed]) for key in keys
+    }
+    consensus["n_books"] = len(parsed)
     return consensus
 
 

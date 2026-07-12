@@ -150,7 +150,9 @@ def collect_day_rows(day: date, *, use_cache: bool = True) -> list[dict[str, Any
                     if consensus.get("away_spread_odds") is not None
                     else None
                 ),
-                "n_books": consensus.get("n_books") or len(items),
+                # Prefer consensus count (parsed books only); never fall back to
+                # raw provider shells which inflate thin ESPN payloads.
+                "n_books": int(consensus.get("n_books") or 0),
             }
         )
         return row

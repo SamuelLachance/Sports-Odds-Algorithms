@@ -624,6 +624,29 @@ def test_get_live_context_fails_closed_on_missing_gap_season(monkeypatch) -> Non
     assert 2024 in calls
 
 
+def test_missing_player_box_preserves_rotation_continuity() -> None:
+    """Score-only updates must not clear last_players into fake continuity=1."""
+    engine = WnbaFeatureEngine()
+    roster = [[f"p{i}", 30.0 - i] for i in range(8)]
+    with_players = _game("2025-05-16", "lva", "sea", 85, 70)
+    with_players["home_box"] = {"players": roster}
+    with_players["away_box"] = {"players": [[f"a{i}", 28.0 - i] for i in range(8)]}
+    engine.update_after_game(with_players)
+
+    home = engine.teams["lva"]
+    assert home.last_players
+    # Drop two stars from the "last" lineup so continuity is imperfect.
+    home.last_players = home.last_players[2:]
+    before = home.top8_continuity()
+    assert before < 1.0
+    prior_last = list(home.last_players)
+
+    score_only = _game("2025-05-18", "lva", "sea", 80, 75)
+    engine.update_after_game(score_only)
+    assert home.last_players == prior_last
+    assert home.top8_continuity() == before
+
+
 if __name__ == "__main__":
     test_canon_franchise_follows_relocation_chains()
     test_engine_features_precede_update_and_elo_moves_to_winner()

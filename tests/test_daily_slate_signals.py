@@ -556,6 +556,81 @@ def test_predict_live_game_skips_context_hook_for_soccer_v2() -> None:
     assert result["model"]["draw_probability"] == 26.4
 
 
+def test_predict_live_game_skips_official_picks_when_soccer_unavailable() -> None:
+    """Flat 33/33/33 unavailable stub must not emit Hubáček official picks."""
+    game = ScheduledGame(
+        league="epl",
+        event_id="401701",
+        name="Liverpool at Arsenal",
+        start_time="2026-07-10T19:00Z",
+        status="pre",
+        status_detail="Scheduled",
+        away_abbr="liv",
+        home_abbr="ars",
+        away_name="Liverpool",
+        home_name="Arsenal",
+        away_espn_id="364",
+        home_espn_id="359",
+        market=MarketOdds(
+            home_moneyline=400,
+            draw_moneyline=300,
+            away_moneyline=-150,
+        ),
+    )
+    blended_stub = {
+        "algorithm": "SoccerPathA",
+        "blend_mode": "soccer_path_a_unavailable",
+        "blend_layers": 0,
+        "soccer_pred": None,
+        "home_win_probability": 33.33,
+        "draw_probability": 33.33,
+        "away_win_probability": 33.34,
+        "blended_home_win_probability": 33.33,
+        "total_score": 0.0,
+        "win_probability": 50.0,
+        "favorite_side": "neutral",
+        "threeway": True,
+        "context_adjustment_pp": 0.0,
+    }
+    algo_instance = MagicMock()
+    algo_instance.calculate_V2.return_value = {"total": -10.0}
+    odds_instance = MagicMock()
+    odds_instance.analyze2.return_value = {}
+
+    with (
+        patch(
+            "web.daily_service.resolve_team",
+            side_effect=lambda league, abbr, name: (
+                ["ars", "arsenal"] if abbr == "ars" else ["liv", "liverpool"]
+            ),
+        ),
+        patch("web.daily_service.load_live_team_data", return_value=[{"seed": 1}]),
+        patch("algo.Algo", return_value=algo_instance),
+        patch("odds_calculator.Odds_Calculator", return_value=odds_instance),
+        patch("web.live_odds_enrichment.fetch_multi_book_odds", return_value={}),
+        patch("web.daily_service.blend_predictions", return_value=dict(blended_stub)),
+        patch(
+            "web.daily_service.apply_ensemble_ml",
+            side_effect=lambda blended, league, **kw: blended,
+        ),
+        patch(
+            "web.daily_service.ensure_hubacek_in_blend",
+            side_effect=lambda blended, **kw: blended,
+        ),
+        patch("web.daily_service.compute_model_agreement", return_value={}),
+        patch("web.daily_service.get_pick_thresholds", return_value={}),
+        patch("web.daily_service.official_pick_binary_probs", return_value=(33.33, 33.34)),
+        patch("web.soccer_paper_tracking.maybe_record_from_blend"),
+        patch(
+            "web.daily_service.evaluate_soccer_official_picks_for_game",
+        ) as mock_eval,
+    ):
+        result = predict_live_game(game)
+
+    mock_eval.assert_not_called()
+    assert result["recommendations"] == []
+
+
 def test_iso_match_date_and_algo_factor_favors() -> None:
     from web.daily_service import _build_model_factors, _iso_match_date
     from web.espn_client import iso_to_project_date

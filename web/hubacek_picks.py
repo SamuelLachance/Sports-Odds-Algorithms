@@ -140,14 +140,12 @@ def hubacek_ml_range(league: str | None = None) -> tuple[float, float] | None:
 
 
 def within_hubacek_ml_range(league: str | None, american_odds: float | None) -> bool:
-    ml_range = hubacek_ml_range(league)
-    if ml_range is None:
-        return True
-    # League ML windows are hard gates — missing odds fail closed.
-    if american_odds is None:
-        return False
+    # Always require a valid American price — missing/garbage juice fail closed
+    # even when the league has no ml_lo/ml_hi window (soccer, etc.).
     from web.bet_advisor import normalize_american_odds
 
+    if american_odds is None:
+        return False
     try:
         odds_int = int(float(american_odds))
     except (TypeError, ValueError):
@@ -155,6 +153,9 @@ def within_hubacek_ml_range(league: str | None, american_odds: float | None) -> 
     normalized = normalize_american_odds(odds_int)
     if normalized is None:
         return False
+    ml_range = hubacek_ml_range(league)
+    if ml_range is None:
+        return True
     return ml_range[0] <= float(normalized) <= ml_range[1]
 
 
@@ -302,7 +303,13 @@ def passes_hubacek_tracked_pick(pick: dict[str, Any]) -> bool:
         return False
     if gap_f < min_gap:
         return False
-    if bet_type in ("moneyline", "soccer_1x2") and not within_hubacek_ml_range(
+    if bet_type == "spread":
+        from web.bet_advisor import normalize_american_odds
+
+        # Spread juice is required — never track ATS picks without a posted price.
+        if normalize_american_odds(pick.get("spread_odds")) is None:
+            return False
+    elif bet_type in ("moneyline", "soccer_1x2") and not within_hubacek_ml_range(
         league, pick.get("market_odds")
     ):
         return False

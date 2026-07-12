@@ -224,14 +224,17 @@ def _consensus(
         "home_spread_odds",
         "away_spread_odds",
     )
+    # Count only providers that yielded at least one parsed market number —
+    # empty shells must not inflate n_books (fail-open on consensus quality).
+    parsed = [line for line in lines if any(line.get(key) is not None for key in keys)]
     consensus: dict[str, Any] = {}
     for key in keys:
-        consensus[key] = _median([line[key] for line in lines])
+        consensus[key] = _median([line[key] for line in parsed])
     if consensus.get("away_open_spread") is None and consensus.get("home_open_spread") is not None:
         consensus["away_open_spread"] = -consensus["home_open_spread"]
     else:
         consensus["away_open_spread"] = None
-    consensus["n_books"] = len(items)
+    consensus["n_books"] = len(parsed)
     return consensus
 
 

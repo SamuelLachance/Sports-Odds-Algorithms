@@ -379,11 +379,14 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
             closing_source = "consensus"
 
         recorded_ml = _normalized_closing_american(pick.get("market_odds"))
-        if recorded_ml is None:
-            recorded_ml = pick.get("market_odds")
         recorded_spread = _normalized_closing_american(pick.get("spread_odds"))
-        if recorded_spread is None and pick.get("spread_odds") is not None:
-            recorded_spread = pick.get("spread_odds")
+        # Fail closed: never store raw |odds| < 100 garbage in the official book.
+        bet_type_key = str(bet_type).lower()
+        if bet_type_key == "spread":
+            if recorded_spread is None:
+                continue
+        elif recorded_ml is None:
+            continue
 
         bet = {
             "id": key,
@@ -408,7 +411,7 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
             "reason": pick.get("reason"),
             "bet_type": str(bet_type).lower(),
             "spread_line": pick.get("spread_line"),
-            "spread_odds": recorded_spread if pick.get("spread_odds") is not None else None,
+            "spread_odds": recorded_spread,
             "consensus_spread": pick.get("consensus_spread"),
             "consensus_odds": pick.get("consensus_odds"),
             "consensus_label": pick.get("consensus_label"),

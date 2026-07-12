@@ -490,6 +490,13 @@ def apply_context_to_blend(
         updated["away_win_probability"] = round(new_away, 2)
         if updated.get("blended_home_win_probability") is not None:
             updated["blended_home_win_probability"] = round(new_home, 2)
+        # Keep nested 1X2 snapshot in step with the board (same as soccer_blend).
+        if updated.get("blended_threeway"):
+            updated["blended_threeway"] = {
+                "home_win_probability": round(new_home, 2),
+                "draw_probability": round(draw_p, 2),
+                "away_win_probability": round(new_away, 2),
+            }
         from web.soccer_blend import threeway_probs_to_total_score
 
         total_score, win_prob, favorite = threeway_probs_to_total_score(

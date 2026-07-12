@@ -571,43 +571,52 @@ def predict_live_game(
         model_payload["live_inputs_stale"] = True
 
     if is_soccer_league(game.league):
-        soccer_pred = blended.get("soccer_pred") or {}
-        pick_home = float(
-            soccer_pred.get("pick_home_win_probability", home_prob)
-        )
-        pick_draw = float(soccer_pred.get("pick_draw_probability", draw_prob))
-        pick_away = float(
-            soccer_pred.get("pick_away_win_probability", away_prob)
-        )
-        pick_away_proj, pick_draw_proj, pick_home_proj = soccer_model_moneylines(
-            pick_home, pick_draw, pick_away
-        )
-        from web.context_signals import games_played_proxy_from_blend
+        soccer_pred = blended.get("soccer_pred")
+        # Unavailable Path A stub invents flat 33/33/33 for UI only — never
+        # emit Hubáček official picks from a null model.
+        if (
+            blended.get("blend_mode") == "soccer_path_a_unavailable"
+            or not isinstance(soccer_pred, dict)
+            or int(blended.get("blend_layers") or 0) <= 0
+        ):
+            picks = []
+        else:
+            pick_home = float(
+                soccer_pred.get("pick_home_win_probability", home_prob)
+            )
+            pick_draw = float(soccer_pred.get("pick_draw_probability", draw_prob))
+            pick_away = float(
+                soccer_pred.get("pick_away_win_probability", away_prob)
+            )
+            pick_away_proj, pick_draw_proj, pick_home_proj = soccer_model_moneylines(
+                pick_home, pick_draw, pick_away
+            )
+            from web.context_signals import games_played_proxy_from_blend
 
-        picks = evaluate_soccer_official_picks_for_game(
-            league=game.league,
-            away_name=game.away_name,
-            home_name=game.home_name,
-            away_slug=away[1],
-            home_slug=home[1],
-            home_prob=pick_home,
-            draw_prob=pick_draw,
-            away_prob=pick_away,
-            away_proj=pick_away_proj,
-            draw_proj=pick_draw_proj,
-            home_proj=pick_home_proj,
-            away_market=game.market.away_moneyline,
-            draw_market=game.market.draw_moneyline,
-            home_market=game.market.home_moneyline,
-            expected_home_goals=blended.get("expected_home_goals")
-            or soccer_pred.get("expected_home_goals"),
-            expected_away_goals=blended.get("expected_away_goals")
-            or soccer_pred.get("expected_away_goals"),
-            base_home_prob=home_prob,
-            base_draw_prob=draw_prob,
-            base_away_prob=away_prob,
-            games_played_proxy=games_played_proxy_from_blend(blended),
-        )
+            picks = evaluate_soccer_official_picks_for_game(
+                league=game.league,
+                away_name=game.away_name,
+                home_name=game.home_name,
+                away_slug=away[1],
+                home_slug=home[1],
+                home_prob=pick_home,
+                draw_prob=pick_draw,
+                away_prob=pick_away,
+                away_proj=pick_away_proj,
+                draw_proj=pick_draw_proj,
+                home_proj=pick_home_proj,
+                away_market=game.market.away_moneyline,
+                draw_market=game.market.draw_moneyline,
+                home_market=game.market.home_moneyline,
+                expected_home_goals=blended.get("expected_home_goals")
+                or soccer_pred.get("expected_home_goals"),
+                expected_away_goals=blended.get("expected_away_goals")
+                or soccer_pred.get("expected_away_goals"),
+                base_home_prob=home_prob,
+                base_draw_prob=draw_prob,
+                base_away_prob=away_prob,
+                games_played_proxy=games_played_proxy_from_blend(blended),
+            )
     else:
         picks = evaluate_official_picks_for_game(
             league=game.league,

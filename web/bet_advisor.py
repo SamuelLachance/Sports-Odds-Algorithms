@@ -243,10 +243,12 @@ def _format_spread(value: float) -> str:
 
 
 def normalize_american_odds(american_odds: int | float | str | None) -> int | None:
-    """Map ESPN EVEN (0) → +100; reject |odds| < 100 garbage; keep valid quotes.
+    """Map ESPN EVEN (0) / ``EVEN`` / ``PK`` → +100; reject |odds| < 100 garbage.
 
     Accepts JSON floats and numeric strings (``-110.0``) so callers do not have
     to pre-coerce; bool is rejected (``True`` is a subclass of ``int``).
+    Text labels match ``espn_client._parse_american_odds`` so raw book text
+    does not silently fail closed on EV / Kelly / grading paths.
     """
     if american_odds is None or isinstance(american_odds, bool):
         return None
@@ -254,6 +256,11 @@ def normalize_american_odds(american_odds: int | float | str | None) -> int | No
         if isinstance(american_odds, str):
             text = american_odds.strip()
             if not text:
+                return None
+            upper = text.upper()
+            if upper in {"EVEN", "PK"}:
+                return 100
+            if upper in {"OFF", "N/A", "NA"}:
                 return None
             odds = int(float(text))
         else:

@@ -141,9 +141,11 @@ def grade_paper_picks() -> dict[str, Any]:
         status = _grade_outcome(pick_outcome, away_score, home_score)
         if status is None:
             continue
-        # Fail closed: without a posted price, leave pending so P&L is not
-        # polluted with 0u losses (or omitted win payouts).
-        market_ml = _safe_int(bet.get("market_ml"))
+        # Fail closed: without a valid American price, leave pending so P&L is
+        # not polluted (invalid |odds| < 100 would pay 0u on win / −1u on loss).
+        from web.bet_advisor import normalize_american_odds
+
+        market_ml = normalize_american_odds(bet.get("market_ml"))
         if market_ml is None:
             continue
         try:
@@ -191,6 +193,12 @@ def maybe_record_from_blend(
     try:
         if not isinstance(blended, dict) or not league or not event_id:
             return
+        # Flat unavailable stub must not paper-track invented 33/33/33 probs.
+        if blended.get("blend_mode") == "soccer_path_a_unavailable":
+            return
+        soccer_pred = blended.get("soccer_pred")
+        if not isinstance(soccer_pred, dict):
+            return
         signals = blended.get("soccer_pick_signals") or {}
         if not isinstance(signals, dict):
             return
@@ -200,9 +208,6 @@ def maybe_record_from_blend(
         outcome = signals.get("best_edge_outcome") or signals.get("model_best_outcome")
         if outcome not in _VALID_OUTCOMES:
             return
-        soccer_pred = blended.get("soccer_pred") or {}
-        if not isinstance(soccer_pred, dict):
-            soccer_pred = {}
         prob_key = {
             "home": "pick_home_win_probability",
             "draw": "pick_draw_probability",

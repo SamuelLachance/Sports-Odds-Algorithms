@@ -132,7 +132,10 @@ def _predict_job(args: tuple[str, str, str, str, str, str]) -> tuple[str, dict |
         from web.predict_service import predict_match as run_predict
 
         result = run_predict(league, away_slug, home_slug, date, season, algo)
-    except (ValueError, KeyError, IndexError, OSError):
+    except Exception:  # noqa: BLE001 — one bad matchup must not abort the Pages pool
+        return "", None
+
+    if not isinstance(result, dict):
         return "", None
 
     rel = (

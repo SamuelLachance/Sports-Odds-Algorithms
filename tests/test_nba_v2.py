@@ -137,6 +137,18 @@ def test_rest_and_b2b_flags() -> None:
     assert features["away_b2b"] == 0.0
 
 
+def test_rest_days_floors_at_zero_for_inverted_dates() -> None:
+    """Out-of-order slate dates must not emit negative rest (false B2B via rest<0)."""
+    from datetime import date
+
+    engine = NbaFeatureEngine()
+    engine.update_after_game(_game("2025-01-16", "bos", "ny", 110, 100))
+    assert engine.teams["bos"].rest_days(date(2025, 1, 15)) == 0.0
+    features = engine.features_for_game(_game("2025-01-15", "bos", "chi", 0, 0))
+    assert features["home_rest_days"] == 0.0
+    assert features["home_rest_days"] >= 0.0
+
+
 def test_season_rollover_carries_elo_and_resets_records() -> None:
     engine = NbaFeatureEngine()
     for day in range(16, 26):

@@ -326,3 +326,17 @@ def test_get_live_context_fails_closed_without_snapshot(monkeypatch) -> None:
     monkeypatch.setattr(live, "_load_snapshot_state", lambda _art, _season: None)
     monkeypatch.setattr(live, "nfl_season_of", lambda _d: 2025)
     assert live.get_live_context("2025-09-15") is None
+
+
+def test_sos_elo_uses_pre_update_opponent_elo() -> None:
+    """SOS must accumulate opponent Elo before the game's Elo shift."""
+    from web.nfl_v2.feature_engine import LEAGUE_ELO
+
+    engine = NflFeatureEngine()
+    engine.update_after_game(_game("2024-09-08", "kc", "bal", 27, 20))
+    assert engine.teams["kc"].sos_elo() == LEAGUE_ELO
+    assert engine.teams["bal"].sos_elo() == LEAGUE_ELO
+    # After Elo moved, a wrong post-update reconstruction would drift SOS.
+    assert engine.teams["kc"].elo != engine.teams["bal"].elo
+    assert engine.teams["kc"].sos_elo_sum == LEAGUE_ELO
+    assert engine.teams["bal"].sos_elo_sum == LEAGUE_ELO

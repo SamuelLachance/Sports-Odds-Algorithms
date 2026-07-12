@@ -776,7 +776,11 @@ def test_normalize_american_odds_maps_even_and_rejects_garbage() -> None:
     # JSON floats / numeric strings must round-trip, not drop as invalid.
     assert normalize_american_odds(-110.0) == -110
     assert normalize_american_odds("-110.0") == -110
-    assert normalize_american_odds("EVEN") is None  # string EVEN is espn_client's job
+    # Text EVEN/PK must match espn_client — raw book strings reach EV/Kelly paths.
+    assert normalize_american_odds("EVEN") == 100
+    assert normalize_american_odds("even") == 100
+    assert normalize_american_odds("PK") == 100
+    assert normalize_american_odds("OFF") is None
     assert normalize_american_odds(True) is None
     assert normalize_american_odds(False) is None
 

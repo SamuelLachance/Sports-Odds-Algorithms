@@ -332,3 +332,16 @@ def test_parse_event_stores_toronto_calendar_day() -> None:
     assert "T" not in parsed["date"]
     # Season-window string compare must accept the normalized day.
     assert "2024-11-01" <= parsed["date"] <= "2025-04-15"
+
+
+def test_blowout_ewma_is_signed_for_winner_and_loser() -> None:
+    """blowout_rate_diff must separate blowout winners from losers."""
+    engine = CbbFeatureEngine()
+    # Margin 30 >= BLOWOUT_MARGIN (18)
+    engine.update_after_game(_game("2024-11-16", "duke", "unc", 90, 60))
+    home = engine.teams["duke"]
+    away = engine.teams["unc"]
+    assert home.blowout_ewma > 0.0
+    assert away.blowout_ewma < 0.0
+    feats = engine.features_for_game(_game("2024-11-23", "duke", "unc", 0, 0))
+    assert feats["blowout_rate_diff"] > 0.0

@@ -517,6 +517,111 @@ def test_summarize_n_books_counts_only_parsed_items() -> None:
     assert "open_away_moneyline" not in summary
 
 
+def test_mlb_consensus_n_books_ignores_empty_providers() -> None:
+    """Empty ESPN provider shells must not inflate MLB n_books."""
+    from web.mlb_odds_espn import _consensus_mlb
+
+    real = {
+        "provider": {"name": "DraftKings"},
+        "homeTeamOdds": {
+            "favorite": True,
+            "close": {
+                "moneyLine": {"american": -130},
+                "pointSpread": {"american": -1.5},
+                "spread": {"american": -115},
+            },
+            "open": {"moneyLine": {"american": -125}},
+        },
+        "awayTeamOdds": {
+            "favorite": False,
+            "close": {
+                "moneyLine": {"american": 110},
+                "pointSpread": {"american": 1.5},
+                "spread": {"american": -105},
+            },
+            "open": {"moneyLine": {"american": 105}},
+        },
+        "close": {"total": 8.5},
+        "open": {"total": 8.0},
+    }
+    empty = {"provider": {"name": "GhostBook"}}
+    consensus = _consensus_mlb([real, empty])
+    assert consensus["n_books"] == 1
+    assert consensus["home_close_ml"] == -130
+    assert consensus["away_close_ml"] == 110
+
+
+def test_nhl_consensus_n_books_ignores_empty_providers() -> None:
+    """Empty ESPN provider shells must not inflate NHL n_books."""
+    from web.nhl_odds_espn import _consensus_nhl
+
+    real = {
+        "provider": {"name": "DraftKings"},
+        "homeTeamOdds": {
+            "favorite": True,
+            "close": {
+                "moneyLine": {"american": -140},
+                "pointSpread": {"american": -1.5},
+                "spread": {"american": -110},
+            },
+            "open": {"moneyLine": {"american": -135}},
+        },
+        "awayTeamOdds": {
+            "favorite": False,
+            "close": {
+                "moneyLine": {"american": 120},
+                "pointSpread": {"american": 1.5},
+                "spread": {"american": -110},
+            },
+            "open": {"moneyLine": {"american": 115}},
+        },
+        "close": {"total": 6.0},
+        "open": {"total": 5.5},
+    }
+    empty = {"provider": {"name": "GhostBook"}}
+    consensus = _consensus_nhl([real, empty])
+    assert consensus["n_books"] == 1
+    assert consensus["home_close_ml"] == -140
+    assert consensus["away_close_ml"] == 120
+
+
+def test_nba_consensus_n_books_ignores_empty_providers() -> None:
+    """Empty ESPN provider shells must not inflate NBA/college n_books."""
+    from web.nba_odds_espn import _consensus
+
+    real = {
+        "provider": {"name": "DraftKings"},
+        "homeTeamOdds": {
+            "favorite": True,
+            "close": {
+                "moneyLine": {"american": -150},
+                "pointSpread": {"american": -4.5},
+                "spread": {"american": -110},
+            },
+            "open": {
+                "moneyLine": {"american": -140},
+                "pointSpread": {"american": -4.0},
+            },
+        },
+        "awayTeamOdds": {
+            "favorite": False,
+            "close": {
+                "moneyLine": {"american": 130},
+                "pointSpread": {"american": 4.5},
+                "spread": {"american": -110},
+            },
+            "open": {"moneyLine": {"american": 120}},
+        },
+        "close": {"total": 220.5},
+        "open": {"total": 218.0},
+    }
+    empty = {"provider": {"name": "GhostBook"}}
+    consensus = _consensus([real, empty])
+    assert consensus["n_books"] == 1
+    assert consensus["home_close_ml"] == -150
+    assert consensus["away_close_ml"] == 130
+
+
 def test_summarize_all_unparsed_returns_empty() -> None:
     assert summarize_book_items([{"provider": {"name": "GhostBook"}}]) == {}
 

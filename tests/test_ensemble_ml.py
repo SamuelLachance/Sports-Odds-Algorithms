@@ -256,3 +256,15 @@ def test_basketball_blend_populates_ensemble_feature_layers(monkeypatch) -> None
         for col in ("legacy_home_prob", "sport_home_prob", "market_devig_home_prob")
         if features.get(col) is not None
     )
+
+
+def test_optional_prob_does_not_coerce_missing_to_zero() -> None:
+    """``payload.get(key) or 0`` used to poison soccer stacking with fake 0%."""
+    from web.ensemble_ml.dataset import optional_prob
+
+    payload = {"draw_probability": 28.0, "away_win_probability": 30.0}
+    assert optional_prob(payload, "home_win_probability") is None
+    assert optional_prob(payload, "draw_probability") == 28.0
+    # Explicit 0.0 is allowed; only missing/invalid stay None.
+    assert optional_prob({"home_win_probability": 0.0}, "home_win_probability") == 0.0
+    assert float(payload.get("home_win_probability") or 0) == 0.0  # old bug

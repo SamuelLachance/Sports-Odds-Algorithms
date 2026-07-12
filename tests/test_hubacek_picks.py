@@ -45,9 +45,12 @@ def test_within_hubacek_ml_range_fails_closed_on_missing_odds() -> None:
     assert within_hubacek_ml_range("mlb", -75) is False
     # EVEN (0) normalizes to +100 and stays in-window for MLB.
     assert within_hubacek_ml_range("mlb", 0) is True
-    # Spread-only leagues without ml_lo/ml_hi stay permissive.
-    assert within_hubacek_ml_range("nba", None) is True
-    assert within_hubacek_ml_range(None, None) is True
+    # Missing/garbage juice fails closed even when no ml_lo/ml_hi window.
+    assert within_hubacek_ml_range("nba", None) is False
+    assert within_hubacek_ml_range(None, None) is False
+    assert within_hubacek_ml_range("nba", -110) is True
+    assert within_hubacek_ml_range("epl", 150) is True
+    assert within_hubacek_ml_range("epl", 50) is False
 
 
 def test_moneyline_gate_requires_gap_ev_and_phi_confidence() -> None:
@@ -198,6 +201,28 @@ def test_tracked_pick_requires_hubacek_strategy_ev_and_confidence() -> None:
             "model_market_gap_pp": 3.0,
             "ev_pct": 3.0,
             "win_probability": 72,
+            "market_odds": -150,
+        }
+    )
+    # Missing / invalid American juice fails closed (even with no league ML window).
+    assert not passes_hubacek_tracked_pick(
+        {
+            "strategy": "hubacek",
+            "model_market_gap_pp": 3.0,
+            "ev_pct": 3.0,
+            "win_probability": 72,
+        }
+    )
+    assert not passes_hubacek_tracked_pick(
+        {
+            "strategy": "hubacek",
+            "model_market_gap_pp": 5.0,
+            "ev_pct": 6.0,
+            "win_probability": 48.0,
+            "side": "home",
+            "bet_type": "soccer_1x2",
+            "league": "epl",
+            "market_odds": 50,
         }
     )
     # EV below the honest floor.
@@ -207,6 +232,7 @@ def test_tracked_pick_requires_hubacek_strategy_ev_and_confidence() -> None:
             "model_market_gap_pp": 3.0,
             "ev_pct": 1.0,
             "win_probability": 72,
+            "market_odds": -150,
         }
     )
     # Gap below the 2 pp floor.
@@ -216,6 +242,7 @@ def test_tracked_pick_requires_hubacek_strategy_ev_and_confidence() -> None:
             "model_market_gap_pp": 1.0,
             "ev_pct": 5.0,
             "win_probability": 72,
+            "market_odds": -150,
         }
     )
     # MLB uses the backtested 6.7 pp gap floor (no confidence bar).
@@ -226,6 +253,7 @@ def test_tracked_pick_requires_hubacek_strategy_ev_and_confidence() -> None:
             "ev_pct": 3.0,
             "win_probability": 62,
             "league": "mlb",
+            "market_odds": -150,
         }
     )
     assert passes_hubacek_tracked_pick(
@@ -268,6 +296,7 @@ def test_tracked_pick_requires_hubacek_strategy_ev_and_confidence() -> None:
             "win_probability": 56,
             "bet_type": "spread",
             "league": "nba",
+            "spread_odds": -110,
         }
     )
     assert passes_hubacek_tracked_pick(
@@ -278,6 +307,19 @@ def test_tracked_pick_requires_hubacek_strategy_ev_and_confidence() -> None:
             "win_probability": 56,
             "bet_type": "spread",
             "league": "nba",
+            "spread_odds": -110,
+        }
+    )
+    # Spread without valid juice fails closed.
+    assert not passes_hubacek_tracked_pick(
+        {
+            "strategy": "hubacek",
+            "model_market_gap_pp": 10.0,
+            "ev_pct": 3.0,
+            "win_probability": 56,
+            "bet_type": "spread",
+            "league": "nba",
+            "spread_odds": 50,
         }
     )
     # Missing gap / win probability must fail closed (not skip those gates).
@@ -286,6 +328,7 @@ def test_tracked_pick_requires_hubacek_strategy_ev_and_confidence() -> None:
             "strategy": "hubacek",
             "ev_pct": 5.0,
             "win_probability": 72,
+            "market_odds": -150,
         }
     )
     assert not passes_hubacek_tracked_pick(
@@ -293,6 +336,7 @@ def test_tracked_pick_requires_hubacek_strategy_ev_and_confidence() -> None:
             "strategy": "hubacek",
             "model_market_gap_pp": 5.0,
             "ev_pct": 5.0,
+            "market_odds": -150,
         }
     )
     # Soccer home-only leagues must reject away/draw on revalidation.
@@ -314,6 +358,7 @@ def test_tracked_pick_requires_hubacek_strategy_ev_and_confidence() -> None:
             "model_market_gap_pp": HUBACEK_MIN_MARKET_GAP_PP + 5,
             "ev_pct": 30.0,
             "win_probability": 72,
+            "market_odds": -150,
         }
     )
     # Non-numeric EV / gap from corrupt JSON must fail closed, not TypeError.

@@ -259,7 +259,8 @@ class TeamState:
         prior = _parse_date(self.last_game_date)
         if prior is None:
             return 5.0
-        return float(min((game_date - prior).days, 14))
+        # Floor at 0: inverted/out-of-order dates must not invent negative rest.
+        return float(min(max((game_date - prior).days, 0), 14))
 
     def games_in_last7(self, game_date: date_cls) -> int:
         count = 0
@@ -590,9 +591,12 @@ class CbbFeatureEngine:
                 team.close_win_ewma += PLAYER_PROXY_ALPHA * (
                     (1.0 if won else 0.0) - team.close_win_ewma
                 )
-            team.blowout_ewma += ALPHA_WIN * (
-                (1.0 if margin >= BLOWOUT_MARGIN else 0.0) - team.blowout_ewma
-            )
+            # Signed blowout signal (+1 win / -1 loss) so blowout_rate_diff
+            # distinguishes who blew whom out, matching WNBA.
+            blowout_signal = 0.0
+            if margin >= BLOWOUT_MARGIN:
+                blowout_signal = 1.0 if won else -1.0
+            team.blowout_ewma += ALPHA_WIN * (blowout_signal - team.blowout_ewma)
             if won:
                 team.streak = team.streak + 1 if team.streak >= 0 else 1
                 team.wins += 1

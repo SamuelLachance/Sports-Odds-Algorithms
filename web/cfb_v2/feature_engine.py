@@ -190,7 +190,7 @@ class TeamState:
     __slots__ = (
         "key", "elo", "pf_fast", "pa_fast", "pf_slow", "pa_slow",
         "win_ewma", "home_win_ewma", "away_win_ewma",
-        "wins", "losses", "points_for", "points_against",
+        "wins", "losses", "ties", "points_for", "points_against",
         "prev_win_pct", "prev_margin_pg", "sos_elo_sum",
         "last_game_date", "recent_dates", "streak",
         "games_played", "season_seen", "first_season", "h2h", "h2h_margin",
@@ -211,6 +211,7 @@ class TeamState:
         self.away_win_ewma = 0.5
         self.wins = 0
         self.losses = 0
+        self.ties = 0
         self.points_for = 0.0
         self.points_against = 0.0
         self.prev_win_pct = 0.5
@@ -240,14 +241,17 @@ class TeamState:
         if self.first_season < 0:
             self.first_season = season
         if self.games_played > 0:
-            total = self.wins + self.losses
-            self.prev_win_pct = self.wins / total if total else 0.5
+            total = self.wins + self.losses + self.ties
+            self.prev_win_pct = (
+                (self.wins + 0.5 * self.ties) / total if total else 0.5
+            )
             self.prev_margin_pg = (
                 (self.points_for - self.points_against) / total if total else 0.0
             )
             self.elo = LEAGUE_ELO + ELO_SEASON_CARRYOVER * (self.elo - LEAGUE_ELO)
         self.wins = 0
         self.losses = 0
+        self.ties = 0
         self.points_for = 0.0
         self.points_against = 0.0
         self.sos_elo_sum = 0.0
@@ -265,11 +269,11 @@ class TeamState:
         self.one_score_wins = 0
 
     def win_pct(self) -> float:
-        total = self.wins + self.losses
-        return self.wins / total if total else 0.5
+        total = self.wins + self.losses + self.ties
+        return (self.wins + 0.5 * self.ties) / total if total else 0.5
 
     def margin_pg(self) -> float:
-        total = self.wins + self.losses
+        total = self.wins + self.losses + self.ties
         if not total:
             return 0.0
         return (self.points_for - self.points_against) / total
@@ -282,14 +286,15 @@ class TeamState:
         return pf**exp / (pf**exp + pa**exp)
 
     def sos_elo(self) -> float:
-        total = self.wins + self.losses
+        total = self.wins + self.losses + self.ties
         return self.sos_elo_sum / total if total else LEAGUE_ELO
 
     def rest_days(self, game_date: date_cls) -> float:
         prior = _parse_date(self.last_game_date)
         if prior is None:
             return 7.0
-        return float(min((game_date - prior).days, 21))
+        # Floor at 0: inverted/out-of-order dates must not invent negative rest.
+        return float(min(max((game_date - prior).days, 0), 21))
 
     def games_in_last14(self, game_date: date_cls) -> int:
         count = 0
@@ -341,6 +346,7 @@ class TeamState:
             "away_win_ewma": self.away_win_ewma,
             "wins": self.wins,
             "losses": self.losses,
+            "ties": self.ties,
             "points_for": self.points_for,
             "points_against": self.points_against,
             "prev_win_pct": self.prev_win_pct,
@@ -492,19 +498,25 @@ class CfbFeatureEngine:
 
         home_score = float(game["home_score"])
         away_score = float(game["away_score"])
+        tied = home_score == away_score
         home_win = home_score > away_score
         signed_margin = home_score - away_score
         abs_margin = abs(signed_margin)
         neutral = infer_neutral_site(game)
 
-        # Elo with MOV multiplier (538-style)
+        # Elo with MOV multiplier (538-style); ties get half-credit, no MOV boost
         home_edge = home.elo - away.elo + (0.0 if neutral else ELO_HOME_ADV)
         exp_home = 1.0 / (1.0 + 10.0 ** (-home_edge / 400.0))
-        winner_edge = home_edge if home_win else -home_edge
-        mov_mult = math.log(max(abs_margin, 1.0) + 1.0) * (
-            2.2 / (0.001 * max(winner_edge, 0.0) + 2.2)
-        )
-        delta = ELO_K * mov_mult * ((1.0 if home_win else 0.0) - exp_home)
+        if tied:
+            score_home = 0.5
+            mov_mult = 1.0
+        else:
+            score_home = 1.0 if home_win else 0.0
+            winner_edge = home_edge if home_win else -home_edge
+            mov_mult = math.log(max(abs_margin, 1.0) + 1.0) * (
+                2.2 / (0.001 * max(winner_edge, 0.0) + 2.2)
+            )
+        delta = ELO_K * mov_mult * (score_home - exp_home)
 
         home.elo_pre_hist.append(home.elo)
         away.elo_pre_hist.append(away.elo)
@@ -513,6 +525,8 @@ class CfbFeatureEngine:
         if len(away.elo_pre_hist) > 5:
             away.elo_pre_hist = away.elo_pre_hist[-5:]
 
+        pre_home_elo = home.elo
+        pre_away_elo = away.elo
         home.elo += delta
         away.elo -= delta
 
@@ -520,26 +534,30 @@ class CfbFeatureEngine:
             return alpha * new + (1.0 - alpha) * old
 
         for team, pf, pa, won, is_home in (
-            (home, home_score, away_score, home_win, True),
-            (away, away_score, home_score, not home_win, False),
+            (home, home_score, away_score, home_win and not tied, True),
+            (away, away_score, home_score, (not home_win) and not tied, False),
         ):
             team.pf_fast = _ewma(team.pf_fast, pf, ALPHA_FAST)
             team.pa_fast = _ewma(team.pa_fast, pa, ALPHA_FAST)
             team.pf_slow = _ewma(team.pf_slow, pf, ALPHA_SLOW)
             team.pa_slow = _ewma(team.pa_slow, pa, ALPHA_SLOW)
-            team.win_ewma = _ewma(team.win_ewma, 1.0 if won else 0.0, ALPHA_WIN)
+            result_score = 0.5 if tied else (1.0 if won else 0.0)
+            team.win_ewma = _ewma(team.win_ewma, result_score, ALPHA_WIN)
             if is_home and not neutral:
                 team.home_win_ewma = _ewma(
-                    team.home_win_ewma, 1.0 if won else 0.0, ALPHA_WIN
+                    team.home_win_ewma, result_score, ALPHA_WIN
                 )
             elif not is_home and not neutral:
                 team.away_win_ewma = _ewma(
-                    team.away_win_ewma, 1.0 if won else 0.0, ALPHA_WIN
+                    team.away_win_ewma, result_score, ALPHA_WIN
                 )
 
             team.points_for += pf
             team.points_against += pa
-            if won:
+            if tied:
+                team.ties += 1
+                team.streak = 0
+            elif won:
                 team.wins += 1
                 team.streak = team.streak + 1 if team.streak > 0 else 1
             else:
@@ -556,7 +574,7 @@ class CfbFeatureEngine:
 
             if abs_margin <= CLOSE_GAME_MARGIN:
                 team.close_win_ewma = _ewma(
-                    team.close_win_ewma, 1.0 if won else 0.0, ALPHA_WIN
+                    team.close_win_ewma, result_score, ALPHA_WIN
                 )
                 team.one_score_games += 1
                 if won:
@@ -575,14 +593,14 @@ class CfbFeatureEngine:
                 team.recent_dates = team.recent_dates[-10:]
             team.games_played += 1
 
-        home.sos_elo_sum += away.elo - delta  # opponent pre-update approx
-        away.sos_elo_sum += home.elo + delta
+        home.sos_elo_sum += pre_away_elo
+        away.sos_elo_sum += pre_home_elo
 
-        # H2H from home perspective
+        # H2H from home perspective (ties do not count as wins/losses)
         record = home.h2h.setdefault(away.key, [0, 0])
-        if home_win:
+        if home_win and not tied:
             record[0] += 1
-        else:
+        elif not tied:
             record[1] += 1
         prev = home.h2h_margin.get(away.key, 0.0)
         home.h2h_margin[away.key] = ALPHA_H2H * signed_margin + (1.0 - ALPHA_H2H) * prev

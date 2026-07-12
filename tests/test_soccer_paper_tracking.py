@@ -80,7 +80,71 @@ def test_grade_skips_unknown_outcome_and_bad_market_ml(tmp_path, monkeypatch) ->
     assert graded["units"] == 1.5
 
 
-def test_maybe_record_from_blend_uses_away_win_fallback(tmp_path, monkeypatch) -> None:
+def test_grade_leaves_invalid_american_odds_pending(tmp_path, monkeypatch) -> None:
+    """|odds| < 100 must stay pending — not settle as 0u win / −1u loss."""
+    import web.soccer_paper_tracking as paper
+
+    path = tmp_path / "soccer_paper_tracking.json"
+    monkeypatch.setattr(paper, "PAPER_TRACKING_PATH", path)
+    path.write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "bets": [
+                    {
+                        "key": "epl:50:home",
+                        "league": "epl",
+                        "event_id": "50",
+                        "pick_outcome": "home",
+                        "market_ml": 50,
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        "web.tracking_service._fetch_event_result",
+        lambda *_a, **_k: (1, 2),
+    )
+    summary = paper.grade_paper_picks()
+    assert summary["newly_graded"] == 0
+    assert summary["settled"] == 0
+    reloaded = paper._load_paper_log()
+    bet = reloaded["bets"][0]
+    assert "status" not in bet
+    assert "units" not in bet
+
+
+def test_maybe_record_skips_unavailable_path_a_stub(tmp_path, monkeypatch) -> None:
+    import web.soccer_paper_tracking as paper
+
+    path = tmp_path / "soccer_paper_tracking.json"
+    monkeypatch.setattr(paper, "PAPER_TRACKING_PATH", path)
+    paper.maybe_record_from_blend(
+        {
+            "blend_mode": "soccer_path_a_unavailable",
+            "soccer_pred": None,
+            "home_win_probability": 33.33,
+            "soccer_pick_signals": {
+                "high_confidence_disagreement": True,
+                "model_best_outcome": "home",
+                "max_edge_pp": 9.0,
+            },
+        },
+        league="epl",
+        event_id="77",
+        home_abbr="ars",
+        away_abbr="liv",
+        home_name="Arsenal",
+        away_name="Liverpool",
+        game_date="2026-07-12",
+        home_ml=400,
+        draw_ml=300,
+        away_ml=-150,
+    )
+    assert paper._load_paper_log()["bets"] == []
+
     import web.soccer_paper_tracking as paper
 
     path = tmp_path / "soccer_paper_tracking.json"

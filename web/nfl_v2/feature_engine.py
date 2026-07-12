@@ -287,7 +287,8 @@ class TeamState:
         prior = _parse_date(self.last_game_date)
         if prior is None:
             return DEFAULT_REST
-        return float(min((game_date - prior).days, 21))
+        # Floor at 0: inverted/out-of-order dates must not invent negative rest.
+        return float(min(max((game_date - prior).days, 0), 21))
 
     def elo_momentum(self) -> float:
         if not self.elo_pre_hist:
@@ -649,6 +650,8 @@ class NflFeatureEngine:
         if len(away.elo_pre_hist) > 5:
             away.elo_pre_hist = away.elo_pre_hist[-5:]
 
+        pre_home_elo = home.elo
+        pre_away_elo = away.elo
         home.elo += delta
         away.elo -= delta
 
@@ -709,8 +712,8 @@ class NflFeatureEngine:
                 team.recent_dates = team.recent_dates[-10:]
             team.games_played += 1
 
-        home.sos_elo_sum += away.elo - delta
-        away.sos_elo_sum += home.elo + delta
+        home.sos_elo_sum += pre_away_elo
+        away.sos_elo_sum += pre_home_elo
 
         record = home.h2h.setdefault(away.key, [0, 0])
         if home_win and not tied:

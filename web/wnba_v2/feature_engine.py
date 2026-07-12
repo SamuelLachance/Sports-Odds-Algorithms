@@ -297,7 +297,9 @@ class TeamState:
         prior = _parse_date(self.last_game_date)
         if prior is None:
             return 5.0
-        return float(min((game_date - prior).days, 10))
+        # Floor at 0: inverted/out-of-order dates must not invent negative rest
+        # (which also falsely trips B2B via rest <= 1).
+        return float(min(max((game_date - prior).days, 0), 10))
 
     def games_in_last7(self, game_date: date_cls) -> int:
         return count_games_in_last_n_days(self.recent_dates, game_date, days=7)
@@ -671,20 +673,22 @@ class WnbaFeatureEngine:
                         continue
                     if pid and mins > 0:
                         minutes_map[pid] = mins
-            if minutes_map:
-                for store, alpha in (
-                    (team.player_min_fast, PLAYER_ALPHA_FAST),
-                    (team.player_min_slow, PLAYER_ALPHA_SLOW),
-                ):
-                    for pid in list(store):
-                        store[pid] *= 1.0 - alpha
-                    for pid, mins in minutes_map.items():
-                        store[pid] = store.get(pid, 0.0) + alpha * mins
-                    for pid in [p for p, v in store.items() if v < 0.5]:
-                        del store[pid]
-                team.last_players = list(minutes_map)
-            else:
-                team.last_players = []
+            # Skip when player rows are absent so prior rotation / continuity
+            # state stays in place (NBA behavior). Clearing last_players would
+            # make top8_continuity() return a false 1.0.
+            if not minutes_map:
+                continue
+            for store, alpha in (
+                (team.player_min_fast, PLAYER_ALPHA_FAST),
+                (team.player_min_slow, PLAYER_ALPHA_SLOW),
+            ):
+                for pid in list(store):
+                    store[pid] *= 1.0 - alpha
+                for pid, mins in minutes_map.items():
+                    store[pid] = store.get(pid, 0.0) + alpha * mins
+                for pid in [p for p, v in store.items() if v < 0.5]:
+                    del store[pid]
+            team.last_players = list(minutes_map)
 
         # win EWMAs / records / streaks / rest bookkeeping
         for team, won, was_home, opp_pre_elo in (

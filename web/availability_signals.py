@@ -12,6 +12,8 @@ from web.league_profiles import get_league_profile
 
 USER_AGENT = "Sports-Odds-Algorithms/2.0"
 MAX_AVAILABILITY_SHIFT_PP = 2.0
+# ESPN team injury lists are $ref stubs; cap detail fetches per team.
+MAX_INJURY_DETAIL_FETCHES = 40
 
 
 @dataclass
@@ -32,6 +34,49 @@ def _fetch_json(url: str) -> Any:
         return None
 
 
+def _injury_status_text(item: dict[str, Any]) -> str:
+    """Normalize ESPN injury status from status / type / fantasy fields."""
+    status = item.get("status")
+    if status is not None and str(status).strip():
+        return str(status).strip().lower()
+    type_block = item.get("type")
+    if isinstance(type_block, dict):
+        for key in ("description", "name", "abbreviation"):
+            val = type_block.get(key)
+            if val is not None and str(val).strip():
+                return str(val).strip().lower()
+    elif type_block is not None and str(type_block).strip():
+        return str(type_block).strip().lower()
+    details = item.get("details")
+    if isinstance(details, dict):
+        fantasy = details.get("fantasyStatus")
+        if isinstance(fantasy, dict):
+            for key in ("description", "abbreviation"):
+                val = fantasy.get(key)
+                if val is not None and str(val).strip():
+                    return str(val).strip().lower()
+    return ""
+
+
+def _status_means_out(status: str) -> bool:
+    if not status:
+        return False
+    return "out" in status or "injured" in status or "suspended" in status
+
+
+def _resolve_injury_item(item: Any) -> dict[str, Any] | None:
+    """ESPN list endpoints return ``{$ref: ...}`` stubs without status inline."""
+    if not isinstance(item, dict):
+        return None
+    if item.get("status") is not None or isinstance(item.get("type"), (str, dict)):
+        return item
+    ref = item.get("$ref")
+    if not isinstance(ref, str) or not ref.strip():
+        return None
+    payload = _fetch_json(ref.strip())
+    return payload if isinstance(payload, dict) else None
+
+
 def _count_team_injuries(league: str, team_espn_id: str) -> tuple[int, int]:
     profile = get_league_profile(league)
     sport_path = profile["sport_path"]
@@ -47,13 +92,23 @@ def _count_team_injuries(league: str, team_espn_id: str) -> tuple[int, int]:
     if not isinstance(payload, dict):
         return 0, 0
     items = payload.get("items") or []
-    total = len(items)
+    if not isinstance(items, list):
+        return 0, 0
+    try:
+        total = int(payload.get("count") if payload.get("count") is not None else len(items))
+    except (TypeError, ValueError):
+        total = len(items)
+    total = max(total, 0)
     out = 0
+    fetched = 0
     for item in items:
-        if not isinstance(item, dict):
+        if fetched >= MAX_INJURY_DETAIL_FETCHES:
+            break
+        resolved = _resolve_injury_item(item)
+        fetched += 1
+        if not isinstance(resolved, dict):
             continue
-        status = str(item.get("status") or item.get("type") or "").lower()
-        if "out" in status or "injured" in status or "suspended" in status:
+        if _status_means_out(_injury_status_text(resolved)):
             out += 1
     return total, out
 

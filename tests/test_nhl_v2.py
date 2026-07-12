@@ -294,3 +294,29 @@ def test_nhl_features_precede_update_rest_and_elo() -> None:
     assert engine.team("TOR").elo > engine.team("BOS").elo
     # Updating game2 must not be required for the Elo move from game1.
     assert engine.team("TOR").games_played == 1
+
+
+def test_explicit_home_win_zero_not_overridden_by_scores() -> None:
+    """`home_win=0` is falsy; must not fall through to score-based `or` fallback."""
+    from web.nhl_v2.feature_engine import NhlFeatureEngine
+
+    engine = NhlFeatureEngine()
+    engine.update_after_game(
+        {
+            "gameId": 99,
+            "date": "2024-10-12",
+            "game_type": 2,
+            "home": "EDM",
+            "away": "CGY",
+            # Scores alone would imply a home win; explicit flag says away won.
+            "home_goals": 5,
+            "away_goals": 1,
+            "home_win": 0,
+            "home_shots": 30,
+            "away_shots": 20,
+        }
+    )
+    assert engine.team("EDM").season_wins == 0
+    assert engine.team("EDM").season_losses == 1
+    assert engine.team("CGY").season_wins == 1
+    assert engine.team("CGY").elo > engine.team("EDM").elo
