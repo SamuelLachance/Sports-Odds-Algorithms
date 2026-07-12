@@ -328,6 +328,36 @@ def test_get_live_context_fails_closed_without_snapshot(monkeypatch) -> None:
     assert live.get_live_context("2025-09-15") is None
 
 
+def test_espn_fetch_accepts_iso_stop_before(monkeypatch, tmp_path) -> None:
+    """Live day_iso is YYYY-MM-DD; ESPN path must not die in _parse_cutoff."""
+    import web.nfl_v2.live as live
+    import web.season_games as season_games
+
+    live.LIVE_CACHE_DIR = tmp_path
+    cutoffs: list[str] = []
+
+    def fake_map(league: str, cutoff_date: str, *, for_backtest: bool = False):
+        cutoffs.append(cutoff_date)
+        # Regression: ISO used to raise ValueError (month=15) inside _parse_cutoff.
+        from web.live_data import _parse_cutoff
+
+        parsed = _parse_cutoff(cutoff_date)
+        assert (parsed.year, parsed.month, parsed.day) == (2025, 9, 15)
+        return {
+            "e1": (
+                "2024-09-08T17:00Z",
+                ("kc", "bal", "Chiefs", "Ravens", 27, 20),
+            )
+        }
+
+    monkeypatch.setattr(season_games, "_load_league_game_map", fake_map)
+    rows = live._fetch_completed_season_games_espn(2024, stop_before="2025-09-15")
+    assert cutoffs == ["2025-09-15"]
+    assert rows is not None
+    assert len(rows) == 1
+    assert rows[0]["home"] == "kc"
+
+
 def test_sos_elo_uses_pre_update_opponent_elo() -> None:
     """SOS must accumulate opponent Elo before the game's Elo shift."""
     from web.nfl_v2.feature_engine import LEAGUE_ELO

@@ -316,6 +316,44 @@ def test_cbb_merge_rows_keeps_prior_closes_when_fresh_empty() -> None:
     assert merged[0]["n_books"] == "2"
 
 
+def test_cbb_merge_spread_only_n_books_keeps_prior_mls() -> None:
+    """n_books>0 without MLs must not wipe prior moneylines."""
+    from scripts.fetch_cbb_odds import merge_rows
+
+    existing = [
+        {
+            "date": "2024-01-15",
+            "home_key": "duke",
+            "away_key": "unc",
+            "home_close_ml": "-150",
+            "away_close_ml": "130",
+            "home_close_spread": "-5.5",
+            "away_close_spread": "5.5",
+            "n_books": "2",
+            "source": "sbr",
+        }
+    ]
+    fresh = [
+        {
+            "date": "2024-01-15",
+            "home_key": "duke",
+            "away_key": "unc",
+            "home_close_ml": None,
+            "away_close_ml": None,
+            "home_close_spread": -6.0,
+            "away_close_spread": 6.0,
+            "n_books": 3,
+            "source": "espn-core",
+        }
+    ]
+    merged = merge_rows(existing, fresh)
+    assert len(merged) == 1
+    assert merged[0]["home_close_ml"] == "-150"
+    assert merged[0]["away_close_ml"] == "130"
+    assert merged[0]["n_books"] == "2"
+    assert merged[0]["source"] == "sbr"
+
+
 def test_cfb_collect_day_rows_refetches_empty_odds_cache(tmp_path, monkeypatch) -> None:
     """Cached n_books=0 rows must not permanently block a later successful fetch."""
     import json

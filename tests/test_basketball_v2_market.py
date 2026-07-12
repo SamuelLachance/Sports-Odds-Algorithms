@@ -80,6 +80,34 @@ def test_apply_market_features_injects_live_odds() -> None:
     assert 0.55 < features["mkt_home_prob"] < 0.70
 
 
+def test_apply_market_features_failsoft_invalid_spreads() -> None:
+    """Junk / PK / bool spreads must not raise or invent market_aware margin."""
+    for junk in ("N/A", "OFF", "", False, "abc"):
+        feats: dict[str, float] = {}
+        has_market, has_spread = apply_market_features(feats, home_spread=junk)
+        assert has_market is False
+        assert has_spread is False
+        assert feats["has_spread"] == 0.0
+        assert feats["mkt_home_spread"] == 0.0
+
+    pk: dict[str, float] = {}
+    has_market, has_spread = apply_market_features(pk, home_spread="PK")
+    assert has_market is False
+    assert has_spread is True
+    assert pk["mkt_home_spread"] == 0.0
+    assert pk["has_spread"] == 1.0
+
+    even: dict[str, float] = {}
+    _, has_spread = apply_market_features(even, home_spread="EVEN")
+    assert has_spread is True
+    assert even["mkt_home_spread"] == 0.0
+
+    # string numeric spreads still work (ESPN / enrich paths)
+    numeric: dict[str, float] = {}
+    _, has_spread = apply_market_features(numeric, home_spread="-3.5")
+    assert has_spread is True
+    assert numeric["mkt_home_spread"] == -3.5
+
 def test_resolve_market_heads_variants() -> None:
     art = {
         "feature_columns": ["elo_diff"],

@@ -6,7 +6,33 @@ so odds wiring cannot drift between ``nba_v2.live`` and ``wnba_v2.live``.
 
 from __future__ import annotations
 
+import math
 from typing import Any
+
+
+def _coerce_home_spread(home_spread: Any) -> float | None:
+    """Fail-soft spread parse aligned with ESPN ``_parse_spread_line``.
+
+    ``PK`` / ``EVEN`` → 0.0; junk / bool → None (do not raise or invent market).
+    """
+    if home_spread is None or home_spread == "":
+        return None
+    # bool is a subclass of int; False→0.0 must not invent a pick'em market.
+    if isinstance(home_spread, bool):
+        return None
+    text = str(home_spread).strip()
+    upper = text.upper()
+    if upper in {"PK", "EVEN"}:
+        return 0.0
+    if upper in {"OFF", "N/A", "NA"}:
+        return None
+    try:
+        value = float(text)
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(value):
+        return None
+    return value
 
 
 def devig_home_prob(home_ml: float | None, away_ml: float | None) -> float | None:
@@ -48,10 +74,11 @@ def apply_market_features(
     """
     mkt_prob = devig_home_prob(home_moneyline, away_moneyline)
     has_market = mkt_prob is not None
-    has_spread = home_spread is not None
+    spread = _coerce_home_spread(home_spread)
+    has_spread = spread is not None
     features["mkt_home_prob"] = float(mkt_prob) if has_market else 0.5
     features["has_market"] = 1.0 if has_market else 0.0
-    features["mkt_home_spread"] = float(home_spread) if has_spread else 0.0
+    features["mkt_home_spread"] = float(spread) if has_spread else 0.0
     features["has_spread"] = 1.0 if has_spread else 0.0
     return has_market, has_spread
 

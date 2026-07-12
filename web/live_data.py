@@ -61,8 +61,20 @@ def resolve_team(
 
 
 def _parse_cutoff(cutoff_date: str) -> datetime:
-    month, day, year = cutoff_date.split("-")
-    return datetime(int(year), int(month), int(day), tzinfo=timezone.utc)
+    """Parse slate cutoffs as M-D-YYYY / MM-DD-YYYY, or ISO YYYY-MM-DD.
+
+    NFL/CFB v2 live passes ISO ``day_iso`` into ``_load_league_game_map``; legacy
+    callers still use project slate labels like ``9-15-2025``.
+    """
+    parts = str(cutoff_date).strip().split("-")
+    if len(parts) != 3:
+        raise ValueError(f"invalid cutoff date: {cutoff_date!r}")
+    a, b, c = (int(p) for p in parts)
+    if a >= 1900:  # YYYY-MM-DD
+        year, month, day = a, b, c
+    else:  # M-D-YYYY or MM-DD-YYYY
+        month, day, year = a, b, c
+    return datetime(year, month, day, tzinfo=timezone.utc)
 
 
 def _event_before_cutoff(event: dict[str, Any], cutoff: datetime) -> bool:

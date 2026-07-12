@@ -270,3 +270,31 @@ def test_tie_is_not_treated_as_away_win() -> None:
     assert away.elo > 1500.0
     # Neither side should record an H2H win on a tie.
     assert home.h2h.get("aub", [0, 0]) == [0, 0]
+
+
+def test_espn_fetch_accepts_iso_stop_before(monkeypatch, tmp_path) -> None:
+    """CFB live has no nflverse fallback — ISO cutoff must parse for season replay."""
+    import web.cfb_v2.live as live
+    import web.season_games as season_games
+
+    live.LIVE_CACHE_DIR = tmp_path
+    cutoffs: list[str] = []
+
+    def fake_map(league: str, cutoff_date: str, *, for_backtest: bool = False):
+        cutoffs.append(cutoff_date)
+        from web.live_data import _parse_cutoff
+
+        parsed = _parse_cutoff(cutoff_date)
+        assert (parsed.year, parsed.month, parsed.day) == (2025, 9, 15)
+        return {
+            "e1": (
+                "2024-09-07T19:00Z",
+                ("ala", "uga", "Alabama", "Georgia", 34, 24),
+            )
+        }
+
+    monkeypatch.setattr(season_games, "_load_league_game_map", fake_map)
+    rows = live._fetch_completed_season_games(2024, stop_before="2025-09-15")
+    assert cutoffs == ["2025-09-15"]
+    assert len(rows) == 1
+    assert rows[0]["home"] == "ala"

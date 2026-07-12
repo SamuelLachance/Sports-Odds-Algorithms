@@ -304,6 +304,23 @@ def test_event_before_cutoff_includes_late_et_prior_toronto_day() -> None:
     assert _event_before_cutoff(same_day, cutoff) is False
 
 
+def test_parse_cutoff_accepts_iso_and_slate_labels() -> None:
+    """NFL/CFB v2 live passes YYYY-MM-DD; legacy slate paths use M-D-YYYY."""
+    from web.live_data import _parse_cutoff
+
+    iso = _parse_cutoff("2025-09-15")
+    assert (iso.year, iso.month, iso.day) == (2025, 9, 15)
+
+    slate = _parse_cutoff("9-15-2025")
+    assert (slate.year, slate.month, slate.day) == (2025, 9, 15)
+
+    padded = _parse_cutoff("09-15-2025")
+    assert (padded.year, padded.month, padded.day) == (2025, 9, 15)
+
+    # Previously ISO was misread as month=15 → ValueError, so ESPN fetch never ran.
+    assert _parse_cutoff("2024-12-01").month == 12
+
+
 def test_fetch_team_schedule_does_not_cache_empty_payload() -> None:
     """Empty ESPN schedules must not poison the process-lifetime schedule cache."""
     from unittest.mock import patch

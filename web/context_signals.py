@@ -109,7 +109,12 @@ def _clamp(value: float, lo: float, hi: float) -> float:
 
 
 def _american_to_implied_pct(american: int) -> float | None:
-    """Implied win % from American odds; None for invalid |odds| < 100."""
+    """Implied win % from American odds; None for invalid |odds| < 100.
+
+    Reject bools: ``False == 0`` must not become EVEN (50%).
+    """
+    if american is None or isinstance(american, bool):
+        return None
     if american == 0:
         return 50.0
     if abs(american) < 100:
@@ -131,6 +136,9 @@ def favorite_longshot_adjustment(
     nudge a small amount toward the dog. Magnitude capped at ±1.5 pp.
     """
     if home_ml is None or away_ml is None:
+        return 0.0
+    # bool is a subclass of int; False must not become EVEN / favorite poison.
+    if isinstance(home_ml, bool) or isinstance(away_ml, bool):
         return 0.0
     try:
         home_ml_i = int(home_ml)
@@ -181,6 +189,12 @@ def steam_line_movement_shift(
         or away_ml is None
         or open_home_ml is None
         or open_away_ml is None
+    ):
+        return 0.0
+    # bool is a subclass of int; False→0 must not fabricate EVEN open/close steam.
+    if any(
+        isinstance(value, bool)
+        for value in (home_ml, away_ml, open_home_ml, open_away_ml)
     ):
         return 0.0
     try:

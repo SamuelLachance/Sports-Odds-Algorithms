@@ -224,19 +224,17 @@ def _consensus(
     max_handicap_abs: float = MAX_NBA_SPREAD,
 ) -> dict[str, Any]:
     lines = [_provider_line(item, max_handicap_abs=max_handicap_abs) for item in items]
-    keys = (
+    close_keys = (
         "home_close_spread",
         "away_close_spread",
         "home_close_ml",
         "away_close_ml",
-        "home_open_spread",
         "close_total",
-        "open_total",
         "home_spread_odds",
         "away_spread_odds",
     )
-    # Count only providers that yielded at least one parsed market number —
-    # empty shells must not inflate n_books (fail-open on consensus quality).
+    keys = close_keys + ("home_open_spread", "open_total")
+    # Medians may still use open fields; empty shells stay out of both pools.
     parsed = [line for line in lines if any(line.get(key) is not None for key in keys)]
     consensus: dict[str, Any] = {}
     for key in keys:
@@ -245,7 +243,11 @@ def _consensus(
         consensus["away_open_spread"] = -consensus["home_open_spread"]
     else:
         consensus["away_open_spread"] = None
-    consensus["n_books"] = len(parsed)
+    # Count only providers with at least one parsed *close* market — open-only
+    # shells still feed open medians but must not inflate n_books.
+    consensus["n_books"] = sum(
+        1 for line in lines if any(line.get(key) is not None for key in close_keys)
+    )
     return consensus
 
 

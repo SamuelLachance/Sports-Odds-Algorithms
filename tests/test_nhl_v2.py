@@ -320,3 +320,75 @@ def test_explicit_home_win_zero_not_overridden_by_scores() -> None:
     assert engine.team("EDM").season_losses == 1
     assert engine.team("CGY").season_wins == 1
     assert engine.team("CGY").elo > engine.team("EDM").elo
+
+
+def test_gap_season_replay_passes_goalie_xg(monkeypatch) -> None:
+    """Gap seasons must attach MoneyPuck goalie xG like the current-season path."""
+    from unittest.mock import MagicMock
+
+    import web.nhl_v2.live as live
+
+    live.get_live_context.cache_clear()
+    art = {"snapshots": {2023: MagicMock()}}
+    monkeypatch.setattr(live, "_load_artifacts", lambda: art)
+    monkeypatch.setattr(
+        live,
+        "_load_snapshot_state",
+        lambda _art, _season: (2023, {"teams": {}}),
+    )
+    monkeypatch.setattr(
+        live.NhlFeatureEngine,
+        "from_dict",
+        classmethod(lambda cls, _payload: MagicMock()),
+    )
+    monkeypatch.setattr(live, "nhl_season_for_date", lambda _d: 2025)
+
+    def fake_bundle(season: int):
+        return (
+            {"team_games": [{"gameId": season}], "goalies": []},
+            False,
+        )
+
+    monkeypatch.setattr(live, "_fetch_stats_bundle", fake_bundle)
+    monkeypatch.setattr(
+        live,
+        "_fetch_moneypuck_slices",
+        lambda seasons: ({s: {s: {"xG": 1.0}} for s in seasons}, False),
+    )
+    xg_seasons: list[int] = []
+
+    def fake_xg(season: int):
+        xg_seasons.append(season)
+        return {f"{season}:99": [10.0, 2.5, 3.0, 1.0, 0.4, 0.0]}, False
+
+    monkeypatch.setattr(live, "_fetch_goalie_xg_slice", fake_xg)
+    monkeypatch.setattr(
+        live,
+        "build_game_index",
+        lambda rows: {
+            int(r["gameId"]): {
+                "gameId": int(r["gameId"]),
+                "date": f"{r['gameId']}-10-10",
+                "home": "TOR",
+                "away": "MTL",
+            }
+            for r in rows
+        },
+    )
+    monkeypatch.setattr(live, "build_goalie_index", lambda _rows: {})
+    monkeypatch.setattr(live, "fetch_schedule_day", lambda _day: [])
+
+    replay_kwargs: list[dict] = []
+
+    def fake_replay(*_args, **kwargs):
+        replay_kwargs.append(kwargs)
+
+    monkeypatch.setattr(live, "replay_season", fake_replay)
+
+    ctx = live.get_live_context("2025-01-15")
+    assert ctx is not None
+    assert 2024 in xg_seasons  # gap season fetched
+    assert 2025 in xg_seasons  # current season fetched
+    gap_calls = [kw for kw in replay_kwargs if kw.get("goalie_xg")]
+    assert gap_calls, "gap replay must pass goalie_xg="
+    assert (2024, 99) in gap_calls[0]["goalie_xg"]

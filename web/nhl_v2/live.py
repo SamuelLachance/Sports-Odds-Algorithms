@@ -359,6 +359,28 @@ def _predict_goals(art: dict[str, Any], features: dict[str, float]) -> tuple[flo
     return round(home, 2), round(away, 2)
 
 
+def _goalie_xg_map(
+    raw: dict[str, list[float]] | None,
+) -> dict[tuple[int, int], tuple[float, float, float, float, float, float]]:
+    """Parse MoneyPuck goalie-xG cache keys ``gameId:goalieId`` -> float tuple."""
+    out: dict[tuple[int, int], tuple[float, float, float, float, float, float]] = {}
+    for key, vals in (raw or {}).items():
+        try:
+            gid_str, goalie_str = key.split(":")
+            shots = float(vals[0]) if len(vals) > 0 else 0.0
+            xg = float(vals[1]) if len(vals) > 1 else 0.0
+            goals = float(vals[2]) if len(vals) > 2 else 0.0
+            hd_shots = float(vals[3]) if len(vals) > 3 else 0.0
+            hd_xg = float(vals[4]) if len(vals) > 4 else 0.0
+            hd_goals = float(vals[5]) if len(vals) > 5 else 0.0
+            out[(int(gid_str), int(goalie_str))] = (
+                shots, xg, goals, hd_shots, hd_xg, hd_goals
+            )
+        except (ValueError, TypeError, IndexError):
+            continue
+    return out
+
+
 def _depth_chart(goalie_rows: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
     """team -> goalies sorted by recent starts (current season)."""
     by_team: dict[str, dict[str, dict[str, Any]]] = {}
@@ -421,21 +443,7 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
         goalie_xg_raw = {}
 
     mp_games = {int(gid): teams for gid, teams in (mp_slice or {}).items()}
-    goalie_xg: dict[tuple[int, int], tuple[float, float, float, float, float, float]] = {}
-    for key, vals in (goalie_xg_raw or {}).items():
-        try:
-            gid_str, goalie_str = key.split(":")
-            shots = float(vals[0]) if len(vals) > 0 else 0.0
-            xg = float(vals[1]) if len(vals) > 1 else 0.0
-            goals = float(vals[2]) if len(vals) > 2 else 0.0
-            hd_shots = float(vals[3]) if len(vals) > 3 else 0.0
-            hd_xg = float(vals[4]) if len(vals) > 4 else 0.0
-            hd_goals = float(vals[5]) if len(vals) > 5 else 0.0
-            goalie_xg[(int(gid_str), int(goalie_str))] = (
-                shots, xg, goals, hd_shots, hd_xg, hd_goals
-            )
-        except (ValueError, TypeError, IndexError):
-            continue
+    goalie_xg = _goalie_xg_map(goalie_xg_raw)
 
     engine = NhlFeatureEngine.from_dict(state)
 
@@ -456,11 +464,15 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
         if not gap_mp:
             # Empty MoneyPuck would replay Elo without xG/shot features — fail closed.
             return None
+        gap_xg_raw, gap_xg_stale = _fetch_goalie_xg_slice(gap_season)
+        live_inputs_stale = live_inputs_stale or gap_xg_stale
         gap_goalies = build_goalie_index(gap_stats["goalies"])
+        # Match training / current-season replay: attach MoneyPuck goalie xG.
         replay_season(
             engine, gap_season, gap_games,
             {int(gid): teams for gid, teams in gap_mp.items()},
             gap_goalies,
+            goalie_xg=_goalie_xg_map(gap_xg_raw),
         )
 
     games = list(build_game_index(stats["team_games"]).values())

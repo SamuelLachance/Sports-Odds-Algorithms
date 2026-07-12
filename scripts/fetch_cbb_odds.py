@@ -178,7 +178,9 @@ def _odds_row(event: dict[str, Any]) -> dict[str, Any]:
     if not consensus:
         return row
     row.update(consensus)
-    row["n_books"] = len(items)
+    # Keep consensus n_books (close-parsed providers only); do not recount raw
+    # ESPN shells / open-only books via len(items).
+    row["n_books"] = int(consensus.get("n_books") or 0)
     row["source"] = "espn-core"
     return row
 
@@ -234,10 +236,15 @@ def _normalize_row(row: dict[str, Any]) -> dict[str, str]:
 
 
 def _row_has_odds(row: dict[str, Any]) -> bool:
-    try:
-        return int(float(row.get("n_books") or 0)) > 0
-    except (TypeError, ValueError):
-        return False
+    """True when a closing row has usable ML closes.
+
+    ``n_books>0`` alone is not enough — ESPN can emit spread/total-only rows that
+    must not wipe prior moneylines.
+    """
+    return bool(
+        str(row.get("home_close_ml") or "").strip()
+        or str(row.get("away_close_ml") or "").strip()
+    )
 
 
 def merge_rows(

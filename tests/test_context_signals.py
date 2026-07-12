@@ -170,6 +170,22 @@ def test_steam_rejects_invalid_american_magnitude() -> None:
     )
 
 
+def test_steam_rejects_bool_false_as_even_open() -> None:
+    """Missing open ML as False must not become EVEN (+100) and invent steam."""
+    poisoned = steam_line_movement_shift(
+        -150, 130, open_home_ml=False, open_away_ml=130  # type: ignore[arg-type]
+    )
+    assert poisoned == 0.0
+    assert steam_line_movement_shift(-150, 130, open_home_ml=None, open_away_ml=130) == 0.0
+
+
+def test_flb_rejects_bool_false_as_even_dog() -> None:
+    """Missing side as False must not become EVEN and invent an FLB nudge."""
+    assert favorite_longshot_adjustment(-200, False, 65.0) == 0.0  # type: ignore[arg-type]
+    assert favorite_longshot_adjustment(False, -200, 40.0) == 0.0  # type: ignore[arg-type]
+    assert favorite_longshot_adjustment(-200, None, 65.0) == 0.0
+
+
 def test_sparse_league_detection() -> None:
     assert is_sparse_sample_league("worldcup")
     assert is_sparse_sample_league("fifa_friendlies")

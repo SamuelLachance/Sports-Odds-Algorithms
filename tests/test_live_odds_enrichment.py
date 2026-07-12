@@ -717,6 +717,42 @@ def test_nba_consensus_n_books_ignores_empty_providers() -> None:
     assert consensus["away_close_ml"] == 130
 
 
+def test_nba_consensus_n_books_ignores_open_only_providers() -> None:
+    """Open-spread-only shells still feed open medians but must not inflate n_books."""
+    from web.nba_odds_espn import _consensus
+
+    close_book = {
+        "provider": {"name": "DraftKings"},
+        "homeTeamOdds": {
+            "favorite": True,
+            "close": {
+                "moneyLine": {"american": -150},
+                "pointSpread": {"american": -3.5},
+            },
+            "moneyLine": -150,
+        },
+        "awayTeamOdds": {
+            "favorite": False,
+            "close": {
+                "moneyLine": {"american": 130},
+                "pointSpread": {"american": 3.5},
+            },
+            "moneyLine": 130,
+        },
+    }
+    open_only = {
+        "provider": {"name": "OpenBook"},
+        "homeTeamOdds": {
+            "open": {"pointSpread": {"american": -4.0}},
+        },
+        "awayTeamOdds": {},
+    }
+    consensus = _consensus([close_book, open_only])
+    assert consensus["n_books"] == 1
+    assert consensus["home_close_ml"] == -150.0
+    assert consensus["home_open_spread"] == -4.0
+
+
 def test_summarize_all_unparsed_returns_empty() -> None:
     assert summarize_book_items([{"provider": {"name": "GhostBook"}}]) == {}
 
