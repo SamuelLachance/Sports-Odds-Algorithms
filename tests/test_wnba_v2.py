@@ -12,6 +12,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from web.wnba_v2.data import (  # noqa: E402
     _american,
+    _event_calendar_date,
     _signed_spread_from_details,
     canon_franchise,
     devig_two_way,
@@ -144,7 +145,61 @@ def test_events_to_results_synthesizes_completed_games() -> None:
     rows = events_to_results(events, 2026)
     assert len(rows) == 1
     assert rows[0]["home"] == "lva" and rows[0]["away"] == "sea"
-    assert rows[0]["date"] == "2026-07-10"  # UTC evening -> US local date
+    assert rows[0]["date"] == "2026-07-10"  # UTC midnight → prior Toronto evening
+
+
+def test_wnba_build_espn_index_uses_toronto_not_utc() -> None:
+    from web.wnba_v2.data import _event_calendar_date
+    from web.wnba_v2.replay import _espn_local_date, build_espn_index, events_to_results
+
+    iso = "2026-07-11T04:30:00Z"
+    assert _espn_local_date({"date": iso}) == _event_calendar_date(iso) == "2026-07-11"
+
+    event = {
+        "event_id": "401",
+        "date": "2026-01-16T03:30:00Z",
+        "season_type": 2,
+        "completed": True,
+        "home_id": "17",
+        "away_id": "14",
+        "home_abbr": "lva",
+        "away_abbr": "sea",
+        "home_score": 90,
+        "away_score": 84,
+    }
+    rows = events_to_results([event], 2026)
+    index = build_espn_index([event])
+    key = (rows[0]["date"], rows[0]["home"], rows[0]["away"])
+    assert key in index
+    assert rows[0]["date"] == "2026-01-15"
+
+
+def test_wnba_espn_local_date_does_not_shift_date_only() -> None:
+    """Date-only stamps are calendar keys — midnight−5h must not roll them back."""
+    rows = events_to_results(
+        [
+            {
+                "event_id": "1",
+                "date": "2026-07-11",
+                "completed": True,
+                "season_type": 2,
+                "home_id": "17",
+                "away_id": "14",
+                "home_abbr": "lva",
+                "away_abbr": "sea",
+                "home_score": 90,
+                "away_score": 84,
+            }
+        ],
+        2026,
+    )
+    assert rows[0]["date"] == "2026-07-11"
+
+
+def test_event_calendar_date_uses_toronto_not_utc_truncation() -> None:
+    """Late-ET tips must key on America/Toronto day, not UTC [:10]."""
+    assert _event_calendar_date("2026-01-16T03:00:00Z") == "2026-01-15"
+    assert _event_calendar_date("2026-01-15") == "2026-01-15"
 
 
 def test_merge_season_games_flags_2020_bubble_and_attaches_boxes() -> None:

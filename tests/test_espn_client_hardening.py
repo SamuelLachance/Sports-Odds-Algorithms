@@ -177,6 +177,58 @@ def test_live_mlb_nhl_reject_moneyline_sized_spreads() -> None:
     assert mlb_ok is not None and mlb_ok.market.spread == -1.5
 
 
+def test_live_cfb_cbb_keep_blowout_spreads() -> None:
+    """Live college caps must match collectors so real blowouts are not dropped."""
+    event = {
+        "id": "1",
+        "name": "Away @ Home",
+        "date": "2026-09-12T17:00Z",
+        "competitions": [
+            {
+                "competitors": [
+                    {
+                        "homeAway": "away",
+                        "team": {
+                            "abbreviation": "UGA",
+                            "displayName": "Georgia",
+                            "id": "1",
+                        },
+                    },
+                    {
+                        "homeAway": "home",
+                        "team": {
+                            "abbreviation": "ALA",
+                            "displayName": "Alabama",
+                            "id": "2",
+                        },
+                    },
+                ],
+                "odds": [
+                    {
+                        "spread": -55.5,
+                        "moneyline": {
+                            "away": {"close": {"odds": 1800}},
+                            "home": {"close": {"odds": -5000}},
+                        },
+                    }
+                ],
+                "status": {"type": {"state": "pre", "shortDetail": "Scheduled"}},
+            }
+        ],
+    }
+    cfb = espn_client._parse_event(event, "cfb")
+    assert cfb is not None and cfb.market.spread == -55.5
+
+    event["competitions"][0]["odds"][0]["spread"] = -45.5
+    cbb = espn_client._parse_event(event, "cbb")
+    assert cbb is not None and cbb.market.spread == -45.5
+
+    # ML-sized dumps still rejected even with the raised college caps.
+    event["competitions"][0]["odds"][0]["spread"] = -152
+    cfb_ml = espn_client._parse_event(event, "cfb")
+    assert cfb_ml is not None and cfb_ml.market.spread is None
+
+
 def test_fetch_scoreboard_default_date_uses_toronto_not_utc() -> None:
     """Default scoreboard window must match America/Toronto slate labeling."""
     from datetime import datetime

@@ -50,3 +50,40 @@ def test_team_comparison_v2_underdog_odds_not_favorite_mirror() -> None:
     assert dog == pytest.approx((100.0 - 60.0) / 60.0 * 100.0)
     assert dog == pytest.approx(66.666666, abs=0.01)
     assert dog != pytest.approx(fav)
+
+
+def test_team_comparison_v2_clamps_100_pct_favorite() -> None:
+    """Algo_V2 total ±100 must not ZeroDivisionError on American odds."""
+    from odds_calculator import Odds_Calculator
+
+    calc = Odds_Calculator("nba")
+    algo_data = {
+        "record_points": 0.0,
+        "home_away_points": 0.0,
+        "home_away_10_games_points": 0.0,
+        "last_10_games_points": 0.0,
+        "avg_points": 0.0,
+        "avg_points_10_games": 0.0,
+        "total": 100.0,
+    }
+    with (
+        patch.object(calc.espn_scraper, "update_data"),
+        patch.object(calc.universal, "load_data", return_value={}),
+        patch.object(calc, "analyze2", return_value={}),
+        patch("odds_calculator.Algo") as algo_cls,
+    ):
+        algo_cls.return_value.calculate_V2.return_value = algo_data
+        lines = calc.team_comparison(
+            "Algo_V2",
+            ["bos", "Boston"],
+            ["mia", "Miami"],
+            "1-1-2024",
+            "2024",
+        )
+
+    fav_line = next(x for x in lines if x.startswith("Favorable team odds:"))
+    dog_line = next(x for x in lines if x.startswith("Underdog team odds:"))
+    fav = float(re.search(r"-([0-9.]+)$", fav_line).group(1))
+    dog = float(re.search(r"\+([0-9.]+)$", dog_line).group(1))
+    assert fav == pytest.approx(10000.0)
+    assert dog == pytest.approx(0.0)

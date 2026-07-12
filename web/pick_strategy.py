@@ -396,7 +396,12 @@ def _evaluate_backtest_pick(
             away_prob,
             market_home=power_home,
             market_draw=draw_prob,
-            market_away=100.0 - home_prob - draw_prob if power_home is not None else None,
+            # Complete the power-home simplex (not model home+draw residual).
+            market_away=(
+                100.0 - float(power_home) - float(draw_prob)
+                if power_home is not None
+                else None
+            ),
         )
         if market_home_odds is not None:
             home_ml = market_home_odds

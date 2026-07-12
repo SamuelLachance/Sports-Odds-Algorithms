@@ -169,7 +169,15 @@ def _odds_row(event: dict[str, Any]) -> dict[str, Any]:
         )
     except OSError:
         return row
-    items = payload.get("items") if isinstance(payload, dict) else None
+    raw_items = payload.get("items") if isinstance(payload, dict) else None
+    if not raw_items:
+        return row
+    # Exclude live/in-game books from "closing" consensus (same as CFB).
+    items = [
+        item
+        for item in raw_items
+        if "live" not in ((item.get("provider") or {}).get("name", "").lower())
+    ]
     if not items:
         return row
     consensus = _consensus(items, max_handicap_abs=MAX_CBB_SPREAD)

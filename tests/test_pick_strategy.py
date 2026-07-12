@@ -5,6 +5,8 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import pytest
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -230,23 +232,58 @@ def test_kelly_and_profit_score_positive_ev() -> None:
 
 
 def test_simulate_market_threeway_renormalizes_nonsimplex_bases() -> None:
-    """Power-home mixed with model draw/away must not invent non-simplex books."""
-    # Same shape as _evaluate_backtest_pick when power_home is set:
-    # market_home=60, market_draw=26, market_away=22 from blended home → sum 108.
+    """Power-home mixed with model draw must complete the power-home simplex."""
+    # Correct call shape from _evaluate_backtest_pick:
+    # market_away = 100 - power_home - draw (14), not 100 - model_home - draw.
     away_ml, draw_ml, home_ml = simulate_market_threeway(
         52.0,
         26.0,
         22.0,
         market_home=60.0,
         market_draw=26.0,
-        market_away=22.0,
+        market_away=14.0,
     )
-    # After renormalize+shrink, fair moneylines should still be valid American.
     for odds in (away_ml, draw_ml, home_ml):
         assert abs(odds) >= 100
-    # Home base is largest after scale → shortest home price among the three.
     assert home_ml < away_ml
     assert home_ml < draw_ml
+
+    buggy_away = simulate_market_threeway(
+        52.0, 26.0, 22.0, market_home=60.0, market_draw=26.0, market_away=22.0
+    )
+    assert (away_ml, draw_ml, home_ml) != buggy_away
+
+
+def test_evaluate_backtest_soccer_passes_power_home_simplex(monkeypatch) -> None:
+    """Synthetic soccer market must use 100 - power_home - draw for away mass."""
+    captured: dict = {}
+
+    def _capture(home_prob, draw_prob, away_prob, **kwargs):
+        captured["kwargs"] = kwargs
+        return (-150, 250, -120)
+
+    monkeypatch.setattr("web.pick_strategy.simulate_market_threeway", _capture)
+    monkeypatch.setattr(
+        "web.pick_strategy.evaluate_soccer_picks",
+        lambda **_k: [],
+    )
+    result = _evaluate_backtest_pick(
+        league="epl",
+        bet_type="soccer_1x2",
+        blended_home=52.0,
+        model_margin=0.0,
+        power_home=60.0,
+        home_goals=1,
+        away_goals=0,
+        thresholds={**DEFAULT_THRESHOLDS, "min_edge": 999.0},
+        home_prob=52.0,
+        draw_prob=26.0,
+        away_prob=22.0,
+    )
+    assert result is None  # no picks / gate
+    assert captured["kwargs"]["market_home"] == 60.0
+    assert captured["kwargs"]["market_draw"] == 26.0
+    assert captured["kwargs"]["market_away"] == pytest.approx(14.0)
 
 
 def test_simulate_market_threeway_applies_synthetic_vig() -> None:

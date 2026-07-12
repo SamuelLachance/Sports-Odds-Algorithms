@@ -182,8 +182,12 @@ def _rows_from_html_table(sport: str, season: int, html: str, translated: dict[s
         close_h = _optional_number(home_row[10])
         if open_a is not None and open_h is not None:
             # Away favorite (lower/more-negative open) → home gets +line.
-            # Always emit opposite-sign home/away closes.
-            if open_a < open_h:
+            # Equal opens (SBR often duplicates the favorite line) → break ties
+            # with moneyline when available; else treat home as chalk.
+            away_is_favorite = open_a < open_h
+            if open_a == open_h and away_close_ml is not None and home_close_ml is not None:
+                away_is_favorite = away_close_ml < home_close_ml
+            if away_is_favorite:
                 home_spread = -close_a if close_a is not None else None
                 away_spread = close_a if close_a is not None else (
                     -close_h if close_h is not None else None
@@ -196,20 +200,19 @@ def _rows_from_html_table(sport: str, season: int, html: str, translated: dict[s
         else:
             home_spread = close_h
             away_spread = close_a
-            # If only one side is present, mirror the other.
-            if home_spread is not None and away_spread is None:
-                away_spread = -home_spread
-            elif away_spread is not None and home_spread is None:
-                home_spread = -away_spread
-            # Same-sign closes are inconsistent — prefer home and mirror away.
-            elif (
-                home_spread is not None
-                and away_spread is not None
-                and home_spread != 0
-                and away_spread != 0
-                and (home_spread > 0) == (away_spread > 0)
-            ):
-                away_spread = -home_spread
+        # Always emit opposite-sign home/away closes (open and no-open paths).
+        if home_spread is not None and away_spread is None:
+            away_spread = -home_spread
+        elif away_spread is not None and home_spread is None:
+            home_spread = -away_spread
+        elif (
+            home_spread is not None
+            and away_spread is not None
+            and home_spread != 0
+            and away_spread != 0
+            and (home_spread > 0) == (away_spread > 0)
+        ):
+            away_spread = -home_spread
         output.append(
             {
                 "date": _make_datestr(away_row[0], season),
@@ -427,6 +430,21 @@ def fetch_sbr_season_rows(sport: str, season: int, translated: dict[str, dict[st
             home_key = normalize_team_key("mlb", home_name)
             if not away_key or not home_key:
                 continue
+            home_spread = _spread_line_cell(home_row[17])
+            away_spread = _spread_line_cell(away_row[17])
+            # Mirror sparse / same-sign run lines (same repair as NHL/NBA HTML).
+            if home_spread is not None and away_spread is None:
+                away_spread = -home_spread
+            elif away_spread is not None and home_spread is None:
+                home_spread = -away_spread
+            elif (
+                home_spread is not None
+                and away_spread is not None
+                and home_spread != 0
+                and away_spread != 0
+                and (home_spread > 0) == (away_spread > 0)
+            ):
+                away_spread = -home_spread
             output.append(
                 {
                     "date": _make_datestr(away_row[0], season, start=3, yr_end=10),
@@ -434,8 +452,8 @@ def fetch_sbr_season_rows(sport: str, season: int, translated: dict[str, dict[st
                     "away_key": away_key,
                     "home_close_ml": _american_ml_cell(home_row[16]),
                     "away_close_ml": _american_ml_cell(away_row[16]),
-                    "home_close_spread": _spread_line_cell(home_row[17]),
-                    "away_close_spread": _spread_line_cell(away_row[17]),
+                    "home_close_spread": home_spread,
+                    "away_close_spread": away_spread,
                     "home_spread_odds": _spread_juice_cell(home_row[18]),
                     "away_spread_odds": _spread_juice_cell(away_row[18]),
                     "source": "sbr-online",

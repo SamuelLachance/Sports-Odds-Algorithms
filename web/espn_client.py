@@ -46,8 +46,9 @@ _MAX_LIVE_SPREAD_ABS: dict[str, float] = {
     "nba": 40.0,
     "wnba": 40.0,
     "nfl": 40.0,
-    "cfb": 50.0,
-    "cbb": 40.0,
+    # Align with college closing collectors (scripts/fetch_{cfb,cbb}_odds.py).
+    "cfb": 120.0,
+    "cbb": 60.0,
 }
 
 

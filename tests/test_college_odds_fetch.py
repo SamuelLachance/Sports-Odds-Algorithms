@@ -102,3 +102,126 @@ def test_cfb_odds_row_does_not_invent_spread_juice() -> None:
     assert row["home_spread_odds"] is None
     assert row["away_spread_odds"] is None
     assert row["home_close_ml"] == -300.0
+
+
+def test_cfb_provider_rejects_juice_sized_point_spread() -> None:
+    """CFB max_abs=120 must not keep −110 juice dumped into pointSpread."""
+    from scripts.fetch_cfb_odds import MAX_CFB_SPREAD
+
+    item = {
+        "provider": {"name": "book"},
+        "homeTeamOdds": {
+            "favorite": True,
+            "close": {
+                "pointSpread": {"american": -110},  # juice dump
+                "moneyLine": {"american": -300},
+                "spread": {"american": -110},
+            },
+        },
+        "awayTeamOdds": {
+            "favorite": False,
+            "close": {
+                "pointSpread": {"american": 110},
+                "moneyLine": {"american": 250},
+                "spread": {"american": -110},
+            },
+        },
+        "spread": -7.5,
+    }
+    consensus = _consensus([item], max_handicap_abs=MAX_CFB_SPREAD)
+    assert consensus["home_close_spread"] == -7.5
+    assert consensus["away_close_spread"] == 7.5
+    assert consensus["home_close_ml"] == -300.0
+
+
+def test_cfb_provider_rejects_juice_point_spread_without_flat_spread() -> None:
+    """Missing flat `spread` must still drop |pointSpread| >= 100 juice dumps."""
+    from scripts.fetch_cfb_odds import MAX_CFB_SPREAD
+
+    item = {
+        "provider": {"name": "book"},
+        "homeTeamOdds": {
+            "favorite": True,
+            "close": {
+                "pointSpread": {"american": -110},
+                "moneyLine": {"american": -200},
+                "spread": {"american": -110},
+            },
+        },
+        "awayTeamOdds": {
+            "favorite": False,
+            "close": {
+                "pointSpread": {"american": 110},
+                "moneyLine": {"american": 170},
+                "spread": {"american": -110},
+            },
+        },
+        # no top-level "spread"
+    }
+    consensus = _consensus([item], max_handicap_abs=MAX_CFB_SPREAD)
+    assert consensus["home_close_spread"] is None
+    assert consensus["away_close_spread"] is None
+    assert consensus["home_close_ml"] == -200.0
+
+
+def test_cbb_odds_row_excludes_live_books_from_consensus() -> None:
+    """Live/in-game books must not pollute CBB closing consensus."""
+    from scripts import fetch_cbb_odds as mod
+
+    event = {
+        "date": "2024-01-15",
+        "home_key": "duke",
+        "away_key": "unc",
+        "event": "1",
+        "comp": "1",
+        "home_final": 80,
+        "away_final": 72,
+    }
+    payload = {
+        "items": [
+            {
+                "provider": {"name": "DraftKings"},
+                "homeTeamOdds": {
+                    "favorite": True,
+                    "close": {
+                        "pointSpread": {"american": -5.5},
+                        "moneyLine": {"american": -220},
+                        "spread": {"american": -110},
+                    },
+                },
+                "awayTeamOdds": {
+                    "favorite": False,
+                    "close": {
+                        "pointSpread": {"american": 5.5},
+                        "moneyLine": {"american": 180},
+                        "spread": {"american": -110},
+                    },
+                },
+                "spread": -5.5,
+            },
+            {
+                "provider": {"name": "DraftKings Live"},
+                "homeTeamOdds": {
+                    "favorite": True,
+                    "close": {
+                        "pointSpread": {"american": -12.5},
+                        "moneyLine": {"american": -500},
+                        "spread": {"american": -115},
+                    },
+                },
+                "awayTeamOdds": {
+                    "favorite": False,
+                    "close": {
+                        "pointSpread": {"american": 12.5},
+                        "moneyLine": {"american": 375},
+                        "spread": {"american": -105},
+                    },
+                },
+                "spread": -12.5,
+            },
+        ]
+    }
+    with patch.object(mod, "_throttled_get", return_value=payload):
+        row = mod._odds_row(event)
+    assert row["home_close_spread"] == -5.5
+    assert row["n_books"] == 1

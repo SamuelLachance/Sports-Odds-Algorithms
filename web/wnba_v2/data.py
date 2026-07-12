@@ -146,6 +146,13 @@ def _to_int(value: Any) -> int | None:
         return None
 
 
+def _event_calendar_date(event_date: str) -> str:
+    """America/Toronto calendar day for ESPN kickoffs (not UTC [:10])."""
+    from web.season_games import _event_date_iso
+
+    return _event_date_iso(event_date)
+
+
 def _to_float(value: Any) -> float | None:
     if value is None:
         return None
@@ -196,7 +203,7 @@ def fetch_season_events(season: int) -> list[dict[str, Any]]:
         events.append(
             {
                 "event_id": str(event.get("id") or ""),
-                "date": str(event.get("date") or "")[:10],
+                "date": _event_calendar_date(str(event.get("date") or "")),
                 "season": season,
                 "season_type": season_type,
                 "completed": status == "STATUS_FINAL",

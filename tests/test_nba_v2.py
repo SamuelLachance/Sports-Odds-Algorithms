@@ -12,6 +12,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from web.nba_v2.data import (  # noqa: E402
     _american,
+    _event_calendar_date,
     _signed_spread_from_details,
     canon_franchise,
     devig_two_way,
@@ -65,6 +66,43 @@ def test_canon_franchise_follows_relocation_chains() -> None:
     # ESPN ids stay stable across rebrands (25 = SEA/OKC)
     assert franchise_for_espn_id("25") == "okc"
     assert franchise_for_espn_id("", "bos") == "bos"
+
+
+def test_event_calendar_date_uses_toronto_not_utc_truncation() -> None:
+    """Late-ET tips must key on America/Toronto day, not UTC [:10]."""
+    # 2026-01-16T03:00Z = Jan 15 22:00 ET
+    assert _event_calendar_date("2026-01-16T03:00:00Z") == "2026-01-15"
+    assert _event_calendar_date("2026-01-15") == "2026-01-15"
+
+
+def test_espn_replay_index_matches_results_local_date() -> None:
+    """build_espn_index must use Toronto day, not UTC [:10], like events_to_results."""
+    from web.nba_v2.data import _event_calendar_date as cal
+    from web.nba_v2.replay import _espn_local_date, build_espn_index, events_to_results
+
+    # EDT tip: UTC 04:30 → Toronto same calendar day; fixed UTC−5 would roll back.
+    iso = "2026-07-11T04:30:00Z"
+    assert _espn_local_date({"date": iso}) == cal(iso) == "2026-07-11"
+
+    event = {
+        "event_id": "1",
+        "date": "2026-01-16T03:30:00Z",
+        "completed": True,
+        "season_type": 2,
+        "neutral_site": False,
+        "home_id": "2",
+        "away_id": "18",
+        "home_abbr": "bos",
+        "away_abbr": "ny",
+        "home_score": 110,
+        "away_score": 100,
+    }
+    rows = events_to_results([event], 2026)
+    index = build_espn_index([event])
+    assert rows[0]["date"] == "2026-01-15"
+    key = (rows[0]["date"], rows[0]["home"], rows[0]["away"])
+    assert key in index
+    assert "2026-01-16" not in {d for d, _, _ in index}
 
 
 def test_engine_features_precede_update_and_elo_moves_to_winner() -> None:

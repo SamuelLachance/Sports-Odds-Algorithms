@@ -280,6 +280,27 @@ def test_apply_context_steam_inactive_without_opens() -> None:
     assert out["blended_home_win_probability"] == 55.0
 
 
+def test_opening_steam_does_not_flip_computed_steam_sign() -> None:
+    """Sport-model opening_steam must floor magnitude, not invert ML steam."""
+    from unittest.mock import patch
+
+    blended = {
+        "blended_home_win_probability": 55.0,
+        "total_score": -55.0,
+        "win_probability": 55.0,
+        "favorite_side": "home",
+        "opening_steam": {"steam_signal": True, "steam_direction": "home"},
+    }
+    market = {"home_moneyline": -110, "away_moneyline": -110}
+    with patch("web.context_signals.steam_line_movement_shift", return_value=-0.8):
+        with patch("web.context_signals.favorite_longshot_adjustment", return_value=0.0):
+            with patch("web.context_signals.news_sentiment_shift", return_value=0.0):
+                out = apply_context_to_blend(blended, market=market, league="nba")
+    # Conflict: computed steam is away (−0.8) while opening says home — keep −0.8.
+    assert out["context_signals"]["steam_pp"] == pytest.approx(-0.8)
+    assert out["blended_home_win_probability"] < 55.0
+
+
 def test_apply_context_noop_without_signals() -> None:
     blended = {
         "blended_home_win_probability": 55.0,
@@ -406,6 +427,35 @@ def test_apply_context_shifts_pre_decorrelation_and_sport_pred() -> None:
     )
     assert out["baseball_pred"]["home_win_probability"] == pytest.approx(
         60.0 + shift, abs=0.05
+    )
+
+
+def test_apply_context_syncs_nested_away_win_probability() -> None:
+    """Binary sport preds must keep away = 100 - home after a context shift."""
+    blended = {
+        "blended_home_win_probability": 60.0,
+        "total_score": -60.0,
+        "win_probability": 60.0,
+        "favorite_side": "home",
+        "away_win_probability": 40.0,
+        "hockey_pred": {
+            "home_win_probability": 60.0,
+            "away_win_probability": 40.0,
+        },
+    }
+    market = {
+        "home_moneyline": -140,
+        "away_moneyline": 120,
+        "open_home_moneyline": 115,
+        "open_away_moneyline": -135,
+    }
+    out = apply_context_to_blend(blended, market=market, league="nhl")
+    assert out["context_adjustment_pp"] != 0.0
+    home = float(out["hockey_pred"]["home_win_probability"])
+    away = float(out["hockey_pred"]["away_win_probability"])
+    assert away == pytest.approx(100.0 - home, abs=0.01)
+    assert float(out["away_win_probability"]) == pytest.approx(
+        100.0 - float(out["home_win_probability"]), abs=0.01
     )
 
 

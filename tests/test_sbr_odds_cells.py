@@ -212,3 +212,88 @@ def test_nhl_html_repairs_same_sign_puck_lines() -> None:
     assert len(rows) == 1
     assert rows[0]["home_close_spread"] == -1.5
     assert rows[0]["away_close_spread"] == 1.5
+
+
+def test_mlb_xlsx_repairs_same_sign_run_lines() -> None:
+    """MLB xlsx must mirror same-sign closes like NHL HTML, not write both negative."""
+    from unittest.mock import patch
+
+    from web.sbr_odds import fetch_sbr_season_rows
+
+    # Header + subheader + away + home; MLB uses cols 16=ML, 17=spread, 18=juice.
+    # fetch_sbr_season_rows skips sheet_rows[0] then starts pairs at body index 1.
+    header = [f"h{i}" for i in range(19)]
+    sub = [f"s{i}" for i in range(19)]
+    away = [""] * 19
+    home = [""] * 19
+    away[0], home[0] = "0415", "0415"
+    away[3], home[3] = "Boston", "New York"
+    away[16], home[16] = "130", "-150"
+    away[17], home[17] = "-1.5", "-1.5"  # same-sign bug from SBR
+    away[18], home[18] = "-110", "-110"
+    sheet = [header, sub, away, home]
+
+    with patch("web.sbr_odds._fetch_bytes", return_value=b"xlsx"):
+        with patch("web.sbr_odds._xlsx_rows", return_value=sheet):
+            with patch("web.sbr_odds._translate_name", side_effect=lambda _s, name, _t: name):
+                with patch(
+                    "web.sbr_odds.normalize_team_key",
+                    side_effect=lambda _s, name: name.lower()[:3],
+                ):
+                    rows = fetch_sbr_season_rows("mlb", 2024, {})
+    assert len(rows) == 1
+    assert rows[0]["home_close_spread"] == -1.5
+    assert rows[0]["away_close_spread"] == 1.5
+
+
+def test_sbr_html_equal_opens_uses_ml_favorite() -> None:
+    """SBR often duplicates the favorite line on both rows; ML breaks the tie."""
+    from unittest.mock import patch
+
+    from web.sbr_odds import _rows_from_html_table
+
+    cells = lambda *vals: "".join(f"<td>{v}</td>" for v in vals)
+    html = (
+        "<table>"
+        f"<tr>{cells(*([f'h{i}' for i in range(12)]))}</tr>"
+        f"<tr>{cells(*(['sub'] * 12))}</tr>"
+        f"<tr>{cells('1015', '', '', 'Boston', '', '', '', '', '', '-5.5', '-6', '-200')}</tr>"
+        f"<tr>{cells('1015', '', '', 'New York', '', '', '', '', '', '-5.5', '-6', '170')}</tr>"
+        "</table>"
+    )
+    with patch("web.sbr_odds._translate_name", side_effect=lambda _s, name, _t: name):
+        with patch(
+            "web.sbr_odds.normalize_team_key",
+            side_effect=lambda _s, name: name.lower()[:3],
+        ):
+            rows = _rows_from_html_table("nba", 2023, html, {})
+    assert len(rows) == 1
+    # Away ML favorite → home gets the plus side.
+    assert rows[0]["home_close_spread"] == 6.0
+    assert rows[0]["away_close_spread"] == -6.0
+
+
+def test_sbr_html_open_branch_mirrors_sparse_close() -> None:
+    """Open-based favorite path must mirror a missing close side."""
+    from unittest.mock import patch
+
+    from web.sbr_odds import _rows_from_html_table
+
+    cells = lambda *vals: "".join(f"<td>{v}</td>" for v in vals)
+    html = (
+        "<table>"
+        f"<tr>{cells(*([f'h{i}' for i in range(12)]))}</tr>"
+        f"<tr>{cells(*(['sub'] * 12))}</tr>"
+        f"<tr>{cells('1015', '', '', 'Boston', '', '', '', '', '', '-5.5', '', '-200')}</tr>"
+        f"<tr>{cells('1015', '', '', 'New York', '', '', '', '', '', '5.5', '5.5', '170')}</tr>"
+        "</table>"
+    )
+    with patch("web.sbr_odds._translate_name", side_effect=lambda _s, name, _t: name):
+        with patch(
+            "web.sbr_odds.normalize_team_key",
+            side_effect=lambda _s, name: name.lower()[:3],
+        ):
+            rows = _rows_from_html_table("nba", 2023, html, {})
+    assert len(rows) == 1
+    assert rows[0]["home_close_spread"] == 5.5
+    assert rows[0]["away_close_spread"] == -5.5

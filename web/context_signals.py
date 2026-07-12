@@ -429,12 +429,13 @@ def apply_context_to_blend(
         list(away_names or []),
     )
     # Prefer steam already computed by sport models when present.
+    # Floor magnitude only when signs agree — never flip ML-derived steam.
     opening_steam = blended.get("opening_steam")
     if isinstance(opening_steam, dict) and opening_steam.get("steam_signal"):
         direction = str(opening_steam.get("steam_direction") or "").lower()
-        if direction == "home":
+        if direction == "home" and steam >= 0:
             steam = max(steam, 0.5)
-        elif direction == "away":
+        elif direction == "away" and steam <= 0:
             steam = min(steam, -0.5)
 
     total_shift = _clamp(flb + steam + news, -MAX_TOTAL_CONTEXT_PP, MAX_TOTAL_CONTEXT_PP)
@@ -497,6 +498,8 @@ def apply_context_to_blend(
         total_score, win_prob = home_win_prob_to_total_score(adjusted)
         updated["blended_home_win_probability"] = round(adjusted, 2)
         updated["home_win_probability"] = round(adjusted, 2)
+        if updated.get("away_win_probability") is not None:
+            updated["away_win_probability"] = round(100.0 - adjusted, 2)
         updated["total_score"] = round(total_score, 2)
         updated["win_probability"] = round(win_prob, 2)
         updated["favorite_side"] = "home" if total_score <= 0 else "away"
@@ -528,6 +531,10 @@ def apply_context_to_blend(
         nested["home_win_probability"] = round(
             _clamp(nested_home + total_shift, 5.0, 95.0), 2
         )
+        if nested.get("away_win_probability") is not None:
+            nested["away_win_probability"] = round(
+                100.0 - float(nested["home_win_probability"]), 2
+            )
         if nested.get("pre_decorrelation_home_win_probability") is not None:
             nested_pre = float(nested["pre_decorrelation_home_win_probability"])
             nested["pre_decorrelation_home_win_probability"] = round(

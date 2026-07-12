@@ -144,8 +144,14 @@ def _provider_line(
         _nested_american(away, "close", "pointSpread"),
         max_abs=max_handicap_abs,
     )
+    raw_spread = _to_float(item.get("spread"))
+    # ESPN sometimes dumps spread juice (−110) into pointSpread.american.
+    # With CFB/CBB's raised handicap cap that juice would otherwise be kept as
+    # the line — even when the flat `spread` field is missing.
+    if home_close_spread is not None and abs(home_close_spread) >= 100.0:
+        home_close_spread = None
+        away_close_spread = None
     if home_close_spread is None:
-        raw_spread = _to_float(item.get("spread"))
         if raw_spread is not None:
             magnitude = abs(raw_spread)
             if home.get("favorite"):
@@ -173,6 +179,8 @@ def _provider_line(
         _nested_american(home, "open", "pointSpread"),
         max_abs=max_handicap_abs,
     )
+    if home_open_spread is not None and abs(home_open_spread) >= 100.0:
+        home_open_spread = None
 
     total = _to_float(item.get("overUnder"))
     open_total = _to_float(((item.get("open") or {}) or {}).get("total"))

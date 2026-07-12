@@ -149,8 +149,17 @@ class Odds_Calculator:
 		to_output.append("Perc chance to win: "+str(winning_odds)+"%")
 
 		# Favorite: p/(100-p)*100 → -X; underdog: (100-p)/p*100 → +Y (not a mirror).
-		favorable_odds=(100/(100-winning_odds) - 1)*100
-		underdog_odds=(100/winning_odds - 1)*100 if winning_odds else 0
+		# Clamp off {0,100} so Algo_V2 totals of ±100 do not ZeroDivisionError.
+		win_pct = float(winning_odds) if winning_odds is not None else 0.0
+		if win_pct <= 0.0:
+			favorable_odds = 0.0
+			underdog_odds = 0.0
+		elif win_pct >= 100.0:
+			favorable_odds = 10000.0
+			underdog_odds = 0.0
+		else:
+			favorable_odds = (100.0 / (100.0 - win_pct) - 1.0) * 100.0
+			underdog_odds = (100.0 / win_pct - 1.0) * 100.0
 		to_output.append("Favorable team odds: -"+str(favorable_odds))
 		to_output.append("Underdog team odds: +"+str(underdog_odds))
 
