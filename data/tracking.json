@@ -585,7 +585,7 @@
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
       "closing_source": "consensus",
-      "closing_snapshot_at": "2026-07-12T10:09:30.077562+00:00"
+      "closing_snapshot_at": "2026-07-12T10:24:40.927187+00:00"
     },
     {
       "id": "2026-07-12:401816139:home",
@@ -667,7 +667,7 @@
       "closing_spread_odds": -105,
       "closing_consensus_spread": -5.5,
       "closing_source": "espn",
-      "closing_snapshot_at": "2026-07-12T10:09:30.077562+00:00"
+      "closing_snapshot_at": "2026-07-12T10:24:40.927187+00:00"
     },
     {
       "id": "401857060:away:spread",
@@ -708,7 +708,7 @@
       "closing_source": "espn",
       "closing_spread_odds": -108,
       "closing_consensus_spread": 6.5,
-      "closing_snapshot_at": "2026-07-12T10:09:30.077562+00:00"
+      "closing_snapshot_at": "2026-07-12T10:24:40.927187+00:00"
     }
   ]
 }
