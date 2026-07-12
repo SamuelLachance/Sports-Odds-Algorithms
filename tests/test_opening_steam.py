@@ -32,6 +32,19 @@ def test_opening_steam_nudges_toward_market_when_model_too_away() -> None:
     assert adj > model_margin
 
 
+def test_opening_steam_move_uses_true_opening_not_close() -> None:
+    """steam_move must reflect open→live, not close masquerading as open."""
+    _, meta = opening_steam_adjustment(
+        5.0,
+        market_spread=-4.5,
+        opening_spread=-3.0,
+    )
+    assert meta["steam_move"] == pytest.approx(-1.5)
+    # Without a true open, ref falls back to market → zero move (fail closed).
+    _, meta_no_open = opening_steam_adjustment(5.0, market_spread=-4.5)
+    assert meta_no_open["steam_move"] == 0.0
+
+
 def test_soccer_implied_shift_soft_fails_invalid_odds() -> None:
     """|odds| < 100 must return None, not raise into slate steam meta."""
     from web.soccer_opening import _implied_shift_pp, soccer_opening_steam_meta

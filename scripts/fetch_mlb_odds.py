@@ -27,20 +27,68 @@ def _load_existing(path: Path) -> list[dict[str, str]]:
         return list(csv.DictReader(handle))
 
 
-def _merge_rows(existing: list[dict[str, str]], fresh: list[dict]) -> list[dict[str, str]]:
-    merged: dict[tuple[str, str, str], dict[str, str]] = {}
-    for row in existing:
-        key = (row["date"], row["home_key"], row["away_key"])
-        merged[key] = {field: row.get(field, "") for field in CLOSING_FIELDS}
+def _closing_signature(row: dict[str, str]) -> tuple[str, ...]:
+    """Odds fields only — identical refreshes collapse; DH conflicts stay."""
+    return tuple(
+        row.get(field, "")
+        for field in (
+            "home_close_ml",
+            "away_close_ml",
+            "home_open_ml",
+            "away_open_ml",
+            "home_close_spread",
+            "away_close_spread",
+            "home_spread_odds",
+            "away_spread_odds",
+            "close_total",
+            "open_total",
+        )
+    )
 
-    for row in fresh:
-        key = (row["date"], row["home_key"], row["away_key"])
-        merged[key] = {
+
+def _normalize_closing_row(row: dict, *, from_fresh: bool) -> dict[str, str]:
+    if from_fresh:
+        return {
             field: "" if row.get(field) is None else str(row.get(field, ""))
             for field in CLOSING_FIELDS
         }
+    return {field: row.get(field, "") for field in CLOSING_FIELDS}
 
-    return sorted(merged.values(), key=lambda item: (item["date"], item["home_key"]))
+
+def _merge_rows(existing: list[dict[str, str]], fresh: list[dict]) -> list[dict[str, str]]:
+    """Merge ESPN refreshes into the CSV without collapsing MLB doubleheaders.
+
+    Fresh rows for a key replace prior rows for that key. Multiple fresh rows
+    with distinct odds under the same (date, home, away) are all kept so
+    ``closing_odds_db`` can mark the key ambiguous instead of last-row-wins.
+    """
+    fresh_by_key: dict[tuple[str, str, str], list[dict[str, str]]] = {}
+    for row in fresh:
+        key = (str(row["date"]), str(row["home_key"]), str(row["away_key"]))
+        norm = _normalize_closing_row(row, from_fresh=True)
+        bucket = fresh_by_key.setdefault(key, [])
+        sig = _closing_signature(norm)
+        if any(_closing_signature(prev) == sig for prev in bucket):
+            continue
+        bucket.append(norm)
+
+    existing_by_key: dict[tuple[str, str, str], list[dict[str, str]]] = {}
+    for row in existing:
+        key = (row["date"], row["home_key"], row["away_key"])
+        norm = _normalize_closing_row(row, from_fresh=False)
+        bucket = existing_by_key.setdefault(key, [])
+        sig = _closing_signature(norm)
+        if any(_closing_signature(prev) == sig for prev in bucket):
+            continue
+        bucket.append(norm)
+
+    merged: list[dict[str, str]] = []
+    for key in sorted(set(existing_by_key) | set(fresh_by_key)):
+        if key in fresh_by_key:
+            merged.extend(fresh_by_key[key])
+        else:
+            merged.extend(existing_by_key[key])
+    return sorted(merged, key=lambda item: (item["date"], item["home_key"]))
 
 
 def write_merged_csv(rows: list[dict[str, str]], path: Path = OUTPUT_CSV) -> int:

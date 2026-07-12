@@ -430,15 +430,25 @@ def fetch_sbr_archive_rows(sport: str) -> list[dict[str, Any]]:
         game_date = _archive_date(record.get("date"))
         if not home_key or not away_key or not game_date:
             continue
+        home_close_ml = _parse_optional_int(record.get("home_close_ml"))
+        away_close_ml = _parse_optional_int(record.get("away_close_ml"))
+        home_spread = _parse_optional_float(record.get("home_close_spread"))
+        away_spread = _parse_optional_float(record.get("away_close_spread"))
+        home_spread, away_spread = _repair_same_sign_spreads(
+            home_spread,
+            away_spread,
+            home_ml=home_close_ml,
+            away_ml=away_close_ml,
+        )
         output.append(
             {
                 "date": game_date,
                 "home_key": home_key,
                 "away_key": away_key,
-                "home_close_ml": _parse_optional_int(record.get("home_close_ml")),
-                "away_close_ml": _parse_optional_int(record.get("away_close_ml")),
-                "home_close_spread": _parse_optional_float(record.get("home_close_spread")),
-                "away_close_spread": _parse_optional_float(record.get("away_close_spread")),
+                "home_close_ml": home_close_ml,
+                "away_close_ml": away_close_ml,
+                "home_close_spread": home_spread,
+                "away_close_spread": away_spread,
                 # Archive JSON has no juice fields — do not invent -110.
                 "home_spread_odds": None,
                 "away_spread_odds": None,
@@ -448,14 +458,42 @@ def fetch_sbr_archive_rows(sport: str) -> list[dict[str, Any]]:
     return output
 
 
+def _odds_row_signature(row: dict[str, Any]) -> tuple[Any, ...]:
+    """Comparable close fields only (ignore source) for DH / duplicate detection."""
+    return (
+        row.get("home_close_ml"),
+        row.get("away_close_ml"),
+        row.get("home_close_spread"),
+        row.get("away_close_spread"),
+        row.get("home_spread_odds"),
+        row.get("away_spread_odds"),
+    )
+
+
 def _dedupe_odds_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    merged: dict[tuple[str, str, str], dict[str, Any]] = {}
+    """Collapse identical rows; keep conflicting same-key lines (MLB DH fail-closed).
+
+    Prefer online over archive when both exist for a key. Distinct odds under the
+    same (date, home, away) must both survive so ``closing_odds_db`` can mark the
+    key ambiguous instead of silently picking one DH leg.
+    """
+    by_key: dict[tuple[str, str, str], list[dict[str, Any]]] = {}
     for row in rows:
         key = (row["date"], row["home_key"], row["away_key"])
-        existing = merged.get(key)
-        if existing is None or existing.get("source") == "sbr-archive":
-            merged[key] = row
-    return list(merged.values())
+        by_key.setdefault(key, []).append(row)
+
+    output: list[dict[str, Any]] = []
+    for group in by_key.values():
+        online = [r for r in group if r.get("source") != "sbr-archive"]
+        pool = online if online else group
+        seen: set[tuple[Any, ...]] = set()
+        for row in pool:
+            sig = _odds_row_signature(row)
+            if sig in seen:
+                continue
+            seen.add(sig)
+            output.append(row)
+    return output
 
 
 def fetch_sbr_season_rows(sport: str, season: int, translated: dict[str, dict[str, str]]) -> list[dict[str, Any]]:

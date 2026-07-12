@@ -135,6 +135,9 @@ def _odds_url(league: str, event_id: str, competition_id: str) -> str | None:
 
 
 def _as_int_odds(value: Any) -> int | None:
+    # bool is a subclass of int; reject before False→0→EVEN +100.
+    if isinstance(value, bool):
+        return None
     validated = _valid_american(value if isinstance(value, (int, float)) else None)
     if validated is None and value is not None:
         try:
@@ -240,9 +243,10 @@ def summarize_book_items(
         name = ((item.get("provider") or {}).get("name") or "").strip()
         if name and name not in providers:
             providers.append(name)
-        if open_home is not None:
+        # Paired opens only — independent per-side medians invent phantom steam
+        # when books expose only one side's open moneyline.
+        if open_home is not None and open_away is not None:
             open_home_values.append(open_home)
-        if open_away is not None:
             open_away_values.append(open_away)
 
     if not lines:

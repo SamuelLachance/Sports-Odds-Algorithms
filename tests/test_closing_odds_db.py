@@ -97,7 +97,29 @@ def test_iso_date_accepts_slate_mdyyyy_cutoff() -> None:
 def test_fetch_opening_spread_proxy_matches_mdyyyy_cutoff(
     tmp_path: Path, monkeypatch
 ) -> None:
-    """Opening steam lookups must find ISO-keyed closes from M-D-YYYY cutoffs."""
+    """Opening steam lookups must find ISO-keyed opens from M-D-YYYY cutoffs."""
+    from web.cbb_opening import fetch_opening_spread_proxy
+
+    odds_dir = tmp_path / "closing-odds"
+    odds_dir.mkdir()
+    (odds_dir / "cbb.csv").write_text(
+        "date,home_key,away_key,home_close_ml,away_close_ml,"
+        "home_close_spread,away_close_spread,home_open_spread,away_open_spread,"
+        "home_spread_odds,away_spread_odds,source\n"
+        "2026-07-12,duke,unc,-150,130,-4.5,4.5,-3.5,3.5,-110,-110,test\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(closing_odds_db, "ODDS_DIR", odds_dir)
+    closing_odds_db.clear_closing_odds_cache()
+
+    assert fetch_opening_spread_proxy("cbb", "7-12-2026", "duke", "unc") == -3.5
+    assert fetch_opening_spread_proxy("cbb", "2026-07-12", "duke", "unc") == -3.5
+
+
+def test_fetch_opening_spread_proxy_does_not_use_close_as_open(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """Close-only rows must fail closed — substituting close fabricates 0pp steam."""
     from web.cbb_opening import fetch_opening_spread_proxy
 
     odds_dir = tmp_path / "closing-odds"
@@ -111,8 +133,30 @@ def test_fetch_opening_spread_proxy_matches_mdyyyy_cutoff(
     monkeypatch.setattr(closing_odds_db, "ODDS_DIR", odds_dir)
     closing_odds_db.clear_closing_odds_cache()
 
-    assert fetch_opening_spread_proxy("cbb", "7-12-2026", "duke", "unc") == -4.5
-    assert fetch_opening_spread_proxy("cbb", "2026-07-12", "duke", "unc") == -4.5
+    assert fetch_opening_spread_proxy("cbb", "2026-07-12", "duke", "unc") is None
+
+
+def test_closing_odds_lookup_loads_open_spreads(tmp_path: Path, monkeypatch) -> None:
+    odds_dir = tmp_path / "closing-odds"
+    odds_dir.mkdir()
+    (odds_dir / "nba.csv").write_text(
+        "date,home_key,away_key,home_close_ml,away_close_ml,"
+        "home_close_spread,away_close_spread,home_open_spread,away_open_spread,"
+        "home_spread_odds,away_spread_odds,source\n"
+        "2024-01-15,bos,ny,-150,130,-3.5,3.5,-2.5,2.5,-110,-110,test\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(closing_odds_db, "ODDS_DIR", odds_dir)
+    closing_odds_db.clear_closing_odds_cache()
+
+    row = closing_odds_db.closing_odds_lookup("nba", "2024-01-15", "bos", "ny")
+    assert row is not None
+    assert row["home_open_spread"] == -2.5
+    assert row["away_open_spread"] == 2.5
+    flipped = closing_odds_db.closing_odds_lookup("nba", "2024-01-15", "ny", "bos")
+    assert flipped is not None
+    assert flipped["home_open_spread"] == 2.5
+    assert flipped["away_open_spread"] == -2.5
 
 
 def test_closing_odds_lookup_does_not_swap_across_fuzzy_dates(

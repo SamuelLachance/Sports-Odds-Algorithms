@@ -105,8 +105,9 @@ def _valid_american(value: float | None) -> float | None:
     """American odds always have magnitude >= 100; reject decimal/garbage.
 
     ESPN EVEN sometimes arrives as 0 — treat as +100 (even money).
+    Reject bools: ``False == 0`` would otherwise become +100.
     """
-    if value is None:
+    if value is None or isinstance(value, bool):
         return None
     if value == 0:
         return 100.0
@@ -156,12 +157,13 @@ def _provider_line(
     # ``_valid_handicap_line`` (|x| ≥ 100). Flat ``spread`` goes through the
     # same helper below so CFB/CBB raised caps cannot reintroduce −110.
     if home_close_spread is None:
+        # Flat ESPN ``spread`` is usually a signed home line. Only apply
+        # favorite+magnitude when home is chalk and the flat value is still a
+        # positive magnitude (NHL/MLB often send ``spread: 1.5`` + home favorite).
+        # Never invert an already-signed line via a wrong away.favorite flag.
         if raw_spread is not None:
-            magnitude = abs(raw_spread)
-            if home.get("favorite"):
-                home_close_spread = -magnitude
-            elif away.get("favorite"):
-                home_close_spread = magnitude
+            if home.get("favorite") and not away.get("favorite") and raw_spread > 0:
+                home_close_spread = -raw_spread
             else:
                 home_close_spread = raw_spread
         home_close_spread = _valid_handicap_line(

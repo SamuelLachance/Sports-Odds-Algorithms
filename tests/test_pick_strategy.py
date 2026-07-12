@@ -403,3 +403,61 @@ def test_closing_market_fields_includes_draw_close_ml(monkeypatch) -> None:
     assert fields["market_home_odds"] == -120
     assert fields["market_draw_odds"] == 240
     assert fields["market_away_odds"] == 320
+
+
+def test_settle_spread_juice_is_side_aware() -> None:
+    """Missing pick juice must not borrow the opposite side's price."""
+    from web.pick_strategy import _settle_spread_juice
+
+    assert (
+        _settle_spread_juice(
+            "away",
+            None,
+            home_spread_odds=-115,
+            away_spread_odds=-105,
+            market_spread=-3.5,
+        )
+        == -105
+    )
+    assert (
+        _settle_spread_juice(
+            "home",
+            None,
+            home_spread_odds=-115,
+            away_spread_odds=-105,
+            market_spread=-3.5,
+        )
+        == -115
+    )
+    # Away pick with only home juice present → fail closed.
+    assert (
+        _settle_spread_juice(
+            "away",
+            None,
+            home_spread_odds=-115,
+            away_spread_odds=None,
+            market_spread=-3.5,
+        )
+        is None
+    )
+    # Synthetic market (no closing line) may use historical -110.
+    assert (
+        _settle_spread_juice(
+            "away",
+            None,
+            home_spread_odds=-115,
+            away_spread_odds=None,
+            market_spread=None,
+        )
+        == -110
+    )
+    assert (
+        _settle_spread_juice(
+            "away",
+            -108,
+            home_spread_odds=-115,
+            away_spread_odds=-105,
+            market_spread=-3.5,
+        )
+        == -108
+    )

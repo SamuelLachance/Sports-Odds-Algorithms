@@ -82,12 +82,11 @@ def _provider_line_mlb(item: dict[str, Any]) -> dict[str, float | None]:
     )
     if home_close_spread is None:
         raw_spread = _to_float(item.get("spread"))
+        # Prefer signed home lines; only re-sign positive magnitudes when home
+        # is the unique favorite. Never invert via a wrong away.favorite flag.
         if raw_spread is not None:
-            magnitude = abs(raw_spread)
-            if home.get("favorite"):
-                home_close_spread = -magnitude
-            elif away.get("favorite"):
-                home_close_spread = magnitude
+            if home.get("favorite") and not away.get("favorite") and raw_spread > 0:
+                home_close_spread = -raw_spread
             else:
                 home_close_spread = raw_spread
         home_close_spread = _valid_handicap_line(

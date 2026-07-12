@@ -146,6 +146,31 @@ def test_select_matchup_game_estimates_missing_nightcap_datetime() -> None:
     assert selected["home_pp_id"] == 200
 
 
+def test_select_matchup_game_estimates_missing_opener_datetime() -> None:
+    """When only G2 has a timestamp, evening kickoff must still pick G2 starters."""
+    import web.mlb_v2.live as live
+
+    game1 = {
+        "gamePk": 1,
+        "status": "S",
+        "game_number": 1,
+        "home_pp_id": 100,
+        # Missing G1 datetime previously cloned G2's time → equal delta → G1 wins.
+    }
+    game2 = {
+        "gamePk": 2,
+        "status": "S",
+        "game_number": 2,
+        "home_pp_id": 200,
+        "game_datetime": "2026-07-12T23:10:00Z",
+    }
+    selected = live._select_matchup_game(
+        [game1, game2], kickoff_iso="2026-07-12T23:05:00Z"
+    )
+    assert selected["gamePk"] == 2
+    assert selected["home_pp_id"] == 200
+
+
 def test_is_final_game_accepts_game_over_status() -> None:
     from web.mlb_v2.replay import is_final_game
 

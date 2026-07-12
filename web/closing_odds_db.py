@@ -154,6 +154,8 @@ def _flip_two_way_odds(row: dict[str, Any]) -> dict[str, Any]:
     flipped["away_open_ml"] = row.get("home_open_ml")
     flipped["home_close_spread"] = row.get("away_close_spread")
     flipped["away_close_spread"] = row.get("home_close_spread")
+    flipped["home_open_spread"] = row.get("away_open_spread")
+    flipped["away_open_spread"] = row.get("home_open_spread")
     flipped["home_spread_odds"] = row.get("away_spread_odds")
     flipped["away_spread_odds"] = row.get("home_spread_odds")
     return flipped
@@ -168,6 +170,8 @@ def _us_odds_signature(row: dict[str, Any]) -> tuple[Any, ...]:
         row.get("away_open_ml"),
         row.get("home_close_spread"),
         row.get("away_close_spread"),
+        row.get("home_open_spread"),
+        row.get("away_open_spread"),
         row.get("home_spread_odds"),
         row.get("away_spread_odds"),
         row.get("close_total"),
@@ -260,6 +264,8 @@ def _load_us_odds_index(
                 "away_open_ml": _parse_int(row.get("away_open_ml")),
                 "home_close_spread": _parse_float(row.get("home_close_spread")),
                 "away_close_spread": _parse_float(row.get("away_close_spread")),
+                "home_open_spread": _parse_float(row.get("home_open_spread")),
+                "away_open_spread": _parse_float(row.get("away_open_spread")),
                 "home_spread_odds": _parse_int(row.get("home_spread_odds")),
                 "away_spread_odds": _parse_int(row.get("away_spread_odds")),
                 "close_total": _parse_float(row.get("close_total")),

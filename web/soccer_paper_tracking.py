@@ -31,19 +31,28 @@ def _safe_int(value: Any) -> int | None:
         return None
 
 
-def _load_paper_log() -> dict[str, Any]:
+def _empty_paper_log() -> dict[str, Any]:
+    return {"version": 1, "bets": []}
+
+
+def _load_paper_log() -> dict[str, Any] | None:
+    """Load the paper ledger. Missing file → empty dict; corrupt → ``None``.
+
+    Callers must not ``_save_paper_log`` on ``None`` — that would wipe a
+    corrupted on-disk ledger during Pages grading.
+    """
     if not PAPER_TRACKING_PATH.is_file():
-        return {"version": 1, "bets": []}
+        return _empty_paper_log()
     try:
         payload = json.loads(PAPER_TRACKING_PATH.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
-        return {"version": 1, "bets": []}
+        return None
     if not isinstance(payload, dict):
-        return {"version": 1, "bets": []}
+        return None
     payload.setdefault("version", 1)
     bets = payload.get("bets")
     if not isinstance(bets, list):
-        payload["bets"] = []
+        return None
     return payload
 
 
@@ -68,6 +77,8 @@ def record_soccer_paper_pick(
     if pick_outcome not in _VALID_OUTCOMES:
         return
     payload = _load_paper_log()
+    if payload is None:
+        return
     bets: list[dict[str, Any]] = payload["bets"]
     dedupe_key = f"{league}:{event_id}:{pick_outcome}"
     if any(isinstance(bet, dict) and bet.get("key") == dedupe_key for bet in bets):
@@ -118,6 +129,17 @@ def grade_paper_picks() -> dict[str, Any]:
     from web.tracking_service import _fetch_event_result, calculate_units
 
     payload = _load_paper_log()
+    if payload is None:
+        # Corrupt ledger: fail closed — do not overwrite the on-disk file.
+        return {
+            "picks": 0,
+            "settled": 0,
+            "wins": 0,
+            "losses": 0,
+            "units": 0.0,
+            "newly_graded": 0,
+            "load_error": True,
+        }
     graded = 0
     for bet in payload["bets"]:
         if not isinstance(bet, dict):

@@ -288,7 +288,10 @@ def _select_matchup_game(
                 except (TypeError, ValueError):
                     gn = 1
                 base_gn, base_dt = known[0]
-                game_dt = base_dt + _DH_MISSING_DT_GAP * max(0, gn - base_gn)
+                # Signed offset: if only G2 has a timestamp, G1 must be earlier
+                # (max(0, …) previously cloned G2's time onto G1 → evening
+                # kickoffs wrongly selected G1 starters).
+                game_dt = base_dt + _DH_MISSING_DT_GAP * (gn - base_gn)
             if game_dt is None:
                 continue
             delta = abs((game_dt - kickoff).total_seconds())

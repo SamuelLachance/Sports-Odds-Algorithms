@@ -435,13 +435,15 @@ def fetch_event_odds(
                 if raw is not None:
                     home_odds = item.get("homeTeamOdds") or {}
                     away_odds = item.get("awayTeamOdds") or {}
-                    if home_odds.get("favorite"):
-                        home_spread = -abs(raw)
-                    elif away_odds.get("favorite"):
-                        home_spread = abs(raw)
+                    # Positive magnitude + home favorite → home chalk. Never
+                    # invert an already-signed line via away.favorite.
+                    if (
+                        home_odds.get("favorite")
+                        and not away_odds.get("favorite")
+                        and raw > 0
+                    ):
+                        home_spread = -raw
                     else:
-                        # ESPN often sends a signed home line; do not flip when
-                        # favorite flags are missing/false.
                         home_spread = raw
 
         home_spread = _valid_handicap_line(home_spread, max_abs=MAX_NBA_SPREAD)

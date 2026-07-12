@@ -63,6 +63,33 @@ DRAWDOWN_PENALTY = 0.35
 PROFIT_SCORE_QUARTILE_FRACTION = 0.25
 
 
+def _settle_spread_juice(
+    side: str,
+    pick_spread_odds: int | float | None,
+    *,
+    home_spread_odds: int | float | None,
+    away_spread_odds: int | float | None,
+    market_spread: float | None,
+) -> int | None:
+    """Juice for P&L: pick price, else same-side market juice, never the other side.
+
+    When grading against a real closing line, missing same-side juice fails closed
+    (returns None) instead of inventing -110 or borrowing the opposite side.
+    """
+    if pick_spread_odds is not None:
+        return int(pick_spread_odds)
+    side_key = str(side or "").strip().lower()
+    if side_key == "home":
+        if home_spread_odds is not None:
+            return int(home_spread_odds)
+    elif side_key == "away":
+        if away_spread_odds is not None:
+            return int(away_spread_odds)
+    if market_spread is None:
+        return DEFAULT_SPREAD_JUICE
+    return None
+
+
 def official_bet_type(league: str) -> OfficialBetType:
     """Spread for basketball/football; moneyline for hockey/baseball; 1X2 for soccer."""
     league = league.lower()
@@ -490,15 +517,14 @@ def _evaluate_backtest_pick(
         if not passes_profit_gate(pick, thresholds):
             return None
         result = grade_spread_bet(pick.side, home_goals, away_goals, market_spread_line)
-        if pick.spread_odds is not None:
-            odds = pick.spread_odds
-        elif home_spread_odds is not None:
-            odds = home_spread_odds
-        elif away_spread_odds is not None:
-            odds = away_spread_odds
-        elif market_spread is None:
-            odds = DEFAULT_SPREAD_JUICE
-        else:
+        odds = _settle_spread_juice(
+            pick.side,
+            pick.spread_odds,
+            home_spread_odds=home_spread_odds,
+            away_spread_odds=away_spread_odds,
+            market_spread=market_spread,
+        )
+        if odds is None:
             return None
     else:
         away_ml, home_ml = simulate_market_moneylines(

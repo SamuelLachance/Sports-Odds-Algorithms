@@ -9,18 +9,23 @@ from web.closing_odds_db import closing_odds_lookup
 STEAM_MARGIN_THRESHOLD = 2.5
 
 
-def _closing_spread_proxy(
+def _opening_spread_from_db(
     league: str,
     game_date: str,
     home_key: str,
     away_key: str,
 ) -> float | None:
+    """Return true opening home spread when cached; never substitute close.
+
+    Using close as an "opening" proxy made ``steam_move`` ~0 whenever live ≈
+    close and hid real open→close line movement.
+    """
     row = closing_odds_lookup(league, game_date, home_key, away_key)
     if not row:
         return None
-    spread = row.get("home_close_spread")
+    spread = row.get("home_open_spread")
     if spread is None:
-        spread = row.get("away_close_spread")
+        spread = row.get("away_open_spread")
         if spread is not None:
             spread = -float(spread)
     return float(spread) if spread is not None else None
@@ -79,5 +84,5 @@ def fetch_opening_spread_proxy(
     home_key: str,
     away_key: str,
 ) -> float | None:
-    """Use closing odds DB spread as closing proxy when available."""
-    return _closing_spread_proxy(league, game_date, home_key, away_key)
+    """Opening home spread from the closing-odds DB when open columns exist."""
+    return _opening_spread_from_db(league, game_date, home_key, away_key)

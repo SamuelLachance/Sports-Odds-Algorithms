@@ -10,25 +10,39 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 
-def test_grade_outcome_title_case_draw() -> None:
-    import web.soccer_paper_tracking as paper
-
-    assert paper._grade_outcome("Draw", 1, 1) == "win"
-    assert paper._grade_outcome("HOME", 1, 2) == "win"
-
-
-def test_load_paper_log_tolerates_corrupt_and_non_list_bets(tmp_path, monkeypatch) -> None:
+def test_load_paper_log_corrupt_returns_none_not_empty(tmp_path, monkeypatch) -> None:
+    """Corrupt / non-list bets must fail closed so grading cannot wipe the file."""
     import web.soccer_paper_tracking as paper
 
     path = tmp_path / "soccer_paper_tracking.json"
     path.write_text("{not-json", encoding="utf-8")
     monkeypatch.setattr(paper, "PAPER_TRACKING_PATH", path)
-    payload = paper._load_paper_log()
-    assert payload == {"version": 1, "bets": []}
+    assert paper._load_paper_log() is None
 
     path.write_text(json.dumps({"version": 1, "bets": "oops"}), encoding="utf-8")
-    payload = paper._load_paper_log()
-    assert payload["bets"] == []
+    assert paper._load_paper_log() is None
+
+
+def test_grade_corrupt_ledger_does_not_wipe_file(tmp_path, monkeypatch) -> None:
+    """Pages grading on a corrupt JSON must not overwrite the ledger with []."""
+    import web.soccer_paper_tracking as paper
+
+    path = tmp_path / "soccer_paper_tracking.json"
+    corrupt = "{not-json-but-was-a-ledger"
+    path.write_text(corrupt, encoding="utf-8")
+    monkeypatch.setattr(paper, "PAPER_TRACKING_PATH", path)
+
+    summary = paper.grade_paper_picks()
+    assert summary.get("load_error") is True
+    assert summary["newly_graded"] == 0
+    assert path.read_text(encoding="utf-8") == corrupt
+
+
+def test_grade_outcome_title_case_draw() -> None:
+    import web.soccer_paper_tracking as paper
+
+    assert paper._grade_outcome("Draw", 1, 1) == "win"
+    assert paper._grade_outcome("HOME", 1, 2) == "win"
 
 
 def test_grade_skips_unknown_outcome_and_bad_market_ml(tmp_path, monkeypatch) -> None:

@@ -38,6 +38,14 @@ def test_valid_american_maps_even_zero_to_plus_100() -> None:
     assert _valid_american(-110) == -110.0
     assert _valid_american(1.91) is None
     assert _valid_american(None) is None
+    # bool is a subclass of int; False == 0 must not become EVEN +100.
+    assert _valid_american(False) is None
+    assert _valid_american(True) is None
+    from web.live_odds_enrichment import _as_int_odds
+
+    assert _as_int_odds(False) is None
+    assert _as_int_odds(True) is None
+    assert _as_int_odds(0) == 100
 
 
 def test_valid_handicap_line_rejects_ml_sized_dumps() -> None:
@@ -537,6 +545,35 @@ def test_summarize_extracts_open_moneylines_and_providers() -> None:
     # Median consensus opens across the three books.
     assert summary["open_home_moneyline"] == -130
     assert summary["open_away_moneyline"] == 110
+
+
+def test_summarize_ignores_unpaired_open_moneylines() -> None:
+    """One-sided opens from different books must not invent a two-way open."""
+    items = [
+        _book_item(
+            home_ml=-150, away_ml=130, name="BookA", open_home_ml=-200
+        ),  # home open only
+        _book_item(
+            home_ml=-140, away_ml=120, name="BookB", open_away_ml=110
+        ),  # away open only
+    ]
+    summary = summarize_book_items(items)
+    assert "open_home_moneyline" not in summary
+    assert "open_away_moneyline" not in summary
+
+
+def test_provider_line_trusts_signed_spread_over_wrong_favorite_flag() -> None:
+    """away.favorite must not invert an already-signed home chalk line."""
+    from web.nba_odds_espn import _provider_line
+
+    item = {
+        "spread": -7.5,
+        "homeTeamOdds": {"favorite": False, "moneyLine": -200},
+        "awayTeamOdds": {"favorite": True, "moneyLine": 170},
+    }
+    line = _provider_line(item)
+    assert line["home_close_spread"] == -7.5
+    assert line["away_close_spread"] == 7.5
 
 
 def test_summarize_n_books_counts_only_parsed_items() -> None:

@@ -613,6 +613,28 @@ def test_nba_v2_preserves_signed_spread_when_favorite_missing() -> None:
     assert rows[0]["home_spread"] == -7.5
 
 
+def test_nba_v2_preserves_signed_spread_when_away_favorite_flag_wrong() -> None:
+    """Wrong away.favorite must not invert a signed home chalk line."""
+    from unittest.mock import patch
+
+    from web.nba_v2 import data as nba_data
+
+    payload = {
+        "items": [
+            {
+                "provider": {"name": "ESPN BET"},
+                "spread": -7.5,
+                "homeTeamOdds": {"favorite": False, "moneyLine": -300, "spreadOdds": -110},
+                "awayTeamOdds": {"favorite": True, "moneyLine": 250, "spreadOdds": -110},
+            }
+        ]
+    }
+    with patch.object(nba_data, "get_json", return_value=payload):
+        rows = nba_data.fetch_event_odds("123", "bos", "ny")
+    assert len(rows) == 1
+    assert rows[0]["home_spread"] == -7.5
+
+
 def test_nba_v2_rejects_ml_sized_nested_point_spread() -> None:
     """ML dumped into pointSpread must fall back to flat signed spread."""
     from unittest.mock import patch

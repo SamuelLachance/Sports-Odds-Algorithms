@@ -463,3 +463,100 @@ def test_repair_same_sign_handles_pk_mismatch_and_asymmetric_magnitude() -> None
     # Both PK / already opposite stay unchanged.
     assert _repair_same_sign_spreads(0.0, 0.0) == (0.0, 0.0)
     assert _repair_same_sign_spreads(-3.5, 3.5) == (-3.5, 3.5)
+
+
+def test_dedupe_keeps_conflicting_mlb_doubleheader_rows() -> None:
+    """Conflicting same-day rows must both survive so closing_odds_db fails closed."""
+    from web.sbr_odds import _dedupe_odds_rows
+
+    rows = [
+        {
+            "date": "2024-07-04",
+            "home_key": "nyy",
+            "away_key": "bos",
+            "home_close_ml": -150,
+            "away_close_ml": 130,
+            "home_close_spread": -1.5,
+            "away_close_spread": 1.5,
+            "home_spread_odds": -110,
+            "away_spread_odds": -110,
+            "source": "sbr-online",
+        },
+        {
+            "date": "2024-07-04",
+            "home_key": "nyy",
+            "away_key": "bos",
+            "home_close_ml": -120,
+            "away_close_ml": 100,
+            "home_close_spread": -1.5,
+            "away_close_spread": 1.5,
+            "home_spread_odds": -115,
+            "away_spread_odds": -105,
+            "source": "sbr-online",
+        },
+    ]
+    out = _dedupe_odds_rows(rows)
+    assert len(out) == 2
+
+
+def test_dedupe_prefers_online_over_archive_identical_key() -> None:
+    from web.sbr_odds import _dedupe_odds_rows
+
+    rows = [
+        {
+            "date": "2024-07-04",
+            "home_key": "nyy",
+            "away_key": "bos",
+            "home_close_ml": -150,
+            "away_close_ml": 130,
+            "home_close_spread": -1.5,
+            "away_close_spread": 1.5,
+            "home_spread_odds": None,
+            "away_spread_odds": None,
+            "source": "sbr-archive",
+        },
+        {
+            "date": "2024-07-04",
+            "home_key": "nyy",
+            "away_key": "bos",
+            "home_close_ml": -150,
+            "away_close_ml": 130,
+            "home_close_spread": -1.5,
+            "away_close_spread": 1.5,
+            "home_spread_odds": -110,
+            "away_spread_odds": -110,
+            "source": "sbr-online",
+        },
+    ]
+    out = _dedupe_odds_rows(rows)
+    assert len(out) == 1
+    assert out[0]["source"] == "sbr-online"
+    assert out[0]["home_spread_odds"] == -110
+
+
+def test_archive_rows_repair_same_sign_spreads() -> None:
+    """Archive JSON path must mirror same-sign dumps like HTML/xlsx scrapers."""
+    from unittest.mock import patch
+
+    from web.sbr_odds import fetch_sbr_archive_rows
+
+    payload = [
+        {
+            "date": "2019-01-15",
+            "home_team": "Boston",
+            "away_team": "New York",
+            "home_close_ml": -150,
+            "away_close_ml": 130,
+            "home_close_spread": -1.5,
+            "away_close_spread": -1.5,
+        }
+    ]
+    with patch("web.sbr_odds._fetch_text", return_value=__import__("json").dumps(payload)):
+        with patch(
+            "web.sbr_odds.normalize_team_key",
+            side_effect=lambda _s, name: name.lower()[:3],
+        ):
+            rows = fetch_sbr_archive_rows("nhl")
+    assert len(rows) == 1
+    assert rows[0]["home_close_spread"] == -1.5
+    assert rows[0]["away_close_spread"] == 1.5
