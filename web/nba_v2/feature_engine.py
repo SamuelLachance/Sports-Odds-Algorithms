@@ -9,7 +9,8 @@ Game dict schema (merged from ESPN events + boxes):
   date (ISO), season (ending year), season_type (2 reg / 3 post),
   home, away (franchise keys), home_score, away_score, neutral_site (optional),
   home_box / away_box (optional dicts: fgm fga tpm tpa ftm fta orb drb tov ast,
-  plus optional players: [[athlete_id, minutes, fga, ast, tov, pf, plus_minus], ...]
+  plus optional players:
+  [[athlete_id, minutes, fga, ast, tov, pf, plus_minus, fta?], ...]
   and optional dnp_ids: [athlete_id, ...]).
 """
 
@@ -60,6 +61,7 @@ LEAGUE_MIN_HHI = 0.12
 LEAGUE_BENCH_MIN_SHARE = 0.35
 HIGH_MIN_FLOOR = 20.0
 BENCH_TOP_N = 5
+STARTER_REST_N = 5
 
 CLOSE_GAME_MARGIN = 5.0
 BLOWOUT_MARGIN = 15.0
@@ -163,6 +165,7 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     "rotation_depth_diff",
     "min_hhi_diff",
     "bench_min_share_diff",
+    "starter_rest_diff",
     # matchup history / interactions
     "h2h_margin_ewma",
     "net_x_pace",
@@ -195,8 +198,13 @@ def _possessions(box: dict[str, float], opp_box: dict[str, float]) -> float | No
     return float(fga) - float(orb) + float(tov) + 0.44 * float(fta)
 
 
-def _parse_player_row(row: Any) -> tuple[str, float, float, float, float, float, float] | None:
-    """Normalize legacy [id, min] or rich [id, min, fga, ast, tov, pf, +/-] rows."""
+def _parse_player_row(
+    row: Any,
+) -> tuple[str, float, float, float, float, float, float, float] | None:
+    """Normalize legacy [id, min] or rich rows with optional FTA.
+
+    Shape: ``[id, min, fga, ast, tov, pf, +/-, fta]``.
+    """
     if not isinstance(row, (list, tuple)) or len(row) < 2:
         return None
     pid = str(row[0] or "")
@@ -215,7 +223,12 @@ def _parse_player_row(row: Any) -> tuple[str, float, float, float, float, float,
         except (TypeError, ValueError):
             return 0.0
 
-    return pid, mins, _at(2), _at(3), _at(4), _at(5), _at(6)
+    return pid, mins, _at(2), _at(3), _at(4), _at(5), _at(6), _at(7)
+
+
+def _usage_possessions(fga: float, fta: float, tov: float) -> float:
+    """Basketball-Reference-style usage possessions (FGA + 0.44*FTA + TOV)."""
+    return float(fga) + 0.44 * float(fta) + float(tov)
 
 
 def _player_rotation_metrics(
@@ -235,7 +248,8 @@ def _player_rotation_metrics(
         return {}
     parsed.sort(key=lambda r: -r[1])
     total_min = sum(r[1] for r in parsed)
-    total_fga = sum(r[2] for r in parsed)
+    usage_vals = [_usage_possessions(r[2], r[7], r[4]) for r in parsed]
+    total_usage = sum(usage_vals)
     if total_min <= 0:
         return {}
 
@@ -243,9 +257,11 @@ def _player_rotation_metrics(
     top3 = parsed[:3]
     top1_min_share = top1[1] / total_min
     top3_min_share = sum(r[1] for r in top3) / total_min
-    if total_fga > 0:
-        top1_usage = top1[2] / total_fga
-        top3_usage = sum(r[2] for r in top3) / total_fga
+    if total_usage > 1e-9:
+        top1_usage = _usage_possessions(top1[2], top1[7], top1[4]) / total_usage
+        top3_usage = sum(
+            _usage_possessions(r[2], r[7], r[4]) for r in top3
+        ) / total_usage
     else:
         # minutes-only caches: usage proxy = minutes share
         top1_usage = top1_min_share
@@ -313,7 +329,7 @@ def _player_rotation_metrics(
         "min_hhi": min_hhi,
         "bench_min_share": bench_min_share,
         "has_pm": 1.0 if has_pm else 0.0,
-        "has_usage": 1.0 if total_fga > 0 else 0.0,
+        "has_usage": 1.0 if total_usage > 1e-9 else 0.0,
     }
 
 
@@ -331,7 +347,8 @@ class TeamState:
         "efg_for_slow", "tpa_rate", "tp_pct", "ft_pct", "tp_pct_against",
         "close_win_ewma", "blowout_net_ewma", "recent_margins",
         "elo_pre_hist", "loc_streak",
-        "last_players", "prev_player_ids", "season_minutes", "h2h_margin",
+        "last_players", "prev_player_ids", "season_minutes", "player_last_date",
+        "h2h_margin",
         "top1_min_share", "top3_min_share", "top1_usage", "top3_usage",
         "high_min_ast_tov", "high_min_foul_rate",
         "star_min_ewma", "star_min_season_avg", "bench_pm",
@@ -389,6 +406,7 @@ class TeamState:
         self.last_players: list[list[Any]] = []
         self.prev_player_ids: list[str] = []
         self.season_minutes: dict[str, float] = {}
+        self.player_last_date: dict[str, str] = {}
         self.h2h_margin: dict[str, float] = {}
         self.top1_min_share = LEAGUE_TOP1_MIN_SHARE
         self.top3_min_share = LEAGUE_TOP3_MIN_SHARE
@@ -435,6 +453,7 @@ class TeamState:
         self.last_players = []
         self.prev_player_ids = []
         self.season_minutes = {}
+        self.player_last_date = {}
         # keep EWMA rotation priors across seasons (gentle carry); reset DNP noise
         self.dnp_star_rate = LEAGUE_DNP_STAR_RATE
 
@@ -518,6 +537,42 @@ class TeamState:
         """Recent star minutes EWMA minus season-average MPG of those stars."""
         return self.star_min_ewma - self.star_min_season_avg
 
+    def starter_rest_weighted(self, game_date: date_cls) -> float:
+        """Minutes-weighted rest of last game's top-N rotation (leak-free).
+
+        Falls back to team rest when player boxes are missing.
+        """
+        team_rest = self.rest_days(game_date)
+        last_parsed = [
+            row for row in (_parse_player_row(r) for r in self.last_players) if row
+        ]
+        if last_parsed:
+            top = sorted(last_parsed, key=lambda r: -r[1])[:STARTER_REST_N]
+            weights = [(str(r[0]), float(r[1])) for r in top]
+        elif self.season_minutes:
+            ranked = sorted(
+                self.season_minutes, key=lambda k: -self.season_minutes[k]
+            )[:STARTER_REST_N]
+            weights = [(pid, float(self.season_minutes[pid])) for pid in ranked]
+        else:
+            return team_rest
+
+        total_w = 0.0
+        weighted = 0.0
+        for pid, mins in weights:
+            if mins <= 0:
+                continue
+            last = _parse_date(self.player_last_date.get(pid, ""))
+            if last is None:
+                rest = team_rest
+            else:
+                rest = float(min(max((game_date - last).days, 0), 10))
+            weighted += mins * rest
+            total_w += mins
+        if total_w <= 0:
+            return team_rest
+        return weighted / total_w
+
     def apply_player_metrics(self, metrics: dict[str, float]) -> None:
         """Fold one game's rotation metrics into team EWMAs (call after features)."""
         if not metrics:
@@ -595,6 +650,13 @@ class TeamState:
                     self.season_minutes.items(), key=lambda kv: -kv[1]
                 )[:15]
             },
+            "player_last_date": {
+                pid: self.player_last_date[pid]
+                for pid, _ in sorted(
+                    self.season_minutes.items(), key=lambda kv: -kv[1]
+                )[:15]
+                if pid in self.player_last_date
+            },
             "h2h_margin": dict(self.h2h_margin),
             "top1_min_share": self.top1_min_share,
             "top3_min_share": self.top3_min_share,
@@ -633,6 +695,10 @@ class TeamState:
             elif key == "season_minutes":
                 state.season_minutes = {
                     str(k): float(v) for k, v in dict(value).items()
+                }
+            elif key == "player_last_date":
+                state.player_last_date = {
+                    str(k): str(v) for k, v in dict(value).items()
                 }
             elif key == "h2h_margin":
                 state.h2h_margin = {str(k): float(v) for k, v in dict(value).items()}
@@ -805,6 +871,8 @@ class NbaFeatureEngine:
             "rotation_depth_diff": home.rotation_depth - away.rotation_depth,
             "min_hhi_diff": home.min_hhi - away.min_hhi,
             "bench_min_share_diff": home.bench_min_share - away.bench_min_share,
+            "starter_rest_diff": home.starter_rest_weighted(game_date)
+            - away.starter_rest_weighted(game_date),
             "h2h_margin_ewma": home.h2h_margin.get(away.franchise, 0.0),
             "net_x_pace": net_rtg_fast_diff * pace_sum / 100.0,
         }
@@ -1008,9 +1076,12 @@ class NbaFeatureEngine:
                 if isinstance(row, (list, tuple)) and row
             ]
             team.last_players = players
+            game_iso = str(game.get("date") or "")
             for parsed in players:
                 pid, mins = str(parsed[0]), float(parsed[1])
                 team.season_minutes[pid] = team.season_minutes.get(pid, 0.0) + mins
+                if game_iso:
+                    team.player_last_date[pid] = game_iso
             team.apply_player_metrics(metrics)
 
         # head-to-head (recency-capped)

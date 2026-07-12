@@ -2,6 +2,10 @@
 
 Keeps pure vs market-aware head selection identical across basketball leagues
 so odds wiring cannot drift between ``nba_v2.live`` and ``wnba_v2.live``.
+
+Also owns fail-closed open→close steam features (``spread_move``,
+``ml_steam_pp``, ``has_steam``) reused by MLB market heads when open/close
+moneylines exist on the training table.
 """
 
 from __future__ import annotations
@@ -12,6 +16,11 @@ from typing import Any
 
 # NBA/WNBA live spreads beyond this are almost always juice/ML dumps.
 _MAX_BASKETBALL_SPREAD = 40.0
+
+# Market-block steam keys (not pure FEATURE_COLUMNS). Fail closed → zeros + has_steam=0.
+STEAM_FEATURE_KEYS: tuple[str, ...] = ("spread_move", "ml_steam_pp", "has_steam")
+CLF_STEAM_FEATURES: tuple[str, ...] = ("ml_steam_pp", "has_steam")
+MARGIN_STEAM_FEATURES: tuple[str, ...] = ("spread_move", "has_steam")
 
 
 def _coerce_home_spread(home_spread: Any) -> float | None:
@@ -76,16 +85,58 @@ def devig_home_prob(home_ml: float | None, away_ml: float | None) -> float | Non
     return ph / (ph + pa)
 
 
+def compute_steam_features(
+    *,
+    home_spread_open: Any = None,
+    home_spread_close: Any = None,
+    home_ml_open: Any = None,
+    away_ml_open: Any = None,
+    home_ml_close: Any = None,
+    away_ml_close: Any = None,
+) -> dict[str, float]:
+    """Open→close steam features; fail closed unless both sides of a pair exist.
+
+    ``spread_move`` = close − open home spread (negative → steam toward home).
+    ``ml_steam_pp`` = (close − open) home no-vig win prob × 100 (percentage points).
+    ``has_steam`` = 1 when either pair produced a value.
+    """
+    spread_move = 0.0
+    ml_steam_pp = 0.0
+    has_any = False
+
+    open_sp = _coerce_home_spread(home_spread_open)
+    close_sp = _coerce_home_spread(home_spread_close)
+    if open_sp is not None and close_sp is not None:
+        spread_move = float(close_sp - open_sp)
+        has_any = True
+
+    open_p = devig_home_prob(home_ml_open, away_ml_open)
+    close_p = devig_home_prob(home_ml_close, away_ml_close)
+    if open_p is not None and close_p is not None:
+        ml_steam_pp = float((close_p - open_p) * 100.0)
+        has_any = True
+
+    return {
+        "spread_move": spread_move,
+        "ml_steam_pp": ml_steam_pp,
+        "has_steam": 1.0 if has_any else 0.0,
+    }
+
+
 def apply_market_features(
     features: dict[str, float],
     *,
     home_moneyline: float | None = None,
     away_moneyline: float | None = None,
     home_spread: float | None = None,
+    home_spread_open: float | None = None,
+    home_ml_open: float | None = None,
+    away_ml_open: float | None = None,
 ) -> tuple[bool, bool]:
-    """Inject ``mkt_*`` / ``has_*`` keys used by basketball v2 market heads.
+    """Inject ``mkt_*`` / ``has_*`` / steam keys used by basketball v2 market heads.
 
-    Returns ``(has_market, has_spread)``.
+    Steam keys are always written (fail closed to 0 / ``has_steam=0`` when opens
+    are missing). Returns ``(has_market, has_spread)``.
     """
     mkt_prob = devig_home_prob(home_moneyline, away_moneyline)
     has_market = mkt_prob is not None
@@ -95,6 +146,16 @@ def apply_market_features(
     features["has_market"] = 1.0 if has_market else 0.0
     features["mkt_home_spread"] = float(spread) if has_spread else 0.0
     features["has_spread"] = 1.0 if has_spread else 0.0
+    features.update(
+        compute_steam_features(
+            home_spread_open=home_spread_open,
+            home_spread_close=home_spread,
+            home_ml_open=home_ml_open,
+            away_ml_open=away_ml_open,
+            home_ml_close=home_moneyline,
+            away_ml_close=away_moneyline,
+        )
+    )
     return has_market, has_spread
 
 
@@ -121,10 +182,12 @@ def resolve_market_heads(
 
     pure_cols = list(art["feature_columns"])
     clf_extra = list(
-        art.get("clf_market_features") or ("mkt_home_prob", "has_market")
+        art.get("clf_market_features")
+        or ("mkt_home_prob", "has_market", *CLF_STEAM_FEATURES)
     )
     margin_extra = list(
-        art.get("margin_market_features") or ("mkt_home_spread", "has_spread")
+        art.get("margin_market_features")
+        or ("mkt_home_spread", "has_spread", *MARGIN_STEAM_FEATURES)
     )
     clf_cols = pure_cols + clf_extra if use_market_clf else pure_cols
     margin_cols = pure_cols + margin_extra if use_market_margin else pure_cols

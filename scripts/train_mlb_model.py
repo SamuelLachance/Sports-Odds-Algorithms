@@ -56,6 +56,8 @@ CLF_PARAMS = dict(
 LR_C = 0.05
 XGB_WEIGHT = 0.55  # ensemble weight for XGBoost vs logistic regression
 MIN_CALIBRATION_POOL = 4000
+# Soft-fail market heads when closing-odds coverage is too thin to fit reliably.
+MIN_MARKET_ROWS = 200
 
 # in-season retrain checkpoints (month boundaries) mirroring production refits
 SEASON_PERIODS: tuple[tuple[int, int], ...] = ((1, 5), (6, 7), (8, 12))
@@ -71,6 +73,9 @@ RUNS_PARAMS = dict(
     random_state=42,
 )
 
+# Fail-closed open→close ML steam when home_open_ml / away_open_ml are present.
+CLF_MARKET_FEATURES = ("mkt_home_prob", "has_market", "ml_steam_pp", "has_steam")
+
 
 def log_loss(p: np.ndarray, y: np.ndarray) -> float:
     p = np.clip(p, 1e-6, 1 - 1e-6)
@@ -81,37 +86,68 @@ def brier(p: np.ndarray, y: np.ndarray) -> float:
     return float(np.mean((p - y) ** 2))
 
 
-def fit_classifier(train: pd.DataFrame, val: pd.DataFrame) -> XGBClassifier:
+def attach_market_features(frame: pd.DataFrame) -> pd.DataFrame:
+    from web.basketball_v2_market import compute_steam_features
+
+    frame = frame.copy()
+    mkt = frame["market_home_prob"] if "market_home_prob" in frame.columns else pd.Series(
+        np.nan, index=frame.index
+    )
+    frame["has_market"] = mkt.notna().astype(float)
+    frame["mkt_home_prob"] = mkt.fillna(0.5)
+    steam_rows = [
+        compute_steam_features(
+            home_ml_open=row.get("home_open_ml"),
+            away_ml_open=row.get("away_open_ml"),
+            home_ml_close=row.get("home_close_ml"),
+            away_ml_close=row.get("away_close_ml"),
+        )
+        for row in frame.to_dict(orient="records")
+    ]
+    frame["spread_move"] = [r["spread_move"] for r in steam_rows]
+    frame["ml_steam_pp"] = [r["ml_steam_pp"] for r in steam_rows]
+    frame["has_steam"] = [r["has_steam"] for r in steam_rows]
+    return frame
+
+
+def fit_classifier(train: pd.DataFrame, val: pd.DataFrame, cols: list[str]) -> XGBClassifier:
     model = XGBClassifier(**CLF_PARAMS)
     model.fit(
-        train[list(FEATURE_COLUMNS)],
+        train[cols],
         train["home_win"],
-        eval_set=[(val[list(FEATURE_COLUMNS)], val["home_win"])],
+        eval_set=[(val[cols], val["home_win"])],
         verbose=False,
     )
     return model
 
 
-def fit_logistic(train: pd.DataFrame):
+def fit_logistic(train: pd.DataFrame, cols: list[str]):
     lr = make_pipeline(
         StandardScaler(), LogisticRegression(C=LR_C, max_iter=3000)
     )
-    lr.fit(train[list(FEATURE_COLUMNS)], train["home_win"])
+    lr.fit(train[cols], train["home_win"])
     return lr
 
 
-def predict_ensemble(xgb: XGBClassifier, lr, frame: pd.DataFrame) -> np.ndarray:
-    px = xgb.predict_proba(frame[list(FEATURE_COLUMNS)])[:, 1]
-    pl = lr.predict_proba(frame[list(FEATURE_COLUMNS)])[:, 1]
+def predict_ensemble(xgb: XGBClassifier, lr, frame: pd.DataFrame, cols: list[str]) -> np.ndarray:
+    px = xgb.predict_proba(frame[cols])[:, 1]
+    pl = lr.predict_proba(frame[cols])[:, 1]
     return XGB_WEIGHT * px + (1.0 - XGB_WEIGHT) * pl
 
 
 def walk_forward(frame: pd.DataFrame, end_season: int) -> pd.DataFrame:
     """Walk-forward OOS predictions with in-season refit checkpoints."""
-    frame = frame.copy()
+    frame = attach_market_features(frame)
     frame["month"] = pd.to_datetime(frame["date"]).dt.month
+    pure_cols = list(FEATURE_COLUMNS)
+    mkt_cols = pure_cols + list(CLF_MARKET_FEATURES)
+    train_market = bool(
+        "market_home_prob" in frame.columns
+        and int(frame["market_home_prob"].notna().sum()) >= MIN_MARKET_ROWS
+    )
     outputs: list[pd.DataFrame] = []
     calibrator: IsotonicRegression | None = None
+    calibrator_mkt: IsotonicRegression | None = None
 
     for eval_season in range(FIRST_EVAL_SEASON, end_season + 1):
         for month_lo, month_hi in SEASON_PERIODS:
@@ -132,9 +168,9 @@ def walk_forward(frame: pd.DataFrame, end_season: int) -> pd.DataFrame:
             if fit.empty or len(val) < 200:
                 fit = train
                 val = train
-            xgb = fit_classifier(fit, val)
-            lr = fit_logistic(train)
-            raw = predict_ensemble(xgb, lr, test)
+            xgb = fit_classifier(fit, val, pure_cols)
+            lr = fit_logistic(train, pure_cols)
+            raw = predict_ensemble(xgb, lr, test, pure_cols)
             if calibrator is not None:
                 calibrated = calibrator.predict(raw)
             else:
@@ -158,18 +194,41 @@ def walk_forward(frame: pd.DataFrame, end_season: int) -> pd.DataFrame:
             chunk = test[keep_cols].copy()
             chunk["model_raw"] = raw
             chunk["model_prob"] = np.clip(calibrated, 0.02, 0.98)
+            if train_market:
+                xgb_mkt = fit_classifier(fit, val, mkt_cols)
+                lr_mkt = fit_logistic(train, mkt_cols)
+                raw_mkt = predict_ensemble(xgb_mkt, lr_mkt, test, mkt_cols)
+                calibrated_mkt = (
+                    calibrator_mkt.predict(raw_mkt)
+                    if calibrator_mkt is not None
+                    else raw_mkt
+                )
+                chunk["model_raw_mkt"] = raw_mkt
+                chunk["model_prob_mkt"] = np.clip(calibrated_mkt, 0.02, 0.98)
             outputs.append(chunk)
 
             pooled = pd.concat(outputs, ignore_index=True)
             if len(pooled) >= MIN_CALIBRATION_POOL:
                 calibrator = IsotonicRegression(out_of_bounds="clip", y_min=0.02, y_max=0.98)
                 calibrator.fit(pooled["model_raw"], pooled["home_win"])
+                if train_market and "model_raw_mkt" in pooled.columns:
+                    calibrator_mkt = IsotonicRegression(
+                        out_of_bounds="clip", y_min=0.02, y_max=0.98
+                    )
+                    calibrator_mkt.fit(pooled["model_raw_mkt"], pooled["home_win"])
         season_rows = pd.concat(
             [c for c in outputs if int(c.season.iloc[0]) == eval_season], ignore_index=True
         )
+        mkt_aware = ""
+        if train_market and "model_prob_mkt" in season_rows.columns:
+            mkt_aware = (
+                f" mktawareLL="
+                f"{log_loss(season_rows.model_prob_mkt.values, season_rows.home_win.values.astype(float)):.5f}"
+            )
         print(
             f"eval {eval_season}: n={len(season_rows)} "
-            f"LL={log_loss(season_rows.model_prob.values, season_rows.home_win.values.astype(float)):.5f}",
+            f"LL={log_loss(season_rows.model_prob.values, season_rows.home_win.values.astype(float)):.5f}"
+            f"{mkt_aware}",
             flush=True,
         )
 
@@ -219,6 +278,21 @@ def _logistic_to_json(lr_pipeline) -> dict:
 
 def train_final_artifacts(frame: pd.DataFrame, oos: pd.DataFrame, end_season: int) -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+    frame = attach_market_features(frame)
+    pure_cols = list(FEATURE_COLUMNS)
+    mkt_cols = pure_cols + list(CLF_MARKET_FEATURES)
+    n_with_odds = (
+        int(frame["market_home_prob"].notna().sum())
+        if "market_home_prob" in frame.columns
+        else 0
+    )
+    train_market = n_with_odds >= MIN_MARKET_ROWS
+    if not train_market:
+        print(
+            f"skipping MLB market heads: only {n_with_odds} rows with odds "
+            f"(need >= {MIN_MARKET_ROWS})",
+            flush=True,
+        )
 
     # final classifier: all data, early stop on most recent season
     val = frame[frame.season == end_season]
@@ -226,19 +300,27 @@ def train_final_artifacts(frame: pd.DataFrame, oos: pd.DataFrame, end_season: in
     if val.empty:
         fit = frame
         val = frame
-    clf = fit_classifier(fit, val)
+    clf = fit_classifier(fit, val, pure_cols)
     clf.get_booster().save_model(str(OUT_DIR / "model_clf.json"))
 
-    lr_final = fit_logistic(frame)
+    lr_final = fit_logistic(frame, pure_cols)
     (OUT_DIR / "model_lr.json").write_text(
         json.dumps(_logistic_to_json(lr_final)), encoding="utf-8"
     )
 
+    if train_market:
+        clf_mkt = fit_classifier(fit, val, mkt_cols)
+        clf_mkt.get_booster().save_model(str(OUT_DIR / "model_clf_market.json"))
+        (OUT_DIR / "model_lr_market.json").write_text(
+            json.dumps(_logistic_to_json(fit_logistic(frame, mkt_cols))),
+            encoding="utf-8",
+        )
+
     runs_home = XGBRegressor(**RUNS_PARAMS)
-    runs_home.fit(frame[list(FEATURE_COLUMNS)], frame["home_score"])
+    runs_home.fit(frame[pure_cols], frame["home_score"])
     runs_home.get_booster().save_model(str(OUT_DIR / "model_runs_home.json"))
     runs_away = XGBRegressor(**RUNS_PARAMS)
-    runs_away.fit(frame[list(FEATURE_COLUMNS)], frame["away_score"])
+    runs_away.fit(frame[pure_cols], frame["away_score"])
     runs_away.get_booster().save_model(str(OUT_DIR / "model_runs_away.json"))
 
     calibrator = IsotonicRegression(out_of_bounds="clip", y_min=0.02, y_max=0.98)
@@ -255,6 +337,20 @@ def train_final_artifacts(frame: pd.DataFrame, oos: pd.DataFrame, end_season: in
         ),
         encoding="utf-8",
     )
+    if train_market and "model_raw_mkt" in oos.columns:
+        calibrator_mkt = IsotonicRegression(out_of_bounds="clip", y_min=0.02, y_max=0.98)
+        calibrator_mkt.fit(oos["model_raw_mkt"], oos["home_win"])
+        (OUT_DIR / "calibrator_market.json").write_text(
+            json.dumps(
+                {
+                    "kind": "isotonic",
+                    "x": [round(float(v), 6) for v in grid],
+                    "y": [round(float(v), 6) for v in calibrator_mkt.predict(grid)],
+                    "fitted_on": int(len(oos)),
+                }
+            ),
+            encoding="utf-8",
+        )
 
     # engine snapshot at end of the season before the current live season
     snapshot_season = end_season - 1
@@ -275,6 +371,8 @@ def train_final_artifacts(frame: pd.DataFrame, oos: pd.DataFrame, end_season: in
         "algorithm": "MLBGradientBoost v2",
         "created_at": datetime.now(timezone.utc).isoformat(),
         "feature_columns": list(FEATURE_COLUMNS),
+        "clf_market_features": list(CLF_MARKET_FEATURES) if train_market else [],
+        "market_heads_trained": train_market,
         "ensemble": {"xgb_weight": XGB_WEIGHT, "lr_C": LR_C},
         "train_rows": int(len(frame)),
         "train_seasons": [int(frame.season.min()), int(end_season)],
@@ -287,6 +385,11 @@ def train_final_artifacts(frame: pd.DataFrame, oos: pd.DataFrame, end_season: in
         "oos_model_logloss_odds_subset": round(
             log_loss(m["model_prob"].values, m["home_win"].values.astype(float)), 5
         ) if len(m) else None,
+        "oos_market_aware_logloss_odds_subset": round(
+            log_loss(m["model_prob_mkt"].values, m["home_win"].values.astype(float)), 5
+        )
+        if train_market and len(m) and "model_prob_mkt" in m.columns
+        else None,
         "oos_market_logloss": round(
             log_loss(m["market_home_prob"].values, m["home_win"].values.astype(float)), 5
         ) if len(m) else None,
@@ -303,10 +406,13 @@ def train_final_artifacts(frame: pd.DataFrame, oos: pd.DataFrame, end_season: in
     (OUT_DIR / "metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
     oos.to_csv(OUT_DIR / "oos_predictions.csv", index=False)
 
-    print(json.dumps({k: metadata[k] for k in (
+    summary_keys = [
         "oos_model_logloss", "oos_market_logloss", "oos_model_logloss_odds_subset",
-        "oos_model_acc", "train_rows",
-    )}, indent=1))
+        "oos_model_acc", "train_rows", "market_heads_trained",
+    ]
+    if train_market:
+        summary_keys.insert(3, "oos_market_aware_logloss_odds_subset")
+    print(json.dumps({k: metadata[k] for k in summary_keys}, indent=1))
     print("\nper-season:")
     for row in per_season:
         print(row)

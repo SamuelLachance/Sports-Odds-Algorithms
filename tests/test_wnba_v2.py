@@ -13,6 +13,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from web.wnba_v2.data import (  # noqa: E402
     _american,
     _event_calendar_date,
+    _player_box_rows,
     _signed_spread_from_details,
     canon_franchise,
     devig_two_way,
@@ -639,12 +640,206 @@ def test_missing_player_box_preserves_rotation_continuity() -> None:
     home.last_players = home.last_players[2:]
     before = home.top8_continuity()
     assert before < 1.0
-    prior_last = list(home.last_players)
+    prior_last = [list(row) for row in home.last_players]
+    prior_top1 = home.top1_min_share
+    prior_depth = home.rotation_depth
 
     score_only = _game("2025-05-18", "lva", "sea", 80, 75)
     engine.update_after_game(score_only)
     assert home.last_players == prior_last
     assert home.top8_continuity() == before
+    assert home.top1_min_share == prior_top1
+    assert home.rotation_depth == prior_depth
+
+
+def _box(players: list[list] | None = None, *, dnp_ids: list[str] | None = None) -> dict:
+    box = {
+        "fgm": 30.0, "fga": 68.0, "tpm": 8.0, "tpa": 24.0,
+        "ftm": 12.0, "fta": 15.0, "orb": 8.0, "drb": 26.0,
+        "tov": 12.0, "ast": 18.0,
+    }
+    if players is not None:
+        box["players"] = players
+    if dnp_ids is not None:
+        box["dnp_ids"] = dnp_ids
+    return box
+
+
+def _rich_players(prefix: str, *, star_out: bool = False) -> list[list]:
+    """Synthetic rich rows: [id, min, fga, ast, tov, pf, +/-]."""
+    base = [
+        [f"{prefix}a", 34, 18, 5, 3, 2, 6],
+        [f"{prefix}b", 32, 15, 4, 2, 3, 3],
+        [f"{prefix}c", 28, 12, 3, 2, 4, 1],
+        [f"{prefix}d", 24, 9, 2, 1, 2, -1],
+        [f"{prefix}e", 20, 7, 2, 1, 3, -2],
+        [f"{prefix}f", 16, 5, 1, 2, 2, -3],
+        [f"{prefix}g", 12, 3, 1, 1, 1, -2],
+        [f"{prefix}h", 10, 2, 1, 1, 2, -2],
+    ]
+    if star_out:
+        return [
+            [f"{prefix}c", 34, 14, 3, 2, 5, -5],
+            [f"{prefix}d", 30, 12, 3, 2, 4, -3],
+            [f"{prefix}e", 26, 10, 2, 1, 3, -2],
+            [f"{prefix}f", 22, 8, 2, 2, 3, -2],
+            [f"{prefix}g", 18, 6, 1, 1, 2, -1],
+            [f"{prefix}h", 14, 4, 1, 1, 2, 0],
+            [f"{prefix}q", 12, 3, 1, 1, 1, 0],
+            [f"{prefix}r", 10, 2, 1, 1, 1, 0],
+        ]
+    return base
+
+
+def test_player_box_rows_rich_shape_and_dnp() -> None:
+    summary = {
+        "boxscore": {
+            "players": [
+                {
+                    "team": {"id": "17"},
+                    "statistics": [
+                        {
+                            "names": ["MIN", "FG", "AST", "TO", "PF", "+/-"],
+                            "athletes": [
+                                {
+                                    "athlete": {"id": "100"},
+                                    "stats": ["32", "8-16", "4", "2", "3", "+5"],
+                                },
+                                {
+                                    "athlete": {"id": "101"},
+                                    "didNotPlay": True,
+                                    "stats": [],
+                                },
+                                {
+                                    "athlete": {"id": "102"},
+                                    "stats": ["18", "3-7", "1", "1", "2", "-2"],
+                                },
+                            ],
+                        }
+                    ],
+                }
+            ]
+        }
+    }
+    players, dnp = _player_box_rows(summary)
+    assert dnp["17"] == ["101"]
+    assert players["17"] == [
+        ["100", 32.0, 16.0, 4.0, 2.0, 3.0, 5.0],
+        ["102", 18.0, 7.0, 1.0, 1.0, 2.0, -2.0],
+    ]
+
+
+def test_player_box_rows_soft_fail_missing_usage_cols() -> None:
+    summary = {
+        "boxscore": {
+            "players": [
+                {
+                    "team": {"id": "14"},
+                    "statistics": [
+                        {
+                            "names": ["MIN"],
+                            "athletes": [
+                                {"athlete": {"id": "200"}, "stats": ["28"]},
+                                {"athlete": {"id": "201"}, "stats": ["0"]},
+                            ],
+                        }
+                    ],
+                }
+            ]
+        }
+    }
+    players, dnp = _player_box_rows(summary)
+    assert dnp == {}
+    assert players["14"] == [["200", 28.0, 0.0, 0.0, 0.0, 0.0, 0.0]]
+
+
+def test_availability_proxies_from_player_rows() -> None:
+    engine = WnbaFeatureEngine()
+    full = [["a", 34], ["b", 32], ["c", 28], ["d", 26], ["e", 22],
+            ["f", 18], ["g", 14], ["h", 12]]
+    sea_full = [["x", 34], ["y", 32], ["z", 28], ["w", 26], ["v", 22],
+                ["u", 18], ["t", 14], ["s", 12]]
+    # Longer warmup so slow-EWMA stars keep a clear lead over role players.
+    for day in range(2, 16):
+        game = _game(f"2025-05-{day:02d}", "lva", "sea", 85, 70)
+        game["home_box"] = _box(full)
+        game["away_box"] = _box(sea_full)
+        engine.update_after_game(game)
+    even = engine.features_for_game(_game("2025-05-17", "lva", "sea", 0, 0))
+    assert even["star_avail_diff"] == 0.0
+    assert even["top1_min_share_diff"] == 0.0
+    assert even["rotation_depth_diff"] == 0.0
+    sea_short = [["z", 32], ["w", 30], ["v", 28], ["u", 24], ["t", 20],
+                 ["s", 16], ["q", 14], ["r", 12]]
+    game_short = _game("2025-05-17", "lva", "sea", 85, 70)
+    game_short["home_box"] = _box(full)
+    game_short["away_box"] = _box(sea_short)
+    engine.update_after_game(game_short)
+    hurt = engine.features_for_game(_game("2025-05-19", "lva", "sea", 0, 0))
+    assert hurt["star_avail_diff"] > 0.5
+    assert hurt["top8_continuity_diff"] > 0.1
+    assert hurt["dnp_star_rate_diff"] < 0.0
+    assert hurt["star_min_gap_diff"] > 0.0
+
+
+def test_rich_player_rotation_features() -> None:
+    engine = WnbaFeatureEngine()
+    for day in range(16, 24):
+        game = _game(f"2025-05-{day:02d}", "lva", "sea", 85, 70)
+        game["home_box"] = _box(_rich_players("h"))
+        game["away_box"] = _box(_rich_players("a"))
+        engine.update_after_game(game)
+    even = engine.features_for_game(_game("2025-05-25", "lva", "sea", 0, 0))
+    assert abs(even["top1_usage_diff"]) < 1e-6
+    assert abs(even["bench_pm_diff"]) < 1e-6
+    assert abs(even["high_min_ast_tov_diff"]) < 1e-6
+    concentrated = [
+        ["ha", 38, 24, 7, 3, 7, 10],
+        ["hb", 28, 10, 3, 2, 5, 2],
+        ["hc", 22, 7, 2, 1, 4, 0],
+        ["hd", 18, 5, 2, 1, 3, -1],
+        ["he", 14, 3, 1, 1, 1, -2],
+        ["hf", 10, 2, 1, 1, 1, -3],
+        ["hg", 8, 2, 0, 1, 1, -2],
+        ["hh", 6, 1, 0, 0, 1, -4],
+    ]
+    game = _game("2025-05-25", "lva", "sea", 85, 70)
+    game["home_box"] = _box(concentrated)
+    game["away_box"] = _box(_rich_players("a", star_out=True), dnp_ids=["aa", "ab"])
+    engine.update_after_game(game)
+    feat = engine.features_for_game(_game("2025-05-27", "lva", "sea", 0, 0))
+    assert feat["top1_min_share_diff"] > 0.0
+    assert feat["top1_usage_diff"] > 0.0
+    assert feat["min_hhi_diff"] > 0.0
+    assert feat["bench_pm_diff"] != 0.0
+    assert feat["dnp_star_rate_diff"] < 0.0
+
+
+def test_from_dict_defaults_new_rotation_fields() -> None:
+    engine = WnbaFeatureEngine()
+    game = _game("2025-05-16", "lva", "sea", 85, 70)
+    game["home_box"] = _box([["a", 34], ["b", 28]])
+    game["away_box"] = _box([["x", 34], ["y", 28]])
+    engine.update_after_game(game)
+    payload = engine.to_dict()
+    rotation_keys = (
+        "prev_player_ids", "season_minutes",
+        "top1_min_share", "top3_min_share", "top1_usage", "top3_usage",
+        "high_min_ast_tov", "high_min_foul_rate", "star_min_ewma",
+        "star_min_season_avg", "bench_pm", "dnp_star_rate", "rotation_depth",
+        "min_hhi", "bench_min_share",
+    )
+    for team_payload in payload["teams"].values():
+        for key in rotation_keys:
+            team_payload.pop(key, None)
+    restored = WnbaFeatureEngine.from_dict(payload)
+    features = restored.features_for_game(_game("2025-05-18", "lva", "sea", 0, 0))
+    assert set(features.keys()) == set(FEATURE_COLUMNS)
+    assert features["star_avail_diff"] == 0.0
+    assert features["top1_min_share_diff"] == 0.0
+    assert features["star_min_gap_diff"] == 0.0
+    assert "star_avail_diff" in FEATURE_COLUMNS
+    assert "bench_min_share_diff" in FEATURE_COLUMNS
 
 
 if __name__ == "__main__":
@@ -663,4 +858,10 @@ if __name__ == "__main__":
     test_live_market_aware_when_odds_provided()
     test_wnba_market_aware_artifacts_present()
     test_predict_matchup_v2_market_aware_wiring_with_stub_context()
+    test_missing_player_box_preserves_rotation_continuity()
+    test_player_box_rows_rich_shape_and_dnp()
+    test_player_box_rows_soft_fail_missing_usage_cols()
+    test_availability_proxies_from_player_rows()
+    test_rich_player_rotation_features()
+    test_from_dict_defaults_new_rotation_fields()
     print("test_wnba_v2.py: all tests passed")

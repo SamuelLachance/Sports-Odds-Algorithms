@@ -6,6 +6,13 @@ odds from the ESPN core API behind a global request throttle, takes a median
 consensus across books, and writes data/supplemental/closing-odds/cfb.csv in
 the same schema as nba.csv.
 
+Season bounds (empirically, parallel to NBA ESPN odds):
+  - EARLIEST_SAFE_SEASON (2019): FBS scoreboards + flat closing lines usually OK.
+  - ~2022+: paired open/close spreads denser (steam features). Local cfb.csv
+    currently starts at 2022; expand with ``--seasons 2019,2020,...`` when
+    backfilling (multi-hour; uses day cache under .build-cache/cfb-odds/).
+  Default ``--seasons`` covers the open/close era through the current slate.
+
 Completed games whose odds lookup fails are still written (empty odds fields,
 n_books=0) so the walk-forward Elo backtest sees every FBS result. Per-day
 responses are cached under .build-cache/cfb-odds/ when at least one row has
@@ -49,6 +56,9 @@ ODDS_URL = (
 # FBS season window: late August kickoffs through the CFP title game in January.
 SEASON_START = (8, 20)
 SEASON_END = (1, 20)
+# Earliest season we treat as ESPN-fetch-safe (flat closes). Dense open/close ~2022+.
+EARLIEST_SAFE_SEASON = 2019
+DEFAULT_SEASONS = "2022,2023,2024,2025"
 
 THROTTLE_SECONDS = 0.18
 ODDS_WORKERS = 4
@@ -194,11 +204,31 @@ def collect_day_rows(day: date, *, use_cache: bool = True) -> list[dict[str, Any
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Fetch CFB (FBS) odds from ESPN core API")
-    parser.add_argument("--seasons", default="2023,2024,2025")
+    parser = argparse.ArgumentParser(
+        description="Fetch CFB (FBS) odds from ESPN core API",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        epilog=(
+            f"Earliest safe season for expansion: {EARLIEST_SAFE_SEASON}. "
+            "Example backfill: --seasons 2019,2020,2021,2022,2023,2024,2025"
+        ),
+    )
+    parser.add_argument(
+        "--seasons",
+        default=DEFAULT_SEASONS,
+        help=(
+            f"Comma-separated season start years (default open/close era; "
+            f"earliest safe {EARLIEST_SAFE_SEASON})"
+        ),
+    )
     parser.add_argument("--no-cache", action="store_true")
     args = parser.parse_args()
     seasons = [int(year) for year in args.seasons.split(",") if year.strip()]
+    if any(year < EARLIEST_SAFE_SEASON for year in seasons):
+        print(
+            f"WARNING: seasons before {EARLIEST_SAFE_SEASON} are outside the "
+            "documented ESPN-safe window; odds may be sparse.",
+            flush=True,
+        )
 
     started = time.monotonic()
     rows_by_event_key: dict[tuple, dict[str, Any]] = {}

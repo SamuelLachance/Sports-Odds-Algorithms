@@ -55,6 +55,8 @@ def _row(
         "away_sot": 3,
         "home_corners": 6,
         "away_corners": 4,
+        "home_yellows": 1,
+        "away_yellows": 2,
         "home_reds": 0,
         "away_reds": 0,
     }
@@ -196,9 +198,9 @@ def test_replay_country_emits_tier1_only_and_respects_cutoff() -> None:
 
 def test_parse_season_csv_extracts_stats_and_odds() -> None:
     text = (
-        "Div,Date,HomeTeam,AwayTeam,FTHG,FTAG,HS,AS,HST,AST,HC,AC,"
+        "Div,Date,HomeTeam,AwayTeam,FTHG,FTAG,HS,AS,HST,AST,HC,AC,HY,AY,HR,AR,"
         "PSH,PSD,PSA,B365H,B365D,B365A,PSCH,PSCD,PSCA,MaxH,MaxD,MaxA\n"
-        "E0,16/08/25,Arsenal,Everton,2,0,15,7,7,2,8,3,"
+        "E0,16/08/25,Arsenal,Everton,2,0,15,7,7,2,8,3,1,3,0,1,"
         "1.45,4.6,7.5,1.44,4.5,7.0,1.42,4.75,8.0,1.5,4.8,8.2\n"
     )
     rows = parse_season_csv(text, "E0", 2025)
@@ -206,10 +208,60 @@ def test_parse_season_csv_extracts_stats_and_odds() -> None:
     row = rows[0]
     assert row["date"] == "2025-08-16"
     assert row["home_sot"] == 7
+    assert row["home_yellows"] == 1
+    assert row["away_yellows"] == 3
+    assert row["home_reds"] == 0
+    assert row["away_reds"] == 1
     assert row["open_home"] == 1.45
     assert row["close_home"] == 1.42
     assert row["max_home"] == 1.5
     assert row["b365_home"] == 1.44
+
+
+def test_cards_and_corners_against_features_emit_before_update() -> None:
+    """Yellow/red/corners-against diffs use prior state only (leak-free)."""
+    from web.soccer_v2.feature_engine import PRIOR_CORNERS, PRIOR_REDS, PRIOR_YELLOWS
+
+    engine = SoccerFeatureEngine("E")
+    engine.start_season(2024)
+    before = engine.features_for_match(
+        {"date": "2024-08-10", "home": "Arsenal", "away": "Everton"}, "epl"
+    )
+    assert before["yellow_diff"] == 0.0
+    assert before["corners_against_diff"] == 0.0
+    assert before["red_burden_diff"] == 0.0
+    assert set(FEATURE_COLUMNS).issubset(before.keys())
+
+    messy = _row("2024-08-10", "Arsenal", "Everton", 1, 1)
+    messy["home_yellows"] = 4
+    messy["away_yellows"] = 0
+    messy["home_reds"] = 1
+    messy["away_reds"] = 0
+    messy["home_corners"] = 2
+    messy["away_corners"] = 9
+    engine.update_after_match(messy, tier=1)
+
+    arsenal = engine.teams["Arsenal"]
+    everton = engine.teams["Everton"]
+    assert arsenal.yellows > PRIOR_YELLOWS
+    assert everton.yellows < PRIOR_YELLOWS
+    assert arsenal.red_burden > PRIOR_REDS
+    assert arsenal.corners_against > PRIOR_CORNERS
+    assert everton.corners_against < PRIOR_CORNERS
+
+    # Emit for next fixture before any further update.
+    after = engine.features_for_match(
+        {"date": "2024-08-17", "home": "Arsenal", "away": "Everton"}, "epl"
+    )
+    assert after["yellow_diff"] > 0.0
+    assert after["red_burden_diff"] > 0.0
+    assert after["corners_against_diff"] > 0.0
+    # State must not change on feature emit alone.
+    yellow_before = arsenal.yellows
+    _ = engine.features_for_match(
+        {"date": "2024-08-24", "home": "Arsenal", "away": "Chelsea"}, "epl"
+    )
+    assert engine.teams["Arsenal"].yellows == yellow_before
 
 
 def test_parse_season_csv_accepts_spaced_home_away_headers() -> None:

@@ -18,6 +18,7 @@ from typing import Any
 
 import numpy as np
 
+from web.basketball_v2_market import apply_market_features, resolve_market_heads
 from web.nfl_v2.feature_engine import FEATURE_COLUMNS, NflFeatureEngine, nfl_season_of
 from web.nfl_v2.replay import events_to_results, nflverse_rows_to_games, replay_season
 
@@ -27,6 +28,10 @@ LIVE_CACHE_DIR = PROJECT_ROOT / ".build-cache" / "nfl-v2-live"
 NFLVERSE_CSV = PROJECT_ROOT / "data" / "supplemental" / "closing-odds" / "nflverse_games.csv"
 
 EVENTS_TTL_SECONDS = 3 * 3600  # fresher than 6h Pages cadence
+
+CLF_MARKET_FEATURES = ("mkt_home_prob", "has_market")
+MARGIN_MARKET_FEATURES = ("mkt_home_spread", "has_spread")
+MARKET_FEATURES = CLF_MARKET_FEATURES + MARGIN_MARKET_FEATURES
 
 
 def artifacts_available() -> bool:
@@ -77,6 +82,12 @@ def _load_artifacts() -> dict[str, Any] | None:
             except (IndexError, ValueError):
                 continue
 
+        def _optional_json(name: str) -> dict[str, Any] | None:
+            path = MODEL_DIR / name
+            if not path.is_file():
+                return None
+            return json.loads(path.read_text(encoding="utf-8"))
+
         clf = _booster("model_clf.json")
         if clf is None or not snapshots:
             return None
@@ -87,9 +98,19 @@ def _load_artifacts() -> dict[str, Any] | None:
             "margin": _booster("model_margin.json"),
             "score_home": _booster("model_score_home.json"),
             "score_away": _booster("model_score_away.json"),
+            "clf_market": _booster("model_clf_market.json"),
+            "lr_market": _optional_json("model_lr_market.json"),
+            "calibrator_market": _optional_json("calibrator_market.json"),
+            "margin_market": _booster("model_margin_market.json"),
             "metadata": metadata,
             "snapshots": snapshots,
             "feature_columns": metadata.get("feature_columns") or list(FEATURE_COLUMNS),
+            "clf_market_features": list(
+                metadata.get("clf_market_features") or CLF_MARKET_FEATURES
+            ),
+            "margin_market_features": list(
+                metadata.get("margin_market_features") or MARGIN_MARKET_FEATURES
+            ),
         }
     except (OSError, json.JSONDecodeError, ValueError, KeyError, TypeError):
         return None
@@ -191,10 +212,82 @@ def _fetch_completed_season_games_nflverse(season: int, *, stop_before: str) -> 
 
 
 def _fetch_completed_season_games(season: int, *, stop_before: str) -> list[dict[str, Any]]:
+    # Prefer nflverse so QB/coach/weather keep updating mid-season (train/serve parity).
+    nflverse = _fetch_completed_season_games_nflverse(season, stop_before=stop_before)
+    if nflverse:
+        return nflverse
     espn = _fetch_completed_season_games_espn(season, stop_before=stop_before)
-    if espn is not None and len(espn) > 0:
-        return espn
-    return _fetch_completed_season_games_nflverse(season, stop_before=stop_before)
+    return espn or []
+
+
+def _lookup_nflverse_matchup_context(
+    day_iso: str, home: str, away: str
+) -> dict[str, Any]:
+    """Tip-time QB/coach/weather from nflverse for this slate matchup when present."""
+    if not NFLVERSE_CSV.is_file():
+        return {}
+    try:
+        import pandas as pd
+    except ImportError:
+        return {}
+    try:
+        frame = pd.read_csv(NFLVERSE_CSV)
+    except (OSError, ValueError):
+        return {}
+    day = str(day_iso)[:10]
+    home_l = str(home).lower().strip()
+    away_l = str(away).lower().strip()
+    if frame.empty or "gameday" not in frame.columns:
+        return {}
+    frame = frame.copy()
+    frame["_day"] = frame["gameday"].astype(str).str[:10]
+    frame["_home"] = frame["home_team"].astype(str).str.lower().str.strip()
+    frame["_away"] = frame["away_team"].astype(str).str.lower().str.strip()
+    exact = frame[(frame["_day"] == day) & (frame["_home"] == home_l) & (frame["_away"] == away_l)]
+    if exact.empty:
+        # Fall back to nearest future/past same matchup in the same season window.
+        try:
+            season = nfl_season_of(date_cls.fromisoformat(day))
+        except ValueError:
+            return {}
+        same = frame[
+            (frame["season"] == season)
+            & (frame["_home"] == home_l)
+            & (frame["_away"] == away_l)
+        ]
+        if same.empty:
+            return {}
+        same = same.assign(_delta=(same["_day"].map(lambda d: abs((date_cls.fromisoformat(d) - date_cls.fromisoformat(day)).days))))
+        exact = same.sort_values("_delta").head(1)
+    row = exact.iloc[0].to_dict()
+    out: dict[str, Any] = {}
+    for key in (
+        "home_qb_id",
+        "away_qb_id",
+        "home_qb_name",
+        "away_qb_name",
+        "home_coach",
+        "away_coach",
+        "roof",
+        "surface",
+        "temp",
+        "wind",
+        "weekday",
+        "home_rest",
+        "away_rest",
+        "div_game",
+        "week",
+        "game_type",
+        "location",
+    ):
+        if key in row and row[key] == row[key]:  # NaN-safe
+            out[key] = row[key]
+    if "location" in out:
+        out["neutral_site"] = str(out.get("location") or "").strip().lower() != "home"
+    if "game_type" in out:
+        gt = str(out.get("game_type") or "").upper()
+        out["is_playoff"] = gt in {"POST", "WC", "DIV", "CON", "SB"}
+    return out
 
 
 @lru_cache(maxsize=8)
@@ -232,14 +325,24 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
     }
 
 
-def _predict_probability(art: dict[str, Any], features: dict[str, float]) -> float:
+def _predict_probability(
+    art: dict[str, Any],
+    features: dict[str, float],
+    *,
+    cols: list[str] | None = None,
+    clf=None,
+    lr: dict[str, Any] | None = None,
+    calibrator: dict[str, Any] | None = None,
+) -> float:
     from xgboost import DMatrix
 
-    cols = art["feature_columns"]
+    cols = list(cols or art["feature_columns"])
+    clf = clf if clf is not None else art["clf"]
+    lr = lr if lr is not None else art["lr"]
+    calibrator = calibrator if calibrator is not None else art["calibrator"]
     vector = np.array([[float(features.get(c, 0.0)) for c in cols]], dtype=float)
-    xgb_p = float(art["clf"].predict(DMatrix(vector, feature_names=list(cols)))[0])
+    xgb_p = float(clf.predict(DMatrix(vector, feature_names=list(cols)))[0])
 
-    lr = art["lr"]
     mean = np.asarray(lr["mean"], dtype=float)
     scale = np.asarray(lr["scale"], dtype=float)
     coef = np.asarray(lr["coef"], dtype=float)
@@ -249,17 +352,22 @@ def _predict_probability(art: dict[str, Any], features: dict[str, float]) -> flo
     lr_p = 1.0 / (1.0 + np.exp(-z))
     weight = float(lr.get("xgb_weight", 0.55))
     raw = weight * xgb_p + (1.0 - weight) * lr_p
-    cal = art["calibrator"]
-    calibrated = float(np.interp(raw, cal["x"], cal["y"]))
+    calibrated = float(np.interp(raw, calibrator["x"], calibrator["y"]))
     return float(min(max(calibrated, 0.02), 0.98))
 
 
-def _predict_regressor(booster, art: dict[str, Any], features: dict[str, float]) -> float | None:
+def _predict_regressor(
+    booster,
+    art: dict[str, Any],
+    features: dict[str, float],
+    *,
+    cols: list[str] | None = None,
+) -> float | None:
     if booster is None:
         return None
     from xgboost import DMatrix
 
-    cols = art["feature_columns"]
+    cols = list(cols or art["feature_columns"])
     vector = np.array([[float(features.get(c, 0.0)) for c in cols]], dtype=float)
     return float(booster.predict(DMatrix(vector, feature_names=list(cols)))[0])
 
@@ -268,8 +376,15 @@ def predict_matchup_v2(
     day_iso: str,
     home_abbr: str,
     away_abbr: str,
+    *,
+    home_moneyline: int | float | None = None,
+    away_moneyline: int | float | None = None,
+    home_spread: float | None = None,
 ) -> dict[str, Any] | None:
-    """Predict an NFL matchup by abbreviations for a given slate date."""
+    """Predict an NFL matchup by abbreviations for a given slate date.
+
+    Soft-fails to the pure head when odds or market boosters are missing.
+    """
     context = get_live_context(day_iso[:10])
     if context is None:
         return None
@@ -286,19 +401,53 @@ def predict_matchup_v2(
         "home": home,
         "away": away,
     }
+    game.update(_lookup_nflverse_matchup_context(day_iso[:10], home, away))
     features = engine.features_for_game(game)
-    prob_home = _predict_probability(art, features)
-    margin = _predict_regressor(art["margin"], art, features)
-    score_home = _predict_regressor(art["score_home"], art, features)
-    score_away = _predict_regressor(art["score_away"], art, features)
+    has_market, has_spread = apply_market_features(
+        features,
+        home_moneyline=home_moneyline,
+        away_moneyline=away_moneyline,
+        home_spread=home_spread,
+    )
+    (
+        use_market_clf,
+        use_market_margin,
+        model_variant,
+        clf_cols,
+        margin_cols,
+    ) = resolve_market_heads(art, has_market=has_market, has_spread=has_spread)
+
+    if use_market_clf:
+        prob_home = _predict_probability(
+            art,
+            features,
+            cols=clf_cols,
+            clf=art["clf_market"],
+            lr=art["lr_market"],
+            calibrator=art["calibrator_market"],
+        )
+    else:
+        prob_home = _predict_probability(art, features, cols=clf_cols)
+
+    if use_market_margin:
+        margin = _predict_regressor(
+            art["margin_market"], art, features, cols=margin_cols
+        )
+    else:
+        margin = _predict_regressor(art["margin"], art, features, cols=margin_cols)
+
+    pure_cols = list(art["feature_columns"])
+    score_home = _predict_regressor(art["score_home"], art, features, cols=pure_cols)
+    score_away = _predict_regressor(art["score_away"], art, features, cols=pure_cols)
 
     home_team = engine.team(home)
     away_team = engine.team(away)
     payload: dict[str, Any] = {
         "model_version": "v2",
         "algorithm": "NFLGradientBoost v2",
+        "model_variant": model_variant,
         "home_win_probability": round(prob_home * 100.0, 2),
-        "features_used": len(art["feature_columns"]),
+        "features_used": len(clf_cols),
         "home_games": int(home_team.games_played),
         "away_games": int(away_team.games_played),
         "home_elo": round(home_team.elo, 1),
@@ -309,6 +458,8 @@ def predict_matchup_v2(
         "away_win_pct": round(away_team.win_pct(), 3),
         "neutral_site": bool(features["neutral_site"]),
         "is_playoff": bool(features["is_playoff"]),
+        "has_market": has_market,
+        "has_spread": has_spread,
     }
     if margin is not None:
         payload["predicted_margin"] = round(margin, 2)

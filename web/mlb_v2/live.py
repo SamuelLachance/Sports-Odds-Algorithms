@@ -22,6 +22,7 @@ from zoneinfo import ZoneInfo
 
 import numpy as np
 
+from web.basketball_v2_market import apply_market_features, resolve_market_heads
 from web.mlb_stats_api import ESPN_TO_MLB_TEAM_ID
 from web.mlb_v2.feature_engine import FEATURE_COLUMNS, MlbFeatureEngine
 from web.mlb_v2.replay import apply_final_game_with_logs, is_final_game, replay_season
@@ -38,6 +39,10 @@ LIVE_CACHE_DIR = PROJECT_ROOT / ".build-cache" / "mlb-v2-live"
 
 LIVE_CACHE_TTL_SECONDS = 3 * 3600  # fresher than 6h Pages cadence
 LIVE_CACHE_STALE_SECONDS = 10 * 86400  # soft-serve window on network failure
+
+# Moneyline-only market head (no spread margin head for MLB runs models).
+# Steam extras match train_mlb_model.CLF_MARKET_FEATURES when opens exist.
+MARKET_FEATURES = ("mkt_home_prob", "has_market", "ml_steam_pp", "has_steam")
 
 # Stats API codedGameState values treated as finished/skipable for DH pick.
 # F/O = completed; C = cancelled. D (delayed/postponed) is NOT final — keep
@@ -87,6 +92,12 @@ def _load_artifacts() -> dict[str, Any] | None:
             except (IndexError, ValueError):
                 continue
 
+        def _optional_json(name: str) -> dict[str, Any] | None:
+            path = MODEL_DIR / name
+            if not path.is_file():
+                return None
+            return json.loads(path.read_text(encoding="utf-8"))
+
         clf = _booster("model_clf.json")
         if clf is None or not snapshots:
             return None
@@ -101,8 +112,14 @@ def _load_artifacts() -> dict[str, Any] | None:
             "metadata": metadata,
             "runs_home": _booster("model_runs_home.json"),
             "runs_away": _booster("model_runs_away.json"),
+            "clf_market": _booster("model_clf_market.json"),
+            "lr_market": _optional_json("model_lr_market.json"),
+            "calibrator_market": _optional_json("calibrator_market.json"),
             "snapshots": snapshots,
             "feature_columns": feature_columns,
+            "clf_market_features": list(
+                metadata.get("clf_market_features") or MARKET_FEATURES
+            ),
         }
     except (OSError, json.JSONDecodeError, ValueError, KeyError, TypeError):
         return None
@@ -310,14 +327,24 @@ def _select_matchup_game(
     return selected
 
 
-def _predict_probability(art: dict[str, Any], features: dict[str, float]) -> float:
+def _predict_probability(
+    art: dict[str, Any],
+    features: dict[str, float],
+    *,
+    cols: list[str] | None = None,
+    clf=None,
+    lr: dict[str, Any] | None = None,
+    calibrator: dict[str, Any] | None = None,
+) -> float:
     from xgboost import DMatrix
 
-    cols = art["feature_columns"]
+    cols = list(cols or art["feature_columns"])
+    clf = clf if clf is not None else art["clf"]
+    lr = lr if lr is not None else art["lr"]
+    calibrator = calibrator if calibrator is not None else art["calibrator"]
     vector = np.array([[float(features.get(c, 0.0)) for c in cols]], dtype=float)
-    xgb_p = float(art["clf"].predict(DMatrix(vector, feature_names=list(cols)))[0])
+    xgb_p = float(clf.predict(DMatrix(vector, feature_names=list(cols)))[0])
 
-    lr = art["lr"]
     mean = np.asarray(lr["mean"], dtype=float)
     scale = np.asarray(lr["scale"], dtype=float)
     coef = np.asarray(lr["coef"], dtype=float)
@@ -329,8 +356,7 @@ def _predict_probability(art: dict[str, Any], features: dict[str, float]) -> flo
     weight = float(lr.get("xgb_weight", 0.55))
     raw = weight * xgb_p + (1.0 - weight) * lr_p
 
-    cal = art["calibrator"]
-    calibrated = float(np.interp(raw, cal["x"], cal["y"]))
+    calibrated = float(np.interp(raw, calibrator["x"], calibrator["y"]))
     return float(min(max(calibrated, 0.02), 0.98))
 
 
@@ -447,8 +473,15 @@ def predict_matchup_v2(
     game_number: int | None = None,
     game_pk: int | None = None,
     kickoff_iso: str | None = None,
+    home_moneyline: int | float | None = None,
+    away_moneyline: int | float | None = None,
 ) -> dict[str, Any] | None:
-    """Predict today's matchup by ESPN abbreviations. Returns None when unavailable."""
+    """Predict today's matchup by ESPN abbreviations. Returns None when unavailable.
+
+    When live moneylines are available and market-aware artifacts exist, scores
+    the market classifier head. Soft-fails to the pure head when odds or
+    market boosters are missing.
+    """
     context = get_live_context(day_iso)
     if context is None:
         return None
@@ -523,7 +556,30 @@ def predict_matchup_v2(
             )
 
     features = engine.features_for_game(game)
-    prob_home = _predict_probability(art, features)
+    has_market, _has_spread = apply_market_features(
+        features,
+        home_moneyline=home_moneyline,
+        away_moneyline=away_moneyline,
+    )
+    (
+        use_market_clf,
+        _use_market_margin,
+        model_variant,
+        clf_cols,
+        _margin_cols,
+    ) = resolve_market_heads(art, has_market=has_market, has_spread=False)
+
+    if use_market_clf:
+        prob_home = _predict_probability(
+            art,
+            features,
+            cols=clf_cols,
+            clf=art["clf_market"],
+            lr=art["lr_market"],
+            calibrator=art["calibrator_market"],
+        )
+    else:
+        prob_home = _predict_probability(art, features, cols=clf_cols)
     runs = _predict_runs(art, features)
 
     names = context["pitcher_names"]
@@ -535,8 +591,9 @@ def predict_matchup_v2(
 
     payload: dict[str, Any] = {
         "model_version": "v2",
+        "model_variant": model_variant,
         "home_win_probability": round(prob_home * 100.0, 2),
-        "features_used": len(art["feature_columns"]),
+        "features_used": len(clf_cols),
         "home_games": int(home_team.season_wins + home_team.season_losses),
         "away_games": int(away_team.season_wins + away_team.season_losses),
         "home_elo": round(home_team.elo, 1),
@@ -546,6 +603,7 @@ def predict_matchup_v2(
         "home_sp_fip": round(float(features["home_sp_fip_blend"]), 2),
         "away_sp_fip": round(float(features["away_sp_fip_blend"]), 2),
         "park_factor": round(float(features["park_factor"]), 3),
+        "has_market": has_market,
     }
     if runs is not None:
         payload["predicted_home_runs"] = runs[0]

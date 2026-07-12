@@ -500,8 +500,8 @@ def test_predict_matchup_applies_earlier_dh_final(monkeypatch) -> None:
         )
 
     monkeypatch.setattr(live, "apply_final_game_with_logs", fake_apply)
-    monkeypatch.setattr(live, "_predict_probability", lambda _art, _feat: 0.55)
-    monkeypatch.setattr(live, "_predict_runs", lambda _art, _feat: None)
+    monkeypatch.setattr(live, "_predict_probability", lambda _art, _feat, **_kw: 0.55)
+    monkeypatch.setattr(live, "_predict_runs", lambda _art, _feat, **_kw: None)
 
     # ESPN abbrs map via ESPN_TO_MLB_TEAM_ID — use known keys
     from web.mlb_stats_api import ESPN_TO_MLB_TEAM_ID
@@ -585,6 +585,42 @@ def test_batting_ewma_updates_on_zero_obp_slg() -> None:
     assert engine.team(111).obp != LEAGUE_OBP
 
 
+def test_platoon_matchup_features_from_sp_hand_and_rates() -> None:
+    """platoon_k/obp_matchup = away_LHP×home_rates − home_LHP×away_rates."""
+    import pytest
+
+    from web.mlb_v2.feature_engine import FEATURE_COLUMNS, MlbFeatureEngine
+
+    assert "platoon_k_matchup" in FEATURE_COLUMNS
+    assert "platoon_obp_matchup" in FEATURE_COLUMNS
+
+    engine = MlbFeatureEngine()
+    home = engine.team(111)
+    away = engine.team(147)
+    home.so_rate = 0.28
+    home.obp = 0.340
+    away.so_rate = 0.18
+    away.obp = 0.300
+
+    # Away SP is LHP → home offense × LHP; home SP missing → RHP prior (0)
+    engine.pitcher(9001, hand="L")
+
+    feats = engine.features_for_game(
+        {
+            "date": "2024-06-15",
+            "home_id": 111,
+            "away_id": 147,
+            "home_pp_id": None,
+            "away_pp_id": 9001,
+            "venue_id": None,
+        }
+    )
+    assert feats["away_sp_is_lhp"] == 1.0
+    assert feats["home_sp_is_lhp"] == 0.0
+    assert feats["platoon_k_matchup"] == pytest.approx(0.28)
+    assert feats["platoon_obp_matchup"] == pytest.approx(0.340)
+
+
 def test_mlb_elo_mov_stays_positive_on_huge_underdog_upset() -> None:
     """Underdog wins with a massive Elo gap must not flip MOV (denom ≤ 0)."""
     import math
@@ -657,3 +693,73 @@ def test_write_mlb_feature_snapshot_refuses_mislabeled_gap_season(tmp_path) -> N
             cache_root=cache,
         )
     assert not (tmp_path / "out" / "state_2023.json.gz").exists()
+
+def test_predict_matchup_v2_market_aware_wiring_with_stub_context() -> None:
+    """Odds + market artifacts flip model_variant without needing a live season fetch."""
+    from unittest.mock import MagicMock, patch
+
+    from web.mlb_stats_api import ESPN_TO_MLB_TEAM_ID
+    from web.mlb_v2 import live as mlb_live
+
+    home_abbr = next(iter(ESPN_TO_MLB_TEAM_ID))
+    away_abbr = [k for k in ESPN_TO_MLB_TEAM_ID if k != home_abbr][0]
+    home_id = ESPN_TO_MLB_TEAM_ID[home_abbr]
+    away_id = ESPN_TO_MLB_TEAM_ID[away_abbr]
+
+    team = MagicMock()
+    team.season_wins = 40
+    team.season_losses = 40
+    team.elo = 1500.0
+
+    engine = MagicMock()
+    engine.team = MagicMock(return_value=team)
+    engine.features_for_game = MagicMock(
+        return_value={
+            "home_sp_fip_blend": 3.8,
+            "away_sp_fip_blend": 4.1,
+            "park_factor": 1.0,
+        }
+    )
+
+    art = {
+        "feature_columns": ["elo_diff"],
+        "clf_market_features": ["mkt_home_prob", "has_market"],
+        "clf": object(),
+        "lr": {"xgb_weight": 0.55},
+        "calibrator": {"x": [0.0, 1.0], "y": [0.0, 1.0]},
+        "clf_market": object(),
+        "lr_market": {"xgb_weight": 0.55},
+        "calibrator_market": {"x": [0.0, 1.0], "y": [0.0, 1.0]},
+        "runs_home": None,
+        "runs_away": None,
+    }
+    context = {
+        "engine": engine,
+        "artifacts": art,
+        "todays_games": {},
+        "todays_matchup_games": {},
+        "todays_finals": [],
+        "pitcher_names": {},
+        "pitchers": {},
+        "team_hitting": {},
+        "team_pitching": {},
+        "season": 2026,
+    }
+
+    with (
+        patch.object(mlb_live, "get_live_context", return_value=context),
+        patch.object(mlb_live, "_predict_probability", return_value=0.58) as mock_prob,
+        patch.object(mlb_live, "_predict_runs", return_value=None),
+    ):
+        result = mlb_live.predict_matchup_v2(
+            "2026-07-12",
+            home_abbr,
+            away_abbr,
+            home_moneyline=-140,
+            away_moneyline=120,
+        )
+
+    assert result is not None
+    assert result["model_variant"] == "market_aware"
+    assert result["has_market"] is True
+    assert mock_prob.call_args.kwargs.get("clf") is art["clf_market"]

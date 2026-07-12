@@ -4,15 +4,21 @@ College basketball scoreboard date-range queries 404 on ESPN's site API, so
 history is assembled from per-day scoreboards cached under
 ``.build-cache/cbb-history/``. Team keys are stable ESPN team ids; abbreviations
 are retained for live slate joins. No Torvik ratings are loaded here.
+
+Sources (stdlib urllib, CI-safe):
+  - ESPN site.api daily scoreboards: event ids, final scores, conference flags.
+  - ESPN site.api summary per event: team box scores (four-factor inputs).
 """
 
 from __future__ import annotations
 
 import csv
 import json
+import math
 import time
 import urllib.error
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from datetime import date, timedelta
 from pathlib import Path
 from typing import Any, Iterator
@@ -31,6 +37,12 @@ SCOREBOARD_URL = (
     "https://site.api.espn.com/apis/site/v2/sports/basketball/"
     "mens-college-basketball/scoreboard?dates={date}&groups=50&limit=300"
 )
+SUMMARY_URL = (
+    "https://site.api.espn.com/apis/site/v2/sports/basketball/"
+    "mens-college-basketball/summary?event={event_id}"
+)
+
+BOX_WORKERS = 6
 
 # Sparse abbr aliases seen on the public slate / ensemble joins.
 ABBR_ALIASES: dict[str, str] = {
@@ -38,7 +50,7 @@ ABBR_ALIASES: dict[str, str] = {
     "connecticut": "conn",
 }
 
-FIRST_SEASON = 2018  # ending year of 2017-18
+FIRST_SEASON = 2018  # ending year of 2017-18; ESPN odds fetch-safe floor (see fetch_cbb_odds)
 SEASON_START = (11, 1)  # Nov 1 of start year
 SEASON_END = (4, 15)  # Apr 15 of ending year
 
@@ -82,6 +94,32 @@ def _to_int(value: Any) -> int | None:
         return int(value)
     except (TypeError, ValueError):
         return None
+
+
+def _to_float(value: Any) -> float | None:
+    if value is None:
+        return None
+    text = str(value).strip().replace("+", "")
+    if text == "":
+        return None
+    try:
+        parsed = float(text)
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(parsed):
+        return None
+    return parsed
+
+
+def _parse_made_attempted(display: str) -> tuple[float, float] | None:
+    parts = str(display).split("-")
+    if len(parts) != 2:
+        return None
+    made = _to_float(parts[0])
+    att = _to_float(parts[1])
+    if made is None or att is None:
+        return None
+    return made, att
 
 
 def cbb_season_for_date(target: date | str) -> int:
@@ -206,8 +244,6 @@ def fetch_season_events(season: int, *, use_cache: bool = True) -> list[dict[str
         except (json.JSONDecodeError, OSError):
             pass
 
-    from concurrent.futures import ThreadPoolExecutor
-
     days = list(_season_days(season))
     by_id: dict[str, dict[str, Any]] = {}
 
@@ -236,6 +272,119 @@ def fetch_season_events(season: int, *, use_cache: bool = True) -> list[dict[str
         encoding="utf-8",
     )
     return events
+
+
+def fetch_box_score(event_id: str) -> dict[str, dict[str, Any]] | None:
+    """Team box stats keyed by ESPN team id. None when unavailable.
+
+    Each team dict carries four-factor inputs:
+      fgm/fga, tpm/tpa, ftm/fta, orb/drb, tov, ast.
+    """
+    data = get_json(SUMMARY_URL.format(event_id=event_id), timeout=45)
+    teams = (data.get("boxscore") or {}).get("teams") or []
+    if len(teams) != 2:
+        return None
+    out: dict[str, dict[str, Any]] = {}
+    for side in teams:
+        team_id = str((side.get("team") or {}).get("id") or "")
+        stats: dict[str, Any] = {}
+        for item in side.get("statistics") or []:
+            name = item.get("name") or ""
+            display = item.get("displayValue") or ""
+            if name == "fieldGoalsMade-fieldGoalsAttempted":
+                pair = _parse_made_attempted(display)
+                if pair:
+                    stats["fgm"], stats["fga"] = pair
+            elif name == "threePointFieldGoalsMade-threePointFieldGoalsAttempted":
+                pair = _parse_made_attempted(display)
+                if pair:
+                    stats["tpm"], stats["tpa"] = pair
+            elif name == "freeThrowsMade-freeThrowsAttempted":
+                pair = _parse_made_attempted(display)
+                if pair:
+                    stats["ftm"], stats["fta"] = pair
+            elif name == "offensiveRebounds":
+                value = _to_float(display)
+                if value is not None:
+                    stats["orb"] = value
+            elif name == "defensiveRebounds":
+                value = _to_float(display)
+                if value is not None:
+                    stats["drb"] = value
+            elif name == "totalTurnovers":
+                value = _to_float(display)
+                if value is not None:
+                    stats["tov"] = value
+            elif name == "turnovers" and "tov" not in stats:
+                value = _to_float(display)
+                if value is not None:
+                    stats["tov"] = value
+            elif name == "assists":
+                value = _to_float(display)
+                if value is not None:
+                    stats["ast"] = value
+        if "fga" not in stats:
+            return None
+        if team_id:
+            out[team_id] = stats
+    return out if len(out) == 2 else None
+
+
+def load_season_boxes(season: int) -> dict[str, Any]:
+    """Load cached boxes for a season (dict values only; strip poisoned nulls)."""
+    boxes_path = CACHE_ROOT / str(season) / "boxes.json"
+    if not boxes_path.is_file():
+        return {}
+    try:
+        payload = json.loads(boxes_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return {}
+    if not isinstance(payload, dict):
+        return {}
+    return {k: v for k, v in payload.items() if isinstance(v, dict)}
+
+
+def fetch_season_boxes(
+    season: int,
+    events: list[dict[str, Any]] | None = None,
+    *,
+    use_cache: bool = True,
+) -> dict[str, Any]:
+    """Incremental per-event box cache under ``{season}/boxes.json``.
+
+    Failed fetches are not persisted as ``null`` (that would poison the cache
+    and block mid-season retries). Only successful team-box dicts are stored.
+    """
+    season_dir = CACHE_ROOT / str(season)
+    season_dir.mkdir(parents=True, exist_ok=True)
+    boxes_path = season_dir / "boxes.json"
+    boxes: dict[str, Any] = load_season_boxes(season) if use_cache else {}
+
+    if events is None:
+        events = fetch_season_events(season, use_cache=use_cache)
+    todo = [
+        str(event["event_id"])
+        for event in events
+        if event.get("completed") and event.get("event_id") and str(event["event_id"]) not in boxes
+    ]
+    if not todo:
+        if boxes and not boxes_path.is_file():
+            boxes_path.write_text(json.dumps(boxes, separators=(",", ":")), encoding="utf-8")
+        return boxes
+
+    def _one(event_id: str) -> tuple[str, dict[str, Any] | None]:
+        try:
+            return event_id, fetch_box_score(event_id)
+        except OSError:
+            return event_id, None
+
+    with ThreadPoolExecutor(max_workers=BOX_WORKERS) as pool:
+        for event_id, box in pool.map(_one, todo):
+            if isinstance(box, dict):
+                boxes[event_id] = box
+
+    boxes_path.write_text(json.dumps(boxes, separators=(",", ":")), encoding="utf-8")
+    return boxes
 
 
 def load_closing_odds_index() -> dict[tuple[str, str, str], dict[str, Any]]:

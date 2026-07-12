@@ -401,3 +401,263 @@ def test_blowout_ewma_is_signed_for_winner_and_loser() -> None:
     assert away.blowout_ewma < 0.0
     feats = engine.features_for_game(_game("2024-11-23", "duke", "unc", 0, 0))
     assert feats["blowout_rate_diff"] > 0.0
+
+
+def _team_box(
+    *,
+    fgm: float = 30.0,
+    fga: float = 60.0,
+    tpm: float = 10.0,
+    tpa: float = 25.0,
+    ftm: float = 15.0,
+    fta: float = 20.0,
+    orb: float = 12.0,
+    drb: float = 25.0,
+    tov: float = 10.0,
+    ast: float = 15.0,
+) -> dict:
+    return {
+        "fgm": fgm,
+        "fga": fga,
+        "tpm": tpm,
+        "tpa": tpa,
+        "ftm": ftm,
+        "fta": fta,
+        "orb": orb,
+        "drb": drb,
+        "tov": tov,
+        "ast": ast,
+    }
+
+
+def test_merge_attaches_home_away_boxes() -> None:
+    events = [
+        {
+            "event_id": "401",
+            "date": "2025-01-15",
+            "season": 2025,
+            "season_type": 2,
+            "completed": True,
+            "home_id": "150",
+            "away_id": "153",
+            "home_abbr": "duke",
+            "away_abbr": "unc",
+            "home_score": 80,
+            "away_score": 74,
+            "neutral_site": False,
+            "conference_game": True,
+            "home_conference_id": "2",
+            "away_conference_id": "2",
+        }
+    ]
+    boxes = {
+        "401": {
+            "150": _team_box(fga=62.0),
+            "153": _team_box(fga=58.0),
+        }
+    }
+    games = merge_season_games([], events, boxes, season=2025)
+    assert len(games) == 1
+    assert games[0]["home_box"]["fga"] == 62.0
+    assert games[0]["away_box"]["fga"] == 58.0
+
+
+def test_box_update_changes_pace_and_four_factors() -> None:
+    """Real boxes move pace / eFG / TOV / ORB / FTR off league priors."""
+    from web.cbb_v2.feature_engine import (
+        LEAGUE_EFG,
+        LEAGUE_FT_RATE,
+        LEAGUE_ORB_PCT,
+        LEAGUE_PACE,
+        LEAGUE_TOV_RATE,
+    )
+
+    engine = CbbFeatureEngine()
+    game = _game("2024-11-16", "duke", "unc", 85, 70)
+    # High eFG (~0.583), elevated pace via high FGA+FTA, low TOV.
+    game["home_box"] = _team_box(
+        fgm=35, fga=60, tpm=10, tpa=22, ftm=15, fta=18, orb=14, drb=28, tov=8
+    )
+    game["away_box"] = _team_box(
+        fgm=25, fga=65, tpm=5, tpa=28, ftm=10, fta=14, orb=8, drb=20, tov=16
+    )
+    prior_efg = engine.teams["duke"].efg_for if "duke" in engine.teams else LEAGUE_EFG
+    engine.update_after_game(game)
+    duke = engine.teams["duke"]
+    unc = engine.teams["unc"]
+    assert duke.pace_ewma != LEAGUE_PACE
+    assert duke.efg_for != prior_efg
+    assert duke.efg_for > LEAGUE_EFG  # hot shooting night
+    assert unc.tov_for > LEAGUE_TOV_RATE  # 16 TOV on ~60 poss
+    assert duke.orb_for != LEAGUE_ORB_PCT
+    assert duke.ftr_for != LEAGUE_FT_RATE
+    feats = engine.features_for_game(_game("2024-11-23", "duke", "unc", 0, 0))
+    assert feats["pace_diff"] != 0.0 or feats["pace_sum"] != 2.0 * LEAGUE_PACE
+    assert feats["efg_for_diff"] != 0.0
+    assert feats["tov_for_diff"] != 0.0
+
+
+def test_missing_box_holds_four_factor_priors() -> None:
+    """Score-only updates keep four-factor EWMAs at prior; pace still moves via ASSUMED."""
+    from web.cbb_v2.feature_engine import LEAGUE_EFG, LEAGUE_TOV_RATE
+
+    engine = CbbFeatureEngine()
+    engine.update_after_game(_game("2024-11-16", "duke", "unc", 80, 70))
+    duke = engine.teams["duke"]
+    assert duke.efg_for == LEAGUE_EFG
+    assert duke.tov_for == LEAGUE_TOV_RATE
+    assert duke.orb_for == engine.teams["unc"].orb_for  # both still at league prior
+    # Pace uses ASSUMED_POSSESSIONS scaled by game total — may move off LEAGUE_PACE.
+    assert duke.pace_ewma != 0.0
+    # Explicit: a second score-only game still does not touch four factors.
+    engine.update_after_game(_game("2024-11-20", "duke", "unc", 78, 72))
+    assert duke.efg_for == LEAGUE_EFG
+    assert duke.efg_against == LEAGUE_EFG
+
+
+def test_box_emit_before_update_sees_prior_four_factors() -> None:
+    """Replay emit must read four-factor state before folding the box into EWMAs."""
+    from web.cbb_v2.feature_engine import LEAGUE_EFG
+
+    engine = CbbFeatureEngine()
+    boxed = _game("2024-11-16", "duke", "unc", 85, 70)
+    boxed["home_box"] = _team_box(fgm=40, fga=60, tpm=12, tov=6)
+    boxed["away_box"] = _team_box(fgm=22, fga=60, tpm=4, tov=18)
+    seen: list[float] = []
+
+    def emit(_game_row: dict, features: dict[str, float]) -> None:
+        seen.append(features["efg_for_diff"])
+
+    replay_season(engine, [boxed], emit=emit)
+    assert len(seen) == 1
+    assert seen[0] == 0.0  # both at LEAGUE_EFG before update
+    assert engine.teams["duke"].efg_for > LEAGUE_EFG
+
+
+def test_fetch_season_boxes_does_not_poison_null(tmp_path, monkeypatch) -> None:
+    """Failed mid-season box fetches must not stick as null in boxes.json."""
+    import json
+
+    import web.cbb_v2.data as cbb_data
+
+    monkeypatch.setattr(cbb_data, "CACHE_ROOT", tmp_path)
+    events = [{"event_id": "e1", "completed": True}]
+    calls = {"n": 0}
+
+    def flaky(_event_id: str):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise OSError("timeout")
+        return {"150": _team_box(), "153": _team_box()}
+
+    monkeypatch.setattr(cbb_data, "fetch_box_score", flaky)
+    boxes = cbb_data.fetch_season_boxes(2025, events, use_cache=True)
+    assert "e1" not in boxes
+    cached_path = tmp_path / "2025" / "boxes.json"
+    assert cached_path.is_file()
+    cached = json.loads(cached_path.read_text(encoding="utf-8"))
+    assert "e1" not in cached
+
+    boxes2 = cbb_data.fetch_season_boxes(2025, events, use_cache=True)
+    assert isinstance(boxes2["e1"], dict)
+    assert calls["n"] == 2
+    cached2 = json.loads(cached_path.read_text(encoding="utf-8"))
+    assert isinstance(cached2["e1"], dict)
+
+
+def test_live_fetch_boxes_cached_does_not_poison_null(tmp_path, monkeypatch) -> None:
+    import json
+
+    import web.cbb_v2.live as live
+
+    monkeypatch.setattr(live, "LIVE_CACHE_DIR", tmp_path)
+    events = [{"event_id": "c1", "completed": True}]
+    calls = {"n": 0}
+
+    def flaky(_event_id: str):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            return None
+        return {"150": {"fga": 60.0}, "153": {"fga": 58.0}}
+
+    monkeypatch.setattr(live, "fetch_box_score", flaky)
+    monkeypatch.setattr(live, "load_season_boxes", lambda _season: {})
+    boxes, stale = live._fetch_boxes_cached(2025, events)
+    assert stale is True
+    assert "c1" not in boxes
+
+    boxes2, stale2 = live._fetch_boxes_cached(2025, events)
+    assert stale2 is False
+    assert isinstance(boxes2["c1"], dict)
+    assert calls["n"] == 2
+    cached = json.loads((tmp_path / "boxes_2025.json").read_text(encoding="utf-8"))
+    assert isinstance(cached["c1"], dict)
+
+def test_predict_matchup_v2_market_aware_wiring_with_stub_context() -> None:
+    """Odds + market artifacts flip model_variant without needing a live season fetch."""
+    from unittest.mock import MagicMock, patch
+
+    from web.cbb_v2 import live as cbb_live
+
+    team = MagicMock()
+    team.games_played = 20
+    team.elo = 1600.0
+    team.ortg_fast = 110.0
+    team.drtg_fast = 98.0
+    team.pace_ewma = 68.0
+    team.win_pct = MagicMock(return_value=0.7)
+
+    engine = MagicMock()
+    engine.teams = {"duke": team, "unc": team}
+    engine.team = MagicMock(return_value=team)
+    engine.resolve_team_id = MagicMock(side_effect=lambda abbr, _id=None: abbr.lower())
+    engine.features_for_game = MagicMock(
+        return_value={
+            "home_rest_days": 2.0,
+            "away_rest_days": 1.0,
+            "is_conference": 1.0,
+        }
+    )
+
+    art = {
+        "feature_columns": ["elo_diff"],
+        "clf_market_features": ["mkt_home_prob", "has_market"],
+        "margin_market_features": ["mkt_home_spread", "has_spread"],
+        "clf": object(),
+        "lr": {"xgb_weight": 0.55},
+        "calibrator": {"x": [0.0, 1.0], "y": [0.0, 1.0]},
+        "clf_market": object(),
+        "lr_market": {"xgb_weight": 0.55},
+        "calibrator_market": {"x": [0.0, 1.0], "y": [0.0, 1.0]},
+        "margin": object(),
+        "margin_market": object(),
+        "score_home": object(),
+        "score_away": object(),
+    }
+    context = {
+        "engine": engine,
+        "artifacts": art,
+        "todays_games": {},
+        "season": 2026,
+        "abbr_map": {},
+    }
+
+    with (
+        patch.object(cbb_live, "get_live_context", return_value=context),
+        patch.object(cbb_live, "_predict_probability", return_value=0.64) as mock_prob,
+        patch.object(cbb_live, "_predict_regressor", side_effect=[8.0, 78.0, 70.0]),
+    ):
+        result = cbb_live.predict_matchup_v2(
+            "2026-01-10",
+            "duke",
+            "unc",
+            home_moneyline=-200,
+            away_moneyline=170,
+            home_spread=-6.5,
+        )
+
+    assert result is not None
+    assert result["model_variant"] == "market_aware"
+    assert result["has_market"] is True
+    assert result["has_spread"] is True
+    assert mock_prob.call_args.kwargs.get("clf") is art["clf_market"]

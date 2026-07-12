@@ -173,6 +173,9 @@ def _load_artifacts() -> dict[str, Any] | None:
         if clf is None or clf_market is None or not snapshots:
             return None
 
+        metadata = json.loads(
+            (MODEL_DIR / "metadata.json").read_text(encoding="utf-8")
+        )
         return {
             "clf": clf,
             "clf_market": clf_market,
@@ -186,9 +189,8 @@ def _load_artifacts() -> dict[str, Any] | None:
             "calibrator_market": json.loads(
                 (MODEL_DIR / "calibrator_market.json").read_text(encoding="utf-8")
             ),
-            "metadata": json.loads(
-                (MODEL_DIR / "metadata.json").read_text(encoding="utf-8")
-            ),
+            "metadata": metadata,
+            "feature_columns": metadata.get("feature_columns") or list(FEATURE_COLUMNS),
             "snapshots": snapshots,
             "goals_home": _booster("model_goals_home.json"),
             "goals_away": _booster("model_goals_away.json"),
@@ -339,7 +341,8 @@ def _predict_probs(
     """(pure, market_aware) calibrated probability triples."""
     import xgboost as xgb
 
-    base = [float(features.get(col, 0.0)) for col in FEATURE_COLUMNS]
+    cols = artifacts.get("feature_columns") or list(FEATURE_COLUMNS)
+    base = [float(features.get(col, 0.0)) for col in cols]
     x_pure = np.asarray([base], dtype=float)
 
     market_extra = (
@@ -394,8 +397,9 @@ def _predict_goals(
 
     if artifacts["goals_home"] is None or artifacts["goals_away"] is None:
         return None, None
+    cols = artifacts.get("feature_columns") or list(FEATURE_COLUMNS)
     x = np.asarray(
-        [[float(features.get(col, 0.0)) for col in FEATURE_COLUMNS]], dtype=float
+        [[float(features.get(col, 0.0)) for col in cols]], dtype=float
     )
     dm = xgb.DMatrix(x)
     home = float(artifacts["goals_home"].predict(dm)[0])

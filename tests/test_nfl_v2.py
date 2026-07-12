@@ -401,3 +401,39 @@ def test_h2h_win_rate_survives_home_away_role_reversal() -> None:
     assert same["h2h_home_win_rate"] == 1.0
     assert reverse["h2h_home_win_rate"] == 0.0
     assert reverse["h2h_margin_ewma"] < 0.0
+
+
+def test_coach_streak_emitted_and_accumulates() -> None:
+    engine = NflFeatureEngine()
+    engine.update_after_game(_game("2024-09-08", "kc", "bal", 27, 20))
+    feats = engine.features_for_game(
+        _game("2024-09-15", "kc", "cin", 0, 0, week=2, home_coach="Coach Home", away_coach="Coach Cin")
+    )
+    assert "home_coach_streak" in FEATURE_COLUMNS
+    assert feats["home_coach_streak"] == 1.0
+    engine.update_after_game(
+        _game("2024-09-15", "kc", "cin", 24, 17, week=2, home_coach="Coach Home", away_coach="Coach Cin")
+    )
+    feats2 = engine.features_for_game(
+        _game("2024-09-22", "kc", "lac", 0, 0, week=3, home_coach="Coach Home", away_coach="Coach Lac")
+    )
+    assert feats2["home_coach_streak"] == 2.0
+
+
+def test_live_prefers_nflverse_context_fields(monkeypatch, tmp_path: Path) -> None:
+    from web.nfl_v2 import live as nfl_live
+
+    csv_path = tmp_path / "nflverse.csv"
+    csv_path.write_text(
+        "season,gameday,home_team,away_team,home_qb_id,away_qb_id,home_coach,away_coach,"
+        "roof,surface,temp,wind,weekday,home_rest,away_rest,div_game,week,game_type,location\n"
+        "2024,2024-09-08,KC,BAL,qb-mahomes,qb-jackson,Andy Reid,John Harbaugh,"
+        "outdoors,grass,72,5,Sunday,7,7,0,1,REG,Home\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(nfl_live, "NFLVERSE_CSV", csv_path)
+    ctx = nfl_live._lookup_nflverse_matchup_context("2024-09-08", "kc", "bal")
+    assert ctx["home_qb_id"] == "qb-mahomes"
+    assert ctx["away_coach"] == "John Harbaugh"
+    assert ctx["temp"] == 72 or float(ctx["temp"]) == 72.0
+    assert ctx["neutral_site"] is False

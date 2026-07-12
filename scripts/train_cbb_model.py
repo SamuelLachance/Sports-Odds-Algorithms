@@ -75,6 +75,12 @@ SCORE_PARAMS = dict(
 LR_C = 0.04
 XGB_WEIGHT = 0.55
 MIN_CALIBRATION_POOL = 2000
+# Soft-fail market heads when closing-odds coverage is too thin (current CBB
+# supplemental odds join is sparse — typically << this threshold).
+MIN_MARKET_ROWS = 200
+
+CLF_MARKET_FEATURES = ("mkt_home_prob", "has_market")
+MARGIN_MARKET_FEATURES = ("mkt_home_spread", "has_spread")
 
 
 def log_loss(p: np.ndarray, y: np.ndarray) -> float:
@@ -117,6 +123,22 @@ def _period_key(frame: pd.DataFrame) -> pd.Series:
     return period
 
 
+def attach_market_features(frame: pd.DataFrame) -> pd.DataFrame:
+    frame = frame.copy()
+    mkt = frame["market_home_prob"] if "market_home_prob" in frame.columns else pd.Series(
+        np.nan, index=frame.index
+    )
+    frame["has_market"] = mkt.notna().astype(float)
+    frame["mkt_home_prob"] = mkt.fillna(0.5)
+    if "home_spread" in frame.columns:
+        spread = frame["home_spread"]
+    else:
+        spread = pd.Series(np.nan, index=frame.index)
+    frame["has_spread"] = spread.notna().astype(float)
+    frame["mkt_home_spread"] = spread.fillna(0.0)
+    return frame
+
+
 def fit_classifier(train: pd.DataFrame, val: pd.DataFrame, cols: list[str]) -> XGBClassifier:
     model = XGBClassifier(**CLF_PARAMS)
     model.fit(
@@ -141,11 +163,28 @@ def predict_ensemble(xgb: XGBClassifier, lr, frame: pd.DataFrame, cols: list[str
 
 
 def walk_forward(frame: pd.DataFrame, end_season: int) -> pd.DataFrame:
-    frame = frame.copy()
+    frame = attach_market_features(frame)
     frame["period"] = _period_key(frame)
-    cols = list(FEATURE_COLUMNS)
+    pure_cols = list(FEATURE_COLUMNS)
+    mkt_cols = pure_cols + list(CLF_MARKET_FEATURES)
+    margin_cols = pure_cols + list(MARGIN_MARKET_FEATURES)
+    n_odds = (
+        int(frame["market_home_prob"].notna().sum())
+        if "market_home_prob" in frame.columns
+        else 0
+    )
+    n_spread = int(frame["has_spread"].sum()) if "has_spread" in frame.columns else 0
+    train_market_clf = n_odds >= MIN_MARKET_ROWS
+    train_market_margin = n_spread >= MIN_MARKET_ROWS
+    if not train_market_clf:
+        print(
+            f"skipping CBB market clf head in walk-forward: only {n_odds} rows with odds "
+            f"(need >= {MIN_MARKET_ROWS})",
+            flush=True,
+        )
     outputs: list[pd.DataFrame] = []
     calibrator: IsotonicRegression | None = None
+    calibrator_mkt: IsotonicRegression | None = None
 
     for eval_season in range(FIRST_EVAL_SEASON, end_season + 1):
         for period in (0, 1, 2):
@@ -162,14 +201,14 @@ def walk_forward(frame: pd.DataFrame, end_season: int) -> pd.DataFrame:
             if fit.empty or len(val) < 200:
                 fit = train
                 val = train
-            xgb = fit_classifier(fit, val, cols)
-            lr = fit_logistic(train, cols)
-            raw = predict_ensemble(xgb, lr, test, cols)
+            xgb = fit_classifier(fit, val, pure_cols)
+            lr = fit_logistic(train, pure_cols)
+            raw = predict_ensemble(xgb, lr, test, pure_cols)
             calibrated = calibrator.predict(raw) if calibrator is not None else raw
 
             margin_model = XGBRegressor(**MARGIN_PARAMS)
-            margin_model.fit(train[cols], train["margin"])
-            margin_pred = margin_model.predict(test[cols])
+            margin_model.fit(train[pure_cols], train["margin"])
+            margin_pred = margin_model.predict(test[pure_cols])
 
             keep_cols = [
                 "season", "date", "event_id", "home", "away",
@@ -183,12 +222,33 @@ def walk_forward(frame: pd.DataFrame, end_season: int) -> pd.DataFrame:
             chunk["model_raw"] = raw
             chunk["model_prob"] = np.clip(calibrated, 0.02, 0.98)
             chunk["model_margin"] = margin_pred
+
+            if train_market_clf:
+                xgb_mkt = fit_classifier(fit, val, mkt_cols)
+                lr_mkt = fit_logistic(train, mkt_cols)
+                raw_mkt = predict_ensemble(xgb_mkt, lr_mkt, test, mkt_cols)
+                calibrated_mkt = (
+                    calibrator_mkt.predict(raw_mkt)
+                    if calibrator_mkt is not None
+                    else raw_mkt
+                )
+                chunk["model_raw_mkt"] = raw_mkt
+                chunk["model_prob_mkt"] = np.clip(calibrated_mkt, 0.02, 0.98)
+            if train_market_margin:
+                margin_model_mkt = XGBRegressor(**MARGIN_PARAMS)
+                margin_model_mkt.fit(train[margin_cols], train["margin"])
+                chunk["model_margin_mkt"] = margin_model_mkt.predict(test[margin_cols])
             outputs.append(chunk)
 
             pooled = pd.concat(outputs, ignore_index=True)
             if len(pooled) >= MIN_CALIBRATION_POOL:
                 calibrator = IsotonicRegression(out_of_bounds="clip", y_min=0.02, y_max=0.98)
                 calibrator.fit(pooled["model_raw"], pooled["home_win"])
+                if train_market_clf and "model_raw_mkt" in pooled.columns:
+                    calibrator_mkt = IsotonicRegression(
+                        out_of_bounds="clip", y_min=0.02, y_max=0.98
+                    )
+                    calibrator_mkt.fit(pooled["model_raw_mkt"], pooled["home_win"])
 
         season_chunks = [c for c in outputs if int(c.season.iloc[0]) == eval_season]
         if not season_chunks:
@@ -252,29 +312,64 @@ def _logistic_to_json(lr_pipeline) -> dict:
 
 def train_final_artifacts(frame: pd.DataFrame, oos: pd.DataFrame, end_season: int) -> dict:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    cols = list(FEATURE_COLUMNS)
+    frame = attach_market_features(frame)
+    pure_cols = list(FEATURE_COLUMNS)
+    mkt_cols = pure_cols + list(CLF_MARKET_FEATURES)
+    margin_cols = pure_cols + list(MARGIN_MARKET_FEATURES)
+    n_odds = (
+        int(frame["market_home_prob"].notna().sum())
+        if "market_home_prob" in frame.columns
+        else 0
+    )
+    n_spread = int(frame["has_spread"].sum()) if "has_spread" in frame.columns else 0
+    train_market_clf = n_odds >= MIN_MARKET_ROWS
+    train_market_margin = n_spread >= MIN_MARKET_ROWS
+    if not train_market_clf:
+        print(
+            f"skipping CBB market clf heads: only {n_odds} rows with odds "
+            f"(need >= {MIN_MARKET_ROWS})",
+            flush=True,
+        )
+    if not train_market_margin:
+        print(
+            f"skipping CBB market margin head: only {n_spread} rows with spreads "
+            f"(need >= {MIN_MARKET_ROWS})",
+            flush=True,
+        )
 
     val = frame[frame.season == end_season]
     fit = frame[frame.season < end_season]
     if val.empty or fit.empty:
         fit = frame
         val = frame
-    clf = fit_classifier(fit, val, cols)
+    clf = fit_classifier(fit, val, pure_cols)
     clf.get_booster().save_model(str(OUT_DIR / "model_clf.json"))
 
     (OUT_DIR / "model_lr.json").write_text(
-        json.dumps(_logistic_to_json(fit_logistic(frame, cols))), encoding="utf-8"
+        json.dumps(_logistic_to_json(fit_logistic(frame, pure_cols))), encoding="utf-8"
     )
 
+    if train_market_clf:
+        clf_mkt = fit_classifier(fit, val, mkt_cols)
+        clf_mkt.get_booster().save_model(str(OUT_DIR / "model_clf_market.json"))
+        (OUT_DIR / "model_lr_market.json").write_text(
+            json.dumps(_logistic_to_json(fit_logistic(frame, mkt_cols))),
+            encoding="utf-8",
+        )
+
     margin_model = XGBRegressor(**MARGIN_PARAMS)
-    margin_model.fit(frame[cols], frame["margin"])
+    margin_model.fit(frame[pure_cols], frame["margin"])
     margin_model.get_booster().save_model(str(OUT_DIR / "model_margin.json"))
+    if train_market_margin:
+        margin_model_mkt = XGBRegressor(**MARGIN_PARAMS)
+        margin_model_mkt.fit(frame[margin_cols], frame["margin"])
+        margin_model_mkt.get_booster().save_model(str(OUT_DIR / "model_margin_market.json"))
 
     score_home = XGBRegressor(**SCORE_PARAMS)
-    score_home.fit(frame[cols], frame["home_score"])
+    score_home.fit(frame[pure_cols], frame["home_score"])
     score_home.get_booster().save_model(str(OUT_DIR / "model_score_home.json"))
     score_away = XGBRegressor(**SCORE_PARAMS)
-    score_away.fit(frame[cols], frame["away_score"])
+    score_away.fit(frame[pure_cols], frame["away_score"])
     score_away.get_booster().save_model(str(OUT_DIR / "model_score_away.json"))
 
     grid = np.linspace(0.0, 1.0, 201)
@@ -291,8 +386,27 @@ def train_final_artifacts(frame: pd.DataFrame, oos: pd.DataFrame, end_season: in
         ),
         encoding="utf-8",
     )
+    if train_market_clf and "model_raw_mkt" in oos.columns:
+        calibrator_mkt = IsotonicRegression(out_of_bounds="clip", y_min=0.02, y_max=0.98)
+        calibrator_mkt.fit(oos["model_raw_mkt"], oos["home_win"])
+        (OUT_DIR / "calibrator_market.json").write_text(
+            json.dumps(
+                {
+                    "kind": "isotonic",
+                    "x": [round(float(v), 6) for v in grid],
+                    "y": [round(float(v), 6) for v in calibrator_mkt.predict(grid)],
+                    "fitted_on": int(len(oos)),
+                }
+            ),
+            encoding="utf-8",
+        )
 
     margin_sigma = float(np.std(oos["margin"] - oos["model_margin"]))
+    margin_sigma_mkt = (
+        float(np.std(oos["margin"] - oos["model_margin_mkt"]))
+        if train_market_margin and "model_margin_mkt" in oos.columns
+        else None
+    )
 
     now_season = cbb_now_season()
     completed = sorted(
@@ -333,6 +447,9 @@ def train_final_artifacts(frame: pd.DataFrame, oos: pd.DataFrame, end_season: in
         "algorithm": "CBBGradientBoost v2",
         "created_at": datetime.now(timezone.utc).isoformat(),
         "feature_columns": list(FEATURE_COLUMNS),
+        "clf_market_features": list(CLF_MARKET_FEATURES) if train_market_clf else [],
+        "margin_market_features": list(MARGIN_MARKET_FEATURES) if train_market_margin else [],
+        "market_heads_trained": bool(train_market_clf or train_market_margin),
         "n_features": len(FEATURE_COLUMNS),
         "ensemble": {"xgb_weight": XGB_WEIGHT, "lr_C": LR_C},
         "train_rows": int(len(frame)),
@@ -340,6 +457,7 @@ def train_final_artifacts(frame: pd.DataFrame, oos: pd.DataFrame, end_season: in
         "eval_seasons": [FIRST_EVAL_SEASON, int(end_season)],
         "snapshot_seasons": sorted(snapshot_seasons),
         "margin_sigma": round(margin_sigma, 3),
+        "margin_sigma_market": round(margin_sigma_mkt, 3) if margin_sigma_mkt is not None else None,
         "oos_model_logloss": round(oos_ll, 5),
         "oos_model_brier": round(brier(p, y), 5),
         "oos_model_acc": round(float(np.mean((p > 0.5) == (y > 0.5))), 4),
@@ -354,6 +472,11 @@ def train_final_artifacts(frame: pd.DataFrame, oos: pd.DataFrame, end_season: in
             log_loss(m["market_home_prob"].values, m["home_win"].values.astype(float)), 5
         )
         if len(m)
+        else None,
+        "oos_market_aware_logloss_odds_subset": round(
+            log_loss(m["model_prob_mkt"].values, m["home_win"].values.astype(float)), 5
+        )
+        if train_market_clf and len(m) and "model_prob_mkt" in m.columns
         else None,
         "official_picks_recommendation": (
             "keep_disabled_no_historical_odds_backtest"
@@ -401,6 +524,7 @@ def train_final_artifacts(frame: pd.DataFrame, oos: pd.DataFrame, end_season: in
                     "oos_margin_mae",
                     "gate_pass_vs_ensemble_ll",
                     "oos_market_logloss",
+                    "market_heads_trained",
                     "train_rows",
                     "n_features",
                     "official_picks_recommendation",

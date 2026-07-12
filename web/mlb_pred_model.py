@@ -306,6 +306,8 @@ def _run_mlb_v2(
             away_abbr,
             kickoff_iso=kickoff_iso,
             game_number=game_number,
+            home_moneyline=home_ml,
+            away_moneyline=away_ml,
         )
     except Exception:  # noqa: BLE001 - any v2 failure falls back to legacy RunCast
         return None
@@ -327,21 +329,23 @@ def _run_mlb_v2(
     market_decorrelated = False
     market_decorrelation_source: str | None = None
     market_home = None
-    if home_ml is not None and away_ml is not None:
-        _away_mkt, market_home = devig_two_way_probs(away_ml, home_ml)
-    if market_home is not None:
-        home_prob = decorrelate_binary(calibrated_prob, market_home)
-        market_decorrelated = True
-        market_decorrelation_source = "moneyline"
-    elif market_spread is not None and not isinstance(market_spread, bool):
-        # Invalid/garbage ML must not block spread-based decorrelation.
-        # bool False→0.0 must not invent a pick'em market.
-        market_prob = spread_to_home_prob(float(market_spread), sigma=DEFAULT_SIGMA)
-        home_prob = decorrelate_from_market(
-            calibrated_prob / 100.0, market_prob / 100.0
-        ) * 100.0
-        market_decorrelated = True
-        market_decorrelation_source = "spread"
+    # Skip post-hoc decorrelation when the market-aware head already used odds.
+    if v2.get("model_variant") != "market_aware":
+        if home_ml is not None and away_ml is not None:
+            _away_mkt, market_home = devig_two_way_probs(away_ml, home_ml)
+        if market_home is not None:
+            home_prob = decorrelate_binary(calibrated_prob, market_home)
+            market_decorrelated = True
+            market_decorrelation_source = "moneyline"
+        elif market_spread is not None and not isinstance(market_spread, bool):
+            # Invalid/garbage ML must not block spread-based decorrelation.
+            # bool False→0.0 must not invent a pick'em market.
+            market_prob = spread_to_home_prob(float(market_spread), sigma=DEFAULT_SIGMA)
+            home_prob = decorrelate_from_market(
+                calibrated_prob / 100.0, market_prob / 100.0
+            ) * 100.0
+            market_decorrelated = True
+            market_decorrelation_source = "spread"
 
     home_games = int(v2.get("home_games") or 0)
     away_games = int(v2.get("away_games") or 0)
@@ -358,6 +362,7 @@ def _run_mlb_v2(
     return {
         "algorithm": "MLBGradientBoost",
         "model_version": "v2",
+        "model_variant": v2.get("model_variant") or "pure",
         "source": "statsapi-xgb-lr-isotonic",
         "market_decorrelated": market_decorrelated,
         "market_decorrelation_source": market_decorrelation_source,
@@ -383,6 +388,7 @@ def _run_mlb_v2(
         "home_elo": v2.get("home_elo"),
         "away_elo": v2.get("away_elo"),
         "park_factor": v2.get("park_factor"),
+        "has_market": v2.get("has_market"),
     }
 
 

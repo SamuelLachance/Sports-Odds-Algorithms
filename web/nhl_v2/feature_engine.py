@@ -49,6 +49,9 @@ LEAGUE_HITS = 23.0
 LEAGUE_BLOCK_RATE = 0.25
 LEAGUE_REB_XG_SHARE = 0.17
 LEAGUE_PEN = 3.9
+LEAGUE_DZ_GIVEAWAYS = 6.5
+LEAGUE_EV_XG_SHARE = 0.72
+LEAGUE_PP_TOI_SHARE = 0.017
 
 GOALIE_PRIOR_SHOTS = 600.0
 GOALIE_HD_PRIOR = 80.0
@@ -134,6 +137,7 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     "rebound_xg_share_for_diff",
     "rebound_xg_share_against_diff",
     "hits_for_diff",
+    "giveaway_diff",
     "block_rate_diff",
     "pp_ice_time_diff",
     "pk_ice_time_diff",
@@ -162,6 +166,11 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     # interactions
     "goalie_gsax_x_soga",
     "rest_x_travel",
+    # skater / roster-quality proxies from unused team MoneyPuck columns
+    "hits_against_diff",
+    "corsi_all_pct_diff",
+    "ev_xg_share_diff",
+    "pp_toi_share_diff",
 )
 
 
@@ -226,7 +235,8 @@ class TeamState:
         # new fields (defaulted in from_dict for old snapshots)
         "flurry_xg_pct_fast", "flurry_xg_pct_slow",
         "reb_xg_share_for", "reb_xg_share_against",
-        "hits_for", "block_rate",
+        "hits_for", "hits_against", "block_rate",
+        "giveaways",
         "pp_ice_time", "pk_ice_time",
         "pen_taken", "pen_drawn",
         "ot_points_luck",
@@ -234,6 +244,9 @@ class TeamState:
         "elo_history",
         "road_streak",
         "h2h",
+        "corsi_all_pct",
+        "ev_xg_share",
+        "pp_toi_share",
     )
 
     def __init__(self) -> None:
@@ -281,7 +294,9 @@ class TeamState:
         self.reb_xg_share_for = LEAGUE_REB_XG_SHARE
         self.reb_xg_share_against = LEAGUE_REB_XG_SHARE
         self.hits_for = LEAGUE_HITS
+        self.hits_against = LEAGUE_HITS
         self.block_rate = LEAGUE_BLOCK_RATE
+        self.giveaways = LEAGUE_DZ_GIVEAWAYS
         self.pp_ice_time = LEAGUE_PP_ICE
         self.pk_ice_time = LEAGUE_PK_ICE
         self.pen_taken = LEAGUE_PEN
@@ -292,6 +307,9 @@ class TeamState:
         self.elo_history: list[float] = []
         self.road_streak = 0
         self.h2h: dict[str, list[int]] = {}
+        self.corsi_all_pct = 0.5
+        self.ev_xg_share = LEAGUE_EV_XG_SHARE
+        self.pp_toi_share = LEAGUE_PP_TOI_SHARE
 
     def points_pct(self) -> float:
         games = self.season_wins + self.season_losses + self.season_ot_losses
@@ -631,6 +649,7 @@ class NhlFeatureEngine:
                 home.reb_xg_share_against - away.reb_xg_share_against
             ),
             "hits_for_diff": home.hits_for - away.hits_for,
+            "giveaway_diff": home.giveaways - away.giveaways,
             "block_rate_diff": home.block_rate - away.block_rate,
             "pp_ice_time_diff": (home.pp_ice_time - away.pp_ice_time) / 60.0,
             "pk_ice_time_diff": (home.pk_ice_time - away.pk_ice_time) / 60.0,
@@ -661,6 +680,10 @@ class NhlFeatureEngine:
             "goalie_hd_gsax_diff": (hg_hd - ag_hd) * 100.0,
             "goalie_gsax_x_soga": goalie_gsax_diff * sog_against_diff,
             "rest_x_travel": rest_diff * travel_diff,
+            "hits_against_diff": home.hits_against - away.hits_against,
+            "corsi_all_pct_diff": home.corsi_all_pct - away.corsi_all_pct,
+            "ev_xg_share_diff": home.ev_xg_share - away.ev_xg_share,
+            "pp_toi_share_diff": home.pp_toi_share - away.pp_toi_share,
         }
         return features
 
@@ -779,6 +802,16 @@ class NhlFeatureEngine:
             if hits is not None:
                 state.hits_for = _ewma(state.hits_for, float(hits), ALPHA_FAST)
 
+            hits_a = own_mp.get("all_hitsAgainst")
+            if hits_a is not None:
+                state.hits_against = _ewma(
+                    state.hits_against, float(hits_a), ALPHA_FAST
+                )
+
+            giveaways = own_mp.get("all_dZoneGiveawaysFor")
+            if giveaways is not None:
+                state.giveaways = _ewma(state.giveaways, float(giveaways), ALPHA_FAST)
+
             blocked = own_mp.get("all_blockedShotAttemptsFor")
             attempts_against = own_mp.get("all_shotAttemptsAgainst")
             if blocked is not None and attempts_against is not None:
@@ -788,6 +821,42 @@ class NhlFeatureEngine:
                     state.block_rate = _ewma(
                         state.block_rate, float(blocked) / aa, ALPHA_FAST
                     )
+
+            # All-strength Corsi share (unused vs 5on5 score-adjusted corsi)
+            cf_all = own_mp.get("all_shotAttemptsFor")
+            ca_all = own_mp.get("all_shotAttemptsAgainst")
+            if cf_all is not None and ca_all is not None:
+                total_c_all = float(cf_all) + float(ca_all)
+                if total_c_all > 20:
+                    state.corsi_all_pct = _ewma(
+                        state.corsi_all_pct,
+                        float(cf_all) / total_c_all,
+                        ALPHA_FAST,
+                    )
+
+            # Even-strength xG share of total offense (PP reliance inverse)
+            xgf55 = own_mp.get("5on5_xGoalsFor")
+            raw_xgf_all = own_mp.get("all_xGoalsFor")
+            if (
+                xgf55 is not None
+                and raw_xgf_all is not None
+                and float(raw_xgf_all) > 0.15
+            ):
+                state.ev_xg_share = _ewma(
+                    state.ev_xg_share,
+                    float(xgf55) / float(raw_xgf_all),
+                    ALPHA_SLOW,
+                )
+
+            # PP TOI as share of team ice (top-unit special-teams proxy)
+            pp_ice = own_mp.get("5on4_iceTime")
+            all_ice = own_mp.get("all_iceTime")
+            if pp_ice is not None and all_ice is not None and float(all_ice) > 1000:
+                state.pp_toi_share = _ewma(
+                    state.pp_toi_share,
+                    float(pp_ice) / float(all_ice),
+                    ALPHA_SLOW,
+                )
 
             pen_t = own_mp.get("all_penaltiesFor")
             pen_d = own_mp.get("all_penaltiesAgainst")

@@ -22,8 +22,10 @@ from web.cbb_v2.data import (  # noqa: E402
     FIRST_SEASON,
     CACHE_ROOT,
     canon_abbr,
+    fetch_season_boxes,
     fetch_season_events,
     load_closing_odds_index,
+    load_season_boxes,
 )
 from web.cbb_v2.feature_engine import FEATURE_COLUMNS, CbbFeatureEngine  # noqa: E402
 from web.cbb_v2.replay import merge_season_games, replay_season  # noqa: E402
@@ -40,7 +42,7 @@ META_COLUMNS = (
 )
 
 
-def load_season(season: int) -> list[dict[str, Any]]:
+def load_season(season: int, *, refresh_boxes: bool = False) -> list[dict[str, Any]]:
     season_dir = CACHE_ROOT / str(season)
     events_path = season_dir / "events.json"
     if events_path.is_file():
@@ -49,7 +51,11 @@ def load_season(season: int) -> list[dict[str, Any]]:
         events = json.loads(events_path.read_text(encoding="utf-8")).get("events", [])
     else:
         events = fetch_season_events(season, use_cache=True)
-    return merge_season_games([], events, season=season)
+    if refresh_boxes:
+        boxes = fetch_season_boxes(season, events, use_cache=True)
+    else:
+        boxes = load_season_boxes(season)
+    return merge_season_games([], events, boxes, season=season)
 
 
 def _parse_n_books(raw: Any) -> int:
@@ -134,6 +140,11 @@ def main() -> int:
     parser.add_argument("--end-season", type=int, default=2026, help="Last season to replay")
     parser.add_argument("--emit-from", type=int, default=2020, help="First season to write rows for")
     parser.add_argument("--refresh", action="store_true", help="Refetch ESPN day caches")
+    parser.add_argument(
+        "--refresh-boxes",
+        action="store_true",
+        help="Fetch missing ESPN summary boxes into .build-cache/cbb-history/{season}/boxes.json",
+    )
     args = parser.parse_args()
 
     if args.end_season < args.start_season:
@@ -157,9 +168,13 @@ def main() -> int:
         for season in range(args.start_season, args.end_season + 1):
             if args.refresh:
                 events = fetch_season_events(season, use_cache=False)
-                games = merge_season_games([], events, season=season)
+                if args.refresh_boxes:
+                    boxes = fetch_season_boxes(season, events, use_cache=True)
+                else:
+                    boxes = load_season_boxes(season)
+                games = merge_season_games([], events, boxes, season=season)
             else:
-                games = load_season(season)
+                games = load_season(season, refresh_boxes=args.refresh_boxes)
             if not games:
                 print(f"season {season}: no games", flush=True)
                 continue

@@ -30,6 +30,8 @@ PRIOR_GPG = 1.40
 PRIOR_SHOTS = 12.5
 PRIOR_SOT = 4.4
 PRIOR_CORNERS = 5.2
+PRIOR_YELLOWS = 1.8
+PRIOR_REDS = 0.08
 PRIOR_HOME_EDGE = 0.38  # home minus away goals league-wide
 
 # goals per shot-on-target (league level, era-stable ~0.30)
@@ -61,6 +63,9 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     "finish_luck_diff",
     "concede_luck_diff",
     "corners_for_diff",
+    "corners_against_diff",
+    "yellow_diff",
+    "red_burden_diff",
     "points_fast_diff",
     "points_slow_diff",
     "win_rate_diff",
@@ -185,6 +190,8 @@ class TeamState:
         "shots_against",
         "corners_for",
         "corners_against",
+        "yellows",
+        "red_burden",
         "finish_luck",
         "concede_luck",
         "points_fast",
@@ -209,6 +216,8 @@ class TeamState:
         self.sot_for = self.sot_against = PRIOR_SOT
         self.shots_for = self.shots_against = PRIOR_SHOTS
         self.corners_for = self.corners_against = PRIOR_CORNERS
+        self.yellows = PRIOR_YELLOWS
+        self.red_burden = PRIOR_REDS
         self.finish_luck = 0.0
         self.concede_luck = 0.0
         self.points_fast = self.points_slow = 1.35
@@ -375,6 +384,9 @@ class SoccerFeatureEngine:
             "finish_luck_diff": home.finish_luck - away.finish_luck,
             "concede_luck_diff": home.concede_luck - away.concede_luck,
             "corners_for_diff": home.corners_for - away.corners_for,
+            "corners_against_diff": home.corners_against - away.corners_against,
+            "yellow_diff": home.yellows - away.yellows,
+            "red_burden_diff": home.red_burden - away.red_burden,
             "points_fast_diff": home.points_fast - away.points_fast,
             "points_slow_diff": home.points_slow - away.points_slow,
             "win_rate_diff": home.win_rate - away.win_rate,
@@ -468,6 +480,8 @@ class SoccerFeatureEngine:
         hs, as_ = row.get("home_shots"), row.get("away_shots")
         hst, ast = row.get("home_sot"), row.get("away_sot")
         hc, ac = row.get("home_corners"), row.get("away_corners")
+        hy, ay = row.get("home_yellows"), row.get("away_yellows")
+        hr, ar = row.get("home_reds"), row.get("away_reds")
         if hs is not None and as_ is not None:
             home.shots_for = _ewma(home.shots_for, float(hs), ALPHA_FAST)
             home.shots_against = _ewma(home.shots_against, float(as_), ALPHA_FAST)
@@ -495,6 +509,12 @@ class SoccerFeatureEngine:
             home.corners_against = _ewma(home.corners_against, float(ac), ALPHA_FAST)
             away.corners_for = _ewma(away.corners_for, float(ac), ALPHA_FAST)
             away.corners_against = _ewma(away.corners_against, float(hc), ALPHA_FAST)
+        if hy is not None and ay is not None:
+            home.yellows = _ewma(home.yellows, float(hy), ALPHA_FAST)
+            away.yellows = _ewma(away.yellows, float(ay), ALPHA_FAST)
+        if hr is not None and ar is not None:
+            home.red_burden = _ewma(home.red_burden, float(hr), ALPHA_SLOW)
+            away.red_burden = _ewma(away.red_burden, float(ar), ALPHA_SLOW)
 
         # league environment (tier-1 only)
         if tier == 1:

@@ -46,6 +46,8 @@ def test_complete_metadata_is_ok(tmp_path, monkeypatch) -> None:
                 "train_rows": 1000,
                 "created_at": "2026-07-01T00:00:00+00:00",
                 "algorithm": "gb",
+                "feature_columns": ["a", "b", "c"],
+                "clf_market_features": ["mkt_home_prob", "has_market"],
             }
         ),
         encoding="utf-8",
@@ -56,3 +58,12 @@ def test_complete_metadata_is_ok(tmp_path, monkeypatch) -> None:
     assert row["ok"] is True
     assert row["oos_model_logloss"] == 0.95
     assert "oos_model_acc" not in row  # soccer often omits this key
+    assert row["n_pure_features"] == 3
+    assert row["n_clf_market_features"] == 2
+
+
+def test_engine_feature_counts_load() -> None:
+    check = _load_check_v2_data()
+    row = check.load_engine_feature_counts("nba")
+    assert row["ok"] is True
+    assert row["n_pure_features"] > 50

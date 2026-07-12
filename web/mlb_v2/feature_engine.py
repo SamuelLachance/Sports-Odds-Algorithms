@@ -128,6 +128,9 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     "away_bullpen_outs_last5",
     "sp_fip_trend_diff",
     "sp_last_outs_diff",
+    # platoon interactions (SP handedness × lineup rates)
+    "platoon_k_matchup",
+    "platoon_obp_matchup",
 )
 
 
@@ -687,6 +690,13 @@ class MlbFeatureEngine:
             "away_bullpen_outs_last5": away.bullpen_outs_last_n(5),
             "sp_fip_trend_diff": home_sp["fip_trend"] - away_sp["fip_trend"],
             "sp_last_outs_diff": home_sp["last_outs"] - away_sp["last_outs"],
+            # Offense SO/OBP when facing opposite-side starter (LHP flag × rates)
+            "platoon_k_matchup": (
+                away_sp["is_lhp"] * home.so_rate - home_sp["is_lhp"] * away.so_rate
+            ),
+            "platoon_obp_matchup": (
+                away_sp["is_lhp"] * home.obp - home_sp["is_lhp"] * away.obp
+            ),
         }
 
     @staticmethod

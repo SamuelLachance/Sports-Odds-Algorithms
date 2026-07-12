@@ -54,13 +54,15 @@ def events_to_results(events: list[dict[str, Any]], season: int) -> list[dict[st
 def merge_season_games(
     results: list[dict[str, Any]],
     events: list[dict[str, Any]],
+    boxes: dict[str, Any] | None = None,
     *,
     season: int | None = None,
 ) -> list[dict[str, Any]]:
-    """Completed games with ESPN metadata; results optional if events provided."""
+    """Completed games with ESPN metadata and optional box stats attached."""
     if not results and events and season is not None:
         results = events_to_results(events, season)
     by_id = {str(e.get("event_id")): e for e in events if e.get("event_id")}
+    boxes = boxes or {}
     games: list[dict[str, Any]] = []
     for row in results:
         game = dict(row)
@@ -78,6 +80,13 @@ def merge_season_games(
             game.setdefault(
                 "away_conference_id", str(event.get("away_conference_id") or "")
             )
+            box = boxes.get(str(event.get("event_id")))
+            if isinstance(box, dict):
+                home_box = box.get(str(event.get("home_id")))
+                away_box = box.get(str(event.get("away_id")))
+                if home_box and away_box:
+                    game["home_box"] = home_box
+                    game["away_box"] = away_box
         force_postseason_neutral_site(game)
         games.append(game)
     games.sort(key=lambda g: (str(g.get("date")), str(g.get("event_id") or "")))

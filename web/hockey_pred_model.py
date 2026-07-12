@@ -395,7 +395,13 @@ def _run_nhl_v2(
     try:
         from web.nhl_v2.live import predict_matchup_v2
 
-        v2 = predict_matchup_v2(game_date, home_abbr, away_abbr)
+        v2 = predict_matchup_v2(
+            game_date,
+            home_abbr,
+            away_abbr,
+            home_moneyline=home_moneyline,
+            away_moneyline=away_moneyline,
+        )
     except Exception:  # noqa: BLE001 - any v2 failure falls back to PuckCast
         return None
     if not v2:
@@ -404,7 +410,12 @@ def _run_nhl_v2(
     calibrated_prob = float(v2["home_win_probability"])  # 0-100, calibrated
     home_prob = calibrated_prob
     market_decorrelated = False
-    if home_moneyline is not None and away_moneyline is not None:
+    # Skip post-hoc decorrelation when the market-aware head already used odds.
+    if (
+        v2.get("model_variant") != "market_aware"
+        and home_moneyline is not None
+        and away_moneyline is not None
+    ):
         _away_mkt, market_home = devig_two_way_probs(away_moneyline, home_moneyline)
         if market_home is not None:
             home_prob = decorrelate_binary(calibrated_prob, market_home)
@@ -413,6 +424,7 @@ def _run_nhl_v2(
     payload: dict[str, Any] = {
         "algorithm": "NHLGradientBoost",
         "model_version": "v2",
+        "model_variant": v2.get("model_variant") or "pure",
         "source": "moneypuck-xgb-lr-isotonic",
         "market_decorrelated": market_decorrelated,
         "pre_decorrelation_home_win_probability": round(calibrated_prob, 2),
@@ -441,6 +453,7 @@ def _run_nhl_v2(
         "home_b2b": v2.get("home_b2b"),
         "away_b2b": v2.get("away_b2b"),
         "features_used": v2.get("features_used"),
+        "has_market": v2.get("has_market"),
     }
     total_goals = None
     if v2.get("predicted_home_goals") is not None and v2.get("predicted_away_goals") is not None:

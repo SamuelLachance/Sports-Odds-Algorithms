@@ -14,6 +14,7 @@ from web.cfb_v2.feature_engine import (  # noqa: E402
     CfbFeatureEngine,
     conference_of,
     infer_neutral_site,
+    power_conf_tier,
 )
 from web.cfb_v2.replay import csv_rows_to_games, events_to_results, replay_season  # noqa: E402
 
@@ -99,6 +100,30 @@ def test_rest_and_games_last14() -> None:
     feats = engine.features_for_game(_game("2024-09-14", "ala", "usf", 0, 0))
     assert feats["home_rest_days"] == 7.0
     assert feats["home_games_last14"] == 1.0
+    assert feats["home_short_week"] == 0.0
+    assert feats["home_bye"] == 0.0
+
+
+def test_short_week_and_bye_rest_flags() -> None:
+    """rest <= 6 → short_week; rest >= 13 → bye-ish; flags use pre-update rest."""
+    engine = CfbFeatureEngine()
+    engine.update_after_game(_game("2024-09-07", "ala", "usf", 35, 14))
+    engine.update_after_game(_game("2024-09-07", "uga", "ksu", 28, 10))
+
+    short = engine.features_for_game(_game("2024-09-13", "ala", "uga", 0, 0))
+    assert short["home_rest_days"] == 6.0
+    assert short["away_rest_days"] == 6.0
+    assert short["home_short_week"] == 1.0
+    assert short["away_short_week"] == 1.0
+    assert short["home_bye"] == 0.0
+    assert short["away_bye"] == 0.0
+
+    bye = engine.features_for_game(_game("2024-09-21", "ala", "uga", 0, 0))
+    assert bye["home_rest_days"] == 14.0
+    assert bye["home_short_week"] == 0.0
+    assert bye["home_bye"] == 1.0
+    assert bye["away_bye"] == 1.0
+    assert set(FEATURE_COLUMNS).issubset(bye.keys())
 
 
 def test_season_rollover_carries_elo() -> None:
@@ -196,6 +221,59 @@ def test_player_proxy_features_present() -> None:
         "one_score_rate_diff",
     }
     assert proxies.issubset(set(FEATURE_COLUMNS))
+
+
+def test_power_conf_diff_p5_vs_g5() -> None:
+    assert power_conf_tier("ala") == 1.0
+    assert power_conf_tier("bsu") == 0.0
+    assert power_conf_tier("nd") == 0.75
+    engine = CfbFeatureEngine()
+    feats = engine.features_for_game(_game("2024-09-07", "ala", "bsu", 0, 0))
+    assert "power_conf_diff" in FEATURE_COLUMNS
+    assert feats["power_conf_diff"] == 1.0
+    even = engine.features_for_game(_game("2024-09-07", "ala", "uga", 0, 0))
+    assert even["power_conf_diff"] == 0.0
+
+
+def test_qb_entity_elo_stub_when_ids_present() -> None:
+    """Without qb ids features stay at prior; with ids Elo updates leak-free."""
+    engine = CfbFeatureEngine()
+    bare = engine.features_for_game(_game("2024-09-07", "ala", "usf", 0, 0))
+    assert bare["home_qb_known"] == 0.0
+    assert bare["away_qb_known"] == 0.0
+    assert bare["qb_elo_diff"] == 0.0
+
+    g1 = _game("2024-09-07", "ala", "usf", 42, 10)
+    g1["home_qb_id"] = "qb-ala-1"
+    g1["away_qb_id"] = "qb-usf-1"
+    before = engine.features_for_game(g1)
+    assert before["home_qb_known"] == 1.0
+    assert before["away_qb_known"] == 1.0
+    assert before["qb_elo_diff"] == 0.0
+    assert before["home_qb_streak"] == 0.0
+    engine.update_after_game(g1)
+    assert engine.qbs["qb-ala-1"].elo > engine.qbs["qb-usf-1"].elo
+    assert engine.teams["ala"].qb_streak == 1
+
+    g2 = _game("2024-09-14", "ala", "usf", 0, 0)
+    g2["home_qb_id"] = "qb-ala-1"
+    g2["away_qb_id"] = "qb-usf-1"
+    after = engine.features_for_game(g2)
+    assert after["qb_elo_diff"] > 0.0
+    assert after["home_qb_streak"] == 1.0
+    assert after["qb_games_diff"] == 0.0  # both started once
+
+
+def test_qb_elo_round_trip_in_snapshot() -> None:
+    engine = CfbFeatureEngine()
+    g = _game("2024-09-07", "ala", "usf", 35, 17)
+    g["home_qb_id"] = "qb-a"
+    g["away_qb_id"] = "qb-b"
+    engine.update_after_game(g)
+    restored = CfbFeatureEngine.from_dict(engine.to_dict())
+    assert "qb-a" in restored.qbs
+    assert restored.qbs["qb-a"].elo == engine.qbs["qb-a"].elo
+    assert restored.teams["ala"].current_qb_id == "qb-a"
 
 
 def test_load_snapshot_state_returns_none_on_bad_gzip(tmp_path) -> None:

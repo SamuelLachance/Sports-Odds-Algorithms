@@ -7,11 +7,12 @@ and the live path replays only the current season.
 
 Game dict schema:
   date (ISO), season (fall year), home / away (ESPN keys lowercased),
-  home_score, away_score, optional neutral_site, week, conference_game.
+  home_score, away_score, optional neutral_site, week, conference_game,
+  optional home_qb_id / away_qb_id (stub for live ESPN athlete ids; absent in
+  cfb.csv today — EntityElo stays at league prior until ids are filled).
 
-Player/QB features: no roster or athlete box data is available in the CFB
-closing-odds corpus. Proxies below are score-derived (volatility, blowout
-rate, close-game luck) — honest substitutes, not true passer ratings.
+Player/QB features: EntityElo wires when qb ids are present (NFL-style stub).
+Score-derived proxies remain for volatility / luck when roster data is missing.
 """
 
 from __future__ import annotations
@@ -26,6 +27,7 @@ ELO_K = 20.0
 ELO_HOME_ADV = 55.0  # Elo points; matches nfelo CFB HFA scale
 ELO_SEASON_CARRYOVER = 0.70
 POINTS_PER_ELO = 24.0
+QB_ELO_K = 15.0
 
 ALPHA_FAST = 0.25
 ALPHA_SLOW = 0.08
@@ -39,6 +41,10 @@ BLOWOUT_MARGIN = 21.0
 DEFAULT_MARGIN_VOL = 16.0
 MARGIN_HIST_LEN = 8
 SEASON_GAMES_NOMINAL = 12.0
+
+# Power Five / Group of Five conference tiers (from _CONFERENCE_BY_KEY labels).
+_P5_CONFS = frozenset({"sec", "b1g", "acc", "b12", "pac12", "pac"})
+_G5_CONFS = frozenset({"mw", "sbelt", "aac", "mac", "cusa"})
 
 FEATURE_COLUMNS: tuple[str, ...] = (
     # team strength
@@ -68,6 +74,10 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     "home_rest_days",
     "away_rest_days",
     "rest_diff",
+    "home_short_week",
+    "away_short_week",
+    "home_bye",
+    "away_bye",
     "home_games_last14",
     "away_games_last14",
     "season_frac",
@@ -80,9 +90,18 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     "elo_x_season_frac",
     "home_expansion",
     "away_expansion",
+    "power_conf_diff",
     # matchup history
     "h2h_home_win_rate",
     "h2h_margin_ewma",
+    # QB EntityElo (stub: active when home_qb_id / away_qb_id present)
+    "qb_elo_diff",
+    "qb_games_diff",
+    "qb_win_ewma_diff",
+    "home_qb_known",
+    "away_qb_known",
+    "home_qb_streak",
+    "away_qb_streak",
     # score-based player / luck proxies (no roster data)
     "close_win_ewma_diff",
     "blowout_net_ewma_diff",
@@ -141,6 +160,25 @@ _CONFERENCE_BY_KEY: dict[str, str] = {
 
 def conference_of(team_key: str) -> str:
     return _CONFERENCE_BY_KEY.get(str(team_key or "").lower().strip(), "")
+
+
+def power_conf_tier(team_key: str) -> float:
+    """P5=1, G5=0, ND/ind≈0.75, unknown=0.5."""
+    conf = conference_of(team_key)
+    if conf in _P5_CONFS:
+        return 1.0
+    if conf in _G5_CONFS:
+        return 0.0
+    if conf == "ind":
+        return 0.75
+    return 0.5
+
+
+def _is_missing_id(value: Any) -> bool:
+    if value is None:
+        return True
+    text = str(value).strip().lower()
+    return text in ("", "nan", "none", "null")
 
 
 def cfb_season_of(day: date_cls) -> int:
@@ -210,7 +248,7 @@ class TeamState:
         "games_played", "season_seen", "first_season", "h2h", "h2h_margin",
         "close_win_ewma", "blowout_net_ewma", "blowout_games", "blowout_wins",
         "one_score_games", "one_score_wins", "recent_margins", "recent_pf",
-        "elo_pre_hist",
+        "elo_pre_hist", "current_qb_id", "qb_streak",
     )
 
     def __init__(self, key: str):
@@ -248,6 +286,8 @@ class TeamState:
         self.recent_margins: list[float] = []
         self.recent_pf: list[float] = []
         self.elo_pre_hist: list[float] = []
+        self.current_qb_id = ""
+        self.qb_streak = 0
 
     def roll_season(self, season: int) -> None:
         if self.season_seen == season:
@@ -281,6 +321,8 @@ class TeamState:
         self.blowout_wins = 0
         self.one_score_games = 0
         self.one_score_wins = 0
+        self.current_qb_id = ""
+        self.qb_streak = 0
 
     def win_pct(self) -> float:
         total = self.wins + self.losses + self.ties
@@ -347,6 +389,13 @@ class TeamState:
             return 0.5
         return self.one_score_wins / self.one_score_games
 
+    def qb_streak_for(self, qb_id: str) -> float:
+        if _is_missing_id(qb_id) or not self.current_qb_id:
+            return 0.0
+        if str(qb_id).strip() != self.current_qb_id:
+            return 0.0
+        return float(min(self.qb_streak, 16))
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "key": self.key,
@@ -383,6 +432,8 @@ class TeamState:
             "recent_margins": list(self.recent_margins[-MARGIN_HIST_LEN:]),
             "recent_pf": list(self.recent_pf[-MARGIN_HIST_LEN:]),
             "elo_pre_hist": list(self.elo_pre_hist[-5:]),
+            "current_qb_id": self.current_qb_id,
+            "qb_streak": self.qb_streak,
         }
 
     @classmethod
@@ -408,11 +459,48 @@ class TeamState:
         return state
 
 
+class EntityElo:
+    """Leak-free Elo tracker for starter QBs (stub until live fills qb ids)."""
+
+    __slots__ = ("key", "elo", "games", "win_ewma", "wins", "losses", "ties")
+
+    def __init__(self, key: str):
+        self.key = key
+        self.elo = LEAGUE_ELO
+        self.games = 0
+        self.win_ewma = 0.5
+        self.wins = 0
+        self.losses = 0
+        self.ties = 0
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "key": self.key,
+            "elo": self.elo,
+            "games": self.games,
+            "win_ewma": self.win_ewma,
+            "wins": self.wins,
+            "losses": self.losses,
+            "ties": self.ties,
+        }
+
+    @classmethod
+    def from_dict(cls, payload: dict[str, Any]) -> "EntityElo":
+        ent = cls(str(payload.get("key") or ""))
+        for key, value in payload.items():
+            if key == "key":
+                continue
+            if hasattr(ent, key):
+                setattr(ent, key, value)
+        return ent
+
+
 class CfbFeatureEngine:
     """League-wide walk-forward state with leak-free feature extraction."""
 
     def __init__(self) -> None:
         self.teams: dict[str, TeamState] = {}
+        self.qbs: dict[str, EntityElo] = {}
         self.league_ppg = LEAGUE_PPG
 
     def team(self, key: str) -> TeamState:
@@ -421,6 +509,14 @@ class CfbFeatureEngine:
         if state is None:
             state = TeamState(key)
             self.teams[key] = state
+        return state
+
+    def qb(self, key: str) -> EntityElo:
+        key = str(key or "").strip()
+        state = self.qbs.get(key)
+        if state is None:
+            state = EntityElo(key)
+            self.qbs[key] = state
         return state
 
     def features_for_game(self, game: dict[str, Any]) -> dict[str, float]:
@@ -457,6 +553,19 @@ class CfbFeatureEngine:
         h2h_total = h2h_record[0] + h2h_record[1]
         h2h_rate = h2h_record[0] / h2h_total if h2h_total else 0.5
 
+        home_qb_id = str(game.get("home_qb_id") or "").strip()
+        away_qb_id = str(game.get("away_qb_id") or "").strip()
+        home_qb_known = 0.0 if _is_missing_id(home_qb_id) else 1.0
+        away_qb_known = 0.0 if _is_missing_id(away_qb_id) else 1.0
+        home_qb = self.qb(home_qb_id) if home_qb_known else None
+        away_qb = self.qb(away_qb_id) if away_qb_known else None
+        home_qb_elo = home_qb.elo if home_qb else LEAGUE_ELO
+        away_qb_elo = away_qb.elo if away_qb else LEAGUE_ELO
+        home_qb_games = float(home_qb.games) if home_qb else 0.0
+        away_qb_games = float(away_qb.games) if away_qb else 0.0
+        home_qb_win = home_qb.win_ewma if home_qb else 0.5
+        away_qb_win = away_qb.win_ewma if away_qb else 0.5
+
         features: dict[str, float] = {
             "elo_diff": elo_diff,
             "pf_fast_diff": home.pf_fast - away.pf_fast,
@@ -483,6 +592,10 @@ class CfbFeatureEngine:
             "home_rest_days": home_rest,
             "away_rest_days": away_rest,
             "rest_diff": home_rest - away_rest,
+            "home_short_week": 1.0 if home_rest <= 6.0 else 0.0,
+            "away_short_week": 1.0 if away_rest <= 6.0 else 0.0,
+            "home_bye": 1.0 if home_rest >= 13.0 else 0.0,
+            "away_bye": 1.0 if away_rest >= 13.0 else 0.0,
             "home_games_last14": float(home.games_in_last14(game_date)),
             "away_games_last14": float(away.games_in_last14(game_date)),
             "season_frac": season_frac,
@@ -495,8 +608,16 @@ class CfbFeatureEngine:
             "elo_x_season_frac": elo_diff * season_frac,
             "home_expansion": 1.0 if home.first_season == season else 0.0,
             "away_expansion": 1.0 if away.first_season == season else 0.0,
+            "power_conf_diff": power_conf_tier(home.key) - power_conf_tier(away.key),
             "h2h_home_win_rate": h2h_rate,
             "h2h_margin_ewma": home.h2h_margin.get(away.key, 0.0),
+            "qb_elo_diff": home_qb_elo - away_qb_elo,
+            "qb_games_diff": home_qb_games - away_qb_games,
+            "qb_win_ewma_diff": home_qb_win - away_qb_win,
+            "home_qb_known": home_qb_known,
+            "away_qb_known": away_qb_known,
+            "home_qb_streak": home.qb_streak_for(home_qb_id),
+            "away_qb_streak": away.qb_streak_for(away_qb_id),
             "close_win_ewma_diff": home.close_win_ewma - away.close_win_ewma,
             "blowout_net_ewma_diff": home.blowout_net_ewma - away.blowout_net_ewma,
             "blowout_rate_diff": home.blowout_rate() - away.blowout_rate(),
@@ -508,6 +629,30 @@ class CfbFeatureEngine:
             "net_x_season_frac": (home.margin_pg() - away.margin_pg()) * season_frac,
         }
         return features
+
+    def _update_entity(
+        self,
+        entity: EntityElo,
+        *,
+        won: bool,
+        tied: bool,
+        edge: float,
+        k: float,
+    ) -> None:
+        exp = 1.0 / (1.0 + 10.0 ** (-edge / 400.0))
+        if tied:
+            score = 0.5
+        else:
+            score = 1.0 if won else 0.0
+        entity.elo += k * (score - exp)
+        entity.games += 1
+        entity.win_ewma = ALPHA_WIN * score + (1.0 - ALPHA_WIN) * entity.win_ewma
+        if tied:
+            entity.ties += 1
+        elif won:
+            entity.wins += 1
+        else:
+            entity.losses += 1
 
     def update_after_game(self, game: dict[str, Any]) -> None:
         season = int(game.get("season") or 0)
@@ -634,6 +779,32 @@ class CfbFeatureEngine:
             ALPHA_H2H * (-signed_margin) + (1.0 - ALPHA_H2H) * away_prev
         )
 
+        # QB EntityElo — after game only; no-op when ids absent (cfb.csv today)
+        home_qb_id = str(game.get("home_qb_id") or "").strip()
+        away_qb_id = str(game.get("away_qb_id") or "").strip()
+        if not _is_missing_id(home_qb_id) and not _is_missing_id(away_qb_id):
+            hq = self.qb(home_qb_id)
+            aq = self.qb(away_qb_id)
+            qb_edge = hq.elo - aq.elo + (0.0 if neutral else ELO_HOME_ADV * 0.25)
+            self._update_entity(
+                hq, won=home_win and not tied, tied=tied, edge=qb_edge, k=QB_ELO_K
+            )
+            self._update_entity(
+                aq, won=(not home_win) and not tied, tied=tied, edge=-qb_edge, k=QB_ELO_K
+            )
+        if not _is_missing_id(home_qb_id):
+            if home.current_qb_id == home_qb_id:
+                home.qb_streak += 1
+            else:
+                home.current_qb_id = home_qb_id
+                home.qb_streak = 1
+        if not _is_missing_id(away_qb_id):
+            if away.current_qb_id == away_qb_id:
+                away.qb_streak += 1
+            else:
+                away.current_qb_id = away_qb_id
+                away.qb_streak = 1
+
         self.league_ppg = (
             ALPHA_LEAGUE * ((home_score + away_score) / 2.0)
             + (1.0 - ALPHA_LEAGUE) * self.league_ppg
@@ -646,6 +817,7 @@ class CfbFeatureEngine:
         return {
             "league_ppg": self.league_ppg,
             "teams": {key: team.to_dict() for key, team in self.teams.items()},
+            "qbs": {key: qb.to_dict() for key, qb in self.qbs.items()},
         }
 
     @classmethod
@@ -657,4 +829,9 @@ class CfbFeatureEngine:
                 team_payload = dict(team_payload)
                 team_payload["key"] = key
             engine.teams[str(key)] = TeamState.from_dict(team_payload)
+        for key, qb_payload in dict(payload.get("qbs") or {}).items():
+            if "key" not in qb_payload:
+                qb_payload = dict(qb_payload)
+                qb_payload["key"] = key
+            engine.qbs[str(key)] = EntityElo.from_dict(qb_payload)
         return engine

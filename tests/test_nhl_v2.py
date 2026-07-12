@@ -298,6 +298,162 @@ def test_nhl_features_precede_update_rest_and_elo() -> None:
     assert engine.team("TOR").games_played == 1
 
 
+def test_giveaway_diff_from_moneypuck_dzone() -> None:
+    """MoneyPuck dZoneGiveawaysFor folds into EWMA and emits giveaway_diff leak-free."""
+    from web.nhl_v2.feature_engine import FEATURE_COLUMNS, LEAGUE_DZ_GIVEAWAYS, NhlFeatureEngine
+
+    engine = NhlFeatureEngine()
+    game1 = {
+        "gameId": 10,
+        "date": "2024-10-12",
+        "game_type": 2,
+        "home": "COL",
+        "away": "DAL",
+        "home_goals": 3,
+        "away_goals": 2,
+        "home_win": 1,
+        "home_shots": 32,
+        "away_shots": 28,
+        "mp": {
+            "COL": {"all_dZoneGiveawaysFor": 12.0},
+            "DAL": {"all_dZoneGiveawaysFor": 2.0},
+        },
+    }
+    before = engine.features_for_game(game1)
+    assert before["giveaway_diff"] == 0.0
+    assert "giveaway_diff" in FEATURE_COLUMNS
+    engine.update_after_game(game1)
+    assert engine.team("COL").giveaways > LEAGUE_DZ_GIVEAWAYS
+    assert engine.team("DAL").giveaways < LEAGUE_DZ_GIVEAWAYS
+
+    after = engine.features_for_game(
+        {
+            "gameId": 11,
+            "date": "2024-10-14",
+            "game_type": 2,
+            "home": "COL",
+            "away": "DAL",
+            "home_goals": 0,
+            "away_goals": 0,
+            "home_win": 0,
+            "home_shots": 20,
+            "away_shots": 20,
+        }
+    )
+    assert after["giveaway_diff"] > 0.0
+    snapshot = engine.team("COL").giveaways
+    _ = engine.features_for_game(
+        {
+            "gameId": 12,
+            "date": "2024-10-16",
+            "game_type": 2,
+            "home": "COL",
+            "away": "MIN",
+            "home_goals": 0,
+            "away_goals": 0,
+            "home_win": 0,
+            "home_shots": 20,
+            "away_shots": 20,
+        }
+    )
+    assert engine.team("COL").giveaways == snapshot
+
+
+def test_skater_depth_proxies_from_unused_moneypuck() -> None:
+    """Unused team MP columns fold into skater/roster-quality FEATURE_COLUMNS."""
+    from web.nhl_v2.feature_engine import (
+        FEATURE_COLUMNS,
+        LEAGUE_EV_XG_SHARE,
+        LEAGUE_HITS,
+        NhlFeatureEngine,
+    )
+
+    skater_cols = {
+        "hits_against_diff",
+        "corsi_all_pct_diff",
+        "ev_xg_share_diff",
+        "pp_toi_share_diff",
+    }
+    assert skater_cols.issubset(set(FEATURE_COLUMNS))
+
+    engine = NhlFeatureEngine()
+    game1 = {
+        "gameId": 20,
+        "date": "2024-10-12",
+        "game_type": 2,
+        "home": "COL",
+        "away": "DAL",
+        "home_goals": 4,
+        "away_goals": 1,
+        "home_win": 1,
+        "home_shots": 35,
+        "away_shots": 22,
+        "mp": {
+            "COL": {
+                "all_hitsAgainst": 35.0,
+                "all_shotAttemptsFor": 70.0,
+                "all_shotAttemptsAgainst": 40.0,
+                "5on5_xGoalsFor": 2.8,
+                "all_xGoalsFor": 3.2,
+                "5on4_iceTime": 400.0,
+                "all_iceTime": 18000.0,
+            },
+            "DAL": {
+                "all_hitsAgainst": 10.0,
+                "all_shotAttemptsFor": 35.0,
+                "all_shotAttemptsAgainst": 65.0,
+                "5on5_xGoalsFor": 1.0,
+                "all_xGoalsFor": 2.5,
+                "5on4_iceTime": 200.0,
+                "all_iceTime": 18000.0,
+            },
+        },
+    }
+    before = engine.features_for_game(game1)
+    assert before["hits_against_diff"] == 0.0
+    assert before["corsi_all_pct_diff"] == 0.0
+    engine.update_after_game(game1)
+    assert engine.team("COL").hits_against > LEAGUE_HITS
+    assert engine.team("DAL").hits_against < LEAGUE_HITS
+    assert engine.team("COL").corsi_all_pct > 0.5
+    assert engine.team("COL").ev_xg_share > LEAGUE_EV_XG_SHARE - 0.01
+
+    after = engine.features_for_game(
+        {
+            "gameId": 21,
+            "date": "2024-10-14",
+            "game_type": 2,
+            "home": "COL",
+            "away": "DAL",
+            "home_goals": 0,
+            "away_goals": 0,
+            "home_win": 0,
+            "home_shots": 20,
+            "away_shots": 20,
+        }
+    )
+    assert after["hits_against_diff"] > 0.0
+    assert after["corsi_all_pct_diff"] > 0.0
+    assert after["ev_xg_share_diff"] > 0.0
+    assert after["pp_toi_share_diff"] > 0.0
+    snapshot = engine.team("COL").corsi_all_pct
+    _ = engine.features_for_game(
+        {
+            "gameId": 22,
+            "date": "2024-10-16",
+            "game_type": 2,
+            "home": "COL",
+            "away": "MIN",
+            "home_goals": 0,
+            "away_goals": 0,
+            "home_win": 0,
+            "home_shots": 20,
+            "away_shots": 20,
+        }
+    )
+    assert engine.team("COL").corsi_all_pct == snapshot
+
+
 def test_explicit_home_win_zero_not_overridden_by_scores() -> None:
     """`home_win=0` is falsy; must not fall through to score-based `or` fallback."""
     from web.nhl_v2.feature_engine import NhlFeatureEngine
@@ -476,3 +632,130 @@ def test_equal_score_without_home_win_is_regulation_tie() -> None:
     assert engine.team("TOR").elo < elo_before_home
     assert engine.team("MTL").elo > elo_before_away
     assert engine.team("TOR").h2h.get("MTL") in (None, [])
+
+def test_predict_matchup_v2_market_aware_wiring_with_stub_context() -> None:
+    """Odds + market artifacts flip model_variant without needing a live season fetch."""
+    from unittest.mock import MagicMock, patch
+
+    from web.nhl_v2 import live as nhl_live
+
+    team = MagicMock()
+    team.games_played = 40
+    team.elo = 1500.0
+    team.xgf_fast = 2.8
+    team.xga_fast = 2.5
+    team.points_pct = MagicMock(return_value=0.55)
+
+    engine = MagicMock()
+    engine.team = MagicMock(return_value=team)
+    engine.features_for_game = MagicMock(
+        return_value={
+            "home_rest_days": 1.0,
+            "away_rest_days": 1.0,
+            "home_b2b": 0.0,
+            "away_b2b": 0.0,
+            "home_goalie_gsax": 0.5,
+            "away_goalie_gsax": -0.2,
+        }
+    )
+
+    art = {
+        "feature_columns": ["elo_diff"],
+        "clf_market_features": ["mkt_home_prob", "has_market"],
+        "clf": object(),
+        "lr": {"xgb_weight": 0.5, "intercept": 0.0, "mean": [0.0], "scale": [1.0], "coef": [0.0]},
+        "calibrator": {"x": [0.0, 1.0], "y": [0.0, 1.0]},
+        "clf_market": object(),
+        "lr_market": {
+            "xgb_weight": 0.5,
+            "intercept": 0.0,
+            "mean": [0.0, 0.5, 1.0],
+            "scale": [1.0, 1.0, 1.0],
+            "coef": [0.0, 0.0, 0.0],
+        },
+        "calibrator_market": {"x": [0.0, 1.0], "y": [0.0, 1.0]},
+        "goals_home": None,
+        "goals_away": None,
+    }
+    context = {
+        "engine": engine,
+        "artifacts": art,
+        "todays_games": {},
+        "depth_chart": {},
+        "goalie_names": {},
+        "season": 2025,
+    }
+
+    with (
+        patch.object(nhl_live, "get_live_context", return_value=context),
+        patch.object(nhl_live, "_predict_probability", return_value=0.61) as mock_prob,
+        patch.object(nhl_live, "_predict_goals", return_value=None),
+    ):
+        result = nhl_live.predict_matchup_v2(
+            "2026-01-10",
+            "tor",
+            "bos",
+            home_moneyline=-150,
+            away_moneyline=130,
+        )
+
+    assert result is not None
+    assert result["model_variant"] == "market_aware"
+    assert result["has_market"] is True
+    assert mock_prob.call_args.kwargs.get("clf") is art["clf_market"]
+
+
+def test_predict_matchup_v2_soft_fails_to_pure_without_market_artifacts() -> None:
+    from unittest.mock import MagicMock, patch
+
+    from web.nhl_v2 import live as nhl_live
+
+    team = MagicMock()
+    team.games_played = 40
+    team.elo = 1500.0
+    team.xgf_fast = 2.8
+    team.xga_fast = 2.5
+    team.points_pct = MagicMock(return_value=0.55)
+
+    engine = MagicMock()
+    engine.team = MagicMock(return_value=team)
+    engine.features_for_game = MagicMock(
+        return_value={
+            "home_rest_days": 1.0,
+            "away_rest_days": 1.0,
+            "home_b2b": 0.0,
+            "away_b2b": 0.0,
+            "home_goalie_gsax": 0.0,
+            "away_goalie_gsax": 0.0,
+        }
+    )
+    art = {
+        "feature_columns": ["elo_diff"],
+        "clf_market_features": ["mkt_home_prob", "has_market"],
+        "clf": object(),
+        "lr": {"xgb_weight": 0.5},
+        "calibrator": {"x": [0.0, 1.0], "y": [0.0, 1.0]},
+        "clf_market": None,
+        "lr_market": None,
+        "calibrator_market": None,
+        "goals_home": None,
+        "goals_away": None,
+    }
+    context = {
+        "engine": engine,
+        "artifacts": art,
+        "todays_games": {},
+        "depth_chart": {},
+        "goalie_names": {},
+        "season": 2025,
+    }
+    with (
+        patch.object(nhl_live, "get_live_context", return_value=context),
+        patch.object(nhl_live, "_predict_probability", return_value=0.55) as mock_prob,
+        patch.object(nhl_live, "_predict_goals", return_value=None),
+    ):
+        result = nhl_live.predict_matchup_v2(
+            "2026-01-10", "tor", "bos", home_moneyline=-150, away_moneyline=130
+        )
+    assert result["model_variant"] == "pure"
+    assert mock_prob.call_args.kwargs.get("clf") is None

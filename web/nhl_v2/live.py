@@ -25,6 +25,7 @@ from typing import Any
 
 import numpy as np
 
+from web.basketball_v2_market import apply_market_features, resolve_market_heads
 from web.nhl_v2.data import (
     MONEYPUCK_TEAMS_URL,
     MP_METRICS,
@@ -47,6 +48,9 @@ STATS_TTL_SECONDS = 3 * 3600  # fresher than 6h Pages cadence
 MP_TTL_SECONDS = 24 * 3600
 
 SHOTS_URL = "https://peter-tanner.com/moneypuck/downloads/shots_{season}.zip"
+
+# Moneyline-only market head (no spread margin head for NHL goals models).
+MARKET_FEATURES = ("mkt_home_prob", "has_market")
 
 # ESPN lowercase keys -> NHL API abbreviations.
 ESPN_TO_NHL: dict[str, str] = {
@@ -118,6 +122,12 @@ def _load_artifacts() -> dict[str, Any] | None:
             except (IndexError, ValueError):
                 continue
 
+        def _optional_json(name: str) -> dict[str, Any] | None:
+            path = MODEL_DIR / name
+            if not path.is_file():
+                return None
+            return json.loads(path.read_text(encoding="utf-8"))
+
         clf = _booster("model_clf.json")
         if clf is None or not snapshots:
             return None
@@ -132,8 +142,14 @@ def _load_artifacts() -> dict[str, Any] | None:
             "metadata": metadata,
             "goals_home": _booster("model_goals_home.json"),
             "goals_away": _booster("model_goals_away.json"),
+            "clf_market": _booster("model_clf_market.json"),
+            "lr_market": _optional_json("model_lr_market.json"),
+            "calibrator_market": _optional_json("calibrator_market.json"),
             "snapshots": snapshots,
             "feature_columns": feature_columns,
+            "clf_market_features": list(
+                metadata.get("clf_market_features") or MARKET_FEATURES
+            ),
         }
     except (OSError, json.JSONDecodeError, ValueError, KeyError, TypeError):
         return None
@@ -322,14 +338,24 @@ def _fetch_goalie_xg_slice(season: int) -> tuple[dict[str, list[float]], bool]:
     return result, False
 
 
-def _predict_probability(art: dict[str, Any], features: dict[str, float]) -> float:
+def _predict_probability(
+    art: dict[str, Any],
+    features: dict[str, float],
+    *,
+    cols: list[str] | None = None,
+    clf=None,
+    lr: dict[str, Any] | None = None,
+    calibrator: dict[str, Any] | None = None,
+) -> float:
     from xgboost import DMatrix
 
-    cols = art["feature_columns"]
+    cols = list(cols or art["feature_columns"])
+    clf = clf if clf is not None else art["clf"]
+    lr = lr if lr is not None else art["lr"]
+    calibrator = calibrator if calibrator is not None else art["calibrator"]
     vector = np.array([[float(features.get(c, 0.0)) for c in cols]], dtype=float)
-    xgb_p = float(art["clf"].predict(DMatrix(vector, feature_names=list(cols)))[0])
+    xgb_p = float(clf.predict(DMatrix(vector, feature_names=list(cols)))[0])
 
-    lr = art["lr"]
     mean = np.asarray(lr["mean"], dtype=float)
     scale = np.asarray(lr["scale"], dtype=float)
     coef = np.asarray(lr["coef"], dtype=float)
@@ -341,8 +367,7 @@ def _predict_probability(art: dict[str, Any], features: dict[str, float]) -> flo
     weight = float(lr.get("xgb_weight", 0.5))
     raw = weight * xgb_p + (1.0 - weight) * lr_p
 
-    cal = art["calibrator"]
-    calibrated = float(np.interp(raw, cal["x"], cal["y"]))
+    calibrated = float(np.interp(raw, calibrator["x"], calibrator["y"]))
     return float(min(max(calibrated, 0.02), 0.98))
 
 
@@ -553,8 +578,16 @@ def predict_matchup_v2(
     day_iso: str,
     home_abbr: str,
     away_abbr: str,
+    *,
+    home_moneyline: int | float | None = None,
+    away_moneyline: int | float | None = None,
 ) -> dict[str, Any] | None:
-    """Predict today's NHL matchup by ESPN abbreviations."""
+    """Predict today's NHL matchup by ESPN abbreviations.
+
+    When live moneylines are available and market-aware artifacts exist, scores
+    the market classifier head. Soft-fails to the pure head when odds or
+    market boosters are missing.
+    """
     context = get_live_context(day_iso)
     if context is None:
         return None
@@ -591,7 +624,30 @@ def predict_matchup_v2(
     engine: NhlFeatureEngine = context["engine"]
     art = context["artifacts"]
     features = engine.features_for_game(game)
-    prob_home = _predict_probability(art, features)
+    has_market, _has_spread = apply_market_features(
+        features,
+        home_moneyline=home_moneyline,
+        away_moneyline=away_moneyline,
+    )
+    (
+        use_market_clf,
+        _use_market_margin,
+        model_variant,
+        clf_cols,
+        _margin_cols,
+    ) = resolve_market_heads(art, has_market=has_market, has_spread=False)
+
+    if use_market_clf:
+        prob_home = _predict_probability(
+            art,
+            features,
+            cols=clf_cols,
+            clf=art["clf_market"],
+            lr=art["lr_market"],
+            calibrator=art["calibrator_market"],
+        )
+    else:
+        prob_home = _predict_probability(art, features, cols=clf_cols)
     goals = _predict_goals(art, features)
 
     home_team = engine.team(home)
@@ -599,8 +655,9 @@ def predict_matchup_v2(
 
     payload: dict[str, Any] = {
         "model_version": "v2",
+        "model_variant": model_variant,
         "home_win_probability": round(prob_home * 100.0, 2),
-        "features_used": len(art["feature_columns"]),
+        "features_used": len(clf_cols),
         "home_games": int(home_team.games_played),
         "away_games": int(away_team.games_played),
         "home_elo": round(home_team.elo, 1),
@@ -621,6 +678,7 @@ def predict_matchup_v2(
         "away_goalie_confirmed": bool((away_starter or {}).get("confirmed")),
         "home_goalie_gsax100": round(float(features["home_goalie_gsax"]), 2),
         "away_goalie_gsax100": round(float(features["away_goalie_gsax"]), 2),
+        "has_market": has_market,
     }
     if goals is not None:
         payload["predicted_home_goals"] = goals[0]

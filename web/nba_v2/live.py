@@ -112,10 +112,12 @@ def _load_artifacts() -> dict[str, Any] | None:
             "snapshots": snapshots,
             "feature_columns": metadata.get("feature_columns") or list(FEATURE_COLUMNS),
             "clf_market_features": list(
-                metadata.get("clf_market_features") or ("mkt_home_prob", "has_market")
+                metadata.get("clf_market_features")
+                or ("mkt_home_prob", "has_market", "ml_steam_pp", "has_steam")
             ),
             "margin_market_features": list(
-                metadata.get("margin_market_features") or ("mkt_home_spread", "has_spread")
+                metadata.get("margin_market_features")
+                or ("mkt_home_spread", "has_spread", "spread_move", "has_steam")
             ),
         }
     except (OSError, json.JSONDecodeError, ValueError, KeyError, TypeError):

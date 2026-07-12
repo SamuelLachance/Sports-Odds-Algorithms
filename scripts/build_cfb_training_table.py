@@ -3,6 +3,12 @@
 Replays data/supplemental/closing-odds/cfb.csv chronologically through
 CfbFeatureEngine and writes one leak-free feature row per game to
 data/cfb_history/training_table.csv (with market columns attached).
+
+``FIRST_SEASON`` (2019) is the earliest ESPN-fetch-safe season documented in
+``scripts/fetch_cfb_odds.py``. ``--emit-from-season`` defaults to the minimum
+season in the odds CSV that has scores + a closing line (currently 2022 in
+the checked-in cfb.csv); it lowers automatically when earlier rows are
+backfilled.
 """
 
 from __future__ import annotations
@@ -23,12 +29,29 @@ from web.cfb_v2.replay import csv_rows_to_games, replay_games  # noqa: E402
 ODDS_CSV = PROJECT_ROOT / "data" / "supplemental" / "closing-odds" / "cfb.csv"
 OUT_DIR = PROJECT_ROOT / "data" / "cfb_history"
 
+# Earliest season we allow for emit/fetch expansion (see fetch_cfb_odds.EARLIEST_SAFE_SEASON).
+FIRST_SEASON = 2019
+
 
 def binary_home_win(home_score: int, away_score: int) -> int | None:
     """1/0 for decisive games; None for ties (exclude from classifier training)."""
     if home_score == away_score:
         return None
     return 1 if home_score > away_score else 0
+
+
+def min_season_with_scores_and_odds(frame: pd.DataFrame) -> int | None:
+    """Earliest CFB season that has finals + at least one closing market line."""
+    if frame.empty or "season" not in frame.columns:
+        return None
+    scored = frame["home_final"].notna() & frame["away_final"].notna()
+    has_close = frame["home_close_spread"].notna() | frame["home_close_ml"].notna()
+    usable = frame.loc[scored & has_close, "season"]
+    if usable.empty:
+        usable = frame.loc[scored, "season"]
+    if usable.empty:
+        return None
+    return int(usable.min())
 
 
 META_COLUMNS = (
@@ -61,6 +84,7 @@ def main() -> int:
         epilog=(
             "Writes data/cfb_history/training_table.csv. "
             "Requires data/supplemental/closing-odds/cfb.csv (or --odds-csv). "
+            f"FIRST_SEASON floor={FIRST_SEASON}. "
             "Next: python scripts/train_cfb_model.py"
         ),
     )
@@ -73,8 +97,11 @@ def main() -> int:
     parser.add_argument(
         "--emit-from-season",
         type=int,
-        default=2022,
-        help="First season to write feature rows for",
+        default=None,
+        help=(
+            "First season to write feature rows for "
+            f"(default: min season with scores+odds in CSV, floored at {FIRST_SEASON})"
+        ),
     )
     args = parser.parse_args()
 
@@ -93,6 +120,30 @@ def main() -> int:
     frame["season"] = frame.day.map(cfb_season_of)
     frame = frame.sort_values(["day", "home_key", "away_key"]).reset_index(drop=True)
 
+    csv_min = min_season_with_scores_and_odds(frame)
+    if args.emit_from_season is None:
+        if csv_min is None:
+            print(
+                "ERROR: odds CSV has no rows with scores to derive --emit-from-season",
+                file=sys.stderr,
+            )
+            return 1
+        emit_from = max(FIRST_SEASON, csv_min)
+    else:
+        emit_from = int(args.emit_from_season)
+        if emit_from < FIRST_SEASON:
+            print(
+                f"WARNING: --emit-from-season {emit_from} is below FIRST_SEASON "
+                f"{FIRST_SEASON} (ESPN-safe floor).",
+                flush=True,
+            )
+
+    print(
+        f"cfb.csv seasons {int(frame.season.min())}-{int(frame.season.max())}; "
+        f"min scores+odds={csv_min}; emit_from={emit_from} (FIRST_SEASON={FIRST_SEASON})",
+        flush=True,
+    )
+
     rows_raw = frame.to_dict(orient="records")
     games = csv_rows_to_games(rows_raw)
 
@@ -107,7 +158,7 @@ def main() -> int:
 
         def emit(game: dict, features: dict) -> None:
             nonlocal written
-            if int(game["season"]) < args.emit_from_season:
+            if int(game["season"]) < emit_from:
                 return
             home_score = int(game["home_score"])
             away_score = int(game["away_score"])
@@ -144,7 +195,7 @@ def main() -> int:
     if written == 0:
         print(
             f"ERROR: wrote 0 rows to {out_path}\n"
-            f"  Check --emit-from-season ({args.emit_from_season}) and odds CSV contents.",
+            f"  Check --emit-from-season ({emit_from}) and odds CSV contents.",
             file=sys.stderr,
         )
         return 1

@@ -3,8 +3,8 @@
 Consumes games chronologically. Features use state accumulated strictly before
 each tip; Torvik / season-end ratings are never read. Efficiency proxies use
 an assumed possession rate when box scores are absent (same constant as the
-legacy CBB fallback path), optionally overridden when home/away boxes supply
-FGA/ORB/TOV/FTA.
+legacy CBB fallback path). When home/away boxes supply FGA/ORB/TOV/FTA, pace
+and four-factor EWMAs update from real possessions like NBA/WNBA.
 """
 
 from __future__ import annotations
@@ -21,6 +21,10 @@ ASSUMED_POSSESSIONS = 68.0
 LEAGUE_PPG = 72.0
 LEAGUE_ORTG = 106.0
 LEAGUE_PACE = 68.0
+LEAGUE_EFG = 0.50
+LEAGUE_TOV_RATE = 0.18
+LEAGUE_ORB_PCT = 0.28
+LEAGUE_FT_RATE = 0.33
 
 ALPHA_FAST = 0.20
 ALPHA_SLOW = 0.07
@@ -49,6 +53,14 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     "net_rtg_slow_diff",
     "pace_sum",
     "pace_diff",
+    "efg_for_diff",
+    "efg_against_diff",
+    "tov_for_diff",
+    "tov_against_diff",
+    "orb_for_diff",
+    "orb_against_diff",
+    "ftr_for_diff",
+    "ftr_against_diff",
     # form / records
     "win_ewma_diff",
     "home_split_win_ewma",
@@ -135,6 +147,8 @@ class TeamState:
     __slots__ = (
         "franchise", "elo", "pf_fast", "pa_fast", "pf_slow", "pa_slow",
         "ortg_fast", "drtg_fast", "ortg_slow", "drtg_slow", "pace_ewma",
+        "efg_for", "efg_against", "tov_for", "tov_against",
+        "orb_for", "orb_against", "ftr_for", "ftr_against",
         "win_ewma", "home_win_ewma", "away_win_ewma",
         "wins", "losses", "points_for", "points_against",
         "prev_win_pct", "prev_net_rtg", "sos_elo_sum",
@@ -158,6 +172,14 @@ class TeamState:
         self.ortg_slow = LEAGUE_ORTG
         self.drtg_slow = LEAGUE_ORTG
         self.pace_ewma = LEAGUE_PACE
+        self.efg_for = LEAGUE_EFG
+        self.efg_against = LEAGUE_EFG
+        self.tov_for = LEAGUE_TOV_RATE
+        self.tov_against = LEAGUE_TOV_RATE
+        self.orb_for = LEAGUE_ORB_PCT
+        self.orb_against = LEAGUE_ORB_PCT
+        self.ftr_for = LEAGUE_FT_RATE
+        self.ftr_against = LEAGUE_FT_RATE
         self.win_ewma = 0.5
         self.home_win_ewma = 0.5
         self.away_win_ewma = 0.5
@@ -309,6 +331,10 @@ class TeamState:
             "ortg_fast": self.ortg_fast, "drtg_fast": self.drtg_fast,
             "ortg_slow": self.ortg_slow, "drtg_slow": self.drtg_slow,
             "pace_ewma": self.pace_ewma,
+            "efg_for": self.efg_for, "efg_against": self.efg_against,
+            "tov_for": self.tov_for, "tov_against": self.tov_against,
+            "orb_for": self.orb_for, "orb_against": self.orb_against,
+            "ftr_for": self.ftr_for, "ftr_against": self.ftr_against,
             "win_ewma": self.win_ewma,
             "home_win_ewma": self.home_win_ewma, "away_win_ewma": self.away_win_ewma,
             "wins": self.wins, "losses": self.losses,
@@ -439,6 +465,14 @@ class CbbFeatureEngine:
             - (away.ortg_slow - away.drtg_slow),
             "pace_sum": home.pace_ewma + away.pace_ewma,
             "pace_diff": home.pace_ewma - away.pace_ewma,
+            "efg_for_diff": home.efg_for - away.efg_for,
+            "efg_against_diff": home.efg_against - away.efg_against,
+            "tov_for_diff": home.tov_for - away.tov_for,
+            "tov_against_diff": home.tov_against - away.tov_against,
+            "orb_for_diff": home.orb_for - away.orb_for,
+            "orb_against_diff": home.orb_against - away.orb_against,
+            "ftr_for_diff": home.ftr_for - away.ftr_for,
+            "ftr_against_diff": home.ftr_against - away.ftr_against,
             "win_ewma_diff": home.win_ewma - away.win_ewma,
             "home_split_win_ewma": home.home_win_ewma,
             "away_split_win_ewma": away.away_win_ewma,
@@ -551,10 +585,13 @@ class CbbFeatureEngine:
         home_box = game.get("home_box")
         away_box = game.get("away_box")
         home_poss = away_poss = None
+        used_box = False
         if isinstance(home_box, dict) and isinstance(away_box, dict):
             home_poss = _possessions(home_box, away_box)
             away_poss = _possessions(away_box, home_box)
-        if not home_poss or not away_poss or home_poss < 40 or away_poss < 40:
+            if home_poss and away_poss and home_poss >= 40 and away_poss >= 40:
+                used_box = True
+        if not used_box:
             # Score-based pace proxy: scale assumed possessions by game total.
             game_total = home_score + away_score
             scale = game_total / max(2.0 * self.league_ppg, 1.0)
@@ -572,6 +609,49 @@ class CbbFeatureEngine:
             team.drtg_fast += ALPHA_FAST * (drtg - team.drtg_fast)
             team.ortg_slow += ALPHA_SLOW * (ortg - team.ortg_slow)
             team.drtg_slow += ALPHA_SLOW * (drtg - team.drtg_slow)
+
+        if used_box:
+            for team, box, opp_box, poss, opp_poss in (
+                (home, home_box, away_box, float(home_poss), float(away_poss)),
+                (away, away_box, home_box, float(away_poss), float(home_poss)),
+            ):
+                fga = float(box.get("fga") or 0.0)
+                if fga > 0:
+                    efg = (
+                        float(box.get("fgm") or 0.0) + 0.5 * float(box.get("tpm") or 0.0)
+                    ) / fga
+                    team.efg_for += ALPHA_FAST * (efg - team.efg_for)
+                    team.ftr_for += ALPHA_FAST * (
+                        float(box.get("fta") or 0.0) / fga - team.ftr_for
+                    )
+                opp_fga = float(opp_box.get("fga") or 0.0)
+                if opp_fga > 0:
+                    opp_efg = (
+                        float(opp_box.get("fgm") or 0.0)
+                        + 0.5 * float(opp_box.get("tpm") or 0.0)
+                    ) / opp_fga
+                    team.efg_against += ALPHA_FAST * (opp_efg - team.efg_against)
+                    team.ftr_against += ALPHA_FAST * (
+                        float(opp_box.get("fta") or 0.0) / opp_fga - team.ftr_against
+                    )
+                if poss > 0:
+                    team.tov_for += ALPHA_FAST * (
+                        float(box.get("tov") or 0.0) / poss - team.tov_for
+                    )
+                if opp_poss > 0:
+                    team.tov_against += ALPHA_FAST * (
+                        float(opp_box.get("tov") or 0.0) / opp_poss - team.tov_against
+                    )
+                orb = float(box.get("orb") or 0.0)
+                opp_drb = float(opp_box.get("drb") or 0.0)
+                if orb + opp_drb > 0:
+                    team.orb_for += ALPHA_FAST * (orb / (orb + opp_drb) - team.orb_for)
+                opp_orb = float(opp_box.get("orb") or 0.0)
+                drb = float(box.get("drb") or 0.0)
+                if opp_orb + drb > 0:
+                    team.orb_against += ALPHA_FAST * (
+                        opp_orb / (opp_orb + drb) - team.orb_against
+                    )
 
         for team, won, pf, signed_for in (
             (home, home_win, home_score, signed_margin),

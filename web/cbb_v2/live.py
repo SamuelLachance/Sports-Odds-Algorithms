@@ -12,12 +12,15 @@ from typing import Any
 
 import numpy as np
 
+from web.basketball_v2_market import apply_market_features, resolve_market_heads
 from web.cbb_v2.data import (
     build_abbr_id_map,
     canon_abbr,
     cbb_season_for_date,
+    fetch_box_score,
     fetch_season_events,
     force_postseason_neutral_site,
+    load_season_boxes,
     team_key,
 )
 from web.cbb_v2.feature_engine import FEATURE_COLUMNS, CbbFeatureEngine
@@ -29,6 +32,12 @@ LIVE_CACHE_DIR = PROJECT_ROOT / ".build-cache" / "cbb-v2-live"
 
 EVENTS_TTL_SECONDS = 3 * 3600  # fresher than 6h Pages cadence
 PAST_SEASON_TTL_SECONDS = 30 * 86400
+BOX_WORKERS = 6
+
+# ML + spread market heads (same shape as NBA/WNBA when closing odds exist).
+CLF_MARKET_FEATURES = ("mkt_home_prob", "has_market")
+MARGIN_MARKET_FEATURES = ("mkt_home_spread", "has_spread")
+MARKET_FEATURES = CLF_MARKET_FEATURES + MARGIN_MARKET_FEATURES
 
 
 def artifacts_available() -> bool:
@@ -73,6 +82,12 @@ def _load_artifacts() -> dict[str, Any] | None:
             except (IndexError, ValueError):
                 continue
 
+        def _optional_json(name: str) -> dict[str, Any] | None:
+            path = MODEL_DIR / name
+            if not path.is_file():
+                return None
+            return json.loads(path.read_text(encoding="utf-8"))
+
         clf = _booster("model_clf.json")
         if clf is None or not snapshots:
             return None
@@ -83,9 +98,19 @@ def _load_artifacts() -> dict[str, Any] | None:
             "margin": _booster("model_margin.json"),
             "score_home": _booster("model_score_home.json"),
             "score_away": _booster("model_score_away.json"),
+            "clf_market": _booster("model_clf_market.json"),
+            "lr_market": _optional_json("model_lr_market.json"),
+            "calibrator_market": _optional_json("calibrator_market.json"),
+            "margin_market": _booster("model_margin_market.json"),
             "metadata": metadata,
             "snapshots": snapshots,
             "feature_columns": metadata.get("feature_columns") or list(FEATURE_COLUMNS),
+            "clf_market_features": list(
+                metadata.get("clf_market_features") or CLF_MARKET_FEATURES
+            ),
+            "margin_market_features": list(
+                metadata.get("margin_market_features") or MARGIN_MARKET_FEATURES
+            ),
         }
     except (OSError, json.JSONDecodeError, ValueError, KeyError, TypeError):
         return None
@@ -152,13 +177,61 @@ def _fetch_events_cached(season: int, *, current: bool) -> tuple[list[dict[str, 
     return events, False
 
 
+def _fetch_boxes_cached(
+    season: int, events: list[dict[str, Any]]
+) -> tuple[dict[str, Any], bool]:
+    """Incremental per-event box cache: only missing final events are fetched.
+
+    Failed fetches are not persisted as ``null`` (that would poison the year-long
+    TTL and block retries). Returns ``(boxes, live_inputs_stale)``.
+    """
+    from concurrent.futures import ThreadPoolExecutor
+
+    path = LIVE_CACHE_DIR / f"boxes_{season}.json"
+    boxes: dict[str, Any] = {}
+    cached = _read_cache(path, 365 * 86400)
+    if isinstance(cached, dict) and cached:
+        boxes = {k: v for k, v in cached.items() if isinstance(v, dict)}
+    else:
+        seeded = load_season_boxes(season)
+        if seeded:
+            boxes = dict(seeded)
+    todo = [
+        str(event["event_id"])
+        for event in events
+        if event.get("completed") and event.get("event_id") and str(event["event_id"]) not in boxes
+    ]
+    if not todo:
+        if boxes and not path.is_file():
+            _write_cache(path, boxes)
+        return boxes, False
+
+    stale = False
+
+    def one(event_id: str) -> tuple[str, Any]:
+        try:
+            return event_id, fetch_box_score(event_id)
+        except OSError:
+            return event_id, None
+
+    with ThreadPoolExecutor(max_workers=BOX_WORKERS) as pool:
+        for event_id, box in pool.map(one, todo):
+            if isinstance(box, dict):
+                boxes[event_id] = box
+            else:
+                stale = True
+    _write_cache(path, boxes)
+    return boxes, stale
+
+
 def _live_season_games(
     season: int, *, current: bool
 ) -> tuple[list[dict[str, Any]], bool]:
     events, stale = _fetch_events_cached(season, current=current)
     if not events:
         return [], stale
-    return merge_season_games([], events, season=season), stale
+    boxes, boxes_stale = _fetch_boxes_cached(season, events)
+    return merge_season_games([], events, boxes, season=season), stale or boxes_stale
 
 
 @lru_cache(maxsize=8)
@@ -189,7 +262,9 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
 
     events, events_stale = _fetch_events_cached(season, current=True)
     live_inputs_stale = live_inputs_stale or events_stale
-    games = merge_season_games([], events, season=season) if events else []
+    boxes, boxes_stale = _fetch_boxes_cached(season, events) if events else ({}, False)
+    live_inputs_stale = live_inputs_stale or boxes_stale
+    games = merge_season_games([], events, boxes, season=season) if events else []
     replay_season(engine, games, stop_before_date=day_iso)
 
     abbr_map = build_abbr_id_map(events)
@@ -224,14 +299,24 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
     }
 
 
-def _predict_probability(art: dict[str, Any], features: dict[str, float]) -> float:
+def _predict_probability(
+    art: dict[str, Any],
+    features: dict[str, float],
+    *,
+    cols: list[str] | None = None,
+    clf=None,
+    lr: dict[str, Any] | None = None,
+    calibrator: dict[str, Any] | None = None,
+) -> float:
     from xgboost import DMatrix
 
-    cols = art["feature_columns"]
+    cols = list(cols or art["feature_columns"])
+    clf = clf if clf is not None else art["clf"]
+    lr = lr if lr is not None else art["lr"]
+    calibrator = calibrator if calibrator is not None else art["calibrator"]
     vector = np.array([[float(features.get(c, 0.0)) for c in cols]], dtype=float)
-    xgb_p = float(art["clf"].predict(DMatrix(vector, feature_names=list(cols)))[0])
+    xgb_p = float(clf.predict(DMatrix(vector, feature_names=list(cols)))[0])
 
-    lr = art["lr"]
     mean = np.asarray(lr["mean"], dtype=float)
     scale = np.asarray(lr["scale"], dtype=float)
     coef = np.asarray(lr["coef"], dtype=float)
@@ -241,17 +326,22 @@ def _predict_probability(art: dict[str, Any], features: dict[str, float]) -> flo
     lr_p = 1.0 / (1.0 + np.exp(-z))
     weight = float(lr.get("xgb_weight", 0.5))
     raw = weight * xgb_p + (1.0 - weight) * lr_p
-    cal = art["calibrator"]
-    calibrated = float(np.interp(raw, cal["x"], cal["y"]))
+    calibrated = float(np.interp(raw, calibrator["x"], calibrator["y"]))
     return float(min(max(calibrated, 0.02), 0.98))
 
 
-def _predict_regressor(booster, art: dict[str, Any], features: dict[str, float]) -> float | None:
+def _predict_regressor(
+    booster,
+    art: dict[str, Any],
+    features: dict[str, float],
+    *,
+    cols: list[str] | None = None,
+) -> float | None:
     if booster is None:
         return None
     from xgboost import DMatrix
 
-    cols = art["feature_columns"]
+    cols = list(cols or art["feature_columns"])
     vector = np.array([[float(features.get(c, 0.0)) for c in cols]], dtype=float)
     return float(booster.predict(DMatrix(vector, feature_names=list(cols)))[0])
 
@@ -263,8 +353,15 @@ def predict_matchup_v2(
     *,
     home_espn_id: str | None = None,
     away_espn_id: str | None = None,
+    home_moneyline: int | float | None = None,
+    away_moneyline: int | float | None = None,
+    home_spread: float | None = None,
 ) -> dict[str, Any] | None:
-    """Predict a CBB matchup by ESPN abbreviations (and optional ids)."""
+    """Predict a CBB matchup by ESPN abbreviations (and optional ids).
+
+    When live moneylines/spreads are available and market-aware artifacts exist,
+    scores the market heads. Soft-fails to pure when odds or boosters are missing.
+    """
     context = get_live_context(day_iso)
     if context is None:
         return None
@@ -298,18 +395,51 @@ def predict_matchup_v2(
     force_postseason_neutral_site(game)
 
     features = engine.features_for_game(game)
-    prob_home = _predict_probability(art, features)
-    margin = _predict_regressor(art["margin"], art, features)
-    score_home = _predict_regressor(art["score_home"], art, features)
-    score_away = _predict_regressor(art["score_away"], art, features)
+    has_market, has_spread = apply_market_features(
+        features,
+        home_moneyline=home_moneyline,
+        away_moneyline=away_moneyline,
+        home_spread=home_spread,
+    )
+    (
+        use_market_clf,
+        use_market_margin,
+        model_variant,
+        clf_cols,
+        margin_cols,
+    ) = resolve_market_heads(art, has_market=has_market, has_spread=has_spread)
+
+    if use_market_clf:
+        prob_home = _predict_probability(
+            art,
+            features,
+            cols=clf_cols,
+            clf=art["clf_market"],
+            lr=art["lr_market"],
+            calibrator=art["calibrator_market"],
+        )
+    else:
+        prob_home = _predict_probability(art, features, cols=clf_cols)
+
+    if use_market_margin:
+        margin = _predict_regressor(
+            art["margin_market"], art, features, cols=margin_cols
+        )
+    else:
+        margin = _predict_regressor(art["margin"], art, features, cols=margin_cols)
+
+    pure_cols = list(art["feature_columns"])
+    score_home = _predict_regressor(art["score_home"], art, features, cols=pure_cols)
+    score_away = _predict_regressor(art["score_away"], art, features, cols=pure_cols)
 
     home_team = engine.team(home)
     away_team = engine.team(away)
     payload: dict[str, Any] = {
         "model_version": "v2",
         "algorithm": "CBBGradientBoost v2",
+        "model_variant": model_variant,
         "home_win_probability": round(prob_home * 100.0, 2),
-        "features_used": len(art["feature_columns"]),
+        "features_used": len(clf_cols),
         "home_games": int(home_team.games_played),
         "away_games": int(away_team.games_played),
         "home_elo": round(home_team.elo, 1),
@@ -325,6 +455,8 @@ def predict_matchup_v2(
         "away_win_pct": round(away_team.win_pct(), 3),
         "pit_safe": True,
         "training_source": "espn_completed_games",
+        "has_market": has_market,
+        "has_spread": has_spread,
     }
     if margin is not None:
         payload["predicted_margin"] = round(margin, 2)

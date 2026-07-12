@@ -92,6 +92,11 @@ LR_C = 0.05
 XGB_WEIGHT = 0.55
 MIN_CALIBRATION_POOL = 400
 
+# Market-aware heads: closing odds are dense enough (~73% ML, ~100% spread).
+CLF_MARKET_FEATURES = ("mkt_home_prob", "has_market")
+MARGIN_MARKET_FEATURES = ("mkt_home_spread", "has_spread")
+MIN_MARKET_ROWS = 200
+
 # NFL season periods: early (Sep-Oct), mid (Nov), late+playoffs (Dec-Feb)
 SEASON_PERIODS: tuple[tuple[int, ...], ...] = (
     (9, 10),
@@ -149,29 +154,42 @@ def attach_market(frame: pd.DataFrame) -> pd.DataFrame:
         lambda d: elo_to_prob(float(d), z=ELO_Z)
     )
     frame["elo_margin"] = frame["elo_diff"] / POINTS_PER_ELO
+    mkt = frame["market_home_prob"]
+    frame["has_market"] = mkt.notna().astype(float)
+    frame["mkt_home_prob"] = mkt.fillna(0.5)
+    spread = frame["home_close_spread"] if "home_close_spread" in frame.columns else pd.Series(
+        np.nan, index=frame.index
+    )
+    frame["has_spread"] = spread.notna().astype(float)
+    frame["mkt_home_spread"] = spread.fillna(0.0)
     return frame
 
 
-def fit_classifier(train: pd.DataFrame, val: pd.DataFrame) -> XGBClassifier:
+def fit_classifier(train: pd.DataFrame, val: pd.DataFrame, cols: list[str] | None = None) -> XGBClassifier:
+    cols = list(cols or FEATURE_COLUMNS)
     model = XGBClassifier(**CLF_PARAMS)
     model.fit(
-        train[list(FEATURE_COLUMNS)],
+        train[cols],
         train["home_win"],
-        eval_set=[(val[list(FEATURE_COLUMNS)], val["home_win"])],
+        eval_set=[(val[cols], val["home_win"])],
         verbose=False,
     )
     return model
 
 
-def fit_logistic(train: pd.DataFrame):
+def fit_logistic(train: pd.DataFrame, cols: list[str] | None = None):
+    cols = list(cols or FEATURE_COLUMNS)
     lr = make_pipeline(StandardScaler(), LogisticRegression(C=LR_C, max_iter=3000))
-    lr.fit(train[list(FEATURE_COLUMNS)], train["home_win"])
+    lr.fit(train[cols], train["home_win"])
     return lr
 
 
-def predict_ensemble(xgb: XGBClassifier, lr, frame: pd.DataFrame) -> np.ndarray:
-    px = xgb.predict_proba(frame[list(FEATURE_COLUMNS)])[:, 1]
-    pl = lr.predict_proba(frame[list(FEATURE_COLUMNS)])[:, 1]
+def predict_ensemble(
+    xgb: XGBClassifier, lr, frame: pd.DataFrame, cols: list[str] | None = None
+) -> np.ndarray:
+    cols = list(cols or FEATURE_COLUMNS)
+    px = xgb.predict_proba(frame[cols])[:, 1]
+    pl = lr.predict_proba(frame[cols])[:, 1]
     return XGB_WEIGHT * px + (1.0 - XGB_WEIGHT) * pl
 
 
@@ -298,29 +316,76 @@ def _logistic_to_json(lr_pipeline) -> dict:
 def train_final_artifacts(frame: pd.DataFrame, oos: pd.DataFrame, end_season: int) -> dict:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     frame = attach_market(frame)
+    pure_cols = list(FEATURE_COLUMNS)
+    mkt_cols = pure_cols + list(CLF_MARKET_FEATURES)
+    margin_cols = pure_cols + list(MARGIN_MARKET_FEATURES)
+    n_odds = int(frame["market_home_prob"].notna().sum())
+    n_spread = int(frame["has_spread"].sum())
+    train_market_clf = n_odds >= MIN_MARKET_ROWS
+    train_market_margin = n_spread >= MIN_MARKET_ROWS
+    if not train_market_clf:
+        print(
+            f"skipping NFL market clf heads: only {n_odds} rows with odds "
+            f"(need >= {MIN_MARKET_ROWS})",
+            flush=True,
+        )
 
     val = frame[frame.season == end_season]
     fit = frame[frame.season < end_season]
     if val.empty or fit.empty:
         fit = frame
         val = frame
-    clf = fit_classifier(fit, val)
+    clf = fit_classifier(fit, val, pure_cols)
     clf.get_booster().save_model(str(OUT_DIR / "model_clf.json"))
 
-    lr_final = fit_logistic(frame)
+    lr_final = fit_logistic(frame, pure_cols)
     (OUT_DIR / "model_lr.json").write_text(
         json.dumps(_logistic_to_json(lr_final)), encoding="utf-8"
     )
 
+    if train_market_clf:
+        clf_mkt = fit_classifier(fit, val, mkt_cols)
+        clf_mkt.get_booster().save_model(str(OUT_DIR / "model_clf_market.json"))
+        (OUT_DIR / "model_lr_market.json").write_text(
+            json.dumps(_logistic_to_json(fit_logistic(frame, mkt_cols))),
+            encoding="utf-8",
+        )
+        oos_feat = frame.merge(
+            oos[["date", "home", "away"]].drop_duplicates(),
+            on=["date", "home", "away"],
+            how="inner",
+        )
+        raw_mkt = predict_ensemble(
+            clf_mkt, fit_logistic(frame, mkt_cols), oos_feat, mkt_cols
+        )
+        calibrator_mkt = IsotonicRegression(out_of_bounds="clip", y_min=0.02, y_max=0.98)
+        calibrator_mkt.fit(raw_mkt, oos_feat["home_win"])
+        grid = np.linspace(0.0, 1.0, 201)
+        (OUT_DIR / "calibrator_market.json").write_text(
+            json.dumps(
+                {
+                    "kind": "isotonic",
+                    "x": [round(float(v), 6) for v in grid],
+                    "y": [round(float(v), 6) for v in calibrator_mkt.predict(grid)],
+                    "fitted_on": int(len(oos_feat)),
+                }
+            ),
+            encoding="utf-8",
+        )
+
     margin_model = XGBRegressor(**MARGIN_PARAMS)
-    margin_model.fit(frame[list(FEATURE_COLUMNS)], frame["margin"])
+    margin_model.fit(frame[pure_cols], frame["margin"])
     margin_model.get_booster().save_model(str(OUT_DIR / "model_margin.json"))
+    if train_market_margin:
+        margin_model_mkt = XGBRegressor(**MARGIN_PARAMS)
+        margin_model_mkt.fit(frame[margin_cols], frame["margin"])
+        margin_model_mkt.get_booster().save_model(str(OUT_DIR / "model_margin_market.json"))
 
     score_home = XGBRegressor(**SCORE_PARAMS)
-    score_home.fit(frame[list(FEATURE_COLUMNS)], frame["home_score"])
+    score_home.fit(frame[pure_cols], frame["home_score"])
     score_home.get_booster().save_model(str(OUT_DIR / "model_score_home.json"))
     score_away = XGBRegressor(**SCORE_PARAMS)
-    score_away.fit(frame[list(FEATURE_COLUMNS)], frame["away_score"])
+    score_away.fit(frame[pure_cols], frame["away_score"])
     score_away.get_booster().save_model(str(OUT_DIR / "model_score_away.json"))
 
     calibrator = IsotonicRegression(out_of_bounds="clip", y_min=0.02, y_max=0.98)
@@ -375,6 +440,9 @@ def train_final_artifacts(frame: pd.DataFrame, oos: pd.DataFrame, end_season: in
         "algorithm": "NFLGradientBoost v2",
         "created_at": datetime.now(timezone.utc).isoformat(),
         "feature_columns": list(FEATURE_COLUMNS),
+        "clf_market_features": list(CLF_MARKET_FEATURES) if train_market_clf else [],
+        "margin_market_features": list(MARGIN_MARKET_FEATURES) if train_market_margin else [],
+        "market_heads_trained": bool(train_market_clf or train_market_margin),
         "n_features": len(FEATURE_COLUMNS),
         "ensemble": {"xgb_weight": XGB_WEIGHT, "lr_C": LR_C},
         "train_rows": int(len(frame)),

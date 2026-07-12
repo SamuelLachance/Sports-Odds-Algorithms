@@ -269,28 +269,28 @@ def _box(players: list[list] | None = None, *, dnp_ids: list[str] | None = None)
 
 
 def _rich_players(prefix: str, *, star_out: bool = False) -> list[list]:
-    """Synthetic rich rows: [id, min, fga, ast, tov, pf, +/-]."""
+    """Synthetic rich rows: [id, min, fga, ast, tov, pf, +/-, fta]."""
     base = [
-        [f"{prefix}a", 38, 22, 6, 3, 2, 8],
-        [f"{prefix}b", 36, 18, 5, 2, 3, 4],
-        [f"{prefix}c", 32, 14, 4, 2, 4, 2],
-        [f"{prefix}d", 28, 10, 3, 1, 2, -1],
-        [f"{prefix}e", 24, 8, 2, 1, 3, -2],
-        [f"{prefix}f", 20, 6, 2, 2, 2, -3],
-        [f"{prefix}g", 16, 4, 1, 1, 1, -4],
-        [f"{prefix}h", 12, 3, 1, 1, 2, -5],
+        [f"{prefix}a", 38, 22, 6, 3, 2, 8, 6],
+        [f"{prefix}b", 36, 18, 5, 2, 3, 4, 4],
+        [f"{prefix}c", 32, 14, 4, 2, 4, 2, 2],
+        [f"{prefix}d", 28, 10, 3, 1, 2, -1, 2],
+        [f"{prefix}e", 24, 8, 2, 1, 3, -2, 1],
+        [f"{prefix}f", 20, 6, 2, 2, 2, -3, 0],
+        [f"{prefix}g", 16, 4, 1, 1, 1, -4, 0],
+        [f"{prefix}h", 12, 3, 1, 1, 2, -5, 0],
     ]
     if star_out:
         # drop top-2 stars; replacements soak minutes
         return [
-            [f"{prefix}c", 36, 16, 4, 2, 5, -6],
-            [f"{prefix}d", 34, 14, 3, 2, 4, -4],
-            [f"{prefix}e", 30, 12, 3, 1, 3, -2],
-            [f"{prefix}f", 26, 10, 2, 2, 3, -3],
-            [f"{prefix}g", 22, 8, 2, 1, 2, -2],
-            [f"{prefix}h", 18, 6, 1, 1, 2, -1],
-            [f"{prefix}q", 16, 5, 1, 1, 1, 0],
-            [f"{prefix}r", 14, 4, 1, 1, 1, 0],
+            [f"{prefix}c", 36, 16, 4, 2, 5, -6, 3],
+            [f"{prefix}d", 34, 14, 3, 2, 4, -4, 2],
+            [f"{prefix}e", 30, 12, 3, 1, 3, -2, 2],
+            [f"{prefix}f", 26, 10, 2, 2, 3, -3, 1],
+            [f"{prefix}g", 22, 8, 2, 1, 2, -2, 1],
+            [f"{prefix}h", 18, 6, 1, 1, 2, -1, 0],
+            [f"{prefix}q", 16, 5, 1, 1, 1, 0, 0],
+            [f"{prefix}r", 14, 4, 1, 1, 1, 0, 0],
         ]
     return base
 
@@ -382,14 +382,14 @@ def test_rich_player_rotation_features() -> None:
     assert abs(even["bench_pm_diff"]) < 1e-6
     assert abs(even["high_min_ast_tov_diff"]) < 1e-6
     concentrated = [
-        ["ha", 42, 28, 8, 4, 8, 12],
-        ["hb", 30, 12, 3, 2, 6, 2],
-        ["hc", 24, 8, 2, 1, 5, 0],
-        ["hd", 20, 6, 2, 1, 4, -1],
-        ["he", 16, 4, 1, 1, 1, -2],
-        ["hf", 12, 3, 1, 1, 1, -3],
-        ["hg", 10, 2, 0, 1, 1, -4],
-        ["hh", 8, 2, 0, 0, 1, -5],
+        ["ha", 42, 28, 8, 4, 8, 12, 10],
+        ["hb", 30, 12, 3, 2, 6, 2, 2],
+        ["hc", 24, 8, 2, 1, 5, 0, 1],
+        ["hd", 20, 6, 2, 1, 4, -1, 1],
+        ["he", 16, 4, 1, 1, 1, -2, 0],
+        ["hf", 12, 3, 1, 1, 1, -3, 0],
+        ["hg", 10, 2, 0, 1, 1, -4, 0],
+        ["hh", 8, 2, 0, 0, 1, -5, 0],
     ]
     game = _game("2025-01-12", "bos", "ny", 110, 100)
     game["home_box"] = _box(concentrated)
@@ -401,6 +401,58 @@ def test_rich_player_rotation_features() -> None:
     assert feat["min_hhi_diff"] > 0.0
     assert feat["bench_pm_diff"] != 0.0
     assert feat["dnp_star_rate_diff"] < 0.0
+
+
+def test_richer_usage_includes_fta_and_tov() -> None:
+    """Usage share uses FGA + 0.44*FTA + TOV when FTA present on player rows."""
+    from web.nba_v2.feature_engine import _player_rotation_metrics, _usage_possessions
+
+    # Star piles FTA+TOV while secondary takes raw FGA — richer usage favors star
+    rows = [
+        ["star", 36, 10, 4, 5, 2, 6, 12],  # usage poss = 10+0.44*12+5 = 20.28
+        ["role", 30, 18, 2, 0, 2, 0, 0],   # usage poss = 18
+        ["bench", 20, 4, 1, 1, 1, 0, 0],
+        ["b2", 16, 2, 0, 0, 1, 0, 0],
+    ]
+    metrics = _player_rotation_metrics(rows)
+    assert metrics["has_usage"] == 1.0
+    total = sum(_usage_possessions(r[2], r[7], r[4]) for r in rows)
+    assert metrics["top1_usage"] == pytest.approx(20.28 / total)
+    # FGA-only would have given role the top usage share
+    assert metrics["top1_usage"] > rows[0][2] / sum(r[2] for r in rows)
+
+
+def test_starter_rest_weighted_from_player_last_dates() -> None:
+    """Minutes-weighted starter rest rises when a heavy-minute star sat longer."""
+    from datetime import date as date_cls
+
+    engine = NbaFeatureEngine()
+    for day in (2, 4, 6, 8):
+        game = _game(f"2025-01-{day:02d}", "bos", "ny", 110, 100)
+        game["home_box"] = _box(_rich_players("h"))
+        game["away_box"] = _box(_rich_players("a"))
+        engine.update_after_game(game)
+
+    bos = engine.team("bos")
+    # Simulate star ha rested last game while still counting as a starter proxy
+    bos.last_players = [
+        ["ha", 38, 22, 6, 3, 2, 8, 6],
+        ["hb", 36, 18, 5, 2, 3, 4, 4],
+        ["hc", 32, 14, 4, 2, 4, 2, 2],
+        ["hd", 28, 10, 3, 1, 2, -1, 2],
+        ["he", 24, 8, 2, 1, 3, -2, 1],
+    ]
+    bos.player_last_date["ha"] = "2025-01-06"
+    for pid in ("hb", "hc", "hd", "he"):
+        bos.player_last_date[pid] = "2025-01-08"
+
+    feat = engine.features_for_game(_game("2025-01-10", "bos", "ny", 0, 0))
+    assert "starter_rest_diff" in FEATURE_COLUMNS
+    assert feat["home_rest_days"] == 2.0
+    weighted = bos.starter_rest_weighted(date_cls(2025, 1, 10))
+    assert weighted > 2.0  # ha at 4 days pulls average up
+    assert weighted < 4.0
+    assert feat["starter_rest_diff"] > 0.0
 
 
 def test_shooting_profile_updates_from_boxes() -> None:
@@ -430,7 +482,7 @@ def test_from_dict_defaults_new_fields_for_old_snapshots() -> None:
         "top1_min_share", "top3_min_share", "top1_usage", "top3_usage",
         "high_min_ast_tov", "high_min_foul_rate", "star_min_ewma",
         "star_min_season_avg", "bench_pm", "dnp_star_rate", "rotation_depth",
-        "min_hhi", "bench_min_share",
+        "min_hhi", "bench_min_share", "player_last_date",
     )
     for team_payload in payload["teams"].values():
         for key in legacy_keys:
@@ -445,7 +497,8 @@ def test_from_dict_defaults_new_fields_for_old_snapshots() -> None:
     assert features["margin_vol_diff"] == 0.0
     assert features["h2h_margin_ewma"] == 0.0
     assert features["elo_mom5_diff"] == 0.0
-    assert len(FEATURE_COLUMNS) == 89
+    assert features["starter_rest_diff"] == 0.0
+    assert len(FEATURE_COLUMNS) == 90
 
 
 def test_from_dict_preserves_explicit_zero_league_avgs() -> None:

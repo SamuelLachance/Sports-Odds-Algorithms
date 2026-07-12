@@ -5,6 +5,8 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import pytest
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -78,6 +80,48 @@ def test_apply_market_features_defaults_when_odds_missing() -> None:
     assert features["has_market"] == 0.0
     assert features["mkt_home_spread"] == 0.0
     assert features["has_spread"] == 0.0
+    assert features["spread_move"] == 0.0
+    assert features["ml_steam_pp"] == 0.0
+    assert features["has_steam"] == 0.0
+
+
+def test_compute_steam_features_fail_closed_and_paired() -> None:
+    from web.basketball_v2_market import compute_steam_features
+
+    empty = compute_steam_features(home_spread_close=-3.5)
+    assert empty["has_steam"] == 0.0
+    assert empty["spread_move"] == 0.0
+
+    half = compute_steam_features(home_spread_open=-3.0)  # close missing
+    assert half["has_steam"] == 0.0
+
+    spread = compute_steam_features(home_spread_open=-3.0, home_spread_close=-4.5)
+    assert spread["has_steam"] == 1.0
+    assert spread["spread_move"] == pytest.approx(-1.5)
+    assert spread["ml_steam_pp"] == 0.0
+
+    ml = compute_steam_features(
+        home_ml_open=-110,
+        away_ml_open=-110,
+        home_ml_close=-150,
+        away_ml_close=130,
+    )
+    assert ml["has_steam"] == 1.0
+    assert ml["ml_steam_pp"] > 0.0  # close favours home more than open
+
+    feats: dict[str, float] = {}
+    apply_market_features(
+        feats,
+        home_moneyline=-150,
+        away_moneyline=130,
+        home_spread=-4.5,
+        home_spread_open=-3.0,
+        home_ml_open=-110,
+        away_ml_open=-110,
+    )
+    assert feats["has_steam"] == 1.0
+    assert feats["spread_move"] == pytest.approx(-1.5)
+    assert feats["ml_steam_pp"] > 0.0
 
 
 def test_apply_market_features_injects_live_odds() -> None:
@@ -192,5 +236,5 @@ def test_resolve_market_heads_defaults_missing_feature_lists() -> None:
         art, has_market=True, has_spread=True
     )
     assert use_clf and use_margin and variant == "market_aware"
-    assert clf_cols[-2:] == ["mkt_home_prob", "has_market"]
-    assert margin_cols[-2:] == ["mkt_home_spread", "has_spread"]
+    assert clf_cols[-4:] == ["mkt_home_prob", "has_market", "ml_steam_pp", "has_steam"]
+    assert margin_cols[-4:] == ["mkt_home_spread", "has_spread", "spread_move", "has_steam"]

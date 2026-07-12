@@ -83,8 +83,9 @@ XGB_WEIGHT = 0.5
 MIN_CALIBRATION_POOL = 1500
 
 # market-aware heads: devigged consensus moneyline (clf) / spread (margin)
-CLF_MARKET_FEATURES = ("mkt_home_prob", "has_market")
-MARGIN_MARKET_FEATURES = ("mkt_home_spread", "has_spread")
+# + fail-closed open→close steam (see web.basketball_v2_market.compute_steam_features)
+CLF_MARKET_FEATURES = ("mkt_home_prob", "has_market", "ml_steam_pp", "has_steam")
+MARGIN_MARKET_FEATURES = ("mkt_home_spread", "has_spread", "spread_move", "has_steam")
 
 
 def log_loss(p: np.ndarray, y: np.ndarray) -> float:
@@ -128,6 +129,8 @@ def _month_periods_key(frame: pd.DataFrame) -> pd.Series:
 
 
 def attach_market_features(frame: pd.DataFrame) -> pd.DataFrame:
+    from web.basketball_v2_market import compute_steam_features
+
     frame = frame.copy()
     mkt = frame["market_home_prob"]
     frame["has_market"] = mkt.notna().astype(float)
@@ -135,6 +138,20 @@ def attach_market_features(frame: pd.DataFrame) -> pd.DataFrame:
     spread = frame["home_spread"]
     frame["has_spread"] = spread.notna().astype(float)
     frame["mkt_home_spread"] = spread.fillna(0.0)
+    steam_rows = [
+        compute_steam_features(
+            home_spread_open=row.get("home_spread_open"),
+            home_spread_close=row.get("home_spread"),
+            home_ml_open=row.get("home_ml_open"),
+            away_ml_open=row.get("away_ml_open"),
+            home_ml_close=row.get("home_ml"),
+            away_ml_close=row.get("away_ml"),
+        )
+        for row in frame.to_dict(orient="records")
+    ]
+    frame["spread_move"] = [r["spread_move"] for r in steam_rows]
+    frame["ml_steam_pp"] = [r["ml_steam_pp"] for r in steam_rows]
+    frame["has_steam"] = [r["has_steam"] for r in steam_rows]
     return frame
 
 

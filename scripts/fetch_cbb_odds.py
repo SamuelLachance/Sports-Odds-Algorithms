@@ -7,9 +7,17 @@ lookup fails are still written (empty odds, n_books=0) so result history stays
 complete. Scoreboards are always live-fetched (no sticky day cache) so mid-day
 and truncated payloads do not permanently miss later completed games.
 
+Season bounds (empirically, parallel to NBA ESPN odds):
+  - EARLIEST_SAFE_SEASON (2018): scoreboards + flat closing lines usually present;
+    matches ``web.cbb_v2.data.FIRST_SEASON`` for training replay.
+  - ~2022+: books expose explicit open/close objects (needed for steam features).
+  Default ``--start-season`` is 2022 (open/close era). Pass 2018 for full
+  score+close backfill — expect multi-hour runs; prefer date chunks.
+
 One-command multi-season backfill (merges with any existing rows):
 
-    python scripts/fetch_cbb_odds.py --start-season 2024 --end-season 2026
+    python scripts/fetch_cbb_odds.py --start-season 2022 --end-season 2026
+    python scripts/fetch_cbb_odds.py --start-season 2018 --end-season 2021
 
 Partial window (e.g. conference season only):
 
@@ -19,7 +27,7 @@ Smoke connectivity check (one mid-season week; merges, does not wipe CSV):
 
     python scripts/fetch_cbb_odds.py --smoke
 
-Full seasons are large (~5k+ games each) and throttle at ~0.18s/request — expect
+Full seasons are large (~5k+ games each) and throttle at ~0.15s/request — expect
 tens of minutes per season. Prefer --start-date/--end-date chunks if ESPN rate-
 limits; re-run safely thanks to merge.
 """
@@ -65,6 +73,9 @@ ODDS_URL = (
 
 SEASON_START = (11, 1)
 SEASON_END = (4, 10)
+# Ending-year of 2017-18; score+close usually OK. Dense open/close from ~2022.
+EARLIEST_SAFE_SEASON = 2018
+DEFAULT_START_SEASON = 2022
 THROTTLE_SECONDS = 0.15
 ODDS_WORKERS = 6
 
@@ -288,8 +299,11 @@ def main() -> int:
     parser.add_argument(
         "--start-season",
         type=int,
-        default=2024,
-        help="First season end-year inclusive (default 2024 = 2023-24)",
+        default=DEFAULT_START_SEASON,
+        help=(
+            f"First season end-year inclusive (default {DEFAULT_START_SEASON} = "
+            f"open/close era; earliest safe {EARLIEST_SAFE_SEASON})"
+        ),
     )
     parser.add_argument(
         "--end-season",

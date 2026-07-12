@@ -230,9 +230,9 @@ def _player_box_rows(
     """Per-team player rows + DNP ids from boxscore.players.
 
     Each played row is
-    ``[athlete_id, minutes, fga, ast, tov, pf, plus_minus]`` (legacy caches
-    may only have the first two fields). DNP athletes are listed separately
-    for availability / foul-trouble proxies.
+    ``[athlete_id, minutes, fga, ast, tov, pf, plus_minus, fta]`` (legacy caches
+    may only have the first two fields; FTA is 0 when FT column absent). DNP
+    athletes are listed separately for availability / foul-trouble proxies.
     """
     players_out: dict[str, list[list[Any]]] = {}
     dnp_out: dict[str, list[str]] = {}
@@ -247,6 +247,7 @@ def _player_box_rows(
             if min_idx is None:
                 continue
             fga_idx = idx.get("FG")
+            ft_idx = idx.get("FT")
             ast_idx = idx.get("AST")
             tov_idx = idx.get("TO") if "TO" in idx else idx.get("TOV")
             pf_idx = idx.get("PF")
@@ -268,6 +269,11 @@ def _player_box_rows(
                 fga = (
                     _parse_fg_attempts(row[fga_idx])
                     if fga_idx is not None and fga_idx < len(row)
+                    else None
+                )
+                fta = (
+                    _parse_fg_attempts(row[ft_idx])
+                    if ft_idx is not None and ft_idx < len(row)
                     else None
                 )
                 ast = (
@@ -297,6 +303,7 @@ def _player_box_rows(
                     tov if tov is not None else 0.0,
                     pf if pf is not None else 0.0,
                     plus_minus if plus_minus is not None else 0.0,
+                    fta if fta is not None else 0.0,
                 ])
         if team_id and rows:
             players_out[team_id] = rows
@@ -309,7 +316,7 @@ def fetch_box_score(event_id: str) -> dict[str, dict[str, Any]] | None:
     """Team box stats keyed by ESPN team id. None when unavailable.
 
     Each team dict may also carry:
-      players: ``[[athlete_id, minutes, fga, ast, tov, pf, plus_minus], ...]``
+      players: ``[[athlete_id, minutes, fga, ast, tov, pf, plus_minus, fta], ...]``
       dnp_ids: athlete ids listed as DNP in the box (coach's decision / injury).
     """
     data = get_json(SUMMARY_URL.format(event_id=event_id), timeout=45)

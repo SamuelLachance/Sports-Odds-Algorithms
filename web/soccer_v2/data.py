@@ -206,6 +206,8 @@ def parse_season_csv(
             "away_sot": _to_int(record.get("AST")),
             "home_corners": _to_int(record.get("HC")),
             "away_corners": _to_int(record.get("AC")),
+            "home_yellows": _to_int(record.get("HY")),
+            "away_yellows": _to_int(record.get("AY")),
             "home_reds": _to_int(record.get("HR")),
             "away_reds": _to_int(record.get("AR")),
             # earliest available price (Pinnacle pre-close, then B365, then avg)

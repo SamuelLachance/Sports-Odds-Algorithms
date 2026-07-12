@@ -949,6 +949,9 @@ def _run_cbb_v2(
     *,
     home_espn_id: str | None = None,
     away_espn_id: str | None = None,
+    home_moneyline: int | None = None,
+    away_moneyline: int | None = None,
+    consensus_spread: float | None = None,
 ) -> dict[str, Any] | None:
     """CBBGradientBoost v2 payload when PIT-safe artifacts + season context exist."""
     try:
@@ -966,12 +969,23 @@ def _run_cbb_v2(
             away_abbr,
             home_espn_id=home_espn_id,
             away_espn_id=away_espn_id,
+            home_moneyline=home_moneyline,
+            away_moneyline=away_moneyline,
+            home_spread=consensus_spread,
         )
     except Exception:  # noqa: BLE001 - v2 layer must never break the slate
         return None
 
 
-def _run_cfb_v2(cutoff_date: str, home_abbr: str, away_abbr: str) -> dict[str, Any] | None:
+def _run_cfb_v2(
+    cutoff_date: str,
+    home_abbr: str,
+    away_abbr: str,
+    *,
+    home_moneyline: int | None = None,
+    away_moneyline: int | None = None,
+    consensus_spread: float | None = None,
+) -> dict[str, Any] | None:
     """CFBGradientBoost v2 payload when artifacts + season context exist."""
     try:
         from web.hockey_pred_model import _cutoff_to_iso
@@ -982,12 +996,27 @@ def _run_cfb_v2(cutoff_date: str, home_abbr: str, away_abbr: str) -> dict[str, A
         day_iso = _cutoff_to_iso(cutoff_date)
         if not day_iso:
             return None
-        return predict_matchup_v2(day_iso, home_abbr, away_abbr)
+        return predict_matchup_v2(
+            day_iso,
+            home_abbr,
+            away_abbr,
+            home_moneyline=home_moneyline,
+            away_moneyline=away_moneyline,
+            home_spread=consensus_spread,
+        )
     except Exception:  # noqa: BLE001 - v2 layer must never break the slate
         return None
 
 
-def _run_nfl_v2(cutoff_date: str, home_abbr: str, away_abbr: str) -> dict[str, Any] | None:
+def _run_nfl_v2(
+    cutoff_date: str,
+    home_abbr: str,
+    away_abbr: str,
+    *,
+    home_moneyline: int | None = None,
+    away_moneyline: int | None = None,
+    consensus_spread: float | None = None,
+) -> dict[str, Any] | None:
     """NFLGradientBoost v2 payload when shipped artifacts + season context exist."""
     try:
         from web.hockey_pred_model import _cutoff_to_iso
@@ -998,7 +1027,14 @@ def _run_nfl_v2(cutoff_date: str, home_abbr: str, away_abbr: str) -> dict[str, A
         day_iso = _cutoff_to_iso(cutoff_date)
         if not day_iso:
             return None
-        return predict_matchup_v2(day_iso, home_abbr, away_abbr)
+        return predict_matchup_v2(
+            day_iso,
+            home_abbr,
+            away_abbr,
+            home_moneyline=home_moneyline,
+            away_moneyline=away_moneyline,
+            home_spread=consensus_spread,
+        )
     except Exception:  # noqa: BLE001 - v2 layer must never break the slate
         return None
 
@@ -1010,9 +1046,19 @@ def _blend_cfb_v2_only(
     away_abbr: str,
     home_espn_id: str | None = None,
     away_espn_id: str | None = None,
+    home_moneyline: int | None = None,
+    away_moneyline: int | None = None,
+    consensus_spread: float | None = None,
 ) -> dict[str, Any] | None:
     """Prefer CFB v2 when shipped artifacts are available."""
-    v2_payload = _run_cfb_v2(cutoff_date, home_abbr, away_abbr)
+    v2_payload = _run_cfb_v2(
+        cutoff_date,
+        home_abbr,
+        away_abbr,
+        home_moneyline=home_moneyline,
+        away_moneyline=away_moneyline,
+        consensus_spread=consensus_spread,
+    )
     if not v2_payload or v2_payload.get("model_version") != "v2":
         return None
     raw_prob = v2_payload.get("home_win_probability")
@@ -1056,9 +1102,19 @@ def _blend_nfl_v2_only(
     away_abbr: str,
     home_espn_id: str | None = None,
     away_espn_id: str | None = None,
+    home_moneyline: int | None = None,
+    away_moneyline: int | None = None,
+    consensus_spread: float | None = None,
 ) -> dict[str, Any] | None:
     """Prefer NFL v2 when shipped artifacts are available."""
-    v2_payload = _run_nfl_v2(cutoff_date, home_abbr, away_abbr)
+    v2_payload = _run_nfl_v2(
+        cutoff_date,
+        home_abbr,
+        away_abbr,
+        home_moneyline=home_moneyline,
+        away_moneyline=away_moneyline,
+        consensus_spread=consensus_spread,
+    )
     if not v2_payload or v2_payload.get("model_version") != "v2":
         return None
     raw_prob = v2_payload.get("home_win_probability")
@@ -1194,6 +1250,9 @@ def _blend_basketball_matrix_only(
             away_abbr,
             home_espn_id=home_espn_id,
             away_espn_id=away_espn_id,
+            home_moneyline=home_moneyline,
+            away_moneyline=away_moneyline,
+            consensus_spread=consensus_spread,
         )
         if v2_payload and v2_payload.get("model_version") == "v2":
             home_prob = float(v2_payload["home_win_probability"])
@@ -1618,6 +1677,9 @@ def blend_predictions(
             away_abbr=away_abbr,
             home_espn_id=home_espn_id,
             away_espn_id=away_espn_id,
+            home_moneyline=home_moneyline,
+            away_moneyline=away_moneyline,
+            consensus_spread=consensus_spread,
         )
         if cfb_v2 is not None:
             return cfb_v2
@@ -1629,6 +1691,9 @@ def blend_predictions(
             away_abbr=away_abbr,
             home_espn_id=home_espn_id,
             away_espn_id=away_espn_id,
+            home_moneyline=home_moneyline,
+            away_moneyline=away_moneyline,
+            consensus_spread=consensus_spread,
         )
         if nfl_v2 is not None:
             return nfl_v2

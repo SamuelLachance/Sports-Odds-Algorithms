@@ -106,6 +106,8 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     "coach_win_ewma_diff",
     "home_coach_known",
     "away_coach_known",
+    "home_coach_streak",
+    "away_coach_streak",
     # score-based luck / volatility proxies
     "close_win_ewma_diff",
     "blowout_net_ewma_diff",
@@ -347,6 +349,13 @@ class TeamState:
         if str(qb_id).strip() != self.current_qb_id:
             return 0.0
         return float(self.qb_streak)
+
+    def coach_streak_for(self, coach_name: str) -> float:
+        if _is_missing_id(coach_name) or not self.current_coach:
+            return 0.0
+        if str(coach_name).strip().lower() != str(self.current_coach).strip().lower():
+            return 0.0
+        return float(self.coach_streak)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -600,6 +609,8 @@ class NflFeatureEngine:
             "coach_win_ewma_diff": home_coach_win - away_coach_win,
             "home_coach_known": home_coach_known,
             "away_coach_known": away_coach_known,
+            "home_coach_streak": home.coach_streak_for(home_coach_name),
+            "away_coach_streak": away.coach_streak_for(away_coach_name),
             "close_win_ewma_diff": home.close_win_ewma - away.close_win_ewma,
             "blowout_net_ewma_diff": home.blowout_net_ewma - away.blowout_net_ewma,
             "blowout_rate_diff": home.blowout_rate() - away.blowout_rate(),
