@@ -46,10 +46,38 @@ META_COLUMNS = (
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Build NFL v2 training table")
-    parser.add_argument("--odds-csv", type=Path, default=ODDS_CSV)
-    parser.add_argument("--emit-from-season", type=int, default=1999)
+    parser = argparse.ArgumentParser(
+        description="Build NFL v2 training table from nflverse closing-odds history.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        epilog=(
+            "Writes data/nfl_history/training_table.csv. "
+            "Requires data/supplemental/closing-odds/nflverse_games.csv "
+            "(or --odds-csv). Next: python scripts/train_nfl_model.py"
+        ),
+    )
+    parser.add_argument(
+        "--odds-csv",
+        type=Path,
+        default=ODDS_CSV,
+        help="nflverse closing-odds CSV",
+    )
+    parser.add_argument(
+        "--emit-from-season",
+        type=int,
+        default=1999,
+        help="First season to write feature rows for",
+    )
     args = parser.parse_args()
+
+    if not args.odds_csv.is_file():
+        print(
+            f"ERROR: missing odds CSV: {args.odds_csv}\n"
+            "  Expected nflverse closing-odds history at "
+            "data/supplemental/closing-odds/nflverse_games.csv\n"
+            "  Pass --odds-csv PATH if the file lives elsewhere.",
+            file=sys.stderr,
+        )
+        return 1
 
     frame = pd.read_csv(args.odds_csv)
     frame = frame[frame.game_type.isin(["REG", "POST", "WC", "DIV", "CON", "SB"])]
@@ -100,6 +128,13 @@ def main() -> int:
 
         replay_games(engine, games, emit=emit)
 
+    if written == 0:
+        print(
+            f"ERROR: wrote 0 rows to {out_path}\n"
+            f"  Check --emit-from-season ({args.emit_from_season}) and odds CSV contents.",
+            file=sys.stderr,
+        )
+        return 1
     print(f"wrote {written} rows -> {out_path}")
     print(f"n_features={len(FEATURE_COLUMNS)} teams_seen={len(engine.teams)} qbs={len(engine.qbs)}")
     return 0

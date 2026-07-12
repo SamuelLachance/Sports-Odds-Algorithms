@@ -444,16 +444,41 @@ def train_final_artifacts(frame: pd.DataFrame, oos: pd.DataFrame, end_season: in
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Train CFB v2 model")
-    parser.add_argument("--end-season", type=int, default=None)
+    parser = argparse.ArgumentParser(
+        description="Train CFB v2 win-probability + margin models (walk-forward OOS).",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        epilog=(
+            f"Requires training table at {TABLE_PATH}. "
+            "Build first: python scripts/build_cfb_training_table.py. "
+            f"Writes artifacts under {OUT_DIR}/."
+        ),
+    )
+    parser.add_argument(
+        "--end-season",
+        type=int,
+        default=None,
+        help="Last season included in training/eval (default: max in table)",
+    )
     args = parser.parse_args()
 
     if not TABLE_PATH.is_file():
-        print(f"missing {TABLE_PATH}; run scripts/build_cfb_training_table.py first")
+        print(
+            f"ERROR: missing training table: {TABLE_PATH}\n"
+            "  Build it first:\n"
+            "    python scripts/build_cfb_training_table.py\n"
+            "  That script needs data/supplemental/closing-odds/cfb.csv.",
+            file=sys.stderr,
+        )
         return 1
 
     frame = pd.read_csv(TABLE_PATH)
     frame = frame.dropna(subset=["home_win", "margin"])
+    if frame.empty:
+        print(
+            f"ERROR: training table is empty after dropping NaN labels: {TABLE_PATH}",
+            file=sys.stderr,
+        )
+        return 1
     end_season = args.end_season
     if end_season is None:
         end_season = int(frame.season.max())
@@ -461,7 +486,11 @@ def main() -> int:
 
     oos = walk_forward(frame, end_season)
     if oos.empty:
-        print("no OOS rows produced")
+        print(
+            "ERROR: no OOS rows produced "
+            f"(end_season={end_season}; need seasons after the warm-up window).",
+            file=sys.stderr,
+        )
         return 1
     train_final_artifacts(frame, oos, end_season)
     return 0

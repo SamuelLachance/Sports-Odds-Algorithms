@@ -893,6 +893,30 @@ a.pick-card-link:focus-visible {
   border-left: 4px solid color-mix(in srgb, var(--accent) 45%, var(--border));
 }
 
+.loading-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 8rem;
+  justify-content: center;
+}
+
+.loading-spinner {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent-strong);
+  border-radius: 50%;
+  animation: soa-spin 0.8s linear infinite;
+}
+
+@keyframes soa-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .edge-badge--ref {
   border-color: var(--border);
   color: var(--text-muted);

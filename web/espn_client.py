@@ -69,20 +69,62 @@ class ScheduledGame:
     market: MarketOdds
 
 
-def _fetch_json(url: str, timeout: int = 20, retries: int = 3) -> dict[str, Any]:
-    last_error: urllib.error.URLError | None = None
+# Soft client-side throttle + shorter timeouts to avoid ESPN rate-limit storms.
+_MIN_REQUEST_INTERVAL_S = 0.12
+_DEFAULT_TIMEOUT_S = 15
+_last_request_at = 0.0
+
+
+def _throttle() -> None:
+    global _last_request_at
+    elapsed = time.monotonic() - _last_request_at
+    if elapsed < _MIN_REQUEST_INTERVAL_S:
+        time.sleep(_MIN_REQUEST_INTERVAL_S - elapsed)
+    _last_request_at = time.monotonic()
+
+
+def _retry_after_seconds(exc: urllib.error.HTTPError, attempt: int) -> float:
+    header = exc.headers.get("Retry-After") if exc.headers else None
+    if header:
+        try:
+            return min(max(float(header), 0.5), 30.0)
+        except ValueError:
+            pass
+    # 429 / 5xx: exponential backoff with a small floor.
+    return min(0.75 * (2**attempt), 8.0)
+
+
+def _fetch_json(url: str, timeout: int | None = None, retries: int = 3) -> dict[str, Any]:
+    timeout_s = _DEFAULT_TIMEOUT_S if timeout is None else timeout
+    last_error: BaseException | None = None
     for attempt in range(max(1, retries)):
         request = urllib.request.Request(
             url,
             headers={"User-Agent": "Sports-Odds-Algorithms/2.0"},
         )
         try:
-            with urllib.request.urlopen(request, timeout=timeout) as response:
+            _throttle()
+            with urllib.request.urlopen(request, timeout=timeout_s) as response:
                 return json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as exc:
+            last_error = exc
+            # Retry rate-limits and transient server errors only.
+            if exc.code in {429, 500, 502, 503, 504} and attempt + 1 < retries:
+                time.sleep(_retry_after_seconds(exc, attempt))
+                continue
+            raise
         except urllib.error.URLError as exc:
             last_error = exc
             if attempt + 1 < retries:
                 time.sleep(0.5 * (attempt + 1))
+                continue
+            raise
+        except TimeoutError as exc:
+            last_error = exc
+            if attempt + 1 < retries:
+                time.sleep(0.5 * (attempt + 1))
+                continue
+            raise
     if last_error is not None:
         raise last_error
     raise urllib.error.URLError("ESPN request failed")

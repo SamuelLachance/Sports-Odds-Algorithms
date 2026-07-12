@@ -2,7 +2,7 @@
 
 The artifact (data/models/wnba_v2/) contains a feature-engine snapshot at the
 end of the previous season. At prediction time we fetch the current season
-from ESPN (events + team box scores, 6h TTL), replay it through the training
+from ESPN (events + team box scores, 3h TTL), replay it through the training
 engine, then score today's matchups with the persisted XGBoost + logistic
 ensemble (isotonic-calibrated) and the margin/score regressors.
 """
@@ -28,7 +28,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 MODEL_DIR = PROJECT_ROOT / "data" / "models" / "wnba_v2"
 LIVE_CACHE_DIR = PROJECT_ROOT / ".build-cache" / "wnba-v2-live"
 
-EVENTS_TTL_SECONDS = 6 * 3600
+EVENTS_TTL_SECONDS = 3 * 3600  # fresher than 6h Pages cadence
 PAST_SEASON_TTL_SECONDS = 30 * 86400
 BOX_WORKERS = 6
 

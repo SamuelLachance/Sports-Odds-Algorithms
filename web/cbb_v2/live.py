@@ -26,7 +26,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 MODEL_DIR = PROJECT_ROOT / "data" / "models" / "cbb_v2"
 LIVE_CACHE_DIR = PROJECT_ROOT / ".build-cache" / "cbb-v2-live"
 
-EVENTS_TTL_SECONDS = 6 * 3600
+EVENTS_TTL_SECONDS = 3 * 3600  # fresher than 6h Pages cadence
 PAST_SEASON_TTL_SECONDS = 30 * 86400
 
 

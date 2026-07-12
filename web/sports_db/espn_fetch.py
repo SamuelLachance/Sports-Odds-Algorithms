@@ -17,7 +17,7 @@ def clear_fetch_cache() -> None:
         _FETCH_CACHE.clear()
 
 
-def _cached_fetch(url: str, timeout: int = 25) -> dict[str, Any] | None:
+def _cached_fetch(url: str, timeout: int = 15) -> dict[str, Any] | None:
     with _CACHE_LOCK:
         if url in _FETCH_CACHE:
             return _FETCH_CACHE[url]
@@ -48,38 +48,38 @@ def season_year_for_league(league: str) -> int:
 
 def fetch_standings(league: str, season_year: int | None = None) -> dict[str, Any] | None:
     year = season_year or season_year_for_league(league)
-    payload = _cached_fetch(f"{_v2_base(league)}/standings?season={year}", timeout=25)
+    payload = _cached_fetch(f"{_v2_base(league)}/standings?season={year}", timeout=15)
     if payload:
         return payload
-    return _cached_fetch(f"{_site_base(league)}/standings", timeout=25)
+    return _cached_fetch(f"{_site_base(league)}/standings", timeout=15)
 
 
 def fetch_league_news(league: str, limit: int = 12) -> dict[str, Any] | None:
-    payload = _cached_fetch(f"{_site_base(league)}/news?limit={limit}", timeout=20)
+    payload = _cached_fetch(f"{_site_base(league)}/news?limit={limit}", timeout=15)
     return payload if payload and payload.get("articles") else None
 
 
 def fetch_rankings(league: str) -> dict[str, Any] | None:
-    payload = _cached_fetch(f"{_site_base(league)}/rankings", timeout=20)
+    payload = _cached_fetch(f"{_site_base(league)}/rankings", timeout=15)
     return payload if payload and payload.get("rankings") else None
 
 
 def fetch_team_roster(league: str, espn_team_id: str) -> dict[str, Any] | None:
-    return _cached_fetch(f"{_site_base(league)}/teams/{espn_team_id}/roster", timeout=25)
+    return _cached_fetch(f"{_site_base(league)}/teams/{espn_team_id}/roster", timeout=15)
 
 
 def fetch_team_statistics(league: str, espn_team_id: str, season_year: int | None = None) -> dict[str, Any] | None:
     year = season_year or season_year_for_league(league)
     return _cached_fetch(
         f"{_site_base(league)}/teams/{espn_team_id}/statistics?season={year}",
-        timeout=25,
+        timeout=15,
     )
 
 
 def fetch_team_detail(league: str, espn_team_id: str) -> dict[str, Any] | None:
     return _cached_fetch(
         f"{_site_base(league)}/teams/{espn_team_id}?enable=roster,stats,projection",
-        timeout=25,
+        timeout=15,
     )
 
 
@@ -89,8 +89,8 @@ def _common_v3_base(league: str) -> str:
 
 
 def fetch_athlete_overview(league: str, athlete_id: str) -> dict[str, Any] | None:
-    return _cached_fetch(f"{_common_v3_base(league)}/athletes/{athlete_id}/overview", timeout=25)
+    return _cached_fetch(f"{_common_v3_base(league)}/athletes/{athlete_id}/overview", timeout=15)
 
 
 def fetch_athlete_stats(league: str, athlete_id: str) -> dict[str, Any] | None:
-    return _cached_fetch(f"{_common_v3_base(league)}/athletes/{athlete_id}/stats", timeout=25)
+    return _cached_fetch(f"{_common_v3_base(league)}/athletes/{athlete_id}/stats", timeout=15)

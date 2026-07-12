@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import io
+import logging
 import os
 import sys
 from contextlib import redirect_stdout
@@ -13,6 +14,7 @@ from typing import Any
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 TORONTO = ZoneInfo("America/Toronto")
+logger = logging.getLogger(__name__)
 
 
 def _toronto_today() -> date:
@@ -761,6 +763,7 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
     all_games: list[dict[str, Any]] = []
     errors: list[dict[str, str]] = []
     slate_cutoff = _slate_cutoff_date()
+    logger.info("Building daily slate (days_ahead=%s)", days_ahead)
 
     for league in SUPPORTED_LEAGUES:
         # Soft-fail every league independently: scoreboard, readiness, prewarm,
@@ -769,6 +772,7 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
             scheduled = fetch_scoreboard(league, days_ahead=days_ahead)
         except Exception as exc:  # noqa: BLE001
             errors.append({"league": league, "error": str(exc)})
+            logger.warning("Scoreboard failed for %s: %s", league, exc)
             continue
 
         try:
@@ -789,12 +793,15 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
                         "error": f"League model prewarm failed: {exc}",
                     }
                 )
+                logger.warning("Model prewarm failed for %s: %s", league, exc)
 
             headlines = _league_news_headlines(league)
+            league_games = 0
 
             for game in actionable:
                 try:
                     all_games.append(predict_live_game(game, headlines=headlines))
+                    league_games += 1
                 except Exception as exc:  # noqa: BLE001
                     errors.append(
                         {
@@ -803,8 +810,17 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
                             "error": str(exc),
                         }
                     )
+                    logger.warning(
+                        "Game predict failed for %s (%s): %s",
+                        league,
+                        game.name,
+                        exc,
+                    )
+            if league_games:
+                logger.info("Slate %s: %s game(s)", league, league_games)
         except Exception as exc:  # noqa: BLE001
             errors.append({"league": league, "error": f"League slate failed: {exc}"})
+            logger.warning("League slate failed for %s: %s", league, exc)
             continue
 
     recommendations = []
@@ -885,6 +901,20 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
         for r in model_analysis
         if _meets_recommendation_threshold(games_by_event.get(r.get("event_id", ""), {}), r)
     ]
+
+    if errors:
+        logger.warning(
+            "Daily slate complete with %s error(s); %s games analyzed",
+            len(errors),
+            len(all_games),
+        )
+    else:
+        logger.info(
+            "Daily slate complete: %s games, %s official picks, %s model-only",
+            len(all_games),
+            len(qualifying),
+            len(model_analysis_qualifying),
+        )
 
     return {
         "generated_at": generated_at,

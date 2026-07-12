@@ -416,18 +416,47 @@ def cbb_now_season() -> int:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Train CBB v2 model")
-    parser.add_argument("--end-season", type=int, default=2026)
-    parser.add_argument("--skip-artifacts", action="store_true")
+    parser = argparse.ArgumentParser(
+        description="Train CBB v2 win-probability + margin models (walk-forward OOS).",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        epilog=(
+            f"Requires training table at {TABLE_PATH}. "
+            "Build first: python scripts/build_cbb_training_table.py. "
+            f"Writes artifacts under {OUT_DIR}/. "
+            "Official picks stay gated until spread backtest clears."
+        ),
+    )
+    parser.add_argument(
+        "--end-season",
+        type=int,
+        default=2026,
+        help="Last season included in training/eval",
+    )
+    parser.add_argument(
+        "--skip-artifacts",
+        action="store_true",
+        help="Only run walk-forward OOS; do not write model artifacts",
+    )
     args = parser.parse_args()
 
     if not TABLE_PATH.is_file():
-        print(f"missing training table: {TABLE_PATH}", flush=True)
-        print("run: python scripts/build_cbb_training_table.py", flush=True)
+        print(
+            f"ERROR: missing training table: {TABLE_PATH}\n"
+            "  Build it first:\n"
+            "    python scripts/build_cbb_training_table.py\n"
+            "  Optional odds join: data/supplemental/closing-odds/cbb.csv.",
+            file=sys.stderr,
+        )
         return 1
 
     frame = pd.read_csv(TABLE_PATH)
     frame = frame.dropna(subset=["home_win"])
+    if frame.empty:
+        print(
+            f"ERROR: training table is empty after dropping NaN labels: {TABLE_PATH}",
+            file=sys.stderr,
+        )
+        return 1
     if "home_ml" in frame.columns and "away_ml" in frame.columns:
         frame["market_home_prob"] = [
             _devig_home_prob(h, a) if pd.notna(h) and pd.notna(a) else np.nan
@@ -438,6 +467,13 @@ def main() -> int:
 
     end_season = min(args.end_season, int(frame.season.max()))
     oos = walk_forward(frame[frame.season <= end_season], end_season)
+    if oos.empty:
+        print(
+            "ERROR: no OOS rows produced "
+            f"(end_season={end_season}; need seasons after the warm-up window).",
+            file=sys.stderr,
+        )
+        return 1
     if not args.skip_artifacts:
         train_final_artifacts(frame[frame.season <= end_season], oos, end_season)
     else:

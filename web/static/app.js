@@ -164,6 +164,25 @@ function api(path) {
   return `/api/${path}`;
 }
 
+function apiErrorMessage(payload, fallback = "Request failed") {
+  const detail = payload?.detail;
+  if (typeof detail === "string" && detail.trim()) return detail;
+  if (detail && typeof detail === "object") {
+    const parts = [detail.message, detail.hint].filter(
+      (part) => typeof part === "string" && part.trim(),
+    );
+    if (parts.length) return parts.join(" — ");
+  }
+  return fallback;
+}
+
+function loadingPanel(message = "Loading…") {
+  return `<div class="panel empty-panel loading-panel" role="status" aria-live="polite" aria-busy="true">
+    <span class="loading-spinner" aria-hidden="true"></span>
+    <strong>${escapeHtml(message)}</strong>
+  </div>`;
+}
+
 async function fetchJson(url, { timeoutMs = 30000 } = {}) {
   const separator = url.includes("?") ? "&" : "?";
   const controller = new AbortController();
@@ -175,9 +194,7 @@ async function fetchJson(url, { timeoutMs = 30000 } = {}) {
     });
     const payload = await response.json().catch(() => null);
     if (!response.ok) {
-      throw new Error(
-        typeof payload?.detail === "string" ? payload.detail : "Request failed",
-      );
+      throw new Error(apiErrorMessage(payload, `Request failed (${response.status})`));
     }
     return payload;
   } catch (err) {
@@ -1006,9 +1023,24 @@ function pickGameHref(pick) {
 function pickCard(pick, extra = "", game = null) {
   const gameHref = pickGameHref(pick);
   const tag = gameHref ? "a" : "article";
+  const leagueLabel = pick.league_name || pick.league || "";
+  const teamLabel = pick.team_name || "Pick";
+  const sideLabel = pickSideLabel(pick);
+  const betLabel = pickBetTypeLabel(pick);
+  const matchupLabel = pick.matchup || extra || "";
+  const tracked =
+    pick.tracked === false ? "reference only" : pick.tracked === true ? "official" : "";
+  const ariaBits = [
+    leagueLabel,
+    `${sideLabel} ${betLabel}`,
+    teamLabel,
+    matchupLabel,
+    tracked,
+  ].filter(Boolean);
+  const ariaLabel = escapeHtml(ariaBits.join(" · "));
   const linkAttrs = gameHref
-    ? ` href="${gameHref}" class="pick-card pick-card-link ${confClass(pick.confidence)}"`
-    : ` class="pick-card ${confClass(pick.confidence)}"`;
+    ? ` href="${gameHref}" class="pick-card pick-card-link ${confClass(pick.confidence)}" aria-label="${ariaLabel}"`
+    : ` class="pick-card ${confClass(pick.confidence)}" role="article" aria-label="${ariaLabel}"`;
   const trackedPill =
     pick.tracked === false
       ? `<span class="strategy-pill strategy-pill--muted">Not tracked</span>`
@@ -1022,7 +1054,7 @@ function pickCard(pick, extra = "", game = null) {
     : "—";
   return `<${tag}${linkAttrs}>
     <div class="pick-top">
-      <span class="league-pill">${escapeHtml(pick.league_name || pick.league || "")}</span>
+      <span class="league-pill">${escapeHtml(leagueLabel)}</span>
       <span class="strategy-pill">${escapeHtml(pick.strategy_label || pick.strategy || "")}</span>
       ${trackedPill}
       ${predictionsOnlyPill(pick.league)}
@@ -1030,11 +1062,11 @@ function pickCard(pick, extra = "", game = null) {
     </div>
     ${renderEdgeBadges(pick, game)}
     <div class="pick-side-row">
-      <span class="pick-side-tag">${escapeHtml(pickSideLabel(pick))} · ${escapeHtml(pickBetTypeLabel(pick))}</span>
-      ${stake != null ? `<span class="pick-stake">${stake}u</span>` : ""}
+      <span class="pick-side-tag">${escapeHtml(sideLabel)} · ${escapeHtml(betLabel)}</span>
+      ${stake != null ? `<span class="pick-stake" aria-label="Stake ${stake} units">${stake}u</span>` : ""}
     </div>
     <h3>${escapeHtml(pick.team_name || "")}</h3>
-    <p class="pick-matchup">${escapeHtml(pick.matchup || extra || "")}</p>
+    <p class="pick-matchup">${escapeHtml(matchupLabel)}</p>
     <p class="pick-time">${formatTime(pick.start_time)}</p>
     <div class="pick-odds">
       <div><span>${pick.bet_type === "spread" ? "Spread" : "Market"}</span><strong>${pickMarketLabel(pick)}</strong></div>
@@ -1047,7 +1079,7 @@ function pickCard(pick, extra = "", game = null) {
       ${pick.kelly_pct != null ? `<div><span>Kelly</span><strong>${pick.kelly_pct}%</strong></div>` : ""}
     </div>
     <p class="pick-reason">${escapeHtml(pick.reason || "")}</p>
-    ${gameHref ? `<span class="pick-open-hint">Open game prediction →</span>` : ""}
+    ${gameHref ? `<span class="pick-open-hint" aria-hidden="true">Open game prediction →</span>` : ""}
   </${tag}>`;
 }
 
@@ -1635,6 +1667,7 @@ async function viewLeaguesHub() {
 async function viewLeaguePage(league) {
   state.sidebarLeague = league;
   renderSidebar(parseRoute());
+  appRoot.innerHTML = loadingPanel(`Loading ${String(league || "").toUpperCase()}…`);
   let data;
   try {
     data = await loadLeagueDb(league);
@@ -2107,7 +2140,7 @@ async function loadTeamProfile(league, abbr) {
 async function viewTeam(league, abbr) {
   state.sidebarLeague = league;
   renderSidebar(parseRoute());
-  appRoot.innerHTML = '<div class="panel empty-panel">Loading team…</div>';
+  appRoot.innerHTML = loadingPanel("Loading team…");
 
   const normalizedAbbr = (abbr || "").toLowerCase();
   let teamDb = await loadTeamDb(league, normalizedAbbr).catch(() => null);
@@ -2193,6 +2226,7 @@ async function viewTeam(league, abbr) {
 async function viewPlayer(league, playerId) {
   state.sidebarLeague = league;
   renderSidebar(parseRoute());
+  appRoot.innerHTML = loadingPanel("Loading player…");
   let player;
   try {
     player = await loadPlayerDb(league, playerId);
@@ -2450,6 +2484,17 @@ function viewMethodology() {
     </section>
 
     <section class="section panel methodology-body">
+      <h2>Why CBB official picks stay off</h2>
+      <p><code>cbb_v2</code> is live for board probabilities and reference spread analysis, but <strong>official Hubáček tracking stays disabled</strong>. The latest walk-forward gate sweep against closing spreads (2024–25 window, ~5.6k games with a spread) failed the enable bar:</p>
+      <ul>
+        <li><strong>Close-line best policy:</strong> −57.9% ROI over 3,993 bets (worst-season ROI −57.9%; 0 of 1 seasons positive). Live gates at close were even worse (−71.7% ROI on 2,227 bets).</li>
+        <li><strong>Open-line research best:</strong> +2.5% ROI on 608 bets — single-season only, and not strong enough to override the close-line collapse.</li>
+        <li><strong>Enable rule:</strong> write <code>bet_policy.json</code> with <code>enabled: true</code> only when the best policy has <em>positive</em> worst-season ROI at the execution price we would actually take. Close fails that bar badly; open’s tiny single-season edge does not clear it either.</li>
+      </ul>
+      <p class="muted">Until a multi-season close-line (or proven open-lock) policy clears that bar, CBB remains predictions-only — never logged in the official tracking book.</p>
+    </section>
+
+    <section class="section panel methodology-body">
       <h2>Closing Line Value (CLV)</h2>
       <p>CLV compares the implied probability of the odds you took against the implied probability of the closing odds: <strong>positive CLV means you beat the close</strong>. Because the closing line aggregates all late information and sharp money, consistently beating it is the best available predictor of long-run profit — far more informative than a short-run win–loss record, which is mostly variance at small sample sizes.</p>
       <p>Every official pick is logged with odds frozen at record time and graded for implied-probability CLV once closing odds land. One caveat: the closing reference here is the <strong>ESPN consensus feed, not a sharp book</strong>, so CLV on this site is an approximation of true closing value.</p>
@@ -2478,6 +2523,7 @@ function viewMethodology() {
     <section class="section panel methodology-body">
       <h2>Honest limitations</h2>
       <ul>
+        <li><strong>CBB official picks are disabled by design.</strong> Walk-forward close-line ROI for the best gate was −57.9% (3,993 bets); open-line +2.5% is single-season only. The board still shows <code>cbb_v2</code> probabilities for research.</li>
         <li><strong>Beating the close is unproven for NBA.</strong> A pilot of the NBA model graded at real closing lines returned −1.5% ATS with negative CLV. Whatever edge exists lives earlier in the day, not at the close.</li>
         <li><strong>MLB edge concentrates at the open.</strong> Walk-forward testing showed roughly +35% ROI against opening lines versus −3.2% at the close — consistent with the finding that FLB mispricing disappears as the market matures.</li>
         <li><strong>Opening-line backtests overstate live ROI.</strong> Historical ROI vs opening prices is an upper bound; live morning tracking locks later consensus prices and usually grades worse than the open-line study.</li>
@@ -2685,13 +2731,14 @@ async function render() {
 }
 
 async function loadPlatform() {
+  appRoot.innerHTML = loadingPanel("Loading today's slate…");
   let slate;
   try {
     slate = await fetchJson(
       USE_STATIC_API ? api("daily-slate.json") : api("daily/slate"),
     );
   } catch (err) {
-    appRoot.innerHTML = `<div class="panel empty-panel error-panel">Could not load daily slate: ${escapeHtml(err.message)}. The site may still be rebuilding — refresh in a few minutes.</div>`;
+    appRoot.innerHTML = `<div class="panel empty-panel error-panel" role="alert">Could not load daily slate: ${escapeHtml(err.message)}. The site may still be rebuilding — refresh in a few minutes.</div>`;
     return;
   }
   state.slate = slate;

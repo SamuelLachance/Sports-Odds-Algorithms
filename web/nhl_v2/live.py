@@ -43,7 +43,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 MODEL_DIR = PROJECT_ROOT / "data" / "models" / "nhl_v2"
 LIVE_CACHE_DIR = PROJECT_ROOT / ".build-cache" / "nhl-v2-live"
 
-STATS_TTL_SECONDS = 6 * 3600
+STATS_TTL_SECONDS = 3 * 3600  # fresher than 6h Pages cadence
 MP_TTL_SECONDS = 24 * 3600
 
 SHOTS_URL = "https://peter-tanner.com/moneypuck/downloads/shots_{season}.zip"

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -45,6 +46,27 @@ class PredictRequest(BaseModel):
     date: str = Field(examples=["4-16-2017"])
     season_year: str = Field(examples=["2017"])
     algorithm: str = Field(default="Algo_V2", examples=["Algo_V2"])
+
+
+def _http_error(
+    status_code: int,
+    message: str,
+    *,
+    code: str,
+    hint: str | None = None,
+    **extra: Any,
+) -> HTTPException:
+    """Structured API errors the frontend can surface cleanly."""
+    detail: dict[str, Any] = {
+        "message": message,
+        "code": code,
+        "error": True,
+    }
+    if hint:
+        detail["hint"] = hint
+    if extra:
+        detail.update(extra)
+    return HTTPException(status_code=status_code, detail=detail)
 
 
 def _v2_artifacts_status() -> dict[str, bool]:
@@ -90,7 +112,13 @@ def teams(league: str) -> list[dict[str, str]]:
     try:
         return get_teams(league)
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise _http_error(
+            400,
+            str(exc),
+            code="invalid_league",
+            hint="Use a supported league id from GET /api/leagues.",
+            league=league,
+        ) from exc
 
 
 @app.get("/api/leagues/{league}/seasons")
@@ -108,7 +136,14 @@ def team_profile(league: str, abbr: str) -> dict:
     try:
         return get_team_profile(league, abbr)
     except ValueError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+        raise _http_error(
+            404,
+            str(exc),
+            code="team_not_found",
+            hint="Check the league id and team abbreviation.",
+            league=league,
+            abbr=abbr,
+        ) from exc
 
 
 @app.get("/api/daily/slate")
@@ -116,7 +151,13 @@ def daily_slate(days_ahead: int = 0) -> dict:
     try:
         return get_daily_slate(days_ahead=max(0, min(days_ahead, 3)))
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
+        raise _http_error(
+            500,
+            "Failed to build the daily slate.",
+            code="slate_build_failed",
+            hint="Retry shortly; ESPN or model prewarm may be unavailable.",
+            cause=str(exc),
+        ) from exc
 
 
 @app.get("/api/tracking")
@@ -127,13 +168,25 @@ def tracking(refresh: bool = False) -> dict:
             return update_tracking(slate)
         return build_tracking_response(load_store())
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
+        raise _http_error(
+            500,
+            "Failed to load bet tracking.",
+            code="tracking_failed",
+            hint="Retry shortly, or open tracking without refresh=true.",
+            cause=str(exc),
+        ) from exc
 
 
 def _read_db_json(rel: str) -> dict:
     path = DB_DIR / rel
     if not path.is_file():
-        raise HTTPException(status_code=404, detail="Database snapshot not found")
+        raise _http_error(
+            404,
+            "Database snapshot not found.",
+            code="db_snapshot_missing",
+            hint="Snapshots are rebuilt on the next Pages deploy.",
+            path=rel,
+        )
     import json
 
     return json.loads(path.read_text(encoding="utf-8"))
@@ -175,7 +228,13 @@ def tracking_sync() -> dict:
         slate = get_daily_slate()
         return update_tracking(slate)
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
+        raise _http_error(
+            500,
+            "Failed to sync bet tracking.",
+            code="tracking_sync_failed",
+            hint="Retry after the slate builds successfully.",
+            cause=str(exc),
+        ) from exc
 
 
 @app.post("/api/predict")
@@ -190,9 +249,22 @@ def predict(body: PredictRequest) -> dict:
             algo_version=body.algorithm,
         )
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise _http_error(
+            400,
+            str(exc),
+            code="predict_invalid",
+            hint="Check league, team slugs, date (M-D-YYYY), and season_year.",
+            league=body.league,
+        ) from exc
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
+        raise _http_error(
+            500,
+            "Prediction failed.",
+            code="predict_failed",
+            hint="Retry with a known historical matchup from the league seasons list.",
+            cause=str(exc),
+            league=body.league,
+        ) from exc
 
 
 @app.get("/")

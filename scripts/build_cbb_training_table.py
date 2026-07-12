@@ -82,12 +82,31 @@ def _odds_for_game(
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Build CBB v2 training table")
-    parser.add_argument("--start-season", type=int, default=FIRST_SEASON)
-    parser.add_argument("--end-season", type=int, default=2026)
-    parser.add_argument("--emit-from", type=int, default=2020)
+    parser = argparse.ArgumentParser(
+        description=(
+            "Build CBB v2 training table from ESPN completed-game history "
+            "(optional closing-odds join)."
+        ),
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        epilog=(
+            "Writes data/cbb_history/training_table.csv. Uses ESPN season caches "
+            "under data/cbb_history/ (fetched on demand). Closing odds joined from "
+            "data/supplemental/closing-odds/cbb.csv when present. "
+            "Next: python scripts/train_cbb_model.py"
+        ),
+    )
+    parser.add_argument("--start-season", type=int, default=FIRST_SEASON, help="First season to replay")
+    parser.add_argument("--end-season", type=int, default=2026, help="Last season to replay")
+    parser.add_argument("--emit-from", type=int, default=2020, help="First season to write rows for")
     parser.add_argument("--refresh", action="store_true", help="Refetch ESPN day caches")
     args = parser.parse_args()
+
+    if args.end_season < args.start_season:
+        print(
+            f"ERROR: --end-season ({args.end_season}) < --start-season ({args.start_season})",
+            file=sys.stderr,
+        )
+        return 1
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     out_path = OUT_DIR / "training_table.csv"
@@ -153,6 +172,14 @@ def main() -> int:
                 flush=True,
             )
 
+    if rows_written == 0:
+        print(
+            f"ERROR: wrote 0 rows to {out_path}\n"
+            f"  Check season range ({args.start_season}-{args.end_season}), "
+            f"--emit-from ({args.emit_from}), and ESPN caches under {CACHE_ROOT}.",
+            file=sys.stderr,
+        )
+        return 1
     print(f"wrote {rows_written} rows -> {out_path}", flush=True)
     return 0
 

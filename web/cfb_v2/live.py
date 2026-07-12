@@ -26,7 +26,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 MODEL_DIR = PROJECT_ROOT / "data" / "models" / "cfb_v2"
 LIVE_CACHE_DIR = PROJECT_ROOT / ".build-cache" / "cfb-v2-live"
 
-EVENTS_TTL_SECONDS = 6 * 3600
+EVENTS_TTL_SECONDS = 3 * 3600  # fresher than 6h Pages cadence
 
 
 def artifacts_available() -> bool:

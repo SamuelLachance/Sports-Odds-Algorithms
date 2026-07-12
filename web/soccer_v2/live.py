@@ -40,7 +40,7 @@ from web.soccer_v2.replay import merge_country_rows, replay_country
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 MODEL_DIR = PROJECT_ROOT / "data" / "models" / "soccer_v2"
 LIVE_CACHE_DIR = PROJECT_ROOT / ".build-cache" / "soccer-v2-live"
-CURRENT_CSV_TTL_SECONDS = 6 * 3600
+CURRENT_CSV_TTL_SECONDS = 3 * 3600  # fresher than 6h Pages cadence
 
 MARKET_FEATURES = ("mkt_open_home", "mkt_open_draw", "mkt_open_away", "has_market")
 

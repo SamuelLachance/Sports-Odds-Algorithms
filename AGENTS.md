@@ -19,7 +19,31 @@ python -m pytest tests/ -q --tb=short
 python smoke_test.py
 python run_server.py
 python -m uvicorn web.app:app --reload --host 127.0.0.1 --port 8000
+python scripts/check_v2_data.py
 ```
+
+## Training NFL / CFB / CBB v2
+
+Build the leak-free training table, then train (walk-forward OOS + artifacts under `data/models/{league}_v2/`). Scripts accept `--help` and exit with a clear error if inputs are missing.
+
+```powershell
+# NFL (needs data/supplemental/closing-odds/nflverse_games.csv)
+python scripts/build_nfl_training_table.py
+python scripts/train_nfl_model.py
+
+# CFB (needs data/supplemental/closing-odds/cfb.csv)
+python scripts/build_cfb_training_table.py
+python scripts/train_cfb_model.py
+
+# CBB (ESPN caches under data/cbb_history/; optional cbb.csv odds join)
+python scripts/build_cbb_training_table.py
+python scripts/train_cbb_model.py
+
+# Quick OOS metadata summary for all v2 leagues
+python scripts/check_v2_data.py
+```
+
+Official NFL/CFB/CBB picks stay gated until spread backtests clear; training still refreshes live prediction artifacts.
 
 ## Déploiement
 

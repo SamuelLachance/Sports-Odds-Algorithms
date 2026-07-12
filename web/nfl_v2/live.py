@@ -26,7 +26,7 @@ MODEL_DIR = PROJECT_ROOT / "data" / "models" / "nfl_v2"
 LIVE_CACHE_DIR = PROJECT_ROOT / ".build-cache" / "nfl-v2-live"
 NFLVERSE_CSV = PROJECT_ROOT / "data" / "supplemental" / "closing-odds" / "nflverse_games.csv"
 
-EVENTS_TTL_SECONDS = 6 * 3600
+EVENTS_TTL_SECONDS = 3 * 3600  # fresher than 6h Pages cadence
 
 
 def artifacts_available() -> bool:
