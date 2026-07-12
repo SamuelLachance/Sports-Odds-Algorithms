@@ -105,8 +105,10 @@ def _college_sos_adjusted_rates(
     sos = sum(opp_gf) / len(opp_gf)
     sos_factor = sos / league_avg if league_avg > 0 else 1.0
     sos_factor = max(0.85, min(1.15, sos_factor))
-    adjusted_gf = base_gf / sos_factor
-    adjusted_ga = base_ga * sos_factor
+    # Tough schedule (sos_factor > 1): credit offense up, defense down.
+    # Prior formula inverted both sides and punished teams for facing elites.
+    adjusted_gf = base_gf * sos_factor
+    adjusted_ga = base_ga / sos_factor
     return round(adjusted_gf, 3), round(adjusted_ga, 3)
 
 

@@ -162,8 +162,16 @@ def _american_ml_cell(value: str) -> int | None:
 
 
 def _spread_line_cell(value: str) -> float | None:
-    """Closing spread; pick'em (0 / PK) kept as 0.0."""
-    return _optional_number(value)
+    """Closing spread; pick'em (0 / PK) kept as 0.0.
+
+    Reject |x| ≥ 100 (American ML/juice dumps misaligned into handicap cells).
+    """
+    number = _optional_number(value)
+    if number is None:
+        return None
+    if abs(number) >= 100.0:
+        return None
+    return number
 
 
 def _spread_juice_cell(value: str, default: int | None = None) -> int | None:
@@ -182,6 +190,10 @@ def _repair_same_sign_spreads(
 
     SBR often duplicates the favorite handicap on both rows. Always trusting the
     home cell flips the board when the away side is chalk.
+
+    Also reconcile opposite-sign lines that disagree with a clear ML favorite
+    (e.g. flat ESPN ``spread: 1.5`` without favorite flags → home dog while
+    home is ML chalk).
     """
     if home_spread is not None and away_spread is None:
         return home_spread, -home_spread
@@ -199,6 +211,21 @@ def _repair_same_sign_spreads(
         and (home_f > 0) == (away_f > 0)
     )
     if not pk_mismatch and not same_sign:
+        # Already opposite (or both PK). If ML names a different chalk, flip.
+        if (
+            home_f != 0.0
+            and away_f != 0.0
+            and home_ml is not None
+            and away_ml is not None
+            and float(home_ml) != float(away_ml)
+        ):
+            ml_home_favorite = float(home_ml) < float(away_ml)
+            spread_home_favorite = home_f < 0.0
+            if ml_home_favorite != spread_home_favorite:
+                magnitude = max(abs(home_f), abs(away_f))
+                if ml_home_favorite:
+                    return -magnitude, magnitude
+                return magnitude, -magnitude
         return home_spread, away_spread
     magnitude = max(abs(home_f), abs(away_f))
     away_is_favorite = (
@@ -240,10 +267,10 @@ def _rows_from_html_table(sport: str, season: int, html: str, translated: dict[s
             continue
         away_close_ml = _american_ml_cell(away_row[11])
         home_close_ml = _american_ml_cell(home_row[11])
-        open_a = _optional_number(away_row[9])
-        open_h = _optional_number(home_row[9])
-        close_a = _optional_number(away_row[10])
-        close_h = _optional_number(home_row[10])
+        open_a = _spread_line_cell(away_row[9])
+        open_h = _spread_line_cell(home_row[9])
+        close_a = _spread_line_cell(away_row[10])
+        close_h = _spread_line_cell(home_row[10])
         if open_a is not None and open_h is not None:
             # Away favorite (lower/more-negative open) → home gets +line.
             # Equal opens (SBR often duplicates the favorite line) → break ties
@@ -387,7 +414,15 @@ def _xlsx_rows(path_bytes: bytes) -> list[list[str]]:
                 else:
                     raw = value_node.text or ""
                     if cell_type == "s":
-                        raw_text = shared_strings[int(raw)] if raw.isdigit() else raw
+                        if raw.isdigit():
+                            idx = int(raw)
+                            raw_text = (
+                                shared_strings[idx]
+                                if 0 <= idx < len(shared_strings)
+                                else ""
+                            )
+                        else:
+                            raw_text = raw
                     else:
                         raw_text = raw
                 col = _xlsx_col_index(cell.get("r") or "")
@@ -429,7 +464,7 @@ def _parse_optional_int(value: Any) -> int | None:
 def _parse_optional_float(value: Any) -> float | None:
     """Archive spread line; pick'em (0 / PK / EVEN) kept as 0.0. Missing → None.
 
-    Must match ``_spread_line_cell`` / ``_optional_number`` used by HTML scrapers.
+    Must match ``_spread_line_cell`` used by HTML scrapers (reject |x| ≥ 100).
     """
     if value in (None, ""):
         return None
@@ -441,6 +476,8 @@ def _parse_optional_float(value: Any) -> float | None:
     except (TypeError, ValueError):
         return None
     if not math.isfinite(number):
+        return None
+    if abs(number) >= 100.0:
         return None
     return number
 

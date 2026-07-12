@@ -57,6 +57,26 @@ def test_clv_threeway_soccer_draw() -> None:
     assert clv is not None and clv > 0
 
 
+def test_clv_threeway_side_is_case_insensitive() -> None:
+    """Title-case sides must resolve to the same closing price as lowercase."""
+    lower = clv_vs_market_pct_threeway(
+        250,
+        side="draw",
+        market_home=-120,
+        market_draw=220,
+        market_away=300,
+    )
+    titled = clv_vs_market_pct_threeway(
+        250,
+        side="Draw",
+        market_home=-120,
+        market_draw=220,
+        market_away=300,
+    )
+    assert lower is not None
+    assert titled == lower
+
+
 def test_clv_threeway_missing_side() -> None:
     assert (
         clv_vs_market_pct_threeway(

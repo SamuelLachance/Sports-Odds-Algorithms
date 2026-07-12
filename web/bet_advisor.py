@@ -272,11 +272,11 @@ def normalize_american_odds(american_odds: int | float | str | None) -> int | No
             parsed = float(text)
             if not math.isfinite(parsed):
                 return None
-            odds = int(parsed)
+            odds = int(round(parsed))
         else:
             if isinstance(american_odds, float) and not math.isfinite(american_odds):
                 return None
-            odds = int(american_odds)
+            odds = int(round(american_odds))
     except (TypeError, ValueError, OverflowError):
         return None
     if odds == 0:

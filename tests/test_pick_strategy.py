@@ -155,6 +155,14 @@ def test_grade_spread_title_case_side_still_home() -> None:
     assert grade_spread_bet("Home", 105, 100, -5.5) == "loss"
 
 
+def test_grade_spread_rejects_unknown_side() -> None:
+    """Typos must not settle as an implicit away ATS result (fail closed)."""
+    with pytest.raises(ValueError, match="invalid spread side"):
+        grade_spread_bet("hom", 110, 100, -5.5)
+    with pytest.raises(ValueError, match="invalid spread side"):
+        grade_spread_bet("", 105, 100, -5.5)
+
+
 def test_grade_moneyline() -> None:
     assert grade_moneyline_bet("home", 3, 2) == "win"
     assert grade_moneyline_bet("away", 3, 2) == "loss"

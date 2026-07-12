@@ -107,6 +107,47 @@ def test_xlsx_rows_honors_sparse_column_refs() -> None:
     assert rows[0][16] == "-150"
 
 
+def test_xlsx_rows_tolerates_out_of_range_shared_string() -> None:
+    """Corrupt shared-string indexes must not abort the whole season workbook."""
+    import io
+    import zipfile
+
+    from web.sbr_odds import _xlsx_rows
+
+    ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+    ss = f"""<?xml version="1.0"?>
+<sst xmlns="{ns}" count="1" uniqueCount="1">
+  <si><t>ok</t></si>
+</sst>"""
+    sheet = f"""<?xml version="1.0"?>
+<worksheet xmlns="{ns}">
+  <sheetData>
+    <row r="1">
+      <c r="A1" t="s"><v>0</v></c>
+      <c r="B1" t="s"><v>99</v></c>
+    </row>
+  </sheetData>
+</worksheet>"""
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w") as zf:
+        zf.writestr("xl/sharedStrings.xml", ss)
+        zf.writestr("xl/worksheets/sheet1.xml", sheet)
+        zf.writestr("[Content_Types].xml", "<Types></Types>")
+    rows = _xlsx_rows(buf.getvalue())
+    assert rows == [["ok", ""]]
+
+
+def test_spread_parsers_reject_ml_sized_handicaps() -> None:
+    """American ML/juice magnitudes must not become closing spreads."""
+    from web.sbr_odds import _parse_optional_float, _spread_line_cell
+
+    assert _spread_line_cell("-150") is None
+    assert _spread_line_cell("152") is None
+    assert _spread_line_cell("-3.5") == -3.5
+    assert _parse_optional_float(-150) is None
+    assert _parse_optional_float(152) is None
+    assert _parse_optional_float(-1.5) == -1.5
+
 
 def test_nhl_covid_html_rows_stamp_2021_calendar() -> None:
     from unittest.mock import patch
@@ -168,7 +209,9 @@ def test_nhl_html_sparse_row_missing_juice_does_not_crash() -> None:
         rows = _rows_from_nhl_html("nhl", 2023, html, {})
     assert len(rows) == 1
     assert rows[0]["home_close_ml"] == -150
-    assert rows[0]["home_close_spread"] == 1.5
+    # Home is ML chalk (−150); raw sheet had home +1.5 / away −1.5 — repair to ML.
+    assert rows[0]["home_close_spread"] == -1.5
+    assert rows[0]["away_close_spread"] == 1.5
     assert rows[0]["home_spread_odds"] is None
     assert rows[0]["away_spread_odds"] is None
 
@@ -572,9 +615,29 @@ def test_repair_same_sign_handles_pk_mismatch_and_asymmetric_magnitude() -> None
         7.0,
         -7.0,
     )
-    # Both PK / already opposite stay unchanged.
+    # Both PK / already opposite stay unchanged when ML is absent or agrees.
     assert _repair_same_sign_spreads(0.0, 0.0) == (0.0, 0.0)
     assert _repair_same_sign_spreads(-3.5, 3.5) == (-3.5, 3.5)
+    assert _repair_same_sign_spreads(-3.5, 3.5, home_ml=-150, away_ml=130) == (
+        -3.5,
+        3.5,
+    )
+
+
+def test_repair_opposite_sign_flips_when_ml_disagrees() -> None:
+    """Opposite-sign lines that name the wrong chalk must follow the ML favorite."""
+    from web.sbr_odds import _repair_same_sign_spreads
+
+    # Spread says home favorite; ML says away chalk.
+    assert _repair_same_sign_spreads(-1.5, 1.5, home_ml=150, away_ml=-170) == (
+        1.5,
+        -1.5,
+    )
+    # Spread says away favorite (flat magnitude path); ML says home chalk.
+    assert _repair_same_sign_spreads(1.5, -1.5, home_ml=-150, away_ml=130) == (
+        -1.5,
+        1.5,
+    )
 
 
 def test_dedupe_keeps_conflicting_mlb_doubleheader_rows() -> None:

@@ -262,7 +262,9 @@ def grade_spread_bet(
     home_spread: float,
 ) -> str:
     margin = home_goals - away_goals
-    side_key = str(side).lower()
+    side_key = str(side).lower().strip()
+    if side_key not in {"home", "away"}:
+        raise ValueError(f"invalid spread side: {side!r}")
     line = spread_line_for_side(home_spread, side_key)
     if side_key == "home":
         diff = margin + line

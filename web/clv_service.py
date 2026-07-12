@@ -60,7 +60,7 @@ def clv_vs_market_pct_threeway(
         "draw": market_draw,
         "away": market_away,
     }
-    market_odds = market_by_side.get(side)
+    market_odds = market_by_side.get(str(side).lower().strip())
     if market_odds is None:
         return None
     # bool is a subclass of int; int(False)==0 must not become EVEN via CLV.

@@ -157,13 +157,14 @@ def _parse_american_odds(value: str | int | float | None) -> int | None:
         return None
     # JSON/float payloads often arrive as -110.0; str(-110.0) is "-110.0" and
     # int(...) raises — accept numeric floats before the string path.
+    # Round half-away medians (e.g. -107.5) to match collector int(round(...)).
     if isinstance(value, bool):
         return None
     if isinstance(value, (int, float)):
         if isinstance(value, float) and not math.isfinite(value):
             return None
         try:
-            odds = int(value)
+            odds = int(round(value))
         except (ValueError, OverflowError):
             return None
         if odds == 0:
@@ -181,7 +182,7 @@ def _parse_american_odds(value: str | int | float | None) -> int | None:
         parsed = float(text)
         if not math.isfinite(parsed):
             return None
-        odds = int(parsed)
+        odds = int(round(parsed))
     except (ValueError, OverflowError):
         return None
     # ESPN often encodes even money as numeric 0; American odds require |x| >= 100.
@@ -190,6 +191,37 @@ def _parse_american_odds(value: str | int | float | None) -> int | None:
     if abs(odds) < 100:
         return None
     return odds
+
+
+def _parse_live_total(value: str | int | float | None) -> float | None:
+    """Live O/U; reject EVEN/pk→0 and non-positive junk (parity with collectors)."""
+    if value is None or value == "" or isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        parsed = float(value)
+        if not math.isfinite(parsed) or parsed <= 0.0 or parsed > 500.0:
+            return None
+        return parsed
+    text = str(value).strip()
+    upper = text.upper()
+    if upper in {"PK", "EVEN", "OFF", "N/A", "NA"}:
+        return None
+    try:
+        parsed = float(text)
+    except ValueError:
+        return None
+    if not math.isfinite(parsed) or parsed <= 0.0 or parsed > 500.0:
+        return None
+    return parsed
+
+
+def _moneyline_cell(raw: Any) -> Any:
+    """Unwrap ESPN ``{american: ...}`` / ``{odds: ...}`` moneyLine payloads."""
+    if isinstance(raw, dict):
+        if "american" in raw:
+            return raw.get("american")
+        return raw.get("odds")
+    return raw
 
 
 def _parse_spread_line(value: str | int | float | None) -> float | None:
@@ -265,9 +297,13 @@ def _extract_moneyline(odds_block: dict[str, Any] | None) -> tuple[int | None, i
     home_ml = _parse_american_odds(home_close.get("odds"))
 
     if away_ml is None:
-        away_ml = _parse_american_odds((odds_block.get("awayTeamOdds") or {}).get("moneyLine"))
+        away_ml = _parse_american_odds(
+            _moneyline_cell((odds_block.get("awayTeamOdds") or {}).get("moneyLine"))
+        )
     if home_ml is None:
-        home_ml = _parse_american_odds((odds_block.get("homeTeamOdds") or {}).get("moneyLine"))
+        home_ml = _parse_american_odds(
+            _moneyline_cell((odds_block.get("homeTeamOdds") or {}).get("moneyLine"))
+        )
 
     return away_ml, home_ml
 
@@ -282,7 +318,9 @@ def _extract_draw_moneyline(odds_block: dict[str, Any] | None) -> int | None:
     if draw_ml is not None:
         return draw_ml
 
-    return _parse_american_odds((odds_block.get("drawOdds") or {}).get("moneyLine"))
+    return _parse_american_odds(
+        _moneyline_cell((odds_block.get("drawOdds") or {}).get("moneyLine"))
+    )
 
 
 def _format_status(competition: dict[str, Any]) -> tuple[str, str]:
@@ -330,7 +368,7 @@ def _parse_event(event: dict[str, Any], league: str) -> ScheduledGame | None:
             home_moneyline=home_ml,
             draw_moneyline=draw_ml,
             spread=home_spread,
-            over_under=(odds_block or {}).get("overUnder"),
+            over_under=_parse_live_total((odds_block or {}).get("overUnder")),
             provider=((odds_block or {}).get("provider") or {}).get("name"),
             away_spread_odds=away_spread_odds,
             home_spread_odds=home_spread_odds,

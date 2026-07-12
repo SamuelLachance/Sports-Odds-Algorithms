@@ -100,6 +100,9 @@ def _parse_float(value: Any) -> float | None:
         return None
     if not math.isfinite(parsed):
         return None
+    # American ML/juice dumps (|x| ≥ 100) are never real handicaps.
+    if abs(parsed) >= 100.0:
+        return None
     return parsed
 
 

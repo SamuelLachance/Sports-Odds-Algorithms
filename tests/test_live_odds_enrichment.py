@@ -1129,6 +1129,67 @@ def test_espn_provider_rejects_even_pk_as_total() -> None:
     assert _provider_line_nhl(mlb_item)["open_total"] is None
 
 
+def test_provider_line_flat_spread_uses_ml_when_favorite_flags_missing() -> None:
+    """Positive flat ``spread`` without favorite flags must follow ML chalk."""
+    from web.nba_odds_espn import _provider_line
+
+    line = _provider_line(
+        {
+            "spread": 1.5,
+            "homeTeamOdds": {"moneyLine": -150},
+            "awayTeamOdds": {"moneyLine": 130},
+        }
+    )
+    assert line["home_close_spread"] == -1.5
+    assert line["away_close_spread"] == 1.5
+
+
+def test_summarize_book_items_rounds_half_ml_median() -> None:
+    """Even-book ML medians must round (−107.5 → −108), matching collectors."""
+    from web.bet_advisor import normalize_american_odds
+
+    assert normalize_american_odds(-107.5) == -108
+    items = [
+        {
+            "provider": {"name": "A"},
+            "homeTeamOdds": {
+                "close": {
+                    "moneyLine": {"american": -105},
+                    "pointSpread": {"american": -3.5},
+                    "spread": {"american": -110},
+                }
+            },
+            "awayTeamOdds": {
+                "close": {
+                    "moneyLine": {"american": -105},
+                    "pointSpread": {"american": 3.5},
+                    "spread": {"american": -110},
+                }
+            },
+        },
+        {
+            "provider": {"name": "B"},
+            "homeTeamOdds": {
+                "close": {
+                    "moneyLine": {"american": -110},
+                    "pointSpread": {"american": -3.5},
+                    "spread": {"american": -110},
+                }
+            },
+            "awayTeamOdds": {
+                "close": {
+                    "moneyLine": {"american": 100},
+                    "pointSpread": {"american": 3.5},
+                    "spread": {"american": -110},
+                }
+            },
+        },
+    ]
+    # median(-105, -110) = -107.5 → must round to -108 (not truncate to -107).
+    summary = summarize_book_items(items, league="nba")
+    assert summary.get("consensus_home_ml") == -108
+
+
 def test_summarize_all_unparsed_returns_empty() -> None:
     assert summarize_book_items([{"provider": {"name": "GhostBook"}}]) == {}
 

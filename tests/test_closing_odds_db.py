@@ -205,6 +205,10 @@ def test_closing_odds_parse_float_rejects_non_finite() -> None:
     assert closing_odds_db._parse_float("Pk") == 0.0
     assert closing_odds_db._parse_float("EVEN") == 0.0
     assert closing_odds_db._parse_float(False) is None  # type: ignore[arg-type]
+    # ML/juice dumps must not become handicaps (parity with ESPN collectors).
+    assert closing_odds_db._parse_float(-150) is None
+    assert closing_odds_db._parse_float("110") is None
+    assert closing_odds_db._parse_float(-3.5) == -3.5
 
 
 def test_closing_odds_parse_total_rejects_even_pk_zero() -> None:

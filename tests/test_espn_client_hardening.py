@@ -354,3 +354,70 @@ def test_fetch_team_schedule_does_not_cache_empty_payload() -> None:
         third = espn_client.fetch_team_schedule("nba", "1", 2026)
     assert third == payload["events"]
     espn_client.clear_schedule_cache()
+
+
+def _minimal_scoreboard_event(*, odds: dict) -> dict:
+    return {
+        "id": "1",
+        "name": "Away at Home",
+        "date": "2026-01-01T00:00Z",
+        "competitions": [
+            {
+                "competitors": [
+                    {
+                        "homeAway": "away",
+                        "team": {
+                            "abbreviation": "AW",
+                            "displayName": "Away",
+                            "id": "1",
+                        },
+                    },
+                    {
+                        "homeAway": "home",
+                        "team": {
+                            "abbreviation": "HM",
+                            "displayName": "Home",
+                            "id": "2",
+                        },
+                    },
+                ],
+                "odds": [odds],
+                "status": {"type": {"state": "pre", "shortDetail": "7:00 PM"}},
+            }
+        ],
+    }
+
+
+def test_parse_event_rejects_even_pk_over_under() -> None:
+    """Live scoreboard must not surface EVEN/pk/0 as a real O/U total."""
+    for junk in ("EVEN", "Pk", 0, "OFF"):
+        game = espn_client._parse_event(
+            _minimal_scoreboard_event(odds={"overUnder": junk}),
+            "nba",
+        )
+        assert game is not None
+        assert game.market.over_under is None
+    game_ok = espn_client._parse_event(
+        _minimal_scoreboard_event(odds={"overUnder": 224.5}),
+        "nba",
+    )
+    assert game_ok is not None
+    assert game_ok.market.over_under == 224.5
+
+
+def test_extract_moneyline_accepts_dict_american_payload() -> None:
+    """Team odds moneyLine often arrives as ``{american: -150}``, not a scalar."""
+    away, home = espn_client._extract_moneyline(
+        {
+            "homeTeamOdds": {"moneyLine": {"american": -150}},
+            "awayTeamOdds": {"moneyLine": {"american": 130}},
+        }
+    )
+    assert away == 130
+    assert home == -150
+
+
+def test_parse_american_odds_rounds_half_median() -> None:
+    """Even-book medians (−107.5) must round like collectors, not truncate to −107."""
+    assert espn_client._parse_american_odds(-107.5) == -108
+    assert espn_client._parse_american_odds("-107.5") == -108
