@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import logging
+import os
 from pathlib import Path
 from typing import Any
 
@@ -25,6 +27,28 @@ DB_DIR = Path(__file__).resolve().parent.parent / "docs" / "api" / "db"
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 
+logger = logging.getLogger(__name__)
+
+# Public Pages origin + local API/dev hosts. Override with CORS_ALLOW_ORIGINS
+# (comma-separated) or set CORS_ALLOW_ORIGINS=* for an open local sandbox.
+_DEFAULT_CORS_ORIGINS = (
+    "https://samuellachance.github.io",
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+    "http://127.0.0.1:5173",
+    "http://localhost:5173",
+)
+
+
+def cors_allow_origins() -> list[str]:
+    raw = (os.environ.get("CORS_ALLOW_ORIGINS") or "").strip()
+    if not raw:
+        return list(_DEFAULT_CORS_ORIGINS)
+    if raw == "*":
+        return ["*"]
+    return [origin.strip() for origin in raw.split(",") if origin.strip()]
+
+
 app = FastAPI(
     title="Sports Odds Algorithms",
     description="Algo-driven sports betting service with tracking across all major leagues.",
@@ -33,9 +57,9 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=cors_allow_origins(),
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Accept"],
 )
 
 
@@ -151,12 +175,12 @@ def daily_slate(days_ahead: int = 0) -> dict:
     try:
         return get_daily_slate(days_ahead=max(0, min(days_ahead, 3)))
     except Exception as exc:
+        logger.exception("Daily slate build failed")
         raise _http_error(
             500,
             "Failed to build the daily slate.",
             code="slate_build_failed",
             hint="Retry shortly; ESPN or model prewarm may be unavailable.",
-            cause=str(exc),
         ) from exc
 
 
@@ -168,12 +192,12 @@ def tracking(refresh: bool = False) -> dict:
             return update_tracking(slate)
         return build_tracking_response(load_store())
     except Exception as exc:
+        logger.exception("Tracking load failed (refresh=%s)", refresh)
         raise _http_error(
             500,
             "Failed to load bet tracking.",
             code="tracking_failed",
             hint="Retry shortly, or open tracking without refresh=true.",
-            cause=str(exc),
         ) from exc
 
 
@@ -228,12 +252,12 @@ def tracking_sync() -> dict:
         slate = get_daily_slate()
         return update_tracking(slate)
     except Exception as exc:
+        logger.exception("Tracking sync failed")
         raise _http_error(
             500,
             "Failed to sync bet tracking.",
             code="tracking_sync_failed",
             hint="Retry after the slate builds successfully.",
-            cause=str(exc),
         ) from exc
 
 
@@ -249,6 +273,7 @@ def predict(body: PredictRequest) -> dict:
             algo_version=body.algorithm,
         )
     except ValueError as exc:
+        # ValueError from predict_service is already a safe validation message.
         raise _http_error(
             400,
             str(exc),
@@ -257,12 +282,12 @@ def predict(body: PredictRequest) -> dict:
             league=body.league,
         ) from exc
     except Exception as exc:
+        logger.exception("Prediction failed for league=%s", body.league)
         raise _http_error(
             500,
             "Prediction failed.",
             code="predict_failed",
             hint="Retry with a known historical matchup from the league seasons list.",
-            cause=str(exc),
             league=body.league,
         ) from exc
 

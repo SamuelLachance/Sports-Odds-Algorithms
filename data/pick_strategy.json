@@ -1,6 +1,6 @@
 {
   "policy": "Official picks use Hubáček gates: decorrelated model beats the de-vigged market by >= 2 pp, honest EV >= 2% (calibrated pre-decorrelation probability), and a per-bet-type confidence bar (20 pp moneyline, 10 pp baseball/soccer, 5 pp spread cover). Live thresholds live in web/hubacek_picks.py; per-league overrides (min_market_gap_pp, min_win_confidence_pp, min_ev_pct, ml_lo/ml_hi, allowed_sides, min_spread_cover_gap_pp, min_spread_confidence_pp, min_spread_point_edge) are stored here from walk-forward bet backtests.",
-  "generated_at": "2026-07-11",
+  "generated_at": "2026-07-12",
   "default": {
     "min_edge": 0,
     "min_ev_pct": 2.0,

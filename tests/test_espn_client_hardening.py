@@ -28,3 +28,10 @@ def test_retry_after_falls_back_to_backoff() -> None:
     exc.headers = {}
     assert espn_client._retry_after_seconds(exc, 0) == 0.75
     assert espn_client._retry_after_seconds(exc, 1) == 1.5
+
+
+def test_throttle_is_threadsafe_callable() -> None:
+    """Throttle lock exists so parallel scoreboard workers can space starts."""
+    assert hasattr(espn_client, "_throttle_lock")
+    espn_client._throttle()
+    espn_client._throttle()

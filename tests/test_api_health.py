@@ -42,6 +42,23 @@ def test_http_error_is_structured() -> None:
     assert detail["message"] == "Database snapshot not found."
     assert "hint" in detail
     assert detail["path"] == "nba/league.json"
+    assert "cause" not in detail
+
+
+def test_cors_origins_default_to_pages_and_localhost() -> None:
+    from web.app import cors_allow_origins
+
+    origins = cors_allow_origins()
+    assert "https://samuellachance.github.io" in origins
+    assert "http://127.0.0.1:8000" in origins
+    assert "*" not in origins
+
+
+def test_cors_origins_env_star_override(monkeypatch) -> None:
+    from web.app import cors_allow_origins
+
+    monkeypatch.setenv("CORS_ALLOW_ORIGINS", "*")
+    assert cors_allow_origins() == ["*"]
 
 
 def test_v2_live_ttl_is_three_hours() -> None:

@@ -98,6 +98,47 @@ def test_roi_stake_weighted_mixed_stakes() -> None:
     assert summary["roi_percent"] == round((1.41 - 3.0) / 4.0 * 100, 2)
 
 
+def test_empty_store_and_push_only_roi_is_zero() -> None:
+    """Empty seasons / push-only windows must not divide by zero."""
+    from web.tracking_service import _normalize_store, _summarize_bets
+
+    empty = _summarize_bets([])
+    assert empty["roi_percent"] == 0.0
+    assert empty["staked_units"] == 0.0
+    assert empty["bets"] == 0
+    assert empty["record"] == "0-0"
+
+    push_only = _summarize_bets(
+        [{"status": "push", "units": 0.0, "stake_units": 2.0}]
+    )
+    assert push_only["roi_percent"] == 0.0
+    assert push_only["staked_units"] == 0.0
+
+    response = build_tracking_response(_normalize_store({"version": 1}))
+    assert response["tracking_since"] is None
+    assert response["all_time"]["roi_percent"] == 0.0
+    assert response["yearly"] == []
+    assert response["daily"] == []
+
+
+def test_normalize_store_tolerates_corrupt_payload() -> None:
+    from web.tracking_service import _normalize_store, record_from_slate
+
+    assert _normalize_store(None)["bets"] == []
+    assert _normalize_store({"bets": "nope"})["bets"] == []
+    assert _normalize_store({"bets": [1, {"side": "home"}]})["bets"] == [{"side": "home"}]
+
+    # Recording into a missing-bets store must not raise.
+    store = record_from_slate({"version": 1}, {"date_label": "2026-07-12", "recommended_bets": []})
+    assert store["bets"] == []
+
+
+def test_calculate_units_guards_bad_odds() -> None:
+    assert calculate_units(1, 0, "win") == 1.0
+    assert calculate_units("bad", -110, "loss") == -1.0
+    assert calculate_units(-5, 150, "win") == 1.5  # negative stake → default 1u
+
+
 def test_record_and_grade() -> None:
     store = {"version": 1, "bets": []}
     slate = {
@@ -561,6 +602,9 @@ if __name__ == "__main__":
     test_roi_excludes_pushes_from_denominator()
     test_roi_is_stake_weighted()
     test_roi_stake_weighted_mixed_stakes()
+    test_empty_store_and_push_only_roi_is_zero()
+    test_normalize_store_tolerates_corrupt_payload()
+    test_calculate_units_guards_bad_odds()
     test_new_bet_skipped_when_game_already_started()
     test_new_bet_recorded_pre_start_with_flag()
     test_new_bet_recorded_when_start_time_unparseable()

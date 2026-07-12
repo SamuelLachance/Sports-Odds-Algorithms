@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -70,17 +71,26 @@ class ScheduledGame:
 
 
 # Soft client-side throttle + shorter timeouts to avoid ESPN rate-limit storms.
+# Slot reservation happens under the lock; sleep is outside so parallel
+# scoreboard workers can overlap in-flight HTTP after spacing start times.
 _MIN_REQUEST_INTERVAL_S = 0.12
 _DEFAULT_TIMEOUT_S = 15
 _last_request_at = 0.0
+_throttle_lock = threading.Lock()
 
 
 def _throttle() -> None:
     global _last_request_at
-    elapsed = time.monotonic() - _last_request_at
-    if elapsed < _MIN_REQUEST_INTERVAL_S:
-        time.sleep(_MIN_REQUEST_INTERVAL_S - elapsed)
-    _last_request_at = time.monotonic()
+    with _throttle_lock:
+        now = time.monotonic()
+        wait = _MIN_REQUEST_INTERVAL_S - (now - _last_request_at)
+        if wait > 0:
+            _last_request_at = now + wait
+        else:
+            wait = 0.0
+            _last_request_at = now
+    if wait > 0:
+        time.sleep(wait)
 
 
 def _retry_after_seconds(exc: urllib.error.HTTPError, attempt: int) -> float:

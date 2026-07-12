@@ -38,6 +38,7 @@ body {
   background: var(--bg);
   color: var(--text);
   line-height: 1.65;
+  overflow-x: clip;
   font-size: 1rem;
 }
 
@@ -617,6 +618,14 @@ select:focus {
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
   transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  contain: layout style;
+}
+
+.pick-card h3 {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 a.pick-card-link {
@@ -958,15 +967,21 @@ a.pick-card-link:focus-visible {
   background: color-mix(in srgb, var(--accent-warm) 8%, var(--bg-soft));
   font-size: 0.9375rem;
   line-height: 1.45;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .disclaimer-bar strong {
   color: var(--accent-warm);
   font-weight: 700;
+  flex: 0 0 auto;
 }
 
 .disclaimer-bar span {
   color: var(--text-muted);
+  flex: 1 1 12rem;
+  min-width: 0;
 }
 
 .edge-badge-row {
@@ -1229,6 +1244,13 @@ a.pick-card-link:focus-visible {
   color: var(--accent-warm);
 }
 
+@media (max-width: 900px) {
+  .roi-caveat-bar {
+    font-size: 0.875rem;
+    padding: 0.75rem 0.9rem;
+  }
+}
+
 .tracking-scope-note {
   margin: 0 0 var(--space-3);
   padding: var(--space-3);
@@ -1482,11 +1504,13 @@ a.pick-card-link:focus-visible {
 
 .main-content {
   min-width: 0;
+  min-height: 18rem;
 }
 
 .tracking-hero {
   padding: var(--space-4);
   margin-bottom: var(--space-3);
+  min-width: 0;
 }
 
 .tracking-hero-top {
@@ -1494,6 +1518,7 @@ a.pick-card-link:focus-visible {
   flex-wrap: wrap;
   justify-content: space-between;
   gap: var(--space-4);
+  min-width: 0;
 }
 
 .tracking-hero h1 {
@@ -1504,8 +1529,10 @@ a.pick-card-link:focus-visible {
 
 .tracking-hero-stats {
   display: grid;
-  grid-template-columns: repeat(4, minmax(100px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--space-2);
+  min-width: 0;
+  flex: 1 1 16rem;
 }
 
 .tracking-hero-stats div {
@@ -2755,9 +2782,15 @@ a.pick-card-link:focus-visible {
     grid-template-columns: 1fr 1fr;
   }
 
+  .tracking-hero-top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
   .tracking-hero-stats {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     width: 100%;
+    flex: none;
   }
 
   .fm-team-hero-stats {
@@ -2773,7 +2806,12 @@ a.pick-card-link:focus-visible {
 
   .disclaimer-bar {
     flex-direction: column;
+    align-items: stretch;
     gap: 0.35rem;
+  }
+
+  .disclaimer-bar span {
+    flex: 1 1 auto;
   }
 
   .section-head {
@@ -2788,6 +2826,10 @@ a.pick-card-link:focus-visible {
   .container {
     width: min(1240px, calc(100% - var(--space-3)));
   }
+
+  .picks-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+  }
 }
 
 @media (max-width: 480px) {
@@ -2797,6 +2839,27 @@ a.pick-card-link:focus-visible {
 
   .pick-odds {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tracking-hero {
+    padding: var(--space-3);
+  }
+
+  .tracking-hero h1 {
+    font-size: 1.4rem;
+  }
+
+  .tracking-hero-stats strong {
+    font-size: 1.25rem;
+  }
+
+  .period-tabs {
+    gap: 0.35rem;
+  }
+
+  .period-tab {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
   }
 
   .line-shop-grid,

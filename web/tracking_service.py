@@ -71,33 +71,63 @@ def stake_units_from_kelly(
 
 
 def calculate_units(stake: float, american_odds: int, result: BetResult) -> float:
+    try:
+        stake_f = float(stake)
+    except (TypeError, ValueError):
+        stake_f = DEFAULT_STAKE_UNITS
+    if stake_f < 0:
+        stake_f = DEFAULT_STAKE_UNITS
+
     if result == "push":
         return 0.0
     if result == "loss":
-        return -stake
-    if american_odds == 0:
-        return stake
-    if american_odds > 0:
-        return stake * (american_odds / 100)
-    return stake * (100 / abs(american_odds))
+        return -stake_f
+    try:
+        odds = int(american_odds)
+    except (TypeError, ValueError):
+        return stake_f
+    # American odds of 0 are invalid; treat as even-money win rather than divide.
+    if odds == 0:
+        return stake_f
+    if odds > 0:
+        return stake_f * (odds / 100.0)
+    return stake_f * (100.0 / abs(odds))
 
 
 def _empty_store() -> dict[str, Any]:
     return {"version": 1, "bets": []}
 
 
+def _normalize_store(store: dict[str, Any] | None) -> dict[str, Any]:
+    """Ensure a tracking store always has a list ``bets`` (empty seasons / corrupt file)."""
+    if not isinstance(store, dict):
+        return _empty_store()
+    bets = store.get("bets")
+    if not isinstance(bets, list):
+        bets = []
+    # Drop non-dict rows so rollups never crash on corrupt entries.
+    bets = [b for b in bets if isinstance(b, dict)]
+    version = store.get("version", 1)
+    try:
+        version = int(version)
+    except (TypeError, ValueError):
+        version = 1
+    return {"version": version, "bets": bets}
+
+
 def load_store() -> dict[str, Any]:
     if not TRACKING_FILE.exists():
         return _empty_store()
     try:
-        return json.loads(TRACKING_FILE.read_text(encoding="utf-8"))
+        return _normalize_store(json.loads(TRACKING_FILE.read_text(encoding="utf-8")))
     except (json.JSONDecodeError, OSError):
         return _empty_store()
 
 
 def save_store(store: dict[str, Any]) -> None:
     TRACKING_FILE.parent.mkdir(parents=True, exist_ok=True)
-    TRACKING_FILE.write_text(json.dumps(store, indent=2), encoding="utf-8")
+    normalized = _normalize_store(store)
+    TRACKING_FILE.write_text(json.dumps(normalized, indent=2), encoding="utf-8")
 
 
 def _bet_key(date_label: str, event_id: str, side: str, bet_type: str = "moneyline") -> str:
@@ -176,12 +206,19 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
     New bets are only created pre-kickoff — a pick first seen after its game
     started was never actionable and is skipped (pending bets still update).
     """
+    store = _normalize_store(store)
     date_label = slate.get("date_label") or toronto_today().isoformat()
     now_dt = datetime.now(timezone.utc)
     now = now_dt.isoformat()
     index = {
-        _bet_key(b["date"], b["event_id"], b["side"], b.get("bet_type") or "moneyline"): b
+        _bet_key(
+            str(b.get("date") or date_label),
+            str(b.get("event_id") or ""),
+            str(b.get("side") or ""),
+            b.get("bet_type") or "moneyline",
+        ): b
         for b in store["bets"]
+        if b.get("event_id") and b.get("side")
     }
     games_by_event = {
         str(g.get("event_id")): g
@@ -494,7 +531,7 @@ def grade_bet(
     odds = _resolve_grading_odds(bet)
     if odds is None:
         return bet
-    units = calculate_units(float(bet.get("stake_units") or 1), odds, status)
+    units = calculate_units(_bet_stake_units(bet), odds, status)
     graded = {
         **bet,
         "status": status,
@@ -507,6 +544,7 @@ def grade_bet(
 
 
 def grade_pending(store: dict[str, Any]) -> dict[str, Any]:
+    store = _normalize_store(store)
     pending = [
         b
         for b in store["bets"]
@@ -529,7 +567,15 @@ def grade_pending(store: dict[str, Any]) -> dict[str, Any]:
             continue
 
         graded = grade_bet(bet, scores[0], scores[1])
-        idx = next(i for i, b in enumerate(store["bets"]) if b["id"] == bet["id"])
+        bet_id = bet.get("id")
+        if not bet_id:
+            continue
+        idx = next(
+            (i for i, b in enumerate(store["bets"]) if b.get("id") == bet_id),
+            None,
+        )
+        if idx is None:
+            continue
         store["bets"][idx] = graded
 
     return store
@@ -553,22 +599,41 @@ def _rollup_label_yearly(d: date) -> str:
 
 
 def _bet_stake_units(bet: dict[str, Any]) -> float:
-    """Stake in units for a bet, defaulting to 1u on missing/bad data."""
+    """Stake in units for a bet, defaulting to 1u on missing/bad/non-positive data."""
     try:
-        return float(bet.get("stake_units") or DEFAULT_STAKE_UNITS)
+        stake = float(bet.get("stake_units") if bet.get("stake_units") is not None else DEFAULT_STAKE_UNITS)
     except (TypeError, ValueError):
         return DEFAULT_STAKE_UNITS
+    if stake <= 0 or stake != stake:  # NaN check
+        return DEFAULT_STAKE_UNITS
+    return stake
+
+
+def _bet_units(bet: dict[str, Any]) -> float:
+    """Settled P&L units; coerce bad values to 0 so rollups never raise."""
+    try:
+        value = float(bet.get("units") or 0)
+    except (TypeError, ValueError):
+        return 0.0
+    if value != value:  # NaN
+        return 0.0
+    return value
 
 
 def _summarize_bets(bets: list[dict[str, Any]]) -> dict[str, Any]:
+    """Roll up a bet list. Empty seasons / push-only windows yield ROI 0, never /0."""
+    bets = [b for b in bets if isinstance(b, dict)]
     wins = sum(1 for b in bets if b.get("status") == "win")
     losses = sum(1 for b in bets if b.get("status") == "loss")
     pushes = sum(1 for b in bets if b.get("status") == "push")
     pending = sum(1 for b in bets if b.get("status") == "pending")
-    settled_units = sum(b.get("units") or 0 for b in bets if b.get("status") != "pending")
+    settled_units = sum(_bet_units(b) for b in bets if b.get("status") != "pending")
     # ROI per staked unit: pushes return the stake, so only win/loss stakes count.
     staked_units = sum(_bet_stake_units(b) for b in bets if b.get("status") in ("win", "loss"))
-    roi = (settled_units / staked_units * 100) if staked_units else 0.0
+    if staked_units > 0:
+        roi = settled_units / staked_units * 100.0
+    else:
+        roi = 0.0
     return {
         "bets": len(bets),
         "wins": wins,
@@ -583,6 +648,7 @@ def _summarize_bets(bets: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def build_period_rollups(store: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
+    store = _normalize_store(store)
     buckets: dict[str, dict[str, list[dict[str, Any]]]] = {
         "daily": {},
         "weekly": {},
@@ -591,8 +657,11 @@ def build_period_rollups(store: dict[str, Any]) -> dict[str, list[dict[str, Any]
     }
 
     for bet in _official_tracked_bets(store["bets"]):
+        raw_date = bet.get("date")
+        if not raw_date:
+            continue
         try:
-            d = _parse_date_label(bet["date"])
+            d = _parse_date_label(str(raw_date))
         except ValueError:
             continue
         for period, key in [
@@ -614,6 +683,7 @@ def build_period_rollups(store: dict[str, Any]) -> dict[str, list[dict[str, Any]
 
 
 def build_tracking_response(store: dict[str, Any]) -> dict[str, Any]:
+    store = _normalize_store(store)
     official_bets = _official_tracked_bets(store["bets"])
     sorted_bets = sorted(
         official_bets,
@@ -622,7 +692,7 @@ def build_tracking_response(store: dict[str, Any]) -> dict[str, Any]:
     )
     all_time = _summarize_bets(official_bets)
     periods = build_period_rollups(store)
-    tracking_since = sorted_bets[-1]["date"] if sorted_bets else None
+    tracking_since = sorted_bets[-1].get("date") if sorted_bets else None
 
     return {
         "bets": sorted_bets,
@@ -649,6 +719,7 @@ def build_tracking_response(store: dict[str, Any]) -> dict[str, Any]:
 
 def prune_below_min_ev(store: dict[str, Any]) -> dict[str, Any]:
     """Drop still-pending bets that no longer qualify. Graded bets are immutable."""
+    store = _normalize_store(store)
     store["bets"] = [
         b
         for b in store["bets"]
@@ -663,7 +734,7 @@ def prune_below_min_edge(store: dict[str, Any]) -> dict[str, Any]:
 
 
 def update_tracking(slate: dict[str, Any]) -> dict[str, Any]:
-    store = load_store()
+    store = _normalize_store(load_store())
     store = prune_below_min_edge(store)
     store = record_from_slate(store, slate)
     store = grade_pending(store)

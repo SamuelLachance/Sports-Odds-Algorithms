@@ -325,3 +325,6 @@ def test_get_daily_slate_isolates_league_and_prewarm_failures() -> None:
     assert "nhl" in error_leagues
     assert "nba" in error_leagues  # prewarm recorded, games still analyzed
     assert any("prewarm" in (e.get("error") or "").lower() for e in slate["errors"])
+    # Public slate errors must not echo raw exception strings.
+    assert not any("boom" in (e.get("error") or "").lower() for e in slate["errors"])
+    assert not any("scoreboard down" in (e.get("error") or "").lower() for e in slate["errors"])

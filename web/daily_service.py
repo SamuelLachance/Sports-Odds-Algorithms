@@ -6,6 +6,7 @@ import io
 import logging
 import os
 import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from contextlib import redirect_stdout
 from datetime import date, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
@@ -581,6 +582,39 @@ def _actionable_games(scheduled: list[ScheduledGame]) -> list[ScheduledGame]:
     ]
 
 
+# Max headlines fed into the news context signal per league.
+_NEWS_HEADLINES_PER_LEAGUE = 40
+
+# Parallel ESPN scoreboard workers (I/O bound; throttle still spaces starts).
+_SCOREBOARD_WORKERS = 6
+
+# Safe, non-exception strings for the public slate `errors` payload.
+_PUBLIC_SLATE_ERRORS = {
+    "scoreboard": "Scoreboard unavailable.",
+    "prewarm": "Model prewarm failed.",
+    "power_prewarm": "Power ratings prewarm failed.",
+    "v2_prewarm": "GradientBoost v2 prewarm failed.",
+    "sport_prewarm": "Sport model prewarm failed.",
+    "predict": "Game prediction failed.",
+    "league": "League slate failed.",
+}
+
+
+def _public_error(
+    league: str,
+    kind: str,
+    *,
+    game: str | None = None,
+) -> dict[str, str]:
+    row: dict[str, str] = {
+        "league": league,
+        "error": _PUBLIC_SLATE_ERRORS.get(kind, "Processing failed."),
+    }
+    if game:
+        row["game"] = game
+    return row
+
+
 def _prewarm_league_models(
     league: str,
     cutoffs: set[str],
@@ -590,9 +624,8 @@ def _prewarm_league_models(
         try:
             prewarm_league_power(league, cutoff)
         except Exception as exc:  # noqa: BLE001
-            errors.append(
-                {"league": league, "error": f"Power prewarm failed ({cutoff}): {exc}"}
-            )
+            logger.warning("Power prewarm failed for %s (%s): %s", league, cutoff, exc)
+            errors.append(_public_error(league, "power_prewarm"))
         if is_basketball_league(league):
             v2_ready = False
             if league.lower() == "wnba":
@@ -605,12 +638,10 @@ def _prewarm_league_models(
                     if day_iso and _wnba_v2_available():
                         v2_ready = _wnba_live_context(day_iso) is not None
                 except Exception as exc:  # noqa: BLE001
-                    errors.append(
-                        {
-                            "league": league,
-                            "error": f"WNBA v2 prewarm failed ({cutoff}): {exc}",
-                        }
+                    logger.warning(
+                        "WNBA v2 prewarm failed for %s (%s): %s", league, cutoff, exc
                     )
+                    errors.append(_public_error(league, "v2_prewarm"))
             elif league.lower() == "nba":
                 try:
                     from web.hockey_pred_model import _cutoff_to_iso as _nba_cutoff_to_iso
@@ -621,32 +652,29 @@ def _prewarm_league_models(
                     if day_iso and _nba_v2_available():
                         v2_ready = _nba_live_context(day_iso) is not None
                 except Exception as exc:  # noqa: BLE001
-                    errors.append(
-                        {
-                            "league": league,
-                            "error": f"NBA v2 prewarm failed ({cutoff}): {exc}",
-                        }
+                    logger.warning(
+                        "NBA v2 prewarm failed for %s (%s): %s", league, cutoff, exc
                     )
+                    errors.append(_public_error(league, "v2_prewarm"))
             if not v2_ready:
                 try:
                     get_basketball_pred_context(league, cutoff)
                 except Exception as exc:  # noqa: BLE001
-                    errors.append(
-                        {
-                            "league": league,
-                            "error": f"Basketball matrix prewarm failed ({cutoff}): {exc}",
-                        }
+                    logger.warning(
+                        "Basketball matrix prewarm failed for %s (%s): %s",
+                        league,
+                        cutoff,
+                        exc,
                     )
+                    errors.append(_public_error(league, "sport_prewarm"))
         if is_baseball_league(league):
             try:
                 get_baseball_pred_context(league, cutoff)
             except Exception as exc:  # noqa: BLE001
-                errors.append(
-                    {
-                        "league": league,
-                        "error": f"Baseball model prewarm failed ({cutoff}): {exc}",
-                    }
+                logger.warning(
+                    "Baseball model prewarm failed for %s (%s): %s", league, cutoff, exc
                 )
+                errors.append(_public_error(league, "sport_prewarm"))
         if league.lower() == "mlb":
             try:
                 from web.mlb_pred_model import _cutoff_to_iso
@@ -656,12 +684,10 @@ def _prewarm_league_models(
                 if day_iso:
                     get_live_context(day_iso)
             except Exception as exc:  # noqa: BLE001
-                errors.append(
-                    {
-                        "league": league,
-                        "error": f"MLB v2 prewarm failed ({cutoff}): {exc}",
-                    }
+                logger.warning(
+                    "MLB v2 prewarm failed for %s (%s): %s", league, cutoff, exc
                 )
+                errors.append(_public_error(league, "v2_prewarm"))
         if league.lower() == "nhl":
             try:
                 from web.hockey_pred_model import _cutoff_to_iso as _nhl_cutoff_to_iso
@@ -671,22 +697,18 @@ def _prewarm_league_models(
                 if day_iso:
                     _nhl_live_context(day_iso)
             except Exception as exc:  # noqa: BLE001
-                errors.append(
-                    {
-                        "league": league,
-                        "error": f"NHL v2 prewarm failed ({cutoff}): {exc}",
-                    }
+                logger.warning(
+                    "NHL v2 prewarm failed for %s (%s): %s", league, cutoff, exc
                 )
+                errors.append(_public_error(league, "v2_prewarm"))
         if is_football_league(league):
             try:
                 get_football_pred_context(league, cutoff)
             except Exception as exc:  # noqa: BLE001
-                errors.append(
-                    {
-                        "league": league,
-                        "error": f"Football model prewarm failed ({cutoff}): {exc}",
-                    }
+                logger.warning(
+                    "Football model prewarm failed for %s (%s): %s", league, cutoff, exc
                 )
+                errors.append(_public_error(league, "sport_prewarm"))
         if is_soccer_league(league):
             soccer_v2_ready = False
             if league.lower() in ("epl", "bundesliga", "laliga", "seriea", "ligue1"):
@@ -699,26 +721,21 @@ def _prewarm_league_models(
                     if day_iso and artifacts_available():
                         soccer_v2_ready = _soc_live_context(day_iso) is not None
                 except Exception as exc:  # noqa: BLE001
-                    errors.append(
-                        {
-                            "league": league,
-                            "error": f"Soccer v2 prewarm failed ({cutoff}): {exc}",
-                        }
+                    logger.warning(
+                        "Soccer v2 prewarm failed for %s (%s): %s", league, cutoff, exc
                     )
+                    errors.append(_public_error(league, "v2_prewarm"))
             if not soccer_v2_ready:
                 try:
                     get_soccer_pred_context(league, cutoff)
                 except Exception as exc:  # noqa: BLE001
-                    errors.append(
-                        {
-                            "league": league,
-                            "error": f"Soccer model prewarm failed ({cutoff}): {exc}",
-                        }
+                    logger.warning(
+                        "Soccer model prewarm failed for %s (%s): %s",
+                        league,
+                        cutoff,
+                        exc,
                     )
-
-
-# Max headlines fed into the news context signal per league.
-_NEWS_HEADLINES_PER_LEAGUE = 40
+                    errors.append(_public_error(league, "sport_prewarm"))
 
 
 def _news_signals_enabled() -> bool:
@@ -765,16 +782,37 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
     slate_cutoff = _slate_cutoff_date()
     logger.info("Building daily slate (days_ahead=%s)", days_ahead)
 
+    # Fetch all league scoreboards in parallel (I/O-bound). Processing stays
+    # sequential so model caches and pick logic remain deterministic.
+    def _fetch_one(league: str) -> tuple[str, Any]:
+        try:
+            return league, fetch_scoreboard(league, days_ahead=days_ahead)
+        except Exception as exc:  # noqa: BLE001
+            return league, exc
+
+    scoreboards: dict[str, Any] = {}
+    workers = max(1, min(_SCOREBOARD_WORKERS, len(SUPPORTED_LEAGUES)))
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        futures = [pool.submit(_fetch_one, league) for league in SUPPORTED_LEAGUES]
+        for fut in as_completed(futures):
+            league, payload = fut.result()
+            scoreboards[league] = payload
+
     for league in SUPPORTED_LEAGUES:
         # Soft-fail every league independently: scoreboard, readiness, prewarm,
         # or a single game must never abort the rest of the slate.
-        try:
-            scheduled = fetch_scoreboard(league, days_ahead=days_ahead)
-        except Exception as exc:  # noqa: BLE001
-            errors.append({"league": league, "error": str(exc)})
-            logger.warning("Scoreboard failed for %s: %s", league, exc)
+        scheduled_or_exc = scoreboards.get(league)
+        if isinstance(scheduled_or_exc, BaseException):
+            errors.append(_public_error(league, "scoreboard"))
+            logger.warning(
+                "Scoreboard failed for %s: %s", league, scheduled_or_exc
+            )
+            continue
+        if scheduled_or_exc is None:
+            errors.append(_public_error(league, "scoreboard"))
             continue
 
+        scheduled = scheduled_or_exc
         try:
             actionable = _actionable_games(scheduled)
             if not actionable:
@@ -787,12 +825,7 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
             try:
                 _prewarm_league_models(league, power_cutoffs, errors)
             except Exception as exc:  # noqa: BLE001 — prewarm must not skip games
-                errors.append(
-                    {
-                        "league": league,
-                        "error": f"League model prewarm failed: {exc}",
-                    }
-                )
+                errors.append(_public_error(league, "prewarm"))
                 logger.warning("Model prewarm failed for %s: %s", league, exc)
 
             headlines = _league_news_headlines(league)
@@ -804,11 +837,7 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
                     league_games += 1
                 except Exception as exc:  # noqa: BLE001
                     errors.append(
-                        {
-                            "league": league,
-                            "game": game.name,
-                            "error": str(exc),
-                        }
+                        _public_error(league, "predict", game=game.name)
                     )
                     logger.warning(
                         "Game predict failed for %s (%s): %s",
@@ -819,7 +848,7 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
             if league_games:
                 logger.info("Slate %s: %s game(s)", league, league_games)
         except Exception as exc:  # noqa: BLE001
-            errors.append({"league": league, "error": f"League slate failed: {exc}"})
+            errors.append(_public_error(league, "league"))
             logger.warning("League slate failed for %s: %s", league, exc)
             continue
 

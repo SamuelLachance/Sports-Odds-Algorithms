@@ -278,6 +278,12 @@ const SPORT_ALGO_LABELS = {
     "WNBA GradientBoost v2 (30-season history, Elo + four factors + pace + rest/travel, XGB/LR ensemble, isotonic-calibrated)",
   "NBAGradientBoost v2":
     "NBA GradientBoost v2 (30-season history, Elo + four factors + pace + rest/travel, XGB/LR ensemble, isotonic-calibrated)",
+  "NFLGradientBoost v2":
+    "NFL GradientBoost v2 (nflverse history, Elo + EPA/success + schedule, XGB/LR ensemble, isotonic-calibrated)",
+  "CFBGradientBoost v2":
+    "CFB GradientBoost v2 (closing-odds history, Elo + EPA proxies + schedule, XGB/LR ensemble, isotonic-calibrated)",
+  "CBBGradientBoost v2":
+    "CBB GradientBoost v2 (ESPN history, Elo + four factors + Torvik fallback, XGB/LR ensemble, isotonic-calibrated)",
   Unified: "Unified model",
 };
 
@@ -294,6 +300,9 @@ const SPORT_LAYER_LABELS = {
   "SoccerGradientBoost v2": "Soccer GradientBoost v2",
   "WNBAGradientBoost v2": "WNBA GradientBoost v2",
   "NBAGradientBoost v2": "NBA GradientBoost v2",
+  "NFLGradientBoost v2": "NFL GradientBoost v2",
+  "CFBGradientBoost v2": "CFB GradientBoost v2",
+  "CBBGradientBoost v2": "CBB GradientBoost v2",
 };
 
 function primaryAlgoLabel(model) {
@@ -316,6 +325,9 @@ function primaryAlgoShort(model) {
     "SoccerGradientBoost v2": "Soccer GB v2",
     "WNBAGradientBoost v2": "WNBA GB v2",
     "NBAGradientBoost v2": "NBA GB v2",
+    "NFLGradientBoost v2": "NFL GB v2",
+    "CFBGradientBoost v2": "CFB GB v2",
+    "CBBGradientBoost v2": "CBB GB v2",
     Unified: "Unified",
   };
   return short[model.algorithm] || model.algorithm || "Algo V2";
@@ -2461,9 +2473,14 @@ function viewMethodology() {
 
     <section class="section panel methodology-body">
       <h2>Prediction stack</h2>
-      <p>Major leagues often run a <strong>single-model GradientBoost v2</strong> as the primary signal — <code>nba_v2</code>, <code>wnba_v2</code>, <code>nhl_v2</code>, <code>mlb_v2</code>, <code>soccer_v2</code>, plus <code>nfl_v2</code>, <code>cfb_v2</code>, and <code>cbb_v2</code> for predictions — rather than three equal layers on every board. Where a blend still applies, layers are weighted per league:</p>
+      <p>All <strong>eight</strong> major boards run a <strong>single-model GradientBoost v2</strong> as the primary signal when trained weights are present:</p>
       <ul>
-        <li><strong>GradientBoost v2</strong> — sport-specific ensembles under <code>web/{nba,wnba,nhl,mlb,soccer,nfl,cfb,cbb}_v2</code>; the main live model for those leagues when trained weights are present.</li>
+        <li><code>nba_v2</code>, <code>wnba_v2</code>, <code>nhl_v2</code>, <code>mlb_v2</code>, <code>soccer_v2</code> — live probabilities and official Hubáček tracking (when gates pass).</li>
+        <li><code>nfl_v2</code>, <code>cfb_v2</code>, <code>cbb_v2</code> — live probabilities for the board only; official Hubáček picks stay off until walk-forward backtests clear.</li>
+      </ul>
+      <p>Where a blend still applies, layers are weighted per league:</p>
+      <ul>
+        <li><strong>GradientBoost v2</strong> — sport-specific ensembles under <code>web/{nba,wnba,nhl,mlb,soccer,nfl,cfb,cbb}_v2</code>; the main live model for those eight leagues when trained weights are present.</li>
         <li><strong>Legacy Algo V2 / power ratings</strong> — efficiency engine and margin-based ratings used as baselines or fallbacks, especially where v2 is thin or absent.</li>
         <li><strong>Other sport layers</strong> — MLB RunCast, Dixon–Coles for soccer, BasketballMatrix / Torvik fallback for CBB, and nfelo-style ratings as supporting football signals.</li>
       </ul>
@@ -2479,7 +2496,7 @@ function viewMethodology() {
         <li><strong>Pick gate probability</strong> — a decorrelated probability that must beat the de-vigged market by a backtested per-league gap (with a confidence floor) before a pick becomes official.</li>
         <li><strong>Honest EV</strong> — expected value computed from the calibrated <em>pre-decorrelation</em> probability, so the decorrelation shove never inflates the printed edge or the Kelly stake.</li>
       </ul>
-      <p class="muted methodology-cite">Hubáček, O., Šourek, G., &amp; Železný, F. (2019). “Exploiting sports-betting market using machine learning.” <em>International Journal of Forecasting</em>, 35(2). <a class="text-link" href="https://doi.org/10.1016/j.ijforecast.2019.01.001" target="_blank" rel="noopener">doi:10.1016/j.ijforecast.2019.01.001</a></p>
+      <p class="muted methodology-cite">Hubáček, O., Šourek, G., &amp; Železný, F. (2019). “Exploiting sports-betting market using machine learning.” <em>International Journal of Forecasting</em>, 35(2). <a class="text-link" href="https://doi.org/10.1016/j.ijforecast.2019.01.001" target="_blank" rel="noopener noreferrer">doi:10.1016/j.ijforecast.2019.01.001</a></p>
       <p class="muted">NFL, CFB, and CBB show the same probability tracks for research, but the Hubáček official gate stays off until walk-forward backtests clear — those leagues never appear in the official tracking book.</p>
     </section>
 
@@ -2669,7 +2686,7 @@ function renderNewsList(news) {
       (item) => `<article class="db-news panel"><h3>${item.headline || "Update"}</h3>
       <p class="muted">${item.published ? new Date(item.published).toLocaleString() : ""}</p>
       <p>${item.description || ""}</p>
-      ${item.link ? `<a href="${item.link}" target="_blank" rel="noopener">Read on ESPN</a>` : ""}</article>`,
+      ${item.link ? `<a href="${item.link}" target="_blank" rel="noopener noreferrer">Read on ESPN</a>` : ""}</article>`,
     )
     .join("")}</div>`;
 }
