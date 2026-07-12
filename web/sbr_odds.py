@@ -130,8 +130,8 @@ def _spread_line_cell(value: str) -> float | None:
     return _optional_number(value)
 
 
-def _spread_juice_cell(value: str, default: int = -110) -> int:
-    """Spread juice; EVEN (0) → +100; missing → default."""
+def _spread_juice_cell(value: str, default: int | None = None) -> int | None:
+    """Spread juice; EVEN (0) → +100; missing → default (None = fail closed)."""
     number = _optional_number(value)
     if number is None:
         return default
@@ -191,8 +191,9 @@ def _rows_from_html_table(sport: str, season: int, html: str, translated: dict[s
                 "away_close_ml": away_close_ml,
                 "home_close_spread": home_spread,
                 "away_close_spread": away_spread,
-                "home_spread_odds": -110,
-                "away_spread_odds": -110,
+                # NBA/NFL HTML archives do not expose spread juice — fail closed.
+                "home_spread_odds": None,
+                "away_spread_odds": None,
                 "source": "sbr-online",
             }
         )
@@ -271,6 +272,11 @@ def _archive_date(raw: Any) -> str:
 
 
 def _parse_optional_int(value: Any) -> int | None:
+    """Archive moneyline; EVEN (0) → +100. Missing → None.
+
+    Must match ``_american_ml_cell`` used by HTML/xlsx scrapers — do not treat
+    numeric 0 as missing (that silently drops even-money closers).
+    """
     if value in (None, ""):
         return None
     try:
@@ -278,18 +284,17 @@ def _parse_optional_int(value: Any) -> int | None:
     except (TypeError, ValueError):
         return None
     if number == 0:
-        return None
+        return 100
     return int(number)
 
 
 def _parse_optional_float(value: Any) -> float | None:
+    """Archive spread line; pick'em (0) kept as 0.0. Missing → None."""
     if value in (None, ""):
         return None
     try:
         number = float(str(value).strip())
     except (TypeError, ValueError):
-        return None
-    if number == 0:
         return None
     return number
 
@@ -326,8 +331,9 @@ def fetch_sbr_archive_rows(sport: str) -> list[dict[str, Any]]:
                 "away_close_ml": _parse_optional_int(record.get("away_close_ml")),
                 "home_close_spread": _parse_optional_float(record.get("home_close_spread")),
                 "away_close_spread": _parse_optional_float(record.get("away_close_spread")),
-                "home_spread_odds": -110,
-                "away_spread_odds": -110,
+                # Archive JSON has no juice fields — do not invent -110.
+                "home_spread_odds": None,
+                "away_spread_odds": None,
                 "source": "sbr-archive",
             }
         )

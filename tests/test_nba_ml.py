@@ -36,9 +36,9 @@ def test_spread_to_home_prob_monotonic():
 
 
 def test_sane_american_rejects_corrupt_odds():
-    # Decimal odds / garbage below magnitude 100 must not create huge payouts.
-    assert _sane_american(-1) == -110.0
-    assert _sane_american(1.87) == -110.0
+    # Decimal odds / garbage below magnitude 100 must not invent -110 juice.
+    assert math.isnan(_sane_american(-1))
+    assert math.isnan(_sane_american(1.87))
     assert _sane_american(-110) == -110.0
     assert _sane_american(+150) == 150.0
     # ESPN EVEN (0) maps to +100, not the -110 fallback.
@@ -46,8 +46,9 @@ def test_sane_american_rejects_corrupt_odds():
     from web.nba_ml.backtest import implied_prob
 
     assert implied_prob(0) == pytest.approx(0.5)
-    # A corrupt -1 would otherwise pay 100 units; guarded to -110.
-    assert american_profit(-1, True) == pytest.approx(0.9091, abs=1e-3)
+    # Corrupt -1 must not pay ~100u or fake -110 profit.
+    assert math.isnan(american_profit(-1, True))
+    assert math.isnan(implied_prob(-1))
 
 
 def test_ats_grading():

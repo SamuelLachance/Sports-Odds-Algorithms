@@ -38,6 +38,102 @@ def test_valid_american_maps_even_zero_to_plus_100() -> None:
     assert _valid_american(None) is None
 
 
+def test_valid_handicap_line_rejects_ml_sized_dumps() -> None:
+    from web.nba_odds_espn import _valid_handicap_line
+
+    assert _valid_handicap_line(-1.5, max_abs=7.0) == -1.5
+    assert _valid_handicap_line(0.0, max_abs=7.0) == 0.0
+    assert _valid_handicap_line(152.0, max_abs=7.0) is None
+    assert _valid_handicap_line(-110.0, max_abs=5.0) is None
+
+
+def test_mlb_provider_line_drops_moneyline_as_run_line() -> None:
+    from web.mlb_odds_espn import _provider_line_mlb
+
+    item = {
+        "homeTeamOdds": {
+            "favorite": False,
+            "moneyLine": 150,
+            "close": {
+                "moneyLine": {"american": 150},
+                "pointSpread": {"american": 152},
+                "spread": {"american": -110},
+            },
+        },
+        "awayTeamOdds": {
+            "favorite": True,
+            "moneyLine": -170,
+            "close": {
+                "moneyLine": {"american": -170},
+                "pointSpread": {"american": -152},
+                "spread": {"american": -110},
+            },
+        },
+        "spread": 1.5,
+        "overUnder": 8.5,
+    }
+    line = _provider_line_mlb(item)
+    assert line["home_close_ml"] == 150.0
+    assert line["away_close_ml"] == -170.0
+    # Nested pointSpread was ML-sized; fall back to signed flat spread magnitude.
+    assert line["home_close_spread"] == 1.5
+    assert line["away_close_spread"] == -1.5
+
+
+def test_mlb_provider_line_keeps_real_run_line() -> None:
+    from web.mlb_odds_espn import _provider_line_mlb
+
+    item = {
+        "homeTeamOdds": {
+            "favorite": True,
+            "close": {
+                "moneyLine": {"american": -140},
+                "pointSpread": {"american": -1.5},
+                "spread": {"american": -115},
+            },
+        },
+        "awayTeamOdds": {
+            "favorite": False,
+            "close": {
+                "moneyLine": {"american": 120},
+                "pointSpread": {"american": 1.5},
+                "spread": {"american": -105},
+            },
+        },
+    }
+    line = _provider_line_mlb(item)
+    assert line["home_close_spread"] == -1.5
+    assert line["away_close_spread"] == 1.5
+    assert line["home_spread_odds"] == -115.0
+
+
+def test_nhl_provider_line_drops_moneyline_as_puck_line() -> None:
+    from web.nhl_odds_espn import _provider_line_nhl
+
+    item = {
+        "homeTeamOdds": {
+            "favorite": True,
+            "close": {
+                "moneyLine": {"american": -150},
+                "pointSpread": {"american": -150},
+                "spread": {"american": -110},
+            },
+        },
+        "awayTeamOdds": {
+            "favorite": False,
+            "close": {
+                "moneyLine": {"american": 130},
+                "pointSpread": {"american": 130},
+                "spread": {"american": -110},
+            },
+        },
+        "spread": 1.5,
+    }
+    line = _provider_line_nhl(item)
+    assert line["home_close_spread"] == -1.5
+    assert line["away_close_spread"] == 1.5
+
+
 def test_nba_odds_collect_preserves_missing_spread_juice() -> None:
     """Historical collectors must leave missing juice as None, not invent -110."""
     from web import nba_odds_espn as nba_odds

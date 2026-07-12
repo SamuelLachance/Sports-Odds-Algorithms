@@ -147,8 +147,16 @@ def _to_int(value: Any) -> int | None:
 
 
 def _to_float(value: Any) -> float | None:
+    if value is None:
+        return None
+    text = str(value).strip().replace("+", "")
+    # ESPN encodes even-money juice / pick'em spreads as EVEN or PK.
+    if text.upper() in {"EVEN", "PK"}:
+        return 0.0
+    if text == "":
+        return None
     try:
-        return float(value)
+        return float(text)
     except (TypeError, ValueError):
         return None
 
@@ -347,7 +355,8 @@ def _signed_spread_from_details(details: str, home_abbr: str, away_abbr: str) ->
 def _side_odds(item_side: dict[str, Any]) -> dict[str, Any]:
     out: dict[str, Any] = {
         "ml": _american((item_side or {}).get("moneyLine")),
-        "spread_odds": _to_float((item_side or {}).get("spreadOdds")),
+        # Spread juice is American odds; reuse EVEN→+100 / reject |x|<100.
+        "spread_odds": _american((item_side or {}).get("spreadOdds")),
     }
     current = (item_side or {}).get("current") or {}
     ps = (current.get("pointSpread") or {}).get("american")

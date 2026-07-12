@@ -298,15 +298,21 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
                 if bet_type != "spread" and consensus_ml is not None:
                     closing_ml = consensus_ml
                     closing_source = "consensus"
-                existing.update(
-                    {
-                        "closing_market_odds": closing_ml,
-                        "closing_spread_odds": pick.get("spread_odds"),
-                        "closing_consensus_spread": pick.get("consensus_spread"),
-                        "closing_source": closing_source,
-                        "closing_snapshot_at": now,
-                    }
-                )
+                existing_update: dict[str, Any] = {}
+                if closing_ml is not None:
+                    existing_update["closing_market_odds"] = closing_ml
+                    existing_update["closing_source"] = closing_source
+                spread_close = pick.get("spread_odds")
+                if spread_close is not None:
+                    existing_update["closing_spread_odds"] = spread_close
+                consensus_close = pick.get("consensus_spread")
+                if consensus_close is not None:
+                    existing_update["closing_consensus_spread"] = consensus_close
+                # Never wipe a prior closing snapshot with missing juice/ML.
+                if existing_update:
+                    existing_update["closing_snapshot_at"] = now
+                    existing_update.setdefault("closing_source", closing_source)
+                    existing.update(existing_update)
             continue
 
         start_time = _parse_start_time(pick.get("start_time"))

@@ -112,6 +112,19 @@ def _valid_american(value: float | None) -> float | None:
     return None
 
 
+def _valid_handicap_line(value: float | None, *, max_abs: float) -> float | None:
+    """Keep real spread/run/puck lines; drop ML-sized values dumped into handicap fields."""
+    if value is None:
+        return None
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    if abs(number) > max_abs:
+        return None
+    return number
+
+
 def _provider_line(item: dict[str, Any]) -> dict[str, float | None]:
     """Extract one book's home-oriented lines, preferring close over flat values."""
     home = item.get("homeTeamOdds") or {}

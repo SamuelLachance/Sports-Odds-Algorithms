@@ -24,7 +24,9 @@ def test_american_to_implied_prob() -> None:
 
 
 def test_devig_two_way_sums_to_one() -> None:
-    home, away = devig_two_way(-110, -110)
+    probs = devig_two_way(-110, -110)
+    assert probs is not None
+    home, away = probs
     assert abs(home + away - 1.0) < 0.01
 
 
@@ -70,7 +72,9 @@ def test_american_odds_zero_is_even_for_clv() -> None:
     """ESPN EVEN (0) must participate in CLV as +100, not drop as None."""
     assert american_to_implied_prob(0) == pytest.approx(0.5)
     assert clv_vs_market_pct(0, -110) is not None
-    home, away = devig_two_way(0, -110)
+    probs = devig_two_way(0, -110)
+    assert probs is not None
+    home, away = probs
     assert abs(home + away - 1.0) < 0.01
 
 
@@ -79,3 +83,14 @@ def test_american_odds_rejects_invalid_magnitude() -> None:
     assert american_to_implied_prob(50) is None
     assert american_to_implied_prob(-50) is None
     assert clv_vs_market_pct(50, -110) is None
+
+
+def test_devig_two_way_fails_closed_on_invalid_odds() -> None:
+    """Bad American prices must not invent a fake 50/50 market."""
+    from web.clv_service import model_edge_vs_devigged_market
+
+    assert devig_two_way(-50, 130) is None
+    assert devig_two_way(50, -110) is None
+    edge = model_edge_vs_devigged_market(60.0, -50, 130)
+    assert edge["market_home_prob"] is None
+    assert edge["model_minus_market_pp"] is None

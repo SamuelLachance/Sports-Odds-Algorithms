@@ -417,11 +417,12 @@ def american_to_decimal(ml: int | None) -> float | None:
     # ESPN EVEN sometimes arrives as numeric 0 — treat as +100.
     if ml == 0:
         ml = 100
+    # Reject garbage like +50 / -50 (same band as basketball v2 / CLV).
+    if abs(ml) < 100:
+        return None
     if ml > 0:
         return 1.0 + ml / 100.0
-    if ml < 0:
-        return 1.0 + 100.0 / abs(ml)
-    return None
+    return 1.0 + 100.0 / abs(ml)
 
 
 def predict_matchup_v2(

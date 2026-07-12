@@ -1164,6 +1164,7 @@ def evaluate_official_picks_for_game(
             min_win_confidence_pp=thresholds["min_spread_confidence_pp"],
             min_point_edge=thresholds.get("min_spread_point_edge"),
             min_ev_pct=thresholds["min_ev_pct"],
+            games_played_proxy=games_played_proxy,
         )
         return picks
 

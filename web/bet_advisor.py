@@ -239,22 +239,39 @@ def _format_spread(value: float) -> str:
     return f"{value:+.1f}".replace(".0", "")
 
 
+def normalize_american_odds(american_odds: int | None) -> int | None:
+    """Map ESPN EVEN (0) → +100; reject |odds| < 100 garbage; keep valid quotes."""
+    if american_odds is None:
+        return None
+    try:
+        odds = int(american_odds)
+    except (TypeError, ValueError):
+        return None
+    if odds == 0:
+        return 100
+    if abs(odds) < 100:
+        return None
+    return odds
+
+
 def american_to_decimal(american_odds: int) -> float:
     # ESPN/EVEN sometimes arrives as 0; treat as +100 (even money).
-    if american_odds == 0:
-        american_odds = 100
-    if american_odds > 0:
-        return 1.0 + american_odds / 100.0
-    return 1.0 + 100.0 / abs(american_odds)
+    odds = normalize_american_odds(american_odds)
+    if odds is None:
+        raise ValueError(f"invalid American odds: {american_odds}")
+    if odds > 0:
+        return 1.0 + odds / 100.0
+    return 1.0 + 100.0 / abs(odds)
 
 
 def american_implied_prob(american_odds: int) -> float:
     # ESPN/EVEN sometimes arrives as 0; treat as +100 (even money → 50%).
-    if american_odds == 0:
-        american_odds = 100
-    if american_odds > 0:
-        return 100.0 / (american_odds + 100.0)
-    return abs(american_odds) / (abs(american_odds) + 100.0)
+    odds = normalize_american_odds(american_odds)
+    if odds is None:
+        raise ValueError(f"invalid American odds: {american_odds}")
+    if odds > 0:
+        return 100.0 / (odds + 100.0)
+    return abs(odds) / (abs(odds) + 100.0)
 
 
 def devig_two_way_probs(
@@ -262,10 +279,12 @@ def devig_two_way_probs(
     home_odds: int | None,
 ) -> tuple[float | None, float | None]:
     """Remove book vig from a two-way moneyline (0–100 scale)."""
-    if away_odds is None or home_odds is None:
+    away_n = normalize_american_odds(away_odds)
+    home_n = normalize_american_odds(home_odds)
+    if away_n is None or home_n is None:
         return None, None
-    away_raw = american_implied_prob(away_odds)
-    home_raw = american_implied_prob(home_odds)
+    away_raw = american_implied_prob(away_n)
+    home_raw = american_implied_prob(home_n)
     total = away_raw + home_raw
     if total <= 0:
         return None, None
@@ -274,8 +293,11 @@ def devig_two_way_probs(
 
 def expected_value_pct(model_prob_pct: float, american_odds: int) -> float:
     """Expected profit per $1 staked, as a percentage (positive = +EV)."""
+    odds = normalize_american_odds(american_odds)
+    if odds is None:
+        raise ValueError(f"invalid American odds: {american_odds}")
     probability = min(max(model_prob_pct, 0.1), 99.9) / 100.0
-    payout = american_to_decimal(american_odds)
+    payout = american_to_decimal(odds)
     return (probability * payout - 1.0) * 100.0
 
 
@@ -810,6 +832,7 @@ def evaluate_picks(
     ]
 
     for side, name, slug, outcome_prob, ev_prob, projection, market, market_implied in candidates:
+        market = normalize_american_odds(market)
         if market is None:
             continue
 
@@ -989,6 +1012,7 @@ def evaluate_soccer_picks(
     ]
 
     for side, name, slug, outcome_prob, projection, market in candidates:
+        market = normalize_american_odds(market)
         if market is None:
             continue
 
@@ -1117,6 +1141,7 @@ def evaluate_spread_picks(
     blended: dict[str, Any] | None = None,
     min_cover_gap_pp: float | None = None,
     min_win_confidence_pp: float | None = None,
+    games_played_proxy: int | None = None,
 ) -> list[BetPick]:
     """Recommend spread bets when decorrelated margin disagrees with the book line."""
     if consensus_spread is None:
@@ -1143,7 +1168,13 @@ def evaluate_spread_picks(
         # Official Hubáček must not invent -110 when ESPN juice is missing.
         if hubacek_only and spread_odds is None:
             continue
-        juice = spread_odds if spread_odds is not None else DEFAULT_SPREAD_JUICE
+        if spread_odds is None:
+            juice = DEFAULT_SPREAD_JUICE
+        else:
+            normalized_juice = normalize_american_odds(spread_odds)
+            if normalized_juice is None:
+                continue
+            juice = normalized_juice
         edge = spread_odds_edge(point_edge, juice, league)
         if min_point_edge is not None and point_edge < min_point_edge:
             continue
@@ -1153,7 +1184,7 @@ def evaluate_spread_picks(
         ev_pct = expected_value_pct(side_cover_prob, juice)
         from web.context_signals import sparse_sample_ev_cap
 
-        ev_pct = sparse_sample_ev_cap(league, None, ev_pct)
+        ev_pct = sparse_sample_ev_cap(league, games_played_proxy, ev_pct)
         market_cover = american_implied_prob(juice) * 100.0
 
         if hubacek_only:
@@ -1204,6 +1235,14 @@ def evaluate_spread_picks(
             )
 
         fair_spread_odds = _probability_to_american(side_cover_prob)
+        extra: dict[str, Any] = {
+            "model_market_gap_pp": round(side_cover_prob - market_cover, 2),
+            "league": league,
+            # Cover % is the EV probability; expose for Honest EV UI.
+            "base_win_probability": round(side_cover_prob, 2),
+        }
+        if games_played_proxy is not None:
+            extra["games_played_proxy"] = games_played_proxy
         picks.append(
             BetPick(
                 side=side,
@@ -1223,12 +1262,7 @@ def evaluate_spread_picks(
                 spread_odds=juice,
                 consensus_spread=consensus_spread,
                 model_margin=round(model_margin, 2),
-                extra={
-                    "model_market_gap_pp": round(side_cover_prob - market_cover, 2),
-                    "league": league,
-                    # Cover % is the EV probability; expose for Honest EV UI.
-                    "base_win_probability": round(side_cover_prob, 2),
-                },
+                extra=extra,
             )
         )
 

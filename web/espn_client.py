@@ -155,6 +155,8 @@ def _parse_american_odds(value: str | int | None) -> int | None:
     # ESPN often encodes even money as numeric 0; American odds require |x| >= 100.
     if odds == 0:
         return 100
+    if abs(odds) < 100:
+        return None
     return odds
 
 

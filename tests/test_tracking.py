@@ -705,6 +705,39 @@ def test_recorded_odds_frozen_and_closing_snapshot_updates() -> None:
     assert bet["closing_market_odds"] == 120
 
 
+def test_pending_closing_snapshot_preserves_prior_when_slate_loses_juice() -> None:
+    """A later slate with missing odds must not wipe a good closing CLV snapshot."""
+    store = {"version": 1, "bets": []}
+    pick = {
+        **_sample_pick(),
+        "bet_type": "spread",
+        "spread_line": -3.5,
+        "spread_odds": -105,
+        "consensus_spread": -3.5,
+        "start_time": _future_start(),
+    }
+    slate = {"date_label": "2026-07-10", "recommended_bets": [pick], "games": []}
+    store = record_from_slate(store, slate)
+    # Re-run with juice present so the pending updater seeds closing_* fields.
+    store = record_from_slate(store, slate)
+    assert store["bets"][0]["closing_spread_odds"] == -105
+    assert store["bets"][0]["closing_market_odds"] == 141
+
+    wiped = {
+        **pick,
+        "market_odds": None,
+        "spread_odds": None,
+        "consensus_spread": None,
+    }
+    store = record_from_slate(
+        store, {"date_label": "2026-07-10", "recommended_bets": [wiped], "games": []}
+    )
+    bet = store["bets"][0]
+    assert bet["closing_spread_odds"] == -105
+    assert bet["closing_consensus_spread"] == -3.5
+    assert bet["closing_market_odds"] == 141
+
+
 def test_clv_computed_at_grading() -> None:
     from web.clv_service import clv_vs_market_pct
 

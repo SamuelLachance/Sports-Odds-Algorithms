@@ -619,6 +619,55 @@ def test_hubacek_spread_skips_missing_juice() -> None:
     assert picks == []
 
 
+def test_evaluate_spread_picks_applies_thin_sample_ev_cap() -> None:
+    """Early-season NBA spreads must soft-cap absurd EV like moneylines do."""
+    # Home has the point edge; give it plus-money juice so uncapped EV >> 55%.
+    picks = evaluate_spread_picks(
+        league="nba",
+        away_name="Away",
+        home_name="Home",
+        away_slug="away",
+        home_slug="home",
+        total_score=-70.0,
+        win_probability=70.0,
+        consensus_spread=-3.5,
+        away_spread_odds=-500,
+        home_spread_odds=400,
+        model_margin_home=-10.0,
+        min_edge=0.0,
+        min_ev_pct=0.0,
+        games_played_proxy=3,
+    )
+    assert picks
+    assert all(pick.ev_pct <= 55.0 for pick in picks)
+    assert picks[0].extra.get("games_played_proxy") == 3
+
+    uncapped = evaluate_spread_picks(
+        league="nba",
+        away_name="Away",
+        home_name="Home",
+        away_slug="away",
+        home_slug="home",
+        total_score=-70.0,
+        win_probability=70.0,
+        consensus_spread=-3.5,
+        away_spread_odds=-500,
+        home_spread_odds=400,
+        model_margin_home=-10.0,
+        min_edge=0.0,
+        min_ev_pct=0.0,
+        games_played_proxy=40,
+    )
+    assert uncapped
+    assert uncapped[0].ev_pct > 55.0
+
+    from web.bet_advisor import enrich_pick_profit_metrics
+
+    enriched = enrich_pick_profit_metrics(picks[0])
+    # Kelly / profit sizing must also respect the thin-sample haircut.
+    assert enriched.ev_pct <= 55.0
+
+
 def test_resolve_binary_win_probs_renormalizes_threeway() -> None:
     from web.bet_advisor import resolve_binary_win_probs
 
@@ -646,6 +695,66 @@ def test_american_odds_zero_treated_as_even() -> None:
 def test_odds_edge_treats_zero_as_even() -> None:
     """ESPN EVEN (0) must match +100 in edge math, not invent a huge same-sign gap."""
     assert _odds_edge(-150, 0, 60.0) == _odds_edge(-150, 100, 60.0)
+
+
+def test_normalize_american_odds_maps_even_and_rejects_garbage() -> None:
+    from web.bet_advisor import normalize_american_odds
+
+    assert normalize_american_odds(0) == 100
+    assert normalize_american_odds(100) == 100
+    assert normalize_american_odds(-110) == -110
+    assert normalize_american_odds(50) is None
+    assert normalize_american_odds(-50) is None
+    assert normalize_american_odds(None) is None
+
+
+def test_american_helpers_reject_sub_100_odds() -> None:
+    from web.bet_advisor import american_implied_prob, american_to_decimal, expected_value_pct
+
+    with pytest.raises(ValueError):
+        american_implied_prob(50)
+    with pytest.raises(ValueError):
+        american_to_decimal(-50)
+    with pytest.raises(ValueError):
+        expected_value_pct(55.0, 50)
+
+
+def test_evaluate_picks_even_market_uses_model_favorite_strategy() -> None:
+    """ESPN EVEN (0) must gate like +100 underdog for cross-sign model favorites."""
+    common = dict(
+        away_name="Away",
+        home_name="Home",
+        away_slug="away",
+        home_slug="home",
+        total_score=-65.0,
+        win_probability=65.0,
+        away_market=-120,
+        min_edge=0.0,
+        min_ev_pct=0.0,
+    )
+    even_picks = evaluate_picks(**common, home_market=0)
+    plus_picks = evaluate_picks(**common, home_market=100)
+    assert even_picks and plus_picks
+    assert even_picks[0].side == "home"
+    assert plus_picks[0].side == "home"
+    assert even_picks[0].strategy == plus_picks[0].strategy == "model_favorite"
+    assert even_picks[0].market_odds == 100
+
+
+def test_evaluate_picks_skips_garbage_american_odds() -> None:
+    picks = evaluate_picks(
+        away_name="Away",
+        home_name="Home",
+        away_slug="away",
+        home_slug="home",
+        total_score=-65.0,
+        win_probability=65.0,
+        away_market=50,
+        home_market=-50,
+        min_edge=0.0,
+        min_ev_pct=0.0,
+    )
+    assert picks == []
 
 
 def test_enrich_pick_profit_metrics_haircuts_kelly_when_sparse_ev_capped() -> None:

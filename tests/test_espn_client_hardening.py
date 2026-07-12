@@ -109,3 +109,12 @@ def test_parse_american_odds_maps_even_zero_to_plus_100() -> None:
     assert espn_client._parse_american_odds("PK") == 100
     assert espn_client._parse_american_odds(-110) == -110
     assert espn_client._parse_american_odds(None) is None
+
+
+def test_parse_american_odds_rejects_invalid_magnitude() -> None:
+    """|odds| < 100 (except ESPN 0→EVEN) must not enter the daily slate."""
+    assert espn_client._parse_american_odds(50) is None
+    assert espn_client._parse_american_odds(-50) is None
+    assert espn_client._parse_american_odds("+75") is None
+    assert espn_client._parse_american_odds(100) == 100
+    assert espn_client._parse_american_odds(-100) == -100

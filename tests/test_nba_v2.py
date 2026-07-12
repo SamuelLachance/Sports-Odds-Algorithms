@@ -423,9 +423,25 @@ def test_devig_home_prob_and_market_variant_helpers() -> None:
 def test_nba_v2_american_maps_espn_even_zero() -> None:
     assert _american(0) == 100.0
     assert _american("0") == 100.0
+    assert _american("EVEN") == 100.0
+    assert _american("PK") == 100.0
     assert _american(-110) == -110.0
     assert _american(50) is None
     assert _american(None) is None
+
+
+def test_nba_v2_side_odds_maps_even_spread_juice() -> None:
+    from web.nba_v2.data import _side_odds, _to_float
+
+    assert _to_float("PK") == 0.0
+    assert _to_float("EVEN") == 0.0
+    even = _side_odds({"moneyLine": "EVEN", "spreadOdds": "EVEN"})
+    assert even["ml"] == 100.0
+    assert even["spread_odds"] == 100.0
+    open_even = _side_odds({"open": {"moneyLine": {"american": "EVEN"}}})
+    assert open_even["ml_open"] == 100.0
+    junk = _side_odds({"moneyLine": -110, "spreadOdds": 50})
+    assert junk["spread_odds"] is None
 
 
 @pytest.mark.slow

@@ -10,7 +10,13 @@ from datetime import date, timedelta
 from pathlib import Path
 from typing import Any, Iterator
 
-from web.nba_odds_espn import _get_json, _nested_american, _to_float, _valid_american
+from web.nba_odds_espn import (
+    _get_json,
+    _nested_american,
+    _to_float,
+    _valid_american,
+    _valid_handicap_line,
+)
 from web.season_games import _normalize_abbr
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -19,6 +25,8 @@ OUTPUT_CSV = PROJECT_ROOT / "data" / "supplemental" / "closing-odds" / "nhl.csv"
 
 # NHL off-season: July–August (no regular games).
 SKIP_MONTHS = frozenset({7, 8})
+# Real puck lines are ±1.5; ML-sized dumps into pointSpread must be dropped.
+MAX_NHL_PUCK_LINE = 5.0
 
 SCOREBOARD_URL = (
     "https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/scoreboard?dates={date}"
@@ -67,7 +75,10 @@ def _provider_line_nhl(item: dict[str, Any]) -> dict[str, float | None]:
     home_open_ml = _valid_american(_nested_american(home, "open", "moneyLine"))
     away_open_ml = _valid_american(_nested_american(away, "open", "moneyLine"))
 
-    home_close_spread = _nested_american(home, "close", "pointSpread")
+    home_close_spread = _valid_handicap_line(
+        _nested_american(home, "close", "pointSpread"),
+        max_abs=MAX_NHL_PUCK_LINE,
+    )
     if home_close_spread is None:
         raw_spread = _to_float(item.get("spread"))
         if raw_spread is not None:
@@ -78,7 +89,13 @@ def _provider_line_nhl(item: dict[str, Any]) -> dict[str, float | None]:
                 home_close_spread = magnitude
             else:
                 home_close_spread = raw_spread
-    away_close_spread = _nested_american(away, "close", "pointSpread")
+        home_close_spread = _valid_handicap_line(
+            home_close_spread, max_abs=MAX_NHL_PUCK_LINE
+        )
+    away_close_spread = _valid_handicap_line(
+        _nested_american(away, "close", "pointSpread"),
+        max_abs=MAX_NHL_PUCK_LINE,
+    )
     if away_close_spread is None and home_close_spread is not None:
         away_close_spread = -home_close_spread
 

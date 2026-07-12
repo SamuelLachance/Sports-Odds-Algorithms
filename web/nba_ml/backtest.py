@@ -12,6 +12,7 @@ Honest methodology:
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 
 import numpy as np
@@ -32,8 +33,8 @@ MIN_VALIDATION_BETS = 20
 SPREAD_BREAK_EVEN = 0.5238  # -110
 
 
-def _sane_american(odds: float, default: float = -110.0) -> float:
-    """American odds must have magnitude >= 100; fall back otherwise."""
+def _sane_american(odds: float, default: float = float("nan")) -> float:
+    """American odds must have magnitude >= 100; return default otherwise."""
     try:
         odds = float(odds)
     except (TypeError, ValueError):
@@ -50,13 +51,15 @@ def american_profit(odds: float, won: bool) -> float:
     if not won:
         return -1.0
     odds = _sane_american(odds)
+    if math.isnan(odds):
+        return float("nan")
     return odds / 100.0 if odds > 0 else 100.0 / -odds
 
 
 def implied_prob(odds: float) -> float:
-    odds = float(odds)
-    if odds == 0:
-        return 0.5
+    odds = _sane_american(float(odds))
+    if math.isnan(odds):
+        return float("nan")
     return 100.0 / (odds + 100.0) if odds > 0 else -odds / (-odds + 100.0)
 
 
@@ -100,17 +103,27 @@ def _ats_bets(frame: pd.DataFrame, pred_margin, sigma, ev_threshold):
         ch = float(cover_home[i])
         ho = _sane_american(home_spread_odds[i])
         ao = _sane_american(away_spread_odds[i])
-        ev_home = ch * american_profit(ho, True) - (1 - ch)
-        ev_away = (1 - ch) * american_profit(ao, True) - ch
-        if ev_home >= ev_threshold and ev_home >= ev_away:
+        ev_home = (
+            ch * american_profit(ho, True) - (1 - ch)
+            if not math.isnan(ho)
+            else float("-inf")
+        )
+        ev_away = (
+            (1 - ch) * american_profit(ao, True) - ch
+            if not math.isnan(ao)
+            else float("-inf")
+        )
+        if not math.isnan(ho) and ev_home >= ev_threshold and ev_home >= ev_away:
             side, odds = "home", ho
-        elif ev_away >= ev_threshold:
+        elif not math.isnan(ao) and ev_away >= ev_threshold:
             side, odds = "away", ao
         else:
             continue
         result = _ats_result(side, margins[i], spreads[i])
         won = result == "win"
         profit = 0.0 if result == "push" else american_profit(odds, won)
+        if math.isnan(profit):
+            continue
         clv = np.nan
         if not np.isnan(open_spreads[i]):
             clv = (open_spreads[i] - spreads[i]) if side == "home" else (spreads[i] - open_spreads[i])

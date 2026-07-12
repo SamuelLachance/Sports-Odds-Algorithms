@@ -324,6 +324,13 @@ def test_american_to_decimal_maps_espn_even_zero() -> None:
     assert abs(sum(probs) - 1.0) < 1e-9
 
 
+def test_american_to_decimal_rejects_invalid_magnitude() -> None:
+    """Garbage |ml| < 100 must not enable market-aware soccer heads."""
+    assert american_to_decimal(-50) is None
+    assert american_to_decimal(50) is None
+    assert american_to_decimal(75) is None
+
+
 if __name__ == "__main__":
     test_poisson_1x2_sums_to_one_and_favors_stronger_attack()
     test_engine_elo_moves_toward_winner_and_features_precede_update()
@@ -338,4 +345,5 @@ if __name__ == "__main__":
     test_blend_soccer_survives_pred_crash()
     test_fetch_current_csv_keeps_prior_on_network_failure()
     test_american_to_decimal_maps_espn_even_zero()
+    test_american_to_decimal_rejects_invalid_magnitude()
     print("test_soccer_v2.py: all tests passed")

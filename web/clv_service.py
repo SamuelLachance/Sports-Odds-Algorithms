@@ -20,14 +20,15 @@ def american_to_implied_prob(odds: int | None) -> float | None:
     return abs(odds) / (abs(odds) + 100.0)
 
 
-def devig_two_way(home_odds: int, away_odds: int) -> tuple[float, float]:
+def devig_two_way(home_odds: int, away_odds: int) -> tuple[float, float] | None:
+    """Remove vig from a two-way market. Returns None when either price is invalid."""
     home_raw = american_to_implied_prob(home_odds)
     away_raw = american_to_implied_prob(away_odds)
     if home_raw is None or away_raw is None:
-        return 0.5, 0.5
+        return None
     total = home_raw + away_raw
     if total <= 0:
-        return 0.5, 0.5
+        return None
     return home_raw / total, away_raw / total
 
 
@@ -72,12 +73,16 @@ def model_edge_vs_devigged_market(
   home_odds: int | None,
   away_odds: int | None,
 ) -> dict[str, Any]:
+    empty = {
+        "market_home_prob": None,
+        "model_minus_market_pp": None,
+    }
     if home_odds is None or away_odds is None:
-        return {
-            "market_home_prob": None,
-            "model_minus_market_pp": None,
-        }
-    market_home, _market_away = devig_two_way(home_odds, away_odds)
+        return empty
+    probs = devig_two_way(home_odds, away_odds)
+    if probs is None:
+        return empty
+    market_home, _market_away = probs
     model_p = model_home_prob / 100.0
     return {
         "market_home_prob": round(market_home * 100.0, 2),
