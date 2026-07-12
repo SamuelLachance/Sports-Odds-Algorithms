@@ -62,7 +62,10 @@ from web.league_profiles import (  # noqa: E402
     eligible_for_official_picks,
     get_algo_league,
 )
-from web.league_readiness import is_league_ready_for_daily_slate  # noqa: E402
+from web.league_readiness import (  # noqa: E402
+    assess_league_readiness,
+    is_league_ready_for_daily_slate,
+)
 from web.live_data import load_live_team_data, resolve_team  # noqa: E402
 from web.pick_strategy import (
     evaluate_official_picks_for_game,
@@ -704,6 +707,7 @@ _PUBLIC_SLATE_ERRORS = {
     "sport_prewarm": "Sport model prewarm failed.",
     "predict": "Game prediction failed.",
     "league": "League slate failed.",
+    "not_ready": "League not ready for predictions.",
 }
 
 
@@ -886,6 +890,7 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
     generated_at = datetime.now(timezone.utc).isoformat()
     all_games: list[dict[str, Any]] = []
     errors: list[dict[str, str]] = []
+    leagues_not_ready: list[dict[str, str]] = []
     slate_cutoff = _slate_cutoff_date()
     logger.info("Building daily slate (days_ahead=%s)", days_ahead)
 
@@ -934,7 +939,15 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
             if not actionable:
                 continue
 
-            if not is_league_ready_for_daily_slate(league, slate_cutoff):
+            readiness = assess_league_readiness(league, slate_cutoff)
+            if not readiness.get("ready"):
+                reason = str(
+                    readiness.get("reason") or "Insufficient season data for predictions."
+                )
+                leagues_not_ready.append({"league": league, "reason": reason})
+                logger.info(
+                    "Skipping %s — not ready (%s)", league, reason
+                )
                 continue
 
             power_cutoffs = {_today_cutoff(game) for game in actionable}

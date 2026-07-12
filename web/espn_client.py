@@ -265,6 +265,10 @@ def _parse_event(event: dict[str, Any], league: str) -> ScheduledGame | None:
     )
 
 
+class ScoreboardFetchError(RuntimeError):
+    """Raised when every ESPN scoreboard request fails (network), not an empty slate."""
+
+
 def fetch_scoreboard(
     league: str,
     on_date: date | None = None,
@@ -274,6 +278,8 @@ def fetch_scoreboard(
     profile = get_league_profile(league)
     games: list[ScheduledGame] = []
     seen: set[str] = set()
+    attempts = 0
+    failures = 0
 
     base = on_date or date.today()
     dates_to_check = [
@@ -286,9 +292,11 @@ def fetch_scoreboard(
             f"https://site.api.espn.com/apis/site/v2/sports/"
             f"{profile['sport_path']}/scoreboard?dates={date_param}"
         )
+        attempts += 1
         try:
             payload = _fetch_json(url)
         except urllib.error.URLError:
+            failures += 1
             continue
 
         for event in payload.get("events") or []:
@@ -302,19 +310,26 @@ def fetch_scoreboard(
 
     if not games and on_date is None:
         url = f"https://site.api.espn.com/apis/site/v2/sports/{profile['sport_path']}/scoreboard"
+        attempts += 1
         try:
             payload = _fetch_json(url)
         except urllib.error.URLError:
-            return games
+            failures += 1
+            payload = None
 
-        for event in payload.get("events") or []:
-            event_id = str(event.get("id") or "")
-            if not event_id or event_id in seen:
-                continue
-            seen.add(event_id)
-            parsed = _parse_event(event, league)
-            if parsed:
-                games.append(parsed)
+        if payload is not None:
+            for event in payload.get("events") or []:
+                event_id = str(event.get("id") or "")
+                if not event_id or event_id in seen:
+                    continue
+                seen.add(event_id)
+                parsed = _parse_event(event, league)
+                if parsed:
+                    games.append(parsed)
+
+    # Distinguish total network failure from a genuinely empty schedule.
+    if attempts > 0 and failures == attempts and not games:
+        raise ScoreboardFetchError(f"ESPN scoreboard unavailable for {league}")
 
     return games
 
