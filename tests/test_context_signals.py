@@ -466,5 +466,30 @@ def test_steam_open_even_zero_not_skipped_by_falsy_or() -> None:
     assert out_even["context_signals"]["steam_pp"] != 0.0
 
 
+def test_apply_context_threeway_pre_decorrelation_uses_board_clamp() -> None:
+    """Honest-EV base must use non-draw mass clamps, not binary 5–95."""
+    from unittest.mock import patch
+
+    blended = {
+        "threeway": True,
+        "home_win_probability": 68.0,
+        "draw_probability": 30.0,
+        "away_win_probability": 2.0,
+        "pre_decorrelation_home_win_probability": 68.0,
+    }
+    with (
+        patch("web.context_signals.favorite_longshot_adjustment", return_value=3.0),
+        patch("web.context_signals.steam_line_movement_shift", return_value=0.0),
+        patch("web.context_signals.news_sentiment_shift", return_value=0.0),
+    ):
+        out = apply_context_to_blend(
+            blended, market={}, headlines=[], home_names=[], away_names=[], league="epl"
+        )
+    # remaining non-draw mass = 70 → home hi = 69; both board and pre must match.
+    assert out["home_win_probability"] == 69.0
+    assert out["pre_decorrelation_home_win_probability"] == 69.0
+    assert out["away_win_probability"] == 1.0
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-q"])

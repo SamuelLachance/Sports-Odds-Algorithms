@@ -13,6 +13,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from web.league_profiles import MIN_GAMES_FOR_POWER  # noqa: E402
 from web.season_games import (  # noqa: E402
     _collect_from_scoreboards,
+    _event_date_iso,
     _load_league_game_map,
     _parse_event_to_game,
     get_league_power_context,
@@ -116,11 +117,32 @@ def test_get_league_power_context_builds_ratings_from_sample_games() -> None:
     assert param is not None
 
 
+def test_event_date_iso_uses_toronto_not_utc_for_odds_keys() -> None:
+    """Late-ET tips must key closing odds on the Toronto calendar day."""
+    from web.closing_odds_db import _lookup_us_odds_row
+    from web.espn_client import iso_to_project_date
+
+    # Jul 1 10pm ET → Toronto 2025-07-01, UTC calendar date 2025-07-02.
+    iso = "2025-07-02T02:00:00Z"
+    assert iso_to_project_date(iso) == "7-1-2025"
+    assert _event_date_iso(iso) == "2025-07-01"
+    assert _event_date_iso("2025-07-01") == "2025-07-01"
+
+    index = {
+        ("2025-07-01", "bos", "nyy"): {"home_close_ml": -130, "tag": "g1"},
+        ("2025-07-02", "bos", "nyy"): {"home_close_ml": -150, "tag": "g2"},
+    }
+    hit = _lookup_us_odds_row(index, _event_date_iso(iso), "bos", "nyy")
+    assert hit is not None
+    assert hit["tag"] == "g1"
+
+
 if __name__ == "__main__":
     test_parse_event_to_game_normalizes_abbreviations()
     test_get_league_power_context_requires_min_games()
     test_get_league_power_context_builds_ratings_from_sample_games()
     test_collect_from_scoreboards_deduplicates_events()
+    test_event_date_iso_uses_toronto_not_utc_for_odds_keys()
     print("test_season_games.py: all tests passed")
     cutoff = datetime(2026, 6, 12, tzinfo=timezone.utc)
     event = _completed_event(

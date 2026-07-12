@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import json
 import urllib.request
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from functools import lru_cache
 from typing import Any
+from zoneinfo import ZoneInfo
 
 from web.espn_client import (
     ESPN_ABBR_ALIASES,
@@ -212,8 +213,24 @@ def _scoreboard_lookback_days(league: str) -> int:
 
 
 def _event_date_iso(event_date: str) -> str:
+    """Calendar day YYYY-MM-DD in America/Toronto for closing-odds keys.
+
+    Truncating UTC ISO stamps mis-keys late-ET games onto the next UTC day,
+    which can attach the wrong close on consecutive same-matchup series.
+    Bare ``YYYY-MM-DD`` labels are kept as-is.
+    """
     raw = str(event_date or "").strip()
-    return raw[:10] if raw else ""
+    if not raw:
+        return ""
+    if len(raw) == 10 and raw[4] == "-" and raw[7] == "-" and "T" not in raw:
+        return raw
+    try:
+        parsed = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except ValueError:
+        return raw[:10]
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(ZoneInfo("America/Toronto")).date().isoformat()
 
 
 def _load_league_game_map(

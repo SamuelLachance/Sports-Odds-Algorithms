@@ -146,7 +146,16 @@ def within_hubacek_ml_range(league: str | None, american_odds: float | None) -> 
     # League ML windows are hard gates — missing odds fail closed.
     if american_odds is None:
         return False
-    return ml_range[0] <= float(american_odds) <= ml_range[1]
+    from web.bet_advisor import normalize_american_odds
+
+    try:
+        odds_int = int(float(american_odds))
+    except (TypeError, ValueError):
+        return False
+    normalized = normalize_american_odds(odds_int)
+    if normalized is None:
+        return False
+    return ml_range[0] <= float(normalized) <= ml_range[1]
 
 
 def _blend_is_decorrelated(blended: dict[str, Any]) -> bool:

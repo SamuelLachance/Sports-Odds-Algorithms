@@ -106,13 +106,35 @@ def test_moneyline_edge_same_sign_favorite() -> None:
 
 
 def test_moneyline_edge_cross_sign_model_dog_market_fav() -> None:
-    """Model underdog priced as favorite: compare to breakeven, not raw subtraction."""
-    edge = _odds_edge(122, -70, 45.0)
+    """Model underdog priced as favorite: compare to breakeven, not raw subtraction.
+
+    For a 45% side, favorite breakeven is ~-82. Any valid American favorite
+    (≤ -100) is worse than that, so edge is 0 — garbage like -70 must not invent
+    a positive edge either (see test_odds_edge_rejects_invalid_sub_100_american).
+    """
+    edge = _odds_edge(122, -110, 45.0)
     fair_underdog = _breakeven_american(45.0, as_underdog=True)
     breakeven_fav = _breakeven_american(45.0, as_underdog=False)
-    assert edge > 0.0
-    assert edge == float(-70 - breakeven_fav)
     assert fair_underdog > 0
+    assert breakeven_fav > -100  # sub-50% "favorite" fair is softer than -100
+    assert edge == 0.0
+    # Higher-confidence dog can still clear a soft favorite price.
+    edge_soft = _odds_edge(100, -105, 48.0)
+    be_soft = _breakeven_american(48.0, as_underdog=False)
+    # 48% fav breakeven ≈ -92; -105 is still worse → 0
+    assert be_soft > -100
+    assert edge_soft == 0.0
+    # Model favorite priced softer as dog: classic +value cross-sign.
+    padres_prob = 54.79
+    edge_dog = _odds_edge(-121, 109, padres_prob)
+    assert edge_dog > 0.0
+
+
+def test_odds_edge_rejects_invalid_sub_100_american() -> None:
+    """Garbage |odds| < 100 must not invent a positive edge."""
+    assert _odds_edge(150, -50, 40.0) == 0.0
+    assert _odds_edge(-150, 50, 60.0) == 0.0
+    assert _odds_edge(122, -70, 45.0) == 0.0
 
 
 def test_pick_em_win_probs() -> None:

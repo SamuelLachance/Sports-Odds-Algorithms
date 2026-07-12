@@ -185,3 +185,30 @@ def test_sbr_archive_parsers_keep_even_ml_and_pickem_spread() -> None:
     assert _parse_optional_float(-3.5) == -3.5
     assert _parse_optional_float("") is None
     assert _parse_optional_float(None) is None
+
+
+def test_nhl_html_repairs_same_sign_puck_lines() -> None:
+    """NHL HTML must mirror same-sign closes like NBA/NFL, not write both negative."""
+    from unittest.mock import patch
+
+    from web.sbr_odds import _rows_from_nhl_html
+
+    cells = lambda *vals: "".join(f"<td>{v}</td>" for v in vals)
+    # NHL layout: date, …, name@3, …, ML@9, spread@10, juice@11
+    html = (
+        "<table>"
+        f"<tr>{cells(*([f'h{i}' for i in range(12)]))}</tr>"
+        f"<tr>{cells(*(['sub'] * 12))}</tr>"
+        f"<tr>{cells('1015', '', '', 'Boston', '', '', '', '', '', '-150', '-1.5', '-110')}</tr>"
+        f"<tr>{cells('1015', '', '', 'Montreal', '', '', '', '', '', '130', '-1.5', '-110')}</tr>"
+        "</table>"
+    )
+    with patch("web.sbr_odds._translate_name", side_effect=lambda _s, name, _t: name):
+        with patch(
+            "web.sbr_odds.normalize_team_key",
+            side_effect=lambda _s, name: name.lower()[:3],
+        ):
+            rows = _rows_from_nhl_html("nhl", 2023, html, {})
+    assert len(rows) == 1
+    assert rows[0]["home_close_spread"] == -1.5
+    assert rows[0]["away_close_spread"] == 1.5

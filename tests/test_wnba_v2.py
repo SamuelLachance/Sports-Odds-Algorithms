@@ -245,6 +245,29 @@ def test_wnba_v2_side_odds_maps_even_spread_juice() -> None:
     assert junk["spread_odds"] is None
 
 
+def test_wnba_v2_side_odds_reads_espn_close_nested_shape() -> None:
+    from web.wnba_v2.data import _side_odds
+
+    out = _side_odds(
+        {
+            "close": {
+                "moneyLine": {"american": -160},
+                "pointSpread": {"american": -3.5},
+                "spread": {"american": -105},
+            },
+            "open": {
+                "moneyLine": {"american": -155},
+                "pointSpread": {"american": -3.0},
+            },
+        }
+    )
+    assert out["ml"] == -160.0
+    assert out["spread_odds"] == -105.0
+    assert out["point_spread"] == -3.5
+    assert out["ml_open"] == -155.0
+    assert out["spread_open"] == -3.0
+
+
 def test_wnba_v2_preserves_signed_spread_when_favorite_missing() -> None:
     from unittest.mock import patch
 

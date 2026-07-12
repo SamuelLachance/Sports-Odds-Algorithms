@@ -139,6 +139,21 @@ def test_simulate_market_moneylines_near_even_stay_valid_american() -> None:
         assert abs(home_ml) >= 100, (home_prob, home_ml)
 
 
+def test_apply_synthetic_vig_worsens_even_money_price() -> None:
+    """Near-even dogs must take juice, not snap back to fair +100."""
+    from web.clv_service import american_to_implied_prob
+    from web.pick_strategy import _apply_synthetic_vig
+
+    assert _apply_synthetic_vig(-100) == -104
+    juiced = _apply_synthetic_vig(100)
+    assert abs(juiced) >= 100
+    assert american_to_implied_prob(juiced) > american_to_implied_prob(100)
+    # Asymmetric pick'em markets should juice both sides.
+    away_ml, home_ml = simulate_market_moneylines(50.0)
+    assert american_to_implied_prob(away_ml) > 0.5
+    assert american_to_implied_prob(home_ml) > 0.5
+
+
 def test_evaluate_backtest_pick_uses_real_spread_when_provided() -> None:
     thresholds = {
         **DEFAULT_THRESHOLDS,
@@ -248,3 +263,19 @@ def test_simulate_market_threeway_applies_synthetic_vig() -> None:
         + american_implied_prob(home_ml)
     )
     assert overround > 1.02
+
+
+def test_closing_market_fields_includes_draw_close_ml(monkeypatch) -> None:
+    """Soccer closes must surface draw ML, not only home/away."""
+    monkeypatch.setattr(
+        "web.pick_strategy.closing_odds_lookup",
+        lambda *_a, **_k: {
+            "home_close_ml": -120,
+            "draw_close_ml": 240,
+            "away_close_ml": 320,
+        },
+    )
+    fields = _closing_market_fields("epl", "2024-01-15", "ars", "che")
+    assert fields["market_home_odds"] == -120
+    assert fields["market_draw_odds"] == 240
+    assert fields["market_away_odds"] == 320

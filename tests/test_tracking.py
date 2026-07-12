@@ -158,6 +158,24 @@ def test_record_and_grade() -> None:
     assert response["summary"]["wins"] == 1
 
 
+def test_tracking_response_sorts_same_day_by_edge_desc() -> None:
+    """Within a calendar day, higher-edge bets should list first."""
+    low = _sample_pick()
+    low["date"] = "2026-06-11"
+    low["event_id"] = "low"
+    low["edge"] = 2.0
+    high = _sample_pick()
+    high["date"] = "2026-06-11"
+    high["event_id"] = "high"
+    high["edge"] = 8.0
+    newer = _sample_pick()
+    newer["date"] = "2026-06-12"
+    newer["event_id"] = "newer"
+    newer["edge"] = 1.0
+    response = build_tracking_response({"version": 1, "bets": [low, high, newer]})
+    assert [b["event_id"] for b in response["bets"]] == ["newer", "high", "low"]
+
+
 def test_rejects_low_confidence() -> None:
     """Confidence bar applies in leagues that keep one (MLB's is 0 by backtest)."""
     low_conf_nhl = {**_sample_pick(win_probability=55), "league": "nhl", "league_name": "NHL"}

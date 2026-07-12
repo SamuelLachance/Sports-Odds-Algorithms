@@ -148,8 +148,9 @@ class Odds_Calculator:
 
 		to_output.append("Perc chance to win: "+str(winning_odds)+"%")
 
+		# Favorite: p/(100-p)*100 → -X; underdog: (100-p)/p*100 → +Y (not a mirror).
 		favorable_odds=(100/(100-winning_odds) - 1)*100
-		underdog_odds=(100/(100-winning_odds) - 1)*100
+		underdog_odds=(100/winning_odds - 1)*100 if winning_odds else 0
 		to_output.append("Favorable team odds: -"+str(favorable_odds))
 		to_output.append("Underdog team odds: +"+str(underdog_odds))
 

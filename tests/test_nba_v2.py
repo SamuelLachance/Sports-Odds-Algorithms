@@ -499,6 +499,30 @@ def test_nba_v2_side_odds_maps_even_spread_juice() -> None:
     assert junk["spread_odds"] is None
 
 
+def test_nba_v2_side_odds_reads_espn_close_nested_shape() -> None:
+    """Core ESPN odds use close.*; flat spreadOdds/current must not be required."""
+    from web.nba_v2.data import _side_odds
+
+    side = {
+        "moneyLine": -150,
+        "close": {
+            "moneyLine": {"american": -150},
+            "pointSpread": {"american": -4.5},
+            "spread": {"american": -110},
+        },
+        "open": {
+            "moneyLine": {"american": -145},
+            "pointSpread": {"american": -4.0},
+        },
+    }
+    out = _side_odds(side)
+    assert out["ml"] == -150.0
+    assert out["spread_odds"] == -110.0
+    assert out["point_spread"] == -4.5
+    assert out["ml_open"] == -145.0
+    assert out["spread_open"] == -4.0
+
+
 def test_nba_v2_preserves_signed_spread_when_favorite_missing() -> None:
     """Flat signed ESPN spread must not flip when favorite flag is absent/false."""
     from unittest.mock import patch

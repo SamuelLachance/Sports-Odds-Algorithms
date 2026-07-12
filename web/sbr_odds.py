@@ -241,6 +241,21 @@ def _rows_from_nhl_html(sport: str, season: int, html: str, translated: dict[str
         home_key = normalize_team_key(sport, home_name)
         if not away_key or not home_key:
             continue
+        home_spread = _spread_line_cell(home_row[10])
+        away_spread = _spread_line_cell(away_row[10])
+        # Mirror sparse / same-sign puck lines (same repair as NBA/NFL HTML).
+        if home_spread is not None and away_spread is None:
+            away_spread = -home_spread
+        elif away_spread is not None and home_spread is None:
+            home_spread = -away_spread
+        elif (
+            home_spread is not None
+            and away_spread is not None
+            and home_spread != 0
+            and away_spread != 0
+            and (home_spread > 0) == (away_spread > 0)
+        ):
+            away_spread = -home_spread
         output.append(
             {
                 # COVID 2020-21 NHL slate was played in calendar 2021; SBR
@@ -255,8 +270,8 @@ def _rows_from_nhl_html(sport: str, season: int, html: str, translated: dict[str
                 "away_key": away_key,
                 "home_close_ml": _american_ml_cell(home_row[9]),
                 "away_close_ml": _american_ml_cell(away_row[9]),
-                "home_close_spread": _spread_line_cell(home_row[10]),
-                "away_close_spread": _spread_line_cell(away_row[10]),
+                "home_close_spread": home_spread,
+                "away_close_spread": away_spread,
                 "home_spread_odds": _spread_juice_cell(home_row[11]),
                 "away_spread_odds": _spread_juice_cell(away_row[11]),
                 "source": "sbr-online",

@@ -30,6 +30,9 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from web.nba_odds_espn import OUTPUT_FIELDS, _consensus, _get_json  # noqa: E402
 from web.season_games import _normalize_abbr  # noqa: E402
 
+# CFB blowouts routinely exceed NBA's 40-pt handicap cap (archive max ~115).
+MAX_CFB_SPREAD = 120.0
+
 CACHE_DIR = PROJECT_ROOT / ".build-cache" / "cfb-odds"
 OUTPUT_CSV = PROJECT_ROOT / "data" / "supplemental" / "closing-odds" / "cfb.csv"
 
@@ -133,7 +136,7 @@ def _odds_row(event: dict[str, Any]) -> dict[str, Any]:
     ]
     if not items:
         return row
-    consensus = _consensus(items)
+    consensus = _consensus(items, max_handicap_abs=MAX_CFB_SPREAD)
     if consensus.get("home_close_spread") is None and consensus.get("home_close_ml") is None:
         return row
     row.update(
@@ -142,8 +145,9 @@ def _odds_row(event: dict[str, Any]) -> dict[str, Any]:
             "away_close_ml": consensus["away_close_ml"],
             "home_close_spread": consensus["home_close_spread"],
             "away_close_spread": consensus["away_close_spread"],
-            "home_spread_odds": consensus["home_spread_odds"] or -110,
-            "away_spread_odds": consensus["away_spread_odds"] or -110,
+            # Fail closed: do not invent -110 juice when books omit spread odds.
+            "home_spread_odds": consensus["home_spread_odds"],
+            "away_spread_odds": consensus["away_spread_odds"],
             "home_open_spread": consensus["home_open_spread"],
             "away_open_spread": consensus["away_open_spread"],
             "close_total": consensus["close_total"],

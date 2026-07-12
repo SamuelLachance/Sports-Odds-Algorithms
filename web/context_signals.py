@@ -506,9 +506,19 @@ def apply_context_to_blend(
     if updated.get("pre_decorrelation_home_win_probability") is not None:
         pre = float(updated["pre_decorrelation_home_win_probability"])
         updated["pre_context_pre_decorrelation_home_win_probability"] = round(pre, 2)
-        updated["pre_decorrelation_home_win_probability"] = round(
-            _clamp(pre + total_shift, 5.0, 95.0), 2
-        )
+        if updated.get("threeway") and updated.get("draw_probability") is not None:
+            # Match threeway board clamps (non-draw mass), not binary 5–95.
+            draw_for_pre = float(updated["draw_probability"])
+            remaining_pre = max(100.0 - draw_for_pre, 0.0)
+            lo_pre = min(1.0, remaining_pre)
+            hi_pre = max(lo_pre, min(97.0, remaining_pre - min(1.0, remaining_pre)))
+            new_pre = _clamp(pre + total_shift, lo_pre, hi_pre)
+            new_pre = min(max(new_pre, 0.0), remaining_pre)
+            updated["pre_decorrelation_home_win_probability"] = round(new_pre, 2)
+        else:
+            updated["pre_decorrelation_home_win_probability"] = round(
+                _clamp(pre + total_shift, 5.0, 95.0), 2
+            )
     for key in ("hockey_pred", "basketball_pred", "baseball_pred", "football_pred"):
         pred = updated.get(key)
         if not isinstance(pred, dict) or pred.get("home_win_probability") is None:

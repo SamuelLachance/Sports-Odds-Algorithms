@@ -148,3 +148,23 @@ def test_closing_odds_coverage_counts_rows(tmp_path: Path, monkeypatch) -> None:
     coverage = closing_odds_db.closing_odds_coverage("nhl")
     assert coverage["rows"] == 1
     assert "nhl.csv" in coverage["source"]
+
+
+def test_flip_two_way_odds_swaps_sparse_spreads() -> None:
+    """Home/away flip must swap sparse spread lines with their juice."""
+    flipped = closing_odds_db._flip_two_way_odds(
+        {
+            "home_close_ml": -150,
+            "away_close_ml": 130,
+            "home_close_spread": None,
+            "away_close_spread": 3.5,
+            "home_spread_odds": None,
+            "away_spread_odds": -110,
+        }
+    )
+    assert flipped["home_close_ml"] == 130
+    assert flipped["away_close_ml"] == -150
+    assert flipped["home_close_spread"] == 3.5
+    assert flipped["away_close_spread"] is None
+    assert flipped["home_spread_odds"] == -110
+    assert flipped["away_spread_odds"] is None

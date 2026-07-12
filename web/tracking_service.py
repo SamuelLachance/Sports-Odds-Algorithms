@@ -795,7 +795,8 @@ def build_tracking_response(store: dict[str, Any]) -> dict[str, Any]:
     official_bets = _official_tracked_bets(store["bets"])
     sorted_bets = sorted(
         official_bets,
-        key=lambda b: (b.get("date", ""), -(b.get("edge") or 0)),
+        # Newest date first; within a day, highest edge first.
+        key=lambda b: (b.get("date", ""), b.get("edge") or 0),
         reverse=True,
     )
     all_time = _summarize_bets(official_bets)

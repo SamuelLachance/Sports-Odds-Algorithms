@@ -171,10 +171,18 @@ def simulate_market_spread(
 
 
 def _apply_synthetic_vig(american_ml: int) -> int:
-    """Widen fair American odds with vig; keep |odds| >= 100 (valid American)."""
+    """Widen fair American odds with vig; keep |odds| >= 100 (valid American).
+
+    Near-even plus-money (``+100``…``~+104``) would land in invalid ``|x| < 100``
+    after ``* 0.96``; clamping back to ``+100`` cancels the juice while favorites
+    still get juiced. Cross to soft favorite juice instead.
+    """
     if american_ml < 0:
         return min(int(american_ml * 1.04), -100)
-    return max(int(american_ml * 0.96), 100)
+    juiced = int(american_ml * 0.96)
+    if juiced >= 100:
+        return juiced
+    return min(int(-100 * 1.04), -100)
 
 
 def simulate_market_moneylines(
@@ -345,6 +353,8 @@ def _closing_market_fields(
     fields: dict[str, Any] = {}
     if odds.get("home_close_ml") is not None:
         fields["market_home_odds"] = odds["home_close_ml"]
+    if odds.get("draw_close_ml") is not None:
+        fields["market_draw_odds"] = odds["draw_close_ml"]
     if odds.get("away_close_ml") is not None:
         fields["market_away_odds"] = odds["away_close_ml"]
     if odds.get("home_close_spread") is not None:

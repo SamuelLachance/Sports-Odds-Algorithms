@@ -125,18 +125,19 @@ def _iso_date(raw: str) -> str:
 
 
 def _flip_two_way_odds(row: dict[str, Any]) -> dict[str, Any]:
-    """Swap home/away orientation for a matched odds row."""
+    """Swap home/away orientation for a matched odds row.
+
+    Spread *lines* must swap like moneylines/juice. Negating in place only
+    works when both sides are present and complementary; sparse rows would
+    leave juice on the opposite side from the line.
+    """
     flipped = dict(row)
     flipped["home_close_ml"] = row.get("away_close_ml")
     flipped["away_close_ml"] = row.get("home_close_ml")
     flipped["home_open_ml"] = row.get("away_open_ml")
     flipped["away_open_ml"] = row.get("home_open_ml")
-    home_spread = row.get("home_close_spread")
-    away_spread = row.get("away_close_spread")
-    if home_spread is not None:
-        flipped["home_close_spread"] = -float(home_spread)
-    if away_spread is not None:
-        flipped["away_close_spread"] = -float(away_spread)
+    flipped["home_close_spread"] = row.get("away_close_spread")
+    flipped["away_close_spread"] = row.get("home_close_spread")
     flipped["home_spread_odds"] = row.get("away_spread_odds")
     flipped["away_spread_odds"] = row.get("home_spread_odds")
     return flipped

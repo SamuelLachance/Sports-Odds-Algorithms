@@ -43,6 +43,9 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from web.cbb_v2.data import canon_abbr  # noqa: E402
 from web.nba_odds_espn import OUTPUT_FIELDS, _consensus, _get_json  # noqa: E402
 
+# CBB blowouts can exceed NBA's 40-pt cap (archive max ~54.5).
+MAX_CBB_SPREAD = 60.0
+
 try:
     from web.closing_odds_db import clear_closing_odds_cache
 except ImportError:  # pragma: no cover - optional in lean checkouts
@@ -169,7 +172,7 @@ def _odds_row(event: dict[str, Any]) -> dict[str, Any]:
     items = payload.get("items") if isinstance(payload, dict) else None
     if not items:
         return row
-    consensus = _consensus(items)
+    consensus = _consensus(items, max_handicap_abs=MAX_CBB_SPREAD)
     if not consensus:
         return row
     row.update(consensus)

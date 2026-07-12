@@ -200,8 +200,11 @@ def _odds_edge(model_projection: int, market_odds: int, model_prob_pct: float) -
     instead of subtracting across zero (e.g. +109 vs -121 is not +230).
     """
     # ESPN/EVEN sometimes arrives as 0; treat as +100 (match EV helpers).
-    if market_odds == 0:
-        market_odds = 100
+    # Reject |odds| < 100 garbage — same fail-closed as normalize_american_odds.
+    normalized = normalize_american_odds(market_odds)
+    if normalized is None:
+        return 0.0
+    market_odds = normalized
     fair_odds = _probability_to_american(model_prob_pct)
     same_sign = (fair_odds >= 0 and market_odds >= 0) or (
         fair_odds <= 0 and market_odds <= 0

@@ -353,25 +353,43 @@ def _signed_spread_from_details(details: str, home_abbr: str, away_abbr: str) ->
 
 
 def _side_odds(item_side: dict[str, Any]) -> dict[str, Any]:
-    from web.nba_odds_espn import MAX_NBA_SPREAD, _valid_handicap_line
+    from web.nba_odds_espn import MAX_NBA_SPREAD, _nested_american, _valid_handicap_line
 
+    side = item_side or {}
+    # Prefer ESPN core close.* shape (same as live multi-book); fall back to flat.
+    ml = _american(_nested_american(side, "close", "moneyLine"))
+    if ml is None:
+        ml = _american(side.get("moneyLine"))
+    spread_odds = _american(_nested_american(side, "close", "spread"))
+    if spread_odds is None:
+        spread_odds = _american(side.get("spreadOdds"))
+    raw_ps = _nested_american(side, "close", "pointSpread")
+    if raw_ps is None:
+        current = side.get("current") or {}
+        ps = (current.get("pointSpread") or {}).get("american")
+        raw_ps = _to_float(str(ps).replace("+", "")) if ps not in (None, "") else None
     out: dict[str, Any] = {
-        "ml": _american((item_side or {}).get("moneyLine")),
-        # Spread juice is American odds; reuse EVEN→+100 / reject |x|<100.
-        "spread_odds": _american((item_side or {}).get("spreadOdds")),
+        "ml": ml,
+        "spread_odds": spread_odds,
+        # Drop ML-sized values ESPN sometimes dumps into pointSpread.
+        "point_spread": _valid_handicap_line(raw_ps, max_abs=MAX_NBA_SPREAD),
     }
-    current = (item_side or {}).get("current") or {}
-    ps = (current.get("pointSpread") or {}).get("american")
-    raw_ps = _to_float(str(ps).replace("+", "")) if ps not in (None, "") else None
-    # Drop ML-sized values ESPN sometimes dumps into pointSpread.
-    out["point_spread"] = _valid_handicap_line(raw_ps, max_abs=MAX_NBA_SPREAD)
-    open_blob = (item_side or {}).get("open") or {}
-    ml_open = (open_blob.get("moneyLine") or {}).get("american")
-    out["ml_open"] = _american(str(ml_open).replace("+", "")) if ml_open not in (None, "") else None
-    ps_open = (open_blob.get("pointSpread") or {}).get("american")
-    raw_open = (
-        _to_float(str(ps_open).replace("+", "")) if ps_open not in (None, "") else None
-    )
+    open_blob = side.get("open") or {}
+    ml_open = _nested_american(side, "open", "moneyLine")
+    if ml_open is None:
+        ml_open_raw = (open_blob.get("moneyLine") or {}).get("american")
+        ml_open = (
+            _to_float(str(ml_open_raw).replace("+", ""))
+            if ml_open_raw not in (None, "")
+            else None
+        )
+    out["ml_open"] = _american(ml_open)
+    raw_open = _nested_american(side, "open", "pointSpread")
+    if raw_open is None:
+        ps_open = (open_blob.get("pointSpread") or {}).get("american")
+        raw_open = (
+            _to_float(str(ps_open).replace("+", "")) if ps_open not in (None, "") else None
+        )
     out["spread_open"] = _valid_handicap_line(raw_open, max_abs=MAX_NBA_SPREAD)
     return out
 

@@ -40,6 +40,11 @@ def test_within_hubacek_ml_range_fails_closed_on_missing_odds() -> None:
     assert within_hubacek_ml_range("mlb", None) is False
     assert within_hubacek_ml_range("mlb", -110) is True
     assert within_hubacek_ml_range("mlb", 240) is False
+    # Invalid American magnitudes must fail closed (not raw interval membership).
+    assert within_hubacek_ml_range("mlb", 50) is False
+    assert within_hubacek_ml_range("mlb", -75) is False
+    # EVEN (0) normalizes to +100 and stays in-window for MLB.
+    assert within_hubacek_ml_range("mlb", 0) is True
     # Spread-only leagues without ml_lo/ml_hi stay permissive.
     assert within_hubacek_ml_range("nba", None) is True
     assert within_hubacek_ml_range(None, None) is True
