@@ -377,7 +377,7 @@ def test_mlb_official_picks_respect_ml_price_window() -> None:
 
 
 def test_nfl_cfb_official_picks_disabled_by_backtest() -> None:
-    """NFL/CFB cleared all-seasons-positive; CBB remains disabled."""
+    """NFL/CFB/CBB cleared all-seasons-positive enable bars."""
     from web.hubacek_picks import clear_strategy_cache
     from web.league_profiles import eligible_for_official_picks
     from web.pick_strategy import load_pick_strategy
@@ -395,5 +395,8 @@ def test_nfl_cfb_official_picks_disabled_by_backtest() -> None:
     assert cfb["enabled"] is True
     assert eligible_for_official_picks("cfb") is True
 
-    assert get_pick_thresholds("cbb")["enabled"] is False
-    assert eligible_for_official_picks("cbb") is False
+    cbb = get_pick_thresholds("cbb")
+    assert cbb["bet_type"] == "moneyline"
+    assert cbb["enabled"] is True
+    assert cbb["allowed_sides"] == ["home"]
+    assert eligible_for_official_picks("cbb") is True

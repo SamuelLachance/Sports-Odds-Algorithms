@@ -50,17 +50,18 @@
     "backtest_bets": 52
   },
   "cbb": {
-    "bet_type": "spread",
-    "min_spread_cover_gap_pp": 10.0,
-    "min_spread_point_edge": 3.0,
-    "min_spread_confidence_pp": 5.0,
+    "bet_type": "moneyline",
+    "min_market_gap_pp": 2.2,
+    "min_win_confidence_pp": 15.0,
     "min_ev_pct": 2.0,
-    "enabled": false,
-    "note": "Official tracking stays disabled pending multi-season odds coverage. Close-line Hubacek sweep still catastrophic on the single-season window; expanding odds history via scripts/fetch_cbb_odds.py.",
-    "backtest_roi_pct": -57.62,
-    "backtest_bets": 3994,
-    "backtest_open_roi_pct": 3.41,
-    "backtest_open_bets": 1640
+    "ml_lo": -150,
+    "ml_hi": 200,
+    "allowed_sides": ["home"],
+    "fav_mode": "favorite",
+    "enabled": true,
+    "note": "Re-enabled 2026-07-12 as moneyline (not spread): home favorites only, raw gap >= 2 pp (2.2 after 1.12x decorrelation), EV >= 2%, |p-50| >= 15 pp, ML −150..+200 vs close. Multi-season odds join (2023-2025 conference windows): ROI +20.9% / 188 bets, all 3 seasons positive, worst +14.4%. Spread Hubacek grids still fail the 3-season bar.",
+    "backtest_roi_pct": 20.9,
+    "backtest_bets": 188
   },
   "nfl": {
     "bet_type": "moneyline",

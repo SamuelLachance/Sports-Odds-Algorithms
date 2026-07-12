@@ -108,7 +108,7 @@ function predictionsOnlyPill(league) {
 function officialEmptyPanel(hubacekRule) {
   return `<div class="panel empty-panel empty-panel--official">
     <strong>No official picks today</strong>
-    <p class="muted">Nothing cleared the official Hubáček gate on tracked leagues (NBA, WNBA, NHL, MLB, NFL, CFB, calibrated soccer). CBB stays predictions-only — see Model predictions below when model value spots exist.</p>
+    <p class="muted">Nothing cleared the official Hubáček gate on tracked leagues (NBA, WNBA, CBB, NHL, MLB, NFL, CFB, calibrated soccer). See Model predictions below when model value spots exist.</p>
     <p class="muted empty-panel-rule">${escapeHtml(hubacekRule)}</p>
   </div>`;
 }
@@ -1845,7 +1845,7 @@ function viewPicks() {
   appRoot.innerHTML = `
     <section class="page-head">
       <h1>Algo picks</h1>
-      <p><strong>Official Hubáček tracking</strong> covers NBA, WNBA, NHL, MLB, NFL, CFB, and calibrated soccer. <strong>CBB</strong> stays predictions-only until multi-season odds clear the enable bar. On tracked leagues, official spots fire when the decorrelated model beats the de-vigged book by a backtested per-league gap with honest EV, confidence floors, and side/favorite filters where the all-seasons-positive search required them. Stakes are quarter-Kelly (0.25–3u).</p>
+      <p><strong>Official Hubáček tracking</strong> covers NBA, WNBA, CBB, NHL, MLB, NFL, CFB, and calibrated soccer. Official spots fire when the decorrelated model beats the de-vigged book by a backtested per-league gap with honest EV, confidence floors, and side/favorite filters where the all-seasons-positive search required them. Stakes are quarter-Kelly (0.25–3u).</p>
       <p class="muted">Official gate: ${escapeHtml(hubacekRule)}</p>
     </section>
     ${disclaimerBar()}
@@ -2683,7 +2683,7 @@ function viewTracking(options = {}) {
 
     <div class="panel tracking-scope-note" role="note">
       <strong>Official book scope</strong>
-      <p class="muted">Rollups cover NBA, WNBA, NHL, MLB, NFL, CFB, and calibrated soccer. <span class="edge-badge edge-badge--ref">Predictions only</span> (CBB) is excluded from this book — it never appears as an empty 0–0 official rollup.</p>
+      <p class="muted">Rollups cover NBA, WNBA, CBB, NHL, MLB, NFL, CFB, and calibrated soccer.</p>
     </div>
 
     ${youngBook ? `<div class="panel empty-panel tracking-empty-expect">
@@ -2798,7 +2798,7 @@ function viewMethodology() {
         <li><strong>Legacy Algo V2 / power ratings</strong> — efficiency engine and margin-based ratings used as baselines or fallbacks, especially where v2 is thin or absent.</li>
         <li><strong>Other sport layers</strong> — MLB RunCast, Dixon–Coles for soccer, BasketballMatrix / Torvik fallback for CBB, and nfelo-style ratings as supporting football signals.</li>
       </ul>
-      <p>A per-league <strong>meta-stack</strong> decides how much to trust each available layer, and a <strong>temperature calibration</strong> pass rescales the probability so that, against history, "60%" actually means about 60%. Official Hubáček tracking is enabled for NBA, WNBA, NHL, MLB, NFL, CFB, and calibrated soccer; CBB remains predictions-only until multi-season odds clear the enable bar.</p>
+      <p>A per-league <strong>meta-stack</strong> decides how much to trust each available layer, and a <strong>temperature calibration</strong> pass rescales the probability so that, against history, "60%" actually means about 60%. Official Hubáček tracking is enabled for NBA, WNBA, CBB, NHL, MLB, NFL, CFB, and calibrated soccer when each league’s walk-forward policy clears the all-seasons-positive enable bar.</p>
     </section>
 
     <section class="section panel methodology-body">
@@ -2811,18 +2811,16 @@ function viewMethodology() {
         <li><strong>Honest EV</strong> — expected value computed from the calibrated <em>pre-decorrelation</em> probability, so the decorrelation shove never inflates the printed edge or the Kelly stake.</li>
       </ul>
       <p class="muted methodology-cite">Hubáček, O., Šourek, G., &amp; Železný, F. (2019). “Exploiting sports-betting market using machine learning.” <em>International Journal of Forecasting</em>, 35(2). <a class="text-link" href="https://doi.org/10.1016/j.ijforecast.2019.01.001" target="_blank" rel="noopener noreferrer">doi:10.1016/j.ijforecast.2019.01.001</a></p>
-      <p class="muted">CBB shows the same probability tracks for research, but the Hubáček official gate stays off until multi-season walk-forward backtests clear the positive worst-season enable bar.</p>
+      <p class="muted">Every tracked league must clear an all-seasons-positive walk-forward policy (side/favorite filters included when needed) before entering the official book.</p>
     </section>
 
     <section class="section panel methodology-body">
-      <h2>Why CBB official picks stay off</h2>
-      <p><code>cbb_v2</code> is live for board probabilities and reference spread analysis, but <strong>official Hubáček tracking stays disabled</strong>. The latest walk-forward gate sweep against closing spreads (2024–25 window, ~5.6k games with a spread) failed the enable bar:</p>
+      <h2>Why CBB switched to moneyline</h2>
+      <p><code>cbb_v2</code> spread Hubáček grids still fail the three-season enable bar at the close. After expanding odds coverage (2023–2025 conference windows), a <strong>home-favorite moneyline</strong> policy cleared all three seasons:</p>
       <ul>
-        <li><strong>Close-line best policy:</strong> −57.6% ROI over 3,994 bets (worst-season ROI −57.6%; 0 of 1 seasons positive).</li>
-        <li><strong>Open-line research best:</strong> +3.4% ROI on 1,640 bets — single-season only, and not strong enough to override the close-line collapse.</li>
-        <li><strong>Enable rule:</strong> write <code>bet_policy.json</code> with <code>enabled: true</code> only when the best policy has <em>positive</em> worst-season ROI at the execution price we would actually take. Close fails that bar badly; open’s tiny single-season edge does not clear it either.</li>
+        <li><strong>Close-line ML policy:</strong> +20.9% ROI over 188 bets (worst-season +14.4%; 3 of 3 seasons positive). Home favorites only, gap ≥ 2 pp, EV ≥ 2%, |p−50| ≥ 15 pp, prices −150..+200.</li>
+        <li><strong>Spread grids:</strong> still no all-seasons-positive close policy — official CBB tracking uses moneyline, not ATS.</li>
       </ul>
-      <p class="muted">Until a multi-season close-line (or proven open-lock) policy clears that bar, CBB remains predictions-only — never logged in the official tracking book.</p>
     </section>
 
     <section class="section panel methodology-body">
@@ -2854,7 +2852,7 @@ function viewMethodology() {
     <section class="section panel methodology-body">
       <h2>Honest limitations</h2>
       <ul>
-        <li><strong>CBB official picks stay off.</strong> Close-line best gate remains catastrophic (−57.6% on the available window). WNBA/NHL/NFL/CFB were re-enabled only after all-seasons-positive side/favorite filters cleared the enable bar.</li>
+        <li><strong>CBB official tracking is moneyline-only.</strong> Spread Hubáček grids still fail the three-season bar; the enabled home-favorite ML policy is +20.9% / 188 bets (2023–2025, worst +14.4%).</li>
         <li><strong>Beating the close is unproven for NBA.</strong> A pilot of the NBA model graded at real closing lines returned −1.5% ATS with negative CLV. Whatever edge exists lives earlier in the day, not at the close.</li>
         <li><strong>MLB edge concentrates at the open.</strong> Walk-forward testing (2026-07-12) showed roughly +5.9% ROI against opening lines versus −2.6% at the close — consistent with the finding that FLB mispricing disappears as the market matures. Opening-line figures are an upper bound versus live morning prices.</li>
         <li><strong>Opening-line backtests overstate live ROI.</strong> Historical ROI vs opening prices is an upper bound; live morning tracking locks later consensus prices and usually grades worse than the open-line study.</li>

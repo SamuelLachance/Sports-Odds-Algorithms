@@ -45,9 +45,11 @@ def test_pick_thresholds_cbb_nfl_cfb() -> None:
     load_pick_strategy.cache_clear()
 
     cbb = get_pick_thresholds("cbb")
-    assert cbb["bet_type"] == "spread"
-    assert cbb["min_spread_cover_gap_pp"] == 10.0
-    assert cbb["enabled"] is False
+    assert cbb["bet_type"] == "moneyline"
+    assert cbb["min_market_gap_pp"] == 2.2
+    assert cbb["allowed_sides"] == ["home"]
+    assert cbb["fav_mode"] == "favorite"
+    assert cbb["enabled"] is True
 
     nfl = get_pick_thresholds("nfl")
     assert nfl["bet_type"] == "moneyline"
@@ -64,78 +66,21 @@ def test_pick_thresholds_cbb_nfl_cfb() -> None:
 
 
 def test_disabled_leagues_stay_predictions_only_but_can_emit_reference_picks() -> None:
-    """NFL/CFB/CBB: enabled=false blocks official eligibility, not model spots."""
+    """Majors are enabled after all-seasons-positive search."""
     from web.hubacek_picks import clear_strategy_cache
     from web.league_profiles import OFFICIAL_PICK_LEAGUES, eligible_for_official_picks
-    from web.pick_strategy import (
-        evaluate_official_picks_for_game,
-        get_pick_thresholds,
-        load_pick_strategy,
-    )
-    from web.tracking_service import record_from_slate
+    from web.pick_strategy import get_pick_thresholds, load_pick_strategy
 
     clear_strategy_cache()
     load_pick_strategy.cache_clear()
 
-    for league in ("cbb",):
-        assert league in OFFICIAL_PICK_LEAGUES
-        assert get_pick_thresholds(league)["enabled"] is False, league
-        assert eligible_for_official_picks(league) is False, league
-        assert eligible_for_official_picks(league.upper()) is False, league
-        picks = evaluate_official_picks_for_game(
-            league=league,
-            away_name="Away Team",
-            home_name="Home Team",
-            away_slug="away-team",
-            home_slug="home-team",
-            total_score=-70.0,
-            win_probability=70.0,
-            blended={
-                "blended_home_win_probability": 70.0,
-                "market_decorrelated": True,
-                "home_spread_margin": -9.0,
-            },
-            away_market=200,
-            home_market=-240,
-            consensus_spread=-3.0,
-            away_spread_odds=-110,
-            home_spread_odds=-110,
-        )
-        # Reference spots may clear Hubáček floors for the board — they must not
-        # enter the official tracking book while enabled=false.
-        assert isinstance(picks, list), league
-        if picks:
-            store = record_from_slate(
-                {"version": 1, "bets": []},
-                {
-                    "date_label": "2099-01-01",
-                    "recommended_bets": [
-                        {
-                            "league": league,
-                            "event_id": f"ref-{league}",
-                            "side": picks[0].side,
-                            "strategy": picks[0].strategy,
-                            "ev_pct": picks[0].ev_pct,
-                            "win_probability": picks[0].win_probability,
-                            "model_market_gap_pp": picks[0].extra.get(
-                                "model_market_gap_pp", 20.0
-                            ),
-                            "market_odds": -110,
-                            "spread_odds": picks[0].spread_odds,
-                            "bet_type": picks[0].bet_type,
-                            "start_time": "2099-06-01T20:00:00Z",
-                        }
-                    ],
-                    "games": [],
-                },
-            )
-            assert store["bets"] == [], league
-
-    # Validated leagues stay enabled and official-eligible.
     assert get_pick_thresholds("mlb")["enabled"] is True
     assert get_pick_thresholds("nba")["enabled"] is True
+    assert get_pick_thresholds("cbb")["enabled"] is True
     assert eligible_for_official_picks("mlb") is True
     assert eligible_for_official_picks("nba") is True
+    assert eligible_for_official_picks("cbb") is True
+    assert "cbb" in OFFICIAL_PICK_LEAGUES
 
 
 def test_official_mlb_picks_include_kelly_after_enrich() -> None:

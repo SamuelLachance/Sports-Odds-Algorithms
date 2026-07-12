@@ -62,13 +62,9 @@ def test_eligible_for_official_picks() -> None:
     assert eligible_for_official_picks("worldcup")
     assert eligible_for_official_picks("nba")
     assert eligible_for_official_picks("mlb")
+    assert eligible_for_official_picks("cbb")
 
-    # In OFFICIAL_PICK_LEAGUES but pick_strategy enabled=false — not UI/tracking eligible.
-    for paused in ("cbb",):
-        assert paused in OFFICIAL_PICK_LEAGUES
-        assert get_pick_thresholds(paused).get("enabled") is False, paused
-        assert eligible_for_official_picks(paused) is False, paused
-
+    # All previously paused majors are now enabled after all-seasons-positive search.
     assert eligible_for_official_picks("nhl")
     assert eligible_for_official_picks("wnba")
     assert eligible_for_official_picks("nfl")
@@ -80,20 +76,19 @@ def test_eligible_for_official_picks() -> None:
 
 
 def test_nfl_cfb_cbb_not_eligible_for_official_picks() -> None:
-    """CBB stays predictions-only; NFL/CFB cleared the all-seasons-positive bar."""
+    """All major Hubáček leagues cleared all-seasons-positive policies."""
     from web.hubacek_picks import clear_strategy_cache
     from web.pick_strategy import load_pick_strategy
 
     clear_strategy_cache()
     load_pick_strategy.cache_clear()
 
-    assert eligible_for_official_picks("cbb") is False
+    assert eligible_for_official_picks("cbb") is True
     assert eligible_for_official_picks("nfl") is True
     assert eligible_for_official_picks("cfb") is True
     assert eligible_for_official_picks("nhl") is True
     assert eligible_for_official_picks("wnba") is True
-    # Case-insensitive
-    assert eligible_for_official_picks("CBB") is False
+    assert eligible_for_official_picks("CBB") is True
     assert eligible_for_official_picks("NFL") is True
     assert eligible_for_official_picks("Cfb") is True
 

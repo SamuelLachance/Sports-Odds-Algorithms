@@ -136,5 +136,5 @@ def test_load_pick_strategy_uses_schema_and_keeps_live_gates() -> None:
     assert isinstance(config.get("default"), dict)
     assert config["mlb"]["enabled"] is True
     assert config["nfl"]["enabled"] is True
-    assert config["cbb"]["enabled"] is False
+    assert config["cbb"]["enabled"] is True
     assert get_pick_thresholds("mlb")["min_market_gap_pp"] == 6.7

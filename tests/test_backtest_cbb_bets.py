@@ -64,15 +64,14 @@ def test_build_side_table_rejects_garbage_juice_instead_of_inventing_minus_110()
     assert bool((sides.odds.abs() >= 100).all())
 
 
-def test_cbb_bet_policy_disabled_with_reason() -> None:
+def test_cbb_bet_policy_enabled_all_seasons_positive() -> None:
     import json
 
     assert POLICY_PATH.is_file()
     policy = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
-    assert policy.get("enabled") is False
-    assert policy.get("enabled_note") or policy.get("reason")
-    # Close-line research remains catastrophic; open-line research is recorded
-    # on the chosen (disabled) open policy backtest block.
-    open_bt = policy.get("backtest") or {}
-    assert open_bt.get("seasons_total", 0) <= 1
-    assert policy.get("exec_price") == "open"
+    assert policy.get("enabled") is True
+    assert policy.get("bet_type") == "moneyline"
+    bt = policy.get("backtest") or {}
+    assert bt.get("seasons_total", 0) >= 3
+    assert bt.get("worst_season_roi", -1) > 0
+
