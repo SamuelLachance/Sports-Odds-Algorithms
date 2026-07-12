@@ -11,6 +11,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from web.hubacek_picks import HUBACEK_MIN_WIN_CONFIDENCE_PP  # noqa: E402
 from web.tracking_service import (  # noqa: E402
+    _bet_stake_units,
     _bet_units,
     _fetch_event_result,
     _scoreboard_dates_for_bet,
@@ -174,6 +175,19 @@ def test_non_finite_units_do_not_poison_roi() -> None:
     assert summary["roi_percent"] == 0.0
     # NaN EV must not Kelly-size a full stake via portfolio path.
     assert stake_units_from_kelly(8.0, ev_pct=float("nan")) == 0.25
+
+
+def test_bool_units_do_not_invent_roi() -> None:
+    """bool is a subclass of int; True→1.0 used to mint a fake +1u / 100% ROI."""
+    assert _bet_units({"units": True}) == 0.0
+    assert _bet_units({"units": False}) == 0.0
+    assert _bet_stake_units({"stake_units": True}) == 1.0
+    assert _bet_stake_units({"stake_units": False}) == 1.0
+    summary = _summarize_bets(
+        [{"status": "win", "units": True, "stake_units": 1.0}]
+    )
+    assert summary["units"] == 0.0
+    assert summary["roi_percent"] == 0.0
 
 
 def test_record_and_grade() -> None:

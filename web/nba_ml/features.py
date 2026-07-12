@@ -174,7 +174,11 @@ class FeatureState:
     def _rest_features(self, state: _TeamState, game_day: date) -> tuple[float, int, int]:
         if state.last_date is None:
             return 3.0, 0, 0
-        rest = max(0, min((game_day - state.last_date).days, 10))
+        delta = (game_day - state.last_date).days
+        # Inverted / future last_date must not invent B2B (rest=0 → b2b=1).
+        if delta < 0:
+            return 3.0, 0, 0
+        rest = min(delta, 10)
         b2b = 1 if rest <= 1 else 0
         # 3-in-4: current game is the 3rd within a 4-calendar-day window, i.e.
         # at least two prior games fell within the last 3 days.

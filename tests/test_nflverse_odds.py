@@ -25,6 +25,11 @@ def test_nflverse_parse_int_matches_closing_odds_rules() -> None:
     assert _parse_int("inf") is None
     assert _parse_int("-inf") is None
     assert _parse_int("nan") is None
+    # Parity with closing_odds_db: string EVEN/PK → +100; bool rejected.
+    assert _parse_int("EVEN") == 100
+    assert _parse_int("Pk") == 100
+    assert _parse_int(False) is None
+    assert _parse_int(True) is None
 
 
 def test_nflverse_rows_flip_spread_line_to_betting_convention(tmp_path: Path) -> None:

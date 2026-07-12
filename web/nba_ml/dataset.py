@@ -40,12 +40,25 @@ META_COLUMNS = (
 
 
 def _num(value):
-    if value is None or value == "" or (isinstance(value, float) and pd.isna(value)):
+    # bool is a subclass of int; False→0.0 must not invent EVEN / pick'em markets.
+    if value is None or value == "" or isinstance(value, bool):
+        return None
+    if isinstance(value, float) and pd.isna(value):
         return None
     try:
         return float(value)
     except (TypeError, ValueError):
         return None
+
+
+def _spread_line(value) -> float | None:
+    """Home-oriented handicap; reject American juice dumps (|x| ≥ 100)."""
+    number = _num(value)
+    if number is None:
+        return None
+    if abs(number) >= 100.0:
+        return None
+    return number
 
 
 def _spread_juice(value) -> float:
@@ -81,7 +94,7 @@ def build_dataset(odds_csv: Path = ODDS_CSV) -> pd.DataFrame:
         home_score = int(row["home_final"])
         away_score = int(row["away_final"])
 
-        market_spread = _num(row.get("home_close_spread"))
+        market_spread = _spread_line(row.get("home_close_spread"))
         home_ml = _num(row.get("home_close_ml"))
         away_ml = _num(row.get("away_close_ml"))
 
@@ -109,7 +122,7 @@ def build_dataset(odds_csv: Path = ODDS_CSV) -> pd.DataFrame:
                 "home_win": 1 if home_score > away_score else 0,
                 "n_prior_games": n_prior,
                 "home_close_spread": market_spread,
-                "home_open_spread": _num(row.get("home_open_spread")),
+                "home_open_spread": _spread_line(row.get("home_open_spread")),
                 "home_close_ml": home_ml,
                 "away_close_ml": away_ml,
                 "home_spread_odds": _spread_juice(row.get("home_spread_odds")),

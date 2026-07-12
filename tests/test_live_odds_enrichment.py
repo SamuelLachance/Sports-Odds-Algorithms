@@ -552,6 +552,27 @@ def test_line_shopping_reports_ev_at_best_without_changing_espn_ev() -> None:
     assert fields["ev_pct_at_best"] > round(espn_ev, 2)
 
 
+def test_line_shopping_omits_ev_at_best_for_non_finite_or_bool_prob() -> None:
+    """NaN used to leak; ±inf clamped to 99.9%/0.1%; bool True→1% garbage EV."""
+    import math
+
+    market = {
+        "n_books": 2,
+        "home_moneyline": -105,
+        "best_home_ml": 110,
+        "consensus_home_ml": -105,
+        "consensus_away_ml": -115,
+    }
+    for bad in (float("nan"), float("inf"), float("-inf"), True, False):
+        fields = line_shopping_fields_for_pick(
+            market, side="home", model_prob_pct=bad
+        )
+        assert "ev_pct_at_best" not in fields
+        assert fields.get("best_available_odds") == 110
+    ok = line_shopping_fields_for_pick(market, side="home", model_prob_pct=55.0)
+    assert math.isfinite(ok["ev_pct_at_best"])
+
+
 def test_multi_book_disabled_via_env() -> None:
     with patch.dict("os.environ", {"LIVE_MULTI_BOOK": "0"}, clear=False):
         assert multi_book_enabled("nba") is False

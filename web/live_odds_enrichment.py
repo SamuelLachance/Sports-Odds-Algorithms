@@ -522,10 +522,20 @@ def line_shopping_fields_for_pick(
             fields["best_vs_espn_pp"] = side_edge
             # Side-only edge — never inherit game-level max across home/away.
             fields["line_shopping_edge_pp"] = side_edge
-        if model_prob_pct is not None and best_odds is not None:
-            from web.bet_advisor import expected_value_pct
+        # bool / NaN / ±inf must not invent shopped EV (True→1%, inf→99.9% clamp).
+        if (
+            model_prob_pct is not None
+            and not isinstance(model_prob_pct, bool)
+            and best_odds is not None
+        ):
+            try:
+                prob = float(model_prob_pct)
+            except (TypeError, ValueError):
+                prob = float("nan")
+            if math.isfinite(prob):
+                from web.bet_advisor import expected_value_pct
 
-            fields["ev_pct_at_best"] = round(
-                expected_value_pct(float(model_prob_pct), best_odds), 2
-            )
+                fields["ev_pct_at_best"] = round(
+                    expected_value_pct(prob, best_odds), 2
+                )
     return {k: v for k, v in fields.items() if v is not None}

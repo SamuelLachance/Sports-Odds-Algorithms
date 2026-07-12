@@ -64,12 +64,14 @@ def _odds_for_game(
     if not row:
         return {}
 
-    def _f(key: str, *, american: bool = False) -> float | None:
+    def _f(key: str, *, american: bool = False, is_total: bool = False) -> float | None:
         raw = row.get(key)
         if raw is None or raw == "" or isinstance(raw, bool):
             return None
         if isinstance(raw, str) and raw.strip().upper() in {"EVEN", "PK"}:
-            # Juice EVEN/PK → +100; handicap pick'em → 0.0 (NBA parity).
+            # Totals: PK/EVEN is missing (not 0.0). Juice → +100; handicap → 0.0.
+            if is_total:
+                return None
             return 100.0 if american else 0.0
         try:
             val = float(raw)
@@ -82,6 +84,12 @@ def _odds_for_game(
                 return 100.0
             if abs(val) < 100:
                 return None
+        elif is_total:
+            if val <= 0.0 or val > 500.0:
+                return None
+        elif abs(val) >= 100.0:
+            # American ML/juice dumps misaligned into handicap cells.
+            return None
         return val
 
     return {
@@ -90,7 +98,7 @@ def _odds_for_game(
         "home_spread": _f("home_close_spread"),
         "spread_home_odds": _f("home_spread_odds", american=True),
         "spread_away_odds": _f("away_spread_odds", american=True),
-        "total_line": _f("close_total"),
+        "total_line": _f("close_total", is_total=True),
         "books": int(float(row["n_books"])) if row.get("n_books") not in (None, "") else 0,
     }
 

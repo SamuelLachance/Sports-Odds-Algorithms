@@ -13,11 +13,19 @@ NFLVERSE_URL = "https://raw.githubusercontent.com/nflverse/nfldata/master/data/g
 
 
 def _parse_int(value: Any) -> int | None:
-    """Parse American odds; EVEN ``0`` → ``+100``, reject ``|x| < 100``."""
+    """Parse American odds; EVEN ``0`` → ``+100``, reject ``|x| < 100``.
+
+    Parity with ``closing_odds_db._parse_int``: string EVEN/PK → +100; bool rejected.
+    """
     if value is None or value == "":
         return None
+    if isinstance(value, bool):
+        return None
+    text = str(value).strip()
+    if text.upper() in {"EVEN", "PK"}:
+        return 100
     try:
-        parsed = float(str(value).strip())
+        parsed = float(text)
         if not math.isfinite(parsed):
             return None
         number = int(parsed)

@@ -219,6 +219,21 @@ def test_expected_value_pct_favorite() -> None:
     assert ev > MIN_EXPECTED_VALUE_PCT
 
 
+def test_expected_value_pct_rejects_non_finite_and_bool_prob() -> None:
+    """±inf used to clamp into 99.9%/0.1%; bool True→1%; NaN leaked."""
+    import math
+
+    import pytest
+
+    from web.bet_advisor import kelly_fraction
+
+    for bad in (float("nan"), float("inf"), float("-inf"), True, False):
+        with pytest.raises(ValueError):
+            expected_value_pct(bad, -110)
+        assert kelly_fraction(bad, -110) == 0.0
+    assert math.isfinite(expected_value_pct(55.0, -110))
+
+
 def test_passes_moneyline_pick_gate_model_favorite() -> None:
     assert passes_moneyline_pick_gate(edge=20, ev_pct=4, strategy="model_favorite")
     assert not passes_moneyline_pick_gate(edge=20, ev_pct=2, strategy="model_favorite")
@@ -904,6 +919,28 @@ def test_enrich_pick_profit_metrics_maps_even_zero_for_kelly() -> None:
     )
     enrich_pick_profit_metrics(pick)
     assert pick.extra["kelly_pct"] == pytest.approx(kelly_fraction(58.0, 100) * 100.0)
+
+
+def test_enrich_pick_profit_metrics_skips_non_finite_or_bool_prob() -> None:
+    """Corrupt probs must fail closed (not clamp inf→99.9% or True→1%)."""
+    from web.bet_advisor import BetPick, enrich_pick_profit_metrics
+
+    for bad in (float("nan"), float("inf"), True):
+        pick = BetPick(
+            side="home",
+            team_name="A",
+            team_slug="a",
+            strategy="hubacek",
+            confidence="high",
+            edge=5.0,
+            model_projection=-110,
+            market_odds=-110,
+            win_probability=bad,  # type: ignore[arg-type]
+            reason="bad",
+        )
+        enrich_pick_profit_metrics(pick)
+        assert pick.extra.get("kelly_pct") is None
+        assert pick.ev_pct == 0.0
 
 
 def test_market_home_prob_pct_rejects_bool_spread() -> None:

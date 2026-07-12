@@ -515,6 +515,81 @@ def test_predict_matchup_v2_uses_open_odds_for_market_features() -> None:
     assert result["market_decorrelated"] is True
 
 
+def test_predict_matchup_v2_fail_closed_without_full_open_triple() -> None:
+    """Partial/missing opens must not mix close sides into the open-trained head."""
+    from unittest.mock import MagicMock, patch
+
+    import web.soccer_v2.live as live
+
+    home = MagicMock()
+    home.games_played = 20
+    home.elo = 1600.0
+    away = MagicMock()
+    away.games_played = 20
+    away.elo = 1500.0
+
+    engine = MagicMock()
+    engine.teams = {"Arsenal": home, "Liverpool": away}
+    engine.features_for_match = MagicMock(
+        return_value={"elo_diff": 60.0, "home_rest_days": 3.0, "away_rest_days": 3.0}
+    )
+
+    captured: dict[str, object] = {}
+
+    def fake_predict_probs(_art, _feats, market):
+        captured["market_features"] = market
+        return (0.4, 0.3, 0.3), (0.45, 0.28, 0.27)
+
+    with (
+        patch.object(live, "_load_artifacts", return_value={"ok": True}),
+        patch.object(
+            live,
+            "get_live_context",
+            return_value={
+                "pools": {"E": engine},
+                "snapshot_season": 2026,
+                "live_inputs_stale": False,
+            },
+        ),
+        patch.object(
+            live,
+            "resolve_team",
+            side_effect=["Arsenal", "Liverpool", "Arsenal", "Liverpool"],
+        ),
+        patch.object(live, "_predict_probs", side_effect=fake_predict_probs),
+        patch.object(live, "_predict_goals", return_value=(1.6, 1.2)),
+        patch.object(live, "_decorrelate", side_effect=lambda p, _m, weight=0.35: p),
+    ):
+        # All opens missing → pure head only.
+        missing = live.predict_matchup_v2(
+            "epl",
+            "2026-07-10",
+            home_abbr="ars",
+            away_abbr="liv",
+            home_ml=-150,
+            draw_ml=280,
+            away_ml=400,
+        )
+        # Partial open (draw missing) must not mix live draw into open features.
+        partial = live.predict_matchup_v2(
+            "epl",
+            "2026-07-10",
+            home_abbr="ars",
+            away_abbr="liv",
+            home_ml=-150,
+            draw_ml=280,
+            away_ml=400,
+            open_home_ml=-120,
+            open_draw_ml=None,
+            open_away_ml=220,
+        )
+
+    assert missing is not None and partial is not None
+    assert missing["market_calibrated"] is False
+    assert partial["market_calibrated"] is False
+    assert captured["market_features"] is None
+
+
 def test_get_live_context_fails_closed_on_missing_gap_season(tmp_path, monkeypatch) -> None:
     """Empty intermediate soccer seasons must not silently skip Elo/carryover."""
     import gzip

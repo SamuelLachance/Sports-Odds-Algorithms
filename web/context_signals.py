@@ -440,11 +440,12 @@ def apply_context_to_blend(
         open_away = market.get("opening_away_ml")
 
     # FLB is an opening-price bias; only use opens when both sides are present.
+    # Close prices must not substitute — that is a different market and blocks
+    # the daily open-aware re-apply from ever firing steam.
     if open_home is not None and open_away is not None:
-        flb_home, flb_away = open_home, open_away
+        flb = favorite_longshot_adjustment(open_home, open_away, home_prob)
     else:
-        flb_home, flb_away = home_ml, away_ml
-    flb = favorite_longshot_adjustment(flb_home, flb_away, home_prob)
+        flb = 0.0
     steam = steam_line_movement_shift(
         home_ml,
         away_ml,
@@ -469,13 +470,16 @@ def apply_context_to_blend(
     total_shift = _clamp(flb + steam + news, -MAX_TOTAL_CONTEXT_PP, MAX_TOTAL_CONTEXT_PP)
     if abs(total_shift) < 1e-9:
         updated = dict(blended)
-        updated["context_adjustment_pp"] = 0.0
-        updated["context_signals"] = {
-            "flb_pp": flb,
-            "steam_pp": steam,
-            "news_pp": news,
-            "total_pp": 0.0,
-        }
+        # Stamp 0 only when opens were available (steam/FLB truly idle). Without
+        # opens, leave context unset so daily can re-apply with multi-book opens.
+        if open_home is not None and open_away is not None:
+            updated["context_adjustment_pp"] = 0.0
+            updated["context_signals"] = {
+                "flb_pp": flb,
+                "steam_pp": steam,
+                "news_pp": news,
+                "total_pp": 0.0,
+            }
         return updated
 
     from web.blend_service import home_win_prob_to_total_score

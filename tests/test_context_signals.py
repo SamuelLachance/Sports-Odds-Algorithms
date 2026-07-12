@@ -251,7 +251,13 @@ def test_apply_context_stores_pre_context_and_updates_probs() -> None:
         "win_probability": 62.0,
         "favorite_side": "home",
     }
-    market = {"home_moneyline": -200, "away_moneyline": 170}
+    # Opens drive FLB; close alone must not. Injury headline nudges home down.
+    market = {
+        "home_moneyline": -200,
+        "away_moneyline": 170,
+        "open_home_moneyline": -200,
+        "open_away_moneyline": 170,
+    }
     out = apply_context_to_blend(
         blended,
         market=market,
@@ -264,7 +270,7 @@ def test_apply_context_stores_pre_context_and_updates_probs() -> None:
     assert out["pre_context_home_win_probability"] == 62.0
     assert "context_adjustment_pp" in out
     assert out["blended_home_win_probability"] != 62.0 or out["context_adjustment_pp"] == 0.0
-    # FLB (home fav) + injury on home → home prob should drop.
+    # FLB (home fav open) + injury on home → home prob should drop.
     assert out["blended_home_win_probability"] < 62.0
 
 
@@ -323,8 +329,26 @@ def test_apply_context_steam_inactive_without_opens() -> None:
     }
     market = {"home_moneyline": -140, "away_moneyline": 120}
     out = apply_context_to_blend(blended, market=market, league="nba")
-    assert out["context_signals"]["steam_pp"] == 0.0
+    # Close-only idle pass must leave context unset so daily can re-apply opens.
+    assert out.get("context_adjustment_pp") is None
+    assert out.get("context_signals") is None
     assert out["blended_home_win_probability"] == 55.0
+
+
+def test_apply_context_flb_ignores_close_only_moneylines() -> None:
+    """FLB is an opening-price bias — close chalk must not drive the nudge."""
+    blended = {
+        "blended_home_win_probability": 70.0,
+        "total_score": -70.0,
+        "win_probability": 70.0,
+        "favorite_side": "home",
+    }
+    # Heavy close favorite would have produced flb_pp < 0 under the old fallback.
+    market = {"home_moneyline": -250, "away_moneyline": 200}
+    assert favorite_longshot_adjustment(-250, 200, 70.0) < 0
+    out = apply_context_to_blend(blended, market=market, league="nba")
+    assert out.get("context_adjustment_pp") is None
+    assert out["blended_home_win_probability"] == 70.0
 
 
 def test_opening_steam_does_not_flip_computed_steam_sign() -> None:
@@ -356,7 +380,28 @@ def test_apply_context_noop_without_signals() -> None:
         "favorite_side": "home",
     }
     out = apply_context_to_blend(blended, market={}, league="nba")
+    # No opens / no signals → leave unset (daily may attach opens later).
+    assert out.get("context_adjustment_pp") is None
+    assert out["blended_home_win_probability"] == 55.0
+
+
+def test_apply_context_noop_stamps_zero_when_opens_present() -> None:
+    """With opens but no movement/FLB/news, stamp 0 so callers know context ran."""
+    blended = {
+        "blended_home_win_probability": 55.0,
+        "total_score": -55.0,
+        "win_probability": 55.0,
+        "favorite_side": "home",
+    }
+    market = {
+        "home_moneyline": -110,
+        "away_moneyline": -110,
+        "open_home_moneyline": -110,
+        "open_away_moneyline": -110,
+    }
+    out = apply_context_to_blend(blended, market=market, league="nba")
     assert out["context_adjustment_pp"] == 0.0
+    assert out["context_signals"]["steam_pp"] == 0.0
     assert out["blended_home_win_probability"] == 55.0
 
 
@@ -405,7 +450,14 @@ def test_apply_context_threeway_holds_draw_when_clamped() -> None:
         patch("web.context_signals.steam_line_movement_shift", return_value=0.0),
         patch("web.context_signals.news_sentiment_shift", return_value=0.0),
     ):
-        out = apply_context_to_blend(blended, market={}, league="epl")
+        out = apply_context_to_blend(
+            blended,
+            market={
+                "open_home_moneyline": -110,
+                "open_away_moneyline": -110,
+            },
+            league="epl",
+        )
     assert float(out["draw_probability"]) == pytest.approx(28.0, abs=0.01)
     assert (
         float(out["home_win_probability"])
@@ -625,7 +677,15 @@ def test_apply_context_threeway_pre_decorrelation_uses_board_clamp() -> None:
         patch("web.context_signals.news_sentiment_shift", return_value=0.0),
     ):
         out = apply_context_to_blend(
-            blended, market={}, headlines=[], home_names=[], away_names=[], league="epl"
+            blended,
+            market={
+                "open_home_moneyline": -110,
+                "open_away_moneyline": -110,
+            },
+            headlines=[],
+            home_names=[],
+            away_names=[],
+            league="epl",
         )
     # remaining non-draw mass = 70 → home hi = 69; both board and pre must match.
     assert out["home_win_probability"] == 69.0

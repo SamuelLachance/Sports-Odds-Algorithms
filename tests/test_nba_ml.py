@@ -153,3 +153,75 @@ def test_predict_nba_smoke():
     assert out["home_win_probability"] >= 5.0
     assert out["model_market_edge_pp"] is not None
     assert predict_nba("zzz", "lal") is None
+
+
+def test_rest_features_fail_closed_on_inverted_dates() -> None:
+    """game_day before last_date must not invent B2B (rest=0 → b2b=1)."""
+    state = FeatureState()
+    team = state.teams["bos"]
+    team.last_date = date(2025, 2, 1)
+    rest, b2b, three = state._rest_features(team, date(2025, 1, 15))
+    assert rest == 3.0
+    assert b2b == 0
+    assert three == 0
+
+
+def test_replayed_state_respects_cutoff_date(tmp_path, monkeypatch) -> None:
+    """Point-in-time replay must exclude games on/after the cutoff tip date."""
+    import pandas as pd
+
+    from web.nba_ml import predict as predict_mod
+
+    csv_path = tmp_path / "odds.csv"
+    frame = pd.DataFrame(
+        [
+            {
+                "date": "2025-01-10",
+                "home_key": "bos",
+                "away_key": "nyk",
+                "home_final": 110,
+                "away_final": 100,
+            },
+            {
+                "date": "2025-02-01",
+                "home_key": "bos",
+                "away_key": "lal",
+                "home_final": 120,
+                "away_final": 90,
+            },
+        ]
+    )
+    frame.to_csv(csv_path, index=False)
+    monkeypatch.setattr(predict_mod, "ODDS_CSV", csv_path)
+    predict_mod.clear_caches()
+
+    early = predict_mod._replayed_state("2025-01-15")
+    assert early.teams["bos"].last_date == date(2025, 1, 10)
+    assert "lal" not in early.teams
+
+    full = predict_mod._replayed_state("2025-02-02")
+    assert full.teams["bos"].last_date == date(2025, 2, 1)
+    assert full.teams["bos"].elo != early.teams["bos"].elo
+    predict_mod.clear_caches()
+
+
+def test_parse_cutoff_rejects_garbage() -> None:
+    from web.nba_ml.predict import _parse_cutoff
+
+    with pytest.raises(ValueError, match="invalid NBA ML cutoff"):
+        _parse_cutoff("not-a-date")
+    with pytest.raises(ValueError, match="invalid NBA ML cutoff"):
+        _parse_cutoff("15 Jan 2025")
+
+
+def test_dataset_num_rejects_bool_and_juice_spreads() -> None:
+    """False→0 and |spread|≥100 must not invent EVEN / juice handicaps."""
+    from web.nba_ml.dataset import _num, _spread_juice, _spread_line
+
+    assert _num(False) is None
+    assert _num(True) is None
+    assert math.isnan(_spread_juice(False))
+    assert _spread_line(False) is None
+    assert _spread_line(-110) is None
+    assert _spread_line(-6.5) == -6.5
+    assert _spread_line(0) == 0.0

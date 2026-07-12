@@ -902,8 +902,12 @@ def _bet_stake_units(bet: dict[str, Any]) -> float:
     """Stake in units for a bet, defaulting to 1u on missing/bad/non-positive data."""
     import math
 
+    raw = bet.get("stake_units")
+    # bool is a subclass of int; True→1.0 / False→0→default must not look intentional.
+    if isinstance(raw, bool):
+        return DEFAULT_STAKE_UNITS
     try:
-        stake = float(bet.get("stake_units") if bet.get("stake_units") is not None else DEFAULT_STAKE_UNITS)
+        stake = float(raw if raw is not None else DEFAULT_STAKE_UNITS)
     except (TypeError, ValueError):
         return DEFAULT_STAKE_UNITS
     if not math.isfinite(stake) or stake <= 0:
@@ -915,8 +919,12 @@ def _bet_units(bet: dict[str, Any]) -> float:
     """Settled P&L units; coerce bad / non-finite values to 0 so rollups stay finite."""
     import math
 
+    raw = bet.get("units")
+    # bool is a subclass of int; True→1.0 would invent a full unit of P&L / ROI.
+    if isinstance(raw, bool):
+        return 0.0
     try:
-        value = float(bet.get("units") or 0)
+        value = float(raw if raw is not None else 0)
     except (TypeError, ValueError):
         return 0.0
     if not math.isfinite(value):

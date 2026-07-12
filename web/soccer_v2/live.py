@@ -486,16 +486,18 @@ def predict_matchup_v2(
     features = engine.features_for_match(row, league)
 
     # Market-aware head was trained on *opening* 1X2 features (mkt_open_*).
-    # Prefer open juice for that head; fall back to live only when open is missing.
-    feat_h = open_home_ml if open_home_ml is not None else home_ml
-    feat_d = open_draw_ml if open_draw_ml is not None else draw_ml
-    feat_a = open_away_ml if open_away_ml is not None else away_ml
+    # Require a full open triple — never substitute live close (train/serve
+    # mismatch) or mix open/close sides (fabricates a market never seen in train).
     market_features = None
-    if feat_h is not None and feat_d is not None and feat_a is not None:
+    if (
+        open_home_ml is not None
+        and open_draw_ml is not None
+        and open_away_ml is not None
+    ):
         market_features = devig_decimal(
-            american_to_decimal(feat_h),
-            american_to_decimal(feat_d),
-            american_to_decimal(feat_a),
+            american_to_decimal(open_home_ml),
+            american_to_decimal(open_draw_ml),
+            american_to_decimal(open_away_ml),
         )
 
     # Hubáček decorrelation pushes away from *current* market, not open.

@@ -112,3 +112,24 @@ def test_cbb_odds_join_maps_pk_spread_and_rejects_bool() -> None:
     assert out_bool["home_ml"] is None
     assert out_bool["home_spread"] is None
     assert out_bool["away_ml"] == -110.0
+
+
+def test_cbb_odds_join_rejects_juice_as_spread_and_pk_total() -> None:
+    """American juice in spread cells / PK totals must not poison training."""
+    idx = {
+        ("2024-01-01", "duke", "unc"): {
+            "home_close_ml": "-150",
+            "away_close_ml": "130",
+            "home_close_spread": "-110",
+            "home_spread_odds": "-110",
+            "away_spread_odds": "-110",
+            "close_total": "PK",
+            "n_books": "2",
+        }
+    }
+    out = _odds_for_game(
+        idx, {"date": "2024-01-01", "home_abbr": "duke", "away_abbr": "unc"}
+    )
+    assert out["home_spread"] is None
+    assert out["total_line"] is None
+    assert out["home_ml"] == -150.0

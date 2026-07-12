@@ -35,16 +35,24 @@ def _load_models():
     return margin["model"], float(margin["sigma"]), winprob["model"], winprob.get("isotonic"), meta
 
 
-@lru_cache(maxsize=1)
-def _replayed_state() -> FeatureState:
+@lru_cache(maxsize=32)
+def _replayed_state(stop_before: str | None = None) -> FeatureState:
+    """Replay completed games strictly before ``stop_before`` (ISO YYYY-MM-DD).
+
+    Without a cutoff the full table is used (live tip uses today's date so
+    same-day results never leak into Elo/rest). Sorted CSV → early ``break``.
+    """
     state = FeatureState()
     frame = pd.read_csv(ODDS_CSV).dropna(subset=["home_final", "away_final"])
     frame = frame.sort_values("date")
     for _, row in frame.iterrows():
+        game_day = parse_game_date(row["date"])
+        if stop_before is not None and game_day.isoformat() >= stop_before:
+            break
         state.update(
             str(row["home_key"]).lower(),
             str(row["away_key"]).lower(),
-            parse_game_date(row["date"]),
+            game_day,
             int(row["home_final"]),
             int(row["away_final"]),
         )
@@ -65,7 +73,8 @@ def _parse_cutoff(cutoff_date: str | None) -> date:
             return datetime.strptime(text[:10], fmt).date()
         except ValueError:
             continue
-    return date.today()
+    # Unparseable cutoffs must not silently become "today" (wrong rest/Elo).
+    raise ValueError(f"invalid NBA ML cutoff date: {cutoff_date!r}")
 
 
 def predict_nba(
@@ -88,11 +97,14 @@ def predict_nba(
     away = away_abbr.lower()
 
     margin_model, sigma, winprob_model, iso, meta = _load_models()
-    state = _replayed_state()
+    try:
+        game_day = _parse_cutoff(cutoff_date)
+    except ValueError:
+        return None
+    state = _replayed_state(game_day.isoformat())
     if home not in state.teams or away not in state.teams:
         return None
 
-    game_day = _parse_cutoff(cutoff_date)
     feats = state.features_for(
         home,
         away,

@@ -328,7 +328,10 @@ def expected_value_pct(model_prob_pct: float, american_odds: int) -> float:
     odds = normalize_american_odds(american_odds)
     if odds is None:
         raise ValueError(f"invalid American odds: {american_odds}")
-    probability = min(max(model_prob_pct, 0.1), 99.9) / 100.0
+    # bool / NaN / ±inf must not clamp into 0.1–99.9% (inf→max EV, True→1%).
+    if isinstance(model_prob_pct, bool) or not math.isfinite(model_prob_pct):
+        raise ValueError(f"invalid model probability: {model_prob_pct}")
+    probability = min(max(float(model_prob_pct), 0.1), 99.9) / 100.0
     payout = american_to_decimal(odds)
     return (probability * payout - 1.0) * 100.0
 
@@ -340,7 +343,10 @@ def kelly_fraction(
     max_fraction: float = MAX_KELLY_FRACTION,
 ) -> float:
     """Kelly criterion stake fraction for a +EV bet (capped)."""
-    probability = min(max(model_prob_pct, 0.1), 99.9) / 100.0
+    # Fail closed: bool / non-finite probs must not size a max Kelly stake.
+    if isinstance(model_prob_pct, bool) or not math.isfinite(model_prob_pct):
+        return 0.0
+    probability = min(max(float(model_prob_pct), 0.1), 99.9) / 100.0
     decimal_odds = american_to_decimal(american_odds)
     edge = probability * decimal_odds - 1.0
     if edge <= 0:
@@ -403,8 +409,19 @@ def enrich_pick_profit_metrics(pick: BetPick) -> BetPick:
     # EV/Kelly use the calibrated (pre-decorrelation) probability when available;
     # the decorrelated win_probability only drives the gap/confidence gates.
     base_prob = pick.extra.get("base_win_probability")
-    prob = float(base_prob) if base_prob is not None else float(pick.win_probability)
-    uncapped_ev = expected_value_pct(prob, odds)
+    raw_prob = base_prob if base_prob is not None else pick.win_probability
+    if isinstance(raw_prob, bool):
+        return pick
+    try:
+        prob = float(raw_prob)
+    except (TypeError, ValueError):
+        return pick
+    if not math.isfinite(prob):
+        return pick
+    try:
+        uncapped_ev = expected_value_pct(prob, odds)
+    except ValueError:
+        return pick
     ev_pct = uncapped_ev
     league = pick.extra.get("league")
     if league:
