@@ -214,7 +214,13 @@ def _clamp_live_spread(
     away_spread_odds: int | None,
     home_spread_odds: int | None,
 ) -> tuple[float | None, int | None, int | None]:
-    """Drop ML-sized 'spreads' for leagues with tight handicap bands."""
+    """Drop ML/juice dumps and out-of-band handicaps from live spread fields.
+
+    College caps (CFB ≤120) must still reject common juice (−105…−120): those
+    magnitudes are American odds, never real point spreads.
+    """
+    if home_spread is not None and abs(home_spread) >= 100.0:
+        return None, None, None
     max_abs = _MAX_LIVE_SPREAD_ABS.get(league.lower())
     if (
         max_abs is not None

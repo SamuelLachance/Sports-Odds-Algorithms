@@ -421,13 +421,15 @@ def line_shopping_fields_for_pick(
     Official EV/Kelly stay on ESPN ``market_odds``. When a better book price
     exists, also report ``ev_pct_at_best`` so the UI does not imply Honest EV
     is executable at the shopped price.
+
+    ``line_shopping_edge_pp`` on a pick is the shopping edge for *this* side,
+    not the game-level max across home/away.
     """
     if not market.get("n_books"):
         return {}
     best = best_available_for_pick(market, side=side, bet_type=bet_type)
     fields: dict[str, Any] = {
         "n_books": market.get("n_books"),
-        "line_shopping_edge_pp": market.get("line_shopping_edge_pp"),
         "consensus_home_ml": market.get("consensus_home_ml"),
         "consensus_away_ml": market.get("consensus_away_ml"),
     }
@@ -444,10 +446,15 @@ def line_shopping_fields_for_pick(
         )
         if side_edge is not None:
             fields["best_vs_espn_pp"] = side_edge
+            fields["line_shopping_edge_pp"] = side_edge
+        elif market.get("line_shopping_edge_pp") is not None:
+            fields["line_shopping_edge_pp"] = market.get("line_shopping_edge_pp")
         if model_prob_pct is not None:
             from web.bet_advisor import expected_value_pct
 
             fields["ev_pct_at_best"] = round(
                 expected_value_pct(float(model_prob_pct), int(best)), 2
             )
+    elif market.get("line_shopping_edge_pp") is not None:
+        fields["line_shopping_edge_pp"] = market.get("line_shopping_edge_pp")
     return {k: v for k, v in fields.items() if v is not None}

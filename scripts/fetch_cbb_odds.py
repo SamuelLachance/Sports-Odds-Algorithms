@@ -239,9 +239,17 @@ def _normalize_row(row: dict[str, Any]) -> dict[str, str]:
     return out
 
 
+def _row_has_odds(row: dict[str, Any]) -> bool:
+    try:
+        return int(float(row.get("n_books") or 0)) > 0
+    except (TypeError, ValueError):
+        return False
+
+
 def merge_rows(
     existing: list[dict[str, Any]], fresh: list[dict[str, Any]]
 ) -> list[dict[str, str]]:
+    """Merge by (date, home, away). Keep prior closes when fresh odds are empty."""
     merged: dict[tuple[str, str, str], dict[str, str]] = {}
     for row in existing:
         key = _row_key(row)
@@ -249,8 +257,13 @@ def merge_rows(
             merged[key] = _normalize_row(row)
     for row in fresh:
         key = _row_key(row)
-        if key[0]:
-            merged[key] = _normalize_row(row)
+        if not key[0]:
+            continue
+        normalized = _normalize_row(row)
+        prior = merged.get(key)
+        if prior is not None and _row_has_odds(prior) and not _row_has_odds(normalized):
+            continue
+        merged[key] = normalized
     return sorted(merged.values(), key=lambda item: (item["date"], item["home_key"]))
 
 

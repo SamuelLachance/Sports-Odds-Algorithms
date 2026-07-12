@@ -7,6 +7,8 @@ import sys
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -45,6 +47,9 @@ def test_valid_handicap_line_rejects_ml_sized_dumps() -> None:
     assert _valid_handicap_line(0.0, max_abs=7.0) == 0.0
     assert _valid_handicap_line(152.0, max_abs=7.0) is None
     assert _valid_handicap_line(-110.0, max_abs=5.0) is None
+    # Raised college caps must still reject juice/ML magnitudes.
+    assert _valid_handicap_line(-110.0, max_abs=120.0) is None
+    assert _valid_handicap_line(55.5, max_abs=120.0) == 55.5
 
 
 def test_nba_provider_line_rejects_ml_sized_point_spread() -> None:
@@ -336,6 +341,34 @@ def test_line_shopping_fields_for_pick() -> None:
     assert fields["n_books"] == 5
     assert best_available_for_pick(market, side="away") == 110
 
+
+def test_line_shopping_fields_use_side_edge_not_game_max() -> None:
+    """Home pick must not inherit the away side's larger shopping edge."""
+    from web.live_odds_enrichment import shopping_edge_pp
+
+    market = {
+        "n_books": 4,
+        "home_moneyline": -110,
+        "away_moneyline": 100,
+        "best_home_ml": -105,  # small home edge
+        "best_away_ml": 130,  # large away edge
+        "line_shopping_edge_pp": 99.0,  # poisoned game-level max
+        "consensus_home_ml": -108,
+        "consensus_away_ml": 105,
+    }
+    home_fields = line_shopping_fields_for_pick(
+        market, side="home", bet_type="moneyline"
+    )
+    away_fields = line_shopping_fields_for_pick(
+        market, side="away", bet_type="moneyline"
+    )
+    home_edge = shopping_edge_pp(-110, -105)
+    away_edge = shopping_edge_pp(100, 130)
+    assert home_edge is not None and away_edge is not None
+    assert away_edge > home_edge
+    assert home_fields["line_shopping_edge_pp"] == pytest.approx(home_edge)
+    assert home_fields["best_vs_espn_pp"] == pytest.approx(home_edge)
+    assert away_fields["line_shopping_edge_pp"] == pytest.approx(away_edge)
 
 def test_line_shopping_reports_ev_at_best_without_changing_espn_ev() -> None:
     from web.bet_advisor import expected_value_pct

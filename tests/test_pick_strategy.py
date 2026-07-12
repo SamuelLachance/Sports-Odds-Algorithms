@@ -286,6 +286,44 @@ def test_evaluate_backtest_soccer_passes_power_home_simplex(monkeypatch) -> None
     assert captured["kwargs"]["market_away"] == pytest.approx(14.0)
 
 
+def test_backtest_roi_excludes_pushes_from_denominator(monkeypatch) -> None:
+    """Pushes must not dilute ROI (same rule as tracking_service)."""
+    from web.pick_strategy import _backtest_samples
+
+    outcomes = iter(
+        [
+            (0.91, "win"),
+            (-1.0, "loss"),
+            (0.0, "push"),
+        ]
+    )
+    monkeypatch.setattr(
+        "web.pick_strategy._evaluate_backtest_pick",
+        lambda **_k: next(outcomes),
+    )
+    samples = [
+        {
+            "blended_home": 55.0,
+            "model_margin": 2.0,
+            "home_goals": 100,
+            "away_goals": 90,
+        }
+        for _ in range(3)
+    ]
+    summary = _backtest_samples(
+        "nba",
+        samples,
+        {**DEFAULT_THRESHOLDS, "min_edge": 0.0},
+        "spread",
+    )
+    assert summary["wins"] == 1
+    assert summary["losses"] == 1
+    assert summary["pushes"] == 1
+    assert summary["bets"] == 3
+    # -0.09 / 2 decided bets ≈ -4.5%, not -0.09 / 3 ≈ -3.0%
+    assert summary["roi_pct"] == pytest.approx(-4.5, abs=0.05)
+
+
 def test_simulate_market_threeway_applies_synthetic_vig() -> None:
     """Docstring promises vig; overround must match two-way synthetic books."""
     from web.bet_advisor import american_implied_prob

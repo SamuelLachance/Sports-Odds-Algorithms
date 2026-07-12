@@ -228,6 +228,14 @@ def test_live_cfb_cbb_keep_blowout_spreads() -> None:
     cfb_ml = espn_client._parse_event(event, "cfb")
     assert cfb_ml is not None and cfb_ml.market.spread is None
 
+    # Common juice (−110) must not slip through CFB's raised 120 cap.
+    event["competitions"][0]["odds"][0]["spread"] = -110
+    cfb_juice = espn_client._parse_event(event, "cfb")
+    assert cfb_juice is not None and cfb_juice.market.spread is None
+    event["competitions"][0]["odds"][0]["spread"] = -105
+    cfb_soft = espn_client._parse_event(event, "cfb")
+    assert cfb_soft is not None and cfb_soft.market.spread is None
+
 
 def test_fetch_scoreboard_default_date_uses_toronto_not_utc() -> None:
     """Default scoreboard window must match America/Toronto slate labeling."""

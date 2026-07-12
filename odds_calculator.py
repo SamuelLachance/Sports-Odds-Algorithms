@@ -148,8 +148,8 @@ class Odds_Calculator:
 
 		to_output.append("Perc chance to win: "+str(winning_odds)+"%")
 
-		# Favorite: p/(100-p)*100 → -X; underdog: (100-p)/p*100 → +Y (not a mirror).
-		# Clamp off {0,100} so Algo_V2 totals of ±100 do not ZeroDivisionError.
+		# Fair two-way American: favorite -X and underdog +X share magnitude
+		# p/(100-p)*100. Clamp off {0,100} so Algo_V2 ±100 does not ZeroDivisionError.
 		win_pct = float(winning_odds) if winning_odds is not None else 0.0
 		if win_pct <= 0.0:
 			favorable_odds = 0.0
@@ -159,7 +159,7 @@ class Odds_Calculator:
 			underdog_odds = 0.0
 		else:
 			favorable_odds = (100.0 / (100.0 - win_pct) - 1.0) * 100.0
-			underdog_odds = (100.0 / win_pct - 1.0) * 100.0
+			underdog_odds = favorable_odds
 		to_output.append("Favorable team odds: -"+str(favorable_odds))
 		to_output.append("Underdog team odds: +"+str(underdog_odds))
 
@@ -386,7 +386,10 @@ class Odds_Calculator:
 		to_output.append("")
 		to_output.append(indent+team[1])
 
-		if (records[-1][0]-records[-1][1])>(records[-2][0]-records[-2][1]):
+		# Single-season / early international slates have only one record row.
+		if len(records) < 2:
+			temp = "n/a"
+		elif (records[-1][0]-records[-1][1])>(records[-2][0]-records[-2][1]):
 			temp="uptrend"
 		else:
 			temp="downtrend"
@@ -401,16 +404,22 @@ class Odds_Calculator:
 		
 
 		recent_win_loss = win_loss[-min(10, len(win_loss)) :]
-		win_10_games = sum(item[2] for item in recent_win_loss)
+		wins = sum(1 for item in recent_win_loss if item[2] > 0)
+		losses = len(recent_win_loss) - wins
+		win_10_games = wins - losses
 
 		temp={'-10': '0-10', '-8': '1-9', '-6': '2-8', '-4': '3-7', '-2': '4-6', '0': '5-5', '2': '6-4', '4': '7-3', '6': '8-2', '8': '9-1', '10': '10-0'}
-		to_output.append(indent+"10 Games: "+temp[str(win_10_games)])
-		won=last_10_games[-1][str(win_10_games)][0]
-		num_games=last_10_games[-1][str(win_10_games)][1]
-		if num_games!=0:
-			to_output.append(indent+"   "+str(won)+" won out of "+str(num_games)+" games | "+str(won/num_games*100)+"%")
-		else:
-			to_output.append(indent+"   "+str(won)+" won out of "+str(num_games)+" games | N/A%")
+		# Early season (<10 games) yields odd win-loss diffs that are absent from
+		# the full-window bucket map — fall back to the literal W-L label.
+		to_output.append(indent+"10 Games: "+temp.get(str(win_10_games), f"{wins}-{losses}"))
+		bucket = last_10_games[-1].get(str(win_10_games))
+		if bucket is not None:
+			won=bucket[0]
+			num_games=bucket[1]
+			if num_games!=0:
+				to_output.append(indent+"   "+str(won)+" won out of "+str(num_games)+" games | "+str(won/num_games*100)+"%")
+			else:
+				to_output.append(indent+"   "+str(won)+" won out of "+str(num_games)+" games | N/A%")
 
 
 		to_output.append(indent+"Avg points: "+str(avg_points['avg_game_points'][-1])+" - "+str(avg_points['avg_other_game_points'][-1]))

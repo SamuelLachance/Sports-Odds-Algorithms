@@ -164,6 +164,59 @@ def test_cfb_provider_rejects_juice_point_spread_without_flat_spread() -> None:
     assert consensus["home_close_ml"] == -200.0
 
 
+def test_cfb_provider_rejects_juice_in_flat_spread_fallback() -> None:
+    """CFB must not reintroduce −110 via flat `spread` after juice-clearing nested fields."""
+    from scripts.fetch_cfb_odds import MAX_CFB_SPREAD
+
+    item = {
+        "provider": {"name": "book"},
+        "homeTeamOdds": {
+            "favorite": True,
+            "close": {
+                "pointSpread": {"american": -110},
+                "moneyLine": {"american": -200},
+            },
+        },
+        "awayTeamOdds": {
+            "favorite": False,
+            "close": {
+                "pointSpread": {"american": 110},
+                "moneyLine": {"american": 170},
+            },
+        },
+        "spread": -110,  # juice also dumped into flat field
+    }
+    consensus = _consensus([item], max_handicap_abs=MAX_CFB_SPREAD)
+    assert consensus["home_close_spread"] is None
+    assert consensus["away_close_spread"] is None
+
+
+def test_cfb_provider_rejects_away_only_juice_point_spread() -> None:
+    """Away-only juice nested field must not leave asymmetric away_close_spread=110."""
+    from scripts.fetch_cfb_odds import MAX_CFB_SPREAD
+
+    item = {
+        "provider": {"name": "book"},
+        "homeTeamOdds": {
+            "favorite": True,
+            "close": {
+                "moneyLine": {"american": -200},
+            },
+        },
+        "awayTeamOdds": {
+            "favorite": False,
+            "close": {
+                "pointSpread": {"american": 110},  # juice only on away
+                "moneyLine": {"american": 170},
+            },
+        },
+        "spread": -7.5,
+    }
+    consensus = _consensus([item], max_handicap_abs=MAX_CFB_SPREAD)
+    assert consensus["home_close_spread"] == -7.5
+    assert consensus["away_close_spread"] == 7.5
+
+
 def test_cbb_odds_row_excludes_live_books_from_consensus() -> None:
     """Live/in-game books must not pollute CBB closing consensus."""
     from scripts import fetch_cbb_odds as mod
@@ -225,3 +278,80 @@ def test_cbb_odds_row_excludes_live_books_from_consensus() -> None:
         row = mod._odds_row(event)
     assert row["home_close_spread"] == -5.5
     assert row["n_books"] == 1
+
+
+def test_cbb_merge_rows_keeps_prior_closes_when_fresh_empty() -> None:
+    """Fresh n_books=0 shells must not wipe existing closing lines."""
+    from scripts.fetch_cbb_odds import merge_rows
+
+    existing = [
+        {
+            "date": "2024-01-15",
+            "home_key": "duke",
+            "away_key": "unc",
+            "home_close_ml": "-150",
+            "away_close_ml": "130",
+            "home_close_spread": "-5.5",
+            "away_close_spread": "5.5",
+            "n_books": "2",
+            "source": "espn-core",
+        }
+    ]
+    fresh = [
+        {
+            "date": "2024-01-15",
+            "home_key": "duke",
+            "away_key": "unc",
+            "home_close_ml": None,
+            "away_close_ml": None,
+            "home_close_spread": None,
+            "away_close_spread": None,
+            "n_books": 0,
+            "source": "espn-core",
+        }
+    ]
+    merged = merge_rows(existing, fresh)
+    assert len(merged) == 1
+    assert merged[0]["home_close_ml"] == "-150"
+    assert merged[0]["n_books"] == "2"
+
+
+def test_cfb_collect_day_rows_refetches_empty_odds_cache(tmp_path, monkeypatch) -> None:
+    """Cached n_books=0 rows must not permanently block a later successful fetch."""
+    import json
+    from datetime import date
+    from unittest.mock import patch
+
+    from scripts import fetch_cfb_odds as mod
+
+    monkeypatch.setattr(mod, "CACHE_DIR", tmp_path)
+    day = date(2024, 9, 1)
+    cache_file = tmp_path / f"{day.strftime('%Y%m%d')}.json"
+    cache_file.write_text(
+        json.dumps(
+            [
+                {
+                    "date": "2024-09-01",
+                    "home_key": "ala",
+                    "away_key": "uga",
+                    "n_books": 0,
+                    "home_close_ml": None,
+                }
+            ]
+        ),
+        encoding="utf-8",
+    )
+    filled = [
+        {
+            "date": "2024-09-01",
+            "home_key": "ala",
+            "away_key": "uga",
+            "n_books": 2,
+            "home_close_ml": -200,
+        }
+    ]
+    with patch.object(mod, "_iter_completed_events", return_value=[{"id": "1"}]):
+        with patch.object(mod, "_odds_row", return_value=filled[0]):
+            rows = mod.collect_day_rows(day, use_cache=True)
+    assert rows[0]["n_books"] == 2
+    assert rows[0]["home_close_ml"] == -200

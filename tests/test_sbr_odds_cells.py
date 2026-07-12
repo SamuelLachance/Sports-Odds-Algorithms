@@ -51,6 +51,51 @@ def test_nhl_covid_datestr_uses_calendar_2021() -> None:
     assert _make_datestr("0115", 2023, start=8, yr_end=12) == "2024-01-15"
 
 
+def test_mlb_datestr_uses_calendar_season_year() -> None:
+    """MLB season year == calendar year; early months must not roll to season+1."""
+    from web.sbr_odds import _make_datestr
+
+    assert _make_datestr("0215", 2024, start=1, yr_end=12) == "2024-02-15"
+    assert _make_datestr("0415", 2024, start=1, yr_end=12) == "2024-04-15"
+    assert _make_datestr("1101", 2024, start=1, yr_end=12) == "2024-11-01"
+
+
+def test_xlsx_rows_honors_sparse_column_refs() -> None:
+    """OpenXML omits empty cells; column ``r`` must pad so Q → index 16."""
+    import io
+    import zipfile
+
+    from web.sbr_odds import _xlsx_rows
+
+    ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+    ss = f"""<?xml version="1.0"?>
+<sst xmlns="{ns}" count="2" uniqueCount="2">
+  <si><t>0415</t></si>
+  <si><t>Boston</t></si>
+</sst>"""
+    sheet = f"""<?xml version="1.0"?>
+<worksheet xmlns="{ns}">
+  <sheetData>
+    <row r="1">
+      <c r="A1" t="s"><v>0</v></c>
+      <c r="D1" t="s"><v>1</v></c>
+      <c r="Q1"><v>-150</v></c>
+    </row>
+  </sheetData>
+</worksheet>"""
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w") as zf:
+        zf.writestr("xl/sharedStrings.xml", ss)
+        zf.writestr("xl/worksheets/sheet1.xml", sheet)
+        zf.writestr("[Content_Types].xml", "<Types></Types>")
+    rows = _xlsx_rows(buf.getvalue())
+    assert len(rows) == 1
+    assert rows[0][0] == "0415"
+    assert rows[0][3] == "Boston"
+    assert rows[0][16] == "-150"
+
+
+
 def test_nhl_covid_html_rows_stamp_2021_calendar() -> None:
     from unittest.mock import patch
 
@@ -195,6 +240,35 @@ def test_nhl_html_repairs_same_sign_puck_lines() -> None:
 
     cells = lambda *vals: "".join(f"<td>{v}</td>" for v in vals)
     # NHL layout: date, …, name@3, …, ML@9, spread@10, juice@11
+    # Home is ML favorite (−150); both rows dump −1.5.
+    html = (
+        "<table>"
+        f"<tr>{cells(*([f'h{i}' for i in range(12)]))}</tr>"
+        f"<tr>{cells(*(['sub'] * 12))}</tr>"
+        f"<tr>{cells('1015', '', '', 'Boston', '', '', '', '', '', '130', '-1.5', '-110')}</tr>"
+        f"<tr>{cells('1015', '', '', 'Montreal', '', '', '', '', '', '-150', '-1.5', '-110')}</tr>"
+        "</table>"
+    )
+    with patch("web.sbr_odds._translate_name", side_effect=lambda _s, name, _t: name):
+        with patch(
+            "web.sbr_odds.normalize_team_key",
+            side_effect=lambda _s, name: name.lower()[:3],
+        ):
+            rows = _rows_from_nhl_html("nhl", 2023, html, {})
+    assert len(rows) == 1
+    assert rows[0]["home_close_ml"] == -150
+    assert rows[0]["away_close_ml"] == 130
+    assert rows[0]["home_close_spread"] == -1.5
+    assert rows[0]["away_close_spread"] == 1.5
+
+
+def test_nhl_html_same_sign_uses_away_ml_favorite() -> None:
+    """Same-sign puck dump must assign −line to the away ML favorite, not always home."""
+    from unittest.mock import patch
+
+    from web.sbr_odds import _rows_from_nhl_html
+
+    cells = lambda *vals: "".join(f"<td>{v}</td>" for v in vals)
     html = (
         "<table>"
         f"<tr>{cells(*([f'h{i}' for i in range(12)]))}</tr>"
@@ -210,8 +284,10 @@ def test_nhl_html_repairs_same_sign_puck_lines() -> None:
         ):
             rows = _rows_from_nhl_html("nhl", 2023, html, {})
     assert len(rows) == 1
-    assert rows[0]["home_close_spread"] == -1.5
-    assert rows[0]["away_close_spread"] == 1.5
+    assert rows[0]["away_close_ml"] == -150
+    assert rows[0]["home_close_ml"] == 130
+    assert rows[0]["home_close_spread"] == 1.5
+    assert rows[0]["away_close_spread"] == -1.5
 
 
 def test_mlb_xlsx_repairs_same_sign_run_lines() -> None:
@@ -244,6 +320,37 @@ def test_mlb_xlsx_repairs_same_sign_run_lines() -> None:
     assert len(rows) == 1
     assert rows[0]["home_close_spread"] == -1.5
     assert rows[0]["away_close_spread"] == 1.5
+
+
+def test_mlb_xlsx_same_sign_uses_away_ml_favorite() -> None:
+    """Same-sign run-line dump must assign −line to the away ML favorite."""
+    from unittest.mock import patch
+
+    from web.sbr_odds import fetch_sbr_season_rows
+
+    header = [f"h{i}" for i in range(19)]
+    sub = [f"s{i}" for i in range(19)]
+    away = [""] * 19
+    home = [""] * 19
+    away[0], home[0] = "0415", "0415"
+    away[3], home[3] = "Boston", "New York"
+    away[16], home[16] = "-150", "130"  # away chalk
+    away[17], home[17] = "-1.5", "-1.5"
+    away[18], home[18] = "-110", "-110"
+    sheet = [header, sub, away, home]
+
+    with patch("web.sbr_odds._fetch_bytes", return_value=b"xlsx"):
+        with patch("web.sbr_odds._xlsx_rows", return_value=sheet):
+            with patch("web.sbr_odds._translate_name", side_effect=lambda _s, name, _t: name):
+                with patch(
+                    "web.sbr_odds.normalize_team_key",
+                    side_effect=lambda _s, name: name.lower()[:3],
+                ):
+                    rows = fetch_sbr_season_rows("mlb", 2024, {})
+    assert len(rows) == 1
+    assert rows[0]["away_close_ml"] == -150
+    assert rows[0]["home_close_spread"] == 1.5
+    assert rows[0]["away_close_spread"] == -1.5
 
 
 def test_sbr_html_equal_opens_uses_ml_favorite() -> None:

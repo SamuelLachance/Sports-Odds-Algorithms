@@ -115,12 +115,18 @@ def _valid_american(value: float | None) -> float | None:
 
 
 def _valid_handicap_line(value: float | None, *, max_abs: float) -> float | None:
-    """Keep real spread/run/puck lines; drop ML-sized values dumped into handicap fields."""
+    """Keep real spread/run/puck lines; drop ML/juice dumps into handicap fields.
+
+    American juice/ML magnitudes start at 100. Even when ``max_abs`` is raised for
+    college blowouts (CFB ≤120), |line| ≥ 100 is never a real handicap.
+    """
     if value is None:
         return None
     try:
         number = float(value)
     except (TypeError, ValueError):
+        return None
+    if abs(number) >= 100.0:
         return None
     if abs(number) > max_abs:
         return None
@@ -145,12 +151,9 @@ def _provider_line(
         max_abs=max_handicap_abs,
     )
     raw_spread = _to_float(item.get("spread"))
-    # ESPN sometimes dumps spread juice (−110) into pointSpread.american.
-    # With CFB/CBB's raised handicap cap that juice would otherwise be kept as
-    # the line — even when the flat `spread` field is missing.
-    if home_close_spread is not None and abs(home_close_spread) >= 100.0:
-        home_close_spread = None
-        away_close_spread = None
+    # Juice/ML dumps in nested pointSpread are already dropped by
+    # ``_valid_handicap_line`` (|x| ≥ 100). Flat ``spread`` goes through the
+    # same helper below so CFB/CBB raised caps cannot reintroduce −110.
     if home_close_spread is None:
         if raw_spread is not None:
             magnitude = abs(raw_spread)
@@ -179,8 +182,6 @@ def _provider_line(
         _nested_american(home, "open", "pointSpread"),
         max_abs=max_handicap_abs,
     )
-    if home_open_spread is not None and abs(home_open_spread) >= 100.0:
-        home_open_spread = None
 
     total = _to_float(item.get("overUnder"))
     open_total = _to_float(((item.get("open") or {}) or {}).get("total"))

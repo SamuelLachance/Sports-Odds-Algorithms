@@ -83,18 +83,18 @@ def _make_datestr(raw: str, season: int, *, start: int = 8, yr_end: int = 12) ->
     """Map MMDD + season-start year to YYYY-MM-DD.
 
     ``season`` is the year the season *starts* (NBA 2023 → 2023-24). Months
-    before ``start`` roll into ``season + 1``. For mid-calendar seasons that
-    pass ``start=1`` (NHL COVID 2020-21), pass the calendar year of the games
-    (``season + 1``) as ``season`` — otherwise Jan–Jun stamp as the prior year.
+    before ``start`` roll into ``season + 1``. Calendar-year sports (MLB) pass
+    ``start=1`` so Jan–Dec stay on ``season``. ``yr_end`` is retained for
+    callers but no longer flips the year (NBA ``yr_end=12`` never matched a
+    valid month; MLB callers should use ``start=1`` instead of ``start=3``).
     """
+    del yr_end  # kept for call-site compatibility
     raw = str(raw).strip()
     if len(raw) == 3:
         raw = f"0{raw}"
     month = int(raw[:2])
     day = int(raw[2:4])
     year = season if month >= start else season + 1
-    if month > yr_end and start == 8:
-        year = season + 1 if month < start else season
     return f"{year:04d}-{month:02d}-{day:02d}"
 
 
@@ -152,6 +152,41 @@ def _spread_juice_cell(value: str, default: int | None = None) -> int | None:
     return _coerce_american(_optional_number(value), default=default)
 
 
+def _repair_same_sign_spreads(
+    home_spread: float | None,
+    away_spread: float | None,
+    *,
+    home_ml: float | int | None = None,
+    away_ml: float | int | None = None,
+) -> tuple[float | None, float | None]:
+    """Mirror sparse lines; on same-sign dumps, assign −line to the ML favorite.
+
+    SBR often duplicates the favorite handicap on both rows. Always trusting the
+    home cell flips the board when the away side is chalk.
+    """
+    if home_spread is not None and away_spread is None:
+        return home_spread, -home_spread
+    if away_spread is not None and home_spread is None:
+        return -away_spread, away_spread
+    if (
+        home_spread is not None
+        and away_spread is not None
+        and home_spread != 0
+        and away_spread != 0
+        and (home_spread > 0) == (away_spread > 0)
+    ):
+        magnitude = abs(float(home_spread))
+        away_is_favorite = (
+            away_ml is not None
+            and home_ml is not None
+            and float(away_ml) < float(home_ml)
+        )
+        if away_is_favorite:
+            return magnitude, -magnitude
+        return -magnitude, magnitude
+    return home_spread, away_spread
+
+
 def _pairwise(rows: list[list[str]]) -> list[tuple[list[str], list[str]]]:
     pairs: list[tuple[list[str], list[str]]] = []
     for index in range(1, len(rows) - 1, 2):
@@ -201,18 +236,12 @@ def _rows_from_html_table(sport: str, season: int, html: str, translated: dict[s
             home_spread = close_h
             away_spread = close_a
         # Always emit opposite-sign home/away closes (open and no-open paths).
-        if home_spread is not None and away_spread is None:
-            away_spread = -home_spread
-        elif away_spread is not None and home_spread is None:
-            home_spread = -away_spread
-        elif (
-            home_spread is not None
-            and away_spread is not None
-            and home_spread != 0
-            and away_spread != 0
-            and (home_spread > 0) == (away_spread > 0)
-        ):
-            away_spread = -home_spread
+        home_spread, away_spread = _repair_same_sign_spreads(
+            home_spread,
+            away_spread,
+            home_ml=home_close_ml,
+            away_ml=away_close_ml,
+        )
         output.append(
             {
                 "date": _make_datestr(away_row[0], season),
@@ -246,19 +275,15 @@ def _rows_from_nhl_html(sport: str, season: int, html: str, translated: dict[str
             continue
         home_spread = _spread_line_cell(home_row[10])
         away_spread = _spread_line_cell(away_row[10])
-        # Mirror sparse / same-sign puck lines (same repair as NBA/NFL HTML).
-        if home_spread is not None and away_spread is None:
-            away_spread = -home_spread
-        elif away_spread is not None and home_spread is None:
-            home_spread = -away_spread
-        elif (
-            home_spread is not None
-            and away_spread is not None
-            and home_spread != 0
-            and away_spread != 0
-            and (home_spread > 0) == (away_spread > 0)
-        ):
-            away_spread = -home_spread
+        home_close_ml = _american_ml_cell(home_row[9])
+        away_close_ml = _american_ml_cell(away_row[9])
+        # Mirror sparse / same-sign puck lines; ML picks the favorite side.
+        home_spread, away_spread = _repair_same_sign_spreads(
+            home_spread,
+            away_spread,
+            home_ml=home_close_ml,
+            away_ml=away_close_ml,
+        )
         output.append(
             {
                 # COVID 2020-21 NHL slate was played in calendar 2021; SBR
@@ -271,8 +296,8 @@ def _rows_from_nhl_html(sport: str, season: int, html: str, translated: dict[str
                 ),
                 "home_key": home_key,
                 "away_key": away_key,
-                "home_close_ml": _american_ml_cell(home_row[9]),
-                "away_close_ml": _american_ml_cell(away_row[9]),
+                "home_close_ml": home_close_ml,
+                "away_close_ml": away_close_ml,
                 "home_close_spread": home_spread,
                 "away_close_spread": away_spread,
                 "home_spread_odds": _spread_juice_cell(home_row[11]),
@@ -281,6 +306,17 @@ def _rows_from_nhl_html(sport: str, season: int, html: str, translated: dict[str
             }
         )
     return output
+
+
+def _xlsx_col_index(cell_ref: str) -> int | None:
+    """Parse OpenXML cell ref (``A1``, ``Q12``) to 0-based column index."""
+    letters = "".join(ch for ch in str(cell_ref) if ch.isalpha())
+    if not letters:
+        return None
+    index = 0
+    for ch in letters.upper():
+        index = index * 26 + (ord(ch) - ord("A") + 1)
+    return index - 1
 
 
 def _xlsx_rows(path_bytes: bytes) -> list[list[str]]:
@@ -297,17 +333,25 @@ def _xlsx_rows(path_bytes: bytes) -> list[list[str]]:
         ns = {"m": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
         for row in sheet.findall("m:sheetData/m:row", ns):
             values: list[str] = []
+            next_col = 0
             for cell in row.findall("m:c", ns):
                 cell_type = cell.get("t")
                 value_node = cell.find("m:v", ns)
                 if value_node is None:
-                    values.append("")
-                    continue
-                raw = value_node.text or ""
-                if cell_type == "s":
-                    values.append(shared_strings[int(raw)] if raw.isdigit() else raw)
+                    raw_text = ""
                 else:
-                    values.append(raw)
+                    raw = value_node.text or ""
+                    if cell_type == "s":
+                        raw_text = shared_strings[int(raw)] if raw.isdigit() else raw
+                    else:
+                        raw_text = raw
+                col = _xlsx_col_index(cell.get("r") or "")
+                if col is None:
+                    col = next_col
+                while len(values) <= col:
+                    values.append("")
+                values[col] = raw_text
+                next_col = col + 1
             rows.append(values)
     return rows
 
@@ -432,26 +476,23 @@ def fetch_sbr_season_rows(sport: str, season: int, translated: dict[str, dict[st
                 continue
             home_spread = _spread_line_cell(home_row[17])
             away_spread = _spread_line_cell(away_row[17])
-            # Mirror sparse / same-sign run lines (same repair as NHL/NBA HTML).
-            if home_spread is not None and away_spread is None:
-                away_spread = -home_spread
-            elif away_spread is not None and home_spread is None:
-                home_spread = -away_spread
-            elif (
-                home_spread is not None
-                and away_spread is not None
-                and home_spread != 0
-                and away_spread != 0
-                and (home_spread > 0) == (away_spread > 0)
-            ):
-                away_spread = -home_spread
+            home_close_ml = _american_ml_cell(home_row[16])
+            away_close_ml = _american_ml_cell(away_row[16])
+            # Mirror sparse / same-sign run lines; ML picks the favorite side.
+            home_spread, away_spread = _repair_same_sign_spreads(
+                home_spread,
+                away_spread,
+                home_ml=home_close_ml,
+                away_ml=away_close_ml,
+            )
             output.append(
                 {
-                    "date": _make_datestr(away_row[0], season, start=3, yr_end=10),
+                    # MLB season year == calendar year (Mar–Nov games).
+                    "date": _make_datestr(away_row[0], season, start=1, yr_end=12),
                     "home_key": home_key,
                     "away_key": away_key,
-                    "home_close_ml": _american_ml_cell(home_row[16]),
-                    "away_close_ml": _american_ml_cell(away_row[16]),
+                    "home_close_ml": home_close_ml,
+                    "away_close_ml": away_close_ml,
                     "home_close_spread": home_spread,
                     "away_close_spread": away_spread,
                     "home_spread_odds": _spread_juice_cell(home_row[18]),

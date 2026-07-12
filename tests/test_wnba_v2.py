@@ -66,6 +66,10 @@ def test_canon_franchise_follows_relocation_chains() -> None:
     # ESPN ids stay stable across rebrands (17 = Utah/SA/LV franchise)
     assert franchise_for_espn_id("17") == "lva"
     assert franchise_for_espn_id("", "sea") == "sea"
+    # Historical ESPN ids must resolve to relocation targets, not stale tricodes.
+    assert franchise_for_espn_id("4") == "dal"  # Shock → Wings
+    assert franchise_for_espn_id("21") == "lva"  # Starzz → Aces
+    assert franchise_for_espn_id("10") == "con"  # Miracle → Sun
 
 
 def test_engine_features_precede_update_and_elo_moves_to_winner() -> None:

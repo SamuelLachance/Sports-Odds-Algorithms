@@ -129,6 +129,8 @@ def _apply_availability_layer(
             result["blended_home_win_probability"] = round(adjusted, 2)
         if result.get("home_win_probability") is not None:
             result["home_win_probability"] = round(adjusted, 2)
+        if result.get("away_win_probability") is not None:
+            result["away_win_probability"] = round(100.0 - adjusted, 2)
         # Keep nested sport preds + honest-EV base in step with the board nudge
         # so Hubáček / UI readers do not disagree with display win%.
         if result.get("pre_decorrelation_home_win_probability") is not None:
@@ -145,6 +147,10 @@ def _apply_availability_layer(
             nested["home_win_probability"] = round(
                 min(max(nested_home + float(shift), 5.0), 95.0), 2
             )
+            if nested.get("away_win_probability") is not None:
+                nested["away_win_probability"] = round(
+                    100.0 - float(nested["home_win_probability"]), 2
+                )
             if nested.get("pre_decorrelation_home_win_probability") is not None:
                 nested_pre = float(nested["pre_decorrelation_home_win_probability"])
                 nested["pre_decorrelation_home_win_probability"] = round(

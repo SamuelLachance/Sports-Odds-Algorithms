@@ -162,8 +162,14 @@ def collect_day_rows(day: date, *, use_cache: bool = True) -> list[dict[str, Any
     cache_file = CACHE_DIR / f"{day.strftime('%Y%m%d')}.json"
     if use_cache and cache_file.is_file():
         try:
-            return json.loads(cache_file.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):
+            cached = json.loads(cache_file.read_text(encoding="utf-8"))
+            # Empty-odds cache (n_books=0) from a failed fetch must not stick —
+            # allow a later run to refill closes.
+            if cached and any(int(r.get("n_books") or 0) > 0 for r in cached):
+                return cached
+            if cached == []:
+                return cached
+        except (json.JSONDecodeError, OSError, TypeError, ValueError):
             pass
 
     events = list(_iter_completed_events(day))

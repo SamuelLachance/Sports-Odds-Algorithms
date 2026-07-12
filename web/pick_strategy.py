@@ -813,7 +813,10 @@ def _backtest_samples(
         else:
             pushes += 1
 
-    roi_pct = (units_total / bets * 100.0) if bets else 0.0
+    # Pushes return the stake — exclude them from the ROI denominator (same as
+    # tracking_service._summarize_bets).
+    decided = wins + losses
+    roi_pct = (units_total / decided * 100.0) if decided else 0.0
     return {
         "bet_type": bet_type,
         "bets": bets,

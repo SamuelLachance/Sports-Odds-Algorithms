@@ -882,6 +882,49 @@ def test_nba_v2_availability_shift_moves_win_pct_keeps_margin() -> None:
         blend_module._run_nba_v2 = nba_v2_original
 
 
+def test_availability_layer_syncs_away_win_probability() -> None:
+    """Availability nudge must keep board + nested away% as 100 − home%."""
+    from unittest.mock import patch
+
+    from web.availability_signals import AvailabilitySnapshot
+    from web.blend_service import _apply_availability_layer
+
+    result = {
+        "home_win_probability": 60.0,
+        "away_win_probability": 40.0,
+        "hockey_pred": {
+            "home_win_probability": 60.0,
+            "away_win_probability": 40.0,
+        },
+    }
+    with (
+        patch(
+            "web.availability_signals.fetch_availability_snapshot",
+            return_value=AvailabilitySnapshot(
+                home_injuries=0,
+                away_injuries=2,
+                home_out=0,
+                away_out=1,
+                sources=["espn_injuries_away"],
+            ),
+        ),
+        patch(
+            "web.availability_signals.availability_home_prob_shift",
+            return_value=2.0,
+        ),
+    ):
+        out = _apply_availability_layer(
+            result,
+            league="nhl",
+            home_espn_id="1",
+            away_espn_id="2",
+        )
+    assert out["home_win_probability"] == pytest.approx(62.0)
+    assert out["away_win_probability"] == pytest.approx(38.0)
+    assert out["hockey_pred"]["home_win_probability"] == pytest.approx(62.0)
+    assert out["hockey_pred"]["away_win_probability"] == pytest.approx(38.0)
+
+
 def test_model_agreement_nfl_three_layers_agree() -> None:
     import web.blend_service as blend_module
 

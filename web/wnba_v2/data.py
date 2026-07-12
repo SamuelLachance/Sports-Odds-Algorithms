@@ -82,7 +82,9 @@ def canon_franchise(tricode_or_abbr: str) -> str:
 def franchise_for_espn_id(team_id: str, abbr: str = "") -> str:
     mapped = ESPN_ID_TO_FRANCHISE.get(str(team_id))
     if mapped:
-        return mapped
+        # Historical ESPN ids still map to old tricodes (det/utah/orl); chain
+        # through FRANCHISE so Elo stays continuous across relocations.
+        return canon_franchise(mapped)
     return canon_franchise(abbr)
 
 
