@@ -276,6 +276,39 @@ def test_blend_soccer_survives_pred_model_crash() -> None:
     assert result["soccer_pred"] is None
 
 
+def test_fetch_current_csv_keeps_prior_on_network_failure(tmp_path, monkeypatch) -> None:
+    """Network failure must not wipe a usable CSV cache; flag as stale instead."""
+    import time
+
+    import web.soccer_v2.live as live
+    from web.soccer_v2.data import parse_season_csv
+
+    monkeypatch.setattr(live, "LIVE_CACHE_DIR", tmp_path)
+    csv_body = (
+        "Div,Date,HomeTeam,AwayTeam,FTHG,FTAG,FTR,HS,AS,HST,AST,HF,AF,HC,AC,HY,AY,HR,AR\n"
+        "E0,10/08/24,Arsenal,Liverpool,2,1,H,10,8,5,3,8,10,4,3,1,2,0,0\n"
+    )
+    cache = tmp_path / "E0_2024.csv"
+    cache.write_text(csv_body, encoding="utf-8")
+    aged = time.time() - (live.CURRENT_CSV_TTL_SECONDS + 60)
+    import os
+
+    os.utime(cache, (aged, aged))
+
+    def _boom(*_a, **_k):
+        raise OSError("offline")
+
+    monkeypatch.setattr(live, "fetch_csv_text", _boom)
+    rows, stale = live._fetch_current_csv("E0", 2024)
+    assert stale is True
+    assert len(rows) == 1
+    assert rows[0]["home"] == "Arsenal"
+    # Cache must still contain the prior body (not emptied).
+    assert "Arsenal" in cache.read_text(encoding="utf-8")
+    expected = parse_season_csv(csv_body, "E0", 2024)
+    assert rows[0]["away"] == expected[0]["away"]
+
+
 if __name__ == "__main__":
     test_poisson_1x2_sums_to_one_and_favors_stronger_attack()
     test_engine_elo_moves_toward_winner_and_features_precede_update()
@@ -287,4 +320,6 @@ if __name__ == "__main__":
     test_decorrelate_pushes_away_from_market()
     test_resolve_team_by_abbr_hint_and_fuzzy()
     test_live_context_and_prediction_when_artifacts_present()
+    test_blend_soccer_survives_pred_crash()
+    test_fetch_current_csv_keeps_prior_on_network_failure()
     print("test_soccer_v2.py: all tests passed")

@@ -407,19 +407,9 @@ def fetch_event_odds(
 
 def devig_two_way(price_a: float, price_b: float) -> tuple[float, float] | None:
     """Implied no-vig probabilities for a two-way American-odds market."""
+    from web.basketball_v2_market import devig_home_prob
 
-    def implied(american: float) -> float | None:
-        if american >= 100:
-            return 100.0 / (american + 100.0)
-        if american <= -100:
-            return -american / (-american + 100.0)
+    home = devig_home_prob(price_a, price_b)
+    if home is None:
         return None
-
-    pa = implied(price_a)
-    pb = implied(price_b)
-    if pa is None or pb is None:
-        return None
-    total = pa + pb
-    if total <= 0:
-        return None
-    return pa / total, pb / total
+    return home, 1.0 - home

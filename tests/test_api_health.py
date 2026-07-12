@@ -67,3 +67,54 @@ def test_v2_live_ttl_is_three_hours() -> None:
 
     assert nba_live.EVENTS_TTL_SECONDS == 3 * 3600
     assert cbb_live.EVENTS_TTL_SECONDS == 3 * 3600
+
+
+def test_get_seasons_rejects_unknown_league() -> None:
+    from web.predict_service import get_seasons
+
+    try:
+        get_seasons("not-a-league")
+        assert False, "expected ValueError"
+    except ValueError as exc:
+        assert "Unsupported league" in str(exc)
+
+
+def test_seasons_route_returns_structured_400() -> None:
+    from web.app import seasons
+
+    try:
+        seasons("zzz")
+        assert False, "expected HTTPException"
+    except HTTPException as exc:
+        assert exc.status_code == 400
+        assert isinstance(exc.detail, dict)
+        assert exc.detail["code"] == "invalid_league"
+
+
+def test_read_db_json_corrupt_returns_structured_500(tmp_path, monkeypatch) -> None:
+    import web.app as app_mod
+
+    monkeypatch.setattr(app_mod, "DB_DIR", tmp_path)
+    bad = tmp_path / "manifest.json"
+    bad.write_text("{not-json", encoding="utf-8")
+    try:
+        app_mod._read_db_json("manifest.json")
+        assert False, "expected HTTPException"
+    except HTTPException as exc:
+        assert exc.status_code == 500
+        assert isinstance(exc.detail, dict)
+        assert exc.detail["code"] == "db_snapshot_corrupt"
+        assert "traceback" not in str(exc.detail).lower()
+
+
+def test_read_db_json_non_object_returns_structured_500(tmp_path, monkeypatch) -> None:
+    import web.app as app_mod
+
+    monkeypatch.setattr(app_mod, "DB_DIR", tmp_path)
+    (tmp_path / "manifest.json").write_text("[1, 2]", encoding="utf-8")
+    try:
+        app_mod._read_db_json("manifest.json")
+        assert False, "expected HTTPException"
+    except HTTPException as exc:
+        assert exc.status_code == 500
+        assert exc.detail["code"] == "db_snapshot_invalid"

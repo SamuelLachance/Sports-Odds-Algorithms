@@ -51,8 +51,28 @@ def test_football_cbb_v2_artifacts_optional() -> None:
         print(f"{label} artifacts_available: {available}")
 
 
+def test_core_v2_artifacts_optional() -> None:
+    """Report nba/wnba/nhl/mlb/soccer v2 presence; never fail when absent."""
+    checks = (
+        ("nba_v2", "web.nba_v2.live"),
+        ("wnba_v2", "web.wnba_v2.live"),
+        ("nhl_v2", "web.nhl_v2.live"),
+        ("mlb_v2", "web.mlb_v2.live"),
+        ("soccer_v2", "web.soccer_v2.live"),
+    )
+    for label, module_path in checks:
+        try:
+            module = __import__(module_path, fromlist=["artifacts_available"])
+            available = bool(module.artifacts_available())
+        except Exception as exc:  # noqa: BLE001 - smoke must stay non-fatal
+            print(f"{label} artifacts_available: error ({exc})")
+            continue
+        print(f"{label} artifacts_available: {available}")
+
+
 if __name__ == "__main__":
     test_api_import()
     test_nba_example()
     test_football_cbb_v2_artifacts_optional()
+    test_core_v2_artifacts_optional()
     print("All smoke tests passed.")

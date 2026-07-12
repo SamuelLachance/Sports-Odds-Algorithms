@@ -249,6 +249,96 @@ def test_live_market_aware_when_odds_provided() -> None:
     ] != pure["predicted_margin"]
 
 
+def test_wnba_market_aware_artifacts_present() -> None:
+    """Market heads shipped with WNBA v2 must load for live market-aware scoring."""
+    from web.wnba_v2.live import _load_artifacts, artifacts_available
+
+    assert artifacts_available()
+    art = _load_artifacts()
+    assert art is not None
+    assert art.get("clf_market") is not None
+    assert art.get("lr_market") is not None
+    assert art.get("calibrator_market") is not None
+    assert art.get("margin_market") is not None
+    assert "mkt_home_prob" in art["clf_market_features"]
+    assert "has_market" in art["clf_market_features"]
+    assert "mkt_home_spread" in art["margin_market_features"]
+    assert "has_spread" in art["margin_market_features"]
+
+
+def test_predict_matchup_v2_market_aware_wiring_with_stub_context() -> None:
+    """Odds + market artifacts flip model_variant without needing a live season fetch."""
+    from unittest.mock import MagicMock, patch
+
+    from web.wnba_v2 import live as wnba_live
+
+    team = MagicMock()
+    team.games_played = 20
+    team.elo = 1500.0
+    team.ortg_fast = 105.0
+    team.drtg_fast = 100.0
+    team.pace_ewma = 80.0
+    team.win_pct = MagicMock(return_value=0.55)
+
+    engine = MagicMock()
+    engine.teams = {"lva": team, "sea": team}
+    engine.team = MagicMock(return_value=team)
+    engine.features_for_game = MagicMock(
+        return_value={
+            "home_rest_days": 1.0,
+            "away_rest_days": 1.0,
+            "home_b2b": 0.0,
+            "away_b2b": 0.0,
+            "home_expansion": 0.0,
+            "away_expansion": 0.0,
+        }
+    )
+
+    art = {
+        "feature_columns": ["elo_diff"],
+        "clf_market_features": ["mkt_home_prob", "has_market"],
+        "margin_market_features": ["mkt_home_spread", "has_spread"],
+        "clf": object(),
+        "lr": {"xgb_weight": 0.5, "intercept": 0.0, "coefs": [0.0]},
+        "calibrator": {"x": [0.0, 1.0], "y": [0.0, 1.0]},
+        "clf_market": object(),
+        "lr_market": {"xgb_weight": 0.5, "intercept": 0.0, "coefs": [0.0, 0.0, 0.0]},
+        "calibrator_market": {"x": [0.0, 1.0], "y": [0.0, 1.0]},
+        "margin": object(),
+        "margin_market": object(),
+        "score_home": object(),
+        "score_away": object(),
+    }
+    context = {
+        "engine": engine,
+        "artifacts": art,
+        "todays_games": {},
+        "season": 2026,
+    }
+
+    with (
+        patch.object(wnba_live, "get_live_context", return_value=context),
+        patch.object(wnba_live, "canon_franchise", side_effect=lambda x: x.lower()),
+        patch.object(wnba_live, "_predict_probability", return_value=0.62) as mock_prob,
+        patch.object(wnba_live, "_predict_regressor", side_effect=[5.0, 85.0, 80.0]),
+    ):
+        result = wnba_live.predict_matchup_v2(
+            "2026-07-10",
+            "lva",
+            "sea",
+            home_moneyline=-150,
+            away_moneyline=130,
+            home_spread=-4.5,
+        )
+
+    assert result is not None
+    assert result["model_variant"] == "market_aware"
+    assert result["has_market"] is True
+    assert result["has_spread"] is True
+    assert result["predicted_margin"] == 5.0
+    assert mock_prob.call_args.kwargs.get("clf") is art["clf_market"]
+
+
 if __name__ == "__main__":
     test_canon_franchise_follows_relocation_chains()
     test_engine_features_precede_update_and_elo_moves_to_winner()
@@ -263,4 +353,6 @@ if __name__ == "__main__":
     test_live_prediction_when_artifacts_present()
     test_devig_home_prob_and_market_variant_helpers()
     test_live_market_aware_when_odds_provided()
+    test_wnba_market_aware_artifacts_present()
+    test_predict_matchup_v2_market_aware_wiring_with_stub_context()
     print("test_wnba_v2.py: all tests passed")

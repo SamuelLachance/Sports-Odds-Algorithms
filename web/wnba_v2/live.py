@@ -20,6 +20,11 @@ from typing import Any
 
 import numpy as np
 
+from web.basketball_v2_market import (
+    apply_market_features,
+    resolve_market_heads,
+    devig_home_prob as _devig_home_prob,  # noqa: F401 — re-exported for tests
+)
 from web.wnba_v2.data import canon_franchise, fetch_box_score, fetch_season_events
 from web.wnba_v2.feature_engine import FEATURE_COLUMNS, WnbaFeatureEngine
 from web.wnba_v2.replay import merge_season_games, replay_season
@@ -253,27 +258,6 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
     }
 
 
-def _devig_home_prob(home_ml: float | None, away_ml: float | None) -> float | None:
-    def implied(american: float) -> float | None:
-        try:
-            american = float(american)
-        except (TypeError, ValueError):
-            return None
-        if american >= 100:
-            return 100.0 / (american + 100.0)
-        if american <= -100:
-            return -american / (-american + 100.0)
-        return None
-
-    if home_ml is None or away_ml is None:
-        return None
-    ph = implied(home_ml)
-    pa = implied(away_ml)
-    if ph is None or pa is None or ph + pa <= 0:
-        return None
-    return ph / (ph + pa)
-
-
 def _predict_probability(
     art: dict[str, Any],
     features: dict[str, float],
@@ -358,28 +342,19 @@ def predict_matchup_v2(
     }
 
     features = engine.features_for_game(game)
-    mkt_prob = _devig_home_prob(home_moneyline, away_moneyline)
-    has_market = mkt_prob is not None
-    has_spread = home_spread is not None
-    features["mkt_home_prob"] = float(mkt_prob) if has_market else 0.5
-    features["has_market"] = 1.0 if has_market else 0.0
-    features["mkt_home_spread"] = float(home_spread) if has_spread else 0.0
-    features["has_spread"] = 1.0 if has_spread else 0.0
-
-    use_market_clf = bool(
-        has_market
-        and art.get("clf_market") is not None
-        and art.get("lr_market") is not None
-        and art.get("calibrator_market") is not None
+    has_market, has_spread = apply_market_features(
+        features,
+        home_moneyline=home_moneyline,
+        away_moneyline=away_moneyline,
+        home_spread=home_spread,
     )
-    use_market_margin = bool(has_spread and art.get("margin_market") is not None)
-    model_variant = "market_aware" if (use_market_clf or use_market_margin) else "pure"
-
-    pure_cols = list(art["feature_columns"])
-    clf_cols = pure_cols + list(art["clf_market_features"]) if use_market_clf else pure_cols
-    margin_cols = (
-        pure_cols + list(art["margin_market_features"]) if use_market_margin else pure_cols
-    )
+    (
+        use_market_clf,
+        use_market_margin,
+        model_variant,
+        clf_cols,
+        margin_cols,
+    ) = resolve_market_heads(art, has_market=has_market, has_spread=has_spread)
 
     if use_market_clf:
         prob_home = _predict_probability(
@@ -391,15 +366,16 @@ def predict_matchup_v2(
             calibrator=art["calibrator_market"],
         )
     else:
-        prob_home = _predict_probability(art, features, cols=pure_cols)
+        prob_home = _predict_probability(art, features, cols=clf_cols)
 
     if use_market_margin:
         margin = _predict_regressor(
             art["margin_market"], art, features, cols=margin_cols
         )
     else:
-        margin = _predict_regressor(art["margin"], art, features, cols=pure_cols)
+        margin = _predict_regressor(art["margin"], art, features, cols=margin_cols)
 
+    pure_cols = list(art["feature_columns"])
     score_home = _predict_regressor(art["score_home"], art, features, cols=pure_cols)
     score_away = _predict_regressor(art["score_away"], art, features, cols=pure_cols)
 
@@ -411,7 +387,7 @@ def predict_matchup_v2(
         "algorithm": "WNBAGradientBoost v2",
         "model_variant": model_variant,
         "home_win_probability": round(prob_home * 100.0, 2),
-        "features_used": len(clf_cols if use_market_clf else pure_cols),
+        "features_used": len(clf_cols),
         "home_games": int(home_team.games_played),
         "away_games": int(away_team.games_played),
         "home_elo": round(home_team.elo, 1),

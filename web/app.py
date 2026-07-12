@@ -147,7 +147,16 @@ def teams(league: str) -> list[dict[str, str]]:
 
 @app.get("/api/leagues/{league}/seasons")
 def seasons(league: str) -> list[str]:
-    return get_seasons(league)
+    try:
+        return get_seasons(league)
+    except ValueError as exc:
+        raise _http_error(
+            400,
+            str(exc),
+            code="invalid_league",
+            hint="Use a supported league id from GET /api/leagues.",
+            league=league,
+        ) from exc
 
 
 @app.get("/api/teams")
@@ -213,7 +222,33 @@ def _read_db_json(rel: str) -> dict:
         )
     import json
 
-    return json.loads(path.read_text(encoding="utf-8"))
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise _http_error(
+            500,
+            "Database snapshot is corrupt.",
+            code="db_snapshot_corrupt",
+            hint="Snapshots are rebuilt on the next Pages deploy.",
+            path=rel,
+        ) from exc
+    except OSError as exc:
+        raise _http_error(
+            500,
+            "Database snapshot could not be read.",
+            code="db_snapshot_unreadable",
+            hint="Retry shortly; check local docs/api/db permissions.",
+            path=rel,
+        ) from exc
+    if not isinstance(payload, dict):
+        raise _http_error(
+            500,
+            "Database snapshot has an unexpected shape.",
+            code="db_snapshot_invalid",
+            hint="Snapshots are rebuilt on the next Pages deploy.",
+            path=rel,
+        )
+    return payload
 
 
 @app.get("/api/db/manifest")

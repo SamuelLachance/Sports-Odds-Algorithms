@@ -202,8 +202,12 @@ def soccer_season_for_date(date_iso: str) -> int:
     return year if month >= 7 else year - 1
 
 
-def _fetch_current_csv(division: str, season: int) -> list[dict[str, Any]]:
-    """Current-season rows with a TTL cache (football-data updates ~daily)."""
+def _fetch_current_csv(division: str, season: int) -> tuple[list[dict[str, Any]], bool]:
+    """Current-season rows with a TTL cache (football-data updates ~daily).
+
+    Returns ``(rows, live_inputs_stale)``. On network failure, prefer an existing
+    on-disk CSV over wiping the cache to empty.
+    """
     LIVE_CACHE_DIR.mkdir(parents=True, exist_ok=True)
     cache = LIVE_CACHE_DIR / f"{division}_{season}.csv"
     if (
@@ -211,15 +215,21 @@ def _fetch_current_csv(division: str, season: int) -> list[dict[str, Any]]:
         and time.time() - cache.stat().st_mtime < CURRENT_CSV_TTL_SECONDS
     ):
         text = cache.read_text(encoding="utf-8", errors="replace")
-        return parse_season_csv(text, division, season) if text.strip() else []
+        rows = parse_season_csv(text, division, season) if text.strip() else []
+        return rows, False
     try:
         text = fetch_csv_text(division, season, cache_dir=LIVE_CACHE_DIR, force=True)
     except OSError:
         text = None
     if text is None:
+        # Soft-fail: keep prior CSV rather than negative-caching an empty wipe.
+        if cache.is_file():
+            prior = cache.read_text(encoding="utf-8", errors="replace")
+            if prior.strip():
+                return parse_season_csv(prior, division, season), True
         cache.write_text("", encoding="utf-8")  # negative-cache missing files
-        return []
-    return parse_season_csv(text, division, season)
+        return [], False
+    return parse_season_csv(text, division, season), False
 
 
 @lru_cache(maxsize=8)
@@ -245,6 +255,7 @@ def get_live_context(cutoff_iso: str) -> dict[str, Any] | None:
     except (OSError, json.JSONDecodeError, gzip.BadGzipFile, EOFError, KeyError, TypeError, ValueError):
         return None
 
+    live_inputs_stale = False
     # replay every season after the snapshot up to the cutoff (handles both
     # in-season updates and multi-season snapshot gaps)
     for season in range(snap_season + 1, target_season + 1):
@@ -253,7 +264,8 @@ def get_live_context(cutoff_iso: str) -> dict[str, Any] | None:
             for division in (top_division, SECOND_DIVISIONS.get(top_division)):
                 if not division:
                     continue
-                rows = _fetch_current_csv(division, season)
+                rows, csv_stale = _fetch_current_csv(division, season)
+                live_inputs_stale = live_inputs_stale or csv_stale
                 if not rows:
                     continue
                 country = DIVISION_COUNTRY[division]
@@ -265,7 +277,12 @@ def get_live_context(cutoff_iso: str) -> dict[str, Any] | None:
             merged = merge_country_rows(divisions)
             replay_country(engine, merged, stop_before_date=cutoff_iso)
 
-    return {"pools": pools, "snapshot_season": snap_season, "cutoff": cutoff_iso}
+    return {
+        "pools": pools,
+        "snapshot_season": snap_season,
+        "cutoff": cutoff_iso,
+        "live_inputs_stale": live_inputs_stale,
+    }
 
 
 def _team_lookup(engine: SoccerFeatureEngine) -> dict[str, str]:
@@ -467,7 +484,7 @@ def predict_matchup_v2(
 
     exp_home, exp_away = _predict_goals(artifacts, features)
 
-    return {
+    payload: dict[str, Any] = {
         "algorithm": "SoccerGradientBoost v2",
         "model_version": MODEL_VERSION,
         "source": "soccer-v2-xgb-ensemble",
@@ -501,6 +518,9 @@ def predict_matchup_v2(
         "decorrelation_weight": PICK_DECORRELATION_WEIGHT,
         "snapshot_season": context["snapshot_season"],
     }
+    if context.get("live_inputs_stale"):
+        payload["live_inputs_stale"] = True
+    return payload
 
 
 def clear_live_caches() -> None:

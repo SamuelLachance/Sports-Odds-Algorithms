@@ -60,6 +60,38 @@ def test_agents_md_documents_cors_allow_origins() -> None:
     assert "CORS_ALLOW_ORIGINS=*" in text
 
 
+def test_agents_md_documents_basketball_market_aware_helper() -> None:
+    text = AGENTS_MD.read_text(encoding="utf-8")
+    assert "basketball_v2_market" in text
+    assert "market-aware" in text
+
+
+def test_agents_md_documents_daily_build_env_knobs() -> None:
+    text = AGENTS_MD.read_text(encoding="utf-8")
+    assert "FAST_DAILY_BUILD" in text
+    assert "LIVE_MULTI_BOOK" in text
+    assert "LIVE_MULTI_BOOK_BUDGET_S" in text
+    assert "NEWS_SIGNALS" in text
+    assert "line_shopping" in text
+    assert "soccer_paper_tracking" in text
+    assert "internal" in text.lower()
+
+
+def test_app_js_honesty_banners_and_parallel_load() -> None:
+    js = (STATIC_DIR / "app.js").read_text(encoding="utf-8")
+    assert "STALE_SLATE_HOURS" in js
+    assert "function slateAgeHours" in js
+    assert "function isStaleSlate" in js
+    assert "function slateStatusBanners" in js
+    assert "Partial slate" in js
+    assert "Stale board" in js
+    assert "Line shopping skipped" in js
+    assert "Stale live inputs" in js
+    assert "Promise.allSettled" in js
+    assert "Soccer paper log is internal-only" in js
+    assert "status-banner" in (STATIC_DIR / "styles.css").read_text(encoding="utf-8")
+
+
 def test_pytest_ini_defines_slow_marker() -> None:
     text = PYTEST_INI.read_text(encoding="utf-8")
     assert "markers =" in text

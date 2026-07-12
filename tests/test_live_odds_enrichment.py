@@ -20,6 +20,7 @@ from web.live_odds_enrichment import (  # noqa: E402
     fetch_multi_book_odds,
     line_shopping_edge_from_market,
     line_shopping_fields_for_pick,
+    line_shopping_status,
     multi_book_enabled,
     odds_path_for_league,
     reset_enrichment_budget,
@@ -173,6 +174,22 @@ def test_multi_book_skipped_during_fast_daily_build() -> None:
         clear=False,
     ):
         assert multi_book_enabled("nba") is True
+
+
+def test_line_shopping_status_labels() -> None:
+    with patch.dict("os.environ", {"LIVE_MULTI_BOOK": "0"}, clear=False):
+        assert line_shopping_status() == "off"
+    with patch.dict("os.environ", {"LIVE_MULTI_BOOK": "1"}, clear=False):
+        assert line_shopping_status() == "on"
+    with patch.dict("os.environ", {"FAST_DAILY_BUILD": "1"}, clear=False):
+        os.environ.pop("LIVE_MULTI_BOOK", None)
+        assert line_shopping_status() == "skipped_fast_build"
+    with patch.dict(
+        "os.environ",
+        {"FAST_DAILY_BUILD": "1", "LIVE_MULTI_BOOK": "1"},
+        clear=False,
+    ):
+        assert line_shopping_status() == "on"
 
 
 def test_summarize_extracts_open_moneylines_and_providers() -> None:

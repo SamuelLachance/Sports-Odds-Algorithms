@@ -151,33 +151,39 @@ def _write_cache(path: Path, payload: Any) -> None:
     path.write_text(json.dumps(payload, separators=(",", ":")), encoding="utf-8")
 
 
-def _fetch_stats_bundle(season: int) -> dict[str, Any] | None:
-    """Current-season team results + goalie logs (6h TTL)."""
+def _fetch_stats_bundle(season: int) -> tuple[dict[str, Any] | None, bool]:
+    """Current-season team results + goalie logs (6h TTL).
+
+    Returns ``(bundle, live_inputs_stale)``. On network failure, may soft-return
+    a longer-TTL cache and set ``live_inputs_stale=True``.
+    """
     path = LIVE_CACHE_DIR / f"stats_{season}.json"
     cached = _read_cache(path, STATS_TTL_SECONDS)
     if cached is not None:
-        return cached
+        return cached, False
     try:
         team_rows = fetch_team_games(season)
         goalie_rows = fetch_goalie_games(season)
     except OSError:
         stale = _read_cache(path, 10 * 86400)
-        return stale
+        return stale, stale is not None
     bundle = {"team_games": team_rows, "goalies": goalie_rows}
     _write_cache(path, bundle)
-    return bundle
+    return bundle, False
 
 
 def _fetch_moneypuck_slices(
     seasons: list[int],
-) -> dict[int, dict[str, dict[str, dict[str, float]]]]:
+) -> tuple[dict[int, dict[str, dict[str, dict[str, float]]]], bool]:
     """MoneyPuck team metrics per requested season, keyed by gameId (24h TTL).
 
     Downloads the (large) all-seasons file at most once per call, only when at
     least one requested season slice is stale.
+    Returns ``(slices_by_season, live_inputs_stale)``.
     """
     out: dict[int, dict[str, dict[str, dict[str, float]]]] = {}
     stale: list[int] = []
+    used_stale = False
     for season in seasons:
         cached = _read_cache(LIVE_CACHE_DIR / f"mp_{season}.json", MP_TTL_SECONDS)
         if cached is not None:
@@ -185,14 +191,16 @@ def _fetch_moneypuck_slices(
         else:
             stale.append(season)
     if not stale:
-        return out
+        return out, False
     try:
         payload = get_bytes(MONEYPUCK_TEAMS_URL)
     except OSError:
         for season in stale:
             fallback = _read_cache(LIVE_CACHE_DIR / f"mp_{season}.json", 30 * 86400)
             out[season] = fallback or {}
-        return out
+            if fallback is not None:
+                used_stale = True
+        return out, used_stale
     wanted = set(stale)
     slices: dict[int, dict[str, dict[str, dict[str, float]]]] = {s: {} for s in stale}
     reader = csv.DictReader(io.StringIO(payload.decode("utf-8", "ignore")))
@@ -225,23 +233,26 @@ def _fetch_moneypuck_slices(
     for season, games in slices.items():
         _write_cache(LIVE_CACHE_DIR / f"mp_{season}.json", games)
         out[season] = games
-    return out
+    return out, False
 
 
-def _fetch_goalie_xg_slice(season: int) -> dict[str, list[float]]:
+def _fetch_goalie_xg_slice(season: int) -> tuple[dict[str, list[float]], bool]:
     """Current-season per-goalie per-game xG from MoneyPuck shots (24h TTL).
 
     Keyed by "gameId:goalieId" -> [shots, xg, goals].
+    Returns ``(slice, live_inputs_stale)``.
     """
     path = LIVE_CACHE_DIR / f"goalie_xg_{season}.json"
     cached = _read_cache(path, MP_TTL_SECONDS)
     if cached is not None:
-        return cached
+        return cached, False
     try:
         payload = get_bytes(SHOTS_URL.format(season=season))
     except OSError:
         stale = _read_cache(path, 30 * 86400)
-        return stale or {}
+        if stale is not None:
+            return stale, True
+        return {}, False
     # [shots, xg, goals, hd_shots, hd_xg, hd_goals]
     out: dict[str, list[float]] = defaultdict(lambda: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
     hd_threshold = 0.20
@@ -284,10 +295,10 @@ def _fetch_goalie_xg_slice(season: int) -> dict[str, list[float]]:
                             bucket[4] += xg
                             bucket[5] += goal
     except (zipfile.BadZipFile, OSError):
-        return {}
+        return {}, False
     result = dict(out)
     _write_cache(path, result)
-    return result
+    return result, False
 
 
 def _predict_probability(art: dict[str, Any], features: dict[str, float]) -> float:
@@ -368,14 +379,21 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
         return None
     snapshot_season, state = loaded
 
-    stats = _fetch_stats_bundle(season)
+    live_inputs_stale = False
+    stats, stats_stale = _fetch_stats_bundle(season)
+    live_inputs_stale = live_inputs_stale or stats_stale
     if stats is None:
         return None
     season_has_games = bool(stats.get("team_games"))
-    mp_slice = (
-        _fetch_moneypuck_slices([season]).get(season) or {} if season_has_games else {}
-    )
-    goalie_xg_raw = _fetch_goalie_xg_slice(season) if season_has_games else {}
+    if season_has_games:
+        mp_all, mp_stale = _fetch_moneypuck_slices([season])
+        live_inputs_stale = live_inputs_stale or mp_stale
+        mp_slice = mp_all.get(season) or {}
+        goalie_xg_raw, xg_stale = _fetch_goalie_xg_slice(season)
+        live_inputs_stale = live_inputs_stale or xg_stale
+    else:
+        mp_slice = {}
+        goalie_xg_raw = {}
 
     mp_games = {int(gid): teams for gid, teams in (mp_slice or {}).items()}
     goalie_xg: dict[tuple[int, int], tuple[float, float, float, float, float, float]] = {}
@@ -398,10 +416,13 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
 
     # replay any full seasons between the snapshot and the target season
     for gap_season in range(snapshot_season + 1, season):
-        gap_stats = _fetch_stats_bundle(gap_season)
+        gap_stats, gap_stale = _fetch_stats_bundle(gap_season)
+        live_inputs_stale = live_inputs_stale or gap_stale
         if gap_stats is None:
             continue
-        gap_mp = _fetch_moneypuck_slices([gap_season]).get(gap_season) or {}
+        gap_mp_all, gap_mp_stale = _fetch_moneypuck_slices([gap_season])
+        live_inputs_stale = live_inputs_stale or gap_mp_stale
+        gap_mp = gap_mp_all.get(gap_season) or {}
         gap_games = list(build_game_index(gap_stats["team_games"]).values())
         gap_goalies = build_goalie_index(gap_stats["goalies"])
         replay_season(
@@ -421,6 +442,7 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
         schedule = fetch_schedule_day(day_iso)
     except OSError:
         schedule = []
+        live_inputs_stale = True
     todays: dict[tuple[str, str], dict[str, Any]] = {}
     for game in schedule:
         if game.get("home") and game.get("away"):
@@ -430,7 +452,8 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
     # (offseason/opening night) fall back to last season's starter usage.
     goalie_rows: list[dict[str, Any]] = list(stats["goalies"] or [])
     if not goalie_rows:
-        prev = _fetch_stats_bundle(season - 1)
+        prev, prev_stale = _fetch_stats_bundle(season - 1)
+        live_inputs_stale = live_inputs_stale or prev_stale
         if prev:
             goalie_rows = list(prev.get("goalies") or [])
 
@@ -449,6 +472,7 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
         "goalie_names": goalie_names,
         "season": season,
         "day_iso": day_iso,
+        "live_inputs_stale": live_inputs_stale,
     }
 
 
@@ -558,6 +582,8 @@ def predict_matchup_v2(
         payload["predicted_home_goals"] = goals[0]
         payload["predicted_away_goals"] = goals[1]
         payload["predicted_margin"] = round(goals[0] - goals[1], 2)
+    if context.get("live_inputs_stale"):
+        payload["live_inputs_stale"] = True
     return payload
 
 

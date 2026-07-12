@@ -75,6 +75,9 @@ def get_seasons(league: str) -> list[str]:
     from datetime import date
 
     league = league.lower()
+    if league not in SUPPORTED_LEAGUES:
+        raise ValueError(f"Unsupported league: {league}")
+
     data_dir = PROJECT_ROOT / league / "team_data"
     if data_dir.is_dir():
         seasons = sorted(

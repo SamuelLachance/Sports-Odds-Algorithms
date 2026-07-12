@@ -9,7 +9,7 @@ Algorithme de prédiction sportive (NBA, NHL, MLB et autres ligues) avec démo w
 - Web : `web/` (FastAPI + frontend statique)
 - Sport models : `web/{nba,wnba,nhl,mlb,soccer,nfl,cfb,cbb}_v2` (GradientBoost v2; CBB primary = GB v2 with Torvik fallback; NFL/CFB v2 live for predictions, official picks disabled until backtest clears)
 - Données historiques : CSV dans `nba/`, `nhl/`, `mlb/`
-- Modules récents : `web/context_signals.py` (FLB / news / sparse EV caps), `web/portfolio_sizing.py` (stake sizing corrélé), `web/live_odds_enrichment.py` (multi-book NBA/NHL/MLB/WNBA)
+- Modules récents : `web/context_signals.py` (FLB / news / sparse EV caps), `web/portfolio_sizing.py` (stake sizing corrélé), `web/live_odds_enrichment.py` (multi-book NBA/NHL/MLB/WNBA), `web/basketball_v2_market.py` (helpers partagés NBA/WNBA live market-aware)
 
 ## Commandes utiles
 
@@ -58,6 +58,7 @@ Official NFL/CFB/CBB picks stay gated until spread backtests clear; training sti
 
 - Préserver la logique Algo V1/V2 dans `algo.py` ; tester avec `smoke_test.py` / pytest après changements core.
 - Le board public consomme ESPN + résultats saison courante ; ne pas casser le pipeline Pages.
+- NBA/WNBA v2 live : passer `home_moneyline` / `away_moneyline` / `home_spread` active les heads market-aware (`model_variant=market_aware`) via `web/basketball_v2_market.py` ; sans cotes → head pure.
 - Ne pas inventer de claims de performance (pas de profits garantis ; le pilot NBA ML a un ROI close négatif).
 - Commits clairs en anglais ; pousser sur `master` après changements validés.
 
@@ -70,6 +71,19 @@ FastAPI CORS is configured in `web/app.py` via `cors_allow_origins()`.
 - **Open sandbox** (local only): `CORS_ALLOW_ORIGINS=*`
 
 Do not set `*` on a publicly reachable API. Restart uvicorn after changing the env var.
+
+## Daily build env knobs
+
+Used by `web/daily_service.py` / `web/live_odds_enrichment.py` / Pages `build_gh_pages.py`:
+
+| Variable | Default | Effect |
+|---|---|---|
+| `FAST_DAILY_BUILD` | unset / off | When `1`/`true`, skips multi-book fetches (and other slow paths) so CI/Pages stays under timeout. |
+| `LIVE_MULTI_BOOK` | on interactively; off under `FAST_DAILY_BUILD` | Set `1` to force multi-book on; `0`/`false` to force off. Slate `summary.line_shopping` reports `on` / `skipped_fast_build` / `off`. |
+| `LIVE_MULTI_BOOK_BUDGET_S` | `120` | Wall-time budget (seconds) for cumulative book fetches per build. |
+| `NEWS_SIGNALS` | league defaults | Set `0`/`false` to disable headline keyword nudges in the context layer. |
+
+Soccer paper tracking (`web/soccer_paper_tracking.py`) is an **internal** research log graded during Pages deploy — not Hubáček official tracking and not shown as site performance.
 
 ## Pytest markers
 

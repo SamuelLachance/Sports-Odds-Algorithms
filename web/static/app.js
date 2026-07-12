@@ -1,4 +1,4 @@
-const APP_BUILD_VERSION = "2026-07-12-wave4-seo404";
+const APP_BUILD_VERSION = "2026-07-12-wave5-honesty";
 const META_BASE_PATH =
   document.querySelector('meta[name="base-path"]')?.content ?? "";
 const IS_GITHUB_IO = window.location.hostname.endsWith("github.io");
@@ -13,6 +13,9 @@ const BASE_PATH = IS_GITHUB_IO
 
 // Prebuilt JSON in /api unless we're hitting the local FastAPI dev server.
 const USE_STATIC_API = !IS_LOCAL_DEV;
+
+/** Hours after which a Pages slate is labeled stale (rebuilds ~4×/day). */
+const STALE_SLATE_HOURS = 8;
 
 const state = {
   slate: null,
@@ -639,6 +642,67 @@ function disclaimerBar(extra = "") {
     <strong>Research decision-support</strong>
     <span>Bet early, shop lines, size to units.${extra ? ` ${extra}` : ""}</span>
   </aside>`;
+}
+
+function slateAgeHours(iso, nowMs = Date.now()) {
+  if (!iso) return null;
+  const stamp = new Date(iso).getTime();
+  if (Number.isNaN(stamp)) return null;
+  return Math.max(0, (nowMs - stamp) / 3_600_000);
+}
+
+function isStaleSlate(iso, maxHours = STALE_SLATE_HOURS, nowMs = Date.now()) {
+  const age = slateAgeHours(iso, nowMs);
+  return age != null && age >= maxHours;
+}
+
+function slateStatusBanners(slate) {
+  const parts = [];
+  const errors = Array.isArray(slate?.errors) ? slate.errors : [];
+  const errorCount = slate?.summary?.error_count ?? errors.length;
+  if (errorCount > 0) {
+    const sample = errors
+      .slice(0, 3)
+      .map((e) => {
+        const league = e.league || e.scope || "";
+        const stage = e.error || e.stage || e.code || e.message || "issue";
+        return league ? `${league}: ${stage}` : String(stage);
+      })
+      .join(" · ");
+    const more = errorCount > 3 ? ` (+${errorCount - 3} more)` : "";
+    parts.push(`<aside class="status-banner status-banner--warn" role="status">
+      <strong>Partial slate</strong>
+      <span>${errorCount} build issue${errorCount === 1 ? "" : "s"} — some leagues may be incomplete.${sample ? ` ${escapeHtml(sample)}${more}.` : ""}</span>
+    </aside>`);
+  }
+  if (isStaleSlate(slate?.generated_at)) {
+    const age = slateAgeHours(slate.generated_at);
+    const hours = age != null ? Math.floor(age) : STALE_SLATE_HOURS;
+    parts.push(`<aside class="status-banner status-banner--stale" role="status">
+      <strong>Stale board</strong>
+      <span>Last rebuild was about ${hours}h ago (Pages refreshes ~4×/day). Treat odds and picks as delayed.</span>
+    </aside>`);
+  }
+  const shopping = slate?.summary?.line_shopping;
+  if (shopping === "skipped_fast_build") {
+    parts.push(`<aside class="status-banner status-banner--info" role="status">
+      <strong>Line shopping skipped</strong>
+      <span>This build used FAST_DAILY_BUILD — multi-book prices were not fetched. ESPN consensus only.</span>
+    </aside>`);
+  } else if (shopping === "off") {
+    parts.push(`<aside class="status-banner status-banner--info" role="status">
+      <strong>Line shopping off</strong>
+      <span>LIVE_MULTI_BOOK is disabled for this build — no multi-book edge scan.</span>
+    </aside>`);
+  }
+  const staleLive = (slate?.games || []).some((g) => g.model?.live_inputs_stale);
+  if (staleLive) {
+    parts.push(`<aside class="status-banner status-banner--stale" role="status">
+      <strong>Stale live inputs</strong>
+      <span>At least one model reused cached NHL/soccer feeds after a fetch failure — projections may lag.</span>
+    </aside>`);
+  }
+  return parts.join("");
 }
 
 function contextCallout(model) {
@@ -1544,6 +1608,7 @@ function viewDashboard() {
         </div>
       </div>
       ${disclaimerBar()}
+      ${slateStatusBanners(slate)}
     </section>
 
     <div class="rollup-grid home-quick-links">
@@ -1636,6 +1701,7 @@ function viewPicks() {
       <p class="muted">Official gate: ${escapeHtml(hubacekRule)}</p>
     </section>
     ${disclaimerBar()}
+    ${slateStatusBanners(slate)}
     <section class="section picks-section-official">
       <div class="section-head">
         <div>
@@ -2629,6 +2695,7 @@ function viewMethodology() {
         <li><strong>MLB edge concentrates at the open.</strong> Walk-forward testing showed roughly +35% ROI against opening lines versus −3.2% at the close — consistent with the finding that FLB mispricing disappears as the market matures.</li>
         <li><strong>Opening-line backtests overstate live ROI.</strong> Historical ROI vs opening prices is an upper bound; live morning tracking locks later consensus prices and usually grades worse than the open-line study.</li>
         <li><strong>The live tracked sample is very young.</strong> Until dozens of graded bets settle, record, units, and ROI are noise; process metrics (CLV, stake discipline) matter more.</li>
+        <li><strong>Soccer paper log is internal-only.</strong> Deploy may grade a private soccer paper-tracking file for research hygiene; it is <em>not</em> Hubáček official tracking and is not shown as performance on this site.</li>
         <li><strong>This is research, not investment advice.</strong> Nothing here guarantees profit; treat the board as decision support for studying betting markets.</li>
       </ul>
     </section>`;
@@ -2848,11 +2915,16 @@ async function loadPlatform() {
   }
   state.slate = slate;
 
-  try {
-    state.tracking = await fetchJson(
-      USE_STATIC_API ? api("tracking.json") : api("tracking"),
-    );
-  } catch {
+  // Secondary payloads are independent — fetch in parallel after the slate hard-fail gate.
+  const [trackingResult, teamsResult, manifestResult] = await Promise.allSettled([
+    fetchJson(USE_STATIC_API ? api("tracking.json") : api("tracking")),
+    fetchJson(USE_STATIC_API ? api("teams-index.json") : api("teams")),
+    fetchJson(USE_STATIC_API ? dbApi("manifest.json") : api("db/manifest")),
+  ]);
+
+  if (trackingResult.status === "fulfilled") {
+    state.tracking = trackingResult.value;
+  } else {
     state.tracking = {
       bets: [],
       summary: { record: "0-0", units: 0, roi_percent: 0, pending: 0 },
@@ -2864,24 +2936,16 @@ async function loadPlatform() {
     };
   }
 
-  try {
-    state.teamsIndex = await fetchJson(
-      USE_STATIC_API ? api("teams-index.json") : api("teams"),
-    );
-  } catch {
-    state.teamsIndex = { leagues: [] };
-  }
-
-  try {
-    state.dbManifest = await fetchJson(
-      USE_STATIC_API ? dbApi("manifest.json") : api("db/manifest"),
-    );
-  } catch {
-    state.dbManifest = null;
-  }
+  state.teamsIndex =
+    teamsResult.status === "fulfilled"
+      ? teamsResult.value
+      : { leagues: [] };
+  state.dbManifest =
+    manifestResult.status === "fulfilled" ? manifestResult.value : null;
 
   const stamp = slate.generated_at ? new Date(slate.generated_at) : new Date();
-  footerUpdated.textContent = `Updated ${stamp.toLocaleString()}`;
+  const staleNote = isStaleSlate(slate.generated_at) ? " · stale" : "";
+  footerUpdated.textContent = `Updated ${stamp.toLocaleString()}${staleNote}`;
   renderLeagueMenu();
   renderSidebar(parseRoute());
 

@@ -38,6 +38,32 @@ def test_load_snapshot_state_returns_none_on_bad_gzip(tmp_path, monkeypatch) -> 
     assert live._load_snapshot_state(art, 2025) is None
 
 
+def test_fetch_stats_bundle_flags_stale_on_network_failure(tmp_path, monkeypatch) -> None:
+    import json
+    import time
+
+    import web.nhl_v2.live as live
+
+    monkeypatch.setattr(live, "LIVE_CACHE_DIR", tmp_path)
+    cache = tmp_path / "stats_2024.json"
+    payload = {"team_games": [{"id": 1}], "goalies": []}
+    cache.write_text(json.dumps(payload), encoding="utf-8")
+    # Age the file past the fresh TTL but within the soft-fail window.
+    aged = time.time() - (live.STATS_TTL_SECONDS + 60)
+    import os
+
+    os.utime(cache, (aged, aged))
+
+    def _boom(*_a, **_k):
+        raise OSError("offline")
+
+    monkeypatch.setattr(live, "fetch_team_games", _boom)
+    monkeypatch.setattr(live, "fetch_goalie_games", _boom)
+    bundle, stale = live._fetch_stats_bundle(2024)
+    assert stale is True
+    assert bundle == payload
+
+
 def test_blend_nhl_survives_hockey_pred_crash() -> None:
     """NHL blend must fall back to Algo V1 when hockey pred raises."""
     from web.blend_service import blend_predictions

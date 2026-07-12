@@ -21,6 +21,13 @@ logger = logging.getLogger(__name__)
 def _toronto_today() -> date:
     return datetime.now(TORONTO).date()
 
+
+def _line_shopping_status() -> str:
+    from web.live_odds_enrichment import line_shopping_status
+
+    return line_shopping_status()
+
+
 from web.bet_advisor import (
     ensure_hubacek_in_blend,
     model_moneylines,
@@ -456,6 +463,10 @@ def predict_live_game(
     }
     if draw_proj is not None:
         model_payload["draw_projection"] = draw_proj
+    if (blended.get("hockey_pred") or {}).get("live_inputs_stale") or (
+        blended.get("soccer_pred") or {}
+    ).get("live_inputs_stale"):
+        model_payload["live_inputs_stale"] = True
 
     if is_soccer_league(game.league):
         soccer_pred = blended.get("soccer_pred") or {}
@@ -954,6 +965,8 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
             "model_analysis_bets": len(model_analysis_qualifying),
             **official_hubacek_thresholds(),
             "leagues": list({game["league"] for game in all_games}),
+            "error_count": len(errors),
+            "line_shopping": _line_shopping_status(),
         },
         "recommended_bets": qualifying[:20],
         "model_analysis_bets": model_analysis_qualifying[:20],

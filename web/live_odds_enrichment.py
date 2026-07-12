@@ -95,6 +95,25 @@ def multi_book_enabled(league: str) -> bool:
     return league.lower() in MULTI_BOOK_LEAGUES
 
 
+def line_shopping_status() -> str:
+    """Honesty label for whether this build attempted multi-book enrichment.
+
+    Returns:
+      - ``on`` — multi-book fetches run for NBA/NHL/MLB/WNBA
+      - ``skipped_fast_build`` — FAST_DAILY_BUILD skipped enrichment (default)
+      - ``off`` — LIVE_MULTI_BOOK explicitly disabled
+    """
+    flag = (os.environ.get("LIVE_MULTI_BOOK") or "").strip().lower()
+    if flag in {"0", "false", "no", "off"}:
+        return "off"
+    if flag in {"1", "true", "yes", "on"}:
+        return "on"
+    fast = (os.environ.get("FAST_DAILY_BUILD") or "").strip().lower()
+    if fast in {"1", "true", "yes", "on"}:
+        return "skipped_fast_build"
+    return "on"
+
+
 def _odds_url(league: str, event_id: str, competition_id: str) -> str | None:
     path = odds_path_for_league(league)
     if not path:

@@ -1028,6 +1028,46 @@ a.pick-card-link:focus-visible {
   min-width: 0;
 }
 
+.status-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+  margin-top: var(--space-2);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  line-height: 1.45;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.status-banner--warn {
+  border: 1px solid color-mix(in srgb, #fbbf24 45%, var(--border));
+  background: color-mix(in srgb, #fbbf24 10%, var(--bg-soft));
+}
+
+.status-banner--stale {
+  border: 1px solid color-mix(in srgb, #f97316 40%, var(--border));
+  background: color-mix(in srgb, #f97316 9%, var(--bg-soft));
+}
+
+.status-banner--info {
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg-soft));
+}
+
+.status-banner strong {
+  color: var(--text);
+  flex: 0 0 auto;
+}
+
+.status-banner span {
+  color: var(--text-muted);
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
 .edge-badge-row {
   display: flex;
   flex-wrap: wrap;
