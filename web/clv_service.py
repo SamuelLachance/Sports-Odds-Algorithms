@@ -63,6 +63,9 @@ def clv_vs_market_pct_threeway(
     market_odds = market_by_side.get(side)
     if market_odds is None:
         return None
+    # bool is a subclass of int; int(False)==0 must not become EVEN via CLV.
+    if isinstance(pick_odds, bool) or isinstance(market_odds, bool):
+        return None
     try:
         return clv_vs_market_pct(int(pick_odds), int(market_odds))
     except (TypeError, ValueError):

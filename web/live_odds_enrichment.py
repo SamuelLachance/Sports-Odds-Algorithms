@@ -217,9 +217,10 @@ def summarize_book_items(
 ) -> dict[str, Any]:
     """Build consensus + best-price + opening-line fields from ESPN core odds items.
 
-    ``n_books`` counts only provider items that yielded at least one parsed
-    market number; ``book_providers`` lists their names. Median consensus opens
-    (``open_home_moneyline`` / ``open_away_moneyline``) feed the steam signal.
+    ``n_books`` counts only providers with at least one parsed *close* market
+    number; open-only shells still feed steam medians but do not inflate
+    ``book_providers``. Median consensus opens (``open_home_moneyline`` /
+    ``open_away_moneyline``) feed the steam signal.
     """
     filtered = [
         item
@@ -240,17 +241,17 @@ def summarize_book_items(
         line = _provider_line_for_league(league_key, item)
         open_home, open_away = _provider_open_moneylines(item)
         has_close = any(line.get(field) is not None for field in _LINE_FIELDS)
-        if not has_close and open_home is None and open_away is None:
+        # Open-only providers still feed steam medians, but must not inflate
+        # n_books / book_providers (those gate close-consensus line shopping).
+        if open_home is not None and open_away is not None:
+            open_home_values.append(open_home)
+            open_away_values.append(open_away)
+        if not has_close:
             continue
         lines.append(line)
         name = ((item.get("provider") or {}).get("name") or "").strip()
         if name and name not in providers:
             providers.append(name)
-        # Paired opens only — independent per-side medians invent phantom steam
-        # when books expose only one side's open moneyline.
-        if open_home is not None and open_away is not None:
-            open_home_values.append(open_home)
-            open_away_values.append(open_away)
 
     if not lines:
         return {}

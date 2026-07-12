@@ -68,6 +68,52 @@ def test_soccer_implied_shift_soft_fails_invalid_odds() -> None:
     assert meta["implied_shifts_pp"]["home"] is None
 
 
+def test_soccer_steam_ignores_adverse_move_on_model_favorite() -> None:
+    """Largest |shift| into a drop on the model favorite must not confirm steam."""
+    from web.soccer_opening import soccer_opening_steam_meta
+
+    # Home is model favorite; open→close home implied drops hard (adverse).
+    # Draw/away flat so |home shift| wins the old abs-based steam pick.
+    meta = soccer_opening_steam_meta(
+        home_ml=100,
+        draw_ml=250,
+        away_ml=400,
+        open_home_ml=-200,
+        open_draw_ml=250,
+        open_away_ml=400,
+        model_home=58.0,
+        model_draw=24.0,
+        model_away=18.0,
+    )
+    assert meta["model_best_outcome"] == "home"
+    assert meta["implied_shifts_pp"]["home"] is not None
+    assert meta["implied_shifts_pp"]["home"] < -2.5
+    assert meta["steam_signal"] is False
+    assert meta.get("steam_direction") is None
+
+
+def test_soccer_steam_requires_positive_move_into_favorite() -> None:
+    """Confirming steam: market implied prob rises into the model favorite."""
+    from web.soccer_opening import soccer_opening_steam_meta
+
+    # Open: home dog; close: home shortens, but market still below model 62%.
+    meta = soccer_opening_steam_meta(
+        home_ml=-130,
+        draw_ml=250,
+        away_ml=320,
+        open_home_ml=110,
+        open_draw_ml=250,
+        open_away_ml=280,
+        model_home=62.0,
+        model_draw=22.0,
+        model_away=16.0,
+    )
+    assert meta["model_best_outcome"] == "home"
+    assert meta["steam_signal"] is True
+    assert meta["steam_direction"] == "home"
+    assert meta["steam_move_pp"] > 0
+
+
 def test_soccer_opening_does_not_fabricate_open_from_close(monkeypatch) -> None:
     """Missing open must stay None — copying close invents 0pp steam."""
     from web import soccer_opening as so

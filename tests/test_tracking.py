@@ -353,6 +353,15 @@ def test_grade_bet_leaves_ungraded_on_invalid_american_odds() -> None:
     assert "units" not in graded or graded.get("units") is None
 
 
+def test_calculate_units_rejects_bool_odds() -> None:
+    """int(False)==0 must not pay EVEN units on a win."""
+    from web.tracking_service import calculate_units
+
+    assert calculate_units(1.0, False, "win") == 0.0  # type: ignore[arg-type]
+    assert calculate_units(1.0, True, "win") == 0.0  # type: ignore[arg-type]
+    assert calculate_units(1.0, 0, "win") == 1.0
+
+
 def test_grade_bet_even_zero_moneyline_still_grades() -> None:
     bet = {
         "side": "home",

@@ -431,3 +431,22 @@ def test_ensure_hubacek_still_runs_on_spread_only_ensemble() -> None:
     )
     assert updated.get("market_decorrelated") is True
     assert updated["blended_home_win_probability"] != 60.0
+
+
+def test_soccer_legacy_proxy_uses_total_score_not_inverted_linear_map() -> None:
+    """Ensemble soccer rows must not map power_home via ``p*2-50`` (inverts favorites)."""
+    from web.bet_advisor import soccer_threeway_probs
+    from web.blend_service import home_win_prob_to_total_score
+    from web.soccer_blend import power_threeway_probs
+
+    power_home = 60.0
+    power_tw = power_threeway_probs(power_home, "epl")
+    legacy_total, _ = home_win_prob_to_total_score(power_home)
+    legacy_tw = soccer_threeway_probs(legacy_total, "epl")
+    inverted = soccer_threeway_probs(power_home * 2 - 50, "epl")
+
+    assert legacy_total < 0  # Algo: ≤0 means home favorite
+    assert legacy_tw[0] == pytest.approx(power_tw[0])
+    assert inverted[0] < legacy_tw[0]  # old formula treated home as underdog
+    assert inverted[0] < 50.0
+    assert power_tw[0] > inverted[0]

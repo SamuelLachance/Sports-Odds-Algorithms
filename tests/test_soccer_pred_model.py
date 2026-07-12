@@ -11,6 +11,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from web.league_profiles import is_soccer_league
 from web.soccer_pred_model import (  # noqa: E402
     _normalize_threeway,
+    _rest_days_since,
     build_soccer_model,
     predict_matchup_from_model,
 )
@@ -56,6 +57,15 @@ def test_is_soccer_league() -> None:
 def test_normalize_threeway_sums_to_100() -> None:
     home, draw, away = _normalize_threeway(40.0, 28.0, 32.0)
     assert abs(home + draw + away - 100.0) < 0.02
+
+
+def test_path_a_rest_days_floors_at_zero_for_same_day() -> None:
+    """Same-day / inverted dates must not invent a 1-day rest floor."""
+    last = {"ars": "2024-08-10"}
+    assert _rest_days_since(last, "ars", "2024-08-10") == 0.0
+    assert _rest_days_since(last, "ars", "2024-08-09") == 0.0
+    assert _rest_days_since(last, "ars", "2024-08-12") == 2.0
+    assert _rest_days_since(last, "ars", "2024-09-15") == 21.0  # capped
 
 
 def test_build_soccer_model_favors_stronger_home_team() -> None:

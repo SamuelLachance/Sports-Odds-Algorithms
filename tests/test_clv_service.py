@@ -68,6 +68,30 @@ def test_clv_threeway_missing_side() -> None:
         )
         is None
     )
+
+
+def test_clv_threeway_rejects_bool_odds() -> None:
+    """int(False)==0 must not become EVEN CLV through the three-way path."""
+    assert (
+        clv_vs_market_pct_threeway(
+            False,  # type: ignore[arg-type]
+            side="draw",
+            market_home=-120,
+            market_draw=220,
+            market_away=300,
+        )
+        is None
+    )
+    assert (
+        clv_vs_market_pct_threeway(
+            250,
+            side="draw",
+            market_home=-120,
+            market_draw=False,  # type: ignore[arg-type]
+            market_away=300,
+        )
+        is None
+    )
 def test_american_odds_zero_is_even_for_clv() -> None:
     """ESPN EVEN (0) must participate in CLV as +100, not drop as None."""
     assert american_to_implied_prob(0) == pytest.approx(0.5)

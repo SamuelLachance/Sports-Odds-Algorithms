@@ -141,7 +141,9 @@ def soccer_opening_steam_meta(
     for outcome, shift in shifts.items():
         if shift is None:
             continue
-        if abs(shift) >= STEAM_IMPLIED_SHIFT_PP and abs(shift) > abs(steam_mag):
+        # Confirming steam requires a positive implied-prob move into the
+        # outcome — adverse (away-from-pick) drops must not count.
+        if shift >= STEAM_IMPLIED_SHIFT_PP and shift > steam_mag:
             steam_outcome = outcome
             steam_mag = shift
     if steam_outcome is None:

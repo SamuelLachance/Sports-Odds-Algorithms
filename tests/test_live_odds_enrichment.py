@@ -594,6 +594,24 @@ def test_summarize_n_books_counts_only_parsed_items() -> None:
     assert "open_away_moneyline" not in summary
 
 
+def test_summarize_n_books_ignores_open_only_providers() -> None:
+    """Paired opens feed steam medians but must not inflate close n_books."""
+    close_book = _book_item(
+        home_ml=-150, away_ml=130, name="BookA", open_home_ml=-145, open_away_ml=125
+    )
+    open_only = {
+        "provider": {"name": "OpenOnly"},
+        "homeTeamOdds": {"open": {"moneyLine": {"american": "-160"}}},
+        "awayTeamOdds": {"open": {"moneyLine": {"american": "140"}}},
+    }
+    summary = summarize_book_items([close_book, open_only])
+    assert summary["n_books"] == 1
+    assert summary["book_providers"] == ["BookA"]
+    # Median of BookA opens + OpenOnly opens.
+    assert summary["open_home_moneyline"] == -152  # median(-145, -160) → avg for even
+    assert summary["open_away_moneyline"] == 132
+
+
 def test_mlb_consensus_n_books_ignores_empty_providers() -> None:
     """Empty ESPN provider shells must not inflate MLB n_books."""
     from web.mlb_odds_espn import _consensus_mlb

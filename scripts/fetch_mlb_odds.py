@@ -56,21 +56,73 @@ def _normalize_closing_row(row: dict, *, from_fresh: bool) -> dict[str, str]:
 
 
 def _row_has_odds(row: dict[str, str]) -> bool:
-    """True when a closing row has usable ML closes (or n_books>0 when present)."""
-    if (row.get("home_close_ml") or "").strip() or (row.get("away_close_ml") or "").strip():
-        return True
+    """True when a closing row has usable ML closes.
+
+    ``n_books>0`` alone is not enough — ESPN can emit run-line-only rows that
+    must not wipe prior SBR moneylines or poison DH matching.
+    """
+    return bool(
+        (row.get("home_close_ml") or "").strip()
+        or (row.get("away_close_ml") or "").strip()
+    )
+
+
+def _parse_home_ml(row: dict[str, str]) -> float | None:
+    raw = (row.get("home_close_ml") or "").strip()
+    if not raw:
+        return None
     try:
-        return int(float(row.get("n_books") or 0)) > 0
+        return float(raw)
     except (TypeError, ValueError):
-        return False
+        return None
 
 
 def _home_ml_distance(left: dict[str, str], right: dict[str, str]) -> float:
     """Absolute home-ML gap for matching a fresh DH refresh to a prior leg."""
-    try:
-        return abs(float(left.get("home_close_ml") or 0) - float(right.get("home_close_ml") or 0))
-    except (TypeError, ValueError):
+    left_ml = _parse_home_ml(left)
+    right_ml = _parse_home_ml(right)
+    if left_ml is None or right_ml is None:
         return float("inf")
+    return abs(left_ml - right_ml)
+
+
+def _fill_empty_from_prior(prior: dict[str, str], fresh: dict[str, str]) -> dict[str, str]:
+    """Keep prior odds fields when the fresh refresh leaves them blank."""
+    out = dict(fresh)
+    for field in CLOSING_FIELDS:
+        if field in {"date", "home_key", "away_key", "source"}:
+            continue
+        if not (out.get(field) or "").strip() and (prior.get(field) or "").strip():
+            out[field] = prior[field]
+    if not (out.get("source") or "").strip():
+        out["source"] = prior.get("source", "")
+    return out
+
+
+def _pair_fresh_to_existing(
+    existing_odds: list[dict[str, str]],
+    with_odds: list[dict[str, str]],
+) -> list[dict[str, str]]:
+    """Match fresh priced legs to nearest prior legs; keep unmatched priors."""
+    remaining = list(existing_odds)
+    out: list[dict[str, str]] = []
+    unmatched_fresh: list[dict[str, str]] = []
+    for fresh_row in with_odds:
+        if not remaining:
+            unmatched_fresh.append(fresh_row)
+            continue
+        best_i = min(
+            range(len(remaining)),
+            key=lambda i: _home_ml_distance(remaining[i], fresh_row),
+        )
+        if _home_ml_distance(remaining[best_i], fresh_row) == float("inf"):
+            unmatched_fresh.append(fresh_row)
+            continue
+        prior = remaining.pop(best_i)
+        out.append(_fill_empty_from_prior(prior, fresh_row))
+    out.extend(remaining)
+    out.extend(unmatched_fresh)
+    return out
 
 
 def _merge_rows(existing: list[dict[str, str]], fresh: list[dict]) -> list[dict[str, str]]:
@@ -80,7 +132,7 @@ def _merge_rows(existing: list[dict[str, str]], fresh: list[dict]) -> list[dict[
     with distinct odds under the same (date, home, away) are all kept so
     ``closing_odds_db`` can mark the key ambiguous instead of last-row-wins.
 
-    Empty ESPN stubs (n_books=0) must not wipe prior SBR/ESPN closes, and an
+    Empty ESPN stubs (no ML closes) must not wipe prior SBR/ESPN closes, and an
     empty stub alongside a real DH sibling must not poison the key as ambiguous.
 
     A partial refresh that returns fewer priced legs than an existing DH must
@@ -116,18 +168,8 @@ def _merge_rows(existing: list[dict[str, str]], fresh: list[dict]) -> list[dict[
                 row for row in existing_by_key.get(key, []) if _row_has_odds(row)
             ]
             if with_odds:
-                if len(existing_odds) > len(with_odds):
-                    remaining = list(existing_odds)
-                    out: list[dict[str, str]] = []
-                    for fresh_row in with_odds:
-                        best_i = min(
-                            range(len(remaining)),
-                            key=lambda i: _home_ml_distance(remaining[i], fresh_row),
-                        )
-                        remaining.pop(best_i)
-                        out.append(fresh_row)
-                    out.extend(remaining)
-                    merged.extend(out)
+                if existing_odds:
+                    merged.extend(_pair_fresh_to_existing(existing_odds, with_odds))
                 else:
                     merged.extend(with_odds)
             elif existing_odds:

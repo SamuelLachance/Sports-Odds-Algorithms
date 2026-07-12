@@ -105,3 +105,76 @@ def test_merge_partial_fresh_keeps_existing_dh_sibling() -> None:
     mls = sorted(row["home_close_ml"] for row in merged)
     assert mls == ["-120", "-155"]
     assert len(merged) == 2
+
+
+def test_merge_spread_only_n_books_keeps_prior_mls() -> None:
+    """Run-line-only ESPN rows (n_books>0, empty MLs) must not wipe prior MLs."""
+    existing = [_row(home_close_ml="-150", away_close_ml="130", n_books="2", source="sbr")]
+    fresh = [
+        _row(
+            home_close_ml="",
+            away_close_ml="",
+            home_close_spread="-1.5",
+            away_close_spread="1.5",
+            home_spread_odds="-110",
+            away_spread_odds="-110",
+            n_books="3",
+            source="espn-core",
+        )
+    ]
+    merged = _merge_rows(existing, fresh)
+    assert len(merged) == 1
+    assert merged[0]["home_close_ml"] == "-150"
+    assert merged[0]["source"] == "sbr"
+
+
+def test_merge_spread_only_stub_does_not_replace_wrong_dh_leg() -> None:
+    """Empty home ML must not coerce to 0 and match the nearer DH favorite."""
+    from scripts.fetch_mlb_odds import _home_ml_distance
+
+    g1 = _row(home_close_ml="-150", away_close_ml="130", source="sbr")
+    g2 = _row(home_close_ml="-120", away_close_ml="100", home_spread_odds="-115", source="sbr")
+    stub = _row(
+        home_close_ml="",
+        away_close_ml="",
+        home_close_spread="-1.5",
+        away_close_spread="1.5",
+        n_books="2",
+        source="espn",
+    )
+    assert _home_ml_distance(g1, stub) == float("inf")
+    assert _home_ml_distance(g2, stub) == float("inf")
+    merged = _merge_rows([g1, g2], [stub])
+    mls = sorted(row["home_close_ml"] for row in merged)
+    assert mls == ["-120", "-150"]
+    assert all(row["source"] == "sbr" for row in merged)
+
+
+def test_merge_ml_refresh_keeps_prior_spreads() -> None:
+    existing = [
+        _row(
+            home_close_ml="-150",
+            home_open_ml="-140",
+            home_close_spread="-1.5",
+            away_close_spread="1.5",
+            source="sbr",
+        )
+    ]
+    fresh = [
+        _row(
+            home_close_ml="-155",
+            away_close_ml="135",
+            home_open_ml="",
+            away_open_ml="",
+            home_close_spread="",
+            away_close_spread="",
+            home_spread_odds="",
+            away_spread_odds="",
+            source="espn",
+        )
+    ]
+    merged = _merge_rows(existing, fresh)
+    assert merged[0]["home_close_ml"] == "-155"
+    assert merged[0]["home_close_spread"] == "-1.5"
+    assert merged[0]["home_open_ml"] == "-140"
+    assert merged[0]["home_spread_odds"] == "-110"

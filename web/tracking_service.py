@@ -87,6 +87,9 @@ def calculate_units(stake: float, american_odds: int, result: BetResult) -> floa
         return 0.0
     if result == "loss":
         return -stake_f
+    # bool is a subclass of int; int(False)==0 must not pay EVEN.
+    if isinstance(american_odds, bool):
+        return 0.0
     try:
         odds = int(american_odds)
     except (TypeError, ValueError):

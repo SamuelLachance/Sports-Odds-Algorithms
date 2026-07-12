@@ -277,7 +277,10 @@ def collect_soccer_rows(
 
         power_home = float(power["home_win_probability"])
         power_tw = power_threeway_probs(power_home, league)
-        legacy_tw = soccer_threeway_probs(power_home * 2 - 50, league)
+        # Proxy legacy via Algo total_score convention (≤0 = home favorite).
+        # ``power_home * 2 - 50`` inverts favorites (60% → +70 away-favored).
+        legacy_total, _ = home_win_prob_to_total_score(power_home)
+        legacy_tw = soccer_threeway_probs(legacy_total, league)
 
         game_cutoff = _sport_cutoff_bucket(game_date)
         _sport_key, sport_payload = _run_sport_pred_model(

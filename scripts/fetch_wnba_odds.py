@@ -29,12 +29,37 @@ def _load_existing(path: Path) -> list[dict[str, str]]:
 
 def _row_has_odds(row: dict[str, str]) -> bool:
     """True when a closing row has usable ML closes (WNBA CSV has no n_books)."""
-    if (row.get("home_close_ml") or "").strip() or (row.get("away_close_ml") or "").strip():
-        return True
-    try:
-        return int(float(row.get("n_books") or 0)) > 0
-    except (TypeError, ValueError):
-        return False
+    return bool(
+        (row.get("home_close_ml") or "").strip()
+        or (row.get("away_close_ml") or "").strip()
+    )
+
+
+_MARKET_VALUE_FIELDS = (
+    "home_close_ml",
+    "away_close_ml",
+    "home_close_spread",
+    "away_close_spread",
+    "home_spread_odds",
+    "away_spread_odds",
+)
+
+
+def _row_has_market_values(row: dict[str, str]) -> bool:
+    return any((row.get(field) or "").strip() for field in _MARKET_VALUE_FIELDS)
+
+
+def _fill_empty_from_prior(prior: dict[str, str], fresh: dict[str, str]) -> dict[str, str]:
+    """Keep prior odds fields when the fresh refresh leaves them blank."""
+    out = dict(fresh)
+    for field in CLOSING_FIELDS:
+        if field in {"date", "home_key", "away_key", "source"}:
+            continue
+        if not (out.get(field) or "").strip() and (prior.get(field) or "").strip():
+            out[field] = prior[field]
+    if not (out.get("source") or "").strip():
+        out["source"] = prior.get("source", "")
+    return out
 
 
 def _merge_rows(existing: list[dict[str, str]], fresh: list[dict]) -> list[dict[str, str]]:
@@ -52,7 +77,13 @@ def _merge_rows(existing: list[dict[str, str]], fresh: list[dict]) -> list[dict[
         }
         prior = merged.get(key)
         if prior is not None and _row_has_odds(prior) and not _row_has_odds(normalized):
+            if not _row_has_market_values(normalized):
+                continue  # empty stub — keep prior wholly
+            # Spread-only refresh: keep prior MLs, still accept fresh fields.
+            merged[key] = _fill_empty_from_prior(prior, normalized)
             continue
+        if prior is not None:
+            normalized = _fill_empty_from_prior(prior, normalized)
         merged[key] = normalized
 
     return sorted(merged.values(), key=lambda item: (item["date"], item["home_key"]))

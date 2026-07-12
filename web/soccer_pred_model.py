@@ -165,7 +165,8 @@ def _rest_days_since(
     end = _parse_game_date(match_date)
     if start is None or end is None:
         return default
-    return float(max((end - start).days, 1))
+    # Floor at 0 (same-day / inverted dates); cap like soccer v2 TeamState.
+    return float(min(max((end - start).days, 0), 21))
 
 
 def _league_dc_rho(league: str) -> float:
