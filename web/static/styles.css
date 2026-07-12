@@ -42,6 +42,27 @@ body {
   font-size: 1rem;
 }
 
+.skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: 0.75rem;
+  z-index: 200;
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+  background: var(--accent, #2dd4bf);
+  color: #0b1220;
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-160%);
+  transition: transform 0.15s ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
 .page-bg {
   position: fixed;
   inset: 0;
@@ -612,6 +633,19 @@ select:focus {
   color: var(--text-muted);
   font-size: 0.875rem;
   padding-bottom: calc(var(--space-2) + env(safe-area-inset-bottom, 0px));
+}
+
+.footer-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.footer-disclaimer {
+  font-size: 0.78rem;
+  opacity: 0.9;
+  max-width: 42rem;
 }
 
 .form-note {

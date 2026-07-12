@@ -20,6 +20,7 @@ from datetime import date as date_cls
 from typing import Any
 
 from web.nba_v2.arenas import market_altitude_km, market_coords
+from web.v2_schedule_utils import count_games_in_last_n_days
 
 LEAGUE_ELO = 1500.0
 ELO_K = 20.0
@@ -272,7 +273,9 @@ def _player_rotation_metrics(
     season_minutes = season_minutes or {}
     played_ids = {r[0] for r in parsed}
     dnp_set = set(dnp_ids or [])
-    top_season = sorted(season_minutes, key=lambda k: -season_minutes[k])[:8]
+    # One sort covers top-8 DNP stars and top-3 minute leaders.
+    ranked_season = sorted(season_minutes, key=lambda k: -season_minutes[k])
+    top_season = ranked_season[:8]
     if top_season:
         absent = sum(
             1 for pid in top_season if pid not in played_ids or pid in dnp_set
@@ -281,7 +284,7 @@ def _player_rotation_metrics(
     else:
         dnp_star_rate = LEAGUE_DNP_STAR_RATE
 
-    star_ids = sorted(season_minutes, key=lambda k: -season_minutes[k])[:3]
+    star_ids = ranked_season[:3]
     if star_ids and games_played > 0:
         last_mins = []
         season_mpg = []
@@ -461,20 +464,10 @@ class TeamState:
         return float(min((game_date - prior).days, 10))
 
     def games_in_last7(self, game_date: date_cls) -> int:
-        count = 0
-        for iso in self.recent_dates:
-            played = _parse_date(iso)
-            if played and 0 < (game_date - played).days <= 7:
-                count += 1
-        return count
+        return count_games_in_last_n_days(self.recent_dates, game_date, days=7)
 
     def games_in_last3(self, game_date: date_cls) -> int:
-        count = 0
-        for iso in self.recent_dates:
-            played = _parse_date(iso)
-            if played and 0 < (game_date - played).days <= 3:
-                count += 1
-        return count
+        return count_games_in_last_n_days(self.recent_dates, game_date, days=3)
 
     def elo_momentum(self) -> float:
         """Elo change over (up to) the last 5 games this season."""

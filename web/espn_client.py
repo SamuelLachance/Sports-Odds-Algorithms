@@ -344,8 +344,17 @@ def clear_schedule_cache() -> None:
 
 
 def iso_to_project_date(iso_value: str) -> str:
+    """Convert an ISO kickoff to project cutoff M-D-YYYY in America/Toronto.
+
+    Slate readiness and date labels use Toronto; using UTC here caused
+    late-ET / early-UTC games to land on the wrong calendar day.
+    """
+    from zoneinfo import ZoneInfo
+
     parsed = datetime.fromisoformat(iso_value.replace("Z", "+00:00"))
-    local = parsed.astimezone(timezone.utc)
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    local = parsed.astimezone(ZoneInfo("America/Toronto"))
     return f"{local.month}-{local.day}-{local.year}"
 
 

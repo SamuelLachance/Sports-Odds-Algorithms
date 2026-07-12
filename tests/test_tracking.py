@@ -269,6 +269,28 @@ def test_pending_bet_still_updated_after_start() -> None:
     assert bet["closing_source"] == "espn"
 
 
+def test_record_dedupes_across_slate_date_labels() -> None:
+    """Same event/side across consecutive slate days must not create a second pending row."""
+    store = {"version": 1, "bets": []}
+    pick = {**_sample_pick(), "start_time": _future_start()}
+    store = record_from_slate(
+        store, {"date_label": "2026-07-10", "recommended_bets": [pick], "games": []}
+    )
+    assert len(store["bets"]) == 1
+    first_id = store["bets"][0]["id"]
+
+    moved = {**_sample_pick(), "start_time": _future_start(), "market_odds": 155}
+    store = record_from_slate(
+        store, {"date_label": "2026-07-11", "recommended_bets": [moved], "games": []}
+    )
+    assert len(store["bets"]) == 1
+    bet = store["bets"][0]
+    assert bet["id"] == first_id
+    assert bet["date"] == "2026-07-10"  # original slate day preserved
+    assert bet["market_odds"] == 141  # frozen at first record
+    assert bet["closing_market_odds"] == 155
+
+
 def test_closing_snapshot_prefers_consensus_moneyline() -> None:
     """Multi-book consensus beats the single ESPN price for the closing snapshot."""
     store = {"version": 1, "bets": []}
@@ -609,6 +631,7 @@ if __name__ == "__main__":
     test_new_bet_recorded_pre_start_with_flag()
     test_new_bet_recorded_when_start_time_unparseable()
     test_pending_bet_still_updated_after_start()
+    test_record_dedupes_across_slate_date_labels()
     test_closing_snapshot_prefers_consensus_moneyline()
     test_closing_snapshot_falls_back_to_espn_without_consensus()
     test_record_and_grade()

@@ -18,10 +18,15 @@ python -m pip install -r requirements.txt
 python -m pytest tests/ -q --tb=short
 python -m pytest tests/ -q -m "not slow"
 python smoke_test.py
+python scripts/dev_check.py
+python scripts/dev_check.py --quick-only
+python scripts/dev_check.py --with-v2
 python run_server.py
 python -m uvicorn web.app:app --reload --host 127.0.0.1 --port 8000
 python scripts/check_v2_data.py
 ```
+
+`scripts/dev_check.py` is the local DX gate: pytest with `-m "not slow"` plus `smoke_test.py` by default (`--quick-only` skips smoke; `--full` runs the entire suite; `--with-v2` also runs `check_v2_data.py`).
 
 ## Training NFL / CFB / CBB v2
 
@@ -52,7 +57,7 @@ Official NFL/CFB/CBB picks stay gated until spread backtests clear; training sti
 - Remote : `https://github.com/SamuelLachance/Sports-Odds-Algorithms`
 - Site : `https://samuellachance.github.io/Sports-Odds-Algorithms/`
 - Rebuild : **4×/jour** America/Toronto (minuit, 6h, midi, 18h EDT via GitHub Actions `pages.yml`)
-- CI tests : `.github/workflows/test.yml` (suite pytest complète + `smoke_test.py` on push/PR to `master`)
+- CI tests : `.github/workflows/test.yml` (compileall + suite pytest + `smoke_test.py` on push/PR to `master`; pytest cache restored between runs)
 
 ## Conventions
 

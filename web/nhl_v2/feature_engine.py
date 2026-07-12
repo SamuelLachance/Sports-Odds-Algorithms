@@ -21,6 +21,7 @@ from datetime import date as date_cls
 from typing import Any
 
 from web.nhl_v2.arenas import ARENA_COORDS
+from web.v2_schedule_utils import count_games_in_last_n_days
 
 LEAGUE_ELO = 1500.0
 ELO_K = 6.0
@@ -324,15 +325,7 @@ class TeamState:
         return float(min((current - previous).days, 10))
 
     def games_last_n(self, game_date: str, days: int) -> int:
-        current = _parse_date(game_date)
-        if not current:
-            return 0
-        count = 0
-        for iso in self.recent_dates:
-            past = _parse_date(iso)
-            if past and 0 < (current - past).days <= days:
-                count += 1
-        return count
+        return count_games_in_last_n_days(self.recent_dates, game_date, days=days)
 
     def games_last6(self, game_date: str) -> int:
         return self.games_last_n(game_date, 6)
@@ -426,15 +419,7 @@ class GoalieState:
         return float(min((current - previous).days, 14))
 
     def starts_last_n(self, game_date: str, days: int) -> int:
-        current = _parse_date(game_date)
-        if not current:
-            return 0
-        count = 0
-        for iso in self.recent_start_dates:
-            past = _parse_date(iso)
-            if past and 0 < (current - past).days <= days:
-                count += 1
-        return count
+        return count_games_in_last_n_days(self.recent_start_dates, game_date, days=days)
 
     def starts_last10(self, game_date: str) -> int:
         return self.starts_last_n(game_date, 10)
@@ -533,7 +518,8 @@ class NhlFeatureEngine:
         home_travel = _travel_km(home_prev, home_coords) / 1000.0
         away_travel = _travel_km(away_prev, home_coords) / 1000.0
 
-        month = _parse_date(game_date).month if _parse_date(game_date) else 1
+        parsed_game_date = _parse_date(game_date)
+        month = parsed_game_date.month if parsed_game_date else 1
         season_frac = {10: 0.0, 11: 0.12, 12: 0.25, 1: 0.4, 2: 0.55, 3: 0.7,
                        4: 0.85, 5: 0.95, 6: 1.0}.get(month, 0.5)
 

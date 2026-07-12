@@ -18,6 +18,7 @@ import math
 from datetime import date as date_cls
 from typing import Any
 
+from web.v2_schedule_utils import count_games_in_last_n_days
 from web.wnba_v2.arenas import market_altitude_m, market_coords
 
 LEAGUE_ELO = 1500.0
@@ -297,20 +298,10 @@ class TeamState:
         return float(min((game_date - prior).days, 10))
 
     def games_in_last7(self, game_date: date_cls) -> int:
-        count = 0
-        for iso in self.recent_dates:
-            played = _parse_date(iso)
-            if played and 0 < (game_date - played).days <= 7:
-                count += 1
-        return count
+        return count_games_in_last_n_days(self.recent_dates, game_date, days=7)
 
     def is_3in4(self, game_date: date_cls) -> bool:
-        count = 0
-        for iso in self.recent_dates:
-            played = _parse_date(iso)
-            if played and 0 < (game_date - played).days <= 3:
-                count += 1
-        return count >= 2
+        return count_games_in_last_n_days(self.recent_dates, game_date, days=3) >= 2
 
     def elo_momentum5(self) -> float:
         if not self.elo_hist:

@@ -1446,6 +1446,7 @@ def blend_predictions(
     away_moneyline: int | None = None,
     draw_moneyline: int | None = None,
     headlines: list[str] | None = None,
+    match_date: str = "",
 ) -> dict[str, Any]:
     """
     Blend Algo_V2 and power model into unified total_score / win_probability.
@@ -1518,6 +1519,7 @@ def blend_predictions(
             event_id=event_id,
             home_espn_id=home_espn_id,
             away_espn_id=away_espn_id,
+            match_date=match_date,
         )
 
     if league.lower() == "cfb":

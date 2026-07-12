@@ -89,7 +89,27 @@ def test_app_js_honesty_banners_and_parallel_load() -> None:
     assert "Stale live inputs" in js
     assert "Promise.allSettled" in js
     assert "Soccer paper log is internal-only" in js
+    assert "Research only — not betting advice" in js
+    assert "No guaranteed profits" in js
     assert "status-banner" in (STATIC_DIR / "styles.css").read_text(encoding="utf-8")
+
+
+def test_index_has_skip_link_and_footer_disclaimer() -> None:
+    html = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
+    css = (STATIC_DIR / "styles.css").read_text(encoding="utf-8")
+    assert 'class="skip-link"' in html
+    assert 'href="#appRoot"' in html
+    assert "footer-disclaimer" in html
+    assert "No guaranteed profits" in html
+    assert ".skip-link" in css
+    assert ".footer-disclaimer" in css
+
+
+def test_agents_md_documents_dev_check() -> None:
+    text = AGENTS_MD.read_text(encoding="utf-8")
+    assert "scripts/dev_check.py" in text
+    assert "--quick-only" in text
+    assert "--with-v2" in text
 
 
 def test_pytest_ini_defines_slow_marker() -> None:

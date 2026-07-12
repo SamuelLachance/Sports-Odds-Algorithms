@@ -68,11 +68,18 @@ def test_test_yml_is_valid_and_lean() -> None:
     steps = test_job.get("steps") or []
     step_names = [step.get("name") for step in steps if isinstance(step, dict)]
     assert "Install Python dependencies" in step_names
+    assert "Cache pytest" in step_names
+    assert "Compile Python packages" in step_names
     assert "Pytest (full suite)" in step_names
     assert "Smoke test (core algo)" in step_names
     install = next(step for step in steps if step.get("name") == "Install Python dependencies")
     # Skip slow pip self-upgrade; rely on setup-python + pip cache.
     assert "--upgrade pip" not in str(install.get("run", ""))
+    compile_step = next(step for step in steps if step.get("name") == "Compile Python packages")
+    assert "compileall" in str(compile_step.get("run", ""))
     pytest_step = next(step for step in steps if step.get("name") == "Pytest (full suite)")
     assert "--durations=12" in str(pytest_step.get("run", ""))
     assert "cancel-in-progress: true" in text
+    cache_step = next(step for step in steps if step.get("name") == "Cache pytest")
+    assert str(cache_step.get("uses", "")).startswith("actions/cache")
+    assert ".pytest_cache" in str(cache_step.get("with", {}).get("path", ""))

@@ -34,7 +34,8 @@
   <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-  <div class="page-bg"></div>
+  <a class="skip-link" href="#appRoot">Skip to content</a>
+  <div class="page-bg" aria-hidden="true"></div>
 
   <header class="site-header">
     <div class="container header-inner">
@@ -96,7 +97,10 @@
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <span>Sharp Odds · Research decision-support — not betting advice</span>
+      <div class="footer-copy">
+        <span>Sharp Odds · Research only — not betting advice</span>
+        <span class="footer-disclaimer">No guaranteed profits. Opening-line studies overstate live ROI; treat tracking as provisional until the sample is large.</span>
+      </div>
       <span id="footerUpdated">—</span>
     </div>
   </footer>

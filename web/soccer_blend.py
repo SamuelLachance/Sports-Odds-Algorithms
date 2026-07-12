@@ -381,9 +381,14 @@ def attach_soccer_context_display(
         away_espn_id=away_espn_id,
     )
     if not context:
-        return result
+        # Still lock the daily FLB/news hook — v2 probs must not be re-shifted.
+        updated = dict(result)
+        updated["context_adjustment_pp"] = 0.0
+        return updated
     updated = dict(result)
     updated["soccer_context"] = context
+    # Sentinel so daily_service does not re-apply probability-shifting context.
+    updated["context_adjustment_pp"] = 0.0
     return updated
 
 
@@ -421,11 +426,15 @@ def _attach_soccer_context_layer(
     updated["home_win_probability"] = home_p
     updated["draw_probability"] = draw_p
     updated["away_win_probability"] = away_p
+    # Keep blended_* in sync — apply_context_to_blend prefers blended_home.
+    updated["blended_home_win_probability"] = round(home_p, 2)
     updated["total_score"] = round(total, 2)
     updated["win_probability"] = round(win_prob, 2)
     updated["favorite_side"] = favorite
     updated["soccer_context"] = context
     updated["context_adjusted"] = True
+    # Path A ESPN context is final for display/EV base; block daily re-apply.
+    updated["context_adjustment_pp"] = 0.0
     if updated.get("soccer_pred"):
         soccer_pred = dict(updated["soccer_pred"])
         soccer_pred.update(

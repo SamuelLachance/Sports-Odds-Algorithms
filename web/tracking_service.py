@@ -129,10 +129,16 @@ def save_store(store: dict[str, Any]) -> None:
     TRACKING_FILE.write_text(json.dumps(normalized, indent=2), encoding="utf-8")
 
 
-def _bet_key(date_label: str, event_id: str, side: str, bet_type: str = "moneyline") -> str:
+def _bet_key(event_id: str, side: str, bet_type: str = "moneyline") -> str:
+    """Stable identity for a tracked pick (no slate calendar date).
+
+    Horizon games can appear on consecutive daily builds with different
+    ``date_label`` values; including the slate day would duplicate pending
+    rows and double-count P&L after grading.
+    """
     if bet_type == "moneyline":
-        return f"{date_label}:{event_id}:{side}"
-    return f"{date_label}:{event_id}:{side}:{bet_type}"
+        return f"{event_id}:{side}"
+    return f"{event_id}:{side}:{bet_type}"
 
 
 def _grading_spread_line(bet: dict[str, Any]) -> float | None:
@@ -209,16 +215,24 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
     date_label = slate.get("date_label") or toronto_today().isoformat()
     now_dt = datetime.now(timezone.utc)
     now = now_dt.isoformat()
-    index = {
-        _bet_key(
-            str(b.get("date") or date_label),
+    # Index by event/side/type only so a pick seen on consecutive slate days
+    # updates closing odds instead of creating a second pending row.
+    index: dict[str, dict[str, Any]] = {}
+    for b in store["bets"]:
+        if not b.get("event_id") or not b.get("side"):
+            continue
+        key = _bet_key(
             str(b.get("event_id") or ""),
             str(b.get("side") or ""),
             b.get("bet_type") or "moneyline",
-        ): b
-        for b in store["bets"]
-        if b.get("event_id") and b.get("side")
-    }
+        )
+        prior = index.get(key)
+        if prior is None:
+            index[key] = b
+            continue
+        # Prefer an existing pending row when legacy date-keyed duplicates exist.
+        if prior.get("status") != "pending" and b.get("status") == "pending":
+            index[key] = b
     games_by_event = {
         str(g.get("event_id")): g
         for g in slate.get("games") or []
@@ -236,7 +250,7 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
             continue
 
         bet_type = pick.get("bet_type") or "moneyline"
-        key = _bet_key(date_label, event_id, side, bet_type)
+        key = _bet_key(event_id, side, bet_type)
         existing = index.get(key)
         if existing:
             if existing.get("status") == "pending":

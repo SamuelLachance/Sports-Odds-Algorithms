@@ -69,6 +69,7 @@ def test_blend_predictions_accepts_headlines_kwarg() -> None:
     from web.blend_service import blend_predictions
 
     assert "headlines" in inspect.signature(blend_predictions).parameters
+    assert "match_date" in inspect.signature(blend_predictions).parameters
 
 
 def _scheduled_game() -> ScheduledGame:
@@ -162,6 +163,7 @@ def test_predict_live_game_single_fetch_opens_and_headlines() -> None:
 
     # Headlines flow into blend_predictions and the context hook.
     assert mock_blend.call_args.kwargs["headlines"] == headlines
+    assert mock_blend.call_args.kwargs["match_date"] == "2026-07-10"
     assert captured["context_headlines"] == headlines
 
     # Multi-book consensus opens activate the steam signal in the hook.
@@ -328,3 +330,140 @@ def test_get_daily_slate_isolates_league_and_prewarm_failures() -> None:
     # Public slate errors must not echo raw exception strings.
     assert not any("boom" in (e.get("error") or "").lower() for e in slate["errors"])
     assert not any("scoreboard down" in (e.get("error") or "").lower() for e in slate["errors"])
+
+
+def test_get_daily_slate_resets_enrichment_budget() -> None:
+    """Each slate build must reset the process-global multi-book wall-time budget."""
+    from web.daily_service import get_daily_slate
+
+    with (
+        patch("web.daily_service.SUPPORTED_LEAGUES", ("nba",)),
+        patch("web.daily_service.fetch_scoreboard", return_value=[]),
+        patch("web.live_odds_enrichment.reset_enrichment_budget") as mock_reset,
+        patch(
+            "web.daily_service.official_hubacek_thresholds",
+            return_value={"min_edge_pp": 0, "min_ev_pct": 0},
+        ),
+    ):
+        get_daily_slate(days_ahead=0)
+
+    mock_reset.assert_called_once()
+
+
+def test_predict_live_game_skips_context_hook_for_soccer_v2() -> None:
+    """Soccer v2 calibrated probs must not be re-shifted by the daily FLB/news hook."""
+    game = ScheduledGame(
+        league="epl",
+        event_id="401700",
+        name="Liverpool at Arsenal",
+        start_time="2026-07-10T19:00Z",
+        status="pre",
+        status_detail="Scheduled",
+        away_abbr="liv",
+        home_abbr="ars",
+        away_name="Liverpool",
+        home_name="Arsenal",
+        away_espn_id="364",
+        home_espn_id="359",
+        market=MarketOdds(
+            home_moneyline=-120,
+            draw_moneyline=260,
+            away_moneyline=320,
+        ),
+    )
+    blended_stub = {
+        "algorithm": "SoccerGradientBoost v2",
+        "blend_mode": "soccer_v2",
+        "total_score": -51.2,
+        "win_probability": 51.2,
+        "favorite_side": "home",
+        "threeway": True,
+        "home_win_probability": 51.2,
+        "draw_probability": 26.4,
+        "away_win_probability": 22.4,
+        "blended_home_win_probability": 51.2,
+        "soccer_pred": {
+            "home_win_probability": 51.2,
+            "draw_probability": 26.4,
+            "away_win_probability": 22.4,
+            "pick_home_win_probability": 52.0,
+            "pick_draw_probability": 26.1,
+            "pick_away_win_probability": 21.9,
+        },
+        # Intentionally omit context_adjustment_pp — daily must still skip.
+    }
+    algo_instance = MagicMock()
+    algo_instance.calculate_V2.return_value = {"total": -10.0}
+    odds_instance = MagicMock()
+    odds_instance.analyze2.return_value = {}
+
+    with (
+        patch(
+            "web.daily_service.resolve_team",
+            side_effect=lambda league, abbr, name: (
+                ["ars", "arsenal"] if abbr == "ars" else ["liv", "liverpool"]
+            ),
+        ),
+        patch("web.daily_service.load_live_team_data", return_value=[{"seed": 1}]),
+        patch("algo.Algo", return_value=algo_instance),
+        patch("odds_calculator.Odds_Calculator", return_value=odds_instance),
+        patch("web.live_odds_enrichment.fetch_multi_book_odds", return_value={}),
+        patch("web.daily_service.blend_predictions", return_value=dict(blended_stub)),
+        patch("web.context_signals.apply_context_to_blend") as mock_context,
+        patch(
+            "web.daily_service.apply_ensemble_ml",
+            side_effect=lambda blended, league, **kw: blended,
+        ),
+        patch(
+            "web.daily_service.ensure_hubacek_in_blend",
+            side_effect=lambda blended, **kw: blended,
+        ),
+        patch("web.daily_service.compute_model_agreement", return_value={}),
+        patch("web.daily_service.get_pick_thresholds", return_value={}),
+        patch("web.daily_service.official_pick_binary_probs", return_value=(45.0, 55.0)),
+        patch("web.daily_service.soccer_model_moneylines", return_value=(200, 260, -120)),
+        patch("web.soccer_paper_tracking.maybe_record_from_blend"),
+        patch(
+            "web.daily_service.evaluate_soccer_official_picks_for_game",
+            return_value=[],
+        ),
+    ):
+        result = predict_live_game(game, headlines=["Arsenal midfielder out"])
+
+    mock_context.assert_not_called()
+    assert result["model"]["home_win_probability"] == 51.2
+    assert result["model"]["draw_probability"] == 26.4
+
+
+def test_iso_match_date_and_algo_factor_favors() -> None:
+    from web.daily_service import _build_model_factors, _iso_match_date
+    from web.espn_client import iso_to_project_date
+
+    # 03:00 UTC on Jul 11 is still Jul 10 evening in Toronto (EDT).
+    assert _iso_match_date("2026-07-11T03:00:00Z") == "2026-07-10"
+    assert iso_to_project_date("2026-07-11T03:00:00Z") == "7-10-2026"
+
+    factors = _build_model_factors(
+        {"blend_mode": "blended"},
+        {"record_points": 5.0, "avg_points": -2.0},
+        "nba",
+    )
+    by_key = {f["key"]: f for f in factors}
+    assert by_key["record_points"]["favors"] == "away"  # Algo: positive → away
+    assert by_key["avg_points"]["favors"] == "home"
+
+    nhl_factors = _build_model_factors(
+        {
+            "blend_mode": "nhl_v2",
+            "hockey_pred": {
+                "expected_home_goals": 3.1,
+                "expected_away_goals": 2.4,
+                "predicted_margin": 0.7,
+                "market_decorrelated": True,
+            },
+        },
+        {},
+        "nhl",
+    )
+    assert any(f["key"] == "xg_margin" for f in nhl_factors)
+    assert any(f["key"] == "decorrelation" for f in nhl_factors)

@@ -74,6 +74,97 @@ def test_injury_count_favors_healthier_side() -> None:
     assert any(f["key"] == "injuries" for f in factors)
 
 
+def test_path_a_context_layer_syncs_blended_home_and_locks_daily_hook() -> None:
+    """ESPN Path A context must update blended_home and set context_adjustment_pp."""
+    from unittest.mock import patch
+
+    from web.soccer_blend import _attach_soccer_context_layer
+
+    base = {
+        "home_win_probability": 45.0,
+        "draw_probability": 28.0,
+        "away_win_probability": 27.0,
+        "blended_home_win_probability": 45.0,
+        "blended_threeway": {
+            "home_win_probability": 45.0,
+            "draw_probability": 28.0,
+            "away_win_probability": 27.0,
+        },
+        "soccer_pred": {
+            "home_win_probability": 45.0,
+            "draw_probability": 28.0,
+            "away_win_probability": 27.0,
+        },
+        "total_score": -45.0,
+        "win_probability": 45.0,
+        "favorite_side": "away",
+    }
+    fake_context = {
+        "home_win_probability": 48.5,
+        "draw_probability": 27.0,
+        "away_win_probability": 24.5,
+        "factors": [{"key": "form", "label": "Form"}],
+    }
+    with patch(
+        "web.soccer_blend.build_soccer_context_payload", return_value=fake_context
+    ):
+        out = _attach_soccer_context_layer(
+            base,
+            league="epl",
+            cutoff_date="7-10-2026",
+            home_abbr="ars",
+            away_abbr="liv",
+        )
+    assert out["home_win_probability"] == 48.5
+    assert out["blended_home_win_probability"] == 48.5
+    assert out["blended_threeway"]["home_win_probability"] == 48.5
+    assert out["soccer_pred"]["home_win_probability"] == 48.5
+    assert out["context_adjusted"] is True
+    assert out["context_adjustment_pp"] == 0.0
+
+
+def test_soccer_v2_display_context_locks_daily_hook_without_mutating_probs() -> None:
+    from unittest.mock import patch
+
+    from web.soccer_blend import attach_soccer_context_display
+
+    base = {
+        "home_win_probability": 51.2,
+        "draw_probability": 26.4,
+        "away_win_probability": 22.4,
+    }
+    with patch(
+        "web.soccer_blend.build_soccer_context_payload",
+        return_value={
+            "home_win_probability": 40.0,
+            "draw_probability": 30.0,
+            "away_win_probability": 30.0,
+            "factors": [{"key": "injuries"}],
+        },
+    ):
+        out = attach_soccer_context_display(
+            base,
+            league="epl",
+            cutoff_date="7-10-2026",
+            home_abbr="ars",
+            away_abbr="liv",
+        )
+    assert out["home_win_probability"] == 51.2
+    assert out["context_adjustment_pp"] == 0.0
+    assert out["soccer_context"]["factors"][0]["key"] == "injuries"
+
+    with patch("web.soccer_blend.build_soccer_context_payload", return_value=None):
+        locked = attach_soccer_context_display(
+            base,
+            league="epl",
+            cutoff_date="7-10-2026",
+            home_abbr="ars",
+            away_abbr="liv",
+        )
+    assert locked["context_adjustment_pp"] == 0.0
+    assert "soccer_context" not in locked
+
+
 if __name__ == "__main__":
     test_parse_form_score()
     test_apply_threeway_context_shifts_renormalizes()
@@ -81,4 +172,6 @@ if __name__ == "__main__":
     test_neutral_venue_reduces_home_shift()
     test_style_profiles_produce_style_factor()
     test_injury_count_favors_healthier_side()
+    test_path_a_context_layer_syncs_blended_home_and_locks_daily_hook()
+    test_soccer_v2_display_context_locks_daily_hook_without_mutating_probs()
     print("test_soccer_context.py: all tests passed")

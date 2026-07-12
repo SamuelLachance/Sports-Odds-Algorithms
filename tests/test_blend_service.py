@@ -489,6 +489,7 @@ def test_blend_soccer_v2_payload_skips_path_a_enrichment() -> None:
             "draw_probability": 28.0,
             "away_win_probability": 24.0,
         }
+        updated["context_adjustment_pp"] = 0.0
         return updated
 
     try:
@@ -536,10 +537,45 @@ def test_blend_soccer_v2_payload_skips_path_a_enrichment() -> None:
         assert result["soccer_pred"]["pick_home_win_probability"] == 52.0
         assert result.get("context_adjusted") is not True
         assert result["soccer_context"]["factors"][0]["label"] == "Home injury"
+        assert result.get("context_adjustment_pp") == 0.0
     finally:
         blend_module.run_soccer_pred_model = soccer_original
         blend_module.finalize_soccer_path_a = finalize_original
         blend_module.attach_soccer_context_display = display_original
+
+
+def test_blend_soccer_forwards_match_date_to_pred_model() -> None:
+    import web.blend_service as blend_module
+
+    soccer_original = blend_module.run_soccer_pred_model
+    finalize_original = blend_module.finalize_soccer_path_a
+    captured: dict = {}
+
+    def _fake_soccer(*_a, **kwargs):
+        captured.update(kwargs)
+        return {
+            "algorithm": "SoccerPathA",
+            "home_win_probability": 40.0,
+            "draw_probability": 30.0,
+            "away_win_probability": 30.0,
+        }
+
+    try:
+        blend_module.run_soccer_pred_model = _fake_soccer
+        blend_module.finalize_soccer_path_a = lambda result, **_k: result
+        blend_predictions(
+            legacy_total_score=-40.0,
+            legacy_win_probability=40.0,
+            league="epl",
+            cutoff_date="7-10-2026",
+            home_abbr="ars",
+            away_abbr="liv",
+            match_date="2026-07-10",
+        )
+        assert captured.get("match_date") == "2026-07-10"
+    finally:
+        blend_module.run_soccer_pred_model = soccer_original
+        blend_module.finalize_soccer_path_a = finalize_original
 
 
 def test_model_agreement_soccer_single_model() -> None:

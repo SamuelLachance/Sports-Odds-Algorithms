@@ -73,16 +73,41 @@ from web.pick_strategy import (
 from web.predict_service import FACTOR_LABELS  # noqa: E402
 
 SINGLE_MODEL_BLEND_MODES = frozenset(
-    {"basketball_matrix", "mlb_runcast", "soccer_path_a", "wnba_v2", "nba_v2"}
+    {
+        "basketball_matrix",
+        "mlb_runcast",
+        "soccer_path_a",
+        "soccer_v2",
+        "wnba_v2",
+        "nba_v2",
+        "nhl_v2",
+        "nfl_v2",
+        "cfb_v2",
+        "cbb_torvik",
+        "cbb_v2",
+    }
 )
 
 
-def _factor_entry(key: str, label: str, value: float) -> dict[str, Any]:
+def _factor_entry(
+    key: str,
+    label: str,
+    value: float,
+    *,
+    positive_favors: str = "home",
+) -> dict[str, Any]:
+    """Build a factor row. Sport margins are home-positive; Algo totals are away-positive."""
+    if value == 0:
+        favors = "neutral"
+    elif value > 0:
+        favors = positive_favors
+    else:
+        favors = "away" if positive_favors == "home" else "home"
     return {
         "key": key,
         "label": label,
         "value": value,
-        "favors": "home" if value > 0 else "away" if value < 0 else "neutral",
+        "favors": favors,
     }
 
 
@@ -90,6 +115,55 @@ def _sport_layer_factors(blended: dict[str, Any], league: str) -> list[dict[str,
     """Factors from the active sport model (not legacy Algo V2)."""
     league = league.lower()
     factors: list[dict[str, Any]] = []
+
+    if is_hockey_league(league):
+        pred = blended.get("hockey_pred") or {}
+        home_xg = pred.get("expected_home_goals")
+        away_xg = pred.get("expected_away_goals")
+        if home_xg is not None and away_xg is not None:
+            factors.append(
+                _factor_entry(
+                    "xg_margin",
+                    "Expected goals (home − away)",
+                    float(home_xg) - float(away_xg),
+                )
+            )
+        margin = pred.get("predicted_margin")
+        if margin is not None:
+            factors.append(
+                _factor_entry("score_margin", "Projected goal margin (home)", float(margin))
+            )
+        home_elo = pred.get("home_elo")
+        away_elo = pred.get("away_elo")
+        if home_elo is not None and away_elo is not None:
+            factors.append(
+                _factor_entry(
+                    "elo_edge",
+                    "Elo edge (home − away)",
+                    round(float(home_elo) - float(away_elo), 1),
+                )
+            )
+        home_xgf = pred.get("home_xgf_pg")
+        away_xgf = pred.get("away_xgf_pg")
+        if home_xgf is not None and away_xgf is not None:
+            factors.append(
+                _factor_entry(
+                    "xgf_edge",
+                    "xGF/60 edge (home − away)",
+                    round(float(home_xgf) - float(away_xgf), 3),
+                )
+            )
+        home_rest = pred.get("home_rest_days")
+        away_rest = pred.get("away_rest_days")
+        if home_rest is not None and away_rest is not None:
+            rest_edge = float(home_rest) - float(away_rest)
+            if abs(rest_edge) >= 1.0:
+                factors.append(
+                    _factor_entry("rest_edge", "Rest days edge (home − away)", rest_edge)
+                )
+        if pred.get("market_decorrelated") or blended.get("market_decorrelated"):
+            factors.append(_factor_entry("decorrelation", "Market decorrelation applied", 1.0))
+        return factors
 
     if league == "mlb":
         pred = blended.get("baseball_pred") or {}
@@ -234,7 +308,10 @@ def _build_model_factors(
     for key, label in FACTOR_LABELS.items():
         if key not in algo_data:
             continue
-        factors.append(_factor_entry(key, label, float(algo_data[key])))
+        # Algo convention: positive factor totals favor the away team.
+        factors.append(
+            _factor_entry(key, label, float(algo_data[key]), positive_favors="away")
+        )
     return factors
 
 
@@ -250,6 +327,19 @@ def _today_cutoff(game: ScheduledGame) -> str:
         return iso_to_project_date(game.start_time)
     today = _toronto_today()
     return f"{today.month}-{today.day}-{today.year}"
+
+
+def _iso_match_date(start_time: str | None) -> str:
+    """Kickoff calendar date as YYYY-MM-DD in America/Toronto (soccer rest features)."""
+    if not start_time:
+        return ""
+    try:
+        parsed = datetime.fromisoformat(str(start_time).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return ""
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(TORONTO).date().isoformat()
 
 
 def _is_actionable_soon(game: ScheduledGame, horizon_days: int = 3) -> bool:
@@ -353,10 +443,16 @@ def predict_live_game(
         away_moneyline=game.market.away_moneyline,
         draw_moneyline=game.market.draw_moneyline,
         headlines=headlines,
+        match_date=_iso_match_date(game.start_time),
     )
     # Context layer hook: specialized blend paths (NBA/MLB/NHL/soccer) skip
     # `_with_db_rating_layer`; apply once here when not already attached.
-    if blended.get("context_adjustment_pp") is None:
+    # Soccer v2 / Path-A ESPN context lock probs via context_adjustment_pp.
+    if (
+        blended.get("context_adjustment_pp") is None
+        and not blended.get("context_adjusted")
+        and (blended.get("blend_mode") or "") != "soccer_v2"
+    ):
         from web.context_signals import apply_context_to_blend
 
         context_market: dict[str, Any] = {
@@ -404,7 +500,7 @@ def predict_live_game(
             away_abbr=away[0],
             home_name=game.home_name,
             away_name=game.away_name,
-            game_date=cutoff,
+            game_date=_iso_match_date(game.start_time) or _toronto_today().isoformat(),
             home_ml=game.market.home_moneyline,
             draw_ml=game.market.draw_moneyline,
             away_ml=game.market.away_moneyline,
@@ -792,6 +888,15 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
     errors: list[dict[str, str]] = []
     slate_cutoff = _slate_cutoff_date()
     logger.info("Building daily slate (days_ahead=%s)", days_ahead)
+
+    # Fresh multi-book wall-time budget for this build (long-lived uvicorn
+    # otherwise permanently exhausts the process-global accumulator).
+    try:
+        from web.live_odds_enrichment import reset_enrichment_budget
+
+        reset_enrichment_budget()
+    except Exception:  # noqa: BLE001 — never block the slate on budget reset
+        pass
 
     # Fetch all league scoreboards in parallel (I/O-bound). Processing stays
     # sequential so model caches and pick logic remain deterministic.

@@ -1,4 +1,4 @@
-const APP_BUILD_VERSION = "2026-07-12-wave5-honesty";
+const APP_BUILD_VERSION = "2026-07-12-wave6-dx";
 const META_BASE_PATH =
   document.querySelector('meta[name="base-path"]')?.content ?? "";
 const IS_GITHUB_IO = window.location.hostname.endsWith("github.io");
@@ -639,8 +639,8 @@ function sparseLeaguePill(league) {
 
 function disclaimerBar(extra = "") {
   return `<aside class="disclaimer-bar" role="note">
-    <strong>Research decision-support</strong>
-    <span>Bet early, shop lines, size to units.${extra ? ` ${extra}` : ""}</span>
+    <strong>Research only — not betting advice</strong>
+    <span>No guaranteed profits. Markets are efficient; past ROI is not a promise. Bet early, shop lines, size to units.${extra ? ` ${extra}` : ""}</span>
   </aside>`;
 }
 
@@ -2696,7 +2696,7 @@ function viewMethodology() {
         <li><strong>Opening-line backtests overstate live ROI.</strong> Historical ROI vs opening prices is an upper bound; live morning tracking locks later consensus prices and usually grades worse than the open-line study.</li>
         <li><strong>The live tracked sample is very young.</strong> Until dozens of graded bets settle, record, units, and ROI are noise; process metrics (CLV, stake discipline) matter more.</li>
         <li><strong>Soccer paper log is internal-only.</strong> Deploy may grade a private soccer paper-tracking file for research hygiene; it is <em>not</em> Hubáček official tracking and is not shown as performance on this site.</li>
-        <li><strong>This is research, not investment advice.</strong> Nothing here guarantees profit; treat the board as decision support for studying betting markets.</li>
+        <li><strong>This is research, not investment advice.</strong> Nothing here guarantees profit; published units and ROI are observational. Treat the board as decision support for studying betting markets, not as a tip service.</li>
       </ul>
     </section>`;
 }
