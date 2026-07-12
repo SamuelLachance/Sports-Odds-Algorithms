@@ -96,8 +96,12 @@ def model_moneylines(total_score: float) -> tuple[int, int]:
 def soccer_threeway_probs(total_score: float, league: str) -> tuple[float, float, float]:
     """Return home win, draw, and away win probabilities (0-100 scale)."""
     win_prob = abs(total_score)
-    home_is_favorite = total_score <= 0
-    home_binary = win_prob if home_is_favorite else 100.0 - win_prob
+    # total_score == 0 is pick'em — not "home favorite at 0%".
+    if win_prob < 1e-9:
+        home_binary = 50.0
+    else:
+        home_is_favorite = total_score < 0
+        home_binary = win_prob if home_is_favorite else 100.0 - win_prob
     away_binary = 100.0 - home_binary
 
     base_draw = SOCCER_DRAW_BASE.get(league.lower(), SOCCER_DRAW_BASE["default"])

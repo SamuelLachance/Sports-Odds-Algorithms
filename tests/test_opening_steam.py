@@ -128,6 +128,41 @@ def test_soccer_steam_requires_positive_move_into_favorite() -> None:
     assert meta["steam_move_pp"] > 0
 
 
+def test_soccer_steam_edge_uses_raw_model_not_inflated_pick() -> None:
+    """Decorrelated pick probs must not be what crosses STEAM_MODEL_EDGE_PP."""
+    from web.soccer_opening import STEAM_MODEL_EDGE_PP, soccer_opening_steam_meta
+
+    # Close home ~42.8% de-vig; open→close home implied rises into favorite.
+    close_home, close_draw, close_away = 120, 240, 220
+    open_home, open_draw, open_away = 160, 240, 200
+    display_meta = soccer_opening_steam_meta(
+        home_ml=close_home,
+        draw_ml=close_draw,
+        away_ml=close_away,
+        open_home_ml=open_home,
+        open_draw_ml=open_draw,
+        open_away_ml=open_away,
+        model_home=46.5,  # edge ~3.7pp < threshold
+        model_draw=28.0,
+        model_away=25.5,
+    )
+    pick_meta = soccer_opening_steam_meta(
+        home_ml=close_home,
+        draw_ml=close_draw,
+        away_ml=close_away,
+        open_home_ml=open_home,
+        open_draw_ml=open_draw,
+        open_away_ml=open_away,
+        model_home=47.5,  # Hubáček-inflated edge ~4.7pp
+        model_draw=27.5,
+        model_away=25.0,
+    )
+    assert display_meta["model_edge_pp"] < STEAM_MODEL_EDGE_PP
+    assert pick_meta["model_edge_pp"] >= STEAM_MODEL_EDGE_PP
+    # Callers must pass display probs so borderline edges stay below threshold.
+    assert display_meta["steam_signal"] is False
+    assert pick_meta["steam_signal"] is True
+
 def test_soccer_opening_does_not_fabricate_open_from_close(monkeypatch) -> None:
     """Missing open must stay None — copying close invents 0pp steam."""
     from web import soccer_opening as so

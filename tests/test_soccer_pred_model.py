@@ -10,6 +10,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from web.league_profiles import is_soccer_league
 from web.soccer_pred_model import (  # noqa: E402
+    _fit_dixon_coles_params,
     _normalize_threeway,
     _rest_days_since,
     build_soccer_model,
@@ -82,6 +83,25 @@ def test_build_soccer_model_favors_stronger_home_team() -> None:
         + strong_home.away_win_probability
     )
     assert abs(total - 100.0) < 0.05
+
+
+def test_dixon_coles_defence_init_from_conceded_not_away_scored() -> None:
+    """High away scoring + high conceding must not inflate defence strength."""
+    # ``leak`` scores freely away but concedes freely; ``wall`` scores little, concedes little.
+    games = [
+        ("wall", "leak", "Wall", "Leak", 0, 3),
+        ("leak", "wall", "Leak", "Wall", 3, 0),
+        ("wall", "leak", "Wall", "Leak", 0, 4),
+        ("leak", "wall", "Leak", "Wall", 2, 0),
+        ("wall", "other", "Wall", "Other", 1, 0),
+        ("other", "wall", "Other", "Wall", 0, 1),
+        ("leak", "other", "Leak", "Other", 3, 2),
+        ("other", "leak", "Other", "Leak", 2, 3),
+    ]
+    attack, defence, _hca = _fit_dixon_coles_params(games, ["wall", "leak", "other"])
+    # Higher defence ⇒ harder to score on. Wall should outrank leak.
+    assert defence["wall"] > defence["leak"]
+    assert attack["leak"] > attack["wall"]
 
 
 if __name__ == "__main__":

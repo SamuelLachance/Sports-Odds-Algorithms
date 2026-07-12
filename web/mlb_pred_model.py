@@ -133,16 +133,18 @@ def build_mlb_model(
                 hca=DEFAULT_HCA_RUNS,
                 seed=idx,
             )
-            x_rows.append(features_to_vector(feats))
             raw_probs.append(raw_prob)
             if home_score > away_score:
+                x_rows.append(features_to_vector(feats))
                 y_rows.append(1.0)
                 outcomes.append(1.0)
             elif home_score < away_score:
+                x_rows.append(features_to_vector(feats))
                 y_rows.append(0.0)
                 outcomes.append(0.0)
             else:
-                y_rows.append(0.5)
+                # Soft 0.5 is fine for the calibrator; XGB uses dtype=int so
+                # 0.5→0 and would train ties as away wins.
                 outcomes.append(0.5)
 
         update_runs_efficiency_after_game(efficiency, home, away, home_score, away_score)
@@ -422,7 +424,12 @@ def run_mlb_pred_model(
     game_date = _cutoff_to_iso(cutoff_date)
     pitcher_margin = 0.0
     if game_date:
-        edge = pitcher_matchup_margin(home_abbr, away_abbr, game_date=game_date)
+        edge = pitcher_matchup_margin(
+            home_abbr,
+            away_abbr,
+            game_date=game_date,
+            game_number=game_number,
+        )
         if edge is not None:
             pitcher_margin = float(edge)
 

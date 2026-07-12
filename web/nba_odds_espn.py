@@ -82,8 +82,11 @@ def _to_float(value: Any) -> float | None:
     if value is None:
         return None
     text = str(value).strip().replace("+", "")
-    if text in ("", "EVEN", "even", "pk", "PK"):
-        return 0.0 if text.lower() in ("even", "pk") else None
+    if not text:
+        return None
+    # Case-insensitive PK/EVEN (HTML often emits ``Pk`` / ``Even``); match SBR.
+    if text.upper() in {"EVEN", "PK"}:
+        return 0.0
     try:
         parsed = float(text)
     except ValueError:

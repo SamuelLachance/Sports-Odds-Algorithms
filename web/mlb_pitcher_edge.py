@@ -83,7 +83,7 @@ def _team_id_for_abbr(abbr: str) -> int | None:
 
 
 @lru_cache(maxsize=64)
-def fetch_probable_pitchers(game_date: str) -> dict[tuple[int, int], dict[str, dict[str, float]]]:
+def fetch_probable_pitchers(game_date: str) -> dict[tuple[int, int, int], dict[str, dict[str, float]]]:
     """Map (home_team_id, away_team_id) -> {home: stats, away: stats} for a calendar date."""
     url = (
         f"{BASE_URL}/schedule?sportId=1&date={game_date}"
@@ -93,7 +93,8 @@ def fetch_probable_pitchers(game_date: str) -> dict[tuple[int, int], dict[str, d
     if not payload:
         return {}
 
-    lookup: dict[tuple[int, int], dict[str, dict[str, float]]] = {}
+    # Key includes gameNumber so doubleheaders do not last-win overwrite G1.
+    lookup: dict[tuple[int, int, int], dict[str, dict[str, float]]] = {}
     for day in payload.get("dates") or []:
         for game in day.get("games") or []:
             teams = game.get("teams") or {}
@@ -103,11 +104,15 @@ def fetch_probable_pitchers(game_date: str) -> dict[tuple[int, int], dict[str, d
             away_id = int((away.get("team") or {}).get("id") or 0)
             if not home_id or not away_id:
                 continue
+            try:
+                game_number = int(game.get("gameNumber") or 1)
+            except (TypeError, ValueError):
+                game_number = 1
             home_pitcher = _pitching_snapshot(home.get("probablePitcher"))
             away_pitcher = _pitching_snapshot(away.get("probablePitcher"))
             if not home_pitcher and not away_pitcher:
                 continue
-            lookup[(home_id, away_id)] = {
+            lookup[(home_id, away_id, game_number)] = {
                 "home": home_pitcher or {"era": LEAGUE_ERA_BASELINE, "whip": LEAGUE_WHIP_BASELINE},
                 "away": away_pitcher or {"era": LEAGUE_ERA_BASELINE, "whip": LEAGUE_WHIP_BASELINE},
             }
@@ -125,6 +130,7 @@ def pitcher_matchup_margin(
     away_abbr: str,
     *,
     game_date: str | None = None,
+    game_number: int | None = None,
 ) -> float | None:
     """Signed run margin from probable starter quality (home minus away)."""
     home_id = _team_id_for_abbr(home_abbr)
@@ -133,7 +139,11 @@ def pitcher_matchup_margin(
         return None
     when = game_date or date.today().isoformat()
     lookup = fetch_probable_pitchers(when)
-    matchup = lookup.get((home_id, away_id))
+    try:
+        gn = int(game_number) if game_number is not None else 1
+    except (TypeError, ValueError):
+        gn = 1
+    matchup = lookup.get((home_id, away_id, gn))
     if not matchup:
         return None
     diff = _pitcher_skill(matchup["home"]) - _pitcher_skill(matchup["away"])

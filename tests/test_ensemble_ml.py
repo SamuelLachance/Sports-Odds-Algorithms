@@ -450,3 +450,13 @@ def test_soccer_legacy_proxy_uses_total_score_not_inverted_linear_map() -> None:
     assert inverted[0] < legacy_tw[0]  # old formula treated home as underdog
     assert inverted[0] < 50.0
     assert power_tw[0] > inverted[0]
+
+def test_soccer_ensemble_pickem_power_proxy_not_away_blowout() -> None:
+    """50% power home must not become home=0% via total_score=0 pick'em bug."""
+    from web.soccer_blend import power_threeway_probs
+
+    home, draw, away = power_threeway_probs(50.0, "epl")
+    assert abs(home - away) < 1e-9
+    assert home > 20.0
+    assert home + draw + away == pytest.approx(100.0)
+

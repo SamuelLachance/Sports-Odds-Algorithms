@@ -46,6 +46,22 @@ def test_valid_american_maps_even_zero_to_plus_100() -> None:
     assert _as_int_odds(False) is None
     assert _as_int_odds(True) is None
     assert _as_int_odds(0) == 100
+    # String EVEN/PK must match numeric 0 → +100 (shopping edge vs books).
+    assert _as_int_odds("EVEN") == 100
+    assert _as_int_odds("Pk") == 100
+    assert shopping_edge_pp("EVEN", 110) == shopping_edge_pp(0, 110)
+    fields = line_shopping_fields_for_pick(
+        {
+            "n_books": 2,
+            "best_home_ml": 110,
+            "home_moneyline": "EVEN",
+            "consensus_home_ml": 100,
+            "consensus_away_ml": -120,
+        },
+        side="home",
+    )
+    assert fields.get("best_available_odds") == 110
+    assert fields.get("line_shopping_edge_pp") == shopping_edge_pp("EVEN", 110)
 
 
 def test_valid_handicap_line_rejects_ml_sized_dumps() -> None:
@@ -1033,12 +1049,39 @@ def test_consensus_rejects_mixed_sign_spread_median_pickem() -> None:
 def test_espn_provider_rejects_even_pk_as_total() -> None:
     """EVEN/pk map to 0.0 in ``_to_float`` and must not become O/U 0."""
     from web.mlb_odds_espn import _provider_line_mlb
-    from web.nba_odds_espn import _provider_line, _valid_total
+    from web.nba_odds_espn import _provider_line, _to_float, _valid_american, _valid_total
     from web.nhl_odds_espn import _provider_line_nhl
 
     assert _valid_total(0.0) is None
     assert _valid_total(-5.0) is None
     assert _valid_total(220.5) == 220.5
+    # Mixed-case book labels must match lowercase pk/even (SBR parity).
+    assert _to_float("Pk") == 0.0
+    assert _to_float("Even") == 0.0
+    assert _valid_american(_to_float("Pk")) == 100.0
+    assert _valid_american(_to_float("Even")) == 100.0
+    mixed = {
+        "provider": {"name": "A"},
+        "homeTeamOdds": {
+            "favorite": True,
+            "close": {
+                "moneyLine": {"american": "Pk"},
+                "pointSpread": {"american": -3.5},
+                "spread": {"american": "Even"},
+            },
+        },
+        "awayTeamOdds": {
+            "favorite": False,
+            "close": {
+                "moneyLine": {"american": -120},
+                "pointSpread": {"american": 3.5},
+                "spread": {"american": -110},
+            },
+        },
+    }
+    line = _provider_line(mixed)
+    assert line["home_close_ml"] == 100.0
+    assert line["home_spread_odds"] == 100.0
 
     base = {
         "provider": {"name": "A"},

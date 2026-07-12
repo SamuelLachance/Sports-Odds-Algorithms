@@ -15,6 +15,7 @@ import os
 import time
 from typing import Any
 
+from web.bet_advisor import normalize_american_odds
 from web.clv_service import american_to_implied_prob
 from web.mlb_odds_espn import MAX_MLB_RUN_LINE, _consensus_mlb, _provider_line_mlb
 from web.nba_odds_espn import (
@@ -137,17 +138,10 @@ def _odds_url(league: str, event_id: str, competition_id: str) -> str | None:
 
 def _as_int_odds(value: Any) -> int | None:
     # bool is a subclass of int; reject before False→0→EVEN +100.
+    # Text EVEN/PK must match normalize_american_odds (not float()→None drop).
     if isinstance(value, bool):
         return None
-    validated = _valid_american(value if isinstance(value, (int, float)) else None)
-    if validated is None and value is not None:
-        try:
-            validated = _valid_american(float(value))
-        except (TypeError, ValueError):
-            return None
-    if validated is None:
-        return None
-    return int(round(validated))
+    return normalize_american_odds(value)
 
 
 def best_american_odds(values: list[Any]) -> int | None:

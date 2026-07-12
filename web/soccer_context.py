@@ -68,6 +68,8 @@ class MatchContextSignals:
     venue_name: str | None = None
     home_injuries: int = 0
     away_injuries: int = 0
+    home_out: int = 0
+    away_out: int = 0
     home_style: TeamStyleProfile | None = None
     away_style: TeamStyleProfile | None = None
     sources: list[str] = field(default_factory=list)
@@ -86,11 +88,6 @@ def _stat_value(stats: list[dict[str, Any]], name: str) -> float | None:
         except (TypeError, ValueError):
             return None
     return None
-
-
-def _league_core_slug(league: str) -> str:
-    profile = get_league_profile(league)
-    return profile["sport_path"].split("/", 1)[1]
 
 
 def parse_form_score(form: str | None, sample: int = 5) -> float | None:
@@ -215,19 +212,13 @@ def get_team_style_profiles(league: str, cutoff_date: str) -> dict[str, TeamStyl
     return {key: _finalize_style(raw) for key, raw in raw_profiles.items()}
 
 
-def _fetch_injury_count(league: str, espn_team_id: str) -> int:
+def _fetch_injury_burden(league: str, espn_team_id: str) -> tuple[int, int]:
+    """Return (listed_count, out_count) using shared ESPN OUT filtering."""
     if not espn_team_id:
-        return 0
-    slug = _league_core_slug(league)
-    url = (
-        f"https://sports.core.api.espn.com/v2/sports/soccer/leagues/{slug}"
-        f"/teams/{espn_team_id}/injuries"
-    )
-    try:
-        payload = _fetch_json(url, timeout=12)
-    except (urllib.error.URLError, TimeoutError, json.JSONDecodeError):
-        return 0
-    return int(payload.get("count") or 0)
+        return 0, 0
+    from web.availability_signals import _count_team_injuries
+
+    return _count_team_injuries(league, espn_team_id)
 
 
 def _fetch_summary_header(league: str, event_id: str) -> dict[str, Any] | None:
@@ -300,9 +291,13 @@ def fetch_match_context_signals(
         signals.unavailable.extend(["form", "venue"])
 
     if home_espn_id:
-        signals.home_injuries = _fetch_injury_count(league, home_espn_id)
+        signals.home_injuries, signals.home_out = _fetch_injury_burden(
+            league, home_espn_id
+        )
     if away_espn_id:
-        signals.away_injuries = _fetch_injury_count(league, away_espn_id)
+        signals.away_injuries, signals.away_out = _fetch_injury_burden(
+            league, away_espn_id
+        )
     if home_espn_id or away_espn_id:
         if signals.home_injuries or signals.away_injuries:
             signals.sources.append("injuries")
@@ -411,8 +406,15 @@ def compute_context_adjustments(
                 }
             )
 
-    injury_delta = signals.away_injuries - signals.home_injuries
-    if injury_delta:
+    # Weight true OUT ≫ questionable/DTD — raw ESPN ``count`` alone invents edges.
+    home_burden = signals.home_out + 0.35 * max(
+        signals.home_injuries - signals.home_out, 0
+    )
+    away_burden = signals.away_out + 0.35 * max(
+        signals.away_injuries - signals.away_out, 0
+    )
+    injury_delta = away_burden - home_burden
+    if abs(injury_delta) >= 0.2:
         per = min(MAX_INJURY_IMPACT_PP, abs(injury_delta) * 0.6)
         signed = per if injury_delta > 0 else -per
         home_shift += signed
@@ -422,7 +424,10 @@ def compute_context_adjustments(
             {
                 "key": "injuries",
                 "label": "Injuries listed",
-                "detail": f"home {signals.home_injuries} · away {signals.away_injuries}",
+                "detail": (
+                    f"home {signals.home_injuries} ({signals.home_out} out)"
+                    f" · away {signals.away_injuries} ({signals.away_out} out)"
+                ),
                 "home_shift": round(signed, 2),
                 "source": "espn_core_injuries",
             }

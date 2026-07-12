@@ -68,10 +68,25 @@ def test_style_profiles_produce_style_factor() -> None:
 
 
 def test_injury_count_favors_healthier_side() -> None:
-    signals = MatchContextSignals(home_injuries=0, away_injuries=4)
+    signals = MatchContextSignals(home_injuries=0, away_injuries=4, away_out=4)
     home_shift, _, _, factors = compute_context_adjustments(signals)
     assert home_shift > 0
     assert any(f["key"] == "injuries" for f in factors)
+
+
+def test_injury_shift_weights_out_over_questionable() -> None:
+    """Many DTD listings must not beat a single true OUT on the other side."""
+    # Away: 4 questionable (0 OUT) → burden 4*0.35 = 1.4
+    # Home: 1 OUT → burden 1.0 → away still slightly worse, home_shift > 0
+    soft = MatchContextSignals(home_injuries=1, home_out=1, away_injuries=4, away_out=0)
+    hard = MatchContextSignals(home_injuries=4, home_out=0, away_injuries=1, away_out=1)
+    soft_shift, _, _, _ = compute_context_adjustments(soft)
+    hard_shift, _, _, _ = compute_context_adjustments(hard)
+    # Soft: home healthier on OUT weight → positive home shift
+    assert soft_shift > 0
+    # Hard: home has only DTD while away has OUT → negative (or smaller) home shift
+    assert hard_shift < soft_shift
+    assert hard_shift < 0
 
 
 def test_path_a_context_layer_syncs_blended_home_and_locks_daily_hook() -> None:
@@ -197,6 +212,7 @@ if __name__ == "__main__":
     test_neutral_venue_reduces_home_shift()
     test_style_profiles_produce_style_factor()
     test_injury_count_favors_healthier_side()
+    test_injury_shift_weights_out_over_questionable()
     test_path_a_context_layer_syncs_blended_home_and_locks_daily_hook()
     test_soccer_v2_display_context_locks_daily_hook_without_mutating_probs()
     print("test_soccer_context.py: all tests passed")

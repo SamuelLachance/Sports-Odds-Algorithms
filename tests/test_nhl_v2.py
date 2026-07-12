@@ -466,6 +466,12 @@ def test_equal_score_without_home_win_is_regulation_tie() -> None:
     assert engine.team("TOR").season_losses == 0
     assert engine.team("MTL").season_wins == 0
     assert engine.team("MTL").season_losses == 0
+    # Regulation-tie goals still count even though W-L stays flat.
+    assert engine.team("TOR").season_gf == 2
+    assert engine.team("TOR").season_ga == 2
+    assert engine.team("MTL").season_gf == 2
+    assert engine.team("MTL").season_ga == 2
+    assert engine.team("TOR").games_played == 1
     # Half-credit Elo: home (with HFA) should lose a little Elo vs even opponent.
     assert engine.team("TOR").elo < elo_before_home
     assert engine.team("MTL").elo > elo_before_away

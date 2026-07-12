@@ -103,6 +103,24 @@ def _parse_float(value: Any) -> float | None:
     return parsed
 
 
+def _parse_total(value: Any) -> float | None:
+    """Over/under totals only — reject PK/EVEN→0 that spreads keep as pick'em."""
+    if value is None or value == "":
+        return None
+    if isinstance(value, bool):
+        return None
+    text = str(value).strip()
+    if text.upper() in {"PK", "EVEN"}:
+        return None
+    try:
+        parsed = float(text)
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(parsed) or parsed <= 0.0 or parsed > 500.0:
+        return None
+    return parsed
+
+
 @lru_cache(maxsize=1)
 def _team_maps() -> dict[str, dict[str, str]]:
     if not TEAM_MAP_PATH.is_file():
@@ -283,8 +301,8 @@ def _load_us_odds_index(
                 "away_open_spread": _parse_float(row.get("away_open_spread")),
                 "home_spread_odds": _parse_int(row.get("home_spread_odds")),
                 "away_spread_odds": _parse_int(row.get("away_spread_odds")),
-                "close_total": _parse_float(row.get("close_total")),
-                "open_total": _parse_float(row.get("open_total")),
+                "close_total": _parse_total(row.get("close_total")),
+                "open_total": _parse_total(row.get("open_total")),
                 "source": row.get("source") or "closing-odds-db",
             }
             existing = index.get(key)

@@ -219,3 +219,27 @@ def test_runcast_xgb_blend_keeps_margin_aligned_with_runs() -> None:
     assert float(out["predicted_margin"]) == pytest.approx(1.0)
     # Win% may move with XGB, but margin stays with the sim runs.
     assert float(out["home_win_probability"]) != 58.0
+
+
+def test_mlb_xgb_training_skips_ties_not_cast_to_away_win() -> None:
+    """Tied games must not enter XGB labels — dtype=int turns 0.5 into 0."""
+    dated = _sample_dated_games()
+    # Force a walk-forward row that is a true tie.
+    dated.append(("2024-05-20", ("a", "b", "A", "B", 3, 3)))
+
+    captured: dict[str, list] = {}
+
+    def _capture(x_rows, y_rows):
+        captured["y"] = list(y_rows)
+        captured["n"] = len(x_rows)
+        return None
+
+    with patch("web.mlb_pred_model._train_xgb_classifier", side_effect=_capture):
+        with patch("web.mlb_pred_model.fit_best_calibrator", return_value=None):
+            build_mlb_model(dated, "2024-06-01")
+
+    assert "y" in captured
+    assert 0.5 not in captured["y"]
+    assert all(label in (0.0, 1.0) for label in captured["y"])
+    # Sample rows include a 4-4 earlier; that and the appended 3-3 must be excluded.
+    assert captured["n"] == len(captured["y"])

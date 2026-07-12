@@ -329,9 +329,9 @@ def _fit_dixon_coles_params(
     attack = [0.0] * n
     defence = [0.0] * n
     home_goals = [0.0] * n
-    away_goals = [0.0] * n
+    goals_against = [0.0] * n
     home_matches = [0.0] * n
-    away_matches = [0.0] * n
+    matches = [0.0] * n
 
     weights = game_weights or [1.0] * len(games)
     total_weight = sum(weights) or float(len(games))
@@ -341,23 +341,29 @@ def _fit_dixon_coles_params(
             continue
         hi, ai = index[home], index[away]
         home_goals[hi] += hg * weight
-        away_goals[ai] += ag * weight
         home_matches[hi] += weight
-        away_matches[ai] += weight
+        # Defence strength is goals *conceded*, not goals scored away.
+        goals_against[hi] += ag * weight
+        goals_against[ai] += hg * weight
+        matches[hi] += weight
+        matches[ai] += weight
 
     league_home_avg = sum(hg * w for (*_, hg, _), w in zip(games, weights)) / total_weight
-    league_away_avg = sum(ag * w for (*_, _, ag), w in zip(games, weights)) / total_weight
+    league_gf_avg = (
+        sum((hg + ag) * w for (*_, hg, ag), w in zip(games, weights)) / (2.0 * total_weight)
+    )
     league_home_avg = max(league_home_avg, 0.5)
-    league_away_avg = max(league_away_avg, 0.5)
+    league_gf_avg = max(league_gf_avg, 0.5)
 
     for i, key in enumerate(team_keys):
         if home_matches[i]:
             attack[i] = math.log(
                 max(home_goals[i] / home_matches[i], 0.2) / league_home_avg
             )
-        if away_matches[i]:
+        if matches[i]:
+            # Higher defence ⇒ harder to score on (see λ = exp(attack − defence)).
             defence[i] = math.log(
-                max(away_goals[i] / away_matches[i], 0.2) / league_away_avg
+                league_gf_avg / max(goals_against[i] / matches[i], 0.2)
             )
 
     for _ in range(12):
@@ -1038,6 +1044,8 @@ def _run_soccer_v2(
     if not v2:
         return None
 
+    # Steam edge must use display probs — pick_* are already Hubáček-pushed
+    # away from market and inflate model_edge_pp past the steam threshold.
     steam_meta = soccer_opening_steam_meta(
         home_ml=home_ml,
         draw_ml=draw_ml,
@@ -1045,9 +1053,9 @@ def _run_soccer_v2(
         open_home_ml=open_home,
         open_draw_ml=open_draw,
         open_away_ml=open_away,
-        model_home=v2["pick_home_win_probability"],
-        model_draw=v2["pick_draw_probability"],
-        model_away=v2["pick_away_win_probability"],
+        model_home=v2["home_win_probability"],
+        model_draw=v2["draw_probability"],
+        model_away=v2["away_win_probability"],
     )
     pick_signals = build_soccer_pick_signals(
         home_prob=v2["pick_home_win_probability"],
@@ -1141,6 +1149,7 @@ def run_soccer_pred_model(
     )
 
     open_home, open_draw, open_away = fetch_soccer_opening_moneylines(league, event_id)
+    # Use display (pre-pick) probs so Hubáček decorrelation does not invent steam.
     steam_meta = soccer_opening_steam_meta(
         home_ml=home_ml,
         draw_ml=draw_ml,
@@ -1148,9 +1157,9 @@ def run_soccer_pred_model(
         open_home_ml=open_home,
         open_draw_ml=open_draw,
         open_away_ml=open_away,
-        model_home=pick_probs[0],
-        model_draw=pick_probs[1],
-        model_away=pick_probs[2],
+        model_home=display_probs[0],
+        model_draw=display_probs[1],
+        model_away=display_probs[2],
     )
 
     pick_signals = build_soccer_pick_signals(

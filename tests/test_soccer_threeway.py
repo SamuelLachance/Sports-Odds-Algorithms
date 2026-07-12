@@ -5,6 +5,8 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import pytest
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -32,6 +34,15 @@ def test_soccer_threeway_probs_sum_to_100() -> None:
         total_prob = round(home + draw + away, 4)
         assert abs(total_prob - 100.0) < 0.01
         assert 18.0 <= draw <= 35.0
+
+
+def test_soccer_threeway_pickem_is_symmetric_not_away_blowout() -> None:
+    """total_score=0 must be 50/50 binary — not home_binary=abs(0)=0."""
+    home, draw, away = soccer_threeway_probs(0.0, "epl")
+    assert abs(home - away) < 1e-9
+    assert home > 20.0
+    assert away > 20.0
+    assert home + draw + away == pytest.approx(100.0)
 
 
 def test_closer_matchups_raise_draw_probability() -> None:

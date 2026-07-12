@@ -900,19 +900,21 @@ class NhlFeatureEngine:
             away.h2h[game["home"]] = away.h2h[game["home"]][-8:]
 
         is_regular = int(game.get("game_type") or 2) == 2
-        if is_regular and not tied:
-            if home_win:
-                home.season_wins += 1
-                if away_ot_loss:
-                    away.season_ot_losses += 1
+        if is_regular:
+            # W-L skip regulation ties; goals still count (games_gpg already does).
+            if not tied:
+                if home_win:
+                    home.season_wins += 1
+                    if away_ot_loss:
+                        away.season_ot_losses += 1
+                    else:
+                        away.season_losses += 1
                 else:
-                    away.season_losses += 1
-            else:
-                away.season_wins += 1
-                if home_ot_loss:
-                    home.season_ot_losses += 1
-                else:
-                    home.season_losses += 1
+                    away.season_wins += 1
+                    if home_ot_loss:
+                        home.season_ot_losses += 1
+                    else:
+                        home.season_losses += 1
             home.season_gf += home_goals
             home.season_ga += away_goals
             away.season_gf += away_goals

@@ -91,6 +91,7 @@ def test_fetch_probable_pitchers_uses_direct_season_stats(monkeypatch) -> None:
             {
                 "games": [
                     {
+                        "gameNumber": 1,
                         "teams": {
                             "home": {
                                 "team": {"id": 147},
@@ -134,8 +135,75 @@ def test_fetch_probable_pitchers_uses_direct_season_stats(monkeypatch) -> None:
     }
     monkeypatch.setattr(pe, "_fetch_json", lambda *_a, **_k: payload)
     lookup = pe.fetch_probable_pitchers("2025-06-15")
-    assert (147, 111) in lookup
+    assert (147, 111, 1) in lookup
     margin = pe.pitcher_matchup_margin("nyy", "bos", game_date="2025-06-15")
     assert margin is not None
     assert margin > 0
+    pe.fetch_probable_pitchers.cache_clear()
+
+
+def test_doubleheader_pitchers_do_not_overwrite_game_one(monkeypatch) -> None:
+    """Same matchup G1/G2 must keep distinct probable-pitcher margins."""
+    from web import mlb_pitcher_edge as pe
+
+    pe.fetch_probable_pitchers.cache_clear()
+
+    def _pitcher(era: str, whip: str) -> dict:
+        return {
+            "stats": [
+                {
+                    "type": {"displayName": "statsSingleSeason"},
+                    "group": {"displayName": "pitching"},
+                    "stats": {
+                        "era": era,
+                        "inningsPitched": "60.0",
+                        "whip": whip,
+                    },
+                }
+            ]
+        }
+
+    payload = {
+        "dates": [
+            {
+                "games": [
+                    {
+                        "gameNumber": 1,
+                        "teams": {
+                            "home": {
+                                "team": {"id": 147},
+                                "probablePitcher": _pitcher("2.00", "0.90"),
+                            },
+                            "away": {
+                                "team": {"id": 111},
+                                "probablePitcher": _pitcher("5.50", "1.50"),
+                            },
+                        },
+                    },
+                    {
+                        "gameNumber": 2,
+                        "teams": {
+                            "home": {
+                                "team": {"id": 147},
+                                "probablePitcher": _pitcher("5.50", "1.50"),
+                            },
+                            "away": {
+                                "team": {"id": 111},
+                                "probablePitcher": _pitcher("2.00", "0.90"),
+                            },
+                        },
+                    },
+                ]
+            }
+        ]
+    }
+    monkeypatch.setattr(pe, "_fetch_json", lambda *_a, **_k: payload)
+    lookup = pe.fetch_probable_pitchers("2025-06-15")
+    assert (147, 111, 1) in lookup
+    assert (147, 111, 2) in lookup
+    g1 = pe.pitcher_matchup_margin("nyy", "bos", game_date="2025-06-15", game_number=1)
+    g2 = pe.pitcher_matchup_margin("nyy", "bos", game_date="2025-06-15", game_number=2)
+    assert g1 is not None and g2 is not None
+    assert g1 > 0
+    assert g2 < 0
     pe.fetch_probable_pitchers.cache_clear()

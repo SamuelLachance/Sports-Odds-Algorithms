@@ -207,6 +207,38 @@ def test_closing_odds_parse_float_rejects_non_finite() -> None:
     assert closing_odds_db._parse_float(False) is None  # type: ignore[arg-type]
 
 
+def test_closing_odds_parse_total_rejects_even_pk_zero() -> None:
+    """PK/EVEN must stay pick'em for spreads, not invent O/U 0.0 totals."""
+    assert closing_odds_db._parse_total("220.5") == 220.5
+    assert closing_odds_db._parse_total("EVEN") is None
+    assert closing_odds_db._parse_total("Pk") is None
+    assert closing_odds_db._parse_total("0") is None
+    assert closing_odds_db._parse_total(-5) is None
+    assert closing_odds_db._parse_total(False) is None  # type: ignore[arg-type]
+    # Spreads still keep pick'em as 0.0 via _parse_float.
+    assert closing_odds_db._parse_float("EVEN") == 0.0
+
+
+def test_closing_odds_lookup_drops_even_total(tmp_path: Path, monkeypatch) -> None:
+    odds_dir = tmp_path / "closing-odds"
+    odds_dir.mkdir()
+    (odds_dir / "nba.csv").write_text(
+        "date,home_key,away_key,home_close_ml,away_close_ml,"
+        "home_close_spread,away_close_spread,home_spread_odds,away_spread_odds,"
+        "close_total,open_total,source\n"
+        "2024-02-01,bos,ny,-150,130,-3.5,3.5,-110,-110,EVEN,PK,test\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(closing_odds_db, "ODDS_DIR", odds_dir)
+    closing_odds_db.clear_closing_odds_cache()
+
+    row = closing_odds_db.closing_odds_lookup("nba", "2024-02-01", "bos", "ny")
+    assert row is not None
+    assert row["home_close_spread"] == -3.5
+    assert row["close_total"] is None
+    assert row["open_total"] is None
+
+
 def test_closing_odds_even_zero_maps_to_plus_100(tmp_path: Path, monkeypatch) -> None:
     odds_dir = tmp_path / "closing-odds"
     odds_dir.mkdir()
