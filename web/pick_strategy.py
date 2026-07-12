@@ -1240,10 +1240,13 @@ def evaluate_official_picks_for_game(
     away_prob: float | None = None,
     games_played_proxy: int | None = None,
 ) -> list[BetPick]:
-    """Official picks: Hubáček decorrelation gap vs market (no flat EV% bar)."""
+    """Evaluate Hubáček-gated spots for a game (official or reference).
+
+    ``enabled=false`` (NFL/CFB/CBB) does **not** suppress evaluation — callers
+    gate the official book via ``eligible_for_official_picks``. Predictions-only
+    leagues still need reference value spots on the game card / model_analysis.
+    """
     thresholds = get_pick_thresholds(league)
-    if not thresholds.get("enabled", True):
-        return []
     # Unavailable sport stubs invent coin-flip probs for UI — never official-pick them.
     blend_mode = str((blended or {}).get("blend_mode") or "")
     if blend_mode.endswith("_unavailable"):

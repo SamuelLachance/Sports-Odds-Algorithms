@@ -35,7 +35,8 @@ def _consensus_spread_for_preds(
 ) -> float | None:
     """Prefer multi-book consensus home spread when finite; else scoreboard."""
     raw = (book_enrichment or {}).get("consensus_home_spread")
-    if raw is not None:
+    # bool is a subclass of int; False→0.0 must not invent a pick'em line.
+    if raw is not None and not isinstance(raw, bool):
         try:
             value = float(raw)
         except (TypeError, ValueError):
@@ -43,7 +44,13 @@ def _consensus_spread_for_preds(
         else:
             if math.isfinite(value):
                 return value
-    return scoreboard_spread
+    if scoreboard_spread is None or isinstance(scoreboard_spread, bool):
+        return None
+    try:
+        board = float(scoreboard_spread)
+    except (TypeError, ValueError):
+        return None
+    return board if math.isfinite(board) else None
 
 
 from web.bet_advisor import (
@@ -1119,6 +1126,18 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
         for r in model_analysis
         if _meets_recommendation_threshold(games_by_event.get(r.get("event_id", ""), {}), r)
     ]
+
+    # Match tracking_service.record_from_slate stake math so board units equal
+    # the official book (multi-pick same-slate correlation haircut).
+    from web.tracking_service import stake_units_from_kelly
+
+    slate_correlation_penalty = 0.15 if len(qualifying) > 1 else 0.0
+    for rec in qualifying:
+        rec["stake_units"] = stake_units_from_kelly(
+            rec.get("kelly_pct"),
+            ev_pct=rec.get("ev_pct"),
+            correlation_penalty=slate_correlation_penalty,
+        )
 
     if errors:
         logger.warning(

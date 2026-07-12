@@ -65,13 +65,23 @@ function hubacekPickRule(source, game) {
     source ||
     state.tracking ||
     {};
-  const gap = thresholds.min_market_gap_pp ?? source?.min_market_gap_pp;
+  const betType = game
+    ? officialBetType(game)
+    : thresholds.bet_type || null;
+  // Spread official gates use cover-gap floors (NBA 10 pp, WNBA 8 pp), not the
+  // moneyline min_market_gap_pp baseline that pick_strategy still carries.
+  const gap =
+    betType === "spread"
+      ? (thresholds.min_spread_cover_gap_pp ??
+        source?.min_spread_cover_gap_pp ??
+        thresholds.min_market_gap_pp ??
+        source?.min_market_gap_pp)
+      : (thresholds.min_market_gap_pp ?? source?.min_market_gap_pp);
   const ev = thresholds.min_ev_pct ?? source?.min_ev_pct ?? 2;
   const conf =
     thresholds.min_win_confidence_pp ??
     source?.min_win_confidence_pp ??
     minHubacekConfidence(source);
-  const betType = game ? officialBetType(game) : null;
   const market = game ? officialMarketPhrase(game) : "market";
   if (gap == null) {
     return `Hubáček spot: decorrelated model clears the backtested per-league ${market} gap with honest EV floors`;
@@ -636,7 +646,13 @@ function edgeQualityBadges(pick, game) {
     String(pick?.strategy_label || "")
       .toLowerCase()
       .includes("hubacek");
-  if (isOfficial && pick?.tracked !== false) {
+  // Close-floor is an official-book claim. Game-card picks omit `tracked`; only
+  // badge when the slate marked tracked=true or the league is official-eligible.
+  // Predictions-only / MLS reference Hubáček-style spots must not claim it.
+  const officiallyBooked =
+    pick?.tracked === true ||
+    (pick?.tracked !== false && game?.eligible_for_official_picks === true);
+  if (isOfficial && officiallyBooked) {
     badges.push({
       key: "close",
       label: "Close-floor",

@@ -135,6 +135,26 @@ def test_app_js_honesty_banners_and_parallel_load() -> None:
     assert "function hubacekPickRule(source, game)" in js
 
 
+def test_app_js_hubacek_rule_uses_spread_cover_gap() -> None:
+    """Spread empty-states must quote cover-gap floors, not moneyline 2 pp."""
+    js = (STATIC_DIR / "app.js").read_text(encoding="utf-8")
+    fn = js.split("function hubacekPickRule(source, game)")[1].split("function ")[0]
+    assert "min_spread_cover_gap_pp" in fn
+    assert 'betType === "spread"' in fn
+    # Must not read only min_market_gap_pp for the displayed gap.
+    assert "thresholds.min_spread_cover_gap_pp" in fn
+
+
+def test_app_js_close_floor_badge_requires_official_booking() -> None:
+    """Reference Hubáček-style spots (MLS / predictions-only) must not claim Close-floor."""
+    js = (STATIC_DIR / "app.js").read_text(encoding="utf-8")
+    fn = js.split("function edgeQualityBadges(pick, game)")[1].split("function ")[0]
+    assert "officiallyBooked" in fn
+    assert "eligible_for_official_picks" in fn
+    assert 'pick?.tracked === true' in fn
+    assert 'label: "Close-floor"' in fn
+
+
 def test_index_has_skip_link_and_footer_disclaimer() -> None:
     html = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
     css = (STATIC_DIR / "styles.css").read_text(encoding="utf-8")

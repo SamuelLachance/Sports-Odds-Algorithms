@@ -399,9 +399,10 @@ def _side_odds(item_side: dict[str, Any]) -> dict[str, Any]:
 
     side = item_side or {}
     # Prefer ESPN core close.* shape (same as live multi-book); fall back to flat.
+    # Flat dict ``{american: ...}`` needs unwrap; bare ``_american(dict)`` drops ML.
     ml = _american(_nested_american(side, "close", "moneyLine"))
     if ml is None:
-        ml = _american(side.get("moneyLine"))
+        ml = _american(_nested_american(side, "moneyLine"))
     spread_odds = _american(_nested_american(side, "close", "spread"))
     if spread_odds is None:
         spread_odds = _american(side.get("spreadOdds"))

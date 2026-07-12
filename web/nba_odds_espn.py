@@ -203,10 +203,11 @@ def _provider_line(
 
     home_ml = _nested_american(home, "close", "moneyLine")
     if home_ml is None:
-        home_ml = _to_float(home.get("moneyLine"))
+        # Flat dict ``{american: ...}`` needs unwrap; bare ``_to_float(dict)`` drops ML.
+        home_ml = _nested_american(home, "moneyLine")
     away_ml = _nested_american(away, "close", "moneyLine")
     if away_ml is None:
-        away_ml = _to_float(away.get("moneyLine"))
+        away_ml = _nested_american(away, "moneyLine")
     home_ml = _valid_american(home_ml)
     away_ml = _valid_american(away_ml)
 

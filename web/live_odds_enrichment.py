@@ -11,6 +11,7 @@ becomes a no-op for the remaining games.
 
 from __future__ import annotations
 
+import math
 import os
 import time
 from typing import Any
@@ -159,6 +160,40 @@ def best_american_odds(values: list[Any]) -> int | None:
     )
 
 
+def _spreads_equal(left: Any, right: Any) -> bool:
+    """True when both handicaps parse to the same finite line (exact match)."""
+    if left is None or right is None:
+        return False
+    if isinstance(left, bool) or isinstance(right, bool):
+        return False
+    try:
+        a = float(left)
+        b = float(right)
+    except (TypeError, ValueError):
+        return False
+    if not math.isfinite(a) or not math.isfinite(b):
+        return False
+    return abs(a - b) < 1e-9
+
+
+def best_spread_odds_for_line(
+    lines: list[dict[str, Any]],
+    *,
+    odds_key: str,
+    spread_key: str,
+    target_spread: float | None,
+) -> int | None:
+    """Best juice only among books quoting ``target_spread`` (not a different line)."""
+    if target_spread is None or isinstance(target_spread, bool):
+        return None
+    matched = [
+        line.get(odds_key)
+        for line in lines
+        if _spreads_equal(line.get(spread_key), target_spread)
+    ]
+    return best_american_odds(matched)
+
+
 def shopping_edge_pp(espn_odds: int | None, best_odds: int | None) -> float | None:
     """Implied-prob edge (pp) of best book vs ESPN single-provider quote."""
     espn = _as_int_odds(espn_odds)
@@ -265,11 +300,20 @@ def summarize_book_items(
 
         best_home_ml = best_american_odds([line.get("home_close_ml") for line in lines])
         best_away_ml = best_american_odds([line.get("away_close_ml") for line in lines])
-        best_home_spread = best_american_odds(
-            [line.get("home_spread_odds") for line in lines]
+        consensus_home_spread = consensus.get("home_close_spread")
+        consensus_away_spread = consensus.get("away_close_spread")
+        # Juice from a different handicap is not shoppable for the consensus line.
+        best_home_spread = best_spread_odds_for_line(
+            lines,
+            odds_key="home_spread_odds",
+            spread_key="home_close_spread",
+            target_spread=consensus_home_spread,
         )
-        best_away_spread = best_american_odds(
-            [line.get("away_spread_odds") for line in lines]
+        best_away_spread = best_spread_odds_for_line(
+            lines,
+            odds_key="away_spread_odds",
+            spread_key="away_close_spread",
+            target_spread=consensus_away_spread,
         )
 
         consensus_home_ml = _as_int_odds(consensus.get("home_close_ml"))
@@ -284,8 +328,8 @@ def summarize_book_items(
             "best_away_spread": best_away_spread,
             "consensus_home_ml": consensus_home_ml,
             "consensus_away_ml": consensus_away_ml,
-            "consensus_home_spread": consensus.get("home_close_spread"),
-            "consensus_away_spread": consensus.get("away_close_spread"),
+            "consensus_home_spread": consensus_home_spread,
+            "consensus_away_spread": consensus_away_spread,
         }
     else:
         summary = {

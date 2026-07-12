@@ -460,3 +460,20 @@ def test_soccer_ensemble_pickem_power_proxy_not_away_blowout() -> None:
     assert home > 20.0
     assert home + draw + away == pytest.approx(100.0)
 
+
+def test_extract_binary_features_rejects_bool_market_spread() -> None:
+    """False/True consensus_spread must not invent pick'em / 1-pt market features."""
+    from web.ensemble_ml.features import _safe_float, extract_binary_features
+
+    assert _safe_float(False) is None
+    assert _safe_float(True) is None
+    feats = extract_binary_features(
+        {
+            "legacy": {"home_win_probability": 55.0},
+            "power": {"home_win_probability": 54.0},
+        },
+        "nba",
+        consensus_spread=False,  # type: ignore[arg-type]
+    )
+    assert feats["market_spread"] is None
+

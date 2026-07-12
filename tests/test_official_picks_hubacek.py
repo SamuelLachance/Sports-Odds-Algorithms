@@ -371,10 +371,11 @@ def test_mlb_official_picks_respect_ml_price_window() -> None:
 
 
 def test_nfl_cfb_official_picks_disabled_by_backtest() -> None:
-    """NFL/CFB spread gates exist for reference but walk-forward backtests
-    found no positive worst-season policy, so official picks are disabled."""
+    """NFL/CFB: gates exist for reference; enabled=false blocks official book only."""
     from web.hubacek_picks import clear_strategy_cache
+    from web.league_profiles import eligible_for_official_picks
     from web.pick_strategy import load_pick_strategy
+    from web.tracking_service import record_from_slate
 
     clear_strategy_cache()
     load_pick_strategy.cache_clear()
@@ -384,6 +385,7 @@ def test_nfl_cfb_official_picks_disabled_by_backtest() -> None:
         assert thresholds["bet_type"] == "spread"
         assert thresholds["min_ev_pct"] >= 2.5
         assert thresholds["enabled"] is False
+        assert eligible_for_official_picks(league) is False
         blended = {
             "total_score": -72.0,
             "win_probability": 72.0,
@@ -407,4 +409,32 @@ def test_nfl_cfb_official_picks_disabled_by_backtest() -> None:
             away_spread_odds=-110,
             home_spread_odds=-110,
         )
-        assert picks == [], league
+        # Reference evaluation may still surface spots for model_analysis.
+        assert isinstance(picks, list), league
+        if not picks:
+            continue
+        store = record_from_slate(
+            {"version": 1, "bets": []},
+            {
+                "date_label": "2099-01-01",
+                "recommended_bets": [
+                    {
+                        "league": league,
+                        "event_id": f"hubacek-ref-{league}",
+                        "side": picks[0].side,
+                        "strategy": "hubacek",
+                        "ev_pct": picks[0].ev_pct,
+                        "win_probability": picks[0].win_probability,
+                        "model_market_gap_pp": picks[0].extra.get(
+                            "model_market_gap_pp", 20.0
+                        ),
+                        "market_odds": -110,
+                        "spread_odds": picks[0].spread_odds,
+                        "bet_type": "spread",
+                        "start_time": "2099-09-01T17:00:00Z",
+                    }
+                ],
+                "games": [],
+            },
+        )
+        assert store["bets"] == [], league

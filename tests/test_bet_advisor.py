@@ -18,6 +18,7 @@ from web.bet_advisor import (  # noqa: E402
     evaluate_picks,
     evaluate_spread_picks,
     expected_value_pct,
+    market_home_prob_pct,
     model_home_margin,
     model_moneylines,
     passes_moneyline_pick_gate,
@@ -903,6 +904,14 @@ def test_enrich_pick_profit_metrics_maps_even_zero_for_kelly() -> None:
     )
     enrich_pick_profit_metrics(pick)
     assert pick.extra["kelly_pct"] == pytest.approx(kelly_fraction(58.0, 100) * 100.0)
+
+
+def test_market_home_prob_pct_rejects_bool_spread() -> None:
+    """False consensus_spread must not become pick'em → 50% home win."""
+    assert market_home_prob_pct(consensus_spread=False) is None  # type: ignore[arg-type]
+    assert market_home_prob_pct(consensus_spread=True) is None  # type: ignore[arg-type]
+    # Real pick'em still maps near 50%.
+    assert market_home_prob_pct(consensus_spread=0.0) == pytest.approx(50.0, abs=0.5)
 
 
 if __name__ == "__main__":

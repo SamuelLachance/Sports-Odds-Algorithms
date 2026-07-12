@@ -1324,3 +1324,128 @@ def test_fetch_network_failure_charges_budget_then_soft_fails() -> None:
                     assert fetch_multi_book_odds("nba", "402") == {}
     finally:
         reset_enrichment_budget()
+
+
+def test_provider_line_unwraps_flat_dict_moneyline() -> None:
+    """Flat ``moneyLine: {american: ...}`` (no close.*) must not drop both MLs."""
+    from web.mlb_odds_espn import _provider_line_mlb
+    from web.nba_odds_espn import _provider_line
+    from web.nhl_odds_espn import _provider_line_nhl
+
+    item = {
+        "spread": -6.5,
+        "homeTeamOdds": {"favorite": True, "moneyLine": {"american": -220}},
+        "awayTeamOdds": {"favorite": False, "moneyLine": {"american": 180}},
+    }
+    nba = _provider_line(item)
+    assert nba["home_close_ml"] == -220.0
+    assert nba["away_close_ml"] == 180.0
+    assert nba["home_close_spread"] == -6.5
+
+    mlb_item = {
+        "spread": 1.5,
+        "homeTeamOdds": {"favorite": True, "moneyLine": {"american": -140}},
+        "awayTeamOdds": {"favorite": False, "moneyLine": {"american": 120}},
+    }
+    mlb = _provider_line_mlb(mlb_item)
+    assert mlb["home_close_ml"] == -140.0
+    assert mlb["away_close_ml"] == 120.0
+
+    nhl = _provider_line_nhl(mlb_item)
+    assert nhl["home_close_ml"] == -140.0
+    assert nhl["away_close_ml"] == 120.0
+
+
+def test_nba_v2_side_odds_unwraps_flat_dict_moneyline() -> None:
+    from web.nba_v2.data import _side_odds
+
+    side = _side_odds({"favorite": True, "moneyLine": {"american": -220}})
+    assert side["ml"] == -220.0
+
+
+def test_summarize_best_spread_juice_requires_matching_handicap() -> None:
+    """Shopped spread juice from a different line must not look executable."""
+    from web.live_odds_enrichment import summarize_book_items
+
+    items = [
+        {
+            "provider": {"name": "BookA"},
+            "homeTeamOdds": {
+                "close": {
+                    "moneyLine": {"american": -150},
+                    "pointSpread": {"american": -3.5},
+                    "spread": {"american": -110},
+                }
+            },
+            "awayTeamOdds": {
+                "close": {
+                    "moneyLine": {"american": 130},
+                    "pointSpread": {"american": 3.5},
+                    "spread": {"american": -110},
+                }
+            },
+        },
+        {
+            "provider": {"name": "BookB"},
+            "homeTeamOdds": {
+                "close": {
+                    "moneyLine": {"american": -150},
+                    "pointSpread": {"american": -3.0},
+                    "spread": {"american": -105},
+                }
+            },
+            "awayTeamOdds": {
+                "close": {
+                    "moneyLine": {"american": 130},
+                    "pointSpread": {"american": 3.0},
+                    "spread": {"american": -115},
+                }
+            },
+        },
+    ]
+    summary = summarize_book_items(items, league="nba")
+    # Consensus median of -3.5 and -3.0 is -3.25 — matches neither book; fail closed.
+    assert summary["consensus_home_spread"] == -3.25
+    assert summary["best_home_spread"] is None
+    assert summary["best_away_spread"] is None
+
+    # When books agree on the handicap, juice shopping is allowed.
+    agree = [
+        {
+            "provider": {"name": "BookA"},
+            "homeTeamOdds": {
+                "close": {
+                    "moneyLine": {"american": -150},
+                    "pointSpread": {"american": -3.5},
+                    "spread": {"american": -110},
+                }
+            },
+            "awayTeamOdds": {
+                "close": {
+                    "moneyLine": {"american": 130},
+                    "pointSpread": {"american": 3.5},
+                    "spread": {"american": -110},
+                }
+            },
+        },
+        {
+            "provider": {"name": "BookB"},
+            "homeTeamOdds": {
+                "close": {
+                    "moneyLine": {"american": -150},
+                    "pointSpread": {"american": -3.5},
+                    "spread": {"american": -105},
+                }
+            },
+            "awayTeamOdds": {
+                "close": {
+                    "moneyLine": {"american": 130},
+                    "pointSpread": {"american": 3.5},
+                    "spread": {"american": -115},
+                }
+            },
+        },
+    ]
+    agreed = summarize_book_items(agree, league="nba")
+    assert agreed["consensus_home_spread"] == -3.5
+    assert agreed["best_home_spread"] == -105

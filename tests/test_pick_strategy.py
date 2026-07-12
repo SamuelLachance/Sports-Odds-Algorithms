@@ -66,8 +66,8 @@ def test_pick_thresholds_cbb_nfl_cfb() -> None:
     assert cfb["min_ev_pct"] == 2.5
 
 
-def test_disabled_leagues_produce_no_official_picks() -> None:
-    """NFL/CFB failed walk-forward validation; CBB paused — enabled flag enforced."""
+def test_disabled_leagues_stay_predictions_only_but_can_emit_reference_picks() -> None:
+    """NFL/CFB/CBB: enabled=false blocks official eligibility, not model spots."""
     from web.hubacek_picks import clear_strategy_cache
     from web.league_profiles import OFFICIAL_PICK_LEAGUES, eligible_for_official_picks
     from web.pick_strategy import (
@@ -75,6 +75,7 @@ def test_disabled_leagues_produce_no_official_picks() -> None:
         get_pick_thresholds,
         load_pick_strategy,
     )
+    from web.tracking_service import record_from_slate
 
     clear_strategy_cache()
     load_pick_strategy.cache_clear()
@@ -103,7 +104,35 @@ def test_disabled_leagues_produce_no_official_picks() -> None:
             away_spread_odds=-110,
             home_spread_odds=-110,
         )
-        assert picks == [], league
+        # Reference spots may clear Hubáček floors for the board — they must not
+        # enter the official tracking book while enabled=false.
+        assert isinstance(picks, list), league
+        if picks:
+            store = record_from_slate(
+                {"version": 1, "bets": []},
+                {
+                    "date_label": "2099-01-01",
+                    "recommended_bets": [
+                        {
+                            "league": league,
+                            "event_id": f"ref-{league}",
+                            "side": picks[0].side,
+                            "strategy": picks[0].strategy,
+                            "ev_pct": picks[0].ev_pct,
+                            "win_probability": picks[0].win_probability,
+                            "model_market_gap_pp": picks[0].extra.get(
+                                "model_market_gap_pp", 20.0
+                            ),
+                            "market_odds": -110,
+                            "spread_odds": picks[0].spread_odds,
+                            "bet_type": picks[0].bet_type,
+                            "start_time": "2099-06-01T20:00:00Z",
+                        }
+                    ],
+                    "games": [],
+                },
+            )
+            assert store["bets"] == [], league
 
     # Validated leagues stay enabled and official-eligible.
     assert get_pick_thresholds("mlb")["enabled"] is True

@@ -32,7 +32,8 @@ def _sport_layer(blended: dict[str, Any]) -> dict[str, Any] | None:
 
 
 def _safe_float(value: Any) -> float | None:
-    if value is None:
+    # bool is a subclass of int; False→0.0 / True→1.0 must not become market lines.
+    if value is None or isinstance(value, bool):
         return None
     try:
         parsed = float(value)

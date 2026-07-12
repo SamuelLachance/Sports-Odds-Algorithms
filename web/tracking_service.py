@@ -321,7 +321,17 @@ def _consensus_closing_ml(game: dict[str, Any] | None, side: str) -> int | None:
 
 
 def _official_tracked_bets(bets: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    return [b for b in bets if eligible_for_official_picks(b.get("league") or "")]
+    """Hubáček official book only — league eligibility is not enough.
+
+    Graded legacy rows (e.g. strategy ``value``) stay on disk for immutability
+    but must not enter ROI / period rollups advertised as Hubáček tracking.
+    """
+    return [
+        b
+        for b in bets
+        if eligible_for_official_picks(b.get("league") or "")
+        and str(b.get("strategy") or "").lower() == "hubacek"
+    ]
 
 
 def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str, Any]:

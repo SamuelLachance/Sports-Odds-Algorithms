@@ -70,10 +70,11 @@ def _provider_line_mlb(item: dict[str, Any]) -> dict[str, float | None]:
 
     home_close_ml = _valid_american(_nested_american(home, "close", "moneyLine"))
     if home_close_ml is None:
-        home_close_ml = _valid_american(_to_float(home.get("moneyLine")))
+        # Flat dict ``{american: ...}`` needs unwrap; bare ``_to_float(dict)`` drops ML.
+        home_close_ml = _valid_american(_nested_american(home, "moneyLine"))
     away_close_ml = _valid_american(_nested_american(away, "close", "moneyLine"))
     if away_close_ml is None:
-        away_close_ml = _valid_american(_to_float(away.get("moneyLine")))
+        away_close_ml = _valid_american(_nested_american(away, "moneyLine"))
 
     home_open_ml = _valid_american(_nested_american(home, "open", "moneyLine"))
     away_open_ml = _valid_american(_nested_american(away, "open", "moneyLine"))

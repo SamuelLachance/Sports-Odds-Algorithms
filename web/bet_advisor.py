@@ -629,10 +629,17 @@ def market_home_prob_pct(
     _away, home = devig_two_way_probs(away_market, home_market)
     if home is not None:
         return home
-    if consensus_spread is not None:
+    # Reject bools: False is not None and float(False)==0 invents a 50% market.
+    if consensus_spread is not None and not isinstance(consensus_spread, bool):
         from web.cbb_calibrate import spread_to_home_prob
 
-        return spread_to_home_prob(float(consensus_spread))
+        try:
+            spread = float(consensus_spread)
+        except (TypeError, ValueError):
+            return None
+        if not math.isfinite(spread):
+            return None
+        return spread_to_home_prob(spread)
     return None
 
 

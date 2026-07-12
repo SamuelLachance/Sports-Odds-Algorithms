@@ -227,6 +227,39 @@ def test_tracking_response_tolerates_corrupt_edge_for_sort() -> None:
     assert [b["event_id"] for b in response["bets"]] == ["numeric", "junk"]
 
 
+def test_tracking_response_excludes_legacy_non_hubacek_rows() -> None:
+    """Graded legacy strategy rows stay on disk but must not poison Hubáček ROI."""
+    hubacek = _sample_pick()
+    hubacek.update(
+        {
+            "id": "2026-06-11:hub:home",
+            "date": "2026-06-11",
+            "league": "mlb",
+            "status": "win",
+            "units": 1.0,
+            "stake_units": 1.0,
+            "strategy": "hubacek",
+        }
+    )
+    legacy = {
+        "id": "2026-06-11:legacy:home",
+        "date": "2026-06-11",
+        "event_id": "legacy",
+        "league": "nba",
+        "side": "home",
+        "strategy": "value",
+        "status": "win",
+        "units": 5.0,
+        "stake_units": 1.0,
+        "edge": 9.0,
+    }
+    response = build_tracking_response({"version": 1, "bets": [hubacek, legacy]})
+    assert [b["event_id"] for b in response["bets"]] == ["401815712"]
+    assert response["summary"]["bets"] == 1
+    assert response["summary"]["units"] == 1.0
+    assert response["all_time"]["units"] == 1.0
+
+
 def test_stake_units_from_kelly_rejects_bool() -> None:
     """False kelly must not coerce to 0% and fall through to default 1u."""
     from web.tracking_service import stake_units_from_kelly

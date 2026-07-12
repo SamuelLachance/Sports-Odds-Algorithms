@@ -252,6 +252,9 @@ def test_consensus_spread_for_preds_helper() -> None:
     assert _consensus_spread_for_preds(3.5, {"consensus_home_spread": -3.5}) == -3.5
     assert _consensus_spread_for_preds(3.5, {}) == 3.5
     assert _consensus_spread_for_preds(3.5, {"consensus_home_spread": float("nan")}) == 3.5
+    # bool False must not become pick'em 0.0 preferred over the scoreboard.
+    assert _consensus_spread_for_preds(-4.5, {"consensus_home_spread": False}) == -4.5
+    assert _consensus_spread_for_preds(False, {}) is None
 
     """A books outage must not change core outputs — market stays bare."""
     game = _scheduled_game()
@@ -404,6 +407,100 @@ def test_get_daily_slate_isolates_league_and_prewarm_failures() -> None:
     assert not any("boom" in (e.get("error") or "").lower() for e in slate["errors"])
     assert not any("scoreboard down" in (e.get("error") or "").lower() for e in slate["errors"])
     assert slate["summary"]["leagues_not_ready"] == []
+
+
+def test_get_daily_slate_attaches_correlated_stake_units() -> None:
+    """Official recommended_bets stake_units must match tracking correlation haircut."""
+    from web.daily_service import get_daily_slate
+    from web.tracking_service import stake_units_from_kelly
+
+    game_a = _scheduled_game()
+    game_b = ScheduledGame(
+        league="nba",
+        event_id="401802",
+        name="Celtics at Bucks",
+        start_time="2026-07-10T23:30Z",
+        status="pre",
+        status_detail="Scheduled",
+        home_abbr="mil",
+        away_abbr="bos",
+        home_name="Milwaukee Bucks",
+        away_name="Boston Celtics",
+        home_espn_id="15",
+        away_espn_id="2",
+        market=MarketOdds(
+            home_moneyline=-130,
+            away_moneyline=110,
+            spread=-3.5,
+            home_spread_odds=-110,
+            away_spread_odds=-110,
+        ),
+    )
+
+    def fake_predict(game, headlines=None):
+        return {
+            "event_id": game.event_id,
+            "league": game.league,
+            "league_name": "NBA",
+            "matchup": {
+                "away": {"name": game.away_name},
+                "home": {"name": game.home_name},
+            },
+            "start_time": game.start_time,
+            "eligible_for_official_picks": True,
+            "recommendations": [
+                {
+                    "side": "home",
+                    "bet_type": "spread",
+                    "strategy": "hubacek",
+                    "ev_pct": 8.0,
+                    "edge": 6.0,
+                    "profit_score": 2.0,
+                    "kelly_pct": 4.0,
+                    "win_probability": 60.0,
+                    "model_market_gap_pp": 12.0,
+                    "spread_odds": -110,
+                }
+            ],
+            "top_pick": None,
+            "model": {},
+            "market": {},
+            "name": game.name,
+            "status": game.status,
+            "status_detail": game.status_detail,
+            "cutoff_date": "7-10-2026",
+            "season_year": "2026",
+        }
+
+    with (
+        patch("web.daily_service.SUPPORTED_LEAGUES", ("nba",)),
+        patch(
+            "web.daily_service.fetch_scoreboard",
+            return_value=[game_a, game_b],
+        ),
+        patch("web.daily_service._actionable_games", side_effect=lambda games: games),
+        patch(
+            "web.daily_service.assess_league_readiness",
+            return_value={"ready": True, "reason": "ok"},
+        ),
+        patch("web.daily_service._prewarm_league_models"),
+        patch("web.daily_service._league_news_headlines", return_value=[]),
+        patch("web.daily_service.predict_live_game", side_effect=fake_predict),
+        patch("web.daily_service.passes_hubacek_tracked_pick", return_value=True),
+        patch(
+            "web.daily_service.official_hubacek_thresholds",
+            return_value={"min_edge_pp": 0, "min_ev_pct": 0},
+        ),
+    ):
+        slate = get_daily_slate(days_ahead=0)
+
+    assert len(slate["recommended_bets"]) == 2
+    expected = stake_units_from_kelly(4.0, ev_pct=8.0, correlation_penalty=0.15)
+    raw = stake_units_from_kelly(4.0, ev_pct=8.0, correlation_penalty=0.0)
+    assert expected < raw
+    for rec in slate["recommended_bets"]:
+        assert rec["stake_units"] == expected
+        assert rec["tracked"] is True
 
 
 def test_get_daily_slate_reports_leagues_not_ready() -> None:

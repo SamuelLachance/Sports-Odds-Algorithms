@@ -201,6 +201,7 @@ def test_tracking_rollups_filter_non_official_leagues() -> None:
         "event_id": "401999001",
         "league": "mls",
         "side": "home",
+        "strategy": "hubacek",
         "status": "win",
         "units": 1.4,
         "edge": 30.0,
@@ -212,12 +213,25 @@ def test_tracking_rollups_filter_non_official_leagues() -> None:
         "event_id": "401815712",
         "league": "mlb",
         "side": "home",
+        "strategy": "hubacek",
         "status": "loss",
         "units": -1.0,
         "edge": 30.0,
         "ev_pct": OFFICIAL_MIN_EV_PCT,
     }
-    store = {"version": 1, "bets": [soccer_bet, mlb_bet]}
+    legacy_nba = {
+        "id": "2026-06-01:legacy:home",
+        "date": "2026-06-01",
+        "event_id": "legacy",
+        "league": "nba",
+        "side": "home",
+        "strategy": "value",
+        "status": "win",
+        "units": 2.0,
+        "edge": 30.0,
+        "ev_pct": OFFICIAL_MIN_EV_PCT,
+    }
+    store = {"version": 1, "bets": [soccer_bet, mlb_bet, legacy_nba]}
     assert len(_official_tracked_bets(store["bets"])) == 1
     response = build_tracking_response(store)
     assert response["summary"]["bets"] == 1
