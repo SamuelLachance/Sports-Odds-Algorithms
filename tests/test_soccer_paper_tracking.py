@@ -157,3 +157,105 @@ def test_maybe_record_from_blend_skips_missing_model_prob(tmp_path, monkeypatch)
         away_ml=300,
     )
     assert paper._load_paper_log()["bets"] == []
+
+
+def test_pick_signals_best_edge_outcome_can_differ_from_model_best() -> None:
+    """Max edge can sit on draw while the model favorite is home."""
+    from web.soccer_pick_signals import (
+        HIGH_CONFIDENCE_DISAGREEMENT_PP,
+        build_soccer_pick_signals,
+    )
+
+    signals = build_soccer_pick_signals(
+        home_prob=45.0,
+        draw_prob=30.0,
+        away_prob=25.0,
+        # Fair draw ~+233; fat +350 gives a large underdog edge on draw.
+        home_ml=-110,
+        draw_ml=350,
+        away_ml=220,
+    )
+    assert signals["model_best_outcome"] == "home"
+    assert signals["best_edge_outcome"] == "draw"
+    assert signals["max_edge_pp"] >= HIGH_CONFIDENCE_DISAGREEMENT_PP
+    assert signals["high_confidence_disagreement"] is True
+
+
+def test_maybe_record_papers_best_edge_outcome_not_model_favorite(
+    tmp_path, monkeypatch
+) -> None:
+    import web.soccer_paper_tracking as paper
+
+    path = tmp_path / "soccer_paper_tracking.json"
+    monkeypatch.setattr(paper, "PAPER_TRACKING_PATH", path)
+
+    paper.maybe_record_from_blend(
+        {
+            "soccer_pick_signals": {
+                "high_confidence_disagreement": True,
+                "model_best_outcome": "home",
+                "best_edge_outcome": "draw",
+                "max_edge_pp": 12.0,
+            },
+            "soccer_pred": {
+                "pick_home_win_probability": 45.0,
+                "pick_draw_probability": 30.0,
+                "pick_away_win_probability": 25.0,
+            },
+        },
+        league="epl",
+        event_id="edge-draw",
+        home_abbr="ars",
+        away_abbr="liv",
+        home_name="Arsenal",
+        away_name="Liverpool",
+        game_date="2026-07-12",
+        home_ml=-110,
+        draw_ml=350,
+        away_ml=220,
+    )
+    bets = paper._load_paper_log()["bets"]
+    assert len(bets) == 1
+    assert bets[0]["pick_outcome"] == "draw"
+    assert bets[0]["model_prob"] == 30.0
+    assert bets[0]["market_ml"] == 350
+    assert bets[0]["edge_pp"] == 12.0
+
+
+def test_grade_paper_picks_persists_summary_when_nothing_new(
+    tmp_path, monkeypatch
+) -> None:
+    """Pages re-runs must refresh on-disk summary even with newly_graded=0."""
+    import web.soccer_paper_tracking as paper
+
+    path = tmp_path / "soccer_paper_tracking.json"
+    monkeypatch.setattr(paper, "PAPER_TRACKING_PATH", path)
+    path.write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "bets": [
+                    {
+                        "key": "epl:1:home",
+                        "league": "epl",
+                        "event_id": "1",
+                        "pick_outcome": "home",
+                        "market_ml": -120,
+                        "status": "win",
+                        "units": 0.833,
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        "web.tracking_service._fetch_event_result",
+        lambda *_a, **_k: None,
+    )
+    summary = paper.grade_paper_picks()
+    assert summary["newly_graded"] == 0
+    assert summary["settled"] == 1
+    reloaded = json.loads(path.read_text(encoding="utf-8"))
+    assert reloaded["summary"]["settled"] == 1
+    assert reloaded["summary"]["units"] == 0.833

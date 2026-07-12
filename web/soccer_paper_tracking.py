@@ -168,8 +168,9 @@ def grade_paper_picks() -> dict[str, Any]:
         "newly_graded": graded,
     }
     payload["summary"] = summary
-    if graded:
-        _save_paper_log(payload)
+    # Persist summary even when nothing newly graded so Pages/deploy
+    # summaries stay consistent with the on-disk ledger.
+    _save_paper_log(payload)
     return summary
 
 
@@ -195,7 +196,8 @@ def maybe_record_from_blend(
             return
         if not signals.get("high_confidence_disagreement"):
             return
-        outcome = signals.get("model_best_outcome")
+        # Paper the outcome that carries the edge, not merely the model favorite.
+        outcome = signals.get("best_edge_outcome") or signals.get("model_best_outcome")
         if outcome not in _VALID_OUTCOMES:
             return
         soccer_pred = blended.get("soccer_pred") or {}

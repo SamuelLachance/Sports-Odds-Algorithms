@@ -41,16 +41,20 @@ def build_soccer_pick_signals(
         home_prob, draw_prob, away_prob
     )
     max_edge = 0.0
-    for prob, proj, market in (
-        (away_prob, away_proj, away_ml),
-        (draw_prob, draw_proj, draw_ml),
-        (home_prob, home_proj, home_ml),
+    best_edge_outcome: str | None = None
+    for outcome, prob, proj, market in (
+        ("away", away_prob, away_proj, away_ml),
+        ("draw", draw_prob, draw_proj, draw_ml),
+        ("home", home_prob, home_proj, home_ml),
     ):
         if market is None:
             continue
         edge = _odds_edge(proj, market, prob)
-        max_edge = max(max_edge, edge)
+        if edge > max_edge:
+            max_edge = edge
+            best_edge_outcome = outcome
     signals["max_edge_pp"] = round(max_edge, 2)
+    signals["best_edge_outcome"] = best_edge_outcome
     if max_edge >= DISAGREEMENT_THRESHOLD_PP:
         signals["disagreement_signal"] = True
     if max_edge >= HIGH_CONFIDENCE_DISAGREEMENT_PP:

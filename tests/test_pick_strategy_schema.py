@@ -43,6 +43,15 @@ def test_validate_strategy_entry_coerces_numbers_and_bools() -> None:
     assert "garbage" not in cleaned
 
 
+def test_validate_strategy_entry_string_false_disables_league() -> None:
+    """String 'false' must not become True via bool('false')."""
+    cleaned = validate_strategy_entry({"bet_type": "spread", "enabled": "false"})
+    assert cleaned is not None
+    assert cleaned["enabled"] is False
+    assert validate_strategy_entry({"enabled": "true"})["enabled"] is True
+    assert validate_strategy_entry({"enabled": "off"})["enabled"] is False
+
+
 def test_validate_pick_strategy_payload_drops_corrupt_entries() -> None:
     payload = validate_pick_strategy_payload(
         {

@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import sys
-from datetime import date
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -29,6 +28,7 @@ from web.sports_meta_model import (  # noqa: E402
     fit_binary_blend_weights_grid,
     fit_binary_temperature_grid,
 )
+from web.tracking_service import toronto_cutoff_mdy, toronto_today  # noqa: E402
 
 CALIBRATION_WINDOW = None  # full walk-forward after warmup
 MIN_CALIBRATION_GAMES = 40
@@ -52,8 +52,7 @@ CORE_LEAGUES = (
 
 
 def _cutoff_today() -> str:
-    today = date.today()
-    return f"{today.month}-{today.day}-{today.year}"
+    return toronto_cutoff_mdy()
 
 
 def _data_depth_metadata(game_count: int, calibration_games: int) -> dict[str, int]:
@@ -322,7 +321,7 @@ def main() -> int:
         }
 
     payload["_meta"] = {
-        "tuned_at": date.today().isoformat(),
+        "tuned_at": toronto_today().isoformat(),
         "calibration_window": "full",
         "pro_seasons": BACKTEST_PRO_SEASONS,
         "scoreboard_days": BACKTEST_SCOREBOARD_LOOKBACK_DAYS,

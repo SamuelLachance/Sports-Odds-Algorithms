@@ -1268,6 +1268,64 @@ def test_spread_value_helpers_skip_missing_juice() -> None:
     )
 
 
+def test_model_agreement_normalizes_float_string_juice() -> None:
+    """Agreement market juice from JSON float-strings must match int juice."""
+    blended = {
+        "blend_layers": 3,
+        "legacy": {"total_score": -70.0, "home_win_probability": 70.0},
+        "power": {"home_win_probability": 68.0},
+        "football_pred": {"home_win_probability": 72.0},
+    }
+    as_int = compute_model_agreement(
+        blended,
+        "nfl",
+        market={
+            "spread": -1.5,
+            "away_spread_odds": -110,
+            "home_spread_odds": -110,
+        },
+    )
+    as_str = compute_model_agreement(
+        blended,
+        "nfl",
+        market={
+            "spread": -1.5,
+            "away_spread_odds": "-110.0",
+            "home_spread_odds": "-110.0",
+        },
+    )
+    assert as_str["required"] == 3
+    assert as_str["agreed"] == as_int["agreed"]
+    assert as_str["value_sides"] == as_int["value_sides"]
+    # Invalid garbage juice must not invent agreement.
+    garbage = compute_model_agreement(
+        blended,
+        "nfl",
+        market={"spread": -1.5, "away_spread_odds": 50, "home_spread_odds": 50},
+    )
+    assert garbage["agreed"] is False
+    assert garbage["value_sides"] == []
+
+
+def test_power_layer_margin_uses_win_prob_not_power_diff() -> None:
+    """PowerRatings power_diff is rating units — must not become predicted_margin points."""
+    from web.bet_advisor import model_home_margin
+    from web.blend_service import _layer_home_margin
+
+    power = {
+        "algorithm": "PowerRatings",
+        "power_diff": 10.0,
+        "home_win_probability": 62.0,
+    }
+    # Mimic run_power_model output: no predicted_margin from power_diff.
+    assert "predicted_margin" not in power
+    got = _layer_home_margin(power, "nba")
+    total, _ = home_win_prob_to_total_score(62.0)
+    want = model_home_margin(total, "nba")
+    assert got == pytest.approx(want)
+    assert abs(got - (-10.0)) > 5  # must not treat power_diff as points
+
+
 if __name__ == "__main__":
     test_total_score_to_home_win_prob()
     test_home_win_prob_to_total_score()

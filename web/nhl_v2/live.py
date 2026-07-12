@@ -50,13 +50,13 @@ SHOTS_URL = "https://peter-tanner.com/moneypuck/downloads/shots_{season}.zip"
 
 # ESPN lowercase keys -> NHL API abbreviations.
 ESPN_TO_NHL: dict[str, str] = {
-    "ana": "ANA", "ari": "ARI", "bos": "BOS", "buf": "BUF", "car": "CAR",
-    "cbj": "CBJ", "cgy": "CGY", "chi": "CHI", "col": "COL", "dal": "DAL",
-    "det": "DET", "edm": "EDM", "fla": "FLA", "la": "LAK", "min": "MIN",
-    "mtl": "MTL", "nj": "NJD", "nsh": "NSH", "nyi": "NYI", "nyr": "NYR",
-    "ott": "OTT", "phi": "PHI", "pit": "PIT", "sea": "SEA", "sj": "SJS",
-    "stl": "STL", "tb": "TBL", "tor": "TOR", "uta": "UTA", "utah": "UTA",
-    "van": "VAN", "vgk": "VGK", "wpg": "WPG", "wsh": "WSH",
+    "ana": "ANA", "ari": "ARI", "phx": "ARI", "bos": "BOS", "buf": "BUF",
+    "car": "CAR", "cbj": "CBJ", "cgy": "CGY", "chi": "CHI", "col": "COL",
+    "dal": "DAL", "det": "DET", "edm": "EDM", "fla": "FLA", "la": "LAK",
+    "min": "MIN", "mtl": "MTL", "nj": "NJD", "nsh": "NSH", "nyi": "NYI",
+    "nyr": "NYR", "ott": "OTT", "phi": "PHI", "pit": "PIT", "sea": "SEA",
+    "sj": "SJS", "stl": "STL", "tb": "TBL", "tor": "TOR", "uta": "UTA",
+    "utah": "UTA", "van": "VAN", "vgk": "VGK", "wpg": "WPG", "wsh": "WSH",
 }
 
 

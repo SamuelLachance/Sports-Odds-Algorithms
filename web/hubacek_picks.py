@@ -231,10 +231,14 @@ def passes_hubacek_spread_gate(
     if point_edge <= 0:
         return False
 
-    from web.bet_advisor import american_implied_prob
+    from web.bet_advisor import american_implied_prob, normalize_american_odds
 
+    # Fail closed on garbage juice — never raise into the slate pipeline.
     # ESPN EVEN (0) must map like +100 → 50% cover, not 100/(0+100)=100%.
-    market_cover = american_implied_prob(int(spread_odds)) * 100.0
+    juice = normalize_american_odds(spread_odds)
+    if juice is None:
+        return False
+    market_cover = american_implied_prob(juice) * 100.0
     cover_gap = side_cover_prob - market_cover
     if cover_gap < min_cover_gap_pp:
         return False
@@ -268,12 +272,21 @@ def passes_hubacek_tracked_pick(pick: dict[str, Any]) -> bool:
     if pick.get("strategy") != "hubacek":
         return False
     league = pick.get("league")
-    if (pick.get("ev_pct") or 0) < hubacek_min_ev_pct(league):
+    try:
+        ev_pct = float(pick.get("ev_pct") if pick.get("ev_pct") is not None else 0)
+    except (TypeError, ValueError):
+        return False
+    if ev_pct < hubacek_min_ev_pct(league):
         return False
     # Fail closed: gap and win probability are required official-book fields.
     win_prob = pick.get("win_probability")
     gap = pick.get("model_market_gap_pp")
     if win_prob is None or gap is None:
+        return False
+    try:
+        win_prob_f = float(win_prob)
+        gap_f = float(gap)
+    except (TypeError, ValueError):
         return False
     bet_type = str(pick.get("bet_type") or "moneyline").lower()
     allowed = hubacek_allowed_sides(league)
@@ -285,9 +298,9 @@ def passes_hubacek_tracked_pick(pick: dict[str, Any]) -> bool:
     else:
         min_pp = hubacek_min_win_confidence_pp(league)
         min_gap = hubacek_min_market_gap_pp(league)
-    if not passes_hubacek_confidence(float(win_prob), min_pp=min_pp):
+    if not passes_hubacek_confidence(win_prob_f, min_pp=min_pp):
         return False
-    if float(gap) < min_gap:
+    if gap_f < min_gap:
         return False
     if bet_type in ("moneyline", "soccer_1x2") and not within_hubacek_ml_range(
         league, pick.get("market_odds")

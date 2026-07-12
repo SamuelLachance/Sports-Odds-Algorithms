@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import sys
-from datetime import date
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -19,11 +18,11 @@ from web.ensemble_ml.config import (  # noqa: E402
 from web.league_profiles import LEAGUE_PROFILES, is_soccer_league  # noqa: E402
 from web.sports_meta_model import META_WEIGHTS_PATH  # noqa: E402
 from web.soccer_meta_model import META_WEIGHTS_PATH as SOCCER_META_PATH  # noqa: E402
+from web.tracking_service import toronto_cutoff_mdy, toronto_today  # noqa: E402
 
 
 def _cutoff_today() -> str:
-    today = date.today()
-    return f"{today.month}-{today.day}-{today.year}"
+    return toronto_cutoff_mdy()
 
 
 def _category(league: str) -> str:
@@ -89,7 +88,7 @@ def build_report(cutoff: str) -> dict:
         }
         rows.append(row)
     return {
-        "generated_at": date.today().isoformat(),
+        "generated_at": toronto_today().isoformat(),
         "cutoff": cutoff,
         "leagues": rows,
     }

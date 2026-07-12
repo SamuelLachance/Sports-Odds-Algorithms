@@ -370,6 +370,56 @@ def test_line_shopping_fields_use_side_edge_not_game_max() -> None:
     assert home_fields["best_vs_espn_pp"] == pytest.approx(home_edge)
     assert away_fields["line_shopping_edge_pp"] == pytest.approx(away_edge)
 
+
+def test_line_shopping_omits_edge_when_espn_side_missing() -> None:
+    """Missing ESPN juice for the pick side must not inherit game-level max."""
+    market = {
+        "n_books": 4,
+        "home_moneyline": None,
+        "away_moneyline": 100,
+        "best_home_ml": -105,
+        "best_away_ml": 130,
+        "line_shopping_edge_pp": 99.0,
+    }
+    home_fields = line_shopping_fields_for_pick(
+        market, side="home", bet_type="moneyline"
+    )
+    assert home_fields["best_available_odds"] == -105
+    assert "line_shopping_edge_pp" not in home_fields
+    assert "best_vs_espn_pp" not in home_fields
+
+
+def test_line_shopping_omits_edge_when_best_missing() -> None:
+    """No shopped price → do not attach the game-level shopping edge to the pick."""
+    market = {
+        "n_books": 4,
+        "home_moneyline": -110,
+        "away_moneyline": 100,
+        "best_home_ml": None,
+        "best_away_ml": 130,
+        "line_shopping_edge_pp": 99.0,
+    }
+    home_fields = line_shopping_fields_for_pick(
+        market, side="home", bet_type="moneyline"
+    )
+    assert "best_available_odds" not in home_fields
+    assert "line_shopping_edge_pp" not in home_fields
+
+
+def test_line_shopping_accepts_float_string_espn_odds() -> None:
+    """JSON/CSV float strings must not crash pick attach via bare int()."""
+    market = {
+        "n_books": 3,
+        "home_moneyline": "-110.0",
+        "away_moneyline": "100.0",
+        "best_home_ml": -105,
+        "best_away_ml": 105,
+    }
+    fields = line_shopping_fields_for_pick(market, side="home", bet_type="moneyline")
+    assert fields["best_available_odds"] == -105
+    assert fields["line_shopping_edge_pp"] == shopping_edge_pp(-110, -105)
+
+
 def test_line_shopping_reports_ev_at_best_without_changing_espn_ev() -> None:
     from web.bet_advisor import expected_value_pct
 

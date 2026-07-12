@@ -51,6 +51,18 @@ def test_pages_404_html_redirects_into_hash_router() -> None:
     html = (STATIC_DIR / "404.html").read_text(encoding="utf-8")
     assert "Sports-Odds-Algorithms" in html
     assert "location.replace" in html
+    # Custom domain / localhost must not hardcode the GitHub project base.
+    assert 'base = "/Sports-Odds-Algorithms"' not in html
+    assert 'var projectBase = "/Sports-Odds-Algorithms"' in html
+    assert "github" in html and ".io" in html
+    assert ".test(host)" in html
+
+
+def test_index_html_canonical_points_at_brand_domain() -> None:
+    html = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
+    assert 'rel="canonical" href="https://sharpsheettips.com/"' in html
+    assert 'property="og:url" content="https://sharpsheettips.com/"' in html
+    assert 'rel="alternate" href="https://samuellachance.github.io/Sports-Odds-Algorithms/"' in html
 
 
 def test_agents_md_documents_cors_allow_origins() -> None:
@@ -155,9 +167,12 @@ def test_copy_static_assets_writes_sitemap_robots_and_favicon(tmp_path, monkeypa
 
     sitemap = (tmp_path / "sitemap.xml").read_text(encoding="utf-8")
     assert "urlset" in sitemap
+    assert "sharpsheettips.com/" in sitemap
     assert "samuellachance.github.io/Sports-Odds-Algorithms/" in sitemap
-    assert "#/picks" in sitemap
-    assert "#/tracking" in sitemap
+    # Hash SPA routes are not distinct URLs for crawlers.
+    assert "#/picks" not in sitemap
+    assert "#/tracking" not in sitemap
+    assert "#" not in sitemap
 
     index = (tmp_path / "index.html").read_text(encoding="utf-8")
     assert 'meta name="base-path" content="/Sports-Odds-Algorithms"' in index
@@ -225,6 +240,17 @@ def test_app_js_mlb_nhl_frontend_contracts() -> None:
     assert "function viewGames" in js
     games_fn = js.split("function viewGames")[1].split("function ")[0]
     assert "slateStatusBanners" in games_fn
+    # Tracking page must not hide load failures behind a fake 0–0 / 0% book.
+    assert "function viewTracking" in js
+    tracking_fn = js.split("function viewTracking")[1].split("function ")[0]
+    assert "slateStatusBanners" in tracking_fn
+    assert "trackingLoadFailed" in tracking_fn
+    assert 'record: "—"' in js
+    assert 'roi_percent: null' in js
+    # Methodology MLB close ROI must match bet_policy / pick_strategy (−2.2%, not −3.2%).
+    assert "−2.2% at the close" in js
+    assert "+34.3% ROI" in js
+    assert "−3.2% at the close" not in js
 
 
 def test_format_odds_treats_even_zero_like_plus_100() -> None:

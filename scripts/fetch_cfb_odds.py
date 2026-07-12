@@ -8,7 +8,8 @@ the same schema as nba.csv.
 
 Completed games whose odds lookup fails are still written (empty odds fields,
 n_books=0) so the walk-forward Elo backtest sees every FBS result. Per-day
-responses are cached under .build-cache/cfb-odds/ so reruns are cheap.
+responses are cached under .build-cache/cfb-odds/ when at least one row has
+odds (n_books>0); empty or all-failed days are refetched on the next run.
 """
 
 from __future__ import annotations
@@ -163,11 +164,10 @@ def collect_day_rows(day: date, *, use_cache: bool = True) -> list[dict[str, Any
     if use_cache and cache_file.is_file():
         try:
             cached = json.loads(cache_file.read_text(encoding="utf-8"))
-            # Empty-odds cache (n_books=0) from a failed fetch must not stick —
-            # allow a later run to refill closes.
-            if cached and any(int(r.get("n_books") or 0) > 0 for r in cached):
-                return cached
-            if cached == []:
+            # Empty-odds / partial-day caches must not stick: one filled game
+            # used to freeze siblings still at n_books=0. Sticky [] (scoreboard
+            # outage / mid-day empty slate) must also refetch.
+            if cached and all(int(r.get("n_books") or 0) > 0 for r in cached):
                 return cached
         except (json.JSONDecodeError, OSError, TypeError, ValueError):
             pass

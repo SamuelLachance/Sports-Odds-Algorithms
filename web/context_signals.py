@@ -416,7 +416,12 @@ def apply_context_to_blend(
     if open_away is None:
         open_away = market.get("opening_away_ml")
 
-    flb = favorite_longshot_adjustment(home_ml, away_ml, home_prob)
+    # FLB is an opening-price bias; only use opens when both sides are present.
+    if open_home is not None and open_away is not None:
+        flb_home, flb_away = open_home, open_away
+    else:
+        flb_home, flb_away = home_ml, away_ml
+    flb = favorite_longshot_adjustment(flb_home, flb_away, home_prob)
     steam = steam_line_movement_shift(
         home_ml,
         away_ml,

@@ -5,7 +5,6 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from datetime import date
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -21,6 +20,7 @@ from web.pick_strategy import (  # noqa: E402
     official_bet_type,
     tune_league_thresholds,
 )
+from web.tracking_service import toronto_cutoff_mdy, toronto_today  # noqa: E402
 
 CORE_LEAGUES = (
     "nba",
@@ -48,8 +48,7 @@ CATEGORY_ANCHORS = {
 
 
 def _cutoff_today() -> str:
-    today = date.today()
-    return f"{today.month}-{today.day}-{today.year}"
+    return toronto_cutoff_mdy()
 
 
 def _leagues_for_categories(categories: set[str] | None) -> list[str]:
@@ -100,7 +99,7 @@ def main() -> int:
     leagues = _leagues_for_categories(categories)
     cutoff = _cutoff_today()
     payload: dict[str, object] = _load_existing_payload()
-    payload["generated_at"] = date.today().isoformat()
+    payload["generated_at"] = toronto_today().isoformat()
 
     tuned: dict[str, dict] = {}
     for league in leagues:

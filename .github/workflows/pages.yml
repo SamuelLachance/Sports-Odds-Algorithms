@@ -74,23 +74,25 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .build-cache/sports-db
-          key: sports-db-${{ hashFiles('web/sports_db/**', 'web/live_data.py', 'web/espn_client.py', 'data/ratings/**', 'data/soccer_meta_weights.json', 'data/sports_meta_weights.json') }}-${{ runner.os }}
+          key: sports-db-${{ hashFiles('web/sports_db/**', 'web/live_data.py', 'web/espn_client.py', 'web/season_games.py', 'data/ratings/**', 'data/soccer_meta_weights.json', 'data/sports_meta_weights.json') }}-${{ runner.os }}
           restore-keys: |
-            sports-db-${{ hashFiles('web/sports_db/**', 'web/live_data.py', 'web/espn_client.py', 'data/ratings/**', 'data/soccer_meta_weights.json', 'data/sports_meta_weights.json') }}-
+            sports-db-${{ hashFiles('web/sports_db/**', 'web/live_data.py', 'web/espn_client.py', 'web/season_games.py', 'data/ratings/**', 'data/soccer_meta_weights.json', 'data/sports_meta_weights.json') }}-
             sports-db-
 
       - name: Restore Pages API cache
         uses: actions/cache@v4
         with:
           path: .build-cache/pages-api
-          key: pages-api-${{ hashFiles('web/sports_db/**', 'web/daily_service.py', 'web/tracking_service.py', 'web/predict_service.py', 'data/ratings/**') }}-${{ runner.os }}
+          key: pages-api-${{ hashFiles('web/sports_db/**', 'web/daily_service.py', 'web/tracking_service.py', 'web/predict_service.py', 'web/espn_client.py', 'web/season_games.py', 'web/live_data.py', 'data/ratings/**') }}-${{ runner.os }}
           restore-keys: |
-            pages-api-${{ hashFiles('web/sports_db/**', 'web/daily_service.py', 'web/tracking_service.py', 'web/predict_service.py', 'data/ratings/**') }}-
+            pages-api-${{ hashFiles('web/sports_db/**', 'web/daily_service.py', 'web/tracking_service.py', 'web/predict_service.py', 'web/espn_client.py', 'web/season_games.py', 'web/live_data.py', 'data/ratings/**') }}-
             pages-api-
 
       - name: Compute cache date
         id: cache_date
-        run: echo "today=$(date -u +%Y%m%d)" >> "$GITHUB_OUTPUT"
+        # America/Toronto calendar day (not UTC) so EST midnight crons do not
+        # roll the live-cache key while the slate is still the prior evening.
+        run: echo "today=$(TZ=America/Toronto date +%Y%m%d)" >> "$GITHUB_OUTPUT"
 
       - name: Restore NHL v2 live cache (MoneyPuck daily slices)
         uses: actions/cache@v4

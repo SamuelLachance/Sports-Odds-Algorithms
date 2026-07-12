@@ -423,6 +423,8 @@ class TeamState:
         self.sos_elo_sum = 0.0
         self.last_game_date = ""
         self.recent_dates = []
+        # Drop last venue so opening-night travel/tz do not inherit prior season.
+        self.last_market = None
         self.streak = 0
         self.games_played = 0
         self.season_seen = season

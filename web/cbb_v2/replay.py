@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from datetime import date as date_cls, datetime, timedelta
 from typing import Any, Callable
 
 from web.cbb_v2.data import canon_abbr, team_key
@@ -10,14 +9,10 @@ from web.cbb_v2.feature_engine import CbbFeatureEngine
 
 
 def _espn_local_date(event: dict[str, Any]) -> str:
-    raw = str(event.get("date") or "")
-    if "T" not in raw:
-        return raw[:10]
-    try:
-        stamp = datetime.fromisoformat(raw.replace("Z", "+00:00"))
-        return (stamp - timedelta(hours=5)).date().isoformat()
-    except ValueError:
-        return raw[:10]
+    """America/Toronto calendar day — same keying as NBA/WNBA and season_games."""
+    from web.season_games import _event_date_iso
+
+    return _event_date_iso(str(event.get("date") or ""))
 
 
 def events_to_results(events: list[dict[str, Any]], season: int) -> list[dict[str, Any]]:

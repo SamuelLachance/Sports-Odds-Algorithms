@@ -440,21 +440,18 @@ def line_shopping_fields_for_pick(
             if bet_type == "spread"
             else market.get("home_moneyline" if side == "home" else "away_moneyline")
         )
-        side_edge = shopping_edge_pp(
-            int(espn) if espn is not None else None,
-            best,
-        )
+        # Use _as_int_odds — bare int("-110.0") raises and can abort pick attach.
+        espn_odds = _as_int_odds(espn)
+        best_odds = _as_int_odds(best)
+        side_edge = shopping_edge_pp(espn_odds, best_odds)
         if side_edge is not None:
             fields["best_vs_espn_pp"] = side_edge
+            # Side-only edge — never inherit game-level max across home/away.
             fields["line_shopping_edge_pp"] = side_edge
-        elif market.get("line_shopping_edge_pp") is not None:
-            fields["line_shopping_edge_pp"] = market.get("line_shopping_edge_pp")
-        if model_prob_pct is not None:
+        if model_prob_pct is not None and best_odds is not None:
             from web.bet_advisor import expected_value_pct
 
             fields["ev_pct_at_best"] = round(
-                expected_value_pct(float(model_prob_pct), int(best)), 2
+                expected_value_pct(float(model_prob_pct), best_odds), 2
             )
-    elif market.get("line_shopping_edge_pp") is not None:
-        fields["line_shopping_edge_pp"] = market.get("line_shopping_edge_pp")
     return {k: v for k, v in fields.items() if v is not None}

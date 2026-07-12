@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import sys
-from datetime import date
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -26,6 +25,7 @@ from web.ensemble_ml.model import (  # noqa: E402
 from web.ensemble_ml.predict import clear_ensemble_caches  # noqa: E402
 from web.league_profiles import is_soccer_league  # noqa: E402
 from web.nba_ml.calibrate import brier, log_loss  # noqa: E402
+from web.tracking_service import toronto_cutoff_mdy, toronto_today  # noqa: E402
 
 CORE_LEAGUES = (
     "nba",
@@ -46,8 +46,7 @@ CORE_LEAGUES = (
 
 
 def _cutoff_today() -> str:
-    today = date.today()
-    return f"{today.month}-{today.day}-{today.year}"
+    return toronto_cutoff_mdy()
 
 
 def train_league(
@@ -88,7 +87,7 @@ def train_league(
             "model_type": "soccer_threeway",
             "train_rows": len(frame),
             "holdout_home_logloss": round(sum(losses) / len(losses), 4) if losses else None,
-            "trained_at": date.today().isoformat(),
+            "trained_at": toronto_today().isoformat(),
             "features": list(model.feature_columns),
         }
         save_ensemble(league, model, meta)
@@ -147,7 +146,7 @@ def train_league(
         "beats_market": bool(beats_market) if beats_market is not None else None,
         "holdout_brier": round(brier(prob_arr, out_arr), 4),
         "margin_sigma": model.margin_sigma,
-        "trained_at": date.today().isoformat(),
+        "trained_at": toronto_today().isoformat(),
         "features": list(model.feature_columns),
     }
     save_ensemble(league, model, meta)
@@ -214,7 +213,7 @@ def main() -> int:
     report_path = PROJECT_ROOT / "data" / "supplemental" / "ensemble-ml" / "train_report.json"
     report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text(
-        json.dumps({"trained_at": date.today().isoformat(), "leagues": summary}, indent=2) + "\n",
+        json.dumps({"trained_at": toronto_today().isoformat(), "leagues": summary}, indent=2) + "\n",
         encoding="utf-8",
     )
     print(f"Trained {trained} leagues -> {report_path}")

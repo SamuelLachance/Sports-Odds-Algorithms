@@ -27,6 +27,13 @@ TORONTO = ZoneInfo(TIMEZONE_LABEL)
 def toronto_today() -> date:
     return datetime.now(TORONTO).date()
 
+
+def toronto_cutoff_mdy(now: datetime | None = None) -> str:
+    """M-D-YYYY cutoff aligned to America/Toronto (not server-local / UTC date)."""
+    when = now.astimezone(TORONTO) if now is not None else datetime.now(TORONTO)
+    day = when.date()
+    return f"{day.month}-{day.day}-{day.year}"
+
 BetResult = Literal["pending", "win", "loss", "push"]
 
 # Stake sizing: quarter-Kelly, expressed in units where 1u = 1% of bankroll.
@@ -189,9 +196,16 @@ def _bet_key(event_id: str, side: str, bet_type: str = "moneyline") -> str:
     ``date_label`` values; including the slate day would duplicate pending
     rows and double-count P&L after grading.
     """
-    if bet_type == "moneyline":
-        return f"{event_id}:{side}"
-    return f"{event_id}:{side}:{bet_type}"
+    side_key = str(side).lower()
+    type_key = str(bet_type or "moneyline").lower()
+    if type_key == "moneyline":
+        return f"{event_id}:{side_key}"
+    return f"{event_id}:{side_key}:{type_key}"
+
+
+def _normalized_closing_american(value: Any) -> int | None:
+    """Valid American price for a closing snapshot, else None (keep prior)."""
+    return normalize_american_odds(value)
 
 
 def _grading_spread_line(bet: dict[str, Any]) -> float | None:
@@ -211,19 +225,10 @@ def _resolve_grading_odds(bet: dict[str, Any]) -> int | None:
         for key in ("spread_odds", "consensus_odds", "market_odds"):
             value = bet.get(key)
             if value is not None:
-                try:
-                    return normalize_american_odds(int(value))
-                except (TypeError, ValueError):
-                    return None
+                return normalize_american_odds(value)
         # Missing posted juice — leave ungraded (do not invent -110).
         return None
-    market_odds = bet.get("market_odds")
-    if market_odds is None:
-        return None
-    try:
-        return normalize_american_odds(int(market_odds))
-    except (TypeError, ValueError):
-        return None
+    return normalize_american_odds(bet.get("market_odds"))
 
 
 def _parse_date_label(value: str) -> date:
@@ -254,10 +259,7 @@ def _consensus_closing_ml(game: dict[str, Any] | None, side: str) -> int | None:
     value = market.get(key) if key else None
     if value is None:
         return None
-    try:
-        return normalize_american_odds(int(value))
-    except (TypeError, ValueError):
-        return None
+    return normalize_american_odds(value)
 
 
 def _official_tracked_bets(bets: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -302,18 +304,27 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
         if isinstance(g, dict) and g.get("event_id")
     }
 
-    for pick in slate.get("recommended_bets") or []:
+    recommended = [
+        p for p in (slate.get("recommended_bets") or []) if isinstance(p, dict)
+    ]
+    # Haircut only when multiple picks actually qualify for the official book —
+    # ineligible / gate-failed rows must not inflate the correlation penalty.
+    qualifying: list[dict[str, Any]] = []
+    for pick in recommended:
         if not eligible_for_official_picks(pick.get("league") or ""):
             continue
         if not passes_hubacek_tracked_pick(pick):
             continue
+        if not pick.get("event_id") or not pick.get("side"):
+            continue
+        qualifying.append(pick)
+    slate_correlation_penalty = 0.15 if len(qualifying) > 1 else 0.0
+
+    for pick in qualifying:
         event_id = pick.get("event_id")
         side = pick.get("side")
-        if not event_id or not side:
-            continue
-
         bet_type = pick.get("bet_type") or "moneyline"
-        key = _bet_key(event_id, side, bet_type)
+        key = _bet_key(str(event_id), str(side), bet_type)
         existing = index.get(key)
         if existing:
             if existing.get("status") == "pending":
@@ -326,26 +337,32 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
                 # No parseable tip → fail closed (do not keep refreshing forever).
                 if tip is None or tip <= now_dt:
                     continue
-                closing_ml = pick.get("market_odds")
+                closing_ml = _normalized_closing_american(pick.get("market_odds"))
                 closing_source = "espn"
-                consensus_ml = _consensus_closing_ml(games_by_event.get(str(event_id)), side)
-                if bet_type != "spread" and consensus_ml is not None:
+                consensus_ml = _consensus_closing_ml(
+                    games_by_event.get(str(event_id)), str(side)
+                )
+                if str(bet_type).lower() != "spread" and consensus_ml is not None:
                     closing_ml = consensus_ml
                     closing_source = "consensus"
                 existing_update: dict[str, Any] = {}
+                if pick.get("start_time"):
+                    # Keep tip in sync for postponed games (scoreboard date scan).
+                    existing_update["start_time"] = pick.get("start_time")
                 if closing_ml is not None:
                     existing_update["closing_market_odds"] = closing_ml
                     existing_update["closing_source"] = closing_source
-                spread_close = pick.get("spread_odds")
+                spread_close = _normalized_closing_american(pick.get("spread_odds"))
                 if spread_close is not None:
                     existing_update["closing_spread_odds"] = spread_close
                 consensus_close = pick.get("consensus_spread")
                 if consensus_close is not None:
                     existing_update["closing_consensus_spread"] = consensus_close
-                # Never wipe a prior closing snapshot with missing juice/ML.
+                # Never wipe a prior closing snapshot with missing/invalid juice.
                 if existing_update:
-                    existing_update["closing_snapshot_at"] = now
-                    existing_update.setdefault("closing_source", closing_source)
+                    if closing_ml is not None or spread_close is not None:
+                        existing_update["closing_snapshot_at"] = now
+                        existing_update.setdefault("closing_source", closing_source)
                     existing.update(existing_update)
             continue
 
@@ -354,12 +371,19 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
             # First seen post-kickoff: never actionable, no closing snapshot possible.
             continue
 
-        closing_ml = pick.get("market_odds")
+        closing_ml = _normalized_closing_american(pick.get("market_odds"))
         closing_source = "espn"
-        consensus_ml = _consensus_closing_ml(games_by_event.get(str(event_id)), side)
-        if bet_type != "spread" and consensus_ml is not None:
+        consensus_ml = _consensus_closing_ml(games_by_event.get(str(event_id)), str(side))
+        if str(bet_type).lower() != "spread" and consensus_ml is not None:
             closing_ml = consensus_ml
             closing_source = "consensus"
+
+        recorded_ml = _normalized_closing_american(pick.get("market_odds"))
+        if recorded_ml is None:
+            recorded_ml = pick.get("market_odds")
+        recorded_spread = _normalized_closing_american(pick.get("spread_odds"))
+        if recorded_spread is None and pick.get("spread_odds") is not None:
+            recorded_spread = pick.get("spread_odds")
 
         bet = {
             "id": key,
@@ -367,7 +391,7 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
             "event_id": event_id,
             "league": pick.get("league"),
             "league_name": pick.get("league_name"),
-            "side": side,
+            "side": str(side).lower() if side else side,
             "team_name": pick.get("team_name"),
             "team_slug": pick.get("team_slug"),
             "team_abbr": pick.get("team_abbr"),
@@ -379,12 +403,12 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
             "edge": pick.get("edge"),
             "ev_pct": pick.get("ev_pct"),
             "model_projection": pick.get("model_projection"),
-            "market_odds": pick.get("market_odds"),
+            "market_odds": recorded_ml,
             "win_probability": pick.get("win_probability"),
             "reason": pick.get("reason"),
-            "bet_type": bet_type,
+            "bet_type": str(bet_type).lower(),
             "spread_line": pick.get("spread_line"),
-            "spread_odds": pick.get("spread_odds"),
+            "spread_odds": recorded_spread if pick.get("spread_odds") is not None else None,
             "consensus_spread": pick.get("consensus_spread"),
             "consensus_odds": pick.get("consensus_odds"),
             "consensus_label": pick.get("consensus_label"),
@@ -396,6 +420,7 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
             "stake_units": stake_units_from_kelly(
                 pick.get("kelly_pct"),
                 ev_pct=pick.get("ev_pct"),
+                correlation_penalty=slate_correlation_penalty,
             ),
             "recorded_at": now,
             "recorded_pre_start": True,
@@ -405,8 +430,9 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
             bet["closing_market_odds"] = closing_ml
             bet["closing_source"] = closing_source
             bet["closing_snapshot_at"] = now
-        if pick.get("spread_odds") is not None:
-            bet["closing_spread_odds"] = pick.get("spread_odds")
+        spread_seed = _normalized_closing_american(pick.get("spread_odds"))
+        if spread_seed is not None:
+            bet["closing_spread_odds"] = spread_seed
         if pick.get("consensus_spread") is not None:
             bet["closing_consensus_spread"] = pick.get("consensus_spread")
         store["bets"].append(bet)
@@ -561,11 +587,9 @@ def _recorded_and_closing_odds(bet: dict[str, Any]) -> tuple[int | None, int | N
     else:
         recorded = bet.get("market_odds")
         closing = bet.get("closing_market_odds")
-    try:
-        rec = int(recorded) if recorded is not None else None
-        close = int(closing) if closing is not None else None
-    except (TypeError, ValueError):
-        return None, None
+    # Normalize EVEN/float-strings; reject invalid magnitudes (fail closed for CLV).
+    rec = normalize_american_odds(recorded) if recorded is not None else None
+    close = normalize_american_odds(closing) if closing is not None else None
     return rec, close
 
 

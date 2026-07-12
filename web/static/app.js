@@ -2577,17 +2577,25 @@ function viewTracking(options = {}) {
   state.sidebarLeague = null;
   renderSidebar(parseRoute());
   const period = state.trackingPeriod;
+  const loadFailed = Boolean(state.trackingLoadFailed);
   const all = state.tracking?.all_time || state.tracking?.summary || {};
   const bets = state.tracking?.bets || [];
-  const since = state.tracking?.tracking_since || "—";
+  const since = loadFailed ? "—" : state.tracking?.tracking_since || "—";
   const minConf = minHubacekConfidence(state.slate);
   const hubacekRule = hubacekPickRule(state.slate);
   const graded = bets.filter((b) => b.status && b.status !== "pending");
-  const youngBook = bets.length > 0 && graded.length < 30;
+  const youngBook = !loadFailed && bets.length > 0 && graded.length < 30;
   const decidedCount = (Number(all.wins) || 0) + (Number(all.losses) || 0);
-  const provisionalSample = decidedCount < 30;
+  const provisionalSample = !loadFailed && decidedCount < 30;
+  const recordDisplay = loadFailed ? "—" : all.record || "0-0";
+  const unitsDisplay = loadFailed
+    ? "—"
+    : `${all.units > 0 ? "+" : ""}${all.units ?? 0}u`;
+  const roiDisplay = loadFailed ? "—" : `${all.roi_percent ?? 0}%`;
+  const pendingDisplay = loadFailed ? "—" : `${all.pending ?? 0}`;
 
   appRoot.innerHTML = `
+    ${slateStatusBanners(state.slate)}
     <section class="tracking-hero panel">
       <div class="tracking-hero-top">
         <div>
@@ -2597,10 +2605,10 @@ function viewTracking(options = {}) {
           <p class="muted tracking-rule">${escapeHtml(hubacekRule)}</p>
         </div>
         <div class="tracking-hero-stats">
-          <div><span>Record</span><strong>${all.record || "0-0"}</strong>${provisionalSample ? `<small class="edge-badge edge-badge--sparse" title="Fewer than 30 decided bets — treat results as provisional">Provisional — small sample</small>` : ""}</div>
-          <div><span>Units</span><strong class="${Number(all.units) > 0 ? "clv-positive" : Number(all.units) < 0 ? "clv-negative" : ""}">${all.units > 0 ? "+" : ""}${all.units ?? 0}u</strong></div>
-          <div><span>ROI (per staked unit)</span><strong>${all.roi_percent ?? 0}%</strong></div>
-          <div><span>Pending</span><strong>${all.pending ?? 0}</strong></div>
+          <div><span>Record</span><strong>${escapeHtml(String(recordDisplay))}</strong>${provisionalSample ? `<small class="edge-badge edge-badge--sparse" title="Fewer than 30 decided bets — treat results as provisional">Provisional — small sample</small>` : ""}</div>
+          <div><span>Units</span><strong class="${loadFailed ? "" : Number(all.units) > 0 ? "clv-positive" : Number(all.units) < 0 ? "clv-negative" : ""}">${escapeHtml(String(unitsDisplay))}</strong></div>
+          <div><span>ROI (per staked unit)</span><strong>${escapeHtml(String(roiDisplay))}</strong></div>
+          <div><span>Pending</span><strong>${escapeHtml(String(pendingDisplay))}</strong></div>
         </div>
       </div>
       <aside class="disclaimer-bar roi-caveat-bar" role="note">
@@ -2786,7 +2794,7 @@ function viewMethodology() {
       <ul>
         <li><strong>CBB official picks are disabled by design.</strong> Walk-forward close-line ROI for the best gate was −57.9% (3,993 bets); open-line +2.5% is single-season only. The board still shows <code>cbb_v2</code> probabilities for research.</li>
         <li><strong>Beating the close is unproven for NBA.</strong> A pilot of the NBA model graded at real closing lines returned −1.5% ATS with negative CLV. Whatever edge exists lives earlier in the day, not at the close.</li>
-        <li><strong>MLB edge concentrates at the open.</strong> Walk-forward testing showed roughly +35% ROI against opening lines versus −3.2% at the close — consistent with the finding that FLB mispricing disappears as the market matures.</li>
+        <li><strong>MLB edge concentrates at the open.</strong> Walk-forward testing showed roughly +34.3% ROI against opening lines versus −2.2% at the close — consistent with the finding that FLB mispricing disappears as the market matures.</li>
         <li><strong>Opening-line backtests overstate live ROI.</strong> Historical ROI vs opening prices is an upper bound; live morning tracking locks later consensus prices and usually grades worse than the open-line study.</li>
         <li><strong>The live tracked sample is very young.</strong> Until dozens of graded bets settle, record, units, and ROI are noise; process metrics (CLV, stake discipline) matter more.</li>
         <li><strong>Soccer paper log is internal-only.</strong> Deploy may grade a private soccer paper-tracking file for research hygiene; it is <em>not</em> Hubáček official tracking and is not shown as performance on this site.</li>
@@ -3028,10 +3036,11 @@ async function loadPlatform() {
     state.trackingLoadFailed = false;
   } else {
     state.trackingLoadFailed = true;
+    // Placeholders must not look like a real break-even 0–0 / 0% book.
     state.tracking = {
       bets: [],
-      summary: { record: "0-0", units: 0, roi_percent: 0, pending: 0 },
-      all_time: { record: "0-0", units: 0, roi_percent: 0, pending: 0 },
+      summary: { record: "—", units: null, roi_percent: null, pending: null },
+      all_time: { record: "—", units: null, roi_percent: null, pending: null },
       daily: [],
       weekly: [],
       monthly: [],

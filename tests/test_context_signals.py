@@ -267,6 +267,27 @@ def test_apply_context_steam_activates_from_market_opens() -> None:
     assert out["blended_home_win_probability"] > 55.0
 
 
+def test_apply_context_flb_uses_opening_moneylines_not_close() -> None:
+    """FLB follows open-like chalk; a shortened close must not erase the bias."""
+    blended = {
+        "blended_home_win_probability": 62.0,
+        "total_score": -62.0,
+        "win_probability": 62.0,
+        "favorite_side": "home",
+    }
+    # Open heavy home favorite (−200) → FLB; close shortened to −140 (no FLB).
+    market = {
+        "home_moneyline": -140,
+        "away_moneyline": 120,
+        "open_home_moneyline": -200,
+        "open_away_moneyline": 170,
+    }
+    out = apply_context_to_blend(blended, market=market, league="nba")
+    assert out["context_signals"]["flb_pp"] < 0
+    # Live-only FLB would be 0 at −140; opens must drive the nudge.
+    assert favorite_longshot_adjustment(-140, 120, 62.0) == 0.0
+
+
 def test_apply_context_steam_inactive_without_opens() -> None:
     blended = {
         "blended_home_win_probability": 55.0,

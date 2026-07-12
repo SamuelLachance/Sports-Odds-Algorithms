@@ -112,6 +112,37 @@ def test_disabled_leagues_produce_no_official_picks() -> None:
     assert eligible_for_official_picks("nba") is True
 
 
+def test_official_mlb_picks_include_kelly_after_enrich() -> None:
+    """Live official path must attach Kelly — slate recording sizes off kelly_pct."""
+    from web.pick_strategy import evaluate_official_picks_for_game
+
+    picks = evaluate_official_picks_for_game(
+        league="mlb",
+        away_name="Away",
+        home_name="Home",
+        away_slug="away",
+        home_slug="home",
+        total_score=-72.0,
+        win_probability=72.0,
+        blended={
+            "blended_home_win_probability": 72.0,
+            "market_decorrelated": True,
+            "home_win_probability": 72.0,
+            "away_win_probability": 28.0,
+        },
+        away_market=200,
+        home_market=-150,
+        consensus_spread=None,
+        away_spread_odds=None,
+        home_spread_odds=None,
+        home_prob=72.0,
+        away_prob=28.0,
+    )
+    assert picks
+    assert picks[0].extra.get("kelly_pct") is not None
+    assert picks[0].profit_score > 0
+
+
 def test_grade_spread_home_covers() -> None:
     assert grade_spread_bet("home", 110, 100, -5.5) == "win"
     assert grade_spread_bet("home", 105, 100, -5.5) == "loss"
@@ -252,6 +283,24 @@ def test_simulate_market_threeway_renormalizes_nonsimplex_bases() -> None:
         52.0, 26.0, 22.0, market_home=60.0, market_draw=26.0, market_away=22.0
     )
     assert (away_ml, draw_ml, home_ml) != buggy_away
+
+
+def test_simulate_market_threeway_clamps_negative_away_mass() -> None:
+    """power_home + draw > 100 must not invent a negative away leg / absurd ML."""
+    away_ml, draw_ml, home_ml = simulate_market_threeway(
+        40.0,
+        28.0,
+        32.0,
+        market_home=95.0,
+        market_draw=50.0,
+        market_away=-45.0,
+    )
+    for odds in (away_ml, draw_ml, home_ml):
+        assert abs(odds) >= 100
+        assert abs(odds) < 5000
+    # Away mass was floored; home remains the shortest price of the three.
+    assert home_ml < away_ml
+    assert home_ml < draw_ml
 
 
 def test_evaluate_backtest_soccer_passes_power_home_simplex(monkeypatch) -> None:

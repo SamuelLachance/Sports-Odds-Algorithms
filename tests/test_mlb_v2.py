@@ -98,6 +98,54 @@ def test_select_matchup_game_distinguishes_pending_doubleheader() -> None:
     assert live._select_matchup_game(games)["gamePk"] == 1
 
 
+def test_prefer_todays_game_keeps_delayed_game1() -> None:
+    """Rain delay (D) is not terminal — do not promote pending game 2."""
+    import web.mlb_v2.live as live
+
+    delayed1 = {
+        "gamePk": 1,
+        "status": "D",
+        "game_number": 1,
+        "home_pp_id": 100,
+    }
+    pending2 = {
+        "gamePk": 2,
+        "status": "S",
+        "game_number": 2,
+        "home_pp_id": 200,
+    }
+    assert live._prefer_todays_game(delayed1, pending2)["gamePk"] == 1
+    assert live._prefer_todays_game(pending2, delayed1)["gamePk"] == 1
+    # Cancelled game 1 may still promote game 2.
+    cancelled1 = {**delayed1, "status": "C"}
+    assert live._prefer_todays_game(cancelled1, pending2)["gamePk"] == 2
+
+
+def test_select_matchup_game_estimates_missing_nightcap_datetime() -> None:
+    """Nightcap ESPN kickoff must not fall back to G1 when G2 lacks gameDate."""
+    import web.mlb_v2.live as live
+
+    game1 = {
+        "gamePk": 1,
+        "status": "S",
+        "game_number": 1,
+        "home_pp_id": 100,
+        "game_datetime": "2026-07-12T17:05:00Z",
+    }
+    game2 = {
+        "gamePk": 2,
+        "status": "S",
+        "game_number": 2,
+        "home_pp_id": 200,
+        # TBA / missing Stats API datetime is common on nightcaps.
+    }
+    selected = live._select_matchup_game(
+        [game1, game2], kickoff_iso="2026-07-12T23:05:00Z"
+    )
+    assert selected["gamePk"] == 2
+    assert selected["home_pp_id"] == 200
+
+
 def test_is_final_game_accepts_game_over_status() -> None:
     from web.mlb_v2.replay import is_final_game
 

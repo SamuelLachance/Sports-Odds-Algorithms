@@ -42,45 +42,34 @@ def _fast_daily_build() -> bool:
     return _env_flag("FAST_DAILY_BUILD")
 
 
-# Public hash routes listed in the static sitemap (SPA).
-SITEMAP_HASH_ROUTES = (
-    "/",
-    "/games",
-    "/teams",
-    "/picks",
-    "/tracking",
-    "/methodology",
-)
+# Brand canonical origin (custom domain). Hash SPA routes are not distinct URLs
+# for crawlers, so the sitemap only lists the real document.
+SITE_ORIGIN = "https://sharpsheettips.com"
+PAGES_MIRROR = f"https://samuellachance.github.io{BASE_PATH}"
 
 
 def write_seo_files() -> None:
     """robots.txt + sitemap.xml for the GitHub Pages static site."""
-    site = f"https://samuellachance.github.io{BASE_PATH}"
     robots = (
         "User-agent: *\n"
         "Allow: /\n"
-        f"Sitemap: {site}/sitemap.xml\n"
+        f"Sitemap: {SITE_ORIGIN}/sitemap.xml\n"
     )
     (DOCS_DIR / "robots.txt").write_text(robots, encoding="utf-8")
 
-    urls: list[str] = []
-    for route in SITEMAP_HASH_ROUTES:
-        if route == "/":
-            loc = f"{site}/"
-        else:
-            # Keep the leading slash so SPA hashes stay "#/games", not "#games".
-            loc = f"{site}/#{route if route.startswith('/') else '/' + route}"
-        urls.append(
-            "  <url>\n"
-            f"    <loc>{loc}</loc>\n"
-            "    <changefreq>daily</changefreq>\n"
-            "  </url>"
-        )
+    # Fragments (#/picks etc.) are ignored by search engines — only index the document.
     sitemap = (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-        + "\n".join(urls)
-        + "\n</urlset>\n"
+        "  <url>\n"
+        f"    <loc>{SITE_ORIGIN}/</loc>\n"
+        "    <changefreq>daily</changefreq>\n"
+        "  </url>\n"
+        "  <url>\n"
+        f"    <loc>{PAGES_MIRROR}/</loc>\n"
+        "    <changefreq>daily</changefreq>\n"
+        "  </url>\n"
+        "</urlset>\n"
     )
     (DOCS_DIR / "sitemap.xml").write_text(sitemap, encoding="utf-8")
 

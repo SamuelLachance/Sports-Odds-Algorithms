@@ -32,6 +32,9 @@ METRIC_KEYS = (
     "created_at",
 )
 
+# Hollow metadata.json that only parses must not count as ok for --with-v2 gates.
+REQUIRED_KEYS = ("oos_model_logloss", "train_rows", "created_at")
+
 
 def _fmt(value: object) -> str:
     if value is None:
@@ -53,6 +56,15 @@ def load_league(league: str) -> dict:
         meta = json.loads(meta_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         row["error"] = f"unreadable: {exc}"
+        return row
+
+    if not isinstance(meta, dict):
+        row["error"] = "incomplete metadata (not an object)"
+        return row
+
+    missing = [key for key in REQUIRED_KEYS if key not in meta]
+    if missing:
+        row["error"] = f"incomplete metadata (missing: {', '.join(missing)})"
         return row
 
     row["ok"] = True

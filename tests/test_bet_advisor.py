@@ -773,6 +773,12 @@ def test_normalize_american_odds_maps_even_and_rejects_garbage() -> None:
     assert normalize_american_odds(50) is None
     assert normalize_american_odds(-50) is None
     assert normalize_american_odds(None) is None
+    # JSON floats / numeric strings must round-trip, not drop as invalid.
+    assert normalize_american_odds(-110.0) == -110
+    assert normalize_american_odds("-110.0") == -110
+    assert normalize_american_odds("EVEN") is None  # string EVEN is espn_client's job
+    assert normalize_american_odds(True) is None
+    assert normalize_american_odds(False) is None
 
 
 def test_american_helpers_reject_sub_100_odds() -> None:
@@ -846,6 +852,48 @@ def test_enrich_pick_profit_metrics_haircuts_kelly_when_sparse_ev_capped() -> No
     uncapped_kelly_pct = kelly_fraction(70.0, 250) * 100.0
     assert pick.extra["kelly_pct"] < uncapped_kelly_pct
     assert pick.extra["expected_units"] == pytest.approx(pick.ev_pct / 100.0)
+
+
+def test_enrich_pick_profit_metrics_accepts_float_string_odds() -> None:
+    """JSON float-string juice must not crash Kelly enrichment."""
+    from web.bet_advisor import BetPick, enrich_pick_profit_metrics
+
+    pick = BetPick(
+        side="home",
+        team_name="A",
+        team_slug="a",
+        strategy="hubacek",
+        confidence="high",
+        edge=5.0,
+        model_projection=-110,
+        market_odds="-110.0",  # type: ignore[arg-type]
+        win_probability=58.0,
+        reason="json odds",
+        extra={"league": "mlb"},
+    )
+    enrich_pick_profit_metrics(pick)
+    assert pick.extra.get("kelly_pct") is not None
+    assert pick.profit_score > 0
+
+
+def test_enrich_pick_profit_metrics_maps_even_zero_for_kelly() -> None:
+    from web.bet_advisor import BetPick, enrich_pick_profit_metrics, kelly_fraction
+
+    pick = BetPick(
+        side="home",
+        team_name="A",
+        team_slug="a",
+        strategy="hubacek",
+        confidence="high",
+        edge=5.0,
+        model_projection=-110,
+        market_odds=0,
+        win_probability=58.0,
+        reason="even",
+        extra={"league": "mlb"},
+    )
+    enrich_pick_profit_metrics(pick)
+    assert pick.extra["kelly_pct"] == pytest.approx(kelly_fraction(58.0, 100) * 100.0)
 
 
 if __name__ == "__main__":

@@ -128,9 +128,15 @@ def _parse_event(event: dict[str, Any], *, fallback_date: str) -> dict[str, Any]
     if not event_id:
         return None
     raw_date = str(event.get("date") or fallback_date)
+    # Always store America/Toronto YYYY-MM-DD (never raw ISO / UTC[:10]).
+    from web.season_games import _event_date_iso
+
+    day_iso = _event_date_iso(raw_date) if "T" in raw_date else raw_date[:10]
+    if not day_iso:
+        day_iso = str(fallback_date)[:10]
     return {
         "event_id": event_id,
-        "date": raw_date[:10] if "T" not in raw_date else raw_date,
+        "date": day_iso,
         "season": _to_int(season_blob.get("year")) or 0,
         "season_type": season_type,
         "completed": completed,
@@ -204,7 +210,8 @@ def fetch_season_events(season: int, *, use_cache: bool = True) -> list[dict[str
         for events in pool.map(_one, days):
             for event in events:
                 if event.get("season") and int(event["season"]) not in (0, season):
-                    event_date = str(event.get("date") or "")
+                    # Compare calendar days only — ISO suffixes break string bounds.
+                    event_date = str(event.get("date") or "")[:10]
                     if not (f"{season - 1}-11-01" <= event_date <= f"{season}-04-15"):
                         continue
                     event = dict(event)

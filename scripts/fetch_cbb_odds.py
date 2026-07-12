@@ -4,8 +4,8 @@ Walks daily mens-college-basketball scoreboards for each requested season (or
 date window), pulls per-event odds, takes a median consensus across books, and
 merges into data/supplemental/closing-odds/cbb.csv. Completed games whose odds
 lookup fails are still written (empty odds, n_books=0) so result history stays
-complete. Per-day scoreboard JSON is cached under .build-cache/cbb-odds/ so
-re-runs are resumable.
+complete. Scoreboards are always live-fetched (no sticky day cache) so mid-day
+and truncated payloads do not permanently miss later completed games.
 
 One-command multi-season backfill (merges with any existing rows):
 
@@ -21,14 +21,13 @@ Smoke connectivity check (one mid-season week; merges, does not wipe CSV):
 
 Full seasons are large (~5k+ games each) and throttle at ~0.18s/request — expect
 tens of minutes per season. Prefer --start-date/--end-date chunks if ESPN rate-
-limits; re-run safely thanks to merge + day cache.
+limits; re-run safely thanks to merge.
 """
 
 from __future__ import annotations
 
 import argparse
 import csv
-import json
 import sys
 import threading
 import time
@@ -52,7 +51,6 @@ except ImportError:  # pragma: no cover - optional in lean checkouts
     def clear_closing_odds_cache() -> None:
         return None
 
-CACHE_DIR = PROJECT_ROOT / ".build-cache" / "cbb-odds"
 OUTPUT_CSV = PROJECT_ROOT / "data" / "supplemental" / "closing-odds" / "cbb.csv"
 
 SCOREBOARD_URL = (
@@ -103,21 +101,17 @@ def _date_range(start: date, end: date) -> Iterator[date]:
 
 
 def _iter_completed_events(day: date) -> Iterator[dict[str, Any]]:
+    """Yield completed games for ``day``. Always live-fetch the scoreboard.
+
+    A sticky per-day JSON cache previously froze mid-day / truncated payloads
+    forever (later completed games never appeared). CFB always live-fetches;
+    mirror that here.
+    """
     datestr = day.strftime("%Y%m%d")
-    cache_path = CACHE_DIR / f"{datestr}.json"
-    CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    payload: dict[str, Any] | None = None
-    if cache_path.is_file():
-        try:
-            payload = json.loads(cache_path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):
-            payload = None
-    if payload is None:
-        try:
-            payload = _throttled_get(SCOREBOARD_URL.format(date=datestr))
-            cache_path.write_text(json.dumps(payload), encoding="utf-8")
-        except OSError:
-            return
+    try:
+        payload = _throttled_get(SCOREBOARD_URL.format(date=datestr))
+    except OSError:
+        return
     if not isinstance(payload, dict):
         return
     for event in payload.get("events") or []:

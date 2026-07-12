@@ -409,9 +409,14 @@ class Odds_Calculator:
 		win_10_games = wins - losses
 
 		temp={'-10': '0-10', '-8': '1-9', '-6': '2-8', '-4': '3-7', '-2': '4-6', '0': '5-5', '2': '6-4', '4': '7-3', '6': '8-2', '8': '9-1', '10': '10-0'}
-		# Early season (<10 games) yields odd win-loss diffs that are absent from
-		# the full-window bucket map — fall back to the literal W-L label.
-		to_output.append(indent+"10 Games: "+temp.get(str(win_10_games), f"{wins}-{losses}"))
+		# Empty history is 0-0, not the full-window 5-5 bucket (wins=losses=0).
+		# Early season (<10 games) yields odd win-loss diffs absent from the map —
+		# fall back to the literal W-L label.
+		if not recent_win_loss:
+			last10_label = "0-0"
+		else:
+			last10_label = temp.get(str(win_10_games), f"{wins}-{losses}")
+		to_output.append(indent+"10 Games: "+last10_label)
 		bucket = last_10_games[-1].get(str(win_10_games))
 		if bucket is not None:
 			won=bucket[0]

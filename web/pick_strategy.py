@@ -250,8 +250,12 @@ def simulate_market_threeway(
     base_home = market_home if market_home is not None else home_prob
     base_draw = market_draw if market_draw is not None else draw_prob
     base_away = market_away if market_away is not None else away_prob
-    # Callers may mix power-home with model draw/away; force a simplex first.
-    total = float(base_home) + float(base_draw) + float(base_away)
+    # Callers may mix power-home with model draw/away; force a non-negative
+    # simplex first (power_home + draw can exceed 100 → negative away mass).
+    base_home = max(0.0, float(base_home))
+    base_draw = max(0.0, float(base_draw))
+    base_away = max(0.0, float(base_away))
+    total = base_home + base_draw + base_away
     if total > 0:
         scale = 100.0 / total
         base_home *= scale
@@ -1145,7 +1149,7 @@ def evaluate_soccer_official_picks_for_game(
         picks = [pick for pick in picks if pick.side in allowed]
     for pick in picks:
         pick.bet_type = "soccer_1x2"
-    return picks
+    return [enrich_pick_profit_metrics(pick) for pick in picks]
 
 
 def evaluate_official_picks_for_game(
@@ -1200,7 +1204,7 @@ def evaluate_official_picks_for_game(
             min_ev_pct=thresholds["min_ev_pct"],
             games_played_proxy=games_played_proxy,
         )
-        return picks
+        return [enrich_pick_profit_metrics(pick) for pick in picks]
 
     if bet_type == "moneyline":
         ml_away, ml_home, base_away, base_home = official_pick_binary_prob_sets(
@@ -1233,6 +1237,6 @@ def evaluate_official_picks_for_game(
             league=league,
             games_played_proxy=games_played_proxy,
         )
-        return picks
+        return [enrich_pick_profit_metrics(pick) for pick in picks]
 
     return []

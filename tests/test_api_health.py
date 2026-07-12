@@ -17,12 +17,30 @@ EXPECTED_V2_KEYS = ("nba", "wnba", "nhl", "mlb", "soccer", "nfl", "cfb", "cbb")
 
 def test_health_reports_v2_artifacts() -> None:
     payload = health()
-    assert payload["status"] == "ok"
+    assert payload["status"] in {"ok", "degraded"}
     artifacts = payload["v2_artifacts"]
     assert set(artifacts) == set(EXPECTED_V2_KEYS)
     assert all(isinstance(v, bool) for v in artifacts.values())
     assert payload["v2_artifacts_total"] == len(EXPECTED_V2_KEYS)
     assert 0 <= payload["v2_artifacts_ready"] <= len(EXPECTED_V2_KEYS)
+    if payload["v2_artifacts_ready"] == 0:
+        assert payload["status"] == "degraded"
+    else:
+        assert payload["status"] == "ok"
+
+
+def test_health_degraded_when_all_v2_artifacts_missing(monkeypatch) -> None:
+    import web.app as app_mod
+
+    monkeypatch.setattr(
+        app_mod,
+        "_v2_artifacts_status",
+        lambda: {key: False for key in EXPECTED_V2_KEYS},
+    )
+    payload = health()
+    assert payload["status"] == "degraded"
+    assert payload["v2_artifacts_ready"] == 0
+    assert payload["v2_artifacts_total"] == len(EXPECTED_V2_KEYS)
 
 
 def test_http_error_is_structured() -> None:

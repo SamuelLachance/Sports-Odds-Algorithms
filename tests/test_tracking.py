@@ -326,6 +326,9 @@ def test_consensus_closing_ml_rejects_invalid_american() -> None:
     assert _consensus_closing_ml(game, "away") == -110
     even = {"market": {"consensus_home_ml": 0}}
     assert _consensus_closing_ml(even, "home") == 100
+    # Float strings from JSON/CSV must still seed CLV closing snapshots.
+    floatish = {"market": {"consensus_home_ml": "-115.0"}}
+    assert _consensus_closing_ml(floatish, "home") == -115
 
 
 def test_grade_bet_leaves_ungraded_on_invalid_american_odds() -> None:
@@ -607,6 +610,25 @@ def test_recorded_spread_odds_preserves_even_zero() -> None:
     # Posted EVEN is selected over consensus, then normalized to +100 for CLV/units.
     assert rec == 100
     assert close == -105
+
+
+def test_recorded_and_closing_odds_accept_float_strings() -> None:
+    """CLV must not drop when JSON/CSV stores American prices as float strings."""
+    from web.clv_service import clv_vs_market_pct
+    from web.tracking_service import _clv_pct, _recorded_and_closing_odds
+
+    rec, close = _recorded_and_closing_odds(
+        {
+            "bet_type": "moneyline",
+            "market_odds": "150.0",
+            "closing_market_odds": "130.0",
+        }
+    )
+    assert rec == 150
+    assert close == 130
+    assert _clv_pct(
+        {"bet_type": "moneyline", "market_odds": "150.0", "closing_market_odds": "130.0"}
+    ) == clv_vs_market_pct(150, 130)
 
 
 def test_grade_and_clv_use_same_spread_odds_priority() -> None:
@@ -891,6 +913,125 @@ def test_stake_units_quarter_kelly() -> None:
     assert stake_units_from_kelly(4.0) == 1.0
     assert stake_units_from_kelly(0.5) == 0.25
     assert stake_units_from_kelly(25.0) == 3.0
+    # Explicit correlation haircut shrinks classic quarter-Kelly.
+    raw = stake_units_from_kelly(4.0, ev_pct=5.0, correlation_penalty=0.0)
+    haircut = stake_units_from_kelly(4.0, ev_pct=5.0, correlation_penalty=0.15)
+    assert raw == 1.0
+    assert haircut == 0.85
+
+
+def test_record_from_slate_applies_correlation_penalty_on_multi_pick_day() -> None:
+    """Same-slate multi-pick days must not size at raw quarter-Kelly."""
+    from datetime import datetime, timedelta, timezone
+
+    future = (datetime.now(timezone.utc) + timedelta(hours=6)).isoformat()
+    a = _sample_pick(event_id="a")
+    a["kelly_pct"] = 4.0
+    a["start_time"] = future
+    b = _sample_pick(event_id="b")
+    b["kelly_pct"] = 4.0
+    b["start_time"] = future
+    store = record_from_slate(
+        {"version": 1, "bets": []},
+        {"date_label": "2026-07-12", "recommended_bets": [a, b], "games": []},
+    )
+    assert len(store["bets"]) == 2
+    assert all(bet["stake_units"] == 0.85 for bet in store["bets"])
+
+    solo = _sample_pick(event_id="solo")
+    solo["kelly_pct"] = 4.0
+    solo["start_time"] = future
+    solo_store = record_from_slate(
+        {"version": 1, "bets": []},
+        {"date_label": "2026-07-12", "recommended_bets": [solo], "games": []},
+    )
+    assert solo_store["bets"][0]["stake_units"] == 1.0
+
+
+def test_correlation_penalty_ignores_gate_failed_companions() -> None:
+    """A second recommended row that fails Hubáček must not haircut the survivor."""
+    from datetime import datetime, timedelta, timezone
+
+    future = (datetime.now(timezone.utc) + timedelta(hours=6)).isoformat()
+    good = _sample_pick(event_id="good")
+    good["kelly_pct"] = 4.0
+    good["start_time"] = future
+    failed = _sample_pick(event_id="failed", win_probability=51.0, gap_pp=0.5)
+    failed["kelly_pct"] = 4.0
+    failed["start_time"] = future
+    store = record_from_slate(
+        {"version": 1, "bets": []},
+        {"date_label": "2026-07-12", "recommended_bets": [good, failed], "games": []},
+    )
+    assert len(store["bets"]) == 1
+    assert store["bets"][0]["stake_units"] == 1.0
+
+
+def test_pending_closing_rejects_garbage_american_overwrite() -> None:
+    """Invalid |odds| < 100 must not wipe a valid pre-tip closing CLV snapshot."""
+    store = {"version": 1, "bets": []}
+    pick = {**_sample_pick(), "start_time": _future_start(), "market_odds": -120}
+    store = record_from_slate(
+        store, {"date_label": "2026-07-10", "recommended_bets": [pick], "games": []}
+    )
+    assert store["bets"][0]["closing_market_odds"] == -120
+
+    garbage = {**_sample_pick(), "start_time": _future_start(), "market_odds": 50}
+    store = record_from_slate(
+        store, {"date_label": "2026-07-10", "recommended_bets": [garbage], "games": []}
+    )
+    assert store["bets"][0]["closing_market_odds"] == -120
+    assert store["bets"][0]["market_odds"] == -120
+
+
+def test_pending_refresh_updates_start_time_when_postponed() -> None:
+    """Postponed tip-offs must refresh stored start_time for scoreboard dating."""
+    store = {"version": 1, "bets": []}
+    early = _future_start()
+    pick = {**_sample_pick(), "start_time": early}
+    store = record_from_slate(
+        store, {"date_label": "2026-07-10", "recommended_bets": [pick], "games": []}
+    )
+    later = (
+        datetime.now(timezone.utc) + timedelta(hours=30)
+    ).strftime("%Y-%m-%dT%H:%M:%SZ")
+    moved = {**_sample_pick(), "start_time": later, "market_odds": 130}
+    store = record_from_slate(
+        store, {"date_label": "2026-07-10", "recommended_bets": [moved], "games": []}
+    )
+    assert store["bets"][0]["start_time"] == later
+    assert store["bets"][0]["closing_market_odds"] == 130
+
+
+def test_dedupe_collapses_side_case_variants() -> None:
+    """Home vs home must not create twin pending rows for the same event."""
+    from web.tracking_service import _normalize_store
+
+    store = _normalize_store(
+        {
+            "version": 1,
+            "bets": [
+                {
+                    "event_id": "1",
+                    "side": "Home",
+                    "bet_type": "moneyline",
+                    "status": "pending",
+                    "market_odds": 150,
+                    "recorded_at": "2026-01-01T10:00:00+00:00",
+                },
+                {
+                    "event_id": "1",
+                    "side": "home",
+                    "bet_type": "moneyline",
+                    "status": "pending",
+                    "market_odds": 130,
+                    "recorded_at": "2026-01-02T10:00:00+00:00",
+                },
+            ],
+        }
+    )
+    assert len(store["bets"]) == 1
+    assert store["bets"][0]["market_odds"] == 150
 
 
 def test_prune_keeps_graded_bets() -> None:

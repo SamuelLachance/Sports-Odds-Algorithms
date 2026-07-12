@@ -131,3 +131,40 @@ def test_get_output_analysis_early_season_odd_last10() -> None:
     }
     lines = calc.get_output_analysis("", ["bos", "Boston"], returned, "home")
     assert any("10 Games: 2-1" in line for line in lines)
+
+
+def test_get_output_analysis_empty_last10_is_zero_zero() -> None:
+    """No games played must label 0-0, not the full-window 5-5 bucket."""
+    from odds_calculator import Odds_Calculator
+
+    calc = Odds_Calculator("nba")
+    buckets = {str(i): [0, 0] for i in range(-10, 11, 2)}
+    returned = {
+        "seasonal_records": [[0, 0], [0, 0]],
+        "avg_game_points": {
+            "avg_game_points": [0, 0],
+            "avg_other_game_points": [0, 0],
+            "avg_10_games": [0, 0],
+            "avg_other_10_games": [0, 0],
+        },
+        "home_away_record": {
+            "home_record": [[0, 0], [0, 0]],
+            "home_10_games": [[0, 0], [0, 0]],
+            "away_record": [[0, 0], [0, 0]],
+            "away_10_games": [[0, 0], [0, 0]],
+        },
+        "current_win_ratio": [],
+        "10_game_win_ratio": [buckets, dict(buckets)],
+        "win_loss_streaks_against": {
+            "games_since_last_loss": 0,
+            "games_since_last_win": 0,
+            "other_team": "mia",
+            "games_since_last_loss_home": 0,
+            "games_since_last_win_home": 0,
+            "games_since_last_loss_away": 0,
+            "games_since_last_win_away": 0,
+        },
+    }
+    lines = calc.get_output_analysis("", ["bos", "Boston"], returned, "home")
+    assert any("10 Games: 0-0" in line for line in lines)
+    assert not any("10 Games: 5-5" in line for line in lines)

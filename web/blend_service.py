@@ -26,6 +26,7 @@ from web.bet_advisor import (
     _odds_edge,
     model_home_margin,
     model_moneylines,
+    normalize_american_odds,
     spread_odds_edge,
     spread_point_edge,
 )
@@ -578,11 +579,12 @@ def compute_model_agreement(
     third_payload = blended.get(third_key) if third_key else None
     market = market or {}
 
-    away_market = market.get("away_moneyline")
-    home_market = market.get("home_moneyline")
+    # Normalize juice so float-strings / ESPN EVEN / garbage never invent value.
+    away_market = normalize_american_odds(market.get("away_moneyline"))
+    home_market = normalize_american_odds(market.get("home_moneyline"))
     consensus_spread = market.get("spread")
-    away_spread_odds = market.get("away_spread_odds")
-    home_spread_odds = market.get("home_spread_odds")
+    away_spread_odds = normalize_american_odds(market.get("away_spread_odds"))
+    home_spread_odds = normalize_american_odds(market.get("home_spread_odds"))
     use_spread = uses_spread_bets(league) and consensus_spread is not None
 
     def _spread_kwargs() -> dict[str, Any]:
@@ -738,12 +740,14 @@ def run_power_model(
     if not prediction:
         return None
 
+    # Do not copy power_diff into predicted_margin — power ratings are not
+    # point margins. ATS helpers fall through to home_win_probability →
+    # model_home_margin so agreement/ensemble features stay on the right scale.
     return {
         "algorithm": "PowerRatings",
         "home_power": prediction["home_power"],
         "away_power": prediction["away_power"],
         "power_diff": prediction["power_diff"],
-        "predicted_margin": prediction["power_diff"],
         "home_win_probability": prediction["home_win_probability"],
         "param": prediction["param"],
         "home_games": prediction["home_games"],

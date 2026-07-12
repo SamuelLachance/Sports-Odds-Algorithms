@@ -7,8 +7,13 @@ DEFAULT_THREEWAY_DECORRELATION_WEIGHT = 0.35
 
 
 def _as_fraction(prob: float) -> tuple[float, bool]:
-    """Return probability in 0–1 and whether input was on 0–100 scale."""
-    if prob > 1.0:
+    """Return probability in 0–1 and whether input was on 0–100 scale.
+
+    Values ``> 1`` are percent. Exactly ``1.0`` is ambiguous (1% vs 100% as a
+    fraction); treat it as 1% — callers that mean certainty pass ``100.0``, and
+    fraction-scale callers use values in ``(0, 1)``.
+    """
+    if prob > 1.0 or prob == 1.0:
         return min(max(prob / 100.0, 0.01), 0.99), True
     return min(max(prob, 0.01), 0.99), False
 

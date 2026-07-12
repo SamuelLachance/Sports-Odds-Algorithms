@@ -7,20 +7,32 @@
   <title>Sharp Odds — Redirecting</title>
   <script>
     (function () {
-      var base = "/Sports-Odds-Algorithms";
+      // Project Pages live under /Sports-Odds-Algorithms; custom domain + local are root.
+      var host = location.hostname || "";
+      var projectBase = "/Sports-Odds-Algorithms";
+      var base = /\.github\.io$/i.test(host) ? projectBase : "";
       var path = location.pathname || "/";
-      if (path.indexOf(base) === 0) {
+      if (base && path.indexOf(base) === 0) {
         path = path.slice(base.length) || "/";
       }
       if (!path.startsWith("/")) path = "/" + path;
       // Drop trailing slash except root; map filesystem 404s into hash routes.
       if (path.length > 1 && path.endsWith("/")) path = path.slice(0, -1);
       var hash = path === "/" ? "#/" : "#" + path;
-      location.replace(base + "/" + hash + location.search);
+      var prefix = base || "";
+      location.replace(prefix + "/" + hash + location.search);
     })();
   </script>
 </head>
 <body>
-  <p>Page not found. <a href="/Sports-Odds-Algorithms/#/">Return home</a>.</p>
+  <p>Page not found. <a id="home-link" href="/#/">Return home</a>.</p>
+  <script>
+    (function () {
+      var host = location.hostname || "";
+      var base = /\.github\.io$/i.test(host) ? "/Sports-Odds-Algorithms" : "";
+      var link = document.getElementById("home-link");
+      if (link) link.setAttribute("href", (base || "") + "/#/");
+    })();
+  </script>
 </body>
 </html>

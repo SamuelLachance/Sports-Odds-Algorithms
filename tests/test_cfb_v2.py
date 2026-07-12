@@ -233,3 +233,12 @@ def test_get_live_context_fails_closed_on_missing_gap_season(monkeypatch) -> Non
     monkeypatch.setattr(live, "cfb_season_of", lambda _d: 2025)
     assert live.get_live_context("2025-09-15") is None
     assert 2024 in calls
+
+
+def test_espn_local_date_uses_toronto_not_fixed_utc_minus_5() -> None:
+    from web.cfb_v2.replay import _espn_local_date
+    from web.season_games import _event_date_iso
+
+    iso = "2024-06-15T04:30:00Z"
+    assert _espn_local_date({"date": iso}) == _event_date_iso(iso) == "2024-06-15"
+    assert _espn_local_date({"date": "2024-09-01"}) == "2024-09-01"

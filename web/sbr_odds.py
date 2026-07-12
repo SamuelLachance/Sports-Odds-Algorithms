@@ -168,23 +168,33 @@ def _repair_same_sign_spreads(
         return home_spread, -home_spread
     if away_spread is not None and home_spread is None:
         return -away_spread, away_spread
-    if (
-        home_spread is not None
-        and away_spread is not None
-        and home_spread != 0
-        and away_spread != 0
-        and (home_spread > 0) == (away_spread > 0)
+    if home_spread is None or away_spread is None:
+        return home_spread, away_spread
+    home_f = float(home_spread)
+    away_f = float(away_spread)
+    # Pick'em (0) on one side with a real line on the other is inconsistent.
+    pk_mismatch = (home_f == 0.0) ^ (away_f == 0.0)
+    same_sign = (
+        home_f != 0.0
+        and away_f != 0.0
+        and (home_f > 0) == (away_f > 0)
+    )
+    if not pk_mismatch and not same_sign:
+        return home_spread, away_spread
+    magnitude = max(abs(home_f), abs(away_f))
+    away_is_favorite = (
+        away_ml is not None
+        and home_ml is not None
+        and float(away_ml) < float(home_ml)
+    )
+    if not away_is_favorite and pk_mismatch and (
+        home_ml is None or away_ml is None or float(away_ml) == float(home_ml)
     ):
-        magnitude = abs(float(home_spread))
-        away_is_favorite = (
-            away_ml is not None
-            and home_ml is not None
-            and float(away_ml) < float(home_ml)
-        )
-        if away_is_favorite:
-            return magnitude, -magnitude
-        return -magnitude, magnitude
-    return home_spread, away_spread
+        # Prefer the sign of the non-zero dump when MLs do not break the tie.
+        away_is_favorite = away_f < 0 or home_f > 0
+    if away_is_favorite:
+        return magnitude, -magnitude
+    return -magnitude, magnitude
 
 
 def _pairwise(rows: list[list[str]]) -> list[tuple[list[str], list[str]]]:
@@ -219,9 +229,14 @@ def _rows_from_html_table(sport: str, season: int, html: str, translated: dict[s
             # Away favorite (lower/more-negative open) → home gets +line.
             # Equal opens (SBR often duplicates the favorite line) → break ties
             # with moneyline when available; else treat home as chalk.
+            # Close ML also wins when the favorite flipped after open: mirroring
+            # from the open chalk invents opposite-sign closes that skip
+            # ``_repair_same_sign_spreads`` and keep the wrong side as favorite.
             away_is_favorite = open_a < open_h
-            if open_a == open_h and away_close_ml is not None and home_close_ml is not None:
-                away_is_favorite = away_close_ml < home_close_ml
+            if away_close_ml is not None and home_close_ml is not None:
+                ml_away_favorite = float(away_close_ml) < float(home_close_ml)
+                if open_a == open_h or ml_away_favorite != away_is_favorite:
+                    away_is_favorite = ml_away_favorite
             if away_is_favorite:
                 home_spread = -close_a if close_a is not None else None
                 away_spread = close_a if close_a is not None else (

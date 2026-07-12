@@ -113,6 +113,16 @@ def test_parse_american_odds_maps_even_zero_to_plus_100() -> None:
     assert espn_client._parse_american_odds(None) is None
 
 
+def test_parse_american_odds_accepts_float_json_values() -> None:
+    """ESPN/core JSON often emits American prices as floats; do not drop them."""
+    assert espn_client._parse_american_odds(-110.0) == -110
+    assert espn_client._parse_american_odds(150.0) == 150
+    assert espn_client._parse_american_odds("-110.0") == -110
+    assert espn_client._parse_american_odds("+150.0") == 150
+    assert espn_client._parse_american_odds(0.0) == 100
+    assert espn_client._parse_american_odds(50.0) is None
+
+
 def test_parse_american_odds_rejects_invalid_magnitude() -> None:
     """|odds| < 100 (except ESPN 0→EVEN) must not enter the daily slate."""
     assert espn_client._parse_american_odds(50) is None
@@ -287,3 +297,26 @@ def test_event_before_cutoff_includes_late_et_prior_toronto_day() -> None:
         "competitions": [{"status": {"type": {"completed": True}}}],
     }
     assert _event_before_cutoff(same_day, cutoff) is False
+
+
+def test_fetch_team_schedule_does_not_cache_empty_payload() -> None:
+    """Empty ESPN schedules must not poison the process-lifetime schedule cache."""
+    from unittest.mock import patch
+
+    espn_client.clear_schedule_cache()
+    url_suffix = "teams/1/schedule?season=2026"
+    with patch.object(espn_client, "_fetch_json", return_value={"events": []}):
+        first = espn_client.fetch_team_schedule("nba", "1", 2026)
+    assert first == []
+    assert not any(url_suffix in key for key in espn_client._SCHEDULE_CACHE)
+
+    payload = {"events": [{"id": "401"}]}
+    with patch.object(espn_client, "_fetch_json", return_value=payload) as fetch:
+        second = espn_client.fetch_team_schedule("nba", "1", 2026)
+    assert second == payload["events"]
+    assert fetch.call_count == 1
+    # Non-empty result is cached for subsequent callers.
+    with patch.object(espn_client, "_fetch_json", side_effect=AssertionError("cache miss")):
+        third = espn_client.fetch_team_schedule("nba", "1", 2026)
+    assert third == payload["events"]
+    espn_client.clear_schedule_cache()

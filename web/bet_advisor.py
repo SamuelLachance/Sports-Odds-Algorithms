@@ -242,12 +242,22 @@ def _format_spread(value: float) -> str:
     return f"{value:+.1f}".replace(".0", "")
 
 
-def normalize_american_odds(american_odds: int | None) -> int | None:
-    """Map ESPN EVEN (0) → +100; reject |odds| < 100 garbage; keep valid quotes."""
-    if american_odds is None:
+def normalize_american_odds(american_odds: int | float | str | None) -> int | None:
+    """Map ESPN EVEN (0) → +100; reject |odds| < 100 garbage; keep valid quotes.
+
+    Accepts JSON floats and numeric strings (``-110.0``) so callers do not have
+    to pre-coerce; bool is rejected (``True`` is a subclass of ``int``).
+    """
+    if american_odds is None or isinstance(american_odds, bool):
         return None
     try:
-        odds = int(american_odds)
+        if isinstance(american_odds, str):
+            text = american_odds.strip()
+            if not text:
+                return None
+            odds = int(float(text))
+        else:
+            odds = int(american_odds)
     except (TypeError, ValueError):
         return None
     if odds == 0:
@@ -366,9 +376,11 @@ def enrich_pick_profit_metrics(pick: BetPick) -> BetPick:
         if pick.spread_odds is None:
             # Fail closed — do not invent -110 for unpriced spreads.
             return pick
-        odds = int(pick.spread_odds)
+        odds = normalize_american_odds(pick.spread_odds)
     else:
-        odds = int(pick.market_odds)
+        odds = normalize_american_odds(pick.market_odds)
+    if odds is None:
+        return pick
     # EV/Kelly use the calibrated (pre-decorrelation) probability when available;
     # the decorrelated win_probability only drives the gap/confidence gates.
     base_prob = pick.extra.get("base_win_probability")

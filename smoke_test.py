@@ -51,6 +51,17 @@ def test_football_cbb_v2_artifacts_optional() -> None:
         print(f"{label} artifacts_available: {available}")
 
 
+def test_toronto_event_date_helper() -> None:
+    """Regression: EDT kickoffs must use America/Toronto, not UTC[:10] / UTC−5."""
+    from web.season_games import _event_date_iso
+
+    # 04:30Z in June = 00:30 Toronto (EDT) same calendar day.
+    assert _event_date_iso("2024-06-15T04:30:00Z") == "2024-06-15"
+    # Late-ET tip that rolls UTC past midnight must stay prior Toronto evening.
+    assert _event_date_iso("2026-01-16T03:00:00Z") == "2026-01-15"
+    assert _event_date_iso("2026-01-15") == "2026-01-15"
+
+
 def test_core_v2_artifacts_optional() -> None:
     """Report nba/wnba/nhl/mlb/soccer v2 presence; never fail when absent."""
     checks = (
@@ -73,6 +84,7 @@ def test_core_v2_artifacts_optional() -> None:
 if __name__ == "__main__":
     test_api_import()
     test_nba_example()
+    test_toronto_event_date_helper()
     test_football_cbb_v2_artifacts_optional()
     test_core_v2_artifacts_optional()
     print("All smoke tests passed.")

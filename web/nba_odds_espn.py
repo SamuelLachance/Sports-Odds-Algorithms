@@ -279,60 +279,83 @@ def _cache_path(datestr: str) -> Path:
     return CACHE_DIR / f"{datestr}.json"
 
 
+def _empty_odds_row(event: dict[str, Any]) -> dict[str, Any]:
+    """Stub row when odds lookup fails — preserves the completed game."""
+    return {
+        "date": event["date"],
+        "home_key": event["home_key"],
+        "away_key": event["away_key"],
+        "home_final": event["home_final"],
+        "away_final": event["away_final"],
+        "home_close_ml": None,
+        "away_close_ml": None,
+        "home_close_spread": None,
+        "away_close_spread": None,
+        "home_spread_odds": None,
+        "away_spread_odds": None,
+        "home_open_spread": None,
+        "away_open_spread": None,
+        "close_total": None,
+        "open_total": None,
+        "n_books": 0,
+        "source": "espn-core",
+    }
+
+
 def collect_day_rows(day: date, *, use_cache: bool = True) -> list[dict[str, Any]]:
     datestr = day.strftime("%Y%m%d")
     cache_file = _cache_path(datestr)
     if use_cache and cache_file.is_file():
         try:
-            return json.loads(cache_file.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):
+            cached = json.loads(cache_file.read_text(encoding="utf-8"))
+            # Empty / partial-day / all-failed odds caches must not stick: one
+            # filled game must not freeze siblings still at n_books=0.
+            if cached and all(int(r.get("n_books") or 0) > 0 for r in cached):
+                return cached
+        except (json.JSONDecodeError, OSError, TypeError, ValueError):
             pass
 
-    def _odds_row(event: dict[str, Any]) -> dict[str, Any] | None:
+    def _odds_row(event: dict[str, Any]) -> dict[str, Any]:
+        row = _empty_odds_row(event)
         try:
             odds_payload = _get_json(
                 ODDS_URL.format(event=event["event"], comp=event["comp"])
             )
         except OSError:
-            return None
+            return row
         items = [
             item
             for item in (odds_payload.get("items") or [])
             if "live" not in ((item.get("provider") or {}).get("name", "").lower())
         ]
         if not items:
-            return None
+            return row
         consensus = _consensus(items)
         if consensus.get("home_close_spread") is None and consensus.get("home_close_ml") is None:
-            return None
-        return {
-            "date": event["date"],
-            "home_key": event["home_key"],
-            "away_key": event["away_key"],
-            "home_final": event["home_final"],
-            "away_final": event["away_final"],
-            "home_close_ml": consensus["home_close_ml"],
-            "away_close_ml": consensus["away_close_ml"],
-            "home_close_spread": consensus["home_close_spread"],
-            "away_close_spread": consensus["away_close_spread"],
-            # Missing juice stays None — do not invent -110 for training/CLV rows.
-            "home_spread_odds": consensus["home_spread_odds"],
-            "away_spread_odds": consensus["away_spread_odds"],
-            "home_open_spread": consensus["home_open_spread"],
-            "away_open_spread": consensus["away_open_spread"],
-            "close_total": consensus["close_total"],
-            "open_total": consensus["open_total"],
-            "n_books": consensus["n_books"],
-            "source": "espn-core",
-        }
+            return row
+        row.update(
+            {
+                "home_close_ml": consensus["home_close_ml"],
+                "away_close_ml": consensus["away_close_ml"],
+                "home_close_spread": consensus["home_close_spread"],
+                "away_close_spread": consensus["away_close_spread"],
+                # Missing juice stays None — do not invent -110 for training/CLV rows.
+                "home_spread_odds": consensus["home_spread_odds"],
+                "away_spread_odds": consensus["away_spread_odds"],
+                "home_open_spread": consensus["home_open_spread"],
+                "away_open_spread": consensus["away_open_spread"],
+                "close_total": consensus["close_total"],
+                "open_total": consensus["open_total"],
+                "n_books": consensus["n_books"],
+            }
+        )
+        return row
 
     events = list(_iter_completed_events(day, day))
     rows: list[dict[str, Any]] = []
     if events:
         with ThreadPoolExecutor(max_workers=8) as pool:
-            for result in pool.map(_odds_row, events):
-                if result is not None:
-                    rows.append(result)
+            rows = list(pool.map(_odds_row, events))
 
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     cache_file.write_text(json.dumps(rows), encoding="utf-8")

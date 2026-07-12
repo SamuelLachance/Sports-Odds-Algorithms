@@ -151,9 +151,22 @@ def _fetch_json(url: str, timeout: int | None = None, retries: int = 3) -> dict[
     raise urllib.error.URLError("ESPN request failed")
 
 
-def _parse_american_odds(value: str | int | None) -> int | None:
+def _parse_american_odds(value: str | int | float | None) -> int | None:
     if value is None or value == "":
         return None
+    # JSON/float payloads often arrive as -110.0; str(-110.0) is "-110.0" and
+    # int(...) raises — accept numeric floats before the string path.
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        if value != value:  # NaN
+            return None
+        odds = int(value)
+        if odds == 0:
+            return 100
+        if abs(odds) < 100:
+            return None
+        return odds
     text = str(value).strip()
     upper = text.upper()
     if upper in {"EVEN", "PK"}:
@@ -161,10 +174,7 @@ def _parse_american_odds(value: str | int | None) -> int | None:
     if upper in {"OFF", "N/A", "NA"}:
         return None
     try:
-        if text.startswith("+"):
-            odds = int(text)
-        else:
-            odds = int(text)
+        odds = int(float(text))
     except ValueError:
         return None
     # ESPN often encodes even money as numeric 0; American odds require |x| >= 100.
@@ -405,9 +415,13 @@ def fetch_team_schedule(league: str, espn_team_id: str, season: int) -> list[dic
     try:
         payload = _fetch_json(url)
     except (urllib.error.URLError, TimeoutError, json.JSONDecodeError):
+        # Network/parse failure — do not cache; allow a later retry.
         return []
     events = payload.get("events") or []
-    _SCHEDULE_CACHE[url] = events
+    # Empty successful payloads are often transient (pre-publish / ESPN glitch).
+    # Caching [] would poison season_games / live_data for the process lifetime.
+    if events:
+        _SCHEDULE_CACHE[url] = events
     return events
 
 

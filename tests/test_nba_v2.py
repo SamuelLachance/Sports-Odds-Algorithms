@@ -143,15 +143,24 @@ def test_season_rollover_carries_elo_and_resets_records() -> None:
         engine.update_after_game(
             _game(f"2025-01-{day:02d}", "bos", "ny", 115, 95, season=2025)
         )
+    # Finish the prior season on the road so last_market is the away venue.
+    engine.update_after_game(
+        _game("2025-04-10", "lal", "bos", 90, 100, season=2025)
+    )
+    assert engine.teams["bos"].last_market is not None
     elo_2025 = engine.teams["bos"].elo
     features = engine.features_for_game(
         _game("2025-10-22", "bos", "ny", 0, 0, season=2026)
     )
     bos = engine.teams["bos"]
     assert bos.wins == 0 and bos.losses == 0
+    assert bos.last_market is None
     assert 1500.0 < bos.elo < elo_2025
     assert features["prev_win_pct_diff"] == 1.0
     assert features["home_games_played"] == 0.0
+    # Opening-night home travel must not inherit last season's road venue.
+    assert features["home_travel_km"] == 0.0
+    assert features["home_tz_shift"] == 0.0
 
 
 def test_engine_snapshot_round_trip() -> None:

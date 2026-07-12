@@ -120,11 +120,16 @@ def _v2_artifacts_status() -> dict[str, bool]:
 @app.get("/api/health")
 def health() -> dict:
     artifacts = _v2_artifacts_status()
+    ready = sum(1 for ok in artifacts.values() if ok)
+    total = len(artifacts)
+    # Still HTTP 200 so load balancers stay up, but surface a degraded flag
+    # when the entire GradientBoost v2 stack is missing.
+    status = "ok" if ready > 0 else "degraded"
     return {
-        "status": "ok",
+        "status": status,
         "v2_artifacts": artifacts,
-        "v2_artifacts_ready": sum(1 for ok in artifacts.values() if ok),
-        "v2_artifacts_total": len(artifacts),
+        "v2_artifacts_ready": ready,
+        "v2_artifacts_total": total,
     }
 
 

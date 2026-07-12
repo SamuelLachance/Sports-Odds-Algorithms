@@ -355,3 +355,205 @@ def test_cfb_collect_day_rows_refetches_empty_odds_cache(tmp_path, monkeypatch) 
             rows = mod.collect_day_rows(day, use_cache=True)
     assert rows[0]["n_books"] == 2
     assert rows[0]["home_close_ml"] == -200
+
+
+def test_cfb_collect_day_rows_refetches_partial_day_cache(tmp_path, monkeypatch) -> None:
+    """One filled book row must not freeze siblings still at n_books=0."""
+    import json
+    from datetime import date
+    from unittest.mock import patch
+
+    from scripts import fetch_cfb_odds as mod
+
+    monkeypatch.setattr(mod, "CACHE_DIR", tmp_path)
+    day = date(2024, 9, 3)
+    cache_file = tmp_path / f"{day.strftime('%Y%m%d')}.json"
+    cache_file.write_text(
+        json.dumps(
+            [
+                {
+                    "date": "2024-09-03",
+                    "home_key": "ala",
+                    "away_key": "uga",
+                    "n_books": 2,
+                    "home_close_ml": -200,
+                },
+                {
+                    "date": "2024-09-03",
+                    "home_key": "osu",
+                    "away_key": "mich",
+                    "n_books": 0,
+                    "home_close_ml": None,
+                },
+            ]
+        ),
+        encoding="utf-8",
+    )
+    filled = [
+        {
+            "date": "2024-09-03",
+            "home_key": "ala",
+            "away_key": "uga",
+            "n_books": 2,
+            "home_close_ml": -200,
+        },
+        {
+            "date": "2024-09-03",
+            "home_key": "osu",
+            "away_key": "mich",
+            "n_books": 3,
+            "home_close_ml": -140,
+        },
+    ]
+    with patch.object(mod, "_iter_completed_events", return_value=[{"id": "1"}, {"id": "2"}]):
+        with patch.object(mod, "_odds_row", side_effect=filled):
+            rows = mod.collect_day_rows(day, use_cache=True)
+    assert len(rows) == 2
+    assert rows[1]["n_books"] == 3
+    assert rows[1]["home_close_ml"] == -140
+
+
+def test_cfb_collect_day_rows_refetches_sticky_empty_list(tmp_path, monkeypatch) -> None:
+    """Cached [] from a scoreboard outage / mid-day empty slate must not stick."""
+    from datetime import date
+    from unittest.mock import patch
+
+    from scripts import fetch_cfb_odds as mod
+
+    monkeypatch.setattr(mod, "CACHE_DIR", tmp_path)
+    day = date(2024, 9, 2)
+    cache_file = tmp_path / f"{day.strftime('%Y%m%d')}.json"
+    cache_file.write_text("[]", encoding="utf-8")
+    filled = {
+        "date": "2024-09-02",
+        "home_key": "osu",
+        "away_key": "mich",
+        "n_books": 3,
+        "home_close_ml": -140,
+    }
+    with patch.object(mod, "_iter_completed_events", return_value=[{"id": "2"}]):
+        with patch.object(mod, "_odds_row", return_value=filled):
+            rows = mod.collect_day_rows(day, use_cache=True)
+    assert len(rows) == 1
+    assert rows[0]["n_books"] == 3
+    assert rows[0]["home_close_ml"] == -140
+
+
+def test_nba_collect_day_rows_refetches_empty_odds_cache(tmp_path, monkeypatch) -> None:
+    """Sticky [] after an odds outage must not permanently skip a later refill."""
+    from datetime import date
+    from unittest.mock import patch
+
+    from web import nba_odds_espn as mod
+
+    monkeypatch.setattr(mod, "CACHE_DIR", tmp_path)
+    day = date(2024, 1, 15)
+    cache_file = tmp_path / f"{day.strftime('%Y%m%d')}.json"
+    cache_file.write_text("[]", encoding="utf-8")
+    event = {
+        "date": "2024-01-15",
+        "event": "1",
+        "comp": "1",
+        "home_key": "bos",
+        "away_key": "nyk",
+        "home_final": 110,
+        "away_final": 105,
+    }
+    filled = {
+        **mod._empty_odds_row(event),
+        "home_close_ml": -150,
+        "away_close_ml": 130,
+        "home_close_spread": -3.5,
+        "away_close_spread": 3.5,
+        "n_books": 3,
+    }
+    with patch.object(mod, "_iter_completed_events", return_value=[event]):
+        with patch("web.nba_odds_espn.ThreadPoolExecutor") as pool_cls:
+            pool = pool_cls.return_value.__enter__.return_value
+            pool.map.return_value = [filled]
+            rows = mod.collect_day_rows(day, use_cache=True)
+    assert len(rows) == 1
+    assert rows[0]["n_books"] == 3
+    assert rows[0]["home_close_ml"] == -150
+    # Successful refill must be trusted on the next call.
+    rows2 = mod.collect_day_rows(day, use_cache=True)
+    assert rows2[0]["n_books"] == 3
+
+
+def test_nba_collect_day_rows_refetches_all_zero_books_cache(tmp_path, monkeypatch) -> None:
+    """Cached n_books=0 stubs must not permanently block a later successful fetch."""
+    import json
+    from datetime import date
+    from unittest.mock import patch
+
+    from web import nba_odds_espn as mod
+
+    monkeypatch.setattr(mod, "CACHE_DIR", tmp_path)
+    day = date(2024, 1, 16)
+    event = {
+        "date": "2024-01-16",
+        "event": "2",
+        "comp": "2",
+        "home_key": "mia",
+        "away_key": "chi",
+        "home_final": 100,
+        "away_final": 98,
+    }
+    cache_file = tmp_path / f"{day.strftime('%Y%m%d')}.json"
+    cache_file.write_text(json.dumps([mod._empty_odds_row(event)]), encoding="utf-8")
+    filled = {
+        **mod._empty_odds_row(event),
+        "home_close_ml": -120,
+        "away_close_ml": 100,
+        "n_books": 2,
+    }
+    with patch.object(mod, "_iter_completed_events", return_value=[event]):
+        with patch("web.nba_odds_espn.ThreadPoolExecutor") as pool_cls:
+            pool = pool_cls.return_value.__enter__.return_value
+            pool.map.return_value = [filled]
+            rows = mod.collect_day_rows(day, use_cache=True)
+    assert rows[0]["n_books"] == 2
+
+
+def test_cbb_scoreboard_always_live_fetches(tmp_path, monkeypatch) -> None:
+    """Truncated mid-day scoreboard must not stick; later runs see new games."""
+    from datetime import date
+    from unittest.mock import patch
+
+    from scripts import fetch_cbb_odds as mod
+
+    day = date(2024, 1, 20)
+
+    def _event(eid: str, home: str, away: str) -> dict:
+        return {
+            "id": eid,
+            "competitions": [
+                {
+                    "id": eid,
+                    "status": {"type": {"completed": True}},
+                    "competitors": [
+                        {
+                            "homeAway": "home",
+                            "score": "70",
+                            "team": {"abbreviation": home},
+                        },
+                        {
+                            "homeAway": "away",
+                            "score": "65",
+                            "team": {"abbreviation": away},
+                        },
+                    ],
+                }
+            ],
+        }
+
+    payloads = [
+        {"events": [_event("1", "DUKE", "UNC")]},
+        {"events": [_event("1", "DUKE", "UNC"), _event("2", "KU", "UK")]},
+    ]
+    with patch.object(mod, "_throttled_get", side_effect=payloads) as fetch:
+        first = list(mod._iter_completed_events(day))
+        second = list(mod._iter_completed_events(day))
+    assert len(first) == 1
+    assert len(second) == 2
+    assert fetch.call_count == 2

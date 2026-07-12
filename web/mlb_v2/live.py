@@ -39,8 +39,15 @@ LIVE_CACHE_DIR = PROJECT_ROOT / ".build-cache" / "mlb-v2-live"
 LIVE_CACHE_TTL_SECONDS = 3 * 3600  # fresher than 6h Pages cadence
 LIVE_CACHE_STALE_SECONDS = 10 * 86400  # soft-serve window on network failure
 
-# Stats API codedGameState values treated as finished for doubleheader pick.
-_FINAL_STATUSES = frozenset({"F", "O", "C", "D"})
+# Stats API codedGameState values treated as finished/skipable for DH pick.
+# F/O = completed; C = cancelled. D (delayed/postponed) is NOT final — keep
+# that game as the live card until it finals or is cancelled.
+_FINAL_STATUSES = frozenset({"F", "O", "C"})
+
+# Max |kickoff − game_datetime| to trust a DH kickoff match (seconds).
+_KICKOFF_MATCH_MAX_DELTA_S = 3.5 * 3600
+# Synthetic gap used when a DH leg is missing game_datetime.
+_DH_MISSING_DT_GAP = timedelta(hours=6)
 
 
 def artifacts_available() -> bool:
@@ -260,17 +267,39 @@ def _select_matchup_game(
                 continue
     kickoff = _parse_kickoff_utc(kickoff_iso)
     if kickoff is not None and len(games) > 1:
+        known: list[tuple[int, datetime]] = []
+        for game in games:
+            game_dt = _parse_kickoff_utc(game.get("game_datetime"))
+            if game_dt is None:
+                continue
+            try:
+                gn = int(game.get("game_number") or 1)
+            except (TypeError, ValueError):
+                gn = 1
+            known.append((gn, game_dt))
+        known.sort(key=lambda item: item[0])
         best: dict[str, Any] | None = None
         best_delta: float | None = None
         for game in games:
             game_dt = _parse_kickoff_utc(game.get("game_datetime"))
+            if game_dt is None and known:
+                try:
+                    gn = int(game.get("game_number") or 1)
+                except (TypeError, ValueError):
+                    gn = 1
+                base_gn, base_dt = known[0]
+                game_dt = base_dt + _DH_MISSING_DT_GAP * max(0, gn - base_gn)
             if game_dt is None:
                 continue
             delta = abs((game_dt - kickoff).total_seconds())
             if best_delta is None or delta < best_delta:
                 best_delta = delta
                 best = game
-        if best is not None:
+        if (
+            best is not None
+            and best_delta is not None
+            and best_delta <= _KICKOFF_MATCH_MAX_DELTA_S
+        ):
             return best
     selected: dict[str, Any] | None = None
     for game in games:

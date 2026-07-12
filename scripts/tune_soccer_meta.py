@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import sys
-from datetime import date
 from pathlib import Path
 
 from typing import Any
@@ -47,14 +46,14 @@ from web.soccer_pred_model import (  # noqa: E402
 from web.soccer_decorrelation import devig_threeway_from_odds  # noqa: E402
 from web.supplemental_games import soccer_backtest_odds  # noqa: E402
 from web.ensemble_ml.config import sportsbook_logloss_benchmark  # noqa: E402
+from web.tracking_service import toronto_cutoff_mdy, toronto_today  # noqa: E402
 
 MIN_CALIBRATION_GAMES = 40
 MIN_LEAGUE_GAMES = 60
 
 
 def _cutoff_today() -> str:
-    today = date.today()
-    return f"{today.month}-{today.day}-{today.year}"
+    return toronto_cutoff_mdy()
 
 
 def _load_dated_games(league: str, cutoff: str) -> list:
@@ -530,7 +529,7 @@ def main() -> int:
         }
 
     payload["_meta"] = {
-        "tuned_at": date.today().isoformat(),
+        "tuned_at": toronto_today().isoformat(),
         "calibration_window": "full",
         "pro_seasons": BACKTEST_PRO_SEASONS,
         "scoreboard_days": BACKTEST_SCOREBOARD_LOOKBACK_DAYS,

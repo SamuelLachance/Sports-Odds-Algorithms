@@ -244,3 +244,53 @@ def test_get_live_context_fails_closed_on_empty_current_moneypuck(monkeypatch) -
         lambda seasons: ({}, False),
     )
     assert live.get_live_context("2024-12-15") is None
+
+
+def test_espn_to_nhl_maps_phx_alias() -> None:
+    """Historical ESPN/closing keys still use phx for the Coyotes franchise."""
+    from web.nhl_v2.live import ESPN_TO_NHL
+
+    assert ESPN_TO_NHL["phx"] == "ARI"
+    assert ESPN_TO_NHL["ari"] == "ARI"
+
+
+def test_nhl_features_precede_update_rest_and_elo() -> None:
+    """Emit-before-update: rest/B2B must not see the current game; Elo moves after."""
+    from web.nhl_v2.feature_engine import ELO_HOME_ADV, NhlFeatureEngine
+
+    engine = NhlFeatureEngine()
+    game1 = {
+        "gameId": 1,
+        "date": "2024-10-10",
+        "game_type": 2,
+        "home": "TOR",
+        "away": "BOS",
+        "home_goals": 4,
+        "away_goals": 2,
+        "home_win": 1,
+        "home_shots": 30,
+        "away_shots": 28,
+    }
+    before = engine.features_for_game(game1)
+    assert before["elo_diff"] == ELO_HOME_ADV / 100.0
+    assert before["home_b2b"] == 0.0
+    engine.update_after_game(game1)
+    game2 = {
+        "gameId": 2,
+        "date": "2024-10-11",
+        "game_type": 2,
+        "home": "MTL",
+        "away": "TOR",
+        "home_goals": 0,
+        "away_goals": 0,
+        "home_win": 0,
+        "home_shots": 20,
+        "away_shots": 20,
+    }
+    after = engine.features_for_game(game2)
+    # TOR played yesterday → B2B; features still pre-update for game2.
+    assert after["away_b2b"] == 1.0
+    assert after["away_rest_days"] == 1.0
+    assert engine.team("TOR").elo > engine.team("BOS").elo
+    # Updating game2 must not be required for the Elo move from game1.
+    assert engine.team("TOR").games_played == 1

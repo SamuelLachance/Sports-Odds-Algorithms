@@ -169,6 +169,39 @@ def test_sbr_html_emits_opposite_sign_spreads() -> None:
     assert rows[0]["away_close_spread"] == -3.5
 
 
+def test_sbr_html_open_favorite_flip_follows_close_ml() -> None:
+    """When the favorite flips after open, close ML must win over open chalk.
+
+    Open home chalk + same-sign close dump previously mirrored from open and
+    skipped ``_repair_same_sign_spreads``, keeping the wrong side as favorite.
+    """
+    from unittest.mock import patch
+
+    from web.sbr_odds import _rows_from_html_table
+
+    cells = lambda *vals: "".join(f"<td>{v}</td>" for v in vals)
+    # Open: home −7 / away +7. Close dump: both −3.5. Close ML: away −150.
+    html = (
+        "<table>"
+        f"<tr>{cells(*([f'h{i}' for i in range(12)]))}</tr>"
+        f"<tr>{cells(*(['sub'] * 12))}</tr>"
+        f"<tr>{cells('1015', '', '', 'Boston', '', '', '', '', '', '7', '-3.5', '-150')}</tr>"
+        f"<tr>{cells('1015', '', '', 'Montreal', '', '', '', '', '', '-7', '-3.5', '130')}</tr>"
+        "</table>"
+    )
+    with patch("web.sbr_odds._translate_name", side_effect=lambda _s, name, _t: name):
+        with patch(
+            "web.sbr_odds.normalize_team_key",
+            side_effect=lambda _s, name: name.lower()[:3],
+        ):
+            rows = _rows_from_html_table("nba", 2023, html, {})
+    assert len(rows) == 1
+    assert rows[0]["away_close_ml"] == -150
+    assert rows[0]["home_close_ml"] == 130
+    assert rows[0]["home_close_spread"] == 3.5
+    assert rows[0]["away_close_spread"] == -3.5
+
+
 def test_sbr_html_and_archive_do_not_invent_spread_juice() -> None:
     """Fail closed: missing juice must stay None, not fake -110."""
     from unittest.mock import patch
@@ -404,3 +437,29 @@ def test_sbr_html_open_branch_mirrors_sparse_close() -> None:
     assert len(rows) == 1
     assert rows[0]["home_close_spread"] == 5.5
     assert rows[0]["away_close_spread"] == -5.5
+
+
+def test_repair_same_sign_handles_pk_mismatch_and_asymmetric_magnitude() -> None:
+    from web.sbr_odds import _repair_same_sign_spreads
+
+    # One-sided pick'em: non-zero dump sign identifies the favorite when MLs tie.
+    assert _repair_same_sign_spreads(0.0, -3.5, home_ml=-110, away_ml=-110) == (
+        3.5,
+        -3.5,
+    )
+    assert _repair_same_sign_spreads(-3.5, 0.0, home_ml=-150, away_ml=130) == (
+        -3.5,
+        3.5,
+    )
+    # Same-sign dump with unequal abs → prefer the larger magnitude; ML picks favorite.
+    assert _repair_same_sign_spreads(-7.0, -3.5, home_ml=-150, away_ml=130) == (
+        -7.0,
+        7.0,
+    )
+    assert _repair_same_sign_spreads(-7.0, -3.5, home_ml=130, away_ml=-150) == (
+        7.0,
+        -7.0,
+    )
+    # Both PK / already opposite stay unchanged.
+    assert _repair_same_sign_spreads(0.0, 0.0) == (0.0, 0.0)
+    assert _repair_same_sign_spreads(-3.5, 3.5) == (-3.5, 3.5)

@@ -285,3 +285,50 @@ def test_get_live_context_fails_closed_on_missing_gap_season(monkeypatch) -> Non
     monkeypatch.setattr(live, "cbb_season_for_date", lambda _d: 2025)
     assert live.get_live_context("2025-01-15") is None
     assert 2024 in calls
+
+
+def test_espn_local_date_uses_toronto_not_fixed_utc_minus_5() -> None:
+    """EDT tips must not roll back a day under the old UTC−5 heuristic."""
+    from web.cbb_v2.replay import _espn_local_date
+    from web.season_games import _event_date_iso
+
+    # 2024-06-15 04:30Z = 00:30 America/Toronto (EDT); UTC−5 wrongly → 06-14.
+    iso = "2024-06-15T04:30:00Z"
+    assert _espn_local_date({"date": iso}) == _event_date_iso(iso) == "2024-06-15"
+    assert _espn_local_date({"date": "2024-11-15"}) == "2024-11-15"
+
+
+def test_parse_event_stores_toronto_calendar_day() -> None:
+    """Parsed events must never retain raw ISO stamps (breaks season windows)."""
+    from web.cbb_v2.data import _parse_event
+
+    event = {
+        "id": "401",
+        "date": "2025-04-15T18:00:00Z",
+        "season": {"year": 2025, "type": 3},
+        "status": {"type": {"completed": True, "name": "STATUS_FINAL"}},
+        "competitions": [
+            {
+                "neutralSite": False,
+                "conferenceCompetition": False,
+                "competitors": [
+                    {
+                        "homeAway": "home",
+                        "score": "70",
+                        "team": {"id": "150", "abbreviation": "DUKE", "displayName": "Duke"},
+                    },
+                    {
+                        "homeAway": "away",
+                        "score": "65",
+                        "team": {"id": "153", "abbreviation": "UNC", "displayName": "UNC"},
+                    },
+                ],
+            }
+        ],
+    }
+    parsed = _parse_event(event, fallback_date="2025-04-15")
+    assert parsed is not None
+    assert parsed["date"] == "2025-04-15"
+    assert "T" not in parsed["date"]
+    # Season-window string compare must accept the normalized day.
+    assert "2024-11-01" <= parsed["date"] <= "2025-04-15"

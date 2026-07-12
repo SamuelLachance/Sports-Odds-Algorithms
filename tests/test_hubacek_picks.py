@@ -142,6 +142,22 @@ def test_spread_gate_treats_even_odds_zero_like_plus_100() -> None:
     assert passes_hubacek_spread_gate(**kwargs, spread_odds=0)
 
 
+def test_spread_gate_fails_closed_on_invalid_american_odds() -> None:
+    """Garbage juice must return False, not raise into the slate pipeline."""
+    blended = {"market_decorrelated": True, "blended_home_win_probability": 72.0}
+    kwargs = dict(
+        blended=blended,
+        side="home",
+        point_edge=2.0,
+        side_cover_prob=72.0,
+        ev_pct=5.0,
+        consensus_spread=-3.0,
+    )
+    assert passes_hubacek_spread_gate(**kwargs, spread_odds=50) is False
+    assert passes_hubacek_spread_gate(**kwargs, spread_odds=-75) is False
+    assert passes_hubacek_spread_gate(**kwargs, spread_odds=-110) is True
+
+
 def test_baseball_moneyline_gate_uses_lower_confidence_bar() -> None:
     from web.hubacek_picks import HUBACEK_BASEBALL_MIN_WIN_CONFIDENCE_PP
 
@@ -298,6 +314,18 @@ def test_tracked_pick_requires_hubacek_strategy_ev_and_confidence() -> None:
             "model_market_gap_pp": HUBACEK_MIN_MARKET_GAP_PP + 5,
             "ev_pct": 30.0,
             "win_probability": 72,
+        }
+    )
+    # Non-numeric EV / gap from corrupt JSON must fail closed, not TypeError.
+    assert not passes_hubacek_tracked_pick(
+        {
+            "strategy": "hubacek",
+            "model_market_gap_pp": "nope",
+            "ev_pct": 5.0,
+            "win_probability": 72,
+            "side": "home",
+            "league": "mlb",
+            "market_odds": 140,
         }
     )
 

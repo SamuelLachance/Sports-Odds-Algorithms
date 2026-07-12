@@ -21,6 +21,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from web.closing_odds_db import clear_closing_odds_cache  # noqa: E402
 from web.nba_odds_espn import OUTPUT_CSV, OUTPUT_FIELDS, fetch_nba_odds_rows  # noqa: E402
+from web.tracking_service import toronto_today  # noqa: E402
 
 
 def _parse_date(value: str) -> date:
@@ -84,7 +85,7 @@ def write_csv(rows: list[dict], path: Path = OUTPUT_CSV) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Backfill NBA odds from ESPN.")
     parser.add_argument("--start", default="2016-10-01", type=_parse_date)
-    parser.add_argument("--end", default=date.today().isoformat(), type=_parse_date)
+    parser.add_argument("--end", default=toronto_today().isoformat(), type=_parse_date)
     parser.add_argument("--no-cache", action="store_true")
     args = parser.parse_args()
 

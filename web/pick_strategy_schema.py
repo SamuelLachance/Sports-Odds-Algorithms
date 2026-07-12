@@ -48,6 +48,21 @@ def _as_number(value: Any) -> float | None:
     return None
 
 
+def _as_bool(value: Any) -> bool | None:
+    """Coerce JSON bools and common string/int forms; reject unknown strings."""
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        return bool(value)
+    if isinstance(value, str):
+        text = value.strip().lower()
+        if text in {"1", "true", "yes", "on"}:
+            return True
+        if text in {"0", "false", "no", "off", ""}:
+            return False
+    return None
+
+
 def validate_strategy_entry(entry: Any) -> dict[str, Any] | None:
     """Return a cleaned league/default entry, or None if unusable."""
     if not isinstance(entry, dict):
@@ -61,7 +76,9 @@ def validate_strategy_entry(entry: Any) -> dict[str, Any] | None:
         cleaned["bet_type"] = bet_type.lower()
 
     if "enabled" in entry:
-        cleaned["enabled"] = bool(entry["enabled"])
+        enabled = _as_bool(entry["enabled"])
+        if enabled is not None:
+            cleaned["enabled"] = enabled
 
     for key in _NUMERIC_KEYS:
         if key not in entry or entry[key] is None:

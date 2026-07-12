@@ -6,7 +6,7 @@ emitting leak-free feature rows before folding each result into state.
 
 from __future__ import annotations
 
-from datetime import date as date_cls, datetime, timedelta
+from datetime import date as date_cls
 from typing import Any, Callable
 
 from web.cfb_v2.feature_engine import (
@@ -18,12 +18,10 @@ from web.cfb_v2.feature_engine import (
 
 
 def _espn_local_date(event: dict[str, Any]) -> str:
-    raw = str(event.get("date") or "")
-    try:
-        stamp = datetime.fromisoformat(raw.replace("Z", "+00:00"))
-        return (stamp - timedelta(hours=5)).date().isoformat()
-    except ValueError:
-        return raw[:10]
+    """America/Toronto calendar day — same keying as season_games / live paths."""
+    from web.season_games import _event_date_iso
+
+    return _event_date_iso(str(event.get("date") or ""))
 
 
 def events_to_results(events: list[dict[str, Any]], season: int | None = None) -> list[dict[str, Any]]:

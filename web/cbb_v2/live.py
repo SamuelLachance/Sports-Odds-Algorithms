@@ -196,11 +196,14 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
         engine.register_abbr(abbr, eid)
 
     todays: dict[tuple[str, str], dict[str, Any]] = {}
+    from web.season_games import _event_date_iso
+
     for event in events:
-        event_day = str(event.get("date") or "")[:10]
-        if event_day != day_iso and "T" in str(event.get("date") or ""):
-            # also accept UTC-shifted local day already normalized in fetch
-            continue
+        raw_date = str(event.get("date") or "")
+        # Prefer already-normalized YYYY-MM-DD; map leftover ISO via Toronto.
+        event_day = (
+            _event_date_iso(raw_date) if "T" in raw_date else raw_date[:10]
+        )
         if event_day != day_iso:
             continue
         home = team_key(event.get("home_id") or "", event.get("home_abbr") or "")
