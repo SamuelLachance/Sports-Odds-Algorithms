@@ -91,7 +91,9 @@
       "away_name": "England",
       "edge_pp": 79.0,
       "event_id": "760512",
+      "final_score": "2\u20131",
       "game_date": "7-11-2026",
+      "graded_at": "2026-07-12T06:36:04.172495+00:00",
       "home_abbr": "nor",
       "home_name": "Norway",
       "key": "worldcup:760512:away",
@@ -123,14 +125,18 @@
           "steam_signal": false
         },
         "steam_signal": false
-      }
+      },
+      "status": "win",
+      "units": 0.909
     },
     {
       "away_abbr": "sui",
       "away_name": "Switzerland",
       "edge_pp": 59.0,
       "event_id": "760513",
+      "final_score": "1\u20133",
       "game_date": "7-12-2026",
+      "graded_at": "2026-07-12T06:36:04.264226+00:00",
       "home_abbr": "arg",
       "home_name": "Argentina",
       "key": "worldcup:760513:home",
@@ -162,16 +168,57 @@
           "steam_signal": false
         },
         "steam_signal": false
+      },
+      "status": "win",
+      "units": 0.69
+    },
+    {
+      "away_abbr": "esp",
+      "away_name": "Spain",
+      "edge_pp": 48.99,
+      "event_id": "760514",
+      "game_date": "7-14-2026",
+      "home_abbr": "fra",
+      "home_name": "France",
+      "key": "worldcup:760514:home",
+      "league": "worldcup",
+      "market_ml": 135,
+      "model_prob": 53.76,
+      "paper": true,
+      "pick_outcome": "home",
+      "recorded_at": "2026-07-12T06:36:02.175181+00:00",
+      "signals": {
+        "away_games": 10,
+        "disagreement_signal": true,
+        "high_confidence_disagreement": true,
+        "home_games": 10,
+        "max_edge_pp": 48.99,
+        "model_best_outcome": "home",
+        "opening_steam": {
+          "implied_shifts_pp": {
+            "away": 0.48,
+            "draw": -0.98,
+            "home": 0.0
+          },
+          "model_best_outcome": "home",
+          "model_edge_pp": 13.07,
+          "opening_away_ml": 225,
+          "opening_draw_ml": 215,
+          "opening_home_ml": 135,
+          "steam_direction": null,
+          "steam_signal": false
+        },
+        "steam_signal": false
       }
     }
   ],
   "summary": {
     "losses": 0,
-    "newly_graded": 1,
-    "picks": 2,
-    "settled": 2,
-    "units": 1.233,
-    "wins": 2
+    "newly_graded": 2,
+    "picks": 5,
+    "settled": 4,
+    "units": 2.832,
+    "wins": 4
   },
   "version": 1
 }
