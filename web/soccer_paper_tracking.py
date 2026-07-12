@@ -211,10 +211,18 @@ def maybe_record_from_blend(
             "draw": "draw_probability",
             "away": "away_win_probability",
         }[outcome]
-        model_prob = _safe_float(
-            soccer_pred.get(prob_key),
-            _safe_float(blended.get(fallback_key)),
-        )
+        raw_prob = soccer_pred.get(prob_key)
+        if raw_prob is None:
+            raw_prob = blended.get(fallback_key)
+        # Fail closed: missing probs must not invent model_prob=0.0 junk rows.
+        if raw_prob is None:
+            return
+        try:
+            model_prob = float(raw_prob)
+        except (TypeError, ValueError):
+            return
+        if model_prob <= 0:
+            return
         market_ml = {"home": home_ml, "draw": draw_ml, "away": away_ml}[outcome]
         record_soccer_paper_pick(
             league=league,

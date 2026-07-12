@@ -431,8 +431,16 @@ def _evaluate_backtest_pick(
             total_score=total,
             win_probability=win_prob,
             consensus_spread=market_spread_line,
-            away_spread_odds=away_spread_odds or DEFAULT_SPREAD_JUICE,
-            home_spread_odds=home_spread_odds or DEFAULT_SPREAD_JUICE,
+            away_spread_odds=(
+                away_spread_odds
+                if away_spread_odds is not None
+                else DEFAULT_SPREAD_JUICE
+            ),
+            home_spread_odds=(
+                home_spread_odds
+                if home_spread_odds is not None
+                else DEFAULT_SPREAD_JUICE
+            ),
             model_margin_home=model_margin,
             min_edge=thresholds["min_edge"],
             min_point_edge=thresholds["min_spread_point_edge"],
@@ -443,7 +451,14 @@ def _evaluate_backtest_pick(
         if not passes_profit_gate(pick, thresholds):
             return None
         result = grade_spread_bet(pick.side, home_goals, away_goals, market_spread_line)
-        odds = pick.spread_odds or home_spread_odds or away_spread_odds or DEFAULT_SPREAD_JUICE
+        if pick.spread_odds is not None:
+            odds = pick.spread_odds
+        elif home_spread_odds is not None:
+            odds = home_spread_odds
+        elif away_spread_odds is not None:
+            odds = away_spread_odds
+        else:
+            odds = DEFAULT_SPREAD_JUICE
     else:
         away_ml, home_ml = simulate_market_moneylines(
             blended_home,

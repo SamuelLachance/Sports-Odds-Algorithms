@@ -287,6 +287,8 @@ def _run_mlb_v2(
     market_spread: float | None = None,
     home_ml: int | None = None,
     away_ml: int | None = None,
+    kickoff_iso: str | None = None,
+    game_number: int | None = None,
 ) -> dict[str, Any] | None:
     """Persisted MLB v2 (statsapi feature engine + gradient boost ensemble)."""
     if not is_mlb_league(league):
@@ -297,18 +299,28 @@ def _run_mlb_v2(
     try:
         from web.mlb_v2.live import predict_matchup_v2
 
-        v2 = predict_matchup_v2(game_date, home_abbr, away_abbr)
+        v2 = predict_matchup_v2(
+            game_date,
+            home_abbr,
+            away_abbr,
+            kickoff_iso=kickoff_iso,
+            game_number=game_number,
+        )
     except Exception:  # noqa: BLE001 - any v2 failure falls back to legacy RunCast
         return None
     if not v2:
         return None
 
     calibrated_prob = float(v2["home_win_probability"])  # 0-100, calibrated
-    margin = float(v2.get("predicted_margin") or 0.0)
-    if not margin:
+    # Keep a true pick'em margin of 0.0; only invent from win% when missing.
+    raw_margin = v2.get("predicted_margin")
+    if raw_margin is None:
         margin = DEFAULT_SIGMA * np.log(
-            max(calibrated_prob / 100.0, 1e-6) / max(1.0 - calibrated_prob / 100.0, 1e-6)
+            max(calibrated_prob / 100.0, 1e-6)
+            / max(1.0 - calibrated_prob / 100.0, 1e-6)
         )
+    else:
+        margin = float(raw_margin)
 
     home_prob = calibrated_prob
     market_decorrelated = False
@@ -383,6 +395,8 @@ def run_mlb_pred_model(
     market_spread: float | None = None,
     home_ml: int | None = None,
     away_ml: int | None = None,
+    kickoff_iso: str | None = None,
+    game_number: int | None = None,
 ) -> dict[str, Any] | None:
     _ = home_espn_id, away_espn_id, home_name, away_name
 
@@ -394,6 +408,8 @@ def run_mlb_pred_model(
         market_spread=market_spread,
         home_ml=home_ml,
         away_ml=away_ml,
+        kickoff_iso=kickoff_iso,
+        game_number=game_number,
     )
     if v2_payload is not None:
         return v2_payload

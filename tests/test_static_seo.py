@@ -199,6 +199,9 @@ def test_app_js_mlb_nhl_frontend_contracts() -> None:
     assert 'betType === "moneyline"' in js
     assert 'betType === "spread"' in js
     assert "base_win_probability" in js
+    # Soccer 1X2 away EV must not use binary 100 − home fallback.
+    assert "m.threeway && top?.side === \"away\"" in js
+    assert "away_win_probability" in js
     # Three-track calibrated probability is labeled EV prob (not Honest EV %).
     assert "Display · ${gateLabel} · EV prob" in js
     assert "<span>EV prob</span>" in js
@@ -222,3 +225,14 @@ def test_app_js_mlb_nhl_frontend_contracts() -> None:
     assert "function viewGames" in js
     games_fn = js.split("function viewGames")[1].split("function ")[0]
     assert "slateStatusBanners" in games_fn
+
+
+def test_format_odds_treats_even_zero_like_plus_100() -> None:
+    """ESPN EVEN (0) must display as +100, not an em dash."""
+    js = (STATIC_DIR / "app.js").read_text(encoding="utf-8")
+    # Guard the formatOdds contract in source (no JS runtime in pytest).
+    assert "function formatOdds(v)" in js
+    assert "if (v === 0) v = 100;" in js
+    assert "v == null || v === 0" not in js.split("function formatOdds(v)")[1].split(
+        "function "
+    )[0]

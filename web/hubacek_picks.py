@@ -222,10 +222,10 @@ def passes_hubacek_spread_gate(
     if point_edge <= 0:
         return False
 
-    if spread_odds >= 0:
-        market_cover = 100.0 / (spread_odds + 100.0) * 100.0
-    else:
-        market_cover = abs(spread_odds) / (abs(spread_odds) + 100.0) * 100.0
+    from web.bet_advisor import american_implied_prob
+
+    # ESPN EVEN (0) must map like +100 → 50% cover, not 100/(0+100)=100%.
+    market_cover = american_implied_prob(int(spread_odds)) * 100.0
     cover_gap = side_cover_prob - market_cover
     if cover_gap < min_cover_gap_pp:
         return False

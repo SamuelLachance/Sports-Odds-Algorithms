@@ -27,6 +27,15 @@ from web.live_odds_enrichment import (  # noqa: E402
     shopping_edge_pp,
     summarize_book_items,
 )
+from web.nba_odds_espn import _valid_american  # noqa: E402
+
+
+def test_valid_american_maps_even_zero_to_plus_100() -> None:
+    assert _valid_american(0) == 100.0
+    assert _valid_american(100) == 100.0
+    assert _valid_american(-110) == -110.0
+    assert _valid_american(1.91) is None
+    assert _valid_american(None) is None
 
 
 def _book_item(

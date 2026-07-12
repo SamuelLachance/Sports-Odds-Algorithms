@@ -7,16 +7,21 @@ from typing import Any
 
 
 def american_to_implied_prob(odds: int | None) -> float | None:
-    if odds is None or odds == 0:
+    if odds is None:
         return None
+    # ESPN/EVEN sometimes arrives as 0; treat as +100 (even money → 50%).
+    if odds == 0:
+        odds = 100
     if odds > 0:
         return 100.0 / (odds + 100.0)
     return abs(odds) / (abs(odds) + 100.0)
 
 
 def devig_two_way(home_odds: int, away_odds: int) -> tuple[float, float]:
-    home_raw = american_to_implied_prob(home_odds) or 0.5
-    away_raw = american_to_implied_prob(away_odds) or 0.5
+    home_raw = american_to_implied_prob(home_odds)
+    away_raw = american_to_implied_prob(away_odds)
+    if home_raw is None or away_raw is None:
+        return 0.5, 0.5
     total = home_raw + away_raw
     if total <= 0:
         return 0.5, 0.5

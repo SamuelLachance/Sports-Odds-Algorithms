@@ -68,6 +68,36 @@ def test_prefer_todays_game_picks_non_final_doubleheader() -> None:
     assert live._prefer_todays_game(over1, game2)["gamePk"] == 2
 
 
+def test_select_matchup_game_distinguishes_pending_doubleheader() -> None:
+    import web.mlb_v2.live as live
+
+    game1 = {
+        "gamePk": 1,
+        "status": "S",
+        "game_number": 1,
+        "home_pp_id": 100,
+        "game_datetime": "2026-07-12T17:05:00Z",
+    }
+    game2 = {
+        "gamePk": 2,
+        "status": "S",
+        "game_number": 2,
+        "home_pp_id": 200,
+        "game_datetime": "2026-07-12T23:10:00Z",
+    }
+    games = [game1, game2]
+    assert live._select_matchup_game(games, game_number=2)["gamePk"] == 2
+    assert live._select_matchup_game(games, game_pk=2)["home_pp_id"] == 200
+    # ESPN evening kickoff must pick game 2 starters, not morning game 1.
+    selected = live._select_matchup_game(
+        games, kickoff_iso="2026-07-12T23:05:00Z"
+    )
+    assert selected["gamePk"] == 2
+    assert selected["home_pp_id"] == 200
+    # Without selectors, prefer fold still keeps game 1 when both pending.
+    assert live._select_matchup_game(games)["gamePk"] == 1
+
+
 def test_is_final_game_accepts_game_over_status() -> None:
     from web.mlb_v2.replay import is_final_game
 

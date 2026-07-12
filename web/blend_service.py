@@ -1264,6 +1264,7 @@ def _blend_mlb_runcast_only(
     consensus_spread: float | None = None,
     home_moneyline: int | None = None,
     away_moneyline: int | None = None,
+    kickoff_iso: str | None = None,
 ) -> dict[str, Any]:
     """MLB uses MLBRunCast only — no Algo V2, power, meta, db_rating, or EnsembleML."""
     sport_payload = run_mlb_pred_model(
@@ -1278,6 +1279,7 @@ def _blend_mlb_runcast_only(
         market_spread=consensus_spread,
         home_ml=home_moneyline,
         away_ml=away_moneyline,
+        kickoff_iso=kickoff_iso,
     )
     if not sport_payload:
         reason = mlb_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
@@ -1352,16 +1354,28 @@ def _blend_soccer_path_a_only(
         sport_payload = None
     if not sport_payload:
         reason = soccer_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
+        # Complete 1X2 fields so predict_live_game never KeyErrors on threeway.
+        # Lock context so FLB/news cannot invent a favorite from a null model.
         return {
             "algorithm": "SoccerPathA",
             "blend_mode": "soccer_path_a_unavailable",
             "blend_layers": 0,
             "blend_note": reason,
             "soccer_pred": None,
+            "home_win_probability": 33.33,
+            "draw_probability": 33.33,
+            "away_win_probability": 33.34,
+            "blended_home_win_probability": 33.33,
+            "blended_threeway": {
+                "home_win_probability": 33.33,
+                "draw_probability": 33.33,
+                "away_win_probability": 33.34,
+            },
             "total_score": 0.0,
             "win_probability": 50.0,
             "favorite_side": "neutral",
             "threeway": True,
+            "context_adjustment_pp": 0.0,
         }
 
     is_v2 = sport_payload.get("algorithm") == "SoccerGradientBoost v2"
@@ -1451,6 +1465,7 @@ def blend_predictions(
     draw_moneyline: int | None = None,
     headlines: list[str] | None = None,
     match_date: str = "",
+    kickoff_iso: str = "",
 ) -> dict[str, Any]:
     """
     Blend Algo_V2 and power model into unified total_score / win_probability.
@@ -1505,6 +1520,7 @@ def blend_predictions(
             consensus_spread=consensus_spread,
             home_moneyline=home_moneyline,
             away_moneyline=away_moneyline,
+            kickoff_iso=kickoff_iso or None,
         )
 
     if is_soccer_league(league):

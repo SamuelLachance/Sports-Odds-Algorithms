@@ -471,11 +471,14 @@ def apply_context_to_blend(
         updated["away_win_probability"] = round(new_away, 2)
         if updated.get("blended_home_win_probability") is not None:
             updated["blended_home_win_probability"] = round(new_home, 2)
-        binary_home = new_home / max(new_home + new_away, 1e-9) * 100.0
-        total_score, win_prob = home_win_prob_to_total_score(binary_home)
+        from web.soccer_blend import threeway_probs_to_total_score
+
+        total_score, win_prob, favorite = threeway_probs_to_total_score(
+            new_home, draw_p, new_away
+        )
         updated["total_score"] = round(total_score, 2)
         updated["win_probability"] = round(win_prob, 2)
-        updated["favorite_side"] = "home" if total_score <= 0 else "away"
+        updated["favorite_side"] = favorite
     else:
         adjusted = _clamp(home_prob + total_shift, 5.0, 95.0)
         total_score, win_prob = home_win_prob_to_total_score(adjusted)
@@ -508,6 +511,18 @@ def apply_context_to_blend(
                 _clamp(nested_pre + total_shift, 5.0, 95.0), 2
             )
         updated[key] = nested
+
+    # Soccer nested preds must follow the (possibly renormalized) 1X2 board.
+    soccer_pred = updated.get("soccer_pred")
+    if isinstance(soccer_pred, dict) and updated.get("threeway"):
+        nested = dict(soccer_pred)
+        if updated.get("home_win_probability") is not None:
+            nested["home_win_probability"] = updated["home_win_probability"]
+        if updated.get("draw_probability") is not None:
+            nested["draw_probability"] = updated["draw_probability"]
+        if updated.get("away_win_probability") is not None:
+            nested["away_win_probability"] = updated["away_win_probability"]
+        updated["soccer_pred"] = nested
 
     updated["context_adjustment_pp"] = round(total_shift, 3)
     updated["context_signals"] = {

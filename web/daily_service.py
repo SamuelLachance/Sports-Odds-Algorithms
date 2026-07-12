@@ -445,6 +445,7 @@ def predict_live_game(
         draw_moneyline=game.market.draw_moneyline,
         headlines=headlines,
         match_date=_iso_match_date(game.start_time),
+        kickoff_iso=game.start_time or "",
     )
     # Context layer hook: specialized blend paths (NBA/MLB/NHL/soccer) skip
     # `_with_db_rating_layer`; apply once here when not already attached.

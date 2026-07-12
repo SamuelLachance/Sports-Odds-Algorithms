@@ -335,7 +335,9 @@ function formatGameDate(value) {
 }
 
 function formatOdds(v) {
-  if (v == null || v === 0) return "—";
+  if (v == null) return "—";
+  // ESPN EVEN sometimes arrives as 0; display like +100.
+  if (v === 0) v = 100;
   return v > 0 ? `+${v}` : `${v}`;
 }
 
@@ -863,11 +865,21 @@ function hubacekThreeTrackPanel(game, pick) {
       // Cover % already drives EV; do not fall back to ML home %.
       evProb = pickProb ?? null;
     } else if (betType === "moneyline" && homeEvFallback != null) {
-      // Home-only model fields must be inverted for away moneylines.
-      evProb =
-        top?.side === "away"
-          ? Math.round((100 - Number(homeEvFallback)) * 100) / 100
-          : homeEvFallback;
+      if (m.threeway && top?.side === "away") {
+        // Soccer 1X2: away mass is not 100 − home (draw takes the rest).
+        evProb =
+          m.pre_decorrelation_away_win_probability ??
+          m.pre_context_away_win_probability ??
+          m.away_win_probability ??
+          pickProb ??
+          null;
+      } else {
+        // Binary sports: home-only model fields invert for away moneylines.
+        evProb =
+          top?.side === "away"
+            ? Math.round((100 - Number(homeEvFallback)) * 100) / 100
+            : homeEvFallback;
+      }
     } else if (top?.side === "draw") {
       evProb =
         m.pre_decorrelation_draw_probability ??

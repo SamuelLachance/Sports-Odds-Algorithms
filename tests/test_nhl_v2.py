@@ -208,3 +208,39 @@ def test_get_live_context_fails_closed_on_empty_gap_moneypuck(monkeypatch) -> No
         lambda _rows: {1: {"home": "TOR", "away": "MTL"}},
     )
     assert live.get_live_context("2025-01-15") is None
+
+
+def test_get_live_context_fails_closed_on_empty_current_moneypuck(monkeypatch) -> None:
+    """Current season with Stats games but empty MoneyPuck must fail closed."""
+    from unittest.mock import MagicMock
+
+    import web.nhl_v2.live as live
+
+    live.get_live_context.cache_clear()
+    art = {"snapshots": {2024: MagicMock()}}
+    monkeypatch.setattr(live, "_load_artifacts", lambda: art)
+    monkeypatch.setattr(
+        live,
+        "_load_snapshot_state",
+        lambda _art, _season: (2024, {"teams": {}}),
+    )
+    monkeypatch.setattr(
+        live.NhlFeatureEngine,
+        "from_dict",
+        classmethod(lambda cls, _payload: MagicMock()),
+    )
+    monkeypatch.setattr(live, "nhl_season_for_date", lambda _d: 2024)
+    monkeypatch.setattr(
+        live,
+        "_fetch_stats_bundle",
+        lambda season: (
+            {"team_games": [{"gameId": 1, "teamAbbrev": "TOR"}], "goalies": []},
+            False,
+        ),
+    )
+    monkeypatch.setattr(
+        live,
+        "_fetch_moneypuck_slices",
+        lambda seasons: ({}, False),
+    )
+    assert live.get_live_context("2024-12-15") is None

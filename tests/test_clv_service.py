@@ -15,6 +15,8 @@ from web.clv_service import (  # noqa: E402
     devig_two_way,
 )
 
+import pytest  # noqa: E402
+
 
 def test_american_to_implied_prob() -> None:
     assert american_to_implied_prob(-110) is not None
@@ -64,3 +66,9 @@ def test_clv_threeway_missing_side() -> None:
         )
         is None
     )
+def test_american_odds_zero_is_even_for_clv() -> None:
+    """ESPN EVEN (0) must participate in CLV as +100, not drop as None."""
+    assert american_to_implied_prob(0) == pytest.approx(0.5)
+    assert clv_vs_market_pct(0, -110) is not None
+    home, away = devig_two_way(0, -110)
+    assert abs(home + away - 1.0) < 0.01

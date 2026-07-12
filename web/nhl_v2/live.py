@@ -217,6 +217,10 @@ def _fetch_moneypuck_slices(
             out[season] = fallback or {}
             if fallback is not None:
                 used_stale = True
+            else:
+                # Empty after network failure — callers treat empty as fail-closed;
+                # still mark stale so soft-cache hits remain distinguishable.
+                used_stale = True
         return out, used_stale
     wanted = set(stale)
     slices: dict[int, dict[str, dict[str, dict[str, float]]]] = {s: {} for s in stale}
@@ -406,6 +410,10 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
         mp_all, mp_stale = _fetch_moneypuck_slices([season])
         live_inputs_stale = live_inputs_stale or mp_stale
         mp_slice = mp_all.get(season) or {}
+        if not mp_slice:
+            # Empty MoneyPuck would replay Elo without xG/shot features — fail closed
+            # (same policy as gap seasons).
+            return None
         goalie_xg_raw, xg_stale = _fetch_goalie_xg_slice(season)
         live_inputs_stale = live_inputs_stale or xg_stale
     else:

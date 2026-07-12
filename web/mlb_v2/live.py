@@ -14,6 +14,7 @@ import gzip
 import json
 import time
 from datetime import date as date_cls
+from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -192,6 +193,66 @@ def _prefer_todays_game(
     return existing
 
 
+def _parse_kickoff_utc(value: Any) -> datetime | None:
+    if not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None
+    if parsed.tzinfo is None:
+        return parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
+
+
+def _select_matchup_game(
+    games: list[dict[str, Any]],
+    *,
+    game_pk: int | None = None,
+    game_number: int | None = None,
+    kickoff_iso: str | None = None,
+) -> dict[str, Any] | None:
+    """Pick the DH/single game for a matchup.
+
+    Prefer explicit ``game_pk`` / ``game_number``, then closest ``game_datetime``
+    to ESPN kickoff, else ``_prefer_todays_game`` fold (game 1 when both pending).
+    """
+    if not games:
+        return None
+    if game_pk is not None:
+        for game in games:
+            try:
+                if int(game.get("gamePk") or 0) == int(game_pk):
+                    return game
+            except (TypeError, ValueError):
+                continue
+    if game_number is not None:
+        for game in games:
+            try:
+                if int(game.get("game_number") or 1) == int(game_number):
+                    return game
+            except (TypeError, ValueError):
+                continue
+    kickoff = _parse_kickoff_utc(kickoff_iso)
+    if kickoff is not None and len(games) > 1:
+        best: dict[str, Any] | None = None
+        best_delta: float | None = None
+        for game in games:
+            game_dt = _parse_kickoff_utc(game.get("game_datetime"))
+            if game_dt is None:
+                continue
+            delta = abs((game_dt - kickoff).total_seconds())
+            if best_delta is None or delta < best_delta:
+                best_delta = delta
+                best = game
+        if best is not None:
+            return best
+    selected: dict[str, Any] | None = None
+    for game in games:
+        selected = _prefer_todays_game(selected, game)
+    return selected
+
+
 def _predict_probability(art: dict[str, Any], features: dict[str, float]) -> float:
     from xgboost import DMatrix
 
@@ -284,14 +345,18 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
     )
 
     todays_games: dict[tuple[int, int], dict[str, Any]] = {}
+    todays_matchup_games: dict[tuple[int, int], list[dict[str, Any]]] = {}
     todays_finals: list[dict[str, Any]] = []
     for game in bundle["games"]:
         if str(game.get("date")) != day_iso:
             continue
         key = (int(game["home_id"]), int(game["away_id"]))
+        todays_matchup_games.setdefault(key, []).append(game)
         todays_games[key] = _prefer_todays_game(todays_games.get(key), game)
         if is_final_game(game):
             todays_finals.append(game)
+    for rows in todays_matchup_games.values():
+        rows.sort(key=lambda g: (int(g.get("game_number") or 1), int(g.get("gamePk") or 0)))
 
     pitcher_names: dict[int, str] = {}
     for game in bundle["games"]:
@@ -305,6 +370,7 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
         "engine": engine,
         "artifacts": art,
         "todays_games": todays_games,
+        "todays_matchup_games": todays_matchup_games,
         "todays_finals": todays_finals,
         "pitcher_names": pitcher_names,
         "pitchers": bundle.get("pitchers") or {},
@@ -320,6 +386,10 @@ def predict_matchup_v2(
     day_iso: str,
     home_abbr: str,
     away_abbr: str,
+    *,
+    game_number: int | None = None,
+    game_pk: int | None = None,
+    kickoff_iso: str | None = None,
 ) -> dict[str, Any] | None:
     """Predict today's matchup by ESPN abbreviations. Returns None when unavailable."""
     context = get_live_context(day_iso)
@@ -330,7 +400,16 @@ def predict_matchup_v2(
     if not home_id or not away_id:
         return None
 
-    game = context["todays_games"].get((home_id, away_id))
+    matchup_key = (home_id, away_id)
+    candidates = list(context.get("todays_matchup_games", {}).get(matchup_key) or [])
+    game = _select_matchup_game(
+        candidates,
+        game_pk=game_pk,
+        game_number=game_number,
+        kickoff_iso=kickoff_iso,
+    )
+    if game is None:
+        game = context["todays_games"].get(matchup_key)
     if game is None:
         # scheduled game missing (e.g. postponed) -> synthetic neutral row
         game = {

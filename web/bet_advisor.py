@@ -201,6 +201,9 @@ def _odds_edge(model_projection: int, market_odds: int, model_prob_pct: float) -
     differ, compare the market quote to the model's breakeven line on that side
     instead of subtracting across zero (e.g. +109 vs -121 is not +230).
     """
+    # ESPN/EVEN sometimes arrives as 0; treat as +100 (match EV helpers).
+    if market_odds == 0:
+        market_odds = 100
     fair_odds = _probability_to_american(model_prob_pct)
     same_sign = (fair_odds >= 0 and market_odds >= 0) or (
         fair_odds <= 0 and market_odds <= 0
@@ -344,7 +347,8 @@ def enrich_pick_profit_metrics(pick: BetPick) -> BetPick:
     # the decorrelated win_probability only drives the gap/confidence gates.
     base_prob = pick.extra.get("base_win_probability")
     prob = float(base_prob) if base_prob is not None else float(pick.win_probability)
-    ev_pct = expected_value_pct(prob, odds)
+    uncapped_ev = expected_value_pct(prob, odds)
+    ev_pct = uncapped_ev
     league = pick.extra.get("league")
     if league:
         from web.context_signals import sparse_sample_ev_cap
@@ -354,15 +358,28 @@ def enrich_pick_profit_metrics(pick: BetPick) -> BetPick:
             games_i = int(games_proxy) if games_proxy is not None else None
         except (TypeError, ValueError):
             games_i = None
-        ev_pct = sparse_sample_ev_cap(str(league), games_i, ev_pct)
+        ev_pct = sparse_sample_ev_cap(str(league), games_i, uncapped_ev)
     pick.ev_pct = round(ev_pct, 2)
-    kelly = kelly_fraction(prob, odds)
+    # When sparse/thin caps haircut EV, size Kelly / profit_score / units off an
+    # effective probability that reproduces the capped EV at these odds — not
+    # the raw uncapped edge.
+    sizing_prob = prob
+    if uncapped_ev > 0 and ev_pct < uncapped_ev:
+        decimal = american_to_decimal(odds)
+        if decimal > 0:
+            sizing_prob = min(
+                max((ev_pct / 100.0 + 1.0) / decimal * 100.0, 0.1),
+                99.9,
+            )
+    kelly = kelly_fraction(sizing_prob, odds)
     pick.profit_score = round(
-        pick_profit_score(model_prob_pct=prob, american_odds=odds, edge=pick.edge),
+        pick_profit_score(
+            model_prob_pct=sizing_prob, american_odds=odds, edge=pick.edge
+        ),
         4,
     )
     pick.extra["kelly_pct"] = round(kelly * 100.0, 2)
-    pick.extra["expected_units"] = round(expected_units_per_bet(prob, odds), 4)
+    pick.extra["expected_units"] = round(ev_pct / 100.0, 4)
     if pick.market_implied_prob is not None:
         pick.extra["model_market_gap_pp"] = round(
             pick.win_probability - pick.market_implied_prob, 2

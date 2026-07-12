@@ -492,6 +492,14 @@ def test_blend_soccer_path_a_unavailable_fallback() -> None:
         assert result["algorithm"] == "SoccerPathA"
         assert result.get("soccer_pred") is None
         assert result["threeway"] is True
+        # Complete 1X2 so predict_live_game never KeyErrors; lock context.
+        assert result["home_win_probability"] == pytest.approx(33.33)
+        assert result["draw_probability"] == pytest.approx(33.33)
+        assert result["away_win_probability"] == pytest.approx(33.34)
+        assert result["context_adjustment_pp"] == 0.0
+        float(result["home_win_probability"])
+        float(result["draw_probability"])
+        float(result["away_win_probability"])
     finally:
         blend_module.run_soccer_pred_model = soccer_original
 

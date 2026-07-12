@@ -187,7 +187,9 @@ def _grading_spread_line(bet: dict[str, Any]) -> float | None:
 def _resolve_grading_odds(bet: dict[str, Any]) -> int | None:
     bet_type = bet.get("bet_type") or "moneyline"
     if bet_type == "spread":
-        for key in ("consensus_odds", "spread_odds", "market_odds"):
+        # Same priority as _recorded_and_closing_odds (CLV): posted spread juice
+        # first. Do not use `or` — ESPN EVEN is 0 (falsy but valid).
+        for key in ("spread_odds", "consensus_odds", "market_odds"):
             value = bet.get(key)
             if value is not None:
                 return int(value)
@@ -496,7 +498,7 @@ def _grade_spread_bet(
 def _recorded_and_closing_odds(bet: dict[str, Any]) -> tuple[int | None, int | None]:
     bet_type = bet.get("bet_type") or "moneyline"
     if bet_type == "spread":
-        recorded = bet.get("spread_odds") or bet.get("consensus_odds")
+        recorded = _resolve_grading_odds(bet)
         closing = bet.get("closing_spread_odds")
     else:
         recorded = bet.get("market_odds")

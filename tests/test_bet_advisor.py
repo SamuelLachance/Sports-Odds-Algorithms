@@ -638,6 +638,35 @@ def test_american_odds_zero_treated_as_even() -> None:
     assert american_implied_prob(0) == pytest.approx(0.5)
 
 
+def test_odds_edge_treats_zero_as_even() -> None:
+    """ESPN EVEN (0) must match +100 in edge math, not invent a huge same-sign gap."""
+    assert _odds_edge(-150, 0, 60.0) == _odds_edge(-150, 100, 60.0)
+
+
+def test_enrich_pick_profit_metrics_haircuts_kelly_when_sparse_ev_capped() -> None:
+    """Sparse EV cap must also shrink Kelly / expected_units / profit_score."""
+    from web.bet_advisor import BetPick, enrich_pick_profit_metrics, kelly_fraction
+
+    pick = BetPick(
+        side="home",
+        team_name="A",
+        team_slug="a",
+        strategy="hubacek",
+        confidence="high",
+        edge=20.0,
+        model_projection=-110,
+        market_odds=250,
+        win_probability=70.0,
+        reason="thin sample",
+        extra={"league": "worldcup", "games_played_proxy": 2},
+    )
+    enrich_pick_profit_metrics(pick)
+    assert pick.ev_pct <= 18.0
+    uncapped_kelly_pct = kelly_fraction(70.0, 250) * 100.0
+    assert pick.extra["kelly_pct"] < uncapped_kelly_pct
+    assert pick.extra["expected_units"] == pytest.approx(pick.ev_pct / 100.0)
+
+
 if __name__ == "__main__":
     test_spread_line_for_side()
     test_spread_point_edge_home_favorite()

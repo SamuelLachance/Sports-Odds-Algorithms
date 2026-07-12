@@ -120,6 +120,23 @@ def test_spread_gate_requires_decorrelated_blend_and_cover_gap() -> None:
     )
 
 
+def test_spread_gate_treats_even_odds_zero_like_plus_100() -> None:
+    """ESPN EVEN (0) must use 50% market cover, not 100%."""
+    blended = {"market_decorrelated": True, "blended_home_win_probability": 58.0}
+    kwargs: dict = {
+        "blended": blended,
+        "side": "home",
+        "point_edge": 2.0,
+        "side_cover_prob": 58.0,
+        "ev_pct": 5.0,
+        "consensus_spread": -3.0,
+    }
+    assert passes_hubacek_spread_gate(**kwargs, spread_odds=0) == passes_hubacek_spread_gate(
+        **kwargs, spread_odds=100
+    )
+    assert passes_hubacek_spread_gate(**kwargs, spread_odds=0)
+
+
 def test_baseball_moneyline_gate_uses_lower_confidence_bar() -> None:
     from web.hubacek_picks import HUBACEK_BASEBALL_MIN_WIN_CONFIDENCE_PP
 

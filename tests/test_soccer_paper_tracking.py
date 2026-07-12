@@ -127,3 +127,33 @@ def test_maybe_record_from_blend_uses_away_win_fallback(tmp_path, monkeypatch) -
         draw_ml=None,
         away_ml=None,
     )
+
+
+def test_maybe_record_from_blend_skips_missing_model_prob(tmp_path, monkeypatch) -> None:
+    """Missing pick/fallback probs must not invent model_prob=0.0 paper rows."""
+    import web.soccer_paper_tracking as paper
+
+    path = tmp_path / "soccer_paper_tracking.json"
+    monkeypatch.setattr(paper, "PAPER_TRACKING_PATH", path)
+
+    paper.maybe_record_from_blend(
+        {
+            "soccer_pick_signals": {
+                "high_confidence_disagreement": True,
+                "model_best_outcome": "home",
+                "max_edge_pp": 5,
+            },
+            "soccer_pred": {},
+        },
+        league="epl",
+        event_id="1",
+        home_abbr="ars",
+        away_abbr="liv",
+        home_name="Arsenal",
+        away_name="Liverpool",
+        game_date="2026-07-12",
+        home_ml=-120,
+        draw_ml=250,
+        away_ml=300,
+    )
+    assert paper._load_paper_log()["bets"] == []

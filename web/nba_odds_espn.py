@@ -99,9 +99,14 @@ def _nested_american(node: Any, *keys: str) -> float | None:
 
 
 def _valid_american(value: float | None) -> float | None:
-    """American odds always have magnitude >= 100; reject decimal/garbage."""
+    """American odds always have magnitude >= 100; reject decimal/garbage.
+
+    ESPN EVEN sometimes arrives as 0 — treat as +100 (even money).
+    """
     if value is None:
         return None
+    if value == 0:
+        return 100.0
     if 100.0 <= abs(value) <= 100000.0:
         return value
     return None

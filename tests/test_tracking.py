@@ -506,6 +506,45 @@ def test_grade_spread_without_juice_leaves_ungraded() -> None:
     assert "units" not in graded
 
 
+def test_recorded_spread_odds_preserves_even_zero() -> None:
+    """ESPN EVEN (0) must not fall through to consensus via falsy `or`."""
+    from web.tracking_service import _recorded_and_closing_odds
+
+    rec, close = _recorded_and_closing_odds(
+        {
+            "bet_type": "spread",
+            "spread_odds": 0,
+            "consensus_odds": -110,
+            "closing_spread_odds": -105,
+        }
+    )
+    assert rec == 0
+    assert close == -105
+
+
+def test_grade_and_clv_use_same_spread_odds_priority() -> None:
+    """P&L and CLV must settle on the same recorded juice when fields differ."""
+    from web.clv_service import clv_vs_market_pct
+    from web.tracking_service import _resolve_grading_odds, calculate_units
+
+    bet = {
+        "side": "home",
+        "bet_type": "spread",
+        "league": "nba",
+        "consensus_spread": -3.5,
+        "spread_odds": -105,
+        "consensus_odds": -120,
+        "closing_spread_odds": -110,
+        "stake_units": 1.0,
+        "status": "pending",
+    }
+    assert _resolve_grading_odds(bet) == -105
+    graded = grade_bet(bet, 100, 110)  # home covers -3.5
+    assert graded["status"] == "win"
+    assert graded["units"] == calculate_units(1.0, -105, "win")
+    assert graded["clv_pct"] == clv_vs_market_pct(-105, -110)
+
+
 def test_grade_spread_push() -> None:
     bet = {
         "side": "home",

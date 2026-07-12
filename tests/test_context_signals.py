@@ -306,6 +306,35 @@ def test_apply_context_threeway_renormalizes() -> None:
     assert total == pytest.approx(100.0, abs=0.05)
 
 
+def test_apply_context_preserves_draw_favorite() -> None:
+    """Draw-favorite threeways must not be forced to home after a context shift."""
+    blended = {
+        "threeway": True,
+        "home_win_probability": 28.0,
+        "draw_probability": 44.0,
+        "away_win_probability": 28.0,
+        "blended_home_win_probability": 28.0,
+        "total_score": 0.0,
+        "win_probability": 44.0,
+        "favorite_side": "draw",
+    }
+    # Small FLB/steam shift that keeps draw as the mode after renormalize.
+    out = apply_context_to_blend(
+        blended,
+        market={
+            "home_moneyline": 150,
+            "away_moneyline": 150,
+            "open_home_moneyline": 140,
+            "open_away_moneyline": 160,
+        },
+        league="epl",
+    )
+    assert out["context_adjustment_pp"] != 0.0
+    assert out["favorite_side"] == "draw"
+    assert float(out["draw_probability"]) > float(out["home_win_probability"])
+    assert float(out["draw_probability"]) > float(out["away_win_probability"])
+
+
 def test_apply_context_shifts_pre_decorrelation_and_sport_pred() -> None:
     """Context must move Honest-EV base and nested sport probs with the board."""
     blended = {
@@ -337,6 +366,36 @@ def test_apply_context_shifts_pre_decorrelation_and_sport_pred() -> None:
     assert out["baseball_pred"]["home_win_probability"] == pytest.approx(
         60.0 + shift, abs=0.05
     )
+
+
+def test_apply_context_syncs_nested_soccer_pred_threeway() -> None:
+    """Three-way context shift must keep soccer_pred in step with the board."""
+    blended = {
+        "threeway": True,
+        "home_win_probability": 40.0,
+        "draw_probability": 28.0,
+        "away_win_probability": 32.0,
+        "blended_home_win_probability": 40.0,
+        "total_score": -55.56,
+        "win_probability": 55.56,
+        "favorite_side": "home",
+        "soccer_pred": {
+            "home_win_probability": 40.0,
+            "draw_probability": 28.0,
+            "away_win_probability": 32.0,
+        },
+    }
+    market = {
+        "home_moneyline": 180,
+        "away_moneyline": -210,
+        "open_home_moneyline": 130,
+        "open_away_moneyline": -150,
+    }
+    out = apply_context_to_blend(blended, market=market, league="epl")
+    assert out["context_adjustment_pp"] != 0.0
+    assert out["soccer_pred"]["home_win_probability"] == out["home_win_probability"]
+    assert out["soccer_pred"]["draw_probability"] == out["draw_probability"]
+    assert out["soccer_pred"]["away_win_probability"] == out["away_win_probability"]
 
 
 if __name__ == "__main__":

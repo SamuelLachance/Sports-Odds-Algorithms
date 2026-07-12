@@ -135,3 +135,24 @@ def test_official_pick_binary_probs_ignores_spread_decor_for_mlb() -> None:
     )
     assert home != 61.5
     assert away == 100.0 - home
+
+
+def test_run_mlb_v2_keeps_zero_predicted_margin(monkeypatch) -> None:
+    """A true pick'em margin of 0.0 must not be replaced by the logit fallback."""
+    import web.mlb_pred_model as mlb
+
+    monkeypatch.setattr(
+        "web.mlb_v2.live.predict_matchup_v2",
+        lambda *_a, **_k: {
+            "home_win_probability": 50.0,
+            "predicted_margin": 0.0,
+            "model_version": "v2",
+            "home_probable_pitcher": None,
+            "away_probable_pitcher": None,
+        },
+    )
+    out = mlb._run_mlb_v2("mlb", "07-12-2026", "nyy", "bos")
+    assert out is not None
+    assert float(out["predicted_margin"]) == 0.0
+    # Without market spread, disagreement stays off — margin itself is the contract.
+    assert out["mlb_pick_signals"]["disagreement_runs"] is None
