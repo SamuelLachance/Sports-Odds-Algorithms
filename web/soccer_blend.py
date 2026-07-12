@@ -65,6 +65,8 @@ def blend_threeway_layers(
     layers: list[tuple[float, float, float]],
     weights: list[float],
 ) -> tuple[float, float, float]:
+    if not layers or not weights or abs(sum(weights)) < 1e-12:
+        return 33.33, 33.33, 33.34
     weight_sum = sum(weights)
     home = sum(w * layer[0] for w, layer in zip(weights, layers)) / weight_sum
     draw = sum(w * layer[1] for w, layer in zip(weights, layers)) / weight_sum

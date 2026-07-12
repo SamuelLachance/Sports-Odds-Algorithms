@@ -53,7 +53,13 @@ HUBACEK_SOCCER_MIN_WIN_CONFIDENCE_PP = 10.0
 # under the empirical margin model. Use a 5 pp bar (≥55% cover) instead.
 HUBACEK_SPREAD_MIN_WIN_CONFIDENCE_PP = 5.0
 
-_SPORT_PRED_KEYS = ("hockey_pred", "basketball_pred", "baseball_pred", "soccer_pred")
+_SPORT_PRED_KEYS = (
+    "hockey_pred",
+    "basketball_pred",
+    "baseball_pred",
+    "soccer_pred",
+    "football_pred",
+)
 
 
 @lru_cache(maxsize=1)

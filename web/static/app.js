@@ -301,7 +301,9 @@ function navigate(hash) {
 
 function formatTime(iso) {
   if (!iso) return "TBD";
-  return new Date(iso).toLocaleString(undefined, {
+  const parsed = new Date(iso);
+  if (Number.isNaN(parsed.getTime())) return "TBD";
+  return parsed.toLocaleString(undefined, {
     weekday: "short",
     month: "short",
     day: "numeric",
@@ -739,7 +741,7 @@ function slateStatusBanners(slate) {
   if (staleLive) {
     parts.push(`<aside class="status-banner status-banner--stale" role="status">
       <strong>Stale live inputs</strong>
-      <span>At least one model reused cached NHL/MLB/soccer feeds after a fetch failure — projections may lag.</span>
+      <span>At least one model reused cached live feeds after a fetch failure — projections may lag.</span>
     </aside>`);
   }
   if (state.trackingLoadFailed) {
@@ -1806,7 +1808,9 @@ function viewGames(league) {
   renderGameSubmenu(state.selectedLeague);
   renderSidebar(parseRoute());
   const games = gamesForLeague(state.selectedLeague);
+  const slate = state.slate || {};
   appRoot.innerHTML = `<section class="page-head"><h1>Games</h1><p>Today's matchups with full algo breakdowns. Filter by league in the sidebar or open a team sheet from any game.</p></section>
+    ${slateStatusBanners(slate)}
     <div class="slate-list">${games.length ? games.map((g) => gameListCard(g)).join("") : gamesFilterEmptyPanel(state.selectedLeague)}</div>`;
 }
 
@@ -3031,8 +3035,11 @@ async function loadPlatform() {
     manifestResult.status === "fulfilled" ? manifestResult.value : null;
 
   const stamp = slate.generated_at ? new Date(slate.generated_at) : new Date();
+  const stampLabel = Number.isNaN(stamp.getTime())
+    ? "Updated recently"
+    : `Updated ${stamp.toLocaleString()}`;
   const staleNote = isStaleSlate(slate.generated_at) ? " · stale" : "";
-  footerUpdated.textContent = `Updated ${stamp.toLocaleString()}${staleNote}`;
+  footerUpdated.textContent = `${stampLabel}${staleNote}`;
   renderLeagueMenu();
   renderSidebar(parseRoute());
 

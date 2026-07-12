@@ -240,6 +240,36 @@ def test_player_proxy_features_present() -> None:
     assert proxies.issubset(set(FEATURE_COLUMNS))
 
 
+def test_load_snapshot_state_returns_none_on_bad_gzip(tmp_path) -> None:
+    import web.nfl_v2.live as live
+
+    bad = tmp_path / "state_2023.json.gz"
+    bad.write_bytes(b"not-gzip-data")
+    art = {"snapshots": {2023: bad}}
+    assert live._load_snapshot_state(art, 2024) is None
+
+
+def test_load_artifacts_returns_none_on_corrupt_json(tmp_path, monkeypatch) -> None:
+    import gzip
+
+    import web.nfl_v2.live as live
+
+    model_dir = tmp_path / "nfl_v2"
+    model_dir.mkdir()
+    for name in ("model_clf.json", "model_lr.json", "model_margin.json", "calibrator.json"):
+        (model_dir / name).write_text("{not-json", encoding="utf-8")
+    (model_dir / "metadata.json").write_text(
+        '{"ship_models": true}', encoding="utf-8"
+    )
+    with gzip.open(model_dir / "state_2023.json.gz", "wt", encoding="utf-8") as handle:
+        handle.write("{}")
+
+    monkeypatch.setattr(live, "MODEL_DIR", model_dir)
+    live._load_artifacts.cache_clear()
+    assert live.artifacts_available() is True
+    assert live._load_artifacts() is None
+
+
 def test_live_artifacts_helper() -> None:
     from web.nfl_v2.live import artifacts_available
 

@@ -145,6 +145,16 @@ def test_extract_draw_moneyline_from_espn_shape() -> None:
     assert _extract_draw_moneyline(odds_block_alt) == 220
 
 
+def test_blend_threeway_layers_empty_weights_is_safe() -> None:
+    from web.soccer_blend import blend_threeway_layers
+
+    assert blend_threeway_layers([], []) == (33.33, 33.33, 33.34)
+    assert blend_threeway_layers([(50.0, 25.0, 25.0)], [0.0]) == (33.33, 33.33, 33.34)
+    home, draw, away = blend_threeway_layers([(60.0, 20.0, 20.0)], [1.0])
+    assert abs(home + draw + away - 100.0) < 0.01
+    assert home == 60.0
+
+
 if __name__ == "__main__":
     test_soccer_threeway_probs_sum_to_100()
     test_closer_matchups_raise_draw_probability()

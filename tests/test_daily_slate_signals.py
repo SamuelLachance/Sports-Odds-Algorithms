@@ -748,3 +748,64 @@ def test_predict_live_game_promotes_baseball_live_inputs_stale() -> None:
         result = predict_live_game(game)
 
     assert result["model"]["live_inputs_stale"] is True
+
+
+def test_predict_live_game_promotes_basketball_live_inputs_stale() -> None:
+    """NBA/WNBA/CBB v2 stores stale under basketball_pred; board reads model.live_inputs_stale."""
+    game = ScheduledGame(
+        league="nba",
+        event_id="401999",
+        name="Celtics at Knicks",
+        start_time="2026-01-10T00:00Z",
+        status="pre",
+        status_detail="7:00 PM ET",
+        away_abbr="BOS",
+        home_abbr="NY",
+        away_name="Boston Celtics",
+        home_name="New York Knicks",
+        away_espn_id="2",
+        home_espn_id="18",
+        market=MarketOdds(away_moneyline=105, home_moneyline=-115),
+    )
+    blended_stub = {
+        "algorithm": "Unified",
+        "blend_mode": "nba_v2",
+        "total_score": -55.0,
+        "win_probability": 55.0,
+        "favorite_side": "home",
+        "blended_home_win_probability": 55.0,
+        "basketball_pred": {"live_inputs_stale": True, "home_win_probability": 55.0},
+    }
+    algo_instance = MagicMock()
+    algo_instance.calculate_V2.return_value = {"total": -10.0}
+    odds_instance = MagicMock()
+    odds_instance.analyze2.return_value = {}
+
+    with (
+        patch(
+            "web.daily_service.resolve_team",
+            side_effect=lambda league, abbr, name: (
+                ["ny", "new-york-knicks"] if abbr == "NY" else ["bos", "boston-celtics"]
+            ),
+        ),
+        patch("web.daily_service.load_live_team_data", return_value=[{"seed": 1}]),
+        patch("algo.Algo", return_value=algo_instance),
+        patch("odds_calculator.Odds_Calculator", return_value=odds_instance),
+        patch("web.live_odds_enrichment.fetch_multi_book_odds", return_value={}),
+        patch("web.daily_service.blend_predictions", return_value=dict(blended_stub)),
+        patch(
+            "web.daily_service.apply_ensemble_ml",
+            side_effect=lambda blended, league, **kw: blended,
+        ),
+        patch(
+            "web.daily_service.ensure_hubacek_in_blend",
+            side_effect=lambda blended, **kw: blended,
+        ),
+        patch("web.daily_service.compute_model_agreement", return_value={}),
+        patch("web.daily_service.get_pick_thresholds", return_value={}),
+        patch("web.daily_service.official_pick_binary_probs", return_value=(45.0, 55.0)),
+        patch("web.daily_service.evaluate_official_picks_for_game", return_value=[]),
+    ):
+        result = predict_live_game(game)
+
+    assert result["model"]["live_inputs_stale"] is True

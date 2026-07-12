@@ -346,7 +346,14 @@ def _resolve_home_prob(blended: dict[str, Any]) -> float | None:
 
 
 def _games_played_proxy_from_blend(blended: dict[str, Any]) -> int | None:
-    for key in ("hockey_pred", "basketball_pred", "baseball_pred", "soccer_pred", "mlb_pred"):
+    for key in (
+        "hockey_pred",
+        "basketball_pred",
+        "baseball_pred",
+        "soccer_pred",
+        "football_pred",
+        "mlb_pred",
+    ):
         pred = blended.get(key)
         if not isinstance(pred, dict):
             continue

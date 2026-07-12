@@ -44,7 +44,7 @@ jobs:
             pytest-${{ runner.os }}-py3.12-
 
       - name: Compile Python packages
-        run: python -m compileall -q web algo.py odds_calculator.py backtester.py scripts smoke_test.py
+        run: python -m compileall -q web algo.py odds_calculator.py backtester.py scripts smoke_test.py run_server.py
 
       - name: Pytest (full suite)
         run: python -m pytest tests/ -q --tb=short --durations=12

@@ -219,6 +219,17 @@ def test_tracked_pick_requires_hubacek_strategy_ev_and_confidence() -> None:
     )
 
 
+def test_blend_is_decorrelated_reads_football_pred() -> None:
+    from web.hubacek_picks import _blend_is_decorrelated
+
+    assert _blend_is_decorrelated(
+        {"football_pred": {"market_decorrelated": True, "home_win_probability": 58.0}}
+    )
+    assert not _blend_is_decorrelated(
+        {"football_pred": {"market_decorrelated": False, "home_win_probability": 58.0}}
+    )
+
+
 if __name__ == "__main__":
     test_official_thresholds_have_real_floors()
     test_moneyline_gate_requires_gap_ev_and_phi_confidence()

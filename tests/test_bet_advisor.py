@@ -524,6 +524,17 @@ def test_best_pick_only_selects_highest_profit_score() -> None:
     assert chosen[0].profit_score >= strong.profit_score
 
 
+def test_blend_outputs_are_market_decorrelated_reads_football_pred() -> None:
+    from web.bet_advisor import blend_outputs_are_market_decorrelated
+
+    assert blend_outputs_are_market_decorrelated(
+        {"football_pred": {"market_decorrelated": True}}
+    )
+    assert not blend_outputs_are_market_decorrelated(
+        {"football_pred": {"home_win_probability": 55.0}}
+    )
+
+
 if __name__ == "__main__":
     test_spread_line_for_side()
     test_spread_point_edge_home_favorite()

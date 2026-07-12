@@ -155,6 +155,15 @@ jobs:
             cbb-v2-live-${{ steps.cache_date.outputs.today }}-
             cbb-v2-live-
 
+      - name: Restore MLB v2 live cache (Stats API season bundle)
+        uses: actions/cache@v4
+        with:
+          path: .build-cache/mlb-v2-live
+          key: mlb-v2-live-${{ steps.cache_date.outputs.today }}-${{ github.run_id }}
+          restore-keys: |
+            mlb-v2-live-${{ steps.cache_date.outputs.today }}-
+            mlb-v2-live-
+
       - name: Build static site
         run: python scripts/build_gh_pages.py
 

@@ -183,10 +183,11 @@ def _prefer_todays_game(
         return candidate
     if (not existing_final) and candidate_final:
         return existing
-    # Same finality: prefer higher game_number (game 2 of DH) when both pending,
-    # else keep the earlier entry for stable training-style first-game semantics.
+    # Same finality: prefer lower game_number (game 1 of DH) when both pending
+    # so morning predictions use the next starters; after game 1 finals the
+    # finality branch above promotes game 2.
     if not existing_final and not candidate_final:
-        if int(candidate.get("game_number") or 1) > int(existing.get("game_number") or 1):
+        if int(candidate.get("game_number") or 1) < int(existing.get("game_number") or 1):
             return candidate
     return existing
 

@@ -463,6 +463,105 @@ def test_nba_market_aware_artifacts_present() -> None:
     assert "has_spread" in art["margin_market_features"]
 
 
+def test_load_artifacts_returns_none_on_corrupt_json(tmp_path, monkeypatch) -> None:
+    """Corrupt on-disk JSON must not raise — live layer returns None instead."""
+    import gzip
+    import json
+
+    import web.nba_v2.live as live
+
+    model_dir = tmp_path / "nba_v2"
+    model_dir.mkdir()
+    for name in (
+        "model_clf.json",
+        "model_lr.json",
+        "model_margin.json",
+        "calibrator.json",
+        "metadata.json",
+    ):
+        (model_dir / name).write_text("{not-json", encoding="utf-8")
+    with gzip.open(model_dir / "state_2024.json.gz", "wt", encoding="utf-8") as handle:
+        handle.write("{}")
+
+    monkeypatch.setattr(live, "MODEL_DIR", model_dir)
+    live._load_artifacts.cache_clear()
+    assert live.artifacts_available() is True
+    assert live._load_artifacts() is None
+
+
+def test_load_snapshot_state_returns_none_on_bad_gzip(tmp_path) -> None:
+    import web.nba_v2.live as live
+
+    bad = tmp_path / "state_2024.json.gz"
+    bad.write_bytes(b"not-gzip-data")
+    art = {"snapshots": {2024: bad}}
+    assert live._load_snapshot_state(art, 2025) is None
+
+
+def test_fetch_events_cached_marks_stale_on_soft_serve(tmp_path, monkeypatch) -> None:
+    import json
+    import time
+
+    import web.nba_v2.live as live
+
+    monkeypatch.setattr(live, "LIVE_CACHE_DIR", tmp_path)
+    path = tmp_path / "events_2025.json"
+    path.write_text(json.dumps({"events": [{"event_id": "1"}]}), encoding="utf-8")
+    # Age the cache past the normal TTL so soft-serve path is used.
+    old = time.time() - (live.EVENTS_TTL_SECONDS + 10)
+    import os
+
+    os.utime(path, (old, old))
+
+    def boom(_season: int):
+        raise OSError("network down")
+
+    monkeypatch.setattr(live, "fetch_season_events", boom)
+    events, stale = live._fetch_events_cached(2025, current=True)
+    assert stale is True
+    assert events == [{"event_id": "1"}]
+
+
+def test_fetch_boxes_cached_does_not_poison_null_and_retries(tmp_path, monkeypatch) -> None:
+    """Failed box fetches must not stick as null in the year-long cache."""
+    import json
+
+    import web.nba_v2.live as live
+
+    monkeypatch.setattr(live, "LIVE_CACHE_DIR", tmp_path)
+    events = [{"event_id": "e1", "completed": True}]
+    calls = {"n": 0}
+
+    def flaky(_event_id: str):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise OSError("timeout")
+        return {"home": {"pts": 100}, "away": {"pts": 90}}
+
+    monkeypatch.setattr(live, "fetch_box_score", flaky)
+    boxes, stale = live._fetch_boxes_cached(2025, events)
+    assert stale is True
+    assert "e1" not in boxes
+    cached = json.loads((tmp_path / "boxes_2025.json").read_text(encoding="utf-8"))
+    assert "e1" not in cached or isinstance(cached.get("e1"), dict)
+
+    boxes2, stale2 = live._fetch_boxes_cached(2025, events)
+    assert stale2 is False
+    assert isinstance(boxes2["e1"], dict)
+    assert calls["n"] == 2
+
+
+def test_live_season_games_falls_back_to_history_when_events_empty(monkeypatch) -> None:
+    import web.nba_v2.live as live
+
+    history = [{"date": "2025-01-01", "home": "bos", "away": "ny"}]
+    monkeypatch.setattr(live, "_fetch_events_cached", lambda *_a, **_k: ([], False))
+    monkeypatch.setattr(live, "_history_season", lambda _season: history)
+    games, stale = live._live_season_games(2025, current=True)
+    assert games == history
+    assert stale is False
+
+
 def test_predict_matchup_v2_market_aware_wiring_with_stub_context() -> None:
     """Odds + market artifacts flip model_variant without needing a live season fetch."""
     from unittest.mock import MagicMock, patch

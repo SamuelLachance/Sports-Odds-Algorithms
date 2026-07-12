@@ -212,4 +212,10 @@ def test_app_js_mlb_nhl_frontend_contracts() -> None:
     assert 'aria-current", "page"' in js or 'setAttribute("aria-current", "page")' in js
     assert 'event.key !== "Escape"' in js
     assert "trackingLoadFailed" in js
-    assert "NHL/MLB/soccer" in js
+    assert "reused cached live feeds" in js
+    assert "Number.isNaN(parsed.getTime())" in js
+    assert "slateStatusBanners(slate)" in js
+    # Games view must surface the same honesty banners as home/picks.
+    assert "function viewGames" in js
+    games_fn = js.split("function viewGames")[1].split("function ")[0]
+    assert "slateStatusBanners" in games_fn

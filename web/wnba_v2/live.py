@@ -64,49 +64,60 @@ def _load_artifacts() -> dict[str, Any] | None:
     except ImportError:
         return None
 
-    def _booster(name: str):
-        path = MODEL_DIR / name
-        if not path.is_file():
+    try:
+
+        def _booster(name: str):
+            path = MODEL_DIR / name
+            if not path.is_file():
+                return None
+            try:
+                booster = Booster()
+                booster.load_model(str(path))
+                return booster
+            except Exception:  # noqa: BLE001 - corrupt booster → unavailable
+                return None
+
+        metadata = json.loads((MODEL_DIR / "metadata.json").read_text(encoding="utf-8"))
+        snapshots: dict[int, Path] = {}
+        for path in MODEL_DIR.glob("state_*.json.gz"):
+            try:
+                snapshots[int(path.stem.split("_")[1].split(".")[0])] = path
+            except (IndexError, ValueError):
+                continue
+
+        def _optional_json(name: str) -> dict[str, Any] | None:
+            path = MODEL_DIR / name
+            if not path.is_file():
+                return None
+            return json.loads(path.read_text(encoding="utf-8"))
+
+        clf = _booster("model_clf.json")
+        if clf is None or not snapshots:
             return None
-        booster = Booster()
-        booster.load_model(str(path))
-        return booster
 
-    metadata = json.loads((MODEL_DIR / "metadata.json").read_text(encoding="utf-8"))
-    snapshots: dict[int, Path] = {}
-    for path in MODEL_DIR.glob("state_*.json.gz"):
-        try:
-            snapshots[int(path.stem.split("_")[1].split(".")[0])] = path
-        except (IndexError, ValueError):
-            continue
-
-    def _optional_json(name: str) -> dict[str, Any] | None:
-        path = MODEL_DIR / name
-        if not path.is_file():
-            return None
-        return json.loads(path.read_text(encoding="utf-8"))
-
-    return {
-        "clf": _booster("model_clf.json"),
-        "lr": json.loads((MODEL_DIR / "model_lr.json").read_text(encoding="utf-8")),
-        "calibrator": json.loads((MODEL_DIR / "calibrator.json").read_text(encoding="utf-8")),
-        "margin": _booster("model_margin.json"),
-        "score_home": _booster("model_score_home.json"),
-        "score_away": _booster("model_score_away.json"),
-        "clf_market": _booster("model_clf_market.json"),
-        "lr_market": _optional_json("model_lr_market.json"),
-        "calibrator_market": _optional_json("calibrator_market.json"),
-        "margin_market": _booster("model_margin_market.json"),
-        "metadata": metadata,
-        "snapshots": snapshots,
-        "feature_columns": metadata.get("feature_columns") or list(FEATURE_COLUMNS),
-        "clf_market_features": list(
-            metadata.get("clf_market_features") or ("mkt_home_prob", "has_market")
-        ),
-        "margin_market_features": list(
-            metadata.get("margin_market_features") or ("mkt_home_spread", "has_spread")
-        ),
-    }
+        return {
+            "clf": clf,
+            "lr": json.loads((MODEL_DIR / "model_lr.json").read_text(encoding="utf-8")),
+            "calibrator": json.loads((MODEL_DIR / "calibrator.json").read_text(encoding="utf-8")),
+            "margin": _booster("model_margin.json"),
+            "score_home": _booster("model_score_home.json"),
+            "score_away": _booster("model_score_away.json"),
+            "clf_market": _booster("model_clf_market.json"),
+            "lr_market": _optional_json("model_lr_market.json"),
+            "calibrator_market": _optional_json("calibrator_market.json"),
+            "margin_market": _booster("model_margin_market.json"),
+            "metadata": metadata,
+            "snapshots": snapshots,
+            "feature_columns": metadata.get("feature_columns") or list(FEATURE_COLUMNS),
+            "clf_market_features": list(
+                metadata.get("clf_market_features") or ("mkt_home_prob", "has_market")
+            ),
+            "margin_market_features": list(
+                metadata.get("margin_market_features") or ("mkt_home_spread", "has_spread")
+            ),
+        }
+    except (OSError, json.JSONDecodeError, ValueError, KeyError, TypeError):
+        return None
 
 
 def _load_snapshot_state(art: dict[str, Any], target_season: int) -> tuple[int, Any] | None:
@@ -115,8 +126,11 @@ def _load_snapshot_state(art: dict[str, Any], target_season: int) -> tuple[int, 
     if not eligible:
         return None
     season = max(eligible)
-    with gzip.open(art["snapshots"][season], "rt", encoding="utf-8") as handle:
-        return season, json.load(handle)
+    try:
+        with gzip.open(art["snapshots"][season], "rt", encoding="utf-8") as handle:
+            return season, json.load(handle)
+    except (OSError, json.JSONDecodeError, gzip.BadGzipFile, EOFError, TypeError, ValueError):
+        return None
 
 
 def _read_cache(path: Path, ttl: int) -> Any | None:
@@ -135,35 +149,46 @@ def _write_cache(path: Path, payload: Any) -> None:
     path.write_text(json.dumps(payload, separators=(",", ":")), encoding="utf-8")
 
 
-def _fetch_events_cached(season: int, *, current: bool) -> list[dict[str, Any]]:
+def _fetch_events_cached(season: int, *, current: bool) -> tuple[list[dict[str, Any]], bool]:
+    """Returns ``(events, live_inputs_stale)``; soft-serves long-TTL cache on fetch failure."""
     path = LIVE_CACHE_DIR / f"events_{season}.json"
     ttl = EVENTS_TTL_SECONDS if current else PAST_SEASON_TTL_SECONDS
     cached = _read_cache(path, ttl)
     if cached is not None:
-        return cached.get("events", [])
+        return cached.get("events", []), False
     try:
         events = fetch_season_events(season)
     except OSError:
-        stale = _read_cache(path, 90 * 86400)
-        return (stale or {}).get("events", [])
+        soft = _read_cache(path, 90 * 86400)
+        if soft is not None:
+            return soft.get("events", []), True
+        return [], False
     _write_cache(path, {"events": events})
-    return events
+    return events, False
 
 
-def _fetch_boxes_cached(season: int, events: list[dict[str, Any]]) -> dict[str, Any]:
-    """Incremental per-event box cache: only missing final events are fetched."""
+def _fetch_boxes_cached(
+    season: int, events: list[dict[str, Any]]
+) -> tuple[dict[str, Any], bool]:
+    """Incremental per-event box cache: only missing final events are fetched.
+
+    Failed fetches are not persisted as ``null`` (that would poison the year-long
+    TTL and block retries). Returns ``(boxes, live_inputs_stale)``.
+    """
     path = LIVE_CACHE_DIR / f"boxes_{season}.json"
     boxes: dict[str, Any] = {}
     cached = _read_cache(path, 365 * 86400)
     if isinstance(cached, dict):
-        boxes = cached
+        boxes = {k: v for k, v in cached.items() if isinstance(v, dict)}
     todo = [
         event["event_id"]
         for event in events
         if event.get("completed") and event["event_id"] not in boxes
     ]
     if not todo:
-        return boxes
+        return boxes, False
+
+    stale = False
 
     def one(event_id: str) -> tuple[str, Any]:
         try:
@@ -173,9 +198,12 @@ def _fetch_boxes_cached(season: int, events: list[dict[str, Any]]) -> dict[str, 
 
     with ThreadPoolExecutor(max_workers=BOX_WORKERS) as pool:
         for event_id, box in pool.map(one, todo):
-            boxes[event_id] = box
+            if isinstance(box, dict):
+                boxes[event_id] = box
+            else:
+                stale = True
     _write_cache(path, boxes)
-    return boxes
+    return boxes, stale
 
 
 def _history_season(season: int) -> list[dict[str, Any]] | None:
@@ -203,13 +231,22 @@ def _history_season(season: int) -> list[dict[str, Any]] | None:
     return merge_season_games(results, events, boxes, season=season)
 
 
-def _live_season_games(season: int, *, current: bool) -> list[dict[str, Any]]:
-    games = None if current else _history_season(season)
-    if games is None:
-        events = _fetch_events_cached(season, current=current)
-        boxes = _fetch_boxes_cached(season, events) if events else {}
-        games = merge_season_games([], events, boxes, season=season)
-    return games
+def _live_season_games(
+    season: int, *, current: bool
+) -> tuple[list[dict[str, Any]], bool]:
+    """Prefer offline history for past seasons; refresh current season via ESPN.
+
+    Returns ``(games, live_inputs_stale)``.
+    """
+    if not current:
+        cached = _history_season(season)
+        if cached is not None:
+            return cached, False
+    events, stale = _fetch_events_cached(season, current=current)
+    if not events:
+        return (_history_season(season) or []), stale
+    boxes, boxes_stale = _fetch_boxes_cached(season, events)
+    return merge_season_games([], events, boxes, season=season), stale or boxes_stale
 
 
 @lru_cache(maxsize=8)
@@ -230,15 +267,20 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
     snapshot_season, state = loaded
 
     engine = WnbaFeatureEngine.from_dict(state)
+    live_inputs_stale = False
 
     # replay any full seasons between the snapshot and the target season
     for gap_season in range(snapshot_season + 1, season):
-        gap_games = _live_season_games(gap_season, current=False)
+        gap_games, gap_stale = _live_season_games(gap_season, current=False)
+        live_inputs_stale = live_inputs_stale or gap_stale
         if gap_games:
             replay_season(engine, gap_games)
 
-    events = _fetch_events_cached(season, current=True)
-    games = _live_season_games(season, current=True) if events else []
+    events, events_stale = _fetch_events_cached(season, current=True)
+    live_inputs_stale = live_inputs_stale or events_stale
+    # Always rebuild season games (history fallback when ESPN events are empty).
+    games, games_stale = _live_season_games(season, current=True)
+    live_inputs_stale = live_inputs_stale or games_stale
     replay_season(engine, games, stop_before_date=day_iso)
 
     todays: dict[tuple[str, str], dict[str, Any]] = {}
@@ -255,6 +297,7 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
         "todays_games": todays,
         "season": season,
         "day_iso": day_iso,
+        "live_inputs_stale": live_inputs_stale,
     }
 
 
@@ -419,6 +462,8 @@ def predict_matchup_v2(
             payload["predicted_home_score"] = round(score_home, 1)
             payload["predicted_away_score"] = round(score_away, 1)
         payload["predicted_total"] = round(total, 1)
+    if context.get("live_inputs_stale"):
+        payload["live_inputs_stale"] = True
     return payload
 
 

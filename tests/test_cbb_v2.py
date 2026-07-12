@@ -205,3 +205,36 @@ def test_artifacts_available_false_without_models() -> None:
     # Point at empty temp by checking default dir without required files is fine
     # if models were just trained this may be True; only assert callable works.
     assert isinstance(live.artifacts_available(), bool)
+
+
+def test_load_snapshot_state_returns_none_on_bad_gzip(tmp_path) -> None:
+    import web.cbb_v2.live as live
+
+    bad = tmp_path / "state_2024.json.gz"
+    bad.write_bytes(b"not-gzip-data")
+    art = {"snapshots": {2024: bad}}
+    assert live._load_snapshot_state(art, 2025) is None
+
+
+def test_load_artifacts_returns_none_on_corrupt_json(tmp_path, monkeypatch) -> None:
+    import gzip
+
+    import web.cbb_v2.live as live
+
+    model_dir = tmp_path / "cbb_v2"
+    model_dir.mkdir()
+    for name in (
+        "model_clf.json",
+        "model_lr.json",
+        "model_margin.json",
+        "calibrator.json",
+        "metadata.json",
+    ):
+        (model_dir / name).write_text("{not-json", encoding="utf-8")
+    with gzip.open(model_dir / "state_2024.json.gz", "wt", encoding="utf-8") as handle:
+        handle.write("{}")
+
+    monkeypatch.setattr(live, "MODEL_DIR", model_dir)
+    live._load_artifacts.cache_clear()
+    assert live.artifacts_available() is True
+    assert live._load_artifacts() is None

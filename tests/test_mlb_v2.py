@@ -59,9 +59,10 @@ def test_prefer_todays_game_picks_non_final_doubleheader() -> None:
     }
     assert live._prefer_todays_game(game1, game2)["gamePk"] == 2
     assert live._prefer_todays_game(game2, game1)["gamePk"] == 2
-    # Both pending: prefer later game_number (game 2 of DH).
+    # Both pending: prefer earlier game_number (game 1 of DH).
     pending1 = {**game1, "status": "S"}
-    assert live._prefer_todays_game(pending1, game2)["gamePk"] == 2
+    assert live._prefer_todays_game(pending1, game2)["gamePk"] == 1
+    assert live._prefer_todays_game(game2, pending1)["gamePk"] == 1
 
 
 def test_fetch_season_bundle_flags_stale_on_network_failure(tmp_path, monkeypatch) -> None:

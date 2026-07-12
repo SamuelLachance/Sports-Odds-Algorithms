@@ -266,6 +266,39 @@ def test_wnba_market_aware_artifacts_present() -> None:
     assert "has_spread" in art["margin_market_features"]
 
 
+def test_load_artifacts_returns_none_on_corrupt_json(tmp_path, monkeypatch) -> None:
+    import gzip
+
+    import web.wnba_v2.live as live
+
+    model_dir = tmp_path / "wnba_v2"
+    model_dir.mkdir()
+    for name in (
+        "model_clf.json",
+        "model_lr.json",
+        "model_margin.json",
+        "calibrator.json",
+        "metadata.json",
+    ):
+        (model_dir / name).write_text("{not-json", encoding="utf-8")
+    with gzip.open(model_dir / "state_2024.json.gz", "wt", encoding="utf-8") as handle:
+        handle.write("{}")
+
+    monkeypatch.setattr(live, "MODEL_DIR", model_dir)
+    live._load_artifacts.cache_clear()
+    assert live.artifacts_available() is True
+    assert live._load_artifacts() is None
+
+
+def test_load_snapshot_state_returns_none_on_bad_gzip(tmp_path) -> None:
+    import web.wnba_v2.live as live
+
+    bad = tmp_path / "state_2024.json.gz"
+    bad.write_bytes(b"not-gzip-data")
+    art = {"snapshots": {2024: bad}}
+    assert live._load_snapshot_state(art, 2025) is None
+
+
 def test_predict_matchup_v2_market_aware_wiring_with_stub_context() -> None:
     """Odds + market artifacts flip model_variant without needing a live season fetch."""
     from unittest.mock import MagicMock, patch
@@ -337,6 +370,45 @@ def test_predict_matchup_v2_market_aware_wiring_with_stub_context() -> None:
     assert result["has_spread"] is True
     assert result["predicted_margin"] == 5.0
     assert mock_prob.call_args.kwargs.get("clf") is art["clf_market"]
+
+
+def test_fetch_boxes_cached_does_not_poison_null_and_retries(tmp_path, monkeypatch) -> None:
+    import json
+
+    import web.wnba_v2.live as live
+
+    monkeypatch.setattr(live, "LIVE_CACHE_DIR", tmp_path)
+    events = [{"event_id": "w1", "completed": True}]
+    calls = {"n": 0}
+
+    def flaky(_event_id: str):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            return None
+        return {"home": {"pts": 80}, "away": {"pts": 75}}
+
+    monkeypatch.setattr(live, "fetch_box_score", flaky)
+    boxes, stale = live._fetch_boxes_cached(2025, events)
+    assert stale is True
+    assert "w1" not in boxes
+
+    boxes2, stale2 = live._fetch_boxes_cached(2025, events)
+    assert stale2 is False
+    assert isinstance(boxes2["w1"], dict)
+    assert calls["n"] == 2
+    cached = json.loads((tmp_path / "boxes_2025.json").read_text(encoding="utf-8"))
+    assert isinstance(cached["w1"], dict)
+
+
+def test_live_season_games_falls_back_to_history_when_events_empty(monkeypatch) -> None:
+    import web.wnba_v2.live as live
+
+    history = [{"date": "2025-06-01", "home": "lva", "away": "sea"}]
+    monkeypatch.setattr(live, "_fetch_events_cached", lambda *_a, **_k: ([], False))
+    monkeypatch.setattr(live, "_history_season", lambda _season: history)
+    games, stale = live._live_season_games(2025, current=True)
+    assert games == history
+    assert stale is False
 
 
 if __name__ == "__main__":

@@ -62,9 +62,12 @@ def _load_artifacts() -> dict[str, Any] | None:
             path = MODEL_DIR / name
             if not path.is_file():
                 return None
-            booster = Booster()
-            booster.load_model(str(path))
-            return booster
+            try:
+                booster = Booster()
+                booster.load_model(str(path))
+                return booster
+            except Exception:  # noqa: BLE001 - corrupt booster → unavailable
+                return None
 
         metadata = json.loads((MODEL_DIR / "metadata.json").read_text(encoding="utf-8"))
         snapshots: dict[int, Path] = {}
@@ -97,8 +100,11 @@ def _load_snapshot_state(art: dict[str, Any], target_season: int) -> tuple[int, 
     if not eligible:
         return None
     season = max(eligible)
-    with gzip.open(art["snapshots"][season], "rt", encoding="utf-8") as handle:
-        return season, json.load(handle)
+    try:
+        with gzip.open(art["snapshots"][season], "rt", encoding="utf-8") as handle:
+            return season, json.load(handle)
+    except (OSError, json.JSONDecodeError, gzip.BadGzipFile, EOFError, TypeError, ValueError):
+        return None
 
 
 def _read_cache(path: Path, ttl: int) -> Any | None:

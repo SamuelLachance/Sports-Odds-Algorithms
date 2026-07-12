@@ -48,6 +48,7 @@ def test_pages_yml_is_valid_yaml() -> None:
         "cbb-v2-live",
         "nhl-v2-live",
         "soccer-v2-live",
+        "mlb-v2-live",
     ):
         assert sport_cache in joined
 
@@ -76,7 +77,18 @@ def test_test_yml_is_valid_and_lean() -> None:
     # Skip slow pip self-upgrade; rely on setup-python + pip cache.
     assert "--upgrade pip" not in str(install.get("run", ""))
     compile_step = next(step for step in steps if step.get("name") == "Compile Python packages")
-    assert "compileall" in str(compile_step.get("run", ""))
+    compile_run = str(compile_step.get("run", ""))
+    assert "compileall" in compile_run
+    for target in (
+        "web",
+        "algo.py",
+        "odds_calculator.py",
+        "backtester.py",
+        "scripts",
+        "smoke_test.py",
+        "run_server.py",
+    ):
+        assert target in compile_run
     pytest_step = next(step for step in steps if step.get("name") == "Pytest (full suite)")
     assert "--durations=12" in str(pytest_step.get("run", ""))
     assert "cancel-in-progress: true" in text

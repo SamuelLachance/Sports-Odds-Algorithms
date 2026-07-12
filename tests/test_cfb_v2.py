@@ -191,3 +191,12 @@ def test_player_proxy_features_present() -> None:
         "one_score_rate_diff",
     }
     assert proxies.issubset(set(FEATURE_COLUMNS))
+
+
+def test_load_snapshot_state_returns_none_on_bad_gzip(tmp_path) -> None:
+    import web.cfb_v2.live as live
+
+    bad = tmp_path / "state_2023.json.gz"
+    bad.write_bytes(b"not-gzip-data")
+    art = {"snapshots": {2023: bad}}
+    assert live._load_snapshot_state(art, 2024) is None

@@ -564,6 +564,8 @@ def predict_live_game(
         (blended.get("hockey_pred") or {}).get("live_inputs_stale")
         or (blended.get("soccer_pred") or {}).get("live_inputs_stale")
         or (blended.get("baseball_pred") or {}).get("live_inputs_stale")
+        or (blended.get("basketball_pred") or {}).get("live_inputs_stale")
+        or (blended.get("football_pred") or {}).get("live_inputs_stale")
     ):
         model_payload["live_inputs_stale"] = True
 

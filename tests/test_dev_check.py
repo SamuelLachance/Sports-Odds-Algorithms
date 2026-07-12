@@ -84,6 +84,17 @@ def test_dev_check_compile_runs_first(monkeypatch) -> None:
     assert mod.main(["--quick-only", "--compile"]) == 0
     assert any("compileall" in c for c in calls)
     assert calls[0][calls[0].index("-m") + 1] == "compileall"
+    compile_argv = calls[0]
+    for target in (
+        "web",
+        "scripts",
+        "algo.py",
+        "odds_calculator.py",
+        "backtester.py",
+        "smoke_test.py",
+        "run_server.py",
+    ):
+        assert target in compile_argv
 
 
 def test_dev_check_full_runs_full_pytest_then_smoke(monkeypatch) -> None:

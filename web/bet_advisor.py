@@ -505,7 +505,13 @@ def resolve_binary_win_probs(
     return _side_win_probs(total_score)
 
 
-_SPORT_PRED_KEYS = ("hockey_pred", "basketball_pred", "baseball_pred", "soccer_pred")
+_SPORT_PRED_KEYS = (
+    "hockey_pred",
+    "basketball_pred",
+    "baseball_pred",
+    "soccer_pred",
+    "football_pred",
+)
 
 
 def _sport_pred_payload(blended: dict[str, Any]) -> dict[str, Any] | None:
