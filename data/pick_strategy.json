@@ -52,7 +52,11 @@
     "min_spread_confidence_pp": 5.0,
     "min_ev_pct": 2.0,
     "enabled": false,
-    "note": "Official tracking stays disabled. CBBGradientBoost v2 ships with PIT-safe ESPN walk-forward features (OOS logloss ~0.507 vs ensemble ~0.55 gate) and Torvik as live fallback only — not used in training. ESPN core closing odds now cover 2024-11-04→2025-03-15 (6164 games, 5636 with odds in data/supplemental/closing-odds/cbb.csv). Expand with: python scripts/fetch_cbb_odds.py --start-season 2024 --end-season 2026 (merge-safe; or --start-date/--end-date chunks). Enable picks only after remaining seasons are filled plus a positive worst-season spread backtest."
+    "note": "Official tracking stays disabled. CBBGradientBoost v2 OOS margins vs ESPN core odds (scripts/backtest_cbb_bets.py; 5636 games with spreads, 2024-11-04→2025-03-15, season 2025 only): close-line Hubacek sweep best worst-season ROI -57.9% (3993 bets at gap≥4/pt≥2/EV≥2; current live gates 7/5/2 → -71.7% / 2227 bets). Open-line best +2.5% (608 bets, gap≥4/pt≥6/EV≥2) but single-season only and close floor catastrophic — not strong enough to enable. Model margin MAE 9.30 vs close-spread MAE 5.30. Expand odds with: python scripts/fetch_cbb_odds.py --start-season 2024 --end-season 2026. Re-enable only after multi-season positive worst-season close (or open with non-terrible close floor).",
+    "backtest_roi_pct": -57.89,
+    "backtest_bets": 3993,
+    "backtest_open_roi_pct": 2.48,
+    "backtest_open_bets": 608
   },
   "nfl": {
     "bet_type": "spread",

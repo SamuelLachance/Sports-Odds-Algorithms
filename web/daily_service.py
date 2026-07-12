@@ -763,35 +763,49 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
     slate_cutoff = _slate_cutoff_date()
 
     for league in SUPPORTED_LEAGUES:
+        # Soft-fail every league independently: scoreboard, readiness, prewarm,
+        # or a single game must never abort the rest of the slate.
         try:
             scheduled = fetch_scoreboard(league, days_ahead=days_ahead)
         except Exception as exc:  # noqa: BLE001
             errors.append({"league": league, "error": str(exc)})
             continue
 
-        actionable = _actionable_games(scheduled)
-        if not actionable:
-            continue
+        try:
+            actionable = _actionable_games(scheduled)
+            if not actionable:
+                continue
 
-        if not is_league_ready_for_daily_slate(league, slate_cutoff):
-            continue
+            if not is_league_ready_for_daily_slate(league, slate_cutoff):
+                continue
 
-        power_cutoffs = {_today_cutoff(game) for game in actionable}
-        _prewarm_league_models(league, power_cutoffs, errors)
-
-        headlines = _league_news_headlines(league)
-
-        for game in actionable:
+            power_cutoffs = {_today_cutoff(game) for game in actionable}
             try:
-                all_games.append(predict_live_game(game, headlines=headlines))
-            except Exception as exc:  # noqa: BLE001
+                _prewarm_league_models(league, power_cutoffs, errors)
+            except Exception as exc:  # noqa: BLE001 — prewarm must not skip games
                 errors.append(
                     {
                         "league": league,
-                        "game": game.name,
-                        "error": str(exc),
+                        "error": f"League model prewarm failed: {exc}",
                     }
                 )
+
+            headlines = _league_news_headlines(league)
+
+            for game in actionable:
+                try:
+                    all_games.append(predict_live_game(game, headlines=headlines))
+                except Exception as exc:  # noqa: BLE001
+                    errors.append(
+                        {
+                            "league": league,
+                            "game": game.name,
+                            "error": str(exc),
+                        }
+                    )
+        except Exception as exc:  # noqa: BLE001
+            errors.append({"league": league, "error": f"League slate failed: {exc}"})
+            continue
 
     recommendations = []
     for game in all_games:

@@ -23,9 +23,10 @@ def portfolio_stake_units(
     ``correlation_penalty`` shrinks the stake (0.15 → 15% haircut) to reflect
     same-slate correlation — more conservative than raw quarter-Kelly.
 
-    Returns units clamped to ``[min_units, max_units]``. Non-positive Kelly
-    yields ``min_units`` only when EV is positive; otherwise returns ``min_units``
-    floored result after clamp (callers that want a default 1u should gate first).
+    Returns units clamped to ``[min_units, max_units]``. Non-positive Kelly or
+    explicitly negative EV yields ``min_units`` (callers that want a default 1u
+    should gate first). Missing EV should be passed as ``0`` so sizing still
+    follows Kelly without the negative-EV short-circuit.
     """
     try:
         kelly = float(kelly_fraction)
@@ -33,7 +34,8 @@ def portfolio_stake_units(
     except (TypeError, ValueError):
         return float(min_units)
 
-    if kelly <= 0:
+    # Do not Kelly-size a non-positive edge or a non-positive Kelly fraction.
+    if kelly <= 0 or ev < 0:
         return float(min_units)
 
     bankroll = max(float(bankroll_units), 1.0)

@@ -143,7 +143,9 @@ def steam_line_movement_shift(
 ) -> float:
     """Signed pp home-prob nudge from open→close moneyline steam (public/sharp proxy).
 
-    Positive = steam toward home. Capped at ±1.0 pp. Returns 0 when opens missing.
+    Positive = steam toward home. Uses the average of home implied lift and away
+    implied drop so pure vig reshuffles cancel. Capped at ±1.0 pp. Returns 0 when
+    opens are missing.
     """
     if (
         home_ml is None
@@ -155,10 +157,13 @@ def steam_line_movement_shift(
     try:
         close_home = _american_to_implied_pct(int(home_ml))
         open_home = _american_to_implied_pct(int(open_home_ml))
+        close_away = _american_to_implied_pct(int(away_ml))
+        open_away = _american_to_implied_pct(int(open_away_ml))
     except (TypeError, ValueError):
         return 0.0
 
-    move_pp = close_home - open_home
+    # Average home lift with away drop so vig reshuffles cancel out.
+    move_pp = ((close_home - open_home) - (close_away - open_away)) / 2.0
     # Ignore noise under ~1.5 pp implied; scale gently above that.
     if abs(move_pp) < 1.5:
         return 0.0

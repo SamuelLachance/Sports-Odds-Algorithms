@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import json
 import sys
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 import joblib
@@ -42,7 +42,7 @@ def _median(values):
 
 def _write_report(result, dataset_rows, date_min, date_max) -> None:
     payload = {
-        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "dataset_rows": dataset_rows,
         "date_range": [date_min, date_max],
         "oos_seasons": result.meta.get("oos_seasons"),
@@ -126,7 +126,7 @@ def main() -> int:
     ats_thr = _median([f["ats_ev_threshold"] for f in result.meta["folds"]])
     ml_thr = _median([f["ml_ev_threshold"] for f in result.meta["folds"]])
     metadata = {
-        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "feature_columns": list(FEATURE_COLUMNS),
         "margin_sigma": round(final_models.margin_sigma, 3),
         "dataset_rows": len(df),

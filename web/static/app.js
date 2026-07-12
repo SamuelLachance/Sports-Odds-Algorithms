@@ -1025,6 +1025,7 @@ function pickCard(pick, extra = "", game = null) {
       <span class="league-pill">${escapeHtml(pick.league_name || pick.league || "")}</span>
       <span class="strategy-pill">${escapeHtml(pick.strategy_label || pick.strategy || "")}</span>
       ${trackedPill}
+      ${predictionsOnlyPill(pick.league)}
       ${sparseLeaguePill(pick.league)}
     </div>
     ${renderEdgeBadges(pick, game)}
@@ -2329,7 +2330,6 @@ function viewTracking() {
           <p>Official Hubáček bets are logged with odds frozen at record time, graded on ESPN finals with closing-line value (CLV), staked at quarter-Kelly (0.25–3u), and rolled up day → week → month → year → all time.</p>
           <p class="muted">Tracking since ${escapeHtml(String(since))} · ${escapeHtml(state.tracking?.timezone || "America/Toronto")}</p>
           <p class="muted tracking-rule">${escapeHtml(hubacekRule)}</p>
-          <p class="muted">Opening-line backtest ROI is an upper bound versus live morning tracking, which usually locks later consensus prices.</p>
         </div>
         <div class="tracking-hero-stats">
           <div><span>Record</span><strong>${all.record || "0-0"}</strong>${provisionalSample ? `<small class="edge-badge edge-badge--sparse" title="Fewer than 30 decided bets — treat results as provisional">Provisional — small sample</small>` : ""}</div>
@@ -2338,9 +2338,18 @@ function viewTracking() {
           <div><span>Pending</span><strong>${all.pending ?? 0}</strong></div>
         </div>
       </div>
+      <aside class="disclaimer-bar roi-caveat-bar" role="note">
+        <strong>Open vs close ROI</strong>
+        <span>Opening-line backtest ROI is an <em>upper bound</em>. Live morning tracking usually locks later consensus prices and grades closer to the close — expect live ROI below the open-line study.</span>
+      </aside>
       ${disclaimerBar("CLV and ROI need sample size — treat early results as provisional.")}
       ${clvCaption()}
     </section>
+
+    <div class="panel tracking-scope-note" role="note">
+      <strong>Official book scope</strong>
+      <p class="muted">Rollups cover NBA, WNBA, NHL, MLB, and calibrated soccer only. <span class="edge-badge edge-badge--ref">Predictions only</span> leagues (NFL, CFB, CBB) are excluded from this book — they never appear as empty 0–0 official rollups.</p>
+    </div>
 
     ${youngBook ? `<div class="panel empty-panel tracking-empty-expect">
       <strong>Young track record</strong>
@@ -2355,7 +2364,12 @@ function viewTracking() {
       .join("")}</div>
 
     <section class="section">
-      <div class="section-head"><h2>Period rollups</h2></div>
+      <div class="section-head">
+        <div>
+          <h2>Period rollups</h2>
+          <p class="muted section-intro">Official Hubáček spots only — predictions-only leagues omitted.</p>
+        </div>
+      </div>
       ${renderTrackingSummary()}
     </section>
 
@@ -2372,6 +2386,7 @@ function viewTracking() {
           <div>
             <strong>${b.team_abbr ? teamNameLink(b.league, b.team_abbr, b.team_name) : escapeHtml(b.team_name || "")}</strong>
             <span class="league-pill">${escapeHtml(b.league_name || b.league || "")}</span>
+            ${predictionsOnlyPill(b.league)}
             ${sparseLeaguePill(b.league)}
             ${statusBadge(b.status, b.units)}
           </div>

@@ -64,16 +64,31 @@ def test_eligible_for_official_picks() -> None:
     assert eligible_for_official_picks("mlb")
 
     # In OFFICIAL_PICK_LEAGUES but pick_strategy enabled=false — not UI/tracking eligible.
-    assert "nfl" in OFFICIAL_PICK_LEAGUES
-    assert "cfb" in OFFICIAL_PICK_LEAGUES
-    assert "cbb" in OFFICIAL_PICK_LEAGUES
-    assert not eligible_for_official_picks("nfl")
-    assert not eligible_for_official_picks("cfb")
-    assert not eligible_for_official_picks("cbb")
+    for paused in ("nfl", "cfb", "cbb"):
+        assert paused in OFFICIAL_PICK_LEAGUES
+        assert get_pick_thresholds(paused).get("enabled") is False, paused
+        assert eligible_for_official_picks(paused) is False, paused
 
     # Leagues without a closing-line-beating model stay untracked.
     assert not eligible_for_official_picks("mls")
     assert not eligible_for_official_picks("ucl")
+
+
+def test_nfl_cfb_cbb_not_eligible_for_official_picks() -> None:
+    """Explicit gate: football/CBB stay predictions-only until walk-forward clears."""
+    from web.hubacek_picks import clear_strategy_cache
+    from web.pick_strategy import load_pick_strategy
+
+    clear_strategy_cache()
+    load_pick_strategy.cache_clear()
+
+    assert eligible_for_official_picks("nfl") is False
+    assert eligible_for_official_picks("cfb") is False
+    assert eligible_for_official_picks("cbb") is False
+    # Case-insensitive
+    assert eligible_for_official_picks("NFL") is False
+    assert eligible_for_official_picks("Cfb") is False
+    assert eligible_for_official_picks("CBB") is False
 
 
 def test_soccer_game_not_eligible_for_official_picks() -> None:

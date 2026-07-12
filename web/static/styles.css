@@ -1193,6 +1193,38 @@ a.pick-card-link:focus-visible {
   font-size: 0.875rem;
 }
 
+.roi-caveat-bar {
+  margin-top: var(--space-3);
+  border-color: color-mix(in srgb, var(--accent-warm) 42%, var(--border));
+  background: color-mix(in srgb, var(--accent-warm) 12%, var(--bg-soft));
+}
+
+.roi-caveat-bar em {
+  font-style: normal;
+  font-weight: 700;
+  color: var(--accent-warm);
+}
+
+.tracking-scope-note {
+  margin: 0 0 var(--space-3);
+  padding: var(--space-3);
+  text-align: left;
+}
+
+.tracking-scope-note strong {
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.tracking-scope-note p {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.tracking-scope-note .edge-badge {
+  vertical-align: middle;
+}
+
 .tracking-empty-expect {
   text-align: left;
   margin-bottom: var(--space-3);

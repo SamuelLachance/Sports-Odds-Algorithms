@@ -50,5 +50,10 @@ def test_invalid_inputs_return_min() -> None:
     assert portfolio_stake_units("bad", 0.04) == 0.25  # type: ignore[arg-type]
 
 
+def test_negative_ev_returns_min_not_kelly_size() -> None:
+    # Positive Kelly with negative EV must not size up off Kelly alone.
+    assert portfolio_stake_units(-5.0, 0.08, correlation_penalty=0.0) == 0.25
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-q"])

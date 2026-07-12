@@ -80,6 +80,7 @@ def test_disabled_leagues_produce_no_official_picks() -> None:
         assert league in OFFICIAL_PICK_LEAGUES
         assert get_pick_thresholds(league)["enabled"] is False, league
         assert eligible_for_official_picks(league) is False, league
+        assert eligible_for_official_picks(league.upper()) is False, league
         picks = evaluate_official_picks_for_game(
             league=league,
             away_name="Away Team",

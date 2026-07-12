@@ -47,9 +47,37 @@ class PredictRequest(BaseModel):
     algorithm: str = Field(default="Algo_V2", examples=["Algo_V2"])
 
 
+def _v2_artifacts_status() -> dict[str, bool]:
+    """Report whether each sport's GradientBoost v2 artifacts are on disk."""
+    checks: tuple[tuple[str, str], ...] = (
+        ("nba", "web.nba_v2.live"),
+        ("wnba", "web.wnba_v2.live"),
+        ("nhl", "web.nhl_v2.live"),
+        ("mlb", "web.mlb_v2.live"),
+        ("soccer", "web.soccer_v2.live"),
+        ("nfl", "web.nfl_v2.live"),
+        ("cfb", "web.cfb_v2.live"),
+        ("cbb", "web.cbb_v2.live"),
+    )
+    status: dict[str, bool] = {}
+    for key, module_path in checks:
+        try:
+            module = __import__(module_path, fromlist=["artifacts_available"])
+            status[key] = bool(module.artifacts_available())
+        except Exception:  # noqa: BLE001 — health must stay non-fatal
+            status[key] = False
+    return status
+
+
 @app.get("/api/health")
-def health() -> dict[str, str]:
-    return {"status": "ok"}
+def health() -> dict:
+    artifacts = _v2_artifacts_status()
+    return {
+        "status": "ok",
+        "v2_artifacts": artifacts,
+        "v2_artifacts_ready": sum(1 for ok in artifacts.values() if ok),
+        "v2_artifacts_total": len(artifacts),
+    }
 
 
 @app.get("/api/leagues")

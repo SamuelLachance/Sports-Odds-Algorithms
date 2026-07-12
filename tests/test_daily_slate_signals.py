@@ -228,3 +228,100 @@ def test_predict_live_game_enrichment_soft_fail() -> None:
     assert market["home_moneyline"] == -110
     assert "n_books" not in market
     assert result["model"]["win_probability"] == 55.0
+
+
+def test_get_daily_slate_isolates_league_and_prewarm_failures() -> None:
+    """One league's scoreboard/prewarm/readiness failure must not abort the slate."""
+    from web.daily_service import get_daily_slate
+    from web.league_profiles import SUPPORTED_LEAGUES
+
+    nba_game = _scheduled_game()
+    mlb_game = ScheduledGame(
+        league="mlb",
+        event_id="401800",
+        name="Yankees at Red Sox",
+        start_time="2026-07-10T23:00Z",
+        status="pre",
+        status_detail="Scheduled",
+        home_abbr="bos",
+        away_abbr="nyy",
+        home_name="Boston Red Sox",
+        away_name="New York Yankees",
+        home_espn_id="2",
+        away_espn_id="10",
+        market=MarketOdds(
+            home_moneyline=-120,
+            away_moneyline=100,
+            spread=-1.5,
+            home_spread_odds=-110,
+            away_spread_odds=-110,
+        ),
+    )
+
+    def fake_scoreboard(league: str, days_ahead: int = 0):
+        if league == "nhl":
+            raise RuntimeError("nhl scoreboard down")
+        if league == "nba":
+            return [nba_game]
+        if league == "mlb":
+            return [mlb_game]
+        return []
+
+    predicted = []
+
+    def fake_predict(game, headlines=None):
+        predicted.append(game.league)
+        return {
+            "event_id": game.event_id,
+            "league": game.league,
+            "league_name": game.league.upper(),
+            "matchup": {
+                "away": {"name": game.away_name},
+                "home": {"name": game.home_name},
+            },
+            "start_time": game.start_time,
+            "eligible_for_official_picks": False,
+            "recommendations": [],
+            "top_pick": None,
+            "model": {},
+            "market": {},
+            "name": game.name,
+            "status": game.status,
+            "status_detail": game.status_detail,
+            "cutoff_date": "7-10-2026",
+            "season_year": "2026",
+        }
+
+    def _prewarm_maybe_fail(league, *_a, **_k):
+        if league == "nba":
+            raise RuntimeError("prewarm boom")
+
+    with (
+        patch("web.daily_service.SUPPORTED_LEAGUES", ("nhl", "nba", "mlb")),
+        patch("web.daily_service.fetch_scoreboard", side_effect=fake_scoreboard),
+        patch("web.daily_service._actionable_games", side_effect=lambda games: games),
+        patch(
+            "web.daily_service.is_league_ready_for_daily_slate",
+            return_value=True,
+        ),
+        patch(
+            "web.daily_service._prewarm_league_models",
+            side_effect=_prewarm_maybe_fail,
+        ),
+        patch("web.daily_service._league_news_headlines", return_value=[]),
+        patch("web.daily_service.predict_live_game", side_effect=fake_predict),
+        patch("web.daily_service.passes_hubacek_tracked_pick", return_value=False),
+        patch(
+            "web.daily_service.official_hubacek_thresholds",
+            return_value={"min_edge_pp": 0, "min_ev_pct": 0},
+        ),
+    ):
+        slate = get_daily_slate(days_ahead=0)
+
+    assert len(SUPPORTED_LEAGUES) >= 3  # sanity: real registry still intact
+    assert {g["league"] for g in slate["games"]} == {"nba", "mlb"}
+    assert predicted == ["nba", "mlb"]
+    error_leagues = {e["league"] for e in slate["errors"]}
+    assert "nhl" in error_leagues
+    assert "nba" in error_leagues  # prewarm recorded, games still analyzed
+    assert any("prewarm" in (e.get("error") or "").lower() for e in slate["errors"])
