@@ -539,3 +539,47 @@ def test_game_matches_slate_day_includes_west_coast_spillover() -> None:
     assert live._game_matches_slate_day(afternoon, "2026-07-12") is False
     same_day = {"date": "2026-07-12", "game_datetime": "2026-07-12T23:10:00Z"}
     assert live._game_matches_slate_day(same_day, "2026-07-12") is True
+
+
+def test_batting_ewma_updates_on_zero_obp_slg() -> None:
+    """Hitless 0.000 OBP/SLG must not fall through truthy `or` to league averages."""
+    import pytest
+
+    from web.mlb_v2.feature_engine import (
+        ALPHA_BATTING,
+        LEAGUE_OBP,
+        LEAGUE_SLG,
+        MlbFeatureEngine,
+    )
+
+    engine = MlbFeatureEngine()
+    prior_obp = engine.team(111).obp
+    prior_slg = engine.team(111).slg
+    assert prior_obp == LEAGUE_OBP
+    assert prior_slg == LEAGUE_SLG
+    engine.update_after_game(
+        {
+            "date": "2024-06-15",
+            "home_id": 111,
+            "away_id": 147,
+            "home_score": 1,
+            "away_score": 0,
+        },
+        home_hit_log={
+            "pa": 28,
+            "ab": 27,
+            "h": 0,
+            "obp": 0.0,
+            "slg": 0.0,
+            "hr": 0,
+            "bb": 0,
+            "so": 12,
+            "d2": 0,
+            "d3": 0,
+        },
+    )
+    expected_obp = (1.0 - ALPHA_BATTING) * LEAGUE_OBP + ALPHA_BATTING * 0.0
+    expected_slg = (1.0 - ALPHA_BATTING) * LEAGUE_SLG + ALPHA_BATTING * 0.0
+    assert engine.team(111).obp == pytest.approx(expected_obp)
+    assert engine.team(111).slg == pytest.approx(expected_slg)
+    assert engine.team(111).obp != LEAGUE_OBP

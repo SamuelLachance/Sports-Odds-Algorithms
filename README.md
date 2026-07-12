@@ -10,7 +10,7 @@ Daily algorithmic sports betting platform across **NBA, WNBA, CBB, NFL, CFB, NHL
 
 | Feature | Description |
 |---------|-------------|
-| **Daily slate** | Rebuilt **4×/day** via UTC crons `0 4/10/16/22` (midnight / 6 AM / noon / 6 PM **EDT**; +1h during EST) and on every push via GitHub Actions |
+| **Daily slate** | Rebuilt **4×/day** via UTC crons `0 4,10,16,22` (midnight / 6 AM / noon / 6 PM **EDT**; +1h during EST) and on `master` pushes that change site/build inputs (see `pages.yml` `paths-ignore`) |
 | **Live data** | ESPN schedules, scores, and consensus moneylines/spreads; multi-book enrichment for NBA/NHL/MLB/WNBA when available |
 | **Unified model** | Prefer sport-specific **GradientBoost v2** when trained; otherwise blend legacy **Algo V2**, **power ratings**, and supporting sport layers |
 | **Algo picks** | Hubáček-style official picks: decorrelated model must beat the de-vigged market by ≥2 pp with ≥2% honest EV and a per-bet-type confidence bar (stricter per-league overrides where walk-forward backtests exist) |
@@ -109,7 +109,7 @@ The demo can also use bundled historical team CSV files (no live scraping requir
 
 ### Deploy to GitHub Pages
 
-Static assets are built from `web/static/` into `docs/` by `scripts/build_gh_pages.py`. Pushes to `master` trigger the `.github/workflows/pages.yml` workflow.
+Static assets are built from `web/static/` into `docs/` by `scripts/build_gh_pages.py`. Pushes to `master` that change site/build inputs trigger `.github/workflows/pages.yml` (markdown, tests, and tracking-only syncs are ignored — see `paths-ignore`).
 
 ---
 

@@ -10,6 +10,7 @@ import re
 import urllib.request
 import zipfile
 import xml.etree.ElementTree as ET
+from datetime import date as date_cls
 from pathlib import Path
 from typing import Any
 
@@ -80,7 +81,9 @@ def _parse_table_rows(html: str) -> list[list[str]]:
     return rows
 
 
-def _make_datestr(raw: str, season: int, *, start: int = 8, yr_end: int = 12) -> str:
+def _make_datestr(
+    raw: str, season: int, *, start: int = 8, yr_end: int = 12
+) -> str | None:
     """Map MMDD + season-start year to YYYY-MM-DD.
 
     ``season`` is the year the season *starts* (NBA 2023 → 2023-24). Months
@@ -88,15 +91,23 @@ def _make_datestr(raw: str, season: int, *, start: int = 8, yr_end: int = 12) ->
     ``start=1`` so Jan–Dec stay on ``season``. ``yr_end`` is retained for
     callers but no longer flips the year (NBA ``yr_end=12`` never matched a
     valid month; MLB callers should use ``start=1`` instead of ``start=3``).
+
+    Empty / short / non-numeric / impossible calendar cells return ``None`` so
+    callers can skip the pair instead of aborting the whole season scrape.
     """
     del yr_end  # kept for call-site compatibility
-    raw = str(raw).strip()
-    if len(raw) == 3:
-        raw = f"0{raw}"
-    month = int(raw[:2])
-    day = int(raw[2:4])
+    text = str(raw).strip()
+    if len(text) == 3:
+        text = f"0{text}"
+    if len(text) < 4 or not text[:4].isdigit():
+        return None
+    month = int(text[:2])
+    day = int(text[2:4])
     year = season if month >= start else season + 1
-    return f"{year:04d}-{month:02d}-{day:02d}"
+    try:
+        return date_cls(year, month, day).isoformat()
+    except ValueError:
+        return None
 
 
 def _clean_number(value: str) -> float:
@@ -266,9 +277,12 @@ def _rows_from_html_table(sport: str, season: int, html: str, translated: dict[s
             home_ml=home_close_ml,
             away_ml=away_close_ml,
         )
+        game_date = _make_datestr(away_row[0], season)
+        if not game_date:
+            continue
         output.append(
             {
-                "date": _make_datestr(away_row[0], season),
+                "date": game_date,
                 "home_key": home_key,
                 "away_key": away_key,
                 "home_close_ml": home_close_ml,
@@ -308,16 +322,19 @@ def _rows_from_nhl_html(sport: str, season: int, html: str, translated: dict[str
             home_ml=home_close_ml,
             away_ml=away_close_ml,
         )
+        # COVID 2020-21 NHL slate was played in calendar 2021; SBR
+        # season key is still 2020. Pass calendar year when start=1.
+        game_date = _make_datestr(
+            away_row[0],
+            season + 1 if covid else season,
+            start=1 if covid else 8,
+            yr_end=12,
+        )
+        if not game_date:
+            continue
         output.append(
             {
-                # COVID 2020-21 NHL slate was played in calendar 2021; SBR
-                # season key is still 2020. Pass calendar year when start=1.
-                "date": _make_datestr(
-                    away_row[0],
-                    season + 1 if covid else season,
-                    start=1 if covid else 8,
-                    yr_end=12,
-                ),
+                "date": game_date,
                 "home_key": home_key,
                 "away_key": away_key,
                 "home_close_ml": home_close_ml,
@@ -406,11 +423,17 @@ def _parse_optional_int(value: Any) -> int | None:
 
 
 def _parse_optional_float(value: Any) -> float | None:
-    """Archive spread line; pick'em (0) kept as 0.0. Missing → None."""
+    """Archive spread line; pick'em (0 / PK / EVEN) kept as 0.0. Missing → None.
+
+    Must match ``_spread_line_cell`` / ``_optional_number`` used by HTML scrapers.
+    """
     if value in (None, ""):
         return None
+    text = str(value).strip()
+    if text.upper() in {"PK", "EVEN"}:
+        return 0.0
     try:
-        number = float(str(value).strip())
+        number = float(text)
     except (TypeError, ValueError):
         return None
     if not math.isfinite(number):
@@ -561,10 +584,13 @@ def fetch_sbr_season_rows(sport: str, season: int, translated: dict[str, dict[st
                 home_ml=home_close_ml,
                 away_ml=away_close_ml,
             )
+            # MLB season year == calendar year (Mar–Nov games).
+            game_date = _make_datestr(away_row[0], season, start=1, yr_end=12)
+            if not game_date:
+                continue
             output.append(
                 {
-                    # MLB season year == calendar year (Mar–Nov games).
-                    "date": _make_datestr(away_row[0], season, start=1, yr_end=12),
+                    "date": game_date,
                     "home_key": home_key,
                     "away_key": away_key,
                     "home_close_ml": home_close_ml,

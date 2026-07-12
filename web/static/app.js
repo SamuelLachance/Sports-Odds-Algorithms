@@ -268,9 +268,10 @@ const KNOWN_ROUTES = new Set([
 ]);
 
 function parseRoute() {
-  // Strip any nested fragment (e.g. "#/picks#model-predictions" → path "picks").
+  // Strip any nested fragment (e.g. "#/picks#model-predictions" → path "picks")
+  // and any query mistakenly left inside the hash (e.g. "#/games?utm=1").
   const raw = location.hash.replace(/^#/, "") || "/";
-  const hash = raw.split("#")[0] || "/";
+  const hash = (raw.split("#")[0] || "/").split("?")[0] || "/";
   const parts = hash.split("/").filter(Boolean);
   return { path: parts[0] || "", parts };
 }
@@ -483,7 +484,18 @@ function renderSeasonStatsSection(categories, profileStats, options = {}) {
   const rowCount = blocks.reduce((total, cat) => total + cat.stats.length, 0);
   if (!rowCount) {
     if (profileStats?.games_played != null || profileStats?.win_pct != null) {
+      const recordBits = [];
+      if (profileStats.wins != null) {
+        const ties =
+          profileStats.ties != null && Number(profileStats.ties) > 0
+            ? `-${profileStats.ties}`
+            : "";
+        recordBits.push(
+          `<li><span>Record</span><strong>${profileStats.wins}-${profileStats.losses ?? 0}${ties}</strong></li>`,
+        );
+      }
       return `<ul class="db-stat-list">
+        ${recordBits.join("")}
         <li><span>Games played</span><strong>${profileStats.games_played ?? "—"}</strong></li>
         <li><span>Win %</span><strong>${profileStats.win_pct ?? "—"}%</strong></li>
       </ul>`;
@@ -2224,6 +2236,7 @@ function resolveTeamHeroContext(teamDb, profile, recentGames) {
   if (standing.wins == null && profile?.season_stats?.wins != null) {
     standing.wins = profile.season_stats.wins;
     standing.losses = profile.season_stats.losses;
+    if (profile.season_stats.ties != null) standing.ties = profile.season_stats.ties;
   }
 
   if (standing.rank == null) {
@@ -2368,7 +2381,8 @@ function renderRecentGameRow(league, game) {
   const abbr = game.opponent_abbr || parsed.opponent_abbr || null;
   const location = game.location || parsed.location || "";
   const result = game.result || "";
-  const badgeClass = result === "W" ? "win" : result === "L" ? "loss" : "";
+  const badgeClass =
+    result === "W" ? "win" : result === "L" ? "loss" : result === "T" ? "tie" : "";
   const score = normalizeRecentGameScore(game.score);
   const prefix = gameLocationPrefix(location);
   const opponentMarkup = recentGameOpponentLink(league, {

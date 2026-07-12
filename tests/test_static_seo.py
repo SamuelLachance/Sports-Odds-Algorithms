@@ -56,6 +56,27 @@ def test_pages_404_html_redirects_into_hash_router() -> None:
     assert 'var projectBase = "/Sports-Odds-Algorithms"' in html
     assert "github" in html and ".io" in html
     assert ".test(host)" in html
+    # Query must precede the hash; otherwise parseRoute treats "games?utm=1" as the path.
+    assert "location.search || \"\") + hash" in html or "(location.search || '') + hash" in html
+    assert "hash + location.search" not in html
+
+
+def test_parse_route_strips_query_inside_hash() -> None:
+    """Source guard: hash query poison must not break KNOWN_ROUTES matching."""
+    js = (STATIC_DIR / "app.js").read_text(encoding="utf-8")
+    fn = js.split("function parseRoute()")[1].split("function ")[0]
+    assert '.split("?")[0]' in fn or ".split('?')[0]" in fn
+    assert 'result === "T" ? "tie"' in js
+    assert ".result-badge.tie" in (STATIC_DIR / "styles.css").read_text(encoding="utf-8")
+
+
+def test_readme_cron_and_pages_trigger_honesty() -> None:
+    """README must not claim slash-cron hours or unqualified every-push deploys."""
+    text = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
+    assert "0 4,10,16,22" in text
+    assert "0 4/10/16/22" not in text
+    assert "every push" not in text.lower()
+    assert "paths-ignore" in text
 
 
 def test_index_html_canonical_points_at_brand_domain() -> None:
@@ -286,6 +307,9 @@ def test_agents_md_cron_uses_comma_list_not_step_slash() -> None:
     assert "0 4,10,16,22" in text
     assert "0 4/10/16/22" not in text
     assert "negative" in text.lower() or "ROI close négatif" in text
+    readme = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
+    assert "0 4,10,16,22" in readme
+    assert "0 4/10/16/22" not in readme
     """ESPN EVEN (0) must display as +100, not an em dash."""
     js = (STATIC_DIR / "app.js").read_text(encoding="utf-8")
     # Guard the formatOdds contract in source (no JS runtime in pytest).

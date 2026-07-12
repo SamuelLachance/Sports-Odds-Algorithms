@@ -418,3 +418,28 @@ def test_faceoff_ewma_updates_on_zero_pct() -> None:
     expected = (1.0 - ALPHA_SPECIAL) * LEAGUE_FO_PCT + ALPHA_SPECIAL * 0.0
     assert engine.team("bos").faceoff == pytest.approx(expected)
     assert engine.team("mtl").faceoff != LEAGUE_FO_PCT
+
+
+def test_sog_ewma_updates_on_zero_shots() -> None:
+    """Explicit 0 SOG must not fall through truthy `or` to LEAGUE_SOG."""
+    from web.nhl_v2.feature_engine import ALPHA_FAST, LEAGUE_SOG, NhlFeatureEngine
+
+    engine = NhlFeatureEngine()
+    prior = engine.team("bos").sog_for
+    assert prior == LEAGUE_SOG
+    engine.update_after_game(
+        {
+            "date": "2024-10-15",
+            "home": "bos",
+            "away": "mtl",
+            "home_goals": 3,
+            "away_goals": 2,
+            "home_win": 1,
+            "home_shots": 0,
+            "away_shots": 0,
+            "mp": {},
+        }
+    )
+    expected = (1.0 - ALPHA_FAST) * LEAGUE_SOG + ALPHA_FAST * 0.0
+    assert engine.team("bos").sog_for == pytest.approx(expected)
+    assert engine.team("bos").sog_for != LEAGUE_SOG

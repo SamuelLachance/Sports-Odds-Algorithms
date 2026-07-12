@@ -2003,6 +2003,7 @@ a.pick-card-link:focus-visible {
 
 .result-badge.win { background: color-mix(in srgb, var(--accent) 20%, transparent); color: var(--accent-strong); }
 .result-badge.loss { background: rgba(248, 113, 113, 0.2); color: #f87171; }
+.result-badge.tie { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
 
 .game-card.clickable {
   cursor: pointer;

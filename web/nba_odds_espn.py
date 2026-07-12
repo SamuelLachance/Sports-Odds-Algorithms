@@ -363,7 +363,14 @@ def collect_day_rows(day: date, *, use_cache: bool = True) -> list[dict[str, Any
         if not items:
             return row
         consensus = _consensus(items)
-        if consensus.get("home_close_spread") is None and consensus.get("home_close_ml") is None:
+        # Keep away-only / totals-only closes — do not require a home ML or spread.
+        if (
+            consensus.get("home_close_spread") is None
+            and consensus.get("away_close_spread") is None
+            and consensus.get("home_close_ml") is None
+            and consensus.get("away_close_ml") is None
+            and consensus.get("close_total") is None
+        ):
             return row
         row.update(
             {

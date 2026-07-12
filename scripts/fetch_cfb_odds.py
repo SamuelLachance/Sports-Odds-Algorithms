@@ -141,7 +141,14 @@ def _odds_row(event: dict[str, Any]) -> dict[str, Any]:
     if not items:
         return row
     consensus = _consensus(items, max_handicap_abs=MAX_CFB_SPREAD)
-    if consensus.get("home_close_spread") is None and consensus.get("home_close_ml") is None:
+    # Keep away-only / totals-only closes — do not require a home ML or spread.
+    if (
+        consensus.get("home_close_spread") is None
+        and consensus.get("away_close_spread") is None
+        and consensus.get("home_close_ml") is None
+        and consensus.get("away_close_ml") is None
+        and consensus.get("close_total") is None
+    ):
         return row
     row.update(
         {

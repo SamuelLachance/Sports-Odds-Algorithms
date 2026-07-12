@@ -20,7 +20,9 @@
       if (path.length > 1 && path.endsWith("/")) path = path.slice(0, -1);
       var hash = path === "/" ? "#/" : "#" + path;
       var prefix = base || "";
-      location.replace(prefix + "/" + hash + location.search);
+      // Query must precede the hash so the SPA router sees a clean path
+      // (…/?utm=1#/games), not a poisoned fragment (#/games?utm=1).
+      location.replace(prefix + "/" + (location.search || "") + hash);
     })();
   </script>
 </head>

@@ -272,9 +272,50 @@ def test_sbr_archive_parsers_keep_even_ml_and_pickem_spread() -> None:
 
     assert _parse_optional_float(0) == 0.0
     assert _parse_optional_float("0") == 0.0
+    assert _parse_optional_float("PK") == 0.0
+    assert _parse_optional_float("EVEN") == 0.0
     assert _parse_optional_float(-3.5) == -3.5
     assert _parse_optional_float("") is None
     assert _parse_optional_float(None) is None
+
+
+def test_make_datestr_skips_corrupt_cells() -> None:
+    """Blank / short / impossible MMDD must soft-fail, not crash the season scrape."""
+    from web.sbr_odds import _make_datestr
+
+    assert _make_datestr("", 2023) is None
+    assert _make_datestr("15", 2023) is None
+    assert _make_datestr("ab15", 2023) is None
+    assert _make_datestr("0230", 2023, start=1) is None
+    assert _make_datestr("1015", 2023, start=8) == "2023-10-15"
+
+
+def test_html_table_skips_blank_date_without_aborting() -> None:
+    """One blank date cell must not raise — sibling games still parse."""
+    from unittest.mock import patch
+
+    from web.sbr_odds import _rows_from_html_table
+
+    cells = lambda *vals: "".join(f"<td>{v}</td>" for v in vals)
+    html = (
+        "<table>"
+        f"<tr>{cells(*([f'h{i}' for i in range(12)]))}</tr>"
+        f"<tr>{cells(*(['sub'] * 12))}</tr>"
+        f"<tr>{cells('', '', '', 'Boston', '', '', '', '', '', '-3.5', '-3.5', '130')}</tr>"
+        f"<tr>{cells('', '', '', 'Montreal', '', '', '', '', '', '3.5', '3.5', '-150')}</tr>"
+        f"<tr>{cells('1015', '', '', 'Lakers', '', '', '', '', '', '-5.5', '-5.5', '140')}</tr>"
+        f"<tr>{cells('1015', '', '', 'Celtics', '', '', '', '', '', '5.5', '5.5', '-160')}</tr>"
+        "</table>"
+    )
+    with patch("web.sbr_odds._translate_name", side_effect=lambda _s, name, _t: name):
+        with patch(
+            "web.sbr_odds.normalize_team_key",
+            side_effect=lambda _s, name: name.lower()[:3],
+        ):
+            rows = _rows_from_html_table("nba", 2023, html, {})
+    assert len(rows) == 1
+    assert rows[0]["date"] == "2023-10-15"
+    assert rows[0]["home_key"] == "cel"
 
 
 def test_nhl_html_repairs_same_sign_puck_lines() -> None:

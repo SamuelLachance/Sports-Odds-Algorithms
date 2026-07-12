@@ -104,6 +104,38 @@ def test_cfb_odds_row_does_not_invent_spread_juice() -> None:
     assert row["home_close_ml"] == -300.0
 
 
+def test_cfb_odds_row_keeps_away_only_moneyline() -> None:
+    """Away-only closes must not be discarded when home ML/spread are missing."""
+    from scripts import fetch_cfb_odds as mod
+
+    event = {
+        "date": "2024-09-01",
+        "home_key": "ala",
+        "away_key": "uga",
+        "event": "1",
+        "comp": "1",
+        "home_final": 28,
+        "away_final": 21,
+    }
+    payload = {
+        "items": [
+            {
+                "provider": {"name": "book"},
+                "homeTeamOdds": {"favorite": False, "close": {}},
+                "awayTeamOdds": {
+                    "favorite": True,
+                    "close": {"moneyLine": {"american": -150}},
+                },
+            }
+        ]
+    }
+    with patch.object(mod, "_throttled_get", return_value=payload):
+        row = mod._odds_row(event)
+    assert row["away_close_ml"] == -150.0
+    assert row["home_close_ml"] is None
+    assert row["n_books"] == 1
+
+
 def test_cfb_provider_rejects_juice_sized_point_spread() -> None:
     """CFB max_abs=120 must not keep −110 juice dumped into pointSpread."""
     from scripts.fetch_cfb_odds import MAX_CFB_SPREAD
@@ -518,6 +550,42 @@ def test_nhl_odds_row_keeps_puck_line_without_ml(tmp_path, monkeypatch) -> None:
     assert rows[0]["n_books"] >= 1
 
 
+def test_nhl_odds_row_keeps_totals_only(tmp_path, monkeypatch) -> None:
+    """Totals-only consensus must persist when ML and puck line are absent."""
+    from datetime import date
+
+    from web import nhl_odds_espn as mod
+
+    monkeypatch.setattr(mod, "CACHE_DIR", tmp_path)
+    day = date(2024, 1, 15)
+    event = {
+        "date": "2024-01-15",
+        "event": "1",
+        "comp": "1",
+        "home_key": "bos",
+        "away_key": "mtl",
+    }
+    payload = {
+        "items": [
+            {
+                "provider": {"name": "DraftKings"},
+                "close": {"total": 6.5},
+                "overUnder": 6.5,
+                "homeTeamOdds": {"favorite": False, "close": {}},
+                "awayTeamOdds": {"favorite": False, "close": {}},
+            }
+        ]
+    }
+    monkeypatch.setattr(mod, "_iter_completed_events", lambda *_a, **_k: iter([event]))
+    monkeypatch.setattr(mod, "_get_json", lambda *_a, **_k: payload)
+    rows = mod.collect_day_rows(day, use_cache=False)
+    assert len(rows) == 1
+    assert rows[0]["close_total"] == 6.5
+    assert rows[0]["home_close_ml"] is None
+    assert rows[0]["home_close_spread"] is None
+    assert rows[0]["n_books"] >= 1
+
+
 def test_mlb_odds_row_keeps_run_line_without_ml(tmp_path, monkeypatch) -> None:
     """Run-line-only books must not be dropped when moneylines are absent."""
     from datetime import date
@@ -556,6 +624,42 @@ def test_mlb_odds_row_keeps_run_line_without_ml(tmp_path, monkeypatch) -> None:
     assert rows[0]["home_close_spread"] == -1.5
     assert rows[0]["away_close_spread"] == 1.5
     assert rows[0]["home_close_ml"] is None
+    assert rows[0]["n_books"] >= 1
+
+
+def test_mlb_odds_row_keeps_totals_only(tmp_path, monkeypatch) -> None:
+    """Totals-only consensus must persist when ML and run line are absent."""
+    from datetime import date
+
+    from web import mlb_odds_espn as mod
+
+    monkeypatch.setattr(mod, "CACHE_DIR", tmp_path)
+    day = date(2024, 6, 15)
+    event = {
+        "date": "2024-06-15",
+        "event": "1",
+        "comp": "1",
+        "home_key": "bos",
+        "away_key": "nyy",
+    }
+    payload = {
+        "items": [
+            {
+                "provider": {"name": "DraftKings"},
+                "close": {"total": 8.5},
+                "overUnder": 8.5,
+                "homeTeamOdds": {"favorite": False, "close": {}},
+                "awayTeamOdds": {"favorite": False, "close": {}},
+            }
+        ]
+    }
+    monkeypatch.setattr(mod, "_iter_completed_events", lambda *_a, **_k: iter([event]))
+    monkeypatch.setattr(mod, "_get_json", lambda *_a, **_k: payload)
+    rows = mod.collect_day_rows(day, use_cache=False)
+    assert len(rows) == 1
+    assert rows[0]["close_total"] == 8.5
+    assert rows[0]["home_close_ml"] is None
+    assert rows[0]["home_close_spread"] is None
     assert rows[0]["n_books"] >= 1
 
 

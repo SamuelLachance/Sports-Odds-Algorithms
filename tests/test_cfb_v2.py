@@ -309,3 +309,12 @@ def test_h2h_win_rate_survives_home_away_role_reversal() -> None:
     assert same["h2h_home_win_rate"] == 1.0
     assert reverse["h2h_home_win_rate"] == 0.0
     assert reverse["h2h_margin_ewma"] < 0.0
+
+
+def test_week_zero_is_not_replaced_by_date_derived_week() -> None:
+    """Explicit week=0 (preseason) must not fall through truthy `or`."""
+    engine = CfbFeatureEngine()
+    game = _game("2024-08-24", "ala", "uga", 0, 0)
+    game["week"] = 0
+    feats = engine.features_for_game(game)
+    assert feats["week"] == 0.0

@@ -789,14 +789,20 @@ class MlbFeatureEngine:
             pa = float(hit_log.get("pa") or 0)
             ab = float(hit_log.get("ab") or 0)
             if pa >= 10:
-                team.obp = _ewma(team.obp, float(hit_log.get("obp") or LEAGUE_OBP), ALPHA_BATTING)
-                team.slg = _ewma(team.slg, float(hit_log.get("slg") or LEAGUE_SLG), ALPHA_BATTING)
+                # Do not use truthiness — 0.000 OBP/SLG is a real (hitless) game.
+                obp_raw = hit_log.get("obp")
+                slg_raw = hit_log.get("slg")
+                obp_val = float(obp_raw) if obp_raw is not None else LEAGUE_OBP
+                slg_val = float(slg_raw) if slg_raw is not None else LEAGUE_SLG
+                team.obp = _ewma(team.obp, obp_val, ALPHA_BATTING)
+                team.slg = _ewma(team.slg, slg_val, ALPHA_BATTING)
                 team.hr_pg = _ewma(team.hr_pg, float(hit_log.get("hr") or 0), ALPHA_BATTING)
                 team.bb_rate = _ewma(team.bb_rate, float(hit_log.get("bb") or 0) / pa, ALPHA_BATTING)
                 team.so_rate = _ewma(team.so_rate, float(hit_log.get("so") or 0) / pa, ALPHA_BATTING)
             if ab >= 10:
                 ba = float(hit_log.get("h") or 0) / ab
-                slg = float(hit_log.get("slg") or LEAGUE_SLG)
+                slg_raw = hit_log.get("slg")
+                slg = float(slg_raw) if slg_raw is not None else LEAGUE_SLG
                 team.iso = _ewma(team.iso, max(slg - ba, -0.05), ALPHA_BATTING)
                 xbh = (
                     float(hit_log.get("d2") or 0)

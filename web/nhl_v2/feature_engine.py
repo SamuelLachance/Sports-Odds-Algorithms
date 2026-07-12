@@ -823,8 +823,17 @@ class NhlFeatureEngine:
             if pk_ice is not None:
                 state.pk_ice_time = _ewma(state.pk_ice_time, float(pk_ice), ALPHA_SPECIAL)
 
-            sog_for = float(sog_f or own_mp.get("all_shotsOnGoalFor") or LEAGUE_SOG)
-            sog_against = float(sog_a or own_mp.get("all_shotsOnGoalAgainst") or LEAGUE_SOG)
+            # Do not use truthiness — 0 SOG is rare but valid; missing is None.
+            if sog_f is not None:
+                sog_for = float(sog_f)
+            else:
+                mp_sog_f = own_mp.get("all_shotsOnGoalFor")
+                sog_for = float(mp_sog_f) if mp_sog_f is not None else LEAGUE_SOG
+            if sog_a is not None:
+                sog_against = float(sog_a)
+            else:
+                mp_sog_a = own_mp.get("all_shotsOnGoalAgainst")
+                sog_against = float(mp_sog_a) if mp_sog_a is not None else LEAGUE_SOG
             state.sog_for = _ewma(state.sog_for, sog_for, ALPHA_FAST)
             state.sog_against = _ewma(state.sog_against, sog_against, ALPHA_FAST)
             if sog_for > 5:

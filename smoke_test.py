@@ -80,12 +80,16 @@ def test_docs_do_not_overstate_nba_ml_close_roi() -> None:
     lowered = readme_text.lower()
     assert "beats the nba close" not in lowered
     assert "positive closing-line roi" not in lowered
-    # AGENTS cron must use comma hours, not step syntax that misstates deploy times.
+    # Cron must use comma hours, not step syntax that misstates deploy times.
     agents_text = agents.read_text(encoding="utf-8")
     assert "0 4,10,16,22" in agents_text
     assert "0 4/10/16/22" not in agents_text
     assert "ROI close négatif" in agents_text or "roi close négatif" in agents_text.lower()
-
+    # Public README must match AGENTS / pages.yml (slash form was a prior docs lie).
+    assert "0 4,10,16,22" in readme_text
+    assert "0 4/10/16/22" not in readme_text
+    assert "every push" not in readme_text.lower()
+    assert "paths-ignore" in readme_text
 
 def test_core_v2_artifacts_optional() -> None:
     """Report nba/wnba/nhl/mlb/soccer v2 presence; never fail when absent."""

@@ -428,7 +428,14 @@ class CfbFeatureEngine:
 
         home_rest = home.rest_days(game_date)
         away_rest = away.rest_days(game_date)
-        week = float(game.get("week") or _week_number(game_date, season))
+        raw_week = game.get("week")
+        if raw_week is None or (isinstance(raw_week, float) and math.isnan(raw_week)):
+            week = float(_week_number(game_date, season))
+        else:
+            try:
+                week = float(raw_week)
+            except (TypeError, ValueError):
+                week = float(_week_number(game_date, season))
         season_frac = min(home.games_played, away.games_played) / SEASON_GAMES_NOMINAL
         elo_diff = home.elo - away.elo + (0.0 if neutral else ELO_HOME_ADV)
 

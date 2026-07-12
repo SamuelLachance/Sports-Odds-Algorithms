@@ -132,23 +132,33 @@ def get_team_profile(league: str, abbr: str) -> dict[str, Any]:
     data = load_live_team_data(league, resolved, espn_id, cutoff)
     season_year = current_season_year(league, today)
 
-    wins = losses = 0
+    wins = losses = ties = 0
     recent: list[dict[str, Any]] = []
     if data:
         entry = data[-1]
         scores = entry.get("game_scores") or []
         opponents = entry.get("other_team") or []
         dates = entry.get("dates") or []
-        for i, game in enumerate(scores):
-            if game[0] > game[1]:
+        for game in scores:
+            scored, allowed = game[0], game[1]
+            if scored > allowed:
                 wins += 1
-            else:
+            elif scored < allowed:
                 losses += 1
+            else:
+                ties += 1
         home_away = entry.get("home_away") or []
         team_labels = {t["abbr"]: t["label"] for t in teams}
         for i in range(max(0, len(scores) - 5), len(scores)):
             opp_abbr = opponents[i] if i < len(opponents) else ""
             opp_name = team_labels.get(opp_abbr.lower(), opp_abbr.upper() if opp_abbr else "")
+            scored, allowed = scores[i][0], scores[i][1]
+            if scored > allowed:
+                result = "W"
+            elif scored < allowed:
+                result = "L"
+            else:
+                result = "T"
             recent.append(
                 {
                     "date": dates[i] if i < len(dates) else "",
@@ -156,11 +166,12 @@ def get_team_profile(league: str, abbr: str) -> dict[str, Any]:
                     "opponent_abbr": opp_abbr.lower() if opp_abbr else None,
                     "location": home_away[i] if i < len(home_away) else "",
                     "score": scores[i],
-                    "result": "W" if scores[i][0] > scores[i][1] else "L",
+                    "result": result,
                 }
             )
 
     seasons_used = data[-1].get("seasons_used") if data else []
+    games_played = wins + losses + ties
     return {
         "league": league,
         "league_name": LEAGUE_PROFILES[league]["name"],
@@ -173,8 +184,9 @@ def get_team_profile(league: str, abbr: str) -> dict[str, Any]:
         "season_stats": {
             "wins": wins,
             "losses": losses,
-            "games_played": wins + losses,
-            "win_pct": round(wins / (wins + losses) * 100, 1) if wins + losses else 0,
+            "ties": ties,
+            "games_played": games_played,
+            "win_pct": round(wins / games_played * 100, 1) if games_played else 0,
         },
         "recent_games": list(reversed(recent)),
         "cutoff_date": cutoff,
