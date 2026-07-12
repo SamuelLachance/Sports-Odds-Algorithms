@@ -439,6 +439,88 @@ def test_cfb_collect_day_rows_refetches_sticky_empty_list(tmp_path, monkeypatch)
     assert rows[0]["home_close_ml"] == -140
 
 
+def test_nhl_odds_row_keeps_puck_line_without_ml(tmp_path, monkeypatch) -> None:
+    """Puck-line-only books must not be dropped when moneylines are absent."""
+    from datetime import date
+
+    from web import nhl_odds_espn as mod
+
+    monkeypatch.setattr(mod, "CACHE_DIR", tmp_path)
+    day = date(2024, 1, 15)
+    event = {
+        "date": "2024-01-15",
+        "event": "1",
+        "comp": "1",
+        "home_key": "bos",
+        "away_key": "mtl",
+    }
+    payload = {
+        "items": [
+            {
+                "provider": {"name": "DraftKings"},
+                "spread": -1.5,
+                "homeTeamOdds": {
+                    "favorite": True,
+                    "close": {"pointSpread": {"american": -1.5}},
+                },
+                "awayTeamOdds": {
+                    "favorite": False,
+                    "close": {"pointSpread": {"american": 1.5}},
+                },
+            }
+        ]
+    }
+    monkeypatch.setattr(mod, "_iter_completed_events", lambda *_a, **_k: iter([event]))
+    monkeypatch.setattr(mod, "_get_json", lambda *_a, **_k: payload)
+    rows = mod.collect_day_rows(day, use_cache=False)
+    assert len(rows) == 1
+    assert rows[0]["home_close_spread"] == -1.5
+    assert rows[0]["away_close_spread"] == 1.5
+    assert rows[0]["home_close_ml"] is None
+    assert rows[0]["n_books"] >= 1
+
+
+def test_mlb_odds_row_keeps_run_line_without_ml(tmp_path, monkeypatch) -> None:
+    """Run-line-only books must not be dropped when moneylines are absent."""
+    from datetime import date
+
+    from web import mlb_odds_espn as mod
+
+    monkeypatch.setattr(mod, "CACHE_DIR", tmp_path)
+    day = date(2024, 6, 15)
+    event = {
+        "date": "2024-06-15",
+        "event": "1",
+        "comp": "1",
+        "home_key": "bos",
+        "away_key": "nyy",
+    }
+    payload = {
+        "items": [
+            {
+                "provider": {"name": "DraftKings"},
+                "spread": -1.5,
+                "homeTeamOdds": {
+                    "favorite": True,
+                    "close": {"pointSpread": {"american": -1.5}},
+                },
+                "awayTeamOdds": {
+                    "favorite": False,
+                    "close": {"pointSpread": {"american": 1.5}},
+                },
+            }
+        ]
+    }
+    monkeypatch.setattr(mod, "_iter_completed_events", lambda *_a, **_k: iter([event]))
+    monkeypatch.setattr(mod, "_get_json", lambda *_a, **_k: payload)
+    rows = mod.collect_day_rows(day, use_cache=False)
+    assert len(rows) == 1
+    assert rows[0]["home_close_spread"] == -1.5
+    assert rows[0]["away_close_spread"] == 1.5
+    assert rows[0]["home_close_ml"] is None
+    assert rows[0]["n_books"] >= 1
+
+
 def test_nba_collect_day_rows_refetches_empty_odds_cache(tmp_path, monkeypatch) -> None:
     """Sticky [] after an odds outage must not permanently skip a later refill."""
     from datetime import date

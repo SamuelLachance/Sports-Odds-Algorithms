@@ -69,15 +69,10 @@ def fetch_soccer_opening_moneylines(
     odds_block = _fetch_event_odds_block(league, event_id or "")
     if not odds_block:
         return None, None, None
-    _, home_close = _extract_open_close_moneyline(odds_block, "home")
-    _, away_close = _extract_open_close_moneyline(odds_block, "away")
-    open_draw, _ = _extract_open_close_moneyline(odds_block, "draw")
+    # Missing open must stay None — copying close fabricates 0pp "steam".
     open_home, _ = _extract_open_close_moneyline(odds_block, "home")
+    open_draw, _ = _extract_open_close_moneyline(odds_block, "draw")
     open_away, _ = _extract_open_close_moneyline(odds_block, "away")
-    if open_home is None and home_close is not None:
-        open_home = home_close
-    if open_away is None and away_close is not None:
-        open_away = away_close
     return open_home, open_draw, open_away
 
 

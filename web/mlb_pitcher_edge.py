@@ -25,21 +25,56 @@ def _fetch_json(url: str, timeout: int = 20) -> dict[str, Any] | None:
         return None
 
 
+def _stat_from_block(stat: dict[str, Any] | None) -> dict[str, float] | None:
+    if not isinstance(stat, dict) or not stat:
+        return None
+    try:
+        innings = float(stat.get("inningsPitched") or stat.get("ip") or 0)
+    except (TypeError, ValueError):
+        return None
+    if innings < 10:
+        return None
+    try:
+        era = float(stat.get("era") or LEAGUE_ERA_BASELINE)
+        whip = float(stat.get("whip") or LEAGUE_WHIP_BASELINE)
+    except (TypeError, ValueError):
+        return None
+    return {"era": era, "whip": whip, "innings": innings}
+
+
 def _pitching_snapshot(person: dict[str, Any] | None) -> dict[str, float] | None:
+    """Extract season pitching from a probablePitcher person blob.
+
+    Schedule hydrate returns season numbers on the block itself
+    (``statsSingleSeason`` / ``stats`` dict, empty ``splits``). People-API
+    hydrate uses ``splits[].stat``. Prefer season blocks over gameLog.
+    """
     if not person:
         return None
     stats_blocks = person.get("stats") or []
-    for block in stats_blocks:
+    season_first = sorted(
+        stats_blocks,
+        key=lambda b: 0
+        if str((b.get("type") or {}).get("displayName") or "")
+        .lower()
+        .find("season")
+        >= 0
+        else 1,
+    )
+    for block in season_first:
         if block.get("group", {}).get("displayName") != "pitching":
             continue
+        # People API: splits[].stat
         for split in block.get("splits") or []:
-            stat = split.get("stat") or {}
-            innings = float(stat.get("inningsPitched") or stat.get("ip") or 0)
-            if innings < 10:
-                continue
-            era = float(stat.get("era") or LEAGUE_ERA_BASELINE)
-            whip = float(stat.get("whip") or LEAGUE_WHIP_BASELINE)
-            return {"era": era, "whip": whip, "innings": innings}
+            snap = _stat_from_block(split.get("stat") if isinstance(split, dict) else None)
+            if snap:
+                return snap
+        # Schedule hydrate: season totals live directly on block["stats"].
+        direct = block.get("stats")
+        if isinstance(direct, dict) and "splits" not in direct:
+            snap = _stat_from_block(direct)
+            if snap:
+                return snap
     return None
 
 

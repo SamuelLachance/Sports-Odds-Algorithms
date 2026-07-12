@@ -81,6 +81,39 @@ def test_count_team_injuries_resolves_ref_stubs_for_out() -> None:
     assert out == 1  # only the Out player; Day-To-Day is not out
 
 
+def test_count_team_injuries_fetches_when_type_is_ref_stub() -> None:
+    """type: {$ref} without status/description must not skip the detail fetch."""
+    list_payload = {
+        "count": 1,
+        "items": [
+            {
+                "$ref": "https://example.test/injuries/out-1",
+                "type": {"$ref": "https://example.test/types/out"},
+            }
+        ],
+    }
+    details = {
+        "https://example.test/injuries/out-1": {
+            "status": "Out",
+            "type": {"description": "out", "abbreviation": "O"},
+        },
+    }
+
+    def fake_fetch(url: str):
+        if url in details:
+            return details[url]
+        if "/teams/7/injuries" in url:
+            return list_payload
+        return None
+
+    with patch("web.availability_signals.get_league_profile", return_value={"sport_path": "basketball/nba"}):
+        with patch("web.availability_signals._fetch_json", side_effect=fake_fetch):
+            total, out = _count_team_injuries("nba", "7")
+
+    assert total == 1
+    assert out == 1
+
+
 def test_count_without_ref_resolution_would_miss_out() -> None:
     """Document the pre-fix failure mode: stub-only items never look like Out."""
     stubs = [{"$ref": "https://example.test/injuries/1"}]

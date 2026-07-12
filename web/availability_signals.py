@@ -81,10 +81,15 @@ def _status_means_out(status: str) -> bool:
 
 
 def _resolve_injury_item(item: Any) -> dict[str, Any] | None:
-    """ESPN list endpoints return ``{$ref: ...}`` stubs without status inline."""
+    """ESPN list endpoints return ``{$ref: ...}`` stubs without status inline.
+
+    A nested ``type: {$ref: ...}`` dict is *not* enough — that still has no
+    readable status, so we must fetch the detail URL when present.
+    """
     if not isinstance(item, dict):
         return None
-    if item.get("status") is not None or isinstance(item.get("type"), (str, dict)):
+    # Usable inline status/type text → no fetch needed.
+    if _injury_status_text(item):
         return item
     ref = item.get("$ref")
     if not isinstance(ref, str) or not ref.strip():

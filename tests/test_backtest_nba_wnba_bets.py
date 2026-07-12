@@ -92,3 +92,48 @@ def test_simulate_spread_skips_missing_juice_instead_of_inventing_minus_110(
         exec_price="consensus",
     )
     assert result.get("bets", 0) >= 1
+
+
+@pytest.mark.parametrize(
+    "script_name",
+    ["backtest_nba_bets.py", "backtest_wnba_bets.py"],
+)
+def test_normalize_ml_maps_even_zero(script_name: str) -> None:
+    module = _load(script_name)
+    assert module._normalize_ml(0) == 100.0
+    assert module._normalize_ml(-110) == -110.0
+    assert module._normalize_ml(50) is None
+    assert module._normalize_ml(None) is None
+
+
+@pytest.mark.parametrize(
+    "script_name",
+    ["backtest_nba_bets.py", "backtest_wnba_bets.py"],
+)
+def test_simulate_moneyline_accepts_even_zero(script_name: str) -> None:
+    """ESPN EVEN (0) must bet as +100 — not skip via |ml|<100 gate."""
+    module = _load(script_name)
+    frame = pd.DataFrame(
+        {
+            "season": [2024],
+            "model_home_prob": [0.62],
+            "home_win": [1],
+            "home_ml": [0.0],
+            "away_ml": [-120.0],
+            "home_ml_open": [0.0],
+            "away_ml_open": [-120.0],
+            "best_home_ml": [float("nan")],
+            "best_away_ml": [float("nan")],
+        }
+    )
+    result = module.simulate_moneyline(
+        frame,
+        prob_col="model_home_prob",
+        min_edge_pp=-999.0,
+        min_ev_pct=-999.0,
+        ml_lo=-10000.0,
+        ml_hi=10000.0,
+        exec_price="consensus",
+    )
+    assert result.get("bets", 0) >= 1
+    # Pre-fix abs(0)<100 skipped the row entirely.

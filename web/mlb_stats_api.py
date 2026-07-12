@@ -55,9 +55,28 @@ def _fetch_json(url: str, timeout: int = 20) -> dict[str, Any] | None:
         return None
 
 
+# MLB Stats API fileCode / abbreviation → ESPN slate keys used elsewhere.
+_MLB_STANDINGS_KEY_ALIASES: dict[str, str] = {
+    "cws": "chw",  # White Sox (MLB fileCode) vs ESPN chw
+    "ath": "oak",  # Athletics legacy key
+    "was": "wsh",
+}
+
+
+def _standings_team_key(team: dict[str, Any]) -> str | None:
+    abbr = (
+        (team.get("fileCode") or team.get("abbreviation") or "")
+        .lower()
+        .replace(" ", "")
+    )
+    if not abbr:
+        return None
+    return _MLB_STANDINGS_KEY_ALIASES.get(abbr, abbr)
+
+
 @lru_cache(maxsize=8)
 def fetch_mlb_season_standings(season: int) -> dict[str, dict[str, float]]:
-    """Team-level season stats keyed by lower-case MLB/ESPN abbr."""
+    """Team-level season stats keyed by lower-case ESPN-compatible abbr."""
     url = (
         f"{BASE_URL}/standings?leagueId=103,104&season={season}"
         f"&standingsTypes=regularSeason"
@@ -70,11 +89,7 @@ def fetch_mlb_season_standings(season: int) -> dict[str, dict[str, float]]:
     for record in payload.get("records") or []:
         for team_rec in record.get("teamRecords") or []:
             team = team_rec.get("team") or {}
-            abbr = (
-                (team.get("fileCode") or team.get("abbreviation") or "")
-                .lower()
-                .replace(" ", "")
-            )
+            abbr = _standings_team_key(team)
             if not abbr:
                 continue
             wins = float(team_rec.get("wins") or 0)

@@ -185,6 +185,7 @@ def _summarize(records: list[dict]) -> dict:
     pushes = sum(1 for r in records if r["result"] == "push")
     units = float(np.sum(profits))
     graded = wins + losses
+    # ROI vs risked stakes only — pushes return the stake (match tracking_service).
     return {
         "bets": len(records),
         "wins": wins,
@@ -192,7 +193,7 @@ def _summarize(records: list[dict]) -> dict:
         "pushes": pushes,
         "win_pct": round(100.0 * wins / graded, 2) if graded else 0.0,
         "units": round(units, 2),
-        "roi_pct": round(100.0 * units / len(records), 2),
+        "roi_pct": round(100.0 * units / graded, 2) if graded else 0.0,
     }
 
 

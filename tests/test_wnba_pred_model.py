@@ -138,3 +138,28 @@ def test_run_wnba_pred_model_payload(
     assert payload["source"] == "elo-efficiency-xgb-calibrated"
     assert "wnba_pick_signals" in payload
     assert payload["home_win_probability"] > 50.0
+
+
+@patch("web.wnba_pred_model.fetch_opening_spread_proxy", return_value=None)
+@patch("web.wnba_pred_model.availability_home_shift_pp")
+@patch("web.wnba_pred_model.load_wnba_dated_games")
+@patch("web.wnba_pred_model.load_league_completed_games")
+def test_wnba_availability_shift_survives_margin_rebuild(
+    mock_games, mock_dated, mock_avail, _mock_opening
+) -> None:
+    import pytest
+
+    mock_games.return_value = [g for _d, g in _sample_dated_games()]
+    mock_dated.return_value = _sample_dated_games()
+    get_wnba_pred_context.cache_clear()
+
+    mock_avail.return_value = 0.0
+    base = run_wnba_pred_model("wnba", "06-15-2025", "a", "c")
+    get_wnba_pred_context.cache_clear()
+    mock_avail.return_value = 2.0
+    shifted = run_wnba_pred_model("wnba", "06-15-2025", "a", "c")
+    assert base is not None and shifted is not None
+    assert shifted["availability_shift_pp"] == 2.0
+    assert shifted["raw_home_win_probability"] == pytest.approx(
+        base["raw_home_win_probability"] + 2.0, abs=0.05
+    )

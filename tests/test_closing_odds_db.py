@@ -86,6 +86,35 @@ def test_closing_odds_lookup_same_day_swap_and_fuzzy_date(tmp_path: Path, monkey
     assert missing is None
 
 
+def test_iso_date_accepts_slate_mdyyyy_cutoff() -> None:
+    """Slate cutoffs are M-D-YYYY; CSV keys are YYYY-MM-DD."""
+    assert closing_odds_db._iso_date("7-12-2026") == "2026-07-12"
+    assert closing_odds_db._iso_date("07-12-2026") == "2026-07-12"
+    assert closing_odds_db._iso_date("2026-07-12") == "2026-07-12"
+    assert closing_odds_db._iso_date("20260712") == "2026-07-12"
+
+
+def test_fetch_opening_spread_proxy_matches_mdyyyy_cutoff(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """Opening steam lookups must find ISO-keyed closes from M-D-YYYY cutoffs."""
+    from web.cbb_opening import fetch_opening_spread_proxy
+
+    odds_dir = tmp_path / "closing-odds"
+    odds_dir.mkdir()
+    (odds_dir / "cbb.csv").write_text(
+        "date,home_key,away_key,home_close_ml,away_close_ml,"
+        "home_close_spread,away_close_spread,home_spread_odds,away_spread_odds,source\n"
+        "2026-07-12,duke,unc,-150,130,-4.5,4.5,-110,-110,test\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(closing_odds_db, "ODDS_DIR", odds_dir)
+    closing_odds_db.clear_closing_odds_cache()
+
+    assert fetch_opening_spread_proxy("cbb", "7-12-2026", "duke", "unc") == -4.5
+    assert fetch_opening_spread_proxy("cbb", "2026-07-12", "duke", "unc") == -4.5
+
+
 def test_closing_odds_lookup_does_not_swap_across_fuzzy_dates(
     tmp_path: Path, monkeypatch
 ) -> None:

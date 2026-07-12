@@ -22,6 +22,16 @@ def test_country_to_espn_abbr_maps_major_nations() -> None:
     assert country_to_espn_abbr("Bosnia & Herzegovina") == "bih"
 
 
+def test_mauritius_not_aliased_to_mauritania() -> None:
+    """Mauritius is FIFA/ESPN `mri`; Mauritania is `mtn` — never conflate."""
+    from web.international_soccer_odds import _espn_country_to_abbr
+
+    _espn_country_to_abbr.cache_clear()
+    assert country_to_espn_abbr("Mauritania") == "mtn"
+    assert country_to_espn_abbr("Mauritius") == "mri"
+    assert country_to_espn_abbr("Mauritius") != country_to_espn_abbr("Mauritania")
+
+
 def test_international_fd_games_include_scores_and_odds() -> None:
     games = load_international_fd_games()
     assert len(games) >= 400

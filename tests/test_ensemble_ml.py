@@ -353,6 +353,36 @@ def test_market_devig_soft_fails_invalid_and_even_text() -> None:
     assert abs(sum(even) - 100.0) < 0.05
 
 
+def test_extract_binary_features_normalizes_even_zero_ml() -> None:
+    """Raw market_*_ml must map ESPN EVEN (0) → +100 like training closes."""
+    from web.ensemble_ml.features import extract_binary_features
+
+    feats = extract_binary_features(
+        {
+            "legacy": {"home_win_probability": 55.0},
+            "power": {"home_win_probability": 54.0},
+        },
+        "nba",
+        home_moneyline=0,
+        away_moneyline=130,
+    )
+    assert feats["market_home_ml"] == 100.0
+    assert feats["market_away_ml"] == 130.0
+    # De-vig path already normalized; keep it consistent with +100.
+    assert feats["market_devig_home_prob"] is not None
+    assert feats["market_devig_home_prob"] == pytest.approx(
+        extract_binary_features(
+            {
+                "legacy": {"home_win_probability": 55.0},
+                "power": {"home_win_probability": 54.0},
+            },
+            "nba",
+            home_moneyline=100,
+            away_moneyline=130,
+        )["market_devig_home_prob"]
+    )
+
+
 def test_ensure_hubacek_still_runs_on_spread_only_ensemble() -> None:
     """Without market_decorrelated, ensemble blend_mode must not skip Hubáček."""
     from web.bet_advisor import (

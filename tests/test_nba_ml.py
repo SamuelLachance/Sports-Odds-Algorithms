@@ -63,6 +63,24 @@ def test_ats_grading():
     assert _ats_result("home", 6, -6) == "push"
 
 
+def test_summarize_roi_excludes_pushes_from_denominator():
+    """Pushes return the stake — ROI is vs risked (win/loss) units only."""
+    from web.nba_ml.backtest import _summarize
+
+    summary = _summarize(
+        [
+            {"result": "win", "profit": 1.0},
+            {"result": "push", "profit": 0.0},
+        ]
+    )
+    assert summary["pushes"] == 1
+    assert summary["bets"] == 2
+    assert summary["roi_pct"] == 100.0  # 1u / 1 risked, not 50% over 2 rows
+    push_only = _summarize([{"result": "push", "profit": 0.0}])
+    assert push_only["roi_pct"] == 0.0
+    assert push_only["pushes"] == 1
+
+
 def test_feature_state_is_leak_free_and_updates():
     state = FeatureState()
     day = date(2024, 1, 1)

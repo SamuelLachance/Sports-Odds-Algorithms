@@ -217,6 +217,13 @@ def test_app_js_mlb_nhl_frontend_contracts() -> None:
     # Soccer 1X2 away EV must not use binary 100 − home fallback.
     assert "m.threeway && top?.side === \"away\"" in js
     assert "away_win_probability" in js
+    # Draw EV must be checked before moneyline home-fallback (bet_type often
+    # remains "moneyline" on soccer 1X2 cards).
+    draw_idx = js.find('top?.side === "draw"')
+    moneyline_fallback_idx = js.find('betType === "moneyline" && homeEvFallback')
+    assert draw_idx != -1 and moneyline_fallback_idx != -1
+    assert draw_idx < moneyline_fallback_idx
+    assert "pre_decorrelation_draw_probability" in js
     # Three-track calibrated probability is labeled EV prob (not Honest EV %).
     assert "Display · ${gateLabel} · EV prob" in js
     assert "<span>EV prob</span>" in js

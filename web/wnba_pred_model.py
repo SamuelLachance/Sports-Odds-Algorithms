@@ -311,7 +311,6 @@ def run_wnba_pred_model(
     if home_games < MIN_TEAM_GAMES or away_games < MIN_TEAM_GAMES:
         return None
 
-    raw_prob = float(prediction["home_win_probability"])
     margin = float(prediction["predicted_margin"])
 
     avail_shift = availability_home_shift_pp(
@@ -322,7 +321,6 @@ def run_wnba_pred_model(
         home_games,
         away_games,
     )
-    raw_prob = min(max(raw_prob + avail_shift, 1.0), 99.0)
 
     opening_spread = fetch_opening_spread_proxy(
         league,
@@ -335,7 +333,9 @@ def run_wnba_pred_model(
         market_spread,
         opening_spread=opening_spread,
     )
+    # Rebuild from steam-adjusted margin, then apply availability (do not wipe it).
     raw_prob = margin_to_home_win_prob(margin, sigma=float(context.get("sigma", DEFAULT_SIGMA)))
+    raw_prob = min(max(raw_prob + avail_shift, 1.0), 99.0)
 
     if market_spread is not None:
         market_prob = spread_to_home_prob(float(market_spread), sigma=float(context["sigma"]))

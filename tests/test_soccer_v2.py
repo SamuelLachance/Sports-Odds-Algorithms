@@ -14,6 +14,7 @@ from web.soccer_v2.data import devig_decimal, parse_season_csv  # noqa: E402
 from web.soccer_v2.feature_engine import (  # noqa: E402
     FEATURE_COLUMNS,
     SoccerFeatureEngine,
+    _dixon_coles_tau,
     poisson_1x2,
 )
 from web.soccer_v2.live import (  # noqa: E402
@@ -61,6 +62,22 @@ def test_poisson_1x2_sums_to_one_and_favors_stronger_attack() -> None:
     even_home, even_draw, even_away = poisson_1x2(1.3, 1.3)
     assert abs(even_home + even_draw + even_away - 1.0) < 1e-9
     assert even_draw > draw  # closer matchup -> higher draw probability
+
+
+def test_poisson_1x2_high_xg_stays_non_negative() -> None:
+    """Dixon–Coles τ must clamp to ≥ 0 when λ > 1/|ρ| (~10)."""
+    from web.soccer_v2.feature_engine import DC_RHO
+
+    exp_home, exp_away = 12.0, 11.0
+    # Unclamped factors would be negative: 1 + 12*(-0.10) = -0.20
+    assert 1.0 + exp_home * DC_RHO < 0.0
+    assert 1.0 + exp_away * DC_RHO < 0.0
+    assert _dixon_coles_tau(0, 1, exp_home, exp_away, DC_RHO) == 0.0
+    assert _dixon_coles_tau(1, 0, exp_home, exp_away, DC_RHO) == 0.0
+    assert _dixon_coles_tau(0, 0, exp_home, exp_away, DC_RHO) >= 0.0
+    home, draw, away = poisson_1x2(exp_home, exp_away)
+    assert home >= 0.0 and draw >= 0.0 and away >= 0.0
+    assert abs(home + draw + away - 1.0) < 1e-9
 
 
 def test_engine_elo_moves_toward_winner_and_features_precede_update() -> None:

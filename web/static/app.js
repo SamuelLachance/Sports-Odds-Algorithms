@@ -880,6 +880,15 @@ function hubacekThreeTrackPanel(game, pick) {
     if (betType === "spread") {
       // Cover % already drives EV; do not fall back to ML home %.
       evProb = pickProb ?? null;
+    } else if (top?.side === "draw") {
+      // Draw must win over the moneyline home-fallback branch (bet_type often
+      // still says "moneyline" on soccer 1X2 cards before official rewrite).
+      evProb =
+        m.pre_decorrelation_draw_probability ??
+        m.pre_context_draw_probability ??
+        m.draw_probability ??
+        pickProb ??
+        null;
     } else if (betType === "moneyline" && homeEvFallback != null) {
       if (m.threeway && top?.side === "away") {
         // Soccer 1X2: away mass is not 100 − home (draw takes the rest).
@@ -896,12 +905,6 @@ function hubacekThreeTrackPanel(game, pick) {
             ? Math.round((100 - Number(homeEvFallback)) * 100) / 100
             : homeEvFallback;
       }
-    } else if (top?.side === "draw") {
-      evProb =
-        m.pre_decorrelation_draw_probability ??
-        m.pre_context_draw_probability ??
-        m.draw_probability ??
-        null;
     }
     // Other bet types / missing tracks: leave null → "—"
   }

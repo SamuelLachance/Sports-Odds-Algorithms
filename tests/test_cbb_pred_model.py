@@ -6,6 +6,8 @@ import sys
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -151,6 +153,35 @@ def test_run_cbb_pred_model_payload(mock_games, mock_dated, mock_torvik) -> None
     assert payload["market_decorrelated"] is True
     assert "pre_decorrelation_home_win_probability" in payload
     assert payload["pre_decorrelation_home_win_probability"] != payload["home_win_probability"]
+
+
+@patch("web.cbb_pred_model.availability_home_shift_pp")
+@patch("web.cbb_pred_model.fetch_opening_spread_proxy", return_value=None)
+@patch("web.cbb_pred_model.fetch_torvik_ratings")
+@patch("web.cbb_pred_model.load_cbb_dated_games")
+@patch("web.cbb_pred_model.load_league_completed_games")
+def test_cbb_availability_shift_survives_margin_rebuild(
+    mock_games, mock_dated, mock_torvik, _mock_open, mock_avail
+) -> None:
+    """Avail pp must apply after margin→prob rebuild, not be wiped by it."""
+    from web.cbb_pred_model import get_cbb_pred_context
+
+    clear_torvik_cache()
+    mock_games.return_value = [g for _d, g in _sample_dated_games()]
+    mock_dated.return_value = _sample_dated_games()
+    mock_torvik.return_value = _mock_torvik()
+    get_cbb_pred_context.cache_clear()
+
+    mock_avail.return_value = 0.0
+    base = run_cbb_pred_model("cbb", "11-15-2024", "a", "c")
+    get_cbb_pred_context.cache_clear()
+    mock_avail.return_value = 2.0
+    shifted = run_cbb_pred_model("cbb", "11-15-2024", "a", "c")
+    assert base is not None and shifted is not None
+    assert shifted["availability_shift_pp"] == 2.0
+    assert shifted["raw_home_win_probability"] == pytest.approx(
+        base["raw_home_win_probability"] + 2.0, abs=0.05
+    )
 
 
 def test_fallback_efficiency_from_games() -> None:

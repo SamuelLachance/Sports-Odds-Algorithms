@@ -51,6 +51,18 @@ def _valid_spread_juice(raw: object) -> float | None:
     return odds
 
 
+def _normalize_ml(raw: object) -> float | None:
+    """American ML or None when missing/garbage. EVEN 0 → +100."""
+    if raw is None or pd.isna(raw):
+        return None
+    odds = float(raw)
+    if odds == 0:
+        return 100.0
+    if abs(odds) < 100:
+        return None
+    return odds
+
+
 def devig(home_ml: float, away_ml: float) -> tuple[float, float]:
     ph = 1.0 / american_to_decimal(home_ml)
     pa = 1.0 / american_to_decimal(away_ml)
@@ -115,26 +127,23 @@ def simulate_moneyline(
     picks: list[dict] = []
     for row in frame.itertuples(index=False):
         if exec_price == "open":
-            home_ml = row.home_ml_open
-            away_ml = row.away_ml_open
+            home_ml = _normalize_ml(row.home_ml_open)
+            away_ml = _normalize_ml(row.away_ml_open)
         else:
-            home_ml = row.home_ml
-            away_ml = row.away_ml
-        if pd.isna(home_ml) or pd.isna(away_ml):
+            home_ml = _normalize_ml(row.home_ml)
+            away_ml = _normalize_ml(row.away_ml)
+        if home_ml is None or away_ml is None:
             continue
-        if abs(float(home_ml)) < 100 or abs(float(away_ml)) < 100:
-            continue
-        market_home, market_away = devig(float(home_ml), float(away_ml))
+        market_home, market_away = devig(home_ml, away_ml)
         p_home = float(getattr(row, prob_col))
-        exec_home = row.best_home_ml if exec_price == "best" else home_ml
-        exec_away = row.best_away_ml if exec_price == "best" else away_ml
-        if pd.isna(exec_home) or abs(float(exec_home)) < 100:
-            exec_home = home_ml
-        if pd.isna(exec_away) or abs(float(exec_away)) < 100:
-            exec_away = away_ml
+        if exec_price == "best":
+            exec_home = _normalize_ml(row.best_home_ml) or home_ml
+            exec_away = _normalize_ml(row.best_away_ml) or away_ml
+        else:
+            exec_home, exec_away = home_ml, away_ml
         for side, prob, market, ml, fill_ml in (
-            ("home", p_home, market_home, float(home_ml), float(exec_home)),
-            ("away", 1.0 - p_home, market_away, float(away_ml), float(exec_away)),
+            ("home", p_home, market_home, home_ml, exec_home),
+            ("away", 1.0 - p_home, market_away, away_ml, exec_away),
         ):
             if not (ml_lo <= ml <= ml_hi):
                 continue

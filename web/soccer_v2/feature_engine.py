@@ -96,6 +96,25 @@ DC_RHO = -0.10
 _MAX_GOALS = 8
 
 
+def _dixon_coles_tau(
+    i: int,
+    j: int,
+    exp_home: float,
+    exp_away: float,
+    rho: float,
+) -> float:
+    """Low-score dependency factor; clamped to ≥ 0 for large λ."""
+    if i == 0 and j == 0:
+        return max(0.0, 1.0 - exp_home * exp_away * rho)
+    if i == 0 and j == 1:
+        return max(0.0, 1.0 + exp_home * rho)
+    if i == 1 and j == 0:
+        return max(0.0, 1.0 + exp_away * rho)
+    if i == 1 and j == 1:
+        return max(0.0, 1.0 - rho)
+    return 1.0
+
+
 def poisson_1x2(
     exp_home: float,
     exp_away: float,
@@ -114,16 +133,7 @@ def poisson_1x2(
     ]
     for i in range(_MAX_GOALS + 1):
         for j in range(_MAX_GOALS + 1):
-            p = ph[i] * pa[j]
-            # low-score dependency correction (Dixon & Coles 1997)
-            if i == 0 and j == 0:
-                p *= 1.0 - exp_home * exp_away * rho
-            elif i == 0 and j == 1:
-                p *= 1.0 + exp_home * rho
-            elif i == 1 and j == 0:
-                p *= 1.0 + exp_away * rho
-            elif i == 1 and j == 1:
-                p *= 1.0 - rho
+            p = ph[i] * pa[j] * _dixon_coles_tau(i, j, exp_home, exp_away, rho)
             if i > j:
                 home_p += p
             elif i == j:

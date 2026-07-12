@@ -254,7 +254,9 @@ def collect_day_rows(day: date, *, use_cache: bool = True) -> list[dict[str, Any
         consensus = _consensus_nhl(items)
         home_ml = _valid_american(consensus.get("home_close_ml"))
         away_ml = _valid_american(consensus.get("away_close_ml"))
-        if home_ml is None and away_ml is None:
+        home_spread = consensus.get("home_close_spread")
+        # Keep puck-line-only rows (match NBA/WNBA) — do not require a ML.
+        if home_ml is None and away_ml is None and home_spread is None:
             return row
         row.update(
             {
@@ -262,7 +264,7 @@ def collect_day_rows(day: date, *, use_cache: bool = True) -> list[dict[str, Any
                 "away_close_ml": _int_or_none(away_ml),
                 "home_open_ml": _int_or_none(consensus.get("home_open_ml")),
                 "away_open_ml": _int_or_none(consensus.get("away_open_ml")),
-                "home_close_spread": consensus.get("home_close_spread"),
+                "home_close_spread": home_spread,
                 "away_close_spread": consensus.get("away_close_spread"),
                 # Missing juice stays None — do not invent -110 for training/CLV rows.
                 "home_spread_odds": _int_or_none(consensus.get("home_spread_odds")),

@@ -53,7 +53,8 @@ MANUAL_COUNTRY_ALIASES: dict[str, str] = {
     "laos": "lao",
     "latvia": "lva",
     "malaysia": "mas",
-    "mauritius": "mtn",
+    "mauritius": "mri",  # FIFA/ESPN; Mauritania is mtn — do not conflate
+    "mauritania": "mtn",
     "montserrat": "msr",
     "nepal": "nep",
     "new caledonia": "ncl",

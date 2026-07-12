@@ -116,11 +116,23 @@ def normalize_team_key(league: str, label: str) -> str | None:
 
 
 def _iso_date(raw: str) -> str:
+    """Normalize YYYYMMDD, YYYY-MM-DD, or slate M-D-YYYY cutoffs to ISO."""
     raw = str(raw or "").strip()
     if not raw:
         return ""
     if len(raw) == 8 and raw.isdigit():
         return f"{raw[:4]}-{raw[4:6]}-{raw[6:8]}"
+    parts = raw.split("-")
+    if len(parts) == 3:
+        try:
+            a, b, c = int(parts[0]), int(parts[1]), int(parts[2])
+        except ValueError:
+            return raw[:10]
+        # Slate cutoffs are M-D-YYYY; CSV keys are YYYY-MM-DD.
+        if a < 1900 and c >= 1900:
+            return f"{c:04d}-{a:02d}-{b:02d}"
+        if a >= 1900:
+            return f"{a:04d}-{b:02d}-{c:02d}"
     return raw[:10]
 
 

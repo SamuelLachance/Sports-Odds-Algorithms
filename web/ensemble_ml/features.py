@@ -7,7 +7,11 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from web.bet_advisor import devig_two_way_probs, model_home_margin
+from web.bet_advisor import (
+    devig_two_way_probs,
+    model_home_margin,
+    normalize_american_odds,
+)
 from web.blend_service import (
     _layer_home_margin,
     _third_layer_key,
@@ -131,8 +135,9 @@ def extract_binary_features(
         "overtime_probability": overtime_probability,
         "market_devig_home_prob": market_home,
         "market_spread": _safe_float(consensus_spread),
-        "market_home_ml": _safe_float(home_moneyline),
-        "market_away_ml": _safe_float(away_moneyline),
+        # Normalize EVEN 0 / text → +100 so live features match training closes.
+        "market_home_ml": _safe_float(normalize_american_odds(home_moneyline)),
+        "market_away_ml": _safe_float(normalize_american_odds(away_moneyline)),
     }
 
 

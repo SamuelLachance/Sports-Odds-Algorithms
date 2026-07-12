@@ -53,3 +53,21 @@ def test_soccer_implied_shift_soft_fails_invalid_odds() -> None:
     )
     assert meta["steam_signal"] is False
     assert meta["implied_shifts_pp"]["home"] is None
+
+
+def test_soccer_opening_does_not_fabricate_open_from_close(monkeypatch) -> None:
+    """Missing open must stay None — copying close invents 0pp steam."""
+    from web import soccer_opening as so
+
+    block = {
+        "moneyline": {
+            "home": {"close": {"odds": "-120"}},
+            "away": {"close": {"odds": "250"}},
+            "draw": {"open": {"odds": "240"}, "close": {"odds": "280"}},
+        }
+    }
+    monkeypatch.setattr(so, "_fetch_event_odds_block", lambda *_a, **_k: block)
+    open_h, open_d, open_a = so.fetch_soccer_opening_moneylines("epl", "123")
+    assert open_h is None
+    assert open_a is None
+    assert open_d == 240
