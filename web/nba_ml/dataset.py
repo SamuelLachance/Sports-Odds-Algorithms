@@ -48,6 +48,16 @@ def _num(value):
         return None
 
 
+def _spread_juice(value, default: float = -110.0) -> float:
+    """Spread juice defaulting to -110; ESPN EVEN (0) maps to +100."""
+    odds = _num(value)
+    if odds is None:
+        return default
+    if odds == 0:
+        return 100.0
+    return odds
+
+
 def build_dataset(odds_csv: Path = ODDS_CSV) -> pd.DataFrame:
     if not odds_csv.is_file():
         raise FileNotFoundError(f"Missing NBA odds table: {odds_csv}")
@@ -97,8 +107,8 @@ def build_dataset(odds_csv: Path = ODDS_CSV) -> pd.DataFrame:
                 "home_open_spread": _num(row.get("home_open_spread")),
                 "home_close_ml": home_ml,
                 "away_close_ml": away_ml,
-                "home_spread_odds": _num(row.get("home_spread_odds")) or -110,
-                "away_spread_odds": _num(row.get("away_spread_odds")) or -110,
+                "home_spread_odds": _spread_juice(row.get("home_spread_odds")),
+                "away_spread_odds": _spread_juice(row.get("away_spread_odds")),
                 "n_books": _num(row.get("n_books")) or 1,
             }
         )

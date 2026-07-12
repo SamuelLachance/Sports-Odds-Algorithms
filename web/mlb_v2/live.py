@@ -14,10 +14,11 @@ import gzip
 import json
 import time
 from datetime import date as date_cls
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
+from zoneinfo import ZoneInfo
 
 import numpy as np
 
@@ -205,6 +206,30 @@ def _parse_kickoff_utc(value: Any) -> datetime | None:
     return parsed.astimezone(timezone.utc)
 
 
+def _game_matches_slate_day(game: dict[str, Any], day_iso: str) -> bool:
+    """True when Stats API officialDate aligns with ESPN/Toronto slate day.
+
+    Late West Coast games often have officialDate = local venue date while
+    ESPN kickoff in America/Toronto has already rolled to the next calendar
+    day. Include previous-day rows whose kickoff lands on ``day_iso`` in
+    Toronto so we do not fall through to a synthetic no-pitcher game.
+    """
+    gdate = str(game.get("date") or "")
+    if gdate == day_iso:
+        return True
+    try:
+        prev = (date_cls.fromisoformat(day_iso) - timedelta(days=1)).isoformat()
+    except ValueError:
+        return False
+    if gdate != prev:
+        return False
+    game_dt = _parse_kickoff_utc(game.get("game_datetime"))
+    if game_dt is None:
+        return False
+    toronto_day = game_dt.astimezone(ZoneInfo("America/Toronto")).date().isoformat()
+    return toronto_day == day_iso
+
+
 def _select_matchup_game(
     games: list[dict[str, Any]],
     *,
@@ -348,7 +373,7 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
     todays_matchup_games: dict[tuple[int, int], list[dict[str, Any]]] = {}
     todays_finals: list[dict[str, Any]] = []
     for game in bundle["games"]:
-        if str(game.get("date")) != day_iso:
+        if not _game_matches_slate_day(game, day_iso):
             continue
         key = (int(game["home_id"]), int(game["away_id"]))
         todays_matchup_games.setdefault(key, []).append(game)

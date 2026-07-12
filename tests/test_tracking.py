@@ -137,6 +137,10 @@ def test_calculate_units_guards_bad_odds() -> None:
     assert calculate_units(1, 0, "win") == 1.0
     assert calculate_units("bad", -110, "loss") == -1.0
     assert calculate_units(-5, 150, "win") == 1.5  # negative stake → default 1u
+    # Invalid |odds| < 100 (other than EVEN/0) must not invent huge payouts.
+    assert calculate_units(1, 50, "win") == 0.0
+    assert calculate_units(1, -50, "win") == 0.0
+    assert calculate_units(1, "oops", "win") == 0.0
 
 
 def test_record_and_grade() -> None:

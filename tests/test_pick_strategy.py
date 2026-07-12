@@ -21,6 +21,7 @@ from web.pick_strategy import (  # noqa: E402
     official_bet_type,
     simulate_market_moneylines,
     simulate_market_spread,
+    simulate_market_threeway,
 )
 
 
@@ -126,7 +127,16 @@ def test_simulate_market_helpers() -> None:
     assert spread != 0.0
     away_ml, home_ml = simulate_market_moneylines(62.0)
     assert away_ml != home_ml
+    assert abs(away_ml) >= 100 and abs(home_ml) >= 100
     assert "min_edge" in DEFAULT_THRESHOLDS
+
+
+def test_simulate_market_moneylines_near_even_stay_valid_american() -> None:
+    """Vig near 50/50 must not emit invalid |odds| < 100."""
+    for home_prob in (48.0, 49.0, 50.0, 50.5, 51.0, 52.0):
+        away_ml, home_ml = simulate_market_moneylines(home_prob)
+        assert abs(away_ml) >= 100, (home_prob, away_ml)
+        assert abs(home_ml) >= 100, (home_prob, home_ml)
 
 
 def test_evaluate_backtest_pick_uses_real_spread_when_provided() -> None:
@@ -173,3 +183,23 @@ def test_kelly_and_profit_score_positive_ev() -> None:
     assert kelly > 0
     score = pick_profit_score(model_prob_pct=55.0, american_odds=-110, edge=20.0)
     assert score > 0
+
+
+def test_simulate_market_threeway_renormalizes_nonsimplex_bases() -> None:
+    """Power-home mixed with model draw/away must not invent non-simplex books."""
+    # Same shape as _evaluate_backtest_pick when power_home is set:
+    # market_home=60, market_draw=26, market_away=22 from blended home → sum 108.
+    away_ml, draw_ml, home_ml = simulate_market_threeway(
+        52.0,
+        26.0,
+        22.0,
+        market_home=60.0,
+        market_draw=26.0,
+        market_away=22.0,
+    )
+    # After renormalize+shrink, fair moneylines should still be valid American.
+    for odds in (away_ml, draw_ml, home_ml):
+        assert abs(odds) >= 100
+    # Home base is largest after scale → shortest home price among the three.
+    assert home_ml < away_ml
+    assert home_ml < draw_ml

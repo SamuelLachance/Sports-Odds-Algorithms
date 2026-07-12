@@ -17,6 +17,9 @@ def devig_home_prob(home_ml: float | None, away_ml: float | None) -> float | Non
             american = float(american)
         except (TypeError, ValueError):
             return None
+        # ESPN EVEN sometimes arrives as numeric 0 — treat as +100.
+        if american == 0:
+            american = 100.0
         if american >= 100:
             return 100.0 / (american + 100.0)
         if american <= -100:

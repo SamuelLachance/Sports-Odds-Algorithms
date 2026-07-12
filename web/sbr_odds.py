@@ -101,6 +101,45 @@ def _clean_number(value: str) -> float:
         return 0.0
 
 
+def _optional_number(value: str) -> float | None:
+    """Parse a numeric cell; return None for blank/blacklist (not 0.0)."""
+    text = str(value).strip()
+    if not text or text in BLACKLIST:
+        # Pick'em spreads are encoded as PK — keep as 0.0.
+        if text.lower() == "pk":
+            return 0.0
+        return None
+    try:
+        return float(text)
+    except ValueError:
+        return None
+
+
+def _american_ml_cell(value: str) -> int | None:
+    """Closing moneyline; ESPN/SBR EVEN (0) → +100. Missing → None."""
+    number = _optional_number(value)
+    if number is None:
+        return None
+    if number == 0:
+        return 100
+    return int(number)
+
+
+def _spread_line_cell(value: str) -> float | None:
+    """Closing spread; pick'em (0 / PK) kept as 0.0."""
+    return _optional_number(value)
+
+
+def _spread_juice_cell(value: str, default: int = -110) -> int:
+    """Spread juice; EVEN (0) → +100; missing → default."""
+    number = _optional_number(value)
+    if number is None:
+        return default
+    if number == 0:
+        return 100
+    return int(number)
+
+
 def _pairwise(rows: list[list[str]]) -> list[tuple[list[str], list[str]]]:
     pairs: list[tuple[list[str], list[str]]] = []
     for index in range(1, len(rows) - 1, 2):
@@ -123,20 +162,26 @@ def _rows_from_html_table(sport: str, season: int, html: str, translated: dict[s
         home_key = normalize_team_key(sport, home_name)
         if not away_key or not home_key:
             continue
-        away_close_ml = int(_clean_number(away_row[11])) if _clean_number(away_row[11]) else None
-        home_close_ml = int(_clean_number(home_row[11])) if _clean_number(home_row[11]) else None
-        open_a = _clean_number(away_row[9])
-        open_h = _clean_number(home_row[9])
-        close_a = _clean_number(away_row[10])
-        close_h = _clean_number(home_row[10])
-        if open_a and open_h:
+        away_close_ml = _american_ml_cell(away_row[11])
+        home_close_ml = _american_ml_cell(home_row[11])
+        open_a = _optional_number(away_row[9])
+        open_h = _optional_number(home_row[9])
+        close_a = _optional_number(away_row[10])
+        close_h = _optional_number(home_row[10])
+        if open_a is not None and open_h is not None:
             if open_a < open_h:
-                home_spread, away_spread = -close_a, close_h
+                home_spread, away_spread = (
+                    (-close_a if close_a is not None else None),
+                    close_h,
+                )
             else:
-                home_spread, away_spread = close_h, -close_a
+                home_spread, away_spread = (
+                    close_h,
+                    (-close_a if close_a is not None else None),
+                )
         else:
-            home_spread = close_h or None
-            away_spread = close_a or None
+            home_spread = close_h
+            away_spread = close_a
         output.append(
             {
                 "date": _make_datestr(away_row[0], season),
@@ -177,12 +222,12 @@ def _rows_from_nhl_html(sport: str, season: int, html: str, translated: dict[str
                 ),
                 "home_key": home_key,
                 "away_key": away_key,
-                "home_close_ml": int(_clean_number(home_row[9])) or None,
-                "away_close_ml": int(_clean_number(away_row[9])) or None,
-                "home_close_spread": _clean_number(home_row[10]) or None,
-                "away_close_spread": _clean_number(away_row[10]) or None,
-                "home_spread_odds": int(_clean_number(home_row[11])) or -110,
-                "away_spread_odds": int(_clean_number(away_row[11])) or -110,
+                "home_close_ml": _american_ml_cell(home_row[9]),
+                "away_close_ml": _american_ml_cell(away_row[9]),
+                "home_close_spread": _spread_line_cell(home_row[10]),
+                "away_close_spread": _spread_line_cell(away_row[10]),
+                "home_spread_odds": _spread_juice_cell(home_row[11]),
+                "away_spread_odds": _spread_juice_cell(away_row[11]),
                 "source": "sbr-online",
             }
         )
@@ -335,12 +380,12 @@ def fetch_sbr_season_rows(sport: str, season: int, translated: dict[str, dict[st
                     "date": _make_datestr(away_row[0], season, start=3, yr_end=10),
                     "home_key": home_key,
                     "away_key": away_key,
-                    "home_close_ml": int(_clean_number(home_row[16])) or None,
-                    "away_close_ml": int(_clean_number(away_row[16])) or None,
-                    "home_close_spread": _clean_number(home_row[17]) or None,
-                    "away_close_spread": _clean_number(away_row[17]) or None,
-                    "home_spread_odds": int(_clean_number(home_row[18])) or -110,
-                    "away_spread_odds": int(_clean_number(away_row[18])) or -110,
+                    "home_close_ml": _american_ml_cell(home_row[16]),
+                    "away_close_ml": _american_ml_cell(away_row[16]),
+                    "home_close_spread": _spread_line_cell(home_row[17]),
+                    "away_close_spread": _spread_line_cell(away_row[17]),
+                    "home_spread_odds": _spread_juice_cell(home_row[18]),
+                    "away_spread_odds": _spread_juice_cell(away_row[18]),
                     "source": "sbr-online",
                 }
             )

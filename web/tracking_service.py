@@ -83,10 +83,12 @@ def calculate_units(stake: float, american_odds: int, result: BetResult) -> floa
     try:
         odds = int(american_odds)
     except (TypeError, ValueError):
-        return stake_f
-    # American odds of 0 are invalid; treat as even-money win rather than divide.
+        return 0.0
+    # ESPN EVEN (0) → even money; other |odds| < 100 are invalid → 0u on win.
     if odds == 0:
         return stake_f
+    if abs(odds) < 100:
+        return 0.0
     if odds > 0:
         return stake_f * (odds / 100.0)
     return stake_f * (100.0 / abs(odds))

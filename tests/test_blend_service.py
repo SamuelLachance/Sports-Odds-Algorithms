@@ -874,6 +874,8 @@ def test_nba_v2_availability_shift_moves_win_pct_keeps_margin() -> None:
         assert result["availability"]["shift_pp"] == 0.7
         assert result["blended_home_win_probability"] == 58.7
         assert result["win_probability"] == 58.7
+        # Nested sport pred must track the board nudge (not stay at raw 58.0).
+        assert result["basketball_pred"]["home_win_probability"] == 58.7
         assert result["home_spread_margin"] == -4.5
         assert blended_home_spread_margin(result, "nba") == -4.5
     finally:
@@ -1144,6 +1146,26 @@ def test_blended_home_spread_margin_matches_unified_total_score() -> None:
     expected = model_home_margin(61.43, "wnba")
     assert margin == expected
     assert margin > 0
+
+
+def test_cached_home_spread_margin_not_flipped_when_favorite_crosses_50() -> None:
+    """Hubáček/context may flip favorite_side; dedicated margin head must stay put."""
+    blended = {
+        "blend_mode": "basketball_matrix",
+        "home_spread_margin": -4.0,
+        "favorite_side": "away",  # win% crossed 50% after context nudge
+        "total_score": 51.0,
+        "win_probability": 51.0,
+    }
+    assert blended_home_spread_margin(blended, "nba") == -4.0
+    mlb = {
+        "blend_mode": "mlb_v2",
+        "home_spread_margin": -1.2,
+        "favorite_side": "away",
+        "total_score": 50.5,
+        "win_probability": 50.5,
+    }
+    assert blended_home_spread_margin(mlb, "mlb") == -1.2
 
 
 def test_attach_home_spread_margin_exposes_pick_margin() -> None:

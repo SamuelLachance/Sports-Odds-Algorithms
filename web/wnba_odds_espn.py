@@ -119,8 +119,17 @@ def collect_day_rows(day: date, *, use_cache: bool = True) -> list[dict[str, Any
             "away_close_ml": int(round(away_ml)) if away_ml is not None else None,
             "home_close_spread": home_spread,
             "away_close_spread": consensus.get("away_close_spread"),
-            "home_spread_odds": int(round(consensus["home_spread_odds"] or -110)),
-            "away_spread_odds": int(round(consensus["away_spread_odds"] or -110)),
+            # Missing juice stays None — do not invent -110 for training/CLV rows.
+            "home_spread_odds": (
+                int(round(consensus["home_spread_odds"]))
+                if consensus.get("home_spread_odds") is not None
+                else None
+            ),
+            "away_spread_odds": (
+                int(round(consensus["away_spread_odds"]))
+                if consensus.get("away_spread_odds") is not None
+                else None
+            ),
             "source": "espn-core",
         }
 

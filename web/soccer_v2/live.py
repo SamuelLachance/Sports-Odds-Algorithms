@@ -414,6 +414,9 @@ def american_to_decimal(ml: int | None) -> float | None:
     if ml is None:
         return None
     ml = int(ml)
+    # ESPN EVEN sometimes arrives as numeric 0 — treat as +100.
+    if ml == 0:
+        ml = 100
     if ml > 0:
         return 1.0 + ml / 100.0
     if ml < 0:

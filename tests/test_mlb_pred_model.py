@@ -156,3 +156,42 @@ def test_run_mlb_v2_keeps_zero_predicted_margin(monkeypatch) -> None:
     assert float(out["predicted_margin"]) == 0.0
     # Without market spread, disagreement stays off — margin itself is the contract.
     assert out["mlb_pick_signals"]["disagreement_runs"] is None
+
+
+def test_runcast_xgb_blend_keeps_margin_aligned_with_runs() -> None:
+    """XGB win% blend must not invent a logit margin that disagrees with run totals."""
+    import numpy as np
+    import pytest
+
+    class _FakeXgb:
+        def predict_proba(self, _x):
+            return np.array([[0.2, 0.8]])
+
+    model = {
+        "sigma": 1.5,
+        "xgb_model": _FakeXgb(),
+        "efficiency": object(),
+        "last_game_date": {"nyy": "07-01-2026", "bos": "07-01-2026"},
+        "team_game_counts": {"nyy": 80, "bos": 80},
+        "hca": 0.1,
+        "cutoff_date": "07-12-2026",
+    }
+    with patch(
+        "web.mlb_pred_model.raw_prob_from_runs_sim",
+        return_value=(5.0, 4.0, 1.0, 58.0),
+    ), patch(
+        "web.mlb_pred_model.build_matchup_features",
+        return_value={},
+    ), patch(
+        "web.mlb_pred_model.features_to_vector",
+        return_value=np.zeros(5),
+    ):
+        out = predict_matchup_from_mlb_model(
+            model, "nyy", "bos", game_date="07-12-2026"
+        )
+    assert out is not None
+    assert float(out["predicted_home_runs"]) == 5.0
+    assert float(out["predicted_away_runs"]) == 4.0
+    assert float(out["predicted_margin"]) == pytest.approx(1.0)
+    # Win% may move with XGB, but margin stays with the sim runs.
+    assert float(out["home_win_probability"]) != 58.0

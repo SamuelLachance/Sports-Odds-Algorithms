@@ -215,9 +215,8 @@ def predict_matchup_from_mlb_model(
         try:
             xgb_p = float(xgb_model.predict_proba(features_to_vector(feats).reshape(1, -1))[0, 1])
             raw_prob = round(0.45 * raw_prob + 0.55 * xgb_p * 100.0, 2)
-            margin = float(model.get("sigma", DEFAULT_SIGMA)) * np.log(
-                max(raw_prob / 100.0, 1e-6) / max(1.0 - raw_prob / 100.0, 1e-6)
-            )
+            # Keep sim margin aligned with run totals (do not invent a logit
+            # margin that disagrees with predicted_home_runs - predicted_away_runs).
         except (ValueError, IndexError, AttributeError):
             pass
 

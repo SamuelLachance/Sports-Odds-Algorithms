@@ -275,6 +275,11 @@ def test_spread_cover_probability_uses_empirical_sigma() -> None:
     # A 2-point cushion is ~56% cover in the NBA, far below the old 60%.
     assert spread_cover_probability(2.0, "nba") < 57.0
     assert spread_cover_probability(0.0, "nba") == 50.0
+    # Negative cushions are below 50% (symmetric around the CDF).
+    assert spread_cover_probability(-3.0, "nba") < 50.0
+    assert abs(
+        spread_cover_probability(-3.0, "nba") + spread_cover_probability(3.0, "nba") - 100.0
+    ) < 1e-9
     # Monotonic in point edge.
     assert (
         spread_cover_probability(1.0, "nba")
@@ -438,7 +443,7 @@ def test_ensemble_home_margin_sign_does_not_flip_spread_pick() -> None:
         "favorite_side": "home",
         "blended_home_win_probability": 63.01,
         "market_decorrelated": True,
-        # EnsembleML stores score-diff margin; blended_home_spread_margin negates it.
+        # EnsembleML already stores book-convention margin (negative = home favored).
         "home_spread_margin": -7.7,
         "ensemble_ml": {
             "home_win_probability": 63.01,

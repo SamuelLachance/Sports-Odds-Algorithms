@@ -304,6 +304,37 @@ def test_apply_context_threeway_renormalizes() -> None:
         + float(out["away_win_probability"])
     )
     assert total == pytest.approx(100.0, abs=0.05)
+    # Draw is held fixed; only home↔away move.
+    assert float(out["draw_probability"]) == pytest.approx(28.0, abs=0.01)
+
+
+def test_apply_context_threeway_holds_draw_when_clamped() -> None:
+    """Extreme home clamp must not rescale draw mass."""
+    from unittest.mock import patch
+
+    blended = {
+        "threeway": True,
+        "home_win_probability": 2.0,
+        "draw_probability": 28.0,
+        "away_win_probability": 70.0,
+        "blended_home_win_probability": 2.0,
+        "total_score": 70.0,
+        "win_probability": 70.0,
+        "favorite_side": "away",
+    }
+    with (
+        patch("web.context_signals.favorite_longshot_adjustment", return_value=-5.0),
+        patch("web.context_signals.steam_line_movement_shift", return_value=0.0),
+        patch("web.context_signals.news_sentiment_shift", return_value=0.0),
+    ):
+        out = apply_context_to_blend(blended, market={}, league="epl")
+    assert float(out["draw_probability"]) == pytest.approx(28.0, abs=0.01)
+    assert (
+        float(out["home_win_probability"])
+        + float(out["draw_probability"])
+        + float(out["away_win_probability"])
+    ) == pytest.approx(100.0, abs=0.05)
+    assert float(out["home_win_probability"]) < 2.0
 
 
 def test_apply_context_preserves_draw_favorite() -> None:
@@ -396,6 +427,33 @@ def test_apply_context_syncs_nested_soccer_pred_threeway() -> None:
     assert out["soccer_pred"]["home_win_probability"] == out["home_win_probability"]
     assert out["soccer_pred"]["draw_probability"] == out["draw_probability"]
     assert out["soccer_pred"]["away_win_probability"] == out["away_win_probability"]
+
+
+def test_steam_open_even_zero_not_skipped_by_falsy_or() -> None:
+    """American open ML 0 (EVEN) must not fall through via falsy `or`."""
+    blended = {
+        "blended_home_win_probability": 55.0,
+        "total_score": -55.0,
+        "win_probability": 55.0,
+        "favorite_side": "home",
+    }
+    # Hard steam home vs EVEN open; compare against explicit +100 open.
+    market_even = {
+        "home_moneyline": -160,
+        "away_moneyline": 140,
+        "open_home_moneyline": 0,
+        "open_away_moneyline": -135,
+    }
+    market_plus = {
+        "home_moneyline": -160,
+        "away_moneyline": 140,
+        "open_home_moneyline": 100,
+        "open_away_moneyline": -135,
+    }
+    out_even = apply_context_to_blend(blended, market=market_even, league="nba")
+    out_plus = apply_context_to_blend(blended, market=market_plus, league="nba")
+    assert out_even["context_signals"]["steam_pp"] == out_plus["context_signals"]["steam_pp"]
+    assert out_even["context_signals"]["steam_pp"] != 0.0
 
 
 if __name__ == "__main__":

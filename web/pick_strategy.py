@@ -170,6 +170,13 @@ def simulate_market_spread(
     return _round_spread(shrunk)
 
 
+def _apply_synthetic_vig(american_ml: int) -> int:
+    """Widen fair American odds with vig; keep |odds| >= 100 (valid American)."""
+    if american_ml < 0:
+        return min(int(american_ml * 1.04), -100)
+    return max(int(american_ml * 0.96), 100)
+
+
 def simulate_market_moneylines(
     home_prob: float,
     *,
@@ -183,15 +190,7 @@ def simulate_market_moneylines(
     market_home = min(max(market_home, 5.0), 95.0)
     away_prob = 100.0 - market_home
     away_ml, home_ml = projections_from_win_probs(market_home, away_prob)
-    if home_ml < 0:
-        home_ml = int(home_ml * 1.04)
-    else:
-        home_ml = int(home_ml * 0.96)
-    if away_ml < 0:
-        away_ml = int(away_ml * 1.04)
-    else:
-        away_ml = int(away_ml * 0.96)
-    return away_ml, home_ml
+    return _apply_synthetic_vig(away_ml), _apply_synthetic_vig(home_ml)
 
 
 def grade_spread_bet(
@@ -243,6 +242,13 @@ def simulate_market_threeway(
     base_home = market_home if market_home is not None else home_prob
     base_draw = market_draw if market_draw is not None else draw_prob
     base_away = market_away if market_away is not None else away_prob
+    # Callers may mix power-home with model draw/away; force a simplex first.
+    total = float(base_home) + float(base_draw) + float(base_away)
+    if total > 0:
+        scale = 100.0 / total
+        base_home *= scale
+        base_draw *= scale
+        base_away *= scale
     shrink = 1.0 - MARKET_SHRINK
     reg_home = 33.33 + (base_home - 33.33) * shrink
     reg_draw = 33.33 + (base_draw - 33.33) * shrink

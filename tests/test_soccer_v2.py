@@ -16,7 +16,12 @@ from web.soccer_v2.feature_engine import (  # noqa: E402
     SoccerFeatureEngine,
     poisson_1x2,
 )
-from web.soccer_v2.live import _decorrelate, _norm_name, resolve_team  # noqa: E402
+from web.soccer_v2.live import (  # noqa: E402
+    _decorrelate,
+    _norm_name,
+    american_to_decimal,
+    resolve_team,
+)
 from web.soccer_v2.replay import merge_country_rows, replay_country  # noqa: E402
 
 
@@ -309,6 +314,16 @@ def test_fetch_current_csv_keeps_prior_on_network_failure(tmp_path, monkeypatch)
     assert rows[0]["away"] == expected[0]["away"]
 
 
+def test_american_to_decimal_maps_espn_even_zero() -> None:
+    assert american_to_decimal(0) == pytest.approx(2.0)
+    assert american_to_decimal(100) == pytest.approx(2.0)
+    assert american_to_decimal(-200) == pytest.approx(1.5)
+    assert american_to_decimal(None) is None
+    probs = devig_decimal(american_to_decimal(0), 3.5, 4.0)
+    assert probs is not None
+    assert abs(sum(probs) - 1.0) < 1e-9
+
+
 if __name__ == "__main__":
     test_poisson_1x2_sums_to_one_and_favors_stronger_attack()
     test_engine_elo_moves_toward_winner_and_features_precede_update()
@@ -322,4 +337,5 @@ if __name__ == "__main__":
     test_live_context_and_prediction_when_artifacts_present()
     test_blend_soccer_survives_pred_crash()
     test_fetch_current_csv_keeps_prior_on_network_failure()
+    test_american_to_decimal_maps_espn_even_zero()
     print("test_soccer_v2.py: all tests passed")

@@ -12,6 +12,9 @@ def american_to_implied_prob(odds: int | None) -> float | None:
     # ESPN/EVEN sometimes arrives as 0; treat as +100 (even money → 50%).
     if odds == 0:
         odds = 100
+    # American odds require |x| >= 100; reject garbage like +50 / -50.
+    if abs(odds) < 100:
+        return None
     if odds > 0:
         return 100.0 / (odds + 100.0)
     return abs(odds) / (abs(odds) + 100.0)

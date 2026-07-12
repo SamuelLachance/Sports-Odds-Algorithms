@@ -100,3 +100,12 @@ def test_fetch_scoreboard_empty_payload_is_not_a_fetch_error() -> None:
     with patch("web.espn_client._fetch_json", return_value={"events": []}):
         games = espn_client.fetch_scoreboard("nba", on_date=date(2026, 7, 12))
     assert games == []
+
+
+def test_parse_american_odds_maps_even_zero_to_plus_100() -> None:
+    """ESPN numeric 0 (even money) must become +100, not invalid American 0."""
+    assert espn_client._parse_american_odds(0) == 100
+    assert espn_client._parse_american_odds("EVEN") == 100
+    assert espn_client._parse_american_odds("PK") == 100
+    assert espn_client._parse_american_odds(-110) == -110
+    assert espn_client._parse_american_odds(None) is None

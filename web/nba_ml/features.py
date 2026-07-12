@@ -94,8 +94,9 @@ def american_to_prob(odds: float | None) -> float | None:
     if odds is None:
         return None
     odds = float(odds)
+    # ESPN EVEN sometimes arrives as numeric 0 — treat as +100.
     if odds == 0:
-        return None
+        odds = 100.0
     if odds > 0:
         return 100.0 / (odds + 100.0)
     return -odds / (-odds + 100.0)

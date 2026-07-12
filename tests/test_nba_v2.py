@@ -11,6 +11,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from web.nba_v2.data import (  # noqa: E402
+    _american,
     _signed_spread_from_details,
     canon_franchise,
     devig_two_way,
@@ -417,6 +418,14 @@ def test_devig_home_prob_and_market_variant_helpers() -> None:
     # heavy home favorite
     fav = _devig_home_prob(-200, 170)
     assert fav is not None and fav > 0.6
+
+
+def test_nba_v2_american_maps_espn_even_zero() -> None:
+    assert _american(0) == 100.0
+    assert _american("0") == 100.0
+    assert _american(-110) == -110.0
+    assert _american(50) is None
+    assert _american(None) is None
 
 
 @pytest.mark.slow

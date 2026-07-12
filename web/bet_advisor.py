@@ -157,11 +157,9 @@ def spread_cover_probability(point_edge: float, league: str | None = None) -> fl
     """ATS cover probability from point cushion, via the empirical margin model.
 
     P(cover) = Φ(point_edge / σ) where σ is the league's margin-vs-closing-spread
-    residual std dev (e.g. ~13.3 points for NBA). Replaces the old linear
-    5 pp/point heuristic that badly overstated cover probability and EV.
+    residual std dev (e.g. ~13.3 points for NBA). Negative cushions are < 50%;
+    callers that require a positive edge must gate separately.
     """
-    if point_edge <= 0:
-        return 50.0
     sigma = spread_margin_sigma(league)
     prob = 0.5 * (1.0 + math.erf(point_edge / (sigma * math.sqrt(2.0))))
     return min(max(prob * 100.0, 5.0), 95.0)

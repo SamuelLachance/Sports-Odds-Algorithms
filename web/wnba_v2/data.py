@@ -319,7 +319,12 @@ def fetch_box_score(event_id: str) -> dict[str, dict[str, Any]] | None:
 
 def _american(value: Any) -> float | None:
     number = _to_float(value)
-    if number is None or abs(number) < 100:
+    if number is None:
+        return None
+    # ESPN EVEN sometimes arrives as numeric 0 — treat as +100.
+    if number == 0:
+        return 100.0
+    if abs(number) < 100:
         return None
     return number
 

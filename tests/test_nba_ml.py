@@ -20,10 +20,13 @@ from web.nba_ml.features import (
 def test_american_to_prob_and_devig():
     assert american_to_prob(-110) == pytest.approx(0.5238, abs=1e-3)
     assert american_to_prob(+150) == pytest.approx(0.4, abs=1e-3)
+    # ESPN EVEN (0) must match +100, not drop as None.
+    assert american_to_prob(0) == pytest.approx(american_to_prob(100), abs=1e-9)
     # Devig removes the vig so probabilities sum to 1.
     p = devig_home_prob(-150, +130)
     assert 0.0 < p < 1.0
     assert devig_home_prob(None, +130) is None
+    assert abs(devig_home_prob(0, -110) - devig_home_prob(100, -110)) < 1e-9
 
 
 def test_spread_to_home_prob_monotonic():
@@ -38,6 +41,11 @@ def test_sane_american_rejects_corrupt_odds():
     assert _sane_american(1.87) == -110.0
     assert _sane_american(-110) == -110.0
     assert _sane_american(+150) == 150.0
+    # ESPN EVEN (0) maps to +100, not the -110 fallback.
+    assert _sane_american(0) == 100.0
+    from web.nba_ml.backtest import implied_prob
+
+    assert implied_prob(0) == pytest.approx(0.5)
     # A corrupt -1 would otherwise pay 100 units; guarded to -110.
     assert american_profit(-1, True) == pytest.approx(0.9091, abs=1e-3)
 

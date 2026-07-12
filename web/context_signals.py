@@ -403,8 +403,13 @@ def apply_context_to_blend(
     market = market or {}
     home_ml = market.get("home_moneyline")
     away_ml = market.get("away_moneyline")
-    open_home = market.get("open_home_moneyline") or market.get("opening_home_ml")
-    open_away = market.get("open_away_moneyline") or market.get("opening_away_ml")
+    # Prefer primary open keys; do not use `or` — American 0 (EVEN) is falsy.
+    open_home = market.get("open_home_moneyline")
+    if open_home is None:
+        open_home = market.get("opening_home_ml")
+    open_away = market.get("open_away_moneyline")
+    if open_away is None:
+        open_away = market.get("opening_away_ml")
 
     flb = favorite_longshot_adjustment(home_ml, away_ml, home_prob)
     steam = steam_line_movement_shift(
@@ -454,18 +459,21 @@ def apply_context_to_blend(
 
     if updated.get("threeway") and updated.get("draw_probability") is not None:
         draw_p = float(updated["draw_probability"])
-        away_p = float(updated.get("away_win_probability") or (100.0 - home_prob - draw_p))
+        away_raw = updated.get("away_win_probability")
+        if away_raw is None:
+            away_p = 100.0 - home_prob - draw_p
+        else:
+            away_p = float(away_raw)
         updated["pre_context_away_win_probability"] = round(away_p, 2)
         updated["pre_context_draw_probability"] = round(draw_p, 2)
-        new_home = _clamp(home_prob + total_shift, 1.0, 97.0)
-        # Hold draw; shift mass between home and away, then renormalize.
-        new_away = _clamp(away_p - total_shift, 1.0, 97.0)
-        total = new_home + draw_p + new_away
-        if total <= 0:
-            return blended
-        new_home = new_home / total * 100.0
-        draw_p = draw_p / total * 100.0
-        new_away = new_away / total * 100.0
+        # Hold draw fixed; move mass only between home and away within the
+        # remaining share (do not renormalize draw after clamps).
+        remaining = max(100.0 - draw_p, 0.0)
+        lo = min(1.0, remaining)
+        hi = max(lo, min(97.0, remaining - min(1.0, remaining)))
+        new_home = _clamp(home_prob + total_shift, lo, hi)
+        new_home = min(max(new_home, 0.0), remaining)
+        new_away = remaining - new_home
         updated["home_win_probability"] = round(new_home, 2)
         updated["draw_probability"] = round(draw_p, 2)
         updated["away_win_probability"] = round(new_away, 2)

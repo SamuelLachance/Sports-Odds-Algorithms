@@ -445,3 +445,24 @@ def test_predict_matchup_applies_earlier_dh_final(monkeypatch) -> None:
     assert apply_calls[0][3] == 0
     engine.update_after_game.assert_not_called()
     cloned.features_for_game.assert_called_once_with(game2)
+
+
+def test_game_matches_slate_day_includes_west_coast_spillover() -> None:
+    """10pm PT on July 11 is officialDate 07-11 but Toronto slate day 07-12."""
+    import web.mlb_v2.live as live
+
+    # 2026-07-12 05:10 UTC = 2026-07-11 22:10 America/Los_Angeles
+    # and 2026-07-12 01:10 America/Toronto.
+    late = {
+        "date": "2026-07-11",
+        "game_datetime": "2026-07-12T05:10:00Z",
+    }
+    assert live._game_matches_slate_day(late, "2026-07-12") is True
+    assert live._game_matches_slate_day(late, "2026-07-11") is True  # officialDate match
+    afternoon = {
+        "date": "2026-07-11",
+        "game_datetime": "2026-07-11T20:10:00Z",  # still July 11 in Toronto
+    }
+    assert live._game_matches_slate_day(afternoon, "2026-07-12") is False
+    same_day = {"date": "2026-07-12", "game_datetime": "2026-07-12T23:10:00Z"}
+    assert live._game_matches_slate_day(same_day, "2026-07-12") is True

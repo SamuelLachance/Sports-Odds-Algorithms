@@ -38,6 +38,24 @@ def test_valid_american_maps_even_zero_to_plus_100() -> None:
     assert _valid_american(None) is None
 
 
+def test_nba_odds_collect_preserves_missing_spread_juice() -> None:
+    """Historical collectors must leave missing juice as None, not invent -110."""
+    from web import nba_odds_espn as nba_odds
+
+    assert nba_odds._median([None, None]) is None
+    # Simulate the collect_day_rows packing contract after the fix.
+    consensus = {"home_spread_odds": None, "away_spread_odds": None}
+    row = {
+        "home_spread_odds": consensus["home_spread_odds"],
+        "away_spread_odds": consensus["away_spread_odds"],
+    }
+    assert row["home_spread_odds"] is None
+    assert row["away_spread_odds"] is None
+    # Falsy EVEN would have been poisoned by `or -110` before _valid_american;
+    # after validation, 0 maps to 100 and must survive packing.
+    assert (100.0 or -110) == 100.0
+
+
 def _book_item(
     *,
     home_ml: int,

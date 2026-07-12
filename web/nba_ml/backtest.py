@@ -38,6 +38,9 @@ def _sane_american(odds: float, default: float = -110.0) -> float:
         odds = float(odds)
     except (TypeError, ValueError):
         return default
+    # ESPN EVEN sometimes arrives as numeric 0 — treat as +100.
+    if odds == 0:
+        return 100.0
     if 100.0 <= abs(odds) <= 100000.0:
         return odds
     return default
@@ -52,6 +55,8 @@ def american_profit(odds: float, won: bool) -> float:
 
 def implied_prob(odds: float) -> float:
     odds = float(odds)
+    if odds == 0:
+        return 0.5
     return 100.0 / (odds + 100.0) if odds > 0 else -odds / (-odds + 100.0)
 
 
@@ -131,15 +136,19 @@ def _ml_bets(frame: pd.DataFrame, win_prob, ev_threshold):
     for i in range(len(frame)):
         if np.isnan(home_ml[i]) or np.isnan(away_ml[i]):
             continue
-        if abs(home_ml[i]) < 100 or abs(away_ml[i]) < 100:
+        home_odds = _sane_american(float(home_ml[i]), default=float("nan"))
+        away_odds = _sane_american(float(away_ml[i]), default=float("nan"))
+        if np.isnan(home_odds) or np.isnan(away_odds):
+            continue
+        if abs(home_odds) < 100 or abs(away_odds) < 100:
             continue
         p = float(win_prob[i])
-        ev_home = p * american_profit(home_ml[i], True) - (1 - p)
-        ev_away = (1 - p) * american_profit(away_ml[i], True) - p
+        ev_home = p * american_profit(home_odds, True) - (1 - p)
+        ev_away = (1 - p) * american_profit(away_odds, True) - p
         if ev_home >= ev_threshold and ev_home >= ev_away:
-            side, odds, won = "home", home_ml[i], home_win[i] == 1
+            side, odds, won = "home", home_odds, home_win[i] == 1
         elif ev_away >= ev_threshold:
-            side, odds, won = "away", away_ml[i], home_win[i] == 0
+            side, odds, won = "away", away_odds, home_win[i] == 0
         else:
             continue
         records.append(

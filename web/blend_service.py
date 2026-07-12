@@ -127,6 +127,30 @@ def _apply_availability_layer(
         result["favorite_side"] = "home" if total <= 0 else "away"
         if result.get("blended_home_win_probability") is not None:
             result["blended_home_win_probability"] = round(adjusted, 2)
+        if result.get("home_win_probability") is not None:
+            result["home_win_probability"] = round(adjusted, 2)
+        # Keep nested sport preds + honest-EV base in step with the board nudge
+        # so Hubáček / UI readers do not disagree with display win%.
+        if result.get("pre_decorrelation_home_win_probability") is not None:
+            pre = float(result["pre_decorrelation_home_win_probability"])
+            result["pre_decorrelation_home_win_probability"] = round(
+                min(max(pre + float(shift), 5.0), 95.0), 2
+            )
+        for key in ("hockey_pred", "basketball_pred", "baseball_pred", "football_pred"):
+            pred = result.get(key)
+            if not isinstance(pred, dict) or pred.get("home_win_probability") is None:
+                continue
+            nested = dict(pred)
+            nested_home = float(nested["home_win_probability"])
+            nested["home_win_probability"] = round(
+                min(max(nested_home + float(shift), 5.0), 95.0), 2
+            )
+            if nested.get("pre_decorrelation_home_win_probability") is not None:
+                nested_pre = float(nested["pre_decorrelation_home_win_probability"])
+                nested["pre_decorrelation_home_win_probability"] = round(
+                    min(max(nested_pre + float(shift), 5.0), 95.0), 2
+                )
+            result[key] = nested
         return result
     except Exception:  # noqa: BLE001 - availability must never break the slate
         return result
@@ -402,25 +426,17 @@ def _layer_home_margin(layer: dict[str, Any], league: str) -> float | None:
     return None
 
 
-def _normalize_spread_margin_sign(margin: float, favorite_side: str | None) -> float:
-    """Spread convention: negative = home favored, positive = away favored."""
-    if favorite_side == "home" and margin > 0:
-        return -margin
-    if favorite_side == "away" and margin < 0:
-        return -margin
-    return margin
-
-
 def blended_home_spread_margin(blended: dict[str, Any], league: str) -> float:
-    """Home margin for spread picks, aligned with unified total_score / win%."""
-    favorite_side = blended.get("favorite_side")
+    """Home margin for spread picks, aligned with unified total_score / win%.
+
+    A dedicated ``home_spread_margin`` (sport / ensemble head) is returned as-is.
+    Never flip its sign to match ``favorite_side``: Hubáček / context can nudge
+    win% across 50% while the points head still favors the other side; flipping
+    invents the opposite ATS edge.
+    """
     cached = blended.get("home_spread_margin")
     if cached is not None:
-        if blended.get("blend_mode") in {"wnba_v2", "nba_v2", "cbb_v2", "cfb_v2", "nfl_v2"}:
-            # Dedicated margin head was backtested as-is; never flip its sign
-            # to match the win-probability favorite.
-            return float(cached)
-        return _normalize_spread_margin_sign(float(cached), favorite_side)
+        return float(cached)
     total = blended.get("total_score")
     if total is not None:
         return model_home_margin(float(total), league)

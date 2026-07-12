@@ -147,10 +147,15 @@ def _parse_american_odds(value: str | int | None) -> int | None:
         return None
     try:
         if text.startswith("+"):
-            return int(text)
-        return int(text)
+            odds = int(text)
+        else:
+            odds = int(text)
     except ValueError:
         return None
+    # ESPN often encodes even money as numeric 0; American odds require |x| >= 100.
+    if odds == 0:
+        return 100
+    return odds
 
 
 def _parse_spread_line(value: str | int | float | None) -> float | None:
