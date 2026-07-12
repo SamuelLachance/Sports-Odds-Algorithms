@@ -399,8 +399,16 @@ def fetch_event_odds(
             else:
                 raw = _to_float(item.get("spread"))
                 if raw is not None:
-                    favored_home = bool((item.get("homeTeamOdds") or {}).get("favorite"))
-                    home_spread = -abs(raw) if favored_home else abs(raw)
+                    home_odds = item.get("homeTeamOdds") or {}
+                    away_odds = item.get("awayTeamOdds") or {}
+                    if home_odds.get("favorite"):
+                        home_spread = -abs(raw)
+                    elif away_odds.get("favorite"):
+                        home_spread = abs(raw)
+                    else:
+                        # ESPN often sends a signed home line; do not flip when
+                        # favorite flags are missing/false.
+                        home_spread = raw
 
         rows.append(
             {

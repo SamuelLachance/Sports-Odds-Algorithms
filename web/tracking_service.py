@@ -121,11 +121,28 @@ def _normalize_store(store: dict[str, Any] | None) -> dict[str, Any]:
 
 
 def _bet_preference_rank(bet: dict[str, Any]) -> tuple[int, str]:
-    """Prefer settled rows over pending, then newest ``recorded_at``."""
+    """Prefer settled rows over pending, then compare ``recorded_at``.
+
+    Settled: newer stamp wins. Pending: earlier stamp wins (preserve opening odds).
+    """
     status = str(bet.get("status") or "pending").lower()
     decided = 1 if status in {"win", "loss", "push"} else 0
     stamp = str(bet.get("recorded_at") or bet.get("closing_snapshot_at") or bet.get("date") or "")
     return (decided, stamp)
+
+
+def _prefer_bet(candidate: dict[str, Any], prior: dict[str, Any]) -> bool:
+    """True when ``candidate`` should replace ``prior`` for the same bet key."""
+    c_decided, c_stamp = _bet_preference_rank(candidate)
+    p_decided, p_stamp = _bet_preference_rank(prior)
+    if c_decided != p_decided:
+        return c_decided > p_decided
+    if c_decided:
+        return c_stamp > p_stamp
+    # Pending duplicates: keep the earlier opening price.
+    if c_stamp and p_stamp:
+        return c_stamp < p_stamp
+    return bool(c_stamp) and not p_stamp
 
 
 def _dedupe_bets_by_key(bets: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -145,7 +162,7 @@ def _dedupe_bets_by_key(bets: list[dict[str, Any]]) -> list[dict[str, Any]]:
             chosen[key] = bet
             order.append(key)
             continue
-        if _bet_preference_rank(bet) > _bet_preference_rank(prior):
+        if _prefer_bet(bet, prior):
             chosen[key] = bet
     return [chosen[k] for k in order] + orphans
 
@@ -245,9 +262,10 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
     """Log Hubáček official picks from the daily slate.
 
     Odds and model numbers are frozen at record time; later slate runs only
-    refresh a closing-line snapshot on still-pending bets (for CLV grading).
+    refresh a closing-line snapshot on still-pending bets **until tip-off**
+    (for CLV grading). Post-tip prices are live and must not overwrite close.
     New bets are only created pre-kickoff — a pick first seen after its game
-    started was never actionable and is skipped (pending bets still update).
+    started was never actionable and is skipped.
     """
     store = _normalize_store(store)
     date_label = slate.get("date_label") or toronto_today().isoformat()
@@ -269,7 +287,8 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
             index[key] = b
             continue
         # Prefer settled over pending so a graded row is never reopened.
-        if _bet_preference_rank(b) > _bet_preference_rank(prior):
+        # Pending duplicates keep the earlier opening price.
+        if _prefer_bet(b, prior):
             index[key] = b
     games_by_event = {
         str(g.get("event_id")): g
@@ -292,6 +311,14 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
         existing = index.get(key)
         if existing:
             if existing.get("status") == "pending":
+                # Prefer the current slate tip: a rescheduled/past start means
+                # the game is live and ESPN prices are no longer closing lines.
+                tip = _parse_start_time(pick.get("start_time"))
+                if tip is None:
+                    tip = _parse_start_time(existing.get("start_time"))
+                # Freeze closing at tip-off — post-tip ESPN prices are live, not close.
+                if tip is not None and tip <= now_dt:
+                    continue
                 closing_ml = pick.get("market_odds")
                 closing_source = "espn"
                 consensus_ml = _consensus_closing_ml(games_by_event.get(str(event_id)), side)
@@ -319,6 +346,13 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
         if start_time is not None and start_time <= now_dt:
             # First seen post-kickoff: never actionable, no closing snapshot possible.
             continue
+
+        closing_ml = pick.get("market_odds")
+        closing_source = "espn"
+        consensus_ml = _consensus_closing_ml(games_by_event.get(str(event_id)), side)
+        if bet_type != "spread" and consensus_ml is not None:
+            closing_ml = consensus_ml
+            closing_source = "consensus"
 
         bet = {
             "id": key,
@@ -359,6 +393,15 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
             "recorded_at": now,
             "recorded_pre_start": True,
         }
+        # Seed closing from the actionable price; refresh until tip-off.
+        if closing_ml is not None:
+            bet["closing_market_odds"] = closing_ml
+            bet["closing_source"] = closing_source
+            bet["closing_snapshot_at"] = now
+        if pick.get("spread_odds") is not None:
+            bet["closing_spread_odds"] = pick.get("spread_odds")
+        if pick.get("consensus_spread") is not None:
+            bet["closing_consensus_spread"] = pick.get("consensus_spread")
         store["bets"].append(bet)
         index[key] = bet
 
@@ -576,7 +619,8 @@ def grade_bet(
     elif side == "draw":
         status = "win" if away_score == home_score else "loss"
     elif away_score == home_score:
-        if is_soccer_league(bet.get("league") or ""):
+        # Soccer 1X2 home/away sides lose on draws even if league is missing.
+        if bet_type == "soccer_1x2" or is_soccer_league(bet.get("league") or ""):
             status = "loss"
         else:
             status = "push"

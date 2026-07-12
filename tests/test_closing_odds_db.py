@@ -74,6 +74,25 @@ def test_closing_odds_lookup_fuzzy_date_and_swap(tmp_path: Path, monkeypatch) ->
     assert missing is None
 
 
+def test_closing_odds_even_zero_maps_to_plus_100(tmp_path: Path, monkeypatch) -> None:
+    odds_dir = tmp_path / "closing-odds"
+    odds_dir.mkdir()
+    (odds_dir / "nba.csv").write_text(
+        "date,home_key,away_key,home_close_ml,away_close_ml,"
+        "home_close_spread,away_close_spread,home_spread_odds,away_spread_odds,source\n"
+        "2024-02-01,bos,ny,0,-110,-3.5,3.5,0,-105,test\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(closing_odds_db, "ODDS_DIR", odds_dir)
+    closing_odds_db.clear_closing_odds_cache()
+
+    row = closing_odds_db.closing_odds_lookup("nba", "2024-02-01", "bos", "ny")
+    assert row is not None
+    assert row["home_close_ml"] == 100
+    assert row["home_spread_odds"] == 100
+    assert row["away_spread_odds"] == -105
+
+
 def test_closing_odds_coverage_counts_rows(tmp_path: Path, monkeypatch) -> None:
     odds_dir = tmp_path / "closing-odds"
     odds_dir.mkdir()

@@ -39,6 +39,17 @@ LEAGUE_CONFIG = {
     for league_id, profile in LEAGUE_PROFILES.items()
 }
 
+# Reject ML-sized values dumped into live spread fields (same policy as collectors).
+_MAX_LIVE_SPREAD_ABS: dict[str, float] = {
+    "mlb": 7.0,
+    "nhl": 5.0,
+    "nba": 40.0,
+    "wnba": 40.0,
+    "nfl": 40.0,
+    "cfb": 50.0,
+    "cbb": 40.0,
+}
+
 
 @dataclass
 class MarketOdds:
@@ -142,8 +153,11 @@ def _fetch_json(url: str, timeout: int | None = None, retries: int = 3) -> dict[
 def _parse_american_odds(value: str | int | None) -> int | None:
     if value is None or value == "":
         return None
-    text = str(value).replace("EVEN", "+100").replace("PK", "+100").strip()
-    if text.upper() in {"OFF", "N/A", "NA"}:
+    text = str(value).strip()
+    upper = text.upper()
+    if upper in {"EVEN", "PK"}:
+        return 100
+    if upper in {"OFF", "N/A", "NA"}:
         return None
     try:
         if text.startswith("+"):
@@ -163,8 +177,11 @@ def _parse_american_odds(value: str | int | None) -> int | None:
 def _parse_spread_line(value: str | int | float | None) -> float | None:
     if value is None or value == "":
         return None
-    text = str(value).replace("PK", "0").replace("EVEN", "0").strip()
-    if text.upper() in {"OFF", "N/A", "NA"}:
+    text = str(value).strip()
+    upper = text.upper()
+    if upper in {"PK", "EVEN"}:
+        return 0.0
+    if upper in {"OFF", "N/A", "NA"}:
         return None
     try:
         return float(text)
@@ -187,6 +204,23 @@ def _extract_spread(odds_block: dict[str, Any] | None) -> tuple[float | None, in
 
     away_spread_odds = _parse_american_odds(away_close.get("odds"))
     home_spread_odds = _parse_american_odds(home_close.get("odds"))
+    return home_spread, away_spread_odds, home_spread_odds
+
+
+def _clamp_live_spread(
+    league: str,
+    home_spread: float | None,
+    away_spread_odds: int | None,
+    home_spread_odds: int | None,
+) -> tuple[float | None, int | None, int | None]:
+    """Drop ML-sized 'spreads' for leagues with tight handicap bands."""
+    max_abs = _MAX_LIVE_SPREAD_ABS.get(league.lower())
+    if (
+        max_abs is not None
+        and home_spread is not None
+        and abs(home_spread) > max_abs
+    ):
+        return None, None, None
     return home_spread, away_spread_odds, home_spread_odds
 
 
@@ -241,7 +275,9 @@ def _parse_event(event: dict[str, Any], league: str) -> ScheduledGame | None:
     odds_block = (competition.get("odds") or [None])[0]
     away_ml, home_ml = _extract_moneyline(odds_block)
     draw_ml = _extract_draw_moneyline(odds_block)
-    home_spread, away_spread_odds, home_spread_odds = _extract_spread(odds_block)
+    home_spread, away_spread_odds, home_spread_odds = _clamp_live_spread(
+        league, *_extract_spread(odds_block)
+    )
     state, detail = _format_status(competition)
     away_team = away.get("team") or {}
     home_team = home.get("team") or {}

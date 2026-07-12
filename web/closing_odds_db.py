@@ -63,9 +63,13 @@ def _parse_int(value: Any) -> int | None:
     if value is None or value == "":
         return None
     try:
-        return int(float(str(value).strip()))
+        number = int(float(str(value).strip()))
     except (TypeError, ValueError):
         return None
+    # ESPN/SBR EVEN money arrives as 0 — normalize like live odds paths.
+    if number == 0:
+        return 100
+    return number
 
 
 def _parse_float(value: Any) -> float | None:

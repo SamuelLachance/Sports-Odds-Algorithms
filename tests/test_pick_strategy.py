@@ -178,6 +178,35 @@ def test_evaluate_backtest_pick_uses_real_spread_when_provided() -> None:
     assert real_line[1] == "win"
 
 
+def test_evaluate_backtest_pick_skips_real_spread_without_juice() -> None:
+    """Closing line without juice must not invent -110 for walk-forward ROI."""
+    thresholds = {
+        **DEFAULT_THRESHOLDS,
+        "min_edge": 0.0,
+        "min_ev_pct": 0.0,
+        "min_spread_point_edge": 0.0,
+        "min_profit_score": -999.0,
+        "min_kelly_pct": 0.0,
+    }
+    assert (
+        _evaluate_backtest_pick(
+            league="nba",
+            bet_type="spread",
+            blended_home=85.0,
+            model_margin=-15.0,
+            power_margin=-12.0,
+            power_home=80.0,
+            home_goals=105,
+            away_goals=100,
+            thresholds=thresholds,
+            market_spread=-4.0,
+            home_spread_odds=None,
+            away_spread_odds=None,
+        )
+        is None
+    )
+
+
 def test_kelly_and_profit_score_positive_ev() -> None:
     kelly = kelly_fraction(55.0, -110)
     assert kelly > 0

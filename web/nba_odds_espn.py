@@ -24,6 +24,8 @@ from typing import Any, Iterator
 
 # NBA has no regular games in July/August; skip to avoid wasted requests.
 SKIP_MONTHS = frozenset({7, 8})
+# Real NBA spreads are rarely beyond ~30; larger values are usually ML/juice dumps.
+MAX_NBA_SPREAD = 40.0
 
 from web.season_games import _normalize_abbr
 
@@ -125,13 +127,23 @@ def _valid_handicap_line(value: float | None, *, max_abs: float) -> float | None
     return number
 
 
-def _provider_line(item: dict[str, Any]) -> dict[str, float | None]:
+def _provider_line(
+    item: dict[str, Any],
+    *,
+    max_handicap_abs: float = MAX_NBA_SPREAD,
+) -> dict[str, float | None]:
     """Extract one book's home-oriented lines, preferring close over flat values."""
     home = item.get("homeTeamOdds") or {}
     away = item.get("awayTeamOdds") or {}
 
-    home_close_spread = _nested_american(home, "close", "pointSpread")
-    away_close_spread = _nested_american(away, "close", "pointSpread")
+    home_close_spread = _valid_handicap_line(
+        _nested_american(home, "close", "pointSpread"),
+        max_abs=max_handicap_abs,
+    )
+    away_close_spread = _valid_handicap_line(
+        _nested_american(away, "close", "pointSpread"),
+        max_abs=max_handicap_abs,
+    )
     if home_close_spread is None:
         raw_spread = _to_float(item.get("spread"))
         if raw_spread is not None:
@@ -142,6 +154,9 @@ def _provider_line(item: dict[str, Any]) -> dict[str, float | None]:
                 home_close_spread = magnitude
             else:
                 home_close_spread = raw_spread
+        home_close_spread = _valid_handicap_line(
+            home_close_spread, max_abs=max_handicap_abs
+        )
     if away_close_spread is None and home_close_spread is not None:
         away_close_spread = -home_close_spread
 
@@ -154,7 +169,10 @@ def _provider_line(item: dict[str, Any]) -> dict[str, float | None]:
     home_ml = _valid_american(home_ml)
     away_ml = _valid_american(away_ml)
 
-    home_open_spread = _nested_american(home, "open", "pointSpread")
+    home_open_spread = _valid_handicap_line(
+        _nested_american(home, "open", "pointSpread"),
+        max_abs=max_handicap_abs,
+    )
 
     total = _to_float(item.get("overUnder"))
     open_total = _to_float(((item.get("open") or {}) or {}).get("total"))
@@ -180,8 +198,12 @@ def _median(values: list[float]) -> float | None:
     return statistics.median(clean) if clean else None
 
 
-def _consensus(items: list[dict[str, Any]]) -> dict[str, Any]:
-    lines = [_provider_line(item) for item in items]
+def _consensus(
+    items: list[dict[str, Any]],
+    *,
+    max_handicap_abs: float = MAX_NBA_SPREAD,
+) -> dict[str, Any]:
+    lines = [_provider_line(item, max_handicap_abs=max_handicap_abs) for item in items]
     keys = (
         "home_close_spread",
         "away_close_spread",

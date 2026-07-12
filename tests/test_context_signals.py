@@ -160,6 +160,16 @@ def test_steam_toward_home_when_implied_rises() -> None:
     assert shift > 0
 
 
+def test_steam_rejects_invalid_american_magnitude() -> None:
+    """Garbage |odds| < 100 must not invent a steam nudge."""
+    assert (
+        steam_line_movement_shift(-110, 100, open_home_ml=50, open_away_ml=-150) == 0.0
+    )
+    assert (
+        steam_line_movement_shift(-50, 130, open_home_ml=-110, open_away_ml=100) == 0.0
+    )
+
+
 def test_sparse_league_detection() -> None:
     assert is_sparse_sample_league("worldcup")
     assert is_sparse_sample_league("fifa_friendlies")

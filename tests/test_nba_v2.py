@@ -430,6 +430,61 @@ def test_nba_v2_american_maps_espn_even_zero() -> None:
     assert _american(None) is None
 
 
+def test_nba_v2_closing_odds_index_maps_even_ml() -> None:
+    """Closing CSV EVEN/0 must enter the index as +100, not raw 0."""
+    import csv
+    from pathlib import Path
+    from unittest.mock import patch
+
+    from web.nba_v2 import data as nba_data
+
+    csv_path = Path("nba_closing_probe.csv")
+    with csv_path.open("w", encoding="utf-8", newline="") as fh:
+        writer = csv.DictWriter(
+            fh,
+            fieldnames=[
+                "date",
+                "home_key",
+                "away_key",
+                "home_close_ml",
+                "away_close_ml",
+                "home_close_spread",
+                "home_spread_odds",
+                "away_spread_odds",
+                "home_open_spread",
+                "close_total",
+                "n_books",
+            ],
+        )
+        writer.writeheader()
+        writer.writerow(
+            {
+                "date": "2024-01-15",
+                "home_key": "bos",
+                "away_key": "nyk",
+                "home_close_ml": "0",
+                "away_close_ml": "-110",
+                "home_close_spread": "-3.5",
+                "home_spread_odds": "EVEN",
+                "away_spread_odds": "50",
+                "home_open_spread": "-3",
+                "close_total": "220",
+                "n_books": "3",
+            }
+        )
+    try:
+        with patch.object(nba_data, "CLOSING_ODDS_CSV", csv_path):
+            index = nba_data.load_closing_odds_index()
+        # nyk canon → ny franchise key
+        row = index[("2024-01-15", "bos", "ny")]
+        assert row["home_ml"] == 100.0
+        assert row["away_ml"] == -110.0
+        assert row["home_spread_odds"] == 100.0
+        assert row["away_spread_odds"] is None  # |50| < 100 rejected
+    finally:
+        csv_path.unlink(missing_ok=True)
+
+
 def test_nba_v2_side_odds_maps_even_spread_juice() -> None:
     from web.nba_v2.data import _side_odds, _to_float
 
@@ -442,6 +497,28 @@ def test_nba_v2_side_odds_maps_even_spread_juice() -> None:
     assert open_even["ml_open"] == 100.0
     junk = _side_odds({"moneyLine": -110, "spreadOdds": 50})
     assert junk["spread_odds"] is None
+
+
+def test_nba_v2_preserves_signed_spread_when_favorite_missing() -> None:
+    """Flat signed ESPN spread must not flip when favorite flag is absent/false."""
+    from unittest.mock import patch
+
+    from web.nba_v2 import data as nba_data
+
+    payload = {
+        "items": [
+            {
+                "provider": {"name": "ESPN BET"},
+                "spread": -7.5,
+                "homeTeamOdds": {"favorite": False, "moneyLine": -300, "spreadOdds": -110},
+                "awayTeamOdds": {"favorite": False, "moneyLine": 250, "spreadOdds": -110},
+            }
+        ]
+    }
+    with patch.object(nba_data, "get_json", return_value=payload):
+        rows = nba_data.fetch_event_odds("123", "bos", "ny")
+    assert len(rows) == 1
+    assert rows[0]["home_spread"] == -7.5
 
 
 @pytest.mark.slow

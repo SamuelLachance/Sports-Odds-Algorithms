@@ -360,7 +360,10 @@ def _pick_extra_with_league(
 def enrich_pick_profit_metrics(pick: BetPick) -> BetPick:
     """Attach EV%, Kelly, and profit_score used for official pick ranking."""
     if pick.bet_type == "spread":
-        odds = int(pick.spread_odds if pick.spread_odds is not None else DEFAULT_SPREAD_JUICE)
+        if pick.spread_odds is None:
+            # Fail closed — do not invent -110 for unpriced spreads.
+            return pick
+        odds = int(pick.spread_odds)
     else:
         odds = int(pick.market_odds)
     # EV/Kelly use the calibrated (pre-decorrelation) probability when available;
@@ -1166,15 +1169,13 @@ def evaluate_spread_picks(
         if point_edge <= 0:
             continue
         # Official Hubáček must not invent -110 when ESPN juice is missing.
-        if hubacek_only and spread_odds is None:
-            continue
+        # Non-Hubáček paths also fail closed — invented juice skews EV/ROI.
         if spread_odds is None:
-            juice = DEFAULT_SPREAD_JUICE
-        else:
-            normalized_juice = normalize_american_odds(spread_odds)
-            if normalized_juice is None:
-                continue
-            juice = normalized_juice
+            continue
+        normalized_juice = normalize_american_odds(spread_odds)
+        if normalized_juice is None:
+            continue
+        juice = normalized_juice
         edge = spread_odds_edge(point_edge, juice, league)
         if min_point_edge is not None and point_edge < min_point_edge:
             continue

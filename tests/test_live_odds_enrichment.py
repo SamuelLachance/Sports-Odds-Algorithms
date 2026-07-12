@@ -47,6 +47,66 @@ def test_valid_handicap_line_rejects_ml_sized_dumps() -> None:
     assert _valid_handicap_line(-110.0, max_abs=5.0) is None
 
 
+def test_nba_provider_line_rejects_ml_sized_point_spread() -> None:
+    from web.nba_odds_espn import _provider_line
+
+    item = {
+        "provider": {"name": "DraftKings"},
+        "spread": -7.5,
+        "homeTeamOdds": {
+            "favorite": True,
+            "moneyLine": -280,
+            "close": {
+                "pointSpread": {"american": -280},
+                "moneyLine": {"american": -280},
+                "spread": {"american": -110},
+            },
+        },
+        "awayTeamOdds": {
+            "favorite": False,
+            "moneyLine": 230,
+            "close": {
+                "pointSpread": {"american": 230},
+                "moneyLine": {"american": 230},
+                "spread": {"american": -110},
+            },
+        },
+    }
+    line = _provider_line(item)
+    # Nested pointSpread dumped ML; fall back to flat signed spread.
+    assert line["home_close_spread"] == -7.5
+    assert line["away_close_spread"] == 7.5
+
+
+def test_summarize_mlb_rejects_fake_run_line_from_moneyline() -> None:
+    """Live multi-book MLB path must use run-line validation (not NBA parser)."""
+    item = {
+        "provider": {"name": "FanDuel"},
+        "spread": 1.5,
+        "homeTeamOdds": {
+            "favorite": False,
+            "moneyLine": 140,
+            "close": {
+                "pointSpread": {"american": 140},
+                "moneyLine": {"american": 140},
+                "spread": {"american": -115},
+            },
+        },
+        "awayTeamOdds": {
+            "favorite": True,
+            "moneyLine": -160,
+            "close": {
+                "pointSpread": {"american": -160},
+                "moneyLine": {"american": -160},
+                "spread": {"american": -105},
+            },
+        },
+    }
+    summary = summarize_book_items([item], league="mlb")
+    assert summary["consensus_home_spread"] == 1.5
+    assert abs(summary["consensus_home_spread"]) < 10
+
+
 def test_mlb_provider_line_drops_moneyline_as_run_line() -> None:
     from web.mlb_odds_espn import _provider_line_mlb
 

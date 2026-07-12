@@ -108,9 +108,12 @@ def _clamp(value: float, lo: float, hi: float) -> float:
     return min(max(value, lo), hi)
 
 
-def _american_to_implied_pct(american: int) -> float:
+def _american_to_implied_pct(american: int) -> float | None:
+    """Implied win % from American odds; None for invalid |odds| < 100."""
     if american == 0:
         return 50.0
+    if abs(american) < 100:
+        return None
     if american < 0:
         return abs(american) / (abs(american) + 100.0) * 100.0
     return 100.0 / (american + 100.0) * 100.0
@@ -186,6 +189,8 @@ def steam_line_movement_shift(
         close_away = _american_to_implied_pct(int(away_ml))
         open_away = _american_to_implied_pct(int(open_away_ml))
     except (TypeError, ValueError):
+        return 0.0
+    if None in (close_home, open_home, close_away, open_away):
         return 0.0
 
     # Average home lift with away drop so vig reshuffles cancel out.

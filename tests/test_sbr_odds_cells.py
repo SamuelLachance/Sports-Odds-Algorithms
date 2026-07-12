@@ -20,9 +20,60 @@ from web.sbr_odds import (  # noqa: E402
 
 def test_sbr_american_ml_keeps_even_zero_as_plus_100() -> None:
     assert _american_ml_cell("0") == 100
+    assert _american_ml_cell("EVEN") == 100
+    assert _american_ml_cell("even") == 100
     assert _american_ml_cell("-110") == -110
     assert _american_ml_cell("") is None
     assert _american_ml_cell("NL") is None
+
+
+def test_sbr_american_parsers_reject_invalid_magnitude() -> None:
+    """|odds| < 100 (except EVEN/0) must not enter closing tables."""
+    assert _american_ml_cell("50") is None
+    assert _american_ml_cell("-50") is None
+    assert _spread_juice_cell("75") is None
+    assert _spread_juice_cell("-75") is None
+    assert _parse_optional_int(50) is None
+    assert _parse_optional_int(-50) is None
+    assert _parse_optional_int("EVEN") == 100
+
+
+def test_nhl_covid_datestr_uses_calendar_2021() -> None:
+    """2020-21 NHL COVID slate was played in 2021; start=1 must not stamp 2020."""
+    from web.sbr_odds import _make_datestr
+
+    # Callers pass season+1 (calendar year) when covid=True / start=1.
+    assert _make_datestr("0115", 2021, start=1, yr_end=12) == "2021-01-15"
+    assert _make_datestr("0210", 2021, start=1, yr_end=12) == "2021-02-10"
+    assert _make_datestr("0515", 2021, start=1, yr_end=12) == "2021-05-15"
+    # Regular NHL season still rolls Aug→next calendar year.
+    assert _make_datestr("1015", 2023, start=8, yr_end=12) == "2023-10-15"
+    assert _make_datestr("0115", 2023, start=8, yr_end=12) == "2024-01-15"
+
+
+def test_nhl_covid_html_rows_stamp_2021_calendar() -> None:
+    from unittest.mock import patch
+
+    from web.sbr_odds import _rows_from_nhl_html
+
+    cells = lambda *vals: "".join(f"<td>{v}</td>" for v in vals)
+    # Need >= 12 cells for NHL juice column (index 11).
+    html = (
+        "<table>"
+        f"<tr>{cells(*([f'h{i}' for i in range(12)]))}</tr>"
+        f"<tr>{cells(*(['sub'] * 12))}</tr>"
+        f"<tr>{cells('0115', '', '', 'Boston', '', '', '', '', '', '-110', '1.5', '-110')}</tr>"
+        f"<tr>{cells('0115', '', '', 'New York', '', '', '', '', '', '100', '-1.5', '-110')}</tr>"
+        "</table>"
+    )
+    with patch("web.sbr_odds._translate_name", side_effect=lambda _s, name, _t: name):
+        with patch(
+            "web.sbr_odds.normalize_team_key",
+            side_effect=lambda _s, name: name.lower()[:3],
+        ):
+            rows = _rows_from_nhl_html("nhl", 2020, html, {}, covid=True)
+    assert len(rows) == 1
+    assert rows[0]["date"] == "2021-01-15"
 
 
 def test_sbr_spread_line_keeps_pickem_zero() -> None:
@@ -40,9 +91,37 @@ def test_sbr_spread_juice_maps_even_zero() -> None:
 
 
 def test_nba_ml_dataset_spread_juice_maps_even_zero() -> None:
+    import math
+
     assert _spread_juice(0) == 100.0
-    assert _spread_juice(None) == -110.0
+    assert math.isnan(_spread_juice(None))
     assert _spread_juice(-105) == -105.0
+
+
+def test_sbr_html_emits_opposite_sign_spreads() -> None:
+    """Signed open/close cells must not write same-sign home/away closes."""
+    from unittest.mock import patch
+
+    from web.sbr_odds import _rows_from_html_table
+
+    cells = lambda *vals: "".join(f"<td>{v}</td>" for v in vals)
+    html = (
+        "<table>"
+        f"<tr>{cells(*([f'h{i}' for i in range(12)]))}</tr>"
+        f"<tr>{cells(*(['sub'] * 12))}</tr>"
+        f"<tr>{cells('1015', '', '', 'Boston', '', '', '', '', '', '-3.5', '-3.5', '-110')}</tr>"
+        f"<tr>{cells('1015', '', '', 'New York', '', '', '', '', '', '3.5', '3.5', '0')}</tr>"
+        "</table>"
+    )
+    with patch("web.sbr_odds._translate_name", side_effect=lambda _s, name, _t: name):
+        with patch(
+            "web.sbr_odds.normalize_team_key",
+            side_effect=lambda _s, name: name.lower()[:3],
+        ):
+            rows = _rows_from_html_table("nba", 2023, html, {})
+    assert len(rows) == 1
+    assert rows[0]["home_close_spread"] == 3.5
+    assert rows[0]["away_close_spread"] == -3.5
 
 
 def test_sbr_html_and_archive_do_not_invent_spread_juice() -> None:

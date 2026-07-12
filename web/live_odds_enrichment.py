@@ -15,7 +15,9 @@ import time
 from typing import Any
 
 from web.clv_service import american_to_implied_prob
+from web.mlb_odds_espn import MAX_MLB_RUN_LINE, _provider_line_mlb
 from web.nba_odds_espn import (
+    MAX_NBA_SPREAD,
     _consensus,
     _get_json,
     _median,
@@ -23,8 +25,16 @@ from web.nba_odds_espn import (
     _provider_line,
     _valid_american,
 )
+from web.nhl_odds_espn import MAX_NHL_PUCK_LINE, _provider_line_nhl
 
 MULTI_BOOK_LEAGUES = frozenset({"nba", "nhl", "mlb", "wnba"})
+
+_HANDICAP_MAX: dict[str, float] = {
+    "nba": MAX_NBA_SPREAD,
+    "wnba": MAX_NBA_SPREAD,
+    "mlb": MAX_MLB_RUN_LINE,
+    "nhl": MAX_NHL_PUCK_LINE,
+}
 
 # ESPN core odds paths (sport/league segment).
 _ODDS_PATH: dict[str, str] = {
@@ -181,7 +191,24 @@ _LINE_FIELDS = (
 )
 
 
-def summarize_book_items(items: list[dict[str, Any]]) -> dict[str, Any]:
+def _provider_line_for_league(
+    league: str | None,
+    item: dict[str, Any],
+) -> dict[str, float | None]:
+    """Dispatch to sport-specific parsers so fake ML-sized handicaps are dropped."""
+    key = (league or "nba").lower()
+    if key == "mlb":
+        return _provider_line_mlb(item)
+    if key == "nhl":
+        return _provider_line_nhl(item)
+    return _provider_line(item, max_handicap_abs=_HANDICAP_MAX.get(key, MAX_NBA_SPREAD))
+
+
+def summarize_book_items(
+    items: list[dict[str, Any]],
+    *,
+    league: str | None = None,
+) -> dict[str, Any]:
     """Build consensus + best-price + opening-line fields from ESPN core odds items.
 
     ``n_books`` counts only provider items that yielded at least one parsed
@@ -196,12 +223,15 @@ def summarize_book_items(items: list[dict[str, Any]]) -> dict[str, Any]:
     if not filtered:
         return {}
 
+    league_key = (league or "nba").lower()
+    max_handicap = _HANDICAP_MAX.get(league_key, MAX_NBA_SPREAD)
+
     lines: list[dict[str, float | None]] = []
     providers: list[str] = []
     open_home_values: list[float] = []
     open_away_values: list[float] = []
     for item in filtered:
-        line = _provider_line(item)
+        line = _provider_line_for_league(league_key, item)
         open_home, open_away = _provider_open_moneylines(item)
         has_close = any(line.get(field) is not None for field in _LINE_FIELDS)
         if not has_close and open_home is None and open_away is None:
@@ -218,7 +248,15 @@ def summarize_book_items(items: list[dict[str, Any]]) -> dict[str, Any]:
     if not lines:
         return {}
 
-    consensus = _consensus(filtered)
+    # Prefer league-aware line parse for consensus medians (MLB/NHL validate
+    # run/puck lines; NBA path validates with MAX_NBA_SPREAD).
+    if league_key in {"mlb", "nhl"}:
+        consensus = {
+            field: _median([line.get(field) for line in lines])  # type: ignore[arg-type]
+            for field in _LINE_FIELDS
+        }
+    else:
+        consensus = _consensus(filtered, max_handicap_abs=max_handicap)
 
     best_home_ml = best_american_odds([line.get("home_close_ml") for line in lines])
     best_away_ml = best_american_odds([line.get("away_close_ml") for line in lines])
@@ -300,7 +338,7 @@ def fetch_multi_book_odds(
     items = payload.get("items") or []
     if not items:
         return {}
-    return summarize_book_items(items)
+    return summarize_book_items(items, league=league)
 
 
 def apply_enrichment_to_market(

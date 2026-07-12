@@ -427,6 +427,24 @@ def _evaluate_backtest_pick(
                 market_margin_home=power_margin,
             )
         )
+        # Fail closed on missing juice when grading against a real closing line.
+        # Synthetic markets (no closing juice) still use historical -110 convention.
+        if market_spread is not None:
+            if home_spread_odds is None and away_spread_odds is None:
+                return None
+            home_juice = home_spread_odds
+            away_juice = away_spread_odds
+        else:
+            home_juice = (
+                home_spread_odds
+                if home_spread_odds is not None
+                else DEFAULT_SPREAD_JUICE
+            )
+            away_juice = (
+                away_spread_odds
+                if away_spread_odds is not None
+                else DEFAULT_SPREAD_JUICE
+            )
         total, win_prob = home_win_prob_to_total_score(blended_home)
         picks = evaluate_spread_picks(
             league=league,
@@ -437,16 +455,8 @@ def _evaluate_backtest_pick(
             total_score=total,
             win_probability=win_prob,
             consensus_spread=market_spread_line,
-            away_spread_odds=(
-                away_spread_odds
-                if away_spread_odds is not None
-                else DEFAULT_SPREAD_JUICE
-            ),
-            home_spread_odds=(
-                home_spread_odds
-                if home_spread_odds is not None
-                else DEFAULT_SPREAD_JUICE
-            ),
+            away_spread_odds=away_juice,
+            home_spread_odds=home_juice,
             model_margin_home=model_margin,
             min_edge=thresholds["min_edge"],
             min_point_edge=thresholds["min_spread_point_edge"],
@@ -463,8 +473,10 @@ def _evaluate_backtest_pick(
             odds = home_spread_odds
         elif away_spread_odds is not None:
             odds = away_spread_odds
-        else:
+        elif market_spread is None:
             odds = DEFAULT_SPREAD_JUICE
+        else:
+            return None
     else:
         away_ml, home_ml = simulate_market_moneylines(
             blended_home,

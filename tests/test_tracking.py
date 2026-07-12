@@ -253,14 +253,22 @@ def test_new_bet_recorded_when_start_time_unparseable() -> None:
     assert len(store["bets"]) == 1
 
 
-def test_pending_bet_still_updated_after_start() -> None:
-    """Post-start slate runs still refresh closing odds on existing pending bets."""
+def test_pending_bet_closing_freezes_after_start() -> None:
+    """Post-tip slate runs must not overwrite closing with live prices."""
     store = {"version": 1, "bets": []}
     pick = {**_sample_pick(), "start_time": _future_start()}
     store = record_from_slate(
         store, {"date_label": "2026-07-10", "recommended_bets": [pick], "games": []}
     )
     assert len(store["bets"]) == 1
+    assert store["bets"][0]["closing_market_odds"] == 141  # seeded at record
+
+    # Pre-tip refresh still moves the closing snapshot.
+    pre_tip = {**_sample_pick(), "start_time": _future_start(), "market_odds": 130}
+    store = record_from_slate(
+        store, {"date_label": "2026-07-10", "recommended_bets": [pre_tip], "games": []}
+    )
+    assert store["bets"][0]["closing_market_odds"] == 130
 
     started = {**_sample_pick(), "start_time": _past_start(), "market_odds": 120}
     store = record_from_slate(
@@ -269,8 +277,7 @@ def test_pending_bet_still_updated_after_start() -> None:
     assert len(store["bets"]) == 1
     bet = store["bets"][0]
     assert bet["market_odds"] == 141  # frozen at record time
-    assert bet["closing_market_odds"] == 120
-    assert bet["closing_source"] == "espn"
+    assert bet["closing_market_odds"] == 130  # last pre-tip close, not live 120
 
 
 def test_record_dedupes_across_slate_date_labels() -> None:
@@ -638,6 +645,51 @@ def test_grade_soccer_home_ml_loses_on_draw() -> None:
     assert graded["status"] == "loss"
 
 
+def test_grade_soccer_1x2_home_loses_on_draw_without_league() -> None:
+    """soccer_1x2 must lose on draws even when league is missing/wrong."""
+    graded = grade_bet(
+        {
+            "side": "home",
+            "bet_type": "soccer_1x2",
+            "market_odds": -120,
+            "stake_units": 1.0,
+        },
+        1,
+        1,
+    )
+    assert graded["status"] == "loss"
+
+
+def test_dedupe_pending_prefers_earlier_opening_odds() -> None:
+    from web.tracking_service import _normalize_store
+
+    store = _normalize_store(
+        {
+            "version": 1,
+            "bets": [
+                {
+                    "event_id": "1",
+                    "side": "home",
+                    "bet_type": "moneyline",
+                    "status": "pending",
+                    "market_odds": 150,
+                    "recorded_at": "2026-01-01T10:00:00+00:00",
+                },
+                {
+                    "event_id": "1",
+                    "side": "home",
+                    "bet_type": "moneyline",
+                    "status": "pending",
+                    "market_odds": 130,
+                    "recorded_at": "2026-01-02T10:00:00+00:00",
+                },
+            ],
+        }
+    )
+    assert len(store["bets"]) == 1
+    assert store["bets"][0]["market_odds"] == 150
+
+
 def test_scoreboard_dates_use_start_time_not_record_date() -> None:
     bet = {
         "date": "2026-06-12",
@@ -828,7 +880,7 @@ if __name__ == "__main__":
     test_new_bet_skipped_when_game_already_started()
     test_new_bet_recorded_pre_start_with_flag()
     test_new_bet_recorded_when_start_time_unparseable()
-    test_pending_bet_still_updated_after_start()
+    test_pending_bet_closing_freezes_after_start()
     test_record_dedupes_across_slate_date_labels()
     test_closing_snapshot_prefers_consensus_moneyline()
     test_closing_snapshot_falls_back_to_espn_without_consensus()

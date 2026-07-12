@@ -48,13 +48,18 @@ def _num(value):
         return None
 
 
-def _spread_juice(value, default: float = -110.0) -> float:
-    """Spread juice defaulting to -110; ESPN EVEN (0) maps to +100."""
+def _spread_juice(value) -> float:
+    """Normalize spread juice; missing/invalid → NaN (fail closed — do not invent -110).
+
+    ESPN EVEN (0) maps to +100. Backtest ATS skips NaN juice via ``_sane_american``.
+    """
     odds = _num(value)
     if odds is None:
-        return default
+        return float("nan")
     if odds == 0:
         return 100.0
+    if abs(odds) < 100:
+        return float("nan")
     return odds
 
 

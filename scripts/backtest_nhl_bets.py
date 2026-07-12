@@ -28,6 +28,11 @@ KELLY_MIN_UNITS = 0.25
 
 
 def american_to_decimal(ml: float) -> float:
+    """Decimal odds from American; EVEN 0 -> 2.0; invalid |ml|<100 -> NaN."""
+    if ml == 0:
+        ml = 100.0
+    if abs(ml) < 100:
+        return float("nan")
     return 1.0 + (ml / 100.0 if ml > 0 else 100.0 / abs(ml))
 
 
@@ -67,19 +72,21 @@ def simulate(
         away_ml = getattr(row, away_col)
         if pd.isna(home_ml) or pd.isna(away_ml):
             continue
+        home_ml_f = 100.0 if float(home_ml) == 0 else float(home_ml)
+        away_ml_f = 100.0 if float(away_ml) == 0 else float(away_ml)
         # American odds are only valid at |ml| >= 100 (median of mixed-sign
         # books can produce garbage near zero).
-        if abs(float(home_ml)) < 100 or abs(float(away_ml)) < 100:
+        if abs(home_ml_f) < 100 or abs(away_ml_f) < 100:
             continue
-        market_home, market_away = devig(float(home_ml), float(away_ml))
+        market_home, market_away = devig(home_ml_f, away_ml_f)
         p_home = float(row.model_prob)
         close_home_ml = close_away_ml = None
         if clv_cols is not None:
             close_home_ml = getattr(row, clv_cols[0])
             close_away_ml = getattr(row, clv_cols[1])
         for side, prob, market, ml, close_ml in (
-            ("home", p_home, market_home, float(home_ml), close_home_ml),
-            ("away", 1.0 - p_home, market_away, float(away_ml), close_away_ml),
+            ("home", p_home, market_home, home_ml_f, close_home_ml),
+            ("away", 1.0 - p_home, market_away, away_ml_f, close_away_ml),
         ):
             if not (ml_lo <= ml <= ml_hi):
                 continue
@@ -95,7 +102,9 @@ def simulate(
             pnl = units * (dec - 1.0) if won else -units
             clv_pct = None
             if close_ml is not None and not pd.isna(close_ml):
-                clv_pct = (dec / american_to_decimal(float(close_ml)) - 1.0) * 100.0
+                close_dec = american_to_decimal(float(close_ml))
+                if close_dec == close_dec:  # not NaN
+                    clv_pct = (dec / close_dec - 1.0) * 100.0
             picks.append(
                 {
                     "season": int(row.season),

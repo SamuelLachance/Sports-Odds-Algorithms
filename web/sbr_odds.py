@@ -80,6 +80,13 @@ def _parse_table_rows(html: str) -> list[list[str]]:
 
 
 def _make_datestr(raw: str, season: int, *, start: int = 8, yr_end: int = 12) -> str:
+    """Map MMDD + season-start year to YYYY-MM-DD.
+
+    ``season`` is the year the season *starts* (NBA 2023 → 2023-24). Months
+    before ``start`` roll into ``season + 1``. For mid-calendar seasons that
+    pass ``start=1`` (NHL COVID 2020-21), pass the calendar year of the games
+    (``season + 1``) as ``season`` — otherwise Jan–Jun stamp as the prior year.
+    """
     raw = str(raw).strip()
     if len(raw) == 3:
         raw = f"0{raw}"
@@ -106,23 +113,33 @@ def _optional_number(value: str) -> float | None:
     text = str(value).strip()
     if not text or text in BLACKLIST:
         # Pick'em spreads are encoded as PK — keep as 0.0.
-        if text.lower() == "pk":
+        # EVEN sometimes appears in juice/ML cells — treat as 0 for American map.
+        lowered = text.lower()
+        if lowered in {"pk", "even"}:
             return 0.0
         return None
+    if text.upper() == "EVEN":
+        return 0.0
     try:
         return float(text)
     except ValueError:
         return None
 
 
-def _american_ml_cell(value: str) -> int | None:
-    """Closing moneyline; ESPN/SBR EVEN (0) → +100. Missing → None."""
-    number = _optional_number(value)
+def _coerce_american(number: float | None, *, default: int | None = None) -> int | None:
+    """Map EVEN/0 → +100; reject invalid |odds| < 100; missing → default."""
     if number is None:
-        return None
+        return default
     if number == 0:
         return 100
+    if abs(number) < 100:
+        return None
     return int(number)
+
+
+def _american_ml_cell(value: str) -> int | None:
+    """Closing moneyline; ESPN/SBR EVEN (0) → +100. Missing → None."""
+    return _coerce_american(_optional_number(value))
 
 
 def _spread_line_cell(value: str) -> float | None:
@@ -132,12 +149,7 @@ def _spread_line_cell(value: str) -> float | None:
 
 def _spread_juice_cell(value: str, default: int | None = None) -> int | None:
     """Spread juice; EVEN (0) → +100; missing → default (None = fail closed)."""
-    number = _optional_number(value)
-    if number is None:
-        return default
-    if number == 0:
-        return 100
-    return int(number)
+    return _coerce_american(_optional_number(value), default=default)
 
 
 def _pairwise(rows: list[list[str]]) -> list[tuple[list[str], list[str]]]:
@@ -169,19 +181,35 @@ def _rows_from_html_table(sport: str, season: int, html: str, translated: dict[s
         close_a = _optional_number(away_row[10])
         close_h = _optional_number(home_row[10])
         if open_a is not None and open_h is not None:
+            # Away favorite (lower/more-negative open) → home gets +line.
+            # Always emit opposite-sign home/away closes.
             if open_a < open_h:
-                home_spread, away_spread = (
-                    (-close_a if close_a is not None else None),
-                    close_h,
+                home_spread = -close_a if close_a is not None else None
+                away_spread = close_a if close_a is not None else (
+                    -close_h if close_h is not None else None
                 )
             else:
-                home_spread, away_spread = (
-                    close_h,
-                    (-close_a if close_a is not None else None),
+                home_spread = close_h
+                away_spread = -close_h if close_h is not None else (
+                    close_a if close_a is not None else None
                 )
         else:
             home_spread = close_h
             away_spread = close_a
+            # If only one side is present, mirror the other.
+            if home_spread is not None and away_spread is None:
+                away_spread = -home_spread
+            elif away_spread is not None and home_spread is None:
+                home_spread = -away_spread
+            # Same-sign closes are inconsistent — prefer home and mirror away.
+            elif (
+                home_spread is not None
+                and away_spread is not None
+                and home_spread != 0
+                and away_spread != 0
+                and (home_spread > 0) == (away_spread > 0)
+            ):
+                away_spread = -home_spread
         output.append(
             {
                 "date": _make_datestr(away_row[0], season),
@@ -215,11 +243,13 @@ def _rows_from_nhl_html(sport: str, season: int, html: str, translated: dict[str
             continue
         output.append(
             {
+                # COVID 2020-21 NHL slate was played in calendar 2021; SBR
+                # season key is still 2020. Pass calendar year when start=1.
                 "date": _make_datestr(
                     away_row[0],
-                    season,
+                    season + 1 if covid else season,
                     start=1 if covid else 8,
-                    yr_end=3 if covid else 12,
+                    yr_end=12,
                 ),
                 "home_key": home_key,
                 "away_key": away_key,
@@ -279,13 +309,14 @@ def _parse_optional_int(value: Any) -> int | None:
     """
     if value in (None, ""):
         return None
+    text = str(value).strip()
+    if text.upper() in {"EVEN", "PK"}:
+        return 100
     try:
-        number = float(str(value).strip())
+        number = float(text)
     except (TypeError, ValueError):
         return None
-    if number == 0:
-        return 100
-    return int(number)
+    return _coerce_american(number)
 
 
 def _parse_optional_float(value: Any) -> float | None:

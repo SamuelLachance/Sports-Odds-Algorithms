@@ -47,6 +47,11 @@ MIN_SPREAD_CONFIDENCE_PP = 5.0
 
 
 def american_to_decimal(ml: float) -> float:
+    """Decimal odds from American; EVEN 0 -> 2.0; invalid |ml|<100 -> NaN."""
+    if ml == 0:
+        ml = 100.0
+    if abs(ml) < 100:
+        return float("nan")
     return 1.0 + (ml / 100.0 if ml > 0 else 100.0 / abs(ml))
 
 

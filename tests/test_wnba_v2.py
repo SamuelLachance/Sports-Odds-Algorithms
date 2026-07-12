@@ -245,6 +245,27 @@ def test_wnba_v2_side_odds_maps_even_spread_juice() -> None:
     assert junk["spread_odds"] is None
 
 
+def test_wnba_v2_preserves_signed_spread_when_favorite_missing() -> None:
+    from unittest.mock import patch
+
+    from web.wnba_v2 import data as wnba_data
+
+    payload = {
+        "items": [
+            {
+                "provider": {"name": "ESPN BET"},
+                "spread": -5.5,
+                "homeTeamOdds": {"favorite": False, "moneyLine": -220, "spreadOdds": -110},
+                "awayTeamOdds": {"favorite": False, "moneyLine": 180, "spreadOdds": -110},
+            }
+        ]
+    }
+    with patch.object(wnba_data, "get_json", return_value=payload):
+        rows = wnba_data.fetch_event_odds("99", "ny", "chi")
+    assert len(rows) == 1
+    assert rows[0]["home_spread"] == -5.5
+
+
 @pytest.mark.slow
 def test_live_market_aware_when_odds_provided() -> None:
     from web.wnba_v2.live import artifacts_available, predict_matchup_v2

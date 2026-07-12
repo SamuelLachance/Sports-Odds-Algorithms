@@ -106,7 +106,9 @@ def test_parse_american_odds_maps_even_zero_to_plus_100() -> None:
     """ESPN numeric 0 (even money) must become +100, not invalid American 0."""
     assert espn_client._parse_american_odds(0) == 100
     assert espn_client._parse_american_odds("EVEN") == 100
+    assert espn_client._parse_american_odds("even") == 100
     assert espn_client._parse_american_odds("PK") == 100
+    assert espn_client._parse_american_odds("pk") == 100
     assert espn_client._parse_american_odds(-110) == -110
     assert espn_client._parse_american_odds(None) is None
 
@@ -118,3 +120,58 @@ def test_parse_american_odds_rejects_invalid_magnitude() -> None:
     assert espn_client._parse_american_odds("+75") is None
     assert espn_client._parse_american_odds(100) == 100
     assert espn_client._parse_american_odds(-100) == -100
+
+
+def test_parse_spread_line_accepts_lowercase_pk() -> None:
+    assert espn_client._parse_spread_line("pk") == 0.0
+    assert espn_client._parse_spread_line("PK") == 0.0
+    assert espn_client._parse_spread_line("even") == 0.0
+
+
+def test_live_mlb_nhl_reject_moneyline_sized_spreads() -> None:
+    """Live scoreboard must drop ML dumps into spread like historical collectors."""
+    event = {
+        "id": "1",
+        "name": "Away @ Home",
+        "date": "2026-07-12T17:00Z",
+        "competitions": [
+            {
+                "competitors": [
+                    {
+                        "homeAway": "away",
+                        "team": {
+                            "abbreviation": "NYY",
+                            "displayName": "Yankees",
+                            "id": "1",
+                        },
+                    },
+                    {
+                        "homeAway": "home",
+                        "team": {
+                            "abbreviation": "BOS",
+                            "displayName": "Red Sox",
+                            "id": "2",
+                        },
+                    },
+                ],
+                "odds": [
+                    {
+                        "spread": -152,
+                        "moneyline": {
+                            "away": {"close": {"odds": 140}},
+                            "home": {"close": {"odds": -160}},
+                        },
+                    }
+                ],
+                "status": {"type": {"state": "pre", "shortDetail": "Scheduled"}},
+            }
+        ],
+    }
+    mlb = espn_client._parse_event(event, "mlb")
+    nhl = espn_client._parse_event(event, "nhl")
+    assert mlb is not None and mlb.market.spread is None
+    assert nhl is not None and nhl.market.spread is None
+
+    event["competitions"][0]["odds"][0]["spread"] = -1.5
+    mlb_ok = espn_client._parse_event(event, "mlb")
+    assert mlb_ok is not None and mlb_ok.market.spread == -1.5

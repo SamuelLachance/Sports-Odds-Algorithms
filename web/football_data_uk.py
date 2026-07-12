@@ -292,14 +292,30 @@ def load_football_data_uk_games(league: str) -> list[dict[str, Any]]:
                     parsed = None
             if parsed is None:
                 continue
+            # Prefer Pinnacle/Bet365/Avg *closing* columns; fall back to open/pre-close.
             odds_home = _parse_american_odds(
-                record.get("PSH") or record.get("B365H") or record.get("AvgH")
+                record.get("PSCH")
+                or record.get("AvgCH")
+                or record.get("B365CH")
+                or record.get("PSH")
+                or record.get("B365H")
+                or record.get("AvgH")
             )
             odds_draw = _parse_american_odds(
-                record.get("PSD") or record.get("B365D") or record.get("AvgD")
+                record.get("PSCD")
+                or record.get("AvgCD")
+                or record.get("B365CD")
+                or record.get("PSD")
+                or record.get("B365D")
+                or record.get("AvgD")
             )
             odds_away = _parse_american_odds(
-                record.get("PSA") or record.get("B365A") or record.get("AvgA")
+                record.get("PSCA")
+                or record.get("AvgCA")
+                or record.get("B365CA")
+                or record.get("PSA")
+                or record.get("B365A")
+                or record.get("AvgA")
             )
             rows.append(
                 {

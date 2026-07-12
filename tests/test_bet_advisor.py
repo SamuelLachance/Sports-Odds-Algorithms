@@ -619,6 +619,51 @@ def test_hubacek_spread_skips_missing_juice() -> None:
     assert picks == []
 
 
+def test_spread_picks_skip_missing_juice_even_without_hubacek() -> None:
+    """Non-Hubáček ranking must not invent −110 when juice is absent."""
+    picks = evaluate_spread_picks(
+        league="nba",
+        away_name="Away",
+        home_name="Home",
+        away_slug="away",
+        home_slug="home",
+        total_score=-90.0,
+        win_probability=90.0,
+        consensus_spread=-1.5,
+        away_spread_odds=None,
+        home_spread_odds=None,
+        model_margin_home=-12.0,
+        min_edge=0.0,
+    )
+    assert picks == []
+
+
+def test_enrich_spread_profit_metrics_skips_missing_juice() -> None:
+    from web.bet_advisor import enrich_pick_profit_metrics
+
+    pick = BetPick(
+        side="home",
+        team_name="Home",
+        team_slug="home",
+        strategy="value",
+        confidence="medium",
+        edge=5.0,
+        model_projection=-150,
+        market_odds=-110,
+        win_probability=55.0,
+        reason="test",
+        bet_type="spread",
+        consensus_spread=-3.5,
+        spread_line=-3.5,
+        spread_odds=None,
+    )
+    enriched = enrich_pick_profit_metrics(pick)
+    assert enriched is pick
+    assert enriched.ev_pct == 0.0
+    assert enriched.profit_score == 0.0
+    assert "kelly_pct" not in enriched.extra
+
+
 def test_evaluate_spread_picks_applies_thin_sample_ev_cap() -> None:
     """Early-season NBA spreads must soft-cap absurd EV like moneylines do."""
     # Home has the point edge; give it plus-money juice so uncapped EV >> 55%.

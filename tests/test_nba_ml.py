@@ -22,6 +22,10 @@ def test_american_to_prob_and_devig():
     assert american_to_prob(+150) == pytest.approx(0.4, abs=1e-3)
     # ESPN EVEN (0) must match +100, not drop as None.
     assert american_to_prob(0) == pytest.approx(american_to_prob(100), abs=1e-9)
+    # Invalid |odds| < 100 must not invent market probs.
+    assert american_to_prob(50) is None
+    assert american_to_prob(-50) is None
+    assert devig_home_prob(-50, 130) is None
     # Devig removes the vig so probabilities sum to 1.
     p = devig_home_prob(-150, +130)
     assert 0.0 < p < 1.0

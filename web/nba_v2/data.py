@@ -429,8 +429,16 @@ def fetch_event_odds(
             else:
                 raw = _to_float(item.get("spread"))
                 if raw is not None:
-                    favored_home = bool((item.get("homeTeamOdds") or {}).get("favorite"))
-                    home_spread = -abs(raw) if favored_home else abs(raw)
+                    home_odds = item.get("homeTeamOdds") or {}
+                    away_odds = item.get("awayTeamOdds") or {}
+                    if home_odds.get("favorite"):
+                        home_spread = -abs(raw)
+                    elif away_odds.get("favorite"):
+                        home_spread = abs(raw)
+                    else:
+                        # ESPN often sends a signed home line; do not flip when
+                        # favorite flags are missing/false.
+                        home_spread = raw
         rows.append(
             {
                 "provider": provider,
@@ -461,11 +469,11 @@ def load_closing_odds_index() -> dict[tuple[str, str, str], dict[str, Any]]:
             if not (date and home and away):
                 continue
             index[(date, home, away)] = {
-                "home_ml": _to_float(row.get("home_close_ml")),
-                "away_ml": _to_float(row.get("away_close_ml")),
+                "home_ml": _american(row.get("home_close_ml")),
+                "away_ml": _american(row.get("away_close_ml")),
                 "home_spread": _to_float(row.get("home_close_spread")),
-                "home_spread_odds": _to_float(row.get("home_spread_odds")),
-                "away_spread_odds": _to_float(row.get("away_spread_odds")),
+                "home_spread_odds": _american(row.get("home_spread_odds")),
+                "away_spread_odds": _american(row.get("away_spread_odds")),
                 "home_spread_open": _to_float(row.get("home_open_spread")),
                 "total": _to_float(row.get("close_total")),
                 "n_books": _to_int(row.get("n_books")) or 0,

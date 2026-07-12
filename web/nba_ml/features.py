@@ -97,6 +97,9 @@ def american_to_prob(odds: float | None) -> float | None:
     # ESPN EVEN sometimes arrives as numeric 0 — treat as +100.
     if odds == 0:
         odds = 100.0
+    # Invalid American magnitudes must not pollute market features.
+    if abs(odds) < 100:
+        return None
     if odds > 0:
         return 100.0 / (odds + 100.0)
     return -odds / (-odds + 100.0)
