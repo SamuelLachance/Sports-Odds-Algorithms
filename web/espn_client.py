@@ -246,17 +246,45 @@ def _parse_spread_line(value: str | int | float | None) -> float | None:
 
 
 def _extract_spread(odds_block: dict[str, Any] | None) -> tuple[float | None, int | None, int | None]:
-    """Return home consensus spread and per-side spread juice from ESPN odds."""
+    """Return home consensus spread and per-side spread juice from ESPN odds.
+
+    Prefer nested ``pointSpread`` lines when present. Flat ``spread`` is often an
+    unsigned magnitude with ``homeTeamOdds.favorite`` (NHL/MLB); mirror the
+    multi-book collectors by signing via favorite flags / ML chalk.
+    """
     if not odds_block:
         return None, None, None
 
-    home_spread = _parse_spread_line(odds_block.get("spread"))
+    from web.sbr_odds import _repair_same_sign_spreads
+
     point_spread = odds_block.get("pointSpread") or {}
     away_close = (point_spread.get("away") or {}).get("close") or {}
     home_close = (point_spread.get("home") or {}).get("close") or {}
+    nested_home = _parse_spread_line(home_close.get("line"))
+    flat = _parse_spread_line(odds_block.get("spread"))
 
-    if home_spread is None:
-        home_spread = _parse_spread_line(home_close.get("line"))
+    home_team = odds_block.get("homeTeamOdds") or {}
+    away_team = odds_block.get("awayTeamOdds") or {}
+
+    if nested_home is not None:
+        home_spread = nested_home
+    elif flat is not None:
+        # Positive flat + home chalk means magnitude-only favorite line.
+        if home_team.get("favorite") and not away_team.get("favorite") and flat > 0:
+            home_spread = -flat
+        else:
+            home_spread = flat
+    else:
+        home_spread = None
+
+    away_ml, home_ml = _extract_moneyline(odds_block)
+    away_spread = -home_spread if home_spread is not None else None
+    home_spread, _away = _repair_same_sign_spreads(
+        home_spread,
+        away_spread,
+        home_ml=home_ml,
+        away_ml=away_ml,
+    )
 
     away_spread_odds = _parse_american_odds(away_close.get("odds"))
     home_spread_odds = _parse_american_odds(home_close.get("odds"))

@@ -583,3 +583,77 @@ def test_batting_ewma_updates_on_zero_obp_slg() -> None:
     assert engine.team(111).obp == pytest.approx(expected_obp)
     assert engine.team(111).slg == pytest.approx(expected_slg)
     assert engine.team(111).obp != LEAGUE_OBP
+
+
+def test_mlb_elo_mov_stays_positive_on_huge_underdog_upset() -> None:
+    """Underdog wins with a massive Elo gap must not flip MOV (denom ≤ 0)."""
+    import math
+
+    import pytest
+
+    from web.mlb_v2.feature_engine import ELO_HOME_ADV, ELO_K, MlbFeatureEngine
+
+    engine = MlbFeatureEngine()
+    home = engine.team(111)
+    away = engine.team(147)
+    home.elo = 2800.0
+    away.elo = 500.0
+    pre_home, pre_away = home.elo, away.elo
+
+    # Without max(winner_diff, 0): winner_diff=-2300 → mov_mult < 0 → favorite
+    # gains Elo after losing.
+    winner_diff = away.elo - home.elo
+    assert winner_diff < -2200
+    buggy_mov = math.log(5 + 1.0) * (2.2 / (0.001 * winner_diff + 2.2))
+    assert buggy_mov < 0
+
+    engine.update_after_game(
+        {
+            "date": "2024-06-15",
+            "home_id": 111,
+            "away_id": 147,
+            "home_score": 1,
+            "away_score": 6,
+        }
+    )
+    assert home.elo < pre_home
+    assert away.elo > pre_away
+    expected_home = 1.0 / (
+        1.0 + 10 ** ((pre_away - pre_home - ELO_HOME_ADV) / 400.0)
+    )
+    clamped_mov = math.log(5 + 1.0) * (2.2 / (0.001 * max(winner_diff, 0.0) + 2.2))
+    expected_delta = ELO_K * clamped_mov * (0.0 - expected_home)
+    assert home.elo == pytest.approx(pre_home + expected_delta, abs=1e-9)
+
+
+def test_write_mlb_feature_snapshot_refuses_mislabeled_gap_season(tmp_path) -> None:
+    """Missing snapshot-season cache must not write state_N with end-of-(N-1) state."""
+    import json
+    import pytest
+
+    from web.mlb_v2.feature_engine import MlbFeatureEngine
+    from web.mlb_v2.replay import write_mlb_feature_snapshot
+
+    cache = tmp_path / "cache"
+    season_2022 = cache / "2022"
+    season_2022.mkdir(parents=True)
+    for name, payload in (
+        ("games", []),
+        ("pitchers", {}),
+        ("team_hitting", {}),
+        ("team_pitching", {}),
+    ):
+        (season_2022 / f"{name}.json").write_text(
+            json.dumps(payload), encoding="utf-8"
+        )
+
+    engine = MlbFeatureEngine()
+    with pytest.raises(ValueError, match="mislabeled"):
+        write_mlb_feature_snapshot(
+            engine,
+            tmp_path / "out",
+            snapshot_season=2023,
+            start_season=2022,
+            cache_root=cache,
+        )
+    assert not (tmp_path / "out" / "state_2023.json.gz").exists()

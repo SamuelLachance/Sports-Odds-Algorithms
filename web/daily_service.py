@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import io
 import logging
+import math
 import os
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -26,6 +27,23 @@ def _line_shopping_status() -> str:
     from web.live_odds_enrichment import line_shopping_status
 
     return line_shopping_status()
+
+
+def _consensus_spread_for_preds(
+    scoreboard_spread: float | None,
+    book_enrichment: dict[str, Any] | None,
+) -> float | None:
+    """Prefer multi-book consensus home spread when finite; else scoreboard."""
+    raw = (book_enrichment or {}).get("consensus_home_spread")
+    if raw is not None:
+        try:
+            value = float(raw)
+        except (TypeError, ValueError):
+            value = None
+        else:
+            if math.isfinite(value):
+                return value
+    return scoreboard_spread
 
 
 from web.bet_advisor import (
@@ -407,6 +425,10 @@ def predict_live_game(
     except Exception:  # noqa: BLE001 — never block slate on books
         book_enrichment = {}
 
+    consensus_spread = _consensus_spread_for_preds(
+        game.market.spread, book_enrichment
+    )
+
     algo_league = get_algo_league(game.league)
     odds_calculator = Odds_Calculator(algo_league)
     algo = Algo(algo_league)
@@ -439,7 +461,7 @@ def predict_live_game(
         away_espn_id=game.away_espn_id,
         home_slug=home[1],
         away_slug=away[1],
-        consensus_spread=game.market.spread,
+        consensus_spread=consensus_spread,
         home_moneyline=game.market.home_moneyline,
         away_moneyline=game.market.away_moneyline,
         draw_moneyline=game.market.draw_moneyline,
@@ -478,7 +500,7 @@ def predict_live_game(
     blended = apply_ensemble_ml(
         blended,
         game.league,
-        consensus_spread=game.market.spread,
+        consensus_spread=consensus_spread,
         home_moneyline=game.market.home_moneyline,
         away_moneyline=game.market.away_moneyline,
         draw_moneyline=game.market.draw_moneyline,
@@ -488,7 +510,7 @@ def predict_live_game(
         league=game.league,
         away_market=game.market.away_moneyline,
         home_market=game.market.home_moneyline,
-        consensus_spread=game.market.spread,
+        consensus_spread=consensus_spread,
     )
 
     if is_soccer_league(game.league):
@@ -642,7 +664,7 @@ def predict_live_game(
                 blended=blended,
                 away_market=game.market.away_moneyline,
                 home_market=game.market.home_moneyline,
-                consensus_spread=game.market.spread,
+                consensus_spread=consensus_spread,
                 away_spread_odds=game.market.away_spread_odds,
                 home_spread_odds=game.market.home_spread_odds,
                 home_prob=ml_home_prob,
@@ -663,7 +685,7 @@ def predict_live_game(
         "away_moneyline": game.market.away_moneyline,
         "home_moneyline": game.market.home_moneyline,
         "draw_moneyline": game.market.draw_moneyline,
-        "spread": game.market.spread,
+        "spread": consensus_spread,
         "away_spread_odds": game.market.away_spread_odds,
         "home_spread_odds": game.market.home_spread_odds,
         "over_under": game.market.over_under,

@@ -421,3 +421,50 @@ def test_parse_american_odds_rounds_half_median() -> None:
     """Even-book medians (−107.5) must round like collectors, not truncate to −107."""
     assert espn_client._parse_american_odds(-107.5) == -108
     assert espn_client._parse_american_odds("-107.5") == -108
+
+
+def test_extract_spread_signs_flat_magnitude_when_home_favorite() -> None:
+    """Scoreboard flat ``spread: 1.5`` + home favorite must become −1.5 (not +1.5)."""
+    home_spread, _away_juice, _home_juice = espn_client._extract_spread(
+        {
+            "spread": 1.5,
+            "homeTeamOdds": {"favorite": True, "moneyLine": -150},
+            "awayTeamOdds": {"favorite": False, "moneyLine": 130},
+            "moneyline": {
+                "home": {"close": {"odds": -150}},
+                "away": {"close": {"odds": 130}},
+            },
+        }
+    )
+    assert home_spread == -1.5
+
+
+def test_extract_spread_prefers_nested_signed_line_over_flat_magnitude() -> None:
+    """Nested signed close line wins over an unsigned flat ``spread`` dump."""
+    home_spread, _, _ = espn_client._extract_spread(
+        {
+            "spread": 3.5,
+            "pointSpread": {"home": {"close": {"line": -3.5, "odds": -110}}},
+            "homeTeamOdds": {"favorite": True, "moneyLine": -160},
+            "awayTeamOdds": {"favorite": False, "moneyLine": 140},
+            "moneyline": {
+                "home": {"close": {"odds": -160}},
+                "away": {"close": {"odds": 140}},
+            },
+        }
+    )
+    assert home_spread == -3.5
+
+
+def test_extract_spread_repairs_via_ml_when_favorite_flags_missing() -> None:
+    """Unsigned flat spread with no favorite flags still follows ML chalk."""
+    home_spread, _, _ = espn_client._extract_spread(
+        {
+            "spread": 1.5,
+            "moneyline": {
+                "home": {"close": {"odds": -150}},
+                "away": {"close": {"odds": 130}},
+            },
+        }
+    )
+    assert home_spread == -1.5

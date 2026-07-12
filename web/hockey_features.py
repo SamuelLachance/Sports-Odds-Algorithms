@@ -273,12 +273,10 @@ def build_training_matrix(
             league,
             history_games=train_slice,
         )
+        if home_score == away_score:
+            # College hockey can tie; do not train ties as away wins.
+            continue
         x_rows.append(_features_to_vector(feats))
-        if home_score > away_score:
-            y_rows.append(1)
-        elif home_score < away_score:
-            y_rows.append(0)
-        else:
-            y_rows.append(0)
+        y_rows.append(1 if home_score > away_score else 0)
 
     return x_rows, y_rows, FEATURE_NAMES

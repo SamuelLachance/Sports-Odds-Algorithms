@@ -111,7 +111,13 @@ def _accumulate_style(
     shots = _stat_value(stats, "totalShots")
     passes = _stat_value(stats, "totalPasses")
     longballs = _stat_value(stats, "totalLongBalls")
-    tackles = _stat_value(stats, "effectiveTackles") or _stat_value(stats, "totalTackles")
+    # Prefer effective tackles when present — including 0.0 (do not use `or`).
+    effective_tackles = _stat_value(stats, "effectiveTackles")
+    tackles = (
+        effective_tackles
+        if effective_tackles is not None
+        else _stat_value(stats, "totalTackles")
+    )
     interceptions = _stat_value(stats, "interceptions")
 
     bucket = profiles.setdefault(

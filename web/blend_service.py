@@ -238,9 +238,13 @@ def layer_home_win_probability(layer: dict[str, Any]) -> float | None:
         return total_score_to_home_win_prob(float(layer["total_score"]))
     if layer.get("win_probability") is not None and layer.get("favorite_side"):
         win_prob = float(layer["win_probability"])
-        if layer["favorite_side"] == "home":
+        side = str(layer["favorite_side"]).strip().lower()
+        if side == "home":
             return win_prob
-        return 100.0 - win_prob
+        if side == "away":
+            return 100.0 - win_prob
+        # "draw" / "neutral" / unknown: win_probability is not a home/away win %.
+        return None
     return None
 
 

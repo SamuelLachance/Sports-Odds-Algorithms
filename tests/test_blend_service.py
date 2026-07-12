@@ -76,6 +76,25 @@ def test_layer_home_win_probability_from_legacy_payload() -> None:
     ) == pytest.approx(35.69, abs=0.01)
 
 
+def test_layer_home_win_probability_rejects_draw_favorite() -> None:
+    """Draw-mode win_probability is draw %, not away — do not invent home win %."""
+    assert (
+        layer_home_win_probability(
+            {"win_probability": 44.0, "favorite_side": "draw"}
+        )
+        is None
+    )
+    assert (
+        layer_home_win_probability(
+            {"win_probability": 50.0, "favorite_side": "neutral"}
+        )
+        is None
+    )
+    assert layer_home_win_probability(
+        {"win_probability": 44.0, "favorite_side": "away"}
+    ) == pytest.approx(56.0)
+
+
 def test_blend_with_espn_ids_and_slugs_calls_db_rating_without_espn_kwargs() -> None:
     import web.blend_service as blend_module
 

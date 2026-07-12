@@ -179,7 +179,80 @@ def test_predict_live_game_single_fetch_opens_and_headlines() -> None:
     assert market["line_shopping_edge_pp"] is not None
 
 
-def test_predict_live_game_enrichment_soft_fail() -> None:
+def test_predict_live_game_uses_consensus_home_spread_for_preds() -> None:
+    """Multi-book consensus_home_spread must feed blend/picks, not only UI."""
+    game = _scheduled_game()
+    game.market.spread = 4.5  # wrong-sign / stale scoreboard line
+    enrichment = {
+        "n_books": 2,
+        "consensus_home_spread": -4.5,
+        "best_home_ml": -105,
+        "best_away_ml": 105,
+    }
+    blended_stub = {
+        "algorithm": "Unified",
+        "blend_mode": "blended",
+        "total_score": -55.0,
+        "win_probability": 55.0,
+        "favorite_side": "home",
+        "blended_home_win_probability": 55.0,
+        "context_adjustment_pp": 0.0,
+    }
+
+    algo_instance = MagicMock()
+    algo_instance.calculate_V2.return_value = {"total": -10.0}
+    odds_instance = MagicMock()
+    odds_instance.analyze2.return_value = {}
+
+    with (
+        patch(
+            "web.daily_service.resolve_team",
+            side_effect=lambda league, abbr, name: (
+                ["bos", "boston-celtics"] if abbr == "BOS" else ["mia", "miami-heat"]
+            ),
+        ),
+        patch("web.daily_service.load_live_team_data", return_value=[{"seed": 1}]),
+        patch("algo.Algo", return_value=algo_instance),
+        patch("odds_calculator.Odds_Calculator", return_value=odds_instance),
+        patch(
+            "web.live_odds_enrichment.fetch_multi_book_odds",
+            return_value=enrichment,
+        ),
+        patch(
+            "web.daily_service.blend_predictions", return_value=dict(blended_stub)
+        ) as mock_blend,
+        patch(
+            "web.daily_service.apply_ensemble_ml",
+            side_effect=lambda blended, league, **kw: blended,
+        ) as mock_ensemble,
+        patch(
+            "web.daily_service.ensure_hubacek_in_blend",
+            side_effect=lambda blended, **kw: blended,
+        ) as mock_hubacek,
+        patch("web.daily_service.compute_model_agreement", return_value={}),
+        patch("web.daily_service.get_pick_thresholds", return_value={}),
+        patch("web.daily_service.official_pick_binary_probs", return_value=(45.0, 55.0)),
+        patch(
+            "web.daily_service.evaluate_official_picks_for_game", return_value=[]
+        ) as mock_picks,
+        patch("web.daily_service.eligible_for_official_picks", return_value=True),
+    ):
+        result = predict_live_game(game)
+
+    assert mock_blend.call_args.kwargs["consensus_spread"] == -4.5
+    assert mock_ensemble.call_args.kwargs["consensus_spread"] == -4.5
+    assert mock_hubacek.call_args.kwargs["consensus_spread"] == -4.5
+    assert mock_picks.call_args.kwargs["consensus_spread"] == -4.5
+    assert result["market"]["spread"] == -4.5
+
+
+def test_consensus_spread_for_preds_helper() -> None:
+    from web.daily_service import _consensus_spread_for_preds
+
+    assert _consensus_spread_for_preds(3.5, {"consensus_home_spread": -3.5}) == -3.5
+    assert _consensus_spread_for_preds(3.5, {}) == 3.5
+    assert _consensus_spread_for_preds(3.5, {"consensus_home_spread": float("nan")}) == 3.5
+
     """A books outage must not change core outputs — market stays bare."""
     game = _scheduled_game()
     blended_stub = {

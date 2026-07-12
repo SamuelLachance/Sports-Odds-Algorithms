@@ -64,6 +64,38 @@ def test_build_training_matrix_leak_free() -> None:
     assert len(x_rows) >= 10
 
 
+def test_build_training_matrix_skips_ties_not_away_wins() -> None:
+    """Tied games must be omitted — labeling them 0 trains them as away wins."""
+    dated = []
+    for i in range(25):
+        day = f"2025-01-{i + 1:02d}"
+        home_win = i % 2 == 0
+        dated.append(
+            (
+                day,
+                (
+                    "aaa",
+                    "bbb",
+                    "A",
+                    "B",
+                    3 if home_win else 1,
+                    1 if home_win else 3,
+                ),
+            )
+        )
+    # Insert a tie late enough that both teams have history.
+    dated.append(("2025-01-26", ("aaa", "bbb", "A", "B", 2, 2)))
+    dated.append(("2025-01-27", ("aaa", "bbb", "A", "B", 4, 1)))
+
+    x_rows, y_rows, _names = build_training_matrix(dated, "2025-02-01", "ncaah")
+    assert len(x_rows) == len(y_rows)
+    assert all(label in (0, 1) for label in y_rows)
+    # Rebuild without the tie: labels must match (tie skipped entirely).
+    dated_no_tie = [row for row in dated if row[1][4] != row[1][5]]
+    _x2, y2, _ = build_training_matrix(dated_no_tie, "2025-02-01", "ncaah")
+    assert y_rows == y2
+
+
 def test_build_matchup_features_keys() -> None:
     dated = [
         ("2025-01-01", ("aaa", "bbb", "A", "B", 3, 2)),

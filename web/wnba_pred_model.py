@@ -143,16 +143,18 @@ def build_wnba_model(
                 sigma=DEFAULT_SIGMA,
                 hca=DEFAULT_HCA,
             )
-            x_rows.append(features_to_vector(feats))
             raw_probs.append(raw_prob)
             if home_score > away_score:
+                x_rows.append(features_to_vector(feats))
                 y_rows.append(1.0)
                 outcomes.append(1.0)
             elif home_score < away_score:
+                x_rows.append(features_to_vector(feats))
                 y_rows.append(0.0)
                 outcomes.append(0.0)
             else:
-                y_rows.append(0.5)
+                # Soft 0.5 is fine for the calibrator; XGB uses dtype=int so
+                # 0.5→0 and would train ties as away wins.
                 outcomes.append(0.5)
 
         update_elo_after_game(elo, home, away, home_score, away_score)
@@ -337,7 +339,8 @@ def run_wnba_pred_model(
     raw_prob = margin_to_home_win_prob(margin, sigma=float(context.get("sigma", DEFAULT_SIGMA)))
     raw_prob = min(max(raw_prob + avail_shift, 1.0), 99.0)
 
-    if market_spread is not None:
+    # bool False→0.0 must not invent a pick'em market for decorrelation.
+    if market_spread is not None and not isinstance(market_spread, bool):
         market_prob = spread_to_home_prob(float(market_spread), sigma=float(context["sigma"]))
         raw_prob = decorrelate_from_market(raw_prob / 100.0, market_prob / 100.0) * 100.0
 

@@ -265,7 +265,8 @@ def run_cbb_pred_model(
     calibrated_prob = apply_cbb_calibration(raw_prob, context.get("calibrator"))
     pre_decorrelation = float(calibrated_prob)
     market_decorrelated = False
-    if market_spread is not None:
+    # bool False→0.0 must not invent a pick'em market for decorrelation.
+    if market_spread is not None and not isinstance(market_spread, bool):
         market_prob = spread_to_home_prob(float(market_spread))
         calibrated_prob = (
             decorrelate_from_market(calibrated_prob / 100.0, market_prob / 100.0) * 100.0

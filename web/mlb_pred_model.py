@@ -333,8 +333,9 @@ def _run_mlb_v2(
         home_prob = decorrelate_binary(calibrated_prob, market_home)
         market_decorrelated = True
         market_decorrelation_source = "moneyline"
-    elif market_spread is not None:
+    elif market_spread is not None and not isinstance(market_spread, bool):
         # Invalid/garbage ML must not block spread-based decorrelation.
+        # bool False→0.0 must not invent a pick'em market.
         market_prob = spread_to_home_prob(float(market_spread), sigma=DEFAULT_SIGMA)
         home_prob = decorrelate_from_market(
             calibrated_prob / 100.0, market_prob / 100.0
@@ -475,8 +476,9 @@ def run_mlb_pred_model(
         home_prob = decorrelate_binary(calibrated_prob, market_home)
         market_decorrelated = True
         market_decorrelation_source = "moneyline"
-    elif market_spread is not None:
+    elif market_spread is not None and not isinstance(market_spread, bool):
         # Invalid/garbage ML must not block spread-based decorrelation.
+        # bool False→0.0 must not invent a pick'em market.
         market_prob = spread_to_home_prob(float(market_spread), sigma=float(context["sigma"]))
         home_prob = decorrelate_from_market(
             calibrated_prob / 100.0, market_prob / 100.0

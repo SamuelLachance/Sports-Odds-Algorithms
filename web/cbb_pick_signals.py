@@ -38,17 +38,23 @@ def build_cbb_pick_signals(
         elif away_ml <= BIG_FAVORITE_ML:
             favorite_side = "away"
 
-    if market_spread is not None and abs(float(market_spread)) >= BIG_FAVORITE_SPREAD:
-        favorite_side = "home" if float(market_spread) < 0 else "away"
+    # bool is a subclass of int: False→0.0 would invent pick'em / big-favorite flags.
+    usable_spread = (
+        market_spread
+        if market_spread is not None and not isinstance(market_spread, bool)
+        else None
+    )
+    if usable_spread is not None and abs(float(usable_spread)) >= BIG_FAVORITE_SPREAD:
+        favorite_side = "home" if float(usable_spread) < 0 else "away"
 
     if favorite_side:
         signals["big_favorite_side"] = favorite_side
         signals["big_favorite_dog"] = True
         signals["underdog_signal"] = True
 
-    if market_spread is not None:
+    if usable_spread is not None:
         model_spread = -model_margin
-        disagreement = abs(model_spread - float(market_spread))
+        disagreement = abs(model_spread - float(usable_spread))
         signals["disagreement_pts"] = round(disagreement, 2)
         if disagreement >= DISAGREEMENT_SPREAD_THRESHOLD:
             signals["disagreement_signal"] = True

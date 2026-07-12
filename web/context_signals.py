@@ -360,7 +360,13 @@ def _resolve_home_prob(blended: dict[str, Any]) -> float | None:
         return win_prob if total <= 0 else 100.0 - win_prob
     if blended.get("win_probability") is not None and blended.get("favorite_side"):
         win_prob = float(blended["win_probability"])
-        return win_prob if blended["favorite_side"] == "home" else 100.0 - win_prob
+        side = str(blended["favorite_side"]).strip().lower()
+        if side == "home":
+            return win_prob
+        if side == "away":
+            return 100.0 - win_prob
+        # "draw" / "neutral" / unknown: win_probability is not a home/away win %.
+        return None
     return None
 
 

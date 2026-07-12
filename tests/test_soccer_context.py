@@ -11,6 +11,8 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from web.soccer_context import (  # noqa: E402
     MatchContextSignals,
     TeamStyleProfile,
+    _accumulate_style,
+    _finalize_style,
     apply_threeway_context_shifts,
     compute_context_adjustments,
     parse_form_score,
@@ -23,6 +25,20 @@ def test_parse_form_score() -> None:
     assert parse_form_score("WDL") == round(1.5 / 3, 4)
     assert parse_form_score("") is None
     assert parse_form_score(None) is None
+
+
+def test_zero_effective_tackles_not_replaced_by_total() -> None:
+    """effectiveTackles==0 is valid; `or` must not fall through to totalTackles."""
+    stats = [
+        {"name": "effectiveTackles", "displayValue": "0"},
+        {"name": "totalTackles", "displayValue": "18"},
+        {"name": "interceptions", "displayValue": "2"},
+    ]
+    raw: dict = {}
+    _accumulate_style(raw, "home", stats)
+    profile = _finalize_style(raw["home"])
+    # press = effective tackles (0) + interceptions (2), not total tackles 18.
+    assert profile.press_index == 2.0
 
 
 def test_apply_threeway_context_shifts_renormalizes() -> None:

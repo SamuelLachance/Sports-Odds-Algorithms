@@ -470,6 +470,37 @@ def test_predict_matchup_v2_uses_open_odds_for_market_features() -> None:
     assert result["market_decorrelated"] is True
 
 
+def test_get_live_context_fails_closed_on_missing_gap_season(tmp_path, monkeypatch) -> None:
+    """Empty intermediate soccer seasons must not silently skip Elo/carryover."""
+    import gzip
+    import json
+
+    import web.soccer_v2.live as live
+
+    live.get_live_context.cache_clear()
+    snap_path = tmp_path / "state_2022.json.gz"
+    payload = {
+        "pools": {
+            "E": SoccerFeatureEngine("E").to_dict(),
+        }
+    }
+    with gzip.open(snap_path, "wt", encoding="utf-8") as handle:
+        json.dump(payload, handle)
+
+    monkeypatch.setattr(
+        live,
+        "_load_artifacts",
+        lambda: {"snapshots": {2022: snap_path}},
+    )
+    monkeypatch.setattr(live, "soccer_season_for_date", lambda _d: 2024)
+    monkeypatch.setattr(
+        live,
+        "_fetch_current_csv",
+        lambda _division, _season: ([], False),
+    )
+    assert live.get_live_context("2024-10-05") is None
+
+
 if __name__ == "__main__":
     test_poisson_1x2_sums_to_one_and_favors_stronger_attack()
     test_engine_elo_moves_toward_winner_and_features_precede_update()

@@ -8,6 +8,7 @@ slate" view, identical to production inference timing).
 from __future__ import annotations
 
 from collections import defaultdict
+from pathlib import Path
 from typing import Any, Callable
 
 from web.mlb_v2.feature_engine import MlbFeatureEngine
@@ -195,3 +196,60 @@ def replay_season(
 
         for pitcher_id, hand, log in appearances.get(game_date, []):
             engine.apply_pitcher_appearance(pitcher_id, hand, log)
+
+
+def write_mlb_feature_snapshot(
+    engine: MlbFeatureEngine,
+    out_dir: Path,
+    *,
+    snapshot_season: int,
+    start_season: int,
+    cache_root: Path,
+) -> Path:
+    """Replay caches through ``snapshot_season`` and write ``state_{N}.json.gz``.
+
+    Refuses to label a snapshot as end-of-N when season N was never replayed
+    (missing cache would otherwise warm-start live with end-of-(N-1) state under
+    a ``state_N`` filename and skip gap replay for N).
+    """
+    import gzip
+    import json
+
+    out_dir = Path(out_dir)
+    cache_root = Path(cache_root)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    last_replayed: int | None = None
+    for season in range(int(start_season), int(snapshot_season) + 1):
+        season_dir = cache_root / str(season)
+        if not (season_dir / "games.json").is_file():
+            continue
+        data = {
+            name: json.loads((season_dir / f"{name}.json").read_text(encoding="utf-8"))
+            for name in ("games", "pitchers", "team_hitting", "team_pitching")
+        }
+        replay_season(
+            engine,
+            season,
+            data["games"],
+            data["pitchers"],
+            data["team_hitting"],
+            data["team_pitching"],
+        )
+        last_replayed = season
+
+    if last_replayed != int(snapshot_season):
+        raise ValueError(
+            f"Refusing mislabeled MLB snapshot state_{snapshot_season}.json.gz: "
+            f"last replayed season is {last_replayed}"
+        )
+    if int(engine.season or 0) != int(snapshot_season):
+        raise ValueError(
+            f"Refusing mislabeled MLB snapshot state_{snapshot_season}.json.gz: "
+            f"engine.season is {engine.season}"
+        )
+
+    snapshot_path = out_dir / f"state_{snapshot_season}.json.gz"
+    with gzip.open(snapshot_path, "wt", encoding="utf-8") as handle:
+        json.dump(engine.to_dict(), handle, separators=(",", ":"))
+    return snapshot_path

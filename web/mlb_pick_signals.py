@@ -39,7 +39,8 @@ def build_mlb_pick_signals(
             signals["big_favorite_dog"] = True
             signals["underdog_side"] = "away" if home_ml <= BIG_FAVORITE_ML else "home"
 
-    if market_spread is not None:
+    # bool is a subclass of int: False→0.0 would invent pick'em disagreement.
+    if market_spread is not None and not isinstance(market_spread, bool):
         model_spread = -model_margin
         disagreement = abs(model_spread - float(market_spread))
         signals["disagreement_runs"] = round(disagreement, 2)

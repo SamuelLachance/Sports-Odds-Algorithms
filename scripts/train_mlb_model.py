@@ -13,7 +13,6 @@ Outputs to data/models/mlb_v2/:
 from __future__ import annotations
 
 import argparse
-import gzip
 import json
 import sys
 from datetime import date, datetime, timezone
@@ -31,7 +30,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from web.mlb_v2.feature_engine import FEATURE_COLUMNS, MlbFeatureEngine  # noqa: E402
-from web.mlb_v2.replay import replay_season  # noqa: E402
+from web.mlb_v2.replay import write_mlb_feature_snapshot  # noqa: E402
 
 TABLE_PATH = PROJECT_ROOT / "data" / "mlb_history" / "training_table.csv"
 CACHE_ROOT = PROJECT_ROOT / ".build-cache" / "mlb-history"
@@ -260,21 +259,13 @@ def train_final_artifacts(frame: pd.DataFrame, oos: pd.DataFrame, end_season: in
     # engine snapshot at end of the season before the current live season
     snapshot_season = end_season - 1
     engine = MlbFeatureEngine()
-    for season in range(int(frame.season.min()), snapshot_season + 1):
-        season_dir = CACHE_ROOT / str(season)
-        if not (season_dir / "games.json").is_file():
-            continue
-        data = {
-            name: json.loads((season_dir / f"{name}.json").read_text(encoding="utf-8"))
-            for name in ("games", "pitchers", "team_hitting", "team_pitching")
-        }
-        replay_season(
-            engine, season, data["games"], data["pitchers"],
-            data["team_hitting"], data["team_pitching"],
-        )
-    snapshot_path = OUT_DIR / f"state_{snapshot_season}.json.gz"
-    with gzip.open(snapshot_path, "wt", encoding="utf-8") as handle:
-        json.dump(engine.to_dict(), handle, separators=(",", ":"))
+    write_mlb_feature_snapshot(
+        engine,
+        OUT_DIR,
+        snapshot_season=snapshot_season,
+        start_season=int(frame.season.min()),
+        cache_root=CACHE_ROOT,
+    )
 
     per_season = season_metrics(oos)
     y = oos["home_win"].to_numpy(dtype=float)

@@ -13,6 +13,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from web.context_signals import (  # noqa: E402
     MAX_FLB_SHIFT_PP,
     MAX_NEWS_SHIFT_PP,
+    _resolve_home_prob,
     apply_context_to_blend,
     favorite_longshot_adjustment,
     is_sparse_sample_league,
@@ -432,6 +433,20 @@ def test_apply_context_preserves_draw_favorite() -> None:
     assert out["favorite_side"] == "draw"
     assert float(out["draw_probability"]) > float(out["home_win_probability"])
     assert float(out["draw_probability"]) > float(out["away_win_probability"])
+
+
+def test_resolve_home_prob_rejects_draw_favorite_without_threeway() -> None:
+    """Legacy draw payloads must not invert draw% into a fake home win%."""
+    assert (
+        _resolve_home_prob({"win_probability": 44.0, "favorite_side": "draw"})
+        is None
+    )
+    assert _resolve_home_prob(
+        {"win_probability": 44.0, "favorite_side": "away"}
+    ) == pytest.approx(56.0)
+    assert _resolve_home_prob(
+        {"win_probability": 44.0, "favorite_side": "home"}
+    ) == pytest.approx(44.0)
 
 
 def test_apply_context_shifts_pre_decorrelation_and_sport_pred() -> None:

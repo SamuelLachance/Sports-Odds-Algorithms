@@ -270,6 +270,10 @@ def get_live_context(cutoff_iso: str) -> dict[str, Any] | None:
                     continue
                 country = DIVISION_COUNTRY[division]
                 rows_by_country.setdefault(country, {})[division] = rows
+        # Intermediate seasons with no CSV rows would skip Elo/carryover —
+        # fail closed (current season may still be empty pre-kickoff).
+        if season < target_season and not rows_by_country:
+            return None
         for country, divisions in rows_by_country.items():
             engine = pools.get(country)
             if engine is None:

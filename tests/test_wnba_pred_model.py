@@ -163,3 +163,25 @@ def test_wnba_availability_shift_survives_margin_rebuild(
     assert shifted["raw_home_win_probability"] == pytest.approx(
         base["raw_home_win_probability"] + 2.0, abs=0.05
     )
+
+
+def test_wnba_xgb_training_skips_ties_not_cast_to_away_win() -> None:
+    """Tied games must not enter XGB labels — dtype=int turns 0.5 into 0."""
+    dated = _sample_dated_games()
+    dated.append(("2025-05-20", ("a", "b", "A", "B", 80, 80)))
+
+    captured: dict[str, list] = {}
+
+    def _capture(x_rows, y_rows):
+        captured["y"] = list(y_rows)
+        captured["n"] = len(x_rows)
+        return None
+
+    with patch("web.wnba_pred_model._train_xgb_classifier", side_effect=_capture):
+        with patch("web.wnba_pred_model.fit_best_calibrator", return_value=None):
+            build_wnba_model(dated, "2025-06-01")
+
+    assert "y" in captured
+    assert 0.5 not in captured["y"]
+    assert all(label in (0.0, 1.0) for label in captured["y"])
+    assert captured["n"] == len(captured["y"])

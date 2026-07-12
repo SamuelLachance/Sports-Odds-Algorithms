@@ -704,8 +704,12 @@ class MlbFeatureEngine:
         expected_home = 1.0 / (1.0 + 10 ** ((away.elo - home.elo - ELO_HOME_ADV) / 400.0))
         actual_home = 1.0 if home_score > away_score else 0.0
         margin = abs(home_score - away_score)
+        # Clamp like NBA/NHL/NFL: underdog wins must not drive denominator ≤ 0
+        # (sign-flip / explode near winner_elo_diff ≈ -2200).
         winner_elo_diff = (home.elo - away.elo) if home_score > away_score else (away.elo - home.elo)
-        mov_mult = math.log(margin + 1.0) * (2.2 / (0.001 * winner_elo_diff + 2.2))
+        mov_mult = math.log(margin + 1.0) * (
+            2.2 / (0.001 * max(winner_elo_diff, 0.0) + 2.2)
+        )
         delta = ELO_K * mov_mult * (actual_home - expected_home)
         home.elo += delta
         away.elo -= delta
