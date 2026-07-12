@@ -97,6 +97,11 @@ TEAM_TO_ABBR: dict[str, dict[str, str]] = {
         "Stuttgart": "vfb",
         "Hertha": "ber",
         "Schalke 04": "s04",
+        # FD labels for 2024-25 promoted sides (ESPN: STP / KSV).
+        "St Pauli": "stp",
+        "St. Pauli": "stp",
+        "Holstein Kiel": "ksv",
+        "Hamburg": "hsv",
     },
     "laliga": {
         "Barcelona": "bar",
@@ -125,6 +130,8 @@ TEAM_TO_ABBR: dict[str, dict[str, str]] = {
         "Leganes": "leg",
         "Levante": "lev",
         "Espanyol": "esp",
+        # football-data.co.uk omits the 'y' in some season CSVs.
+        "Espanol": "esp",
         "Valladolid": "vll",
         "Almeria": "alm",
         "Vallecano": "ray",
@@ -231,10 +238,15 @@ def _team_abbr(league: str, label: str) -> str | None:
     mapping = TEAM_TO_ABBR.get(league, {})
     if label in mapping:
         return mapping[label]
-    # loose match on prefix
+    # Loose prefix match, but fail closed when multiple clubs share a prefix
+    # (e.g. "Manchester" / "Man" must not become Manchester City by iteration order).
+    hits: list[str] = []
     for key, abbr in mapping.items():
         if label.startswith(key) or key.startswith(label):
-            return abbr
+            if abbr not in hits:
+                hits.append(abbr)
+    if len(hits) == 1:
+        return hits[0]
     return None
 
 

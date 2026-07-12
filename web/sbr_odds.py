@@ -5,6 +5,7 @@ from __future__ import annotations
 import csv
 import io
 import json
+import math
 import re
 import urllib.request
 import zipfile
@@ -103,9 +104,12 @@ def _clean_number(value: str) -> float:
     if value in BLACKLIST or not value:
         return 0.0
     try:
-        return float(value)
+        parsed = float(value)
     except ValueError:
         return 0.0
+    if not math.isfinite(parsed):
+        return 0.0
+    return parsed
 
 
 def _optional_number(value: str) -> float | None:
@@ -121,14 +125,19 @@ def _optional_number(value: str) -> float | None:
     if text.upper() == "EVEN":
         return 0.0
     try:
-        return float(text)
+        parsed = float(text)
     except ValueError:
         return None
+    if not math.isfinite(parsed):
+        return None
+    return parsed
 
 
 def _coerce_american(number: float | None, *, default: int | None = None) -> int | None:
     """Map EVEN/0 → +100; reject invalid |odds| < 100; missing → default."""
     if number is None:
+        return default
+    if not math.isfinite(number):
         return default
     if number == 0:
         return 100
@@ -403,6 +412,8 @@ def _parse_optional_float(value: Any) -> float | None:
     try:
         number = float(str(value).strip())
     except (TypeError, ValueError):
+        return None
+    if not math.isfinite(number):
         return None
     return number
 

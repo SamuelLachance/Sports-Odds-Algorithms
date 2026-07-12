@@ -21,6 +21,20 @@ def test_opening_steam_nudges_toward_market_not_away() -> None:
     assert adj == pytest.approx(model_margin - min(4.0 * 0.15, 1.5), abs=1e-9)
 
 
+def test_opening_steam_rejects_bool_false_as_pickem() -> None:
+    """False must fail closed like None — not float(False)=0 inventing steam."""
+    adj_f, meta_f = opening_steam_adjustment(5.0, False)
+    adj_n, meta_n = opening_steam_adjustment(5.0, None)
+    assert adj_f == 5.0
+    assert meta_f["steam_signal"] is False
+    assert adj_n == 5.0
+    assert meta_n["steam_signal"] is False
+    # True would also coerce to 1.0 — reject bools entirely.
+    adj_t, meta_t = opening_steam_adjustment(5.0, True)
+    assert adj_t == 5.0
+    assert meta_t["steam_signal"] is False
+
+
 def test_opening_steam_nudges_toward_market_when_model_too_away() -> None:
     """Model home−4 vs market home−8 must increase home margin toward the book."""
     model_margin = -4.0  # away favored by 4 in margin space

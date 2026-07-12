@@ -54,6 +54,30 @@ def test_international_fd_games_include_scores_and_odds() -> None:
     assert sample["home_odds"] is not None
 
 
+def test_international_fd_does_not_treat_max_as_close() -> None:
+    """H_Max/D_Max/A_Max are best prices, not average closes — refuse the row."""
+    from unittest.mock import patch
+
+    csv_text = (
+        "Date,Home,Away,HG,AG,H_Avg,D_Avg,A_Avg,H_Max,D_Max,A_Max\n"
+        "15/06/2024,Brazil,Argentina,1,0,,,,2.10,3.40,3.50\n"
+        "16/06/2024,France,Germany,2,1,1.90,3.40,4.00,1.95,3.50,4.20\n"
+    )
+    load_international_fd_games.cache_clear()
+    with patch(
+        "web.international_soccer_odds._fetch_source_file",
+        return_value=csv_text,
+    ):
+        with patch(
+            "web.international_soccer_odds.SOURCE_FILES",
+            ("WorldCup2024.csv",),
+        ):
+            games = load_international_fd_games()
+    assert len(games) == 1
+    assert games[0]["home_name"] == "France"
+    assert games[0]["home_odds"] is not None
+
+
 def test_international_odds_lookup_known_sample() -> None:
     index = load_international_odds_index()
     assert index

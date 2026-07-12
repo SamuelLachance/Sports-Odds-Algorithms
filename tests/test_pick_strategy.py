@@ -149,10 +149,29 @@ def test_grade_spread_home_covers() -> None:
     assert grade_spread_bet("away", 105, 100, -5.5) == "win"
 
 
+def test_grade_spread_title_case_side_still_home() -> None:
+    """Legacy side='Home' must use the home line, not invert to away."""
+    assert grade_spread_bet("Home", 110, 100, -5.5) == "win"
+    assert grade_spread_bet("Home", 105, 100, -5.5) == "loss"
+
+
 def test_grade_moneyline() -> None:
     assert grade_moneyline_bet("home", 3, 2) == "win"
     assert grade_moneyline_bet("away", 3, 2) == "loss"
     assert grade_moneyline_bet("home", 2, 2) == "push"
+
+
+def test_grade_moneyline_title_case_side() -> None:
+    assert grade_moneyline_bet("Home", 3, 2) == "win"
+    assert grade_moneyline_bet("Away", 3, 2) == "loss"
+
+
+def test_grade_soccer_1x2_title_case_draw() -> None:
+    from web.pick_strategy import grade_soccer_1x2_bet
+
+    assert grade_soccer_1x2_bet("Draw", 1, 1) == "win"
+    assert grade_soccer_1x2_bet("Home", 2, 1) == "win"
+    assert grade_soccer_1x2_bet("Away", 0, 1) == "win"
 
 
 def test_simulate_market_helpers() -> None:

@@ -42,6 +42,13 @@ def _median(values: list[float]) -> float | None:
     return float(statistics.median(clean))
 
 
+def _valid_american_median(value: float | None) -> float | None:
+    """Drop even-book medians that land in the invalid |x| < 100 dead zone."""
+    if value is None or abs(value) < 100:
+        return None
+    return value
+
+
 def consensus_odds(rows: list[dict[str, Any]]) -> dict[str, Any]:
     """Median market across pre-game books for one event."""
     if not rows:
@@ -55,13 +62,6 @@ def consensus_odds(rows: list[dict[str, Any]]) -> dict[str, Any]:
     ml_open_h = [r.get("home_ml_open") for r in rows if r.get("home_ml_open") is not None]
     ml_open_a = [r.get("away_ml_open") for r in rows if r.get("away_ml_open") is not None]
     sp_open = [r.get("home_spread_open") for r in rows if r.get("home_spread_open") is not None]
-    # drop degenerate medians from mixed +/- books
-    home_ml = _median(home_mls)
-    away_ml = _median(away_mls)
-    if home_ml is not None and abs(home_ml) < 100:
-        home_ml = None
-    if away_ml is not None and abs(away_ml) < 100:
-        away_ml = None
 
     def _best(values: list[float]) -> float | None:
         """Best price for the bettor: highest decimal payout."""
@@ -71,15 +71,15 @@ def consensus_odds(rows: list[dict[str, Any]]) -> dict[str, Any]:
         return max(priced, key=lambda ml: ml if ml > 0 else 10000.0 / abs(ml))
 
     return {
-        "home_ml": home_ml,
-        "away_ml": away_ml,
+        "home_ml": _valid_american_median(_median(home_mls)),
+        "away_ml": _valid_american_median(_median(away_mls)),
         "home_spread": _median(spreads),
-        "spread_home_odds": _median(home_so),
-        "spread_away_odds": _median(away_so),
+        "spread_home_odds": _valid_american_median(_median(home_so)),
+        "spread_away_odds": _valid_american_median(_median(away_so)),
         "total_line": _median(totals),
         "books": len(rows),
-        "home_ml_open": _median(ml_open_h),
-        "away_ml_open": _median(ml_open_a),
+        "home_ml_open": _valid_american_median(_median(ml_open_h)),
+        "away_ml_open": _valid_american_median(_median(ml_open_a)),
         "home_spread_open": _median(sp_open),
         "best_home_ml": _best(home_mls),
         "best_away_ml": _best(away_mls),

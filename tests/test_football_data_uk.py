@@ -21,6 +21,17 @@ def test_parse_american_odds_from_decimal() -> None:
     assert _parse_american_odds("") is None
 
 
+def test_team_abbr_fails_closed_on_ambiguous_manchester_prefix() -> None:
+    """Truncated 'Manchester'/'Man' must not map to City via first prefix hit."""
+    from web.football_data_uk import _team_abbr
+
+    assert _team_abbr("epl", "Manchester United") == "man"
+    assert _team_abbr("epl", "Manchester City") == "mnc"
+    assert _team_abbr("epl", "Manchester") is None
+    assert _team_abbr("epl", "Man") is None
+    assert _team_abbr("epl", "Arsenal") == "ars"
+
+
 def test_load_football_data_uk_prefers_pinnacle_close() -> None:
     """PSCH (close) must win over PSH (open) when both are present."""
     csv_text = (
@@ -76,3 +87,32 @@ def test_load_football_data_uk_does_not_label_opens_as_closes() -> None:
     assert rows[0]["home_odds"] is None
     assert rows[0]["draw_odds"] is None
     assert rows[0]["away_odds"] is None
+
+
+def test_team_abbr_maps_fd_spelling_variants() -> None:
+    """Unmapped FD labels silently drop whole games from closing odds."""
+    from web.football_data_uk import _team_abbr
+
+    assert _team_abbr("laliga", "Espanol") == "esp"
+    assert _team_abbr("laliga", "Espanyol") == "esp"
+    assert _team_abbr("bundesliga", "St Pauli") == "stp"
+    assert _team_abbr("bundesliga", "Holstein Kiel") == "ksv"
+
+
+def test_load_football_data_uk_keeps_espanol_and_st_pauli_rows() -> None:
+    csv_text = (
+        "Div,Date,HomeTeam,AwayTeam,FTHG,FTAG,PSCH,PSCD,PSCA\n"
+        "SP1,16/08/24,Espanol,Barcelona,1,2,4.50,3.60,1.75\n"
+        "D1,24/08/24,St Pauli,Holstein Kiel,0,0,2.20,3.30,3.40\n"
+    )
+    load_football_data_uk_games.cache_clear()
+    with patch("web.football_data_uk._season_tags", return_value=["2425"]):
+        with patch("web.football_data_uk._fetch_csv", return_value=csv_text):
+            laliga = load_football_data_uk_games("laliga")
+            bundes = load_football_data_uk_games("bundesliga")
+    assert len(laliga) == 1
+    assert laliga[0]["home_key"] == "esp"
+    assert laliga[0]["away_key"] == "bar"
+    assert len(bundes) == 1
+    assert bundes[0]["home_key"] == "stp"
+    assert bundes[0]["away_key"] == "ksv"

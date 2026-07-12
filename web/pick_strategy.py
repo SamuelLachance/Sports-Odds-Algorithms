@@ -251,8 +251,9 @@ def grade_spread_bet(
     home_spread: float,
 ) -> str:
     margin = home_goals - away_goals
-    line = spread_line_for_side(home_spread, side)
-    if side == "home":
+    side_key = str(side).lower()
+    line = spread_line_for_side(home_spread, side_key)
+    if side_key == "home":
         diff = margin + line
     else:
         diff = -margin + line
@@ -267,15 +268,16 @@ def grade_moneyline_bet(side: str, home_goals: int, away_goals: int) -> str:
     if home_goals == away_goals:
         return "push"
     home_won = home_goals > away_goals
-    if side == "home":
+    if str(side).lower() == "home":
         return "win" if home_won else "loss"
     return "win" if not home_won else "loss"
 
 
 def grade_soccer_1x2_bet(side: str, home_goals: int, away_goals: int) -> str:
-    if side == "draw":
+    side_key = str(side).lower()
+    if side_key == "draw":
         return "win" if home_goals == away_goals else "loss"
-    if side == "home":
+    if side_key == "home":
         return "win" if home_goals > away_goals else "loss"
     return "win" if away_goals > home_goals else "loss"
 

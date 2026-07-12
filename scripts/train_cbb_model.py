@@ -88,11 +88,18 @@ def brier(p: np.ndarray, y: np.ndarray) -> float:
 
 def _devig_home_prob(home_ml: float, away_ml: float) -> float | None:
     def implied(american: float) -> float | None:
-        if american >= 100:
+        try:
+            american = float(american)
+        except (TypeError, ValueError):
+            return None
+        # ESPN/SBR EVEN money arrives as 0 — treat as +100 (same as live paths).
+        if american == 0:
+            american = 100.0
+        if abs(american) < 100:
+            return None
+        if american > 0:
             return 100.0 / (american + 100.0)
-        if american <= -100:
-            return -american / (-american + 100.0)
-        return None
+        return abs(american) / (abs(american) + 100.0)
 
     ph = implied(home_ml)
     pa = implied(away_ml)

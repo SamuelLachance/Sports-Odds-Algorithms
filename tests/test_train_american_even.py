@@ -26,6 +26,9 @@ def _load(name: str, relative: str):
     [
         "scripts/train_cfb_model.py",
         "scripts/train_nfl_model.py",
+        "scripts/train_nba_model.py",
+        "scripts/train_wnba_model.py",
+        "scripts/train_cbb_model.py",
     ],
 )
 def test_train_devig_treats_espn_even_zero_as_plus_100(relative: str) -> None:
@@ -37,6 +40,10 @@ def test_train_devig_treats_espn_even_zero_as_plus_100(relative: str) -> None:
     assert plus is not None
     assert even == pytest.approx(plus)
     assert mod._devig_home_prob(-50.0, -110.0) is None
+    # Away EVEN (real CBB closing-odds join shape) must also keep market_home_prob.
+    assert mod._devig_home_prob(-425.0, 0.0) == pytest.approx(
+        mod._devig_home_prob(-425.0, 100.0)
+    )
 
 
 if __name__ == "__main__":

@@ -70,6 +70,20 @@ def test_ncaa_baseball_uses_calendar_year() -> None:
     assert prior_season_year("ncaabb", date(2026, 3, 15)) == 2025
 
 
+def test_european_club_soccer_uses_season_start_year() -> None:
+    """ESPN ?season= for EPL/etc is Aug start year — not calendar year after Jan 1."""
+    midwinter = date(2026, 1, 15)
+    for league in ("epl", "laliga", "bundesliga", "seriea", "ligue1", "ucl"):
+        assert current_season_year(league, midwinter) == 2025
+        assert prior_season_year(league, midwinter) == 2024
+        assert guess_season_years(league, midwinter) == [2025, 2024]
+    # After July kickoff, start year matches calendar year.
+    assert current_season_year("epl", date(2025, 8, 15)) == 2025
+    # MLS / World Cup stay calendar-year.
+    assert current_season_year("mls", midwinter) == 2026
+    assert current_season_year("worldcup", midwinter) == 2026
+
+
 def test_min_games_threshold() -> None:
     assert MIN_GAMES_FOR_MODEL == 10
 

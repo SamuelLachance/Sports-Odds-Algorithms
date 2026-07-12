@@ -63,6 +63,22 @@ def test_valid_handicap_line_rejects_ml_sized_dumps() -> None:
     assert _valid_handicap_line(True, max_abs=7.0) is None
 
 
+def test_espn_handicap_parsers_reject_nan() -> None:
+    """NaN used to pass abs() checks and poison consensus medians."""
+    import math
+
+    from web.nba_odds_espn import _median, _to_float, _valid_handicap_line
+
+    assert _to_float("nan") is None
+    assert _to_float("inf") is None
+    assert _valid_handicap_line(float("nan"), max_abs=40.0) is None
+    assert _valid_handicap_line(float("inf"), max_abs=40.0) is None
+    med = _median([-3.5, float("nan"), -4.0])
+    assert med is not None
+    assert math.isfinite(med)
+    assert med == -3.75
+
+
 def test_nba_provider_line_rejects_ml_sized_point_spread() -> None:
     from web.nba_odds_espn import _provider_line
 

@@ -457,12 +457,26 @@ def current_season_year(league: str, cutoff: date) -> int:
     Conventions match ESPN's ``?season=`` parameter:
     - NBA/NHL/CBB/NCAAH: ending calendar year (2025-26 → 2026)
     - NFL/CFB: starting / fall year (2025 season includes Feb 2026 playoffs)
-    - WNBA / MLB / soccer: calendar year
+    - European club soccer / UCL: Aug start year (2025-26 → 2025)
+    - WNBA / MLB / MLS / international tournaments: calendar year
     """
     year = cutoff.year
     month = cutoff.month
 
-    # Spring / calendar-year baseball (MLB, NCAA baseball, winter leagues, WBC).
+    # European club soccer + UCL: ESPN ?season= is the Aug start year
+    # (matches soccer_v2.live.soccer_season_for_date). Calendar-year here
+    # empties mid-season schedule fetches after Jan 1.
+    if league in {
+        "epl",
+        "laliga",
+        "bundesliga",
+        "seriea",
+        "ligue1",
+        "ucl",
+    }:
+        return year if month >= 7 else year - 1
+
+    # Spring / calendar-year baseball + MLS + international tournaments + WNBA.
     if league in {
         "mlb",
         "ncaabb",
@@ -472,12 +486,6 @@ def current_season_year(league: str, cutoff: date) -> int:
         "lmp",
         "wbc",
         "mls",
-        "epl",
-        "laliga",
-        "bundesliga",
-        "seriea",
-        "ligue1",
-        "ucl",
         "worldcup",
         "fifa_friendlies",
         "concacaf_wcq",

@@ -14,6 +14,7 @@ Coverage notes (empirically):
 from __future__ import annotations
 
 import json
+import math
 import statistics
 import time
 import urllib.request
@@ -84,9 +85,12 @@ def _to_float(value: Any) -> float | None:
     if text in ("", "EVEN", "even", "pk", "PK"):
         return 0.0 if text.lower() in ("even", "pk") else None
     try:
-        return float(text)
+        parsed = float(text)
     except ValueError:
         return None
+    if not math.isfinite(parsed):
+        return None
+    return parsed
 
 
 def _nested_american(node: Any, *keys: str) -> float | None:
@@ -128,6 +132,8 @@ def _valid_handicap_line(value: float | None, *, max_abs: float) -> float | None
     try:
         number = float(value)
     except (TypeError, ValueError):
+        return None
+    if not math.isfinite(number):
         return None
     if abs(number) >= 100.0:
         return None
@@ -214,7 +220,7 @@ def _provider_line(
 
 
 def _median(values: list[float]) -> float | None:
-    clean = [v for v in values if v is not None]
+    clean = [v for v in values if v is not None and math.isfinite(v)]
     return statistics.median(clean) if clean else None
 
 

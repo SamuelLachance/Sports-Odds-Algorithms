@@ -27,6 +27,18 @@ def test_sbr_american_ml_keeps_even_zero_as_plus_100() -> None:
     assert _american_ml_cell("NL") is None
 
 
+def test_sbr_parsers_reject_non_finite() -> None:
+    """NaN/inf must not crash int() coerce or poison spread cells."""
+    assert _american_ml_cell("nan") is None
+    assert _american_ml_cell("inf") is None
+    assert _spread_juice_cell("nan") is None
+    assert _spread_line_cell("nan") is None
+    assert _spread_line_cell("inf") is None
+    assert _parse_optional_float("nan") is None
+    assert _parse_optional_float("inf") is None
+    assert _parse_optional_int("nan") is None
+
+
 def test_sbr_american_parsers_reject_invalid_magnitude() -> None:
     """|odds| < 100 (except EVEN/0) must not enter closing tables."""
     assert _american_ml_cell("50") is None

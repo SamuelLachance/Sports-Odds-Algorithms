@@ -204,10 +204,10 @@ def load_international_fd_games() -> list[dict[str, Any]]:
                 away_goals = int(record.get("AG") or record.get("FTAG") or "")
             except ValueError:
                 continue
-            # Parse-then-fallback: truthy placeholders must not block later columns.
-            home_odds = _first_parseable_odds(record, "H_Avg", "AvgH", "H_Max")
-            draw_odds = _first_parseable_odds(record, "D_Avg", "AvgD", "D_Max")
-            away_odds = _first_parseable_odds(record, "A_Avg", "AvgA", "A_Max")
+            # Average close only — never treat book Max (best price) as a close.
+            home_odds = _first_parseable_odds(record, "H_Avg", "AvgH")
+            draw_odds = _first_parseable_odds(record, "D_Avg", "AvgD")
+            away_odds = _first_parseable_odds(record, "A_Avg", "AvgA")
             if home_odds is None or draw_odds is None or away_odds is None:
                 continue
             signature = (game_date, home_key, away_key, home_goals, away_goals)

@@ -50,16 +50,31 @@ def opening_steam_adjustment(
         "market_spread": market_spread,
         "opening_spread": opening_spread,
     }
-    if market_spread is None:
+    # bool is a subclass of int: False→0.0 would invent pick'em steam.
+    if market_spread is None or isinstance(market_spread, bool):
+        return model_margin, meta
+    try:
+        market_spread_f = float(market_spread)
+    except (TypeError, ValueError):
         return model_margin, meta
 
     # Convert model margin to spread convention for comparison.
     model_spread = -model_margin
-    diff = model_spread - float(market_spread)
+    diff = model_spread - market_spread_f
     meta["spread_disagreement"] = round(abs(diff), 2)
+    meta["market_spread"] = market_spread_f
 
-    ref = opening_spread if opening_spread is not None else market_spread
-    steam_move = float(market_spread) - float(ref)
+    if opening_spread is None or isinstance(opening_spread, bool):
+        ref = market_spread_f
+        meta["opening_spread"] = None
+    else:
+        try:
+            ref = float(opening_spread)
+            meta["opening_spread"] = ref
+        except (TypeError, ValueError):
+            ref = market_spread_f
+            meta["opening_spread"] = None
+    steam_move = market_spread_f - ref
     meta["steam_move"] = round(steam_move, 2)
 
     if abs(diff) >= STEAM_MARGIN_THRESHOLD:
