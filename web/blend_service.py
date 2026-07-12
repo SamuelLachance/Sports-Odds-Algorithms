@@ -847,6 +847,10 @@ def _blend_hockey_pred_or_algo_v1(
     }
     if sport_payload.get("market_decorrelated"):
         result["market_decorrelated"] = True
+    if sport_payload.get("pre_decorrelation_home_win_probability") is not None:
+        result["pre_decorrelation_home_win_probability"] = sport_payload[
+            "pre_decorrelation_home_win_probability"
+        ]
     if sport_payload.get("predicted_margin") is not None:
         result["home_spread_margin"] = round(-float(sport_payload["predicted_margin"]), 2)
     return result
@@ -1343,6 +1347,12 @@ def _blend_mlb_runcast_only(
     }
     if sport_payload.get("model_version"):
         result["model_version"] = sport_payload["model_version"]
+    if sport_payload.get("market_decorrelated"):
+        result["market_decorrelated"] = True
+    if sport_payload.get("pre_decorrelation_home_win_probability") is not None:
+        result["pre_decorrelation_home_win_probability"] = sport_payload[
+            "pre_decorrelation_home_win_probability"
+        ]
     if sport_payload.get("predicted_margin") is not None:
         result["home_spread_margin"] = round(-float(sport_payload["predicted_margin"]), 2)
     return result

@@ -677,3 +677,82 @@ def test_cbb_scoreboard_always_live_fetches(tmp_path, monkeypatch) -> None:
     assert len(first) == 1
     assert len(second) == 2
     assert fetch.call_count == 2
+
+
+def test_cbb_odds_collector_stamps_toronto_tip_date() -> None:
+    """Scoreboard query day must not override Toronto tip for closing-odds keys."""
+    from datetime import date
+    from unittest.mock import patch
+
+    from scripts import fetch_cbb_odds as mod
+
+    payload = {
+        "events": [
+            {
+                "id": "401",
+                "date": "2025-07-02T02:00:00Z",  # Toronto still 2025-07-01
+                "competitions": [
+                    {
+                        "id": "401c",
+                        "date": "2025-07-02T02:00:00Z",
+                        "status": {"type": {"completed": True}},
+                        "competitors": [
+                            {
+                                "homeAway": "home",
+                                "score": "70",
+                                "team": {"abbreviation": "DUKE"},
+                            },
+                            {
+                                "homeAway": "away",
+                                "score": "65",
+                                "team": {"abbreviation": "UNC"},
+                            },
+                        ],
+                    }
+                ],
+            }
+        ]
+    }
+    with patch.object(mod, "_throttled_get", return_value=payload):
+        rows = list(mod._iter_completed_events(date(2025, 7, 2)))
+    assert len(rows) == 1
+    assert rows[0]["date"] == "2025-07-01"
+
+
+def test_cfb_odds_collector_stamps_toronto_tip_date() -> None:
+    from datetime import date
+    from unittest.mock import patch
+
+    from scripts import fetch_cfb_odds as mod
+
+    payload = {
+        "events": [
+            {
+                "id": "401",
+                "date": "2025-09-07T02:00:00Z",
+                "competitions": [
+                    {
+                        "id": "401c",
+                        "date": "2025-09-07T02:00:00Z",
+                        "status": {"type": {"completed": True}},
+                        "competitors": [
+                            {
+                                "homeAway": "home",
+                                "score": "28",
+                                "team": {"abbreviation": "ALA"},
+                            },
+                            {
+                                "homeAway": "away",
+                                "score": "21",
+                                "team": {"abbreviation": "UGA"},
+                            },
+                        ],
+                    }
+                ],
+            }
+        ]
+    }
+    with patch.object(mod, "_throttled_get", return_value=payload):
+        rows = list(mod._iter_completed_events(date(2025, 9, 7)))
+    assert len(rows) == 1
+    assert rows[0]["date"] == "2025-09-06"

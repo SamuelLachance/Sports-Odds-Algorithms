@@ -834,9 +834,10 @@ class NhlFeatureEngine:
 
         home_fo = game.get("home_faceoff_pct")
         away_fo = game.get("away_faceoff_pct")
-        if home_fo:
+        # Do not use truthiness — 0.0 is a valid (rare) observation; missing is None.
+        if home_fo is not None:
             home.faceoff = _ewma(home.faceoff, float(home_fo), ALPHA_SPECIAL)
-        if away_fo:
+        if away_fo is not None:
             away.faceoff = _ewma(away.faceoff, float(away_fo), ALPHA_SPECIAL)
 
         home.win_ewma = _ewma(home.win_ewma, float(home_win), ALPHA_WIN)

@@ -255,6 +255,35 @@ def test_blend_mlb_v2_sets_mlb_v2_blend_mode() -> None:
         blend_module.run_mlb_pred_model = mlb_original
 
 
+def test_blend_mlb_hoists_hubacek_decorrelation_fields() -> None:
+    """MLB single-layer blend must expose decorrelation flags like CBB/NHL."""
+    import web.blend_service as blend_module
+
+    mlb_original = blend_module.run_mlb_pred_model
+    try:
+        blend_module.run_mlb_pred_model = lambda *_a, **_k: {
+            "algorithm": "MLBGradientBoost",
+            "model_version": "v2",
+            "home_win_probability": 60.0,
+            "pre_decorrelation_home_win_probability": 55.0,
+            "market_decorrelated": True,
+            "predicted_margin": 0.8,
+        }
+        result = blend_predictions(
+            legacy_total_score=-56.0,
+            legacy_win_probability=56.0,
+            league="mlb",
+            cutoff_date="06-15-2024",
+            home_abbr="nyy",
+            away_abbr="bos",
+        )
+        assert result["market_decorrelated"] is True
+        assert result["pre_decorrelation_home_win_probability"] == 55.0
+        assert result["blended_home_win_probability"] == 60.0
+    finally:
+        blend_module.run_mlb_pred_model = mlb_original
+
+
 def test_model_agreement_mlb_single_model() -> None:
     agreement = compute_model_agreement({"legacy": {"favorite_side": "home"}}, "mlb")
     assert agreement["required"] == 0
@@ -676,6 +705,7 @@ def test_blend_nhl_v2_single_layer_when_available() -> None:
     assert result["blend_layers"] == 1
     assert result["blended_home_win_probability"] == 63.5
     assert result["market_decorrelated"] is True
+    assert result["pre_decorrelation_home_win_probability"] == 60.0
     assert result["hockey_pred"]["home_goalie"] == "Starter A"
     assert result["home_spread_margin"] == -0.8
     assert result.get("legacy") is None

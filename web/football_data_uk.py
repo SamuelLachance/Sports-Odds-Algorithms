@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 import io
+import math
 import urllib.request
 from datetime import datetime, timezone
 from functools import lru_cache
@@ -214,6 +215,9 @@ def _parse_american_odds(value: str | None) -> int | None:
     try:
         decimal = float(value)
     except ValueError:
+        return None
+    # Corrupt FD cells ("nan"/"inf") must fail closed — never crash the loader.
+    if not math.isfinite(decimal):
         return None
     if decimal <= 1.0:
         return None

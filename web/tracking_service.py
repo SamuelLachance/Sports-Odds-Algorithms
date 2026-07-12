@@ -261,13 +261,13 @@ def _grading_spread_line(bet: dict[str, Any]) -> float | None:
 def _resolve_grading_odds(bet: dict[str, Any]) -> int | None:
     bet_type = bet.get("bet_type") or "moneyline"
     if bet_type == "spread":
-        # Same priority as _recorded_and_closing_odds (CLV): posted spread juice
-        # first. Do not use `or` — ESPN EVEN is 0 (falsy but valid).
-        for key in ("spread_odds", "consensus_odds", "market_odds"):
+        # Posted spread juice only — never fall back to ``market_odds`` (usually
+        # the moneyline). Do not use `or` — ESPN EVEN is 0 (falsy but valid).
+        for key in ("spread_odds", "consensus_odds"):
             value = bet.get(key)
             if value is not None:
                 return normalize_american_odds(value)
-        # Missing posted juice — leave ungraded (do not invent -110).
+        # Missing posted juice — leave ungraded (do not invent -110 or use ML).
         return None
     return normalize_american_odds(bet.get("market_odds"))
 

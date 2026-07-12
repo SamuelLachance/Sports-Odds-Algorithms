@@ -6,6 +6,8 @@ import gzip
 import sys
 from pathlib import Path
 
+import pytest
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -392,3 +394,27 @@ def test_gap_season_replay_passes_goalie_xg(monkeypatch) -> None:
     gap_calls = [kw for kw in replay_kwargs if kw.get("goalie_xg")]
     assert gap_calls, "gap replay must pass goalie_xg="
     assert (2024, 99) in gap_calls[0]["goalie_xg"]
+
+
+def test_faceoff_ewma_updates_on_zero_pct() -> None:
+    """0.0 faceoff % must not be skipped by a truthiness check."""
+    from web.nhl_v2.feature_engine import ALPHA_SPECIAL, LEAGUE_FO_PCT, NhlFeatureEngine
+
+    engine = NhlFeatureEngine()
+    prior = engine.team("bos").faceoff
+    assert prior == LEAGUE_FO_PCT
+    engine.update_after_game(
+        {
+            "date": "2024-10-15",
+            "home": "bos",
+            "away": "mtl",
+            "home_goals": 3,
+            "away_goals": 2,
+            "home_win": 1,
+            "home_faceoff_pct": 0.0,
+            "away_faceoff_pct": 0.55,
+        }
+    )
+    expected = (1.0 - ALPHA_SPECIAL) * LEAGUE_FO_PCT + ALPHA_SPECIAL * 0.0
+    assert engine.team("bos").faceoff == pytest.approx(expected)
+    assert engine.team("mtl").faceoff != LEAGUE_FO_PCT

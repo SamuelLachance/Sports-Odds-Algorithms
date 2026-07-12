@@ -41,6 +41,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from web.cbb_v2.data import canon_abbr  # noqa: E402
 from web.nba_odds_espn import OUTPUT_FIELDS, _consensus, _get_json  # noqa: E402
+from web.season_games import _event_date_iso  # noqa: E402
 
 # CBB blowouts can exceed NBA's 40-pt cap (archive max ~54.5).
 MAX_CBB_SPREAD = 60.0
@@ -133,8 +134,11 @@ def _iter_completed_events(day: date) -> Iterator[dict[str, Any]]:
             away_score = int(away.get("score"))
         except (TypeError, ValueError):
             continue
+        tip_date = _event_date_iso(
+            str(event.get("date") or competition.get("date") or "")
+        ) or day.isoformat()
         yield {
-            "date": day.isoformat(),
+            "date": tip_date,
             "event": str(event.get("id") or ""),
             "comp": str(competition.get("id") or event.get("id") or ""),
             "home_key": home_abbr,

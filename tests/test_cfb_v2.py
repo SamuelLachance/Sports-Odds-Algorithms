@@ -298,3 +298,14 @@ def test_espn_fetch_accepts_iso_stop_before(monkeypatch, tmp_path) -> None:
     assert cutoffs == ["2025-09-15"]
     assert len(rows) == 1
     assert rows[0]["home"] == "ala"
+
+
+def test_h2h_win_rate_survives_home_away_role_reversal() -> None:
+    """W/L H2H must update both sides — reverse fixtures must not default to 0.5."""
+    engine = CfbFeatureEngine()
+    engine.update_after_game(_game("2024-09-01", "ala", "uga", 24, 20))
+    same = engine.features_for_game(_game("2024-11-01", "ala", "uga", 0, 0))
+    reverse = engine.features_for_game(_game("2024-11-01", "uga", "ala", 0, 0))
+    assert same["h2h_home_win_rate"] == 1.0
+    assert reverse["h2h_home_win_rate"] == 0.0
+    assert reverse["h2h_margin_ewma"] < 0.0

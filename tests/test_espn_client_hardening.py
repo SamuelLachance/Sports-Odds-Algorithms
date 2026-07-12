@@ -143,6 +143,18 @@ def test_parse_spread_line_accepts_lowercase_pk() -> None:
     assert espn_client._parse_spread_line("even") == 0.0
 
 
+def test_parse_spread_line_rejects_nan_and_inf() -> None:
+    """Non-finite spreads must not slip onto the live slate via abs(nan) checks."""
+    assert espn_client._parse_spread_line(float("nan")) is None
+    assert espn_client._parse_spread_line("nan") is None
+    assert espn_client._parse_spread_line(float("inf")) is None
+    assert espn_client._parse_spread_line("-inf") is None
+    clamped = espn_client._clamp_live_spread(
+        "nba", espn_client._parse_spread_line(float("nan")), -110, -110
+    )
+    assert clamped == (None, -110, -110)
+
+
 def test_live_mlb_nhl_reject_moneyline_sized_spreads() -> None:
     """Live scoreboard must drop ML dumps into spread like historical collectors."""
     event = {

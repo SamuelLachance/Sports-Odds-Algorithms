@@ -725,6 +725,26 @@ def test_grade_spread_without_juice_leaves_ungraded() -> None:
     assert "units" not in graded
 
 
+def test_grade_spread_does_not_settle_at_moneyline_market_odds() -> None:
+    """Spread P&L must not fall back to ``market_odds`` (usually the ML)."""
+    from web.tracking_service import _resolve_grading_odds
+
+    bet = {
+        "side": "home",
+        "bet_type": "spread",
+        "consensus_spread": -5.5,
+        "spread_odds": None,
+        "consensus_odds": None,
+        "market_odds": -150,
+        "stake_units": 1.0,
+        "status": "pending",
+    }
+    assert _resolve_grading_odds(bet) is None
+    graded = grade_bet(bet, 100, 110)
+    assert graded.get("status") == "pending"
+    assert "units" not in graded
+
+
 def test_recorded_spread_odds_preserves_even_zero() -> None:
     """ESPN EVEN (0) must not fall through to consensus via falsy `or`."""
     from web.tracking_service import _recorded_and_closing_odds

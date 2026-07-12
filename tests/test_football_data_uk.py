@@ -21,6 +21,32 @@ def test_parse_american_odds_from_decimal() -> None:
     assert _parse_american_odds("") is None
 
 
+def test_parse_american_odds_rejects_nan_and_inf() -> None:
+    """Corrupt FD cells must fail closed — never raise into the season loader."""
+    assert _parse_american_odds("nan") is None
+    assert _parse_american_odds("NaN") is None
+    assert _parse_american_odds("inf") is None
+    assert _parse_american_odds("-inf") is None
+
+
+def test_load_football_data_uk_skips_nan_close_for_avg_fallback() -> None:
+    """Truthy NaN in PSCH must not crash or block AvgCH fallback."""
+    csv_text = (
+        "Div,Date,HomeTeam,AwayTeam,FTHG,FTAG,"
+        "PSCH,PSCD,PSCA,AvgCH,AvgCD,AvgCA\n"
+        "E0,16/08/25,Arsenal,Everton,2,0,"
+        "nan,inf,-,1.95,3.60,4.00\n"
+    )
+    load_football_data_uk_games.cache_clear()
+    with patch("web.football_data_uk._season_tags", return_value=["2526"]):
+        with patch("web.football_data_uk._fetch_csv", return_value=csv_text):
+            rows = load_football_data_uk_games("epl")
+    assert len(rows) == 1
+    assert rows[0]["home_odds"] == _parse_american_odds("1.95")
+    assert rows[0]["draw_odds"] == _parse_american_odds("3.60")
+    assert rows[0]["away_odds"] == _parse_american_odds("4.00")
+
+
 def test_team_abbr_fails_closed_on_ambiguous_manchester_prefix() -> None:
     """Truncated 'Manchester'/'Man' must not map to City via first prefix hit."""
     from web.football_data_uk import _team_abbr

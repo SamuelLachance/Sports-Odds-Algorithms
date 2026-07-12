@@ -195,6 +195,11 @@ def _parse_american_odds(value: str | int | float | None) -> int | None:
 def _parse_spread_line(value: str | int | float | None) -> float | None:
     if value is None or value == "":
         return None
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        parsed = float(value)
+        return parsed if math.isfinite(parsed) else None
     text = str(value).strip()
     upper = text.upper()
     if upper in {"PK", "EVEN"}:
@@ -202,9 +207,10 @@ def _parse_spread_line(value: str | int | float | None) -> float | None:
     if upper in {"OFF", "N/A", "NA"}:
         return None
     try:
-        return float(text)
+        parsed = float(text)
     except ValueError:
         return None
+    return parsed if math.isfinite(parsed) else None
 
 
 def _extract_spread(odds_block: dict[str, Any] | None) -> tuple[float | None, int | None, int | None]:

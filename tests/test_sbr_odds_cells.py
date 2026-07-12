@@ -546,6 +546,42 @@ def test_dedupe_prefers_online_over_archive_identical_key() -> None:
     assert out[0]["home_spread_odds"] == -110
 
 
+def test_dedupe_empty_online_does_not_wipe_archive_closes() -> None:
+    """Empty HTML stubs must not replace filled archive closes for the same key."""
+    from web.sbr_odds import _dedupe_odds_rows
+
+    rows = [
+        {
+            "date": "2024-01-01",
+            "home_key": "bos",
+            "away_key": "nyk",
+            "home_close_ml": -150,
+            "away_close_ml": 130,
+            "home_close_spread": -3.5,
+            "away_close_spread": 3.5,
+            "home_spread_odds": -110,
+            "away_spread_odds": -110,
+            "source": "sbr-archive",
+        },
+        {
+            "date": "2024-01-01",
+            "home_key": "bos",
+            "away_key": "nyk",
+            "home_close_ml": None,
+            "away_close_ml": None,
+            "home_close_spread": None,
+            "away_close_spread": None,
+            "home_spread_odds": None,
+            "away_spread_odds": None,
+            "source": "sbr-html",
+        },
+    ]
+    out = _dedupe_odds_rows(rows)
+    assert len(out) == 1
+    assert out[0]["source"] == "sbr-archive"
+    assert out[0]["home_close_ml"] == -150
+
+
 def test_archive_rows_repair_same_sign_spreads() -> None:
     """Archive JSON path must mirror same-sign dumps like HTML/xlsx scrapers."""
     from unittest.mock import patch

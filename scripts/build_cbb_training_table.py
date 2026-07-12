@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import math
 import sys
 from pathlib import Path
 from typing import Any
@@ -61,21 +62,31 @@ def _odds_for_game(
     if not row:
         return {}
 
-    def _f(key: str) -> float | None:
+    def _f(key: str, *, american: bool = False) -> float | None:
         raw = row.get(key)
         if raw is None or raw == "":
             return None
+        if american and isinstance(raw, str) and raw.strip().upper() in {"EVEN", "PK"}:
+            return 100.0
         try:
-            return float(raw)
+            val = float(raw)
         except (TypeError, ValueError):
             return None
+        if not math.isfinite(val):
+            return None
+        if american:
+            if val == 0:
+                return 100.0
+            if abs(val) < 100:
+                return None
+        return val
 
     return {
-        "home_ml": _f("home_close_ml"),
-        "away_ml": _f("away_close_ml"),
+        "home_ml": _f("home_close_ml", american=True),
+        "away_ml": _f("away_close_ml", american=True),
         "home_spread": _f("home_close_spread"),
-        "spread_home_odds": _f("home_spread_odds"),
-        "spread_away_odds": _f("away_spread_odds"),
+        "spread_home_odds": _f("home_spread_odds", american=True),
+        "spread_away_odds": _f("away_spread_odds", american=True),
         "total_line": _f("close_total"),
         "books": int(float(row["n_books"])) if row.get("n_books") not in (None, "") else 0,
     }

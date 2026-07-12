@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import math
 import statistics
 import sys
 from pathlib import Path
@@ -36,15 +37,43 @@ META_COLUMNS = (
 
 
 def _median(values: list[float]) -> float | None:
-    clean = [v for v in values if v is not None]
+    clean = [v for v in values if v is not None and math.isfinite(v)]
     if not clean:
         return None
     return float(statistics.median(clean))
 
 
+def _clean_american(values: list[Any]) -> list[float]:
+    """Finite American prices only; ESPN EVEN 0 / text → +100."""
+    out: list[float] = []
+    for raw in values:
+        if raw is None:
+            continue
+        if isinstance(raw, bool):
+            continue
+        if isinstance(raw, str) and raw.strip().upper() in {"EVEN", "PK"}:
+            out.append(100.0)
+            continue
+        try:
+            val = float(raw)
+        except (TypeError, ValueError):
+            continue
+        if not math.isfinite(val):
+            continue
+        if val == 0:
+            out.append(100.0)
+        elif abs(val) >= 100:
+            out.append(val)
+    return out
+
+
 def _valid_american_median(value: float | None) -> float | None:
     """Drop even-book medians that land in the invalid |x| < 100 dead zone."""
-    if value is None or abs(value) < 100:
+    if value is None or not math.isfinite(value):
+        return None
+    if value == 0:
+        return 100.0
+    if abs(value) < 100:
         return None
     return value
 
@@ -53,19 +82,31 @@ def consensus_odds(rows: list[dict[str, Any]]) -> dict[str, Any]:
     """Median market across pre-game books for one event."""
     if not rows:
         return {}
-    home_mls = [r.get("home_ml") for r in rows if r.get("home_ml") is not None]
-    away_mls = [r.get("away_ml") for r in rows if r.get("away_ml") is not None]
-    spreads = [r.get("home_spread") for r in rows if r.get("home_spread") is not None]
-    home_so = [r.get("home_spread_odds") for r in rows if r.get("home_spread_odds") is not None]
-    away_so = [r.get("away_spread_odds") for r in rows if r.get("away_spread_odds") is not None]
-    totals = [r.get("total") for r in rows if r.get("total") is not None]
-    ml_open_h = [r.get("home_ml_open") for r in rows if r.get("home_ml_open") is not None]
-    ml_open_a = [r.get("away_ml_open") for r in rows if r.get("away_ml_open") is not None]
-    sp_open = [r.get("home_spread_open") for r in rows if r.get("home_spread_open") is not None]
+    home_mls = _clean_american([r.get("home_ml") for r in rows])
+    away_mls = _clean_american([r.get("away_ml") for r in rows])
+    spreads = [
+        float(v)
+        for v in (r.get("home_spread") for r in rows)
+        if isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v)
+    ]
+    home_so = _clean_american([r.get("home_spread_odds") for r in rows])
+    away_so = _clean_american([r.get("away_spread_odds") for r in rows])
+    totals = [
+        float(v)
+        for v in (r.get("total") for r in rows)
+        if isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v)
+    ]
+    ml_open_h = _clean_american([r.get("home_ml_open") for r in rows])
+    ml_open_a = _clean_american([r.get("away_ml_open") for r in rows])
+    sp_open = [
+        float(v)
+        for v in (r.get("home_spread_open") for r in rows)
+        if isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v)
+    ]
 
     def _best(values: list[float]) -> float | None:
         """Best price for the bettor: highest decimal payout."""
-        priced = [v for v in values if v is not None and abs(v) >= 100]
+        priced = [v for v in values if math.isfinite(v) and abs(v) >= 100]
         if not priced:
             return None
         return max(priced, key=lambda ml: ml if ml > 0 else 10000.0 / abs(ml))

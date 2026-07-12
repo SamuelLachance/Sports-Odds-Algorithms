@@ -717,8 +717,11 @@ def _collect_soccer_backtest_samples(
                     soccer.draw_probability,
                     soccer.away_win_probability,
                 )
-        total = -power_home if power_home > 50 else power_home
-        legacy_tw = soccer_threeway_probs(total, league)
+        # Same Algo total_score convention as power_threeway_probs — do not use
+        # ``power_home`` raw when ≤50 (that understates away favorites / overstates
+        # underdog home threeway mass in Hubáček soccer backtests).
+        legacy_total, _ = home_win_prob_to_total_score(power_home)
+        legacy_tw = soccer_threeway_probs(legacy_total, league)
         stacked = stack_soccer_blend_layers(
             legacy=legacy_tw,
             power=power_tw,

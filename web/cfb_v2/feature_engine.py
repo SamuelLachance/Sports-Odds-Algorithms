@@ -596,12 +596,16 @@ class CfbFeatureEngine:
         home.sos_elo_sum += pre_away_elo
         away.sos_elo_sum += pre_home_elo
 
-        # H2H from home perspective (ties do not count as wins/losses)
-        record = home.h2h.setdefault(away.key, [0, 0])
-        if home_win and not tied:
-            record[0] += 1
-        elif not tied:
-            record[1] += 1
+        # Bilateral W/L (ties do not count): reverse fixtures must not fall back to 0.5.
+        if not tied:
+            home_rec = home.h2h.setdefault(away.key, [0, 0])
+            away_rec = away.h2h.setdefault(home.key, [0, 0])
+            if home_win:
+                home_rec[0] += 1
+                away_rec[1] += 1
+            else:
+                home_rec[1] += 1
+                away_rec[0] += 1
         prev = home.h2h_margin.get(away.key, 0.0)
         home.h2h_margin[away.key] = ALPHA_H2H * signed_margin + (1.0 - ALPHA_H2H) * prev
         away_prev = away.h2h_margin.get(home.key, 0.0)

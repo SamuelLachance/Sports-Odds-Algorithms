@@ -370,3 +370,14 @@ def test_sos_elo_uses_pre_update_opponent_elo() -> None:
     assert engine.teams["kc"].elo != engine.teams["bal"].elo
     assert engine.teams["kc"].sos_elo_sum == LEAGUE_ELO
     assert engine.teams["bal"].sos_elo_sum == LEAGUE_ELO
+
+
+def test_h2h_win_rate_survives_home_away_role_reversal() -> None:
+    """W/L H2H must update both sides — reverse fixtures must not default to 0.5."""
+    engine = NflFeatureEngine()
+    engine.update_after_game(_game("2024-09-08", "kc", "sf", 27, 20))
+    same = engine.features_for_game(_game("2024-10-06", "kc", "sf", 0, 0, week=5))
+    reverse = engine.features_for_game(_game("2024-10-06", "sf", "kc", 0, 0, week=5))
+    assert same["h2h_home_win_rate"] == 1.0
+    assert reverse["h2h_home_win_rate"] == 0.0
+    assert reverse["h2h_margin_ewma"] < 0.0

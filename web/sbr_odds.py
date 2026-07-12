@@ -481,12 +481,18 @@ def _odds_row_signature(row: dict[str, Any]) -> tuple[Any, ...]:
     )
 
 
+def _row_has_close_fields(row: dict[str, Any]) -> bool:
+    """True when any close ML/spread/juice field is present (not an empty stub)."""
+    return any(v is not None for v in _odds_row_signature(row))
+
+
 def _dedupe_odds_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Collapse identical rows; keep conflicting same-key lines (MLB DH fail-closed).
 
-    Prefer online over archive when both exist for a key. Distinct odds under the
-    same (date, home, away) must both survive so ``closing_odds_db`` can mark the
-    key ambiguous instead of silently picking one DH leg.
+    Prefer online over archive when online has real close fields. Empty online
+    stubs must not wipe filled archive rows for the same key. Distinct odds under
+    the same (date, home, away) must both survive so ``closing_odds_db`` can mark
+    the key ambiguous instead of silently picking one DH leg.
     """
     by_key: dict[tuple[str, str, str], list[dict[str, Any]]] = {}
     for row in rows:
@@ -496,7 +502,13 @@ def _dedupe_odds_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     output: list[dict[str, Any]] = []
     for group in by_key.values():
         online = [r for r in group if r.get("source") != "sbr-archive"]
-        pool = online if online else group
+        online_rich = [r for r in online if _row_has_close_fields(r)]
+        if online_rich:
+            pool = online_rich
+        else:
+            archive = [r for r in group if r.get("source") == "sbr-archive"]
+            archive_rich = [r for r in archive if _row_has_close_fields(r)]
+            pool = archive_rich if archive_rich else (online if online else group)
         seen: set[tuple[Any, ...]] = set()
         for row in pool:
             sig = _odds_row_signature(row)

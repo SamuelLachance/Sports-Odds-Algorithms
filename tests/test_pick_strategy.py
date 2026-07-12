@@ -536,3 +536,23 @@ def test_settle_spread_juice_is_side_aware() -> None:
         )
         is None
     )
+
+
+def test_soccer_hubacek_legacy_proxy_uses_total_score_convention() -> None:
+    """Underdog home power % must not inflate legacy threeway via raw power_home."""
+    from web.bet_advisor import soccer_threeway_probs
+    from web.blend_service import home_win_prob_to_total_score
+    from web.soccer_blend import power_threeway_probs
+
+    power_home = 40.0
+    power_tw = power_threeway_probs(power_home, "epl")
+    legacy_total, _ = home_win_prob_to_total_score(power_home)
+    legacy_tw = soccer_threeway_probs(legacy_total, "epl")
+    # Old Hubáček backtest shortcut: ``power_home`` when ≤50.
+    buggy_tw = soccer_threeway_probs(power_home, "epl")
+
+    assert legacy_total == 60.0
+    assert legacy_tw[0] == pytest.approx(power_tw[0])
+    assert buggy_tw[0] > legacy_tw[0]
+    assert legacy_tw[0] < 35.0
+    assert buggy_tw[0] > 35.0

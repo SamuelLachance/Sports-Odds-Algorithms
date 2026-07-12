@@ -29,7 +29,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from web.nba_odds_espn import OUTPUT_FIELDS, _consensus, _get_json  # noqa: E402
-from web.season_games import _normalize_abbr  # noqa: E402
+from web.season_games import _event_date_iso, _normalize_abbr  # noqa: E402
 
 # CFB blowouts routinely exceed NBA's 40-pt handicap cap (archive max ~115).
 MAX_CFB_SPREAD = 120.0
@@ -101,8 +101,11 @@ def _iter_completed_events(day: date) -> Iterator[dict[str, Any]]:
             away_score = int(away.get("score"))
         except (TypeError, ValueError):
             continue
+        tip_date = _event_date_iso(
+            str(event.get("date") or competition.get("date") or "")
+        ) or day.isoformat()
         yield {
-            "date": day.isoformat(),
+            "date": tip_date,
             "event": str(event.get("id") or ""),
             "comp": str(competition.get("id") or ""),
             "home_key": home_abbr,

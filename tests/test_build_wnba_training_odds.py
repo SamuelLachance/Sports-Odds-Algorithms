@@ -52,3 +52,45 @@ def test_consensus_rejects_even_book_median_dead_zone_for_juice_and_opens() -> N
     # Best price still picks a valid book, not the dead-zone median.
     assert c["best_spread_home_odds"] in (100, -110)
     assert abs(c["best_spread_home_odds"]) >= 100
+
+
+def test_consensus_maps_espn_even_zero_and_rejects_nan() -> None:
+    """Raw ESPN EVEN 0 must become +100; NaN books must not poison the median."""
+    even = consensus_odds(
+        [
+            {
+                "home_ml": 0,
+                "away_ml": -110,
+                "home_spread": -3.5,
+                "home_spread_odds": -110,
+                "away_spread_odds": -110,
+                "total": 160,
+            }
+        ]
+    )
+    assert even["home_ml"] == 100.0
+    assert even["away_ml"] == -110.0
+
+    poisoned = consensus_odds(
+        [
+            {
+                "home_ml": float("nan"),
+                "away_ml": -110,
+                "home_spread": float("nan"),
+                "home_spread_odds": -110,
+                "away_spread_odds": -110,
+                "total": 160,
+            },
+            {
+                "home_ml": -105,
+                "away_ml": -115,
+                "home_spread": -3.5,
+                "home_spread_odds": -110,
+                "away_spread_odds": -110,
+                "total": 161,
+            },
+        ]
+    )
+    assert poisoned["home_ml"] == -105.0
+    assert poisoned["home_spread"] == -3.5
+    assert poisoned["away_ml"] == -112.5
