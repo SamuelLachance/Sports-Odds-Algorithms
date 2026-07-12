@@ -545,11 +545,11 @@
       "stake_units": 3.0,
       "recorded_at": "2026-07-12T06:36:02.954809+00:00",
       "recorded_pre_start": true,
-      "closing_market_odds": -110,
+      "closing_market_odds": -112,
       "closing_source": "espn",
-      "closing_spread_odds": -110,
-      "closing_consensus_spread": -4.5,
-      "closing_snapshot_at": "2026-07-12T10:39:12.172806+00:00"
+      "closing_spread_odds": -112,
+      "closing_consensus_spread": -5.5,
+      "closing_snapshot_at": "2026-07-12T12:39:49.743407+00:00"
     },
     {
       "id": "2026-07-12:401816137:home",
@@ -590,7 +590,7 @@
       "closing_spread_odds": null,
       "closing_consensus_spread": null,
       "closing_source": "consensus",
-      "closing_snapshot_at": "2026-07-12T12:26:19.710204+00:00"
+      "closing_snapshot_at": "2026-07-12T12:39:49.743407+00:00"
     },
     {
       "id": "2026-07-12:401816139:home",
