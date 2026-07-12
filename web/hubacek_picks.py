@@ -112,27 +112,29 @@ def clear_strategy_cache() -> None:
 
 
 def hubacek_min_market_gap_pp(league: str | None = None) -> float:
-    override = league_pick_overrides(league).get("min_market_gap_pp")
-    return float(override) if override is not None else HUBACEK_MIN_MARKET_GAP_PP
+    override = _finite_float(league_pick_overrides(league).get("min_market_gap_pp"))
+    return override if override is not None else HUBACEK_MIN_MARKET_GAP_PP
 
 
 def hubacek_min_spread_cover_gap_pp(league: str | None = None) -> float:
-    override = league_pick_overrides(league).get("min_spread_cover_gap_pp")
-    return float(override) if override is not None else HUBACEK_MIN_SPREAD_COVER_GAP_PP
+    override = _finite_float(
+        league_pick_overrides(league).get("min_spread_cover_gap_pp")
+    )
+    return override if override is not None else HUBACEK_MIN_SPREAD_COVER_GAP_PP
 
 
 def hubacek_min_spread_confidence_pp(league: str | None = None) -> float:
-    override = league_pick_overrides(league).get("min_spread_confidence_pp")
+    override = _finite_float(
+        league_pick_overrides(league).get("min_spread_confidence_pp")
+    )
     return (
-        float(override)
-        if override is not None
-        else HUBACEK_SPREAD_MIN_WIN_CONFIDENCE_PP
+        override if override is not None else HUBACEK_SPREAD_MIN_WIN_CONFIDENCE_PP
     )
 
 
 def hubacek_min_ev_pct(league: str | None = None) -> float:
-    override = league_pick_overrides(league).get("min_ev_pct")
-    return float(override) if override is not None else HUBACEK_MIN_EV_PCT
+    override = _finite_float(league_pick_overrides(league).get("min_ev_pct"))
+    return override if override is not None else HUBACEK_MIN_EV_PCT
 
 
 def hubacek_allowed_sides(league: str | None = None) -> set[str] | None:
@@ -144,11 +146,12 @@ def hubacek_allowed_sides(league: str | None = None) -> set[str] | None:
 
 def hubacek_ml_range(league: str | None = None) -> tuple[float, float] | None:
     overrides = league_pick_overrides(league)
-    lo = overrides.get("ml_lo")
-    hi = overrides.get("ml_hi")
+    lo = _finite_float(overrides.get("ml_lo"))
+    hi = _finite_float(overrides.get("ml_hi"))
     if lo is None or hi is None:
         return None
-    return float(lo), float(hi)
+    return lo, hi
+
 
 
 def within_hubacek_ml_range(league: str | None, american_odds: float | None) -> bool:
@@ -156,13 +159,11 @@ def within_hubacek_ml_range(league: str | None, american_odds: float | None) -> 
     # even when the league has no ml_lo/ml_hi window (soccer, etc.).
     from web.bet_advisor import normalize_american_odds
 
-    if american_odds is None:
+    if american_odds is None or isinstance(american_odds, bool):
         return False
-    try:
-        odds_int = int(float(american_odds))
-    except (TypeError, ValueError):
-        return False
-    normalized = normalize_american_odds(odds_int)
+    # Pass raw value through normalize first so bool/string labels are handled
+    # before int(float(...)) can turn False→0→EVEN +100.
+    normalized = normalize_american_odds(american_odds)
     if normalized is None:
         return False
     ml_range = hubacek_ml_range(league)
@@ -298,9 +299,11 @@ def passes_hubacek_spread_gate(
 
 def hubacek_min_win_confidence_pp(league: str | None = None) -> float:
     """Per-league Hubáček φ threshold (override > baseball/soccer default > 20 pp)."""
-    override = league_pick_overrides(league).get("min_win_confidence_pp")
+    override = _finite_float(
+        league_pick_overrides(league).get("min_win_confidence_pp")
+    )
     if override is not None:
-        return float(override)
+        return override
     if league:
         from web.baseball_pred_model import is_baseball_league
         from web.league_profiles import is_soccer_league

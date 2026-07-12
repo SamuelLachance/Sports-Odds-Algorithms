@@ -375,6 +375,13 @@ def test_american_to_decimal_rejects_invalid_magnitude() -> None:
     assert american_to_decimal(75) is None
 
 
+def test_american_to_decimal_rejects_bool_false_as_even() -> None:
+    """False must not coerce to int 0 → +100 → decimal 2.0."""
+    assert american_to_decimal(False) is None
+    assert american_to_decimal(True) is None
+    assert american_to_decimal(0) == pytest.approx(2.0)
+
+
 def test_predict_matchup_v2_uses_open_odds_for_market_features() -> None:
     """Market head was trained on open 1X2; live juice is only for decorrelation."""
     from unittest.mock import MagicMock, patch

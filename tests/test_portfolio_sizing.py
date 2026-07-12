@@ -60,5 +60,13 @@ def test_negative_ev_returns_min_not_kelly_size() -> None:
     assert portfolio_stake_units(-5.0, 0.08, correlation_penalty=0.0) == 0.25
 
 
+def test_non_finite_ev_or_kelly_returns_min() -> None:
+    """NaN EV used to fail open (nan < 0 is False) and size a full Kelly stake."""
+    assert portfolio_stake_units(float("nan"), 0.08, correlation_penalty=0.0) == 0.25
+    assert portfolio_stake_units(float("inf"), 0.08, correlation_penalty=0.0) == 0.25
+    assert portfolio_stake_units(5.0, float("nan"), correlation_penalty=0.0) == 0.25
+    assert portfolio_stake_units(5.0, float("inf"), correlation_penalty=0.0) == 0.25
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-q"])

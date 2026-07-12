@@ -405,6 +405,31 @@ def test_closing_market_fields_includes_draw_close_ml(monkeypatch) -> None:
     assert fields["market_away_odds"] == 320
 
 
+def test_closing_market_fields_reconstructs_sparse_away_spread(monkeypatch) -> None:
+    """After orientation flip, sole away_close_spread must still yield home market_spread."""
+    from web.closing_odds_db import _flip_two_way_odds
+
+    # Common CSV shape: only home line filled. Flip moves it to away.
+    flipped = _flip_two_way_odds(
+        {
+            "home_close_spread": -3.5,
+            "away_close_spread": None,
+            "home_spread_odds": -110,
+            "away_spread_odds": None,
+        }
+    )
+    assert flipped["home_close_spread"] is None
+    assert flipped["away_close_spread"] == -3.5
+
+    monkeypatch.setattr(
+        "web.pick_strategy.closing_odds_lookup",
+        lambda *_a, **_k: flipped,
+    )
+    fields = _closing_market_fields("nba", "2024-01-15", "bos", "ny")
+    # New home was original away → underdog at +3.5.
+    assert fields["market_spread"] == 3.5
+
+
 def test_settle_spread_juice_is_side_aware() -> None:
     """Missing pick juice must not borrow the opposite side's price."""
     from web.pick_strategy import _settle_spread_juice
@@ -460,4 +485,35 @@ def test_settle_spread_juice_is_side_aware() -> None:
             market_spread=-3.5,
         )
         == -108
+    )
+    # Non-finite / invalid American juice must fail closed (no ValueError).
+    assert (
+        _settle_spread_juice(
+            "home",
+            float("nan"),
+            home_spread_odds=-110,
+            away_spread_odds=-110,
+            market_spread=-3.5,
+        )
+        is None
+    )
+    assert (
+        _settle_spread_juice(
+            "home",
+            True,  # type: ignore[arg-type]
+            home_spread_odds=-110,
+            away_spread_odds=-110,
+            market_spread=-3.5,
+        )
+        is None
+    )
+    assert (
+        _settle_spread_juice(
+            "away",
+            None,
+            home_spread_odds=-115,
+            away_spread_odds=50,
+            market_spread=-3.5,
+        )
+        is None
     )

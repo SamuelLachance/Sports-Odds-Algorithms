@@ -22,6 +22,8 @@ from web.blend_service import blended_home_spread_margin, home_win_prob_to_total
 from web.hubacek_picks import (
     hubacek_min_ev_pct,
     hubacek_min_market_gap_pp,
+    hubacek_min_spread_confidence_pp,
+    hubacek_min_spread_cover_gap_pp,
     hubacek_min_win_confidence_pp,
     hubacek_ml_range,
     official_hubacek_thresholds,
@@ -75,16 +77,19 @@ def _settle_spread_juice(
 
     When grading against a real closing line, missing same-side juice fails closed
     (returns None) instead of inventing -110 or borrowing the opposite side.
+    Non-finite / invalid American prices fail closed (no ValueError on NaN).
     """
+    from web.bet_advisor import normalize_american_odds
+
     if pick_spread_odds is not None:
-        return int(pick_spread_odds)
+        return normalize_american_odds(pick_spread_odds)
     side_key = str(side or "").strip().lower()
     if side_key == "home":
         if home_spread_odds is not None:
-            return int(home_spread_odds)
+            return normalize_american_odds(home_spread_odds)
     elif side_key == "away":
         if away_spread_odds is not None:
-            return int(away_spread_odds)
+            return normalize_american_odds(away_spread_odds)
     if market_spread is None:
         return DEFAULT_SPREAD_JUICE
     return None
@@ -142,14 +147,21 @@ def get_pick_thresholds(league: str) -> dict[str, Any]:
     hubacek["min_market_gap_pp"] = hubacek_min_market_gap_pp(league)
     hubacek["min_win_confidence_pp"] = hubacek_min_win_confidence_pp(league)
     hubacek["min_ev_pct"] = hubacek_min_ev_pct(league)
-    if entry.get("min_spread_cover_gap_pp") is not None:
-        hubacek["min_spread_cover_gap_pp"] = float(entry["min_spread_cover_gap_pp"])
-    if entry.get("min_spread_confidence_pp") is not None:
-        hubacek["min_spread_confidence_pp"] = float(entry["min_spread_confidence_pp"])
+    # Use Hubáček helpers (finite-safe) — never raw float() on JSON that could be NaN.
+    hubacek["min_spread_cover_gap_pp"] = hubacek_min_spread_cover_gap_pp(league)
+    hubacek["min_spread_confidence_pp"] = hubacek_min_spread_confidence_pp(league)
     ml_range = hubacek_ml_range(league)
     min_spread_point_edge = OFFICIAL_MIN_SPREAD_POINT_EDGE
-    if entry.get("min_spread_point_edge") is not None:
-        min_spread_point_edge = float(entry["min_spread_point_edge"])
+    raw_point_edge = entry.get("min_spread_point_edge")
+    if raw_point_edge is not None:
+        import math
+
+        try:
+            point_edge = float(raw_point_edge)
+        except (TypeError, ValueError):
+            point_edge = float("nan")
+        if math.isfinite(point_edge):
+            min_spread_point_edge = point_edge
     return {
         "bet_type": bet_type,
         **hubacek,
@@ -390,6 +402,10 @@ def _closing_market_fields(
         fields["market_away_odds"] = odds["away_close_ml"]
     if odds.get("home_close_spread") is not None:
         fields["market_spread"] = float(odds["home_close_spread"])
+    elif odds.get("away_close_spread") is not None:
+        # Sparse same-day orientation flips leave the only line on away;
+        # reconstruct the home-oriented close (mirrors cbb_opening opens).
+        fields["market_spread"] = -float(odds["away_close_spread"])
     if odds.get("home_spread_odds") is not None:
         fields["home_spread_odds"] = odds["home_spread_odds"]
     if odds.get("away_spread_odds") is not None:

@@ -253,39 +253,59 @@ def summarize_book_items(
         if name and name not in providers:
             providers.append(name)
 
-    if not lines:
+    # Open-only slate: still return steam medians with n_books=0 (do not drop
+    # opens via an empty early return). Completely empty input stays {}.
+    if not lines and not open_home_values and not open_away_values:
         return {}
 
-    # Prefer league-aware line parse for consensus medians (MLB/NHL validate
-    # run/puck lines; NBA path validates with MAX_NBA_SPREAD).
-    if league_key in {"mlb", "nhl"}:
-        consensus = {
-            field: _median([line.get(field) for line in lines])  # type: ignore[arg-type]
-            for field in _LINE_FIELDS
+    if lines:
+        # Prefer league-aware line parse for consensus medians (MLB/NHL validate
+        # run/puck lines; NBA path validates with MAX_NBA_SPREAD).
+        if league_key in {"mlb", "nhl"}:
+            consensus = {
+                field: _median([line.get(field) for line in lines])  # type: ignore[arg-type]
+                for field in _LINE_FIELDS
+            }
+        else:
+            consensus = _consensus(filtered, max_handicap_abs=max_handicap)
+
+        best_home_ml = best_american_odds([line.get("home_close_ml") for line in lines])
+        best_away_ml = best_american_odds([line.get("away_close_ml") for line in lines])
+        best_home_spread = best_american_odds(
+            [line.get("home_spread_odds") for line in lines]
+        )
+        best_away_spread = best_american_odds(
+            [line.get("away_spread_odds") for line in lines]
+        )
+
+        consensus_home_ml = _as_int_odds(consensus.get("home_close_ml"))
+        consensus_away_ml = _as_int_odds(consensus.get("away_close_ml"))
+
+        summary: dict[str, Any] = {
+            "n_books": len(lines),
+            "book_providers": providers,
+            "best_home_ml": best_home_ml,
+            "best_away_ml": best_away_ml,
+            "best_home_spread": best_home_spread,
+            "best_away_spread": best_away_spread,
+            "consensus_home_ml": consensus_home_ml,
+            "consensus_away_ml": consensus_away_ml,
+            "consensus_home_spread": consensus.get("home_close_spread"),
+            "consensus_away_spread": consensus.get("away_close_spread"),
         }
     else:
-        consensus = _consensus(filtered, max_handicap_abs=max_handicap)
-
-    best_home_ml = best_american_odds([line.get("home_close_ml") for line in lines])
-    best_away_ml = best_american_odds([line.get("away_close_ml") for line in lines])
-    best_home_spread = best_american_odds([line.get("home_spread_odds") for line in lines])
-    best_away_spread = best_american_odds([line.get("away_spread_odds") for line in lines])
-
-    consensus_home_ml = _as_int_odds(consensus.get("home_close_ml"))
-    consensus_away_ml = _as_int_odds(consensus.get("away_close_ml"))
-
-    summary: dict[str, Any] = {
-        "n_books": len(lines),
-        "book_providers": providers,
-        "best_home_ml": best_home_ml,
-        "best_away_ml": best_away_ml,
-        "best_home_spread": best_home_spread,
-        "best_away_spread": best_away_spread,
-        "consensus_home_ml": consensus_home_ml,
-        "consensus_away_ml": consensus_away_ml,
-        "consensus_home_spread": consensus.get("home_close_spread"),
-        "consensus_away_spread": consensus.get("away_close_spread"),
-    }
+        summary = {
+            "n_books": 0,
+            "book_providers": [],
+            "best_home_ml": None,
+            "best_away_ml": None,
+            "best_home_spread": None,
+            "best_away_spread": None,
+            "consensus_home_ml": None,
+            "consensus_away_ml": None,
+            "consensus_home_spread": None,
+            "consensus_away_spread": None,
+        }
     open_home_ml = _as_int_odds(_median(open_home_values)) if open_home_values else None
     open_away_ml = _as_int_odds(_median(open_away_values)) if open_away_values else None
     if open_home_ml is not None:

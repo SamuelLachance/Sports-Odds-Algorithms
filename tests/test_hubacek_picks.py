@@ -53,6 +53,19 @@ def test_within_hubacek_ml_range_fails_closed_on_missing_odds() -> None:
     assert within_hubacek_ml_range("epl", 50) is False
 
 
+def test_within_hubacek_ml_range_rejects_bool_false_as_even() -> None:
+    """False must not coerce via float→0→EVEN +100 and pass the ML window."""
+    from web.hubacek_picks import within_hubacek_ml_range
+
+    assert within_hubacek_ml_range("nba", False) is False
+    assert within_hubacek_ml_range("mlb", False) is False
+    assert within_hubacek_ml_range("epl", False) is False
+    assert within_hubacek_ml_range("nba", True) is False
+    # Numeric ESPN EVEN still allowed.
+    assert within_hubacek_ml_range("nba", 0) is True
+    assert within_hubacek_ml_range("nba", "EVEN") is True
+
+
 def test_moneyline_gate_requires_gap_ev_and_phi_confidence() -> None:
     assert passes_hubacek_moneyline_gate(
         model_prob_pct=72.0,
@@ -437,6 +450,40 @@ def test_blend_is_decorrelated_ignores_ensemble_mode_without_flag() -> None:
     )
     flagged = {**spread_only, "market_decorrelated": True}
     assert _blend_is_decorrelated(flagged)
+
+
+def test_nan_threshold_overrides_do_not_fail_open() -> None:
+    """Corrupt NaN floors must fall back to defaults — not disable gap/EV gates."""
+    from unittest.mock import patch
+
+    from web.hubacek_picks import (
+        hubacek_min_ev_pct,
+        hubacek_min_market_gap_pp,
+        hubacek_min_win_confidence_pp,
+    )
+
+    with patch(
+        "web.hubacek_picks.league_pick_overrides",
+        return_value={
+            "min_ev_pct": float("nan"),
+            "min_market_gap_pp": float("nan"),
+            "min_win_confidence_pp": float("inf"),
+        },
+    ):
+        assert hubacek_min_ev_pct("nba") == HUBACEK_MIN_EV_PCT
+        assert hubacek_min_market_gap_pp("nba") == HUBACEK_MIN_MARKET_GAP_PP
+        assert hubacek_min_win_confidence_pp("nba") == HUBACEK_MIN_WIN_CONFIDENCE_PP
+        # Below-floor pick must still be rejected (was True when NaN floors failed open).
+        assert not passes_hubacek_tracked_pick(
+            {
+                "strategy": "hubacek",
+                "model_market_gap_pp": 0.1,
+                "ev_pct": 0.1,
+                "win_probability": 50.0,
+                "market_odds": -150,
+                "league": "nba",
+            }
+        )
 
 
 if __name__ == "__main__":

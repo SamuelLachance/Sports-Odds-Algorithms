@@ -39,6 +39,9 @@ def devig_home_prob(home_ml: float | None, away_ml: float | None) -> float | Non
     """Two-way no-vig implied home win probability from American moneylines."""
 
     def implied(american: float) -> float | None:
+        # bool is a subclass of int; False→0.0 must not invent EVEN (+100).
+        if american is None or isinstance(american, bool):
+            return None
         try:
             american = float(american)
         except (TypeError, ValueError):
@@ -53,6 +56,8 @@ def devig_home_prob(home_ml: float | None, away_ml: float | None) -> float | Non
         return None
 
     if home_ml is None or away_ml is None:
+        return None
+    if isinstance(home_ml, bool) or isinstance(away_ml, bool):
         return None
     ph = implied(home_ml)
     pa = implied(away_ml)

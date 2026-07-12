@@ -612,6 +612,64 @@ def test_summarize_n_books_ignores_open_only_providers() -> None:
     assert summary["open_away_moneyline"] == 132
 
 
+def test_summarize_preserves_opens_when_all_providers_are_open_only() -> None:
+    """All-open-only slate must still expose steam medians (n_books=0)."""
+    open_only = {
+        "provider": {"name": "OpenOnly"},
+        "homeTeamOdds": {"open": {"moneyLine": {"american": -160}}},
+        "awayTeamOdds": {"open": {"moneyLine": {"american": 140}}},
+    }
+    summary = summarize_book_items([open_only])
+    assert summary["n_books"] == 0
+    assert summary["book_providers"] == []
+    assert summary["open_home_moneyline"] == -160
+    assert summary["open_away_moneyline"] == 140
+    assert summary["consensus_home_ml"] is None
+    assert summary["best_home_ml"] is None
+
+
+def test_mlb_nhl_consensus_n_books_ignores_open_only_providers() -> None:
+    """MLB/NHL must match NBA: open-only shells feed opens, not n_books."""
+    from web.mlb_odds_espn import _consensus_mlb
+    from web.nhl_odds_espn import _consensus_nhl
+
+    close_book = {
+        "provider": {"name": "DraftKings"},
+        "homeTeamOdds": {
+            "favorite": True,
+            "close": {
+                "moneyLine": {"american": -130},
+                "pointSpread": {"american": -1.5},
+                "spread": {"american": -115},
+            },
+            "open": {"moneyLine": {"american": -125}},
+        },
+        "awayTeamOdds": {
+            "favorite": False,
+            "close": {
+                "moneyLine": {"american": 110},
+                "pointSpread": {"american": 1.5},
+                "spread": {"american": -105},
+            },
+            "open": {"moneyLine": {"american": 105}},
+        },
+        "close": {"total": 8.5},
+        "open": {"total": 8.0},
+    }
+    open_only = {
+        "provider": {"name": "OpenBook"},
+        "homeTeamOdds": {"open": {"moneyLine": {"american": -140}}},
+        "awayTeamOdds": {"open": {"moneyLine": {"american": 120}}},
+    }
+    for consensus_fn in (_consensus_mlb, _consensus_nhl):
+        consensus = consensus_fn([close_book, open_only])
+        assert consensus["n_books"] == 1
+        assert consensus["home_close_ml"] == -130
+        # Open medians still include the open-only book.
+        assert consensus["home_open_ml"] == -132.5  # median(-125, -140)
+        assert consensus["away_open_ml"] == 112.5
+
+
 def test_mlb_consensus_n_books_ignores_empty_providers() -> None:
     """Empty ESPN provider shells must not inflate MLB n_books."""
     from web.mlb_odds_espn import _consensus_mlb

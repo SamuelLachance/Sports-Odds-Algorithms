@@ -411,9 +411,12 @@ def _decorrelate(
 
 
 def american_to_decimal(ml: int | None) -> float | None:
-    if ml is None:
+    if ml is None or isinstance(ml, bool):
         return None
-    ml = int(ml)
+    try:
+        ml = int(ml)
+    except (TypeError, ValueError):
+        return None
     # ESPN EVEN sometimes arrives as numeric 0 — treat as +100.
     if ml == 0:
         ml = 100

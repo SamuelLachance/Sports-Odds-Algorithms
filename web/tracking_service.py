@@ -76,11 +76,14 @@ def stake_units_from_kelly(
 
 
 def calculate_units(stake: float, american_odds: int, result: BetResult) -> float:
+    import math
+
     try:
         stake_f = float(stake)
     except (TypeError, ValueError):
         stake_f = DEFAULT_STAKE_UNITS
-    if stake_f < 0:
+    # Non-finite / negative stakes must not poison rollups with ±inf / NaN P&L.
+    if not math.isfinite(stake_f) or stake_f < 0:
         stake_f = DEFAULT_STAKE_UNITS
 
     if result == "push":
@@ -806,22 +809,26 @@ def _rollup_label_yearly(d: date) -> str:
 
 def _bet_stake_units(bet: dict[str, Any]) -> float:
     """Stake in units for a bet, defaulting to 1u on missing/bad/non-positive data."""
+    import math
+
     try:
         stake = float(bet.get("stake_units") if bet.get("stake_units") is not None else DEFAULT_STAKE_UNITS)
     except (TypeError, ValueError):
         return DEFAULT_STAKE_UNITS
-    if stake <= 0 or stake != stake:  # NaN check
+    if not math.isfinite(stake) or stake <= 0:
         return DEFAULT_STAKE_UNITS
     return stake
 
 
 def _bet_units(bet: dict[str, Any]) -> float:
-    """Settled P&L units; coerce bad values to 0 so rollups never raise."""
+    """Settled P&L units; coerce bad / non-finite values to 0 so rollups stay finite."""
+    import math
+
     try:
         value = float(bet.get("units") or 0)
     except (TypeError, ValueError):
         return 0.0
-    if value != value:  # NaN
+    if not math.isfinite(value):
         return 0.0
     return value
 

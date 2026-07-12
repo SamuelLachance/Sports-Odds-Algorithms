@@ -7,6 +7,8 @@ units where ``bankroll_units=100`` means 1u ≈ 1% of bankroll.
 
 from __future__ import annotations
 
+import math
+
 
 def portfolio_stake_units(
     ev_pct: float,
@@ -26,7 +28,9 @@ def portfolio_stake_units(
     Returns units clamped to ``[min_units, max_units]``. Non-positive Kelly or
     explicitly negative EV yields ``min_units`` (callers that want a default 1u
     should gate first). Missing EV should be passed as ``0`` so sizing still
-    follows Kelly without the negative-EV short-circuit.
+    follows Kelly without the negative-EV short-circuit. Non-finite Kelly/EV
+    (±inf / NaN) fail closed to ``min_units`` — NaN comparisons are never true,
+    so they must not slip through as a full-size stake.
     """
     try:
         kelly = float(kelly_fraction)
@@ -40,6 +44,11 @@ def portfolio_stake_units(
             return float(min_units)
         except (TypeError, ValueError):
             return 0.25
+
+    if not math.isfinite(kelly) or not math.isfinite(ev):
+        return lo
+    if not math.isfinite(bankroll) or not math.isfinite(lo) or not math.isfinite(hi):
+        return 0.25
 
     # Do not Kelly-size a non-positive edge or a non-positive Kelly fraction.
     if kelly <= 0 or ev < 0:

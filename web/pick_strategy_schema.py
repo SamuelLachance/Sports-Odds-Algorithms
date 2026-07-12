@@ -36,16 +36,24 @@ _META_KEYS = frozenset({"policy", "generated_at"})
 
 
 def _as_number(value: Any) -> float | None:
+    """Parse a finite float; reject bool / NaN / ±inf so gates never fail open."""
+    import math
+
     if isinstance(value, bool) or value is None:
         return None
     if isinstance(value, (int, float)):
-        return float(value)
-    if isinstance(value, str):
+        number = float(value)
+    elif isinstance(value, str):
         try:
-            return float(value.strip())
+            number = float(value.strip())
         except ValueError:
             return None
-    return None
+    else:
+        return None
+    if not math.isfinite(number):
+        return None
+    return number
+
 
 
 def _as_bool(value: Any) -> bool | None:

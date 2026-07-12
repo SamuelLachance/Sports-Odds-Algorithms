@@ -11,8 +11,10 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from web.hubacek_picks import HUBACEK_MIN_WIN_CONFIDENCE_PP  # noqa: E402
 from web.tracking_service import (  # noqa: E402
+    _bet_units,
     _fetch_event_result,
     _scoreboard_dates_for_bet,
+    _summarize_bets,
     build_tracking_response,
     calculate_units,
     grade_bet,
@@ -21,6 +23,7 @@ from web.tracking_service import (  # noqa: E402
     prune_below_min_edge,
     record_from_slate,
     save_store,
+    stake_units_from_kelly,
 )
 
 
@@ -148,6 +151,22 @@ def test_calculate_units_guards_bad_odds() -> None:
     assert calculate_units(1, 50, "win") == 0.0
     assert calculate_units(1, -50, "win") == 0.0
     assert calculate_units(1, "oops", "win") == 0.0
+    # Non-finite stake must not poison P&L with ±inf / NaN.
+    assert calculate_units(float("inf"), -110, "win") == 100.0 / 110.0
+    assert calculate_units(float("nan"), 150, "loss") == -1.0
+
+
+def test_non_finite_units_do_not_poison_roi() -> None:
+    """Corrupt ±inf settled units used to make all-time ROI infinite."""
+    assert _bet_units({"units": float("inf")}) == 0.0
+    assert _bet_units({"units": float("-inf")}) == 0.0
+    summary = _summarize_bets(
+        [{"status": "win", "units": float("inf"), "stake_units": 1.0}]
+    )
+    assert summary["units"] == 0.0
+    assert summary["roi_percent"] == 0.0
+    # NaN EV must not Kelly-size a full stake via portfolio path.
+    assert stake_units_from_kelly(8.0, ev_pct=float("nan")) == 0.25
 
 
 def test_record_and_grade() -> None:

@@ -127,25 +127,26 @@ def _provider_line_nhl(item: dict[str, Any]) -> dict[str, float | None]:
 
 def _consensus_nhl(items: list[dict[str, Any]]) -> dict[str, Any]:
     lines = [_provider_line_nhl(item) for item in items]
-    keys = (
+    close_keys = (
         "home_close_ml",
         "away_close_ml",
-        "home_open_ml",
-        "away_open_ml",
         "home_close_spread",
         "away_close_spread",
         "home_spread_odds",
         "away_spread_odds",
         "close_total",
-        "open_total",
     )
-    # Count only providers that yielded at least one parsed market number —
-    # empty shells must not inflate n_books (fail-open on consensus quality).
+    keys = close_keys + ("home_open_ml", "away_open_ml", "open_total")
+    # Medians may still use open fields; empty shells stay out of both pools.
     parsed = [line for line in lines if any(line.get(key) is not None for key in keys)]
     consensus: dict[str, Any] = {
         key: _median([line[key] for line in parsed]) for key in keys
     }
-    consensus["n_books"] = len(parsed)
+    # Count only providers with at least one parsed *close* market — open-only
+    # shells still feed open medians but must not inflate n_books (NBA parity).
+    consensus["n_books"] = sum(
+        1 for line in lines if any(line.get(key) is not None for key in close_keys)
+    )
     return consensus
 
 

@@ -43,7 +43,25 @@ def test_validate_strategy_entry_coerces_numbers_and_bools() -> None:
     assert "garbage" not in cleaned
 
 
-def test_validate_strategy_entry_string_false_disables_league() -> None:
+def test_validate_strategy_entry_drops_non_finite_numbers() -> None:
+    """NaN/inf thresholds must not load — Hubáček floors would fail open."""
+    cleaned = validate_strategy_entry(
+        {
+            "bet_type": "moneyline",
+            "min_ev_pct": float("nan"),
+            "min_market_gap_pp": float("inf"),
+            "min_win_confidence_pp": 20.0,
+            "ml_lo": float("-inf"),
+            "ml_hi": 200,
+        }
+    )
+    assert cleaned is not None
+    assert "min_ev_pct" not in cleaned
+    assert "min_market_gap_pp" not in cleaned
+    assert "ml_lo" not in cleaned
+    assert cleaned["min_win_confidence_pp"] == 20.0
+    assert cleaned["ml_hi"] == 200.0
+
     """String 'false' must not become True via bool('false')."""
     cleaned = validate_strategy_entry({"bet_type": "spread", "enabled": "false"})
     assert cleaned is not None

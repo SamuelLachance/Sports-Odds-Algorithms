@@ -41,6 +41,22 @@ def test_devig_home_prob_treats_espn_even_zero_as_plus_100() -> None:
     assert feats["has_market"] == 1.0
 
 
+def test_devig_home_prob_rejects_bool_false_as_even() -> None:
+    """False floats to 0.0; must not invent EVEN market-aware features."""
+    assert devig_home_prob(False, -110) is None
+    assert devig_home_prob(-110, False) is None
+    assert devig_home_prob(False, False) is None
+    assert devig_home_prob(True, -110) is None
+    feats: dict[str, float] = {}
+    has_market, has_spread = apply_market_features(
+        feats, home_moneyline=False, away_moneyline=-110, home_spread=False
+    )
+    assert has_market is False
+    assert has_spread is False
+    assert feats["has_market"] == 0.0
+    assert feats["has_spread"] == 0.0
+
+
 def test_data_devig_two_way_delegates_and_accepts_strings() -> None:
     from web.nba_v2.data import devig_two_way as nba_devig
     from web.wnba_v2.data import devig_two_way as wnba_devig
