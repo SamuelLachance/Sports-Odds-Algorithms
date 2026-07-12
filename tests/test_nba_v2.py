@@ -5,6 +5,8 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import pytest
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -386,6 +388,7 @@ def test_from_dict_defaults_new_fields_for_old_snapshots() -> None:
     assert len(FEATURE_COLUMNS) == 89
 
 
+@pytest.mark.slow
 def test_live_prediction_when_artifacts_present() -> None:
     from web.nba_v2.live import artifacts_available, predict_matchup_v2, nba_season_for_date
 
@@ -416,6 +419,7 @@ def test_devig_home_prob_and_market_variant_helpers() -> None:
     assert fav is not None and fav > 0.6
 
 
+@pytest.mark.slow
 def test_live_market_aware_when_odds_provided() -> None:
     from web.nba_v2.live import artifacts_available, predict_matchup_v2
 

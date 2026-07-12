@@ -16,6 +16,7 @@ Algorithme de prédiction sportive (NBA, NHL, MLB et autres ligues) avec démo w
 ```powershell
 python -m pip install -r requirements.txt
 python -m pytest tests/ -q --tb=short
+python -m pytest tests/ -q -m "not slow"
 python smoke_test.py
 python run_server.py
 python -m uvicorn web.app:app --reload --host 127.0.0.1 --port 8000
@@ -59,3 +60,21 @@ Official NFL/CFB/CBB picks stay gated until spread backtests clear; training sti
 - Le board public consomme ESPN + résultats saison courante ; ne pas casser le pipeline Pages.
 - Ne pas inventer de claims de performance (pas de profits garantis ; le pilot NBA ML a un ROI close négatif).
 - Commits clairs en anglais ; pousser sur `master` après changements validés.
+
+## CORS (`CORS_ALLOW_ORIGINS`)
+
+FastAPI CORS is configured in `web/app.py` via `cors_allow_origins()`.
+
+- **Default** (env unset): public Pages origin `https://samuellachance.github.io` plus local API/dev hosts (`127.0.0.1` / `localhost` on ports `8000` and `5173`).
+- **Comma-separated allowlist**: `CORS_ALLOW_ORIGINS=https://example.com,http://127.0.0.1:3000`
+- **Open sandbox** (local only): `CORS_ALLOW_ORIGINS=*`
+
+Do not set `*` on a publicly reachable API. Restart uvicorn after changing the env var.
+
+## Pytest markers
+
+`pytest.ini` defines a `slow` marker for longer integration / live-artifact checks. Default CI runs the full suite; to skip slow tests locally:
+
+```powershell
+python -m pytest tests/ -q -m "not slow"
+```

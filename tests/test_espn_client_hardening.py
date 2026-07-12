@@ -32,6 +32,10 @@ def test_retry_after_falls_back_to_backoff() -> None:
 
 def test_throttle_is_threadsafe_callable() -> None:
     """Throttle lock exists so parallel scoreboard workers can space starts."""
+    from unittest.mock import patch
+
     assert hasattr(espn_client, "_throttle_lock")
-    espn_client._throttle()
-    espn_client._throttle()
+    # Avoid real sleeps so the suite stays quiet and non-flaky under load.
+    with patch("web.espn_client.time.sleep"):
+        espn_client._throttle()
+        espn_client._throttle()

@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import os
 import sys
-import time
 from pathlib import Path
 from unittest.mock import patch
 
@@ -228,22 +227,31 @@ def test_apply_enrichment_to_market_pure_merge() -> None:
 
 
 def test_budget_cutoff_disables_enrichment_for_rest_of_build() -> None:
+    """Budget accounting must not rely on real wall-clock sleeps (flake-prone)."""
     reset_enrichment_budget()
     calls = {"n": 0}
+    clock = {"t": 100.0}
+
+    def _mono() -> float:
+        return clock["t"]
 
     def _slow_fetch(url: str, timeout: int = 5, retries: int = 1) -> dict:
         calls["n"] += 1
-        time.sleep(0.05)
+        clock["t"] += 0.05
         return {"items": [_book_item(home_ml=-150, away_ml=130)]}
 
     market = {"home_moneyline": -145, "away_moneyline": 125}
     env = {"LIVE_MULTI_BOOK": "1", "LIVE_MULTI_BOOK_BUDGET_S": "0.02"}
     try:
         with patch.dict("os.environ", env, clear=False):
-            with patch("web.live_odds_enrichment._get_json", side_effect=_slow_fetch):
-                first = enrich_market_dict(dict(market), "nba", "401")
-                assert enrichment_budget_exhausted()
-                second = enrich_market_dict(dict(market), "nba", "402")
+            with patch("web.live_odds_enrichment.time.monotonic", side_effect=_mono):
+                with patch(
+                    "web.live_odds_enrichment._get_json",
+                    side_effect=_slow_fetch,
+                ):
+                    first = enrich_market_dict(dict(market), "nba", "401")
+                    assert enrichment_budget_exhausted()
+                    second = enrich_market_dict(dict(market), "nba", "402")
     finally:
         reset_enrichment_budget()
 
@@ -297,16 +305,24 @@ def test_fetch_skips_network_when_path_or_budget_blocks() -> None:
 def test_fetch_network_failure_charges_budget_then_soft_fails() -> None:
     reset_enrichment_budget()
     env = {"LIVE_MULTI_BOOK": "1", "LIVE_MULTI_BOOK_BUDGET_S": "0.05"}
+    clock = {"t": 50.0}
+
+    def _mono() -> float:
+        return clock["t"]
 
     def _slow_fail(*_a, **_k):
-        time.sleep(0.06)
+        clock["t"] += 0.06
         raise OSError("espn down")
 
     try:
         with patch.dict("os.environ", env, clear=False):
-            with patch("web.live_odds_enrichment._get_json", side_effect=_slow_fail):
-                assert fetch_multi_book_odds("nba", "401") == {}
-                assert enrichment_budget_exhausted()
+            with patch("web.live_odds_enrichment.time.monotonic", side_effect=_mono):
+                with patch(
+                    "web.live_odds_enrichment._get_json",
+                    side_effect=_slow_fail,
+                ):
+                    assert fetch_multi_book_odds("nba", "401") == {}
+                    assert enrichment_budget_exhausted()
                 # Second call is a clear budget no-op (no network).
                 with patch(
                     "web.live_odds_enrichment._get_json",

@@ -143,51 +143,57 @@ def artifacts_available() -> bool:
 def _load_artifacts() -> dict[str, Any] | None:
     if not artifacts_available():
         return None
-    import xgboost as xgb
-
-    clf = xgb.Booster()
-    clf.load_model(str(MODEL_DIR / "model_clf.json"))
-    clf_market = xgb.Booster()
-    clf_market.load_model(str(MODEL_DIR / "model_clf_market.json"))
-
-    snapshots: dict[int, Path] = {}
-    for path in MODEL_DIR.glob("state_*.json.gz"):
-        try:
-            snapshots[int(path.stem.split("_")[1].split(".")[0])] = path
-        except (IndexError, ValueError):
-            continue
-
-    return {
-        "clf": clf,
-        "clf_market": clf_market,
-        "lr": json.loads((MODEL_DIR / "model_lr.json").read_text(encoding="utf-8")),
-        "lr_market": json.loads(
-            (MODEL_DIR / "model_lr_market.json").read_text(encoding="utf-8")
-        ),
-        "calibrator": json.loads(
-            (MODEL_DIR / "calibrator.json").read_text(encoding="utf-8")
-        ),
-        "calibrator_market": json.loads(
-            (MODEL_DIR / "calibrator_market.json").read_text(encoding="utf-8")
-        ),
-        "metadata": json.loads(
-            (MODEL_DIR / "metadata.json").read_text(encoding="utf-8")
-        ),
-        "snapshots": snapshots,
-        "goals_home": _load_optional_regressor("model_goals_home.json"),
-        "goals_away": _load_optional_regressor("model_goals_away.json"),
-    }
-
-
-def _load_optional_regressor(filename: str):
-    import xgboost as xgb
-
-    path = MODEL_DIR / filename
-    if not path.is_file():
+    try:
+        from xgboost import Booster  # noqa: F401
+    except ImportError:
         return None
-    booster = xgb.Booster()
-    booster.load_model(str(path))
-    return booster
+
+    try:
+        def _booster(name: str):
+            path = MODEL_DIR / name
+            if not path.is_file():
+                return None
+            try:
+                booster = Booster()
+                booster.load_model(str(path))
+                return booster
+            except Exception:  # noqa: BLE001 - corrupt booster → unavailable
+                return None
+
+        snapshots: dict[int, Path] = {}
+        for path in MODEL_DIR.glob("state_*.json.gz"):
+            try:
+                snapshots[int(path.stem.split("_")[1].split(".")[0])] = path
+            except (IndexError, ValueError):
+                continue
+
+        clf = _booster("model_clf.json")
+        clf_market = _booster("model_clf_market.json")
+        if clf is None or clf_market is None or not snapshots:
+            return None
+
+        return {
+            "clf": clf,
+            "clf_market": clf_market,
+            "lr": json.loads((MODEL_DIR / "model_lr.json").read_text(encoding="utf-8")),
+            "lr_market": json.loads(
+                (MODEL_DIR / "model_lr_market.json").read_text(encoding="utf-8")
+            ),
+            "calibrator": json.loads(
+                (MODEL_DIR / "calibrator.json").read_text(encoding="utf-8")
+            ),
+            "calibrator_market": json.loads(
+                (MODEL_DIR / "calibrator_market.json").read_text(encoding="utf-8")
+            ),
+            "metadata": json.loads(
+                (MODEL_DIR / "metadata.json").read_text(encoding="utf-8")
+            ),
+            "snapshots": snapshots,
+            "goals_home": _booster("model_goals_home.json"),
+            "goals_away": _booster("model_goals_away.json"),
+        }
+    except (OSError, json.JSONDecodeError, ValueError, KeyError, TypeError):
+        return None
 
 
 def soccer_season_for_date(date_iso: str) -> int:
@@ -229,13 +235,15 @@ def get_live_context(cutoff_iso: str) -> dict[str, Any] | None:
     if not usable:
         return None
     snap_season = max(usable)
-    with gzip.open(snapshots[snap_season], "rt", encoding="utf-8") as fh:
-        payload = json.load(fh)
-
-    pools = {
-        country: SoccerFeatureEngine.from_dict(data)
-        for country, data in (payload.get("pools") or {}).items()
-    }
+    try:
+        with gzip.open(snapshots[snap_season], "rt", encoding="utf-8") as fh:
+            payload = json.load(fh)
+        pools = {
+            country: SoccerFeatureEngine.from_dict(data)
+            for country, data in (payload.get("pools") or {}).items()
+        }
+    except (OSError, json.JSONDecodeError, gzip.BadGzipFile, EOFError, KeyError, TypeError, ValueError):
+        return None
 
     # replay every season after the snapshot up to the cutoff (handles both
     # in-season updates and multi-season snapshot gaps)
@@ -493,3 +501,8 @@ def predict_matchup_v2(
         "decorrelation_weight": PICK_DECORRELATION_WEIGHT,
         "snapshot_season": context["snapshot_season"],
     }
+
+
+def clear_live_caches() -> None:
+    get_live_context.cache_clear()
+    _load_artifacts.cache_clear()

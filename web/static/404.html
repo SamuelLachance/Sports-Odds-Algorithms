@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Sharp Odds — Redirecting</title>
+  <script>
+    (function () {
+      var base = "/Sports-Odds-Algorithms";
+      var path = location.pathname || "/";
+      if (path.indexOf(base) === 0) {
+        path = path.slice(base.length) || "/";
+      }
+      if (!path.startsWith("/")) path = "/" + path;
+      // Drop trailing slash except root; map filesystem 404s into hash routes.
+      if (path.length > 1 && path.endsWith("/")) path = path.slice(0, -1);
+      var hash = path === "/" ? "#/" : "#" + path;
+      location.replace(base + "/" + hash + location.search);
+    })();
+  </script>
+</head>
+<body>
+  <p>Page not found. <a href="/Sports-Odds-Algorithms/#/">Return home</a>.</p>
+</body>
+</html>

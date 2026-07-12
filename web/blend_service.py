@@ -1330,19 +1330,22 @@ def _blend_soccer_path_a_only(
     match_date: str = "",
 ) -> dict[str, Any]:
     """Soccer Path A with db_rating + ESPN context enrichment."""
-    sport_payload = run_soccer_pred_model(
-        league,
-        cutoff_date,
-        home_abbr,
-        away_abbr,
-        home_name=home_name,
-        away_name=away_name,
-        home_ml=home_moneyline,
-        draw_ml=draw_moneyline,
-        away_ml=away_moneyline,
-        event_id=event_id,
-        match_date=match_date,
-    )
+    try:
+        sport_payload = run_soccer_pred_model(
+            league,
+            cutoff_date,
+            home_abbr,
+            away_abbr,
+            home_name=home_name,
+            away_name=away_name,
+            home_ml=home_moneyline,
+            draw_ml=draw_moneyline,
+            away_ml=away_moneyline,
+            event_id=event_id,
+            match_date=match_date,
+        )
+    except Exception:  # noqa: BLE001 - soccer layer must never break the slate
+        sport_payload = None
     if not sport_payload:
         reason = soccer_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
         return {

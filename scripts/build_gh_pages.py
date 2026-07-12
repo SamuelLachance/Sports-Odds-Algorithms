@@ -42,15 +42,57 @@ def _fast_daily_build() -> bool:
     return _env_flag("FAST_DAILY_BUILD")
 
 
+# Public hash routes listed in the static sitemap (SPA).
+SITEMAP_HASH_ROUTES = (
+    "/",
+    "/games",
+    "/teams",
+    "/picks",
+    "/tracking",
+    "/methodology",
+)
+
+
+def write_seo_files() -> None:
+    """robots.txt + sitemap.xml for the GitHub Pages static site."""
+    site = f"https://samuellachance.github.io{BASE_PATH}"
+    robots = (
+        "User-agent: *\n"
+        "Allow: /\n"
+        f"Sitemap: {site}/sitemap.xml\n"
+    )
+    (DOCS_DIR / "robots.txt").write_text(robots, encoding="utf-8")
+
+    urls: list[str] = []
+    for route in SITEMAP_HASH_ROUTES:
+        if route == "/":
+            loc = f"{site}/"
+        else:
+            # Keep the leading slash so SPA hashes stay "#/games", not "#games".
+            loc = f"{site}/#{route if route.startswith('/') else '/' + route}"
+        urls.append(
+            "  <url>\n"
+            f"    <loc>{loc}</loc>\n"
+            "    <changefreq>daily</changefreq>\n"
+            "  </url>"
+        )
+    sitemap = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        + "\n".join(urls)
+        + "\n</urlset>\n"
+    )
+    (DOCS_DIR / "sitemap.xml").write_text(sitemap, encoding="utf-8")
+
+
 def copy_static_assets() -> None:
     DOCS_DIR.mkdir(parents=True, exist_ok=True)
 
-    for name in ("index.html", "styles.css", "app.js"):
+    for name in ("index.html", "styles.css", "app.js", "favicon.svg", "404.html"):
         shutil.copy2(STATIC_SRC / name, DOCS_DIR / name)
 
     index_path = DOCS_DIR / "index.html"
     app_path = DOCS_DIR / "app.js"
-    css_path = DOCS_DIR / "styles.css"
     asset_version = str(int(app_path.stat().st_mtime_ns // 1_000_000))
     html = index_path.read_text(encoding="utf-8")
     html = html.replace(
@@ -59,12 +101,14 @@ def copy_static_assets() -> None:
     )
     html = html.replace('href="/static/styles.css"', f'href="styles.css?v={asset_version}"')
     html = html.replace('src="/static/app.js"', f'src="app.js?v={asset_version}"')
+    html = html.replace('href="/static/favicon.svg"', "href=\"favicon.svg\"")
     html = html.replace(
         "https://github.com/JamesQuintero/Sports-Odds-Algorithms",
         "https://github.com/SamuelLachance/Sports-Odds-Algorithms",
     )
     index_path.write_text(html, encoding="utf-8")
 
+    write_seo_files()
     (DOCS_DIR / ".nojekyll").touch()
 
 

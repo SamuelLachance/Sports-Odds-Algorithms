@@ -5,6 +5,8 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import pytest
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -185,6 +187,7 @@ def test_resolve_team_by_abbr_hint_and_fuzzy() -> None:
     assert _norm_name("1. FC Köln") == "koln"
 
 
+@pytest.mark.slow
 def test_live_context_and_prediction_when_artifacts_present() -> None:
     """End-to-end live smoke test (skips when artifacts are not built)."""
     from web.soccer_v2.live import artifacts_available, predict_matchup_v2
@@ -213,6 +216,64 @@ def test_live_context_and_prediction_when_artifacts_present() -> None:
     assert result["market_decorrelated"] is True
     assert result["expected_home_goals"] is not None
     assert result["elo_home"] > 1000
+
+
+def test_load_artifacts_returns_none_on_corrupt_json(tmp_path, monkeypatch) -> None:
+    """Corrupt on-disk JSON must not raise — live layer returns None instead."""
+    import gzip
+
+    import web.soccer_v2.live as live
+
+    model_dir = tmp_path / "soccer_v2"
+    model_dir.mkdir()
+    required = (
+        "model_clf.json",
+        "model_lr.json",
+        "model_clf_market.json",
+        "model_lr_market.json",
+        "calibrator.json",
+        "calibrator_market.json",
+        "metadata.json",
+    )
+    for name in required:
+        (model_dir / name).write_text("{not-json", encoding="utf-8")
+    with gzip.open(model_dir / "state_2024.json.gz", "wt", encoding="utf-8") as handle:
+        handle.write("{}")
+
+    monkeypatch.setattr(live, "MODEL_DIR", model_dir)
+    live._load_artifacts.cache_clear()
+    assert live.artifacts_available() is True
+    assert live._load_artifacts() is None
+
+
+def test_blend_soccer_survives_pred_model_crash() -> None:
+    """Blend must fall back cleanly when soccer pred raises."""
+    from web.blend_service import blend_predictions
+    import web.blend_service as blend_module
+
+    original = blend_module.run_soccer_pred_model
+
+    def _boom(*_a, **_k):
+        raise RuntimeError("simulated soccer v2 failure")
+
+    try:
+        blend_module.run_soccer_pred_model = _boom
+        result = blend_predictions(
+            legacy_total_score=-48.0,
+            legacy_win_probability=48.0,
+            league="epl",
+            cutoff_date="11-15-2025",
+            home_abbr="ars",
+            away_abbr="liv",
+            home_moneyline=-120,
+            draw_moneyline=260,
+            away_moneyline=320,
+        )
+    finally:
+        blend_module.run_soccer_pred_model = original
+
+    assert result["blend_mode"] == "soccer_path_a_unavailable"
+    assert result["soccer_pred"] is None
 
 
 if __name__ == "__main__":

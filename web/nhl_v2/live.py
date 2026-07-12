@@ -81,38 +81,45 @@ def _load_artifacts() -> dict[str, Any] | None:
     except ImportError:
         return None
 
-    clf = Booster()
-    clf.load_model(str(MODEL_DIR / "model_clf.json"))
-    lr = json.loads((MODEL_DIR / "model_lr.json").read_text(encoding="utf-8"))
-    calibrator = json.loads((MODEL_DIR / "calibrator.json").read_text(encoding="utf-8"))
-    metadata = json.loads((MODEL_DIR / "metadata.json").read_text(encoding="utf-8"))
+    try:
+        def _booster(name: str):
+            path = MODEL_DIR / name
+            if not path.is_file():
+                return None
+            try:
+                booster = Booster()
+                booster.load_model(str(path))
+                return booster
+            except Exception:  # noqa: BLE001 - corrupt booster → unavailable
+                return None
 
-    goals_home = goals_away = None
-    if (MODEL_DIR / "model_goals_home.json").is_file():
-        goals_home = Booster()
-        goals_home.load_model(str(MODEL_DIR / "model_goals_home.json"))
-    if (MODEL_DIR / "model_goals_away.json").is_file():
-        goals_away = Booster()
-        goals_away.load_model(str(MODEL_DIR / "model_goals_away.json"))
+        metadata = json.loads((MODEL_DIR / "metadata.json").read_text(encoding="utf-8"))
+        snapshots: dict[int, Path] = {}
+        for path in MODEL_DIR.glob("state_*.json.gz"):
+            try:
+                snapshots[int(path.stem.split("_")[1].split(".")[0])] = path
+            except (IndexError, ValueError):
+                continue
 
-    snapshots: dict[int, Path] = {}
-    for path in MODEL_DIR.glob("state_*.json.gz"):
-        try:
-            snapshots[int(path.stem.split("_")[1].split(".")[0])] = path
-        except (IndexError, ValueError):
-            continue
+        clf = _booster("model_clf.json")
+        if clf is None or not snapshots:
+            return None
 
-    feature_columns = metadata.get("feature_columns") or list(FEATURE_COLUMNS)
-    return {
-        "clf": clf,
-        "lr": lr,
-        "calibrator": calibrator,
-        "metadata": metadata,
-        "goals_home": goals_home,
-        "goals_away": goals_away,
-        "snapshots": snapshots,
-        "feature_columns": feature_columns,
-    }
+        feature_columns = metadata.get("feature_columns") or list(FEATURE_COLUMNS)
+        return {
+            "clf": clf,
+            "lr": json.loads((MODEL_DIR / "model_lr.json").read_text(encoding="utf-8")),
+            "calibrator": json.loads(
+                (MODEL_DIR / "calibrator.json").read_text(encoding="utf-8")
+            ),
+            "metadata": metadata,
+            "goals_home": _booster("model_goals_home.json"),
+            "goals_away": _booster("model_goals_away.json"),
+            "snapshots": snapshots,
+            "feature_columns": feature_columns,
+        }
+    except (OSError, json.JSONDecodeError, ValueError, KeyError, TypeError):
+        return None
 
 
 def _load_snapshot_state(art: dict[str, Any], target_season: int) -> tuple[int, Any] | None:
@@ -121,8 +128,11 @@ def _load_snapshot_state(art: dict[str, Any], target_season: int) -> tuple[int, 
     if not eligible:
         return None
     season = max(eligible)
-    with gzip.open(art["snapshots"][season], "rt", encoding="utf-8") as handle:
-        return season, json.load(handle)
+    try:
+        with gzip.open(art["snapshots"][season], "rt", encoding="utf-8") as handle:
+            return season, json.load(handle)
+    except (OSError, json.JSONDecodeError, gzip.BadGzipFile, EOFError, TypeError, ValueError):
+        return None
 
 
 def _read_cache(path: Path, ttl: int) -> Any | None:

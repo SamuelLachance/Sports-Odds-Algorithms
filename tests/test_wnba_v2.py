@@ -5,6 +5,8 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import pytest
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -191,6 +193,7 @@ def test_signed_spread_and_devig() -> None:
     assert devig_two_way(-50, 130) is None  # invalid american price
 
 
+@pytest.mark.slow
 def test_live_prediction_when_artifacts_present() -> None:
     """Live smoke test (skips when model artifacts are not built)."""
     from web.wnba_v2.live import artifacts_available, predict_matchup_v2, wnba_season_for_date
@@ -220,6 +223,7 @@ def test_devig_home_prob_and_market_variant_helpers() -> None:
     assert fav is not None and fav > 0.6
 
 
+@pytest.mark.slow
 def test_live_market_aware_when_odds_provided() -> None:
     from web.wnba_v2.live import artifacts_available, predict_matchup_v2
 

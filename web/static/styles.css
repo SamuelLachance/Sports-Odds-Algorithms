@@ -924,6 +924,16 @@ a.pick-card-link:focus-visible {
   border-left: 4px solid color-mix(in srgb, var(--accent) 45%, var(--border));
 }
 
+.empty-panel--not-found {
+  border-color: rgba(251, 191, 36, 0.35);
+}
+
+.empty-panel--not-found .inline-code {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.85em;
+  color: var(--accent-warm);
+}
+
 .empty-panel--slate {
   border-left: 4px solid color-mix(in srgb, var(--accent-warm) 50%, var(--border));
 }

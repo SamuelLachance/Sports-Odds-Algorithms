@@ -1,4 +1,4 @@
-const APP_BUILD_VERSION = "2026-07-12-wave3-a11y";
+const APP_BUILD_VERSION = "2026-07-12-wave4-seo404";
 const META_BASE_PATH =
   document.querySelector('meta[name="base-path"]')?.content ?? "";
 const IS_GITHUB_IO = window.location.hostname.endsWith("github.io");
@@ -230,10 +230,44 @@ async function fetchJson(url, { timeoutMs = 30000 } = {}) {
   }
 }
 
+/** Top-level hash segments the SPA knows how to render. */
+const KNOWN_ROUTES = new Set([
+  "",
+  "picks",
+  "games",
+  "game",
+  "teams",
+  "team",
+  "player",
+  "tracking",
+  "methodology",
+  "database",
+]);
+
 function parseRoute() {
   const hash = location.hash.replace(/^#/, "") || "/";
   const parts = hash.split("/").filter(Boolean);
   return { path: parts[0] || "", parts };
+}
+
+function isKnownRoute(route) {
+  return KNOWN_ROUTES.has(route?.path || "");
+}
+
+function viewNotFound(route) {
+  const attempted = escapeHtml(
+    location.hash || `#/${(route?.parts || []).join("/")}` || "#/",
+  );
+  appRoot.innerHTML = `<div class="panel empty-panel empty-panel--not-found" role="alert">
+    <strong>Page not found</strong>
+    <p class="muted">No route matches <code class="inline-code">${attempted}</code>. Hash URLs are the public deep links for this app.</p>
+    <div class="empty-panel-actions">
+      <a class="btn btn-secondary btn-sm" href="#/">Home</a>
+      <a class="btn btn-secondary btn-sm" href="#/games">Games</a>
+      <a class="btn btn-secondary btn-sm" href="#/picks">Algo picks</a>
+      <a class="btn btn-secondary btn-sm" href="#/tracking">CLV tracking</a>
+    </div>
+  </div>`;
 }
 
 function navigate(hash) {
@@ -2780,6 +2814,10 @@ async function render() {
   highlightNav(route);
   closeMobileNav();
   try {
+    if (!isKnownRoute(route)) {
+      viewNotFound(route);
+      return;
+    }
     if (route.path === "picks") viewPicks();
     else if (route.path === "games") viewGames(route.parts[1]);
     else if (route.path === "game") viewGame(route.parts[1]);
