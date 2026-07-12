@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import csv
 import io
+import math
 import time
 import urllib.error
 import urllib.request
@@ -131,15 +132,18 @@ def fetch_csv_text(
 
 
 def _to_float(value: Any) -> float | None:
-    if value is None:
+    if value is None or isinstance(value, bool):
         return None
     text = str(value).strip()
     if not text:
         return None
     try:
-        return float(text)
+        parsed = float(text)
     except ValueError:
         return None
+    if not math.isfinite(parsed):
+        return None
+    return parsed
 
 
 def _to_int(value: Any) -> int | None:
@@ -265,9 +269,22 @@ def devig_decimal(
     """Decimal 1X2 odds -> vig-free probabilities (0-1)."""
     if not home or not draw or not away:
         return None
-    if home <= 1.0 or draw <= 1.0 or away <= 1.0:
+    try:
+        home_f = float(home)
+        draw_f = float(draw)
+        away_f = float(away)
+    except (TypeError, ValueError):
         return None
-    inv = (1.0 / home, 1.0 / draw, 1.0 / away)
+    # Inf would wipe a side to 0%; NaN would poison the whole triple.
+    if not (
+        math.isfinite(home_f)
+        and math.isfinite(draw_f)
+        and math.isfinite(away_f)
+    ):
+        return None
+    if home_f <= 1.0 or draw_f <= 1.0 or away_f <= 1.0:
+        return None
+    inv = (1.0 / home_f, 1.0 / draw_f, 1.0 / away_f)
     total = sum(inv)
     if total <= 0:
         return None

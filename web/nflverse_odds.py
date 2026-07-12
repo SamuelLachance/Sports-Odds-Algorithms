@@ -61,6 +61,9 @@ def rows_from_nflverse_csv(path: Path) -> list[dict[str, Any]]:
                 spread_num = None
             if spread_num is not None and not math.isfinite(spread_num):
                 spread_num = None
+            # Juice/ML dumps (|x| ≥ 100) are never real NFL handicaps.
+            if spread_num is not None and abs(spread_num) >= 100.0:
+                spread_num = None
             home_close_spread = -spread_num if spread_num is not None else ""
             away_close_spread = spread_num if spread_num is not None else ""
             rows.append(

@@ -93,7 +93,15 @@ def _haversine_km(a: tuple[float, float, float], b: tuple[float, float, float]) 
 def american_to_prob(odds: float | None) -> float | None:
     if odds is None:
         return None
-    odds = float(odds)
+    # bool is a subclass of int; False→0.0 must not invent EVEN (+100 → 50%).
+    if isinstance(odds, bool):
+        return None
+    try:
+        odds = float(odds)
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(odds):
+        return None
     # ESPN EVEN sometimes arrives as numeric 0 — treat as +100.
     if odds == 0:
         odds = 100.0

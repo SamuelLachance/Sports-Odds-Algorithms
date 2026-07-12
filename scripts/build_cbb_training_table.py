@@ -66,10 +66,11 @@ def _odds_for_game(
 
     def _f(key: str, *, american: bool = False) -> float | None:
         raw = row.get(key)
-        if raw is None or raw == "":
+        if raw is None or raw == "" or isinstance(raw, bool):
             return None
-        if american and isinstance(raw, str) and raw.strip().upper() in {"EVEN", "PK"}:
-            return 100.0
+        if isinstance(raw, str) and raw.strip().upper() in {"EVEN", "PK"}:
+            # Juice EVEN/PK → +100; handicap pick'em → 0.0 (NBA parity).
+            return 100.0 if american else 0.0
         try:
             val = float(raw)
         except (TypeError, ValueError):

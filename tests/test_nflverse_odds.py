@@ -48,6 +48,27 @@ def test_nflverse_rows_flip_spread_line_to_betting_convention(tmp_path: Path) ->
     assert float(rows[1]["away_close_spread"]) == -4.0
 
 
+def test_nflverse_drops_juice_sized_spread_line(tmp_path: Path) -> None:
+    """American juice magnitudes must not become NFL closing spreads."""
+    from web.nflverse_odds import rows_from_nflverse_csv
+
+    csv_path = tmp_path / "games.csv"
+    csv_path.write_text(
+        "game_type,gameday,home_team,away_team,spread_line,"
+        "home_moneyline,away_moneyline,home_spread_odds,away_spread_odds\n"
+        "REG,2024-09-08,KC,BAL,-110,-150,130,-110,-110\n"
+        "REG,2024-09-15,BUF,MIA,3.5,-165,145,-105,-115\n",
+        encoding="utf-8",
+    )
+    rows = rows_from_nflverse_csv(csv_path)
+    assert len(rows) == 2
+    assert rows[0]["home_close_spread"] == ""
+    assert rows[0]["away_close_spread"] == ""
+    assert rows[0]["home_close_ml"] == -150
+    assert float(rows[1]["home_close_spread"]) == -3.5
+    assert float(rows[1]["away_close_spread"]) == 3.5
+
+
 def test_nflverse_drops_non_finite_spread_line(tmp_path: Path) -> None:
     """NaN spread_line must not poison the closing-odds cache CSV."""
     from web.nflverse_odds import rows_from_nflverse_csv

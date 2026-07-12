@@ -624,6 +624,28 @@ def test_repair_same_sign_handles_pk_mismatch_and_asymmetric_magnitude() -> None
     )
 
 
+def test_repair_same_sign_rejects_bool_moneylines() -> None:
+    """False→0.0 must not invent EVEN chalk and flip same-sign dumps."""
+    from web.sbr_odds import _repair_same_sign_spreads
+
+    # Without MLs, same-sign defaults to home favorite (−mag / +mag).
+    assert _repair_same_sign_spreads(3.5, 3.5) == (-3.5, 3.5)
+    # Bool False must not become 0.0 and crown away as favorite vs −150.
+    assert _repair_same_sign_spreads(3.5, 3.5, home_ml=False, away_ml=-150) == (
+        -3.5,
+        3.5,
+    )
+    assert _repair_same_sign_spreads(3.5, 3.5, home_ml=-150, away_ml=False) == (
+        -3.5,
+        3.5,
+    )
+    # Opposite-sign board must stay put when a bool poisons one ML.
+    assert _repair_same_sign_spreads(-3.5, 3.5, home_ml=False, away_ml=-150) == (
+        -3.5,
+        3.5,
+    )
+
+
 def test_repair_opposite_sign_flips_when_ml_disagrees() -> None:
     """Opposite-sign lines that name the wrong chalk must follow the ML favorite."""
     from web.sbr_odds import _repair_same_sign_spreads

@@ -13,6 +13,7 @@ Signals:
 
 from __future__ import annotations
 
+import math
 import re
 from typing import Any
 
@@ -321,6 +322,8 @@ def sparse_sample_ev_cap(
     try:
         ev = float(ev_pct)
     except (TypeError, ValueError):
+        return 0.0
+    if not math.isfinite(ev):
         return 0.0
 
     sparse = is_sparse_sample_league(league)

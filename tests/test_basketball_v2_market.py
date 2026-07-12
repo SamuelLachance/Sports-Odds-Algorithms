@@ -124,6 +124,25 @@ def test_apply_market_features_failsoft_invalid_spreads() -> None:
     assert has_spread is True
     assert numeric["mkt_home_spread"] == -3.5
 
+
+def test_apply_market_features_rejects_juice_sized_spreads() -> None:
+    """American juice/ML dumps must not enable market-aware margin heads."""
+    from web.basketball_v2_market import _coerce_home_spread
+
+    assert _coerce_home_spread(-110) is None
+    assert _coerce_home_spread(150) is None
+    assert _coerce_home_spread("-110") is None
+    assert _coerce_home_spread(45) is None  # beyond NBA/WNBA max
+    assert _coerce_home_spread(-4.5) == -4.5
+
+    for junk in (-110, 110, 150, "-105", 50):
+        feats: dict[str, float] = {}
+        _, has_spread = apply_market_features(feats, home_spread=junk)
+        assert has_spread is False
+        assert feats["has_spread"] == 0.0
+        assert feats["mkt_home_spread"] == 0.0
+
+
 def test_resolve_market_heads_variants() -> None:
     art = {
         "feature_columns": ["elo_diff"],

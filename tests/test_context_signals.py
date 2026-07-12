@@ -220,6 +220,15 @@ def test_sparse_ev_cap_soft_for_thin_regular_league() -> None:
     assert capped <= 55.0
 
 
+def test_sparse_ev_cap_rejects_nan_and_inf() -> None:
+    import math
+
+    assert sparse_sample_ev_cap("nba", 40, float("nan")) == 0.0
+    assert sparse_sample_ev_cap("worldcup", None, float("inf")) == 0.0
+    assert sparse_sample_ev_cap("nba", 3, float("-inf")) == 0.0
+    assert not math.isnan(sparse_sample_ev_cap("nba", 40, float("nan")))
+
+
 def test_games_played_proxy_from_blend_reads_sport_pred_and_context() -> None:
     from web.context_signals import games_played_proxy_from_blend
 

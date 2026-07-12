@@ -35,9 +35,14 @@ SPREAD_BREAK_EVEN = 0.5238  # -110
 
 def _sane_american(odds: float, default: float = float("nan")) -> float:
     """American odds must have magnitude >= 100; return default otherwise."""
+    # bool is a subclass of int; False→0.0 must not invent EVEN (+100).
+    if isinstance(odds, bool):
+        return default
     try:
         odds = float(odds)
     except (TypeError, ValueError):
+        return default
+    if not math.isfinite(odds):
         return default
     # ESPN EVEN sometimes arrives as numeric 0 — treat as +100.
     if odds == 0:
@@ -57,7 +62,10 @@ def american_profit(odds: float, won: bool) -> float:
 
 
 def implied_prob(odds: float) -> float:
-    odds = _sane_american(float(odds))
+    # Reject bool before float() — False→0.0 would invent EVEN via _sane_american.
+    if isinstance(odds, bool):
+        return float("nan")
+    odds = _sane_american(odds)
     if math.isnan(odds):
         return float("nan")
     return 100.0 / (odds + 100.0) if odds > 0 else -odds / (-odds + 100.0)

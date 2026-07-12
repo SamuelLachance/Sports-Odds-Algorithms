@@ -10,7 +10,12 @@ import pytest
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from web.soccer_v2.data import devig_decimal, parse_season_csv  # noqa: E402
+from web.soccer_v2.data import (  # noqa: E402
+    _first_odds,
+    _to_int,
+    devig_decimal,
+    parse_season_csv,
+)
 from web.soccer_v2.feature_engine import (  # noqa: E402
     FEATURE_COLUMNS,
     SoccerFeatureEngine,
@@ -227,6 +232,32 @@ def test_devig_decimal_sums_to_one() -> None:
     assert abs(sum(probs) - 1.0) < 1e-9
     assert probs[0] > probs[1] > probs[2]
     assert devig_decimal(None, 4.5, 7.0) is None
+
+
+def test_soccer_parsers_reject_nan_and_inf() -> None:
+    """Non-finite cells must not crash season parse or invent 0% win probs."""
+    import math
+
+    assert _to_int("nan") is None
+    assert _to_int("inf") is None
+    assert _to_int("-inf") is None
+    assert _first_odds({"H": "inf"}, ("H",)) is None
+    assert _first_odds({"H": "nan"}, ("H",)) is None
+    assert devig_decimal(float("inf"), 3.5, 4.0) is None
+    assert devig_decimal(float("nan"), 3.5, 4.0) is None
+
+    csv_text = (
+        "Div,Date,HomeTeam,AwayTeam,FTHG,FTAG,HS,AS,HST,AST,HC,AC,HR,AR,"
+        "B365H,B365D,B365A\n"
+        "E0,10/08/24,Arsenal,Chelsea,2,1,nan,9,6,3,5,4,0,0,1.5,4.0,6.0\n"
+        "E0,11/08/24,Liverpool,Everton,inf,0,10,8,5,2,4,3,0,0,1.4,4.5,7.0\n"
+    )
+    rows = parse_season_csv(csv_text, "E0", 2025)
+    assert len(rows) == 1
+    assert rows[0]["home"] == "Arsenal"
+    assert rows[0]["home_shots"] is None
+    assert rows[0]["away_shots"] == 9
+    assert not any(math.isnan(v) for v in (rows[0]["open_home"],) if v is not None)
 
 
 def test_decorrelate_pushes_away_from_market() -> None:

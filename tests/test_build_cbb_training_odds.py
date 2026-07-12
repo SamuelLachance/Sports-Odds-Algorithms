@@ -75,3 +75,40 @@ def test_cbb_odds_join_uses_canon_abbr_aliases() -> None:
     assert out["home_ml"] == -150.0
     assert out["away_ml"] == 130.0
     assert out["home_spread"] == -4.5
+
+
+def test_cbb_odds_join_maps_pk_spread_and_rejects_bool() -> None:
+    """Handicap PK/EVEN is pick'em 0; bool False must not become EVEN/+100."""
+    idx_pk = {
+        ("2024-01-01", "duke", "unc"): {
+            "home_close_ml": "-110",
+            "away_close_ml": "100",
+            "home_close_spread": "PK",
+            "home_spread_odds": "-110",
+            "away_spread_odds": "-110",
+            "close_total": "140",
+            "n_books": "2",
+        }
+    }
+    out_pk = _odds_for_game(
+        idx_pk, {"date": "2024-01-01", "home_abbr": "duke", "away_abbr": "unc"}
+    )
+    assert out_pk["home_spread"] == 0.0
+
+    idx_bool = {
+        ("2024-01-01", "duke", "unc"): {
+            "home_close_ml": False,
+            "away_close_ml": "-110",
+            "home_close_spread": False,
+            "home_spread_odds": "-110",
+            "away_spread_odds": "-110",
+            "close_total": "140",
+            "n_books": "2",
+        }
+    }
+    out_bool = _odds_for_game(
+        idx_bool, {"date": "2024-01-01", "home_abbr": "duke", "away_abbr": "unc"}
+    )
+    assert out_bool["home_ml"] is None
+    assert out_bool["home_spread"] is None
+    assert out_bool["away_ml"] == -110.0

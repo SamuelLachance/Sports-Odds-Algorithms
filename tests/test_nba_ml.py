@@ -8,7 +8,7 @@ from datetime import date
 import pytest
 
 from web.nba_ml import nba_ml_artifacts_present, nba_ml_enabled
-from web.nba_ml.backtest import _ats_result, _sane_american, american_profit
+from web.nba_ml.backtest import _ats_result, _sane_american, american_profit, implied_prob
 from web.nba_ml.features import (
     FeatureState,
     american_to_prob,
@@ -31,6 +31,19 @@ def test_american_to_prob_and_devig():
     assert 0.0 < p < 1.0
     assert devig_home_prob(None, +130) is None
     assert abs(devig_home_prob(0, -110) - devig_home_prob(100, -110)) < 1e-9
+
+
+def test_american_to_prob_rejects_bool_false_as_even() -> None:
+    """False floats to 0.0; must not invent EVEN market features or P&L."""
+    assert american_to_prob(False) is None
+    assert american_to_prob(True) is None
+    assert math.isnan(_sane_american(False))
+    assert math.isnan(_sane_american(True))
+    assert math.isnan(implied_prob(False))
+    assert math.isnan(implied_prob(True))
+    assert math.isnan(american_profit(False, True))
+    assert devig_home_prob(False, -110) is None
+    assert devig_home_prob(-110, False) is None
 
 
 def test_spread_to_home_prob_monotonic():

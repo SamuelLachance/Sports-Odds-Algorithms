@@ -203,6 +203,11 @@ def _repair_same_sign_spreads(
         return home_spread, away_spread
     home_f = float(home_spread)
     away_f = float(away_spread)
+    # bool is a subclass of int; False→0.0 must not invent EVEN ML chalk.
+    if isinstance(home_ml, bool):
+        home_ml = None
+    if isinstance(away_ml, bool):
+        away_ml = None
     # Pick'em (0) on one side with a real line on the other is inconsistent.
     pk_mismatch = (home_f == 0.0) ^ (away_f == 0.0)
     same_sign = (

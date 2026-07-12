@@ -10,10 +10,15 @@ import math
 from typing import Any
 
 
+# NBA/WNBA live spreads beyond this are almost always juice/ML dumps.
+_MAX_BASKETBALL_SPREAD = 40.0
+
+
 def _coerce_home_spread(home_spread: Any) -> float | None:
     """Fail-soft spread parse aligned with ESPN ``_parse_spread_line``.
 
-    ``PK`` / ``EVEN`` → 0.0; junk / bool → None (do not raise or invent market).
+    ``PK`` / ``EVEN`` → 0.0; junk / bool / |x|≥100 juice dumps → None
+    (do not raise or invent market-aware margin features).
     """
     if home_spread is None or home_spread == "":
         return None
@@ -31,6 +36,11 @@ def _coerce_home_spread(home_spread: Any) -> float | None:
     except (TypeError, ValueError):
         return None
     if not math.isfinite(value):
+        return None
+    # American juice/ML magnitudes (|x| ≥ 100) are never real handicaps.
+    if abs(value) >= 100.0:
+        return None
+    if abs(value) > _MAX_BASKETBALL_SPREAD:
         return None
     return value
 
