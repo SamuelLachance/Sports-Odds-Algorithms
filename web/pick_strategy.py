@@ -1052,6 +1052,7 @@ def evaluate_soccer_official_picks_for_game(
     base_home_prob: float | None = None,
     base_draw_prob: float | None = None,
     base_away_prob: float | None = None,
+    games_played_proxy: int | None = None,
 ) -> list[BetPick]:
     """Official 1X2 picks: Hubáček decorrelation gap vs market, honest EV."""
     thresholds = get_pick_thresholds(league)
@@ -1071,6 +1072,8 @@ def evaluate_soccer_official_picks_for_game(
         away_market=away_market,
         draw_market=draw_market,
         home_market=home_market,
+        expected_home_goals=expected_home_goals,
+        expected_away_goals=expected_away_goals,
         base_home_prob=base_home_prob,
         base_draw_prob=base_draw_prob,
         base_away_prob=base_away_prob,
@@ -1079,6 +1082,7 @@ def evaluate_soccer_official_picks_for_game(
         min_win_confidence_pp=thresholds["min_win_confidence_pp"],
         min_ev_pct=thresholds["min_ev_pct"],
         league=league,
+        games_played_proxy=games_played_proxy,
     )
     allowed_sides = thresholds.get("allowed_sides")
     if allowed_sides:
@@ -1106,12 +1110,17 @@ def evaluate_official_picks_for_game(
     home_spread_odds: int | None,
     home_prob: float | None = None,
     away_prob: float | None = None,
+    games_played_proxy: int | None = None,
 ) -> list[BetPick]:
     """Official picks: Hubáček decorrelation gap vs market (no flat EV% bar)."""
     thresholds = get_pick_thresholds(league)
     if not thresholds.get("enabled", True):
         return []
     bet_type = thresholds["bet_type"]
+    if games_played_proxy is None:
+        from web.context_signals import games_played_proxy_from_blend
+
+        games_played_proxy = games_played_proxy_from_blend(blended)
 
     if bet_type == "spread":
         if consensus_spread is None:
@@ -1166,6 +1175,7 @@ def evaluate_official_picks_for_game(
             ml_lo=thresholds.get("ml_lo"),
             ml_hi=thresholds.get("ml_hi"),
             league=league,
+            games_played_proxy=games_played_proxy,
         )
         return picks
 

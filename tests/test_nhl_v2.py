@@ -103,3 +103,37 @@ def test_infer_nhl_game_type_playoff_window() -> None:
     assert infer_nhl_game_type("2026-05-20") == 3
     assert infer_nhl_game_type("2026-06-15") == 3
     assert infer_nhl_game_type("not-a-date") == 2
+
+
+def test_get_live_context_fails_closed_on_missing_gap_season(monkeypatch) -> None:
+    """Hard-missing intermediate seasons must not silently skip Elo/form state."""
+    from unittest.mock import MagicMock
+
+    import web.nhl_v2.live as live
+
+    live.get_live_context.cache_clear()
+    art = {"snapshots": {2023: MagicMock()}}
+    monkeypatch.setattr(live, "_load_artifacts", lambda: art)
+    monkeypatch.setattr(
+        live,
+        "_load_snapshot_state",
+        lambda _art, _season: (2023, {"teams": {}}),
+    )
+    monkeypatch.setattr(
+        live.NhlFeatureEngine,
+        "from_dict",
+        classmethod(lambda cls, _payload: MagicMock()),
+    )
+    monkeypatch.setattr(live, "nhl_season_for_date", lambda _d: 2025)
+
+    calls: list[int] = []
+
+    def fake_bundle(season: int):
+        calls.append(season)
+        if season == 2024:
+            return None, False
+        return {"team_games": [], "goalies": []}, False
+
+    monkeypatch.setattr(live, "_fetch_stats_bundle", fake_bundle)
+    assert live.get_live_context("2025-01-15") is None
+    assert 2024 in calls

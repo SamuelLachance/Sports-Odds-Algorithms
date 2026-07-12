@@ -436,7 +436,8 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
         gap_stats, gap_stale = _fetch_stats_bundle(gap_season)
         live_inputs_stale = live_inputs_stale or gap_stale
         if gap_stats is None:
-            continue
+            # Missing intermediate season would skip Elo/form state — fail closed.
+            return None
         gap_mp_all, gap_mp_stale = _fetch_moneypuck_slices([gap_season])
         live_inputs_stale = live_inputs_stale or gap_mp_stale
         gap_mp = gap_mp_all.get(gap_season) or {}

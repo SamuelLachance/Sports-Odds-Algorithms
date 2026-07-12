@@ -581,6 +581,8 @@ def predict_live_game(
         pick_away_proj, pick_draw_proj, pick_home_proj = soccer_model_moneylines(
             pick_home, pick_draw, pick_away
         )
+        from web.context_signals import games_played_proxy_from_blend
+
         picks = evaluate_soccer_official_picks_for_game(
             league=game.league,
             away_name=game.away_name,
@@ -603,6 +605,7 @@ def predict_live_game(
             base_home_prob=home_prob,
             base_draw_prob=draw_prob,
             base_away_prob=away_prob,
+            games_played_proxy=games_played_proxy_from_blend(blended),
         )
     else:
         picks = evaluate_official_picks_for_game(
@@ -654,10 +657,16 @@ def predict_live_game(
         from web.live_odds_enrichment import line_shopping_fields_for_pick
 
         enriched = _enrich_pick_with_team_abbr(pick_dict, matchup)
+        # Honest EV stays on ESPN; parallel EV at the shopped price uses the
+        # calibrated (base) probability when available.
+        model_prob = enriched.get("base_win_probability")
+        if model_prob is None:
+            model_prob = enriched.get("win_probability")
         shopping = line_shopping_fields_for_pick(
             market_dict,
             side=str(enriched.get("side") or ""),
             bet_type=str(enriched.get("bet_type") or "moneyline"),
+            model_prob_pct=float(model_prob) if model_prob is not None else None,
         )
         return {**enriched, **shopping} if shopping else enriched
 

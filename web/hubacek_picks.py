@@ -104,9 +104,30 @@ def hubacek_min_market_gap_pp(league: str | None = None) -> float:
     return float(override) if override is not None else HUBACEK_MIN_MARKET_GAP_PP
 
 
+def hubacek_min_spread_cover_gap_pp(league: str | None = None) -> float:
+    override = league_pick_overrides(league).get("min_spread_cover_gap_pp")
+    return float(override) if override is not None else HUBACEK_MIN_SPREAD_COVER_GAP_PP
+
+
+def hubacek_min_spread_confidence_pp(league: str | None = None) -> float:
+    override = league_pick_overrides(league).get("min_spread_confidence_pp")
+    return (
+        float(override)
+        if override is not None
+        else HUBACEK_SPREAD_MIN_WIN_CONFIDENCE_PP
+    )
+
+
 def hubacek_min_ev_pct(league: str | None = None) -> float:
     override = league_pick_overrides(league).get("min_ev_pct")
     return float(override) if override is not None else HUBACEK_MIN_EV_PCT
+
+
+def hubacek_allowed_sides(league: str | None = None) -> set[str] | None:
+    sides = league_pick_overrides(league).get("allowed_sides")
+    if not sides:
+        return None
+    return {str(side).lower() for side in sides}
 
 
 def hubacek_ml_range(league: str | None = None) -> tuple[float, float] | None:
@@ -238,17 +259,26 @@ def passes_hubacek_tracked_pick(pick: dict[str, Any]) -> bool:
     league = pick.get("league")
     if (pick.get("ev_pct") or 0) < hubacek_min_ev_pct(league):
         return False
+    # Fail closed: gap and win probability are required official-book fields.
     win_prob = pick.get("win_probability")
-    if (pick.get("bet_type") or "moneyline") == "spread":
-        min_pp = HUBACEK_SPREAD_MIN_WIN_CONFIDENCE_PP
+    gap = pick.get("model_market_gap_pp")
+    if win_prob is None or gap is None:
+        return False
+    bet_type = str(pick.get("bet_type") or "moneyline").lower()
+    allowed = hubacek_allowed_sides(league)
+    if allowed is not None and str(pick.get("side") or "").lower() not in allowed:
+        return False
+    if bet_type == "spread":
+        min_pp = hubacek_min_spread_confidence_pp(league)
+        min_gap = hubacek_min_spread_cover_gap_pp(league)
     else:
         min_pp = hubacek_min_win_confidence_pp(league)
-    if win_prob is not None and not passes_hubacek_confidence(float(win_prob), min_pp=min_pp):
+        min_gap = hubacek_min_market_gap_pp(league)
+    if not passes_hubacek_confidence(float(win_prob), min_pp=min_pp):
         return False
-    gap = pick.get("model_market_gap_pp")
-    if gap is not None and float(gap) < hubacek_min_market_gap_pp(league):
+    if float(gap) < min_gap:
         return False
-    if (pick.get("bet_type") or "moneyline") == "moneyline" and not within_hubacek_ml_range(
+    if bet_type in ("moneyline", "soccer_1x2") and not within_hubacek_ml_range(
         league, pick.get("market_odds")
     ):
         return False

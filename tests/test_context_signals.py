@@ -193,6 +193,21 @@ def test_sparse_ev_cap_soft_for_thin_regular_league() -> None:
     assert capped <= 55.0
 
 
+def test_games_played_proxy_from_blend_reads_sport_pred_and_context() -> None:
+    from web.context_signals import games_played_proxy_from_blend
+
+    assert games_played_proxy_from_blend(
+        {"basketball_pred": {"home_games": 4, "away_games": 7}}
+    ) == 4
+    assert games_played_proxy_from_blend(
+        {
+            "context_signals": {"games_played_proxy": 3},
+            "basketball_pred": {"home_games": 40, "away_games": 40},
+        }
+    ) == 3
+    assert games_played_proxy_from_blend({}) is None
+
+
 def test_apply_context_stores_pre_context_and_updates_probs() -> None:
     blended = {
         "blended_home_win_probability": 62.0,

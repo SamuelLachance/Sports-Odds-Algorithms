@@ -370,6 +370,17 @@ def _games_played_proxy_from_blend(blended: dict[str, Any]) -> int | None:
     return None
 
 
+def games_played_proxy_from_blend(blended: dict[str, Any]) -> int | None:
+    """Public wrapper: min team games from sport-pred layers when available."""
+    ctx = blended.get("context_signals")
+    if isinstance(ctx, dict) and ctx.get("games_played_proxy") is not None:
+        try:
+            return int(ctx["games_played_proxy"])
+        except (TypeError, ValueError):
+            pass
+    return _games_played_proxy_from_blend(blended)
+
+
 def apply_context_to_blend(
     blended: dict[str, Any],
     *,

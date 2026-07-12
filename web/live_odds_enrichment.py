@@ -376,8 +376,14 @@ def line_shopping_fields_for_pick(
     *,
     side: str,
     bet_type: str = "moneyline",
+    model_prob_pct: float | None = None,
 ) -> dict[str, Any]:
-    """Subset of market enrichment to attach onto recommended_bets / pick cards."""
+    """Subset of market enrichment to attach onto recommended_bets / pick cards.
+
+    Official EV/Kelly stay on ESPN ``market_odds``. When a better book price
+    exists, also report ``ev_pct_at_best`` so the UI does not imply Honest EV
+    is executable at the shopped price.
+    """
     if not market.get("n_books"):
         return {}
     best = best_available_for_pick(market, side=side, bet_type=bet_type)
@@ -400,4 +406,10 @@ def line_shopping_fields_for_pick(
         )
         if side_edge is not None:
             fields["best_vs_espn_pp"] = side_edge
+        if model_prob_pct is not None:
+            from web.bet_advisor import expected_value_pct
+
+            fields["ev_pct_at_best"] = round(
+                expected_value_pct(float(model_prob_pct), int(best)), 2
+            )
     return {k: v for k, v in fields.items() if v is not None}

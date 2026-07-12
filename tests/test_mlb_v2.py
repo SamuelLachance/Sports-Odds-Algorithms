@@ -63,6 +63,21 @@ def test_prefer_todays_game_picks_non_final_doubleheader() -> None:
     pending1 = {**game1, "status": "S"}
     assert live._prefer_todays_game(pending1, game2)["gamePk"] == 1
     assert live._prefer_todays_game(game2, pending1)["gamePk"] == 1
+    # Game Over (O) is terminal for preference, same as Final (F).
+    over1 = {**game1, "status": "O"}
+    assert live._prefer_todays_game(over1, game2)["gamePk"] == 2
+
+
+def test_is_final_game_accepts_game_over_status() -> None:
+    from web.mlb_v2.replay import is_final_game
+
+    base = {"home_score": 5, "away_score": 3}
+    assert is_final_game({**base, "status": "F"})
+    assert is_final_game({**base, "status": "O"})
+    assert not is_final_game({**base, "status": "S"})
+    assert not is_final_game({"status": "O", "home_score": 5})  # missing away
+    assert not is_final_game({**base, "status": "C"})  # cancelled ≠ completed
+    assert not is_final_game({**base, "status": "D"})  # postponed ≠ completed
 
 
 def test_fetch_season_bundle_flags_stale_on_network_failure(tmp_path, monkeypatch) -> None:
@@ -252,7 +267,7 @@ def test_predict_matchup_applies_earlier_dh_final(monkeypatch) -> None:
     game1 = {
         "gamePk": 1,
         "date": "2026-07-12",
-        "status": "F",
+        "status": "O",  # Game Over — must count as final for same-day DH updates
         "game_number": 1,
         "home_id": home_id,
         "away_id": away_id,

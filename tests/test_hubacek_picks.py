@@ -198,8 +198,8 @@ def test_tracked_pick_requires_hubacek_strategy_ev_and_confidence() -> None:
             "league": "mlb",
         }
     )
-    # Spread bets use the 5 pp cover-confidence bar.
-    assert passes_hubacek_tracked_pick(
+    # NBA spread uses the backtested 10 pp cover-gap floor (not the 2 pp ML floor).
+    assert not passes_hubacek_tracked_pick(
         {
             "strategy": "hubacek",
             "model_market_gap_pp": 3.0,
@@ -207,6 +207,44 @@ def test_tracked_pick_requires_hubacek_strategy_ev_and_confidence() -> None:
             "win_probability": 56,
             "bet_type": "spread",
             "league": "nba",
+        }
+    )
+    assert passes_hubacek_tracked_pick(
+        {
+            "strategy": "hubacek",
+            "model_market_gap_pp": 10.0,
+            "ev_pct": 3.0,
+            "win_probability": 56,
+            "bet_type": "spread",
+            "league": "nba",
+        }
+    )
+    # Missing gap / win probability must fail closed (not skip those gates).
+    assert not passes_hubacek_tracked_pick(
+        {
+            "strategy": "hubacek",
+            "ev_pct": 5.0,
+            "win_probability": 72,
+        }
+    )
+    assert not passes_hubacek_tracked_pick(
+        {
+            "strategy": "hubacek",
+            "model_market_gap_pp": 5.0,
+            "ev_pct": 5.0,
+        }
+    )
+    # Soccer home-only leagues must reject away/draw on revalidation.
+    assert not passes_hubacek_tracked_pick(
+        {
+            "strategy": "hubacek",
+            "model_market_gap_pp": 5.0,
+            "ev_pct": 6.0,
+            "win_probability": 48.0,
+            "side": "away",
+            "bet_type": "soccer_1x2",
+            "league": "epl",
+            "market_odds": 150,
         }
     )
     assert not passes_hubacek_tracked_pick(

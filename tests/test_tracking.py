@@ -449,7 +449,7 @@ def _spread_pick(
     *,
     edge: float = 30.0,
     ev_pct: float = 5.0,
-    gap_pp: float = 5.0,
+    gap_pp: float = 10.5,
     win_probability: float = 72.0,
     event_id: str = "401859967",
 ) -> dict:

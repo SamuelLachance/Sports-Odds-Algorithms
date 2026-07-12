@@ -488,6 +488,55 @@ def test_spread_picks_require_hubacek_decorrelation_gap() -> None:
     assert picks == []
 
 
+def test_evaluate_picks_applies_thin_sample_ev_cap_via_games_proxy() -> None:
+    """Early-season non-sparse leagues soft-cap absurd EV when proxy is tiny."""
+    picks = evaluate_picks(
+        away_name="Away",
+        home_name="Home",
+        away_slug="away",
+        home_slug="home",
+        total_score=55.0,
+        win_probability=55.0,
+        away_market=400,
+        home_market=-500,
+        away_prob=55.0,
+        home_prob=45.0,
+        base_away_prob=55.0,
+        base_home_prob=45.0,
+        hubacek_only=True,
+        min_market_gap_pp=2.0,
+        min_win_confidence_pp=0.0,
+        min_ev_pct=2.0,
+        league="nba",
+        games_played_proxy=3,
+    )
+    assert picks
+    # Uncapped EV at +400 with 55% is +175%; thin-sample soft-cap is 55%.
+    assert all(pick.ev_pct <= 55.0 for pick in picks)
+    assert picks[0].extra.get("games_played_proxy") == 3
+    uncapped = evaluate_picks(
+        away_name="Away",
+        home_name="Home",
+        away_slug="away",
+        home_slug="home",
+        total_score=55.0,
+        win_probability=55.0,
+        away_market=400,
+        home_market=-500,
+        away_prob=55.0,
+        home_prob=45.0,
+        base_away_prob=55.0,
+        base_home_prob=45.0,
+        hubacek_only=True,
+        min_market_gap_pp=2.0,
+        min_win_confidence_pp=0.0,
+        min_ev_pct=2.0,
+        league="nba",
+        games_played_proxy=40,
+    )
+    assert uncapped
+    assert uncapped[0].ev_pct > 55.0
+
 def test_best_pick_only_selects_highest_profit_score() -> None:
     weak = BetPick(
         side="away",

@@ -522,6 +522,61 @@ def test_fetch_events_cached_marks_stale_on_soft_serve(tmp_path, monkeypatch) ->
     assert events == [{"event_id": "1"}]
 
 
+def test_fetch_events_cached_marks_stale_on_hard_fail(tmp_path, monkeypatch) -> None:
+    """Fetch failure with no soft cache must still flag stale (honesty for history fallback)."""
+    import web.nba_v2.live as live
+
+    monkeypatch.setattr(live, "LIVE_CACHE_DIR", tmp_path)
+
+    def boom(_season: int):
+        raise OSError("network down")
+
+    monkeypatch.setattr(live, "fetch_season_events", boom)
+    events, stale = live._fetch_events_cached(2025, current=True)
+    assert events == []
+    assert stale is True
+
+
+def test_get_live_context_fails_closed_on_missing_gap_season(monkeypatch) -> None:
+    """Hard-missing intermediate seasons must not silently skip Elo/form state."""
+    from unittest.mock import MagicMock
+
+    import web.nba_v2.live as live
+
+    live.get_live_context.cache_clear()
+    art = {
+        "snapshots": {2023: MagicMock()},
+        "feature_columns": [],
+        "clf": None,
+        "lr": {},
+        "calibrator": {"x": [0.0, 1.0], "y": [0.0, 1.0]},
+    }
+    monkeypatch.setattr(live, "_load_artifacts", lambda: art)
+    monkeypatch.setattr(
+        live,
+        "_load_snapshot_state",
+        lambda _art, _season: (2023, {"teams": {}}),
+    )
+    monkeypatch.setattr(
+        live.NbaFeatureEngine,
+        "from_dict",
+        classmethod(lambda cls, _payload: MagicMock()),
+    )
+
+    calls: list[int] = []
+
+    def fake_games(season: int, *, current: bool = False):
+        calls.append(season)
+        if season == 2024:
+            return [], False
+        return [{"date": f"{season}-01-01"}], False
+
+    monkeypatch.setattr(live, "_live_season_games", fake_games)
+    monkeypatch.setattr(live, "nba_season_for_date", lambda _d: 2025)
+    assert live.get_live_context("2025-01-15") is None
+    assert 2024 in calls
+
+
 def test_fetch_boxes_cached_does_not_poison_null_and_retries(tmp_path, monkeypatch) -> None:
     """Failed box fetches must not stick as null in the year-long cache."""
     import json

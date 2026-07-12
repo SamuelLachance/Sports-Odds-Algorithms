@@ -69,8 +69,10 @@ def _bullpen_line(
 
 
 def is_final_game(game: dict[str, Any]) -> bool:
+    # MLB Stats API uses F (Final) and O (Game Over) for completed games.
+    status = str(game.get("status") or "")
     return (
-        str(game.get("status") or "") == "F"
+        status in {"F", "O"}
         and game.get("home_score") is not None
         and game.get("away_score") is not None
     )

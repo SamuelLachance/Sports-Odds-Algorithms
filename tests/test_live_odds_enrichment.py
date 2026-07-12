@@ -154,6 +154,30 @@ def test_line_shopping_fields_for_pick() -> None:
     assert best_available_for_pick(market, side="away") == 110
 
 
+def test_line_shopping_reports_ev_at_best_without_changing_espn_ev() -> None:
+    from web.bet_advisor import expected_value_pct
+
+    market = {
+        "n_books": 4,
+        "home_moneyline": -110,
+        "away_moneyline": 100,
+        "best_home_ml": -105,
+        "best_away_ml": 110,
+    }
+    model_prob = 55.0
+    fields = line_shopping_fields_for_pick(
+        market,
+        side="home",
+        bet_type="moneyline",
+        model_prob_pct=model_prob,
+    )
+    espn_ev = expected_value_pct(model_prob, -110)
+    best_ev = expected_value_pct(model_prob, -105)
+    assert fields["best_available_odds"] == -105
+    assert fields["ev_pct_at_best"] == round(best_ev, 2)
+    assert fields["ev_pct_at_best"] > round(espn_ev, 2)
+
+
 def test_multi_book_disabled_via_env() -> None:
     with patch.dict("os.environ", {"LIVE_MULTI_BOOK": "0"}, clear=False):
         assert multi_book_enabled("nba") is False

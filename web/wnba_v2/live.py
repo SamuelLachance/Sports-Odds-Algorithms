@@ -162,7 +162,8 @@ def _fetch_events_cached(season: int, *, current: bool) -> tuple[list[dict[str, 
         soft = _read_cache(path, 90 * 86400)
         if soft is not None:
             return soft.get("events", []), True
-        return [], False
+        # Hard fail with no soft cache: mark stale so history fallback is honest.
+        return [], True
     _write_cache(path, {"events": events})
     return events, False
 
@@ -273,8 +274,10 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
     for gap_season in range(snapshot_season + 1, season):
         gap_games, gap_stale = _live_season_games(gap_season, current=False)
         live_inputs_stale = live_inputs_stale or gap_stale
-        if gap_games:
-            replay_season(engine, gap_games)
+        if not gap_games:
+            # Missing intermediate season would skip Elo/form state — fail closed.
+            return None
+        replay_season(engine, gap_games)
 
     events, events_stale = _fetch_events_cached(season, current=True)
     live_inputs_stale = live_inputs_stale or events_stale

@@ -411,6 +411,53 @@ def test_live_season_games_falls_back_to_history_when_events_empty(monkeypatch) 
     assert stale is False
 
 
+def test_fetch_events_cached_marks_stale_on_hard_fail(tmp_path, monkeypatch) -> None:
+    import web.wnba_v2.live as live
+
+    monkeypatch.setattr(live, "LIVE_CACHE_DIR", tmp_path)
+
+    def boom(_season: int):
+        raise OSError("network down")
+
+    monkeypatch.setattr(live, "fetch_season_events", boom)
+    events, stale = live._fetch_events_cached(2025, current=True)
+    assert events == []
+    assert stale is True
+
+
+def test_get_live_context_fails_closed_on_missing_gap_season(monkeypatch) -> None:
+    from unittest.mock import MagicMock
+
+    import web.wnba_v2.live as live
+
+    live.get_live_context.cache_clear()
+    art = {"snapshots": {2023: MagicMock()}}
+    monkeypatch.setattr(live, "_load_artifacts", lambda: art)
+    monkeypatch.setattr(
+        live,
+        "_load_snapshot_state",
+        lambda _art, _season: (2023, {"teams": {}}),
+    )
+    monkeypatch.setattr(
+        live.WnbaFeatureEngine,
+        "from_dict",
+        classmethod(lambda cls, _payload: MagicMock()),
+    )
+
+    calls: list[int] = []
+
+    def fake_games(season: int, *, current: bool = False):
+        calls.append(season)
+        if season == 2024:
+            return [], False
+        return [{"date": f"{season}-06-01"}], False
+
+    monkeypatch.setattr(live, "_live_season_games", fake_games)
+    monkeypatch.setattr(live, "wnba_season_for_date", lambda _d: 2025)
+    assert live.get_live_context("2025-06-15") is None
+    assert 2024 in calls
+
+
 if __name__ == "__main__":
     test_canon_franchise_follows_relocation_chains()
     test_engine_features_precede_update_and_elo_moves_to_winner()

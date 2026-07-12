@@ -133,6 +133,83 @@ def test_evaluate_soccer_picks_skips_team_when_projected_score_conflicts() -> No
     assert all(pick.side != "home" for pick in picks)
 
 
+def test_hubacek_soccer_fails_closed_without_full_1x2() -> None:
+    """Incomplete 1X2 must not fall back to 0–1 implied prob vs 0–100 model probs."""
+    picks = evaluate_soccer_picks(
+        away_name="Away",
+        home_name="Home",
+        away_slug="away",
+        home_slug="home",
+        home_prob=55.0,
+        draw_prob=25.0,
+        away_prob=20.0,
+        away_proj=200,
+        draw_proj=250,
+        home_proj=-140,
+        away_market=180,
+        draw_market=None,
+        home_market=-150,
+        hubacek_only=True,
+        min_market_gap_pp=2.0,
+        min_win_confidence_pp=0.0,
+        min_ev_pct=2.0,
+        league="epl",
+    )
+    assert picks == []
+
+
+def test_hubacek_soccer_blocks_projected_score_conflict() -> None:
+    picks = evaluate_soccer_picks(
+        away_name="Away",
+        home_name="Home",
+        away_slug="away",
+        home_slug="home",
+        home_prob=52.0,
+        draw_prob=26.0,
+        away_prob=22.0,
+        away_proj=250,
+        draw_proj=300,
+        home_proj=-110,
+        away_market=260,
+        draw_market=270,
+        home_market=120,
+        expected_home_goals=0.5,
+        expected_away_goals=2.4,
+        base_home_prob=51.0,
+        hubacek_only=True,
+        min_market_gap_pp=4.0,
+        min_win_confidence_pp=0.0,
+        min_ev_pct=5.0,
+        league="epl",
+    )
+    assert all(pick.side != "home" for pick in picks)
+
+
+def test_soccer_non_hubacek_stores_market_implied_on_percent_scale() -> None:
+    picks = evaluate_soccer_picks(
+        away_name="Away",
+        home_name="Home",
+        away_slug="away",
+        home_slug="home",
+        home_prob=40.0,
+        draw_prob=30.0,
+        away_prob=30.0,
+        away_proj=150,
+        draw_proj=220,
+        home_proj=130,
+        away_market=150,
+        draw_market=None,
+        home_market=130,
+        min_edge=0.0,
+        min_ev_pct=0.0,
+    )
+    assert picks
+    for pick in picks:
+        assert pick.market_implied_prob is not None
+        assert pick.market_implied_prob > 1.0
+        assert pick.market_implied_prob < 99.0
+
+
 def test_extract_draw_moneyline_from_espn_shape() -> None:
     odds_block = {
         "moneyline": {
@@ -163,5 +240,8 @@ if __name__ == "__main__":
     test_evaluate_soccer_picks_single_best_when_multiple_qualify()
     test_soccer_team_pick_blocked_when_projected_score_favors_other_side()
     test_evaluate_soccer_picks_skips_team_when_projected_score_conflicts()
+    test_hubacek_soccer_fails_closed_without_full_1x2()
+    test_hubacek_soccer_blocks_projected_score_conflict()
+    test_soccer_non_hubacek_stores_market_implied_on_percent_scale()
     test_extract_draw_moneyline_from_espn_shape()
     print("test_soccer_threeway.py: all tests passed")

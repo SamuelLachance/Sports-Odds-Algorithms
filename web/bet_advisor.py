@@ -935,12 +935,16 @@ def evaluate_soccer_picks(
     """Evaluate 3-way soccer moneyline outcomes vs the book."""
     picks: list[BetPick] = []
 
+    # Hubáček official soccer requires a full 1X2 book so de-vig stays on the
+    # same 0–100 scale as model probs. Incomplete boards fail closed.
     devig_probs: dict[str, float | None] = {}
-    if hubacek_only and away_market is not None and draw_market is not None and home_market is not None:
+    if away_market is not None and draw_market is not None and home_market is not None:
         from web.soccer_decorrelation import devig_threeway_from_odds
 
         mkt_h, mkt_d, mkt_a = devig_threeway_from_odds(home_market, draw_market, away_market)
         devig_probs = {"home": mkt_h, "draw": mkt_d, "away": mkt_a}
+    elif hubacek_only:
+        return []
 
     base_probs: dict[str, float | None] = {
         "home": base_home_prob,
@@ -968,13 +972,14 @@ def evaluate_soccer_picks(
             ev_pct = sparse_sample_ev_cap(league, games_played_proxy, ev_pct)
         is_model_favorite = projection < 0
         is_market_underdog = market > 0
+        # Always store market implied on the 0–100 probability scale.
         market_implied = (
             devig_probs.get(side)
-            if hubacek_only and devig_probs
-            else american_implied_prob(market)
+            if devig_probs
+            else american_implied_prob(market) * 100.0
         )
 
-        if not hubacek_only and soccer_team_pick_blocked_by_projected_score(
+        if soccer_team_pick_blocked_by_projected_score(
             side,
             expected_home_goals=expected_home_goals,
             expected_away_goals=expected_away_goals,
