@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import csv
 import json
+import math
 import time
 import urllib.error
 import urllib.request
@@ -121,9 +122,12 @@ def _to_float(value: Any) -> float | None:
     if text == "":
         return None
     try:
-        return float(text)
+        parsed = float(text)
     except (TypeError, ValueError):
         return None
+    if not math.isfinite(parsed):
+        return None
+    return parsed
 
 
 def _season_date_chunks(season: int) -> list[tuple[str, str]]:

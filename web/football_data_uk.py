@@ -304,17 +304,12 @@ def load_football_data_uk_games(league: str) -> list[dict[str, Any]]:
                     parsed = None
             if parsed is None:
                 continue
-            # Prefer Pinnacle/Bet365/Avg *closing* columns; fall back to open/pre-close.
+            # Closing columns only — open/pre-close (PSH/B365H/AvgH) must not be
+            # stored as closes (closing_odds_db maps home_odds → home_close_ml).
             # Parse each column — do not `or`-chain raw cells (``-`` blocks fallbacks).
-            odds_home = _first_parseable_odds(
-                record, "PSCH", "AvgCH", "B365CH", "PSH", "B365H", "AvgH"
-            )
-            odds_draw = _first_parseable_odds(
-                record, "PSCD", "AvgCD", "B365CD", "PSD", "B365D", "AvgD"
-            )
-            odds_away = _first_parseable_odds(
-                record, "PSCA", "AvgCA", "B365CA", "PSA", "B365A", "AvgA"
-            )
+            odds_home = _first_parseable_odds(record, "PSCH", "AvgCH", "B365CH")
+            odds_draw = _first_parseable_odds(record, "PSCD", "AvgCD", "B365CD")
+            odds_away = _first_parseable_odds(record, "PSCA", "AvgCA", "B365CA")
             rows.append(
                 {
                     "date": parsed.strftime("%Y-%m-%d"),

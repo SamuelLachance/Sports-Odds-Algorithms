@@ -254,6 +254,11 @@ def collect_day_rows(day: date, *, use_cache: bool = True) -> list[dict[str, Any
         consensus = _consensus_nhl(items)
         home_ml = _valid_american(consensus.get("home_close_ml"))
         away_ml = _valid_american(consensus.get("away_close_ml"))
+        # Even-book medians can land in |x| < 100; re-validate opens/juice too.
+        home_open_ml = _valid_american(consensus.get("home_open_ml"))
+        away_open_ml = _valid_american(consensus.get("away_open_ml"))
+        home_spread_odds = _valid_american(consensus.get("home_spread_odds"))
+        away_spread_odds = _valid_american(consensus.get("away_spread_odds"))
         home_spread = consensus.get("home_close_spread")
         # Keep puck-line-only rows (match NBA/WNBA) — do not require a ML.
         if home_ml is None and away_ml is None and home_spread is None:
@@ -262,13 +267,13 @@ def collect_day_rows(day: date, *, use_cache: bool = True) -> list[dict[str, Any
             {
                 "home_close_ml": _int_or_none(home_ml),
                 "away_close_ml": _int_or_none(away_ml),
-                "home_open_ml": _int_or_none(consensus.get("home_open_ml")),
-                "away_open_ml": _int_or_none(consensus.get("away_open_ml")),
+                "home_open_ml": _int_or_none(home_open_ml),
+                "away_open_ml": _int_or_none(away_open_ml),
                 "home_close_spread": home_spread,
                 "away_close_spread": consensus.get("away_close_spread"),
                 # Missing juice stays None — do not invent -110 for training/CLV rows.
-                "home_spread_odds": _int_or_none(consensus.get("home_spread_odds")),
-                "away_spread_odds": _int_or_none(consensus.get("away_spread_odds")),
+                "home_spread_odds": _int_or_none(home_spread_odds),
+                "away_spread_odds": _int_or_none(away_spread_odds),
                 "close_total": consensus.get("close_total"),
                 "open_total": consensus.get("open_total"),
                 "n_books": consensus.get("n_books"),

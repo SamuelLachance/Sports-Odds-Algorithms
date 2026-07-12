@@ -65,8 +65,13 @@ def stake_units_from_kelly(
 
     from web.portfolio_sizing import portfolio_stake_units
 
+    try:
+        ev_value = float(ev_pct) if ev_pct is not None else 0.0
+    except (TypeError, ValueError):
+        ev_value = 0.0
+
     return portfolio_stake_units(
-        float(ev_pct) if ev_pct is not None else 0.0,
+        ev_value,
         kelly_frac,
         bankroll_units=100.0,
         max_units=MAX_STAKE_UNITS,
@@ -215,11 +220,41 @@ def _normalized_closing_american(value: Any) -> int | None:
 
 
 def _grading_spread_line(bet: dict[str, Any]) -> float | None:
-    consensus = bet.get("consensus_spread")
+    """Home/away handicap for grading; reject bool / NaN / junk (leave ungraded)."""
+    import math
+
+    def _coerce_line(raw: Any) -> float | None:
+        if raw is None or raw == "":
+            return None
+        # bool is a subclass of int; False→0.0 must not invent a pick'em.
+        if isinstance(raw, bool):
+            return None
+        if isinstance(raw, str):
+            text = raw.strip()
+            upper = text.upper()
+            if upper in {"PK", "EVEN"}:
+                return 0.0
+            if upper in {"OFF", "N/A", "NA"}:
+                return None
+            try:
+                value = float(text)
+            except ValueError:
+                return None
+        else:
+            try:
+                value = float(raw)
+            except (TypeError, ValueError):
+                return None
+        if not math.isfinite(value):
+            return None
+        return value
+
+    consensus = _coerce_line(bet.get("consensus_spread"))
     if consensus is not None:
-        return spread_line_for_side(float(consensus), bet["side"])
-    if bet.get("spread_line") is not None:
-        return float(bet["spread_line"])
+        return spread_line_for_side(consensus, bet["side"])
+    spread_line = _coerce_line(bet.get("spread_line"))
+    if spread_line is not None:
+        return spread_line
     return None
 
 
@@ -775,7 +810,11 @@ def grade_pending(store: dict[str, Any]) -> dict[str, Any]:
         if not scores:
             continue
 
-        graded = grade_bet(bet, scores[0], scores[1])
+        try:
+            graded = grade_bet(bet, scores[0], scores[1])
+        except (TypeError, ValueError):
+            # Corrupt line/odds on one bet must not abort the whole pending pass.
+            continue
         bet_id = bet.get("id")
         if not bet_id:
             continue

@@ -189,6 +189,14 @@ def test_closing_odds_parse_int_rejects_invalid_magnitude() -> None:
     assert closing_odds_db._parse_int("nan") is None
 
 
+def test_closing_odds_parse_float_rejects_non_finite() -> None:
+    assert closing_odds_db._parse_float("3.5") == 3.5
+    assert closing_odds_db._parse_float("nan") is None
+    assert closing_odds_db._parse_float("inf") is None
+    assert closing_odds_db._parse_float("-inf") is None
+    assert closing_odds_db._parse_float("") is None
+
+
 def test_closing_odds_even_zero_maps_to_plus_100(tmp_path: Path, monkeypatch) -> None:
     odds_dir = tmp_path / "closing-odds"
     odds_dir.mkdir()

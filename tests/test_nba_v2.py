@@ -558,6 +558,8 @@ def test_nba_v2_side_odds_maps_even_spread_juice() -> None:
 
     assert _to_float("PK") == 0.0
     assert _to_float("EVEN") == 0.0
+    assert _to_float("nan") is None
+    assert _to_float("inf") is None
     even = _side_odds({"moneyLine": "EVEN", "spreadOdds": "EVEN"})
     assert even["ml"] == 100.0
     assert even["spread_odds"] == 100.0

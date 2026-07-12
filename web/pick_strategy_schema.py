@@ -80,13 +80,15 @@ def validate_strategy_entry(entry: Any) -> dict[str, Any] | None:
     bet_type = entry.get("bet_type")
     if bet_type is not None:
         if not isinstance(bet_type, str) or bet_type.lower() not in VALID_BET_TYPES:
-            return None
+            # Keep an explicit disable so ``get_pick_thresholds`` does not fall
+            # through to ``default`` and re-enable gated leagues (NFL/CFB/CBB).
+            return {"enabled": False}
         cleaned["bet_type"] = bet_type.lower()
 
     if "enabled" in entry:
         enabled = _as_bool(entry["enabled"])
-        if enabled is not None:
-            cleaned["enabled"] = enabled
+        # null / unrecognized strings fail closed (omit used to mean enabled).
+        cleaned["enabled"] = False if enabled is None else enabled
 
     for key in _NUMERIC_KEYS:
         if key not in entry or entry[key] is None:

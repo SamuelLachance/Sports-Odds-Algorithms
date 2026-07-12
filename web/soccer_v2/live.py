@@ -414,7 +414,8 @@ def american_to_decimal(ml: int | None) -> float | None:
     if ml is None or isinstance(ml, bool):
         return None
     try:
-        ml = int(ml)
+        # Accept floatish strings ("-110.0") like normalize_american_odds.
+        ml = int(round(float(ml)))
     except (TypeError, ValueError):
         return None
     # ESPN EVEN sometimes arrives as numeric 0 — treat as +100.

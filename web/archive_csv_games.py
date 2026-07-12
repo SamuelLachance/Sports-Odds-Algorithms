@@ -77,14 +77,16 @@ def load_archive_csv_games(league: str, cutoff_date: str) -> list[GameTuple]:
                         opp_score = int(str(row[4]).split()[0])
                     except ValueError:
                         continue
+                    team_name = slug.replace("-", " ").title()
+                    opp_name = opp_abbr.upper()
                     if home_away == "home":
                         home_key, away_key = team_abbr, opp_abbr
+                        home_name, away_name = team_name, opp_name
                     elif home_away == "away":
                         home_key, away_key = opp_abbr, team_abbr
+                        home_name, away_name = opp_name, team_name
                     else:
                         continue
-                    home_name = slug.replace("-", " ").title()
-                    away_name = opp_abbr.upper()
                     key = f"{game_date.date().isoformat()}:{home_key}:{away_key}"
                     merged[key] = (
                         home_key,
@@ -98,4 +100,7 @@ def load_archive_csv_games(league: str, cutoff_date: str) -> list[GameTuple]:
         game_tuple
         for _key, game_tuple in sorted(merged.items())
     ]
-    return games[:ARCHIVE_MAX_GAMES]
+    # Cap keeps the newest window (keys are ISO date ascending).
+    if len(games) > ARCHIVE_MAX_GAMES:
+        return games[-ARCHIVE_MAX_GAMES:]
+    return games

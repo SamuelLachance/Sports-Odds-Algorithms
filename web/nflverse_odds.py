@@ -31,7 +31,17 @@ def rows_from_nflverse_csv(path: Path) -> list[dict[str, Any]]:
     with path.open(encoding="utf-8", newline="") as handle:
         reader = csv.DictReader(handle)
         for record in reader:
-            if record.get("game_type") not in (None, "", "REG", "POST"):
+            # nflverse uses WC/DIV/CON/SB (not a single POST) for playoffs.
+            if record.get("game_type") not in (
+                None,
+                "",
+                "REG",
+                "POST",
+                "WC",
+                "DIV",
+                "CON",
+                "SB",
+            ):
                 continue
             home = normalize_team_key("nfl", record.get("home_team", ""))
             away = normalize_team_key("nfl", record.get("away_team", ""))

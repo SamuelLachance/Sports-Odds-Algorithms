@@ -23,6 +23,14 @@ from web.cfb_v2.replay import csv_rows_to_games, replay_games  # noqa: E402
 ODDS_CSV = PROJECT_ROOT / "data" / "supplemental" / "closing-odds" / "cfb.csv"
 OUT_DIR = PROJECT_ROOT / "data" / "cfb_history"
 
+
+def binary_home_win(home_score: int, away_score: int) -> int | None:
+    """1/0 for decisive games; None for ties (exclude from classifier training)."""
+    if home_score == away_score:
+        return None
+    return 1 if home_score > away_score else 0
+
+
 META_COLUMNS = (
     "season",
     "date",
@@ -103,6 +111,9 @@ def main() -> int:
                 return
             home_score = int(game["home_score"])
             away_score = int(game["away_score"])
+            home_win = binary_home_win(home_score, away_score)
+            if home_win is None:
+                return
             row = {
                 "season": int(game["season"]),
                 "date": game["date"],
@@ -110,7 +121,7 @@ def main() -> int:
                 "away": game["away"],
                 "home_score": home_score,
                 "away_score": away_score,
-                "home_win": 1 if home_score > away_score else 0,
+                "home_win": home_win,
                 "margin": home_score - away_score,
                 "total_points": home_score + away_score,
                 "home_close_ml": game.get("home_close_ml"),

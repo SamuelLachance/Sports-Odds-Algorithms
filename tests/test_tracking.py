@@ -797,6 +797,86 @@ def test_grade_spread_push() -> None:
     assert graded["units"] == 0.0
 
 
+def test_grade_spread_rejects_bool_nan_and_pk_lines() -> None:
+    """False→0.0 / NaN→always-loss / PK→ValueError must not settle wrongly."""
+    from web.tracking_service import _grading_spread_line
+
+    assert _grading_spread_line({"side": "home", "consensus_spread": False}) is None
+    assert (
+        _grading_spread_line({"side": "home", "consensus_spread": float("nan")}) is None
+    )
+    assert _grading_spread_line({"side": "home", "consensus_spread": "PK"}) == 0.0
+
+    false_bet = {
+        "side": "home",
+        "bet_type": "spread",
+        "consensus_spread": False,
+        "spread_odds": -110,
+        "stake_units": 1.0,
+        "status": "pending",
+    }
+    assert grade_bet(false_bet, 100, 105)["status"] == "pending"
+
+    nan_bet = {
+        "side": "home",
+        "bet_type": "spread",
+        "consensus_spread": float("nan"),
+        "spread_odds": -110,
+        "stake_units": 1.0,
+        "status": "pending",
+    }
+    assert grade_bet(nan_bet, 100, 105)["status"] == "pending"
+
+    pk_bet = {
+        "side": "home",
+        "bet_type": "spread",
+        "consensus_spread": "PK",
+        "spread_odds": -110,
+        "stake_units": 1.0,
+    }
+    graded = grade_bet(pk_bet, 100, 105)
+    assert graded["status"] == "win"
+
+
+def test_grade_pending_survives_corrupt_spread_line(monkeypatch) -> None:
+    """One bad pending bet must not abort grading of the rest of the store."""
+    import web.tracking_service as ts
+
+    store = {
+        "version": 1,
+        "bets": [
+            {
+                "id": "bad",
+                "event_id": "1",
+                "league": "nba",
+                "side": "home",
+                "bet_type": "spread",
+                "status": "pending",
+                "consensus_spread": "GARBAGE",
+                "spread_odds": -110,
+                "stake_units": 1,
+                "date": "2026-07-12",
+            },
+            {
+                "id": "good",
+                "event_id": "2",
+                "league": "nba",
+                "side": "home",
+                "bet_type": "moneyline",
+                "status": "pending",
+                "market_odds": -110,
+                "stake_units": 1,
+                "date": "2026-07-12",
+            },
+        ],
+    }
+    monkeypatch.setattr(ts, "_fetch_event_result", lambda league, eid: (100, 110))
+    out = grade_pending(store)
+    by_id = {b["id"]: b for b in out["bets"]}
+    assert by_id["bad"]["status"] == "pending"
+    assert by_id["good"]["status"] == "win"
+
+
 def test_grade_spread_away_cover() -> None:
     bet = {
         "side": "away",
@@ -1048,6 +1128,8 @@ def test_stake_units_quarter_kelly() -> None:
     haircut = stake_units_from_kelly(4.0, ev_pct=5.0, correlation_penalty=0.15)
     assert raw == 1.0
     assert haircut == 0.85
+    # Non-numeric EV must not raise (slate recording path).
+    assert stake_units_from_kelly(4.0, ev_pct="bad") == 1.0
 
 
 def test_record_from_slate_applies_correlation_penalty_on_multi_pick_day() -> None:

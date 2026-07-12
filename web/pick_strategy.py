@@ -141,7 +141,9 @@ def get_pick_thresholds(league: str) -> dict[str, Any]:
     """Live official-pick thresholds: Hubáček gates with per-league overrides."""
     config = load_pick_strategy()
     league = league.lower()
-    entry = config.get(league) or config.get(_category_for_league(league)) or config["default"]
+    category = _category_for_league(league)
+    used_default = league not in config and category not in config
+    entry = config.get(league) or config.get(category) or config["default"]
     bet_type = entry.get("bet_type") or official_bet_type(league)
     hubacek = official_hubacek_thresholds()
     hubacek["min_market_gap_pp"] = hubacek_min_market_gap_pp(league)
@@ -173,7 +175,9 @@ def get_pick_thresholds(league: str) -> dict[str, Any]:
         "min_kelly_pct": 0.0,
         # Walk-forward validation gate: leagues whose backtests failed (or are
         # pending) carry enabled=false in data/pick_strategy.json.
-        "enabled": bool(entry.get("enabled", True)),
+        # League/category entries missing ``enabled`` fail closed; only the
+        # shared ``default`` block may omit it and stay on.
+        "enabled": bool(entry.get("enabled", used_default)),
         "backtest_roi_pct": entry.get("backtest_roi_pct"),
         "backtest_bets": entry.get("backtest_bets", 0),
         "backtest_units": entry.get("backtest_units"),

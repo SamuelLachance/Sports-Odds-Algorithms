@@ -234,11 +234,18 @@ def _consensus(
         "away_spread_odds",
     )
     keys = close_keys + ("home_open_spread", "open_total")
+    american_keys = frozenset(
+        {"home_close_ml", "away_close_ml", "home_spread_odds", "away_spread_odds"}
+    )
     # Medians may still use open fields; empty shells stay out of both pools.
     parsed = [line for line in lines if any(line.get(key) is not None for key in keys)]
     consensus: dict[str, Any] = {}
     for key in keys:
-        consensus[key] = _median([line[key] for line in parsed])
+        value = _median([line[key] for line in parsed])
+        # Even-book medians can average into the invalid |x| < 100 band.
+        if key in american_keys:
+            value = _valid_american(value)
+        consensus[key] = value
     if consensus.get("away_open_spread") is None and consensus.get("home_open_spread") is not None:
         consensus["away_open_spread"] = -consensus["home_open_spread"]
     else:

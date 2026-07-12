@@ -811,6 +811,113 @@ def test_nba_consensus_n_books_ignores_open_only_providers() -> None:
     assert consensus["home_open_spread"] == -4.0
 
 
+def test_nba_consensus_rejects_even_book_median_in_dead_zone() -> None:
+    """Two books at -110 and +100 must not median to -5 (invalid American)."""
+    from web.nba_odds_espn import _consensus, _valid_american
+
+    items = [
+        {
+            "provider": {"name": "A"},
+            "spread": -3.5,
+            "homeTeamOdds": {
+                "favorite": True,
+                "close": {
+                    "moneyLine": {"american": -110},
+                    "pointSpread": {"american": -3.5},
+                    "spread": {"american": -110},
+                },
+            },
+            "awayTeamOdds": {
+                "favorite": False,
+                "close": {
+                    "moneyLine": {"american": 100},
+                    "pointSpread": {"american": 3.5},
+                    "spread": {"american": -110},
+                },
+            },
+        },
+        {
+            "provider": {"name": "B"},
+            "spread": 3.5,
+            "homeTeamOdds": {
+                "favorite": False,
+                "close": {
+                    "moneyLine": {"american": 100},
+                    "pointSpread": {"american": 3.5},
+                    "spread": {"american": -110},
+                },
+            },
+            "awayTeamOdds": {
+                "favorite": True,
+                "close": {
+                    "moneyLine": {"american": -110},
+                    "pointSpread": {"american": -3.5},
+                    "spread": {"american": -110},
+                },
+            },
+        },
+    ]
+    consensus = _consensus(items)
+    assert consensus["home_close_ml"] is None
+    assert consensus["away_close_ml"] is None
+    assert _valid_american(-5.0) is None
+
+
+def test_mlb_nhl_open_ml_rejects_invalid_even_median() -> None:
+    """Open ML packing used ``_int_or_none`` without ``_valid_american``."""
+    from web.mlb_odds_espn import _consensus_mlb
+    from web.nba_odds_espn import _valid_american
+    from web.nhl_odds_espn import _consensus_nhl
+
+    items = [
+        {
+            "provider": {"name": "A"},
+            "homeTeamOdds": {
+                "open": {"moneyLine": {"american": -110}},
+                "close": {
+                    "moneyLine": {"american": -150},
+                    "pointSpread": {"american": -1.5},
+                    "spread": {"american": -110},
+                },
+            },
+            "awayTeamOdds": {
+                "open": {"moneyLine": {"american": 100}},
+                "close": {
+                    "moneyLine": {"american": 130},
+                    "pointSpread": {"american": 1.5},
+                    "spread": {"american": -110},
+                },
+            },
+        },
+        {
+            "provider": {"name": "B"},
+            "homeTeamOdds": {
+                "open": {"moneyLine": {"american": 100}},
+                "close": {
+                    "moneyLine": {"american": -150},
+                    "pointSpread": {"american": -1.5},
+                    "spread": {"american": -110},
+                },
+            },
+            "awayTeamOdds": {
+                "open": {"moneyLine": {"american": -110}},
+                "close": {
+                    "moneyLine": {"american": 130},
+                    "pointSpread": {"american": 1.5},
+                    "spread": {"american": -110},
+                },
+            },
+        },
+    ]
+    for consensus_fn in (_consensus_mlb, _consensus_nhl):
+        consensus = consensus_fn(items)
+        assert consensus["home_close_ml"] == -150.0
+        # Even median of -110 and +100 lands in the dead zone.
+        assert consensus["home_open_ml"] == -5.0
+        assert _valid_american(consensus["home_open_ml"]) is None
+        assert _valid_american(consensus["away_open_ml"]) is None
+
+
 def test_summarize_all_unparsed_returns_empty() -> None:
     assert summarize_book_items([{"provider": {"name": "GhostBook"}}]) == {}
 

@@ -57,3 +57,22 @@ def test_load_football_data_uk_skips_unparseable_close_for_avg_fallback() -> Non
     assert rows[0]["home_odds"] == _parse_american_odds("1.95")
     assert rows[0]["draw_odds"] == _parse_american_odds("3.60")
     assert rows[0]["away_odds"] == _parse_american_odds("4.00")
+
+
+def test_load_football_data_uk_does_not_label_opens_as_closes() -> None:
+    """Open-only rows must leave odds None — never store PSH as a close."""
+    csv_text = (
+        "Div,Date,HomeTeam,AwayTeam,FTHG,FTAG,"
+        "PSH,PSD,PSA,B365H,B365D,B365A\n"
+        "E0,16/08/25,Arsenal,Everton,2,0,"
+        "2.10,3.50,3.50,2.05,3.40,3.60\n"
+    )
+    load_football_data_uk_games.cache_clear()
+    with patch("web.football_data_uk._season_tags", return_value=["2526"]):
+        with patch("web.football_data_uk._fetch_csv", return_value=csv_text):
+            rows = load_football_data_uk_games("epl")
+    assert len(rows) == 1
+    assert rows[0]["home_goals"] == 2
+    assert rows[0]["home_odds"] is None
+    assert rows[0]["draw_odds"] is None
+    assert rows[0]["away_odds"] is None

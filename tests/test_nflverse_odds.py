@@ -42,3 +42,25 @@ def test_nflverse_rows_flip_spread_line_to_betting_convention(tmp_path: Path) ->
     # Underdog home: nflverse -4 → betting +4
     assert float(rows[1]["home_close_spread"]) == 4.0
     assert float(rows[1]["away_close_spread"]) == -4.0
+
+
+def test_nflverse_keeps_playoff_game_types(tmp_path: Path) -> None:
+    """WC/DIV/CON/SB must import; nflverse no longer uses a single POST label."""
+    from web.nflverse_odds import rows_from_nflverse_csv
+
+    csv_path = tmp_path / "games.csv"
+    csv_path.write_text(
+        "game_type,gameday,home_team,away_team,spread_line,"
+        "home_moneyline,away_moneyline,home_spread_odds,away_spread_odds\n"
+        "WC,2025-01-11,BUF,DEN,8.5,-450,360,-110,-110\n"
+        "DIV,2025-01-19,KC,HOU,9.5,-500,390,-110,-110\n"
+        "CON,2025-01-26,PHI,WAS,6.0,-250,210,-110,-110\n"
+        "SB,2025-02-09,PHI,KC,-1.5,110,-130,-105,-115\n"
+        "PRE,2024-08-10,KC,CHI,3.0,-150,130,-110,-110\n",
+        encoding="utf-8",
+    )
+    rows = rows_from_nflverse_csv(csv_path)
+    assert len(rows) == 4
+    dates = {r["date"] for r in rows}
+    assert "2025-02-09" in dates
+    assert all(r["date"] != "2024-08-10" for r in rows)

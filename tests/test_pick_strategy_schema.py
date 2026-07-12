@@ -15,7 +15,10 @@ from web.pick_strategy_schema import (  # noqa: E402
 
 
 def test_validate_strategy_entry_rejects_bad_bet_type() -> None:
-    assert validate_strategy_entry({"bet_type": "parlay", "enabled": True}) is None
+    # Corrupt bet_type keeps an explicit disable (fail closed) instead of None.
+    assert validate_strategy_entry({"bet_type": "parlay", "enabled": True}) == {
+        "enabled": False
+    }
     assert validate_strategy_entry("not-a-dict") is None
 
 
@@ -86,9 +89,40 @@ def test_validate_pick_strategy_payload_drops_corrupt_entries() -> None:
     assert payload["generated_at"] == "2026-07-12"
     assert payload["default"]["min_ev_pct"] == 2.0
     assert payload["nba"]["bet_type"] == "spread"
-    assert "bad_league" not in payload
+    # Corrupt bet_type keeps enabled=false so gated leagues do not fall open.
+    assert payload["bad_league"] == {"enabled": False}
     assert "also_bad" not in payload
     assert "" not in payload
+
+
+def test_corrupt_league_bet_type_does_not_reenable_via_default() -> None:
+    """Invalid NFL bet_type used to drop the block → default enabled=true."""
+    from unittest.mock import patch
+
+    from web.pick_strategy import get_pick_thresholds
+
+    payload = validate_pick_strategy_payload(
+        {
+            "nfl": {"bet_type": "spreads", "enabled": False},
+            "default": {"enabled": True, "bet_type": "moneyline"},
+        }
+    )
+    assert payload["nfl"] == {"enabled": False}
+
+    with patch("web.pick_strategy.load_pick_strategy", return_value=payload):
+        thresholds = get_pick_thresholds("nfl")
+    assert thresholds["enabled"] is False
+
+
+def test_null_or_garbage_enabled_fails_closed() -> None:
+    """``enabled: null`` / unknown strings must not omit the key (fail-open)."""
+    assert validate_strategy_entry({"bet_type": "spread", "enabled": None}) == {
+        "bet_type": "spread",
+        "enabled": False,
+    }
+    assert validate_strategy_entry({"bet_type": "spread", "enabled": "nope"})[
+        "enabled"
+    ] is False
 
 
 def test_load_pick_strategy_uses_schema_and_keeps_live_gates() -> None:

@@ -55,18 +55,22 @@ def _odds_for_game(
     away = str(game.get("away") or "")
     row = index.get((date, home, away))
     if row is None:
-        # UTC/local date skew
+        # UTC/local date skew — only when exactly one ±1 neighbor exists
+        # (refuse consecutive same-venue series; mirrors closing_odds_db).
         from datetime import date as date_cls, timedelta
 
         try:
             base = date_cls.fromisoformat(date)
         except ValueError:
             return {}
-        for offset in (1, -1):
+        neighbors: list[dict[str, Any]] = []
+        for offset in (-1, 1):
             alt = (base + timedelta(days=offset)).isoformat()
-            row = index.get((alt, home, away))
-            if row is not None:
-                break
+            candidate = index.get((alt, home, away))
+            if candidate is not None:
+                neighbors.append(candidate)
+        if len(neighbors) == 1:
+            row = neighbors[0]
     if not row:
         return {}
     return {
