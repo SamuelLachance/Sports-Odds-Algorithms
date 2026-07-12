@@ -7,7 +7,8 @@ from typing import Any
 
 
 def american_to_implied_prob(odds: int | None) -> float | None:
-    if odds is None:
+    # bool is a subclass of int; False must not become EVEN (+100 → 50%).
+    if odds is None or isinstance(odds, bool):
         return None
     # ESPN/EVEN sometimes arrives as 0; treat as +100 (even money → 50%).
     if odds == 0:

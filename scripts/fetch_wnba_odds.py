@@ -27,7 +27,18 @@ def _load_existing(path: Path) -> list[dict[str, str]]:
         return list(csv.DictReader(handle))
 
 
+def _row_has_odds(row: dict[str, str]) -> bool:
+    """True when a closing row has usable ML closes (WNBA CSV has no n_books)."""
+    if (row.get("home_close_ml") or "").strip() or (row.get("away_close_ml") or "").strip():
+        return True
+    try:
+        return int(float(row.get("n_books") or 0)) > 0
+    except (TypeError, ValueError):
+        return False
+
+
 def _merge_rows(existing: list[dict[str, str]], fresh: list[dict]) -> list[dict[str, str]]:
+    """Merge by (date, home, away). Keep prior closes when fresh odds are empty."""
     merged: dict[tuple[str, str, str], dict[str, str]] = {}
     for row in existing:
         key = (row["date"], row["home_key"], row["away_key"])
@@ -35,10 +46,14 @@ def _merge_rows(existing: list[dict[str, str]], fresh: list[dict]) -> list[dict[
 
     for row in fresh:
         key = (row["date"], row["home_key"], row["away_key"])
-        merged[key] = {
+        normalized = {
             field: "" if row.get(field) is None else str(row.get(field, ""))
             for field in CLOSING_FIELDS
         }
+        prior = merged.get(key)
+        if prior is not None and _row_has_odds(prior) and not _row_has_odds(normalized):
+            continue
+        merged[key] = normalized
 
     return sorted(merged.values(), key=lambda item: (item["date"], item["home_key"]))
 

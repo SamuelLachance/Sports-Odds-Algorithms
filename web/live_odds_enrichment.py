@@ -1,7 +1,8 @@
 """Live multi-book odds enrichment for daily slate markets.
 
 Soft-fails on network/parse errors so the slate build never blocks on books.
-Enable with LIVE_MULTI_BOOK=1 (default ON for NBA/NHL/MLB/WNBA).
+Defaults ON for NBA/NHL/MLB/WNBA interactively; OFF under FAST_DAILY_BUILD
+unless LIVE_MULTI_BOOK=1 forces it on (Pages sets that explicitly).
 
 A global wall-time budget (LIVE_MULTI_BOOK_BUDGET_S, default 120s) caps the
 cumulative time spent fetching books per build; once exceeded, enrichment
@@ -166,10 +167,12 @@ def best_american_odds(values: list[Any]) -> int | None:
 
 def shopping_edge_pp(espn_odds: int | None, best_odds: int | None) -> float | None:
     """Implied-prob edge (pp) of best book vs ESPN single-provider quote."""
-    if espn_odds is None or best_odds is None:
+    espn = _as_int_odds(espn_odds)
+    best = _as_int_odds(best_odds)
+    if espn is None or best is None:
         return None
-    espn_p = american_to_implied_prob(int(espn_odds))
-    best_p = american_to_implied_prob(int(best_odds))
+    espn_p = american_to_implied_prob(espn)
+    best_p = american_to_implied_prob(best)
     if espn_p is None or best_p is None:
         return None
     return round((espn_p - best_p) * 100.0, 2)

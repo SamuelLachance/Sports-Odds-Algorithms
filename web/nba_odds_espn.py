@@ -121,8 +121,9 @@ def _valid_handicap_line(value: float | None, *, max_abs: float) -> float | None
 
     American juice/ML magnitudes start at 100. Even when ``max_abs`` is raised for
     college blowouts (CFB ≤120), |line| ≥ 100 is never a real handicap.
+    Reject bools: ``False == 0`` would otherwise become a pick'em line.
     """
-    if value is None:
+    if value is None or isinstance(value, bool):
         return None
     try:
         number = float(value)

@@ -10,6 +10,39 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 
+def test_safe_int_rejects_bool_false_poison() -> None:
+    """False must not become market_ml=0 (later normalized to EVEN +100)."""
+    import web.soccer_paper_tracking as paper
+
+    assert paper._safe_int(False) is None
+    assert paper._safe_int(True) is None
+    assert paper._safe_int(0) == 0
+    assert paper._safe_int("-110") == -110
+
+
+def test_record_pick_drops_bool_market_ml(tmp_path, monkeypatch) -> None:
+    """False must not become EVEN/+100 — refuse the unpriced paper row entirely."""
+    import web.soccer_paper_tracking as paper
+
+    path = tmp_path / "soccer_paper_tracking.json"
+    monkeypatch.setattr(paper, "PAPER_TRACKING_PATH", path)
+    paper.record_soccer_paper_pick(
+        league="epl",
+        event_id="1",
+        home_abbr="A",
+        away_abbr="B",
+        home_name="A FC",
+        away_name="B FC",
+        game_date="2024-01-01",
+        pick_outcome="home",
+        model_prob=0.55,
+        market_ml=False,  # type: ignore[arg-type]
+        edge_pp=5.0,
+    )
+    assert not path.is_file()
+    assert paper._load_paper_log()["bets"] == []
+
+
 def test_load_paper_log_corrupt_returns_none_not_empty(tmp_path, monkeypatch) -> None:
     """Corrupt / non-list bets must fail closed so grading cannot wipe the file."""
     import web.soccer_paper_tracking as paper
@@ -243,6 +276,50 @@ def test_maybe_record_from_blend_skips_missing_model_prob(tmp_path, monkeypatch)
     )
     assert paper._load_paper_log()["bets"] == []
 
+
+def test_maybe_record_skips_unpriced_market_ml(tmp_path, monkeypatch) -> None:
+    """Unexecutable prices must not enter the ledger (grading would leave them forever)."""
+    import web.soccer_paper_tracking as paper
+
+    path = tmp_path / "soccer_paper_tracking.json"
+    monkeypatch.setattr(paper, "PAPER_TRACKING_PATH", path)
+
+    paper.maybe_record_from_blend(
+        {
+            "soccer_pred": {"pick_draw_probability": 0.4},
+            "soccer_pick_signals": {
+                "high_confidence_disagreement": True,
+                "best_edge_outcome": "draw",
+                "max_edge_pp": 8.0,
+            },
+        },
+        league="epl",
+        event_id="unpriced",
+        home_abbr="ars",
+        away_abbr="che",
+        home_name="Arsenal",
+        away_name="Chelsea",
+        game_date="2026-07-12",
+        home_ml=-110,
+        draw_ml=None,
+        away_ml=220,
+    )
+    assert paper._load_paper_log()["bets"] == []
+
+    paper.record_soccer_paper_pick(
+        league="epl",
+        event_id="direct",
+        home_abbr="ars",
+        away_abbr="che",
+        home_name="Arsenal",
+        away_name="Chelsea",
+        game_date="2026-07-12",
+        pick_outcome="home",
+        model_prob=55.0,
+        market_ml=None,
+        edge_pp=5.0,
+    )
+    assert paper._load_paper_log()["bets"] == []
 
 def test_pick_signals_best_edge_outcome_can_differ_from_model_best() -> None:
     """Max edge can sit on draw while the model favorite is home."""

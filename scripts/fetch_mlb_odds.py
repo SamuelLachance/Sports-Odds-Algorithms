@@ -55,12 +55,37 @@ def _normalize_closing_row(row: dict, *, from_fresh: bool) -> dict[str, str]:
     return {field: row.get(field, "") for field in CLOSING_FIELDS}
 
 
+def _row_has_odds(row: dict[str, str]) -> bool:
+    """True when a closing row has usable ML closes (or n_books>0 when present)."""
+    if (row.get("home_close_ml") or "").strip() or (row.get("away_close_ml") or "").strip():
+        return True
+    try:
+        return int(float(row.get("n_books") or 0)) > 0
+    except (TypeError, ValueError):
+        return False
+
+
+def _home_ml_distance(left: dict[str, str], right: dict[str, str]) -> float:
+    """Absolute home-ML gap for matching a fresh DH refresh to a prior leg."""
+    try:
+        return abs(float(left.get("home_close_ml") or 0) - float(right.get("home_close_ml") or 0))
+    except (TypeError, ValueError):
+        return float("inf")
+
+
 def _merge_rows(existing: list[dict[str, str]], fresh: list[dict]) -> list[dict[str, str]]:
     """Merge ESPN refreshes into the CSV without collapsing MLB doubleheaders.
 
     Fresh rows for a key replace prior rows for that key. Multiple fresh rows
     with distinct odds under the same (date, home, away) are all kept so
     ``closing_odds_db`` can mark the key ambiguous instead of last-row-wins.
+
+    Empty ESPN stubs (n_books=0) must not wipe prior SBR/ESPN closes, and an
+    empty stub alongside a real DH sibling must not poison the key as ambiguous.
+
+    A partial refresh that returns fewer priced legs than an existing DH must
+    replace the nearest prior leg(s) and keep unmatched siblings so
+    ``closing_odds_db`` can still fail closed on ambiguity.
     """
     fresh_by_key: dict[tuple[str, str, str], list[dict[str, str]]] = {}
     for row in fresh:
@@ -85,7 +110,30 @@ def _merge_rows(existing: list[dict[str, str]], fresh: list[dict]) -> list[dict[
     merged: list[dict[str, str]] = []
     for key in sorted(set(existing_by_key) | set(fresh_by_key)):
         if key in fresh_by_key:
-            merged.extend(fresh_by_key[key])
+            fresh_bucket = fresh_by_key[key]
+            with_odds = [row for row in fresh_bucket if _row_has_odds(row)]
+            existing_odds = [
+                row for row in existing_by_key.get(key, []) if _row_has_odds(row)
+            ]
+            if with_odds:
+                if len(existing_odds) > len(with_odds):
+                    remaining = list(existing_odds)
+                    out: list[dict[str, str]] = []
+                    for fresh_row in with_odds:
+                        best_i = min(
+                            range(len(remaining)),
+                            key=lambda i: _home_ml_distance(remaining[i], fresh_row),
+                        )
+                        remaining.pop(best_i)
+                        out.append(fresh_row)
+                    out.extend(remaining)
+                    merged.extend(out)
+                else:
+                    merged.extend(with_odds)
+            elif existing_odds:
+                merged.extend(existing_by_key[key])
+            else:
+                merged.extend(fresh_bucket)
         else:
             merged.extend(existing_by_key[key])
     return sorted(merged, key=lambda item: (item["date"], item["home_key"]))

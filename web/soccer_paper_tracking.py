@@ -23,7 +23,8 @@ def _safe_float(value: Any, default: float = 0.0) -> float:
 
 
 def _safe_int(value: Any) -> int | None:
-    if value is None:
+    # bool is a subclass of int; False→0 would later normalize to EVEN +100.
+    if value is None or isinstance(value, bool):
         return None
     try:
         return int(value)
@@ -76,6 +77,13 @@ def record_soccer_paper_pick(
         return
     if pick_outcome not in _VALID_OUTCOMES:
         return
+    # Fail closed: unpriced / invalid American odds can never settle — do not
+    # inflate the ledger with forever-pending rows.
+    from web.bet_advisor import normalize_american_odds
+
+    priced_ml = normalize_american_odds(market_ml)
+    if priced_ml is None:
+        return
     payload = _load_paper_log()
     if payload is None:
         return
@@ -96,7 +104,7 @@ def record_soccer_paper_pick(
             "away_name": away_name,
             "pick_outcome": pick_outcome,
             "model_prob": round(_safe_float(model_prob), 2),
-            "market_ml": _safe_int(market_ml),
+            "market_ml": priced_ml,
             "edge_pp": round(_safe_float(edge_pp), 2),
             "signals": signals if isinstance(signals, dict) else {},
             "paper": True,

@@ -58,6 +58,9 @@ def test_valid_handicap_line_rejects_ml_sized_dumps() -> None:
     # Raised college caps must still reject juice/ML magnitudes.
     assert _valid_handicap_line(-110.0, max_abs=120.0) is None
     assert _valid_handicap_line(55.5, max_abs=120.0) == 55.5
+    # bool is a subclass of int; False == 0 must not become a pick'em line.
+    assert _valid_handicap_line(False, max_abs=7.0) is None
+    assert _valid_handicap_line(True, max_abs=7.0) is None
 
 
 def test_nba_provider_line_rejects_ml_sized_point_spread() -> None:
@@ -709,6 +712,19 @@ def test_apply_enrichment_to_market_pure_merge() -> None:
     )
     assert out["n_books"] == 3
     assert out["open_home_moneyline"] == -120
+    assert out["line_shopping_edge_pp"] is not None
+
+
+def test_apply_enrichment_tolerates_float_string_espn_odds() -> None:
+    """JSON/CSV often stores American odds as '-110.0'; bare int() raises."""
+    edge = shopping_edge_pp("-110.0", -105)  # type: ignore[arg-type]
+    assert edge == shopping_edge_pp(-110, -105)
+    assert shopping_edge_pp(False, -105) is None  # type: ignore[arg-type]
+    out = apply_enrichment_to_market(
+        {"home_moneyline": "-110.0", "away_moneyline": "100.0"},
+        {"n_books": 3, "best_home_ml": -105, "best_away_ml": 105},
+    )
+    assert out["n_books"] == 3
     assert out["line_shopping_edge_pp"] is not None
 
 

@@ -138,3 +138,22 @@ def test_read_db_json_non_object_returns_structured_500(tmp_path, monkeypatch) -
     except HTTPException as exc:
         assert exc.status_code == 500
         assert exc.detail["code"] == "db_snapshot_invalid"
+
+
+def test_read_db_json_rejects_path_traversal(tmp_path, monkeypatch) -> None:
+    """Relative escapes must not read JSON outside docs/api/db."""
+    import json
+
+    import web.app as app_mod
+
+    db_dir = tmp_path / "db"
+    db_dir.mkdir()
+    secret = tmp_path / "secret.json"
+    secret.write_text(json.dumps({"leaked": True}), encoding="utf-8")
+    monkeypatch.setattr(app_mod, "DB_DIR", db_dir)
+    try:
+        app_mod._read_db_json("../secret.json")
+        assert False, "expected HTTPException"
+    except HTTPException as exc:
+        assert exc.status_code == 404
+        assert exc.detail["code"] == "db_snapshot_missing"

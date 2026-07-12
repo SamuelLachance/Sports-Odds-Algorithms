@@ -78,6 +78,14 @@ def test_american_odds_zero_is_even_for_clv() -> None:
     assert abs(home + away - 1.0) < 0.01
 
 
+def test_american_to_implied_prob_rejects_bool() -> None:
+    """bool is a subclass of int; False must not map to EVEN (+100 → 50%)."""
+    assert american_to_implied_prob(False) is None
+    assert american_to_implied_prob(True) is None
+    assert clv_vs_market_pct(False, -110) is None  # type: ignore[arg-type]
+    assert clv_vs_market_pct(150, False) is None  # type: ignore[arg-type]
+
+
 def test_american_odds_rejects_invalid_magnitude() -> None:
     """|odds| < 100 (except ESPN 0→EVEN) must not price CLV."""
     assert american_to_implied_prob(50) is None

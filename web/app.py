@@ -218,7 +218,18 @@ def tracking(refresh: bool = False) -> dict:
 
 
 def _read_db_json(rel: str) -> dict:
-    path = DB_DIR / rel
+    base = DB_DIR.resolve()
+    path = (DB_DIR / rel).resolve()
+    try:
+        path.relative_to(base)
+    except ValueError as exc:
+        raise _http_error(
+            404,
+            "Database snapshot not found.",
+            code="db_snapshot_missing",
+            hint="Snapshots are rebuilt on the next Pages deploy.",
+            path=rel,
+        ) from exc
     if not path.is_file():
         raise _http_error(
             404,

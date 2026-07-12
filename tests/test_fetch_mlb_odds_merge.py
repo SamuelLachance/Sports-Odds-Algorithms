@@ -54,3 +54,54 @@ def test_merge_keeps_existing_when_no_fresh_for_key() -> None:
     fresh = [_row(date="2024-07-04")]
     merged = _merge_rows(existing, fresh)
     assert len(merged) == 2
+
+
+def test_merge_keeps_prior_closes_when_fresh_empty_stub() -> None:
+    """Empty ESPN stubs (n_books=0) must not wipe good SBR/ESPN closes."""
+    existing = [_row(home_close_ml="-150", away_close_ml="130", n_books="2", source="sbr")]
+    fresh = [
+        _row(
+            home_close_ml="",
+            away_close_ml="",
+            home_close_spread="",
+            away_close_spread="",
+            home_spread_odds="",
+            away_spread_odds="",
+            n_books="0",
+            source="espn-core",
+        )
+    ]
+    merged = _merge_rows(existing, fresh)
+    assert len(merged) == 1
+    assert merged[0]["home_close_ml"] == "-150"
+    assert merged[0]["n_books"] == "2"
+    assert merged[0]["source"] == "sbr"
+
+
+def test_merge_drops_empty_stub_alongside_real_dh_sibling() -> None:
+    """A blank stub must not sit next to a real DH row and force ambiguity."""
+    g1 = _row(home_close_ml="-150", away_close_ml="130", n_books="1")
+    stub = _row(
+        home_close_ml="",
+        away_close_ml="",
+        home_close_spread="",
+        away_close_spread="",
+        home_spread_odds="",
+        away_spread_odds="",
+        n_books="0",
+        source="espn-core",
+    )
+    merged = _merge_rows([], [g1, stub])
+    assert len(merged) == 1
+    assert merged[0]["home_close_ml"] == "-150"
+
+
+def test_merge_partial_fresh_keeps_existing_dh_sibling() -> None:
+    """A one-game ESPN refresh must not delete the other DH close."""
+    g1 = _row(home_close_ml="-150", away_close_ml="130", source="sbr")
+    g2 = _row(home_close_ml="-120", away_close_ml="100", home_spread_odds="-115", source="sbr")
+    fresh_g1 = _row(home_close_ml="-155", away_close_ml="135", source="espn")
+    merged = _merge_rows([g1, g2], [fresh_g1])
+    mls = sorted(row["home_close_ml"] for row in merged)
+    assert mls == ["-120", "-155"]
+    assert len(merged) == 2
