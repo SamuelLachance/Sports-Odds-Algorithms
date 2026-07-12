@@ -39,7 +39,10 @@ def artifacts_available() -> bool:
     )
     if not all((MODEL_DIR / name).is_file() for name in required):
         return False
-    meta = json.loads((MODEL_DIR / "metadata.json").read_text(encoding="utf-8"))
+    try:
+        meta = json.loads((MODEL_DIR / "metadata.json").read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
     if not meta.get("ship_models", False):
         return False
     return any(MODEL_DIR.glob("state_*.json.gz"))
@@ -54,33 +57,39 @@ def _load_artifacts() -> dict[str, Any] | None:
     except ImportError:
         return None
 
-    def _booster(name: str):
-        path = MODEL_DIR / name
-        if not path.is_file():
+    try:
+        def _booster(name: str):
+            path = MODEL_DIR / name
+            if not path.is_file():
+                return None
+            booster = Booster()
+            booster.load_model(str(path))
+            return booster
+
+        metadata = json.loads((MODEL_DIR / "metadata.json").read_text(encoding="utf-8"))
+        snapshots: dict[int, Path] = {}
+        for path in MODEL_DIR.glob("state_*.json.gz"):
+            try:
+                snapshots[int(path.stem.split("_")[1].split(".")[0])] = path
+            except (IndexError, ValueError):
+                continue
+
+        clf = _booster("model_clf.json")
+        if clf is None or not snapshots:
             return None
-        booster = Booster()
-        booster.load_model(str(path))
-        return booster
-
-    metadata = json.loads((MODEL_DIR / "metadata.json").read_text(encoding="utf-8"))
-    snapshots: dict[int, Path] = {}
-    for path in MODEL_DIR.glob("state_*.json.gz"):
-        try:
-            snapshots[int(path.stem.split("_")[1].split(".")[0])] = path
-        except (IndexError, ValueError):
-            continue
-
-    return {
-        "clf": _booster("model_clf.json"),
-        "lr": json.loads((MODEL_DIR / "model_lr.json").read_text(encoding="utf-8")),
-        "calibrator": json.loads((MODEL_DIR / "calibrator.json").read_text(encoding="utf-8")),
-        "margin": _booster("model_margin.json"),
-        "score_home": _booster("model_score_home.json"),
-        "score_away": _booster("model_score_away.json"),
-        "metadata": metadata,
-        "snapshots": snapshots,
-        "feature_columns": metadata.get("feature_columns") or list(FEATURE_COLUMNS),
-    }
+        return {
+            "clf": clf,
+            "lr": json.loads((MODEL_DIR / "model_lr.json").read_text(encoding="utf-8")),
+            "calibrator": json.loads((MODEL_DIR / "calibrator.json").read_text(encoding="utf-8")),
+            "margin": _booster("model_margin.json"),
+            "score_home": _booster("model_score_home.json"),
+            "score_away": _booster("model_score_away.json"),
+            "metadata": metadata,
+            "snapshots": snapshots,
+            "feature_columns": metadata.get("feature_columns") or list(FEATURE_COLUMNS),
+        }
+    except (OSError, json.JSONDecodeError, ValueError, KeyError, TypeError):
+        return None
 
 
 def _load_snapshot_state(art: dict[str, Any], target_season: int) -> tuple[int, Any] | None:
@@ -113,7 +122,10 @@ def _fetch_completed_season_games_espn(season: int, *, stop_before: str) -> list
     cache_path = LIVE_CACHE_DIR / f"events_{season}_{stop_before}.json"
     cached = _read_cache(cache_path, EVENTS_TTL_SECONDS)
     if cached is not None:
-        return events_to_results(cached, season)
+        try:
+            return events_to_results(cached, season)
+        except (TypeError, ValueError, KeyError):
+            pass
 
     try:
         from web.season_games import _event_date_iso, _load_league_game_map
@@ -184,7 +196,10 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
     art = _load_artifacts()
     if art is None:
         return None
-    day = date_cls.fromisoformat(day_iso[:10])
+    try:
+        day = date_cls.fromisoformat(day_iso[:10])
+    except ValueError:
+        return None
     season = nfl_season_of(day)
     snap = _load_snapshot_state(art, season)
     if snap is None:

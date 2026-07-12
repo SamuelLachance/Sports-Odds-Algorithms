@@ -17,7 +17,7 @@ import io
 import time
 import urllib.error
 import urllib.request
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -85,7 +85,7 @@ def season_tag(season: int) -> str:
 
 
 def current_season(today: datetime | None = None) -> int:
-    now = today or datetime.utcnow()
+    now = today or datetime.now(timezone.utc)
     return now.year if now.month >= 7 else now.year - 1
 
 

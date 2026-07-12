@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import urllib.error
 import urllib.request
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from web.league_profiles import get_league_profile
@@ -20,7 +20,7 @@ class AvailabilitySnapshot:
     away_injuries: int = 0
     home_out: int = 0
     away_out: int = 0
-    sources: list[str] | None = None
+    sources: list[str] = field(default_factory=list)
 
 
 def _fetch_json(url: str) -> Any:
@@ -64,7 +64,7 @@ def fetch_availability_snapshot(
     home_espn_id: str | None,
     away_espn_id: str | None,
 ) -> AvailabilitySnapshot:
-    snap = AvailabilitySnapshot(sources=[])
+    snap = AvailabilitySnapshot()
     if home_espn_id:
         home_total, home_out = _count_team_injuries(league, home_espn_id)
         snap.home_injuries = home_total

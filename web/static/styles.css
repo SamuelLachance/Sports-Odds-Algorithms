@@ -869,6 +869,45 @@ a.pick-card-link:focus-visible {
   color: var(--text-muted);
 }
 
+.empty-panel strong {
+  display: block;
+  color: var(--text);
+  margin-bottom: 0.35rem;
+}
+
+.empty-panel p {
+  margin: 0.35rem 0 0;
+  max-width: 42rem;
+  margin-inline: auto;
+}
+
+.empty-panel-rule {
+  font-size: 0.875rem;
+}
+
+.empty-panel--ref {
+  border-left: 4px solid var(--border);
+}
+
+.empty-panel--official {
+  border-left: 4px solid color-mix(in srgb, var(--accent) 45%, var(--border));
+}
+
+.edge-badge--ref {
+  border-color: var(--border);
+  color: var(--text-muted);
+  background: var(--bg-soft);
+}
+
+.three-track-panel--ref {
+  border-color: var(--border);
+}
+
+.three-track-caption {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+}
+
 .disclaimer {
   margin-top: var(--space-2);
 }

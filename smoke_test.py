@@ -34,7 +34,25 @@ def test_api_import() -> None:
     print("FastAPI app import OK")
 
 
+def test_football_cbb_v2_artifacts_optional() -> None:
+    """Report nfl/cfb/cbb v2 artifact presence; never fail when models are absent."""
+    checks = (
+        ("nfl_v2", "web.nfl_v2.live"),
+        ("cfb_v2", "web.cfb_v2.live"),
+        ("cbb_v2", "web.cbb_v2.live"),
+    )
+    for label, module_path in checks:
+        try:
+            module = __import__(module_path, fromlist=["artifacts_available"])
+            available = bool(module.artifacts_available())
+        except Exception as exc:  # noqa: BLE001 - smoke must stay non-fatal
+            print(f"{label} artifacts_available: error ({exc})")
+            continue
+        print(f"{label} artifacts_available: {available}")
+
+
 if __name__ == "__main__":
     test_api_import()
     test_nba_example()
+    test_football_cbb_v2_artifacts_optional()
     print("All smoke tests passed.")

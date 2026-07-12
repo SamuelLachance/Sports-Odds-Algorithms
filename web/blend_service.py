@@ -96,37 +96,41 @@ def _apply_availability_layer(
     """ESPN injury nudge on win% only; leave dedicated margin heads untouched."""
     if is_soccer_league(league) or not home_espn_id or not away_espn_id:
         return result
-    from web.availability_signals import (
-        availability_home_prob_shift,
-        fetch_availability_snapshot,
-    )
+    try:
+        from web.availability_signals import (
+            availability_home_prob_shift,
+            fetch_availability_snapshot,
+        )
 
-    snapshot = fetch_availability_snapshot(
-        league,
-        home_espn_id=home_espn_id,
-        away_espn_id=away_espn_id,
-    )
-    shift = availability_home_prob_shift(snapshot)
-    if abs(shift) < 0.05:
+        snapshot = fetch_availability_snapshot(
+            league,
+            home_espn_id=home_espn_id,
+            away_espn_id=away_espn_id,
+        )
+        shift = availability_home_prob_shift(snapshot)
+        if abs(shift) < 0.05:
+            return result
+        home_prob = layer_home_win_probability(result)
+        if home_prob is None:
+            return result
+        adjusted = min(max(float(home_prob) + float(shift), 5.0), 95.0)
+        total, win_prob = home_win_prob_to_total_score(adjusted)
+        result = dict(result)
+        sources = snapshot.sources if isinstance(snapshot.sources, list) else []
+        result["availability"] = {
+            "shift_pp": shift,
+            "home_injuries": int(snapshot.home_injuries or 0),
+            "away_injuries": int(snapshot.away_injuries or 0),
+            "sources": sources,
+        }
+        result["win_probability"] = round(win_prob, 2)
+        result["total_score"] = round(total, 2)
+        result["favorite_side"] = "home" if total <= 0 else "away"
+        if result.get("blended_home_win_probability") is not None:
+            result["blended_home_win_probability"] = round(adjusted, 2)
         return result
-    home_prob = layer_home_win_probability(result)
-    if home_prob is None:
+    except Exception:  # noqa: BLE001 - availability must never break the slate
         return result
-    adjusted = min(max(home_prob + shift, 5.0), 95.0)
-    total, win_prob = home_win_prob_to_total_score(adjusted)
-    result = dict(result)
-    result["availability"] = {
-        "shift_pp": shift,
-        "home_injuries": snapshot.home_injuries,
-        "away_injuries": snapshot.away_injuries,
-        "sources": snapshot.sources or [],
-    }
-    result["win_probability"] = round(win_prob, 2)
-    result["total_score"] = round(total, 2)
-    result["favorite_side"] = "home" if total <= 0 else "away"
-    if result.get("blended_home_win_probability") is not None:
-        result["blended_home_win_probability"] = round(adjusted, 2)
-    return result
 
 
 def _with_db_rating_layer(
@@ -949,7 +953,13 @@ def _blend_cfb_v2_only(
     v2_payload = _run_cfb_v2(cutoff_date, home_abbr, away_abbr)
     if not v2_payload or v2_payload.get("model_version") != "v2":
         return None
-    home_prob = float(v2_payload["home_win_probability"])
+    raw_prob = v2_payload.get("home_win_probability")
+    if raw_prob is None:
+        return None
+    try:
+        home_prob = float(raw_prob)
+    except (TypeError, ValueError):
+        return None
     total, win_prob = home_win_prob_to_total_score(home_prob)
     result: dict[str, Any] = {
         "algorithm": str(v2_payload.get("algorithm") or "CFBGradientBoost v2"),
@@ -963,8 +973,12 @@ def _blend_cfb_v2_only(
         "favorite_side": "home" if total <= 0 else "away",
         "model_version": "v2",
     }
-    if v2_payload.get("predicted_margin") is not None:
-        result["home_spread_margin"] = round(-float(v2_payload["predicted_margin"]), 2)
+    margin = v2_payload.get("predicted_margin")
+    if margin is not None:
+        try:
+            result["home_spread_margin"] = round(-float(margin), 2)
+        except (TypeError, ValueError):
+            pass
     return _apply_availability_layer(
         result,
         league="cfb",
@@ -985,7 +999,13 @@ def _blend_nfl_v2_only(
     v2_payload = _run_nfl_v2(cutoff_date, home_abbr, away_abbr)
     if not v2_payload or v2_payload.get("model_version") != "v2":
         return None
-    home_prob = float(v2_payload["home_win_probability"])
+    raw_prob = v2_payload.get("home_win_probability")
+    if raw_prob is None:
+        return None
+    try:
+        home_prob = float(raw_prob)
+    except (TypeError, ValueError):
+        return None
     total, win_prob = home_win_prob_to_total_score(home_prob)
     result: dict[str, Any] = {
         "algorithm": str(v2_payload.get("algorithm") or "NFLGradientBoost v2"),
@@ -999,8 +1019,12 @@ def _blend_nfl_v2_only(
         "favorite_side": "home" if total <= 0 else "away",
         "model_version": "v2",
     }
-    if v2_payload.get("predicted_margin") is not None:
-        result["home_spread_margin"] = round(-float(v2_payload["predicted_margin"]), 2)
+    margin = v2_payload.get("predicted_margin")
+    if margin is not None:
+        try:
+            result["home_spread_margin"] = round(-float(margin), 2)
+        except (TypeError, ValueError):
+            pass
     return _apply_availability_layer(
         result,
         league="nfl",

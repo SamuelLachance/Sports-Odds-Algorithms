@@ -1,4 +1,4 @@
-const APP_BUILD_VERSION = "2026-07-10-ux-a-plus";
+const APP_BUILD_VERSION = "2026-07-12-wave2-ux";
 const META_BASE_PATH =
   document.querySelector('meta[name="base-path"]')?.content ?? "";
 const IS_GITHUB_IO = window.location.hostname.endsWith("github.io");
@@ -59,6 +59,44 @@ function hubacekPickRule(source) {
   const ev = s.min_ev_pct ?? source?.min_ev_pct ?? 2;
   const conf = minHubacekConfidence(source);
   return `Hubáček spot: decorrelated model beats the book by ≥ ${gap} pp with ≥ ${ev}% EV and |p−50| ≥ ${conf} pp`;
+}
+
+/** Leagues with live models but official Hubáček tracking disabled. */
+const PREDICTIONS_ONLY_LEAGUES = new Set(["nfl", "cfb", "cbb", "ncaabb"]);
+
+function isPredictionsOnlyLeague(league) {
+  return PREDICTIONS_ONLY_LEAGUES.has(String(league || "").toLowerCase());
+}
+
+function predictionsOnlyPill(league) {
+  if (!isPredictionsOnlyLeague(league)) return "";
+  return `<span class="edge-badge edge-badge--ref" title="Model live; official Hubáček picks disabled until backtests clear">Predictions only</span>`;
+}
+
+function officialEmptyPanel(hubacekRule) {
+  return `<div class="panel empty-panel empty-panel--official">
+    <strong>No official picks today</strong>
+    <p class="muted">Nothing cleared the official Hubáček gate on tracked leagues (NBA, WNBA, NHL, MLB, calibrated soccer). NFL, CFB, and CBB stay predictions-only — see Model predictions below when model value spots exist.</p>
+    <p class="muted empty-panel-rule">${escapeHtml(hubacekRule)}</p>
+  </div>`;
+}
+
+function modelAnalysisEmptyPanel() {
+  return `<div class="panel empty-panel empty-panel--ref">
+    <strong>No model value spots today</strong>
+    <p class="muted">Reference-only analysis (including NFL/CFB/CBB) found no value spots on today's slate. Full probabilities stay on each game page.</p>
+  </div>`;
+}
+
+function gamesFilterEmptyPanel(league) {
+  if (league && league !== "all" && isPredictionsOnlyLeague(league)) {
+    const label = String(league).toUpperCase();
+    return `<div class="panel empty-panel empty-panel--ref">
+      <strong>No ${escapeHtml(label)} games on today's slate</strong>
+      <p class="muted">${escapeHtml(label)} is predictions-only — GradientBoost v2 is live when games appear, but spots are not logged as official Hubáček picks.</p>
+    </div>`;
+  }
+  return `<div class="panel empty-panel">No games for this filter.</div>`;
 }
 
 function officialBetTypeForLeague(league) {
@@ -605,6 +643,7 @@ function hubacekThreeTrackPanel(game, pick) {
   const top = pick || game?.top_pick;
   if (!m && !top) return "";
 
+  const predictionsOnly = isPredictionsOnlyGame(game);
   const displayProb = m.threeway
     ? null
     : m.win_probability;
@@ -621,10 +660,19 @@ function hubacekThreeTrackPanel(game, pick) {
     m.pre_context_home_win_probability ??
     null;
 
-  return `<div class="three-track-panel">
+  const kicker = predictionsOnly ? "Model probability tracks" : "Hubáček 3-track";
+  const gateLabel = predictionsOnly ? "Decorrelated" : "Pick gate";
+  const gateHint = predictionsOnly
+    ? "Shown for research — not an official pick gate"
+    : "Decorrelated prob for gap / confidence";
+  const caption = predictionsOnly
+    ? `<p class="muted three-track-caption">Predictions-only league — these tracks inform the board, but do not create official Hubáček bets.</p>`
+    : "";
+
+  return `<div class="three-track-panel${predictionsOnly ? " three-track-panel--ref" : ""}">
     <div class="three-track-head">
-      <span class="panel-kicker">Hubáček 3-track</span>
-      <span class="muted">Display · Pick gate · Honest EV</span>
+      <span class="panel-kicker">${kicker}</span>
+      <span class="muted">Display · ${gateLabel} · Honest EV</span>
     </div>
     <div class="three-track-grid">
       <div>
@@ -633,9 +681,9 @@ function hubacekThreeTrackPanel(game, pick) {
         <small>Blended model shown on the board</small>
       </div>
       <div>
-        <span>Pick gate</span>
+        <span>${gateLabel}</span>
         <strong>${pickProb != null ? `${pickProb}%` : "—"}</strong>
-        <small>Decorrelated prob for gap / confidence</small>
+        <small>${gateHint}</small>
       </div>
       <div>
         <span>Honest EV</span>
@@ -643,6 +691,7 @@ function hubacekThreeTrackPanel(game, pick) {
         <small>Calibrated pre-decorrelation for EV &amp; Kelly</small>
       </div>
     </div>
+    ${caption}
     <a class="text-link three-track-link" href="#/methodology">How this works →</a>
   </div>`;
 }
@@ -1246,12 +1295,12 @@ function gameValuePickBlock(game, top, isSoccer) {
       return `<div class="game-pick neutral">
         <strong>Model value analysis</strong>
         ${renderEdgeBadges(top, game)}
-        <span>${pickTeamNameLink(top, game.league, game.matchup)} · ${pickSideLabel(top)} ${pickBetTypeLabel(top)} · ${pickMarketLabel(top)} vs model ${pickModelLabel(top)} (+${top.ev_pct != null ? top.ev_pct + "% EV" : ""}${top.edge != null ? ", +" + top.edge + " edge" : ""})${stakeBit} — not an official tracked pick</span>
+        <span>${pickTeamNameLink(top, game.league, game.matchup)} · ${pickSideLabel(top)} ${pickBetTypeLabel(top)} · ${pickMarketLabel(top)} vs model ${pickModelLabel(top)} (+${top.ev_pct != null ? top.ev_pct + "% EV" : ""}${top.edge != null ? ", +" + top.edge + " edge" : ""})${stakeBit} — not an official Hubáček pick</span>
         <p>${escapeHtml(top.reason || "")}</p>
         ${fairOddsBetStrip(game, top)}
       </div>`;
     }
-    return `<div class="game-pick neutral"><strong>Predictions only</strong><span>${isSoccer ? "Full 1X2 model probabilities and fair prices are shown below. Value spots appear under Model predictions on the picks page but are not tracked as official bets." : "Model probabilities and fair prices are shown; this league is not tracked as an official pick."}</span></div>`;
+    return `<div class="game-pick neutral"><strong>Predictions only</strong><span>${isSoccer ? "Full 1X2 model probabilities and fair prices are shown below. Value spots appear under Model predictions on the picks page but are not tracked as official Hubáček bets." : "Model probabilities and fair prices are shown. NFL, CFB, and CBB stay predictions-only until walk-forward backtests clear — not an official Hubáček pick."}</span></div>`;
   }
   if (top) {
     return `<div class="game-pick ${confClass(top.confidence)}">
@@ -1333,6 +1382,7 @@ function algoCenter(game) {
     <div class="algo-hero-head">
       <span class="league-pill">${escapeHtml(game.league_name || "")}</span>
       ${sparseLeaguePill(game.league)}
+      ${predictionsOnlyPill(game.league)}
       <h1>${matchupLinks(game.league, away, home)}</h1>
       <p class="game-meta">${formatTime(game.start_time)} · ${escapeHtml(game.status_detail || game.status || "")}</p>
       <p class="db-game-links"><a href="${teamHref(game.league, game.matchup?.away?.abbr)}">${escapeHtml(away.name)}</a> · <a href="${teamHref(game.league, game.matchup?.home?.abbr)}">${escapeHtml(home.name)}</a> · <a href="${leagueHref(game.league)}">${escapeHtml(game.league_name || "")} league</a></p>
@@ -1438,9 +1488,9 @@ function viewDashboard() {
       <div class="picks-grid">${picks.length ? picks.slice(0, 6).map((p) => {
         const g = gameById(p.event_id);
         return pickCard(p, "", g);
-      }).join("") : `<div class="panel empty-panel">No official bets meet ${escapeHtml(hubacekRule)} today.</div>`}</div>
+      }).join("") : officialEmptyPanel(hubacekRule)}</div>
     </section>
-    ${modelAnalysis.length ? `<section class="section"><div class="section-head"><h2>Model predictions (not tracked)</h2><a class="text-link" href="#/picks#model-predictions">View all →</a></div><p class="muted section-intro">Same analysis as game pages — reference only, not logged in official bet history.</p><div class="picks-grid">${modelAnalysis.slice(0, 6).map((p) => pickCard(p)).join("")}</div></section>` : ""}`;
+    ${modelAnalysis.length ? `<section class="section"><div class="section-head"><h2>Model predictions (not tracked)</h2><a class="text-link" href="#/picks#model-predictions">View all →</a></div><p class="muted section-intro">Same analysis as game pages — reference only, not logged in official bet history. NFL/CFB/CBB never appear as official Hubáček picks.</p><div class="picks-grid">${modelAnalysis.slice(0, 6).map((p) => pickCard(p)).join("")}</div></section>` : ""}`;
 }
 
 function renderTrackingSummary() {
@@ -1478,8 +1528,8 @@ function viewPicks() {
   appRoot.innerHTML = `
     <section class="page-head">
       <h1>Algo picks</h1>
-      <p><strong>Official Hubáček tracking</strong> covers NBA, WNBA, NHL, MLB, and calibrated soccer leagues. <strong>NFL, CFB, and CBB</strong> are predictions-only — GradientBoost v2 models are live, but official picks stay disabled until walk-forward backtests clear. Official spots fire when the decorrelated model beats the de-vigged book by a backtested per-league gap with honest EV and confidence floors (|p−50| ≥ ${minConf} pp on moneylines). Stakes are quarter-Kelly (0.25–3u).</p>
-      <p class="muted">${escapeHtml(hubacekRule)}</p>
+      <p><strong>Official Hubáček tracking</strong> covers NBA, WNBA, NHL, MLB, and calibrated soccer leagues only. <strong>NFL, CFB, and CBB</strong> are predictions-only — GradientBoost v2 models are live, but they never enter the official Hubáček book until walk-forward backtests clear. On tracked leagues, official spots fire when the decorrelated model beats the de-vigged book by a backtested per-league gap with honest EV and confidence floors (|p−50| ≥ ${minConf} pp on moneylines). Stakes are quarter-Kelly (0.25–3u).</p>
+      <p class="muted">Official gate: ${escapeHtml(hubacekRule)}</p>
     </section>
     ${disclaimerBar()}
     <section class="section picks-section-official">
@@ -1490,17 +1540,17 @@ function viewPicks() {
         </div>
         <span class="section-count">${picks.length}</span>
       </div>
-      <div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p, "", gameById(p.event_id))).join("") : `<div class="panel empty-panel">No official bets meet ${escapeHtml(hubacekRule)} today.</div>`}</div>
+      <div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p, "", gameById(p.event_id))).join("") : officialEmptyPanel(hubacekRule)}</div>
     </section>
     <section class="section picks-section-reference" id="model-predictions">
       <div class="section-head">
         <div>
           <h2>Model predictions (not tracked)</h2>
-          <p class="muted section-intro">Reference-only value spots — including NFL/CFB/CBB (models live, official picks disabled) plus MLS, UCL, and other non-tracked analysis. Full probabilities stay on each game page.</p>
+          <p class="muted section-intro">Reference-only value spots — including NFL/CFB/CBB (models live, official Hubáček picks disabled) plus MLS, UCL, and other non-tracked analysis. Full probabilities stay on each game page.</p>
         </div>
         <span class="section-count">${modelAnalysis.length}</span>
       </div>
-      <div class="picks-grid">${modelAnalysis.length ? modelAnalysis.map((p) => pickCard(p)).join("") : `<div class="panel empty-panel">No model value spots on today's slate.</div>`}</div>
+      <div class="picks-grid">${modelAnalysis.length ? modelAnalysis.map((p) => pickCard(p)).join("") : modelAnalysisEmptyPanel()}</div>
     </section>`;
 }
 
@@ -1512,7 +1562,7 @@ function viewGames(league) {
   renderSidebar(parseRoute());
   const games = gamesForLeague(state.selectedLeague);
   appRoot.innerHTML = `<section class="page-head"><h1>Games</h1><p>Today's matchups with full algo breakdowns. Filter by league in the sidebar or open a team sheet from any game.</p></section>
-    <div class="slate-list">${games.length ? games.map((g) => gameListCard(g)).join("") : '<div class="panel empty-panel">No games for this filter.</div>'}</div>`;
+    <div class="slate-list">${games.length ? games.map((g) => gameListCard(g)).join("") : gamesFilterEmptyPanel(state.selectedLeague)}</div>`;
 }
 
 function gameListCard(game) {
@@ -1541,7 +1591,7 @@ function gameListCard(game) {
     betStrip = contextCallout(m);
   }
   return `<article class="game-card panel clickable" data-game="${game.event_id}">
-    <div class="game-head"><div><span class="league-pill">${escapeHtml(game.league_name || "")}</span>${sparseLeaguePill(game.league)}<h3>${matchupLinks(game.league, away, home)}</h3><p class="game-meta">${formatTime(game.start_time)}</p></div>
+    <div class="game-head"><div><span class="league-pill">${escapeHtml(game.league_name || "")}</span>${sparseLeaguePill(game.league)}${predictionsOnlyPill(game.league)}<h3>${matchupLinks(game.league, away, home)}</h3><p class="game-meta">${formatTime(game.start_time)}</p></div>
     <div class="win-chip"><span>${primaryAlgoShort(m)}</span><strong>${escapeHtml(fav)}</strong><small>${m.win_probability}%</small></div></div>
     ${betStrip}
     <a class="btn btn-secondary btn-sm" href="#/game/${game.event_id}">Open algo breakdown →</a>
@@ -1597,18 +1647,29 @@ async function viewLeaguePage(league) {
   const betting = data.betting || {};
   const games = betting.games_today || [];
   const leagueName = data.league?.name || league.toUpperCase();
+  const predictionsOnly = isPredictionsOnlyLeague(league);
+  const boardEmpty = !games.length
+    ? `<section class="section"><div class="section-head"><h2>Today's board</h2></div>
+        <div class="panel empty-panel${predictionsOnly ? " empty-panel--ref" : ""}">
+          <strong>No games today</strong>
+          <p class="muted">${predictionsOnly
+            ? `${escapeHtml(leagueName)} is predictions-only — when games appear, GradientBoost v2 projections show on the board but are not logged as official Hubáček picks.`
+            : "Nothing scheduled for this league on today's slate."}</p>
+        </div></section>`
+    : "";
   appRoot.innerHTML = `${breadcrumbs([
     { label: "Home", href: "#/" },
     { label: "Leagues", href: "#/teams" },
     { label: leagueName },
   ])}<section class="page-head">
     <span class="league-pill">${data.league?.category}</span>
+    ${predictionsOnlyPill(league)}
     <h1>${leagueName}</h1>
     <p>${data.profile?.description || "Standings, ratings, news, and team sheets for betting research."}</p>
     <p class="muted">Season ${data.season_year} · ${betting.game_count || 0} games today · Updated ${new Date(data.generated_at).toLocaleString()}</p>
   </section>
   ${games.length ? `<section class="section"><div class="section-head"><h2>Today's board (${games.length})</h2></div>
-    <div class="db-bet-grid">${games.map((g) => renderBettingGameCard(g, league)).join("")}</div></section>` : ""}
+    <div class="db-bet-grid">${games.map((g) => renderBettingGameCard(g, league)).join("")}</div></section>` : boardEmpty}
   <div class="db-grid-two">
     <section class="section"><div class="section-head"><h2>Standings</h2></div>${renderStandingsTable(data.standings, league)}</section>
     <section class="section"><div class="section-head"><h2>Power ratings</h2></div><div class="panel">${renderRatingsSummary(data.ratings)}</div></section>
@@ -2370,6 +2431,7 @@ function viewMethodology() {
         <li><strong>Honest EV</strong> — expected value computed from the calibrated <em>pre-decorrelation</em> probability, so the decorrelation shove never inflates the printed edge or the Kelly stake.</li>
       </ul>
       <p class="muted methodology-cite">Hubáček, O., Šourek, G., &amp; Železný, F. (2019). “Exploiting sports-betting market using machine learning.” <em>International Journal of Forecasting</em>, 35(2). <a class="text-link" href="https://doi.org/10.1016/j.ijforecast.2019.01.001" target="_blank" rel="noopener">doi:10.1016/j.ijforecast.2019.01.001</a></p>
+      <p class="muted">NFL, CFB, and CBB show the same probability tracks for research, but the Hubáček official gate stays off until walk-forward backtests clear — those leagues never appear in the official tracking book.</p>
     </section>
 
     <section class="section panel methodology-body">
@@ -2476,6 +2538,7 @@ function renderBettingGameCard(sheet, league) {
     <div class="db-bet-head">
       <span class="league-pill">${escapeHtml(sheet.league_name || league || "")}</span>
       ${sparseLeaguePill(league)}
+      ${predictionsOnlyPill(league)}
       <strong>${matchupLinks(league, matchup.away, matchup.home)}</strong>
       <span class="muted">${formatTime(sheet.start_time)}</span>
     </div>
@@ -2496,7 +2559,7 @@ function renderBettingGameCard(sheet, league) {
         <span>${pickTeamNameLink(top, league, matchup)} · ${pickSideLabel(top)} ${pickBetTypeLabel(top)}${top.ev_pct != null ? ` · +${top.ev_pct}% EV` : ""}${stake != null ? ` · ${stake}u` : ""}${predictionsOnly ? " — not tracked" : ""}</span>
       </div>
       ${renderEdgeBadges(top, sheet)}
-    </div>` : predictionsOnly ? `<div class="game-pick neutral"><strong>Predictions only</strong> — model shown, not an official tracked pick</div>` : `<div class="game-pick neutral"><strong>No official pick</strong> — ${hubacekPickRule(state.slate)} not met</div>`}
+    </div>` : predictionsOnly ? `<div class="game-pick neutral"><strong>Predictions only</strong> — model shown, not an official Hubáček pick</div>` : `<div class="game-pick neutral"><strong>No official pick</strong> — ${hubacekPickRule(state.slate)} not met</div>`}
     ${lineShoppingPanel(market, top)}
     <div class="db-bet-links">
       <a href="${teamHref(league, matchup.home?.abbr)}">${escapeHtml(home)}</a>

@@ -30,6 +30,8 @@ venv/
 .ruff_cache/
 
 # Build/data caches and logs
+# Includes v2 live scoreboard caches: nba-v2-live, wnba-v2-live, nfl-v2-live,
+# cfb-v2-live, cbb-v2-live, soccer-v2-live, plus history/odds scratch dirs.
 .build-cache/
 data/db_ratings_cache/
 docs_old_*/

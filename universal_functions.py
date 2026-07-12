@@ -249,7 +249,9 @@ class Universal_Functions:
 	#returns time 14:45 for file naming purposes
 	def get_current_time(self):
 		#2013-12-15 17:45:35.177000
-		curDate=str(datetime.datetime.utcnow() + datetime.timedelta(hours=self.daylight_savings))
+		# timezone-aware UTC (datetime.utcnow deprecated); drop tz for legacy str parse
+		now = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+		curDate=str(now + datetime.timedelta(hours=self.daylight_savings))
 		date=curDate.split(' ')
 
 		#17:45:35.177000

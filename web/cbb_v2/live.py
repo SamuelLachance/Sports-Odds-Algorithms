@@ -52,33 +52,39 @@ def _load_artifacts() -> dict[str, Any] | None:
     except ImportError:
         return None
 
-    def _booster(name: str):
-        path = MODEL_DIR / name
-        if not path.is_file():
+    try:
+        def _booster(name: str):
+            path = MODEL_DIR / name
+            if not path.is_file():
+                return None
+            booster = Booster()
+            booster.load_model(str(path))
+            return booster
+
+        metadata = json.loads((MODEL_DIR / "metadata.json").read_text(encoding="utf-8"))
+        snapshots: dict[int, Path] = {}
+        for path in MODEL_DIR.glob("state_*.json.gz"):
+            try:
+                snapshots[int(path.stem.split("_")[1].split(".")[0])] = path
+            except (IndexError, ValueError):
+                continue
+
+        clf = _booster("model_clf.json")
+        if clf is None or not snapshots:
             return None
-        booster = Booster()
-        booster.load_model(str(path))
-        return booster
-
-    metadata = json.loads((MODEL_DIR / "metadata.json").read_text(encoding="utf-8"))
-    snapshots: dict[int, Path] = {}
-    for path in MODEL_DIR.glob("state_*.json.gz"):
-        try:
-            snapshots[int(path.stem.split("_")[1].split(".")[0])] = path
-        except (IndexError, ValueError):
-            continue
-
-    return {
-        "clf": _booster("model_clf.json"),
-        "lr": json.loads((MODEL_DIR / "model_lr.json").read_text(encoding="utf-8")),
-        "calibrator": json.loads((MODEL_DIR / "calibrator.json").read_text(encoding="utf-8")),
-        "margin": _booster("model_margin.json"),
-        "score_home": _booster("model_score_home.json"),
-        "score_away": _booster("model_score_away.json"),
-        "metadata": metadata,
-        "snapshots": snapshots,
-        "feature_columns": metadata.get("feature_columns") or list(FEATURE_COLUMNS),
-    }
+        return {
+            "clf": clf,
+            "lr": json.loads((MODEL_DIR / "model_lr.json").read_text(encoding="utf-8")),
+            "calibrator": json.loads((MODEL_DIR / "calibrator.json").read_text(encoding="utf-8")),
+            "margin": _booster("model_margin.json"),
+            "score_home": _booster("model_score_home.json"),
+            "score_away": _booster("model_score_away.json"),
+            "metadata": metadata,
+            "snapshots": snapshots,
+            "feature_columns": metadata.get("feature_columns") or list(FEATURE_COLUMNS),
+        }
+    except (OSError, json.JSONDecodeError, ValueError, KeyError, TypeError):
+        return None
 
 
 def _load_snapshot_state(art: dict[str, Any], target_season: int) -> tuple[int, Any] | None:
@@ -110,21 +116,29 @@ def _fetch_events_cached(season: int, *, current: bool) -> list[dict[str, Any]]:
     path = LIVE_CACHE_DIR / f"events_{season}.json"
     ttl = EVENTS_TTL_SECONDS if current else PAST_SEASON_TTL_SECONDS
     cached = _read_cache(path, ttl)
-    if cached is not None:
-        return cached.get("events", [])
+    if isinstance(cached, dict):
+        events = cached.get("events")
+        if isinstance(events, list):
+            return events
     history = PROJECT_ROOT / ".build-cache" / "cbb-history" / str(season) / "events.json"
     if history.is_file() and not current:
         try:
-            events = json.loads(history.read_text(encoding="utf-8")).get("events", [])
-            _write_cache(path, {"events": events})
-            return events
+            payload = json.loads(history.read_text(encoding="utf-8"))
+            events = payload.get("events", []) if isinstance(payload, dict) else []
+            if isinstance(events, list):
+                _write_cache(path, {"events": events})
+                return events
         except (json.JSONDecodeError, OSError):
             pass
     try:
         events = fetch_season_events(season, use_cache=True)
     except OSError:
         stale = _read_cache(path, 90 * 86400)
-        return (stale or {}).get("events", [])
+        if isinstance(stale, dict):
+            return list(stale.get("events") or [])
+        return []
+    if not isinstance(events, list):
+        return []
     _write_cache(path, {"events": events})
     return events
 

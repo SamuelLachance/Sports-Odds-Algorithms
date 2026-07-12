@@ -52,7 +52,7 @@
     "min_spread_confidence_pp": 5.0,
     "min_ev_pct": 2.0,
     "enabled": false,
-    "note": "Official tracking stays disabled. CBBGradientBoost v2 ships with PIT-safe ESPN walk-forward features (OOS logloss ~0.507 vs ensemble ~0.55 gate) and Torvik as live fallback only — not used in training. ESPN core odds are fetchable (scripts/fetch_cbb_odds.py) but only a smoke week is cached; enable picks only after a full historical closing-odds pull plus a positive worst-season spread backtest."
+    "note": "Official tracking stays disabled. CBBGradientBoost v2 ships with PIT-safe ESPN walk-forward features (OOS logloss ~0.507 vs ensemble ~0.55 gate) and Torvik as live fallback only — not used in training. ESPN core closing odds now cover 2024-11-04→2025-03-15 (6164 games, 5636 with odds in data/supplemental/closing-odds/cbb.csv). Expand with: python scripts/fetch_cbb_odds.py --start-season 2024 --end-season 2026 (merge-safe; or --start-date/--end-date chunks). Enable picks only after remaining seasons are filled plus a positive worst-season spread backtest."
   },
   "nfl": {
     "bet_type": "spread",
