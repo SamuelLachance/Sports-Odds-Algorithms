@@ -227,7 +227,12 @@ def _provider_line(
     open_total = _valid_total(_to_float(((item.get("open") or {}) or {}).get("total")))
 
     home_spread_odds = _valid_american(_nested_american(home, "close", "spread"))
+    if home_spread_odds is None:
+        # Flat dict ``{american: ...}`` needs unwrap (same as moneyLine).
+        home_spread_odds = _valid_american(_nested_american(home, "spread"))
     away_spread_odds = _valid_american(_nested_american(away, "close", "spread"))
+    if away_spread_odds is None:
+        away_spread_odds = _valid_american(_nested_american(away, "spread"))
 
     return {
         "home_close_spread": home_close_spread,

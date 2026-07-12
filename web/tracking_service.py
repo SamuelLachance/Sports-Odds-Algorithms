@@ -375,8 +375,8 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
     recommended = [
         p for p in (slate.get("recommended_bets") or []) if isinstance(p, dict)
     ]
-    # Haircut only when multiple picks actually qualify for the official book —
-    # ineligible / gate-failed rows must not inflate the correlation penalty.
+    # Haircut only when multiple picks are newly recorded — post-tip /
+    # invalid-odds / gate-failed companions must not inflate the penalty.
     qualifying: list[dict[str, Any]] = []
     for pick in recommended:
         if not eligible_for_official_picks(pick.get("league") or ""):
@@ -386,8 +386,8 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
         if not pick.get("event_id") or not pick.get("side"):
             continue
         qualifying.append(pick)
-    slate_correlation_penalty = 0.15 if len(qualifying) > 1 else 0.0
 
+    new_records: list[dict[str, Any]] = []
     for pick in qualifying:
         event_id = pick.get("event_id")
         side = pick.get("side")
@@ -456,6 +456,26 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
         elif recorded_ml is None:
             continue
 
+        new_records.append(
+            {
+                "pick": pick,
+                "key": key,
+                "event_id": event_id,
+                "side": side,
+                "bet_type": bet_type_key,
+                "closing_ml": closing_ml,
+                "closing_source": closing_source,
+                "recorded_ml": recorded_ml,
+                "recorded_spread": recorded_spread,
+            }
+        )
+
+    slate_correlation_penalty = 0.15 if len(new_records) > 1 else 0.0
+    for row in new_records:
+        pick = row["pick"]
+        key = row["key"]
+        event_id = row["event_id"]
+        side = row["side"]
         bet = {
             "id": key,
             "date": date_label,
@@ -474,12 +494,12 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
             "edge": pick.get("edge"),
             "ev_pct": pick.get("ev_pct"),
             "model_projection": pick.get("model_projection"),
-            "market_odds": recorded_ml,
+            "market_odds": row["recorded_ml"],
             "win_probability": pick.get("win_probability"),
             "reason": pick.get("reason"),
-            "bet_type": str(bet_type).lower(),
+            "bet_type": row["bet_type"],
             "spread_line": pick.get("spread_line"),
-            "spread_odds": recorded_spread,
+            "spread_odds": row["recorded_spread"],
             "consensus_spread": pick.get("consensus_spread"),
             "consensus_odds": pick.get("consensus_odds"),
             "consensus_label": pick.get("consensus_label"),
@@ -497,11 +517,13 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
             "recorded_pre_start": True,
         }
         # Seed closing from the actionable price; refresh until tip-off.
+        closing_ml = row["closing_ml"]
+        closing_source = row["closing_source"]
         if closing_ml is not None:
             bet["closing_market_odds"] = closing_ml
             bet["closing_source"] = closing_source
             bet["closing_snapshot_at"] = now
-        spread_seed = _normalized_closing_american(pick.get("spread_odds"))
+        spread_seed = row["recorded_spread"]
         if spread_seed is not None:
             bet["closing_spread_odds"] = spread_seed
         if pick.get("consensus_spread") is not None:

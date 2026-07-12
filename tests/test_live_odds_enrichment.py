@@ -500,6 +500,34 @@ def test_line_shopping_accepts_float_string_espn_odds() -> None:
     assert fields["line_shopping_edge_pp"] == shopping_edge_pp(-110, -105)
 
 
+def test_spread_shopping_edge_omitted_when_handicaps_mismatch() -> None:
+    """Best juice on consensus -3.5 must not claim an ESPN edge vs -3.0 juice."""
+    market = {
+        "n_books": 2,
+        "spread": -3.0,
+        "home_spread_odds": -110,
+        "away_spread_odds": -110,
+        "best_home_spread": -105,
+        "best_away_spread": -105,
+        "consensus_home_spread": -3.5,
+        "consensus_away_spread": 3.5,
+    }
+    fields = line_shopping_fields_for_pick(market, side="home", bet_type="spread")
+    assert fields["best_available_odds"] == -105
+    assert "best_vs_espn_pp" not in fields
+    assert "line_shopping_edge_pp" not in fields
+
+    matched = {
+        **market,
+        "spread": -3.5,
+        "consensus_home_spread": -3.5,
+    }
+    matched_fields = line_shopping_fields_for_pick(
+        matched, side="home", bet_type="spread"
+    )
+    assert matched_fields["line_shopping_edge_pp"] == shopping_edge_pp(-110, -105)
+
+
 def test_line_shopping_reports_ev_at_best_without_changing_espn_ev() -> None:
     from web.bet_advisor import expected_value_pct
 
@@ -1356,11 +1384,78 @@ def test_provider_line_unwraps_flat_dict_moneyline() -> None:
     assert nhl["away_close_ml"] == 120.0
 
 
+def test_provider_line_unwraps_flat_dict_spread_juice() -> None:
+    """Flat ``spread: {american: ...}`` (no close.spread) must not drop juice."""
+    from web.mlb_odds_espn import _provider_line_mlb
+    from web.nba_odds_espn import _provider_line
+    from web.nhl_odds_espn import _provider_line_nhl
+
+    item = {
+        "spread": -6.5,
+        "homeTeamOdds": {
+            "favorite": True,
+            "moneyLine": {"american": -220},
+            "spread": {"american": -110},
+        },
+        "awayTeamOdds": {
+            "favorite": False,
+            "moneyLine": {"american": 180},
+            "spread": {"american": -105},
+        },
+    }
+    nba = _provider_line(item)
+    assert nba["home_spread_odds"] == -110.0
+    assert nba["away_spread_odds"] == -105.0
+
+    mlb_item = {
+        "spread": 1.5,
+        "homeTeamOdds": {
+            "favorite": True,
+            "moneyLine": {"american": -140},
+            "spread": {"american": -115},
+        },
+        "awayTeamOdds": {
+            "favorite": False,
+            "moneyLine": {"american": 120},
+            "spread": {"american": -105},
+        },
+    }
+    mlb = _provider_line_mlb(mlb_item)
+    assert mlb["home_spread_odds"] == -115.0
+    assert mlb["away_spread_odds"] == -105.0
+
+    nhl = _provider_line_nhl(mlb_item)
+    assert nhl["home_spread_odds"] == -115.0
+    assert nhl["away_spread_odds"] == -105.0
+
+
 def test_nba_v2_side_odds_unwraps_flat_dict_moneyline() -> None:
     from web.nba_v2.data import _side_odds
 
     side = _side_odds({"favorite": True, "moneyLine": {"american": -220}})
     assert side["ml"] == -220.0
+
+
+def test_nba_v2_side_odds_unwraps_flat_dict_spread_juice() -> None:
+    from web.nba_v2.data import _side_odds
+
+    side = _side_odds(
+        {
+            "favorite": True,
+            "moneyLine": {"american": -150},
+            "spread": {"american": -110},
+        }
+    )
+    assert side["ml"] == -150.0
+    assert side["spread_odds"] == -110.0
+
+    legacy = _side_odds(
+        {
+            "moneyLine": {"american": -150},
+            "spreadOdds": {"american": -108},
+        }
+    )
+    assert legacy["spread_odds"] == -108.0
 
 
 def test_summarize_best_spread_juice_requires_matching_handicap() -> None:

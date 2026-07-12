@@ -405,7 +405,11 @@ def _side_odds(item_side: dict[str, Any]) -> dict[str, Any]:
         ml = _american(_nested_american(side, "moneyLine"))
     spread_odds = _american(_nested_american(side, "close", "spread"))
     if spread_odds is None:
-        spread_odds = _american(side.get("spreadOdds"))
+        # Flat dict ``{american: ...}`` needs unwrap (same as moneyLine).
+        spread_odds = _american(_nested_american(side, "spread"))
+    if spread_odds is None:
+        # Legacy / alternate ESPN key; unwrap dict form the same way.
+        spread_odds = _american(_nested_american(side, "spreadOdds"))
     raw_ps = _nested_american(side, "close", "pointSpread")
     if raw_ps is None:
         current = side.get("current") or {}

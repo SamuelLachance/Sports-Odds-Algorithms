@@ -509,7 +509,15 @@ def line_shopping_fields_for_pick(
         # Use _as_int_odds — bare int("-110.0") raises and can abort pick attach.
         espn_odds = _as_int_odds(espn)
         best_odds = _as_int_odds(best)
-        side_edge = shopping_edge_pp(espn_odds, best_odds)
+        # Spread juice from a different handicap is not a real shopping edge.
+        side_edge = None
+        if bet_type == "spread":
+            if _spreads_equal(
+                market.get("spread"), market.get("consensus_home_spread")
+            ):
+                side_edge = shopping_edge_pp(espn_odds, best_odds)
+        else:
+            side_edge = shopping_edge_pp(espn_odds, best_odds)
         if side_edge is not None:
             fields["best_vs_espn_pp"] = side_edge
             # Side-only edge — never inherit game-level max across home/away.

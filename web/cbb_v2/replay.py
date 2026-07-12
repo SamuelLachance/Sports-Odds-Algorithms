@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Callable
 
-from web.cbb_v2.data import canon_abbr, team_key
+from web.cbb_v2.data import canon_abbr, force_postseason_neutral_site, team_key
 from web.cbb_v2.feature_engine import CbbFeatureEngine
 
 
@@ -78,10 +78,7 @@ def merge_season_games(
             game.setdefault(
                 "away_conference_id", str(event.get("away_conference_id") or "")
             )
-        # March Madness / neutral conference tournaments often lack the flag.
-        date = str(game.get("date") or "")
-        if int(game.get("season_type") or 2) == 3 and date[5:7] in {"03", "04"}:
-            game["neutral_site"] = True
+        force_postseason_neutral_site(game)
         games.append(game)
     games.sort(key=lambda g: (str(g.get("date")), str(g.get("event_id") or "")))
     return games

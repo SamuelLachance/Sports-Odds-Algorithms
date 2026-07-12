@@ -114,6 +114,14 @@ def _provider_line_mlb(item: dict[str, Any]) -> dict[str, float | None]:
         close_total = _valid_total(_to_float(item.get("overUnder")))
     open_total = _valid_total(_to_float(((item.get("open") or {}) or {}).get("total")))
 
+    home_spread_odds = _valid_american(_nested_american(home, "close", "spread"))
+    if home_spread_odds is None:
+        # Flat dict ``{american: ...}`` needs unwrap (same as moneyLine).
+        home_spread_odds = _valid_american(_nested_american(home, "spread"))
+    away_spread_odds = _valid_american(_nested_american(away, "close", "spread"))
+    if away_spread_odds is None:
+        away_spread_odds = _valid_american(_nested_american(away, "spread"))
+
     return {
         "home_close_ml": home_close_ml,
         "away_close_ml": away_close_ml,
@@ -121,8 +129,8 @@ def _provider_line_mlb(item: dict[str, Any]) -> dict[str, float | None]:
         "away_open_ml": away_open_ml,
         "home_close_spread": home_close_spread,
         "away_close_spread": away_close_spread,
-        "home_spread_odds": _valid_american(_nested_american(home, "close", "spread")),
-        "away_spread_odds": _valid_american(_nested_american(away, "close", "spread")),
+        "home_spread_odds": home_spread_odds,
+        "away_spread_odds": away_spread_odds,
         "close_total": close_total,
         "open_total": open_total,
     }

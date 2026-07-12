@@ -1281,6 +1281,29 @@ def test_correlation_penalty_ignores_gate_failed_companions() -> None:
     assert store["bets"][0]["stake_units"] == 1.0
 
 
+def test_correlation_penalty_ignores_post_tip_companions() -> None:
+    """A Hubáček companion already past tip-off must not haircut the survivor."""
+    future = _future_start()
+    past = _past_start()
+    live = _sample_pick(event_id="live")
+    live["kelly_pct"] = 4.0
+    live["start_time"] = future
+    started = _sample_pick(event_id="started")
+    started["kelly_pct"] = 4.0
+    started["start_time"] = past
+    store = record_from_slate(
+        {"version": 1, "bets": []},
+        {
+            "date_label": "2026-07-12",
+            "recommended_bets": [live, started],
+            "games": [],
+        },
+    )
+    assert len(store["bets"]) == 1
+    assert store["bets"][0]["event_id"] == "live"
+    assert store["bets"][0]["stake_units"] == 1.0
+
+
 def test_pending_closing_rejects_garbage_american_overwrite() -> None:
     """Invalid |odds| < 100 must not wipe a valid pre-tip closing CLV snapshot."""
     store = {"version": 1, "bets": []}

@@ -207,6 +207,20 @@ def test_parse_season_csv_extracts_stats_and_odds() -> None:
     assert row["b365_home"] == 1.44
 
 
+def test_parse_season_csv_accepts_spaced_home_away_headers() -> None:
+    """fetch_csv_text treats 'Home Team' as valid; parser must read those columns."""
+    text = (
+        "Div,Date,Home Team,Away Team,FTHG,FTAG\n"
+        "E0,16/08/25,Arsenal,Everton,2,0\n"
+    )
+    rows = parse_season_csv(text, "E0", 2025)
+    assert len(rows) == 1
+    assert rows[0]["home"] == "Arsenal"
+    assert rows[0]["away"] == "Everton"
+    assert rows[0]["home_goals"] == 2
+    assert rows[0]["away_goals"] == 0
+
+
 def test_devig_decimal_sums_to_one() -> None:
     probs = devig_decimal(1.5, 4.5, 7.0)
     assert probs is not None

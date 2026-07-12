@@ -29,6 +29,13 @@ TEAM_ID_TO_ABBR: dict[int, str] = {
 }
 
 
+def binary_home_win(home_score: int, away_score: int) -> int | None:
+    """1/0 for decisive games; None for ties (exclude from classifier training)."""
+    if home_score == away_score:
+        return None
+    return 1 if home_score > away_score else 0
+
+
 def load_season(season: int) -> dict[str, Any] | None:
     season_dir = CACHE_ROOT / str(season)
     paths = {
@@ -53,6 +60,10 @@ def build_rows(start_season: int, end_season: int) -> pd.DataFrame:
             continue
 
         def on_row(game: dict[str, Any], feats: dict[str, float]) -> None:
+            home_win = binary_home_win(int(game["home_score"]), int(game["away_score"]))
+            if home_win is None:
+                # Feature engine also skips ties; do not label them as away wins.
+                return
             home_id = int(game["home_id"])
             away_id = int(game["away_id"])
             record: dict[str, Any] = {
@@ -67,7 +78,7 @@ def build_rows(start_season: int, end_season: int) -> pd.DataFrame:
                 "away_pp_id": game.get("away_pp_id"),
                 "home_score": game.get("home_score"),
                 "away_score": game.get("away_score"),
-                "home_win": 1 if int(game["home_score"]) > int(game["away_score"]) else 0,
+                "home_win": home_win,
             }
             record.update(feats)
             rows.append(record)

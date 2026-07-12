@@ -17,6 +17,7 @@ from web.cbb_v2.data import (
     canon_abbr,
     cbb_season_for_date,
     fetch_season_events,
+    force_postseason_neutral_site,
     team_key,
 )
 from web.cbb_v2.feature_engine import FEATURE_COLUMNS, CbbFeatureEngine
@@ -293,6 +294,8 @@ def predict_matchup_v2(
         "home_conference_id": str((event or {}).get("home_conference_id") or ""),
         "away_conference_id": str((event or {}).get("away_conference_id") or ""),
     }
+    # Match training/replay: postseason March/April often lack ESPN neutralSite.
+    force_postseason_neutral_site(game)
 
     features = engine.features_for_game(game)
     prob_home = _predict_probability(art, features)

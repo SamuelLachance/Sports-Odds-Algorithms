@@ -8,7 +8,12 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from web.cbb_v2.data import canon_abbr, cbb_season_for_date, team_key  # noqa: E402
+from web.cbb_v2.data import (  # noqa: E402
+    canon_abbr,
+    cbb_season_for_date,
+    force_postseason_neutral_site,
+    team_key,
+)
 from web.cbb_v2.feature_engine import (  # noqa: E402
     ELO_HOME_ADV,
     FEATURE_COLUMNS,
@@ -180,6 +185,57 @@ def test_events_to_results_and_merge() -> None:
     games = merge_season_games([], events, season=2025)
     assert len(games) == 1
     assert games[0]["home_abbr"] == "duke"
+
+
+def test_postseason_march_forces_neutral_site_train_and_live_parity() -> None:
+    """Training strips HCA for March postseason; live must apply the same heuristic."""
+    events = [
+        {
+            "event_id": "401584",
+            "date": "2025-03-20T00:00Z",
+            "season": 2025,
+            "season_type": 3,
+            "completed": True,
+            "home_id": "150",
+            "away_id": "153",
+            "home_abbr": "duke",
+            "away_abbr": "unc",
+            "home_score": 80,
+            "away_score": 74,
+            "neutral_site": False,
+            "conference_game": False,
+        }
+    ]
+    games = merge_season_games([], events, season=2025)
+    assert len(games) == 1
+    assert games[0]["neutral_site"] is True
+
+    live_game = {
+        "date": "2025-03-20",
+        "season": 2025,
+        "season_type": 3,
+        "home": "150",
+        "away": "153",
+        "home_abbr": "duke",
+        "away_abbr": "unc",
+        "neutral_site": False,
+        "conference_game": False,
+        "home_conference_id": "",
+        "away_conference_id": "",
+    }
+    force_postseason_neutral_site(live_game)
+    assert live_game["neutral_site"] is True
+
+    engine = CbbFeatureEngine()
+    feats = engine.features_for_game(
+        {
+            **live_game,
+            "home_score": 0,
+            "away_score": 0,
+        }
+    )
+    assert feats["neutral_site"] == 1.0
+    assert feats["elo_diff"] == 0.0  # no ELO_HOME_ADV on neutral
 
 
 def test_replay_emits_before_update() -> None:

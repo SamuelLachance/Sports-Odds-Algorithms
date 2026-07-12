@@ -54,3 +54,24 @@ def test_cbb_odds_join_rejects_nan_moneyline_and_spread() -> None:
     assert out["away_ml"] == -110.0
     assert out["home_spread"] is None
     assert out["home_spread"] is None or math.isfinite(out["home_spread"])
+
+
+def test_cbb_odds_join_uses_canon_abbr_aliases() -> None:
+    """Index keys are canon_abbr'd; join must map uconn→conn the same way."""
+    idx = {
+        ("2024-01-01", "conn", "unc"): {
+            "home_close_ml": "-150",
+            "away_close_ml": "130",
+            "home_close_spread": "-4.5",
+            "home_spread_odds": "-110",
+            "away_spread_odds": "-110",
+            "close_total": "145",
+            "n_books": "2",
+        }
+    }
+    out = _odds_for_game(
+        idx, {"date": "2024-01-01", "home_abbr": "uconn", "away_abbr": "unc"}
+    )
+    assert out["home_ml"] == -150.0
+    assert out["away_ml"] == 130.0
+    assert out["home_spread"] == -4.5

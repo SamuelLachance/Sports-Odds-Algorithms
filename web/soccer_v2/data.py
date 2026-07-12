@@ -175,8 +175,9 @@ def parse_season_csv(
     rows: list[dict[str, Any]] = []
     reader = csv.DictReader(io.StringIO(text))
     for record in reader:
-        home = (record.get("HomeTeam") or "").strip()
-        away = (record.get("AwayTeam") or "").strip()
+        # fetch_csv_text accepts both "HomeTeam" and spaced "Home Team".
+        home = (record.get("HomeTeam") or record.get("Home Team") or "").strip()
+        away = (record.get("AwayTeam") or record.get("Away Team") or "").strip()
         if not home or not away:
             continue
         date_iso = _parse_date(record.get("Date") or "")

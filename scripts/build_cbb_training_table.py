@@ -21,6 +21,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from web.cbb_v2.data import (  # noqa: E402
     FIRST_SEASON,
     CACHE_ROOT,
+    canon_abbr,
     fetch_season_events,
     load_closing_odds_index,
 )
@@ -56,8 +57,9 @@ def _odds_for_game(
     game: dict[str, Any],
 ) -> dict[str, Any]:
     date = str(game.get("date") or "")[:10]
-    home = str(game.get("home_abbr") or "").lower()
-    away = str(game.get("away_abbr") or "").lower()
+    # Index keys use canon_abbr; lowercase-only misses aliases like uconn→conn.
+    home = canon_abbr(str(game.get("home_abbr") or ""))
+    away = canon_abbr(str(game.get("away_abbr") or ""))
     row = odds_index.get((date, home, away))
     if not row:
         return {}
