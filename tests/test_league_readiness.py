@@ -10,6 +10,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from web import league_readiness as readiness_module  # noqa: E402
 from web.league_readiness import (  # noqa: E402
+    assess_league_readiness,
     assess_mlb_readiness,
     assess_soccer_readiness,
     assess_three_layer_readiness,
@@ -167,3 +168,32 @@ def test_readiness_true_when_power_and_third_layer_available(monkeypatch) -> Non
     assert result["ready"] is True
     assert result["power"] is True
     assert result["third_layer"] is True
+
+
+def test_assess_league_readiness_routes_by_sport(monkeypatch) -> None:
+    monkeypatch.setattr(
+        readiness_module,
+        "assess_hockey_readiness",
+        lambda *_a, **_k: {"ready": True, "reason": "Algo V1 ready"},
+    )
+    monkeypatch.setattr(
+        readiness_module,
+        "assess_mlb_readiness",
+        lambda *_a, **_k: {"ready": False, "reason": "Need more games"},
+    )
+    assert assess_league_readiness("nhl", "6-11-2026")["ready"] is True
+    assert assess_league_readiness("mlb", "6-11-2026")["reason"] == "Need more games"
+
+
+def test_list_leagues_metadata_matches_live_stacks() -> None:
+    from web.league_profiles import list_leagues_metadata
+
+    by_id = {row["id"]: row["description"] for row in list_leagues_metadata()}
+    assert "GradientBoost v2" in by_id["nba"]
+    assert "BasketballMatrix" in by_id["nba"]
+    assert "predictions only" in by_id["nfl"].lower()
+    assert "predictions only" in by_id["cbb"].lower()
+    assert "SoccerPathA" in by_id["epl"]
+    assert "MLBRunCast" in by_id["mlb"]
+    assert "Algo V1" in by_id["nhl"]
+    assert "Algo V2 + power ratings" not in by_id["nba"]

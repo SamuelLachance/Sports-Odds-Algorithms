@@ -62,10 +62,7 @@ from web.league_profiles import (  # noqa: E402
     eligible_for_official_picks,
     get_algo_league,
 )
-from web.league_readiness import (  # noqa: E402
-    assess_league_readiness,
-    is_league_ready_for_daily_slate,
-)
+from web.league_readiness import assess_league_readiness  # noqa: E402
 from web.live_data import load_live_team_data, resolve_team  # noqa: E402
 from web.pick_strategy import (
     evaluate_official_picks_for_game,
@@ -79,6 +76,7 @@ SINGLE_MODEL_BLEND_MODES = frozenset(
     {
         "basketball_matrix",
         "mlb_runcast",
+        "mlb_v2",
         "soccer_path_a",
         "soccer_v2",
         "wnba_v2",
@@ -983,7 +981,8 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
 
     recommendations = []
     for game in all_games:
-        if not game.get("eligible_for_official_picks", True):
+        # Fail closed: missing eligibility must not enter the official book.
+        if not game.get("eligible_for_official_picks", False):
             continue
         for pick in game.get("recommendations") or []:
             recommendations.append(
@@ -1000,7 +999,7 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
 
     model_analysis = []
     for game in all_games:
-        if game.get("eligible_for_official_picks", True):
+        if game.get("eligible_for_official_picks", False):
             continue
         for pick in game.get("recommendations") or []:
             model_analysis.append(
@@ -1085,6 +1084,7 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
             "leagues": list({game["league"] for game in all_games}),
             "error_count": len(errors),
             "line_shopping": _line_shopping_status(),
+            "leagues_not_ready": leagues_not_ready,
         },
         "recommended_bets": qualifying[:20],
         "model_analysis_bets": model_analysis_qualifying[:20],

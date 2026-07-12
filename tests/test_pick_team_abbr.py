@@ -36,6 +36,29 @@ def test_enrich_pick_with_team_abbr() -> None:
     assert enriched["team_slug"] == "arizona-diamondbacks"
 
 
+def test_pick_to_dict_includes_base_win_probability_for_away() -> None:
+    """Honest EV track needs pick-scoped base prob, not home-only model fields."""
+    pick = pick_to_dict(
+        BetPick(
+            side="away",
+            team_name="Twins",
+            team_slug="minnesota-twins",
+            strategy="value",
+            confidence="medium",
+            edge=12.0,
+            model_projection=130,
+            market_odds=145,
+            win_probability=52.0,
+            reason="Edge",
+            extra={"base_win_probability": 54.5, "games_played_proxy": 40, "kelly_pct": 1.2},
+        )
+    )
+    assert pick["side"] == "away"
+    assert pick["base_win_probability"] == 54.5
+    assert pick["games_played_proxy"] == 40
+    assert pick["kelly_pct"] == 1.2
+
+
 def test_draw_pick_has_no_team_abbr() -> None:
     pick = {"side": "draw", "team_name": "Draw"}
     matchup = {

@@ -46,7 +46,7 @@ def game_betting_sheet(game: dict[str, Any]) -> dict[str, Any]:
         "model": _model_summary(game.get("model")),
         "recommendations": game.get("recommendations") or [],
         "top_pick": game.get("top_pick"),
-        "eligible_for_official_picks": game.get("eligible_for_official_picks", True),
+        "eligible_for_official_picks": game.get("eligible_for_official_picks", False),
         "official_bet_type": game.get("official_bet_type"),
         "factors": (game.get("model") or {}).get("factors") or game.get("factors"),
     }
@@ -57,14 +57,14 @@ def league_betting_context(slate: dict[str, Any] | None, league: str) -> dict[st
     official_picks = sum(
         1
         for g in games
-        if g.get("eligible_for_official_picks", True) and (g.get("recommendations") or g.get("top_pick"))
+        if g.get("eligible_for_official_picks", False) and (g.get("recommendations") or g.get("top_pick"))
     )
     return {
         "games_today": games,
         "game_count": len(games),
         "official_pick_count": official_picks,
         "has_soccer_predictions_only": any(
-            not g.get("eligible_for_official_picks", True) for g in games
+            not g.get("eligible_for_official_picks", False) for g in games
         ),
     }
 
@@ -91,7 +91,7 @@ def team_betting_context(
         "game_count": len(sheets),
         "has_official_pick": any(
             (s.get("recommendations") or [])
-            and s.get("eligible_for_official_picks", True)
+            and s.get("eligible_for_official_picks", False)
             for s in sheets
         ),
     }

@@ -86,12 +86,20 @@ def test_app_js_honesty_banners_and_parallel_load() -> None:
     assert "Partial slate" in js
     assert "Stale board" in js
     assert "Line shopping skipped" in js
+    assert "League not ready" in js
+    assert "leagues_not_ready" in js
     assert "Stale live inputs" in js
     assert "Promise.allSettled" in js
     assert "Soccer paper log is internal-only" in js
     assert "Research only — not betting advice" in js
     assert "No guaranteed profits" in js
     assert "status-banner" in (STATIC_DIR / "styles.css").read_text(encoding="utf-8")
+    # ncaabb is NCAA baseball — not a GB-v2 predictions-only football/cbb league.
+    assert 'PREDICTIONS_ONLY_LEAGUES = new Set(["nfl", "cfb", "cbb"])' in js
+    assert '["nba", "wnba", "cbb", "nfl", "cfb"]' in js
+    assert "ncaabb" not in js.split("PREDICTIONS_ONLY_LEAGUES")[1].split(";")[0]
+    assert "backtested per-league" in js
+    assert "function hubacekPickRule(source, game)" in js
 
 
 def test_index_has_skip_link_and_footer_disclaimer() -> None:
@@ -110,6 +118,8 @@ def test_agents_md_documents_dev_check() -> None:
     assert "scripts/dev_check.py" in text
     assert "--quick-only" in text
     assert "--with-v2" in text
+    assert "--compile" in text
+    assert "mutually exclusive" in text
 
 
 def test_pytest_ini_defines_slow_marker() -> None:
@@ -167,3 +177,23 @@ def test_favicon_route_is_registered() -> None:
     assert "/favicon.svg" in paths
     response = favicon_svg()
     assert response.path == STATIC_DIR / "favicon.svg"
+
+
+def test_app_js_mlb_nhl_frontend_contracts() -> None:
+    """SPA contracts that previously broke MLB/NHL board UX."""
+    js = (STATIC_DIR / "app.js").read_text(encoding="utf-8")
+    # Nested hash fragments must not poison the router path.
+    assert 'raw.split("#")[0]' in js
+    assert 'href="#/picks#model-predictions"' not in js
+    # Honest EV must invert home-only fallbacks for away picks.
+    assert 'top?.side === "away"' in js
+    assert "base_win_probability" in js
+    # Games sidebar must not leak onto non-games routes.
+    assert 'route?.path !== "games"' in js
+    assert "sidebarGames.hidden = true" in js
+    # Game cards must navigate (clickable is wired, not cosmetic-only).
+    assert ".game-card.clickable[data-game]" in js
+    assert "navigate(`#/game/${eventId}`)" in js
+    # Null-safe matchup access on dense MLB/NHL slates.
+    assert "game.matchup?.away" in js
+    assert "game.model || {}" in js

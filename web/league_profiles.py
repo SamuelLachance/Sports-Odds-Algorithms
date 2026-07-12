@@ -513,23 +513,47 @@ def list_leagues_metadata() -> list[dict[str, str]]:
         category = profile["category"]
         if category == "soccer":
             model_note = (
-                "Unified 3-layer 1X2 model (Algo V2 + power + Elo/Pi/Dixon-Coles) "
-                "with score projections when season data is sufficient"
+                "Live ESPN · SoccerPathA (Dixon–Coles path) when season data is sufficient"
             )
         elif category == "hockey":
             model_note = (
-                "Algo V1 weighted-factor model (James Quintero NHL profile) "
+                "Live ESPN · Algo V1 weighted-factor model (NHL profile) "
                 "when season data is sufficient"
             )
         elif category == "baseball":
+            if league_id == "mlb":
+                model_note = (
+                    "Live ESPN · MLBRunCast when season data is sufficient"
+                )
+            else:
+                model_note = (
+                    f"Live ESPN · Unified 3-layer baseball model "
+                    f"({algo.upper()} profile) when season data is sufficient"
+                )
+        elif category == "football":
+            label = league_id.upper()
             model_note = (
-                f"Unified 3-layer model (Algo V2 + power + Elo, "
-                f"{algo.upper()} profile) when season data is sufficient"
+                f"Live ESPN · {label} GradientBoost v2 — predictions only until "
+                "walk-forward backtests clear"
             )
+        elif category == "basketball":
+            if league_id == "cbb":
+                model_note = (
+                    "Live ESPN · CBB GradientBoost v2 / Torvik fallback — "
+                    "predictions only until walk-forward backtests clear"
+                )
+            elif league_id in ("nba", "wnba"):
+                model_note = (
+                    f"Live ESPN · {league_id.upper()} GradientBoost v2 when artifacts "
+                    "ship, else BasketballMatrix"
+                )
+            else:
+                model_note = (
+                    "Live ESPN · BasketballMatrix when season data is sufficient"
+                )
         else:
             model_note = (
-                f"Live ESPN data · Unified model (Algo V2 + power ratings, "
-                f"{algo.upper()} profile)"
+                f"Live ESPN data · Unified model ({algo.upper()} profile)"
             )
         rows.append(
             {

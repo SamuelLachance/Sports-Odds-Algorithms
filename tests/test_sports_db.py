@@ -760,6 +760,7 @@ def test_league_betting_context_counts_games() -> None:
                 "model": {"win_probability": 62, "model_agreement": {"required": True, "agreed": True}},
                 "market": {"home_moneyline": -150},
                 "top_pick": {"team_name": "Boston", "edge": 45},
+                "eligible_for_official_picks": True,
             },
             {
                 "league": "nhl",
@@ -774,6 +775,21 @@ def test_league_betting_context_counts_games() -> None:
     sheet = game_betting_sheet(slate["games"][0])
     assert sheet["model"]["win_probability"] == 62
     assert sheet["top_pick"]["edge"] == 45
+    # Missing eligibility must fail closed (not count as official).
+    bare = league_betting_context(
+        {
+            "games": [
+                {
+                    "league": "nba",
+                    "event_id": "9",
+                    "matchup": {"home": {"abbr": "bos"}, "away": {"abbr": "nyk"}},
+                    "top_pick": {"team_name": "Boston"},
+                }
+            ]
+        },
+        "nba",
+    )
+    assert bare["official_pick_count"] == 0
 
 
 def test_recent_games_from_live_extracts_opponents(monkeypatch) -> None:

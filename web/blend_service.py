@@ -1292,9 +1292,10 @@ def _blend_mlb_runcast_only(
     home_prob = float(sport_payload["home_win_probability"])
     total, win_prob = home_win_prob_to_total_score(home_prob)
     algorithm = str(sport_payload.get("algorithm") or "MLBRunCast")
+    is_v2 = str(sport_payload.get("model_version") or "") == "v2"
     result = {
         "algorithm": algorithm,
-        "blend_mode": "mlb_runcast",
+        "blend_mode": "mlb_v2" if is_v2 else "mlb_runcast",
         "blend_layers": 1,
         "blend_weights": {"baseball_pred": 1.0},
         "baseball_pred": sport_payload,

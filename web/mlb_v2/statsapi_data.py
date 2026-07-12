@@ -37,12 +37,13 @@ def parse_ip_outs(raw: Any) -> int:
     return int(text or 0) * 3
 
 
-def fetch_season_games(season: int, *, include_names: bool = False) -> list[dict[str, Any]]:
-    url = (
-        f"{BASE_URL}/schedule?sportId=1&season={season}&gameType=R"
-        "&hydrate=probablePitcher"
-    )
-    payload = get_json(url)
+# Regular + postseason. Spring training / All-Star omitted intentionally.
+_SEASON_GAME_TYPES = ("R", "F", "D", "L", "W")
+
+
+def _parse_schedule_games(
+    payload: dict[str, Any], *, include_names: bool = False
+) -> list[dict[str, Any]]:
     games: list[dict[str, Any]] = []
     for day in payload.get("dates") or []:
         for game in day.get("games") or []:
@@ -58,6 +59,7 @@ def fetch_season_games(season: int, *, include_names: bool = False) -> list[dict
                 "gamePk": game.get("gamePk"),
                 "date": game.get("officialDate") or str(day.get("date") or ""),
                 "status": status,
+                "game_type": game.get("gameType") or "R",
                 "day_night": game.get("dayNight") or "",
                 "double_header": game.get("doubleHeader") or "N",
                 "game_number": int(game.get("gameNumber") or 1),
@@ -74,6 +76,30 @@ def fetch_season_games(season: int, *, include_names: bool = False) -> list[dict
                 row["away_pp_name"] = (away.get("probablePitcher") or {}).get("fullName")
                 row["game_datetime"] = game.get("gameDate")
             games.append(row)
+    return games
+
+
+def fetch_season_games(season: int, *, include_names: bool = False) -> list[dict[str, Any]]:
+    """Fetch regular-season and postseason games for ``season`` (calendar year)."""
+    by_pk: dict[int, dict[str, Any]] = {}
+    for game_type in _SEASON_GAME_TYPES:
+        url = (
+            f"{BASE_URL}/schedule?sportId=1&season={season}&gameType={game_type}"
+            "&hydrate=probablePitcher"
+        )
+        try:
+            payload = get_json(url)
+        except OSError:
+            # Postseason endpoints often 404 / empty mid-season; keep what we have.
+            if game_type == "R":
+                raise
+            continue
+        for row in _parse_schedule_games(payload, include_names=include_names):
+            pk = row.get("gamePk")
+            if pk is None:
+                continue
+            by_pk[int(pk)] = row
+    games = list(by_pk.values())
     games.sort(key=lambda g: (g["date"], g.get("gamePk") or 0))
     return games
 

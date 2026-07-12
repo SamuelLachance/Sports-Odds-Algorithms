@@ -21,12 +21,13 @@ python smoke_test.py
 python scripts/dev_check.py
 python scripts/dev_check.py --quick-only
 python scripts/dev_check.py --with-v2
+python scripts/dev_check.py --compile
 python run_server.py
 python -m uvicorn web.app:app --reload --host 127.0.0.1 --port 8000
 python scripts/check_v2_data.py
 ```
 
-`scripts/dev_check.py` is the local DX gate: pytest with `-m "not slow"` plus `smoke_test.py` by default (`--quick-only` skips smoke; `--full` runs the entire suite; `--with-v2` also runs `check_v2_data.py`).
+`scripts/dev_check.py` is the local DX gate: pytest with `-m "not slow"` plus `smoke_test.py` by default (`--quick-only` skips smoke; `--full` runs the entire suite; `--with-v2` also runs `check_v2_data.py`; `--compile` mirrors CI `compileall`). `--full` and `--quick-only` are mutually exclusive.
 
 ## Training NFL / CFB / CBB v2
 

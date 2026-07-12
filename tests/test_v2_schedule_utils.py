@@ -21,6 +21,8 @@ def test_iso_day_normalizes_date_and_string() -> None:
     assert iso_day("") is None
     assert iso_day("bad") is None
     assert iso_day(None) is None
+    assert iso_day("2026-99-99") is None
+    assert iso_day("2026-02-30") is None
 
 
 def test_count_games_in_last_n_days_matches_day_diff_semantics() -> None:

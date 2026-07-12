@@ -228,6 +228,33 @@ def test_blend_mlb_runcast_only_when_available() -> None:
         blend_module.run_mlb_pred_model = mlb_original
 
 
+def test_blend_mlb_v2_sets_mlb_v2_blend_mode() -> None:
+    import web.blend_service as blend_module
+    from web.daily_service import SINGLE_MODEL_BLEND_MODES
+
+    mlb_original = blend_module.run_mlb_pred_model
+    try:
+        blend_module.run_mlb_pred_model = lambda *_a, **_k: {
+            "algorithm": "MLBGradientBoost",
+            "model_version": "v2",
+            "home_win_probability": 58.0,
+            "predicted_margin": 1.1,
+        }
+        result = blend_predictions(
+            legacy_total_score=-58.0,
+            legacy_win_probability=58.0,
+            league="mlb",
+            cutoff_date="06-15-2024",
+            home_abbr="nyy",
+            away_abbr="bos",
+        )
+        assert result["blend_mode"] == "mlb_v2"
+        assert result["model_version"] == "v2"
+        assert "mlb_v2" in SINGLE_MODEL_BLEND_MODES
+    finally:
+        blend_module.run_mlb_pred_model = mlb_original
+
+
 def test_model_agreement_mlb_single_model() -> None:
     agreement = compute_model_agreement({"legacy": {"favorite_side": "home"}}, "mlb")
     assert agreement["required"] == 0

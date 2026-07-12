@@ -24,6 +24,10 @@ def iso_day(value: date | str | None) -> str | None:
     # Cheap structural guard; full validation only when needed by callers.
     if day[4] != "-" or day[7] != "-":
         return None
+    try:
+        date.fromisoformat(day)
+    except ValueError:
+        return None
     return day
 
 

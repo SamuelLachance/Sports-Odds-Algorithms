@@ -5,6 +5,7 @@ Usage:
   python scripts/dev_check.py --quick-only
   python scripts/dev_check.py --with-v2
   python scripts/dev_check.py --full
+  python scripts/dev_check.py --compile
 """
 
 from __future__ import annotations
@@ -43,10 +44,38 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Run the full pytest suite (includes slow tests) then smoke.",
     )
+    parser.add_argument(
+        "--compile",
+        action="store_true",
+        help="Also run python -m compileall on web/, scripts/, and root modules (mirrors CI).",
+    )
     args = parser.parse_args(argv)
+
+    if args.full and args.quick_only:
+        parser.error("--full and --quick-only are mutually exclusive")
 
     py = sys.executable
     failures: list[str] = []
+
+    if args.compile:
+        code = _run(
+            "compileall",
+            [
+                py,
+                "-m",
+                "compileall",
+                "-q",
+                "web",
+                "scripts",
+                "algo.py",
+                "odds_calculator.py",
+                "backtester.py",
+                "smoke_test.py",
+                "run_server.py",
+            ],
+        )
+        if code != 0:
+            failures.append("compileall")
 
     if args.full:
         code = _run(

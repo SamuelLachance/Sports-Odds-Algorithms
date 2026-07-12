@@ -1,10 +1,11 @@
 """Live MLB v2 inference: artifact loading + current-season replay + prediction.
 
 The artifact (data/models/mlb_v2/) contains a feature-engine snapshot at the
-end of the previous season. At prediction time we fetch the current season
-from the MLB Stats API (daily cached), replay it through the same engine used
-in training, then score today's matchups with the persisted XGBoost +
-logistic ensemble and isotonic calibrator.
+end of a prior season. At prediction time we load the newest snapshot strictly
+older than the target season, gap-replay any intermediate seasons, fetch the
+current season from the MLB Stats API (daily cached), replay through today,
+then score today's matchups with the persisted XGBoost + logistic ensemble and
+isotonic calibrator.
 """
 
 from __future__ import annotations
@@ -34,6 +35,10 @@ MODEL_DIR = PROJECT_ROOT / "data" / "models" / "mlb_v2"
 LIVE_CACHE_DIR = PROJECT_ROOT / ".build-cache" / "mlb-v2-live"
 
 LIVE_CACHE_TTL_SECONDS = 3 * 3600  # fresher than 6h Pages cadence
+LIVE_CACHE_STALE_SECONDS = 10 * 86400  # soft-serve window on network failure
+
+# Stats API codedGameState values treated as finished for doubleheader pick.
+_FINAL_STATUSES = frozenset({"F", "O", "C", "D"})
 
 
 def artifacts_available() -> bool:
@@ -52,47 +57,69 @@ def _load_artifacts() -> dict[str, Any] | None:
     except ImportError:
         return None
 
-    clf = Booster()
-    clf.load_model(str(MODEL_DIR / "model_clf.json"))
-    lr = json.loads((MODEL_DIR / "model_lr.json").read_text(encoding="utf-8"))
-    calibrator = json.loads((MODEL_DIR / "calibrator.json").read_text(encoding="utf-8"))
-    metadata = json.loads((MODEL_DIR / "metadata.json").read_text(encoding="utf-8"))
+    try:
 
-    runs_home = runs_away = None
-    if (MODEL_DIR / "model_runs_home.json").is_file():
-        runs_home = Booster()
-        runs_home.load_model(str(MODEL_DIR / "model_runs_home.json"))
-    if (MODEL_DIR / "model_runs_away.json").is_file():
-        runs_away = Booster()
-        runs_away.load_model(str(MODEL_DIR / "model_runs_away.json"))
+        def _booster(name: str):
+            path = MODEL_DIR / name
+            if not path.is_file():
+                return None
+            try:
+                booster = Booster()
+                booster.load_model(str(path))
+                return booster
+            except Exception:  # noqa: BLE001 - corrupt booster → unavailable
+                return None
 
-    snapshots = sorted(MODEL_DIR.glob("state_*.json.gz"))
-    with gzip.open(snapshots[-1], "rt", encoding="utf-8") as handle:
-        state = json.load(handle)
-    snapshot_season = int(snapshots[-1].stem.split("_")[1].split(".")[0])
+        metadata = json.loads((MODEL_DIR / "metadata.json").read_text(encoding="utf-8"))
+        snapshots: dict[int, Path] = {}
+        for path in MODEL_DIR.glob("state_*.json.gz"):
+            try:
+                snapshots[int(path.stem.split("_")[1].split(".")[0])] = path
+            except (IndexError, ValueError):
+                continue
 
-    feature_columns = metadata.get("feature_columns") or list(FEATURE_COLUMNS)
-    return {
-        "clf": clf,
-        "lr": lr,
-        "calibrator": calibrator,
-        "metadata": metadata,
-        "runs_home": runs_home,
-        "runs_away": runs_away,
-        "state": state,
-        "snapshot_season": snapshot_season,
-        "feature_columns": feature_columns,
-    }
+        clf = _booster("model_clf.json")
+        if clf is None or not snapshots:
+            return None
+
+        feature_columns = metadata.get("feature_columns") or list(FEATURE_COLUMNS)
+        return {
+            "clf": clf,
+            "lr": json.loads((MODEL_DIR / "model_lr.json").read_text(encoding="utf-8")),
+            "calibrator": json.loads(
+                (MODEL_DIR / "calibrator.json").read_text(encoding="utf-8")
+            ),
+            "metadata": metadata,
+            "runs_home": _booster("model_runs_home.json"),
+            "runs_away": _booster("model_runs_away.json"),
+            "snapshots": snapshots,
+            "feature_columns": feature_columns,
+        }
+    except (OSError, json.JSONDecodeError, ValueError, KeyError, TypeError):
+        return None
+
+
+def _load_snapshot_state(art: dict[str, Any], target_season: int) -> tuple[int, Any] | None:
+    """Newest snapshot strictly older than the target season."""
+    eligible = [season for season in art["snapshots"] if season < target_season]
+    if not eligible:
+        return None
+    season = max(eligible)
+    try:
+        with gzip.open(art["snapshots"][season], "rt", encoding="utf-8") as handle:
+            return season, json.load(handle)
+    except (OSError, json.JSONDecodeError, gzip.BadGzipFile, EOFError, TypeError, ValueError):
+        return None
 
 
 def _cache_path(name: str, season: int, day_iso: str) -> Path:
     return LIVE_CACHE_DIR / f"{season}" / f"{day_iso}_{name}.json"
 
 
-def _read_cache(path: Path) -> Any | None:
+def _read_cache(path: Path, ttl: int) -> Any | None:
     if not path.is_file():
         return None
-    if time.time() - path.stat().st_mtime > LIVE_CACHE_TTL_SECONDS:
+    if time.time() - path.stat().st_mtime > ttl:
         return None
     try:
         return json.loads(path.read_text(encoding="utf-8"))
@@ -105,12 +132,18 @@ def _write_cache(path: Path, payload: Any) -> None:
     path.write_text(json.dumps(payload, separators=(",", ":")), encoding="utf-8")
 
 
-def _fetch_current_season_bundle(season: int, day_iso: str) -> dict[str, Any] | None:
-    """Season-to-date games, pitcher logs and team logs (cached per day)."""
+def _fetch_current_season_bundle(
+    season: int, day_iso: str
+) -> tuple[dict[str, Any] | None, bool]:
+    """Season-to-date games, pitcher logs and team logs (cached per day).
+
+    Returns ``(bundle, live_inputs_stale)``. On network failure, may soft-return
+    a longer-TTL cache and set ``live_inputs_stale=True``.
+    """
     bundle_path = _cache_path("bundle", season, day_iso)
-    cached = _read_cache(bundle_path)
+    cached = _read_cache(bundle_path, LIVE_CACHE_TTL_SECONDS)
     if cached is not None:
-        return cached
+        return cached, False
     try:
         games = fetch_season_games(season, include_names=True)
         pitcher_ids = sorted(
@@ -126,7 +159,8 @@ def _fetch_current_season_bundle(season: int, day_iso: str) -> dict[str, Any] | 
         team_hitting = fetch_team_logs(season, team_ids, "hitting")
         team_pitching = fetch_team_logs(season, team_ids, "pitching")
     except OSError:
-        return None
+        stale = _read_cache(bundle_path, LIVE_CACHE_STALE_SECONDS)
+        return stale, stale is not None
     bundle = {
         "games": games,
         "pitchers": pitchers,
@@ -134,7 +168,27 @@ def _fetch_current_season_bundle(season: int, day_iso: str) -> dict[str, Any] | 
         "team_pitching": team_pitching,
     }
     _write_cache(bundle_path, bundle)
-    return bundle
+    return bundle, False
+
+
+def _prefer_todays_game(
+    existing: dict[str, Any] | None, candidate: dict[str, Any]
+) -> dict[str, Any]:
+    """For doubleheaders, prefer the not-yet-final game (live starters)."""
+    if existing is None:
+        return candidate
+    existing_final = str(existing.get("status") or "") in _FINAL_STATUSES
+    candidate_final = str(candidate.get("status") or "") in _FINAL_STATUSES
+    if existing_final and not candidate_final:
+        return candidate
+    if (not existing_final) and candidate_final:
+        return existing
+    # Same finality: prefer higher game_number (game 2 of DH) when both pending,
+    # else keep the earlier entry for stable training-style first-game semantics.
+    if not existing_final and not candidate_final:
+        if int(candidate.get("game_number") or 1) > int(existing.get("game_number") or 1):
+            return candidate
+    return existing
 
 
 def _predict_probability(art: dict[str, Any], features: dict[str, float]) -> float:
@@ -186,12 +240,31 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
         return None
 
     season = target.year
-    if season <= art["snapshot_season"]:
-        # target predates the snapshot -> cannot position state honestly
+    loaded = _load_snapshot_state(art, season)
+    if loaded is None:
         return None
+    snapshot_season, state = loaded
 
-    engine = MlbFeatureEngine.from_dict(art["state"])
-    bundle = _fetch_current_season_bundle(season, day_iso)
+    engine = MlbFeatureEngine.from_dict(state)
+    live_inputs_stale = False
+
+    # Replay any full seasons between the snapshot and the target season.
+    for gap_season in range(snapshot_season + 1, season):
+        gap_bundle, gap_stale = _fetch_current_season_bundle(gap_season, day_iso)
+        live_inputs_stale = live_inputs_stale or gap_stale
+        if gap_bundle is None:
+            continue
+        replay_season(
+            engine,
+            gap_season,
+            gap_bundle["games"],
+            gap_bundle["pitchers"],
+            gap_bundle["team_hitting"],
+            gap_bundle["team_pitching"],
+        )
+
+    bundle, bundle_stale = _fetch_current_season_bundle(season, day_iso)
+    live_inputs_stale = live_inputs_stale or bundle_stale
     if bundle is None:
         return None
 
@@ -209,8 +282,7 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
     for game in bundle["games"]:
         if str(game.get("date")) == day_iso:
             key = (int(game["home_id"]), int(game["away_id"]))
-            if key not in todays_games:  # first game of a doubleheader
-                todays_games[key] = game
+            todays_games[key] = _prefer_todays_game(todays_games.get(key), game)
 
     pitcher_names: dict[int, str] = {}
     for game in bundle["games"]:
@@ -227,6 +299,7 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
         "pitcher_names": pitcher_names,
         "season": season,
         "day_iso": day_iso,
+        "live_inputs_stale": live_inputs_stale,
     }
 
 
@@ -292,6 +365,8 @@ def predict_matchup_v2(
         payload["predicted_home_runs"] = runs[0]
         payload["predicted_away_runs"] = runs[1]
         payload["predicted_margin"] = round(runs[0] - runs[1], 2)
+    if context.get("live_inputs_stale"):
+        payload["live_inputs_stale"] = True
     return payload
 
 

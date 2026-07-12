@@ -15,6 +15,7 @@ import math
 from typing import Any
 
 from web.mlb_v2.venues import VENUE_COORDS
+from web.v2_schedule_utils import count_games_in_last_n_days
 
 LEAGUE_ELO = 1500.0
 ELO_K = 4.0
@@ -520,14 +521,8 @@ class MlbFeatureEngine:
             return 1.0
 
     def _games_last7(self, team: TeamState, game_date: str) -> float:
-        try:
-            from datetime import date, timedelta
-
-            current = date.fromisoformat(game_date)
-            floor = (current - timedelta(days=7)).isoformat()
-            return float(sum(1 for d in team.recent_dates if d >= floor))
-        except ValueError:
-            return 6.0
+        # Same morning-slate contract as NHL/NBA: prior games in (date-7, date).
+        return float(count_games_in_last_n_days(team.recent_dates, game_date, days=7))
 
     def _pitcher_features(
         self, pitcher_id: int | None, game_date: str

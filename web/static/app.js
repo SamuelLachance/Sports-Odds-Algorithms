@@ -56,16 +56,34 @@ function minHubacekConfidence(source) {
   return s.min_win_confidence_pp ?? source?.min_win_confidence_pp ?? 20;
 }
 
-function hubacekPickRule(source) {
-  const s = source?.summary || source || state.tracking || {};
-  const gap = s.min_market_gap_pp ?? source?.min_market_gap_pp ?? 2;
-  const ev = s.min_ev_pct ?? source?.min_ev_pct ?? 2;
-  const conf = minHubacekConfidence(source);
+function hubacekPickRule(source, game) {
+  // Prefer per-game pick_strategy thresholds (league-specific gap floors).
+  const thresholds =
+    game?.model?.pick_strategy ||
+    source?.summary ||
+    source ||
+    state.tracking ||
+    {};
+  const gap = thresholds.min_market_gap_pp ?? source?.min_market_gap_pp;
+  const ev = thresholds.min_ev_pct ?? source?.min_ev_pct ?? 2;
+  const conf =
+    thresholds.min_win_confidence_pp ??
+    source?.min_win_confidence_pp ??
+    minHubacekConfidence(source);
+  const betType = game ? officialBetType(game) : null;
+  const market = game ? officialMarketPhrase(game) : "market";
+  if (gap == null) {
+    return `Hubáček spot: decorrelated model clears the backtested per-league ${market} gap with honest EV floors`;
+  }
+  // |p−50| confidence floor applies to moneylines; spread/1X2 use cover/side gaps.
+  if (betType === "spread" || betType === "soccer_1x2") {
+    return `Hubáček spot: decorrelated model beats the book by ≥ ${gap} pp on the ${market} with ≥ ${ev}% EV`;
+  }
   return `Hubáček spot: decorrelated model beats the book by ≥ ${gap} pp with ≥ ${ev}% EV and |p−50| ≥ ${conf} pp`;
 }
 
-/** Leagues with live models but official Hubáček tracking disabled. */
-const PREDICTIONS_ONLY_LEAGUES = new Set(["nfl", "cfb", "cbb", "ncaabb"]);
+/** Leagues with live models but official Hubáček tracking disabled by design. */
+const PREDICTIONS_ONLY_LEAGUES = new Set(["nfl", "cfb", "cbb"]);
 
 function isPredictionsOnlyLeague(league) {
   return PREDICTIONS_ONLY_LEAGUES.has(String(league || "").toLowerCase());
@@ -127,7 +145,8 @@ function gamesFilterEmptyPanel(league) {
 
 function officialBetTypeForLeague(league) {
   const id = (league || "").toLowerCase();
-  if (["nba", "wnba", "cbb", "ncaabb", "nfl", "cfb"].includes(id)) return "spread";
+  // Basketball + football use spread; ncaabb is NCAA baseball (moneyline).
+  if (["nba", "wnba", "cbb", "nfl", "cfb"].includes(id)) return "spread";
   if (
     [
       "mls",
@@ -248,7 +267,9 @@ const KNOWN_ROUTES = new Set([
 ]);
 
 function parseRoute() {
-  const hash = location.hash.replace(/^#/, "") || "/";
+  // Strip any nested fragment (e.g. "#/picks#model-predictions" → path "picks").
+  const raw = location.hash.replace(/^#/, "") || "/";
+  const hash = raw.split("#")[0] || "/";
   const parts = hash.split("/").filter(Boolean);
   return { path: parts[0] || "", parts };
 }
@@ -695,6 +716,24 @@ function slateStatusBanners(slate) {
       <span>LIVE_MULTI_BOOK is disabled for this build — no multi-book edge scan.</span>
     </aside>`);
   }
+  const notReady = Array.isArray(slate?.summary?.leagues_not_ready)
+    ? slate.summary.leagues_not_ready
+    : [];
+  if (notReady.length) {
+    const sample = notReady
+      .slice(0, 3)
+      .map((row) => {
+        const league = row.league || "";
+        const reason = row.reason || "insufficient season data";
+        return league ? `${league}: ${reason}` : String(reason);
+      })
+      .join(" · ");
+    const more = notReady.length > 3 ? ` (+${notReady.length - 3} more)` : "";
+    parts.push(`<aside class="status-banner status-banner--info" role="status">
+      <strong>League not ready</strong>
+      <span>${notReady.length} league${notReady.length === 1 ? "" : "s"} had games but lacked enough season data for predictions.${sample ? ` ${escapeHtml(sample)}${more}.` : ""}</span>
+    </aside>`);
+  }
   const staleLive = (slate?.games || []).some((g) => g.model?.live_inputs_stale);
   if (staleLive) {
     parts.push(`<aside class="status-banner status-banner--stale" role="status">
@@ -804,11 +843,18 @@ function hubacekThreeTrackPanel(game, pick) {
       : "—";
 
   const pickProb = top?.win_probability;
-  const evProb =
-    top?.base_win_probability ??
+  const homeEvFallback =
     m.pre_decorrelation_home_win_probability ??
     m.pre_context_home_win_probability ??
     null;
+  let evProb = top?.base_win_probability ?? null;
+  if (evProb == null && homeEvFallback != null) {
+    // Home-only model fields must be inverted for away moneylines.
+    evProb =
+      top?.side === "away"
+        ? Math.round((100 - Number(homeEvFallback)) * 100) / 100
+        : homeEvFallback;
+  }
 
   const kicker = predictionsOnly ? "Model probability tracks" : "Hubáček 3-track";
   const gateLabel = predictionsOnly ? "Decorrelated" : "Pick gate";
@@ -1072,6 +1118,13 @@ function renderSidebar(route) {
   } else {
     if (sidebarTeams) sidebarTeams.hidden = true;
   }
+  // Games submenu is only meaningful on Games / Game detail routes.
+  if (route?.path !== "games" && route?.path !== "game") {
+    if (sidebarGames) {
+      sidebarGames.hidden = true;
+      if (gameMenu) gameMenu.innerHTML = "";
+    }
+  }
 }
 
 function leaguesForSidebar() {
@@ -1122,8 +1175,8 @@ function renderGameSubmenu(league) {
     league === "all" ? "Today's games" : `${league.toUpperCase()} games`;
   gameMenu.innerHTML = games
     .map((g) => {
-      const away = g.matchup.away.name;
-      const home = g.matchup.home.name;
+      const away = g.matchup?.away?.name || "Away";
+      const home = g.matchup?.home?.name || "Home";
       return `<li><a href="#/game/${g.event_id}" class="game-link">${away} @ ${home}</a></li>`;
     })
     .join("");
@@ -1466,7 +1519,7 @@ function gameValuePickBlock(game, top, isSoccer) {
         ${fairOddsBetStrip(game, top)}
       </div>`;
     }
-    return `<div class="game-pick neutral"><strong>Predictions only</strong><span>${isSoccer ? "Full 1X2 model probabilities and fair prices are shown below. Value spots appear under Model predictions on the picks page but are not tracked as official Hubáček bets." : "Model probabilities and fair prices are shown. NFL, CFB, and CBB stay predictions-only until walk-forward backtests clear — not an official Hubáček pick."}</span></div>`;
+    return `<div class="game-pick neutral"><strong>Predictions only</strong><span>${isSoccer ? "Full 1X2 model probabilities and fair prices are shown below. Value spots appear under Model predictions on the picks page but are not tracked as official Hubáček bets." : isPredictionsOnlyLeague(game?.league) ? "Model probabilities and fair prices are shown. NFL, CFB, and CBB stay predictions-only until walk-forward backtests clear — not an official Hubáček pick." : "Model probabilities and fair prices are shown for research. This league is not in the official Hubáček tracking book."}</span></div>`;
   }
   if (top) {
     return `<div class="game-pick ${confClass(top.confidence)}">
@@ -1478,9 +1531,9 @@ function gameValuePickBlock(game, top, isSoccer) {
     </div>`;
   }
   if (isSoccer) {
-    return `<div class="game-pick neutral"><strong>No official 1X2 pick</strong><span>${hubacekPickRule(state.slate)} not met on home/draw/away lines.</span></div>`;
+    return `<div class="game-pick neutral"><strong>No official 1X2 pick</strong><span>${hubacekPickRule(state.slate, game)} not met on home/draw/away lines.</span></div>`;
   }
-  return `<div class="game-pick neutral"><strong>No official pick</strong><span>${hubacekPickRule(state.slate)} not met on today's ${officialMarketPhrase(game)} line.</span></div>`;
+  return `<div class="game-pick neutral"><strong>No official pick</strong><span>${hubacekPickRule(state.slate, game)} not met on today's ${officialMarketPhrase(game)} line.</span></div>`;
 }
 
 function gameRecommendationsList(game, away, home) {
@@ -1504,11 +1557,13 @@ function gameRecommendationsList(game, away, home) {
 }
 
 function algoCenter(game) {
-  const m = game.model;
-  const mk = game.market;
-  const away = game.matchup.away;
-  const home = game.matchup.home;
-  const fav = m.favorite_side === "home" ? home.name : away.name;
+  const m = game.model || {};
+  const mk = game.market || {};
+  const away = game.matchup?.away || {};
+  const home = game.matchup?.home || {};
+  const awayName = away.name || "Away";
+  const homeName = home.name || "Home";
+  const fav = m.favorite_side === "home" ? homeName : awayName;
   const top = game.top_pick;
   const threeway = m.threeway;
   const isSoccer = Boolean(threeway);
@@ -1517,33 +1572,33 @@ function algoCenter(game) {
     ? `<div class="algo-probability threeway">
         <span>${algoLabel}</span>
         <div class="threeway-grid">
-          <div><small>${teamNameLink(game.league, away.abbr, away.name)}</small><strong>${m.away_win_probability}%</strong></div>
-          <div><small>Draw</small><strong>${m.draw_probability}%</strong></div>
-          <div><small>${teamNameLink(game.league, home.abbr, home.name)}</small><strong>${m.home_win_probability}%</strong></div>
+          <div><small>${teamNameLink(game.league, away.abbr, awayName)}</small><strong>${m.away_win_probability ?? "—"}%</strong></div>
+          <div><small>Draw</small><strong>${m.draw_probability ?? "—"}%</strong></div>
+          <div><small>${teamNameLink(game.league, home.abbr, homeName)}</small><strong>${m.home_win_probability ?? "—"}%</strong></div>
         </div>
         ${m.soccer_pred?.expected_home_goals != null ? `<small>Projected score ${m.soccer_pred.expected_away_goals}-${m.soccer_pred.expected_home_goals}</small>` : ""}
         ${m.soccer_context?.factors?.length ? `<details class="factor-details"><summary>Context factors (ESPN)</summary><div class="factor-list">${m.soccer_context.factors.map((f) => `<div class="factor-row"><span>${f.label}</span><small>${f.detail || ""}</small></div>`).join("")}</div></details>` : ""}
       </div>`
     : `<div class="algo-probability">
         <span>${algoLabel}</span>
-        <strong class="prob-value">${m.win_probability}%</strong>
-        <small>Model favorite: ${fav}${m.home_spread_margin != null && usesSpreadOfficialPicks(game) ? ` · spread margin ${formatSpread(m.home_spread_margin)}` : ""}</small>
+        <strong class="prob-value">${m.win_probability ?? "—"}%</strong>
+        <small>Model favorite: ${escapeHtml(fav)}${m.home_spread_margin != null && usesSpreadOfficialPicks(game) ? ` · spread margin ${formatSpread(m.home_spread_margin)}` : ""}</small>
       </div>`;
   const drawChip =
     threeway && mk.draw_moneyline != null
       ? `<div class="odds-chip"><span>Draw</span><strong>${formatOdds(mk.draw_moneyline)}</strong><small>Model ${formatOdds(m.draw_projection)}</small></div>`
       : "";
   const oddsRow = `<div class="odds-row game-odds">
-        <div class="odds-chip"><span>${teamNameLink(game.league, away.abbr, away.name)}</span><strong>${formatOdds(mk.away_moneyline)}</strong><small>Model ${formatOdds(m.away_projection)}</small></div>
+        <div class="odds-chip"><span>${teamNameLink(game.league, away.abbr, awayName)}</span><strong>${formatOdds(mk.away_moneyline)}</strong><small>Model ${formatOdds(m.away_projection)}</small></div>
         ${drawChip}
-        <div class="odds-chip"><span>${teamNameLink(game.league, home.abbr, home.name)}</span><strong>${formatOdds(mk.home_moneyline)}</strong><small>Model ${formatOdds(m.home_projection)}</small></div>
+        <div class="odds-chip"><span>${teamNameLink(game.league, home.abbr, homeName)}</span><strong>${formatOdds(mk.home_moneyline)}</strong><small>Model ${formatOdds(m.home_projection)}</small></div>
         ${threeway ? "" : usesSpreadOfficialPicks(game) ? `<div class="odds-chip"><span>Spread / O-U</span><strong>${mk.spread ?? "—"} / ${mk.over_under ?? "—"}</strong><small>${mk.provider || "ESPN"}</small></div>` : mk.over_under != null ? `<div class="odds-chip"><span>O-U</span><strong>${mk.over_under}</strong><small>${mk.provider || "ESPN"}</small></div>` : ""}
       </div>`;
   return `<section class="algo-hero panel">
     ${breadcrumbs([
       { label: "Home", href: "#/" },
       { label: "Games", href: "#/games" },
-      { label: `${away.name} @ ${home.name}` },
+      { label: `${awayName} @ ${homeName}` },
     ])}
     <div class="algo-hero-head">
       <span class="league-pill">${escapeHtml(game.league_name || "")}</span>
@@ -1551,7 +1606,7 @@ function algoCenter(game) {
       ${predictionsOnlyPill(game.league)}
       <h1>${matchupLinks(game.league, away, home)}</h1>
       <p class="game-meta">${formatTime(game.start_time)} · ${escapeHtml(game.status_detail || game.status || "")}</p>
-      <p class="db-game-links"><a href="${teamHref(game.league, game.matchup?.away?.abbr)}">${escapeHtml(away.name)}</a> · <a href="${teamHref(game.league, game.matchup?.home?.abbr)}">${escapeHtml(home.name)}</a> · <a href="${leagueHref(game.league)}">${escapeHtml(game.league_name || "")} league</a></p>
+      <p class="db-game-links"><a href="${teamHref(game.league, game.matchup?.away?.abbr)}">${escapeHtml(awayName)}</a> · <a href="${teamHref(game.league, game.matchup?.home?.abbr)}">${escapeHtml(homeName)}</a> · <a href="${leagueHref(game.league)}">${escapeHtml(game.league_name || "")} league</a></p>
     </div>
     ${disclaimerBar("Fair odds below are model prices — shop the best book before staking.")}
     <div class="algo-core">
@@ -1659,7 +1714,7 @@ function viewDashboard() {
         return pickCard(p, "", g);
       }).join("") : !games.length ? slateEmptyPanel() : officialEmptyPanel(hubacekRule)}</div>
     </section>
-    ${modelAnalysis.length ? `<section class="section"><div class="section-head"><h2>Model predictions (not tracked)</h2><a class="text-link" href="#/picks#model-predictions">View all →</a></div><p class="muted section-intro">Same analysis as game pages — reference only, not logged in official bet history. NFL/CFB/CBB never appear as official Hubáček picks.</p><div class="picks-grid">${modelAnalysis.slice(0, 6).map((p) => pickCard(p)).join("")}</div></section>` : ""}`;
+    ${modelAnalysis.length ? `<section class="section"><div class="section-head"><h2>Model predictions (not tracked)</h2><a class="text-link" href="#/picks">View all →</a></div><p class="muted section-intro">Same analysis as game pages — reference only, not logged in official bet history. NFL/CFB/CBB never appear as official Hubáček picks.</p><div class="picks-grid">${modelAnalysis.slice(0, 6).map((p) => pickCard(p)).join("")}</div></section>` : ""}`;
 }
 
 function renderTrackingSummary() {
@@ -1736,10 +1791,12 @@ function viewGames(league) {
 }
 
 function gameListCard(game) {
-  const away = game.matchup.away;
-  const home = game.matchup.home;
-  const m = game.model;
-  const fav = m.favorite_side === "home" ? home.name : away.name;
+  const away = game.matchup?.away || {};
+  const home = game.matchup?.home || {};
+  const m = game.model || {};
+  const awayName = away.name || "Away";
+  const homeName = home.name || "Home";
+  const fav = m.favorite_side === "home" ? homeName : awayName;
   const top = game.top_pick;
   const stake = top ? stakeUnitsFromPick(top) : null;
   const predictionsOnly = isPredictionsOnlyGame(game);
@@ -1760,11 +1817,12 @@ function gameListCard(game) {
   } else if (m?.context_adjustment_pp != null && Number(m.context_adjustment_pp) !== 0) {
     betStrip = contextCallout(m);
   }
-  return `<article class="game-card panel clickable" data-game="${game.event_id}">
+  const eventId = escapeHtml(String(game.event_id || ""));
+  return `<article class="game-card panel clickable" data-game="${eventId}" role="link" tabindex="0" aria-label="Open ${escapeHtml(awayName)} at ${escapeHtml(homeName)}">
     <div class="game-head"><div><span class="league-pill">${escapeHtml(game.league_name || "")}</span>${sparseLeaguePill(game.league)}${predictionsOnlyPill(game.league)}<h3>${matchupLinks(game.league, away, home)}</h3><p class="game-meta">${formatTime(game.start_time)}</p></div>
-    <div class="win-chip"><span>${primaryAlgoShort(m)}</span><strong>${escapeHtml(fav)}</strong><small>${m.win_probability}%</small></div></div>
+    <div class="win-chip"><span>${primaryAlgoShort(m)}</span><strong>${escapeHtml(fav)}</strong><small>${m.win_probability != null ? `${m.win_probability}%` : "—"}</small></div></div>
     ${betStrip}
-    <a class="btn btn-secondary btn-sm" href="#/game/${game.event_id}">Open algo breakdown →</a>
+    <a class="btn btn-secondary btn-sm" href="#/game/${eventId}">Open algo breakdown →</a>
   </article>`;
 }
 
@@ -2788,7 +2846,7 @@ function renderBettingGameCard(sheet, league) {
         <span>${pickTeamNameLink(top, league, matchup)} · ${pickSideLabel(top)} ${pickBetTypeLabel(top)}${top.ev_pct != null ? ` · +${top.ev_pct}% EV` : ""}${stake != null ? ` · ${stake}u` : ""}${predictionsOnly ? " — not tracked" : ""}</span>
       </div>
       ${renderEdgeBadges(top, sheet)}
-    </div>` : predictionsOnly ? `<div class="game-pick neutral"><strong>Predictions only</strong> — model shown, not an official Hubáček pick</div>` : `<div class="game-pick neutral"><strong>No official pick</strong> — ${hubacekPickRule(state.slate)} not met</div>`}
+    </div>` : predictionsOnly ? `<div class="game-pick neutral"><strong>Predictions only</strong> — model shown, not an official Hubáček pick</div>` : `<div class="game-pick neutral"><strong>No official pick</strong> — ${hubacekPickRule(state.slate, sheet)} not met</div>`}
     ${lineShoppingPanel(market, top)}
     <div class="db-bet-links">
       <a href="${teamHref(league, matchup.home?.abbr)}">${escapeHtml(home)}</a>
@@ -2960,6 +3018,23 @@ window.addEventListener("hashchange", () => render());
 navToggle?.addEventListener("click", toggleMobileNav);
 mainNav?.querySelectorAll("a").forEach((link) => {
   link.addEventListener("click", closeMobileNav);
+});
+
+// Game list cards look clickable — navigate unless the user hit an inner link/button.
+appRoot?.addEventListener("click", (event) => {
+  const card = event.target.closest?.(".game-card.clickable[data-game]");
+  if (!card || !appRoot.contains(card)) return;
+  if (event.target.closest?.("a, button, input, select, textarea, label")) return;
+  const eventId = card.getAttribute("data-game");
+  if (eventId) navigate(`#/game/${eventId}`);
+});
+appRoot?.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter" && event.key !== " ") return;
+  const card = event.target.closest?.(".game-card.clickable[data-game]");
+  if (!card || event.target !== card) return;
+  event.preventDefault();
+  const eventId = card.getAttribute("data-game");
+  if (eventId) navigate(`#/game/${eventId}`);
 });
 
 loadPlatform().catch((err) => {

@@ -39,3 +39,30 @@ def test_throttle_is_threadsafe_callable() -> None:
     with patch("web.espn_client.time.sleep"):
         espn_client._throttle()
         espn_client._throttle()
+
+
+def test_fetch_scoreboard_raises_when_all_requests_fail() -> None:
+    """Total ESPN outage must not look like an empty schedule."""
+    import urllib.error
+    from unittest.mock import patch
+
+    def boom(_url: str):
+        raise urllib.error.URLError("timed out")
+
+    with patch("web.espn_client._fetch_json", side_effect=boom):
+        try:
+            espn_client.fetch_scoreboard("nba", on_date=__import__("datetime").date(2026, 7, 12))
+            raised = False
+        except espn_client.ScoreboardFetchError:
+            raised = True
+    assert raised
+
+
+def test_fetch_scoreboard_empty_payload_is_not_a_fetch_error() -> None:
+    """A successful empty scoreboard is a real empty slate, not ScoreboardFetchError."""
+    from datetime import date
+    from unittest.mock import patch
+
+    with patch("web.espn_client._fetch_json", return_value={"events": []}):
+        games = espn_client.fetch_scoreboard("nba", on_date=date(2026, 7, 12))
+    assert games == []

@@ -303,8 +303,8 @@ def test_get_daily_slate_isolates_league_and_prewarm_failures() -> None:
         patch("web.daily_service.fetch_scoreboard", side_effect=fake_scoreboard),
         patch("web.daily_service._actionable_games", side_effect=lambda games: games),
         patch(
-            "web.daily_service.is_league_ready_for_daily_slate",
-            return_value=True,
+            "web.daily_service.assess_league_readiness",
+            return_value={"ready": True, "reason": "ok"},
         ),
         patch(
             "web.daily_service._prewarm_league_models",
@@ -330,6 +330,127 @@ def test_get_daily_slate_isolates_league_and_prewarm_failures() -> None:
     # Public slate errors must not echo raw exception strings.
     assert not any("boom" in (e.get("error") or "").lower() for e in slate["errors"])
     assert not any("scoreboard down" in (e.get("error") or "").lower() for e in slate["errors"])
+    assert slate["summary"]["leagues_not_ready"] == []
+
+
+def test_get_daily_slate_reports_leagues_not_ready() -> None:
+    """Games on the board but insufficient season data must surface honestly."""
+    from web.daily_service import get_daily_slate
+
+    nhl_game = ScheduledGame(
+        league="nhl",
+        event_id="401900",
+        name="Bruins at Canadiens",
+        start_time="2026-07-10T23:00Z",
+        status="pre",
+        status_detail="Scheduled",
+        home_abbr="mtl",
+        away_abbr="bos",
+        home_name="Montreal Canadiens",
+        away_name="Boston Bruins",
+        home_espn_id="8",
+        away_espn_id="1",
+        market=MarketOdds(
+            home_moneyline=-110,
+            away_moneyline=-110,
+            spread=-1.5,
+            home_spread_odds=-110,
+            away_spread_odds=-110,
+        ),
+    )
+
+    def fake_scoreboard(league: str, days_ahead: int = 0):
+        if league == "nhl":
+            return [nhl_game]
+        return []
+
+    def fake_ready(league: str, _cutoff: str):
+        if league == "nhl":
+            return {
+                "ready": False,
+                "reason": "Need 10+ completed games (have 2)",
+            }
+        return {"ready": True, "reason": "ok"}
+
+    with (
+        patch("web.daily_service.SUPPORTED_LEAGUES", ("nhl", "nba")),
+        patch("web.daily_service.fetch_scoreboard", side_effect=fake_scoreboard),
+        patch("web.daily_service._actionable_games", side_effect=lambda games: games),
+        patch("web.daily_service.assess_league_readiness", side_effect=fake_ready),
+        patch("web.daily_service._prewarm_league_models"),
+        patch("web.daily_service._league_news_headlines", return_value=[]),
+        patch("web.daily_service.predict_live_game"),
+        patch(
+            "web.daily_service.official_hubacek_thresholds",
+            return_value={"min_edge_pp": 0, "min_ev_pct": 0},
+        ),
+    ):
+        slate = get_daily_slate(days_ahead=0)
+
+    assert slate["games"] == []
+    assert slate["summary"]["leagues_not_ready"] == [
+        {"league": "nhl", "reason": "Need 10+ completed games (have 2)"}
+    ]
+
+
+def test_get_daily_slate_eligibility_defaults_fail_closed() -> None:
+    """Missing eligible_for_official_picks must not enter official recommendations."""
+    from web.daily_service import get_daily_slate
+
+    nba_game = _scheduled_game()
+
+    def fake_predict(game, headlines=None):
+        return {
+            "event_id": game.event_id,
+            "league": game.league,
+            "league_name": game.league.upper(),
+            "matchup": {
+                "away": {"name": game.away_name},
+                "home": {"name": game.home_name},
+            },
+            "start_time": game.start_time,
+            # Intentionally omit eligible_for_official_picks
+            "recommendations": [
+                {
+                    "side": "home",
+                    "bet_type": "spread",
+                    "ev_pct": 5.0,
+                    "edge": 4.0,
+                    "profit_score": 1.0,
+                }
+            ],
+            "top_pick": None,
+            "model": {},
+            "market": {},
+            "name": game.name,
+            "status": game.status,
+            "status_detail": game.status_detail,
+            "cutoff_date": "7-10-2026",
+            "season_year": "2026",
+        }
+
+    with (
+        patch("web.daily_service.SUPPORTED_LEAGUES", ("nba",)),
+        patch("web.daily_service.fetch_scoreboard", return_value=[nba_game]),
+        patch("web.daily_service._actionable_games", side_effect=lambda games: games),
+        patch(
+            "web.daily_service.assess_league_readiness",
+            return_value={"ready": True, "reason": "ok"},
+        ),
+        patch("web.daily_service._prewarm_league_models"),
+        patch("web.daily_service._league_news_headlines", return_value=[]),
+        patch("web.daily_service.predict_live_game", side_effect=fake_predict),
+        patch("web.daily_service.passes_hubacek_tracked_pick", return_value=True),
+        patch(
+            "web.daily_service.official_hubacek_thresholds",
+            return_value={"min_edge_pp": 0, "min_ev_pct": 0},
+        ),
+    ):
+        slate = get_daily_slate(days_ahead=0)
+
+    assert slate["recommended_bets"] == []
+    assert len(slate["model_analysis_bets"]) == 1
+    assert slate["model_analysis_bets"][0]["tracked"] is False
 
 
 def test_get_daily_slate_resets_enrichment_budget() -> None:

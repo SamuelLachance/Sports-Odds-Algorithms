@@ -291,6 +291,46 @@ def test_record_dedupes_across_slate_date_labels() -> None:
     assert bet["closing_market_odds"] == 155
 
 
+def test_normalize_store_collapses_legacy_duplicate_keys() -> None:
+    """Legacy same-event rows must not inflate ROI after normalize/save."""
+    from web.tracking_service import _normalize_store, _summarize_bets
+
+    store = _normalize_store(
+        {
+            "version": 1,
+            "bets": [
+                {
+                    "id": "a",
+                    "event_id": "401815712",
+                    "side": "home",
+                    "bet_type": "moneyline",
+                    "status": "pending",
+                    "units": 0.0,
+                    "stake_units": 1.0,
+                    "recorded_at": "2026-07-10T12:00:00+00:00",
+                    "league": "mlb",
+                },
+                {
+                    "id": "b",
+                    "event_id": "401815712",
+                    "side": "home",
+                    "bet_type": "moneyline",
+                    "status": "win",
+                    "units": 1.4,
+                    "stake_units": 1.0,
+                    "recorded_at": "2026-07-11T12:00:00+00:00",
+                    "league": "mlb",
+                },
+            ],
+        }
+    )
+    assert len(store["bets"]) == 1
+    assert store["bets"][0]["id"] == "b"
+    summary = _summarize_bets(store["bets"])
+    assert summary["bets"] == 1
+    assert summary["roi_percent"] == 140.0
+
+
 def test_closing_snapshot_prefers_consensus_moneyline() -> None:
     """Multi-book consensus beats the single ESPN price for the closing snapshot."""
     store = {"version": 1, "bets": []}

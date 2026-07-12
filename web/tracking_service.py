@@ -98,7 +98,11 @@ def _empty_store() -> dict[str, Any]:
 
 
 def _normalize_store(store: dict[str, Any] | None) -> dict[str, Any]:
-    """Ensure a tracking store always has a list ``bets`` (empty seasons / corrupt file)."""
+    """Ensure a tracking store always has a list ``bets`` (empty seasons / corrupt file).
+
+    Also collapses legacy duplicate rows that share the same event/side/type key
+    so rollups never double-count P&L from older date-keyed recordings.
+    """
     if not isinstance(store, dict):
         return _empty_store()
     bets = store.get("bets")
@@ -106,12 +110,43 @@ def _normalize_store(store: dict[str, Any] | None) -> dict[str, Any]:
         bets = []
     # Drop non-dict rows so rollups never crash on corrupt entries.
     bets = [b for b in bets if isinstance(b, dict)]
+    bets = _dedupe_bets_by_key(bets)
     version = store.get("version", 1)
     try:
         version = int(version)
     except (TypeError, ValueError):
         version = 1
     return {"version": version, "bets": bets}
+
+
+def _bet_preference_rank(bet: dict[str, Any]) -> tuple[int, str]:
+    """Prefer settled rows over pending, then newest ``recorded_at``."""
+    status = str(bet.get("status") or "pending").lower()
+    decided = 1 if status in {"win", "loss", "push"} else 0
+    stamp = str(bet.get("recorded_at") or bet.get("closing_snapshot_at") or bet.get("date") or "")
+    return (decided, stamp)
+
+
+def _dedupe_bets_by_key(bets: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Keep one row per ``event_id:side[:bet_type]``; preserve insertion order of winners."""
+    chosen: dict[str, dict[str, Any]] = {}
+    order: list[str] = []
+    orphans: list[dict[str, Any]] = []
+    for bet in bets:
+        event_id = str(bet.get("event_id") or "")
+        side = str(bet.get("side") or "")
+        if not event_id or not side:
+            orphans.append(bet)
+            continue
+        key = _bet_key(event_id, side, bet.get("bet_type") or "moneyline")
+        prior = chosen.get(key)
+        if prior is None:
+            chosen[key] = bet
+            order.append(key)
+            continue
+        if _bet_preference_rank(bet) > _bet_preference_rank(prior):
+            chosen[key] = bet
+    return [chosen[k] for k in order] + orphans
 
 
 def load_store() -> dict[str, Any]:

@@ -65,6 +65,23 @@ def nhl_season_for_date(target: date_cls) -> int:
     return target.year if target.month >= 7 else target.year - 1
 
 
+def infer_nhl_game_type(day_iso: str) -> int:
+    """Best-effort regular (2) vs playoff (3) when the scoreboard row is missing.
+
+    NHL playoffs typically run mid-April through June. Early April still has
+    regular-season games, so we only flip after the 15th.
+    """
+    try:
+        day = date_cls.fromisoformat(day_iso[:10])
+    except ValueError:
+        return 2
+    if day.month in (5, 6):
+        return 3
+    if day.month == 4 and day.day >= 15:
+        return 3
+    return 2
+
+
 def artifacts_available() -> bool:
     required = ("model_clf.json", "model_lr.json", "calibrator.json", "metadata.json")
     if not all((MODEL_DIR / name).is_file() for name in required):
@@ -522,7 +539,7 @@ def predict_matchup_v2(
         game = {
             "gameId": 0,
             "date": day_iso,
-            "game_type": 2,
+            "game_type": infer_nhl_game_type(day_iso),
             "home": home,
             "away": away,
         }

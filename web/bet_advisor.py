@@ -1216,6 +1216,11 @@ def pick_to_dict(pick: BetPick) -> dict[str, Any]:
         "reason": pick.reason,
         "bet_type": pick.bet_type,
     }
+    # Honest-EV / three-track UI reads these pick-scoped fields (not home-only).
+    if pick.extra.get("base_win_probability") is not None:
+        payload["base_win_probability"] = pick.extra["base_win_probability"]
+    if pick.extra.get("games_played_proxy") is not None:
+        payload["games_played_proxy"] = pick.extra["games_played_proxy"]
     if pick.bet_type == "spread":
         payload.update(
             {

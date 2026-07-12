@@ -244,14 +244,19 @@ def assess_soccer_readiness(league: str, cutoff_date: str) -> dict[str, Any]:
     return result
 
 
-def is_league_ready_for_daily_slate(league: str, cutoff_date: str) -> bool:
+def assess_league_readiness(league: str, cutoff_date: str) -> dict[str, Any]:
+    """Unified readiness assessment with a human-readable ``reason``."""
     if is_basketball_league(league):
-        return assess_basketball_readiness(league, cutoff_date)["ready"]
+        return assess_basketball_readiness(league, cutoff_date)
     if is_hockey_league(league):
-        return assess_hockey_readiness(league, cutoff_date)["ready"]
+        return assess_hockey_readiness(league, cutoff_date)
     if is_mlb_league(league):
-        return assess_mlb_readiness(league, cutoff_date)["ready"]
+        return assess_mlb_readiness(league, cutoff_date)
     if is_soccer_league(league):
-        return assess_soccer_readiness(league, cutoff_date)["ready"]
-    return assess_three_layer_readiness(league, cutoff_date)["ready"]
+        return assess_soccer_readiness(league, cutoff_date)
+    return assess_three_layer_readiness(league, cutoff_date)
+
+
+def is_league_ready_for_daily_slate(league: str, cutoff_date: str) -> bool:
+    return bool(assess_league_readiness(league, cutoff_date).get("ready"))
 

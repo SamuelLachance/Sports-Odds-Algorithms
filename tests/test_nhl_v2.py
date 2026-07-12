@@ -92,3 +92,14 @@ def test_blend_nhl_survives_hockey_pred_crash() -> None:
     assert result["blend_mode"] == "algo_v1"
     assert result["algorithm"] == "Algo_V1"
     assert result.get("hockey_pred") is None
+
+
+def test_infer_nhl_game_type_playoff_window() -> None:
+    from web.nhl_v2.live import infer_nhl_game_type
+
+    assert infer_nhl_game_type("2026-01-15") == 2
+    assert infer_nhl_game_type("2026-04-10") == 2
+    assert infer_nhl_game_type("2026-04-15") == 3
+    assert infer_nhl_game_type("2026-05-20") == 3
+    assert infer_nhl_game_type("2026-06-15") == 3
+    assert infer_nhl_game_type("not-a-date") == 2
