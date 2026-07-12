@@ -159,6 +159,60 @@ def hubacek_allowed_sides(league: str | None = None) -> set[str] | None:
     return {str(side).lower() for side in sides}
 
 
+def hubacek_fav_mode(league: str | None = None) -> str:
+    """Favorite/dog filter from pick_strategy (`any` when unset)."""
+    mode = league_pick_overrides(league).get("fav_mode")
+    if isinstance(mode, str) and mode.strip():
+        return mode.strip().lower()
+    return "any"
+
+
+def passes_hubacek_fav_mode(
+    *,
+    fav_mode: str,
+    bet_type: str,
+    side: str,
+    american_odds: float | None,
+    consensus_spread: float | None = None,
+    side_line: float | None = None,
+) -> bool:
+    """Filter picks by favorite/dog mode used in all-seasons-positive backtests."""
+    mode = (fav_mode or "any").lower()
+    if mode in ("", "any"):
+        return True
+    from web.bet_advisor import normalize_american_odds
+
+    bet = (bet_type or "moneyline").lower()
+    side_l = str(side or "").lower()
+    if bet == "spread":
+        laying: bool | None = None
+        if consensus_spread is not None and math.isfinite(float(consensus_spread)):
+            spread = float(consensus_spread)
+            laying = (side_l == "home" and spread < 0) or (side_l == "away" and spread > 0)
+        elif side_line is not None and math.isfinite(float(side_line)):
+            # Negative side line = that side is laying points.
+            laying = float(side_line) < 0
+        if laying is None:
+            return False
+        if mode == "favorite":
+            return laying
+        if mode == "dog":
+            return not laying
+        return True
+    ml = normalize_american_odds(american_odds)
+    if ml is None:
+        return False
+    if mode == "favorite":
+        return ml < 0
+    if mode == "dog":
+        return ml > 0
+    if mode == "slight_fav":
+        return ml < 0 and abs(ml) <= 200
+    if mode == "big_dog":
+        return ml >= 150
+    return True
+
+
 def hubacek_ml_range(league: str | None = None) -> tuple[float, float] | None:
     overrides = league_pick_overrides(league)
     lo = _finite_float(overrides.get("ml_lo"))
@@ -352,6 +406,17 @@ def passes_hubacek_tracked_pick(pick: dict[str, Any]) -> bool:
     bet_type = str(pick.get("bet_type") or "moneyline").lower()
     allowed = hubacek_allowed_sides(league)
     if allowed is not None and str(pick.get("side") or "").lower() not in allowed:
+        return False
+    if not passes_hubacek_fav_mode(
+        fav_mode=hubacek_fav_mode(league),
+        bet_type=bet_type,
+        side=str(pick.get("side") or ""),
+        american_odds=(
+            pick.get("spread_odds") if bet_type == "spread" else pick.get("market_odds")
+        ),
+        consensus_spread=_finite_float(pick.get("consensus_spread")),
+        side_line=_finite_float(pick.get("spread_line")),
+    ):
         return False
     if bet_type == "spread":
         min_pp = hubacek_min_spread_confidence_pp(league)

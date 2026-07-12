@@ -47,23 +47,20 @@ def test_pick_thresholds_cbb_nfl_cfb() -> None:
     cbb = get_pick_thresholds("cbb")
     assert cbb["bet_type"] == "spread"
     assert cbb["min_spread_cover_gap_pp"] == 10.0
-    assert cbb["min_spread_point_edge"] == 3.0
-    assert cbb["min_spread_confidence_pp"] == 5.0
-    assert cbb["min_ev_pct"] == 2.0
+    assert cbb["enabled"] is False
 
     nfl = get_pick_thresholds("nfl")
-    assert nfl["bet_type"] == "spread"
-    assert nfl["min_spread_cover_gap_pp"] == 4.0
-    assert nfl["min_spread_point_edge"] == 5.0
-    assert nfl["min_spread_confidence_pp"] == 5.0
-    assert nfl["min_ev_pct"] == 2.0
+    assert nfl["bet_type"] == "moneyline"
+    assert nfl["min_market_gap_pp"] == 5.6
+    assert nfl["allowed_sides"] == ["home"]
+    assert nfl["enabled"] is True
 
     cfb = get_pick_thresholds("cfb")
     assert cfb["bet_type"] == "spread"
-    assert cfb["min_spread_cover_gap_pp"] == 7.0
-    assert cfb["min_spread_point_edge"] == 5.0
-    assert cfb["min_spread_confidence_pp"] == 5.0
-    assert cfb["min_ev_pct"] == 2.0
+    assert cfb["min_spread_cover_gap_pp"] == 11.0
+    assert cfb["allowed_sides"] == ["away"]
+    assert cfb["fav_mode"] == "favorite"
+    assert cfb["enabled"] is True
 
 
 def test_disabled_leagues_stay_predictions_only_but_can_emit_reference_picks() -> None:
@@ -80,7 +77,7 @@ def test_disabled_leagues_stay_predictions_only_but_can_emit_reference_picks() -
     clear_strategy_cache()
     load_pick_strategy.cache_clear()
 
-    for league in ("nfl", "cfb", "cbb"):
+    for league in ("cbb",):
         assert league in OFFICIAL_PICK_LEAGUES
         assert get_pick_thresholds(league)["enabled"] is False, league
         assert eligible_for_official_picks(league) is False, league

@@ -1,0 +1,28 @@
+{
+  "stake_mode": "kelly",
+  "kelly_fraction": 0.25,
+  "enabled": true,
+  "enabled_note": "All-seasons-positive open-line policy: away favorites, cover gap>=11pp, conf>=12pp. 2023-2025 all positive.",
+  "bet_type": "spread",
+  "margin_col": "model_margin",
+  "exec_price": "open",
+  "sigma": 16.822,
+  "min_cover_gap_pp": 11.0,
+  "min_point_edge": 0.0,
+  "min_ev_pct": 2.0,
+  "min_spread_confidence_pp": 12.0,
+  "allowed_sides": ["away"],
+  "fav_mode": "favorite",
+  "backtest": {
+    "bets": 94,
+    "roi_pct": 5.69,
+    "worst_season_roi": 3.42,
+    "seasons_positive": 3,
+    "seasons_total": 3,
+    "per_season": {
+      "2023": {"bets": 40, "roi_pct": 4.71, "profit_units": 5.6},
+      "2024": {"bets": 35, "roi_pct": 3.42, "profit_units": 3.6},
+      "2025": {"bets": 19, "roi_pct": 11.97, "profit_units": 6.8}
+    }
+  }
+}

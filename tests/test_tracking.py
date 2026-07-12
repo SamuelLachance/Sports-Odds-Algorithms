@@ -135,7 +135,7 @@ def test_empty_store_and_push_only_roi_is_null() -> None:
     assert "≥2 pp" not in note
     assert ">=2 pp" not in note
     assert "per-league" in note
-    assert "NFL/CFB/CBB" in note
+    assert "CBB" in note
     assert response.get("thresholds_scope") == "global_baseline"
 
 

@@ -1038,14 +1038,14 @@ def build_tracking_response(store: dict[str, Any]) -> dict[str, Any]:
         "timezone": TIMEZONE_LABEL,
         "last_updated": datetime.now(timezone.utc).isoformat(),
         "note": (
-            "Tracks Hubáček official picks only (NBA, MLB, calibrated "
+            "Tracks Hubáček official picks (NBA, WNBA, NHL, MLB, NFL, CFB, calibrated "
             "soccer). Gates use backtested per-league market/cover gaps with honest "
-            "EV floors and a confidence bar — live thresholds are not a single global "
-            "gap for every sport. Basketball/football spreads graded ATS at the "
-            "recorded book spread; hockey/baseball at the recorded moneyline; soccer "
+            "EV floors, confidence bars, and side/favorite filters where required. "
+            "Basketball/football spreads graded ATS at the recorded book spread; "
+            "hockey/baseball/NFL moneylines at the recorded moneyline; soccer "
             "1X2 at the recorded price. Odds are frozen at record time and CLV is "
             "logged at grading. Stakes are quarter-Kelly (0.25–3u, 1u = 1% bankroll). "
-            "WNBA/NHL/NFL/CFB/CBB never enter this book while official picks stay disabled."
+            "CBB never enters this book while official picks stay disabled."
         ),
         **official_hubacek_thresholds(),
     }

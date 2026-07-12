@@ -15,7 +15,7 @@ Daily algorithmic sports betting platform across **NBA, WNBA, CBB, NFL, CFB, NHL
 | **Unified model** | Prefer sport-specific **GradientBoost v2** when trained; otherwise blend legacy **Algo V2**, **power ratings**, and supporting sport layers |
 | **Algo picks** | Hubáček-style official picks: decorrelated model must beat the de-vigged market by ≥2 pp with ≥2% honest EV and a per-bet-type confidence bar (stricter per-league overrides where walk-forward backtests exist) |
 | **Bet tracking** | Freezes odds at record time, grades against ESPN finals, logs implied-probability CLV vs the ESPN consensus closing snapshot, and sizes stakes with portfolio-aware quarter-Kelly (0.25–3u) |
-| **League coverage** | Games and team pages for all supported leagues; official Hubáček tracking covers NBA, MLB, and calibrated soccer. **WNBA, NHL, NFL, CFB, and CBB are predictions-only** — v2 models are live, official picks disabled until walk-forward backtests clear the positive worst-season enable bar |
+| **League coverage** | Games and team pages for all supported leagues; official Hubáček tracking covers NBA, WNBA, NHL, MLB, NFL, CFB, and calibrated soccer. **CBB is predictions-only** until multi-season odds clear the positive worst-season enable bar |
 
 ### Prediction stack
 

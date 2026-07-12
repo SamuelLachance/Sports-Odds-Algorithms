@@ -64,10 +64,15 @@ def test_eligible_for_official_picks() -> None:
     assert eligible_for_official_picks("mlb")
 
     # In OFFICIAL_PICK_LEAGUES but pick_strategy enabled=false — not UI/tracking eligible.
-    for paused in ("nfl", "cfb", "cbb", "nhl", "wnba"):
+    for paused in ("cbb",):
         assert paused in OFFICIAL_PICK_LEAGUES
         assert get_pick_thresholds(paused).get("enabled") is False, paused
         assert eligible_for_official_picks(paused) is False, paused
+
+    assert eligible_for_official_picks("nhl")
+    assert eligible_for_official_picks("wnba")
+    assert eligible_for_official_picks("nfl")
+    assert eligible_for_official_picks("cfb")
 
     # Leagues without a closing-line-beating model stay untracked.
     assert not eligible_for_official_picks("mls")
@@ -75,22 +80,22 @@ def test_eligible_for_official_picks() -> None:
 
 
 def test_nfl_cfb_cbb_not_eligible_for_official_picks() -> None:
-    """Explicit gate: paused leagues stay predictions-only until walk-forward clears."""
+    """CBB stays predictions-only; NFL/CFB cleared the all-seasons-positive bar."""
     from web.hubacek_picks import clear_strategy_cache
     from web.pick_strategy import load_pick_strategy
 
     clear_strategy_cache()
     load_pick_strategy.cache_clear()
 
-    assert eligible_for_official_picks("nfl") is False
-    assert eligible_for_official_picks("cfb") is False
     assert eligible_for_official_picks("cbb") is False
-    assert eligible_for_official_picks("nhl") is False
-    assert eligible_for_official_picks("wnba") is False
+    assert eligible_for_official_picks("nfl") is True
+    assert eligible_for_official_picks("cfb") is True
+    assert eligible_for_official_picks("nhl") is True
+    assert eligible_for_official_picks("wnba") is True
     # Case-insensitive
-    assert eligible_for_official_picks("NFL") is False
-    assert eligible_for_official_picks("Cfb") is False
     assert eligible_for_official_picks("CBB") is False
+    assert eligible_for_official_picks("NFL") is True
+    assert eligible_for_official_picks("Cfb") is True
 
 
 def test_soccer_game_not_eligible_for_official_picks() -> None:

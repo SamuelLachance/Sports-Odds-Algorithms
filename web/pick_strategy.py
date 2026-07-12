@@ -174,6 +174,7 @@ def get_pick_thresholds(league: str) -> dict[str, Any]:
         "ml_lo": ml_range[0] if ml_range else None,
         "ml_hi": ml_range[1] if ml_range else None,
         "allowed_sides": entry.get("allowed_sides"),
+        "fav_mode": entry.get("fav_mode") or "any",
         "min_spread_point_edge": min_spread_point_edge,
         "min_profit_score": 0.0,
         "min_kelly_pct": 0.0,
@@ -1291,7 +1292,10 @@ def evaluate_official_picks_for_game(
             min_ev_pct=thresholds["min_ev_pct"],
             games_played_proxy=games_played_proxy,
         )
-        return [enrich_pick_profit_metrics(pick) for pick in picks]
+        return [
+            enrich_pick_profit_metrics(pick)
+            for pick in _filter_official_side_fav(picks, thresholds, consensus_spread)
+        ]
 
     if bet_type == "moneyline":
         ml_away, ml_home, base_away, base_home = official_pick_binary_prob_sets(
@@ -1324,6 +1328,40 @@ def evaluate_official_picks_for_game(
             league=league,
             games_played_proxy=games_played_proxy,
         )
-        return [enrich_pick_profit_metrics(pick) for pick in picks]
+        return [
+            enrich_pick_profit_metrics(pick)
+            for pick in _filter_official_side_fav(picks, thresholds, consensus_spread)
+        ]
 
     return []
+
+
+def _filter_official_side_fav(
+    picks: list[BetPick],
+    thresholds: dict[str, Any],
+    consensus_spread: float | None,
+) -> list[BetPick]:
+    """Apply allowed_sides + fav_mode from the all-seasons-positive backtests."""
+    from web.hubacek_picks import passes_hubacek_fav_mode
+
+    allowed = thresholds.get("allowed_sides")
+    allowed_set = (
+        {str(side).lower() for side in allowed} if isinstance(allowed, list) else None
+    )
+    fav_mode = str(thresholds.get("fav_mode") or "any").lower()
+    filtered: list[BetPick] = []
+    for pick in picks:
+        if allowed_set is not None and str(pick.side).lower() not in allowed_set:
+            continue
+        odds = pick.spread_odds if pick.bet_type == "spread" else pick.market_odds
+        if not passes_hubacek_fav_mode(
+            fav_mode=fav_mode,
+            bet_type=pick.bet_type,
+            side=pick.side,
+            american_odds=odds,
+            consensus_spread=consensus_spread,
+            side_line=getattr(pick, "spread_line", None),
+        ):
+            continue
+        filtered.append(pick)
+    return filtered

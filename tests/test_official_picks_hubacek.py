@@ -250,26 +250,30 @@ def test_mlb_official_picks_use_moneyline_decorrelation() -> None:
 
 
 def test_nhl_pick_thresholds_use_backtested_policy() -> None:
-    """NHL research gates come from data/pick_strategy.json; official tracking paused."""
+    """NHL all-seasons-positive big-dog policy from pick_strategy.json."""
     thresholds = get_pick_thresholds("nhl")
-    assert thresholds["min_market_gap_pp"] >= 2.5
-    assert thresholds["min_win_confidence_pp"] == 0.0
-    assert thresholds["ml_lo"] == -350
-    assert thresholds["ml_hi"] == 300
+    assert thresholds["min_market_gap_pp"] >= 2.0
+    assert thresholds["min_win_confidence_pp"] == 5.0
+    assert thresholds["ml_lo"] == 150
+    assert thresholds["ml_hi"] == 180
     assert thresholds["bet_type"] == "moneyline"
-    assert thresholds["enabled"] is False
+    assert thresholds["enabled"] is True
+    assert thresholds.get("fav_mode") == "big_dog"
 
 
 def test_nhl_official_picks_use_moneyline_decorrelation() -> None:
+    """NHL official book is big-dog only (+150..+180); bet the away dog."""
     min_gap = get_pick_thresholds("nhl")["min_market_gap_pp"]
-    pre_home = 70.0
-    decor_home = decorrelate_binary(pre_home, 55.0)
-    # devig(130/-150) home ≈ 58.0% -> ensure the scenario clears the NHL gap gate
-    assert decor_home - 58.0 >= min_gap
+    # Home -180 / away +160. Push model toward away so the dog clears gap+EV+conf.
+    pre_home = 40.0
+    market_home = 64.3  # approx de-vig of -180 vs +160
+    decor_home = decorrelate_binary(pre_home, market_home)
+    decor_away = 100.0 - decor_home
+    assert decor_away - (100.0 - market_home) >= min_gap
     blended = {
-        "total_score": -decor_home,
-        "win_probability": decor_home,
-        "favorite_side": "home",
+        "total_score": decor_away,  # away lean
+        "win_probability": decor_away,
+        "favorite_side": "away",
         "blended_home_win_probability": decor_home,
         "hockey_pred": {
             "algorithm": "NHLGradientBoost",
@@ -286,11 +290,11 @@ def test_nhl_official_picks_use_moneyline_decorrelation() -> None:
         home_name="Home",
         away_slug="away",
         home_slug="home",
-        total_score=-decor_home,
-        win_probability=decor_home,
+        total_score=decor_away,
+        win_probability=decor_away,
         blended=blended,
-        away_market=130,
-        home_market=-150,
+        away_market=160,
+        home_market=-180,
         consensus_spread=None,
         away_spread_odds=None,
         home_spread_odds=None,
@@ -298,11 +302,12 @@ def test_nhl_official_picks_use_moneyline_decorrelation() -> None:
     assert picks
     assert picks[0].strategy == "hubacek"
     assert picks[0].bet_type == "moneyline"
-    assert picks[0].side == "home"
+    assert picks[0].side == "away"
+    assert picks[0].market_odds == 160
 
 
 def test_nhl_official_picks_respect_ml_price_window() -> None:
-    """NHL moneyline picks outside [-350, +300] are rejected."""
+    """NHL moneyline picks outside +150..+180 are rejected."""
     pre_home = 85.0
     decor_home = decorrelate_binary(pre_home, 72.0)
     blended = {
@@ -334,7 +339,7 @@ def test_nhl_official_picks_respect_ml_price_window() -> None:
         away_spread_odds=None,
         home_spread_odds=None,
     )
-    assert not [p for p in picks if p.side == "home"]
+    assert picks == []
 
 
 def test_mlb_official_picks_respect_ml_price_window() -> None:
@@ -372,70 +377,23 @@ def test_mlb_official_picks_respect_ml_price_window() -> None:
 
 
 def test_nfl_cfb_official_picks_disabled_by_backtest() -> None:
-    """NFL/CFB: gates exist for reference; enabled=false blocks official book only."""
+    """NFL/CFB cleared all-seasons-positive; CBB remains disabled."""
     from web.hubacek_picks import clear_strategy_cache
     from web.league_profiles import eligible_for_official_picks
     from web.pick_strategy import load_pick_strategy
-    from web.tracking_service import record_from_slate
 
     clear_strategy_cache()
     load_pick_strategy.cache_clear()
 
-    for league in ("nfl", "cfb"):
-        thresholds = get_pick_thresholds(league)
-        assert thresholds["bet_type"] == "spread"
-        assert thresholds["min_ev_pct"] >= 2.0
-        assert thresholds["enabled"] is False
-        assert eligible_for_official_picks(league) is False
-        blended = {
-            "total_score": -72.0,
-            "win_probability": 72.0,
-            "favorite_side": "home",
-            "blended_home_win_probability": 72.0,
-            "home_spread_margin": -9.5,
-            "market_decorrelated": True,
-        }
-        picks = evaluate_official_picks_for_game(
-            league=league,
-            away_name="Away",
-            home_name="Home",
-            away_slug="away",
-            home_slug="home",
-            total_score=-72.0,
-            win_probability=72.0,
-            blended=blended,
-            away_market=145,
-            home_market=-165,
-            consensus_spread=-3.5,
-            away_spread_odds=-110,
-            home_spread_odds=-110,
-        )
-        # Reference evaluation may still surface spots for model_analysis.
-        assert isinstance(picks, list), league
-        if not picks:
-            continue
-        store = record_from_slate(
-            {"version": 1, "bets": []},
-            {
-                "date_label": "2099-01-01",
-                "recommended_bets": [
-                    {
-                        "league": league,
-                        "event_id": f"hubacek-ref-{league}",
-                        "side": picks[0].side,
-                        "strategy": "hubacek",
-                        "ev_pct": picks[0].ev_pct,
-                        "win_probability": picks[0].win_probability,
-                        "model_market_gap_pp": picks[0].extra.get(
-                            "model_market_gap_pp", 20.0
-                        ),
-                        "market_odds": -110,
-                        "spread_odds": picks[0].spread_odds,
-                        "bet_type": "spread",
-                        "start_time": "2099-09-01T17:00:00Z",
-                    }
-                ],
-                "games": [],
-            },
-        )
-        assert store["bets"] == [], league
+    nfl = get_pick_thresholds("nfl")
+    assert nfl["bet_type"] == "moneyline"
+    assert nfl["enabled"] is True
+    assert eligible_for_official_picks("nfl") is True
+
+    cfb = get_pick_thresholds("cfb")
+    assert cfb["bet_type"] == "spread"
+    assert cfb["enabled"] is True
+    assert eligible_for_official_picks("cfb") is True
+
+    assert get_pick_thresholds("cbb")["enabled"] is False
+    assert eligible_for_official_picks("cbb") is False

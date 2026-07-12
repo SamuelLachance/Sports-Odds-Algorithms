@@ -33,6 +33,9 @@ _NUMERIC_KEYS = frozenset(
 
 _INT_KEYS = frozenset({"backtest_bets", "backtest_open_bets"})
 _META_KEYS = frozenset({"policy", "generated_at"})
+_VALID_FAV_MODES = frozenset(
+    {"any", "favorite", "dog", "slight_fav", "big_dog"}
+)
 
 
 def _as_number(value: Any) -> float | None:
@@ -107,6 +110,10 @@ def validate_strategy_entry(entry: Any) -> dict[str, Any] | None:
         ]
         if cleaned_sides:
             cleaned["allowed_sides"] = cleaned_sides
+
+    fav_mode = entry.get("fav_mode")
+    if isinstance(fav_mode, str) and fav_mode.strip().lower() in _VALID_FAV_MODES:
+        cleaned["fav_mode"] = fav_mode.strip().lower()
 
     note = entry.get("note")
     if isinstance(note, str) and note.strip():
