@@ -28,6 +28,7 @@ def test_split_year_leagues_before_october() -> None:
     cutoff = date(2026, 6, 11)
     assert current_season_year("nba", cutoff) == 2026
     assert current_season_year("nhl", cutoff) == 2026
+    # WNBA is calendar-year (May–Oct); NFL uses fall start year.
     assert current_season_year("wnba", cutoff) == 2026
     assert current_season_year("nfl", cutoff) == 2026
 
@@ -36,6 +37,22 @@ def test_split_year_leagues_from_october() -> None:
     cutoff = date(2026, 11, 1)
     assert current_season_year("nba", cutoff) == 2027
     assert prior_season_year("nba", cutoff) == 2026
+    # NFL November is still the 2026 season (not NBA's ending-year +1).
+    assert current_season_year("nfl", cutoff) == 2026
+    # WNBA Finals window stays on the calendar year.
+    assert current_season_year("wnba", date(2025, 10, 12)) == 2025
+
+
+def test_nfl_playoffs_keep_fall_season_year() -> None:
+    assert current_season_year("nfl", date(2026, 2, 8)) == 2025
+    assert current_season_year("nfl", date(2026, 3, 1)) == 2026
+
+
+def test_cfb_bowls_keep_fall_season_year() -> None:
+    # CFB must not share CBB's Aug→ending-year rollover.
+    assert current_season_year("cfb", date(2025, 1, 15)) == 2024
+    assert current_season_year("cfb", date(2025, 9, 1)) == 2025
+    assert current_season_year("cbb", date(2025, 9, 1)) == 2026
 
 
 def test_college_season_rollover() -> None:
@@ -61,6 +78,8 @@ if __name__ == "__main__":
     test_calendar_year_leagues_use_cutoff_year()
     test_split_year_leagues_before_october()
     test_split_year_leagues_from_october()
+    test_nfl_playoffs_keep_fall_season_year()
+    test_cfb_bowls_keep_fall_season_year()
     test_college_season_rollover()
     test_min_games_threshold()
     print("test_season_selection.py: all tests passed")

@@ -384,6 +384,8 @@ def _signed_spread_from_details(details: str, home_abbr: str, away_abbr: str) ->
 
 
 def _side_odds(item_side: dict[str, Any]) -> dict[str, Any]:
+    from web.nba_odds_espn import MAX_NBA_SPREAD, _valid_handicap_line
+
     out: dict[str, Any] = {
         "ml": _american((item_side or {}).get("moneyLine")),
         # Spread juice is American odds; reuse EVEN→+100 / reject |x|<100.
@@ -391,14 +393,17 @@ def _side_odds(item_side: dict[str, Any]) -> dict[str, Any]:
     }
     current = (item_side or {}).get("current") or {}
     ps = (current.get("pointSpread") or {}).get("american")
-    out["point_spread"] = _to_float(str(ps).replace("+", "")) if ps not in (None, "") else None
+    raw_ps = _to_float(str(ps).replace("+", "")) if ps not in (None, "") else None
+    # Drop ML-sized values ESPN sometimes dumps into pointSpread.
+    out["point_spread"] = _valid_handicap_line(raw_ps, max_abs=MAX_NBA_SPREAD)
     open_blob = (item_side or {}).get("open") or {}
     ml_open = (open_blob.get("moneyLine") or {}).get("american")
     out["ml_open"] = _american(str(ml_open).replace("+", "")) if ml_open not in (None, "") else None
     ps_open = (open_blob.get("pointSpread") or {}).get("american")
-    out["spread_open"] = (
+    raw_open = (
         _to_float(str(ps_open).replace("+", "")) if ps_open not in (None, "") else None
     )
+    out["spread_open"] = _valid_handicap_line(raw_open, max_abs=MAX_NBA_SPREAD)
     return out
 
 
@@ -408,6 +413,8 @@ def fetch_event_odds(
     away_abbr: str,
 ) -> list[dict[str, Any]]:
     """Per-book odds rows for one event (moneylines, home spread, total)."""
+    from web.nba_odds_espn import MAX_NBA_SPREAD, _valid_handicap_line
+
     try:
         data = get_json(ODDS_URL.format(event_id=event_id), timeout=45)
     except OSError:
@@ -439,6 +446,7 @@ def fetch_event_odds(
                         # ESPN often sends a signed home line; do not flip when
                         # favorite flags are missing/false.
                         home_spread = raw
+        home_spread = _valid_handicap_line(home_spread, max_abs=MAX_NBA_SPREAD)
         rows.append(
             {
                 "provider": provider,

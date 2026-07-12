@@ -232,3 +232,19 @@ def test_simulate_market_threeway_renormalizes_nonsimplex_bases() -> None:
     # Home base is largest after scale → shortest home price among the three.
     assert home_ml < away_ml
     assert home_ml < draw_ml
+
+
+def test_simulate_market_threeway_applies_synthetic_vig() -> None:
+    """Docstring promises vig; overround must match two-way synthetic books."""
+    from web.bet_advisor import american_implied_prob
+
+    away_2, home_2 = simulate_market_moneylines(60.0)
+    assert american_implied_prob(away_2) + american_implied_prob(home_2) > 1.0
+
+    away_ml, draw_ml, home_ml = simulate_market_threeway(45.0, 28.0, 27.0)
+    overround = (
+        american_implied_prob(away_ml)
+        + american_implied_prob(draw_ml)
+        + american_implied_prob(home_ml)
+    )
+    assert overround > 1.02

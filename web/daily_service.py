@@ -919,7 +919,10 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
     # sequential so model caches and pick logic remain deterministic.
     def _fetch_one(league: str) -> tuple[str, Any]:
         try:
-            return league, fetch_scoreboard(league, days_ahead=days_ahead)
+            # Match date_label / slate cutoffs (America/Toronto), not UTC server today.
+            return league, fetch_scoreboard(
+                league, on_date=_toronto_today(), days_ahead=days_ahead
+            )
         except Exception as exc:  # noqa: BLE001
             return league, exc
 

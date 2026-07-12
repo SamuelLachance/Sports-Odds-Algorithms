@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Literal
 from zoneinfo import ZoneInfo
 
-from web.bet_advisor import spread_line_for_side
+from web.bet_advisor import normalize_american_odds, spread_line_for_side
 from web.hubacek_picks import (
     official_hubacek_thresholds,
     passes_hubacek_tracked_pick,
@@ -211,13 +211,19 @@ def _resolve_grading_odds(bet: dict[str, Any]) -> int | None:
         for key in ("spread_odds", "consensus_odds", "market_odds"):
             value = bet.get(key)
             if value is not None:
-                return int(value)
+                try:
+                    return normalize_american_odds(int(value))
+                except (TypeError, ValueError):
+                    return None
         # Missing posted juice — leave ungraded (do not invent -110).
         return None
     market_odds = bet.get("market_odds")
     if market_odds is None:
         return None
-    return int(market_odds)
+    try:
+        return normalize_american_odds(int(market_odds))
+    except (TypeError, ValueError):
+        return None
 
 
 def _parse_date_label(value: str) -> date:
@@ -249,7 +255,7 @@ def _consensus_closing_ml(game: dict[str, Any] | None, side: str) -> int | None:
     if value is None:
         return None
     try:
-        return int(value)
+        return normalize_american_odds(int(value))
     except (TypeError, ValueError):
         return None
 
@@ -317,7 +323,8 @@ def record_from_slate(store: dict[str, Any], slate: dict[str, Any]) -> dict[str,
                 if tip is None:
                     tip = _parse_start_time(existing.get("start_time"))
                 # Freeze closing at tip-off — post-tip ESPN prices are live, not close.
-                if tip is not None and tip <= now_dt:
+                # No parseable tip → fail closed (do not keep refreshing forever).
+                if tip is None or tip <= now_dt:
                     continue
                 closing_ml = pick.get("market_odds")
                 closing_source = "espn"

@@ -324,7 +324,13 @@ def fetch_scoreboard(
     attempts = 0
     failures = 0
 
-    base = on_date or date.today()
+    if on_date is None:
+        # Align with daily slate labeling (America/Toronto), not bare UTC date.today().
+        from zoneinfo import ZoneInfo
+
+        base = datetime.now(ZoneInfo("America/Toronto")).date()
+    else:
+        base = on_date
     dates_to_check = [
         base.fromordinal(base.toordinal() + offset) for offset in range(0, days_ahead + 1)
     ]
@@ -418,7 +424,13 @@ def iso_to_project_date(iso_value: str) -> str:
 
 
 def current_season_year(league: str, cutoff: date) -> int:
-    """ESPN season year for the in-progress season on the cutoff date."""
+    """ESPN season year for the in-progress season on the cutoff date.
+
+    Conventions match ESPN's ``?season=`` parameter:
+    - NBA/NHL/CBB/NCAAH: ending calendar year (2025-26 → 2026)
+    - NFL/CFB: starting / fall year (2025 season includes Feb 2026 playoffs)
+    - WNBA / MLB / soccer: calendar year
+    """
     year = cutoff.year
     month = cutoff.month
 
@@ -446,15 +458,26 @@ def current_season_year(league: str, cutoff: date) -> int:
         "uefa_euro",
         "uefa_nations",
         "copa_america",
+        "wnba",
     }:
         return year
 
-    if league in {"cbb", "cfb"}:
+    # NFL: Sep–Feb uses the fall start year (playoffs stay on prior season).
+    if league == "nfl":
+        return year if month >= 3 else year - 1
+
+    # CFB: Aug–Jan bowls use the fall start year (not CBB's ending-year scheme).
+    if league == "cfb":
+        return year if month >= 7 else year - 1
+
+    # CBB: Aug+ rolls into the spring ending year (2025-26 → 2026).
+    if league == "cbb":
         if month >= 8:
             return year + 1
         return year
 
-    if league in {"nba", "nhl", "nfl", "wnba", "ncaah", "ncaawh"}:
+    # NBA / NHL / college hockey: Oct+ rolls into the spring ending year.
+    if league in {"nba", "nhl", "ncaah", "ncaawh"}:
         if month >= 10:
             return year + 1
         return year

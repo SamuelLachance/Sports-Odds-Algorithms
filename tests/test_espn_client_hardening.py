@@ -175,3 +175,55 @@ def test_live_mlb_nhl_reject_moneyline_sized_spreads() -> None:
     event["competitions"][0]["odds"][0]["spread"] = -1.5
     mlb_ok = espn_client._parse_event(event, "mlb")
     assert mlb_ok is not None and mlb_ok.market.spread == -1.5
+
+
+def test_fetch_scoreboard_default_date_uses_toronto_not_utc() -> None:
+    """Default scoreboard window must match America/Toronto slate labeling."""
+    from datetime import datetime
+    from unittest.mock import patch
+    from zoneinfo import ZoneInfo
+
+    # 04:00 UTC on Jan 15 = still Jan 14 evening in America/Toronto (EST).
+    frozen_utc = datetime(2026, 1, 15, 4, 0, tzinfo=ZoneInfo("UTC"))
+    captured: list[str] = []
+
+    class _FrozenDateTime(datetime):
+        @classmethod
+        def now(cls, tz=None):  # noqa: ANN001
+            return frozen_utc.astimezone(tz) if tz is not None else frozen_utc
+
+    def fake_fetch(url: str, *args, **kwargs):
+        if "dates=" in url:
+            captured.append(url.split("dates=")[1].split("&")[0])
+        return {"events": []}
+
+    with (
+        patch("web.espn_client.datetime", _FrozenDateTime),
+        patch.object(espn_client, "_fetch_json", side_effect=fake_fetch),
+    ):
+        espn_client.fetch_scoreboard("nba", days_ahead=0)
+
+    assert captured == ["20260114"]
+
+
+def test_event_before_cutoff_includes_late_et_prior_toronto_day() -> None:
+    """Late-ET games must use Toronto calendar day, not UTC midnight cutoff."""
+    from web.espn_client import iso_to_project_date
+    from web.live_data import _event_before_cutoff, _parse_cutoff
+
+    # Feb 8 10pm ET = Feb 9 03:00Z → Toronto date 2-8-2025
+    assert iso_to_project_date("2025-02-09T03:00:00Z") == "2-8-2025"
+
+    event = {
+        "date": "2025-02-09T03:00:00Z",
+        "competitions": [{"status": {"type": {"completed": True}}}],
+    }
+    cutoff = _parse_cutoff("2-9-2025")
+    assert _event_before_cutoff(event, cutoff) is True
+
+    # Same Toronto day as cutoff must be excluded (strictly before).
+    same_day = {
+        "date": "2025-02-09T18:00:00Z",
+        "competitions": [{"status": {"type": {"completed": True}}}],
+    }
+    assert _event_before_cutoff(same_day, cutoff) is False

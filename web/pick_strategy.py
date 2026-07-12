@@ -254,7 +254,11 @@ def simulate_market_threeway(
     reg_draw = 33.33 + (base_draw - 33.33) * shrink
     reg_away = 33.33 + (base_away - 33.33) * shrink
     away_ml, draw_ml, home_ml = soccer_model_moneylines(reg_home, reg_draw, reg_away)
-    return away_ml, draw_ml, home_ml
+    return (
+        _apply_synthetic_vig(away_ml),
+        _apply_synthetic_vig(draw_ml),
+        _apply_synthetic_vig(home_ml),
+    )
 
 
 def _max_drawdown(unit_deltas: list[float]) -> float:

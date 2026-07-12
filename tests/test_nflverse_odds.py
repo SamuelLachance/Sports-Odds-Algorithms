@@ -1,0 +1,44 @@
+"""nflverse closing-odds import normalization."""
+
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from web.nflverse_odds import _parse_int  # noqa: E402
+
+
+def test_nflverse_parse_int_matches_closing_odds_rules() -> None:
+    assert _parse_int(0) == 100
+    assert _parse_int("0") == 100
+    assert _parse_int(-50) is None
+    assert _parse_int(75) is None
+    assert _parse_int("1.91") is None
+    assert _parse_int(-110) == -110
+    assert _parse_int(150) == 150
+    assert _parse_int(None) is None
+    assert _parse_int("") is None
+
+
+def test_nflverse_rows_flip_spread_line_to_betting_convention(tmp_path: Path) -> None:
+    """nflverse +3.0 (home favored) must become home_close_spread -3.0."""
+    from web.nflverse_odds import rows_from_nflverse_csv
+
+    csv_path = tmp_path / "games.csv"
+    csv_path.write_text(
+        "game_type,gameday,home_team,away_team,spread_line,"
+        "home_moneyline,away_moneyline,home_spread_odds,away_spread_odds\n"
+        "REG,2024-09-08,KC,BAL,3.0,-150,130,-110,-110\n"
+        "REG,2024-09-08,ATL,PIT,-4.0,160,-180,-105,-115\n",
+        encoding="utf-8",
+    )
+    rows = rows_from_nflverse_csv(csv_path)
+    assert len(rows) == 2
+    assert float(rows[0]["home_close_spread"]) == -3.0
+    assert float(rows[0]["away_close_spread"]) == 3.0
+    # Underdog home: nflverse -4 → betting +4
+    assert float(rows[1]["home_close_spread"]) == 4.0
+    assert float(rows[1]["away_close_spread"]) == -4.0

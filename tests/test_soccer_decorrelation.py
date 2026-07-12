@@ -20,6 +20,19 @@ def test_devig_threeway_sums_to_100() -> None:
     assert abs(sum(probs) - 100.0) < 0.05
 
 
+def test_devig_threeway_invalid_american_fails_closed() -> None:
+    """Match two-way de-vig: bad magnitudes return None instead of raising."""
+    from web.bet_advisor import devig_two_way_probs
+
+    assert devig_two_way_probs(-50, 130) == (None, None)
+    assert devig_threeway_from_odds(-50, 280, 400) is None
+    assert devig_threeway_from_odds(-150, 75, 400) is None
+    # EVEN 0 normalizes to +100 and still de-vigs.
+    even = devig_threeway_from_odds(-150, 0, 400)
+    assert even is not None
+    assert abs(sum(even) - 100.0) < 0.05
+
+
 def test_decorrelate_moves_away_from_market() -> None:
     model = (55.0, 25.0, 20.0)
     market = (45.0, 30.0, 25.0)
@@ -30,5 +43,6 @@ def test_decorrelate_moves_away_from_market() -> None:
 
 if __name__ == "__main__":
     test_devig_threeway_sums_to_100()
+    test_devig_threeway_invalid_american_fails_closed()
     test_decorrelate_moves_away_from_market()
     print("test_soccer_decorrelation.py: all tests passed")

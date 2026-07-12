@@ -25,7 +25,7 @@ def test_nhl_odds_key_alias_resolves_st_louis() -> None:
     assert _canonical_odds_team_key("nhl", "winnipegjets") == "wpg"
 
 
-def test_closing_odds_lookup_fuzzy_date_and_swap(tmp_path: Path, monkeypatch) -> None:
+def test_closing_odds_lookup_same_day_swap_and_fuzzy_date(tmp_path: Path, monkeypatch) -> None:
     odds_dir = tmp_path / "closing-odds"
     odds_dir.mkdir()
     csv_path = odds_dir / "nba.csv"
@@ -70,8 +70,48 @@ def test_closing_odds_lookup_fuzzy_date_and_swap(tmp_path: Path, monkeypatch) ->
     assert row["home_close_spread"] == -3.5
     assert row["home_spread_odds"] == -110
 
+    # Same-day home/away flip is tolerated (source feed orientation).
+    swapped = closing_odds_db.closing_odds_lookup("nba", "2024-01-15", "ny", "bos")
+    assert swapped is not None
+    assert swapped["home_close_ml"] == 130
+    assert swapped["away_close_ml"] == -150
+    assert swapped["home_close_spread"] == 3.5
+
+    # Fuzzy ±1 day keeps the same home/away keys.
+    fuzzy = closing_odds_db.closing_odds_lookup("nba", "2024-01-16", "bos", "ny")
+    assert fuzzy is not None
+    assert fuzzy["home_close_ml"] == -150
+
     missing = closing_odds_db.closing_odds_lookup("nba", "2024-01-20", "bos", "ny")
     assert missing is None
+
+
+def test_closing_odds_lookup_does_not_swap_across_fuzzy_dates(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """Adjacent-day + flipped venue must not attach the other game's line."""
+    odds_dir = tmp_path / "closing-odds"
+    odds_dir.mkdir()
+    (odds_dir / "nba.csv").write_text(
+        "date,home_key,away_key,home_close_ml,away_close_ml,"
+        "home_close_spread,away_close_spread,home_spread_odds,away_spread_odds,source\n"
+        "2024-01-16,ny,bos,-200,170,-6.5,6.5,-110,-110,test\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(closing_odds_db, "ODDS_DIR", odds_dir)
+    closing_odds_db.clear_closing_odds_cache()
+
+    # Looking up bos@ny on 1/15 must not flip the 1/16 ny@bos row.
+    row = closing_odds_db.closing_odds_lookup("nba", "2024-01-15", "bos", "ny")
+    assert row is None
+
+
+def test_closing_odds_parse_int_rejects_invalid_magnitude() -> None:
+    assert closing_odds_db._parse_int(0) == 100
+    assert closing_odds_db._parse_int(50) is None
+    assert closing_odds_db._parse_int(-75) is None
+    assert closing_odds_db._parse_int(-110) == -110
+    assert closing_odds_db._parse_int(150) == 150
 
 
 def test_closing_odds_even_zero_maps_to_plus_100(tmp_path: Path, monkeypatch) -> None:

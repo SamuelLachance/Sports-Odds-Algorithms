@@ -521,6 +521,39 @@ def test_nba_v2_preserves_signed_spread_when_favorite_missing() -> None:
     assert rows[0]["home_spread"] == -7.5
 
 
+def test_nba_v2_rejects_ml_sized_nested_point_spread() -> None:
+    """ML dumped into pointSpread must fall back to flat signed spread."""
+    from unittest.mock import patch
+
+    from web.nba_v2 import data as nba_data
+
+    payload = {
+        "items": [
+            {
+                "provider": {"name": "DraftKings"},
+                "spread": -7.5,
+                "homeTeamOdds": {
+                    "favorite": True,
+                    "moneyLine": -280,
+                    "current": {"pointSpread": {"american": -280}},
+                    "spreadOdds": -110,
+                },
+                "awayTeamOdds": {
+                    "favorite": False,
+                    "moneyLine": 230,
+                    "current": {"pointSpread": {"american": 230}},
+                    "spreadOdds": -110,
+                },
+            }
+        ]
+    }
+    with patch.object(nba_data, "get_json", return_value=payload):
+        rows = nba_data.fetch_event_odds("1", "bos", "ny")
+    assert len(rows) == 1
+    assert rows[0]["home_spread"] == -7.5
+    assert abs(rows[0]["home_spread"]) <= 40
+
+
 @pytest.mark.slow
 def test_live_market_aware_when_odds_provided() -> None:
     from web.nba_v2.live import artifacts_available, predict_matchup_v2

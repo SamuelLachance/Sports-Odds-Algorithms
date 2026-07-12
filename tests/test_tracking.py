@@ -280,6 +280,65 @@ def test_pending_bet_closing_freezes_after_start() -> None:
     assert bet["closing_market_odds"] == 130  # last pre-tip close, not live 120
 
 
+def test_pending_closing_does_not_refresh_when_start_time_unparseable() -> None:
+    """Without a tip to freeze on, closing must not keep moving (fail closed)."""
+    store = {"version": 1, "bets": []}
+    pick = {**_sample_pick(), "start_time": "TBD", "market_odds": -110}
+    store = record_from_slate(
+        store, {"date_label": "2026-07-10", "recommended_bets": [pick], "games": []}
+    )
+    assert store["bets"][0]["closing_market_odds"] == -110
+
+    moved = {**_sample_pick(), "start_time": "TBD", "market_odds": 150}
+    store = record_from_slate(
+        store, {"date_label": "2026-07-10", "recommended_bets": [moved], "games": []}
+    )
+    assert store["bets"][0]["closing_market_odds"] == -110
+    assert store["bets"][0]["market_odds"] == -110
+
+
+def test_consensus_closing_ml_rejects_invalid_american() -> None:
+    from web.tracking_service import _consensus_closing_ml
+
+    game = {
+        "event_id": "1",
+        "market": {"consensus_home_ml": 50, "consensus_away_ml": -110},
+    }
+    assert _consensus_closing_ml(game, "home") is None
+    assert _consensus_closing_ml(game, "away") == -110
+    even = {"market": {"consensus_home_ml": 0}}
+    assert _consensus_closing_ml(even, "home") == 100
+
+
+def test_grade_bet_leaves_ungraded_on_invalid_american_odds() -> None:
+    """Invalid |odds| < 100 must not book a 0u win/loss (same as missing juice)."""
+    bet = {
+        "side": "home",
+        "bet_type": "moneyline",
+        "league": "mlb",
+        "market_odds": 50,
+        "stake_units": 1.0,
+        "status": "pending",
+    }
+    graded = grade_bet(bet, 2, 5)
+    assert graded.get("status") == "pending"
+    assert "units" not in graded or graded.get("units") is None
+
+
+def test_grade_bet_even_zero_moneyline_still_grades() -> None:
+    bet = {
+        "side": "home",
+        "bet_type": "moneyline",
+        "league": "mlb",
+        "market_odds": 0,
+        "stake_units": 1.0,
+        "status": "pending",
+    }
+    graded = grade_bet(bet, 2, 5)
+    assert graded["status"] == "win"
+    assert graded["units"] == 1.0
+
+
 def test_record_dedupes_across_slate_date_labels() -> None:
     """Same event/side across consecutive slate days must not create a second pending row."""
     store = {"version": 1, "bets": []}
@@ -415,13 +474,12 @@ def test_closing_snapshot_prefers_consensus_moneyline() -> None:
     store = {"version": 1, "bets": []}
     slate = {
         "date_label": "2026-06-11",
-        "recommended_bets": [_sample_pick()],
+        "recommended_bets": [{**_sample_pick(), "start_time": _future_start()}],
         "games": [],
     }
     store = record_from_slate(store, slate)
 
-    moved = _sample_pick()
-    moved["market_odds"] = 120
+    moved = {**_sample_pick(), "start_time": _future_start(), "market_odds": 120}
     game = {
         "event_id": "401815712",
         "market": {"consensus_home_ml": 112, "consensus_away_ml": -125},
@@ -439,13 +497,12 @@ def test_closing_snapshot_falls_back_to_espn_without_consensus() -> None:
     store = {"version": 1, "bets": []}
     slate = {
         "date_label": "2026-06-11",
-        "recommended_bets": [_sample_pick()],
+        "recommended_bets": [{**_sample_pick(), "start_time": _future_start()}],
         "games": [],
     }
     store = record_from_slate(store, slate)
 
-    moved = _sample_pick()
-    moved["market_odds"] = 120
+    moved = {**_sample_pick(), "start_time": _future_start(), "market_odds": 120}
     game = {"event_id": "401815712", "market": {"provider": "espn"}}
     store = record_from_slate(
         store,
@@ -529,7 +586,8 @@ def test_recorded_spread_odds_preserves_even_zero() -> None:
             "closing_spread_odds": -105,
         }
     )
-    assert rec == 0
+    # Posted EVEN is selected over consensus, then normalized to +100 for CLV/units.
+    assert rec == 100
     assert close == -105
 
 
@@ -737,15 +795,13 @@ def test_recorded_odds_frozen_and_closing_snapshot_updates() -> None:
     store = {"version": 1, "bets": []}
     slate = {
         "date_label": "2026-06-11",
-        "recommended_bets": [_sample_pick()],
+        "recommended_bets": [{**_sample_pick(), "start_time": _future_start()}],
         "games": [],
     }
     store = record_from_slate(store, slate)
     assert store["bets"][0]["market_odds"] == 141
 
-    moved = _sample_pick()
-    moved["market_odds"] = 120
-    moved["ev_pct"] = 9.9
+    moved = {**_sample_pick(), "start_time": _future_start(), "market_odds": 120, "ev_pct": 9.9}
     store = record_from_slate(
         store,
         {"date_label": "2026-06-11", "recommended_bets": [moved], "games": []},
@@ -881,6 +937,9 @@ if __name__ == "__main__":
     test_new_bet_recorded_pre_start_with_flag()
     test_new_bet_recorded_when_start_time_unparseable()
     test_pending_bet_closing_freezes_after_start()
+    test_pending_closing_does_not_refresh_when_start_time_unparseable()
+    test_grade_bet_leaves_ungraded_on_invalid_american_odds()
+    test_grade_bet_even_zero_moneyline_still_grades()
     test_record_dedupes_across_slate_date_labels()
     test_closing_snapshot_prefers_consensus_moneyline()
     test_closing_snapshot_falls_back_to_espn_without_consensus()

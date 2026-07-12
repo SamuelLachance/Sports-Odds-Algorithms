@@ -71,10 +71,16 @@ def _event_before_cutoff(event: dict[str, Any], cutoff: datetime) -> bool:
     if not status.get("completed"):
         return False
 
-    event_date = datetime.fromisoformat(event["date"].replace("Z", "+00:00"))
-    if event_date.tzinfo is None:
-        event_date = event_date.replace(tzinfo=timezone.utc)
-    return event_date < cutoff
+    # Compare Toronto calendar days (same as iso_to_project_date / slate labels).
+    # A UTC-midnight cutoff wrongly drops late-ET games whose ISO stamp is the
+    # next UTC day but still the prior Toronto day.
+    from datetime import date as date_cls
+
+    event_label = iso_to_project_date(event["date"])
+    em, ed, ey = event_label.split("-")
+    event_day = date_cls(int(ey), int(em), int(ed))
+    cutoff_day = date_cls(cutoff.year, cutoff.month, cutoff.day)
+    return event_day < cutoff_day
 
 
 def _score_value(comp: dict[str, Any]) -> int:

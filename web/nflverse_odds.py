@@ -12,12 +12,18 @@ NFLVERSE_URL = "https://raw.githubusercontent.com/nflverse/nfldata/master/data/g
 
 
 def _parse_int(value: Any) -> int | None:
+    """Parse American odds; EVEN ``0`` → ``+100``, reject ``|x| < 100``."""
     if value is None or value == "":
         return None
     try:
-        return int(float(str(value)))
+        number = int(float(str(value).strip()))
     except (TypeError, ValueError):
         return None
+    if number == 0:
+        return 100
+    if abs(number) < 100:
+        return None
+    return number
 
 
 def rows_from_nflverse_csv(path: Path) -> list[dict[str, Any]]:
@@ -33,6 +39,14 @@ def rows_from_nflverse_csv(path: Path) -> list[dict[str, Any]]:
             if not home or not away or not game_date:
                 continue
             spread = record.get("spread_line")
+            # nflverse spread_line = expected home margin (positive = home favored).
+            # Closing-odds cache uses betting convention (negative = home favored).
+            try:
+                spread_num = float(str(spread).strip()) if spread not in (None, "") else None
+            except (TypeError, ValueError):
+                spread_num = None
+            home_close_spread = -spread_num if spread_num is not None else ""
+            away_close_spread = spread_num if spread_num is not None else ""
             rows.append(
                 {
                     "date": game_date,
@@ -40,8 +54,8 @@ def rows_from_nflverse_csv(path: Path) -> list[dict[str, Any]]:
                     "away_key": away,
                     "home_close_ml": _parse_int(record.get("home_moneyline")),
                     "away_close_ml": _parse_int(record.get("away_moneyline")),
-                    "home_close_spread": spread,
-                    "away_close_spread": f"{-float(spread)}" if spread not in (None, "") else "",
+                    "home_close_spread": home_close_spread,
+                    "away_close_spread": away_close_spread,
                     "home_spread_odds": _parse_int(record.get("home_spread_odds")),
                     "away_spread_odds": _parse_int(record.get("away_spread_odds")),
                     "source": "nflverse",

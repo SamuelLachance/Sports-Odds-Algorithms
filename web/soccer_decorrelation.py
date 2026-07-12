@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from web.bet_advisor import american_implied_prob
+from web.bet_advisor import american_implied_prob, normalize_american_odds
 from web.market_decorrelation import (
     DEFAULT_THREEWAY_DECORRELATION_WEIGHT,
     decorrelate_three_way,
@@ -17,12 +17,18 @@ def devig_threeway_from_odds(
     draw_odds: int | None,
     away_odds: int | None,
 ) -> tuple[float, float, float] | None:
-    """Remove book vig from 1X2 moneylines (0–100 scale)."""
-    if home_odds is None or draw_odds is None or away_odds is None:
+    """Remove book vig from 1X2 moneylines (0–100 scale).
+
+    Invalid American odds fail closed (``None``), matching ``devig_two_way_probs``.
+    """
+    home_n = normalize_american_odds(home_odds)
+    draw_n = normalize_american_odds(draw_odds)
+    away_n = normalize_american_odds(away_odds)
+    if home_n is None or draw_n is None or away_n is None:
         return None
-    home_raw = american_implied_prob(home_odds)
-    draw_raw = american_implied_prob(draw_odds)
-    away_raw = american_implied_prob(away_odds)
+    home_raw = american_implied_prob(home_n)
+    draw_raw = american_implied_prob(draw_n)
+    away_raw = american_implied_prob(away_n)
     total = home_raw + draw_raw + away_raw
     if total <= 0:
         return None

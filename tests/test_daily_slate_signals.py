@@ -260,7 +260,7 @@ def test_get_daily_slate_isolates_league_and_prewarm_failures() -> None:
         ),
     )
 
-    def fake_scoreboard(league: str, days_ahead: int = 0):
+    def fake_scoreboard(league: str, days_ahead: int = 0, **_kwargs):
         if league == "nhl":
             raise RuntimeError("nhl scoreboard down")
         if league == "nba":
@@ -359,7 +359,7 @@ def test_get_daily_slate_reports_leagues_not_ready() -> None:
         ),
     )
 
-    def fake_scoreboard(league: str, days_ahead: int = 0):
+    def fake_scoreboard(league: str, days_ahead: int = 0, **_kwargs):
         if league == "nhl":
             return [nhl_game]
         return []

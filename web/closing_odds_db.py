@@ -69,6 +69,9 @@ def _parse_int(value: Any) -> int | None:
     # ESPN/SBR EVEN money arrives as 0 — normalize like live odds paths.
     if number == 0:
         return 100
+    # American odds require |x| >= 100; reject garbage magnitudes.
+    if abs(number) < 100:
+        return None
     return number
 
 
@@ -145,24 +148,31 @@ def _lookup_us_odds_row(
     home: str,
     away: str,
 ) -> dict[str, Any] | None:
-    """Exact or +/-1 day match; tolerate swapped home/away in source feeds."""
+    """Exact or +/-1 day match; tolerate same-day home/away swaps only.
+
+    Fuzzy ±1 day is for timezone/date-label drift on the *same* matchup.
+    Combining a fuzzy date with a home/away flip can attach the wrong game's
+    line on back-to-backs (adjacent day, flipped venue).
+    """
     try:
         base_date = date_cls.fromisoformat(game_date)
     except ValueError:
         base_date = None
 
-    date_candidates: list[str] = [game_date]
-    if base_date is not None:
-        for offset in (-1, 1):
-            date_candidates.append((base_date + timedelta(days=offset)).isoformat())
+    direct = index.get((game_date, home, away))
+    if direct:
+        return dict(direct)
+    swapped = index.get((game_date, away, home))
+    if swapped:
+        return _flip_two_way_odds(swapped)
 
-    for candidate_date in date_candidates:
-        direct = index.get((candidate_date, home, away))
-        if direct:
-            return dict(direct)
-        swapped = index.get((candidate_date, away, home))
-        if swapped:
-            return _flip_two_way_odds(swapped)
+    if base_date is None:
+        return None
+    for offset in (-1, 1):
+        candidate_date = (base_date + timedelta(days=offset)).isoformat()
+        fuzzy = index.get((candidate_date, home, away))
+        if fuzzy:
+            return dict(fuzzy)
     return None
 
 
