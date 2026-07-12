@@ -47,6 +47,13 @@ def test_grade_skips_unknown_outcome_and_bad_market_ml(tmp_path, monkeypatch) ->
                         "event_id": "2",
                         "pick_outcome": "bogus",
                     },
+                    {
+                        "key": "epl:3:away",
+                        "league": "epl",
+                        "event_id": "3",
+                        "pick_outcome": "away",
+                        "market_ml": 150,
+                    },
                     "not-a-dict",
                 ],
             }
@@ -56,16 +63,21 @@ def test_grade_skips_unknown_outcome_and_bad_market_ml(tmp_path, monkeypatch) ->
 
     monkeypatch.setattr(
         "web.tracking_service._fetch_event_result",
-        lambda *_a, **_k: (1, 2),
+        lambda *_a, **_k: (2, 1),
     )
     summary = paper.grade_paper_picks()
+    # Bad/missing market_ml stays pending; only priced picks settle.
     assert summary["newly_graded"] == 1
     assert summary["settled"] == 1
     assert summary["wins"] == 1
+    assert summary["units"] == 1.5
     reloaded = paper._load_paper_log()
-    graded = next(b for b in reloaded["bets"] if isinstance(b, dict) and b["event_id"] == "1")
+    unpriced = next(b for b in reloaded["bets"] if isinstance(b, dict) and b["event_id"] == "1")
+    assert "status" not in unpriced
+    assert "units" not in unpriced
+    graded = next(b for b in reloaded["bets"] if isinstance(b, dict) and b["event_id"] == "3")
     assert graded["status"] == "win"
-    assert "units" not in graded  # bad market_ml skipped
+    assert graded["units"] == 1.5
 
 
 def test_maybe_record_from_blend_uses_away_win_fallback(tmp_path, monkeypatch) -> None:

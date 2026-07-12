@@ -492,6 +492,20 @@ def test_grade_spread_cover_win() -> None:
     assert graded["status"] == "win"
 
 
+def test_grade_spread_without_juice_leaves_ungraded() -> None:
+    """Missing posted spread juice must not invent −110 for P&L."""
+    bet = {
+        "side": "home",
+        "bet_type": "spread",
+        "consensus_spread": -5.5,
+        "stake_units": 1.0,
+        "status": "pending",
+    }
+    graded = grade_bet(bet, 98, 110)
+    assert graded.get("status") == "pending"
+    assert "units" not in graded
+
+
 def test_grade_spread_push() -> None:
     bet = {
         "side": "home",

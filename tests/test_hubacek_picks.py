@@ -23,6 +23,7 @@ from web.hubacek_picks import (  # noqa: E402
 def test_official_thresholds_have_real_floors() -> None:
     thresholds = official_hubacek_thresholds()
     assert thresholds["pick_system"] == "hubacek"
+    assert thresholds.get("thresholds_scope") == "global_baseline"
     assert thresholds["min_ev_pct"] == HUBACEK_MIN_EV_PCT == 2.0
     assert thresholds["min_market_gap_pp"] == HUBACEK_MIN_MARKET_GAP_PP == 2.0
     assert thresholds["min_win_confidence_pp"] == HUBACEK_MIN_WIN_CONFIDENCE_PP == 20.0
@@ -31,6 +32,17 @@ def test_official_thresholds_have_real_floors() -> None:
         == HUBACEK_SPREAD_MIN_WIN_CONFIDENCE_PP
         == 5.0
     )
+
+
+def test_within_hubacek_ml_range_fails_closed_on_missing_odds() -> None:
+    from web.hubacek_picks import within_hubacek_ml_range
+
+    assert within_hubacek_ml_range("mlb", None) is False
+    assert within_hubacek_ml_range("mlb", -110) is True
+    assert within_hubacek_ml_range("mlb", 240) is False
+    # Spread-only leagues without ml_lo/ml_hi stay permissive.
+    assert within_hubacek_ml_range("nba", None) is True
+    assert within_hubacek_ml_range(None, None) is True
 
 
 def test_moneyline_gate_requires_gap_ev_and_phi_confidence() -> None:
@@ -179,6 +191,17 @@ def test_tracked_pick_requires_hubacek_strategy_ev_and_confidence() -> None:
         }
     )
     assert passes_hubacek_tracked_pick(
+        {
+            "strategy": "hubacek",
+            "model_market_gap_pp": 7.0,
+            "ev_pct": 3.0,
+            "win_probability": 55,
+            "market_odds": -150,
+            "league": "mlb",
+        }
+    )
+    # MLB ML window is a hard gate — missing odds fail closed.
+    assert not passes_hubacek_tracked_pick(
         {
             "strategy": "hubacek",
             "model_market_gap_pp": 7.0,

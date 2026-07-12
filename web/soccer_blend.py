@@ -450,6 +450,13 @@ def _attach_soccer_context_layer(
                 "away_win_probability": away_p,
             }
         )
+        # Without market decorr, pick_* mirrors display; keep them in sync after
+        # ESPN context so Hubáček gates and EV base do not diverge. When
+        # market_decorrelated, pick_* stays as the intentional Hubáček layer.
+        if not soccer_pred.get("market_decorrelated"):
+            soccer_pred["pick_home_win_probability"] = home_p
+            soccer_pred["pick_draw_probability"] = draw_p
+            soccer_pred["pick_away_win_probability"] = away_p
         updated["soccer_pred"] = soccer_pred
     if updated.get("blended_threeway"):
         updated["blended_threeway"] = {

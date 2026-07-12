@@ -14,7 +14,6 @@ from web.hubacek_picks import (
     passes_hubacek_tracked_pick,
 )
 from web.league_profiles import (
-    DEFAULT_SPREAD_JUICE,
     eligible_for_official_picks,
     is_soccer_league,
 )
@@ -188,12 +187,12 @@ def _grading_spread_line(bet: dict[str, Any]) -> float | None:
 def _resolve_grading_odds(bet: dict[str, Any]) -> int | None:
     bet_type = bet.get("bet_type") or "moneyline"
     if bet_type == "spread":
-        return int(
-            bet.get("consensus_odds")
-            or bet.get("spread_odds")
-            or bet.get("market_odds")
-            or DEFAULT_SPREAD_JUICE
-        )
+        for key in ("consensus_odds", "spread_odds", "market_odds"):
+            value = bet.get(key)
+            if value is not None:
+                return int(value)
+        # Missing posted juice — leave ungraded (do not invent -110).
+        return None
     market_odds = bet.get("market_odds")
     if market_odds is None:
         return None

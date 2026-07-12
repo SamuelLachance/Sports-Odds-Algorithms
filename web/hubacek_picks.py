@@ -140,11 +140,12 @@ def hubacek_ml_range(league: str | None = None) -> tuple[float, float] | None:
 
 
 def within_hubacek_ml_range(league: str | None, american_odds: float | None) -> bool:
-    if american_odds is None:
-        return True
     ml_range = hubacek_ml_range(league)
     if ml_range is None:
         return True
+    # League ML windows are hard gates — missing odds fail closed.
+    if american_odds is None:
+        return False
     return ml_range[0] <= float(american_odds) <= ml_range[1]
 
 
@@ -161,9 +162,10 @@ def _blend_is_decorrelated(blended: dict[str, Any]) -> bool:
 
 
 def official_hubacek_thresholds() -> dict[str, Any]:
-    """Live official-pick gates (Hubáček theory with real floors)."""
+    """Global baseline official-pick floors (leagues may raise via overrides)."""
     return {
         "pick_system": "hubacek",
+        "thresholds_scope": "global_baseline",
         "min_market_gap_pp": HUBACEK_MIN_MARKET_GAP_PP,
         "min_spread_cover_gap_pp": HUBACEK_MIN_SPREAD_COVER_GAP_PP,
         "min_win_confidence_pp": HUBACEK_MIN_WIN_CONFIDENCE_PP,

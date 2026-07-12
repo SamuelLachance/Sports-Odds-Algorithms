@@ -26,6 +26,7 @@ def test_threeway_probs_to_total_score_draw_favorite() -> None:
     assert total == 0.0
 
 
+def test_soccer_threeway_probs_sum_to_100() -> None:
     for total in (-75.0, -55.0, 0.0, 45.0, 80.0):
         home, draw, away = soccer_threeway_probs(total, "epl")
         total_prob = round(home + draw + away, 4)
@@ -158,6 +159,35 @@ def test_hubacek_soccer_fails_closed_without_full_1x2() -> None:
     assert picks == []
 
 
+def test_hubacek_soccer_fails_closed_when_devig_returns_none(monkeypatch) -> None:
+    """Invalid full 1X2 boards must fail closed, not TypeError on unpack."""
+    monkeypatch.setattr(
+        "web.soccer_decorrelation.devig_threeway_from_odds",
+        lambda *_a, **_k: None,
+    )
+    picks = evaluate_soccer_picks(
+        away_name="Away",
+        home_name="Home",
+        away_slug="away",
+        home_slug="home",
+        home_prob=55.0,
+        draw_prob=25.0,
+        away_prob=20.0,
+        away_proj=200,
+        draw_proj=260,
+        home_proj=-140,
+        away_market=200,
+        draw_market=260,
+        home_market=-140,
+        hubacek_only=True,
+        min_market_gap_pp=2.0,
+        min_win_confidence_pp=0.0,
+        min_ev_pct=2.0,
+        league="epl",
+    )
+    assert picks == []
+
+
 def test_hubacek_soccer_blocks_projected_score_conflict() -> None:
     picks = evaluate_soccer_picks(
         away_name="Away",
@@ -230,6 +260,82 @@ def test_blend_threeway_layers_empty_weights_is_safe() -> None:
     home, draw, away = blend_threeway_layers([(60.0, 20.0, 20.0)], [1.0])
     assert abs(home + draw + away - 100.0) < 0.01
     assert home == 60.0
+
+
+def test_path_a_context_syncs_pick_probs_without_market_decorr(monkeypatch) -> None:
+    """Path A ESPN context must refresh pick_* when not market-decorrelated."""
+    from web.soccer_blend import _attach_soccer_context_layer
+
+    monkeypatch.setattr(
+        "web.soccer_blend.build_soccer_context_payload",
+        lambda *args, **kwargs: {
+            "home_win_probability": 48.0,
+            "draw_probability": 26.0,
+            "away_win_probability": 26.0,
+        },
+    )
+    result = {
+        "home_win_probability": 42.0,
+        "draw_probability": 28.0,
+        "away_win_probability": 30.0,
+        "soccer_pred": {
+            "home_win_probability": 42.0,
+            "draw_probability": 28.0,
+            "away_win_probability": 30.0,
+            "pick_home_win_probability": 42.0,
+            "pick_draw_probability": 28.0,
+            "pick_away_win_probability": 30.0,
+            "market_decorrelated": False,
+        },
+    }
+    out = _attach_soccer_context_layer(
+        result,
+        league="epl",
+        cutoff_date="2026-07-12",
+        home_abbr="ars",
+        away_abbr="che",
+    )
+    pred = out["soccer_pred"]
+    assert pred["pick_home_win_probability"] == 48.0
+    assert pred["pick_draw_probability"] == 26.0
+    assert pred["pick_away_win_probability"] == 26.0
+
+
+def test_path_a_context_preserves_decorrelated_pick_probs(monkeypatch) -> None:
+    from web.soccer_blend import _attach_soccer_context_layer
+
+    monkeypatch.setattr(
+        "web.soccer_blend.build_soccer_context_payload",
+        lambda *args, **kwargs: {
+            "home_win_probability": 48.0,
+            "draw_probability": 26.0,
+            "away_win_probability": 26.0,
+        },
+    )
+    result = {
+        "home_win_probability": 42.0,
+        "draw_probability": 28.0,
+        "away_win_probability": 30.0,
+        "soccer_pred": {
+            "home_win_probability": 42.0,
+            "draw_probability": 28.0,
+            "away_win_probability": 30.0,
+            "pick_home_win_probability": 44.0,
+            "pick_draw_probability": 27.0,
+            "pick_away_win_probability": 29.0,
+            "market_decorrelated": True,
+        },
+    }
+    out = _attach_soccer_context_layer(
+        result,
+        league="epl",
+        cutoff_date="2026-07-12",
+        home_abbr="ars",
+        away_abbr="che",
+    )
+    pred = out["soccer_pred"]
+    assert pred["pick_home_win_probability"] == 44.0
+    assert pred["home_win_probability"] == 48.0
 
 
 if __name__ == "__main__":

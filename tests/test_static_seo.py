@@ -199,6 +199,9 @@ def test_app_js_mlb_nhl_frontend_contracts() -> None:
     assert 'betType === "moneyline"' in js
     assert 'betType === "spread"' in js
     assert "base_win_probability" in js
+    # Three-track calibrated probability is labeled EV prob (not Honest EV %).
+    assert "Display · ${gateLabel} · EV prob" in js
+    assert "<span>EV prob</span>" in js
     # Games sidebar must not leak onto non-games routes.
     assert 'route?.path !== "games"' in js
     assert "sidebarGames.hidden = true" in js

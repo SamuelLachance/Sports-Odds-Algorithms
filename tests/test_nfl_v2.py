@@ -274,3 +274,46 @@ def test_live_artifacts_helper() -> None:
     from web.nfl_v2.live import artifacts_available
 
     assert isinstance(artifacts_available(), bool)
+
+
+def test_get_live_context_fails_closed_on_missing_gap_season(monkeypatch) -> None:
+    from unittest.mock import MagicMock
+
+    import web.nfl_v2.live as live
+
+    live.get_live_context.cache_clear()
+    art = {"snapshots": {2023: MagicMock()}}
+    monkeypatch.setattr(live, "_load_artifacts", lambda: art)
+    monkeypatch.setattr(
+        live,
+        "_load_snapshot_state",
+        lambda _art, _season: (2023, {"teams": {}}),
+    )
+    monkeypatch.setattr(
+        live.NflFeatureEngine,
+        "from_dict",
+        classmethod(lambda cls, _payload: MagicMock()),
+    )
+
+    calls: list[int] = []
+
+    def fake_games(season: int, *, stop_before: str):
+        calls.append(season)
+        if season == 2024:
+            return []
+        return [{"date": f"{season}-09-08", "home": "kc", "away": "bal"}]
+
+    monkeypatch.setattr(live, "_fetch_completed_season_games", fake_games)
+    monkeypatch.setattr(live, "nfl_season_of", lambda _d: 2025)
+    assert live.get_live_context("2025-09-15") is None
+    assert 2024 in calls
+
+
+def test_get_live_context_fails_closed_without_snapshot(monkeypatch) -> None:
+    import web.nfl_v2.live as live
+
+    live.get_live_context.cache_clear()
+    monkeypatch.setattr(live, "_load_artifacts", lambda: {"snapshots": {}})
+    monkeypatch.setattr(live, "_load_snapshot_state", lambda _art, _season: None)
+    monkeypatch.setattr(live, "nfl_season_of", lambda _d: 2025)
+    assert live.get_live_context("2025-09-15") is None

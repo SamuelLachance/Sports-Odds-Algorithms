@@ -485,6 +485,30 @@ def apply_context_to_blend(
         updated["win_probability"] = round(win_prob, 2)
         updated["favorite_side"] = "home" if total_score <= 0 else "away"
 
+    # Keep Honest-EV base (pre-decorrelation) and nested sport preds in step with
+    # the board shift so Hubáček gates / EV do not silently disagree with display.
+    if updated.get("pre_decorrelation_home_win_probability") is not None:
+        pre = float(updated["pre_decorrelation_home_win_probability"])
+        updated["pre_context_pre_decorrelation_home_win_probability"] = round(pre, 2)
+        updated["pre_decorrelation_home_win_probability"] = round(
+            _clamp(pre + total_shift, 5.0, 95.0), 2
+        )
+    for key in ("hockey_pred", "basketball_pred", "baseball_pred", "football_pred"):
+        pred = updated.get(key)
+        if not isinstance(pred, dict) or pred.get("home_win_probability") is None:
+            continue
+        nested = dict(pred)
+        nested_home = float(nested["home_win_probability"])
+        nested["home_win_probability"] = round(
+            _clamp(nested_home + total_shift, 5.0, 95.0), 2
+        )
+        if nested.get("pre_decorrelation_home_win_probability") is not None:
+            nested_pre = float(nested["pre_decorrelation_home_win_probability"])
+            nested["pre_decorrelation_home_win_probability"] = round(
+                _clamp(nested_pre + total_shift, 5.0, 95.0), 2
+            )
+        updated[key] = nested
+
     updated["context_adjustment_pp"] = round(total_shift, 3)
     updated["context_signals"] = {
         "flb_pp": flb,

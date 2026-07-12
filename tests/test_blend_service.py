@@ -1163,6 +1163,38 @@ def test_attach_home_spread_margin_skips_moneyline_leagues() -> None:
     assert "home_spread_margin" not in attached
 
 
+def test_spread_value_helpers_skip_missing_juice() -> None:
+    """Agreement must not invent −110 or TypeError when juice is absent."""
+    from web.blend_service import _best_value_spread_side, _layer_has_spread_value_on_side
+
+    # predicted_margin: positive = home favored (sport-model convention).
+    layer = {"predicted_margin": 12.0, "home_win_probability": 72.0}
+    assert (
+        _layer_has_spread_value_on_side(layer, "nba", "home", -3.5, spread_odds=None)
+        is False
+    )
+    assert (
+        _best_value_spread_side(
+            layer,
+            "nba",
+            -3.5,
+            away_spread_odds=None,
+            home_spread_odds=None,
+        )
+        is None
+    )
+    assert (
+        _best_value_spread_side(
+            layer,
+            "nba",
+            -3.5,
+            away_spread_odds=None,
+            home_spread_odds=-110,
+        )
+        == "home"
+    )
+
+
 if __name__ == "__main__":
     test_total_score_to_home_win_prob()
     test_home_win_prob_to_total_score()

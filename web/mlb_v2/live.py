@@ -22,7 +22,7 @@ import numpy as np
 
 from web.mlb_stats_api import ESPN_TO_MLB_TEAM_ID
 from web.mlb_v2.feature_engine import FEATURE_COLUMNS, MlbFeatureEngine
-from web.mlb_v2.replay import is_final_game, replay_season
+from web.mlb_v2.replay import apply_final_game_with_logs, is_final_game, replay_season
 from web.mlb_v2.statsapi_data import (
     fetch_pitcher_logs,
     fetch_season_games,
@@ -256,6 +256,9 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
         if gap_bundle is None:
             # Missing intermediate season would skip Elo/form/SP state — fail closed.
             return None
+        if not gap_bundle.get("games"):
+            # Empty bundle (soft-cache / blank API) would skip Elo/form — fail closed.
+            return None
         replay_season(
             engine,
             gap_season,
@@ -304,6 +307,9 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
         "todays_games": todays_games,
         "todays_finals": todays_finals,
         "pitcher_names": pitcher_names,
+        "pitchers": bundle.get("pitchers") or {},
+        "team_hitting": bundle.get("team_hitting") or {},
+        "team_pitching": bundle.get("team_pitching") or {},
         "season": season,
         "day_iso": day_iso,
         "live_inputs_stale": live_inputs_stale,
@@ -357,7 +363,28 @@ def predict_matchup_v2(
     if earlier_finals:
         engine = MlbFeatureEngine.from_dict(engine.to_dict())
         for prior in sorted(earlier_finals, key=lambda g: int(g.get("game_number") or 1)):
-            engine.update_after_game(prior)
+            # Occurrence index within today's finals for this matchup (DH game 1 → 0).
+            home_occ = sum(
+                1
+                for g in earlier_finals
+                if int(g.get("home_id") or 0) == home_id
+                and int(g.get("game_number") or 1) < int(prior.get("game_number") or 1)
+            )
+            away_occ = sum(
+                1
+                for g in earlier_finals
+                if int(g.get("away_id") or 0) == away_id
+                and int(g.get("game_number") or 1) < int(prior.get("game_number") or 1)
+            )
+            apply_final_game_with_logs(
+                engine,
+                prior,
+                context.get("pitchers") or {},
+                context.get("team_hitting") or {},
+                context.get("team_pitching") or {},
+                home_occ=home_occ,
+                away_occ=away_occ,
+            )
 
     features = engine.features_for_game(game)
     prob_home = _predict_probability(art, features)

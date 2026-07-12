@@ -239,13 +239,19 @@ def _format_spread(value: float) -> str:
 
 
 def american_to_decimal(american_odds: int) -> float:
-    if american_odds >= 0:
+    # ESPN/EVEN sometimes arrives as 0; treat as +100 (even money).
+    if american_odds == 0:
+        american_odds = 100
+    if american_odds > 0:
         return 1.0 + american_odds / 100.0
     return 1.0 + 100.0 / abs(american_odds)
 
 
 def american_implied_prob(american_odds: int) -> float:
-    if american_odds >= 0:
+    # ESPN/EVEN sometimes arrives as 0; treat as +100 (even money → 50%).
+    if american_odds == 0:
+        american_odds = 100
+    if american_odds > 0:
         return 100.0 / (american_odds + 100.0)
     return abs(american_odds) / (abs(american_odds) + 100.0)
 
@@ -498,7 +504,11 @@ def resolve_binary_win_probs(
         if blended.get("threeway"):
             home_prob = float(blended.get("home_win_probability", 50.0))
             away_prob = float(blended.get("away_win_probability", 50.0))
-            return away_prob, home_prob
+            # 1X2 mass excludes draw — renormalize so callers get a true 2-way pair.
+            mass = home_prob + away_prob
+            if mass <= 0:
+                return 50.0, 50.0
+            return away_prob / mass * 100.0, home_prob / mass * 100.0
         if blended.get("blended_home_win_probability") is not None:
             home_prob = float(blended["blended_home_win_probability"])
             return 100.0 - home_prob, home_prob
@@ -936,13 +946,18 @@ def evaluate_soccer_picks(
     picks: list[BetPick] = []
 
     # Hubáček official soccer requires a full 1X2 book so de-vig stays on the
-    # same 0–100 scale as model probs. Incomplete boards fail closed.
+    # same 0–100 scale as model probs. Incomplete / invalid boards fail closed.
     devig_probs: dict[str, float | None] = {}
     if away_market is not None and draw_market is not None and home_market is not None:
         from web.soccer_decorrelation import devig_threeway_from_odds
 
-        mkt_h, mkt_d, mkt_a = devig_threeway_from_odds(home_market, draw_market, away_market)
-        devig_probs = {"home": mkt_h, "draw": mkt_d, "away": mkt_a}
+        devigged = devig_threeway_from_odds(home_market, draw_market, away_market)
+        if devigged is None:
+            if hubacek_only:
+                return []
+        else:
+            mkt_h, mkt_d, mkt_a = devigged
+            devig_probs = {"home": mkt_h, "draw": mkt_d, "away": mkt_a}
     elif hubacek_only:
         return []
 
@@ -1109,6 +1124,9 @@ def evaluate_spread_picks(
     for side, name, slug, spread_odds in candidates:
         point_edge = spread_point_edge(model_margin, consensus_spread, side)
         if point_edge <= 0:
+            continue
+        # Official Hubáček must not invent -110 when ESPN juice is missing.
+        if hubacek_only and spread_odds is None:
             continue
         juice = spread_odds if spread_odds is not None else DEFAULT_SPREAD_JUICE
         edge = spread_odds_edge(point_edge, juice, league)

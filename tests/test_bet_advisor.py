@@ -5,6 +5,8 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import pytest
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -582,6 +584,58 @@ def test_blend_outputs_are_market_decorrelated_reads_football_pred() -> None:
     assert not blend_outputs_are_market_decorrelated(
         {"football_pred": {"home_win_probability": 55.0}}
     )
+
+
+def test_hubacek_spread_skips_missing_juice() -> None:
+    """Official Hubáček must not invent −110 when spread juice is absent."""
+    blended = {
+        "blended_home_win_probability": 62.0,
+        "home_spread_margin": -6.5,
+        "market_decorrelated": True,
+    }
+    picks = evaluate_spread_picks(
+        league="nba",
+        away_name="Away",
+        home_name="Home",
+        away_slug="away",
+        home_slug="home",
+        total_score=-62.0,
+        win_probability=62.0,
+        consensus_spread=-3.5,
+        away_spread_odds=None,
+        home_spread_odds=None,
+        model_margin_home=-6.5,
+        hubacek_only=True,
+        blended=blended,
+        min_ev_pct=0.0,
+        min_cover_gap_pp=0.0,
+        min_win_confidence_pp=0.0,
+    )
+    assert picks == []
+
+
+def test_resolve_binary_win_probs_renormalizes_threeway() -> None:
+    from web.bet_advisor import resolve_binary_win_probs
+
+    away, home = resolve_binary_win_probs(
+        {
+            "threeway": True,
+            "home_win_probability": 40.0,
+            "draw_probability": 25.0,
+            "away_win_probability": 35.0,
+        },
+        0.0,
+    )
+    assert away + home == pytest.approx(100.0)
+    assert home == pytest.approx(40.0 / 75.0 * 100.0)
+    assert away == pytest.approx(35.0 / 75.0 * 100.0)
+
+
+def test_american_odds_zero_treated_as_even() -> None:
+    from web.bet_advisor import american_implied_prob, american_to_decimal
+
+    assert american_to_decimal(0) == pytest.approx(2.0)
+    assert american_implied_prob(0) == pytest.approx(0.5)
 
 
 if __name__ == "__main__":

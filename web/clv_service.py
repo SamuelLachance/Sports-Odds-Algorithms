@@ -65,13 +65,15 @@ def model_edge_vs_devigged_market(
   away_odds: int | None,
 ) -> dict[str, Any]:
     if home_odds is None or away_odds is None:
-        return {"clv_home_pct": None, "market_home_prob": None}
+        return {
+            "market_home_prob": None,
+            "model_minus_market_pp": None,
+        }
     market_home, _market_away = devig_two_way(home_odds, away_odds)
     model_p = model_home_prob / 100.0
     return {
         "market_home_prob": round(market_home * 100.0, 2),
         "model_minus_market_pp": round((model_p - market_home) * 100.0, 2),
-        "clv_home_pct": clv_vs_market_pct(home_odds, home_odds),
     }
 
 

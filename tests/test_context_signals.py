@@ -306,5 +306,38 @@ def test_apply_context_threeway_renormalizes() -> None:
     assert total == pytest.approx(100.0, abs=0.05)
 
 
+def test_apply_context_shifts_pre_decorrelation_and_sport_pred() -> None:
+    """Context must move Honest-EV base and nested sport probs with the board."""
+    blended = {
+        "blended_home_win_probability": 60.0,
+        "total_score": -60.0,
+        "win_probability": 60.0,
+        "favorite_side": "home",
+        "pre_decorrelation_home_win_probability": 63.0,
+        "market_decorrelated": True,
+        "baseball_pred": {
+            "home_win_probability": 60.0,
+            "pre_decorrelation_home_win_probability": 63.0,
+            "market_decorrelated": True,
+        },
+    }
+    # Strong home steam from open → close.
+    market = {
+        "home_moneyline": -140,
+        "away_moneyline": 120,
+        "open_home_moneyline": 115,
+        "open_away_moneyline": -135,
+    }
+    out = apply_context_to_blend(blended, market=market, league="mlb")
+    assert out["context_adjustment_pp"] != 0.0
+    shift = float(out["context_adjustment_pp"])
+    assert out["pre_decorrelation_home_win_probability"] == pytest.approx(
+        63.0 + shift, abs=0.05
+    )
+    assert out["baseball_pred"]["home_win_probability"] == pytest.approx(
+        60.0 + shift, abs=0.05
+    )
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-q"])

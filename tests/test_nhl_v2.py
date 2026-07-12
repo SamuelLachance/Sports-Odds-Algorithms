@@ -137,3 +137,74 @@ def test_get_live_context_fails_closed_on_missing_gap_season(monkeypatch) -> Non
     monkeypatch.setattr(live, "_fetch_stats_bundle", fake_bundle)
     assert live.get_live_context("2025-01-15") is None
     assert 2024 in calls
+
+
+def test_get_live_context_fails_closed_on_empty_gap_games(monkeypatch) -> None:
+    """Empty intermediate-season game bundles must fail closed (not silent Elo skip)."""
+    from unittest.mock import MagicMock
+
+    import web.nhl_v2.live as live
+
+    live.get_live_context.cache_clear()
+    art = {"snapshots": {2023: MagicMock()}}
+    monkeypatch.setattr(live, "_load_artifacts", lambda: art)
+    monkeypatch.setattr(
+        live,
+        "_load_snapshot_state",
+        lambda _art, _season: (2023, {"teams": {}}),
+    )
+    monkeypatch.setattr(
+        live.NhlFeatureEngine,
+        "from_dict",
+        classmethod(lambda cls, _payload: MagicMock()),
+    )
+    monkeypatch.setattr(live, "nhl_season_for_date", lambda _d: 2025)
+    monkeypatch.setattr(
+        live,
+        "_fetch_stats_bundle",
+        lambda season: ({"team_games": [], "goalies": []}, False),
+    )
+    monkeypatch.setattr(live, "_fetch_moneypuck_slices", lambda seasons: ({}, False))
+    assert live.get_live_context("2025-01-15") is None
+
+
+def test_get_live_context_fails_closed_on_empty_gap_moneypuck(monkeypatch) -> None:
+    """Gap seasons with Stats games but empty MoneyPuck must fail closed."""
+    from unittest.mock import MagicMock
+
+    import web.nhl_v2.live as live
+
+    live.get_live_context.cache_clear()
+    art = {"snapshots": {2023: MagicMock()}}
+    monkeypatch.setattr(live, "_load_artifacts", lambda: art)
+    monkeypatch.setattr(
+        live,
+        "_load_snapshot_state",
+        lambda _art, _season: (2023, {"teams": {}}),
+    )
+    monkeypatch.setattr(
+        live.NhlFeatureEngine,
+        "from_dict",
+        classmethod(lambda cls, _payload: MagicMock()),
+    )
+    monkeypatch.setattr(live, "nhl_season_for_date", lambda _d: 2025)
+
+    monkeypatch.setattr(
+        live,
+        "_fetch_stats_bundle",
+        lambda season: (
+            {"team_games": [{"gameId": 1, "teamAbbrev": "TOR"}], "goalies": []},
+            False,
+        ),
+    )
+    monkeypatch.setattr(
+        live,
+        "_fetch_moneypuck_slices",
+        lambda seasons: ({}, False),
+    )
+    monkeypatch.setattr(
+        live,
+        "build_game_index",
+        lambda _rows: {1: {"home": "TOR", "away": "MTL"}},
+    )
+    assert live.get_live_context("2025-01-15") is None

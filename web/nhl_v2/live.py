@@ -442,6 +442,12 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
         live_inputs_stale = live_inputs_stale or gap_mp_stale
         gap_mp = gap_mp_all.get(gap_season) or {}
         gap_games = list(build_game_index(gap_stats["team_games"]).values())
+        if not gap_games:
+            # Empty bundle (soft-cache / blank API) would skip Elo/form — fail closed.
+            return None
+        if not gap_mp:
+            # Empty MoneyPuck would replay Elo without xG/shot features — fail closed.
+            return None
         gap_goalies = build_goalie_index(gap_stats["goalies"])
         replay_season(
             engine, gap_season, gap_games,

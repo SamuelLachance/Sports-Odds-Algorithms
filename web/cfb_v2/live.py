@@ -180,10 +180,18 @@ def get_live_context(day_iso: str) -> dict[str, Any] | None:
     season = cfb_season_of(day)
     snap = _load_snapshot_state(art, season)
     if snap is None:
-        engine = CfbFeatureEngine()
-    else:
-        _snap_season, payload = snap
-        engine = CfbFeatureEngine.from_dict(payload)
+        # No prior-season snapshot → cold-start would invent Elo/form. Fail closed.
+        return None
+    snapshot_season, payload = snap
+    engine = CfbFeatureEngine.from_dict(payload)
+
+    # Replay any full seasons between the snapshot and the target season.
+    for gap_season in range(snapshot_season + 1, season):
+        gap_games = _fetch_completed_season_games(gap_season, stop_before=day_iso[:10])
+        if not gap_games:
+            # Missing intermediate season would skip Elo/form state — fail closed.
+            return None
+        replay_season(engine, gap_games)
 
     games = _fetch_completed_season_games(season, stop_before=day_iso[:10])
     replay_season(engine, games, stop_before_date=day_iso[:10])

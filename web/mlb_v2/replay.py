@@ -78,6 +78,53 @@ def is_final_game(game: dict[str, Any]) -> bool:
     )
 
 
+def apply_final_game_with_logs(
+    engine: MlbFeatureEngine,
+    game: dict[str, Any],
+    pitchers: dict[str, Any],
+    team_hitting: dict[str, list[dict[str, Any]]],
+    team_pitching: dict[str, list[dict[str, Any]]],
+    *,
+    home_occ: int = 0,
+    away_occ: int = 0,
+) -> None:
+    """Apply one final game with hitting/bullpen logs (live DH parity with replay)."""
+    game_date = str(game.get("date") or "")
+    home_id = int(game["home_id"])
+    away_id = int(game["away_id"])
+    hit_index = _index_team_logs(team_hitting)
+    pitch_index = _index_team_logs(team_pitching)
+
+    home_hits = hit_index.get((home_id, game_date)) or []
+    away_hits = hit_index.get((away_id, game_date)) or []
+    home_pitch = pitch_index.get((home_id, game_date)) or []
+    away_pitch = pitch_index.get((away_id, game_date)) or []
+
+    home_hit_log = home_hits[home_occ] if home_occ < len(home_hits) else None
+    away_hit_log = away_hits[away_occ] if away_occ < len(away_hits) else None
+    home_team_pitch = home_pitch[home_occ] if home_occ < len(home_pitch) else None
+    away_team_pitch = away_pitch[away_occ] if away_occ < len(away_pitch) else None
+
+    home_starter = _starter_log(pitchers, game.get("home_pp_id"), game_date)
+    away_starter = _starter_log(pitchers, game.get("away_pp_id"), game_date)
+
+    engine.update_after_game(
+        game,
+        home_hit_log=home_hit_log,
+        away_hit_log=away_hit_log,
+        home_bullpen=_bullpen_line(home_team_pitch, home_starter),
+        away_bullpen=_bullpen_line(away_team_pitch, away_starter),
+    )
+    for side in ("home", "away"):
+        pid = game.get(f"{side}_pp_id")
+        starter = home_starter if side == "home" else away_starter
+        if not pid or not starter:
+            continue
+        payload = (pitchers or {}).get(str(pid)) or {}
+        hand = str(payload.get("hand") or "R")
+        engine.apply_pitcher_appearance(int(pid), hand, starter)
+
+
 def replay_season(
     engine: MlbFeatureEngine,
     season: int,

@@ -141,15 +141,19 @@ def grade_paper_picks() -> dict[str, Any]:
         status = _grade_outcome(pick_outcome, away_score, home_score)
         if status is None:
             continue
+        # Fail closed: without a posted price, leave pending so P&L is not
+        # polluted with 0u losses (or omitted win payouts).
+        market_ml = _safe_int(bet.get("market_ml"))
+        if market_ml is None:
+            continue
+        try:
+            units = round(calculate_units(1.0, market_ml, status), 3)
+        except (TypeError, ValueError):
+            continue
         bet["status"] = status
         bet["final_score"] = f"{away_score}–{home_score}"
         bet["graded_at"] = datetime.now(timezone.utc).isoformat()
-        market_ml = _safe_int(bet.get("market_ml"))
-        if market_ml is not None:
-            try:
-                bet["units"] = round(calculate_units(1.0, market_ml, status), 3)
-            except (TypeError, ValueError):
-                bet["units"] = 0.0
+        bet["units"] = units
         graded += 1
 
     settled = [b for b in payload["bets"] if isinstance(b, dict) and b.get("status") in {"win", "loss"}]

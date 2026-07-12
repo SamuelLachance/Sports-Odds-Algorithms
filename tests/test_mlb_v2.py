@@ -256,6 +256,49 @@ def test_get_live_context_fails_closed_on_missing_gap_season(monkeypatch) -> Non
     assert 2024 in calls
 
 
+def test_get_live_context_fails_closed_on_empty_gap_games(monkeypatch) -> None:
+    """Empty intermediate-season game bundles must fail closed (not silent Elo skip)."""
+    from unittest.mock import MagicMock
+
+    import web.mlb_v2.live as live
+
+    live.get_live_context.cache_clear()
+    art = {
+        "snapshots": {2023: MagicMock()},
+        "feature_columns": [],
+        "clf": None,
+        "lr": {},
+        "calibrator": {"x": [0.0, 1.0], "y": [0.0, 1.0]},
+        "runs_home": None,
+        "runs_away": None,
+    }
+    monkeypatch.setattr(live, "_load_artifacts", lambda: art)
+    monkeypatch.setattr(
+        live,
+        "_load_snapshot_state",
+        lambda _art, _season: (2023, {"teams": {}, "pitchers": {}, "venues": {}}),
+    )
+    monkeypatch.setattr(
+        live.MlbFeatureEngine,
+        "from_dict",
+        classmethod(lambda cls, _payload: MagicMock()),
+    )
+    monkeypatch.setattr(
+        live,
+        "_fetch_current_season_bundle",
+        lambda season, _day: (
+            {
+                "games": [],
+                "pitchers": {},
+                "team_hitting": {},
+                "team_pitching": {},
+            },
+            False,
+        ),
+    )
+    assert live.get_live_context("2025-07-12") is None
+
+
 def test_predict_matchup_applies_earlier_dh_final(monkeypatch) -> None:
     """Game-2 prediction must fold same-day game-1 final into a cloned engine."""
     from unittest.mock import MagicMock
@@ -328,6 +371,9 @@ def test_predict_matchup_applies_earlier_dh_final(monkeypatch) -> None:
             "todays_games": {(home_id, away_id): game2},
             "todays_finals": [game1],
             "pitcher_names": {},
+            "pitchers": {},
+            "team_hitting": {},
+            "team_pitching": {},
             "season": 2026,
             "day_iso": "2026-07-12",
             "live_inputs_stale": False,
@@ -338,6 +384,19 @@ def test_predict_matchup_applies_earlier_dh_final(monkeypatch) -> None:
         "from_dict",
         classmethod(lambda cls, _payload: cloned),
     )
+    apply_calls: list[tuple] = []
+
+    def fake_apply(eng, game, pitchers, hitting, pitching, *, home_occ=0, away_occ=0):
+        apply_calls.append((eng, game, home_occ, away_occ))
+        eng.update_after_game(
+            game,
+            home_hit_log=None,
+            away_hit_log=None,
+            home_bullpen=None,
+            away_bullpen=None,
+        )
+
+    monkeypatch.setattr(live, "apply_final_game_with_logs", fake_apply)
     monkeypatch.setattr(live, "_predict_probability", lambda _art, _feat: 0.55)
     monkeypatch.setattr(live, "_predict_runs", lambda _art, _feat: None)
 
@@ -349,6 +408,10 @@ def test_predict_matchup_applies_earlier_dh_final(monkeypatch) -> None:
 
     out = live.predict_matchup_v2("2026-07-12", home_abbr, away_abbr)
     assert out is not None
-    cloned.update_after_game.assert_called_once_with(game1)
+    assert len(apply_calls) == 1
+    assert apply_calls[0][0] is cloned
+    assert apply_calls[0][1] is game1
+    assert apply_calls[0][2] == 0
+    assert apply_calls[0][3] == 0
     engine.update_after_game.assert_not_called()
     cloned.features_for_game.assert_called_once_with(game2)

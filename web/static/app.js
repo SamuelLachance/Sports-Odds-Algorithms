@@ -890,7 +890,7 @@ function hubacekThreeTrackPanel(game, pick) {
   return `<div class="three-track-panel${predictionsOnly ? " three-track-panel--ref" : ""}">
     <div class="three-track-head">
       <span class="panel-kicker">${kicker}</span>
-      <span class="muted">Display · ${gateLabel} · Honest EV</span>
+      <span class="muted">Display · ${gateLabel} · EV prob</span>
     </div>
     <div class="three-track-grid">
       <div>
@@ -904,9 +904,9 @@ function hubacekThreeTrackPanel(game, pick) {
         <small>${gateHint}</small>
       </div>
       <div>
-        <span>Honest EV</span>
+        <span>EV prob</span>
         <strong>${evProb != null ? `${evProb}%` : pickProb != null ? `${pickProb}%` : "—"}</strong>
-        <small>Calibrated pre-decorrelation for EV &amp; Kelly</small>
+        <small>Calibrated pre-decorrelation for Honest EV &amp; Kelly</small>
       </div>
     </div>
     ${caption}

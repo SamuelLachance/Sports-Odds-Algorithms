@@ -30,7 +30,6 @@ from web.bet_advisor import (
     spread_point_edge,
 )
 from web.league_profiles import (
-    DEFAULT_SPREAD_JUICE,
     MIN_RECOMMENDED_EDGE,
     is_soccer_league,
     uses_spread_bets,
@@ -486,9 +485,11 @@ def _layer_has_spread_value_on_side(
     margin = _layer_home_margin(layer, league)
     if margin is None:
         return False
+    # Missing posted juice is not value — do not invent -110 for agreement.
+    if spread_odds is None:
+        return False
     point_edge = spread_point_edge(margin, consensus_spread, side)
-    juice = spread_odds if spread_odds is not None else DEFAULT_SPREAD_JUICE
-    return spread_odds_edge(point_edge, juice, league) >= MIN_RECOMMENDED_EDGE
+    return spread_odds_edge(point_edge, spread_odds, league) >= MIN_RECOMMENDED_EDGE
 
 
 def _best_value_spread_side(
@@ -507,6 +508,8 @@ def _best_value_spread_side(
         ("away", away_spread_odds),
         ("home", home_spread_odds),
     ):
+        if juice is None:
+            continue
         point_edge = spread_point_edge(margin, consensus_spread, side)
         edge = spread_odds_edge(point_edge, juice, league)
         if edge >= MIN_RECOMMENDED_EDGE:
