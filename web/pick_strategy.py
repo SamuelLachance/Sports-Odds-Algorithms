@@ -77,6 +77,7 @@ def _settle_spread_juice(
 
     When grading against a real closing line, missing same-side juice fails closed
     (returns None) instead of inventing -110 or borrowing the opposite side.
+    Unknown / empty sides also fail closed (no synthetic -110).
     Non-finite / invalid American prices fail closed (no ValueError on NaN).
     """
     from web.bet_advisor import normalize_american_odds
@@ -90,6 +91,9 @@ def _settle_spread_juice(
     elif side_key == "away":
         if away_spread_odds is not None:
             return normalize_american_odds(away_spread_odds)
+    else:
+        # Unknown / empty side must not invent -110 juice on synthetic markets.
+        return None
     if market_spread is None:
         return DEFAULT_SPREAD_JUICE
     return None
@@ -272,21 +276,26 @@ def grade_spread_bet(
 
 
 def grade_moneyline_bet(side: str, home_goals: int, away_goals: int) -> str:
+    side_key = str(side).lower().strip()
+    if side_key not in {"home", "away"}:
+        raise ValueError(f"invalid moneyline side: {side!r}")
     if home_goals == away_goals:
         return "push"
     home_won = home_goals > away_goals
-    if str(side).lower() == "home":
+    if side_key == "home":
         return "win" if home_won else "loss"
     return "win" if not home_won else "loss"
 
 
 def grade_soccer_1x2_bet(side: str, home_goals: int, away_goals: int) -> str:
-    side_key = str(side).lower()
+    side_key = str(side).lower().strip()
     if side_key == "draw":
         return "win" if home_goals == away_goals else "loss"
     if side_key == "home":
         return "win" if home_goals > away_goals else "loss"
-    return "win" if away_goals > home_goals else "loss"
+    if side_key == "away":
+        return "win" if away_goals > home_goals else "loss"
+    raise ValueError(f"invalid soccer 1X2 side: {side!r}")
 
 
 def simulate_market_threeway(

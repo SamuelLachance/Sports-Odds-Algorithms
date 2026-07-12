@@ -174,6 +174,21 @@ def test_grade_soccer_1x2_title_case_draw() -> None:
     assert grade_soccer_1x2_bet("Away", 0, 1) == "win"
 
 
+def test_grade_soccer_1x2_rejects_unknown_side() -> None:
+    """Typos must not settle as an implicit away 1X2 (fail closed)."""
+    from web.pick_strategy import grade_soccer_1x2_bet
+
+    with pytest.raises(ValueError, match="invalid soccer 1X2 side"):
+        grade_soccer_1x2_bet("hame", 2, 1)
+    with pytest.raises(ValueError, match="invalid soccer 1X2 side"):
+        grade_soccer_1x2_bet("", 1, 0)
+
+
+def test_grade_moneyline_rejects_unknown_side() -> None:
+    with pytest.raises(ValueError, match="invalid moneyline side"):
+        grade_moneyline_bet("hame", 3, 2)
+
+
 def test_simulate_market_helpers() -> None:
     spread = simulate_market_spread(-8.0, "nba")
     assert spread != 0.0
@@ -533,6 +548,27 @@ def test_settle_spread_juice_is_side_aware() -> None:
             home_spread_odds=-115,
             away_spread_odds=50,
             market_spread=-3.5,
+        )
+        is None
+    )
+    # Unknown / empty side must not invent synthetic -110 juice.
+    assert (
+        _settle_spread_juice(
+            "draw",
+            None,
+            home_spread_odds=-115,
+            away_spread_odds=-105,
+            market_spread=None,
+        )
+        is None
+    )
+    assert (
+        _settle_spread_juice(
+            "",
+            None,
+            home_spread_odds=-115,
+            away_spread_odds=-105,
+            market_spread=None,
         )
         is None
     )

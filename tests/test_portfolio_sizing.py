@@ -68,5 +68,18 @@ def test_non_finite_ev_or_kelly_returns_min() -> None:
     assert portfolio_stake_units(5.0, float("inf"), correlation_penalty=0.0) == 0.25
 
 
+def test_bool_kelly_or_ev_returns_min_not_max_stake() -> None:
+    """bool is a subclass of int; True→1.0 Kelly would clamp to max_units."""
+    assert portfolio_stake_units(5.0, True, correlation_penalty=0.0) == 0.25  # type: ignore[arg-type]
+    assert portfolio_stake_units(5.0, False, correlation_penalty=0.0) == 0.25  # type: ignore[arg-type]
+    assert portfolio_stake_units(True, 0.08, correlation_penalty=0.0) == 0.25  # type: ignore[arg-type]
+
+
+def test_inverted_min_max_units_swaps_bounds() -> None:
+    """min_units > max_units must not invent a stake above the intended ceiling."""
+    # Kelly 8% → 2u before clamp; with swapped 5/1 bounds, result must be ≤ 1.
+    assert portfolio_stake_units(10.0, 0.08, min_units=5.0, max_units=1.0, correlation_penalty=0.0) == 1.0
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-q"])

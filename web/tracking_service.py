@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any, Literal
@@ -56,19 +57,30 @@ def stake_units_from_kelly(
     """
     if kelly_pct is None:
         return DEFAULT_STAKE_UNITS
+    # bool is a subclass of int; False→0 must not look like "missing → 1u".
+    if isinstance(kelly_pct, bool):
+        return MIN_STAKE_UNITS
     try:
         kelly_frac = float(kelly_pct) / 100.0
     except (TypeError, ValueError):
         return DEFAULT_STAKE_UNITS
+    if not math.isfinite(kelly_frac):
+        return MIN_STAKE_UNITS
     if kelly_frac <= 0:
         return DEFAULT_STAKE_UNITS
 
     from web.portfolio_sizing import portfolio_stake_units
 
-    try:
-        ev_value = float(ev_pct) if ev_pct is not None else 0.0
-    except (TypeError, ValueError):
+    if isinstance(ev_pct, bool):
         ev_value = 0.0
+    else:
+        try:
+            ev_value = float(ev_pct) if ev_pct is not None else 0.0
+        except (TypeError, ValueError):
+            ev_value = 0.0
+    # Non-finite EV must reach portfolio_stake_units fail-closed path (not 0.0).
+    if not math.isfinite(ev_value):
+        return MIN_STAKE_UNITS
 
     return portfolio_stake_units(
         ev_value,
@@ -755,15 +767,20 @@ def grade_bet(
     home_score: int,
 ) -> dict[str, Any]:
     bet_type = bet.get("bet_type") or "moneyline"
-    side = str(bet["side"]).lower()
+    side = str(bet["side"]).lower().strip()
 
     if bet_type == "spread":
         spread = _grading_spread_line(bet)
         if spread is None:
             return bet
+        if side not in {"home", "away"}:
+            return bet
         status = _grade_spread_bet(side, spread, away_score, home_score)
     elif side == "draw":
         status = "win" if away_score == home_score else "loss"
+    elif side not in {"home", "away"}:
+        # Unknown / corrupt side must not settle as an implicit home ML.
+        return bet
     elif away_score == home_score:
         # Soccer 1X2 home/away sides lose on draws even if league is missing.
         if bet_type == "soccer_1x2" or is_soccer_league(bet.get("league") or ""):
@@ -941,10 +958,21 @@ def build_period_rollups(store: dict[str, Any]) -> dict[str, list[dict[str, Any]
 def build_tracking_response(store: dict[str, Any]) -> dict[str, Any]:
     store = _normalize_store(store)
     official_bets = _official_tracked_bets(store["bets"])
+
+    def _sort_edge(bet: dict[str, Any]) -> float:
+        raw = bet.get("edge")
+        if raw is None or isinstance(raw, bool):
+            return 0.0
+        try:
+            value = float(raw)
+        except (TypeError, ValueError):
+            return 0.0
+        return value if math.isfinite(value) else 0.0
+
     sorted_bets = sorted(
         official_bets,
         # Newest date first; within a day, highest edge first.
-        key=lambda b: (b.get("date", ""), b.get("edge") or 0),
+        key=lambda b: (str(b.get("date") or ""), _sort_edge(b)),
         reverse=True,
     )
     all_time = _summarize_bets(official_bets)

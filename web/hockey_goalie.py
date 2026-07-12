@@ -239,7 +239,8 @@ def _goalie_sv_pct(starter: dict[str, Any] | None, team_abbr: str) -> float | No
 
 def _sv_to_xg_multiplier(goalie_sv: float, team_sv: float, shots_against_pg: float = 30.0) -> float:
     """GSAx proxy: better goalie suppresses opponent xG."""
-    gsax = (team_sv - goalie_sv) * shots_against_pg
+    # Positive GSAx when the starter saves more than the team baseline.
+    gsax = (goalie_sv - team_sv) * shots_against_pg
     shift = gsax * 0.012
     shift = max(-MAX_GOALIE_XG_SHIFT, min(MAX_GOALIE_XG_SHIFT, shift))
     return max(0.88, min(1.12, 1.0 - shift))
@@ -263,7 +264,8 @@ def goalie_xg_multipliers(
     """
     Return (home_xg_mult, away_xg_mult, metadata).
 
-  home_mult scales away expected goals (home goalie); away_mult scales home xG.
+    ``home_xg_mult`` scales home expected goals (away goalie / away GA);
+    ``away_xg_mult`` scales away expected goals (home goalie / home GA).
     """
     league = league.lower()
     metadata: dict[str, Any] = {"league": league, "method": None}
@@ -296,8 +298,9 @@ def goalie_xg_multipliers(
         if home_ga is None or away_ga is None:
             values = [v for v in rates.values() if v > 0]
             league_avg = sum(values) / len(values) if values else 3.0
-            home_mult = _college_goalie_proxy(home_ga or league_avg, league_avg)
-            away_mult = _college_goalie_proxy(away_ga or league_avg, league_avg)
+            # Same opponent-defense convention as the both-present branch.
+            home_mult = _college_goalie_proxy(away_ga or league_avg, league_avg)
+            away_mult = _college_goalie_proxy(home_ga or league_avg, league_avg)
             metadata["league_avg_ga"] = round(league_avg, 3)
             return home_mult, away_mult, metadata
         league_avg = sum(rates.values()) / len(rates)

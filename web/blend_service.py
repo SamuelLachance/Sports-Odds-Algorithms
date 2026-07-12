@@ -343,6 +343,8 @@ def _run_sport_pred_model(
     away_ml: int | None = None,
     home_espn_id: str | None = None,
     away_espn_id: str | None = None,
+    kickoff_iso: str | None = None,
+    game_number: int | None = None,
 ) -> tuple[str | None, dict[str, Any] | None]:
     """Return (payload_key, payload) for sport-specific third layer."""
     if is_basketball_league(league):
@@ -361,10 +363,18 @@ def _run_sport_pred_model(
             market_spread=market_spread,
             home_ml=home_ml,
             away_ml=away_ml,
+            kickoff_iso=kickoff_iso,
+            game_number=game_number,
         )
         return ("baseball_pred", payload) if payload else (None, None)
     if is_baseball_league(league):
-        payload = run_baseball_pred_model(league, cutoff_date, home_abbr, away_abbr)
+        payload = run_baseball_pred_model(
+            league,
+            cutoff_date,
+            home_abbr,
+            away_abbr,
+            game_number=game_number,
+        )
         return ("baseball_pred", payload) if payload else (None, None)
     if is_hockey_league(league):
         return None, None
@@ -1300,6 +1310,7 @@ def _blend_mlb_runcast_only(
     home_moneyline: int | None = None,
     away_moneyline: int | None = None,
     kickoff_iso: str | None = None,
+    game_number: int | None = None,
 ) -> dict[str, Any]:
     """MLB uses MLBRunCast only — no Algo V2, power, meta, db_rating, or EnsembleML."""
     sport_payload = run_mlb_pred_model(
@@ -1315,6 +1326,7 @@ def _blend_mlb_runcast_only(
         home_ml=home_moneyline,
         away_ml=away_moneyline,
         kickoff_iso=kickoff_iso,
+        game_number=game_number,
     )
     if not sport_payload:
         reason = mlb_unavailable_reason(league, cutoff_date, home_abbr, away_abbr)
@@ -1507,6 +1519,7 @@ def blend_predictions(
     headlines: list[str] | None = None,
     match_date: str = "",
     kickoff_iso: str = "",
+    game_number: int | None = None,
 ) -> dict[str, Any]:
     """
     Blend Algo_V2 and power model into unified total_score / win_probability.
@@ -1562,6 +1575,7 @@ def blend_predictions(
             home_moneyline=home_moneyline,
             away_moneyline=away_moneyline,
             kickoff_iso=kickoff_iso or None,
+            game_number=game_number,
         )
 
     if is_soccer_league(league):
@@ -1663,6 +1677,8 @@ def blend_predictions(
         market_spread=consensus_spread,
         home_ml=home_moneyline,
         away_ml=away_moneyline,
+        kickoff_iso=kickoff_iso or None,
+        game_number=game_number,
     )
     if is_baseball_league(league):
         meta = get_sports_meta_config(league)

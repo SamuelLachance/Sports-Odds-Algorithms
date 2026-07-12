@@ -290,6 +290,40 @@ def test_model_agreement_mlb_single_model() -> None:
     assert agreement["agreed"] is True
 
 
+def test_run_sport_pred_model_forwards_mlb_dh_keys() -> None:
+    """Ensemble / non-slate MLB path must forward kickoff + game_number for DH."""
+    from web import blend_service as blend_module
+
+    captured: dict[str, object] = {}
+
+    def _fake_mlb(*_a, **kwargs):
+        captured.update(kwargs)
+        return {
+            "algorithm": "MLBRunCast",
+            "home_win_probability": 55.0,
+            "predicted_margin": 0.4,
+        }
+
+    original = blend_module.run_mlb_pred_model
+    try:
+        blend_module.run_mlb_pred_model = _fake_mlb
+        key, payload = blend_module._run_sport_pred_model(
+            "mlb",
+            "06-15-2025",
+            "nyy",
+            "bos",
+            kickoff_iso="2025-06-15T20:10:00Z",
+            game_number=2,
+        )
+    finally:
+        blend_module.run_mlb_pred_model = original
+
+    assert key == "baseball_pred"
+    assert payload is not None
+    assert captured.get("kickoff_iso") == "2025-06-15T20:10:00Z"
+    assert captured.get("game_number") == 2
+
+
 def test_blend_mlb_runcast_unavailable_fallback() -> None:
     import web.blend_service as blend_module
 

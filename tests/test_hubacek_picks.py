@@ -486,6 +486,56 @@ def test_nan_threshold_overrides_do_not_fail_open() -> None:
         )
 
 
+def test_negative_threshold_overrides_do_not_fail_open() -> None:
+    """Negative gap/EV/φ floors make every comparison pass — must fall back."""
+    from unittest.mock import patch
+
+    from web.hubacek_picks import (
+        hubacek_min_ev_pct,
+        hubacek_min_market_gap_pp,
+        hubacek_min_win_confidence_pp,
+        passes_hubacek_confidence,
+    )
+
+    with patch(
+        "web.hubacek_picks.league_pick_overrides",
+        return_value={
+            "min_ev_pct": -5.0,
+            "min_market_gap_pp": -10.0,
+            "min_win_confidence_pp": -1.0,
+        },
+    ):
+        assert hubacek_min_ev_pct("nba") == HUBACEK_MIN_EV_PCT
+        assert hubacek_min_market_gap_pp("nba") == HUBACEK_MIN_MARKET_GAP_PP
+        assert hubacek_min_win_confidence_pp("nba") == HUBACEK_MIN_WIN_CONFIDENCE_PP
+        assert not passes_hubacek_tracked_pick(
+            {
+                "strategy": "hubacek",
+                "model_market_gap_pp": 0.1,
+                "ev_pct": 0.1,
+                "win_probability": 50.0,
+                "market_odds": -150,
+                "league": "nba",
+            }
+        )
+    assert not passes_hubacek_confidence(50.0, min_pp=-5.0)
+    assert not passes_hubacek_confidence(72.0, min_pp=-1.0)
+
+
+def test_swapped_ml_range_bounds_still_admit_prices_inside_window() -> None:
+    """ml_lo > ml_hi must normalize, not reject every American price."""
+    from unittest.mock import patch
+
+    from web.hubacek_picks import hubacek_ml_range, within_hubacek_ml_range
+
+    with patch(
+        "web.hubacek_picks.league_pick_overrides",
+        return_value={"ml_lo": 200.0, "ml_hi": -200.0},
+    ):
+        assert hubacek_ml_range("mlb") == (-200.0, 200.0)
+        assert within_hubacek_ml_range("mlb", -110)
+
+
 if __name__ == "__main__":
     test_official_thresholds_have_real_floors()
     test_moneyline_gate_requires_gap_ev_and_phi_confidence()

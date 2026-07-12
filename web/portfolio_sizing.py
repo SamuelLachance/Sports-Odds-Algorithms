@@ -29,9 +29,17 @@ def portfolio_stake_units(
     explicitly negative EV yields ``min_units`` (callers that want a default 1u
     should gate first). Missing EV should be passed as ``0`` so sizing still
     follows Kelly without the negative-EV short-circuit. Non-finite Kelly/EV
-    (±inf / NaN) fail closed to ``min_units`` — NaN comparisons are never true,
-    so they must not slip through as a full-size stake.
+    (±inf / NaN) and bool inputs fail closed to ``min_units`` — NaN comparisons
+    are never true, and ``True`` is a subclass of ``int`` that would otherwise
+    size a full-bankroll stake.
     """
+    # bool is a subclass of int; True→1.0 would size a full-bankroll Kelly stake.
+    if isinstance(kelly_fraction, bool) or isinstance(ev_pct, bool):
+        try:
+            return float(min_units) if math.isfinite(float(min_units)) else 0.25
+        except (TypeError, ValueError):
+            return 0.25
+
     try:
         kelly = float(kelly_fraction)
         ev = float(ev_pct)
@@ -49,6 +57,10 @@ def portfolio_stake_units(
         return lo
     if not math.isfinite(bankroll) or not math.isfinite(lo) or not math.isfinite(hi):
         return 0.25
+
+    # Inverted clamp bounds → fail closed to the safer (lower) value.
+    if lo > hi:
+        return round(hi, 2) if hi >= 0 else 0.25
 
     # Do not Kelly-size a non-positive edge or a non-positive Kelly fraction.
     if kelly <= 0 or ev < 0:

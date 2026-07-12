@@ -196,6 +196,7 @@ def _weighted_margin(
     season: int,
     use_api: bool = True,
     game_date: str | None = None,
+    game_number: int | None = None,
 ) -> tuple[float, dict[str, float]]:
     cfg = _league_sharp_config(league)
     weights = cfg.get("signal_weights") or {
@@ -220,7 +221,12 @@ def _weighted_margin(
     if use_api and league == "mlb" and game_date:
         from web.mlb_pitcher_edge import pitcher_matchup_margin
 
-        pitcher_edge = pitcher_matchup_margin(home_abbr, away_abbr, game_date=game_date)
+        pitcher_edge = pitcher_matchup_margin(
+            home_abbr,
+            away_abbr,
+            game_date=game_date,
+            game_number=game_number,
+        )
         if pitcher_edge is not None:
             pitcher_signal = pitcher_edge
 
@@ -337,6 +343,7 @@ def predict_matchup_from_model(
     *,
     season: int | None = None,
     game_date: str | None = None,
+    game_number: int | None = None,
 ) -> dict[str, float | str] | None:
     home = home_key.lower()
     away = away_key.lower()
@@ -366,6 +373,7 @@ def predict_matchup_from_model(
         away_abbr=away,
         season=season or 2025,
         game_date=game_date,
+        game_number=game_number,
     )
     param = float(model["param"])
     prob = 1.0 / (1.0 + math.exp(-margin / param))
@@ -453,6 +461,8 @@ def run_baseball_pred_model(
     cutoff_date: str,
     home_abbr: str,
     away_abbr: str,
+    *,
+    game_number: int | None = None,
 ) -> dict[str, Any] | None:
     """SharpBaseball: ESPN walk-forward + MLB Stats API season enrichment."""
     context = get_baseball_pred_context(league, cutoff_date)
@@ -462,7 +472,12 @@ def run_baseball_pred_model(
     season = _season_from_cutoff(cutoff_date, league)
     game_date = _cutoff_to_iso(cutoff_date)
     prediction = predict_matchup_from_model(
-        context, home_abbr, away_abbr, season=season, game_date=game_date
+        context,
+        home_abbr,
+        away_abbr,
+        season=season,
+        game_date=game_date,
+        game_number=game_number,
     )
     if not prediction:
         return None

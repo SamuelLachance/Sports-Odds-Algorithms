@@ -30,12 +30,23 @@ from web.pick_strategy_schema import validate_pick_strategy_payload
 
 
 def _finite_float(value: Any) -> float | None:
-    """Parse a float; reject NaN/±inf so inequality gates stay fail-closed."""
+    """Parse a float; reject bool / NaN / ±inf so inequality gates stay fail-closed."""
+    # bool is a subclass of int; True→1.0 / False→0.0 must not become gate floors.
+    if isinstance(value, bool):
+        return None
     try:
         number = float(value)
     except (TypeError, ValueError):
         return None
     if not math.isfinite(number):
+        return None
+    return number
+
+
+def _nonneg_finite_float(value: Any) -> float | None:
+    """Finite float ≥ 0 for Hubáček floors; negatives fail open if accepted."""
+    number = _finite_float(value)
+    if number is None or number < 0:
         return None
     return number
 
@@ -112,19 +123,21 @@ def clear_strategy_cache() -> None:
 
 
 def hubacek_min_market_gap_pp(league: str | None = None) -> float:
-    override = _finite_float(league_pick_overrides(league).get("min_market_gap_pp"))
+    override = _nonneg_finite_float(
+        league_pick_overrides(league).get("min_market_gap_pp")
+    )
     return override if override is not None else HUBACEK_MIN_MARKET_GAP_PP
 
 
 def hubacek_min_spread_cover_gap_pp(league: str | None = None) -> float:
-    override = _finite_float(
+    override = _nonneg_finite_float(
         league_pick_overrides(league).get("min_spread_cover_gap_pp")
     )
     return override if override is not None else HUBACEK_MIN_SPREAD_COVER_GAP_PP
 
 
 def hubacek_min_spread_confidence_pp(league: str | None = None) -> float:
-    override = _finite_float(
+    override = _nonneg_finite_float(
         league_pick_overrides(league).get("min_spread_confidence_pp")
     )
     return (
@@ -133,7 +146,7 @@ def hubacek_min_spread_confidence_pp(league: str | None = None) -> float:
 
 
 def hubacek_min_ev_pct(league: str | None = None) -> float:
-    override = _finite_float(league_pick_overrides(league).get("min_ev_pct"))
+    override = _nonneg_finite_float(league_pick_overrides(league).get("min_ev_pct"))
     return override if override is not None else HUBACEK_MIN_EV_PCT
 
 
@@ -150,7 +163,8 @@ def hubacek_ml_range(league: str | None = None) -> tuple[float, float] | None:
     hi = _finite_float(overrides.get("ml_hi"))
     if lo is None or hi is None:
         return None
-    return lo, hi
+    # Swapped JSON bounds would reject every price; normalize to [min, max].
+    return (lo, hi) if lo <= hi else (hi, lo)
 
 
 
@@ -205,6 +219,9 @@ def official_hubacek_thresholds() -> dict[str, Any]:
 def passes_hubacek_confidence(model_prob_pct: float, *, min_pp: float = HUBACEK_MIN_WIN_CONFIDENCE_PP) -> bool:
     """|p̂ − 50| ≥ φ (paper Section 5.2, φ = 0.2)."""
     if not math.isfinite(model_prob_pct) or not math.isfinite(min_pp):
+        return False
+    # Negative φ makes abs(p−50) ≥ φ always true — fail closed on corrupt floors.
+    if min_pp < 0:
         return False
     return abs(model_prob_pct - 50.0) >= min_pp
 
@@ -299,7 +316,7 @@ def passes_hubacek_spread_gate(
 
 def hubacek_min_win_confidence_pp(league: str | None = None) -> float:
     """Per-league Hubáček φ threshold (override > baseball/soccer default > 20 pp)."""
-    override = _finite_float(
+    override = _nonneg_finite_float(
         league_pick_overrides(league).get("min_win_confidence_pp")
     )
     if override is not None:

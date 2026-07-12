@@ -72,6 +72,44 @@ def test_sharp_baseball_algorithm_name() -> None:
     assert "mlb_api_component" in payload
 
 
+def test_sharp_baseball_forwards_dh_game_number(monkeypatch) -> None:
+    """Doubleheader G2 must not reuse G1 pitcher edge via default game_number=1."""
+    from unittest.mock import MagicMock
+
+    from web import baseball_pred_model as bpm
+
+    model = build_baseball_model(_sample_games(), "mlb")
+    assert model is not None
+
+    seen: list[int | None] = []
+
+    def _fake_margin(home, away, *, game_date=None, game_number=None):
+        seen.append(game_number)
+        return 0.4 if game_number == 1 else -0.4
+
+    monkeypatch.setattr(
+        "web.mlb_pitcher_edge.pitcher_matchup_margin",
+        _fake_margin,
+    )
+    # Avoid MLB season API noise in this unit test.
+    monkeypatch.setattr(
+        "web.mlb_stats_api.mlb_api_matchup_edge",
+        MagicMock(return_value=None),
+    )
+
+    g1 = predict_matchup_from_model(
+        model, "a", "b", season=2025, game_date="2025-06-15", game_number=1
+    )
+    g2 = predict_matchup_from_model(
+        model, "a", "b", season=2025, game_date="2025-06-15", game_number=2
+    )
+    assert g1 is not None and g2 is not None
+    assert seen == [1, 2]
+    assert g1["pitcher_component"] > 0
+    assert g2["pitcher_component"] < 0
+    assert g1["predicted_margin"] != g2["predicted_margin"]
+
+
 if __name__ == "__main__":
     test_is_baseball_league()
     test_build_baseball_model_favors_stronger_team()

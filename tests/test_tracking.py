@@ -209,6 +209,33 @@ def test_tracking_response_sorts_same_day_by_edge_desc() -> None:
     assert [b["event_id"] for b in response["bets"]] == ["newer", "high", "low"]
 
 
+def test_tracking_response_tolerates_corrupt_edge_for_sort() -> None:
+    """String/list edge used to TypeError when mixed with numeric edges."""
+    junk = _sample_pick()
+    junk["date"] = "2026-06-11"
+    junk["event_id"] = "junk"
+    junk["edge"] = "high"
+    junk["status"] = "win"
+    junk["units"] = 1.0
+    numeric = _sample_pick()
+    numeric["date"] = "2026-06-11"
+    numeric["event_id"] = "numeric"
+    numeric["edge"] = 8.0
+    numeric["status"] = "win"
+    numeric["units"] = 1.0
+    response = build_tracking_response({"version": 1, "bets": [junk, numeric]})
+    assert [b["event_id"] for b in response["bets"]] == ["numeric", "junk"]
+
+
+def test_stake_units_from_kelly_rejects_bool() -> None:
+    """False kelly must not coerce to 0% and fall through to default 1u."""
+    from web.tracking_service import stake_units_from_kelly
+
+    assert stake_units_from_kelly(False) == 0.25  # type: ignore[arg-type]
+    assert stake_units_from_kelly(True) == 0.25  # type: ignore[arg-type]
+    assert stake_units_from_kelly(None) == 1.0
+
+
 def test_rejects_low_confidence() -> None:
     """Confidence bar applies in leagues that keep one (MLB's is 0 by backtest)."""
     low_conf_nhl = {**_sample_pick(win_probability=55), "league": "nhl", "league_name": "NHL"}
@@ -993,6 +1020,21 @@ def test_grade_soccer_1x2_home_loses_on_draw_without_league() -> None:
         1,
     )
     assert graded["status"] == "loss"
+
+
+def test_grade_bet_leaves_unknown_side_pending() -> None:
+    """Corrupt side strings must not settle as an implicit home moneyline."""
+    bet = {
+        "side": "hame",
+        "bet_type": "moneyline",
+        "league": "nba",
+        "market_odds": -110,
+        "stake_units": 1.0,
+        "status": "pending",
+    }
+    graded = grade_bet(bet, 100, 110)
+    assert graded.get("status") == "pending"
+    assert "graded_at" not in graded or graded.get("graded_at") is None
 
 
 def test_dedupe_pending_prefers_earlier_opening_odds() -> None:
