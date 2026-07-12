@@ -125,6 +125,13 @@ def _american_to_implied_pct(american: int) -> float | None:
     return 100.0 / (american + 100.0) * 100.0
 
 
+def _coerce_open_american(value: Any) -> int | None:
+    """Normalize opening ML for FLB/steam; reject bool / juice-band garbage."""
+    from web.bet_advisor import normalize_american_odds
+
+    return normalize_american_odds(value)
+
+
 def favorite_longshot_adjustment(
     home_ml: int | None,
     away_ml: int | None,
@@ -432,12 +439,14 @@ def apply_context_to_blend(
     home_ml = market.get("home_moneyline")
     away_ml = market.get("away_moneyline")
     # Prefer primary open keys; do not use `or` — American 0 (EVEN) is falsy.
-    open_home = market.get("open_home_moneyline")
+    # Coerce through American-odds rules so False / |x|<100 do not count as
+    # "opens present" and stamp idle context (blocking daily open re-apply).
+    open_home = _coerce_open_american(market.get("open_home_moneyline"))
     if open_home is None:
-        open_home = market.get("opening_home_ml")
-    open_away = market.get("open_away_moneyline")
+        open_home = _coerce_open_american(market.get("opening_home_ml"))
+    open_away = _coerce_open_american(market.get("open_away_moneyline"))
     if open_away is None:
-        open_away = market.get("opening_away_ml")
+        open_away = _coerce_open_american(market.get("opening_away_ml"))
 
     # FLB is an opening-price bias; only use opens when both sides are present.
     # Close prices must not substitute — that is a different market and blocks
@@ -449,8 +458,8 @@ def apply_context_to_blend(
     steam = steam_line_movement_shift(
         home_ml,
         away_ml,
-        open_home_ml=open_home if open_home is not None else None,
-        open_away_ml=open_away if open_away is not None else None,
+        open_home_ml=open_home,
+        open_away_ml=open_away,
     )
     news = news_sentiment_shift(
         list(headlines or []),

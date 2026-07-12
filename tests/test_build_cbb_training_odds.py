@@ -133,3 +133,23 @@ def test_cbb_odds_join_rejects_juice_as_spread_and_pk_total() -> None:
     assert out["home_spread"] is None
     assert out["total_line"] is None
     assert out["home_ml"] == -150.0
+
+
+def test_cbb_odds_join_nan_n_books_defaults_to_zero() -> None:
+    """Non-finite n_books must not raise ValueError mid training-table join."""
+    idx = {
+        ("2024-01-01", "duke", "unc"): {
+            "home_close_ml": "-110",
+            "away_close_ml": "100",
+            "home_close_spread": "-3.5",
+            "home_spread_odds": "-110",
+            "away_spread_odds": "-110",
+            "close_total": "140",
+            "n_books": "nan",
+        }
+    }
+    out = _odds_for_game(
+        idx, {"date": "2024-01-01", "home_abbr": "duke", "away_abbr": "unc"}
+    )
+    assert out["books"] == 0
+    assert out["home_ml"] == -110.0

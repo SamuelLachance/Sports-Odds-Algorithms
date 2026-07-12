@@ -145,6 +145,21 @@ def _as_int_odds(value: Any) -> int | None:
     return normalize_american_odds(value)
 
 
+def _median_open_moneyline(values: list[float]) -> float | None:
+    """Median open ML; fail closed on mixed-sign pools (median 0 → fake EVEN).
+
+    Individual books already pass ``_valid_american``; even-book medians can
+    still land in the |x| < 100 dead zone or average opposite favorites to 0.
+    """
+    clean = [v for v in values if v is not None and math.isfinite(v)]
+    if not clean:
+        return None
+    nonzero = [v for v in clean if v != 0.0]
+    if nonzero and len({v > 0 for v in nonzero}) > 1:
+        return None
+    return _valid_american(_median(clean))
+
+
 def best_american_odds(values: list[Any]) -> int | None:
     """Best price for the bettor = lowest implied probability."""
     cleaned: list[int] = []
@@ -344,11 +359,14 @@ def summarize_book_items(
             "consensus_home_spread": None,
             "consensus_away_spread": None,
         }
-    open_home_ml = _as_int_odds(_median(open_home_values)) if open_home_values else None
-    open_away_ml = _as_int_odds(_median(open_away_values)) if open_away_values else None
-    if open_home_ml is not None:
+    # Open ML medians: reject mixed-sign pools (median 0 → fake EVEN) and
+    # require both sides valid so dead-zone home + valid away never unpairs.
+    open_home_raw = _median_open_moneyline(open_home_values) if open_home_values else None
+    open_away_raw = _median_open_moneyline(open_away_values) if open_away_values else None
+    open_home_ml = _as_int_odds(open_home_raw) if open_home_raw is not None else None
+    open_away_ml = _as_int_odds(open_away_raw) if open_away_raw is not None else None
+    if open_home_ml is not None and open_away_ml is not None:
         summary["open_home_moneyline"] = open_home_ml
-    if open_away_ml is not None:
         summary["open_away_moneyline"] = open_away_ml
     return summary
 

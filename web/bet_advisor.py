@@ -654,7 +654,7 @@ def market_home_prob_pct(
             spread = float(consensus_spread)
         except (TypeError, ValueError):
             return None
-        if not math.isfinite(spread):
+        if not math.isfinite(spread) or abs(spread) >= 100.0:
             return None
         return spread_to_home_prob(spread)
     return None
@@ -1208,7 +1208,13 @@ def evaluate_spread_picks(
     games_played_proxy: int | None = None,
 ) -> list[BetPick]:
     """Recommend spread bets when decorrelated margin disagrees with the book line."""
-    if consensus_spread is None:
+    if consensus_spread is None or isinstance(consensus_spread, bool):
+        return []
+    try:
+        consensus_spread = float(consensus_spread)
+    except (TypeError, ValueError):
+        return []
+    if not math.isfinite(consensus_spread) or abs(consensus_spread) >= 100.0:
         return []
     if hubacek_only and (blended is None or not blend_outputs_are_market_decorrelated(blended)):
         return []

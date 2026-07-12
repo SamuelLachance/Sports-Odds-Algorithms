@@ -23,7 +23,13 @@ from web.nba_ml.config import (
     WINPROB_MODEL_PATH,
     nba_ml_artifacts_present,
 )
-from web.nba_ml.features import FeatureState, devig_home_prob, parse_game_date, spread_to_home_prob
+from web.nba_ml.features import (
+    FeatureState,
+    coerce_market_spread,
+    devig_home_prob,
+    parse_game_date,
+    spread_to_home_prob,
+)
 from web.nba_ml.model import cover_probability, ensemble_home_prob
 
 
@@ -104,6 +110,8 @@ def predict_nba(
     state = _replayed_state(game_day.isoformat())
     if home not in state.teams or away not in state.teams:
         return None
+
+    market_spread = coerce_market_spread(market_spread)
 
     feats = state.features_for(
         home,

@@ -826,6 +826,42 @@ def test_grade_spread_does_not_settle_at_moneyline_market_odds() -> None:
     assert "units" not in graded
 
 
+def test_resolve_grading_odds_falls_through_junk_spread_odds() -> None:
+    """Invalid posted juice must not shadow a valid consensus_odds."""
+    from web.tracking_service import _resolve_grading_odds
+
+    bet = {
+        "bet_type": "spread",
+        "side": "home",
+        "consensus_spread": -3.5,
+        "spread_odds": 50,
+        "consensus_odds": -110,
+        "stake_units": 1.0,
+        "status": "pending",
+    }
+    assert _resolve_grading_odds(bet) == -110
+    graded = grade_bet(bet, 100, 110)
+    assert graded["status"] == "win"
+    assert "units" in graded
+
+
+def test_grading_spread_line_rejects_juice_as_handicap() -> None:
+    """American juice dumped into consensus_spread must leave the bet ungraded."""
+    from web.tracking_service import _grading_spread_line
+
+    assert _grading_spread_line({"side": "home", "consensus_spread": -110}) is None
+    assert _grading_spread_line({"side": "away", "consensus_spread": 105}) is None
+    bet = {
+        "side": "home",
+        "bet_type": "spread",
+        "consensus_spread": -110,
+        "spread_odds": -110,
+        "stake_units": 1.0,
+        "status": "pending",
+    }
+    assert grade_bet(bet, 100, 120)["status"] == "pending"
+
+
 def test_recorded_spread_odds_preserves_even_zero() -> None:
     """ESPN EVEN (0) must not fall through to consensus via falsy `or`."""
     from web.tracking_service import _recorded_and_closing_odds

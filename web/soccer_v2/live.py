@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import gzip
 import json
+import math
 import re
 import time
 import unicodedata
@@ -419,8 +420,11 @@ def american_to_decimal(ml: int | None) -> float | None:
         return None
     try:
         # Accept floatish strings ("-110.0") like normalize_american_odds.
-        ml = int(round(float(ml)))
-    except (TypeError, ValueError):
+        parsed = float(ml)
+        if not math.isfinite(parsed):
+            return None
+        ml = int(round(parsed))
+    except (TypeError, ValueError, OverflowError):
         return None
     # ESPN EVEN sometimes arrives as numeric 0 — treat as +100.
     if ml == 0:

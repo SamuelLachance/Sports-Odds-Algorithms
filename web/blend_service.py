@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from typing import Any
 
 from web.baseball_pred_model import (
@@ -601,7 +602,16 @@ def compute_model_agreement(
     # Normalize juice so float-strings / ESPN EVEN / garbage never invent value.
     away_market = normalize_american_odds(market.get("away_moneyline"))
     home_market = normalize_american_odds(market.get("home_moneyline"))
-    consensus_spread = market.get("spread")
+    raw_spread = market.get("spread")
+    consensus_spread: float | None = None
+    if raw_spread is not None and not isinstance(raw_spread, bool):
+        try:
+            spread_val = float(raw_spread)
+        except (TypeError, ValueError):
+            spread_val = None
+        else:
+            if math.isfinite(spread_val) and abs(spread_val) < 100.0:
+                consensus_spread = spread_val
     away_spread_odds = normalize_american_odds(market.get("away_spread_odds"))
     home_spread_odds = normalize_american_odds(market.get("home_spread_odds"))
     use_spread = uses_spread_bets(league) and consensus_spread is not None

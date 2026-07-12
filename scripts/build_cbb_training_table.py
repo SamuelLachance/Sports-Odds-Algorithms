@@ -52,6 +52,19 @@ def load_season(season: int) -> list[dict[str, Any]]:
     return merge_season_games([], events, season=season)
 
 
+def _parse_n_books(raw: Any) -> int:
+    """Parse book count; non-finite / garbage must not abort the training join."""
+    if raw is None or raw == "" or isinstance(raw, bool):
+        return 0
+    try:
+        val = float(raw)
+    except (TypeError, ValueError):
+        return 0
+    if not math.isfinite(val):
+        return 0
+    return int(val)
+
+
 def _odds_for_game(
     odds_index: dict[tuple[str, str, str], dict[str, Any]],
     game: dict[str, Any],
@@ -99,7 +112,7 @@ def _odds_for_game(
         "spread_home_odds": _f("home_spread_odds", american=True),
         "spread_away_odds": _f("away_spread_odds", american=True),
         "total_line": _f("close_total", is_total=True),
-        "books": int(float(row["n_books"])) if row.get("n_books") not in (None, "") else 0,
+        "books": _parse_n_books(row.get("n_books")),
     }
 
 

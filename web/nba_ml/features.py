@@ -69,6 +69,7 @@ GEO_ALIASES = {
     "pho": "phx",
     "was": "wsh",
     "uth": "uta",
+    "utah": "uta",  # ESPN / closing-odds key (espn_client maps UTAH → utah)
     "bro": "bkn",
     "njn": "bkn",
     "cho": "cha",
@@ -124,11 +125,25 @@ def devig_home_prob(home_ml: float | None, away_ml: float | None) -> float | Non
     return home_p / total
 
 
+def coerce_market_spread(home_spread: Any) -> float | None:
+    """Finite NBA handicap, else None (reject bool pick'em / juice-as-spread)."""
+    if home_spread is None or isinstance(home_spread, bool):
+        return None
+    try:
+        value = float(home_spread)
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(value) or abs(value) >= 100.0:
+        return None
+    return value
+
+
 def spread_to_home_prob(home_spread: float | None) -> float | None:
     """Rough NBA spread -> home win prob (logistic, ~0.28 pts of sigma scale)."""
-    if home_spread is None:
+    coerced = coerce_market_spread(home_spread)
+    if coerced is None:
         return None
-    return 1.0 / (1.0 + math.exp(home_spread / 4.05))
+    return 1.0 / (1.0 + math.exp(coerced / 4.05))
 
 
 def _season_of(game_day: date) -> int:
@@ -253,6 +268,7 @@ class FeatureState:
         season_progress = min(
             (home_state.season_games + away_state.season_games) / 164.0, 1.0
         )
+        spread_feat = coerce_market_spread(market_spread)
 
         return {
             "elo_diff": elo_diff,
@@ -274,11 +290,16 @@ class FeatureState:
             "travel_away_km": travel_away,
             "tz_shift_diff": tz_home - tz_away,
             "season_progress": season_progress,
-            "market_spread": float(market_spread) if market_spread is not None else float("nan"),
+            "market_spread": (
+                float(spread_feat) if spread_feat is not None else float("nan")
+            ),
             "market_devig_home_prob": float(devig) if devig is not None else float("nan"),
         }
 
     def update(self, home: str, away: str, game_day: date, home_score: int, away_score: int) -> None:
+        # Live replay (_replayed_state) only calls update(); without a season
+        # reset here, Elo/form/season_games skew vs training features_for path.
+        self._maybe_new_season(game_day)
         home_state = self.teams[home]
         away_state = self.teams[away]
 

@@ -951,6 +951,29 @@ def test_market_home_prob_pct_rejects_bool_spread() -> None:
     assert market_home_prob_pct(consensus_spread=0.0) == pytest.approx(50.0, abs=0.5)
 
 
+def test_market_home_prob_pct_rejects_juice_as_spread() -> None:
+    """American juice in the spread slot must not imply ~100% home win."""
+    assert market_home_prob_pct(consensus_spread=-110) is None
+    assert market_home_prob_pct(consensus_spread=105) is None
+
+
+def test_evaluate_spread_picks_rejects_juice_as_consensus() -> None:
+    """Juice-sized consensus_spread must not produce ATS picks."""
+    picks = evaluate_spread_picks(
+        away_name="Away",
+        home_name="Home",
+        away_slug="away",
+        home_slug="home",
+        league="nba",
+        total_score=-10.0,
+        win_probability=60.0,
+        consensus_spread=-110,
+        away_spread_odds=-110,
+        home_spread_odds=-110,
+    )
+    assert picks == []
+
+
 if __name__ == "__main__":
     test_spread_line_for_side()
     test_spread_point_edge_home_favorite()

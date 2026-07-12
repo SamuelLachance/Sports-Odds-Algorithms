@@ -405,6 +405,29 @@ def test_apply_context_noop_stamps_zero_when_opens_present() -> None:
     assert out["blended_home_win_probability"] == 55.0
 
 
+def test_apply_context_invalid_opens_do_not_stamp_idle() -> None:
+    """False / |odds|<100 opens must not stamp 0 and block daily re-apply."""
+    blended = {
+        "blended_home_win_probability": 55.0,
+        "total_score": -55.0,
+        "win_probability": 55.0,
+        "favorite_side": "home",
+    }
+    for open_home, open_away in ((False, False), (50, 50), (-50, 50)):
+        out = apply_context_to_blend(
+            blended,
+            market={
+                "home_moneyline": -140,
+                "away_moneyline": 120,
+                "open_home_moneyline": open_home,
+                "open_away_moneyline": open_away,
+            },
+            league="nba",
+        )
+        assert out.get("context_adjustment_pp") is None, (open_home, open_away)
+        assert out.get("context_signals") is None
+
+
 def test_apply_context_threeway_renormalizes() -> None:
     blended = {
         "threeway": True,

@@ -42,7 +42,8 @@ def _consensus_spread_for_preds(
         except (TypeError, ValueError):
             value = None
         else:
-            if math.isfinite(value):
+            # Reject American juice dumped into handicap cells (|x|≥100).
+            if math.isfinite(value) and abs(value) < 100.0:
                 return value
     if scoreboard_spread is None or isinstance(scoreboard_spread, bool):
         return None
@@ -50,7 +51,9 @@ def _consensus_spread_for_preds(
         board = float(scoreboard_spread)
     except (TypeError, ValueError):
         return None
-    return board if math.isfinite(board) else None
+    if not math.isfinite(board) or abs(board) >= 100.0:
+        return None
+    return board
 
 
 from web.bet_advisor import (
@@ -563,7 +566,7 @@ def predict_live_game(
         "away_moneyline": game.market.away_moneyline,
         "home_moneyline": game.market.home_moneyline,
         "draw_moneyline": game.market.draw_moneyline,
-        "spread": game.market.spread,
+        "spread": consensus_spread,
         "away_spread_odds": game.market.away_spread_odds,
         "home_spread_odds": game.market.home_spread_odds,
     }
@@ -577,7 +580,7 @@ def predict_live_game(
         league=game.league,
         away_market=game.market.away_moneyline,
         home_market=game.market.home_moneyline,
-        consensus_spread=game.market.spread,
+        consensus_spread=consensus_spread,
     )
 
     model_payload: dict[str, Any] = {

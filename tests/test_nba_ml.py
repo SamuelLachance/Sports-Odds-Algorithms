@@ -52,6 +52,27 @@ def test_spread_to_home_prob_monotonic():
     assert spread_to_home_prob(0) == pytest.approx(0.5, abs=1e-6)
 
 
+def test_live_spread_rejects_bool_and_juice() -> None:
+    """Live inference must match training: False/|x|≥100 are not handicaps."""
+    from web.nba_ml.features import FeatureState, coerce_market_spread
+
+    assert coerce_market_spread(False) is None
+    assert coerce_market_spread(-110) is None
+    assert spread_to_home_prob(False) is None
+    assert spread_to_home_prob(-110) is None
+    assert coerce_market_spread(-6.5) == -6.5
+
+    state = FeatureState()
+    feats = state.features_for(
+        "bos", "lal", date(2025, 1, 15), market_spread=False
+    )
+    assert math.isnan(feats["market_spread"])
+    feats_juice = state.features_for(
+        "bos", "lal", date(2025, 1, 15), market_spread=-110
+    )
+    assert math.isnan(feats_juice["market_spread"])
+
+
 def test_sane_american_rejects_corrupt_odds():
     # Decimal odds / garbage below magnitude 100 must not invent -110 juice.
     assert math.isnan(_sane_american(-1))
@@ -225,3 +246,50 @@ def test_dataset_num_rejects_bool_and_juice_spreads() -> None:
     assert _spread_line(-110) is None
     assert _spread_line(-6.5) == -6.5
     assert _spread_line(0) == 0.0
+
+
+def test_update_applies_season_reset_like_features_for() -> None:
+    """Live replay only calls update(); must reset Elo/form/season_games at boundaries."""
+    from web.nba_ml.features import ELO_BASE, ELO_SEASON_REGRESS
+
+    live = FeatureState()
+    live.update("bos", "lal", date(2024, 4, 10), 110, 100)
+    elo_after_april = live.teams["bos"].elo
+    assert live.teams["bos"].season_games == 1
+
+    # Season boundary alone (before scoring the next game) must regress Elo
+    # and clear season counters — matching features_for's _maybe_new_season.
+    live._maybe_new_season(date(2024, 11, 5))
+    assert live.current_season == 2024
+    assert live.teams["bos"].season_games == 0
+    assert live.teams["bos"].elo == pytest.approx(
+        ELO_BASE + (elo_after_april - ELO_BASE) * (1.0 - ELO_SEASON_REGRESS)
+    )
+    assert not live.teams["bos"].margins
+
+    # Full update across the boundary must leave season_games=1 (Nov game only).
+    live2 = FeatureState()
+    live2.update("bos", "lal", date(2024, 4, 10), 110, 100)
+    live2.update("bos", "lal", date(2024, 11, 5), 105, 98)
+    assert live2.current_season == 2024
+    assert live2.teams["bos"].season_games == 1
+
+    train = FeatureState()
+    train.features_for("bos", "lal", date(2024, 4, 10))
+    train.update("bos", "lal", date(2024, 4, 10), 110, 100)
+    feats = train.features_for("bos", "lal", date(2024, 11, 5))
+    assert train.teams["bos"].season_games == 0
+    assert feats["season_progress"] == 0.0
+
+
+def test_utah_geo_alias_resolves_travel() -> None:
+    """ESPN/odds key ``utah`` must map to Jazz geo (uta), not silently zero travel."""
+    from web.nba_ml.features import _geo
+
+    assert _geo("utah") is not None
+    assert _geo("utah") == _geo("uta")
+
+    state = FeatureState()
+    state.update("bos", "utah", date(2024, 1, 10), 110, 100)  # Jazz last venue = bos
+    feats = state.features_for("utah", "bos", date(2024, 1, 12))
+    assert feats["travel_home_km"] > 0.0

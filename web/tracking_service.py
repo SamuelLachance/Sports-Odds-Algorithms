@@ -262,6 +262,9 @@ def _grading_spread_line(bet: dict[str, Any]) -> float | None:
                 return None
         if not math.isfinite(value):
             return None
+        # American juice dumped into a handicap cell (e.g. -110) is not a line.
+        if abs(value) >= 100.0:
+            return None
         return value
 
     consensus = _coerce_line(bet.get("consensus_spread"))
@@ -278,10 +281,14 @@ def _resolve_grading_odds(bet: dict[str, Any]) -> int | None:
     if bet_type == "spread":
         # Posted spread juice only — never fall back to ``market_odds`` (usually
         # the moneyline). Do not use `or` — ESPN EVEN is 0 (falsy but valid).
+        # Invalid posted juice (e.g. 50) must fall through to consensus_odds.
         for key in ("spread_odds", "consensus_odds"):
             value = bet.get(key)
-            if value is not None:
-                return normalize_american_odds(value)
+            if value is None:
+                continue
+            normalized = normalize_american_odds(value)
+            if normalized is not None:
+                return normalized
         # Missing posted juice — leave ungraded (do not invent -110 or use ML).
         return None
     return normalize_american_odds(bet.get("market_odds"))

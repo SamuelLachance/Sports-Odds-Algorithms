@@ -427,6 +427,13 @@ def test_american_to_decimal_rejects_bool_false_as_even() -> None:
     assert american_to_decimal(0) == pytest.approx(2.0)
 
 
+def test_american_to_decimal_rejects_non_finite() -> None:
+    """±inf / NaN must fail closed (no OverflowError crash)."""
+    assert american_to_decimal(float("inf")) is None
+    assert american_to_decimal(float("-inf")) is None
+    assert american_to_decimal(float("nan")) is None
+
+
 def test_american_to_decimal_accepts_floatish_strings() -> None:
     """``int('-110.0')`` raises; market-aware soccer head must still engage."""
     assert american_to_decimal("-110.0") == pytest.approx(1.9090909, rel=1e-5)

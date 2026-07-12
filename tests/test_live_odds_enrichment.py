@@ -646,6 +646,36 @@ def test_summarize_ignores_unpaired_open_moneylines() -> None:
     assert "open_away_moneyline" not in summary
 
 
+def test_summarize_open_ml_rejects_mixed_sign_even_median() -> None:
+    """Opposite-sign open pools must not median to fake EVEN (+100) on both sides."""
+    items = [
+        _book_item(
+            home_ml=-150, away_ml=130, name="A", open_home_ml=-150, open_away_ml=130
+        ),
+        _book_item(
+            home_ml=-150, away_ml=130, name="B", open_home_ml=150, open_away_ml=-130
+        ),
+    ]
+    summary = summarize_book_items(items, league="nba")
+    assert "open_home_moneyline" not in summary
+    assert "open_away_moneyline" not in summary
+
+
+def test_summarize_open_ml_rejects_unpaired_dead_zone_median() -> None:
+    """Dead-zone home median + valid away must not expose a one-sided open."""
+    items = [
+        _book_item(
+            home_ml=-150, away_ml=130, name="A", open_home_ml=-110, open_away_ml=-105
+        ),
+        _book_item(
+            home_ml=-150, away_ml=130, name="B", open_home_ml=100, open_away_ml=-115
+        ),
+    ]
+    summary = summarize_book_items(items, league="nba")
+    assert "open_home_moneyline" not in summary
+    assert "open_away_moneyline" not in summary
+
+
 def test_provider_line_trusts_signed_spread_over_wrong_favorite_flag() -> None:
     """away.favorite must not invert an already-signed home chalk line."""
     from web.nba_odds_espn import _provider_line
