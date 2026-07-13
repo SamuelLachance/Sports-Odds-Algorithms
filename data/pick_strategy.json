@@ -1,6 +1,6 @@
 {
-  "policy": "Official picks use Hub\u00e1\u010dek gates: decorrelated model beats the de-vigged market by a backtested per-league gap, honest EV floor (calibrated pre-decorrelation probability), and a per-bet-type confidence bar (defaults 20 pp moneyline, 10 pp baseball/soccer, 5 pp spread cover). Live thresholds live in web/hubacek_picks.py; per-league overrides are stored here from walk-forward bet backtests. Enable bar: positive worst-season ROI at the execution price we would actually take (prefer multi-season).",
-  "generated_at": "2026-07-12",
+  "policy": "Official picks use Hub\u00e1\u010dek gates from walk-forward hybrid OOS bet backtests. Enable bar: positive worst-season ROI at the execution price we would actually take.",
+  "generated_at": "2026-07-13",
   "default": {
     "min_edge": 0,
     "min_ev_pct": 2.0,
@@ -14,171 +14,166 @@
   },
   "mlb": {
     "bet_type": "moneyline",
-    "min_market_gap_pp": 6.7,
+    "min_market_gap_pp": 6.0,
     "min_win_confidence_pp": 0.0,
     "min_ev_pct": 0.0,
     "ml_lo": -200,
     "ml_hi": 200,
     "enabled": true,
-    "note": "Live model upgraded to HybridGradientBoost v2; prior Hubacek gates retained (gap=6.7, ml -200..+200) pending full open/close backtest on keyed hybrid OOS.",
-    "backtest_roi_pct": 5.93,
-    "backtest_bets": 1030,
-    "backtest_close_roi_pct": -2.61
+    "note": "Hybrid OOS Hub\u00e1\u010dek refresh 2026-07-13: gap>=6.0pp EV>=0.0% ML[-200,200] open ROI 12.71% worst 9.45% n=474. Close ROI 0.12% (morning prices sit between open and close). ENABLED.",
+    "backtest_roi_pct": 12.71,
+    "backtest_bets": 474,
+    "backtest_close_roi_pct": 0.12,
+    "fav_mode": "any"
   },
   "nba": {
-    "bet_type": "spread",
-    "min_spread_cover_gap_pp": 10.0,
-    "min_spread_confidence_pp": 5.0,
-    "min_spread_point_edge": 3.0,
-    "min_ev_pct": 2.0,
-    "enabled": true,
-    "note": "NBA v2 (90 features) walk-forward backtest 2026-07-12 (scripts/backtest_nba_bets.py): market-aware margin cover gap >= 10 pp and point edge >= 3 at the opening spread. Opening-line ROI +20.77% (451 bets, 2024-2025 open-odds window, both seasons positive, worst +15.63%). Bets recorded in the morning sit between the open and close.",
-    "backtest_roi_pct": 20.77,
-    "backtest_bets": 451
-  },
-  "wnba": {
     "bet_type": "spread",
     "min_spread_cover_gap_pp": 12.0,
     "min_spread_confidence_pp": 5.0,
     "min_spread_point_edge": 0.0,
     "min_ev_pct": 2.0,
-    "allowed_sides": [
-      "away"
-    ],
-    "fav_mode": "any",
     "enabled": true,
-    "note": "Re-enabled 2026-07-12 after all-seasons-positive search: market-aware margin, away sides only, cover gap >= 12 pp at the open. Open-line ROI +21.1% (52 bets, 2024-2025, both seasons positive, worst +19.7%). Thin sample \u2014 morning prices sit between open and close. | Live clf upgraded to HybridGradientBoost v2; prior Hubacek gates retained.",
-    "backtest_roi_pct": 21.12,
-    "backtest_bets": 52
+    "note": "Hybrid OOS Hub\u00e1\u010dek refresh 2026-07-13: cover gap>=12.0pp point_edge>=0.0 exec=open ROI 19.62% worst 8.42% n=226. ENABLED.",
+    "backtest_roi_pct": 19.62,
+    "backtest_bets": 226
+  },
+  "wnba": {
+    "bet_type": "spread",
+    "min_spread_cover_gap_pp": 6.0,
+    "min_spread_confidence_pp": 5.0,
+    "min_spread_point_edge": 0.0,
+    "min_ev_pct": 2.0,
+    "enabled": true,
+    "note": "Hybrid OOS Hub\u00e1\u010dek refresh 2026-07-13: cover gap>=6.0pp point_edge>=0.0 exec=open ROI 10.6% worst 7.92% n=314. ENABLED.",
+    "backtest_roi_pct": 10.6,
+    "backtest_bets": 314
   },
   "cbb": {
     "bet_type": "moneyline",
-    "min_market_gap_pp": 2.2,
-    "min_win_confidence_pp": 15.0,
-    "min_ev_pct": 2.0,
+    "min_market_gap_pp": 2.0,
+    "min_win_confidence_pp": 0.0,
+    "min_ev_pct": 4.0,
     "ml_lo": -150,
     "ml_hi": 200,
-    "allowed_sides": [
-      "home"
-    ],
     "fav_mode": "favorite",
     "enabled": true,
-    "note": "Re-enabled 2026-07-12 as moneyline (not spread): home favorites only, raw gap >= 2 pp (2.2 after 1.12x decorrelation), EV >= 2%, |p-50| >= 15 pp, ML \u2212150..+200 vs close. Multi-season odds join (2023-2025 conference windows): ROI +20.9% / 188 bets, all 3 seasons positive, worst +14.4%. Spread Hubacek grids still fail the 3-season bar. | Live clf upgraded to HybridGradientBoost v2; prior Hubacek gates retained.",
-    "backtest_roi_pct": 20.9,
-    "backtest_bets": 188
+    "note": "Hybrid OOS Hub\u00e1\u010dek refresh 2026-07-13: gap>=2.0pp EV>=4.0% ML[-150,200] sides=favorite exec=close ROI 3.67% worst 3.19% n=326. ENABLED.",
+    "backtest_roi_pct": 3.67,
+    "backtest_bets": 326
   },
   "nfl": {
     "bet_type": "moneyline",
-    "min_market_gap_pp": 5.6,
-    "min_win_confidence_pp": 15.0,
-    "min_ev_pct": 4.0,
+    "min_market_gap_pp": 8.0,
+    "min_win_confidence_pp": 0.0,
+    "min_ev_pct": 0.0,
     "ml_lo": -350,
     "ml_hi": 300,
     "allowed_sides": [
       "home"
     ],
     "fav_mode": "any",
-    "enabled": true,
-    "note": "Re-enabled 2026-07-12 on moneyline (not spread): home only, raw gap >= 5 pp (5.6 after 1.12x decorrelation), EV >= 4%, |p-50| >= 15 pp, ML \u2212350..+300 vs close. 2022-2025 window all 4 seasons positive (74 bets, ROI +13.4%, worst +7.3%). Full 2010-2025 spread grid still has no all-seasons-positive policy \u2014 this is a recent-window home-ML book. | Live clf upgraded to HybridGradientBoost v2; prior Hubacek gates retained.",
-    "backtest_roi_pct": 13.42,
-    "backtest_bets": 74
+    "enabled": false,
+    "note": "Hybrid OOS Hub\u00e1\u010dek refresh 2026-07-13: gap>=8.0pp EV>=0.0% ML[-350,300] sides=home exec=close ROI -12.48% worst -18.39% n=189. DISABLED.",
+    "backtest_roi_pct": -12.48,
+    "backtest_bets": 189
   },
   "cfb": {
-    "bet_type": "spread",
+    "bet_type": "moneyline",
     "min_spread_cover_gap_pp": 11.0,
     "min_spread_point_edge": 0.0,
     "min_spread_confidence_pp": 12.0,
-    "min_ev_pct": 2.0,
+    "min_ev_pct": 0.0,
     "allowed_sides": [
-      "away"
+      "home"
     ],
-    "fav_mode": "favorite",
-    "enabled": true,
-    "note": "Re-enabled 2026-07-12: open-line away favorites only, cover gap >= 11 pp, cover conf >= 12 pp. ROI +5.69% (94 bets, 2023-2025, all 3 seasons positive, worst +3.42%).",
-    "backtest_roi_pct": 5.69,
-    "backtest_bets": 94
+    "fav_mode": "any",
+    "enabled": false,
+    "note": "Hybrid OOS Hub\u00e1\u010dek refresh 2026-07-13: gap>=8.0pp EV>=0.0% ML[-350,300] sides=home exec=close ROI 4.22% worst -0.05% n=517. DISABLED.",
+    "backtest_roi_pct": 4.22,
+    "backtest_bets": 517,
+    "min_market_gap_pp": 8.0,
+    "ml_lo": -350,
+    "ml_hi": 300,
+    "min_win_confidence_pp": 0.0
   },
   "nhl": {
     "bet_type": "moneyline",
-    "min_market_gap_pp": 2.2,
-    "min_win_confidence_pp": 5.0,
-    "min_ev_pct": 2.0,
-    "ml_lo": 150,
-    "ml_hi": 180,
-    "allowed_sides": [
-      "home",
-      "away"
-    ],
-    "fav_mode": "big_dog",
+    "min_market_gap_pp": 5.0,
+    "min_win_confidence_pp": 0.0,
+    "min_ev_pct": 4.0,
+    "ml_lo": -250,
+    "ml_hi": 250,
+    "fav_mode": "any",
     "enabled": true,
-    "note": "Re-enabled 2026-07-12: market-aware ML, big dogs only (+150..+180), raw gap >= 2 pp (2.2 after 1.12x decorrelation), EV >= 2%, |p-50| >= 5 pp at the open. ROI +35.5% (179 bets, 2023-2025, all 3 seasons positive, worst +27.8%, CLV positive in prior open studies). Narrow price band by design. | Live clf upgraded to HybridGradientBoost v2; prior Hubacek gates retained.",
-    "backtest_roi_pct": 35.54,
-    "backtest_bets": 179
+    "note": "Hybrid OOS Hub\u00e1\u010dek refresh 2026-07-13: gap>=5.0pp EV>=4.0% ML[-250,250] open ROI 13.16% worst 7.34% n=604. Close ROI -1.93% (morning prices sit between open and close). ENABLED.",
+    "backtest_roi_pct": 13.16,
+    "backtest_bets": 604,
+    "backtest_close_roi_pct": -1.93
   },
   "epl": {
     "bet_type": "soccer_1x2",
-    "min_market_gap_pp": 4.6,
+    "min_market_gap_pp": 2.0,
     "min_win_confidence_pp": 0.0,
-    "min_ev_pct": 5.0,
+    "min_ev_pct": 2.0,
     "allowed_sides": [
-      "home"
+      "away"
     ],
-    "enabled": true,
-    "note": "Soccer v2 pooled top-5 walk-forward backtest 2026-07-12 (scripts/backtest_soccer_bets.py): market-aware calibrated home prob beats the devigged opening line by >= 4 pp raw (4.6 pp after 1.15x decorrelation), EV >= 5% \u2014 home outcomes only. Best-price execution ROI +8.6% across 2015-2025 (1771 bets, 9/11 seasons positive, worst \u22124.35%, CLV +4.16%). | Soccer v2 clf upgraded to HybridGradientBoost v2; prior Hubacek gates retained.",
-    "backtest_roi_pct": 8.6,
-    "backtest_bets": 1771
+    "enabled": false,
+    "note": "Hybrid OOS soccer refresh 2026-07-13: gap>=2.0 EV>=2.0% outcomes=['away'] exec=max ROI 7.7% worst -10.45% n=1216. DISABLED.",
+    "backtest_roi_pct": 7.7,
+    "backtest_bets": 1216
   },
   "bundesliga": {
     "bet_type": "soccer_1x2",
-    "min_market_gap_pp": 4.6,
+    "min_market_gap_pp": 2.0,
     "min_win_confidence_pp": 0.0,
-    "min_ev_pct": 5.0,
+    "min_ev_pct": 2.0,
     "allowed_sides": [
-      "home"
+      "away"
     ],
-    "enabled": true,
-    "note": "Shares the pooled soccer v2 policy (see epl entry). | Soccer v2 clf upgraded to HybridGradientBoost v2; prior Hubacek gates retained.",
-    "backtest_roi_pct": 8.6,
-    "backtest_bets": 1771
+    "enabled": false,
+    "note": "Hybrid OOS soccer refresh 2026-07-13: gap>=2.0 EV>=2.0% outcomes=['away'] exec=max ROI 7.7% worst -10.45% n=1216. DISABLED.",
+    "backtest_roi_pct": 7.7,
+    "backtest_bets": 1216
   },
   "laliga": {
     "bet_type": "soccer_1x2",
-    "min_market_gap_pp": 4.6,
+    "min_market_gap_pp": 2.0,
     "min_win_confidence_pp": 0.0,
-    "min_ev_pct": 5.0,
+    "min_ev_pct": 2.0,
     "allowed_sides": [
-      "home"
+      "away"
     ],
-    "enabled": true,
-    "note": "Shares the pooled soccer v2 policy (see epl entry). | Soccer v2 clf upgraded to HybridGradientBoost v2; prior Hubacek gates retained.",
-    "backtest_roi_pct": 8.6,
-    "backtest_bets": 1771
+    "enabled": false,
+    "note": "Hybrid OOS soccer refresh 2026-07-13: gap>=2.0 EV>=2.0% outcomes=['away'] exec=max ROI 7.7% worst -10.45% n=1216. DISABLED.",
+    "backtest_roi_pct": 7.7,
+    "backtest_bets": 1216
   },
   "seriea": {
     "bet_type": "soccer_1x2",
-    "min_market_gap_pp": 4.6,
+    "min_market_gap_pp": 2.0,
     "min_win_confidence_pp": 0.0,
-    "min_ev_pct": 5.0,
+    "min_ev_pct": 2.0,
     "allowed_sides": [
-      "home"
+      "away"
     ],
-    "enabled": true,
-    "note": "Shares the pooled soccer v2 policy (see epl entry). | Soccer v2 clf upgraded to HybridGradientBoost v2; prior Hubacek gates retained.",
-    "backtest_roi_pct": 8.6,
-    "backtest_bets": 1771
+    "enabled": false,
+    "note": "Hybrid OOS soccer refresh 2026-07-13: gap>=2.0 EV>=2.0% outcomes=['away'] exec=max ROI 7.7% worst -10.45% n=1216. DISABLED.",
+    "backtest_roi_pct": 7.7,
+    "backtest_bets": 1216
   },
   "ligue1": {
     "bet_type": "soccer_1x2",
-    "min_market_gap_pp": 4.6,
+    "min_market_gap_pp": 2.0,
     "min_win_confidence_pp": 0.0,
-    "min_ev_pct": 5.0,
+    "min_ev_pct": 2.0,
     "allowed_sides": [
-      "home"
+      "away"
     ],
-    "enabled": true,
-    "note": "Shares the pooled soccer v2 policy (see epl entry). | Soccer v2 clf upgraded to HybridGradientBoost v2; prior Hubacek gates retained.",
-    "backtest_roi_pct": 8.6,
-    "backtest_bets": 1771
+    "enabled": false,
+    "note": "Hybrid OOS soccer refresh 2026-07-13: gap>=2.0 EV>=2.0% outcomes=['away'] exec=max ROI 7.7% worst -10.45% n=1216. DISABLED.",
+    "backtest_roi_pct": 7.7,
+    "backtest_bets": 1216
   },
   "worldcup": {
     "bet_type": "soccer_1x2",

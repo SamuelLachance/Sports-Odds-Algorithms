@@ -206,6 +206,7 @@ def test_mlb_pick_thresholds_use_backtested_policy() -> None:
     assert thresholds["ml_lo"] == -200
     assert thresholds["ml_hi"] == 200
     thresholds_ncaabb = get_pick_thresholds("ncaabb")
+    # College baseball uses baseball confidence default (no league override).
     assert thresholds_ncaabb["min_win_confidence_pp"] == 10.0
 
 
@@ -250,21 +251,22 @@ def test_mlb_official_picks_use_moneyline_decorrelation() -> None:
 
 
 def test_nhl_pick_thresholds_use_backtested_policy() -> None:
-    """NHL all-seasons-positive big-dog policy from pick_strategy.json."""
+    """NHL open-line hybrid Hubáček policy from pick_strategy.json."""
     thresholds = get_pick_thresholds("nhl")
-    assert thresholds["min_market_gap_pp"] >= 2.0
-    assert thresholds["min_win_confidence_pp"] == 5.0
-    assert thresholds["ml_lo"] == 150
-    assert thresholds["ml_hi"] == 180
+    assert thresholds["min_market_gap_pp"] >= 5.0
+    assert thresholds["min_win_confidence_pp"] == 0.0
+    assert thresholds["ml_lo"] == -250
+    assert thresholds["ml_hi"] == 250
     assert thresholds["bet_type"] == "moneyline"
     assert thresholds["enabled"] is True
-    assert thresholds.get("fav_mode") == "big_dog"
+    assert thresholds.get("fav_mode", "any") == "any"
 
 
 def test_nhl_official_picks_use_moneyline_decorrelation() -> None:
-    """NHL official book is big-dog only (+150..+180); bet the away dog."""
-    min_gap = get_pick_thresholds("nhl")["min_market_gap_pp"]
-    # Home -180 / away +160. Push model toward away so the dog clears gap+EV+conf.
+    """NHL official book is either-side ML in [-250, +250] at the open."""
+    thresholds = get_pick_thresholds("nhl")
+    min_gap = thresholds["min_market_gap_pp"]
+    # Home -180 / away +160. Push model toward away so the dog clears gap+EV.
     pre_home = 40.0
     market_home = 64.3  # approx de-vig of -180 vs +160
     decor_home = decorrelate_binary(pre_home, market_home)
@@ -307,7 +309,7 @@ def test_nhl_official_picks_use_moneyline_decorrelation() -> None:
 
 
 def test_nhl_official_picks_respect_ml_price_window() -> None:
-    """NHL moneyline picks outside +150..+180 are rejected."""
+    """NHL moneyline picks outside [-250, +250] are rejected."""
     pre_home = 85.0
     decor_home = decorrelate_binary(pre_home, 72.0)
     blended = {
@@ -377,7 +379,7 @@ def test_mlb_official_picks_respect_ml_price_window() -> None:
 
 
 def test_nfl_cfb_official_picks_disabled_by_backtest() -> None:
-    """NFL/CFB/CBB cleared all-seasons-positive enable bars."""
+    """Hybrid OOS: CBB moneyline clears; NFL/CFB stay disabled."""
     from web.hubacek_picks import clear_strategy_cache
     from web.league_profiles import eligible_for_official_picks
     from web.pick_strategy import load_pick_strategy
@@ -387,16 +389,16 @@ def test_nfl_cfb_official_picks_disabled_by_backtest() -> None:
 
     nfl = get_pick_thresholds("nfl")
     assert nfl["bet_type"] == "moneyline"
-    assert nfl["enabled"] is True
-    assert eligible_for_official_picks("nfl") is True
+    assert nfl["enabled"] is False
+    assert eligible_for_official_picks("nfl") is False
 
     cfb = get_pick_thresholds("cfb")
-    assert cfb["bet_type"] == "spread"
-    assert cfb["enabled"] is True
-    assert eligible_for_official_picks("cfb") is True
+    assert cfb["bet_type"] == "moneyline"
+    assert cfb["enabled"] is False
+    assert eligible_for_official_picks("cfb") is False
 
     cbb = get_pick_thresholds("cbb")
     assert cbb["bet_type"] == "moneyline"
     assert cbb["enabled"] is True
-    assert cbb["allowed_sides"] == ["home"]
+    assert cbb.get("fav_mode") == "favorite"
     assert eligible_for_official_picks("cbb") is True

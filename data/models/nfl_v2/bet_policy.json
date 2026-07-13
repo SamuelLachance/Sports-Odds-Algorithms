@@ -1,29 +1,47 @@
 {
   "stake_mode": "kelly",
   "kelly_fraction": 0.25,
-  "enabled": true,
-  "enabled_note": "All-seasons-positive close-line moneyline on 2022-2025 window: home only, edge>=5pp, EV>=4%, conf>=15pp. Full 2010-2025 spread grid still fails enable bar.",
+  "enabled": false,
+  "enabled_note": "worst_season_roi=-18.39 -> KEEP DISABLED",
   "bet_type": "moneyline",
   "exec_price": "close",
   "prob_col": "model_prob",
-  "min_edge_pp": 5.0,
-  "min_ev_pct": 4.0,
+  "min_edge_pp": 8.0,
+  "min_ev_pct": 0.0,
   "ml_lo": -350,
   "ml_hi": 300,
-  "allowed_sides": ["home"],
-  "min_win_confidence_pp": 15.0,
+  "sides": "home",
   "backtest": {
-    "bets": 74,
-    "roi_pct": 13.42,
-    "worst_season_roi": 7.34,
-    "seasons_positive": 4,
+    "bets": 189,
+    "staked_units": 564.3,
+    "profit_units": -70.4,
+    "roi_pct": -12.48,
+    "win_rate": 0.4603,
+    "seasons_positive": 0,
     "seasons_total": 4,
-    "window": "2022-2025",
-    "per_season": {
-      "2022": {"bets": 14, "roi_pct": 7.34, "profit_units": 2.9},
-      "2023": {"bets": 22, "roi_pct": 14.12, "profit_units": 9.3},
-      "2024": {"bets": 20, "roi_pct": 20.65, "profit_units": 12.2},
-      "2025": {"bets": 18, "roi_pct": 8.65, "profit_units": 4.1}
+    "worst_season_roi": -18.39,
+    "median_season_roi": -12.05
+  },
+  "backtest_per_season": {
+    "2022": {
+      "bets": 48,
+      "roi_pct": -18.39,
+      "profit_units": -26.5
+    },
+    "2023": {
+      "bets": 47,
+      "roi_pct": -16.08,
+      "profit_units": -22.5
+    },
+    "2024": {
+      "bets": 56,
+      "roi_pct": -8.03,
+      "profit_units": -13.4
+    },
+    "2025": {
+      "bets": 38,
+      "roi_pct": -7.1,
+      "profit_units": -8.0
     }
   }
 }

@@ -1,19 +1,74 @@
 {
-  "wnba": null,
   "mlb": {
-    "league": "mlb",
     "enabled": true,
-    "min_market_gap_pp": 10.0,
-    "side": "dog",
-    "bets": 6359,
-    "roi_pct": 47.47,
-    "worst_season_roi_pct": 33.12,
-    "seasons_positive": 8,
-    "seasons_total": 8,
-    "win_rate": 0.5748
+    "bet_type": "moneyline",
+    "roi": 12.71,
+    "bets": 474
   },
-  "nhl": null,
-  "nfl": null,
-  "cbb": null,
-  "soccer": null
+  "nhl": {
+    "enabled": true,
+    "bet_type": "moneyline",
+    "roi": 13.16,
+    "bets": 604
+  },
+  "nba": {
+    "enabled": true,
+    "bet_type": "spread",
+    "roi": 19.62,
+    "bets": 226
+  },
+  "wnba": {
+    "enabled": true,
+    "bet_type": "spread",
+    "roi": 10.6,
+    "bets": 314
+  },
+  "nfl": {
+    "enabled": false,
+    "bet_type": "moneyline",
+    "roi": -12.48,
+    "bets": 189
+  },
+  "cfb": {
+    "enabled": false,
+    "bet_type": "moneyline",
+    "roi": 4.22,
+    "bets": 517
+  },
+  "cbb": {
+    "enabled": true,
+    "bet_type": "moneyline",
+    "roi": 3.67,
+    "bets": 326
+  },
+  "epl": {
+    "enabled": false,
+    "bet_type": "soccer_1x2",
+    "roi": 7.7,
+    "bets": 1216
+  },
+  "laliga": {
+    "enabled": false,
+    "bet_type": "soccer_1x2",
+    "roi": 7.7,
+    "bets": 1216
+  },
+  "seriea": {
+    "enabled": false,
+    "bet_type": "soccer_1x2",
+    "roi": 7.7,
+    "bets": 1216
+  },
+  "bundesliga": {
+    "enabled": false,
+    "bet_type": "soccer_1x2",
+    "roi": 7.7,
+    "bets": 1216
+  },
+  "ligue1": {
+    "enabled": false,
+    "bet_type": "soccer_1x2",
+    "roi": 7.7,
+    "bets": 1216
+  }
 }

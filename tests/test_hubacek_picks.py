@@ -300,7 +300,7 @@ def test_tracked_pick_requires_hubacek_strategy_ev_and_confidence() -> None:
             "league": "mlb",
         }
     )
-    # NBA spread uses the backtested 10 pp cover-gap floor (not the 2 pp ML floor).
+    # NBA spread uses the backtested 12 pp cover-gap floor (not the 2 pp ML floor).
     assert not passes_hubacek_tracked_pick(
         {
             "strategy": "hubacek",
@@ -315,7 +315,7 @@ def test_tracked_pick_requires_hubacek_strategy_ev_and_confidence() -> None:
     assert passes_hubacek_tracked_pick(
         {
             "strategy": "hubacek",
-            "model_market_gap_pp": 10.0,
+            "model_market_gap_pp": 12.0,
             "ev_pct": 3.0,
             "win_probability": 56,
             "bet_type": "spread",
@@ -352,16 +352,16 @@ def test_tracked_pick_requires_hubacek_strategy_ev_and_confidence() -> None:
             "market_odds": -150,
         }
     )
-    # Soccer home-only leagues must reject away/draw on revalidation.
+    # Soccer home-only internationals must reject away/draw on revalidation.
     assert not passes_hubacek_tracked_pick(
         {
             "strategy": "hubacek",
-            "model_market_gap_pp": 5.0,
-            "ev_pct": 6.0,
+            "model_market_gap_pp": 9.0,
+            "ev_pct": 9.0,
             "win_probability": 48.0,
             "side": "away",
             "bet_type": "soccer_1x2",
-            "league": "epl",
+            "league": "worldcup",
             "market_odds": 150,
         }
     )

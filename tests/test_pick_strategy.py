@@ -46,23 +46,17 @@ def test_pick_thresholds_cbb_nfl_cfb() -> None:
 
     cbb = get_pick_thresholds("cbb")
     assert cbb["bet_type"] == "moneyline"
-    assert cbb["min_market_gap_pp"] == 2.2
-    assert cbb["allowed_sides"] == ["home"]
-    assert cbb["fav_mode"] == "favorite"
+    assert cbb["min_market_gap_pp"] == 2.0
+    assert cbb.get("fav_mode") == "favorite"
     assert cbb["enabled"] is True
 
     nfl = get_pick_thresholds("nfl")
     assert nfl["bet_type"] == "moneyline"
-    assert nfl["min_market_gap_pp"] == 5.6
-    assert nfl["allowed_sides"] == ["home"]
-    assert nfl["enabled"] is True
+    assert nfl["enabled"] is False
 
     cfb = get_pick_thresholds("cfb")
-    assert cfb["bet_type"] == "spread"
-    assert cfb["min_spread_cover_gap_pp"] == 11.0
-    assert cfb["allowed_sides"] == ["away"]
-    assert cfb["fav_mode"] == "favorite"
-    assert cfb["enabled"] is True
+    assert cfb["bet_type"] == "moneyline"
+    assert cfb["enabled"] is False
 
 
 def test_disabled_leagues_stay_predictions_only_but_can_emit_reference_picks() -> None:
