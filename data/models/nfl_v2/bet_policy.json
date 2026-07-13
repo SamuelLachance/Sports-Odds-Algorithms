@@ -1,110 +1,53 @@
 {
   "stake_mode": "kelly",
   "kelly_fraction": 0.25,
-  "enabled": false,
-  "enabled_note": "worst_season_roi=-16.81 -> KEEP DISABLED",
+  "enabled": true,
+  "enabled_note": "positive worst-season ROI (Hub\u00e1\u010dek decorrelated, live weight 0.12)",
+  "source": "search_nfl_hubacek.py",
+  "hubacek_decorrelated": true,
   "bet_type": "moneyline",
   "exec_price": "close",
+  "source_oos": "hybrid",
   "prob_col": "model_prob",
-  "min_edge_pp": 5.0,
-  "min_ev_pct": 5.0,
-  "ml_lo": -350,
-  "ml_hi": 300,
-  "sides": "either",
+  "decor_w": 0.12,
+  "min_edge_pp": 2.0,
+  "min_ev_pct": 0.0,
+  "ml_lo": -180,
+  "ml_hi": 180,
+  "sides": "favorite",
+  "season_window": "from2022",
+  "hubacek": true,
   "backtest": {
-    "bets": 414,
-    "staked_units": 1078.4,
-    "profit_units": 22.2,
-    "roi_pct": 2.06,
-    "win_rate": 0.5749,
-    "seasons_positive": 10,
-    "seasons_total": 16,
-    "worst_season_roi": -16.81,
-    "median_season_roi": 4.65
+    "bets": 73,
+    "staked_units": 70.1,
+    "profit_units": 17.3,
+    "roi_pct": 24.73,
+    "win_rate": 0.6712,
+    "seasons_positive": 4,
+    "seasons_total": 4,
+    "worst_season_roi": 18.01,
+    "median_season_roi": 19.91
   },
   "backtest_per_season": {
-    "2010": {
-      "bets": 7,
-      "roi_pct": 52.61,
-      "profit_units": 8.1
-    },
-    "2011": {
-      "bets": 2,
-      "roi_pct": 43.58,
-      "profit_units": 2.0
-    },
-    "2012": {
-      "bets": 2,
-      "roi_pct": 17.56,
-      "profit_units": 0.6
-    },
-    "2013": {
-      "bets": 63,
-      "roi_pct": -0.08,
-      "profit_units": -0.1
-    },
-    "2014": {
-      "bets": 26,
-      "roi_pct": 16.7,
-      "profit_units": 12.0
-    },
-    "2015": {
-      "bets": 36,
-      "roi_pct": 4.11,
-      "profit_units": 3.8
-    },
-    "2016": {
-      "bets": 28,
-      "roi_pct": 9.58,
-      "profit_units": 6.8
-    },
-    "2017": {
-      "bets": 37,
-      "roi_pct": -1.86,
-      "profit_units": -1.9
-    },
-    "2018": {
-      "bets": 35,
-      "roi_pct": 5.18,
-      "profit_units": 5.0
-    },
-    "2019": {
-      "bets": 39,
-      "roi_pct": -12.23,
-      "profit_units": -13.2
-    },
-    "2020": {
-      "bets": 33,
-      "roi_pct": -6.9,
-      "profit_units": -6.1
-    },
-    "2021": {
-      "bets": 23,
-      "roi_pct": 3.11,
-      "profit_units": 1.8
-    },
     "2022": {
-      "bets": 32,
-      "roi_pct": -16.81,
-      "profit_units": -12.5
+      "bets": 10,
+      "roi_pct": 20.21,
+      "profit_units": 2.2
     },
     "2023": {
       "bets": 15,
-      "roi_pct": -9.11,
-      "profit_units": -3.4
+      "roi_pct": 19.62,
+      "profit_units": 1.7
     },
     "2024": {
       "bets": 18,
-      "roi_pct": 16.41,
-      "profit_units": 7.6
+      "roi_pct": 53.58,
+      "profit_units": 6.5
     },
     "2025": {
-      "bets": 18,
-      "roi_pct": 27.84,
-      "profit_units": 11.7
+      "bets": 30,
+      "roi_pct": 18.01,
+      "profit_units": 6.9
     }
-  },
-  "source": "NFLRevolutionHybrid_full105",
-  "oos": "oos_predictions_hybrid.csv",
-  "model_note": "Full-feature CurveFM+CatBoost hybrid (rev_full_mkt65_period, 124 cols). Hubacek ML grid still fails worst-season ROI \u2014 official picks stay off."
+  }
 }

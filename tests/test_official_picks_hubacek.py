@@ -378,19 +378,20 @@ def test_mlb_official_picks_respect_ml_price_window() -> None:
     assert not [p for p in picks if p.side == "home"]
 
 
-def test_nfl_cfb_official_picks_disabled_by_backtest() -> None:
-    """Hybrid OOS: CBB moneyline clears; NFL/CFB stay disabled."""
+def test_nfl_cfb_official_picks_hubacek_gates() -> None:
+    """Hubáček OOS: NFL moneyline niche clears; CFB stays disabled."""
     from web.hubacek_picks import clear_strategy_cache
     from web.league_profiles import eligible_for_official_picks
-    from web.pick_strategy import load_pick_strategy
+    from web.pick_strategy import get_pick_thresholds, load_pick_strategy
 
     clear_strategy_cache()
     load_pick_strategy.cache_clear()
 
     nfl = get_pick_thresholds("nfl")
     assert nfl["bet_type"] == "moneyline"
-    assert nfl["enabled"] is False
-    assert eligible_for_official_picks("nfl") is False
+    assert nfl["enabled"] is True
+    assert nfl.get("fav_mode") == "favorite"
+    assert eligible_for_official_picks("nfl") is True
 
     cfb = get_pick_thresholds("cfb")
     assert cfb["bet_type"] == "moneyline"

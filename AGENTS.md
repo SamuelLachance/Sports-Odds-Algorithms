@@ -7,7 +7,7 @@ Algorithme de prédiction sportive (NBA, NHL, MLB et autres ligues) avec démo w
 - Python 3.10+ (`requirements.txt`)
 - Core : `algo.py`, `odds_calculator.py`, `backtester.py`
 - Web : `web/` (FastAPI + frontend statique)
-- Sport models : `web/{nba,wnba,nhl,mlb,soccer,nfl,cfb,cbb}_v2` (GradientBoost v2; CBB primary = GB v2 with Torvik fallback; NFL/CFB v2 live for predictions, official picks disabled until backtest clears)
+- Sport models : `web/{nba,wnba,nhl,mlb,soccer,nfl,cfb,cbb}_v2` (GradientBoost v2; CBB primary = GB v2 with Torvik fallback; NFL Hubáček ML niche enabled from hybrid OOS; CFB official picks still gated)
 - Données historiques : CSV dans `nba/`, `nhl/`, `mlb/`
 - Modules récents : `web/context_signals.py` (FLB / news / sparse EV caps), `web/portfolio_sizing.py` (stake sizing corrélé), `web/live_odds_enrichment.py` (multi-book NBA/NHL/MLB/WNBA), `web/basketball_v2_market.py` (helpers partagés NBA/WNBA live market-aware)
 
@@ -60,7 +60,7 @@ python scripts/train_cbb_model.py
 python scripts/check_v2_data.py
 ```
 
-Official NFL/CFB/CBB picks stay gated until spread backtests clear; training still refreshes live prediction artifacts.
+Official NFL Hubáček moneyline niche is enabled when `data/pick_strategy.json` shows `nfl.enabled=true` (hybrid OOS, worst-season ROI > 0). CFB stays gated until its search clears; spread beat-close gates are separate from Hubáček pick enable.
 
 ## Déploiement
 

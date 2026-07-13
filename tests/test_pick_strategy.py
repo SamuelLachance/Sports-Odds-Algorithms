@@ -52,7 +52,8 @@ def test_pick_thresholds_cbb_nfl_cfb() -> None:
 
     nfl = get_pick_thresholds("nfl")
     assert nfl["bet_type"] == "moneyline"
-    assert nfl["enabled"] is False
+    assert nfl["enabled"] is True
+    assert nfl.get("fav_mode") == "favorite"
 
     cfb = get_pick_thresholds("cfb")
     assert cfb["bet_type"] == "moneyline"
