@@ -2,46 +2,109 @@
   "stake_mode": "kelly",
   "kelly_fraction": 0.25,
   "enabled": false,
-  "enabled_note": "worst_season_roi=-5.05 -> KEEP DISABLED",
+  "enabled_note": "worst_season_roi=-23.5 -> KEEP DISABLED",
   "bet_type": "moneyline",
   "exec_price": "close",
   "prob_col": "model_prob",
-  "min_edge_pp": 5.0,
-  "min_ev_pct": 5.0,
-  "ml_lo": -150,
+  "min_edge_pp": 3.0,
+  "min_ev_pct": 0.0,
+  "ml_lo": -200,
   "ml_hi": 200,
-  "sides": "favorite",
+  "sides": "away",
   "backtest": {
-    "bets": 63,
-    "staked_units": 174.2,
-    "profit_units": 2.5,
-    "roi_pct": 1.41,
-    "win_rate": 0.5556,
-    "seasons_positive": 2,
-    "seasons_total": 4,
-    "worst_season_roi": -5.05,
-    "median_season_roi": 0.07
+    "bets": 522,
+    "staked_units": 792.7,
+    "profit_units": -30.8,
+    "roi_pct": -3.88,
+    "win_rate": 0.4598,
+    "seasons_positive": 4,
+    "seasons_total": 16,
+    "worst_season_roi": -23.5,
+    "median_season_roi": -6.18
   },
   "backtest_per_season": {
+    "2010": {
+      "bets": 14,
+      "roi_pct": -4.72,
+      "profit_units": -0.7
+    },
+    "2011": {
+      "bets": 5,
+      "roi_pct": -21.77,
+      "profit_units": -1.2
+    },
+    "2012": {
+      "bets": 9,
+      "roi_pct": 29.17,
+      "profit_units": 3.2
+    },
+    "2013": {
+      "bets": 80,
+      "roi_pct": -14.67,
+      "profit_units": -24.3
+    },
+    "2014": {
+      "bets": 32,
+      "roi_pct": -7.79,
+      "profit_units": -4.3
+    },
+    "2015": {
+      "bets": 37,
+      "roi_pct": -6.26,
+      "profit_units": -4.5
+    },
+    "2016": {
+      "bets": 30,
+      "roi_pct": -20.25,
+      "profit_units": -9.4
+    },
+    "2017": {
+      "bets": 23,
+      "roi_pct": -0.23,
+      "profit_units": -0.1
+    },
+    "2018": {
+      "bets": 27,
+      "roi_pct": -6.1,
+      "profit_units": -3.0
+    },
+    "2019": {
+      "bets": 25,
+      "roi_pct": -15.43,
+      "profit_units": -6.1
+    },
+    "2020": {
+      "bets": 28,
+      "roi_pct": 35.97,
+      "profit_units": 14.8
+    },
+    "2021": {
+      "bets": 44,
+      "roi_pct": 19.92,
+      "profit_units": 12.2
+    },
     "2022": {
-      "bets": 13,
-      "roi_pct": 10.96,
-      "profit_units": 4.0
+      "bets": 54,
+      "roi_pct": 14.48,
+      "profit_units": 11.5
     },
     "2023": {
-      "bets": 20,
-      "roi_pct": 1.95,
-      "profit_units": 1.1
+      "bets": 51,
+      "roi_pct": -23.5,
+      "profit_units": -12.1
     },
     "2024": {
-      "bets": 16,
-      "roi_pct": -1.81,
-      "profit_units": -0.8
+      "bets": 29,
+      "roi_pct": -20.33,
+      "profit_units": -6.0
     },
     "2025": {
-      "bets": 14,
-      "roi_pct": -5.05,
-      "profit_units": -1.9
+      "bets": 34,
+      "roi_pct": -2.31,
+      "profit_units": -0.8
     }
-  }
+  },
+  "source": "NFLRevolutionHybrid",
+  "oos": "oos_predictions_hybrid.csv",
+  "model_note": "CurveFM+CatBoost hybrid OOS (rev_ll_curves_mkt70); Hubacek grids fail worst-season ROI gate \u2014 official picks stay off."
 }

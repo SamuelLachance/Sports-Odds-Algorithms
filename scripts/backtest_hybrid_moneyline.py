@@ -121,10 +121,41 @@ def main() -> int:
     args = parser.parse_args()
 
     v2 = PROJECT_ROOT / "data" / "models" / f"{args.league}_v2"
-    frame = pd.read_csv(v2 / "oos_predictions.csv")
+    hybrid_oos = v2 / "oos_predictions_hybrid.csv"
+    oos_path = hybrid_oos if hybrid_oos.is_file() else (v2 / "oos_predictions.csv")
+    frame = pd.read_csv(oos_path)
+    print(f"{args.league}: loading {oos_path.name}")
     if "model_prob" not in frame.columns:
         raise SystemExit("missing model_prob")
-    # prefer close ML, fall back — price loop below selects concrete columns
+    # Enrich moneylines from primary OOS / training table when hybrid file omits them
+    if "home_close_ml" not in frame.columns and "home_ml" not in frame.columns:
+        enrich_sources = [
+            v2 / "oos_predictions.csv",
+            PROJECT_ROOT / "data" / f"{args.league}_history" / "training_table.csv",
+        ]
+        keys = [c for c in ("season", "date", "home", "away") if c in frame.columns]
+        for src in enrich_sources:
+            if not src.is_file() or not keys:
+                continue
+            other = pd.read_csv(src)
+            odds = [
+                c
+                for c in (
+                    "home_close_ml",
+                    "away_close_ml",
+                    "home_open_ml",
+                    "away_open_ml",
+                    "home_ml",
+                    "away_ml",
+                )
+                if c in other.columns
+            ]
+            join_keys = [c for c in keys if c in other.columns]
+            if not odds or not join_keys:
+                continue
+            frame = frame.merge(other[join_keys + odds].drop_duplicates(join_keys), on=join_keys, how="left")
+            print(f"{args.league}: joined moneylines from {src.name}")
+            break
     if "home_close_ml" not in frame.columns and "home_ml" not in frame.columns:
         raise SystemExit("missing home_close_ml/home_ml")
     frame = frame.dropna(subset=["model_prob", "home_win", "season"])

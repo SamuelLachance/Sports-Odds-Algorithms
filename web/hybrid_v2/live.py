@@ -13,7 +13,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 
 def fill_curve_proxies(features: dict[str, Any]) -> dict[str, Any]:
-    """Identity CurveFM proxies from tabular strength features (live path)."""
+    """Identity CurveFM / MC proxies from tabular strength features (live path)."""
     out = dict(features)
     elo = float(out.get("elo_diff") or 0.0)
     net = float(
@@ -21,6 +21,7 @@ def fill_curve_proxies(features: dict[str, Any]) -> dict[str, Any]:
         or out.get("net_rtg_diff")
         or out.get("adj_margin_ewma_diff")
         or out.get("xg_diff")
+        or out.get("epa_off_diff")
         or 0.0
     )
     out.setdefault("curve_elo_diff", elo)
@@ -29,9 +30,38 @@ def fill_curve_proxies(features: dict[str, Any]) -> dict[str, Any]:
     out.setdefault("curve_unc_sum", 0.0)
     out.setdefault("curve_unc_diff", 0.0)
     out.setdefault("curve_backend", 0.0)
+    # Match-layer MC proxies (NFL revolution / hybrid)
+    points_per_elo = float(out.get("points_per_elo") or 25.0)
+    mc_margin = float(out.get("mc_margin") if out.get("mc_margin") is not None else elo / max(points_per_elo, 1e-6))
+    out.setdefault("mc_margin", mc_margin)
+    out.setdefault("mc_sigma", float(out.get("mc_sigma") or 13.0))
+    # Normal CDF approx for home win prior
+    if "mc_home_prob" not in out or out.get("mc_home_prob") is None:
+        import math
+
+        z = mc_margin / max(float(out["mc_sigma"]), 1e-6)
+        out["mc_home_prob"] = float(min(max(0.5 * (1.0 + math.erf(z / math.sqrt(2.0))), 0.02), 0.98))
+    out.setdefault("mc_x_unc", float(out["mc_margin"]) * float(out.get("curve_unc_sum") or 0.0))
+    # Categorical defaults for CatBoost hybrid
+    out.setdefault("roof_cat", "dome" if float(out.get("roof_dome") or 0.0) > 0.5 else "outdoor")
+    out.setdefault("weekday_cat", "thu" if float(out.get("weekday_thu") or 0.0) > 0.5 else "other")
+    week = float(out.get("week") or 1.0)
+    if "week_bucket" not in out:
+        if week <= 4:
+            out["week_bucket"] = "early"
+        elif week <= 9:
+            out["week_bucket"] = "mid"
+        elif week <= 13:
+            out["week_bucket"] = "late"
+        elif week <= 18:
+            out["week_bucket"] = "dec"
+        else:
+            out["week_bucket"] = "post"
     # Market feature defaults when odds missing
     out.setdefault("has_market", float(out.get("has_market") or 0.0))
     out.setdefault("mkt_home_prob", float(out.get("mkt_home_prob") or 0.5))
+    out.setdefault("has_spread", float(out.get("has_spread") or 0.0))
+    out.setdefault("mkt_home_spread", float(out.get("mkt_home_spread") or out.get("home_spread") or 0.0))
     out.setdefault("ml_steam_pp", float(out.get("ml_steam_pp") or 0.0))
     out.setdefault("has_steam", float(out.get("has_steam") or 0.0))
     out.setdefault("mkt_open_home", float(out.get("mkt_open_home") or 1 / 3))
@@ -125,10 +155,15 @@ def score_hybrid_binary(
         "market_blend_w": w,
     }
     if bundle["margin"] is not None:
-        m_cols = bundle["margin_feature_cols"] or [c for c in cols if c not in cat_cols]
+        m_cols = bundle["margin_feature_cols"] or cols
+        m_cats = [c for c in cat_cols if c in m_cols]
         m_row = {c: feature_row.get(c, 0.0) for c in m_cols}
+        for c in m_cats:
+            m_row[c] = str(feature_row.get(c, feature_row.get(c.replace("_id", ""), "UNK")))
         m_frame = pd.DataFrame([m_row])[m_cols]
-        out["predicted_margin"] = float(bundle["margin"].predict(Pool(m_frame))[0])
+        out["predicted_margin"] = float(
+            bundle["margin"].predict(Pool(m_frame, cat_features=m_cats or None))[0]
+        )
     return out
 
 

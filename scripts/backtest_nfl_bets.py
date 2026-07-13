@@ -36,6 +36,7 @@ GAMES_CSV = PROJECT_ROOT / "data" / "supplemental" / "closing-odds" / "nflverse_
 ELO_OOS_PATH = PROJECT_ROOT / "data" / "models" / "nfl_backtest" / "oos_predictions.csv"
 V2_DIR = PROJECT_ROOT / "data" / "models" / "nfl_v2"
 V2_OOS_PATH = V2_DIR / "oos_predictions.csv"
+V2_HYBRID_OOS_PATH = V2_DIR / "oos_predictions_hybrid.csv"
 V2_META_PATH = V2_DIR / "metadata.json"
 
 LEAGUE = "nfl"
@@ -135,9 +136,30 @@ def build_walk_forward_predictions(frame: pd.DataFrame) -> pd.DataFrame:
 
 
 def load_v2_predictions() -> pd.DataFrame | None:
-    if not V2_OOS_PATH.is_file():
+    path = V2_HYBRID_OOS_PATH if V2_HYBRID_OOS_PATH.is_file() else V2_OOS_PATH
+    if not path.is_file():
         return None
-    preds = pd.read_csv(V2_OOS_PATH)
+    preds = pd.read_csv(path)
+    # Enrich odds/spreads from primary XGB OOS when hybrid file is thin
+    if "home_spread_odds" not in preds.columns or preds.get("home_spread_odds", pd.Series(dtype=float)).isna().all():
+        if V2_OOS_PATH.is_file() and path != V2_OOS_PATH:
+            other = pd.read_csv(V2_OOS_PATH)
+            keys = [c for c in ("season", "date", "home", "away") if c in preds.columns and c in other.columns]
+            odds = [
+                c
+                for c in (
+                    "home_close_spread",
+                    "home_spread",
+                    "home_spread_odds",
+                    "away_spread_odds",
+                    "spread_home_odds",
+                    "spread_away_odds",
+                )
+                if c in other.columns
+            ]
+            if keys and odds:
+                preds = preds.drop(columns=[c for c in odds if c in preds.columns], errors="ignore")
+                preds = preds.merge(other[keys + odds].drop_duplicates(keys), on=keys, how="left")
     rename = {}
     if "home_spread" not in preds.columns and "home_close_spread" in preds.columns:
         rename["home_close_spread"] = "home_spread"
