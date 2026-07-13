@@ -30,7 +30,7 @@ from web.nba_odds_espn import (
 )
 from web.nhl_odds_espn import MAX_NHL_PUCK_LINE, _consensus_nhl, _provider_line_nhl
 
-MULTI_BOOK_LEAGUES = frozenset({"nba", "nhl", "mlb", "wnba"})
+MULTI_BOOK_LEAGUES = frozenset({"nba", "nhl", "mlb", "wnba", "nfl"})
 
 _HANDICAP_MAX: dict[str, float] = {
     "nba": MAX_NBA_SPREAD,

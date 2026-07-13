@@ -8,7 +8,13 @@ and the live path replays only the current season.
 Game dict schema:
   date (ISO), season, home / away (lowercase abbr), home_score, away_score,
   optional: week, game_type, location, div_game, roof, surface, temp, wind,
-  weekday, home_rest, away_rest, home_qb_id, away_qb_id, home_coach, away_coach.
+  weekday, home_rest, away_rest, home_qb_id, away_qb_id, home_coach, away_coach,
+  home_epa_off / home_epa_def / home_sr_off / home_sr_def / home_explosive_off /
+  home_pass_epa_off (and away_*), madden_ovr_diff / madden_known.
+
+Injury note: same-day ESPN injury HTML is intentionally NOT trained (leak /
+unstable). Use leak-free QB-change / backup proxies instead; live still applies
+an availability nudge in blend_service.
 
 Elo defaults: CFB-style K=20 with NFL HFA=48 and POINTS_PER_ELO=25 so
 elo_diff is consistent with elo_to_prob(z=401.62). QB/coach Elo updated
@@ -36,8 +42,12 @@ ALPHA_SLOW = 0.08
 ALPHA_WIN = 0.15
 ALPHA_H2H = 0.35
 ALPHA_LEAGUE = 0.02
+ALPHA_EPA = 0.20
 
 LEAGUE_PPG = 22.5
+DEFAULT_EPA = 0.0
+DEFAULT_SR = 0.45
+DEFAULT_EXPLOSIVE = 0.10
 CLOSE_GAME_MARGIN = 8.0
 BLOWOUT_MARGIN = 17.0
 DEFAULT_MARGIN_VOL = 14.0
@@ -46,6 +56,7 @@ SEASON_GAMES_NOMINAL = 17.0
 DEFAULT_TEMP = 70.0
 DEFAULT_WIND = 0.0
 DEFAULT_REST = 7.0
+MADDEN_MIN_SEASON = 2025  # madden_nfl_2026.csv maps to 2025+ NFL seasons
 
 FEATURE_COLUMNS: tuple[str, ...] = (
     # team strength
@@ -90,6 +101,8 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     "league_ppg",
     "exp_total_env",
     "elo_x_season_frac",
+    "wind_x_outdoor",
+    "short_week_x_rest",
     # matchup history
     "h2h_home_win_rate",
     "h2h_margin_ewma",
@@ -101,6 +114,8 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     "away_qb_known",
     "home_qb_streak",
     "away_qb_streak",
+    "qb_change_diff",
+    "qb_games_out_proxy_diff",
     "coach_elo_diff",
     "coach_games_diff",
     "coach_win_ewma_diff",
@@ -108,6 +123,18 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     "away_coach_known",
     "home_coach_streak",
     "away_coach_streak",
+    # PBP efficiency (leak-free prior EWMA)
+    "epa_off_diff",
+    "epa_def_diff",
+    "sr_off_diff",
+    "sr_def_diff",
+    "explosive_diff",
+    "pass_epa_diff",
+    "epa_off_vs_def",
+    "epa_x_season_frac",
+    # Madden prior (known seasons only)
+    "madden_ovr_diff",
+    "madden_known",
     # score-based luck / volatility proxies
     "close_win_ewma_diff",
     "blowout_net_ewma_diff",
@@ -203,6 +230,54 @@ def _is_turf(surface: str) -> float:
     return 1.0
 
 
+_MADDEN_CACHE: dict[str, float] | None = None
+
+
+def _load_madden_team_ovr(top_n: int = 8) -> dict[str, float]:
+    global _MADDEN_CACHE
+    if _MADDEN_CACHE is not None:
+        return _MADDEN_CACHE
+    from pathlib import Path
+
+    path = Path(__file__).resolve().parent.parent.parent / "data" / "ratings" / "madden_nfl_2026.csv"
+    out: dict[str, float] = {}
+    if not path.is_file():
+        _MADDEN_CACHE = out
+        return out
+    try:
+        import pandas as pd
+
+        frame = pd.read_csv(path)
+        if "team_abbr" not in frame.columns or "overall" not in frame.columns:
+            _MADDEN_CACHE = out
+            return out
+        frame = frame.copy()
+        frame["team_abbr"] = frame["team_abbr"].astype(str).str.lower().str.strip()
+        frame["overall"] = pd.to_numeric(frame["overall"], errors="coerce")
+        frame = frame.dropna(subset=["overall"])
+        for team, group in frame.groupby("team_abbr"):
+            top = group["overall"].nlargest(top_n)
+            if len(top):
+                out[str(team)] = float(top.mean())
+    except Exception:  # noqa: BLE001
+        out = {}
+    _MADDEN_CACHE = out
+    return out
+
+
+def _madden_ovr_diff(home: str, away: str) -> tuple[float, float]:
+    ratings = _load_madden_team_ovr()
+    home_k = str(home or "").lower().strip()
+    away_k = str(away or "").lower().strip()
+    # Madden uses LAR→LA style; tolerate common aliases.
+    aliases = {"lar": "la", "wsh": "was", "jac": "jax"}
+    home_k = aliases.get(home_k, home_k)
+    away_k = aliases.get(away_k, away_k)
+    if home_k not in ratings or away_k not in ratings:
+        return 0.0, 0.0
+    return float(ratings[home_k] - ratings[away_k]), 1.0
+
+
 class TeamState:
     __slots__ = (
         "key", "elo", "pf_fast", "pa_fast", "pf_slow", "pa_slow",
@@ -214,6 +289,8 @@ class TeamState:
         "close_win_ewma", "blowout_net_ewma", "blowout_games", "blowout_wins",
         "one_score_games", "one_score_wins", "recent_margins", "recent_pf",
         "elo_pre_hist", "current_qb_id", "qb_streak", "current_coach", "coach_streak",
+        "epa_off", "epa_def", "sr_off", "sr_def", "explosive_off", "pass_epa_off",
+        "qb_last_start_games",
     )
 
     def __init__(self, key: str):
@@ -255,6 +332,13 @@ class TeamState:
         self.qb_streak = 0
         self.current_coach = ""
         self.coach_streak = 0
+        self.epa_off = DEFAULT_EPA
+        self.epa_def = DEFAULT_EPA
+        self.sr_off = DEFAULT_SR
+        self.sr_def = DEFAULT_SR
+        self.explosive_off = DEFAULT_EXPLOSIVE
+        self.pass_epa_off = DEFAULT_EPA
+        self.qb_last_start_games: dict[str, int] = {}
 
     def roll_season(self, season: int) -> None:
         if self.season_seen == season:
@@ -397,6 +481,13 @@ class TeamState:
             "qb_streak": self.qb_streak,
             "current_coach": self.current_coach,
             "coach_streak": self.coach_streak,
+            "epa_off": self.epa_off,
+            "epa_def": self.epa_def,
+            "sr_off": self.sr_off,
+            "sr_def": self.sr_def,
+            "explosive_off": self.explosive_off,
+            "pass_epa_off": self.pass_epa_off,
+            "qb_last_start_games": dict(self.qb_last_start_games),
         }
 
     @classmethod
@@ -417,6 +508,10 @@ class TeamState:
                 state.recent_pf = [float(v) for v in value]
             elif key == "elo_pre_hist":
                 state.elo_pre_hist = [float(v) for v in value]
+            elif key == "qb_last_start_games":
+                state.qb_last_start_games = {
+                    str(k): int(v) for k, v in dict(value or {}).items()
+                }
             elif hasattr(state, key):
                 setattr(state, key, value)
         return state
@@ -541,6 +636,28 @@ class NflFeatureEngine:
         home_qb_win = home_qb.win_ewma if home_qb else 0.5
         away_qb_win = away_qb.win_ewma if away_qb else 0.5
 
+        # Leak-free QB change / games-out proxies (vs last starter on this team).
+        home_qb_change = 0.0
+        away_qb_change = 0.0
+        if home_qb_known and home.current_qb_id and home.current_qb_id != home_qb_id:
+            home_qb_change = 1.0
+        if away_qb_known and away.current_qb_id and away.current_qb_id != away_qb_id:
+            away_qb_change = 1.0
+        home_qb_out = 0.0
+        away_qb_out = 0.0
+        if home_qb_known:
+            last_gp = home.qb_last_start_games.get(home_qb_id)
+            if last_gp is not None:
+                home_qb_out = float(max(home.games_played - last_gp, 0))
+            elif home.current_qb_id and home.current_qb_id != home_qb_id:
+                home_qb_out = 4.0
+        if away_qb_known:
+            last_gp = away.qb_last_start_games.get(away_qb_id)
+            if last_gp is not None:
+                away_qb_out = float(max(away.games_played - last_gp, 0))
+            elif away.current_qb_id and away.current_qb_id != away_qb_id:
+                away_qb_out = 4.0
+
         home_coach_name = str(game.get("home_coach") or "").strip()
         away_coach_name = str(game.get("away_coach") or "").strip()
         home_coach_known = 0.0 if _is_missing_id(home_coach_name) else 1.0
@@ -553,6 +670,14 @@ class NflFeatureEngine:
         away_coach_games = float(away_coach.games) if away_coach else 0.0
         home_coach_win = home_coach.win_ewma if home_coach else 0.5
         away_coach_win = away_coach.win_ewma if away_coach else 0.5
+
+        madden_known = 0.0
+        madden_diff = 0.0
+        if "madden_ovr_diff" in game and game.get("madden_ovr_diff") is not None:
+            madden_diff = _safe_float(game.get("madden_ovr_diff"), 0.0)
+            madden_known = _safe_float(game.get("madden_known"), 1.0 if season >= MADDEN_MIN_SEASON else 0.0)
+        elif season >= MADDEN_MIN_SEASON:
+            madden_diff, madden_known = _madden_ovr_diff(str(game["home"]), str(game["away"]))
 
         features: dict[str, float] = {
             "elo_diff": elo_diff,
@@ -595,6 +720,8 @@ class NflFeatureEngine:
             "league_ppg": self.league_ppg,
             "exp_total_env": (home.pf_fast + home.pa_fast + away.pf_fast + away.pa_fast) / 2.0,
             "elo_x_season_frac": elo_diff * season_frac,
+            "wind_x_outdoor": wind * roof_outdoor,
+            "short_week_x_rest": short_week * (home_rest - away_rest),
             "h2h_home_win_rate": h2h_rate,
             "h2h_margin_ewma": home.h2h_margin.get(away.key, 0.0),
             "qb_elo_diff": home_qb_elo - away_qb_elo,
@@ -604,6 +731,8 @@ class NflFeatureEngine:
             "away_qb_known": away_qb_known,
             "home_qb_streak": home.qb_streak_for(home_qb_id),
             "away_qb_streak": away.qb_streak_for(away_qb_id),
+            "qb_change_diff": home_qb_change - away_qb_change,
+            "qb_games_out_proxy_diff": home_qb_out - away_qb_out,
             "coach_elo_diff": home_coach_elo - away_coach_elo,
             "coach_games_diff": home_coach_games - away_coach_games,
             "coach_win_ewma_diff": home_coach_win - away_coach_win,
@@ -611,6 +740,16 @@ class NflFeatureEngine:
             "away_coach_known": away_coach_known,
             "home_coach_streak": home.coach_streak_for(home_coach_name),
             "away_coach_streak": away.coach_streak_for(away_coach_name),
+            "epa_off_diff": home.epa_off - away.epa_off,
+            "epa_def_diff": home.epa_def - away.epa_def,
+            "sr_off_diff": home.sr_off - away.sr_off,
+            "sr_def_diff": home.sr_def - away.sr_def,
+            "explosive_diff": home.explosive_off - away.explosive_off,
+            "pass_epa_diff": home.pass_epa_off - away.pass_epa_off,
+            "epa_off_vs_def": (home.epa_off - away.epa_def) - (away.epa_off - home.epa_def),
+            "epa_x_season_frac": (home.epa_off - away.epa_off) * season_frac,
+            "madden_ovr_diff": madden_diff,
+            "madden_known": madden_known,
             "close_win_ewma_diff": home.close_win_ewma - away.close_win_ewma,
             "blowout_net_ewma_diff": home.blowout_net_ewma - away.blowout_net_ewma,
             "blowout_rate_diff": home.blowout_rate() - away.blowout_rate(),
@@ -784,12 +923,28 @@ class NflFeatureEngine:
             else:
                 home.current_qb_id = home_qb_id
                 home.qb_streak = 1
+            home.qb_last_start_games[home_qb_id] = home.games_played
         if not _is_missing_id(away_qb_id):
             if away.current_qb_id == away_qb_id:
                 away.qb_streak += 1
             else:
                 away.current_qb_id = away_qb_id
                 away.qb_streak = 1
+            away.qb_last_start_games[away_qb_id] = away.games_played
+
+        # PBP EPA — post-game only (features already emitted from prior EWMA).
+        def _ewma_epa(old: float, new: float | None) -> float:
+            if new is None or (isinstance(new, float) and not math.isfinite(new)):
+                return old
+            return ALPHA_EPA * float(new) + (1.0 - ALPHA_EPA) * old
+
+        for team, prefix in ((home, "home"), (away, "away")):
+            team.epa_off = _ewma_epa(team.epa_off, game.get(f"{prefix}_epa_off"))
+            team.epa_def = _ewma_epa(team.epa_def, game.get(f"{prefix}_epa_def"))
+            team.sr_off = _ewma_epa(team.sr_off, game.get(f"{prefix}_sr_off"))
+            team.sr_def = _ewma_epa(team.sr_def, game.get(f"{prefix}_sr_def"))
+            team.explosive_off = _ewma_epa(team.explosive_off, game.get(f"{prefix}_explosive_off"))
+            team.pass_epa_off = _ewma_epa(team.pass_epa_off, game.get(f"{prefix}_pass_epa_off"))
 
         home_coach_name = str(game.get("home_coach") or "").strip()
         away_coach_name = str(game.get("away_coach") or "").strip()

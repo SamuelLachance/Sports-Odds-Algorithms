@@ -67,7 +67,7 @@ def _game(
 
 
 def test_feature_columns_count_in_range() -> None:
-    assert 55 <= len(FEATURE_COLUMNS) <= 75
+    assert 55 <= len(FEATURE_COLUMNS) <= 90
 
 
 def test_engine_features_precede_update_and_elo_moves() -> None:
@@ -437,3 +437,33 @@ def test_live_prefers_nflverse_context_fields(monkeypatch, tmp_path: Path) -> No
     assert ctx["away_coach"] == "John Harbaugh"
     assert ctx["temp"] == 72 or float(ctx["temp"]) == 72.0
     assert ctx["neutral_site"] is False
+
+
+def test_qb_change_and_epa_features() -> None:
+    engine = NflFeatureEngine()
+    g1 = _game("2024-09-08", "kc", "bal", 27, 20, home_qb_id="qb-a", away_qb_id="qb-b")
+    g1.update(
+        {
+            "home_epa_off": 0.2,
+            "away_epa_off": -0.1,
+            "home_epa_def": 0.0,
+            "away_epa_def": 0.05,
+            "home_sr_off": 0.5,
+            "away_sr_off": 0.4,
+            "home_sr_def": 0.45,
+            "away_sr_def": 0.48,
+            "home_explosive_off": 0.12,
+            "away_explosive_off": 0.08,
+            "home_pass_epa_off": 0.25,
+            "away_pass_epa_off": -0.05,
+        }
+    )
+    engine.features_for_game(g1)
+    engine.update_after_game(g1)
+    g2 = _game("2024-09-15", "kc", "cin", 24, 17, home_qb_id="qb-backup", away_qb_id="qb-c", week=2)
+    feats = engine.features_for_game(g2)
+    assert "epa_off_diff" in FEATURE_COLUMNS
+    assert "qb_change_diff" in FEATURE_COLUMNS
+    assert feats["qb_change_diff"] == 1.0
+    assert feats["epa_off_diff"] != 0.0
+    assert feats["madden_known"] in (0.0, 1.0)

@@ -116,6 +116,7 @@ LEAGUE_STACKING_FEATURES: dict[str, tuple[str, ...]] = {
     "nhl": NHL_STACKING_FEATURES,
     "mlb": MLB_STACKING_FEATURES,
     "cbb": CBB_STACKING_FEATURES,
+    "nfl": STACKING_FEATURES + ("sport_minus_market",),
 }
 
 DATASET_CACHE_DIR = PROJECT_ROOT / "data" / "supplemental" / "ensemble-ml"

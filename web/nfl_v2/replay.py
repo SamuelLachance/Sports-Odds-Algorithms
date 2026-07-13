@@ -15,6 +15,7 @@ from web.nfl_v2.feature_engine import (
     infer_playoff,
     nfl_season_of,
 )
+from web.nfl_v2.epa import attach_epa_to_games
 
 
 def _espn_local_date(event: dict[str, Any]) -> str:
@@ -54,12 +55,74 @@ def events_to_results(events: list[dict[str, Any]], season: int | None = None) -
             "event_id": event.get("event_id"),
             "week": event.get("week"),
             "game_type": event.get("game_type"),
+            "home_qb_id": event.get("home_qb_id"),
+            "away_qb_id": event.get("away_qb_id"),
+            "home_coach": event.get("home_coach"),
+            "away_coach": event.get("away_coach"),
+            "game_id": event.get("game_id"),
         }
         if row["neutral_site"] is None:
             row["neutral_site"] = infer_neutral_site(row)
         rows.append(row)
     rows.sort(key=lambda r: (r["date"], r["home"], r["away"]))
     return rows
+
+
+def backfill_nflverse_context(games: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Fill missing QB/coach/game_id on ESPN-derived games from nflverse history."""
+    from pathlib import Path
+
+    csv_path = Path(__file__).resolve().parent.parent.parent / "data" / "supplemental" / "closing-odds" / "nflverse_games.csv"
+    if not csv_path.is_file() or not games:
+        return games
+    try:
+        import pandas as pd
+    except ImportError:
+        return games
+    try:
+        frame = pd.read_csv(csv_path)
+    except (OSError, ValueError):
+        return games
+    if frame.empty:
+        return games
+    frame = frame.copy()
+    frame["_day"] = frame["gameday"].astype(str).str[:10]
+    frame["_home"] = frame["home_team"].astype(str).str.lower().str.strip()
+    frame["_away"] = frame["away_team"].astype(str).str.lower().str.strip()
+    lookup: dict[tuple[str, str, str], dict] = {}
+    for row in frame.to_dict(orient="records"):
+        key = (str(row["_day"]), str(row["_home"]), str(row["_away"]))
+        lookup[key] = row
+    for game in games:
+        key = (
+            str(game.get("date") or "")[:10],
+            str(game.get("home") or "").lower(),
+            str(game.get("away") or "").lower(),
+        )
+        row = lookup.get(key)
+        if row is None:
+            continue
+        for field in (
+            "home_qb_id",
+            "away_qb_id",
+            "home_coach",
+            "away_coach",
+            "game_id",
+            "roof",
+            "surface",
+            "temp",
+            "wind",
+            "weekday",
+            "home_rest",
+            "away_rest",
+            "week",
+            "game_type",
+        ):
+            if game.get(field) in (None, ""):
+                val = row.get(field)
+                if val is not None and val == val:
+                    game[field] = val
+    return attach_epa_to_games(games)
 
 
 def _optional_float(value: Any) -> float | None:
@@ -141,7 +204,7 @@ def nflverse_rows_to_games(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         }
         games.append(game)
     games.sort(key=lambda g: (g["date"], g["home"], g["away"]))
-    return games
+    return attach_epa_to_games(games)
 
 
 def csv_rows_to_games(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -178,6 +241,10 @@ def csv_rows_to_games(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "home_spread_odds": row.get("home_spread_odds"),
             "away_spread_odds": row.get("away_spread_odds"),
             "close_total": row.get("close_total"),
+            "home_open_ml": row.get("home_open_ml"),
+            "away_open_ml": row.get("away_open_ml"),
+            "home_open_spread": row.get("home_open_spread"),
+            "away_open_spread": row.get("away_open_spread"),
         }
         games.append(game)
     games.sort(key=lambda g: (g["date"], g["home"], g["away"]))

@@ -63,19 +63,16 @@
   },
   "nfl": {
     "bet_type": "moneyline",
-    "min_market_gap_pp": 8.0,
+    "min_market_gap_pp": 5.0,
     "min_win_confidence_pp": 0.0,
-    "min_ev_pct": 0.0,
-    "ml_lo": -350,
-    "ml_hi": 300,
-    "allowed_sides": [
-      "home"
-    ],
-    "fav_mode": "any",
+    "min_ev_pct": 5.0,
+    "ml_lo": -150,
+    "ml_hi": 200,
+    "fav_mode": "favorite",
     "enabled": false,
-    "note": "Hybrid OOS Hub\u00e1\u010dek refresh 2026-07-13: gap>=8.0pp EV>=0.0% ML[-350,300] sides=home exec=close ROI -12.48% worst -18.39% n=189. DISABLED.",
-    "backtest_roi_pct": -12.48,
-    "backtest_bets": 189
+    "note": "Hybrid OOS Hub\u00e1\u010dek refresh 2026-07-13: gap>=5.0pp EV>=5.0% ML[-150,200] sides=favorite exec=close ROI 1.41% worst -5.05% n=63. DISABLED.",
+    "backtest_roi_pct": 1.41,
+    "backtest_bets": 63
   },
   "cfb": {
     "bet_type": "moneyline",

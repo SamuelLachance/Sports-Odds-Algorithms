@@ -26,8 +26,8 @@
   "nfl": {
     "enabled": false,
     "bet_type": "moneyline",
-    "roi": -12.48,
-    "bets": 189
+    "roi": 1.41,
+    "bets": 63
   },
   "cfb": {
     "enabled": false,

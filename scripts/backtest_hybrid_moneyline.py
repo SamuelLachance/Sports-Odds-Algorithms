@@ -124,49 +124,61 @@ def main() -> int:
     frame = pd.read_csv(v2 / "oos_predictions.csv")
     if "model_prob" not in frame.columns:
         raise SystemExit("missing model_prob")
-    # prefer close ML, fall back
-    home_col = "home_close_ml" if "home_close_ml" in frame.columns else "home_ml"
-    away_col = "away_close_ml" if "away_close_ml" in frame.columns else "away_ml"
-    if home_col not in frame.columns:
-        raise SystemExit(f"missing {home_col}")
-    frame = frame.dropna(subset=["model_prob", "home_win", home_col, away_col, "season"])
+    # prefer close ML, fall back — price loop below selects concrete columns
+    if "home_close_ml" not in frame.columns and "home_ml" not in frame.columns:
+        raise SystemExit("missing home_close_ml/home_ml")
+    frame = frame.dropna(subset=["model_prob", "home_win", "season"])
     if args.min_season is not None:
         frame = frame[frame["season"] >= args.min_season]
     if args.max_season is not None:
         frame = frame[frame["season"] <= args.max_season]
-    print(f"{args.league}: OOS n={len(frame)} using {home_col}/{away_col}")
+
+    price_cols: list[tuple[str, str, str]] = []
+    if "home_close_ml" in frame.columns and "away_close_ml" in frame.columns:
+        price_cols.append(("close", "home_close_ml", "away_close_ml"))
+    elif "home_ml" in frame.columns and "away_ml" in frame.columns:
+        price_cols.append(("close", "home_ml", "away_ml"))
+    if "home_open_ml" in frame.columns and "away_open_ml" in frame.columns:
+        open_n = int(frame[["home_open_ml", "away_open_ml"]].dropna().shape[0])
+        if open_n >= args.min_bets:
+            price_cols.append(("open", "home_open_ml", "away_open_ml"))
+    if not price_cols:
+        raise SystemExit("missing moneyline columns")
 
     results = []
-    for min_edge in (2.0, 3.0, 4.0, 5.0, 5.6, 6.0, 7.0, 8.0):
-        for min_ev in (0.0, 2.0, 4.0, 5.0):
-            for ml_lo, ml_hi in ((-350, 300), (-200, 200), (-150, 200), (-150, 250)):
-                for sides in ("either", "home", "away", "favorite"):
-                    params = {
-                        "bet_type": "moneyline",
-                        "exec_price": "close",
-                        "prob_col": "model_prob",
-                        "min_edge_pp": min_edge,
-                        "min_ev_pct": min_ev,
-                        "ml_lo": ml_lo,
-                        "ml_hi": ml_hi,
-                        "sides": sides,
-                    }
-                    res = simulate(
-                        frame,
-                        min_edge_pp=min_edge,
-                        min_ev_pct=min_ev,
-                        ml_lo=ml_lo,
-                        ml_hi=ml_hi,
-                        sides=sides,
-                        home_col=home_col,
-                        away_col=away_col,
-                    )
-                    if res.get("bets", 0) < args.min_bets:
-                        continue
-                    if res.get("seasons_total", 0) < args.min_seasons:
-                        continue
-                    score = (res["worst_season_roi"], res["roi_pct"])
-                    results.append((score, params, res))
+    for exec_price, home_col, away_col in price_cols:
+        priced = frame.dropna(subset=[home_col, away_col])
+        print(f"{args.league}: OOS n={len(priced)} using {home_col}/{away_col} ({exec_price})")
+        for min_edge in (2.0, 3.0, 4.0, 5.0, 5.6, 6.0, 7.0, 8.0):
+            for min_ev in (0.0, 2.0, 4.0, 5.0):
+                for ml_lo, ml_hi in ((-350, 300), (-200, 200), (-150, 200), (-150, 250)):
+                    for sides in ("either", "home", "away", "favorite"):
+                        params = {
+                            "bet_type": "moneyline",
+                            "exec_price": exec_price,
+                            "prob_col": "model_prob",
+                            "min_edge_pp": min_edge,
+                            "min_ev_pct": min_ev,
+                            "ml_lo": ml_lo,
+                            "ml_hi": ml_hi,
+                            "sides": sides,
+                        }
+                        res = simulate(
+                            priced,
+                            min_edge_pp=min_edge,
+                            min_ev_pct=min_ev,
+                            ml_lo=ml_lo,
+                            ml_hi=ml_hi,
+                            sides=sides,
+                            home_col=home_col,
+                            away_col=away_col,
+                        )
+                        if res.get("bets", 0) < args.min_bets:
+                            continue
+                        if res.get("seasons_total", 0) < args.min_seasons:
+                            continue
+                        score = (res["worst_season_roi"], res["roi_pct"])
+                        results.append((score, params, res))
 
     results.sort(key=lambda x: x[0], reverse=True)
     print("top ML policies:")

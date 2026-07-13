@@ -431,6 +431,13 @@ def train_final_artifacts(frame: pd.DataFrame, oos: pd.DataFrame, end_season: in
     close_mae = float(
         np.mean(np.abs(close_subset.margin + close_subset.home_close_spread))
     ) if len(close_subset) else float("nan")
+    # Model ATS residual MAE: how far predicted margin is from covering the close.
+    ats_residual_mae = float(
+        np.mean(np.abs((close_subset.model_margin + close_subset.home_close_spread)))
+    ) if len(close_subset) else float("nan")
+    beat_close_spread = bool(
+        close_mae == close_mae and oos_margin_mae < close_mae
+    )
 
     ship_models = bool(
         oos_margin_mae < ELO_BASELINE_MAE or oos_model_ll < oos_elo_ll - 0.01
@@ -456,6 +463,10 @@ def train_final_artifacts(frame: pd.DataFrame, oos: pd.DataFrame, end_season: in
         "oos_elo_logloss": round(oos_elo_ll, 5),
         "elo_baseline_mae_reference": ELO_BASELINE_MAE,
         "oos_close_spread_mae": round(close_mae, 4) if close_mae == close_mae else None,
+        "oos_ats_residual_mae": (
+            round(ats_residual_mae, 4) if ats_residual_mae == ats_residual_mae else None
+        ),
+        "beat_close_spread_gate": beat_close_spread,
         "margin_sigma": round(margin_sigma, 4),
         "ship_models": ship_models,
         "elo_params": {

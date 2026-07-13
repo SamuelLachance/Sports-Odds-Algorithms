@@ -21,6 +21,7 @@ from web.nfl_v2.feature_engine import FEATURE_COLUMNS, NflFeatureEngine  # noqa:
 from web.nfl_v2.replay import nflverse_rows_to_games, replay_games  # noqa: E402
 
 ODDS_CSV = PROJECT_ROOT / "data" / "supplemental" / "closing-odds" / "nflverse_games.csv"
+OPENS_CSV = PROJECT_ROOT / "data" / "supplemental" / "closing-odds" / "nfl.csv"
 OUT_DIR = PROJECT_ROOT / "data" / "nfl_history"
 
 
@@ -29,6 +30,40 @@ def binary_home_win(home_score: int, away_score: int) -> int | None:
     if home_score == away_score:
         return None
     return 1 if home_score > away_score else 0
+
+
+def _attach_opening_lines(games: list[dict]) -> list[dict]:
+    """Join SBR opens from nfl.csv when present; never invent open=close."""
+    if not OPENS_CSV.is_file():
+        return games
+    try:
+        opens = pd.read_csv(OPENS_CSV)
+    except (OSError, ValueError):
+        return games
+    needed = {"date", "home_key", "away_key"}
+    if opens.empty or not needed.issubset(set(opens.columns)):
+        return games
+    opens = opens.copy()
+    opens["_day"] = opens["date"].astype(str).str[:10]
+    opens["_home"] = opens["home_key"].astype(str).str.lower().str.strip()
+    opens["_away"] = opens["away_key"].astype(str).str.lower().str.strip()
+    has_open = any(c in opens.columns for c in ("home_open_ml", "home_open_spread"))
+    if not has_open:
+        return games
+    lookup = { (r._day, r._home, r._away): r for r in opens.itertuples(index=False) }
+    for game in games:
+        key = (str(game.get("date") or "")[:10], str(game.get("home") or "").lower(), str(game.get("away") or "").lower())
+        row = lookup.get(key)
+        if row is None:
+            continue
+        for field in ("home_open_ml", "away_open_ml", "home_open_spread", "away_open_spread"):
+            if not hasattr(row, field):
+                continue
+            val = getattr(row, field)
+            if val is None or (isinstance(val, float) and val != val):
+                continue
+            game[field] = val
+    return games
 
 
 META_COLUMNS = (
@@ -50,6 +85,10 @@ META_COLUMNS = (
     "home_spread_odds",
     "away_spread_odds",
     "close_total",
+    "home_open_ml",
+    "away_open_ml",
+    "home_open_spread",
+    "away_open_spread",
 )
 
 
@@ -94,6 +133,7 @@ def main() -> int:
 
     rows_raw = frame.to_dict(orient="records")
     games = nflverse_rows_to_games(rows_raw)
+    games = _attach_opening_lines(games)
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     out_path = OUT_DIR / "training_table.csv"
@@ -132,6 +172,10 @@ def main() -> int:
                 "home_spread_odds": game.get("home_spread_odds"),
                 "away_spread_odds": game.get("away_spread_odds"),
                 "close_total": game.get("close_total"),
+                "home_open_ml": game.get("home_open_ml"),
+                "away_open_ml": game.get("away_open_ml"),
+                "home_open_spread": game.get("home_open_spread"),
+                "away_open_spread": game.get("away_open_spread"),
             }
             row.update({col: float(features[col]) for col in FEATURE_COLUMNS})
             writer.writerow(row)

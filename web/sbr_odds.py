@@ -293,18 +293,32 @@ def _rows_from_html_table(sport: str, season: int, html: str, translated: dict[s
                 away_spread = close_a if close_a is not None else (
                     -close_h if close_h is not None else None
                 )
+                home_open_spread = -open_a
+                away_open_spread = open_a
             else:
                 home_spread = close_h
                 away_spread = -close_h if close_h is not None else (
                     close_a if close_a is not None else None
                 )
+                home_open_spread = open_h
+                away_open_spread = -open_h if open_h is not None else (
+                    open_a if open_a is not None else None
+                )
         else:
             home_spread = close_h
             away_spread = close_a
+            home_open_spread = None
+            away_open_spread = None
         # Always emit opposite-sign home/away closes (open and no-open paths).
         home_spread, away_spread = _repair_same_sign_spreads(
             home_spread,
             away_spread,
+            home_ml=home_close_ml,
+            away_ml=away_close_ml,
+        )
+        home_open_spread, away_open_spread = _repair_same_sign_spreads(
+            home_open_spread,
+            away_open_spread,
             home_ml=home_close_ml,
             away_ml=away_close_ml,
         )
@@ -320,6 +334,10 @@ def _rows_from_html_table(sport: str, season: int, html: str, translated: dict[s
                 "away_close_ml": away_close_ml,
                 "home_close_spread": home_spread,
                 "away_close_spread": away_spread,
+                "home_open_ml": None,  # HTML archive has no open ML
+                "away_open_ml": None,
+                "home_open_spread": home_open_spread,
+                "away_open_spread": away_open_spread,
                 # NBA/NFL HTML archives do not expose spread juice — fail closed.
                 "home_spread_odds": None,
                 "away_spread_odds": None,
@@ -676,6 +694,10 @@ def write_sbr_cache(sport: str, seasons: list[int], path: Path | None = None) ->
         "away_close_ml",
         "home_close_spread",
         "away_close_spread",
+        "home_open_ml",
+        "away_open_ml",
+        "home_open_spread",
+        "away_open_spread",
         "home_spread_odds",
         "away_spread_odds",
         "source",

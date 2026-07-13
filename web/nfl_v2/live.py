@@ -20,7 +20,12 @@ import numpy as np
 
 from web.basketball_v2_market import apply_market_features, resolve_market_heads
 from web.nfl_v2.feature_engine import FEATURE_COLUMNS, NflFeatureEngine, nfl_season_of
-from web.nfl_v2.replay import events_to_results, nflverse_rows_to_games, replay_season
+from web.nfl_v2.replay import (
+    backfill_nflverse_context,
+    events_to_results,
+    nflverse_rows_to_games,
+    replay_season,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 MODEL_DIR = PROJECT_ROOT / "data" / "models" / "nfl_v2"
@@ -193,7 +198,7 @@ def _fetch_completed_season_games_espn(season: int, *, stop_before: str) -> list
     if not filtered:
         return None
     _write_cache(cache_path, filtered)
-    return events_to_results(filtered, season)
+    return backfill_nflverse_context(events_to_results(filtered, season))
 
 
 def _fetch_completed_season_games_nflverse(season: int, *, stop_before: str) -> list[dict[str, Any]]:
@@ -402,6 +407,17 @@ def predict_matchup_v2(
         "away": away,
     }
     game.update(_lookup_nflverse_matchup_context(day_iso[:10], home, away))
+    # Carry forward last-start QB when slate row has no starter yet.
+    home_team_state = engine.team(home)
+    away_team_state = engine.team(away)
+    if not game.get("home_qb_id") and home_team_state.current_qb_id:
+        game["home_qb_id"] = home_team_state.current_qb_id
+    if not game.get("away_qb_id") and away_team_state.current_qb_id:
+        game["away_qb_id"] = away_team_state.current_qb_id
+    if not game.get("home_coach") and home_team_state.current_coach:
+        game["home_coach"] = home_team_state.current_coach
+    if not game.get("away_coach") and away_team_state.current_coach:
+        game["away_coach"] = away_team_state.current_coach
     features = engine.features_for_game(game)
     has_market, has_spread = apply_market_features(
         features,

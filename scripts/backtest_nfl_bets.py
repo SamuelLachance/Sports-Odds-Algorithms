@@ -6,7 +6,9 @@ present; otherwise rebuilds the production nfelo model
 grid and ranks by worst-season ROI. Use --write-policy only when the best
 policy has positive worst-season ROI (writes data/models/nfl_v2/bet_policy.json).
 
-nflverse has no opening lines, so the close is the only executable price.
+nflverse closes are the primary executable price. When OOS includes
+``home_open_spread``, the grid also searches open-line execution (never
+inventing open=close).
 """
 
 from __future__ import annotations
@@ -310,34 +312,41 @@ def main() -> int:
     sides = build_side_table(preds, sigma)
 
     results: list[tuple[tuple, dict, dict]] = []
-    for min_gap in (4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0):
-        for min_pt in (2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0):
-            for min_ev in (2.0, 2.5, 3.0):
-                params = {
-                    "exec_price": "close",
-                    "min_spread_cover_gap_pp": min_gap,
-                    "min_spread_point_edge": min_pt,
-                    "min_ev_pct": min_ev,
-                }
-                res = simulate_spread(
-                    sides,
-                    min_cover_gap_pp=min_gap,
-                    min_point_edge=min_pt,
-                    min_ev_pct=min_ev,
-                )
-                if res.get("bets", 0) < args.min_bets:
-                    continue
-                score = (round(res["worst_season_roi"], 2), round(res["roi_pct"], 2))
-                results.append((score, params, res))
+    price_specs: list[tuple[str, pd.DataFrame]] = [("close", sides)]
+    if "home_open_spread" in preds.columns and preds["home_open_spread"].notna().sum() >= args.min_bets:
+        open_preds = preds.dropna(subset=["home_open_spread"]).copy()
+        open_preds["home_spread"] = open_preds["home_open_spread"].astype(float)
+        price_specs.append(("open", build_side_table(open_preds, sigma)))
+
+    for exec_price, side_frame in price_specs:
+        for min_gap in (4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0):
+            for min_pt in (2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0):
+                for min_ev in (2.0, 2.5, 3.0):
+                    params = {
+                        "exec_price": exec_price,
+                        "min_spread_cover_gap_pp": min_gap,
+                        "min_spread_point_edge": min_pt,
+                        "min_ev_pct": min_ev,
+                    }
+                    res = simulate_spread(
+                        side_frame,
+                        min_cover_gap_pp=min_gap,
+                        min_point_edge=min_pt,
+                        min_ev_pct=min_ev,
+                    )
+                    if res.get("bets", 0) < args.min_bets:
+                        continue
+                    score = (round(res["worst_season_roi"], 2), round(res["roi_pct"], 2))
+                    results.append((score, params, res))
 
     if not results:
         print("no qualifying policies")
         return 1
 
     results.sort(key=lambda item: item[0], reverse=True)
-    print("top policies (ranked by worst-season ROI, then overall ROI, at the CLOSE):")
+    print("top policies (ranked by worst-season ROI, then overall ROI):")
     for score, params, res in results[:15]:
-        desc = ", ".join(f"{k}={v}" for k, v in params.items() if k != "exec_price")
+        desc = ", ".join(f"{k}={v}" for k, v in params.items())
         print(
             f"  [worst={score[0]:7.2f} roi={score[1]:6.2f}] {desc}: bets={res['bets']} "
             f"win={res['win_rate']:.3f} pos={res['seasons_positive']}/{res['seasons_total']}"
