@@ -14,6 +14,23 @@ EPA_PATHS = (
     PROJECT_ROOT / ".build-cache" / "nfl-pbp" / "game_team_epa.csv",
 )
 
+EPA_FIELDS = (
+    "epa_off",
+    "epa_def",
+    "sr_off",
+    "sr_def",
+    "explosive_off",
+    "pass_epa_off",
+    "rush_epa_off",
+    "sack_rate_off",
+    "sack_rate_def",
+    "qb_hit_rate_off",
+    "qb_hit_rate_def",
+    "early_down_epa_off",
+    "third_down_sr_off",
+    "redzone_epa_off",
+)
+
 
 @lru_cache(maxsize=1)
 def load_game_team_epa() -> pd.DataFrame:
@@ -35,22 +52,11 @@ def attach_epa_to_games(games: list[dict[str, Any]]) -> list[dict[str, Any]]:
     for row in epa.itertuples(index=False):
         gid = str(getattr(row, "game_id"))
         team = str(getattr(row, "team"))
-        by_game.setdefault(gid, {})[team] = {
-            "epa_off": float(getattr(row, "epa_off")) if pd.notna(getattr(row, "epa_off", None)) else None,
-            "epa_def": float(getattr(row, "epa_def")) if pd.notna(getattr(row, "epa_def", None)) else None,
-            "sr_off": float(getattr(row, "sr_off")) if pd.notna(getattr(row, "sr_off", None)) else None,
-            "sr_def": float(getattr(row, "sr_def")) if pd.notna(getattr(row, "sr_def", None)) else None,
-            "explosive_off": (
-                float(getattr(row, "explosive_off"))
-                if pd.notna(getattr(row, "explosive_off", None))
-                else None
-            ),
-            "pass_epa_off": (
-                float(getattr(row, "pass_epa_off"))
-                if pd.notna(getattr(row, "pass_epa_off", None))
-                else None
-            ),
-        }
+        stats: dict[str, float | None] = {}
+        for field in EPA_FIELDS:
+            raw = getattr(row, field, None)
+            stats[field] = float(raw) if raw is not None and pd.notna(raw) else None
+        by_game.setdefault(gid, {})[team] = stats  # type: ignore[assignment]
     for game in games:
         gid = str(game.get("game_id") or "")
         if not gid or gid not in by_game:

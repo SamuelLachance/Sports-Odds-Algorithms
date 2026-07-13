@@ -67,7 +67,10 @@ def _game(
 
 
 def test_feature_columns_count_in_range() -> None:
-    assert 55 <= len(FEATURE_COLUMNS) <= 90
+    assert 55 <= len(FEATURE_COLUMNS) <= 130
+    assert "cold_game" in FEATURE_COLUMNS
+    assert "wr1_snap_share_diff" in FEATURE_COLUMNS
+    assert "sack_rate_def_diff" in FEATURE_COLUMNS
 
 
 def test_engine_features_precede_update_and_elo_moves() -> None:
@@ -464,6 +467,10 @@ def test_qb_change_and_epa_features() -> None:
     feats = engine.features_for_game(g2)
     assert "epa_off_diff" in FEATURE_COLUMNS
     assert "qb_change_diff" in FEATURE_COLUMNS
+    assert "rush_epa_diff" in FEATURE_COLUMNS
+    assert "spread_move" in FEATURE_COLUMNS
+    assert "ref_home_bias" in FEATURE_COLUMNS
+    assert "tz_diff" in FEATURE_COLUMNS
     assert feats["qb_change_diff"] == 1.0
     assert feats["epa_off_diff"] != 0.0
     assert feats["madden_known"] in (0.0, 1.0)

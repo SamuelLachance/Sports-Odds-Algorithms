@@ -37,8 +37,12 @@ Build the leak-free training table, then train (walk-forward OOS + artifacts und
 
 ```powershell
 # NFL (needs data/supplemental/closing-odds/nflverse_games.csv)
-# Optional PBP EPA cache (improves margin MAE; build once, then rebuild table):
+# Optional PBP EPA + pressure/situational (rebuild then training table):
 # python scripts/build_nfl_pbp_epa.py --copy-supplemental
+# Optional snap shares:
+# python scripts/build_nfl_snap_shares.py --copy-supplemental
+# Optional daily injury snapshots (PIT join once history accumulates):
+# python scripts/snapshot_espn_injuries.py
 # Optional SBR open spreads into nfl.csv (for open-line Hubáček grids):
 # python -c "from web.sbr_odds import write_sbr_cache; write_sbr_cache('nfl', list(range(2015,2026)))"
 python scripts/build_nfl_training_table.py

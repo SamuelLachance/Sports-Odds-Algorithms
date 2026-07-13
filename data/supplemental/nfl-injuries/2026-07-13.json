@@ -1,0 +1,5926 @@
+{
+  "as_of": "2026-07-13T19:31:54.188256+00:00",
+  "league": "nfl",
+  "teams": [
+    {
+      "team": "ari",
+      "team_id": "22",
+      "injuries": 25,
+      "out": 0,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "atl",
+      "team_id": "1",
+      "injuries": 25,
+      "out": 1,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "out",
+          "out": true
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "bal",
+      "team_id": "33",
+      "injuries": 25,
+      "out": 0,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "buf",
+      "team_id": "2",
+      "injuries": 25,
+      "out": 1,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "out",
+          "out": true
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "car",
+      "team_id": "29",
+      "injuries": 25,
+      "out": 0,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "chi",
+      "team_id": "3",
+      "injuries": 25,
+      "out": 0,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "cin",
+      "team_id": "4",
+      "injuries": 25,
+      "out": 0,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "cle",
+      "team_id": "5",
+      "injuries": 25,
+      "out": 1,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "out",
+          "out": true
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "dal",
+      "team_id": "6",
+      "injuries": 25,
+      "out": 1,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "injured reserve",
+          "out": true
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "den",
+      "team_id": "7",
+      "injuries": 25,
+      "out": 0,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "det",
+      "team_id": "8",
+      "injuries": 25,
+      "out": 1,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "injured reserve",
+          "out": true
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "gb",
+      "team_id": "9",
+      "injuries": 25,
+      "out": 0,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "hou",
+      "team_id": "34",
+      "injuries": 25,
+      "out": 0,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "ind",
+      "team_id": "11",
+      "injuries": 25,
+      "out": 0,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "jax",
+      "team_id": "30",
+      "injuries": 25,
+      "out": 0,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "kc",
+      "team_id": "12",
+      "injuries": 25,
+      "out": 0,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "lv",
+      "team_id": "13",
+      "injuries": 25,
+      "out": 2,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "injured reserve",
+          "out": true
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "injured reserve",
+          "out": true
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "lac",
+      "team_id": "24",
+      "injuries": 25,
+      "out": 0,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "lar",
+      "team_id": "14",
+      "injuries": 25,
+      "out": 1,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "injured reserve",
+          "out": true
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "mia",
+      "team_id": "15",
+      "injuries": 25,
+      "out": 0,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "min",
+      "team_id": "16",
+      "injuries": 25,
+      "out": 0,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "ne",
+      "team_id": "17",
+      "injuries": 25,
+      "out": 1,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "injured reserve",
+          "out": true
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "no",
+      "team_id": "18",
+      "injuries": 25,
+      "out": 1,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "out",
+          "out": true
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "nyg",
+      "team_id": "19",
+      "injuries": 25,
+      "out": 4,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "injured reserve",
+          "out": true
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "out",
+          "out": true
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "injured reserve",
+          "out": true
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "injured reserve",
+          "out": true
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "nyj",
+      "team_id": "20",
+      "injuries": 25,
+      "out": 2,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "injured reserve",
+          "out": true
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "injured reserve",
+          "out": true
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "phi",
+      "team_id": "21",
+      "injuries": 25,
+      "out": 1,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "out",
+          "out": true
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "pit",
+      "team_id": "23",
+      "injuries": 25,
+      "out": 1,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "injured reserve",
+          "out": true
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "sf",
+      "team_id": "25",
+      "injuries": 25,
+      "out": 2,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "out",
+          "out": true
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "injured reserve",
+          "out": true
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "sea",
+      "team_id": "26",
+      "injuries": 25,
+      "out": 0,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "tb",
+      "team_id": "27",
+      "injuries": 25,
+      "out": 0,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "ten",
+      "team_id": "10",
+      "injuries": 25,
+      "out": 0,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    },
+    {
+      "team": "wsh",
+      "team_id": "28",
+      "injuries": 25,
+      "out": 0,
+      "ol_out": 0,
+      "skill_out": 0,
+      "details": [
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "questionable",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        },
+        {
+          "player": "",
+          "position": "",
+          "bucket": "other",
+          "status": "active",
+          "out": false
+        }
+      ]
+    }
+  ]
+}

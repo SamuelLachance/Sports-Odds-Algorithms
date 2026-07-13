@@ -27,6 +27,8 @@ import math
 from datetime import date as date_cls
 from typing import Any
 
+from web.nfl_v2.team_geo import timezone_diff
+
 LEAGUE_ELO = 1500.0
 ELO_K = 20.0
 ELO_HOME_ADV = 48.0  # NFL HFA (nfelo-aligned Elo points)
@@ -48,6 +50,11 @@ LEAGUE_PPG = 22.5
 DEFAULT_EPA = 0.0
 DEFAULT_SR = 0.45
 DEFAULT_EXPLOSIVE = 0.10
+DEFAULT_SACK = 0.06
+DEFAULT_QB_HIT = 0.10
+DEFAULT_SNAP = 0.55
+DEFAULT_OL_STARTERS = 5.0
+REF_ELO_K = 12.0
 CLOSE_GAME_MARGIN = 8.0
 BLOWOUT_MARGIN = 17.0
 DEFAULT_MARGIN_VOL = 14.0
@@ -103,10 +110,15 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     "elo_x_season_frac",
     "wind_x_outdoor",
     "short_week_x_rest",
+    "cold_game",
+    "high_wind",
+    "temp_x_outdoor",
+    "tz_diff",
+    "westbound_short_week",
     # matchup history
     "h2h_home_win_rate",
     "h2h_margin_ewma",
-    # QB / coach
+    # QB / coach / referee
     "qb_elo_diff",
     "qb_games_diff",
     "qb_win_ewma_diff",
@@ -123,6 +135,8 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     "away_coach_known",
     "home_coach_streak",
     "away_coach_streak",
+    "ref_known",
+    "ref_home_bias",
     # PBP efficiency (leak-free prior EWMA)
     "epa_off_diff",
     "epa_def_diff",
@@ -130,8 +144,30 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     "sr_def_diff",
     "explosive_diff",
     "pass_epa_diff",
+    "rush_epa_diff",
+    "pass_rush_epa_gap_diff",
+    "sack_rate_off_diff",
+    "sack_rate_def_diff",
+    "qb_hit_rate_off_diff",
+    "qb_hit_rate_def_diff",
+    "early_down_epa_diff",
+    "third_down_sr_diff",
+    "redzone_epa_diff",
     "epa_off_vs_def",
     "epa_x_season_frac",
+    "pass_epa_x_wind",
+    # Snap continuity
+    "wr1_snap_share_diff",
+    "ol_starter_share_diff",
+    # Injury burden (as-of snapshots when present)
+    "injury_burden_diff",
+    "ol_out_diff",
+    "skill_out_diff",
+    "injury_known",
+    # Opening-line steam (0 when opens missing)
+    "has_open_line",
+    "spread_move",
+    "ml_steam_pp",
     # Madden prior (known seasons only)
     "madden_ovr_diff",
     "madden_known",
@@ -158,6 +194,12 @@ def _parse_date(value: str) -> date_cls | None:
         return date_cls.fromisoformat(str(value)[:10])
     except ValueError:
         return None
+
+
+def _amer_implied(ml: float) -> float:
+    if not math.isfinite(ml) or abs(ml) < 100:
+        return 0.5
+    return (-ml) / (-ml + 100.0) if ml < 0 else 100.0 / (ml + 100.0)
 
 
 def _safe_float(value: Any, default: float) -> float:
@@ -290,6 +332,9 @@ class TeamState:
         "one_score_games", "one_score_wins", "recent_margins", "recent_pf",
         "elo_pre_hist", "current_qb_id", "qb_streak", "current_coach", "coach_streak",
         "epa_off", "epa_def", "sr_off", "sr_def", "explosive_off", "pass_epa_off",
+        "rush_epa_off", "sack_rate_off", "sack_rate_def", "qb_hit_rate_off", "qb_hit_rate_def",
+        "early_down_epa_off", "third_down_sr_off", "redzone_epa_off",
+        "wr1_snap_share", "ol_starter_share",
         "qb_last_start_games",
     )
 
@@ -338,6 +383,16 @@ class TeamState:
         self.sr_def = DEFAULT_SR
         self.explosive_off = DEFAULT_EXPLOSIVE
         self.pass_epa_off = DEFAULT_EPA
+        self.rush_epa_off = DEFAULT_EPA
+        self.sack_rate_off = DEFAULT_SACK
+        self.sack_rate_def = DEFAULT_SACK
+        self.qb_hit_rate_off = DEFAULT_QB_HIT
+        self.qb_hit_rate_def = DEFAULT_QB_HIT
+        self.early_down_epa_off = DEFAULT_EPA
+        self.third_down_sr_off = DEFAULT_SR
+        self.redzone_epa_off = DEFAULT_EPA
+        self.wr1_snap_share = DEFAULT_SNAP
+        self.ol_starter_share = DEFAULT_SNAP
         self.qb_last_start_games: dict[str, int] = {}
 
     def roll_season(self, season: int) -> None:
@@ -487,6 +542,16 @@ class TeamState:
             "sr_def": self.sr_def,
             "explosive_off": self.explosive_off,
             "pass_epa_off": self.pass_epa_off,
+            "rush_epa_off": self.rush_epa_off,
+            "sack_rate_off": self.sack_rate_off,
+            "sack_rate_def": self.sack_rate_def,
+            "qb_hit_rate_off": self.qb_hit_rate_off,
+            "qb_hit_rate_def": self.qb_hit_rate_def,
+            "early_down_epa_off": self.early_down_epa_off,
+            "third_down_sr_off": self.third_down_sr_off,
+            "redzone_epa_off": self.redzone_epa_off,
+            "wr1_snap_share": self.wr1_snap_share,
+            "ol_starter_share": self.ol_starter_share,
             "qb_last_start_games": dict(self.qb_last_start_games),
         }
 
@@ -560,6 +625,7 @@ class NflFeatureEngine:
         self.teams: dict[str, TeamState] = {}
         self.qbs: dict[str, EntityElo] = {}
         self.coaches: dict[str, EntityElo] = {}
+        self.refs: dict[str, EntityElo] = {}
         self.league_ppg = LEAGUE_PPG
 
     def team(self, key: str) -> TeamState:
@@ -584,6 +650,14 @@ class NflFeatureEngine:
         if state is None:
             state = EntityElo(key)
             self.coaches[key] = state
+        return state
+
+    def ref(self, key: str) -> EntityElo:
+        key = str(key or "").strip().lower()
+        state = self.refs.get(key)
+        if state is None:
+            state = EntityElo(key)
+            self.refs[key] = state
         return state
 
     def _rest_pair(self, game: dict[str, Any], home: TeamState, away: TeamState, game_date: date_cls) -> tuple[float, float]:
@@ -722,6 +796,15 @@ class NflFeatureEngine:
             "elo_x_season_frac": elo_diff * season_frac,
             "wind_x_outdoor": wind * roof_outdoor,
             "short_week_x_rest": short_week * (home_rest - away_rest),
+            "cold_game": 1.0 if (roof_outdoor > 0.5 and temp < 32.0) else 0.0,
+            "high_wind": 1.0 if (roof_outdoor > 0.5 and wind >= 15.0) else 0.0,
+            "temp_x_outdoor": (temp - DEFAULT_TEMP) * roof_outdoor,
+            "tz_diff": timezone_diff(str(game["home"]), str(game["away"])),
+            "westbound_short_week": (
+                1.0
+                if short_week > 0.5 and timezone_diff(str(game["home"]), str(game["away"])) > 1.5
+                else 0.0
+            ),
             "h2h_home_win_rate": h2h_rate,
             "h2h_margin_ewma": home.h2h_margin.get(away.key, 0.0),
             "qb_elo_diff": home_qb_elo - away_qb_elo,
@@ -740,14 +823,44 @@ class NflFeatureEngine:
             "away_coach_known": away_coach_known,
             "home_coach_streak": home.coach_streak_for(home_coach_name),
             "away_coach_streak": away.coach_streak_for(away_coach_name),
+            "ref_known": 0.0,
+            "ref_home_bias": 0.0,
             "epa_off_diff": home.epa_off - away.epa_off,
             "epa_def_diff": home.epa_def - away.epa_def,
             "sr_off_diff": home.sr_off - away.sr_off,
             "sr_def_diff": home.sr_def - away.sr_def,
             "explosive_diff": home.explosive_off - away.explosive_off,
             "pass_epa_diff": home.pass_epa_off - away.pass_epa_off,
+            "rush_epa_diff": home.rush_epa_off - away.rush_epa_off,
+            "pass_rush_epa_gap_diff": (
+                (home.pass_epa_off - home.rush_epa_off) - (away.pass_epa_off - away.rush_epa_off)
+            ),
+            "sack_rate_off_diff": home.sack_rate_off - away.sack_rate_off,
+            "sack_rate_def_diff": home.sack_rate_def - away.sack_rate_def,
+            "qb_hit_rate_off_diff": home.qb_hit_rate_off - away.qb_hit_rate_off,
+            "qb_hit_rate_def_diff": home.qb_hit_rate_def - away.qb_hit_rate_def,
+            "early_down_epa_diff": home.early_down_epa_off - away.early_down_epa_off,
+            "third_down_sr_diff": home.third_down_sr_off - away.third_down_sr_off,
+            "redzone_epa_diff": home.redzone_epa_off - away.redzone_epa_off,
             "epa_off_vs_def": (home.epa_off - away.epa_def) - (away.epa_off - home.epa_def),
             "epa_x_season_frac": (home.epa_off - away.epa_off) * season_frac,
+            "pass_epa_x_wind": (home.pass_epa_off - away.pass_epa_off) * wind * roof_outdoor,
+            "wr1_snap_share_diff": home.wr1_snap_share - away.wr1_snap_share,
+            "ol_starter_share_diff": home.ol_starter_share - away.ol_starter_share,
+            "injury_burden_diff": (
+                _safe_float(game.get("home_out"), 0.0) - _safe_float(game.get("away_out"), 0.0)
+            ),
+            "ol_out_diff": (
+                _safe_float(game.get("home_ol_out"), 0.0) - _safe_float(game.get("away_ol_out"), 0.0)
+            ),
+            "skill_out_diff": (
+                _safe_float(game.get("home_skill_out"), 0.0)
+                - _safe_float(game.get("away_skill_out"), 0.0)
+            ),
+            "injury_known": _safe_float(game.get("injury_known"), 0.0),
+            "has_open_line": 0.0,
+            "spread_move": 0.0,
+            "ml_steam_pp": 0.0,
             "madden_ovr_diff": madden_diff,
             "madden_known": madden_known,
             "close_win_ewma_diff": home.close_win_ewma - away.close_win_ewma,
@@ -760,6 +873,41 @@ class NflFeatureEngine:
             "away_off_vs_home_def": away.pf_fast - home.pa_fast,
             "net_x_season_frac": (home.margin_pg() - away.margin_pg()) * season_frac,
         }
+        # Referee home-bias Elo (prior to this game)
+        ref_name = str(game.get("referee") or "").strip()
+        if not _is_missing_id(ref_name):
+            ref_ent = self.ref(ref_name)
+            features["ref_known"] = 1.0
+            features["ref_home_bias"] = (ref_ent.elo - LEAGUE_ELO) / 100.0
+
+        # Opening-line steam when opens are present (never invent open=close)
+        open_spread = game.get("home_open_spread")
+        close_spread = game.get("home_close_spread")
+        open_hml = game.get("home_open_ml")
+        close_hml = game.get("home_close_ml")
+        open_aml = game.get("away_open_ml")
+        close_aml = game.get("away_close_ml")
+        has_spread_open = open_spread is not None and close_spread is not None
+        has_ml_open = (
+            open_hml is not None
+            and close_hml is not None
+            and open_aml is not None
+            and close_aml is not None
+        )
+        if has_spread_open or has_ml_open:
+            features["has_open_line"] = 1.0
+        if has_spread_open:
+            try:
+                features["spread_move"] = float(open_spread) - float(close_spread)
+            except (TypeError, ValueError):
+                features["spread_move"] = 0.0
+        if has_ml_open:
+            try:
+                features["ml_steam_pp"] = (
+                    _amer_implied(float(close_hml)) - _amer_implied(float(open_hml))
+                ) * 100.0
+            except (TypeError, ValueError):
+                features["ml_steam_pp"] = 0.0
         return features
 
     def _update_entity(
@@ -945,6 +1093,33 @@ class NflFeatureEngine:
             team.sr_def = _ewma_epa(team.sr_def, game.get(f"{prefix}_sr_def"))
             team.explosive_off = _ewma_epa(team.explosive_off, game.get(f"{prefix}_explosive_off"))
             team.pass_epa_off = _ewma_epa(team.pass_epa_off, game.get(f"{prefix}_pass_epa_off"))
+            team.rush_epa_off = _ewma_epa(team.rush_epa_off, game.get(f"{prefix}_rush_epa_off"))
+            team.sack_rate_off = _ewma_epa(team.sack_rate_off, game.get(f"{prefix}_sack_rate_off"))
+            team.sack_rate_def = _ewma_epa(team.sack_rate_def, game.get(f"{prefix}_sack_rate_def"))
+            team.qb_hit_rate_off = _ewma_epa(team.qb_hit_rate_off, game.get(f"{prefix}_qb_hit_rate_off"))
+            team.qb_hit_rate_def = _ewma_epa(team.qb_hit_rate_def, game.get(f"{prefix}_qb_hit_rate_def"))
+            team.early_down_epa_off = _ewma_epa(
+                team.early_down_epa_off, game.get(f"{prefix}_early_down_epa_off")
+            )
+            team.third_down_sr_off = _ewma_epa(
+                team.third_down_sr_off, game.get(f"{prefix}_third_down_sr_off")
+            )
+            team.redzone_epa_off = _ewma_epa(
+                team.redzone_epa_off, game.get(f"{prefix}_redzone_epa_off")
+            )
+            team.wr1_snap_share = _ewma_epa(team.wr1_snap_share, game.get(f"{prefix}_wr1_snap_share"))
+            team.ol_starter_share = _ewma_epa(
+                team.ol_starter_share, game.get(f"{prefix}_ol_starter_share")
+            )
+
+        # Referee Elo — home-team perspective after the game
+        ref_name = str(game.get("referee") or "").strip()
+        if not _is_missing_id(ref_name) and not tied:
+            ref_ent = self.ref(ref_name)
+            # Edge near 0 so K updates track home win frequency under this crew.
+            self._update_entity(
+                ref_ent, won=home_win, tied=False, edge=0.0, k=REF_ELO_K
+            )
 
         home_coach_name = str(game.get("home_coach") or "").strip()
         away_coach_name = str(game.get("away_coach") or "").strip()
@@ -986,6 +1161,7 @@ class NflFeatureEngine:
             "teams": {key: team.to_dict() for key, team in self.teams.items()},
             "qbs": {key: qb.to_dict() for key, qb in self.qbs.items()},
             "coaches": {key: coach.to_dict() for key, coach in self.coaches.items()},
+            "refs": {key: ref.to_dict() for key, ref in self.refs.items()},
         }
 
     @classmethod
@@ -1007,4 +1183,9 @@ class NflFeatureEngine:
                 coach_payload = dict(coach_payload)
                 coach_payload["key"] = key
             engine.coaches[str(key)] = EntityElo.from_dict(coach_payload)
+        for key, ref_payload in dict(payload.get("refs") or {}).items():
+            if "key" not in ref_payload:
+                ref_payload = dict(ref_payload)
+                ref_payload["key"] = key
+            engine.refs[str(key)] = EntityElo.from_dict(ref_payload)
         return engine

@@ -16,6 +16,8 @@ from web.nfl_v2.feature_engine import (
     nfl_season_of,
 )
 from web.nfl_v2.epa import attach_epa_to_games
+from web.nfl_v2.injuries import attach_injuries_to_games
+from web.nfl_v2.snaps import attach_snaps_to_games
 
 
 def _espn_local_date(event: dict[str, Any]) -> str:
@@ -193,6 +195,7 @@ def nflverse_rows_to_games(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "away_qb_name": row.get("away_qb_name"),
             "home_coach": row.get("home_coach"),
             "away_coach": row.get("away_coach"),
+            "referee": row.get("referee"),
             "home_close_ml": row.get("home_moneyline", row.get("home_close_ml")),
             "away_close_ml": row.get("away_moneyline", row.get("away_close_ml")),
             "home_close_spread": home_close_spread,
@@ -201,10 +204,17 @@ def nflverse_rows_to_games(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "away_spread_odds": row.get("away_spread_odds"),
             "close_total": row.get("total_line", row.get("close_total")),
             "game_id": row.get("game_id"),
+            "home_open_ml": row.get("home_open_ml"),
+            "away_open_ml": row.get("away_open_ml"),
+            "home_open_spread": row.get("home_open_spread"),
+            "away_open_spread": row.get("away_open_spread"),
         }
         games.append(game)
     games.sort(key=lambda g: (g["date"], g["home"], g["away"]))
-    return attach_epa_to_games(games)
+    games = attach_epa_to_games(games)
+    games = attach_snaps_to_games(games)
+    games = attach_injuries_to_games(games)
+    return games
 
 
 def csv_rows_to_games(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:

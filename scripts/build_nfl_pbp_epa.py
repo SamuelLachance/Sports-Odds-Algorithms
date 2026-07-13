@@ -58,6 +58,10 @@ def _aggregate_season(path: Path) -> pd.DataFrame:
         "pass",
         "rush",
         "special_teams_play",
+        "sack",
+        "qb_hit",
+        "down",
+        "yardline_100",
     ]
     frame = raw[[c for c in wanted if c in raw.columns]].copy()
     if "special_teams_play" not in frame.columns:
@@ -71,6 +75,9 @@ def _aggregate_season(path: Path) -> pd.DataFrame:
             frame["season"] = int(path.stem.split("_")[-1])
         except ValueError:
             frame["season"] = 0
+    for col in ("sack", "qb_hit", "down", "yardline_100"):
+        if col not in frame.columns:
+            frame[col] = np.nan
 
     mask = (
         frame["posteam"].notna()
@@ -85,6 +92,13 @@ def _aggregate_season(path: Path) -> pd.DataFrame:
     plays["success"] = plays["success"].fillna(0).astype(float)
     plays["yards_gained"] = plays["yards_gained"].fillna(0).astype(float)
     plays["explosive"] = (plays["yards_gained"] >= EXPLOSIVE_YARDS).astype(float)
+    plays["sack"] = plays["sack"].fillna(0).astype(float)
+    plays["qb_hit"] = plays["qb_hit"].fillna(0).astype(float)
+    plays["down"] = pd.to_numeric(plays["down"], errors="coerce")
+    plays["yardline_100"] = pd.to_numeric(plays["yardline_100"], errors="coerce")
+    plays["is_early"] = plays["down"].isin([1, 2]).astype(float)
+    plays["is_third"] = (plays["down"] == 3).astype(float)
+    plays["is_rz"] = (plays["yardline_100"] <= 20).astype(float)
 
     off = (
         plays.groupby(["game_id", "season", "posteam"], as_index=False)
@@ -93,8 +107,41 @@ def _aggregate_season(path: Path) -> pd.DataFrame:
             sr_off=("success", "mean"),
             explosive_off=("explosive", "mean"),
             plays_off=("epa", "size"),
+            sack_rate_off=("sack", "mean"),
+            qb_hit_rate_off=("qb_hit", "mean"),
         )
     )
+    early = plays.loc[plays["is_early"] > 0.5]
+    if not early.empty:
+        early_agg = (
+            early.groupby(["game_id", "posteam"], as_index=False)["epa"]
+            .mean()
+            .rename(columns={"epa": "early_down_epa_off"})
+        )
+        off = off.merge(early_agg, on=["game_id", "posteam"], how="left")
+    else:
+        off["early_down_epa_off"] = np.nan
+    third = plays.loc[plays["is_third"] > 0.5]
+    if not third.empty:
+        third_agg = (
+            third.groupby(["game_id", "posteam"], as_index=False)["success"]
+            .mean()
+            .rename(columns={"success": "third_down_sr_off"})
+        )
+        off = off.merge(third_agg, on=["game_id", "posteam"], how="left")
+    else:
+        off["third_down_sr_off"] = np.nan
+    rz = plays.loc[plays["is_rz"] > 0.5]
+    if not rz.empty:
+        rz_agg = (
+            rz.groupby(["game_id", "posteam"], as_index=False)["epa"]
+            .mean()
+            .rename(columns={"epa": "redzone_epa_off"})
+        )
+        off = off.merge(rz_agg, on=["game_id", "posteam"], how="left")
+    else:
+        off["redzone_epa_off"] = np.nan
+
     if "pass" in plays.columns:
         pass_plays = plays.loc[plays["pass"].fillna(0).astype(float) > 0.5]
         pass_agg = (
@@ -122,6 +169,8 @@ def _aggregate_season(path: Path) -> pd.DataFrame:
             epa_def=("epa", "mean"),
             sr_def=("success", "mean"),
             plays_def=("epa", "size"),
+            sack_rate_def=("sack", "mean"),
+            qb_hit_rate_def=("qb_hit", "mean"),
         )
         .rename(columns={"defteam": "team"})
     )
@@ -133,8 +182,15 @@ def _aggregate_season(path: Path) -> pd.DataFrame:
         "explosive_off",
         "pass_epa_off",
         "rush_epa_off",
+        "sack_rate_off",
+        "qb_hit_rate_off",
+        "early_down_epa_off",
+        "third_down_sr_off",
+        "redzone_epa_off",
         "epa_def",
         "sr_def",
+        "sack_rate_def",
+        "qb_hit_rate_def",
     ):
         if col in merged.columns:
             merged[col] = merged[col].astype(float)

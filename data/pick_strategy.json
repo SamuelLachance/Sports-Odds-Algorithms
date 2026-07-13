@@ -63,19 +63,16 @@
   },
   "nfl": {
     "bet_type": "moneyline",
-    "min_market_gap_pp": 3.0,
+    "min_market_gap_pp": 5.0,
     "min_win_confidence_pp": 0.0,
-    "min_ev_pct": 0.0,
-    "ml_lo": -200,
-    "ml_hi": 200,
+    "min_ev_pct": 5.0,
+    "ml_lo": -350,
+    "ml_hi": 300,
     "fav_mode": "any",
     "enabled": false,
-    "note": "NFLRevolutionHybrid Hubacek refresh 2026-07-13: gap>=3.0pp EV>=0.0% ML[-200,200] sides=away exec=close ROI -3.88% worst -23.5% n=522. DISABLED (no positive worst-season niche on revolution OOS). Live predictions use hybrid.",
-    "backtest_roi_pct": -3.88,
-    "backtest_bets": 522,
-    "allowed_sides": [
-      "away"
-    ]
+    "note": "NFLRevolutionHybrid full-feat Hubacek refresh 2026-07-13: gap>=5.0pp EV>=5.0% ML[-350,300] sides=either exec=close ROI 2.06% worst -16.81% n=414. DISABLED (no positive worst-season niche). Live predictions use full 124-col hybrid.",
+    "backtest_roi_pct": 2.06,
+    "backtest_bets": 414
   },
   "cfb": {
     "bet_type": "moneyline",

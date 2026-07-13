@@ -306,6 +306,9 @@ def select_cols(cfg: RevConfig) -> list[str]:
             "epa_off_diff",
             "epa_def_diff",
             "pass_epa_diff",
+            "rush_epa_diff",
+            "sack_rate_def_diff",
+            "early_down_epa_diff",
             "sr_off_diff",
             "rest_diff",
             "short_week",
@@ -313,6 +316,10 @@ def select_cols(cfg: RevConfig) -> list[str]:
             "elo_x_season_frac",
             "qb_change_diff",
             "madden_ovr_diff",
+            "spread_move",
+            "ml_steam_pp",
+            "tz_diff",
+            "injury_burden_diff",
         )
         if c in FEATURE_COLUMNS
     ]
@@ -320,10 +327,29 @@ def select_cols(cfg: RevConfig) -> list[str]:
     market = ["mkt_home_prob", "has_market", "mkt_home_spread", "has_spread"]
     cats = list(CAT_COLS)
     if cfg.feature_mode == "curves_mc":
-        return curves + core[:10] + market + cats
+        # Still include the high-leverage NEW columns even in curves_mc mode
+        boost = [
+            c
+            for c in (
+                "rush_epa_diff",
+                "sack_rate_def_diff",
+                "qb_hit_rate_def_diff",
+                "early_down_epa_diff",
+                "redzone_epa_diff",
+                "tz_diff",
+                "ref_home_bias",
+                "wr1_snap_share_diff",
+                "ol_starter_share_diff",
+                "spread_move",
+                "ml_steam_pp",
+                "injury_burden_diff",
+            )
+            if c in FEATURE_COLUMNS
+        ]
+        return curves + core[:10] + boost + market + cats
     if cfg.feature_mode == "core":
         return core + curves + market + cats
-    # full
+    # full — all 105 tabular features + curves/MC + market + cats
     return list(FEATURE_COLUMNS) + curves + market + cats
 
 
@@ -534,75 +560,27 @@ def walk_forward(frame: pd.DataFrame, cfg: RevConfig, end_season: int = 2025) ->
 
 
 def search_space() -> list[RevConfig]:
-    """LL-first hunt, near-close MAE anchors, then period refine of winners."""
+    """Full 105-feat configs first (new PBP/snaps/travel/ref), then niches."""
     priority = [
-        # Logloss hunters (best so far rev_ats_w85 LL=0.61453)
-        RevConfig(name="rev_ll_mkt55_rw85", residual_blend_w=0.85, market_blend_w=0.55, use_mc=False, resid_shrink=0.15, depth=6, lr=0.04),
-        RevConfig(name="rev_ll_mkt65_rw70", residual_blend_w=0.70, market_blend_w=0.65, use_mc=False, resid_shrink=0.15, depth=6),
-        RevConfig(name="rev_ll_mkt75_rw50", residual_blend_w=0.50, market_blend_w=0.75, use_mc=False, resid_shrink=0.10, depth=5, lr=0.05),
-        RevConfig(name="rev_ll_mkt80", residual_blend_w=0.20, market_blend_w=0.80, use_mc=False, resid_shrink=0.05, depth=5),
-        RevConfig(name="rev_ll_deep_mkt60", residual_blend_w=0.85, market_blend_w=0.60, use_mc=False, depth=7, lr=0.03, iterations=450, l2=8.0, resid_shrink=0.2),
+        # Full feature board with new pressure/snap/travel/ref columns
+        RevConfig(name="rev_full_mkt55", feature_mode="full", residual_blend_w=0.70, market_blend_w=0.55, use_mc=False, resid_shrink=0.15, depth=6, lr=0.04, iterations=400),
+        RevConfig(name="rev_full_mkt65", feature_mode="full", residual_blend_w=0.60, market_blend_w=0.65, use_mc=False, resid_shrink=0.12, depth=6, iterations=400),
+        RevConfig(name="rev_full_mkt70", feature_mode="full", residual_blend_w=0.55, market_blend_w=0.70, use_mc=False, resid_shrink=0.10, depth=6, iterations=380),
+        RevConfig(name="rev_full_mkt75", feature_mode="full", residual_blend_w=0.45, market_blend_w=0.75, use_mc=False, resid_shrink=0.08, depth=5, iterations=350),
+        RevConfig(name="rev_full_deep_mkt60", feature_mode="full", residual_blend_w=0.65, market_blend_w=0.60, use_mc=False, depth=7, lr=0.03, iterations=500, l2=8.0, resid_shrink=0.15),
+        RevConfig(name="rev_full_ats_shrink", feature_mode="full", residual_blend_w=1.0, market_blend_w=0.50, use_mc=False, resid_shrink=0.20, depth=6),
+        RevConfig(name="rev_full_nomc_rw85", feature_mode="full", residual_blend_w=0.85, market_blend_w=0.45, use_mc=False, resid_shrink=0.25, iterations=420),
+        # Prior winner family refreshed on full feats
         RevConfig(name="rev_ll_curves_mkt70", feature_mode="curves_mc", residual_blend_w=0.6, market_blend_w=0.70, use_mc=False, resid_shrink=0.15),
         RevConfig(name="rev_ll_core_mkt60", feature_mode="core", residual_blend_w=0.8, market_blend_w=0.60, use_mc=False, resid_shrink=0.2),
-        # Near-close MAE with tiny residual
-        RevConfig(name="rev_mae_shrink12", residual_blend_w=1.0, market_blend_w=0.55, use_mc=False, resid_shrink=0.12),
-        RevConfig(name="rev_mae_shrink08", residual_blend_w=1.0, market_blend_w=0.55, use_mc=False, resid_shrink=0.08),
-        RevConfig(name="rev_mae_anchor70", residual_blend_w=1.0, market_blend_w=0.55, use_mc=False, resid_shrink=0.25, market_anchor_w=0.70),
-        # Earlier beat-close attempts (resume skips if done)
-        RevConfig(name="rev_ats_pure", residual_blend_w=1.0, market_blend_w=0.35, use_mc=False, resid_shrink=1.0),
-        RevConfig(name="rev_ats_shrink50", residual_blend_w=1.0, market_blend_w=0.35, use_mc=False, resid_shrink=0.5),
-        RevConfig(name="rev_ats_shrink35", residual_blend_w=1.0, market_blend_w=0.40, use_mc=False, resid_shrink=0.35),
-        RevConfig(name="rev_ats_shrink20", residual_blend_w=1.0, market_blend_w=0.40, use_mc=False, resid_shrink=0.20),
-        RevConfig(name="rev_ats_mae_loss", residual_blend_w=1.0, market_blend_w=0.35, use_mc=False, resid_loss="MAE", resid_shrink=0.6),
-        RevConfig(name="rev_anchor20", residual_blend_w=1.0, market_blend_w=0.40, use_mc=False, resid_shrink=0.7, market_anchor_w=0.20),
-        RevConfig(name="rev_anchor40", residual_blend_w=1.0, market_blend_w=0.40, use_mc=False, resid_shrink=0.5, market_anchor_w=0.40),
-        RevConfig(name="rev_anchor60", residual_blend_w=0.9, market_blend_w=0.45, use_mc=False, resid_shrink=0.4, market_anchor_w=0.60),
-        RevConfig(name="rev_mc_light", residual_blend_w=1.0, market_blend_w=0.35, use_mc=True, mc_blend_w=0.05, resid_shrink=0.5),
-        RevConfig(name="rev_curves_ats", feature_mode="curves_mc", residual_blend_w=1.0, market_blend_w=0.50, use_mc=False, resid_shrink=0.45),
-        RevConfig(name="rev_core_pure", feature_mode="core", residual_blend_w=1.0, market_blend_w=0.35, use_mc=False, resid_shrink=0.55),
+        RevConfig(name="rev_ll_mkt55_rw85", residual_blend_w=0.85, market_blend_w=0.55, use_mc=False, resid_shrink=0.15, depth=6, lr=0.04),
+        RevConfig(name="rev_ll_mkt80", residual_blend_w=0.20, market_blend_w=0.80, use_mc=False, resid_shrink=0.05, depth=5),
     ]
-    base = [
-        RevConfig(name="rev_ats_w55", residual_blend_w=0.55, market_blend_w=0.45),
-        RevConfig(name="rev_ats_w70", residual_blend_w=0.70, market_blend_w=0.40),
-        RevConfig(name="rev_ats_w85", residual_blend_w=0.85, market_blend_w=0.35, lr=0.04),
-        RevConfig(name="rev_ats_w100", residual_blend_w=1.0, market_blend_w=0.30),
-        RevConfig(name="rev_mc_heavy", residual_blend_w=0.60, market_blend_w=0.50, depth=7, lr=0.035, iterations=400),
-        RevConfig(name="rev_curves_mc", feature_mode="curves_mc", residual_blend_w=0.75, market_blend_w=0.55),
-        RevConfig(name="rev_core_ats", feature_mode="core", residual_blend_w=0.80, market_blend_w=0.40),
-        RevConfig(name="rev_nomarket_ats", market_blend_w=0.0, residual_blend_w=0.90, iterations=400),
-        RevConfig(name="rev_deep_l2", depth=7, l2=8.0, lr=0.03, iterations=450, residual_blend_w=0.65, market_blend_w=0.45),
-        RevConfig(name="rev_shallow_fast", depth=5, lr=0.07, iterations=280, residual_blend_w=0.50, market_blend_w=0.55),
-        RevConfig(name="rev_mkt_dom", residual_blend_w=0.40, market_blend_w=0.70, depth=5),
-        RevConfig(name="rev_pure_margin", residual_blend_w=0.0, market_blend_w=0.40, use_mc=True),
-        RevConfig(name="rev_no_mc", residual_blend_w=0.70, market_blend_w=0.45, use_mc=False),
-    ]
-    extra = []
-    for seed in (7, 13, 21, 99):
-        extra.append(
-            replace(
-                base[1],
-                name=f"rev_ats_w70_s{seed}",
-                seed=seed,
-                residual_blend_w=0.65 + 0.05 * (seed % 5),
-                market_blend_w=0.30 + 0.05 * (seed % 4),
-            )
-        )
-    for rw in (0.4, 0.5, 0.6, 0.75, 0.9, 0.95):
-        extra.append(
-            replace(
-                base[0],
-                name=f"rev_sweep_rw{int(rw * 100)}",
-                residual_blend_w=rw,
-                market_blend_w=max(0.0, 0.6 - 0.3 * rw),
-            )
-        )
-    # Period-fold confirmation of strongest LL / MAE candidates
     refine = [
-        RevConfig(name="rev_ats_w85_period", residual_blend_w=0.85, market_blend_w=0.35, lr=0.04, fold_mode="period", iterations=400, early_stopping=30, use_mc=False, resid_shrink=0.2),
-        RevConfig(name="rev_ll_mkt65_period", residual_blend_w=0.70, market_blend_w=0.65, fold_mode="period", iterations=400, use_mc=False, resid_shrink=0.15),
-        RevConfig(name="rev_mae_shrink12_period", residual_blend_w=1.0, market_blend_w=0.55, fold_mode="period", iterations=380, use_mc=False, resid_shrink=0.12),
+        RevConfig(name="rev_full_mkt70_period", feature_mode="full", residual_blend_w=0.55, market_blend_w=0.70, use_mc=False, resid_shrink=0.10, fold_mode="period", iterations=450, early_stopping=30),
+        RevConfig(name="rev_full_mkt65_period", feature_mode="full", residual_blend_w=0.60, market_blend_w=0.65, use_mc=False, resid_shrink=0.12, fold_mode="period", iterations=450, early_stopping=30),
     ]
-    return priority + base + extra + refine
+    return priority + refine
 
 
 def _rank_score(result: dict[str, Any]) -> tuple:
