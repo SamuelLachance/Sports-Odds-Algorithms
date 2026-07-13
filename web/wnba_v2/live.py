@@ -363,11 +363,17 @@ def predict_matchup_v2(
     home_moneyline: int | float | None = None,
     away_moneyline: int | float | None = None,
     home_spread: float | None = None,
+    home_moneyline_open: int | float | None = None,
+    away_moneyline_open: int | float | None = None,
+    home_spread_open: float | None = None,
 ) -> dict[str, Any] | None:
     """Predict a WNBA matchup by ESPN abbreviations for a given slate date.
 
     When live moneylines and/or spreads are available and market-aware artifacts
     exist, scores the market heads. Falls back to the pure head when odds are missing.
+
+    Opening lines (when provided or looked up) feed open→close steam features so
+    live inference matches training on ``ml_steam_pp`` / ``spread_move``.
     """
     context = get_live_context(day_iso)
     if context is None:
@@ -389,12 +395,23 @@ def predict_matchup_v2(
         "neutral_site": bool((event or {}).get("neutral_site")),
     }
 
+    if home_spread_open is None:
+        try:
+            from web.wnba_opening import fetch_opening_spread_proxy
+
+            home_spread_open = fetch_opening_spread_proxy("wnba", day_iso, home, away)
+        except Exception:  # noqa: BLE001 — steam is best-effort
+            home_spread_open = None
+
     features = engine.features_for_game(game)
     has_market, has_spread = apply_market_features(
         features,
         home_moneyline=home_moneyline,
         away_moneyline=away_moneyline,
         home_spread=home_spread,
+        home_spread_open=home_spread_open,
+        home_ml_open=home_moneyline_open,
+        away_ml_open=away_moneyline_open,
     )
     (
         use_market_clf,
@@ -450,10 +467,11 @@ def predict_matchup_v2(
         "away_b2b": bool(features["away_b2b"]),
         "home_win_pct": round(home_team.win_pct(), 3),
         "away_win_pct": round(away_team.win_pct(), 3),
-        "home_expansion": bool(features["home_expansion"]),
-        "away_expansion": bool(features["away_expansion"]),
+        "home_expansion": bool(home_team.first_season == context["season"]),
+        "away_expansion": bool(away_team.first_season == context["season"]),
         "has_market": has_market,
         "has_spread": has_spread,
+        "has_steam": bool(features.get("has_steam")),
     }
     if margin is not None:
         payload["predicted_margin"] = round(margin, 2)

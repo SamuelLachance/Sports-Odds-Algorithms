@@ -475,6 +475,18 @@ def predict_live_game(
         home_moneyline=game.market.home_moneyline,
         away_moneyline=game.market.away_moneyline,
         draw_moneyline=game.market.draw_moneyline,
+        home_moneyline_open=(
+            int(book_enrichment["open_home_moneyline"])
+            if isinstance(book_enrichment.get("open_home_moneyline"), (int, float))
+            and not isinstance(book_enrichment.get("open_home_moneyline"), bool)
+            else None
+        ),
+        away_moneyline_open=(
+            int(book_enrichment["open_away_moneyline"])
+            if isinstance(book_enrichment.get("open_away_moneyline"), (int, float))
+            and not isinstance(book_enrichment.get("open_away_moneyline"), bool)
+            else None
+        ),
         headlines=headlines,
         match_date=_iso_match_date(game.start_time),
         kickoff_iso=game.start_time or "",

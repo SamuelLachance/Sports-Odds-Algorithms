@@ -888,6 +888,8 @@ def _run_wnba_v2(
     home_moneyline: int | None = None,
     away_moneyline: int | None = None,
     consensus_spread: float | None = None,
+    home_moneyline_open: int | None = None,
+    away_moneyline_open: int | None = None,
 ) -> dict[str, Any] | None:
     """WNBAGradientBoost v2 payload when artifacts + season context exist."""
     try:
@@ -906,6 +908,8 @@ def _run_wnba_v2(
             home_moneyline=home_moneyline,
             away_moneyline=away_moneyline,
             home_spread=consensus_spread,
+            home_moneyline_open=home_moneyline_open,
+            away_moneyline_open=away_moneyline_open,
         )
     except Exception:  # noqa: BLE001 - v2 layer must never break the slate
         return None
@@ -1166,6 +1170,8 @@ def _blend_basketball_matrix_only(
     consensus_spread: float | None = None,
     home_moneyline: int | None = None,
     away_moneyline: int | None = None,
+    home_moneyline_open: int | None = None,
+    away_moneyline_open: int | None = None,
 ) -> dict[str, Any]:
     """Basketball display prefers sport-specific models; BasketballMatrix is fallback.
 
@@ -1216,6 +1222,8 @@ def _blend_basketball_matrix_only(
             home_moneyline=home_moneyline,
             away_moneyline=away_moneyline,
             consensus_spread=consensus_spread,
+            home_moneyline_open=home_moneyline_open,
+            away_moneyline_open=away_moneyline_open,
         )
         if v2_payload and v2_payload.get("model_version") == "v2":
             home_prob = float(v2_payload["home_win_probability"])
@@ -1589,6 +1597,8 @@ def blend_predictions(
     home_moneyline: int | None = None,
     away_moneyline: int | None = None,
     draw_moneyline: int | None = None,
+    home_moneyline_open: int | None = None,
+    away_moneyline_open: int | None = None,
     headlines: list[str] | None = None,
     match_date: str = "",
     kickoff_iso: str = "",
@@ -1620,6 +1630,8 @@ def blend_predictions(
             consensus_spread=consensus_spread,
             home_moneyline=home_moneyline,
             away_moneyline=away_moneyline,
+            home_moneyline_open=home_moneyline_open,
+            away_moneyline_open=away_moneyline_open,
         )
 
     if is_hockey_league(league):

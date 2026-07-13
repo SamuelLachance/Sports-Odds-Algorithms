@@ -84,7 +84,7 @@ def test_engine_features_precede_update_and_elo_moves_to_winner() -> None:
     later = engine.features_for_game(_game("2025-06-10", "lva", "sea", 0, 0))
     assert later["elo_diff"] > first["elo_diff"]
     assert later["win_pct_diff"] == 1.0
-    assert later["h2h_home_win_rate"] == 1.0
+    assert later["h2h_margin_ewma"] > 0.0
 
 
 def test_neutral_site_removes_home_court() -> None:
@@ -93,7 +93,9 @@ def test_neutral_site_removes_home_court() -> None:
         _game("2025-05-16", "lva", "sea", 0, 0, neutral=True)
     )
     assert neutral["elo_diff"] == 0.0
-    assert neutral["neutral_site"] == 1.0
+    assert "neutral_site" not in neutral
+    home = engine.features_for_game(_game("2025-05-16", "lva", "sea", 0, 0))
+    assert home["elo_diff"] == ELO_HOME_ADV
 
 
 def test_rest_and_b2b_flags() -> None:
@@ -769,6 +771,12 @@ def test_availability_proxies_from_player_rows() -> None:
     assert even["star_avail_diff"] == 0.0
     assert even["top1_min_share_diff"] == 0.0
     assert even["rotation_depth_diff"] == 0.0
+    assert even["close_win_ewma_diff"] == 0.0
+    assert even["bubble_season"] == 0.0
+    assert "away_tz_shift" in even
+    assert "home_3in4" in even
+    assert "high_min_ast_tov_diff" not in even
+    assert "bench_pm_diff" not in even
     sea_short = [["z", 32], ["w", 30], ["v", 28], ["u", 24], ["t", 20],
                  ["s", 16], ["q", 14], ["r", 12]]
     game_short = _game("2025-05-17", "lva", "sea", 85, 70)
@@ -791,8 +799,6 @@ def test_rich_player_rotation_features() -> None:
         engine.update_after_game(game)
     even = engine.features_for_game(_game("2025-05-25", "lva", "sea", 0, 0))
     assert abs(even["top1_usage_diff"]) < 1e-6
-    assert abs(even["bench_pm_diff"]) < 1e-6
-    assert abs(even["high_min_ast_tov_diff"]) < 1e-6
     concentrated = [
         ["ha", 38, 24, 7, 3, 7, 10],
         ["hb", 28, 10, 3, 2, 5, 2],
@@ -811,7 +817,6 @@ def test_rich_player_rotation_features() -> None:
     assert feat["top1_min_share_diff"] > 0.0
     assert feat["top1_usage_diff"] > 0.0
     assert feat["min_hhi_diff"] > 0.0
-    assert feat["bench_pm_diff"] != 0.0
     assert feat["dnp_star_rate_diff"] < 0.0
 
 
@@ -838,8 +843,34 @@ def test_from_dict_defaults_new_rotation_fields() -> None:
     assert features["star_avail_diff"] == 0.0
     assert features["top1_min_share_diff"] == 0.0
     assert features["star_min_gap_diff"] == 0.0
+    assert features["margin_vol_diff"] == 0.0
     assert "star_avail_diff" in FEATURE_COLUMNS
     assert "bench_min_share_diff" in FEATURE_COLUMNS
+    assert "bubble_season" in FEATURE_COLUMNS
+    assert "away_tz_shift" in FEATURE_COLUMNS
+
+
+def test_minutes_weighted_dnp_star_rate_prefers_star_minutes() -> None:
+    from web.wnba_v2.feature_engine import _player_rotation_metrics
+
+    # Top season minutes on aa/ab; only aa plays → missing weight ~ ab share.
+    metrics = _player_rotation_metrics(
+        [["aa", 34], ["c", 20], ["d", 18]],
+        dnp_ids=["ab"],
+        season_minutes={"aa": 400.0, "ab": 380.0, "c": 100.0, "d": 90.0,
+                        "e": 80.0, "f": 70.0, "g": 60.0, "h": 50.0},
+        games_played=10,
+    )
+    assert metrics["dnp_star_rate"] > 0.25
+    assert metrics["dnp_star_rate"] < 0.55
+
+
+def test_bubble_season_flag() -> None:
+    engine = WnbaFeatureEngine()
+    feat = engine.features_for_game(_game("2020-07-25", "lva", "sea", 0, 0, season=2020))
+    assert feat["bubble_season"] == 1.0
+    feat2 = engine.features_for_game(_game("2025-07-25", "lva", "sea", 0, 0, season=2025))
+    assert feat2["bubble_season"] == 0.0
 
 
 if __name__ == "__main__":
@@ -864,4 +895,6 @@ if __name__ == "__main__":
     test_availability_proxies_from_player_rows()
     test_rich_player_rotation_features()
     test_from_dict_defaults_new_rotation_fields()
+    test_minutes_weighted_dnp_star_rate_prefers_star_minutes()
+    test_bubble_season_flag()
     print("test_wnba_v2.py: all tests passed")

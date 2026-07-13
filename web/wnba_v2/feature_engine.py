@@ -5,6 +5,13 @@ row using only state accumulated strictly before that date, then folds the
 result into state. State is JSON-serializable so training can snapshot
 end-of-season state and the live path replays only the current season.
 
+Feature set (~77 cols): team strength (Elo / net / adj margin), efficiency and
+four factors, form/trends, schedule (rest, travel, 3-in-4, TZ), minutes-weighted
+player-rotation proxies from prior boxes, H2H margin EWMA, and a 2020 bubble flag.
+Context flags with zero OOS gain (playoff / neutral / expansion / sparse box
+ast-tov / bench +/-) were dropped; schedule signals previously computed but not
+emitted (away TZ, close-win, margin vol, 3-in-4) are included.
+
 Game dict schema (merged from data.wnba.com results + ESPN boxes):
   date (ISO), season, season_type (2 reg / 3 post), home, away (franchise keys),
   home_score, away_score, neutral_site (optional),
@@ -117,42 +124,42 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     "away_games_played",
     "games_played_min",
     "season_frac",
-    "is_playoff",
-    "neutral_site",
-    "home_expansion",
-    "away_expansion",
     "league_ppg",
     "exp_total_env",
     "elo_x_season_frac",
-    "h2h_home_win_rate",
-    # v2.1 additions
+    # form / trends
     "net_rtg_trend_diff",
     "ortg_trend_diff",
     "drtg_trend_diff",
     "efg_trend_diff",
     "elo_mom5_diff",
     "blowout_rate_diff",
+    "close_win_ewma_diff",
+    "margin_vol_diff",
+    # schedule / travel
     "home_stand_len",
     "away_road_trip_len",
     "home_tz_shift",
+    "away_tz_shift",
+    "home_3in4",
+    "away_3in4",
     "tp_pct_diff",
     "top8_continuity_diff",
-    # availability / richer player-rotation proxies (prior boxes only)
+    # player-rotation proxies (prior boxes only; minutes-weighted avail/DNP)
     "star_avail_diff",
     "top1_min_share_diff",
     "top3_min_share_diff",
     "top1_usage_diff",
     "top3_usage_diff",
-    "high_min_ast_tov_diff",
-    "high_min_foul_rate_diff",
     "star_min_gap_diff",
-    "bench_pm_diff",
     "dnp_star_rate_diff",
     "rotation_depth_diff",
     "min_hhi_diff",
     "bench_min_share_diff",
     "h2h_margin_ewma",
     "adj_margin_ewma_diff",
+    # regime
+    "bubble_season",
 )
 
 
@@ -285,10 +292,16 @@ def _player_rotation_metrics(
     ranked_season = sorted(season_minutes, key=lambda k: -season_minutes[k])
     top_season = ranked_season[:8]
     if top_season:
-        absent = sum(
-            1 for pid in top_season if pid not in played_ids or pid in dnp_set
+        # Minutes-weighted absence among season-minute leaders (stars matter more
+        # than equal-count DNP rate).
+        weights = [float(season_minutes.get(pid, 0.0)) for pid in top_season]
+        total_w = sum(weights) or 1.0
+        missing_w = sum(
+            w
+            for pid, w in zip(top_season, weights)
+            if pid not in played_ids or pid in dnp_set
         )
-        dnp_star_rate = absent / len(top_season)
+        dnp_star_rate = missing_w / total_w
     else:
         dnp_star_rate = LEAGUE_DNP_STAR_RATE
 
@@ -524,14 +537,16 @@ class TeamState:
         return sum(1 for pid in pool if pid in present) / len(pool)
 
     def star_availability(self) -> float:
-        """Share of the slow-decay top-3 stars that appeared in the last game."""
+        """Minutes-weighted share of slow-decay top-3 stars in the last game."""
         if not self.last_players:
             return 1.0
         pool = _top_players(self.player_min_slow, 3, 8.0)
         if not pool:
             return 1.0
         present = self._last_player_ids()
-        return sum(1 for pid in pool if pid in present) / len(pool)
+        weights = [float(self.player_min_slow.get(pid, 0.0)) for pid in pool]
+        total_w = sum(weights) or 1.0
+        return sum(w for pid, w in zip(pool, weights) if pid in present) / total_w
 
     def star_min_gap(self) -> float:
         """Recent star minutes EWMA minus season-average MPG of those stars."""
@@ -725,15 +740,6 @@ class WnbaFeatureEngine:
                 away_travel = _haversine_km(away_from, venue)
                 away_tz_shift = (venue[1] - away_from[1]) / 15.0
 
-        venue_alt = market_altitude_m(home.franchise, season) or 0.0
-        away_alt_from = away.last_altitude
-        if away_alt_from is None:
-            away_alt_from = market_altitude_m(away.franchise, season) or venue_alt
-
-        h2h_record = home.h2h.get(away.franchise) or [0, 0]
-        h2h_total = h2h_record[0] + h2h_record[1]
-        h2h_rate = h2h_record[0] / h2h_total if h2h_total else 0.5
-
         season_frac = min(home.games_played, away.games_played) / SEASON_GAMES_NOMINAL
         elo_diff = home.elo - away.elo + (0.0 if neutral else ELO_HOME_ADV)
         rest_diff = home_rest - away_rest
@@ -789,15 +795,10 @@ class WnbaFeatureEngine:
             "away_games_played": float(away.games_played),
             "games_played_min": float(min(home.games_played, away.games_played)),
             "season_frac": season_frac,
-            "is_playoff": 1.0 if int(game.get("season_type") or 2) == 3 else 0.0,
-            "neutral_site": 1.0 if neutral else 0.0,
-            "home_expansion": 1.0 if home.first_season == season else 0.0,
-            "away_expansion": 1.0 if away.first_season == season else 0.0,
             "league_ppg": self.league_ppg,
             "exp_total_env": (home.pf_fast + home.pa_fast + away.pf_fast + away.pa_fast)
             / 2.0,
             "elo_x_season_frac": elo_diff * season_frac,
-            "h2h_home_win_rate": h2h_rate,
             "net_rtg_trend_diff": (
                 (home.ortg_fast - home.drtg_fast) - (home.ortg_slow - home.drtg_slow)
             )
@@ -810,9 +811,14 @@ class WnbaFeatureEngine:
             - (away.efg_for - away.efg_for_slow),
             "elo_mom5_diff": home.elo_momentum5() - away.elo_momentum5(),
             "blowout_rate_diff": home.blowout_ewma - away.blowout_ewma,
+            "close_win_ewma_diff": home.close_win_ewma - away.close_win_ewma,
+            "margin_vol_diff": home.margin_volatility() - away.margin_volatility(),
             "home_stand_len": home_stand,
             "away_road_trip_len": road_trip,
             "home_tz_shift": home_tz_shift,
+            "away_tz_shift": away_tz_shift,
+            "home_3in4": 1.0 if home.is_3in4(game_date) else 0.0,
+            "away_3in4": 1.0 if away.is_3in4(game_date) else 0.0,
             "tp_pct_diff": home.tp_pct - away.tp_pct,
             "top8_continuity_diff": home.top8_continuity() - away.top8_continuity(),
             "star_avail_diff": home.star_availability() - away.star_availability(),
@@ -820,16 +826,14 @@ class WnbaFeatureEngine:
             "top3_min_share_diff": home.top3_min_share - away.top3_min_share,
             "top1_usage_diff": home.top1_usage - away.top1_usage,
             "top3_usage_diff": home.top3_usage - away.top3_usage,
-            "high_min_ast_tov_diff": home.high_min_ast_tov - away.high_min_ast_tov,
-            "high_min_foul_rate_diff": home.high_min_foul_rate - away.high_min_foul_rate,
             "star_min_gap_diff": home.star_min_gap() - away.star_min_gap(),
-            "bench_pm_diff": home.bench_pm - away.bench_pm,
             "dnp_star_rate_diff": home.dnp_star_rate - away.dnp_star_rate,
             "rotation_depth_diff": home.rotation_depth - away.rotation_depth,
             "min_hhi_diff": home.min_hhi - away.min_hhi,
             "bench_min_share_diff": home.bench_min_share - away.bench_min_share,
             "h2h_margin_ewma": home.h2h_margin.get(away.franchise, 0.0),
             "adj_margin_ewma_diff": home.adj_margin_ewma - away.adj_margin_ewma,
+            "bubble_season": 1.0 if season == 2020 else 0.0,
         }
         return features
 
