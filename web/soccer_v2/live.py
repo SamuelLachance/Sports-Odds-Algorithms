@@ -519,14 +519,41 @@ def predict_matchup_v2(
 
     pure, market_aware = _predict_probs(artifacts, features, market_features)
     display = market_aware if market_features is not None else pure
+    model_variant = "market_aware" if market_features is not None else "pure"
+
+    try:
+        from web.hybrid_v2.live import fill_curve_proxies, score_hybrid_soccer
+
+        row = fill_curve_proxies(dict(features))
+        if market_features is not None:
+            row["mkt_open_home"] = float(market_features[0])
+            row["mkt_open_draw"] = float(market_features[1])
+            row["mkt_open_away"] = float(market_features[2])
+            row["has_market"] = 1.0
+        row["home_id"] = str(home_key)
+        row["away_id"] = str(away_key)
+        hybrid = score_hybrid_soccer(
+            "soccer",
+            row,
+            market_probs=tuple(market_features) if market_features is not None else None,
+        )
+        if hybrid is not None:
+            display = (hybrid["home"], hybrid["draw"], hybrid["away"])
+            model_variant = "hybrid"
+    except Exception:  # noqa: BLE001 — hybrid is best-effort overlay
+        pass
+
     pick = _decorrelate(display, live_market)
 
     exp_home, exp_away = _predict_goals(artifacts, features)
 
     payload: dict[str, Any] = {
-        "algorithm": "SoccerGradientBoost v2",
+        "algorithm": (
+            "HybridGradientBoost v2" if model_variant == "hybrid" else "SoccerGradientBoost v2"
+        ),
         "model_version": MODEL_VERSION,
-        "source": "soccer-v2-xgb-ensemble",
+        "model_variant": model_variant,
+        "source": "soccer-v2-xgb-ensemble" if model_variant != "hybrid" else "soccer-v2-hybrid",
         "league": league,
         "home_team": home_key,
         "away_team": away_key,

@@ -1,0 +1,30 @@
+{
+  "oos_model_logloss": 0.97411,
+  "oos_model_acc": 0.5326,
+  "n": 36197,
+  "baseline_ll": 0.98749,
+  "delta_vs_baseline": 0.01338,
+  "beat_baseline": true,
+  "multiclass": true,
+  "config": {
+    "name": "cb_full_w50",
+    "backend": "catboost",
+    "depth": 7,
+    "learning_rate": 0.04,
+    "iterations": 450,
+    "l2": 4.0,
+    "min_data": 40,
+    "subsample": 0.9,
+    "use_curves": true,
+    "use_categoricals": true,
+    "use_market": true,
+    "market_blend_w": 0.5,
+    "feature_mode": "full",
+    "early_stopping": 35,
+    "seed": 42,
+    "target_mode": "prob"
+  },
+  "league": "soccer",
+  "elapsed_s": 250.9,
+  "created_at": "2026-07-13T15:27:21.169876+00:00"
+}

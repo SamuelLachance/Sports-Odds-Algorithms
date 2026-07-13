@@ -1,5 +1,5 @@
 {
-  "policy": "Official picks use Hubáček gates: decorrelated model beats the de-vigged market by a backtested per-league gap, honest EV floor (calibrated pre-decorrelation probability), and a per-bet-type confidence bar (defaults 20 pp moneyline, 10 pp baseball/soccer, 5 pp spread cover). Live thresholds live in web/hubacek_picks.py; per-league overrides are stored here from walk-forward bet backtests. Enable bar: positive worst-season ROI at the execution price we would actually take (prefer multi-season).",
+  "policy": "Official picks use Hub\u00e1\u010dek gates: decorrelated model beats the de-vigged market by a backtested per-league gap, honest EV floor (calibrated pre-decorrelation probability), and a per-bet-type confidence bar (defaults 20 pp moneyline, 10 pp baseball/soccer, 5 pp spread cover). Live thresholds live in web/hubacek_picks.py; per-league overrides are stored here from walk-forward bet backtests. Enable bar: positive worst-season ROI at the execution price we would actually take (prefer multi-season).",
   "generated_at": "2026-07-12",
   "default": {
     "min_edge": 0,
@@ -20,7 +20,7 @@
     "ml_lo": -200,
     "ml_hi": 200,
     "enabled": true,
-    "note": "MLB v2 (75 features) walk-forward backtest 2026-07-12 (scripts/backtest_mlb_bets.py): raw model-market gap >= 6 pp (6.7 pp after 1.12x decorrelation), EV >= 0%, prices -200..+200. Opening-line ROI +5.93% (1030 bets, 2024-2026, all 3 seasons positive, worst +4.01%, CLV +8.13%); closing-line floor -2.61%. Morning bets sit between open and close.",
+    "note": "Live model upgraded to HybridGradientBoost v2; prior Hubacek gates retained (gap=6.7, ml -200..+200) pending full open/close backtest on keyed hybrid OOS.",
     "backtest_roi_pct": 5.93,
     "backtest_bets": 1030,
     "backtest_close_roi_pct": -2.61
@@ -42,10 +42,12 @@
     "min_spread_confidence_pp": 5.0,
     "min_spread_point_edge": 0.0,
     "min_ev_pct": 2.0,
-    "allowed_sides": ["away"],
+    "allowed_sides": [
+      "away"
+    ],
     "fav_mode": "any",
     "enabled": true,
-    "note": "Re-enabled 2026-07-12 after all-seasons-positive search: market-aware margin, away sides only, cover gap >= 12 pp at the open. Open-line ROI +21.1% (52 bets, 2024-2025, both seasons positive, worst +19.7%). Thin sample — morning prices sit between open and close.",
+    "note": "Re-enabled 2026-07-12 after all-seasons-positive search: market-aware margin, away sides only, cover gap >= 12 pp at the open. Open-line ROI +21.1% (52 bets, 2024-2025, both seasons positive, worst +19.7%). Thin sample \u2014 morning prices sit between open and close. | Live clf upgraded to HybridGradientBoost v2; prior Hubacek gates retained.",
     "backtest_roi_pct": 21.12,
     "backtest_bets": 52
   },
@@ -56,10 +58,12 @@
     "min_ev_pct": 2.0,
     "ml_lo": -150,
     "ml_hi": 200,
-    "allowed_sides": ["home"],
+    "allowed_sides": [
+      "home"
+    ],
     "fav_mode": "favorite",
     "enabled": true,
-    "note": "Re-enabled 2026-07-12 as moneyline (not spread): home favorites only, raw gap >= 2 pp (2.2 after 1.12x decorrelation), EV >= 2%, |p-50| >= 15 pp, ML −150..+200 vs close. Multi-season odds join (2023-2025 conference windows): ROI +20.9% / 188 bets, all 3 seasons positive, worst +14.4%. Spread Hubacek grids still fail the 3-season bar.",
+    "note": "Re-enabled 2026-07-12 as moneyline (not spread): home favorites only, raw gap >= 2 pp (2.2 after 1.12x decorrelation), EV >= 2%, |p-50| >= 15 pp, ML \u2212150..+200 vs close. Multi-season odds join (2023-2025 conference windows): ROI +20.9% / 188 bets, all 3 seasons positive, worst +14.4%. Spread Hubacek grids still fail the 3-season bar. | Live clf upgraded to HybridGradientBoost v2; prior Hubacek gates retained.",
     "backtest_roi_pct": 20.9,
     "backtest_bets": 188
   },
@@ -70,10 +74,12 @@
     "min_ev_pct": 4.0,
     "ml_lo": -350,
     "ml_hi": 300,
-    "allowed_sides": ["home"],
+    "allowed_sides": [
+      "home"
+    ],
     "fav_mode": "any",
     "enabled": true,
-    "note": "Re-enabled 2026-07-12 on moneyline (not spread): home only, raw gap >= 5 pp (5.6 after 1.12x decorrelation), EV >= 4%, |p-50| >= 15 pp, ML −350..+300 vs close. 2022-2025 window all 4 seasons positive (74 bets, ROI +13.4%, worst +7.3%). Full 2010-2025 spread grid still has no all-seasons-positive policy — this is a recent-window home-ML book.",
+    "note": "Re-enabled 2026-07-12 on moneyline (not spread): home only, raw gap >= 5 pp (5.6 after 1.12x decorrelation), EV >= 4%, |p-50| >= 15 pp, ML \u2212350..+300 vs close. 2022-2025 window all 4 seasons positive (74 bets, ROI +13.4%, worst +7.3%). Full 2010-2025 spread grid still has no all-seasons-positive policy \u2014 this is a recent-window home-ML book. | Live clf upgraded to HybridGradientBoost v2; prior Hubacek gates retained.",
     "backtest_roi_pct": 13.42,
     "backtest_bets": 74
   },
@@ -83,7 +89,9 @@
     "min_spread_point_edge": 0.0,
     "min_spread_confidence_pp": 12.0,
     "min_ev_pct": 2.0,
-    "allowed_sides": ["away"],
+    "allowed_sides": [
+      "away"
+    ],
     "fav_mode": "favorite",
     "enabled": true,
     "note": "Re-enabled 2026-07-12: open-line away favorites only, cover gap >= 11 pp, cover conf >= 12 pp. ROI +5.69% (94 bets, 2023-2025, all 3 seasons positive, worst +3.42%).",
@@ -97,10 +105,13 @@
     "min_ev_pct": 2.0,
     "ml_lo": 150,
     "ml_hi": 180,
-    "allowed_sides": ["home", "away"],
+    "allowed_sides": [
+      "home",
+      "away"
+    ],
     "fav_mode": "big_dog",
     "enabled": true,
-    "note": "Re-enabled 2026-07-12: market-aware ML, big dogs only (+150..+180), raw gap >= 2 pp (2.2 after 1.12x decorrelation), EV >= 2%, |p-50| >= 5 pp at the open. ROI +35.5% (179 bets, 2023-2025, all 3 seasons positive, worst +27.8%, CLV positive in prior open studies). Narrow price band by design.",
+    "note": "Re-enabled 2026-07-12: market-aware ML, big dogs only (+150..+180), raw gap >= 2 pp (2.2 after 1.12x decorrelation), EV >= 2%, |p-50| >= 5 pp at the open. ROI +35.5% (179 bets, 2023-2025, all 3 seasons positive, worst +27.8%, CLV positive in prior open studies). Narrow price band by design. | Live clf upgraded to HybridGradientBoost v2; prior Hubacek gates retained.",
     "backtest_roi_pct": 35.54,
     "backtest_bets": 179
   },
@@ -109,9 +120,11 @@
     "min_market_gap_pp": 4.6,
     "min_win_confidence_pp": 0.0,
     "min_ev_pct": 5.0,
-    "allowed_sides": ["home"],
+    "allowed_sides": [
+      "home"
+    ],
     "enabled": true,
-    "note": "Soccer v2 pooled top-5 walk-forward backtest 2026-07-12 (scripts/backtest_soccer_bets.py): market-aware calibrated home prob beats the devigged opening line by >= 4 pp raw (4.6 pp after 1.15x decorrelation), EV >= 5% — home outcomes only. Best-price execution ROI +8.6% across 2015-2025 (1771 bets, 9/11 seasons positive, worst −4.35%, CLV +4.16%).",
+    "note": "Soccer v2 pooled top-5 walk-forward backtest 2026-07-12 (scripts/backtest_soccer_bets.py): market-aware calibrated home prob beats the devigged opening line by >= 4 pp raw (4.6 pp after 1.15x decorrelation), EV >= 5% \u2014 home outcomes only. Best-price execution ROI +8.6% across 2015-2025 (1771 bets, 9/11 seasons positive, worst \u22124.35%, CLV +4.16%). | Soccer v2 clf upgraded to HybridGradientBoost v2; prior Hubacek gates retained.",
     "backtest_roi_pct": 8.6,
     "backtest_bets": 1771
   },
@@ -120,9 +133,11 @@
     "min_market_gap_pp": 4.6,
     "min_win_confidence_pp": 0.0,
     "min_ev_pct": 5.0,
-    "allowed_sides": ["home"],
+    "allowed_sides": [
+      "home"
+    ],
     "enabled": true,
-    "note": "Shares the pooled soccer v2 policy (see epl entry).",
+    "note": "Shares the pooled soccer v2 policy (see epl entry). | Soccer v2 clf upgraded to HybridGradientBoost v2; prior Hubacek gates retained.",
     "backtest_roi_pct": 8.6,
     "backtest_bets": 1771
   },
@@ -131,9 +146,11 @@
     "min_market_gap_pp": 4.6,
     "min_win_confidence_pp": 0.0,
     "min_ev_pct": 5.0,
-    "allowed_sides": ["home"],
+    "allowed_sides": [
+      "home"
+    ],
     "enabled": true,
-    "note": "Shares the pooled soccer v2 policy (see epl entry).",
+    "note": "Shares the pooled soccer v2 policy (see epl entry). | Soccer v2 clf upgraded to HybridGradientBoost v2; prior Hubacek gates retained.",
     "backtest_roi_pct": 8.6,
     "backtest_bets": 1771
   },
@@ -142,9 +159,11 @@
     "min_market_gap_pp": 4.6,
     "min_win_confidence_pp": 0.0,
     "min_ev_pct": 5.0,
-    "allowed_sides": ["home"],
+    "allowed_sides": [
+      "home"
+    ],
     "enabled": true,
-    "note": "Shares the pooled soccer v2 policy (see epl entry).",
+    "note": "Shares the pooled soccer v2 policy (see epl entry). | Soccer v2 clf upgraded to HybridGradientBoost v2; prior Hubacek gates retained.",
     "backtest_roi_pct": 8.6,
     "backtest_bets": 1771
   },
@@ -153,9 +172,11 @@
     "min_market_gap_pp": 4.6,
     "min_win_confidence_pp": 0.0,
     "min_ev_pct": 5.0,
-    "allowed_sides": ["home"],
+    "allowed_sides": [
+      "home"
+    ],
     "enabled": true,
-    "note": "Shares the pooled soccer v2 policy (see epl entry).",
+    "note": "Shares the pooled soccer v2 policy (see epl entry). | Soccer v2 clf upgraded to HybridGradientBoost v2; prior Hubacek gates retained.",
     "backtest_roi_pct": 8.6,
     "backtest_bets": 1771
   },
@@ -164,25 +185,31 @@
     "min_market_gap_pp": 8.0,
     "min_win_confidence_pp": 10.0,
     "min_ev_pct": 8.0,
-    "allowed_sides": ["home"],
+    "allowed_sides": [
+      "home"
+    ],
     "enabled": true,
-    "note": "Sparse-sample international: EV capped at >= 8% and market gap >= 8 pp; home only. Tournament samples are thin vs club leagues — avoid over-fitting short OOS windows."
+    "note": "Sparse-sample international: EV capped at >= 8% and market gap >= 8 pp; home only. Tournament samples are thin vs club leagues \u2014 avoid over-fitting short OOS windows."
   },
   "fifa_friendlies": {
     "bet_type": "soccer_1x2",
     "min_market_gap_pp": 8.0,
     "min_win_confidence_pp": 10.0,
     "min_ev_pct": 8.0,
-    "allowed_sides": ["home"],
+    "allowed_sides": [
+      "home"
+    ],
     "enabled": true,
-    "note": "Sparse-sample international friendlies: EV >= 8%, market gap >= 8 pp, home only. Motivation/rotation noise is high — sparse-sample EV caps apply."
+    "note": "Sparse-sample international friendlies: EV >= 8%, market gap >= 8 pp, home only. Motivation/rotation noise is high \u2014 sparse-sample EV caps apply."
   },
   "uefa_euro": {
     "bet_type": "soccer_1x2",
     "min_market_gap_pp": 8.0,
     "min_win_confidence_pp": 10.0,
     "min_ev_pct": 8.0,
-    "allowed_sides": ["home"],
+    "allowed_sides": [
+      "home"
+    ],
     "enabled": true,
     "note": "Sparse-sample international: EV >= 8%, market gap >= 8 pp, home only pending larger OOS."
   },
@@ -191,7 +218,9 @@
     "min_market_gap_pp": 8.0,
     "min_win_confidence_pp": 10.0,
     "min_ev_pct": 8.0,
-    "allowed_sides": ["home"],
+    "allowed_sides": [
+      "home"
+    ],
     "enabled": true,
     "note": "Sparse-sample international: EV >= 8%, market gap >= 8 pp, home only pending larger OOS."
   },
@@ -200,7 +229,9 @@
     "min_market_gap_pp": 8.0,
     "min_win_confidence_pp": 10.0,
     "min_ev_pct": 8.0,
-    "allowed_sides": ["home"],
+    "allowed_sides": [
+      "home"
+    ],
     "enabled": true,
     "note": "Sparse-sample international: EV >= 8%, market gap >= 8 pp, home only pending larger OOS."
   },
@@ -209,7 +240,9 @@
     "min_market_gap_pp": 8.0,
     "min_win_confidence_pp": 10.0,
     "min_ev_pct": 8.0,
-    "allowed_sides": ["home"],
+    "allowed_sides": [
+      "home"
+    ],
     "enabled": true,
     "note": "Sparse-sample international: EV >= 8%, market gap >= 8 pp, home only pending larger OOS."
   },
@@ -218,7 +251,9 @@
     "min_market_gap_pp": 8.0,
     "min_win_confidence_pp": 10.0,
     "min_ev_pct": 8.0,
-    "allowed_sides": ["home"],
+    "allowed_sides": [
+      "home"
+    ],
     "enabled": true,
     "note": "Sparse-sample international: EV >= 8%, market gap >= 8 pp, home only pending larger OOS."
   },
@@ -227,7 +262,9 @@
     "min_market_gap_pp": 8.0,
     "min_win_confidence_pp": 10.0,
     "min_ev_pct": 8.0,
-    "allowed_sides": ["home"],
+    "allowed_sides": [
+      "home"
+    ],
     "enabled": true,
     "note": "Sparse-sample international: EV >= 8%, market gap >= 8 pp, home only pending larger OOS."
   }

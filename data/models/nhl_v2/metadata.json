@@ -1,5 +1,5 @@
 {
-  "algorithm": "NHLGradientBoost v2",
+  "algorithm": "HybridGradientBoost v2",
   "created_at": "2026-07-12T17:24:53.902386+00:00",
   "feature_columns": [
     "elo_diff",
@@ -115,13 +115,13 @@
     2025
   ],
   "snapshot_season": 2025,
-  "oos_model_logloss": 0.66897,
-  "oos_model_brier": 0.23789,
-  "oos_model_acc": 0.5874,
+  "oos_model_logloss": 0.66631,
+  "oos_model_brier": 0.23685,
+  "oos_model_acc": 0.5908,
   "oos_with_odds": 14782,
-  "oos_model_logloss_odds_subset": 0.66834,
+  "oos_model_logloss_odds_subset": 0.66354,
   "oos_market_aware_logloss_odds_subset": 0.66765,
-  "oos_market_logloss": 0.66485,
+  "oos_market_logloss": 0.66036,
   "per_season": [
     {
       "season": 2014,
@@ -363,5 +363,11 @@
     "away_3in4": 0.0,
     "home_road_trip": 0.0,
     "is_divisional": 0.0
-  }
+  },
+  "hybrid": true,
+  "hybrid_backend": "catboost",
+  "hybrid_market_blend_w": 0.6,
+  "baseline_xgb_logloss": 0.66631,
+  "gap_vs_market": 0.00318,
+  "hybrid_shipped_at": "2026-07-13T15:09:51.045832+00:00"
 }

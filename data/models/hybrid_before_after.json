@@ -1,0 +1,58 @@
+[
+  {
+    "league": "wnba",
+    "before": 0.62284,
+    "after": 0.60996,
+    "delta": 0.01288,
+    "shipped": true
+  },
+  {
+    "league": "nba",
+    "before": 0.6099,
+    "after": 0.61461,
+    "delta": -0.00471,
+    "shipped": false
+  },
+  {
+    "league": "nhl",
+    "before": 0.66897,
+    "after": 0.66631,
+    "delta": 0.00266,
+    "shipped": true
+  },
+  {
+    "league": "mlb",
+    "before": 0.67731,
+    "after": 0.67346,
+    "delta": 0.00385,
+    "shipped": true
+  },
+  {
+    "league": "nfl",
+    "before": 0.63107,
+    "after": 0.62995,
+    "delta": 0.00112,
+    "shipped": true
+  },
+  {
+    "league": "cfb",
+    "before": 0.52648,
+    "after": 0.52809,
+    "delta": -0.00161,
+    "shipped": false
+  },
+  {
+    "league": "cbb",
+    "before": 0.50712,
+    "after": 0.47457,
+    "delta": 0.03255,
+    "shipped": true
+  },
+  {
+    "league": "soccer",
+    "before": 0.98749,
+    "after": 0.97411,
+    "delta": 0.01338,
+    "shipped": true
+  }
+]

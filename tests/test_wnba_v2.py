@@ -523,6 +523,7 @@ def test_predict_matchup_v2_market_aware_wiring_with_stub_context() -> None:
         patch.object(wnba_live, "canon_franchise", side_effect=lambda x: x.lower()),
         patch.object(wnba_live, "_predict_probability", return_value=0.62) as mock_prob,
         patch.object(wnba_live, "_predict_regressor", side_effect=[5.0, 85.0, 80.0]),
+        patch("web.hybrid_v2.live.try_hybrid_binary", return_value=None),
     ):
         result = wnba_live.predict_matchup_v2(
             "2026-07-10",

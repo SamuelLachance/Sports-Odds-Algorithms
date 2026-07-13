@@ -580,6 +580,24 @@ def predict_matchup_v2(
         )
     else:
         prob_home = _predict_probability(art, features, cols=clf_cols)
+
+    try:
+        from web.hybrid_v2.live import try_hybrid_binary
+
+        mkt_p = float(features["mkt_home_prob"]) if has_market else None
+        hybrid = try_hybrid_binary(
+            "mlb",
+            features,
+            home_id=str(home_id),
+            away_id=str(away_id),
+            market_home_prob=mkt_p,
+        )
+        if hybrid is not None:
+            prob_home = float(hybrid["home_win_prob"])
+            model_variant = "hybrid"
+    except Exception:  # noqa: BLE001 — hybrid is best-effort overlay
+        pass
+
     runs = _predict_runs(art, features)
 
     names = context["pitcher_names"]

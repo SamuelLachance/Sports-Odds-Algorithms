@@ -334,6 +334,26 @@ def predict_matchup_v2(
     else:
         margin = _predict_regressor(art["margin"], art, features, cols=margin_cols)
 
+    # Prefer shipped hybrid CatBoost+market-blend win prob when available.
+    try:
+        from web.hybrid_v2.live import try_hybrid_binary
+
+        mkt_p = float(features["mkt_home_prob"]) if has_market else None
+        hybrid = try_hybrid_binary(
+            "cfb",
+            features,
+            home_id=home,
+            away_id=away,
+            market_home_prob=mkt_p,
+        )
+        if hybrid is not None:
+            prob_home = float(hybrid["home_win_prob"])
+            model_variant = "hybrid"
+            if hybrid.get("predicted_margin") is not None:
+                margin = float(hybrid["predicted_margin"])
+    except Exception:  # noqa: BLE001 — hybrid is best-effort overlay
+        pass
+
     pure_cols = list(art["feature_columns"])
     score_home = _predict_regressor(art["score_home"], art, features, cols=pure_cols)
     score_away = _predict_regressor(art["score_away"], art, features, cols=pure_cols)

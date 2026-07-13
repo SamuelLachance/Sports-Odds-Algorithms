@@ -1,5 +1,5 @@
 {
-  "algorithm": "CBBGradientBoost v2",
+  "algorithm": "HybridGradientBoost v2",
   "created_at": "2026-07-12T17:28:14.927190+00:00",
   "feature_columns": [
     "elo_diff",
@@ -102,17 +102,17 @@
   ],
   "margin_sigma": 12.412,
   "margin_sigma_market": 12.135,
-  "oos_model_logloss": 0.50712,
-  "oos_model_brier": 0.17041,
-  "oos_model_acc": 0.738,
-  "oos_margin_mae": 9.68,
+  "oos_model_logloss": 0.47457,
+  "oos_model_brier": 0.15748,
+  "oos_model_acc": 0.7645,
+  "oos_margin_mae": 9.5471,
   "ensemble_baseline_logloss": 0.55,
   "gate_pass_vs_ensemble_ll": true,
   "pit_safe": true,
   "training_source": "espn_completed_games",
   "torvik_used_in_training": false,
   "oos_with_odds": 4986,
-  "oos_market_logloss": 0.33917,
+  "oos_market_logloss": 0.47252,
   "oos_market_aware_logloss_odds_subset": 0.43694,
   "official_picks_recommendation": "enable_if_worst_season_roi_positive",
   "per_season": [
@@ -245,5 +245,12 @@
     "home_3in4": 0.0,
     "away_3in4": 0.0
   },
-  "bet_policy_note": "Official CBB picks remain disabled until a positive worst-season walk-forward backtest on historical closing odds is available."
+  "bet_policy_note": "Official CBB picks remain disabled until a positive worst-season walk-forward backtest on historical closing odds is available.",
+  "hybrid": true,
+  "hybrid_backend": "catboost",
+  "hybrid_market_blend_w": 0.6,
+  "baseline_xgb_logloss": 0.50712,
+  "oos_model_logloss_odds_subset": 0.47909,
+  "gap_vs_market": 0.00657,
+  "hybrid_shipped_at": "2026-07-13T15:14:10.583049+00:00"
 }

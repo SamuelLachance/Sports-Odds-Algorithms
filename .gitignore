@@ -62,6 +62,9 @@ data/wnba_history/
 data/models/wnba_v2/oos_predictions.csv
 data/models/wnba_hybrid/oos_*.csv
 data/models/wnba_hybrid/summary_*.json
+data/models/*_hybrid/oos_*.csv
+data/models/*_hybrid/summary_*.json
+data/models/*_v2/oos_predictions_hybrid.csv
 
 # NBA v2 raw history + rebuildable outputs (fetch via scripts/fetch_nba_history.py,
 # rebuild via scripts/build_nba_training_table.py). Model artifacts in
