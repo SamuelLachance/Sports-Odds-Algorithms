@@ -1,0 +1,240 @@
+{
+  "n_positive_ml": 6028,
+  "n_positive_spread": 0,
+  "best": {
+    "params": {
+      "bet_type": "moneyline",
+      "exec_price": "close",
+      "source_oos": "hybrid",
+      "prob_col": "model_raw",
+      "decor_w": 0.12,
+      "min_edge_pp": 10.0,
+      "min_ev_pct": 6.0,
+      "ml_lo": -250,
+      "ml_hi": 250,
+      "sides": "big_dog",
+      "season_window": "all",
+      "hubacek": true
+    },
+    "backtest": {
+      "bets": 214,
+      "staked_units": 642.0,
+      "profit_units": 43.9,
+      "roi_pct": 6.84,
+      "win_rate": 0.3645,
+      "seasons_positive": 3,
+      "seasons_total": 3,
+      "worst_season_roi": 2.87,
+      "median_season_roi": 6.28,
+      "per_season": {
+        "2023": {
+          "bets": 90,
+          "roi_pct": 2.87,
+          "profit_units": 7.8
+        },
+        "2024": {
+          "bets": 55,
+          "roi_pct": 6.28,
+          "profit_units": 10.4
+        },
+        "2025": {
+          "bets": 69,
+          "roi_pct": 12.46,
+          "profit_units": 25.8
+        }
+      }
+    }
+  },
+  "top10": [
+    {
+      "params": {
+        "bet_type": "moneyline",
+        "exec_price": "close",
+        "source_oos": "hybrid",
+        "prob_col": "model_prob",
+        "decor_w": 0.18,
+        "min_edge_pp": 10.0,
+        "min_ev_pct": 0.0,
+        "ml_lo": -120,
+        "ml_hi": 120,
+        "sides": "dog",
+        "season_window": "all",
+        "hubacek": true
+      },
+      "worst": 9.85,
+      "roi": 12.69,
+      "bets": 107
+    },
+    {
+      "params": {
+        "bet_type": "moneyline",
+        "exec_price": "close",
+        "source_oos": "hybrid",
+        "prob_col": "model_prob",
+        "decor_w": 0.18,
+        "min_edge_pp": 10.0,
+        "min_ev_pct": 1.0,
+        "ml_lo": -120,
+        "ml_hi": 120,
+        "sides": "dog",
+        "season_window": "all",
+        "hubacek": true
+      },
+      "worst": 9.85,
+      "roi": 12.69,
+      "bets": 107
+    },
+    {
+      "params": {
+        "bet_type": "moneyline",
+        "exec_price": "close",
+        "source_oos": "hybrid",
+        "prob_col": "model_prob",
+        "decor_w": 0.18,
+        "min_edge_pp": 10.0,
+        "min_ev_pct": 2.0,
+        "ml_lo": -120,
+        "ml_hi": 120,
+        "sides": "dog",
+        "season_window": "all",
+        "hubacek": true
+      },
+      "worst": 9.85,
+      "roi": 12.69,
+      "bets": 107
+    },
+    {
+      "params": {
+        "bet_type": "moneyline",
+        "exec_price": "close",
+        "source_oos": "hybrid",
+        "prob_col": "model_prob",
+        "decor_w": 0.18,
+        "min_edge_pp": 10.0,
+        "min_ev_pct": 3.0,
+        "ml_lo": -120,
+        "ml_hi": 120,
+        "sides": "dog",
+        "season_window": "all",
+        "hubacek": true
+      },
+      "worst": 9.85,
+      "roi": 12.69,
+      "bets": 107
+    },
+    {
+      "params": {
+        "bet_type": "moneyline",
+        "exec_price": "close",
+        "source_oos": "hybrid",
+        "prob_col": "model_prob",
+        "decor_w": 0.18,
+        "min_edge_pp": 10.0,
+        "min_ev_pct": 4.0,
+        "ml_lo": -120,
+        "ml_hi": 120,
+        "sides": "dog",
+        "season_window": "all",
+        "hubacek": true
+      },
+      "worst": 9.85,
+      "roi": 12.69,
+      "bets": 107
+    },
+    {
+      "params": {
+        "bet_type": "moneyline",
+        "exec_price": "close",
+        "source_oos": "hybrid",
+        "prob_col": "model_prob",
+        "decor_w": 0.18,
+        "min_edge_pp": 10.0,
+        "min_ev_pct": 5.0,
+        "ml_lo": -120,
+        "ml_hi": 120,
+        "sides": "dog",
+        "season_window": "all",
+        "hubacek": true
+      },
+      "worst": 9.85,
+      "roi": 12.69,
+      "bets": 107
+    },
+    {
+      "params": {
+        "bet_type": "moneyline",
+        "exec_price": "close",
+        "source_oos": "hybrid",
+        "prob_col": "model_prob",
+        "decor_w": 0.18,
+        "min_edge_pp": 10.0,
+        "min_ev_pct": 6.0,
+        "ml_lo": -120,
+        "ml_hi": 120,
+        "sides": "dog",
+        "season_window": "all",
+        "hubacek": true
+      },
+      "worst": 9.85,
+      "roi": 12.69,
+      "bets": 107
+    },
+    {
+      "params": {
+        "bet_type": "moneyline",
+        "exec_price": "open",
+        "source_oos": "hybrid",
+        "prob_col": "model_prob",
+        "decor_w": 0.18,
+        "min_edge_pp": 10.0,
+        "min_ev_pct": 0.0,
+        "ml_lo": -120,
+        "ml_hi": 120,
+        "sides": "dog",
+        "season_window": "all",
+        "hubacek": true
+      },
+      "worst": 9.85,
+      "roi": 12.69,
+      "bets": 107
+    },
+    {
+      "params": {
+        "bet_type": "moneyline",
+        "exec_price": "open",
+        "source_oos": "hybrid",
+        "prob_col": "model_prob",
+        "decor_w": 0.18,
+        "min_edge_pp": 10.0,
+        "min_ev_pct": 1.0,
+        "ml_lo": -120,
+        "ml_hi": 120,
+        "sides": "dog",
+        "season_window": "all",
+        "hubacek": true
+      },
+      "worst": 9.85,
+      "roi": 12.69,
+      "bets": 107
+    },
+    {
+      "params": {
+        "bet_type": "moneyline",
+        "exec_price": "open",
+        "source_oos": "hybrid",
+        "prob_col": "model_prob",
+        "decor_w": 0.18,
+        "min_edge_pp": 10.0,
+        "min_ev_pct": 2.0,
+        "ml_lo": -120,
+        "ml_hi": 120,
+        "sides": "dog",
+        "season_window": "all",
+        "hubacek": true
+      },
+      "worst": 9.85,
+      "roi": 12.69,
+      "bets": 107
+    }
+  ]
+}

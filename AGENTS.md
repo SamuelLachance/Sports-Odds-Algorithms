@@ -7,7 +7,7 @@ Algorithme de prédiction sportive (NBA, NHL, MLB et autres ligues) avec démo w
 - Python 3.10+ (`requirements.txt`)
 - Core : `algo.py`, `odds_calculator.py`, `backtester.py`
 - Web : `web/` (FastAPI + frontend statique)
-- Sport models : `web/{nba,wnba,nhl,mlb,soccer,nfl,cfb,cbb}_v2` (GradientBoost v2; CBB primary = GB v2 with Torvik fallback; NFL Hubáček ML niche enabled from hybrid OOS; CFB official picks still gated)
+- Sport models : `web/{nba,wnba,nhl,mlb,soccer,nfl,cfb,cbb}_v2` (GradientBoost v2; CBB primary = GB v2 with Torvik fallback; NFL/CFB/soccer Hubáček niches enabled from hybrid OOS when worst-season ROI > 0)
 - Données historiques : CSV dans `nba/`, `nhl/`, `mlb/`
 - Modules récents : `web/context_signals.py` (FLB / news / sparse EV caps), `web/portfolio_sizing.py` (stake sizing corrélé), `web/live_odds_enrichment.py` (multi-book NBA/NHL/MLB/WNBA), `web/basketball_v2_market.py` (helpers partagés NBA/WNBA live market-aware)
 
@@ -60,7 +60,7 @@ python scripts/train_cbb_model.py
 python scripts/check_v2_data.py
 ```
 
-Official NFL Hubáček moneyline niche is enabled when `data/pick_strategy.json` shows `nfl.enabled=true` (hybrid OOS, worst-season ROI > 0). CFB stays gated until its search clears; spread beat-close gates are separate from Hubáček pick enable.
+Official NFL Hubáček moneyline niche is enabled when `data/pick_strategy.json` shows `nfl.enabled=true` (hybrid OOS, worst-season ROI > 0). CFB big-dog ML and top-5 club soccer (home/away) niches are likewise enabled when their decorrelated searches clear the same bar. Spread beat-close gates remain separate from Hubáček pick enable.
 
 ## Déploiement
 

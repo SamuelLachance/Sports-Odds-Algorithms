@@ -379,7 +379,7 @@ def test_mlb_official_picks_respect_ml_price_window() -> None:
 
 
 def test_nfl_cfb_official_picks_hubacek_gates() -> None:
-    """Hubáček OOS: NFL moneyline niche clears; CFB stays disabled."""
+    """Hubáček OOS: NFL and CFB moneyline niches clear."""
     from web.hubacek_picks import clear_strategy_cache
     from web.league_profiles import eligible_for_official_picks
     from web.pick_strategy import get_pick_thresholds, load_pick_strategy
@@ -395,8 +395,9 @@ def test_nfl_cfb_official_picks_hubacek_gates() -> None:
 
     cfb = get_pick_thresholds("cfb")
     assert cfb["bet_type"] == "moneyline"
-    assert cfb["enabled"] is False
-    assert eligible_for_official_picks("cfb") is False
+    assert cfb["enabled"] is True
+    assert cfb.get("fav_mode") == "big_dog"
+    assert eligible_for_official_picks("cfb") is True
 
     cbb = get_pick_thresholds("cbb")
     assert cbb["bet_type"] == "moneyline"

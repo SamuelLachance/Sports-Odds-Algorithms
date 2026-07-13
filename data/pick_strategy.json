@@ -50,16 +50,16 @@
   },
   "cbb": {
     "bet_type": "moneyline",
-    "min_market_gap_pp": 2.0,
+    "min_market_gap_pp": 6.0,
     "min_win_confidence_pp": 0.0,
-    "min_ev_pct": 4.0,
-    "ml_lo": -150,
+    "min_ev_pct": 5.0,
+    "ml_lo": -200,
     "ml_hi": 200,
     "fav_mode": "favorite",
     "enabled": true,
-    "note": "Hybrid OOS Hub\u00e1\u010dek refresh 2026-07-13: gap>=2.0pp EV>=4.0% ML[-150,200] sides=favorite exec=close ROI 3.67% worst 3.19% n=326. ENABLED.",
-    "backtest_roi_pct": 3.67,
-    "backtest_bets": 326
+    "note": "Hub\u00e1\u010dek CBB 2026-07-13: hybrid model_raw decor_w=0.12 gap>=6.0 EV>=5.0% ML[-200,200] sides=favorite exec=close window=from2023 ROI 5.33% worst 3.71% n=267. ENABLED.",
+    "backtest_roi_pct": 5.33,
+    "backtest_bets": 267
   },
   "nfl": {
     "bet_type": "moneyline",
@@ -76,22 +76,16 @@
   },
   "cfb": {
     "bet_type": "moneyline",
-    "min_spread_cover_gap_pp": 11.0,
-    "min_spread_point_edge": 0.0,
-    "min_spread_confidence_pp": 12.0,
-    "min_ev_pct": 0.0,
-    "allowed_sides": [
-      "home"
-    ],
-    "fav_mode": "any",
-    "enabled": false,
-    "note": "Hybrid OOS Hub\u00e1\u010dek refresh 2026-07-13: gap>=8.0pp EV>=0.0% ML[-350,300] sides=home exec=close ROI 4.22% worst -0.05% n=517. DISABLED.",
-    "backtest_roi_pct": 4.22,
-    "backtest_bets": 517,
-    "min_market_gap_pp": 8.0,
-    "ml_lo": -350,
-    "ml_hi": 300,
-    "min_win_confidence_pp": 0.0
+    "enabled": true,
+    "min_market_gap_pp": 10.0,
+    "min_ev_pct": 6.0,
+    "ml_lo": 150,
+    "ml_hi": 250,
+    "min_win_confidence_pp": 0.0,
+    "fav_mode": "big_dog",
+    "backtest_roi_pct": 6.84,
+    "backtest_bets": 214,
+    "note": "Hubacek CFB 2026-07-13: hybrid model_raw decor_w=0.12 gap>=10.0 EV>=6.0% ML[150,250] sides=big_dog exec=close window=all ROI 6.84% worst 2.87% n=214. ENABLED."
   },
   "nhl": {
     "bet_type": "moneyline",
@@ -109,68 +103,73 @@
   },
   "epl": {
     "bet_type": "soccer_1x2",
-    "min_market_gap_pp": 2.0,
+    "min_market_gap_pp": 6.0,
     "min_win_confidence_pp": 0.0,
-    "min_ev_pct": 2.0,
+    "min_ev_pct": 6.0,
     "allowed_sides": [
+      "home",
       "away"
     ],
-    "enabled": false,
-    "note": "Hybrid OOS soccer refresh 2026-07-13: gap>=2.0 EV>=2.0% outcomes=['away'] exec=max ROI 7.7% worst -10.45% n=1216. DISABLED.",
-    "backtest_roi_pct": 7.7,
-    "backtest_bets": 1216
+    "enabled": true,
+    "note": "Hub\u00e1\u010dek soccer 2026-07-13: decor_w=0.15 gap>=6.0 EV>=6.0% outcomes=['home', 'away'] exec=close maxodds=2.5 window=from2023 ROI 7.49% worst 6.14% n=320. ENABLED.",
+    "backtest_roi_pct": 7.49,
+    "backtest_bets": 320
   },
   "bundesliga": {
     "bet_type": "soccer_1x2",
-    "min_market_gap_pp": 2.0,
+    "min_market_gap_pp": 6.0,
     "min_win_confidence_pp": 0.0,
-    "min_ev_pct": 2.0,
+    "min_ev_pct": 6.0,
     "allowed_sides": [
+      "home",
       "away"
     ],
-    "enabled": false,
-    "note": "Hybrid OOS soccer refresh 2026-07-13: gap>=2.0 EV>=2.0% outcomes=['away'] exec=max ROI 7.7% worst -10.45% n=1216. DISABLED.",
-    "backtest_roi_pct": 7.7,
-    "backtest_bets": 1216
+    "enabled": true,
+    "note": "Hub\u00e1\u010dek soccer 2026-07-13: decor_w=0.15 gap>=6.0 EV>=6.0% outcomes=['home', 'away'] exec=close maxodds=2.5 window=from2023 ROI 7.49% worst 6.14% n=320. ENABLED.",
+    "backtest_roi_pct": 7.49,
+    "backtest_bets": 320
   },
   "laliga": {
     "bet_type": "soccer_1x2",
-    "min_market_gap_pp": 2.0,
+    "min_market_gap_pp": 6.0,
     "min_win_confidence_pp": 0.0,
-    "min_ev_pct": 2.0,
+    "min_ev_pct": 6.0,
     "allowed_sides": [
+      "home",
       "away"
     ],
-    "enabled": false,
-    "note": "Hybrid OOS soccer refresh 2026-07-13: gap>=2.0 EV>=2.0% outcomes=['away'] exec=max ROI 7.7% worst -10.45% n=1216. DISABLED.",
-    "backtest_roi_pct": 7.7,
-    "backtest_bets": 1216
+    "enabled": true,
+    "note": "Hub\u00e1\u010dek soccer 2026-07-13: decor_w=0.15 gap>=6.0 EV>=6.0% outcomes=['home', 'away'] exec=close maxodds=2.5 window=from2023 ROI 7.49% worst 6.14% n=320. ENABLED.",
+    "backtest_roi_pct": 7.49,
+    "backtest_bets": 320
   },
   "seriea": {
     "bet_type": "soccer_1x2",
-    "min_market_gap_pp": 2.0,
+    "min_market_gap_pp": 6.0,
     "min_win_confidence_pp": 0.0,
-    "min_ev_pct": 2.0,
+    "min_ev_pct": 6.0,
     "allowed_sides": [
+      "home",
       "away"
     ],
-    "enabled": false,
-    "note": "Hybrid OOS soccer refresh 2026-07-13: gap>=2.0 EV>=2.0% outcomes=['away'] exec=max ROI 7.7% worst -10.45% n=1216. DISABLED.",
-    "backtest_roi_pct": 7.7,
-    "backtest_bets": 1216
+    "enabled": true,
+    "note": "Hub\u00e1\u010dek soccer 2026-07-13: decor_w=0.15 gap>=6.0 EV>=6.0% outcomes=['home', 'away'] exec=close maxodds=2.5 window=from2023 ROI 7.49% worst 6.14% n=320. ENABLED.",
+    "backtest_roi_pct": 7.49,
+    "backtest_bets": 320
   },
   "ligue1": {
     "bet_type": "soccer_1x2",
-    "min_market_gap_pp": 2.0,
+    "min_market_gap_pp": 6.0,
     "min_win_confidence_pp": 0.0,
-    "min_ev_pct": 2.0,
+    "min_ev_pct": 6.0,
     "allowed_sides": [
+      "home",
       "away"
     ],
-    "enabled": false,
-    "note": "Hybrid OOS soccer refresh 2026-07-13: gap>=2.0 EV>=2.0% outcomes=['away'] exec=max ROI 7.7% worst -10.45% n=1216. DISABLED.",
-    "backtest_roi_pct": 7.7,
-    "backtest_bets": 1216
+    "enabled": true,
+    "note": "Hub\u00e1\u010dek soccer 2026-07-13: decor_w=0.15 gap>=6.0 EV>=6.0% outcomes=['home', 'away'] exec=close maxodds=2.5 window=from2023 ROI 7.49% worst 6.14% n=320. ENABLED.",
+    "backtest_roi_pct": 7.49,
+    "backtest_bets": 320
   },
   "worldcup": {
     "bet_type": "soccer_1x2",

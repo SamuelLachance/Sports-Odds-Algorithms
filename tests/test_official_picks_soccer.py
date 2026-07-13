@@ -58,25 +58,25 @@ def test_eligible_for_official_picks() -> None:
         assert eligible_for_official_picks(league) is enabled, league
 
     # Validated / enabled official leagues.
-    assert not eligible_for_official_picks("epl")  # club soccer disabled (worst-season ROI)
+    assert eligible_for_official_picks("epl")  # club soccer Hubáček niche enabled
     assert eligible_for_official_picks("worldcup")
     assert eligible_for_official_picks("nba")
     assert eligible_for_official_picks("mlb")
     assert eligible_for_official_picks("cbb")
 
-    # Hybrid Hubáček refresh: NHL/WNBA on; NFL/CFB off until worst-season clears.
+    # Hubáček refresh: NHL/WNBA/NFL/CFB on when worst-season clears.
     assert eligible_for_official_picks("nhl")
     assert eligible_for_official_picks("wnba")
-    assert not eligible_for_official_picks("nfl")
-    assert not eligible_for_official_picks("cfb")
+    assert eligible_for_official_picks("nfl")
+    assert eligible_for_official_picks("cfb")
 
     # Leagues without a closing-line-beating model stay untracked.
     assert not eligible_for_official_picks("mls")
     assert not eligible_for_official_picks("ucl")
 
 
-def test_nfl_cfb_cbb_not_eligible_for_official_picks() -> None:
-    """CBB/NHL/WNBA enabled; NFL/CFB remain gated after hybrid OOS refresh."""
+def test_nfl_cfb_cbb_eligible_for_official_picks() -> None:
+    """CBB/NHL/WNBA/NFL/CFB enabled after Hubáček OOS niches clear."""
     from web.hubacek_picks import clear_strategy_cache
     from web.pick_strategy import load_pick_strategy
 
@@ -84,13 +84,13 @@ def test_nfl_cfb_cbb_not_eligible_for_official_picks() -> None:
     load_pick_strategy.cache_clear()
 
     assert eligible_for_official_picks("cbb") is True
-    assert eligible_for_official_picks("nfl") is False
-    assert eligible_for_official_picks("cfb") is False
+    assert eligible_for_official_picks("nfl") is True
+    assert eligible_for_official_picks("cfb") is True
     assert eligible_for_official_picks("nhl") is True
     assert eligible_for_official_picks("wnba") is True
     assert eligible_for_official_picks("CBB") is True
-    assert eligible_for_official_picks("NFL") is False
-    assert eligible_for_official_picks("Cfb") is False
+    assert eligible_for_official_picks("NFL") is True
+    assert eligible_for_official_picks("Cfb") is True
 
 
 def test_soccer_game_not_eligible_for_official_picks() -> None:
@@ -266,15 +266,15 @@ def test_evaluate_soccer_official_picks_respects_disabled_league() -> None:
 
 
 def test_top5_soccer_thresholds_use_backtested_v2_policy() -> None:
-    """Top-5 club leagues share soccer v2 policy; hybrid refresh keeps them disabled."""
+    """Top-5 club leagues share soccer v2 Hubáček policy (home/away, enabled)."""
     for league in ("epl", "bundesliga", "laliga", "seriea", "ligue1"):
         thresholds = get_pick_thresholds(league)
         assert thresholds["bet_type"] == "soccer_1x2"
-        assert thresholds["min_market_gap_pp"] >= 2.0, league
-        assert thresholds["min_ev_pct"] >= 2.0, league
+        assert thresholds["min_market_gap_pp"] >= 6.0, league
+        assert thresholds["min_ev_pct"] >= 6.0, league
         assert thresholds["min_win_confidence_pp"] == 0.0, league
-        assert thresholds["allowed_sides"] == ["away"], league
-        assert thresholds["enabled"] is False, league
+        assert set(thresholds["allowed_sides"]) == {"home", "away"}, league
+        assert thresholds["enabled"] is True, league
     # Internationals use sparse-sample EV caps (home only).
     worldcup = get_pick_thresholds("worldcup")
     assert worldcup["allowed_sides"] == ["home"]
@@ -284,8 +284,9 @@ def test_top5_soccer_thresholds_use_backtested_v2_policy() -> None:
 
 
 def test_top5_soccer_official_picks_home_side_only() -> None:
-    """Club soccer stays disabled after hybrid worst-season fail; no official picks."""
-    assert get_pick_thresholds("epl")["enabled"] is False
+    """Club soccer Hubáček niche allows home/away; draw stays filtered."""
+    assert get_pick_thresholds("epl")["enabled"] is True
+    assert set(get_pick_thresholds("epl")["allowed_sides"]) == {"home", "away"}
     home_pick = evaluate_soccer_official_picks_for_game(
         league="epl",
         away_name="Chelsea",
@@ -305,7 +306,9 @@ def test_top5_soccer_official_picks_home_side_only() -> None:
         base_draw_prob=26.0,
         base_away_prob=23.0,
     )
-    assert home_pick == []
+    assert len(home_pick) == 1
+    assert home_pick[0].side == "home"
+    assert all(p.side != "draw" for p in home_pick)
 
     away_edge_only = evaluate_soccer_official_picks_for_game(
         league="epl",
@@ -326,4 +329,5 @@ def test_top5_soccer_official_picks_home_side_only() -> None:
         base_draw_prob=24.0,
         base_away_prob=38.0,
     )
-    assert away_edge_only == []
+    # May or may not clear EV/gap; never emit draw.
+    assert all(p.side != "draw" for p in away_edge_only)

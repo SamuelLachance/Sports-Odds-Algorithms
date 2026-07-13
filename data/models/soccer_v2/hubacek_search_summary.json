@@ -1,0 +1,277 @@
+{
+  "n_positive": 16173,
+  "best": {
+    "params": {
+      "bet_type": "soccer_1x2",
+      "exec_price": "close",
+      "decor_w": 0.15,
+      "min_gap_pp": 6.0,
+      "min_edge_pp": 6.0,
+      "min_ev_pct": 6.0,
+      "max_decimal_odds": 2.5,
+      "outcomes": [
+        "home",
+        "away"
+      ],
+      "season_window": "from2023",
+      "hubacek": true,
+      "model_variant": "market_aware",
+      "prob_prefix": "model_prob"
+    },
+    "backtest": {
+      "bets": 320,
+      "staked_units": 848.1,
+      "profit_units": 63.5,
+      "roi_pct": 7.49,
+      "win_rate": 0.575,
+      "seasons_positive": 3,
+      "seasons_total": 3,
+      "worst_season_roi": 6.14,
+      "median_season_roi": 7.64,
+      "per_season": {
+        "2023": {
+          "bets": 75,
+          "roi_pct": 9.87,
+          "profit_units": 20.0
+        },
+        "2024": {
+          "bets": 143,
+          "roi_pct": 6.14,
+          "profit_units": 23.5
+        },
+        "2025": {
+          "bets": 102,
+          "roi_pct": 7.64,
+          "profit_units": 20.1
+        }
+      }
+    }
+  },
+  "top10": [
+    {
+      "params": {
+        "bet_type": "soccer_1x2",
+        "exec_price": "close",
+        "decor_w": 0.15,
+        "min_gap_pp": 6.0,
+        "min_edge_pp": 6.0,
+        "min_ev_pct": 6.0,
+        "max_decimal_odds": 2.5,
+        "outcomes": [
+          "home",
+          "away"
+        ],
+        "season_window": "from2023",
+        "hubacek": true,
+        "model_variant": "market_aware",
+        "prob_prefix": "model_prob"
+      },
+      "worst": 6.14,
+      "roi": 7.49,
+      "bets": 320
+    },
+    {
+      "params": {
+        "bet_type": "soccer_1x2",
+        "exec_price": "close",
+        "decor_w": 0.15,
+        "min_gap_pp": 6.0,
+        "min_edge_pp": 6.0,
+        "min_ev_pct": 6.0,
+        "max_decimal_odds": 2.5,
+        "outcomes": [
+          "home",
+          "draw",
+          "away"
+        ],
+        "season_window": "from2023",
+        "hubacek": true,
+        "model_variant": "market_aware",
+        "prob_prefix": "model_prob"
+      },
+      "worst": 6.14,
+      "roi": 7.49,
+      "bets": 320
+    },
+    {
+      "params": {
+        "bet_type": "soccer_1x2",
+        "exec_price": "close",
+        "decor_w": 0.15,
+        "min_gap_pp": 6.0,
+        "min_edge_pp": 6.0,
+        "min_ev_pct": 6.0,
+        "max_decimal_odds": 2.5,
+        "outcomes": [
+          "home",
+          "away"
+        ],
+        "season_window": "from2023",
+        "hubacek": true,
+        "model_variant": "market_aware",
+        "prob_prefix": "cal"
+      },
+      "worst": 6.14,
+      "roi": 7.49,
+      "bets": 320
+    },
+    {
+      "params": {
+        "bet_type": "soccer_1x2",
+        "exec_price": "close",
+        "decor_w": 0.15,
+        "min_gap_pp": 6.0,
+        "min_edge_pp": 6.0,
+        "min_ev_pct": 6.0,
+        "max_decimal_odds": 2.5,
+        "outcomes": [
+          "home",
+          "draw",
+          "away"
+        ],
+        "season_window": "from2023",
+        "hubacek": true,
+        "model_variant": "market_aware",
+        "prob_prefix": "cal"
+      },
+      "worst": 6.14,
+      "roi": 7.49,
+      "bets": 320
+    },
+    {
+      "params": {
+        "bet_type": "soccer_1x2",
+        "exec_price": "close",
+        "decor_w": 0.15,
+        "min_gap_pp": 6.0,
+        "min_edge_pp": 6.0,
+        "min_ev_pct": 6.0,
+        "max_decimal_odds": 2.5,
+        "outcomes": [
+          "home",
+          "away"
+        ],
+        "season_window": "from2023",
+        "hubacek": true,
+        "model_variant": "market_aware",
+        "prob_prefix": "calm"
+      },
+      "worst": 6.14,
+      "roi": 7.49,
+      "bets": 320
+    },
+    {
+      "params": {
+        "bet_type": "soccer_1x2",
+        "exec_price": "close",
+        "decor_w": 0.15,
+        "min_gap_pp": 6.0,
+        "min_edge_pp": 6.0,
+        "min_ev_pct": 6.0,
+        "max_decimal_odds": 2.5,
+        "outcomes": [
+          "home",
+          "draw",
+          "away"
+        ],
+        "season_window": "from2023",
+        "hubacek": true,
+        "model_variant": "market_aware",
+        "prob_prefix": "calm"
+      },
+      "worst": 6.14,
+      "roi": 7.49,
+      "bets": 320
+    },
+    {
+      "params": {
+        "bet_type": "soccer_1x2",
+        "exec_price": "close",
+        "decor_w": 0.15,
+        "min_gap_pp": 6.0,
+        "min_edge_pp": 6.0,
+        "min_ev_pct": 0.0,
+        "max_decimal_odds": 2.5,
+        "outcomes": [
+          "home",
+          "away"
+        ],
+        "season_window": "from2023",
+        "hubacek": true,
+        "model_variant": "market_aware",
+        "prob_prefix": "model_prob"
+      },
+      "worst": 2.51,
+      "roi": 5.42,
+      "bets": 422
+    },
+    {
+      "params": {
+        "bet_type": "soccer_1x2",
+        "exec_price": "close",
+        "decor_w": 0.15,
+        "min_gap_pp": 6.0,
+        "min_edge_pp": 6.0,
+        "min_ev_pct": 0.0,
+        "max_decimal_odds": 2.5,
+        "outcomes": [
+          "home",
+          "draw",
+          "away"
+        ],
+        "season_window": "from2023",
+        "hubacek": true,
+        "model_variant": "market_aware",
+        "prob_prefix": "model_prob"
+      },
+      "worst": 2.51,
+      "roi": 5.42,
+      "bets": 422
+    },
+    {
+      "params": {
+        "bet_type": "soccer_1x2",
+        "exec_price": "close",
+        "decor_w": 0.15,
+        "min_gap_pp": 6.0,
+        "min_edge_pp": 6.0,
+        "min_ev_pct": 0.0,
+        "max_decimal_odds": 2.5,
+        "outcomes": [
+          "home",
+          "away"
+        ],
+        "season_window": "from2023",
+        "hubacek": true,
+        "model_variant": "market_aware",
+        "prob_prefix": "cal"
+      },
+      "worst": 2.51,
+      "roi": 5.42,
+      "bets": 422
+    },
+    {
+      "params": {
+        "bet_type": "soccer_1x2",
+        "exec_price": "close",
+        "decor_w": 0.15,
+        "min_gap_pp": 6.0,
+        "min_edge_pp": 6.0,
+        "min_ev_pct": 0.0,
+        "max_decimal_odds": 2.5,
+        "outcomes": [
+          "home",
+          "draw",
+          "away"
+        ],
+        "season_window": "from2023",
+        "hubacek": true,
+        "model_variant": "market_aware",
+        "prob_prefix": "cal"
+      },
+      "worst": 2.51,
+      "roi": 5.42,
+      "bets": 422
+    }
+  ]
+}
