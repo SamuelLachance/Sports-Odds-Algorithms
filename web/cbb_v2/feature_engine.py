@@ -740,24 +740,16 @@ class CbbFeatureEngine:
         season: int,
         elo_diff: float,
     ) -> dict[str, float]:
-        from web.cbb_v2.game_factors import pregame_home_wp
-
-        home_abbr, away_abbr, home_name, away_name = self._team_display_names(game)
-        wp, known = pregame_home_wp(
-            home_name=home_name,
-            away_name=away_name,
-            home_abbr=home_abbr,
-            away_abbr=away_abbr,
-            asof=game_date,
-            season=season,
-        )
-        if known < 0.5:
-            # Elo-implied home win prob (real PIT strength), not a blank fill.
-            wp = 1.0 / (1.0 + 10.0 ** (-elo_diff / 400.0))
-            known = 0.0
+        # Torvik "pregame" WP disabled: the toRvik-data pregame_prob archives
+        # are recomputed retroactively (they beat the CLOSING line standalone
+        # and separate losing favorites ~2.5x more sharply than the market —
+        # impossible for an honest pregame number). Until a provenance-verified
+        # live-captured archive exists, serve the Elo-implied prob with
+        # known=0 so the feature is inert in training and at live time.
+        wp = 1.0 / (1.0 + 10.0 ** (-elo_diff / 400.0))
         return {
             "torvik_pregame_home_wp": float(wp),
-            "torvik_pregame_known": float(known),
+            "torvik_pregame_known": 0.0,
         }
 
     def _ap_features(

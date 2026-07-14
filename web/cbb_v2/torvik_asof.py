@@ -173,8 +173,13 @@ def available_years() -> list[int]:
 
 
 def asof_date_for_game(game_date: date) -> date:
-    """Torvik archive rows are morning-of ratings for that calendar date."""
-    return game_date
+    """Latest archive day guaranteed to predate tip-off.
+
+    Archive rows are END-of-day snapshots (opening night already shows every
+    team's record advanced), so joining the game's own date leaks that game's
+    result. Yesterday's snapshot is the newest point-in-time-safe rating.
+    """
+    return game_date - timedelta(days=1)
 
 
 def _resolve_team_norm(team_name: str, team_abbr: str, year: int) -> str | None:
@@ -216,30 +221,24 @@ def lookup(
     asof: date,
     season: int,
 ) -> TorvikAsOf | None:
-    """Return ratings from the most recent archive morning on/before ``asof``.
+    """Return ratings from the newest archive snapshot strictly before tip.
 
-    If nothing exists on/before ``asof``, uses the earliest archive morning on/after
-    ``asof`` within a 3-day window (covers season-open tips).
+    Only the campaign's own archive file (``full_{season}.csv``) is consulted:
+    the old ``season±1`` fallback silently served frozen end-of-prior-season
+    ratings (with torvik_known=1) whenever a campaign file was missing, and the
+    old forward window (+3 days) read post-game snapshots for season openers.
+    No archive on/before ``asof`` → no rating (torvik_known stays 0).
     """
-    day = None
-    year_used = None
-    for year in (season, season - 1, season + 1):
-        frame = _load_year(year)
-        if frame is None or frame.empty:
-            continue
-        on_or_before = frame[frame["date"] <= asof]
-        if not on_or_before.empty:
-            asof_date = on_or_before["date"].max()
-        else:
-            after = frame[(frame["date"] >= asof) & (frame["date"] <= asof + timedelta(days=3))]
-            if after.empty:
-                continue
-            asof_date = after["date"].min()
-        day = frame[frame["date"] == asof_date]
-        if not day.empty:
-            year_used = year
-            break
-    if day is None or day.empty or year_used is None:
+    frame = _load_year(season)
+    if frame is None or frame.empty:
+        return None
+    on_or_before = frame[frame["date"] <= asof]
+    if on_or_before.empty:
+        return None
+    asof_date = on_or_before["date"].max()
+    day = frame[frame["date"] == asof_date]
+    year_used = season
+    if day.empty:
         return None
 
     team_norm = _resolve_team_norm(team_name, team_abbr, year_used)
