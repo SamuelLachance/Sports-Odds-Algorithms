@@ -112,6 +112,32 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     "home_off_vs_away_def",
     "away_off_vs_home_def",
     "net_x_season_frac",
+    # market / steam
+    "has_market",
+    "mkt_home_prob",
+    "has_spread",
+    "mkt_home_spread",
+    "has_open_line",
+    "spread_move",
+    "ml_steam_pp",
+    "has_steam",
+    "n_books",
+    "mkt_total",
+    "has_total",
+    "total_move",
+    "steam_to_fav",
+    "reverse_line_move",
+    "chalk_steam",
+    # AP / CFP rankings (as-of week)
+    "ap_rank_diff",
+    "ap_known",
+    "cfp_rank_diff",
+    "has_rank",
+    # PBP EPA (has_epa=0 when missing)
+    "epa_off_diff",
+    "epa_def_diff",
+    "sr_off_diff",
+    "has_epa",
 )
 
 
@@ -628,6 +654,27 @@ class CfbFeatureEngine:
             "away_off_vs_home_def": away.pf_fast - home.pa_fast,
             "net_x_season_frac": (home.margin_pg() - away.margin_pg()) * season_frac,
         }
+        from web.market_steam_features import steam_features_from_game
+
+        features.update(steam_features_from_game(game))
+        # Rankings / EPA attached on game dict at table build
+        def _f(key: str, default: float = 0.0) -> float:
+            try:
+                val = game.get(key)
+                if val is None:
+                    return default
+                return float(val)
+            except (TypeError, ValueError):
+                return default
+
+        features["ap_rank_diff"] = _f("ap_rank_diff")
+        features["ap_known"] = _f("ap_known")
+        features["cfp_rank_diff"] = _f("cfp_rank_diff")
+        features["has_rank"] = _f("has_rank")
+        features["epa_off_diff"] = _f("epa_off_diff")
+        features["epa_def_diff"] = _f("epa_def_diff")
+        features["sr_off_diff"] = _f("sr_off_diff")
+        features["has_epa"] = _f("has_epa")
         return features
 
     def _update_entity(

@@ -168,6 +168,29 @@ def main() -> int:
             if not games:
                 print(f"season {season}: no games cached", flush=True)
                 continue
+            # Bake consensus open/close onto games before FE so steam columns populate.
+            for game in games:
+                market = consensus_odds(odds.get(str(game.get("event_id") or "")) or [])
+                if not market:
+                    continue
+                for key, value in market.items():
+                    if value is not None:
+                        game[key] = value
+                if market.get("home_ml") is not None:
+                    game["home_close_ml"] = market["home_ml"]
+                    game["away_close_ml"] = market["away_ml"]
+                if market.get("home_ml_open") is not None:
+                    game["home_open_ml"] = market["home_ml_open"]
+                    game["away_open_ml"] = market["away_ml_open"]
+                if market.get("home_spread") is not None:
+                    game["home_close_spread"] = market["home_spread"]
+                if market.get("home_spread_open") is not None:
+                    game["home_open_spread"] = market["home_spread_open"]
+                if market.get("total_line") is not None:
+                    game["close_total"] = market["total_line"]
+                    game["total_line"] = market["total_line"]
+                if market.get("books") is not None:
+                    game["n_books"] = market["books"]
             emitted = 0
 
             def emit(game: dict[str, Any], features: dict[str, float]) -> None:

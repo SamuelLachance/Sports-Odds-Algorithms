@@ -1,0 +1,376 @@
+season,week,asof_date,team_id,team_abbr,team_name,rank,previous,points
+2023,1,2023-08-14,61,uga,Georgia Bulldogs,1,0,1572.0
+2023,1,2023-08-14,130,mich,Michigan Wolverines,2,0,1490.0
+2023,1,2023-08-14,194,osu,Ohio State Buckeyes,3,0,1400.0
+2023,1,2023-08-14,333,ala,Alabama Crimson Tide,4,0,1398.0
+2023,1,2023-08-14,99,lsu,LSU Tigers,5,0,1276.0
+2023,1,2023-08-14,30,usc,USC Trojans,6,0,1245.0
+2023,1,2023-08-14,213,psu,Penn State Nittany Lions,7,0,1177.0
+2023,1,2023-08-14,52,fsu,Florida State Seminoles,8,0,1147.0
+2023,1,2023-08-14,228,clem,Clemson Tigers,9,0,1032.0
+2023,1,2023-08-14,264,wash,Washington Huskies,10,0,977.0
+2023,1,2023-08-14,251,tex,Texas Longhorns,11,0,882.0
+2023,1,2023-08-14,2633,,,12,0,868.0
+2023,1,2023-08-14,87,nd,Notre Dame Fighting Irish,13,0,863.0
+2023,1,2023-08-14,254,utah,Utah Utes,14,0,811.0
+2023,1,2023-08-14,2483,ore,Oregon Ducks,15,0,732.0
+2023,1,2023-08-14,2306,ksu,Kansas State Wildcats,16,0,501.0
+2023,1,2023-08-14,2628,,,17,0,416.0
+2023,1,2023-08-14,204,orst,Oregon State Beavers,18,0,406.0
+2023,1,2023-08-14,275,wis,Wisconsin Badgers,19,0,386.0
+2023,1,2023-08-14,201,ou,Oklahoma Sooners,20,0,296.0
+2023,1,2023-08-14,153,unc,North Carolina Tar Heels,21,0,292.0
+2023,1,2023-08-14,145,miss,Ole Miss Rebels,22,0,281.0
+2023,1,2023-08-14,245,ta&m,Texas A&M Aggies,23,0,227.0
+2023,1,2023-08-14,2655,,,24,0,224.0
+2023,1,2023-08-14,2294,iowa,Iowa Hawkeyes,25,0,131.0
+2023,2,2023-09-05,61,uga,Georgia Bulldogs,1,1,1569.0
+2023,2,2023-09-05,130,mich,Michigan Wolverines,2,2,1485.0
+2023,2,2023-09-05,333,ala,Alabama Crimson Tide,3,4,1424.0
+2023,2,2023-09-05,52,fsu,Florida State Seminoles,4,8,1384.0
+2023,2,2023-09-05,194,osu,Ohio State Buckeyes,5,3,1308.0
+2023,2,2023-09-05,30,usc,USC Trojans,6,6,1255.0
+2023,2,2023-09-05,213,psu,Penn State Nittany Lions,7,7,1212.0
+2023,2,2023-09-05,264,wash,Washington Huskies,8,10,1107.0
+2023,2,2023-09-05,2633,,,9,12,975.0
+2023,2,2023-09-05,87,nd,Notre Dame Fighting Irish,10,13,967.0
+2023,2,2023-09-05,251,tex,Texas Longhorns,11,11,935.0
+2023,2,2023-09-05,254,utah,Utah Utes,12,14,919.0
+2023,2,2023-09-05,2483,ore,Oregon Ducks,13,15,823.0
+2023,2,2023-09-05,99,lsu,LSU Tigers,14,5,706.0
+2023,2,2023-09-05,2306,ksu,Kansas State Wildcats,15,16,579.0
+2023,2,2023-09-05,204,orst,Oregon State Beavers,16,18,558.0
+2023,2,2023-09-05,153,unc,North Carolina Tar Heels,17,21,551.0
+2023,2,2023-09-05,201,ou,Oklahoma Sooners,18,20,426.0
+2023,2,2023-09-05,275,wis,Wisconsin Badgers,19,19,407.0
+2023,2,2023-09-05,145,miss,Ole Miss Rebels,20,22,379.0
+2023,2,2023-09-05,150,duke,Duke Blue Devils,21,0,343.0
+2023,2,2023-09-05,38,colo,Colorado Buffaloes,22,0,269.0
+2023,2,2023-09-05,245,ta&m,Texas A&M Aggies,23,23,267.0
+2023,2,2023-09-05,2655,,,24,24,241.0
+2023,2,2023-09-05,228,clem,Clemson Tigers,25,9,141.0
+2023,3,2023-09-10,61,uga,Georgia Bulldogs,1,1,1540.0
+2023,3,2023-09-10,130,mich,Michigan Wolverines,2,2,1458.0
+2023,3,2023-09-10,52,fsu,Florida State Seminoles,3,4,1413.0
+2023,3,2023-09-10,251,tex,Texas Longhorns,4,11,1338.0
+2023,3,2023-09-10,30,usc,USC Trojans,5,6,1269.0
+2023,3,2023-09-10,194,osu,Ohio State Buckeyes,6,5,1265.0
+2023,3,2023-09-10,213,psu,Penn State Nittany Lions,7,7,1204.0
+2023,3,2023-09-10,264,wash,Washington Huskies,8,8,1102.0
+2023,3,2023-09-10,87,nd,Notre Dame Fighting Irish,9,10,1015.0
+2023,3,2023-09-10,333,ala,Alabama Crimson Tide,10,3,953.0
+2023,3,2023-09-10,2633,,,11,9,929.0
+2023,3,2023-09-10,254,utah,Utah Utes,12,12,847.0
+2023,3,2023-09-10,2483,ore,Oregon Ducks,13,13,827.0
+2023,3,2023-09-10,99,lsu,LSU Tigers,14,14,667.0
+2023,3,2023-09-10,2306,ksu,Kansas State Wildcats,15,15,636.0
+2023,3,2023-09-10,204,orst,Oregon State Beavers,16,16,605.0
+2023,3,2023-09-10,145,miss,Ole Miss Rebels,17,20,505.0
+2023,3,2023-09-10,38,colo,Colorado Buffaloes,18,22,481.0
+2023,3,2023-09-10,201,ou,Oklahoma Sooners,19,18,453.0
+2023,3,2023-09-10,153,unc,North Carolina Tar Heels,20,17,444.0
+2023,3,2023-09-10,150,duke,Duke Blue Devils,21,21,421.0
+2023,3,2023-09-10,2390,mia,Miami Hurricanes,22,0,230.0
+2023,3,2023-09-10,265,wsu,Washington State Cougars,23,0,129.0
+2023,3,2023-09-10,26,ucla,UCLA Bruins,24,0,107.0
+2023,3,2023-09-10,2294,iowa,Iowa Hawkeyes,25,0,106.0
+2023,4,2023-09-17,61,uga,Georgia Bulldogs,1,1,1566.0
+2023,4,2023-09-17,130,mich,Michigan Wolverines,2,2,1481.0
+2023,4,2023-09-17,251,tex,Texas Longhorns,3,4,1380.0
+2023,4,2023-09-17,52,fsu,Florida State Seminoles,4,3,1378.0
+2023,4,2023-09-17,30,usc,USC Trojans,5,5,1296.0
+2023,4,2023-09-17,194,osu,Ohio State Buckeyes,6,6,1291.0
+2023,4,2023-09-17,213,psu,Penn State Nittany Lions,7,7,1217.0
+2023,4,2023-09-17,264,wash,Washington Huskies,8,8,1194.0
+2023,4,2023-09-17,87,nd,Notre Dame Fighting Irish,9,9,1066.0
+2023,4,2023-09-17,2483,ore,Oregon Ducks,10,13,942.0
+2023,4,2023-09-17,254,utah,Utah Utes,11,12,921.0
+2023,4,2023-09-17,99,lsu,LSU Tigers,12,14,805.0
+2023,4,2023-09-17,333,ala,Alabama Crimson Tide,13,10,796.0
+2023,4,2023-09-17,204,orst,Oregon State Beavers,14,16,715.0
+2023,4,2023-09-17,145,miss,Ole Miss Rebels,15,17,657.0
+2023,4,2023-09-17,201,ou,Oklahoma Sooners,16,19,606.0
+2023,4,2023-09-17,153,unc,North Carolina Tar Heels,17,20,567.0
+2023,4,2023-09-17,150,duke,Duke Blue Devils,18,21,530.0
+2023,4,2023-09-17,38,colo,Colorado Buffaloes,19,18,509.0
+2023,4,2023-09-17,2390,mia,Miami Hurricanes,20,22,359.0
+2023,4,2023-09-17,265,wsu,Washington State Cougars,21,23,278.0
+2023,4,2023-09-17,26,ucla,UCLA Bruins,22,24,204.0
+2023,4,2023-09-17,2633,,,23,11,198.0
+2023,4,2023-09-17,2294,iowa,Iowa Hawkeyes,24,25,125.0
+2023,4,2023-09-17,57,fla,Florida Gators,25,0,103.0
+2023,5,2023-09-24,61,uga,Georgia Bulldogs,1,1,1562.0
+2023,5,2023-09-24,130,mich,Michigan Wolverines,2,2,1445.0
+2023,5,2023-09-24,251,tex,Texas Longhorns,3,3,1401.0
+2023,5,2023-09-24,194,osu,Ohio State Buckeyes,4,6,1370.0
+2023,5,2023-09-24,52,fsu,Florida State Seminoles,5,4,1351.0
+2023,5,2023-09-24,213,psu,Penn State Nittany Lions,6,7,1244.0
+2023,5,2023-09-24,264,wash,Washington Huskies,7,8,1228.0
+2023,5,2023-09-24,30,usc,USC Trojans,8,5,1169.0
+2023,5,2023-09-24,2483,ore,Oregon Ducks,9,10,1076.0
+2023,5,2023-09-24,254,utah,Utah Utes,10,11,981.0
+2023,5,2023-09-24,87,nd,Notre Dame Fighting Irish,11,9,904.0
+2023,5,2023-09-24,333,ala,Alabama Crimson Tide,12,13,862.0
+2023,5,2023-09-24,99,lsu,LSU Tigers,13,12,813.0
+2023,5,2023-09-24,201,ou,Oklahoma Sooners,14,16,716.0
+2023,5,2023-09-24,153,unc,North Carolina Tar Heels,15,17,659.0
+2023,5,2023-09-24,265,wsu,Washington State Cougars,16,21,652.0
+2023,5,2023-09-24,150,duke,Duke Blue Devils,17,18,648.0
+2023,5,2023-09-24,2390,mia,Miami Hurricanes,18,20,523.0
+2023,5,2023-09-24,204,orst,Oregon State Beavers,19,14,366.0
+2023,5,2023-09-24,145,miss,Ole Miss Rebels,20,15,349.0
+2023,5,2023-09-24,2633,,,21,23,260.0
+2023,5,2023-09-24,57,fla,Florida Gators,22,25,235.0
+2023,5,2023-09-24,142,miz,Missouri Tigers,23,0,197.0
+2023,5,2023-09-24,2305,ku,Kansas Jayhawks,24,0,132.0
+2023,5,2023-09-24,278,fres,Fresno State Bulldogs,25,0,64.0
+2023,6,2023-10-01,61,uga,Georgia Bulldogs,1,1,1501.0
+2023,6,2023-10-01,130,mich,Michigan Wolverines,2,2,1436.0
+2023,6,2023-10-01,251,tex,Texas Longhorns,3,3,1426.0
+2023,6,2023-10-01,194,osu,Ohio State Buckeyes,4,4,1357.0
+2023,6,2023-10-01,52,fsu,Florida State Seminoles,5,5,1336.0
+2023,6,2023-10-01,213,psu,Penn State Nittany Lions,6,6,1227.0
+2023,6,2023-10-01,264,wash,Washington Huskies,7,7,1213.0
+2023,6,2023-10-01,2483,ore,Oregon Ducks,8,9,1113.0
+2023,6,2023-10-01,30,usc,USC Trojans,9,8,1077.0
+2023,6,2023-10-01,87,nd,Notre Dame Fighting Irish,10,11,975.0
+2023,6,2023-10-01,333,ala,Alabama Crimson Tide,11,12,921.0
+2023,6,2023-10-01,201,ou,Oklahoma Sooners,12,14,840.0
+2023,6,2023-10-01,265,wsu,Washington State Cougars,13,16,765.0
+2023,6,2023-10-01,153,unc,North Carolina Tar Heels,14,15,726.0
+2023,6,2023-10-01,204,orst,Oregon State Beavers,15,19,633.0
+2023,6,2023-10-01,145,miss,Ole Miss Rebels,16,20,616.0
+2023,6,2023-10-01,2390,mia,Miami Hurricanes,17,18,589.0
+2023,6,2023-10-01,254,utah,Utah Utes,18,10,454.0
+2023,6,2023-10-01,150,duke,Duke Blue Devils,19,17,384.0
+2023,6,2023-10-01,96,uk,Kentucky Wildcats,20,0,344.0
+2023,6,2023-10-01,142,miz,Missouri Tigers,21,23,329.0
+2023,6,2023-10-01,2633,,,22,21,306.0
+2023,6,2023-10-01,99,lsu,LSU Tigers,23,13,149.0
+2023,6,2023-10-01,278,fres,Fresno State Bulldogs,24,25,130.0
+2023,6,2023-10-01,97,lou,Louisville Cardinals,25,0,90.0
+2023,7,2023-10-08,61,uga,Georgia Bulldogs,1,1,1559.0
+2023,7,2023-10-08,130,mich,Michigan Wolverines,2,2,1489.0
+2023,7,2023-10-08,194,osu,Ohio State Buckeyes,3,4,1408.0
+2023,7,2023-10-08,52,fsu,Florida State Seminoles,4,5,1389.0
+2023,7,2023-10-08,201,ou,Oklahoma Sooners,5,12,1278.0
+2023,7,2023-10-08,213,psu,Penn State Nittany Lions,6,6,1273.0
+2023,7,2023-10-08,264,wash,Washington Huskies,7,7,1239.0
+2023,7,2023-10-08,2483,ore,Oregon Ducks,8,8,1150.0
+2023,7,2023-10-08,251,tex,Texas Longhorns,9,3,1052.0
+2023,7,2023-10-08,30,usc,USC Trojans,10,9,999.0
+2023,7,2023-10-08,333,ala,Alabama Crimson Tide,11,11,971.0
+2023,7,2023-10-08,153,unc,North Carolina Tar Heels,12,14,894.0
+2023,7,2023-10-08,145,miss,Ole Miss Rebels,13,16,748.0
+2023,7,2023-10-08,97,lou,Louisville Cardinals,14,25,731.0
+2023,7,2023-10-08,204,orst,Oregon State Beavers,15,15,725.0
+2023,7,2023-10-08,254,utah,Utah Utes,16,18,567.0
+2023,7,2023-10-08,150,duke,Duke Blue Devils,17,19,479.0
+2023,7,2023-10-08,26,ucla,UCLA Bruins,18,0,438.0
+2023,7,2023-10-08,265,wsu,Washington State Cougars,19,13,412.0
+2023,7,2023-10-08,2633,,,19,22,412.0
+2023,7,2023-10-08,87,nd,Notre Dame Fighting Irish,21,10,374.0
+2023,7,2023-10-08,99,lsu,LSU Tigers,22,23,321.0
+2023,7,2023-10-08,2305,ku,Kansas Jayhawks,23,0,103.0
+2023,7,2023-10-08,96,uk,Kentucky Wildcats,24,20,99.0
+2023,7,2023-10-08,2390,mia,Miami Hurricanes,25,17,74.0
+2023,8,2023-10-15,61,uga,Georgia Bulldogs,1,1,1541.0
+2023,8,2023-10-15,130,mich,Michigan Wolverines,2,2,1492.0
+2023,8,2023-10-15,194,osu,Ohio State Buckeyes,3,3,1393.0
+2023,8,2023-10-15,52,fsu,Florida State Seminoles,4,4,1388.0
+2023,8,2023-10-15,264,wash,Washington Huskies,5,7,1355.0
+2023,8,2023-10-15,201,ou,Oklahoma Sooners,6,5,1277.0
+2023,8,2023-10-15,213,psu,Penn State Nittany Lions,7,6,1253.0
+2023,8,2023-10-15,251,tex,Texas Longhorns,8,9,1098.0
+2023,8,2023-10-15,2483,ore,Oregon Ducks,9,8,1034.0
+2023,8,2023-10-15,153,unc,North Carolina Tar Heels,10,12,1011.0
+2023,8,2023-10-15,333,ala,Alabama Crimson Tide,11,11,987.0
+2023,8,2023-10-15,204,orst,Oregon State Beavers,12,15,834.0
+2023,8,2023-10-15,145,miss,Ole Miss Rebels,13,13,825.0
+2023,8,2023-10-15,254,utah,Utah Utes,14,16,695.0
+2023,8,2023-10-15,87,nd,Notre Dame Fighting Irish,15,21,664.0
+2023,8,2023-10-15,150,duke,Duke Blue Devils,16,17,593.0
+2023,8,2023-10-15,2633,,,17,19,557.0
+2023,8,2023-10-15,30,usc,USC Trojans,18,10,530.0
+2023,8,2023-10-15,99,lsu,LSU Tigers,19,22,493.0
+2023,8,2023-10-15,142,miz,Missouri Tigers,20,0,365.0
+2023,8,2023-10-15,97,lou,Louisville Cardinals,21,14,309.0
+2023,8,2023-10-15,2005,af,Air Force Falcons,22,0,245.0
+2023,8,2023-10-15,2655,,,23,0,137.0
+2023,8,2023-10-15,2294,iowa,Iowa Hawkeyes,24,0,125.0
+2023,8,2023-10-15,26,ucla,UCLA Bruins,25,18,122.0
+2023,9,2023-10-22,61,uga,Georgia Bulldogs,1,1,1536.0
+2023,9,2023-10-22,130,mich,Michigan Wolverines,2,2,1504.0
+2023,9,2023-10-22,194,osu,Ohio State Buckeyes,3,3,1454.0
+2023,9,2023-10-22,52,fsu,Florida State Seminoles,4,4,1408.0
+2023,9,2023-10-22,264,wash,Washington Huskies,5,5,1325.0
+2023,9,2023-10-22,201,ou,Oklahoma Sooners,6,6,1267.0
+2023,9,2023-10-22,251,tex,Texas Longhorns,7,8,1150.0
+2023,9,2023-10-22,2483,ore,Oregon Ducks,8,9,1133.0
+2023,9,2023-10-22,333,ala,Alabama Crimson Tide,9,11,1071.0
+2023,9,2023-10-22,213,psu,Penn State Nittany Lions,10,7,999.0
+2023,9,2023-10-22,204,orst,Oregon State Beavers,11,12,922.0
+2023,9,2023-10-22,145,miss,Ole Miss Rebels,12,13,889.0
+2023,9,2023-10-22,254,utah,Utah Utes,13,14,868.0
+2023,9,2023-10-22,87,nd,Notre Dame Fighting Irish,14,15,718.0
+2023,9,2023-10-22,99,lsu,LSU Tigers,15,19,687.0
+2023,9,2023-10-22,142,miz,Missouri Tigers,16,20,594.0
+2023,9,2023-10-22,153,unc,North Carolina Tar Heels,17,10,506.0
+2023,9,2023-10-22,97,lou,Louisville Cardinals,18,21,420.0
+2023,9,2023-10-22,2005,af,Air Force Falcons,19,22,395.0
+2023,9,2023-10-22,150,duke,Duke Blue Devils,20,16,371.0
+2023,9,2023-10-22,2633,,,21,17,306.0
+2023,9,2023-10-22,2655,,,22,23,248.0
+2023,9,2023-10-22,26,ucla,UCLA Bruins,23,25,243.0
+2023,9,2023-10-22,30,usc,USC Trojans,24,18,193.0
+2023,9,2023-10-22,256,jmu,James Madison Dukes,25,0,167.0
+2023,10,2023-10-29,61,uga,Georgia Bulldogs,1,1,1553.0
+2023,10,2023-10-29,130,mich,Michigan Wolverines,2,2,1494.0
+2023,10,2023-10-29,194,osu,Ohio State Buckeyes,3,3,1446.0
+2023,10,2023-10-29,52,fsu,Florida State Seminoles,4,4,1421.0
+2023,10,2023-10-29,264,wash,Washington Huskies,5,5,1327.0
+2023,10,2023-10-29,2483,ore,Oregon Ducks,6,8,1235.0
+2023,10,2023-10-29,251,tex,Texas Longhorns,7,7,1189.0
+2023,10,2023-10-29,333,ala,Alabama Crimson Tide,8,9,1114.0
+2023,10,2023-10-29,213,psu,Penn State Nittany Lions,9,10,1044.0
+2023,10,2023-10-29,201,ou,Oklahoma Sooners,10,6,1010.0
+2023,10,2023-10-29,145,miss,Ole Miss Rebels,11,12,990.0
+2023,10,2023-10-29,87,nd,Notre Dame Fighting Irish,12,14,847.0
+2023,10,2023-10-29,99,lsu,LSU Tigers,13,15,816.0
+2023,10,2023-10-29,142,miz,Missouri Tigers,14,16,714.0
+2023,10,2023-10-29,97,lou,Louisville Cardinals,15,18,666.0
+2023,10,2023-10-29,204,orst,Oregon State Beavers,16,11,557.0
+2023,10,2023-10-29,2005,af,Air Force Falcons,17,19,526.0
+2023,10,2023-10-29,254,utah,Utah Utes,18,13,510.0
+2023,10,2023-10-29,2633,,,19,21,473.0
+2023,10,2023-10-29,26,ucla,UCLA Bruins,20,23,331.0
+2023,10,2023-10-29,2655,,,21,22,303.0
+2023,10,2023-10-29,2305,ku,Kansas Jayhawks,22,0,250.0
+2023,10,2023-10-29,256,jmu,James Madison Dukes,23,25,192.0
+2023,10,2023-10-29,30,usc,USC Trojans,24,24,139.0
+2023,10,2023-10-29,2306,ksu,Kansas State Wildcats,25,0,112.0
+2023,11,2023-11-05,61,uga,Georgia Bulldogs,1,1,1558.0
+2023,11,2023-11-05,130,mich,Michigan Wolverines,2,2,1485.0
+2023,11,2023-11-05,194,osu,Ohio State Buckeyes,3,3,1453.0
+2023,11,2023-11-05,52,fsu,Florida State Seminoles,4,4,1411.0
+2023,11,2023-11-05,264,wash,Washington Huskies,5,5,1333.0
+2023,11,2023-11-05,2483,ore,Oregon Ducks,6,6,1240.0
+2023,11,2023-11-05,251,tex,Texas Longhorns,7,7,1190.0
+2023,11,2023-11-05,333,ala,Alabama Crimson Tide,8,8,1143.0
+2023,11,2023-11-05,213,psu,Penn State Nittany Lions,9,9,1075.0
+2023,11,2023-11-05,145,miss,Ole Miss Rebels,10,11,1027.0
+2023,11,2023-11-05,97,lou,Louisville Cardinals,11,15,926.0
+2023,11,2023-11-05,204,orst,Oregon State Beavers,12,16,772.0
+2023,11,2023-11-05,254,utah,Utah Utes,13,18,734.0
+2023,11,2023-11-05,2633,,,14,19,703.0
+2023,11,2023-11-05,197,okst,Oklahoma State Cowboys,15,0,660.0
+2023,11,2023-11-05,142,miz,Missouri Tigers,16,14,644.0
+2023,11,2023-11-05,201,ou,Oklahoma Sooners,17,10,547.0
+2023,11,2023-11-05,99,lsu,LSU Tigers,18,13,532.0
+2023,11,2023-11-05,2305,ku,Kansas Jayhawks,19,22,496.0
+2023,11,2023-11-05,2655,,,20,21,351.0
+2023,11,2023-11-05,256,jmu,James Madison Dukes,21,23,294.0
+2023,11,2023-11-05,87,nd,Notre Dame Fighting Irish,22,12,270.0
+2023,11,2023-11-05,12,ariz,Arizona Wildcats,23,0,176.0
+2023,11,2023-11-05,153,unc,North Carolina Tar Heels,24,0,95.0
+2023,11,2023-11-05,2335,lib,Liberty Flames,25,0,85.0
+2023,12,2023-11-12,61,uga,Georgia Bulldogs,1,1,1540.0
+2023,12,2023-11-12,130,mich,Michigan Wolverines,2,2,1464.0
+2023,12,2023-11-12,194,osu,Ohio State Buckeyes,3,3,1433.0
+2023,12,2023-11-12,52,fsu,Florida State Seminoles,4,4,1366.0
+2023,12,2023-11-12,264,wash,Washington Huskies,5,5,1322.0
+2023,12,2023-11-12,2483,ore,Oregon Ducks,6,6,1218.0
+2023,12,2023-11-12,251,tex,Texas Longhorns,7,7,1180.0
+2023,12,2023-11-12,333,ala,Alabama Crimson Tide,8,8,1141.0
+2023,12,2023-11-12,97,lou,Louisville Cardinals,9,11,1002.0
+2023,12,2023-11-12,204,orst,Oregon State Beavers,10,12,934.0
+2023,12,2023-11-12,142,miz,Missouri Tigers,11,16,917.0
+2023,12,2023-11-12,213,psu,Penn State Nittany Lions,12,9,857.0
+2023,12,2023-11-12,145,miss,Ole Miss Rebels,13,10,810.0
+2023,12,2023-11-12,201,ou,Oklahoma Sooners,14,17,733.0
+2023,12,2023-11-12,99,lsu,LSU Tigers,15,18,703.0
+2023,12,2023-11-12,254,utah,Utah Utes,16,13,543.0
+2023,12,2023-11-12,2655,,,17,20,412.0
+2023,12,2023-11-12,256,jmu,James Madison Dukes,18,21,405.0
+2023,12,2023-11-12,12,ariz,Arizona Wildcats,19,23,387.0
+2023,12,2023-11-12,87,nd,Notre Dame Fighting Irish,20,22,359.0
+2023,12,2023-11-12,2633,,,21,14,333.0
+2023,12,2023-11-12,153,unc,North Carolina Tar Heels,22,24,265.0
+2023,12,2023-11-12,2306,ksu,Kansas State Wildcats,23,0,240.0
+2023,12,2023-11-12,197,okst,Oklahoma State Cowboys,24,15,178.0
+2023,12,2023-11-12,2335,lib,Liberty Flames,25,25,133.0
+2023,13,2023-11-19,61,uga,Georgia Bulldogs,1,1,1549.0
+2023,13,2023-11-19,194,osu,Ohio State Buckeyes,2,3,1447.0
+2023,13,2023-11-19,130,mich,Michigan Wolverines,3,2,1440.0
+2023,13,2023-11-19,264,wash,Washington Huskies,4,5,1367.0
+2023,13,2023-11-19,52,fsu,Florida State Seminoles,5,4,1324.0
+2023,13,2023-11-19,2483,ore,Oregon Ducks,6,6,1219.0
+2023,13,2023-11-19,251,tex,Texas Longhorns,7,7,1180.0
+2023,13,2023-11-19,333,ala,Alabama Crimson Tide,8,8,1138.0
+2023,13,2023-11-19,97,lou,Louisville Cardinals,9,9,1017.0
+2023,13,2023-11-19,142,miz,Missouri Tigers,10,11,964.0
+2023,13,2023-11-19,213,psu,Penn State Nittany Lions,11,12,894.0
+2023,13,2023-11-19,145,miss,Ole Miss Rebels,12,13,878.0
+2023,13,2023-11-19,201,ou,Oklahoma Sooners,13,14,766.0
+2023,13,2023-11-19,99,lsu,LSU Tigers,14,15,748.0
+2023,13,2023-11-19,204,orst,Oregon State Beavers,15,10,714.0
+2023,13,2023-11-19,12,ariz,Arizona Wildcats,16,19,625.0
+2023,13,2023-11-19,87,nd,Notre Dame Fighting Irish,17,20,503.0
+2023,13,2023-11-19,2655,,,18,17,499.0
+2023,13,2023-11-19,2306,ksu,Kansas State Wildcats,19,23,418.0
+2023,13,2023-11-19,2294,iowa,Iowa Hawkeyes,20,0,332.0
+2023,13,2023-11-19,197,okst,Oklahoma State Cowboys,21,24,329.0
+2023,13,2023-11-19,2335,lib,Liberty Flames,22,25,229.0
+2023,13,2023-11-19,2649,,,23,0,118.0
+2023,13,2023-11-19,256,jmu,James Madison Dukes,24,18,75.0
+2023,13,2023-11-19,2633,,,25,21,72.0
+2023,14,2023-11-26,61,uga,Georgia Bulldogs,1,1,1540.0
+2023,14,2023-11-26,130,mich,Michigan Wolverines,2,3,1495.0
+2023,14,2023-11-26,264,wash,Washington Huskies,3,4,1413.0
+2023,14,2023-11-26,52,fsu,Florida State Seminoles,4,5,1358.0
+2023,14,2023-11-26,2483,ore,Oregon Ducks,5,6,1277.0
+2023,14,2023-11-26,194,osu,Ohio State Buckeyes,6,2,1251.0
+2023,14,2023-11-26,251,tex,Texas Longhorns,7,7,1205.0
+2023,14,2023-11-26,333,ala,Alabama Crimson Tide,8,8,1125.0
+2023,14,2023-11-26,142,miz,Missouri Tigers,9,10,1011.0
+2023,14,2023-11-26,213,psu,Penn State Nittany Lions,10,11,961.0
+2023,14,2023-11-26,145,miss,Ole Miss Rebels,11,12,936.0
+2023,14,2023-11-26,201,ou,Oklahoma Sooners,12,13,857.0
+2023,14,2023-11-26,99,lsu,LSU Tigers,13,14,809.0
+2023,14,2023-11-26,12,ariz,Arizona Wildcats,14,16,712.0
+2023,14,2023-11-26,97,lou,Louisville Cardinals,15,9,689.0
+2023,14,2023-11-26,87,nd,Notre Dame Fighting Irish,16,17,592.0
+2023,14,2023-11-26,2655,,,17,18,557.0
+2023,14,2023-11-26,2294,iowa,Iowa Hawkeyes,18,20,458.0
+2023,14,2023-11-26,197,okst,Oklahoma State Cowboys,19,21,407.0
+2023,14,2023-11-26,2335,lib,Liberty Flames,20,22,293.0
+2023,14,2023-11-26,152,ncsu,NC State Wolfpack,21,0,269.0
+2023,14,2023-11-26,204,orst,Oregon State Beavers,21,15,269.0
+2023,14,2023-11-26,2649,,,23,23,176.0
+2023,14,2023-11-26,256,jmu,James Madison Dukes,24,24,121.0
+2023,14,2023-11-26,2567,,,25,0,108.0
+2023,15,2023-12-03,130,mich,Michigan Wolverines,1,2,1539.0
+2023,15,2023-12-03,264,wash,Washington Huskies,2,3,1499.0
+2023,15,2023-12-03,251,tex,Texas Longhorns,3,7,1375.0
+2023,15,2023-12-03,52,fsu,Florida State Seminoles,4,4,1358.0
+2023,15,2023-12-03,333,ala,Alabama Crimson Tide,5,8,1329.0
+2023,15,2023-12-03,61,uga,Georgia Bulldogs,6,1,1256.0
+2023,15,2023-12-03,194,osu,Ohio State Buckeyes,7,6,1185.0
+2023,15,2023-12-03,2483,ore,Oregon Ducks,8,5,1119.0
+2023,15,2023-12-03,142,miz,Missouri Tigers,9,9,1014.0
+2023,15,2023-12-03,213,psu,Penn State Nittany Lions,10,10,960.0
+2023,15,2023-12-03,145,miss,Ole Miss Rebels,11,11,944.0
+2023,15,2023-12-03,201,ou,Oklahoma Sooners,12,12,867.0
+2023,15,2023-12-03,99,lsu,LSU Tigers,13,13,823.0
+2023,15,2023-12-03,12,ariz,Arizona Wildcats,14,14,740.0
+2023,15,2023-12-03,87,nd,Notre Dame Fighting Irish,15,16,634.0
+2023,15,2023-12-03,97,lou,Louisville Cardinals,16,15,584.0
+2023,15,2023-12-03,2567,,,17,25,432.0
+2023,15,2023-12-03,2335,lib,Liberty Flames,18,20,424.0
+2023,15,2023-12-03,152,ncsu,NC State Wolfpack,19,21,377.0
+2023,15,2023-12-03,2294,iowa,Iowa Hawkeyes,20,18,356.0
+2023,15,2023-12-03,204,orst,Oregon State Beavers,21,21,309.0
+2023,15,2023-12-03,197,okst,Oklahoma State Cowboys,22,19,256.0
+2023,15,2023-12-03,2655,,,23,17,201.0
+2023,15,2023-12-03,256,jmu,James Madison Dukes,24,24,177.0
+2023,15,2023-12-03,2633,,,25,0,98.0

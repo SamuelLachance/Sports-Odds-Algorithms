@@ -522,11 +522,14 @@ def load_closing_odds_index() -> dict[tuple[str, str, str], dict[str, Any]]:
             index[(date, home, away)] = {
                 "home_ml": _american(row.get("home_close_ml")),
                 "away_ml": _american(row.get("away_close_ml")),
+                "home_ml_open": _american(row.get("home_open_ml")),
+                "away_ml_open": _american(row.get("away_open_ml")),
                 "home_spread": _to_float(row.get("home_close_spread")),
                 "home_spread_odds": _american(row.get("home_spread_odds")),
                 "away_spread_odds": _american(row.get("away_spread_odds")),
                 "home_spread_open": _to_float(row.get("home_open_spread")),
                 "total": _to_float(row.get("close_total")),
+                "open_total": _to_float(row.get("open_total")),
                 "n_books": _to_int(row.get("n_books")) or 0,
             }
     return index

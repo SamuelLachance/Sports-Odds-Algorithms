@@ -369,5 +369,5 @@
   "hybrid_market_blend_w": 0.6,
   "baseline_xgb_logloss": 0.66613,
   "gap_vs_market": 0.00308,
-  "hybrid_shipped_at": "2026-07-14T01:07:15.903705+00:00"
+  "hybrid_shipped_at": "2026-07-14T08:57:43.698983+00:00"
 }

@@ -1,5 +1,5 @@
 {
-  "algorithm": "NFLGradientBoost v2",
+  "algorithm": "HybridGradientBoost v2",
   "created_at": "2026-07-13T19:33:30.066243+00:00",
   "feature_columns": [
     "elo_diff",
@@ -131,10 +131,10 @@
     2010,
     2025
   ],
-  "oos_model_logloss": 0.63229,
-  "oos_model_brier": 0.22056,
-  "oos_model_acc": 0.6469,
-  "oos_margin_mae": 10.4467,
+  "oos_model_logloss": 0.6192,
+  "oos_model_brier": 0.21462,
+  "oos_model_acc": 0.6586,
+  "oos_margin_mae": 10.1979,
   "oos_elo_margin_mae": 10.408,
   "oos_elo_logloss": 0.63202,
   "elo_baseline_mae_reference": 10.69,
@@ -480,5 +480,10 @@
     "madden_known": 0.0
   },
   "oos_market_logloss": 0.60964,
-  "oos_with_odds": 4349
+  "oos_with_odds": 4349,
+  "hybrid": true,
+  "hybrid_backend": "catboost",
+  "hybrid_market_blend_w": 0.6,
+  "baseline_xgb_logloss": 0.6192,
+  "hybrid_shipped_at": "2026-07-14T09:05:14.575894+00:00"
 }

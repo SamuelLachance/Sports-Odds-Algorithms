@@ -1,40 +1,48 @@
 {
   "stake_mode": "kelly",
   "kelly_fraction": 0.25,
-  "bet_type": "spread",
-  "margin_col": "model_margin_mkt",
-  "exec_price": "open",
-  "sigma": 12.458,
-  "min_cover_gap_pp": 6.0,
-  "min_point_edge": 0.0,
-  "model_variant": "market_aware",
+  "enabled": true,
+  "enabled_note": "positive worst-season ROI (Hub\u00e1\u010dek decorrelated search)",
+  "source": "hubacek_binary_search",
+  "hubacek_decorrelated": true,
+  "bet_type": "moneyline",
+  "exec_price": "close",
+  "source_oos": "hybrid",
+  "prob_col": "model_prob",
+  "decor_w": 0.12,
+  "min_edge_pp": 1.5,
+  "min_ev_pct": 0.0,
+  "ml_lo": -350,
+  "ml_hi": 300,
+  "sides": "away",
+  "season_window": "from2023",
+  "hubacek": true,
   "backtest": {
-    "bets": 314,
-    "staked_units": 907.7,
-    "profit_units": 96.2,
-    "roi_pct": 10.6,
-    "win_rate": 0.5701,
-    "max_drawdown_units": 23.5,
+    "bets": 252,
+    "staked_units": 424.2,
+    "profit_units": 8.7,
+    "roi_pct": 2.06,
+    "win_rate": 0.4802,
     "seasons_positive": 3,
     "seasons_total": 3,
-    "worst_season_roi": 7.92,
-    "median_season_roi": 12.56
+    "worst_season_roi": 0.24,
+    "median_season_roi": 1.56
   },
   "backtest_per_season": {
     "2023": {
-      "bets": 1,
-      "roi_pct": 89.29,
-      "profit_units": 1.6
+      "bets": 75,
+      "roi_pct": 4.46,
+      "profit_units": 5.9
     },
     "2024": {
-      "bets": 140,
-      "roi_pct": 7.92,
-      "profit_units": 32.7
+      "bets": 73,
+      "roi_pct": 0.24,
+      "profit_units": 0.3
     },
     "2025": {
-      "bets": 173,
-      "roi_pct": 12.56,
-      "profit_units": 62.0
+      "bets": 104,
+      "roi_pct": 1.56,
+      "profit_units": 2.5
     }
   }
 }

@@ -29,18 +29,18 @@
     "oos_model_brier": 0.23685,
     "oos_model_acc": 0.5963,
     "n": 9904,
-    "baseline_ll": 0.66631,
-    "delta_vs_baseline": 0.00018,
+    "baseline_ll": 0.66613,
+    "delta_vs_baseline": -0.0,
     "beat_baseline": false,
     "multiclass": false,
     "oos_market_logloss": 0.66036,
     "oos_model_logloss_odds_subset": 0.66344,
     "gap_vs_market": 0.00308,
     "league": "nhl",
-    "elapsed_s": 153.3,
-    "created_at": "2026-07-14T00:48:18.867413+00:00"
+    "elapsed_s": 148.1,
+    "created_at": "2026-07-14T08:55:59.278101+00:00"
   },
-  "created_at": "2026-07-14T01:07:12.282554+00:00",
+  "created_at": "2026-07-14T08:57:40.403162+00:00",
   "feature_cols": [
     "elo_diff",
     "gf_fast_diff",

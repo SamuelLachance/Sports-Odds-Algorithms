@@ -2,7 +2,7 @@
   "stake_mode": "kelly",
   "kelly_fraction": 0.25,
   "enabled": true,
-  "enabled_note": "positive worst-season ROI (Hub\u00e1\u010dek expanded hybrid; robust volume floor)",
+  "enabled_note": "positive worst-season ROI (Hubacek expanded hybrid; robust volume floor). Close ML niches searched first (2026-07 refresh) but did not clear upgrade vs this open niche (candidate close worst_season_roi~4.95 on 241 bets); open retained.",
   "source": "hubacek_binary_search",
   "hubacek_decorrelated": true,
   "bet_type": "moneyline",
@@ -44,5 +44,6 @@
       "roi_pct": 27.6,
       "profit_units": 27.5
     }
-  }
+  },
+  "close_search_note": "prefer_close=true in refresh_majors_hubacek; open kept (stronger existing policy)"
 }

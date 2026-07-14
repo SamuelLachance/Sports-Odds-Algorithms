@@ -1,0 +1,2281 @@
+league,season,date,home,away,home_xg,away_xg
+La_liga,2020,2020-09-12,Eibar,Celta Vigo,0.344008,0.783653
+La_liga,2020,2020-09-12,Granada,Athletic Club,0.545144,0.483337
+La_liga,2020,2020-09-12,Cadiz,Osasuna,0.600934,0.633286
+La_liga,2020,2020-09-13,Alaves,Real Betis,1.17642,0.341233
+La_liga,2020,2020-09-13,Real Valladolid,Real Sociedad,0.858211,0.31178
+La_liga,2020,2020-09-13,Villarreal,SD Huesca,2.01913,0.556003
+La_liga,2020,2020-09-13,Valencia,Levante,1.72531,2.37179
+La_liga,2020,2020-09-19,Villarreal,Eibar,2.99286,1.112
+La_liga,2020,2020-09-19,Getafe,Osasuna,0.702715,0.486466
+La_liga,2020,2020-09-19,Celta Vigo,Valencia,2.33534,0.456643
+La_liga,2020,2020-09-20,SD Huesca,Cadiz,0.223846,1.50522
+La_liga,2020,2020-09-20,Granada,Alaves,2.45453,0.77021
+La_liga,2020,2020-09-20,Real Betis,Real Valladolid,1.76775,0.290702
+La_liga,2020,2020-09-20,Real Sociedad,Real Madrid,0.718119,0.769069
+La_liga,2020,2020-09-26,Alaves,Getafe,0.867165,1.31111
+La_liga,2020,2020-09-26,Valencia,SD Huesca,0.306092,1.10618
+La_liga,2020,2020-09-26,Elche,Real Sociedad,1.23661,3.3738
+La_liga,2020,2020-09-26,Real Betis,Real Madrid,1.41465,3.86499
+La_liga,2020,2020-09-27,Osasuna,Levante,0.724471,2.99435
+La_liga,2020,2020-09-27,Eibar,Athletic Club,0.325316,0.505645
+La_liga,2020,2020-09-27,Atletico Madrid,Granada,3.60448,1.30515
+La_liga,2020,2020-09-27,Real Valladolid,Celta Vigo,1.52483,1.08307
+La_liga,2020,2020-09-27,Barcelona,Villarreal,3.50735,0.244835
+La_liga,2020,2020-09-27,Cadiz,Sevilla,1.0983,2.2102
+La_liga,2020,2020-09-29,Real Sociedad,Valencia,0.589249,0.836796
+La_liga,2020,2020-09-29,Getafe,Real Betis,0.908069,0.442837
+La_liga,2020,2020-09-30,SD Huesca,Atletico Madrid,0.631932,1.79241
+La_liga,2020,2020-09-30,Villarreal,Alaves,2.65908,0.618672
+La_liga,2020,2020-09-30,Eibar,Elche,1.06052,0.378171
+La_liga,2020,2020-09-30,Real Madrid,Real Valladolid,2.64599,0.540187
+La_liga,2020,2020-10-01,Athletic Club,Cadiz,0.545027,0.263675
+La_liga,2020,2020-10-01,Sevilla,Levante,1.04729,0.375244
+La_liga,2020,2020-10-01,Celta Vigo,Barcelona,0.568201,0.931689
+La_liga,2020,2020-10-03,Real Valladolid,Eibar,1.09473,1.6913
+La_liga,2020,2020-10-03,Atletico Madrid,Villarreal,0.610002,0.201508
+La_liga,2020,2020-10-03,Real Sociedad,Getafe,2.19684,0.315862
+La_liga,2020,2020-10-03,Elche,SD Huesca,0.188885,1.70374
+La_liga,2020,2020-10-03,Valencia,Real Betis,0.475219,1.87508
+La_liga,2020,2020-10-04,Osasuna,Celta Vigo,1.12188,0.360866
+La_liga,2020,2020-10-04,Alaves,Athletic Club,0.520642,0.487749
+La_liga,2020,2020-10-04,Levante,Real Madrid,0.577329,1.87714
+La_liga,2020,2020-10-04,Cadiz,Granada,1.09095,0.820558
+La_liga,2020,2020-10-04,Barcelona,Sevilla,1.05717,1.25522
+La_liga,2020,2020-10-17,Granada,Sevilla,1.08721,0.699011
+La_liga,2020,2020-10-17,Celta Vigo,Atletico Madrid,1.89737,1.51399
+La_liga,2020,2020-10-17,Real Madrid,Cadiz,1.1359,1.768
+La_liga,2020,2020-10-17,Getafe,Barcelona,1.70992,0.62541
+La_liga,2020,2020-10-18,Eibar,Osasuna,0.371361,1.2646
+La_liga,2020,2020-10-18,Athletic Club,Levante,2.07013,0.281482
+La_liga,2020,2020-10-18,Villarreal,Valencia,1.59975,0.677588
+La_liga,2020,2020-10-18,Alaves,Elche,0.90822,0.902261
+La_liga,2020,2020-10-18,SD Huesca,Real Valladolid,1.25439,0.907963
+La_liga,2020,2020-10-18,Real Betis,Real Sociedad,0.304528,1.58336
+La_liga,2020,2020-10-23,Elche,Valencia,0.165573,1.23519
+La_liga,2020,2020-10-24,Barcelona,Real Madrid,1.57351,3.20848
+La_liga,2020,2020-10-24,Osasuna,Athletic Club,0.989319,0.5791
+La_liga,2020,2020-10-24,Sevilla,Eibar,1.98558,0.198368
+La_liga,2020,2020-10-24,Atletico Madrid,Real Betis,1.24304,1.01541
+La_liga,2020,2020-10-25,Real Valladolid,Alaves,0.305213,2.3128
+La_liga,2020,2020-10-25,Cadiz,Villarreal,0.20914,0.752296
+La_liga,2020,2020-10-25,Getafe,Granada,1.33438,0.949811
+La_liga,2020,2020-10-25,Real Sociedad,SD Huesca,1.79773,0.591473
+La_liga,2020,2020-10-26,Levante,Celta Vigo,1.19249,0.818389
+La_liga,2020,2020-10-30,Eibar,Cadiz,0.466935,0.932416
+La_liga,2020,2020-10-31,Real Madrid,SD Huesca,2.23898,0.79915
+La_liga,2020,2020-10-31,Athletic Club,Sevilla,1.32876,1.15091
+La_liga,2020,2020-10-31,Osasuna,Atletico Madrid,1.42768,3.06286
+La_liga,2020,2020-10-31,Alaves,Barcelona,1.11324,2.07747
+La_liga,2020,2020-11-01,Real Betis,Elche,3.06462,0.478252
+La_liga,2020,2020-11-01,Celta Vigo,Real Sociedad,2.12312,2.27628
+La_liga,2020,2020-11-01,Granada,Levante,0.230886,0.813588
+La_liga,2020,2020-11-01,Valencia,Getafe,1.75934,2.35774
+La_liga,2020,2020-11-02,Villarreal,Real Valladolid,1.85014,0.793913
+La_liga,2020,2020-11-06,Elche,Celta Vigo,1.6055,2.15551
+La_liga,2020,2020-11-07,SD Huesca,Eibar,2.23211,0.839508
+La_liga,2020,2020-11-07,Barcelona,Real Betis,4.44487,0.86991
+La_liga,2020,2020-11-07,Sevilla,Osasuna,1.151,0.499107
+La_liga,2020,2020-11-07,Atletico Madrid,Cadiz,2.62556,0.395983
+La_liga,2020,2020-11-08,Getafe,Villarreal,0.55465,2.32114
+La_liga,2020,2020-11-08,Real Sociedad,Granada,3.72416,0.780649
+La_liga,2020,2020-11-08,Levante,Alaves,1.99148,1.01595
+La_liga,2020,2020-11-08,Real Valladolid,Athletic Club,2.28498,1.57936
+La_liga,2020,2020-11-08,Valencia,Real Madrid,2.34693,1.05824
+La_liga,2020,2020-11-20,Osasuna,SD Huesca,0.878778,0.807899
+La_liga,2020,2020-11-21,Levante,Elche,0.902091,0.832435
+La_liga,2020,2020-11-21,Villarreal,Real Madrid,1.72712,0.652049
+La_liga,2020,2020-11-21,Sevilla,Celta Vigo,2.22603,2.08172
+La_liga,2020,2020-11-21,Atletico Madrid,Barcelona,0.812108,1.29964
+La_liga,2020,2020-11-22,Eibar,Getafe,1.45225,0.352628
+La_liga,2020,2020-11-22,Cadiz,Real Sociedad,0.0824748,1.90588
+La_liga,2020,2020-11-22,Granada,Real Valladolid,1.40253,1.45546
+La_liga,2020,2020-11-22,Alaves,Valencia,1.82668,1.79824
+La_liga,2020,2020-11-23,Athletic Club,Real Betis,2.75202,0.385631
+La_liga,2020,2020-11-27,Real Valladolid,Levante,1.25969,1.11009
+La_liga,2020,2020-11-28,Elche,Cadiz,0.0867292,0.678171
+La_liga,2020,2020-11-28,Valencia,Atletico Madrid,0.181436,1.10533
+La_liga,2020,2020-11-28,SD Huesca,Sevilla,0.167609,1.69981
+La_liga,2020,2020-11-28,Real Madrid,Alaves,1.66068,2.35024
+La_liga,2020,2020-11-29,Barcelona,Osasuna,3.91416,1.56118
+La_liga,2020,2020-11-29,Getafe,Athletic Club,0.536725,0.277502
+La_liga,2020,2020-11-29,Celta Vigo,Granada,4.64116,1.49416
+La_liga,2020,2020-11-29,Real Sociedad,Villarreal,1.91705,1.10165
+La_liga,2020,2020-11-30,Real Betis,Eibar,0.51761,3.24869
+La_liga,2020,2020-12-04,Athletic Club,Celta Vigo,0.454057,1.20044
+La_liga,2020,2020-12-05,Levante,Getafe,2.56696,0.49433
+La_liga,2020,2020-12-05,Sevilla,Real Madrid,0.533909,1.69653
+La_liga,2020,2020-12-05,Atletico Madrid,Real Valladolid,1.2755,0.440427
+La_liga,2020,2020-12-05,Cadiz,Barcelona,2.61118,1.71026
+La_liga,2020,2020-12-06,Granada,SD Huesca,1.82994,1.68663
+La_liga,2020,2020-12-06,Osasuna,Real Betis,0.366687,1.52162
+La_liga,2020,2020-12-06,Villarreal,Elche,0.520422,0.0544723
+La_liga,2020,2020-12-06,Alaves,Real Sociedad,0.249462,1.39953
+La_liga,2020,2020-12-07,Eibar,Valencia,1.09317,0.648196
+La_liga,2020,2020-12-11,Real Valladolid,Osasuna,1.87748,1.33403
+La_liga,2020,2020-12-12,Valencia,Athletic Club,2.17259,1.73307
+La_liga,2020,2020-12-12,Getafe,Sevilla,0.374252,0.507527
+La_liga,2020,2020-12-12,SD Huesca,Alaves,0.380766,0.171439
+La_liga,2020,2020-12-12,Real Madrid,Atletico Madrid,0.6517,0.784775
+La_liga,2020,2020-12-13,Real Sociedad,Eibar,1.33912,1.55401
+La_liga,2020,2020-12-13,Real Betis,Villarreal,0.475008,1.10577
+La_liga,2020,2020-12-13,Elche,Granada,0.534289,1.40539
+La_liga,2020,2020-12-13,Barcelona,Levante,2.62077,0.97888
+La_liga,2020,2020-12-14,Celta Vigo,Cadiz,1.51712,0.906249
+La_liga,2020,2020-12-15,Real Madrid,Athletic Club,2.58032,0.728304
+La_liga,2020,2020-12-16,Barcelona,Real Sociedad,2.58133,1.82452
+La_liga,2020,2020-12-18,Athletic Club,SD Huesca,1.51945,0.182818
+La_liga,2020,2020-12-19,Atletico Madrid,Elche,2.10005,0.522281
+La_liga,2020,2020-12-19,Barcelona,Valencia,3.2847,1.97181
+La_liga,2020,2020-12-19,Levante,Real Sociedad,1.52776,2.1027
+La_liga,2020,2020-12-19,Osasuna,Villarreal,0.925068,2.79417
+La_liga,2020,2020-12-19,Sevilla,Real Valladolid,1.73966,0.878614
+La_liga,2020,2020-12-20,Celta Vigo,Alaves,1.62567,0.404844
+La_liga,2020,2020-12-20,Granada,Real Betis,1.38241,1.04957
+La_liga,2020,2020-12-20,Cadiz,Getafe,0.356498,1.10435
+La_liga,2020,2020-12-20,Eibar,Real Madrid,0.642099,2.35916
+La_liga,2020,2020-12-22,Elche,Osasuna,1.25398,1.69506
+La_liga,2020,2020-12-22,Valencia,Sevilla,0.559111,1.85011
+La_liga,2020,2020-12-22,SD Huesca,Levante,1.36969,0.581363
+La_liga,2020,2020-12-22,Real Sociedad,Atletico Madrid,0.230082,0.546595
+La_liga,2020,2020-12-22,Villarreal,Athletic Club,1.32193,0.910796
+La_liga,2020,2020-12-22,Real Valladolid,Barcelona,0.499141,3.23865
+La_liga,2020,2020-12-23,Getafe,Celta Vigo,0.265652,0.767168
+La_liga,2020,2020-12-23,Real Madrid,Granada,2.04414,0.79963
+La_liga,2020,2020-12-23,Alaves,Eibar,1.88686,0.786669
+La_liga,2020,2020-12-23,Real Betis,Cadiz,0.342496,0.282205
+La_liga,2020,2020-12-29,Barcelona,Eibar,2.05695,0.592271
+La_liga,2020,2020-12-29,Sevilla,Villarreal,2.7317,0.346419
+La_liga,2020,2020-12-29,Levante,Real Betis,1.67536,2.63943
+La_liga,2020,2020-12-29,Cadiz,Real Valladolid,0.786846,0.299749
+La_liga,2020,2020-12-30,Granada,Valencia,2.23615,1.27314
+La_liga,2020,2020-12-30,Atletico Madrid,Getafe,0.919165,0.941238
+La_liga,2020,2020-12-30,Celta Vigo,SD Huesca,2.85208,1.0513
+La_liga,2020,2020-12-30,Elche,Real Madrid,1.02416,1.55495
+La_liga,2020,2020-12-31,Athletic Club,Real Sociedad,0.172341,1.84296
+La_liga,2020,2020-12-31,Osasuna,Alaves,0.318257,1.35028
+La_liga,2020,2021-01-02,Villarreal,Levante,1.72781,0.554357
+La_liga,2020,2021-01-02,Real Betis,Sevilla,2.03775,0.248156
+La_liga,2020,2021-01-02,Getafe,Real Valladolid,0.768671,1.16924
+La_liga,2020,2021-01-02,Real Madrid,Celta Vigo,1.24672,0.564784
+La_liga,2020,2021-01-03,Athletic Club,Elche,1.38777,0.137448
+La_liga,2020,2021-01-03,Alaves,Atletico Madrid,0.154899,2.31899
+La_liga,2020,2021-01-03,Eibar,Granada,1.84192,0.917602
+La_liga,2020,2021-01-03,Real Sociedad,Osasuna,0.78536,0.609915
+La_liga,2020,2021-01-03,SD Huesca,Barcelona,0.259005,3.21201
+La_liga,2020,2021-01-04,Valencia,Cadiz,0.942061,0.522228
+La_liga,2020,2021-01-06,Athletic Club,Barcelona,0.638117,1.39939
+La_liga,2020,2021-01-08,Celta Vigo,Villarreal,0.363035,2.88163
+La_liga,2020,2021-01-09,Sevilla,Real Sociedad,2.9243,1.05731
+La_liga,2020,2021-01-09,Granada,Barcelona,0.490441,1.64578
+La_liga,2020,2021-01-09,Osasuna,Real Madrid,0.589148,0.42235
+La_liga,2020,2021-01-10,Levante,Eibar,0.857988,1.34206
+La_liga,2020,2021-01-10,Cadiz,Alaves,2.59473,0.829834
+La_liga,2020,2021-01-10,Real Valladolid,Valencia,0.562807,1.09369
+La_liga,2020,2021-01-11,Elche,Getafe,1.21278,3.17089
+La_liga,2020,2021-01-11,SD Huesca,Real Betis,1.15245,2.98435
+La_liga,2020,2021-01-12,Granada,Osasuna,0.831007,0.624174
+La_liga,2020,2021-01-12,Atletico Madrid,Sevilla,0.577443,1.19957
+La_liga,2020,2021-01-19,Cadiz,Levante,0.725743,2.00702
+La_liga,2020,2021-01-19,Real Valladolid,Elche,1.02082,0.575886
+La_liga,2020,2021-01-19,Alaves,Sevilla,1.40643,1.03209
+La_liga,2020,2021-01-20,Getafe,SD Huesca,0.656624,0.712964
+La_liga,2020,2021-01-20,Real Betis,Celta Vigo,0.646493,0.966752
+La_liga,2020,2021-01-20,Villarreal,Granada,2.15885,0.135256
+La_liga,2020,2021-01-21,Valencia,Osasuna,0.439791,1.63527
+La_liga,2020,2021-01-21,Eibar,Atletico Madrid,1.27041,1.23064
+La_liga,2020,2021-01-22,Levante,Real Valladolid,1.04736,0.631096
+La_liga,2020,2021-01-23,SD Huesca,Villarreal,0.177253,0.484831
+La_liga,2020,2021-01-23,Sevilla,Cadiz,2.51675,1.16695
+La_liga,2020,2021-01-23,Real Sociedad,Real Betis,2.24597,0.638534
+La_liga,2020,2021-01-23,Alaves,Real Madrid,0.762571,1.42254
+La_liga,2020,2021-01-24,Osasuna,Granada,1.88102,0.592689
+La_liga,2020,2021-01-24,Elche,Barcelona,0.477298,3.12144
+La_liga,2020,2021-01-24,Celta Vigo,Eibar,1.53045,0.591142
+La_liga,2020,2021-01-24,Atletico Madrid,Valencia,2.05311,0.250249
+La_liga,2020,2021-01-25,Athletic Club,Getafe,1.87633,1.29166
+La_liga,2020,2021-01-29,Real Valladolid,SD Huesca,1.74924,1.18337
+La_liga,2020,2021-01-30,Eibar,Sevilla,1.02238,1.66557
+La_liga,2020,2021-01-30,Real Madrid,Levante,1.23555,1.82881
+La_liga,2020,2021-01-30,Valencia,Elche,3.00838,0.328905
+La_liga,2020,2021-01-30,Villarreal,Real Sociedad,0.232475,1.16681
+La_liga,2020,2021-01-31,Getafe,Alaves,0.530765,0.20139
+La_liga,2020,2021-01-31,Cadiz,Atletico Madrid,0.861261,1.79542
+La_liga,2020,2021-01-31,Granada,Celta Vigo,0.3242,0.339262
+La_liga,2020,2021-01-31,Barcelona,Athletic Club,2.53148,0.275356
+La_liga,2020,2021-02-01,Real Betis,Osasuna,1.9333,1.38521
+La_liga,2020,2021-02-05,Alaves,Real Valladolid,1.60639,0.0534012
+La_liga,2020,2021-02-06,Levante,Granada,1.52404,1.26925
+La_liga,2020,2021-02-06,SD Huesca,Real Madrid,0.920971,3.53921
+La_liga,2020,2021-02-06,Elche,Villarreal,1.13518,1.51126
+La_liga,2020,2021-02-06,Sevilla,Getafe,2.03342,0.209522
+La_liga,2020,2021-02-07,Real Sociedad,Cadiz,4.7946,0.354151
+La_liga,2020,2021-02-07,Athletic Club,Valencia,1.34704,0.841344
+La_liga,2020,2021-02-07,Osasuna,Eibar,2.62128,1.07628
+La_liga,2020,2021-02-07,Real Betis,Barcelona,1.87521,1.33284
+La_liga,2020,2021-02-08,Atletico Madrid,Celta Vigo,1.22973,1.71926
+La_liga,2020,2021-02-09,Real Madrid,Getafe,1.86359,0.0930356
+La_liga,2020,2021-02-12,Celta Vigo,Elche,2.31967,0.836576
+La_liga,2020,2021-02-13,Granada,Atletico Madrid,0.827088,0.929672
+La_liga,2020,2021-02-13,Sevilla,SD Huesca,1.329,1.39522
+La_liga,2020,2021-02-13,Eibar,Real Valladolid,1.92231,0.968574
+La_liga,2020,2021-02-13,Barcelona,Alaves,2.86032,0.710997
+La_liga,2020,2021-02-14,Getafe,Real Sociedad,0.263007,1.03317
+La_liga,2020,2021-02-14,Real Madrid,Valencia,0.862855,0.0596554
+La_liga,2020,2021-02-14,Levante,Osasuna,1.73006,0.685142
+La_liga,2020,2021-02-14,Villarreal,Real Betis,1.17957,1.35008
+La_liga,2020,2021-02-15,Cadiz,Athletic Club,0.567254,2.36113
+La_liga,2020,2021-02-17,Levante,Atletico Madrid,0.642423,1.16962
+La_liga,2020,2021-02-19,Real Betis,Getafe,2.67474,0.277079
+La_liga,2020,2021-02-20,Elche,Eibar,0.397175,1.66898
+La_liga,2020,2021-02-20,Atletico Madrid,Levante,2.06148,0.767582
+La_liga,2020,2021-02-20,Valencia,Celta Vigo,1.16675,0.689216
+La_liga,2020,2021-02-20,Real Valladolid,Real Madrid,0.909714,1.30987
+La_liga,2020,2021-02-21,Barcelona,Cadiz,2.39005,1.32905
+La_liga,2020,2021-02-21,Real Sociedad,Alaves,2.50353,0.307378
+La_liga,2020,2021-02-21,SD Huesca,Granada,2.47156,0.854609
+La_liga,2020,2021-02-21,Athletic Club,Villarreal,2.32222,0.0679965
+La_liga,2020,2021-02-22,Osasuna,Sevilla,0.457508,1.05344
+La_liga,2020,2021-02-24,Barcelona,Elche,2.66084,0.351113
+La_liga,2020,2021-02-26,Levante,Athletic Club,1.05928,1.99686
+La_liga,2020,2021-02-27,Eibar,SD Huesca,1.79661,0.480747
+La_liga,2020,2021-02-27,Sevilla,Barcelona,0.117061,1.58696
+La_liga,2020,2021-02-27,Alaves,Osasuna,0.483459,0.994243
+La_liga,2020,2021-02-27,Getafe,Valencia,0.895893,0.173822
+La_liga,2020,2021-02-28,Celta Vigo,Real Valladolid,0.86079,0.762391
+La_liga,2020,2021-02-28,Cadiz,Real Betis,0.227972,0.596164
+La_liga,2020,2021-02-28,Granada,Elche,1.45197,1.28521
+La_liga,2020,2021-02-28,Villarreal,Atletico Madrid,1.941,0.839764
+La_liga,2020,2021-03-01,Real Madrid,Real Sociedad,1.98534,1.21953
+La_liga,2020,2021-03-05,Valencia,Villarreal,1.75518,1.84626
+La_liga,2020,2021-03-06,Real Valladolid,Getafe,1.31724,0.971736
+La_liga,2020,2021-03-06,Elche,Sevilla,1.0131,0.964034
+La_liga,2020,2021-03-06,Cadiz,Eibar,1.6239,1.6003
+La_liga,2020,2021-03-06,Osasuna,Barcelona,0.756534,1.30761
+La_liga,2020,2021-03-07,SD Huesca,Celta Vigo,3.13618,0.655624
+La_liga,2020,2021-03-07,Atletico Madrid,Real Madrid,1.9832,1.88411
+La_liga,2020,2021-03-07,Real Sociedad,Levante,4.95179,0.186229
+La_liga,2020,2021-03-07,Athletic Club,Granada,1.28132,1.45524
+La_liga,2020,2021-03-08,Real Betis,Alaves,2.01921,0.798216
+La_liga,2020,2021-03-10,Atletico Madrid,Athletic Club,1.53875,0.701495
+La_liga,2020,2021-03-12,Levante,Valencia,0.853066,0.493596
+La_liga,2020,2021-03-13,Alaves,Cadiz,1.48992,1.74684
+La_liga,2020,2021-03-13,Real Madrid,Elche,1.72628,0.726991
+La_liga,2020,2021-03-13,Osasuna,Real Valladolid,0.467892,0.891
+La_liga,2020,2021-03-13,Getafe,Atletico Madrid,0.409679,1.81829
+La_liga,2020,2021-03-14,Celta Vigo,Athletic Club,1.18876,0.725139
+La_liga,2020,2021-03-14,Granada,Real Sociedad,0.331961,0.306083
+La_liga,2020,2021-03-14,Eibar,Villarreal,1.32358,2.84919
+La_liga,2020,2021-03-14,Sevilla,Real Betis,0.841992,0.662923
+La_liga,2020,2021-03-15,Barcelona,SD Huesca,1.52419,2.19819
+La_liga,2020,2021-03-17,Sevilla,Elche,1.95263,0.612799
+La_liga,2020,2021-03-19,Real Betis,Levante,2.46001,0.568605
+La_liga,2020,2021-03-20,Athletic Club,Eibar,1.72731,0.532399
+La_liga,2020,2021-03-20,Celta Vigo,Real Madrid,0.686996,2.79574
+La_liga,2020,2021-03-20,SD Huesca,Osasuna,0.89442,0.734886
+La_liga,2020,2021-03-20,Real Valladolid,Sevilla,0.809957,1.11252
+La_liga,2020,2021-03-21,Getafe,Elche,1.79357,1.38712
+La_liga,2020,2021-03-21,Valencia,Granada,1.4357,0.924202
+La_liga,2020,2021-03-21,Villarreal,Cadiz,2.50648,0.90665
+La_liga,2020,2021-03-21,Atletico Madrid,Alaves,0.64656,1.1132
+La_liga,2020,2021-03-21,Real Sociedad,Barcelona,0.917148,3.3338
+La_liga,2020,2021-04-02,Levante,SD Huesca,0.462819,0.857773
+La_liga,2020,2021-04-03,Granada,Villarreal,1.22939,3.49755
+La_liga,2020,2021-04-03,Real Madrid,Eibar,1.96177,0.299961
+La_liga,2020,2021-04-03,Osasuna,Getafe,0.198501,0.316201
+La_liga,2020,2021-04-04,Alaves,Celta Vigo,1.868,2.58943
+La_liga,2020,2021-04-04,Elche,Real Betis,0.797759,1.90364
+La_liga,2020,2021-04-04,Cadiz,Valencia,1.02818,0.858442
+La_liga,2020,2021-04-04,Sevilla,Atletico Madrid,1.89943,0.551951
+La_liga,2020,2021-04-05,Barcelona,Real Valladolid,1.68796,0.435921
+La_liga,2020,2021-04-07,Real Sociedad,Athletic Club,0.724498,0.990446
+La_liga,2020,2021-04-09,SD Huesca,Elche,1.09388,0.880685
+La_liga,2020,2021-04-10,Getafe,Cadiz,2.78378,0.640397
+La_liga,2020,2021-04-10,Athletic Club,Alaves,1.81094,0.448906
+La_liga,2020,2021-04-10,Eibar,Levante,0.360623,0.309936
+La_liga,2020,2021-04-10,Real Madrid,Barcelona,1.64993,1.15567
+La_liga,2020,2021-04-11,Villarreal,Osasuna,1.60338,1.29078
+La_liga,2020,2021-04-11,Valencia,Real Sociedad,2.34115,1.13047
+La_liga,2020,2021-04-11,Real Valladolid,Granada,1.19214,1.22464
+La_liga,2020,2021-04-11,Real Betis,Atletico Madrid,0.613966,1.34136
+La_liga,2020,2021-04-12,Celta Vigo,Sevilla,2.09186,1.59713
+La_liga,2020,2021-04-18,Osasuna,Elche,0.531975,0.699627
+La_liga,2020,2021-04-18,Real Sociedad,Sevilla,0.292775,3.65426
+La_liga,2020,2021-04-18,Alaves,SD Huesca,0.316991,0.747867
+La_liga,2020,2021-04-18,Atletico Madrid,Eibar,2.75029,0.0
+La_liga,2020,2021-04-18,Real Betis,Valencia,0.62725,1.61735
+La_liga,2020,2021-04-18,Cadiz,Celta Vigo,0.322965,0.436078
+La_liga,2020,2021-04-18,Getafe,Real Madrid,2.19426,0.618079
+La_liga,2020,2021-04-18,Levante,Villarreal,0.844482,1.87811
+La_liga,2020,2021-04-21,Levante,Sevilla,0.310335,2.05149
+La_liga,2020,2021-04-21,Osasuna,Valencia,3.63596,1.20337
+La_liga,2020,2021-04-21,Real Betis,Athletic Club,0.244787,0.845575
+La_liga,2020,2021-04-21,Alaves,Villarreal,1.40963,1.45071
+La_liga,2020,2021-04-21,Elche,Real Valladolid,1.33615,1.30359
+La_liga,2020,2021-04-21,Cadiz,Real Madrid,1.31917,3.52537
+La_liga,2020,2021-04-22,Atletico Madrid,SD Huesca,2.32831,1.40665
+La_liga,2020,2021-04-22,Granada,Eibar,1.76204,1.34566
+La_liga,2020,2021-04-22,Real Sociedad,Celta Vigo,2.19014,0.504303
+La_liga,2020,2021-04-22,Barcelona,Getafe,2.15458,1.39543
+La_liga,2020,2021-04-24,Elche,Levante,0.43368,0.236951
+La_liga,2020,2021-04-24,Real Valladolid,Cadiz,3.23903,1.55697
+La_liga,2020,2021-04-24,Valencia,Alaves,1.00912,0.893913
+La_liga,2020,2021-04-24,Real Madrid,Real Betis,0.985387,0.898058
+La_liga,2020,2021-04-25,SD Huesca,Getafe,0.472579,0.711933
+La_liga,2020,2021-04-25,Villarreal,Barcelona,0.964915,3.38056
+La_liga,2020,2021-04-25,Celta Vigo,Osasuna,0.601898,1.41709
+La_liga,2020,2021-04-25,Sevilla,Granada,1.27314,0.902764
+La_liga,2020,2021-04-25,Athletic Club,Atletico Madrid,1.42809,0.745334
+La_liga,2020,2021-04-26,Eibar,Real Sociedad,0.729653,0.706358
+La_liga,2020,2021-04-28,Athletic Club,Real Valladolid,1.73076,0.640604
+La_liga,2020,2021-04-29,Barcelona,Granada,1.43667,0.811246
+La_liga,2020,2021-04-30,Celta Vigo,Levante,2.3642,0.976661
+La_liga,2020,2021-05-01,Eibar,Alaves,1.64332,0.154274
+La_liga,2020,2021-05-01,Elche,Atletico Madrid,1.38118,1.01516
+La_liga,2020,2021-05-01,SD Huesca,Real Sociedad,0.446278,0.298366
+La_liga,2020,2021-05-01,Real Madrid,Osasuna,1.6256,0.0721582
+La_liga,2020,2021-05-02,Real Valladolid,Real Betis,0.76247,1.88115
+La_liga,2020,2021-05-02,Villarreal,Getafe,0.184151,0.487189
+La_liga,2020,2021-05-02,Granada,Cadiz,0.924434,1.60276
+La_liga,2020,2021-05-02,Valencia,Barcelona,1.41404,3.98456
+La_liga,2020,2021-05-03,Sevilla,Athletic Club,0.792995,0.6882
+La_liga,2020,2021-05-07,Real Sociedad,Elche,2.39443,0.0778732
+La_liga,2020,2021-05-08,Alaves,Levante,1.32991,0.987587
+La_liga,2020,2021-05-08,Barcelona,Atletico Madrid,0.853587,0.685355
+La_liga,2020,2021-05-08,Cadiz,SD Huesca,0.990604,0.43525
+La_liga,2020,2021-05-08,Athletic Club,Osasuna,1.39303,1.55726
+La_liga,2020,2021-05-09,Getafe,Eibar,0.767031,1.06817
+La_liga,2020,2021-05-09,Valencia,Real Valladolid,1.26443,0.754813
+La_liga,2020,2021-05-09,Villarreal,Celta Vigo,2.50872,1.98001
+La_liga,2020,2021-05-09,Real Madrid,Sevilla,0.99637,1.07261
+La_liga,2020,2021-05-10,Real Betis,Granada,1.84702,2.08496
+La_liga,2020,2021-05-11,Osasuna,Cadiz,2.14746,1.54692
+La_liga,2020,2021-05-11,Elche,Alaves,0.886211,1.66141
+La_liga,2020,2021-05-11,Levante,Barcelona,1.27727,3.0801
+La_liga,2020,2021-05-12,Sevilla,Valencia,0.865705,0.343195
+La_liga,2020,2021-05-12,Celta Vigo,Getafe,0.209945,1.14081
+La_liga,2020,2021-05-12,SD Huesca,Athletic Club,1.56368,0.401551
+La_liga,2020,2021-05-12,Atletico Madrid,Real Sociedad,1.7908,1.53283
+La_liga,2020,2021-05-13,Real Valladolid,Villarreal,1.38976,0.600771
+La_liga,2020,2021-05-13,Eibar,Real Betis,1.10754,0.605825
+La_liga,2020,2021-05-13,Granada,Real Madrid,1.69529,1.39286
+La_liga,2020,2021-05-16,Alaves,Granada,2.83763,0.841672
+La_liga,2020,2021-05-16,Athletic Club,Real Madrid,0.705495,1.21866
+La_liga,2020,2021-05-16,Atletico Madrid,Osasuna,2.97525,0.673558
+La_liga,2020,2021-05-16,Barcelona,Celta Vigo,2.10966,0.631271
+La_liga,2020,2021-05-16,Real Betis,SD Huesca,1.17298,0.249221
+La_liga,2020,2021-05-16,Getafe,Levante,0.769611,0.441218
+La_liga,2020,2021-05-16,Cadiz,Elche,1.07259,2.83914
+La_liga,2020,2021-05-16,Real Sociedad,Real Valladolid,1.67996,1.04641
+La_liga,2020,2021-05-16,Valencia,Eibar,1.33301,2.68303
+La_liga,2020,2021-05-16,Villarreal,Sevilla,1.60717,2.51965
+La_liga,2020,2021-05-21,Levante,Cadiz,1.51266,0.424135
+La_liga,2020,2021-05-22,Celta Vigo,Real Betis,1.21829,2.06863
+La_liga,2020,2021-05-22,Eibar,Barcelona,1.44968,0.284589
+La_liga,2020,2021-05-22,SD Huesca,Valencia,0.974788,0.421299
+La_liga,2020,2021-05-22,Osasuna,Real Sociedad,0.41494,2.08092
+La_liga,2020,2021-05-22,Real Madrid,Villarreal,0.804298,0.614418
+La_liga,2020,2021-05-22,Real Valladolid,Atletico Madrid,0.995635,1.2916
+La_liga,2020,2021-05-22,Elche,Athletic Club,1.33082,0.303264
+La_liga,2020,2021-05-23,Granada,Getafe,0.444987,0.46059
+La_liga,2020,2021-05-23,Sevilla,Alaves,0.35705,0.785012
+La_liga,2021,2021-08-13,Valencia,Getafe,1.57861,1.19326
+La_liga,2021,2021-08-14,Mallorca,Real Betis,0.569578,0.814085
+La_liga,2021,2021-08-14,Cadiz,Levante,0.993589,0.915954
+La_liga,2021,2021-08-14,Osasuna,Espanyol,0.579404,0.583698
+La_liga,2021,2021-08-14,Alaves,Real Madrid,1.41097,2.15551
+La_liga,2021,2021-08-15,Celta Vigo,Atletico Madrid,1.59399,1.805
+La_liga,2021,2021-08-15,Barcelona,Real Sociedad,3.46484,0.902312
+La_liga,2021,2021-08-15,Sevilla,Rayo Vallecano,3.67402,0.484078
+La_liga,2021,2021-08-16,Villarreal,Granada,1.21791,0.246735
+La_liga,2021,2021-08-16,Elche,Athletic Club,0.933565,0.634866
+La_liga,2021,2021-08-20,Real Betis,Cadiz,1.82337,1.4533
+La_liga,2021,2021-08-21,Alaves,Mallorca,0.920977,0.82407
+La_liga,2021,2021-08-21,Granada,Valencia,0.752693,1.50025
+La_liga,2021,2021-08-21,Espanyol,Villarreal,1.68861,0.597171
+La_liga,2021,2021-08-21,Athletic Club,Barcelona,1.43436,1.18383
+La_liga,2021,2021-08-22,Real Sociedad,Rayo Vallecano,2.26913,0.76322
+La_liga,2021,2021-08-22,Atletico Madrid,Elche,1.04508,0.168373
+La_liga,2021,2021-08-22,Levante,Real Madrid,1.63837,2.14125
+La_liga,2021,2021-08-23,Getafe,Sevilla,0.391853,0.813891
+La_liga,2021,2021-08-23,Osasuna,Celta Vigo,2.58218,0.084571
+La_liga,2021,2021-08-27,Mallorca,Espanyol,1.28733,0.296878
+La_liga,2021,2021-08-27,Valencia,Alaves,2.33998,0.360675
+La_liga,2021,2021-08-28,Celta Vigo,Athletic Club,0.934567,1.45227
+La_liga,2021,2021-08-28,Real Sociedad,Levante,0.855875,0.521015
+La_liga,2021,2021-08-28,Elche,Sevilla,0.855435,1.70035
+La_liga,2021,2021-08-28,Real Betis,Real Madrid,0.420687,0.94097
+La_liga,2021,2021-08-29,Barcelona,Getafe,1.05122,0.283315
+La_liga,2021,2021-08-29,Cadiz,Osasuna,1.36149,2.28418
+La_liga,2021,2021-08-29,Rayo Vallecano,Granada,2.19631,0.586302
+La_liga,2021,2021-08-29,Atletico Madrid,Villarreal,1.773,0.448731
+La_liga,2021,2021-09-11,Levante,Rayo Vallecano,1.10993,2.7683
+La_liga,2021,2021-09-11,Athletic Club,Mallorca,1.855,0.22503
+La_liga,2021,2021-09-12,Espanyol,Atletico Madrid,0.373891,0.732283
+La_liga,2021,2021-09-12,Osasuna,Valencia,0.457252,0.924929
+La_liga,2021,2021-09-12,Cadiz,Real Sociedad,0.607763,2.36611
+La_liga,2021,2021-09-12,Real Madrid,Celta Vigo,3.03734,1.99062
+La_liga,2021,2021-09-13,Getafe,Elche,0.3796,1.07401
+La_liga,2021,2021-09-13,Granada,Real Betis,0.780077,2.43767
+La_liga,2021,2021-09-17,Celta Vigo,Cadiz,0.993864,1.07407
+La_liga,2021,2021-09-18,Rayo Vallecano,Getafe,1.98661,1.15428
+La_liga,2021,2021-09-18,Atletico Madrid,Athletic Club,1.10053,1.10578
+La_liga,2021,2021-09-18,Elche,Levante,0.536512,1.12463
+La_liga,2021,2021-09-18,Alaves,Osasuna,0.251601,1.32313
+La_liga,2021,2021-09-19,Mallorca,Villarreal,0.529054,1.63437
+La_liga,2021,2021-09-19,Real Sociedad,Sevilla,1.17723,0.7654
+La_liga,2021,2021-09-19,Real Betis,Espanyol,2.36891,1.21693
+La_liga,2021,2021-09-19,Valencia,Real Madrid,0.647432,1.36343
+La_liga,2021,2021-09-20,Barcelona,Granada,1.88236,0.612728
+La_liga,2021,2021-09-21,Getafe,Atletico Madrid,0.330581,1.47906
+La_liga,2021,2021-09-21,Athletic Club,Rayo Vallecano,0.956027,1.04121
+La_liga,2021,2021-09-21,Levante,Celta Vigo,1.40702,0.739683
+La_liga,2021,2021-09-22,Sevilla,Valencia,1.20708,0.442431
+La_liga,2021,2021-09-22,Espanyol,Alaves,1.61796,0.424815
+La_liga,2021,2021-09-22,Villarreal,Elche,2.77855,1.09551
+La_liga,2021,2021-09-22,Real Madrid,Mallorca,2.3746,1.19165
+La_liga,2021,2021-09-23,Granada,Real Sociedad,1.25019,1.58153
+La_liga,2021,2021-09-23,Osasuna,Real Betis,0.820269,2.20306
+La_liga,2021,2021-09-23,Cadiz,Barcelona,1.40061,0.361756
+La_liga,2021,2021-09-25,Alaves,Atletico Madrid,1.19699,0.558059
+La_liga,2021,2021-09-25,Valencia,Athletic Club,1.08633,0.830524
+La_liga,2021,2021-09-25,Sevilla,Espanyol,1.57528,0.478568
+La_liga,2021,2021-09-25,Real Madrid,Villarreal,1.53636,0.666401
+La_liga,2021,2021-09-26,Mallorca,Osasuna,2.74158,1.63553
+La_liga,2021,2021-09-26,Barcelona,Levante,3.11328,0.712689
+La_liga,2021,2021-09-26,Rayo Vallecano,Cadiz,1.89007,1.09997
+La_liga,2021,2021-09-26,Real Sociedad,Elche,2.11835,0.573483
+La_liga,2021,2021-09-26,Real Betis,Getafe,2.4642,0.590585
+La_liga,2021,2021-09-27,Celta Vigo,Granada,1.26658,0.541862
+La_liga,2021,2021-10-01,Athletic Club,Alaves,2.49402,0.808018
+La_liga,2021,2021-10-02,Osasuna,Rayo Vallecano,0.657174,0.148539
+La_liga,2021,2021-10-02,Mallorca,Levante,0.442135,1.43388
+La_liga,2021,2021-10-02,Cadiz,Valencia,0.156791,1.43757
+La_liga,2021,2021-10-02,Atletico Madrid,Barcelona,1.37412,0.74746
+La_liga,2021,2021-10-03,Elche,Celta Vigo,1.39817,0.713553
+La_liga,2021,2021-10-03,Espanyol,Real Madrid,1.29119,1.62384
+La_liga,2021,2021-10-03,Villarreal,Real Betis,2.58641,0.527081
+La_liga,2021,2021-10-03,Getafe,Real Sociedad,0.523662,0.799948
+La_liga,2021,2021-10-03,Granada,Sevilla,0.0843984,1.4028
+La_liga,2021,2021-10-16,Levante,Getafe,0.83295,0.557421
+La_liga,2021,2021-10-16,Real Sociedad,Mallorca,0.404506,0.35977
+La_liga,2021,2021-10-17,Rayo Vallecano,Elche,1.10651,0.326072
+La_liga,2021,2021-10-17,Celta Vigo,Sevilla,0.888941,0.828384
+La_liga,2021,2021-10-17,Villarreal,Osasuna,0.713142,0.957297
+La_liga,2021,2021-10-17,Barcelona,Valencia,2.37862,0.378333
+La_liga,2021,2021-10-18,Alaves,Real Betis,1.35769,1.47785
+La_liga,2021,2021-10-18,Espanyol,Cadiz,1.73503,0.603648
+La_liga,2021,2021-10-22,Osasuna,Granada,1.24456,0.434896
+La_liga,2021,2021-10-23,Valencia,Mallorca,1.47094,0.807566
+La_liga,2021,2021-10-23,Cadiz,Alaves,2.00294,1.86733
+La_liga,2021,2021-10-23,Elche,Espanyol,0.998945,1.05435
+La_liga,2021,2021-10-23,Athletic Club,Villarreal,2.64328,0.605636
+La_liga,2021,2021-10-24,Sevilla,Levante,1.82952,1.28779
+La_liga,2021,2021-10-24,Barcelona,Real Madrid,1.58789,1.5463
+La_liga,2021,2021-10-24,Real Betis,Rayo Vallecano,1.43375,1.16768
+La_liga,2021,2021-10-24,Atletico Madrid,Real Sociedad,1.75286,0.834092
+La_liga,2021,2021-10-25,Getafe,Celta Vigo,0.461119,2.48108
+La_liga,2021,2021-10-26,Alaves,Elche,1.81349,0.281657
+La_liga,2021,2021-10-26,Espanyol,Athletic Club,1.23306,3.68446
+La_liga,2021,2021-10-26,Villarreal,Cadiz,1.95102,1.53615
+La_liga,2021,2021-10-27,Rayo Vallecano,Barcelona,0.786282,2.85731
+La_liga,2021,2021-10-27,Mallorca,Sevilla,2.27366,1.42068
+La_liga,2021,2021-10-27,Real Betis,Valencia,2.58067,2.17844
+La_liga,2021,2021-10-27,Real Madrid,Osasuna,0.655438,0.71046
+La_liga,2021,2021-10-28,Celta Vigo,Real Sociedad,0.995591,1.42714
+La_liga,2021,2021-10-28,Granada,Getafe,2.26351,0.581107
+La_liga,2021,2021-10-28,Levante,Atletico Madrid,2.12426,1.33383
+La_liga,2021,2021-10-30,Elche,Real Madrid,1.15068,1.60735
+La_liga,2021,2021-10-30,Sevilla,Osasuna,2.43378,0.790454
+La_liga,2021,2021-10-30,Valencia,Villarreal,1.66395,0.804209
+La_liga,2021,2021-10-30,Barcelona,Alaves,1.56007,0.599628
+La_liga,2021,2021-10-31,Cadiz,Mallorca,1.80233,1.03662
+La_liga,2021,2021-10-31,Atletico Madrid,Real Betis,2.5506,0.521096
+La_liga,2021,2021-10-31,Getafe,Espanyol,0.951784,0.619895
+La_liga,2021,2021-10-31,Real Sociedad,Athletic Club,1.05807,1.01149
+La_liga,2021,2021-11-01,Rayo Vallecano,Celta Vigo,0.467972,0.43779
+La_liga,2021,2021-11-01,Levante,Granada,1.33088,1.46089
+La_liga,2021,2021-11-05,Athletic Club,Cadiz,0.584754,0.491777
+La_liga,2021,2021-11-06,Espanyol,Granada,1.76367,2.06874
+La_liga,2021,2021-11-06,Celta Vigo,Barcelona,1.77068,1.13925
+La_liga,2021,2021-11-06,Alaves,Levante,1.53471,0.802633
+La_liga,2021,2021-11-06,Real Madrid,Rayo Vallecano,2.72626,1.78044
+La_liga,2021,2021-11-07,Villarreal,Getafe,1.49263,0.153162
+La_liga,2021,2021-11-07,Valencia,Atletico Madrid,1.57167,2.63804
+La_liga,2021,2021-11-07,Mallorca,Elche,2.04894,0.679919
+La_liga,2021,2021-11-07,Osasuna,Real Sociedad,0.495749,1.43263
+La_liga,2021,2021-11-07,Real Betis,Sevilla,0.389163,1.42156
+La_liga,2021,2021-11-19,Levante,Athletic Club,0.630763,0.452179
+La_liga,2021,2021-11-20,Celta Vigo,Villarreal,0.90981,2.71931
+La_liga,2021,2021-11-20,Sevilla,Alaves,1.37509,1.47367
+La_liga,2021,2021-11-20,Atletico Madrid,Osasuna,1.61044,0.378974
+La_liga,2021,2021-11-20,Barcelona,Espanyol,1.51262,1.41291
+La_liga,2021,2021-11-21,Getafe,Cadiz,1.54295,0.370193
+La_liga,2021,2021-11-21,Granada,Real Madrid,0.56422,3.77854
+La_liga,2021,2021-11-21,Elche,Real Betis,0.824849,1.60069
+La_liga,2021,2021-11-21,Real Sociedad,Valencia,0.405372,0.584859
+La_liga,2021,2021-11-22,Rayo Vallecano,Mallorca,1.94957,0.827606
+La_liga,2021,2021-11-26,Athletic Club,Granada,1.33935,0.977596
+La_liga,2021,2021-11-27,Alaves,Celta Vigo,0.677245,1.54308
+La_liga,2021,2021-11-27,Valencia,Rayo Vallecano,1.58132,2.02852
+La_liga,2021,2021-11-27,Mallorca,Getafe,0.472696,0.739333
+La_liga,2021,2021-11-27,Villarreal,Barcelona,1.55977,3.37249
+La_liga,2021,2021-11-28,Real Betis,Levante,2.3097,0.645945
+La_liga,2021,2021-11-28,Espanyol,Real Sociedad,0.378098,1.32638
+La_liga,2021,2021-11-28,Cadiz,Atletico Madrid,0.766477,3.32569
+La_liga,2021,2021-11-28,Real Madrid,Sevilla,1.2476,1.30167
+La_liga,2021,2021-11-29,Osasuna,Elche,2.13729,1.05682
+La_liga,2021,2021-12-01,Real Madrid,Athletic Club,1.60531,2.70199
+La_liga,2021,2021-12-03,Granada,Alaves,1.08266,1.38466
+La_liga,2021,2021-12-04,Sevilla,Villarreal,0.46965,1.90918
+La_liga,2021,2021-12-04,Barcelona,Real Betis,1.20871,0.642697
+La_liga,2021,2021-12-04,Atletico Madrid,Mallorca,2.07045,0.775913
+La_liga,2021,2021-12-04,Real Sociedad,Real Madrid,0.585154,2.19245
+La_liga,2021,2021-12-05,Rayo Vallecano,Espanyol,0.649198,0.474816
+La_liga,2021,2021-12-05,Elche,Cadiz,2.33084,1.50592
+La_liga,2021,2021-12-05,Levante,Osasuna,0.510046,0.250564
+La_liga,2021,2021-12-05,Celta Vigo,Valencia,0.645079,1.01149
+La_liga,2021,2021-12-06,Getafe,Athletic Club,1.35736,0.466017
+La_liga,2021,2021-12-10,Mallorca,Celta Vigo,0.898098,1.33476
+La_liga,2021,2021-12-11,Espanyol,Levante,2.1352,3.38759
+La_liga,2021,2021-12-11,Alaves,Getafe,0.989074,1.04682
+La_liga,2021,2021-12-11,Valencia,Elche,1.67544,1.12996
+La_liga,2021,2021-12-11,Athletic Club,Sevilla,2.35659,0.214536
+La_liga,2021,2021-12-12,Villarreal,Rayo Vallecano,2.10964,1.41255
+La_liga,2021,2021-12-12,Osasuna,Barcelona,0.367626,1.3894
+La_liga,2021,2021-12-12,Real Betis,Real Sociedad,1.21698,1.06737
+La_liga,2021,2021-12-12,Real Madrid,Atletico Madrid,0.587828,0.769681
+La_liga,2021,2021-12-13,Cadiz,Granada,0.6189,1.12436
+La_liga,2021,2021-12-17,Celta Vigo,Espanyol,1.6562,0.377711
+La_liga,2021,2021-12-18,Rayo Vallecano,Alaves,1.87281,0.198501
+La_liga,2021,2021-12-18,Real Sociedad,Villarreal,1.34561,3.02243
+La_liga,2021,2021-12-18,Barcelona,Elche,2.96397,1.26552
+La_liga,2021,2021-12-18,Sevilla,Atletico Madrid,0.373147,1.24499
+La_liga,2021,2021-12-19,Granada,Mallorca,2.71538,1.08613
+La_liga,2021,2021-12-19,Athletic Club,Real Betis,1.1909,2.01927
+La_liga,2021,2021-12-19,Getafe,Osasuna,1.09096,0.712207
+La_liga,2021,2021-12-19,Real Madrid,Cadiz,2.79615,0.242189
+La_liga,2021,2021-12-20,Levante,Valencia,2.73541,2.10622
+La_liga,2021,2021-12-21,Villarreal,Alaves,3.87986,0.310052
+La_liga,2021,2021-12-21,Sevilla,Barcelona,0.299426,1.90576
+La_liga,2021,2021-12-22,Granada,Atletico Madrid,0.911053,1.77937
+La_liga,2021,2021-12-22,Athletic Club,Real Madrid,1.0933,1.58518
+La_liga,2021,2021-12-31,Valencia,Espanyol,0.864078,2.14833
+La_liga,2021,2022-01-02,Getafe,Real Madrid,0.900039,0.913167
+La_liga,2021,2022-01-02,Elche,Granada,1.44824,0.965958
+La_liga,2021,2022-01-02,Atletico Madrid,Rayo Vallecano,1.98103,0.104074
+La_liga,2021,2022-01-02,Alaves,Real Sociedad,1.5407,1.38111
+La_liga,2021,2022-01-02,Real Betis,Celta Vigo,0.889436,1.872
+La_liga,2021,2022-01-02,Mallorca,Barcelona,0.988536,1.61795
+La_liga,2021,2022-01-03,Villarreal,Levante,4.19047,0.423407
+La_liga,2021,2022-01-03,Osasuna,Athletic Club,0.521945,2.48538
+La_liga,2021,2022-01-03,Cadiz,Sevilla,0.238594,1.28387
+La_liga,2021,2022-01-08,Levante,Mallorca,1.32485,1.16534
+La_liga,2021,2022-01-08,Real Sociedad,Celta Vigo,2.32107,0.313993
+La_liga,2021,2022-01-08,Granada,Barcelona,0.747757,0.967234
+La_liga,2021,2022-01-08,Real Madrid,Valencia,4.1129,1.12054
+La_liga,2021,2022-01-09,Rayo Vallecano,Real Betis,1.47922,1.26688
+La_liga,2021,2022-01-09,Sevilla,Getafe,0.592329,0.114607
+La_liga,2021,2022-01-09,Alaves,Athletic Club,0.585505,0.463719
+La_liga,2021,2022-01-09,Osasuna,Cadiz,3.13396,0.210192
+La_liga,2021,2022-01-09,Villarreal,Atletico Madrid,2.56125,0.882404
+La_liga,2021,2022-01-10,Espanyol,Elche,1.30222,0.662335
+La_liga,2021,2022-01-16,Elche,Villarreal,0.204155,0.755426
+La_liga,2021,2022-01-18,Cadiz,Espanyol,0.801983,1.91578
+La_liga,2021,2022-01-18,Real Betis,Alaves,2.10165,0.260065
+La_liga,2021,2022-01-19,Celta Vigo,Osasuna,1.52433,0.46556
+La_liga,2021,2022-01-19,Valencia,Sevilla,0.573449,1.17995
+La_liga,2021,2022-01-20,Getafe,Granada,1.18065,0.856476
+La_liga,2021,2022-01-21,Espanyol,Real Betis,1.57092,2.85687
+La_liga,2021,2022-01-22,Levante,Cadiz,1.08487,0.911469
+La_liga,2021,2022-01-22,Villarreal,Mallorca,2.19824,1.59983
+La_liga,2021,2022-01-22,Sevilla,Celta Vigo,0.885077,0.469693
+La_liga,2021,2022-01-22,Atletico Madrid,Valencia,2.25966,0.726623
+La_liga,2021,2022-01-23,Granada,Osasuna,0.582823,2.17061
+La_liga,2021,2022-01-23,Real Madrid,Elche,3.82847,0.725434
+La_liga,2021,2022-01-23,Real Sociedad,Getafe,1.21342,0.350506
+La_liga,2021,2022-01-23,Rayo Vallecano,Athletic Club,1.45337,0.412898
+La_liga,2021,2022-01-23,Alaves,Barcelona,0.733223,1.14948
+La_liga,2021,2022-02-04,Getafe,Levante,1.1718,0.556029
+La_liga,2021,2022-02-05,Elche,Alaves,1.77379,1.12234
+La_liga,2021,2022-02-05,Mallorca,Cadiz,2.23498,0.887418
+La_liga,2021,2022-02-05,Celta Vigo,Rayo Vallecano,0.65442,0.678815
+La_liga,2021,2022-02-05,Osasuna,Sevilla,0.397154,1.34983
+La_liga,2021,2022-02-06,Valencia,Real Sociedad,1.19065,0.539612
+La_liga,2021,2022-02-06,Barcelona,Atletico Madrid,0.926663,1.61465
+La_liga,2021,2022-02-06,Real Betis,Villarreal,0.737524,1.34131
+La_liga,2021,2022-02-06,Real Madrid,Granada,1.47173,0.39522
+La_liga,2021,2022-02-07,Athletic Club,Espanyol,1.07545,0.580028
+La_liga,2021,2022-02-11,Sevilla,Elche,0.767939,0.28732
+La_liga,2021,2022-02-12,Cadiz,Celta Vigo,0.880656,0.900788
+La_liga,2021,2022-02-12,Villarreal,Real Madrid,0.460031,2.11101
+La_liga,2021,2022-02-12,Rayo Vallecano,Osasuna,0.590034,2.12321
+La_liga,2021,2022-02-12,Atletico Madrid,Getafe,3.20819,2.2661
+La_liga,2021,2022-02-13,Alaves,Valencia,2.03492,1.18082
+La_liga,2021,2022-02-13,Levante,Real Betis,1.66764,2.09703
+La_liga,2021,2022-02-13,Real Sociedad,Granada,3.43761,0.773811
+La_liga,2021,2022-02-13,Espanyol,Barcelona,0.624266,1.62221
+La_liga,2021,2022-02-14,Mallorca,Athletic Club,1.81722,1.54391
+La_liga,2021,2022-02-16,Atletico Madrid,Levante,1.10602,0.813252
+La_liga,2021,2022-02-18,Elche,Rayo Vallecano,2.95715,0.832156
+La_liga,2021,2022-02-19,Granada,Villarreal,2.12749,5.34192
+La_liga,2021,2022-02-19,Osasuna,Atletico Madrid,0.689493,0.928671
+La_liga,2021,2022-02-19,Cadiz,Getafe,0.653762,0.885378
+La_liga,2021,2022-02-19,Real Madrid,Alaves,3.02281,0.63724
+La_liga,2021,2022-02-20,Espanyol,Sevilla,1.60205,0.958453
+La_liga,2021,2022-02-20,Valencia,Barcelona,0.774868,2.4686
+La_liga,2021,2022-02-20,Real Betis,Mallorca,1.47285,0.33988
+La_liga,2021,2022-02-20,Athletic Club,Real Sociedad,3.08821,0.528403
+La_liga,2021,2022-02-21,Celta Vigo,Levante,1.40465,1.54675
+La_liga,2021,2022-02-25,Levante,Elche,2.13075,1.0394
+La_liga,2021,2022-02-26,Mallorca,Valencia,1.38849,0.71964
+La_liga,2021,2022-02-26,Getafe,Alaves,1.2384,1.33865
+La_liga,2021,2022-02-26,Rayo Vallecano,Real Madrid,1.19813,1.92697
+La_liga,2021,2022-02-26,Atletico Madrid,Celta Vigo,0.771653,0.724951
+La_liga,2021,2022-02-27,Villarreal,Espanyol,4.80545,0.641431
+La_liga,2021,2022-02-27,Sevilla,Real Betis,1.73411,0.745673
+La_liga,2021,2022-02-27,Real Sociedad,Osasuna,1.52268,0.410683
+La_liga,2021,2022-02-27,Barcelona,Athletic Club,3.24274,0.332521
+La_liga,2021,2022-02-28,Granada,Cadiz,0.240876,0.902122
+La_liga,2021,2022-03-02,Mallorca,Real Sociedad,0.455768,1.44904
+La_liga,2021,2022-03-04,Alaves,Sevilla,2.03396,1.07969
+La_liga,2021,2022-03-05,Osasuna,Villarreal,1.52659,0.522906
+La_liga,2021,2022-03-05,Espanyol,Getafe,0.12167,0.477665
+La_liga,2021,2022-03-05,Valencia,Granada,1.83454,0.209802
+La_liga,2021,2022-03-05,Real Madrid,Real Sociedad,2.08769,0.743278
+La_liga,2021,2022-03-06,Cadiz,Rayo Vallecano,1.1663,0.908358
+La_liga,2021,2022-03-06,Elche,Barcelona,0.850008,4.0864
+La_liga,2021,2022-03-06,Celta Vigo,Mallorca,2.80024,1.59076
+La_liga,2021,2022-03-06,Real Betis,Atletico Madrid,1.31499,2.6744
+La_liga,2021,2022-03-07,Athletic Club,Levante,3.4866,0.552215
+La_liga,2021,2022-03-11,Atletico Madrid,Cadiz,0.659742,0.817457
+La_liga,2021,2022-03-12,Levante,Espanyol,1.25649,0.47916
+La_liga,2021,2022-03-12,Granada,Elche,1.34208,1.32937
+La_liga,2021,2022-03-12,Villarreal,Celta Vigo,1.16993,0.933297
+La_liga,2021,2022-03-12,Getafe,Valencia,1.20664,0.250843
+La_liga,2021,2022-03-13,Rayo Vallecano,Sevilla,0.626895,0.412843
+La_liga,2021,2022-03-13,Real Betis,Athletic Club,0.846393,0.707634
+La_liga,2021,2022-03-13,Real Sociedad,Alaves,3.04773,0.666399
+La_liga,2021,2022-03-13,Barcelona,Osasuna,3.90343,0.110884
+La_liga,2021,2022-03-14,Mallorca,Real Madrid,1.17685,1.81712
+La_liga,2021,2022-03-18,Athletic Club,Getafe,2.64347,0.562831
+La_liga,2021,2022-03-19,Alaves,Granada,2.13094,2.19056
+La_liga,2021,2022-03-19,Elche,Valencia,0.509372,0.979663
+La_liga,2021,2022-03-19,Osasuna,Levante,2.67397,1.21866
+La_liga,2021,2022-03-19,Rayo Vallecano,Atletico Madrid,1.88474,1.1919
+La_liga,2021,2022-03-20,Espanyol,Mallorca,1.54033,0.306153
+La_liga,2021,2022-03-20,Celta Vigo,Real Betis,1.26157,0.444295
+La_liga,2021,2022-03-20,Cadiz,Villarreal,1.4273,0.192945
+La_liga,2021,2022-03-20,Sevilla,Real Sociedad,0.355365,1.22058
+La_liga,2021,2022-03-20,Real Madrid,Barcelona,0.627785,4.25983
+La_liga,2021,2022-04-02,Getafe,Mallorca,1.69452,0.308149
+La_liga,2021,2022-04-02,Levante,Villarreal,1.71737,1.10171
+La_liga,2021,2022-04-02,Celta Vigo,Real Madrid,1.07389,2.94585
+La_liga,2021,2022-04-02,Atletico Madrid,Alaves,2.86429,0.518108
+La_liga,2021,2022-04-03,Athletic Club,Elche,2.08095,0.45189
+La_liga,2021,2022-04-03,Real Betis,Osasuna,4.85779,0.310951
+La_liga,2021,2022-04-03,Granada,Rayo Vallecano,2.26365,1.04645
+La_liga,2021,2022-04-03,Valencia,Cadiz,0.107859,0.196233
+La_liga,2021,2022-04-03,Barcelona,Sevilla,1.93362,0.488161
+La_liga,2021,2022-04-04,Real Sociedad,Espanyol,1.95778,0.714821
+La_liga,2021,2022-04-08,Sevilla,Granada,3.30823,0.981555
+La_liga,2021,2022-04-09,Cadiz,Real Betis,1.15546,1.22849
+La_liga,2021,2022-04-09,Mallorca,Atletico Madrid,1.08047,0.575266
+La_liga,2021,2022-04-09,Villarreal,Athletic Club,0.919935,2.04982
+La_liga,2021,2022-04-09,Real Madrid,Getafe,1.62196,0.407933
+La_liga,2021,2022-04-10,Osasuna,Alaves,2.67295,0.779772
+La_liga,2021,2022-04-10,Espanyol,Celta Vigo,1.55824,0.6961
+La_liga,2021,2022-04-10,Elche,Real Sociedad,1.0483,2.08213
+La_liga,2021,2022-04-10,Levante,Barcelona,2.98698,1.36074
+La_liga,2021,2022-04-11,Rayo Vallecano,Valencia,0.556213,0.56958
+La_liga,2021,2022-04-15,Real Sociedad,Real Betis,0.86796,0.377534
+La_liga,2021,2022-04-16,Elche,Mallorca,1.49995,1.06428
+La_liga,2021,2022-04-16,Alaves,Rayo Vallecano,0.531373,1.22034
+La_liga,2021,2022-04-16,Valencia,Osasuna,1.20904,1.06317
+La_liga,2021,2022-04-16,Getafe,Villarreal,0.939154,2.82388
+La_liga,2021,2022-04-17,Granada,Levante,1.15642,4.45893
+La_liga,2021,2022-04-17,Atletico Madrid,Espanyol,1.58913,0.814562
+La_liga,2021,2022-04-17,Athletic Club,Celta Vigo,0.910556,0.882589
+La_liga,2021,2022-04-17,Sevilla,Real Madrid,1.17236,1.53527
+La_liga,2021,2022-04-18,Barcelona,Cadiz,1.35403,1.92768
+La_liga,2021,2022-04-19,Mallorca,Alaves,0.91373,0.561806
+La_liga,2021,2022-04-19,Real Betis,Elche,1.34387,0.834721
+La_liga,2021,2022-04-19,Villarreal,Valencia,2.79507,0.313345
+La_liga,2021,2022-04-20,Atletico Madrid,Granada,1.14761,0.150986
+La_liga,2021,2022-04-20,Celta Vigo,Getafe,0.326278,1.45896
+La_liga,2021,2022-04-20,Osasuna,Real Madrid,0.872915,4.60461
+La_liga,2021,2022-04-21,Espanyol,Rayo Vallecano,0.454741,1.01579
+La_liga,2021,2022-04-21,Levante,Sevilla,2.62106,2.46009
+La_liga,2021,2022-04-21,Cadiz,Athletic Club,3.42624,2.33226
+La_liga,2021,2022-04-21,Real Sociedad,Barcelona,1.0324,1.96498
+La_liga,2021,2022-04-24,Barcelona,Rayo Vallecano,1.10806,0.247749
+La_liga,2021,2022-04-29,Sevilla,Cadiz,0.873458,0.899478
+La_liga,2021,2022-04-30,Alaves,Villarreal,1.85307,1.14043
+La_liga,2021,2022-04-30,Real Madrid,Espanyol,2.31704,1.64156
+La_liga,2021,2022-04-30,Valencia,Levante,0.737326,1.70278
+La_liga,2021,2022-04-30,Athletic Club,Atletico Madrid,1.24712,0.503211
+La_liga,2021,2022-05-01,Elche,Osasuna,0.80936,1.11898
+La_liga,2021,2022-05-01,Granada,Celta Vigo,0.999398,1.30137
+La_liga,2021,2022-05-01,Rayo Vallecano,Real Sociedad,1.19946,0.87498
+La_liga,2021,2022-05-01,Barcelona,Mallorca,1.64114,1.23981
+La_liga,2021,2022-05-02,Getafe,Real Betis,0.851757,0.470229
+La_liga,2021,2022-05-06,Levante,Real Sociedad,2.22217,2.30649
+La_liga,2021,2022-05-07,Mallorca,Granada,1.77941,2.64631
+La_liga,2021,2022-05-07,Athletic Club,Valencia,1.54495,0.127375
+La_liga,2021,2022-05-07,Celta Vigo,Alaves,2.99933,0.136283
+La_liga,2021,2022-05-07,Cadiz,Elche,2.02383,0.0634173
+La_liga,2021,2022-05-07,Real Betis,Barcelona,0.627814,1.19659
+La_liga,2021,2022-05-08,Getafe,Rayo Vallecano,0.629264,0.816549
+La_liga,2021,2022-05-08,Villarreal,Sevilla,2.70051,0.986887
+La_liga,2021,2022-05-08,Espanyol,Osasuna,0.56923,1.11008
+La_liga,2021,2022-05-08,Atletico Madrid,Real Madrid,2.45366,1.13607
+La_liga,2021,2022-05-10,Valencia,Real Betis,1.11931,1.83636
+La_liga,2021,2022-05-10,Granada,Athletic Club,1.01967,0.35575
+La_liga,2021,2022-05-10,Barcelona,Celta Vigo,1.23358,0.851127
+La_liga,2021,2022-05-11,Alaves,Espanyol,2.4573,0.902191
+La_liga,2021,2022-05-11,Osasuna,Getafe,0.608205,0.582724
+La_liga,2021,2022-05-11,Sevilla,Mallorca,1.65199,0.553368
+La_liga,2021,2022-05-11,Elche,Atletico Madrid,0.169168,2.61258
+La_liga,2021,2022-05-12,Real Sociedad,Cadiz,2.65814,0.675387
+La_liga,2021,2022-05-12,Rayo Vallecano,Villarreal,1.8933,2.9178
+La_liga,2021,2022-05-12,Real Madrid,Levante,4.89552,0.695945
+La_liga,2021,2022-05-15,Athletic Club,Osasuna,1.47829,0.764272
+La_liga,2021,2022-05-15,Atletico Madrid,Sevilla,0.892826,0.794179
+La_liga,2021,2022-05-15,Real Betis,Granada,1.70154,1.15584
+La_liga,2021,2022-05-15,Celta Vigo,Elche,1.5573,0.445721
+La_liga,2021,2022-05-15,Mallorca,Rayo Vallecano,0.945419,2.04546
+La_liga,2021,2022-05-15,Getafe,Barcelona,0.237476,0.19547
+La_liga,2021,2022-05-15,Cadiz,Real Madrid,2.66633,1.92483
+La_liga,2021,2022-05-15,Espanyol,Valencia,0.59873,2.2262
+La_liga,2021,2022-05-15,Levante,Alaves,2.14717,0.571687
+La_liga,2021,2022-05-15,Villarreal,Real Sociedad,1.01013,2.72677
+La_liga,2021,2022-05-20,Real Madrid,Real Betis,1.8155,1.43562
+La_liga,2021,2022-05-20,Rayo Vallecano,Levante,2.7327,3.28491
+La_liga,2021,2022-05-21,Valencia,Celta Vigo,1.47889,1.40936
+La_liga,2021,2022-05-22,Elche,Getafe,3.02536,1.06857
+La_liga,2021,2022-05-22,Alaves,Cadiz,0.391505,1.84089
+La_liga,2021,2022-05-22,Granada,Espanyol,2.0332,0.386799
+La_liga,2021,2022-05-22,Osasuna,Mallorca,0.897014,1.2351
+La_liga,2021,2022-05-22,Barcelona,Villarreal,0.628178,0.68657
+La_liga,2021,2022-05-22,Real Sociedad,Atletico Madrid,2.21737,0.586617
+La_liga,2021,2022-05-22,Sevilla,Athletic Club,1.41239,0.487249
+La_liga,2022,2022-08-12,Osasuna,Sevilla,1.35571,0.965574
+La_liga,2022,2022-08-13,Celta Vigo,Espanyol,0.347363,1.0334
+La_liga,2022,2022-08-13,Real Valladolid,Villarreal,0.859075,1.39509
+La_liga,2022,2022-08-13,Barcelona,Rayo Vallecano,1.37129,0.77153
+La_liga,2022,2022-08-14,Cadiz,Real Sociedad,0.294358,2.64367
+La_liga,2022,2022-08-14,Valencia,Girona,1.87878,0.132198
+La_liga,2022,2022-08-14,Almeria,Real Madrid,0.80073,3.11412
+La_liga,2022,2022-08-15,Athletic Club,Mallorca,1.60559,0.476414
+La_liga,2022,2022-08-15,Getafe,Atletico Madrid,1.14045,1.48417
+La_liga,2022,2022-08-15,Real Betis,Elche,3.99664,0.29379
+La_liga,2022,2022-08-19,Espanyol,Rayo Vallecano,0.904012,1.69789
+La_liga,2022,2022-08-19,Sevilla,Real Valladolid,1.95115,0.557629
+La_liga,2022,2022-08-20,Osasuna,Cadiz,2.92362,1.01741
+La_liga,2022,2022-08-20,Mallorca,Real Betis,1.46761,2.21648
+La_liga,2022,2022-08-20,Celta Vigo,Real Madrid,1.31973,3.59631
+La_liga,2022,2022-08-21,Athletic Club,Valencia,0.761587,0.676158
+La_liga,2022,2022-08-21,Atletico Madrid,Villarreal,1.5852,1.9825
+La_liga,2022,2022-08-21,Real Sociedad,Barcelona,0.79913,2.04035
+La_liga,2022,2022-08-22,Elche,Almeria,0.899007,0.969747
+La_liga,2022,2022-08-22,Girona,Getafe,1.52171,0.692785
+La_liga,2022,2022-08-26,Girona,Celta Vigo,0.566228,0.625546
+La_liga,2022,2022-08-26,Real Betis,Osasuna,0.507146,0.910349
+La_liga,2022,2022-08-27,Elche,Real Sociedad,1.23504,1.81171
+La_liga,2022,2022-08-27,Rayo Vallecano,Mallorca,0.864794,0.855715
+La_liga,2022,2022-08-27,Almeria,Sevilla,2.15407,1.37889
+La_liga,2022,2022-08-28,Getafe,Villarreal,0.273957,1.13195
+La_liga,2022,2022-08-28,Barcelona,Real Valladolid,3.28674,0.720063
+La_liga,2022,2022-08-28,Espanyol,Real Madrid,1.63359,2.04602
+La_liga,2022,2022-08-29,Cadiz,Athletic Club,0.239303,3.18677
+La_liga,2022,2022-08-29,Valencia,Atletico Madrid,0.65396,1.97507
+La_liga,2022,2022-09-02,Celta Vigo,Cadiz,1.50986,0.234828
+La_liga,2022,2022-09-03,Mallorca,Girona,0.895835,1.09499
+La_liga,2022,2022-09-03,Real Madrid,Real Betis,3.20593,0.333406
+La_liga,2022,2022-09-03,Real Sociedad,Atletico Madrid,1.75154,2.24791
+La_liga,2022,2022-09-03,Sevilla,Barcelona,0.829157,4.67838
+La_liga,2022,2022-09-04,Osasuna,Rayo Vallecano,3.1751,0.179917
+La_liga,2022,2022-09-04,Athletic Club,Espanyol,1.24661,1.11365
+La_liga,2022,2022-09-04,Villarreal,Elche,3.5829,0.21919
+La_liga,2022,2022-09-04,Valencia,Getafe,2.92757,0.572495
+La_liga,2022,2022-09-05,Real Valladolid,Almeria,2.12493,0.505353
+La_liga,2022,2022-09-09,Girona,Real Valladolid,2.59252,0.510622
+La_liga,2022,2022-09-10,Rayo Vallecano,Valencia,2.01158,2.18195
+La_liga,2022,2022-09-10,Espanyol,Sevilla,2.37055,2.32043
+La_liga,2022,2022-09-10,Cadiz,Barcelona,0.24818,2.66856
+La_liga,2022,2022-09-10,Atletico Madrid,Celta Vigo,0.92341,1.30565
+La_liga,2022,2022-09-11,Real Madrid,Mallorca,2.21791,0.950984
+La_liga,2022,2022-09-11,Elche,Athletic Club,0.748083,3.2386
+La_liga,2022,2022-09-11,Getafe,Real Sociedad,1.06907,1.32142
+La_liga,2022,2022-09-11,Real Betis,Villarreal,1.61505,2.44235
+La_liga,2022,2022-09-12,Almeria,Osasuna,0.166505,2.14
+La_liga,2022,2022-09-16,Real Valladolid,Cadiz,1.98829,0.523314
+La_liga,2022,2022-09-17,Mallorca,Almeria,0.968715,0.297582
+La_liga,2022,2022-09-17,Barcelona,Elche,5.17903,0.0129931
+La_liga,2022,2022-09-17,Valencia,Celta Vigo,1.91153,0.587167
+La_liga,2022,2022-09-17,Athletic Club,Rayo Vallecano,2.17305,0.62187
+La_liga,2022,2022-09-18,Osasuna,Getafe,1.1323,1.43239
+La_liga,2022,2022-09-18,Villarreal,Sevilla,2.10358,0.436539
+La_liga,2022,2022-09-18,Real Betis,Girona,1.49153,1.34699
+La_liga,2022,2022-09-18,Real Sociedad,Espanyol,2.35791,1.28945
+La_liga,2022,2022-09-18,Atletico Madrid,Real Madrid,1.10431,1.09277
+La_liga,2022,2022-09-30,Athletic Club,Almeria,2.55531,0.42606
+La_liga,2022,2022-10-01,Cadiz,Villarreal,1.06071,1.43089
+La_liga,2022,2022-10-01,Getafe,Real Valladolid,2.50588,1.32186
+La_liga,2022,2022-10-01,Sevilla,Atletico Madrid,0.362804,2.12095
+La_liga,2022,2022-10-01,Mallorca,Barcelona,0.925106,0.636371
+La_liga,2022,2022-10-02,Espanyol,Valencia,0.738099,1.35604
+La_liga,2022,2022-10-02,Celta Vigo,Real Betis,0.892987,1.10607
+La_liga,2022,2022-10-02,Girona,Real Sociedad,0.932579,2.23639
+La_liga,2022,2022-10-02,Real Madrid,Osasuna,2.56301,0.466155
+La_liga,2022,2022-10-03,Rayo Vallecano,Elche,0.651238,0.924633
+La_liga,2022,2022-10-07,Osasuna,Valencia,1.96282,2.73352
+La_liga,2022,2022-10-08,Almeria,Rayo Vallecano,1.05684,0.893142
+La_liga,2022,2022-10-08,Atletico Madrid,Girona,2.19801,0.721587
+La_liga,2022,2022-10-08,Sevilla,Athletic Club,1.35598,1.91863
+La_liga,2022,2022-10-08,Getafe,Real Madrid,0.262283,1.48053
+La_liga,2022,2022-10-09,Real Valladolid,Real Betis,0.662444,0.545154
+La_liga,2022,2022-10-09,Cadiz,Espanyol,1.33811,1.47057
+La_liga,2022,2022-10-09,Real Sociedad,Villarreal,2.37138,0.221593
+La_liga,2022,2022-10-09,Barcelona,Celta Vigo,1.98459,1.35022
+La_liga,2022,2022-10-10,Elche,Mallorca,0.334856,2.69714
+La_liga,2022,2022-10-14,Rayo Vallecano,Getafe,1.11946,0.395734
+La_liga,2022,2022-10-15,Girona,Cadiz,2.36044,1.3467
+La_liga,2022,2022-10-15,Valencia,Elche,3.04132,1.30317
+La_liga,2022,2022-10-15,Mallorca,Sevilla,1.41043,0.176713
+La_liga,2022,2022-10-15,Athletic Club,Atletico Madrid,1.33263,0.463248
+La_liga,2022,2022-10-16,Celta Vigo,Real Sociedad,0.482536,1.17936
+La_liga,2022,2022-10-16,Real Madrid,Barcelona,1.46965,1.66548
+La_liga,2022,2022-10-16,Espanyol,Real Valladolid,1.63127,0.552288
+La_liga,2022,2022-10-16,Real Betis,Almeria,3.19417,1.11551
+La_liga,2022,2022-10-17,Villarreal,Osasuna,2.15273,0.33234
+La_liga,2022,2022-10-18,Sevilla,Valencia,1.19743,1.71123
+La_liga,2022,2022-10-18,Getafe,Athletic Club,0.753077,1.10208
+La_liga,2022,2022-10-18,Atletico Madrid,Rayo Vallecano,0.817771,1.61962
+La_liga,2022,2022-10-19,Cadiz,Real Betis,0.74688,1.22222
+La_liga,2022,2022-10-19,Real Valladolid,Celta Vigo,1.63342,2.03107
+La_liga,2022,2022-10-19,Real Sociedad,Mallorca,2.16436,1.09436
+La_liga,2022,2022-10-19,Elche,Real Madrid,1.04972,1.6151
+La_liga,2022,2022-10-20,Almeria,Girona,2.08595,2.65444
+La_liga,2022,2022-10-20,Osasuna,Espanyol,1.02851,1.44867
+La_liga,2022,2022-10-20,Barcelona,Villarreal,3.61604,0.503294
+La_liga,2022,2022-10-22,Rayo Vallecano,Cadiz,3.88516,0.642193
+La_liga,2022,2022-10-22,Real Valladolid,Real Sociedad,0.785666,0.82513
+La_liga,2022,2022-10-22,Valencia,Mallorca,1.07022,1.25148
+La_liga,2022,2022-10-22,Real Madrid,Sevilla,2.17678,0.518059
+La_liga,2022,2022-10-23,Espanyol,Elche,2.18547,0.318561
+La_liga,2022,2022-10-23,Real Betis,Atletico Madrid,1.33076,0.585496
+La_liga,2022,2022-10-23,Girona,Osasuna,0.666875,0.693721
+La_liga,2022,2022-10-23,Villarreal,Almeria,0.852495,1.24152
+La_liga,2022,2022-10-23,Barcelona,Athletic Club,2.13539,0.240803
+La_liga,2022,2022-10-24,Celta Vigo,Getafe,0.821869,0.226128
+La_liga,2022,2022-10-28,Mallorca,Espanyol,1.19,0.248446
+La_liga,2022,2022-10-29,Almeria,Celta Vigo,2.30529,0.197875
+La_liga,2022,2022-10-29,Cadiz,Atletico Madrid,1.58908,1.79745
+La_liga,2022,2022-10-29,Sevilla,Rayo Vallecano,0.978055,0.773435
+La_liga,2022,2022-10-29,Valencia,Barcelona,0.187414,2.33418
+La_liga,2022,2022-10-30,Osasuna,Real Valladolid,1.90028,0.330479
+La_liga,2022,2022-10-30,Real Madrid,Girona,2.65755,1.99848
+La_liga,2022,2022-10-30,Athletic Club,Villarreal,2.05689,0.221451
+La_liga,2022,2022-10-30,Real Sociedad,Real Betis,1.28165,1.34514
+La_liga,2022,2022-10-31,Elche,Getafe,1.22713,0.372744
+La_liga,2022,2022-11-04,Girona,Athletic Club,1.06554,0.81175
+La_liga,2022,2022-11-05,Getafe,Cadiz,0.517067,1.24542
+La_liga,2022,2022-11-05,Real Valladolid,Elche,2.81292,0.198499
+La_liga,2022,2022-11-05,Celta Vigo,Osasuna,0.824768,0.360091
+La_liga,2022,2022-11-05,Barcelona,Almeria,4.33587,0.538049
+La_liga,2022,2022-11-06,Atletico Madrid,Espanyol,2.02314,0.870622
+La_liga,2022,2022-11-06,Real Sociedad,Valencia,1.45821,0.795825
+La_liga,2022,2022-11-06,Villarreal,Mallorca,0.429852,0.704012
+La_liga,2022,2022-11-06,Real Betis,Sevilla,1.13067,1.49591
+La_liga,2022,2022-11-07,Rayo Vallecano,Real Madrid,1.65854,2.21264
+La_liga,2022,2022-11-08,Elche,Girona,0.914455,2.20883
+La_liga,2022,2022-11-08,Athletic Club,Real Valladolid,2.65727,0.481138
+La_liga,2022,2022-11-08,Osasuna,Barcelona,1.23564,1.01467
+La_liga,2022,2022-11-09,Almeria,Getafe,0.346293,0.451929
+La_liga,2022,2022-11-09,Sevilla,Real Sociedad,0.69755,2.18846
+La_liga,2022,2022-11-09,Espanyol,Villarreal,0.841866,0.750078
+La_liga,2022,2022-11-09,Mallorca,Atletico Madrid,1.46593,1.50598
+La_liga,2022,2022-11-10,Rayo Vallecano,Celta Vigo,0.442488,0.677591
+La_liga,2022,2022-11-10,Valencia,Real Betis,2.2469,0.307626
+La_liga,2022,2022-11-10,Real Madrid,Cadiz,1.73107,1.11674
+La_liga,2022,2022-12-29,Girona,Rayo Vallecano,2.26829,1.3213
+La_liga,2022,2022-12-29,Real Betis,Athletic Club,0.541791,0.358148
+La_liga,2022,2022-12-29,Atletico Madrid,Elche,1.74436,0.568911
+La_liga,2022,2022-12-30,Getafe,Mallorca,1.32751,0.359715
+La_liga,2022,2022-12-30,Celta Vigo,Sevilla,1.66459,0.594381
+La_liga,2022,2022-12-30,Cadiz,Almeria,1.57833,2.22992
+La_liga,2022,2022-12-30,Real Valladolid,Real Madrid,0.535068,2.5342
+La_liga,2022,2022-12-31,Barcelona,Espanyol,2.74555,0.846842
+La_liga,2022,2022-12-31,Real Sociedad,Osasuna,1.54314,0.305627
+La_liga,2022,2022-12-31,Villarreal,Valencia,2.37349,1.16707
+La_liga,2022,2023-01-06,Elche,Celta Vigo,1.14494,1.9713
+La_liga,2022,2023-01-06,Valencia,Cadiz,0.495475,0.434224
+La_liga,2022,2023-01-07,Villarreal,Real Madrid,2.41742,2.16674
+La_liga,2022,2023-01-07,Mallorca,Real Valladolid,1.52838,0.434531
+La_liga,2022,2023-01-07,Espanyol,Girona,1.26728,1.65781
+La_liga,2022,2023-01-08,Almeria,Real Sociedad,0.30978,2.11666
+La_liga,2022,2023-01-08,Rayo Vallecano,Real Betis,1.38976,0.735098
+La_liga,2022,2023-01-08,Sevilla,Getafe,1.21643,1.17518
+La_liga,2022,2023-01-08,Atletico Madrid,Barcelona,1.93573,1.23617
+La_liga,2022,2023-01-09,Athletic Club,Osasuna,1.17556,0.427681
+La_liga,2022,2023-01-13,Celta Vigo,Villarreal,2.45811,0.105032
+La_liga,2022,2023-01-14,Real Valladolid,Rayo Vallecano,0.611009,1.16996
+La_liga,2022,2023-01-14,Girona,Sevilla,2.8461,0.784402
+La_liga,2022,2023-01-14,Osasuna,Mallorca,1.19142,0.523266
+La_liga,2022,2023-01-14,Real Sociedad,Athletic Club,1.88839,0.265103
+La_liga,2022,2023-01-15,Getafe,Espanyol,0.496479,0.460177
+La_liga,2022,2023-01-15,Almeria,Atletico Madrid,1.08212,2.08354
+La_liga,2022,2023-01-16,Cadiz,Elche,1.40204,0.654686
+La_liga,2022,2023-01-20,Mallorca,Celta Vigo,0.403993,0.425448
+La_liga,2022,2023-01-21,Rayo Vallecano,Real Sociedad,0.64183,1.43612
+La_liga,2022,2023-01-21,Espanyol,Real Betis,2.16171,0.835514
+La_liga,2022,2023-01-21,Atletico Madrid,Real Valladolid,4.11414,0.421793
+La_liga,2022,2023-01-21,Sevilla,Cadiz,1.66028,0.0765073
+La_liga,2022,2023-01-22,Villarreal,Girona,2.79546,0.637476
+La_liga,2022,2023-01-22,Elche,Osasuna,2.36237,0.607835
+La_liga,2022,2023-01-22,Barcelona,Getafe,0.712066,1.2457
+La_liga,2022,2023-01-22,Athletic Club,Real Madrid,1.15604,0.946951
+La_liga,2022,2023-01-23,Valencia,Almeria,2.70702,1.68834
+La_liga,2022,2023-01-27,Almeria,Espanyol,2.17998,0.805809
+La_liga,2022,2023-01-28,Cadiz,Mallorca,1.8313,0.306812
+La_liga,2022,2023-01-28,Girona,Barcelona,0.893789,0.981042
+La_liga,2022,2023-01-28,Sevilla,Elche,3.27297,0.340633
+La_liga,2022,2023-01-28,Getafe,Real Betis,0.206383,2.00036
+La_liga,2022,2023-01-29,Real Valladolid,Valencia,1.47049,1.05725
+La_liga,2022,2023-01-29,Osasuna,Atletico Madrid,0.741393,1.29745
+La_liga,2022,2023-01-29,Celta Vigo,Athletic Club,0.614646,0.232576
+La_liga,2022,2023-01-29,Real Madrid,Real Sociedad,1.40476,0.370087
+La_liga,2022,2023-01-30,Villarreal,Rayo Vallecano,1.19676,0.830107
+La_liga,2022,2023-02-01,Real Betis,Barcelona,0.760581,2.38335
+La_liga,2022,2023-02-02,Real Madrid,Valencia,2.60454,0.213484
+La_liga,2022,2023-02-03,Athletic Club,Cadiz,2.30209,1.55348
+La_liga,2022,2023-02-04,Espanyol,Osasuna,1.56394,0.919455
+La_liga,2022,2023-02-04,Elche,Villarreal,2.88986,1.48923
+La_liga,2022,2023-02-04,Atletico Madrid,Getafe,1.01341,1.13659
+La_liga,2022,2023-02-04,Real Betis,Celta Vigo,3.54117,2.30434
+La_liga,2022,2023-02-05,Mallorca,Real Madrid,0.241595,1.39842
+La_liga,2022,2023-02-05,Girona,Valencia,2.57015,0.877751
+La_liga,2022,2023-02-05,Real Sociedad,Real Valladolid,1.21593,0.781504
+La_liga,2022,2023-02-05,Barcelona,Sevilla,3.09763,0.0413799
+La_liga,2022,2023-02-06,Rayo Vallecano,Almeria,1.38079,1.37549
+La_liga,2022,2023-02-10,Cadiz,Girona,0.717862,0.213596
+La_liga,2022,2023-02-11,Almeria,Real Betis,2.00937,3.30673
+La_liga,2022,2023-02-11,Sevilla,Mallorca,2.16804,0.206824
+La_liga,2022,2023-02-11,Valencia,Athletic Club,1.6755,1.34748
+La_liga,2022,2023-02-12,Getafe,Rayo Vallecano,1.23739,1.70522
+La_liga,2022,2023-02-12,Celta Vigo,Atletico Madrid,1.057,0.955578
+La_liga,2022,2023-02-12,Real Valladolid,Osasuna,1.96448,1.03574
+La_liga,2022,2023-02-12,Villarreal,Barcelona,1.05151,1.37827
+La_liga,2022,2023-02-13,Espanyol,Real Sociedad,1.25733,1.20722
+La_liga,2022,2023-02-15,Real Madrid,Elche,4.04364,0.619125
+La_liga,2022,2023-02-17,Girona,Almeria,3.22586,1.23696
+La_liga,2022,2023-02-18,Real Sociedad,Celta Vigo,1.52902,1.34253
+La_liga,2022,2023-02-18,Real Betis,Real Valladolid,2.21822,0.97905
+La_liga,2022,2023-02-18,Mallorca,Villarreal,2.74393,1.01893
+La_liga,2022,2023-02-18,Osasuna,Real Madrid,0.400542,1.86475
+La_liga,2022,2023-02-19,Elche,Espanyol,1.60154,1.35887
+La_liga,2022,2023-02-19,Rayo Vallecano,Sevilla,1.37468,0.476153
+La_liga,2022,2023-02-19,Atletico Madrid,Athletic Club,1.06493,1.00816
+La_liga,2022,2023-02-19,Barcelona,Cadiz,2.28935,1.404
+La_liga,2022,2023-02-20,Getafe,Valencia,2.13388,1.09398
+La_liga,2022,2023-02-24,Elche,Real Betis,0.883935,4.05176
+La_liga,2022,2023-02-25,Espanyol,Mallorca,1.99389,0.557974
+La_liga,2022,2023-02-25,Cadiz,Rayo Vallecano,0.816453,0.407208
+La_liga,2022,2023-02-25,Real Madrid,Atletico Madrid,1.56317,0.217661
+La_liga,2022,2023-02-25,Valencia,Real Sociedad,0.636111,0.817876
+La_liga,2022,2023-02-26,Athletic Club,Girona,1.34464,1.33877
+La_liga,2022,2023-02-26,Celta Vigo,Real Valladolid,2.97597,0.902118
+La_liga,2022,2023-02-26,Almeria,Barcelona,0.828027,1.15571
+La_liga,2022,2023-02-26,Sevilla,Osasuna,2.38177,1.34283
+La_liga,2022,2023-02-27,Villarreal,Getafe,1.9115,0.467981
+La_liga,2022,2023-03-03,Real Sociedad,Cadiz,1.07575,0.847252
+La_liga,2022,2023-03-04,Getafe,Girona,1.86918,0.845978
+La_liga,2022,2023-03-04,Almeria,Villarreal,0.371041,2.37286
+La_liga,2022,2023-03-04,Mallorca,Elche,0.96231,0.957134
+La_liga,2022,2023-03-04,Atletico Madrid,Sevilla,3.05182,1.76791
+La_liga,2022,2023-03-05,Real Valladolid,Espanyol,1.38048,0.946065
+La_liga,2022,2023-03-05,Barcelona,Valencia,2.09199,0.629336
+La_liga,2022,2023-03-05,Rayo Vallecano,Athletic Club,0.853959,1.25683
+La_liga,2022,2023-03-05,Real Betis,Real Madrid,0.59294,1.14462
+La_liga,2022,2023-03-06,Osasuna,Celta Vigo,1.16313,0.726128
+La_liga,2022,2023-03-10,Cadiz,Getafe,1.73207,2.6986
+La_liga,2022,2023-03-11,Real Madrid,Espanyol,1.78234,1.10182
+La_liga,2022,2023-03-11,Elche,Real Valladolid,2.80287,0.246865
+La_liga,2022,2023-03-11,Celta Vigo,Rayo Vallecano,2.13766,0.697265
+La_liga,2022,2023-03-11,Valencia,Osasuna,1.84171,0.257674
+La_liga,2022,2023-03-12,Mallorca,Real Sociedad,1.4638,0.683339
+La_liga,2022,2023-03-12,Sevilla,Almeria,3.15875,1.51939
+La_liga,2022,2023-03-12,Villarreal,Real Betis,1.33264,1.03133
+La_liga,2022,2023-03-12,Athletic Club,Barcelona,1.13701,0.724931
+La_liga,2022,2023-03-13,Girona,Atletico Madrid,0.301909,1.80682
+La_liga,2022,2023-03-17,Real Valladolid,Athletic Club,1.08382,2.34513
+La_liga,2022,2023-03-18,Almeria,Cadiz,2.69365,1.13127
+La_liga,2022,2023-03-18,Rayo Vallecano,Girona,1.71981,1.50856
+La_liga,2022,2023-03-18,Espanyol,Celta Vigo,1.7106,1.63211
+La_liga,2022,2023-03-18,Atletico Madrid,Valencia,3.36294,0.68946
+La_liga,2022,2023-03-19,Real Betis,Mallorca,0.606846,0.140478
+La_liga,2022,2023-03-19,Osasuna,Villarreal,1.15562,1.5875
+La_liga,2022,2023-03-19,Real Sociedad,Elche,2.69405,0.0819691
+La_liga,2022,2023-03-19,Getafe,Sevilla,2.0733,0.81914
+La_liga,2022,2023-03-19,Barcelona,Real Madrid,1.66532,0.524212
+La_liga,2022,2023-03-31,Mallorca,Osasuna,0.433196,0.507781
+La_liga,2022,2023-04-01,Girona,Espanyol,1.45036,0.946182
+La_liga,2022,2023-04-01,Athletic Club,Getafe,0.751393,0.723494
+La_liga,2022,2023-04-01,Cadiz,Sevilla,0.691241,1.72869
+La_liga,2022,2023-04-01,Elche,Barcelona,0.508304,1.61804
+La_liga,2022,2023-04-02,Celta Vigo,Almeria,2.13933,1.23651
+La_liga,2022,2023-04-02,Real Madrid,Real Valladolid,4.82721,0.719567
+La_liga,2022,2023-04-02,Villarreal,Real Sociedad,2.80501,0.912497
+La_liga,2022,2023-04-02,Atletico Madrid,Real Betis,1.70131,0.371436
+La_liga,2022,2023-04-03,Valencia,Rayo Vallecano,2.71116,0.645345
+La_liga,2022,2023-04-07,Sevilla,Celta Vigo,0.475247,0.611169
+La_liga,2022,2023-04-08,Osasuna,Elche,1.68972,0.657812
+La_liga,2022,2023-04-08,Espanyol,Athletic Club,1.16752,2.73876
+La_liga,2022,2023-04-08,Real Sociedad,Getafe,2.1178,0.243923
+La_liga,2022,2023-04-08,Real Madrid,Villarreal,2.23296,1.24489
+La_liga,2022,2023-04-09,Real Valladolid,Mallorca,0.948859,1.98329
+La_liga,2022,2023-04-09,Real Betis,Cadiz,1.58835,2.85597
+La_liga,2022,2023-04-09,Almeria,Valencia,1.49927,1.08869
+La_liga,2022,2023-04-09,Rayo Vallecano,Atletico Madrid,0.564426,2.36535
+La_liga,2022,2023-04-10,Barcelona,Girona,1.05077,0.491057
+La_liga,2022,2023-04-14,Rayo Vallecano,Osasuna,1.08431,0.373133
+La_liga,2022,2023-04-15,Villarreal,Real Valladolid,1.99484,2.41465
+La_liga,2022,2023-04-15,Athletic Club,Real Sociedad,1.00026,1.71232
+La_liga,2022,2023-04-15,Real Betis,Espanyol,1.965,0.616302
+La_liga,2022,2023-04-15,Cadiz,Real Madrid,0.583718,4.49059
+La_liga,2022,2023-04-16,Girona,Elche,1.22906,0.577847
+La_liga,2022,2023-04-16,Getafe,Barcelona,0.621219,1.04627
+La_liga,2022,2023-04-16,Atletico Madrid,Almeria,2.51151,0.058186
+La_liga,2022,2023-04-16,Valencia,Sevilla,0.527847,1.46976
+La_liga,2022,2023-04-17,Celta Vigo,Mallorca,0.469148,1.18361
+La_liga,2022,2023-04-21,Espanyol,Cadiz,1.52285,1.12699
+La_liga,2022,2023-04-22,Osasuna,Real Betis,1.63275,1.99331
+La_liga,2022,2023-04-22,Almeria,Athletic Club,0.573355,1.83476
+La_liga,2022,2023-04-22,Real Sociedad,Rayo Vallecano,0.814682,0.359842
+La_liga,2022,2023-04-22,Real Valladolid,Girona,1.11143,1.0586
+La_liga,2022,2023-04-22,Real Madrid,Celta Vigo,1.81403,0.744532
+La_liga,2022,2023-04-23,Elche,Valencia,0.795158,1.05313
+La_liga,2022,2023-04-23,Barcelona,Atletico Madrid,2.12803,0.714419
+La_liga,2022,2023-04-23,Mallorca,Getafe,1.917,0.118861
+La_liga,2022,2023-04-23,Sevilla,Villarreal,0.853114,2.13506
+La_liga,2022,2023-04-25,Cadiz,Osasuna,1.4054,0.865548
+La_liga,2022,2023-04-25,Girona,Real Madrid,2.4202,1.63006
+La_liga,2022,2023-04-25,Real Betis,Real Sociedad,0.7286,0.607061
+La_liga,2022,2023-04-26,Atletico Madrid,Mallorca,2.61545,0.741129
+La_liga,2022,2023-04-26,Getafe,Almeria,1.66712,2.08963
+La_liga,2022,2023-04-26,Celta Vigo,Elche,1.4351,1.48138
+La_liga,2022,2023-04-26,Rayo Vallecano,Barcelona,0.862266,1.00988
+La_liga,2022,2023-04-27,Valencia,Real Valladolid,0.900084,0.993149
+La_liga,2022,2023-04-27,Villarreal,Espanyol,4.94822,1.12119
+La_liga,2022,2023-04-27,Athletic Club,Sevilla,0.194682,1.00143
+La_liga,2022,2023-04-28,Osasuna,Real Sociedad,0.987164,2.09575
+La_liga,2022,2023-04-29,Elche,Rayo Vallecano,3.37969,0.565048
+La_liga,2022,2023-04-29,Real Madrid,Almeria,3.20538,1.375
+La_liga,2022,2023-04-29,Barcelona,Real Betis,3.0864,0.231066
+La_liga,2022,2023-04-30,Cadiz,Valencia,2.16593,1.05204
+La_liga,2022,2023-04-30,Villarreal,Celta Vigo,2.36969,0.746823
+La_liga,2022,2023-04-30,Espanyol,Getafe,2.44417,0.410072
+La_liga,2022,2023-04-30,Real Valladolid,Atletico Madrid,1.46642,2.75586
+La_liga,2022,2023-05-01,Mallorca,Athletic Club,1.2911,1.3765
+La_liga,2022,2023-05-01,Sevilla,Girona,2.35198,1.13007
+La_liga,2022,2023-05-02,Barcelona,Osasuna,2.40046,0.355588
+La_liga,2022,2023-05-02,Almeria,Elche,1.82539,1.01416
+La_liga,2022,2023-05-02,Real Sociedad,Real Madrid,2.26252,0.867228
+La_liga,2022,2023-05-03,Valencia,Villarreal,1.04163,0.742844
+La_liga,2022,2023-05-03,Atletico Madrid,Cadiz,4.25954,0.0260457
+La_liga,2022,2023-05-03,Getafe,Celta Vigo,2.8705,0.219098
+La_liga,2022,2023-05-04,Girona,Mallorca,2.20534,1.34254
+La_liga,2022,2023-05-04,Sevilla,Espanyol,2.902,0.61847
+La_liga,2022,2023-05-04,Athletic Club,Real Betis,1.01449,0.753982
+La_liga,2022,2023-05-04,Rayo Vallecano,Real Valladolid,1.57028,0.571427
+La_liga,2022,2023-05-12,Mallorca,Cadiz,1.6025,0.611231
+La_liga,2022,2023-05-13,Real Sociedad,Girona,3.05494,1.4691
+La_liga,2022,2023-05-13,Osasuna,Almeria,1.87424,0.507884
+La_liga,2022,2023-05-13,Villarreal,Athletic Club,3.09272,1.82199
+La_liga,2022,2023-05-13,Real Madrid,Getafe,0.879325,0.586304
+La_liga,2022,2023-05-14,Celta Vigo,Valencia,1.216,1.86638
+La_liga,2022,2023-05-14,Elche,Atletico Madrid,2.28487,1.44785
+La_liga,2022,2023-05-14,Real Valladolid,Sevilla,2.01745,3.05781
+La_liga,2022,2023-05-14,Espanyol,Barcelona,2.72734,3.6498
+La_liga,2022,2023-05-15,Real Betis,Rayo Vallecano,2.69596,1.71956
+La_liga,2022,2023-05-19,Cadiz,Real Valladolid,2.1319,0.20683
+La_liga,2022,2023-05-20,Girona,Villarreal,1.31674,1.71579
+La_liga,2022,2023-05-20,Athletic Club,Celta Vigo,1.04201,0.283064
+La_liga,2022,2023-05-20,Almeria,Mallorca,1.70726,0.35959
+La_liga,2022,2023-05-20,Getafe,Elche,1.58846,1.34186
+La_liga,2022,2023-05-20,Barcelona,Real Sociedad,1.8413,2.8035
+La_liga,2022,2023-05-21,Rayo Vallecano,Espanyol,1.83113,1.3061
+La_liga,2022,2023-05-21,Atletico Madrid,Osasuna,2.08773,0.714505
+La_liga,2022,2023-05-21,Valencia,Real Madrid,1.49126,2.08896
+La_liga,2022,2023-05-21,Sevilla,Real Betis,1.51947,0.114129
+La_liga,2022,2023-05-23,Celta Vigo,Girona,0.933339,1.40034
+La_liga,2022,2023-05-23,Real Sociedad,Almeria,1.91983,0.0996009
+La_liga,2022,2023-05-23,Real Valladolid,Barcelona,2.20591,1.72866
+La_liga,2022,2023-05-24,Elche,Sevilla,1.35854,0.889054
+La_liga,2022,2023-05-24,Villarreal,Cadiz,2.9741,2.09634
+La_liga,2022,2023-05-24,Real Madrid,Rayo Vallecano,1.66281,0.446413
+La_liga,2022,2023-05-24,Real Betis,Getafe,1.09282,0.344449
+La_liga,2022,2023-05-24,Espanyol,Atletico Madrid,3.03603,2.76349
+La_liga,2022,2023-05-25,Mallorca,Valencia,0.538476,2.073
+La_liga,2022,2023-05-25,Osasuna,Athletic Club,0.906699,0.534145
+La_liga,2022,2023-05-27,Sevilla,Real Madrid,0.980153,0.815661
+La_liga,2022,2023-05-28,Athletic Club,Elche,2.91389,0.769369
+La_liga,2022,2023-05-28,Atletico Madrid,Real Sociedad,0.818599,0.943774
+La_liga,2022,2023-05-28,Barcelona,Mallorca,4.40817,0.124265
+La_liga,2022,2023-05-28,Getafe,Osasuna,2.7187,0.432264
+La_liga,2022,2023-05-28,Cadiz,Celta Vigo,1.59827,0.599427
+La_liga,2022,2023-05-28,Rayo Vallecano,Villarreal,1.16605,0.622891
+La_liga,2022,2023-05-28,Almeria,Real Valladolid,1.5528,0.364363
+La_liga,2022,2023-05-28,Girona,Real Betis,1.63315,2.32066
+La_liga,2022,2023-05-28,Valencia,Espanyol,2.5327,1.78056
+La_liga,2022,2023-06-04,Real Madrid,Athletic Club,1.72224,2.17987
+La_liga,2022,2023-06-04,Villarreal,Atletico Madrid,2.06391,1.16068
+La_liga,2022,2023-06-04,Celta Vigo,Barcelona,0.565601,1.41678
+La_liga,2022,2023-06-04,Real Valladolid,Getafe,0.686831,0.27917
+La_liga,2022,2023-06-04,Elche,Cadiz,1.534,2.22255
+La_liga,2022,2023-06-04,Espanyol,Almeria,0.500084,2.03499
+La_liga,2022,2023-06-04,Osasuna,Girona,1.91718,0.822488
+La_liga,2022,2023-06-04,Real Betis,Valencia,0.677919,0.845969
+La_liga,2022,2023-06-04,Mallorca,Rayo Vallecano,2.25123,1.04004
+La_liga,2022,2023-06-04,Real Sociedad,Sevilla,2.35387,0.461529
+La_liga,2023,2023-08-11,Almeria,Rayo Vallecano,1.1196,2.09532
+La_liga,2023,2023-08-11,Sevilla,Valencia,0.714148,1.06796
+La_liga,2023,2023-08-12,Real Sociedad,Girona,1.46019,1.27791
+La_liga,2023,2023-08-12,Las Palmas,Mallorca,0.871699,1.49411
+La_liga,2023,2023-08-12,Athletic Club,Real Madrid,0.700577,1.33266
+La_liga,2023,2023-08-13,Celta Vigo,Osasuna,0.783184,0.964645
+La_liga,2023,2023-08-13,Villarreal,Real Betis,0.737812,0.969349
+La_liga,2023,2023-08-13,Getafe,Barcelona,0.804505,1.67817
+La_liga,2023,2023-08-14,Cadiz,Alaves,0.822358,0.227442
+La_liga,2023,2023-08-14,Atletico Madrid,Granada,3.01246,1.13452
+La_liga,2023,2023-08-18,Mallorca,Villarreal,0.370077,2.12458
+La_liga,2023,2023-08-18,Valencia,Las Palmas,1.50324,0.741978
+La_liga,2023,2023-08-19,Real Sociedad,Celta Vigo,0.917678,1.77937
+La_liga,2023,2023-08-19,Almeria,Real Madrid,1.81328,2.8802
+La_liga,2023,2023-08-19,Osasuna,Athletic Club,1.33582,1.88906
+La_liga,2023,2023-08-20,Girona,Getafe,1.86612,0.754861
+La_liga,2023,2023-08-20,Barcelona,Cadiz,3.42524,1.11132
+La_liga,2023,2023-08-20,Real Betis,Atletico Madrid,1.02642,0.34492
+La_liga,2023,2023-08-21,Alaves,Sevilla,2.17962,0.958638
+La_liga,2023,2023-08-21,Granada,Rayo Vallecano,0.837141,2.7851
+La_liga,2023,2023-08-25,Las Palmas,Real Sociedad,1.56933,1.11751
+La_liga,2023,2023-08-25,Celta Vigo,Real Madrid,1.17827,1.6167
+La_liga,2023,2023-08-26,Cadiz,Almeria,1.56203,0.271622
+La_liga,2023,2023-08-26,Granada,Mallorca,1.81377,2.50232
+La_liga,2023,2023-08-26,Sevilla,Girona,1.93643,1.07498
+La_liga,2023,2023-08-27,Villarreal,Barcelona,1.87195,2.95807
+La_liga,2023,2023-08-27,Valencia,Osasuna,1.87647,1.45939
+La_liga,2023,2023-08-27,Athletic Club,Real Betis,2.86727,0.346198
+La_liga,2023,2023-08-28,Getafe,Alaves,2.67029,0.860623
+La_liga,2023,2023-08-28,Rayo Vallecano,Atletico Madrid,0.542939,3.29424
+La_liga,2023,2023-09-01,Cadiz,Villarreal,1.97214,0.494033
+La_liga,2023,2023-09-01,Almeria,Celta Vigo,3.16421,1.96028
+La_liga,2023,2023-09-02,Real Sociedad,Granada,2.08686,0.549509
+La_liga,2023,2023-09-02,Real Madrid,Getafe,2.64665,0.893748
+La_liga,2023,2023-09-02,Alaves,Valencia,1.90475,0.715753
+La_liga,2023,2023-09-02,Real Betis,Rayo Vallecano,0.91924,1.53554
+La_liga,2023,2023-09-03,Girona,Las Palmas,1.42397,1.18696
+La_liga,2023,2023-09-03,Mallorca,Athletic Club,0.403052,0.645541
+La_liga,2023,2023-09-03,Osasuna,Barcelona,0.801843,1.77255
+La_liga,2023,2023-09-15,Rayo Vallecano,Alaves,2.64605,0.556231
+La_liga,2023,2023-09-16,Athletic Club,Cadiz,4.05837,0.238836
+La_liga,2023,2023-09-16,Valencia,Atletico Madrid,2.22142,0.564083
+La_liga,2023,2023-09-16,Celta Vigo,Mallorca,2.06489,0.853213
+La_liga,2023,2023-09-16,Barcelona,Real Betis,2.54628,0.852869
+La_liga,2023,2023-09-17,Getafe,Osasuna,0.736469,1.29606
+La_liga,2023,2023-09-17,Villarreal,Almeria,1.43205,1.76794
+La_liga,2023,2023-09-17,Sevilla,Las Palmas,2.43059,1.03513
+La_liga,2023,2023-09-17,Real Madrid,Real Sociedad,2.56902,2.1546
+La_liga,2023,2023-09-18,Granada,Girona,1.97263,2.1418
+La_liga,2023,2023-09-22,Alaves,Athletic Club,1.97317,1.77623
+La_liga,2023,2023-09-23,Girona,Mallorca,4.19225,2.42602
+La_liga,2023,2023-09-23,Osasuna,Sevilla,1.57361,0.693906
+La_liga,2023,2023-09-23,Barcelona,Celta Vigo,1.82246,1.67938
+La_liga,2023,2023-09-23,Almeria,Valencia,2.46387,0.995742
+La_liga,2023,2023-09-24,Real Sociedad,Getafe,2.13384,1.59398
+La_liga,2023,2023-09-24,Rayo Vallecano,Villarreal,1.0345,1.0365
+La_liga,2023,2023-09-24,Real Betis,Cadiz,2.70742,0.570946
+La_liga,2023,2023-09-24,Las Palmas,Granada,0.701293,0.0378648
+La_liga,2023,2023-09-24,Atletico Madrid,Real Madrid,1.79578,0.847915
+La_liga,2023,2023-09-26,Sevilla,Almeria,2.90509,1.37069
+La_liga,2023,2023-09-26,Mallorca,Barcelona,1.21366,1.62815
+La_liga,2023,2023-09-27,Athletic Club,Getafe,0.60877,1.30782
+La_liga,2023,2023-09-27,Villarreal,Girona,1.89071,2.29941
+La_liga,2023,2023-09-27,Real Madrid,Las Palmas,2.71542,0.618032
+La_liga,2023,2023-09-27,Cadiz,Rayo Vallecano,0.35761,0.258447
+La_liga,2023,2023-09-27,Valencia,Real Sociedad,0.356756,0.29355
+La_liga,2023,2023-09-28,Granada,Real Betis,1.55108,0.870668
+La_liga,2023,2023-09-28,Celta Vigo,Alaves,0.497466,2.39712
+La_liga,2023,2023-09-28,Osasuna,Atletico Madrid,0.759357,1.22827
+La_liga,2023,2023-09-29,Barcelona,Sevilla,2.5598,1.07557
+La_liga,2023,2023-09-30,Getafe,Villarreal,0.768368,0.112227
+La_liga,2023,2023-09-30,Rayo Vallecano,Mallorca,1.78616,1.33689
+La_liga,2023,2023-09-30,Girona,Real Madrid,2.17781,2.78602
+La_liga,2023,2023-09-30,Real Sociedad,Athletic Club,1.38238,1.96039
+La_liga,2023,2023-10-01,Almeria,Granada,2.24188,3.51421
+La_liga,2023,2023-10-01,Alaves,Osasuna,1.5824,1.26744
+La_liga,2023,2023-10-01,Atletico Madrid,Cadiz,3.10102,0.677345
+La_liga,2023,2023-10-01,Real Betis,Valencia,2.53745,0.510459
+La_liga,2023,2023-10-02,Las Palmas,Celta Vigo,1.46382,1.54337
+La_liga,2023,2023-10-06,Athletic Club,Almeria,3.02889,0.0892217
+La_liga,2023,2023-10-07,Cadiz,Girona,0.653575,1.26462
+La_liga,2023,2023-10-07,Real Madrid,Osasuna,4.47802,0.164111
+La_liga,2023,2023-10-07,Mallorca,Valencia,0.919992,0.509313
+La_liga,2023,2023-10-07,Sevilla,Rayo Vallecano,0.807105,0.998714
+La_liga,2023,2023-10-08,Villarreal,Las Palmas,1.16305,1.1602
+La_liga,2023,2023-10-08,Atletico Madrid,Real Sociedad,2.94239,0.928071
+La_liga,2023,2023-10-08,Celta Vigo,Getafe,3.02859,1.00866
+La_liga,2023,2023-10-08,Alaves,Real Betis,1.89594,0.872851
+La_liga,2023,2023-10-08,Granada,Barcelona,0.611577,2.99552
+La_liga,2023,2023-10-20,Osasuna,Granada,1.79846,0.776224
+La_liga,2023,2023-10-21,Real Sociedad,Mallorca,2.0056,2.03914
+La_liga,2023,2023-10-21,Getafe,Real Betis,1.86677,1.42816
+La_liga,2023,2023-10-21,Sevilla,Real Madrid,1.8723,2.17904
+La_liga,2023,2023-10-21,Celta Vigo,Atletico Madrid,1.26757,2.39246
+La_liga,2023,2023-10-22,Las Palmas,Rayo Vallecano,1.18559,1.25598
+La_liga,2023,2023-10-22,Girona,Almeria,2.1972,0.878392
+La_liga,2023,2023-10-22,Villarreal,Alaves,1.71642,1.79896
+La_liga,2023,2023-10-22,Barcelona,Athletic Club,1.70266,0.453295
+La_liga,2023,2023-10-23,Valencia,Cadiz,1.6763,0.551967
+La_liga,2023,2023-10-27,Girona,Celta Vigo,0.619488,0.174681
+La_liga,2023,2023-10-28,Almeria,Las Palmas,0.275712,1.06446
+La_liga,2023,2023-10-28,Barcelona,Real Madrid,1.32038,0.959404
+La_liga,2023,2023-10-28,Mallorca,Getafe,0.722341,0.292202
+La_liga,2023,2023-10-28,Cadiz,Sevilla,1.42705,1.28392
+La_liga,2023,2023-10-29,Real Betis,Osasuna,1.43393,0.446425
+La_liga,2023,2023-10-29,Rayo Vallecano,Real Sociedad,0.844003,1.93178
+La_liga,2023,2023-10-29,Athletic Club,Valencia,1.63308,2.17868
+La_liga,2023,2023-10-29,Atletico Madrid,Alaves,1.94088,0.385398
+La_liga,2023,2023-10-30,Granada,Villarreal,2.80131,1.90197
+La_liga,2023,2023-11-03,Las Palmas,Atletico Madrid,0.452709,1.52768
+La_liga,2023,2023-11-04,Osasuna,Girona,2.18398,2.78694
+La_liga,2023,2023-11-04,Real Betis,Mallorca,2.84664,0.540374
+La_liga,2023,2023-11-04,Celta Vigo,Sevilla,3.01524,1.25089
+La_liga,2023,2023-11-04,Real Sociedad,Barcelona,0.84705,1.22041
+La_liga,2023,2023-11-05,Alaves,Almeria,2.57982,0.893084
+La_liga,2023,2023-11-05,Valencia,Granada,1.18921,0.344591
+La_liga,2023,2023-11-05,Villarreal,Athletic Club,1.78074,2.22797
+La_liga,2023,2023-11-05,Real Madrid,Rayo Vallecano,1.85349,0.134981
+La_liga,2023,2023-11-06,Getafe,Cadiz,1.21452,0.821864
+La_liga,2023,2023-11-10,Athletic Club,Celta Vigo,4.72334,2.25302
+La_liga,2023,2023-11-11,Rayo Vallecano,Girona,1.67584,4.2691
+La_liga,2023,2023-11-11,Almeria,Real Sociedad,0.637245,2.53693
+La_liga,2023,2023-11-11,Granada,Getafe,1.4404,2.30149
+La_liga,2023,2023-11-11,Osasuna,Las Palmas,1.44069,0.291858
+La_liga,2023,2023-11-11,Real Madrid,Valencia,1.90598,2.03068
+La_liga,2023,2023-11-12,Barcelona,Alaves,1.81139,1.83858
+La_liga,2023,2023-11-12,Sevilla,Real Betis,0.615603,2.17922
+La_liga,2023,2023-11-12,Atletico Madrid,Villarreal,3.93786,0.868854
+La_liga,2023,2023-11-24,Alaves,Granada,0.871813,1.13855
+La_liga,2023,2023-11-25,Rayo Vallecano,Barcelona,0.912299,1.30627
+La_liga,2023,2023-11-25,Valencia,Celta Vigo,0.247015,0.609862
+La_liga,2023,2023-11-25,Getafe,Almeria,1.39391,1.72918
+La_liga,2023,2023-11-25,Atletico Madrid,Mallorca,2.29683,0.945212
+La_liga,2023,2023-11-26,Villarreal,Osasuna,2.84591,1.26437
+La_liga,2023,2023-11-26,Real Sociedad,Sevilla,1.05204,0.374082
+La_liga,2023,2023-11-26,Cadiz,Real Madrid,1.13056,1.84054
+La_liga,2023,2023-11-26,Real Betis,Las Palmas,1.92649,0.751589
+La_liga,2023,2023-11-27,Girona,Athletic Club,1.36177,1.67266
+La_liga,2023,2023-11-29,Mallorca,Cadiz,0.8514,0.251799
+La_liga,2023,2023-12-01,Las Palmas,Getafe,1.8817,0.76355
+La_liga,2023,2023-12-02,Girona,Valencia,1.85396,1.00981
+La_liga,2023,2023-12-02,Athletic Club,Rayo Vallecano,1.6869,0.34629
+La_liga,2023,2023-12-02,Real Madrid,Granada,2.2606,0.110085
+La_liga,2023,2023-12-02,Osasuna,Real Sociedad,1.01822,1.69944
+La_liga,2023,2023-12-03,Mallorca,Alaves,0.909609,0.277842
+La_liga,2023,2023-12-03,Almeria,Real Betis,2.69938,0.769817
+La_liga,2023,2023-12-03,Sevilla,Villarreal,2.4784,1.47061
+La_liga,2023,2023-12-03,Barcelona,Atletico Madrid,3.18789,0.996297
+La_liga,2023,2023-12-04,Celta Vigo,Cadiz,2.73216,0.346727
+La_liga,2023,2023-12-08,Getafe,Valencia,0.841976,0.183916
+La_liga,2023,2023-12-09,Alaves,Las Palmas,2.20546,0.473883
+La_liga,2023,2023-12-09,Real Betis,Real Madrid,1.51575,0.803862
+La_liga,2023,2023-12-09,Villarreal,Real Sociedad,2.37019,2.19834
+La_liga,2023,2023-12-09,Mallorca,Sevilla,0.533315,0.554467
+La_liga,2023,2023-12-10,Atletico Madrid,Almeria,2.16876,1.6656
+La_liga,2023,2023-12-10,Cadiz,Osasuna,1.15321,1.81825
+La_liga,2023,2023-12-10,Barcelona,Girona,4.25448,2.93797
+La_liga,2023,2023-12-11,Rayo Vallecano,Celta Vigo,1.32415,0.126167
+La_liga,2023,2023-12-12,Granada,Athletic Club,0.543471,1.68816
+La_liga,2023,2023-12-15,Osasuna,Rayo Vallecano,1.77561,1.15316
+La_liga,2023,2023-12-16,Celta Vigo,Granada,1.33261,0.690175
+La_liga,2023,2023-12-16,Athletic Club,Atletico Madrid,2.73082,0.342126
+La_liga,2023,2023-12-16,Sevilla,Getafe,0.80788,2.83746
+La_liga,2023,2023-12-16,Valencia,Barcelona,0.78681,3.16129
+La_liga,2023,2023-12-17,Almeria,Mallorca,0.314828,1.51369
+La_liga,2023,2023-12-17,Real Sociedad,Real Betis,0.989954,1.37163
+La_liga,2023,2023-12-17,Las Palmas,Cadiz,0.826817,1.42619
+La_liga,2023,2023-12-17,Real Madrid,Villarreal,3.22478,0.421986
+La_liga,2023,2023-12-18,Girona,Alaves,1.92988,0.546438
+La_liga,2023,2023-12-19,Rayo Vallecano,Valencia,0.51265,0.33485
+La_liga,2023,2023-12-19,Atletico Madrid,Getafe,2.02936,2.53681
+La_liga,2023,2023-12-19,Granada,Sevilla,1.12822,0.514939
+La_liga,2023,2023-12-20,Barcelona,Almeria,4.04903,1.39703
+La_liga,2023,2023-12-20,Athletic Club,Las Palmas,3.53577,0.2514
+La_liga,2023,2023-12-20,Villarreal,Celta Vigo,2.59564,1.98503
+La_liga,2023,2023-12-21,Real Betis,Girona,1.61394,1.64551
+La_liga,2023,2023-12-21,Cadiz,Real Sociedad,0.856097,0.6603
+La_liga,2023,2023-12-21,Mallorca,Osasuna,1.68391,1.5871
+La_liga,2023,2023-12-21,Alaves,Real Madrid,0.388196,0.947483
+La_liga,2023,2023-12-23,Atletico Madrid,Sevilla,1.53277,0.279969
+La_liga,2023,2024-01-02,Getafe,Rayo Vallecano,0.651184,2.73568
+La_liga,2023,2024-01-02,Real Sociedad,Alaves,0.98082,0.969339
+La_liga,2023,2024-01-02,Valencia,Villarreal,2.78114,1.15004
+La_liga,2023,2024-01-03,Granada,Cadiz,3.87666,0.746073
+La_liga,2023,2024-01-03,Celta Vigo,Real Betis,2.54675,1.73674
+La_liga,2023,2024-01-03,Real Madrid,Mallorca,1.87575,0.840414
+La_liga,2023,2024-01-03,Girona,Atletico Madrid,2.32369,2.67389
+La_liga,2023,2024-01-04,Osasuna,Almeria,2.03356,0.239636
+La_liga,2023,2024-01-04,Sevilla,Athletic Club,0.54777,1.99704
+La_liga,2023,2024-01-04,Las Palmas,Barcelona,0.967341,2.3608
+La_liga,2023,2024-01-12,Sevilla,Alaves,2.49561,2.08895
+La_liga,2023,2024-01-13,Las Palmas,Villarreal,0.963955,1.71198
+La_liga,2023,2024-01-13,Mallorca,Celta Vigo,2.59976,0.711693
+La_liga,2023,2024-01-13,Athletic Club,Real Sociedad,1.73042,1.02381
+La_liga,2023,2024-01-13,Real Betis,Granada,2.00904,0.658067
+La_liga,2023,2024-01-14,Almeria,Girona,2.20551,0.246622
+La_liga,2023,2024-01-14,Cadiz,Valencia,1.55289,1.7596
+La_liga,2023,2024-01-19,Alaves,Cadiz,1.83115,0.670357
+La_liga,2023,2024-01-20,Rayo Vallecano,Las Palmas,2.16832,0.786109
+La_liga,2023,2024-01-20,Villarreal,Mallorca,1.7328,0.430539
+La_liga,2023,2024-01-20,Valencia,Athletic Club,0.7444,0.351363
+La_liga,2023,2024-01-20,Celta Vigo,Real Sociedad,0.257377,0.630224
+La_liga,2023,2024-01-21,Osasuna,Getafe,1.57055,1.50775
+La_liga,2023,2024-01-21,Real Madrid,Almeria,3.07258,0.928735
+La_liga,2023,2024-01-21,Real Betis,Barcelona,1.61122,2.71025
+La_liga,2023,2024-01-21,Girona,Sevilla,2.95279,0.947841
+La_liga,2023,2024-01-22,Granada,Atletico Madrid,0.684269,1.42876
+La_liga,2023,2024-01-26,Almeria,Alaves,1.80182,2.061
+La_liga,2023,2024-01-27,Real Sociedad,Rayo Vallecano,0.251108,0.129675
+La_liga,2023,2024-01-27,Las Palmas,Real Madrid,0.929969,2.05683
+La_liga,2023,2024-01-27,Barcelona,Villarreal,2.02779,2.36875
+La_liga,2023,2024-01-27,Mallorca,Real Betis,1.72961,0.400759
+La_liga,2023,2024-01-28,Celta Vigo,Girona,1.03961,1.60712
+La_liga,2023,2024-01-28,Cadiz,Athletic Club,0.367526,0.25604
+La_liga,2023,2024-01-28,Sevilla,Osasuna,1.42372,1.07779
+La_liga,2023,2024-01-28,Atletico Madrid,Valencia,2.80234,0.406631
+La_liga,2023,2024-01-29,Getafe,Granada,1.03385,1.504
+La_liga,2023,2024-01-31,Barcelona,Osasuna,2.21737,1.41966
+La_liga,2023,2024-01-31,Atletico Madrid,Rayo Vallecano,1.29884,0.426602
+La_liga,2023,2024-02-01,Getafe,Real Madrid,0.791039,2.72231
+La_liga,2023,2024-02-02,Athletic Club,Mallorca,1.95995,0.469702
+La_liga,2023,2024-02-03,Valencia,Almeria,1.38646,1.5882
+La_liga,2023,2024-02-03,Granada,Las Palmas,0.155607,1.27614
+La_liga,2023,2024-02-03,Alaves,Barcelona,1.04716,1.55781
+La_liga,2023,2024-02-03,Girona,Real Sociedad,1.04543,0.583723
+La_liga,2023,2024-02-04,Villarreal,Cadiz,1.00089,0.686978
+La_liga,2023,2024-02-04,Osasuna,Celta Vigo,1.00524,1.37845
+La_liga,2023,2024-02-04,Real Betis,Getafe,1.54414,1.9002
+La_liga,2023,2024-02-04,Real Madrid,Atletico Madrid,2.36334,1.35012
+La_liga,2023,2024-02-05,Rayo Vallecano,Sevilla,2.1306,1.77647
+La_liga,2023,2024-02-09,Cadiz,Real Betis,0.755069,1.43872
+La_liga,2023,2024-02-10,Alaves,Villarreal,2.09111,1.29002
+La_liga,2023,2024-02-10,Real Sociedad,Osasuna,2.50503,0.704714
+La_liga,2023,2024-02-10,Real Madrid,Girona,3.32636,0.180194
+La_liga,2023,2024-02-10,Las Palmas,Valencia,1.41954,0.251178
+La_liga,2023,2024-02-11,Getafe,Celta Vigo,2.22295,1.2733
+La_liga,2023,2024-02-11,Mallorca,Rayo Vallecano,0.82898,1.40787
+La_liga,2023,2024-02-11,Sevilla,Atletico Madrid,2.15338,1.67549
+La_liga,2023,2024-02-11,Barcelona,Granada,2.5229,1.20453
+La_liga,2023,2024-02-12,Almeria,Athletic Club,0.900611,0.621857
+La_liga,2023,2024-02-16,Villarreal,Getafe,1.61961,0.976893
+La_liga,2023,2024-02-17,Atletico Madrid,Las Palmas,2.79269,0.660284
+La_liga,2023,2024-02-17,Osasuna,Cadiz,1.37854,0.919753
+La_liga,2023,2024-02-17,Celta Vigo,Barcelona,0.636492,1.5046
+La_liga,2023,2024-02-17,Valencia,Sevilla,1.11987,0.0457854
+La_liga,2023,2024-02-18,Rayo Vallecano,Real Madrid,1.1431,1.0219
+La_liga,2023,2024-02-18,Granada,Almeria,1.79616,0.693843
+La_liga,2023,2024-02-18,Mallorca,Real Sociedad,0.188904,1.20859
+La_liga,2023,2024-02-18,Real Betis,Alaves,1.18267,0.490778
+La_liga,2023,2024-02-19,Athletic Club,Girona,2.7904,1.80583
+La_liga,2023,2024-02-23,Real Sociedad,Villarreal,1.48985,1.6421
+La_liga,2023,2024-02-24,Barcelona,Getafe,2.65095,0.316762
+La_liga,2023,2024-02-24,Alaves,Mallorca,0.501891,1.80166
+La_liga,2023,2024-02-24,Almeria,Atletico Madrid,0.352281,1.87638
+La_liga,2023,2024-02-25,Cadiz,Celta Vigo,1.87476,0.680213
+La_liga,2023,2024-02-25,Real Betis,Athletic Club,0.921277,0.137757
+La_liga,2023,2024-02-25,Las Palmas,Osasuna,0.942659,0.387933
+La_liga,2023,2024-02-25,Real Madrid,Sevilla,1.01644,0.967099
+La_liga,2023,2024-02-26,Girona,Rayo Vallecano,2.81311,0.564655
+La_liga,2023,2024-03-01,Celta Vigo,Almeria,1.82317,0.3259
+La_liga,2023,2024-03-02,Sevilla,Real Sociedad,2.15506,1.27238
+La_liga,2023,2024-03-02,Rayo Vallecano,Cadiz,0.688061,1.21648
+La_liga,2023,2024-03-02,Getafe,Las Palmas,2.38804,1.37145
+La_liga,2023,2024-03-02,Valencia,Real Madrid,1.33185,1.45798
+La_liga,2023,2024-03-03,Villarreal,Granada,3.02991,0.276758
+La_liga,2023,2024-03-03,Atletico Madrid,Real Betis,3.54138,0.588581
+La_liga,2023,2024-03-03,Mallorca,Girona,0.943297,1.08616
+La_liga,2023,2024-03-03,Athletic Club,Barcelona,0.468397,0.714592
+La_liga,2023,2024-03-04,Osasuna,Alaves,1.71646,1.14533
+La_liga,2023,2024-03-08,Barcelona,Mallorca,2.06225,0.504754
+La_liga,2023,2024-03-09,Valencia,Getafe,1.27245,1.17773
+La_liga,2023,2024-03-09,Cadiz,Atletico Madrid,1.18033,0.895711
+La_liga,2023,2024-03-09,Granada,Real Sociedad,2.0551,1.88323
+La_liga,2023,2024-03-09,Girona,Osasuna,2.1772,0.185235
+La_liga,2023,2024-03-10,Alaves,Rayo Vallecano,0.640241,0.579451
+La_liga,2023,2024-03-10,Las Palmas,Athletic Club,0.834663,1.27321
+La_liga,2023,2024-03-10,Real Madrid,Celta Vigo,3.6885,0.53726
+La_liga,2023,2024-03-10,Real Betis,Villarreal,1.39975,1.30814
+La_liga,2023,2024-03-11,Almeria,Sevilla,1.81235,2.6495
+La_liga,2023,2024-03-15,Real Sociedad,Cadiz,2.34962,0.695705
+La_liga,2023,2024-03-16,Mallorca,Granada,1.65502,0.295993
+La_liga,2023,2024-03-16,Osasuna,Real Madrid,0.669756,3.05767
+La_liga,2023,2024-03-16,Getafe,Girona,1.10963,1.70185
+La_liga,2023,2024-03-16,Athletic Club,Alaves,2.31129,1.38702
+La_liga,2023,2024-03-17,Sevilla,Celta Vigo,1.75591,2.23423
+La_liga,2023,2024-03-17,Villarreal,Valencia,2.1872,1.07722
+La_liga,2023,2024-03-17,Las Palmas,Almeria,0.793707,0.688106
+La_liga,2023,2024-03-17,Rayo Vallecano,Real Betis,0.790186,0.69375
+La_liga,2023,2024-03-17,Atletico Madrid,Barcelona,0.570805,1.94966
+La_liga,2023,2024-03-29,Cadiz,Granada,1.19169,0.412637
+La_liga,2023,2024-03-30,Getafe,Sevilla,1.57791,0.901033
+La_liga,2023,2024-03-30,Almeria,Osasuna,0.745696,1.00888
+La_liga,2023,2024-03-30,Valencia,Mallorca,1.33845,0.673736
+La_liga,2023,2024-03-30,Barcelona,Las Palmas,1.72947,0.314295
+La_liga,2023,2024-03-31,Celta Vigo,Rayo Vallecano,0.838396,0.515128
+La_liga,2023,2024-03-31,Girona,Real Betis,2.43161,0.524961
+La_liga,2023,2024-03-31,Alaves,Real Sociedad,0.142958,1.29248
+La_liga,2023,2024-03-31,Real Madrid,Athletic Club,1.1877,0.304704
+La_liga,2023,2024-04-01,Villarreal,Atletico Madrid,0.681964,1.2402
+La_liga,2023,2024-04-04,Granada,Valencia,0.729135,0.718558
+La_liga,2023,2024-04-12,Real Betis,Celta Vigo,1.22903,1.58129
+La_liga,2023,2024-04-13,Atletico Madrid,Girona,2.58629,2.20992
+La_liga,2023,2024-04-13,Rayo Vallecano,Getafe,0.777828,0.25153
+La_liga,2023,2024-04-13,Mallorca,Real Madrid,0.592998,1.81161
+La_liga,2023,2024-04-13,Cadiz,Barcelona,0.79048,0.833415
+La_liga,2023,2024-04-14,Las Palmas,Sevilla,0.0909476,2.06406
+La_liga,2023,2024-04-14,Granada,Alaves,1.86823,0.279326
+La_liga,2023,2024-04-14,Athletic Club,Villarreal,0.823044,2.1913
+La_liga,2023,2024-04-14,Real Sociedad,Almeria,1.68743,1.77546
+La_liga,2023,2024-04-15,Osasuna,Valencia,2.26875,0.235711
+La_liga,2023,2024-04-19,Athletic Club,Granada,1.64137,0.150973
+La_liga,2023,2024-04-20,Celta Vigo,Las Palmas,3.58931,0.90843
+La_liga,2023,2024-04-20,Rayo Vallecano,Osasuna,0.560289,0.930714
+La_liga,2023,2024-04-20,Valencia,Real Betis,0.951475,1.82123
+La_liga,2023,2024-04-20,Girona,Cadiz,2.30941,1.82433
+La_liga,2023,2024-04-21,Getafe,Real Sociedad,1.19821,1.03517
+La_liga,2023,2024-04-21,Almeria,Villarreal,2.14538,1.60008
+La_liga,2023,2024-04-21,Alaves,Atletico Madrid,0.521018,0.715212
+La_liga,2023,2024-04-21,Real Madrid,Barcelona,2.7698,1.34666
+La_liga,2023,2024-04-22,Sevilla,Mallorca,1.72842,0.879845
+La_liga,2023,2024-04-26,Real Sociedad,Real Madrid,0.380904,0.462672
+La_liga,2023,2024-04-27,Las Palmas,Girona,1.41676,2.0472
+La_liga,2023,2024-04-27,Almeria,Getafe,2.748,1.67485
+La_liga,2023,2024-04-27,Alaves,Celta Vigo,3.41094,0.188273
+La_liga,2023,2024-04-27,Atletico Madrid,Athletic Club,0.62028,0.894572
+La_liga,2023,2024-04-28,Cadiz,Mallorca,0.441837,0.827497
+La_liga,2023,2024-04-28,Granada,Osasuna,2.31468,0.989028
+La_liga,2023,2024-04-28,Villarreal,Rayo Vallecano,1.98091,0.896929
+La_liga,2023,2024-04-28,Real Betis,Sevilla,2.39465,1.26484
+La_liga,2023,2024-04-29,Barcelona,Valencia,2.59636,1.49346
+La_liga,2023,2024-05-03,Getafe,Athletic Club,4.41644,0.925588
+La_liga,2023,2024-05-04,Real Sociedad,Las Palmas,0.899129,0.56693
+La_liga,2023,2024-05-04,Real Madrid,Cadiz,2.63447,0.998827
+La_liga,2023,2024-05-04,Girona,Barcelona,2.31519,2.6053
+La_liga,2023,2024-05-04,Mallorca,Atletico Madrid,0.328479,0.874778
+La_liga,2023,2024-05-05,Osasuna,Real Betis,1.02463,1.44688
+La_liga,2023,2024-05-05,Celta Vigo,Villarreal,4.41257,0.544766
+La_liga,2023,2024-05-05,Valencia,Alaves,1.40821,1.16915
+La_liga,2023,2024-05-05,Rayo Vallecano,Almeria,2.09609,0.555982
+La_liga,2023,2024-05-05,Sevilla,Granada,2.45224,0.227083
+La_liga,2023,2024-05-10,Alaves,Girona,2.40148,1.53657
+La_liga,2023,2024-05-11,Mallorca,Las Palmas,0.45718,0.313172
+La_liga,2023,2024-05-11,Villarreal,Sevilla,3.10775,1.95835
+La_liga,2023,2024-05-11,Granada,Real Madrid,0.699759,2.7909
+La_liga,2023,2024-05-11,Athletic Club,Osasuna,2.17034,1.05326
+La_liga,2023,2024-05-12,Cadiz,Getafe,1.42818,0.310309
+La_liga,2023,2024-05-12,Atletico Madrid,Celta Vigo,1.81009,0.370026
+La_liga,2023,2024-05-12,Valencia,Rayo Vallecano,1.1633,0.785651
+La_liga,2023,2024-05-12,Real Betis,Almeria,1.69343,1.08304
+La_liga,2023,2024-05-13,Barcelona,Real Sociedad,1.66029,0.799193
+La_liga,2023,2024-05-14,Osasuna,Mallorca,0.428998,0.919263
+La_liga,2023,2024-05-14,Real Madrid,Alaves,2.88216,1.50657
+La_liga,2023,2024-05-14,Girona,Villarreal,2.28453,0.776468
+La_liga,2023,2024-05-15,Sevilla,Cadiz,1.43788,2.85137
+La_liga,2023,2024-05-15,Rayo Vallecano,Granada,3.00296,0.933417
+La_liga,2023,2024-05-15,Celta Vigo,Athletic Club,0.758179,0.377111
+La_liga,2023,2024-05-15,Getafe,Atletico Madrid,0.446969,1.67036
+La_liga,2023,2024-05-16,Las Palmas,Real Betis,2.61533,1.3277
+La_liga,2023,2024-05-16,Almeria,Barcelona,1.03949,2.13122
+La_liga,2023,2024-05-16,Real Sociedad,Valencia,1.13192,0.774644
+La_liga,2023,2024-05-18,Alaves,Getafe,1.57753,0.658124
+La_liga,2023,2024-05-19,Athletic Club,Sevilla,1.78593,1.29208
+La_liga,2023,2024-05-19,Atletico Madrid,Osasuna,1.76117,1.88434
+La_liga,2023,2024-05-19,Barcelona,Rayo Vallecano,1.69959,1.68527
+La_liga,2023,2024-05-19,Real Betis,Real Sociedad,1.60754,0.792849
+La_liga,2023,2024-05-19,Cadiz,Las Palmas,1.36112,0.966249
+La_liga,2023,2024-05-19,Mallorca,Almeria,2.45608,0.238391
+La_liga,2023,2024-05-19,Granada,Celta Vigo,1.75765,2.02078
+La_liga,2023,2024-05-19,Valencia,Girona,3.35606,2.90299
+La_liga,2023,2024-05-19,Villarreal,Real Madrid,2.21178,1.59129
+La_liga,2023,2024-05-24,Girona,Granada,4.75092,0.987219
+La_liga,2023,2024-05-25,Osasuna,Villarreal,1.09355,0.835313
+La_liga,2023,2024-05-25,Real Sociedad,Atletico Madrid,0.570544,2.19824
+La_liga,2023,2024-05-25,Almeria,Cadiz,3.23442,0.494605
+La_liga,2023,2024-05-25,Rayo Vallecano,Athletic Club,1.47462,0.930597
+La_liga,2023,2024-05-25,Real Madrid,Real Betis,1.24417,1.15552
+La_liga,2023,2024-05-26,Getafe,Mallorca,1.07908,1.34437
+La_liga,2023,2024-05-26,Celta Vigo,Valencia,1.50162,2.16042
+La_liga,2023,2024-05-26,Las Palmas,Alaves,1.15618,2.23542
+La_liga,2023,2024-05-26,Sevilla,Barcelona,1.96266,1.4772
+La_liga,2024,2024-08-15,Athletic Club,Getafe,0.290195,0.537517
+La_liga,2024,2024-08-15,Real Betis,Girona,1.80582,1.54726
+La_liga,2024,2024-08-16,Celta Vigo,Alaves,0.793797,1.9391
+La_liga,2024,2024-08-16,Las Palmas,Sevilla,1.3187,2.09987
+La_liga,2024,2024-08-17,Osasuna,Leganes,1.7631,1.33949
+La_liga,2024,2024-08-17,Valencia,Barcelona,1.55206,3.48824
+La_liga,2024,2024-08-18,Real Sociedad,Rayo Vallecano,1.56608,1.60148
+La_liga,2024,2024-08-18,Mallorca,Real Madrid,1.30561,0.608052
+La_liga,2024,2024-08-19,Real Valladolid,Espanyol,1.17753,0.515586
+La_liga,2024,2024-08-19,Villarreal,Atletico Madrid,0.68684,1.13868
+La_liga,2024,2024-08-23,Celta Vigo,Valencia,1.30571,1.1544
+La_liga,2024,2024-08-23,Sevilla,Villarreal,1.23826,1.39825
+La_liga,2024,2024-08-24,Osasuna,Mallorca,0.887678,0.427602
+La_liga,2024,2024-08-24,Barcelona,Athletic Club,2.41577,1.09985
+La_liga,2024,2024-08-24,Getafe,Rayo Vallecano,0.512723,0.161076
+La_liga,2024,2024-08-24,Espanyol,Real Sociedad,1.79566,0.796104
+La_liga,2024,2024-08-25,Real Madrid,Real Valladolid,2.17954,0.378528
+La_liga,2024,2024-08-25,Leganes,Las Palmas,1.58998,1.23438
+La_liga,2024,2024-08-25,Alaves,Real Betis,0.172545,1.36012
+La_liga,2024,2024-08-25,Atletico Madrid,Girona,1.42393,0.596524
+La_liga,2024,2024-08-26,Villarreal,Celta Vigo,4.3817,3.79183
+La_liga,2024,2024-08-27,Mallorca,Sevilla,0.940858,0.60976
+La_liga,2024,2024-08-27,Rayo Vallecano,Barcelona,0.392473,1.51872
+La_liga,2024,2024-08-28,Real Valladolid,Leganes,0.773785,0.184577
+La_liga,2024,2024-08-28,Athletic Club,Valencia,1.51595,0.0996371
+La_liga,2024,2024-08-28,Real Sociedad,Alaves,0.951647,2.62561
+La_liga,2024,2024-08-28,Atletico Madrid,Espanyol,3.88587,0.855829
+La_liga,2024,2024-08-29,Girona,Osasuna,2.6015,0.0199618
+La_liga,2024,2024-08-29,Las Palmas,Real Madrid,0.809213,3.28322
+La_liga,2024,2024-08-31,Barcelona,Real Valladolid,4.94022,0.422493
+La_liga,2024,2024-08-31,Athletic Club,Atletico Madrid,0.252231,1.58613
+La_liga,2024,2024-08-31,Espanyol,Rayo Vallecano,1.84679,1.0088
+La_liga,2024,2024-08-31,Valencia,Villarreal,1.14322,0.885369
+La_liga,2024,2024-08-31,Leganes,Mallorca,0.52078,1.48758
+La_liga,2024,2024-09-01,Alaves,Las Palmas,2.01026,0.547308
+La_liga,2024,2024-09-01,Osasuna,Celta Vigo,0.779621,1.72329
+La_liga,2024,2024-09-01,Sevilla,Girona,0.812687,2.36355
+La_liga,2024,2024-09-01,Getafe,Real Sociedad,0.547095,0.0209183
+La_liga,2024,2024-09-01,Real Madrid,Real Betis,2.37168,0.831429
+La_liga,2024,2024-09-13,Real Betis,Leganes,1.72201,0.107021
+La_liga,2024,2024-09-14,Mallorca,Villarreal,0.345425,2.41884
+La_liga,2024,2024-09-14,Espanyol,Alaves,1.95102,2.3693
+La_liga,2024,2024-09-14,Sevilla,Getafe,1.64801,0.971555
+La_liga,2024,2024-09-14,Real Sociedad,Real Madrid,1.41828,2.2759
+La_liga,2024,2024-09-15,Celta Vigo,Real Valladolid,1.99273,0.382657
+La_liga,2024,2024-09-15,Girona,Barcelona,1.09568,2.5936
+La_liga,2024,2024-09-15,Las Palmas,Athletic Club,1.5194,1.80432
+La_liga,2024,2024-09-15,Atletico Madrid,Valencia,3.22965,0.18311
+La_liga,2024,2024-09-16,Rayo Vallecano,Osasuna,1.48433,0.530311
+La_liga,2024,2024-09-17,Mallorca,Real Sociedad,1.56932,0.499139
+La_liga,2024,2024-09-18,Real Betis,Getafe,3.06176,0.864309
+La_liga,2024,2024-09-19,Leganes,Athletic Club,0.666594,1.32325
+La_liga,2024,2024-09-20,Alaves,Sevilla,1.40641,0.623937
+La_liga,2024,2024-09-21,Real Valladolid,Real Sociedad,0.952589,1.3906
+La_liga,2024,2024-09-21,Osasuna,Las Palmas,1.97167,1.28282
+La_liga,2024,2024-09-21,Valencia,Girona,0.350785,0.387698
+La_liga,2024,2024-09-21,Real Madrid,Espanyol,4.89487,0.318831
+La_liga,2024,2024-09-22,Getafe,Leganes,1.24276,0.783211
+La_liga,2024,2024-09-22,Athletic Club,Celta Vigo,0.864304,1.21547
+La_liga,2024,2024-09-22,Villarreal,Barcelona,2.39605,4.1937
+La_liga,2024,2024-09-22,Rayo Vallecano,Atletico Madrid,1.68952,0.554066
+La_liga,2024,2024-09-23,Real Betis,Mallorca,1.37084,1.4369
+La_liga,2024,2024-09-24,Sevilla,Real Valladolid,1.67099,0.411515
+La_liga,2024,2024-09-24,Valencia,Osasuna,1.17527,0.377552
+La_liga,2024,2024-09-24,Real Madrid,Alaves,1.79791,0.853455
+La_liga,2024,2024-09-25,Girona,Rayo Vallecano,2.1579,0.377734
+La_liga,2024,2024-09-25,Barcelona,Getafe,2.20799,0.929851
+La_liga,2024,2024-09-26,Espanyol,Villarreal,0.355072,1.96233
+La_liga,2024,2024-09-26,Las Palmas,Real Betis,1.10799,2.66646
+La_liga,2024,2024-09-26,Celta Vigo,Atletico Madrid,1.76126,0.778357
+La_liga,2024,2024-09-27,Real Valladolid,Mallorca,1.31551,2.49026
+La_liga,2024,2024-09-28,Getafe,Alaves,2.55847,0.415348
+La_liga,2024,2024-09-28,Rayo Vallecano,Leganes,1.15229,0.852356
+La_liga,2024,2024-09-28,Real Sociedad,Valencia,3.6853,0.805963
+La_liga,2024,2024-09-28,Osasuna,Barcelona,2.50067,0.751814
+La_liga,2024,2024-09-29,Celta Vigo,Girona,0.52399,1.41269
+La_liga,2024,2024-09-29,Athletic Club,Sevilla,1.82961,1.24147
+La_liga,2024,2024-09-29,Real Betis,Espanyol,1.97922,0.569387
+La_liga,2024,2024-09-29,Atletico Madrid,Real Madrid,1.05477,0.660987
+La_liga,2024,2024-09-30,Villarreal,Las Palmas,4.07869,0.802357
+La_liga,2024,2024-10-04,Leganes,Valencia,0.913168,0.703751
+La_liga,2024,2024-10-05,Espanyol,Mallorca,0.948554,1.79839
+La_liga,2024,2024-10-05,Getafe,Osasuna,1.34832,0.247706
+La_liga,2024,2024-10-05,Las Palmas,Celta Vigo,0.964894,0.814163
+La_liga,2024,2024-10-05,Real Valladolid,Rayo Vallecano,1.65842,1.64746
+La_liga,2024,2024-10-05,Real Madrid,Villarreal,0.459582,1.4618
+La_liga,2024,2024-10-06,Girona,Athletic Club,2.17393,3.15974
+La_liga,2024,2024-10-06,Alaves,Barcelona,0.794829,2.49367
+La_liga,2024,2024-10-06,Sevilla,Real Betis,1.8284,0.436615
+La_liga,2024,2024-10-06,Real Sociedad,Atletico Madrid,1.08517,0.561748
+La_liga,2024,2024-10-18,Alaves,Real Valladolid,0.433035,2.33646
+La_liga,2024,2024-10-19,Athletic Club,Espanyol,1.46517,0.500795
+La_liga,2024,2024-10-19,Osasuna,Real Betis,2.21025,2.79181
+La_liga,2024,2024-10-19,Girona,Real Sociedad,0.446152,1.86082
+La_liga,2024,2024-10-19,Celta Vigo,Real Madrid,1.79112,1.19816
+La_liga,2024,2024-10-20,Mallorca,Rayo Vallecano,2.72076,0.464955
+La_liga,2024,2024-10-20,Atletico Madrid,Leganes,5.21397,0.271901
+La_liga,2024,2024-10-20,Villarreal,Getafe,1.14683,2.02638
+La_liga,2024,2024-10-20,Barcelona,Sevilla,4.08528,0.599652
+La_liga,2024,2024-10-21,Valencia,Las Palmas,1.94417,1.56861
+La_liga,2024,2024-10-25,Espanyol,Sevilla,1.0292,0.813306
+La_liga,2024,2024-10-26,Real Valladolid,Villarreal,0.97802,2.68435
+La_liga,2024,2024-10-26,Rayo Vallecano,Alaves,2.89009,0.871439
+La_liga,2024,2024-10-26,Las Palmas,Girona,1.24451,1.04715
+La_liga,2024,2024-10-26,Real Madrid,Barcelona,1.40359,2.51566
+La_liga,2024,2024-10-27,Leganes,Celta Vigo,1.54881,0.767239
+La_liga,2024,2024-10-27,Getafe,Valencia,2.97825,0.63831
+La_liga,2024,2024-10-27,Real Betis,Atletico Madrid,2.20384,0.555217
+La_liga,2024,2024-10-27,Real Sociedad,Osasuna,1.6767,1.06487
+La_liga,2024,2024-10-28,Mallorca,Athletic Club,0.542356,0.755466
+La_liga,2024,2024-11-01,Alaves,Mallorca,1.43582,0.708287
+La_liga,2024,2024-11-02,Osasuna,Real Valladolid,3.21695,0.204092
+La_liga,2024,2024-11-02,Girona,Leganes,1.81274,0.320545
+La_liga,2024,2024-11-03,Atletico Madrid,Las Palmas,1.73469,0.0329044
+La_liga,2024,2024-11-03,Barcelona,Espanyol,1.94398,0.787359
+La_liga,2024,2024-11-03,Sevilla,Real Sociedad,0.629505,1.21835
+La_liga,2024,2024-11-03,Athletic Club,Real Betis,4.2033,1.54499
+La_liga,2024,2024-11-04,Celta Vigo,Getafe,2.12477,0.424746
+La_liga,2024,2024-11-08,Rayo Vallecano,Las Palmas,2.63982,1.25211
+La_liga,2024,2024-11-09,Real Madrid,Osasuna,3.27315,0.0678926
+La_liga,2024,2024-11-09,Villarreal,Alaves,1.44293,0.608571
+La_liga,2024,2024-11-09,Leganes,Sevilla,1.09319,0.539924
+La_liga,2024,2024-11-10,Real Betis,Celta Vigo,1.65065,0.941675
+La_liga,2024,2024-11-10,Mallorca,Atletico Madrid,0.735147,0.93863
+La_liga,2024,2024-11-10,Getafe,Girona,0.220796,0.521025
+La_liga,2024,2024-11-10,Real Valladolid,Athletic Club,0.887674,1.487
+La_liga,2024,2024-11-10,Real Sociedad,Barcelona,1.88518,0.514102
+La_liga,2024,2024-11-22,Getafe,Real Valladolid,0.658487,0.729169
+La_liga,2024,2024-11-23,Valencia,Real Betis,1.67338,1.05242
+La_liga,2024,2024-11-23,Atletico Madrid,Alaves,2.05318,0.785902
+La_liga,2024,2024-11-23,Las Palmas,Mallorca,1.15972,1.45816
+La_liga,2024,2024-11-23,Girona,Espanyol,3.28521,0.488285
+La_liga,2024,2024-11-23,Celta Vigo,Barcelona,2.75981,1.93782
+La_liga,2024,2024-11-24,Osasuna,Villarreal,1.3273,2.68193
+La_liga,2024,2024-11-24,Sevilla,Rayo Vallecano,1.57063,0.862262
+La_liga,2024,2024-11-24,Leganes,Real Madrid,0.108948,2.73014
+La_liga,2024,2024-11-24,Athletic Club,Real Sociedad,1.65075,0.799084
+La_liga,2024,2024-11-29,Mallorca,Valencia,0.721435,1.33443
+La_liga,2024,2024-11-30,Barcelona,Las Palmas,2.18354,0.599185
+La_liga,2024,2024-11-30,Alaves,Leganes,1.28884,1.3688
+La_liga,2024,2024-11-30,Espanyol,Celta Vigo,1.50136,1.55998
+La_liga,2024,2024-11-30,Real Valladolid,Atletico Madrid,0.437294,3.40487
+La_liga,2024,2024-12-01,Villarreal,Girona,1.96842,0.516301
+La_liga,2024,2024-12-01,Real Madrid,Getafe,3.23626,0.34657
+La_liga,2024,2024-12-01,Rayo Vallecano,Athletic Club,0.590024,0.556919
+La_liga,2024,2024-12-01,Real Sociedad,Real Betis,0.818081,0.366137
+La_liga,2024,2024-12-02,Sevilla,Osasuna,1.09081,1.04839
+La_liga,2024,2024-12-03,Mallorca,Barcelona,0.921728,5.38074
+La_liga,2024,2024-12-04,Athletic Club,Real Madrid,2.08134,1.97732
+La_liga,2024,2024-12-06,Celta Vigo,Mallorca,1.19949,1.09038
+La_liga,2024,2024-12-07,Las Palmas,Real Valladolid,1.27625,1.30835
+La_liga,2024,2024-12-07,Real Betis,Barcelona,2.76257,1.54117
+La_liga,2024,2024-12-07,Valencia,Rayo Vallecano,1.0002,1.02294
+La_liga,2024,2024-12-07,Girona,Real Madrid,0.351337,1.16034
+La_liga,2024,2024-12-08,Leganes,Real Sociedad,0.463722,1.74462
+La_liga,2024,2024-12-08,Athletic Club,Villarreal,1.31484,0.796459
+La_liga,2024,2024-12-08,Osasuna,Alaves,2.31345,1.50067
+La_liga,2024,2024-12-08,Atletico Madrid,Sevilla,2.32183,0.635773
+La_liga,2024,2024-12-09,Getafe,Espanyol,0.530268,1.17303
+La_liga,2024,2024-12-13,Real Valladolid,Valencia,0.531831,0.657242
+La_liga,2024,2024-12-14,Espanyol,Osasuna,0.298744,0.213917
+La_liga,2024,2024-12-14,Mallorca,Girona,1.65091,0.939735
+La_liga,2024,2024-12-14,Sevilla,Celta Vigo,0.487466,0.928845
+La_liga,2024,2024-12-14,Rayo Vallecano,Real Madrid,1.60769,1.15429
+La_liga,2024,2024-12-15,Atletico Madrid,Getafe,1.85376,0.238672
+La_liga,2024,2024-12-15,Alaves,Athletic Club,0.803776,0.843706
+La_liga,2024,2024-12-15,Villarreal,Real Betis,1.60957,1.6735
+La_liga,2024,2024-12-15,Real Sociedad,Las Palmas,1.24562,0.840973
+La_liga,2024,2024-12-15,Barcelona,Leganes,2.16597,0.77236
+La_liga,2024,2024-12-18,Villarreal,Rayo Vallecano,2.52908,1.85712
+La_liga,2024,2024-12-18,Espanyol,Valencia,1.87851,1.78128
+La_liga,2024,2024-12-20,Girona,Real Valladolid,2.16439,0.0119855
+La_liga,2024,2024-12-21,Getafe,Mallorca,0.735241,2.06274
+La_liga,2024,2024-12-21,Celta Vigo,Real Sociedad,1.22165,0.314488
+La_liga,2024,2024-12-21,Osasuna,Athletic Club,0.417557,1.18093
+La_liga,2024,2024-12-21,Barcelona,Atletico Madrid,3.37424,0.710716
+La_liga,2024,2024-12-22,Valencia,Alaves,1.34762,1.54294
+La_liga,2024,2024-12-22,Real Madrid,Sevilla,2.90098,1.41183
+La_liga,2024,2024-12-22,Las Palmas,Espanyol,0.956162,0.878983
+La_liga,2024,2024-12-22,Leganes,Villarreal,1.47457,4.01011
+La_liga,2024,2024-12-22,Real Betis,Rayo Vallecano,1.93031,0.878426
+La_liga,2024,2025-01-03,Valencia,Real Madrid,1.35313,2.69157
+La_liga,2024,2025-01-10,Rayo Vallecano,Celta Vigo,1.00439,3.25801
+La_liga,2024,2025-01-11,Alaves,Girona,1.72201,0.625652
+La_liga,2024,2025-01-11,Real Valladolid,Real Betis,1.62446,1.03813
+La_liga,2024,2025-01-11,Espanyol,Leganes,1.05544,1.92496
+La_liga,2024,2025-01-11,Sevilla,Valencia,0.734356,1.08107
+La_liga,2024,2025-01-12,Las Palmas,Getafe,1.62636,1.39575
+La_liga,2024,2025-01-12,Atletico Madrid,Osasuna,2.28719,0.391974
+La_liga,2024,2025-01-13,Real Sociedad,Villarreal,0.805968,1.22527
+La_liga,2024,2025-01-17,Espanyol,Real Valladolid,1.28839,1.72021
+La_liga,2024,2025-01-18,Girona,Sevilla,1.14329,3.09224
+La_liga,2024,2025-01-18,Leganes,Atletico Madrid,0.770342,3.0563
+La_liga,2024,2025-01-18,Real Betis,Alaves,0.501492,1.6539
+La_liga,2024,2025-01-18,Getafe,Barcelona,1.16921,3.50383
+La_liga,2024,2025-01-19,Celta Vigo,Athletic Club,0.40033,2.49675
+La_liga,2024,2025-01-19,Real Madrid,Las Palmas,6.40549,1.06201
+La_liga,2024,2025-01-19,Osasuna,Rayo Vallecano,0.660386,0.797534
+La_liga,2024,2025-01-19,Valencia,Real Sociedad,1.77248,0.758224
+La_liga,2024,2025-01-20,Villarreal,Mallorca,2.35437,0.390989
+La_liga,2024,2025-01-24,Las Palmas,Osasuna,0.833212,2.53692
+La_liga,2024,2025-01-25,Mallorca,Real Betis,0.789384,0.59491
+La_liga,2024,2025-01-25,Atletico Madrid,Villarreal,1.72274,1.78456
+La_liga,2024,2025-01-25,Sevilla,Espanyol,1.15013,1.27943
+La_liga,2024,2025-01-25,Real Valladolid,Real Madrid,0.234653,2.45677
+La_liga,2024,2025-01-26,Rayo Vallecano,Girona,3.01055,1.56182
+La_liga,2024,2025-01-26,Real Sociedad,Getafe,1.26074,2.01027
+La_liga,2024,2025-01-26,Athletic Club,Leganes,2.27277,1.57401
+La_liga,2024,2025-01-26,Barcelona,Valencia,4.35875,1.30328
+La_liga,2024,2025-01-27,Alaves,Celta Vigo,0.891741,0.155093
+La_liga,2024,2025-01-31,Leganes,Rayo Vallecano,1.00009,2.39088
+La_liga,2024,2025-02-01,Getafe,Sevilla,0.922731,0.871043
+La_liga,2024,2025-02-01,Villarreal,Real Valladolid,3.89354,0.747261
+La_liga,2024,2025-02-01,Atletico Madrid,Mallorca,1.59869,0.421783
+La_liga,2024,2025-02-01,Espanyol,Real Madrid,0.52719,1.52796
+La_liga,2024,2025-02-02,Barcelona,Alaves,1.18526,0.126278
+La_liga,2024,2025-02-02,Valencia,Celta Vigo,1.93065,0.51501
+La_liga,2024,2025-02-02,Osasuna,Real Sociedad,1.11088,2.35115
+La_liga,2024,2025-02-02,Real Betis,Athletic Club,1.31717,1.75905
+La_liga,2024,2025-02-03,Girona,Las Palmas,2.19186,1.31791
+La_liga,2024,2025-02-07,Rayo Vallecano,Real Valladolid,2.87261,0.610157
+La_liga,2024,2025-02-08,Celta Vigo,Real Betis,1.75134,1.51159
+La_liga,2024,2025-02-08,Athletic Club,Girona,3.81937,0.0558089
+La_liga,2024,2025-02-08,Las Palmas,Villarreal,1.90619,1.26021
+La_liga,2024,2025-02-08,Real Madrid,Atletico Madrid,2.55575,1.62463
+La_liga,2024,2025-02-09,Alaves,Getafe,1.25855,0.825065
+La_liga,2024,2025-02-09,Valencia,Leganes,2.03187,0.417562
+La_liga,2024,2025-02-09,Real Sociedad,Espanyol,1.67839,0.872507
+La_liga,2024,2025-02-09,Sevilla,Barcelona,0.921429,1.93199
+La_liga,2024,2025-02-10,Mallorca,Osasuna,1.17321,1.81967
+La_liga,2024,2025-02-14,Girona,Getafe,1.287,0.95535
+La_liga,2024,2025-02-15,Leganes,Alaves,1.76328,1.4212
+La_liga,2024,2025-02-15,Osasuna,Real Madrid,1.64382,2.73344
+La_liga,2024,2025-02-15,Atletico Madrid,Celta Vigo,0.689105,1.45388
+La_liga,2024,2025-02-15,Villarreal,Valencia,1.04228,0.740954
+La_liga,2024,2025-02-16,Espanyol,Athletic Club,1.19577,0.896815
+La_liga,2024,2025-02-16,Real Valladolid,Sevilla,0.532481,1.4827
+La_liga,2024,2025-02-16,Mallorca,Las Palmas,2.33414,1.04401
+La_liga,2024,2025-02-16,Real Betis,Real Sociedad,2.49445,0.20529
+La_liga,2024,2025-02-17,Barcelona,Rayo Vallecano,2.82775,1.30941
+La_liga,2024,2025-02-21,Celta Vigo,Osasuna,2.31891,0.838476
+La_liga,2024,2025-02-22,Alaves,Espanyol,1.54627,0.495881
+La_liga,2024,2025-02-22,Rayo Vallecano,Villarreal,0.514336,0.79404
+La_liga,2024,2025-02-22,Valencia,Atletico Madrid,1.35435,2.31785
+La_liga,2024,2025-02-22,Las Palmas,Barcelona,0.431009,1.66486
+La_liga,2024,2025-02-23,Athletic Club,Real Valladolid,5.3162,0.598765
+La_liga,2024,2025-02-23,Real Madrid,Girona,2.36313,0.325619
+La_liga,2024,2025-02-23,Getafe,Real Betis,0.86267,2.34571
+La_liga,2024,2025-02-23,Real Sociedad,Leganes,1.0679,0.256673
+La_liga,2024,2025-02-24,Sevilla,Mallorca,1.5822,1.64957
+La_liga,2024,2025-02-28,Real Valladolid,Las Palmas,2.17386,0.163235
+La_liga,2024,2025-03-01,Girona,Celta Vigo,0.89503,1.64758
+La_liga,2024,2025-03-01,Rayo Vallecano,Sevilla,2.59009,0.807803
+La_liga,2024,2025-03-01,Real Betis,Real Madrid,2.23957,1.05072
+La_liga,2024,2025-03-01,Atletico Madrid,Athletic Club,2.01612,1.54329
+La_liga,2024,2025-03-02,Leganes,Getafe,0.554524,0.585024
+La_liga,2024,2025-03-02,Barcelona,Real Sociedad,3.63697,0.0
+La_liga,2024,2025-03-02,Mallorca,Alaves,1.83195,1.63763
+La_liga,2024,2025-03-02,Osasuna,Valencia,1.26777,1.54983
+La_liga,2024,2025-03-08,Celta Vigo,Leganes,1.07104,0.99815
+La_liga,2024,2025-03-08,Alaves,Villarreal,1.21479,2.63287
+La_liga,2024,2025-03-08,Valencia,Real Valladolid,2.37105,0.645621
+La_liga,2024,2025-03-09,Getafe,Atletico Madrid,1.39814,1.02142
+La_liga,2024,2025-03-09,Real Madrid,Rayo Vallecano,1.59439,1.21003
+La_liga,2024,2025-03-09,Athletic Club,Mallorca,0.938663,1.02509
+La_liga,2024,2025-03-09,Real Betis,Las Palmas,2.31412,0.426529
+La_liga,2024,2025-03-09,Real Sociedad,Sevilla,0.803868,1.01162
+La_liga,2024,2025-03-10,Espanyol,Girona,0.325296,1.58787
+La_liga,2024,2025-03-14,Las Palmas,Alaves,1.94387,1.49888
+La_liga,2024,2025-03-15,Real Valladolid,Celta Vigo,0.839415,1.81654
+La_liga,2024,2025-03-15,Mallorca,Espanyol,2.57036,0.184342
+La_liga,2024,2025-03-15,Villarreal,Real Madrid,2.00539,1.10001
+La_liga,2024,2025-03-15,Girona,Valencia,1.17978,1.21975
+La_liga,2024,2025-03-16,Leganes,Real Betis,1.57329,2.92809
+La_liga,2024,2025-03-16,Sevilla,Athletic Club,0.459323,1.64488
+La_liga,2024,2025-03-16,Rayo Vallecano,Real Sociedad,0.536859,0.905535
+La_liga,2024,2025-03-16,Osasuna,Getafe,2.08486,0.900928
+La_liga,2024,2025-03-16,Atletico Madrid,Barcelona,1.09435,2.16215
+La_liga,2024,2025-03-27,Barcelona,Osasuna,4.63707,0.53356
+La_liga,2024,2025-03-29,Real Sociedad,Real Valladolid,1.32811,1.29525
+La_liga,2024,2025-03-29,Espanyol,Atletico Madrid,0.985043,0.994468
+La_liga,2024,2025-03-29,Alaves,Rayo Vallecano,1.60064,0.681703
+La_liga,2024,2025-03-29,Real Madrid,Leganes,3.59257,2.38359
+La_liga,2024,2025-03-30,Getafe,Villarreal,0.940085,1.38471
+La_liga,2024,2025-03-30,Barcelona,Girona,2.75333,0.490847
+La_liga,2024,2025-03-30,Valencia,Mallorca,0.731544,0.657805
+La_liga,2024,2025-03-30,Athletic Club,Osasuna,0.759463,0.564979
+La_liga,2024,2025-03-30,Real Betis,Sevilla,0.894203,0.867589
+La_liga,2024,2025-03-31,Celta Vigo,Las Palmas,1.07663,0.52734
+La_liga,2024,2025-04-04,Rayo Vallecano,Espanyol,0.501253,3.48741
+La_liga,2024,2025-04-05,Girona,Alaves,1.73306,0.805674
+La_liga,2024,2025-04-05,Real Madrid,Valencia,3.36121,1.08997
+La_liga,2024,2025-04-05,Mallorca,Celta Vigo,0.670008,1.12056
+La_liga,2024,2025-04-05,Barcelona,Real Betis,1.46844,0.249939
+La_liga,2024,2025-04-06,Las Palmas,Real Sociedad,1.75387,2.81501
+La_liga,2024,2025-04-06,Sevilla,Atletico Madrid,0.818692,1.23653
+La_liga,2024,2025-04-06,Real Valladolid,Getafe,0.300994,2.80288
+La_liga,2024,2025-04-06,Villarreal,Athletic Club,1.59491,0.998653
+La_liga,2024,2025-04-07,Leganes,Osasuna,2.22334,2.07408
+La_liga,2024,2025-04-11,Valencia,Sevilla,1.42634,0.910522
+La_liga,2024,2025-04-12,Real Sociedad,Mallorca,0.616782,0.801126
+La_liga,2024,2025-04-12,Getafe,Las Palmas,1.61783,1.54225
+La_liga,2024,2025-04-12,Celta Vigo,Espanyol,0.824366,0.780846
+La_liga,2024,2025-04-12,Leganes,Barcelona,0.5988,1.10105
+La_liga,2024,2025-04-13,Osasuna,Girona,1.68846,0.57428
+La_liga,2024,2025-04-13,Alaves,Real Madrid,0.607781,1.26541
+La_liga,2024,2025-04-13,Real Betis,Villarreal,2.04046,1.32607
+La_liga,2024,2025-04-13,Athletic Club,Rayo Vallecano,1.97654,1.81883
+La_liga,2024,2025-04-14,Atletico Madrid,Real Valladolid,4.06291,1.38016
+La_liga,2024,2025-04-18,Espanyol,Getafe,0.367268,0.736613
+La_liga,2024,2025-04-19,Rayo Vallecano,Valencia,0.722317,2.06284
+La_liga,2024,2025-04-19,Barcelona,Celta Vigo,2.56587,2.50499
+La_liga,2024,2025-04-19,Mallorca,Leganes,1.06921,0.951824
+La_liga,2024,2025-04-19,Las Palmas,Atletico Madrid,0.768437,0.757145
+La_liga,2024,2025-04-20,Real Valladolid,Osasuna,1.45455,2.36202
+La_liga,2024,2025-04-20,Villarreal,Real Sociedad,2.14498,2.29777
+La_liga,2024,2025-04-20,Sevilla,Alaves,1.89613,1.30312
+La_liga,2024,2025-04-20,Real Madrid,Athletic Club,2.40667,0.132511
+La_liga,2024,2025-04-21,Girona,Real Betis,1.10326,2.28252
+La_liga,2024,2025-04-22,Valencia,Espanyol,1.07897,0.344156
+La_liga,2024,2025-04-22,Barcelona,Mallorca,3.43457,0.326579
+La_liga,2024,2025-04-23,Athletic Club,Las Palmas,2.63805,1.01774
+La_liga,2024,2025-04-23,Celta Vigo,Villarreal,3.19678,0.5946
+La_liga,2024,2025-04-23,Getafe,Real Madrid,2.53565,1.74803
+La_liga,2024,2025-04-23,Alaves,Real Sociedad,0.815479,0.472083
+La_liga,2024,2025-04-24,Osasuna,Sevilla,0.373711,0.934425
+La_liga,2024,2025-04-24,Leganes,Girona,0.330809,0.764098
+La_liga,2024,2025-04-24,Atletico Madrid,Rayo Vallecano,3.34529,1.13186
+La_liga,2024,2025-04-24,Real Betis,Real Valladolid,2.26702,0.839722
+La_liga,2024,2025-04-27,Villarreal,Espanyol,1.35413,1.53522
+La_liga,2024,2025-05-02,Rayo Vallecano,Getafe,1.2162,0.8041
+La_liga,2024,2025-05-03,Alaves,Atletico Madrid,0.908148,0.391409
+La_liga,2024,2025-05-03,Villarreal,Osasuna,2.30041,1.41412
+La_liga,2024,2025-05-03,Las Palmas,Valencia,1.80995,1.6731
+La_liga,2024,2025-05-03,Real Valladolid,Barcelona,0.745612,2.21168
+La_liga,2024,2025-05-04,Real Madrid,Celta Vigo,3.07408,2.13071
+La_liga,2024,2025-05-04,Sevilla,Leganes,2.33742,0.804853
+La_liga,2024,2025-05-04,Espanyol,Real Betis,0.873167,1.05631
+La_liga,2024,2025-05-04,Real Sociedad,Athletic Club,0.893155,0.232928
+La_liga,2024,2025-05-05,Girona,Mallorca,1.77813,0.488126
+La_liga,2024,2025-05-09,Las Palmas,Rayo Vallecano,0.721442,1.00781
+La_liga,2024,2025-05-10,Valencia,Getafe,2.97396,0.590071
+La_liga,2024,2025-05-10,Celta Vigo,Sevilla,0.959531,2.61391
+La_liga,2024,2025-05-10,Girona,Villarreal,0.280235,2.28245
+La_liga,2024,2025-05-10,Mallorca,Real Valladolid,1.75638,2.76393
+La_liga,2024,2025-05-10,Atletico Madrid,Real Sociedad,1.71528,0.298675
+La_liga,2024,2025-05-11,Leganes,Espanyol,2.05779,1.57739
+La_liga,2024,2025-05-11,Barcelona,Real Madrid,4.10632,2.5616
+La_liga,2024,2025-05-11,Athletic Club,Alaves,1.35049,0.642793
+La_liga,2024,2025-05-11,Real Betis,Osasuna,0.359348,2.2272
+La_liga,2024,2025-05-13,Real Valladolid,Girona,1.30694,1.56752
+La_liga,2024,2025-05-13,Real Sociedad,Celta Vigo,3.31324,1.29945
+La_liga,2024,2025-05-13,Sevilla,Las Palmas,0.93125,0.399067
+La_liga,2024,2025-05-14,Alaves,Valencia,2.06262,0.584778
+La_liga,2024,2025-05-14,Villarreal,Leganes,2.28885,1.19032
+La_liga,2024,2025-05-14,Real Madrid,Mallorca,3.46174,0.475193
+La_liga,2024,2025-05-15,Osasuna,Atletico Madrid,1.07473,1.34093
+La_liga,2024,2025-05-15,Rayo Vallecano,Real Betis,1.30199,1.17134
+La_liga,2024,2025-05-15,Espanyol,Barcelona,1.51531,0.735877
+La_liga,2024,2025-05-15,Getafe,Athletic Club,0.73382,1.33336
+La_liga,2024,2025-05-18,Atletico Madrid,Real Betis,4.94276,0.821908
+La_liga,2024,2025-05-18,Barcelona,Villarreal,1.569,1.96183
+La_liga,2024,2025-05-18,Celta Vigo,Rayo Vallecano,2.4242,0.906857
+La_liga,2024,2025-05-18,Valencia,Athletic Club,0.388682,1.16214
+La_liga,2024,2025-05-18,Mallorca,Getafe,0.809089,1.55977
+La_liga,2024,2025-05-18,Real Sociedad,Girona,1.87253,1.64512
+La_liga,2024,2025-05-18,Sevilla,Real Madrid,0.484891,1.95992
+La_liga,2024,2025-05-18,Real Valladolid,Alaves,0.890453,1.22692
+La_liga,2024,2025-05-18,Las Palmas,Leganes,0.513718,1.06274
+La_liga,2024,2025-05-18,Osasuna,Espanyol,1.92502,0.572332
+La_liga,2024,2025-05-23,Real Betis,Valencia,1.15286,0.647724
+La_liga,2024,2025-05-24,Real Madrid,Real Sociedad,2.61915,1.18496
+La_liga,2024,2025-05-24,Espanyol,Las Palmas,1.72167,0.735505
+La_liga,2024,2025-05-24,Leganes,Real Valladolid,1.74736,0.479375
+La_liga,2024,2025-05-24,Alaves,Osasuna,1.57466,1.88098
+La_liga,2024,2025-05-24,Getafe,Celta Vigo,0.35897,1.30818
+La_liga,2024,2025-05-24,Rayo Vallecano,Mallorca,2.11982,0.747939
+La_liga,2024,2025-05-25,Girona,Atletico Madrid,0.0503369,3.10637
+La_liga,2024,2025-05-25,Villarreal,Sevilla,1.28805,1.64829
+La_liga,2024,2025-05-25,Athletic Club,Barcelona,0.750806,3.36402
+La_liga,2025,2025-08-15,Girona,Rayo Vallecano,0.795304,3.25355
+La_liga,2025,2025-08-15,Villarreal,Real Oviedo,2.60739,0.85578
+La_liga,2025,2025-08-16,Mallorca,Barcelona,0.529217,2.0243
+La_liga,2025,2025-08-16,Alaves,Levante,1.72315,0.74203
+La_liga,2025,2025-08-16,Valencia,Real Sociedad,1.58599,1.04897
+La_liga,2025,2025-08-17,Celta Vigo,Getafe,0.744247,1.50131
+La_liga,2025,2025-08-17,Athletic Club,Sevilla,2.67586,0.901645
+La_liga,2025,2025-08-17,Espanyol,Atletico Madrid,1.41508,1.29319
+La_liga,2025,2025-08-18,Elche,Real Betis,0.981494,1.59562
+La_liga,2025,2025-08-19,Real Madrid,Osasuna,1.4294,0.201044
+La_liga,2025,2025-08-22,Real Betis,Alaves,2.13985,1.43838
+La_liga,2025,2025-08-23,Mallorca,Celta Vigo,0.664974,0.917413
+La_liga,2025,2025-08-23,Atletico Madrid,Elche,1.68159,0.313268
+La_liga,2025,2025-08-23,Levante,Barcelona,2.68812,2.48128
+La_liga,2025,2025-08-24,Osasuna,Valencia,0.946758,0.589594
+La_liga,2025,2025-08-24,Villarreal,Girona,2.97707,0.140267
+La_liga,2025,2025-08-24,Real Sociedad,Espanyol,1.43366,1.87234
+La_liga,2025,2025-08-24,Real Oviedo,Real Madrid,0.33749,1.82072
+La_liga,2025,2025-08-25,Athletic Club,Rayo Vallecano,1.68759,0.493587
+La_liga,2025,2025-08-25,Sevilla,Getafe,0.833075,1.32944
+La_liga,2025,2025-08-27,Celta Vigo,Real Betis,0.905201,0.714458
+La_liga,2025,2025-08-29,Elche,Levante,1.44309,0.969663
+La_liga,2025,2025-08-29,Valencia,Getafe,1.54336,0.757418
+La_liga,2025,2025-08-30,Alaves,Atletico Madrid,0.855094,0.960547
+La_liga,2025,2025-08-30,Real Oviedo,Real Sociedad,0.45706,0.92221
+La_liga,2025,2025-08-30,Girona,Sevilla,2.00908,1.62032
+La_liga,2025,2025-08-30,Real Madrid,Mallorca,1.84116,0.549872
+La_liga,2025,2025-08-31,Celta Vigo,Villarreal,0.876041,0.96978
+La_liga,2025,2025-08-31,Real Betis,Athletic Club,0.716186,1.11141
+La_liga,2025,2025-08-31,Espanyol,Osasuna,1.36886,1.38167
+La_liga,2025,2025-08-31,Rayo Vallecano,Barcelona,1.87124,2.35774
+La_liga,2025,2025-09-12,Sevilla,Elche,0.346397,0.781151
+La_liga,2025,2025-09-13,Getafe,Real Oviedo,0.954087,0.369812
+La_liga,2025,2025-09-13,Real Sociedad,Real Madrid,3.14772,2.54171
+La_liga,2025,2025-09-13,Athletic Club,Alaves,0.866662,0.090756
+La_liga,2025,2025-09-13,Atletico Madrid,Villarreal,1.5106,0.668177
+La_liga,2025,2025-09-14,Celta Vigo,Girona,1.80278,1.41213
+La_liga,2025,2025-09-14,Levante,Real Betis,1.02425,2.19546
+La_liga,2025,2025-09-14,Osasuna,Rayo Vallecano,1.4012,0.979149
+La_liga,2025,2025-09-14,Barcelona,Valencia,3.46022,0.12495
+La_liga,2025,2025-09-15,Espanyol,Mallorca,2.67405,2.03185
+La_liga,2025,2025-09-19,Real Betis,Real Sociedad,2.53579,0.606673
+La_liga,2025,2025-09-20,Girona,Levante,0.423855,4.50183
+La_liga,2025,2025-09-20,Real Madrid,Espanyol,2.06136,0.969443
+La_liga,2025,2025-09-20,Villarreal,Osasuna,3.56395,1.95599
+La_liga,2025,2025-09-20,Alaves,Sevilla,0.910257,0.891992
+La_liga,2025,2025-09-20,Valencia,Athletic Club,2.01007,0.499198
+La_liga,2025,2025-09-21,Rayo Vallecano,Celta Vigo,1.3145,1.28175
+La_liga,2025,2025-09-21,Mallorca,Atletico Madrid,0.530939,2.08772
+La_liga,2025,2025-09-21,Elche,Real Oviedo,1.57497,1.10565
+La_liga,2025,2025-09-21,Barcelona,Getafe,2.96429,0.215949
+La_liga,2025,2025-09-23,Espanyol,Valencia,3.31313,1.00785
+La_liga,2025,2025-09-23,Athletic Club,Girona,2.02629,0.856618
+La_liga,2025,2025-09-23,Levante,Real Madrid,1.70121,4.06315
+La_liga,2025,2025-09-23,Sevilla,Villarreal,0.83617,2.40523
+La_liga,2025,2025-09-24,Getafe,Alaves,0.576203,1.21176
+La_liga,2025,2025-09-24,Real Sociedad,Mallorca,2.82857,0.641137
+La_liga,2025,2025-09-24,Atletico Madrid,Rayo Vallecano,4.95017,1.61988
+La_liga,2025,2025-09-25,Osasuna,Elche,1.17524,1.05089
+La_liga,2025,2025-09-25,Real Oviedo,Barcelona,1.45014,2.07001
+La_liga,2025,2025-09-26,Girona,Espanyol,1.07661,0.949116
+La_liga,2025,2025-09-27,Getafe,Levante,0.830967,1.27833
+La_liga,2025,2025-09-27,Atletico Madrid,Real Madrid,2.79075,1.02797
+La_liga,2025,2025-09-27,Mallorca,Alaves,1.04267,0.566415
+La_liga,2025,2025-09-27,Villarreal,Athletic Club,1.86396,1.56287
+La_liga,2025,2025-09-28,Rayo Vallecano,Sevilla,1.89093,0.579597
+La_liga,2025,2025-09-28,Elche,Celta Vigo,4.03596,0.821768
+La_liga,2025,2025-09-28,Barcelona,Real Sociedad,3.00954,0.957079
+La_liga,2025,2025-09-28,Real Betis,Osasuna,1.18955,0.578485
+La_liga,2025,2025-09-29,Valencia,Real Oviedo,1.72261,0.997143
+La_liga,2025,2025-10-03,Osasuna,Getafe,0.692026,0.856515
+La_liga,2025,2025-10-04,Real Oviedo,Levante,1.08551,1.62121
+La_liga,2025,2025-10-04,Girona,Valencia,1.16415,2.22808
+La_liga,2025,2025-10-04,Athletic Club,Mallorca,1.73351,0.213773
+La_liga,2025,2025-10-04,Real Madrid,Villarreal,4.32336,0.956644
+La_liga,2025,2025-10-05,Alaves,Elche,2.85063,0.661537
+La_liga,2025,2025-10-05,Sevilla,Barcelona,2.89414,2.4823
+La_liga,2025,2025-10-05,Espanyol,Real Betis,2.0699,1.43721
+La_liga,2025,2025-10-05,Real Sociedad,Rayo Vallecano,0.768998,0.684504
+La_liga,2025,2025-10-05,Celta Vigo,Atletico Madrid,2.27285,0.710823
+La_liga,2025,2025-10-17,Real Oviedo,Espanyol,1.21155,4.46256
+La_liga,2025,2025-10-18,Sevilla,Mallorca,1.25884,1.95555
+La_liga,2025,2025-10-18,Barcelona,Girona,2.41958,1.69375
+La_liga,2025,2025-10-18,Villarreal,Real Betis,0.980598,0.895532
+La_liga,2025,2025-10-18,Atletico Madrid,Osasuna,2.24415,0.981492
+La_liga,2025,2025-10-19,Elche,Athletic Club,0.823916,0.240214
+La_liga,2025,2025-10-19,Celta Vigo,Real Sociedad,0.717367,2.13562
+La_liga,2025,2025-10-19,Levante,Rayo Vallecano,0.940509,2.53118
+La_liga,2025,2025-10-19,Getafe,Real Madrid,0.530119,2.14595
+La_liga,2025,2025-10-20,Alaves,Valencia,1.05624,0.318076
+La_liga,2025,2025-10-24,Real Sociedad,Sevilla,1.64382,0.247146
+La_liga,2025,2025-10-25,Girona,Real Oviedo,2.24132,2.22406
+La_liga,2025,2025-10-25,Espanyol,Elche,1.70342,1.11414
+La_liga,2025,2025-10-25,Athletic Club,Getafe,0.358524,1.00378
+La_liga,2025,2025-10-25,Valencia,Villarreal,0.641435,2.62387
+La_liga,2025,2025-10-26,Mallorca,Levante,1.86979,2.3579
+La_liga,2025,2025-10-26,Real Madrid,Barcelona,3.41322,1.12434
+La_liga,2025,2025-10-26,Osasuna,Celta Vigo,2.318,1.54054
+La_liga,2025,2025-10-26,Rayo Vallecano,Alaves,1.54971,1.41466
+La_liga,2025,2025-10-27,Real Betis,Atletico Madrid,1.33792,0.876554
+La_liga,2025,2025-10-31,Getafe,Girona,1.40213,1.54366
+La_liga,2025,2025-11-01,Villarreal,Rayo Vallecano,2.7136,1.08632
+La_liga,2025,2025-11-01,Atletico Madrid,Sevilla,2.98632,0.376887
+La_liga,2025,2025-11-01,Real Sociedad,Athletic Club,1.8412,1.13112
+La_liga,2025,2025-11-01,Real Madrid,Valencia,2.89965,0.292177
+La_liga,2025,2025-11-02,Levante,Celta Vigo,1.23651,1.92474
+La_liga,2025,2025-11-02,Alaves,Espanyol,2.18038,1.04283
+La_liga,2025,2025-11-02,Barcelona,Elche,2.8073,0.549079
+La_liga,2025,2025-11-02,Real Betis,Mallorca,2.82134,0.749852
+La_liga,2025,2025-11-03,Real Oviedo,Osasuna,0.717473,0.626317
+La_liga,2025,2025-11-07,Elche,Real Sociedad,0.808307,1.47221
+La_liga,2025,2025-11-08,Girona,Alaves,1.26365,2.00772
+La_liga,2025,2025-11-08,Sevilla,Osasuna,1.22271,0.967352
+La_liga,2025,2025-11-08,Atletico Madrid,Levante,3.03599,1.29112
+La_liga,2025,2025-11-08,Espanyol,Villarreal,0.476157,1.47118
+La_liga,2025,2025-11-09,Athletic Club,Real Oviedo,2.65219,0.182696
+La_liga,2025,2025-11-09,Rayo Vallecano,Real Madrid,1.60641,0.841463
+La_liga,2025,2025-11-09,Valencia,Real Betis,1.95148,1.58932
+La_liga,2025,2025-11-09,Mallorca,Getafe,1.30353,0.539674
+La_liga,2025,2025-11-09,Celta Vigo,Barcelona,0.512253,3.42936
+La_liga,2025,2025-11-21,Valencia,Levante,1.65038,0.67426
+La_liga,2025,2025-11-22,Alaves,Celta Vigo,0.3056,1.32351
+La_liga,2025,2025-11-22,Barcelona,Athletic Club,2.32922,1.04615
+La_liga,2025,2025-11-22,Osasuna,Real Sociedad,1.27964,1.76546
+La_liga,2025,2025-11-22,Villarreal,Mallorca,2.6371,1.38464
+La_liga,2025,2025-11-23,Real Oviedo,Rayo Vallecano,0.499406,0.922998
+La_liga,2025,2025-11-23,Real Betis,Girona,1.5784,1.48903
+La_liga,2025,2025-11-23,Getafe,Atletico Madrid,0.578828,1.47677
+La_liga,2025,2025-11-23,Elche,Real Madrid,1.59518,3.88258
+La_liga,2025,2025-11-24,Espanyol,Sevilla,1.16625,1.80002
+La_liga,2025,2025-11-28,Getafe,Elche,1.34046,0.448894
+La_liga,2025,2025-11-29,Mallorca,Osasuna,1.10581,1.11108
+La_liga,2025,2025-11-29,Barcelona,Alaves,2.51096,2.09256
+La_liga,2025,2025-11-29,Levante,Athletic Club,1.20253,2.80864
+La_liga,2025,2025-11-29,Atletico Madrid,Real Oviedo,2.40693,0.921985
+La_liga,2025,2025-11-30,Real Sociedad,Villarreal,1.3715,1.63038
+La_liga,2025,2025-11-30,Sevilla,Real Betis,0.735196,1.17861
+La_liga,2025,2025-11-30,Celta Vigo,Espanyol,0.635572,0.599243
+La_liga,2025,2025-11-30,Girona,Real Madrid,1.05171,2.21359
+La_liga,2025,2025-12-01,Rayo Vallecano,Valencia,2.13298,0.897663
+La_liga,2025,2025-12-02,Barcelona,Atletico Madrid,3.46121,1.35018
+La_liga,2025,2025-12-03,Athletic Club,Real Madrid,0.917315,2.36743
+La_liga,2025,2025-12-05,Real Oviedo,Mallorca,1.60009,0.617185
+La_liga,2025,2025-12-06,Villarreal,Getafe,0.816941,0.282254
+La_liga,2025,2025-12-06,Alaves,Real Sociedad,1.88765,1.09935
+La_liga,2025,2025-12-06,Real Betis,Barcelona,2.74214,3.30288
+La_liga,2025,2025-12-06,Athletic Club,Atletico Madrid,1.18636,0.771885
+La_liga,2025,2025-12-07,Elche,Girona,1.59513,0.781043
+La_liga,2025,2025-12-07,Valencia,Sevilla,1.23901,0.635478
+La_liga,2025,2025-12-07,Espanyol,Rayo Vallecano,1.57985,0.285545
+La_liga,2025,2025-12-07,Real Madrid,Celta Vigo,2.41681,1.60908
+La_liga,2025,2025-12-08,Osasuna,Levante,1.74988,0.544977
+La_liga,2025,2025-12-12,Real Sociedad,Girona,1.02349,1.16894
+La_liga,2025,2025-12-13,Atletico Madrid,Valencia,2.07076,1.26068
+La_liga,2025,2025-12-13,Mallorca,Elche,2.581,0.311674
+La_liga,2025,2025-12-13,Barcelona,Osasuna,2.14468,0.228217
+La_liga,2025,2025-12-13,Getafe,Espanyol,0.305925,0.75472
+La_liga,2025,2025-12-14,Sevilla,Real Oviedo,2.31899,0.416975
+La_liga,2025,2025-12-14,Celta Vigo,Athletic Club,1.97074,1.66561
+La_liga,2025,2025-12-14,Alaves,Real Madrid,1.313,1.90656
+La_liga,2025,2025-12-15,Rayo Vallecano,Real Betis,2.1848,0.788766
+La_liga,2025,2025-12-19,Valencia,Mallorca,2.16012,0.199412
+La_liga,2025,2025-12-20,Real Oviedo,Celta Vigo,0.517531,0.600009
+La_liga,2025,2025-12-20,Levante,Real Sociedad,1.22005,1.62986
+La_liga,2025,2025-12-20,Osasuna,Alaves,2.39145,0.718671
+La_liga,2025,2025-12-20,Real Madrid,Sevilla,4.00139,1.51418
+La_liga,2025,2025-12-21,Girona,Atletico Madrid,1.11565,1.26201
+La_liga,2025,2025-12-21,Villarreal,Barcelona,2.16466,3.27381
+La_liga,2025,2025-12-21,Elche,Rayo Vallecano,3.66996,1.14923
+La_liga,2025,2025-12-21,Real Betis,Getafe,3.46022,1.24726
+La_liga,2025,2025-12-22,Athletic Club,Espanyol,1.72282,0.908988
+La_liga,2025,2026-01-02,Rayo Vallecano,Getafe,0.662324,0.663898
+La_liga,2025,2026-01-03,Celta Vigo,Valencia,2.59029,1.79296
+La_liga,2025,2026-01-03,Osasuna,Athletic Club,0.868051,1.554
+La_liga,2025,2026-01-03,Elche,Villarreal,1.52119,2.635
+La_liga,2025,2026-01-03,Espanyol,Barcelona,1.79661,2.94252
+La_liga,2025,2026-01-04,Sevilla,Levante,1.66562,1.65102
+La_liga,2025,2026-01-04,Real Madrid,Real Betis,3.0073,0.974623
+La_liga,2025,2026-01-04,Alaves,Real Oviedo,1.56756,3.21906
+La_liga,2025,2026-01-04,Mallorca,Girona,1.48338,1.45714
+La_liga,2025,2026-01-04,Real Sociedad,Atletico Madrid,1.70649,1.37325
+La_liga,2025,2026-01-09,Getafe,Real Sociedad,0.240168,1.25801
+La_liga,2025,2026-01-10,Real Oviedo,Real Betis,1.01026,2.70809
+La_liga,2025,2026-01-10,Villarreal,Alaves,1.38322,0.844572
+La_liga,2025,2026-01-10,Girona,Osasuna,0.984024,1.22674
+La_liga,2025,2026-01-10,Valencia,Elche,2.04147,0.244413
+La_liga,2025,2026-01-11,Rayo Vallecano,Mallorca,2.05105,1.05743
+La_liga,2025,2026-01-11,Levante,Espanyol,1.18232,1.58922
+La_liga,2025,2026-01-12,Sevilla,Celta Vigo,0.262521,2.07629
+La_liga,2025,2026-01-16,Espanyol,Girona,1.26738,1.82377
+La_liga,2025,2026-01-17,Real Madrid,Levante,2.54865,0.787501
+La_liga,2025,2026-01-17,Mallorca,Athletic Club,3.11432,2.28242
+La_liga,2025,2026-01-17,Osasuna,Real Oviedo,2.03551,1.36173
+La_liga,2025,2026-01-17,Real Betis,Villarreal,1.34951,1.17907
+La_liga,2025,2026-01-18,Getafe,Valencia,0.584591,0.746856
+La_liga,2025,2026-01-18,Atletico Madrid,Alaves,1.7743,1.21004
+La_liga,2025,2026-01-18,Celta Vigo,Rayo Vallecano,1.90274,1.31932
+La_liga,2025,2026-01-18,Real Sociedad,Barcelona,1.55875,3.92031
+La_liga,2025,2026-01-19,Elche,Sevilla,1.48075,2.4961
+La_liga,2025,2026-01-23,Levante,Elche,3.24455,0.632971
+La_liga,2025,2026-01-24,Rayo Vallecano,Osasuna,0.669564,1.36861
+La_liga,2025,2026-01-24,Valencia,Espanyol,2.76956,1.75941
+La_liga,2025,2026-01-24,Sevilla,Athletic Club,1.43055,1.91259
+La_liga,2025,2026-01-24,Villarreal,Real Madrid,0.952831,1.62206
+La_liga,2025,2026-01-25,Atletico Madrid,Mallorca,1.42501,0.367893
+La_liga,2025,2026-01-25,Barcelona,Real Oviedo,2.59917,0.486404
+La_liga,2025,2026-01-25,Real Sociedad,Celta Vigo,2.15496,1.63115
+La_liga,2025,2026-01-25,Alaves,Real Betis,1.67102,1.78662
+La_liga,2025,2026-01-26,Girona,Getafe,1.01571,1.1089
+La_liga,2025,2026-01-30,Espanyol,Alaves,1.20096,1.32248
+La_liga,2025,2026-01-31,Real Oviedo,Girona,1.26601,0.664225
+La_liga,2025,2026-01-31,Osasuna,Villarreal,2.13467,0.911128
+La_liga,2025,2026-01-31,Levante,Atletico Madrid,0.41109,0.615283
+La_liga,2025,2026-01-31,Elche,Barcelona,0.839,7.11049
+La_liga,2025,2026-02-01,Real Madrid,Rayo Vallecano,2.30208,1.06935
+La_liga,2025,2026-02-01,Real Betis,Valencia,2.16883,1.88674
+La_liga,2025,2026-02-01,Getafe,Celta Vigo,0.499866,0.256881
+La_liga,2025,2026-02-01,Athletic Club,Real Sociedad,0.893754,1.58578
+La_liga,2025,2026-02-02,Mallorca,Sevilla,3.04346,1.24318
+La_liga,2025,2026-02-06,Celta Vigo,Osasuna,2.0351,1.00253
+La_liga,2025,2026-02-07,Barcelona,Mallorca,2.48168,1.01087
+La_liga,2025,2026-02-07,Real Sociedad,Elche,1.7719,1.08664
+La_liga,2025,2026-02-08,Alaves,Getafe,3.01162,1.7859
+La_liga,2025,2026-02-08,Athletic Club,Levante,2.77377,0.615311
+La_liga,2025,2026-02-08,Sevilla,Girona,0.958247,2.60199
+La_liga,2025,2026-02-08,Atletico Madrid,Real Betis,0.625525,0.839838
+La_liga,2025,2026-02-08,Valencia,Real Madrid,0.571838,1.04576
+La_liga,2025,2026-02-09,Villarreal,Espanyol,1.53925,0.744747
+La_liga,2025,2026-02-13,Elche,Osasuna,2.33332,0.81264
+La_liga,2025,2026-02-14,Espanyol,Celta Vigo,1.16112,2.81494
+La_liga,2025,2026-02-14,Getafe,Villarreal,1.61761,0.969388
+La_liga,2025,2026-02-14,Sevilla,Alaves,0.354256,1.38983
+La_liga,2025,2026-02-14,Real Madrid,Real Sociedad,3.05918,1.66018
+La_liga,2025,2026-02-15,Real Oviedo,Athletic Club,0.861013,1.20566
+La_liga,2025,2026-02-15,Rayo Vallecano,Atletico Madrid,2.75329,0.752854
+La_liga,2025,2026-02-15,Levante,Valencia,1.45737,0.743814
+La_liga,2025,2026-02-15,Mallorca,Real Betis,0.731317,2.04841
+La_liga,2025,2026-02-16,Girona,Barcelona,2.8897,2.69655
+La_liga,2025,2026-02-18,Levante,Villarreal,0.774339,2.40024
+La_liga,2025,2026-02-20,Athletic Club,Elche,3.38352,0.783583
+La_liga,2025,2026-02-21,Real Sociedad,Real Oviedo,2.77486,1.75088
+La_liga,2025,2026-02-21,Real Betis,Rayo Vallecano,2.13548,1.30345
+La_liga,2025,2026-02-21,Osasuna,Real Madrid,2.31248,2.02307
+La_liga,2025,2026-02-21,Atletico Madrid,Espanyol,3.28587,1.04114
+La_liga,2025,2026-02-22,Getafe,Sevilla,0.250539,0.283172
+La_liga,2025,2026-02-22,Barcelona,Levante,4.24402,0.602552
+La_liga,2025,2026-02-22,Celta Vigo,Mallorca,2.93904,0.0207331
+La_liga,2025,2026-02-22,Villarreal,Valencia,2.38144,1.91256
+La_liga,2025,2026-02-23,Alaves,Girona,2.1366,2.05717
+La_liga,2025,2026-02-27,Levante,Alaves,2.77253,1.29855
+La_liga,2025,2026-02-28,Rayo Vallecano,Athletic Club,1.35951,0.428457
+La_liga,2025,2026-02-28,Barcelona,Villarreal,3.54743,1.36182
+La_liga,2025,2026-02-28,Mallorca,Real Sociedad,0.754182,0.929702
+La_liga,2025,2026-02-28,Real Oviedo,Atletico Madrid,1.50089,0.853142
+La_liga,2025,2026-03-01,Elche,Espanyol,1.82376,0.834858
+La_liga,2025,2026-03-01,Valencia,Osasuna,1.31076,0.259132
+La_liga,2025,2026-03-01,Real Betis,Sevilla,1.48441,0.656164
+La_liga,2025,2026-03-01,Girona,Celta Vigo,1.57036,0.697106
+La_liga,2025,2026-03-02,Real Madrid,Getafe,2.02274,0.476324
+La_liga,2025,2026-03-04,Rayo Vallecano,Real Oviedo,2.55086,1.01052
+La_liga,2025,2026-03-06,Celta Vigo,Real Madrid,0.910298,0.637644
+La_liga,2025,2026-03-07,Osasuna,Mallorca,3.09031,1.03165
+La_liga,2025,2026-03-07,Levante,Girona,0.819009,1.917
+La_liga,2025,2026-03-07,Atletico Madrid,Real Sociedad,3.57972,0.313932
+La_liga,2025,2026-03-07,Athletic Club,Barcelona,1.04698,0.560009
+La_liga,2025,2026-03-08,Villarreal,Elche,2.30632,1.62051
+La_liga,2025,2026-03-08,Getafe,Real Betis,0.821088,1.24912
+La_liga,2025,2026-03-08,Sevilla,Rayo Vallecano,1.14573,0.211673
+La_liga,2025,2026-03-08,Valencia,Alaves,2.51657,1.60795
+La_liga,2025,2026-03-09,Espanyol,Real Oviedo,1.55092,0.886689
+La_liga,2025,2026-03-13,Alaves,Villarreal,0.287232,0.873846
+La_liga,2025,2026-03-14,Girona,Athletic Club,2.19442,1.97271
+La_liga,2025,2026-03-14,Atletico Madrid,Getafe,2.14469,1.58248
+La_liga,2025,2026-03-14,Real Oviedo,Valencia,1.8648,0.486871
+La_liga,2025,2026-03-14,Real Madrid,Elche,1.72531,1.3711
+La_liga,2025,2026-03-15,Mallorca,Espanyol,2.1497,1.35243
+La_liga,2025,2026-03-15,Barcelona,Sevilla,3.8639,1.04304
+La_liga,2025,2026-03-15,Real Betis,Celta Vigo,1.87752,0.646702
+La_liga,2025,2026-03-15,Real Sociedad,Osasuna,2.91429,0.615126
+La_liga,2025,2026-03-16,Rayo Vallecano,Levante,1.68134,1.45599
+La_liga,2025,2026-03-20,Villarreal,Real Sociedad,3.35586,0.894953
+La_liga,2025,2026-03-21,Elche,Mallorca,1.51605,1.51939
+La_liga,2025,2026-03-21,Espanyol,Getafe,1.51208,2.06384
+La_liga,2025,2026-03-21,Levante,Real Oviedo,2.92669,1.33569
+La_liga,2025,2026-03-21,Osasuna,Girona,2.26232,0.232115
+La_liga,2025,2026-03-21,Sevilla,Valencia,0.505411,1.7133
+La_liga,2025,2026-03-22,Barcelona,Rayo Vallecano,1.92205,2.19631
+La_liga,2025,2026-03-22,Celta Vigo,Alaves,1.70969,1.67221
+La_liga,2025,2026-03-22,Athletic Club,Real Betis,1.92715,0.591202
+La_liga,2025,2026-03-22,Real Madrid,Atletico Madrid,2.96605,1.40234
+La_liga,2025,2026-04-03,Rayo Vallecano,Elche,1.51493,0.601974
+La_liga,2025,2026-04-04,Real Sociedad,Levante,2.96404,0.320219
+La_liga,2025,2026-04-04,Mallorca,Real Madrid,1.03875,1.51454
+La_liga,2025,2026-04-04,Real Betis,Espanyol,2.00215,0.144091
+La_liga,2025,2026-04-04,Atletico Madrid,Barcelona,0.919286,2.68584
+La_liga,2025,2026-04-05,Getafe,Athletic Club,1.96345,0.524379
+La_liga,2025,2026-04-05,Valencia,Celta Vigo,0.720964,1.457
+La_liga,2025,2026-04-05,Real Oviedo,Sevilla,0.785105,0.840736
+La_liga,2025,2026-04-05,Alaves,Osasuna,1.65967,1.61149
+La_liga,2025,2026-04-06,Girona,Villarreal,0.653493,0.443518
+La_liga,2025,2026-04-10,Real Madrid,Girona,1.98086,0.46667
+La_liga,2025,2026-04-11,Real Sociedad,Alaves,1.295,1.206
+La_liga,2025,2026-04-11,Elche,Valencia,1.03489,2.76889
+La_liga,2025,2026-04-11,Barcelona,Espanyol,3.30789,1.13134
+La_liga,2025,2026-04-11,Sevilla,Atletico Madrid,1.6578,0.855474
+La_liga,2025,2026-04-12,Osasuna,Real Betis,1.52928,0.411183
+La_liga,2025,2026-04-12,Mallorca,Rayo Vallecano,2.54659,1.97051
+La_liga,2025,2026-04-12,Celta Vigo,Real Oviedo,1.15878,2.12846
+La_liga,2025,2026-04-12,Athletic Club,Villarreal,1.31935,1.55144
+La_liga,2025,2026-04-13,Levante,Getafe,3.32797,0.290983
+La_liga,2025,2026-04-21,Athletic Club,Osasuna,0.49013,1.39553
+La_liga,2025,2026-04-21,Mallorca,Valencia,2.24468,1.39393
+La_liga,2025,2026-04-21,Real Madrid,Alaves,1.504,1.62967
+La_liga,2025,2026-04-21,Girona,Real Betis,1.72891,1.24954
+La_liga,2025,2026-04-22,Elche,Atletico Madrid,3.62854,0.846836
+La_liga,2025,2026-04-22,Real Sociedad,Getafe,1.90157,0.215233
+La_liga,2025,2026-04-22,Barcelona,Celta Vigo,1.54451,1.07392
+La_liga,2025,2026-04-23,Levante,Sevilla,1.2081,0.444478
+La_liga,2025,2026-04-23,Rayo Vallecano,Espanyol,2.06977,1.68535
+La_liga,2025,2026-04-23,Real Oviedo,Villarreal,2.52849,3.25021
+La_liga,2025,2026-04-24,Real Betis,Real Madrid,1.01953,1.09576
+La_liga,2025,2026-04-25,Alaves,Mallorca,1.40767,0.221499
+La_liga,2025,2026-04-25,Getafe,Barcelona,0.607664,2.05171
+La_liga,2025,2026-04-25,Valencia,Girona,2.31263,1.38799
+La_liga,2025,2026-04-25,Atletico Madrid,Athletic Club,2.47955,0.970599
+La_liga,2025,2026-04-26,Rayo Vallecano,Real Sociedad,3.18496,2.39684
+La_liga,2025,2026-04-26,Real Oviedo,Elche,0.772271,0.621829
+La_liga,2025,2026-04-26,Osasuna,Sevilla,2.14254,0.553816
+La_liga,2025,2026-04-26,Villarreal,Celta Vigo,2.409,2.05297
+La_liga,2025,2026-04-27,Espanyol,Levante,0.853225,1.38559
+La_liga,2025,2026-05-01,Girona,Mallorca,1.77655,1.30537
+La_liga,2025,2026-05-02,Villarreal,Levante,2.47953,0.801231
+La_liga,2025,2026-05-02,Valencia,Atletico Madrid,0.778471,1.80568
+La_liga,2025,2026-05-02,Alaves,Athletic Club,0.613172,0.895921
+La_liga,2025,2026-05-02,Osasuna,Barcelona,1.28813,1.56763
+La_liga,2025,2026-05-03,Celta Vigo,Elche,1.4443,1.64767
+La_liga,2025,2026-05-03,Getafe,Rayo Vallecano,1.35219,0.954171
+La_liga,2025,2026-05-03,Real Betis,Real Oviedo,1.86882,1.14971
+La_liga,2025,2026-05-03,Espanyol,Real Madrid,1.09007,1.5023
+La_liga,2025,2026-05-04,Sevilla,Real Sociedad,1.32018,0.166837
+La_liga,2025,2026-05-08,Levante,Osasuna,3.53052,0.500111
+La_liga,2025,2026-05-09,Elche,Alaves,2.08849,2.45633
+La_liga,2025,2026-05-09,Sevilla,Espanyol,1.41747,0.402373
+La_liga,2025,2026-05-09,Atletico Madrid,Celta Vigo,2.78506,0.292392
+La_liga,2025,2026-05-09,Real Sociedad,Real Betis,2.66557,1.78903
+La_liga,2025,2026-05-10,Mallorca,Villarreal,1.54058,0.9943
+La_liga,2025,2026-05-10,Athletic Club,Valencia,0.935199,1.49759
+La_liga,2025,2026-05-10,Real Oviedo,Getafe,0.570226,1.40609
+La_liga,2025,2026-05-10,Barcelona,Real Madrid,1.72002,0.562101
+La_liga,2025,2026-05-11,Rayo Vallecano,Girona,1.79488,1.12895
+La_liga,2025,2026-05-12,Celta Vigo,Levante,1.92053,1.52943
+La_liga,2025,2026-05-12,Real Betis,Elche,1.97559,0.342743
+La_liga,2025,2026-05-12,Osasuna,Atletico Madrid,2.41049,1.8226
+La_liga,2025,2026-05-13,Espanyol,Athletic Club,0.8471,0.886467
+La_liga,2025,2026-05-13,Villarreal,Sevilla,0.952333,0.917489
+La_liga,2025,2026-05-13,Alaves,Barcelona,0.95347,0.356356
+La_liga,2025,2026-05-13,Getafe,Mallorca,1.82108,0.412059
+La_liga,2025,2026-05-14,Valencia,Rayo Vallecano,0.938336,1.53041
+La_liga,2025,2026-05-14,Girona,Real Sociedad,2.68586,0.553216
+La_liga,2025,2026-05-14,Real Madrid,Real Oviedo,1.74088,1.18679
+La_liga,2025,2026-05-17,Athletic Club,Celta Vigo,2.90368,0.307867
+La_liga,2025,2026-05-17,Barcelona,Real Betis,1.59946,0.985477
+La_liga,2025,2026-05-17,Atletico Madrid,Girona,2.70772,2.0015
+La_liga,2025,2026-05-17,Real Sociedad,Valencia,1.30267,1.99329
+La_liga,2025,2026-05-17,Real Oviedo,Alaves,0.631265,1.28286
+La_liga,2025,2026-05-17,Osasuna,Espanyol,1.81152,0.947142
+La_liga,2025,2026-05-17,Sevilla,Real Madrid,0.683481,1.47378
+La_liga,2025,2026-05-17,Levante,Mallorca,2.43681,0.438978
+La_liga,2025,2026-05-17,Rayo Vallecano,Villarreal,1.92496,0.654975
+La_liga,2025,2026-05-17,Elche,Getafe,0.691836,0.0944069
+La_liga,2025,2026-05-23,Alaves,Rayo Vallecano,1.72468,1.64691
+La_liga,2025,2026-05-23,Real Betis,Levante,1.8664,2.36717
+La_liga,2025,2026-05-23,Celta Vigo,Sevilla,1.61801,0.755735
+La_liga,2025,2026-05-23,Espanyol,Real Sociedad,2.14307,1.23238
+La_liga,2025,2026-05-23,Real Madrid,Athletic Club,1.95397,1.4543
+La_liga,2025,2026-05-23,Valencia,Barcelona,1.83367,1.29336
+La_liga,2025,2026-05-23,Girona,Elche,0.668034,0.495408
+La_liga,2025,2026-05-23,Getafe,Osasuna,0.264137,0.800038
+La_liga,2025,2026-05-23,Mallorca,Real Oviedo,3.50774,0.243154
+La_liga,2025,2026-05-24,Villarreal,Atletico Madrid,2.80441,1.58431

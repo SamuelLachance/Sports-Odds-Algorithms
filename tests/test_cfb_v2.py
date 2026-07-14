@@ -41,7 +41,10 @@ def _game(
 
 
 def test_feature_columns_count_in_range() -> None:
-    assert 40 <= len(FEATURE_COLUMNS) <= 70
+    assert 40 <= len(FEATURE_COLUMNS) <= 100
+    assert "has_steam" in FEATURE_COLUMNS
+    assert "has_epa" in FEATURE_COLUMNS
+    assert "ap_rank_diff" in FEATURE_COLUMNS
 
 
 def test_conference_proxy_maps_power_five() -> None:

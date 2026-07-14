@@ -1,0 +1,402 @@
+season,week,asof_date,team_id,team_abbr,team_name,rank,previous,points
+2024,1,2024-08-12,61,uga,Georgia Bulldogs,1,0,1532.0
+2024,1,2024-08-12,194,osu,Ohio State Buckeyes,2,0,1490.0
+2024,1,2024-08-12,2483,ore,Oregon Ducks,3,0,1403.0
+2024,1,2024-08-12,251,tex,Texas Longhorns,4,0,1386.0
+2024,1,2024-08-12,333,ala,Alabama Crimson Tide,5,0,1260.0
+2024,1,2024-08-12,145,miss,Ole Miss Rebels,6,0,1189.0
+2024,1,2024-08-12,87,nd,Notre Dame Fighting Irish,7,0,1122.0
+2024,1,2024-08-12,213,psu,Penn State Nittany Lions,8,0,1060.0
+2024,1,2024-08-12,130,mich,Michigan Wolverines,9,0,995.0
+2024,1,2024-08-12,52,fsu,Florida State Seminoles,10,0,971.0
+2024,1,2024-08-12,142,miz,Missouri Tigers,11,0,927.0
+2024,1,2024-08-12,254,utah,Utah Utes,12,0,887.0
+2024,1,2024-08-12,99,lsu,LSU Tigers,13,0,804.0
+2024,1,2024-08-12,228,clem,Clemson Tigers,14,0,689.0
+2024,1,2024-08-12,2633,,,15,0,629.0
+2024,1,2024-08-12,201,ou,Oklahoma Sooners,16,0,566.0
+2024,1,2024-08-12,197,okst,Oklahoma State Cowboys,17,0,538.0
+2024,1,2024-08-12,2306,ksu,Kansas State Wildcats,18,0,526.0
+2024,1,2024-08-12,2390,mia,Miami Hurricanes,19,0,492.0
+2024,1,2024-08-12,245,ta&m,Texas A&M Aggies,20,0,292.0
+2024,1,2024-08-12,12,ariz,Arizona Wildcats,21,0,237.0
+2024,1,2024-08-12,2305,ku,Kansas Jayhawks,22,0,231.0
+2024,1,2024-08-12,30,usc,USC Trojans,23,0,172.0
+2024,1,2024-08-12,152,ncsu,NC State Wolfpack,24,0,171.0
+2024,1,2024-08-12,2294,iowa,Iowa Hawkeyes,25,0,140.0
+2024,2,2024-09-03,61,uga,Georgia Bulldogs,1,1,1545.0
+2024,2,2024-09-03,194,osu,Ohio State Buckeyes,2,2,1478.0
+2024,2,2024-09-03,251,tex,Texas Longhorns,3,4,1418.0
+2024,2,2024-09-03,333,ala,Alabama Crimson Tide,4,5,1309.0
+2024,2,2024-09-03,87,nd,Notre Dame Fighting Irish,5,7,1240.0
+2024,2,2024-09-03,145,miss,Ole Miss Rebels,6,6,1212.0
+2024,2,2024-09-03,2483,ore,Oregon Ducks,7,3,1197.0
+2024,2,2024-09-03,213,psu,Penn State Nittany Lions,8,8,1146.0
+2024,2,2024-09-03,142,miz,Missouri Tigers,9,11,968.0
+2024,2,2024-09-03,130,mich,Michigan Wolverines,10,9,935.0
+2024,2,2024-09-03,254,utah,Utah Utes,11,12,897.0
+2024,2,2024-09-03,2390,mia,Miami Hurricanes,12,19,893.0
+2024,2,2024-09-03,30,usc,USC Trojans,13,23,811.0
+2024,2,2024-09-03,2633,,,14,15,784.0
+2024,2,2024-09-03,201,ou,Oklahoma Sooners,15,16,703.0
+2024,2,2024-09-03,197,okst,Oklahoma State Cowboys,16,17,610.0
+2024,2,2024-09-03,2306,ksu,Kansas State Wildcats,17,18,607.0
+2024,2,2024-09-03,99,lsu,LSU Tigers,18,13,410.0
+2024,2,2024-09-03,2305,ku,Kansas Jayhawks,19,22,349.0
+2024,2,2024-09-03,12,ariz,Arizona Wildcats,20,21,339.0
+2024,2,2024-09-03,2294,iowa,Iowa Hawkeyes,21,25,294.0
+2024,2,2024-09-03,97,lou,Louisville Cardinals,22,0,188.0
+2024,2,2024-09-03,59,gt,Georgia Tech Yellow Jackets,23,0,161.0
+2024,2,2024-09-03,152,ncsu,NC State Wolfpack,24,24,142.0
+2024,2,2024-09-03,228,clem,Clemson Tigers,25,14,134.0
+2024,3,2024-09-08,61,uga,Georgia Bulldogs,1,1,1566.0
+2024,3,2024-09-08,251,tex,Texas Longhorns,2,3,1492.0
+2024,3,2024-09-08,194,osu,Ohio State Buckeyes,3,2,1476.0
+2024,3,2024-09-08,333,ala,Alabama Crimson Tide,4,4,1331.0
+2024,3,2024-09-08,145,miss,Ole Miss Rebels,5,6,1323.0
+2024,3,2024-09-08,142,miz,Missouri Tigers,6,9,1125.0
+2024,3,2024-09-08,2633,,,7,14,1107.0
+2024,3,2024-09-08,213,psu,Penn State Nittany Lions,8,8,1090.0
+2024,3,2024-09-08,2483,ore,Oregon Ducks,9,7,1077.0
+2024,3,2024-09-08,2390,mia,Miami Hurricanes,10,12,1073.0
+2024,3,2024-09-08,30,usc,USC Trojans,11,13,1022.0
+2024,3,2024-09-08,254,utah,Utah Utes,12,11,1010.0
+2024,3,2024-09-08,197,okst,Oklahoma State Cowboys,13,16,734.0
+2024,3,2024-09-08,2306,ksu,Kansas State Wildcats,14,17,702.0
+2024,3,2024-09-08,201,ou,Oklahoma Sooners,15,15,672.0
+2024,3,2024-09-08,99,lsu,LSU Tigers,16,18,521.0
+2024,3,2024-09-08,130,mich,Michigan Wolverines,17,10,503.0
+2024,3,2024-09-08,87,nd,Notre Dame Fighting Irish,18,5,427.0
+2024,3,2024-09-08,97,lou,Louisville Cardinals,19,22,383.0
+2024,3,2024-09-08,12,ariz,Arizona Wildcats,20,20,381.0
+2024,3,2024-09-08,66,isu,Iowa State Cyclones,21,0,309.0
+2024,3,2024-09-08,228,clem,Clemson Tigers,22,25,292.0
+2024,3,2024-09-08,158,neb,Nebraska Cornhuskers,23,0,142.0
+2024,3,2024-09-08,103,bc,Boston College Eagles,24,0,116.0
+2024,3,2024-09-08,2459,niu,Northern Illinois Huskies,25,0,114.0
+2024,4,2024-09-15,251,tex,Texas Longhorns,1,2,1540.0
+2024,4,2024-09-15,61,uga,Georgia Bulldogs,2,1,1518.0
+2024,4,2024-09-15,194,osu,Ohio State Buckeyes,3,3,1461.0
+2024,4,2024-09-15,333,ala,Alabama Crimson Tide,4,4,1358.0
+2024,4,2024-09-15,145,miss,Ole Miss Rebels,5,5,1316.0
+2024,4,2024-09-15,2633,,,6,7,1188.0
+2024,4,2024-09-15,142,miz,Missouri Tigers,7,6,1127.0
+2024,4,2024-09-15,2390,mia,Miami Hurricanes,8,10,1094.0
+2024,4,2024-09-15,2483,ore,Oregon Ducks,9,9,1093.0
+2024,4,2024-09-15,213,psu,Penn State Nittany Lions,10,8,1050.0
+2024,4,2024-09-15,30,usc,USC Trojans,11,11,1008.0
+2024,4,2024-09-15,254,utah,Utah Utes,12,12,912.0
+2024,4,2024-09-15,2306,ksu,Kansas State Wildcats,13,14,836.0
+2024,4,2024-09-15,197,okst,Oklahoma State Cowboys,14,13,742.0
+2024,4,2024-09-15,201,ou,Oklahoma Sooners,15,15,649.0
+2024,4,2024-09-15,99,lsu,LSU Tigers,16,16,537.0
+2024,4,2024-09-15,87,nd,Notre Dame Fighting Irish,17,18,477.0
+2024,4,2024-09-15,130,mich,Michigan Wolverines,18,17,447.0
+2024,4,2024-09-15,97,lou,Louisville Cardinals,19,19,418.0
+2024,4,2024-09-15,66,isu,Iowa State Cyclones,20,21,354.0
+2024,4,2024-09-15,228,clem,Clemson Tigers,21,22,291.0
+2024,4,2024-09-15,158,neb,Nebraska Cornhuskers,22,23,266.0
+2024,4,2024-09-15,2459,niu,Northern Illinois Huskies,23,25,151.0
+2024,4,2024-09-15,356,ill,Illinois Fighting Illini,24,0,137.0
+2024,4,2024-09-15,245,ta&m,Texas A&M Aggies,25,0,82.0
+2024,5,2024-09-22,251,tex,Texas Longhorns,1,1,1527.0
+2024,5,2024-09-22,61,uga,Georgia Bulldogs,2,2,1482.0
+2024,5,2024-09-22,194,osu,Ohio State Buckeyes,3,3,1432.0
+2024,5,2024-09-22,333,ala,Alabama Crimson Tide,4,4,1328.0
+2024,5,2024-09-22,2633,,,5,6,1283.0
+2024,5,2024-09-22,145,miss,Ole Miss Rebels,6,5,1269.0
+2024,5,2024-09-22,2390,mia,Miami Hurricanes,7,8,1139.0
+2024,5,2024-09-22,2483,ore,Oregon Ducks,8,9,1073.0
+2024,5,2024-09-22,213,psu,Penn State Nittany Lions,9,10,1051.0
+2024,5,2024-09-22,254,utah,Utah Utes,10,12,1037.0
+2024,5,2024-09-22,142,miz,Missouri Tigers,11,7,1009.0
+2024,5,2024-09-22,130,mich,Michigan Wolverines,12,18,805.0
+2024,5,2024-09-22,30,usc,USC Trojans,13,11,690.0
+2024,5,2024-09-22,99,lsu,LSU Tigers,14,16,637.0
+2024,5,2024-09-22,97,lou,Louisville Cardinals,15,19,553.0
+2024,5,2024-09-22,87,nd,Notre Dame Fighting Irish,16,17,546.0
+2024,5,2024-09-22,228,clem,Clemson Tigers,17,21,540.0
+2024,5,2024-09-22,66,isu,Iowa State Cyclones,18,20,530.0
+2024,5,2024-09-22,356,ill,Illinois Fighting Illini,19,24,458.0
+2024,5,2024-09-22,197,okst,Oklahoma State Cowboys,20,14,388.0
+2024,5,2024-09-22,201,ou,Oklahoma Sooners,21,15,375.0
+2024,5,2024-09-22,252,byu,BYU Cougars,22,0,327.0
+2024,5,2024-09-22,2306,ksu,Kansas State Wildcats,23,13,168.0
+2024,5,2024-09-22,245,ta&m,Texas A&M Aggies,24,25,77.0
+2024,5,2024-09-22,68,bois,Boise State Broncos,25,0,69.0
+2024,6,2024-09-29,333,ala,Alabama Crimson Tide,1,4,1549.0
+2024,6,2024-09-29,251,tex,Texas Longhorns,2,1,1525.0
+2024,6,2024-09-29,194,osu,Ohio State Buckeyes,3,3,1445.0
+2024,6,2024-09-29,2633,,,4,5,1356.0
+2024,6,2024-09-29,61,uga,Georgia Bulldogs,5,2,1329.0
+2024,6,2024-09-29,2483,ore,Oregon Ducks,6,8,1216.0
+2024,6,2024-09-29,213,psu,Penn State Nittany Lions,7,9,1208.0
+2024,6,2024-09-29,2390,mia,Miami Hurricanes,8,7,1170.0
+2024,6,2024-09-29,142,miz,Missouri Tigers,9,11,1085.0
+2024,6,2024-09-29,130,mich,Michigan Wolverines,10,12,913.0
+2024,6,2024-09-29,30,usc,USC Trojans,11,13,854.0
+2024,6,2024-09-29,145,miss,Ole Miss Rebels,12,6,799.0
+2024,6,2024-09-29,99,lsu,LSU Tigers,13,14,757.0
+2024,6,2024-09-29,87,nd,Notre Dame Fighting Irish,14,16,748.0
+2024,6,2024-09-29,228,clem,Clemson Tigers,15,17,694.0
+2024,6,2024-09-29,66,isu,Iowa State Cyclones,16,18,656.0
+2024,6,2024-09-29,252,byu,BYU Cougars,17,22,549.0
+2024,6,2024-09-29,254,utah,Utah Utes,18,10,467.0
+2024,6,2024-09-29,201,ou,Oklahoma Sooners,19,21,428.0
+2024,6,2024-09-29,2306,ksu,Kansas State Wildcats,20,23,398.0
+2024,6,2024-09-29,68,bois,Boise State Broncos,21,25,253.0
+2024,6,2024-09-29,97,lou,Louisville Cardinals,22,15,223.0
+2024,6,2024-09-29,84,iu,Indiana Hoosiers,23,0,172.0
+2024,6,2024-09-29,356,ill,Illinois Fighting Illini,24,19,169.0
+2024,6,2024-09-29,245,ta&m,Texas A&M Aggies,25,24,122.0
+2024,6,2024-09-29,2439,unlv,UNLV Rebels,25,0,122.0
+2024,7,2024-10-06,251,tex,Texas Longhorns,1,2,1516.0
+2024,7,2024-10-06,194,osu,Ohio State Buckeyes,2,3,1473.0
+2024,7,2024-10-06,2483,ore,Oregon Ducks,3,6,1348.0
+2024,7,2024-10-06,213,psu,Penn State Nittany Lions,4,7,1305.0
+2024,7,2024-10-06,61,uga,Georgia Bulldogs,5,5,1299.0
+2024,7,2024-10-06,2390,mia,Miami Hurricanes,6,8,1187.0
+2024,7,2024-10-06,333,ala,Alabama Crimson Tide,7,1,1182.0
+2024,7,2024-10-06,2633,,,8,4,1001.0
+2024,7,2024-10-06,145,miss,Ole Miss Rebels,9,12,978.0
+2024,7,2024-10-06,228,clem,Clemson Tigers,10,15,861.0
+2024,7,2024-10-06,66,isu,Iowa State Cyclones,11,16,853.0
+2024,7,2024-10-06,87,nd,Notre Dame Fighting Irish,11,14,853.0
+2024,7,2024-10-06,99,lsu,LSU Tigers,13,13,827.0
+2024,7,2024-10-06,252,byu,BYU Cougars,14,17,753.0
+2024,7,2024-10-06,245,ta&m,Texas A&M Aggies,15,25,702.0
+2024,7,2024-10-06,254,utah,Utah Utes,16,18,473.0
+2024,7,2024-10-06,68,bois,Boise State Broncos,17,21,463.0
+2024,7,2024-10-06,84,iu,Indiana Hoosiers,18,23,459.0
+2024,7,2024-10-06,201,ou,Oklahoma Sooners,18,19,459.0
+2024,7,2024-10-06,2306,ksu,Kansas State Wildcats,18,20,459.0
+2024,7,2024-10-06,142,miz,Missouri Tigers,21,9,352.0
+2024,7,2024-10-06,221,pitt,Pittsburgh Panthers,22,0,196.0
+2024,7,2024-10-06,356,ill,Illinois Fighting Illini,23,24,182.0
+2024,7,2024-10-06,130,mich,Michigan Wolverines,24,10,170.0
+2024,7,2024-10-06,2567,,,25,0,165.0
+2024,8,2024-10-13,251,tex,Texas Longhorns,1,1,1544.0
+2024,8,2024-10-13,2483,ore,Oregon Ducks,2,3,1493.0
+2024,8,2024-10-13,213,psu,Penn State Nittany Lions,3,4,1380.0
+2024,8,2024-10-13,194,osu,Ohio State Buckeyes,4,2,1357.0
+2024,8,2024-10-13,61,uga,Georgia Bulldogs,5,5,1300.0
+2024,8,2024-10-13,2390,mia,Miami Hurricanes,6,6,1232.0
+2024,8,2024-10-13,333,ala,Alabama Crimson Tide,7,7,1127.0
+2024,8,2024-10-13,99,lsu,LSU Tigers,8,13,994.0
+2024,8,2024-10-13,66,isu,Iowa State Cyclones,9,11,982.0
+2024,8,2024-10-13,228,clem,Clemson Tigers,10,10,980.0
+2024,8,2024-10-13,2633,,,11,8,959.0
+2024,8,2024-10-13,87,nd,Notre Dame Fighting Irish,12,11,914.0
+2024,8,2024-10-13,252,byu,BYU Cougars,13,14,889.0
+2024,8,2024-10-13,245,ta&m,Texas A&M Aggies,14,15,744.0
+2024,8,2024-10-13,68,bois,Boise State Broncos,15,17,597.0
+2024,8,2024-10-13,84,iu,Indiana Hoosiers,16,18,580.0
+2024,8,2024-10-13,2306,ksu,Kansas State Wildcats,17,18,567.0
+2024,8,2024-10-13,145,miss,Ole Miss Rebels,18,9,511.0
+2024,8,2024-10-13,142,miz,Missouri Tigers,19,21,409.0
+2024,8,2024-10-13,221,pitt,Pittsburgh Panthers,20,22,397.0
+2024,8,2024-10-13,2567,,,21,25,260.0
+2024,8,2024-10-13,356,ill,Illinois Fighting Illini,22,23,249.0
+2024,8,2024-10-13,349,army,Army Black Knights,23,0,137.0
+2024,8,2024-10-13,130,mich,Michigan Wolverines,24,24,133.0
+2024,8,2024-10-13,2426,navy,Navy Midshipmen,25,0,84.0
+2024,9,2024-10-20,2483,ore,Oregon Ducks,1,2,1523.0
+2024,9,2024-10-20,61,uga,Georgia Bulldogs,2,5,1434.0
+2024,9,2024-10-20,213,psu,Penn State Nittany Lions,3,3,1375.0
+2024,9,2024-10-20,194,osu,Ohio State Buckeyes,4,4,1353.0
+2024,9,2024-10-20,251,tex,Texas Longhorns,5,1,1257.0
+2024,9,2024-10-20,2390,mia,Miami Hurricanes,6,6,1242.0
+2024,9,2024-10-20,2633,,,7,11,1075.0
+2024,9,2024-10-20,99,lsu,LSU Tigers,8,8,1049.0
+2024,9,2024-10-20,228,clem,Clemson Tigers,9,10,984.0
+2024,9,2024-10-20,66,isu,Iowa State Cyclones,10,9,972.0
+2024,9,2024-10-20,252,byu,BYU Cougars,11,13,910.0
+2024,9,2024-10-20,87,nd,Notre Dame Fighting Irish,12,12,891.0
+2024,9,2024-10-20,84,iu,Indiana Hoosiers,13,16,830.0
+2024,9,2024-10-20,245,ta&m,Texas A&M Aggies,14,14,748.0
+2024,9,2024-10-20,333,ala,Alabama Crimson Tide,15,7,643.0
+2024,9,2024-10-20,2306,ksu,Kansas State Wildcats,16,17,576.0
+2024,9,2024-10-20,68,bois,Boise State Broncos,17,15,573.0
+2024,9,2024-10-20,145,miss,Ole Miss Rebels,18,18,408.0
+2024,9,2024-10-20,221,pitt,Pittsburgh Panthers,19,20,396.0
+2024,9,2024-10-20,356,ill,Illinois Fighting Illini,20,22,392.0
+2024,9,2024-10-20,142,miz,Missouri Tigers,21,19,359.0
+2024,9,2024-10-20,2567,,,22,21,313.0
+2024,9,2024-10-20,349,army,Army Black Knights,23,23,193.0
+2024,9,2024-10-20,2426,navy,Navy Midshipmen,24,25,166.0
+2024,9,2024-10-20,238,van,Vanderbilt Commodores,25,0,92.0
+2024,10,2024-10-27,2483,ore,Oregon Ducks,1,1,1549.0
+2024,10,2024-10-27,61,uga,Georgia Bulldogs,2,2,1467.0
+2024,10,2024-10-27,213,psu,Penn State Nittany Lions,3,3,1417.0
+2024,10,2024-10-27,194,osu,Ohio State Buckeyes,4,4,1324.0
+2024,10,2024-10-27,2390,mia,Miami Hurricanes,5,6,1283.0
+2024,10,2024-10-27,251,tex,Texas Longhorns,6,5,1276.0
+2024,10,2024-10-27,2633,,,7,7,1081.0
+2024,10,2024-10-27,87,nd,Notre Dame Fighting Irish,8,12,1000.0
+2024,10,2024-10-27,252,byu,BYU Cougars,9,11,995.0
+2024,10,2024-10-27,245,ta&m,Texas A&M Aggies,10,14,972.0
+2024,10,2024-10-27,66,isu,Iowa State Cyclones,11,10,968.0
+2024,10,2024-10-27,228,clem,Clemson Tigers,11,9,968.0
+2024,10,2024-10-27,84,iu,Indiana Hoosiers,13,13,952.0
+2024,10,2024-10-27,333,ala,Alabama Crimson Tide,14,15,706.0
+2024,10,2024-10-27,68,bois,Boise State Broncos,15,17,619.0
+2024,10,2024-10-27,99,lsu,LSU Tigers,16,8,577.0
+2024,10,2024-10-27,2306,ksu,Kansas State Wildcats,17,16,571.0
+2024,10,2024-10-27,221,pitt,Pittsburgh Panthers,18,19,570.0
+2024,10,2024-10-27,145,miss,Ole Miss Rebels,19,18,471.0
+2024,10,2024-10-27,2567,,,20,22,400.0
+2024,10,2024-10-27,349,army,Army Black Knights,21,23,312.0
+2024,10,2024-10-27,265,wsu,Washington State Cougars,22,0,220.0
+2024,10,2024-10-27,38,colo,Colorado Buffaloes,23,0,152.0
+2024,10,2024-10-27,356,ill,Illinois Fighting Illini,24,20,113.0
+2024,10,2024-10-27,142,miz,Missouri Tigers,25,21,44.0
+2024,11,2024-11-03,2483,ore,Oregon Ducks,1,1,1550.0
+2024,11,2024-11-03,61,uga,Georgia Bulldogs,2,2,1449.0
+2024,11,2024-11-03,194,osu,Ohio State Buckeyes,3,4,1442.0
+2024,11,2024-11-03,2390,mia,Miami Hurricanes,4,5,1348.0
+2024,11,2024-11-03,251,tex,Texas Longhorns,5,6,1310.0
+2024,11,2024-11-03,213,psu,Penn State Nittany Lions,6,3,1158.0
+2024,11,2024-11-03,2633,,,7,7,1150.0
+2024,11,2024-11-03,84,iu,Indiana Hoosiers,8,13,1123.0
+2024,11,2024-11-03,252,byu,BYU Cougars,9,9,1084.0
+2024,11,2024-11-03,87,nd,Notre Dame Fighting Irish,10,8,1066.0
+2024,11,2024-11-03,333,ala,Alabama Crimson Tide,11,14,867.0
+2024,11,2024-11-03,68,bois,Boise State Broncos,12,15,853.0
+2024,11,2024-11-03,2567,,,13,20,752.0
+2024,11,2024-11-03,99,lsu,LSU Tigers,14,16,707.0
+2024,11,2024-11-03,245,ta&m,Texas A&M Aggies,15,10,662.0
+2024,11,2024-11-03,145,miss,Ole Miss Rebels,16,19,653.0
+2024,11,2024-11-03,66,isu,Iowa State Cyclones,17,11,592.0
+2024,11,2024-11-03,349,army,Army Black Knights,18,21,468.0
+2024,11,2024-11-03,228,clem,Clemson Tigers,19,11,447.0
+2024,11,2024-11-03,265,wsu,Washington State Cougars,20,22,351.0
+2024,11,2024-11-03,38,colo,Colorado Buffaloes,21,23,234.0
+2024,11,2024-11-03,2306,ksu,Kansas State Wildcats,22,17,227.0
+2024,11,2024-11-03,221,pitt,Pittsburgh Panthers,23,18,203.0
+2024,11,2024-11-03,238,van,Vanderbilt Commodores,24,0,130.0
+2024,11,2024-11-03,97,lou,Louisville Cardinals,25,0,115.0
+2024,12,2024-11-10,2483,ore,Oregon Ducks,1,1,1550.0
+2024,12,2024-11-10,194,osu,Ohio State Buckeyes,2,3,1484.0
+2024,12,2024-11-10,251,tex,Texas Longhorns,3,5,1409.0
+2024,12,2024-11-10,213,psu,Penn State Nittany Lions,4,6,1274.0
+2024,12,2024-11-10,84,iu,Indiana Hoosiers,5,8,1273.0
+2024,12,2024-11-10,2633,,,6,7,1270.0
+2024,12,2024-11-10,252,byu,BYU Cougars,7,9,1161.0
+2024,12,2024-11-10,87,nd,Notre Dame Fighting Irish,8,10,1095.0
+2024,12,2024-11-10,333,ala,Alabama Crimson Tide,9,11,1036.0
+2024,12,2024-11-10,145,miss,Ole Miss Rebels,10,16,966.0
+2024,12,2024-11-10,61,uga,Georgia Bulldogs,11,2,964.0
+2024,12,2024-11-10,2390,mia,Miami Hurricanes,12,4,907.0
+2024,12,2024-11-10,68,bois,Boise State Broncos,13,12,839.0
+2024,12,2024-11-10,2567,,,14,13,788.0
+2024,12,2024-11-10,245,ta&m,Texas A&M Aggies,15,15,674.0
+2024,12,2024-11-10,349,army,Army Black Knights,16,18,533.0
+2024,12,2024-11-10,228,clem,Clemson Tigers,17,19,524.0
+2024,12,2024-11-10,38,colo,Colorado Buffaloes,18,21,463.0
+2024,12,2024-11-10,265,wsu,Washington State Cougars,19,20,456.0
+2024,12,2024-11-10,2306,ksu,Kansas State Wildcats,20,22,333.0
+2024,12,2024-11-10,99,lsu,LSU Tigers,21,14,265.0
+2024,12,2024-11-10,97,lou,Louisville Cardinals,22,25,240.0
+2024,12,2024-11-10,2579,,,23,0,203.0
+2024,12,2024-11-10,142,miz,Missouri Tigers,24,0,176.0
+2024,12,2024-11-10,2655,,,25,0,98.0
+2024,13,2024-11-17,2483,ore,Oregon Ducks,1,1,1550.0
+2024,13,2024-11-17,194,osu,Ohio State Buckeyes,2,2,1485.0
+2024,13,2024-11-17,251,tex,Texas Longhorns,3,3,1413.0
+2024,13,2024-11-17,213,psu,Penn State Nittany Lions,4,4,1319.0
+2024,13,2024-11-17,84,iu,Indiana Hoosiers,5,5,1310.0
+2024,13,2024-11-17,87,nd,Notre Dame Fighting Irish,6,8,1191.0
+2024,13,2024-11-17,333,ala,Alabama Crimson Tide,7,9,1130.0
+2024,13,2024-11-17,61,uga,Georgia Bulldogs,8,11,1113.0
+2024,13,2024-11-17,145,miss,Ole Miss Rebels,9,10,1083.0
+2024,13,2024-11-17,2633,,,10,6,953.0
+2024,13,2024-11-17,2390,mia,Miami Hurricanes,11,12,945.0
+2024,13,2024-11-17,68,bois,Boise State Broncos,12,13,880.0
+2024,13,2024-11-17,2567,,,13,14,810.0
+2024,13,2024-11-17,252,byu,BYU Cougars,14,7,785.0
+2024,13,2024-11-17,245,ta&m,Texas A&M Aggies,15,15,687.0
+2024,13,2024-11-17,38,colo,Colorado Buffaloes,16,18,583.0
+2024,13,2024-11-17,228,clem,Clemson Tigers,17,17,559.0
+2024,13,2024-11-17,349,army,Army Black Knights,18,16,555.0
+2024,13,2024-11-17,2579,,,19,23,444.0
+2024,13,2024-11-17,2655,,,20,25,323.0
+2024,13,2024-11-17,9,asu,Arizona State Sun Devils,21,0,322.0
+2024,13,2024-11-17,66,isu,Iowa State Cyclones,22,0,256.0
+2024,13,2024-11-17,2439,unlv,UNLV Rebels,23,0,125.0
+2024,13,2024-11-17,356,ill,Illinois Fighting Illini,24,0,74.0
+2024,13,2024-11-17,265,wsu,Washington State Cougars,25,19,61.0
+2024,14,2024-11-24,2483,ore,Oregon Ducks,1,1,1525.0
+2024,14,2024-11-24,194,osu,Ohio State Buckeyes,2,2,1463.0
+2024,14,2024-11-24,251,tex,Texas Longhorns,3,3,1395.0
+2024,14,2024-11-24,213,psu,Penn State Nittany Lions,4,4,1301.0
+2024,14,2024-11-24,87,nd,Notre Dame Fighting Irish,5,6,1278.0
+2024,14,2024-11-24,61,uga,Georgia Bulldogs,6,8,1242.0
+2024,14,2024-11-24,2633,,,7,10,1110.0
+2024,14,2024-11-24,2390,mia,Miami Hurricanes,8,11,1096.0
+2024,14,2024-11-24,2567,,,9,13,1001.0
+2024,14,2024-11-24,84,iu,Indiana Hoosiers,10,5,998.0
+2024,14,2024-11-24,68,bois,Boise State Broncos,11,12,984.0
+2024,14,2024-11-24,228,clem,Clemson Tigers,12,17,789.0
+2024,14,2024-11-24,333,ala,Alabama Crimson Tide,13,7,739.0
+2024,14,2024-11-24,9,asu,Arizona State Sun Devils,14,21,727.0
+2024,14,2024-11-24,145,miss,Ole Miss Rebels,15,9,661.0
+2024,14,2024-11-24,2579,,,16,19,639.0
+2024,14,2024-11-24,66,isu,Iowa State Cyclones,17,22,498.0
+2024,14,2024-11-24,2655,,,18,20,446.0
+2024,14,2024-11-24,252,byu,BYU Cougars,19,14,445.0
+2024,14,2024-11-24,245,ta&m,Texas A&M Aggies,20,15,399.0
+2024,14,2024-11-24,2439,unlv,UNLV Rebels,21,23,231.0
+2024,14,2024-11-24,356,ill,Illinois Fighting Illini,22,24,188.0
+2024,14,2024-11-24,38,colo,Colorado Buffaloes,23,16,161.0
+2024,14,2024-11-24,142,miz,Missouri Tigers,24,0,142.0
+2024,14,2024-11-24,349,army,Army Black Knights,25,18,133.0
+2024,15,2024-12-01,2483,ore,Oregon Ducks,1,1,1550.0
+2024,15,2024-12-01,251,tex,Texas Longhorns,2,3,1484.0
+2024,15,2024-12-01,213,psu,Penn State Nittany Lions,3,4,1378.0
+2024,15,2024-12-01,87,nd,Notre Dame Fighting Irish,4,5,1373.0
+2024,15,2024-12-01,61,uga,Georgia Bulldogs,5,6,1302.0
+2024,15,2024-12-01,2633,,,6,7,1200.0
+2024,15,2024-12-01,194,osu,Ohio State Buckeyes,7,2,1174.0
+2024,15,2024-12-01,2567,,,8,9,1127.0
+2024,15,2024-12-01,84,iu,Indiana Hoosiers,9,10,1059.0
+2024,15,2024-12-01,68,bois,Boise State Broncos,10,11,1036.0
+2024,15,2024-12-01,333,ala,Alabama Crimson Tide,11,13,840.0
+2024,15,2024-12-01,9,asu,Arizona State Sun Devils,12,14,832.0
+2024,15,2024-12-01,2579,,,13,16,789.0
+2024,15,2024-12-01,2390,mia,Miami Hurricanes,14,8,756.0
+2024,15,2024-12-01,145,miss,Ole Miss Rebels,15,15,717.0
+2024,15,2024-12-01,66,isu,Iowa State Cyclones,16,17,647.0
+2024,15,2024-12-01,252,byu,BYU Cougars,17,19,548.0
+2024,15,2024-12-01,228,clem,Clemson Tigers,18,12,502.0
+2024,15,2024-12-01,2439,unlv,UNLV Rebels,19,21,340.0
+2024,15,2024-12-01,38,colo,Colorado Buffaloes,20,23,295.0
+2024,15,2024-12-01,356,ill,Illinois Fighting Illini,21,22,274.0
+2024,15,2024-12-01,142,miz,Missouri Tigers,22,24,214.0
+2024,15,2024-12-01,183,syr,Syracuse Orange,23,0,206.0
+2024,15,2024-12-01,349,army,Army Black Knights,24,25,182.0
+2024,15,2024-12-01,235,mem,Memphis Tigers,25,0,121.0
+2024,16,2024-12-08,2483,ore,Oregon Ducks,1,1,1550.0
+2024,16,2024-12-08,61,uga,Georgia Bulldogs,2,5,1474.0
+2024,16,2024-12-08,87,nd,Notre Dame Fighting Irish,3,4,1398.0
+2024,16,2024-12-08,251,tex,Texas Longhorns,4,2,1356.0
+2024,16,2024-12-08,213,psu,Penn State Nittany Lions,5,3,1258.0
+2024,16,2024-12-08,194,osu,Ohio State Buckeyes,6,7,1233.0
+2024,16,2024-12-08,2633,,,7,6,1224.0
+2024,16,2024-12-08,68,bois,Boise State Broncos,8,10,1108.0
+2024,16,2024-12-08,84,iu,Indiana Hoosiers,9,9,1052.0
+2024,16,2024-12-08,9,asu,Arizona State Sun Devils,10,12,1001.0
+2024,16,2024-12-08,333,ala,Alabama Crimson Tide,11,11,838.0
+2024,16,2024-12-08,2567,,,12,8,837.0
+2024,16,2024-12-08,228,clem,Clemson Tigers,13,18,827.0
+2024,16,2024-12-08,2579,,,14,13,770.0
+2024,16,2024-12-08,2390,mia,Miami Hurricanes,15,14,697.0
+2024,16,2024-12-08,145,miss,Ole Miss Rebels,16,15,680.0
+2024,16,2024-12-08,252,byu,BYU Cougars,17,17,531.0
+2024,16,2024-12-08,66,isu,Iowa State Cyclones,18,16,401.0
+2024,16,2024-12-08,349,army,Army Black Knights,19,24,363.0
+2024,16,2024-12-08,38,colo,Colorado Buffaloes,20,20,329.0
+2024,16,2024-12-08,356,ill,Illinois Fighting Illini,21,21,317.0
+2024,16,2024-12-08,183,syr,Syracuse Orange,22,23,234.0
+2024,16,2024-12-08,142,miz,Missouri Tigers,23,22,228.0
+2024,16,2024-12-08,2439,unlv,UNLV Rebels,24,19,144.0
+2024,16,2024-12-08,235,mem,Memphis Tigers,25,25,132.0

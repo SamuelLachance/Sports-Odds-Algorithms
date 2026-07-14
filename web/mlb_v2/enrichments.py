@@ -122,6 +122,41 @@ def _team_xwoba() -> dict[tuple[int, int], float]:
     return out
 
 
+@lru_cache(maxsize=1)
+def _team_xwoba_rolling() -> list[tuple[str, int, int, float]]:
+    """Sorted (asof_date, for_season, team_id, xwoba) for PIT lookup."""
+    path = SUP / "mlb-statcast" / "team_xwoba_rolling.csv"
+    if not path.is_file():
+        return []
+    rows: list[tuple[str, int, int, float]] = []
+    for row in pd.read_csv(path).to_dict(orient="records"):
+        try:
+            asof = str(row.get("asof_date") or "")[:10]
+            tid = int(row["team_id"])
+            xw = float(row["xwoba"])
+            for_season = int(row.get("for_season") or (int(row["season"]) + 1))
+        except (TypeError, ValueError, KeyError):
+            continue
+        if asof:
+            rows.append((asof, for_season, tid, xw))
+    rows.sort()
+    return rows
+
+
+def _rolling_xwoba(team_id: int, day: str, season: int) -> float | None:
+    """Prior-season (or earlier) snapshot only — never same-season final leak."""
+    best: float | None = None
+    for asof, for_season, tid, xw in _team_xwoba_rolling():
+        if tid != int(team_id):
+            continue
+        # Prefer for_season match (season-end prior for this season)
+        if for_season == int(season) and asof < day:
+            best = xw
+        elif for_season < int(season) and asof < day:
+            best = xw
+    return best
+
+
 def attach_game_enrichments(game: dict[str, Any], *, season: int | None = None) -> None:
     """Mutate ``game`` with weather / ump / IL / Statcast priors when available."""
     day = str(game.get("date") or "")[:10]
@@ -185,7 +220,18 @@ def attach_game_enrichments(game: dict[str, Any], *, season: int | None = None) 
         hx = _team_xwoba().get((int(season), int(home_id)))
         if hx is not None:
             game["home_prev_xwoba"] = hx
+        hx_roll = _rolling_xwoba(int(home_id), day, int(season))
+        if hx_roll is not None:
+            game["home_roll_xwoba"] = hx_roll
     if away_id is not None:
         ax = _team_xwoba().get((int(season), int(away_id)))
         if ax is not None:
             game["away_prev_xwoba"] = ax
+        ax_roll = _rolling_xwoba(int(away_id), day, int(season))
+        if ax_roll is not None:
+            game["away_roll_xwoba"] = ax_roll
+    if game.get("home_roll_xwoba") is not None or game.get("away_roll_xwoba") is not None:
+        game["has_statcast_rolling"] = 1.0
+        game["roll_xwoba_diff"] = float(
+            (game.get("home_roll_xwoba") or 0.320) - (game.get("away_roll_xwoba") or 0.320)
+        )

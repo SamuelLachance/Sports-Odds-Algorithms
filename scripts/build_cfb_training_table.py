@@ -147,6 +147,12 @@ def main() -> int:
     rows_raw = frame.to_dict(orient="records")
     games = csv_rows_to_games(rows_raw)
 
+    from web.cfb_v2.epa import attach_epa_priors_to_games  # noqa: E402
+    from web.cfb_v2.rankings import attach_rankings_to_games  # noqa: E402
+
+    attach_rankings_to_games(games)
+    attach_epa_priors_to_games(games)
+
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     out_path = OUT_DIR / "training_table.csv"
 

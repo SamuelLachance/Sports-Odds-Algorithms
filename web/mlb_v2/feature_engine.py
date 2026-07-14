@@ -222,6 +222,9 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     "away_prev_xwoba",
     "xwoba_diff",
     "has_statcast_offense",
+    # Rolling Statcast (season-to-date / prior snapshot; has_*=0 when missing)
+    "roll_xwoba_diff",
+    "has_statcast_rolling",
     # market / bullpen heuristics
     "steam_to_fav",
     "reverse_line_move",
@@ -1301,6 +1304,11 @@ class MlbFeatureEngine:
             "away_prev_xwoba": away_prev_xwoba,
             "xwoba_diff": home_prev_xwoba - away_prev_xwoba,
             "has_statcast_offense": has_sc_off,
+            "roll_xwoba_diff": float(
+                (game.get("roll_xwoba_diff") if game.get("roll_xwoba_diff") is not None else 0.0)
+                or 0.0
+            ),
+            "has_statcast_rolling": float(game.get("has_statcast_rolling") or 0.0),
             # heuristics
             "steam_to_fav": steam_to_fav,
             "reverse_line_move": reverse_line_move,

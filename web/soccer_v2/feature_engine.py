@@ -95,6 +95,25 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     "league_laliga",
     "league_seriea",
     "league_ligue1",
+    # market / steam + Understat xG priors
+    "has_market",
+    "mkt_home_prob",
+    "has_spread",
+    "mkt_home_spread",
+    "has_open_line",
+    "spread_move",
+    "ml_steam_pp",
+    "has_steam",
+    "n_books",
+    "mkt_total",
+    "has_total",
+    "total_move",
+    "steam_to_fav",
+    "reverse_line_move",
+    "chalk_steam",
+    "xg_for_diff",
+    "xg_against_diff",
+    "has_xg",
 )
 
 DC_RHO = -0.10
@@ -414,6 +433,25 @@ class SoccerFeatureEngine:
         }
         for lg_key, column in _LEAGUE_ONEHOT.items():
             features[column] = 1.0 if league == lg_key else 0.0
+        from web.market_steam_features import soccer_steam_from_row
+
+        features.update(soccer_steam_from_row(row if isinstance(row, dict) else {}))
+        # Understat xG priors (attached on row at table build)
+        try:
+            hx = float(row["home_xg_for"]) if row.get("home_xg_for") is not None else None
+            ax = float(row["away_xg_for"]) if row.get("away_xg_for") is not None else None
+            hxa = float(row["home_xg_against"]) if row.get("home_xg_against") is not None else None
+            axa = float(row["away_xg_against"]) if row.get("away_xg_against") is not None else None
+        except (TypeError, ValueError, AttributeError):
+            hx = ax = hxa = axa = None
+        if hx is not None or ax is not None:
+            features["has_xg"] = 1.0
+            features["xg_for_diff"] = float((hx or 1.3) - (ax or 1.3))
+            features["xg_against_diff"] = float((hxa or 1.3) - (axa or 1.3))
+        else:
+            features["has_xg"] = 0.0
+            features["xg_for_diff"] = 0.0
+            features["xg_against_diff"] = 0.0
         return features
 
     # -- update ------------------------------------------------------------

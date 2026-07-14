@@ -26,6 +26,7 @@ from web.soccer_v2.data import (  # noqa: E402
 )
 from web.soccer_v2.feature_engine import FEATURE_COLUMNS, SoccerFeatureEngine  # noqa: E402
 from web.soccer_v2.replay import merge_country_rows, replay_country  # noqa: E402
+from web.soccer_v2.xg import attach_xg_to_rows  # noqa: E402
 
 META_COLUMNS = (
     "league",
@@ -75,6 +76,7 @@ def main() -> None:
         for country, divisions in sorted(by_country.items()):
             engine = SoccerFeatureEngine(country)
             merged = merge_country_rows(divisions)
+            attach_xg_to_rows(merged)
 
             def emit(row: dict[str, Any], features: dict[str, float]) -> None:
                 nonlocal written

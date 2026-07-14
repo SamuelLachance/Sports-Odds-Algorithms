@@ -169,6 +169,25 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     # matchup history / interactions
     "h2h_margin_ewma",
     "net_x_pace",
+    # market / steam (has_*=0 when opens missing — never invent open=close)
+    "has_market",
+    "mkt_home_prob",
+    "has_spread",
+    "mkt_home_spread",
+    "has_open_line",
+    "spread_move",
+    "ml_steam_pp",
+    "has_steam",
+    "n_books",
+    "mkt_total",
+    "has_total",
+    "total_move",
+    "steam_to_fav",
+    "reverse_line_move",
+    "chalk_steam",
+    # prior-season external rating (2K / fetch_external_ratings)
+    "prev_ovr_diff",
+    "has_ext_rating",
 )
 
 
@@ -876,6 +895,24 @@ class NbaFeatureEngine:
             "h2h_margin_ewma": home.h2h_margin.get(away.franchise, 0.0),
             "net_x_pace": net_rtg_fast_diff * pace_sum / 100.0,
         }
+        from web.market_steam_features import steam_features_from_game
+
+        features.update(steam_features_from_game(game))
+        # Prior-season OVR (PIT-safe); missing → has_ext_rating=0
+        try:
+            home_ovr = float(game["home_prev_ovr"]) if game.get("home_prev_ovr") is not None else None
+        except (TypeError, ValueError):
+            home_ovr = None
+        try:
+            away_ovr = float(game["away_prev_ovr"]) if game.get("away_prev_ovr") is not None else None
+        except (TypeError, ValueError):
+            away_ovr = None
+        if home_ovr is not None or away_ovr is not None:
+            features["has_ext_rating"] = 1.0
+            features["prev_ovr_diff"] = float((home_ovr or 75.0) - (away_ovr or 75.0))
+        else:
+            features["has_ext_rating"] = 0.0
+            features["prev_ovr_diff"] = 0.0
         return features
 
     # -- state update ---------------------------------------------------------

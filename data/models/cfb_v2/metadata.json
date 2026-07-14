@@ -1,5 +1,5 @@
 {
-  "algorithm": "CFBGradientBoost v2",
+  "algorithm": "HybridGradientBoost v2",
   "created_at": "2026-07-12T17:20:43.444766+00:00",
   "feature_columns": [
     "elo_diff",
@@ -86,10 +86,10 @@
     2023,
     2025
   ],
-  "oos_model_logloss": 0.52648,
-  "oos_model_brier": 0.17653,
-  "oos_model_acc": 0.7279,
-  "oos_margin_mae": 13.4954,
+  "oos_model_logloss": 0.49571,
+  "oos_model_brier": 0.16567,
+  "oos_model_acc": 0.7463,
+  "oos_margin_mae": 12.9238,
   "oos_elo_margin_mae": 15.8261,
   "oos_elo_logloss": 0.55982,
   "elo_baseline_mae_reference": 14.15,
@@ -214,5 +214,10 @@
     "away_qb_streak": 0.0
   },
   "oos_market_logloss": 0.50282,
-  "oos_with_odds": 2604
+  "oos_with_odds": 2604,
+  "hybrid": true,
+  "hybrid_backend": "catboost",
+  "hybrid_market_blend_w": 0.55,
+  "baseline_xgb_logloss": 0.52648,
+  "hybrid_shipped_at": "2026-07-14T06:16:14.280613+00:00"
 }

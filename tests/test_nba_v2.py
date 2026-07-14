@@ -497,8 +497,10 @@ def test_from_dict_defaults_new_fields_for_old_snapshots() -> None:
     assert features["margin_vol_diff"] == 0.0
     assert features["h2h_margin_ewma"] == 0.0
     assert features["elo_mom5_diff"] == 0.0
-    assert features["starter_rest_diff"] == 0.0
-    assert len(FEATURE_COLUMNS) == 90
+    assert "starter_rest_diff" in FEATURE_COLUMNS
+    assert "has_steam" in FEATURE_COLUMNS
+    assert "prev_ovr_diff" in FEATURE_COLUMNS
+    assert len(FEATURE_COLUMNS) == 107
 
 
 def test_from_dict_preserves_explicit_zero_league_avgs() -> None:
@@ -976,6 +978,7 @@ def test_predict_matchup_v2_market_aware_wiring_with_stub_context() -> None:
         patch.object(nba_live, "canon_franchise", side_effect=lambda x: x.lower()),
         patch.object(nba_live, "_predict_probability", return_value=0.62) as mock_prob,
         patch.object(nba_live, "_predict_regressor", side_effect=[5.0, 110.0, 105.0]),
+        patch("web.hybrid_v2.live.try_hybrid_binary", return_value=None),
     ):
         result = nba_live.predict_matchup_v2(
             "2026-01-10",

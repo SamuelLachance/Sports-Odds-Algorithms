@@ -1,0 +1,376 @@
+season,week,asof_date,team_id,team_abbr,team_name,rank,previous,points
+2025,2,2025-09-02,194,osu,Ohio State Buckeyes,1,3,1636.0
+2025,2,2025-09-02,213,psu,Penn State Nittany Lions,2,2,1558.0
+2025,2,2025-09-02,99,lsu,LSU Tigers,3,9,1514.0
+2025,2,2025-09-02,61,uga,Georgia Bulldogs,4,5,1410.0
+2025,2,2025-09-02,2390,mia,Miami Hurricanes,5,10,1360.0
+2025,2,2025-09-02,2483,ore,Oregon Ducks,6,7,1302.0
+2025,2,2025-09-02,251,tex,Texas Longhorns,7,1,1293.0
+2025,2,2025-09-02,228,clem,Clemson Tigers,8,4,1135.0
+2025,2,2025-09-02,87,nd,Notre Dame Fighting Irish,9,6,1068.0
+2025,2,2025-09-02,2579,,,10,13,882.0
+2025,2,2025-09-02,356,ill,Illinois Fighting Illini,11,12,855.0
+2025,2,2025-09-02,9,asu,Arizona State Sun Devils,12,11,850.0
+2025,2,2025-09-02,57,fla,Florida Gators,13,15,737.0
+2025,2,2025-09-02,52,fsu,Florida State Seminoles,14,0,705.0
+2025,2,2025-09-02,130,mich,Michigan Wolverines,15,14,686.0
+2025,2,2025-09-02,66,isu,Iowa State Cyclones,16,22,566.0
+2025,2,2025-09-02,2567,,,17,16,561.0
+2025,2,2025-09-02,201,ou,Oklahoma Sooners,18,18,519.0
+2025,2,2025-09-02,245,ta&m,Texas A&M Aggies,19,19,424.0
+2025,2,2025-09-02,145,miss,Ole Miss Rebels,20,21,393.0
+2025,2,2025-09-02,333,ala,Alabama Crimson Tide,21,8,360.0
+2025,2,2025-09-02,2633,,,22,24,339.0
+2025,2,2025-09-02,84,iu,Indiana Hoosiers,23,20,257.0
+2025,2,2025-09-02,2641,,,24,23,247.0
+2025,2,2025-09-02,254,utah,Utah Utes,25,0,227.0
+2025,3,2025-09-07,194,osu,Ohio State Buckeyes,1,1,1614.0
+2025,3,2025-09-07,213,psu,Penn State Nittany Lions,2,2,1524.0
+2025,3,2025-09-07,99,lsu,LSU Tigers,3,3,1487.0
+2025,3,2025-09-07,2483,ore,Oregon Ducks,4,6,1375.0
+2025,3,2025-09-07,2390,mia,Miami Hurricanes,5,5,1360.0
+2025,3,2025-09-07,61,uga,Georgia Bulldogs,6,4,1350.0
+2025,3,2025-09-07,251,tex,Texas Longhorns,7,7,1248.0
+2025,3,2025-09-07,87,nd,Notre Dame Fighting Irish,8,9,1086.0
+2025,3,2025-09-07,356,ill,Illinois Fighting Illini,9,11,1001.0
+2025,3,2025-09-07,52,fsu,Florida State Seminoles,10,14,954.0
+2025,3,2025-09-07,2579,,,11,10,927.0
+2025,3,2025-09-07,228,clem,Clemson Tigers,12,8,894.0
+2025,3,2025-09-07,201,ou,Oklahoma Sooners,13,18,893.0
+2025,3,2025-09-07,66,isu,Iowa State Cyclones,14,16,794.0
+2025,3,2025-09-07,2633,,,15,22,537.0
+2025,3,2025-09-07,245,ta&m,Texas A&M Aggies,16,19,532.0
+2025,3,2025-09-07,145,miss,Ole Miss Rebels,17,20,518.0
+2025,3,2025-09-07,58,usf,South Florida Bulls,18,0,444.0
+2025,3,2025-09-07,333,ala,Alabama Crimson Tide,19,21,396.0
+2025,3,2025-09-07,254,utah,Utah Utes,20,25,361.0
+2025,3,2025-09-07,2641,,,21,24,347.0
+2025,3,2025-09-07,84,iu,Indiana Hoosiers,22,23,331.0
+2025,3,2025-09-07,130,mich,Michigan Wolverines,23,15,250.0
+2025,3,2025-09-07,2,aub,Auburn Tigers,24,0,172.0
+2025,3,2025-09-07,142,miz,Missouri Tigers,25,0,109.0
+2025,4,2025-09-14,194,osu,Ohio State Buckeyes,1,1,1631.0
+2025,4,2025-09-14,213,psu,Penn State Nittany Lions,2,2,1490.0
+2025,4,2025-09-14,99,lsu,LSU Tigers,3,3,1470.0
+2025,4,2025-09-14,2390,mia,Miami Hurricanes,4,5,1434.0
+2025,4,2025-09-14,61,uga,Georgia Bulldogs,5,6,1428.0
+2025,4,2025-09-14,2483,ore,Oregon Ducks,6,4,1423.0
+2025,4,2025-09-14,52,fsu,Florida State Seminoles,7,10,1123.0
+2025,4,2025-09-14,251,tex,Texas Longhorns,8,7,1111.0
+2025,4,2025-09-14,356,ill,Illinois Fighting Illini,9,9,1110.0
+2025,4,2025-09-14,245,ta&m,Texas A&M Aggies,10,16,1101.0
+2025,4,2025-09-14,201,ou,Oklahoma Sooners,11,13,1056.0
+2025,4,2025-09-14,66,isu,Iowa State Cyclones,12,14,820.0
+2025,4,2025-09-14,145,miss,Ole Miss Rebels,13,17,748.0
+2025,4,2025-09-14,333,ala,Alabama Crimson Tide,14,19,599.0
+2025,4,2025-09-14,2633,,,15,15,583.0
+2025,4,2025-09-14,254,utah,Utah Utes,16,20,573.0
+2025,4,2025-09-14,2641,,,17,21,538.0
+2025,4,2025-09-14,59,gt,Georgia Tech Yellow Jackets,18,0,511.0
+2025,4,2025-09-14,84,iu,Indiana Hoosiers,19,22,458.0
+2025,4,2025-09-14,238,van,Vanderbilt Commodores,20,0,397.0
+2025,4,2025-09-14,130,mich,Michigan Wolverines,21,23,356.0
+2025,4,2025-09-14,2,aub,Auburn Tigers,22,24,344.0
+2025,4,2025-09-14,142,miz,Missouri Tigers,23,25,292.0
+2025,4,2025-09-14,87,nd,Notre Dame Fighting Irish,24,8,207.0
+2025,4,2025-09-14,30,usc,USC Trojans,25,0,105.0
+2025,5,2025-09-21,194,osu,Ohio State Buckeyes,1,1,1629.0
+2025,5,2025-09-21,2390,mia,Miami Hurricanes,2,4,1479.0
+2025,5,2025-09-21,213,psu,Penn State Nittany Lions,3,2,1460.0
+2025,5,2025-09-21,99,lsu,LSU Tigers,4,3,1433.0
+2025,5,2025-09-21,61,uga,Georgia Bulldogs,5,5,1420.0
+2025,5,2025-09-21,2483,ore,Oregon Ducks,6,6,1404.0
+2025,5,2025-09-21,201,ou,Oklahoma Sooners,7,11,1194.0
+2025,5,2025-09-21,52,fsu,Florida State Seminoles,8,7,1183.0
+2025,5,2025-09-21,245,ta&m,Texas A&M Aggies,9,10,1072.0
+2025,5,2025-09-21,251,tex,Texas Longhorns,10,8,1057.0
+2025,5,2025-09-21,84,iu,Indiana Hoosiers,11,19,990.0
+2025,5,2025-09-21,2641,,,12,17,890.0
+2025,5,2025-09-21,145,miss,Ole Miss Rebels,13,13,843.0
+2025,5,2025-09-21,66,isu,Iowa State Cyclones,14,12,779.0
+2025,5,2025-09-21,2633,,,15,15,635.0
+2025,5,2025-09-21,59,gt,Georgia Tech Yellow Jackets,16,18,598.0
+2025,5,2025-09-21,333,ala,Alabama Crimson Tide,17,14,595.0
+2025,5,2025-09-21,238,van,Vanderbilt Commodores,18,20,546.0
+2025,5,2025-09-21,130,mich,Michigan Wolverines,19,21,458.0
+2025,5,2025-09-21,142,miz,Missouri Tigers,20,23,452.0
+2025,5,2025-09-21,30,usc,USC Trojans,21,25,264.0
+2025,5,2025-09-21,87,nd,Notre Dame Fighting Irish,22,24,219.0
+2025,5,2025-09-21,356,ill,Illinois Fighting Illini,23,9,145.0
+2025,5,2025-09-21,2628,,,24,0,138.0
+2025,5,2025-09-21,252,byu,BYU Cougars,25,0,131.0
+2025,6,2025-09-28,194,osu,Ohio State Buckeyes,1,1,1626.0
+2025,6,2025-09-28,2483,ore,Oregon Ducks,2,6,1589.0
+2025,6,2025-09-28,2390,mia,Miami Hurricanes,3,2,1529.0
+2025,6,2025-09-28,145,miss,Ole Miss Rebels,4,13,1354.0
+2025,6,2025-09-28,201,ou,Oklahoma Sooners,5,7,1313.0
+2025,6,2025-09-28,245,ta&m,Texas A&M Aggies,6,9,1308.0
+2025,6,2025-09-28,213,psu,Penn State Nittany Lions,7,3,1179.0
+2025,6,2025-09-28,84,iu,Indiana Hoosiers,8,11,1156.0
+2025,6,2025-09-28,251,tex,Texas Longhorns,9,10,1071.0
+2025,6,2025-09-28,333,ala,Alabama Crimson Tide,10,17,1057.0
+2025,6,2025-09-28,2641,,,11,12,967.0
+2025,6,2025-09-28,61,uga,Georgia Bulldogs,12,5,965.0
+2025,6,2025-09-28,99,lsu,LSU Tigers,13,4,838.0
+2025,6,2025-09-28,66,isu,Iowa State Cyclones,14,14,830.0
+2025,6,2025-09-28,2633,,,15,15,697.0
+2025,6,2025-09-28,238,van,Vanderbilt Commodores,16,18,640.0
+2025,6,2025-09-28,59,gt,Georgia Tech Yellow Jackets,17,16,549.0
+2025,6,2025-09-28,52,fsu,Florida State Seminoles,18,8,535.0
+2025,6,2025-09-28,142,miz,Missouri Tigers,19,20,528.0
+2025,6,2025-09-28,130,mich,Michigan Wolverines,20,19,422.0
+2025,6,2025-09-28,87,nd,Notre Dame Fighting Irish,21,22,333.0
+2025,6,2025-09-28,356,ill,Illinois Fighting Illini,22,23,271.0
+2025,6,2025-09-28,252,byu,BYU Cougars,23,25,191.0
+2025,6,2025-09-28,258,uva,Virginia Cavaliers,24,0,125.0
+2025,6,2025-09-28,9,asu,Arizona State Sun Devils,25,0,107.0
+2025,7,2025-10-05,194,osu,Ohio State Buckeyes,1,1,1620.0
+2025,7,2025-10-05,2390,mia,Miami Hurricanes,2,3,1579.0
+2025,7,2025-10-05,2483,ore,Oregon Ducks,3,2,1542.0
+2025,7,2025-10-05,145,miss,Ole Miss Rebels,4,4,1376.0
+2025,7,2025-10-05,245,ta&m,Texas A&M Aggies,5,6,1361.0
+2025,7,2025-10-05,201,ou,Oklahoma Sooners,6,5,1346.0
+2025,7,2025-10-05,84,iu,Indiana Hoosiers,7,8,1213.0
+2025,7,2025-10-05,333,ala,Alabama Crimson Tide,8,10,1202.0
+2025,7,2025-10-05,2641,,,9,11,1135.0
+2025,7,2025-10-05,61,uga,Georgia Bulldogs,10,12,1084.0
+2025,7,2025-10-05,99,lsu,LSU Tigers,11,13,949.0
+2025,7,2025-10-05,2633,,,12,15,892.0
+2025,7,2025-10-05,59,gt,Georgia Tech Yellow Jackets,13,17,782.0
+2025,7,2025-10-05,142,miz,Missouri Tigers,14,19,775.0
+2025,7,2025-10-05,130,mich,Michigan Wolverines,15,20,707.0
+2025,7,2025-10-05,87,nd,Notre Dame Fighting Irish,16,21,610.0
+2025,7,2025-10-05,356,ill,Illinois Fighting Illini,17,22,522.0
+2025,7,2025-10-05,252,byu,BYU Cougars,18,23,463.0
+2025,7,2025-10-05,258,uva,Virginia Cavaliers,19,24,452.0
+2025,7,2025-10-05,238,van,Vanderbilt Commodores,20,16,407.0
+2025,7,2025-10-05,9,asu,Arizona State Sun Devils,21,25,214.0
+2025,7,2025-10-05,66,isu,Iowa State Cyclones,22,14,165.0
+2025,7,2025-10-05,235,mem,Memphis Tigers,23,0,153.0
+2025,7,2025-10-05,58,usf,South Florida Bulls,24,0,150.0
+2025,7,2025-10-05,52,fsu,Florida State Seminoles,25,18,147.0
+2025,8,2025-10-12,194,osu,Ohio State Buckeyes,1,1,1631.0
+2025,8,2025-10-12,2390,mia,Miami Hurricanes,2,2,1582.0
+2025,8,2025-10-12,84,iu,Indiana Hoosiers,3,7,1531.0
+2025,8,2025-10-12,245,ta&m,Texas A&M Aggies,4,5,1433.0
+2025,8,2025-10-12,145,miss,Ole Miss Rebels,5,4,1331.0
+2025,8,2025-10-12,333,ala,Alabama Crimson Tide,6,8,1315.0
+2025,8,2025-10-12,2641,,,7,9,1266.0
+2025,8,2025-10-12,2483,ore,Oregon Ducks,8,3,1175.0
+2025,8,2025-10-12,61,uga,Georgia Bulldogs,9,10,1148.0
+2025,8,2025-10-12,99,lsu,LSU Tigers,10,11,1012.0
+2025,8,2025-10-12,2633,,,11,12,939.0
+2025,8,2025-10-12,59,gt,Georgia Tech Yellow Jackets,12,13,904.0
+2025,8,2025-10-12,87,nd,Notre Dame Fighting Irish,13,16,793.0
+2025,8,2025-10-12,201,ou,Oklahoma Sooners,14,6,786.0
+2025,8,2025-10-12,252,byu,BYU Cougars,15,18,655.0
+2025,8,2025-10-12,142,miz,Missouri Tigers,16,14,649.0
+2025,8,2025-10-12,238,van,Vanderbilt Commodores,17,20,547.0
+2025,8,2025-10-12,258,uva,Virginia Cavaliers,18,19,521.0
+2025,8,2025-10-12,58,usf,South Florida Bulls,19,24,398.0
+2025,8,2025-10-12,30,usc,USC Trojans,20,0,361.0
+2025,8,2025-10-12,251,tex,Texas Longhorns,21,0,319.0
+2025,8,2025-10-12,235,mem,Memphis Tigers,22,23,285.0
+2025,8,2025-10-12,254,utah,Utah Utes,23,0,261.0
+2025,8,2025-10-12,2132,cin,Cincinnati Bearcats,24,0,184.0
+2025,8,2025-10-12,158,neb,Nebraska Cornhuskers,25,0,149.0
+2025,9,2025-10-19,194,osu,Ohio State Buckeyes,1,1,1643.0
+2025,9,2025-10-19,84,iu,Indiana Hoosiers,2,3,1583.0
+2025,9,2025-10-19,245,ta&m,Texas A&M Aggies,3,4,1499.0
+2025,9,2025-10-19,333,ala,Alabama Crimson Tide,4,6,1463.0
+2025,9,2025-10-19,61,uga,Georgia Bulldogs,5,9,1360.0
+2025,9,2025-10-19,2483,ore,Oregon Ducks,6,8,1317.0
+2025,9,2025-10-19,59,gt,Georgia Tech Yellow Jackets,7,12,1143.0
+2025,9,2025-10-19,145,miss,Ole Miss Rebels,8,5,1119.0
+2025,9,2025-10-19,2390,mia,Miami Hurricanes,9,2,1073.0
+2025,9,2025-10-19,238,van,Vanderbilt Commodores,10,17,1031.0
+2025,9,2025-10-19,252,byu,BYU Cougars,11,15,975.0
+2025,9,2025-10-19,87,nd,Notre Dame Fighting Irish,12,13,964.0
+2025,9,2025-10-19,201,ou,Oklahoma Sooners,13,14,882.0
+2025,9,2025-10-19,2641,,,14,7,782.0
+2025,9,2025-10-19,142,miz,Missouri Tigers,15,16,748.0
+2025,9,2025-10-19,258,uva,Virginia Cavaliers,16,18,624.0
+2025,9,2025-10-19,2633,,,17,11,527.0
+2025,9,2025-10-19,58,usf,South Florida Bulls,18,19,501.0
+2025,9,2025-10-19,97,lou,Louisville Cardinals,19,0,458.0
+2025,9,2025-10-19,99,lsu,LSU Tigers,20,10,388.0
+2025,9,2025-10-19,2132,cin,Cincinnati Bearcats,21,24,350.0
+2025,9,2025-10-19,251,tex,Texas Longhorns,22,21,318.0
+2025,9,2025-10-19,356,ill,Illinois Fighting Illini,23,0,168.0
+2025,9,2025-10-19,9,asu,Arizona State Sun Devils,24,0,155.0
+2025,9,2025-10-19,130,mich,Michigan Wolverines,25,0,123.0
+2025,10,2025-10-26,194,osu,Ohio State Buckeyes,1,1,1633.0
+2025,10,2025-10-26,84,iu,Indiana Hoosiers,2,2,1589.0
+2025,10,2025-10-26,245,ta&m,Texas A&M Aggies,3,3,1523.0
+2025,10,2025-10-26,333,ala,Alabama Crimson Tide,4,4,1445.0
+2025,10,2025-10-26,61,uga,Georgia Bulldogs,5,5,1359.0
+2025,10,2025-10-26,2483,ore,Oregon Ducks,6,6,1249.0
+2025,10,2025-10-26,145,miss,Ole Miss Rebels,7,8,1212.0
+2025,10,2025-10-26,59,gt,Georgia Tech Yellow Jackets,8,7,1172.0
+2025,10,2025-10-26,238,van,Vanderbilt Commodores,9,10,1098.0
+2025,10,2025-10-26,252,byu,BYU Cougars,10,11,1069.0
+2025,10,2025-10-26,2390,mia,Miami Hurricanes,10,9,1069.0
+2025,10,2025-10-26,87,nd,Notre Dame Fighting Irish,12,12,944.0
+2025,10,2025-10-26,2641,,,13,14,876.0
+2025,10,2025-10-26,2633,,,14,17,684.0
+2025,10,2025-10-26,258,uva,Virginia Cavaliers,15,16,660.0
+2025,10,2025-10-26,97,lou,Louisville Cardinals,16,19,647.0
+2025,10,2025-10-26,2132,cin,Cincinnati Bearcats,17,21,609.0
+2025,10,2025-10-26,201,ou,Oklahoma Sooners,18,13,485.0
+2025,10,2025-10-26,142,miz,Missouri Tigers,19,15,447.0
+2025,10,2025-10-26,251,tex,Texas Longhorns,20,22,371.0
+2025,10,2025-10-26,130,mich,Michigan Wolverines,21,25,264.0
+2025,10,2025-10-26,248,hou,Houston Cougars,22,0,256.0
+2025,10,2025-10-26,30,usc,USC Trojans,23,0,215.0
+2025,10,2025-10-26,254,utah,Utah Utes,24,0,162.0
+2025,10,2025-10-26,235,mem,Memphis Tigers,25,0,130.0
+2025,11,2025-11-02,194,osu,Ohio State Buckeyes,1,1,1633.0
+2025,11,2025-11-02,84,iu,Indiana Hoosiers,2,2,1591.0
+2025,11,2025-11-02,245,ta&m,Texas A&M Aggies,3,3,1523.0
+2025,11,2025-11-02,333,ala,Alabama Crimson Tide,4,4,1447.0
+2025,11,2025-11-02,61,uga,Georgia Bulldogs,5,5,1364.0
+2025,11,2025-11-02,2483,ore,Oregon Ducks,6,6,1293.0
+2025,11,2025-11-02,145,miss,Ole Miss Rebels,7,7,1263.0
+2025,11,2025-11-02,252,byu,BYU Cougars,8,10,1207.0
+2025,11,2025-11-02,2641,,,9,13,1091.0
+2025,11,2025-11-02,87,nd,Notre Dame Fighting Irish,10,12,1071.0
+2025,11,2025-11-02,201,ou,Oklahoma Sooners,11,18,850.0
+2025,11,2025-11-02,258,uva,Virginia Cavaliers,12,15,838.0
+2025,11,2025-11-02,251,tex,Texas Longhorns,13,20,835.0
+2025,11,2025-11-02,97,lou,Louisville Cardinals,14,16,827.0
+2025,11,2025-11-02,238,van,Vanderbilt Commodores,15,9,698.0
+2025,11,2025-11-02,59,gt,Georgia Tech Yellow Jackets,16,8,667.0
+2025,11,2025-11-02,254,utah,Utah Utes,17,24,560.0
+2025,11,2025-11-02,2390,mia,Miami Hurricanes,18,10,558.0
+2025,11,2025-11-02,142,miz,Missouri Tigers,19,19,491.0
+2025,11,2025-11-02,30,usc,USC Trojans,20,23,453.0
+2025,11,2025-11-02,130,mich,Michigan Wolverines,21,21,344.0
+2025,11,2025-11-02,235,mem,Memphis Tigers,22,25,224.0
+2025,11,2025-11-02,2633,,,23,14,171.0
+2025,11,2025-11-02,264,wash,Washington Huskies,24,0,110.0
+2025,11,2025-11-02,2132,cin,Cincinnati Bearcats,25,17,77.0
+2025,12,2025-11-09,194,osu,Ohio State Buckeyes,1,1,1610.0
+2025,12,2025-11-09,84,iu,Indiana Hoosiers,2,2,1549.0
+2025,12,2025-11-09,245,ta&m,Texas A&M Aggies,3,3,1518.0
+2025,12,2025-11-09,333,ala,Alabama Crimson Tide,4,4,1427.0
+2025,12,2025-11-09,61,uga,Georgia Bulldogs,5,5,1353.0
+2025,12,2025-11-09,145,miss,Ole Miss Rebels,6,7,1248.0
+2025,12,2025-11-09,2483,ore,Oregon Ducks,7,6,1245.0
+2025,12,2025-11-09,2641,,,8,9,1211.0
+2025,12,2025-11-09,87,nd,Notre Dame Fighting Irish,9,10,1102.0
+2025,12,2025-11-09,251,tex,Texas Longhorns,10,13,961.0
+2025,12,2025-11-09,201,ou,Oklahoma Sooners,11,11,928.0
+2025,12,2025-11-09,252,byu,BYU Cougars,12,8,898.0
+2025,12,2025-11-09,238,van,Vanderbilt Commodores,13,15,821.0
+2025,12,2025-11-09,59,gt,Georgia Tech Yellow Jackets,14,16,788.0
+2025,12,2025-11-09,254,utah,Utah Utes,15,17,695.0
+2025,12,2025-11-09,2390,mia,Miami Hurricanes,16,18,683.0
+2025,12,2025-11-09,30,usc,USC Trojans,17,20,645.0
+2025,12,2025-11-09,130,mich,Michigan Wolverines,18,21,498.0
+2025,12,2025-11-09,97,lou,Louisville Cardinals,19,14,326.0
+2025,12,2025-11-09,258,uva,Virginia Cavaliers,20,12,313.0
+2025,12,2025-11-09,2633,,,21,23,276.0
+2025,12,2025-11-09,2132,cin,Cincinnati Bearcats,22,25,224.0
+2025,12,2025-11-09,221,pitt,Pittsburgh Panthers,23,0,201.0
+2025,12,2025-11-09,256,jmu,James Madison Dukes,24,0,167.0
+2025,12,2025-11-09,58,usf,South Florida Bulls,25,0,116.0
+2025,13,2025-11-16,194,osu,Ohio State Buckeyes,1,1,1639.0
+2025,13,2025-11-16,84,iu,Indiana Hoosiers,2,2,1588.0
+2025,13,2025-11-16,245,ta&m,Texas A&M Aggies,3,3,1520.0
+2025,13,2025-11-16,61,uga,Georgia Bulldogs,4,5,1447.0
+2025,13,2025-11-16,145,miss,Ole Miss Rebels,5,6,1331.0
+2025,13,2025-11-16,2483,ore,Oregon Ducks,6,7,1299.0
+2025,13,2025-11-16,2641,,,6,8,1299.0
+2025,13,2025-11-16,201,ou,Oklahoma Sooners,8,11,1162.0
+2025,13,2025-11-16,87,nd,Notre Dame Fighting Irish,9,9,1130.0
+2025,13,2025-11-16,333,ala,Alabama Crimson Tide,10,4,1062.0
+2025,13,2025-11-16,252,byu,BYU Cougars,11,12,992.0
+2025,13,2025-11-16,238,van,Vanderbilt Commodores,12,13,833.0
+2025,13,2025-11-16,254,utah,Utah Utes,13,15,795.0
+2025,13,2025-11-16,2390,mia,Miami Hurricanes,14,16,773.0
+2025,13,2025-11-16,59,gt,Georgia Tech Yellow Jackets,15,14,768.0
+2025,13,2025-11-16,30,usc,USC Trojans,16,17,707.0
+2025,13,2025-11-16,251,tex,Texas Longhorns,17,10,564.0
+2025,13,2025-11-16,130,mich,Michigan Wolverines,18,18,547.0
+2025,13,2025-11-16,258,uva,Virginia Cavaliers,19,20,476.0
+2025,13,2025-11-16,2633,,,20,21,360.0
+2025,13,2025-11-16,256,jmu,James Madison Dukes,21,24,294.0
+2025,13,2025-11-16,249,unt,North Texas Mean Green,22,0,186.0
+2025,13,2025-11-16,142,miz,Missouri Tigers,23,0,173.0
+2025,13,2025-11-16,2655,,,24,0,167.0
+2025,13,2025-11-16,248,hou,Houston Cougars,25,0,107.0
+2025,14,2025-11-23,194,osu,Ohio State Buckeyes,1,1,1640.0
+2025,14,2025-11-23,84,iu,Indiana Hoosiers,2,2,1587.0
+2025,14,2025-11-23,245,ta&m,Texas A&M Aggies,3,3,1522.0
+2025,14,2025-11-23,61,uga,Georgia Bulldogs,4,4,1444.0
+2025,14,2025-11-23,2483,ore,Oregon Ducks,5,6,1326.0
+2025,14,2025-11-23,145,miss,Ole Miss Rebels,6,5,1320.0
+2025,14,2025-11-23,2641,,,7,6,1295.0
+2025,14,2025-11-23,201,ou,Oklahoma Sooners,8,8,1169.0
+2025,14,2025-11-23,87,nd,Notre Dame Fighting Irish,9,9,1117.0
+2025,14,2025-11-23,333,ala,Alabama Crimson Tide,10,10,1056.0
+2025,14,2025-11-23,252,byu,BYU Cougars,11,11,1014.0
+2025,14,2025-11-23,238,van,Vanderbilt Commodores,12,12,876.0
+2025,14,2025-11-23,2390,mia,Miami Hurricanes,13,14,849.0
+2025,14,2025-11-23,254,utah,Utah Utes,14,13,809.0
+2025,14,2025-11-23,130,mich,Michigan Wolverines,15,18,664.0
+2025,14,2025-11-23,251,tex,Texas Longhorns,16,17,646.0
+2025,14,2025-11-23,258,uva,Virginia Cavaliers,17,19,556.0
+2025,14,2025-11-23,2633,,,18,20,473.0
+2025,14,2025-11-23,30,usc,USC Trojans,19,16,464.0
+2025,14,2025-11-23,256,jmu,James Madison Dukes,20,21,331.0
+2025,14,2025-11-23,249,unt,North Texas Mean Green,21,22,288.0
+2025,14,2025-11-23,2655,,,22,24,255.0
+2025,14,2025-11-23,59,gt,Georgia Tech Yellow Jackets,23,15,228.0
+2025,14,2025-11-23,221,pitt,Pittsburgh Panthers,24,0,174.0
+2025,14,2025-11-23,2567,,,25,0,121.0
+2025,15,2025-11-30,194,osu,Ohio State Buckeyes,1,1,1645.0
+2025,15,2025-11-30,84,iu,Indiana Hoosiers,2,2,1589.0
+2025,15,2025-11-30,61,uga,Georgia Bulldogs,3,4,1504.0
+2025,15,2025-11-30,2483,ore,Oregon Ducks,4,5,1396.0
+2025,15,2025-11-30,2641,,,5,7,1366.0
+2025,15,2025-11-30,145,miss,Ole Miss Rebels,6,6,1350.0
+2025,15,2025-11-30,245,ta&m,Texas A&M Aggies,7,3,1282.0
+2025,15,2025-11-30,201,ou,Oklahoma Sooners,8,8,1140.0
+2025,15,2025-11-30,87,nd,Notre Dame Fighting Irish,9,9,1100.0
+2025,15,2025-11-30,333,ala,Alabama Crimson Tide,10,10,1053.0
+2025,15,2025-11-30,252,byu,BYU Cougars,11,11,982.0
+2025,15,2025-11-30,2390,mia,Miami Hurricanes,12,13,898.0
+2025,15,2025-11-30,238,van,Vanderbilt Commodores,13,12,871.0
+2025,15,2025-11-30,251,tex,Texas Longhorns,14,16,861.0
+2025,15,2025-11-30,254,utah,Utah Utes,15,14,739.0
+2025,15,2025-11-30,258,uva,Virginia Cavaliers,16,17,637.0
+2025,15,2025-11-30,30,usc,USC Trojans,17,19,566.0
+2025,15,2025-11-30,130,mich,Michigan Wolverines,18,15,441.0
+2025,15,2025-11-30,256,jmu,James Madison Dukes,19,20,417.0
+2025,15,2025-11-30,249,unt,North Texas Mean Green,20,21,402.0
+2025,15,2025-11-30,2655,,,21,22,373.0
+2025,15,2025-11-30,12,ariz,Arizona Wildcats,22,0,257.0
+2025,15,2025-11-30,2426,navy,Navy Midshipmen,23,0,146.0
+2025,15,2025-11-30,59,gt,Georgia Tech Yellow Jackets,24,23,90.0
+2025,15,2025-11-30,142,miz,Missouri Tigers,25,0,73.0
+2025,16,2025-12-07,84,iu,Indiana Hoosiers,1,2,1650.0
+2025,16,2025-12-07,61,uga,Georgia Bulldogs,2,3,1550.0
+2025,16,2025-12-07,194,osu,Ohio State Buckeyes,3,1,1538.0
+2025,16,2025-12-07,2641,,,4,5,1452.0
+2025,16,2025-12-07,2483,ore,Oregon Ducks,5,4,1358.0
+2025,16,2025-12-07,145,miss,Ole Miss Rebels,6,6,1323.0
+2025,16,2025-12-07,245,ta&m,Texas A&M Aggies,7,7,1278.0
+2025,16,2025-12-07,201,ou,Oklahoma Sooners,8,8,1154.0
+2025,16,2025-12-07,87,nd,Notre Dame Fighting Irish,9,9,1094.0
+2025,16,2025-12-07,2390,mia,Miami Hurricanes,10,12,1017.0
+2025,16,2025-12-07,333,ala,Alabama Crimson Tide,11,10,973.0
+2025,16,2025-12-07,252,byu,BYU Cougars,12,11,899.0
+2025,16,2025-12-07,238,van,Vanderbilt Commodores,13,13,880.0
+2025,16,2025-12-07,251,tex,Texas Longhorns,14,14,872.0
+2025,16,2025-12-07,254,utah,Utah Utes,15,15,748.0
+2025,16,2025-12-07,30,usc,USC Trojans,16,17,609.0
+2025,16,2025-12-07,2655,,,17,21,521.0
+2025,16,2025-12-07,130,mich,Michigan Wolverines,18,18,503.0
+2025,16,2025-12-07,256,jmu,James Madison Dukes,19,19,490.0
+2025,16,2025-12-07,258,uva,Virginia Cavaliers,20,16,323.0
+2025,16,2025-12-07,12,ariz,Arizona Wildcats,21,22,322.0
+2025,16,2025-12-07,2426,navy,Navy Midshipmen,22,23,173.0
+2025,16,2025-12-07,249,unt,North Texas Mean Green,23,20,151.0
+2025,16,2025-12-07,59,gt,Georgia Tech Yellow Jackets,24,24,147.0
+2025,16,2025-12-07,142,miz,Missouri Tigers,25,25,92.0

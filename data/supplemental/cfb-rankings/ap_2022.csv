@@ -1,0 +1,376 @@
+season,week,asof_date,team_id,team_abbr,team_name,rank,previous,points
+2022,1,2022-08-15,333,ala,Alabama Crimson Tide,1,0,1566.0
+2022,1,2022-08-15,194,osu,Ohio State Buckeyes,2,0,1506.0
+2022,1,2022-08-15,61,uga,Georgia Bulldogs,3,0,1455.0
+2022,1,2022-08-15,228,clem,Clemson Tigers,4,0,1292.0
+2022,1,2022-08-15,87,nd,Notre Dame Fighting Irish,5,0,1242.0
+2022,1,2022-08-15,245,ta&m,Texas A&M Aggies,6,0,1212.0
+2022,1,2022-08-15,254,utah,Utah Utes,7,0,1209.0
+2022,1,2022-08-15,130,mich,Michigan Wolverines,8,0,1203.0
+2022,1,2022-08-15,201,ou,Oklahoma Sooners,9,0,956.0
+2022,1,2022-08-15,239,bay,Baylor Bears,10,0,884.0
+2022,1,2022-08-15,2483,ore,Oregon Ducks,11,0,831.0
+2022,1,2022-08-15,197,okst,Oklahoma State Cowboys,12,0,814.0
+2022,1,2022-08-15,152,ncsu,NC State Wolfpack,13,0,752.0
+2022,1,2022-08-15,30,usc,USC Trojans,14,0,711.0
+2022,1,2022-08-15,127,msu,Michigan State Spartans,15,0,631.0
+2022,1,2022-08-15,2390,mia,Miami Hurricanes,16,0,476.0
+2022,1,2022-08-15,221,pitt,Pittsburgh Panthers,17,0,383.0
+2022,1,2022-08-15,275,wis,Wisconsin Badgers,18,0,365.0
+2022,1,2022-08-15,8,ark,Arkansas Razorbacks,19,0,348.0
+2022,1,2022-08-15,96,uk,Kentucky Wildcats,20,0,332.0
+2022,1,2022-08-15,145,miss,Ole Miss Rebels,21,0,324.0
+2022,1,2022-08-15,154,wake,Wake Forest Demon Deacons,22,0,303.0
+2022,1,2022-08-15,2132,cin,Cincinnati Bearcats,23,0,265.0
+2022,1,2022-08-15,248,hou,Houston Cougars,24,0,263.0
+2022,1,2022-08-15,252,byu,BYU Cougars,25,0,234.0
+2022,2,2022-09-06,333,ala,Alabama Crimson Tide,1,1,1552.0
+2022,2,2022-09-06,61,uga,Georgia Bulldogs,2,3,1511.0
+2022,2,2022-09-06,194,osu,Ohio State Buckeyes,3,2,1471.0
+2022,2,2022-09-06,130,mich,Michigan Wolverines,4,8,1299.0
+2022,2,2022-09-06,228,clem,Clemson Tigers,5,4,1280.0
+2022,2,2022-09-06,245,ta&m,Texas A&M Aggies,6,6,1241.0
+2022,2,2022-09-06,201,ou,Oklahoma Sooners,7,9,1130.0
+2022,2,2022-09-06,87,nd,Notre Dame Fighting Irish,8,5,1085.0
+2022,2,2022-09-06,239,bay,Baylor Bears,9,10,1057.0
+2022,2,2022-09-06,30,usc,USC Trojans,10,14,898.0
+2022,2,2022-09-06,197,okst,Oklahoma State Cowboys,11,12,818.0
+2022,2,2022-09-06,57,fla,Florida Gators,12,0,763.0
+2022,2,2022-09-06,254,utah,Utah Utes,13,7,717.0
+2022,2,2022-09-06,127,msu,Michigan State Spartans,14,15,690.0
+2022,2,2022-09-06,2390,mia,Miami Hurricanes,15,16,679.0
+2022,2,2022-09-06,8,ark,Arkansas Razorbacks,16,19,678.0
+2022,2,2022-09-06,221,pitt,Pittsburgh Panthers,17,17,535.0
+2022,2,2022-09-06,152,ncsu,NC State Wolfpack,18,13,513.0
+2022,2,2022-09-06,275,wis,Wisconsin Badgers,19,18,476.0
+2022,2,2022-09-06,96,uk,Kentucky Wildcats,20,20,373.0
+2022,2,2022-09-06,252,byu,BYU Cougars,21,25,266.0
+2022,2,2022-09-06,145,miss,Ole Miss Rebels,22,21,254.0
+2022,2,2022-09-06,154,wake,Wake Forest Demon Deacons,23,22,246.0
+2022,2,2022-09-06,2633,,,24,0,194.0
+2022,2,2022-09-06,248,hou,Houston Cougars,25,24,143.0
+2022,3,2022-09-11,61,uga,Georgia Bulldogs,1,2,1561.0
+2022,3,2022-09-11,333,ala,Alabama Crimson Tide,2,1,1496.0
+2022,3,2022-09-11,194,osu,Ohio State Buckeyes,3,3,1475.0
+2022,3,2022-09-11,130,mich,Michigan Wolverines,4,4,1359.0
+2022,3,2022-09-11,228,clem,Clemson Tigers,5,5,1285.0
+2022,3,2022-09-11,201,ou,Oklahoma Sooners,6,7,1209.0
+2022,3,2022-09-11,30,usc,USC Trojans,7,10,1139.0
+2022,3,2022-09-11,197,okst,Oklahoma State Cowboys,8,11,1004.0
+2022,3,2022-09-11,96,uk,Kentucky Wildcats,9,20,992.0
+2022,3,2022-09-11,8,ark,Arkansas Razorbacks,10,16,938.0
+2022,3,2022-09-11,127,msu,Michigan State Spartans,11,14,902.0
+2022,3,2022-09-11,252,byu,BYU Cougars,12,21,880.0
+2022,3,2022-09-11,2390,mia,Miami Hurricanes,13,15,772.0
+2022,3,2022-09-11,254,utah,Utah Utes,14,13,673.0
+2022,3,2022-09-11,2633,,,15,24,658.0
+2022,3,2022-09-11,152,ncsu,NC State Wolfpack,16,18,623.0
+2022,3,2022-09-11,239,bay,Baylor Bears,17,9,562.0
+2022,3,2022-09-11,57,fla,Florida Gators,18,12,484.0
+2022,3,2022-09-11,154,wake,Wake Forest Demon Deacons,19,23,449.0
+2022,3,2022-09-11,145,miss,Ole Miss Rebels,20,22,411.0
+2022,3,2022-09-11,251,tex,Texas Longhorns,21,0,276.0
+2022,3,2022-09-11,213,psu,Penn State Nittany Lions,22,0,271.0
+2022,3,2022-09-11,221,pitt,Pittsburgh Panthers,23,17,160.0
+2022,3,2022-09-11,245,ta&m,Texas A&M Aggies,24,6,145.0
+2022,3,2022-09-11,2483,ore,Oregon Ducks,25,0,89.0
+2022,4,2022-09-18,61,uga,Georgia Bulldogs,1,1,1569.0
+2022,4,2022-09-18,333,ala,Alabama Crimson Tide,2,2,1492.0
+2022,4,2022-09-18,194,osu,Ohio State Buckeyes,3,3,1473.0
+2022,4,2022-09-18,130,mich,Michigan Wolverines,4,4,1364.0
+2022,4,2022-09-18,228,clem,Clemson Tigers,5,5,1268.0
+2022,4,2022-09-18,201,ou,Oklahoma Sooners,6,6,1257.0
+2022,4,2022-09-18,30,usc,USC Trojans,7,7,1197.0
+2022,4,2022-09-18,96,uk,Kentucky Wildcats,8,9,1096.0
+2022,4,2022-09-18,197,okst,Oklahoma State Cowboys,9,8,1071.0
+2022,4,2022-09-18,8,ark,Arkansas Razorbacks,10,10,920.0
+2022,4,2022-09-18,2633,,,11,15,866.0
+2022,4,2022-09-18,152,ncsu,NC State Wolfpack,12,16,781.0
+2022,4,2022-09-18,254,utah,Utah Utes,13,14,684.0
+2022,4,2022-09-18,213,psu,Penn State Nittany Lions,14,22,666.0
+2022,4,2022-09-18,2483,ore,Oregon Ducks,15,25,593.0
+2022,4,2022-09-18,145,miss,Ole Miss Rebels,16,20,585.0
+2022,4,2022-09-18,239,bay,Baylor Bears,17,17,494.0
+2022,4,2022-09-18,264,wash,Washington Huskies,18,0,485.0
+2022,4,2022-09-18,252,byu,BYU Cougars,19,12,381.0
+2022,4,2022-09-18,57,fla,Florida Gators,20,18,360.0
+2022,4,2022-09-18,154,wake,Wake Forest Demon Deacons,21,19,345.0
+2022,4,2022-09-18,251,tex,Texas Longhorns,22,21,339.0
+2022,4,2022-09-18,245,ta&m,Texas A&M Aggies,23,24,309.0
+2022,4,2022-09-18,221,pitt,Pittsburgh Panthers,24,23,181.0
+2022,4,2022-09-18,2390,mia,Miami Hurricanes,25,13,123.0
+2022,5,2022-09-25,61,uga,Georgia Bulldogs,1,1,1565.0
+2022,5,2022-09-25,333,ala,Alabama Crimson Tide,2,2,1487.0
+2022,5,2022-09-25,194,osu,Ohio State Buckeyes,3,3,1483.0
+2022,5,2022-09-25,130,mich,Michigan Wolverines,4,4,1354.0
+2022,5,2022-09-25,228,clem,Clemson Tigers,5,5,1311.0
+2022,5,2022-09-25,30,usc,USC Trojans,6,7,1236.0
+2022,5,2022-09-25,96,uk,Kentucky Wildcats,7,8,1127.0
+2022,5,2022-09-25,2633,,,8,11,1119.0
+2022,5,2022-09-25,197,okst,Oklahoma State Cowboys,9,9,1081.0
+2022,5,2022-09-25,152,ncsu,NC State Wolfpack,10,12,920.0
+2022,5,2022-09-25,213,psu,Penn State Nittany Lions,11,14,876.0
+2022,5,2022-09-25,254,utah,Utah Utes,12,13,760.0
+2022,5,2022-09-25,2483,ore,Oregon Ducks,13,15,727.0
+2022,5,2022-09-25,145,miss,Ole Miss Rebels,14,16,691.0
+2022,5,2022-09-25,264,wash,Washington Huskies,15,18,657.0
+2022,5,2022-09-25,239,bay,Baylor Bears,16,17,550.0
+2022,5,2022-09-25,245,ta&m,Texas A&M Aggies,17,23,543.0
+2022,5,2022-09-25,201,ou,Oklahoma Sooners,18,6,529.0
+2022,5,2022-09-25,252,byu,BYU Cougars,19,19,482.0
+2022,5,2022-09-25,8,ark,Arkansas Razorbacks,20,10,457.0
+2022,5,2022-09-25,135,minn,Minnesota Golden Gophers,21,0,288.0
+2022,5,2022-09-25,154,wake,Wake Forest Demon Deacons,22,21,265.0
+2022,5,2022-09-25,52,fsu,Florida State Seminoles,23,0,244.0
+2022,5,2022-09-25,221,pitt,Pittsburgh Panthers,24,24,209.0
+2022,5,2022-09-25,2306,ksu,Kansas State Wildcats,25,0,166.0
+2022,6,2022-10-02,333,ala,Alabama Crimson Tide,1,2,1523.0
+2022,6,2022-10-02,61,uga,Georgia Bulldogs,2,1,1521.0
+2022,6,2022-10-02,194,osu,Ohio State Buckeyes,3,3,1488.0
+2022,6,2022-10-02,130,mich,Michigan Wolverines,4,4,1348.0
+2022,6,2022-10-02,228,clem,Clemson Tigers,5,5,1345.0
+2022,6,2022-10-02,30,usc,USC Trojans,6,6,1233.0
+2022,6,2022-10-02,197,okst,Oklahoma State Cowboys,7,9,1182.0
+2022,6,2022-10-02,2633,,,8,8,1129.0
+2022,6,2022-10-02,145,miss,Ole Miss Rebels,9,14,1068.0
+2022,6,2022-10-02,213,psu,Penn State Nittany Lions,10,11,959.0
+2022,6,2022-10-02,254,utah,Utah Utes,11,12,884.0
+2022,6,2022-10-02,2483,ore,Oregon Ducks,12,13,872.0
+2022,6,2022-10-02,96,uk,Kentucky Wildcats,13,7,832.0
+2022,6,2022-10-02,152,ncsu,NC State Wolfpack,14,10,691.0
+2022,6,2022-10-02,154,wake,Wake Forest Demon Deacons,15,22,627.0
+2022,6,2022-10-02,252,byu,BYU Cougars,16,19,604.0
+2022,6,2022-10-02,2628,,,17,0,514.0
+2022,6,2022-10-02,26,ucla,UCLA Bruins,18,0,510.0
+2022,6,2022-10-02,2305,ku,Kansas Jayhawks,19,0,476.0
+2022,6,2022-10-02,2306,ksu,Kansas State Wildcats,20,25,417.0
+2022,6,2022-10-02,264,wash,Washington Huskies,21,15,180.0
+2022,6,2022-10-02,183,syr,Syracuse Orange,22,0,173.0
+2022,6,2022-10-02,344,msst,Mississippi State Bulldogs,23,0,164.0
+2022,6,2022-10-02,2132,cin,Cincinnati Bearcats,24,0,134.0
+2022,6,2022-10-02,99,lsu,LSU Tigers,25,0,108.0
+2022,7,2022-10-09,61,uga,Georgia Bulldogs,1,2,1535.0
+2022,7,2022-10-09,194,osu,Ohio State Buckeyes,2,3,1507.0
+2022,7,2022-10-09,333,ala,Alabama Crimson Tide,3,1,1489.0
+2022,7,2022-10-09,228,clem,Clemson Tigers,4,5,1348.0
+2022,7,2022-10-09,130,mich,Michigan Wolverines,5,4,1319.0
+2022,7,2022-10-09,2633,,,6,8,1232.0
+2022,7,2022-10-09,30,usc,USC Trojans,7,6,1214.0
+2022,7,2022-10-09,197,okst,Oklahoma State Cowboys,8,7,1150.0
+2022,7,2022-10-09,145,miss,Ole Miss Rebels,9,9,1061.0
+2022,7,2022-10-09,213,psu,Penn State Nittany Lions,10,10,974.0
+2022,7,2022-10-09,26,ucla,UCLA Bruins,11,18,907.0
+2022,7,2022-10-09,2483,ore,Oregon Ducks,12,12,893.0
+2022,7,2022-10-09,2628,,,13,17,819.0
+2022,7,2022-10-09,154,wake,Wake Forest Demon Deacons,14,15,748.0
+2022,7,2022-10-09,152,ncsu,NC State Wolfpack,15,14,746.0
+2022,7,2022-10-09,344,msst,Mississippi State Bulldogs,16,23,589.0
+2022,7,2022-10-09,2306,ksu,Kansas State Wildcats,17,20,559.0
+2022,7,2022-10-09,183,syr,Syracuse Orange,18,22,393.0
+2022,7,2022-10-09,2305,ku,Kansas Jayhawks,19,19,330.0
+2022,7,2022-10-09,254,utah,Utah Utes,20,11,328.0
+2022,7,2022-10-09,2132,cin,Cincinnati Bearcats,21,24,257.0
+2022,7,2022-10-09,96,uk,Kentucky Wildcats,22,13,150.0
+2022,7,2022-10-09,251,tex,Texas Longhorns,22,0,150.0
+2022,7,2022-10-09,356,ill,Illinois Fighting Illini,24,0,117.0
+2022,7,2022-10-09,256,jmu,James Madison Dukes,25,0,105.0
+2022,8,2022-10-16,61,uga,Georgia Bulldogs,1,1,1530.0
+2022,8,2022-10-16,194,osu,Ohio State Buckeyes,2,2,1509.0
+2022,8,2022-10-16,2633,,,3,6,1474.0
+2022,8,2022-10-16,130,mich,Michigan Wolverines,4,5,1384.0
+2022,8,2022-10-16,228,clem,Clemson Tigers,5,4,1336.0
+2022,8,2022-10-16,333,ala,Alabama Crimson Tide,6,3,1232.0
+2022,8,2022-10-16,145,miss,Ole Miss Rebels,7,9,1173.0
+2022,8,2022-10-16,2628,,,8,13,1166.0
+2022,8,2022-10-16,26,ucla,UCLA Bruins,9,11,1048.0
+2022,8,2022-10-16,2483,ore,Oregon Ducks,10,12,953.0
+2022,8,2022-10-16,197,okst,Oklahoma State Cowboys,11,8,913.0
+2022,8,2022-10-16,30,usc,USC Trojans,12,7,861.0
+2022,8,2022-10-16,154,wake,Wake Forest Demon Deacons,13,14,790.0
+2022,8,2022-10-16,183,syr,Syracuse Orange,14,18,751.0
+2022,8,2022-10-16,254,utah,Utah Utes,15,20,715.0
+2022,8,2022-10-16,213,psu,Penn State Nittany Lions,16,10,629.0
+2022,8,2022-10-16,2306,ksu,Kansas State Wildcats,17,17,599.0
+2022,8,2022-10-16,356,ill,Illinois Fighting Illini,18,24,433.0
+2022,8,2022-10-16,96,uk,Kentucky Wildcats,19,22,414.0
+2022,8,2022-10-16,251,tex,Texas Longhorns,20,22,368.0
+2022,8,2022-10-16,2132,cin,Cincinnati Bearcats,21,21,321.0
+2022,8,2022-10-16,153,unc,North Carolina Tar Heels,22,0,210.0
+2022,8,2022-10-16,152,ncsu,NC State Wolfpack,23,15,155.0
+2022,8,2022-10-16,344,msst,Mississippi State Bulldogs,24,16,150.0
+2022,8,2022-10-16,2655,,,25,0,115.0
+2022,9,2022-10-23,61,uga,Georgia Bulldogs,1,1,1530.0
+2022,9,2022-10-23,194,osu,Ohio State Buckeyes,2,2,1513.0
+2022,9,2022-10-23,2633,,,3,3,1476.0
+2022,9,2022-10-23,130,mich,Michigan Wolverines,4,4,1382.0
+2022,9,2022-10-23,228,clem,Clemson Tigers,5,5,1318.0
+2022,9,2022-10-23,333,ala,Alabama Crimson Tide,6,6,1266.0
+2022,9,2022-10-23,2628,,,7,8,1213.0
+2022,9,2022-10-23,2483,ore,Oregon Ducks,8,10,1114.0
+2022,9,2022-10-23,197,okst,Oklahoma State Cowboys,9,11,1064.0
+2022,9,2022-10-23,30,usc,USC Trojans,10,12,927.0
+2022,9,2022-10-23,154,wake,Wake Forest Demon Deacons,10,13,927.0
+2022,9,2022-10-23,26,ucla,UCLA Bruins,12,9,803.0
+2022,9,2022-10-23,213,psu,Penn State Nittany Lions,13,16,783.0
+2022,9,2022-10-23,254,utah,Utah Utes,14,15,766.0
+2022,9,2022-10-23,145,miss,Ole Miss Rebels,15,7,744.0
+2022,9,2022-10-23,183,syr,Syracuse Orange,16,14,626.0
+2022,9,2022-10-23,356,ill,Illinois Fighting Illini,17,18,508.0
+2022,9,2022-10-23,99,lsu,LSU Tigers,18,0,502.0
+2022,9,2022-10-23,96,uk,Kentucky Wildcats,19,19,429.0
+2022,9,2022-10-23,2132,cin,Cincinnati Bearcats,20,21,386.0
+2022,9,2022-10-23,153,unc,North Carolina Tar Heels,21,22,278.0
+2022,9,2022-10-23,2306,ksu,Kansas State Wildcats,22,17,272.0
+2022,9,2022-10-23,2655,,,23,25,243.0
+2022,9,2022-10-23,152,ncsu,NC State Wolfpack,24,23,169.0
+2022,9,2022-10-23,2579,,,25,0,113.0
+2022,10,2022-10-30,61,uga,Georgia Bulldogs,1,1,1528.0
+2022,10,2022-10-30,2633,,,2,3,1500.0
+2022,10,2022-10-30,194,osu,Ohio State Buckeyes,2,2,1500.0
+2022,10,2022-10-30,130,mich,Michigan Wolverines,4,4,1378.0
+2022,10,2022-10-30,228,clem,Clemson Tigers,5,5,1312.0
+2022,10,2022-10-30,333,ala,Alabama Crimson Tide,6,6,1258.0
+2022,10,2022-10-30,2628,,,7,7,1220.0
+2022,10,2022-10-30,2483,ore,Oregon Ducks,8,8,1135.0
+2022,10,2022-10-30,30,usc,USC Trojans,9,10,1010.0
+2022,10,2022-10-30,26,ucla,UCLA Bruins,10,12,979.0
+2022,10,2022-10-30,145,miss,Ole Miss Rebels,11,15,905.0
+2022,10,2022-10-30,254,utah,Utah Utes,12,14,876.0
+2022,10,2022-10-30,2306,ksu,Kansas State Wildcats,13,22,772.0
+2022,10,2022-10-30,356,ill,Illinois Fighting Illini,14,17,741.0
+2022,10,2022-10-30,99,lsu,LSU Tigers,15,18,679.0
+2022,10,2022-10-30,213,psu,Penn State Nittany Lions,16,13,641.0
+2022,10,2022-10-30,153,unc,North Carolina Tar Heels,17,21,542.0
+2022,10,2022-10-30,197,okst,Oklahoma State Cowboys,18,9,513.0
+2022,10,2022-10-30,2655,,,19,23,455.0
+2022,10,2022-10-30,154,wake,Wake Forest Demon Deacons,20,10,388.0
+2022,10,2022-10-30,152,ncsu,NC State Wolfpack,21,24,285.0
+2022,10,2022-10-30,183,syr,Syracuse Orange,22,16,205.0
+2022,10,2022-10-30,2335,lib,Liberty Flames,23,0,136.0
+2022,10,2022-10-30,204,orst,Oregon State Beavers,24,0,129.0
+2022,10,2022-10-30,2116,ucf,UCF Knights,25,0,111.0
+2022,11,2022-11-06,61,uga,Georgia Bulldogs,1,1,1574.0
+2022,11,2022-11-06,194,osu,Ohio State Buckeyes,2,2,1500.0
+2022,11,2022-11-06,130,mich,Michigan Wolverines,3,4,1455.0
+2022,11,2022-11-06,2628,,,4,7,1361.0
+2022,11,2022-11-06,2633,,,5,2,1339.0
+2022,11,2022-11-06,2483,ore,Oregon Ducks,6,8,1258.0
+2022,11,2022-11-06,99,lsu,LSU Tigers,7,15,1132.0
+2022,11,2022-11-06,30,usc,USC Trojans,8,9,1061.0
+2022,11,2022-11-06,26,ucla,UCLA Bruins,9,10,1040.0
+2022,11,2022-11-06,333,ala,Alabama Crimson Tide,10,6,1009.0
+2022,11,2022-11-06,145,miss,Ole Miss Rebels,11,11,962.0
+2022,11,2022-11-06,228,clem,Clemson Tigers,12,5,938.0
+2022,11,2022-11-06,254,utah,Utah Utes,13,12,881.0
+2022,11,2022-11-06,213,psu,Penn State Nittany Lions,14,16,735.0
+2022,11,2022-11-06,153,unc,North Carolina Tar Heels,15,17,676.0
+2022,11,2022-11-06,2655,,,16,19,607.0
+2022,11,2022-11-06,152,ncsu,NC State Wolfpack,17,21,547.0
+2022,11,2022-11-06,251,tex,Texas Longhorns,18,0,399.0
+2022,11,2022-11-06,2335,lib,Liberty Flames,19,23,358.0
+2022,11,2022-11-06,87,nd,Notre Dame Fighting Irish,20,0,316.0
+2022,11,2022-11-06,356,ill,Illinois Fighting Illini,21,14,262.0
+2022,11,2022-11-06,2116,ucf,UCF Knights,22,25,257.0
+2022,11,2022-11-06,2306,ksu,Kansas State Wildcats,23,13,247.0
+2022,11,2022-11-06,264,wash,Washington Huskies,24,0,187.0
+2022,11,2022-11-06,52,fsu,Florida State Seminoles,25,0,78.0
+2022,12,2022-11-13,61,uga,Georgia Bulldogs,1,1,1574.0
+2022,12,2022-11-13,194,osu,Ohio State Buckeyes,2,2,1501.0
+2022,12,2022-11-13,130,mich,Michigan Wolverines,3,3,1453.0
+2022,12,2022-11-13,2628,,,4,4,1374.0
+2022,12,2022-11-13,2633,,,5,5,1341.0
+2022,12,2022-11-13,99,lsu,LSU Tigers,6,7,1218.0
+2022,12,2022-11-13,30,usc,USC Trojans,7,8,1152.0
+2022,12,2022-11-13,333,ala,Alabama Crimson Tide,8,10,1140.0
+2022,12,2022-11-13,228,clem,Clemson Tigers,9,12,1055.0
+2022,12,2022-11-13,254,utah,Utah Utes,10,13,965.0
+2022,12,2022-11-13,213,psu,Penn State Nittany Lions,11,14,882.0
+2022,12,2022-11-13,2483,ore,Oregon Ducks,12,6,856.0
+2022,12,2022-11-13,153,unc,North Carolina Tar Heels,13,15,843.0
+2022,12,2022-11-13,145,miss,Ole Miss Rebels,14,11,797.0
+2022,12,2022-11-13,264,wash,Washington Huskies,15,24,693.0
+2022,12,2022-11-13,26,ucla,UCLA Bruins,16,9,648.0
+2022,12,2022-11-13,2116,ucf,UCF Knights,17,22,537.0
+2022,12,2022-11-13,87,nd,Notre Dame Fighting Irish,18,20,495.0
+2022,12,2022-11-13,2306,ksu,Kansas State Wildcats,19,23,468.0
+2022,12,2022-11-13,52,fsu,Florida State Seminoles,20,25,386.0
+2022,12,2022-11-13,2655,,,21,16,273.0
+2022,12,2022-11-13,2132,cin,Cincinnati Bearcats,22,0,237.0
+2022,12,2022-11-13,324,ccu,Coastal Carolina Chanticleers,23,0,143.0
+2022,12,2022-11-13,197,okst,Oklahoma State Cowboys,24,0,85.0
+2022,12,2022-11-13,204,orst,Oregon State Beavers,25,0,81.0
+2022,13,2022-11-20,61,uga,Georgia Bulldogs,1,1,1574.0
+2022,13,2022-11-20,194,osu,Ohio State Buckeyes,2,2,1507.0
+2022,13,2022-11-20,130,mich,Michigan Wolverines,3,3,1446.0
+2022,13,2022-11-20,2628,,,4,4,1395.0
+2022,13,2022-11-20,30,usc,USC Trojans,5,7,1293.0
+2022,13,2022-11-20,99,lsu,LSU Tigers,6,6,1241.0
+2022,13,2022-11-20,228,clem,Clemson Tigers,7,9,1152.0
+2022,13,2022-11-20,333,ala,Alabama Crimson Tide,8,8,1131.0
+2022,13,2022-11-20,2633,,,9,5,1058.0
+2022,13,2022-11-20,2483,ore,Oregon Ducks,10,12,1009.0
+2022,13,2022-11-20,213,psu,Penn State Nittany Lions,11,11,994.0
+2022,13,2022-11-20,264,wash,Washington Huskies,12,15,879.0
+2022,13,2022-11-20,87,nd,Notre Dame Fighting Irish,13,18,710.0
+2022,13,2022-11-20,254,utah,Utah Utes,14,10,709.0
+2022,13,2022-11-20,2306,ksu,Kansas State Wildcats,15,19,697.0
+2022,13,2022-11-20,52,fsu,Florida State Seminoles,16,20,579.0
+2022,13,2022-11-20,26,ucla,UCLA Bruins,17,16,562.0
+2022,13,2022-11-20,153,unc,North Carolina Tar Heels,18,13,464.0
+2022,13,2022-11-20,2655,,,19,21,441.0
+2022,13,2022-11-20,145,miss,Ole Miss Rebels,20,14,395.0
+2022,13,2022-11-20,2132,cin,Cincinnati Bearcats,21,22,353.0
+2022,13,2022-11-20,204,orst,Oregon State Beavers,22,25,271.0
+2022,13,2022-11-20,324,ccu,Coastal Carolina Chanticleers,23,23,186.0
+2022,13,2022-11-20,251,tex,Texas Longhorns,24,0,128.0
+2022,13,2022-11-20,2116,ucf,UCF Knights,25,17,87.0
+2022,14,2022-11-27,61,uga,Georgia Bulldogs,1,1,1570.0
+2022,14,2022-11-27,130,mich,Michigan Wolverines,2,3,1516.0
+2022,14,2022-11-27,2628,,,3,4,1449.0
+2022,14,2022-11-27,30,usc,USC Trojans,4,5,1382.0
+2022,14,2022-11-27,194,osu,Ohio State Buckeyes,5,2,1313.0
+2022,14,2022-11-27,333,ala,Alabama Crimson Tide,6,8,1243.0
+2022,14,2022-11-27,2633,,,7,9,1195.0
+2022,14,2022-11-27,213,psu,Penn State Nittany Lions,8,11,1131.0
+2022,14,2022-11-27,264,wash,Washington Huskies,9,12,1048.0
+2022,14,2022-11-27,228,clem,Clemson Tigers,10,7,928.0
+2022,14,2022-11-27,99,lsu,LSU Tigers,11,6,874.0
+2022,14,2022-11-27,254,utah,Utah Utes,12,14,849.0
+2022,14,2022-11-27,2306,ksu,Kansas State Wildcats,13,15,815.0
+2022,14,2022-11-27,52,fsu,Florida State Seminoles,14,16,730.0
+2022,14,2022-11-27,2483,ore,Oregon Ducks,15,10,701.0
+2022,14,2022-11-27,204,orst,Oregon State Beavers,16,22,662.0
+2022,14,2022-11-27,26,ucla,UCLA Bruins,17,17,618.0
+2022,14,2022-11-27,2655,,,18,19,551.0
+2022,14,2022-11-27,87,nd,Notre Dame Fighting Irish,19,13,384.0
+2022,14,2022-11-27,2579,,,20,0,358.0
+2022,14,2022-11-27,251,tex,Texas Longhorns,21,24,316.0
+2022,14,2022-11-27,2116,ucf,UCF Knights,22,25,170.0
+2022,14,2022-11-27,2636,,,23,0,145.0
+2022,14,2022-11-27,153,unc,North Carolina Tar Heels,24,18,114.0
+2022,14,2022-11-27,344,msst,Mississippi State Bulldogs,25,0,99.0
+2022,15,2022-12-04,61,uga,Georgia Bulldogs,1,1,1574.0
+2022,15,2022-12-04,130,mich,Michigan Wolverines,2,2,1513.0
+2022,15,2022-12-04,2628,,,3,3,1430.0
+2022,15,2022-12-04,194,osu,Ohio State Buckeyes,4,5,1398.0
+2022,15,2022-12-04,333,ala,Alabama Crimson Tide,5,6,1285.0
+2022,15,2022-12-04,2633,,,6,7,1233.0
+2022,15,2022-12-04,254,utah,Utah Utes,7,12,1110.0
+2022,15,2022-12-04,30,usc,USC Trojans,8,4,1068.0
+2022,15,2022-12-04,213,psu,Penn State Nittany Lions,9,8,1063.0
+2022,15,2022-12-04,228,clem,Clemson Tigers,10,10,1042.0
+2022,15,2022-12-04,2306,ksu,Kansas State Wildcats,11,13,1032.0
+2022,15,2022-12-04,264,wash,Washington Huskies,12,9,933.0
+2022,15,2022-12-04,52,fsu,Florida State Seminoles,13,14,708.0
+2022,15,2022-12-04,2655,,,14,18,681.0
+2022,15,2022-12-04,2483,ore,Oregon Ducks,15,15,670.0
+2022,15,2022-12-04,99,lsu,LSU Tigers,16,11,660.0
+2022,15,2022-12-04,204,orst,Oregon State Beavers,17,16,644.0
+2022,15,2022-12-04,26,ucla,UCLA Bruins,18,17,570.0
+2022,15,2022-12-04,87,nd,Notre Dame Fighting Irish,19,19,394.0
+2022,15,2022-12-04,2579,,,20,20,382.0
+2022,15,2022-12-04,251,tex,Texas Longhorns,21,21,305.0
+2022,15,2022-12-04,2636,,,22,23,227.0
+2022,15,2022-12-04,2653,,,23,0,158.0
+2022,15,2022-12-04,344,msst,Mississippi State Bulldogs,24,25,119.0
+2022,15,2022-12-04,152,ncsu,NC State Wolfpack,25,0,59.0

@@ -22,7 +22,7 @@ def load_league_frame(league: str) -> tuple[pd.DataFrame, str] | None:
     v2 = MODELS / f"{league}_v2"
     # Prefer hybrid OOS after feature expansion; open-price leagues still need
     # opening MLs (joined from training table when absent).
-    prefer_open = league in ("mlb", "nhl", "nba", "wnba")
+    prefer_open = False  # unused — close niches preferred; open joined as fallback only
     candidates = [
         ("oos_predictions_hybrid.csv", "hybrid"),
         ("oos_predictions.csv", "xgb"),
@@ -46,11 +46,12 @@ def load_league_frame(league: str) -> tuple[pd.DataFrame, str] | None:
             frame["home_close_spread"] = frame["home_spread"]
         if "model_raw" not in frame.columns and "model_prob" in frame.columns:
             frame["model_raw"] = frame["model_prob"]
-        # Join opening prices from training table when hybrid OOS lacks them.
-        if prefer_open and (
+        # Join opening prices from training table when OOS lacks them (for open fallback).
+        need_open_join = (
             "home_open_ml" not in frame.columns
             or float(frame["home_open_ml"].notna().mean()) < 0.05
-        ):
+        )
+        if need_open_join:
             hist = PROJECT_ROOT / "data" / f"{league}_history" / "training_table.csv"
             if hist.is_file():
                 tt = pd.read_csv(hist)
@@ -65,6 +66,9 @@ def load_league_frame(league: str) -> tuple[pd.DataFrame, str] | None:
                 if "home_key" in frame.columns and "home" not in frame.columns:
                     frame = frame.rename(columns={"home_key": "home", "away_key": "away"})
                 need = ["season", "date", "home", "away", "home_open_ml", "away_open_ml"]
+                # Also accept home_ml_open alias from training tables
+                if "home_open_ml" not in tt.columns and "home_ml_open" in tt.columns:
+                    tt = tt.rename(columns={"home_ml_open": "home_open_ml", "away_ml_open": "away_open_ml"})
                 if all(c in tt.columns for c in need):
                     keys = ["season", "date", "home", "away"]
                     for drop in ("home_open_ml", "away_open_ml"):
@@ -73,7 +77,8 @@ def load_league_frame(league: str) -> tuple[pd.DataFrame, str] | None:
                     # Deduplicate right side to avoid cartesian blow-ups.
                     right = tt[need].drop_duplicates(keys, keep="last")
                     frame = frame.merge(right, on=keys, how="left")
-        if prefer_open and "home_open_ml" not in frame.columns:
+        # Prefer files that have close ML; open is optional fallback.
+        if "home_close_ml" not in frame.columns and "home_ml" not in frame.columns:
             continue
         return frame, label
     return None
@@ -113,13 +118,14 @@ def main() -> int:
 
     configs = {
         "mlb": {
-            "ml_prices": (("open", "home_open_ml", "away_open_ml"), ("close", "home_close_ml", "away_close_ml")),
+            # Close first; expand structural sides (home/away/either) in search
+            "ml_prices": (("close", "home_close_ml", "away_close_ml"), ("open", "home_open_ml", "away_open_ml")),
             "also_spread": False,
             "windows": (("from2022", 2022), ("from2023", 2023), ("from2024", 2024), ("all", None)),
             "min_bets": 80,
         },
         "nhl": {
-            "ml_prices": (("open", "home_open_ml", "away_open_ml"), ("close", "home_close_ml", "away_close_ml")),
+            "ml_prices": (("close", "home_close_ml", "away_close_ml"), ("open", "home_open_ml", "away_open_ml")),
             "also_spread": False,
             "windows": (("from2022", 2022), ("from2023", 2023), ("from2024", 2024), ("all", None)),
             "min_bets": 80,
@@ -132,8 +138,8 @@ def main() -> int:
         },
         "nba": {
             "ml_prices": (
-                ("open", "home_open_ml", "away_open_ml"),
                 ("close", "home_close_ml", "away_close_ml"),
+                ("open", "home_open_ml", "away_open_ml"),
             ),
             "also_spread": True,
             "windows": (("from2022", 2022), ("from2023", 2023), ("from2024", 2024), ("all", None)),
@@ -141,8 +147,8 @@ def main() -> int:
         },
         "wnba": {
             "ml_prices": (
-                ("open", "home_open_ml", "away_open_ml"),
                 ("close", "home_close_ml", "away_close_ml"),
+                ("open", "home_open_ml", "away_open_ml"),
             ),
             "also_spread": True,
             "windows": (("from2022", 2022), ("from2023", 2023), ("from2024", 2024), ("all", None)),

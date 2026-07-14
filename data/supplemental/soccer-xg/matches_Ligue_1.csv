@@ -1,0 +1,2058 @@
+league,season,date,home,away,home_xg,away_xg
+Ligue_1,2020,2020-08-21,Bordeaux,Nantes,0.600075,0.187821
+Ligue_1,2020,2020-08-22,Dijon,Angers,0.739709,2.02214
+Ligue_1,2020,2020-08-22,Lille,Rennes,0.400974,1.29518
+Ligue_1,2020,2020-08-23,Monaco,Reims,2.67622,1.83257
+Ligue_1,2020,2020-08-23,Lorient,Strasbourg,3.07214,0.326826
+Ligue_1,2020,2020-08-23,Nimes,Brest,2.14597,0.468011
+Ligue_1,2020,2020-08-23,Nice,Lens,0.180464,3.03614
+Ligue_1,2020,2020-08-28,Lyon,Dijon,3.97148,0.215658
+Ligue_1,2020,2020-08-29,Rennes,Montpellier,1.78715,0.491784
+Ligue_1,2020,2020-08-29,Strasbourg,Nice,0.227899,1.20894
+Ligue_1,2020,2020-08-30,Reims,Lille,0.206627,0.906784
+Ligue_1,2020,2020-08-30,Angers,Bordeaux,0.511549,2.28529
+Ligue_1,2020,2020-08-30,Metz,Monaco,0.626118,0.189291
+Ligue_1,2020,2020-08-30,Nantes,Nimes,2.15547,0.874864
+Ligue_1,2020,2020-08-30,Saint-Etienne,Lorient,1.39361,0.2149
+Ligue_1,2020,2020-08-30,Brest,Marseille,2.12594,1.32391
+Ligue_1,2020,2020-09-10,Lens,Paris Saint Germain,1.71747,0.344198
+Ligue_1,2020,2020-09-11,Bordeaux,Lyon,0.231132,1.79726
+Ligue_1,2020,2020-09-12,Montpellier,Nice,1.69934,0.376694
+Ligue_1,2020,2020-09-12,Saint-Etienne,Strasbourg,1.76107,1.30205
+Ligue_1,2020,2020-09-13,Lille,Metz,0.814528,0.736721
+Ligue_1,2020,2020-09-13,Lorient,Lens,0.919743,1.98746
+Ligue_1,2020,2020-09-13,Dijon,Brest,0.296281,2.19687
+Ligue_1,2020,2020-09-13,Angers,Reims,2.14867,0.324767
+Ligue_1,2020,2020-09-13,Nimes,Rennes,1.00844,2.0941
+Ligue_1,2020,2020-09-13,Monaco,Nantes,2.27042,1.10894
+Ligue_1,2020,2020-09-13,Paris Saint Germain,Marseille,2.22184,0.502817
+Ligue_1,2020,2020-09-15,Montpellier,Lyon,1.75168,2.17049
+Ligue_1,2020,2020-09-16,Paris Saint Germain,Metz,2.42357,0.980849
+Ligue_1,2020,2020-09-17,Marseille,Saint-Etienne,2.65376,1.02937
+Ligue_1,2020,2020-09-18,Lyon,Nimes,1.62529,0.714832
+Ligue_1,2020,2020-09-19,Lens,Bordeaux,3.02331,0.359182
+Ligue_1,2020,2020-09-19,Rennes,Monaco,0.857476,0.816922
+Ligue_1,2020,2020-09-20,Nice,Paris Saint Germain,0.930504,3.32755
+Ligue_1,2020,2020-09-20,Strasbourg,Dijon,2.38097,0.487834
+Ligue_1,2020,2020-09-20,Metz,Reims,1.71276,1.18244
+Ligue_1,2020,2020-09-20,Montpellier,Angers,1.94396,0.772287
+Ligue_1,2020,2020-09-20,Brest,Lorient,1.21203,1.49951
+Ligue_1,2020,2020-09-20,Nantes,Saint-Etienne,1.33579,1.03738
+Ligue_1,2020,2020-09-20,Marseille,Lille,0.865098,1.49471
+Ligue_1,2020,2020-09-25,Lille,Nantes,2.09387,0.660348
+Ligue_1,2020,2020-09-26,Saint-Etienne,Rennes,0.200419,1.37167
+Ligue_1,2020,2020-09-26,Marseille,Metz,0.864412,1.10713
+Ligue_1,2020,2020-09-27,Bordeaux,Nice,1.17944,0.645309
+Ligue_1,2020,2020-09-27,Dijon,Montpellier,1.60909,2.31217
+Ligue_1,2020,2020-09-27,Angers,Brest,1.11753,2.36408
+Ligue_1,2020,2020-09-27,Monaco,Strasbourg,1.56306,1.40652
+Ligue_1,2020,2020-09-27,Nimes,Lens,0.370624,1.37195
+Ligue_1,2020,2020-09-27,Lorient,Lyon,0.299841,0.818784
+Ligue_1,2020,2020-09-27,Reims,Paris Saint Germain,0.208814,3.93633
+Ligue_1,2020,2020-10-02,Paris Saint Germain,Angers,2.9145,0.943753
+Ligue_1,2020,2020-10-03,Lens,Saint-Etienne,2.13387,0.0932933
+Ligue_1,2020,2020-10-03,Nice,Nantes,1.9654,1.13528
+Ligue_1,2020,2020-10-04,Montpellier,Nimes,0.686408,0.588829
+Ligue_1,2020,2020-10-04,Metz,Lorient,1.60054,0.853711
+Ligue_1,2020,2020-10-04,Bordeaux,Dijon,1.50071,0.237758
+Ligue_1,2020,2020-10-04,Brest,Monaco,0.732353,1.53192
+Ligue_1,2020,2020-10-04,Strasbourg,Lille,0.844783,1.95685
+Ligue_1,2020,2020-10-04,Rennes,Reims,2.09357,1.0506
+Ligue_1,2020,2020-10-04,Lyon,Marseille,3.14327,0.376941
+Ligue_1,2020,2020-10-16,Dijon,Rennes,1.10593,0.769376
+Ligue_1,2020,2020-10-16,Nimes,Paris Saint Germain,0.138218,4.12316
+Ligue_1,2020,2020-10-17,Reims,Lorient,0.273331,2.81036
+Ligue_1,2020,2020-10-17,Marseille,Bordeaux,0.977647,0.508148
+Ligue_1,2020,2020-10-18,Strasbourg,Lyon,1.92587,4.16498
+Ligue_1,2020,2020-10-18,Angers,Metz,1.09118,1.16356
+Ligue_1,2020,2020-10-18,Monaco,Montpellier,1.80187,0.109095
+Ligue_1,2020,2020-10-18,Nantes,Brest,1.90561,0.839348
+Ligue_1,2020,2020-10-18,Saint-Etienne,Nice,0.714171,2.52438
+Ligue_1,2020,2020-10-18,Lille,Lens,2.90262,0.254965
+Ligue_1,2020,2020-10-23,Rennes,Angers,1.21675,1.20512
+Ligue_1,2020,2020-10-24,Lorient,Marseille,0.846635,0.880426
+Ligue_1,2020,2020-10-24,Paris Saint Germain,Dijon,4.08894,1.49175
+Ligue_1,2020,2020-10-25,Bordeaux,Nimes,1.92729,0.712337
+Ligue_1,2020,2020-10-25,Metz,Saint-Etienne,0.330896,0.631401
+Ligue_1,2020,2020-10-25,Montpellier,Reims,0.13909,4.33321
+Ligue_1,2020,2020-10-25,Brest,Strasbourg,0.732823,1.29304
+Ligue_1,2020,2020-10-25,Nice,Lille,0.866315,0.890546
+Ligue_1,2020,2020-10-25,Lyon,Monaco,3.43243,1.89348
+Ligue_1,2020,2020-10-31,Rennes,Brest,1.40289,1.03943
+Ligue_1,2020,2020-10-31,Nantes,Paris Saint Germain,1.63127,2.72536
+Ligue_1,2020,2020-11-01,Saint-Etienne,Montpellier,0.484542,0.937369
+Ligue_1,2020,2020-11-01,Angers,Nice,0.395203,2.78036
+Ligue_1,2020,2020-11-01,Dijon,Lorient,0.377123,1.14876
+Ligue_1,2020,2020-11-01,Nimes,Metz,0.78372,0.859238
+Ligue_1,2020,2020-11-01,Reims,Strasbourg,0.911301,1.42258
+Ligue_1,2020,2020-11-01,Monaco,Bordeaux,3.9375,0.204669
+Ligue_1,2020,2020-11-01,Lille,Lyon,0.444747,0.421049
+Ligue_1,2020,2020-11-06,Strasbourg,Marseille,0.324201,0.0420124
+Ligue_1,2020,2020-11-07,Bordeaux,Montpellier,0.474622,1.59436
+Ligue_1,2020,2020-11-07,Paris Saint Germain,Rennes,1.02539,0.855589
+Ligue_1,2020,2020-11-08,Brest,Lille,1.47256,2.97059
+Ligue_1,2020,2020-11-08,Nimes,Angers,1.66648,2.03947
+Ligue_1,2020,2020-11-08,Metz,Dijon,2.52379,2.43299
+Ligue_1,2020,2020-11-08,Lens,Reims,2.04125,1.02999
+Ligue_1,2020,2020-11-08,Lorient,Nantes,1.77629,1.46578
+Ligue_1,2020,2020-11-08,Nice,Monaco,0.782745,1.87829
+Ligue_1,2020,2020-11-08,Lyon,Saint-Etienne,3.30537,1.46951
+Ligue_1,2020,2020-11-20,Rennes,Bordeaux,1.95047,0.312448
+Ligue_1,2020,2020-11-20,Monaco,Paris Saint Germain,3.28236,2.01645
+Ligue_1,2020,2020-11-21,Brest,Saint-Etienne,1.06599,1.08804
+Ligue_1,2020,2020-11-22,Nantes,Metz,1.48835,1.30332
+Ligue_1,2020,2020-11-22,Dijon,Lens,0.672083,1.28012
+Ligue_1,2020,2020-11-22,Montpellier,Strasbourg,2.65546,3.39205
+Ligue_1,2020,2020-11-22,Reims,Nimes,1.05404,0.955282
+Ligue_1,2020,2020-11-22,Angers,Lyon,0.948811,1.12013
+Ligue_1,2020,2020-11-22,Lille,Lorient,3.37221,0.462287
+Ligue_1,2020,2020-11-25,Lens,Nantes,0.875771,2.16695
+Ligue_1,2020,2020-11-27,Strasbourg,Rennes,0.802873,1.99479
+Ligue_1,2020,2020-11-28,Marseille,Nantes,2.7459,0.322283
+Ligue_1,2020,2020-11-28,Paris Saint Germain,Bordeaux,2.52961,1.13676
+Ligue_1,2020,2020-11-29,Lyon,Reims,1.96635,0.334614
+Ligue_1,2020,2020-11-29,Lens,Angers,1.3761,2.62737
+Ligue_1,2020,2020-11-29,Lorient,Montpellier,0.343499,1.47115
+Ligue_1,2020,2020-11-29,Monaco,Nimes,3.43581,0.208733
+Ligue_1,2020,2020-11-29,Metz,Brest,0.704986,1.32303
+Ligue_1,2020,2020-11-29,Nice,Dijon,2.40463,0.980084
+Ligue_1,2020,2020-11-29,Saint-Etienne,Lille,0.982356,0.391883
+Ligue_1,2020,2020-12-04,Nimes,Marseille,0.384633,2.16881
+Ligue_1,2020,2020-12-05,Rennes,Lens,0.503822,0.927878
+Ligue_1,2020,2020-12-05,Montpellier,Paris Saint Germain,1.98123,2.12699
+Ligue_1,2020,2020-12-06,Lille,Monaco,1.38745,0.669039
+Ligue_1,2020,2020-12-06,Angers,Lorient,1.91353,0.33512
+Ligue_1,2020,2020-12-06,Bordeaux,Brest,2.36548,0.170892
+Ligue_1,2020,2020-12-06,Dijon,Saint-Etienne,0.235832,0.675017
+Ligue_1,2020,2020-12-06,Nantes,Strasbourg,0.633507,3.19753
+Ligue_1,2020,2020-12-06,Reims,Nice,0.511453,0.570809
+Ligue_1,2020,2020-12-06,Metz,Lyon,1.2421,1.81122
+Ligue_1,2020,2020-12-11,Saint-Etienne,Angers,1.15801,0.751779
+Ligue_1,2020,2020-12-12,Marseille,Monaco,1.52748,1.70771
+Ligue_1,2020,2020-12-12,Lens,Montpellier,1.38862,1.61719
+Ligue_1,2020,2020-12-13,Nice,Rennes,0.791546,1.2598
+Ligue_1,2020,2020-12-13,Brest,Reims,2.97358,0.555087
+Ligue_1,2020,2020-12-13,Lorient,Nimes,2.82061,0.562896
+Ligue_1,2020,2020-12-13,Nantes,Dijon,1.88182,1.02506
+Ligue_1,2020,2020-12-13,Strasbourg,Metz,0.788845,1.71894
+Ligue_1,2020,2020-12-13,Lille,Bordeaux,1.34583,0.804147
+Ligue_1,2020,2020-12-13,Paris Saint Germain,Lyon,0.310118,0.833608
+Ligue_1,2020,2020-12-16,Angers,Strasbourg,0.215122,0.510882
+Ligue_1,2020,2020-12-16,Dijon,Lille,0.171789,1.10314
+Ligue_1,2020,2020-12-16,Montpellier,Metz,0.892487,1.63826
+Ligue_1,2020,2020-12-16,Nimes,Nice,0.994031,1.97897
+Ligue_1,2020,2020-12-16,Reims,Nantes,1.74124,2.08259
+Ligue_1,2020,2020-12-16,Rennes,Marseille,1.16849,1.24235
+Ligue_1,2020,2020-12-16,Bordeaux,Saint-Etienne,0.552558,2.18745
+Ligue_1,2020,2020-12-16,Lyon,Brest,3.29974,1.28136
+Ligue_1,2020,2020-12-16,Monaco,Lens,0.928491,0.963125
+Ligue_1,2020,2020-12-16,Paris Saint Germain,Lorient,2.80047,1.30249
+Ligue_1,2020,2020-12-19,Metz,Lens,1.16038,1.14532
+Ligue_1,2020,2020-12-19,Marseille,Reims,1.50569,0.363146
+Ligue_1,2020,2020-12-19,Nice,Lyon,0.761993,3.1134
+Ligue_1,2020,2020-12-20,Brest,Montpellier,2.16892,0.522177
+Ligue_1,2020,2020-12-20,Dijon,Monaco,1.17666,1.12699
+Ligue_1,2020,2020-12-20,Nantes,Angers,0.573136,0.942065
+Ligue_1,2020,2020-12-20,Strasbourg,Bordeaux,1.0111,1.30968
+Ligue_1,2020,2020-12-20,Saint-Etienne,Nimes,2.94469,1.50557
+Ligue_1,2020,2020-12-20,Lorient,Rennes,1.0355,1.00048
+Ligue_1,2020,2020-12-20,Lille,Paris Saint Germain,0.394389,0.552443
+Ligue_1,2020,2020-12-23,Nice,Lorient,0.656687,2.13449
+Ligue_1,2020,2020-12-23,Bordeaux,Reims,1.2121,1.30331
+Ligue_1,2020,2020-12-23,Lens,Brest,2.02607,1.17648
+Ligue_1,2020,2020-12-23,Rennes,Metz,0.66303,0.83489
+Ligue_1,2020,2020-12-23,Nimes,Dijon,0.958657,1.60068
+Ligue_1,2020,2020-12-23,Montpellier,Lille,1.19046,1.70435
+Ligue_1,2020,2020-12-23,Angers,Marseille,0.780388,1.49756
+Ligue_1,2020,2020-12-23,Lyon,Nantes,3.9821,1.10394
+Ligue_1,2020,2020-12-23,Monaco,Saint-Etienne,0.680448,1.97218
+Ligue_1,2020,2020-12-23,Paris Saint Germain,Strasbourg,3.11615,0.417249
+Ligue_1,2020,2021-01-06,Lorient,Monaco,0.61232,2.81772
+Ligue_1,2020,2021-01-06,Metz,Bordeaux,0.71749,0.667484
+Ligue_1,2020,2021-01-06,Nantes,Rennes,0.600663,0.490669
+Ligue_1,2020,2021-01-06,Strasbourg,Nimes,4.64764,0.826798
+Ligue_1,2020,2021-01-06,Brest,Nice,1.13297,1.37393
+Ligue_1,2020,2021-01-06,Lille,Angers,0.285307,0.413017
+Ligue_1,2020,2021-01-06,Lyon,Lens,1.82314,0.947234
+Ligue_1,2020,2021-01-06,Marseille,Montpellier,2.52375,1.17896
+Ligue_1,2020,2021-01-06,Reims,Dijon,0.878332,0.125669
+Ligue_1,2020,2021-01-06,Saint-Etienne,Paris Saint Germain,1.29987,1.39496
+Ligue_1,2020,2021-01-09,Bordeaux,Lorient,1.61234,1.06734
+Ligue_1,2020,2021-01-09,Dijon,Marseille,0.48883,1.80202
+Ligue_1,2020,2021-01-09,Lens,Strasbourg,0.57533,1.57769
+Ligue_1,2020,2021-01-09,Metz,Nice,1.25558,1.48081
+Ligue_1,2020,2021-01-09,Monaco,Angers,2.30803,0.689403
+Ligue_1,2020,2021-01-09,Montpellier,Nantes,0.905512,1.31067
+Ligue_1,2020,2021-01-09,Nimes,Lille,0.34513,1.01419
+Ligue_1,2020,2021-01-09,Paris Saint Germain,Brest,2.91378,0.546939
+Ligue_1,2020,2021-01-09,Reims,Saint-Etienne,1.70535,1.28905
+Ligue_1,2020,2021-01-09,Rennes,Lyon,1.14894,1.11618
+Ligue_1,2020,2021-01-15,Montpellier,Monaco,0.55197,2.88799
+Ligue_1,2020,2021-01-16,Marseille,Nimes,2.16279,1.58781
+Ligue_1,2020,2021-01-16,Angers,Paris Saint Germain,0.937183,1.48664
+Ligue_1,2020,2021-01-17,Brest,Rennes,1.94951,1.4995
+Ligue_1,2020,2021-01-17,Nantes,Lens,1.15976,1.35642
+Ligue_1,2020,2021-01-17,Nice,Bordeaux,0.469882,3.61303
+Ligue_1,2020,2021-01-17,Strasbourg,Saint-Etienne,2.60986,1.25152
+Ligue_1,2020,2021-01-17,Lille,Reims,1.37991,0.265034
+Ligue_1,2020,2021-01-17,Lyon,Metz,1.6386,1.4255
+Ligue_1,2020,2021-01-20,Marseille,Lens,0.118724,1.55004
+Ligue_1,2020,2021-01-22,Paris Saint Germain,Montpellier,4.90921,0.15807
+Ligue_1,2020,2021-01-23,Lens,Nice,1.18896,0.547266
+Ligue_1,2020,2021-01-23,Monaco,Marseille,1.87551,0.462549
+Ligue_1,2020,2021-01-24,Bordeaux,Angers,1.1096,1.71363
+Ligue_1,2020,2021-01-24,Dijon,Strasbourg,0.802784,2.7928
+Ligue_1,2020,2021-01-24,Metz,Nantes,0.833905,0.239963
+Ligue_1,2020,2021-01-24,Reims,Brest,1.18806,1.01943
+Ligue_1,2020,2021-01-24,Rennes,Lille,0.550276,0.796039
+Ligue_1,2020,2021-01-24,Saint-Etienne,Lyon,0.22255,2.19868
+Ligue_1,2020,2021-01-27,Lorient,Dijon,0.895978,1.6704
+Ligue_1,2020,2021-01-29,Lyon,Bordeaux,1.30049,0.73143
+Ligue_1,2020,2021-01-30,Montpellier,Lens,1.03811,1.07049
+Ligue_1,2020,2021-01-31,Nice,Saint-Etienne,0.435831,1.58746
+Ligue_1,2020,2021-01-31,Angers,Nimes,1.59464,0.9424
+Ligue_1,2020,2021-01-31,Brest,Metz,1.8688,1.50555
+Ligue_1,2020,2021-01-31,Lorient,Paris Saint Germain,1.56057,2.64181
+Ligue_1,2020,2021-01-31,Strasbourg,Reims,0.995057,1.31697
+Ligue_1,2020,2021-01-31,Lille,Dijon,1.90817,0.370938
+Ligue_1,2020,2021-01-31,Nantes,Monaco,1.23932,1.52441
+Ligue_1,2020,2021-02-03,Bordeaux,Lille,0.746258,1.99926
+Ligue_1,2020,2021-02-03,Metz,Montpellier,0.902049,1.02749
+Ligue_1,2020,2021-02-03,Reims,Angers,0.556903,0.251964
+Ligue_1,2020,2021-02-03,Rennes,Lorient,1.03454,0.620552
+Ligue_1,2020,2021-02-03,Strasbourg,Brest,0.610074,0.710748
+Ligue_1,2020,2021-02-03,Dijon,Lyon,0.998017,2.26364
+Ligue_1,2020,2021-02-03,Lens,Marseille,1.53188,1.3201
+Ligue_1,2020,2021-02-03,Monaco,Nice,2.7347,0.426701
+Ligue_1,2020,2021-02-03,Paris Saint Germain,Nimes,1.69188,1.73501
+Ligue_1,2020,2021-02-03,Saint-Etienne,Nantes,1.50363,1.25487
+Ligue_1,2020,2021-02-06,Lorient,Reims,1.11747,0.779858
+Ligue_1,2020,2021-02-06,Lyon,Strasbourg,1.59649,0.242033
+Ligue_1,2020,2021-02-06,Lens,Rennes,1.09008,0.549443
+Ligue_1,2020,2021-02-07,Brest,Bordeaux,2.03597,0.635508
+Ligue_1,2020,2021-02-07,Montpellier,Dijon,5.60551,1.31726
+Ligue_1,2020,2021-02-07,Nice,Angers,1.30901,0.620413
+Ligue_1,2020,2021-02-07,Nimes,Monaco,1.54024,1.24576
+Ligue_1,2020,2021-02-07,Saint-Etienne,Metz,0.560201,0.327429
+Ligue_1,2020,2021-02-07,Nantes,Lille,0.400333,1.7948
+Ligue_1,2020,2021-02-07,Marseille,Paris Saint Germain,0.426125,1.23049
+Ligue_1,2020,2021-02-13,Paris Saint Germain,Nice,2.47313,1.0503
+Ligue_1,2020,2021-02-13,Reims,Lens,0.679141,3.15679
+Ligue_1,2020,2021-02-13,Lyon,Montpellier,3.94358,1.75721
+Ligue_1,2020,2021-02-14,Monaco,Lorient,1.93864,1.43939
+Ligue_1,2020,2021-02-14,Angers,Nantes,1.72075,1.75357
+Ligue_1,2020,2021-02-14,Dijon,Nimes,0.466986,1.90774
+Ligue_1,2020,2021-02-14,Metz,Strasbourg,1.46606,1.39672
+Ligue_1,2020,2021-02-14,Rennes,Saint-Etienne,0.797238,0.347155
+Ligue_1,2020,2021-02-14,Lille,Brest,0.62514,0.0883755
+Ligue_1,2020,2021-02-14,Bordeaux,Marseille,1.90455,0.41792
+Ligue_1,2020,2021-02-17,Marseille,Nice,0.648327,1.2083
+Ligue_1,2020,2021-02-19,Brest,Lyon,1.46003,3.47483
+Ligue_1,2020,2021-02-20,Saint-Etienne,Reims,1.97702,0.35467
+Ligue_1,2020,2021-02-20,Nantes,Marseille,0.779308,0.564279
+Ligue_1,2020,2021-02-21,Montpellier,Rennes,2.86812,1.42102
+Ligue_1,2020,2021-02-21,Lens,Dijon,1.29752,0.88646
+Ligue_1,2020,2021-02-21,Nice,Metz,1.04755,1.43338
+Ligue_1,2020,2021-02-21,Nimes,Bordeaux,0.364183,0.791842
+Ligue_1,2020,2021-02-21,Strasbourg,Angers,1.41894,0.325105
+Ligue_1,2020,2021-02-21,Lorient,Lille,0.231568,1.04668
+Ligue_1,2020,2021-02-21,Paris Saint Germain,Monaco,0.953831,1.05657
+Ligue_1,2020,2021-02-24,Nimes,Lorient,0.914735,0.3945
+Ligue_1,2020,2021-02-26,Rennes,Nice,0.752041,1.6621
+Ligue_1,2020,2021-02-27,Bordeaux,Metz,0.978537,1.84068
+Ligue_1,2020,2021-02-27,Dijon,Paris Saint Germain,0.249652,2.12179
+Ligue_1,2020,2021-02-28,Monaco,Brest,2.19231,0.429681
+Ligue_1,2020,2021-02-28,Angers,Lens,1.71598,1.0798
+Ligue_1,2020,2021-02-28,Lorient,Saint-Etienne,0.858628,1.01869
+Ligue_1,2020,2021-02-28,Nimes,Nantes,0.474343,1.48858
+Ligue_1,2020,2021-02-28,Reims,Montpellier,0.338427,0.322556
+Ligue_1,2020,2021-02-28,Lille,Strasbourg,0.866257,0.965368
+Ligue_1,2020,2021-02-28,Marseille,Lyon,1.35641,0.581809
+Ligue_1,2020,2021-03-03,Brest,Dijon,1.56287,0.716104
+Ligue_1,2020,2021-03-03,Lyon,Rennes,1.94262,0.591174
+Ligue_1,2020,2021-03-03,Metz,Angers,0.688591,1.0704
+Ligue_1,2020,2021-03-03,Nice,Nimes,1.50673,2.37864
+Ligue_1,2020,2021-03-03,Saint-Etienne,Lens,1.73128,1.97268
+Ligue_1,2020,2021-03-03,Bordeaux,Paris Saint Germain,0.80867,1.27822
+Ligue_1,2020,2021-03-03,Lille,Marseille,2.22985,0.0997889
+Ligue_1,2020,2021-03-03,Montpellier,Lorient,0.6465,2.0525
+Ligue_1,2020,2021-03-03,Nantes,Reims,1.42636,0.618533
+Ligue_1,2020,2021-03-03,Strasbourg,Monaco,0.75132,0.729752
+Ligue_1,2020,2021-03-10,Marseille,Rennes,0.751259,0.596112
+Ligue_1,2020,2021-03-12,Reims,Lyon,0.734344,1.53476
+Ligue_1,2020,2021-03-13,Angers,Saint-Etienne,0.226499,0.872327
+Ligue_1,2020,2021-03-13,Marseille,Brest,1.72148,0.409173
+Ligue_1,2020,2021-03-14,Nimes,Montpellier,1.83162,1.56372
+Ligue_1,2020,2021-03-14,Dijon,Bordeaux,0.969288,1.5005
+Ligue_1,2020,2021-03-14,Lens,Metz,2.37531,1.46077
+Ligue_1,2020,2021-03-14,Lorient,Nice,2.3105,0.511554
+Ligue_1,2020,2021-03-14,Rennes,Strasbourg,1.03121,0.58962
+Ligue_1,2020,2021-03-14,Monaco,Lille,0.614925,0.163714
+Ligue_1,2020,2021-03-14,Paris Saint Germain,Nantes,0.882924,1.15766
+Ligue_1,2020,2021-03-19,Saint-Etienne,Monaco,0.4503,2.43305
+Ligue_1,2020,2021-03-20,Metz,Rennes,0.685567,2.26743
+Ligue_1,2020,2021-03-20,Nice,Marseille,2.7496,0.30434
+Ligue_1,2020,2021-03-21,Strasbourg,Lens,2.11369,1.55355
+Ligue_1,2020,2021-03-21,Nantes,Lorient,1.39056,0.85463
+Ligue_1,2020,2021-03-21,Montpellier,Bordeaux,2.24117,1.39846
+Ligue_1,2020,2021-03-21,Dijon,Reims,0.792069,1.34244
+Ligue_1,2020,2021-03-21,Brest,Angers,0.480151,0.757882
+Ligue_1,2020,2021-03-21,Lille,Nimes,0.787438,0.80422
+Ligue_1,2020,2021-03-21,Lyon,Paris Saint Germain,0.613014,1.6505
+Ligue_1,2020,2021-04-03,Monaco,Metz,2.50003,0.356458
+Ligue_1,2020,2021-04-03,Paris Saint Germain,Lille,1.05668,0.552797
+Ligue_1,2020,2021-04-03,Lens,Lyon,0.672298,2.10812
+Ligue_1,2020,2021-04-04,Angers,Montpellier,0.995445,1.75167
+Ligue_1,2020,2021-04-04,Reims,Rennes,1.03401,2.06496
+Ligue_1,2020,2021-04-04,Bordeaux,Strasbourg,1.59289,2.28415
+Ligue_1,2020,2021-04-04,Lorient,Brest,1.76108,0.231613
+Ligue_1,2020,2021-04-04,Nantes,Nice,1.36882,2.37312
+Ligue_1,2020,2021-04-04,Nimes,Saint-Etienne,1.56114,2.21045
+Ligue_1,2020,2021-04-04,Marseille,Dijon,1.53499,0.124818
+Ligue_1,2020,2021-04-09,Metz,Lille,1.96214,0.555794
+Ligue_1,2020,2021-04-10,Strasbourg,Paris Saint Germain,0.945852,2.1849
+Ligue_1,2020,2021-04-10,Montpellier,Marseille,2.15762,1.94159
+Ligue_1,2020,2021-04-11,Rennes,Nantes,0.733422,0.224608
+Ligue_1,2020,2021-04-11,Brest,Nimes,1.98561,0.804029
+Ligue_1,2020,2021-04-11,Lens,Lorient,3.35961,1.94788
+Ligue_1,2020,2021-04-11,Nice,Reims,0.515644,0.451514
+Ligue_1,2020,2021-04-11,Saint-Etienne,Bordeaux,3.28299,1.52246
+Ligue_1,2020,2021-04-11,Monaco,Dijon,3.88289,0.683971
+Ligue_1,2020,2021-04-11,Lyon,Angers,2.84942,1.02157
+Ligue_1,2020,2021-04-16,Lille,Montpellier,1.22671,0.914792
+Ligue_1,2020,2021-04-17,Angers,Rennes,0.453458,1.4232
+Ligue_1,2020,2021-04-17,Marseille,Lorient,2.44334,1.47384
+Ligue_1,2020,2021-04-18,Paris Saint Germain,Saint-Etienne,2.04974,1.26569
+Ligue_1,2020,2021-04-18,Reims,Metz,0.731927,0.838419
+Ligue_1,2020,2021-04-18,Nimes,Strasbourg,1.63156,1.0454
+Ligue_1,2020,2021-04-18,Dijon,Nice,1.41735,0.718471
+Ligue_1,2020,2021-04-18,Brest,Lens,0.391745,1.06491
+Ligue_1,2020,2021-04-18,Bordeaux,Monaco,0.927302,1.87096
+Ligue_1,2020,2021-04-18,Nantes,Lyon,1.21944,1.81278
+Ligue_1,2020,2021-04-23,Reims,Marseille,0.704618,2.37375
+Ligue_1,2020,2021-04-24,Saint-Etienne,Brest,1.12226,0.920463
+Ligue_1,2020,2021-04-24,Metz,Paris Saint Germain,0.649808,2.70678
+Ligue_1,2020,2021-04-25,Nice,Montpellier,2.37673,1.73033
+Ligue_1,2020,2021-04-25,Lorient,Bordeaux,2.10336,0.690014
+Ligue_1,2020,2021-04-25,Rennes,Dijon,4.16691,1.03041
+Ligue_1,2020,2021-04-25,Strasbourg,Nantes,1.39872,1.09277
+Ligue_1,2020,2021-04-25,Lens,Nimes,0.712516,1.45501
+Ligue_1,2020,2021-04-25,Angers,Monaco,0.100339,1.35311
+Ligue_1,2020,2021-04-25,Lyon,Lille,0.945519,1.87462
+Ligue_1,2020,2021-04-30,Marseille,Strasbourg,1.13215,0.256318
+Ligue_1,2020,2021-05-01,Paris Saint Germain,Lens,1.37764,1.51498
+Ligue_1,2020,2021-05-01,Lille,Nice,0.684625,0.0
+Ligue_1,2020,2021-05-02,Bordeaux,Rennes,0.58893,0.752351
+Ligue_1,2020,2021-05-02,Brest,Nantes,1.63517,2.61836
+Ligue_1,2020,2021-05-02,Dijon,Metz,1.2483,1.83354
+Ligue_1,2020,2021-05-02,Lorient,Angers,2.41491,0.584175
+Ligue_1,2020,2021-05-02,Nimes,Reims,2.42284,0.651471
+Ligue_1,2020,2021-05-02,Montpellier,Saint-Etienne,1.01968,2.26191
+Ligue_1,2020,2021-05-02,Monaco,Lyon,2.11913,0.840692
+Ligue_1,2020,2021-05-07,Lens,Lille,1.38117,1.24486
+Ligue_1,2020,2021-05-08,Nantes,Bordeaux,1.7162,0.721345
+Ligue_1,2020,2021-05-08,Lyon,Lorient,4.64266,0.61204
+Ligue_1,2020,2021-05-09,Saint-Etienne,Marseille,1.41067,1.92834
+Ligue_1,2020,2021-05-09,Angers,Dijon,1.71976,0.2674
+Ligue_1,2020,2021-05-09,Metz,Nimes,0.680563,2.07976
+Ligue_1,2020,2021-05-09,Nice,Brest,2.95697,1.02622
+Ligue_1,2020,2021-05-09,Strasbourg,Montpellier,1.9728,0.716886
+Ligue_1,2020,2021-05-09,Reims,Monaco,0.432365,1.05896
+Ligue_1,2020,2021-05-09,Rennes,Paris Saint Germain,0.946689,1.54538
+Ligue_1,2020,2021-05-16,Bordeaux,Lens,2.80699,1.12553
+Ligue_1,2020,2021-05-16,Dijon,Nantes,0.988436,2.57999
+Ligue_1,2020,2021-05-16,Lille,Saint-Etienne,0.900703,0.332146
+Ligue_1,2020,2021-05-16,Lorient,Metz,1.42765,0.0661912
+Ligue_1,2020,2021-05-16,Marseille,Angers,2.93056,1.84288
+Ligue_1,2020,2021-05-16,Monaco,Rennes,1.51214,0.318374
+Ligue_1,2020,2021-05-16,Montpellier,Brest,0.408081,1.96696
+Ligue_1,2020,2021-05-16,Nice,Strasbourg,0.74817,2.26561
+Ligue_1,2020,2021-05-16,Nimes,Lyon,0.854315,2.84141
+Ligue_1,2020,2021-05-16,Paris Saint Germain,Reims,4.73633,0.051654
+Ligue_1,2020,2021-05-23,Angers,Lille,0.736956,1.56192
+Ligue_1,2020,2021-05-23,Brest,Paris Saint Germain,0.574713,2.0167
+Ligue_1,2020,2021-05-23,Lens,Monaco,0.23839,1.308
+Ligue_1,2020,2021-05-23,Lyon,Nice,1.32809,1.47366
+Ligue_1,2020,2021-05-23,Metz,Marseille,1.08944,1.15022
+Ligue_1,2020,2021-05-23,Nantes,Montpellier,1.41119,1.70751
+Ligue_1,2020,2021-05-23,Reims,Bordeaux,1.19819,1.23805
+Ligue_1,2020,2021-05-23,Rennes,Nimes,1.33269,0.357583
+Ligue_1,2020,2021-05-23,Saint-Etienne,Dijon,1.4605,1.38029
+Ligue_1,2020,2021-05-23,Strasbourg,Lorient,0.32396,0.521913
+Ligue_1,2021,2021-08-06,Monaco,Nantes,1.76899,0.239715
+Ligue_1,2021,2021-08-07,Lyon,Brest,1.17521,1.01966
+Ligue_1,2021,2021-08-07,Troyes,Paris Saint Germain,0.618173,1.48651
+Ligue_1,2021,2021-08-08,Rennes,Lens,0.598423,2.13637
+Ligue_1,2021,2021-08-08,Saint-Etienne,Lorient,1.85797,0.835981
+Ligue_1,2021,2021-08-08,Strasbourg,Angers,0.267011,1.41617
+Ligue_1,2021,2021-08-08,Bordeaux,Clermont Foot,0.510543,2.95652
+Ligue_1,2021,2021-08-08,Nice,Reims,1.09947,0.158446
+Ligue_1,2021,2021-08-08,Metz,Lille,1.02062,1.62245
+Ligue_1,2021,2021-08-08,Montpellier,Marseille,0.764726,2.15797
+Ligue_1,2021,2021-08-13,Lorient,Monaco,0.779459,0.86536
+Ligue_1,2021,2021-08-14,Lille,Nice,0.768573,2.33694
+Ligue_1,2021,2021-08-14,Paris Saint Germain,Strasbourg,2.90032,0.570058
+Ligue_1,2021,2021-08-15,Angers,Lyon,1.6418,0.977124
+Ligue_1,2021,2021-08-15,Brest,Rennes,2.2991,1.32152
+Ligue_1,2021,2021-08-15,Clermont Foot,Troyes,1.44309,0.696005
+Ligue_1,2021,2021-08-15,Nantes,Metz,1.7221,0.885265
+Ligue_1,2021,2021-08-15,Reims,Montpellier,1.30758,1.9999
+Ligue_1,2021,2021-08-15,Lens,Saint-Etienne,1.1447,0.85171
+Ligue_1,2021,2021-08-15,Marseille,Bordeaux,1.05273,0.318288
+Ligue_1,2021,2021-08-20,Brest,Paris Saint Germain,1.24868,1.51499
+Ligue_1,2021,2021-08-21,Monaco,Lens,0.241985,0.598613
+Ligue_1,2021,2021-08-21,Saint-Etienne,Lille,0.476794,1.1966
+Ligue_1,2021,2021-08-22,Lyon,Clermont Foot,3.31864,1.82093
+Ligue_1,2021,2021-08-22,Metz,Reims,0.670048,1.18358
+Ligue_1,2021,2021-08-22,Bordeaux,Angers,0.603119,1.01295
+Ligue_1,2021,2021-08-22,Strasbourg,Troyes,2.95463,1.14502
+Ligue_1,2021,2021-08-22,Montpellier,Lorient,3.64876,0.462326
+Ligue_1,2021,2021-08-22,Rennes,Nantes,0.869605,0.264197
+Ligue_1,2021,2021-08-27,Nantes,Lyon,1.35394,1.44128
+Ligue_1,2021,2021-08-28,Nice,Bordeaux,2.52768,0.867457
+Ligue_1,2021,2021-08-28,Marseille,Saint-Etienne,2.73701,1.22779
+Ligue_1,2021,2021-08-29,Troyes,Monaco,0.589287,1.74073
+Ligue_1,2021,2021-08-29,Strasbourg,Brest,1.22705,0.592574
+Ligue_1,2021,2021-08-29,Angers,Rennes,2.63179,1.28738
+Ligue_1,2021,2021-08-29,Clermont Foot,Metz,1.64521,1.90265
+Ligue_1,2021,2021-08-29,Lens,Lorient,1.13941,1.2163
+Ligue_1,2021,2021-08-29,Lille,Montpellier,2.46405,0.719288
+Ligue_1,2021,2021-08-29,Reims,Paris Saint Germain,0.826608,1.82461
+Ligue_1,2021,2021-09-10,Lorient,Lille,1.08464,1.51807
+Ligue_1,2021,2021-09-11,Paris Saint Germain,Clermont Foot,2.50575,1.0353
+Ligue_1,2021,2021-09-11,Monaco,Marseille,0.890728,1.36062
+Ligue_1,2021,2021-09-12,Montpellier,Saint-Etienne,1.08969,0.861648
+Ligue_1,2021,2021-09-12,Rennes,Reims,0.805521,0.871123
+Ligue_1,2021,2021-09-12,Bordeaux,Lens,1.00806,3.12454
+Ligue_1,2021,2021-09-12,Brest,Angers,1.47981,0.998328
+Ligue_1,2021,2021-09-12,Metz,Troyes,0.781252,0.86724
+Ligue_1,2021,2021-09-12,Nantes,Nice,2.1566,2.45276
+Ligue_1,2021,2021-09-12,Lyon,Strasbourg,1.69926,2.0448
+Ligue_1,2021,2021-09-17,Strasbourg,Metz,2.04719,0.612439
+Ligue_1,2021,2021-09-18,Lens,Lille,0.486611,1.20992
+Ligue_1,2021,2021-09-18,Saint-Etienne,Bordeaux,1.75367,2.36783
+Ligue_1,2021,2021-09-19,Nice,Monaco,1.94463,2.59113
+Ligue_1,2021,2021-09-19,Troyes,Montpellier,0.489047,0.249763
+Ligue_1,2021,2021-09-19,Angers,Nantes,0.609027,2.59886
+Ligue_1,2021,2021-09-19,Clermont Foot,Brest,0.792314,0.657165
+Ligue_1,2021,2021-09-19,Reims,Lorient,0.977907,0.174553
+Ligue_1,2021,2021-09-19,Marseille,Rennes,2.21352,1.06105
+Ligue_1,2021,2021-09-19,Paris Saint Germain,Lyon,2.22972,0.822779
+Ligue_1,2021,2021-09-22,Monaco,Saint-Etienne,1.73834,0.325508
+Ligue_1,2021,2021-09-22,Montpellier,Bordeaux,1.68484,1.269
+Ligue_1,2021,2021-09-22,Nantes,Brest,1.66414,0.563562
+Ligue_1,2021,2021-09-22,Rennes,Clermont Foot,3.15024,0.379902
+Ligue_1,2021,2021-09-22,Lille,Reims,1.18526,1.1754
+Ligue_1,2021,2021-09-22,Lens,Strasbourg,2.68397,1.09537
+Ligue_1,2021,2021-09-22,Angers,Marseille,0.470168,0.494217
+Ligue_1,2021,2021-09-22,Lyon,Troyes,2.47231,0.943884
+Ligue_1,2021,2021-09-22,Metz,Paris Saint Germain,0.761431,1.14719
+Ligue_1,2021,2021-09-22,Lorient,Nice,0.619405,2.16916
+Ligue_1,2021,2021-09-25,Saint-Etienne,Nice,0.663428,3.17651
+Ligue_1,2021,2021-09-25,Strasbourg,Lille,0.495724,2.58598
+Ligue_1,2021,2021-09-25,Lyon,Lorient,0.843214,0.53504
+Ligue_1,2021,2021-09-25,Paris Saint Germain,Montpellier,2.58386,0.274573
+Ligue_1,2021,2021-09-26,Bordeaux,Rennes,0.601971,1.78121
+Ligue_1,2021,2021-09-26,Brest,Metz,1.66801,0.668594
+Ligue_1,2021,2021-09-26,Reims,Nantes,1.23068,0.768528
+Ligue_1,2021,2021-09-26,Troyes,Angers,1.25966,1.28496
+Ligue_1,2021,2021-09-26,Clermont Foot,Monaco,1.30935,1.79185
+Ligue_1,2021,2021-09-26,Marseille,Lens,2.01958,2.4899
+Ligue_1,2021,2021-10-01,Lens,Reims,2.36403,0.086376
+Ligue_1,2021,2021-10-02,Montpellier,Strasbourg,1.05711,0.293859
+Ligue_1,2021,2021-10-02,Nice,Brest,4.36782,0.31524
+Ligue_1,2021,2021-10-03,Rennes,Paris Saint Germain,0.878199,1.39782
+Ligue_1,2021,2021-10-03,Angers,Metz,2.81377,0.895212
+Ligue_1,2021,2021-10-03,Lorient,Clermont Foot,0.585194,0.774714
+Ligue_1,2021,2021-10-03,Monaco,Bordeaux,1.7267,0.574838
+Ligue_1,2021,2021-10-03,Nantes,Troyes,1.71042,1.64687
+Ligue_1,2021,2021-10-03,Lille,Marseille,3.52308,0.563626
+Ligue_1,2021,2021-10-03,Saint-Etienne,Lyon,2.47827,1.34812
+Ligue_1,2021,2021-10-15,Paris Saint Germain,Angers,2.48997,1.15895
+Ligue_1,2021,2021-10-16,Clermont Foot,Lille,0.403245,0.607051
+Ligue_1,2021,2021-10-16,Lyon,Monaco,2.81711,0.514906
+Ligue_1,2021,2021-10-17,Troyes,Nice,1.42208,0.513333
+Ligue_1,2021,2021-10-17,Bordeaux,Nantes,0.673783,1.27892
+Ligue_1,2021,2021-10-17,Brest,Reims,0.508125,1.03949
+Ligue_1,2021,2021-10-17,Metz,Rennes,0.97348,3.36021
+Ligue_1,2021,2021-10-17,Strasbourg,Saint-Etienne,2.71053,0.931047
+Ligue_1,2021,2021-10-17,Montpellier,Lens,1.62492,1.19027
+Ligue_1,2021,2021-10-17,Marseille,Lorient,1.70821,2.09245
+Ligue_1,2021,2021-10-22,Saint-Etienne,Angers,1.50388,0.675033
+Ligue_1,2021,2021-10-23,Nantes,Clermont Foot,1.07124,0.735892
+Ligue_1,2021,2021-10-23,Lille,Brest,1.6786,1.14162
+Ligue_1,2021,2021-10-24,Nice,Lyon,1.99644,1.41733
+Ligue_1,2021,2021-10-24,Lens,Metz,2.37156,0.790081
+Ligue_1,2021,2021-10-24,Lorient,Bordeaux,1.78373,1.06479
+Ligue_1,2021,2021-10-24,Reims,Troyes,1.02175,0.675059
+Ligue_1,2021,2021-10-24,Rennes,Strasbourg,1.35771,1.02588
+Ligue_1,2021,2021-10-24,Monaco,Montpellier,2.11858,1.16841
+Ligue_1,2021,2021-10-24,Marseille,Paris Saint Germain,1.29195,2.0521
+Ligue_1,2021,2021-10-27,Nice,Marseille,1.50504,0.341475
+Ligue_1,2021,2021-10-29,Paris Saint Germain,Lille,2.30974,1.83335
+Ligue_1,2021,2021-10-30,Metz,Saint-Etienne,0.382626,0.281781
+Ligue_1,2021,2021-10-30,Lyon,Lens,2.02936,2.12966
+Ligue_1,2021,2021-10-31,Angers,Nice,1.21195,0.897424
+Ligue_1,2021,2021-10-31,Bordeaux,Reims,1.94845,1.81401
+Ligue_1,2021,2021-10-31,Montpellier,Nantes,1.47174,0.856557
+Ligue_1,2021,2021-10-31,Strasbourg,Lorient,3.09428,0.666205
+Ligue_1,2021,2021-10-31,Troyes,Rennes,1.80006,1.51345
+Ligue_1,2021,2021-10-31,Brest,Monaco,1.77116,0.507286
+Ligue_1,2021,2021-10-31,Clermont Foot,Marseille,0.743883,1.24579
+Ligue_1,2021,2021-11-05,Lens,Troyes,3.16809,0.537488
+Ligue_1,2021,2021-11-06,Lille,Angers,1.74491,1.15058
+Ligue_1,2021,2021-11-06,Bordeaux,Paris Saint Germain,1.57566,1.23993
+Ligue_1,2021,2021-11-07,Marseille,Metz,1.66928,1.36054
+Ligue_1,2021,2021-11-07,Lorient,Brest,1.16964,2.34992
+Ligue_1,2021,2021-11-07,Nantes,Strasbourg,2.26281,1.92452
+Ligue_1,2021,2021-11-07,Reims,Monaco,0.33707,0.973878
+Ligue_1,2021,2021-11-07,Saint-Etienne,Clermont Foot,2.0562,1.30338
+Ligue_1,2021,2021-11-07,Nice,Montpellier,1.63624,0.641977
+Ligue_1,2021,2021-11-07,Rennes,Lyon,3.97971,0.953137
+Ligue_1,2021,2021-11-19,Monaco,Lille,0.938265,2.16486
+Ligue_1,2021,2021-11-20,Paris Saint Germain,Nantes,1.26725,0.998765
+Ligue_1,2021,2021-11-20,Rennes,Montpellier,3.99657,0.298729
+Ligue_1,2021,2021-11-21,Brest,Lens,1.44486,1.7144
+Ligue_1,2021,2021-11-21,Angers,Lorient,1.46206,0.420713
+Ligue_1,2021,2021-11-21,Strasbourg,Reims,2.02517,1.25894
+Ligue_1,2021,2021-11-21,Troyes,Saint-Etienne,1.19094,1.24032
+Ligue_1,2021,2021-11-21,Metz,Bordeaux,1.32669,2.68178
+Ligue_1,2021,2021-11-21,Clermont Foot,Nice,0.779709,0.617574
+Ligue_1,2021,2021-11-26,Lens,Angers,1.60255,2.00176
+Ligue_1,2021,2021-11-27,Lille,Nantes,1.46803,0.358991
+Ligue_1,2021,2021-11-27,Nice,Metz,1.3496,0.526632
+Ligue_1,2021,2021-11-28,Saint-Etienne,Paris Saint Germain,0.969955,3.43495
+Ligue_1,2021,2021-11-28,Reims,Clermont Foot,0.707634,0.270002
+Ligue_1,2021,2021-11-28,Bordeaux,Brest,1.4572,2.26589
+Ligue_1,2021,2021-11-28,Lorient,Rennes,0.633986,0.989174
+Ligue_1,2021,2021-11-28,Monaco,Strasbourg,1.58216,0.945132
+Ligue_1,2021,2021-11-28,Montpellier,Lyon,1.02178,1.17882
+Ligue_1,2021,2021-11-28,Marseille,Troyes,1.15323,0.145868
+Ligue_1,2021,2021-12-01,Angers,Monaco,1.03304,3.50553
+Ligue_1,2021,2021-12-01,Brest,Saint-Etienne,1.89197,0.456836
+Ligue_1,2021,2021-12-01,Metz,Montpellier,1.47536,1.41193
+Ligue_1,2021,2021-12-01,Strasbourg,Bordeaux,3.43125,1.48801
+Ligue_1,2021,2021-12-01,Troyes,Lorient,1.12178,0.433668
+Ligue_1,2021,2021-12-01,Clermont Foot,Lens,1.80535,0.568409
+Ligue_1,2021,2021-12-01,Lyon,Reims,2.85052,1.05349
+Ligue_1,2021,2021-12-01,Nantes,Marseille,0.174142,1.63717
+Ligue_1,2021,2021-12-01,Paris Saint Germain,Nice,1.61794,0.957516
+Ligue_1,2021,2021-12-01,Rennes,Lille,0.799539,0.708091
+Ligue_1,2021,2021-12-04,Marseille,Brest,1.92281,1.55388
+Ligue_1,2021,2021-12-04,Lille,Troyes,1.79406,0.28995
+Ligue_1,2021,2021-12-04,Lens,Paris Saint Germain,0.824432,2.29134
+Ligue_1,2021,2021-12-05,Saint-Etienne,Rennes,0.357851,3.1151
+Ligue_1,2021,2021-12-05,Reims,Angers,1.34274,1.7715
+Ligue_1,2021,2021-12-05,Lorient,Nantes,0.619711,0.268938
+Ligue_1,2021,2021-12-05,Monaco,Metz,1.91421,0.547708
+Ligue_1,2021,2021-12-05,Montpellier,Clermont Foot,0.855855,0.394172
+Ligue_1,2021,2021-12-05,Nice,Strasbourg,1.36817,2.7263
+Ligue_1,2021,2021-12-05,Bordeaux,Lyon,2.60089,1.84671
+Ligue_1,2021,2021-12-10,Nantes,Lens,1.43665,0.840732
+Ligue_1,2021,2021-12-11,Brest,Montpellier,0.691352,1.67645
+Ligue_1,2021,2021-12-11,Reims,Saint-Etienne,2.71752,0.119419
+Ligue_1,2021,2021-12-12,Lille,Lyon,2.15596,0.422128
+Ligue_1,2021,2021-12-12,Rennes,Nice,1.60766,1.8035
+Ligue_1,2021,2021-12-12,Angers,Clermont Foot,1.52675,1.7067
+Ligue_1,2021,2021-12-12,Troyes,Bordeaux,1.26919,1.13993
+Ligue_1,2021,2021-12-12,Metz,Lorient,1.14227,1.70684
+Ligue_1,2021,2021-12-12,Strasbourg,Marseille,1.7897,0.708922
+Ligue_1,2021,2021-12-12,Paris Saint Germain,Monaco,1.90289,0.815473
+Ligue_1,2021,2021-12-22,Bordeaux,Lille,1.00922,1.23123
+Ligue_1,2021,2021-12-22,Lorient,Paris Saint Germain,1.47671,2.19929
+Ligue_1,2021,2021-12-22,Lyon,Metz,2.79025,0.353946
+Ligue_1,2021,2021-12-22,Marseille,Reims,1.70528,1.05686
+Ligue_1,2021,2021-12-22,Monaco,Rennes,1.62819,1.29487
+Ligue_1,2021,2021-12-22,Montpellier,Angers,0.998835,0.747023
+Ligue_1,2021,2021-12-22,Nice,Lens,0.866194,1.72232
+Ligue_1,2021,2021-12-22,Saint-Etienne,Nantes,1.00748,0.791261
+Ligue_1,2021,2021-12-22,Troyes,Brest,1.05921,0.661085
+Ligue_1,2021,2022-01-07,Bordeaux,Marseille,0.413069,2.1562
+Ligue_1,2021,2022-01-08,Lens,Rennes,0.579974,0.32823
+Ligue_1,2021,2022-01-09,Brest,Nice,1.61742,1.44947
+Ligue_1,2021,2022-01-09,Metz,Strasbourg,0.2706,3.70382
+Ligue_1,2021,2022-01-09,Clermont Foot,Reims,0.762901,0.808538
+Ligue_1,2021,2022-01-09,Nantes,Monaco,0.364991,0.69482
+Ligue_1,2021,2022-01-09,Lyon,Paris Saint Germain,1.03597,1.12874
+Ligue_1,2021,2022-01-14,Nice,Nantes,2.27691,0.396645
+Ligue_1,2021,2022-01-15,Saint-Etienne,Lens,0.950864,0.746899
+Ligue_1,2021,2022-01-15,Paris Saint Germain,Brest,2.70951,0.724633
+Ligue_1,2021,2022-01-16,Rennes,Bordeaux,4.07838,0.412647
+Ligue_1,2021,2022-01-16,Lorient,Angers,0.480599,0.554657
+Ligue_1,2021,2022-01-16,Monaco,Clermont Foot,4.25883,0.248903
+Ligue_1,2021,2022-01-16,Reims,Metz,0.651857,0.713423
+Ligue_1,2021,2022-01-16,Strasbourg,Montpellier,1.4597,1.02915
+Ligue_1,2021,2022-01-16,Troyes,Lyon,0.485256,3.02674
+Ligue_1,2021,2022-01-16,Marseille,Lille,1.62744,0.966892
+Ligue_1,2021,2022-01-19,Clermont Foot,Strasbourg,0.348448,1.74904
+Ligue_1,2021,2022-01-19,Montpellier,Troyes,0.575051,0.548481
+Ligue_1,2021,2022-01-19,Lille,Lorient,1.58626,1.21798
+Ligue_1,2021,2022-01-21,Lyon,Saint-Etienne,2.19008,0.242989
+Ligue_1,2021,2022-01-22,Brest,Lille,1.29391,1.37501
+Ligue_1,2021,2022-01-22,Lens,Marseille,0.618083,1.35491
+Ligue_1,2021,2022-01-23,Metz,Nice,0.233858,1.94674
+Ligue_1,2021,2022-01-23,Angers,Troyes,2.29724,1.63676
+Ligue_1,2021,2022-01-23,Bordeaux,Strasbourg,1.65394,1.49036
+Ligue_1,2021,2022-01-23,Clermont Foot,Rennes,1.09838,2.49108
+Ligue_1,2021,2022-01-23,Nantes,Lorient,1.40263,2.03139
+Ligue_1,2021,2022-01-23,Montpellier,Monaco,2.2292,1.24246
+Ligue_1,2021,2022-01-23,Paris Saint Germain,Reims,2.95339,0.344474
+Ligue_1,2021,2022-01-26,Angers,Saint-Etienne,0.354099,0.352428
+Ligue_1,2021,2022-02-02,Lyon,Marseille,1.5519,1.12202
+Ligue_1,2021,2022-02-04,Marseille,Angers,2.34718,0.686866
+Ligue_1,2021,2022-02-05,Saint-Etienne,Montpellier,2.12286,0.698377
+Ligue_1,2021,2022-02-05,Monaco,Lyon,2.28974,1.30679
+Ligue_1,2021,2022-02-06,Lorient,Lens,1.57013,0.392243
+Ligue_1,2021,2022-02-06,Strasbourg,Nantes,1.32815,0.261773
+Ligue_1,2021,2022-02-06,Troyes,Metz,0.435111,0.566752
+Ligue_1,2021,2022-02-06,Nice,Clermont Foot,0.698505,1.29927
+Ligue_1,2021,2022-02-06,Reims,Bordeaux,2.05989,0.120599
+Ligue_1,2021,2022-02-06,Rennes,Brest,2.77542,0.220673
+Ligue_1,2021,2022-02-06,Lille,Paris Saint Germain,0.863815,3.0381
+Ligue_1,2021,2022-02-11,Paris Saint Germain,Rennes,0.797795,0.589669
+Ligue_1,2021,2022-02-12,Montpellier,Lille,0.740905,1.51288
+Ligue_1,2021,2022-02-12,Lyon,Nice,2.75209,0.0804562
+Ligue_1,2021,2022-02-13,Monaco,Lorient,1.31384,0.132654
+Ligue_1,2021,2022-02-13,Nantes,Reims,0.660721,0.613315
+Ligue_1,2021,2022-02-13,Angers,Strasbourg,0.258677,0.335367
+Ligue_1,2021,2022-02-13,Brest,Troyes,2.76844,0.79069
+Ligue_1,2021,2022-02-13,Clermont Foot,Saint-Etienne,0.834271,1.1863
+Ligue_1,2021,2022-02-13,Lens,Bordeaux,2.18631,0.758048
+Ligue_1,2021,2022-02-13,Metz,Marseille,0.792396,2.31854
+Ligue_1,2021,2022-02-18,Lille,Metz,1.18868,0.279242
+Ligue_1,2021,2022-02-19,Lens,Lyon,0.655911,1.18398
+Ligue_1,2021,2022-02-19,Nantes,Paris Saint Germain,2.59589,3.65345
+Ligue_1,2021,2022-02-20,Nice,Angers,1.29968,0.98327
+Ligue_1,2021,2022-02-20,Saint-Etienne,Strasbourg,1.28968,1.51652
+Ligue_1,2021,2022-02-20,Rennes,Troyes,3.26228,0.762222
+Ligue_1,2021,2022-02-20,Reims,Brest,0.540071,1.69455
+Ligue_1,2021,2022-02-20,Lorient,Montpellier,0.623848,0.376147
+Ligue_1,2021,2022-02-20,Bordeaux,Monaco,0.85473,0.951923
+Ligue_1,2021,2022-02-20,Marseille,Clermont Foot,1.02368,0.769815
+Ligue_1,2021,2022-02-25,Montpellier,Rennes,1.16985,1.81992
+Ligue_1,2021,2022-02-26,Strasbourg,Nice,1.03088,0.148653
+Ligue_1,2021,2022-02-26,Paris Saint Germain,Saint-Etienne,2.81988,0.641957
+Ligue_1,2021,2022-02-27,Monaco,Reims,1.7487,1.66986
+Ligue_1,2021,2022-02-27,Angers,Lens,0.601212,0.688779
+Ligue_1,2021,2022-02-27,Metz,Nantes,0.263909,0.61206
+Ligue_1,2021,2022-02-27,Clermont Foot,Bordeaux,0.55263,0.894218
+Ligue_1,2021,2022-02-27,Brest,Lorient,0.210366,2.16888
+Ligue_1,2021,2022-02-27,Troyes,Marseille,2.00647,1.01636
+Ligue_1,2021,2022-02-27,Lyon,Lille,1.48658,0.735102
+Ligue_1,2021,2022-03-04,Lorient,Lyon,1.26241,2.61126
+Ligue_1,2021,2022-03-05,Lens,Brest,1.83072,0.372083
+Ligue_1,2021,2022-03-05,Nice,Paris Saint Germain,1.20526,0.652664
+Ligue_1,2021,2022-03-06,Saint-Etienne,Metz,1.32057,0.313165
+Ligue_1,2021,2022-03-06,Reims,Strasbourg,0.909924,0.744534
+Ligue_1,2021,2022-03-06,Rennes,Angers,2.39062,0.316774
+Ligue_1,2021,2022-03-06,Bordeaux,Troyes,0.884355,2.3042
+Ligue_1,2021,2022-03-06,Nantes,Montpellier,1.55928,0.200382
+Ligue_1,2021,2022-03-06,Lille,Clermont Foot,2.04079,0.477886
+Ligue_1,2021,2022-03-06,Marseille,Monaco,0.865388,0.69435
+Ligue_1,2021,2022-03-11,Lille,Saint-Etienne,1.24797,0.48678
+Ligue_1,2021,2022-03-12,Montpellier,Nice,2.49092,0.757229
+Ligue_1,2021,2022-03-12,Troyes,Nantes,1.18612,0.490874
+Ligue_1,2021,2022-03-13,Paris Saint Germain,Bordeaux,2.05393,0.756536
+Ligue_1,2021,2022-03-13,Angers,Reims,1.88223,1.52385
+Ligue_1,2021,2022-03-13,Clermont Foot,Lorient,1.27083,1.39672
+Ligue_1,2021,2022-03-13,Metz,Lens,0.696431,0.82202
+Ligue_1,2021,2022-03-13,Strasbourg,Monaco,0.834621,0.695519
+Ligue_1,2021,2022-03-13,Lyon,Rennes,1.18519,1.27931
+Ligue_1,2021,2022-03-13,Brest,Marseille,0.424923,1.94529
+Ligue_1,2021,2022-03-18,Saint-Etienne,Troyes,1.21267,1.06117
+Ligue_1,2021,2022-03-19,Lens,Clermont Foot,1.06718,1.75053
+Ligue_1,2021,2022-03-19,Nantes,Lille,0.53106,1.58475
+Ligue_1,2021,2022-03-20,Monaco,Paris Saint Germain,2.4996,1.50615
+Ligue_1,2021,2022-03-20,Angers,Brest,1.2018,0.562622
+Ligue_1,2021,2022-03-20,Bordeaux,Montpellier,2.60974,0.70843
+Ligue_1,2021,2022-03-20,Lorient,Strasbourg,0.410107,1.33873
+Ligue_1,2021,2022-03-20,Rennes,Metz,3.3969,0.68535
+Ligue_1,2021,2022-03-20,Reims,Lyon,0.546254,1.59498
+Ligue_1,2021,2022-03-20,Marseille,Nice,1.58806,1.69113
+Ligue_1,2021,2022-04-02,Nice,Rennes,1.06234,0.896308
+Ligue_1,2021,2022-04-02,Lille,Bordeaux,3.17511,0.113867
+Ligue_1,2021,2022-04-03,Strasbourg,Lens,2.66149,1.22404
+Ligue_1,2021,2022-04-03,Clermont Foot,Nantes,0.918981,1.95586
+Ligue_1,2021,2022-04-03,Metz,Monaco,0.704436,2.15545
+Ligue_1,2021,2022-04-03,Montpellier,Brest,1.26492,0.703265
+Ligue_1,2021,2022-04-03,Troyes,Reims,1.17209,0.480462
+Ligue_1,2021,2022-04-03,Lyon,Angers,1.58017,1.67709
+Ligue_1,2021,2022-04-03,Paris Saint Germain,Lorient,1.96317,0.841873
+Ligue_1,2021,2022-04-03,Saint-Etienne,Marseille,0.208011,3.73912
+Ligue_1,2021,2022-04-08,Lorient,Saint-Etienne,4.1419,1.17408
+Ligue_1,2021,2022-04-09,Reims,Rennes,2.56613,1.12659
+Ligue_1,2021,2022-04-09,Clermont Foot,Paris Saint Germain,1.02858,3.57375
+Ligue_1,2021,2022-04-10,Bordeaux,Metz,2.28971,0.335155
+Ligue_1,2021,2022-04-10,Angers,Lille,0.679878,0.898909
+Ligue_1,2021,2022-04-10,Brest,Nantes,1.25604,0.778552
+Ligue_1,2021,2022-04-10,Monaco,Troyes,0.441913,0.96754
+Ligue_1,2021,2022-04-10,Lens,Nice,0.790168,1.3837
+Ligue_1,2021,2022-04-10,Strasbourg,Lyon,1.45377,2.10099
+Ligue_1,2021,2022-04-10,Marseille,Montpellier,2.81079,0.477841
+Ligue_1,2021,2022-04-15,Rennes,Monaco,2.27865,2.95816
+Ligue_1,2021,2022-04-16,Saint-Etienne,Brest,1.84462,0.488405
+Ligue_1,2021,2022-04-16,Lille,Lens,0.662879,1.15118
+Ligue_1,2021,2022-04-17,Nice,Lorient,2.19937,0.250443
+Ligue_1,2021,2022-04-17,Metz,Clermont Foot,0.404435,2.74048
+Ligue_1,2021,2022-04-17,Montpellier,Reims,0.909367,1.19445
+Ligue_1,2021,2022-04-17,Nantes,Angers,3.40116,0.417241
+Ligue_1,2021,2022-04-17,Troyes,Strasbourg,1.3267,1.83132
+Ligue_1,2021,2022-04-17,Lyon,Bordeaux,2.49379,1.86392
+Ligue_1,2021,2022-04-17,Paris Saint Germain,Marseille,1.39018,0.304776
+Ligue_1,2021,2022-04-20,Bordeaux,Saint-Etienne,0.927753,0.858193
+Ligue_1,2021,2022-04-20,Lorient,Metz,1.2504,1.69979
+Ligue_1,2021,2022-04-20,Monaco,Nice,2.06975,0.762416
+Ligue_1,2021,2022-04-20,Reims,Lille,0.727134,0.944946
+Ligue_1,2021,2022-04-20,Troyes,Clermont Foot,0.996134,0.411065
+Ligue_1,2021,2022-04-20,Angers,Paris Saint Germain,0.395666,1.41841
+Ligue_1,2021,2022-04-20,Brest,Lyon,1.15279,2.63063
+Ligue_1,2021,2022-04-20,Lens,Montpellier,0.98883,0.216737
+Ligue_1,2021,2022-04-20,Marseille,Nantes,3.11851,0.607116
+Ligue_1,2021,2022-04-20,Strasbourg,Rennes,2.62063,0.851224
+Ligue_1,2021,2022-04-23,Lyon,Montpellier,3.38895,2.02417
+Ligue_1,2021,2022-04-23,Saint-Etienne,Monaco,0.971737,3.28491
+Ligue_1,2021,2022-04-23,Paris Saint Germain,Lens,2.18256,0.666328
+Ligue_1,2021,2022-04-24,Rennes,Lorient,1.74528,0.533869
+Ligue_1,2021,2022-04-24,Clermont Foot,Angers,1.74002,1.3986
+Ligue_1,2021,2022-04-24,Metz,Brest,0.387087,1.93279
+Ligue_1,2021,2022-04-24,Nantes,Bordeaux,2.54491,2.61153
+Ligue_1,2021,2022-04-24,Nice,Troyes,2.36176,0.465645
+Ligue_1,2021,2022-04-24,Lille,Strasbourg,0.354075,0.519111
+Ligue_1,2021,2022-04-24,Reims,Marseille,0.661794,0.458087
+Ligue_1,2021,2022-04-29,Strasbourg,Paris Saint Germain,1.62601,1.94951
+Ligue_1,2021,2022-04-30,Lens,Nantes,1.80901,1.25803
+Ligue_1,2021,2022-04-30,Rennes,Saint-Etienne,1.29378,0.568645
+Ligue_1,2021,2022-05-01,Troyes,Lille,2.99625,0.598432
+Ligue_1,2021,2022-05-01,Lorient,Reims,1.73735,1.40084
+Ligue_1,2021,2022-05-01,Monaco,Angers,2.21937,0.614369
+Ligue_1,2021,2022-05-01,Montpellier,Metz,1.99602,1.33111
+Ligue_1,2021,2022-05-01,Brest,Clermont Foot,1.31508,0.993885
+Ligue_1,2021,2022-05-01,Bordeaux,Nice,0.181557,2.5433
+Ligue_1,2021,2022-05-01,Marseille,Lyon,1.25703,2.73856
+Ligue_1,2021,2022-05-06,Lille,Monaco,0.955562,0.297053
+Ligue_1,2021,2022-05-07,Brest,Strasbourg,0.774117,2.19446
+Ligue_1,2021,2022-05-08,Metz,Lyon,1.95684,2.45822
+Ligue_1,2021,2022-05-08,Reims,Lens,0.345633,1.31364
+Ligue_1,2021,2022-05-08,Clermont Foot,Montpellier,1.81186,1.11037
+Ligue_1,2021,2022-05-08,Angers,Bordeaux,2.39669,0.701993
+Ligue_1,2021,2022-05-08,Lorient,Marseille,0.218659,2.43064
+Ligue_1,2021,2022-05-08,Paris Saint Germain,Troyes,2.00221,1.95545
+Ligue_1,2021,2022-05-11,Nice,Saint-Etienne,1.27732,1.90776
+Ligue_1,2021,2022-05-11,Nantes,Rennes,1.23789,1.53731
+Ligue_1,2021,2022-05-14,Troyes,Lens,0.198308,0.85636
+Ligue_1,2021,2022-05-14,Strasbourg,Clermont Foot,0.635695,0.4006
+Ligue_1,2021,2022-05-14,Saint-Etienne,Reims,1.63375,2.1296
+Ligue_1,2021,2022-05-14,Bordeaux,Lorient,1.0391,0.605152
+Ligue_1,2021,2022-05-14,Rennes,Marseille,1.19637,0.298071
+Ligue_1,2021,2022-05-14,Nice,Lille,0.985813,2.52062
+Ligue_1,2021,2022-05-14,Montpellier,Paris Saint Germain,0.292577,2.57935
+Ligue_1,2021,2022-05-14,Monaco,Brest,3.84541,1.99445
+Ligue_1,2021,2022-05-14,Metz,Angers,0.742006,0.609469
+Ligue_1,2021,2022-05-14,Lyon,Nantes,3.12892,1.28359
+Ligue_1,2021,2022-05-21,Lens,Monaco,1.54786,2.06385
+Ligue_1,2021,2022-05-21,Lille,Rennes,1.7131,1.13675
+Ligue_1,2021,2022-05-21,Lorient,Troyes,1.14699,0.597609
+Ligue_1,2021,2022-05-21,Marseille,Strasbourg,2.10355,1.45881
+Ligue_1,2021,2022-05-21,Nantes,Saint-Etienne,1.84905,1.78716
+Ligue_1,2021,2022-05-21,Paris Saint Germain,Metz,5.5667,0.693173
+Ligue_1,2021,2022-05-21,Reims,Nice,0.665065,1.88275
+Ligue_1,2021,2022-05-21,Clermont Foot,Lyon,2.31455,2.47046
+Ligue_1,2021,2022-05-21,Brest,Bordeaux,1.21971,3.43304
+Ligue_1,2021,2022-05-21,Angers,Montpellier,2.26485,1.29748
+Ligue_1,2022,2022-08-05,Lyon,Ajaccio,1.85675,1.13852
+Ligue_1,2022,2022-08-06,Strasbourg,Monaco,1.39118,2.47965
+Ligue_1,2022,2022-08-06,Clermont Foot,Paris Saint Germain,0.194932,4.11887
+Ligue_1,2022,2022-08-07,Toulouse,Nice,1.85439,0.69938
+Ligue_1,2022,2022-08-07,Lille,Auxerre,1.29993,0.769926
+Ligue_1,2022,2022-08-07,Montpellier,Troyes,1.57764,1.84274
+Ligue_1,2022,2022-08-07,Angers,Nantes,1.91609,1.14718
+Ligue_1,2022,2022-08-07,Lens,Brest,3.31681,1.04228
+Ligue_1,2022,2022-08-07,Rennes,Lorient,1.40484,0.70567
+Ligue_1,2022,2022-08-07,Marseille,Reims,2.77019,0.676094
+Ligue_1,2022,2022-08-12,Nantes,Lille,2.07994,2.53444
+Ligue_1,2022,2022-08-13,Monaco,Rennes,2.39524,2.02488
+Ligue_1,2022,2022-08-13,Paris Saint Germain,Montpellier,3.3388,0.778496
+Ligue_1,2022,2022-08-14,Ajaccio,Lens,0.707316,1.02754
+Ligue_1,2022,2022-08-14,Auxerre,Angers,0.898665,1.65524
+Ligue_1,2022,2022-08-14,Reims,Clermont Foot,2.65438,1.56704
+Ligue_1,2022,2022-08-14,Troyes,Toulouse,0.925402,2.07677
+Ligue_1,2022,2022-08-14,Nice,Strasbourg,1.51022,1.57207
+Ligue_1,2022,2022-08-14,Brest,Marseille,1.64132,1.30958
+Ligue_1,2022,2022-08-19,Lyon,Troyes,3.54595,0.948279
+Ligue_1,2022,2022-08-20,Monaco,Lens,2.27892,2.45812
+Ligue_1,2022,2022-08-20,Marseille,Nantes,1.71654,2.35832
+Ligue_1,2022,2022-08-21,Strasbourg,Reims,1.44615,2.03506
+Ligue_1,2022,2022-08-21,Angers,Brest,1.05295,2.2269
+Ligue_1,2022,2022-08-21,Clermont Foot,Nice,0.712338,1.63135
+Ligue_1,2022,2022-08-21,Montpellier,Auxerre,0.602982,1.29185
+Ligue_1,2022,2022-08-21,Toulouse,Lorient,2.48022,2.96569
+Ligue_1,2022,2022-08-21,Rennes,Ajaccio,0.979786,1.44269
+Ligue_1,2022,2022-08-21,Lille,Paris Saint Germain,1.50337,4.37042
+Ligue_1,2022,2022-08-26,Ajaccio,Lille,0.513092,1.80552
+Ligue_1,2022,2022-08-27,Auxerre,Strasbourg,0.770114,1.65529
+Ligue_1,2022,2022-08-27,Lens,Rennes,1.15835,0.88822
+Ligue_1,2022,2022-08-28,Nantes,Toulouse,1.80364,0.531418
+Ligue_1,2022,2022-08-28,Lorient,Clermont Foot,3.46625,0.432527
+Ligue_1,2022,2022-08-28,Nice,Marseille,0.797222,1.41427
+Ligue_1,2022,2022-08-28,Brest,Montpellier,0.163077,2.2067
+Ligue_1,2022,2022-08-28,Troyes,Angers,2.23192,1.00107
+Ligue_1,2022,2022-08-28,Reims,Lyon,0.889087,1.37054
+Ligue_1,2022,2022-08-28,Paris Saint Germain,Monaco,2.71556,0.237794
+Ligue_1,2022,2022-08-31,Monaco,Troyes,1.69464,2.68434
+Ligue_1,2022,2022-08-31,Angers,Reims,1.43417,2.35235
+Ligue_1,2022,2022-08-31,Montpellier,Ajaccio,1.82411,0.894201
+Ligue_1,2022,2022-08-31,Lyon,Auxerre,3.33913,0.411365
+Ligue_1,2022,2022-08-31,Strasbourg,Nantes,0.260394,0.582194
+Ligue_1,2022,2022-08-31,Lille,Nice,0.936389,1.54373
+Ligue_1,2022,2022-08-31,Marseille,Clermont Foot,2.50885,0.164123
+Ligue_1,2022,2022-08-31,Lens,Lorient,3.01117,1.4489
+Ligue_1,2022,2022-08-31,Rennes,Brest,1.44252,0.265991
+Ligue_1,2022,2022-08-31,Toulouse,Paris Saint Germain,0.582625,3.93565
+Ligue_1,2022,2022-09-03,Auxerre,Marseille,0.623034,1.54448
+Ligue_1,2022,2022-09-03,Lyon,Angers,1.40939,0.685045
+Ligue_1,2022,2022-09-03,Nantes,Paris Saint Germain,0.414108,3.49883
+Ligue_1,2022,2022-09-04,Montpellier,Lille,0.460323,1.28228
+Ligue_1,2022,2022-09-04,Ajaccio,Lorient,0.520351,0.509049
+Ligue_1,2022,2022-09-04,Clermont Foot,Toulouse,1.50732,1.44839
+Ligue_1,2022,2022-09-04,Brest,Strasbourg,0.726914,2.65304
+Ligue_1,2022,2022-09-04,Reims,Lens,1.75851,2.234
+Ligue_1,2022,2022-09-04,Troyes,Rennes,0.564802,2.61037
+Ligue_1,2022,2022-09-04,Nice,Monaco,1.12895,1.16635
+Ligue_1,2022,2022-09-07,Lorient,Lyon,1.48762,2.29822
+Ligue_1,2022,2022-09-09,Lens,Troyes,1.44803,0.674373
+Ligue_1,2022,2022-09-10,Paris Saint Germain,Brest,2.01269,1.34439
+Ligue_1,2022,2022-09-10,Marseille,Lille,2.25737,0.774912
+Ligue_1,2022,2022-09-11,Strasbourg,Clermont Foot,2.60466,0.959426
+Ligue_1,2022,2022-09-11,Ajaccio,Nice,0.427838,1.0495
+Ligue_1,2022,2022-09-11,Angers,Montpellier,2.91339,1.02641
+Ligue_1,2022,2022-09-11,Lorient,Nantes,1.30306,0.586565
+Ligue_1,2022,2022-09-11,Toulouse,Reims,2.111,0.461404
+Ligue_1,2022,2022-09-11,Rennes,Auxerre,3.73421,0.438753
+Ligue_1,2022,2022-09-11,Monaco,Lyon,1.64905,2.28122
+Ligue_1,2022,2022-09-16,Auxerre,Lorient,2.27316,3.48948
+Ligue_1,2022,2022-09-17,Montpellier,Strasbourg,1.8232,0.617378
+Ligue_1,2022,2022-09-17,Lille,Toulouse,1.16749,0.882322
+Ligue_1,2022,2022-09-18,Reims,Monaco,0.302274,2.06526
+Ligue_1,2022,2022-09-18,Clermont Foot,Troyes,1.25973,1.3715
+Ligue_1,2022,2022-09-18,Nice,Angers,0.969061,2.07917
+Ligue_1,2022,2022-09-18,Marseille,Rennes,1.05864,0.858108
+Ligue_1,2022,2022-09-18,Brest,Ajaccio,0.721312,0.511909
+Ligue_1,2022,2022-09-18,Nantes,Lens,0.777656,0.967277
+Ligue_1,2022,2022-09-18,Lyon,Paris Saint Germain,0.892759,1.52633
+Ligue_1,2022,2022-09-30,Angers,Marseille,1.29217,2.3782
+Ligue_1,2022,2022-10-01,Strasbourg,Rennes,1.15088,2.24201
+Ligue_1,2022,2022-10-01,Paris Saint Germain,Nice,0.753307,0.685057
+Ligue_1,2022,2022-10-02,Lorient,Lille,0.51274,1.83189
+Ligue_1,2022,2022-10-02,Ajaccio,Clermont Foot,1.28297,1.29246
+Ligue_1,2022,2022-10-02,Auxerre,Brest,1.21122,0.687048
+Ligue_1,2022,2022-10-02,Toulouse,Montpellier,1.92662,1.73475
+Ligue_1,2022,2022-10-02,Troyes,Reims,1.74344,1.49046
+Ligue_1,2022,2022-10-02,Monaco,Nantes,2.18299,0.406108
+Ligue_1,2022,2022-10-02,Lens,Lyon,2.993,0.0812146
+Ligue_1,2022,2022-10-07,Lyon,Toulouse,1.74178,0.582894
+Ligue_1,2022,2022-10-08,Marseille,Ajaccio,1.66314,0.16416
+Ligue_1,2022,2022-10-08,Reims,Paris Saint Germain,1.91846,1.06607
+Ligue_1,2022,2022-10-09,Montpellier,Monaco,0.564764,1.43544
+Ligue_1,2022,2022-10-09,Angers,Strasbourg,2.08828,2.88307
+Ligue_1,2022,2022-10-09,Clermont Foot,Auxerre,1.41698,1.00824
+Ligue_1,2022,2022-10-09,Nice,Troyes,2.69698,1.64575
+Ligue_1,2022,2022-10-09,Brest,Lorient,0.997609,1.14106
+Ligue_1,2022,2022-10-09,Rennes,Nantes,2.85806,0.439769
+Ligue_1,2022,2022-10-09,Lille,Lens,2.37665,1.04543
+Ligue_1,2022,2022-10-14,Strasbourg,Lille,0.366401,2.59097
+Ligue_1,2022,2022-10-15,Lorient,Reims,1.05131,0.366478
+Ligue_1,2022,2022-10-15,Lens,Montpellier,2.31045,0.305429
+Ligue_1,2022,2022-10-16,Toulouse,Angers,2.46525,1.50535
+Ligue_1,2022,2022-10-16,Auxerre,Nice,0.527675,1.67165
+Ligue_1,2022,2022-10-16,Nantes,Brest,3.45666,0.596967
+Ligue_1,2022,2022-10-16,Rennes,Lyon,1.70448,1.54104
+Ligue_1,2022,2022-10-16,Troyes,Ajaccio,0.434355,1.83625
+Ligue_1,2022,2022-10-16,Monaco,Clermont Foot,1.00523,2.49917
+Ligue_1,2022,2022-10-16,Paris Saint Germain,Marseille,2.99871,0.78459
+Ligue_1,2022,2022-10-21,Ajaccio,Paris Saint Germain,0.301593,2.90657
+Ligue_1,2022,2022-10-22,Montpellier,Lyon,0.807149,2.78494
+Ligue_1,2022,2022-10-22,Marseille,Lens,1.99963,0.612715
+Ligue_1,2022,2022-10-23,Angers,Rennes,0.938402,2.44504
+Ligue_1,2022,2022-10-23,Clermont Foot,Brest,0.70294,2.73014
+Ligue_1,2022,2022-10-23,Reims,Auxerre,2.48368,0.472065
+Ligue_1,2022,2022-10-23,Toulouse,Strasbourg,1.86579,1.63235
+Ligue_1,2022,2022-10-23,Troyes,Lorient,1.13911,1.538
+Ligue_1,2022,2022-10-23,Nice,Nantes,1.34146,1.27743
+Ligue_1,2022,2022-10-23,Lille,Monaco,2.49712,1.76468
+Ligue_1,2022,2022-10-28,Lens,Toulouse,2.64413,0.845923
+Ligue_1,2022,2022-10-29,Paris Saint Germain,Troyes,2.67967,1.60184
+Ligue_1,2022,2022-10-29,Strasbourg,Marseille,0.890654,1.93874
+Ligue_1,2022,2022-10-30,Auxerre,Ajaccio,0.92577,0.500233
+Ligue_1,2022,2022-10-30,Monaco,Angers,1.93991,0.437042
+Ligue_1,2022,2022-10-30,Nantes,Clermont Foot,1.95172,0.713991
+Ligue_1,2022,2022-10-30,Brest,Reims,1.54791,0.982999
+Ligue_1,2022,2022-10-30,Rennes,Montpellier,1.53875,0.975256
+Ligue_1,2022,2022-10-30,Lorient,Nice,1.28783,2.19849
+Ligue_1,2022,2022-10-30,Lyon,Lille,1.19346,1.62118
+Ligue_1,2022,2022-11-04,Troyes,Auxerre,1.93768,1.45801
+Ligue_1,2022,2022-11-05,Ajaccio,Strasbourg,3.68734,0.670138
+Ligue_1,2022,2022-11-05,Angers,Lens,0.829243,2.17996
+Ligue_1,2022,2022-11-06,Lorient,Paris Saint Germain,0.812458,2.35683
+Ligue_1,2022,2022-11-06,Clermont Foot,Montpellier,3.88422,1.22262
+Ligue_1,2022,2022-11-06,Nice,Brest,0.813513,1.08297
+Ligue_1,2022,2022-11-06,Reims,Nantes,3.70953,0.506816
+Ligue_1,2022,2022-11-06,Toulouse,Monaco,0.569642,2.03182
+Ligue_1,2022,2022-11-06,Lille,Rennes,2.72861,0.800938
+Ligue_1,2022,2022-11-06,Marseille,Lyon,1.07268,0.632118
+Ligue_1,2022,2022-11-11,Lyon,Nice,1.15632,1.71081
+Ligue_1,2022,2022-11-12,Lens,Clermont Foot,1.4242,0.213092
+Ligue_1,2022,2022-11-12,Rennes,Toulouse,1.94787,1.11684
+Ligue_1,2022,2022-11-13,Paris Saint Germain,Auxerre,2.22316,0.602881
+Ligue_1,2022,2022-11-13,Nantes,Ajaccio,0.982738,2.40866
+Ligue_1,2022,2022-11-13,Lille,Angers,1.07614,0.448121
+Ligue_1,2022,2022-11-13,Montpellier,Reims,2.07463,2.12638
+Ligue_1,2022,2022-11-13,Brest,Troyes,2.21142,0.4443
+Ligue_1,2022,2022-11-13,Strasbourg,Lorient,1.84883,0.877509
+Ligue_1,2022,2022-11-13,Monaco,Marseille,1.52658,2.71425
+Ligue_1,2022,2022-12-28,Ajaccio,Angers,1.68567,2.13447
+Ligue_1,2022,2022-12-28,Troyes,Nantes,0.202598,1.70731
+Ligue_1,2022,2022-12-28,Auxerre,Monaco,1.32986,1.36064
+Ligue_1,2022,2022-12-28,Clermont Foot,Lille,0.511123,1.79335
+Ligue_1,2022,2022-12-28,Paris Saint Germain,Strasbourg,2.11764,1.1354
+Ligue_1,2022,2022-12-28,Brest,Lyon,1.1351,3.18501
+Ligue_1,2022,2022-12-29,Lorient,Montpellier,1.13229,1.99935
+Ligue_1,2022,2022-12-29,Reims,Rennes,1.37243,1.56704
+Ligue_1,2022,2022-12-29,Nice,Lens,1.19572,1.17989
+Ligue_1,2022,2022-12-29,Marseille,Toulouse,3.90797,1.73074
+Ligue_1,2022,2023-01-01,Monaco,Brest,1.11357,0.984132
+Ligue_1,2022,2023-01-01,Angers,Lorient,2.17455,0.44019
+Ligue_1,2022,2023-01-01,Nantes,Auxerre,0.870785,0.940771
+Ligue_1,2022,2023-01-01,Toulouse,Ajaccio,1.33519,0.0445009
+Ligue_1,2022,2023-01-01,Lyon,Clermont Foot,0.736196,1.2056
+Ligue_1,2022,2023-01-01,Lens,Paris Saint Germain,1.79816,1.97764
+Ligue_1,2022,2023-01-02,Strasbourg,Troyes,1.15328,1.32781
+Ligue_1,2022,2023-01-02,Lille,Reims,2.68973,1.23599
+Ligue_1,2022,2023-01-02,Montpellier,Marseille,1.10931,1.33992
+Ligue_1,2022,2023-01-02,Rennes,Nice,1.78181,0.395975
+Ligue_1,2022,2023-01-11,Ajaccio,Reims,0.812868,1.16269
+Ligue_1,2022,2023-01-11,Auxerre,Toulouse,1.19864,2.32789
+Ligue_1,2022,2023-01-11,Clermont Foot,Rennes,1.92657,0.900551
+Ligue_1,2022,2023-01-11,Nantes,Lyon,1.23816,0.716341
+Ligue_1,2022,2023-01-11,Brest,Lille,0.567145,0.952742
+Ligue_1,2022,2023-01-11,Lorient,Monaco,1.40735,1.61598
+Ligue_1,2022,2023-01-11,Nice,Montpellier,3.47658,0.226284
+Ligue_1,2022,2023-01-11,Paris Saint Germain,Angers,1.66271,0.341443
+Ligue_1,2022,2023-01-11,Strasbourg,Lens,1.15467,1.5001
+Ligue_1,2022,2023-01-11,Troyes,Marseille,0.207647,2.65167
+Ligue_1,2022,2023-01-14,Lens,Auxerre,1.69501,0.171617
+Ligue_1,2022,2023-01-14,Marseille,Lorient,2.03482,0.491556
+Ligue_1,2022,2023-01-14,Lyon,Strasbourg,2.46849,1.15481
+Ligue_1,2022,2023-01-15,Lille,Troyes,4.30681,0.981489
+Ligue_1,2022,2023-01-15,Angers,Clermont Foot,0.394709,2.1061
+Ligue_1,2022,2023-01-15,Montpellier,Nantes,1.10849,0.903599
+Ligue_1,2022,2023-01-15,Reims,Nice,0.97535,0.670589
+Ligue_1,2022,2023-01-15,Toulouse,Brest,1.54762,0.754561
+Ligue_1,2022,2023-01-15,Monaco,Ajaccio,4.16711,0.215581
+Ligue_1,2022,2023-01-15,Rennes,Paris Saint Germain,1.06256,0.603085
+Ligue_1,2022,2023-01-27,Lorient,Rennes,0.989121,1.94175
+Ligue_1,2022,2023-01-28,Troyes,Lens,0.937263,2.43445
+Ligue_1,2022,2023-01-28,Marseille,Monaco,1.772,1.55187
+Ligue_1,2022,2023-01-29,Nice,Lille,1.38874,2.06969
+Ligue_1,2022,2023-01-29,Auxerre,Montpellier,1.78521,0.78685
+Ligue_1,2022,2023-01-29,Clermont Foot,Nantes,0.639165,0.124573
+Ligue_1,2022,2023-01-29,Strasbourg,Toulouse,0.899943,2.05016
+Ligue_1,2022,2023-01-29,Brest,Angers,1.62079,1.00144
+Ligue_1,2022,2023-01-29,Ajaccio,Lyon,1.44596,2.02729
+Ligue_1,2022,2023-01-29,Paris Saint Germain,Reims,1.99468,1.6335
+Ligue_1,2022,2023-02-01,Angers,Ajaccio,0.413798,1.18715
+Ligue_1,2022,2023-02-01,Nantes,Marseille,1.40304,1.94315
+Ligue_1,2022,2023-02-01,Lille,Clermont Foot,1.75188,1.53598
+Ligue_1,2022,2023-02-01,Reims,Lorient,3.61381,0.706803
+Ligue_1,2022,2023-02-01,Toulouse,Troyes,2.94929,1.25445
+Ligue_1,2022,2023-02-01,Monaco,Auxerre,1.97716,1.1306
+Ligue_1,2022,2023-02-01,Montpellier,Paris Saint Germain,0.270069,4.0011
+Ligue_1,2022,2023-02-01,Lyon,Brest,2.29877,0.508973
+Ligue_1,2022,2023-02-01,Lens,Nice,0.396756,2.16495
+Ligue_1,2022,2023-02-01,Rennes,Strasbourg,1.25645,0.141426
+Ligue_1,2022,2023-02-04,Paris Saint Germain,Toulouse,1.80428,0.72878
+Ligue_1,2022,2023-02-04,Troyes,Lyon,0.699933,1.30711
+Ligue_1,2022,2023-02-04,Rennes,Lille,2.18737,2.35242
+Ligue_1,2022,2023-02-05,Clermont Foot,Monaco,0.276781,1.46634
+Ligue_1,2022,2023-02-05,Ajaccio,Nantes,0.223431,1.56852
+Ligue_1,2022,2023-02-05,Auxerre,Reims,0.610426,0.406084
+Ligue_1,2022,2023-02-05,Lorient,Angers,0.68751,0.584769
+Ligue_1,2022,2023-02-05,Strasbourg,Montpellier,1.51625,0.613708
+Ligue_1,2022,2023-02-05,Brest,Lens,2.17044,2.26474
+Ligue_1,2022,2023-02-05,Marseille,Nice,2.61067,1.4814
+Ligue_1,2022,2023-02-10,Nice,Ajaccio,0.568545,0.264601
+Ligue_1,2022,2023-02-11,Monaco,Paris Saint Germain,3.80363,0.932921
+Ligue_1,2022,2023-02-11,Clermont Foot,Marseille,1.08989,2.10938
+Ligue_1,2022,2023-02-12,Toulouse,Rennes,2.71302,1.19649
+Ligue_1,2022,2023-02-12,Angers,Auxerre,0.445823,2.48705
+Ligue_1,2022,2023-02-12,Lille,Strasbourg,3.65427,0.174274
+Ligue_1,2022,2023-02-12,Montpellier,Brest,3.94905,0.468613
+Ligue_1,2022,2023-02-12,Reims,Troyes,2.10651,0.569562
+Ligue_1,2022,2023-02-12,Nantes,Lorient,1.64174,1.63028
+Ligue_1,2022,2023-02-12,Lyon,Lens,1.52893,1.30823
+Ligue_1,2022,2023-02-17,Auxerre,Lyon,1.34783,0.718949
+Ligue_1,2022,2023-02-18,Nice,Reims,1.53255,1.28715
+Ligue_1,2022,2023-02-18,Strasbourg,Angers,1.94958,1.04967
+Ligue_1,2022,2023-02-19,Paris Saint Germain,Lille,2.09603,3.20773
+Ligue_1,2022,2023-02-19,Lorient,Ajaccio,2.43638,0.592896
+Ligue_1,2022,2023-02-19,Brest,Monaco,0.76754,1.61066
+Ligue_1,2022,2023-02-19,Rennes,Clermont Foot,1.67258,0.86584
+Ligue_1,2022,2023-02-19,Troyes,Montpellier,0.0856634,1.08483
+Ligue_1,2022,2023-02-19,Lens,Nantes,3.13027,0.236483
+Ligue_1,2022,2023-02-19,Toulouse,Marseille,2.09816,1.21797
+Ligue_1,2022,2023-02-24,Lille,Brest,0.77221,0.20242
+Ligue_1,2022,2023-02-25,Angers,Lyon,1.13511,1.81818
+Ligue_1,2022,2023-02-25,Montpellier,Lens,0.645251,1.53537
+Ligue_1,2022,2023-02-26,Lorient,Auxerre,1.04974,1.20936
+Ligue_1,2022,2023-02-26,Ajaccio,Troyes,3.94522,1.40375
+Ligue_1,2022,2023-02-26,Clermont Foot,Strasbourg,1.74774,0.920081
+Ligue_1,2022,2023-02-26,Nantes,Rennes,2.42469,0.986331
+Ligue_1,2022,2023-02-26,Reims,Toulouse,2.17445,0.52285
+Ligue_1,2022,2023-02-26,Monaco,Nice,0.68882,1.7956
+Ligue_1,2022,2023-02-26,Marseille,Paris Saint Germain,2.28992,3.73353
+Ligue_1,2022,2023-03-03,Nice,Auxerre,1.73919,0.443087
+Ligue_1,2022,2023-03-04,Lens,Lille,0.616556,1.90081
+Ligue_1,2022,2023-03-04,Paris Saint Germain,Nantes,1.10912,0.238685
+Ligue_1,2022,2023-03-05,Troyes,Monaco,0.879409,2.81633
+Ligue_1,2022,2023-03-05,Montpellier,Angers,3.41548,0.955683
+Ligue_1,2022,2023-03-05,Strasbourg,Brest,0.983616,0.585063
+Ligue_1,2022,2023-03-05,Reims,Ajaccio,0.40953,0.36989
+Ligue_1,2022,2023-03-05,Toulouse,Clermont Foot,1.02505,0.647727
+Ligue_1,2022,2023-03-05,Lyon,Lorient,2.54074,0.887853
+Ligue_1,2022,2023-03-05,Rennes,Marseille,1.03495,1.45275
+Ligue_1,2022,2023-03-10,Lille,Lyon,2.35286,1.0584
+Ligue_1,2022,2023-03-11,Auxerre,Rennes,0.961104,0.690947
+Ligue_1,2022,2023-03-11,Brest,Paris Saint Germain,0.751032,2.66126
+Ligue_1,2022,2023-03-12,Clermont Foot,Lens,1.86085,2.00502
+Ligue_1,2022,2023-03-12,Ajaccio,Montpellier,0.191981,1.27414
+Ligue_1,2022,2023-03-12,Angers,Toulouse,1.02056,1.56928
+Ligue_1,2022,2023-03-12,Lorient,Troyes,1.79136,0.492296
+Ligue_1,2022,2023-03-12,Nantes,Nice,1.75098,1.51843
+Ligue_1,2022,2023-03-12,Monaco,Reims,0.98037,1.81877
+Ligue_1,2022,2023-03-12,Marseille,Strasbourg,1.67973,2.2222
+Ligue_1,2022,2023-03-17,Lyon,Nantes,1.62188,1.06263
+Ligue_1,2022,2023-03-18,Toulouse,Lille,2.05248,1.96469
+Ligue_1,2022,2023-03-18,Lens,Angers,1.64899,0.589326
+Ligue_1,2022,2023-03-19,Ajaccio,Monaco,0.409601,1.45597
+Ligue_1,2022,2023-03-19,Montpellier,Clermont Foot,3.01981,1.40585
+Ligue_1,2022,2023-03-19,Nice,Lorient,1.21674,0.883148
+Ligue_1,2022,2023-03-19,Strasbourg,Auxerre,2.88267,0.945437
+Ligue_1,2022,2023-03-19,Troyes,Brest,1.00182,1.16022
+Ligue_1,2022,2023-03-19,Paris Saint Germain,Rennes,1.70984,1.90042
+Ligue_1,2022,2023-03-19,Reims,Marseille,1.91783,1.39201
+Ligue_1,2022,2023-03-31,Marseille,Montpellier,1.43396,0.849684
+Ligue_1,2022,2023-04-01,Auxerre,Troyes,1.16561,1.17234
+Ligue_1,2022,2023-04-01,Rennes,Lens,1.21006,1.4486
+Ligue_1,2022,2023-04-02,Lille,Lorient,1.96183,0.0956693
+Ligue_1,2022,2023-04-02,Angers,Nice,0.960041,1.20001
+Ligue_1,2022,2023-04-02,Clermont Foot,Ajaccio,2.13637,0.411997
+Ligue_1,2022,2023-04-02,Nantes,Reims,1.37353,2.00509
+Ligue_1,2022,2023-04-02,Brest,Toulouse,1.47173,1.77942
+Ligue_1,2022,2023-04-02,Monaco,Strasbourg,1.40127,1.55623
+Ligue_1,2022,2023-04-02,Paris Saint Germain,Lyon,1.22372,2.14851
+Ligue_1,2022,2023-04-07,Lens,Strasbourg,1.31665,0.580047
+Ligue_1,2022,2023-04-08,Angers,Lille,1.03911,1.06957
+Ligue_1,2022,2023-04-08,Nice,Paris Saint Germain,1.22259,1.24929
+Ligue_1,2022,2023-04-09,Lyon,Rennes,1.23785,1.06365
+Ligue_1,2022,2023-04-09,Ajaccio,Auxerre,0.982688,0.925035
+Ligue_1,2022,2023-04-09,Montpellier,Toulouse,1.79324,2.20627
+Ligue_1,2022,2023-04-09,Reims,Brest,3.26526,1.11133
+Ligue_1,2022,2023-04-09,Troyes,Clermont Foot,0.488321,1.86113
+Ligue_1,2022,2023-04-09,Nantes,Monaco,0.973965,1.66938
+Ligue_1,2022,2023-04-09,Lorient,Marseille,0.637221,0.782867
+Ligue_1,2022,2023-04-14,Toulouse,Lyon,1.51685,2.988
+Ligue_1,2022,2023-04-15,Rennes,Reims,3.21823,0.343875
+Ligue_1,2022,2023-04-15,Paris Saint Germain,Lens,1.39403,1.43462
+Ligue_1,2022,2023-04-16,Lille,Montpellier,2.31737,0.515081
+Ligue_1,2022,2023-04-16,Auxerre,Nantes,2.65132,1.28278
+Ligue_1,2022,2023-04-16,Clermont Foot,Angers,2.01768,0.327937
+Ligue_1,2022,2023-04-16,Strasbourg,Ajaccio,1.59182,0.478923
+Ligue_1,2022,2023-04-16,Brest,Nice,0.956282,0.656233
+Ligue_1,2022,2023-04-16,Monaco,Lorient,2.67195,1.03367
+Ligue_1,2022,2023-04-16,Marseille,Troyes,3.75094,0.405591
+Ligue_1,2022,2023-04-21,Angers,Paris Saint Germain,1.28414,1.75064
+Ligue_1,2022,2023-04-22,Auxerre,Lille,1.0782,3.08943
+Ligue_1,2022,2023-04-22,Lens,Monaco,3.52672,1.53352
+Ligue_1,2022,2023-04-23,Reims,Strasbourg,1.13179,1.33348
+Ligue_1,2022,2023-04-23,Ajaccio,Brest,0.193609,0.451465
+Ligue_1,2022,2023-04-23,Lorient,Toulouse,0.506852,1.25506
+Ligue_1,2022,2023-04-23,Nantes,Troyes,1.98437,1.7244
+Ligue_1,2022,2023-04-23,Nice,Clermont Foot,1.52279,0.917427
+Ligue_1,2022,2023-04-23,Montpellier,Rennes,0.748138,1.32781
+Ligue_1,2022,2023-04-23,Lyon,Marseille,1.45711,2.21507
+Ligue_1,2022,2023-04-29,Lille,Ajaccio,1.55851,0.360442
+Ligue_1,2022,2023-04-30,Monaco,Montpellier,1.35206,2.11063
+Ligue_1,2022,2023-04-30,Clermont Foot,Reims,1.12839,0.483303
+Ligue_1,2022,2023-04-30,Rennes,Angers,2.51135,1.27022
+Ligue_1,2022,2023-04-30,Troyes,Nice,0.625019,3.65344
+Ligue_1,2022,2023-04-30,Paris Saint Germain,Lorient,1.76277,3.2671
+Ligue_1,2022,2023-04-30,Marseille,Auxerre,3.56928,0.456496
+Ligue_1,2022,2023-04-30,Strasbourg,Lyon,1.68749,0.889805
+Ligue_1,2022,2023-05-02,Toulouse,Lens,0.396677,1.35975
+Ligue_1,2022,2023-05-03,Brest,Nantes,0.794114,0.725944
+Ligue_1,2022,2023-05-06,Nice,Rennes,1.33415,1.06201
+Ligue_1,2022,2023-05-06,Reims,Lille,2.07452,1.42756
+Ligue_1,2022,2023-05-06,Lens,Marseille,1.33558,1.27465
+Ligue_1,2022,2023-05-07,Angers,Monaco,1.41717,1.58485
+Ligue_1,2022,2023-05-07,Ajaccio,Toulouse,0.211301,2.52738
+Ligue_1,2022,2023-05-07,Auxerre,Clermont Foot,1.57698,1.82065
+Ligue_1,2022,2023-05-07,Lorient,Brest,1.23052,1.42227
+Ligue_1,2022,2023-05-07,Nantes,Strasbourg,0.815995,1.94833
+Ligue_1,2022,2023-05-07,Lyon,Montpellier,3.69552,2.30837
+Ligue_1,2022,2023-05-07,Troyes,Paris Saint Germain,0.615079,4.3052
+Ligue_1,2022,2023-05-12,Lens,Reims,1.35466,1.80834
+Ligue_1,2022,2023-05-13,Strasbourg,Nice,1.67065,0.360576
+Ligue_1,2022,2023-05-13,Paris Saint Germain,Ajaccio,2.31569,0.313564
+Ligue_1,2022,2023-05-14,Clermont Foot,Lyon,1.73834,1.90489
+Ligue_1,2022,2023-05-14,Montpellier,Lorient,1.20401,0.582419
+Ligue_1,2022,2023-05-14,Brest,Auxerre,1.63305,0.73065
+Ligue_1,2022,2023-05-14,Rennes,Troyes,3.75816,0.263264
+Ligue_1,2022,2023-05-14,Toulouse,Nantes,1.24578,0.621868
+Ligue_1,2022,2023-05-14,Monaco,Lille,0.690333,1.29341
+Ligue_1,2022,2023-05-14,Marseille,Angers,2.99154,0.559445
+Ligue_1,2022,2023-05-19,Lyon,Monaco,2.40929,1.46568
+Ligue_1,2022,2023-05-20,Nantes,Montpellier,0.751273,1.7036
+Ligue_1,2022,2023-05-20,Lille,Marseille,1.86027,1.19915
+Ligue_1,2022,2023-05-21,Ajaccio,Rennes,0.0631786,2.09363
+Ligue_1,2022,2023-05-21,Nice,Toulouse,2.78131,0.964577
+Ligue_1,2022,2023-05-21,Brest,Clermont Foot,1.14332,0.36306
+Ligue_1,2022,2023-05-21,Reims,Angers,1.7427,0.700941
+Ligue_1,2022,2023-05-21,Troyes,Strasbourg,0.706571,2.30022
+Ligue_1,2022,2023-05-21,Lorient,Lens,1.37416,2.30872
+Ligue_1,2022,2023-05-21,Auxerre,Paris Saint Germain,0.696155,1.84662
+Ligue_1,2022,2023-05-27,Angers,Troyes,0.775828,0.234923
+Ligue_1,2022,2023-05-27,Clermont Foot,Lorient,1.34675,0.9985
+Ligue_1,2022,2023-05-27,Lille,Nantes,2.16385,1.0893
+Ligue_1,2022,2023-05-27,Montpellier,Nice,1.61612,4.59487
+Ligue_1,2022,2023-05-27,Lyon,Reims,3.22012,0.505996
+Ligue_1,2022,2023-05-27,Marseille,Brest,0.968914,1.5307
+Ligue_1,2022,2023-05-27,Lens,Ajaccio,2.29667,0.18809
+Ligue_1,2022,2023-05-27,Strasbourg,Paris Saint Germain,1.33636,1.16057
+Ligue_1,2022,2023-05-27,Rennes,Monaco,0.759796,0.377473
+Ligue_1,2022,2023-05-27,Toulouse,Auxerre,1.21674,0.653455
+Ligue_1,2022,2023-06-03,Ajaccio,Marseille,0.129389,1.22431
+Ligue_1,2022,2023-06-03,Auxerre,Lens,2.03416,3.19981
+Ligue_1,2022,2023-06-03,Monaco,Toulouse,2.1529,2.66693
+Ligue_1,2022,2023-06-03,Nantes,Angers,1.06065,0.190199
+Ligue_1,2022,2023-06-03,Lorient,Strasbourg,0.489883,0.851717
+Ligue_1,2022,2023-06-03,Nice,Lyon,2.30538,1.68314
+Ligue_1,2022,2023-06-03,Paris Saint Germain,Clermont Foot,2.23509,2.97907
+Ligue_1,2022,2023-06-03,Brest,Rennes,1.22603,1.57488
+Ligue_1,2022,2023-06-03,Reims,Montpellier,1.84121,2.21924
+Ligue_1,2022,2023-06-03,Troyes,Lille,0.241842,1.69616
+Ligue_1,2023,2023-08-12,Marseille,Reims,1.5127,0.993374
+Ligue_1,2023,2023-08-12,Nice,Lille,1.12141,1.53437
+Ligue_1,2023,2023-08-12,Brest,Lens,2.91934,0.960002
+Ligue_1,2023,2023-08-12,Paris Saint Germain,Lorient,1.36166,0.136269
+Ligue_1,2023,2023-08-13,Nantes,Toulouse,1.07028,2.06035
+Ligue_1,2023,2023-08-13,Clermont Foot,Monaco,1.97981,3.40428
+Ligue_1,2023,2023-08-13,Montpellier,Le Havre,1.2977,1.24958
+Ligue_1,2023,2023-08-13,Rennes,Metz,4.67967,0.561838
+Ligue_1,2023,2023-08-13,Strasbourg,Lyon,1.16184,2.05387
+Ligue_1,2023,2023-08-18,Metz,Marseille,0.360903,1.49349
+Ligue_1,2023,2023-08-19,Lyon,Montpellier,0.641589,1.91808
+Ligue_1,2023,2023-08-19,Toulouse,Paris Saint Germain,1.15991,2.00415
+Ligue_1,2023,2023-08-20,Lille,Nantes,3.239,1.27164
+Ligue_1,2023,2023-08-20,Lorient,Nice,0.750785,2.42649
+Ligue_1,2023,2023-08-20,Reims,Clermont Foot,2.41479,0.399613
+Ligue_1,2023,2023-08-20,Le Havre,Brest,0.866995,1.60466
+Ligue_1,2023,2023-08-20,Monaco,Strasbourg,1.30947,0.552621
+Ligue_1,2023,2023-08-20,Lens,Rennes,1.3445,1.62597
+Ligue_1,2023,2023-08-25,Nantes,Monaco,0.906833,4.95812
+Ligue_1,2023,2023-08-26,Marseille,Brest,3.50896,1.72801
+Ligue_1,2023,2023-08-26,Paris Saint Germain,Lens,1.86713,0.487094
+Ligue_1,2023,2023-08-27,Rennes,Le Havre,3.49731,0.41475
+Ligue_1,2023,2023-08-27,Strasbourg,Toulouse,2.84995,0.308716
+Ligue_1,2023,2023-08-27,Clermont Foot,Metz,0.540615,0.791472
+Ligue_1,2023,2023-08-27,Montpellier,Reims,1.42165,1.8496
+Ligue_1,2023,2023-08-27,Lorient,Lille,1.745,1.45127
+Ligue_1,2023,2023-08-27,Nice,Lyon,1.82327,0.25547
+Ligue_1,2023,2023-09-01,Nantes,Marseille,0.621642,2.77866
+Ligue_1,2023,2023-09-02,Brest,Rennes,1.58468,0.248338
+Ligue_1,2023,2023-09-02,Monaco,Lens,1.24938,0.612432
+Ligue_1,2023,2023-09-03,Toulouse,Clermont Foot,0.64111,1.40431
+Ligue_1,2023,2023-09-03,Lille,Montpellier,1.33906,0.793407
+Ligue_1,2023,2023-09-03,Le Havre,Lorient,1.70033,0.675614
+Ligue_1,2023,2023-09-03,Metz,Reims,1.14763,0.859494
+Ligue_1,2023,2023-09-03,Nice,Strasbourg,2.28809,0.158524
+Ligue_1,2023,2023-09-03,Lyon,Paris Saint Germain,2.44259,4.91949
+Ligue_1,2023,2023-09-15,Paris Saint Germain,Nice,1.21929,1.94985
+Ligue_1,2023,2023-09-16,Rennes,Lille,0.427673,1.60903
+Ligue_1,2023,2023-09-16,Lens,Metz,1.61194,0.629577
+Ligue_1,2023,2023-09-17,Lorient,Monaco,0.660724,1.54062
+Ligue_1,2023,2023-09-17,Strasbourg,Montpellier,2.27232,1.03603
+Ligue_1,2023,2023-09-17,Clermont Foot,Nantes,1.26417,0.866302
+Ligue_1,2023,2023-09-17,Reims,Brest,1.97443,1.56067
+Ligue_1,2023,2023-09-17,Marseille,Toulouse,1.16853,0.882315
+Ligue_1,2023,2023-09-17,Lyon,Le Havre,1.83314,1.25165
+Ligue_1,2023,2023-09-22,Monaco,Nice,1.80137,1.10143
+Ligue_1,2023,2023-09-23,Nantes,Lorient,2.52906,1.59675
+Ligue_1,2023,2023-09-23,Brest,Lyon,2.54509,0.254128
+Ligue_1,2023,2023-09-24,Metz,Strasbourg,1.03805,0.456135
+Ligue_1,2023,2023-09-24,Lens,Toulouse,3.08782,0.649363
+Ligue_1,2023,2023-09-24,Le Havre,Clermont Foot,1.01727,0.716065
+Ligue_1,2023,2023-09-24,Montpellier,Rennes,1.38233,0.933593
+Ligue_1,2023,2023-09-24,Paris Saint Germain,Marseille,2.00222,0.568702
+Ligue_1,2023,2023-09-26,Lille,Reims,1.41766,1.21818
+Ligue_1,2023,2023-09-29,Strasbourg,Lens,0.305015,1.52229
+Ligue_1,2023,2023-09-30,Clermont Foot,Paris Saint Germain,1.16006,2.99118
+Ligue_1,2023,2023-09-30,Monaco,Marseille,1.5165,0.908767
+Ligue_1,2023,2023-10-01,Reims,Lyon,1.99596,0.389915
+Ligue_1,2023,2023-10-01,Toulouse,Metz,2.3397,0.598514
+Ligue_1,2023,2023-10-01,Nice,Brest,1.03293,0.153004
+Ligue_1,2023,2023-10-01,Le Havre,Lille,1.05835,1.38688
+Ligue_1,2023,2023-10-01,Lorient,Montpellier,0.799881,2.77044
+Ligue_1,2023,2023-10-01,Rennes,Nantes,2.3169,0.902963
+Ligue_1,2023,2023-10-06,Strasbourg,Nantes,0.944783,2.24185
+Ligue_1,2023,2023-10-07,Metz,Nice,0.263633,1.51523
+Ligue_1,2023,2023-10-07,Reims,Monaco,1.99785,1.74741
+Ligue_1,2023,2023-10-08,Marseille,Le Havre,3.00689,0.131369
+Ligue_1,2023,2023-10-08,Lyon,Lorient,1.3787,1.07853
+Ligue_1,2023,2023-10-08,Brest,Toulouse,1.61363,1.23903
+Ligue_1,2023,2023-10-08,Lens,Lille,2.58377,1.34285
+Ligue_1,2023,2023-10-08,Rennes,Paris Saint Germain,1.34436,3.13091
+Ligue_1,2023,2023-10-20,Le Havre,Lens,1.84471,1.96292
+Ligue_1,2023,2023-10-21,Paris Saint Germain,Strasbourg,2.51872,0.224242
+Ligue_1,2023,2023-10-21,Nice,Marseille,0.828728,1.00304
+Ligue_1,2023,2023-10-22,Lorient,Rennes,0.594654,0.940774
+Ligue_1,2023,2023-10-22,Toulouse,Reims,0.900833,0.96583
+Ligue_1,2023,2023-10-22,Lille,Brest,2.19168,0.625269
+Ligue_1,2023,2023-10-22,Nantes,Montpellier,1.74936,0.495893
+Ligue_1,2023,2023-10-22,Monaco,Metz,1.9731,0.720525
+Ligue_1,2023,2023-10-22,Lyon,Clermont Foot,1.73586,1.28994
+Ligue_1,2023,2023-10-27,Clermont Foot,Nice,0.298709,2.15871
+Ligue_1,2023,2023-10-28,Reims,Lorient,0.981549,0.412238
+Ligue_1,2023,2023-10-28,Lens,Nantes,4.32919,1.21849
+Ligue_1,2023,2023-10-29,Brest,Paris Saint Germain,1.68226,2.09847
+Ligue_1,2023,2023-10-29,Lille,Monaco,0.667633,0.901743
+Ligue_1,2023,2023-10-29,Metz,Le Havre,0.469858,0.890469
+Ligue_1,2023,2023-10-29,Montpellier,Toulouse,3.2823,0.877804
+Ligue_1,2023,2023-10-29,Rennes,Strasbourg,1.11025,1.02122
+Ligue_1,2023,2023-11-03,Paris Saint Germain,Montpellier,1.23178,0.583754
+Ligue_1,2023,2023-11-04,Lorient,Lens,0.521851,0.707799
+Ligue_1,2023,2023-11-04,Marseille,Lille,0.751791,0.326226
+Ligue_1,2023,2023-11-05,Lyon,Metz,1.8478,0.667193
+Ligue_1,2023,2023-11-05,Strasbourg,Clermont Foot,1.55966,1.05162
+Ligue_1,2023,2023-11-05,Toulouse,Le Havre,2.31734,1.21056
+Ligue_1,2023,2023-11-05,Nantes,Reims,1.54695,1.7428
+Ligue_1,2023,2023-11-05,Monaco,Brest,1.11674,0.73688
+Ligue_1,2023,2023-11-05,Nice,Rennes,2.28618,0.484764
+Ligue_1,2023,2023-11-10,Montpellier,Nice,0.651349,0.62039
+Ligue_1,2023,2023-11-11,Reims,Paris Saint Germain,1.54396,2.64035
+Ligue_1,2023,2023-11-11,Le Havre,Monaco,1.12627,0.968375
+Ligue_1,2023,2023-11-12,Lille,Toulouse,2.6899,0.41683
+Ligue_1,2023,2023-11-12,Clermont Foot,Lorient,1.40549,0.58473
+Ligue_1,2023,2023-11-12,Metz,Nantes,0.940982,1.75389
+Ligue_1,2023,2023-11-12,Rennes,Lyon,0.680277,2.07974
+Ligue_1,2023,2023-11-12,Lens,Marseille,1.21972,0.723678
+Ligue_1,2023,2023-11-24,Paris Saint Germain,Monaco,2.61317,1.52014
+Ligue_1,2023,2023-11-25,Clermont Foot,Lens,1.84299,2.53223
+Ligue_1,2023,2023-11-25,Strasbourg,Marseille,1.18208,1.36665
+Ligue_1,2023,2023-11-26,Nice,Toulouse,1.00133,1.27183
+Ligue_1,2023,2023-11-26,Lorient,Metz,1.37412,1.85366
+Ligue_1,2023,2023-11-26,Nantes,Le Havre,1.75264,0.225701
+Ligue_1,2023,2023-11-26,Montpellier,Brest,2.19901,2.38593
+Ligue_1,2023,2023-11-26,Rennes,Reims,1.93506,2.24931
+Ligue_1,2023,2023-11-26,Lyon,Lille,1.71151,1.7068
+Ligue_1,2023,2023-11-29,Montpellier,Clermont Foot,2.5147,0.548696
+Ligue_1,2023,2023-12-01,Reims,Strasbourg,1.93212,1.82995
+Ligue_1,2023,2023-12-02,Lens,Lyon,2.66019,3.02776
+Ligue_1,2023,2023-12-02,Nantes,Nice,1.18224,1.2317
+Ligue_1,2023,2023-12-03,Le Havre,Paris Saint Germain,1.85535,1.76208
+Ligue_1,2023,2023-12-03,Toulouse,Lorient,1.10351,0.645774
+Ligue_1,2023,2023-12-03,Monaco,Montpellier,2.46013,1.18556
+Ligue_1,2023,2023-12-03,Brest,Clermont Foot,1.30229,0.605084
+Ligue_1,2023,2023-12-03,Lille,Metz,3.04386,1.85842
+Ligue_1,2023,2023-12-03,Marseille,Rennes,0.91395,0.483795
+Ligue_1,2023,2023-12-06,Marseille,Lyon,1.82709,0.235651
+Ligue_1,2023,2023-12-07,Brest,Strasbourg,0.993441,1.26839
+Ligue_1,2023,2023-12-08,Montpellier,Lens,1.34889,1.61301
+Ligue_1,2023,2023-12-09,Rennes,Monaco,2.14616,1.09728
+Ligue_1,2023,2023-12-09,Paris Saint Germain,Nantes,2.15633,0.483837
+Ligue_1,2023,2023-12-10,Nice,Reims,1.2751,1.13313
+Ligue_1,2023,2023-12-10,Strasbourg,Le Havre,1.50877,1.62211
+Ligue_1,2023,2023-12-10,Clermont Foot,Lille,1.1121,0.635418
+Ligue_1,2023,2023-12-10,Metz,Brest,0.632144,0.219846
+Ligue_1,2023,2023-12-10,Lyon,Toulouse,3.13849,1.6021
+Ligue_1,2023,2023-12-10,Lorient,Marseille,2.01809,2.88724
+Ligue_1,2023,2023-12-15,Monaco,Lyon,1.40268,0.739288
+Ligue_1,2023,2023-12-16,Le Havre,Nice,1.92557,1.64135
+Ligue_1,2023,2023-12-16,Lens,Reims,1.26773,0.876139
+Ligue_1,2023,2023-12-17,Nantes,Brest,1.38959,1.8065
+Ligue_1,2023,2023-12-17,Toulouse,Rennes,0.686037,1.08165
+Ligue_1,2023,2023-12-17,Lorient,Strasbourg,1.17121,1.76122
+Ligue_1,2023,2023-12-17,Metz,Montpellier,0.850081,0.766157
+Ligue_1,2023,2023-12-17,Marseille,Clermont Foot,2.62654,0.131252
+Ligue_1,2023,2023-12-17,Lille,Paris Saint Germain,1.90778,1.39323
+Ligue_1,2023,2023-12-20,Paris Saint Germain,Metz,2.18199,0.149111
+Ligue_1,2023,2023-12-20,Strasbourg,Lille,0.805349,0.882407
+Ligue_1,2023,2023-12-20,Toulouse,Monaco,1.58928,2.26628
+Ligue_1,2023,2023-12-20,Lyon,Nantes,2.1113,0.351645
+Ligue_1,2023,2023-12-20,Nice,Lens,2.95792,0.539445
+Ligue_1,2023,2023-12-20,Clermont Foot,Rennes,0.75621,2.31736
+Ligue_1,2023,2023-12-20,Reims,Le Havre,1.4252,0.459561
+Ligue_1,2023,2023-12-20,Montpellier,Marseille,1.51091,1.20263
+Ligue_1,2023,2023-12-20,Brest,Lorient,1.59135,0.456656
+Ligue_1,2023,2024-01-12,Marseille,Strasbourg,1.56944,1.14984
+Ligue_1,2023,2024-01-13,Monaco,Reims,1.02592,1.91585
+Ligue_1,2023,2024-01-13,Rennes,Nice,1.82506,0.805568
+Ligue_1,2023,2024-01-14,Lille,Lorient,3.05553,0.122714
+Ligue_1,2023,2024-01-14,Nantes,Clermont Foot,1.63891,1.22157
+Ligue_1,2023,2024-01-14,Metz,Toulouse,0.558992,0.952191
+Ligue_1,2023,2024-01-14,Brest,Montpellier,4.34723,0.462585
+Ligue_1,2023,2024-01-14,Le Havre,Lyon,1.47292,0.873358
+Ligue_1,2023,2024-01-14,Lens,Paris Saint Germain,2.68223,1.80377
+Ligue_1,2023,2024-01-26,Lyon,Rennes,0.96504,1.37472
+Ligue_1,2023,2024-01-27,Nice,Metz,1.97472,0.119776
+Ligue_1,2023,2024-01-27,Marseille,Monaco,3.46234,0.372187
+Ligue_1,2023,2024-01-28,Montpellier,Lille,1.37722,0.622726
+Ligue_1,2023,2024-01-28,Lorient,Le Havre,1.63382,1.35726
+Ligue_1,2023,2024-01-28,Clermont Foot,Strasbourg,1.53045,1.31652
+Ligue_1,2023,2024-01-28,Reims,Nantes,1.21383,1.40977
+Ligue_1,2023,2024-01-28,Toulouse,Lens,2.4207,1.17066
+Ligue_1,2023,2024-01-28,Paris Saint Germain,Brest,1.89797,1.07348
+Ligue_1,2023,2024-02-02,Strasbourg,Paris Saint Germain,2.57864,1.90654
+Ligue_1,2023,2024-02-03,Rennes,Montpellier,2.21096,0.797935
+Ligue_1,2023,2024-02-03,Nantes,Lens,0.711906,1.63838
+Ligue_1,2023,2024-02-04,Monaco,Le Havre,1.48516,0.149171
+Ligue_1,2023,2024-02-04,Lille,Clermont Foot,2.44237,0.81129
+Ligue_1,2023,2024-02-04,Reims,Toulouse,2.02418,1.74173
+Ligue_1,2023,2024-02-04,Metz,Lorient,0.822983,1.37239
+Ligue_1,2023,2024-02-04,Brest,Nice,0.875796,0.67289
+Ligue_1,2023,2024-02-04,Lyon,Marseille,1.92161,0.511356
+Ligue_1,2023,2024-02-09,Marseille,Metz,2.39451,0.955249
+Ligue_1,2023,2024-02-10,Lens,Strasbourg,1.91964,1.66695
+Ligue_1,2023,2024-02-10,Paris Saint Germain,Lille,2.43098,1.48271
+Ligue_1,2023,2024-02-11,Le Havre,Rennes,1.37399,1.18673
+Ligue_1,2023,2024-02-11,Toulouse,Nantes,0.893343,0.497993
+Ligue_1,2023,2024-02-11,Lorient,Reims,2.29027,1.17008
+Ligue_1,2023,2024-02-11,Clermont Foot,Brest,1.19719,1.35687
+Ligue_1,2023,2024-02-11,Montpellier,Lyon,1.78103,1.29775
+Ligue_1,2023,2024-02-11,Nice,Monaco,2.16459,2.06475
+Ligue_1,2023,2024-02-16,Lyon,Nice,0.801467,0.685452
+Ligue_1,2023,2024-02-17,Lille,Le Havre,4.23306,0.29674
+Ligue_1,2023,2024-02-17,Nantes,Paris Saint Germain,2.13627,1.71895
+Ligue_1,2023,2024-02-18,Strasbourg,Lorient,1.71908,2.13729
+Ligue_1,2023,2024-02-18,Rennes,Clermont Foot,4.27182,0.755433
+Ligue_1,2023,2024-02-18,Monaco,Toulouse,1.69534,1.57778
+Ligue_1,2023,2024-02-18,Montpellier,Metz,3.04692,0.929361
+Ligue_1,2023,2024-02-18,Reims,Lens,1.04087,1.45983
+Ligue_1,2023,2024-02-18,Brest,Marseille,1.79901,0.49619
+Ligue_1,2023,2024-02-23,Metz,Lyon,1.76992,1.25668
+Ligue_1,2023,2024-02-24,Lorient,Nantes,0.620869,0.331772
+Ligue_1,2023,2024-02-24,Strasbourg,Brest,0.147244,1.75632
+Ligue_1,2023,2024-02-25,Lens,Monaco,2.863,2.33037
+Ligue_1,2023,2024-02-25,Le Havre,Reims,1.71847,3.16987
+Ligue_1,2023,2024-02-25,Nice,Clermont Foot,1.97032,2.46292
+Ligue_1,2023,2024-02-25,Toulouse,Lille,1.95824,0.599376
+Ligue_1,2023,2024-02-25,Paris Saint Germain,Rennes,1.88699,0.982428
+Ligue_1,2023,2024-02-25,Marseille,Montpellier,2.91179,1.09554
+Ligue_1,2023,2024-03-01,Monaco,Paris Saint Germain,2.44196,1.84721
+Ligue_1,2023,2024-03-02,Reims,Lille,0.533658,1.08259
+Ligue_1,2023,2024-03-02,Clermont Foot,Marseille,0.737192,3.06861
+Ligue_1,2023,2024-03-03,Toulouse,Nice,1.50074,1.91177
+Ligue_1,2023,2024-03-03,Nantes,Metz,0.962736,2.36445
+Ligue_1,2023,2024-03-03,Montpellier,Strasbourg,1.55397,1.61588
+Ligue_1,2023,2024-03-03,Brest,Le Havre,1.2486,0.427329
+Ligue_1,2023,2024-03-03,Rennes,Lorient,1.48788,1.94566
+Ligue_1,2023,2024-03-03,Lyon,Lens,2.13225,3.35268
+Ligue_1,2023,2024-03-08,Nice,Montpellier,1.51018,1.66988
+Ligue_1,2023,2024-03-09,Lorient,Lyon,0.279234,2.37921
+Ligue_1,2023,2024-03-09,Lens,Brest,0.751467,0.522507
+Ligue_1,2023,2024-03-10,Paris Saint Germain,Reims,1.53515,1.51893
+Ligue_1,2023,2024-03-10,Strasbourg,Monaco,0.268122,1.32837
+Ligue_1,2023,2024-03-10,Le Havre,Toulouse,1.2502,0.212288
+Ligue_1,2023,2024-03-10,Metz,Clermont Foot,1.82804,0.624762
+Ligue_1,2023,2024-03-10,Lille,Rennes,2.4764,1.21123
+Ligue_1,2023,2024-03-10,Marseille,Nantes,2.03657,0.651156
+Ligue_1,2023,2024-03-15,Toulouse,Lyon,2.0594,1.49785
+Ligue_1,2023,2024-03-16,Nantes,Strasbourg,0.709166,1.88754
+Ligue_1,2023,2024-03-16,Lens,Nice,1.36305,1.80693
+Ligue_1,2023,2024-03-17,Brest,Lille,1.4278,0.845861
+Ligue_1,2023,2024-03-17,Monaco,Lorient,3.43264,0.75287
+Ligue_1,2023,2024-03-17,Clermont Foot,Le Havre,1.17889,1.13876
+Ligue_1,2023,2024-03-17,Reims,Metz,1.57996,1.12407
+Ligue_1,2023,2024-03-17,Rennes,Marseille,1.59209,0.740416
+Ligue_1,2023,2024-03-17,Montpellier,Paris Saint Germain,2.51778,2.24298
+Ligue_1,2023,2024-03-29,Lille,Lens,1.60249,0.741746
+Ligue_1,2023,2024-03-30,Metz,Monaco,1.76276,2.86235
+Ligue_1,2023,2024-03-30,Lyon,Reims,2.12533,1.48533
+Ligue_1,2023,2024-03-31,Lorient,Brest,1.41137,0.429902
+Ligue_1,2023,2024-03-31,Nice,Nantes,1.21101,1.79381
+Ligue_1,2023,2024-03-31,Clermont Foot,Toulouse,0.897271,2.30312
+Ligue_1,2023,2024-03-31,Le Havre,Montpellier,0.690722,1.81849
+Ligue_1,2023,2024-03-31,Strasbourg,Rennes,2.45769,0.913264
+Ligue_1,2023,2024-03-31,Marseille,Paris Saint Germain,1.02584,1.73967
+Ligue_1,2023,2024-04-05,Lille,Marseille,1.94744,0.849968
+Ligue_1,2023,2024-04-06,Lens,Le Havre,1.03136,1.54783
+Ligue_1,2023,2024-04-06,Paris Saint Germain,Clermont Foot,2.57381,0.28144
+Ligue_1,2023,2024-04-07,Brest,Metz,4.51637,2.08036
+Ligue_1,2023,2024-04-07,Toulouse,Strasbourg,0.825103,0.582127
+Ligue_1,2023,2024-04-07,Reims,Nice,0.537635,1.92153
+Ligue_1,2023,2024-04-07,Montpellier,Lorient,2.68931,1.74832
+Ligue_1,2023,2024-04-07,Monaco,Rennes,1.60487,1.6645
+Ligue_1,2023,2024-04-07,Nantes,Lyon,1.10318,2.90994
+Ligue_1,2023,2024-04-12,Metz,Lens,0.802713,1.90927
+Ligue_1,2023,2024-04-13,Strasbourg,Reims,2.30507,0.739073
+Ligue_1,2023,2024-04-13,Rennes,Toulouse,0.877819,0.783871
+Ligue_1,2023,2024-04-14,Le Havre,Nantes,1.6031,0.756172
+Ligue_1,2023,2024-04-14,Clermont Foot,Montpellier,1.36904,1.71417
+Ligue_1,2023,2024-04-14,Lyon,Brest,1.8478,1.7183
+Ligue_1,2023,2024-04-19,Nice,Lorient,2.51301,0.561667
+Ligue_1,2023,2024-04-20,Nantes,Rennes,0.159376,2.38163
+Ligue_1,2023,2024-04-20,Lens,Clermont Foot,2.80705,0.617299
+Ligue_1,2023,2024-04-21,Lille,Strasbourg,1.26308,0.948728
+Ligue_1,2023,2024-04-21,Reims,Montpellier,1.31942,1.35565
+Ligue_1,2023,2024-04-21,Le Havre,Metz,0.649411,1.50162
+Ligue_1,2023,2024-04-21,Brest,Monaco,0.640964,1.30681
+Ligue_1,2023,2024-04-21,Toulouse,Marseille,0.654707,1.06509
+Ligue_1,2023,2024-04-21,Paris Saint Germain,Lyon,3.09132,0.667233
+Ligue_1,2023,2024-04-24,Lorient,Paris Saint Germain,1.03633,1.97814
+Ligue_1,2023,2024-04-24,Marseille,Nice,1.77662,1.28789
+Ligue_1,2023,2024-04-24,Monaco,Lille,2.21532,1.28227
+Ligue_1,2023,2024-04-26,Montpellier,Nantes,0.679578,1.70799
+Ligue_1,2023,2024-04-27,Paris Saint Germain,Le Havre,2.25829,1.21268
+Ligue_1,2023,2024-04-28,Metz,Lille,1.28183,0.882087
+Ligue_1,2023,2024-04-28,Strasbourg,Nice,1.04231,1.89803
+Ligue_1,2023,2024-04-28,Lorient,Toulouse,1.3574,2.23471
+Ligue_1,2023,2024-04-28,Clermont Foot,Reims,2.56811,0.875188
+Ligue_1,2023,2024-04-28,Rennes,Brest,2.34207,2.18698
+Ligue_1,2023,2024-04-28,Lyon,Monaco,2.6414,2.04607
+Ligue_1,2023,2024-04-28,Marseille,Lens,1.77344,1.25145
+Ligue_1,2023,2024-05-03,Toulouse,Montpellier,1.98611,0.660372
+Ligue_1,2023,2024-05-03,Lens,Lorient,2.30235,0.459806
+Ligue_1,2023,2024-05-04,Le Havre,Strasbourg,2.56306,0.631836
+Ligue_1,2023,2024-05-04,Monaco,Clermont Foot,3.44513,1.01532
+Ligue_1,2023,2024-05-04,Metz,Rennes,0.829235,2.01818
+Ligue_1,2023,2024-05-04,Brest,Nantes,0.621067,1.33601
+Ligue_1,2023,2024-05-06,Lille,Lyon,1.12451,2.42982
+Ligue_1,2023,2024-05-10,Nice,Le Havre,1.93635,0.427788
+Ligue_1,2023,2024-05-10,Brest,Reims,1.34751,0.432216
+Ligue_1,2023,2024-05-12,Paris Saint Germain,Toulouse,1.50414,1.71089
+Ligue_1,2023,2024-05-12,Strasbourg,Metz,1.38725,0.896939
+Ligue_1,2023,2024-05-12,Rennes,Lens,2.1522,0.410537
+Ligue_1,2023,2024-05-12,Marseille,Lorient,3.96907,1.0861
+Ligue_1,2023,2024-05-12,Clermont Foot,Lyon,1.17651,0.389723
+Ligue_1,2023,2024-05-12,Nantes,Lille,0.810391,1.40896
+Ligue_1,2023,2024-05-12,Montpellier,Monaco,1.12952,2.31591
+Ligue_1,2023,2024-05-15,Nice,Paris Saint Germain,1.95517,1.44503
+Ligue_1,2023,2024-05-15,Reims,Marseille,0.879349,1.81257
+Ligue_1,2023,2024-05-19,Metz,Paris Saint Germain,1.20722,2.92879
+Ligue_1,2023,2024-05-19,Lens,Montpellier,5.38555,1.11518
+Ligue_1,2023,2024-05-19,Le Havre,Marseille,2.32336,2.32131
+Ligue_1,2023,2024-05-19,Lyon,Strasbourg,3.26691,1.12544
+Ligue_1,2023,2024-05-19,Reims,Rennes,1.39024,1.25648
+Ligue_1,2023,2024-05-19,Lille,Nice,1.59935,1.32909
+Ligue_1,2023,2024-05-19,Lorient,Clermont Foot,4.92005,0.737223
+Ligue_1,2023,2024-05-19,Monaco,Nantes,1.85296,0.885758
+Ligue_1,2023,2024-05-19,Toulouse,Brest,0.984204,1.02904
+Ligue_1,2024,2024-08-16,Le Havre,Paris Saint Germain,0.197023,2.9098
+Ligue_1,2024,2024-08-17,Brest,Marseille,1.51475,2.96496
+Ligue_1,2024,2024-08-17,Reims,Lille,0.0758907,2.31711
+Ligue_1,2024,2024-08-17,Monaco,Saint-Etienne,2.78444,0.484117
+Ligue_1,2024,2024-08-18,Auxerre,Nice,3.03248,0.58056
+Ligue_1,2024,2024-08-18,Montpellier,Strasbourg,1.44704,1.10476
+Ligue_1,2024,2024-08-18,Toulouse,Nantes,1.50937,0.513845
+Ligue_1,2024,2024-08-18,Angers,Lens,0.297792,1.04077
+Ligue_1,2024,2024-08-18,Rennes,Lyon,2.57411,2.20066
+Ligue_1,2024,2024-08-23,Paris Saint Germain,Montpellier,4.93703,0.772997
+Ligue_1,2024,2024-08-24,Lyon,Monaco,0.0144803,2.60916
+Ligue_1,2024,2024-08-24,Lille,Angers,1.25796,0.737042
+Ligue_1,2024,2024-08-24,Saint-Etienne,Le Havre,1.48827,2.23362
+Ligue_1,2024,2024-08-25,Lens,Brest,4.01926,0.695576
+Ligue_1,2024,2024-08-25,Nice,Toulouse,1.23725,0.946618
+Ligue_1,2024,2024-08-25,Strasbourg,Rennes,1.58875,1.40309
+Ligue_1,2024,2024-08-25,Nantes,Auxerre,1.52541,0.876338
+Ligue_1,2024,2024-08-25,Marseille,Reims,2.94016,1.01201
+Ligue_1,2024,2024-08-30,Lyon,Strasbourg,3.22754,2.44695
+Ligue_1,2024,2024-08-31,Brest,Saint-Etienne,3.60698,0.256612
+Ligue_1,2024,2024-08-31,Montpellier,Nantes,0.745975,1.69437
+Ligue_1,2024,2024-08-31,Toulouse,Marseille,0.485368,1.29819
+Ligue_1,2024,2024-09-01,Monaco,Lens,0.905621,1.91297
+Ligue_1,2024,2024-09-01,Le Havre,Auxerre,2.83661,0.743523
+Ligue_1,2024,2024-09-01,Reims,Rennes,2.00948,1.02619
+Ligue_1,2024,2024-09-01,Angers,Nice,1.33204,2.53408
+Ligue_1,2024,2024-09-01,Lille,Paris Saint Germain,1.57562,3.24139
+Ligue_1,2024,2024-09-13,Saint-Etienne,Lille,1.1774,2.73176
+Ligue_1,2024,2024-09-14,Marseille,Nice,1.02694,1.72041
+Ligue_1,2024,2024-09-14,Auxerre,Monaco,0.419427,3.37672
+Ligue_1,2024,2024-09-14,Paris Saint Germain,Brest,2.91245,1.00928
+Ligue_1,2024,2024-09-15,Rennes,Montpellier,1.26867,0.310262
+Ligue_1,2024,2024-09-15,Nantes,Reims,1.43325,0.549218
+Ligue_1,2024,2024-09-15,Toulouse,Le Havre,1.8674,0.15045
+Ligue_1,2024,2024-09-15,Strasbourg,Angers,2.47918,0.855084
+Ligue_1,2024,2024-09-15,Lens,Lyon,0.623644,0.529029
+Ligue_1,2024,2024-09-20,Nice,Saint-Etienne,4.50007,0.335532
+Ligue_1,2024,2024-09-21,Lille,Strasbourg,2.30213,3.02005
+Ligue_1,2024,2024-09-21,Rennes,Lens,1.34636,0.853348
+Ligue_1,2024,2024-09-21,Reims,Paris Saint Germain,0.760314,1.90277
+Ligue_1,2024,2024-09-22,Monaco,Le Havre,1.84023,0.580512
+Ligue_1,2024,2024-09-22,Brest,Toulouse,0.709045,2.3505
+Ligue_1,2024,2024-09-22,Angers,Nantes,0.82486,1.28588
+Ligue_1,2024,2024-09-22,Montpellier,Auxerre,1.78396,1.42586
+Ligue_1,2024,2024-09-22,Lyon,Marseille,3.89273,0.675578
+Ligue_1,2024,2024-09-27,Auxerre,Brest,2.9504,0.726126
+Ligue_1,2024,2024-09-27,Paris Saint Germain,Rennes,3.22405,2.02646
+Ligue_1,2024,2024-09-28,Lens,Nice,2.06424,0.9614
+Ligue_1,2024,2024-09-28,Le Havre,Lille,0.488988,3.5706
+Ligue_1,2024,2024-09-28,Monaco,Montpellier,3.45707,0.768868
+Ligue_1,2024,2024-09-29,Toulouse,Lyon,0.716626,0.730803
+Ligue_1,2024,2024-09-29,Nantes,Saint-Etienne,2.61562,1.0242
+Ligue_1,2024,2024-09-29,Angers,Reims,1.08284,4.18122
+Ligue_1,2024,2024-09-29,Strasbourg,Marseille,1.67455,0.782395
+Ligue_1,2024,2024-10-04,Marseille,Angers,0.896807,1.19435
+Ligue_1,2024,2024-10-05,Saint-Etienne,Auxerre,2.45106,0.71964
+Ligue_1,2024,2024-10-05,Lille,Toulouse,1.37754,1.43654
+Ligue_1,2024,2024-10-05,Rennes,Monaco,0.640297,0.498715
+Ligue_1,2024,2024-10-06,Lyon,Nantes,2.43324,0.765938
+Ligue_1,2024,2024-10-06,Reims,Montpellier,3.71514,0.874094
+Ligue_1,2024,2024-10-06,Brest,Le Havre,0.890433,2.11913
+Ligue_1,2024,2024-10-06,Strasbourg,Lens,1.31135,1.43012
+Ligue_1,2024,2024-10-06,Nice,Paris Saint Germain,0.326466,0.822322
+Ligue_1,2024,2024-10-18,Monaco,Lille,1.1914,0.163769
+Ligue_1,2024,2024-10-19,Brest,Rennes,1.42573,1.14445
+Ligue_1,2024,2024-10-19,Saint-Etienne,Lens,0.782727,1.35593
+Ligue_1,2024,2024-10-19,Paris Saint Germain,Strasbourg,4.66981,2.22038
+Ligue_1,2024,2024-10-20,Le Havre,Lyon,0.360268,2.76676
+Ligue_1,2024,2024-10-20,Auxerre,Reims,2.86385,1.22872
+Ligue_1,2024,2024-10-20,Toulouse,Angers,2.43778,1.47299
+Ligue_1,2024,2024-10-20,Nantes,Nice,0.832336,0.776883
+Ligue_1,2024,2024-10-20,Montpellier,Marseille,1.75684,3.88109
+Ligue_1,2024,2024-10-25,Rennes,Le Havre,1.84154,0.272294
+Ligue_1,2024,2024-10-26,Angers,Saint-Etienne,3.26778,1.33
+Ligue_1,2024,2024-10-26,Reims,Brest,1.44911,1.64092
+Ligue_1,2024,2024-10-26,Lens,Lille,0.865293,1.47637
+Ligue_1,2024,2024-10-27,Lyon,Auxerre,2.21183,1.0609
+Ligue_1,2024,2024-10-27,Montpellier,Toulouse,0.241419,2.88708
+Ligue_1,2024,2024-10-27,Strasbourg,Nantes,1.99679,0.761926
+Ligue_1,2024,2024-10-27,Nice,Monaco,1.79435,0.796703
+Ligue_1,2024,2024-10-27,Marseille,Paris Saint Germain,0.277951,4.04221
+Ligue_1,2024,2024-11-01,Monaco,Angers,1.47525,0.50003
+Ligue_1,2024,2024-11-01,Lille,Lyon,1.67241,1.58011
+Ligue_1,2024,2024-11-02,Paris Saint Germain,Lens,2.76932,0.803421
+Ligue_1,2024,2024-11-02,Brest,Nice,1.02021,1.92085
+Ligue_1,2024,2024-11-02,Saint-Etienne,Strasbourg,2.82745,0.451174
+Ligue_1,2024,2024-11-03,Toulouse,Reims,0.910081,0.818661
+Ligue_1,2024,2024-11-03,Auxerre,Rennes,2.39897,0.701873
+Ligue_1,2024,2024-11-03,Le Havre,Montpellier,1.7998,0.722691
+Ligue_1,2024,2024-11-03,Nantes,Marseille,1.25901,0.876221
+Ligue_1,2024,2024-11-08,Marseille,Auxerre,2.02831,2.09466
+Ligue_1,2024,2024-11-09,Strasbourg,Monaco,0.771173,3.42574
+Ligue_1,2024,2024-11-09,Lens,Nantes,3.74705,1.49891
+Ligue_1,2024,2024-11-09,Angers,Paris Saint Germain,1.21483,4.38095
+Ligue_1,2024,2024-11-10,Nice,Lille,1.92983,2.19562
+Ligue_1,2024,2024-11-10,Rennes,Toulouse,0.31279,1.31564
+Ligue_1,2024,2024-11-10,Le Havre,Reims,1.51035,2.69952
+Ligue_1,2024,2024-11-10,Montpellier,Brest,3.03758,1.88669
+Ligue_1,2024,2024-11-10,Lyon,Saint-Etienne,2.28647,0.703111
+Ligue_1,2024,2024-11-22,Monaco,Brest,2.55781,1.38684
+Ligue_1,2024,2024-11-22,Paris Saint Germain,Toulouse,1.63216,1.84157
+Ligue_1,2024,2024-11-23,Lens,Marseille,2.1723,1.37895
+Ligue_1,2024,2024-11-23,Saint-Etienne,Montpellier,1.27297,0.862794
+Ligue_1,2024,2024-11-23,Reims,Lyon,1.17295,1.92683
+Ligue_1,2024,2024-11-24,Lille,Rennes,0.641516,0.178059
+Ligue_1,2024,2024-11-24,Nantes,Le Havre,0.846924,0.977121
+Ligue_1,2024,2024-11-24,Auxerre,Angers,0.683126,1.14148
+Ligue_1,2024,2024-11-24,Nice,Strasbourg,2.03827,0.524154
+Ligue_1,2024,2024-11-29,Reims,Lens,0.589301,1.40788
+Ligue_1,2024,2024-11-30,Rennes,Saint-Etienne,3.01812,0.168428
+Ligue_1,2024,2024-11-30,Brest,Strasbourg,2.90417,0.930345
+Ligue_1,2024,2024-11-30,Paris Saint Germain,Nantes,3.85838,0.742742
+Ligue_1,2024,2024-12-01,Montpellier,Lille,1.28241,2.06485
+Ligue_1,2024,2024-12-01,Le Havre,Angers,0.322626,2.10367
+Ligue_1,2024,2024-12-01,Lyon,Nice,2.88467,2.03621
+Ligue_1,2024,2024-12-01,Toulouse,Auxerre,2.78623,0.129647
+Ligue_1,2024,2024-12-01,Marseille,Monaco,1.65632,0.958578
+Ligue_1,2024,2024-12-06,Lille,Brest,3.01042,0.740372
+Ligue_1,2024,2024-12-06,Auxerre,Paris Saint Germain,0.34154,3.04535
+Ligue_1,2024,2024-12-07,Monaco,Toulouse,2.8043,0.232536
+Ligue_1,2024,2024-12-07,Nice,Le Havre,2.27599,1.42884
+Ligue_1,2024,2024-12-07,Angers,Lyon,0.505438,2.02701
+Ligue_1,2024,2024-12-08,Lens,Montpellier,1.10272,1.51819
+Ligue_1,2024,2024-12-08,Strasbourg,Reims,1.0949,1.28455
+Ligue_1,2024,2024-12-08,Nantes,Rennes,1.70972,0.285927
+Ligue_1,2024,2024-12-08,Saint-Etienne,Marseille,0.166752,2.9851
+Ligue_1,2024,2024-12-13,Toulouse,Saint-Etienne,1.73249,0.388289
+Ligue_1,2024,2024-12-14,Marseille,Lille,1.21515,1.24013
+Ligue_1,2024,2024-12-14,Auxerre,Lens,0.51026,1.73768
+Ligue_1,2024,2024-12-14,Reims,Monaco,1.52074,1.3291
+Ligue_1,2024,2024-12-15,Montpellier,Nice,2.45121,1.55192
+Ligue_1,2024,2024-12-15,Rennes,Angers,0.62717,0.391796
+Ligue_1,2024,2024-12-15,Le Havre,Strasbourg,1.58328,1.39172
+Ligue_1,2024,2024-12-15,Brest,Nantes,2.20104,1.39913
+Ligue_1,2024,2024-12-15,Paris Saint Germain,Lyon,2.59615,1.23945
+Ligue_1,2024,2024-12-18,Monaco,Paris Saint Germain,3.10193,2.40654
+Ligue_1,2024,2025-01-03,Nice,Rennes,1.51944,1.50451
+Ligue_1,2024,2025-01-04,Saint-Etienne,Reims,3.18639,1.27612
+Ligue_1,2024,2025-01-04,Lille,Nantes,1.13415,1.07277
+Ligue_1,2024,2025-01-04,Lyon,Montpellier,1.07725,1.55585
+Ligue_1,2024,2025-01-05,Lens,Toulouse,1.32887,2.19226
+Ligue_1,2024,2025-01-05,Angers,Brest,1.90119,0.608874
+Ligue_1,2024,2025-01-05,Strasbourg,Auxerre,2.89722,1.7605
+Ligue_1,2024,2025-01-05,Marseille,Le Havre,3.17491,0.885341
+Ligue_1,2024,2025-01-10,Nantes,Monaco,1.41184,3.48791
+Ligue_1,2024,2025-01-10,Auxerre,Lille,0.601359,1.51829
+Ligue_1,2024,2025-01-11,Brest,Lyon,1.28964,1.40093
+Ligue_1,2024,2025-01-11,Reims,Nice,0.950928,3.22004
+Ligue_1,2024,2025-01-11,Rennes,Marseille,1.76569,2.49254
+Ligue_1,2024,2025-01-12,Le Havre,Lens,1.84216,3.10793
+Ligue_1,2024,2025-01-12,Toulouse,Strasbourg,1.19281,1.82783
+Ligue_1,2024,2025-01-12,Montpellier,Angers,1.44663,3.46863
+Ligue_1,2024,2025-01-12,Paris Saint Germain,Saint-Etienne,5.07062,0.410024
+Ligue_1,2024,2025-01-17,Montpellier,Monaco,2.60645,1.74957
+Ligue_1,2024,2025-01-17,Lille,Nice,1.29219,2.90437
+Ligue_1,2024,2025-01-18,Lens,Paris Saint Germain,1.34901,1.57299
+Ligue_1,2024,2025-01-18,Rennes,Brest,1.92675,1.87321
+Ligue_1,2024,2025-01-18,Lyon,Toulouse,0.619056,1.36611
+Ligue_1,2024,2025-01-19,Saint-Etienne,Nantes,0.836137,1.36031
+Ligue_1,2024,2025-01-19,Reims,Le Havre,1.49091,1.29453
+Ligue_1,2024,2025-01-19,Angers,Auxerre,1.21759,0.462137
+Ligue_1,2024,2025-01-19,Marseille,Strasbourg,3.29082,0.854933
+Ligue_1,2024,2025-01-24,Auxerre,Saint-Etienne,0.582829,1.1913
+Ligue_1,2024,2025-01-25,Monaco,Rennes,3.47384,1.85205
+Ligue_1,2024,2025-01-25,Strasbourg,Lille,1.19703,1.95469
+Ligue_1,2024,2025-01-25,Paris Saint Germain,Reims,1.79628,0.613384
+Ligue_1,2024,2025-01-26,Le Havre,Brest,0.696232,2.38282
+Ligue_1,2024,2025-01-26,Toulouse,Montpellier,1.34257,0.939857
+Ligue_1,2024,2025-01-26,Lens,Angers,2.01118,0.0813578
+Ligue_1,2024,2025-01-26,Nantes,Lyon,1.62983,1.61762
+Ligue_1,2024,2025-01-26,Nice,Marseille,2.10992,1.11157
+Ligue_1,2024,2025-01-31,Montpellier,Lens,1.11121,3.21001
+Ligue_1,2024,2025-02-01,Brest,Paris Saint Germain,0.63646,3.94899
+Ligue_1,2024,2025-02-01,Monaco,Auxerre,2.07751,1.6376
+Ligue_1,2024,2025-02-01,Lille,Saint-Etienne,2.74822,2.10343
+Ligue_1,2024,2025-02-02,Toulouse,Nice,0.854551,1.51342
+Ligue_1,2024,2025-02-02,Reims,Nantes,0.960868,1.41652
+Ligue_1,2024,2025-02-02,Angers,Le Havre,1.77333,2.19254
+Ligue_1,2024,2025-02-02,Rennes,Strasbourg,0.763344,0.994427
+Ligue_1,2024,2025-02-02,Marseille,Lyon,3.61972,1.83806
+Ligue_1,2024,2025-02-07,Nantes,Brest,1.45114,2.49765
+Ligue_1,2024,2025-02-07,Paris Saint Germain,Monaco,3.13964,0.924683
+Ligue_1,2024,2025-02-08,Lille,Le Havre,1.76979,1.65349
+Ligue_1,2024,2025-02-08,Nice,Lens,3.37347,1.02488
+Ligue_1,2024,2025-02-08,Saint-Etienne,Rennes,0.462142,4.06991
+Ligue_1,2024,2025-02-09,Lyon,Reims,3.24979,0.307882
+Ligue_1,2024,2025-02-09,Auxerre,Toulouse,0.716768,1.16269
+Ligue_1,2024,2025-02-09,Strasbourg,Montpellier,3.17215,1.9822
+Ligue_1,2024,2025-02-09,Angers,Marseille,0.367397,2.87581
+Ligue_1,2024,2025-02-14,Brest,Auxerre,1.97492,1.48646
+Ligue_1,2024,2025-02-15,Marseille,Saint-Etienne,5.94236,1.0312
+Ligue_1,2024,2025-02-15,Monaco,Nantes,5.14782,1.36606
+Ligue_1,2024,2025-02-15,Toulouse,Paris Saint Germain,1.19618,2.93281
+Ligue_1,2024,2025-02-16,Montpellier,Lyon,1.33893,1.59077
+Ligue_1,2024,2025-02-16,Lens,Strasbourg,0.265561,1.97845
+Ligue_1,2024,2025-02-16,Reims,Angers,2.06733,2.43148
+Ligue_1,2024,2025-02-16,Le Havre,Nice,0.555829,1.22276
+Ligue_1,2024,2025-02-16,Rennes,Lille,0.417057,3.01977
+Ligue_1,2024,2025-02-21,Rennes,Reims,3.0636,0.160269
+Ligue_1,2024,2025-02-22,Lille,Monaco,1.04956,2.78007
+Ligue_1,2024,2025-02-22,Saint-Etienne,Angers,1.70031,3.1805
+Ligue_1,2024,2025-02-22,Auxerre,Marseille,1.96607,1.22185
+Ligue_1,2024,2025-02-23,Nantes,Lens,4.25273,2.06191
+Ligue_1,2024,2025-02-23,Le Havre,Toulouse,1.04249,2.60783
+Ligue_1,2024,2025-02-23,Strasbourg,Brest,0.785346,0.498988
+Ligue_1,2024,2025-02-23,Nice,Montpellier,2.14122,0.916772
+Ligue_1,2024,2025-02-23,Lyon,Paris Saint Germain,1.76184,2.74583
+Ligue_1,2024,2025-02-28,Monaco,Reims,4.01066,0.722972
+Ligue_1,2024,2025-03-01,Saint-Etienne,Nice,1.01895,2.41374
+Ligue_1,2024,2025-03-01,Lens,Le Havre,2.02687,1.73131
+Ligue_1,2024,2025-03-01,Paris Saint Germain,Lille,3.59846,0.872733
+Ligue_1,2024,2025-03-02,Lyon,Brest,1.54474,1.89282
+Ligue_1,2024,2025-03-02,Montpellier,Rennes,1.60296,2.49604
+Ligue_1,2024,2025-03-02,Auxerre,Strasbourg,2.09273,1.52559
+Ligue_1,2024,2025-03-02,Angers,Toulouse,0.363765,4.43647
+Ligue_1,2024,2025-03-02,Marseille,Nantes,2.61727,0.838148
+Ligue_1,2024,2025-03-07,Toulouse,Monaco,1.25392,2.8576
+Ligue_1,2024,2025-03-08,Rennes,Paris Saint Germain,2.10922,3.39834
+Ligue_1,2024,2025-03-08,Lille,Montpellier,1.7771,0.305936
+Ligue_1,2024,2025-03-08,Marseille,Lens,1.18945,1.23993
+Ligue_1,2024,2025-03-09,Brest,Angers,4.53611,0.48923
+Ligue_1,2024,2025-03-09,Le Havre,Saint-Etienne,2.15479,1.3916
+Ligue_1,2024,2025-03-09,Reims,Auxerre,1.83707,1.87605
+Ligue_1,2024,2025-03-09,Nantes,Strasbourg,0.66134,1.17018
+Ligue_1,2024,2025-03-09,Nice,Lyon,1.50591,0.78019
+Ligue_1,2024,2025-03-14,Nice,Auxerre,2.29143,0.606081
+Ligue_1,2024,2025-03-15,Nantes,Lille,2.00991,2.45036
+Ligue_1,2024,2025-03-15,Angers,Monaco,0.497795,2.03553
+Ligue_1,2024,2025-03-15,Lens,Rennes,0.643819,0.653605
+Ligue_1,2024,2025-03-16,Lyon,Le Havre,3.58655,1.56105
+Ligue_1,2024,2025-03-16,Montpellier,Saint-Etienne,1.33869,1.13788
+Ligue_1,2024,2025-03-16,Brest,Reims,0.33799,0.985266
+Ligue_1,2024,2025-03-16,Strasbourg,Toulouse,1.98742,1.39687
+Ligue_1,2024,2025-03-16,Paris Saint Germain,Marseille,2.60859,0.734284
+Ligue_1,2024,2025-03-28,Strasbourg,Lyon,1.77552,2.87161
+Ligue_1,2024,2025-03-29,Reims,Marseille,1.05547,1.07885
+Ligue_1,2024,2025-03-29,Saint-Etienne,Paris Saint Germain,1.27635,3.96021
+Ligue_1,2024,2025-03-29,Monaco,Nice,2.52612,0.60151
+Ligue_1,2024,2025-03-30,Toulouse,Brest,2.44172,1.99117
+Ligue_1,2024,2025-03-30,Angers,Rennes,1.04854,1.63382
+Ligue_1,2024,2025-03-30,Auxerre,Montpellier,2.11681,0.457017
+Ligue_1,2024,2025-03-30,Le Havre,Nantes,4.01379,1.06585
+Ligue_1,2024,2025-03-30,Lille,Lens,1.95492,0.596446
+Ligue_1,2024,2025-04-04,Nice,Nantes,2.17922,0.945149
+Ligue_1,2024,2025-04-05,Paris Saint Germain,Angers,1.64379,0.280438
+Ligue_1,2024,2025-04-05,Brest,Monaco,0.90697,1.75483
+Ligue_1,2024,2025-04-05,Lyon,Lille,1.75398,0.656931
+Ligue_1,2024,2025-04-06,Lens,Saint-Etienne,2.50421,1.69228
+Ligue_1,2024,2025-04-06,Montpellier,Le Havre,0.956146,1.72977
+Ligue_1,2024,2025-04-06,Reims,Strasbourg,0.891063,2.80314
+Ligue_1,2024,2025-04-06,Rennes,Auxerre,1.06426,1.10602
+Ligue_1,2024,2025-04-06,Marseille,Toulouse,1.13222,1.30619
+Ligue_1,2024,2025-04-11,Lens,Reims,2.71917,1.44859
+Ligue_1,2024,2025-04-12,Monaco,Marseille,2.91516,0.877673
+Ligue_1,2024,2025-04-12,Toulouse,Lille,0.982005,0.599675
+Ligue_1,2024,2025-04-12,Strasbourg,Nice,0.789035,1.83829
+Ligue_1,2024,2025-04-13,Saint-Etienne,Brest,1.02329,2.01379
+Ligue_1,2024,2025-04-13,Le Havre,Rennes,0.718016,3.72188
+Ligue_1,2024,2025-04-13,Angers,Montpellier,1.771,0.452518
+Ligue_1,2024,2025-04-13,Auxerre,Lyon,1.00397,3.11801
+Ligue_1,2024,2025-04-18,Rennes,Nantes,2.52992,0.702331
+Ligue_1,2024,2025-04-19,Paris Saint Germain,Le Havre,3.19233,0.709291
+Ligue_1,2024,2025-04-19,Monaco,Strasbourg,0.969947,0.340219
+Ligue_1,2024,2025-04-19,Marseille,Montpellier,3.82233,0.304052
+Ligue_1,2024,2025-04-20,Lille,Auxerre,2.97047,0.280948
+Ligue_1,2024,2025-04-20,Nice,Angers,2.72567,0.278639
+Ligue_1,2024,2025-04-20,Brest,Lens,1.05399,2.98551
+Ligue_1,2024,2025-04-20,Reims,Toulouse,0.659517,1.32734
+Ligue_1,2024,2025-04-20,Saint-Etienne,Lyon,1.74645,0.632299
+Ligue_1,2024,2025-04-22,Nantes,Paris Saint Germain,0.520926,2.30552
+Ligue_1,2024,2025-04-25,Paris Saint Germain,Nice,4.50698,1.63001
+Ligue_1,2024,2025-04-26,Strasbourg,Saint-Etienne,2.8346,2.2201
+Ligue_1,2024,2025-04-26,Le Havre,Monaco,0.807798,3.28954
+Ligue_1,2024,2025-04-26,Lyon,Rennes,2.25879,0.781584
+Ligue_1,2024,2025-04-27,Angers,Lille,0.916985,2.22596
+Ligue_1,2024,2025-04-27,Nantes,Toulouse,1.33764,0.410988
+Ligue_1,2024,2025-04-27,Montpellier,Reims,0.949696,1.03714
+Ligue_1,2024,2025-04-27,Lens,Auxerre,2.31455,2.38411
+Ligue_1,2024,2025-04-27,Marseille,Brest,1.12568,2.00913
+Ligue_1,2024,2025-05-02,Nice,Reims,1.2118,0.876237
+Ligue_1,2024,2025-05-03,Strasbourg,Paris Saint Germain,1.42064,2.35931
+Ligue_1,2024,2025-05-03,Toulouse,Rennes,1.01393,1.57739
+Ligue_1,2024,2025-05-03,Saint-Etienne,Monaco,1.16957,1.84407
+Ligue_1,2024,2025-05-04,Nantes,Angers,0.14126,0.727966
+Ligue_1,2024,2025-05-04,Auxerre,Le Havre,0.32277,1.30285
+Ligue_1,2024,2025-05-04,Lyon,Lens,1.1801,0.952824
+Ligue_1,2024,2025-05-04,Brest,Montpellier,1.34191,0.413817
+Ligue_1,2024,2025-05-04,Lille,Marseille,0.682721,1.42571
+Ligue_1,2024,2025-05-10,Reims,Saint-Etienne,1.12267,0.71062
+Ligue_1,2024,2025-05-10,Auxerre,Nantes,0.624481,0.823377
+Ligue_1,2024,2025-05-10,Angers,Strasbourg,1.33058,0.710143
+Ligue_1,2024,2025-05-10,Le Havre,Marseille,1.10297,2.16132
+Ligue_1,2024,2025-05-10,Rennes,Nice,2.06744,1.23457
+Ligue_1,2024,2025-05-10,Montpellier,Paris Saint Germain,0.594471,1.78222
+Ligue_1,2024,2025-05-10,Toulouse,Lens,1.12406,0.766404
+Ligue_1,2024,2025-05-10,Brest,Lille,1.88589,1.84479
+Ligue_1,2024,2025-05-10,Monaco,Lyon,1.48659,0.390411
+Ligue_1,2024,2025-05-17,Strasbourg,Le Havre,1.74414,2.49529
+Ligue_1,2024,2025-05-17,Marseille,Rennes,4.06558,1.40321
+Ligue_1,2024,2025-05-17,Nantes,Montpellier,3.00657,0.602786
+Ligue_1,2024,2025-05-17,Lyon,Angers,3.75818,0.556633
+Ligue_1,2024,2025-05-17,Lens,Monaco,2.49045,0.481188
+Ligue_1,2024,2025-05-17,Nice,Brest,5.0223,0.68904
+Ligue_1,2024,2025-05-17,Paris Saint Germain,Auxerre,3.71972,0.9013
+Ligue_1,2024,2025-05-17,Saint-Etienne,Toulouse,1.32698,3.82215
+Ligue_1,2024,2025-05-17,Lille,Reims,2.31624,0.0983246
+Ligue_1,2025,2025-08-15,Rennes,Marseille,1.31418,2.07298
+Ligue_1,2025,2025-08-16,Lens,Lyon,1.87447,1.615
+Ligue_1,2025,2025-08-16,Monaco,Le Havre,1.88048,0.427494
+Ligue_1,2025,2025-08-16,Nice,Toulouse,0.95554,0.56945
+Ligue_1,2025,2025-08-17,Brest,Lille,1.49573,1.84218
+Ligue_1,2025,2025-08-17,Auxerre,Lorient,1.4925,1.84516
+Ligue_1,2025,2025-08-17,Angers,Paris FC,0.82142,0.71125
+Ligue_1,2025,2025-08-17,Metz,Strasbourg,0.184483,0.731013
+Ligue_1,2025,2025-08-17,Nantes,Paris Saint Germain,0.124428,1.35682
+Ligue_1,2025,2025-08-22,Paris Saint Germain,Angers,2.0878,0.176876
+Ligue_1,2025,2025-08-23,Marseille,Paris FC,3.337,1.05457
+Ligue_1,2025,2025-08-23,Nice,Auxerre,2.66284,2.24407
+Ligue_1,2025,2025-08-23,Lyon,Metz,2.35479,0.504863
+Ligue_1,2025,2025-08-24,Lorient,Rennes,3.4466,0.0728372
+Ligue_1,2025,2025-08-24,Strasbourg,Nantes,1.81743,0.425423
+Ligue_1,2025,2025-08-24,Le Havre,Lens,2.0398,1.29098
+Ligue_1,2025,2025-08-24,Toulouse,Brest,1.32432,0.750148
+Ligue_1,2025,2025-08-24,Lille,Monaco,2.41091,1.52213
+Ligue_1,2025,2025-08-29,Lens,Brest,4.42054,0.963409
+Ligue_1,2025,2025-08-30,Lorient,Lille,1.1603,3.70255
+Ligue_1,2025,2025-08-30,Nantes,Auxerre,0.418091,1.10996
+Ligue_1,2025,2025-08-30,Toulouse,Paris Saint Germain,2.33006,2.49609
+Ligue_1,2025,2025-08-31,Angers,Rennes,1.58619,1.73758
+Ligue_1,2025,2025-08-31,Le Havre,Nice,1.75553,0.715595
+Ligue_1,2025,2025-08-31,Paris FC,Metz,3.39898,1.6248
+Ligue_1,2025,2025-08-31,Monaco,Strasbourg,2.35547,1.7732
+Ligue_1,2025,2025-08-31,Lyon,Marseille,3.15727,0.896862
+Ligue_1,2025,2025-09-12,Marseille,Lorient,2.83367,0.187377
+Ligue_1,2025,2025-09-13,Nice,Nantes,2.34645,0.775945
+Ligue_1,2025,2025-09-13,Auxerre,Monaco,0.904229,1.62646
+Ligue_1,2025,2025-09-14,Lille,Toulouse,2.42116,1.15678
+Ligue_1,2025,2025-09-14,Brest,Paris FC,2.60519,1.85008
+Ligue_1,2025,2025-09-14,Metz,Angers,1.76271,1.98184
+Ligue_1,2025,2025-09-14,Paris Saint Germain,Lens,1.05815,1.2242
+Ligue_1,2025,2025-09-14,Strasbourg,Le Havre,1.43354,0.524832
+Ligue_1,2025,2025-09-14,Rennes,Lyon,2.20918,1.7381
+Ligue_1,2025,2025-09-19,Lyon,Angers,2.20483,0.677354
+Ligue_1,2025,2025-09-20,Nantes,Rennes,2.65629,1.44041
+Ligue_1,2025,2025-09-20,Brest,Nice,2.07376,2.26393
+Ligue_1,2025,2025-09-20,Lens,Lille,3.8174,1.89889
+Ligue_1,2025,2025-09-21,Paris FC,Strasbourg,1.9014,2.46459
+Ligue_1,2025,2025-09-21,Auxerre,Toulouse,0.883373,1.50957
+Ligue_1,2025,2025-09-21,Le Havre,Lorient,2.23396,1.26993
+Ligue_1,2025,2025-09-21,Monaco,Metz,3.497,1.91296
+Ligue_1,2025,2025-09-22,Marseille,Paris Saint Germain,1.77744,0.919565
+Ligue_1,2025,2025-09-26,Strasbourg,Marseille,1.0976,2.00258
+Ligue_1,2025,2025-09-27,Lorient,Monaco,2.09364,0.894035
+Ligue_1,2025,2025-09-27,Toulouse,Nantes,1.98573,1.8303
+Ligue_1,2025,2025-09-27,Paris Saint Germain,Auxerre,2.11672,0.73132
+Ligue_1,2025,2025-09-28,Nice,Paris FC,1.36997,1.49444
+Ligue_1,2025,2025-09-28,Angers,Brest,0.501827,1.34192
+Ligue_1,2025,2025-09-28,Lille,Lyon,1.65271,0.642572
+Ligue_1,2025,2025-09-28,Metz,Le Havre,0.39939,0.395921
+Ligue_1,2025,2025-09-28,Rennes,Lens,1.57438,1.51932
+Ligue_1,2025,2025-10-03,Paris FC,Lorient,1.83687,0.855852
+Ligue_1,2025,2025-10-04,Metz,Marseille,0.1529,2.67719
+Ligue_1,2025,2025-10-04,Brest,Nantes,1.44552,0.489862
+Ligue_1,2025,2025-10-04,Auxerre,Lens,1.27422,0.471027
+Ligue_1,2025,2025-10-05,Lyon,Toulouse,1.42206,1.36525
+Ligue_1,2025,2025-10-05,Le Havre,Rennes,1.98097,1.21285
+Ligue_1,2025,2025-10-05,Monaco,Nice,2.4556,1.13121
+Ligue_1,2025,2025-10-05,Strasbourg,Angers,4.2783,0.294622
+Ligue_1,2025,2025-10-05,Lille,Paris Saint Germain,0.647492,1.71207
+Ligue_1,2025,2025-10-17,Paris Saint Germain,Strasbourg,2.85659,1.92082
+Ligue_1,2025,2025-10-18,Nice,Lyon,1.16366,2.89867
+Ligue_1,2025,2025-10-18,Angers,Monaco,1.58102,1.65166
+Ligue_1,2025,2025-10-18,Marseille,Le Havre,4.20445,0.352985
+Ligue_1,2025,2025-10-19,Lens,Paris FC,1.98018,0.583966
+Ligue_1,2025,2025-10-19,Lorient,Brest,1.5878,1.56803
+Ligue_1,2025,2025-10-19,Toulouse,Metz,2.73037,0.119104
+Ligue_1,2025,2025-10-19,Rennes,Auxerre,1.93587,1.66634
+Ligue_1,2025,2025-10-19,Nantes,Lille,0.772603,2.7603
+Ligue_1,2025,2025-10-24,Paris FC,Nantes,0.951277,0.916827
+Ligue_1,2025,2025-10-25,Brest,Paris Saint Germain,1.89257,2.92453
+Ligue_1,2025,2025-10-25,Monaco,Toulouse,3.37276,0.584122
+Ligue_1,2025,2025-10-25,Lens,Marseille,1.87596,0.765479
+Ligue_1,2025,2025-10-26,Lille,Metz,3.85054,1.01476
+Ligue_1,2025,2025-10-26,Angers,Lorient,1.30397,2.00206
+Ligue_1,2025,2025-10-26,Auxerre,Le Havre,0.563862,1.52215
+Ligue_1,2025,2025-10-26,Rennes,Nice,1.54435,0.88734
+Ligue_1,2025,2025-10-26,Lyon,Strasbourg,1.14566,0.798152
+Ligue_1,2025,2025-10-29,Le Havre,Brest,0.556063,0.370311
+Ligue_1,2025,2025-10-29,Lorient,Paris Saint Germain,0.192946,1.28813
+Ligue_1,2025,2025-10-29,Nice,Lille,1.74459,0.661109
+Ligue_1,2025,2025-10-29,Metz,Lens,3.11925,1.23771
+Ligue_1,2025,2025-10-29,Marseille,Angers,1.58833,0.996929
+Ligue_1,2025,2025-10-29,Paris FC,Lyon,0.581508,1.21871
+Ligue_1,2025,2025-10-29,Nantes,Monaco,2.1261,4.10211
+Ligue_1,2025,2025-10-29,Toulouse,Rennes,1.62131,1.26096
+Ligue_1,2025,2025-10-29,Strasbourg,Auxerre,4.10806,0.68695
+Ligue_1,2025,2025-11-01,Paris Saint Germain,Nice,1.88647,0.3867
+Ligue_1,2025,2025-11-01,Monaco,Paris FC,0.820947,1.18048
+Ligue_1,2025,2025-11-01,Auxerre,Marseille,1.09464,0.698037
+Ligue_1,2025,2025-11-02,Rennes,Strasbourg,3.06877,2.08816
+Ligue_1,2025,2025-11-02,Lens,Lorient,3.21467,1.98367
+Ligue_1,2025,2025-11-02,Lille,Angers,2.2089,0.277522
+Ligue_1,2025,2025-11-02,Nantes,Metz,1.07598,1.36245
+Ligue_1,2025,2025-11-02,Toulouse,Le Havre,1.07851,1.07299
+Ligue_1,2025,2025-11-02,Brest,Lyon,1.63942,0.143862
+Ligue_1,2025,2025-11-07,Paris FC,Rennes,2.2285,1.36728
+Ligue_1,2025,2025-11-08,Marseille,Brest,3.09058,0.69584
+Ligue_1,2025,2025-11-08,Le Havre,Nantes,0.984753,0.353936
+Ligue_1,2025,2025-11-08,Monaco,Lens,2.4076,3.23933
+Ligue_1,2025,2025-11-09,Lorient,Toulouse,1.26999,1.15206
+Ligue_1,2025,2025-11-09,Angers,Auxerre,1.15143,0.589602
+Ligue_1,2025,2025-11-09,Metz,Nice,1.32977,0.784993
+Ligue_1,2025,2025-11-09,Strasbourg,Lille,0.768163,0.480004
+Ligue_1,2025,2025-11-09,Lyon,Paris Saint Germain,0.712588,1.69872
+Ligue_1,2025,2025-11-21,Nice,Marseille,1.36131,3.09163
+Ligue_1,2025,2025-11-22,Lens,Strasbourg,2.2242,0.400272
+Ligue_1,2025,2025-11-22,Rennes,Monaco,3.067,1.60818
+Ligue_1,2025,2025-11-22,Paris Saint Germain,Le Havre,4.11577,1.28573
+Ligue_1,2025,2025-11-23,Auxerre,Lyon,1.512,1.27606
+Ligue_1,2025,2025-11-23,Brest,Metz,3.36815,1.02855
+Ligue_1,2025,2025-11-23,Nantes,Lorient,0.915515,0.352154
+Ligue_1,2025,2025-11-23,Toulouse,Angers,1.85382,0.324057
+Ligue_1,2025,2025-11-23,Lille,Paris FC,4.14474,1.50332
+Ligue_1,2025,2025-11-28,Metz,Rennes,1.31354,0.980088
+Ligue_1,2025,2025-11-29,Monaco,Paris Saint Germain,0.637875,1.47676
+Ligue_1,2025,2025-11-29,Paris FC,Auxerre,1.80891,1.15143
+Ligue_1,2025,2025-11-29,Marseille,Toulouse,1.62768,1.09387
+Ligue_1,2025,2025-11-30,Strasbourg,Brest,1.14608,1.00638
+Ligue_1,2025,2025-11-30,Angers,Lens,1.10642,1.96335
+Ligue_1,2025,2025-11-30,Le Havre,Lille,0.867678,1.35017
+Ligue_1,2025,2025-11-30,Lorient,Nice,3.49255,1.3285
+Ligue_1,2025,2025-11-30,Lyon,Nantes,2.1878,0.384922
+Ligue_1,2025,2025-12-05,Brest,Monaco,1.13774,0.485017
+Ligue_1,2025,2025-12-05,Lille,Marseille,0.572302,0.902813
+Ligue_1,2025,2025-12-06,Nantes,Lens,1.1817,3.26397
+Ligue_1,2025,2025-12-06,Toulouse,Strasbourg,0.64097,0.0918532
+Ligue_1,2025,2025-12-06,Paris Saint Germain,Rennes,2.32641,0.153549
+Ligue_1,2025,2025-12-07,Nice,Angers,1.38209,1.33715
+Ligue_1,2025,2025-12-07,Auxerre,Metz,2.22374,0.346523
+Ligue_1,2025,2025-12-07,Le Havre,Paris FC,1.93371,1.2524
+Ligue_1,2025,2025-12-07,Lorient,Lyon,2.48644,0.475087
+Ligue_1,2025,2025-12-12,Angers,Nantes,3.04663,0.26526
+Ligue_1,2025,2025-12-13,Rennes,Brest,1.58903,0.872611
+Ligue_1,2025,2025-12-13,Metz,Paris Saint Germain,0.363683,1.94768
+Ligue_1,2025,2025-12-13,Paris FC,Toulouse,0.366399,2.03766
+Ligue_1,2025,2025-12-14,Lyon,Le Havre,2.9604,1.44459
+Ligue_1,2025,2025-12-14,Auxerre,Lille,2.50862,0.733512
+Ligue_1,2025,2025-12-14,Lens,Nice,1.91622,0.733412
+Ligue_1,2025,2025-12-14,Strasbourg,Lorient,0.911848,0.415871
+Ligue_1,2025,2025-12-14,Marseille,Monaco,2.02467,1.94962
+Ligue_1,2025,2026-01-02,Toulouse,Lens,0.46972,2.67769
+Ligue_1,2025,2026-01-03,Monaco,Lyon,0.799996,1.95535
+Ligue_1,2025,2026-01-03,Nice,Strasbourg,2.39473,1.38731
+Ligue_1,2025,2026-01-03,Lille,Rennes,1.06111,1.49739
+Ligue_1,2025,2026-01-04,Marseille,Nantes,1.14141,3.16795
+Ligue_1,2025,2026-01-04,Brest,Auxerre,1.54399,0.835513
+Ligue_1,2025,2026-01-04,Le Havre,Angers,1.54881,0.730978
+Ligue_1,2025,2026-01-04,Lorient,Metz,1.55407,0.364932
+Ligue_1,2025,2026-01-04,Paris Saint Germain,Paris FC,1.58716,0.938334
+Ligue_1,2025,2026-01-16,Monaco,Lorient,1.31321,1.17141
+Ligue_1,2025,2026-01-16,Paris Saint Germain,Lille,1.29284,0.67995
+Ligue_1,2025,2026-01-17,Lens,Auxerre,2.61821,0.393025
+Ligue_1,2025,2026-01-17,Toulouse,Nice,1.77349,1.41914
+Ligue_1,2025,2026-01-17,Angers,Marseille,1.03735,3.91118
+Ligue_1,2025,2026-01-18,Strasbourg,Metz,1.019,0.984265
+Ligue_1,2025,2026-01-18,Nantes,Paris FC,0.411699,0.738941
+Ligue_1,2025,2026-01-18,Rennes,Le Havre,2.54723,0.538741
+Ligue_1,2025,2026-01-18,Lyon,Brest,2.62893,1.16318
+Ligue_1,2025,2026-01-23,Auxerre,Paris Saint Germain,0.352997,2.19544
+Ligue_1,2025,2026-01-24,Rennes,Lorient,1.88241,1.10359
+Ligue_1,2025,2026-01-24,Le Havre,Monaco,0.171551,0.562454
+Ligue_1,2025,2026-01-24,Marseille,Lens,1.07239,1.00288
+Ligue_1,2025,2026-01-25,Nantes,Nice,1.98581,1.6112
+Ligue_1,2025,2026-01-25,Brest,Toulouse,0.988274,0.684258
+Ligue_1,2025,2026-01-25,Metz,Lyon,1.18331,3.34121
+Ligue_1,2025,2026-01-25,Paris FC,Angers,0.759097,0.342734
+Ligue_1,2025,2026-01-25,Lille,Strasbourg,1.74087,3.56512
+Ligue_1,2025,2026-01-30,Lens,Le Havre,1.60367,0.407119
+Ligue_1,2025,2026-01-31,Paris FC,Marseille,1.82048,2.71118
+Ligue_1,2025,2026-01-31,Lorient,Nantes,0.777027,1.20179
+Ligue_1,2025,2026-01-31,Monaco,Rennes,2.28518,0.427968
+Ligue_1,2025,2026-02-01,Lyon,Lille,0.616999,0.390671
+Ligue_1,2025,2026-02-01,Angers,Metz,1.34676,0.397871
+Ligue_1,2025,2026-02-01,Nice,Brest,1.2009,1.83505
+Ligue_1,2025,2026-02-01,Toulouse,Auxerre,0.804565,0.871363
+Ligue_1,2025,2026-02-01,Strasbourg,Paris Saint Germain,1.97116,1.16489
+Ligue_1,2025,2026-02-08,Brest,Lorient,2.05135,0.720569
+Ligue_1,2025,2026-02-08,Lens,Rennes,1.01131,1.33597
+Ligue_1,2025,2026-02-08,Metz,Lille,0.581838,1.53538
+Ligue_1,2025,2026-02-08,Nantes,Lyon,0.795659,0.990033
+Ligue_1,2025,2026-02-08,Nice,Monaco,0.455943,0.827302
+Ligue_1,2025,2026-02-08,Angers,Toulouse,1.17089,0.691991
+Ligue_1,2025,2026-02-08,Auxerre,Paris FC,1.27393,0.758207
+Ligue_1,2025,2026-02-08,Le Havre,Strasbourg,0.856821,0.51294
+Ligue_1,2025,2026-02-08,Paris Saint Germain,Marseille,4.63077,0.90611
+Ligue_1,2025,2026-02-13,Rennes,Paris Saint Germain,1.80204,4.17604
+Ligue_1,2025,2026-02-13,Monaco,Nantes,2.20188,1.00661
+Ligue_1,2025,2026-02-14,Marseille,Strasbourg,1.61535,2.39153
+Ligue_1,2025,2026-02-14,Lille,Brest,1.77426,0.841964
+Ligue_1,2025,2026-02-14,Paris FC,Lens,0.399344,3.50163
+Ligue_1,2025,2026-02-15,Le Havre,Toulouse,0.977711,3.12342
+Ligue_1,2025,2026-02-15,Lorient,Angers,1.4393,0.406012
+Ligue_1,2025,2026-02-15,Metz,Auxerre,0.753602,1.05829
+Ligue_1,2025,2026-02-15,Lyon,Nice,1.9974,1.30477
+Ligue_1,2025,2026-02-20,Brest,Marseille,1.33408,1.3575
+Ligue_1,2025,2026-02-21,Lens,Monaco,1.82827,2.34004
+Ligue_1,2025,2026-02-21,Toulouse,Paris FC,2.67763,0.687806
+Ligue_1,2025,2026-02-21,Paris Saint Germain,Metz,2.41445,0.0591146
+Ligue_1,2025,2026-02-22,Auxerre,Rennes,0.700042,1.10597
+Ligue_1,2025,2026-02-22,Angers,Lille,0.24039,2.74265
+Ligue_1,2025,2026-02-22,Nantes,Le Havre,1.70753,0.753349
+Ligue_1,2025,2026-02-22,Nice,Lorient,2.74646,1.97697
+Ligue_1,2025,2026-02-22,Strasbourg,Lyon,2.22901,0.427324
+Ligue_1,2025,2026-02-27,Strasbourg,Lens,0.874721,2.03807
+Ligue_1,2025,2026-02-28,Rennes,Toulouse,0.709138,0.668386
+Ligue_1,2025,2026-02-28,Monaco,Angers,1.67082,0.609359
+Ligue_1,2025,2026-02-28,Le Havre,Paris Saint Germain,0.682797,4.03627
+Ligue_1,2025,2026-03-01,Paris FC,Nice,1.3017,1.26295
+Ligue_1,2025,2026-03-01,Lille,Nantes,0.495693,0.171014
+Ligue_1,2025,2026-03-01,Lorient,Auxerre,1.02766,1.96667
+Ligue_1,2025,2026-03-01,Metz,Brest,1.58374,0.963216
+Ligue_1,2025,2026-03-01,Marseille,Lyon,1.78764,1.78524
+Ligue_1,2025,2026-03-06,Paris Saint Germain,Monaco,1.22179,1.75294
+Ligue_1,2025,2026-03-07,Nantes,Angers,0.611683,0.853223
+Ligue_1,2025,2026-03-07,Auxerre,Strasbourg,1.03226,1.27324
+Ligue_1,2025,2026-03-07,Toulouse,Marseille,1.28713,1.3226
+Ligue_1,2025,2026-03-08,Lens,Metz,2.22106,0.250806
+Ligue_1,2025,2026-03-08,Brest,Le Havre,1.26459,1.10286
+Ligue_1,2025,2026-03-08,Lille,Lorient,0.850092,0.929269
+Ligue_1,2025,2026-03-08,Nice,Rennes,2.68488,1.87138
+Ligue_1,2025,2026-03-08,Lyon,Paris FC,1.92522,2.32579
+Ligue_1,2025,2026-03-13,Marseille,Auxerre,1.12898,0.293047
+Ligue_1,2025,2026-03-14,Lorient,Lens,2.37345,1.01216
+Ligue_1,2025,2026-03-14,Angers,Nice,0.889177,1.60128
+Ligue_1,2025,2026-03-14,Monaco,Brest,2.81345,1.56097
+Ligue_1,2025,2026-03-15,Strasbourg,Paris FC,1.20221,0.616395
+Ligue_1,2025,2026-03-15,Le Havre,Lyon,0.640079,1.13833
+Ligue_1,2025,2026-03-15,Metz,Toulouse,1.62616,1.74262
+Ligue_1,2025,2026-03-15,Rennes,Lille,1.5463,1.3508
+Ligue_1,2025,2026-03-20,Lens,Angers,4.33933,1.15185
+Ligue_1,2025,2026-03-21,Toulouse,Lorient,1.48458,0.477676
+Ligue_1,2025,2026-03-21,Auxerre,Brest,2.0573,0.882319
+Ligue_1,2025,2026-03-21,Nice,Paris Saint Germain,0.17662,4.04442
+Ligue_1,2025,2026-03-22,Lyon,Monaco,1.10723,3.4997
+Ligue_1,2025,2026-03-22,Marseille,Lille,1.02929,1.61107
+Ligue_1,2025,2026-03-22,Paris FC,Le Havre,2.42628,1.74386
+Ligue_1,2025,2026-03-22,Rennes,Metz,1.70552,0.314914
+Ligue_1,2025,2026-03-22,Nantes,Strasbourg,1.91469,2.83907
+Ligue_1,2025,2026-04-03,Paris Saint Germain,Toulouse,1.7337,0.102597
+Ligue_1,2025,2026-04-04,Strasbourg,Nice,2.70892,0.354354
+Ligue_1,2025,2026-04-04,Brest,Rennes,1.89452,2.7958
+Ligue_1,2025,2026-04-04,Lille,Lens,3.82171,0.412713
+Ligue_1,2025,2026-04-05,Angers,Lyon,0.353538,0.522379
+Ligue_1,2025,2026-04-05,Le Havre,Auxerre,0.711193,2.40825
+Ligue_1,2025,2026-04-05,Lorient,Paris FC,1.16554,1.39879
+Ligue_1,2025,2026-04-05,Metz,Nantes,2.3189,0.389282
+Ligue_1,2025,2026-04-05,Monaco,Marseille,1.67743,3.10791
+Ligue_1,2025,2026-04-10,Paris FC,Monaco,2.95341,1.7647
+Ligue_1,2025,2026-04-10,Marseille,Metz,3.31638,0.535052
+Ligue_1,2025,2026-04-11,Auxerre,Nantes,0.797017,1.44705
+Ligue_1,2025,2026-04-11,Rennes,Angers,1.09968,1.19461
+Ligue_1,2025,2026-04-12,Nice,Le Havre,2.14773,2.12622
+Ligue_1,2025,2026-04-12,Toulouse,Lille,1.46514,2.08775
+Ligue_1,2025,2026-04-12,Lyon,Lorient,1.84879,1.57488
+Ligue_1,2025,2026-04-17,Lens,Toulouse,3.98387,0.578481
+Ligue_1,2025,2026-04-18,Lorient,Marseille,1.28628,2.13073
+Ligue_1,2025,2026-04-18,Angers,Le Havre,0.961095,1.54566
+Ligue_1,2025,2026-04-18,Lille,Nice,0.413432,0.171356
+Ligue_1,2025,2026-04-19,Monaco,Auxerre,1.94243,0.745123
+Ligue_1,2025,2026-04-19,Metz,Paris FC,1.48448,1.97282
+Ligue_1,2025,2026-04-19,Nantes,Brest,0.970265,0.631132
+Ligue_1,2025,2026-04-19,Strasbourg,Rennes,0.944239,3.25297
+Ligue_1,2025,2026-04-19,Paris Saint Germain,Lyon,3.20455,1.20364
+Ligue_1,2025,2026-04-22,Paris Saint Germain,Nantes,2.26452,0.672206
+Ligue_1,2025,2026-04-24,Brest,Lens,0.309794,3.24582
+Ligue_1,2025,2026-04-25,Lyon,Auxerre,2.16328,0.883316
+Ligue_1,2025,2026-04-25,Angers,Paris Saint Germain,0.977437,3.00296
+Ligue_1,2025,2026-04-25,Toulouse,Monaco,2.15303,1.34617
+Ligue_1,2025,2026-04-26,Lorient,Strasbourg,2.57081,1.98869
+Ligue_1,2025,2026-04-26,Le Havre,Metz,2.64995,1.88709
+Ligue_1,2025,2026-04-26,Paris FC,Lille,1.12423,1.75999
+Ligue_1,2025,2026-04-26,Rennes,Nantes,1.55601,2.51691
+Ligue_1,2025,2026-04-26,Marseille,Nice,2.82843,1.41493
+Ligue_1,2025,2026-05-03,Lille,Le Havre,1.9163,0.334256
+Ligue_1,2025,2026-05-03,Metz,Monaco,1.1478,1.58879
+Ligue_1,2025,2026-05-03,Nantes,Marseille,3.07178,1.55164
+Ligue_1,2025,2026-05-03,Nice,Lens,1.33864,1.55241
+Ligue_1,2025,2026-05-03,Paris Saint Germain,Lorient,2.98414,1.27737
+Ligue_1,2025,2026-05-03,Auxerre,Angers,2.5499,2.16783
+Ligue_1,2025,2026-05-03,Paris FC,Brest,2.86094,0.733091
+Ligue_1,2025,2026-05-03,Strasbourg,Toulouse,0.405296,1.67665
+Ligue_1,2025,2026-05-03,Lyon,Rennes,2.6657,1.06495
+Ligue_1,2025,2026-05-08,Lens,Nantes,0.719134,1.06721
+Ligue_1,2025,2026-05-10,Angers,Strasbourg,0.793655,1.81952
+Ligue_1,2025,2026-05-10,Auxerre,Nice,0.866185,2.07007
+Ligue_1,2025,2026-05-10,Le Havre,Marseille,1.23305,1.03467
+Ligue_1,2025,2026-05-10,Metz,Lorient,0.730271,1.76754
+Ligue_1,2025,2026-05-10,Monaco,Lille,0.308864,0.400405
+Ligue_1,2025,2026-05-10,Paris Saint Germain,Brest,1.608,0.123268
+Ligue_1,2025,2026-05-10,Rennes,Paris FC,1.53143,1.59351
+Ligue_1,2025,2026-05-10,Toulouse,Lyon,1.87108,1.56954
+Ligue_1,2025,2026-05-13,Brest,Strasbourg,2.64653,1.69163
+Ligue_1,2025,2026-05-13,Lens,Paris Saint Germain,3.03896,0.943876
+Ligue_1,2025,2026-05-17,Brest,Angers,2.38724,1.06418
+Ligue_1,2025,2026-05-17,Lille,Auxerre,1.22445,0.615778
+Ligue_1,2025,2026-05-17,Lorient,Le Havre,1.26937,1.28765
+Ligue_1,2025,2026-05-17,Lyon,Lens,1.12358,2.01573
+Ligue_1,2025,2026-05-17,Marseille,Rennes,3.90151,2.20696
+Ligue_1,2025,2026-05-17,Nice,Metz,1.216,0.836784
+Ligue_1,2025,2026-05-17,Paris FC,Paris Saint Germain,2.32862,0.863934
+Ligue_1,2025,2026-05-17,Strasbourg,Monaco,2.11536,1.44729

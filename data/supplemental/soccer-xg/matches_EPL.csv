@@ -1,0 +1,2281 @@
+league,season,date,home,away,home_xg,away_xg
+EPL,2020,2020-09-12,Fulham,Arsenal,0.126327,2.16287
+EPL,2020,2020-09-12,Crystal Palace,Southampton,1.39569,1.26267
+EPL,2020,2020-09-12,Liverpool,Leeds,3.15412,0.269813
+EPL,2020,2020-09-12,West Ham,Newcastle United,0.861445,1.65911
+EPL,2020,2020-09-13,West Bromwich Albion,Leicester,0.352997,2.95581
+EPL,2020,2020-09-13,Tottenham,Everton,0.822944,1.26793
+EPL,2020,2020-09-14,Sheffield United,Wolverhampton Wanderers,0.949316,1.61307
+EPL,2020,2020-09-14,Brighton,Chelsea,1.44281,1.27062
+EPL,2020,2020-09-19,Everton,West Bromwich Albion,4.16254,0.315347
+EPL,2020,2020-09-19,Leeds,Fulham,1.45254,1.55503
+EPL,2020,2020-09-19,Manchester United,Crystal Palace,1.09737,1.91456
+EPL,2020,2020-09-19,Arsenal,West Ham,1.32902,2.06377
+EPL,2020,2020-09-20,Southampton,Tottenham,2.27708,2.28004
+EPL,2020,2020-09-20,Newcastle United,Brighton,0.520678,1.8766
+EPL,2020,2020-09-20,Chelsea,Liverpool,0.904183,2.25211
+EPL,2020,2020-09-20,Leicester,Burnley,0.987365,1.52404
+EPL,2020,2020-09-21,Aston Villa,Sheffield United,0.80527,0.849709
+EPL,2020,2020-09-21,Wolverhampton Wanderers,Manchester City,0.727677,2.07651
+EPL,2020,2020-09-26,Brighton,Manchester United,2.97659,1.57583
+EPL,2020,2020-09-26,Crystal Palace,Everton,0.443115,2.27189
+EPL,2020,2020-09-26,West Bromwich Albion,Chelsea,0.911185,2.36046
+EPL,2020,2020-09-26,Burnley,Southampton,0.347136,0.706632
+EPL,2020,2020-09-27,Sheffield United,Leeds,1.53278,1.46641
+EPL,2020,2020-09-27,Tottenham,Newcastle United,3.18765,0.942726
+EPL,2020,2020-09-27,Manchester City,Leicester,1.44633,2.86721
+EPL,2020,2020-09-27,West Ham,Wolverhampton Wanderers,3.05703,0.385152
+EPL,2020,2020-09-28,Fulham,Aston Villa,0.534675,2.03222
+EPL,2020,2020-09-28,Liverpool,Arsenal,2.73834,1.17817
+EPL,2020,2020-10-03,Chelsea,Crystal Palace,2.51433,0.103249
+EPL,2020,2020-10-03,Everton,Brighton,2.34034,1.16568
+EPL,2020,2020-10-03,Leeds,Manchester City,2.56662,1.41533
+EPL,2020,2020-10-03,Newcastle United,Burnley,1.95629,0.438849
+EPL,2020,2020-10-04,Leicester,West Ham,0.456022,2.03227
+EPL,2020,2020-10-04,Southampton,West Bromwich Albion,0.949079,0.161283
+EPL,2020,2020-10-04,Arsenal,Sheffield United,0.667131,0.144994
+EPL,2020,2020-10-04,Wolverhampton Wanderers,Fulham,0.89359,0.969393
+EPL,2020,2020-10-04,Manchester United,Tottenham,0.873435,3.3017
+EPL,2020,2020-10-04,Aston Villa,Liverpool,3.07626,1.65705
+EPL,2020,2020-10-17,Everton,Liverpool,1.35998,2.49492
+EPL,2020,2020-10-17,Chelsea,Southampton,1.98708,1.42348
+EPL,2020,2020-10-17,Manchester City,Arsenal,1.43023,0.838322
+EPL,2020,2020-10-17,Newcastle United,Manchester United,0.867496,2.21729
+EPL,2020,2020-10-18,Sheffield United,Fulham,1.66363,1.35611
+EPL,2020,2020-10-18,Crystal Palace,Brighton,0.761169,1.0935
+EPL,2020,2020-10-18,Tottenham,West Ham,1.77602,1.49992
+EPL,2020,2020-10-18,Leicester,Aston Villa,0.671595,0.873776
+EPL,2020,2020-10-19,West Bromwich Albion,Burnley,0.731692,1.08532
+EPL,2020,2020-10-19,Leeds,Wolverhampton Wanderers,1.08332,0.618191
+EPL,2020,2020-10-23,Aston Villa,Leeds,1.50125,2.37695
+EPL,2020,2020-10-24,West Ham,Manchester City,0.263739,0.892456
+EPL,2020,2020-10-24,Fulham,Crystal Palace,1.05258,2.81049
+EPL,2020,2020-10-24,Manchester United,Chelsea,0.648427,0.219906
+EPL,2020,2020-10-24,Liverpool,Sheffield United,2.40286,1.39788
+EPL,2020,2020-10-25,Southampton,Everton,0.74151,0.287054
+EPL,2020,2020-10-25,Wolverhampton Wanderers,Newcastle United,0.758626,0.253685
+EPL,2020,2020-10-25,Arsenal,Leicester,0.73944,0.736172
+EPL,2020,2020-10-26,Brighton,West Bromwich Albion,0.546807,0.295654
+EPL,2020,2020-10-26,Burnley,Tottenham,0.95045,0.797344
+EPL,2020,2020-10-30,Wolverhampton Wanderers,Crystal Palace,1.34895,0.802767
+EPL,2020,2020-10-31,Sheffield United,Manchester City,0.687544,1.89643
+EPL,2020,2020-10-31,Burnley,Chelsea,0.407341,1.23077
+EPL,2020,2020-10-31,Liverpool,West Ham,1.56302,0.269048
+EPL,2020,2020-11-01,Aston Villa,Southampton,2.44855,1.00333
+EPL,2020,2020-11-01,Newcastle United,Everton,2.6311,1.21805
+EPL,2020,2020-11-01,Manchester United,Arsenal,0.394113,0.998072
+EPL,2020,2020-11-01,Tottenham,Brighton,1.97236,0.324457
+EPL,2020,2020-11-02,Fulham,West Bromwich Albion,1.62247,0.482685
+EPL,2020,2020-11-02,Leeds,Leicester,1.74822,3.07657
+EPL,2020,2020-11-06,Brighton,Burnley,1.59022,0.326933
+EPL,2020,2020-11-06,Southampton,Newcastle United,0.985828,0.175633
+EPL,2020,2020-11-07,Everton,Manchester United,0.376464,1.59642
+EPL,2020,2020-11-07,Crystal Palace,Leeds,1.30169,0.847913
+EPL,2020,2020-11-07,Chelsea,Sheffield United,2.87622,0.743967
+EPL,2020,2020-11-07,West Ham,Fulham,1.42614,1.84922
+EPL,2020,2020-11-08,West Bromwich Albion,Tottenham,0.799352,1.87063
+EPL,2020,2020-11-08,Leicester,Wolverhampton Wanderers,2.0545,0.57936
+EPL,2020,2020-11-08,Manchester City,Liverpool,1.58487,1.18789
+EPL,2020,2020-11-08,Arsenal,Aston Villa,1.39037,1.98553
+EPL,2020,2020-11-21,Newcastle United,Chelsea,0.368286,1.81923
+EPL,2020,2020-11-21,Aston Villa,Brighton,1.76514,1.50038
+EPL,2020,2020-11-21,Tottenham,Manchester City,0.761142,1.66325
+EPL,2020,2020-11-21,Manchester United,West Bromwich Albion,2.42994,0.438646
+EPL,2020,2020-11-22,Fulham,Everton,1.87028,2.2508
+EPL,2020,2020-11-22,Sheffield United,West Ham,0.692374,2.1142
+EPL,2020,2020-11-22,Leeds,Arsenal,1.9617,0.710778
+EPL,2020,2020-11-22,Liverpool,Leicester,3.77245,1.98397
+EPL,2020,2020-11-23,Burnley,Crystal Palace,1.75343,1.28331
+EPL,2020,2020-11-23,Wolverhampton Wanderers,Southampton,1.57479,1.0785
+EPL,2020,2020-11-27,Crystal Palace,Newcastle United,0.534893,1.27929
+EPL,2020,2020-11-28,Brighton,Liverpool,2.30722,0.28109
+EPL,2020,2020-11-28,Manchester City,Burnley,2.26129,0.419877
+EPL,2020,2020-11-28,Everton,Leeds,1.29229,3.11324
+EPL,2020,2020-11-28,West Bromwich Albion,Sheffield United,1.71644,3.36544
+EPL,2020,2020-11-29,Southampton,Manchester United,0.498783,2.47547
+EPL,2020,2020-11-29,Chelsea,Tottenham,0.974755,0.22689
+EPL,2020,2020-11-29,Arsenal,Wolverhampton Wanderers,1.1185,2.0069
+EPL,2020,2020-11-30,Leicester,Fulham,1.27814,2.03719
+EPL,2020,2020-11-30,West Ham,Aston Villa,0.571633,2.39051
+EPL,2020,2020-12-05,Burnley,Everton,0.730434,2.28139
+EPL,2020,2020-12-05,Manchester City,Fulham,3.26328,0.287444
+EPL,2020,2020-12-05,West Ham,Manchester United,2.53006,1.78708
+EPL,2020,2020-12-05,Chelsea,Leeds,4.89472,1.0277
+EPL,2020,2020-12-06,West Bromwich Albion,Crystal Palace,0.567234,1.68656
+EPL,2020,2020-12-06,Sheffield United,Leicester,0.290743,1.3904
+EPL,2020,2020-12-06,Tottenham,Arsenal,0.390629,0.595216
+EPL,2020,2020-12-06,Liverpool,Wolverhampton Wanderers,1.59454,0.357753
+EPL,2020,2020-12-07,Brighton,Southampton,2.03376,1.34801
+EPL,2020,2020-12-11,Leeds,West Ham,1.56644,1.7851
+EPL,2020,2020-12-12,Wolverhampton Wanderers,Aston Villa,1.1356,1.26872
+EPL,2020,2020-12-12,Newcastle United,West Bromwich Albion,0.904163,0.57319
+EPL,2020,2020-12-12,Manchester United,Manchester City,0.591617,1.28434
+EPL,2020,2020-12-12,Everton,Chelsea,1.2216,1.00627
+EPL,2020,2020-12-13,Southampton,Sheffield United,2.27973,0.219115
+EPL,2020,2020-12-13,Crystal Palace,Tottenham,1.84443,1.40792
+EPL,2020,2020-12-13,Fulham,Liverpool,1.72509,1.82445
+EPL,2020,2020-12-13,Leicester,Brighton,1.64351,0.791673
+EPL,2020,2020-12-13,Arsenal,Burnley,1.85362,0.815375
+EPL,2020,2020-12-15,Wolverhampton Wanderers,Chelsea,0.683783,1.56772
+EPL,2020,2020-12-15,Manchester City,West Bromwich Albion,2.58593,0.210243
+EPL,2020,2020-12-16,Arsenal,Southampton,0.661135,1.11296
+EPL,2020,2020-12-16,Leeds,Newcastle United,2.95137,1.44437
+EPL,2020,2020-12-16,Leicester,Everton,0.83883,1.51486
+EPL,2020,2020-12-16,Fulham,Brighton,1.00448,0.462456
+EPL,2020,2020-12-16,West Ham,Crystal Palace,0.449469,1.09108
+EPL,2020,2020-12-16,Liverpool,Tottenham,1.21783,1.5161
+EPL,2020,2020-12-17,Aston Villa,Burnley,1.81142,0.316737
+EPL,2020,2020-12-17,Sheffield United,Manchester United,1.23525,1.78667
+EPL,2020,2020-12-19,Crystal Palace,Liverpool,0.489318,2.86902
+EPL,2020,2020-12-19,Southampton,Manchester City,0.586972,1.15599
+EPL,2020,2020-12-19,Everton,Arsenal,0.661744,1.25206
+EPL,2020,2020-12-19,Newcastle United,Fulham,1.26725,1.10645
+EPL,2020,2020-12-20,Brighton,Sheffield United,2.90097,1.03713
+EPL,2020,2020-12-20,Tottenham,Leicester,0.945932,1.74772
+EPL,2020,2020-12-20,Manchester United,Leeds,4.77743,1.63467
+EPL,2020,2020-12-20,West Bromwich Albion,Aston Villa,0.0388442,2.61964
+EPL,2020,2020-12-21,Burnley,Wolverhampton Wanderers,1.20465,1.45722
+EPL,2020,2020-12-21,Chelsea,West Ham,2.41157,0.277737
+EPL,2020,2020-12-26,Leicester,Manchester United,1.0396,2.08423
+EPL,2020,2020-12-26,Aston Villa,Crystal Palace,4.58214,0.849086
+EPL,2020,2020-12-26,Fulham,Southampton,0.781855,0.119709
+EPL,2020,2020-12-26,Arsenal,Chelsea,1.94485,2.25414
+EPL,2020,2020-12-26,Manchester City,Newcastle United,3.19575,0.200953
+EPL,2020,2020-12-26,Sheffield United,Everton,1.25106,0.568803
+EPL,2020,2020-12-27,Leeds,Burnley,2.13271,1.54591
+EPL,2020,2020-12-27,West Ham,Brighton,1.38877,1.50551
+EPL,2020,2020-12-27,Liverpool,West Bromwich Albion,1.45485,0.739845
+EPL,2020,2020-12-27,Wolverhampton Wanderers,Tottenham,0.742598,0.408109
+EPL,2020,2020-12-28,Crystal Palace,Leicester,0.321348,1.72132
+EPL,2020,2020-12-28,Chelsea,Aston Villa,1.53701,0.730859
+EPL,2020,2020-12-29,Brighton,Arsenal,0.799368,1.31394
+EPL,2020,2020-12-29,Burnley,Sheffield United,0.973831,0.492578
+EPL,2020,2020-12-29,Southampton,West Ham,0.670996,1.07246
+EPL,2020,2020-12-29,West Bromwich Albion,Leeds,0.43551,1.54225
+EPL,2020,2020-12-29,Manchester United,Wolverhampton Wanderers,1.48207,0.411046
+EPL,2020,2020-12-30,Newcastle United,Liverpool,0.817935,1.32047
+EPL,2020,2021-01-01,Everton,West Ham,0.371045,1.19713
+EPL,2020,2021-01-01,Manchester United,Aston Villa,2.46473,1.56434
+EPL,2020,2021-01-02,Tottenham,Leeds,2.5286,1.15626
+EPL,2020,2021-01-02,Crystal Palace,Sheffield United,0.598888,0.323158
+EPL,2020,2021-01-02,Brighton,Wolverhampton Wanderers,2.4228,1.81856
+EPL,2020,2021-01-02,West Bromwich Albion,Arsenal,0.869874,4.03429
+EPL,2020,2021-01-03,Newcastle United,Leicester,0.264584,0.702081
+EPL,2020,2021-01-03,Chelsea,Manchester City,0.691013,3.18063
+EPL,2020,2021-01-04,Southampton,Liverpool,0.500436,1.37204
+EPL,2020,2021-01-12,Sheffield United,Newcastle United,2.01315,1.04745
+EPL,2020,2021-01-12,Wolverhampton Wanderers,Everton,0.852495,0.323445
+EPL,2020,2021-01-12,Burnley,Manchester United,0.648582,1.23996
+EPL,2020,2021-01-13,Manchester City,Brighton,2.90855,0.177084
+EPL,2020,2021-01-13,Tottenham,Fulham,3.14372,1.05329
+EPL,2020,2021-01-14,Arsenal,Crystal Palace,0.368554,0.709634
+EPL,2020,2021-01-16,Wolverhampton Wanderers,West Bromwich Albion,1.94358,2.46332
+EPL,2020,2021-01-16,Leeds,Brighton,0.245193,1.14424
+EPL,2020,2021-01-16,West Ham,Burnley,1.73397,0.395668
+EPL,2020,2021-01-16,Fulham,Chelsea,0.46126,1.37939
+EPL,2020,2021-01-16,Leicester,Southampton,2.12019,0.378147
+EPL,2020,2021-01-17,Sheffield United,Tottenham,0.978133,1.28385
+EPL,2020,2021-01-17,Liverpool,Manchester United,1.20205,1.18929
+EPL,2020,2021-01-17,Manchester City,Crystal Palace,0.961088,0.0515836
+EPL,2020,2021-01-18,Arsenal,Newcastle United,2.30744,0.168796
+EPL,2020,2021-01-19,West Ham,West Bromwich Albion,2.17512,0.464091
+EPL,2020,2021-01-19,Leicester,Chelsea,1.1449,0.615727
+EPL,2020,2021-01-20,Manchester City,Aston Villa,3.34385,0.601768
+EPL,2020,2021-01-20,Fulham,Manchester United,0.753669,1.68401
+EPL,2020,2021-01-21,Liverpool,Burnley,1.64907,1.08059
+EPL,2020,2021-01-23,Aston Villa,Newcastle United,2.6026,0.400364
+EPL,2020,2021-01-26,Newcastle United,Leeds,1.1364,0.785914
+EPL,2020,2021-01-26,Crystal Palace,West Ham,0.629033,3.30321
+EPL,2020,2021-01-26,West Bromwich Albion,Manchester City,0.568258,2.24838
+EPL,2020,2021-01-26,Southampton,Arsenal,0.99504,2.4339
+EPL,2020,2021-01-27,Burnley,Aston Villa,0.717681,2.70718
+EPL,2020,2021-01-27,Chelsea,Wolverhampton Wanderers,0.663324,0.63192
+EPL,2020,2021-01-27,Brighton,Fulham,2.29129,0.513226
+EPL,2020,2021-01-27,Everton,Leicester,0.474981,0.792045
+EPL,2020,2021-01-27,Manchester United,Sheffield United,0.9931,0.689548
+EPL,2020,2021-01-28,Tottenham,Liverpool,0.104586,2.58798
+EPL,2020,2021-01-30,Everton,Newcastle United,0.966012,2.08832
+EPL,2020,2021-01-30,Crystal Palace,Wolverhampton Wanderers,1.36877,0.450907
+EPL,2020,2021-01-30,West Bromwich Albion,Fulham,0.994664,1.52044
+EPL,2020,2021-01-30,Manchester City,Sheffield United,1.53116,0.154537
+EPL,2020,2021-01-30,Arsenal,Manchester United,0.747166,1.51332
+EPL,2020,2021-01-30,Southampton,Aston Villa,2.22557,0.795508
+EPL,2020,2021-01-31,Chelsea,Burnley,1.4405,0.390714
+EPL,2020,2021-01-31,Leicester,Leeds,1.73432,1.8141
+EPL,2020,2021-01-31,West Ham,Liverpool,0.883061,2.05809
+EPL,2020,2021-01-31,Brighton,Tottenham,1.77386,0.372524
+EPL,2020,2021-02-02,Sheffield United,West Bromwich Albion,1.35804,1.61871
+EPL,2020,2021-02-02,Wolverhampton Wanderers,Arsenal,1.56162,0.716265
+EPL,2020,2021-02-02,Manchester United,Southampton,5.0325,0.507893
+EPL,2020,2021-02-02,Newcastle United,Crystal Palace,1.90755,0.809312
+EPL,2020,2021-02-03,Burnley,Manchester City,0.0489155,2.12153
+EPL,2020,2021-02-03,Fulham,Leicester,0.731288,1.71299
+EPL,2020,2021-02-03,Leeds,Everton,1.14303,1.91539
+EPL,2020,2021-02-03,Aston Villa,West Ham,0.741154,1.79064
+EPL,2020,2021-02-03,Liverpool,Brighton,1.09518,1.18977
+EPL,2020,2021-02-04,Tottenham,Chelsea,0.569446,2.393
+EPL,2020,2021-02-06,Aston Villa,Arsenal,1.19792,0.679649
+EPL,2020,2021-02-06,Burnley,Brighton,1.88934,0.612682
+EPL,2020,2021-02-06,Newcastle United,Southampton,0.910553,1.43445
+EPL,2020,2021-02-06,Fulham,West Ham,1.60884,0.943539
+EPL,2020,2021-02-06,Manchester United,Everton,1.71769,1.5571
+EPL,2020,2021-02-07,Tottenham,West Bromwich Albion,1.92997,0.698686
+EPL,2020,2021-02-07,Wolverhampton Wanderers,Leicester,1.35506,0.632232
+EPL,2020,2021-02-07,Liverpool,Manchester City,1.17728,3.55196
+EPL,2020,2021-02-07,Sheffield United,Chelsea,0.623045,1.64144
+EPL,2020,2021-02-08,Leeds,Crystal Palace,2.64769,0.370278
+EPL,2020,2021-02-13,Leicester,Liverpool,2.07383,1.68325
+EPL,2020,2021-02-13,Crystal Palace,Burnley,0.645616,1.95502
+EPL,2020,2021-02-13,Manchester City,Tottenham,2.46219,0.4235
+EPL,2020,2021-02-13,Brighton,Aston Villa,2.33232,0.144036
+EPL,2020,2021-02-14,Southampton,Wolverhampton Wanderers,0.8536,1.09361
+EPL,2020,2021-02-14,West Bromwich Albion,Manchester United,0.945964,0.423885
+EPL,2020,2021-02-14,Arsenal,Leeds,2.50614,0.77074
+EPL,2020,2021-02-14,Everton,Fulham,0.314075,2.55085
+EPL,2020,2021-02-15,West Ham,Sheffield United,2.32735,0.926652
+EPL,2020,2021-02-15,Chelsea,Newcastle United,2.5428,0.432603
+EPL,2020,2021-02-17,Burnley,Fulham,1.20642,0.594471
+EPL,2020,2021-02-17,Everton,Manchester City,1.04664,1.23218
+EPL,2020,2021-02-19,Wolverhampton Wanderers,Leeds,0.592049,2.4793
+EPL,2020,2021-02-20,Southampton,Chelsea,0.496603,1.44849
+EPL,2020,2021-02-20,Burnley,West Bromwich Albion,0.535153,1.71922
+EPL,2020,2021-02-20,Liverpool,Everton,1.54046,2.01468
+EPL,2020,2021-02-20,Fulham,Sheffield United,1.21006,0.977747
+EPL,2020,2021-02-21,West Ham,Tottenham,1.09246,0.770706
+EPL,2020,2021-02-21,Aston Villa,Leicester,1.7084,1.23852
+EPL,2020,2021-02-21,Arsenal,Manchester City,0.331188,2.08868
+EPL,2020,2021-02-21,Manchester United,Newcastle United,1.7256,0.341778
+EPL,2020,2021-02-22,Brighton,Crystal Palace,2.59204,0.179886
+EPL,2020,2021-02-23,Leeds,Southampton,1.84753,1.47981
+EPL,2020,2021-02-27,Manchester City,West Ham,0.760574,1.92892
+EPL,2020,2021-02-27,West Bromwich Albion,Brighton,0.687091,3.12111
+EPL,2020,2021-02-27,Leeds,Aston Villa,1.00106,0.876255
+EPL,2020,2021-02-27,Newcastle United,Wolverhampton Wanderers,1.9519,1.27827
+EPL,2020,2021-02-28,Crystal Palace,Fulham,0.0880148,0.813134
+EPL,2020,2021-02-28,Leicester,Arsenal,0.533575,2.1065
+EPL,2020,2021-02-28,Tottenham,Burnley,2.35788,0.603212
+EPL,2020,2021-02-28,Chelsea,Manchester United,1.17294,0.35954
+EPL,2020,2021-02-28,Sheffield United,Liverpool,0.777149,2.80551
+EPL,2020,2021-03-01,Everton,Southampton,1.42054,0.665743
+EPL,2020,2021-03-02,Manchester City,Wolverhampton Wanderers,3.26196,0.318824
+EPL,2020,2021-03-03,Burnley,Leicester,1.26793,1.24109
+EPL,2020,2021-03-03,Sheffield United,Aston Villa,0.716254,1.44176
+EPL,2020,2021-03-03,Crystal Palace,Manchester United,0.742397,0.584016
+EPL,2020,2021-03-04,West Bromwich Albion,Everton,1.02038,1.40789
+EPL,2020,2021-03-04,Fulham,Tottenham,1.1715,1.5519
+EPL,2020,2021-03-04,Liverpool,Chelsea,0.247034,1.22635
+EPL,2020,2021-03-06,Burnley,Arsenal,1.10374,2.53692
+EPL,2020,2021-03-06,Sheffield United,Southampton,0.908155,2.37386
+EPL,2020,2021-03-06,Aston Villa,Wolverhampton Wanderers,0.956392,2.15087
+EPL,2020,2021-03-06,Brighton,Leicester,0.75471,1.03801
+EPL,2020,2021-03-07,West Bromwich Albion,Newcastle United,1.46503,0.454577
+EPL,2020,2021-03-07,Liverpool,Fulham,0.701764,1.37047
+EPL,2020,2021-03-07,Manchester City,Manchester United,1.27561,2.11411
+EPL,2020,2021-03-07,Tottenham,Crystal Palace,2.24159,0.559383
+EPL,2020,2021-03-08,Chelsea,Everton,2.57224,0.270757
+EPL,2020,2021-03-08,West Ham,Leeds,2.37556,1.34971
+EPL,2020,2021-03-10,Manchester City,Southampton,3.10503,1.60561
+EPL,2020,2021-03-12,Newcastle United,Aston Villa,0.873171,0.748665
+EPL,2020,2021-03-13,Leeds,Chelsea,0.382957,0.971054
+EPL,2020,2021-03-13,Crystal Palace,West Bromwich Albion,1.30694,0.513439
+EPL,2020,2021-03-13,Everton,Burnley,1.69849,0.74852
+EPL,2020,2021-03-13,Fulham,Manchester City,0.449499,2.72578
+EPL,2020,2021-03-14,Southampton,Brighton,1.03495,0.895967
+EPL,2020,2021-03-14,Leicester,Sheffield United,4.54571,0.0934777
+EPL,2020,2021-03-14,Arsenal,Tottenham,1.56529,0.705566
+EPL,2020,2021-03-14,Manchester United,West Ham,1.70128,0.463737
+EPL,2020,2021-03-15,Wolverhampton Wanderers,Liverpool,1.29175,1.0552
+EPL,2020,2021-03-19,Fulham,Leeds,1.47498,1.40706
+EPL,2020,2021-03-20,Brighton,Newcastle United,0.951921,0.100945
+EPL,2020,2021-03-21,West Ham,Arsenal,2.50629,1.35217
+EPL,2020,2021-03-21,Aston Villa,Tottenham,0.439681,1.72011
+EPL,2020,2021-04-03,Chelsea,West Bromwich Albion,2.55917,1.38315
+EPL,2020,2021-04-03,Leeds,Sheffield United,2.50597,0.867652
+EPL,2020,2021-04-03,Leicester,Manchester City,0.284781,1.98438
+EPL,2020,2021-04-03,Arsenal,Liverpool,0.161161,2.43732
+EPL,2020,2021-04-04,Southampton,Burnley,2.40272,1.50285
+EPL,2020,2021-04-04,Newcastle United,Tottenham,3.30098,2.43683
+EPL,2020,2021-04-04,Aston Villa,Fulham,1.52229,1.52172
+EPL,2020,2021-04-04,Manchester United,Brighton,1.73474,1.41071
+EPL,2020,2021-04-05,Everton,Crystal Palace,2.53386,0.603749
+EPL,2020,2021-04-05,Wolverhampton Wanderers,West Ham,1.95649,1.59694
+EPL,2020,2021-04-09,Fulham,Wolverhampton Wanderers,0.733154,0.428134
+EPL,2020,2021-04-10,Manchester City,Leeds,1.98825,0.17525
+EPL,2020,2021-04-10,Liverpool,Aston Villa,2.14592,0.760621
+EPL,2020,2021-04-10,Crystal Palace,Chelsea,0.602167,3.85472
+EPL,2020,2021-04-11,Burnley,Newcastle United,1.84262,1.34279
+EPL,2020,2021-04-11,West Ham,Leicester,1.02408,1.17188
+EPL,2020,2021-04-11,Tottenham,Manchester United,0.921801,2.09737
+EPL,2020,2021-04-11,Sheffield United,Arsenal,0.315121,1.93838
+EPL,2020,2021-04-12,West Bromwich Albion,Southampton,2.77089,1.5002
+EPL,2020,2021-04-12,Brighton,Everton,1.16465,0.306287
+EPL,2020,2021-04-16,Everton,Tottenham,2.26022,1.4815
+EPL,2020,2021-04-17,Newcastle United,West Ham,2.4314,2.06741
+EPL,2020,2021-04-17,Wolverhampton Wanderers,Sheffield United,1.22604,0.295925
+EPL,2020,2021-04-18,Arsenal,Fulham,2.85573,0.839128
+EPL,2020,2021-04-18,Manchester United,Burnley,2.87455,0.959804
+EPL,2020,2021-04-19,Leeds,Liverpool,2.59719,1.60043
+EPL,2020,2021-04-20,Chelsea,Brighton,0.807348,0.459568
+EPL,2020,2021-04-21,Tottenham,Southampton,1.28824,1.06134
+EPL,2020,2021-04-21,Aston Villa,Manchester City,0.801733,1.5634
+EPL,2020,2021-04-22,Leicester,West Bromwich Albion,2.6712,0.277126
+EPL,2020,2021-04-23,Arsenal,Everton,0.735767,0.529676
+EPL,2020,2021-04-24,Liverpool,Newcastle United,2.84708,0.860694
+EPL,2020,2021-04-24,West Ham,Chelsea,0.267123,2.52059
+EPL,2020,2021-04-24,Sheffield United,Brighton,0.786324,2.06038
+EPL,2020,2021-04-25,Wolverhampton Wanderers,Burnley,0.351673,2.24049
+EPL,2020,2021-04-25,Leeds,Manchester United,0.216834,1.11635
+EPL,2020,2021-04-25,Aston Villa,West Bromwich Albion,2.65394,1.56764
+EPL,2020,2021-04-26,Leicester,Crystal Palace,1.23419,0.723112
+EPL,2020,2021-04-30,Southampton,Leicester,0.954057,2.51518
+EPL,2020,2021-05-01,Crystal Palace,Manchester City,0.361866,2.04443
+EPL,2020,2021-05-01,Brighton,Leeds,2.52542,0.510874
+EPL,2020,2021-05-01,Chelsea,Fulham,1.8433,0.290042
+EPL,2020,2021-05-01,Everton,Aston Villa,1.223,1.58811
+EPL,2020,2021-05-02,Newcastle United,Arsenal,0.172988,1.78751
+EPL,2020,2021-05-02,Tottenham,Sheffield United,2.26016,0.469026
+EPL,2020,2021-05-03,West Bromwich Albion,Wolverhampton Wanderers,1.07133,0.844138
+EPL,2020,2021-05-03,Burnley,West Ham,1.68312,2.42477
+EPL,2020,2021-05-07,Leicester,Newcastle United,2.315,2.87261
+EPL,2020,2021-05-08,Leeds,Tottenham,2.55216,1.03384
+EPL,2020,2021-05-08,Sheffield United,Crystal Palace,0.639325,2.25382
+EPL,2020,2021-05-08,Manchester City,Chelsea,1.79168,0.619724
+EPL,2020,2021-05-08,Liverpool,Southampton,2.26367,1.2289
+EPL,2020,2021-05-09,Wolverhampton Wanderers,Brighton,1.1199,0.27571
+EPL,2020,2021-05-09,Aston Villa,Manchester United,0.565472,1.88793
+EPL,2020,2021-05-09,West Ham,Everton,1.09704,1.56222
+EPL,2020,2021-05-09,Arsenal,West Bromwich Albion,1.07042,1.83076
+EPL,2020,2021-05-10,Fulham,Burnley,0.778074,1.65831
+EPL,2020,2021-05-11,Manchester United,Leicester,0.212874,0.991522
+EPL,2020,2021-05-11,Southampton,Crystal Palace,1.58872,1.32586
+EPL,2020,2021-05-12,Chelsea,Arsenal,1.56786,0.692043
+EPL,2020,2021-05-13,Manchester United,Liverpool,1.71328,2.938
+EPL,2020,2021-05-13,Aston Villa,Everton,0.558976,0.975408
+EPL,2020,2021-05-14,Newcastle United,Manchester City,2.18312,1.477
+EPL,2020,2021-05-15,Burnley,Leeds,1.41338,1.85654
+EPL,2020,2021-05-15,Southampton,Fulham,2.29146,0.875957
+EPL,2020,2021-05-15,Brighton,West Ham,0.922587,1.92378
+EPL,2020,2021-05-16,Crystal Palace,Aston Villa,1.95285,1.2303
+EPL,2020,2021-05-16,Tottenham,Wolverhampton Wanderers,3.13947,1.09206
+EPL,2020,2021-05-16,West Bromwich Albion,Liverpool,1.14202,2.07854
+EPL,2020,2021-05-16,Everton,Sheffield United,1.24609,1.391
+EPL,2020,2021-05-18,Manchester United,Fulham,0.92243,0.872643
+EPL,2020,2021-05-18,Southampton,Leeds,1.3084,1.58132
+EPL,2020,2021-05-18,Brighton,Manchester City,1.22824,1.07139
+EPL,2020,2021-05-18,Chelsea,Leicester,2.86149,0.832596
+EPL,2020,2021-05-19,Everton,Wolverhampton Wanderers,0.670997,0.265526
+EPL,2020,2021-05-19,Newcastle United,Sheffield United,1.82508,0.882242
+EPL,2020,2021-05-19,Tottenham,Aston Villa,0.89279,1.63669
+EPL,2020,2021-05-19,Crystal Palace,Arsenal,0.998377,1.7945
+EPL,2020,2021-05-19,Burnley,Liverpool,0.837048,2.73316
+EPL,2020,2021-05-19,West Bromwich Albion,West Ham,1.10741,3.56991
+EPL,2020,2021-05-23,Arsenal,Brighton,0.772904,0.193968
+EPL,2020,2021-05-23,Aston Villa,Chelsea,0.980413,3.43414
+EPL,2020,2021-05-23,Fulham,Newcastle United,0.98902,1.60157
+EPL,2020,2021-05-23,Leeds,West Bromwich Albion,2.49009,1.02209
+EPL,2020,2021-05-23,Leicester,Tottenham,1.82554,1.85229
+EPL,2020,2021-05-23,Liverpool,Crystal Palace,2.20348,0.772317
+EPL,2020,2021-05-23,Manchester City,Everton,2.88355,1.07258
+EPL,2020,2021-05-23,Sheffield United,Burnley,0.420006,0.558508
+EPL,2020,2021-05-23,West Ham,Southampton,1.98344,1.35179
+EPL,2020,2021-05-23,Wolverhampton Wanderers,Manchester United,0.701256,2.05229
+EPL,2021,2021-08-13,Brentford,Arsenal,1.88818,1.02385
+EPL,2021,2021-08-14,Manchester United,Leeds,1.64248,0.568342
+EPL,2021,2021-08-14,Burnley,Brighton,1.79548,1.6853
+EPL,2021,2021-08-14,Chelsea,Crystal Palace,1.18709,0.321701
+EPL,2021,2021-08-14,Everton,Southampton,2.38863,0.580601
+EPL,2021,2021-08-14,Leicester,Wolverhampton Wanderers,0.668082,1.32714
+EPL,2021,2021-08-14,Watford,Aston Villa,1.35036,1.13718
+EPL,2021,2021-08-14,Norwich,Liverpool,1.3333,1.78728
+EPL,2021,2021-08-15,Newcastle United,West Ham,1.67926,3.00939
+EPL,2021,2021-08-15,Tottenham,Manchester City,1.06014,2.10585
+EPL,2021,2021-08-21,Liverpool,Burnley,2.63945,0.690464
+EPL,2021,2021-08-21,Manchester City,Norwich,2.43928,0.0250088
+EPL,2021,2021-08-21,Aston Villa,Newcastle United,1.18426,0.63163
+EPL,2021,2021-08-21,Crystal Palace,Brentford,0.606313,0.712439
+EPL,2021,2021-08-21,Leeds,Everton,0.966093,1.85713
+EPL,2021,2021-08-21,Brighton,Watford,1.77896,0.407224
+EPL,2021,2021-08-22,Southampton,Manchester United,0.587526,2.26173
+EPL,2021,2021-08-22,Wolverhampton Wanderers,Tottenham,1.51127,1.72636
+EPL,2021,2021-08-22,Arsenal,Chelsea,0.630099,3.64132
+EPL,2021,2021-08-23,West Ham,Leicester,2.28613,0.62676
+EPL,2021,2021-08-28,Manchester City,Arsenal,4.47273,0.116805
+EPL,2021,2021-08-28,Newcastle United,Southampton,1.19077,3.46036
+EPL,2021,2021-08-28,Norwich,Leicester,1.44084,1.27371
+EPL,2021,2021-08-28,Aston Villa,Brentford,0.431464,1.13312
+EPL,2021,2021-08-28,Brighton,Everton,0.701622,1.54868
+EPL,2021,2021-08-28,West Ham,Crystal Palace,1.44748,1.67658
+EPL,2021,2021-08-28,Liverpool,Chelsea,2.08462,0.573638
+EPL,2021,2021-08-29,Burnley,Leeds,1.71102,1.52078
+EPL,2021,2021-08-29,Tottenham,Watford,0.920963,0.596016
+EPL,2021,2021-08-29,Wolverhampton Wanderers,Manchester United,1.79575,0.944083
+EPL,2021,2021-09-11,Crystal Palace,Tottenham,2.89372,0.0775646
+EPL,2021,2021-09-11,Arsenal,Norwich,2.68515,0.577292
+EPL,2021,2021-09-11,Brentford,Brighton,0.729786,0.287902
+EPL,2021,2021-09-11,Leicester,Manchester City,0.8001,2.75058
+EPL,2021,2021-09-11,Manchester United,Newcastle United,2.77326,0.622042
+EPL,2021,2021-09-11,Southampton,West Ham,0.692135,0.725407
+EPL,2021,2021-09-11,Watford,Wolverhampton Wanderers,0.185407,2.55922
+EPL,2021,2021-09-11,Chelsea,Aston Villa,1.22153,1.17349
+EPL,2021,2021-09-12,Leeds,Liverpool,0.652514,4.4016
+EPL,2021,2021-09-13,Everton,Burnley,1.80386,1.82061
+EPL,2021,2021-09-17,Newcastle United,Leeds,1.17668,1.42995
+EPL,2021,2021-09-18,Wolverhampton Wanderers,Brentford,1.02316,2.32741
+EPL,2021,2021-09-18,Norwich,Watford,0.782665,2.42487
+EPL,2021,2021-09-18,Burnley,Arsenal,0.775574,1.09928
+EPL,2021,2021-09-18,Liverpool,Crystal Palace,2.76793,0.644168
+EPL,2021,2021-09-18,Manchester City,Southampton,1.22451,0.490923
+EPL,2021,2021-09-18,Aston Villa,Everton,0.777716,0.755035
+EPL,2021,2021-09-19,Brighton,Leicester,1.47438,1.25373
+EPL,2021,2021-09-19,West Ham,Manchester United,1.6671,1.8954
+EPL,2021,2021-09-19,Tottenham,Chelsea,0.70567,2.5869
+EPL,2021,2021-09-25,Chelsea,Manchester City,0.194202,1.69244
+EPL,2021,2021-09-25,Manchester United,Aston Villa,1.9251,1.57249
+EPL,2021,2021-09-25,Watford,Newcastle United,0.904061,2.52338
+EPL,2021,2021-09-25,Everton,Norwich,2.26681,0.800903
+EPL,2021,2021-09-25,Leeds,West Ham,1.1967,1.98962
+EPL,2021,2021-09-25,Leicester,Burnley,2.16233,0.428866
+EPL,2021,2021-09-25,Brentford,Liverpool,2.94058,2.25736
+EPL,2021,2021-09-26,Southampton,Wolverhampton Wanderers,0.909342,0.909833
+EPL,2021,2021-09-26,Arsenal,Tottenham,1.44499,0.980166
+EPL,2021,2021-09-27,Crystal Palace,Brighton,1.36836,0.649566
+EPL,2021,2021-10-02,Manchester United,Everton,1.0496,1.32211
+EPL,2021,2021-10-02,Burnley,Norwich,0.584725,0.673617
+EPL,2021,2021-10-02,Chelsea,Southampton,3.79243,1.52634
+EPL,2021,2021-10-02,Leeds,Watford,1.57388,0.192794
+EPL,2021,2021-10-02,Wolverhampton Wanderers,Newcastle United,1.15849,0.865217
+EPL,2021,2021-10-02,Brighton,Arsenal,1.11551,0.36431
+EPL,2021,2021-10-03,Crystal Palace,Leicester,1.1703,1.04322
+EPL,2021,2021-10-03,Tottenham,Aston Villa,1.78187,1.07395
+EPL,2021,2021-10-03,West Ham,Brentford,1.37258,1.30098
+EPL,2021,2021-10-03,Liverpool,Manchester City,0.949368,1.04319
+EPL,2021,2021-10-16,Watford,Liverpool,0.302302,3.65553
+EPL,2021,2021-10-16,Aston Villa,Wolverhampton Wanderers,1.21276,2.19633
+EPL,2021,2021-10-16,Leicester,Manchester United,2.96611,1.02494
+EPL,2021,2021-10-16,Manchester City,Burnley,2.15712,1.07719
+EPL,2021,2021-10-16,Norwich,Brighton,1.16088,1.17572
+EPL,2021,2021-10-16,Southampton,Leeds,1.83082,0.446173
+EPL,2021,2021-10-16,Brentford,Chelsea,1.62169,0.248256
+EPL,2021,2021-10-17,Everton,West Ham,0.854165,2.03034
+EPL,2021,2021-10-17,Newcastle United,Tottenham,0.645658,1.55008
+EPL,2021,2021-10-18,Arsenal,Crystal Palace,1.7436,0.492239
+EPL,2021,2021-10-22,Arsenal,Aston Villa,3.4984,1.41088
+EPL,2021,2021-10-23,Chelsea,Norwich,3.10509,0.267429
+EPL,2021,2021-10-23,Crystal Palace,Newcastle United,2.25588,0.721813
+EPL,2021,2021-10-23,Everton,Watford,1.84089,3.10344
+EPL,2021,2021-10-23,Leeds,Wolverhampton Wanderers,1.71313,0.858644
+EPL,2021,2021-10-23,Southampton,Burnley,1.42567,0.673195
+EPL,2021,2021-10-23,Brighton,Manchester City,1.1695,3.57376
+EPL,2021,2021-10-24,Brentford,Leicester,1.16789,1.00254
+EPL,2021,2021-10-24,West Ham,Tottenham,1.73468,0.672198
+EPL,2021,2021-10-24,Manchester United,Liverpool,1.35584,4.04765
+EPL,2021,2021-10-30,Leicester,Arsenal,1.98801,1.10288
+EPL,2021,2021-10-30,Burnley,Brentford,2.72901,0.834312
+EPL,2021,2021-10-30,Liverpool,Brighton,1.39778,1.51032
+EPL,2021,2021-10-30,Manchester City,Crystal Palace,0.65739,1.05029
+EPL,2021,2021-10-30,Newcastle United,Chelsea,0.157616,2.16608
+EPL,2021,2021-10-30,Watford,Southampton,0.852556,1.90757
+EPL,2021,2021-10-30,Tottenham,Manchester United,1.15787,1.38612
+EPL,2021,2021-10-31,Norwich,Leeds,0.661887,1.16855
+EPL,2021,2021-10-31,Aston Villa,West Ham,0.687551,2.66391
+EPL,2021,2021-11-01,Wolverhampton Wanderers,Everton,1.69344,1.69767
+EPL,2021,2021-11-05,Southampton,Aston Villa,0.89818,0.536077
+EPL,2021,2021-11-06,Manchester United,Manchester City,0.759561,2.04202
+EPL,2021,2021-11-06,Brentford,Norwich,2.79229,1.15797
+EPL,2021,2021-11-06,Chelsea,Burnley,3.00585,0.674072
+EPL,2021,2021-11-06,Crystal Palace,Wolverhampton Wanderers,2.65161,0.25416
+EPL,2021,2021-11-06,Brighton,Newcastle United,1.43123,0.227321
+EPL,2021,2021-11-07,Arsenal,Watford,1.49208,0.491659
+EPL,2021,2021-11-07,Everton,Tottenham,0.597906,0.801798
+EPL,2021,2021-11-07,Leeds,Leicester,1.96551,0.795292
+EPL,2021,2021-11-07,West Ham,Liverpool,1.25298,1.45641
+EPL,2021,2021-11-20,Leicester,Chelsea,0.499504,2.57178
+EPL,2021,2021-11-20,Aston Villa,Brighton,1.06946,0.582787
+EPL,2021,2021-11-20,Burnley,Crystal Palace,1.04224,1.74839
+EPL,2021,2021-11-20,Newcastle United,Brentford,2.18388,1.23275
+EPL,2021,2021-11-20,Norwich,Southampton,0.43778,1.13118
+EPL,2021,2021-11-20,Watford,Manchester United,2.73393,1.66794
+EPL,2021,2021-11-20,Wolverhampton Wanderers,West Ham,1.31903,0.436331
+EPL,2021,2021-11-20,Liverpool,Arsenal,3.97374,0.268025
+EPL,2021,2021-11-21,Manchester City,Everton,2.61302,0.266894
+EPL,2021,2021-11-21,Tottenham,Leeds,2.31744,1.46689
+EPL,2021,2021-11-27,Arsenal,Newcastle United,2.84493,0.185383
+EPL,2021,2021-11-27,Crystal Palace,Aston Villa,0.962129,0.454305
+EPL,2021,2021-11-27,Liverpool,Southampton,3.07278,0.966132
+EPL,2021,2021-11-27,Norwich,Wolverhampton Wanderers,1.4047,0.297157
+EPL,2021,2021-11-27,Brighton,Leeds,1.90498,0.864829
+EPL,2021,2021-11-28,Brentford,Everton,1.19813,0.968075
+EPL,2021,2021-11-28,Leicester,Watford,2.16027,2.38383
+EPL,2021,2021-11-28,Manchester City,West Ham,2.72187,0.171763
+EPL,2021,2021-11-28,Chelsea,Manchester United,2.34525,0.563367
+EPL,2021,2021-11-30,Newcastle United,Norwich,1.15636,1.51084
+EPL,2021,2021-11-30,Leeds,Crystal Palace,1.9818,0.707328
+EPL,2021,2021-12-01,Watford,Chelsea,0.990877,0.908574
+EPL,2021,2021-12-01,West Ham,Brighton,1.14679,1.2607
+EPL,2021,2021-12-01,Wolverhampton Wanderers,Burnley,0.711691,0.195537
+EPL,2021,2021-12-01,Southampton,Leicester,1.91169,1.4401
+EPL,2021,2021-12-01,Aston Villa,Manchester City,0.772083,1.01897
+EPL,2021,2021-12-01,Everton,Liverpool,0.512263,2.86067
+EPL,2021,2021-12-02,Tottenham,Brentford,2.07248,0.225492
+EPL,2021,2021-12-02,Manchester United,Arsenal,1.85597,1.16638
+EPL,2021,2021-12-04,West Ham,Chelsea,2.0174,1.37049
+EPL,2021,2021-12-04,Newcastle United,Burnley,1.70609,0.604599
+EPL,2021,2021-12-04,Southampton,Brighton,1.34236,1.4872
+EPL,2021,2021-12-04,Wolverhampton Wanderers,Liverpool,0.095167,2.42332
+EPL,2021,2021-12-04,Watford,Manchester City,0.675105,4.03223
+EPL,2021,2021-12-05,Leeds,Brentford,1.41896,1.19959
+EPL,2021,2021-12-05,Manchester United,Crystal Palace,0.870376,0.520593
+EPL,2021,2021-12-05,Tottenham,Norwich,2.00668,1.06562
+EPL,2021,2021-12-05,Aston Villa,Leicester,1.84818,0.982614
+EPL,2021,2021-12-06,Everton,Arsenal,1.06108,1.05723
+EPL,2021,2021-12-10,Brentford,Watford,1.82799,0.561554
+EPL,2021,2021-12-11,Manchester City,Wolverhampton Wanderers,2.99915,0.0762839
+EPL,2021,2021-12-11,Arsenal,Southampton,2.08429,0.502215
+EPL,2021,2021-12-11,Chelsea,Leeds,2.74844,1.72934
+EPL,2021,2021-12-11,Liverpool,Aston Villa,2.71181,0.140573
+EPL,2021,2021-12-11,Norwich,Manchester United,0.986107,2.09817
+EPL,2021,2021-12-12,Burnley,West Ham,0.54801,0.998813
+EPL,2021,2021-12-12,Leicester,Newcastle United,2.05771,0.511934
+EPL,2021,2021-12-12,Crystal Palace,Everton,2.09864,1.27556
+EPL,2021,2021-12-14,Norwich,Aston Villa,0.502647,1.96261
+EPL,2021,2021-12-14,Manchester City,Leeds,3.31349,0.227498
+EPL,2021,2021-12-15,Brighton,Wolverhampton Wanderers,1.20118,1.11736
+EPL,2021,2021-12-15,Crystal Palace,Southampton,1.49244,0.625183
+EPL,2021,2021-12-15,Arsenal,West Ham,2.81482,0.338855
+EPL,2021,2021-12-16,Chelsea,Everton,3.20239,0.627528
+EPL,2021,2021-12-16,Liverpool,Newcastle United,2.93912,0.2064
+EPL,2021,2021-12-18,Leeds,Arsenal,1.31408,3.69008
+EPL,2021,2021-12-19,Wolverhampton Wanderers,Chelsea,0.321371,0.793952
+EPL,2021,2021-12-19,Newcastle United,Manchester City,0.174208,3.64686
+EPL,2021,2021-12-19,Tottenham,Liverpool,2.79777,1.54944
+EPL,2021,2021-12-26,Manchester City,Leicester,3.82869,2.43425
+EPL,2021,2021-12-26,Norwich,Arsenal,0.154212,2.87539
+EPL,2021,2021-12-26,Tottenham,Crystal Palace,2.82148,0.178324
+EPL,2021,2021-12-26,West Ham,Southampton,1.53745,1.35643
+EPL,2021,2021-12-26,Aston Villa,Chelsea,0.474029,2.8285
+EPL,2021,2021-12-26,Brighton,Brentford,0.943363,1.10342
+EPL,2021,2021-12-27,Newcastle United,Manchester United,1.26586,1.75587
+EPL,2021,2021-12-28,Watford,West Ham,1.0143,2.84084
+EPL,2021,2021-12-28,Crystal Palace,Norwich,2.38978,0.594134
+EPL,2021,2021-12-28,Southampton,Tottenham,0.353043,2.80917
+EPL,2021,2021-12-28,Leicester,Liverpool,0.615892,2.72682
+EPL,2021,2021-12-29,Chelsea,Brighton,0.763458,0.78663
+EPL,2021,2021-12-29,Brentford,Manchester City,0.238829,1.01763
+EPL,2021,2021-12-30,Manchester United,Burnley,1.80776,0.871738
+EPL,2021,2022-01-01,Arsenal,Manchester City,0.836949,1.94623
+EPL,2021,2022-01-01,Watford,Tottenham,0.303514,1.93752
+EPL,2021,2022-01-01,Crystal Palace,West Ham,2.69204,2.23146
+EPL,2021,2022-01-02,Brentford,Aston Villa,0.501329,1.13821
+EPL,2021,2022-01-02,Everton,Brighton,1.82698,1.48397
+EPL,2021,2022-01-02,Leeds,Burnley,2.04186,0.960493
+EPL,2021,2022-01-02,Chelsea,Liverpool,1.389,1.78897
+EPL,2021,2022-01-03,Manchester United,Wolverhampton Wanderers,0.768752,0.840925
+EPL,2021,2022-01-11,Southampton,Brentford,1.59306,0.621466
+EPL,2021,2022-01-12,West Ham,Norwich,2.89217,0.343347
+EPL,2021,2022-01-14,Brighton,Crystal Palace,2.18053,0.509681
+EPL,2021,2022-01-15,Manchester City,Chelsea,0.901703,0.613757
+EPL,2021,2022-01-15,Newcastle United,Watford,1.03855,1.49623
+EPL,2021,2022-01-15,Norwich,Everton,1.00153,0.541027
+EPL,2021,2022-01-15,Wolverhampton Wanderers,Southampton,2.29917,0.91728
+EPL,2021,2022-01-15,Aston Villa,Manchester United,1.82784,1.35378
+EPL,2021,2022-01-16,Liverpool,Brentford,3.49099,0.376656
+EPL,2021,2022-01-16,West Ham,Leeds,2.3549,2.26884
+EPL,2021,2022-01-18,Brighton,Chelsea,0.747557,0.572994
+EPL,2021,2022-01-19,Leicester,Tottenham,1.95031,4.24711
+EPL,2021,2022-01-19,Brentford,Manchester United,2.081,2.05969
+EPL,2021,2022-01-21,Watford,Norwich,1.30606,0.925212
+EPL,2021,2022-01-22,Everton,Aston Villa,1.2384,0.860245
+EPL,2021,2022-01-22,Brentford,Wolverhampton Wanderers,0.742573,0.218211
+EPL,2021,2022-01-22,Leeds,Newcastle United,1.12992,1.15904
+EPL,2021,2022-01-22,Manchester United,West Ham,1.75857,0.238027
+EPL,2021,2022-01-22,Southampton,Manchester City,1.00222,1.62907
+EPL,2021,2022-01-23,Arsenal,Burnley,1.35507,0.388963
+EPL,2021,2022-01-23,Crystal Palace,Liverpool,1.62615,1.49697
+EPL,2021,2022-01-23,Leicester,Brighton,1.70979,1.19738
+EPL,2021,2022-01-23,Chelsea,Tottenham,1.04212,0.328818
+EPL,2021,2022-02-05,Burnley,Watford,0.765905,0.933965
+EPL,2021,2022-02-08,West Ham,Watford,0.905143,0.335474
+EPL,2021,2022-02-08,Newcastle United,Everton,2.68732,0.823607
+EPL,2021,2022-02-08,Burnley,Manchester United,0.772721,1.83387
+EPL,2021,2022-02-09,Norwich,Crystal Palace,0.296411,1.22883
+EPL,2021,2022-02-09,Tottenham,Southampton,1.74286,1.73293
+EPL,2021,2022-02-09,Manchester City,Brentford,1.98246,0.461305
+EPL,2021,2022-02-09,Aston Villa,Leeds,1.5013,2.52914
+EPL,2021,2022-02-10,Wolverhampton Wanderers,Arsenal,0.641359,1.45247
+EPL,2021,2022-02-10,Liverpool,Leicester,2.72997,0.544954
+EPL,2021,2022-02-12,Manchester United,Southampton,2.99207,0.677386
+EPL,2021,2022-02-12,Brentford,Crystal Palace,1.97576,0.49802
+EPL,2021,2022-02-12,Everton,Leeds,2.58561,0.242668
+EPL,2021,2022-02-12,Watford,Brighton,0.532979,1.80456
+EPL,2021,2022-02-12,Norwich,Manchester City,0.356755,4.44653
+EPL,2021,2022-02-13,Burnley,Liverpool,1.16081,1.95722
+EPL,2021,2022-02-13,Newcastle United,Aston Villa,0.527571,0.455206
+EPL,2021,2022-02-13,Tottenham,Wolverhampton Wanderers,0.838197,1.87026
+EPL,2021,2022-02-13,Leicester,West Ham,1.40693,0.745068
+EPL,2021,2022-02-15,Manchester United,Brighton,2.74936,1.26179
+EPL,2021,2022-02-19,West Ham,Newcastle United,0.847948,0.932574
+EPL,2021,2022-02-19,Arsenal,Brentford,1.52247,0.640726
+EPL,2021,2022-02-19,Aston Villa,Watford,1.0267,1.82051
+EPL,2021,2022-02-19,Brighton,Burnley,0.44587,0.821228
+EPL,2021,2022-02-19,Crystal Palace,Chelsea,0.624023,1.12339
+EPL,2021,2022-02-19,Liverpool,Norwich,3.15449,0.66975
+EPL,2021,2022-02-19,Southampton,Everton,2.72851,0.19991
+EPL,2021,2022-02-19,Manchester City,Tottenham,2.31773,2.00235
+EPL,2021,2022-02-20,Leeds,Manchester United,1.74476,2.60999
+EPL,2021,2022-02-20,Wolverhampton Wanderers,Leicester,0.472777,1.55048
+EPL,2021,2022-02-23,Burnley,Tottenham,1.55576,0.691655
+EPL,2021,2022-02-23,Watford,Crystal Palace,1.71917,0.818403
+EPL,2021,2022-02-23,Liverpool,Leeds,5.3303,0.141547
+EPL,2021,2022-02-24,Arsenal,Wolverhampton Wanderers,2.50961,1.10934
+EPL,2021,2022-02-25,Southampton,Norwich,3.08863,0.424877
+EPL,2021,2022-02-26,Leeds,Tottenham,1.89569,2.47025
+EPL,2021,2022-02-26,Brentford,Newcastle United,0.494232,2.25373
+EPL,2021,2022-02-26,Crystal Palace,Burnley,1.03765,0.255988
+EPL,2021,2022-02-26,Manchester United,Watford,2.41457,0.437185
+EPL,2021,2022-02-26,Brighton,Aston Villa,0.627107,1.3027
+EPL,2021,2022-02-26,Everton,Manchester City,0.770819,1.93422
+EPL,2021,2022-02-27,West Ham,Wolverhampton Wanderers,1.62241,0.892018
+EPL,2021,2022-03-01,Burnley,Leicester,1.04214,1.79558
+EPL,2021,2022-03-05,Leicester,Leeds,0.359129,2.14389
+EPL,2021,2022-03-05,Aston Villa,Southampton,2.85379,1.32947
+EPL,2021,2022-03-05,Burnley,Chelsea,0.849232,2.2868
+EPL,2021,2022-03-05,Newcastle United,Brighton,1.58028,1.64995
+EPL,2021,2022-03-05,Norwich,Brentford,0.77334,2.22064
+EPL,2021,2022-03-05,Wolverhampton Wanderers,Crystal Palace,0.710865,2.53759
+EPL,2021,2022-03-05,Liverpool,West Ham,2.18865,1.33829
+EPL,2021,2022-03-06,Watford,Arsenal,1.29603,1.00457
+EPL,2021,2022-03-06,Manchester City,Manchester United,2.74434,0.361782
+EPL,2021,2022-03-07,Tottenham,Everton,3.24279,0.208263
+EPL,2021,2022-03-10,Wolverhampton Wanderers,Watford,1.55037,0.498696
+EPL,2021,2022-03-10,Southampton,Newcastle United,1.79835,0.812233
+EPL,2021,2022-03-10,Norwich,Chelsea,0.965723,2.1308
+EPL,2021,2022-03-10,Leeds,Aston Villa,0.194028,1.2729
+EPL,2021,2022-03-12,Brighton,Liverpool,0.629316,2.48312
+EPL,2021,2022-03-12,Brentford,Burnley,1.82002,0.825311
+EPL,2021,2022-03-12,Manchester United,Tottenham,1.0181,1.62374
+EPL,2021,2022-03-13,Chelsea,Newcastle United,1.07072,0.246037
+EPL,2021,2022-03-13,Everton,Wolverhampton Wanderers,0.397268,0.712135
+EPL,2021,2022-03-13,Leeds,Norwich,3.11755,1.40148
+EPL,2021,2022-03-13,Southampton,Watford,1.25696,1.29385
+EPL,2021,2022-03-13,West Ham,Aston Villa,1.58468,1.05391
+EPL,2021,2022-03-13,Arsenal,Leicester,2.93665,0.54911
+EPL,2021,2022-03-14,Crystal Palace,Manchester City,0.474002,2.04021
+EPL,2021,2022-03-16,Brighton,Tottenham,1.04171,2.05196
+EPL,2021,2022-03-16,Arsenal,Liverpool,0.534265,1.27681
+EPL,2021,2022-03-17,Everton,Newcastle United,0.708809,0.75803
+EPL,2021,2022-03-18,Wolverhampton Wanderers,Leeds,1.24075,2.82103
+EPL,2021,2022-03-19,Aston Villa,Arsenal,0.309375,1.14522
+EPL,2021,2022-03-20,Leicester,Brentford,1.27865,1.72466
+EPL,2021,2022-03-20,Tottenham,West Ham,2.54795,0.644964
+EPL,2021,2022-04-02,Liverpool,Watford,2.23651,0.753307
+EPL,2021,2022-04-02,Wolverhampton Wanderers,Aston Villa,1.62151,1.91256
+EPL,2021,2022-04-02,Leeds,Southampton,1.50715,2.06387
+EPL,2021,2022-04-02,Chelsea,Brentford,1.29014,2.43422
+EPL,2021,2022-04-02,Burnley,Manchester City,0.0591223,1.62008
+EPL,2021,2022-04-02,Brighton,Norwich,2.38297,0.494112
+EPL,2021,2022-04-02,Manchester United,Leicester,0.902127,1.07638
+EPL,2021,2022-04-03,West Ham,Everton,1.49657,0.657846
+EPL,2021,2022-04-03,Tottenham,Newcastle United,3.6081,0.538152
+EPL,2021,2022-04-04,Crystal Palace,Arsenal,1.39707,1.05199
+EPL,2021,2022-04-06,Burnley,Everton,2.24439,2.31574
+EPL,2021,2022-04-08,Newcastle United,Wolverhampton Wanderers,1.43878,0.306867
+EPL,2021,2022-04-09,Everton,Manchester United,0.357295,0.762357
+EPL,2021,2022-04-09,Watford,Leeds,1.07422,0.895612
+EPL,2021,2022-04-09,Southampton,Chelsea,0.564726,4.39683
+EPL,2021,2022-04-09,Arsenal,Brighton,2.35153,0.596106
+EPL,2021,2022-04-09,Aston Villa,Tottenham,1.48712,0.983601
+EPL,2021,2022-04-10,Norwich,Burnley,1.6723,1.44652
+EPL,2021,2022-04-10,Leicester,Crystal Palace,0.879235,1.52767
+EPL,2021,2022-04-10,Brentford,West Ham,1.85534,0.244824
+EPL,2021,2022-04-10,Manchester City,Liverpool,1.34647,1.29983
+EPL,2021,2022-04-16,Tottenham,Brighton,0.58624,0.711155
+EPL,2021,2022-04-16,Watford,Brentford,1.50381,2.12457
+EPL,2021,2022-04-16,Southampton,Arsenal,1.04007,1.35002
+EPL,2021,2022-04-16,Manchester United,Norwich,1.66737,1.79754
+EPL,2021,2022-04-17,West Ham,Burnley,2.79175,1.88137
+EPL,2021,2022-04-17,Newcastle United,Leicester,2.54294,0.541084
+EPL,2021,2022-04-19,Liverpool,Manchester United,2.25967,0.110227
+EPL,2021,2022-04-20,Everton,Leicester,1.68819,0.786333
+EPL,2021,2022-04-20,Chelsea,Arsenal,0.593801,1.87331
+EPL,2021,2022-04-20,Newcastle United,Crystal Palace,0.767855,0.432788
+EPL,2021,2022-04-20,Manchester City,Brighton,1.52844,0.117354
+EPL,2021,2022-04-21,Burnley,Southampton,2.14743,1.31837
+EPL,2021,2022-04-23,Arsenal,Manchester United,2.54173,2.04244
+EPL,2021,2022-04-23,Norwich,Newcastle United,0.657661,1.87558
+EPL,2021,2022-04-23,Manchester City,Watford,3.68,0.42632
+EPL,2021,2022-04-23,Leicester,Aston Villa,0.235635,0.593202
+EPL,2021,2022-04-23,Brentford,Tottenham,1.3153,0.517755
+EPL,2021,2022-04-24,Chelsea,West Ham,2.34959,0.388975
+EPL,2021,2022-04-24,Burnley,Wolverhampton Wanderers,1.27298,0.592902
+EPL,2021,2022-04-24,Brighton,Southampton,1.87343,0.926764
+EPL,2021,2022-04-24,Liverpool,Everton,1.70397,0.424961
+EPL,2021,2022-04-25,Crystal Palace,Leeds,1.61656,0.374044
+EPL,2021,2022-04-28,Manchester United,Chelsea,0.618456,2.46868
+EPL,2021,2022-04-30,Newcastle United,Liverpool,0.115353,2.73435
+EPL,2021,2022-04-30,Wolverhampton Wanderers,Brighton,0.525912,2.90679
+EPL,2021,2022-04-30,Watford,Burnley,0.785742,1.37022
+EPL,2021,2022-04-30,Southampton,Crystal Palace,0.650256,0.756217
+EPL,2021,2022-04-30,Aston Villa,Norwich,2.31192,0.352212
+EPL,2021,2022-04-30,Leeds,Manchester City,1.03608,3.01431
+EPL,2021,2022-05-01,Tottenham,Leicester,1.65338,0.274133
+EPL,2021,2022-05-01,Everton,Chelsea,1.11712,1.21141
+EPL,2021,2022-05-01,West Ham,Arsenal,0.451976,0.964564
+EPL,2021,2022-05-02,Manchester United,Brentford,1.84111,0.681425
+EPL,2021,2022-05-07,Crystal Palace,Watford,2.49142,0.255373
+EPL,2021,2022-05-07,Chelsea,Wolverhampton Wanderers,1.82098,1.6842
+EPL,2021,2022-05-07,Burnley,Aston Villa,1.31028,1.81256
+EPL,2021,2022-05-07,Brentford,Southampton,3.68223,0.988574
+EPL,2021,2022-05-07,Brighton,Manchester United,2.82636,0.930715
+EPL,2021,2022-05-07,Liverpool,Tottenham,1.0481,0.982635
+EPL,2021,2022-05-08,Norwich,West Ham,0.77895,3.25894
+EPL,2021,2022-05-08,Leicester,Everton,1.47479,1.55635
+EPL,2021,2022-05-08,Arsenal,Leeds,2.7227,0.696785
+EPL,2021,2022-05-08,Manchester City,Newcastle United,4.05613,0.995099
+EPL,2021,2022-05-10,Aston Villa,Liverpool,1.44726,1.75417
+EPL,2021,2022-05-11,Leeds,Chelsea,0.499789,1.46853
+EPL,2021,2022-05-11,Leicester,Norwich,2.57058,1.21966
+EPL,2021,2022-05-11,Watford,Everton,0.232236,0.812193
+EPL,2021,2022-05-11,Wolverhampton Wanderers,Manchester City,0.411857,3.39304
+EPL,2021,2022-05-12,Tottenham,Arsenal,3.42522,0.387446
+EPL,2021,2022-05-15,Tottenham,Burnley,2.39449,0.629888
+EPL,2021,2022-05-15,Wolverhampton Wanderers,Norwich,0.999066,1.53212
+EPL,2021,2022-05-15,West Ham,Manchester City,1.0088,2.14723
+EPL,2021,2022-05-15,Watford,Leicester,2.58968,2.27297
+EPL,2021,2022-05-15,Leeds,Brighton,2.22282,2.25898
+EPL,2021,2022-05-15,Aston Villa,Crystal Palace,0.799443,1.39009
+EPL,2021,2022-05-15,Everton,Brentford,2.69589,1.81626
+EPL,2021,2022-05-16,Newcastle United,Arsenal,1.68299,0.492454
+EPL,2021,2022-05-17,Southampton,Liverpool,0.121506,1.19178
+EPL,2021,2022-05-19,Everton,Crystal Palace,0.813157,1.6023
+EPL,2021,2022-05-19,Aston Villa,Burnley,0.996403,1.63117
+EPL,2021,2022-05-19,Chelsea,Leicester,1.61996,0.0417972
+EPL,2021,2022-05-22,Arsenal,Everton,4.35597,1.08601
+EPL,2021,2022-05-22,Brentford,Leeds,0.844985,1.47786
+EPL,2021,2022-05-22,Brighton,West Ham,1.67774,0.268845
+EPL,2021,2022-05-22,Burnley,Newcastle United,1.49164,1.74291
+EPL,2021,2022-05-22,Chelsea,Watford,2.59231,0.575755
+EPL,2021,2022-05-22,Crystal Palace,Manchester United,0.354618,0.782005
+EPL,2021,2022-05-22,Leicester,Southampton,3.42058,1.05141
+EPL,2021,2022-05-22,Liverpool,Wolverhampton Wanderers,3.19385,1.11708
+EPL,2021,2022-05-22,Manchester City,Aston Villa,3.3209,0.247841
+EPL,2021,2022-05-22,Norwich,Tottenham,0.310789,3.815
+EPL,2022,2022-08-05,Crystal Palace,Arsenal,1.20637,1.43601
+EPL,2022,2022-08-06,Fulham,Liverpool,1.26822,2.34111
+EPL,2022,2022-08-06,Bournemouth,Aston Villa,0.588341,0.488895
+EPL,2022,2022-08-06,Leeds,Wolverhampton Wanderers,0.88917,1.10119
+EPL,2022,2022-08-06,Newcastle United,Nottingham Forest,1.8591,0.235825
+EPL,2022,2022-08-06,Tottenham,Southampton,1.6172,0.386546
+EPL,2022,2022-08-06,Everton,Chelsea,0.541983,1.92315
+EPL,2022,2022-08-07,Manchester United,Brighton,1.42103,1.7289
+EPL,2022,2022-08-07,Leicester,Brentford,0.455695,0.931067
+EPL,2022,2022-08-07,West Ham,Manchester City,0.246188,2.58739
+EPL,2022,2022-08-13,Aston Villa,Everton,2.66696,1.37507
+EPL,2022,2022-08-13,Brighton,Newcastle United,1.60835,0.183952
+EPL,2022,2022-08-13,Manchester City,Bournemouth,1.69064,0.123946
+EPL,2022,2022-08-13,Southampton,Leeds,1.40906,1.99694
+EPL,2022,2022-08-13,Wolverhampton Wanderers,Fulham,0.975375,1.08813
+EPL,2022,2022-08-13,Arsenal,Leicester,3.0107,0.690679
+EPL,2022,2022-08-13,Brentford,Manchester United,1.38785,0.896038
+EPL,2022,2022-08-14,Nottingham Forest,West Ham,1.9717,2.08634
+EPL,2022,2022-08-14,Chelsea,Tottenham,1.83945,1.58708
+EPL,2022,2022-08-15,Liverpool,Crystal Palace,2.23596,1.64468
+EPL,2022,2022-08-20,Tottenham,Wolverhampton Wanderers,1.46608,0.686123
+EPL,2022,2022-08-20,Crystal Palace,Aston Villa,2.91137,0.803828
+EPL,2022,2022-08-20,Everton,Nottingham Forest,1.43408,0.918315
+EPL,2022,2022-08-20,Fulham,Brentford,2.89934,1.59352
+EPL,2022,2022-08-20,Leicester,Southampton,0.242948,1.24155
+EPL,2022,2022-08-20,Bournemouth,Arsenal,0.211335,1.71081
+EPL,2022,2022-08-21,Leeds,Chelsea,2.20971,0.692492
+EPL,2022,2022-08-21,West Ham,Brighton,0.768634,1.82645
+EPL,2022,2022-08-21,Newcastle United,Manchester City,2.2127,3.67382
+EPL,2022,2022-08-22,Manchester United,Liverpool,2.01764,1.52301
+EPL,2022,2022-08-27,Southampton,Manchester United,1.35887,1.34359
+EPL,2022,2022-08-27,Brentford,Everton,2.28391,1.65465
+EPL,2022,2022-08-27,Brighton,Leeds,1.60986,1.14874
+EPL,2022,2022-08-27,Chelsea,Leicester,1.74916,1.96023
+EPL,2022,2022-08-27,Liverpool,Bournemouth,4.86035,0.180991
+EPL,2022,2022-08-27,Manchester City,Crystal Palace,2.3853,0.091976
+EPL,2022,2022-08-27,Arsenal,Fulham,2.47427,0.926007
+EPL,2022,2022-08-28,Aston Villa,West Ham,0.304555,0.334589
+EPL,2022,2022-08-28,Wolverhampton Wanderers,Newcastle United,1.13248,1.93362
+EPL,2022,2022-08-28,Nottingham Forest,Tottenham,0.801369,2.44473
+EPL,2022,2022-08-30,Fulham,Brighton,1.07093,1.75359
+EPL,2022,2022-08-30,Crystal Palace,Brentford,0.777363,1.61808
+EPL,2022,2022-08-30,Southampton,Chelsea,1.44086,1.5047
+EPL,2022,2022-08-30,Leeds,Everton,1.04551,1.17189
+EPL,2022,2022-08-31,Manchester City,Nottingham Forest,3.83759,0.729752
+EPL,2022,2022-08-31,Arsenal,Aston Villa,2.79971,0.297168
+EPL,2022,2022-08-31,Bournemouth,Wolverhampton Wanderers,0.362035,1.53246
+EPL,2022,2022-08-31,West Ham,Tottenham,1.52267,0.723285
+EPL,2022,2022-08-31,Liverpool,Newcastle United,1.76119,0.643546
+EPL,2022,2022-09-01,Leicester,Manchester United,0.615266,1.09969
+EPL,2022,2022-09-03,Everton,Liverpool,1.39169,1.38617
+EPL,2022,2022-09-03,Newcastle United,Crystal Palace,2.90672,0.920595
+EPL,2022,2022-09-03,Nottingham Forest,Bournemouth,1.32895,0.905041
+EPL,2022,2022-09-03,Tottenham,Fulham,2.67823,0.381556
+EPL,2022,2022-09-03,Wolverhampton Wanderers,Southampton,1.10039,1.20838
+EPL,2022,2022-09-03,Brentford,Leeds,2.7485,1.796
+EPL,2022,2022-09-03,Chelsea,West Ham,0.707333,1.4196
+EPL,2022,2022-09-03,Aston Villa,Manchester City,0.279392,1.92143
+EPL,2022,2022-09-04,Brighton,Leicester,2.73166,1.06549
+EPL,2022,2022-09-04,Manchester United,Arsenal,2.02904,1.42238
+EPL,2022,2022-09-16,Aston Villa,Southampton,1.34365,0.218302
+EPL,2022,2022-09-16,Nottingham Forest,Fulham,1.41541,1.3496
+EPL,2022,2022-09-17,Wolverhampton Wanderers,Manchester City,0.310995,1.4242
+EPL,2022,2022-09-17,Newcastle United,Bournemouth,1.54758,0.976948
+EPL,2022,2022-09-17,Tottenham,Leicester,1.98619,1.59449
+EPL,2022,2022-09-18,Brentford,Arsenal,0.54011,1.32021
+EPL,2022,2022-09-18,Everton,West Ham,0.39773,0.655351
+EPL,2022,2022-10-01,Arsenal,Tottenham,2.48403,1.5027
+EPL,2022,2022-10-01,Bournemouth,Brentford,0.758128,1.046
+EPL,2022,2022-10-01,Crystal Palace,Chelsea,0.70987,1.25506
+EPL,2022,2022-10-01,Fulham,Newcastle United,0.683701,4.67198
+EPL,2022,2022-10-01,Liverpool,Brighton,2.1515,2.36567
+EPL,2022,2022-10-01,Southampton,Everton,1.95961,1.99979
+EPL,2022,2022-10-01,West Ham,Wolverhampton Wanderers,1.03934,0.575988
+EPL,2022,2022-10-02,Manchester City,Manchester United,3.01103,1.71335
+EPL,2022,2022-10-02,Leeds,Aston Villa,0.298626,1.89645
+EPL,2022,2022-10-03,Leicester,Nottingham Forest,1.2497,1.22169
+EPL,2022,2022-10-08,Bournemouth,Leicester,1.14891,1.18125
+EPL,2022,2022-10-08,Chelsea,Wolverhampton Wanderers,2.43092,0.748449
+EPL,2022,2022-10-08,Manchester City,Southampton,2.73536,0.101148
+EPL,2022,2022-10-08,Newcastle United,Brentford,2.44631,1.13466
+EPL,2022,2022-10-08,Brighton,Tottenham,0.899735,0.771641
+EPL,2022,2022-10-09,Crystal Palace,Leeds,1.65194,1.06564
+EPL,2022,2022-10-09,West Ham,Fulham,3.43676,0.549848
+EPL,2022,2022-10-09,Arsenal,Liverpool,2.81968,0.765151
+EPL,2022,2022-10-09,Everton,Manchester United,0.365844,1.82612
+EPL,2022,2022-10-10,Nottingham Forest,Aston Villa,0.221346,0.657187
+EPL,2022,2022-10-14,Brentford,Brighton,1.90636,2.15668
+EPL,2022,2022-10-15,Leicester,Crystal Palace,0.973426,0.346808
+EPL,2022,2022-10-15,Fulham,Bournemouth,1.61738,1.62829
+EPL,2022,2022-10-15,Wolverhampton Wanderers,Nottingham Forest,1.22368,1.24761
+EPL,2022,2022-10-15,Tottenham,Everton,2.49409,0.560039
+EPL,2022,2022-10-16,Aston Villa,Chelsea,2.44542,1.23643
+EPL,2022,2022-10-16,Leeds,Arsenal,2.02232,0.821757
+EPL,2022,2022-10-16,Manchester United,Newcastle United,1.41606,0.78815
+EPL,2022,2022-10-16,Southampton,West Ham,0.524479,1.70727
+EPL,2022,2022-10-16,Liverpool,Manchester City,1.9992,0.911493
+EPL,2022,2022-10-18,Brighton,Nottingham Forest,2.10188,0.195003
+EPL,2022,2022-10-18,Crystal Palace,Wolverhampton Wanderers,1.25617,0.857837
+EPL,2022,2022-10-19,Bournemouth,Southampton,0.810452,1.23878
+EPL,2022,2022-10-19,Brentford,Chelsea,1.45228,0.557405
+EPL,2022,2022-10-19,Newcastle United,Everton,1.13393,0.0609567
+EPL,2022,2022-10-19,Liverpool,West Ham,2.24066,2.48649
+EPL,2022,2022-10-19,Manchester United,Tottenham,1.70973,0.658526
+EPL,2022,2022-10-20,Fulham,Aston Villa,2.892,0.711487
+EPL,2022,2022-10-20,Leicester,Leeds,0.655249,1.19464
+EPL,2022,2022-10-22,Nottingham Forest,Liverpool,2.50163,2.19752
+EPL,2022,2022-10-22,Everton,Crystal Palace,1.93396,0.597167
+EPL,2022,2022-10-22,Manchester City,Brighton,1.86239,0.52863
+EPL,2022,2022-10-22,Chelsea,Manchester United,1.20238,0.730935
+EPL,2022,2022-10-23,Aston Villa,Brentford,3.45617,1.00462
+EPL,2022,2022-10-23,Leeds,Fulham,1.96384,2.47512
+EPL,2022,2022-10-23,Southampton,Arsenal,0.622653,1.57897
+EPL,2022,2022-10-23,Wolverhampton Wanderers,Leicester,1.61785,0.989075
+EPL,2022,2022-10-23,Tottenham,Newcastle United,1.56513,1.1294
+EPL,2022,2022-10-24,West Ham,Bournemouth,1.97715,0.730443
+EPL,2022,2022-10-29,Leicester,Manchester City,0.693597,0.703827
+EPL,2022,2022-10-29,Bournemouth,Tottenham,0.887533,2.1946
+EPL,2022,2022-10-29,Brentford,Wolverhampton Wanderers,1.29257,0.557605
+EPL,2022,2022-10-29,Brighton,Chelsea,2.881,1.07554
+EPL,2022,2022-10-29,Crystal Palace,Southampton,1.00384,1.35803
+EPL,2022,2022-10-29,Newcastle United,Aston Villa,4.18808,0.270814
+EPL,2022,2022-10-29,Fulham,Everton,1.76438,1.19166
+EPL,2022,2022-10-29,Liverpool,Leeds,1.90889,1.61271
+EPL,2022,2022-10-30,Arsenal,Nottingham Forest,3.00699,0.206127
+EPL,2022,2022-10-30,Manchester United,West Ham,1.7514,1.00033
+EPL,2022,2022-11-05,Leeds,Bournemouth,2.22532,1.55594
+EPL,2022,2022-11-05,Manchester City,Fulham,2.39332,0.843884
+EPL,2022,2022-11-05,Nottingham Forest,Brentford,1.29696,1.2204
+EPL,2022,2022-11-05,Wolverhampton Wanderers,Brighton,1.29252,1.87375
+EPL,2022,2022-11-05,Everton,Leicester,1.3729,2.2679
+EPL,2022,2022-11-06,Chelsea,Arsenal,0.278815,2.37846
+EPL,2022,2022-11-06,Aston Villa,Manchester United,0.578563,0.517189
+EPL,2022,2022-11-06,Southampton,Newcastle United,1.65228,1.42101
+EPL,2022,2022-11-06,West Ham,Crystal Palace,0.192579,1.03344
+EPL,2022,2022-11-06,Tottenham,Liverpool,1.81736,1.46548
+EPL,2022,2022-11-12,Manchester City,Brentford,1.605,3.29012
+EPL,2022,2022-11-12,Bournemouth,Everton,2.45642,0.768756
+EPL,2022,2022-11-12,Liverpool,Southampton,2.74418,1.43427
+EPL,2022,2022-11-12,Nottingham Forest,Crystal Palace,1.23752,1.14552
+EPL,2022,2022-11-12,Tottenham,Leeds,2.58046,1.71731
+EPL,2022,2022-11-12,West Ham,Leicester,0.720721,1.60566
+EPL,2022,2022-11-12,Newcastle United,Chelsea,1.3601,0.359105
+EPL,2022,2022-11-12,Wolverhampton Wanderers,Arsenal,0.512339,2.27996
+EPL,2022,2022-11-13,Brighton,Aston Villa,0.829107,1.15437
+EPL,2022,2022-11-13,Fulham,Manchester United,1.70218,3.37664
+EPL,2022,2022-12-26,Brentford,Tottenham,2.25263,0.883787
+EPL,2022,2022-12-26,Crystal Palace,Fulham,0.421754,2.69927
+EPL,2022,2022-12-26,Everton,Wolverhampton Wanderers,1.22653,1.22076
+EPL,2022,2022-12-26,Leicester,Newcastle United,0.31099,1.76382
+EPL,2022,2022-12-26,Southampton,Brighton,1.70709,1.00714
+EPL,2022,2022-12-26,Aston Villa,Liverpool,1.69155,3.50694
+EPL,2022,2022-12-26,Arsenal,West Ham,1.88828,1.02652
+EPL,2022,2022-12-27,Chelsea,Bournemouth,1.91378,0.44307
+EPL,2022,2022-12-27,Manchester United,Nottingham Forest,2.13668,0.477076
+EPL,2022,2022-12-28,Leeds,Manchester City,0.603751,4.16249
+EPL,2022,2022-12-30,West Ham,Brentford,1.13979,1.51436
+EPL,2022,2022-12-30,Liverpool,Leicester,2.02463,0.863312
+EPL,2022,2022-12-31,Wolverhampton Wanderers,Manchester United,0.587672,2.44728
+EPL,2022,2022-12-31,Bournemouth,Crystal Palace,0.895819,1.75264
+EPL,2022,2022-12-31,Fulham,Southampton,1.49305,0.698711
+EPL,2022,2022-12-31,Manchester City,Everton,2.36333,0.0760019
+EPL,2022,2022-12-31,Newcastle United,Leeds,2.78846,0.517099
+EPL,2022,2022-12-31,Brighton,Arsenal,1.15663,3.22106
+EPL,2022,2023-01-01,Tottenham,Aston Villa,0.569383,1.21733
+EPL,2022,2023-01-01,Nottingham Forest,Chelsea,0.985219,1.37305
+EPL,2022,2023-01-02,Brentford,Liverpool,2.0991,2.10461
+EPL,2022,2023-01-03,Arsenal,Newcastle United,0.970637,0.959523
+EPL,2022,2023-01-03,Everton,Brighton,1.16896,2.50731
+EPL,2022,2023-01-03,Leicester,Fulham,1.45221,1.33493
+EPL,2022,2023-01-03,Manchester United,Bournemouth,2.97383,0.679022
+EPL,2022,2023-01-04,Southampton,Nottingham Forest,0.62937,1.22324
+EPL,2022,2023-01-04,Leeds,West Ham,1.2577,1.29245
+EPL,2022,2023-01-04,Aston Villa,Wolverhampton Wanderers,1.03226,0.832522
+EPL,2022,2023-01-04,Crystal Palace,Tottenham,0.787525,1.66514
+EPL,2022,2023-01-05,Chelsea,Manchester City,0.493576,1.71972
+EPL,2022,2023-01-12,Fulham,Chelsea,0.711266,2.39911
+EPL,2022,2023-01-13,Aston Villa,Leeds,1.64599,2.46295
+EPL,2022,2023-01-14,Manchester United,Manchester City,1.98228,0.73695
+EPL,2022,2023-01-14,Brighton,Liverpool,2.40062,1.28853
+EPL,2022,2023-01-14,Everton,Southampton,1.18191,1.08412
+EPL,2022,2023-01-14,Nottingham Forest,Leicester,1.75313,0.803421
+EPL,2022,2023-01-14,Wolverhampton Wanderers,West Ham,0.806232,0.735105
+EPL,2022,2023-01-14,Brentford,Bournemouth,1.29815,0.269283
+EPL,2022,2023-01-15,Chelsea,Crystal Palace,2.12987,0.837366
+EPL,2022,2023-01-15,Newcastle United,Fulham,1.96256,0.989872
+EPL,2022,2023-01-15,Tottenham,Arsenal,1.71032,2.04232
+EPL,2022,2023-01-18,Crystal Palace,Manchester United,0.413339,1.39437
+EPL,2022,2023-01-19,Manchester City,Tottenham,2.34166,1.16499
+EPL,2022,2023-01-21,Liverpool,Chelsea,1.30125,1.84467
+EPL,2022,2023-01-21,Bournemouth,Nottingham Forest,1.80549,1.57544
+EPL,2022,2023-01-21,Leicester,Brighton,1.35941,1.94491
+EPL,2022,2023-01-21,Southampton,Aston Villa,0.672444,1.16432
+EPL,2022,2023-01-21,West Ham,Everton,2.46879,0.286826
+EPL,2022,2023-01-21,Crystal Palace,Newcastle United,0.333154,1.44384
+EPL,2022,2023-01-22,Leeds,Brentford,0.374736,0.17114
+EPL,2022,2023-01-22,Manchester City,Wolverhampton Wanderers,3.32757,0.469277
+EPL,2022,2023-01-22,Arsenal,Manchester United,2.90273,0.272246
+EPL,2022,2023-01-23,Fulham,Tottenham,1.09339,0.993805
+EPL,2022,2023-02-03,Chelsea,Fulham,1.41471,0.493341
+EPL,2022,2023-02-04,Everton,Arsenal,2.09191,0.690102
+EPL,2022,2023-02-04,Aston Villa,Leicester,1.4989,2.49784
+EPL,2022,2023-02-04,Brentford,Southampton,2.36747,0.644385
+EPL,2022,2023-02-04,Brighton,Bournemouth,2.55696,0.908298
+EPL,2022,2023-02-04,Manchester United,Crystal Palace,2.07035,1.3798
+EPL,2022,2023-02-04,Wolverhampton Wanderers,Liverpool,2.63328,1.30193
+EPL,2022,2023-02-04,Newcastle United,West Ham,1.22883,1.27831
+EPL,2022,2023-02-05,Nottingham Forest,Leeds,0.3325,1.12331
+EPL,2022,2023-02-05,Tottenham,Manchester City,1.42168,0.773747
+EPL,2022,2023-02-08,Manchester United,Leeds,2.00007,0.554798
+EPL,2022,2023-02-11,West Ham,Chelsea,1.07615,0.900465
+EPL,2022,2023-02-11,Arsenal,Brentford,1.36738,2.17538
+EPL,2022,2023-02-11,Crystal Palace,Brighton,0.928279,2.64981
+EPL,2022,2023-02-11,Fulham,Nottingham Forest,1.69704,0.686824
+EPL,2022,2023-02-11,Leicester,Tottenham,1.41208,1.11709
+EPL,2022,2023-02-11,Southampton,Wolverhampton Wanderers,1.30203,0.615651
+EPL,2022,2023-02-11,Bournemouth,Newcastle United,1.54458,1.54853
+EPL,2022,2023-02-12,Leeds,Manchester United,1.89163,1.30375
+EPL,2022,2023-02-12,Manchester City,Aston Villa,3.60987,0.275348
+EPL,2022,2023-02-13,Liverpool,Everton,2.23291,0.402331
+EPL,2022,2023-02-15,Arsenal,Manchester City,1.70139,2.00841
+EPL,2022,2023-02-18,Aston Villa,Arsenal,0.335752,2.85981
+EPL,2022,2023-02-18,Brentford,Crystal Palace,0.610105,1.12202
+EPL,2022,2023-02-18,Brighton,Fulham,2.71375,0.224214
+EPL,2022,2023-02-18,Chelsea,Southampton,1.61723,0.619532
+EPL,2022,2023-02-18,Everton,Leeds,1.53811,0.597403
+EPL,2022,2023-02-18,Nottingham Forest,Manchester City,1.12735,2.80966
+EPL,2022,2023-02-18,Wolverhampton Wanderers,Bournemouth,0.911415,1.15274
+EPL,2022,2023-02-18,Newcastle United,Liverpool,1.74852,2.16549
+EPL,2022,2023-02-19,Manchester United,Leicester,4.24663,1.39678
+EPL,2022,2023-02-19,Tottenham,West Ham,1.43042,0.365173
+EPL,2022,2023-02-24,Fulham,Wolverhampton Wanderers,0.913133,0.997097
+EPL,2022,2023-02-25,Everton,Aston Villa,1.54109,2.06037
+EPL,2022,2023-02-25,Leeds,Southampton,0.720048,0.391128
+EPL,2022,2023-02-25,Leicester,Arsenal,0.0203463,0.722059
+EPL,2022,2023-02-25,West Ham,Nottingham Forest,3.05032,0.350849
+EPL,2022,2023-02-25,Bournemouth,Manchester City,1.08527,2.98206
+EPL,2022,2023-02-25,Crystal Palace,Liverpool,0.989086,1.35123
+EPL,2022,2023-02-26,Tottenham,Chelsea,0.926313,0.262281
+EPL,2022,2023-03-01,Liverpool,Wolverhampton Wanderers,2.70191,0.78681
+EPL,2022,2023-03-01,Arsenal,Everton,3.06919,1.604
+EPL,2022,2023-03-04,Manchester City,Newcastle United,1.34144,0.359809
+EPL,2022,2023-03-04,Arsenal,Bournemouth,2.46279,1.74267
+EPL,2022,2023-03-04,Aston Villa,Crystal Palace,0.890605,0.152761
+EPL,2022,2023-03-04,Brighton,West Ham,3.49993,0.250045
+EPL,2022,2023-03-04,Chelsea,Leeds,1.8678,0.633995
+EPL,2022,2023-03-04,Wolverhampton Wanderers,Tottenham,0.562477,1.25588
+EPL,2022,2023-03-04,Southampton,Leicester,1.34332,1.67051
+EPL,2022,2023-03-05,Nottingham Forest,Everton,0.799733,1.70877
+EPL,2022,2023-03-05,Liverpool,Manchester United,3.44269,0.837542
+EPL,2022,2023-03-06,Brentford,Fulham,2.44358,1.67531
+EPL,2022,2023-03-11,Bournemouth,Liverpool,1.10128,2.13465
+EPL,2022,2023-03-11,Everton,Brentford,1.71599,1.95088
+EPL,2022,2023-03-11,Leeds,Brighton,0.596738,1.51388
+EPL,2022,2023-03-11,Leicester,Chelsea,2.36139,1.49478
+EPL,2022,2023-03-11,Tottenham,Nottingham Forest,1.73482,1.62805
+EPL,2022,2023-03-11,Crystal Palace,Manchester City,0.185498,2.1884
+EPL,2022,2023-03-12,Fulham,Arsenal,0.61832,2.64355
+EPL,2022,2023-03-12,Manchester United,Southampton,0.910911,1.18053
+EPL,2022,2023-03-12,West Ham,Aston Villa,2.14634,1.99139
+EPL,2022,2023-03-12,Newcastle United,Wolverhampton Wanderers,2.45527,0.709895
+EPL,2022,2023-03-15,Southampton,Brentford,0.358977,1.66591
+EPL,2022,2023-03-15,Brighton,Crystal Palace,0.588727,1.21452
+EPL,2022,2023-03-17,Nottingham Forest,Newcastle United,0.531985,2.50027
+EPL,2022,2023-03-18,Aston Villa,Bournemouth,3.45474,0.50014
+EPL,2022,2023-03-18,Brentford,Leicester,0.476467,1.42133
+EPL,2022,2023-03-18,Southampton,Tottenham,2.52077,1.88473
+EPL,2022,2023-03-18,Wolverhampton Wanderers,Leeds,2.76358,1.6549
+EPL,2022,2023-03-18,Chelsea,Everton,1.90027,1.64675
+EPL,2022,2023-03-19,Arsenal,Crystal Palace,1.53568,1.19194
+EPL,2022,2023-04-01,Manchester City,Liverpool,3.01243,0.318171
+EPL,2022,2023-04-01,Arsenal,Leeds,3.29548,0.497609
+EPL,2022,2023-04-01,Bournemouth,Fulham,3.14054,0.601049
+EPL,2022,2023-04-01,Brighton,Brentford,3.8195,1.2788
+EPL,2022,2023-04-01,Crystal Palace,Leicester,1.93471,0.198959
+EPL,2022,2023-04-01,Nottingham Forest,Wolverhampton Wanderers,1.11441,0.383739
+EPL,2022,2023-04-01,Chelsea,Aston Villa,2.38024,0.765794
+EPL,2022,2023-04-02,West Ham,Southampton,1.40363,0.318261
+EPL,2022,2023-04-02,Newcastle United,Manchester United,3.33162,0.334127
+EPL,2022,2023-04-03,Everton,Tottenham,0.823365,1.39177
+EPL,2022,2023-04-04,Leicester,Aston Villa,0.671597,1.00159
+EPL,2022,2023-04-04,Bournemouth,Brighton,1.15322,2.63392
+EPL,2022,2023-04-04,Leeds,Nottingham Forest,2.43248,0.613917
+EPL,2022,2023-04-04,Chelsea,Liverpool,2.18903,0.202217
+EPL,2022,2023-04-05,West Ham,Newcastle United,0.83342,2.84091
+EPL,2022,2023-04-05,Manchester United,Brentford,1.1445,0.64499
+EPL,2022,2023-04-08,Manchester United,Everton,4.38578,0.949183
+EPL,2022,2023-04-08,Aston Villa,Nottingham Forest,1.42718,0.232452
+EPL,2022,2023-04-08,Brentford,Newcastle United,2.06521,1.02337
+EPL,2022,2023-04-08,Fulham,West Ham,0.456524,1.23261
+EPL,2022,2023-04-08,Leicester,Bournemouth,0.731965,1.92396
+EPL,2022,2023-04-08,Tottenham,Brighton,0.594139,1.47549
+EPL,2022,2023-04-08,Wolverhampton Wanderers,Chelsea,0.601153,0.815308
+EPL,2022,2023-04-08,Southampton,Manchester City,0.492801,3.05999
+EPL,2022,2023-04-09,Leeds,Crystal Palace,1.02075,3.22687
+EPL,2022,2023-04-09,Liverpool,Arsenal,4.64012,1.53631
+EPL,2022,2023-04-15,Aston Villa,Newcastle United,1.91802,0.425086
+EPL,2022,2023-04-15,Chelsea,Brighton,0.46331,2.52107
+EPL,2022,2023-04-15,Everton,Fulham,2.24262,1.92209
+EPL,2022,2023-04-15,Southampton,Crystal Palace,0.678449,0.86306
+EPL,2022,2023-04-15,Tottenham,Bournemouth,2.30604,1.20598
+EPL,2022,2023-04-15,Wolverhampton Wanderers,Brentford,0.93912,1.5133
+EPL,2022,2023-04-15,Manchester City,Leicester,1.60702,1.92692
+EPL,2022,2023-04-16,West Ham,Arsenal,1.96095,2.71782
+EPL,2022,2023-04-16,Nottingham Forest,Manchester United,1.05289,3.33747
+EPL,2022,2023-04-17,Leeds,Liverpool,1.16748,2.65476
+EPL,2022,2023-04-21,Arsenal,Southampton,2.39609,1.43063
+EPL,2022,2023-04-22,Fulham,Leeds,1.43763,1.07482
+EPL,2022,2023-04-22,Brentford,Aston Villa,2.03162,1.66602
+EPL,2022,2023-04-22,Crystal Palace,Everton,0.368137,0.433712
+EPL,2022,2023-04-22,Leicester,Wolverhampton Wanderers,2.66929,0.59626
+EPL,2022,2023-04-22,Liverpool,Nottingham Forest,3.32745,0.724666
+EPL,2022,2023-04-23,Bournemouth,West Ham,0.974687,2.52322
+EPL,2022,2023-04-23,Newcastle United,Tottenham,3.98532,0.883001
+EPL,2022,2023-04-25,Wolverhampton Wanderers,Crystal Palace,1.12829,0.580294
+EPL,2022,2023-04-25,Aston Villa,Fulham,0.839159,0.079864
+EPL,2022,2023-04-25,Leeds,Leicester,2.09645,2.08594
+EPL,2022,2023-04-26,Nottingham Forest,Brighton,2.43846,2.33064
+EPL,2022,2023-04-26,West Ham,Liverpool,0.939348,1.7045
+EPL,2022,2023-04-26,Chelsea,Brentford,1.21124,0.695344
+EPL,2022,2023-04-26,Manchester City,Arsenal,2.01168,0.398372
+EPL,2022,2023-04-27,Everton,Newcastle United,0.777008,2.86368
+EPL,2022,2023-04-27,Southampton,Bournemouth,0.477034,0.988554
+EPL,2022,2023-04-27,Tottenham,Manchester United,2.37239,1.96508
+EPL,2022,2023-04-29,Crystal Palace,West Ham,2.31888,1.98262
+EPL,2022,2023-04-29,Brentford,Nottingham Forest,1.32059,0.939693
+EPL,2022,2023-04-29,Brighton,Wolverhampton Wanderers,3.60471,0.603985
+EPL,2022,2023-04-30,Bournemouth,Leeds,2.51723,1.33691
+EPL,2022,2023-04-30,Fulham,Manchester City,0.431813,2.32338
+EPL,2022,2023-04-30,Manchester United,Aston Villa,1.3056,0.434738
+EPL,2022,2023-04-30,Newcastle United,Southampton,3.91457,0.897175
+EPL,2022,2023-04-30,Liverpool,Tottenham,2.42911,1.44927
+EPL,2022,2023-05-01,Leicester,Everton,3.32486,3.28648
+EPL,2022,2023-05-02,Arsenal,Chelsea,2.7832,0.785202
+EPL,2022,2023-05-03,Liverpool,Fulham,1.67372,0.740125
+EPL,2022,2023-05-03,Manchester City,West Ham,2.99908,0.492075
+EPL,2022,2023-05-04,Brighton,Manchester United,2.09953,1.32105
+EPL,2022,2023-05-06,Bournemouth,Chelsea,1.21755,1.76852
+EPL,2022,2023-05-06,Manchester City,Leeds,2.83472,0.140924
+EPL,2022,2023-05-06,Tottenham,Crystal Palace,1.15665,0.306669
+EPL,2022,2023-05-06,Wolverhampton Wanderers,Aston Villa,0.80605,1.50158
+EPL,2022,2023-05-06,Liverpool,Brentford,1.992,0.183892
+EPL,2022,2023-05-07,Newcastle United,Arsenal,1.37224,1.29061
+EPL,2022,2023-05-07,West Ham,Manchester United,1.76618,1.1942
+EPL,2022,2023-05-08,Fulham,Leicester,1.75276,2.92566
+EPL,2022,2023-05-08,Brighton,Everton,3.23717,2.94223
+EPL,2022,2023-05-08,Nottingham Forest,Southampton,1.91326,3.31096
+EPL,2022,2023-05-13,Leeds,Newcastle United,2.01567,2.35118
+EPL,2022,2023-05-13,Aston Villa,Tottenham,1.79987,1.18505
+EPL,2022,2023-05-13,Chelsea,Nottingham Forest,0.999181,1.96797
+EPL,2022,2023-05-13,Crystal Palace,Bournemouth,1.40237,0.262022
+EPL,2022,2023-05-13,Manchester United,Wolverhampton Wanderers,3.10118,0.268789
+EPL,2022,2023-05-13,Southampton,Fulham,0.149649,1.27085
+EPL,2022,2023-05-14,Brentford,West Ham,4.42571,0.203312
+EPL,2022,2023-05-14,Everton,Manchester City,1.18597,1.04338
+EPL,2022,2023-05-14,Arsenal,Brighton,0.958651,2.21276
+EPL,2022,2023-05-15,Leicester,Liverpool,0.527496,1.77085
+EPL,2022,2023-05-18,Newcastle United,Brighton,4.11359,0.593493
+EPL,2022,2023-05-20,Tottenham,Brentford,1.61667,1.15344
+EPL,2022,2023-05-20,Bournemouth,Manchester United,0.815723,1.71783
+EPL,2022,2023-05-20,Fulham,Crystal Palace,1.95519,1.70785
+EPL,2022,2023-05-20,Liverpool,Aston Villa,0.918508,1.46948
+EPL,2022,2023-05-20,Wolverhampton Wanderers,Everton,1.28976,2.46976
+EPL,2022,2023-05-20,Nottingham Forest,Arsenal,1.1397,0.4902
+EPL,2022,2023-05-21,West Ham,Leeds,2.48001,0.645828
+EPL,2022,2023-05-21,Brighton,Southampton,2.41418,0.863659
+EPL,2022,2023-05-21,Manchester City,Chelsea,1.20557,1.15648
+EPL,2022,2023-05-22,Newcastle United,Leicester,2.05089,0.0839072
+EPL,2022,2023-05-24,Brighton,Manchester City,2.11486,1.92973
+EPL,2022,2023-05-25,Manchester United,Chelsea,4.92231,1.68364
+EPL,2022,2023-05-28,Arsenal,Wolverhampton Wanderers,3.02466,0.38772
+EPL,2022,2023-05-28,Aston Villa,Brighton,2.55845,1.23117
+EPL,2022,2023-05-28,Brentford,Manchester City,1.43893,1.18649
+EPL,2022,2023-05-28,Chelsea,Newcastle United,2.01924,1.51899
+EPL,2022,2023-05-28,Crystal Palace,Nottingham Forest,1.00786,0.436439
+EPL,2022,2023-05-28,Everton,Bournemouth,1.12933,0.432084
+EPL,2022,2023-05-28,Leeds,Tottenham,1.19151,2.03315
+EPL,2022,2023-05-28,Leicester,West Ham,2.03013,0.970352
+EPL,2022,2023-05-28,Manchester United,Fulham,2.74766,1.88167
+EPL,2022,2023-05-28,Southampton,Liverpool,1.33964,4.00345
+EPL,2023,2023-08-11,Burnley,Manchester City,0.311032,2.40074
+EPL,2023,2023-08-12,Arsenal,Nottingham Forest,0.84262,0.966305
+EPL,2023,2023-08-12,Bournemouth,West Ham,1.51025,1.4834
+EPL,2023,2023-08-12,Brighton,Luton,4.36748,1.88594
+EPL,2023,2023-08-12,Everton,Fulham,2.59001,1.58144
+EPL,2023,2023-08-12,Sheffield United,Crystal Palace,0.422704,2.27616
+EPL,2023,2023-08-12,Newcastle United,Aston Villa,4.32208,1.486
+EPL,2023,2023-08-13,Brentford,Tottenham,1.90756,1.45316
+EPL,2023,2023-08-13,Chelsea,Liverpool,1.93258,1.29994
+EPL,2023,2023-08-14,Manchester United,Wolverhampton Wanderers,1.97087,1.72228
+EPL,2023,2023-08-18,Nottingham Forest,Sheffield United,1.37181,0.551038
+EPL,2023,2023-08-19,Wolverhampton Wanderers,Brighton,2.68821,3.15562
+EPL,2023,2023-08-19,Fulham,Brentford,0.399899,3.46888
+EPL,2023,2023-08-19,Liverpool,Bournemouth,3.25448,1.3867
+EPL,2023,2023-08-19,Tottenham,Manchester United,2.53904,2.44604
+EPL,2023,2023-08-19,Manchester City,Newcastle United,1.22528,0.257154
+EPL,2023,2023-08-20,Aston Villa,Everton,3.24336,0.721465
+EPL,2023,2023-08-20,West Ham,Chelsea,1.71234,1.60916
+EPL,2023,2023-08-21,Crystal Palace,Arsenal,1.06916,2.20593
+EPL,2023,2023-08-25,Chelsea,Luton,3.41419,0.465741
+EPL,2023,2023-08-26,Bournemouth,Tottenham,0.483582,2.26115
+EPL,2023,2023-08-26,Arsenal,Fulham,3.23088,0.849817
+EPL,2023,2023-08-26,Brentford,Crystal Palace,0.948011,1.06061
+EPL,2023,2023-08-26,Everton,Wolverhampton Wanderers,1.89792,1.40228
+EPL,2023,2023-08-26,Manchester United,Nottingham Forest,3.02803,0.960354
+EPL,2023,2023-08-26,Brighton,West Ham,1.3743,2.9527
+EPL,2023,2023-08-27,Burnley,Aston Villa,0.630605,2.83691
+EPL,2023,2023-08-27,Sheffield United,Manchester City,0.762232,3.84804
+EPL,2023,2023-08-27,Newcastle United,Liverpool,1.62037,0.856121
+EPL,2023,2023-09-01,Luton,West Ham,2.02244,1.22528
+EPL,2023,2023-09-02,Sheffield United,Everton,1.575,2.73871
+EPL,2023,2023-09-02,Manchester City,Fulham,2.00152,1.46427
+EPL,2023,2023-09-02,Brentford,Bournemouth,3.07185,2.11013
+EPL,2023,2023-09-02,Burnley,Tottenham,1.66604,2.39785
+EPL,2023,2023-09-02,Chelsea,Nottingham Forest,2.28442,1.1505
+EPL,2023,2023-09-02,Brighton,Newcastle United,1.32258,0.90476
+EPL,2023,2023-09-03,Crystal Palace,Wolverhampton Wanderers,2.32935,1.13911
+EPL,2023,2023-09-03,Liverpool,Aston Villa,2.73138,0.615503
+EPL,2023,2023-09-03,Arsenal,Manchester United,1.90973,0.966109
+EPL,2023,2023-09-16,Wolverhampton Wanderers,Liverpool,0.538833,2.82701
+EPL,2023,2023-09-16,Tottenham,Sheffield United,2.15909,0.790655
+EPL,2023,2023-09-16,West Ham,Manchester City,0.895632,4.15046
+EPL,2023,2023-09-16,Aston Villa,Crystal Palace,2.31518,1.11696
+EPL,2023,2023-09-16,Fulham,Luton,1.75704,1.45705
+EPL,2023,2023-09-16,Manchester United,Brighton,0.719951,1.93908
+EPL,2023,2023-09-16,Newcastle United,Brentford,1.50126,0.633678
+EPL,2023,2023-09-17,Bournemouth,Chelsea,1.32515,1.39677
+EPL,2023,2023-09-17,Everton,Arsenal,0.28317,0.802605
+EPL,2023,2023-09-18,Nottingham Forest,Burnley,0.705795,0.807651
+EPL,2023,2023-09-23,Luton,Wolverhampton Wanderers,2.24101,0.762984
+EPL,2023,2023-09-23,Manchester City,Nottingham Forest,1.33984,0.729109
+EPL,2023,2023-09-23,Crystal Palace,Fulham,0.37236,0.542678
+EPL,2023,2023-09-23,Brentford,Everton,1.57402,2.51497
+EPL,2023,2023-09-23,Burnley,Manchester United,0.935444,0.840273
+EPL,2023,2023-09-24,Chelsea,Aston Villa,1.19716,1.13479
+EPL,2023,2023-09-24,Brighton,Bournemouth,2.14533,1.58984
+EPL,2023,2023-09-24,Arsenal,Tottenham,2.3429,2.21166
+EPL,2023,2023-09-24,Liverpool,West Ham,4.14262,1.53878
+EPL,2023,2023-09-24,Sheffield United,Newcastle United,0.579392,5.1082
+EPL,2023,2023-09-30,Aston Villa,Brighton,1.90746,1.72819
+EPL,2023,2023-09-30,Everton,Luton,3.65377,1.5102
+EPL,2023,2023-09-30,Manchester United,Crystal Palace,1.55408,1.19015
+EPL,2023,2023-09-30,Newcastle United,Burnley,3.08516,0.801849
+EPL,2023,2023-09-30,Bournemouth,Arsenal,0.644443,4.0742
+EPL,2023,2023-09-30,West Ham,Sheffield United,3.19753,0.911997
+EPL,2023,2023-09-30,Wolverhampton Wanderers,Manchester City,0.673985,0.98075
+EPL,2023,2023-09-30,Tottenham,Liverpool,2.18823,1.12299
+EPL,2023,2023-10-01,Nottingham Forest,Brentford,0.800317,1.75862
+EPL,2023,2023-10-02,Fulham,Chelsea,0.889383,1.98461
+EPL,2023,2023-10-03,Luton,Burnley,1.53058,0.920206
+EPL,2023,2023-10-07,Luton,Tottenham,0.848118,2.37947
+EPL,2023,2023-10-07,Burnley,Chelsea,0.956642,1.97566
+EPL,2023,2023-10-07,Everton,Bournemouth,3.16482,0.981732
+EPL,2023,2023-10-07,Fulham,Sheffield United,2.26612,0.251809
+EPL,2023,2023-10-07,Manchester United,Brentford,1.29356,1.02509
+EPL,2023,2023-10-07,Crystal Palace,Nottingham Forest,0.982452,1.22105
+EPL,2023,2023-10-08,Brighton,Liverpool,2.23187,2.51029
+EPL,2023,2023-10-08,West Ham,Newcastle United,0.931345,1.97865
+EPL,2023,2023-10-08,Wolverhampton Wanderers,Aston Villa,1.76232,1.81618
+EPL,2023,2023-10-08,Arsenal,Manchester City,0.386558,0.858071
+EPL,2023,2023-10-21,Liverpool,Everton,2.28568,0.0937725
+EPL,2023,2023-10-21,Bournemouth,Wolverhampton Wanderers,1.01839,2.30454
+EPL,2023,2023-10-21,Brentford,Burnley,3.15685,0.693129
+EPL,2023,2023-10-21,Manchester City,Brighton,0.962509,0.963733
+EPL,2023,2023-10-21,Newcastle United,Crystal Palace,3.73336,1.08795
+EPL,2023,2023-10-21,Nottingham Forest,Luton,3.27549,1.49555
+EPL,2023,2023-10-21,Chelsea,Arsenal,1.71838,1.05791
+EPL,2023,2023-10-21,Sheffield United,Manchester United,1.41074,1.46187
+EPL,2023,2023-10-22,Aston Villa,West Ham,2.34143,0.659622
+EPL,2023,2023-10-23,Tottenham,Fulham,1.63523,0.745838
+EPL,2023,2023-10-27,Crystal Palace,Tottenham,0.561834,0.989103
+EPL,2023,2023-10-28,Chelsea,Brentford,1.71801,2.48137
+EPL,2023,2023-10-28,Bournemouth,Burnley,1.10052,0.90255
+EPL,2023,2023-10-28,Arsenal,Sheffield United,3.03496,0.0281554
+EPL,2023,2023-10-28,Wolverhampton Wanderers,Newcastle United,0.863393,2.31987
+EPL,2023,2023-10-29,West Ham,Everton,0.618578,0.733813
+EPL,2023,2023-10-29,Aston Villa,Luton,3.07654,0.453117
+EPL,2023,2023-10-29,Brighton,Fulham,1.31996,0.552523
+EPL,2023,2023-10-29,Liverpool,Nottingham Forest,2.70428,0.642014
+EPL,2023,2023-10-29,Manchester United,Manchester City,0.714628,4.54595
+EPL,2023,2023-11-04,Fulham,Manchester United,1.18241,0.697095
+EPL,2023,2023-11-04,Brentford,West Ham,1.82944,1.75505
+EPL,2023,2023-11-04,Burnley,Crystal Palace,1.4998,1.43653
+EPL,2023,2023-11-04,Everton,Brighton,0.617607,0.442489
+EPL,2023,2023-11-04,Manchester City,Bournemouth,2.39949,0.643127
+EPL,2023,2023-11-04,Sheffield United,Wolverhampton Wanderers,1.10165,1.14803
+EPL,2023,2023-11-04,Newcastle United,Arsenal,1.12355,0.535473
+EPL,2023,2023-11-05,Nottingham Forest,Aston Villa,0.592447,1.33116
+EPL,2023,2023-11-05,Luton,Liverpool,1.3411,3.03925
+EPL,2023,2023-11-06,Tottenham,Chelsea,0.959108,4.05865
+EPL,2023,2023-11-11,Wolverhampton Wanderers,Tottenham,1.90884,0.432315
+EPL,2023,2023-11-11,Arsenal,Burnley,2.63194,0.327706
+EPL,2023,2023-11-11,Crystal Palace,Everton,1.89194,1.7904
+EPL,2023,2023-11-11,Manchester United,Luton,2.74105,0.408265
+EPL,2023,2023-11-11,Bournemouth,Newcastle United,2.78424,0.306141
+EPL,2023,2023-11-12,Aston Villa,Fulham,2.86039,0.648745
+EPL,2023,2023-11-12,Brighton,Sheffield United,1.08601,0.84434
+EPL,2023,2023-11-12,Liverpool,Brentford,1.56004,1.44954
+EPL,2023,2023-11-12,West Ham,Nottingham Forest,2.06402,1.42128
+EPL,2023,2023-11-12,Chelsea,Manchester City,3.47238,3.19324
+EPL,2023,2023-11-25,Manchester City,Liverpool,1.79622,0.766278
+EPL,2023,2023-11-25,Burnley,West Ham,1.44228,1.36963
+EPL,2023,2023-11-25,Luton,Crystal Palace,0.996153,1.83546
+EPL,2023,2023-11-25,Newcastle United,Chelsea,2.15227,0.968061
+EPL,2023,2023-11-25,Nottingham Forest,Brighton,2.22655,1.21792
+EPL,2023,2023-11-25,Sheffield United,Bournemouth,0.816227,3.13975
+EPL,2023,2023-11-25,Brentford,Arsenal,1.66315,1.82699
+EPL,2023,2023-11-26,Tottenham,Aston Villa,2.22542,2.39755
+EPL,2023,2023-11-26,Everton,Manchester United,2.49764,2.07334
+EPL,2023,2023-11-27,Fulham,Wolverhampton Wanderers,2.49057,1.57875
+EPL,2023,2023-12-02,Arsenal,Wolverhampton Wanderers,3.30368,1.07886
+EPL,2023,2023-12-02,Brentford,Luton,3.25952,0.227176
+EPL,2023,2023-12-02,Burnley,Sheffield United,2.60469,0.618131
+EPL,2023,2023-12-02,Nottingham Forest,Everton,0.673085,0.623789
+EPL,2023,2023-12-02,Newcastle United,Manchester United,2.90191,0.422674
+EPL,2023,2023-12-03,Bournemouth,Aston Villa,2.54937,0.89511
+EPL,2023,2023-12-03,Chelsea,Brighton,1.66304,0.855058
+EPL,2023,2023-12-03,Liverpool,Fulham,2.72831,1.51005
+EPL,2023,2023-12-03,West Ham,Crystal Palace,1.1466,0.987682
+EPL,2023,2023-12-03,Manchester City,Tottenham,2.90729,0.433077
+EPL,2023,2023-12-05,Wolverhampton Wanderers,Burnley,1.11886,0.781542
+EPL,2023,2023-12-05,Luton,Arsenal,0.526254,2.58815
+EPL,2023,2023-12-06,Brighton,Brentford,1.54099,1.22007
+EPL,2023,2023-12-06,Fulham,Nottingham Forest,3.09427,0.218659
+EPL,2023,2023-12-06,Sheffield United,Liverpool,0.834172,1.80116
+EPL,2023,2023-12-06,Crystal Palace,Bournemouth,1.26441,1.79997
+EPL,2023,2023-12-06,Aston Villa,Manchester City,2.1922,1.00198
+EPL,2023,2023-12-06,Manchester United,Chelsea,4.03949,2.3512
+EPL,2023,2023-12-07,Everton,Newcastle United,2.95393,1.29564
+EPL,2023,2023-12-07,Tottenham,West Ham,1.61268,1.7409
+EPL,2023,2023-12-09,Crystal Palace,Liverpool,1.79152,1.3708
+EPL,2023,2023-12-09,Brighton,Burnley,2.96247,1.05162
+EPL,2023,2023-12-09,Manchester United,Bournemouth,1.11296,1.9742
+EPL,2023,2023-12-09,Sheffield United,Brentford,0.841976,0.644638
+EPL,2023,2023-12-09,Wolverhampton Wanderers,Nottingham Forest,1.02199,1.21801
+EPL,2023,2023-12-09,Aston Villa,Arsenal,0.628499,1.71667
+EPL,2023,2023-12-10,Everton,Chelsea,1.11437,0.885512
+EPL,2023,2023-12-10,Fulham,West Ham,2.1884,0.983
+EPL,2023,2023-12-10,Luton,Manchester City,0.689037,2.23353
+EPL,2023,2023-12-10,Tottenham,Newcastle United,4.40118,1.61368
+EPL,2023,2023-12-15,Nottingham Forest,Tottenham,1.70569,1.60738
+EPL,2023,2023-12-16,Chelsea,Sheffield United,3.27322,0.44014
+EPL,2023,2023-12-16,Manchester City,Crystal Palace,2.41646,1.64977
+EPL,2023,2023-12-16,Newcastle United,Fulham,4.27933,0.471042
+EPL,2023,2023-12-16,Burnley,Everton,0.811435,2.22305
+EPL,2023,2023-12-17,Arsenal,Brighton,2.76976,0.663054
+EPL,2023,2023-12-17,Brentford,Aston Villa,0.796812,1.4664
+EPL,2023,2023-12-17,West Ham,Wolverhampton Wanderers,1.03828,0.556206
+EPL,2023,2023-12-17,Liverpool,Manchester United,1.97111,0.632715
+EPL,2023,2023-12-21,Crystal Palace,Brighton,1.65409,1.33653
+EPL,2023,2023-12-22,Aston Villa,Sheffield United,1.21861,0.646159
+EPL,2023,2023-12-23,West Ham,Manchester United,1.51468,0.730496
+EPL,2023,2023-12-23,Fulham,Burnley,1.38096,0.41714
+EPL,2023,2023-12-23,Luton,Newcastle United,1.81844,1.41488
+EPL,2023,2023-12-23,Nottingham Forest,Bournemouth,0.791806,1.89067
+EPL,2023,2023-12-23,Tottenham,Everton,1.57527,1.98385
+EPL,2023,2023-12-23,Liverpool,Arsenal,0.982901,0.851681
+EPL,2023,2023-12-24,Wolverhampton Wanderers,Chelsea,1.74626,1.75447
+EPL,2023,2023-12-26,Newcastle United,Nottingham Forest,2.79106,3.1074
+EPL,2023,2023-12-26,Bournemouth,Fulham,2.07911,0.324365
+EPL,2023,2023-12-26,Sheffield United,Luton,3.61788,0.715575
+EPL,2023,2023-12-26,Burnley,Liverpool,0.972389,1.68451
+EPL,2023,2023-12-26,Manchester United,Aston Villa,1.20104,1.83637
+EPL,2023,2023-12-27,Brentford,Wolverhampton Wanderers,2.59347,1.89483
+EPL,2023,2023-12-27,Chelsea,Crystal Palace,2.73005,0.958077
+EPL,2023,2023-12-27,Everton,Manchester City,1.23529,2.28321
+EPL,2023,2023-12-28,Brighton,Tottenham,3.84702,2.06955
+EPL,2023,2023-12-28,Arsenal,West Ham,2.7884,1.59711
+EPL,2023,2023-12-30,Luton,Chelsea,2.64093,1.57463
+EPL,2023,2023-12-30,Aston Villa,Burnley,2.92587,1.11923
+EPL,2023,2023-12-30,Crystal Palace,Brentford,1.61057,1.28731
+EPL,2023,2023-12-30,Manchester City,Sheffield United,2.24229,0.263211
+EPL,2023,2023-12-30,Wolverhampton Wanderers,Everton,2.64477,0.519641
+EPL,2023,2023-12-30,Nottingham Forest,Manchester United,0.744348,0.651905
+EPL,2023,2023-12-31,Fulham,Arsenal,1.52829,1.6591
+EPL,2023,2023-12-31,Tottenham,Bournemouth,2.15027,1.58229
+EPL,2023,2024-01-01,Liverpool,Newcastle United,6.67151,0.910974
+EPL,2023,2024-01-02,West Ham,Brighton,0.9831,2.1552
+EPL,2023,2024-01-12,Burnley,Luton,1.52023,0.965167
+EPL,2023,2024-01-13,Chelsea,Fulham,2.0456,0.697847
+EPL,2023,2024-01-13,Newcastle United,Manchester City,1.23638,2.55452
+EPL,2023,2024-01-14,Everton,Aston Villa,1.03664,1.3435
+EPL,2023,2024-01-14,Manchester United,Tottenham,0.923233,1.31224
+EPL,2023,2024-01-20,Arsenal,Crystal Palace,3.52167,0.288083
+EPL,2023,2024-01-20,Brentford,Nottingham Forest,1.94219,1.22251
+EPL,2023,2024-01-21,Sheffield United,West Ham,2.61362,2.4241
+EPL,2023,2024-01-21,Bournemouth,Liverpool,0.834585,1.53344
+EPL,2023,2024-01-22,Brighton,Wolverhampton Wanderers,1.3701,1.14116
+EPL,2023,2024-01-30,Nottingham Forest,Arsenal,0.631618,1.39143
+EPL,2023,2024-01-30,Fulham,Everton,2.37499,2.83317
+EPL,2023,2024-01-30,Luton,Brighton,3.63312,1.01366
+EPL,2023,2024-01-30,Crystal Palace,Sheffield United,1.1601,0.768467
+EPL,2023,2024-01-30,Aston Villa,Newcastle United,1.44485,3.3224
+EPL,2023,2024-01-31,Tottenham,Brentford,3.36194,1.59637
+EPL,2023,2024-01-31,Manchester City,Burnley,1.84756,1.49114
+EPL,2023,2024-01-31,Liverpool,Chelsea,3.6627,0.477972
+EPL,2023,2024-02-01,West Ham,Bournemouth,1.3128,1.13487
+EPL,2023,2024-02-01,Wolverhampton Wanderers,Manchester United,2.27609,3.22698
+EPL,2023,2024-02-03,Everton,Tottenham,3.25881,0.922371
+EPL,2023,2024-02-03,Brighton,Crystal Palace,1.92591,0.241137
+EPL,2023,2024-02-03,Burnley,Fulham,1.00428,1.28806
+EPL,2023,2024-02-03,Newcastle United,Luton,2.37353,2.67463
+EPL,2023,2024-02-03,Sheffield United,Aston Villa,1.52784,2.99015
+EPL,2023,2024-02-04,Bournemouth,Nottingham Forest,1.1895,0.456548
+EPL,2023,2024-02-04,Chelsea,Wolverhampton Wanderers,2.35967,2.48996
+EPL,2023,2024-02-04,Manchester United,West Ham,0.96721,1.1807
+EPL,2023,2024-02-04,Arsenal,Liverpool,2.8526,0.542052
+EPL,2023,2024-02-05,Brentford,Manchester City,0.865741,2.10785
+EPL,2023,2024-02-10,Manchester City,Everton,1.58971,0.192072
+EPL,2023,2024-02-10,Fulham,Bournemouth,1.7456,2.60612
+EPL,2023,2024-02-10,Liverpool,Burnley,3.14734,1.11123
+EPL,2023,2024-02-10,Luton,Sheffield United,1.76215,1.98283
+EPL,2023,2024-02-10,Tottenham,Brighton,2.10928,1.49285
+EPL,2023,2024-02-10,Wolverhampton Wanderers,Brentford,1.05781,1.84908
+EPL,2023,2024-02-10,Nottingham Forest,Newcastle United,0.968075,0.511375
+EPL,2023,2024-02-11,West Ham,Arsenal,0.191065,3.99893
+EPL,2023,2024-02-11,Aston Villa,Manchester United,2.64675,2.44591
+EPL,2023,2024-02-12,Crystal Palace,Chelsea,0.719516,1.26948
+EPL,2023,2024-02-17,Brentford,Liverpool,1.69518,3.08952
+EPL,2023,2024-02-17,Burnley,Arsenal,0.335143,2.20575
+EPL,2023,2024-02-17,Fulham,Aston Villa,1.41796,1.57297
+EPL,2023,2024-02-17,Newcastle United,Bournemouth,2.38425,2.08098
+EPL,2023,2024-02-17,Nottingham Forest,West Ham,2.66942,0.520016
+EPL,2023,2024-02-17,Tottenham,Wolverhampton Wanderers,1.59768,1.77591
+EPL,2023,2024-02-17,Manchester City,Chelsea,2.77713,1.82903
+EPL,2023,2024-02-18,Sheffield United,Brighton,0.586214,3.35549
+EPL,2023,2024-02-18,Luton,Manchester United,1.57234,3.58973
+EPL,2023,2024-02-19,Everton,Crystal Palace,2.44588,0.734685
+EPL,2023,2024-02-20,Manchester City,Brentford,2.53766,0.503799
+EPL,2023,2024-02-21,Liverpool,Luton,3.70302,0.956512
+EPL,2023,2024-02-24,Aston Villa,Nottingham Forest,3.48861,2.25569
+EPL,2023,2024-02-24,Brighton,Everton,1.6538,0.286655
+EPL,2023,2024-02-24,Crystal Palace,Burnley,2.41612,0.0760216
+EPL,2023,2024-02-24,Manchester United,Fulham,1.96036,1.1385
+EPL,2023,2024-02-24,Bournemouth,Manchester City,0.925889,1.79636
+EPL,2023,2024-02-24,Arsenal,Newcastle United,2.59336,0.217373
+EPL,2023,2024-02-25,Wolverhampton Wanderers,Sheffield United,1.21618,0.654342
+EPL,2023,2024-02-26,West Ham,Brentford,2.06873,1.33683
+EPL,2023,2024-03-02,Brentford,Chelsea,2.4732,2.1523
+EPL,2023,2024-03-02,Everton,West Ham,3.12075,2.17948
+EPL,2023,2024-03-02,Fulham,Brighton,1.37604,1.15198
+EPL,2023,2024-03-02,Newcastle United,Wolverhampton Wanderers,3.33495,0.507769
+EPL,2023,2024-03-02,Nottingham Forest,Liverpool,0.971466,1.32259
+EPL,2023,2024-03-02,Tottenham,Crystal Palace,2.6625,0.277887
+EPL,2023,2024-03-02,Luton,Aston Villa,2.43312,2.08586
+EPL,2023,2024-03-03,Burnley,Bournemouth,1.60461,1.43616
+EPL,2023,2024-03-03,Manchester City,Manchester United,2.64173,0.153764
+EPL,2023,2024-03-04,Sheffield United,Arsenal,0.201374,2.47294
+EPL,2023,2024-03-09,Manchester United,Everton,2.9016,1.8214
+EPL,2023,2024-03-09,Bournemouth,Sheffield United,3.92657,1.91752
+EPL,2023,2024-03-09,Crystal Palace,Luton,3.25103,1.08531
+EPL,2023,2024-03-09,Wolverhampton Wanderers,Fulham,1.29589,2.94155
+EPL,2023,2024-03-09,Arsenal,Brentford,1.59369,0.733239
+EPL,2023,2024-03-10,Aston Villa,Tottenham,1.23267,2.25381
+EPL,2023,2024-03-10,Brighton,Nottingham Forest,0.534518,0.687034
+EPL,2023,2024-03-10,West Ham,Burnley,1.87414,0.88131
+EPL,2023,2024-03-10,Liverpool,Manchester City,2.25492,1.37289
+EPL,2023,2024-03-11,Chelsea,Newcastle United,1.78315,0.568435
+EPL,2023,2024-03-13,Bournemouth,Luton,2.84403,2.79419
+EPL,2023,2024-03-16,Burnley,Brentford,2.69776,1.25123
+EPL,2023,2024-03-16,Luton,Nottingham Forest,0.853782,1.95268
+EPL,2023,2024-03-16,Fulham,Tottenham,2.47234,2.14564
+EPL,2023,2024-03-17,West Ham,Aston Villa,1.32829,0.911274
+EPL,2023,2024-03-30,Newcastle United,West Ham,3.80922,0.994584
+EPL,2023,2024-03-30,Bournemouth,Everton,1.39268,0.93378
+EPL,2023,2024-03-30,Chelsea,Burnley,4.46643,2.10422
+EPL,2023,2024-03-30,Nottingham Forest,Crystal Palace,0.784652,0.900972
+EPL,2023,2024-03-30,Sheffield United,Fulham,1.78824,1.10254
+EPL,2023,2024-03-30,Tottenham,Luton,2.46523,0.402402
+EPL,2023,2024-03-30,Aston Villa,Wolverhampton Wanderers,1.28271,1.66232
+EPL,2023,2024-03-30,Brentford,Manchester United,3.16487,0.989565
+EPL,2023,2024-03-31,Liverpool,Brighton,3.21149,0.43922
+EPL,2023,2024-03-31,Manchester City,Arsenal,1.22009,0.511402
+EPL,2023,2024-04-02,Nottingham Forest,Fulham,1.94619,1.04304
+EPL,2023,2024-04-02,Newcastle United,Everton,2.65009,1.69834
+EPL,2023,2024-04-02,Bournemouth,Crystal Palace,1.30969,0.174389
+EPL,2023,2024-04-02,Burnley,Wolverhampton Wanderers,1.12581,1.01021
+EPL,2023,2024-04-02,West Ham,Tottenham,1.47017,1.39423
+EPL,2023,2024-04-03,Arsenal,Luton,1.14384,0.292082
+EPL,2023,2024-04-03,Brentford,Brighton,0.423299,1.22404
+EPL,2023,2024-04-03,Manchester City,Aston Villa,3.87704,1.18643
+EPL,2023,2024-04-04,Liverpool,Sheffield United,2.51772,0.720948
+EPL,2023,2024-04-04,Chelsea,Manchester United,3.48048,1.56686
+EPL,2023,2024-04-06,Crystal Palace,Manchester City,1.49472,2.26381
+EPL,2023,2024-04-06,Aston Villa,Brentford,1.16333,1.42064
+EPL,2023,2024-04-06,Everton,Burnley,0.659844,0.34699
+EPL,2023,2024-04-06,Fulham,Newcastle United,0.834564,1.18012
+EPL,2023,2024-04-06,Luton,Bournemouth,1.30478,0.616108
+EPL,2023,2024-04-06,Wolverhampton Wanderers,West Ham,1.78341,1.14133
+EPL,2023,2024-04-06,Brighton,Arsenal,0.428514,4.16518
+EPL,2023,2024-04-07,Manchester United,Liverpool,0.814509,4.43457
+EPL,2023,2024-04-07,Sheffield United,Chelsea,1.74265,0.521789
+EPL,2023,2024-04-07,Tottenham,Nottingham Forest,1.61978,2.00122
+EPL,2023,2024-04-13,Newcastle United,Tottenham,3.1483,0.737596
+EPL,2023,2024-04-13,Brentford,Sheffield United,1.09071,0.834498
+EPL,2023,2024-04-13,Burnley,Brighton,1.8522,0.889445
+EPL,2023,2024-04-13,Manchester City,Luton,4.64245,0.809775
+EPL,2023,2024-04-13,Nottingham Forest,Wolverhampton Wanderers,1.76244,1.45688
+EPL,2023,2024-04-13,Bournemouth,Manchester United,2.38519,1.52274
+EPL,2023,2024-04-14,Liverpool,Crystal Palace,3.04497,2.12879
+EPL,2023,2024-04-14,West Ham,Fulham,1.45307,3.61413
+EPL,2023,2024-04-14,Arsenal,Aston Villa,1.89003,0.929049
+EPL,2023,2024-04-15,Chelsea,Everton,3.37093,1.21791
+EPL,2023,2024-04-20,Luton,Brentford,0.497799,3.7809
+EPL,2023,2024-04-20,Sheffield United,Burnley,1.97816,2.42338
+EPL,2023,2024-04-20,Wolverhampton Wanderers,Arsenal,0.164516,1.66179
+EPL,2023,2024-04-21,Everton,Nottingham Forest,0.473233,1.18916
+EPL,2023,2024-04-21,Aston Villa,Bournemouth,2.62687,2.05211
+EPL,2023,2024-04-21,Crystal Palace,West Ham,3.7185,1.34536
+EPL,2023,2024-04-21,Fulham,Liverpool,0.83885,1.02445
+EPL,2023,2024-04-23,Arsenal,Chelsea,3.45858,1.60343
+EPL,2023,2024-04-24,Wolverhampton Wanderers,Bournemouth,0.484454,2.40311
+EPL,2023,2024-04-24,Crystal Palace,Newcastle United,1.43661,0.55129
+EPL,2023,2024-04-24,Everton,Liverpool,1.89111,1.87155
+EPL,2023,2024-04-24,Manchester United,Sheffield United,3.51311,1.20517
+EPL,2023,2024-04-25,Brighton,Manchester City,0.572021,1.90507
+EPL,2023,2024-04-27,West Ham,Liverpool,0.794025,2.29298
+EPL,2023,2024-04-27,Fulham,Crystal Palace,1.39418,1.05387
+EPL,2023,2024-04-27,Manchester United,Burnley,3.06197,1.89591
+EPL,2023,2024-04-27,Newcastle United,Sheffield United,2.93477,1.82408
+EPL,2023,2024-04-27,Wolverhampton Wanderers,Luton,1.49011,0.90435
+EPL,2023,2024-04-27,Everton,Brentford,1.21399,0.956356
+EPL,2023,2024-04-27,Aston Villa,Chelsea,0.612257,1.56401
+EPL,2023,2024-04-28,Bournemouth,Brighton,2.48132,1.35682
+EPL,2023,2024-04-28,Tottenham,Arsenal,2.60458,1.51469
+EPL,2023,2024-04-28,Nottingham Forest,Manchester City,2.17312,0.932063
+EPL,2023,2024-05-02,Chelsea,Tottenham,2.22432,1.27064
+EPL,2023,2024-05-03,Luton,Everton,0.950391,1.22959
+EPL,2023,2024-05-04,Arsenal,Bournemouth,3.91372,0.4687
+EPL,2023,2024-05-04,Brentford,Fulham,0.809379,1.45579
+EPL,2023,2024-05-04,Burnley,Newcastle United,1.28632,4.25643
+EPL,2023,2024-05-04,Sheffield United,Nottingham Forest,2.48986,1.93818
+EPL,2023,2024-05-04,Manchester City,Wolverhampton Wanderers,4.52542,0.396887
+EPL,2023,2024-05-05,Brighton,Aston Villa,2.63566,0.0644055
+EPL,2023,2024-05-05,Chelsea,West Ham,4.21838,0.893899
+EPL,2023,2024-05-05,Liverpool,Tottenham,3.26222,1.17205
+EPL,2023,2024-05-06,Crystal Palace,Manchester United,2.0656,0.341417
+EPL,2023,2024-05-11,Fulham,Manchester City,0.0886245,3.15218
+EPL,2023,2024-05-11,Bournemouth,Brentford,1.07237,1.92722
+EPL,2023,2024-05-11,Everton,Sheffield United,1.82411,0.465523
+EPL,2023,2024-05-11,Newcastle United,Brighton,2.45163,1.91556
+EPL,2023,2024-05-11,Tottenham,Burnley,3.00238,0.950331
+EPL,2023,2024-05-11,West Ham,Luton,3.71009,0.640456
+EPL,2023,2024-05-11,Wolverhampton Wanderers,Crystal Palace,1.1561,2.51452
+EPL,2023,2024-05-11,Nottingham Forest,Chelsea,2.44569,2.41068
+EPL,2023,2024-05-12,Manchester United,Arsenal,0.551669,1.73104
+EPL,2023,2024-05-13,Aston Villa,Liverpool,2.71655,1.89968
+EPL,2023,2024-05-14,Tottenham,Manchester City,1.84285,2.70331
+EPL,2023,2024-05-15,Brighton,Chelsea,1.32423,1.544
+EPL,2023,2024-05-15,Manchester United,Newcastle United,1.49706,2.27657
+EPL,2023,2024-05-19,Arsenal,Everton,3.2117,0.664904
+EPL,2023,2024-05-19,Brentford,Newcastle United,1.70157,3.65044
+EPL,2023,2024-05-19,Brighton,Manchester United,1.9717,1.00404
+EPL,2023,2024-05-19,Burnley,Nottingham Forest,1.08222,1.57962
+EPL,2023,2024-05-19,Chelsea,Bournemouth,1.59771,2.002
+EPL,2023,2024-05-19,Crystal Palace,Aston Villa,2.23189,0.598846
+EPL,2023,2024-05-19,Liverpool,Wolverhampton Wanderers,5.65937,0.731254
+EPL,2023,2024-05-19,Luton,Fulham,2.06743,1.11598
+EPL,2023,2024-05-19,Manchester City,West Ham,2.31504,0.240159
+EPL,2023,2024-05-19,Sheffield United,Tottenham,0.697312,3.19675
+EPL,2024,2024-08-16,Manchester United,Fulham,2.04268,0.418711
+EPL,2024,2024-08-17,Ipswich,Liverpool,0.342601,3.92906
+EPL,2024,2024-08-17,Arsenal,Wolverhampton Wanderers,1.6283,0.575835
+EPL,2024,2024-08-17,Everton,Brighton,0.405325,1.79083
+EPL,2024,2024-08-17,Newcastle United,Southampton,0.433489,1.95483
+EPL,2024,2024-08-17,Nottingham Forest,Bournemouth,1.24405,1.90915
+EPL,2024,2024-08-17,West Ham,Aston Villa,2.8047,2.6703
+EPL,2024,2024-08-18,Brentford,Crystal Palace,1.38064,1.14757
+EPL,2024,2024-08-18,Chelsea,Manchester City,1.06123,1.18038
+EPL,2024,2024-08-19,Leicester,Tottenham,1.02614,1.40775
+EPL,2024,2024-08-24,Brighton,Manchester United,2.14153,1.28556
+EPL,2024,2024-08-24,Crystal Palace,West Ham,1.3761,1.53421
+EPL,2024,2024-08-24,Fulham,Leicester,1.96218,0.857005
+EPL,2024,2024-08-24,Manchester City,Ipswich,3.07818,0.479999
+EPL,2024,2024-08-24,Southampton,Nottingham Forest,0.214952,2.86475
+EPL,2024,2024-08-24,Tottenham,Everton,2.61143,0.648869
+EPL,2024,2024-08-24,Aston Villa,Arsenal,1.31664,1.41399
+EPL,2024,2024-08-25,Wolverhampton Wanderers,Chelsea,2.4181,2.02935
+EPL,2024,2024-08-25,Bournemouth,Newcastle United,2.53513,1.89287
+EPL,2024,2024-08-25,Liverpool,Brentford,2.71877,0.457239
+EPL,2024,2024-08-31,Arsenal,Brighton,2.41798,1.81748
+EPL,2024,2024-08-31,Brentford,Southampton,3.86281,1.64713
+EPL,2024,2024-08-31,Everton,Bournemouth,2.55629,2.95688
+EPL,2024,2024-08-31,Ipswich,Fulham,0.707048,1.18883
+EPL,2024,2024-08-31,Leicester,Aston Villa,0.774741,2.16385
+EPL,2024,2024-08-31,Nottingham Forest,Wolverhampton Wanderers,1.41069,0.937632
+EPL,2024,2024-08-31,West Ham,Manchester City,0.947201,3.19297
+EPL,2024,2024-09-01,Newcastle United,Tottenham,1.58694,1.63304
+EPL,2024,2024-09-01,Chelsea,Crystal Palace,2.97743,0.459708
+EPL,2024,2024-09-01,Manchester United,Liverpool,1.50087,2.10397
+EPL,2024,2024-09-14,Southampton,Manchester United,1.35593,3.02693
+EPL,2024,2024-09-14,Brighton,Ipswich,1.75696,0.721323
+EPL,2024,2024-09-14,Fulham,West Ham,2.88601,0.682719
+EPL,2024,2024-09-14,Liverpool,Nottingham Forest,1.17044,0.589532
+EPL,2024,2024-09-14,Crystal Palace,Leicester,2.88716,1.65187
+EPL,2024,2024-09-14,Manchester City,Brentford,1.55279,1.05094
+EPL,2024,2024-09-14,Aston Villa,Everton,3.15876,0.852158
+EPL,2024,2024-09-14,Bournemouth,Chelsea,1.53731,0.932726
+EPL,2024,2024-09-15,Tottenham,Arsenal,0.792595,1.1209
+EPL,2024,2024-09-15,Wolverhampton Wanderers,Newcastle United,1.46969,1.48343
+EPL,2024,2024-09-21,West Ham,Chelsea,0.758267,2.39727
+EPL,2024,2024-09-21,Southampton,Ipswich,2.89813,1.645
+EPL,2024,2024-09-21,Leicester,Everton,1.33793,1.82377
+EPL,2024,2024-09-21,Liverpool,Bournemouth,2.43731,1.46979
+EPL,2024,2024-09-21,Fulham,Newcastle United,3.21141,1.09768
+EPL,2024,2024-09-21,Aston Villa,Wolverhampton Wanderers,2.37351,0.520117
+EPL,2024,2024-09-21,Tottenham,Brentford,3.89481,0.893565
+EPL,2024,2024-09-21,Crystal Palace,Manchester United,1.66928,2.35056
+EPL,2024,2024-09-22,Brighton,Nottingham Forest,1.56836,1.36923
+EPL,2024,2024-09-22,Manchester City,Arsenal,2.75588,1.28411
+EPL,2024,2024-09-28,Newcastle United,Manchester City,1.34344,1.26516
+EPL,2024,2024-09-28,Nottingham Forest,Fulham,0.614351,1.43592
+EPL,2024,2024-09-28,Everton,Crystal Palace,1.10959,1.12358
+EPL,2024,2024-09-28,Arsenal,Leicester,6.05305,0.337909
+EPL,2024,2024-09-28,Brentford,West Ham,0.370222,0.878617
+EPL,2024,2024-09-28,Chelsea,Brighton,3.65839,1.20712
+EPL,2024,2024-09-28,Wolverhampton Wanderers,Liverpool,0.748925,2.11724
+EPL,2024,2024-09-29,Ipswich,Aston Villa,1.84608,1.14494
+EPL,2024,2024-09-29,Manchester United,Tottenham,0.600721,5.4072
+EPL,2024,2024-09-30,Bournemouth,Southampton,1.44215,0.696068
+EPL,2024,2024-10-05,Crystal Palace,Liverpool,0.609481,2.07332
+EPL,2024,2024-10-05,Leicester,Bournemouth,0.912063,1.94963
+EPL,2024,2024-10-05,Manchester City,Fulham,1.36684,2.75846
+EPL,2024,2024-10-05,West Ham,Ipswich,4.39402,1.18463
+EPL,2024,2024-10-05,Arsenal,Southampton,3.25165,1.27313
+EPL,2024,2024-10-05,Brentford,Wolverhampton Wanderers,4.13513,0.696254
+EPL,2024,2024-10-05,Everton,Newcastle United,0.692214,1.79048
+EPL,2024,2024-10-06,Chelsea,Nottingham Forest,2.27752,1.66654
+EPL,2024,2024-10-06,Aston Villa,Manchester United,0.532809,0.448537
+EPL,2024,2024-10-06,Brighton,Tottenham,1.97217,1.09279
+EPL,2024,2024-10-19,Tottenham,West Ham,1.44052,0.858803
+EPL,2024,2024-10-19,Fulham,Aston Villa,2.63074,1.43595
+EPL,2024,2024-10-19,Ipswich,Everton,1.174,1.60804
+EPL,2024,2024-10-19,Manchester United,Brentford,1.76555,0.892843
+EPL,2024,2024-10-19,Newcastle United,Brighton,1.93657,1.6779
+EPL,2024,2024-10-19,Southampton,Leicester,2.42776,2.83826
+EPL,2024,2024-10-19,Bournemouth,Arsenal,2.18419,0.740758
+EPL,2024,2024-10-20,Wolverhampton Wanderers,Manchester City,0.761217,1.36569
+EPL,2024,2024-10-20,Liverpool,Chelsea,2.22517,1.33904
+EPL,2024,2024-10-21,Nottingham Forest,Crystal Palace,1.88573,0.835001
+EPL,2024,2024-10-25,Leicester,Nottingham Forest,0.832415,2.54488
+EPL,2024,2024-10-26,Manchester City,Southampton,3.16286,0.369989
+EPL,2024,2024-10-26,Aston Villa,Bournemouth,1.974,0.328651
+EPL,2024,2024-10-26,Brentford,Ipswich,4.09663,1.65698
+EPL,2024,2024-10-26,Brighton,Wolverhampton Wanderers,1.51347,1.11074
+EPL,2024,2024-10-26,Everton,Fulham,0.884845,1.49531
+EPL,2024,2024-10-27,Chelsea,Newcastle United,1.61794,1.74225
+EPL,2024,2024-10-27,Crystal Palace,Tottenham,0.978611,1.0192
+EPL,2024,2024-10-27,West Ham,Manchester United,2.99312,2.62598
+EPL,2024,2024-10-27,Arsenal,Liverpool,1.0883,1.35346
+EPL,2024,2024-11-02,Newcastle United,Arsenal,0.859715,0.911305
+EPL,2024,2024-11-02,Bournemouth,Manchester City,2.4493,2.3527
+EPL,2024,2024-11-02,Ipswich,Leicester,1.33617,2.33858
+EPL,2024,2024-11-02,Liverpool,Brighton,1.81037,1.01568
+EPL,2024,2024-11-02,Nottingham Forest,West Ham,2.35011,0.132317
+EPL,2024,2024-11-02,Southampton,Everton,0.540345,1.78581
+EPL,2024,2024-11-02,Wolverhampton Wanderers,Crystal Palace,1.65018,2.64849
+EPL,2024,2024-11-03,Tottenham,Aston Villa,2.09751,2.48749
+EPL,2024,2024-11-03,Manchester United,Chelsea,2.1605,1.21071
+EPL,2024,2024-11-04,Fulham,Brentford,1.43017,0.739231
+EPL,2024,2024-11-09,Brentford,Bournemouth,1.56474,2.49234
+EPL,2024,2024-11-09,Crystal Palace,Fulham,1.96037,2.25331
+EPL,2024,2024-11-09,West Ham,Everton,1.1237,0.865983
+EPL,2024,2024-11-09,Wolverhampton Wanderers,Southampton,0.912781,0.792655
+EPL,2024,2024-11-09,Brighton,Manchester City,2.87116,2.60334
+EPL,2024,2024-11-09,Liverpool,Aston Villa,2.68196,1.66337
+EPL,2024,2024-11-10,Nottingham Forest,Newcastle United,1.17852,1.86904
+EPL,2024,2024-11-10,Manchester United,Leicester,1.2369,0.417295
+EPL,2024,2024-11-10,Tottenham,Ipswich,1.75088,2.18392
+EPL,2024,2024-11-10,Chelsea,Arsenal,1.24067,1.9605
+EPL,2024,2024-11-23,Leicester,Chelsea,0.967987,2.81658
+EPL,2024,2024-11-23,Bournemouth,Brighton,1.91157,1.23059
+EPL,2024,2024-11-23,Arsenal,Nottingham Forest,1.66016,0.403136
+EPL,2024,2024-11-23,Everton,Brentford,1.5951,1.34314
+EPL,2024,2024-11-23,Aston Villa,Crystal Palace,3.04455,1.61437
+EPL,2024,2024-11-23,Fulham,Wolverhampton Wanderers,0.717158,1.33903
+EPL,2024,2024-11-23,Manchester City,Tottenham,2.15899,3.30449
+EPL,2024,2024-11-24,Southampton,Liverpool,1.53985,3.18835
+EPL,2024,2024-11-24,Ipswich,Manchester United,1.98714,1.26912
+EPL,2024,2024-11-25,Newcastle United,West Ham,1.49781,0.942824
+EPL,2024,2024-11-29,Brighton,Southampton,1.86986,0.934969
+EPL,2024,2024-11-30,Brentford,Leicester,2.21885,0.907555
+EPL,2024,2024-11-30,Crystal Palace,Newcastle United,2.29595,0.020989
+EPL,2024,2024-11-30,Nottingham Forest,Ipswich,1.76587,0.462771
+EPL,2024,2024-11-30,Wolverhampton Wanderers,Bournemouth,0.866034,3.07901
+EPL,2024,2024-11-30,West Ham,Arsenal,1.23539,3.99935
+EPL,2024,2024-12-01,Chelsea,Aston Villa,1.94939,0.875443
+EPL,2024,2024-12-01,Manchester United,Everton,1.76161,0.766749
+EPL,2024,2024-12-01,Tottenham,Fulham,1.01086,1.57274
+EPL,2024,2024-12-01,Liverpool,Manchester City,3.70054,0.745015
+EPL,2024,2024-12-03,Ipswich,Crystal Palace,0.471708,1.65422
+EPL,2024,2024-12-03,Leicester,West Ham,2.78061,2.87716
+EPL,2024,2024-12-04,Everton,Wolverhampton Wanderers,1.49904,0.847724
+EPL,2024,2024-12-04,Manchester City,Nottingham Forest,3.20169,0.802155
+EPL,2024,2024-12-04,Newcastle United,Liverpool,1.52057,2.22766
+EPL,2024,2024-12-04,Southampton,Chelsea,1.91014,5.8331
+EPL,2024,2024-12-04,Arsenal,Manchester United,2.96684,0.256083
+EPL,2024,2024-12-04,Aston Villa,Brentford,3.21673,1.13266
+EPL,2024,2024-12-05,Fulham,Brighton,0.666644,1.09939
+EPL,2024,2024-12-05,Bournemouth,Tottenham,3.27716,0.623934
+EPL,2024,2024-12-07,Aston Villa,Southampton,2.51338,0.385832
+EPL,2024,2024-12-07,Brentford,Newcastle United,1.746,1.95645
+EPL,2024,2024-12-07,Crystal Palace,Manchester City,1.21476,1.5846
+EPL,2024,2024-12-07,Manchester United,Nottingham Forest,1.4697,0.651217
+EPL,2024,2024-12-08,Fulham,Arsenal,0.150988,2.4333
+EPL,2024,2024-12-08,Ipswich,Bournemouth,1.5668,3.49127
+EPL,2024,2024-12-08,Leicester,Brighton,1.42438,1.12184
+EPL,2024,2024-12-08,Tottenham,Chelsea,3.25488,2.57326
+EPL,2024,2024-12-09,West Ham,Wolverhampton Wanderers,1.19808,1.47567
+EPL,2024,2024-12-14,Liverpool,Fulham,2.09698,1.2862
+EPL,2024,2024-12-14,Arsenal,Everton,1.30865,0.132166
+EPL,2024,2024-12-14,Wolverhampton Wanderers,Ipswich,1.23748,1.73349
+EPL,2024,2024-12-14,Newcastle United,Leicester,3.95461,0.186759
+EPL,2024,2024-12-14,Nottingham Forest,Aston Villa,2.2861,0.389423
+EPL,2024,2024-12-15,Brighton,Crystal Palace,1.32323,3.00618
+EPL,2024,2024-12-15,Manchester City,Manchester United,0.638103,2.04662
+EPL,2024,2024-12-15,Chelsea,Brentford,2.59146,1.65861
+EPL,2024,2024-12-15,Southampton,Tottenham,1.27356,3.89322
+EPL,2024,2024-12-16,Bournemouth,West Ham,2.04842,1.81827
+EPL,2024,2024-12-21,Aston Villa,Manchester City,2.05988,1.09627
+EPL,2024,2024-12-21,Brentford,Nottingham Forest,0.769004,0.964897
+EPL,2024,2024-12-21,West Ham,Brighton,1.22937,1.34379
+EPL,2024,2024-12-21,Ipswich,Newcastle United,1.06427,3.23386
+EPL,2024,2024-12-21,Crystal Palace,Arsenal,1.6052,3.05434
+EPL,2024,2024-12-22,Fulham,Southampton,1.25255,0.280031
+EPL,2024,2024-12-22,Everton,Chelsea,1.07081,1.51591
+EPL,2024,2024-12-22,Manchester United,Bournemouth,2.28533,1.82831
+EPL,2024,2024-12-22,Leicester,Wolverhampton Wanderers,0.78868,1.13531
+EPL,2024,2024-12-22,Tottenham,Liverpool,1.20245,5.20214
+EPL,2024,2024-12-26,Manchester City,Everton,2.51965,0.653289
+EPL,2024,2024-12-26,Bournemouth,Crystal Palace,1.20189,0.500066
+EPL,2024,2024-12-26,Chelsea,Fulham,1.55626,1.77929
+EPL,2024,2024-12-26,Newcastle United,Aston Villa,2.82867,0.225522
+EPL,2024,2024-12-26,Nottingham Forest,Tottenham,1.30018,1.05758
+EPL,2024,2024-12-26,Southampton,West Ham,2.19833,1.90111
+EPL,2024,2024-12-26,Wolverhampton Wanderers,Manchester United,0.826489,0.358876
+EPL,2024,2024-12-26,Liverpool,Leicester,1.89935,0.22097
+EPL,2024,2024-12-27,Brighton,Brentford,1.33538,0.961233
+EPL,2024,2024-12-27,Arsenal,Ipswich,2.16462,0.0783327
+EPL,2024,2024-12-29,Leicester,Manchester City,1.84208,1.58002
+EPL,2024,2024-12-29,Crystal Palace,Southampton,3.05417,1.21853
+EPL,2024,2024-12-29,Everton,Nottingham Forest,0.615191,2.02753
+EPL,2024,2024-12-29,Fulham,Bournemouth,0.961566,1.70692
+EPL,2024,2024-12-29,Tottenham,Wolverhampton Wanderers,2.28433,0.640697
+EPL,2024,2024-12-29,West Ham,Liverpool,0.518279,3.29868
+EPL,2024,2024-12-30,Aston Villa,Brighton,1.87997,0.938042
+EPL,2024,2024-12-30,Ipswich,Chelsea,1.50093,1.60622
+EPL,2024,2024-12-30,Manchester United,Newcastle United,1.00073,2.2424
+EPL,2024,2025-01-01,Brentford,Arsenal,0.272604,1.99848
+EPL,2024,2025-01-04,Tottenham,Newcastle United,1.00333,2.42963
+EPL,2024,2025-01-04,Bournemouth,Everton,2.61852,0.561015
+EPL,2024,2025-01-04,Aston Villa,Leicester,2.3456,0.81548
+EPL,2024,2025-01-04,Crystal Palace,Chelsea,1.2766,1.51541
+EPL,2024,2025-01-04,Manchester City,West Ham,1.97986,1.53286
+EPL,2024,2025-01-04,Southampton,Brentford,0.249614,5.54874
+EPL,2024,2025-01-04,Brighton,Arsenal,1.76513,1.81142
+EPL,2024,2025-01-05,Fulham,Ipswich,2.65469,1.4434
+EPL,2024,2025-01-05,Liverpool,Manchester United,2.862,1.67469
+EPL,2024,2025-01-06,Wolverhampton Wanderers,Nottingham Forest,1.90463,2.57227
+EPL,2024,2025-01-14,Brentford,Manchester City,2.39088,2.65315
+EPL,2024,2025-01-14,West Ham,Fulham,0.937322,2.83581
+EPL,2024,2025-01-14,Chelsea,Bournemouth,2.53808,1.14845
+EPL,2024,2025-01-14,Nottingham Forest,Liverpool,0.5292,2.72291
+EPL,2024,2025-01-15,Everton,Aston Villa,1.23126,1.28522
+EPL,2024,2025-01-15,Leicester,Crystal Palace,2.09904,2.2647
+EPL,2024,2025-01-15,Newcastle United,Wolverhampton Wanderers,2.13327,1.47433
+EPL,2024,2025-01-15,Arsenal,Tottenham,2.25501,0.777071
+EPL,2024,2025-01-16,Ipswich,Brighton,0.268127,1.06343
+EPL,2024,2025-01-16,Manchester United,Southampton,3.10847,1.36705
+EPL,2024,2025-01-18,Newcastle United,Bournemouth,0.837801,2.70174
+EPL,2024,2025-01-18,Brentford,Liverpool,1.20021,4.16249
+EPL,2024,2025-01-18,Leicester,Fulham,0.676934,2.36823
+EPL,2024,2025-01-18,West Ham,Crystal Palace,0.221062,1.62561
+EPL,2024,2025-01-18,Arsenal,Aston Villa,1.64458,1.20602
+EPL,2024,2025-01-19,Everton,Tottenham,2.56089,1.35719
+EPL,2024,2025-01-19,Manchester United,Brighton,1.31823,2.17172
+EPL,2024,2025-01-19,Nottingham Forest,Southampton,2.36419,1.25922
+EPL,2024,2025-01-19,Ipswich,Manchester City,0.795637,3.20228
+EPL,2024,2025-01-20,Chelsea,Wolverhampton Wanderers,3.14882,1.06726
+EPL,2024,2025-01-25,Bournemouth,Nottingham Forest,2.8254,0.996166
+EPL,2024,2025-01-25,Brighton,Everton,0.64378,0.870883
+EPL,2024,2025-01-25,Liverpool,Ipswich,2.16809,0.804707
+EPL,2024,2025-01-25,Southampton,Newcastle United,0.825621,3.08319
+EPL,2024,2025-01-25,Wolverhampton Wanderers,Arsenal,0.514724,0.887358
+EPL,2024,2025-01-25,Manchester City,Chelsea,2.23213,1.49843
+EPL,2024,2025-01-26,Crystal Palace,Brentford,1.23177,1.92037
+EPL,2024,2025-01-26,Tottenham,Leicester,1.27483,1.40469
+EPL,2024,2025-01-26,Aston Villa,West Ham,0.907851,1.67886
+EPL,2024,2025-01-26,Fulham,Manchester United,0.560571,0.201988
+EPL,2024,2025-02-01,Nottingham Forest,Brighton,4.0677,0.756296
+EPL,2024,2025-02-01,Bournemouth,Liverpool,1.65273,2.7219
+EPL,2024,2025-02-01,Everton,Leicester,3.11261,0.447136
+EPL,2024,2025-02-01,Ipswich,Southampton,1.94845,1.17566
+EPL,2024,2025-02-01,Newcastle United,Fulham,1.22716,1.60881
+EPL,2024,2025-02-01,Wolverhampton Wanderers,Aston Villa,2.00146,0.742809
+EPL,2024,2025-02-02,Brentford,Tottenham,1.66475,0.945355
+EPL,2024,2025-02-02,Manchester United,Crystal Palace,1.50706,2.44633
+EPL,2024,2025-02-02,Arsenal,Manchester City,1.53202,0.743191
+EPL,2024,2025-02-03,Chelsea,West Ham,1.39066,1.1868
+EPL,2024,2025-02-12,Everton,Liverpool,0.910523,0.929103
+EPL,2024,2025-02-14,Brighton,Chelsea,2.06892,0.649788
+EPL,2024,2025-02-15,Leicester,Arsenal,0.233209,1.75
+EPL,2024,2025-02-15,Aston Villa,Ipswich,2.89841,0.332864
+EPL,2024,2025-02-15,Fulham,Nottingham Forest,2.20993,0.331301
+EPL,2024,2025-02-15,Manchester City,Newcastle United,2.12004,0.157211
+EPL,2024,2025-02-15,Southampton,Bournemouth,0.974418,2.08722
+EPL,2024,2025-02-15,West Ham,Brentford,0.673466,1.96499
+EPL,2024,2025-02-15,Crystal Palace,Everton,2.30646,1.01565
+EPL,2024,2025-02-16,Liverpool,Wolverhampton Wanderers,1.86758,1.05329
+EPL,2024,2025-02-16,Tottenham,Manchester United,1.97109,1.42652
+EPL,2024,2025-02-19,Aston Villa,Liverpool,1.02269,2.04279
+EPL,2024,2025-02-21,Leicester,Brentford,0.727901,2.03465
+EPL,2024,2025-02-22,Everton,Manchester United,2.10444,0.645685
+EPL,2024,2025-02-22,Bournemouth,Wolverhampton Wanderers,0.629691,2.10124
+EPL,2024,2025-02-22,Arsenal,West Ham,1.37264,1.02684
+EPL,2024,2025-02-22,Fulham,Crystal Palace,0.23426,1.46203
+EPL,2024,2025-02-22,Ipswich,Tottenham,1.15389,1.58741
+EPL,2024,2025-02-22,Southampton,Brighton,0.154147,5.12018
+EPL,2024,2025-02-22,Aston Villa,Chelsea,2.69413,2.17418
+EPL,2024,2025-02-23,Newcastle United,Nottingham Forest,3.45858,2.38603
+EPL,2024,2025-02-23,Manchester City,Liverpool,0.58248,0.807058
+EPL,2024,2025-02-25,Brighton,Bournemouth,2.57927,1.70169
+EPL,2024,2025-02-25,Wolverhampton Wanderers,Fulham,0.928973,1.43473
+EPL,2024,2025-02-25,Crystal Palace,Aston Villa,4.02522,0.667217
+EPL,2024,2025-02-25,Chelsea,Southampton,2.98234,0.845039
+EPL,2024,2025-02-26,Brentford,Everton,1.34009,1.44955
+EPL,2024,2025-02-26,Nottingham Forest,Arsenal,0.508611,1.31766
+EPL,2024,2025-02-26,Tottenham,Manchester City,1.28426,2.38641
+EPL,2024,2025-02-26,Manchester United,Ipswich,1.40202,1.04498
+EPL,2024,2025-02-26,Liverpool,Newcastle United,1.40027,0.45882
+EPL,2024,2025-02-27,West Ham,Leicester,1.70437,0.289578
+EPL,2024,2025-03-08,Nottingham Forest,Manchester City,0.501476,0.721234
+EPL,2024,2025-03-08,Brighton,Fulham,1.94417,0.708227
+EPL,2024,2025-03-08,Crystal Palace,Ipswich,3.13879,1.63282
+EPL,2024,2025-03-08,Liverpool,Southampton,4.98996,0.511566
+EPL,2024,2025-03-08,Brentford,Aston Villa,0.637743,1.29638
+EPL,2024,2025-03-08,Wolverhampton Wanderers,Everton,0.812432,1.3672
+EPL,2024,2025-03-09,Chelsea,Leicester,1.76844,0.108487
+EPL,2024,2025-03-09,Tottenham,Bournemouth,1.35053,2.22536
+EPL,2024,2025-03-09,Manchester United,Arsenal,1.31107,1.82996
+EPL,2024,2025-03-10,West Ham,Newcastle United,0.823986,1.62976
+EPL,2024,2025-03-15,Everton,West Ham,1.189,0.516029
+EPL,2024,2025-03-15,Ipswich,Nottingham Forest,0.520839,1.30722
+EPL,2024,2025-03-15,Manchester City,Brighton,2.02642,2.11119
+EPL,2024,2025-03-15,Southampton,Wolverhampton Wanderers,1.2821,0.540718
+EPL,2024,2025-03-15,Bournemouth,Brentford,2.02714,1.60321
+EPL,2024,2025-03-16,Arsenal,Chelsea,0.695725,0.286036
+EPL,2024,2025-03-16,Fulham,Tottenham,1.03966,1.40865
+EPL,2024,2025-03-16,Leicester,Manchester United,1.30455,1.13892
+EPL,2024,2025-04-01,Arsenal,Fulham,2.30189,1.44206
+EPL,2024,2025-04-01,Wolverhampton Wanderers,West Ham,1.10359,1.73057
+EPL,2024,2025-04-01,Nottingham Forest,Manchester United,0.512063,1.86688
+EPL,2024,2025-04-02,Brighton,Aston Villa,0.558009,1.20715
+EPL,2024,2025-04-02,Bournemouth,Ipswich,1.99637,1.41263
+EPL,2024,2025-04-02,Manchester City,Leicester,2.07165,0.104741
+EPL,2024,2025-04-02,Newcastle United,Brentford,2.26584,1.53201
+EPL,2024,2025-04-02,Southampton,Crystal Palace,0.687304,0.93776
+EPL,2024,2025-04-02,Liverpool,Everton,1.29718,0.823136
+EPL,2024,2025-04-03,Chelsea,Tottenham,1.30443,1.40274
+EPL,2024,2025-04-05,Everton,Arsenal,1.22875,1.4031
+EPL,2024,2025-04-05,Crystal Palace,Brighton,0.443965,1.27226
+EPL,2024,2025-04-05,Ipswich,Wolverhampton Wanderers,0.872356,2.8096
+EPL,2024,2025-04-05,West Ham,Bournemouth,0.907832,1.94869
+EPL,2024,2025-04-05,Aston Villa,Nottingham Forest,2.63349,0.96769
+EPL,2024,2025-04-06,Brentford,Chelsea,1.36123,1.47829
+EPL,2024,2025-04-06,Fulham,Liverpool,1.72764,1.40638
+EPL,2024,2025-04-06,Tottenham,Southampton,2.648,0.780439
+EPL,2024,2025-04-06,Manchester United,Manchester City,1.23317,0.687894
+EPL,2024,2025-04-07,Leicester,Newcastle United,0.354575,3.44111
+EPL,2024,2025-04-12,Manchester City,Crystal Palace,4.59724,1.33808
+EPL,2024,2025-04-12,Brighton,Leicester,3.6978,1.98444
+EPL,2024,2025-04-12,Nottingham Forest,Everton,0.423949,1.26036
+EPL,2024,2025-04-12,Southampton,Aston Villa,0.412256,2.99927
+EPL,2024,2025-04-12,Arsenal,Brentford,0.767369,0.588583
+EPL,2024,2025-04-13,Chelsea,Ipswich,2.90758,1.60301
+EPL,2024,2025-04-13,Liverpool,West Ham,1.42902,1.46598
+EPL,2024,2025-04-13,Wolverhampton Wanderers,Tottenham,2.22977,1.62887
+EPL,2024,2025-04-13,Newcastle United,Manchester United,2.6383,0.786568
+EPL,2024,2025-04-14,Bournemouth,Fulham,1.8577,1.07203
+EPL,2024,2025-04-16,Newcastle United,Crystal Palace,2.32947,2.37548
+EPL,2024,2025-04-19,Brentford,Brighton,2.95516,1.24107
+EPL,2024,2025-04-19,Crystal Palace,Bournemouth,0.337818,0.664093
+EPL,2024,2025-04-19,Everton,Manchester City,0.81683,1.87989
+EPL,2024,2025-04-19,West Ham,Southampton,0.98423,0.922877
+EPL,2024,2025-04-19,Aston Villa,Newcastle United,3.05371,1.27176
+EPL,2024,2025-04-20,Fulham,Chelsea,0.306122,0.75172
+EPL,2024,2025-04-20,Ipswich,Arsenal,0.192879,2.81362
+EPL,2024,2025-04-20,Manchester United,Wolverhampton Wanderers,1.13966,0.187814
+EPL,2024,2025-04-20,Leicester,Liverpool,0.232205,4.52706
+EPL,2024,2025-04-21,Tottenham,Nottingham Forest,2.4024,0.557682
+EPL,2024,2025-04-22,Manchester City,Aston Villa,1.36232,1.85906
+EPL,2024,2025-04-23,Arsenal,Crystal Palace,1.92149,2.50515
+EPL,2024,2025-04-26,Chelsea,Everton,0.768313,0.916838
+EPL,2024,2025-04-26,Brighton,West Ham,1.29433,1.24134
+EPL,2024,2025-04-26,Newcastle United,Ipswich,4.11539,0.127203
+EPL,2024,2025-04-26,Southampton,Fulham,0.935581,1.9956
+EPL,2024,2025-04-26,Wolverhampton Wanderers,Leicester,2.57666,1.04978
+EPL,2024,2025-04-27,Bournemouth,Manchester United,0.60995,1.91039
+EPL,2024,2025-04-27,Liverpool,Tottenham,2.51104,0.512812
+EPL,2024,2025-05-01,Nottingham Forest,Brentford,0.670607,1.52054
+EPL,2024,2025-05-02,Manchester City,Wolverhampton Wanderers,0.859463,0.622455
+EPL,2024,2025-05-03,Aston Villa,Fulham,1.29013,0.702787
+EPL,2024,2025-05-03,Everton,Ipswich,0.808481,1.14351
+EPL,2024,2025-05-03,Leicester,Southampton,1.60739,0.550774
+EPL,2024,2025-05-03,Arsenal,Bournemouth,2.05484,1.41783
+EPL,2024,2025-05-04,West Ham,Tottenham,1.15166,0.847022
+EPL,2024,2025-05-04,Brighton,Newcastle United,0.687863,1.63777
+EPL,2024,2025-05-04,Brentford,Manchester United,3.58737,1.13404
+EPL,2024,2025-05-04,Chelsea,Liverpool,3.51944,1.4267
+EPL,2024,2025-05-05,Crystal Palace,Nottingham Forest,2.34037,0.63684
+EPL,2024,2025-05-10,Fulham,Everton,1.20869,1.32604
+EPL,2024,2025-05-10,Ipswich,Brentford,0.717433,1.32077
+EPL,2024,2025-05-10,Southampton,Manchester City,0.136995,1.58463
+EPL,2024,2025-05-10,Wolverhampton Wanderers,Brighton,0.73395,1.41254
+EPL,2024,2025-05-10,Bournemouth,Aston Villa,1.02272,1.12376
+EPL,2024,2025-05-11,Newcastle United,Chelsea,1.6703,0.646426
+EPL,2024,2025-05-11,Manchester United,West Ham,2.31287,2.15985
+EPL,2024,2025-05-11,Nottingham Forest,Leicester,1.76909,1.22949
+EPL,2024,2025-05-11,Tottenham,Crystal Palace,0.806792,3.98546
+EPL,2024,2025-05-11,Liverpool,Arsenal,2.74682,2.18795
+EPL,2024,2025-05-16,Aston Villa,Tottenham,1.69061,0.523016
+EPL,2024,2025-05-16,Chelsea,Manchester United,1.29571,0.337632
+EPL,2024,2025-05-18,Everton,Southampton,2.67793,1.05025
+EPL,2024,2025-05-18,West Ham,Nottingham Forest,0.850457,2.14756
+EPL,2024,2025-05-18,Brentford,Fulham,2.43045,1.61741
+EPL,2024,2025-05-18,Leicester,Ipswich,0.788544,1.36957
+EPL,2024,2025-05-18,Arsenal,Newcastle United,1.15958,2.24634
+EPL,2024,2025-05-19,Brighton,Liverpool,2.17789,3.065
+EPL,2024,2025-05-20,Crystal Palace,Wolverhampton Wanderers,1.68451,1.42886
+EPL,2024,2025-05-20,Manchester City,Bournemouth,1.59779,0.962014
+EPL,2024,2025-05-25,Nottingham Forest,Chelsea,1.58014,1.30874
+EPL,2024,2025-05-25,Newcastle United,Everton,1.1591,1.07279
+EPL,2024,2025-05-25,Manchester United,Aston Villa,2.96259,0.335222
+EPL,2024,2025-05-25,Liverpool,Crystal Palace,1.92122,1.4144
+EPL,2024,2025-05-25,Tottenham,Brighton,1.85265,3.11624
+EPL,2024,2025-05-25,Southampton,Arsenal,0.598144,2.40711
+EPL,2024,2025-05-25,Wolverhampton Wanderers,Brentford,1.10889,1.97196
+EPL,2024,2025-05-25,Bournemouth,Leicester,2.72449,0.156702
+EPL,2024,2025-05-25,Ipswich,West Ham,0.893095,0.967379
+EPL,2024,2025-05-25,Fulham,Manchester City,2.21797,2.45923
+EPL,2025,2025-08-15,Liverpool,Bournemouth,2.33007,1.57303
+EPL,2025,2025-08-16,Aston Villa,Newcastle United,0.318601,1.40098
+EPL,2025,2025-08-16,Brighton,Fulham,1.44008,0.902883
+EPL,2025,2025-08-16,Sunderland,West Ham,0.724368,0.558948
+EPL,2025,2025-08-16,Tottenham,Burnley,1.97858,0.734138
+EPL,2025,2025-08-16,Wolverhampton Wanderers,Manchester City,0.519436,2.29903
+EPL,2025,2025-08-17,Chelsea,Crystal Palace,1.36793,1.03414
+EPL,2025,2025-08-17,Nottingham Forest,Brentford,1.7555,1.32516
+EPL,2025,2025-08-17,Manchester United,Arsenal,1.37653,1.3304
+EPL,2025,2025-08-18,Leeds,Everton,2.3812,0.674338
+EPL,2025,2025-08-22,West Ham,Chelsea,0.978572,3.94997
+EPL,2025,2025-08-23,Manchester City,Tottenham,1.2475,1.28015
+EPL,2025,2025-08-23,Brentford,Aston Villa,1.12964,0.976852
+EPL,2025,2025-08-23,Burnley,Sunderland,1.00381,1.12127
+EPL,2025,2025-08-23,Bournemouth,Wolverhampton Wanderers,1.78462,0.373367
+EPL,2025,2025-08-23,Arsenal,Leeds,2.73761,0.156761
+EPL,2025,2025-08-24,Crystal Palace,Nottingham Forest,1.10188,1.32987
+EPL,2025,2025-08-24,Everton,Brighton,1.80116,2.08487
+EPL,2025,2025-08-24,Fulham,Manchester United,1.65333,1.54603
+EPL,2025,2025-08-25,Newcastle United,Liverpool,1.96342,0.646559
+EPL,2025,2025-08-30,Chelsea,Fulham,2.4324,0.736228
+EPL,2025,2025-08-30,Tottenham,Bournemouth,0.17067,2.1201
+EPL,2025,2025-08-30,Wolverhampton Wanderers,Everton,0.943257,2.03791
+EPL,2025,2025-08-30,Sunderland,Brentford,1.57127,1.44604
+EPL,2025,2025-08-30,Manchester United,Burnley,4.02237,1.32618
+EPL,2025,2025-08-30,Leeds,Newcastle United,0.6773,0.303635
+EPL,2025,2025-08-31,Nottingham Forest,West Ham,0.716018,2.236
+EPL,2025,2025-08-31,Brighton,Manchester City,2.20864,2.13418
+EPL,2025,2025-08-31,Liverpool,Arsenal,0.481404,0.485679
+EPL,2025,2025-08-31,Aston Villa,Crystal Palace,1.20586,2.59713
+EPL,2025,2025-09-13,Arsenal,Nottingham Forest,2.8817,0.293681
+EPL,2025,2025-09-13,Newcastle United,Wolverhampton Wanderers,1.19186,0.375942
+EPL,2025,2025-09-13,Bournemouth,Brighton,1.44187,0.624923
+EPL,2025,2025-09-13,Crystal Palace,Sunderland,1.75805,0.354129
+EPL,2025,2025-09-13,Everton,Aston Villa,1.8927,0.354327
+EPL,2025,2025-09-13,Fulham,Leeds,1.13979,0.830398
+EPL,2025,2025-09-13,West Ham,Tottenham,0.793248,1.51402
+EPL,2025,2025-09-13,Brentford,Chelsea,1.17533,0.755999
+EPL,2025,2025-09-14,Burnley,Liverpool,0.168041,2.79492
+EPL,2025,2025-09-14,Manchester City,Manchester United,1.99725,1.51915
+EPL,2025,2025-09-20,Liverpool,Everton,1.06166,0.721371
+EPL,2025,2025-09-20,West Ham,Crystal Palace,0.466365,2.33565
+EPL,2025,2025-09-20,Wolverhampton Wanderers,Leeds,1.5661,0.456988
+EPL,2025,2025-09-20,Brighton,Tottenham,1.40466,1.19181
+EPL,2025,2025-09-20,Burnley,Nottingham Forest,1.14159,0.830779
+EPL,2025,2025-09-20,Manchester United,Chelsea,1.34458,0.469843
+EPL,2025,2025-09-20,Fulham,Brentford,1.52431,0.826556
+EPL,2025,2025-09-21,Bournemouth,Newcastle United,0.55066,0.153629
+EPL,2025,2025-09-21,Sunderland,Aston Villa,0.938312,0.939354
+EPL,2025,2025-09-21,Arsenal,Manchester City,0.718575,1.1227
+EPL,2025,2025-09-27,Brentford,Manchester United,2.78726,2.23609
+EPL,2025,2025-09-27,Chelsea,Brighton,2.02653,2.4751
+EPL,2025,2025-09-27,Crystal Palace,Liverpool,3.53323,3.10176
+EPL,2025,2025-09-27,Leeds,Bournemouth,2.04728,1.06033
+EPL,2025,2025-09-27,Manchester City,Burnley,3.22133,0.509491
+EPL,2025,2025-09-27,Nottingham Forest,Sunderland,1.4203,1.94154
+EPL,2025,2025-09-27,Tottenham,Wolverhampton Wanderers,0.818711,1.15951
+EPL,2025,2025-09-28,Aston Villa,Fulham,1.36575,0.952612
+EPL,2025,2025-09-28,Newcastle United,Arsenal,0.739851,2.07048
+EPL,2025,2025-09-29,Everton,West Ham,0.909703,0.775766
+EPL,2025,2025-10-03,Bournemouth,Fulham,1.33458,0.84335
+EPL,2025,2025-10-04,Leeds,Tottenham,1.48051,0.688198
+EPL,2025,2025-10-04,Arsenal,West Ham,3.0585,0.864549
+EPL,2025,2025-10-04,Manchester United,Sunderland,1.9298,0.807119
+EPL,2025,2025-10-04,Chelsea,Liverpool,1.23721,2.05981
+EPL,2025,2025-10-05,Aston Villa,Burnley,1.73572,0.502292
+EPL,2025,2025-10-05,Everton,Crystal Palace,2.13876,2.17789
+EPL,2025,2025-10-05,Newcastle United,Nottingham Forest,3.81662,0.337689
+EPL,2025,2025-10-05,Wolverhampton Wanderers,Brighton,0.369404,1.39158
+EPL,2025,2025-10-05,Brentford,Manchester City,0.693758,1.09647
+EPL,2025,2025-10-18,Nottingham Forest,Chelsea,2.0555,2.5583
+EPL,2025,2025-10-18,Brighton,Newcastle United,0.857104,1.28313
+EPL,2025,2025-10-18,Burnley,Leeds,0.509647,2.33152
+EPL,2025,2025-10-18,Crystal Palace,Bournemouth,4.56284,2.0471
+EPL,2025,2025-10-18,Manchester City,Everton,2.4799,0.794622
+EPL,2025,2025-10-18,Sunderland,Wolverhampton Wanderers,1.02481,0.676323
+EPL,2025,2025-10-18,Fulham,Arsenal,0.502332,2.07823
+EPL,2025,2025-10-19,Tottenham,Aston Villa,1.51461,0.352231
+EPL,2025,2025-10-19,Liverpool,Manchester United,2.60972,2.53117
+EPL,2025,2025-10-20,West Ham,Brentford,0.260251,3.46635
+EPL,2025,2025-10-24,Leeds,West Ham,2.2214,0.498653
+EPL,2025,2025-10-25,Chelsea,Sunderland,1.21332,1.5506
+EPL,2025,2025-10-25,Newcastle United,Fulham,2.76806,1.52001
+EPL,2025,2025-10-25,Manchester United,Brighton,1.96231,0.947154
+EPL,2025,2025-10-25,Brentford,Liverpool,3.27126,2.11838
+EPL,2025,2025-10-26,Bournemouth,Nottingham Forest,0.656601,0.305493
+EPL,2025,2025-10-26,Arsenal,Crystal Palace,0.856175,0.350534
+EPL,2025,2025-10-26,Aston Villa,Manchester City,0.843906,1.36914
+EPL,2025,2025-10-26,Wolverhampton Wanderers,Burnley,2.58132,1.54544
+EPL,2025,2025-10-26,Everton,Tottenham,1.4032,2.09327
+EPL,2025,2025-11-01,Brighton,Leeds,2.64127,0.35919
+EPL,2025,2025-11-01,Burnley,Arsenal,0.679177,2.51649
+EPL,2025,2025-11-01,Crystal Palace,Brentford,0.734558,0.820498
+EPL,2025,2025-11-01,Fulham,Wolverhampton Wanderers,1.91207,0.209934
+EPL,2025,2025-11-01,Nottingham Forest,Manchester United,1.55066,0.91622
+EPL,2025,2025-11-01,Tottenham,Chelsea,0.146954,3.34251
+EPL,2025,2025-11-01,Liverpool,Aston Villa,1.47021,0.43502
+EPL,2025,2025-11-02,West Ham,Newcastle United,1.41383,0.523615
+EPL,2025,2025-11-02,Manchester City,Bournemouth,2.48999,0.899846
+EPL,2025,2025-11-03,Sunderland,Everton,1.18068,1.00741
+EPL,2025,2025-11-08,Tottenham,Manchester United,1.35532,0.820256
+EPL,2025,2025-11-08,Everton,Fulham,2.30607,0.424478
+EPL,2025,2025-11-08,West Ham,Burnley,2.96728,1.87478
+EPL,2025,2025-11-08,Sunderland,Arsenal,1.20495,2.32943
+EPL,2025,2025-11-08,Chelsea,Wolverhampton Wanderers,3.98342,0.111462
+EPL,2025,2025-11-09,Aston Villa,Bournemouth,1.88282,2.00992
+EPL,2025,2025-11-09,Brentford,Newcastle United,2.73729,0.432277
+EPL,2025,2025-11-09,Crystal Palace,Brighton,0.839547,0.637037
+EPL,2025,2025-11-09,Nottingham Forest,Leeds,2.49097,0.419461
+EPL,2025,2025-11-09,Manchester City,Liverpool,1.59542,1.0281
+EPL,2025,2025-11-22,Burnley,Chelsea,0.660943,1.72093
+EPL,2025,2025-11-22,Bournemouth,West Ham,3.48299,0.390782
+EPL,2025,2025-11-22,Brighton,Brentford,0.977488,2.19979
+EPL,2025,2025-11-22,Fulham,Sunderland,2.83729,0.222768
+EPL,2025,2025-11-22,Liverpool,Nottingham Forest,1.79273,1.19459
+EPL,2025,2025-11-22,Wolverhampton Wanderers,Crystal Palace,1.66409,1.44933
+EPL,2025,2025-11-22,Newcastle United,Manchester City,2.40555,2.45648
+EPL,2025,2025-11-23,Leeds,Aston Villa,1.84668,1.35978
+EPL,2025,2025-11-23,Arsenal,Tottenham,2.27827,0.0300672
+EPL,2025,2025-11-24,Manchester United,Everton,2.2737,0.155063
+EPL,2025,2025-11-29,Brentford,Burnley,3.72106,0.874025
+EPL,2025,2025-11-29,Manchester City,Leeds,2.85292,1.75142
+EPL,2025,2025-11-29,Sunderland,Bournemouth,1.16955,1.79274
+EPL,2025,2025-11-29,Everton,Newcastle United,1.01125,2.45882
+EPL,2025,2025-11-29,Tottenham,Fulham,1.04396,0.494736
+EPL,2025,2025-11-30,Crystal Palace,Manchester United,2.13561,1.47768
+EPL,2025,2025-11-30,Aston Villa,Wolverhampton Wanderers,1.15486,0.692588
+EPL,2025,2025-11-30,Nottingham Forest,Brighton,0.960325,2.0572
+EPL,2025,2025-11-30,West Ham,Liverpool,0.364152,1.56793
+EPL,2025,2025-11-30,Chelsea,Arsenal,0.791914,1.22828
+EPL,2025,2025-12-02,Bournemouth,Everton,0.635415,1.19573
+EPL,2025,2025-12-02,Fulham,Manchester City,0.972635,1.96225
+EPL,2025,2025-12-02,Newcastle United,Tottenham,1.88558,1.05205
+EPL,2025,2025-12-03,Arsenal,Brentford,2.63126,0.588716
+EPL,2025,2025-12-03,Brighton,Aston Villa,1.96298,3.15745
+EPL,2025,2025-12-03,Burnley,Crystal Palace,1.16852,0.987797
+EPL,2025,2025-12-03,Wolverhampton Wanderers,Nottingham Forest,1.02461,1.12389
+EPL,2025,2025-12-03,Leeds,Chelsea,2.2047,0.964018
+EPL,2025,2025-12-03,Liverpool,Sunderland,1.37633,0.712662
+EPL,2025,2025-12-04,Manchester United,West Ham,2.27674,1.36584
+EPL,2025,2025-12-06,Aston Villa,Arsenal,2.71986,1.85965
+EPL,2025,2025-12-06,Bournemouth,Chelsea,1.41931,0.672602
+EPL,2025,2025-12-06,Everton,Nottingham Forest,1.25348,0.31234
+EPL,2025,2025-12-06,Manchester City,Sunderland,2.41605,0.626486
+EPL,2025,2025-12-06,Newcastle United,Burnley,1.80708,1.58375
+EPL,2025,2025-12-06,Tottenham,Brentford,2.42388,0.470563
+EPL,2025,2025-12-06,Leeds,Liverpool,1.79333,2.04805
+EPL,2025,2025-12-07,Brighton,West Ham,2.10077,1.7064
+EPL,2025,2025-12-07,Fulham,Crystal Palace,0.766771,1.71109
+EPL,2025,2025-12-08,Wolverhampton Wanderers,Manchester United,0.262147,4.04708
+EPL,2025,2025-12-13,Chelsea,Everton,2.64457,1.34
+EPL,2025,2025-12-13,Liverpool,Brighton,2.4127,1.69004
+EPL,2025,2025-12-13,Burnley,Fulham,2.05486,1.65053
+EPL,2025,2025-12-13,Arsenal,Wolverhampton Wanderers,1.61796,0.61997
+EPL,2025,2025-12-14,Crystal Palace,Manchester City,1.30092,1.35317
+EPL,2025,2025-12-14,Nottingham Forest,Tottenham,2.32658,0.380246
+EPL,2025,2025-12-14,Sunderland,Newcastle United,0.630045,0.169329
+EPL,2025,2025-12-14,West Ham,Aston Villa,1.27701,0.595093
+EPL,2025,2025-12-14,Brentford,Leeds,0.697006,1.63409
+EPL,2025,2025-12-15,Manchester United,Bournemouth,3.21204,2.35196
+EPL,2025,2025-12-20,Newcastle United,Chelsea,2.87863,1.0261
+EPL,2025,2025-12-20,Bournemouth,Burnley,1.81847,0.480528
+EPL,2025,2025-12-20,Brighton,Sunderland,0.919272,1.31044
+EPL,2025,2025-12-20,Manchester City,West Ham,3.58188,1.02143
+EPL,2025,2025-12-20,Wolverhampton Wanderers,Brentford,1.26823,1.56309
+EPL,2025,2025-12-20,Tottenham,Liverpool,1.34905,1.23164
+EPL,2025,2025-12-20,Everton,Arsenal,0.213273,1.84723
+EPL,2025,2025-12-20,Leeds,Crystal Palace,2.90786,1.53058
+EPL,2025,2025-12-21,Aston Villa,Manchester United,1.86917,1.30455
+EPL,2025,2025-12-22,Fulham,Nottingham Forest,1.70568,0.486296
+EPL,2025,2025-12-26,Manchester United,Newcastle United,0.940811,1.12998
+EPL,2025,2025-12-27,Nottingham Forest,Manchester City,0.600141,1.46468
+EPL,2025,2025-12-27,Arsenal,Brighton,2.54318,0.710064
+EPL,2025,2025-12-27,Brentford,Bournemouth,2.8513,2.56183
+EPL,2025,2025-12-27,Burnley,Everton,1.24948,1.25204
+EPL,2025,2025-12-27,Liverpool,Wolverhampton Wanderers,1.56502,0.780664
+EPL,2025,2025-12-27,West Ham,Fulham,1.13719,1.11436
+EPL,2025,2025-12-27,Chelsea,Aston Villa,1.97155,2.05918
+EPL,2025,2025-12-28,Sunderland,Leeds,0.805957,2.60653
+EPL,2025,2025-12-28,Crystal Palace,Tottenham,0.929681,0.870768
+EPL,2025,2025-12-30,Burnley,Newcastle United,1.32551,2.49248
+EPL,2025,2025-12-30,Chelsea,Bournemouth,2.33294,3.49142
+EPL,2025,2025-12-30,Nottingham Forest,Everton,1.75445,1.69525
+EPL,2025,2025-12-30,West Ham,Brighton,2.27644,3.08914
+EPL,2025,2025-12-30,Arsenal,Aston Villa,4.41335,2.94195
+EPL,2025,2025-12-30,Manchester United,Wolverhampton Wanderers,1.13306,1.21784
+EPL,2025,2026-01-01,Crystal Palace,Fulham,2.35346,1.75434
+EPL,2025,2026-01-01,Liverpool,Leeds,1.67833,0.15936
+EPL,2025,2026-01-01,Brentford,Tottenham,0.556304,0.608309
+EPL,2025,2026-01-01,Sunderland,Manchester City,0.962141,2.44247
+EPL,2025,2026-01-03,Aston Villa,Nottingham Forest,1.42988,0.8982
+EPL,2025,2026-01-03,Wolverhampton Wanderers,West Ham,2.23925,0.235678
+EPL,2025,2026-01-03,Brighton,Burnley,1.4717,0.254551
+EPL,2025,2026-01-03,Bournemouth,Arsenal,0.947846,1.28
+EPL,2025,2026-01-04,Leeds,Manchester United,0.970138,1.94781
+EPL,2025,2026-01-04,Newcastle United,Crystal Palace,2.72764,1.27825
+EPL,2025,2026-01-04,Tottenham,Sunderland,1.4175,0.467481
+EPL,2025,2026-01-04,Everton,Brentford,1.00566,3.05179
+EPL,2025,2026-01-04,Fulham,Liverpool,0.609182,1.7188
+EPL,2025,2026-01-04,Manchester City,Chelsea,1.03049,2.03726
+EPL,2025,2026-01-06,West Ham,Nottingham Forest,1.73697,1.26683
+EPL,2025,2026-01-07,Everton,Wolverhampton Wanderers,1.63321,0.71329
+EPL,2025,2026-01-07,Bournemouth,Tottenham,1.19014,1.6261
+EPL,2025,2026-01-07,Brentford,Sunderland,3.86096,1.50644
+EPL,2025,2026-01-07,Crystal Palace,Aston Villa,1.32505,2.07015
+EPL,2025,2026-01-07,Fulham,Chelsea,1.06013,2.45107
+EPL,2025,2026-01-07,Manchester City,Brighton,2.95904,1.33162
+EPL,2025,2026-01-07,Burnley,Manchester United,0.31971,2.52488
+EPL,2025,2026-01-07,Newcastle United,Leeds,2.43495,2.35318
+EPL,2025,2026-01-08,Arsenal,Liverpool,0.701832,0.318642
+EPL,2025,2026-01-17,Manchester United,Manchester City,3.07278,0.387015
+EPL,2025,2026-01-17,Chelsea,Brentford,1.62263,1.47521
+EPL,2025,2026-01-17,Leeds,Fulham,2.16898,0.258796
+EPL,2025,2026-01-17,Liverpool,Burnley,3.49045,0.546971
+EPL,2025,2026-01-17,Sunderland,Crystal Palace,1.84601,1.15169
+EPL,2025,2026-01-17,Tottenham,West Ham,1.65292,2.76761
+EPL,2025,2026-01-17,Nottingham Forest,Arsenal,0.318481,2.86323
+EPL,2025,2026-01-18,Wolverhampton Wanderers,Newcastle United,0.390216,0.813313
+EPL,2025,2026-01-18,Aston Villa,Everton,0.905393,0.745859
+EPL,2025,2026-01-19,Brighton,Bournemouth,0.995777,1.69737
+EPL,2025,2026-01-24,West Ham,Sunderland,2.18675,0.713838
+EPL,2025,2026-01-24,Burnley,Tottenham,1.54884,2.59093
+EPL,2025,2026-01-24,Fulham,Brighton,1.13243,1.94652
+EPL,2025,2026-01-24,Manchester City,Wolverhampton Wanderers,1.0654,0.542683
+EPL,2025,2026-01-24,Bournemouth,Liverpool,3.31474,0.937335
+EPL,2025,2026-01-25,Brentford,Nottingham Forest,2.00413,1.38958
+EPL,2025,2026-01-25,Crystal Palace,Chelsea,2.41793,3.08817
+EPL,2025,2026-01-25,Newcastle United,Aston Villa,1.95484,1.32143
+EPL,2025,2026-01-25,Arsenal,Manchester United,1.42411,0.640902
+EPL,2025,2026-01-26,Everton,Leeds,0.889916,1.6766
+EPL,2025,2026-01-31,Brighton,Everton,1.42825,1.28126
+EPL,2025,2026-01-31,Leeds,Arsenal,0.17871,3.54427
+EPL,2025,2026-01-31,Wolverhampton Wanderers,Bournemouth,2.10353,1.59116
+EPL,2025,2026-01-31,Chelsea,West Ham,2.66133,1.72585
+EPL,2025,2026-01-31,Liverpool,Newcastle United,3.09973,0.284319
+EPL,2025,2026-02-01,Aston Villa,Brentford,2.15316,0.314916
+EPL,2025,2026-02-01,Manchester United,Fulham,1.84362,1.71998
+EPL,2025,2026-02-01,Nottingham Forest,Crystal Palace,0.987254,1.648
+EPL,2025,2026-02-01,Tottenham,Manchester City,1.49738,2.03614
+EPL,2025,2026-02-02,Sunderland,Burnley,1.8865,0.126371
+EPL,2025,2026-02-06,Leeds,Nottingham Forest,3.38179,1.6608
+EPL,2025,2026-02-07,Manchester United,Tottenham,2.16576,0.593404
+EPL,2025,2026-02-07,Bournemouth,Aston Villa,1.82646,0.646496
+EPL,2025,2026-02-07,Arsenal,Sunderland,1.19401,0.427225
+EPL,2025,2026-02-07,Burnley,West Ham,1.84644,1.1223
+EPL,2025,2026-02-07,Fulham,Everton,2.20126,1.88778
+EPL,2025,2026-02-07,Wolverhampton Wanderers,Chelsea,1.11372,3.76278
+EPL,2025,2026-02-07,Newcastle United,Brentford,3.3215,1.65022
+EPL,2025,2026-02-08,Brighton,Crystal Palace,0.737798,0.928404
+EPL,2025,2026-02-08,Liverpool,Manchester City,1.26652,2.41476
+EPL,2025,2026-02-10,Chelsea,Leeds,3.21176,1.28948
+EPL,2025,2026-02-10,Everton,Bournemouth,2.33114,1.4121
+EPL,2025,2026-02-10,Tottenham,Newcastle United,1.68925,2.46991
+EPL,2025,2026-02-10,West Ham,Manchester United,1.30746,0.735767
+EPL,2025,2026-02-11,Aston Villa,Brighton,0.576138,0.481306
+EPL,2025,2026-02-11,Crystal Palace,Burnley,2.1276,0.691273
+EPL,2025,2026-02-11,Manchester City,Fulham,1.67722,1.05283
+EPL,2025,2026-02-11,Nottingham Forest,Wolverhampton Wanderers,3.69094,0.406959
+EPL,2025,2026-02-11,Sunderland,Liverpool,0.693794,3.08172
+EPL,2025,2026-02-12,Brentford,Arsenal,1.81154,0.78418
+EPL,2025,2026-02-18,Wolverhampton Wanderers,Arsenal,0.173119,2.01018
+EPL,2025,2026-02-21,Aston Villa,Leeds,1.25439,1.27855
+EPL,2025,2026-02-21,Brentford,Brighton,1.69023,1.37203
+EPL,2025,2026-02-21,Chelsea,Burnley,2.51534,1.01255
+EPL,2025,2026-02-21,West Ham,Bournemouth,2.34412,0.522731
+EPL,2025,2026-02-21,Manchester City,Newcastle United,2.22648,0.507954
+EPL,2025,2026-02-22,Crystal Palace,Wolverhampton Wanderers,2.03559,1.67749
+EPL,2025,2026-02-22,Nottingham Forest,Liverpool,0.934768,2.39634
+EPL,2025,2026-02-22,Sunderland,Fulham,1.7609,2.16696
+EPL,2025,2026-02-22,Tottenham,Arsenal,0.383264,3.31701
+EPL,2025,2026-02-23,Everton,Manchester United,0.560924,1.4547
+EPL,2025,2026-02-27,Wolverhampton Wanderers,Aston Villa,1.50771,1.31328
+EPL,2025,2026-02-28,Bournemouth,Sunderland,1.82434,1.07887
+EPL,2025,2026-02-28,Burnley,Brentford,0.823824,2.44595
+EPL,2025,2026-02-28,Liverpool,West Ham,2.09939,1.3517
+EPL,2025,2026-02-28,Newcastle United,Everton,1.11889,2.40731
+EPL,2025,2026-02-28,Leeds,Manchester City,1.37824,2.46834
+EPL,2025,2026-03-01,Brighton,Nottingham Forest,1.20107,0.83055
+EPL,2025,2026-03-01,Fulham,Tottenham,2.3207,0.952091
+EPL,2025,2026-03-01,Manchester United,Crystal Palace,2.34609,0.384699
+EPL,2025,2026-03-01,Arsenal,Chelsea,1.71598,1.35268
+EPL,2025,2026-03-03,Bournemouth,Brentford,2.3177,0.673328
+EPL,2025,2026-03-03,Everton,Burnley,1.15845,0.762229
+EPL,2025,2026-03-03,Leeds,Sunderland,0.888232,0.843856
+EPL,2025,2026-03-03,Wolverhampton Wanderers,Liverpool,0.636033,2.17217
+EPL,2025,2026-03-04,Aston Villa,Chelsea,1.06854,3.38883
+EPL,2025,2026-03-04,Brighton,Arsenal,0.919228,0.514803
+EPL,2025,2026-03-04,Fulham,West Ham,0.628123,1.49528
+EPL,2025,2026-03-04,Manchester City,Nottingham Forest,2.72655,1.23642
+EPL,2025,2026-03-04,Newcastle United,Manchester United,1.96637,1.80571
+EPL,2025,2026-03-05,Tottenham,Crystal Palace,1.29615,1.91515
+EPL,2025,2026-03-14,Burnley,Bournemouth,1.67695,2.36979
+EPL,2025,2026-03-14,Sunderland,Brighton,0.659083,1.12832
+EPL,2025,2026-03-14,Arsenal,Everton,1.90855,1.17847
+EPL,2025,2026-03-14,Chelsea,Newcastle United,1.72508,1.03251
+EPL,2025,2026-03-14,West Ham,Manchester City,0.488982,1.9546
+EPL,2025,2026-03-15,Crystal Palace,Leeds,0.525205,1.13558
+EPL,2025,2026-03-15,Manchester United,Aston Villa,1.67823,1.21071
+EPL,2025,2026-03-15,Nottingham Forest,Fulham,0.821011,0.933988
+EPL,2025,2026-03-15,Liverpool,Tottenham,1.30076,1.15636
+EPL,2025,2026-03-16,Brentford,Wolverhampton Wanderers,2.7966,1.80044
+EPL,2025,2026-03-20,Bournemouth,Manchester United,1.76664,1.74574
+EPL,2025,2026-03-21,Brighton,Liverpool,3.42956,0.956801
+EPL,2025,2026-03-21,Fulham,Burnley,3.48438,1.92556
+EPL,2025,2026-03-21,Everton,Chelsea,1.44532,1.35143
+EPL,2025,2026-03-21,Leeds,Brentford,0.417296,0.302221
+EPL,2025,2026-03-22,Newcastle United,Sunderland,1.26705,2.66657
+EPL,2025,2026-03-22,Aston Villa,West Ham,2.48528,0.760054
+EPL,2025,2026-03-22,Tottenham,Nottingham Forest,1.6189,1.54408
+EPL,2025,2026-04-10,West Ham,Wolverhampton Wanderers,2.54379,0.571967
+EPL,2025,2026-04-11,Arsenal,Bournemouth,3.16346,1.39461
+EPL,2025,2026-04-11,Brentford,Everton,2.26302,1.57033
+EPL,2025,2026-04-11,Burnley,Brighton,0.812029,1.07182
+EPL,2025,2026-04-11,Liverpool,Fulham,2.01499,1.42024
+EPL,2025,2026-04-12,Nottingham Forest,Aston Villa,0.85045,1.36297
+EPL,2025,2026-04-12,Sunderland,Tottenham,1.77584,1.01598
+EPL,2025,2026-04-12,Crystal Palace,Newcastle United,3.13933,1.27299
+EPL,2025,2026-04-12,Chelsea,Manchester City,1.22108,2.40839
+EPL,2025,2026-04-13,Manchester United,Leeds,1.36555,2.95118
+EPL,2025,2026-04-18,Brentford,Fulham,2.33552,0.790707
+EPL,2025,2026-04-18,Leeds,Wolverhampton Wanderers,3.55804,0.568627
+EPL,2025,2026-04-18,Newcastle United,Bournemouth,1.61167,3.36662
+EPL,2025,2026-04-18,Tottenham,Brighton,1.56052,1.1373
+EPL,2025,2026-04-18,Chelsea,Manchester United,1.28109,0.436043
+EPL,2025,2026-04-19,Aston Villa,Sunderland,3.90223,1.56008
+EPL,2025,2026-04-19,Everton,Liverpool,1.4784,1.38333
+EPL,2025,2026-04-19,Nottingham Forest,Burnley,1.4425,0.601418
+EPL,2025,2026-04-19,Manchester City,Arsenal,2.61528,2.28964
+EPL,2025,2026-04-20,Crystal Palace,West Ham,0.733442,0.622445
+EPL,2025,2026-04-21,Brighton,Chelsea,2.51784,0.297865
+EPL,2025,2026-04-22,Bournemouth,Leeds,1.91355,1.21601
+EPL,2025,2026-04-22,Burnley,Manchester City,0.973776,3.40888
+EPL,2025,2026-04-24,Sunderland,Nottingham Forest,0.614323,1.54208
+EPL,2025,2026-04-25,Fulham,Aston Villa,1.24069,0.906156
+EPL,2025,2026-04-25,Liverpool,Crystal Palace,1.45071,2.19912
+EPL,2025,2026-04-25,West Ham,Everton,1.8356,1.1144
+EPL,2025,2026-04-25,Wolverhampton Wanderers,Tottenham,0.762656,1.06403
+EPL,2025,2026-04-25,Arsenal,Newcastle United,0.639189,0.868897
+EPL,2025,2026-04-27,Manchester United,Brentford,1.84852,1.30383
+EPL,2025,2026-05-01,Leeds,Burnley,2.09546,0.434597
+EPL,2025,2026-05-02,Brentford,West Ham,2.27374,0.753895
+EPL,2025,2026-05-02,Newcastle United,Brighton,3.12933,1.87112
+EPL,2025,2026-05-02,Wolverhampton Wanderers,Sunderland,1.96131,0.923954
+EPL,2025,2026-05-02,Arsenal,Fulham,4.09079,0.696714
+EPL,2025,2026-05-03,Bournemouth,Crystal Palace,2.29626,0.678329
+EPL,2025,2026-05-03,Manchester United,Liverpool,2.55612,1.02814
+EPL,2025,2026-05-03,Aston Villa,Tottenham,0.609494,1.12225
+EPL,2025,2026-05-04,Chelsea,Nottingham Forest,2.17132,2.31019
+EPL,2025,2026-05-04,Everton,Manchester City,1.68558,1.41706
+EPL,2025,2026-05-09,Liverpool,Chelsea,0.623191,0.597184
+EPL,2025,2026-05-09,Brighton,Wolverhampton Wanderers,2.22427,0.515647
+EPL,2025,2026-05-09,Fulham,Bournemouth,1.24334,0.998003
+EPL,2025,2026-05-09,Sunderland,Manchester United,1.2376,0.535981
+EPL,2025,2026-05-09,Manchester City,Brentford,4.37429,0.670038
+EPL,2025,2026-05-10,Burnley,Aston Villa,1.71234,1.75493
+EPL,2025,2026-05-10,Crystal Palace,Everton,3.28826,2.10265
+EPL,2025,2026-05-10,Nottingham Forest,Newcastle United,1.46434,1.65067
+EPL,2025,2026-05-10,West Ham,Arsenal,1.32011,1.42953
+EPL,2025,2026-05-11,Tottenham,Leeds,1.49036,1.86976
+EPL,2025,2026-05-13,Manchester City,Crystal Palace,1.95679,0.428862
+EPL,2025,2026-05-15,Aston Villa,Liverpool,2.5252,1.55027
+EPL,2025,2026-05-17,Manchester United,Nottingham Forest,4.28532,1.84418
+EPL,2025,2026-05-17,Brentford,Crystal Palace,1.54564,1.82274
+EPL,2025,2026-05-17,Everton,Sunderland,1.32181,1.28383
+EPL,2025,2026-05-17,Leeds,Brighton,0.747756,2.23238
+EPL,2025,2026-05-17,Wolverhampton Wanderers,Fulham,1.49725,1.48412
+EPL,2025,2026-05-17,Newcastle United,West Ham,2.1336,0.957771
+EPL,2025,2026-05-18,Arsenal,Burnley,1.22695,0.194884
+EPL,2025,2026-05-19,Bournemouth,Manchester City,1.71486,1.26917
+EPL,2025,2026-05-19,Chelsea,Tottenham,1.09262,2.15227
+EPL,2025,2026-05-24,Brighton,Manchester United,0.702398,2.32868
+EPL,2025,2026-05-24,Burnley,Wolverhampton Wanderers,1.28476,2.8433
+EPL,2025,2026-05-24,Crystal Palace,Arsenal,1.00492,3.90645
+EPL,2025,2026-05-24,Fulham,Newcastle United,1.72878,0.24232
+EPL,2025,2026-05-24,Liverpool,Brentford,2.99412,1.46082
+EPL,2025,2026-05-24,Manchester City,Aston Villa,1.38085,2.4397
+EPL,2025,2026-05-24,Nottingham Forest,Bournemouth,2.05852,1.33684
+EPL,2025,2026-05-24,Sunderland,Chelsea,2.33109,0.920885
+EPL,2025,2026-05-24,Tottenham,Everton,1.40597,0.268476
+EPL,2025,2026-05-24,West Ham,Leeds,2.73135,1.94969

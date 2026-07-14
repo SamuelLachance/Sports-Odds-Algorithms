@@ -1,0 +1,2281 @@
+league,season,date,home,away,home_xg,away_xg
+Serie_A,2020,2020-09-19,Fiorentina,Torino,2.35462,0.617878
+Serie_A,2020,2020-09-19,Verona,Roma,0.910773,1.77959
+Serie_A,2020,2020-09-20,Parma Calcio 1913,Napoli,0.160985,1.54079
+Serie_A,2020,2020-09-20,Genoa,Crotone,2.23283,1.32278
+Serie_A,2020,2020-09-20,Sassuolo,Cagliari,2.0285,0.95973
+Serie_A,2020,2020-09-20,Juventus,Sampdoria,2.14288,0.606523
+Serie_A,2020,2020-09-21,AC Milan,Bologna,2.94224,0.825483
+Serie_A,2020,2020-09-26,Torino,Atalanta,0.773914,2.47087
+Serie_A,2020,2020-09-26,Cagliari,Lazio,0.91566,1.99417
+Serie_A,2020,2020-09-26,Sampdoria,Benevento,1.36058,1.27481
+Serie_A,2020,2020-09-26,Inter,Fiorentina,1.69563,2.25332
+Serie_A,2020,2020-09-27,Spezia,Sassuolo,1.29116,2.6497
+Serie_A,2020,2020-09-27,Verona,Udinese,1.35384,2.14756
+Serie_A,2020,2020-09-27,Napoli,Genoa,2.34102,0.265594
+Serie_A,2020,2020-09-27,Crotone,AC Milan,0.107055,2.43073
+Serie_A,2020,2020-09-27,Roma,Juventus,2.81817,1.90728
+Serie_A,2020,2020-09-28,Bologna,Parma Calcio 1913,2.04715,1.2448
+Serie_A,2020,2020-09-30,Benevento,Inter,1.2507,4.53244
+Serie_A,2020,2020-09-30,Udinese,Spezia,1.86648,0.812849
+Serie_A,2020,2020-09-30,Lazio,Atalanta,1.80375,1.89667
+Serie_A,2020,2020-10-02,Fiorentina,Sampdoria,2.02799,2.18148
+Serie_A,2020,2020-10-03,Sassuolo,Crotone,1.85563,1.5945
+Serie_A,2020,2020-10-03,Udinese,Roma,1.66689,0.762958
+Serie_A,2020,2020-10-04,Atalanta,Cagliari,3.60777,0.655559
+Serie_A,2020,2020-10-04,Benevento,Bologna,0.8907,1.82239
+Serie_A,2020,2020-10-04,Lazio,Inter,1.20722,0.719092
+Serie_A,2020,2020-10-04,Parma Calcio 1913,Verona,1.23442,0.633776
+Serie_A,2020,2020-10-04,AC Milan,Spezia,2.64977,0.152433
+Serie_A,2020,2020-10-17,Napoli,Atalanta,1.17201,0.640405
+Serie_A,2020,2020-10-17,Inter,AC Milan,2.54683,2.06232
+Serie_A,2020,2020-10-17,Sampdoria,Lazio,1.83414,0.454609
+Serie_A,2020,2020-10-17,Crotone,Juventus,1.39522,1.58494
+Serie_A,2020,2020-10-18,Bologna,Sassuolo,1.45422,3.23668
+Serie_A,2020,2020-10-18,Spezia,Fiorentina,0.925627,1.08362
+Serie_A,2020,2020-10-18,Torino,Cagliari,1.24172,1.79136
+Serie_A,2020,2020-10-18,Udinese,Parma Calcio 1913,1.71631,0.96514
+Serie_A,2020,2020-10-18,Roma,Benevento,4.18819,1.55972
+Serie_A,2020,2020-10-19,Verona,Genoa,0.88144,0.38231
+Serie_A,2020,2020-10-23,Sassuolo,Torino,1.69093,2.08517
+Serie_A,2020,2020-10-24,Atalanta,Sampdoria,2.09742,2.49916
+Serie_A,2020,2020-10-24,Genoa,Inter,0.0128508,1.63844
+Serie_A,2020,2020-10-24,Lazio,Bologna,1.42977,1.75593
+Serie_A,2020,2020-10-25,Cagliari,Crotone,2.08322,1.40714
+Serie_A,2020,2020-10-25,Benevento,Napoli,0.650046,2.26936
+Serie_A,2020,2020-10-25,Parma Calcio 1913,Spezia,3.67014,0.965076
+Serie_A,2020,2020-10-25,Fiorentina,Udinese,1.20434,2.6861
+Serie_A,2020,2020-10-25,Juventus,Verona,2.17723,0.599908
+Serie_A,2020,2020-10-26,AC Milan,Roma,2.81817,2.35903
+Serie_A,2020,2020-10-31,Crotone,Atalanta,0.524608,3.49595
+Serie_A,2020,2020-10-31,Inter,Parma Calcio 1913,3.0518,0.760875
+Serie_A,2020,2020-10-31,Bologna,Cagliari,1.46614,1.26683
+Serie_A,2020,2020-11-01,Udinese,AC Milan,0.956217,1.02378
+Serie_A,2020,2020-11-01,Spezia,Juventus,0.546346,2.88171
+Serie_A,2020,2020-11-01,Torino,Lazio,2.4688,1.75598
+Serie_A,2020,2020-11-01,Napoli,Sassuolo,2.14387,1.52493
+Serie_A,2020,2020-11-01,Roma,Fiorentina,3.6279,0.37308
+Serie_A,2020,2020-11-01,Sampdoria,Genoa,0.858208,1.18373
+Serie_A,2020,2020-11-02,Verona,Benevento,2.51742,1.60386
+Serie_A,2020,2020-11-04,Genoa,Torino,1.18572,0.444269
+Serie_A,2020,2020-11-06,Sassuolo,Udinese,0.0834694,0.0917939
+Serie_A,2020,2020-11-07,Cagliari,Sampdoria,1.89967,0.134345
+Serie_A,2020,2020-11-07,Benevento,Spezia,0.251291,1.45194
+Serie_A,2020,2020-11-07,Parma Calcio 1913,Fiorentina,0.131692,0.814627
+Serie_A,2020,2020-11-08,Lazio,Juventus,1.07713,1.27201
+Serie_A,2020,2020-11-08,Atalanta,Inter,0.955473,0.815144
+Serie_A,2020,2020-11-08,Genoa,Roma,0.64745,3.49225
+Serie_A,2020,2020-11-08,Torino,Crotone,0.235946,0.300792
+Serie_A,2020,2020-11-08,Bologna,Napoli,0.729048,1.40583
+Serie_A,2020,2020-11-08,AC Milan,Verona,3.65495,2.20988
+Serie_A,2020,2020-11-21,Crotone,Lazio,0.432377,1.79345
+Serie_A,2020,2020-11-21,Spezia,Atalanta,0.594898,2.20038
+Serie_A,2020,2020-11-21,Juventus,Cagliari,2.54799,0.0831584
+Serie_A,2020,2020-11-22,Fiorentina,Benevento,1.21172,0.565303
+Serie_A,2020,2020-11-22,Inter,Torino,3.74566,1.97826
+Serie_A,2020,2020-11-22,Roma,Parma Calcio 1913,3.20915,0.0318982
+Serie_A,2020,2020-11-22,Sampdoria,Bologna,0.817944,1.73409
+Serie_A,2020,2020-11-22,Verona,Sassuolo,1.3932,0.51
+Serie_A,2020,2020-11-22,Udinese,Genoa,0.413067,0.731116
+Serie_A,2020,2020-11-22,Napoli,AC Milan,1.8847,1.83664
+Serie_A,2020,2020-11-28,Sassuolo,Inter,0.753035,1.49985
+Serie_A,2020,2020-11-28,Benevento,Juventus,0.439998,1.64625
+Serie_A,2020,2020-11-28,Atalanta,Verona,1.20139,1.78911
+Serie_A,2020,2020-11-29,Lazio,Udinese,1.22788,1.42863
+Serie_A,2020,2020-11-29,Bologna,Crotone,1.80058,0.401219
+Serie_A,2020,2020-11-29,AC Milan,Fiorentina,2.85768,0.602734
+Serie_A,2020,2020-11-29,Cagliari,Spezia,1.44548,2.7383
+Serie_A,2020,2020-11-29,Napoli,Roma,2.05867,0.314633
+Serie_A,2020,2020-11-30,Torino,Sampdoria,1.63863,1.38058
+Serie_A,2020,2020-11-30,Genoa,Parma Calcio 1913,1.58372,1.40499
+Serie_A,2020,2020-12-05,Spezia,Lazio,1.7297,0.437896
+Serie_A,2020,2020-12-05,Juventus,Torino,2.52836,1.34238
+Serie_A,2020,2020-12-05,Inter,Bologna,1.98287,1.1214
+Serie_A,2020,2020-12-06,Verona,Cagliari,3.02671,1.67924
+Serie_A,2020,2020-12-06,Parma Calcio 1913,Benevento,0.501198,0.340508
+Serie_A,2020,2020-12-06,Roma,Sassuolo,1.27993,0.209882
+Serie_A,2020,2020-12-06,Crotone,Napoli,0.508882,1.93801
+Serie_A,2020,2020-12-06,Sampdoria,AC Milan,0.986547,2.66831
+Serie_A,2020,2020-12-07,Fiorentina,Genoa,2.79212,1.37691
+Serie_A,2020,2020-12-11,Sassuolo,Benevento,1.08927,2.09826
+Serie_A,2020,2020-12-12,Crotone,Spezia,1.69279,0.824038
+Serie_A,2020,2020-12-12,Torino,Udinese,1.07631,1.47406
+Serie_A,2020,2020-12-12,Lazio,Verona,0.647828,0.955041
+Serie_A,2020,2020-12-13,Cagliari,Inter,1.61081,2.74594
+Serie_A,2020,2020-12-13,Atalanta,Fiorentina,2.8038,0.461794
+Serie_A,2020,2020-12-13,Bologna,Roma,0.354826,4.03543
+Serie_A,2020,2020-12-13,Napoli,Sampdoria,1.51835,0.713804
+Serie_A,2020,2020-12-13,Genoa,Juventus,0.484378,3.60091
+Serie_A,2020,2020-12-13,AC Milan,Parma Calcio 1913,1.8515,0.603434
+Serie_A,2020,2020-12-15,Udinese,Crotone,1.10391,0.123143
+Serie_A,2020,2020-12-15,Benevento,Lazio,1.43093,0.416738
+Serie_A,2020,2020-12-16,Juventus,Atalanta,2.71039,0.902039
+Serie_A,2020,2020-12-16,Fiorentina,Sassuolo,1.71835,1.7103
+Serie_A,2020,2020-12-16,Genoa,AC Milan,1.22979,2.05417
+Serie_A,2020,2020-12-16,Inter,Napoli,1.31797,3.25581
+Serie_A,2020,2020-12-16,Parma Calcio 1913,Cagliari,0.870374,0.265316
+Serie_A,2020,2020-12-16,Spezia,Bologna,2.66532,1.61165
+Serie_A,2020,2020-12-16,Verona,Sampdoria,1.49333,0.779474
+Serie_A,2020,2020-12-17,Roma,Torino,3.04581,0.975058
+Serie_A,2020,2020-12-19,Fiorentina,Verona,1.68253,1.24682
+Serie_A,2020,2020-12-19,Sampdoria,Crotone,2.48022,1.04297
+Serie_A,2020,2020-12-19,Parma Calcio 1913,Juventus,0.926619,2.80045
+Serie_A,2020,2020-12-20,Torino,Bologna,1.10564,2.17731
+Serie_A,2020,2020-12-20,Benevento,Genoa,1.55436,0.245022
+Serie_A,2020,2020-12-20,Cagliari,Udinese,0.628497,1.43641
+Serie_A,2020,2020-12-20,Inter,Spezia,1.26331,0.779401
+Serie_A,2020,2020-12-20,Sassuolo,AC Milan,1.04718,1.41457
+Serie_A,2020,2020-12-20,Atalanta,Roma,1.91426,0.712758
+Serie_A,2020,2020-12-20,Lazio,Napoli,0.701577,0.982563
+Serie_A,2020,2020-12-22,Crotone,Parma Calcio 1913,0.7999,1.50226
+Serie_A,2020,2020-12-22,Juventus,Fiorentina,0.388088,1.53117
+Serie_A,2020,2020-12-23,Verona,Inter,1.23629,2.0312
+Serie_A,2020,2020-12-23,Bologna,Atalanta,1.08799,1.89381
+Serie_A,2020,2020-12-23,AC Milan,Lazio,1.88103,1.45797
+Serie_A,2020,2020-12-23,Napoli,Torino,0.896358,0.390204
+Serie_A,2020,2020-12-23,Roma,Cagliari,3.36165,1.19646
+Serie_A,2020,2020-12-23,Sampdoria,Sassuolo,1.6455,2.16381
+Serie_A,2020,2020-12-23,Spezia,Genoa,0.530442,1.24789
+Serie_A,2020,2020-12-23,Udinese,Benevento,2.4683,0.338064
+Serie_A,2020,2021-01-03,Inter,Crotone,2.4614,1.85185
+Serie_A,2020,2021-01-03,Atalanta,Sassuolo,3.50279,0.499119
+Serie_A,2020,2021-01-03,Cagliari,Napoli,0.860583,5.2489
+Serie_A,2020,2021-01-03,Fiorentina,Bologna,0.352245,0.633738
+Serie_A,2020,2021-01-03,Genoa,Lazio,1.14509,1.34628
+Serie_A,2020,2021-01-03,Parma Calcio 1913,Torino,0.846876,1.67327
+Serie_A,2020,2021-01-03,Roma,Sampdoria,2.40692,0.229603
+Serie_A,2020,2021-01-03,Spezia,Verona,0.450318,1.5461
+Serie_A,2020,2021-01-03,Benevento,AC Milan,2.34965,1.53692
+Serie_A,2020,2021-01-03,Juventus,Udinese,3.54071,1.75781
+Serie_A,2020,2021-01-06,Cagliari,Benevento,1.16751,1.23401
+Serie_A,2020,2021-01-06,Atalanta,Parma Calcio 1913,2.38532,0.0467904
+Serie_A,2020,2021-01-06,Bologna,Udinese,1.30678,1.70449
+Serie_A,2020,2021-01-06,Crotone,Roma,0.498045,1.89996
+Serie_A,2020,2021-01-06,Lazio,Fiorentina,1.91891,1.77283
+Serie_A,2020,2021-01-06,Sampdoria,Inter,1.3375,2.49173
+Serie_A,2020,2021-01-06,Sassuolo,Genoa,2.26,1.04966
+Serie_A,2020,2021-01-06,Torino,Verona,1.36437,0.299538
+Serie_A,2020,2021-01-06,Napoli,Spezia,4.01311,1.92698
+Serie_A,2020,2021-01-06,AC Milan,Juventus,1.02584,2.3569
+Serie_A,2020,2021-01-09,Benevento,Atalanta,0.945676,4.0811
+Serie_A,2020,2021-01-09,Genoa,Bologna,1.0511,1.03548
+Serie_A,2020,2021-01-09,AC Milan,Torino,1.58807,0.372133
+Serie_A,2020,2021-01-10,Roma,Inter,0.904251,1.9311
+Serie_A,2020,2021-01-10,Parma Calcio 1913,Lazio,0.38214,3.416
+Serie_A,2020,2021-01-10,Udinese,Napoli,2.22446,1.7625
+Serie_A,2020,2021-01-10,Verona,Crotone,1.29189,0.832994
+Serie_A,2020,2021-01-10,Fiorentina,Cagliari,1.90744,1.25523
+Serie_A,2020,2021-01-10,Juventus,Sassuolo,3.03948,0.542444
+Serie_A,2020,2021-01-11,Spezia,Sampdoria,1.71534,0.433748
+Serie_A,2020,2021-01-15,Lazio,Roma,0.941571,0.639638
+Serie_A,2020,2021-01-16,Bologna,Verona,2.59435,0.695086
+Serie_A,2020,2021-01-16,Torino,Spezia,0.994528,0.310945
+Serie_A,2020,2021-01-16,Sampdoria,Udinese,1.50541,2.78281
+Serie_A,2020,2021-01-17,Napoli,Fiorentina,2.24139,1.1403
+Serie_A,2020,2021-01-17,Crotone,Benevento,1.49503,2.46021
+Serie_A,2020,2021-01-17,Sassuolo,Parma Calcio 1913,1.81397,0.698377
+Serie_A,2020,2021-01-17,Atalanta,Genoa,2.08328,0.905971
+Serie_A,2020,2021-01-17,Inter,Juventus,1.73238,0.368127
+Serie_A,2020,2021-01-18,Cagliari,AC Milan,1.1919,1.69958
+Serie_A,2020,2021-01-20,Udinese,Atalanta,0.418061,1.28447
+Serie_A,2020,2021-01-22,Benevento,Torino,1.60271,1.4463
+Serie_A,2020,2021-01-23,Roma,Spezia,2.59451,1.46005
+Serie_A,2020,2021-01-23,AC Milan,Atalanta,1.74436,2.39517
+Serie_A,2020,2021-01-23,Udinese,Inter,0.210828,0.725987
+Serie_A,2020,2021-01-23,Fiorentina,Crotone,1.03932,0.611551
+Serie_A,2020,2021-01-24,Juventus,Bologna,3.5214,0.43025
+Serie_A,2020,2021-01-24,Genoa,Cagliari,2.49498,1.27481
+Serie_A,2020,2021-01-24,Verona,Napoli,2.35109,0.903544
+Serie_A,2020,2021-01-24,Lazio,Sassuolo,2.00707,0.657277
+Serie_A,2020,2021-01-24,Parma Calcio 1913,Sampdoria,1.05418,2.1892
+Serie_A,2020,2021-01-29,Torino,Fiorentina,2.16367,1.48381
+Serie_A,2020,2021-01-30,Bologna,AC Milan,1.3455,3.3292
+Serie_A,2020,2021-01-30,Sampdoria,Juventus,0.240857,1.63913
+Serie_A,2020,2021-01-30,Inter,Benevento,1.65732,0.0
+Serie_A,2020,2021-01-31,Spezia,Udinese,0.816035,1.20302
+Serie_A,2020,2021-01-31,Crotone,Genoa,0.63775,1.25048
+Serie_A,2020,2021-01-31,Atalanta,Lazio,1.18024,2.39061
+Serie_A,2020,2021-01-31,Cagliari,Sassuolo,0.879547,1.89569
+Serie_A,2020,2021-01-31,Napoli,Parma Calcio 1913,1.05768,0.540369
+Serie_A,2020,2021-01-31,Roma,Verona,2.18476,0.728479
+Serie_A,2020,2021-02-05,Fiorentina,Inter,0.54225,2.48145
+Serie_A,2020,2021-02-06,Sassuolo,Spezia,0.974042,1.65222
+Serie_A,2020,2021-02-06,Atalanta,Torino,2.05759,2.80114
+Serie_A,2020,2021-02-06,Juventus,Roma,0.251055,0.652535
+Serie_A,2020,2021-02-06,Genoa,Napoli,1.09369,2.09283
+Serie_A,2020,2021-02-07,Benevento,Sampdoria,0.949104,1.70084
+Serie_A,2020,2021-02-07,AC Milan,Crotone,3.26629,0.483519
+Serie_A,2020,2021-02-07,Udinese,Verona,2.21674,0.324304
+Serie_A,2020,2021-02-07,Parma Calcio 1913,Bologna,0.787202,1.45085
+Serie_A,2020,2021-02-07,Lazio,Cagliari,1.0166,1.23787
+Serie_A,2020,2021-02-12,Bologna,Benevento,1.91922,0.80004
+Serie_A,2020,2021-02-13,Torino,Genoa,0.406879,0.209162
+Serie_A,2020,2021-02-13,Napoli,Juventus,1.05643,2.01493
+Serie_A,2020,2021-02-13,Spezia,AC Milan,1.33279,0.522191
+Serie_A,2020,2021-02-14,Roma,Udinese,2.98143,0.310308
+Serie_A,2020,2021-02-14,Cagliari,Atalanta,0.203346,0.966776
+Serie_A,2020,2021-02-14,Sampdoria,Fiorentina,1.37373,1.28041
+Serie_A,2020,2021-02-14,Crotone,Sassuolo,0.737979,2.7814
+Serie_A,2020,2021-02-14,Inter,Lazio,2.41606,0.975673
+Serie_A,2020,2021-02-15,Verona,Parma Calcio 1913,1.25993,1.28195
+Serie_A,2020,2021-02-19,Fiorentina,Spezia,2.08276,0.854682
+Serie_A,2020,2021-02-19,Cagliari,Torino,0.804795,1.16138
+Serie_A,2020,2021-02-20,Lazio,Sampdoria,1.36887,1.27226
+Serie_A,2020,2021-02-20,Genoa,Verona,0.942869,1.17826
+Serie_A,2020,2021-02-20,Sassuolo,Bologna,1.75431,0.547118
+Serie_A,2020,2021-02-21,Parma Calcio 1913,Udinese,2.71894,1.34636
+Serie_A,2020,2021-02-21,AC Milan,Inter,0.707265,2.95518
+Serie_A,2020,2021-02-21,Atalanta,Napoli,2.68448,0.624734
+Serie_A,2020,2021-02-21,Benevento,Roma,0.24834,0.917367
+Serie_A,2020,2021-02-22,Juventus,Crotone,4.42058,0.654355
+Serie_A,2020,2021-02-27,Spezia,Parma Calcio 1913,1.50261,1.22437
+Serie_A,2020,2021-02-27,Bologna,Lazio,1.30451,2.4983
+Serie_A,2020,2021-02-27,Verona,Juventus,0.7004,1.22214
+Serie_A,2020,2021-02-28,Sampdoria,Atalanta,0.459133,1.37431
+Serie_A,2020,2021-02-28,Crotone,Cagliari,0.859768,1.47542
+Serie_A,2020,2021-02-28,Udinese,Fiorentina,1.00916,0.393598
+Serie_A,2020,2021-02-28,Inter,Genoa,2.85565,0.104998
+Serie_A,2020,2021-02-28,Napoli,Benevento,2.34858,0.430179
+Serie_A,2020,2021-02-28,Roma,AC Milan,1.198,3.2493
+Serie_A,2020,2021-03-02,Juventus,Spezia,2.61694,1.26299
+Serie_A,2020,2021-03-03,Sassuolo,Napoli,2.4724,2.54342
+Serie_A,2020,2021-03-03,Fiorentina,Roma,0.44021,1.38176
+Serie_A,2020,2021-03-03,Genoa,Sampdoria,0.282448,0.554452
+Serie_A,2020,2021-03-03,AC Milan,Udinese,1.31277,0.772446
+Serie_A,2020,2021-03-03,Benevento,Verona,0.345715,1.81493
+Serie_A,2020,2021-03-03,Cagliari,Bologna,0.918475,0.572194
+Serie_A,2020,2021-03-03,Atalanta,Crotone,3.83419,0.599388
+Serie_A,2020,2021-03-04,Parma Calcio 1913,Inter,0.807935,3.45928
+Serie_A,2020,2021-03-06,Spezia,Benevento,1.68194,0.319654
+Serie_A,2020,2021-03-06,Udinese,Sassuolo,1.7241,0.944927
+Serie_A,2020,2021-03-06,Juventus,Lazio,1.44911,0.876141
+Serie_A,2020,2021-03-07,Roma,Genoa,1.11292,0.22588
+Serie_A,2020,2021-03-07,Verona,AC Milan,1.12134,1.02359
+Serie_A,2020,2021-03-07,Fiorentina,Parma Calcio 1913,1.2552,2.66766
+Serie_A,2020,2021-03-07,Crotone,Torino,2.60234,1.97011
+Serie_A,2020,2021-03-07,Sampdoria,Cagliari,0.52749,0.979884
+Serie_A,2020,2021-03-07,Napoli,Bologna,1.22462,0.770095
+Serie_A,2020,2021-03-08,Inter,Atalanta,0.181511,0.676989
+Serie_A,2020,2021-03-12,Lazio,Crotone,2.70511,1.38008
+Serie_A,2020,2021-03-12,Atalanta,Spezia,2.01267,1.24595
+Serie_A,2020,2021-03-13,Sassuolo,Verona,1.56376,1.47961
+Serie_A,2020,2021-03-13,Benevento,Fiorentina,1.543,2.26928
+Serie_A,2020,2021-03-13,Genoa,Udinese,1.64784,1.91532
+Serie_A,2020,2021-03-14,Bologna,Sampdoria,2.26652,1.56796
+Serie_A,2020,2021-03-14,Torino,Inter,1.35492,2.51476
+Serie_A,2020,2021-03-14,Parma Calcio 1913,Roma,2.09688,1.6811
+Serie_A,2020,2021-03-14,Cagliari,Juventus,0.656951,2.33997
+Serie_A,2020,2021-03-14,AC Milan,Napoli,1.48364,1.34959
+Serie_A,2020,2021-03-17,Torino,Sassuolo,2.1526,1.41405
+Serie_A,2020,2021-03-19,Parma Calcio 1913,Genoa,2.09686,0.896292
+Serie_A,2020,2021-03-20,Crotone,Bologna,1.94617,3.85076
+Serie_A,2020,2021-03-20,Spezia,Cagliari,1.03827,2.95218
+Serie_A,2020,2021-03-21,Verona,Atalanta,0.145024,2.06793
+Serie_A,2020,2021-03-21,Udinese,Lazio,1.92074,1.51277
+Serie_A,2020,2021-03-21,Juventus,Benevento,2.31196,0.247326
+Serie_A,2020,2021-03-21,Sampdoria,Torino,0.774348,0.739358
+Serie_A,2020,2021-03-21,Fiorentina,AC Milan,0.445056,1.83261
+Serie_A,2020,2021-03-21,Roma,Napoli,0.733296,1.07404
+Serie_A,2020,2021-04-03,AC Milan,Sampdoria,0.96551,1.01539
+Serie_A,2020,2021-04-03,Napoli,Crotone,3.45014,1.17165
+Serie_A,2020,2021-04-03,Genoa,Fiorentina,1.18401,0.905325
+Serie_A,2020,2021-04-03,Benevento,Parma Calcio 1913,1.38823,1.2091
+Serie_A,2020,2021-04-03,Sassuolo,Roma,3.38116,1.55499
+Serie_A,2020,2021-04-03,Lazio,Spezia,2.36513,0.938101
+Serie_A,2020,2021-04-03,Atalanta,Udinese,2.63099,0.738068
+Serie_A,2020,2021-04-03,Cagliari,Verona,1.24308,1.30136
+Serie_A,2020,2021-04-03,Torino,Juventus,1.15909,3.29698
+Serie_A,2020,2021-04-03,Bologna,Inter,1.26861,2.12357
+Serie_A,2020,2021-04-07,Juventus,Napoli,1.61051,1.36435
+Serie_A,2020,2021-04-07,Inter,Sassuolo,1.27678,0.868116
+Serie_A,2020,2021-04-10,Spezia,Crotone,1.39234,1.43962
+Serie_A,2020,2021-04-10,Parma Calcio 1913,AC Milan,1.7023,1.0074
+Serie_A,2020,2021-04-10,Udinese,Torino,1.03189,1.53854
+Serie_A,2020,2021-04-11,Inter,Cagliari,1.25573,0.242059
+Serie_A,2020,2021-04-11,Juventus,Genoa,2.82825,1.47493
+Serie_A,2020,2021-04-11,Verona,Lazio,0.215489,0.457956
+Serie_A,2020,2021-04-11,Sampdoria,Napoli,0.904896,1.89882
+Serie_A,2020,2021-04-11,Roma,Bologna,1.3735,2.0125
+Serie_A,2020,2021-04-11,Fiorentina,Atalanta,1.28762,3.07955
+Serie_A,2020,2021-04-12,Benevento,Sassuolo,0.392283,1.28252
+Serie_A,2020,2021-04-17,Crotone,Udinese,1.56852,0.827427
+Serie_A,2020,2021-04-17,Sampdoria,Verona,1.94443,1.31995
+Serie_A,2020,2021-04-17,Sassuolo,Fiorentina,2.27601,0.777004
+Serie_A,2020,2021-04-17,Cagliari,Parma Calcio 1913,2.36238,1.6174
+Serie_A,2020,2021-04-18,AC Milan,Genoa,1.21528,1.31309
+Serie_A,2020,2021-04-18,Lazio,Benevento,3.64262,1.40017
+Serie_A,2020,2021-04-18,Atalanta,Juventus,0.979557,0.795659
+Serie_A,2020,2021-04-18,Bologna,Spezia,3.12881,0.532614
+Serie_A,2020,2021-04-18,Torino,Roma,3.37014,1.507
+Serie_A,2020,2021-04-18,Napoli,Inter,0.584142,1.0199
+Serie_A,2020,2021-04-20,Verona,Fiorentina,1.9565,1.14388
+Serie_A,2020,2021-04-21,AC Milan,Sassuolo,1.11244,2.13785
+Serie_A,2020,2021-04-21,Genoa,Benevento,1.28057,1.03972
+Serie_A,2020,2021-04-21,Udinese,Cagliari,0.764035,1.37919
+Serie_A,2020,2021-04-21,Spezia,Inter,0.0315577,2.88353
+Serie_A,2020,2021-04-21,Juventus,Parma Calcio 1913,2.49694,1.3096
+Serie_A,2020,2021-04-21,Crotone,Sampdoria,0.688921,2.0374
+Serie_A,2020,2021-04-21,Bologna,Torino,0.327911,1.85996
+Serie_A,2020,2021-04-22,Roma,Atalanta,1.11253,2.39045
+Serie_A,2020,2021-04-22,Napoli,Lazio,1.59439,1.43947
+Serie_A,2020,2021-04-24,Genoa,Spezia,2.46449,0.932413
+Serie_A,2020,2021-04-24,Parma Calcio 1913,Crotone,2.13448,2.71958
+Serie_A,2020,2021-04-24,Sassuolo,Sampdoria,1.66072,0.986504
+Serie_A,2020,2021-04-25,Benevento,Udinese,2.51862,1.34953
+Serie_A,2020,2021-04-25,Fiorentina,Juventus,1.21138,1.15603
+Serie_A,2020,2021-04-25,Inter,Verona,0.85992,1.06135
+Serie_A,2020,2021-04-25,Cagliari,Roma,1.26292,1.58437
+Serie_A,2020,2021-04-25,Atalanta,Bologna,4.45853,0.901726
+Serie_A,2020,2021-04-26,Torino,Napoli,1.04779,3.0505
+Serie_A,2020,2021-04-26,Lazio,AC Milan,2.28486,1.83
+Serie_A,2020,2021-05-01,Verona,Spezia,2.04122,1.17641
+Serie_A,2020,2021-05-01,Crotone,Inter,0.759966,2.34169
+Serie_A,2020,2021-05-01,AC Milan,Benevento,3.44683,0.742758
+Serie_A,2020,2021-05-02,Lazio,Genoa,2.90489,1.12186
+Serie_A,2020,2021-05-02,Sassuolo,Atalanta,1.26321,1.94826
+Serie_A,2020,2021-05-02,Napoli,Cagliari,2.9066,1.88547
+Serie_A,2020,2021-05-02,Bologna,Fiorentina,1.93952,2.01163
+Serie_A,2020,2021-05-02,Udinese,Juventus,0.372087,2.79425
+Serie_A,2020,2021-05-02,Sampdoria,Roma,1.37262,1.63837
+Serie_A,2020,2021-05-03,Torino,Parma Calcio 1913,1.35363,0.402756
+Serie_A,2020,2021-05-08,Udinese,Bologna,0.488745,2.52775
+Serie_A,2020,2021-05-08,Spezia,Napoli,1.27161,2.32097
+Serie_A,2020,2021-05-08,Inter,Sampdoria,1.95771,1.4093
+Serie_A,2020,2021-05-08,Fiorentina,Lazio,1.42543,0.980945
+Serie_A,2020,2021-05-09,Genoa,Sassuolo,0.749499,1.91968
+Serie_A,2020,2021-05-09,Parma Calcio 1913,Atalanta,1.05585,3.16517
+Serie_A,2020,2021-05-09,Benevento,Cagliari,1.11891,1.94848
+Serie_A,2020,2021-05-09,Verona,Torino,1.76249,0.858971
+Serie_A,2020,2021-05-09,Roma,Crotone,2.34234,0.285602
+Serie_A,2020,2021-05-09,Juventus,AC Milan,1.10288,1.22848
+Serie_A,2020,2021-05-11,Napoli,Udinese,3.38173,0.186833
+Serie_A,2020,2021-05-12,Cagliari,Fiorentina,0.346121,0.10611
+Serie_A,2020,2021-05-12,Atalanta,Benevento,1.79069,0.183599
+Serie_A,2020,2021-05-12,Bologna,Genoa,2.30788,1.65544
+Serie_A,2020,2021-05-12,Sassuolo,Juventus,2.23729,1.36904
+Serie_A,2020,2021-05-12,Torino,AC Milan,0.86194,4.30596
+Serie_A,2020,2021-05-12,Lazio,Parma Calcio 1913,1.35561,0.569751
+Serie_A,2020,2021-05-12,Inter,Roma,2.30537,0.961595
+Serie_A,2020,2021-05-12,Sampdoria,Spezia,1.83643,2.7592
+Serie_A,2020,2021-05-13,Crotone,Verona,0.646392,0.622067
+Serie_A,2020,2021-05-15,Genoa,Atalanta,1.7247,2.28339
+Serie_A,2020,2021-05-15,Spezia,Torino,2.73126,0.940601
+Serie_A,2020,2021-05-15,Juventus,Inter,3.16532,1.34382
+Serie_A,2020,2021-05-15,Roma,Lazio,1.03543,0.765258
+Serie_A,2020,2021-05-16,Fiorentina,Napoli,0.344483,1.90774
+Serie_A,2020,2021-05-16,Benevento,Crotone,1.7951,1.10271
+Serie_A,2020,2021-05-16,Udinese,Sampdoria,0.344524,1.40036
+Serie_A,2020,2021-05-16,Parma Calcio 1913,Sassuolo,0.998801,2.48538
+Serie_A,2020,2021-05-16,AC Milan,Cagliari,1.40469,0.425678
+Serie_A,2020,2021-05-17,Verona,Bologna,1.98719,2.04284
+Serie_A,2020,2021-05-18,Lazio,Torino,2.14691,0.280579
+Serie_A,2020,2021-05-22,Crotone,Fiorentina,2.41313,0.470867
+Serie_A,2020,2021-05-22,Cagliari,Genoa,2.16617,1.63375
+Serie_A,2020,2021-05-22,Sampdoria,Parma Calcio 1913,1.34869,0.720234
+Serie_A,2020,2021-05-23,Inter,Udinese,3.52785,1.16043
+Serie_A,2020,2021-05-23,Torino,Benevento,1.35452,0.349447
+Serie_A,2020,2021-05-23,Bologna,Juventus,1.06031,3.63043
+Serie_A,2020,2021-05-23,Sassuolo,Lazio,1.9712,0.974681
+Serie_A,2020,2021-05-23,Atalanta,AC Milan,0.61287,2.06325
+Serie_A,2020,2021-05-23,Spezia,Roma,2.87459,2.72274
+Serie_A,2020,2021-05-23,Napoli,Verona,1.57132,0.51703
+Serie_A,2021,2021-08-21,Verona,Sassuolo,2.25155,1.86679
+Serie_A,2021,2021-08-21,Inter,Genoa,2.20707,0.967177
+Serie_A,2021,2021-08-21,Torino,Atalanta,0.864837,1.01343
+Serie_A,2021,2021-08-21,Empoli,Lazio,1.13436,1.78152
+Serie_A,2021,2021-08-22,Bologna,Salernitana,1.72577,1.63711
+Serie_A,2021,2021-08-22,Udinese,Juventus,2.08573,1.49379
+Serie_A,2021,2021-08-22,Napoli,Venezia,2.39159,0.60988
+Serie_A,2021,2021-08-22,Roma,Fiorentina,2.75414,0.867167
+Serie_A,2021,2021-08-23,Cagliari,Spezia,3.28935,1.03088
+Serie_A,2021,2021-08-23,Sampdoria,AC Milan,1.24757,0.804449
+Serie_A,2021,2021-08-27,Udinese,Venezia,3.01783,0.908926
+Serie_A,2021,2021-08-27,Verona,Inter,0.603998,1.8369
+Serie_A,2021,2021-08-28,Lazio,Spezia,2.71713,0.735352
+Serie_A,2021,2021-08-28,Atalanta,Bologna,0.989249,0.41987
+Serie_A,2021,2021-08-28,Fiorentina,Torino,0.53999,0.293784
+Serie_A,2021,2021-08-28,Juventus,Empoli,1.81566,1.10327
+Serie_A,2021,2021-08-29,Sassuolo,Sampdoria,1.22815,0.577075
+Serie_A,2021,2021-08-29,Genoa,Napoli,0.339332,1.15407
+Serie_A,2021,2021-08-29,AC Milan,Cagliari,2.67169,0.406709
+Serie_A,2021,2021-08-29,Salernitana,Roma,0.221399,1.88679
+Serie_A,2021,2021-09-11,Empoli,Venezia,1.88537,2.43118
+Serie_A,2021,2021-09-11,Napoli,Juventus,2.18708,1.56057
+Serie_A,2021,2021-09-11,Atalanta,Fiorentina,2.11526,1.81465
+Serie_A,2021,2021-09-12,Sampdoria,Inter,1.46613,0.965476
+Serie_A,2021,2021-09-12,Cagliari,Genoa,1.83111,1.25494
+Serie_A,2021,2021-09-12,Spezia,Udinese,0.788419,0.78059
+Serie_A,2021,2021-09-12,Torino,Salernitana,2.9969,0.252452
+Serie_A,2021,2021-09-12,AC Milan,Lazio,3.47807,0.24655
+Serie_A,2021,2021-09-12,Roma,Sassuolo,2.32713,2.09991
+Serie_A,2021,2021-09-13,Bologna,Verona,1.25512,0.315142
+Serie_A,2021,2021-09-17,Sassuolo,Torino,0.79628,2.48473
+Serie_A,2021,2021-09-18,Genoa,Fiorentina,1.28373,1.12359
+Serie_A,2021,2021-09-18,Inter,Bologna,4.28011,0.855616
+Serie_A,2021,2021-09-18,Salernitana,Atalanta,0.792486,1.38299
+Serie_A,2021,2021-09-19,Empoli,Sampdoria,0.927264,1.34865
+Serie_A,2021,2021-09-19,Venezia,Spezia,0.805717,0.478482
+Serie_A,2021,2021-09-19,Verona,Roma,1.02132,0.661729
+Serie_A,2021,2021-09-19,Lazio,Cagliari,1.72557,1.91594
+Serie_A,2021,2021-09-19,Juventus,AC Milan,1.31518,1.04896
+Serie_A,2021,2021-09-20,Udinese,Napoli,0.243458,3.30273
+Serie_A,2021,2021-09-21,Bologna,Genoa,2.2881,1.69881
+Serie_A,2021,2021-09-21,Atalanta,Sassuolo,2.10813,0.911464
+Serie_A,2021,2021-09-21,Fiorentina,Inter,1.733,2.73737
+Serie_A,2021,2021-09-22,Salernitana,Verona,2.68942,2.06188
+Serie_A,2021,2021-09-22,Spezia,Juventus,1.03395,2.54565
+Serie_A,2021,2021-09-22,Cagliari,Empoli,0.754694,1.14537
+Serie_A,2021,2021-09-22,AC Milan,Venezia,2.11409,0.581225
+Serie_A,2021,2021-09-23,Sampdoria,Napoli,0.56857,2.10601
+Serie_A,2021,2021-09-23,Torino,Lazio,1.27244,0.846161
+Serie_A,2021,2021-09-23,Roma,Udinese,1.383,0.809534
+Serie_A,2021,2021-09-25,Spezia,AC Milan,0.953769,1.74102
+Serie_A,2021,2021-09-25,Inter,Atalanta,3.52091,1.50237
+Serie_A,2021,2021-09-25,Genoa,Verona,1.43713,2.07264
+Serie_A,2021,2021-09-26,Juventus,Sampdoria,2.62795,0.600946
+Serie_A,2021,2021-09-26,Empoli,Bologna,1.47687,2.49784
+Serie_A,2021,2021-09-26,Sassuolo,Salernitana,1.60845,1.16385
+Serie_A,2021,2021-09-26,Udinese,Fiorentina,0.492029,1.13861
+Serie_A,2021,2021-09-26,Lazio,Roma,2.48417,1.84369
+Serie_A,2021,2021-09-26,Napoli,Cagliari,2.05833,0.153322
+Serie_A,2021,2021-09-27,Venezia,Torino,1.5265,0.8526
+Serie_A,2021,2021-10-01,Cagliari,Venezia,0.658426,0.486148
+Serie_A,2021,2021-10-02,Salernitana,Genoa,0.547267,1.58603
+Serie_A,2021,2021-10-02,Torino,Juventus,0.908329,1.89552
+Serie_A,2021,2021-10-02,Sassuolo,Inter,1.61921,2.04169
+Serie_A,2021,2021-10-03,Bologna,Lazio,0.778479,0.96271
+Serie_A,2021,2021-10-03,Verona,Spezia,0.690616,1.57689
+Serie_A,2021,2021-10-03,Sampdoria,Udinese,1.52931,3.28192
+Serie_A,2021,2021-10-03,Fiorentina,Napoli,0.383136,1.64223
+Serie_A,2021,2021-10-03,Roma,Empoli,1.8551,0.43764
+Serie_A,2021,2021-10-03,Atalanta,AC Milan,2.63096,2.50955
+Serie_A,2021,2021-10-16,Spezia,Salernitana,1.67718,1.60938
+Serie_A,2021,2021-10-16,Lazio,Inter,2.31397,1.44791
+Serie_A,2021,2021-10-16,AC Milan,Verona,1.51852,1.58319
+Serie_A,2021,2021-10-17,Cagliari,Sampdoria,1.50713,1.78619
+Serie_A,2021,2021-10-17,Empoli,Atalanta,0.575048,3.83506
+Serie_A,2021,2021-10-17,Genoa,Sassuolo,1.38414,2.8217
+Serie_A,2021,2021-10-17,Udinese,Bologna,1.35716,1.49614
+Serie_A,2021,2021-10-17,Napoli,Torino,1.32917,1.07482
+Serie_A,2021,2021-10-17,Juventus,Roma,1.46974,1.4565
+Serie_A,2021,2021-10-18,Venezia,Fiorentina,0.794394,0.42719
+Serie_A,2021,2021-10-22,Torino,Genoa,2.2411,2.35473
+Serie_A,2021,2021-10-22,Sampdoria,Spezia,0.974056,1.05608
+Serie_A,2021,2021-10-23,Salernitana,Empoli,1.37213,2.83049
+Serie_A,2021,2021-10-23,Sassuolo,Venezia,2.13069,0.506648
+Serie_A,2021,2021-10-23,Bologna,AC Milan,0.631007,0.90866
+Serie_A,2021,2021-10-24,Atalanta,Udinese,0.629032,0.667553
+Serie_A,2021,2021-10-24,Fiorentina,Cagliari,3.1216,0.119909
+Serie_A,2021,2021-10-24,Verona,Lazio,3.536,1.42458
+Serie_A,2021,2021-10-24,Roma,Napoli,1.6324,0.593957
+Serie_A,2021,2021-10-24,Inter,Juventus,0.961912,1.34492
+Serie_A,2021,2021-10-26,Spezia,Genoa,2.40615,1.0654
+Serie_A,2021,2021-10-26,Venezia,Salernitana,0.62413,1.52483
+Serie_A,2021,2021-10-26,AC Milan,Torino,1.12486,0.488007
+Serie_A,2021,2021-10-27,Juventus,Sassuolo,1.15204,1.12654
+Serie_A,2021,2021-10-27,Sampdoria,Atalanta,0.984824,1.98512
+Serie_A,2021,2021-10-27,Udinese,Verona,0.940667,0.843224
+Serie_A,2021,2021-10-27,Cagliari,Roma,1.31963,2.49703
+Serie_A,2021,2021-10-27,Empoli,Inter,0.542985,3.07924
+Serie_A,2021,2021-10-27,Lazio,Fiorentina,0.637443,0.517761
+Serie_A,2021,2021-10-28,Napoli,Bologna,2.67727,0.251648
+Serie_A,2021,2021-10-30,Atalanta,Lazio,0.723746,1.4355
+Serie_A,2021,2021-10-30,Verona,Juventus,1.57716,1.78968
+Serie_A,2021,2021-10-30,Torino,Sampdoria,2.61562,0.249004
+Serie_A,2021,2021-10-31,Inter,Udinese,2.0569,0.303819
+Serie_A,2021,2021-10-31,Fiorentina,Spezia,2.8175,0.0882599
+Serie_A,2021,2021-10-31,Genoa,Venezia,0.720997,0.488128
+Serie_A,2021,2021-10-31,Sassuolo,Empoli,1.24312,1.4834
+Serie_A,2021,2021-10-31,Salernitana,Napoli,0.405769,1.54055
+Serie_A,2021,2021-10-31,Roma,AC Milan,1.25894,1.86101
+Serie_A,2021,2021-11-01,Bologna,Cagliari,1.7361,0.403517
+Serie_A,2021,2021-11-05,Empoli,Genoa,0.745284,1.69731
+Serie_A,2021,2021-11-06,Spezia,Torino,0.333765,0.420439
+Serie_A,2021,2021-11-06,Juventus,Fiorentina,0.984607,0.320219
+Serie_A,2021,2021-11-06,Cagliari,Atalanta,0.510728,3.54195
+Serie_A,2021,2021-11-07,Venezia,Roma,3.22538,2.76533
+Serie_A,2021,2021-11-07,Sampdoria,Bologna,1.05575,1.86418
+Serie_A,2021,2021-11-07,Udinese,Sassuolo,1.59111,0.694033
+Serie_A,2021,2021-11-07,Lazio,Salernitana,1.67971,0.239577
+Serie_A,2021,2021-11-07,Napoli,Verona,0.800943,1.22561
+Serie_A,2021,2021-11-07,AC Milan,Inter,1.15715,2.34764
+Serie_A,2021,2021-11-20,Atalanta,Spezia,2.5762,0.928225
+Serie_A,2021,2021-11-20,Lazio,Juventus,0.254933,2.76719
+Serie_A,2021,2021-11-20,Fiorentina,AC Milan,1.50869,1.57419
+Serie_A,2021,2021-11-21,Sassuolo,Cagliari,3.47952,1.23102
+Serie_A,2021,2021-11-21,Bologna,Venezia,0.995082,1.01889
+Serie_A,2021,2021-11-21,Salernitana,Sampdoria,0.982098,1.52856
+Serie_A,2021,2021-11-21,Inter,Napoli,2.19596,0.941603
+Serie_A,2021,2021-11-21,Genoa,Roma,0.102684,2.34272
+Serie_A,2021,2021-11-22,Verona,Empoli,1.30231,1.56263
+Serie_A,2021,2021-11-22,Torino,Udinese,1.93566,1.00294
+Serie_A,2021,2021-11-26,Cagliari,Salernitana,1.71881,0.238047
+Serie_A,2021,2021-11-27,Empoli,Fiorentina,2.14107,2.39546
+Serie_A,2021,2021-11-27,Sampdoria,Verona,0.75047,0.697659
+Serie_A,2021,2021-11-27,Juventus,Atalanta,0.818174,0.573467
+Serie_A,2021,2021-11-27,Venezia,Inter,0.192519,2.60343
+Serie_A,2021,2021-11-28,Udinese,Genoa,0.782758,0.602047
+Serie_A,2021,2021-11-28,AC Milan,Sassuolo,0.880541,1.18489
+Serie_A,2021,2021-11-28,Spezia,Bologna,0.638423,2.54608
+Serie_A,2021,2021-11-28,Roma,Torino,0.962178,0.798443
+Serie_A,2021,2021-11-28,Napoli,Lazio,1.19531,0.272761
+Serie_A,2021,2021-11-30,Atalanta,Venezia,2.90312,0.520194
+Serie_A,2021,2021-11-30,Fiorentina,Sampdoria,2.87335,0.634027
+Serie_A,2021,2021-11-30,Verona,Cagliari,1.16014,0.575054
+Serie_A,2021,2021-11-30,Salernitana,Juventus,0.461655,2.54436
+Serie_A,2021,2021-12-01,Bologna,Roma,0.220551,0.90512
+Serie_A,2021,2021-12-01,Inter,Spezia,2.85144,0.25153
+Serie_A,2021,2021-12-01,Genoa,AC Milan,0.357508,1.10251
+Serie_A,2021,2021-12-01,Sassuolo,Napoli,0.306603,0.922552
+Serie_A,2021,2021-12-02,Torino,Empoli,1.37796,0.972492
+Serie_A,2021,2021-12-02,Lazio,Udinese,1.45921,2.04224
+Serie_A,2021,2021-12-04,AC Milan,Salernitana,2.58223,0.194258
+Serie_A,2021,2021-12-04,Roma,Inter,0.530518,1.67407
+Serie_A,2021,2021-12-04,Napoli,Atalanta,1.11737,1.52971
+Serie_A,2021,2021-12-05,Bologna,Fiorentina,0.587444,1.21379
+Serie_A,2021,2021-12-05,Spezia,Sassuolo,2.36057,1.4473
+Serie_A,2021,2021-12-05,Venezia,Verona,1.48718,2.08845
+Serie_A,2021,2021-12-05,Sampdoria,Lazio,1.14767,1.15156
+Serie_A,2021,2021-12-05,Juventus,Genoa,3.00541,0.0
+Serie_A,2021,2021-12-06,Empoli,Udinese,2.02523,2.08721
+Serie_A,2021,2021-12-06,Cagliari,Torino,1.20956,1.90192
+Serie_A,2021,2021-12-10,Genoa,Sampdoria,1.01041,2.02929
+Serie_A,2021,2021-12-11,Fiorentina,Salernitana,2.74247,0.924612
+Serie_A,2021,2021-12-11,Venezia,Juventus,0.433734,1.53897
+Serie_A,2021,2021-12-11,Udinese,AC Milan,2.28394,1.15102
+Serie_A,2021,2021-12-12,Torino,Bologna,2.12527,0.945252
+Serie_A,2021,2021-12-12,Verona,Atalanta,0.996933,1.01933
+Serie_A,2021,2021-12-12,Napoli,Empoli,1.61708,0.644488
+Serie_A,2021,2021-12-12,Sassuolo,Lazio,0.893952,0.733536
+Serie_A,2021,2021-12-12,Inter,Cagliari,3.63912,0.222398
+Serie_A,2021,2021-12-13,Roma,Spezia,2.29875,0.609287
+Serie_A,2021,2021-12-17,Lazio,Genoa,2.07083,0.172789
+Serie_A,2021,2021-12-17,Salernitana,Inter,1.09173,3.31333
+Serie_A,2021,2021-12-18,Atalanta,Roma,1.47111,1.99516
+Serie_A,2021,2021-12-18,Bologna,Juventus,0.844256,1.39683
+Serie_A,2021,2021-12-18,Cagliari,Udinese,0.183657,0.521701
+Serie_A,2021,2021-12-19,Fiorentina,Sassuolo,2.26952,1.00122
+Serie_A,2021,2021-12-19,Spezia,Empoli,1.36967,1.224
+Serie_A,2021,2021-12-19,Sampdoria,Venezia,1.80875,0.811355
+Serie_A,2021,2021-12-19,Torino,Verona,0.860761,0.261412
+Serie_A,2021,2021-12-19,AC Milan,Napoli,0.369086,0.994378
+Serie_A,2021,2021-12-21,Genoa,Atalanta,0.0227283,1.41779
+Serie_A,2021,2021-12-21,Juventus,Cagliari,2.24385,1.13484
+Serie_A,2021,2021-12-22,Sassuolo,Bologna,0.775996,1.4889
+Serie_A,2021,2021-12-22,Venezia,Lazio,0.755959,1.55202
+Serie_A,2021,2021-12-22,Verona,Fiorentina,0.948779,1.28925
+Serie_A,2021,2021-12-22,Inter,Torino,1.02989,0.536356
+Serie_A,2021,2021-12-22,Roma,Sampdoria,1.45266,1.18082
+Serie_A,2021,2021-12-22,Empoli,AC Milan,1.66086,1.96497
+Serie_A,2021,2021-12-22,Napoli,Spezia,1.45364,0.355079
+Serie_A,2021,2022-01-06,Sampdoria,Cagliari,0.731494,2.18965
+Serie_A,2021,2022-01-06,Lazio,Empoli,3.09009,2.15425
+Serie_A,2021,2022-01-06,Spezia,Verona,1.32415,2.16034
+Serie_A,2021,2022-01-06,Sassuolo,Genoa,2.1565,0.213242
+Serie_A,2021,2022-01-06,AC Milan,Roma,3.01902,0.861234
+Serie_A,2021,2022-01-06,Juventus,Napoli,1.07965,0.884683
+Serie_A,2021,2022-01-09,Venezia,AC Milan,0.511301,3.87292
+Serie_A,2021,2022-01-09,Empoli,Sassuolo,1.02555,4.0481
+Serie_A,2021,2022-01-09,Napoli,Sampdoria,1.42942,0.369245
+Serie_A,2021,2022-01-09,Udinese,Atalanta,0.725694,3.65946
+Serie_A,2021,2022-01-09,Genoa,Spezia,0.956415,1.75709
+Serie_A,2021,2022-01-09,Roma,Juventus,2.53255,1.45001
+Serie_A,2021,2022-01-09,Verona,Salernitana,1.38469,1.28422
+Serie_A,2021,2022-01-09,Inter,Lazio,2.15451,0.747451
+Serie_A,2021,2022-01-10,Torino,Fiorentina,2.52401,0.472644
+Serie_A,2021,2022-01-11,Cagliari,Bologna,1.47121,0.693001
+Serie_A,2021,2022-01-15,Sampdoria,Torino,1.28669,1.31237
+Serie_A,2021,2022-01-15,Salernitana,Lazio,0.232152,1.73777
+Serie_A,2021,2022-01-15,Juventus,Udinese,1.70532,0.552532
+Serie_A,2021,2022-01-16,Sassuolo,Verona,0.85553,4.11644
+Serie_A,2021,2022-01-16,Venezia,Empoli,1.03771,1.12304
+Serie_A,2021,2022-01-16,Roma,Cagliari,2.01468,0.642616
+Serie_A,2021,2022-01-16,Atalanta,Inter,1.51513,1.50653
+Serie_A,2021,2022-01-17,Bologna,Napoli,0.80171,2.20066
+Serie_A,2021,2022-01-17,AC Milan,Spezia,2.85028,1.56746
+Serie_A,2021,2022-01-17,Fiorentina,Genoa,3.75618,0.0786195
+Serie_A,2021,2022-01-21,Verona,Bologna,2.05174,0.416668
+Serie_A,2021,2022-01-22,Genoa,Udinese,1.73379,0.0599026
+Serie_A,2021,2022-01-22,Inter,Venezia,2.86895,0.222828
+Serie_A,2021,2022-01-22,Lazio,Atalanta,0.272931,0.310955
+Serie_A,2021,2022-01-23,Cagliari,Fiorentina,2.42279,2.56091
+Serie_A,2021,2022-01-23,Napoli,Salernitana,4.54865,0.0822889
+Serie_A,2021,2022-01-23,Spezia,Sampdoria,0.529956,0.438332
+Serie_A,2021,2022-01-23,Torino,Sassuolo,3.25065,0.628281
+Serie_A,2021,2022-01-23,Empoli,Roma,1.23141,2.17975
+Serie_A,2021,2022-01-23,AC Milan,Juventus,0.705495,0.352915
+Serie_A,2021,2022-02-05,Roma,Genoa,1.4581,0.537092
+Serie_A,2021,2022-02-05,Inter,AC Milan,1.06379,1.17012
+Serie_A,2021,2022-02-05,Fiorentina,Lazio,0.709615,2.48806
+Serie_A,2021,2022-02-06,Atalanta,Cagliari,0.983984,1.62586
+Serie_A,2021,2022-02-06,Bologna,Empoli,0.553308,1.87705
+Serie_A,2021,2022-02-06,Sampdoria,Sassuolo,2.41944,1.32565
+Serie_A,2021,2022-02-06,Venezia,Napoli,0.387253,1.79731
+Serie_A,2021,2022-02-06,Udinese,Torino,1.18272,0.231176
+Serie_A,2021,2022-02-06,Juventus,Verona,1.38424,0.434667
+Serie_A,2021,2022-02-07,Salernitana,Spezia,0.419799,1.99832
+Serie_A,2021,2022-02-12,Lazio,Bologna,2.15933,0.975118
+Serie_A,2021,2022-02-12,Napoli,Inter,1.87896,0.770409
+Serie_A,2021,2022-02-12,Torino,Venezia,0.545957,0.468815
+Serie_A,2021,2022-02-13,AC Milan,Sampdoria,1.58606,0.171196
+Serie_A,2021,2022-02-13,Empoli,Cagliari,0.62072,0.833332
+Serie_A,2021,2022-02-13,Genoa,Salernitana,2.59108,0.96554
+Serie_A,2021,2022-02-13,Verona,Udinese,0.622109,1.01066
+Serie_A,2021,2022-02-13,Sassuolo,Roma,1.08187,1.74236
+Serie_A,2021,2022-02-13,Atalanta,Juventus,2.4593,1.04207
+Serie_A,2021,2022-02-14,Spezia,Fiorentina,0.489481,2.36382
+Serie_A,2021,2022-02-18,Juventus,Torino,0.773842,0.848296
+Serie_A,2021,2022-02-19,Sampdoria,Empoli,0.565043,1.31858
+Serie_A,2021,2022-02-19,Roma,Verona,0.31384,0.82269
+Serie_A,2021,2022-02-19,Salernitana,AC Milan,0.602765,1.20115
+Serie_A,2021,2022-02-20,Fiorentina,Atalanta,0.71376,0.402145
+Serie_A,2021,2022-02-20,Venezia,Genoa,1.09963,1.76519
+Serie_A,2021,2022-02-20,Inter,Sassuolo,3.34692,1.94409
+Serie_A,2021,2022-02-20,Udinese,Lazio,1.84915,1.33877
+Serie_A,2021,2022-02-21,Cagliari,Napoli,2.24847,1.45257
+Serie_A,2021,2022-02-21,Bologna,Spezia,2.0119,0.262135
+Serie_A,2021,2022-02-25,AC Milan,Udinese,0.778008,0.698483
+Serie_A,2021,2022-02-25,Genoa,Inter,0.770871,1.15904
+Serie_A,2021,2022-02-26,Salernitana,Bologna,1.32318,0.611632
+Serie_A,2021,2022-02-26,Empoli,Juventus,1.37121,2.13647
+Serie_A,2021,2022-02-26,Sassuolo,Fiorentina,1.72605,2.13772
+Serie_A,2021,2022-02-27,Torino,Cagliari,1.3681,1.69853
+Serie_A,2021,2022-02-27,Verona,Venezia,3.53339,0.974017
+Serie_A,2021,2022-02-27,Spezia,Roma,0.364313,4.55711
+Serie_A,2021,2022-02-27,Lazio,Napoli,1.43139,0.849244
+Serie_A,2021,2022-02-28,Atalanta,Sampdoria,2.69433,0.476071
+Serie_A,2021,2022-03-04,Inter,Salernitana,4.69296,0.836976
+Serie_A,2021,2022-03-05,Udinese,Sampdoria,2.57043,0.661531
+Serie_A,2021,2022-03-05,Roma,Atalanta,1.74727,1.05953
+Serie_A,2021,2022-03-05,Cagliari,Lazio,0.596491,2.68261
+Serie_A,2021,2022-03-06,Genoa,Empoli,1.26288,0.319298
+Serie_A,2021,2022-03-06,Bologna,Torino,0.24493,0.754248
+Serie_A,2021,2022-03-06,Fiorentina,Verona,1.53524,0.97388
+Serie_A,2021,2022-03-06,Venezia,Sassuolo,3.09905,3.70614
+Serie_A,2021,2022-03-06,Juventus,Spezia,1.41795,0.984779
+Serie_A,2021,2022-03-06,Napoli,AC Milan,0.377216,1.29857
+Serie_A,2021,2022-03-12,Salernitana,Sassuolo,1.63738,1.5945
+Serie_A,2021,2022-03-12,Spezia,Cagliari,2.30067,0.490723
+Serie_A,2021,2022-03-12,Sampdoria,Juventus,1.39467,1.43772
+Serie_A,2021,2022-03-12,AC Milan,Empoli,0.868404,0.69889
+Serie_A,2021,2022-03-13,Fiorentina,Bologna,2.74019,0.966761
+Serie_A,2021,2022-03-13,Verona,Napoli,0.870895,2.06949
+Serie_A,2021,2022-03-13,Atalanta,Genoa,1.1714,0.731994
+Serie_A,2021,2022-03-13,Udinese,Roma,0.92821,1.07674
+Serie_A,2021,2022-03-13,Torino,Inter,2.30248,2.6573
+Serie_A,2021,2022-03-14,Lazio,Venezia,1.45542,0.399391
+Serie_A,2021,2022-03-18,Sassuolo,Spezia,2.44051,0.28431
+Serie_A,2021,2022-03-18,Genoa,Torino,0.953473,0.517226
+Serie_A,2021,2022-03-19,Napoli,Udinese,1.28206,0.771369
+Serie_A,2021,2022-03-19,Inter,Fiorentina,0.996394,1.05358
+Serie_A,2021,2022-03-19,Cagliari,AC Milan,0.748068,2.41621
+Serie_A,2021,2022-03-20,Venezia,Sampdoria,1.64587,1.39567
+Serie_A,2021,2022-03-20,Empoli,Verona,0.934289,1.54465
+Serie_A,2021,2022-03-20,Juventus,Salernitana,2.40548,0.438066
+Serie_A,2021,2022-03-20,Roma,Lazio,2.47701,0.358377
+Serie_A,2021,2022-03-20,Bologna,Atalanta,1.59506,1.58088
+Serie_A,2021,2022-04-02,Spezia,Venezia,1.14124,0.53455
+Serie_A,2021,2022-04-02,Lazio,Sassuolo,2.09117,1.71478
+Serie_A,2021,2022-04-02,Salernitana,Torino,1.08204,1.45234
+Serie_A,2021,2022-04-03,Fiorentina,Empoli,1.71922,0.207616
+Serie_A,2021,2022-04-03,Atalanta,Napoli,1.66786,1.84682
+Serie_A,2021,2022-04-03,Udinese,Cagliari,5.37396,0.256503
+Serie_A,2021,2022-04-03,Sampdoria,Roma,0.449626,1.1837
+Serie_A,2021,2022-04-03,Juventus,Inter,1.89815,1.0453
+Serie_A,2021,2022-04-04,Verona,Genoa,1.209,0.709184
+Serie_A,2021,2022-04-04,AC Milan,Bologna,1.83563,0.79281
+Serie_A,2021,2022-04-09,Empoli,Spezia,0.888808,1.52229
+Serie_A,2021,2022-04-09,Inter,Verona,2.68092,0.916591
+Serie_A,2021,2022-04-09,Cagliari,Juventus,0.213416,1.58167
+Serie_A,2021,2022-04-10,Genoa,Lazio,0.57986,2.15663
+Serie_A,2021,2022-04-10,Napoli,Fiorentina,1.45436,0.894842
+Serie_A,2021,2022-04-10,Sassuolo,Atalanta,1.66107,1.85636
+Serie_A,2021,2022-04-10,Venezia,Udinese,1.18437,3.08444
+Serie_A,2021,2022-04-10,Roma,Salernitana,1.95563,0.544663
+Serie_A,2021,2022-04-10,Torino,AC Milan,0.635906,0.691935
+Serie_A,2021,2022-04-11,Bologna,Sampdoria,2.56257,0.566838
+Serie_A,2021,2022-04-15,Spezia,Inter,0.413811,2.74371
+Serie_A,2021,2022-04-15,AC Milan,Genoa,1.81517,0.252167
+Serie_A,2021,2022-04-16,Cagliari,Sassuolo,1.90806,0.294539
+Serie_A,2021,2022-04-16,Sampdoria,Salernitana,0.90485,0.505369
+Serie_A,2021,2022-04-16,Udinese,Empoli,1.12137,1.96032
+Serie_A,2021,2022-04-16,Fiorentina,Venezia,3.78568,0.131667
+Serie_A,2021,2022-04-16,Juventus,Bologna,2.24238,0.991401
+Serie_A,2021,2022-04-16,Lazio,Torino,0.987224,0.981319
+Serie_A,2021,2022-04-18,Napoli,Roma,1.2951,1.34625
+Serie_A,2021,2022-04-18,Atalanta,Verona,1.27003,3.74719
+Serie_A,2021,2022-04-20,Udinese,Salernitana,0.480919,1.09235
+Serie_A,2021,2022-04-23,Torino,Spezia,2.68611,0.989529
+Serie_A,2021,2022-04-23,Venezia,Atalanta,0.703396,3.55103
+Serie_A,2021,2022-04-23,Inter,Roma,1.78507,1.23184
+Serie_A,2021,2022-04-23,Verona,Sampdoria,1.42671,0.913747
+Serie_A,2021,2022-04-24,Salernitana,Fiorentina,1.32457,0.507881
+Serie_A,2021,2022-04-24,Bologna,Udinese,0.933408,1.71422
+Serie_A,2021,2022-04-24,Empoli,Napoli,1.80347,1.30674
+Serie_A,2021,2022-04-24,Genoa,Cagliari,0.72812,0.923392
+Serie_A,2021,2022-04-24,Lazio,AC Milan,0.75325,2.45325
+Serie_A,2021,2022-04-25,Sassuolo,Juventus,1.3833,0.54335
+Serie_A,2021,2022-04-27,Fiorentina,Udinese,2.81473,3.3303
+Serie_A,2021,2022-04-27,Bologna,Inter,1.38147,2.44323
+Serie_A,2021,2022-04-27,Atalanta,Torino,2.63289,2.44099
+Serie_A,2021,2022-04-30,Cagliari,Verona,0.698699,1.5873
+Serie_A,2021,2022-04-30,Napoli,Sassuolo,3.24407,1.15108
+Serie_A,2021,2022-04-30,Sampdoria,Genoa,1.54966,1.54661
+Serie_A,2021,2022-04-30,Spezia,Lazio,1.59858,3.13613
+Serie_A,2021,2022-05-01,Juventus,Venezia,2.2771,0.746217
+Serie_A,2021,2022-05-01,Empoli,Torino,0.722045,3.02504
+Serie_A,2021,2022-05-01,AC Milan,Fiorentina,1.54898,0.516032
+Serie_A,2021,2022-05-01,Udinese,Inter,1.22718,2.52307
+Serie_A,2021,2022-05-01,Roma,Bologna,0.985697,1.44805
+Serie_A,2021,2022-05-02,Atalanta,Salernitana,1.48441,1.4366
+Serie_A,2021,2022-05-05,Salernitana,Venezia,1.97941,1.32167
+Serie_A,2021,2022-05-06,Inter,Empoli,5.56052,0.682871
+Serie_A,2021,2022-05-06,Genoa,Juventus,3.11452,1.95852
+Serie_A,2021,2022-05-07,Torino,Napoli,0.569398,1.5765
+Serie_A,2021,2022-05-07,Sassuolo,Udinese,1.50599,2.43382
+Serie_A,2021,2022-05-07,Lazio,Sampdoria,2.35961,0.726496
+Serie_A,2021,2022-05-08,Spezia,Atalanta,1.09582,2.4171
+Serie_A,2021,2022-05-08,Venezia,Bologna,2.47386,2.42822
+Serie_A,2021,2022-05-08,Salernitana,Cagliari,1.62897,0.382997
+Serie_A,2021,2022-05-08,Verona,AC Milan,1.07974,3.12506
+Serie_A,2021,2022-05-09,Fiorentina,Roma,1.70341,0.580624
+Serie_A,2021,2022-05-14,Empoli,Salernitana,1.76936,3.34278
+Serie_A,2021,2022-05-14,Verona,Torino,0.692798,1.74109
+Serie_A,2021,2022-05-14,Udinese,Spezia,1.40244,2.64896
+Serie_A,2021,2022-05-14,Roma,Venezia,3.01714,0.343274
+Serie_A,2021,2022-05-15,Bologna,Sassuolo,1.64743,2.61319
+Serie_A,2021,2022-05-15,Napoli,Genoa,2.3453,1.0345
+Serie_A,2021,2022-05-15,AC Milan,Atalanta,1.53356,0.779491
+Serie_A,2021,2022-05-15,Cagliari,Inter,0.669726,2.63086
+Serie_A,2021,2022-05-16,Sampdoria,Fiorentina,1.7651,1.57284
+Serie_A,2021,2022-05-16,Juventus,Lazio,0.767731,0.839523
+Serie_A,2021,2022-05-20,Torino,Roma,0.516826,2.72468
+Serie_A,2021,2022-05-21,Genoa,Bologna,0.916093,1.06929
+Serie_A,2021,2022-05-21,Atalanta,Empoli,3.27816,0.290017
+Serie_A,2021,2022-05-21,Fiorentina,Juventus,1.38571,0.0655878
+Serie_A,2021,2022-05-21,Lazio,Verona,3.45526,1.97266
+Serie_A,2021,2022-05-22,Spezia,Napoli,1.70411,1.7779
+Serie_A,2021,2022-05-22,Inter,Sampdoria,2.96426,0.836763
+Serie_A,2021,2022-05-22,Sassuolo,AC Milan,0.293355,4.00571
+Serie_A,2021,2022-05-22,Salernitana,Udinese,2.38256,2.36064
+Serie_A,2021,2022-05-22,Venezia,Cagliari,0.665291,1.57535
+Serie_A,2022,2022-08-13,AC Milan,Udinese,2.68095,0.439661
+Serie_A,2022,2022-08-13,Sampdoria,Atalanta,0.617683,2.28675
+Serie_A,2022,2022-08-13,Monza,Torino,1.0301,3.13646
+Serie_A,2022,2022-08-13,Lecce,Inter,0.752988,2.52817
+Serie_A,2022,2022-08-14,Lazio,Bologna,0.709672,1.59632
+Serie_A,2022,2022-08-14,Fiorentina,Cremonese,2.01254,1.76638
+Serie_A,2022,2022-08-14,Spezia,Empoli,0.861875,0.987781
+Serie_A,2022,2022-08-14,Salernitana,Roma,0.505094,2.98256
+Serie_A,2022,2022-08-15,Verona,Napoli,1.13087,2.79803
+Serie_A,2022,2022-08-15,Juventus,Sassuolo,2.24204,0.878583
+Serie_A,2022,2022-08-20,Torino,Lazio,0.996405,0.713273
+Serie_A,2022,2022-08-20,Udinese,Salernitana,1.42871,1.50184
+Serie_A,2022,2022-08-20,Inter,Spezia,2.62744,0.482897
+Serie_A,2022,2022-08-20,Sassuolo,Lecce,0.803483,0.703764
+Serie_A,2022,2022-08-21,Napoli,Monza,3.26352,0.121476
+Serie_A,2022,2022-08-21,Empoli,Fiorentina,0.757409,0.796219
+Serie_A,2022,2022-08-21,Bologna,Verona,1.13475,2.46808
+Serie_A,2022,2022-08-21,Atalanta,AC Milan,0.538424,1.53637
+Serie_A,2022,2022-08-22,Roma,Cremonese,2.91426,0.508942
+Serie_A,2022,2022-08-22,Sampdoria,Juventus,0.948831,0.807606
+Serie_A,2022,2022-08-26,Monza,Udinese,0.988468,2.26189
+Serie_A,2022,2022-08-26,Lazio,Inter,0.997005,1.62842
+Serie_A,2022,2022-08-27,Juventus,Roma,0.633345,0.963959
+Serie_A,2022,2022-08-27,Cremonese,Torino,0.815757,2.71403
+Serie_A,2022,2022-08-27,AC Milan,Bologna,2.83694,0.505259
+Serie_A,2022,2022-08-27,Spezia,Sassuolo,1.17548,2.83921
+Serie_A,2022,2022-08-28,Salernitana,Sampdoria,1.76461,1.66897
+Serie_A,2022,2022-08-28,Verona,Atalanta,0.369511,0.843159
+Serie_A,2022,2022-08-28,Lecce,Empoli,0.813378,0.37813
+Serie_A,2022,2022-08-28,Fiorentina,Napoli,0.381649,1.68549
+Serie_A,2022,2022-08-30,Sassuolo,AC Milan,1.06304,0.914316
+Serie_A,2022,2022-08-30,Roma,Monza,2.67127,0.560728
+Serie_A,2022,2022-08-30,Inter,Cremonese,2.79797,1.06761
+Serie_A,2022,2022-08-31,Empoli,Verona,0.778503,0.589249
+Serie_A,2022,2022-08-31,Sampdoria,Lazio,0.740992,1.61049
+Serie_A,2022,2022-08-31,Udinese,Fiorentina,0.879492,0.44345
+Serie_A,2022,2022-08-31,Napoli,Lecce,2.00236,1.02186
+Serie_A,2022,2022-08-31,Juventus,Spezia,1.76503,0.175145
+Serie_A,2022,2022-09-01,Atalanta,Torino,2.86971,0.398647
+Serie_A,2022,2022-09-01,Bologna,Salernitana,1.96131,1.19651
+Serie_A,2022,2022-09-03,Fiorentina,Juventus,1.83258,1.07522
+Serie_A,2022,2022-09-03,AC Milan,Inter,1.63731,2.07688
+Serie_A,2022,2022-09-03,Lazio,Napoli,0.299785,2.0197
+Serie_A,2022,2022-09-04,Cremonese,Sassuolo,0.417337,1.70824
+Serie_A,2022,2022-09-04,Spezia,Bologna,1.06255,1.02319
+Serie_A,2022,2022-09-04,Verona,Sampdoria,2.3433,0.798714
+Serie_A,2022,2022-09-04,Udinese,Roma,1.28199,0.862157
+Serie_A,2022,2022-09-05,Monza,Atalanta,0.943464,1.94986
+Serie_A,2022,2022-09-05,Salernitana,Empoli,1.80811,0.984719
+Serie_A,2022,2022-09-05,Torino,Lecce,1.0247,0.451427
+Serie_A,2022,2022-09-10,Napoli,Spezia,1.94628,0.664499
+Serie_A,2022,2022-09-10,Inter,Torino,1.53614,0.594956
+Serie_A,2022,2022-09-10,Sampdoria,AC Milan,0.923014,1.6646
+Serie_A,2022,2022-09-11,Atalanta,Cremonese,0.636633,0.620155
+Serie_A,2022,2022-09-11,Bologna,Fiorentina,1.25233,1.17879
+Serie_A,2022,2022-09-11,Lecce,Monza,1.46903,0.0823778
+Serie_A,2022,2022-09-11,Sassuolo,Udinese,0.349641,2.21222
+Serie_A,2022,2022-09-11,Lazio,Verona,1.84525,0.40445
+Serie_A,2022,2022-09-11,Juventus,Salernitana,1.83929,2.07448
+Serie_A,2022,2022-09-12,Empoli,Roma,1.15196,3.83699
+Serie_A,2022,2022-09-16,Salernitana,Lecce,1.08144,1.30867
+Serie_A,2022,2022-09-17,Bologna,Empoli,1.7821,1.66438
+Serie_A,2022,2022-09-17,Spezia,Sampdoria,1.02757,1.01245
+Serie_A,2022,2022-09-17,Torino,Sassuolo,0.672322,0.480221
+Serie_A,2022,2022-09-18,Udinese,Inter,1.29565,0.991896
+Serie_A,2022,2022-09-18,Cremonese,Lazio,0.992274,3.61789
+Serie_A,2022,2022-09-18,Fiorentina,Verona,2.8313,0.608308
+Serie_A,2022,2022-09-18,Monza,Juventus,2.52643,1.20518
+Serie_A,2022,2022-09-18,Roma,Atalanta,3.28059,0.144998
+Serie_A,2022,2022-09-18,AC Milan,Napoli,2.2547,1.17973
+Serie_A,2022,2022-10-01,Napoli,Torino,1.18491,0.741608
+Serie_A,2022,2022-10-01,Inter,Roma,0.76194,1.03755
+Serie_A,2022,2022-10-01,Empoli,AC Milan,1.01178,2.6069
+Serie_A,2022,2022-10-02,Lazio,Spezia,3.03467,0.852447
+Serie_A,2022,2022-10-02,Lecce,Cremonese,0.945844,1.55939
+Serie_A,2022,2022-10-02,Sampdoria,Monza,0.0814991,1.2288
+Serie_A,2022,2022-10-02,Sassuolo,Salernitana,3.21976,0.568495
+Serie_A,2022,2022-10-02,Atalanta,Fiorentina,1.64453,0.638248
+Serie_A,2022,2022-10-02,Juventus,Bologna,2.51162,0.330255
+Serie_A,2022,2022-10-03,Verona,Udinese,0.284674,2.17728
+Serie_A,2022,2022-10-08,Sassuolo,Inter,1.10218,2.81804
+Serie_A,2022,2022-10-08,AC Milan,Juventus,2.30469,0.673421
+Serie_A,2022,2022-10-08,Bologna,Sampdoria,0.669175,0.823033
+Serie_A,2022,2022-10-09,Torino,Empoli,2.73808,0.14731
+Serie_A,2022,2022-10-09,Monza,Spezia,0.763016,0.534751
+Serie_A,2022,2022-10-09,Salernitana,Verona,0.975817,0.947745
+Serie_A,2022,2022-10-09,Udinese,Atalanta,1.11402,1.97537
+Serie_A,2022,2022-10-09,Cremonese,Napoli,0.762438,4.47078
+Serie_A,2022,2022-10-09,Roma,Lecce,3.61927,0.326132
+Serie_A,2022,2022-10-10,Fiorentina,Lazio,2.60463,2.19633
+Serie_A,2022,2022-10-15,Empoli,Monza,2.16532,0.834003
+Serie_A,2022,2022-10-15,Torino,Juventus,0.517644,2.34335
+Serie_A,2022,2022-10-15,Atalanta,Sassuolo,2.59044,0.538078
+Serie_A,2022,2022-10-16,Inter,Salernitana,1.81451,0.250149
+Serie_A,2022,2022-10-16,Lazio,Udinese,0.687074,0.690342
+Serie_A,2022,2022-10-16,Spezia,Cremonese,1.09416,2.46395
+Serie_A,2022,2022-10-16,Napoli,Bologna,4.47916,1.05317
+Serie_A,2022,2022-10-16,Verona,AC Milan,1.93604,1.7368
+Serie_A,2022,2022-10-17,Sampdoria,Roma,0.263194,2.60212
+Serie_A,2022,2022-10-17,Lecce,Fiorentina,1.61529,0.356946
+Serie_A,2022,2022-10-21,Juventus,Empoli,3.78986,0.507227
+Serie_A,2022,2022-10-22,Salernitana,Spezia,1.91377,0.685579
+Serie_A,2022,2022-10-22,AC Milan,Monza,1.23023,1.32964
+Serie_A,2022,2022-10-22,Fiorentina,Inter,1.27024,2.51989
+Serie_A,2022,2022-10-23,Udinese,Torino,1.40576,1.17556
+Serie_A,2022,2022-10-23,Bologna,Lecce,2.1232,0.336101
+Serie_A,2022,2022-10-23,Atalanta,Lazio,0.874683,0.911832
+Serie_A,2022,2022-10-23,Roma,Napoli,0.209646,0.867955
+Serie_A,2022,2022-10-24,Cremonese,Sampdoria,1.72584,1.19704
+Serie_A,2022,2022-10-24,Sassuolo,Verona,1.45562,1.60903
+Serie_A,2022,2022-10-29,Napoli,Sassuolo,2.46208,1.0297
+Serie_A,2022,2022-10-29,Lecce,Juventus,0.166187,0.512337
+Serie_A,2022,2022-10-29,Inter,Sampdoria,2.52781,0.332522
+Serie_A,2022,2022-10-30,Empoli,Atalanta,0.655562,3.40094
+Serie_A,2022,2022-10-30,Cremonese,Udinese,0.639202,1.46552
+Serie_A,2022,2022-10-30,Spezia,Fiorentina,1.61425,1.5294
+Serie_A,2022,2022-10-30,Lazio,Salernitana,1.97581,1.42108
+Serie_A,2022,2022-10-30,Torino,AC Milan,0.912695,1.05623
+Serie_A,2022,2022-10-31,Verona,Roma,0.288065,3.03255
+Serie_A,2022,2022-10-31,Monza,Bologna,1.09073,1.16962
+Serie_A,2022,2022-11-04,Udinese,Lecce,1.65337,0.842155
+Serie_A,2022,2022-11-05,Empoli,Sassuolo,0.963,0.724143
+Serie_A,2022,2022-11-05,Salernitana,Cremonese,1.57799,1.6138
+Serie_A,2022,2022-11-05,Atalanta,Napoli,2.79481,1.76328
+Serie_A,2022,2022-11-05,AC Milan,Spezia,3.4076,1.44997
+Serie_A,2022,2022-11-06,Bologna,Torino,2.44593,1.01138
+Serie_A,2022,2022-11-06,Monza,Verona,0.739437,0.247304
+Serie_A,2022,2022-11-06,Sampdoria,Fiorentina,0.800046,1.24199
+Serie_A,2022,2022-11-06,Roma,Lazio,0.378495,0.538797
+Serie_A,2022,2022-11-06,Juventus,Inter,1.55487,1.51619
+Serie_A,2022,2022-11-08,Napoli,Empoli,1.89523,0.205301
+Serie_A,2022,2022-11-08,Spezia,Udinese,2.3694,0.507712
+Serie_A,2022,2022-11-08,Cremonese,AC Milan,0.192159,1.2958
+Serie_A,2022,2022-11-09,Lecce,Atalanta,1.78957,1.27623
+Serie_A,2022,2022-11-09,Sassuolo,Roma,1.24506,0.758794
+Serie_A,2022,2022-11-09,Fiorentina,Salernitana,2.52973,0.542105
+Serie_A,2022,2022-11-09,Inter,Bologna,2.78307,0.657702
+Serie_A,2022,2022-11-09,Torino,Sampdoria,0.479941,0.613268
+Serie_A,2022,2022-11-10,Verona,Juventus,1.14515,0.877959
+Serie_A,2022,2022-11-10,Lazio,Monza,1.30785,0.578178
+Serie_A,2022,2022-11-11,Empoli,Cremonese,2.652,1.34565
+Serie_A,2022,2022-11-12,Napoli,Udinese,1.52943,1.00653
+Serie_A,2022,2022-11-12,Sampdoria,Lecce,0.852999,1.067
+Serie_A,2022,2022-11-12,Bologna,Sassuolo,0.761979,0.793558
+Serie_A,2022,2022-11-13,Atalanta,Inter,2.06229,1.93052
+Serie_A,2022,2022-11-13,Verona,Spezia,2.16554,0.752225
+Serie_A,2022,2022-11-13,Monza,Salernitana,3.0821,0.218377
+Serie_A,2022,2022-11-13,Roma,Torino,1.34528,0.847683
+Serie_A,2022,2022-11-13,AC Milan,Fiorentina,1.96799,0.85798
+Serie_A,2022,2022-11-13,Juventus,Lazio,1.70269,0.38627
+Serie_A,2022,2023-01-04,Salernitana,AC Milan,0.680121,3.81282
+Serie_A,2022,2023-01-04,Sassuolo,Sampdoria,1.44975,0.851384
+Serie_A,2022,2023-01-04,Spezia,Atalanta,1.39353,1.80642
+Serie_A,2022,2023-01-04,Torino,Verona,0.468743,1.41144
+Serie_A,2022,2023-01-04,Lecce,Lazio,1.17761,0.706207
+Serie_A,2022,2023-01-04,Roma,Bologna,2.08071,0.752989
+Serie_A,2022,2023-01-04,Cremonese,Juventus,0.698907,1.61459
+Serie_A,2022,2023-01-04,Fiorentina,Monza,1.48692,1.54126
+Serie_A,2022,2023-01-04,Inter,Napoli,1.4695,1.09463
+Serie_A,2022,2023-01-04,Udinese,Empoli,1.31671,0.660856
+Serie_A,2022,2023-01-07,Fiorentina,Sassuolo,3.08538,1.75424
+Serie_A,2022,2023-01-07,Juventus,Udinese,2.59304,0.306949
+Serie_A,2022,2023-01-07,Monza,Inter,1.4187,1.61501
+Serie_A,2022,2023-01-08,Salernitana,Torino,0.58108,2.37677
+Serie_A,2022,2023-01-08,Lazio,Empoli,1.31242,0.59916
+Serie_A,2022,2023-01-08,Spezia,Lecce,0.657345,0.956499
+Serie_A,2022,2023-01-08,Sampdoria,Napoli,0.384407,3.41709
+Serie_A,2022,2023-01-08,AC Milan,Roma,1.09082,1.10865
+Serie_A,2022,2023-01-09,Verona,Cremonese,1.92775,0.810314
+Serie_A,2022,2023-01-09,Bologna,Atalanta,0.386319,0.685431
+Serie_A,2022,2023-01-13,Napoli,Juventus,2.23581,0.962617
+Serie_A,2022,2023-01-14,Cremonese,Monza,0.456418,2.49329
+Serie_A,2022,2023-01-14,Lecce,AC Milan,1.82563,1.51192
+Serie_A,2022,2023-01-14,Inter,Verona,0.608402,0.183795
+Serie_A,2022,2023-01-15,Sassuolo,Lazio,0.701271,2.79068
+Serie_A,2022,2023-01-15,Torino,Spezia,0.944969,1.56177
+Serie_A,2022,2023-01-15,Udinese,Bologna,2.44779,1.96519
+Serie_A,2022,2023-01-15,Atalanta,Salernitana,3.21868,0.535222
+Serie_A,2022,2023-01-15,Roma,Fiorentina,1.21585,0.377978
+Serie_A,2022,2023-01-16,Empoli,Sampdoria,1.95693,1.17611
+Serie_A,2022,2023-01-21,Verona,Lecce,0.625033,0.835357
+Serie_A,2022,2023-01-21,Salernitana,Napoli,0.480227,1.82215
+Serie_A,2022,2023-01-21,Fiorentina,Torino,1.02747,0.770286
+Serie_A,2022,2023-01-22,Sampdoria,Udinese,1.60507,1.57295
+Serie_A,2022,2023-01-22,Monza,Sassuolo,0.965924,1.70695
+Serie_A,2022,2023-01-22,Spezia,Roma,0.227346,1.9435
+Serie_A,2022,2023-01-22,Juventus,Atalanta,1.91809,1.16585
+Serie_A,2022,2023-01-23,Bologna,Cremonese,0.850469,1.79982
+Serie_A,2022,2023-01-23,Inter,Empoli,1.39728,0.854487
+Serie_A,2022,2023-01-24,Lazio,AC Milan,2.81178,1.04083
+Serie_A,2022,2023-01-27,Bologna,Spezia,1.86506,0.485936
+Serie_A,2022,2023-01-27,Lecce,Salernitana,1.3906,0.767336
+Serie_A,2022,2023-01-28,Empoli,Torino,0.785973,1.26398
+Serie_A,2022,2023-01-28,Cremonese,Inter,0.723453,2.37567
+Serie_A,2022,2023-01-28,Atalanta,Sampdoria,1.82577,0.960106
+Serie_A,2022,2023-01-29,AC Milan,Sassuolo,0.500004,2.07278
+Serie_A,2022,2023-01-29,Juventus,Monza,1.37709,1.37396
+Serie_A,2022,2023-01-29,Lazio,Fiorentina,1.25871,1.27234
+Serie_A,2022,2023-01-29,Napoli,Roma,1.00111,0.840248
+Serie_A,2022,2023-01-30,Udinese,Verona,2.4832,0.486279
+Serie_A,2022,2023-02-04,Cremonese,Lecce,0.597112,1.5587
+Serie_A,2022,2023-02-04,Roma,Empoli,2.2831,1.42102
+Serie_A,2022,2023-02-04,Sassuolo,Atalanta,1.11218,0.295481
+Serie_A,2022,2023-02-05,Spezia,Napoli,0.407354,1.80405
+Serie_A,2022,2023-02-05,Torino,Udinese,1.39626,0.461006
+Serie_A,2022,2023-02-05,Fiorentina,Bologna,1.33534,1.82438
+Serie_A,2022,2023-02-05,Inter,AC Milan,0.7617,0.20882
+Serie_A,2022,2023-02-06,Verona,Lazio,1.21157,0.755429
+Serie_A,2022,2023-02-06,Monza,Sampdoria,2.17396,1.5131
+Serie_A,2022,2023-02-07,Salernitana,Juventus,0.516144,2.89699
+Serie_A,2022,2023-02-10,AC Milan,Torino,1.73339,0.762177
+Serie_A,2022,2023-02-11,Empoli,Spezia,1.31083,1.85869
+Serie_A,2022,2023-02-11,Lecce,Roma,0.385596,1.9116
+Serie_A,2022,2023-02-11,Lazio,Atalanta,0.750085,3.35025
+Serie_A,2022,2023-02-12,Udinese,Sassuolo,1.26596,0.366407
+Serie_A,2022,2023-02-12,Bologna,Monza,0.435137,0.771658
+Serie_A,2022,2023-02-12,Juventus,Fiorentina,1.48805,0.664528
+Serie_A,2022,2023-02-12,Napoli,Cremonese,1.88832,0.15718
+Serie_A,2022,2023-02-13,Verona,Salernitana,1.41093,0.83116
+Serie_A,2022,2023-02-13,Sampdoria,Inter,0.478178,1.53473
+Serie_A,2022,2023-02-17,Sassuolo,Napoli,0.834544,2.16647
+Serie_A,2022,2023-02-18,Sampdoria,Bologna,2.60391,0.714025
+Serie_A,2022,2023-02-18,Monza,AC Milan,0.406294,2.86999
+Serie_A,2022,2023-02-18,Inter,Udinese,2.73622,0.640201
+Serie_A,2022,2023-02-19,Atalanta,Lecce,1.41005,0.522898
+Serie_A,2022,2023-02-19,Fiorentina,Empoli,2.15571,0.627418
+Serie_A,2022,2023-02-19,Salernitana,Lazio,0.337378,3.08929
+Serie_A,2022,2023-02-19,Spezia,Juventus,0.836135,1.414
+Serie_A,2022,2023-02-19,Roma,Verona,1.21643,0.578592
+Serie_A,2022,2023-02-20,Torino,Cremonese,2.40761,0.488613
+Serie_A,2022,2023-02-25,Empoli,Napoli,0.380337,2.54452
+Serie_A,2022,2023-02-25,Lecce,Sassuolo,1.1937,1.0752
+Serie_A,2022,2023-02-26,Bologna,Inter,1.06501,1.14705
+Serie_A,2022,2023-02-26,Salernitana,Monza,2.5863,1.26116
+Serie_A,2022,2023-02-26,Udinese,Spezia,2.82563,2.0555
+Serie_A,2022,2023-02-26,AC Milan,Atalanta,2.09197,0.0994278
+Serie_A,2022,2023-02-27,Verona,Fiorentina,1.79742,1.9106
+Serie_A,2022,2023-02-27,Lazio,Sampdoria,1.57889,0.374617
+Serie_A,2022,2023-02-28,Cremonese,Roma,0.993955,0.650695
+Serie_A,2022,2023-02-28,Juventus,Torino,1.52038,0.972144
+Serie_A,2022,2023-03-03,Napoli,Lazio,0.772343,0.225477
+Serie_A,2022,2023-03-04,Monza,Empoli,0.966878,0.964274
+Serie_A,2022,2023-03-04,Atalanta,Udinese,1.48158,0.244798
+Serie_A,2022,2023-03-04,Fiorentina,AC Milan,2.04733,0.679884
+Serie_A,2022,2023-03-05,Spezia,Verona,1.17042,0.96044
+Serie_A,2022,2023-03-05,Sampdoria,Salernitana,0.554784,0.653093
+Serie_A,2022,2023-03-05,Inter,Lecce,0.936784,0.477087
+Serie_A,2022,2023-03-05,Roma,Juventus,0.534608,0.722595
+Serie_A,2022,2023-03-06,Sassuolo,Cremonese,1.04818,1.25832
+Serie_A,2022,2023-03-06,Torino,Bologna,1.03473,0.420593
+Serie_A,2022,2023-03-10,Spezia,Inter,0.979758,3.46552
+Serie_A,2022,2023-03-11,Empoli,Udinese,1.15849,1.05986
+Serie_A,2022,2023-03-11,Napoli,Atalanta,1.40151,0.20196
+Serie_A,2022,2023-03-11,Bologna,Lazio,1.09225,0.559995
+Serie_A,2022,2023-03-12,Lecce,Torino,0.338149,1.11715
+Serie_A,2022,2023-03-12,Cremonese,Fiorentina,1.43995,1.19417
+Serie_A,2022,2023-03-12,Verona,Monza,0.584744,1.07345
+Serie_A,2022,2023-03-12,Roma,Sassuolo,1.22501,3.41384
+Serie_A,2022,2023-03-12,Juventus,Sampdoria,2.83726,0.487533
+Serie_A,2022,2023-03-13,AC Milan,Salernitana,2.71062,0.675211
+Serie_A,2022,2023-03-17,Sassuolo,Spezia,2.0765,0.767389
+Serie_A,2022,2023-03-17,Atalanta,Empoli,3.55256,1.32533
+Serie_A,2022,2023-03-18,Monza,Cremonese,1.11436,0.723507
+Serie_A,2022,2023-03-18,Salernitana,Bologna,0.713612,0.363647
+Serie_A,2022,2023-03-18,Udinese,AC Milan,2.17412,1.83354
+Serie_A,2022,2023-03-19,Sampdoria,Verona,1.63263,1.24738
+Serie_A,2022,2023-03-19,Fiorentina,Lecce,1.30231,0.354619
+Serie_A,2022,2023-03-19,Torino,Napoli,1.42018,2.6715
+Serie_A,2022,2023-03-19,Lazio,Roma,0.734907,0.770783
+Serie_A,2022,2023-03-19,Inter,Juventus,1.07278,0.460517
+Serie_A,2022,2023-04-01,Cremonese,Atalanta,1.41841,3.0016
+Serie_A,2022,2023-04-01,Inter,Fiorentina,3.1446,1.31666
+Serie_A,2022,2023-04-01,Juventus,Verona,1.62901,0.406105
+Serie_A,2022,2023-04-02,Bologna,Udinese,1.29647,0.765574
+Serie_A,2022,2023-04-02,Spezia,Salernitana,1.67704,1.06944
+Serie_A,2022,2023-04-02,Monza,Lazio,1.54801,0.496678
+Serie_A,2022,2023-04-02,Roma,Sampdoria,3.16,0.249188
+Serie_A,2022,2023-04-02,Napoli,AC Milan,1.17709,2.65298
+Serie_A,2022,2023-04-03,Empoli,Lecce,1.78579,0.147883
+Serie_A,2022,2023-04-03,Sassuolo,Torino,1.37696,1.86965
+Serie_A,2022,2023-04-07,Salernitana,Inter,0.86082,2.98043
+Serie_A,2022,2023-04-07,Lecce,Napoli,0.812341,1.04784
+Serie_A,2022,2023-04-07,AC Milan,Empoli,2.23861,0.0994945
+Serie_A,2022,2023-04-08,Udinese,Monza,1.59287,1.44568
+Serie_A,2022,2023-04-08,Fiorentina,Spezia,0.920716,1.05143
+Serie_A,2022,2023-04-08,Atalanta,Bologna,1.36434,1.48593
+Serie_A,2022,2023-04-08,Sampdoria,Cremonese,2.63086,1.12248
+Serie_A,2022,2023-04-08,Verona,Sassuolo,0.274094,1.66876
+Serie_A,2022,2023-04-08,Torino,Roma,0.256844,1.10917
+Serie_A,2022,2023-04-08,Lazio,Juventus,1.1873,2.18145
+Serie_A,2022,2023-04-14,Cremonese,Empoli,1.06807,0.858907
+Serie_A,2022,2023-04-14,Spezia,Lazio,0.725806,3.07575
+Serie_A,2022,2023-04-15,Bologna,AC Milan,0.76877,1.40673
+Serie_A,2022,2023-04-15,Napoli,Verona,0.325523,0.356606
+Serie_A,2022,2023-04-15,Inter,Monza,1.89009,0.87771
+Serie_A,2022,2023-04-16,Lecce,Sampdoria,3.03997,0.668479
+Serie_A,2022,2023-04-16,Torino,Salernitana,1.71858,0.495441
+Serie_A,2022,2023-04-16,Sassuolo,Juventus,1.13145,0.652728
+Serie_A,2022,2023-04-16,Roma,Udinese,2.41542,1.13306
+Serie_A,2022,2023-04-17,Fiorentina,Atalanta,2.06843,0.717066
+Serie_A,2022,2023-04-21,Verona,Bologna,1.58693,1.54636
+Serie_A,2022,2023-04-22,Salernitana,Sassuolo,1.3216,0.548493
+Serie_A,2022,2023-04-22,Lazio,Torino,0.852358,0.805452
+Serie_A,2022,2023-04-22,Sampdoria,Spezia,1.77069,2.40982
+Serie_A,2022,2023-04-23,Empoli,Inter,0.643303,1.17139
+Serie_A,2022,2023-04-23,Udinese,Cremonese,1.62407,0.996906
+Serie_A,2022,2023-04-23,Monza,Fiorentina,1.77358,1.23977
+Serie_A,2022,2023-04-23,AC Milan,Lecce,0.96313,1.02889
+Serie_A,2022,2023-04-23,Juventus,Napoli,0.276119,1.73457
+Serie_A,2022,2023-04-24,Atalanta,Roma,1.14526,1.52876
+Serie_A,2022,2023-04-28,Lecce,Udinese,1.67129,0.438409
+Serie_A,2022,2023-04-28,Spezia,Monza,1.47171,1.13564
+Serie_A,2022,2023-04-29,Roma,AC Milan,1.17939,1.37361
+Serie_A,2022,2023-04-29,Torino,Atalanta,0.660685,0.732456
+Serie_A,2022,2023-04-30,Inter,Lazio,2.82534,0.944853
+Serie_A,2022,2023-04-30,Cremonese,Verona,0.547558,0.863565
+Serie_A,2022,2023-04-30,Sassuolo,Empoli,2.28513,0.792643
+Serie_A,2022,2023-04-30,Napoli,Salernitana,1.92667,0.250709
+Serie_A,2022,2023-04-30,Fiorentina,Sampdoria,2.0443,0.318861
+Serie_A,2022,2023-04-30,Bologna,Juventus,1.94769,2.45408
+Serie_A,2022,2023-05-03,Atalanta,Spezia,0.894125,0.817784
+Serie_A,2022,2023-05-03,Juventus,Lecce,1.71206,1.3193
+Serie_A,2022,2023-05-03,Salernitana,Fiorentina,0.995581,1.68787
+Serie_A,2022,2023-05-03,Sampdoria,Torino,0.253121,2.16016
+Serie_A,2022,2023-05-03,Verona,Inter,0.654593,3.16521
+Serie_A,2022,2023-05-03,Lazio,Sassuolo,1.99041,0.665627
+Serie_A,2022,2023-05-03,AC Milan,Cremonese,2.0138,1.02505
+Serie_A,2022,2023-05-03,Monza,Roma,0.412432,1.28561
+Serie_A,2022,2023-05-04,Empoli,Bologna,1.46309,1.83365
+Serie_A,2022,2023-05-04,Udinese,Napoli,0.32403,0.35022
+Serie_A,2022,2023-05-06,AC Milan,Lazio,1.41951,0.896204
+Serie_A,2022,2023-05-06,Roma,Inter,0.875041,1.22382
+Serie_A,2022,2023-05-06,Cremonese,Spezia,0.7603,0.784032
+Serie_A,2022,2023-05-07,Atalanta,Juventus,0.898943,1.43164
+Serie_A,2022,2023-05-07,Torino,Monza,0.773939,0.689637
+Serie_A,2022,2023-05-07,Napoli,Fiorentina,1.90483,1.15411
+Serie_A,2022,2023-05-07,Lecce,Verona,0.552346,0.591222
+Serie_A,2022,2023-05-08,Empoli,Salernitana,2.47536,0.46871
+Serie_A,2022,2023-05-08,Udinese,Sampdoria,1.05129,0.576272
+Serie_A,2022,2023-05-08,Sassuolo,Bologna,0.308471,0.293231
+Serie_A,2022,2023-05-12,Lazio,Lecce,1.35224,1.21029
+Serie_A,2022,2023-05-13,Salernitana,Atalanta,0.778212,1.38826
+Serie_A,2022,2023-05-13,Spezia,AC Milan,1.61806,0.877761
+Serie_A,2022,2023-05-13,Inter,Sassuolo,1.4916,2.1993
+Serie_A,2022,2023-05-14,Verona,Torino,0.409553,2.47106
+Serie_A,2022,2023-05-14,Fiorentina,Udinese,2.33928,0.220248
+Serie_A,2022,2023-05-14,Monza,Napoli,1.37675,1.11029
+Serie_A,2022,2023-05-14,Bologna,Roma,0.303645,1.35745
+Serie_A,2022,2023-05-14,Juventus,Cremonese,1.80205,0.0587152
+Serie_A,2022,2023-05-15,Sampdoria,Empoli,1.11997,1.13938
+Serie_A,2022,2023-05-19,Sassuolo,Monza,1.39346,1.72429
+Serie_A,2022,2023-05-20,Cremonese,Bologna,0.994736,2.89722
+Serie_A,2022,2023-05-20,Atalanta,Verona,0.969521,1.17131
+Serie_A,2022,2023-05-20,AC Milan,Sampdoria,4.81134,0.349816
+Serie_A,2022,2023-05-21,Lecce,Spezia,0.20276,0.714139
+Serie_A,2022,2023-05-21,Torino,Fiorentina,0.817959,0.697558
+Serie_A,2022,2023-05-21,Napoli,Inter,1.84578,0.730736
+Serie_A,2022,2023-05-21,Udinese,Lazio,0.434889,2.09062
+Serie_A,2022,2023-05-22,Roma,Salernitana,1.28071,1.06809
+Serie_A,2022,2023-05-22,Empoli,Juventus,3.54313,2.20387
+Serie_A,2022,2023-05-26,Sampdoria,Sassuolo,2.21953,3.04889
+Serie_A,2022,2023-05-27,Salernitana,Udinese,0.980881,2.39811
+Serie_A,2022,2023-05-27,Spezia,Torino,1.05669,1.46948
+Serie_A,2022,2023-05-27,Fiorentina,Roma,2.99896,1.26818
+Serie_A,2022,2023-05-27,Inter,Atalanta,2.4865,0.731442
+Serie_A,2022,2023-05-28,Verona,Empoli,1.12855,1.11829
+Serie_A,2022,2023-05-28,Bologna,Napoli,1.9362,2.0181
+Serie_A,2022,2023-05-28,Monza,Lecce,0.948514,1.1109
+Serie_A,2022,2023-05-28,Lazio,Cremonese,2.45341,0.381018
+Serie_A,2022,2023-05-28,Juventus,AC Milan,0.585437,0.662594
+Serie_A,2022,2023-06-02,Sassuolo,Fiorentina,1.03485,2.07081
+Serie_A,2022,2023-06-03,Torino,Inter,1.4179,0.879052
+Serie_A,2022,2023-06-03,Cremonese,Salernitana,1.58052,0.396859
+Serie_A,2022,2023-06-03,Empoli,Lazio,0.271931,1.55959
+Serie_A,2022,2023-06-04,Napoli,Sampdoria,1.9182,0.64912
+Serie_A,2022,2023-06-04,Atalanta,Monza,3.6609,1.4138
+Serie_A,2022,2023-06-04,Lecce,Bologna,1.21291,0.775712
+Serie_A,2022,2023-06-04,AC Milan,Verona,2.26469,0.866359
+Serie_A,2022,2023-06-04,Roma,Spezia,2.28038,1.10674
+Serie_A,2022,2023-06-04,Udinese,Juventus,0.955695,1.47447
+Serie_A,2023,2023-08-19,Empoli,Verona,0.844727,0.690842
+Serie_A,2023,2023-08-19,Frosinone,Napoli,0.871157,1.31464
+Serie_A,2023,2023-08-19,Inter,Monza,2.49549,0.581247
+Serie_A,2023,2023-08-19,Genoa,Fiorentina,0.79732,1.1197
+Serie_A,2023,2023-08-20,Roma,Salernitana,2.00607,0.364297
+Serie_A,2023,2023-08-20,Sassuolo,Atalanta,0.381264,1.50058
+Serie_A,2023,2023-08-20,Udinese,Juventus,1.20988,1.86438
+Serie_A,2023,2023-08-20,Lecce,Lazio,1.75411,2.22215
+Serie_A,2023,2023-08-21,Torino,Cagliari,1.03099,0.443184
+Serie_A,2023,2023-08-21,Bologna,AC Milan,1.17349,1.1479
+Serie_A,2023,2023-08-26,Frosinone,Atalanta,0.760807,1.44199
+Serie_A,2023,2023-08-26,Monza,Empoli,2.0469,1.13824
+Serie_A,2023,2023-08-26,AC Milan,Torino,3.25277,0.563184
+Serie_A,2023,2023-08-26,Verona,Roma,0.904461,2.00413
+Serie_A,2023,2023-08-27,Fiorentina,Lecce,1.51003,0.494028
+Serie_A,2023,2023-08-27,Juventus,Bologna,0.915803,0.687398
+Serie_A,2023,2023-08-27,Lazio,Genoa,0.937895,0.69511
+Serie_A,2023,2023-08-27,Napoli,Sassuolo,3.53489,0.145568
+Serie_A,2023,2023-08-28,Salernitana,Udinese,0.559371,0.548425
+Serie_A,2023,2023-08-28,Cagliari,Inter,0.484344,1.25423
+Serie_A,2023,2023-09-01,Sassuolo,Verona,2.62139,0.555465
+Serie_A,2023,2023-09-01,Roma,AC Milan,0.412392,1.62873
+Serie_A,2023,2023-09-02,Udinese,Frosinone,2.07837,2.41709
+Serie_A,2023,2023-09-02,Bologna,Cagliari,2.8268,0.537052
+Serie_A,2023,2023-09-02,Atalanta,Monza,1.96499,0.37036
+Serie_A,2023,2023-09-02,Napoli,Lazio,1.04344,1.04826
+Serie_A,2023,2023-09-03,Torino,Genoa,0.481429,0.102008
+Serie_A,2023,2023-09-03,Inter,Fiorentina,5.21474,0.346607
+Serie_A,2023,2023-09-03,Empoli,Juventus,0.304187,3.04937
+Serie_A,2023,2023-09-03,Lecce,Salernitana,1.83665,1.05367
+Serie_A,2023,2023-09-16,Juventus,Lazio,2.6734,0.704843
+Serie_A,2023,2023-09-16,Inter,AC Milan,2.95417,0.989611
+Serie_A,2023,2023-09-16,Genoa,Napoli,1.33007,0.984291
+Serie_A,2023,2023-09-17,Cagliari,Udinese,2.2007,0.836992
+Serie_A,2023,2023-09-17,Frosinone,Sassuolo,2.97022,1.93433
+Serie_A,2023,2023-09-17,Monza,Lecce,3.29559,0.895727
+Serie_A,2023,2023-09-17,Fiorentina,Atalanta,1.4533,0.632092
+Serie_A,2023,2023-09-17,Roma,Empoli,2.49292,0.166755
+Serie_A,2023,2023-09-18,Salernitana,Torino,0.694683,1.54562
+Serie_A,2023,2023-09-18,Verona,Bologna,0.408446,0.896605
+Serie_A,2023,2023-09-22,Salernitana,Frosinone,0.834621,0.98737
+Serie_A,2023,2023-09-22,Lecce,Genoa,1.00903,0.532474
+Serie_A,2023,2023-09-23,AC Milan,Verona,0.916672,0.845815
+Serie_A,2023,2023-09-23,Sassuolo,Juventus,1.74238,1.36816
+Serie_A,2023,2023-09-23,Lazio,Monza,1.02354,1.80956
+Serie_A,2023,2023-09-24,Empoli,Inter,0.330665,1.63518
+Serie_A,2023,2023-09-24,Atalanta,Cagliari,1.67724,1.00314
+Serie_A,2023,2023-09-24,Udinese,Fiorentina,2.40063,0.281122
+Serie_A,2023,2023-09-24,Bologna,Napoli,0.184666,1.84847
+Serie_A,2023,2023-09-24,Torino,Roma,1.10678,1.10764
+Serie_A,2023,2023-09-26,Juventus,Lecce,1.64987,0.0667791
+Serie_A,2023,2023-09-27,Cagliari,AC Milan,0.67613,2.10838
+Serie_A,2023,2023-09-27,Empoli,Salernitana,2.29107,0.477434
+Serie_A,2023,2023-09-27,Verona,Atalanta,0.325267,1.38356
+Serie_A,2023,2023-09-27,Inter,Sassuolo,1.02458,1.02404
+Serie_A,2023,2023-09-27,Lazio,Torino,0.773684,0.213455
+Serie_A,2023,2023-09-27,Napoli,Udinese,3.70921,0.82191
+Serie_A,2023,2023-09-28,Monza,Bologna,1.02777,1.04179
+Serie_A,2023,2023-09-28,Frosinone,Fiorentina,0.976021,1.45269
+Serie_A,2023,2023-09-28,Genoa,Roma,1.59801,1.29625
+Serie_A,2023,2023-09-30,Lecce,Napoli,0.612649,2.71689
+Serie_A,2023,2023-09-30,AC Milan,Lazio,2.69178,0.502537
+Serie_A,2023,2023-09-30,Salernitana,Inter,0.620122,2.5554
+Serie_A,2023,2023-10-01,Bologna,Empoli,3.28867,1.04905
+Serie_A,2023,2023-10-01,Udinese,Genoa,1.53115,0.83333
+Serie_A,2023,2023-10-01,Atalanta,Juventus,1.97735,0.203059
+Serie_A,2023,2023-10-01,Roma,Frosinone,0.830718,0.791935
+Serie_A,2023,2023-10-02,Torino,Verona,0.617691,0.273624
+Serie_A,2023,2023-10-02,Sassuolo,Monza,1.49022,1.84951
+Serie_A,2023,2023-10-02,Fiorentina,Cagliari,1.52678,0.81356
+Serie_A,2023,2023-10-06,Empoli,Udinese,1.00116,1.23968
+Serie_A,2023,2023-10-06,Lecce,Sassuolo,1.51817,1.74518
+Serie_A,2023,2023-10-07,Inter,Bologna,0.705274,1.04766
+Serie_A,2023,2023-10-07,Juventus,Torino,2.40906,0.592513
+Serie_A,2023,2023-10-07,Genoa,AC Milan,0.353901,0.898603
+Serie_A,2023,2023-10-08,Monza,Salernitana,3.73783,0.999628
+Serie_A,2023,2023-10-08,Frosinone,Verona,1.91977,0.506291
+Serie_A,2023,2023-10-08,Lazio,Atalanta,1.65045,1.0016
+Serie_A,2023,2023-10-08,Cagliari,Roma,1.76268,3.3327
+Serie_A,2023,2023-10-08,Napoli,Fiorentina,1.77418,1.76863
+Serie_A,2023,2023-10-21,Verona,Napoli,0.87241,2.65531
+Serie_A,2023,2023-10-21,Torino,Inter,0.596799,2.44253
+Serie_A,2023,2023-10-21,Sassuolo,Lazio,0.319165,2.93562
+Serie_A,2023,2023-10-22,Roma,Monza,2.53278,0.423669
+Serie_A,2023,2023-10-22,Bologna,Frosinone,1.63336,1.42786
+Serie_A,2023,2023-10-22,Salernitana,Cagliari,1.33333,1.4958
+Serie_A,2023,2023-10-22,Atalanta,Genoa,1.97081,1.04166
+Serie_A,2023,2023-10-22,AC Milan,Juventus,0.238518,1.80571
+Serie_A,2023,2023-10-23,Udinese,Lecce,2.58184,0.808325
+Serie_A,2023,2023-10-23,Fiorentina,Empoli,0.764401,1.79488
+Serie_A,2023,2023-10-27,Genoa,Salernitana,0.40726,0.778619
+Serie_A,2023,2023-10-28,Sassuolo,Bologna,0.864789,0.829724
+Serie_A,2023,2023-10-28,Lecce,Torino,0.462357,1.33241
+Serie_A,2023,2023-10-28,Juventus,Verona,3.64831,0.318759
+Serie_A,2023,2023-10-29,Cagliari,Frosinone,4.07472,1.29593
+Serie_A,2023,2023-10-29,Monza,Udinese,0.40283,1.05616
+Serie_A,2023,2023-10-29,Inter,Roma,2.25314,0.495306
+Serie_A,2023,2023-10-29,Napoli,AC Milan,1.50253,2.37489
+Serie_A,2023,2023-10-30,Empoli,Atalanta,0.271851,2.19175
+Serie_A,2023,2023-10-30,Lazio,Fiorentina,2.36178,0.389451
+Serie_A,2023,2023-11-03,Bologna,Lazio,0.698258,0.462021
+Serie_A,2023,2023-11-04,Salernitana,Napoli,0.322231,1.67658
+Serie_A,2023,2023-11-04,Atalanta,Inter,1.36089,1.39642
+Serie_A,2023,2023-11-04,AC Milan,Udinese,1.28493,2.1049
+Serie_A,2023,2023-11-05,Verona,Monza,1.12724,1.39014
+Serie_A,2023,2023-11-05,Cagliari,Genoa,1.26944,0.669834
+Serie_A,2023,2023-11-05,Roma,Lecce,2.55177,1.20256
+Serie_A,2023,2023-11-05,Fiorentina,Juventus,0.675388,0.855784
+Serie_A,2023,2023-11-06,Frosinone,Empoli,0.80376,1.87117
+Serie_A,2023,2023-11-06,Torino,Sassuolo,3.43408,0.499189
+Serie_A,2023,2023-11-10,Sassuolo,Salernitana,2.4684,0.946956
+Serie_A,2023,2023-11-10,Genoa,Verona,2.04226,0.2458
+Serie_A,2023,2023-11-11,Lecce,AC Milan,1.99035,2.22404
+Serie_A,2023,2023-11-11,Juventus,Cagliari,3.04248,0.477922
+Serie_A,2023,2023-11-11,Monza,Torino,1.16628,0.819686
+Serie_A,2023,2023-11-12,Napoli,Empoli,1.06052,0.38859
+Serie_A,2023,2023-11-12,Udinese,Atalanta,1.21433,0.575292
+Serie_A,2023,2023-11-12,Fiorentina,Bologna,1.57435,2.31019
+Serie_A,2023,2023-11-12,Lazio,Roma,0.398131,0.320262
+Serie_A,2023,2023-11-12,Inter,Frosinone,3.2782,0.58612
+Serie_A,2023,2023-11-25,Salernitana,Lazio,1.40102,1.83536
+Serie_A,2023,2023-11-25,Atalanta,Napoli,0.880466,2.51076
+Serie_A,2023,2023-11-25,AC Milan,Fiorentina,1.78395,1.69486
+Serie_A,2023,2023-11-26,Cagliari,Monza,1.58663,0.802396
+Serie_A,2023,2023-11-26,Frosinone,Genoa,0.990501,1.82552
+Serie_A,2023,2023-11-26,Empoli,Sassuolo,1.47716,2.97603
+Serie_A,2023,2023-11-26,Roma,Udinese,1.25942,0.532293
+Serie_A,2023,2023-11-26,Juventus,Inter,0.488914,0.692636
+Serie_A,2023,2023-11-27,Verona,Lecce,1.94683,1.52186
+Serie_A,2023,2023-11-27,Bologna,Torino,1.34938,0.573292
+Serie_A,2023,2023-12-01,Monza,Juventus,0.656513,2.95935
+Serie_A,2023,2023-12-02,Genoa,Empoli,0.832928,0.753276
+Serie_A,2023,2023-12-02,Lazio,Cagliari,2.50417,0.613719
+Serie_A,2023,2023-12-02,AC Milan,Frosinone,1.01016,0.728766
+Serie_A,2023,2023-12-03,Lecce,Bologna,1.65827,1.51659
+Serie_A,2023,2023-12-03,Fiorentina,Salernitana,3.06935,0.780756
+Serie_A,2023,2023-12-03,Udinese,Verona,2.14774,1.56674
+Serie_A,2023,2023-12-03,Sassuolo,Roma,0.916551,1.9994
+Serie_A,2023,2023-12-03,Napoli,Inter,0.787314,2.58503
+Serie_A,2023,2023-12-04,Torino,Atalanta,1.63866,0.345831
+Serie_A,2023,2023-12-08,Juventus,Napoli,0.662608,1.00524
+Serie_A,2023,2023-12-09,Verona,Lazio,0.792676,1.01398
+Serie_A,2023,2023-12-09,Atalanta,AC Milan,3.10106,1.00625
+Serie_A,2023,2023-12-09,Inter,Udinese,3.34151,0.847308
+Serie_A,2023,2023-12-10,Frosinone,Torino,1.50797,1.06355
+Serie_A,2023,2023-12-10,Monza,Genoa,0.67177,1.74997
+Serie_A,2023,2023-12-10,Salernitana,Bologna,0.601235,1.67302
+Serie_A,2023,2023-12-10,Roma,Fiorentina,0.702857,0.975261
+Serie_A,2023,2023-12-11,Empoli,Lecce,1.8919,0.985028
+Serie_A,2023,2023-12-11,Cagliari,Sassuolo,1.2382,1.29012
+Serie_A,2023,2023-12-15,Genoa,Juventus,0.844502,2.10424
+Serie_A,2023,2023-12-16,Lecce,Frosinone,0.729342,1.84133
+Serie_A,2023,2023-12-16,Napoli,Cagliari,3.03273,1.83831
+Serie_A,2023,2023-12-16,Torino,Empoli,2.11343,0.28927
+Serie_A,2023,2023-12-17,AC Milan,Monza,2.26584,1.42821
+Serie_A,2023,2023-12-17,Fiorentina,Verona,0.330363,2.92504
+Serie_A,2023,2023-12-17,Udinese,Sassuolo,0.750879,2.90114
+Serie_A,2023,2023-12-17,Bologna,Roma,0.782175,0.566461
+Serie_A,2023,2023-12-17,Lazio,Inter,1.63799,1.69409
+Serie_A,2023,2023-12-18,Atalanta,Salernitana,2.34764,0.976758
+Serie_A,2023,2023-12-22,Empoli,Lazio,0.659249,1.95383
+Serie_A,2023,2023-12-22,Sassuolo,Genoa,2.17129,1.3709
+Serie_A,2023,2023-12-22,Monza,Fiorentina,0.659021,1.95676
+Serie_A,2023,2023-12-22,Salernitana,AC Milan,1.14336,2.9432
+Serie_A,2023,2023-12-23,Frosinone,Juventus,0.495508,1.27523
+Serie_A,2023,2023-12-23,Torino,Udinese,0.666821,0.919531
+Serie_A,2023,2023-12-23,Bologna,Atalanta,0.986587,1.59382
+Serie_A,2023,2023-12-23,Inter,Lecce,3.28691,1.1279
+Serie_A,2023,2023-12-23,Verona,Cagliari,0.986759,1.20911
+Serie_A,2023,2023-12-23,Roma,Napoli,2.06895,0.44093
+Serie_A,2023,2023-12-29,Fiorentina,Torino,0.885643,0.439657
+Serie_A,2023,2023-12-29,Napoli,Monza,2.37308,1.09674
+Serie_A,2023,2023-12-29,Genoa,Inter,0.410279,1.8593
+Serie_A,2023,2023-12-29,Lazio,Frosinone,1.74892,1.13132
+Serie_A,2023,2023-12-30,Atalanta,Lecce,1.4919,1.38509
+Serie_A,2023,2023-12-30,Cagliari,Empoli,1.4357,0.222516
+Serie_A,2023,2023-12-30,Udinese,Bologna,1.53169,0.766703
+Serie_A,2023,2023-12-30,Verona,Salernitana,0.812164,0.768493
+Serie_A,2023,2023-12-30,AC Milan,Sassuolo,1.49842,0.40374
+Serie_A,2023,2023-12-30,Juventus,Roma,1.63273,0.39518
+Serie_A,2023,2024-01-05,Bologna,Genoa,1.35919,0.153342
+Serie_A,2023,2024-01-06,Inter,Verona,2.12311,1.36479
+Serie_A,2023,2024-01-06,Frosinone,Monza,1.14998,1.45289
+Serie_A,2023,2024-01-06,Lecce,Cagliari,1.61147,0.994223
+Serie_A,2023,2024-01-06,Sassuolo,Fiorentina,0.701861,1.4924
+Serie_A,2023,2024-01-07,Empoli,AC Milan,0.945682,1.51431
+Serie_A,2023,2024-01-07,Udinese,Lazio,0.612027,0.498208
+Serie_A,2023,2024-01-07,Torino,Napoli,2.13004,1.14787
+Serie_A,2023,2024-01-07,Salernitana,Juventus,0.930992,1.82515
+Serie_A,2023,2024-01-07,Roma,Atalanta,2.58182,1.11144
+Serie_A,2023,2024-01-13,Genoa,Torino,0.575708,0.30855
+Serie_A,2023,2024-01-13,Napoli,Salernitana,2.73312,0.151576
+Serie_A,2023,2024-01-13,Verona,Empoli,1.25066,0.720625
+Serie_A,2023,2024-01-13,Monza,Inter,1.07372,4.72502
+Serie_A,2023,2024-01-14,Lazio,Lecce,1.08287,0.971265
+Serie_A,2023,2024-01-14,Cagliari,Bologna,0.48909,0.738045
+Serie_A,2023,2024-01-14,Fiorentina,Udinese,1.66667,1.16643
+Serie_A,2023,2024-01-14,AC Milan,Roma,1.57355,1.23713
+Serie_A,2023,2024-01-15,Atalanta,Frosinone,4.91726,0.434507
+Serie_A,2023,2024-01-16,Juventus,Sassuolo,1.23237,0.29509
+Serie_A,2023,2024-01-20,Roma,Verona,1.4542,1.09599
+Serie_A,2023,2024-01-20,Udinese,AC Milan,0.813024,2.43121
+Serie_A,2023,2024-01-21,Frosinone,Cagliari,2.9278,0.599249
+Serie_A,2023,2024-01-21,Empoli,Monza,1.78103,0.868813
+Serie_A,2023,2024-01-21,Salernitana,Genoa,1.1539,1.11078
+Serie_A,2023,2024-01-21,Lecce,Juventus,0.493249,2.48407
+Serie_A,2023,2024-01-26,Cagliari,Torino,1.97593,2.42275
+Serie_A,2023,2024-01-27,Atalanta,Udinese,1.32201,0.616693
+Serie_A,2023,2024-01-27,Juventus,Empoli,0.990773,0.696403
+Serie_A,2023,2024-01-27,AC Milan,Bologna,3.60116,2.07278
+Serie_A,2023,2024-01-28,Genoa,Lecce,2.08542,2.29888
+Serie_A,2023,2024-01-28,Verona,Frosinone,2.29871,1.66579
+Serie_A,2023,2024-01-28,Monza,Sassuolo,0.419129,0.725542
+Serie_A,2023,2024-01-28,Lazio,Napoli,0.414353,0.169707
+Serie_A,2023,2024-01-28,Fiorentina,Inter,1.89212,0.617311
+Serie_A,2023,2024-01-29,Salernitana,Roma,1.42906,1.48834
+Serie_A,2023,2024-02-02,Lecce,Fiorentina,2.31602,1.07539
+Serie_A,2023,2024-02-03,Udinese,Monza,0.780762,0.124799
+Serie_A,2023,2024-02-03,Empoli,Genoa,0.58479,0.577479
+Serie_A,2023,2024-02-03,Frosinone,AC Milan,1.0672,2.01173
+Serie_A,2023,2024-02-03,Bologna,Sassuolo,0.889471,0.898681
+Serie_A,2023,2024-02-04,Torino,Salernitana,0.742534,0.0814573
+Serie_A,2023,2024-02-04,Napoli,Verona,1.97716,1.18484
+Serie_A,2023,2024-02-04,Atalanta,Lazio,2.87997,1.29656
+Serie_A,2023,2024-02-04,Inter,Juventus,1.64254,0.597312
+Serie_A,2023,2024-02-05,Roma,Cagliari,3.35931,0.503174
+Serie_A,2023,2024-02-09,Salernitana,Empoli,0.799924,2.14988
+Serie_A,2023,2024-02-10,Cagliari,Lazio,0.69339,1.60335
+Serie_A,2023,2024-02-10,Roma,Inter,1.00864,1.24183
+Serie_A,2023,2024-02-10,Sassuolo,Torino,0.803849,1.11139
+Serie_A,2023,2024-02-11,Fiorentina,Frosinone,3.17846,1.2861
+Serie_A,2023,2024-02-11,Bologna,Lecce,1.77523,1.10831
+Serie_A,2023,2024-02-11,Monza,Verona,0.831924,0.576842
+Serie_A,2023,2024-02-11,Genoa,Atalanta,0.906299,2.84643
+Serie_A,2023,2024-02-11,AC Milan,Napoli,1.37304,0.502118
+Serie_A,2023,2024-02-12,Juventus,Udinese,2.01527,1.13222
+Serie_A,2023,2024-02-14,Bologna,Fiorentina,2.65166,0.969673
+Serie_A,2023,2024-02-16,Torino,Lecce,1.52802,0.415653
+Serie_A,2023,2024-02-16,Inter,Salernitana,4.48759,0.0464174
+Serie_A,2023,2024-02-17,Napoli,Genoa,1.18788,0.285006
+Serie_A,2023,2024-02-17,Verona,Juventus,0.617246,1.80606
+Serie_A,2023,2024-02-17,Atalanta,Sassuolo,5.00929,1.81361
+Serie_A,2023,2024-02-18,Lazio,Bologna,1.14123,1.16044
+Serie_A,2023,2024-02-18,Udinese,Cagliari,1.17588,0.817344
+Serie_A,2023,2024-02-18,Empoli,Fiorentina,0.945067,0.920295
+Serie_A,2023,2024-02-18,Frosinone,Roma,1.62402,1.81853
+Serie_A,2023,2024-02-18,Monza,AC Milan,1.6186,1.33102
+Serie_A,2023,2024-02-22,Torino,Lazio,1.94911,0.352376
+Serie_A,2023,2024-02-23,Bologna,Verona,2.33279,0.701896
+Serie_A,2023,2024-02-24,Sassuolo,Empoli,1.60152,2.52542
+Serie_A,2023,2024-02-24,Salernitana,Monza,0.728802,2.6089
+Serie_A,2023,2024-02-24,Genoa,Udinese,1.62322,0.322829
+Serie_A,2023,2024-02-25,Juventus,Frosinone,1.74414,0.570671
+Serie_A,2023,2024-02-25,Cagliari,Napoli,0.916353,1.46253
+Serie_A,2023,2024-02-25,Lecce,Inter,0.928229,3.07379
+Serie_A,2023,2024-02-25,AC Milan,Atalanta,1.38915,1.06552
+Serie_A,2023,2024-02-26,Roma,Torino,1.52399,0.551839
+Serie_A,2023,2024-02-26,Fiorentina,Lazio,3.86937,0.611852
+Serie_A,2023,2024-02-28,Sassuolo,Napoli,0.237572,2.7969
+Serie_A,2023,2024-02-28,Inter,Atalanta,2.91852,0.258264
+Serie_A,2023,2024-03-01,Lazio,AC Milan,1.59899,0.849675
+Serie_A,2023,2024-03-02,Udinese,Salernitana,1.98278,0.839171
+Serie_A,2023,2024-03-02,Monza,Roma,1.01584,1.89657
+Serie_A,2023,2024-03-02,Torino,Fiorentina,0.561691,0.697752
+Serie_A,2023,2024-03-03,Verona,Sassuolo,0.504318,0.360012
+Serie_A,2023,2024-03-03,Frosinone,Lecce,1.53511,1.29494
+Serie_A,2023,2024-03-03,Empoli,Cagliari,1.50581,0.428646
+Serie_A,2023,2024-03-03,Atalanta,Bologna,1.20723,1.58258
+Serie_A,2023,2024-03-03,Napoli,Juventus,1.7764,2.0359
+Serie_A,2023,2024-03-04,Inter,Genoa,2.90423,1.17046
+Serie_A,2023,2024-03-08,Napoli,Torino,1.61516,1.12784
+Serie_A,2023,2024-03-09,Cagliari,Salernitana,3.41823,1.17253
+Serie_A,2023,2024-03-09,Sassuolo,Frosinone,0.596618,1.38509
+Serie_A,2023,2024-03-09,Bologna,Inter,0.668681,0.81996
+Serie_A,2023,2024-03-09,Genoa,Monza,1.81546,1.66208
+Serie_A,2023,2024-03-10,Lecce,Verona,1.03517,0.556534
+Serie_A,2023,2024-03-10,AC Milan,Empoli,0.988992,0.419598
+Serie_A,2023,2024-03-10,Juventus,Atalanta,1.66716,0.470912
+Serie_A,2023,2024-03-10,Fiorentina,Roma,2.47793,0.776614
+Serie_A,2023,2024-03-11,Lazio,Udinese,2.15139,1.48854
+Serie_A,2023,2024-03-15,Empoli,Bologna,0.868895,2.30568
+Serie_A,2023,2024-03-16,Monza,Cagliari,1.4436,0.443858
+Serie_A,2023,2024-03-16,Udinese,Torino,0.384805,1.54612
+Serie_A,2023,2024-03-16,Salernitana,Lecce,1.45145,2.01475
+Serie_A,2023,2024-03-16,Frosinone,Lazio,1.90054,3.30539
+Serie_A,2023,2024-03-17,Juventus,Genoa,1.38709,0.175513
+Serie_A,2023,2024-03-17,Verona,AC Milan,0.565727,2.75283
+Serie_A,2023,2024-03-17,Roma,Sassuolo,0.858457,0.777601
+Serie_A,2023,2024-03-17,Inter,Napoli,1.37916,1.36148
+Serie_A,2023,2024-03-30,Napoli,Atalanta,1.83498,1.55904
+Serie_A,2023,2024-03-30,Genoa,Frosinone,1.65796,1.00689
+Serie_A,2023,2024-03-30,Torino,Monza,1.61585,0.560169
+Serie_A,2023,2024-03-30,Lazio,Juventus,1.24248,0.479175
+Serie_A,2023,2024-03-30,Fiorentina,AC Milan,1.69969,3.17431
+Serie_A,2023,2024-04-01,Bologna,Salernitana,1.85322,0.702173
+Serie_A,2023,2024-04-01,Cagliari,Verona,0.594452,1.09202
+Serie_A,2023,2024-04-01,Sassuolo,Udinese,1.47611,1.72665
+Serie_A,2023,2024-04-01,Lecce,Roma,1.97592,1.69372
+Serie_A,2023,2024-04-01,Inter,Empoli,2.03375,0.560443
+Serie_A,2023,2024-04-05,Salernitana,Sassuolo,1.2795,1.88042
+Serie_A,2023,2024-04-06,AC Milan,Lecce,2.41313,0.841362
+Serie_A,2023,2024-04-06,Roma,Lazio,0.635152,0.480271
+Serie_A,2023,2024-04-06,Empoli,Torino,0.487874,2.5343
+Serie_A,2023,2024-04-07,Frosinone,Bologna,0.568316,2.46415
+Serie_A,2023,2024-04-07,Monza,Napoli,0.414034,2.70294
+Serie_A,2023,2024-04-07,Verona,Genoa,0.961468,2.01327
+Serie_A,2023,2024-04-07,Cagliari,Atalanta,0.715338,0.772446
+Serie_A,2023,2024-04-07,Juventus,Fiorentina,2.46449,0.508961
+Serie_A,2023,2024-04-08,Udinese,Inter,0.0699579,3.41188
+Serie_A,2023,2024-04-12,Lazio,Salernitana,2.50164,0.544591
+Serie_A,2023,2024-04-13,Lecce,Empoli,3.15126,0.136102
+Serie_A,2023,2024-04-13,Torino,Juventus,0.834792,1.25957
+Serie_A,2023,2024-04-13,Bologna,Monza,2.77216,0.409248
+Serie_A,2023,2024-04-14,Napoli,Frosinone,2.7326,2.31434
+Serie_A,2023,2024-04-14,Sassuolo,AC Milan,1.37198,3.05285
+Serie_A,2023,2024-04-14,Udinese,Roma,0.94473,1.61555
+Serie_A,2023,2024-04-14,Inter,Cagliari,1.95072,1.10904
+Serie_A,2023,2024-04-15,Fiorentina,Genoa,1.78763,1.59509
+Serie_A,2023,2024-04-15,Atalanta,Verona,1.67088,1.10418
+Serie_A,2023,2024-04-19,Genoa,Lazio,0.608539,0.952136
+Serie_A,2023,2024-04-19,Cagliari,Juventus,1.97822,0.595113
+Serie_A,2023,2024-04-20,Empoli,Napoli,1.25351,0.891755
+Serie_A,2023,2024-04-20,Verona,Udinese,1.29522,1.97219
+Serie_A,2023,2024-04-21,Sassuolo,Lecce,0.410145,2.36614
+Serie_A,2023,2024-04-21,Torino,Frosinone,0.520991,0.57895
+Serie_A,2023,2024-04-21,Salernitana,Fiorentina,0.32683,2.45106
+Serie_A,2023,2024-04-21,Monza,Atalanta,0.878869,2.19828
+Serie_A,2023,2024-04-22,Roma,Bologna,1.83356,1.25682
+Serie_A,2023,2024-04-22,AC Milan,Inter,2.51108,1.62976
+Serie_A,2023,2024-04-26,Frosinone,Salernitana,1.75172,1.03098
+Serie_A,2023,2024-04-27,Lecce,Monza,0.927644,1.09563
+Serie_A,2023,2024-04-27,Juventus,AC Milan,1.76562,0.277994
+Serie_A,2023,2024-04-27,Lazio,Verona,1.31699,0.629309
+Serie_A,2023,2024-04-28,Inter,Torino,1.90101,0.45813
+Serie_A,2023,2024-04-28,Bologna,Udinese,0.709144,0.613931
+Serie_A,2023,2024-04-28,Napoli,Roma,3.87555,1.78885
+Serie_A,2023,2024-04-28,Atalanta,Empoli,2.13088,0.593896
+Serie_A,2023,2024-04-28,Fiorentina,Sassuolo,4.29626,0.268378
+Serie_A,2023,2024-04-29,Genoa,Cagliari,1.09421,0.781529
+Serie_A,2023,2024-05-03,Torino,Bologna,0.786625,0.169889
+Serie_A,2023,2024-05-04,Monza,Lazio,2.08077,1.57454
+Serie_A,2023,2024-05-04,Sassuolo,Inter,0.334967,1.63693
+Serie_A,2023,2024-05-05,Cagliari,Lecce,0.923968,1.81298
+Serie_A,2023,2024-05-05,Empoli,Frosinone,0.318217,0.947755
+Serie_A,2023,2024-05-05,Verona,Fiorentina,1.49212,1.10741
+Serie_A,2023,2024-05-05,AC Milan,Genoa,2.31497,0.91116
+Serie_A,2023,2024-05-05,Roma,Juventus,1.60597,0.95263
+Serie_A,2023,2024-05-06,Salernitana,Atalanta,0.497067,2.26499
+Serie_A,2023,2024-05-06,Udinese,Napoli,0.521861,1.1157
+Serie_A,2023,2024-05-10,Frosinone,Inter,1.88809,2.05666
+Serie_A,2023,2024-05-11,Napoli,Bologna,1.48316,1.74055
+Serie_A,2023,2024-05-11,AC Milan,Cagliari,3.56305,1.33911
+Serie_A,2023,2024-05-12,Lazio,Empoli,1.61078,1.10282
+Serie_A,2023,2024-05-12,Genoa,Sassuolo,0.81296,1.69037
+Serie_A,2023,2024-05-12,Verona,Torino,1.09252,0.956758
+Serie_A,2023,2024-05-12,Juventus,Salernitana,2.36999,0.921042
+Serie_A,2023,2024-05-12,Atalanta,Roma,2.85949,1.17185
+Serie_A,2023,2024-05-13,Lecce,Udinese,0.3485,1.63735
+Serie_A,2023,2024-05-13,Fiorentina,Monza,2.45011,1.19628
+Serie_A,2023,2024-05-17,Fiorentina,Napoli,0.566509,1.32124
+Serie_A,2023,2024-05-18,Lecce,Atalanta,1.03049,2.22033
+Serie_A,2023,2024-05-18,Torino,AC Milan,1.08012,1.64179
+Serie_A,2023,2024-05-19,Inter,Lazio,1.61165,0.686603
+Serie_A,2023,2024-05-19,Sassuolo,Cagliari,0.269648,1.47384
+Serie_A,2023,2024-05-19,Udinese,Empoli,1.66873,0.82957
+Serie_A,2023,2024-05-19,Monza,Frosinone,1.24886,2.22694
+Serie_A,2023,2024-05-19,Roma,Genoa,0.736827,0.508028
+Serie_A,2023,2024-05-20,Salernitana,Verona,0.900837,2.33362
+Serie_A,2023,2024-05-20,Bologna,Juventus,1.379,1.27372
+Serie_A,2023,2024-05-24,Cagliari,Fiorentina,2.08262,2.21632
+Serie_A,2023,2024-05-24,Genoa,Bologna,1.5757,0.450804
+Serie_A,2023,2024-05-25,Juventus,Monza,1.92843,1.13394
+Serie_A,2023,2024-05-25,AC Milan,Salernitana,2.82527,1.80163
+Serie_A,2023,2024-05-26,Atalanta,Torino,2.56869,1.69527
+Serie_A,2023,2024-05-26,Napoli,Lecce,1.83014,0.622384
+Serie_A,2023,2024-05-26,Empoli,Roma,2.88989,1.45583
+Serie_A,2023,2024-05-26,Frosinone,Udinese,0.869244,0.895463
+Serie_A,2023,2024-05-26,Verona,Inter,1.63678,2.99853
+Serie_A,2023,2024-05-26,Lazio,Sassuolo,1.25146,1.11933
+Serie_A,2023,2024-06-02,Atalanta,Fiorentina,1.69732,1.0071
+Serie_A,2024,2024-08-17,Genoa,Inter,2.31286,2.00656
+Serie_A,2024,2024-08-17,Parma Calcio 1913,Fiorentina,1.83796,0.81313
+Serie_A,2024,2024-08-17,Empoli,Monza,0.578573,0.327848
+Serie_A,2024,2024-08-17,AC Milan,Torino,2.1004,0.876602
+Serie_A,2024,2024-08-18,Verona,Napoli,1.80536,0.975176
+Serie_A,2024,2024-08-18,Bologna,Udinese,3.3102,0.944621
+Serie_A,2024,2024-08-18,Cagliari,Roma,1.30634,1.29639
+Serie_A,2024,2024-08-18,Lazio,Venezia,2.33223,0.789649
+Serie_A,2024,2024-08-19,Lecce,Atalanta,1.88414,2.45909
+Serie_A,2024,2024-08-19,Juventus,Como,1.30582,0.171238
+Serie_A,2024,2024-08-24,Parma Calcio 1913,AC Milan,2.46266,2.09812
+Serie_A,2024,2024-08-24,Udinese,Lazio,1.11581,1.68277
+Serie_A,2024,2024-08-24,Monza,Genoa,0.401371,0.660299
+Serie_A,2024,2024-08-24,Inter,Lecce,2.48059,0.335346
+Serie_A,2024,2024-08-25,Fiorentina,Venezia,0.660213,1.01295
+Serie_A,2024,2024-08-25,Torino,Atalanta,2.49919,3.08667
+Serie_A,2024,2024-08-25,Napoli,Bologna,2.07052,0.544518
+Serie_A,2024,2024-08-25,Roma,Empoli,2.04246,3.0773
+Serie_A,2024,2024-08-26,Cagliari,Como,1.03532,2.08973
+Serie_A,2024,2024-08-26,Verona,Juventus,0.878611,1.36151
+Serie_A,2024,2024-08-30,Venezia,Torino,0.635612,1.80895
+Serie_A,2024,2024-08-30,Inter,Atalanta,2.28876,1.17772
+Serie_A,2024,2024-08-31,Lecce,Cagliari,2.34113,2.09263
+Serie_A,2024,2024-08-31,Bologna,Empoli,1.35876,1.11428
+Serie_A,2024,2024-08-31,Napoli,Parma Calcio 1913,2.33511,1.90229
+Serie_A,2024,2024-08-31,Lazio,AC Milan,2.32967,1.34242
+Serie_A,2024,2024-09-01,Fiorentina,Monza,2.41541,0.489982
+Serie_A,2024,2024-09-01,Genoa,Verona,1.34735,2.09653
+Serie_A,2024,2024-09-01,Juventus,Roma,0.415282,0.382591
+Serie_A,2024,2024-09-01,Udinese,Como,1.18455,1.65728
+Serie_A,2024,2024-09-14,Como,Bologna,1.45782,1.15087
+Serie_A,2024,2024-09-14,Empoli,Juventus,0.601249,0.726024
+Serie_A,2024,2024-09-14,AC Milan,Venezia,2.18898,0.263269
+Serie_A,2024,2024-09-15,Genoa,Roma,1.59603,2.65805
+Serie_A,2024,2024-09-15,Atalanta,Fiorentina,2.4507,1.96392
+Serie_A,2024,2024-09-15,Torino,Lecce,0.447368,1.6617
+Serie_A,2024,2024-09-15,Cagliari,Napoli,0.881581,1.42805
+Serie_A,2024,2024-09-15,Monza,Inter,0.217777,1.8081
+Serie_A,2024,2024-09-16,Parma Calcio 1913,Udinese,0.87968,3.08828
+Serie_A,2024,2024-09-16,Lazio,Verona,1.79243,0.533276
+Serie_A,2024,2024-09-20,Cagliari,Empoli,1.68655,1.02688
+Serie_A,2024,2024-09-20,Verona,Torino,0.777792,1.96682
+Serie_A,2024,2024-09-21,Venezia,Genoa,2.33503,0.388857
+Serie_A,2024,2024-09-21,Juventus,Napoli,0.419301,0.233773
+Serie_A,2024,2024-09-21,Lecce,Parma Calcio 1913,1.25857,2.054
+Serie_A,2024,2024-09-22,Fiorentina,Lazio,2.85634,1.14467
+Serie_A,2024,2024-09-22,Monza,Bologna,0.707402,1.45302
+Serie_A,2024,2024-09-22,Roma,Udinese,2.5658,0.525078
+Serie_A,2024,2024-09-22,Inter,AC Milan,0.941382,2.75751
+Serie_A,2024,2024-09-24,Atalanta,Como,1.31694,0.579703
+Serie_A,2024,2024-09-27,AC Milan,Lecce,2.43265,0.462274
+Serie_A,2024,2024-09-28,Udinese,Inter,0.984798,2.30465
+Serie_A,2024,2024-09-28,Genoa,Juventus,0.385259,2.91803
+Serie_A,2024,2024-09-28,Bologna,Atalanta,0.176428,2.47751
+Serie_A,2024,2024-09-29,Torino,Lazio,0.494815,2.24735
+Serie_A,2024,2024-09-29,Como,Verona,2.47493,1.5544
+Serie_A,2024,2024-09-29,Roma,Venezia,1.99001,2.02845
+Serie_A,2024,2024-09-29,Empoli,Fiorentina,0.44778,1.25438
+Serie_A,2024,2024-09-29,Napoli,Monza,1.35886,0.298287
+Serie_A,2024,2024-09-30,Parma Calcio 1913,Cagliari,2.98598,3.057
+Serie_A,2024,2024-10-04,Napoli,Como,1.91407,0.638474
+Serie_A,2024,2024-10-04,Verona,Venezia,2.10738,1.43755
+Serie_A,2024,2024-10-05,Udinese,Lecce,1.56312,0.645952
+Serie_A,2024,2024-10-05,Atalanta,Genoa,4.0137,0.543171
+Serie_A,2024,2024-10-05,Inter,Torino,3.44641,1.29026
+Serie_A,2024,2024-10-06,Juventus,Cagliari,3.21709,1.045
+Serie_A,2024,2024-10-06,Lazio,Empoli,2.0459,0.912844
+Serie_A,2024,2024-10-06,Bologna,Parma Calcio 1913,0.835615,1.08533
+Serie_A,2024,2024-10-06,Monza,Roma,1.11968,1.47893
+Serie_A,2024,2024-10-06,Fiorentina,AC Milan,1.94286,2.83446
+Serie_A,2024,2024-10-19,Genoa,Bologna,0.450285,1.15682
+Serie_A,2024,2024-10-19,Como,Parma Calcio 1913,1.28527,0.918205
+Serie_A,2024,2024-10-19,AC Milan,Udinese,1.20398,0.522785
+Serie_A,2024,2024-10-19,Juventus,Lazio,1.49305,0.0648311
+Serie_A,2024,2024-10-20,Empoli,Napoli,1.00465,1.31758
+Serie_A,2024,2024-10-20,Venezia,Atalanta,0.881872,1.83371
+Serie_A,2024,2024-10-20,Lecce,Fiorentina,0.223823,2.21676
+Serie_A,2024,2024-10-20,Cagliari,Torino,1.51181,1.23394
+Serie_A,2024,2024-10-20,Roma,Inter,0.78742,0.796917
+Serie_A,2024,2024-10-21,Verona,Monza,0.81446,1.56377
+Serie_A,2024,2024-10-25,Udinese,Cagliari,1.12881,0.160634
+Serie_A,2024,2024-10-25,Torino,Como,1.56007,1.59554
+Serie_A,2024,2024-10-26,Napoli,Lecce,2.53236,0.57038
+Serie_A,2024,2024-10-26,Atalanta,Verona,3.84122,0.22446
+Serie_A,2024,2024-10-27,Parma Calcio 1913,Empoli,1.43623,0.14913
+Serie_A,2024,2024-10-27,Monza,Venezia,0.903007,0.459902
+Serie_A,2024,2024-10-27,Lazio,Genoa,2.9799,0.261739
+Serie_A,2024,2024-10-27,Inter,Juventus,2.82542,2.36179
+Serie_A,2024,2024-10-27,Fiorentina,Roma,4.56893,0.657353
+Serie_A,2024,2024-10-29,Cagliari,Bologna,1.18569,0.872307
+Serie_A,2024,2024-10-29,Lecce,Verona,1.35273,0.211464
+Serie_A,2024,2024-10-29,AC Milan,Napoli,0.568256,0.956912
+Serie_A,2024,2024-10-30,Empoli,Inter,0.319674,1.68832
+Serie_A,2024,2024-10-30,Venezia,Udinese,2.55368,1.30701
+Serie_A,2024,2024-10-30,Atalanta,Monza,1.65221,0.0805941
+Serie_A,2024,2024-10-30,Juventus,Parma Calcio 1913,2.77649,1.45546
+Serie_A,2024,2024-10-31,Genoa,Fiorentina,0.848655,0.909048
+Serie_A,2024,2024-10-31,Como,Lazio,1.16312,2.96686
+Serie_A,2024,2024-10-31,Roma,Torino,0.436341,0.189286
+Serie_A,2024,2024-11-02,Bologna,Lecce,2.06051,0.771878
+Serie_A,2024,2024-11-02,Udinese,Juventus,0.573076,1.55533
+Serie_A,2024,2024-11-02,Monza,AC Milan,1.23293,2.91043
+Serie_A,2024,2024-11-03,Napoli,Atalanta,0.611112,1.50982
+Serie_A,2024,2024-11-03,Torino,Fiorentina,0.590362,0.523302
+Serie_A,2024,2024-11-03,Verona,Roma,1.51701,2.38413
+Serie_A,2024,2024-11-03,Inter,Venezia,3.34539,1.14021
+Serie_A,2024,2024-11-04,Empoli,Como,0.723897,0.41675
+Serie_A,2024,2024-11-04,Parma Calcio 1913,Genoa,0.883705,1.15243
+Serie_A,2024,2024-11-04,Lazio,Cagliari,3.39964,0.274214
+Serie_A,2024,2024-11-07,Genoa,Como,1.03893,1.37361
+Serie_A,2024,2024-11-08,Lecce,Empoli,1.41905,0.610497
+Serie_A,2024,2024-11-09,Venezia,Parma Calcio 1913,1.29642,0.945022
+Serie_A,2024,2024-11-09,Cagliari,AC Milan,1.90363,2.77604
+Serie_A,2024,2024-11-09,Juventus,Torino,1.57325,0.273931
+Serie_A,2024,2024-11-10,Atalanta,Udinese,1.60488,0.90914
+Serie_A,2024,2024-11-10,Roma,Bologna,1.06974,2.16772
+Serie_A,2024,2024-11-10,Fiorentina,Verona,2.77034,0.53544
+Serie_A,2024,2024-11-10,Monza,Lazio,0.747377,1.17083
+Serie_A,2024,2024-11-10,Inter,Napoli,1.47373,1.00611
+Serie_A,2024,2024-11-23,Verona,Inter,0.554633,2.79774
+Serie_A,2024,2024-11-23,AC Milan,Juventus,0.306342,0.811307
+Serie_A,2024,2024-11-23,Parma Calcio 1913,Atalanta,0.622186,3.54363
+Serie_A,2024,2024-11-24,Genoa,Cagliari,2.1978,2.81223
+Serie_A,2024,2024-11-24,Como,Fiorentina,1.27005,0.947266
+Serie_A,2024,2024-11-24,Torino,Monza,1.45433,0.916564
+Serie_A,2024,2024-11-24,Napoli,Roma,2.02389,0.592582
+Serie_A,2024,2024-11-24,Lazio,Bologna,2.59912,0.0932634
+Serie_A,2024,2024-11-25,Empoli,Udinese,0.166889,1.09285
+Serie_A,2024,2024-11-25,Venezia,Lecce,2.88235,0.624722
+Serie_A,2024,2024-11-29,Cagliari,Verona,2.64816,0.606166
+Serie_A,2024,2024-11-30,Como,Monza,1.38648,1.75565
+Serie_A,2024,2024-11-30,AC Milan,Empoli,2.02293,0.400556
+Serie_A,2024,2024-11-30,Bologna,Venezia,4.16965,0.357302
+Serie_A,2024,2024-12-01,Udinese,Genoa,0.156386,1.7171
+Serie_A,2024,2024-12-01,Parma Calcio 1913,Lazio,1.27449,2.4176
+Serie_A,2024,2024-12-01,Torino,Napoli,0.442989,1.64196
+Serie_A,2024,2024-12-01,Lecce,Juventus,1.10419,1.03998
+Serie_A,2024,2024-12-02,Roma,Atalanta,0.667881,1.76696
+Serie_A,2024,2024-12-06,Inter,Parma Calcio 1913,3.0797,0.274097
+Serie_A,2024,2024-12-06,Atalanta,AC Milan,2.62823,0.899516
+Serie_A,2024,2024-12-07,Genoa,Torino,0.327249,0.70601
+Serie_A,2024,2024-12-07,Juventus,Bologna,0.856802,0.784689
+Serie_A,2024,2024-12-07,Roma,Lecce,2.38077,0.826928
+Serie_A,2024,2024-12-08,Fiorentina,Cagliari,0.412045,1.00073
+Serie_A,2024,2024-12-08,Verona,Empoli,0.895085,1.2903
+Serie_A,2024,2024-12-08,Venezia,Como,0.303457,0.779392
+Serie_A,2024,2024-12-08,Napoli,Lazio,1.14465,0.243674
+Serie_A,2024,2024-12-09,Monza,Udinese,1.92222,1.40496
+Serie_A,2024,2024-12-13,Empoli,Torino,0.953691,1.36089
+Serie_A,2024,2024-12-14,Cagliari,Atalanta,1.90937,2.37449
+Serie_A,2024,2024-12-14,Udinese,Napoli,1.48544,1.96425
+Serie_A,2024,2024-12-14,Juventus,Venezia,2.18951,0.586788
+Serie_A,2024,2024-12-15,Lecce,Monza,1.57794,0.790408
+Serie_A,2024,2024-12-15,Bologna,Fiorentina,2.32266,1.14307
+Serie_A,2024,2024-12-15,Parma Calcio 1913,Verona,2.30533,3.70407
+Serie_A,2024,2024-12-15,Como,Roma,1.1153,0.650738
+Serie_A,2024,2024-12-15,AC Milan,Genoa,1.28243,0.204497
+Serie_A,2024,2024-12-16,Lazio,Inter,0.634641,2.33306
+Serie_A,2024,2024-12-20,Verona,AC Milan,0.649472,1.37505
+Serie_A,2024,2024-12-21,Torino,Bologna,0.270606,1.79816
+Serie_A,2024,2024-12-21,Genoa,Napoli,0.707336,1.42377
+Serie_A,2024,2024-12-21,Lecce,Lazio,1.09129,1.95023
+Serie_A,2024,2024-12-22,Roma,Parma Calcio 1913,5.55856,0.615694
+Serie_A,2024,2024-12-22,Venezia,Cagliari,1.55318,2.62545
+Serie_A,2024,2024-12-22,Atalanta,Empoli,2.08379,1.21827
+Serie_A,2024,2024-12-22,Monza,Juventus,0.983171,2.58556
+Serie_A,2024,2024-12-23,Fiorentina,Udinese,1.55716,0.858846
+Serie_A,2024,2024-12-23,Inter,Como,1.89916,0.367536
+Serie_A,2024,2024-12-28,Empoli,Genoa,1.42691,2.01725
+Serie_A,2024,2024-12-28,Parma Calcio 1913,Monza,1.22224,2.2247
+Serie_A,2024,2024-12-28,Cagliari,Inter,0.302293,3.1724
+Serie_A,2024,2024-12-28,Lazio,Atalanta,0.564499,2.98315
+Serie_A,2024,2024-12-29,Udinese,Torino,1.23954,0.603591
+Serie_A,2024,2024-12-29,Napoli,Venezia,2.55505,0.462133
+Serie_A,2024,2024-12-29,Juventus,Fiorentina,1.74742,1.02946
+Serie_A,2024,2024-12-29,AC Milan,Roma,2.26348,1.61126
+Serie_A,2024,2024-12-30,Como,Lecce,2.25936,0.436266
+Serie_A,2024,2024-12-30,Bologna,Verona,2.86482,0.798964
+Serie_A,2024,2025-01-04,Venezia,Empoli,0.455526,1.52251
+Serie_A,2024,2025-01-04,Fiorentina,Napoli,0.877617,1.59728
+Serie_A,2024,2025-01-04,Verona,Udinese,0.745287,0.655965
+Serie_A,2024,2025-01-05,Monza,Cagliari,1.55837,0.781523
+Serie_A,2024,2025-01-05,Lecce,Genoa,0.545634,1.06752
+Serie_A,2024,2025-01-05,Torino,Parma Calcio 1913,1.0858,0.321586
+Serie_A,2024,2025-01-05,Roma,Lazio,1.23422,1.31957
+Serie_A,2024,2025-01-10,Lazio,Como,1.03936,1.9019
+Serie_A,2024,2025-01-11,Empoli,Lecce,2.31529,1.57649
+Serie_A,2024,2025-01-11,Udinese,Atalanta,2.05217,0.233045
+Serie_A,2024,2025-01-11,Torino,Juventus,0.411274,0.94701
+Serie_A,2024,2025-01-11,AC Milan,Cagliari,2.43026,0.308787
+Serie_A,2024,2025-01-12,Genoa,Parma Calcio 1913,1.51628,0.513393
+Serie_A,2024,2025-01-12,Venezia,Inter,0.668042,2.35271
+Serie_A,2024,2025-01-12,Bologna,Roma,2.28949,1.58872
+Serie_A,2024,2025-01-12,Napoli,Verona,1.59033,0.23211
+Serie_A,2024,2025-01-13,Monza,Fiorentina,0.988429,1.60714
+Serie_A,2024,2025-01-14,Como,AC Milan,1.63578,1.44061
+Serie_A,2024,2025-01-14,Atalanta,Juventus,1.5823,2.27956
+Serie_A,2024,2025-01-15,Inter,Bologna,1.79382,0.914393
+Serie_A,2024,2025-01-17,Roma,Genoa,1.79725,0.494153
+Serie_A,2024,2025-01-18,Bologna,Monza,2.33675,0.410907
+Serie_A,2024,2025-01-18,Juventus,AC Milan,1.56881,1.17816
+Serie_A,2024,2025-01-18,Atalanta,Napoli,0.709505,1.2536
+Serie_A,2024,2025-01-19,Fiorentina,Torino,1.81758,0.540016
+Serie_A,2024,2025-01-19,Cagliari,Lecce,3.36227,0.388374
+Serie_A,2024,2025-01-19,Parma Calcio 1913,Venezia,1.59615,1.1784
+Serie_A,2024,2025-01-19,Verona,Lazio,1.48598,1.99415
+Serie_A,2024,2025-01-19,Inter,Empoli,1.6401,0.412045
+Serie_A,2024,2025-01-20,Como,Udinese,1.81904,0.847427
+Serie_A,2024,2025-01-24,Torino,Cagliari,2.23206,0.270772
+Serie_A,2024,2025-01-25,Como,Atalanta,0.704371,1.04831
+Serie_A,2024,2025-01-25,Napoli,Juventus,2.33562,1.02538
+Serie_A,2024,2025-01-25,Empoli,Bologna,0.83399,0.898773
+Serie_A,2024,2025-01-26,AC Milan,Parma Calcio 1913,2.7112,1.85515
+Serie_A,2024,2025-01-26,Udinese,Roma,0.805147,2.6168
+Serie_A,2024,2025-01-26,Lecce,Inter,0.719003,2.58246
+Serie_A,2024,2025-01-26,Lazio,Fiorentina,2.01121,1.20023
+Serie_A,2024,2025-01-27,Venezia,Verona,0.709709,2.17206
+Serie_A,2024,2025-01-27,Genoa,Monza,3.31745,0.311849
+Serie_A,2024,2025-01-31,Parma Calcio 1913,Lecce,2.00006,0.756887
+Serie_A,2024,2025-02-01,Udinese,Venezia,0.940092,1.36255
+Serie_A,2024,2025-02-01,Monza,Verona,0.279515,0.854806
+Serie_A,2024,2025-02-01,Atalanta,Torino,3.35128,0.629596
+Serie_A,2024,2025-02-01,Bologna,Como,1.681,0.640061
+Serie_A,2024,2025-02-02,Juventus,Empoli,2.00759,0.94947
+Serie_A,2024,2025-02-02,Fiorentina,Genoa,0.695448,1.96523
+Serie_A,2024,2025-02-02,AC Milan,Inter,1.04439,1.98309
+Serie_A,2024,2025-02-02,Roma,Napoli,0.364702,0.384749
+Serie_A,2024,2025-02-03,Cagliari,Lazio,1.82889,1.9337
+Serie_A,2024,2025-02-06,Fiorentina,Inter,1.05274,0.589261
+Serie_A,2024,2025-02-07,Como,Juventus,0.935692,1.32392
+Serie_A,2024,2025-02-08,Empoli,AC Milan,0.668788,1.90573
+Serie_A,2024,2025-02-08,Verona,Atalanta,1.78844,2.14751
+Serie_A,2024,2025-02-08,Torino,Genoa,0.647236,0.308682
+Serie_A,2024,2025-02-09,Cagliari,Parma Calcio 1913,1.49632,1.15072
+Serie_A,2024,2025-02-09,Lecce,Bologna,0.844895,0.8506
+Serie_A,2024,2025-02-09,Venezia,Roma,0.905188,2.14236
+Serie_A,2024,2025-02-09,Lazio,Monza,4.42993,0.87219
+Serie_A,2024,2025-02-09,Napoli,Udinese,2.07882,1.28733
+Serie_A,2024,2025-02-10,Inter,Fiorentina,1.87526,1.03291
+Serie_A,2024,2025-02-14,Bologna,Torino,3.46262,1.64846
+Serie_A,2024,2025-02-15,Atalanta,Cagliari,0.473748,0.123294
+Serie_A,2024,2025-02-15,Lazio,Napoli,0.883377,0.558588
+Serie_A,2024,2025-02-15,AC Milan,Verona,1.8755,0.372202
+Serie_A,2024,2025-02-16,Fiorentina,Como,0.431215,0.875449
+Serie_A,2024,2025-02-16,Udinese,Empoli,2.90516,2.47474
+Serie_A,2024,2025-02-16,Monza,Lecce,0.278072,1.10949
+Serie_A,2024,2025-02-16,Parma Calcio 1913,Roma,0.293477,1.41178
+Serie_A,2024,2025-02-16,Juventus,Inter,1.3662,2.08504
+Serie_A,2024,2025-02-17,Genoa,Venezia,1.60036,0.341183
+Serie_A,2024,2025-02-21,Lecce,Udinese,0.484479,1.52436
+Serie_A,2024,2025-02-22,Parma Calcio 1913,Bologna,1.4111,0.698426
+Serie_A,2024,2025-02-22,Venezia,Lazio,0.995737,0.790887
+Serie_A,2024,2025-02-22,Torino,AC Milan,0.556583,2.18445
+Serie_A,2024,2025-02-22,Inter,Genoa,1.3989,1.51356
+Serie_A,2024,2025-02-23,Como,Napoli,0.466603,1.10277
+Serie_A,2024,2025-02-23,Verona,Fiorentina,0.450798,1.15567
+Serie_A,2024,2025-02-23,Empoli,Atalanta,0.775943,2.50618
+Serie_A,2024,2025-02-23,Cagliari,Juventus,0.225637,2.20526
+Serie_A,2024,2025-02-24,Roma,Monza,2.16209,0.332233
+Serie_A,2024,2025-02-27,Bologna,AC Milan,2.31992,1.55538
+Serie_A,2024,2025-02-28,Fiorentina,Lecce,1.43821,1.11638
+Serie_A,2024,2025-03-01,Atalanta,Venezia,3.34552,0.359199
+Serie_A,2024,2025-03-01,Napoli,Inter,1.72874,0.452597
+Serie_A,2024,2025-03-01,Udinese,Parma Calcio 1913,2.0589,0.617812
+Serie_A,2024,2025-03-02,Monza,Torino,0.582104,1.43219
+Serie_A,2024,2025-03-02,Bologna,Cagliari,2.25801,0.68032
+Serie_A,2024,2025-03-02,Genoa,Empoli,0.229571,1.00977
+Serie_A,2024,2025-03-02,Roma,Como,1.59518,1.29634
+Serie_A,2024,2025-03-02,AC Milan,Lazio,1.28991,2.53115
+Serie_A,2024,2025-03-03,Juventus,Verona,1.97535,0.269838
+Serie_A,2024,2025-03-07,Cagliari,Genoa,0.809829,1.43054
+Serie_A,2024,2025-03-08,Como,Venezia,1.2727,1.80606
+Serie_A,2024,2025-03-08,Parma Calcio 1913,Torino,1.48743,0.72136
+Serie_A,2024,2025-03-08,Lecce,AC Milan,1.1897,3.27991
+Serie_A,2024,2025-03-08,Inter,Monza,3.0629,0.779109
+Serie_A,2024,2025-03-09,Verona,Bologna,1.28101,1.38177
+Serie_A,2024,2025-03-09,Napoli,Fiorentina,2.93764,1.05617
+Serie_A,2024,2025-03-09,Empoli,Roma,0.0771894,2.99912
+Serie_A,2024,2025-03-09,Juventus,Atalanta,0.940693,3.93513
+Serie_A,2024,2025-03-10,Lazio,Udinese,1.01458,1.23859
+Serie_A,2024,2025-03-14,Genoa,Lecce,1.06034,1.20452
+Serie_A,2024,2025-03-15,Monza,Parma Calcio 1913,0.9314,0.616308
+Serie_A,2024,2025-03-15,Udinese,Verona,0.318009,0.542985
+Serie_A,2024,2025-03-15,AC Milan,Como,1.72803,1.35523
+Serie_A,2024,2025-03-15,Torino,Empoli,0.701071,1.73375
+Serie_A,2024,2025-03-16,Venezia,Napoli,1.04696,1.2665
+Serie_A,2024,2025-03-16,Bologna,Lazio,2.85431,0.600718
+Serie_A,2024,2025-03-16,Roma,Cagliari,1.61105,1.10046
+Serie_A,2024,2025-03-16,Fiorentina,Juventus,0.508254,0.597644
+Serie_A,2024,2025-03-16,Atalanta,Inter,0.682065,2.28143
+Serie_A,2024,2025-03-29,Como,Empoli,1.93663,1.78514
+Serie_A,2024,2025-03-29,Venezia,Bologna,0.683347,1.29589
+Serie_A,2024,2025-03-29,Juventus,Genoa,1.50908,0.263169
+Serie_A,2024,2025-03-29,Lecce,Roma,0.694403,1.90759
+Serie_A,2024,2025-03-30,Cagliari,Monza,1.95839,0.962993
+Serie_A,2024,2025-03-30,Fiorentina,Atalanta,1.92673,0.918743
+Serie_A,2024,2025-03-30,Inter,Udinese,2.33787,1.3398
+Serie_A,2024,2025-03-30,Napoli,AC Milan,0.945094,2.25619
+Serie_A,2024,2025-03-31,Verona,Parma Calcio 1913,0.765236,0.501452
+Serie_A,2024,2025-03-31,Lazio,Torino,1.93778,0.632735
+Serie_A,2024,2025-04-04,Genoa,Udinese,1.65486,1.11114
+Serie_A,2024,2025-04-05,Monza,Como,1.05971,2.27029
+Serie_A,2024,2025-04-05,Parma Calcio 1913,Inter,1.66115,2.17944
+Serie_A,2024,2025-04-05,AC Milan,Fiorentina,2.17819,3.04937
+Serie_A,2024,2025-04-06,Lecce,Venezia,1.50136,0.898847
+Serie_A,2024,2025-04-06,Empoli,Cagliari,0.386589,0.162801
+Serie_A,2024,2025-04-06,Torino,Verona,0.963942,1.32441
+Serie_A,2024,2025-04-06,Atalanta,Lazio,1.04022,0.523108
+Serie_A,2024,2025-04-06,Roma,Juventus,1.37162,0.994645
+Serie_A,2024,2025-04-07,Bologna,Napoli,1.11047,0.99857
+Serie_A,2024,2025-04-11,Udinese,AC Milan,0.644579,2.49634
+Serie_A,2024,2025-04-12,Venezia,Monza,1.62268,0.590462
+Serie_A,2024,2025-04-12,Inter,Cagliari,1.71603,0.914283
+Serie_A,2024,2025-04-12,Juventus,Lecce,1.95569,0.940466
+Serie_A,2024,2025-04-13,Atalanta,Bologna,1.15847,0.546815
+Serie_A,2024,2025-04-13,Fiorentina,Parma Calcio 1913,0.670714,0.616318
+Serie_A,2024,2025-04-13,Verona,Genoa,1.00077,0.111761
+Serie_A,2024,2025-04-13,Como,Torino,1.23079,1.04165
+Serie_A,2024,2025-04-13,Lazio,Roma,1.92122,0.221733
+Serie_A,2024,2025-04-14,Napoli,Empoli,2.13717,1.37277
+Serie_A,2024,2025-04-19,Lecce,Como,0.666737,1.65387
+Serie_A,2024,2025-04-19,Monza,Napoli,0.874819,1.66648
+Serie_A,2024,2025-04-19,Roma,Verona,1.24696,0.330349
+Serie_A,2024,2025-04-20,Empoli,Venezia,1.14666,1.48453
+Serie_A,2024,2025-04-20,Bologna,Inter,1.0878,0.661137
+Serie_A,2024,2025-04-20,AC Milan,Atalanta,0.495327,2.07826
+Serie_A,2024,2025-04-23,Cagliari,Fiorentina,0.367407,0.701424
+Serie_A,2024,2025-04-23,Genoa,Lazio,0.470637,1.33679
+Serie_A,2024,2025-04-23,Parma Calcio 1913,Juventus,0.784847,0.777191
+Serie_A,2024,2025-04-23,Torino,Udinese,0.949162,0.949917
+Serie_A,2024,2025-04-27,Como,Genoa,1.80373,1.04585
+Serie_A,2024,2025-04-27,Venezia,AC Milan,1.00629,1.466
+Serie_A,2024,2025-04-27,Fiorentina,Empoli,0.655092,0.465943
+Serie_A,2024,2025-04-27,Inter,Roma,1.10299,2.79826
+Serie_A,2024,2025-04-27,Juventus,Monza,1.14678,0.621764
+Serie_A,2024,2025-04-27,Atalanta,Lecce,2.45836,1.45404
+Serie_A,2024,2025-04-27,Napoli,Torino,1.23274,0.660531
+Serie_A,2024,2025-04-28,Udinese,Bologna,0.387188,1.17741
+Serie_A,2024,2025-04-28,Verona,Cagliari,0.27029,1.87448
+Serie_A,2024,2025-04-28,Lazio,Parma Calcio 1913,1.7767,1.09001
+Serie_A,2024,2025-05-02,Torino,Venezia,1.74541,1.07484
+Serie_A,2024,2025-05-03,Cagliari,Udinese,0.954534,1.92066
+Serie_A,2024,2025-05-03,Parma Calcio 1913,Como,2.74525,1.32818
+Serie_A,2024,2025-05-03,Lecce,Napoli,0.276702,0.845058
+Serie_A,2024,2025-05-03,Inter,Verona,1.59903,0.303341
+Serie_A,2024,2025-05-04,Empoli,Lazio,0.18325,1.12653
+Serie_A,2024,2025-05-04,Monza,Atalanta,0.827428,3.05078
+Serie_A,2024,2025-05-04,Roma,Fiorentina,1.00134,0.760529
+Serie_A,2024,2025-05-04,Bologna,Juventus,0.390379,0.681163
+Serie_A,2024,2025-05-05,Genoa,AC Milan,0.54789,1.29954
+Serie_A,2024,2025-05-09,AC Milan,Bologna,1.55343,0.361364
+Serie_A,2024,2025-05-10,Como,Cagliari,1.93276,1.22492
+Serie_A,2024,2025-05-10,Lazio,Juventus,1.51119,1.17931
+Serie_A,2024,2025-05-10,Empoli,Parma Calcio 1913,0.989813,0.404689
+Serie_A,2024,2025-05-11,Udinese,Monza,1.45767,1.63169
+Serie_A,2024,2025-05-11,Verona,Lecce,0.480962,1.24972
+Serie_A,2024,2025-05-11,Torino,Inter,1.76692,2.48918
+Serie_A,2024,2025-05-11,Napoli,Genoa,2.35243,0.648382
+Serie_A,2024,2025-05-12,Venezia,Fiorentina,2.25991,0.994541
+Serie_A,2024,2025-05-12,Atalanta,Roma,2.87542,0.572288
+Serie_A,2024,2025-05-18,Genoa,Atalanta,1.44057,1.56926
+Serie_A,2024,2025-05-18,Cagliari,Venezia,2.75115,0.773148
+Serie_A,2024,2025-05-18,Fiorentina,Bologna,1.43018,1.51953
+Serie_A,2024,2025-05-18,Verona,Como,1.55405,1.12443
+Serie_A,2024,2025-05-18,Inter,Lazio,1.59363,2.33497
+Serie_A,2024,2025-05-18,Lecce,Torino,0.970765,0.476384
+Serie_A,2024,2025-05-18,Monza,Empoli,1.03178,1.95845
+Serie_A,2024,2025-05-18,Parma Calcio 1913,Napoli,0.296751,0.379711
+Serie_A,2024,2025-05-18,Roma,AC Milan,1.57656,1.78592
+Serie_A,2024,2025-05-18,Juventus,Udinese,2.61362,0.358909
+Serie_A,2024,2025-05-23,Como,Inter,1.49032,2.27789
+Serie_A,2024,2025-05-23,Napoli,Cagliari,2.16118,0.0969696
+Serie_A,2024,2025-05-24,Bologna,Genoa,0.628377,1.17343
+Serie_A,2024,2025-05-24,AC Milan,Monza,1.99268,0.516606
+Serie_A,2024,2025-05-25,Venezia,Juventus,1.01327,1.66948
+Serie_A,2024,2025-05-25,Atalanta,Parma Calcio 1913,1.90265,2.82535
+Serie_A,2024,2025-05-25,Empoli,Verona,1.23351,0.833807
+Serie_A,2024,2025-05-25,Lazio,Lecce,1.73521,0.708667
+Serie_A,2024,2025-05-25,Torino,Roma,0.381059,2.64436
+Serie_A,2024,2025-05-25,Udinese,Fiorentina,1.61711,3.06465
+Serie_A,2025,2025-08-23,Genoa,Lecce,0.56563,0.55094
+Serie_A,2025,2025-08-23,Sassuolo,Napoli,0.298477,1.55456
+Serie_A,2025,2025-08-23,AC Milan,Cremonese,2.08498,0.363576
+Serie_A,2025,2025-08-23,Roma,Bologna,1.47691,0.443508
+Serie_A,2025,2025-08-24,Cagliari,Fiorentina,1.51736,1.14261
+Serie_A,2025,2025-08-24,Como,Lazio,1.28478,0.202984
+Serie_A,2025,2025-08-24,Atalanta,Pisa,2.04697,1.02901
+Serie_A,2025,2025-08-24,Juventus,Parma Calcio 1913,2.74202,0.815567
+Serie_A,2025,2025-08-25,Udinese,Verona,1.05058,0.799203
+Serie_A,2025,2025-08-25,Inter,Torino,2.60956,0.816232
+Serie_A,2025,2025-08-29,Cremonese,Sassuolo,3.52949,1.32978
+Serie_A,2025,2025-08-29,Lecce,AC Milan,0.481693,2.13175
+Serie_A,2025,2025-08-30,Bologna,Como,1.51584,0.521585
+Serie_A,2025,2025-08-30,Parma Calcio 1913,Atalanta,0.751112,1.19727
+Serie_A,2025,2025-08-30,Pisa,Roma,0.6627,0.953921
+Serie_A,2025,2025-08-30,Napoli,Cagliari,1.73158,0.64413
+Serie_A,2025,2025-08-31,Genoa,Juventus,0.593013,1.55128
+Serie_A,2025,2025-08-31,Torino,Fiorentina,1.05012,1.18859
+Serie_A,2025,2025-08-31,Inter,Udinese,1.67172,1.20014
+Serie_A,2025,2025-08-31,Lazio,Verona,3.96645,0.600485
+Serie_A,2025,2025-09-13,Cagliari,Parma Calcio 1913,1.76945,1.95549
+Serie_A,2025,2025-09-13,Juventus,Inter,0.768943,1.01628
+Serie_A,2025,2025-09-13,Fiorentina,Napoli,1.39098,3.55376
+Serie_A,2025,2025-09-14,Roma,Torino,1.02943,0.805089
+Serie_A,2025,2025-09-14,Pisa,Udinese,1.27587,1.72902
+Serie_A,2025,2025-09-14,Atalanta,Lecce,2.62415,0.532382
+Serie_A,2025,2025-09-14,Sassuolo,Lazio,1.2156,0.858246
+Serie_A,2025,2025-09-14,AC Milan,Bologna,1.15538,0.198634
+Serie_A,2025,2025-09-15,Verona,Cremonese,1.8883,0.166346
+Serie_A,2025,2025-09-15,Como,Genoa,1.56467,2.54288
+Serie_A,2025,2025-09-19,Lecce,Cagliari,1.13998,2.21034
+Serie_A,2025,2025-09-20,Bologna,Genoa,1.78786,0.794732
+Serie_A,2025,2025-09-20,Verona,Juventus,1.65885,0.470357
+Serie_A,2025,2025-09-20,Udinese,AC Milan,0.298364,1.70251
+Serie_A,2025,2025-09-21,Lazio,Roma,0.666967,1.22639
+Serie_A,2025,2025-09-21,Torino,Atalanta,1.31336,1.67723
+Serie_A,2025,2025-09-21,Cremonese,Parma Calcio 1913,0.172561,0.902031
+Serie_A,2025,2025-09-21,Fiorentina,Como,0.424904,2.09507
+Serie_A,2025,2025-09-21,Inter,Sassuolo,3.12186,0.850824
+Serie_A,2025,2025-09-22,Napoli,Pisa,1.18611,2.51985
+Serie_A,2025,2025-09-27,Como,Cremonese,1.44033,0.564557
+Serie_A,2025,2025-09-27,Juventus,Atalanta,1.84242,0.885278
+Serie_A,2025,2025-09-27,Cagliari,Inter,0.475174,3.95419
+Serie_A,2025,2025-09-28,Sassuolo,Udinese,2.31332,1.19344
+Serie_A,2025,2025-09-28,Pisa,Fiorentina,0.580471,0.840093
+Serie_A,2025,2025-09-28,Roma,Verona,1.30542,1.35351
+Serie_A,2025,2025-09-28,Lecce,Bologna,2.09017,1.5908
+Serie_A,2025,2025-09-28,AC Milan,Napoli,0.952575,2.23894
+Serie_A,2025,2025-09-29,Parma Calcio 1913,Torino,1.44462,0.660829
+Serie_A,2025,2025-09-29,Genoa,Lazio,1.47659,3.54059
+Serie_A,2025,2025-10-03,Verona,Sassuolo,0.810981,1.5058
+Serie_A,2025,2025-10-04,Lazio,Torino,1.45075,2.18108
+Serie_A,2025,2025-10-04,Parma Calcio 1913,Lecce,1.08896,0.622459
+Serie_A,2025,2025-10-04,Inter,Cremonese,4.65231,0.619599
+Serie_A,2025,2025-10-04,Atalanta,Como,1.74169,0.959121
+Serie_A,2025,2025-10-05,Udinese,Cagliari,2.98545,0.789093
+Serie_A,2025,2025-10-05,Bologna,Pisa,3.69928,0.0265067
+Serie_A,2025,2025-10-05,Fiorentina,Roma,1.11719,1.22512
+Serie_A,2025,2025-10-05,Napoli,Genoa,1.87915,0.691583
+Serie_A,2025,2025-10-05,Juventus,AC Milan,0.570595,1.55707
+Serie_A,2025,2025-10-18,Lecce,Sassuolo,0.66998,0.77146
+Serie_A,2025,2025-10-18,Pisa,Verona,0.572009,1.65491
+Serie_A,2025,2025-10-18,Torino,Napoli,1.90815,1.71911
+Serie_A,2025,2025-10-18,Roma,Inter,2.1538,0.96386
+Serie_A,2025,2025-10-19,Como,Juventus,1.68785,0.964723
+Serie_A,2025,2025-10-19,Cagliari,Bologna,0.367775,1.15836
+Serie_A,2025,2025-10-19,Genoa,Parma Calcio 1913,2.21692,0.0544873
+Serie_A,2025,2025-10-19,Atalanta,Lazio,2.38095,0.220276
+Serie_A,2025,2025-10-19,AC Milan,Fiorentina,2.01853,0.965997
+Serie_A,2025,2025-10-20,Cremonese,Udinese,1.22876,0.962572
+Serie_A,2025,2025-10-24,AC Milan,Pisa,1.97232,1.22514
+Serie_A,2025,2025-10-25,Udinese,Lecce,1.51576,0.373551
+Serie_A,2025,2025-10-25,Parma Calcio 1913,Como,1.56651,0.387121
+Serie_A,2025,2025-10-25,Napoli,Inter,1.18626,2.07077
+Serie_A,2025,2025-10-25,Cremonese,Atalanta,0.967146,1.62371
+Serie_A,2025,2025-10-26,Torino,Genoa,1.8196,1.9796
+Serie_A,2025,2025-10-26,Verona,Cagliari,2.03687,0.837271
+Serie_A,2025,2025-10-26,Sassuolo,Roma,0.949353,2.25968
+Serie_A,2025,2025-10-26,Fiorentina,Bologna,3.87905,0.883347
+Serie_A,2025,2025-10-26,Lazio,Juventus,0.905304,1.24614
+Serie_A,2025,2025-10-28,Lecce,Napoli,1.02929,0.92446
+Serie_A,2025,2025-10-28,Atalanta,AC Milan,1.28167,0.626418
+Serie_A,2025,2025-10-29,Como,Verona,1.74279,1.69938
+Serie_A,2025,2025-10-29,Juventus,Udinese,3.30641,0.604108
+Serie_A,2025,2025-10-29,Roma,Parma Calcio 1913,1.15685,1.17796
+Serie_A,2025,2025-10-29,Bologna,Torino,0.3322,0.797473
+Serie_A,2025,2025-10-29,Genoa,Cremonese,1.3491,1.57974
+Serie_A,2025,2025-10-29,Inter,Fiorentina,2.87253,0.741937
+Serie_A,2025,2025-10-30,Cagliari,Sassuolo,0.845219,0.937652
+Serie_A,2025,2025-10-30,Pisa,Lazio,0.780185,0.657914
+Serie_A,2025,2025-11-01,Udinese,Atalanta,0.707338,0.270197
+Serie_A,2025,2025-11-01,Napoli,Como,0.762314,1.17012
+Serie_A,2025,2025-11-01,Cremonese,Juventus,0.611392,2.61402
+Serie_A,2025,2025-11-02,Verona,Inter,0.372642,1.15025
+Serie_A,2025,2025-11-02,Fiorentina,Lecce,1.38997,1.3239
+Serie_A,2025,2025-11-02,Torino,Pisa,1.22388,1.90329
+Serie_A,2025,2025-11-02,Parma Calcio 1913,Bologna,0.622333,3.51745
+Serie_A,2025,2025-11-02,AC Milan,Roma,3.76419,1.95443
+Serie_A,2025,2025-11-03,Sassuolo,Genoa,1.31641,1.83271
+Serie_A,2025,2025-11-03,Lazio,Cagliari,0.587684,1.48457
+Serie_A,2025,2025-11-07,Pisa,Cremonese,1.45109,1.23118
+Serie_A,2025,2025-11-08,Como,Cagliari,1.0497,0.615264
+Serie_A,2025,2025-11-08,Lecce,Verona,0.555045,0.691863
+Serie_A,2025,2025-11-08,Juventus,Torino,1.93707,0.405589
+Serie_A,2025,2025-11-08,Parma Calcio 1913,AC Milan,1.45012,2.05467
+Serie_A,2025,2025-11-09,Atalanta,Sassuolo,0.707859,2.20132
+Serie_A,2025,2025-11-09,Bologna,Napoli,1.64488,0.19503
+Serie_A,2025,2025-11-09,Genoa,Fiorentina,1.58884,1.33019
+Serie_A,2025,2025-11-09,Roma,Udinese,1.75728,0.928685
+Serie_A,2025,2025-11-09,Inter,Lazio,1.73965,0.54928
+Serie_A,2025,2025-11-22,Cagliari,Genoa,1.37329,1.61562
+Serie_A,2025,2025-11-22,Udinese,Bologna,1.88758,2.88287
+Serie_A,2025,2025-11-22,Fiorentina,Juventus,0.659308,1.65053
+Serie_A,2025,2025-11-22,Napoli,Atalanta,2.02765,0.825775
+Serie_A,2025,2025-11-23,Verona,Parma Calcio 1913,0.943021,1.51628
+Serie_A,2025,2025-11-23,Cremonese,Roma,1.25617,1.73178
+Serie_A,2025,2025-11-23,Lazio,Lecce,1.49492,0.544669
+Serie_A,2025,2025-11-23,Inter,AC Milan,1.74448,0.856085
+Serie_A,2025,2025-11-24,Torino,Como,1.42986,3.37909
+Serie_A,2025,2025-11-24,Sassuolo,Pisa,2.21345,1.38602
+Serie_A,2025,2025-11-28,Como,Sassuolo,1.73426,1.12902
+Serie_A,2025,2025-11-29,Genoa,Verona,1.64897,2.60658
+Serie_A,2025,2025-11-29,Parma Calcio 1913,Udinese,1.03649,1.87351
+Serie_A,2025,2025-11-29,Juventus,Cagliari,1.5343,0.891103
+Serie_A,2025,2025-11-29,AC Milan,Lazio,1.48113,0.899621
+Serie_A,2025,2025-11-30,Lecce,Torino,0.948606,2.0632
+Serie_A,2025,2025-11-30,Pisa,Inter,1.80715,2.04777
+Serie_A,2025,2025-11-30,Atalanta,Fiorentina,2.29028,2.01961
+Serie_A,2025,2025-11-30,Roma,Napoli,0.611755,1.33114
+Serie_A,2025,2025-12-01,Bologna,Cremonese,2.11713,2.33533
+Serie_A,2025,2025-12-06,Sassuolo,Fiorentina,1.64053,1.20662
+Serie_A,2025,2025-12-06,Inter,Como,2.26559,0.943403
+Serie_A,2025,2025-12-06,Verona,Atalanta,1.60244,1.76527
+Serie_A,2025,2025-12-07,Cremonese,Lecce,2.08254,1.37526
+Serie_A,2025,2025-12-07,Cagliari,Roma,1.40358,0.451691
+Serie_A,2025,2025-12-07,Lazio,Bologna,1.24155,1.23115
+Serie_A,2025,2025-12-07,Napoli,Juventus,2.1655,0.24335
+Serie_A,2025,2025-12-08,Pisa,Parma Calcio 1913,1.56873,1.49837
+Serie_A,2025,2025-12-08,Udinese,Genoa,1.49196,1.5362
+Serie_A,2025,2025-12-08,Torino,AC Milan,1.01008,2.10495
+Serie_A,2025,2025-12-12,Lecce,Pisa,2.79987,0.303651
+Serie_A,2025,2025-12-13,Torino,Cremonese,1.94598,0.700243
+Serie_A,2025,2025-12-13,Parma Calcio 1913,Lazio,1.08166,1.76573
+Serie_A,2025,2025-12-13,Atalanta,Cagliari,3.08558,0.568619
+Serie_A,2025,2025-12-14,AC Milan,Sassuolo,1.83346,1.02843
+Serie_A,2025,2025-12-14,Fiorentina,Verona,2.41776,1.53867
+Serie_A,2025,2025-12-14,Udinese,Napoli,1.84146,0.931427
+Serie_A,2025,2025-12-14,Genoa,Inter,0.895295,2.04412
+Serie_A,2025,2025-12-14,Bologna,Juventus,0.97387,2.07145
+Serie_A,2025,2025-12-15,Roma,Como,1.65562,0.635872
+Serie_A,2025,2025-12-20,Lazio,Cremonese,0.432769,0.70974
+Serie_A,2025,2025-12-20,Juventus,Roma,3.09592,1.28421
+Serie_A,2025,2025-12-21,Cagliari,Pisa,1.20171,2.02532
+Serie_A,2025,2025-12-21,Sassuolo,Torino,0.580849,2.00002
+Serie_A,2025,2025-12-21,Fiorentina,Udinese,3.24808,0.794951
+Serie_A,2025,2025-12-21,Genoa,Atalanta,0.967673,1.76564
+Serie_A,2025,2025-12-27,Parma Calcio 1913,Fiorentina,1.26451,1.2463
+Serie_A,2025,2025-12-27,Lecce,Como,1.15442,2.33352
+Serie_A,2025,2025-12-27,Torino,Cagliari,2.4609,0.994774
+Serie_A,2025,2025-12-27,Udinese,Lazio,0.806561,0.848022
+Serie_A,2025,2025-12-27,Pisa,Juventus,0.64162,1.2875
+Serie_A,2025,2025-12-28,AC Milan,Verona,2.87827,0.32776
+Serie_A,2025,2025-12-28,Cremonese,Napoli,0.276244,2.85402
+Serie_A,2025,2025-12-28,Bologna,Sassuolo,0.937045,1.52306
+Serie_A,2025,2025-12-28,Atalanta,Inter,1.16924,1.63271
+Serie_A,2025,2025-12-29,Roma,Genoa,1.86118,0.510864
+Serie_A,2025,2026-01-02,Cagliari,AC Milan,0.308283,0.893304
+Serie_A,2025,2026-01-03,Como,Udinese,2.38351,0.245
+Serie_A,2025,2026-01-03,Genoa,Pisa,0.569456,1.5538
+Serie_A,2025,2026-01-03,Sassuolo,Parma Calcio 1913,1.0095,1.18268
+Serie_A,2025,2026-01-03,Juventus,Lecce,3.59395,0.176301
+Serie_A,2025,2026-01-03,Atalanta,Roma,2.73637,1.01018
+Serie_A,2025,2026-01-04,Lazio,Napoli,0.405788,2.42503
+Serie_A,2025,2026-01-04,Fiorentina,Cremonese,2.20676,0.752862
+Serie_A,2025,2026-01-04,Verona,Torino,0.260564,1.70287
+Serie_A,2025,2026-01-04,Inter,Bologna,4.26719,0.782906
+Serie_A,2025,2026-01-06,Pisa,Como,1.71183,2.10363
+Serie_A,2025,2026-01-06,Lecce,Roma,0.604725,1.89163
+Serie_A,2025,2026-01-06,Sassuolo,Juventus,0.203716,2.90778
+Serie_A,2025,2026-01-07,Bologna,Atalanta,1.11527,1.33342
+Serie_A,2025,2026-01-07,Napoli,Verona,1.57287,1.29178
+Serie_A,2025,2026-01-07,Lazio,Fiorentina,2.70815,1.51944
+Serie_A,2025,2026-01-07,Parma Calcio 1913,Inter,0.261054,3.08782
+Serie_A,2025,2026-01-07,Torino,Udinese,1.67388,2.31786
+Serie_A,2025,2026-01-08,Cremonese,Cagliari,2.2527,1.78257
+Serie_A,2025,2026-01-08,AC Milan,Genoa,2.11615,1.43745
+Serie_A,2025,2026-01-10,Como,Bologna,1.13923,1.54894
+Serie_A,2025,2026-01-10,Udinese,Pisa,2.18018,1.42671
+Serie_A,2025,2026-01-10,Roma,Sassuolo,2.95843,0.858537
+Serie_A,2025,2026-01-10,Atalanta,Torino,2.55106,0.945872
+Serie_A,2025,2026-01-11,Lecce,Parma Calcio 1913,0.842154,1.46392
+Serie_A,2025,2026-01-11,Fiorentina,AC Milan,2.38025,2.05263
+Serie_A,2025,2026-01-11,Verona,Lazio,0.584887,0.64447
+Serie_A,2025,2026-01-11,Inter,Napoli,1.6567,1.38417
+Serie_A,2025,2026-01-12,Genoa,Cagliari,1.26155,1.00677
+Serie_A,2025,2026-01-12,Juventus,Cremonese,3.2309,1.1134
+Serie_A,2025,2026-01-14,Napoli,Parma Calcio 1913,1.29671,0.230185
+Serie_A,2025,2026-01-14,Inter,Lecce,1.91676,0.468829
+Serie_A,2025,2026-01-15,Verona,Bologna,1.6881,0.690747
+Serie_A,2025,2026-01-15,Como,AC Milan,1.86946,1.3926
+Serie_A,2025,2026-01-16,Pisa,Atalanta,1.63695,1.77359
+Serie_A,2025,2026-01-17,Udinese,Inter,0.130821,2.17475
+Serie_A,2025,2026-01-17,Napoli,Sassuolo,0.605235,1.12352
+Serie_A,2025,2026-01-17,Cagliari,Juventus,0.176118,0.872689
+Serie_A,2025,2026-01-18,Parma Calcio 1913,Genoa,0.463872,1.07465
+Serie_A,2025,2026-01-18,Bologna,Fiorentina,1.34398,1.64563
+Serie_A,2025,2026-01-18,Torino,Roma,0.394429,2.02736
+Serie_A,2025,2026-01-18,AC Milan,Lecce,3.17447,0.1816
+Serie_A,2025,2026-01-19,Cremonese,Verona,0.452062,0.487484
+Serie_A,2025,2026-01-19,Lazio,Como,0.465283,2.28394
+Serie_A,2025,2026-01-23,Inter,Pisa,6.24369,0.453549
+Serie_A,2025,2026-01-24,Como,Torino,3.15343,0.327418
+Serie_A,2025,2026-01-24,Fiorentina,Cagliari,2.09156,1.27897
+Serie_A,2025,2026-01-24,Lecce,Lazio,0.601024,0.716991
+Serie_A,2025,2026-01-25,Sassuolo,Cremonese,1.3787,0.845543
+Serie_A,2025,2026-01-25,Atalanta,Parma Calcio 1913,5.01888,1.86533
+Serie_A,2025,2026-01-25,Genoa,Bologna,0.706857,0.591952
+Serie_A,2025,2026-01-25,Juventus,Napoli,1.54679,0.421726
+Serie_A,2025,2026-01-25,Roma,AC Milan,2.13573,0.583212
+Serie_A,2025,2026-01-26,Verona,Udinese,0.573784,1.93652
+Serie_A,2025,2026-01-30,Lazio,Genoa,2.06649,1.83307
+Serie_A,2025,2026-01-31,Pisa,Sassuolo,0.773575,2.20331
+Serie_A,2025,2026-01-31,Napoli,Fiorentina,2.39619,1.81202
+Serie_A,2025,2026-01-31,Cagliari,Verona,1.98129,0.374813
+Serie_A,2025,2026-02-01,Torino,Lecce,2.48263,0.468464
+Serie_A,2025,2026-02-01,Como,Atalanta,5.96884,0.785014
+Serie_A,2025,2026-02-01,Cremonese,Inter,0.510166,2.18311
+Serie_A,2025,2026-02-01,Parma Calcio 1913,Juventus,0.598397,3.51941
+Serie_A,2025,2026-02-02,Udinese,Roma,0.642594,0.668752
+Serie_A,2025,2026-02-03,Bologna,AC Milan,0.440526,3.35769
+Serie_A,2025,2026-02-06,Verona,Pisa,0.0783843,1.26143
+Serie_A,2025,2026-02-07,Genoa,Napoli,1.32462,1.89784
+Serie_A,2025,2026-02-07,Fiorentina,Torino,1.27203,1.0134
+Serie_A,2025,2026-02-08,Bologna,Parma Calcio 1913,1.64658,0.193041
+Serie_A,2025,2026-02-08,Lecce,Udinese,2.18624,0.895031
+Serie_A,2025,2026-02-08,Sassuolo,Inter,0.721597,2.75112
+Serie_A,2025,2026-02-08,Juventus,Lazio,2.85607,0.808824
+Serie_A,2025,2026-02-09,Atalanta,Cremonese,3.12119,0.914806
+Serie_A,2025,2026-02-09,Roma,Cagliari,2.20426,0.613133
+Serie_A,2025,2026-02-13,Pisa,AC Milan,0.937275,2.15769
+Serie_A,2025,2026-02-14,Como,Fiorentina,0.902645,1.302
+Serie_A,2025,2026-02-14,Lazio,Atalanta,1.54366,1.82116
+Serie_A,2025,2026-02-14,Inter,Juventus,2.4811,1.29499
+Serie_A,2025,2026-02-15,Udinese,Sassuolo,0.491201,1.24711
+Serie_A,2025,2026-02-15,Cremonese,Genoa,1.34717,1.33514
+Serie_A,2025,2026-02-15,Parma Calcio 1913,Verona,2.16714,0.856137
+Serie_A,2025,2026-02-15,Torino,Bologna,0.394436,1.71228
+Serie_A,2025,2026-02-15,Napoli,Roma,0.5247,1.95442
+Serie_A,2025,2026-02-16,Cagliari,Lecce,1.46951,1.76359
+Serie_A,2025,2026-02-18,AC Milan,Como,1.17019,1.64526
+Serie_A,2025,2026-02-20,Sassuolo,Verona,1.58706,0.615652
+Serie_A,2025,2026-02-21,Juventus,Como,1.01425,1.43181
+Serie_A,2025,2026-02-21,Lecce,Inter,0.127863,2.6436
+Serie_A,2025,2026-02-21,Cagliari,Lazio,0.771111,0.520733
+Serie_A,2025,2026-02-22,Genoa,Torino,2.06306,0.530703
+Serie_A,2025,2026-02-22,Atalanta,Napoli,0.962214,1.05903
+Serie_A,2025,2026-02-22,AC Milan,Parma Calcio 1913,1.63438,0.760094
+Serie_A,2025,2026-02-22,Roma,Cremonese,2.58194,0.280739
+Serie_A,2025,2026-02-23,Fiorentina,Pisa,1.77825,0.43212
+Serie_A,2025,2026-02-23,Bologna,Udinese,1.44714,0.530625
+Serie_A,2025,2026-02-27,Parma Calcio 1913,Cagliari,1.31257,0.615799
+Serie_A,2025,2026-02-28,Como,Lecce,2.98622,0.424994
+Serie_A,2025,2026-02-28,Verona,Napoli,0.277835,1.21355
+Serie_A,2025,2026-02-28,Inter,Genoa,2.19229,0.170827
+Serie_A,2025,2026-03-01,Cremonese,AC Milan,1.08387,3.87512
+Serie_A,2025,2026-03-01,Sassuolo,Atalanta,1.81132,3.74717
+Serie_A,2025,2026-03-01,Torino,Lazio,1.06085,1.05867
+Serie_A,2025,2026-03-01,Roma,Juventus,2.33059,1.8583
+Serie_A,2025,2026-03-02,Pisa,Bologna,0.743118,0.871649
+Serie_A,2025,2026-03-02,Udinese,Fiorentina,2.0239,0.585387
+Serie_A,2025,2026-03-06,Napoli,Torino,2.32007,0.693368
+Serie_A,2025,2026-03-07,Cagliari,Como,0.518042,0.763847
+Serie_A,2025,2026-03-07,Atalanta,Udinese,1.99854,0.860054
+Serie_A,2025,2026-03-07,Juventus,Pisa,3.16811,0.319971
+Serie_A,2025,2026-03-08,Lecce,Cremonese,1.76705,0.791422
+Serie_A,2025,2026-03-08,Fiorentina,Parma Calcio 1913,0.758473,0.253114
+Serie_A,2025,2026-03-08,Bologna,Verona,0.903746,2.02855
+Serie_A,2025,2026-03-08,Genoa,Roma,2.55911,0.282645
+Serie_A,2025,2026-03-08,AC Milan,Inter,0.852014,1.44398
+Serie_A,2025,2026-03-09,Lazio,Sassuolo,2.4868,0.453204
+Serie_A,2025,2026-03-13,Torino,Parma Calcio 1913,2.44316,0.579861
+Serie_A,2025,2026-03-14,Inter,Atalanta,2.0286,0.867146
+Serie_A,2025,2026-03-14,Napoli,Lecce,1.13114,1.22692
+Serie_A,2025,2026-03-14,Udinese,Juventus,0.741965,3.18734
+Serie_A,2025,2026-03-15,Verona,Genoa,0.370821,0.534091
+Serie_A,2025,2026-03-15,Pisa,Cagliari,2.94287,1.52334
+Serie_A,2025,2026-03-15,Sassuolo,Bologna,0.427053,0.731025
+Serie_A,2025,2026-03-15,Como,Roma,2.46908,0.899976
+Serie_A,2025,2026-03-15,Lazio,AC Milan,0.538397,1.16179
+Serie_A,2025,2026-03-16,Cremonese,Fiorentina,1.47372,1.14462
+Serie_A,2025,2026-03-20,Cagliari,Napoli,0.241246,2.27393
+Serie_A,2025,2026-03-20,Genoa,Udinese,1.30328,0.86584
+Serie_A,2025,2026-03-21,Parma Calcio 1913,Cremonese,0.287758,0.781807
+Serie_A,2025,2026-03-21,AC Milan,Torino,1.44337,2.37211
+Serie_A,2025,2026-03-21,Juventus,Sassuolo,2.25457,0.845538
+Serie_A,2025,2026-03-22,Como,Pisa,1.8215,0.309722
+Serie_A,2025,2026-03-22,Atalanta,Verona,1.74248,0.765772
+Serie_A,2025,2026-03-22,Bologna,Lazio,1.32921,2.14396
+Serie_A,2025,2026-03-22,Roma,Lecce,1.09359,0.807003
+Serie_A,2025,2026-03-22,Fiorentina,Inter,1.81429,1.40088
+Serie_A,2025,2026-04-04,Sassuolo,Cagliari,0.48336,1.90118
+Serie_A,2025,2026-04-04,Verona,Fiorentina,0.922577,0.308725
+Serie_A,2025,2026-04-04,Lazio,Parma Calcio 1913,0.269086,0.360563
+Serie_A,2025,2026-04-05,Cremonese,Bologna,1.39638,1.58974
+Serie_A,2025,2026-04-05,Pisa,Torino,0.309366,1.72611
+Serie_A,2025,2026-04-05,Inter,Roma,2.25441,0.939981
+Serie_A,2025,2026-04-06,Udinese,Como,1.06665,0.786392
+Serie_A,2025,2026-04-06,Lecce,Atalanta,0.364274,2.81595
+Serie_A,2025,2026-04-06,Juventus,Genoa,2.60276,1.48807
+Serie_A,2025,2026-04-06,Napoli,AC Milan,0.872402,0.810602
+Serie_A,2025,2026-04-10,Roma,Pisa,1.45084,1.06318
+Serie_A,2025,2026-04-11,Cagliari,Cremonese,1.431,0.268819
+Serie_A,2025,2026-04-11,Torino,Verona,1.1485,1.67554
+Serie_A,2025,2026-04-11,AC Milan,Udinese,1.62737,1.566
+Serie_A,2025,2026-04-11,Atalanta,Juventus,1.8886,1.18681
+Serie_A,2025,2026-04-12,Genoa,Sassuolo,1.39271,1.39642
+Serie_A,2025,2026-04-12,Parma Calcio 1913,Napoli,0.154689,1.31482
+Serie_A,2025,2026-04-12,Bologna,Lecce,2.5824,0.53637
+Serie_A,2025,2026-04-12,Como,Inter,3.2878,0.507465
+Serie_A,2025,2026-04-13,Fiorentina,Lazio,0.421966,1.29355
+Serie_A,2025,2026-04-17,Sassuolo,Como,1.3509,0.588985
+Serie_A,2025,2026-04-17,Inter,Cagliari,2.38524,0.482209
+Serie_A,2025,2026-04-18,Udinese,Parma Calcio 1913,1.35108,1.39599
+Serie_A,2025,2026-04-18,Napoli,Lazio,0.516972,3.16463
+Serie_A,2025,2026-04-18,Roma,Atalanta,1.70941,0.660238
+Serie_A,2025,2026-04-19,Cremonese,Torino,0.88749,0.159021
+Serie_A,2025,2026-04-19,Verona,AC Milan,0.709696,0.830747
+Serie_A,2025,2026-04-19,Pisa,Genoa,1.00691,2.18534
+Serie_A,2025,2026-04-19,Juventus,Bologna,1.57651,0.852415
+Serie_A,2025,2026-04-20,Lecce,Fiorentina,1.80861,1.26455
+Serie_A,2025,2026-04-24,Napoli,Cremonese,3.24062,0.473643
+Serie_A,2025,2026-04-25,Parma Calcio 1913,Pisa,1.31072,1.56392
+Serie_A,2025,2026-04-25,Bologna,Roma,0.479083,1.65629
+Serie_A,2025,2026-04-25,Verona,Lecce,0.249294,1.20604
+Serie_A,2025,2026-04-26,Fiorentina,Sassuolo,2.19011,0.597621
+Serie_A,2025,2026-04-26,Genoa,Como,0.667154,1.19004
+Serie_A,2025,2026-04-26,Torino,Inter,2.42774,1.64792
+Serie_A,2025,2026-04-26,AC Milan,Juventus,0.616342,0.449727
+Serie_A,2025,2026-04-27,Cagliari,Atalanta,2.00771,1.7579
+Serie_A,2025,2026-04-27,Lazio,Udinese,1.77483,2.30714
+Serie_A,2025,2026-05-01,Pisa,Lecce,2.06716,1.35936
+Serie_A,2025,2026-05-02,Udinese,Torino,2.16904,0.812913
+Serie_A,2025,2026-05-02,Como,Napoli,1.79719,0.847288
+Serie_A,2025,2026-05-02,Atalanta,Genoa,1.66082,0.438786
+Serie_A,2025,2026-05-03,Bologna,Cagliari,0.684487,0.871884
+Serie_A,2025,2026-05-03,Sassuolo,AC Milan,2.23502,0.288558
+Serie_A,2025,2026-05-03,Juventus,Verona,2.68622,0.197193
+Serie_A,2025,2026-05-03,Inter,Parma Calcio 1913,2.01571,0.452228
+Serie_A,2025,2026-05-04,Cremonese,Lazio,0.55053,0.987521
+Serie_A,2025,2026-05-04,Roma,Fiorentina,2.84317,0.132194
+Serie_A,2025,2026-05-08,Torino,Sassuolo,3.06714,2.17042
+Serie_A,2025,2026-05-09,Cagliari,Udinese,1.56516,2.30592
+Serie_A,2025,2026-05-09,Lazio,Inter,0.502107,2.18245
+Serie_A,2025,2026-05-09,Lecce,Juventus,0.607959,1.95698
+Serie_A,2025,2026-05-10,Verona,Como,1.29052,1.06072
+Serie_A,2025,2026-05-10,Cremonese,Pisa,1.26744,0.0
+Serie_A,2025,2026-05-10,Fiorentina,Genoa,0.675179,0.52874
+Serie_A,2025,2026-05-10,Parma Calcio 1913,Roma,0.636151,3.02085
+Serie_A,2025,2026-05-10,AC Milan,Atalanta,2.28396,1.60752
+Serie_A,2025,2026-05-11,Napoli,Bologna,1.22739,1.12339
+Serie_A,2025,2026-05-17,Como,Parma Calcio 1913,2.72094,0.483046
+Serie_A,2025,2026-05-17,Genoa,AC Milan,1.66881,1.55422
+Serie_A,2025,2026-05-17,Juventus,Fiorentina,1.96289,0.513716
+Serie_A,2025,2026-05-17,Pisa,Napoli,0.721322,1.42016
+Serie_A,2025,2026-05-17,Roma,Lazio,1.31805,0.766648
+Serie_A,2025,2026-05-17,Inter,Verona,2.84143,0.911763
+Serie_A,2025,2026-05-17,Atalanta,Bologna,0.871381,1.06559
+Serie_A,2025,2026-05-17,Cagliari,Torino,1.75883,1.33301
+Serie_A,2025,2026-05-17,Sassuolo,Lecce,3.04719,1.29547
+Serie_A,2025,2026-05-17,Udinese,Cremonese,0.270585,0.671214
+Serie_A,2025,2026-05-22,Fiorentina,Atalanta,1.14732,1.58663
+Serie_A,2025,2026-05-23,Bologna,Inter,1.59682,1.18652
+Serie_A,2025,2026-05-23,Lazio,Pisa,1.02094,1.16758
+Serie_A,2025,2026-05-24,Parma Calcio 1913,Sassuolo,1.51292,1.06783
+Serie_A,2025,2026-05-24,Napoli,Udinese,1.55853,0.517372
+Serie_A,2025,2026-05-24,Cremonese,Como,0.977192,2.6911
+Serie_A,2025,2026-05-24,Lecce,Genoa,2.21387,0.782331
+Serie_A,2025,2026-05-24,AC Milan,Cagliari,1.75953,3.43624
+Serie_A,2025,2026-05-24,Torino,Juventus,0.950066,2.53427
+Serie_A,2025,2026-05-24,Verona,Roma,0.597669,3.55506

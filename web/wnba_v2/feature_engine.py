@@ -160,6 +160,22 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     "adj_margin_ewma_diff",
     # regime
     "bubble_season",
+    # market / steam
+    "has_market",
+    "mkt_home_prob",
+    "has_spread",
+    "mkt_home_spread",
+    "has_open_line",
+    "spread_move",
+    "ml_steam_pp",
+    "has_steam",
+    "n_books",
+    "mkt_total",
+    "has_total",
+    "total_move",
+    "steam_to_fav",
+    "reverse_line_move",
+    "chalk_steam",
 )
 
 
@@ -835,6 +851,9 @@ class WnbaFeatureEngine:
             "adj_margin_ewma_diff": home.adj_margin_ewma - away.adj_margin_ewma,
             "bubble_season": 1.0 if season == 2020 else 0.0,
         }
+        from web.market_steam_features import steam_features_from_game
+
+        features.update(steam_features_from_game(game))
         return features
 
     # -- state update ---------------------------------------------------------

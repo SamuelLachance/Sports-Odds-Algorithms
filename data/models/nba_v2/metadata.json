@@ -1,5 +1,5 @@
 {
-  "algorithm": "NBAGradientBoost v2",
+  "algorithm": "HybridGradientBoost v2",
   "created_at": "2026-07-12T17:31:05.585592+00:00",
   "feature_columns": [
     "elo_diff",
@@ -124,14 +124,14 @@
   ],
   "margin_sigma": 12.807,
   "margin_sigma_market": 12.728,
-  "oos_model_logloss": 0.6099,
-  "oos_model_brier": 0.21082,
-  "oos_model_acc": 0.6654,
+  "oos_model_logloss": 0.61286,
+  "oos_model_brier": 0.21167,
+  "oos_model_acc": 0.6699,
   "oos_margin_mae": 10.013,
   "oos_with_odds": 10328,
-  "oos_model_logloss_odds_subset": 0.6224,
+  "oos_model_logloss_odds_subset": 0.60995,
   "oos_market_aware_logloss_odds_subset": 0.61697,
-  "oos_market_logloss": 0.60313,
+  "oos_market_logloss": 0.60341,
   "per_season": [
     {
       "season": 2010,
@@ -402,5 +402,11 @@
     "neutral_site": 0.0,
     "home_expansion": 0.0,
     "away_expansion": 0.0
-  }
+  },
+  "hybrid": true,
+  "hybrid_backend": "catboost",
+  "hybrid_market_blend_w": 0.55,
+  "baseline_xgb_logloss": 0.6099,
+  "gap_vs_market": 0.00654,
+  "hybrid_shipped_at": "2026-07-14T06:04:09.723907+00:00"
 }

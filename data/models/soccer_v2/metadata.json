@@ -83,7 +83,7 @@
     2024,
     2025
   ],
-  "oos_model_logloss": 0.97411,
+  "oos_model_logloss": 0.97253,
   "oos_with_odds": 36197,
   "oos_model_logloss_odds_subset": 0.98749,
   "oos_market_aware_logloss_odds_subset": 0.97759,
@@ -385,9 +385,9 @@
   },
   "hybrid": true,
   "hybrid_backend": "catboost",
-  "hybrid_market_blend_w": 0.5,
-  "baseline_xgb_logloss": 0.98749,
-  "oos_model_acc": 0.5326,
+  "hybrid_market_blend_w": 0.6,
+  "baseline_xgb_logloss": 0.97253,
+  "oos_model_acc": 0.5339,
   "oos_model_brier": null,
-  "hybrid_shipped_at": "2026-07-13T15:27:38.702080+00:00"
+  "hybrid_shipped_at": "2026-07-14T08:42:37.518217+00:00"
 }

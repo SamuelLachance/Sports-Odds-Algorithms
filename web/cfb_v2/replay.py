@@ -95,8 +95,16 @@ def csv_rows_to_games(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "away_spread_odds": row.get("away_spread_odds"),
             "home_open_spread": row.get("home_open_spread"),
             "away_open_spread": row.get("away_open_spread"),
+            "home_open_ml": row.get("home_open_ml"),
+            "away_open_ml": row.get("away_open_ml"),
             "close_total": row.get("close_total"),
+            "open_total": row.get("open_total"),
             "n_books": row.get("n_books"),
+            # Aliases for shared steam helper
+            "home_ml": row.get("home_close_ml"),
+            "away_ml": row.get("away_close_ml"),
+            "home_spread": row.get("home_close_spread"),
+            "total_line": row.get("close_total"),
         }
         games.append(game)
     games.sort(key=lambda g: (g["date"], g["home"], g["away"]))

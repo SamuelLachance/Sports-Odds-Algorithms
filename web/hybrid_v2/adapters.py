@@ -173,6 +173,7 @@ def _attach_binary_market(frame: pd.DataFrame) -> pd.DataFrame:
 
 
 def _attach_soccer_market(frame: pd.DataFrame) -> pd.DataFrame:
+    from web.market_steam_features import soccer_steam_from_row
     from web.soccer_v2.data import devig_decimal
 
     frame = frame.copy()
@@ -181,6 +182,8 @@ def _attach_soccer_market(frame: pd.DataFrame) -> pd.DataFrame:
     draws = np.full(n, 1 / 3, dtype=float)
     aways = np.full(n, 1 / 3, dtype=float)
     has = np.zeros(n, dtype=float)
+    steam_pp = np.zeros(n, dtype=float)
+    has_steam = np.zeros(n, dtype=float)
     if {"open_home", "open_draw", "open_away"}.issubset(frame.columns):
         oh = frame["open_home"].to_numpy()
         od = frame["open_draw"].to_numpy()
@@ -191,14 +194,35 @@ def _attach_soccer_market(frame: pd.DataFrame) -> pd.DataFrame:
                 continue
             homes[i], draws[i], aways[i] = trip
             has[i] = 1.0
+    # Prefer close when available for market_home_prob
+    close_cols = {"close_home", "close_draw", "close_away"}
+    if close_cols.issubset(frame.columns):
+        ch = frame["close_home"].to_numpy()
+        cd = frame["close_draw"].to_numpy()
+        ca = frame["close_away"].to_numpy()
+        for i in range(n):
+            trip = devig_decimal(ch[i], cd[i], ca[i])
+            if trip is None:
+                continue
+            homes[i], draws[i], aways[i] = trip
+            has[i] = 1.0
+    # Row-wise steam from open→close
+    records = frame.to_dict(orient="records")
+    for i, row in enumerate(records):
+        steam = soccer_steam_from_row(row)
+        steam_pp[i] = float(steam.get("ml_steam_pp") or 0.0)
+        has_steam[i] = float(steam.get("has_steam") or 0.0)
+        if steam.get("has_market", 0) >= 0.5:
+            has[i] = 1.0
+            homes[i] = float(steam["mkt_home_prob"])
     frame["mkt_open_home"] = homes
     frame["mkt_open_draw"] = draws
     frame["mkt_open_away"] = aways
     frame["has_market"] = has
     frame["market_home_prob"] = homes
     frame["mkt_home_prob"] = homes
-    frame["ml_steam_pp"] = 0.0
-    frame["has_steam"] = 0.0
+    frame["ml_steam_pp"] = steam_pp
+    frame["has_steam"] = has_steam
     return frame
 
 

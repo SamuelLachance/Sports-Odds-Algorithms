@@ -80,16 +80,39 @@ def _odds_for_game(
         "spread_home_odds": row.get("home_spread_odds"),
         "spread_away_odds": row.get("away_spread_odds"),
         "total_line": row.get("total"),
+        "close_total": row.get("total"),
+        "open_total": row.get("open_total"),
         "books": row.get("n_books") or 0,
-        "home_ml_open": None,
-        "away_ml_open": None,
+        "n_books": row.get("n_books") or 0,
+        "home_ml_open": row.get("home_ml_open"),
+        "away_ml_open": row.get("away_ml_open"),
+        "home_open_ml": row.get("home_ml_open"),
+        "away_open_ml": row.get("away_ml_open"),
         "home_spread_open": row.get("home_spread_open"),
+        "home_open_spread": row.get("home_spread_open"),
+        "home_close_ml": row.get("home_ml"),
+        "away_close_ml": row.get("away_ml"),
+        "home_close_spread": row.get("home_spread"),
         # CSV is already consensus median; best == consensus for this source
         "best_home_ml": row.get("home_ml"),
         "best_away_ml": row.get("away_ml"),
         "best_spread_home_odds": row.get("home_spread_odds"),
         "best_spread_away_odds": row.get("away_spread_odds"),
     }
+
+
+def _attach_market_to_games(
+    games: list[dict[str, Any]],
+    odds_index: dict[tuple[str, str, str], dict[str, Any]],
+) -> None:
+    """Copy closing-odds fields onto game dicts before feature emit (steam needs opens)."""
+    for game in games:
+        market = _odds_for_game(odds_index, game)
+        if not market:
+            continue
+        for key, value in market.items():
+            if value is not None:
+                game[key] = value
 
 
 def main() -> int:
@@ -116,6 +139,7 @@ def main() -> int:
             if not games:
                 print(f"season {season}: no games cached", flush=True)
                 continue
+            _attach_market_to_games(games, odds_index)
             emitted = 0
 
             def emit(game: dict[str, Any], features: dict[str, float]) -> None:

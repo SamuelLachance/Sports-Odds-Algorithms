@@ -33,6 +33,7 @@ UMP_CSV = PROJECT_ROOT / "data" / "supplemental" / "mlb-umpires" / "game_umpires
 IL_CSV = PROJECT_ROOT / "data" / "supplemental" / "mlb-injuries" / "team_il_daily.csv"
 SP_XERA_CSV = PROJECT_ROOT / "data" / "supplemental" / "mlb-statcast" / "pitcher_prev_xera.csv"
 TEAM_XWOBA_CSV = PROJECT_ROOT / "data" / "supplemental" / "mlb-statcast" / "team_prev_xwoba.csv"
+TEAM_XWOBA_ROLLING_CSV = PROJECT_ROOT / "data" / "supplemental" / "mlb-statcast" / "team_xwoba_rolling.csv"
 
 TEAM_ID_TO_ABBR: dict[int, str] = {
     team_id: abbr for abbr, team_id in ESPN_TO_MLB_TEAM_ID.items() if abbr != "ath"
@@ -188,6 +189,21 @@ def _load_team_xwoba() -> dict[tuple[int, int], float]:
     return out
 
 
+def _load_team_xwoba_rolling() -> dict[tuple[int, int], float]:
+    """(for_season, team_id) -> xwoba from season-end prior snapshots."""
+    if not TEAM_XWOBA_ROLLING_CSV.is_file():
+        return {}
+    frame = pd.read_csv(TEAM_XWOBA_ROLLING_CSV)
+    out: dict[tuple[int, int], float] = {}
+    for row in frame.to_dict(orient="records"):
+        try:
+            season = int(row.get("for_season") or (int(row["season"]) + 1))
+            out[(season, int(row["team_id"]))] = float(row["xwoba"])
+        except (TypeError, ValueError, KeyError):
+            continue
+    return out
+
+
 def _attach_enrichments(
     game: dict[str, Any],
     *,
@@ -200,6 +216,7 @@ def _attach_enrichments(
     il: dict[tuple[str, int], dict[str, float]],
     sp_xera: dict[tuple[int, int], float],
     team_xwoba: dict[tuple[int, int], float],
+    team_xwoba_rolling: dict[tuple[int, int], float] | None = None,
 ) -> None:
     day = str(game.get("date") or "")[:10]
     row = odds_lookup.get((day, home_key, away_key))
@@ -272,6 +289,17 @@ def _attach_enrichments(
     if ax is not None:
         game["away_prev_xwoba"] = ax
 
+    roll = team_xwoba_rolling or {}
+    hx_r = roll.get((season, home_id))
+    ax_r = roll.get((season, away_id))
+    if hx_r is not None:
+        game["home_roll_xwoba"] = hx_r
+    if ax_r is not None:
+        game["away_roll_xwoba"] = ax_r
+    if hx_r is not None or ax_r is not None:
+        game["has_statcast_rolling"] = 1.0
+        game["roll_xwoba_diff"] = float((hx_r or 0.320) - (ax_r or 0.320))
+
 
 def build_rows(start_season: int, end_season: int) -> pd.DataFrame:
     engine = MlbFeatureEngine()
@@ -282,9 +310,11 @@ def build_rows(start_season: int, end_season: int) -> pd.DataFrame:
     il = _load_il()
     sp_xera = _load_sp_xera()
     team_xwoba = _load_team_xwoba()
+    team_xwoba_rolling = _load_team_xwoba_rolling()
     print(
         f"weather={len(weather)} odds={len(odds_lookup)} umps={len(umps)} "
-        f"il={len(il)} sp_xera={len(sp_xera)} team_xwoba={len(team_xwoba)}",
+        f"il={len(il)} sp_xera={len(sp_xera)} team_xwoba={len(team_xwoba)} "
+        f"roll_xwoba={len(team_xwoba_rolling)}",
         flush=True,
     )
 
@@ -348,6 +378,7 @@ def build_rows(start_season: int, end_season: int) -> pd.DataFrame:
                 il=il,
                 sp_xera=sp_xera,
                 team_xwoba=team_xwoba,
+                team_xwoba_rolling=team_xwoba_rolling,
             )
 
         replay_season(

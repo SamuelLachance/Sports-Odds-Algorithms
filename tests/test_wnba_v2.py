@@ -849,6 +849,8 @@ def test_from_dict_defaults_new_rotation_fields() -> None:
     assert "bench_min_share_diff" in FEATURE_COLUMNS
     assert "bubble_season" in FEATURE_COLUMNS
     assert "away_tz_shift" in FEATURE_COLUMNS
+    assert "has_steam" in FEATURE_COLUMNS
+    assert "mkt_total" in FEATURE_COLUMNS
 
 
 def test_minutes_weighted_dnp_star_rate_prefers_star_minutes() -> None:
