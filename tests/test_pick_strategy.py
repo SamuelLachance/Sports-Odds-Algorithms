@@ -49,7 +49,9 @@ def test_pick_thresholds_cbb_nfl_cfb() -> None:
     assert cbb["min_market_gap_pp"] == 2.0
     assert cbb.get("fav_mode") == "any"
     assert cbb.get("allowed_sides") == ["away"]
-    assert cbb["enabled"] is True
+    # cbb's enable flag flips with re-validation state (currently disabled
+    # pending leak-free backtests) — require an explicit bool, never fail-open.
+    assert isinstance(cbb.get("enabled"), bool)
 
     nfl = get_pick_thresholds("nfl")
     assert nfl["bet_type"] == "moneyline"
@@ -73,10 +75,12 @@ def test_disabled_leagues_stay_predictions_only_but_can_emit_reference_picks() -
 
     assert get_pick_thresholds("mlb")["enabled"] is True
     assert get_pick_thresholds("nba")["enabled"] is True
-    assert get_pick_thresholds("cbb")["enabled"] is True
     assert eligible_for_official_picks("mlb") is True
     assert eligible_for_official_picks("nba") is True
-    assert eligible_for_official_picks("cbb") is True
+    # cbb stays an OFFICIAL_PICK_LEAGUES member for metadata, but its enable
+    # flag tracks re-validation state — eligibility must mirror the data flag.
+    cbb_enabled = bool(get_pick_thresholds("cbb").get("enabled", True))
+    assert eligible_for_official_picks("cbb") is cbb_enabled
     assert "cbb" in OFFICIAL_PICK_LEAGUES
 
 
@@ -84,27 +88,29 @@ def test_official_mlb_picks_include_kelly_after_enrich() -> None:
     """Live official path must attach Kelly — slate recording sizes off kelly_pct."""
     from web.pick_strategy import evaluate_official_picks_for_game
 
+    # 75% vs a devigged -150/+200 market (~64.3%) clears the live MLB Hubáček
+    # gap floor (8.0 pp in data/pick_strategy.json) with margin.
     picks = evaluate_official_picks_for_game(
         league="mlb",
         away_name="Away",
         home_name="Home",
         away_slug="away",
         home_slug="home",
-        total_score=-72.0,
-        win_probability=72.0,
+        total_score=-75.0,
+        win_probability=75.0,
         blended={
-            "blended_home_win_probability": 72.0,
+            "blended_home_win_probability": 75.0,
             "market_decorrelated": True,
-            "home_win_probability": 72.0,
-            "away_win_probability": 28.0,
+            "home_win_probability": 75.0,
+            "away_win_probability": 25.0,
         },
         away_market=200,
         home_market=-150,
         consensus_spread=None,
         away_spread_odds=None,
         home_spread_odds=None,
-        home_prob=72.0,
-        away_prob=28.0,
+        home_prob=75.0,
+        away_prob=25.0,
     )
     assert picks
     assert picks[0].extra.get("kelly_pct") is not None

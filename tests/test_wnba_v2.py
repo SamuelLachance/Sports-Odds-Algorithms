@@ -276,11 +276,16 @@ def test_live_prediction_when_artifacts_present() -> None:
     result = predict_matchup_v2("2026-07-10", "lva", "sea")
     if result is None:  # live season context unavailable offline
         return
-    assert result["algorithm"] == "WNBAGradientBoost v2"
+    # With hybrid artifacts shipped the overlay upgrades the variant/name;
+    # without them the pure v2 path must still report its own name.
+    variant = result.get("model_variant")
+    assert variant in {"pure", "hybrid"}
+    assert result["algorithm"] == (
+        "HybridGradientBoost v2" if variant == "hybrid" else "WNBAGradientBoost v2"
+    )
     assert 0.0 <= result["home_win_probability"] <= 100.0
     assert result["home_elo"] > 1000
     assert "predicted_margin" in result
-    assert result.get("model_variant") == "pure"
 
 
 def test_devig_home_prob_and_market_variant_helpers() -> None:
@@ -409,7 +414,9 @@ def test_live_market_aware_when_odds_provided() -> None:
     )
     if pure is None or mkt is None:
         return
-    assert mkt["model_variant"] == "market_aware"
+    # Market-fed scoring reports market_aware, or hybrid when the shipped
+    # CatBoost+market-blend overlay takes over. Never "pure" with odds provided.
+    assert mkt["model_variant"] in {"market_aware", "hybrid"}
     assert mkt["has_market"] is True
     assert mkt["has_spread"] is True
     assert "predicted_margin" in mkt

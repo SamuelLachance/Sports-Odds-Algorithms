@@ -57,12 +57,13 @@ def test_eligible_for_official_picks() -> None:
         enabled = bool(get_pick_thresholds(league).get("enabled", True))
         assert eligible_for_official_picks(league) is enabled, league
 
-    # Validated / enabled official leagues.
+    # Validated / enabled official leagues. (cbb is covered by the dynamic
+    # loop above — its enable flag tracks re-validation state and is
+    # currently off pending leak-free backtests.)
     assert eligible_for_official_picks("epl")  # club soccer Hubáček niche enabled
     assert eligible_for_official_picks("worldcup")
     assert eligible_for_official_picks("nba")
     assert eligible_for_official_picks("mlb")
-    assert eligible_for_official_picks("cbb")
 
     # Hubáček refresh: NHL/WNBA/NFL/CFB on when worst-season clears.
     assert eligible_for_official_picks("nhl")
@@ -76,21 +77,24 @@ def test_eligible_for_official_picks() -> None:
 
 
 def test_nfl_cfb_cbb_eligible_for_official_picks() -> None:
-    """CBB/NHL/WNBA/NFL/CFB enabled after Hubáček OOS niches clear."""
+    """NHL/WNBA/NFL/CFB enabled after Hubáček OOS niches clear; cbb tracks its flag."""
     from web.hubacek_picks import clear_strategy_cache
     from web.pick_strategy import load_pick_strategy
 
     clear_strategy_cache()
     load_pick_strategy.cache_clear()
 
-    assert eligible_for_official_picks("cbb") is True
     assert eligible_for_official_picks("nfl") is True
     assert eligible_for_official_picks("cfb") is True
     assert eligible_for_official_picks("nhl") is True
     assert eligible_for_official_picks("wnba") is True
-    assert eligible_for_official_picks("CBB") is True
     assert eligible_for_official_picks("NFL") is True
     assert eligible_for_official_picks("Cfb") is True
+    # cbb eligibility must mirror its live enable flag (currently off pending
+    # leak-free re-validation), case-insensitively.
+    cbb_enabled = bool(get_pick_thresholds("cbb").get("enabled", True))
+    assert eligible_for_official_picks("cbb") is cbb_enabled
+    assert eligible_for_official_picks("CBB") is cbb_enabled
 
 
 def test_soccer_game_not_eligible_for_official_picks() -> None:

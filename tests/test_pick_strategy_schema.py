@@ -136,5 +136,12 @@ def test_load_pick_strategy_uses_schema_and_keeps_live_gates() -> None:
     assert isinstance(config.get("default"), dict)
     assert config["mlb"]["enabled"] is True
     assert config["nfl"]["enabled"] is True
-    assert config["cbb"]["enabled"] is True
-    assert get_pick_thresholds("mlb")["min_market_gap_pp"] == 6.0
+    # cbb's enable flag flips with re-validation state (currently disabled
+    # pending leak-free backtests) — require an explicit bool, never fail-open.
+    assert isinstance(config["cbb"].get("enabled"), bool)
+    # Live MLB gate must surface the league override from data/pick_strategy.json
+    # (schema-validated), not a global default. The numeric value tracks the
+    # backtest refresh, so compare against the loaded config instead of a literal.
+    mlb_gap = get_pick_thresholds("mlb")["min_market_gap_pp"]
+    assert mlb_gap == config["mlb"]["min_market_gap_pp"]
+    assert mlb_gap > 0

@@ -352,7 +352,13 @@ def test_live_context_and_prediction_when_artifacts_present() -> None:
         away_ml=300,
     )
     assert result is not None
-    assert result["algorithm"] == "SoccerGradientBoost v2"
+    # With hybrid artifacts shipped the overlay upgrades the variant/name;
+    # without them the xgb ensemble must still report its own name.
+    assert result["algorithm"] == (
+        "HybridGradientBoost v2"
+        if result.get("model_variant") == "hybrid"
+        else "SoccerGradientBoost v2"
+    )
     total = (
         result["home_win_probability"]
         + result["draw_probability"]

@@ -31,8 +31,10 @@ from web.tracking_service import (  # noqa: E402
 def _sample_pick(
     *,
     edge: float = 30.0,
-    ev_pct: float = 5.0,
-    gap_pp: float = 7.0,
+    # Defaults must clear the live MLB Hubáček gates in data/pick_strategy.json
+    # (currently gap >= 8.0 pp, EV >= 6.0%, ML within [-200, 200]).
+    ev_pct: float = 8.0,
+    gap_pp: float = 10.0,
     win_probability: float = 72.0,
     event_id: str = "401815712",
 ) -> dict:
@@ -146,7 +148,7 @@ def test_normalize_store_tolerates_corrupt_payload() -> None:
     assert _normalize_store({"bets": [1, {"side": "home"}]})["bets"] == [{"side": "home"}]
 
     # Recording into a missing-bets store must not raise.
-    store = record_from_slate({"version": 1}, {"date_label": "2026-07-12", "recommended_bets": []})
+    store = record_from_slate({"version": 1}, {"date_label": _slate_label(), "recommended_bets": []})
     assert store["bets"] == []
 
 
@@ -192,7 +194,7 @@ def test_bool_units_do_not_invent_roi() -> None:
 def test_record_and_grade() -> None:
     store = {"version": 1, "bets": []}
     slate = {
-        "date_label": "2026-06-11",
+        "date_label": _slate_label(),
         "recommended_bets": [_sample_pick()],
         "games": [],
     }
@@ -283,23 +285,41 @@ def test_stake_units_from_kelly_rejects_bool() -> None:
 
 
 def test_rejects_low_confidence() -> None:
-    """Confidence bar applies in leagues that keep one (MLB's is 0 by backtest)."""
-    low_conf_nhl = {**_sample_pick(win_probability=55), "league": "nhl", "league_name": "NHL"}
+    """Confidence bar applies in leagues that keep one (MLB/NHL are 0 by backtest;
+    sparse-sample internationals keep a 10 pp floor in data/pick_strategy.json)."""
+    low_conf = {
+        **_sample_pick(win_probability=55),
+        "league": "worldcup",
+        "league_name": "FIFA World Cup",
+    }
     store = {"version": 1, "bets": []}
     slate = {
-        "date_label": "2026-06-11",
-        "recommended_bets": [low_conf_nhl],
+        "date_label": _slate_label(),
+        "recommended_bets": [low_conf],
         "games": [],
     }
     store = record_from_slate(store, slate)
     assert store["bets"] == []
 
+    # Same pick above the confidence floor is accepted — the rejection above
+    # is the confidence gate, not some other threshold.
+    confident = {
+        **_sample_pick(win_probability=72),
+        "league": "worldcup",
+        "league_name": "FIFA World Cup",
+    }
+    store = record_from_slate(
+        {"version": 1, "bets": []},
+        {"date_label": _slate_label(), "recommended_bets": [confident], "games": []},
+    )
+    assert len(store["bets"]) == 1
+
 
 def test_rejects_non_positive_ev() -> None:
-    """Negative EV must never enter the book (MLB backtested floor is EV >= 0%)."""
+    """Negative EV must never enter the book (MLB backtested floor is EV >= 6%)."""
     store = {"version": 1, "bets": []}
     slate = {
-        "date_label": "2026-06-11",
+        "date_label": _slate_label(),
         "recommended_bets": [_sample_pick(ev_pct=-0.01)],
         "games": [],
     }
@@ -317,7 +337,7 @@ def test_rejects_non_positive_ev() -> None:
         "market_odds": -110,
     }
     store = record_from_slate({"version": 1, "bets": []}, {
-        "date_label": "2026-06-11",
+        "date_label": _slate_label(),
         "recommended_bets": [nba_zero],
         "games": [],
     })
@@ -327,7 +347,7 @@ def test_rejects_non_positive_ev() -> None:
 def test_accepts_hubacek_pick() -> None:
     store = {"version": 1, "bets": []}
     slate = {
-        "date_label": "2026-06-11",
+        "date_label": _slate_label(),
         "recommended_bets": [_sample_pick()],
         "games": [],
     }
@@ -340,7 +360,7 @@ def test_ignores_game_recommendations_not_in_recommended() -> None:
     """Per-game recommendations must not be tracked unless listed in recommended_bets."""
     store = {"version": 1, "bets": []}
     slate = {
-        "date_label": "2026-06-11",
+        "date_label": _slate_label(),
         "recommended_bets": [],
         "games": [
             {
@@ -365,12 +385,21 @@ def _past_start() -> str:
     return (datetime.now(timezone.utc) - timedelta(hours=4)).strftime("%Y-%m-%dT%H:%MZ")
 
 
+def _slate_label(days_ahead: int = 0) -> str:
+    """Clock-relative slate date_label so fixtures never rot as real time passes.
+
+    Tests that pair a slate label with _future_start()/_past_start() must derive
+    the label from the same clock instead of hardcoding a calendar day.
+    """
+    return (datetime.now(timezone.utc) + timedelta(days=days_ahead)).date().isoformat()
+
+
 def test_new_bet_skipped_when_game_already_started() -> None:
     """A pick first seen post-kickoff was never actionable — do not record it."""
     store = {"version": 1, "bets": []}
     pick = {**_sample_pick(), "start_time": _past_start()}
     store = record_from_slate(
-        store, {"date_label": "2026-07-10", "recommended_bets": [pick], "games": []}
+        store, {"date_label": _slate_label(), "recommended_bets": [pick], "games": []}
     )
     assert store["bets"] == []
 
@@ -379,7 +408,7 @@ def test_new_bet_recorded_pre_start_with_flag() -> None:
     store = {"version": 1, "bets": []}
     pick = {**_sample_pick(), "start_time": _future_start()}
     store = record_from_slate(
-        store, {"date_label": "2026-07-10", "recommended_bets": [pick], "games": []}
+        store, {"date_label": _slate_label(), "recommended_bets": [pick], "games": []}
     )
     assert len(store["bets"]) == 1
     assert store["bets"][0]["recorded_pre_start"] is True
@@ -390,7 +419,7 @@ def test_new_bet_recorded_when_start_time_unparseable() -> None:
     store = {"version": 1, "bets": []}
     pick = {**_sample_pick(), "start_time": "TBD"}
     store = record_from_slate(
-        store, {"date_label": "2026-07-10", "recommended_bets": [pick], "games": []}
+        store, {"date_label": _slate_label(), "recommended_bets": [pick], "games": []}
     )
     assert len(store["bets"]) == 1
 
@@ -400,7 +429,7 @@ def test_pending_bet_closing_freezes_after_start() -> None:
     store = {"version": 1, "bets": []}
     pick = {**_sample_pick(), "start_time": _future_start()}
     store = record_from_slate(
-        store, {"date_label": "2026-07-10", "recommended_bets": [pick], "games": []}
+        store, {"date_label": _slate_label(), "recommended_bets": [pick], "games": []}
     )
     assert len(store["bets"]) == 1
     assert store["bets"][0]["closing_market_odds"] == 141  # seeded at record
@@ -408,13 +437,13 @@ def test_pending_bet_closing_freezes_after_start() -> None:
     # Pre-tip refresh still moves the closing snapshot.
     pre_tip = {**_sample_pick(), "start_time": _future_start(), "market_odds": 130}
     store = record_from_slate(
-        store, {"date_label": "2026-07-10", "recommended_bets": [pre_tip], "games": []}
+        store, {"date_label": _slate_label(), "recommended_bets": [pre_tip], "games": []}
     )
     assert store["bets"][0]["closing_market_odds"] == 130
 
     started = {**_sample_pick(), "start_time": _past_start(), "market_odds": 120}
     store = record_from_slate(
-        store, {"date_label": "2026-07-10", "recommended_bets": [started], "games": []}
+        store, {"date_label": _slate_label(), "recommended_bets": [started], "games": []}
     )
     assert len(store["bets"]) == 1
     bet = store["bets"][0]
@@ -427,13 +456,13 @@ def test_pending_closing_does_not_refresh_when_start_time_unparseable() -> None:
     store = {"version": 1, "bets": []}
     pick = {**_sample_pick(), "start_time": "TBD", "market_odds": -110}
     store = record_from_slate(
-        store, {"date_label": "2026-07-10", "recommended_bets": [pick], "games": []}
+        store, {"date_label": _slate_label(), "recommended_bets": [pick], "games": []}
     )
     assert store["bets"][0]["closing_market_odds"] == -110
 
     moved = {**_sample_pick(), "start_time": "TBD", "market_odds": 150}
     store = record_from_slate(
-        store, {"date_label": "2026-07-10", "recommended_bets": [moved], "games": []}
+        store, {"date_label": _slate_label(), "recommended_bets": [moved], "games": []}
     )
     assert store["bets"][0]["closing_market_odds"] == -110
     assert store["bets"][0]["market_odds"] == -110
@@ -496,21 +525,23 @@ def test_grade_bet_even_zero_moneyline_still_grades() -> None:
 def test_record_dedupes_across_slate_date_labels() -> None:
     """Same event/side across consecutive slate days must not create a second pending row."""
     store = {"version": 1, "bets": []}
+    first_day = _slate_label()
+    next_day = _slate_label(days_ahead=1)
     pick = {**_sample_pick(), "start_time": _future_start()}
     store = record_from_slate(
-        store, {"date_label": "2026-07-10", "recommended_bets": [pick], "games": []}
+        store, {"date_label": first_day, "recommended_bets": [pick], "games": []}
     )
     assert len(store["bets"]) == 1
     first_id = store["bets"][0]["id"]
 
     moved = {**_sample_pick(), "start_time": _future_start(), "market_odds": 155}
     store = record_from_slate(
-        store, {"date_label": "2026-07-11", "recommended_bets": [moved], "games": []}
+        store, {"date_label": next_day, "recommended_bets": [moved], "games": []}
     )
     assert len(store["bets"]) == 1
     bet = store["bets"][0]
     assert bet["id"] == first_id
-    assert bet["date"] == "2026-07-10"  # original slate day preserved
+    assert bet["date"] == first_day  # original slate day preserved
     assert bet["market_odds"] == 141  # frozen at first record
     assert bet["closing_market_odds"] == 155
 
@@ -590,7 +621,7 @@ def test_record_from_slate_does_not_reopen_settled_when_pending_dupe_present() -
     # Bypass normalize so both rows exist in the working list; index must prefer settled.
     store = {"version": 1, "bets": [pending_twin, settled]}
     slate = {
-        "date_label": "2026-07-12",
+        "date_label": _slate_label(),
         "recommended_bets": [
             {
                 "event_id": "401815712",
@@ -627,7 +658,7 @@ def test_closing_snapshot_prefers_consensus_moneyline() -> None:
     """Multi-book consensus beats the single ESPN price for the closing snapshot."""
     store = {"version": 1, "bets": []}
     slate = {
-        "date_label": "2026-06-11",
+        "date_label": _slate_label(),
         "recommended_bets": [{**_sample_pick(), "start_time": _future_start()}],
         "games": [],
     }
@@ -640,7 +671,7 @@ def test_closing_snapshot_prefers_consensus_moneyline() -> None:
     }
     store = record_from_slate(
         store,
-        {"date_label": "2026-06-11", "recommended_bets": [moved], "games": [game]},
+        {"date_label": _slate_label(), "recommended_bets": [moved], "games": [game]},
     )
     bet = store["bets"][0]
     assert bet["closing_market_odds"] == 112  # home-side consensus, not ESPN 120
@@ -650,7 +681,7 @@ def test_closing_snapshot_prefers_consensus_moneyline() -> None:
 def test_closing_snapshot_falls_back_to_espn_without_consensus() -> None:
     store = {"version": 1, "bets": []}
     slate = {
-        "date_label": "2026-06-11",
+        "date_label": _slate_label(),
         "recommended_bets": [{**_sample_pick(), "start_time": _future_start()}],
         "games": [],
     }
@@ -660,7 +691,7 @@ def test_closing_snapshot_falls_back_to_espn_without_consensus() -> None:
     game = {"event_id": "401815712", "market": {"provider": "espn"}}
     store = record_from_slate(
         store,
-        {"date_label": "2026-06-11", "recommended_bets": [moved], "games": [game]},
+        {"date_label": _slate_label(), "recommended_bets": [moved], "games": [game]},
     )
     bet = store["bets"][0]
     assert bet["closing_market_odds"] == 120
@@ -670,8 +701,10 @@ def test_closing_snapshot_falls_back_to_espn_without_consensus() -> None:
 def _spread_pick(
     *,
     edge: float = 30.0,
+    # Defaults must clear the live NBA spread Hubáček gates in
+    # data/pick_strategy.json (currently cover gap >= 12.0 pp, EV >= 2.0%).
     ev_pct: float = 5.0,
-    gap_pp: float = 10.5,
+    gap_pp: float = 14.5,
     win_probability: float = 72.0,
     event_id: str = "401859967",
 ) -> dict:
@@ -1046,7 +1079,7 @@ def test_grade_spread_away_cover() -> None:
 def test_record_spread_bet_fields() -> None:
     store = {"version": 1, "bets": []}
     slate = {
-        "date_label": "2026-06-11",
+        "date_label": _slate_label(),
         "recommended_bets": [_spread_pick()],
         "games": [],
     }
@@ -1213,7 +1246,7 @@ def test_recorded_odds_frozen_and_closing_snapshot_updates() -> None:
     """Re-running the slate must not rewrite recorded odds, only the closing snapshot."""
     store = {"version": 1, "bets": []}
     slate = {
-        "date_label": "2026-06-11",
+        "date_label": _slate_label(),
         "recommended_bets": [{**_sample_pick(), "start_time": _future_start()}],
         "games": [],
     }
@@ -1223,12 +1256,12 @@ def test_recorded_odds_frozen_and_closing_snapshot_updates() -> None:
     moved = {**_sample_pick(), "start_time": _future_start(), "market_odds": 120, "ev_pct": 9.9}
     store = record_from_slate(
         store,
-        {"date_label": "2026-06-11", "recommended_bets": [moved], "games": []},
+        {"date_label": _slate_label(), "recommended_bets": [moved], "games": []},
     )
     bet = store["bets"][0]
     assert len(store["bets"]) == 1
     assert bet["market_odds"] == 141  # frozen at record time
-    assert bet["ev_pct"] == 5.0  # frozen at record time
+    assert bet["ev_pct"] == 8.0  # frozen at record time (the _sample_pick default)
     assert bet["closing_market_odds"] == 120
 
 
@@ -1243,7 +1276,7 @@ def test_pending_closing_snapshot_preserves_prior_when_slate_loses_juice() -> No
         "consensus_spread": -3.5,
         "start_time": _future_start(),
     }
-    slate = {"date_label": "2026-07-10", "recommended_bets": [pick], "games": []}
+    slate = {"date_label": _slate_label(), "recommended_bets": [pick], "games": []}
     store = record_from_slate(store, slate)
     # Re-run with juice present so the pending updater seeds closing_* fields.
     store = record_from_slate(store, slate)
@@ -1257,7 +1290,7 @@ def test_pending_closing_snapshot_preserves_prior_when_slate_loses_juice() -> No
         "consensus_spread": None,
     }
     store = record_from_slate(
-        store, {"date_label": "2026-07-10", "recommended_bets": [wiped], "games": []}
+        store, {"date_label": _slate_label(), "recommended_bets": [wiped], "games": []}
     )
     bet = store["bets"][0]
     assert bet["closing_spread_odds"] == -105
@@ -1314,7 +1347,7 @@ def test_record_from_slate_applies_correlation_penalty_on_multi_pick_day() -> No
     b["start_time"] = future
     store = record_from_slate(
         {"version": 1, "bets": []},
-        {"date_label": "2026-07-12", "recommended_bets": [a, b], "games": []},
+        {"date_label": _slate_label(), "recommended_bets": [a, b], "games": []},
     )
     assert len(store["bets"]) == 2
     assert all(bet["stake_units"] == 0.85 for bet in store["bets"])
@@ -1324,7 +1357,7 @@ def test_record_from_slate_applies_correlation_penalty_on_multi_pick_day() -> No
     solo["start_time"] = future
     solo_store = record_from_slate(
         {"version": 1, "bets": []},
-        {"date_label": "2026-07-12", "recommended_bets": [solo], "games": []},
+        {"date_label": _slate_label(), "recommended_bets": [solo], "games": []},
     )
     assert solo_store["bets"][0]["stake_units"] == 1.0
 
@@ -1342,7 +1375,7 @@ def test_correlation_penalty_ignores_gate_failed_companions() -> None:
     failed["start_time"] = future
     store = record_from_slate(
         {"version": 1, "bets": []},
-        {"date_label": "2026-07-12", "recommended_bets": [good, failed], "games": []},
+        {"date_label": _slate_label(), "recommended_bets": [good, failed], "games": []},
     )
     assert len(store["bets"]) == 1
     assert store["bets"][0]["stake_units"] == 1.0
@@ -1361,7 +1394,7 @@ def test_correlation_penalty_ignores_post_tip_companions() -> None:
     store = record_from_slate(
         {"version": 1, "bets": []},
         {
-            "date_label": "2026-07-12",
+            "date_label": _slate_label(),
             "recommended_bets": [live, started],
             "games": [],
         },
@@ -1376,13 +1409,13 @@ def test_pending_closing_rejects_garbage_american_overwrite() -> None:
     store = {"version": 1, "bets": []}
     pick = {**_sample_pick(), "start_time": _future_start(), "market_odds": -120}
     store = record_from_slate(
-        store, {"date_label": "2026-07-10", "recommended_bets": [pick], "games": []}
+        store, {"date_label": _slate_label(), "recommended_bets": [pick], "games": []}
     )
     assert store["bets"][0]["closing_market_odds"] == -120
 
     garbage = {**_sample_pick(), "start_time": _future_start(), "market_odds": 50}
     store = record_from_slate(
-        store, {"date_label": "2026-07-10", "recommended_bets": [garbage], "games": []}
+        store, {"date_label": _slate_label(), "recommended_bets": [garbage], "games": []}
     )
     assert store["bets"][0]["closing_market_odds"] == -120
     assert store["bets"][0]["market_odds"] == -120
@@ -1393,7 +1426,7 @@ def test_record_from_slate_skips_invalid_american_odds() -> None:
     store = record_from_slate(
         {"version": 1, "bets": []},
         {
-            "date_label": "2026-07-12",
+            "date_label": _slate_label(),
             "recommended_bets": [
                 {**_sample_pick(), "start_time": _future_start(), "market_odds": 50}
             ],
@@ -1416,7 +1449,7 @@ def test_record_from_slate_skips_invalid_american_odds() -> None:
     }
     store = record_from_slate(
         {"version": 1, "bets": []},
-        {"date_label": "2026-07-12", "recommended_bets": [spread], "games": []},
+        {"date_label": _slate_label(), "recommended_bets": [spread], "games": []},
     )
     assert store["bets"] == []
 
@@ -1427,14 +1460,14 @@ def test_pending_refresh_updates_start_time_when_postponed() -> None:
     early = _future_start()
     pick = {**_sample_pick(), "start_time": early}
     store = record_from_slate(
-        store, {"date_label": "2026-07-10", "recommended_bets": [pick], "games": []}
+        store, {"date_label": _slate_label(), "recommended_bets": [pick], "games": []}
     )
     later = (
         datetime.now(timezone.utc) + timedelta(hours=30)
     ).strftime("%Y-%m-%dT%H:%M:%SZ")
     moved = {**_sample_pick(), "start_time": later, "market_odds": 130}
     store = record_from_slate(
-        store, {"date_label": "2026-07-10", "recommended_bets": [moved], "games": []}
+        store, {"date_label": _slate_label(), "recommended_bets": [moved], "games": []}
     )
     assert store["bets"][0]["start_time"] == later
     assert store["bets"][0]["closing_market_odds"] == 130
