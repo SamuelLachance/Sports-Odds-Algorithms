@@ -115,11 +115,11 @@
     2025
   ],
   "snapshot_season": 2025,
-  "oos_model_logloss": 0.66613,
-  "oos_model_brier": 0.23685,
-  "oos_model_acc": 0.5963,
+  "oos_model_logloss": 0.663,
+  "oos_model_brier": 0.23526,
+  "oos_model_acc": 0.5977,
   "oos_with_odds": 14782,
-  "oos_model_logloss_odds_subset": 0.66344,
+  "oos_model_logloss_odds_subset": 0.66039,
   "oos_market_aware_logloss_odds_subset": 0.66765,
   "oos_market_logloss": 0.66036,
   "per_season": [
@@ -366,8 +366,8 @@
   },
   "hybrid": true,
   "hybrid_backend": "catboost",
-  "hybrid_market_blend_w": 0.6,
+  "hybrid_market_blend_w": 0.8,
   "baseline_xgb_logloss": 0.66613,
-  "gap_vs_market": 0.00308,
-  "hybrid_shipped_at": "2026-07-14T08:57:43.698983+00:00"
+  "gap_vs_market": 3e-05,
+  "hybrid_shipped_at": "2026-07-14T23:47:02.307583+00:00"
 }

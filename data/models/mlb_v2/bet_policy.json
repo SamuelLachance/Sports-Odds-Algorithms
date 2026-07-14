@@ -1,48 +1,16 @@
 {
-  "stake_mode": "kelly",
-  "kelly_fraction": 0.25,
-  "enabled": true,
-  "enabled_note": "positive worst-season ROI (Hub\u00e1\u010dek decorrelated search)",
-  "source": "hubacek_binary_search",
-  "hubacek_decorrelated": true,
-  "bet_type": "moneyline",
-  "exec_price": "close",
-  "source_oos": "hybrid",
-  "prob_col": "model_raw",
-  "decor_w": 0.12,
-  "min_edge_pp": 8.0,
-  "min_ev_pct": 6.0,
-  "ml_lo": -200,
-  "ml_hi": 200,
-  "sides": "home",
-  "season_window": "all",
-  "hubacek": true,
-  "backtest": {
-    "bets": 321,
-    "staked_units": 959.6,
-    "profit_units": 39.7,
-    "roi_pct": 4.13,
-    "win_rate": 0.5607,
-    "seasons_positive": 3,
-    "seasons_total": 3,
-    "worst_season_roi": 3.64,
-    "median_season_roi": 3.89
+  "source": "hybrid_upgrade_ml_search",
+  "policy": {
+    "league": "mlb",
+    "enabled": true,
+    "min_market_gap_pp": 10.0,
+    "side": "dog",
+    "bets": 6283,
+    "roi_pct": 46.8,
+    "worst_season_roi_pct": 33.82,
+    "seasons_positive": 8,
+    "seasons_total": 8,
+    "win_rate": 0.5754
   },
-  "backtest_per_season": {
-    "2018": {
-      "bets": 200,
-      "roi_pct": 3.64,
-      "profit_units": 21.8
-    },
-    "2019": {
-      "bets": 120,
-      "roi_pct": 3.89,
-      "profit_units": 13.9
-    },
-    "2022": {
-      "bets": 1,
-      "roi_pct": 150.0,
-      "profit_units": 4.0
-    }
-  }
+  "created_from": "scripts/upgrade_hybrid_bet_strategy.py"
 }

@@ -165,7 +165,11 @@ def predict_ensemble(xgb: XGBClassifier, lr, frame: pd.DataFrame, cols: list[str
 def walk_forward(frame: pd.DataFrame, end_season: int) -> pd.DataFrame:
     frame = attach_market_features(frame)
     frame["period"] = _period_key(frame)
-    pure_cols = list(FEATURE_COLUMNS)
+    # FEATURE_COLUMNS gained market columns when the engine learned steam —
+    # strip them from the pure (market-free) head and re-append per head so
+    # no frame carries duplicate column names (XGBoost hard-errors on those).
+    _mkt_features = set(CLF_MARKET_FEATURES) | set(MARGIN_MARKET_FEATURES)
+    pure_cols = [c for c in FEATURE_COLUMNS if c not in _mkt_features]
     mkt_cols = pure_cols + list(CLF_MARKET_FEATURES)
     margin_cols = pure_cols + list(MARGIN_MARKET_FEATURES)
     n_odds = (
@@ -313,7 +317,11 @@ def _logistic_to_json(lr_pipeline) -> dict:
 def train_final_artifacts(frame: pd.DataFrame, oos: pd.DataFrame, end_season: int) -> dict:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     frame = attach_market_features(frame)
-    pure_cols = list(FEATURE_COLUMNS)
+    # FEATURE_COLUMNS gained market columns when the engine learned steam —
+    # strip them from the pure (market-free) head and re-append per head so
+    # no frame carries duplicate column names (XGBoost hard-errors on those).
+    _mkt_features = set(CLF_MARKET_FEATURES) | set(MARGIN_MARKET_FEATURES)
+    pure_cols = [c for c in FEATURE_COLUMNS if c not in _mkt_features]
     mkt_cols = pure_cols + list(CLF_MARKET_FEATURES)
     margin_cols = pure_cols + list(MARGIN_MARKET_FEATURES)
     n_odds = (

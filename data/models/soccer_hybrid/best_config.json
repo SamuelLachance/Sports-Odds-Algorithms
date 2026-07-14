@@ -1,30 +1,30 @@
 {
-  "oos_model_logloss": 0.97253,
-  "oos_model_acc": 0.5339,
+  "oos_model_logloss": 0.97235,
+  "oos_model_acc": 0.5341,
   "n": 36197,
   "baseline_ll": 0.97253,
-  "delta_vs_baseline": 0.0,
+  "delta_vs_baseline": 0.00018,
   "beat_baseline": false,
   "multiclass": true,
   "config": {
-    "name": "cb_full_w60",
+    "name": "cb_full_w70",
     "backend": "catboost",
     "depth": 7,
     "learning_rate": 0.04,
     "iterations": 450,
-    "l2": 5.0,
+    "l2": 4.0,
     "min_data": 40,
     "subsample": 0.9,
     "use_curves": true,
     "use_categoricals": true,
     "use_market": true,
-    "market_blend_w": 0.6,
+    "market_blend_w": 0.7,
     "feature_mode": "full",
     "early_stopping": 35,
     "seed": 42,
     "target_mode": "prob"
   },
   "league": "soccer",
-  "elapsed_s": 194.6,
-  "created_at": "2026-07-14T08:42:11.740864+00:00"
+  "elapsed_s": 172.9,
+  "created_at": "2026-07-14T23:12:29.736149+00:00"
 }

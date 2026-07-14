@@ -1,17 +1,17 @@
 {
-  "oos_model_logloss": 0.67341,
-  "oos_model_brier": 0.24029,
-  "oos_model_acc": 0.5823,
+  "oos_model_logloss": 0.67082,
+  "oos_model_brier": 0.23909,
+  "oos_model_acc": 0.5835,
   "n": 17402,
-  "baseline_ll": 0.67336,
-  "delta_vs_baseline": -5e-05,
-  "beat_baseline": false,
+  "baseline_ll": 0.67341,
+  "delta_vs_baseline": 0.00259,
+  "beat_baseline": true,
   "multiclass": false,
   "oos_market_logloss": 0.67059,
-  "oos_model_logloss_odds_subset": 0.67295,
-  "gap_vs_market": 0.00236,
+  "oos_model_logloss_odds_subset": 0.67061,
+  "gap_vs_market": 2e-05,
   "config": {
-    "name": "cb_full_w60",
+    "name": "cb_full_lstack",
     "backend": "catboost",
     "depth": 7,
     "learning_rate": 0.04,
@@ -22,13 +22,13 @@
     "use_curves": true,
     "use_categoricals": true,
     "use_market": true,
-    "market_blend_w": 0.6,
+    "market_blend_w": 0.0,
     "feature_mode": "full",
     "early_stopping": 35,
     "seed": 42,
-    "target_mode": "prob"
+    "target_mode": "logit_stack"
   },
   "league": "mlb",
-  "elapsed_s": 143.4,
-  "created_at": "2026-07-14T08:48:18.735820+00:00"
+  "elapsed_s": 102.7,
+  "created_at": "2026-07-14T22:38:22.894085+00:00"
 }

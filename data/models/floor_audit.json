@@ -1,6 +1,85 @@
 {
- "created_at": "2026-07-14T21:48:06.006193+00:00",
+ "created_at": "2026-07-14T23:58:27.722713+00:00",
  "results": [
+  {
+   "league": "nba",
+   "oos_file": "oos_cb_core_lstack.csv",
+   "config": "cb_core_lstack",
+   "n": 13661,
+   "home_win_rate": 0.5688,
+   "model_logloss": 0.60485,
+   "model_brier": 0.20871,
+   "model_ece": 0.00754,
+   "reliability": [
+    {
+     "n": 1367,
+     "mean_pred": 0.229,
+     "obs_rate": 0.2275
+    },
+    {
+     "n": 1366,
+     "mean_pred": 0.342,
+     "obs_rate": 0.3631
+    },
+    {
+     "n": 1366,
+     "mean_pred": 0.4195,
+     "obs_rate": 0.4048
+    },
+    {
+     "n": 1366,
+     "mean_pred": 0.49,
+     "obs_rate": 0.4919
+    },
+    {
+     "n": 1366,
+     "mean_pred": 0.5561,
+     "obs_rate": 0.5505
+    },
+    {
+     "n": 1366,
+     "mean_pred": 0.6118,
+     "obs_rate": 0.6171
+    },
+    {
+     "n": 1366,
+     "mean_pred": 0.6654,
+     "obs_rate": 0.672
+    },
+    {
+     "n": 1366,
+     "mean_pred": 0.7199,
+     "obs_rate": 0.724
+    },
+    {
+     "n": 1366,
+     "mean_pred": 0.7828,
+     "obs_rate": 0.7767
+    },
+    {
+     "n": 1366,
+     "mean_pred": 0.8693,
+     "obs_rate": 0.8609
+    }
+   ],
+   "market_source": "market_home_prob",
+   "n_with_odds": 10587,
+   "model_logloss_odds_subset": 0.60359,
+   "market_logloss": 0.60341,
+   "market_brier": 0.20821,
+   "market_ece": 0.00904,
+   "floor_entropy": 0.59962,
+   "floor_entropy_cal": 0.60064,
+   "gap_model_vs_market": 0.00018,
+   "gap_model_vs_floor": 0.00295,
+   "gap_market_vs_floor": 0.00277,
+   "bootstrap_model_minus_market": {
+    "mean": 0.000181697386740537,
+    "ci_lo": -1.4032468213872068e-05,
+    "ci_hi": 0.0003703862531662925,
+    "p_worse_than_ref": 0.9645
+   }
+  },
   {
    "league": "wnba",
    "oos_file": "oos_cb_full_lstack.csv",
@@ -81,82 +160,478 @@
    }
   },
   {
-   "league": "nba",
+   "league": "nfl",
    "oos_file": "oos_cb_core_lstack.csv",
    "config": "cb_core_lstack",
-   "n": 13661,
-   "home_win_rate": 0.5688,
-   "model_logloss": 0.60485,
-   "model_brier": 0.20871,
-   "model_ece": 0.00754,
+   "n": 4350,
+   "home_win_rate": 0.5572,
+   "model_logloss": 0.60977,
+   "model_brier": 0.21116,
+   "model_ece": 0.0135,
    "reliability": [
     {
-     "n": 1367,
-     "mean_pred": 0.229,
-     "obs_rate": 0.2275
+     "n": 435,
+     "mean_pred": 0.2463,
+     "obs_rate": 0.2299
     },
     {
-     "n": 1366,
-     "mean_pred": 0.342,
-     "obs_rate": 0.3631
+     "n": 435,
+     "mean_pred": 0.3526,
+     "obs_rate": 0.3402
     },
     {
-     "n": 1366,
-     "mean_pred": 0.4195,
-     "obs_rate": 0.4048
+     "n": 435,
+     "mean_pred": 0.4215,
+     "obs_rate": 0.4092
     },
     {
-     "n": 1366,
-     "mean_pred": 0.49,
-     "obs_rate": 0.4919
+     "n": 435,
+     "mean_pred": 0.4911,
+     "obs_rate": 0.4805
     },
     {
-     "n": 1366,
-     "mean_pred": 0.5561,
-     "obs_rate": 0.5505
+     "n": 435,
+     "mean_pred": 0.5568,
+     "obs_rate": 0.5471
     },
     {
-     "n": 1366,
-     "mean_pred": 0.6118,
-     "obs_rate": 0.6171
+     "n": 435,
+     "mean_pred": 0.6056,
+     "obs_rate": 0.5793
     },
     {
-     "n": 1366,
-     "mean_pred": 0.6654,
-     "obs_rate": 0.672
+     "n": 435,
+     "mean_pred": 0.6525,
+     "obs_rate": 0.6506
     },
     {
-     "n": 1366,
-     "mean_pred": 0.7199,
-     "obs_rate": 0.724
+     "n": 435,
+     "mean_pred": 0.7047,
+     "obs_rate": 0.6989
     },
     {
-     "n": 1366,
-     "mean_pred": 0.7828,
-     "obs_rate": 0.7767
+     "n": 435,
+     "mean_pred": 0.7593,
+     "obs_rate": 0.7724
     },
     {
-     "n": 1366,
-     "mean_pred": 0.8693,
-     "obs_rate": 0.8609
+     "n": 435,
+     "mean_pred": 0.838,
+     "obs_rate": 0.8644
     }
    ],
    "market_source": "market_home_prob",
-   "n_with_odds": 10587,
-   "model_logloss_odds_subset": 0.60359,
-   "market_logloss": 0.60341,
-   "market_brier": 0.20821,
-   "market_ece": 0.00904,
-   "floor_entropy": 0.59962,
-   "floor_entropy_cal": 0.60064,
-   "gap_model_vs_market": 0.00018,
-   "gap_model_vs_floor": 0.00295,
-   "gap_market_vs_floor": 0.00277,
+   "n_with_odds": 4349,
+   "model_logloss_odds_subset": 0.60985,
+   "market_logloss": 0.60964,
+   "market_brier": 0.2111,
+   "market_ece": 0.01681,
+   "floor_entropy": 0.6157,
+   "floor_entropy_cal": 0.6038,
+   "gap_model_vs_market": 0.00021,
+   "gap_model_vs_floor": 0.00605,
+   "gap_market_vs_floor": 0.00584,
    "bootstrap_model_minus_market": {
-    "mean": 0.000181697386740537,
-    "ci_lo": -1.4032468213872068e-05,
-    "ci_hi": 0.0003703862531662925,
-    "p_worse_than_ref": 0.9645
+    "mean": 0.0002082152688617645,
+    "ci_lo": -0.00031548795981223694,
+    "ci_hi": 0.0007779343378561703,
+    "p_worse_than_ref": 0.772
+   }
+  },
+  {
+   "league": "cfb",
+   "oos_file": "oos_cb_full_lstack.csv",
+   "config": "cb_full_lstack",
+   "n": 2889,
+   "home_win_rate": 0.6348,
+   "model_logloss": 0.47279,
+   "model_brier": 0.15759,
+   "model_ece": 0.01922,
+   "reliability": [
+    {
+     "n": 289,
+     "mean_pred": 0.1541,
+     "obs_rate": 0.1453
+    },
+    {
+     "n": 289,
+     "mean_pred": 0.2985,
+     "obs_rate": 0.3218
+    },
+    {
+     "n": 289,
+     "mean_pred": 0.4145,
+     "obs_rate": 0.4118
+    },
+    {
+     "n": 289,
+     "mean_pred": 0.5175,
+     "obs_rate": 0.526
+    },
+    {
+     "n": 289,
+     "mean_pred": 0.6005,
+     "obs_rate": 0.5986
+    },
+    {
+     "n": 289,
+     "mean_pred": 0.6891,
+     "obs_rate": 0.7232
+    },
+    {
+     "n": 289,
+     "mean_pred": 0.77,
+     "obs_rate": 0.7612
+    },
+    {
+     "n": 289,
+     "mean_pred": 0.8553,
+     "obs_rate": 0.917
+    },
+    {
+     "n": 289,
+     "mean_pred": 0.9232,
+     "obs_rate": 0.9481
+    },
+    {
+     "n": 288,
+     "mean_pred": 0.9789,
+     "obs_rate": 0.9965
+    }
+   ],
+   "market_source": "market_home_prob",
+   "n_with_odds": 2604,
+   "model_logloss_odds_subset": 0.50265,
+   "market_logloss": 0.50282,
+   "market_brier": 0.16833,
+   "market_ece": 0.02081,
+   "floor_entropy": 0.52791,
+   "floor_entropy_cal": 0.493,
+   "gap_model_vs_market": -0.00017,
+   "gap_model_vs_floor": 0.00965,
+   "gap_market_vs_floor": 0.00982,
+   "bootstrap_model_minus_market": {
+    "mean": -0.00017546232681642574,
+    "ci_lo": -0.0010087058405161792,
+    "ci_hi": 0.0006706933021328977,
+    "p_worse_than_ref": 0.3365
+   }
+  },
+  {
+   "league": "cbb",
+   "oos_file": "oos_cb_full_lstack.csv",
+   "config": "cb_full_lstack",
+   "n": 18556,
+   "home_win_rate": 0.6233,
+   "model_logloss": 0.53838,
+   "model_brier": 0.18147,
+   "model_ece": 0.01784,
+   "reliability": [
+    {
+     "n": 1856,
+     "mean_pred": 0.2034,
+     "obs_rate": 0.1821
+    },
+    {
+     "n": 1856,
+     "mean_pred": 0.3629,
+     "obs_rate": 0.3648
+    },
+    {
+     "n": 1856,
+     "mean_pred": 0.455,
+     "obs_rate": 0.4434
+    },
+    {
+     "n": 1856,
+     "mean_pred": 0.5467,
+     "obs_rate": 0.562
+    },
+    {
+     "n": 1856,
+     "mean_pred": 0.6049,
+     "obs_rate": 0.6185
+    },
+    {
+     "n": 1856,
+     "mean_pred": 0.6576,
+     "obs_rate": 0.6697
+    },
+    {
+     "n": 1855,
+     "mean_pred": 0.7205,
+     "obs_rate": 0.7396
+    },
+    {
+     "n": 1855,
+     "mean_pred": 0.7872,
+     "obs_rate": 0.8248
+    },
+    {
+     "n": 1855,
+     "mean_pred": 0.8562,
+     "obs_rate": 0.8765
+    },
+    {
+     "n": 1855,
+     "mean_pred": 0.9263,
+     "obs_rate": 0.952
+    }
+   ],
+   "market_source": "market_home_prob",
+   "n_with_odds": 18556,
+   "model_logloss_odds_subset": 0.53838,
+   "market_logloss": 0.53858,
+   "market_brier": 0.18155,
+   "market_ece": 0.01959,
+   "floor_entropy": 0.56427,
+   "floor_entropy_cal": 0.53396,
+   "gap_model_vs_market": -0.0002,
+   "gap_model_vs_floor": 0.00442,
+   "gap_market_vs_floor": 0.00462,
+   "bootstrap_model_minus_market": {
+    "mean": -0.0001983914093694388,
+    "ci_lo": -0.0005891263882723453,
+    "ci_hi": 0.00017998169380019667,
+    "p_worse_than_ref": 0.1655
+   }
+  },
+  {
+   "league": "nhl",
+   "oos_file": "oos_cb_full_lstack.csv",
+   "config": "cb_full_lstack",
+   "n": 9904,
+   "home_win_rate": 0.5347,
+   "model_logloss": 0.663,
+   "model_brier": 0.23526,
+   "model_ece": 0.0099,
+   "reliability": [
+    {
+     "n": 991,
+     "mean_pred": 0.3356,
+     "obs_rate": 0.335
+    },
+    {
+     "n": 991,
+     "mean_pred": 0.4133,
+     "obs_rate": 0.4097
+    },
+    {
+     "n": 991,
+     "mean_pred": 0.4547,
+     "obs_rate": 0.4511
+    },
+    {
+     "n": 991,
+     "mean_pred": 0.4917,
+     "obs_rate": 0.4844
+    },
+    {
+     "n": 990,
+     "mean_pred": 0.5278,
+     "obs_rate": 0.5293
+    },
+    {
+     "n": 990,
+     "mean_pred": 0.5575,
+     "obs_rate": 0.5677
+    },
+    {
+     "n": 990,
+     "mean_pred": 0.5871,
+     "obs_rate": 0.5535
+    },
+    {
+     "n": 990,
+     "mean_pred": 0.6171,
+     "obs_rate": 0.601
+    },
+    {
+     "n": 990,
+     "mean_pred": 0.6574,
+     "obs_rate": 0.6596
+    },
+    {
+     "n": 990,
+     "mean_pred": 0.7362,
+     "obs_rate": 0.7566
+    }
+   ],
+   "market_source": "market_home_prob",
+   "n_with_odds": 8863,
+   "model_logloss_odds_subset": 0.66039,
+   "market_logloss": 0.66036,
+   "market_brier": 0.23412,
+   "market_ece": 0.01248,
+   "floor_entropy": 0.66053,
+   "floor_entropy_cal": 0.65766,
+   "gap_model_vs_market": 3e-05,
+   "gap_model_vs_floor": 0.00273,
+   "gap_market_vs_floor": 0.0027,
+   "bootstrap_model_minus_market": {
+    "mean": 3.414994663041335e-05,
+    "ci_lo": -0.00019542293899279452,
+    "ci_hi": 0.00026370810923980424,
+    "p_worse_than_ref": 0.6345
+   }
+  },
+  {
+   "league": "mlb",
+   "oos_file": "oos_cb_full_lstack.csv",
+   "config": "cb_full_lstack",
+   "n": 17402,
+   "home_win_rate": 0.5326,
+   "model_logloss": 0.67082,
+   "model_brier": 0.23909,
+   "model_ece": 0.01351,
+   "reliability": [
+    {
+     "n": 1741,
+     "mean_pred": 0.3567,
+     "obs_rate": 0.3653
+    },
+    {
+     "n": 1741,
+     "mean_pred": 0.4211,
+     "obs_rate": 0.4291
+    },
+    {
+     "n": 1740,
+     "mean_pred": 0.4612,
+     "obs_rate": 0.4379
+    },
+    {
+     "n": 1740,
+     "mean_pred": 0.4937,
+     "obs_rate": 0.5132
+    },
+    {
+     "n": 1740,
+     "mean_pred": 0.5225,
+     "obs_rate": 0.5241
+    },
+    {
+     "n": 1740,
+     "mean_pred": 0.5495,
+     "obs_rate": 0.5546
+    },
+    {
+     "n": 1740,
+     "mean_pred": 0.5759,
+     "obs_rate": 0.573
+    },
+    {
+     "n": 1740,
+     "mean_pred": 0.6044,
+     "obs_rate": 0.5724
+    },
+    {
+     "n": 1740,
+     "mean_pred": 0.6378,
+     "obs_rate": 0.631
+    },
+    {
+     "n": 1740,
+     "mean_pred": 0.6985,
+     "obs_rate": 0.7259
+    }
+   ],
+   "market_source": "market_home_prob",
+   "n_with_odds": 17288,
+   "model_logloss_odds_subset": 0.67061,
+   "market_logloss": 0.67059,
+   "market_brier": 0.23897,
+   "market_ece": 0.01361,
+   "floor_entropy": 0.67075,
+   "floor_entropy_cal": 0.66911,
+   "gap_model_vs_market": 2e-05,
+   "gap_model_vs_floor": 0.0015,
+   "gap_market_vs_floor": 0.00148,
+   "bootstrap_model_minus_market": {
+    "mean": 2.4237620135145473e-05,
+    "ci_lo": -4.4714063169202093e-05,
+    "ci_hi": 9.695299398168661e-05,
+    "p_worse_than_ref": 0.7435
+   }
+  },
+  {
+   "league": "soccer",
+   "oos_file": "oos_cb_full_w70.csv",
+   "config": "cb_full_w70",
+   "n": 36197,
+   "home_win_rate": 0.4514,
+   "model_logloss": 0.61394,
+   "model_brier": 0.21305,
+   "model_ece": 0.00594,
+   "reliability": [
+    {
+     "n": 3620,
+     "mean_pred": 0.1467,
+     "obs_rate": 0.1514
+    },
+    {
+     "n": 3620,
+     "mean_pred": 0.2508,
+     "obs_rate": 0.237
+    },
+    {
+     "n": 3620,
+     "mean_pred": 0.3123,
+     "obs_rate": 0.3116
+    },
+    {
+     "n": 3620,
+     "mean_pred": 0.3916,
+     "obs_rate": 0.3892
+    },
+    {
+     "n": 3620,
+     "mean_pred": 0.4263,
+     "obs_rate": 0.4185
+    },
+    {
+     "n": 3620,
+     "mean_pred": 0.4737,
+     "obs_rate": 0.4754
+    },
+    {
+     "n": 3620,
+     "mean_pred": 0.5076,
+     "obs_rate": 0.5047
+    },
+    {
+     "n": 3619,
+     "mean_pred": 0.5774,
+     "obs_rate": 0.5739
+    },
+    {
+     "n": 3619,
+     "mean_pred": 0.663,
+     "obs_rate": 0.6626
+    },
+    {
+     "n": 3619,
+     "mean_pred": 0.8119,
+     "obs_rate": 0.7903
+    }
+   ],
+   "model_logloss_3way": 0.97235,
+   "market_source": "market_home_prob",
+   "n_with_odds": 36197,
+   "model_logloss_odds_subset": 0.61394,
+   "market_logloss": 0.61299,
+   "market_brier": 0.21278,
+   "market_ece": 0.00929,
+   "floor_entropy": 0.61794,
+   "floor_entropy_cal": 0.6113,
+   "gap_model_vs_market": 0.00095,
+   "gap_model_vs_floor": 0.00264,
+   "gap_market_vs_floor": 0.00169,
+   "bootstrap_model_minus_market": {
+    "mean": 0.0009544976207719459,
+    "ci_lo": 0.00027909734780716926,
+    "ci_hi": 0.0016342902852352216,
+    "p_worse_than_ref": 0.9985
    }
   }
  ]

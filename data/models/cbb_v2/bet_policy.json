@@ -1,54 +1,6 @@
 {
- "stake_mode": "kelly",
- "kelly_fraction": 0.25,
- "enabled": false,
- "enabled_note": "positive worst-season ROI (Hub\u00e1\u010dek decorrelated search on expanded hybrid)",
- "source": "hubacek_binary_search",
- "hubacek_decorrelated": true,
- "bet_type": "moneyline",
- "exec_price": "close",
- "source_oos": "hybrid",
- "prob_col": "model_raw",
- "decor_w": 0.12,
- "min_edge_pp": 2.0,
- "min_ev_pct": 0.0,
- "ml_lo": -110,
- "ml_hi": 110,
- "sides": "away",
- "season_window": "all",
- "hubacek": true,
- "backtest": {
-  "bets": 419,
-  "staked_units": 1049.9,
-  "profit_units": 467.3,
-  "roi_pct": 44.51,
-  "win_rate": 0.7017,
-  "seasons_positive": 4,
-  "seasons_total": 4,
-  "worst_season_roi": 1.65,
-  "median_season_roi": 64.37
- },
- "backtest_per_season": {
-  "2022": {
-   "bets": 114,
-   "roi_pct": 66.03,
-   "profit_units": 208.0
-  },
-  "2023": {
-   "bets": 123,
-   "roi_pct": 62.7,
-   "profit_units": 207.2
-  },
-  "2024": {
-   "bets": 141,
-   "roi_pct": 1.65,
-   "profit_units": 5.6
-  },
-  "2025": {
-   "bets": 41,
-   "roi_pct": 73.95,
-   "profit_units": 46.4
-  }
- },
- "note": "Disabled pending leak-free re-validation (Torvik lookahead leak fixed 2026-07-14)."
+  "enabled": false,
+  "reason": "Official CBB picks remain disabled until a positive worst-season walk-forward backtest on historical closing odds is available.",
+  "gate_pass_vs_ensemble_ll": false,
+  "oos_model_logloss": 0.56284
 }
