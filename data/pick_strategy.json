@@ -1,269 +1,269 @@
 {
-  "policy": "Official picks use Hub\u00e1\u010dek gates from walk-forward hybrid OOS bet backtests. Enable bar: positive worst-season ROI at the execution price we would actually take.",
-  "generated_at": "2026-07-14",
-  "default": {
-    "min_edge": 0,
-    "min_ev_pct": 2.0,
-    "min_spread_point_edge": 0.0,
-    "enabled": true
-  },
-  "baseball": {
-    "bet_type": "moneyline",
-    "min_win_confidence_pp": 10.0,
-    "enabled": true
-  },
-  "mlb": {
-    "bet_type": "moneyline",
-    "min_market_gap_pp": 8.0,
-    "min_win_confidence_pp": 0.0,
-    "min_ev_pct": 6.0,
-    "ml_lo": -200,
-    "ml_hi": 200,
-    "enabled": true,
-    "note": "Hybrid OOS Hub\u00e1\u010dek refresh 2026-07-14: gap>=8.0pp EV>=6.0% ML[-200,200] open ROI 4.13% worst 3.64% n=321. Close ROI None% (morning prices sit between open and close). ENABLED.",
-    "backtest_roi_pct": 4.13,
-    "backtest_bets": 321,
-    "backtest_close_roi_pct": 0.12,
-    "fav_mode": "any"
-  },
-  "nba": {
-    "bet_type": "spread",
-    "min_spread_cover_gap_pp": 12.0,
-    "min_spread_confidence_pp": 5.0,
-    "min_spread_point_edge": 0.0,
-    "min_ev_pct": 2.0,
-    "enabled": true,
-    "note": "Hybrid OOS Hub\u00e1\u010dek refresh 2026-07-14: cover gap>=12.0pp point_edge>=0.0 exec=open ROI 19.62% worst 8.42% n=226. ENABLED.",
-    "backtest_roi_pct": 19.62,
-    "backtest_bets": 226
-  },
-  "wnba": {
-    "bet_type": "spread",
-    "min_spread_cover_gap_pp": 10.0,
-    "min_spread_confidence_pp": 5.0,
-    "min_spread_point_edge": 0.0,
-    "min_ev_pct": 0.0,
-    "enabled": true,
-    "note": "Hybrid OOS Hub\u00e1\u010dek refresh 2026-07-14: cover gap>=10.0pp point_edge>=0.0 exec=close ROI 2.06% worst 0.24% n=252. ENABLED.",
-    "backtest_roi_pct": 2.06,
-    "backtest_bets": 252,
-    "min_market_gap_pp": 1.5,
-    "ml_lo": -350,
-    "ml_hi": 300,
-    "min_win_confidence_pp": 0.0
-  },
-  "cbb": {
-    "bet_type": "moneyline",
-    "min_market_gap_pp": 2.0,
-    "min_win_confidence_pp": 0.0,
-    "min_ev_pct": 0.0,
-    "ml_lo": -110,
-    "ml_hi": 110,
-    "fav_mode": "any",
-    "enabled": true,
-    "note": "Hybrid OOS Hub\u00e1\u010dek refresh 2026-07-14: gap>=2.0pp EV>=0.0% ML[-110,110] sides=away exec=close ROI 44.51% worst 1.65% n=419. ENABLED.",
-    "backtest_roi_pct": 44.51,
-    "backtest_bets": 419,
-    "allowed_sides": [
-      "away"
-    ]
-  },
-  "nfl": {
-    "bet_type": "moneyline",
-    "min_market_gap_pp": 3.0,
-    "min_win_confidence_pp": 0.0,
-    "min_ev_pct": 2.0,
-    "ml_lo": -250,
-    "ml_hi": 250,
-    "fav_mode": "favorite",
-    "enabled": true,
-    "note": "Hybrid OOS Hub\u00e1\u010dek refresh 2026-07-14: gap>=3.0pp EV>=2.0% ML[-250,250] sides=favorite exec=close ROI 5.8% worst 0.77% n=100. ENABLED.",
-    "backtest_roi_pct": 5.8,
-    "backtest_bets": 100
-  },
-  "cfb": {
-    "bet_type": "moneyline",
-    "enabled": true,
-    "min_market_gap_pp": 10.0,
-    "min_ev_pct": 6.0,
-    "ml_lo": -250,
-    "ml_hi": 250,
-    "min_win_confidence_pp": 0.0,
-    "fav_mode": "big_dog",
-    "backtest_roi_pct": 6.84,
-    "backtest_bets": 214,
-    "note": "Hybrid OOS Hub\u00e1\u010dek refresh 2026-07-14: gap>=10.0pp EV>=6.0% ML[-250,250] sides=big_dog exec=close ROI 6.84% worst 2.87% n=214. ENABLED."
-  },
-  "nhl": {
-    "bet_type": "moneyline",
-    "min_market_gap_pp": 4.0,
-    "min_win_confidence_pp": 0.0,
-    "min_ev_pct": 5.0,
-    "ml_lo": -250,
-    "ml_hi": 250,
-    "fav_mode": "any",
-    "enabled": true,
-    "note": "Hybrid OOS Hub\u00e1\u010dek refresh 2026-07-14: gap>=4.0pp EV>=5.0% ML[-250,250] open ROI 27.5% worst 26.41% n=179. Close ROI None% (morning prices sit between open and close). ENABLED.",
-    "backtest_roi_pct": 27.5,
-    "backtest_bets": 179,
-    "backtest_close_roi_pct": -1.93
-  },
-  "epl": {
-    "bet_type": "soccer_1x2",
-    "min_market_gap_pp": 6.0,
-    "min_win_confidence_pp": 0.0,
-    "min_ev_pct": 6.0,
-    "allowed_sides": [
-      "home",
-      "away"
-    ],
-    "enabled": true,
-    "note": "Hybrid OOS soccer refresh 2026-07-14: gap>=6.0 EV>=6.0% outcomes=['home', 'away'] exec=close ROI 7.49% worst 6.14% n=320. ENABLED.",
-    "backtest_roi_pct": 7.49,
-    "backtest_bets": 320
-  },
-  "bundesliga": {
-    "bet_type": "soccer_1x2",
-    "min_market_gap_pp": 6.0,
-    "min_win_confidence_pp": 0.0,
-    "min_ev_pct": 6.0,
-    "allowed_sides": [
-      "home",
-      "away"
-    ],
-    "enabled": true,
-    "note": "Hybrid OOS soccer refresh 2026-07-14: gap>=6.0 EV>=6.0% outcomes=['home', 'away'] exec=close ROI 7.49% worst 6.14% n=320. ENABLED.",
-    "backtest_roi_pct": 7.49,
-    "backtest_bets": 320
-  },
-  "laliga": {
-    "bet_type": "soccer_1x2",
-    "min_market_gap_pp": 6.0,
-    "min_win_confidence_pp": 0.0,
-    "min_ev_pct": 6.0,
-    "allowed_sides": [
-      "home",
-      "away"
-    ],
-    "enabled": true,
-    "note": "Hybrid OOS soccer refresh 2026-07-14: gap>=6.0 EV>=6.0% outcomes=['home', 'away'] exec=close ROI 7.49% worst 6.14% n=320. ENABLED.",
-    "backtest_roi_pct": 7.49,
-    "backtest_bets": 320
-  },
-  "seriea": {
-    "bet_type": "soccer_1x2",
-    "min_market_gap_pp": 6.0,
-    "min_win_confidence_pp": 0.0,
-    "min_ev_pct": 6.0,
-    "allowed_sides": [
-      "home",
-      "away"
-    ],
-    "enabled": true,
-    "note": "Hybrid OOS soccer refresh 2026-07-14: gap>=6.0 EV>=6.0% outcomes=['home', 'away'] exec=close ROI 7.49% worst 6.14% n=320. ENABLED.",
-    "backtest_roi_pct": 7.49,
-    "backtest_bets": 320
-  },
-  "ligue1": {
-    "bet_type": "soccer_1x2",
-    "min_market_gap_pp": 6.0,
-    "min_win_confidence_pp": 0.0,
-    "min_ev_pct": 6.0,
-    "allowed_sides": [
-      "home",
-      "away"
-    ],
-    "enabled": true,
-    "note": "Hybrid OOS soccer refresh 2026-07-14: gap>=6.0 EV>=6.0% outcomes=['home', 'away'] exec=close ROI 7.49% worst 6.14% n=320. ENABLED.",
-    "backtest_roi_pct": 7.49,
-    "backtest_bets": 320
-  },
-  "worldcup": {
-    "bet_type": "soccer_1x2",
-    "min_market_gap_pp": 8.0,
-    "min_win_confidence_pp": 10.0,
-    "min_ev_pct": 8.0,
-    "allowed_sides": [
-      "home"
-    ],
-    "enabled": true,
-    "note": "Sparse-sample international: EV capped at >= 8% and market gap >= 8 pp; home only. Tournament samples are thin vs club leagues \u2014 avoid over-fitting short OOS windows."
-  },
-  "fifa_friendlies": {
-    "bet_type": "soccer_1x2",
-    "min_market_gap_pp": 8.0,
-    "min_win_confidence_pp": 10.0,
-    "min_ev_pct": 8.0,
-    "allowed_sides": [
-      "home"
-    ],
-    "enabled": true,
-    "note": "Sparse-sample international friendlies: EV >= 8%, market gap >= 8 pp, home only. Motivation/rotation noise is high \u2014 sparse-sample EV caps apply."
-  },
-  "uefa_euro": {
-    "bet_type": "soccer_1x2",
-    "min_market_gap_pp": 8.0,
-    "min_win_confidence_pp": 10.0,
-    "min_ev_pct": 8.0,
-    "allowed_sides": [
-      "home"
-    ],
-    "enabled": true,
-    "note": "Sparse-sample international: EV >= 8%, market gap >= 8 pp, home only pending larger OOS."
-  },
-  "uefa_nations": {
-    "bet_type": "soccer_1x2",
-    "min_market_gap_pp": 8.0,
-    "min_win_confidence_pp": 10.0,
-    "min_ev_pct": 8.0,
-    "allowed_sides": [
-      "home"
-    ],
-    "enabled": true,
-    "note": "Sparse-sample international: EV >= 8%, market gap >= 8 pp, home only pending larger OOS."
-  },
-  "copa_america": {
-    "bet_type": "soccer_1x2",
-    "min_market_gap_pp": 8.0,
-    "min_win_confidence_pp": 10.0,
-    "min_ev_pct": 8.0,
-    "allowed_sides": [
-      "home"
-    ],
-    "enabled": true,
-    "note": "Sparse-sample international: EV >= 8%, market gap >= 8 pp, home only pending larger OOS."
-  },
-  "concacaf_wcq": {
-    "bet_type": "soccer_1x2",
-    "min_market_gap_pp": 8.0,
-    "min_win_confidence_pp": 10.0,
-    "min_ev_pct": 8.0,
-    "allowed_sides": [
-      "home"
-    ],
-    "enabled": true,
-    "note": "Sparse-sample international: EV >= 8%, market gap >= 8 pp, home only pending larger OOS."
-  },
-  "concacaf_gold": {
-    "bet_type": "soccer_1x2",
-    "min_market_gap_pp": 8.0,
-    "min_win_confidence_pp": 10.0,
-    "min_ev_pct": 8.0,
-    "allowed_sides": [
-      "home"
-    ],
-    "enabled": true,
-    "note": "Sparse-sample international: EV >= 8%, market gap >= 8 pp, home only pending larger OOS."
-  },
-  "concacaf_nations": {
-    "bet_type": "soccer_1x2",
-    "min_market_gap_pp": 8.0,
-    "min_win_confidence_pp": 10.0,
-    "min_ev_pct": 8.0,
-    "allowed_sides": [
-      "home"
-    ],
-    "enabled": true,
-    "note": "Sparse-sample international: EV >= 8%, market gap >= 8 pp, home only pending larger OOS."
-  }
+ "policy": "Official picks use Hub\u00e1\u010dek gates from walk-forward hybrid OOS bet backtests. Enable bar: positive worst-season ROI at the execution price we would actually take.",
+ "generated_at": "2026-07-14",
+ "default": {
+  "min_edge": 0,
+  "min_ev_pct": 2.0,
+  "min_spread_point_edge": 0.0,
+  "enabled": true
+ },
+ "baseball": {
+  "bet_type": "moneyline",
+  "min_win_confidence_pp": 10.0,
+  "enabled": true
+ },
+ "mlb": {
+  "bet_type": "moneyline",
+  "min_market_gap_pp": 8.0,
+  "min_win_confidence_pp": 0.0,
+  "min_ev_pct": 6.0,
+  "ml_lo": -200,
+  "ml_hi": 200,
+  "enabled": true,
+  "note": "Hybrid OOS Hub\u00e1\u010dek refresh 2026-07-14: gap>=8.0pp EV>=6.0% ML[-200,200] open ROI 4.13% worst 3.64% n=321. Close ROI None% (morning prices sit between open and close). ENABLED.",
+  "backtest_roi_pct": 4.13,
+  "backtest_bets": 321,
+  "backtest_close_roi_pct": 0.12,
+  "fav_mode": "any"
+ },
+ "nba": {
+  "bet_type": "spread",
+  "min_spread_cover_gap_pp": 12.0,
+  "min_spread_confidence_pp": 5.0,
+  "min_spread_point_edge": 0.0,
+  "min_ev_pct": 2.0,
+  "enabled": true,
+  "note": "Hybrid OOS Hub\u00e1\u010dek refresh 2026-07-14: cover gap>=12.0pp point_edge>=0.0 exec=open ROI 19.62% worst 8.42% n=226. ENABLED.",
+  "backtest_roi_pct": 19.62,
+  "backtest_bets": 226
+ },
+ "wnba": {
+  "bet_type": "spread",
+  "min_spread_cover_gap_pp": 10.0,
+  "min_spread_confidence_pp": 5.0,
+  "min_spread_point_edge": 0.0,
+  "min_ev_pct": 0.0,
+  "enabled": true,
+  "note": "Hybrid OOS Hub\u00e1\u010dek refresh 2026-07-14: cover gap>=10.0pp point_edge>=0.0 exec=close ROI 2.06% worst 0.24% n=252. ENABLED.",
+  "backtest_roi_pct": 2.06,
+  "backtest_bets": 252,
+  "min_market_gap_pp": 1.5,
+  "ml_lo": -350,
+  "ml_hi": 300,
+  "min_win_confidence_pp": 0.0
+ },
+ "cbb": {
+  "bet_type": "moneyline",
+  "min_market_gap_pp": 2.0,
+  "min_win_confidence_pp": 0.0,
+  "min_ev_pct": 0.0,
+  "ml_lo": -110,
+  "ml_hi": 110,
+  "fav_mode": "any",
+  "enabled": false,
+  "note": "DISABLED 2026-07-14: prior enable (ROI 44.51% n=419) was driven by Torvik same-day lookahead leakage in the training features (see web/cbb_v2/torvik_asof.py fix). Clean walk-forward re-validation in progress; re-enable only if the leak-free policy search clears the bar.",
+  "backtest_roi_pct": 44.51,
+  "backtest_bets": 419,
+  "allowed_sides": [
+   "away"
+  ]
+ },
+ "nfl": {
+  "bet_type": "moneyline",
+  "min_market_gap_pp": 3.0,
+  "min_win_confidence_pp": 0.0,
+  "min_ev_pct": 2.0,
+  "ml_lo": -250,
+  "ml_hi": 250,
+  "fav_mode": "favorite",
+  "enabled": true,
+  "note": "Hybrid OOS Hub\u00e1\u010dek refresh 2026-07-14: gap>=3.0pp EV>=2.0% ML[-250,250] sides=favorite exec=close ROI 5.8% worst 0.77% n=100. ENABLED.",
+  "backtest_roi_pct": 5.8,
+  "backtest_bets": 100
+ },
+ "cfb": {
+  "bet_type": "moneyline",
+  "enabled": true,
+  "min_market_gap_pp": 10.0,
+  "min_ev_pct": 6.0,
+  "ml_lo": -250,
+  "ml_hi": 250,
+  "min_win_confidence_pp": 0.0,
+  "fav_mode": "big_dog",
+  "backtest_roi_pct": 6.84,
+  "backtest_bets": 214,
+  "note": "Hybrid OOS Hub\u00e1\u010dek refresh 2026-07-14: gap>=10.0pp EV>=6.0% ML[-250,250] sides=big_dog exec=close ROI 6.84% worst 2.87% n=214. ENABLED."
+ },
+ "nhl": {
+  "bet_type": "moneyline",
+  "min_market_gap_pp": 4.0,
+  "min_win_confidence_pp": 0.0,
+  "min_ev_pct": 5.0,
+  "ml_lo": -250,
+  "ml_hi": 250,
+  "fav_mode": "any",
+  "enabled": true,
+  "note": "Hybrid OOS Hub\u00e1\u010dek refresh 2026-07-14: gap>=4.0pp EV>=5.0% ML[-250,250] open ROI 27.5% worst 26.41% n=179. Close ROI None% (morning prices sit between open and close). ENABLED.",
+  "backtest_roi_pct": 27.5,
+  "backtest_bets": 179,
+  "backtest_close_roi_pct": -1.93
+ },
+ "epl": {
+  "bet_type": "soccer_1x2",
+  "min_market_gap_pp": 6.0,
+  "min_win_confidence_pp": 0.0,
+  "min_ev_pct": 6.0,
+  "allowed_sides": [
+   "home",
+   "away"
+  ],
+  "enabled": true,
+  "note": "Hybrid OOS soccer refresh 2026-07-14: gap>=6.0 EV>=6.0% outcomes=['home', 'away'] exec=close ROI 7.49% worst 6.14% n=320. ENABLED.",
+  "backtest_roi_pct": 7.49,
+  "backtest_bets": 320
+ },
+ "bundesliga": {
+  "bet_type": "soccer_1x2",
+  "min_market_gap_pp": 6.0,
+  "min_win_confidence_pp": 0.0,
+  "min_ev_pct": 6.0,
+  "allowed_sides": [
+   "home",
+   "away"
+  ],
+  "enabled": true,
+  "note": "Hybrid OOS soccer refresh 2026-07-14: gap>=6.0 EV>=6.0% outcomes=['home', 'away'] exec=close ROI 7.49% worst 6.14% n=320. ENABLED.",
+  "backtest_roi_pct": 7.49,
+  "backtest_bets": 320
+ },
+ "laliga": {
+  "bet_type": "soccer_1x2",
+  "min_market_gap_pp": 6.0,
+  "min_win_confidence_pp": 0.0,
+  "min_ev_pct": 6.0,
+  "allowed_sides": [
+   "home",
+   "away"
+  ],
+  "enabled": true,
+  "note": "Hybrid OOS soccer refresh 2026-07-14: gap>=6.0 EV>=6.0% outcomes=['home', 'away'] exec=close ROI 7.49% worst 6.14% n=320. ENABLED.",
+  "backtest_roi_pct": 7.49,
+  "backtest_bets": 320
+ },
+ "seriea": {
+  "bet_type": "soccer_1x2",
+  "min_market_gap_pp": 6.0,
+  "min_win_confidence_pp": 0.0,
+  "min_ev_pct": 6.0,
+  "allowed_sides": [
+   "home",
+   "away"
+  ],
+  "enabled": true,
+  "note": "Hybrid OOS soccer refresh 2026-07-14: gap>=6.0 EV>=6.0% outcomes=['home', 'away'] exec=close ROI 7.49% worst 6.14% n=320. ENABLED.",
+  "backtest_roi_pct": 7.49,
+  "backtest_bets": 320
+ },
+ "ligue1": {
+  "bet_type": "soccer_1x2",
+  "min_market_gap_pp": 6.0,
+  "min_win_confidence_pp": 0.0,
+  "min_ev_pct": 6.0,
+  "allowed_sides": [
+   "home",
+   "away"
+  ],
+  "enabled": true,
+  "note": "Hybrid OOS soccer refresh 2026-07-14: gap>=6.0 EV>=6.0% outcomes=['home', 'away'] exec=close ROI 7.49% worst 6.14% n=320. ENABLED.",
+  "backtest_roi_pct": 7.49,
+  "backtest_bets": 320
+ },
+ "worldcup": {
+  "bet_type": "soccer_1x2",
+  "min_market_gap_pp": 8.0,
+  "min_win_confidence_pp": 10.0,
+  "min_ev_pct": 8.0,
+  "allowed_sides": [
+   "home"
+  ],
+  "enabled": true,
+  "note": "Sparse-sample international: EV capped at >= 8% and market gap >= 8 pp; home only. Tournament samples are thin vs club leagues \u2014 avoid over-fitting short OOS windows."
+ },
+ "fifa_friendlies": {
+  "bet_type": "soccer_1x2",
+  "min_market_gap_pp": 8.0,
+  "min_win_confidence_pp": 10.0,
+  "min_ev_pct": 8.0,
+  "allowed_sides": [
+   "home"
+  ],
+  "enabled": true,
+  "note": "Sparse-sample international friendlies: EV >= 8%, market gap >= 8 pp, home only. Motivation/rotation noise is high \u2014 sparse-sample EV caps apply."
+ },
+ "uefa_euro": {
+  "bet_type": "soccer_1x2",
+  "min_market_gap_pp": 8.0,
+  "min_win_confidence_pp": 10.0,
+  "min_ev_pct": 8.0,
+  "allowed_sides": [
+   "home"
+  ],
+  "enabled": true,
+  "note": "Sparse-sample international: EV >= 8%, market gap >= 8 pp, home only pending larger OOS."
+ },
+ "uefa_nations": {
+  "bet_type": "soccer_1x2",
+  "min_market_gap_pp": 8.0,
+  "min_win_confidence_pp": 10.0,
+  "min_ev_pct": 8.0,
+  "allowed_sides": [
+   "home"
+  ],
+  "enabled": true,
+  "note": "Sparse-sample international: EV >= 8%, market gap >= 8 pp, home only pending larger OOS."
+ },
+ "copa_america": {
+  "bet_type": "soccer_1x2",
+  "min_market_gap_pp": 8.0,
+  "min_win_confidence_pp": 10.0,
+  "min_ev_pct": 8.0,
+  "allowed_sides": [
+   "home"
+  ],
+  "enabled": true,
+  "note": "Sparse-sample international: EV >= 8%, market gap >= 8 pp, home only pending larger OOS."
+ },
+ "concacaf_wcq": {
+  "bet_type": "soccer_1x2",
+  "min_market_gap_pp": 8.0,
+  "min_win_confidence_pp": 10.0,
+  "min_ev_pct": 8.0,
+  "allowed_sides": [
+   "home"
+  ],
+  "enabled": true,
+  "note": "Sparse-sample international: EV >= 8%, market gap >= 8 pp, home only pending larger OOS."
+ },
+ "concacaf_gold": {
+  "bet_type": "soccer_1x2",
+  "min_market_gap_pp": 8.0,
+  "min_win_confidence_pp": 10.0,
+  "min_ev_pct": 8.0,
+  "allowed_sides": [
+   "home"
+  ],
+  "enabled": true,
+  "note": "Sparse-sample international: EV >= 8%, market gap >= 8 pp, home only pending larger OOS."
+ },
+ "concacaf_nations": {
+  "bet_type": "soccer_1x2",
+  "min_market_gap_pp": 8.0,
+  "min_win_confidence_pp": 10.0,
+  "min_ev_pct": 8.0,
+  "allowed_sides": [
+   "home"
+  ],
+  "enabled": true,
+  "note": "Sparse-sample international: EV >= 8%, market gap >= 8 pp, home only pending larger OOS."
+ }
 }
