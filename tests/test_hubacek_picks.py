@@ -258,7 +258,7 @@ def test_tracked_pick_requires_hubacek_strategy_ev_and_confidence() -> None:
             "market_odds": -150,
         }
     )
-    # MLB uses the backtested 6.7 pp gap floor (no confidence bar).
+    # MLB uses the backtested 8 pp gap / 6% EV floors (no confidence bar).
     assert not passes_hubacek_tracked_pick(
         {
             "strategy": "hubacek",
@@ -272,8 +272,8 @@ def test_tracked_pick_requires_hubacek_strategy_ev_and_confidence() -> None:
     assert passes_hubacek_tracked_pick(
         {
             "strategy": "hubacek",
-            "model_market_gap_pp": 7.0,
-            "ev_pct": 3.0,
+            "model_market_gap_pp": 9.0,
+            "ev_pct": 6.5,
             "win_probability": 55,
             "market_odds": -150,
             "league": "mlb",
@@ -283,8 +283,8 @@ def test_tracked_pick_requires_hubacek_strategy_ev_and_confidence() -> None:
     assert not passes_hubacek_tracked_pick(
         {
             "strategy": "hubacek",
-            "model_market_gap_pp": 7.0,
-            "ev_pct": 3.0,
+            "model_market_gap_pp": 9.0,
+            "ev_pct": 6.5,
             "win_probability": 55,
             "league": "mlb",
         }
@@ -293,8 +293,8 @@ def test_tracked_pick_requires_hubacek_strategy_ev_and_confidence() -> None:
     assert not passes_hubacek_tracked_pick(
         {
             "strategy": "hubacek",
-            "model_market_gap_pp": 7.0,
-            "ev_pct": 3.0,
+            "model_market_gap_pp": 9.0,
+            "ev_pct": 6.5,
             "win_probability": 55,
             "market_odds": 240,
             "league": "mlb",

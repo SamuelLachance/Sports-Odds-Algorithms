@@ -58,6 +58,12 @@ jobs:
       # time budget so the fast build cannot stall on the books API.
       LIVE_MULTI_BOOK: "1"
       LIVE_MULTI_BOOK_BUDGET_S: "120"
+      # Early opening lines (BetOnline/Pinnacle via The Odds API). The key is a
+      # repo secret; without it the store still seeds from ESPN opens for free.
+      # Cost: 4 credits/league/build (us2,eu x h2h,spreads) — with 4 builds/day
+      # keep this to ~1 league on the free 500/month tier.
+      ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+      EARLY_LINES_LEAGUES: ${{ vars.EARLY_LINES_LEAGUES || 'wnba' }}
       PYTHONUNBUFFERED: "1"
     steps:
       - uses: actions/checkout@v4

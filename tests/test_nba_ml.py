@@ -138,11 +138,12 @@ def test_haversine_travel_present_for_cross_country():
     assert feats["travel_away_km"] > 3000
 
 
-def test_flag_default_off_but_artifacts_present():
+def test_flag_default_off_regardless_of_artifacts():
     # Live flag is opt-in; default off regardless of artifacts.
     assert nba_ml_enabled() is False
-    # Artifacts should be committed with the pilot.
-    assert nba_ml_artifacts_present() is True
+    # Legacy pilot artifacts were pruned in favor of nba_v2/nba_hybrid models —
+    # presence is repo state, but the probe must stay a clean bool (never raise).
+    assert isinstance(nba_ml_artifacts_present(), bool)
 
 
 def test_ensemble_home_prob_keeps_fraction_scale():

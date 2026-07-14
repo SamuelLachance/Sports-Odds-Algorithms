@@ -55,8 +55,13 @@ TRACKED_BOOKS = (
     "betrivers",
 )
 
-_DEFAULT_REGIONS = "us,us2,eu"
-_DEFAULT_MARKETS = "h2h,spreads,totals"
+# Defaults sized for the free Odds API tier (cost = markets x regions per
+# call): retail US books (DK/FD/MGM/Caesars) already arrive free via ESPN, so
+# only the early/sharp offshore books are worth credits — us2 (BetOnline,
+# LowVig, Bovada, MyBookie) + eu (Pinnacle). 2 markets x 2 regions = 4 credits
+# per league per snapshot.
+_DEFAULT_REGIONS = "us2,eu"
+_DEFAULT_MARKETS = "h2h,spreads"
 
 
 def _now_iso() -> str:

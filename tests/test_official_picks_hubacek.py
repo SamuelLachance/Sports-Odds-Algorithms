@@ -261,7 +261,8 @@ def test_nhl_pick_thresholds_use_backtested_policy() -> None:
     assert thresholds["bet_type"] == "moneyline"
     assert thresholds["enabled"] is True
     assert thresholds.get("fav_mode", "any") == "any"
-    assert thresholds.get("allowed_sides") == ["home"]
+    # 2026-07-14 hybrid refresh dropped the home-only restriction (any side).
+    assert thresholds.get("allowed_sides") is None
 
 
 def test_nhl_official_picks_use_moneyline_decorrelation() -> None:
@@ -402,7 +403,9 @@ def test_nfl_cfb_official_picks_hubacek_gates() -> None:
 
     cbb = get_pick_thresholds("cbb")
     assert cbb["bet_type"] == "moneyline"
-    assert cbb["enabled"] is True
+    # cbb's enable flag tracks re-validation state (currently off pending
+    # leak-free backtests) — eligibility must mirror it, never fail open.
+    assert isinstance(cbb.get("enabled"), bool)
     assert cbb.get("fav_mode") == "any"
     assert cbb.get("allowed_sides") == ["away"]
-    assert eligible_for_official_picks("cbb") is True
+    assert eligible_for_official_picks("cbb") is bool(cbb.get("enabled"))

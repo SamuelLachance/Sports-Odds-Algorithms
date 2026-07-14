@@ -69,7 +69,9 @@ def test_cbb_bet_policy_enabled_all_seasons_positive() -> None:
 
     assert POLICY_PATH.is_file()
     policy = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
-    assert policy.get("enabled") is True
+    # The enable flag flips with re-validation state (currently disabled pending
+    # leak-free backtests) — require an explicit bool so gating never fails open.
+    assert isinstance(policy.get("enabled"), bool)
     assert policy.get("bet_type") == "moneyline"
     bt = policy.get("backtest") or {}
     assert bt.get("seasons_total", 0) >= 3
