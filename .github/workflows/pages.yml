@@ -175,7 +175,9 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/tracking.json data/soccer_paper_tracking.json
+          # early-lines: first-seen opener store must persist across builds or
+          # every deploy would reset observed opens to that build's snapshot.
+          git add data/tracking.json data/soccer_paper_tracking.json data/supplemental/early-lines
           if git diff --staged --quiet; then
             echo "Tracking store unchanged."
             exit 0

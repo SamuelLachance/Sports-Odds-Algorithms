@@ -1070,6 +1070,30 @@ def _league_news_headlines(
     return headlines
 
 
+def _live_stack_params(leagues: set[str]) -> dict[str, dict[str, Any]]:
+    """Per-league logit-stack params for client-side line-open restacking.
+
+    ``p_final = sigmoid((1-w)*logit(p_model) + w*logit(devig(open)))`` — the
+    exact live-path math, exported so the static board can compute a stacked
+    probability + EV in the browser the moment a line posts.
+    """
+    out: dict[str, dict[str, Any]] = {}
+    for league in leagues:
+        try:
+            from web.hybrid_v2.live import load_hybrid_bundle
+
+            bundle = load_hybrid_bundle(league)
+            if bundle is None or bundle.get("multiclass"):
+                continue
+            out[league] = {
+                "mode": str(bundle.get("target_mode") or "prob"),
+                "w": round(float(bundle.get("market_blend_w") or 0.0), 4),
+            }
+        except Exception:  # noqa: BLE001 — cosmetic metadata, never block slate
+            continue
+    return out
+
+
 def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
     generated_at = datetime.now(timezone.utc).isoformat()
     all_games: list[dict[str, Any]] = []
@@ -1276,7 +1300,8 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
 
     return {
         "generated_at": generated_at,
-        "date_label": _toronto_today().isoformat(),
+        "date_label": (_toronto_today() + timedelta(days=days_ahead)).isoformat(),
+        "days_ahead": days_ahead,
         "summary": {
             "games_analyzed": len(all_games),
             "recommended_bets": len(qualifying),
@@ -1286,6 +1311,9 @@ def get_daily_slate(days_ahead: int = 0) -> dict[str, Any]:
             "error_count": len(errors),
             "line_shopping": _line_shopping_status(),
             "leagues_not_ready": leagues_not_ready,
+            # Per-league market-stack params so the client can restack a
+            # model-only probability the moment a line opens (line watch).
+            "live_stack": _live_stack_params({game["league"] for game in all_games}),
         },
         "recommended_bets": qualifying[:20],
         "model_analysis_bets": model_analysis_qualifying[:20],

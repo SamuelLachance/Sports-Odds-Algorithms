@@ -1068,7 +1068,14 @@ function gamesForLeague(league) {
 }
 
 function gameById(id) {
-  return (state.slate?.games || []).find((g) => g.event_id === id);
+  const today = (state.slate?.games || []).find((g) => g.event_id === id);
+  if (today) return today;
+  // Look-ahead slates (T+1/T+2) share the same card & detail views.
+  for (const day of [1, 2]) {
+    const hit = (state.slates?.[day]?.games || []).find((g) => g.event_id === id);
+    if (hit) return hit;
+  }
+  return undefined;
 }
 
 function leagueHref(league) {
@@ -1858,11 +1865,60 @@ function renderTrackingSummary() {
     .join("")}</div>`;
 }
 
+/** Pending official bets on FUTURE game days (placed in advance on open lines). */
+function upcomingOfficialBets() {
+  const today = state.slate?.date_label || "";
+  return (state.tracking?.bets || [])
+    .filter(
+      (b) =>
+        (b.status == null || b.status === "pending") &&
+        b.date &&
+        today &&
+        b.date > today,
+    )
+    .sort((a, b) => ((a.start_time || a.date) < (b.start_time || b.date) ? -1 : 1));
+}
+
+/** "Placed @ …" line: the exact odds/line the model took the bet at. */
+function lineTakenLabel(bet) {
+  const parts = [];
+  if (bet.bet_type === "spread") {
+    if (bet.spread_line != null) parts.push(`${bet.spread_line > 0 ? "+" : ""}${bet.spread_line}`);
+    if (bet.spread_odds != null) parts.push(formatOdds(bet.spread_odds));
+  } else if (bet.market_odds != null) {
+    parts.push(`ML ${formatOdds(bet.market_odds)}`);
+  }
+  const when = (bet.recorded_at || "").slice(0, 16).replace("T", " ");
+  return parts.length ? `Placed @ ${parts.join(" ")}${when ? ` · ${when}Z` : ""}` : "";
+}
+
+function upcomingOfficialCard(bet) {
+  const taken = lineTakenLabel(bet);
+  const close =
+    bet.closing_market_odds != null && bet.market_odds != null && Number(bet.closing_market_odds) !== Number(bet.market_odds)
+      ? `<span class="muted">now ${formatOdds(bet.closing_market_odds)}</span>`
+      : "";
+  return `<article class="panel upcoming-bet-card">
+    <div class="upcoming-bet-head">
+      <span class="league-pill">${escapeHtml(bet.league_name || bet.league || "")}</span>
+      <span class="muted">${escapeHtml(bet.date || "")} · ${formatTime(bet.start_time)}</span>
+    </div>
+    <h3>${escapeHtml(bet.team_name || "")} <small>${escapeHtml(String(bet.side || ""))} ${escapeHtml(String(bet.bet_type || "moneyline"))}</small></h3>
+    <p class="pick-matchup">${escapeHtml(bet.matchup || "")}</p>
+    <div class="pick-odds">
+      <div><span>Line taken</span><strong>${escapeHtml(taken) || "—"} ${close}</strong></div>
+      ${bet.ev_pct != null ? `<div><span>EV at placement</span><strong>+${bet.ev_pct}%</strong></div>` : ""}
+      ${bet.stake_units != null ? `<div><span>Stake</span><strong>${bet.stake_units}u</strong></div>` : ""}
+    </div>
+  </article>`;
+}
+
 function viewPicks() {
   state.sidebarLeague = null;
   renderSidebar(parseRoute());
   const picks = state.slate?.recommended_bets || [];
   const modelAnalysis = state.slate?.model_analysis_bets || [];
+  const upcoming = upcomingOfficialBets();
   const slate = state.slate || {};
   const minConf = minHubacekConfidence(slate);
   const hubacekRule = hubacekPickRule(slate);
@@ -1884,6 +1940,16 @@ function viewPicks() {
       </div>
       <div class="picks-grid">${picks.length ? picks.map((p) => pickCard(p, "", gameById(p.event_id))).join("") : officialEmptyPanel(hubacekRule)}</div>
     </section>
+    <section class="section picks-section-upcoming" id="upcoming-picks">
+      <div class="section-head">
+        <div>
+          <h2>Upcoming official picks</h2>
+          <p class="muted section-intro">Official bets placed in advance on already-open lines (look-ahead slates). They stay in the book and in tracking at the exact line taken until the game grades — the daily routine never drops a placed bet.</p>
+        </div>
+        <span class="section-count">${upcoming.length}</span>
+      </div>
+      <div class="picks-grid">${upcoming.length ? upcoming.map((b) => upcomingOfficialCard(b)).join("") : '<div class="panel empty-panel">No advance bets yet — they appear here when a future game already has a line and the model clears the official gate.</div>'}</div>
+    </section>
     <section class="section picks-section-reference" id="model-predictions">
       <div class="section-head">
         <div>
@@ -1896,17 +1962,234 @@ function viewPicks() {
     </section>`;
 }
 
+// ---------------------------------------------------------------------------
+// Look-ahead slates (T+1 / T+2) + live line-open watcher.
+// Model-only predictions publish up to 48h early; the watcher polls ESPN core
+// odds for no-line games and, the moment a book posts, computes the model's
+// EV at the opener and a market-stacked probability (same math as the server).
+// ---------------------------------------------------------------------------
+
+const DAY_TABS = [
+  { day: 0, label: "Today" },
+  { day: 1, label: "Tomorrow" },
+  { day: 2, label: "+48h" },
+];
+
+const LINE_WATCH_ODDS_PATH = {
+  nba: "basketball/leagues/nba",
+  wnba: "basketball/leagues/wnba",
+  nhl: "hockey/leagues/nhl",
+  mlb: "baseball/leagues/mlb",
+  nfl: "football/leagues/nfl",
+  cfb: "football/leagues/college-football",
+  cbb: "basketball/leagues/mens-college-basketball",
+};
+const LINE_WATCH_INTERVAL_MS = 4 * 60 * 1000;
+
+state.slates = state.slates || {};
+state.activeDay = 0;
+state.lineWatch = {}; // eventId -> {provider, home_ml, away_ml, found_at, ...}
+let lineWatchTimer = null;
+
+function activeSlate() {
+  if (state.activeDay === 0) return state.slate || {};
+  return state.slates[state.activeDay] || {};
+}
+
+async function ensureSlateForDay(day) {
+  if (day === 0) return state.slate;
+  if (state.slates[day]) return state.slates[day];
+  const payload = await fetchJson(api(`slate-plus${day}.json`));
+  state.slates[day] = payload;
+  return payload;
+}
+
+function impliedFromAmerican(odds) {
+  const o = Number(odds);
+  if (!Number.isFinite(o) || Math.abs(o) < 100) return null;
+  return o > 0 ? 100 / (o + 100) : -o / (-o + 100);
+}
+
+function evPctFromProb(probPct, odds) {
+  const p = Number(probPct) / 100;
+  const o = Number(odds);
+  if (!Number.isFinite(p) || !Number.isFinite(o) || Math.abs(o) < 100) return null;
+  const win = o > 0 ? o / 100 : 100 / -o;
+  return Math.round((p * win - (1 - p)) * 1000) / 10;
+}
+
+function modelHomeProbPct(game) {
+  const m = game?.model || {};
+  if (m.favorite_side === "home") return Number(m.win_probability);
+  if (m.win_probability != null) return 100 - Number(m.win_probability);
+  return null;
+}
+
+/** Market-stacked home prob (exact live-path math) once a line opens. */
+function stackedHomeProbPct(game, homeMl, awayMl) {
+  const params = (activeSlate()?.summary?.live_stack || state.slate?.summary?.live_stack || {})[game.league];
+  const pModel = modelHomeProbPct(game);
+  const ih = impliedFromAmerican(homeMl);
+  const ia = impliedFromAmerican(awayMl);
+  if (!params || pModel == null || ih == null || ia == null) return null;
+  const pMkt = ih / (ih + ia);
+  const w = Number(params.w);
+  const logit = (p) => Math.log(Math.min(Math.max(p, 1e-9), 1 - 1e-9) / (1 - Math.min(Math.max(p, 1e-9), 1 - 1e-9)));
+  const z = (1 - w) * logit(pModel / 100) + w * logit(pMkt);
+  return Math.round((1 / (1 + Math.exp(-z))) * 1000) / 10;
+}
+
+function gameHasLine(game) {
+  const mk = game?.market || {};
+  return mk.home_moneyline != null || mk.away_moneyline != null || mk.spread != null;
+}
+
+function lineWatchCandidates() {
+  const out = [];
+  for (const day of [0, 1, 2]) {
+    const slate = day === 0 ? state.slate : state.slates[day];
+    for (const game of slate?.games || []) {
+      if (gameHasLine(game) || state.lineWatch[game.event_id]) continue;
+      if (!LINE_WATCH_ODDS_PATH[game.league]) continue;
+      const start = Date.parse(game.start_time || "");
+      if (!Number.isFinite(start) || start < Date.now() || start > Date.now() + 60 * 3600 * 1000) continue;
+      out.push(game);
+    }
+  }
+  return out;
+}
+
+async function pollLineOnce(game) {
+  const path = LINE_WATCH_ODDS_PATH[game.league];
+  const id = game.event_id;
+  const url = `https://sports.core.api.espn.com/v2/sports/${path}/events/${id}/competitions/${id}/odds`;
+  try {
+    const resp = await fetch(url);
+    if (!resp.ok) return false;
+    const payload = await resp.json();
+    for (const item of payload?.items || []) {
+      const provider = item?.provider?.name || "";
+      if (provider.toLowerCase().includes("live")) continue;
+      const homeMl = item?.homeTeamOdds?.current?.moneyLine?.american ?? item?.homeTeamOdds?.moneyLine;
+      const awayMl = item?.awayTeamOdds?.current?.moneyLine?.american ?? item?.awayTeamOdds?.moneyLine;
+      const spread = item?.spread ?? null;
+      if (homeMl == null && awayMl == null && spread == null) continue;
+      const pHome = modelHomeProbPct(game);
+      const evHome = homeMl != null && pHome != null ? evPctFromProb(pHome, homeMl) : null;
+      const evAway = awayMl != null && pHome != null ? evPctFromProb(100 - pHome, awayMl) : null;
+      state.lineWatch[id] = {
+        provider,
+        home_ml: homeMl != null ? Number(homeMl) : null,
+        away_ml: awayMl != null ? Number(awayMl) : null,
+        spread,
+        ev_home: evHome,
+        ev_away: evAway,
+        stacked_home: homeMl != null && awayMl != null ? stackedHomeProbPct(game, homeMl, awayMl) : null,
+        found_at: new Date().toISOString(),
+        game_ref: { league: game.league, name: game.name, event_id: id, start_time: game.start_time },
+      };
+      return true;
+    }
+  } catch (err) {
+    /* CORS/network — silent; next tick retries */
+  }
+  return false;
+}
+
+async function lineWatchTick() {
+  const candidates = lineWatchCandidates().slice(0, 24);
+  if (!candidates.length) return;
+  let found = 0;
+  for (const game of candidates) {
+    // Sequential + small gap: gentle on ESPN, fine for two dozen games.
+    if (await pollLineOnce(game)) found += 1;
+    await new Promise((r) => setTimeout(r, 400));
+  }
+  if (found && parseRoute().path === "games") viewGames(state.selectedLeague);
+}
+
+function startLineWatch() {
+  if (lineWatchTimer) return;
+  lineWatchTick();
+  lineWatchTimer = setInterval(() => {
+    if (document.visibilityState === "visible") lineWatchTick();
+  }, LINE_WATCH_INTERVAL_MS);
+}
+
+function lineWatchStrip() {
+  const hits = Object.values(state.lineWatch).sort((a, b) => (a.found_at < b.found_at ? 1 : -1));
+  if (!hits.length) return "";
+  const rows = hits.slice(0, 6).map((hit) => {
+    const bestSide = (hit.ev_home ?? -99) >= (hit.ev_away ?? -99) ? "home" : "away";
+    const bestEv = bestSide === "home" ? hit.ev_home : hit.ev_away;
+    const evTxt = bestEv != null ? `${bestEv > 0 ? "+" : ""}${bestEv}% EV ${bestSide}` : "";
+    return `<a class="line-open-row" href="#/game/${escapeHtml(String(hit.game_ref.event_id))}">
+      <span class="line-open-dot" aria-hidden="true"></span>
+      <strong>${escapeHtml(hit.game_ref.name || "")}</strong>
+      <span>${hit.home_ml != null ? `H ${formatOdds(hit.home_ml)}` : ""} ${hit.away_ml != null ? `A ${formatOdds(hit.away_ml)}` : ""} · ${escapeHtml(hit.provider)}</span>
+      ${evTxt ? `<span class="line-open-ev ${bestEv > 0 ? "pos" : ""}">${evTxt}</span>` : ""}
+    </a>`;
+  });
+  return `<div class="panel line-open-strip"><div class="line-shop-head"><span class="panel-kicker">Lines just opened</span><span class="muted">auto-watch every 4 min</span></div>${rows.join("")}</div>`;
+}
+
+function lineStatusChip(game) {
+  const hit = state.lineWatch[game.event_id];
+  if (hit) {
+    const bestSide = (hit.ev_home ?? -99) >= (hit.ev_away ?? -99) ? "home" : "away";
+    const bestEv = bestSide === "home" ? hit.ev_home : hit.ev_away;
+    return `<span class="line-chip line-chip--open">Line open · ${escapeHtml(hit.provider)}${bestEv != null ? ` · ${bestEv > 0 ? "+" : ""}${bestEv}% EV ${bestSide}` : ""}</span>`;
+  }
+  if (!gameHasLine(game)) {
+    return `<span class="line-chip line-chip--waiting">No line yet — watching</span>`;
+  }
+  return "";
+}
+
+function dayTabsBar() {
+  return `<div class="day-tabs" role="tablist">${DAY_TABS.map(
+    (t) =>
+      `<button class="day-tab ${state.activeDay === t.day ? "active" : ""}" role="tab" aria-selected="${state.activeDay === t.day}" data-day="${t.day}">${t.label}</button>`,
+  ).join("")}</div>`;
+}
+
+function bindDayTabs() {
+  appRoot.querySelectorAll(".day-tab").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const day = Number(btn.dataset.day);
+      state.activeDay = day;
+      btn.closest(".day-tabs")?.querySelectorAll(".day-tab").forEach((b) => b.classList.toggle("active", Number(b.dataset.day) === day));
+      try {
+        await ensureSlateForDay(day);
+      } catch (err) {
+        appRoot.querySelector(".slate-list").innerHTML = `<div class="panel empty-panel">Look-ahead slate not published yet (${escapeHtml(err.message)}). It appears after the next site rebuild.</div>`;
+        return;
+      }
+      viewGames(state.selectedLeague);
+    });
+  });
+}
+
 function viewGames(league) {
   state.selectedLeague = league || "all";
   state.sidebarLeague = league && league !== "all" ? league : null;
   renderLeagueMenu();
   renderGameSubmenu(state.selectedLeague);
   renderSidebar(parseRoute());
-  const games = gamesForLeague(state.selectedLeague);
-  const slate = state.slate || {};
-  appRoot.innerHTML = `<section class="page-head"><h1>Games</h1><p>Today's matchups with full algo breakdowns. Filter by league in the sidebar or open a team sheet from any game.</p></section>
-    ${slateStatusBanners(slate)}
+  const slate = activeSlate();
+  const source = slate?.games || [];
+  const games =
+    state.selectedLeague === "all"
+      ? source
+      : source.filter((g) => g.league === state.selectedLeague);
+  const dayLabel = state.activeDay === 0 ? "Today's matchups" : `Slate for ${escapeHtml(slate?.date_label || "")} — model-only until books post; the watcher flags lines the moment they open`;
+  appRoot.innerHTML = `<section class="page-head"><h1>Games</h1><p>${dayLabel}. Filter by league in the sidebar or open a team sheet from any game.</p></section>
+    ${dayTabsBar()}
+    ${lineWatchStrip()}
+    ${state.activeDay === 0 ? slateStatusBanners(state.slate || {}) : ""}
     <div class="slate-list">${games.length ? games.map((g) => gameListCard(g)).join("") : gamesFilterEmptyPanel(state.selectedLeague)}</div>`;
+  bindDayTabs();
+  startLineWatch();
 }
 
 function gameListCard(game) {
@@ -1938,7 +2221,7 @@ function gameListCard(game) {
   }
   const eventId = escapeHtml(String(game.event_id || ""));
   return `<article class="game-card panel clickable" data-game="${eventId}" role="link" tabindex="0" aria-label="Open ${escapeHtml(awayName)} at ${escapeHtml(homeName)}">
-    <div class="game-head"><div><span class="league-pill">${escapeHtml(game.league_name || "")}</span>${sparseLeaguePill(game.league)}${predictionsOnlyPill(game.league)}<h3>${matchupLinks(game.league, away, home)}</h3><p class="game-meta">${formatTime(game.start_time)}</p></div>
+    <div class="game-head"><div><span class="league-pill">${escapeHtml(game.league_name || "")}</span>${sparseLeaguePill(game.league)}${predictionsOnlyPill(game.league)}${lineStatusChip(game)}<h3>${matchupLinks(game.league, away, home)}</h3><p class="game-meta">${formatTime(game.start_time)}</p></div>
     <div class="win-chip"><span>${primaryAlgoShort(m)}</span><strong>${escapeHtml(fav)}</strong><small>${m.win_probability != null ? `${m.win_probability}%` : "—"}</small></div></div>
     ${betStrip}
     <a class="btn btn-secondary btn-sm" href="#/game/${eventId}">Open algo breakdown →</a>
@@ -2751,10 +3034,11 @@ function viewTracking(options = {}) {
           </div>
           <span class="edge-tag">+${b.edge ?? "—"} edge</span>
         </div>
-        <p class="muted">${escapeHtml(b.matchup || "")} · ${escapeHtml(b.date || "")}${b.stake_units ? ` · ${b.stake_units}u stake` : ""}</p>
+        <p class="muted">${escapeHtml(b.matchup || "")} · ${escapeHtml(b.date || "")}${b.stake_units ? ` · ${b.stake_units}u stake` : ""}${(b.status == null || b.status === "pending") && state.slate?.date_label && b.date > state.slate.date_label ? ' · <span class="line-chip line-chip--waiting">Advance bet</span>' : ""}</p>
+        ${lineTakenLabel(b) ? `<p class="muted bet-line-taken">${escapeHtml(lineTakenLabel(b))}</p>` : ""}
         ${formatClvBlock(b)}
         <div class="pick-odds compact">
-          <div><span>${b.bet_type === "spread" ? "Spread" : "Market"}</span><strong>${b.bet_type === "spread" ? formatSpread(b.spread_line) + " (" + formatOdds(b.spread_odds ?? b.market_odds) + ")" : formatOdds(b.market_odds)}</strong></div>
+          <div><span>${b.bet_type === "spread" ? "Spread taken" : "Line taken"}</span><strong>${b.bet_type === "spread" ? formatSpread(b.spread_line) + " (" + formatOdds(b.spread_odds ?? b.market_odds) + ")" : formatOdds(b.market_odds)}</strong></div>
           <div><span>Model</span><strong>${b.bet_type === "spread" && b.model_margin != null ? (b.side === "home" ? "Home" : "Away") + " margin " + formatSpread(b.side === "home" ? b.model_margin : -b.model_margin) : formatOdds(b.model_projection)}</strong></div>
           <div><span>Strategy</span><strong>${escapeHtml(b.strategy_label || "")}</strong></div>
         </div>
