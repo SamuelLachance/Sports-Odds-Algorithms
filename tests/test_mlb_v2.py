@@ -593,6 +593,28 @@ def test_platoon_matchup_features_from_sp_hand_and_rates() -> None:
 
     assert "platoon_k_matchup" in FEATURE_COLUMNS
     assert "platoon_obp_matchup" in FEATURE_COLUMNS
+    assert 150 <= len(FEATURE_COLUMNS) <= 220
+    assert len(FEATURE_COLUMNS) == len(set(FEATURE_COLUMNS))
+    for col in (
+        "has_open_line",
+        "has_steam",
+        "ml_steam_pp",
+        "ba_diff",
+        "ops_diff",
+        "win_streak_diff",
+        "travel_diff",
+        "home_sp_short_rest",
+        "home_bp_fried",
+        "has_weather",
+        "coors_extreme",
+        "elo_x_season_frac",
+        "april_noise",
+        "has_ump",
+        "has_il",
+        "has_statcast_sp",
+        "steam_to_fav",
+    ):
+        assert col in FEATURE_COLUMNS
 
     engine = MlbFeatureEngine()
     home = engine.team(111)
@@ -615,10 +637,17 @@ def test_platoon_matchup_features_from_sp_hand_and_rates() -> None:
             "venue_id": None,
         }
     )
+    assert set(feats.keys()) == set(FEATURE_COLUMNS)
+    assert all(v == v and isinstance(v, float) for v in feats.values())
     assert feats["away_sp_is_lhp"] == 1.0
     assert feats["home_sp_is_lhp"] == 0.0
     assert feats["platoon_k_matchup"] == pytest.approx(0.28)
     assert feats["platoon_obp_matchup"] == pytest.approx(0.340)
+    assert feats["has_steam"] == 0.0
+    assert feats["has_weather"] == 0.0
+    assert feats["temp_c"] == 22.0
+    assert feats["mkt_home_prob"] == 0.5
+
 
 
 def test_mlb_elo_mov_stays_positive_on_huge_underdog_upset() -> None:
@@ -750,6 +779,7 @@ def test_predict_matchup_v2_market_aware_wiring_with_stub_context() -> None:
         patch.object(mlb_live, "get_live_context", return_value=context),
         patch.object(mlb_live, "_predict_probability", return_value=0.58) as mock_prob,
         patch.object(mlb_live, "_predict_runs", return_value=None),
+        patch("web.hybrid_v2.live.try_hybrid_binary", return_value=None),
     ):
         result = mlb_live.predict_matchup_v2(
             "2026-07-12",

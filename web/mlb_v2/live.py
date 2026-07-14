@@ -555,6 +555,9 @@ def predict_matchup_v2(
                 away_occ=away_occ,
             )
 
+    from web.mlb_v2.enrichments import attach_game_enrichments
+
+    attach_game_enrichments(game, season=int(str(day_iso)[:4]))
     features = engine.features_for_game(game)
     has_market, _has_spread = apply_market_features(
         features,

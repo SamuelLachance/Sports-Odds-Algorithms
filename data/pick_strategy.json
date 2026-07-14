@@ -1,6 +1,6 @@
 {
   "policy": "Official picks use Hub\u00e1\u010dek gates from walk-forward hybrid OOS bet backtests. Enable bar: positive worst-season ROI at the execution price we would actually take.",
-  "generated_at": "2026-07-13",
+  "generated_at": "2026-07-14",
   "default": {
     "min_edge": 0,
     "min_ev_pct": 2.0,
@@ -14,17 +14,20 @@
   },
   "mlb": {
     "bet_type": "moneyline",
-    "min_market_gap_pp": 6.0,
+    "min_market_gap_pp": 8.0,
     "min_win_confidence_pp": 0.0,
-    "min_ev_pct": 0.0,
+    "min_ev_pct": 6.0,
     "ml_lo": -200,
     "ml_hi": 200,
     "enabled": true,
-    "note": "Hybrid OOS Hub\u00e1\u010dek refresh 2026-07-13: gap>=6.0pp EV>=0.0% ML[-200,200] open ROI 12.71% worst 9.45% n=474. Close ROI 0.12% (morning prices sit between open and close). ENABLED.",
-    "backtest_roi_pct": 12.71,
-    "backtest_bets": 474,
+    "note": "Hub\u00e1\u010dek MLB 2026-07-14: hybrid model_raw decor_w=0.12 gap>=8.0 EV>=6.0% ML[-200,200] sides=home exec=close window=all ROI 4.13% worst 3.64% n=321. ENABLED.",
+    "backtest_roi_pct": 4.13,
+    "backtest_bets": 321,
     "backtest_close_roi_pct": 0.12,
-    "fav_mode": "any"
+    "fav_mode": "any",
+    "allowed_sides": [
+      "home"
+    ]
   },
   "nba": {
     "bet_type": "spread",

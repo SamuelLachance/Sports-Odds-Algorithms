@@ -53,18 +53,26 @@ def load_league_frame(league: str) -> tuple[pd.DataFrame, str] | None:
         ):
             hist = PROJECT_ROOT / "data" / f"{league}_history" / "training_table.csv"
             if hist.is_file():
-                cols = ["season", "date", "home", "away", "home_open_ml", "away_open_ml"]
-                tt = pd.read_csv(hist, usecols=lambda c: c in cols or c.endswith("_open_ml"))
-                keys = [c for c in ("season", "date", "home", "away") if c in frame.columns and c in tt.columns]
-                if keys and "home_open_ml" in tt.columns:
+                tt = pd.read_csv(hist)
+                # Normalize team key column names across leagues.
+                rename = {}
+                if "home_key" in tt.columns and "home" not in tt.columns:
+                    rename["home_key"] = "home"
+                if "away_key" in tt.columns and "away" not in tt.columns:
+                    rename["away_key"] = "away"
+                if rename:
+                    tt = tt.rename(columns=rename)
+                if "home_key" in frame.columns and "home" not in frame.columns:
+                    frame = frame.rename(columns={"home_key": "home", "away_key": "away"})
+                need = ["season", "date", "home", "away", "home_open_ml", "away_open_ml"]
+                if all(c in tt.columns for c in need):
+                    keys = ["season", "date", "home", "away"]
                     for drop in ("home_open_ml", "away_open_ml"):
                         if drop in frame.columns:
                             frame = frame.drop(columns=[drop])
-                    frame = frame.merge(
-                        tt[keys + ["home_open_ml", "away_open_ml"]],
-                        on=keys,
-                        how="left",
-                    )
+                    # Deduplicate right side to avoid cartesian blow-ups.
+                    right = tt[need].drop_duplicates(keys, keep="last")
+                    frame = frame.merge(right, on=keys, how="left")
         if prefer_open and "home_open_ml" not in frame.columns:
             continue
         return frame, label
