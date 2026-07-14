@@ -1,2 +1,0 @@
-# Trained NBA ML model artifacts are written here by scripts/train_nba_ml.py
-# (margin_model.joblib, winprob_model.joblib, metadata.json).
