@@ -488,6 +488,7 @@ def apply_context_to_blend(
                 "steam_pp": steam,
                 "news_pp": news,
                 "total_pp": 0.0,
+                "open_source": str(market.get("open_source") or "") or None,
             }
         return updated
 
@@ -610,5 +611,6 @@ def apply_context_to_blend(
         "total_pp": round(total_shift, 3),
         "league": league,
         "games_played_proxy": _games_played_proxy_from_blend(blended),
+        "open_source": str(market.get("open_source") or "") or None,
     }
     return updated

@@ -822,7 +822,10 @@ function contextCallout(model) {
     parts.push(`FLB ${formatSignedPct(signals.flb_pp)} pp`);
   }
   if (signals?.steam_pp != null && Math.abs(Number(signals.steam_pp)) >= 0.05) {
-    parts.push(`Steam ${formatSignedPct(signals.steam_pp)} pp`);
+    const src = signals.open_source
+      ? ` (open ${escapeHtml(String(signals.open_source).replace(/^espn:/, ""))})`
+      : "";
+    parts.push(`Steam ${formatSignedPct(signals.steam_pp)} pp${src}`);
   }
   if (signals?.news_pp != null && Math.abs(Number(signals.news_pp)) >= 0.05) {
     parts.push(`News ${formatSignedPct(signals.news_pp)} pp`);

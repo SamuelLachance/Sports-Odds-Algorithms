@@ -435,6 +435,30 @@ def predict_live_game(
     except Exception:  # noqa: BLE001 — never block slate on books
         book_enrichment = {}
 
+    # Early-lines layer: seed the first-seen store from ESPN provider rows and
+    # look up the earliest observed open (BetOnline & co once the Odds API
+    # snapshot cron runs). Feeds the steam context and the market dict below.
+    early_lines: dict[str, Any] | None = None
+    try:
+        from web.early_lines import early_lines_for_game, seed_from_espn_enrichment
+
+        game_day = str(game.start_time or "")[:10] or cutoff
+        seed_from_espn_enrichment(
+            game.league,
+            event_date=game_day,
+            home_name=game.home_name,
+            away_name=game.away_name,
+            providers=book_enrichment.get("book_lines"),
+        )
+        early_lines = early_lines_for_game(
+            game.league,
+            event_date=game_day,
+            home_name=game.home_name,
+            away_name=game.away_name,
+        )
+    except Exception:  # noqa: BLE001 — never block slate on early lines
+        early_lines = None
+
     consensus_spread = _consensus_spread_for_preds(
         game.market.spread, book_enrichment
     )
@@ -511,6 +535,17 @@ def predict_live_game(
             context_market["open_home_moneyline"] = book_enrichment["open_home_moneyline"]
         if book_enrichment.get("open_away_moneyline") is not None:
             context_market["open_away_moneyline"] = book_enrichment["open_away_moneyline"]
+        # Prefer the earliest observed opener (early-lines store: BetOnline & co
+        # via the Odds API cron, else the first ESPN-published open) — steam
+        # measured from the true open, not the last book to post.
+        early_open = (early_lines or {}).get("open") or {}
+        if early_open.get("home_ml") is not None and early_open.get("away_ml") is not None:
+            try:
+                context_market["open_home_moneyline"] = int(round(float(early_open["home_ml"])))
+                context_market["open_away_moneyline"] = int(round(float(early_open["away_ml"])))
+                context_market["open_source"] = str((early_lines or {}).get("opened_by") or "")
+            except (TypeError, ValueError):
+                pass
         blended = apply_context_to_blend(
             blended,
             market=context_market,
@@ -720,31 +755,10 @@ def predict_live_game(
     except Exception:  # noqa: BLE001 — never block slate on books
         pass
 
-    # Early-lines layer: seed the first-seen store from ESPN provider rows and
-    # attach the earliest observed open (BetOnline & co when the Odds API
-    # snapshot cron runs) so EV can be read against the true opener.
-    early: dict[str, Any] | None = None
-    try:
-        from web.early_lines import early_lines_for_game, seed_from_espn_enrichment
-
-        game_day = str(game.start_time or "")[:10] or cutoff
-        seed_from_espn_enrichment(
-            game.league,
-            event_date=game_day,
-            home_name=game.home_name,
-            away_name=game.away_name,
-            providers=book_enrichment.get("book_lines"),
-        )
-        early = early_lines_for_game(
-            game.league,
-            event_date=game_day,
-            home_name=game.home_name,
-            away_name=game.away_name,
-        )
-        if early:
-            market_dict["early_lines"] = early
-    except Exception:  # noqa: BLE001 — never block slate on early lines
-        early = None
+    # Earliest observed open (computed next to the enrichment fetch above).
+    early = early_lines
+    if early:
+        market_dict["early_lines"] = early
 
     def _enrich_pick(pick_dict: dict[str, Any]) -> dict[str, Any]:
         from web.live_odds_enrichment import line_shopping_fields_for_pick
