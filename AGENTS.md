@@ -104,6 +104,17 @@ Used by `web/daily_service.py` / `web/live_odds_enrichment.py` / Pages `build_gh
 | `LIVE_MULTI_BOOK` | on interactively; off under `FAST_DAILY_BUILD` when unset | Set `1` to force multi-book on (**Pages does this** even with `FAST_DAILY_BUILD=1`); `0`/`false` to force off. Slate `summary.line_shopping` reports `on` / `skipped_fast_build` / `off`. |
 | `LIVE_MULTI_BOOK_BUDGET_S` | `120` | Wall-time budget (seconds) for cumulative book fetches per build. |
 | `NEWS_SIGNALS` | league defaults | Set `0`/`false` to disable headline keyword nudges in the context layer. |
+| `ODDS_API_KEY` | unset | Enables `scripts/snapshot_early_lines.py` (The Odds API multi-book opener capture: BetOnline/Pinnacle/Bovada/...). Without it the early-lines store only accumulates ESPN provider opens seeded by the daily build. |
+
+### Early opening lines (`web/early_lines.py`)
+
+First-seen (game, book, market) snapshots land in `data/supplemental/early-lines/{league}.jsonl`; the earliest book becomes the observed opener. The daily slate attaches `market.early_lines` (`opened_by` / `opened_at` / per-book opens) and moneyline picks gain `open_odds` / `opened_by` / `ev_pct_at_open` (UI shows "Open (book) … EV @ open"). To capture true early openers (BetOnline often posts overnight), run on a cron before the first slate build:
+
+```powershell
+python scripts/snapshot_early_lines.py --leagues wnba,mlb,nba,nhl
+```
+
+Cost note: each league costs `markets x regions` Odds API credits per run (defaults 9; free tier 500/month) — trim `EARLY_LINES_REGIONS`/`EARLY_LINES_MARKETS` or the league list to fit.
 
 Pages (`pages.yml`) typically sets `FAST_DAILY_BUILD=1` **and** `LIVE_MULTI_BOOK=1`, so production line shopping stays on; the UI “line shopping skipped” banner only appears when multi-book is actually skipped.
 

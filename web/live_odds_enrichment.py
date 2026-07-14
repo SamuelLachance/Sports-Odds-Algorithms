@@ -281,6 +281,7 @@ def summarize_book_items(
     providers: list[str] = []
     open_home_values: list[float] = []
     open_away_values: list[float] = []
+    book_lines: list[dict[str, Any]] = []
     for item in filtered:
         line = _provider_line_for_league(league_key, item)
         open_home, open_away = _provider_open_moneylines(item)
@@ -290,12 +291,27 @@ def summarize_book_items(
         if open_home is not None and open_away is not None:
             open_home_values.append(open_home)
             open_away_values.append(open_away)
+        prov_name = ((item.get("provider") or {}).get("name") or "").strip()
+        if prov_name:
+            # Per-provider rows for the early-lines store + per-book UI.
+            book_lines.append(
+                {
+                    "name": prov_name,
+                    "home_ml": line.get("home_close_ml"),
+                    "away_ml": line.get("away_close_ml"),
+                    "home_spread": line.get("home_close_spread"),
+                    "total": line.get("close_total"),
+                    "open_home_ml": open_home,
+                    "open_away_ml": open_away,
+                    "open_home_spread": line.get("home_open_spread"),
+                    "open_total": line.get("open_total"),
+                }
+            )
         if not has_close:
             continue
         lines.append(line)
-        name = ((item.get("provider") or {}).get("name") or "").strip()
-        if name and name not in providers:
-            providers.append(name)
+        if prov_name and prov_name not in providers:
+            providers.append(prov_name)
 
     # Open-only slate: still return steam medians with n_books=0 (do not drop
     # opens via an empty early return). Completely empty input stays {}.
@@ -368,6 +384,8 @@ def summarize_book_items(
     if open_home_ml is not None and open_away_ml is not None:
         summary["open_home_moneyline"] = open_home_ml
         summary["open_away_moneyline"] = open_away_ml
+    if book_lines:
+        summary["book_lines"] = book_lines
     return summary
 
 

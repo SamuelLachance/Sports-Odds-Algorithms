@@ -551,6 +551,18 @@ function pickBestPriceHint(pick) {
   return `<div><span>Best book</span><strong>${formatOdds(pick.best_available_odds)}${edge}</strong></div>`;
 }
 
+/** Earliest observed opener (BetOnline & co) + EV at that price. */
+function pickOpenLineHint(pick) {
+  if (pick.open_odds == null) return "";
+  const book = pick.opened_by ? String(pick.opened_by).replace(/^espn:/, "") : "";
+  const ev =
+    pick.ev_pct_at_open != null
+      ? ` · EV @ open ${pick.ev_pct_at_open > 0 ? "+" : ""}${pick.ev_pct_at_open}%`
+      : "";
+  const label = book ? `Open (${book})` : "Open";
+  return `<div><span>${label}</span><strong>${formatOdds(pick.open_odds)}${ev}</strong></div>`;
+}
+
 /** Thin-sample international / tournament leagues (mirrors context_signals). */
 const SPARSE_SAMPLE_LEAGUES = new Set([
   "worldcup",
@@ -1338,6 +1350,7 @@ function pickCard(pick, extra = "", game = null) {
     <div class="pick-odds">
       <div><span>${pick.bet_type === "spread" ? "Spread" : "Market"}</span><strong>${pickMarketLabel(pick)}</strong></div>
       ${pickBestPriceHint(pick)}
+      ${pickOpenLineHint(pick)}
       <div><span>Model</span><strong>${pickModelLabel(pick)}</strong></div>
       ${gap != null ? `<div><span>Market gap</span><strong>${formatSignedPct(gap)} pp</strong></div>` : pick.edge != null ? `<div><span>Edge</span><strong>+${pick.edge}</strong></div>` : ""}
       ${pick.ev_pct != null ? `<div><span>Honest EV</span><strong>+${pick.ev_pct}%</strong></div>` : ""}

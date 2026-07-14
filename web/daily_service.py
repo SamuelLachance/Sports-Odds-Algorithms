@@ -720,6 +720,32 @@ def predict_live_game(
     except Exception:  # noqa: BLE001 — never block slate on books
         pass
 
+    # Early-lines layer: seed the first-seen store from ESPN provider rows and
+    # attach the earliest observed open (BetOnline & co when the Odds API
+    # snapshot cron runs) so EV can be read against the true opener.
+    early: dict[str, Any] | None = None
+    try:
+        from web.early_lines import early_lines_for_game, seed_from_espn_enrichment
+
+        game_day = str(game.start_time or "")[:10] or cutoff
+        seed_from_espn_enrichment(
+            game.league,
+            event_date=game_day,
+            home_name=game.home_name,
+            away_name=game.away_name,
+            providers=book_enrichment.get("book_lines"),
+        )
+        early = early_lines_for_game(
+            game.league,
+            event_date=game_day,
+            home_name=game.home_name,
+            away_name=game.away_name,
+        )
+        if early:
+            market_dict["early_lines"] = early
+    except Exception:  # noqa: BLE001 — never block slate on early lines
+        early = None
+
     def _enrich_pick(pick_dict: dict[str, Any]) -> dict[str, Any]:
         from web.live_odds_enrichment import line_shopping_fields_for_pick
 
@@ -735,7 +761,29 @@ def predict_live_game(
             bet_type=str(enriched.get("bet_type") or "moneyline"),
             model_prob_pct=float(model_prob) if model_prob is not None else None,
         )
-        return {**enriched, **shopping} if shopping else enriched
+        enriched = {**enriched, **shopping} if shopping else enriched
+        # EV against the earliest observed open (moneyline picks only).
+        try:
+            if (
+                early
+                and model_prob is not None
+                and str(enriched.get("bet_type") or "moneyline") == "moneyline"
+            ):
+                from web.bet_advisor import expected_value_pct
+
+                open_snap = early.get("open") or {}
+                side = str(enriched.get("side") or "")
+                open_odds = open_snap.get("home_ml" if side == "home" else "away_ml")
+                if open_odds is not None:
+                    open_int = int(round(float(open_odds)))
+                    enriched["open_odds"] = open_int
+                    enriched["opened_by"] = early.get("opened_by")
+                    enriched["ev_pct_at_open"] = round(
+                        expected_value_pct(float(model_prob), open_int), 2
+                    )
+        except Exception:  # noqa: BLE001 — cosmetic field, never block picks
+            pass
+        return enriched
 
     return {
         "event_id": game.event_id,
