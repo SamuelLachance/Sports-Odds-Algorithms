@@ -131,9 +131,9 @@
     2010,
     2025
   ],
-  "oos_model_logloss": 0.6192,
-  "oos_model_brier": 0.21462,
-  "oos_model_acc": 0.6586,
+  "oos_model_logloss": 0.60977,
+  "oos_model_brier": 0.21116,
+  "oos_model_acc": 0.6632,
   "oos_margin_mae": 10.1979,
   "oos_elo_margin_mae": 10.408,
   "oos_elo_logloss": 0.63202,
@@ -483,7 +483,9 @@
   "oos_with_odds": 4349,
   "hybrid": true,
   "hybrid_backend": "catboost",
-  "hybrid_market_blend_w": 0.6,
+  "hybrid_market_blend_w": 0.8500000000000001,
   "baseline_xgb_logloss": 0.6192,
-  "hybrid_shipped_at": "2026-07-14T09:05:14.575894+00:00"
+  "hybrid_shipped_at": "2026-07-14T19:50:24.306892+00:00",
+  "oos_model_logloss_odds_subset": 0.60985,
+  "gap_vs_market": 0.00021
 }
