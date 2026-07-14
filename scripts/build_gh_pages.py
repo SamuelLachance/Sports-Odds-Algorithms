@@ -197,6 +197,32 @@ def build_daily_slate(*, refresh_sports_db: bool = True) -> dict:
     slate = get_daily_slate()
     write_json(DOCS_DIR / "api" / "daily-slate.json", slate)
 
+    # Look-ahead slates (48h edge window): model-only predictions publish before
+    # lines open; the board's line-watch restacks them client-side when books
+    # post. Light artifacts only — no tracking, team profiles, or db patching —
+    # and no multi-book/news for future days (lines mostly don't exist yet),
+    # keeping the Pages build inside its timeout. LOOKAHEAD_SLATES=0 disables.
+    future_slates: list[dict] = []
+    if (os.environ.get("LOOKAHEAD_SLATES") or "1").strip().lower() not in ("0", "false"):
+        saved_env = {k: os.environ.get(k) for k in ("LIVE_MULTI_BOOK", "NEWS_SIGNALS")}
+        os.environ["LIVE_MULTI_BOOK"] = "0"
+        os.environ["NEWS_SIGNALS"] = "0"
+        try:
+            for days_ahead in (1, 2):
+                try:
+                    print(f"Building look-ahead slate (+{days_ahead}d)...")
+                    future = get_daily_slate(days_ahead)
+                    write_json(DOCS_DIR / "api" / f"slate-plus{days_ahead}.json", future)
+                    future_slates.append(future)
+                except Exception as exc:  # noqa: BLE001 — look-ahead must not block deploy
+                    print(f"Look-ahead slate +{days_ahead}d failed: {exc}")
+        finally:
+            for key, value in saved_env.items():
+                if value is None:
+                    os.environ.pop(key, None)
+                else:
+                    os.environ[key] = value
+
     if _fast_daily_build():
         print("Building lightweight teams index for sidebar (FAST_DAILY_BUILD)")
         write_json(
@@ -212,7 +238,9 @@ def build_daily_slate(*, refresh_sports_db: bool = True) -> dict:
             write_json(DOCS_DIR / "api" / "team-profiles" / league / f"{abbr}.json", profile)
 
     print("Updating bet tracking rollups...")
-    write_json(DOCS_DIR / "api" / "tracking.json", update_tracking(slate))
+    # Look-ahead qualifying picks (open lines only) become official bets placed
+    # in advance; the same dedupe key refreshes them on later runs.
+    write_json(DOCS_DIR / "api" / "tracking.json", update_tracking(slate, extra_slates=future_slates))
 
     print("Grading soccer paper picks...")
     try:

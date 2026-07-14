@@ -1051,7 +1051,13 @@ def build_tracking_response(store: dict[str, Any]) -> dict[str, Any]:
 
 
 def prune_below_min_ev(store: dict[str, Any]) -> dict[str, Any]:
-    """Drop still-pending bets that no longer qualify. Graded bets are immutable."""
+    """Drop still-pending bets that no longer qualify under CURRENT thresholds.
+
+    MANUAL maintenance only — deliberately NOT part of the daily routine: a
+    recorded official bet (same-day or placed in advance on an open line) is a
+    placed bet and must stay in the book until it grades, even if policy
+    thresholds later tighten or its league gate flips.
+    """
     store = _normalize_store(store)
     store["bets"] = [
         b
@@ -1066,10 +1072,24 @@ def prune_below_min_edge(store: dict[str, Any]) -> dict[str, Any]:
     return prune_below_min_ev(store)
 
 
-def update_tracking(slate: dict[str, Any]) -> dict[str, Any]:
+def update_tracking(
+    slate: dict[str, Any],
+    extra_slates: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    """Daily routine: record today's (and any look-ahead) picks, then grade.
+
+    No pruning here — pending bets only leave the book by grading. Look-ahead
+    slates let official bets be placed days early when a line is already open;
+    on later runs the same (event, side, type) key refreshes the closing
+    snapshot instead of duplicating or dropping the bet.
+    """
     store = _normalize_store(load_store())
-    store = prune_below_min_edge(store)
     store = record_from_slate(store, slate)
+    for future_slate in extra_slates or []:
+        try:
+            store = record_from_slate(store, future_slate)
+        except Exception:  # noqa: BLE001 — a bad look-ahead must not block grading
+            continue
     store = grade_pending(store)
     save_store(store)
     return build_tracking_response(store)
