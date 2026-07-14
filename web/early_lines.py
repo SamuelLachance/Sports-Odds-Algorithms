@@ -280,6 +280,83 @@ def seed_from_espn_enrichment(
         return
 
 
+_SNAPSHOT_DONE: set[str] = set()
+
+
+def maybe_snapshot_for_build(league: str) -> None:
+    """Refresh the Odds API snapshot once per process for allowed leagues.
+
+    Gated by ``EARLY_LINES_LEAGUES`` (comma list; empty = off) and
+    ``ODDS_API_KEY``. Keeps slate-build book prices fresh so line shopping can
+    quote BetOnline & co without a separate cron. Soft-fails silently.
+    """
+    lg = league.lower()
+    allowed = {
+        s.strip().lower()
+        for s in (os.environ.get("EARLY_LINES_LEAGUES") or "").split(",")
+        if s.strip()
+    }
+    if lg in _SNAPSHOT_DONE or lg not in allowed:
+        return
+    _SNAPSHOT_DONE.add(lg)  # one attempt per build even on failure
+    try:
+        snapshot_league_odds_api(lg)
+    except Exception:  # noqa: BLE001 — never block a slate
+        return
+
+
+def book_prices_for_game(
+    league: str,
+    *,
+    event_date: str,
+    home_name: str,
+    away_name: str,
+    max_age_hours: float = 8.0,
+) -> list[dict[str, Any]]:
+    """Fresh per-book CURRENT prices from the store for one game.
+
+    Only rows whose ``last_seen`` is within ``max_age_hours`` qualify — stale
+    snapshots must not masquerade as shoppable prices.
+    """
+    try:
+        store = _load_store(league)
+    except Exception:  # noqa: BLE001
+        return []
+    if not store:
+        return []
+    ekey = _event_key(event_date, home_name, away_name)
+    day = str(event_date or "")[:10]
+    hn, an = _norm_name(home_name), _norm_name(away_name)
+    now = datetime.now(timezone.utc)
+    out: list[dict[str, Any]] = []
+    for r in store.values():
+        if str(r.get("event_key") or "") != ekey:
+            if str(r.get("commence") or "")[:10] != day:
+                continue
+            rh, ra = _norm_name(r.get("home_name")), _norm_name(r.get("away_name"))
+            if not ((hn in rh or rh in hn) and (an in ra or ra in an)):
+                continue
+        try:
+            seen = datetime.strptime(str(r.get("last_seen") or ""), "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+        except ValueError:
+            continue
+        if (now - seen).total_seconds() > max_age_hours * 3600.0:
+            continue
+        last = r.get("last") or {}
+        out.append(
+            {
+                "book": str(r.get("book") or ""),
+                "home_ml": last.get("home_ml"),
+                "away_ml": last.get("away_ml"),
+                "home_spread": last.get("home_spread"),
+                "total": last.get("total"),
+                "last_seen": r.get("last_seen"),
+                "source": r.get("source"),
+            }
+        )
+    return out
+
+
 def early_lines_for_game(
     league: str,
     *,

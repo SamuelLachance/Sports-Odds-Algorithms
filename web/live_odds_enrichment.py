@@ -175,6 +175,159 @@ def best_american_odds(values: list[Any]) -> int | None:
     )
 
 
+# --- Multi-book merge + custom de-vigged consensus -------------------------
+
+# Sharp-book weights for the custom consensus (Pinnacle-class > offshore
+# early-openers > retail). ESPN-sourced retail books weigh like retail.
+SHARP_BOOK_WEIGHTS: dict[str, float] = {
+    "pinnacle": 3.0,
+    "betonlineag": 2.5,
+    "lowvig": 2.0,
+    "bovada": 1.2,
+    "mybookieag": 1.2,
+    "draftkings": 1.0,
+    "fanduel": 1.0,
+    "betmgm": 1.0,
+    "williamhill_us": 1.0,
+    "betrivers": 1.0,
+}
+
+_BOOK_DISPLAY: dict[str, str] = {
+    "betonlineag": "BetOnline",
+    "pinnacle": "Pinnacle",
+    "lowvig": "LowVig",
+    "bovada": "Bovada",
+    "mybookieag": "MyBookie",
+    "draftkings": "DraftKings",
+    "fanduel": "FanDuel",
+    "betmgm": "BetMGM",
+    "williamhill_us": "Caesars",
+    "betrivers": "BetRivers",
+}
+
+
+def _canon_book(name: str) -> str:
+    """Canonical lowercase book key; espn:draftkings == draftkings."""
+    key = str(name or "").strip().lower()
+    if key.startswith("espn:"):
+        key = key[5:]
+    key = key.replace(" ", "").replace("_us", "_us")
+    aliases = {"caesars": "williamhill_us", "espnbet": "espnbet", "betonline": "betonlineag"}
+    return aliases.get(key, key)
+
+
+def book_display_name(name: str) -> str:
+    canon = _canon_book(name)
+    return _BOOK_DISPLAY.get(canon, str(name or "").replace("espn:", "").strip() or canon)
+
+
+def merge_book_prices(
+    espn_book_lines: list[dict[str, Any]] | None,
+    store_prices: list[dict[str, Any]] | None,
+) -> list[dict[str, Any]]:
+    """Merge ESPN per-provider rows with fresh early-lines store prices.
+
+    Dedupe by canonical book (ESPN row wins ties — it is fetched live during
+    this build). Rows: {book, display, home_ml, away_ml, home_spread, source}.
+    """
+    merged: dict[str, dict[str, Any]] = {}
+    for row in store_prices or []:
+        canon = _canon_book(row.get("book"))
+        if not canon:
+            continue
+        merged[canon] = {
+            "book": canon,
+            "display": book_display_name(canon),
+            "home_ml": _as_int_odds(row.get("home_ml")),
+            "away_ml": _as_int_odds(row.get("away_ml")),
+            "home_spread": row.get("home_spread"),
+            "source": row.get("source") or "odds_api",
+        }
+    for row in espn_book_lines or []:
+        canon = _canon_book(row.get("name"))
+        if not canon:
+            continue
+        merged[canon] = {
+            "book": canon,
+            "display": book_display_name(row.get("name")),
+            "home_ml": _as_int_odds(row.get("home_ml")),
+            "away_ml": _as_int_odds(row.get("away_ml")),
+            "home_spread": row.get("home_spread"),
+            "source": "espn",
+        }
+    return [r for r in merged.values() if r.get("home_ml") is not None or r.get("away_ml") is not None]
+
+
+def best_ml_with_book(
+    book_prices: list[dict[str, Any]],
+    *,
+    side: str,
+) -> tuple[int, str] | None:
+    """(best price, display name) for a side across merged books."""
+    key = "home_ml" if side == "home" else "away_ml"
+    best: tuple[int, str] | None = None
+    for row in book_prices:
+        odds = _as_int_odds(row.get(key))
+        if odds is None:
+            continue
+        imp = american_to_implied_prob(odds)
+        if imp is None:
+            continue
+        if best is None or imp < (american_to_implied_prob(best[0]) or 1.0):
+            best = (odds, str(row.get("display") or row.get("book") or ""))
+    return best
+
+
+def _prob_to_american(prob: float) -> int:
+    prob = min(max(prob, 1e-4), 1 - 1e-4)
+    if prob >= 0.5:
+        return int(round(-100.0 * prob / (1.0 - prob)))
+    return int(round(100.0 * (1.0 - prob) / prob))
+
+
+def custom_consensus_from_books(
+    book_prices: list[dict[str, Any]],
+) -> dict[str, Any] | None:
+    """De-vigged, sharp-weighted median consensus across merged books.
+
+    Each two-sided book is de-vigged (home implied / total implied), then the
+    weighted median of home fair probs is taken with SHARP_BOOK_WEIGHTS —
+    robust to one book's stale/outlier number, and vig differences between
+    books cancel. Returns fair prob + fair (no-vig) American lines.
+    """
+    probs: list[tuple[float, float, str]] = []  # (fair_home_prob, weight, book)
+    for row in book_prices:
+        h = _as_int_odds(row.get("home_ml"))
+        a = _as_int_odds(row.get("away_ml"))
+        if h is None or a is None:
+            continue
+        ph = american_to_implied_prob(h)
+        pa = american_to_implied_prob(a)
+        if ph is None or pa is None or ph + pa <= 0:
+            continue
+        canon = _canon_book(row.get("book"))
+        weight = SHARP_BOOK_WEIGHTS.get(canon, 1.0)
+        probs.append((ph / (ph + pa), weight, canon))
+    if not probs:
+        return None
+    probs.sort(key=lambda t: t[0])
+    total_w = sum(w for _, w, _ in probs)
+    acc = 0.0
+    fair = probs[-1][0]
+    for prob, weight, _ in probs:
+        acc += weight
+        if acc >= total_w / 2.0:
+            fair = prob
+            break
+    return {
+        "fair_home_prob": round(fair, 4),
+        "fair_home_ml": _prob_to_american(fair),
+        "fair_away_ml": _prob_to_american(1.0 - fair),
+        "books_used": len(probs),
+        "method": "devig_sharp_weighted_median",
+    }
+
+
 def _spreads_equal(left: Any, right: Any) -> bool:
     """True when both handicaps parse to the same finite line (exact match)."""
     if left is None or right is None:

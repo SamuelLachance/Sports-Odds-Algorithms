@@ -843,7 +843,8 @@ function contextCallout(model) {
 
 function lineShoppingPanel(market, pick) {
   const mk = market || {};
-  const nBooks = mk.n_books ?? pick?.n_books;
+  // Merged pool (ESPN providers + early-lines store) when present.
+  const nBooks = mk.n_books_all ?? mk.n_books ?? pick?.n_books;
   const bestPick = pick?.best_available_odds;
   const hasBest =
     bestPick != null ||
@@ -864,13 +865,20 @@ function lineShoppingPanel(market, pick) {
     );
   }
   if (mk.best_away_ml != null) {
+    const book = mk.best_away_ml_book ? ` <span class="muted">@ ${escapeHtml(mk.best_away_ml_book)}</span>` : "";
     rows.push(
-      `<div><span>Best away ML</span><strong>${formatOdds(mk.best_away_ml)}</strong></div>`,
+      `<div><span>Best away ML</span><strong>${formatOdds(mk.best_away_ml)}${book}</strong></div>`,
     );
   }
   if (mk.best_home_ml != null) {
+    const book = mk.best_home_ml_book ? ` <span class="muted">@ ${escapeHtml(mk.best_home_ml_book)}</span>` : "";
     rows.push(
-      `<div><span>Best home ML</span><strong>${formatOdds(mk.best_home_ml)}</strong></div>`,
+      `<div><span>Best home ML</span><strong>${formatOdds(mk.best_home_ml)}${book}</strong></div>`,
+    );
+  }
+  if (mk.consensus_fair?.fair_home_ml != null) {
+    rows.push(
+      `<div><span>Fair consensus (no vig)</span><strong>${formatOdds(mk.consensus_fair.fair_home_ml)} / ${formatOdds(mk.consensus_fair.fair_away_ml)}</strong></div>`,
     );
   }
   if (mk.best_away_spread != null) {

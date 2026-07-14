@@ -435,13 +435,22 @@ def predict_live_game(
     except Exception:  # noqa: BLE001 — never block slate on books
         book_enrichment = {}
 
-    # Early-lines layer: seed the first-seen store from ESPN provider rows and
-    # look up the earliest observed open (BetOnline & co once the Odds API
-    # snapshot cron runs). Feeds the steam context and the market dict below.
+    # Early-lines layer: refresh the Odds API snapshot (gated by
+    # EARLY_LINES_LEAGUES + ODDS_API_KEY), seed the first-seen store from ESPN
+    # provider rows, and look up the earliest observed open plus fresh
+    # per-book prices. Feeds the steam context and the market dict below.
     early_lines: dict[str, Any] | None = None
+    merged_book_prices: list[dict[str, Any]] = []
     try:
-        from web.early_lines import early_lines_for_game, seed_from_espn_enrichment
+        from web.early_lines import (
+            book_prices_for_game,
+            early_lines_for_game,
+            maybe_snapshot_for_build,
+            seed_from_espn_enrichment,
+        )
+        from web.live_odds_enrichment import merge_book_prices
 
+        maybe_snapshot_for_build(game.league)
         game_day = str(game.start_time or "")[:10] or cutoff
         seed_from_espn_enrichment(
             game.league,
@@ -456,8 +465,18 @@ def predict_live_game(
             home_name=game.home_name,
             away_name=game.away_name,
         )
+        merged_book_prices = merge_book_prices(
+            book_enrichment.get("book_lines"),
+            book_prices_for_game(
+                game.league,
+                event_date=game_day,
+                home_name=game.home_name,
+                away_name=game.away_name,
+            ),
+        )
     except Exception:  # noqa: BLE001 — never block slate on early lines
         early_lines = None
+        merged_book_prices = []
 
     consensus_spread = _consensus_spread_for_preds(
         game.market.spread, book_enrichment
@@ -759,6 +778,31 @@ def predict_live_game(
     early = early_lines
     if early:
         market_dict["early_lines"] = early
+    # Merged multi-book shopping (ESPN providers + fresh early-lines store):
+    # richer best prices WITH the book named, plus the custom de-vigged
+    # sharp-weighted consensus. Official EV/Kelly stay on ESPN market odds.
+    if merged_book_prices:
+        try:
+            from web.live_odds_enrichment import (
+                best_ml_with_book,
+                custom_consensus_from_books,
+            )
+
+            market_dict["book_prices"] = merged_book_prices
+            market_dict["n_books_all"] = len(merged_book_prices)
+            best_home = best_ml_with_book(merged_book_prices, side="home")
+            best_away = best_ml_with_book(merged_book_prices, side="away")
+            if best_home is not None:
+                market_dict["best_home_ml"] = best_home[0]
+                market_dict["best_home_ml_book"] = best_home[1]
+            if best_away is not None:
+                market_dict["best_away_ml"] = best_away[0]
+                market_dict["best_away_ml_book"] = best_away[1]
+            fair = custom_consensus_from_books(merged_book_prices)
+            if fair:
+                market_dict["consensus_fair"] = fair
+        except Exception:  # noqa: BLE001 — cosmetic layer, never block slate
+            pass
 
     def _enrich_pick(pick_dict: dict[str, Any]) -> dict[str, Any]:
         from web.live_odds_enrichment import line_shopping_fields_for_pick
