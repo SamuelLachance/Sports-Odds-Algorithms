@@ -253,29 +253,30 @@ def test_mlb_official_picks_use_moneyline_decorrelation() -> None:
 def test_nhl_pick_thresholds_use_backtested_policy() -> None:
     """NHL open-line hybrid Hubáček policy from pick_strategy.json."""
     thresholds = get_pick_thresholds("nhl")
-    assert thresholds["min_market_gap_pp"] >= 5.0
+    assert thresholds["min_market_gap_pp"] == 4.0
+    assert thresholds["min_ev_pct"] == 5.0
     assert thresholds["min_win_confidence_pp"] == 0.0
     assert thresholds["ml_lo"] == -250
     assert thresholds["ml_hi"] == 250
     assert thresholds["bet_type"] == "moneyline"
     assert thresholds["enabled"] is True
     assert thresholds.get("fav_mode", "any") == "any"
+    assert thresholds.get("allowed_sides") == ["home"]
 
 
 def test_nhl_official_picks_use_moneyline_decorrelation() -> None:
-    """NHL official book is either-side ML in [-250, +250] at the open."""
+    """NHL official book is home-side ML in [-250, +250] at the open."""
     thresholds = get_pick_thresholds("nhl")
     min_gap = thresholds["min_market_gap_pp"]
-    # Home -180 / away +160. Push model toward away so the dog clears gap+EV.
-    pre_home = 40.0
-    market_home = 64.3  # approx de-vig of -180 vs +160
+    # Home +160 / away -180. Push model toward home so it clears gap+EV.
+    pre_home = 60.0
+    market_home = 35.7  # approx de-vig of +160 vs -180
     decor_home = decorrelate_binary(pre_home, market_home)
-    decor_away = 100.0 - decor_home
-    assert decor_away - (100.0 - market_home) >= min_gap
+    assert decor_home - market_home >= min_gap
     blended = {
-        "total_score": decor_away,  # away lean
-        "win_probability": decor_away,
-        "favorite_side": "away",
+        "total_score": decor_home,
+        "win_probability": decor_home,
+        "favorite_side": "home",
         "blended_home_win_probability": decor_home,
         "hockey_pred": {
             "algorithm": "NHLGradientBoost",
@@ -292,11 +293,11 @@ def test_nhl_official_picks_use_moneyline_decorrelation() -> None:
         home_name="Home",
         away_slug="away",
         home_slug="home",
-        total_score=decor_away,
-        win_probability=decor_away,
+        total_score=decor_home,
+        win_probability=decor_home,
         blended=blended,
-        away_market=160,
-        home_market=-180,
+        away_market=-180,
+        home_market=160,
         consensus_spread=None,
         away_spread_odds=None,
         home_spread_odds=None,
@@ -304,7 +305,7 @@ def test_nhl_official_picks_use_moneyline_decorrelation() -> None:
     assert picks
     assert picks[0].strategy == "hubacek"
     assert picks[0].bet_type == "moneyline"
-    assert picks[0].side == "away"
+    assert picks[0].side == "home"
     assert picks[0].market_odds == 160
 
 

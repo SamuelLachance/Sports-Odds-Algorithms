@@ -69,6 +69,13 @@ TEAM_DIVISION: dict[str, str] = {
     "SEA": "P", "VAN": "P", "VGK": "P",
 }
 
+# High-altitude arenas (fraction of ~1 mile elevation proxy; public geography).
+ARENA_ALTITUDE: dict[str, float] = {
+    "COL": 1.0,   # Denver ~5280 ft
+    "CGY": 0.65,  # Calgary ~3550 ft
+    "UTA": 0.8,   # Salt Lake ~4200 ft
+}
+
 FEATURE_COLUMNS: tuple[str, ...] = (
     # baseline core
     "elo_diff",
@@ -171,6 +178,62 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     "corsi_all_pct_diff",
     "ev_xg_share_diff",
     "pp_toi_share_diff",
+    # NHL API special-teams % (fetched historically; EWMA PIT)
+    "pp_pct_diff",
+    "pk_pct_diff",
+    "home_pp_pct_vs_away_pk_pct",
+    "away_pp_pct_vs_home_pk_pct",
+    # matchup cross-terms
+    "home_xgf_vs_away_xga",
+    "away_xgf_vs_home_xga",
+    "home_xgf_slow_vs_away_xga_slow",
+    "away_xgf_slow_vs_home_xga_slow",
+    "hd_share_x_opp_goalie_hd",
+    "pp_xgf_x_opp_pen",
+    "flurry_x_opp_sv",
+    "elo_x_b2b_away",
+    "elo_x_travel",
+    "elo_x_is_playoff",
+    "goalie_gsax_x_b2b",
+    "corsi_raw_vs_adj_gap",
+    # schedule depth
+    "home_stand_len",
+    "away_travel_7d",
+    "home_travel_7d",
+    "home_altitude",
+    "altitude_diff",
+    "days_since_ot_home",
+    "days_since_ot_away",
+    "tz_debt_away",
+    # goalie depth / confirmation proxies
+    "both_goalies_known",
+    "backup_gsax_diff",
+    "starter_vs_backup_home",
+    "starter_vs_backup_away",
+    "goalie_debut_home",
+    "goalie_debut_away",
+    # heuristics
+    "early_season",
+    "luck_diff",
+    "big_elo_gap",
+    "home_fav_elo",
+    "dog_elo_gap",
+    "rematch_flag",
+    "big_fav_ml_proxy",
+    "regulation_win_share_diff",
+    # market / steam (filled at table build when odds rows are complete)
+    "has_market",
+    "mkt_home_prob",
+    "has_open_line",
+    "ml_steam_pp",
+    "has_steam",
+    "has_spread",
+    "mkt_home_spread",
+    "spread_move",
+    "n_books",
+    "total_line",
+    "model_total_vs_line",
+    "has_total",
 )
 
 
@@ -247,6 +310,13 @@ class TeamState:
         "corsi_all_pct",
         "ev_xg_share",
         "pp_toi_share",
+        "pp_pct",
+        "pk_pct",
+        "home_streak",
+        "recent_travel",
+        "last_ot_date",
+        "reg_wins",
+        "reg_games",
     )
 
     def __init__(self) -> None:
@@ -310,6 +380,13 @@ class TeamState:
         self.corsi_all_pct = 0.5
         self.ev_xg_share = LEAGUE_EV_XG_SHARE
         self.pp_toi_share = LEAGUE_PP_TOI_SHARE
+        self.pp_pct = 0.20
+        self.pk_pct = 0.80
+        self.home_streak = 0
+        self.recent_travel: list[tuple[str, float]] = []
+        self.last_ot_date: str | None = None
+        self.reg_wins = 0
+        self.reg_games = 0
 
     def points_pct(self) -> float:
         games = self.season_wins + self.season_losses + self.season_ot_losses
@@ -378,6 +455,34 @@ class TeamState:
         weight = min(self.games_played / 40.0, 1.0)
         return (pdo - 1.0) * weight
 
+    def travel_last_n_days(self, game_date: str, days: int = 7) -> float:
+        current = _parse_date(game_date)
+        if not current:
+            return 0.0
+        total = 0.0
+        for d_str, km in self.recent_travel:
+            d = _parse_date(d_str)
+            if d is None:
+                continue
+            delta = (current - d).days
+            if 0 < delta <= days:
+                total += float(km)
+        return total / 1000.0
+
+    def days_since_ot(self, game_date: str) -> float:
+        if not self.last_ot_date:
+            return 14.0
+        current = _parse_date(game_date)
+        previous = _parse_date(self.last_ot_date)
+        if not current or not previous:
+            return 14.0
+        return float(min(max((current - previous).days, 0), 30))
+
+    def regulation_win_share(self) -> float:
+        if self.reg_games < 5:
+            return 0.5
+        return self.reg_wins / float(self.reg_games)
+
     def to_dict(self) -> dict[str, Any]:
         return {slot: getattr(self, slot) for slot in self.__slots__}
 
@@ -385,8 +490,17 @@ class TeamState:
     def from_dict(cls, payload: dict[str, Any]) -> "TeamState":
         state = cls()
         for slot in cls.__slots__:
-            if slot in payload:
-                setattr(state, slot, payload[slot])
+            if slot not in payload:
+                continue
+            value = payload[slot]
+            if slot == "recent_travel" and isinstance(value, list):
+                parsed: list[tuple[str, float]] = []
+                for item in value:
+                    if isinstance(item, (list, tuple)) and len(item) >= 2:
+                        parsed.append((str(item[0]), float(item[1])))
+                state.recent_travel = parsed
+            else:
+                setattr(state, slot, value)
         return state
 
 
@@ -523,8 +637,31 @@ class NhlFeatureEngine:
             state.one_goal_wins = 0
             state.one_goal_games = 0
             state.road_streak = 0
+            state.home_streak = 0
             state.h2h = {}
             state.elo_history = []
+            state.recent_travel = []
+            state.last_ot_date = None
+            state.reg_wins = 0
+            state.reg_games = 0
+
+    def _backup_goalie_quality(self, team: str, starter_id: Any) -> tuple[float, float]:
+        """Best non-starter GSAx on the team roster pool. Returns (quality, known)."""
+        starter = str(starter_id) if starter_id else ""
+        best = None
+        for gid, gstate in self.goalies.items():
+            if gstate.team != team:
+                continue
+            if starter and gid == starter:
+                continue
+            if gstate.starts < 1 and gstate.shots_seen < 50:
+                continue
+            q = gstate.quality()
+            if best is None or q > best:
+                best = q
+        if best is None:
+            return 0.0, 0.0
+        return float(best), 1.0
 
     def features_for_game(self, game: dict[str, Any]) -> dict[str, float]:
         home = self.team(game["home"])
@@ -568,19 +705,34 @@ class NhlFeatureEngine:
         away_div = TEAM_DIVISION.get(game["away"], "")
         is_div = 1.0 if home_div and home_div == away_div else 0.0
 
-        # Away road-trip length entering this game (consecutive prior away games).
+        # Away road-trip / home-stand length entering this game.
         away_road = float(away.road_streak) if away.last_venue and away.last_venue != game["away"] else 0.0
+        home_stand = float(home.home_streak) if home.last_venue == game["home"] else 0.0
         home_road = 0.0  # home team is at home tonight
 
         tz_shift = _tz_hours(away_prev) - _tz_hours(home_coords)
+        away_tz_debt = abs(tz_shift) * (1.0 if away_rest <= 2.0 else 0.5)
 
         sog_against_diff = home.sog_against - away.sog_against
         goalie_gsax_diff = (hg_gsax - ag_gsax) * 100.0
         rest_diff = home_rest - away_rest
         travel_diff = home_travel - away_travel
+        elo_edge = (home.elo + ELO_HOME_ADV - away.elo) / 100.0
+        is_playoff = 1.0 if int(game.get("game_type") or 2) == 3 else 0.0
+        away_b2b = 1.0 if away_rest <= 1.0 else 0.0
+        home_b2b = 1.0 if home_rest <= 1.0 else 0.0
+
+        home_backup_q, home_backup_known = self._backup_goalie_quality(game["home"], home_goalie_id)
+        away_backup_q, away_backup_known = self._backup_goalie_quality(game["away"], away_goalie_id)
+        both_goalies = 1.0 if home_goalie_id and away_goalie_id else 0.0
+        home_alt = ARENA_ALTITUDE.get(game["home"], 0.0)
+        away_home_alt = ARENA_ALTITUDE.get(game["away"], 0.0)
+
+        h2h_hist = home.h2h.get(game["away"]) or []
+        rematch = 1.0 if len(h2h_hist) >= 1 else 0.0
 
         features: dict[str, float] = {
-            "elo_diff": (home.elo + ELO_HOME_ADV - away.elo) / 100.0,
+            "elo_diff": elo_edge,
             "gf_fast_diff": home.gf_fast - away.gf_fast,
             "ga_fast_diff": home.ga_fast - away.ga_fast,
             "gf_slow_diff": home.gf_slow - away.gf_slow,
@@ -619,8 +771,8 @@ class NhlFeatureEngine:
             "home_rest_days": home_rest,
             "away_rest_days": away_rest,
             "rest_diff": rest_diff,
-            "home_b2b": 1.0 if home_rest <= 1.0 else 0.0,
-            "away_b2b": 1.0 if away_rest <= 1.0 else 0.0,
+            "home_b2b": home_b2b,
+            "away_b2b": away_b2b,
             "home_games_last6": float(home.games_last6(game_date)),
             "away_games_last6": float(away.games_last6(game_date)),
             "home_travel_km": home_travel,
@@ -628,7 +780,7 @@ class NhlFeatureEngine:
             "home_games_played": float(home.games_played),
             "away_games_played": float(away.games_played),
             "season_frac": season_frac,
-            "is_playoff": 1.0 if int(game.get("game_type") or 2) == 3 else 0.0,
+            "is_playoff": is_playoff,
             "league_gpg": self.league_gpg,
             "exp_total_env": env_total,
             "home_goalie_gsax": hg_gsax * 100.0,
@@ -684,6 +836,65 @@ class NhlFeatureEngine:
             "corsi_all_pct_diff": home.corsi_all_pct - away.corsi_all_pct,
             "ev_xg_share_diff": home.ev_xg_share - away.ev_xg_share,
             "pp_toi_share_diff": home.pp_toi_share - away.pp_toi_share,
+            # NHL API special-teams %
+            "pp_pct_diff": home.pp_pct - away.pp_pct,
+            "pk_pct_diff": home.pk_pct - away.pk_pct,
+            "home_pp_pct_vs_away_pk_pct": home.pp_pct - (1.0 - away.pk_pct),
+            "away_pp_pct_vs_home_pk_pct": away.pp_pct - (1.0 - home.pk_pct),
+            # matchup cross-terms
+            "home_xgf_vs_away_xga": home.xgf_fast - away.xga_fast,
+            "away_xgf_vs_home_xga": away.xgf_fast - home.xga_fast,
+            "home_xgf_slow_vs_away_xga_slow": home.xgf_slow - away.xga_slow,
+            "away_xgf_slow_vs_home_xga_slow": away.xgf_slow - home.xga_slow,
+            "hd_share_x_opp_goalie_hd": home.hd_share * (ag_hd * 100.0) - away.hd_share * (hg_hd * 100.0),
+            "pp_xgf_x_opp_pen": home.pp_xgf * away.pen_taken - away.pp_xgf * home.pen_taken,
+            "flurry_x_opp_sv": home.flurry_xg_pct_slow * (1.0 - away.sv_pct) - away.flurry_xg_pct_slow * (1.0 - home.sv_pct),
+            "elo_x_b2b_away": elo_edge * away_b2b,
+            "elo_x_travel": elo_edge * travel_diff,
+            "elo_x_is_playoff": elo_edge * is_playoff,
+            "goalie_gsax_x_b2b": goalie_gsax_diff * (home_b2b - away_b2b),
+            "corsi_raw_vs_adj_gap": (
+                (home.corsi_all_pct - home.corsi_pct_slow)
+                - (away.corsi_all_pct - away.corsi_pct_slow)
+            ),
+            # schedule depth
+            "home_stand_len": home_stand,
+            "away_travel_7d": away.travel_last_n_days(game_date, 7),
+            "home_travel_7d": home.travel_last_n_days(game_date, 7),
+            "home_altitude": home_alt,
+            "altitude_diff": home_alt - away_home_alt,
+            "days_since_ot_home": home.days_since_ot(game_date),
+            "days_since_ot_away": away.days_since_ot(game_date),
+            "tz_debt_away": away_tz_debt,
+            # goalie depth
+            "both_goalies_known": both_goalies,
+            "backup_gsax_diff": (home_backup_q - away_backup_q) * 100.0,
+            "starter_vs_backup_home": (hg_gsax - home_backup_q) * 100.0 if home_backup_known else 0.0,
+            "starter_vs_backup_away": (ag_gsax - away_backup_q) * 100.0 if away_backup_known else 0.0,
+            "goalie_debut_home": 1.0 if home_goalie and home_goalie.starts == 0 else 0.0,
+            "goalie_debut_away": 1.0 if away_goalie and away_goalie.starts == 0 else 0.0,
+            # heuristics
+            "early_season": 1.0 if min(home.games_played, away.games_played) < 10 else 0.0,
+            "luck_diff": (home.pythag() - home.points_pct()) - (away.pythag() - away.points_pct()),
+            "big_elo_gap": 1.0 if abs(elo_edge) >= 1.5 else 0.0,
+            "home_fav_elo": 1.0 if elo_edge > 0 else 0.0,
+            "dog_elo_gap": float(max(-elo_edge, 0.0)),
+            "rematch_flag": rematch,
+            "big_fav_ml_proxy": 1.0 if abs(elo_edge) >= 2.0 else 0.0,
+            "regulation_win_share_diff": home.regulation_win_share() - away.regulation_win_share(),
+            # market placeholders — overwritten at training-table join when odds exist
+            "has_market": 0.0,
+            "mkt_home_prob": 0.5,
+            "has_open_line": 0.0,
+            "ml_steam_pp": 0.0,
+            "has_steam": 0.0,
+            "has_spread": 0.0,
+            "mkt_home_spread": 0.0,
+            "spread_move": 0.0,
+            "n_books": 0.0,
+            "total_line": env_total,
+            "model_total_vs_line": 0.0,
+            "has_total": 0.0,
         }
         return features
 
@@ -932,6 +1143,15 @@ class NhlFeatureEngine:
         if away_fo is not None:
             away.faceoff = _ewma(away.faceoff, float(away_fo), ALPHA_SPECIAL)
 
+        # NHL API special-teams % (game log; skip missing rather than treat as 0).
+        for state, side in ((home, "home"), (away, "away")):
+            pp_obs = game.get(f"{side}_pp_pct")
+            pk_obs = game.get(f"{side}_pk_pct")
+            if pp_obs is not None:
+                state.pp_pct = _ewma(state.pp_pct, float(pp_obs), ALPHA_SPECIAL)
+            if pk_obs is not None:
+                state.pk_pct = _ewma(state.pk_pct, float(pk_obs), ALPHA_SPECIAL)
+
         home.win_ewma = _ewma(home.win_ewma, home_score, ALPHA_WIN)
         away.win_ewma = _ewma(away.win_ewma, 1.0 - home_score, ALPHA_WIN)
         home.home_win_ewma = _ewma(home.home_win_ewma, home_score, ALPHA_WIN)
@@ -989,11 +1209,45 @@ class NhlFeatureEngine:
             away.season_gf += away_goals
             away.season_ga += home_goals
 
-        # Road streak after this game: consecutive finishes away from own arena.
+        # Road streak / home stand after this game.
         home.road_streak = 0
         away.road_streak = (
             (away.road_streak if away.last_venue and away.last_venue != game["away"] else 0) + 1
         )
+        away.home_streak = 0
+        home.home_streak = (
+            (home.home_streak if home.last_venue == game["home"] else 0) + 1
+        )
+
+        if went_extra or tied:
+            home.last_ot_date = game_date
+            away.last_ot_date = game_date
+
+        if is_regular and not tied:
+            home.reg_games += 1
+            away.reg_games += 1
+            # Prefer explicit regulation-win flags when present.
+            home_reg = game.get("home_reg_win")
+            away_reg = game.get("away_reg_win")
+            if home_reg is not None or away_reg is not None:
+                if int(home_reg or 0):
+                    home.reg_wins += 1
+                if int(away_reg or 0):
+                    away.reg_wins += 1
+            elif not went_extra:
+                if home_win:
+                    home.reg_wins += 1
+                else:
+                    away.reg_wins += 1
+
+        # Travel hops completed for this tip (before last_venue overwrite).
+        home_coords = ARENA_COORDS.get(game["home"])
+        home_prev = ARENA_COORDS.get(home.last_venue or game["home"])
+        away_prev = ARENA_COORDS.get(away.last_venue or game["away"])
+        home_hop = _travel_km(home_prev, home_coords)
+        away_hop = _travel_km(away_prev, home_coords)
+        home.recent_travel = (home.recent_travel + [(game_date, home_hop)])[-24:]
+        away.recent_travel = (away.recent_travel + [(game_date, away_hop)])[-24:]
 
         for state in (home, away):
             state.games_played += 1

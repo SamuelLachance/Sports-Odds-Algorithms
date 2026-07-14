@@ -20,19 +20,14 @@ MODELS = PROJECT_ROOT / "data" / "models"
 
 def load_league_frame(league: str) -> tuple[pd.DataFrame, str] | None:
     v2 = MODELS / f"{league}_v2"
-    # Prefer file that has opening prices when league books on open
+    # Prefer hybrid OOS after feature expansion; open-price leagues still need
+    # opening MLs (joined from training table when absent).
     prefer_open = league in ("mlb", "nhl", "nba", "wnba")
     candidates = [
         ("oos_predictions_hybrid.csv", "hybrid"),
         ("oos_predictions.csv", "xgb"),
         ("oos_predictions_improved.csv", "improved"),
     ]
-    if prefer_open:
-        candidates = [
-            ("oos_predictions.csv", "xgb"),
-            ("oos_predictions_hybrid.csv", "hybrid"),
-            ("oos_predictions_improved.csv", "improved"),
-        ]
     for name, label in candidates:
         path = v2 / name
         if not path.is_file():
@@ -51,6 +46,27 @@ def load_league_frame(league: str) -> tuple[pd.DataFrame, str] | None:
             frame["home_close_spread"] = frame["home_spread"]
         if "model_raw" not in frame.columns and "model_prob" in frame.columns:
             frame["model_raw"] = frame["model_prob"]
+        # Join opening prices from training table when hybrid OOS lacks them.
+        if prefer_open and (
+            "home_open_ml" not in frame.columns
+            or float(frame["home_open_ml"].notna().mean()) < 0.05
+        ):
+            hist = PROJECT_ROOT / "data" / f"{league}_history" / "training_table.csv"
+            if hist.is_file():
+                cols = ["season", "date", "home", "away", "home_open_ml", "away_open_ml"]
+                tt = pd.read_csv(hist, usecols=lambda c: c in cols or c.endswith("_open_ml"))
+                keys = [c for c in ("season", "date", "home", "away") if c in frame.columns and c in tt.columns]
+                if keys and "home_open_ml" in tt.columns:
+                    for drop in ("home_open_ml", "away_open_ml"):
+                        if drop in frame.columns:
+                            frame = frame.drop(columns=[drop])
+                    frame = frame.merge(
+                        tt[keys + ["home_open_ml", "away_open_ml"]],
+                        on=keys,
+                        how="left",
+                    )
+        if prefer_open and "home_open_ml" not in frame.columns:
+            continue
         return frame, label
     return None
 

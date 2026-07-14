@@ -385,6 +385,7 @@ def _run_nhl_v2(
     *,
     home_moneyline: int | None = None,
     away_moneyline: int | None = None,
+    home_spread: float | None = None,
 ) -> dict[str, Any] | None:
     """Persisted NHL v2 (MoneyPuck xG feature engine + gradient boost ensemble)."""
     if league.lower() != "nhl":
@@ -401,6 +402,7 @@ def _run_nhl_v2(
             away_abbr,
             home_moneyline=home_moneyline,
             away_moneyline=away_moneyline,
+            home_spread=home_spread,
         )
     except Exception:  # noqa: BLE001 - any v2 failure falls back to PuckCast
         return None

@@ -581,6 +581,11 @@ def predict_matchup_v2(
     *,
     home_moneyline: int | float | None = None,
     away_moneyline: int | float | None = None,
+    home_spread: float | None = None,
+    home_spread_open: float | None = None,
+    home_ml_open: float | None = None,
+    away_ml_open: float | None = None,
+    close_total: float | None = None,
 ) -> dict[str, Any] | None:
     """Predict today's NHL matchup by ESPN abbreviations.
 
@@ -624,18 +629,28 @@ def predict_matchup_v2(
     engine: NhlFeatureEngine = context["engine"]
     art = context["artifacts"]
     features = engine.features_for_game(game)
-    has_market, _has_spread = apply_market_features(
+    has_market, has_spread = apply_market_features(
         features,
         home_moneyline=home_moneyline,
         away_moneyline=away_moneyline,
+        home_spread=home_spread,
+        home_spread_open=home_spread_open,
+        home_ml_open=home_ml_open,
+        away_ml_open=away_ml_open,
     )
+    if close_total is not None:
+        features["has_total"] = 1.0
+        features["total_line"] = float(close_total)
+        features["model_total_vs_line"] = float(features.get("exp_total_env", 0.0)) - float(
+            close_total
+        )
     (
         use_market_clf,
         _use_market_margin,
         model_variant,
         clf_cols,
         _margin_cols,
-    ) = resolve_market_heads(art, has_market=has_market, has_spread=False)
+    ) = resolve_market_heads(art, has_market=has_market, has_spread=has_spread)
 
     if use_market_clf:
         prob_home = _predict_probability(

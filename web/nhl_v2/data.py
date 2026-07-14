@@ -330,9 +330,15 @@ def build_game_index(
         record[f"{side}_shots"] = round(float(row.get("shotsForPerGame") or 0.0))
         record[f"{side}_win"] = int(row.get("wins") or 0)
         record[f"{side}_ot_loss"] = int(row.get("otLosses") or 0)
-        record[f"{side}_pp_pct"] = float(row.get("powerPlayPct") or 0.0)
-        record[f"{side}_pk_pct"] = float(row.get("penaltyKillPct") or 0.0)
         # Preserve missing as None so the feature engine can skip (not treat as 0.0).
+        raw_pp = row.get("powerPlayPct")
+        record[f"{side}_pp_pct"] = (
+            float(raw_pp) if raw_pp is not None and raw_pp != "" else None
+        )
+        raw_pk = row.get("penaltyKillPct")
+        record[f"{side}_pk_pct"] = (
+            float(raw_pk) if raw_pk is not None and raw_pk != "" else None
+        )
         raw_fo = row.get("faceoffWinPct")
         record[f"{side}_faceoff_pct"] = (
             float(raw_fo) if raw_fo is not None and raw_fo != "" else None

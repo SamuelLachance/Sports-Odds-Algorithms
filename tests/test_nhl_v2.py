@@ -375,6 +375,18 @@ def test_skater_depth_proxies_from_unused_moneypuck() -> None:
         "pp_toi_share_diff",
     }
     assert skater_cols.issubset(set(FEATURE_COLUMNS))
+    expanded = {
+        "pp_pct_diff",
+        "home_xgf_vs_away_xga",
+        "home_stand_len",
+        "has_steam",
+        "ml_steam_pp",
+        "regulation_win_share_diff",
+        "backup_gsax_diff",
+    }
+    assert expanded.issubset(set(FEATURE_COLUMNS))
+    assert 90 <= len(FEATURE_COLUMNS) <= 200
+    assert len(FEATURE_COLUMNS) == len(set(FEATURE_COLUMNS))
 
     engine = NhlFeatureEngine()
     game1 = {
@@ -690,6 +702,7 @@ def test_predict_matchup_v2_market_aware_wiring_with_stub_context() -> None:
         patch.object(nhl_live, "get_live_context", return_value=context),
         patch.object(nhl_live, "_predict_probability", return_value=0.61) as mock_prob,
         patch.object(nhl_live, "_predict_goals", return_value=None),
+        patch("web.hybrid_v2.live.try_hybrid_binary", return_value=None),
     ):
         result = nhl_live.predict_matchup_v2(
             "2026-01-10",
@@ -753,6 +766,7 @@ def test_predict_matchup_v2_soft_fails_to_pure_without_market_artifacts() -> Non
         patch.object(nhl_live, "get_live_context", return_value=context),
         patch.object(nhl_live, "_predict_probability", return_value=0.55) as mock_prob,
         patch.object(nhl_live, "_predict_goals", return_value=None),
+        patch("web.hybrid_v2.live.try_hybrid_binary", return_value=None),
     ):
         result = nhl_live.predict_matchup_v2(
             "2026-01-10", "tor", "bos", home_moneyline=-150, away_moneyline=130

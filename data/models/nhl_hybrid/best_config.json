@@ -1,15 +1,15 @@
 {
-  "oos_model_logloss": 0.66631,
+  "oos_model_logloss": 0.66613,
   "oos_model_brier": 0.23685,
-  "oos_model_acc": 0.5908,
+  "oos_model_acc": 0.5963,
   "n": 9904,
-  "baseline_ll": 0.66897,
-  "delta_vs_baseline": 0.00266,
-  "beat_baseline": true,
+  "baseline_ll": 0.66631,
+  "delta_vs_baseline": 0.00018,
+  "beat_baseline": false,
   "multiclass": false,
   "oos_market_logloss": 0.66036,
-  "oos_model_logloss_odds_subset": 0.66354,
-  "gap_vs_market": 0.00318,
+  "oos_model_logloss_odds_subset": 0.66344,
+  "gap_vs_market": 0.00308,
   "config": {
     "name": "cb_full_w60",
     "backend": "catboost",
@@ -29,6 +29,6 @@
     "target_mode": "prob"
   },
   "league": "nhl",
-  "elapsed_s": 188.3,
-  "created_at": "2026-07-13T14:48:45.455644+00:00"
+  "elapsed_s": 153.3,
+  "created_at": "2026-07-14T00:48:18.867413+00:00"
 }
