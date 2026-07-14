@@ -46,6 +46,30 @@ SEASON_GAMES_NOMINAL = 12.0
 _P5_CONFS = frozenset({"sec", "b1g", "acc", "b12", "pac12", "pac"})
 _G5_CONFS = frozenset({"mw", "sbelt", "aac", "mac", "cusa"})
 
+# ESPN scoreboard ``team.conferenceId`` groups (stable across 2019-2025 archives).
+# Realignment is handled point-in-time because the id is captured per game.
+_P5_CONF_IDS = frozenset({"1", "4", "5", "8", "9"})  # ACC, Big12, B1G, SEC, Pac-12
+_G5_CONF_IDS = frozenset({"151", "12", "15", "17", "37"})  # AAC, CUSA, MAC, MWC, SunBelt
+_IND_CONF_ID = "18"  # FBS independents (ND, Army pre-2024, UConn, ...)
+_FBS_CONF_IDS = _P5_CONF_IDS | _G5_CONF_IDS | {_IND_CONF_ID}
+
+# Prior for never-seen non-FBS programs: FCS sides land ~250-300 Elo below the
+# FBS mean in nfelo-style ratings; also the season-carryover regression target.
+FCS_PRIOR_ELO = 1250.0
+
+
+def _conf_id_str(value: Any) -> str:
+    """Canonical ESPN conferenceId ('8', 8, 8.0 → '8'); ''/None/NaN → ''."""
+    if value is None:
+        return ""
+    text = str(value).strip()
+    if not text or text.lower() in ("nan", "none", "null"):
+        return ""
+    try:
+        return str(int(float(text)))
+    except ValueError:
+        return ""
+
 FEATURE_COLUMNS: tuple[str, ...] = (
     # team strength
     "elo_diff",
@@ -91,6 +115,9 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     "home_expansion",
     "away_expansion",
     "power_conf_diff",
+    "home_is_fcs",
+    "away_is_fcs",
+    "fcs_matchup",
     # matchup history
     "h2h_home_win_rate",
     "h2h_margin_ewma",
@@ -133,11 +160,22 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     "ap_known",
     "cfp_rank_diff",
     "has_rank",
-    # PBP EPA (has_epa=0 when missing)
+    "ap_points_log_diff",
+    "home_ranked",
+    "away_ranked",
+    "ap_mom_diff",
+    # PBP EPA (has_epa=0 when missing): GT-filtered EWMAs + opponent-adjusted
     "epa_off_diff",
     "epa_def_diff",
     "sr_off_diff",
     "has_epa",
+    "sr_def_diff",
+    "pace_plays_diff",
+    "epa_pass_off_diff",
+    "epa_rush_off_diff",
+    "adj_epa_off_diff",
+    "adj_epa_def_diff",
+    "has_adj_epa",
 )
 
 
@@ -188,8 +226,21 @@ def conference_of(team_key: str) -> str:
     return _CONFERENCE_BY_KEY.get(str(team_key or "").lower().strip(), "")
 
 
-def power_conf_tier(team_key: str) -> float:
-    """P5=1, G5=0, ND/ind≈0.75, unknown=0.5."""
+def power_conf_tier(team_key: str, conf_id: Any = None) -> float:
+    """P5=1, ind=0.75, G5=0, FCS=-1; unknown keys sit below G5 (-0.5), not above.
+
+    Prefers the point-in-time ESPN ``conferenceId`` when the game row carries
+    one; falls back to the static abbreviation map otherwise.
+    """
+    cid = _conf_id_str(conf_id)
+    if cid:
+        if cid in _P5_CONF_IDS:
+            return 1.0
+        if cid == _IND_CONF_ID:
+            return 0.75
+        if cid in _G5_CONF_IDS:
+            return 0.0
+        return -1.0  # a known non-FBS (FCS) conference
     conf = conference_of(team_key)
     if conf in _P5_CONFS:
         return 1.0
@@ -197,7 +248,16 @@ def power_conf_tier(team_key: str) -> float:
         return 0.0
     if conf == "ind":
         return 0.75
-    return 0.5
+    # Unknown key with no conference id: usually an FCS one-off visitor.
+    return -0.5
+
+
+def side_is_fcs(team_key: str, conf_id: Any = None) -> bool:
+    """True when the side is (very likely) a non-FBS program."""
+    cid = _conf_id_str(conf_id)
+    if cid:
+        return cid not in _FBS_CONF_IDS
+    return conference_of(team_key) == ""
 
 
 def _is_missing_id(value: Any) -> bool:
@@ -274,12 +334,13 @@ class TeamState:
         "games_played", "season_seen", "first_season", "h2h", "h2h_margin",
         "close_win_ewma", "blowout_net_ewma", "blowout_games", "blowout_wins",
         "one_score_games", "one_score_wins", "recent_margins", "recent_pf",
-        "elo_pre_hist", "current_qb_id", "qb_streak",
+        "elo_pre_hist", "current_qb_id", "qb_streak", "elo_base", "last_conf_id",
     )
 
     def __init__(self, key: str):
         self.key = key
         self.elo = LEAGUE_ELO
+        self.elo_base = LEAGUE_ELO
         self.pf_fast = LEAGUE_PPG
         self.pa_fast = LEAGUE_PPG
         self.pf_slow = LEAGUE_PPG
@@ -314,6 +375,28 @@ class TeamState:
         self.elo_pre_hist: list[float] = []
         self.current_qb_id = ""
         self.qb_streak = 0
+        self.last_conf_id = ""
+
+    def note_conf_id(self, conf_id: str) -> None:
+        """Remember the most recent ESPN conferenceId seen for this team.
+
+        Snapshotted with state so live inference (whose ESPN event dicts lack
+        conference ids) classifies FBS/FCS exactly as training did.
+        """
+        if conf_id:
+            self.last_conf_id = conf_id
+
+    def ensure_tier_prior(self, is_fcs: bool) -> None:
+        """Seed never-seen non-FBS programs below the league mean.
+
+        Must run before the first ``roll_season`` touch; a no-op once the team
+        has any history so replayed snapshots are unaffected.
+        """
+        if self.first_season >= 0 or self.games_played > 0 or self.season_seen >= 0:
+            return
+        if is_fcs:
+            self.elo = FCS_PRIOR_ELO
+            self.elo_base = FCS_PRIOR_ELO
 
     def roll_season(self, season: int) -> None:
         if self.season_seen == season:
@@ -328,7 +411,7 @@ class TeamState:
             self.prev_margin_pg = (
                 (self.points_for - self.points_against) / total if total else 0.0
             )
-            self.elo = LEAGUE_ELO + ELO_SEASON_CARRYOVER * (self.elo - LEAGUE_ELO)
+            self.elo = self.elo_base + ELO_SEASON_CARRYOVER * (self.elo - self.elo_base)
         self.wins = 0
         self.losses = 0
         self.ties = 0
@@ -426,6 +509,7 @@ class TeamState:
         return {
             "key": self.key,
             "elo": self.elo,
+            "elo_base": self.elo_base,
             "pf_fast": self.pf_fast,
             "pa_fast": self.pa_fast,
             "pf_slow": self.pf_slow,
@@ -460,6 +544,7 @@ class TeamState:
             "elo_pre_hist": list(self.elo_pre_hist[-5:]),
             "current_qb_id": self.current_qb_id,
             "qb_streak": self.qb_streak,
+            "last_conf_id": self.last_conf_id,
         }
 
     @classmethod
@@ -550,6 +635,14 @@ class CfbFeatureEngine:
         game_date = _parse_date(str(game.get("date") or "")) or date_cls(season, 9, 1)
         home = self.team(str(game["home"]))
         away = self.team(str(game["away"]))
+        home.note_conf_id(_conf_id_str(game.get("home_conf_id")))
+        away.note_conf_id(_conf_id_str(game.get("away_conf_id")))
+        home_conf_id = home.last_conf_id
+        away_conf_id = away.last_conf_id
+        home_is_fcs = side_is_fcs(home.key, home_conf_id)
+        away_is_fcs = side_is_fcs(away.key, away_conf_id)
+        home.ensure_tier_prior(home_is_fcs)
+        away.ensure_tier_prior(away_is_fcs)
         home.roll_season(season)
         away.roll_season(season)
 
@@ -559,6 +652,8 @@ class CfbFeatureEngine:
         away_conf = conference_of(away.key)
         if game.get("conference_game") is not None:
             is_conf = 1.0 if game["conference_game"] else 0.0
+        elif home_conf_id and away_conf_id:
+            is_conf = 1.0 if home_conf_id == away_conf_id else 0.0
         else:
             is_conf = 1.0 if home_conf and home_conf == away_conf else 0.0
 
@@ -634,7 +729,11 @@ class CfbFeatureEngine:
             "elo_x_season_frac": elo_diff * season_frac,
             "home_expansion": 1.0 if home.first_season == season else 0.0,
             "away_expansion": 1.0 if away.first_season == season else 0.0,
-            "power_conf_diff": power_conf_tier(home.key) - power_conf_tier(away.key),
+            "power_conf_diff": power_conf_tier(home.key, home_conf_id)
+            - power_conf_tier(away.key, away_conf_id),
+            "home_is_fcs": 1.0 if home_is_fcs else 0.0,
+            "away_is_fcs": 1.0 if away_is_fcs else 0.0,
+            "fcs_matchup": 1.0 if (home_is_fcs and away_is_fcs) else 0.0,
             "h2h_home_win_rate": h2h_rate,
             "h2h_margin_ewma": home.h2h_margin.get(away.key, 0.0),
             "qb_elo_diff": home_qb_elo - away_qb_elo,
@@ -671,10 +770,21 @@ class CfbFeatureEngine:
         features["ap_known"] = _f("ap_known")
         features["cfp_rank_diff"] = _f("cfp_rank_diff")
         features["has_rank"] = _f("has_rank")
+        features["ap_points_log_diff"] = _f("ap_points_log_diff")
+        features["home_ranked"] = _f("home_ranked")
+        features["away_ranked"] = _f("away_ranked")
+        features["ap_mom_diff"] = _f("ap_mom_diff")
         features["epa_off_diff"] = _f("epa_off_diff")
         features["epa_def_diff"] = _f("epa_def_diff")
         features["sr_off_diff"] = _f("sr_off_diff")
         features["has_epa"] = _f("has_epa")
+        features["sr_def_diff"] = _f("sr_def_diff")
+        features["pace_plays_diff"] = _f("pace_plays_diff")
+        features["epa_pass_off_diff"] = _f("epa_pass_off_diff")
+        features["epa_rush_off_diff"] = _f("epa_rush_off_diff")
+        features["adj_epa_off_diff"] = _f("adj_epa_off_diff")
+        features["adj_epa_def_diff"] = _f("adj_epa_def_diff")
+        features["has_adj_epa"] = _f("has_adj_epa")
         return features
 
     def _update_entity(
@@ -706,6 +816,12 @@ class CfbFeatureEngine:
         game_date = _parse_date(str(game.get("date") or "")) or date_cls(season, 9, 1)
         home = self.team(str(game["home"]))
         away = self.team(str(game["away"]))
+        home.note_conf_id(_conf_id_str(game.get("home_conf_id")))
+        away.note_conf_id(_conf_id_str(game.get("away_conf_id")))
+        home_is_fcs = side_is_fcs(home.key, home.last_conf_id)
+        away_is_fcs = side_is_fcs(away.key, away.last_conf_id)
+        home.ensure_tier_prior(home_is_fcs)
+        away.ensure_tier_prior(away_is_fcs)
         home.roll_season(season)
         away.roll_season(season)
 
@@ -746,16 +862,21 @@ class CfbFeatureEngine:
         def _ewma(old: float, new: float, alpha: float) -> float:
             return alpha * new + (1.0 - alpha) * old
 
-        for team, pf, pa, won, is_home in (
-            (home, home_score, away_score, home_win and not tied, True),
-            (away, away_score, home_score, (not home_win) and not tied, False),
+        for team, pf, pa, won, is_home, opp_is_fcs in (
+            (home, home_score, away_score, home_win and not tied, True, away_is_fcs),
+            (away, away_score, home_score, (not home_win) and not tied, False, home_is_fcs),
         ):
-            team.pf_fast = _ewma(team.pf_fast, pf, ALPHA_FAST)
-            team.pa_fast = _ewma(team.pa_fast, pa, ALPHA_FAST)
-            team.pf_slow = _ewma(team.pf_slow, pf, ALPHA_SLOW)
-            team.pa_slow = _ewma(team.pa_slow, pa, ALPHA_SLOW)
+            # Buy games vs FCS carry little forward signal for the FBS side:
+            # halve the form-EWMA weight for cross-division games.
+            self_is_fcs = home_is_fcs if is_home else away_is_fcs
+            cross_division = opp_is_fcs != self_is_fcs
+            form_scale = 0.5 if cross_division else 1.0
+            team.pf_fast = _ewma(team.pf_fast, pf, ALPHA_FAST * form_scale)
+            team.pa_fast = _ewma(team.pa_fast, pa, ALPHA_FAST * form_scale)
+            team.pf_slow = _ewma(team.pf_slow, pf, ALPHA_SLOW * form_scale)
+            team.pa_slow = _ewma(team.pa_slow, pa, ALPHA_SLOW * form_scale)
             result_score = 0.5 if tied else (1.0 if won else 0.0)
-            team.win_ewma = _ewma(team.win_ewma, result_score, ALPHA_WIN)
+            team.win_ewma = _ewma(team.win_ewma, result_score, ALPHA_WIN * form_scale)
             if is_home and not neutral:
                 team.home_win_ewma = _ewma(
                     team.home_win_ewma, result_score, ALPHA_WIN
@@ -785,14 +906,14 @@ class CfbFeatureEngine:
             if len(team.recent_pf) > MARGIN_HIST_LEN:
                 team.recent_pf = team.recent_pf[-MARGIN_HIST_LEN:]
 
-            if abs_margin <= CLOSE_GAME_MARGIN:
+            if abs_margin <= CLOSE_GAME_MARGIN and not cross_division:
                 team.close_win_ewma = _ewma(
                     team.close_win_ewma, result_score, ALPHA_WIN
                 )
                 team.one_score_games += 1
                 if won:
                     team.one_score_wins += 1
-            if abs_margin >= BLOWOUT_MARGIN:
+            if abs_margin >= BLOWOUT_MARGIN and not cross_division:
                 team.blowout_games += 1
                 if won:
                     team.blowout_wins += 1

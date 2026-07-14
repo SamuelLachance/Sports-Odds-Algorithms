@@ -127,9 +127,11 @@ def _collect_from_scoreboards(
 def _load_espn_team_ids(league: str) -> list[tuple[str, str, str]]:
     """Fetch ESPN team ids from the teams API payload."""
     profile = get_league_profile(league)
+    # College football lists 800+ D1 teams; 500 silently truncated FBS programs
+    # (e.g. Texas Tech), breaking EPA name joins.
     url = (
         f"https://site.api.espn.com/apis/site/v2/sports/"
-        f"{profile['sport_path']}/teams?limit=500"
+        f"{profile['sport_path']}/teams?limit=2000"
     )
     request = urllib.request.Request(
         url,

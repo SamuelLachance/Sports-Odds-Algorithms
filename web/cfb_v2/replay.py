@@ -78,6 +78,11 @@ def csv_rows_to_games(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         away_score = row.get("away_final", row.get("away_score"))
         if home_score is None or away_score is None:
             continue
+        raw_conf = row.get("conference_game")
+        if raw_conf is None or str(raw_conf).strip() == "":
+            conf_game = None
+        else:
+            conf_game = str(raw_conf).strip().lower() in {"1", "true", "yes", "t", "y"}
         game = {
             "date": day_iso,
             "season": season,
@@ -86,6 +91,9 @@ def csv_rows_to_games(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "home_score": int(home_score),
             "away_score": int(away_score),
             "neutral_site": infer_neutral_site({"date": day_iso, "neutral_site": row.get("neutral_site")}),
+            "conference_game": conf_game,
+            "home_conf_id": row.get("home_conf_id"),
+            "away_conf_id": row.get("away_conf_id"),
             "is_bowl": infer_bowl({"date": day_iso}),
             "home_close_ml": row.get("home_close_ml"),
             "away_close_ml": row.get("away_close_ml"),

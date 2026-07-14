@@ -107,6 +107,22 @@ def load_hybrid_bundle(league: str) -> dict[str, Any] | None:
         if m_path.is_file():
             margin = CatBoostRegressor()
             margin.load_model(str(m_path))
+    calibrator = None
+    cal_path = v2 / "calibrator_hybrid.json"
+    if cal_path.is_file():
+        try:
+            cal = json.loads(cal_path.read_text(encoding="utf-8"))
+            if (
+                cal.get("kind") == "isotonic_oos"
+                and len(cal.get("x") or []) >= 2
+                and len(cal.get("x")) == len(cal.get("y") or [])
+            ):
+                calibrator = {
+                    "x": [float(v) for v in cal["x"]],
+                    "y": [float(v) for v in cal["y"]],
+                }
+        except (json.JSONDecodeError, TypeError, ValueError):
+            calibrator = None
     return {
         "meta": meta,
         "clf": clf,
@@ -115,7 +131,9 @@ def load_hybrid_bundle(league: str) -> dict[str, Any] | None:
         "cat_cols": list(meta.get("cat_cols") or []),
         "margin_feature_cols": list(meta.get("margin_feature_cols") or []),
         "market_blend_w": float(meta.get("market_blend_w") or 0.0),
+        "target_mode": str(meta.get("target_mode") or "prob"),
         "multiclass": bool(meta.get("multiclass")),
+        "calibrator": calibrator,
     }
 
 
@@ -143,12 +161,38 @@ def score_hybrid_binary(
     import pandas as pd
 
     frame = pd.DataFrame([row])[cols]
-    pool = Pool(frame, cat_features=cat_cols or None)
+    baseline = None
+    if bundle.get("target_mode") == "offset":
+        # Market-as-init_score models predict a residual on logit(close);
+        # no market at score time -> baseline 0 (= market-free estimate).
+        if market_home_prob is not None and np.isfinite(market_home_prob):
+            p = float(np.clip(market_home_prob, 1e-4, 1 - 1e-4))
+            baseline = [float(np.log(p / (1 - p)))]
+        else:
+            baseline = [0.0]
+    pool = Pool(frame, cat_features=cat_cols or None, baseline=baseline)
     raw = float(bundle["clf"].predict_proba(pool)[0][1])
     w = bundle["market_blend_w"]
-    if w > 0 and market_home_prob is not None and np.isfinite(market_home_prob):
-        raw = (1.0 - w) * raw + w * float(market_home_prob)
-    raw = float(np.clip(raw, 0.02, 0.98))
+    has_mkt = market_home_prob is not None and np.isfinite(market_home_prob)
+    cal = bundle.get("calibrator")
+    if bundle.get("target_mode") == "logit_stack":
+        # Same order as training: calibrate the model prob, then logit-stack
+        # with the market. No post-stack recalibration.
+        if cal is not None:
+            raw = float(np.interp(raw, cal["x"], cal["y"]))
+        if w > 0 and has_mkt:
+            pm = float(np.clip(raw, 1e-9, 1 - 1e-9))
+            pk = float(np.clip(market_home_prob, 1e-9, 1 - 1e-9))
+            z = (1.0 - w) * np.log(pm / (1 - pm)) + w * np.log(pk / (1 - pk))
+            raw = float(1.0 / (1.0 + np.exp(-z)))
+    else:
+        if w > 0 and has_mkt:
+            raw = (1.0 - w) * raw + w * float(market_home_prob)
+        # Post-blend isotonic (fit on walk-forward OOS at ship time) keeps live
+        # probs on the same scale the OOS metrics were computed on.
+        if cal is not None:
+            raw = float(np.interp(raw, cal["x"], cal["y"]))
+    raw = float(np.clip(raw, 0.005, 0.995))
     out: dict[str, Any] = {
         "home_win_prob": raw,
         "model_variant": "hybrid",

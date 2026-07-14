@@ -163,11 +163,20 @@ def attach_curve_features(
 
     has_scores = score_home_col in frame.columns and score_away_col in frame.columns
     has_win = win_col in frame.columns
+    # Neutral-site aware HFA when the table flags it (CFB bowls/CCGs, CBB tournaments).
+    has_neutral = "neutral_site" in frame.columns
 
     for row in frame.itertuples(index=False):
         home = str(getattr(row, home_col))
         away = str(getattr(row, away_col))
         season = int(row.season)
+        if has_neutral:
+            try:
+                hfa = 0.0 if float(getattr(row, "neutral_site") or 0.0) > 0.5 else ELO_HOME_ADV
+            except (TypeError, ValueError):
+                hfa = ELO_HOME_ADV
+        else:
+            hfa = ELO_HOME_ADV
         maybe_refit(season)
 
         for key in (home, away):
@@ -199,9 +208,9 @@ def attach_curve_features(
         )
         rows_out.append(
             {
-                "curve_elo_diff": ph_elo - pa_elo + ELO_HOME_ADV,
+                "curve_elo_diff": ph_elo - pa_elo + hfa,
                 "curve_net_diff": ph_net - pa_net,
-                "curve_elo_raw_diff": hs["elo"] - as_["elo"] + ELO_HOME_ADV,
+                "curve_elo_raw_diff": hs["elo"] - as_["elo"] + hfa,
                 "curve_unc_sum": unc,
                 "curve_unc_diff": (abs(ph_hi - ph_lo) - abs(pa_hi - pa_lo)) / 40.0,
                 "curve_backend": 1.0 if proj.fitted else 0.0,
@@ -214,7 +223,7 @@ def attach_curve_features(
             as_score = float(getattr(row, score_away_col))
             margin = abs(hs_score - as_score)
             signed = hs_score - as_score
-            home_edge = hs["elo"] - as_["elo"] + ELO_HOME_ADV
+            home_edge = hs["elo"] - as_["elo"] + hfa
             exp_home = 1.0 / (1.0 + 10.0 ** (-home_edge / 400.0))
             winner_edge = home_edge if home_win else -home_edge
             mov = math.log(max(margin, 1.0) + 1.0) * (2.2 / (0.001 * max(winner_edge, 0.0) + 2.2))
@@ -229,7 +238,7 @@ def attach_curve_features(
         elif has_win:
             # Soccer-style or score-less: update Elo from win only; net stays flat.
             home_win = float(getattr(row, win_col)) > 0.5
-            home_edge = hs["elo"] - as_["elo"] + ELO_HOME_ADV
+            home_edge = hs["elo"] - as_["elo"] + hfa
             exp_home = 1.0 / (1.0 + 10.0 ** (-home_edge / 400.0))
             delta = ELO_K * ((1.0 if home_win else 0.0) - exp_home)
             hs["elo"] += delta

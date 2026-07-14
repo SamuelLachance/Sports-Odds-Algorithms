@@ -149,14 +149,26 @@ def _devig_home_prob(home_ml: float, away_ml: float) -> float | None:
     return ph / (ph + pa)
 
 
+_ML_COLUMN_PAIRS = (("home_ml", "away_ml"), ("home_close_ml", "away_close_ml"))
+
+
 def _attach_binary_market(frame: pd.DataFrame) -> pd.DataFrame:
     frame = frame.copy()
     if "market_home_prob" not in frame.columns:
-        if "home_ml" in frame.columns and "away_ml" in frame.columns:
+        pair = next(
+            (p for p in _ML_COLUMN_PAIRS if p[0] in frame.columns and p[1] in frame.columns),
+            None,
+        )
+        if pair is not None:
             frame["market_home_prob"] = [
                 _devig_home_prob(h, a) if pd.notna(h) and pd.notna(a) else np.nan
-                for h, a in zip(frame["home_ml"], frame["away_ml"])
+                for h, a in zip(frame[pair[0]], frame[pair[1]])
             ]
+        elif {"mkt_home_prob", "has_market"}.issubset(frame.columns):
+            # De-vigged close baked in by the table builder (NFL/CFB tables).
+            frame["market_home_prob"] = frame["mkt_home_prob"].where(
+                frame["has_market"].astype(float) > 0.5
+            )
         else:
             frame["market_home_prob"] = np.nan
     mkt = frame["market_home_prob"]

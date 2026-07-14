@@ -1,0 +1,376 @@
+season,week,asof_date,team_id,team_abbr,team_name,rank,previous,points
+2020,1,2020-08-24,228,clem,Clemson Tigers,1,0,1520.0
+2020,1,2020-08-24,194,osu,Ohio State Buckeyes,2,0,1504.0
+2020,1,2020-08-24,333,ala,Alabama Crimson Tide,3,0,1422.0
+2020,1,2020-08-24,61,uga,Georgia Bulldogs,4,0,1270.0
+2020,1,2020-08-24,201,ou,Oklahoma Sooners,5,0,1269.0
+2020,1,2020-08-24,99,lsu,LSU Tigers,6,0,1186.0
+2020,1,2020-08-24,213,psu,Penn State Nittany Lions,7,0,1147.0
+2020,1,2020-08-24,57,fla,Florida Gators,8,0,1125.0
+2020,1,2020-08-24,2483,ore,Oregon Ducks,9,0,1119.0
+2020,1,2020-08-24,87,nd,Notre Dame Fighting Irish,10,0,995.0
+2020,1,2020-08-24,2,aub,Auburn Tigers,11,0,852.0
+2020,1,2020-08-24,275,wis,Wisconsin Badgers,12,0,840.0
+2020,1,2020-08-24,245,ta&m,Texas A&M Aggies,13,0,764.0
+2020,1,2020-08-24,251,tex,Texas Longhorns,14,0,703.0
+2020,1,2020-08-24,197,okst,Oklahoma State Cowboys,15,0,672.0
+2020,1,2020-08-24,130,mich,Michigan Wolverines,16,0,611.0
+2020,1,2020-08-24,30,usc,USC Trojans,17,0,534.0
+2020,1,2020-08-24,153,unc,North Carolina Tar Heels,18,0,496.0
+2020,1,2020-08-24,135,minn,Minnesota Golden Gophers,19,0,451.0
+2020,1,2020-08-24,2132,cin,Cincinnati Bearcats,20,0,234.0
+2020,1,2020-08-24,2116,ucf,UCF Knights,21,0,229.0
+2020,1,2020-08-24,254,utah,Utah Utes,22,0,211.0
+2020,1,2020-08-24,66,isu,Iowa State Cyclones,23,0,199.0
+2020,1,2020-08-24,2294,iowa,Iowa Hawkeyes,24,0,134.0
+2020,1,2020-08-24,2633,,,25,0,133.0
+2020,3,2020-09-13,228,clem,Clemson Tigers,1,1,1524.0
+2020,3,2020-09-13,333,ala,Alabama Crimson Tide,2,3,1456.0
+2020,3,2020-09-13,201,ou,Oklahoma Sooners,3,5,1361.0
+2020,3,2020-09-13,61,uga,Georgia Bulldogs,4,4,1324.0
+2020,3,2020-09-13,57,fla,Florida Gators,5,8,1237.0
+2020,3,2020-09-13,99,lsu,LSU Tigers,6,6,1236.0
+2020,3,2020-09-13,87,nd,Notre Dame Fighting Irish,7,10,1155.0
+2020,3,2020-09-13,2,aub,Auburn Tigers,8,11,1055.0
+2020,3,2020-09-13,251,tex,Texas Longhorns,9,14,1033.0
+2020,3,2020-09-13,245,ta&m,Texas A&M Aggies,10,13,983.0
+2020,3,2020-09-13,197,okst,Oklahoma State Cowboys,11,15,927.0
+2020,3,2020-09-13,153,unc,North Carolina Tar Heels,12,18,892.0
+2020,3,2020-09-13,2132,cin,Cincinnati Bearcats,13,20,647.0
+2020,3,2020-09-13,2116,ucf,UCF Knights,14,21,632.0
+2020,3,2020-09-13,2633,,,15,25,528.0
+2020,3,2020-09-13,235,mem,Memphis Tigers,16,0,496.0
+2020,3,2020-09-13,2390,mia,Miami Hurricanes,17,0,463.0
+2020,3,2020-09-13,97,lou,Louisville Cardinals,18,0,387.0
+2020,3,2020-09-13,309,ul,Louisiana Ragin' Cajuns,19,0,377.0
+2020,3,2020-09-13,259,vt,Virginia Tech Hokies,20,0,368.0
+2020,3,2020-09-13,252,byu,BYU Cougars,21,0,358.0
+2020,3,2020-09-13,349,army,Army Black Knights,22,0,244.0
+2020,3,2020-09-13,96,uk,Kentucky Wildcats,23,0,238.0
+2020,3,2020-09-13,2026,app,App State Mountaineers,23,0,238.0
+2020,3,2020-09-13,221,pitt,Pittsburgh Panthers,25,0,158.0
+2020,4,2020-09-20,228,clem,Clemson Tigers,1,1,1523.0
+2020,4,2020-09-20,333,ala,Alabama Crimson Tide,2,2,1458.0
+2020,4,2020-09-20,201,ou,Oklahoma Sooners,3,3,1368.0
+2020,4,2020-09-20,61,uga,Georgia Bulldogs,4,4,1320.0
+2020,4,2020-09-20,57,fla,Florida Gators,5,5,1239.0
+2020,4,2020-09-20,99,lsu,LSU Tigers,6,6,1221.0
+2020,4,2020-09-20,87,nd,Notre Dame Fighting Irish,7,7,1200.0
+2020,4,2020-09-20,2,aub,Auburn Tigers,8,8,1037.0
+2020,4,2020-09-20,251,tex,Texas Longhorns,8,9,1037.0
+2020,4,2020-09-20,245,ta&m,Texas A&M Aggies,10,10,972.0
+2020,4,2020-09-20,153,unc,North Carolina Tar Heels,11,12,883.0
+2020,4,2020-09-20,2390,mia,Miami Hurricanes,12,17,816.0
+2020,4,2020-09-20,2116,ucf,UCF Knights,13,14,771.0
+2020,4,2020-09-20,2132,cin,Cincinnati Bearcats,14,13,720.0
+2020,4,2020-09-20,197,okst,Oklahoma State Cowboys,15,11,693.0
+2020,4,2020-09-20,2633,,,16,15,529.0
+2020,4,2020-09-20,235,mem,Memphis Tigers,17,16,510.0
+2020,4,2020-09-20,252,byu,BYU Cougars,18,21,405.0
+2020,4,2020-09-20,309,ul,Louisiana Ragin' Cajuns,19,19,374.0
+2020,4,2020-09-20,259,vt,Virginia Tech Hokies,20,20,350.0
+2020,4,2020-09-20,221,pitt,Pittsburgh Panthers,21,25,315.0
+2020,4,2020-09-20,349,army,Army Black Knights,22,22,296.0
+2020,4,2020-09-20,96,uk,Kentucky Wildcats,23,23,230.0
+2020,4,2020-09-20,97,lou,Louisville Cardinals,24,18,115.0
+2020,4,2020-09-20,276,mrsh,Marshall Thundering Herd,25,0,108.0
+2020,5,2020-09-27,228,clem,Clemson Tigers,1,1,1542.0
+2020,5,2020-09-27,333,ala,Alabama Crimson Tide,2,2,1473.0
+2020,5,2020-09-27,57,fla,Florida Gators,3,5,1324.0
+2020,5,2020-09-27,61,uga,Georgia Bulldogs,4,4,1310.0
+2020,5,2020-09-27,87,nd,Notre Dame Fighting Irish,5,7,1231.0
+2020,5,2020-09-27,194,osu,Ohio State Buckeyes,6,0,1169.0
+2020,5,2020-09-27,2,aub,Auburn Tigers,7,8,1133.0
+2020,5,2020-09-27,2390,mia,Miami Hurricanes,8,12,1045.0
+2020,5,2020-09-27,251,tex,Texas Longhorns,9,8,862.0
+2020,5,2020-09-27,213,psu,Penn State Nittany Lions,10,0,840.0
+2020,5,2020-09-27,2116,ucf,UCF Knights,11,13,743.0
+2020,5,2020-09-27,153,unc,North Carolina Tar Heels,12,11,734.0
+2020,5,2020-09-27,245,ta&m,Texas A&M Aggies,13,10,705.0
+2020,5,2020-09-27,2483,ore,Oregon Ducks,14,0,651.0
+2020,5,2020-09-27,2132,cin,Cincinnati Bearcats,15,14,646.0
+2020,5,2020-09-27,344,msst,Mississippi State Bulldogs,16,0,590.0
+2020,5,2020-09-27,197,okst,Oklahoma State Cowboys,17,15,555.0
+2020,5,2020-09-27,201,ou,Oklahoma Sooners,18,3,535.0
+2020,5,2020-09-27,275,wis,Wisconsin Badgers,19,0,510.0
+2020,5,2020-09-27,99,lsu,LSU Tigers,20,6,401.0
+2020,5,2020-09-27,2633,,,21,16,377.0
+2020,5,2020-09-27,252,byu,BYU Cougars,22,18,295.0
+2020,5,2020-09-27,130,mich,Michigan Wolverines,23,0,277.0
+2020,5,2020-09-27,221,pitt,Pittsburgh Panthers,24,21,248.0
+2020,5,2020-09-27,235,mem,Memphis Tigers,25,17,196.0
+2020,6,2020-10-04,228,clem,Clemson Tigers,1,1,1536.0
+2020,6,2020-10-04,333,ala,Alabama Crimson Tide,2,2,1488.0
+2020,6,2020-10-04,61,uga,Georgia Bulldogs,3,4,1380.0
+2020,6,2020-10-04,57,fla,Florida Gators,4,3,1340.0
+2020,6,2020-10-04,87,nd,Notre Dame Fighting Irish,5,5,1239.0
+2020,6,2020-10-04,194,osu,Ohio State Buckeyes,6,6,1165.0
+2020,6,2020-10-04,2390,mia,Miami Hurricanes,7,8,1148.0
+2020,6,2020-10-04,153,unc,North Carolina Tar Heels,8,12,944.0
+2020,6,2020-10-04,213,psu,Penn State Nittany Lions,9,10,935.0
+2020,6,2020-10-04,197,okst,Oklahoma State Cowboys,10,17,919.0
+2020,6,2020-10-04,2132,cin,Cincinnati Bearcats,11,15,895.0
+2020,6,2020-10-04,2483,ore,Oregon Ducks,12,14,786.0
+2020,6,2020-10-04,2,aub,Auburn Tigers,13,7,731.0
+2020,6,2020-10-04,2633,,,14,21,717.0
+2020,6,2020-10-04,252,byu,BYU Cougars,15,22,661.0
+2020,6,2020-10-04,275,wis,Wisconsin Badgers,16,19,619.0
+2020,6,2020-10-04,99,lsu,LSU Tigers,17,20,478.0
+2020,6,2020-10-04,2567,,,18,0,393.0
+2020,6,2020-10-04,259,vt,Virginia Tech Hokies,19,0,391.0
+2020,6,2020-10-04,130,mich,Michigan Wolverines,20,23,350.0
+2020,6,2020-10-04,245,ta&m,Texas A&M Aggies,21,13,330.0
+2020,6,2020-10-04,251,tex,Texas Longhorns,22,9,228.0
+2020,6,2020-10-04,309,ul,Louisiana Ragin' Cajuns,23,0,216.0
+2020,6,2020-10-04,66,isu,Iowa State Cyclones,24,0,215.0
+2020,6,2020-10-04,135,minn,Minnesota Golden Gophers,25,0,145.0
+2020,7,2020-10-11,228,clem,Clemson Tigers,1,1,1546.0
+2020,7,2020-10-11,333,ala,Alabama Crimson Tide,2,2,1463.0
+2020,7,2020-10-11,61,uga,Georgia Bulldogs,3,3,1430.0
+2020,7,2020-10-11,87,nd,Notre Dame Fighting Irish,4,5,1317.0
+2020,7,2020-10-11,153,unc,North Carolina Tar Heels,5,8,1190.0
+2020,7,2020-10-11,194,osu,Ohio State Buckeyes,6,6,1152.0
+2020,7,2020-10-11,197,okst,Oklahoma State Cowboys,7,10,1069.0
+2020,7,2020-10-11,2132,cin,Cincinnati Bearcats,8,11,971.0
+2020,7,2020-10-11,213,psu,Penn State Nittany Lions,9,9,970.0
+2020,7,2020-10-11,57,fla,Florida Gators,10,4,904.0
+2020,7,2020-10-11,245,ta&m,Texas A&M Aggies,11,21,883.0
+2020,7,2020-10-11,2483,ore,Oregon Ducks,12,12,817.0
+2020,7,2020-10-11,2390,mia,Miami Hurricanes,13,7,789.0
+2020,7,2020-10-11,252,byu,BYU Cougars,14,15,708.0
+2020,7,2020-10-11,2,aub,Auburn Tigers,15,13,702.0
+2020,7,2020-10-11,275,wis,Wisconsin Badgers,16,16,633.0
+2020,7,2020-10-11,2567,,,17,18,522.0
+2020,7,2020-10-11,2633,,,18,14,462.0
+2020,7,2020-10-11,130,mich,Michigan Wolverines,19,20,417.0
+2020,7,2020-10-11,66,isu,Iowa State Cyclones,20,24,404.0
+2020,7,2020-10-11,309,ul,Louisiana Ragin' Cajuns,21,23,341.0
+2020,7,2020-10-11,2306,ksu,Kansas State Wildcats,22,0,301.0
+2020,7,2020-10-11,259,vt,Virginia Tech Hokies,23,19,198.0
+2020,7,2020-10-11,135,minn,Minnesota Golden Gophers,24,25,177.0
+2020,7,2020-10-11,30,usc,USC Trojans,25,0,124.0
+2020,8,2020-10-18,228,clem,Clemson Tigers,1,1,1542.0
+2020,8,2020-10-18,333,ala,Alabama Crimson Tide,2,2,1494.0
+2020,8,2020-10-18,87,nd,Notre Dame Fighting Irish,3,4,1337.0
+2020,8,2020-10-18,61,uga,Georgia Bulldogs,4,3,1300.0
+2020,8,2020-10-18,194,osu,Ohio State Buckeyes,5,6,1223.0
+2020,8,2020-10-18,197,okst,Oklahoma State Cowboys,6,7,1137.0
+2020,8,2020-10-18,245,ta&m,Texas A&M Aggies,7,11,1054.0
+2020,8,2020-10-18,213,psu,Penn State Nittany Lions,8,9,1033.0
+2020,8,2020-10-18,2132,cin,Cincinnati Bearcats,9,8,1028.0
+2020,8,2020-10-18,57,fla,Florida Gators,10,10,942.0
+2020,8,2020-10-18,2390,mia,Miami Hurricanes,11,13,887.0
+2020,8,2020-10-18,252,byu,BYU Cougars,12,14,875.0
+2020,8,2020-10-18,2483,ore,Oregon Ducks,13,12,841.0
+2020,8,2020-10-18,153,unc,North Carolina Tar Heels,14,5,677.0
+2020,8,2020-10-18,275,wis,Wisconsin Badgers,14,16,677.0
+2020,8,2020-10-18,2567,,,16,17,638.0
+2020,8,2020-10-18,66,isu,Iowa State Cyclones,17,20,511.0
+2020,8,2020-10-18,130,mich,Michigan Wolverines,18,19,489.0
+2020,8,2020-10-18,259,vt,Virginia Tech Hokies,19,23,411.0
+2020,8,2020-10-18,2306,ksu,Kansas State Wildcats,20,22,399.0
+2020,8,2020-10-18,135,minn,Minnesota Golden Gophers,21,24,234.0
+2020,8,2020-10-18,276,mrsh,Marshall Thundering Herd,22,0,227.0
+2020,8,2020-10-18,152,ncsu,NC State Wolfpack,23,0,199.0
+2020,8,2020-10-18,30,usc,USC Trojans,24,25,192.0
+2020,8,2020-10-18,324,ccu,Coastal Carolina Chanticleers,25,0,185.0
+2020,9,2020-10-25,228,clem,Clemson Tigers,1,1,1539.0
+2020,9,2020-10-25,333,ala,Alabama Crimson Tide,2,2,1494.0
+2020,9,2020-10-25,194,osu,Ohio State Buckeyes,3,5,1402.0
+2020,9,2020-10-25,87,nd,Notre Dame Fighting Irish,4,3,1353.0
+2020,9,2020-10-25,61,uga,Georgia Bulldogs,5,4,1292.0
+2020,9,2020-10-25,197,okst,Oklahoma State Cowboys,6,6,1201.0
+2020,9,2020-10-25,2132,cin,Cincinnati Bearcats,7,9,1100.0
+2020,9,2020-10-25,245,ta&m,Texas A&M Aggies,8,7,1094.0
+2020,9,2020-10-25,275,wis,Wisconsin Badgers,9,14,950.0
+2020,9,2020-10-25,57,fla,Florida Gators,10,10,933.0
+2020,9,2020-10-25,252,byu,BYU Cougars,11,12,906.0
+2020,9,2020-10-25,2390,mia,Miami Hurricanes,12,11,888.0
+2020,9,2020-10-25,130,mich,Michigan Wolverines,13,18,839.0
+2020,9,2020-10-25,2483,ore,Oregon Ducks,14,13,784.0
+2020,9,2020-10-25,153,unc,North Carolina Tar Heels,15,14,758.0
+2020,9,2020-10-25,2306,ksu,Kansas State Wildcats,16,20,562.0
+2020,9,2020-10-25,84,iu,Indiana Hoosiers,17,0,466.0
+2020,9,2020-10-25,213,psu,Penn State Nittany Lions,18,8,443.0
+2020,9,2020-10-25,276,mrsh,Marshall Thundering Herd,19,22,379.0
+2020,9,2020-10-25,324,ccu,Coastal Carolina Chanticleers,20,25,282.0
+2020,9,2020-10-25,30,usc,USC Trojans,21,24,243.0
+2020,9,2020-10-25,2567,,,22,16,208.0
+2020,9,2020-10-25,66,isu,Iowa State Cyclones,23,17,205.0
+2020,9,2020-10-25,201,ou,Oklahoma Sooners,24,0,155.0
+2020,9,2020-10-25,68,bois,Boise State Broncos,25,0,113.0
+2020,10,2020-11-01,228,clem,Clemson Tigers,1,1,1515.0
+2020,10,2020-11-01,333,ala,Alabama Crimson Tide,2,2,1513.0
+2020,10,2020-11-01,194,osu,Ohio State Buckeyes,3,3,1430.0
+2020,10,2020-11-01,87,nd,Notre Dame Fighting Irish,4,4,1351.0
+2020,10,2020-11-01,61,uga,Georgia Bulldogs,5,5,1289.0
+2020,10,2020-11-01,2132,cin,Cincinnati Bearcats,6,7,1199.0
+2020,10,2020-11-01,245,ta&m,Texas A&M Aggies,7,8,1156.0
+2020,10,2020-11-01,57,fla,Florida Gators,8,10,1066.0
+2020,10,2020-11-01,252,byu,BYU Cougars,9,11,1014.0
+2020,10,2020-11-01,275,wis,Wisconsin Badgers,10,9,985.0
+2020,10,2020-11-01,2390,mia,Miami Hurricanes,11,12,946.0
+2020,10,2020-11-01,2483,ore,Oregon Ducks,12,14,831.0
+2020,10,2020-11-01,84,iu,Indiana Hoosiers,13,17,765.0
+2020,10,2020-11-01,197,okst,Oklahoma State Cowboys,14,6,760.0
+2020,10,2020-11-01,324,ccu,Coastal Carolina Chanticleers,15,20,527.0
+2020,10,2020-11-01,276,mrsh,Marshall Thundering Herd,16,19,523.0
+2020,10,2020-11-01,66,isu,Iowa State Cyclones,17,23,427.0
+2020,10,2020-11-01,2567,,,18,22,420.0
+2020,10,2020-11-01,201,ou,Oklahoma Sooners,19,24,405.0
+2020,10,2020-11-01,30,usc,USC Trojans,20,21,354.0
+2020,10,2020-11-01,68,bois,Boise State Broncos,21,25,336.0
+2020,10,2020-11-01,251,tex,Texas Longhorns,22,0,190.0
+2020,10,2020-11-01,130,mich,Michigan Wolverines,23,13,151.0
+2020,10,2020-11-01,2,aub,Auburn Tigers,24,0,144.0
+2020,10,2020-11-01,2335,lib,Liberty Flames,25,0,118.0
+2020,11,2020-11-08,333,ala,Alabama Crimson Tide,1,2,1547.0
+2020,11,2020-11-08,87,nd,Notre Dame Fighting Irish,2,4,1464.0
+2020,11,2020-11-08,194,osu,Ohio State Buckeyes,3,3,1449.0
+2020,11,2020-11-08,228,clem,Clemson Tigers,4,1,1355.0
+2020,11,2020-11-08,245,ta&m,Texas A&M Aggies,5,7,1223.0
+2020,11,2020-11-08,57,fla,Florida Gators,6,8,1213.0
+2020,11,2020-11-08,2132,cin,Cincinnati Bearcats,7,6,1208.0
+2020,11,2020-11-08,252,byu,BYU Cougars,8,9,1101.0
+2020,11,2020-11-08,2390,mia,Miami Hurricanes,9,11,958.0
+2020,11,2020-11-08,84,iu,Indiana Hoosiers,10,13,956.0
+2020,11,2020-11-08,2483,ore,Oregon Ducks,11,12,948.0
+2020,11,2020-11-08,61,uga,Georgia Bulldogs,12,5,861.0
+2020,11,2020-11-08,275,wis,Wisconsin Badgers,13,10,852.0
+2020,11,2020-11-08,197,okst,Oklahoma State Cowboys,14,14,762.0
+2020,11,2020-11-08,324,ccu,Coastal Carolina Chanticleers,15,15,551.0
+2020,11,2020-11-08,276,mrsh,Marshall Thundering Herd,16,16,534.0
+2020,11,2020-11-08,66,isu,Iowa State Cyclones,17,17,491.0
+2020,11,2020-11-08,201,ou,Oklahoma Sooners,18,19,467.0
+2020,11,2020-11-08,2567,,,19,18,456.0
+2020,11,2020-11-08,30,usc,USC Trojans,20,20,395.0
+2020,11,2020-11-08,251,tex,Texas Longhorns,21,22,265.0
+2020,11,2020-11-08,2335,lib,Liberty Flames,22,25,260.0
+2020,11,2020-11-08,77,nu,Northwestern Wildcats,23,0,250.0
+2020,11,2020-11-08,2,aub,Auburn Tigers,24,24,184.0
+2020,11,2020-11-08,309,ul,Louisiana Ragin' Cajuns,25,0,118.0
+2020,12,2020-11-15,333,ala,Alabama Crimson Tide,1,1,1548.0
+2020,12,2020-11-15,87,nd,Notre Dame Fighting Irish,2,2,1467.0
+2020,12,2020-11-15,194,osu,Ohio State Buckeyes,3,3,1445.0
+2020,12,2020-11-15,228,clem,Clemson Tigers,4,4,1355.0
+2020,12,2020-11-15,245,ta&m,Texas A&M Aggies,5,5,1240.0
+2020,12,2020-11-15,57,fla,Florida Gators,6,6,1222.0
+2020,12,2020-11-15,2132,cin,Cincinnati Bearcats,7,7,1198.0
+2020,12,2020-11-15,252,byu,BYU Cougars,8,8,1094.0
+2020,12,2020-11-15,84,iu,Indiana Hoosiers,9,10,997.0
+2020,12,2020-11-15,275,wis,Wisconsin Badgers,10,13,950.0
+2020,12,2020-11-15,2483,ore,Oregon Ducks,11,11,949.0
+2020,12,2020-11-15,2390,mia,Miami Hurricanes,12,9,940.0
+2020,12,2020-11-15,61,uga,Georgia Bulldogs,13,12,824.0
+2020,12,2020-11-15,197,okst,Oklahoma State Cowboys,14,14,750.0
+2020,12,2020-11-15,276,mrsh,Marshall Thundering Herd,15,16,557.0
+2020,12,2020-11-15,324,ccu,Coastal Carolina Chanticleers,15,15,557.0
+2020,12,2020-11-15,66,isu,Iowa State Cyclones,17,17,498.0
+2020,12,2020-11-15,201,ou,Oklahoma Sooners,18,18,497.0
+2020,12,2020-11-15,77,nu,Northwestern Wildcats,19,23,378.0
+2020,12,2020-11-15,30,usc,USC Trojans,20,20,377.0
+2020,12,2020-11-15,2335,lib,Liberty Flames,21,22,307.0
+2020,12,2020-11-15,251,tex,Texas Longhorns,22,21,296.0
+2020,12,2020-11-15,2,aub,Auburn Tigers,23,24,187.0
+2020,12,2020-11-15,309,ul,Louisiana Ragin' Cajuns,24,25,177.0
+2020,12,2020-11-15,202,tlsa,Tulsa Golden Hurricane,25,0,155.0
+2020,13,2020-11-22,333,ala,Alabama Crimson Tide,1,1,1550.0
+2020,13,2020-11-22,87,nd,Notre Dame Fighting Irish,2,2,1471.0
+2020,13,2020-11-22,194,osu,Ohio State Buckeyes,3,3,1440.0
+2020,13,2020-11-22,228,clem,Clemson Tigers,4,4,1358.0
+2020,13,2020-11-22,245,ta&m,Texas A&M Aggies,5,5,1249.0
+2020,13,2020-11-22,57,fla,Florida Gators,6,6,1223.0
+2020,13,2020-11-22,2132,cin,Cincinnati Bearcats,7,7,1201.0
+2020,13,2020-11-22,252,byu,BYU Cougars,8,8,1109.0
+2020,13,2020-11-22,2483,ore,Oregon Ducks,9,11,951.0
+2020,13,2020-11-22,2390,mia,Miami Hurricanes,10,12,936.0
+2020,13,2020-11-22,77,nu,Northwestern Wildcats,11,19,922.0
+2020,13,2020-11-22,84,iu,Indiana Hoosiers,12,9,899.0
+2020,13,2020-11-22,61,uga,Georgia Bulldogs,13,13,828.0
+2020,13,2020-11-22,201,ou,Oklahoma Sooners,14,18,693.0
+2020,13,2020-11-22,66,isu,Iowa State Cyclones,15,17,658.0
+2020,13,2020-11-22,324,ccu,Coastal Carolina Chanticleers,16,15,622.0
+2020,13,2020-11-22,276,mrsh,Marshall Thundering Herd,17,15,542.0
+2020,13,2020-11-22,275,wis,Wisconsin Badgers,18,10,540.0
+2020,13,2020-11-22,30,usc,USC Trojans,19,20,461.0
+2020,13,2020-11-22,251,tex,Texas Longhorns,20,22,321.0
+2020,13,2020-11-22,197,okst,Oklahoma State Cowboys,21,14,289.0
+2020,13,2020-11-22,2,aub,Auburn Tigers,22,23,259.0
+2020,13,2020-11-22,309,ul,Louisiana Ragin' Cajuns,23,24,218.0
+2020,13,2020-11-22,202,tlsa,Tulsa Golden Hurricane,24,25,164.0
+2020,13,2020-11-22,153,unc,North Carolina Tar Heels,25,0,108.0
+2020,14,2020-11-29,333,ala,Alabama Crimson Tide,1,1,1550.0
+2020,14,2020-11-29,87,nd,Notre Dame Fighting Irish,2,2,1481.0
+2020,14,2020-11-29,194,osu,Ohio State Buckeyes,3,3,1403.0
+2020,14,2020-11-29,228,clem,Clemson Tigers,4,4,1392.0
+2020,14,2020-11-29,245,ta&m,Texas A&M Aggies,5,5,1262.0
+2020,14,2020-11-29,57,fla,Florida Gators,6,6,1226.0
+2020,14,2020-11-29,2132,cin,Cincinnati Bearcats,7,7,1204.0
+2020,14,2020-11-29,252,byu,BYU Cougars,8,8,1113.0
+2020,14,2020-11-29,2390,mia,Miami Hurricanes,9,10,991.0
+2020,14,2020-11-29,84,iu,Indiana Hoosiers,10,12,984.0
+2020,14,2020-11-29,61,uga,Georgia Bulldogs,11,13,919.0
+2020,14,2020-11-29,66,isu,Iowa State Cyclones,12,15,873.0
+2020,14,2020-11-29,201,ou,Oklahoma Sooners,13,14,815.0
+2020,14,2020-11-29,324,ccu,Coastal Carolina Chanticleers,14,16,694.0
+2020,14,2020-11-29,276,mrsh,Marshall Thundering Herd,15,17,600.0
+2020,14,2020-11-29,77,nu,Northwestern Wildcats,16,11,577.0
+2020,14,2020-11-29,30,usc,USC Trojans,17,19,540.0
+2020,14,2020-11-29,275,wis,Wisconsin Badgers,18,18,531.0
+2020,14,2020-11-29,197,okst,Oklahoma State Cowboys,19,21,426.0
+2020,14,2020-11-29,309,ul,Louisiana Ragin' Cajuns,20,23,352.0
+2020,14,2020-11-29,2483,ore,Oregon Ducks,21,9,326.0
+2020,14,2020-11-29,202,tlsa,Tulsa Golden Hurricane,22,24,244.0
+2020,14,2020-11-29,264,wash,Washington Huskies,23,0,218.0
+2020,14,2020-11-29,2294,iowa,Iowa Hawkeyes,24,0,119.0
+2020,14,2020-11-29,2335,lib,Liberty Flames,25,0,67.0
+2020,15,2020-12-06,333,ala,Alabama Crimson Tide,1,1,1550.0
+2020,15,2020-12-06,87,nd,Notre Dame Fighting Irish,2,2,1482.0
+2020,15,2020-12-06,194,osu,Ohio State Buckeyes,3,3,1407.0
+2020,15,2020-12-06,228,clem,Clemson Tigers,4,4,1387.0
+2020,15,2020-12-06,245,ta&m,Texas A&M Aggies,5,5,1274.0
+2020,15,2020-12-06,57,fla,Florida Gators,6,6,1233.0
+2020,15,2020-12-06,2132,cin,Cincinnati Bearcats,7,7,1204.0
+2020,15,2020-12-06,84,iu,Indiana Hoosiers,8,10,1047.0
+2020,15,2020-12-06,2390,mia,Miami Hurricanes,9,9,1039.0
+2020,15,2020-12-06,66,isu,Iowa State Cyclones,10,12,947.0
+2020,15,2020-12-06,324,ccu,Coastal Carolina Chanticleers,11,14,923.0
+2020,15,2020-12-06,61,uga,Georgia Bulldogs,12,11,914.0
+2020,15,2020-12-06,201,ou,Oklahoma Sooners,13,13,837.0
+2020,15,2020-12-06,252,byu,BYU Cougars,14,8,713.0
+2020,15,2020-12-06,77,nu,Northwestern Wildcats,15,16,647.0
+2020,15,2020-12-06,30,usc,USC Trojans,16,17,624.0
+2020,15,2020-12-06,309,ul,Louisiana Ragin' Cajuns,17,20,560.0
+2020,15,2020-12-06,202,tlsa,Tulsa Golden Hurricane,18,22,444.0
+2020,15,2020-12-06,2294,iowa,Iowa Hawkeyes,19,24,424.0
+2020,15,2020-12-06,153,unc,North Carolina Tar Heels,20,0,306.0
+2020,15,2020-12-06,38,colo,Colorado Buffaloes,21,0,253.0
+2020,15,2020-12-06,2335,lib,Liberty Flames,22,25,191.0
+2020,15,2020-12-06,251,tex,Texas Longhorns,23,0,164.0
+2020,15,2020-12-06,2084,buf,Buffalo Bulls,24,0,145.0
+2020,15,2020-12-06,275,wis,Wisconsin Badgers,25,18,115.0
+2020,16,2020-12-13,333,ala,Alabama Crimson Tide,1,1,1550.0
+2020,16,2020-12-13,87,nd,Notre Dame Fighting Irish,2,2,1482.0
+2020,16,2020-12-13,194,osu,Ohio State Buckeyes,3,3,1405.0
+2020,16,2020-12-13,228,clem,Clemson Tigers,4,4,1388.0
+2020,16,2020-12-13,245,ta&m,Texas A&M Aggies,5,5,1286.0
+2020,16,2020-12-13,2132,cin,Cincinnati Bearcats,6,7,1248.0
+2020,16,2020-12-13,84,iu,Indiana Hoosiers,7,8,1140.0
+2020,16,2020-12-13,66,isu,Iowa State Cyclones,8,10,1059.0
+2020,16,2020-12-13,324,ccu,Coastal Carolina Chanticleers,9,11,994.0
+2020,16,2020-12-13,61,uga,Georgia Bulldogs,10,12,968.0
+2020,16,2020-12-13,57,fla,Florida Gators,11,6,940.0
+2020,16,2020-12-13,201,ou,Oklahoma Sooners,12,13,902.0
+2020,16,2020-12-13,30,usc,USC Trojans,13,16,774.0
+2020,16,2020-12-13,252,byu,BYU Cougars,14,14,724.0
+2020,16,2020-12-13,77,nu,Northwestern Wildcats,15,15,691.0
+2020,16,2020-12-13,153,unc,North Carolina Tar Heels,16,20,631.0
+2020,16,2020-12-13,309,ul,Louisiana Ragin' Cajuns,17,17,566.0
+2020,16,2020-12-13,2294,iowa,Iowa Hawkeyes,18,19,502.0
+2020,16,2020-12-13,2390,mia,Miami Hurricanes,19,9,454.0
+2020,16,2020-12-13,202,tlsa,Tulsa Golden Hurricane,20,18,408.0
+2020,16,2020-12-13,251,tex,Texas Longhorns,21,23,227.0
+2020,16,2020-12-13,2335,lib,Liberty Flames,22,22,184.0
+2020,16,2020-12-13,2084,buf,Buffalo Bulls,23,24,183.0
+2020,16,2020-12-13,152,ncsu,NC State Wolfpack,24,0,137.0
+2020,16,2020-12-13,23,sjsu,San José State Spartans,25,0,124.0

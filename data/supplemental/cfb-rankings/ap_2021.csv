@@ -1,0 +1,376 @@
+season,week,asof_date,team_id,team_abbr,team_name,rank,previous,points
+2021,1,2021-08-16,333,ala,Alabama Crimson Tide,1,0,1548.0
+2021,1,2021-08-16,201,ou,Oklahoma Sooners,2,0,1462.0
+2021,1,2021-08-16,228,clem,Clemson Tigers,3,0,1447.0
+2021,1,2021-08-16,194,osu,Ohio State Buckeyes,4,0,1393.0
+2021,1,2021-08-16,61,uga,Georgia Bulldogs,5,0,1364.0
+2021,1,2021-08-16,245,ta&m,Texas A&M Aggies,6,0,1223.0
+2021,1,2021-08-16,66,isu,Iowa State Cyclones,7,0,1160.0
+2021,1,2021-08-16,2132,cin,Cincinnati Bearcats,8,0,1014.0
+2021,1,2021-08-16,87,nd,Notre Dame Fighting Irish,9,0,1009.0
+2021,1,2021-08-16,153,unc,North Carolina Tar Heels,10,0,999.0
+2021,1,2021-08-16,2483,ore,Oregon Ducks,11,0,968.0
+2021,1,2021-08-16,275,wis,Wisconsin Badgers,12,0,743.0
+2021,1,2021-08-16,57,fla,Florida Gators,13,0,728.0
+2021,1,2021-08-16,2390,mia,Miami Hurricanes,14,0,663.0
+2021,1,2021-08-16,30,usc,USC Trojans,15,0,660.0
+2021,1,2021-08-16,99,lsu,LSU Tigers,16,0,631.0
+2021,1,2021-08-16,84,iu,Indiana Hoosiers,17,0,549.0
+2021,1,2021-08-16,2294,iowa,Iowa Hawkeyes,18,0,513.0
+2021,1,2021-08-16,213,psu,Penn State Nittany Lions,19,0,456.0
+2021,1,2021-08-16,264,wash,Washington Huskies,20,0,449.0
+2021,1,2021-08-16,251,tex,Texas Longhorns,21,0,350.0
+2021,1,2021-08-16,324,ccu,Coastal Carolina Chanticleers,22,0,232.0
+2021,1,2021-08-16,309,ul,Louisiana Ragin' Cajuns,23,0,208.0
+2021,1,2021-08-16,254,utah,Utah Utes,24,0,176.0
+2021,1,2021-08-16,9,asu,Arizona State Sun Devils,25,0,125.0
+2021,2,2021-09-07,333,ala,Alabama Crimson Tide,1,1,1571.0
+2021,2,2021-09-07,61,uga,Georgia Bulldogs,2,5,1507.0
+2021,2,2021-09-07,194,osu,Ohio State Buckeyes,3,4,1437.0
+2021,2,2021-09-07,201,ou,Oklahoma Sooners,4,2,1374.0
+2021,2,2021-09-07,245,ta&m,Texas A&M Aggies,5,6,1288.0
+2021,2,2021-09-07,228,clem,Clemson Tigers,6,3,1231.0
+2021,2,2021-09-07,2132,cin,Cincinnati Bearcats,7,8,1136.0
+2021,2,2021-09-07,87,nd,Notre Dame Fighting Irish,8,9,1070.0
+2021,2,2021-09-07,66,isu,Iowa State Cyclones,9,7,1045.0
+2021,2,2021-09-07,2294,iowa,Iowa Hawkeyes,10,18,942.0
+2021,2,2021-09-07,213,psu,Penn State Nittany Lions,11,19,908.0
+2021,2,2021-09-07,2483,ore,Oregon Ducks,12,11,883.0
+2021,2,2021-09-07,57,fla,Florida Gators,13,13,842.0
+2021,2,2021-09-07,30,usc,USC Trojans,14,15,789.0
+2021,2,2021-09-07,251,tex,Texas Longhorns,15,21,683.0
+2021,2,2021-09-07,26,ucla,UCLA Bruins,16,0,668.0
+2021,2,2021-09-07,324,ccu,Coastal Carolina Chanticleers,17,22,384.0
+2021,2,2021-09-07,275,wis,Wisconsin Badgers,18,12,376.0
+2021,2,2021-09-07,259,vt,Virginia Tech Hokies,19,0,359.0
+2021,2,2021-09-07,145,miss,Ole Miss Rebels,20,0,335.0
+2021,2,2021-09-07,254,utah,Utah Utes,21,24,334.0
+2021,2,2021-09-07,2390,mia,Miami Hurricanes,22,14,229.0
+2021,2,2021-09-07,9,asu,Arizona State Sun Devils,23,25,227.0
+2021,2,2021-09-07,153,unc,North Carolina Tar Heels,24,10,198.0
+2021,2,2021-09-07,2,aub,Auburn Tigers,25,0,83.0
+2021,3,2021-09-12,333,ala,Alabama Crimson Tide,1,1,1572.0
+2021,3,2021-09-12,61,uga,Georgia Bulldogs,2,2,1514.0
+2021,3,2021-09-12,201,ou,Oklahoma Sooners,3,4,1402.0
+2021,3,2021-09-12,2483,ore,Oregon Ducks,4,12,1355.0
+2021,3,2021-09-12,2294,iowa,Iowa Hawkeyes,5,10,1263.0
+2021,3,2021-09-12,228,clem,Clemson Tigers,6,6,1246.0
+2021,3,2021-09-12,245,ta&m,Texas A&M Aggies,7,5,1206.0
+2021,3,2021-09-12,2132,cin,Cincinnati Bearcats,8,7,1149.0
+2021,3,2021-09-12,194,osu,Ohio State Buckeyes,9,3,1029.0
+2021,3,2021-09-12,213,psu,Penn State Nittany Lions,10,11,1005.0
+2021,3,2021-09-12,57,fla,Florida Gators,11,13,935.0
+2021,3,2021-09-12,87,nd,Notre Dame Fighting Irish,12,8,926.0
+2021,3,2021-09-12,26,ucla,UCLA Bruins,13,16,804.0
+2021,3,2021-09-12,66,isu,Iowa State Cyclones,14,9,593.0
+2021,3,2021-09-12,259,vt,Virginia Tech Hokies,15,19,591.0
+2021,3,2021-09-12,324,ccu,Coastal Carolina Chanticleers,16,17,562.0
+2021,3,2021-09-12,145,miss,Ole Miss Rebels,17,20,550.0
+2021,3,2021-09-12,275,wis,Wisconsin Badgers,18,18,499.0
+2021,3,2021-09-12,9,asu,Arizona State Sun Devils,19,23,347.0
+2021,3,2021-09-12,8,ark,Arkansas Razorbacks,20,0,277.0
+2021,3,2021-09-12,153,unc,North Carolina Tar Heels,21,24,268.0
+2021,3,2021-09-12,2,aub,Auburn Tigers,22,25,233.0
+2021,3,2021-09-12,252,byu,BYU Cougars,23,0,213.0
+2021,3,2021-09-12,2390,mia,Miami Hurricanes,24,22,177.0
+2021,3,2021-09-12,130,mich,Michigan Wolverines,25,0,163.0
+2021,4,2021-09-19,333,ala,Alabama Crimson Tide,1,1,1547.0
+2021,4,2021-09-19,61,uga,Georgia Bulldogs,2,2,1491.0
+2021,4,2021-09-19,2483,ore,Oregon Ducks,3,4,1385.0
+2021,4,2021-09-19,201,ou,Oklahoma Sooners,4,3,1302.0
+2021,4,2021-09-19,2294,iowa,Iowa Hawkeyes,5,5,1298.0
+2021,4,2021-09-19,213,psu,Penn State Nittany Lions,6,10,1197.0
+2021,4,2021-09-19,245,ta&m,Texas A&M Aggies,7,7,1158.0
+2021,4,2021-09-19,2132,cin,Cincinnati Bearcats,8,8,1145.0
+2021,4,2021-09-19,228,clem,Clemson Tigers,9,6,1074.0
+2021,4,2021-09-19,194,osu,Ohio State Buckeyes,10,9,976.0
+2021,4,2021-09-19,57,fla,Florida Gators,11,11,930.0
+2021,4,2021-09-19,87,nd,Notre Dame Fighting Irish,12,12,874.0
+2021,4,2021-09-19,145,miss,Ole Miss Rebels,13,17,717.0
+2021,4,2021-09-19,66,isu,Iowa State Cyclones,14,14,664.0
+2021,4,2021-09-19,252,byu,BYU Cougars,15,23,603.0
+2021,4,2021-09-19,8,ark,Arkansas Razorbacks,16,20,537.0
+2021,4,2021-09-19,324,ccu,Coastal Carolina Chanticleers,17,16,526.0
+2021,4,2021-09-19,275,wis,Wisconsin Badgers,18,18,513.0
+2021,4,2021-09-19,130,mich,Michigan Wolverines,19,25,456.0
+2021,4,2021-09-19,127,msu,Michigan State Spartans,20,0,389.0
+2021,4,2021-09-19,153,unc,North Carolina Tar Heels,21,21,306.0
+2021,4,2021-09-19,278,fres,Fresno State Bulldogs,22,0,201.0
+2021,4,2021-09-19,2,aub,Auburn Tigers,23,22,166.0
+2021,4,2021-09-19,26,ucla,UCLA Bruins,24,13,142.0
+2021,4,2021-09-19,2306,ksu,Kansas State Wildcats,25,0,127.0
+2021,5,2021-09-26,333,ala,Alabama Crimson Tide,1,1,1546.0
+2021,5,2021-09-26,61,uga,Georgia Bulldogs,2,2,1492.0
+2021,5,2021-09-26,2483,ore,Oregon Ducks,3,3,1411.0
+2021,5,2021-09-26,213,psu,Penn State Nittany Lions,4,6,1283.0
+2021,5,2021-09-26,2294,iowa,Iowa Hawkeyes,5,5,1277.0
+2021,5,2021-09-26,201,ou,Oklahoma Sooners,6,4,1212.0
+2021,5,2021-09-26,2132,cin,Cincinnati Bearcats,7,8,1154.0
+2021,5,2021-09-26,8,ark,Arkansas Razorbacks,8,16,1094.0
+2021,5,2021-09-26,87,nd,Notre Dame Fighting Irish,9,12,1076.0
+2021,5,2021-09-26,57,fla,Florida Gators,10,11,1019.0
+2021,5,2021-09-26,194,osu,Ohio State Buckeyes,11,10,1005.0
+2021,5,2021-09-26,145,miss,Ole Miss Rebels,12,13,852.0
+2021,5,2021-09-26,252,byu,BYU Cougars,13,15,748.0
+2021,5,2021-09-26,130,mich,Michigan Wolverines,14,19,677.0
+2021,5,2021-09-26,245,ta&m,Texas A&M Aggies,15,7,651.0
+2021,5,2021-09-26,324,ccu,Coastal Carolina Chanticleers,16,17,613.0
+2021,5,2021-09-26,127,msu,Michigan State Spartans,17,20,581.0
+2021,5,2021-09-26,278,fres,Fresno State Bulldogs,18,22,415.0
+2021,5,2021-09-26,197,okst,Oklahoma State Cowboys,19,0,341.0
+2021,5,2021-09-26,26,ucla,UCLA Bruins,20,24,316.0
+2021,5,2021-09-26,239,bay,Baylor Bears,21,0,233.0
+2021,5,2021-09-26,2,aub,Auburn Tigers,22,23,197.0
+2021,5,2021-09-26,152,ncsu,NC State Wolfpack,23,0,145.0
+2021,5,2021-09-26,154,wake,Wake Forest Demon Deacons,24,0,142.0
+2021,5,2021-09-26,228,clem,Clemson Tigers,25,9,138.0
+2021,6,2021-10-03,333,ala,Alabama Crimson Tide,1,1,1541.0
+2021,6,2021-10-03,61,uga,Georgia Bulldogs,2,2,1497.0
+2021,6,2021-10-03,2294,iowa,Iowa Hawkeyes,3,5,1381.0
+2021,6,2021-10-03,213,psu,Penn State Nittany Lions,4,4,1360.0
+2021,6,2021-10-03,2132,cin,Cincinnati Bearcats,5,7,1320.0
+2021,6,2021-10-03,201,ou,Oklahoma Sooners,6,6,1248.0
+2021,6,2021-10-03,194,osu,Ohio State Buckeyes,7,11,1094.0
+2021,6,2021-10-03,2483,ore,Oregon Ducks,8,3,1069.0
+2021,6,2021-10-03,130,mich,Michigan Wolverines,9,14,1053.0
+2021,6,2021-10-03,252,byu,BYU Cougars,10,13,990.0
+2021,6,2021-10-03,127,msu,Michigan State Spartans,11,17,852.0
+2021,6,2021-10-03,197,okst,Oklahoma State Cowboys,12,19,749.0
+2021,6,2021-10-03,8,ark,Arkansas Razorbacks,13,8,745.0
+2021,6,2021-10-03,87,nd,Notre Dame Fighting Irish,14,9,701.0
+2021,6,2021-10-03,324,ccu,Coastal Carolina Chanticleers,15,16,694.0
+2021,6,2021-10-03,96,uk,Kentucky Wildcats,16,0,662.0
+2021,6,2021-10-03,145,miss,Ole Miss Rebels,17,12,601.0
+2021,6,2021-10-03,2,aub,Auburn Tigers,18,22,448.0
+2021,6,2021-10-03,154,wake,Wake Forest Demon Deacons,19,24,412.0
+2021,6,2021-10-03,57,fla,Florida Gators,20,10,343.0
+2021,6,2021-10-03,251,tex,Texas Longhorns,21,0,303.0
+2021,6,2021-10-03,9,asu,Arizona State Sun Devils,22,0,297.0
+2021,6,2021-10-03,152,ncsu,NC State Wolfpack,23,23,279.0
+2021,6,2021-10-03,2567,,,24,0,136.0
+2021,6,2021-10-03,21,sdsu,San Diego State Aztecs,25,0,111.0
+2021,7,2021-10-10,61,uga,Georgia Bulldogs,1,2,1550.0
+2021,7,2021-10-10,2294,iowa,Iowa Hawkeyes,2,3,1476.0
+2021,7,2021-10-10,2132,cin,Cincinnati Bearcats,3,5,1407.0
+2021,7,2021-10-10,201,ou,Oklahoma Sooners,4,6,1336.0
+2021,7,2021-10-10,333,ala,Alabama Crimson Tide,5,1,1286.0
+2021,7,2021-10-10,194,osu,Ohio State Buckeyes,6,7,1157.0
+2021,7,2021-10-10,213,psu,Penn State Nittany Lions,7,4,1147.0
+2021,7,2021-10-10,130,mich,Michigan Wolverines,8,9,1139.0
+2021,7,2021-10-10,2483,ore,Oregon Ducks,9,8,1057.0
+2021,7,2021-10-10,127,msu,Michigan State Spartans,10,11,992.0
+2021,7,2021-10-10,96,uk,Kentucky Wildcats,11,16,918.0
+2021,7,2021-10-10,197,okst,Oklahoma State Cowboys,12,12,830.0
+2021,7,2021-10-10,145,miss,Ole Miss Rebels,13,17,779.0
+2021,7,2021-10-10,87,nd,Notre Dame Fighting Irish,14,14,732.0
+2021,7,2021-10-10,324,ccu,Coastal Carolina Chanticleers,15,15,712.0
+2021,7,2021-10-10,154,wake,Wake Forest Demon Deacons,16,19,526.0
+2021,7,2021-10-10,8,ark,Arkansas Razorbacks,17,13,470.0
+2021,7,2021-10-10,9,asu,Arizona State Sun Devils,18,22,428.0
+2021,7,2021-10-10,252,byu,BYU Cougars,19,10,421.0
+2021,7,2021-10-10,57,fla,Florida Gators,20,20,397.0
+2021,7,2021-10-10,245,ta&m,Texas A&M Aggies,21,0,348.0
+2021,7,2021-10-10,152,ncsu,NC State Wolfpack,22,23,265.0
+2021,7,2021-10-10,2567,,,23,24,225.0
+2021,7,2021-10-10,21,sdsu,San Diego State Aztecs,24,25,176.0
+2021,7,2021-10-10,251,tex,Texas Longhorns,25,21,108.0
+2021,8,2021-10-17,61,uga,Georgia Bulldogs,1,1,1575.0
+2021,8,2021-10-17,2132,cin,Cincinnati Bearcats,2,3,1483.0
+2021,8,2021-10-17,201,ou,Oklahoma Sooners,3,4,1434.0
+2021,8,2021-10-17,333,ala,Alabama Crimson Tide,4,5,1393.0
+2021,8,2021-10-17,194,osu,Ohio State Buckeyes,5,6,1252.0
+2021,8,2021-10-17,130,mich,Michigan Wolverines,6,8,1214.0
+2021,8,2021-10-17,213,psu,Penn State Nittany Lions,7,7,1116.0
+2021,8,2021-10-17,197,okst,Oklahoma State Cowboys,8,12,1082.0
+2021,8,2021-10-17,127,msu,Michigan State Spartans,9,10,1076.0
+2021,8,2021-10-17,2483,ore,Oregon Ducks,10,9,1054.0
+2021,8,2021-10-17,2294,iowa,Iowa Hawkeyes,11,2,1048.0
+2021,8,2021-10-17,145,miss,Ole Miss Rebels,12,13,879.0
+2021,8,2021-10-17,87,nd,Notre Dame Fighting Irish,13,14,763.0
+2021,8,2021-10-17,324,ccu,Coastal Carolina Chanticleers,14,15,736.0
+2021,8,2021-10-17,96,uk,Kentucky Wildcats,15,11,723.0
+2021,8,2021-10-17,154,wake,Wake Forest Demon Deacons,16,16,629.0
+2021,8,2021-10-17,245,ta&m,Texas A&M Aggies,17,21,536.0
+2021,8,2021-10-17,152,ncsu,NC State Wolfpack,18,22,485.0
+2021,8,2021-10-17,2,aub,Auburn Tigers,19,0,397.0
+2021,8,2021-10-17,239,bay,Baylor Bears,20,0,378.0
+2021,8,2021-10-17,2567,,,21,23,358.0
+2021,8,2021-10-17,21,sdsu,San Diego State Aztecs,22,24,284.0
+2021,8,2021-10-17,221,pitt,Pittsburgh Panthers,23,0,177.0
+2021,8,2021-10-17,2636,,,24,0,104.0
+2021,8,2021-10-17,2509,,,25,0,68.0
+2021,9,2021-10-24,61,uga,Georgia Bulldogs,1,1,1575.0
+2021,9,2021-10-24,2132,cin,Cincinnati Bearcats,2,2,1477.0
+2021,9,2021-10-24,333,ala,Alabama Crimson Tide,3,4,1417.0
+2021,9,2021-10-24,201,ou,Oklahoma Sooners,4,3,1383.0
+2021,9,2021-10-24,194,osu,Ohio State Buckeyes,5,5,1311.0
+2021,9,2021-10-24,130,mich,Michigan Wolverines,6,6,1270.0
+2021,9,2021-10-24,2483,ore,Oregon Ducks,7,10,1165.0
+2021,9,2021-10-24,127,msu,Michigan State Spartans,8,9,1160.0
+2021,9,2021-10-24,2294,iowa,Iowa Hawkeyes,9,11,1035.0
+2021,9,2021-10-24,145,miss,Ole Miss Rebels,10,12,1034.0
+2021,9,2021-10-24,87,nd,Notre Dame Fighting Irish,11,13,922.0
+2021,9,2021-10-24,96,uk,Kentucky Wildcats,12,15,849.0
+2021,9,2021-10-24,154,wake,Wake Forest Demon Deacons,13,16,801.0
+2021,9,2021-10-24,245,ta&m,Texas A&M Aggies,14,17,700.0
+2021,9,2021-10-24,197,okst,Oklahoma State Cowboys,15,8,682.0
+2021,9,2021-10-24,239,bay,Baylor Bears,16,20,513.0
+2021,9,2021-10-24,221,pitt,Pittsburgh Panthers,17,23,510.0
+2021,9,2021-10-24,2,aub,Auburn Tigers,18,19,481.0
+2021,9,2021-10-24,2567,,,19,21,473.0
+2021,9,2021-10-24,213,psu,Penn State Nittany Lions,20,7,471.0
+2021,9,2021-10-24,21,sdsu,San Diego State Aztecs,21,22,390.0
+2021,9,2021-10-24,66,isu,Iowa State Cyclones,22,0,298.0
+2021,9,2021-10-24,2636,,,23,24,235.0
+2021,9,2021-10-24,324,ccu,Coastal Carolina Chanticleers,24,14,132.0
+2021,9,2021-10-24,252,byu,BYU Cougars,25,0,44.0
+2021,10,2021-10-31,61,uga,Georgia Bulldogs,1,1,1575.0
+2021,10,2021-10-31,2132,cin,Cincinnati Bearcats,2,2,1455.0
+2021,10,2021-10-31,333,ala,Alabama Crimson Tide,3,3,1413.0
+2021,10,2021-10-31,201,ou,Oklahoma Sooners,4,4,1382.0
+2021,10,2021-10-31,127,msu,Michigan State Spartans,5,8,1340.0
+2021,10,2021-10-31,194,osu,Ohio State Buckeyes,6,5,1296.0
+2021,10,2021-10-31,2483,ore,Oregon Ducks,7,7,1233.0
+2021,10,2021-10-31,87,nd,Notre Dame Fighting Irish,8,11,1067.0
+2021,10,2021-10-31,130,mich,Michigan Wolverines,9,6,1048.0
+2021,10,2021-10-31,154,wake,Wake Forest Demon Deacons,10,13,1025.0
+2021,10,2021-10-31,197,okst,Oklahoma State Cowboys,11,15,915.0
+2021,10,2021-10-31,2,aub,Auburn Tigers,12,18,853.0
+2021,10,2021-10-31,245,ta&m,Texas A&M Aggies,13,14,847.0
+2021,10,2021-10-31,239,bay,Baylor Bears,14,16,833.0
+2021,10,2021-10-31,145,miss,Ole Miss Rebels,15,10,678.0
+2021,10,2021-10-31,2636,,,16,23,460.0
+2021,10,2021-10-31,252,byu,BYU Cougars,17,25,450.0
+2021,10,2021-10-31,96,uk,Kentucky Wildcats,18,12,409.0
+2021,10,2021-10-31,2294,iowa,Iowa Hawkeyes,19,9,342.0
+2021,10,2021-10-31,248,hou,Houston Cougars,20,0,338.0
+2021,10,2021-10-31,324,ccu,Coastal Carolina Chanticleers,21,24,237.0
+2021,10,2021-10-31,213,psu,Penn State Nittany Lions,22,20,182.0
+2021,10,2021-10-31,2567,,,23,19,176.0
+2021,10,2021-10-31,309,ul,Louisiana Ragin' Cajuns,24,0,161.0
+2021,10,2021-10-31,278,fres,Fresno State Bulldogs,25,0,151.0
+2021,11,2021-11-07,61,uga,Georgia Bulldogs,1,1,1575.0
+2021,11,2021-11-07,2132,cin,Cincinnati Bearcats,2,2,1440.0
+2021,11,2021-11-07,333,ala,Alabama Crimson Tide,3,3,1436.0
+2021,11,2021-11-07,201,ou,Oklahoma Sooners,4,4,1406.0
+2021,11,2021-11-07,2483,ore,Oregon Ducks,5,7,1319.0
+2021,11,2021-11-07,194,osu,Ohio State Buckeyes,6,6,1293.0
+2021,11,2021-11-07,87,nd,Notre Dame Fighting Irish,7,8,1139.0
+2021,11,2021-11-07,127,msu,Michigan State Spartans,8,5,1096.0
+2021,11,2021-11-07,130,mich,Michigan Wolverines,9,9,1072.0
+2021,11,2021-11-07,197,okst,Oklahoma State Cowboys,10,11,1038.0
+2021,11,2021-11-07,245,ta&m,Texas A&M Aggies,11,13,1006.0
+2021,11,2021-11-07,145,miss,Ole Miss Rebels,12,15,837.0
+2021,11,2021-11-07,154,wake,Wake Forest Demon Deacons,13,10,763.0
+2021,11,2021-11-07,252,byu,BYU Cougars,14,17,636.0
+2021,11,2021-11-07,2636,,,15,16,606.0
+2021,11,2021-11-07,2,aub,Auburn Tigers,16,12,478.0
+2021,11,2021-11-07,248,hou,Houston Cougars,17,20,467.0
+2021,11,2021-11-07,239,bay,Baylor Bears,18,14,464.0
+2021,11,2021-11-07,2294,iowa,Iowa Hawkeyes,19,19,437.0
+2021,11,2021-11-07,275,wis,Wisconsin Badgers,20,0,286.0
+2021,11,2021-11-07,152,ncsu,NC State Wolfpack,21,0,268.0
+2021,11,2021-11-07,324,ccu,Coastal Carolina Chanticleers,22,21,264.0
+2021,11,2021-11-07,213,psu,Penn State Nittany Lions,23,22,245.0
+2021,11,2021-11-07,309,ul,Louisiana Ragin' Cajuns,24,24,208.0
+2021,11,2021-11-07,221,pitt,Pittsburgh Panthers,25,0,194.0
+2021,12,2021-11-14,61,uga,Georgia Bulldogs,1,1,1550.0
+2021,12,2021-11-14,333,ala,Alabama Crimson Tide,2,3,1449.0
+2021,12,2021-11-14,2132,cin,Cincinnati Bearcats,3,2,1420.0
+2021,12,2021-11-14,2483,ore,Oregon Ducks,4,5,1353.0
+2021,12,2021-11-14,194,osu,Ohio State Buckeyes,5,6,1341.0
+2021,12,2021-11-14,87,nd,Notre Dame Fighting Irish,6,7,1175.0
+2021,12,2021-11-14,127,msu,Michigan State Spartans,7,8,1161.0
+2021,12,2021-11-14,130,mich,Michigan Wolverines,8,9,1134.0
+2021,12,2021-11-14,197,okst,Oklahoma State Cowboys,9,10,1106.0
+2021,12,2021-11-14,145,miss,Ole Miss Rebels,10,12,943.0
+2021,12,2021-11-14,239,bay,Baylor Bears,11,18,882.0
+2021,12,2021-11-14,201,ou,Oklahoma Sooners,12,4,870.0
+2021,12,2021-11-14,154,wake,Wake Forest Demon Deacons,13,13,851.0
+2021,12,2021-11-14,252,byu,BYU Cougars,14,14,671.0
+2021,12,2021-11-14,2636,,,15,15,591.0
+2021,12,2021-11-14,245,ta&m,Texas A&M Aggies,16,11,583.0
+2021,12,2021-11-14,248,hou,Houston Cougars,17,17,509.0
+2021,12,2021-11-14,2294,iowa,Iowa Hawkeyes,18,19,491.0
+2021,12,2021-11-14,275,wis,Wisconsin Badgers,19,20,467.0
+2021,12,2021-11-14,221,pitt,Pittsburgh Panthers,20,25,358.0
+2021,12,2021-11-14,8,ark,Arkansas Razorbacks,21,0,277.0
+2021,12,2021-11-14,309,ul,Louisiana Ragin' Cajuns,22,24,261.0
+2021,12,2021-11-14,21,sdsu,San Diego State Aztecs,23,0,239.0
+2021,12,2021-11-14,254,utah,Utah Utes,24,0,141.0
+2021,12,2021-11-14,152,ncsu,NC State Wolfpack,25,21,95.0
+2021,13,2021-11-21,61,uga,Georgia Bulldogs,1,1,1550.0
+2021,13,2021-11-21,194,osu,Ohio State Buckeyes,2,5,1434.0
+2021,13,2021-11-21,333,ala,Alabama Crimson Tide,3,2,1423.0
+2021,13,2021-11-21,2132,cin,Cincinnati Bearcats,4,3,1416.0
+2021,13,2021-11-21,87,nd,Notre Dame Fighting Irish,5,6,1262.0
+2021,13,2021-11-21,130,mich,Michigan Wolverines,6,8,1246.0
+2021,13,2021-11-21,197,okst,Oklahoma State Cowboys,7,9,1209.0
+2021,13,2021-11-21,145,miss,Ole Miss Rebels,8,10,1060.0
+2021,13,2021-11-21,239,bay,Baylor Bears,9,11,1046.0
+2021,13,2021-11-21,201,ou,Oklahoma Sooners,10,12,1001.0
+2021,13,2021-11-21,2483,ore,Oregon Ducks,11,4,849.0
+2021,13,2021-11-21,127,msu,Michigan State Spartans,12,7,778.0
+2021,13,2021-11-21,252,byu,BYU Cougars,13,14,771.0
+2021,13,2021-11-21,245,ta&m,Texas A&M Aggies,14,16,628.0
+2021,13,2021-11-21,2636,,,15,15,583.0
+2021,13,2021-11-21,254,utah,Utah Utes,16,24,561.0
+2021,13,2021-11-21,2294,iowa,Iowa Hawkeyes,17,18,538.0
+2021,13,2021-11-21,275,wis,Wisconsin Badgers,18,19,517.0
+2021,13,2021-11-21,248,hou,Houston Cougars,19,17,516.0
+2021,13,2021-11-21,221,pitt,Pittsburgh Panthers,20,20,445.0
+2021,13,2021-11-21,154,wake,Wake Forest Demon Deacons,21,13,344.0
+2021,13,2021-11-21,21,sdsu,San Diego State Aztecs,22,23,273.0
+2021,13,2021-11-21,309,ul,Louisiana Ragin' Cajuns,23,22,246.0
+2021,13,2021-11-21,152,ncsu,NC State Wolfpack,24,25,141.0
+2021,13,2021-11-21,8,ark,Arkansas Razorbacks,25,21,105.0
+2021,14,2021-11-28,61,uga,Georgia Bulldogs,1,1,1550.0
+2021,14,2021-11-28,130,mich,Michigan Wolverines,2,6,1449.0
+2021,14,2021-11-28,2132,cin,Cincinnati Bearcats,3,4,1422.0
+2021,14,2021-11-28,333,ala,Alabama Crimson Tide,4,3,1388.0
+2021,14,2021-11-28,197,okst,Oklahoma State Cowboys,5,7,1291.0
+2021,14,2021-11-28,87,nd,Notre Dame Fighting Irish,6,5,1264.0
+2021,14,2021-11-28,194,osu,Ohio State Buckeyes,7,2,1147.0
+2021,14,2021-11-28,145,miss,Ole Miss Rebels,8,8,1105.0
+2021,14,2021-11-28,239,bay,Baylor Bears,9,9,1066.0
+2021,14,2021-11-28,2483,ore,Oregon Ducks,10,11,932.0
+2021,14,2021-11-28,127,msu,Michigan State Spartans,11,12,877.0
+2021,14,2021-11-28,252,byu,BYU Cougars,12,13,839.0
+2021,14,2021-11-28,201,ou,Oklahoma Sooners,13,10,837.0
+2021,14,2021-11-28,254,utah,Utah Utes,14,16,667.0
+2021,14,2021-11-28,2294,iowa,Iowa Hawkeyes,15,17,662.0
+2021,14,2021-11-28,248,hou,Houston Cougars,16,19,603.0
+2021,14,2021-11-28,221,pitt,Pittsburgh Panthers,17,20,589.0
+2021,14,2021-11-28,154,wake,Wake Forest Demon Deacons,18,21,485.0
+2021,14,2021-11-28,21,sdsu,San Diego State Aztecs,19,22,416.0
+2021,14,2021-11-28,309,ul,Louisiana Ragin' Cajuns,20,23,317.0
+2021,14,2021-11-28,152,ncsu,NC State Wolfpack,21,24,310.0
+2021,14,2021-11-28,228,clem,Clemson Tigers,22,0,269.0
+2021,14,2021-11-28,8,ark,Arkansas Razorbacks,23,25,214.0
+2021,14,2021-11-28,245,ta&m,Texas A&M Aggies,24,14,117.0
+2021,14,2021-11-28,96,uk,Kentucky Wildcats,25,0,82.0
+2021,15,2021-12-05,333,ala,Alabama Crimson Tide,1,4,1535.0
+2021,15,2021-12-05,130,mich,Michigan Wolverines,2,2,1480.0
+2021,15,2021-12-05,61,uga,Georgia Bulldogs,3,1,1408.0
+2021,15,2021-12-05,2132,cin,Cincinnati Bearcats,4,3,1404.0
+2021,15,2021-12-05,87,nd,Notre Dame Fighting Irish,5,6,1280.0
+2021,15,2021-12-05,239,bay,Baylor Bears,6,9,1228.0
+2021,15,2021-12-05,194,osu,Ohio State Buckeyes,7,7,1177.0
+2021,15,2021-12-05,145,miss,Ole Miss Rebels,8,8,1101.0
+2021,15,2021-12-05,197,okst,Oklahoma State Cowboys,9,5,1060.0
+2021,15,2021-12-05,254,utah,Utah Utes,10,14,929.0
+2021,15,2021-12-05,127,msu,Michigan State Spartans,11,11,895.0
+2021,15,2021-12-05,252,byu,BYU Cougars,12,12,866.0
+2021,15,2021-12-05,221,pitt,Pittsburgh Panthers,13,17,838.0
+2021,15,2021-12-05,201,ou,Oklahoma Sooners,14,13,807.0
+2021,15,2021-12-05,2483,ore,Oregon Ducks,15,10,594.0
+2021,15,2021-12-05,309,ul,Louisiana Ragin' Cajuns,16,20,490.0
+2021,15,2021-12-05,2294,iowa,Iowa Hawkeyes,17,15,446.0
+2021,15,2021-12-05,152,ncsu,NC State Wolfpack,18,21,404.0
+2021,15,2021-12-05,228,clem,Clemson Tigers,19,22,395.0
+2021,15,2021-12-05,154,wake,Wake Forest Demon Deacons,20,18,393.0
+2021,15,2021-12-05,248,hou,Houston Cougars,21,16,358.0
+2021,15,2021-12-05,8,ark,Arkansas Razorbacks,22,23,279.0
+2021,15,2021-12-05,245,ta&m,Texas A&M Aggies,23,24,171.0
+2021,15,2021-12-05,2636,,,24,0,146.0
+2021,15,2021-12-05,96,uk,Kentucky Wildcats,25,25,129.0

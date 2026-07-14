@@ -28,7 +28,15 @@ ESPN_ABBR_ALIASES: dict[str, dict[str, str]] = {
         "CWS": "chw", "AZ": "ari", "WSH": "wsh",
     },
     "nfl": {"JAX": "jax", "LA": "la", "LV": "lv", "WSH": "wsh"},
-    "cfb": {"OSU": "osu", "USC": "usc", "MIA": "mia"},
+    "cfb": {
+        "OSU": "osu", "USC": "usc", "MIA": "mia",
+        # Historical scoreboard renames (2019-2021 archives) -> modern keys, so
+        # one program keeps one walk-forward state across seasons.
+        "BSU": "bois", "MIAMI": "mia", "NW": "nu", "IND": "iu",
+        "OKLA": "ou", "OKL": "ou", "NCST": "ncsu", "HBU": "hcu",
+        # Teams-API abbreviations that differ from the scoreboard vocabulary.
+        "JXST": "jvst", "BUF": "buff", "AF": "afa", "WIS": "wisc", "LAT": "lt",
+    },
     "cbb": {"UConn": "uconn"},
 }
 

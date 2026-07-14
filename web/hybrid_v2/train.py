@@ -54,13 +54,67 @@ def select_feature_columns(adapter: LeagueAdapter, cfg: HybridConfig) -> list[st
     return cols
 
 
+def _market_logit_baseline(frame) -> np.ndarray:
+    """logit(de-vigged close) as CatBoost init predictions; 0 (=50%) when absent."""
+    mkt = frame["market_home_prob"].to_numpy(dtype=float) if "market_home_prob" in frame.columns else np.full(len(frame), np.nan)
+    p = np.clip(mkt, 1e-4, 1 - 1e-4)
+    out = np.where(np.isfinite(mkt), np.log(p / (1 - p)), 0.0)
+    return out.astype(float)
+
+
+def _logit(p: np.ndarray) -> np.ndarray:
+    p = np.clip(p, 1e-9, 1 - 1e-9)
+    return np.log(p / (1 - p))
+
+
+LOGIT_STACK_DEFAULT_W = 0.85
+LOGIT_STACK_MIN_POOL = 300
+
+
+def fit_logit_stack_w(model_p: np.ndarray, market_p: np.ndarray, y: np.ndarray) -> float:
+    """Grid-fit the logit-space market weight minimizing log-loss."""
+    mask = np.isfinite(market_p) & np.isfinite(model_p) & np.isfinite(y)
+    if mask.sum() < LOGIT_STACK_MIN_POOL:
+        return LOGIT_STACK_DEFAULT_W
+    lm, lk, yy = _logit(model_p[mask]), _logit(market_p[mask]), y[mask]
+    best_w, best_ll = LOGIT_STACK_DEFAULT_W, np.inf
+    for w in np.arange(0.0, 1.0001, 0.05):
+        p = 1.0 / (1.0 + np.exp(-((1.0 - w) * lm + w * lk)))
+        p = np.clip(p, 1e-12, 1 - 1e-12)
+        cur = float(-np.mean(yy * np.log(p) + (1 - yy) * np.log(1 - p)))
+        if cur < best_ll:
+            best_ll, best_w = cur, float(w)
+    return best_w
+
+
+def apply_logit_stack(model_p: np.ndarray, market_p: np.ndarray, w: float) -> np.ndarray:
+    """Logit-space mix on rows with a market; raw model prob elsewhere."""
+    out = model_p.astype(float).copy()
+    mask = np.isfinite(market_p)
+    out[mask] = 1.0 / (
+        1.0 + np.exp(-((1.0 - w) * _logit(model_p[mask]) + w * _logit(market_p[mask])))
+    )
+    return out
+
+
 def _fit_catboost_binary(train, val, cols, cfg):
     from catboost import CatBoostClassifier, Pool
 
     cat_cols = [c for c in ("home_id", "away_id") if c in train.columns and cfg.use_categoricals]
     feature_cols = [c for c in cols if c in train.columns] + cat_cols
-    train_pool = Pool(train[feature_cols], train["home_win"], cat_features=cat_cols or None)
-    val_pool = Pool(val[feature_cols], val["home_win"], cat_features=cat_cols or None)
+    offset = cfg.target_mode == "offset"
+    train_pool = Pool(
+        train[feature_cols],
+        train["home_win"],
+        cat_features=cat_cols or None,
+        baseline=_market_logit_baseline(train) if offset else None,
+    )
+    val_pool = Pool(
+        val[feature_cols],
+        val["home_win"],
+        cat_features=cat_cols or None,
+        baseline=_market_logit_baseline(val) if offset else None,
+    )
     model = CatBoostClassifier(
         iterations=cfg.iterations,
         depth=cfg.depth,
@@ -188,10 +242,14 @@ def _fit_lightgbm_multi(train, val, cols, cfg):
     return model, feature_cols, cat_maps
 
 
-def _predict_catboost(model, frame, feature_cols, cat_cols, *, multiclass: bool):
+def _predict_catboost(model, frame, feature_cols, cat_cols, *, multiclass: bool, offset: bool = False):
     from catboost import Pool
 
-    pool = Pool(frame[feature_cols], cat_features=cat_cols or None)
+    pool = Pool(
+        frame[feature_cols],
+        cat_features=cat_cols or None,
+        baseline=None if multiclass or not offset else _market_logit_baseline(frame),
+    )
     proba = model.predict_proba(pool)
     if multiclass:
         return np.asarray(proba, dtype=float)
@@ -319,8 +377,16 @@ def walk_forward(
             val = train[train.season == val_season]
             min_val = 50 if multi else 100
             if fit.empty or len(val) < min_val:
-                fit = train
-                val = train
+                # No prior-season history (first fold): validate on a
+                # chronological tail instead of early-stopping on the fit set.
+                ordered = train.sort_values("date")
+                n_val = max(min_val, int(round(0.15 * len(ordered))))
+                if len(ordered) >= 2 * n_val:
+                    fit = ordered.iloc[:-n_val]
+                    val = ordered.iloc[-n_val:]
+                else:
+                    fit = train
+                    val = train
 
             preds: list[np.ndarray] = []
             margin_preds: list[np.ndarray] = []
@@ -330,7 +396,12 @@ def walk_forward(
                     preds.append(_predict_catboost(model, test, fcols, cat_cols, multiclass=True))
                 else:
                     model, fcols, cat_cols = _fit_catboost_binary(fit, val, cols, cfg)
-                    preds.append(_predict_catboost(model, test, fcols, cat_cols, multiclass=False))
+                    preds.append(
+                        _predict_catboost(
+                            model, test, fcols, cat_cols,
+                            multiclass=False, offset=cfg.target_mode == "offset",
+                        )
+                    )
                     if adapter.has_margin and "margin" in fit.columns:
                         m_model, m_cols = _fit_margin_catboost(fit, val, cols, cfg)
                         if m_model is not None:
@@ -389,14 +460,39 @@ def walk_forward(
                     calibrator.fit(pooled["model_raw_h"], pooled["home_win"])
             else:
                 raw = np.mean(np.vstack(preds), axis=0) if preds else np.full(len(test), 0.5)
-                if cfg.market_blend_w > 0:
-                    mkt = test["market_home_prob"].to_numpy(dtype=float)
-                    w = float(cfg.market_blend_w)
-                    blended = raw.copy()
-                    mask = np.isfinite(mkt)
-                    blended[mask] = (1.0 - w) * raw[mask] + w * mkt[mask]
-                    raw = blended
-                calibrated = calibrator.predict(raw) if calibrator is not None else raw
+                raw_pre_blend = raw.copy()
+                mkt = (
+                    test["market_home_prob"].to_numpy(dtype=float)
+                    if "market_home_prob" in test.columns
+                    else np.full(len(test), np.nan)
+                )
+                if cfg.target_mode == "logit_stack":
+                    # Calibrate the model first (expanding isotonic on prior
+                    # chunks), THEN logit-stack with the market using a weight
+                    # fit only on pooled prior chunks. No post-stack
+                    # recalibration — restacking calibrated probs preserves the
+                    # market's sharpness.
+                    model_cal = calibrator.predict(raw) if calibrator is not None else raw
+                    if outputs:
+                        pooled_prior = pd.concat(outputs, ignore_index=True)
+                        w = fit_logit_stack_w(
+                            pooled_prior["model_cal"].to_numpy(dtype=float),
+                            pooled_prior["market_home_prob"].to_numpy(dtype=float)
+                            if "market_home_prob" in pooled_prior.columns
+                            else np.full(len(pooled_prior), np.nan),
+                            pooled_prior["home_win"].to_numpy(dtype=float),
+                        )
+                    else:
+                        w = LOGIT_STACK_DEFAULT_W
+                    calibrated = apply_logit_stack(model_cal, mkt, w)
+                else:
+                    if cfg.market_blend_w > 0:
+                        w = float(cfg.market_blend_w)
+                        blended = raw.copy()
+                        mask = np.isfinite(mkt)
+                        blended[mask] = (1.0 - w) * raw[mask] + w * mkt[mask]
+                        raw = blended
+                    calibrated = calibrator.predict(raw) if calibrator is not None else raw
                 keep = [
                     c
                     for c in (
@@ -435,14 +531,22 @@ def walk_forward(
                 if adapter.home_col in chunk.columns and "home" not in chunk.columns:
                     chunk["home"] = chunk[adapter.home_col]
                     chunk["away"] = chunk[adapter.away_col]
-                chunk["model_raw"] = raw
-                chunk["model_prob"] = np.clip(calibrated, 0.02, 0.98)
+                # logit_stack keeps the pre-blend model prob in model_raw (the
+                # expanding isotonic is fit on it) and its calibrated version
+                # in model_cal (the market-stack weight is fit on it).
+                chunk["model_raw"] = raw_pre_blend if cfg.target_mode == "logit_stack" else raw
+                if cfg.target_mode == "logit_stack":
+                    chunk["model_cal"] = model_cal
+                # 0.98 caps tax true near-certain favorites (CFB buy games hit
+                # 99%+); isotonic never extrapolates past observed rates, so
+                # wider caps are safe for every league.
+                chunk["model_prob"] = np.clip(calibrated, 0.005, 0.995)
                 if margin_preds:
                     chunk["model_margin"] = np.mean(np.vstack(margin_preds), axis=0)
                 outputs.append(chunk)
                 pooled = pd.concat(outputs, ignore_index=True)
                 if len(pooled) >= adapter.min_calibration_pool:
-                    calibrator = IsotonicRegression(out_of_bounds="clip", y_min=0.02, y_max=0.98)
+                    calibrator = IsotonicRegression(out_of_bounds="clip", y_min=0.005, y_max=0.995)
                     calibrator.fit(pooled["model_raw"], pooled["home_win"])
 
         season_chunks = [c for c in outputs if int(c.season.iloc[0]) == eval_season]

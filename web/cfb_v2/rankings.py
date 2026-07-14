@@ -73,6 +73,56 @@ def lookup_rank(
     return float(hit.iloc[0]["rank"])
 
 
+def _poll_row(
+    frame: pd.DataFrame | None,
+    *,
+    team_abbr: str,
+    team_name: str,
+    team_id: str,
+    asof: date,
+) -> dict[str, float] | None:
+    """Latest poll row (rank/points/previous) for a team as-of a date."""
+    if frame is None or frame.empty:
+        return None
+    sub = frame[frame["asof_date"] <= asof]
+    if sub.empty:
+        return None
+    poll_date = sub["asof_date"].max()
+    day = frame[frame["asof_date"] == poll_date]
+    tid = str(team_id or "")
+    abbr = str(team_abbr or "").lower()
+    tn = _norm(team_name)
+    hit = day[day["team_id"] == tid] if tid else day.iloc[0:0]
+    if hit.empty and abbr:
+        hit = day[day["team_abbr"] == abbr]
+    if hit.empty and tn:
+        hit = day[day["team_norm"] == tn]
+        if hit.empty:
+            for _, cand in day.iterrows():
+                cn = str(cand["team_norm"])
+                if tn and (tn.startswith(cn) or cn.startswith(tn)):
+                    hit = day.loc[[cand.name]]
+                    break
+    if hit.empty:
+        return None
+    row = hit.iloc[0]
+
+    def _num(key: str, default: float) -> float:
+        if key not in hit.columns:
+            return default
+        try:
+            val = float(row[key])
+        except (TypeError, ValueError):
+            return default
+        return val if pd.notna(val) else default
+
+    return {
+        "rank": _num("rank", UNRANKED_SENTINEL),
+        "points": _num("points", 0.0),
+        "previous": _num("previous", 0.0),
+    }
+
+
 def rank_feature_dict(
     *,
     home_abbr: str,
@@ -84,27 +134,39 @@ def rank_feature_dict(
     home_id: str = "",
     away_id: str = "",
 ) -> dict[str, float]:
+    import math
+
     ap_frame = _load_poll(season, "ap")
     cfp_frame = _load_poll(season, "cfp")
     ap_known = 1.0 if ap_frame is not None and not ap_frame.empty else 0.0
     has_rank = 1.0 if ap_known or (cfp_frame is not None and not cfp_frame.empty) else 0.0
-    home_ap = lookup_rank(
-        team_abbr=home_abbr, team_name=home_name, team_id=home_id, asof=asof, season=season, poll="ap"
-    )
-    away_ap = lookup_rank(
-        team_abbr=away_abbr, team_name=away_name, team_id=away_id, asof=asof, season=season, poll="ap"
-    )
-    home_cfp = lookup_rank(
-        team_abbr=home_abbr, team_name=home_name, team_id=home_id, asof=asof, season=season, poll="cfp"
-    )
-    away_cfp = lookup_rank(
-        team_abbr=away_abbr, team_name=away_name, team_id=away_id, asof=asof, season=season, poll="cfp"
-    )
+
+    def _side(frame: pd.DataFrame | None, abbr: str, name: str, tid: str) -> dict[str, float]:
+        row = _poll_row(frame, team_abbr=abbr, team_name=name, team_id=tid, asof=asof)
+        return row or {"rank": UNRANKED_SENTINEL, "points": 0.0, "previous": 0.0}
+
+    h_ap = _side(ap_frame, home_abbr, home_name, home_id)
+    a_ap = _side(ap_frame, away_abbr, away_name, away_id)
+    h_cfp = _side(cfp_frame, home_abbr, home_name, home_id)
+    a_cfp = _side(cfp_frame, away_abbr, away_name, away_id)
+
+    def _momentum(row: dict[str, float]) -> float:
+        # previous=0 means unranked last week; entering the poll is momentum.
+        if row["rank"] >= UNRANKED_SENTINEL:
+            return 0.0
+        prev = row["previous"] if row["previous"] > 0 else UNRANKED_SENTINEL
+        return max(min(prev - row["rank"], 15.0), -15.0)
+
     return {
-        "ap_rank_diff": away_ap - home_ap,
+        "ap_rank_diff": a_ap["rank"] - h_ap["rank"],
         "ap_known": ap_known,
-        "cfp_rank_diff": away_cfp - home_cfp,
+        "cfp_rank_diff": a_cfp["rank"] - h_cfp["rank"],
         "has_rank": has_rank,
+        # Vote-points gradient: smooth strength signal the rank sentinel destroys.
+        "ap_points_log_diff": math.log1p(h_ap["points"]) - math.log1p(a_ap["points"]),
+        "home_ranked": 1.0 if h_ap["rank"] < UNRANKED_SENTINEL else 0.0,
+        "away_ranked": 1.0 if a_ap["rank"] < UNRANKED_SENTINEL else 0.0,
+        "ap_mom_diff": _momentum(h_ap) - _momentum(a_ap),
     }
 
 

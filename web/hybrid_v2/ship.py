@@ -56,6 +56,7 @@ def ship_league(league: str, *, force: bool = False) -> dict[str, Any]:
     hybrid_meta: dict[str, Any] = {
         "backend": cfg.backend if cfg.backend != "both" else "catboost",
         "market_blend_w": cfg.market_blend_w,
+        "target_mode": cfg.target_mode,
         "feature_mode": cfg.feature_mode,
         "use_curves": cfg.use_curves,
         "use_categoricals": cfg.use_categoricals,
@@ -118,9 +119,22 @@ def ship_league(league: str, *, force: bool = False) -> dict[str, Any]:
             subsample=cfg.subsample,
             min_data_in_leaf=cfg.min_data,
         )
+        from web.hybrid_v2.train import _market_logit_baseline
+
+        offset = cfg.target_mode == "offset"
         model.fit(
-            Pool(train[feature_cols], train["home_win"], cat_features=cat_cols or None),
-            eval_set=Pool(val[feature_cols], val["home_win"], cat_features=cat_cols or None),
+            Pool(
+                train[feature_cols],
+                train["home_win"],
+                cat_features=cat_cols or None,
+                baseline=_market_logit_baseline(train) if offset else None,
+            ),
+            eval_set=Pool(
+                val[feature_cols],
+                val["home_win"],
+                cat_features=cat_cols or None,
+                baseline=_market_logit_baseline(val) if offset else None,
+            ),
             use_best_model=True,
         )
         clf_path = adapter.v2_dir / "model_clf_hybrid.cbm"
@@ -177,13 +191,48 @@ def ship_league(league: str, *, force: bool = False) -> dict[str, Any]:
         if k in best:
             meta[k] = best[k]
     meta["hybrid_shipped_at"] = datetime.now(timezone.utc).isoformat()
-    meta_path.write_text(json.dumps(meta, indent=2), encoding="utf-8")
 
-    (adapter.v2_dir / "hybrid_meta.json").write_text(json.dumps(hybrid_meta, indent=2), encoding="utf-8")
+    # Real post-blend calibrator fit on the winner's walk-forward OOS preds so
+    # live probs match evaluated behavior; identity fallback when OOS is absent.
+    # Runs before the metadata writes: logit_stack freezes its final market
+    # weight here and it must land in hybrid_meta.json.
+    cal: dict[str, Any] = {"x": [0.0, 0.5, 1.0], "y": [0.005, 0.5, 0.995], "kind": "identity_clip"}
+    if not adapter.multiclass and oos_src.is_file():
+        try:
+            from sklearn.isotonic import IsotonicRegression
 
-    # Identity calibrator placeholder — live applies blend; isotonic optional
-    cal = {"x": [0.0, 0.5, 1.0], "y": [0.02, 0.5, 0.98], "kind": "identity_clip"}
+            oos_frame = pd.read_csv(oos_src)
+            if {"model_raw", "home_win"}.issubset(oos_frame.columns) and len(oos_frame) >= 500:
+                cal_values = oos_frame["model_raw"].astype(float).to_numpy()
+                y_oos = oos_frame["home_win"].astype(float).to_numpy()
+                iso = IsotonicRegression(
+                    out_of_bounds="clip", y_min=0.005, y_max=0.995
+                )
+                iso.fit(cal_values, y_oos)
+                if cfg.target_mode == "logit_stack":
+                    # Live order is calibrate -> logit-stack: freeze the final
+                    # market weight fit on calibrated model probs vs the close.
+                    from web.hybrid_v2.train import fit_logit_stack_w
+
+                    mkt = (
+                        oos_frame["market_home_prob"].astype(float).to_numpy()
+                        if "market_home_prob" in oos_frame.columns
+                        else np.full(len(oos_frame), np.nan)
+                    )
+                    w_final = fit_logit_stack_w(iso.predict(cal_values), mkt, y_oos)
+                    hybrid_meta["market_blend_w"] = w_final
+                    meta["hybrid_market_blend_w"] = w_final
+                cal = {
+                    "x": [float(v) for v in iso.X_thresholds_],
+                    "y": [float(v) for v in iso.y_thresholds_],
+                    "kind": "isotonic_oos",
+                    "n_fit": int(len(oos_frame)),
+                }
+        except Exception:  # noqa: BLE001 — calibrator is optional, never block a ship
+            pass
     (adapter.v2_dir / "calibrator_hybrid.json").write_text(json.dumps(cal, indent=2), encoding="utf-8")
+    meta_path.write_text(json.dumps(meta, indent=2), encoding="utf-8")
+    (adapter.v2_dir / "hybrid_meta.json").write_text(json.dumps(hybrid_meta, indent=2), encoding="utf-8")
 
     return {
         "league": league,

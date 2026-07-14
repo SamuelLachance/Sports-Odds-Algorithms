@@ -1,0 +1,403 @@
+season,week,asof_date,team_id,team_abbr,team_name,rank,previous,points
+2019,1,2019-08-19,228,clem,Clemson Tigers,1,0,1540.0
+2019,1,2019-08-19,333,ala,Alabama Crimson Tide,2,0,1496.0
+2019,1,2019-08-19,61,uga,Georgia Bulldogs,3,0,1403.0
+2019,1,2019-08-19,201,ou,Oklahoma Sooners,4,0,1331.0
+2019,1,2019-08-19,194,osu,Ohio State Buckeyes,5,0,1261.0
+2019,1,2019-08-19,99,lsu,LSU Tigers,6,0,1199.0
+2019,1,2019-08-19,130,mich,Michigan Wolverines,7,0,1164.0
+2019,1,2019-08-19,57,fla,Florida Gators,8,0,1054.0
+2019,1,2019-08-19,87,nd,Notre Dame Fighting Irish,9,0,1044.0
+2019,1,2019-08-19,251,tex,Texas Longhorns,10,0,1005.0
+2019,1,2019-08-19,2483,ore,Oregon Ducks,11,0,860.0
+2019,1,2019-08-19,245,ta&m,Texas A&M Aggies,12,0,852.0
+2019,1,2019-08-19,264,wash,Washington Huskies,13,0,786.0
+2019,1,2019-08-19,254,utah,Utah Utes,14,0,772.0
+2019,1,2019-08-19,213,psu,Penn State Nittany Lions,15,0,651.0
+2019,1,2019-08-19,2,aub,Auburn Tigers,16,0,578.0
+2019,1,2019-08-19,2116,ucf,UCF Knights,17,0,410.0
+2019,1,2019-08-19,127,msu,Michigan State Spartans,18,0,377.0
+2019,1,2019-08-19,275,wis,Wisconsin Badgers,19,0,370.0
+2019,1,2019-08-19,2294,iowa,Iowa Hawkeyes,20,0,330.0
+2019,1,2019-08-19,66,isu,Iowa State Cyclones,21,0,302.0
+2019,1,2019-08-19,183,syr,Syracuse Orange,22,0,209.0
+2019,1,2019-08-19,265,wsu,Washington State Cougars,23,0,200.0
+2019,1,2019-08-19,158,neb,Nebraska Cornhuskers,24,0,154.0
+2019,1,2019-08-19,24,stan,Stanford Cardinal,25,0,141.0
+2019,2,2019-09-03,228,clem,Clemson Tigers,1,1,1542.0
+2019,2,2019-09-03,333,ala,Alabama Crimson Tide,2,2,1493.0
+2019,2,2019-09-03,61,uga,Georgia Bulldogs,3,3,1407.0
+2019,2,2019-09-03,201,ou,Oklahoma Sooners,4,4,1337.0
+2019,2,2019-09-03,194,osu,Ohio State Buckeyes,5,5,1270.0
+2019,2,2019-09-03,99,lsu,LSU Tigers,6,6,1233.0
+2019,2,2019-09-03,130,mich,Michigan Wolverines,7,7,1126.0
+2019,2,2019-09-03,87,nd,Notre Dame Fighting Irish,8,9,1037.0
+2019,2,2019-09-03,251,tex,Texas Longhorns,9,10,1032.0
+2019,2,2019-09-03,2,aub,Auburn Tigers,10,16,958.0
+2019,2,2019-09-03,57,fla,Florida Gators,11,8,940.0
+2019,2,2019-09-03,245,ta&m,Texas A&M Aggies,12,12,862.0
+2019,2,2019-09-03,254,utah,Utah Utes,13,14,826.0
+2019,2,2019-09-03,264,wash,Washington Huskies,14,13,768.0
+2019,2,2019-09-03,213,psu,Penn State Nittany Lions,15,15,688.0
+2019,2,2019-09-03,2483,ore,Oregon Ducks,16,11,568.0
+2019,2,2019-09-03,275,wis,Wisconsin Badgers,17,19,519.0
+2019,2,2019-09-03,2116,ucf,UCF Knights,18,17,445.0
+2019,2,2019-09-03,127,msu,Michigan State Spartans,19,18,409.0
+2019,2,2019-09-03,2294,iowa,Iowa Hawkeyes,20,20,351.0
+2019,2,2019-09-03,183,syr,Syracuse Orange,21,22,246.0
+2019,2,2019-09-03,265,wsu,Washington State Cougars,22,23,244.0
+2019,2,2019-09-03,24,stan,Stanford Cardinal,23,25,198.0
+2019,2,2019-09-03,68,bois,Boise State Broncos,24,0,179.0
+2019,2,2019-09-03,66,isu,Iowa State Cyclones,25,21,86.0
+2019,2,2019-09-03,158,neb,Nebraska Cornhuskers,25,24,86.0
+2019,3,2019-09-08,228,clem,Clemson Tigers,1,1,1544.0
+2019,3,2019-09-08,333,ala,Alabama Crimson Tide,2,2,1489.0
+2019,3,2019-09-08,61,uga,Georgia Bulldogs,3,3,1385.0
+2019,3,2019-09-08,99,lsu,LSU Tigers,4,6,1336.0
+2019,3,2019-09-08,201,ou,Oklahoma Sooners,5,4,1315.0
+2019,3,2019-09-08,194,osu,Ohio State Buckeyes,6,5,1291.0
+2019,3,2019-09-08,87,nd,Notre Dame Fighting Irish,7,8,1072.0
+2019,3,2019-09-08,2,aub,Auburn Tigers,8,10,1056.0
+2019,3,2019-09-08,57,fla,Florida Gators,9,11,997.0
+2019,3,2019-09-08,130,mich,Michigan Wolverines,10,7,936.0
+2019,3,2019-09-08,254,utah,Utah Utes,11,13,905.0
+2019,3,2019-09-08,251,tex,Texas Longhorns,12,9,877.0
+2019,3,2019-09-08,213,psu,Penn State Nittany Lions,13,15,781.0
+2019,3,2019-09-08,275,wis,Wisconsin Badgers,14,17,714.0
+2019,3,2019-09-08,2483,ore,Oregon Ducks,15,16,677.0
+2019,3,2019-09-08,245,ta&m,Texas A&M Aggies,16,12,643.0
+2019,3,2019-09-08,2116,ucf,UCF Knights,17,18,544.0
+2019,3,2019-09-08,127,msu,Michigan State Spartans,18,19,495.0
+2019,3,2019-09-08,2294,iowa,Iowa Hawkeyes,19,20,473.0
+2019,3,2019-09-08,265,wsu,Washington State Cougars,20,22,343.0
+2019,3,2019-09-08,120,md,Maryland Terrapins,21,0,207.0
+2019,3,2019-09-08,68,bois,Boise State Broncos,22,24,164.0
+2019,3,2019-09-08,264,wash,Washington Huskies,23,14,161.0
+2019,3,2019-09-08,30,usc,USC Trojans,24,0,137.0
+2019,3,2019-09-08,258,uva,Virginia Cavaliers,25,0,122.0
+2019,4,2019-09-15,228,clem,Clemson Tigers,1,1,1545.0
+2019,4,2019-09-15,333,ala,Alabama Crimson Tide,2,2,1488.0
+2019,4,2019-09-15,61,uga,Georgia Bulldogs,3,3,1386.0
+2019,4,2019-09-15,99,lsu,LSU Tigers,4,4,1339.0
+2019,4,2019-09-15,201,ou,Oklahoma Sooners,5,5,1310.0
+2019,4,2019-09-15,194,osu,Ohio State Buckeyes,6,6,1292.0
+2019,4,2019-09-15,87,nd,Notre Dame Fighting Irish,7,7,1099.0
+2019,4,2019-09-15,2,aub,Auburn Tigers,8,8,1079.0
+2019,4,2019-09-15,57,fla,Florida Gators,9,9,959.0
+2019,4,2019-09-15,254,utah,Utah Utes,10,11,929.0
+2019,4,2019-09-15,130,mich,Michigan Wolverines,11,10,917.0
+2019,4,2019-09-15,251,tex,Texas Longhorns,12,12,888.0
+2019,4,2019-09-15,213,psu,Penn State Nittany Lions,13,13,726.0
+2019,4,2019-09-15,275,wis,Wisconsin Badgers,13,14,726.0
+2019,4,2019-09-15,2116,ucf,UCF Knights,15,17,703.0
+2019,4,2019-09-15,2483,ore,Oregon Ducks,16,15,670.0
+2019,4,2019-09-15,245,ta&m,Texas A&M Aggies,17,16,665.0
+2019,4,2019-09-15,2294,iowa,Iowa Hawkeyes,18,19,539.0
+2019,4,2019-09-15,265,wsu,Washington State Cougars,19,20,452.0
+2019,4,2019-09-15,68,bois,Boise State Broncos,20,22,277.0
+2019,4,2019-09-15,258,uva,Virginia Cavaliers,21,25,252.0
+2019,4,2019-09-15,264,wash,Washington Huskies,22,23,183.0
+2019,4,2019-09-15,25,cal,California Golden Bears,23,0,164.0
+2019,4,2019-09-15,9,asu,Arizona State Sun Devils,24,0,156.0
+2019,4,2019-09-15,2628,,,25,0,104.0
+2019,5,2019-09-22,228,clem,Clemson Tigers,1,1,1543.0
+2019,5,2019-09-22,333,ala,Alabama Crimson Tide,2,2,1485.0
+2019,5,2019-09-22,61,uga,Georgia Bulldogs,3,3,1400.0
+2019,5,2019-09-22,99,lsu,LSU Tigers,4,4,1344.0
+2019,5,2019-09-22,194,osu,Ohio State Buckeyes,5,6,1288.0
+2019,5,2019-09-22,201,ou,Oklahoma Sooners,6,5,1283.0
+2019,5,2019-09-22,2,aub,Auburn Tigers,7,8,1169.0
+2019,5,2019-09-22,275,wis,Wisconsin Badgers,8,13,1071.0
+2019,5,2019-09-22,57,fla,Florida Gators,9,9,1022.0
+2019,5,2019-09-22,87,nd,Notre Dame Fighting Irish,10,7,989.0
+2019,5,2019-09-22,251,tex,Texas Longhorns,11,12,968.0
+2019,5,2019-09-22,213,psu,Penn State Nittany Lions,12,13,848.0
+2019,5,2019-09-22,2483,ore,Oregon Ducks,13,16,839.0
+2019,5,2019-09-22,2294,iowa,Iowa Hawkeyes,14,18,714.0
+2019,5,2019-09-22,25,cal,California Golden Bears,15,23,547.0
+2019,5,2019-09-22,68,bois,Boise State Broncos,16,20,524.0
+2019,5,2019-09-22,264,wash,Washington Huskies,17,22,498.0
+2019,5,2019-09-22,258,uva,Virginia Cavaliers,18,21,430.0
+2019,5,2019-09-22,254,utah,Utah Utes,19,10,426.0
+2019,5,2019-09-22,130,mich,Michigan Wolverines,20,11,287.0
+2019,5,2019-09-22,30,usc,USC Trojans,21,0,257.0
+2019,5,2019-09-22,2116,ucf,UCF Knights,22,15,252.0
+2019,5,2019-09-22,245,ta&m,Texas A&M Aggies,23,17,233.0
+2019,5,2019-09-22,2306,ksu,Kansas State Wildcats,24,0,230.0
+2019,5,2019-09-22,127,msu,Michigan State Spartans,25,0,104.0
+2019,6,2019-09-29,333,ala,Alabama Crimson Tide,1,2,1478.0
+2019,6,2019-09-29,228,clem,Clemson Tigers,2,1,1426.0
+2019,6,2019-09-29,61,uga,Georgia Bulldogs,3,3,1375.0
+2019,6,2019-09-29,194,osu,Ohio State Buckeyes,4,5,1324.0
+2019,6,2019-09-29,99,lsu,LSU Tigers,5,4,1322.0
+2019,6,2019-09-29,201,ou,Oklahoma Sooners,6,6,1264.0
+2019,6,2019-09-29,2,aub,Auburn Tigers,7,7,1186.0
+2019,6,2019-09-29,275,wis,Wisconsin Badgers,8,8,1046.0
+2019,6,2019-09-29,87,nd,Notre Dame Fighting Irish,9,10,996.0
+2019,6,2019-09-29,57,fla,Florida Gators,10,9,986.0
+2019,6,2019-09-29,251,tex,Texas Longhorns,11,11,919.0
+2019,6,2019-09-29,213,psu,Penn State Nittany Lions,12,12,878.0
+2019,6,2019-09-29,2483,ore,Oregon Ducks,13,13,817.0
+2019,6,2019-09-29,2294,iowa,Iowa Hawkeyes,14,14,731.0
+2019,6,2019-09-29,264,wash,Washington Huskies,15,17,603.0
+2019,6,2019-09-29,68,bois,Boise State Broncos,16,16,559.0
+2019,6,2019-09-29,254,utah,Utah Utes,17,19,534.0
+2019,6,2019-09-29,2116,ucf,UCF Knights,18,22,352.0
+2019,6,2019-09-29,130,mich,Michigan Wolverines,19,20,350.0
+2019,6,2019-09-29,9,asu,Arizona State Sun Devils,20,0,249.0
+2019,6,2019-09-29,197,okst,Oklahoma State Cowboys,21,0,215.0
+2019,6,2019-09-29,154,wake,Wake Forest Demon Deacons,22,0,190.0
+2019,6,2019-09-29,258,uva,Virginia Cavaliers,23,18,186.0
+2019,6,2019-09-29,2567,,,24,0,151.0
+2019,6,2019-09-29,127,msu,Michigan State Spartans,25,25,147.0
+2019,6,2019-09-29,245,ta&m,Texas A&M Aggies,25,23,147.0
+2019,7,2019-10-06,333,ala,Alabama Crimson Tide,1,1,1503.0
+2019,7,2019-10-06,228,clem,Clemson Tigers,2,2,1433.0
+2019,7,2019-10-06,194,osu,Ohio State Buckeyes,3,4,1393.0
+2019,7,2019-10-06,61,uga,Georgia Bulldogs,3,3,1393.0
+2019,7,2019-10-06,99,lsu,LSU Tigers,5,5,1352.0
+2019,7,2019-10-06,201,ou,Oklahoma Sooners,6,6,1268.0
+2019,7,2019-10-06,57,fla,Florida Gators,7,10,1163.0
+2019,7,2019-10-06,275,wis,Wisconsin Badgers,8,8,1105.0
+2019,7,2019-10-06,87,nd,Notre Dame Fighting Irish,9,9,1046.0
+2019,7,2019-10-06,213,psu,Penn State Nittany Lions,10,12,958.0
+2019,7,2019-10-06,251,tex,Texas Longhorns,11,11,947.0
+2019,7,2019-10-06,2,aub,Auburn Tigers,12,7,920.0
+2019,7,2019-10-06,2483,ore,Oregon Ducks,13,13,828.0
+2019,7,2019-10-06,68,bois,Boise State Broncos,14,16,654.0
+2019,7,2019-10-06,254,utah,Utah Utes,15,17,624.0
+2019,7,2019-10-06,130,mich,Michigan Wolverines,16,19,618.0
+2019,7,2019-10-06,2294,iowa,Iowa Hawkeyes,17,14,454.0
+2019,7,2019-10-06,9,asu,Arizona State Sun Devils,18,20,388.0
+2019,7,2019-10-06,154,wake,Wake Forest Demon Deacons,19,22,380.0
+2019,7,2019-10-06,258,uva,Virginia Cavaliers,20,23,353.0
+2019,7,2019-10-06,2567,,,21,24,285.0
+2019,7,2019-10-06,239,bay,Baylor Bears,22,0,260.0
+2019,7,2019-10-06,235,mem,Memphis Tigers,23,0,189.0
+2019,7,2019-10-06,245,ta&m,Texas A&M Aggies,24,25,165.0
+2019,7,2019-10-06,2132,cin,Cincinnati Bearcats,25,0,118.0
+2019,8,2019-10-13,333,ala,Alabama Crimson Tide,1,1,1503.0
+2019,8,2019-10-13,99,lsu,LSU Tigers,2,5,1449.0
+2019,8,2019-10-13,228,clem,Clemson Tigers,3,2,1427.0
+2019,8,2019-10-13,194,osu,Ohio State Buckeyes,4,3,1404.0
+2019,8,2019-10-13,201,ou,Oklahoma Sooners,5,6,1333.0
+2019,8,2019-10-13,275,wis,Wisconsin Badgers,6,8,1245.0
+2019,8,2019-10-13,213,psu,Penn State Nittany Lions,7,10,1129.0
+2019,8,2019-10-13,87,nd,Notre Dame Fighting Irish,8,9,1042.0
+2019,8,2019-10-13,57,fla,Florida Gators,9,7,1041.0
+2019,8,2019-10-13,61,uga,Georgia Bulldogs,10,3,995.0
+2019,8,2019-10-13,2,aub,Auburn Tigers,11,12,985.0
+2019,8,2019-10-13,2483,ore,Oregon Ducks,12,13,906.0
+2019,8,2019-10-13,254,utah,Utah Utes,13,15,729.0
+2019,8,2019-10-13,68,bois,Boise State Broncos,14,14,716.0
+2019,8,2019-10-13,251,tex,Texas Longhorns,15,11,672.0
+2019,8,2019-10-13,130,mich,Michigan Wolverines,16,16,648.0
+2019,8,2019-10-13,9,asu,Arizona State Sun Devils,17,18,524.0
+2019,8,2019-10-13,239,bay,Baylor Bears,18,22,470.0
+2019,8,2019-10-13,2567,,,19,21,398.0
+2019,8,2019-10-13,135,minn,Minnesota Golden Gophers,20,0,330.0
+2019,8,2019-10-13,2132,cin,Cincinnati Bearcats,21,25,308.0
+2019,8,2019-10-13,142,miz,Missouri Tigers,22,0,233.0
+2019,8,2019-10-13,2294,iowa,Iowa Hawkeyes,23,17,210.0
+2019,8,2019-10-13,2026,app,App State Mountaineers,24,0,148.0
+2019,8,2019-10-13,264,wash,Washington Huskies,25,0,107.0
+2019,9,2019-10-20,333,ala,Alabama Crimson Tide,1,1,1486.0
+2019,9,2019-10-20,99,lsu,LSU Tigers,2,2,1462.0
+2019,9,2019-10-20,194,osu,Ohio State Buckeyes,3,4,1429.0
+2019,9,2019-10-20,228,clem,Clemson Tigers,4,3,1408.0
+2019,9,2019-10-20,201,ou,Oklahoma Sooners,5,5,1343.0
+2019,9,2019-10-20,213,psu,Penn State Nittany Lions,6,7,1224.0
+2019,9,2019-10-20,57,fla,Florida Gators,7,9,1138.0
+2019,9,2019-10-20,87,nd,Notre Dame Fighting Irish,8,8,1058.0
+2019,9,2019-10-20,2,aub,Auburn Tigers,9,11,1054.0
+2019,9,2019-10-20,61,uga,Georgia Bulldogs,10,10,1031.0
+2019,9,2019-10-20,2483,ore,Oregon Ducks,11,12,979.0
+2019,9,2019-10-20,254,utah,Utah Utes,12,13,852.0
+2019,9,2019-10-20,275,wis,Wisconsin Badgers,13,6,767.0
+2019,9,2019-10-20,239,bay,Baylor Bears,14,18,732.0
+2019,9,2019-10-20,251,tex,Texas Longhorns,15,15,627.0
+2019,9,2019-10-20,2567,,,16,19,587.0
+2019,9,2019-10-20,135,minn,Minnesota Golden Gophers,17,20,577.0
+2019,9,2019-10-20,2132,cin,Cincinnati Bearcats,18,21,468.0
+2019,9,2019-10-20,130,mich,Michigan Wolverines,19,16,440.0
+2019,9,2019-10-20,2294,iowa,Iowa Hawkeyes,20,23,347.0
+2019,9,2019-10-20,2026,app,App State Mountaineers,21,24,286.0
+2019,9,2019-10-20,68,bois,Boise State Broncos,22,14,225.0
+2019,9,2019-10-20,66,isu,Iowa State Cyclones,23,0,185.0
+2019,9,2019-10-20,9,asu,Arizona State Sun Devils,24,17,134.0
+2019,9,2019-10-20,154,wake,Wake Forest Demon Deacons,25,0,118.0
+2019,10,2019-10-27,99,lsu,LSU Tigers,1,2,1476.0
+2019,10,2019-10-27,333,ala,Alabama Crimson Tide,2,1,1474.0
+2019,10,2019-10-27,194,osu,Ohio State Buckeyes,3,3,1468.0
+2019,10,2019-10-27,228,clem,Clemson Tigers,4,4,1406.0
+2019,10,2019-10-27,213,psu,Penn State Nittany Lions,5,6,1302.0
+2019,10,2019-10-27,57,fla,Florida Gators,6,7,1226.0
+2019,10,2019-10-27,2483,ore,Oregon Ducks,7,11,1108.0
+2019,10,2019-10-27,61,uga,Georgia Bulldogs,8,10,1093.0
+2019,10,2019-10-27,254,utah,Utah Utes,9,12,1032.0
+2019,10,2019-10-27,201,ou,Oklahoma Sooners,10,5,1017.0
+2019,10,2019-10-27,2,aub,Auburn Tigers,11,9,910.0
+2019,10,2019-10-27,239,bay,Baylor Bears,12,14,882.0
+2019,10,2019-10-27,135,minn,Minnesota Golden Gophers,13,17,778.0
+2019,10,2019-10-27,130,mich,Michigan Wolverines,14,19,744.0
+2019,10,2019-10-27,2567,,,15,16,666.0
+2019,10,2019-10-27,87,nd,Notre Dame Fighting Irish,16,8,563.0
+2019,10,2019-10-27,2132,cin,Cincinnati Bearcats,17,18,524.0
+2019,10,2019-10-27,275,wis,Wisconsin Badgers,18,13,513.0
+2019,10,2019-10-27,2294,iowa,Iowa Hawkeyes,19,20,456.0
+2019,10,2019-10-27,2026,app,App State Mountaineers,20,21,393.0
+2019,10,2019-10-27,68,bois,Boise State Broncos,21,22,280.0
+2019,10,2019-10-27,2306,ksu,Kansas State Wildcats,22,0,218.0
+2019,10,2019-10-27,154,wake,Wake Forest Demon Deacons,23,25,200.0
+2019,10,2019-10-27,235,mem,Memphis Tigers,24,0,188.0
+2019,10,2019-10-27,21,sdsu,San Diego State Aztecs,25,0,50.0
+2019,11,2019-11-03,99,lsu,LSU Tigers,1,1,1479.0
+2019,11,2019-11-03,333,ala,Alabama Crimson Tide,2,2,1472.0
+2019,11,2019-11-03,194,osu,Ohio State Buckeyes,3,3,1467.0
+2019,11,2019-11-03,228,clem,Clemson Tigers,4,4,1406.0
+2019,11,2019-11-03,213,psu,Penn State Nittany Lions,5,5,1306.0
+2019,11,2019-11-03,61,uga,Georgia Bulldogs,6,8,1196.0
+2019,11,2019-11-03,2483,ore,Oregon Ducks,7,7,1180.0
+2019,11,2019-11-03,254,utah,Utah Utes,8,9,1090.0
+2019,11,2019-11-03,201,ou,Oklahoma Sooners,9,10,1045.0
+2019,11,2019-11-03,57,fla,Florida Gators,10,6,938.0
+2019,11,2019-11-03,239,bay,Baylor Bears,11,12,909.0
+2019,11,2019-11-03,2,aub,Auburn Tigers,12,11,901.0
+2019,11,2019-11-03,135,minn,Minnesota Golden Gophers,13,13,831.0
+2019,11,2019-11-03,130,mich,Michigan Wolverines,14,14,780.0
+2019,11,2019-11-03,87,nd,Notre Dame Fighting Irish,15,16,571.0
+2019,11,2019-11-03,275,wis,Wisconsin Badgers,16,18,558.0
+2019,11,2019-11-03,2132,cin,Cincinnati Bearcats,17,17,527.0
+2019,11,2019-11-03,2294,iowa,Iowa Hawkeyes,18,19,491.0
+2019,11,2019-11-03,235,mem,Memphis Tigers,19,24,448.0
+2019,11,2019-11-03,2306,ksu,Kansas State Wildcats,20,22,364.0
+2019,11,2019-11-03,68,bois,Boise State Broncos,21,21,310.0
+2019,11,2019-11-03,154,wake,Wake Forest Demon Deacons,22,23,296.0
+2019,11,2019-11-03,2567,,,23,15,250.0
+2019,11,2019-11-03,21,sdsu,San Diego State Aztecs,24,25,87.0
+2019,11,2019-11-03,2426,navy,Navy Midshipmen,25,0,83.0
+2019,12,2019-11-10,99,lsu,LSU Tigers,1,1,1542.0
+2019,12,2019-11-10,194,osu,Ohio State Buckeyes,2,3,1480.0
+2019,12,2019-11-10,228,clem,Clemson Tigers,3,4,1441.0
+2019,12,2019-11-10,333,ala,Alabama Crimson Tide,4,2,1312.0
+2019,12,2019-11-10,61,uga,Georgia Bulldogs,5,6,1267.0
+2019,12,2019-11-10,2483,ore,Oregon Ducks,6,7,1224.0
+2019,12,2019-11-10,135,minn,Minnesota Golden Gophers,7,13,1164.0
+2019,12,2019-11-10,254,utah,Utah Utes,8,8,1099.0
+2019,12,2019-11-10,213,psu,Penn State Nittany Lions,9,5,1003.0
+2019,12,2019-11-10,201,ou,Oklahoma Sooners,10,9,1000.0
+2019,12,2019-11-10,57,fla,Florida Gators,11,10,934.0
+2019,12,2019-11-10,239,bay,Baylor Bears,12,11,932.0
+2019,12,2019-11-10,2,aub,Auburn Tigers,13,12,871.0
+2019,12,2019-11-10,130,mich,Michigan Wolverines,14,14,744.0
+2019,12,2019-11-10,275,wis,Wisconsin Badgers,15,16,657.0
+2019,12,2019-11-10,87,nd,Notre Dame Fighting Irish,16,15,593.0
+2019,12,2019-11-10,2132,cin,Cincinnati Bearcats,17,17,567.0
+2019,12,2019-11-10,235,mem,Memphis Tigers,18,19,510.0
+2019,12,2019-11-10,68,bois,Boise State Broncos,19,21,371.0
+2019,12,2019-11-10,2567,,,20,23,346.0
+2019,12,2019-11-10,2426,navy,Navy Midshipmen,21,25,228.0
+2019,12,2019-11-10,251,tex,Texas Longhorns,22,0,199.0
+2019,12,2019-11-10,2294,iowa,Iowa Hawkeyes,23,18,197.0
+2019,12,2019-11-10,84,iu,Indiana Hoosiers,24,0,108.0
+2019,12,2019-11-10,197,okst,Oklahoma State Cowboys,25,0,77.0
+2019,13,2019-11-17,99,lsu,LSU Tigers,1,1,1542.0
+2019,13,2019-11-17,194,osu,Ohio State Buckeyes,2,2,1478.0
+2019,13,2019-11-17,228,clem,Clemson Tigers,3,3,1442.0
+2019,13,2019-11-17,61,uga,Georgia Bulldogs,4,5,1343.0
+2019,13,2019-11-17,333,ala,Alabama Crimson Tide,5,4,1263.0
+2019,13,2019-11-17,2483,ore,Oregon Ducks,6,6,1243.0
+2019,13,2019-11-17,254,utah,Utah Utes,7,8,1155.0
+2019,13,2019-11-17,201,ou,Oklahoma Sooners,8,10,1144.0
+2019,13,2019-11-17,213,psu,Penn State Nittany Lions,9,9,1030.0
+2019,13,2019-11-17,57,fla,Florida Gators,10,11,984.0
+2019,13,2019-11-17,135,minn,Minnesota Golden Gophers,11,7,902.0
+2019,13,2019-11-17,130,mich,Michigan Wolverines,12,14,829.0
+2019,13,2019-11-17,239,bay,Baylor Bears,13,12,787.0
+2019,13,2019-11-17,275,wis,Wisconsin Badgers,14,15,746.0
+2019,13,2019-11-17,87,nd,Notre Dame Fighting Irish,15,16,676.0
+2019,13,2019-11-17,2,aub,Auburn Tigers,16,13,623.0
+2019,13,2019-11-17,2132,cin,Cincinnati Bearcats,17,17,536.0
+2019,13,2019-11-17,235,mem,Memphis Tigers,18,18,520.0
+2019,13,2019-11-17,2294,iowa,Iowa Hawkeyes,19,23,493.0
+2019,13,2019-11-17,68,bois,Boise State Broncos,20,19,379.0
+2019,13,2019-11-17,2567,,,21,20,328.0
+2019,13,2019-11-17,197,okst,Oklahoma State Cowboys,22,25,200.0
+2019,13,2019-11-17,2026,app,App State Mountaineers,23,0,154.0
+2019,13,2019-11-17,245,ta&m,Texas A&M Aggies,24,0,132.0
+2019,13,2019-11-17,259,vt,Virginia Tech Hokies,25,0,61.0
+2019,14,2019-11-24,99,lsu,LSU Tigers,1,1,1537.0
+2019,14,2019-11-24,194,osu,Ohio State Buckeyes,2,2,1486.0
+2019,14,2019-11-24,228,clem,Clemson Tigers,3,3,1440.0
+2019,14,2019-11-24,61,uga,Georgia Bulldogs,4,4,1347.0
+2019,14,2019-11-24,333,ala,Alabama Crimson Tide,5,5,1283.0
+2019,14,2019-11-24,254,utah,Utah Utes,6,7,1231.0
+2019,14,2019-11-24,201,ou,Oklahoma Sooners,7,8,1189.0
+2019,14,2019-11-24,57,fla,Florida Gators,8,10,1058.0
+2019,14,2019-11-24,135,minn,Minnesota Golden Gophers,9,11,996.0
+2019,14,2019-11-24,130,mich,Michigan Wolverines,10,12,913.0
+2019,14,2019-11-24,239,bay,Baylor Bears,11,13,910.0
+2019,14,2019-11-24,213,psu,Penn State Nittany Lions,12,9,903.0
+2019,14,2019-11-24,275,wis,Wisconsin Badgers,13,14,791.0
+2019,14,2019-11-24,2483,ore,Oregon Ducks,14,6,784.0
+2019,14,2019-11-24,87,nd,Notre Dame Fighting Irish,15,15,701.0
+2019,14,2019-11-24,2,aub,Auburn Tigers,16,16,635.0
+2019,14,2019-11-24,235,mem,Memphis Tigers,17,18,535.0
+2019,14,2019-11-24,2132,cin,Cincinnati Bearcats,18,17,518.0
+2019,14,2019-11-24,2294,iowa,Iowa Hawkeyes,19,19,510.0
+2019,14,2019-11-24,68,bois,Boise State Broncos,20,20,410.0
+2019,14,2019-11-24,197,okst,Oklahoma State Cowboys,21,22,266.0
+2019,14,2019-11-24,2026,app,App State Mountaineers,22,23,206.0
+2019,14,2019-11-24,259,vt,Virginia Tech Hokies,23,25,147.0
+2019,14,2019-11-24,2426,navy,Navy Midshipmen,24,0,99.0
+2019,14,2019-11-24,30,usc,USC Trojans,25,0,79.0
+2019,15,2019-12-01,99,lsu,LSU Tigers,1,1,1528.0
+2019,15,2019-12-01,194,osu,Ohio State Buckeyes,2,2,1498.0
+2019,15,2019-12-01,228,clem,Clemson Tigers,3,3,1437.0
+2019,15,2019-12-01,61,uga,Georgia Bulldogs,4,4,1356.0
+2019,15,2019-12-01,254,utah,Utah Utes,5,6,1275.0
+2019,15,2019-12-01,201,ou,Oklahoma Sooners,6,7,1257.0
+2019,15,2019-12-01,57,fla,Florida Gators,7,8,1135.0
+2019,15,2019-12-01,239,bay,Baylor Bears,8,11,1074.0
+2019,15,2019-12-01,333,ala,Alabama Crimson Tide,9,5,995.0
+2019,15,2019-12-01,275,wis,Wisconsin Badgers,10,13,971.0
+2019,15,2019-12-01,2,aub,Auburn Tigers,11,16,957.0
+2019,15,2019-12-01,213,psu,Penn State Nittany Lions,12,12,890.0
+2019,15,2019-12-01,2483,ore,Oregon Ducks,13,14,799.0
+2019,15,2019-12-01,87,nd,Notre Dame Fighting Irish,14,15,734.0
+2019,15,2019-12-01,135,minn,Minnesota Golden Gophers,15,9,683.0
+2019,15,2019-12-01,235,mem,Memphis Tigers,16,17,615.0
+2019,15,2019-12-01,130,mich,Michigan Wolverines,17,10,603.0
+2019,15,2019-12-01,2294,iowa,Iowa Hawkeyes,18,19,537.0
+2019,15,2019-12-01,68,bois,Boise State Broncos,19,20,463.0
+2019,15,2019-12-01,2026,app,App State Mountaineers,20,22,288.0
+2019,15,2019-12-01,2132,cin,Cincinnati Bearcats,21,18,237.0
+2019,15,2019-12-01,258,uva,Virginia Cavaliers,22,0,231.0
+2019,15,2019-12-01,2426,navy,Navy Midshipmen,23,24,216.0
+2019,15,2019-12-01,30,usc,USC Trojans,24,25,157.0
+2019,15,2019-12-01,2005,af,Air Force Falcons,25,0,65.0
+2019,16,2019-12-08,99,lsu,LSU Tigers,1,1,1535.0
+2019,16,2019-12-08,194,osu,Ohio State Buckeyes,2,2,1488.0
+2019,16,2019-12-08,228,clem,Clemson Tigers,3,3,1441.0
+2019,16,2019-12-08,201,ou,Oklahoma Sooners,4,6,1364.0
+2019,16,2019-12-08,61,uga,Georgia Bulldogs,5,4,1241.0
+2019,16,2019-12-08,57,fla,Florida Gators,6,7,1167.0
+2019,16,2019-12-08,2483,ore,Oregon Ducks,7,13,1141.0
+2019,16,2019-12-08,239,bay,Baylor Bears,8,8,1039.0
+2019,16,2019-12-08,2,aub,Auburn Tigers,9,11,1011.0
+2019,16,2019-12-08,333,ala,Alabama Crimson Tide,9,9,1011.0
+2019,16,2019-12-08,275,wis,Wisconsin Badgers,11,10,944.0
+2019,16,2019-12-08,254,utah,Utah Utes,12,5,909.0
+2019,16,2019-12-08,213,psu,Penn State Nittany Lions,13,12,888.0
+2019,16,2019-12-08,87,nd,Notre Dame Fighting Irish,14,14,709.0
+2019,16,2019-12-08,235,mem,Memphis Tigers,15,16,675.0
+2019,16,2019-12-08,135,minn,Minnesota Golden Gophers,16,15,645.0
+2019,16,2019-12-08,130,mich,Michigan Wolverines,17,17,597.0
+2019,16,2019-12-08,68,bois,Boise State Broncos,18,19,500.0
+2019,16,2019-12-08,2294,iowa,Iowa Hawkeyes,19,18,494.0
+2019,16,2019-12-08,2026,app,App State Mountaineers,20,20,355.0
+2019,16,2019-12-08,2426,navy,Navy Midshipmen,21,23,246.0
+2019,16,2019-12-08,30,usc,USC Trojans,22,24,195.0
+2019,16,2019-12-08,2132,cin,Cincinnati Bearcats,23,21,183.0
+2019,16,2019-12-08,2005,af,Air Force Falcons,24,25,97.0
+2019,16,2019-12-08,197,okst,Oklahoma State Cowboys,25,0,70.0

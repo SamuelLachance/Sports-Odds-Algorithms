@@ -1,0 +1,84 @@
+{
+ "created_at": "2026-07-14T19:48:50.399312+00:00",
+ "results": [
+  {
+   "league": "nfl",
+   "oos_file": "oos_cb_core_lstack.csv",
+   "config": "cb_core_lstack",
+   "n": 4350,
+   "home_win_rate": 0.5572,
+   "model_logloss": 0.60977,
+   "model_brier": 0.21116,
+   "model_ece": 0.0135,
+   "reliability": [
+    {
+     "n": 435,
+     "mean_pred": 0.2463,
+     "obs_rate": 0.2299
+    },
+    {
+     "n": 435,
+     "mean_pred": 0.3526,
+     "obs_rate": 0.3402
+    },
+    {
+     "n": 435,
+     "mean_pred": 0.4215,
+     "obs_rate": 0.4092
+    },
+    {
+     "n": 435,
+     "mean_pred": 0.4911,
+     "obs_rate": 0.4805
+    },
+    {
+     "n": 435,
+     "mean_pred": 0.5568,
+     "obs_rate": 0.5471
+    },
+    {
+     "n": 435,
+     "mean_pred": 0.6056,
+     "obs_rate": 0.5793
+    },
+    {
+     "n": 435,
+     "mean_pred": 0.6525,
+     "obs_rate": 0.6506
+    },
+    {
+     "n": 435,
+     "mean_pred": 0.7047,
+     "obs_rate": 0.6989
+    },
+    {
+     "n": 435,
+     "mean_pred": 0.7593,
+     "obs_rate": 0.7724
+    },
+    {
+     "n": 435,
+     "mean_pred": 0.838,
+     "obs_rate": 0.8644
+    }
+   ],
+   "market_source": "market_home_prob",
+   "n_with_odds": 4349,
+   "model_logloss_odds_subset": 0.60985,
+   "market_logloss": 0.60964,
+   "market_brier": 0.2111,
+   "market_ece": 0.01681,
+   "floor_entropy": 0.6157,
+   "floor_entropy_cal": 0.6038,
+   "gap_model_vs_market": 0.00021,
+   "gap_model_vs_floor": 0.00605,
+   "gap_market_vs_floor": 0.00584,
+   "bootstrap_model_minus_market": {
+    "mean": 0.0002082152688617645,
+    "ci_lo": -0.00031548795981223694,
+    "ci_hi": 0.0007779343378561703,
+    "p_worse_than_ref": 0.772
+   }
+  }
+ ]
+}

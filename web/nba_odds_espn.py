@@ -211,6 +211,11 @@ def _provider_line(
     home_ml = _valid_american(home_ml)
     away_ml = _valid_american(away_ml)
 
+    # Opening moneylines (steam features); nested-only — no flat fallback, the
+    # flat moneyLine field is the close.
+    home_open_ml = _valid_american(_nested_american(home, "open", "moneyLine"))
+    away_open_ml = _valid_american(_nested_american(away, "open", "moneyLine"))
+
     home_close_spread, away_close_spread = _repair_same_sign_spreads(
         home_close_spread,
         away_close_spread,
@@ -239,6 +244,8 @@ def _provider_line(
         "away_close_spread": away_close_spread,
         "home_close_ml": home_ml,
         "away_close_ml": away_ml,
+        "home_open_ml": home_open_ml,
+        "away_open_ml": away_open_ml,
         "home_open_spread": home_open_spread,
         "close_total": total,
         "open_total": open_total,
@@ -282,9 +289,16 @@ def _consensus(
         "home_spread_odds",
         "away_spread_odds",
     )
-    keys = close_keys + ("home_open_spread", "open_total")
+    keys = close_keys + ("home_open_spread", "open_total", "home_open_ml", "away_open_ml")
     american_keys = frozenset(
-        {"home_close_ml", "away_close_ml", "home_spread_odds", "away_spread_odds"}
+        {
+            "home_close_ml",
+            "away_close_ml",
+            "home_spread_odds",
+            "away_spread_odds",
+            "home_open_ml",
+            "away_open_ml",
+        }
     )
     handicap_keys = frozenset(
         {"home_close_spread", "away_close_spread", "home_open_spread"}

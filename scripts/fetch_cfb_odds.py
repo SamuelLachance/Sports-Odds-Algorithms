@@ -41,6 +41,20 @@ from web.season_games import _event_date_iso, _normalize_abbr  # noqa: E402
 # CFB blowouts routinely exceed NBA's 40-pt handicap cap (archive max ~115).
 MAX_CFB_SPREAD = 120.0
 
+# CFB extends the NBA schema: open moneylines feed the steam family, and the
+# scoreboard's neutral-site / conference flags replace date heuristics downstream.
+CFB_OUTPUT_FIELDS = tuple(OUTPUT_FIELDS) + (
+    "home_open_ml",
+    "away_open_ml",
+    "neutral_site",
+    "conference_game",
+    # ESPN conference ids as-of game date (PIT-safe realignment + FCS detection).
+    "home_conf_id",
+    "away_conf_id",
+    "venue_city",
+    "venue_state",
+)
+
 CACHE_DIR = PROJECT_ROOT / ".build-cache" / "cfb-odds"
 OUTPUT_CSV = PROJECT_ROOT / "data" / "supplemental" / "closing-odds" / "cfb.csv"
 
@@ -114,6 +128,10 @@ def _iter_completed_events(day: date) -> Iterator[dict[str, Any]]:
         tip_date = _event_date_iso(
             str(event.get("date") or competition.get("date") or "")
         ) or day.isoformat()
+        neutral = competition.get("neutralSite")
+        conf_game = competition.get("conferenceCompetition")
+        venue = competition.get("venue") or {}
+        venue_addr = venue.get("address") or {}
         yield {
             "date": tip_date,
             "event": str(event.get("id") or ""),
@@ -122,12 +140,20 @@ def _iter_completed_events(day: date) -> Iterator[dict[str, Any]]:
             "away_key": away_abbr,
             "home_final": home_score,
             "away_final": away_score,
+            # Tri-state: 1/0 when the scoreboard says so, None when absent so
+            # downstream date heuristics still apply.
+            "neutral_site": None if neutral is None else int(bool(neutral)),
+            "conference_game": None if conf_game is None else int(bool(conf_game)),
+            "home_conf_id": (home.get("team") or {}).get("conferenceId"),
+            "away_conf_id": (away.get("team") or {}).get("conferenceId"),
+            "venue_city": venue_addr.get("city"),
+            "venue_state": venue_addr.get("state"),
         }
 
 
 def _odds_row(event: dict[str, Any]) -> dict[str, Any]:
     """One output row per completed game; odds fields empty when unavailable."""
-    row: dict[str, Any] = {field: None for field in OUTPUT_FIELDS}
+    row: dict[str, Any] = {field: None for field in CFB_OUTPUT_FIELDS}
     row.update(
         {
             "date": event["date"],
@@ -135,6 +161,12 @@ def _odds_row(event: dict[str, Any]) -> dict[str, Any]:
             "away_key": event["away_key"],
             "home_final": event["home_final"],
             "away_final": event["away_final"],
+            "neutral_site": event.get("neutral_site"),
+            "conference_game": event.get("conference_game"),
+            "home_conf_id": event.get("home_conf_id"),
+            "away_conf_id": event.get("away_conf_id"),
+            "venue_city": event.get("venue_city"),
+            "venue_state": event.get("venue_state"),
             "n_books": 0,
             "source": "espn-core",
         }
@@ -164,6 +196,8 @@ def _odds_row(event: dict[str, Any]) -> dict[str, Any]:
         {
             "home_close_ml": consensus["home_close_ml"],
             "away_close_ml": consensus["away_close_ml"],
+            "home_open_ml": consensus.get("home_open_ml"),
+            "away_open_ml": consensus.get("away_open_ml"),
             "home_close_spread": consensus["home_close_spread"],
             "away_close_spread": consensus["away_close_spread"],
             # Fail closed: do not invent -110 juice when books omit spread odds.
@@ -254,10 +288,12 @@ def main() -> int:
 
     OUTPUT_CSV.parent.mkdir(parents=True, exist_ok=True)
     with OUTPUT_CSV.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(OUTPUT_FIELDS))
+        writer = csv.DictWriter(handle, fieldnames=list(CFB_OUTPUT_FIELDS))
         writer.writeheader()
         for row in rows:
-            writer.writerow({k: ("" if row.get(k) is None else row[k]) for k in OUTPUT_FIELDS})
+            writer.writerow(
+                {k: ("" if row.get(k) is None else row[k]) for k in CFB_OUTPUT_FIELDS}
+            )
 
     print(
         f"wrote {OUTPUT_CSV} ({len(rows)} games, {with_odds} with closing spread, "
