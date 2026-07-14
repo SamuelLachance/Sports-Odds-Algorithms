@@ -402,5 +402,6 @@ def test_nfl_cfb_official_picks_hubacek_gates() -> None:
     cbb = get_pick_thresholds("cbb")
     assert cbb["bet_type"] == "moneyline"
     assert cbb["enabled"] is True
-    assert cbb.get("fav_mode") == "favorite"
+    assert cbb.get("fav_mode") == "any"
+    assert cbb.get("allowed_sides") == ["away"]
     assert eligible_for_official_picks("cbb") is True

@@ -1,0 +1,426 @@
+season,week,asof_date,team_id,team_abbr,team_name,rank,previous,points
+2021,1,2020-11-09,2250,gonz,Gonzaga Bulldogs,1,0,1541.0
+2021,1,2020-11-09,239,bay,Baylor Bears,2,0,1540.0
+2021,1,2020-11-09,222,vill,Villanova Wildcats,3,0,1501.0
+2021,1,2020-11-09,258,uva,Virginia Cavaliers,4,0,1364.0
+2021,1,2020-11-09,2294,iowa,Iowa Hawkeyes,5,0,1273.0
+2021,1,2020-11-09,2305,ku,Kansas Jayhawks,6,0,1221.0
+2021,1,2020-11-09,275,wis,Wisconsin Badgers,7,0,1150.0
+2021,1,2020-11-09,356,ill,Illinois Fighting Illini,8,0,1105.0
+2021,1,2020-11-09,150,duke,Duke Blue Devils,9,0,1073.0
+2021,1,2020-11-09,96,uk,Kentucky Wildcats,10,0,1038.0
+2021,1,2020-11-09,156,crei,Creighton Bluejays,11,0,922.0
+2021,1,2020-11-09,2633,tenn,Tennessee Volunteers,12,0,919.0
+2021,1,2020-11-09,127,msu,Michigan State Spartans,13,0,820.0
+2021,1,2020-11-09,2641,ttu,Texas Tech Red Raiders,14,0,790.0
+2021,1,2020-11-09,277,wvu,West Virginia Mountaineers,15,0,651.0
+2021,1,2020-11-09,153,unc,North Carolina Tar Heels,16,0,465.0
+2021,1,2020-11-09,248,hou,Houston Cougars,17,0,438.0
+2021,1,2020-11-09,9,asu,Arizona State Sun Devils,18,0,402.0
+2021,1,2020-11-09,251,tex,Texas Longhorns,19,0,380.0
+2021,1,2020-11-09,2483,ore,Oregon Ducks,20,0,375.0
+2021,1,2020-11-09,52,fsu,Florida State Seminoles,21,0,351.0
+2021,1,2020-11-09,26,ucla,UCLA Bruins,22,0,336.0
+2021,1,2020-11-09,194,osu,Ohio State Buckeyes,23,0,270.0
+2021,1,2020-11-09,164,rutg,Rutgers Scarlet Knights,24,0,190.0
+2021,1,2020-11-09,130,mich,Michigan Wolverines,25,0,160.0
+2021,2,2020-11-30,2250,gonz,Gonzaga Bulldogs,1,1,1569.0
+2021,2,2020-11-30,239,bay,Baylor Bears,2,2,1513.0
+2021,2,2020-11-30,2294,iowa,Iowa Hawkeyes,3,5,1410.0
+2021,2,2020-11-30,275,wis,Wisconsin Badgers,4,7,1287.0
+2021,2,2020-11-30,356,ill,Illinois Fighting Illini,5,8,1281.0
+2021,2,2020-11-30,150,duke,Duke Blue Devils,6,9,1185.0
+2021,2,2020-11-30,2305,ku,Kansas Jayhawks,7,6,1169.0
+2021,2,2020-11-30,127,msu,Michigan State Spartans,8,13,1028.0
+2021,2,2020-11-30,156,crei,Creighton Bluejays,9,11,981.0
+2021,2,2020-11-30,248,hou,Houston Cougars,10,17,949.0
+2021,2,2020-11-30,277,wvu,West Virginia Mountaineers,11,15,943.0
+2021,2,2020-11-30,222,vill,Villanova Wildcats,12,3,939.0
+2021,2,2020-11-30,2633,tenn,Tennessee Volunteers,13,12,878.0
+2021,2,2020-11-30,153,unc,North Carolina Tar Heels,14,16,591.0
+2021,2,2020-11-30,258,uva,Virginia Cavaliers,15,4,581.0
+2021,2,2020-11-30,259,vt,Virginia Tech Hokies,16,0,570.0
+2021,2,2020-11-30,2641,ttu,Texas Tech Red Raiders,17,14,478.0
+2021,2,2020-11-30,251,tex,Texas Longhorns,17,19,478.0
+2021,2,2020-11-30,257,rich,Richmond Spiders,19,0,382.0
+2021,2,2020-11-30,96,uk,Kentucky Wildcats,20,10,363.0
+2021,2,2020-11-30,2483,ore,Oregon Ducks,21,20,338.0
+2021,2,2020-11-30,52,fsu,Florida State Seminoles,22,21,304.0
+2021,2,2020-11-30,194,osu,Ohio State Buckeyes,23,23,282.0
+2021,2,2020-11-30,164,rutg,Rutgers Scarlet Knights,24,24,252.0
+2021,2,2020-11-30,9,asu,Arizona State Sun Devils,25,18,233.0
+2021,3,2020-12-07,2250,gonz,Gonzaga Bulldogs,1,1,1518.0
+2021,3,2020-12-07,239,bay,Baylor Bears,2,2,1470.0
+2021,3,2020-12-07,2294,iowa,Iowa Hawkeyes,3,3,1385.0
+2021,3,2020-12-07,127,msu,Michigan State Spartans,4,8,1296.0
+2021,3,2020-12-07,2305,ku,Kansas Jayhawks,5,7,1195.0
+2021,3,2020-12-07,356,ill,Illinois Fighting Illini,6,5,1104.0
+2021,3,2020-12-07,248,hou,Houston Cougars,7,10,1090.0
+2021,3,2020-12-07,156,crei,Creighton Bluejays,8,9,1068.0
+2021,3,2020-12-07,222,vill,Villanova Wildcats,9,12,1033.0
+2021,3,2020-12-07,150,duke,Duke Blue Devils,10,6,954.0
+2021,3,2020-12-07,277,wvu,West Virginia Mountaineers,11,11,918.0
+2021,3,2020-12-07,2633,tenn,Tennessee Volunteers,12,13,767.0
+2021,3,2020-12-07,275,wis,Wisconsin Badgers,13,4,750.0
+2021,3,2020-12-07,251,tex,Texas Longhorns,13,17,750.0
+2021,3,2020-12-07,259,vt,Virginia Tech Hokies,15,16,688.0
+2021,3,2020-12-07,153,unc,North Carolina Tar Heels,16,14,547.0
+2021,3,2020-12-07,2641,ttu,Texas Tech Red Raiders,17,17,541.0
+2021,3,2020-12-07,258,uva,Virginia Cavaliers,18,15,474.0
+2021,3,2020-12-07,257,rich,Richmond Spiders,19,19,419.0
+2021,3,2020-12-07,52,fsu,Florida State Seminoles,20,22,350.0
+2021,3,2020-12-07,164,rutg,Rutgers Scarlet Knights,21,24,293.0
+2021,3,2020-12-07,194,osu,Ohio State Buckeyes,22,23,287.0
+2021,3,2020-12-07,9,asu,Arizona State Sun Devils,23,25,218.0
+2021,3,2020-12-07,21,sdsu,San Diego State Aztecs,24,0,123.0
+2021,3,2020-12-07,97,lou,Louisville Cardinals,25,0,122.0
+2021,4,2020-12-14,2250,gonz,Gonzaga Bulldogs,1,1,1541.0
+2021,4,2020-12-14,239,bay,Baylor Bears,2,2,1491.0
+2021,4,2020-12-14,2294,iowa,Iowa Hawkeyes,3,3,1427.0
+2021,4,2020-12-14,127,msu,Michigan State Spartans,4,4,1307.0
+2021,4,2020-12-14,2305,ku,Kansas Jayhawks,5,5,1289.0
+2021,4,2020-12-14,248,hou,Houston Cougars,6,7,1169.0
+2021,4,2020-12-14,222,vill,Villanova Wildcats,7,9,1163.0
+2021,4,2020-12-14,277,wvu,West Virginia Mountaineers,8,11,1113.0
+2021,4,2020-12-14,156,crei,Creighton Bluejays,9,8,1037.0
+2021,4,2020-12-14,2633,tenn,Tennessee Volunteers,10,12,941.0
+2021,4,2020-12-14,251,tex,Texas Longhorns,11,13,873.0
+2021,4,2020-12-14,275,wis,Wisconsin Badgers,12,13,846.0
+2021,4,2020-12-14,356,ill,Illinois Fighting Illini,13,6,742.0
+2021,4,2020-12-14,2641,ttu,Texas Tech Red Raiders,14,17,669.0
+2021,4,2020-12-14,52,fsu,Florida State Seminoles,15,20,619.0
+2021,4,2020-12-14,142,miz,Missouri Tigers,16,0,491.0
+2021,4,2020-12-14,258,uva,Virginia Cavaliers,17,18,456.0
+2021,4,2020-12-14,21,sdsu,San Diego State Aztecs,18,24,455.0
+2021,4,2020-12-14,164,rutg,Rutgers Scarlet Knights,19,21,396.0
+2021,4,2020-12-14,194,osu,Ohio State Buckeyes,20,22,392.0
+2021,4,2020-12-14,150,duke,Duke Blue Devils,21,10,345.0
+2021,4,2020-12-14,153,unc,North Carolina Tar Heels,22,16,328.0
+2021,4,2020-12-14,97,lou,Louisville Cardinals,23,25,164.0
+2021,4,2020-12-14,228,clem,Clemson Tigers,24,0,156.0
+2021,4,2020-12-14,130,mich,Michigan Wolverines,25,0,142.0
+2021,5,2020-12-21,2250,gonz,Gonzaga Bulldogs,1,1,1597.0
+2021,5,2020-12-21,239,bay,Baylor Bears,2,2,1538.0
+2021,5,2020-12-21,2305,ku,Kansas Jayhawks,3,5,1426.0
+2021,5,2020-12-21,2294,iowa,Iowa Hawkeyes,4,3,1365.0
+2021,5,2020-12-21,222,vill,Villanova Wildcats,5,7,1304.0
+2021,5,2020-12-21,248,hou,Houston Cougars,6,6,1272.0
+2021,5,2020-12-21,277,wvu,West Virginia Mountaineers,7,8,1225.0
+2021,5,2020-12-21,2633,tenn,Tennessee Volunteers,8,10,1109.0
+2021,5,2020-12-21,275,wis,Wisconsin Badgers,9,12,1051.0
+2021,5,2020-12-21,251,tex,Texas Longhorns,10,11,1035.0
+2021,5,2020-12-21,164,rutg,Rutgers Scarlet Knights,11,19,878.0
+2021,5,2020-12-21,127,msu,Michigan State Spartans,12,4,839.0
+2021,5,2020-12-21,156,crei,Creighton Bluejays,13,9,773.0
+2021,5,2020-12-21,142,miz,Missouri Tigers,14,16,768.0
+2021,5,2020-12-21,2641,ttu,Texas Tech Red Raiders,15,14,661.0
+2021,5,2020-12-21,258,uva,Virginia Cavaliers,16,17,510.0
+2021,5,2020-12-21,153,unc,North Carolina Tar Heels,17,22,492.0
+2021,5,2020-12-21,356,ill,Illinois Fighting Illini,18,13,468.0
+2021,5,2020-12-21,130,mich,Michigan Wolverines,19,25,367.0
+2021,5,2020-12-21,150,duke,Duke Blue Devils,20,21,352.0
+2021,5,2020-12-21,52,fsu,Florida State Seminoles,21,15,335.0
+2021,5,2020-12-21,2752,xav,Xavier Musketeers,22,0,249.0
+2021,5,2020-12-21,194,osu,Ohio State Buckeyes,23,20,245.0
+2021,5,2020-12-21,259,vt,Virginia Tech Hokies,24,0,181.0
+2021,5,2020-12-21,2483,ore,Oregon Ducks,25,0,167.0
+2021,6,2020-12-28,2250,gonz,Gonzaga Bulldogs,1,1,1598.0
+2021,6,2020-12-28,239,bay,Baylor Bears,2,2,1537.0
+2021,6,2020-12-28,2305,ku,Kansas Jayhawks,3,3,1458.0
+2021,6,2020-12-28,222,vill,Villanova Wildcats,4,5,1370.0
+2021,6,2020-12-28,248,hou,Houston Cougars,5,6,1313.0
+2021,6,2020-12-28,275,wis,Wisconsin Badgers,6,9,1249.0
+2021,6,2020-12-28,2633,tenn,Tennessee Volunteers,7,8,1217.0
+2021,6,2020-12-28,251,tex,Texas Longhorns,8,10,1109.0
+2021,6,2020-12-28,277,wvu,West Virginia Mountaineers,9,7,1080.0
+2021,6,2020-12-28,2294,iowa,Iowa Hawkeyes,10,4,1008.0
+2021,6,2020-12-28,156,crei,Creighton Bluejays,11,13,926.0
+2021,6,2020-12-28,142,miz,Missouri Tigers,12,14,888.0
+2021,6,2020-12-28,2641,ttu,Texas Tech Red Raiders,13,15,821.0
+2021,6,2020-12-28,164,rutg,Rutgers Scarlet Knights,14,11,659.0
+2021,6,2020-12-28,356,ill,Illinois Fighting Illini,15,18,650.0
+2021,6,2020-12-28,130,mich,Michigan Wolverines,16,19,582.0
+2021,6,2020-12-28,127,msu,Michigan State Spartans,17,12,431.0
+2021,6,2020-12-28,52,fsu,Florida State Seminoles,18,21,377.0
+2021,6,2020-12-28,77,nu,Northwestern Wildcats,19,0,350.0
+2021,6,2020-12-28,150,duke,Duke Blue Devils,20,20,290.0
+2021,6,2020-12-28,2483,ore,Oregon Ducks,21,25,252.0
+2021,6,2020-12-28,135,minn,Minnesota Golden Gophers,21,0,252.0
+2021,6,2020-12-28,258,uva,Virginia Cavaliers,23,16,238.0
+2021,6,2020-12-28,259,vt,Virginia Tech Hokies,24,24,230.0
+2021,6,2020-12-28,194,osu,Ohio State Buckeyes,25,23,216.0
+2021,7,2021-01-04,2250,gonz,Gonzaga Bulldogs,1,1,1599.0
+2021,7,2021-01-04,239,bay,Baylor Bears,2,2,1537.0
+2021,7,2021-01-04,222,vill,Villanova Wildcats,3,4,1453.0
+2021,7,2021-01-04,251,tex,Texas Longhorns,4,8,1415.0
+2021,7,2021-01-04,2294,iowa,Iowa Hawkeyes,5,10,1298.0
+2021,7,2021-01-04,2305,ku,Kansas Jayhawks,6,3,1224.0
+2021,7,2021-01-04,156,crei,Creighton Bluejays,7,11,1140.0
+2021,7,2021-01-04,275,wis,Wisconsin Badgers,8,6,1085.0
+2021,7,2021-01-04,2633,tenn,Tennessee Volunteers,9,7,1076.0
+2021,7,2021-01-04,130,mich,Michigan Wolverines,10,16,1039.0
+2021,7,2021-01-04,248,hou,Houston Cougars,11,5,977.0
+2021,7,2021-01-04,356,ill,Illinois Fighting Illini,12,15,878.0
+2021,7,2021-01-04,142,miz,Missouri Tigers,13,12,747.0
+2021,7,2021-01-04,277,wvu,West Virginia Mountaineers,14,9,706.0
+2021,7,2021-01-04,164,rutg,Rutgers Scarlet Knights,15,14,703.0
+2021,7,2021-01-04,135,minn,Minnesota Golden Gophers,16,21,559.0
+2021,7,2021-01-04,2483,ore,Oregon Ducks,17,21,545.0
+2021,7,2021-01-04,2641,ttu,Texas Tech Red Raiders,18,13,445.0
+2021,7,2021-01-04,259,vt,Virginia Tech Hokies,19,24,411.0
+2021,7,2021-01-04,228,clem,Clemson Tigers,19,0,411.0
+2021,7,2021-01-04,150,duke,Duke Blue Devils,21,20,280.0
+2021,7,2021-01-04,258,uva,Virginia Cavaliers,22,23,258.0
+2021,7,2021-01-04,139,slu,Saint Louis Billikens,23,0,133.0
+2021,7,2021-01-04,127,msu,Michigan State Spartans,23,17,133.0
+2021,7,2021-01-04,52,fsu,Florida State Seminoles,25,18,120.0
+2021,8,2021-01-11,2250,gonz,Gonzaga Bulldogs,1,1,1599.0
+2021,8,2021-01-11,239,bay,Baylor Bears,2,2,1536.0
+2021,8,2021-01-11,222,vill,Villanova Wildcats,3,3,1436.0
+2021,8,2021-01-11,251,tex,Texas Longhorns,4,4,1422.0
+2021,8,2021-01-11,2294,iowa,Iowa Hawkeyes,5,5,1322.0
+2021,8,2021-01-11,2305,ku,Kansas Jayhawks,6,6,1220.0
+2021,8,2021-01-11,130,mich,Michigan Wolverines,7,10,1161.0
+2021,8,2021-01-11,156,crei,Creighton Bluejays,8,7,1151.0
+2021,8,2021-01-11,275,wis,Wisconsin Badgers,9,8,1110.0
+2021,8,2021-01-11,2633,tenn,Tennessee Volunteers,10,9,1093.0
+2021,8,2021-01-11,248,hou,Houston Cougars,11,11,993.0
+2021,8,2021-01-11,228,clem,Clemson Tigers,12,19,747.0
+2021,8,2021-01-11,277,wvu,West Virginia Mountaineers,13,14,701.0
+2021,8,2021-01-11,356,ill,Illinois Fighting Illini,14,12,694.0
+2021,8,2021-01-11,2641,ttu,Texas Tech Red Raiders,15,18,689.0
+2021,8,2021-01-11,97,lou,Louisville Cardinals,16,0,464.0
+2021,8,2021-01-11,142,miz,Missouri Tigers,17,13,436.0
+2021,8,2021-01-11,258,uva,Virginia Cavaliers,18,22,403.0
+2021,8,2021-01-11,150,duke,Duke Blue Devils,19,21,397.0
+2021,8,2021-01-11,259,vt,Virginia Tech Hokies,20,19,286.0
+2021,8,2021-01-11,194,osu,Ohio State Buckeyes,21,0,280.0
+2021,8,2021-01-11,2483,ore,Oregon Ducks,22,17,264.0
+2021,8,2021-01-11,135,minn,Minnesota Golden Gophers,23,16,233.0
+2021,8,2021-01-11,139,slu,Saint Louis Billikens,24,23,220.0
+2021,8,2021-01-11,41,conn,UConn Huskies,25,0,181.0
+2021,9,2021-01-18,2250,gonz,Gonzaga Bulldogs,1,1,1598.0
+2021,9,2021-01-18,239,bay,Baylor Bears,2,2,1538.0
+2021,9,2021-01-18,222,vill,Villanova Wildcats,3,3,1445.0
+2021,9,2021-01-18,2294,iowa,Iowa Hawkeyes,4,5,1420.0
+2021,9,2021-01-18,251,tex,Texas Longhorns,5,4,1289.0
+2021,9,2021-01-18,2633,tenn,Tennessee Volunteers,6,10,1242.0
+2021,9,2021-01-18,130,mich,Michigan Wolverines,7,7,1197.0
+2021,9,2021-01-18,248,hou,Houston Cougars,8,11,1155.0
+2021,9,2021-01-18,2305,ku,Kansas Jayhawks,9,6,1072.0
+2021,9,2021-01-18,275,wis,Wisconsin Badgers,10,9,939.0
+2021,9,2021-01-18,156,crei,Creighton Bluejays,11,8,833.0
+2021,9,2021-01-18,2641,ttu,Texas Tech Red Raiders,12,15,792.0
+2021,9,2021-01-18,258,uva,Virginia Cavaliers,13,18,778.0
+2021,9,2021-01-18,277,wvu,West Virginia Mountaineers,14,13,732.0
+2021,9,2021-01-18,194,osu,Ohio State Buckeyes,15,21,631.0
+2021,9,2021-01-18,259,vt,Virginia Tech Hokies,16,20,536.0
+2021,9,2021-01-18,135,minn,Minnesota Golden Gophers,17,23,507.0
+2021,9,2021-01-18,333,ala,Alabama Crimson Tide,18,0,487.0
+2021,9,2021-01-18,142,miz,Missouri Tigers,19,17,462.0
+2021,9,2021-01-18,228,clem,Clemson Tigers,20,12,354.0
+2021,9,2021-01-18,2483,ore,Oregon Ducks,21,22,235.0
+2021,9,2021-01-18,356,ill,Illinois Fighting Illini,22,14,232.0
+2021,9,2021-01-18,41,conn,UConn Huskies,23,25,209.0
+2021,9,2021-01-18,26,ucla,UCLA Bruins,24,0,195.0
+2021,9,2021-01-18,139,slu,Saint Louis Billikens,25,24,172.0
+2021,10,2021-01-25,2250,gonz,Gonzaga Bulldogs,1,1,1597.0
+2021,10,2021-01-25,239,bay,Baylor Bears,2,2,1539.0
+2021,10,2021-01-25,222,vill,Villanova Wildcats,3,3,1459.0
+2021,10,2021-01-25,130,mich,Michigan Wolverines,4,7,1376.0
+2021,10,2021-01-25,251,tex,Texas Longhorns,5,5,1341.0
+2021,10,2021-01-25,248,hou,Houston Cougars,6,8,1281.0
+2021,10,2021-01-25,2294,iowa,Iowa Hawkeyes,7,4,1214.0
+2021,10,2021-01-25,258,uva,Virginia Cavaliers,8,13,1067.0
+2021,10,2021-01-25,333,ala,Alabama Crimson Tide,9,18,1039.0
+2021,10,2021-01-25,2641,ttu,Texas Tech Red Raiders,10,12,954.0
+2021,10,2021-01-25,277,wvu,West Virginia Mountaineers,11,14,869.0
+2021,10,2021-01-25,142,miz,Missouri Tigers,12,19,833.0
+2021,10,2021-01-25,194,osu,Ohio State Buckeyes,13,15,810.0
+2021,10,2021-01-25,275,wis,Wisconsin Badgers,14,10,757.0
+2021,10,2021-01-25,2305,ku,Kansas Jayhawks,15,9,665.0
+2021,10,2021-01-25,52,fsu,Florida State Seminoles,16,0,656.0
+2021,10,2021-01-25,156,crei,Creighton Bluejays,17,11,640.0
+2021,10,2021-01-25,2633,tenn,Tennessee Volunteers,18,6,638.0
+2021,10,2021-01-25,356,ill,Illinois Fighting Illini,19,22,415.0
+2021,10,2021-01-25,259,vt,Virginia Tech Hokies,20,16,242.0
+2021,10,2021-01-25,135,minn,Minnesota Golden Gophers,21,17,223.0
+2021,10,2021-01-25,139,slu,Saint Louis Billikens,22,25,218.0
+2021,10,2021-01-25,26,ucla,UCLA Bruins,23,24,157.0
+2021,10,2021-01-25,201,ou,Oklahoma Sooners,24,0,151.0
+2021,10,2021-01-25,97,lou,Louisville Cardinals,25,0,117.0
+2021,11,2021-02-01,2250,gonz,Gonzaga Bulldogs,1,1,1597.0
+2021,11,2021-02-01,239,bay,Baylor Bears,2,2,1539.0
+2021,11,2021-02-01,222,vill,Villanova Wildcats,3,3,1458.0
+2021,11,2021-02-01,130,mich,Michigan Wolverines,4,4,1402.0
+2021,11,2021-02-01,248,hou,Houston Cougars,5,6,1348.0
+2021,11,2021-02-01,251,tex,Texas Longhorns,6,5,1228.0
+2021,11,2021-02-01,194,osu,Ohio State Buckeyes,7,13,1133.0
+2021,11,2021-02-01,2294,iowa,Iowa Hawkeyes,8,7,1079.0
+2021,11,2021-02-01,201,ou,Oklahoma Sooners,9,24,966.0
+2021,11,2021-02-01,333,ala,Alabama Crimson Tide,10,9,958.0
+2021,11,2021-02-01,2633,tenn,Tennessee Volunteers,11,18,869.0
+2021,11,2021-02-01,356,ill,Illinois Fighting Illini,12,19,850.0
+2021,11,2021-02-01,2641,ttu,Texas Tech Red Raiders,13,10,797.0
+2021,11,2021-02-01,258,uva,Virginia Cavaliers,14,8,752.0
+2021,11,2021-02-01,156,crei,Creighton Bluejays,15,17,732.0
+2021,11,2021-02-01,259,vt,Virginia Tech Hokies,16,20,718.0
+2021,11,2021-02-01,277,wvu,West Virginia Mountaineers,17,11,669.0
+2021,11,2021-02-01,142,miz,Missouri Tigers,18,12,589.0
+2021,11,2021-02-01,275,wis,Wisconsin Badgers,19,14,452.0
+2021,11,2021-02-01,52,fsu,Florida State Seminoles,20,16,393.0
+2021,11,2021-02-01,26,ucla,UCLA Bruins,21,23,260.0
+2021,11,2021-02-01,57,fla,Florida Gators,22,0,196.0
+2021,11,2021-02-01,2305,ku,Kansas Jayhawks,23,15,171.0
+2021,11,2021-02-01,2509,pur,Purdue Boilermakers,24,0,130.0
+2021,11,2021-02-01,2181,drke,Drake Bulldogs,25,0,117.0
+2021,12,2021-02-08,2250,gonz,Gonzaga Bulldogs,1,1,1567.0
+2021,12,2021-02-08,239,bay,Baylor Bears,2,2,1520.0
+2021,12,2021-02-08,130,mich,Michigan Wolverines,3,4,1438.0
+2021,12,2021-02-08,194,osu,Ohio State Buckeyes,4,7,1365.0
+2021,12,2021-02-08,222,vill,Villanova Wildcats,5,3,1281.0
+2021,12,2021-02-08,356,ill,Illinois Fighting Illini,6,12,1239.0
+2021,12,2021-02-08,2641,ttu,Texas Tech Red Raiders,7,13,1102.0
+2021,12,2021-02-08,248,hou,Houston Cougars,8,5,1060.0
+2021,12,2021-02-08,258,uva,Virginia Cavaliers,9,14,969.0
+2021,12,2021-02-08,142,miz,Missouri Tigers,10,18,966.0
+2021,12,2021-02-08,333,ala,Alabama Crimson Tide,11,10,911.0
+2021,12,2021-02-08,201,ou,Oklahoma Sooners,12,9,863.0
+2021,12,2021-02-08,251,tex,Texas Longhorns,13,6,841.0
+2021,12,2021-02-08,277,wvu,West Virginia Mountaineers,14,17,824.0
+2021,12,2021-02-08,2294,iowa,Iowa Hawkeyes,15,8,757.0
+2021,12,2021-02-08,2633,tenn,Tennessee Volunteers,16,11,690.0
+2021,12,2021-02-08,52,fsu,Florida State Seminoles,17,20,514.0
+2021,12,2021-02-08,259,vt,Virginia Tech Hokies,18,16,486.0
+2021,12,2021-02-08,156,crei,Creighton Bluejays,19,15,465.0
+2021,12,2021-02-08,30,usc,USC Trojans,20,0,411.0
+2021,12,2021-02-08,275,wis,Wisconsin Badgers,21,19,358.0
+2021,12,2021-02-08,2350,luc,Loyola Chicago Ramblers,22,0,200.0
+2021,12,2021-02-08,197,okst,Oklahoma State Cowboys,23,0,181.0
+2021,12,2021-02-08,2509,pur,Purdue Boilermakers,24,24,85.0
+2021,12,2021-02-08,164,rutg,Rutgers Scarlet Knights,25,0,65.0
+2021,13,2021-02-15,2250,gonz,Gonzaga Bulldogs,1,1,1595.0
+2021,13,2021-02-15,239,bay,Baylor Bears,2,2,1541.0
+2021,13,2021-02-15,130,mich,Michigan Wolverines,3,3,1469.0
+2021,13,2021-02-15,194,osu,Ohio State Buckeyes,4,4,1402.0
+2021,13,2021-02-15,356,ill,Illinois Fighting Illini,5,6,1290.0
+2021,13,2021-02-15,248,hou,Houston Cougars,6,8,1171.0
+2021,13,2021-02-15,258,uva,Virginia Cavaliers,7,9,1130.0
+2021,13,2021-02-15,333,ala,Alabama Crimson Tide,8,11,1086.0
+2021,13,2021-02-15,201,ou,Oklahoma Sooners,9,12,1072.0
+2021,13,2021-02-15,222,vill,Villanova Wildcats,10,5,1061.0
+2021,13,2021-02-15,2294,iowa,Iowa Hawkeyes,11,15,911.0
+2021,13,2021-02-15,251,tex,Texas Longhorns,12,13,886.0
+2021,13,2021-02-15,277,wvu,West Virginia Mountaineers,13,14,837.0
+2021,13,2021-02-15,156,crei,Creighton Bluejays,14,19,794.0
+2021,13,2021-02-15,2641,ttu,Texas Tech Red Raiders,15,7,792.0
+2021,13,2021-02-15,52,fsu,Florida State Seminoles,16,17,625.0
+2021,13,2021-02-15,30,usc,USC Trojans,17,20,587.0
+2021,13,2021-02-15,259,vt,Virginia Tech Hokies,18,18,514.0
+2021,13,2021-02-15,2633,tenn,Tennessee Volunteers,19,16,453.0
+2021,13,2021-02-15,142,miz,Missouri Tigers,20,10,413.0
+2021,13,2021-02-15,275,wis,Wisconsin Badgers,21,21,274.0
+2021,13,2021-02-15,2350,luc,Loyola Chicago Ramblers,22,22,167.0
+2021,13,2021-02-15,2305,ku,Kansas Jayhawks,23,0,141.0
+2021,13,2021-02-15,8,ark,Arkansas Razorbacks,24,0,111.0
+2021,13,2021-02-15,21,sdsu,San Diego State Aztecs,25,0,75.0
+2021,14,2021-02-22,2250,gonz,Gonzaga Bulldogs,1,1,1596.0
+2021,14,2021-02-22,239,bay,Baylor Bears,2,2,1540.0
+2021,14,2021-02-22,130,mich,Michigan Wolverines,3,3,1472.0
+2021,14,2021-02-22,194,osu,Ohio State Buckeyes,4,4,1370.0
+2021,14,2021-02-22,356,ill,Illinois Fighting Illini,5,5,1356.0
+2021,14,2021-02-22,333,ala,Alabama Crimson Tide,6,8,1196.0
+2021,14,2021-02-22,201,ou,Oklahoma Sooners,7,9,1150.0
+2021,14,2021-02-22,222,vill,Villanova Wildcats,8,10,1132.0
+2021,14,2021-02-22,2294,iowa,Iowa Hawkeyes,9,11,1088.0
+2021,14,2021-02-22,277,wvu,West Virginia Mountaineers,10,13,1014.0
+2021,14,2021-02-22,52,fsu,Florida State Seminoles,11,16,967.0
+2021,14,2021-02-22,248,hou,Houston Cougars,12,6,921.0
+2021,14,2021-02-22,156,crei,Creighton Bluejays,13,14,836.0
+2021,14,2021-02-22,251,tex,Texas Longhorns,14,12,730.0
+2021,14,2021-02-22,258,uva,Virginia Cavaliers,15,7,690.0
+2021,14,2021-02-22,259,vt,Virginia Tech Hokies,16,18,545.0
+2021,14,2021-02-22,2305,ku,Kansas Jayhawks,17,23,532.0
+2021,14,2021-02-22,2641,ttu,Texas Tech Red Raiders,18,15,477.0
+2021,14,2021-02-22,30,usc,USC Trojans,19,17,423.0
+2021,14,2021-02-22,8,ark,Arkansas Razorbacks,20,24,346.0
+2021,14,2021-02-22,2350,luc,Loyola Chicago Ramblers,21,22,288.0
+2021,14,2021-02-22,21,sdsu,San Diego State Aztecs,22,25,222.0
+2021,14,2021-02-22,275,wis,Wisconsin Badgers,23,21,200.0
+2021,14,2021-02-22,142,miz,Missouri Tigers,24,20,149.0
+2021,14,2021-02-22,2633,tenn,Tennessee Volunteers,25,19,145.0
+2021,15,2021-03-01,2250,gonz,Gonzaga Bulldogs,1,1,1571.0
+2021,15,2021-03-01,130,mich,Michigan Wolverines,2,3,1512.0
+2021,15,2021-03-01,239,bay,Baylor Bears,3,2,1450.0
+2021,15,2021-03-01,356,ill,Illinois Fighting Illini,4,5,1350.0
+2021,15,2021-03-01,2294,iowa,Iowa Hawkeyes,5,9,1266.0
+2021,15,2021-03-01,277,wvu,West Virginia Mountaineers,6,10,1210.0
+2021,15,2021-03-01,194,osu,Ohio State Buckeyes,7,4,1163.0
+2021,15,2021-03-01,333,ala,Alabama Crimson Tide,8,6,1130.0
+2021,15,2021-03-01,248,hou,Houston Cougars,9,12,1109.0
+2021,15,2021-03-01,222,vill,Villanova Wildcats,10,8,942.0
+2021,15,2021-03-01,52,fsu,Florida State Seminoles,11,11,897.0
+2021,15,2021-03-01,8,ark,Arkansas Razorbacks,12,20,847.0
+2021,15,2021-03-01,2305,ku,Kansas Jayhawks,13,17,785.0
+2021,15,2021-03-01,156,crei,Creighton Bluejays,14,13,669.0
+2021,15,2021-03-01,251,tex,Texas Longhorns,15,14,650.0
+2021,15,2021-03-01,201,ou,Oklahoma Sooners,16,7,584.0
+2021,15,2021-03-01,197,okst,Oklahoma State Cowboys,17,0,553.0
+2021,15,2021-03-01,2641,ttu,Texas Tech Red Raiders,18,18,494.0
+2021,15,2021-03-01,21,sdsu,San Diego State Aztecs,19,22,406.0
+2021,15,2021-03-01,2350,luc,Loyola Chicago Ramblers,20,21,367.0
+2021,15,2021-03-01,258,uva,Virginia Cavaliers,21,15,362.0
+2021,15,2021-03-01,259,vt,Virginia Tech Hokies,22,16,335.0
+2021,15,2021-03-01,2509,pur,Purdue Boilermakers,23,0,192.0
+2021,15,2021-03-01,38,colo,Colorado Buffaloes,24,0,150.0
+2021,15,2021-03-01,275,wis,Wisconsin Badgers,25,23,106.0
+2021,16,2021-03-08,2250,gonz,Gonzaga Bulldogs,1,1,1573.0
+2021,16,2021-03-08,239,bay,Baylor Bears,2,3,1510.0
+2021,16,2021-03-08,356,ill,Illinois Fighting Illini,3,4,1438.0
+2021,16,2021-03-08,130,mich,Michigan Wolverines,4,2,1382.0
+2021,16,2021-03-08,2294,iowa,Iowa Hawkeyes,5,5,1314.0
+2021,16,2021-03-08,333,ala,Alabama Crimson Tide,6,8,1239.0
+2021,16,2021-03-08,248,hou,Houston Cougars,7,9,1173.0
+2021,16,2021-03-08,8,ark,Arkansas Razorbacks,8,12,1046.0
+2021,16,2021-03-08,194,osu,Ohio State Buckeyes,9,7,1032.0
+2021,16,2021-03-08,277,wvu,West Virginia Mountaineers,10,6,919.0
+2021,16,2021-03-08,2305,ku,Kansas Jayhawks,11,13,873.0
+2021,16,2021-03-08,197,okst,Oklahoma State Cowboys,12,17,851.0
+2021,16,2021-03-08,251,tex,Texas Longhorns,13,15,802.0
+2021,16,2021-03-08,222,vill,Villanova Wildcats,14,10,729.0
+2021,16,2021-03-08,52,fsu,Florida State Seminoles,15,11,687.0
+2021,16,2021-03-08,258,uva,Virginia Cavaliers,16,21,531.0
+2021,16,2021-03-08,156,crei,Creighton Bluejays,17,14,510.0
+2021,16,2021-03-08,2350,luc,Loyola Chicago Ramblers,18,20,488.0
+2021,16,2021-03-08,21,sdsu,San Diego State Aztecs,19,19,462.0
+2021,16,2021-03-08,2641,ttu,Texas Tech Red Raiders,20,18,389.0
+2021,16,2021-03-08,2509,pur,Purdue Boilermakers,20,23,389.0
+2021,16,2021-03-08,259,vt,Virginia Tech Hokies,22,22,266.0
+2021,16,2021-03-08,38,colo,Colorado Buffaloes,23,24,209.0
+2021,16,2021-03-08,30,usc,USC Trojans,24,0,175.0
+2021,16,2021-03-08,201,ou,Oklahoma Sooners,25,16,172.0
+2021,17,2021-03-15,2250,gonz,Gonzaga Bulldogs,1,1,1500.0
+2021,17,2021-03-15,356,ill,Illinois Fighting Illini,2,3,1415.0
+2021,17,2021-03-15,239,bay,Baylor Bears,3,2,1397.0
+2021,17,2021-03-15,130,mich,Michigan Wolverines,4,4,1280.0
+2021,17,2021-03-15,333,ala,Alabama Crimson Tide,5,6,1242.0
+2021,17,2021-03-15,248,hou,Houston Cougars,6,7,1145.0
+2021,17,2021-03-15,194,osu,Ohio State Buckeyes,7,9,1138.0
+2021,17,2021-03-15,2294,iowa,Iowa Hawkeyes,8,5,1132.0
+2021,17,2021-03-15,251,tex,Texas Longhorns,9,13,993.0
+2021,17,2021-03-15,8,ark,Arkansas Razorbacks,10,8,895.0
+2021,17,2021-03-15,197,okst,Oklahoma State Cowboys,11,12,891.0
+2021,17,2021-03-15,2305,ku,Kansas Jayhawks,12,11,803.0
+2021,17,2021-03-15,277,wvu,West Virginia Mountaineers,13,10,745.0
+2021,17,2021-03-15,52,fsu,Florida State Seminoles,14,15,651.0
+2021,17,2021-03-15,258,uva,Virginia Cavaliers,15,16,584.0
+2021,17,2021-03-15,21,sdsu,San Diego State Aztecs,16,19,521.0
+2021,17,2021-03-15,2350,luc,Loyola Chicago Ramblers,17,18,513.0
+2021,17,2021-03-15,222,vill,Villanova Wildcats,18,14,490.0
+2021,17,2021-03-15,156,crei,Creighton Bluejays,19,17,411.0
+2021,17,2021-03-15,2509,pur,Purdue Boilermakers,20,20,382.0
+2021,17,2021-03-15,2641,ttu,Texas Tech Red Raiders,21,20,271.0
+2021,17,2021-03-15,38,colo,Colorado Buffaloes,22,23,243.0
+2021,17,2021-03-15,252,byu,BYU Cougars,23,0,125.0
+2021,17,2021-03-15,30,usc,USC Trojans,23,24,125.0
+2021,17,2021-03-15,259,vt,Virginia Tech Hokies,25,22,118.0

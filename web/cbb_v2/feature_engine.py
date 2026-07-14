@@ -115,6 +115,68 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     "away_road_trip_len",
     "home_conf_sos",
     "away_conf_sos",
+    # matchup interactions (ESPN walk-forward, always defined)
+    "home_ortg_vs_away_drtg",
+    "away_ortg_vs_home_drtg",
+    "pace_product",
+    "efg_x_opp_efg_def",
+    "orb_x_opp_drb",
+    "elo_x_neutral",
+    "elo_x_b2b_home",
+    "net_x_season_frac",
+    # heuristics
+    "luck_diff",
+    "early_season",
+    "big_elo_gap",
+    "one_poss_rate_diff",
+    "rematch_flag",
+    "home_fav_elo",
+    "dog_elo_gap",
+    # PIT Torvik (archive or ESPN proxy — never left missing)
+    "torvik_adj_o_diff",
+    "torvik_adj_d_diff",
+    "torvik_adj_t_diff",
+    "torvik_barthag_diff",
+    "torvik_rank_diff",
+    "torvik_wab_diff",
+    "torvik_home_o_vs_away_d",
+    "torvik_away_o_vs_home_d",
+    "torvik_exp_poss",
+    "torvik_known",
+    # Torvik rolling game-factors (archive) or ESPN four-factor EWMA fallback
+    "tf_off_efg_diff",
+    "tf_def_efg_diff",
+    "tf_off_to_diff",
+    "tf_off_or_diff",
+    "tf_off_ftr_diff",
+    "tf_tempo_diff",
+    "tf_adj_o_diff",
+    "tf_adj_d_diff",
+    "tf_known",
+    # Torvik published pregame WP (archive) or Elo-implied fallback
+    "torvik_pregame_home_wp",
+    "torvik_pregame_known",
+    # ESPN AP Top 25 (unranked = 40 sentinel)
+    "ap_rank_diff",
+    "home_ap_rank",
+    "away_ap_rank",
+    "home_ap_ranked",
+    "away_ap_ranked",
+    "both_ap_ranked",
+    "ap_top10_clash",
+    "ap_known",
+    # market / steam (filled at table build when odds rows are complete)
+    "has_market",
+    "mkt_home_prob",
+    "has_spread",
+    "mkt_home_spread",
+    "has_open_line",
+    "spread_move",
+    "ml_steam_pp",
+    "has_steam",
+    "n_books",
+    "total_line",
+    "model_total_vs_line",
 )
 
 
@@ -394,6 +456,7 @@ class CbbFeatureEngine:
         self.league_ppg = LEAGUE_PPG
         self.league_pace = LEAGUE_PACE
         self.abbr_to_id: dict[str, str] = {}
+        self._abbr_to_display: dict[str, str] | None = None
 
     def team(self, franchise: str) -> TeamState:
         state = self.teams.get(franchise)
@@ -527,8 +590,195 @@ class CbbFeatureEngine:
             "away_road_trip_len": road_trip,
             "home_conf_sos": home.conf_sos(),
             "away_conf_sos": away.conf_sos(),
+            # matchup interactions
+            "home_ortg_vs_away_drtg": home.ortg_slow - away.drtg_slow,
+            "away_ortg_vs_home_drtg": away.ortg_slow - home.drtg_slow,
+            "pace_product": home.pace_ewma * away.pace_ewma / 68.0,
+            "efg_x_opp_efg_def": home.efg_for - away.efg_against,
+            "orb_x_opp_drb": home.orb_for - away.orb_against,
+            "elo_x_neutral": elo_diff * (1.0 if neutral else 0.0),
+            "elo_x_b2b_home": elo_diff * (1.0 if home_rest <= 1.0 else 0.0),
+            "net_x_season_frac": (
+                (home.ortg_slow - home.drtg_slow) - (away.ortg_slow - away.drtg_slow)
+            )
+            * season_frac,
+            # heuristics
+            "luck_diff": (home.pythag() - home.win_pct()) - (away.pythag() - away.win_pct()),
+            "early_season": 1.0 if min(home.games_played, away.games_played) < 8 else 0.0,
+            "big_elo_gap": 1.0 if abs(elo_diff) >= 200.0 else 0.0,
+            "one_poss_rate_diff": home.close_win_ewma - away.close_win_ewma,
+            "rematch_flag": 1.0 if h2h_total >= 1 else 0.0,
+            "home_fav_elo": 1.0 if elo_diff > 0 else 0.0,
+            "dog_elo_gap": float(max(-elo_diff, 0.0)),
         }
+        # PIT Torvik (archive) or ESPN walk-forward proxy — always populated.
+        features.update(self._torvik_features(game, home, away, game_date, season))
+        features.update(self._factor_features(game, home, away, game_date, season))
+        features.update(self._pregame_features(game, home, away, game_date, season, elo_diff))
+        features.update(self._ap_features(game, game_date, season))
+        # Market placeholders — overwritten at training-table join when odds exist.
+        features.update(
+            {
+                "has_market": 0.0,
+                "mkt_home_prob": 0.5,
+                "has_spread": 0.0,
+                "mkt_home_spread": 0.0,
+                "has_open_line": 0.0,
+                "spread_move": 0.0,
+                "ml_steam_pp": 0.0,
+                "has_steam": 0.0,
+                "n_books": 0.0,
+                "total_line": features["exp_total_env"],
+                "model_total_vs_line": 0.0,
+            }
+        )
         return features
+
+    def _torvik_features(
+        self,
+        game: dict[str, Any],
+        home: TeamState,
+        away: TeamState,
+        game_date: date_cls,
+        season: int,
+    ) -> dict[str, float]:
+        from web.cbb_v2.torvik_asof import (
+            asof_date_for_game,
+            espn_proxy_torvik_features,
+            lookup,
+            torvik_feature_dict,
+        )
+
+        asof = asof_date_for_game(game_date)
+        home_abbr, away_abbr, home_name, away_name = self._team_display_names(game)
+        h = lookup(team_name=home_name, team_abbr=home_abbr, asof=asof, season=season)
+        a = lookup(team_name=away_name, team_abbr=away_abbr, asof=asof, season=season)
+        if h is not None and a is not None:
+            return torvik_feature_dict(h, a)
+        return espn_proxy_torvik_features(
+            home_ortg=home.ortg_slow,
+            home_drtg=home.drtg_slow,
+            home_pace=home.pace_ewma,
+            away_ortg=away.ortg_slow,
+            away_drtg=away.drtg_slow,
+            away_pace=away.pace_ewma,
+            home_elo=home.elo,
+            away_elo=away.elo,
+        )
+
+    def _team_display_names(self, game: dict[str, Any]) -> tuple[str, str, str, str]:
+        home_abbr = str(game.get("home_abbr") or game.get("home") or "")
+        away_abbr = str(game.get("away_abbr") or game.get("away") or "")
+        home_name = str(game.get("home_name") or game.get("home_display") or "")
+        away_name = str(game.get("away_name") or game.get("away_display") or "")
+        if not home_name or not away_name:
+            if self._abbr_to_display is None:
+                mapping: dict[str, str] = {}
+                try:
+                    from web.season_games import _load_espn_team_ids
+
+                    for _eid, abbr, display in _load_espn_team_ids("cbb"):
+                        mapping[str(abbr).lower()] = str(display)
+                except Exception:
+                    mapping = {}
+                self._abbr_to_display = mapping
+            if not home_name:
+                home_name = self._abbr_to_display.get(home_abbr.lower(), "")
+            if not away_name:
+                away_name = self._abbr_to_display.get(away_abbr.lower(), "")
+        return home_abbr, away_abbr, home_name, away_name
+
+    def _factor_features(
+        self,
+        game: dict[str, Any],
+        home: TeamState,
+        away: TeamState,
+        game_date: date_cls,
+        season: int,
+    ) -> dict[str, float]:
+        from web.cbb_v2.game_factors import factor_feature_dict
+
+        home_abbr, away_abbr, home_name, away_name = self._team_display_names(game)
+        # ESPN walk-forward four-factor / efficiency as real PIT fallback (not NA).
+        home_fb = {
+            "off_efg": home.efg_for * 100.0,
+            "def_efg": home.efg_against * 100.0,
+            "off_to": home.tov_for * 100.0,
+            "off_or": home.orb_for * 100.0,
+            "off_ftr": home.ftr_for * 100.0,
+            "tempo": home.pace_ewma,
+            "adj_o": home.ortg_slow,
+            "adj_d": home.drtg_slow,
+        }
+        away_fb = {
+            "off_efg": away.efg_for * 100.0,
+            "def_efg": away.efg_against * 100.0,
+            "off_to": away.tov_for * 100.0,
+            "off_or": away.orb_for * 100.0,
+            "off_ftr": away.ftr_for * 100.0,
+            "tempo": away.pace_ewma,
+            "adj_o": away.ortg_slow,
+            "adj_d": away.drtg_slow,
+        }
+        return factor_feature_dict(
+            home_name=home_name,
+            away_name=away_name,
+            home_abbr=home_abbr,
+            away_abbr=away_abbr,
+            asof=game_date,
+            season=season,
+            home_fallback=home_fb,
+            away_fallback=away_fb,
+        )
+
+    def _pregame_features(
+        self,
+        game: dict[str, Any],
+        home: TeamState,
+        away: TeamState,
+        game_date: date_cls,
+        season: int,
+        elo_diff: float,
+    ) -> dict[str, float]:
+        from web.cbb_v2.game_factors import pregame_home_wp
+
+        home_abbr, away_abbr, home_name, away_name = self._team_display_names(game)
+        wp, known = pregame_home_wp(
+            home_name=home_name,
+            away_name=away_name,
+            home_abbr=home_abbr,
+            away_abbr=away_abbr,
+            asof=game_date,
+            season=season,
+        )
+        if known < 0.5:
+            # Elo-implied home win prob (real PIT strength), not a blank fill.
+            wp = 1.0 / (1.0 + 10.0 ** (-elo_diff / 400.0))
+            known = 0.0
+        return {
+            "torvik_pregame_home_wp": float(wp),
+            "torvik_pregame_known": float(known),
+        }
+
+    def _ap_features(
+        self,
+        game: dict[str, Any],
+        game_date: date_cls,
+        season: int,
+    ) -> dict[str, float]:
+        from web.cbb_v2.rankings import ap_feature_dict
+
+        home_abbr, away_abbr, home_name, away_name = self._team_display_names(game)
+        return ap_feature_dict(
+            home_id=str(game.get("home") or ""),
+            away_id=str(game.get("away") or ""),
+            home_abbr=home_abbr,
+            away_abbr=away_abbr,
+            home_name=home_name,
+            away_name=away_name,
+            asof=game_date,
+            season=season,
+        )
 
     def update_after_game(self, game: dict[str, Any]) -> None:
         season = int(game.get("season") or 0)

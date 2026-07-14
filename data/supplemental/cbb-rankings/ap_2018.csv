@@ -1,0 +1,451 @@
+season,week,asof_date,team_id,team_abbr,team_name,rank,previous,points
+2018,1,2017-11-01,150,duke,Duke Blue Devils,1,0,1572.0
+2018,1,2017-11-01,127,msu,Michigan State Spartans,2,0,1520.0
+2018,1,2017-11-01,12,ariz,Arizona Wildcats,3,0,1506.0
+2018,1,2017-11-01,2305,ku,Kansas Jayhawks,4,0,1439.0
+2018,1,2017-11-01,96,uk,Kentucky Wildcats,5,0,1340.0
+2018,1,2017-11-01,222,vill,Villanova Wildcats,6,0,1284.0
+2018,1,2017-11-01,2724,wich,Wichita State Shockers,7,0,1270.0
+2018,1,2017-11-01,57,fla,Florida Gators,8,0,1100.0
+2018,1,2017-11-01,153,unc,North Carolina Tar Heels,9,0,1047.0
+2018,1,2017-11-01,30,usc,USC Trojans,10,0,995.0
+2018,1,2017-11-01,277,wvu,West Virginia Mountaineers,11,0,840.0
+2018,1,2017-11-01,2132,cin,Cincinnati Bearcats,12,0,837.0
+2018,1,2017-11-01,2390,mia,Miami Hurricanes,13,0,836.0
+2018,1,2017-11-01,87,nd,Notre Dame Fighting Irish,14,0,814.0
+2018,1,2017-11-01,135,minn,Minnesota Golden Gophers,15,0,642.0
+2018,1,2017-11-01,97,lou,Louisville Cardinals,16,0,570.0
+2018,1,2017-11-01,2752,xav,Xavier Musketeers,17,0,544.0
+2018,1,2017-11-01,2250,gonz,Gonzaga Bulldogs,18,0,500.0
+2018,1,2017-11-01,77,nu,Northwestern Wildcats,19,0,473.0
+2018,1,2017-11-01,2509,pur,Purdue Boilermakers,20,0,362.0
+2018,1,2017-11-01,26,ucla,UCLA Bruins,21,0,340.0
+2018,1,2017-11-01,2608,smc,Saint Mary's Gaels,22,0,333.0
+2018,1,2017-11-01,2550,hall,Seton Hall Pirates,23,0,274.0
+2018,1,2017-11-01,239,bay,Baylor Bears,24,0,163.0
+2018,1,2017-11-01,245,ta&m,Texas A&M Aggies,25,0,130.0
+2018,2,2017-11-13,150,duke,Duke Blue Devils,1,1,1577.0
+2018,2,2017-11-13,127,msu,Michigan State Spartans,2,2,1529.0
+2018,2,2017-11-13,12,ariz,Arizona Wildcats,3,3,1511.0
+2018,2,2017-11-13,2305,ku,Kansas Jayhawks,4,4,1446.0
+2018,2,2017-11-13,222,vill,Villanova Wildcats,5,6,1307.0
+2018,2,2017-11-13,2724,wich,Wichita State Shockers,6,7,1277.0
+2018,2,2017-11-13,96,uk,Kentucky Wildcats,7,5,1219.0
+2018,2,2017-11-13,57,fla,Florida Gators,8,8,1125.0
+2018,2,2017-11-13,153,unc,North Carolina Tar Heels,9,9,1078.0
+2018,2,2017-11-13,30,usc,USC Trojans,10,10,1023.0
+2018,2,2017-11-13,2390,mia,Miami Hurricanes,11,13,911.0
+2018,2,2017-11-13,2132,cin,Cincinnati Bearcats,12,12,890.0
+2018,2,2017-11-13,87,nd,Notre Dame Fighting Irish,13,14,860.0
+2018,2,2017-11-13,135,minn,Minnesota Golden Gophers,14,15,675.0
+2018,2,2017-11-13,2752,xav,Xavier Musketeers,15,17,605.0
+2018,2,2017-11-13,245,ta&m,Texas A&M Aggies,16,25,577.0
+2018,2,2017-11-13,2250,gonz,Gonzaga Bulldogs,17,18,525.0
+2018,2,2017-11-13,97,lou,Louisville Cardinals,18,16,518.0
+2018,2,2017-11-13,2509,pur,Purdue Boilermakers,19,20,426.0
+2018,2,2017-11-13,77,nu,Northwestern Wildcats,20,19,374.0
+2018,2,2017-11-13,2608,smc,Saint Mary's Gaels,21,22,315.0
+2018,2,2017-11-13,2550,hall,Seton Hall Pirates,22,23,283.0
+2018,2,2017-11-13,26,ucla,UCLA Bruins,23,21,266.0
+2018,2,2017-11-13,277,wvu,West Virginia Mountaineers,24,11,211.0
+2018,2,2017-11-13,239,bay,Baylor Bears,25,24,205.0
+2018,3,2017-11-20,150,duke,Duke Blue Devils,1,1,1613.0
+2018,3,2017-11-20,12,ariz,Arizona Wildcats,2,3,1527.0
+2018,3,2017-11-20,2305,ku,Kansas Jayhawks,3,4,1504.0
+2018,3,2017-11-20,127,msu,Michigan State Spartans,4,2,1390.0
+2018,3,2017-11-20,222,vill,Villanova Wildcats,5,5,1345.0
+2018,3,2017-11-20,2724,wich,Wichita State Shockers,6,6,1321.0
+2018,3,2017-11-20,57,fla,Florida Gators,7,8,1117.0
+2018,3,2017-11-20,96,uk,Kentucky Wildcats,8,7,1104.0
+2018,3,2017-11-20,153,unc,North Carolina Tar Heels,9,9,1079.0
+2018,3,2017-11-20,30,usc,USC Trojans,10,10,1055.0
+2018,3,2017-11-20,2390,mia,Miami Hurricanes,11,11,918.0
+2018,3,2017-11-20,2132,cin,Cincinnati Bearcats,12,12,893.0
+2018,3,2017-11-20,87,nd,Notre Dame Fighting Irish,13,13,857.0
+2018,3,2017-11-20,135,minn,Minnesota Golden Gophers,14,14,754.0
+2018,3,2017-11-20,2752,xav,Xavier Musketeers,15,15,750.0
+2018,3,2017-11-20,245,ta&m,Texas A&M Aggies,16,16,618.0
+2018,3,2017-11-20,2250,gonz,Gonzaga Bulldogs,17,17,540.0
+2018,3,2017-11-20,2509,pur,Purdue Boilermakers,18,19,527.0
+2018,3,2017-11-20,97,lou,Louisville Cardinals,19,18,466.0
+2018,3,2017-11-20,2550,hall,Seton Hall Pirates,20,22,370.0
+2018,3,2017-11-20,2608,smc,Saint Mary's Gaels,21,21,344.0
+2018,3,2017-11-20,239,bay,Baylor Bears,22,25,206.0
+2018,3,2017-11-20,277,wvu,West Virginia Mountaineers,23,24,191.0
+2018,3,2017-11-20,26,ucla,UCLA Bruins,23,23,191.0
+2018,3,2017-11-20,333,ala,Alabama Crimson Tide,25,0,133.0
+2018,4,2017-11-27,150,duke,Duke Blue Devils,1,1,1625.0
+2018,4,2017-11-27,2305,ku,Kansas Jayhawks,2,3,1531.0
+2018,4,2017-11-27,127,msu,Michigan State Spartans,3,4,1481.0
+2018,4,2017-11-27,222,vill,Villanova Wildcats,4,5,1435.0
+2018,4,2017-11-27,87,nd,Notre Dame Fighting Irish,5,13,1297.0
+2018,4,2017-11-27,57,fla,Florida Gators,6,7,1272.0
+2018,4,2017-11-27,96,uk,Kentucky Wildcats,7,8,1179.0
+2018,4,2017-11-27,2724,wich,Wichita State Shockers,8,6,1134.0
+2018,4,2017-11-27,245,ta&m,Texas A&M Aggies,9,16,1130.0
+2018,4,2017-11-27,2390,mia,Miami Hurricanes,10,11,1001.0
+2018,4,2017-11-27,2132,cin,Cincinnati Bearcats,11,12,972.0
+2018,4,2017-11-27,135,minn,Minnesota Golden Gophers,12,14,929.0
+2018,4,2017-11-27,153,unc,North Carolina Tar Heels,13,9,922.0
+2018,4,2017-11-27,30,usc,USC Trojans,14,10,681.0
+2018,4,2017-11-27,2250,gonz,Gonzaga Bulldogs,15,17,666.0
+2018,4,2017-11-27,239,bay,Baylor Bears,16,22,576.0
+2018,4,2017-11-27,97,lou,Louisville Cardinals,17,19,568.0
+2018,4,2017-11-27,258,uva,Virginia Cavaliers,18,0,510.0
+2018,4,2017-11-27,277,wvu,West Virginia Mountaineers,19,23,418.0
+2018,4,2017-11-27,9,asu,Arizona State Sun Devils,20,0,383.0
+2018,4,2017-11-27,2752,xav,Xavier Musketeers,21,15,370.0
+2018,4,2017-11-27,2641,ttu,Texas Tech Red Raiders,22,0,247.0
+2018,4,2017-11-27,2628,tcu,TCU Horned Frogs,23,0,133.0
+2018,4,2017-11-27,333,ala,Alabama Crimson Tide,24,25,128.0
+2018,4,2017-11-27,156,crei,Creighton Bluejays,25,0,124.0
+2018,5,2017-12-04,150,duke,Duke Blue Devils,1,1,1625.0
+2018,5,2017-12-04,2305,ku,Kansas Jayhawks,2,2,1525.0
+2018,5,2017-12-04,127,msu,Michigan State Spartans,3,3,1500.0
+2018,5,2017-12-04,222,vill,Villanova Wildcats,4,4,1434.0
+2018,5,2017-12-04,57,fla,Florida Gators,5,6,1301.0
+2018,5,2017-12-04,2724,wich,Wichita State Shockers,6,8,1197.0
+2018,5,2017-12-04,245,ta&m,Texas A&M Aggies,7,9,1192.0
+2018,5,2017-12-04,96,uk,Kentucky Wildcats,8,7,1174.0
+2018,5,2017-12-04,87,nd,Notre Dame Fighting Irish,9,5,1156.0
+2018,5,2017-12-04,2390,mia,Miami Hurricanes,10,10,1122.0
+2018,5,2017-12-04,153,unc,North Carolina Tar Heels,11,13,999.0
+2018,5,2017-12-04,2250,gonz,Gonzaga Bulldogs,12,15,856.0
+2018,5,2017-12-04,2752,xav,Xavier Musketeers,13,21,768.0
+2018,5,2017-12-04,135,minn,Minnesota Golden Gophers,14,12,758.0
+2018,5,2017-12-04,258,uva,Virginia Cavaliers,15,18,728.0
+2018,5,2017-12-04,9,asu,Arizona State Sun Devils,16,20,609.0
+2018,5,2017-12-04,2132,cin,Cincinnati Bearcats,17,11,583.0
+2018,5,2017-12-04,277,wvu,West Virginia Mountaineers,18,19,557.0
+2018,5,2017-12-04,2550,hall,Seton Hall Pirates,19,0,405.0
+2018,5,2017-12-04,2628,tcu,TCU Horned Frogs,20,23,311.0
+2018,5,2017-12-04,2509,pur,Purdue Boilermakers,21,0,266.0
+2018,5,2017-12-04,2440,nev,Nevada Wolf Pack,22,0,199.0
+2018,5,2017-12-04,239,bay,Baylor Bears,23,16,182.0
+2018,5,2017-12-04,2633,tenn,Tennessee Volunteers,24,0,96.0
+2018,5,2017-12-04,30,usc,USC Trojans,25,14,90.0
+2018,6,2017-12-11,222,vill,Villanova Wildcats,1,4,1598.0
+2018,6,2017-12-11,127,msu,Michigan State Spartans,2,3,1561.0
+2018,6,2017-12-11,2724,wich,Wichita State Shockers,3,6,1402.0
+2018,6,2017-12-11,150,duke,Duke Blue Devils,4,1,1362.0
+2018,6,2017-12-11,9,asu,Arizona State Sun Devils,5,16,1316.0
+2018,6,2017-12-11,2390,mia,Miami Hurricanes,6,10,1272.0
+2018,6,2017-12-11,153,unc,North Carolina Tar Heels,7,11,1237.0
+2018,6,2017-12-11,96,uk,Kentucky Wildcats,8,8,1227.0
+2018,6,2017-12-11,245,ta&m,Texas A&M Aggies,9,7,1072.0
+2018,6,2017-12-11,2752,xav,Xavier Musketeers,10,13,1044.0
+2018,6,2017-12-11,277,wvu,West Virginia Mountaineers,11,18,972.0
+2018,6,2017-12-11,2250,gonz,Gonzaga Bulldogs,12,12,805.0
+2018,6,2017-12-11,2305,ku,Kansas Jayhawks,13,2,760.0
+2018,6,2017-12-11,2628,tcu,TCU Horned Frogs,14,20,718.0
+2018,6,2017-12-11,2550,hall,Seton Hall Pirates,15,19,704.0
+2018,6,2017-12-11,258,uva,Virginia Cavaliers,16,15,690.0
+2018,6,2017-12-11,2509,pur,Purdue Boilermakers,17,21,568.0
+2018,6,2017-12-11,87,nd,Notre Dame Fighting Irish,18,9,564.0
+2018,6,2017-12-11,52,fsu,Florida State Seminoles,19,0,452.0
+2018,6,2017-12-11,2633,tenn,Tennessee Volunteers,20,24,342.0
+2018,6,2017-12-11,239,bay,Baylor Bears,21,23,281.0
+2018,6,2017-12-11,57,fla,Florida Gators,22,5,261.0
+2018,6,2017-12-11,12,ariz,Arizona Wildcats,23,0,252.0
+2018,6,2017-12-11,2641,ttu,Texas Tech Red Raiders,24,0,191.0
+2018,6,2017-12-11,2132,cin,Cincinnati Bearcats,25,17,145.0
+2018,7,2017-12-18,222,vill,Villanova Wildcats,1,1,1602.0
+2018,7,2017-12-18,127,msu,Michigan State Spartans,2,2,1560.0
+2018,7,2017-12-18,9,asu,Arizona State Sun Devils,3,5,1429.0
+2018,7,2017-12-18,150,duke,Duke Blue Devils,4,4,1390.0
+2018,7,2017-12-18,153,unc,North Carolina Tar Heels,5,7,1332.0
+2018,7,2017-12-18,2390,mia,Miami Hurricanes,6,6,1308.0
+2018,7,2017-12-18,96,uk,Kentucky Wildcats,7,8,1231.0
+2018,7,2017-12-18,245,ta&m,Texas A&M Aggies,8,9,1156.0
+2018,7,2017-12-18,2752,xav,Xavier Musketeers,9,10,1073.0
+2018,7,2017-12-18,277,wvu,West Virginia Mountaineers,10,11,1040.0
+2018,7,2017-12-18,2724,wich,Wichita State Shockers,11,3,851.0
+2018,7,2017-12-18,2250,gonz,Gonzaga Bulldogs,12,12,831.0
+2018,7,2017-12-18,258,uva,Virginia Cavaliers,13,16,796.0
+2018,7,2017-12-18,2305,ku,Kansas Jayhawks,14,13,791.0
+2018,7,2017-12-18,2628,tcu,TCU Horned Frogs,15,14,789.0
+2018,7,2017-12-18,2509,pur,Purdue Boilermakers,16,17,706.0
+2018,7,2017-12-18,201,ou,Oklahoma Sooners,17,0,691.0
+2018,7,2017-12-18,239,bay,Baylor Bears,18,21,396.0
+2018,7,2017-12-18,12,ariz,Arizona Wildcats,18,23,396.0
+2018,7,2017-12-18,2132,cin,Cincinnati Bearcats,20,25,314.0
+2018,7,2017-12-18,2641,ttu,Texas Tech Red Raiders,21,24,308.0
+2018,7,2017-12-18,2633,tenn,Tennessee Volunteers,21,20,308.0
+2018,7,2017-12-18,2550,hall,Seton Hall Pirates,23,15,223.0
+2018,7,2017-12-18,52,fsu,Florida State Seminoles,24,19,164.0
+2018,7,2017-12-18,156,crei,Creighton Bluejays,25,0,144.0
+2018,8,2017-12-25,222,vill,Villanova Wildcats,1,1,1600.0
+2018,8,2017-12-25,127,msu,Michigan State Spartans,2,2,1560.0
+2018,8,2017-12-25,9,asu,Arizona State Sun Devils,3,3,1481.0
+2018,8,2017-12-25,150,duke,Duke Blue Devils,4,4,1435.0
+2018,8,2017-12-25,245,ta&m,Texas A&M Aggies,5,8,1309.0
+2018,8,2017-12-25,2752,xav,Xavier Musketeers,6,9,1242.0
+2018,8,2017-12-25,277,wvu,West Virginia Mountaineers,7,10,1226.0
+2018,8,2017-12-25,2724,wich,Wichita State Shockers,8,11,992.0
+2018,8,2017-12-25,258,uva,Virginia Cavaliers,9,13,969.0
+2018,8,2017-12-25,2628,tcu,TCU Horned Frogs,10,15,923.0
+2018,8,2017-12-25,2305,ku,Kansas Jayhawks,11,14,920.0
+2018,8,2017-12-25,201,ou,Oklahoma Sooners,12,17,901.0
+2018,8,2017-12-25,153,unc,North Carolina Tar Heels,13,5,891.0
+2018,8,2017-12-25,2509,pur,Purdue Boilermakers,14,16,839.0
+2018,8,2017-12-25,2390,mia,Miami Hurricanes,15,6,827.0
+2018,8,2017-12-25,96,uk,Kentucky Wildcats,16,7,735.0
+2018,8,2017-12-25,12,ariz,Arizona Wildcats,17,18,511.0
+2018,8,2017-12-25,239,bay,Baylor Bears,18,18,437.0
+2018,8,2017-12-25,2633,tenn,Tennessee Volunteers,19,21,405.0
+2018,8,2017-12-25,2250,gonz,Gonzaga Bulldogs,20,12,382.0
+2018,8,2017-12-25,2132,cin,Cincinnati Bearcats,21,20,377.0
+2018,8,2017-12-25,2641,ttu,Texas Tech Red Raiders,22,21,351.0
+2018,8,2017-12-25,2550,hall,Seton Hall Pirates,23,23,227.0
+2018,8,2017-12-25,52,fsu,Florida State Seminoles,24,24,169.0
+2018,8,2017-12-25,156,crei,Creighton Bluejays,25,25,143.0
+2018,9,2018-01-01,127,msu,Michigan State Spartans,1,2,1600.0
+2018,9,2018-01-01,150,duke,Duke Blue Devils,2,4,1556.0
+2018,9,2018-01-01,222,vill,Villanova Wildcats,3,1,1444.0
+2018,9,2018-01-01,9,asu,Arizona State Sun Devils,4,3,1336.0
+2018,9,2018-01-01,2752,xav,Xavier Musketeers,5,6,1325.0
+2018,9,2018-01-01,277,wvu,West Virginia Mountaineers,6,7,1304.0
+2018,9,2018-01-01,201,ou,Oklahoma Sooners,7,12,1160.0
+2018,9,2018-01-01,258,uva,Virginia Cavaliers,8,9,1048.0
+2018,9,2018-01-01,2724,wich,Wichita State Shockers,9,8,1026.0
+2018,9,2018-01-01,2305,ku,Kansas Jayhawks,10,11,963.0
+2018,9,2018-01-01,245,ta&m,Texas A&M Aggies,11,5,894.0
+2018,9,2018-01-01,153,unc,North Carolina Tar Heels,12,13,890.0
+2018,9,2018-01-01,2509,pur,Purdue Boilermakers,13,14,883.0
+2018,9,2018-01-01,12,ariz,Arizona Wildcats,14,17,832.0
+2018,9,2018-01-01,2390,mia,Miami Hurricanes,15,15,782.0
+2018,9,2018-01-01,2628,tcu,TCU Horned Frogs,16,10,760.0
+2018,9,2018-01-01,96,uk,Kentucky Wildcats,17,16,742.0
+2018,9,2018-01-01,2641,ttu,Texas Tech Red Raiders,18,22,483.0
+2018,9,2018-01-01,2250,gonz,Gonzaga Bulldogs,19,20,410.0
+2018,9,2018-01-01,2132,cin,Cincinnati Bearcats,19,21,410.0
+2018,9,2018-01-01,2550,hall,Seton Hall Pirates,21,23,353.0
+2018,9,2018-01-01,8,ark,Arkansas Razorbacks,22,0,254.0
+2018,9,2018-01-01,2633,tenn,Tennessee Volunteers,23,19,198.0
+2018,9,2018-01-01,52,fsu,Florida State Seminoles,24,24,119.0
+2018,9,2018-01-01,228,clem,Clemson Tigers,25,0,104.0
+2018,10,2018-01-08,222,vill,Villanova Wildcats,1,3,1611.0
+2018,10,2018-01-08,277,wvu,West Virginia Mountaineers,2,6,1559.0
+2018,10,2018-01-08,258,uva,Virginia Cavaliers,3,8,1438.0
+2018,10,2018-01-08,127,msu,Michigan State Spartans,4,1,1390.0
+2018,10,2018-01-08,2724,wich,Wichita State Shockers,5,9,1225.0
+2018,10,2018-01-08,2509,pur,Purdue Boilermakers,5,13,1225.0
+2018,10,2018-01-08,150,duke,Duke Blue Devils,7,2,1222.0
+2018,10,2018-01-08,2641,ttu,Texas Tech Red Raiders,8,18,1174.0
+2018,10,2018-01-08,201,ou,Oklahoma Sooners,9,7,1152.0
+2018,10,2018-01-08,2752,xav,Xavier Musketeers,10,5,1050.0
+2018,10,2018-01-08,9,asu,Arizona State Sun Devils,11,4,1036.0
+2018,10,2018-01-08,2305,ku,Kansas Jayhawks,12,10,888.0
+2018,10,2018-01-08,2550,hall,Seton Hall Pirates,13,21,759.0
+2018,10,2018-01-08,2132,cin,Cincinnati Bearcats,14,19,739.0
+2018,10,2018-01-08,2250,gonz,Gonzaga Bulldogs,15,19,676.0
+2018,10,2018-01-08,2628,tcu,TCU Horned Frogs,16,16,621.0
+2018,10,2018-01-08,12,ariz,Arizona Wildcats,17,14,537.0
+2018,10,2018-01-08,2390,mia,Miami Hurricanes,18,15,502.0
+2018,10,2018-01-08,228,clem,Clemson Tigers,19,25,465.0
+2018,10,2018-01-08,153,unc,North Carolina Tar Heels,20,12,423.0
+2018,10,2018-01-08,96,uk,Kentucky Wildcats,21,17,314.0
+2018,10,2018-01-08,2,aub,Auburn Tigers,22,0,243.0
+2018,10,2018-01-08,52,fsu,Florida State Seminoles,23,24,202.0
+2018,10,2018-01-08,2633,tenn,Tennessee Volunteers,24,23,198.0
+2018,10,2018-01-08,156,crei,Creighton Bluejays,25,0,160.0
+2018,11,2018-01-15,222,vill,Villanova Wildcats,1,1,1623.0
+2018,11,2018-01-15,258,uva,Virginia Cavaliers,2,3,1527.0
+2018,11,2018-01-15,2509,pur,Purdue Boilermakers,3,5,1411.0
+2018,11,2018-01-15,201,ou,Oklahoma Sooners,4,9,1371.0
+2018,11,2018-01-15,150,duke,Duke Blue Devils,5,7,1319.0
+2018,11,2018-01-15,277,wvu,West Virginia Mountaineers,6,2,1304.0
+2018,11,2018-01-15,2724,wich,Wichita State Shockers,7,5,1283.0
+2018,11,2018-01-15,2641,ttu,Texas Tech Red Raiders,8,8,1276.0
+2018,11,2018-01-15,127,msu,Michigan State Spartans,9,4,1062.0
+2018,11,2018-01-15,2305,ku,Kansas Jayhawks,10,12,1032.0
+2018,11,2018-01-15,2752,xav,Xavier Musketeers,11,10,928.0
+2018,11,2018-01-15,2132,cin,Cincinnati Bearcats,12,14,858.0
+2018,11,2018-01-15,2250,gonz,Gonzaga Bulldogs,13,15,829.0
+2018,11,2018-01-15,12,ariz,Arizona Wildcats,14,17,723.0
+2018,11,2018-01-15,153,unc,North Carolina Tar Heels,15,20,666.0
+2018,11,2018-01-15,9,asu,Arizona State Sun Devils,16,11,639.0
+2018,11,2018-01-15,2,aub,Auburn Tigers,17,22,523.0
+2018,11,2018-01-15,96,uk,Kentucky Wildcats,18,21,487.0
+2018,11,2018-01-15,2550,hall,Seton Hall Pirates,19,13,455.0
+2018,11,2018-01-15,228,clem,Clemson Tigers,20,19,444.0
+2018,11,2018-01-15,2633,tenn,Tennessee Volunteers,21,24,358.0
+2018,11,2018-01-15,194,osu,Ohio State Buckeyes,22,0,276.0
+2018,11,2018-01-15,130,mich,Michigan Wolverines,23,0,233.0
+2018,11,2018-01-15,2628,tcu,TCU Horned Frogs,24,16,196.0
+2018,11,2018-01-15,2390,mia,Miami Hurricanes,25,18,143.0
+2018,12,2018-01-22,222,vill,Villanova Wildcats,1,1,1623.0
+2018,12,2018-01-22,258,uva,Virginia Cavaliers,2,2,1537.0
+2018,12,2018-01-22,2509,pur,Purdue Boilermakers,3,3,1499.0
+2018,12,2018-01-22,150,duke,Duke Blue Devils,4,5,1439.0
+2018,12,2018-01-22,2305,ku,Kansas Jayhawks,5,10,1338.0
+2018,12,2018-01-22,127,msu,Michigan State Spartans,6,9,1243.0
+2018,12,2018-01-22,277,wvu,West Virginia Mountaineers,7,6,1217.0
+2018,12,2018-01-22,2752,xav,Xavier Musketeers,8,11,1180.0
+2018,12,2018-01-22,2132,cin,Cincinnati Bearcats,9,12,1087.0
+2018,12,2018-01-22,153,unc,North Carolina Tar Heels,10,15,1014.0
+2018,12,2018-01-22,12,ariz,Arizona Wildcats,11,14,974.0
+2018,12,2018-01-22,201,ou,Oklahoma Sooners,12,4,917.0
+2018,12,2018-01-22,194,osu,Ohio State Buckeyes,13,22,787.0
+2018,12,2018-01-22,2641,ttu,Texas Tech Red Raiders,14,8,763.0
+2018,12,2018-01-22,2250,gonz,Gonzaga Bulldogs,15,13,610.0
+2018,12,2018-01-22,2608,smc,Saint Mary's Gaels,16,0,571.0
+2018,12,2018-01-22,2724,wich,Wichita State Shockers,17,7,547.0
+2018,12,2018-01-22,228,clem,Clemson Tigers,18,20,474.0
+2018,12,2018-01-22,2,aub,Auburn Tigers,19,17,470.0
+2018,12,2018-01-22,57,fla,Florida Gators,20,0,366.0
+2018,12,2018-01-22,9,asu,Arizona State Sun Devils,21,16,353.0
+2018,12,2018-01-22,2633,tenn,Tennessee Volunteers,22,21,260.0
+2018,12,2018-01-22,2440,nev,Nevada Wolf Pack,23,0,190.0
+2018,12,2018-01-22,227,uri,Rhode Island Rams,24,0,189.0
+2018,12,2018-01-22,130,mich,Michigan Wolverines,25,23,123.0
+2018,13,2018-01-29,222,vill,Villanova Wildcats,1,1,1607.0
+2018,13,2018-01-29,258,uva,Virginia Cavaliers,2,2,1572.0
+2018,13,2018-01-29,2509,pur,Purdue Boilermakers,3,3,1501.0
+2018,13,2018-01-29,150,duke,Duke Blue Devils,4,4,1372.0
+2018,13,2018-01-29,127,msu,Michigan State Spartans,5,6,1347.0
+2018,13,2018-01-29,2752,xav,Xavier Musketeers,6,8,1278.0
+2018,13,2018-01-29,2305,ku,Kansas Jayhawks,7,5,1224.0
+2018,13,2018-01-29,2132,cin,Cincinnati Bearcats,8,9,1208.0
+2018,13,2018-01-29,12,ariz,Arizona Wildcats,9,11,1103.0
+2018,13,2018-01-29,2641,ttu,Texas Tech Red Raiders,10,14,987.0
+2018,13,2018-01-29,2,aub,Auburn Tigers,11,19,882.0
+2018,13,2018-01-29,201,ou,Oklahoma Sooners,12,12,840.0
+2018,13,2018-01-29,2608,smc,Saint Mary's Gaels,13,16,753.0
+2018,13,2018-01-29,2250,gonz,Gonzaga Bulldogs,14,15,750.0
+2018,13,2018-01-29,277,wvu,West Virginia Mountaineers,15,7,709.0
+2018,13,2018-01-29,2724,wich,Wichita State Shockers,16,17,635.0
+2018,13,2018-01-29,194,osu,Ohio State Buckeyes,17,13,566.0
+2018,13,2018-01-29,2633,tenn,Tennessee Volunteers,18,22,512.0
+2018,13,2018-01-29,153,unc,North Carolina Tar Heels,19,10,470.0
+2018,13,2018-01-29,228,clem,Clemson Tigers,20,18,414.0
+2018,13,2018-01-29,96,uk,Kentucky Wildcats,21,0,344.0
+2018,13,2018-01-29,227,uri,Rhode Island Rams,22,24,327.0
+2018,13,2018-01-29,57,fla,Florida Gators,23,20,172.0
+2018,13,2018-01-29,130,mich,Michigan Wolverines,24,25,103.0
+2018,13,2018-01-29,9,asu,Arizona State Sun Devils,25,21,100.0
+2018,14,2018-02-05,222,vill,Villanova Wildcats,1,1,1608.0
+2018,14,2018-02-05,258,uva,Virginia Cavaliers,2,2,1572.0
+2018,14,2018-02-05,2509,pur,Purdue Boilermakers,3,3,1500.0
+2018,14,2018-02-05,127,msu,Michigan State Spartans,4,5,1407.0
+2018,14,2018-02-05,2752,xav,Xavier Musketeers,5,6,1350.0
+2018,14,2018-02-05,2132,cin,Cincinnati Bearcats,6,8,1305.0
+2018,14,2018-02-05,2641,ttu,Texas Tech Red Raiders,7,10,1182.0
+2018,14,2018-02-05,2,aub,Auburn Tigers,8,11,1138.0
+2018,14,2018-02-05,150,duke,Duke Blue Devils,9,4,1075.0
+2018,14,2018-02-05,2305,ku,Kansas Jayhawks,10,7,1015.0
+2018,14,2018-02-05,2608,smc,Saint Mary's Gaels,11,13,895.0
+2018,14,2018-02-05,2250,gonz,Gonzaga Bulldogs,12,14,851.0
+2018,14,2018-02-05,12,ariz,Arizona Wildcats,13,9,816.0
+2018,14,2018-02-05,194,osu,Ohio State Buckeyes,14,17,747.0
+2018,14,2018-02-05,2633,tenn,Tennessee Volunteers,15,18,739.0
+2018,14,2018-02-05,228,clem,Clemson Tigers,16,20,720.0
+2018,14,2018-02-05,201,ou,Oklahoma Sooners,17,12,636.0
+2018,14,2018-02-05,227,uri,Rhode Island Rams,18,22,486.0
+2018,14,2018-02-05,277,wvu,West Virginia Mountaineers,19,15,457.0
+2018,14,2018-02-05,130,mich,Michigan Wolverines,20,24,331.0
+2018,14,2018-02-05,153,unc,North Carolina Tar Heels,21,19,304.0
+2018,14,2018-02-05,2724,wich,Wichita State Shockers,22,16,295.0
+2018,14,2018-02-05,2440,nev,Nevada Wolf Pack,23,0,205.0
+2018,14,2018-02-05,96,uk,Kentucky Wildcats,24,21,133.0
+2018,14,2018-02-05,2390,mia,Miami Hurricanes,25,0,76.0
+2018,15,2018-02-12,258,uva,Virginia Cavaliers,1,2,1557.0
+2018,15,2018-02-12,127,msu,Michigan State Spartans,2,4,1527.0
+2018,15,2018-02-12,222,vill,Villanova Wildcats,3,1,1518.0
+2018,15,2018-02-12,2752,xav,Xavier Musketeers,4,5,1465.0
+2018,15,2018-02-12,2132,cin,Cincinnati Bearcats,5,6,1359.0
+2018,15,2018-02-12,2509,pur,Purdue Boilermakers,6,3,1269.0
+2018,15,2018-02-12,2641,ttu,Texas Tech Red Raiders,7,7,1258.0
+2018,15,2018-02-12,194,osu,Ohio State Buckeyes,8,14,1094.0
+2018,15,2018-02-12,2250,gonz,Gonzaga Bulldogs,9,12,1063.0
+2018,15,2018-02-12,2,aub,Auburn Tigers,10,8,1025.0
+2018,15,2018-02-12,228,clem,Clemson Tigers,11,16,945.0
+2018,15,2018-02-12,150,duke,Duke Blue Devils,12,9,942.0
+2018,15,2018-02-12,2305,ku,Kansas Jayhawks,13,10,816.0
+2018,15,2018-02-12,153,unc,North Carolina Tar Heels,14,21,763.0
+2018,15,2018-02-12,2608,smc,Saint Mary's Gaels,15,11,683.0
+2018,15,2018-02-12,227,uri,Rhode Island Rams,16,18,666.0
+2018,15,2018-02-12,12,ariz,Arizona Wildcats,17,13,594.0
+2018,15,2018-02-12,2633,tenn,Tennessee Volunteers,18,15,580.0
+2018,15,2018-02-12,2724,wich,Wichita State Shockers,19,22,495.0
+2018,15,2018-02-12,277,wvu,West Virginia Mountaineers,20,19,339.0
+2018,15,2018-02-12,245,ta&m,Texas A&M Aggies,21,0,241.0
+2018,15,2018-02-12,130,mich,Michigan Wolverines,22,20,239.0
+2018,15,2018-02-12,201,ou,Oklahoma Sooners,23,17,152.0
+2018,15,2018-02-12,2440,nev,Nevada Wolf Pack,24,23,87.0
+2018,15,2018-02-12,9,asu,Arizona State Sun Devils,25,0,83.0
+2018,16,2018-02-19,258,uva,Virginia Cavaliers,1,1,1601.0
+2018,16,2018-02-19,127,msu,Michigan State Spartans,2,2,1565.0
+2018,16,2018-02-19,222,vill,Villanova Wildcats,3,3,1509.0
+2018,16,2018-02-19,2752,xav,Xavier Musketeers,4,4,1398.0
+2018,16,2018-02-19,150,duke,Duke Blue Devils,5,12,1292.0
+2018,16,2018-02-19,2641,ttu,Texas Tech Red Raiders,6,7,1206.0
+2018,16,2018-02-19,2250,gonz,Gonzaga Bulldogs,6,9,1206.0
+2018,16,2018-02-19,2305,ku,Kansas Jayhawks,8,13,1166.0
+2018,16,2018-02-19,2509,pur,Purdue Boilermakers,9,6,1130.0
+2018,16,2018-02-19,153,unc,North Carolina Tar Heels,10,14,1074.0
+2018,16,2018-02-19,2132,cin,Cincinnati Bearcats,11,5,954.0
+2018,16,2018-02-19,2,aub,Auburn Tigers,12,10,873.0
+2018,16,2018-02-19,2724,wich,Wichita State Shockers,13,19,870.0
+2018,16,2018-02-19,12,ariz,Arizona Wildcats,14,17,831.0
+2018,16,2018-02-19,228,clem,Clemson Tigers,15,11,683.0
+2018,16,2018-02-19,194,osu,Ohio State Buckeyes,16,8,680.0
+2018,16,2018-02-19,130,mich,Michigan Wolverines,17,22,615.0
+2018,16,2018-02-19,227,uri,Rhode Island Rams,18,16,455.0
+2018,16,2018-02-19,2633,tenn,Tennessee Volunteers,19,18,427.0
+2018,16,2018-02-19,2440,nev,Nevada Wolf Pack,20,24,330.0
+2018,16,2018-02-19,277,wvu,West Virginia Mountaineers,21,20,329.0
+2018,16,2018-02-19,2608,smc,Saint Mary's Gaels,22,15,291.0
+2018,16,2018-02-19,248,hou,Houston Cougars,23,0,263.0
+2018,16,2018-02-19,2393,mtsu,Middle Tennessee Blue Raiders,24,0,87.0
+2018,16,2018-02-19,52,fsu,Florida State Seminoles,25,0,63.0
+2018,17,2018-02-26,258,uva,Virginia Cavaliers,1,1,1608.0
+2018,17,2018-02-26,127,msu,Michigan State Spartans,2,2,1571.0
+2018,17,2018-02-26,2752,xav,Xavier Musketeers,3,4,1422.0
+2018,17,2018-02-26,222,vill,Villanova Wildcats,4,3,1416.0
+2018,17,2018-02-26,150,duke,Duke Blue Devils,5,5,1362.0
+2018,17,2018-02-26,2305,ku,Kansas Jayhawks,6,8,1272.0
+2018,17,2018-02-26,2250,gonz,Gonzaga Bulldogs,7,6,1231.0
+2018,17,2018-02-26,2509,pur,Purdue Boilermakers,8,9,1178.0
+2018,17,2018-02-26,153,unc,North Carolina Tar Heels,9,10,1140.0
+2018,17,2018-02-26,2132,cin,Cincinnati Bearcats,10,11,1013.0
+2018,17,2018-02-26,2724,wich,Wichita State Shockers,11,13,945.0
+2018,17,2018-02-26,2641,ttu,Texas Tech Red Raiders,12,6,887.0
+2018,17,2018-02-26,194,osu,Ohio State Buckeyes,13,16,791.0
+2018,17,2018-02-26,2,aub,Auburn Tigers,14,12,781.0
+2018,17,2018-02-26,130,mich,Michigan Wolverines,15,17,753.0
+2018,17,2018-02-26,2633,tenn,Tennessee Volunteers,16,19,564.0
+2018,17,2018-02-26,227,uri,Rhode Island Rams,17,18,558.0
+2018,17,2018-02-26,228,clem,Clemson Tigers,18,15,499.0
+2018,17,2018-02-26,12,ariz,Arizona Wildcats,19,14,450.0
+2018,17,2018-02-26,277,wvu,West Virginia Mountaineers,20,21,429.0
+2018,17,2018-02-26,2440,nev,Nevada Wolf Pack,21,20,386.0
+2018,17,2018-02-26,2608,smc,Saint Mary's Gaels,22,22,318.0
+2018,17,2018-02-26,96,uk,Kentucky Wildcats,23,0,174.0
+2018,17,2018-02-26,2393,mtsu,Middle Tennessee Blue Raiders,24,24,144.0
+2018,17,2018-02-26,248,hou,Houston Cougars,25,23,45.0
+2018,18,2018-03-05,258,uva,Virginia Cavaliers,1,1,1625.0
+2018,18,2018-03-05,222,vill,Villanova Wildcats,2,4,1516.0
+2018,18,2018-03-05,2752,xav,Xavier Musketeers,3,3,1510.0
+2018,18,2018-03-05,127,msu,Michigan State Spartans,4,2,1346.0
+2018,18,2018-03-05,150,duke,Duke Blue Devils,5,5,1340.0
+2018,18,2018-03-05,2250,gonz,Gonzaga Bulldogs,6,7,1254.0
+2018,18,2018-03-05,130,mich,Michigan Wolverines,7,15,1231.0
+2018,18,2018-03-05,2132,cin,Cincinnati Bearcats,8,10,1213.0
+2018,18,2018-03-05,2305,ku,Kansas Jayhawks,9,6,1129.0
+2018,18,2018-03-05,2509,pur,Purdue Boilermakers,10,8,1096.0
+2018,18,2018-03-05,2724,wich,Wichita State Shockers,11,11,861.0
+2018,18,2018-03-05,153,unc,North Carolina Tar Heels,12,9,852.0
+2018,18,2018-03-05,2633,tenn,Tennessee Volunteers,13,16,825.0
+2018,18,2018-03-05,2641,ttu,Texas Tech Red Raiders,14,12,784.0
+2018,18,2018-03-05,12,ariz,Arizona Wildcats,15,19,739.0
+2018,18,2018-03-05,2,aub,Auburn Tigers,16,14,692.0
+2018,18,2018-03-05,194,osu,Ohio State Buckeyes,17,13,603.0
+2018,18,2018-03-05,277,wvu,West Virginia Mountaineers,18,20,486.0
+2018,18,2018-03-05,228,clem,Clemson Tigers,19,18,422.0
+2018,18,2018-03-05,2608,smc,Saint Mary's Gaels,20,22,385.0
+2018,18,2018-03-05,248,hou,Houston Cougars,21,25,247.0
+2018,18,2018-03-05,2440,nev,Nevada Wolf Pack,22,21,218.0
+2018,18,2018-03-05,57,fla,Florida Gators,23,0,192.0
+2018,18,2018-03-05,2390,mia,Miami Hurricanes,24,0,191.0
+2018,18,2018-03-05,227,uri,Rhode Island Rams,25,17,86.0

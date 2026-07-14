@@ -119,7 +119,57 @@ def _odds_for_game(
         "spread_away_odds": _f("away_spread_odds", american=True),
         "total_line": _f("close_total", is_total=True),
         "books": _parse_n_books(row.get("n_books")),
+        "home_open_spread": _f("home_open_spread"),
+        "away_open_spread": _f("away_open_spread"),
+        "open_total": _f("open_total", is_total=True),
+        # Open ML not always in cbb.csv; when absent steam stays incomplete.
+        "home_open_ml": _f("home_open_ml", american=True),
+        "away_open_ml": _f("away_open_ml", american=True),
     }
+
+
+def _american_to_prob(ml: float) -> float:
+    if ml >= 0:
+        return 100.0 / (ml + 100.0)
+    return abs(ml) / (abs(ml) + 100.0)
+
+
+def _devig_pair(home_ml: float, away_ml: float) -> float:
+    ph = _american_to_prob(home_ml)
+    pa = _american_to_prob(away_ml)
+    tot = ph + pa
+    return ph / tot if tot > 0 else 0.5
+
+
+def _apply_market_features(features: dict[str, float], market: dict[str, Any]) -> bool:
+    """Overwrite market columns. Returns True when close ML+spread are complete."""
+    hml = market.get("home_ml")
+    aml = market.get("away_ml")
+    spread = market.get("home_spread")
+    if hml is None or aml is None or spread is None:
+        return False
+    mkt_p = _devig_pair(float(hml), float(aml))
+    features["has_market"] = 1.0
+    features["mkt_home_prob"] = mkt_p
+    features["has_spread"] = 1.0
+    features["mkt_home_spread"] = float(spread)
+    features["n_books"] = float(market.get("books") or 0)
+    total = market.get("total_line")
+    if total is not None:
+        features["total_line"] = float(total)
+        features["model_total_vs_line"] = float(features.get("exp_total_env", 0.0)) - float(total)
+    open_spread = market.get("home_open_spread")
+    if open_spread is not None:
+        features["has_open_line"] = 1.0
+        features["spread_move"] = float(spread) - float(open_spread)
+    open_h = market.get("home_open_ml")
+    open_a = market.get("away_open_ml")
+    if open_h is not None and open_a is not None:
+        open_p = _devig_pair(float(open_h), float(open_a))
+        features["ml_steam_pp"] = (mkt_p - open_p) * 100.0
+        features["has_steam"] = 1.0
+        features["has_open_line"] = 1.0
+    return True
 
 
 def main() -> int:
@@ -145,7 +195,25 @@ def main() -> int:
         action="store_true",
         help="Fetch missing ESPN summary boxes into .build-cache/cbb-history/{season}/boxes.json",
     )
+    parser.add_argument(
+        "--require-odds",
+        action="store_true",
+        default=True,
+        help="Only emit rows with complete closing ML+spread (no NA market features)",
+    )
+    parser.add_argument(
+        "--allow-missing-odds",
+        action="store_true",
+        help="Emit rows even without closing odds (market features stay placeholders)",
+    )
+    parser.add_argument(
+        "--min-games-played",
+        type=int,
+        default=3,
+        help="Skip tips until both teams have this many completed games (PIT state ready)",
+    )
     args = parser.parse_args()
+    require_odds = bool(args.require_odds) and not bool(args.allow_missing_odds)
 
     if args.end_season < args.start_season:
         print(
@@ -184,7 +252,17 @@ def main() -> int:
                 nonlocal emitted, rows_written
                 if int(game.get("season") or 0) < args.emit_from:
                     return
+                if float(features.get("games_played_min", 0.0)) < float(args.min_games_played):
+                    return
                 market = _odds_for_game(odds_index, game)
+                ok_market = _apply_market_features(features, market)
+                if require_odds and not ok_market:
+                    return
+                # Torvik columns must be finite (archive or ESPN proxy).
+                for col in FEATURE_COLUMNS:
+                    val = features.get(col)
+                    if val is None or not math.isfinite(float(val)):
+                        return
                 home_score = int(game["home_score"])
                 away_score = int(game["away_score"])
                 meta = [

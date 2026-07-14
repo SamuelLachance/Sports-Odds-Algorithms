@@ -1,0 +1,476 @@
+season,week,asof_date,team_id,team_abbr,team_name,rank,previous,points
+2026,1,2025-10-13,2509,pur,Purdue Boilermakers,1,0,1485.0
+2026,1,2025-10-13,248,hou,Houston Cougars,2,0,1459.0
+2026,1,2025-10-13,57,fla,Florida Gators,3,0,1382.0
+2026,1,2025-10-13,41,conn,UConn Huskies,4,0,1299.0
+2026,1,2025-10-13,2599,sju,St. John's Red Storm,5,0,1203.0
+2026,1,2025-10-13,150,duke,Duke Blue Devils,6,0,1123.0
+2026,1,2025-10-13,130,mich,Michigan Wolverines,7,0,1084.0
+2026,1,2025-10-13,252,byu,BYU Cougars,8,0,1078.0
+2026,1,2025-10-13,96,uk,Kentucky Wildcats,9,0,1056.0
+2026,1,2025-10-13,2641,ttu,Texas Tech Red Raiders,10,0,1015.0
+2026,1,2025-10-13,97,lou,Louisville Cardinals,11,0,966.0
+2026,1,2025-10-13,26,ucla,UCLA Bruins,12,0,741.0
+2026,1,2025-10-13,12,ariz,Arizona Wildcats,13,0,715.0
+2026,1,2025-10-13,8,ark,Arkansas Razorbacks,14,0,695.0
+2026,1,2025-10-13,333,ala,Alabama Crimson Tide,15,0,620.0
+2026,1,2025-10-13,66,isu,Iowa State Cyclones,16,0,616.0
+2026,1,2025-10-13,356,ill,Illinois Fighting Illini,17,0,567.0
+2026,1,2025-10-13,2633,tenn,Tennessee Volunteers,18,0,462.0
+2026,1,2025-10-13,2305,ku,Kansas Jayhawks,19,0,453.0
+2026,1,2025-10-13,2,aub,Auburn Tigers,20,0,424.0
+2026,1,2025-10-13,2250,gonz,Gonzaga Bulldogs,21,0,387.0
+2026,1,2025-10-13,127,msu,Michigan State Spartans,22,0,188.0
+2026,1,2025-10-13,156,crei,Creighton Bluejays,23,0,158.0
+2026,1,2025-10-13,275,wis,Wisconsin Badgers,24,0,136.0
+2026,1,2025-10-13,153,unc,North Carolina Tar Heels,25,0,104.0
+2026,2,2026-04-07,130,mich,Michigan Wolverines,1,3,1425.0
+2026,2,2026-04-07,41,conn,UConn Huskies,2,7,1352.0
+2026,2,2026-04-07,12,ariz,Arizona Wildcats,3,2,1311.0
+2026,2,2026-04-07,150,duke,Duke Blue Devils,4,1,1237.0
+2026,2,2026-04-07,356,ill,Illinois Fighting Illini,5,13,1228.0
+2026,2,2026-04-07,2509,pur,Purdue Boilermakers,6,8,1113.0
+2026,2,2026-04-07,248,hou,Houston Cougars,7,5,1021.0
+2026,2,2026-04-07,66,isu,Iowa State Cyclones,8,6,924.0
+2026,2,2026-04-07,57,fla,Florida Gators,9,4,909.0
+2026,2,2026-04-07,2599,sju,St. John's Red Storm,10,10,891.0
+2026,2,2026-04-07,127,msu,Michigan State Spartans,11,11,865.0
+2026,2,2026-04-07,2633,tenn,Tennessee Volunteers,12,23,756.0
+2026,2,2026-04-07,8,ark,Arkansas Razorbacks,13,14,716.0
+2026,2,2026-04-07,158,neb,Nebraska Cornhuskers,14,15,696.0
+2026,2,2026-04-07,2294,iowa,Iowa Hawkeyes,15,0,620.0
+2026,2,2026-04-07,333,ala,Alabama Crimson Tide,16,18,617.0
+2026,2,2026-04-07,258,uva,Virginia Cavaliers,17,9,530.0
+2026,2,2026-04-07,2250,gonz,Gonzaga Bulldogs,18,12,459.0
+2026,2,2026-04-07,238,van,Vanderbilt Commodores,19,16,445.0
+2026,2,2026-04-07,2305,ku,Kansas Jayhawks,20,17,330.0
+2026,2,2026-04-07,2641,ttu,Texas Tech Red Raiders,21,20,244.0
+2026,2,2026-04-07,251,tex,Texas Longhorns,22,0,216.0
+2026,2,2026-04-07,97,lou,Louisville Cardinals,23,23,150.0
+2026,2,2026-04-07,2390,mia,Miami Hurricanes,24,25,89.0
+2026,2,2026-04-07,275,wis,Wisconsin Badgers,25,19,70.0
+2026,3,2025-11-17,2509,pur,Purdue Boilermakers,1,2,1502.0
+2026,3,2025-11-17,248,hou,Houston Cougars,2,1,1457.0
+2026,3,2025-11-17,41,conn,UConn Huskies,3,3,1389.0
+2026,3,2025-11-17,12,ariz,Arizona Wildcats,4,5,1314.0
+2026,3,2025-11-17,150,duke,Duke Blue Devils,5,4,1277.0
+2026,3,2025-11-17,97,lou,Louisville Cardinals,6,12,1161.0
+2026,3,2025-11-17,130,mich,Michigan Wolverines,7,6,1103.0
+2026,3,2025-11-17,356,ill,Illinois Fighting Illini,8,14,1017.0
+2026,3,2025-11-17,252,byu,BYU Cougars,9,7,972.0
+2026,3,2025-11-17,57,fla,Florida Gators,10,10,949.0
+2026,3,2025-11-17,333,ala,Alabama Crimson Tide,11,8,928.0
+2026,3,2025-11-17,96,uk,Kentucky Wildcats,12,9,798.0
+2026,3,2025-11-17,2250,gonz,Gonzaga Bulldogs,13,19,772.0
+2026,3,2025-11-17,2599,sju,St. John's Red Storm,14,13,732.0
+2026,3,2025-11-17,2641,ttu,Texas Tech Red Raiders,15,11,678.0
+2026,3,2025-11-17,66,isu,Iowa State Cyclones,16,16,664.0
+2026,3,2025-11-17,127,msu,Michigan State Spartans,17,17,585.0
+2026,3,2025-11-17,153,unc,North Carolina Tar Heels,18,18,516.0
+2026,3,2025-11-17,26,ucla,UCLA Bruins,19,15,423.0
+2026,3,2025-11-17,2633,tenn,Tennessee Volunteers,20,20,416.0
+2026,3,2025-11-17,8,ark,Arkansas Razorbacks,21,21,247.0
+2026,3,2025-11-17,2,aub,Auburn Tigers,22,22,188.0
+2026,3,2025-11-17,275,wis,Wisconsin Badgers,23,24,180.0
+2026,3,2025-11-17,2305,ku,Kansas Jayhawks,24,25,132.0
+2026,3,2025-11-17,152,ncsu,NC State Wolfpack,25,0,97.0
+2026,4,2025-11-24,2509,pur,Purdue Boilermakers,1,1,1509.0
+2026,4,2025-11-24,12,ariz,Arizona Wildcats,2,4,1439.0
+2026,4,2025-11-24,248,hou,Houston Cougars,3,2,1425.0
+2026,4,2025-11-24,150,duke,Duke Blue Devils,4,5,1319.0
+2026,4,2025-11-24,41,conn,UConn Huskies,5,3,1208.0
+2026,4,2025-11-24,97,lou,Louisville Cardinals,6,6,1201.0
+2026,4,2025-11-24,130,mich,Michigan Wolverines,7,7,1080.0
+2026,4,2025-11-24,333,ala,Alabama Crimson Tide,8,11,1070.0
+2026,4,2025-11-24,252,byu,BYU Cougars,9,9,1033.0
+2026,4,2025-11-24,57,fla,Florida Gators,10,10,961.0
+2026,4,2025-11-24,127,msu,Michigan State Spartans,11,17,879.0
+2026,4,2025-11-24,2250,gonz,Gonzaga Bulldogs,12,13,863.0
+2026,4,2025-11-24,356,ill,Illinois Fighting Illini,13,8,830.0
+2026,4,2025-11-24,2599,sju,St. John's Red Storm,14,14,743.0
+2026,4,2025-11-24,66,isu,Iowa State Cyclones,15,16,706.0
+2026,4,2025-11-24,153,unc,North Carolina Tar Heels,16,18,595.0
+2026,4,2025-11-24,2633,tenn,Tennessee Volunteers,17,20,495.0
+2026,4,2025-11-24,26,ucla,UCLA Bruins,18,19,488.0
+2026,4,2025-11-24,96,uk,Kentucky Wildcats,19,12,394.0
+2026,4,2025-11-24,2641,ttu,Texas Tech Red Raiders,20,15,319.0
+2026,4,2025-11-24,2,aub,Auburn Tigers,21,22,269.0
+2026,4,2025-11-24,8,ark,Arkansas Razorbacks,22,21,260.0
+2026,4,2025-11-24,152,ncsu,NC State Wolfpack,23,25,214.0
+2026,4,2025-11-24,238,van,Vanderbilt Commodores,24,0,111.0
+2026,4,2025-11-24,84,iu,Indiana Hoosiers,25,0,100.0
+2026,5,2025-12-01,2509,pur,Purdue Boilermakers,1,1,1494.0
+2026,5,2025-12-01,12,ariz,Arizona Wildcats,2,2,1442.0
+2026,5,2025-12-01,130,mich,Michigan Wolverines,3,7,1417.0
+2026,5,2025-12-01,150,duke,Duke Blue Devils,4,4,1355.0
+2026,5,2025-12-01,41,conn,UConn Huskies,5,5,1244.0
+2026,5,2025-12-01,97,lou,Louisville Cardinals,6,6,1177.0
+2026,5,2025-12-01,127,msu,Michigan State Spartans,7,11,1095.0
+2026,5,2025-12-01,248,hou,Houston Cougars,8,3,1085.0
+2026,5,2025-12-01,252,byu,BYU Cougars,9,9,1036.0
+2026,5,2025-12-01,66,isu,Iowa State Cyclones,10,15,975.0
+2026,5,2025-12-01,2250,gonz,Gonzaga Bulldogs,11,12,934.0
+2026,5,2025-12-01,333,ala,Alabama Crimson Tide,12,8,868.0
+2026,5,2025-12-01,2633,tenn,Tennessee Volunteers,13,17,771.0
+2026,5,2025-12-01,356,ill,Illinois Fighting Illini,14,13,656.0
+2026,5,2025-12-01,57,fla,Florida Gators,15,10,567.0
+2026,5,2025-12-01,153,unc,North Carolina Tar Heels,16,16,518.0
+2026,5,2025-12-01,238,van,Vanderbilt Commodores,17,24,474.0
+2026,5,2025-12-01,96,uk,Kentucky Wildcats,18,19,451.0
+2026,5,2025-12-01,2641,ttu,Texas Tech Red Raiders,19,20,386.0
+2026,5,2025-12-01,2,aub,Auburn Tigers,20,21,375.0
+2026,5,2025-12-01,2305,ku,Kansas Jayhawks,21,0,339.0
+2026,5,2025-12-01,84,iu,Indiana Hoosiers,22,25,312.0
+2026,5,2025-12-01,2599,sju,St. John's Red Storm,23,14,200.0
+2026,5,2025-12-01,30,usc,USC Trojans,24,0,144.0
+2026,5,2025-12-01,8,ark,Arkansas Razorbacks,25,22,127.0
+2026,6,2025-12-08,12,ariz,Arizona Wildcats,1,2,1461.0
+2026,6,2025-12-08,130,mich,Michigan Wolverines,2,3,1440.0
+2026,6,2025-12-08,150,duke,Duke Blue Devils,3,4,1400.0
+2026,6,2025-12-08,66,isu,Iowa State Cyclones,4,10,1304.0
+2026,6,2025-12-08,41,conn,UConn Huskies,5,5,1263.0
+2026,6,2025-12-08,2509,pur,Purdue Boilermakers,6,1,1173.0
+2026,6,2025-12-08,248,hou,Houston Cougars,7,8,1064.0
+2026,6,2025-12-08,2250,gonz,Gonzaga Bulldogs,8,11,1054.0
+2026,6,2025-12-08,127,msu,Michigan State Spartans,9,7,1017.0
+2026,6,2025-12-08,252,byu,BYU Cougars,10,9,1007.0
+2026,6,2025-12-08,97,lou,Louisville Cardinals,11,6,877.0
+2026,6,2025-12-08,333,ala,Alabama Crimson Tide,12,12,854.0
+2026,6,2025-12-08,356,ill,Illinois Fighting Illini,13,14,771.0
+2026,6,2025-12-08,153,unc,North Carolina Tar Heels,14,16,724.0
+2026,6,2025-12-08,238,van,Vanderbilt Commodores,15,17,686.0
+2026,6,2025-12-08,2641,ttu,Texas Tech Red Raiders,16,19,508.0
+2026,6,2025-12-08,8,ark,Arkansas Razorbacks,17,25,488.0
+2026,6,2025-12-08,57,fla,Florida Gators,18,15,422.0
+2026,6,2025-12-08,2305,ku,Kansas Jayhawks,19,21,380.0
+2026,6,2025-12-08,2633,tenn,Tennessee Volunteers,20,13,286.0
+2026,6,2025-12-08,2,aub,Auburn Tigers,21,20,264.0
+2026,6,2025-12-08,2599,sju,St. John's Red Storm,22,23,254.0
+2026,6,2025-12-08,158,neb,Nebraska Cornhuskers,23,0,180.0
+2026,6,2025-12-08,258,uva,Virginia Cavaliers,24,0,130.0
+2026,6,2025-12-08,26,ucla,UCLA Bruins,25,0,79.0
+2026,7,2025-12-15,12,ariz,Arizona Wildcats,1,1,1500.0
+2026,7,2025-12-15,130,mich,Michigan Wolverines,2,2,1470.0
+2026,7,2025-12-15,150,duke,Duke Blue Devils,3,3,1406.0
+2026,7,2025-12-15,66,isu,Iowa State Cyclones,4,4,1336.0
+2026,7,2025-12-15,41,conn,UConn Huskies,5,5,1286.0
+2026,7,2025-12-15,2509,pur,Purdue Boilermakers,6,6,1195.0
+2026,7,2025-12-15,2250,gonz,Gonzaga Bulldogs,7,8,1109.0
+2026,7,2025-12-15,248,hou,Houston Cougars,8,7,1079.0
+2026,7,2025-12-15,127,msu,Michigan State Spartans,9,9,1037.0
+2026,7,2025-12-15,252,byu,BYU Cougars,10,10,1017.0
+2026,7,2025-12-15,97,lou,Louisville Cardinals,11,11,921.0
+2026,7,2025-12-15,153,unc,North Carolina Tar Heels,12,14,794.0
+2026,7,2025-12-15,238,van,Vanderbilt Commodores,13,15,766.0
+2026,7,2025-12-15,8,ark,Arkansas Razorbacks,14,17,726.0
+2026,7,2025-12-15,158,neb,Nebraska Cornhuskers,15,23,655.0
+2026,7,2025-12-15,333,ala,Alabama Crimson Tide,16,12,644.0
+2026,7,2025-12-15,2305,ku,Kansas Jayhawks,17,19,502.0
+2026,7,2025-12-15,356,ill,Illinois Fighting Illini,18,13,483.0
+2026,7,2025-12-15,2641,ttu,Texas Tech Red Raiders,19,16,314.0
+2026,7,2025-12-15,2633,tenn,Tennessee Volunteers,20,20,286.0
+2026,7,2025-12-15,2,aub,Auburn Tigers,21,21,283.0
+2026,7,2025-12-15,2599,sju,St. John's Red Storm,22,22,250.0
+2026,7,2025-12-15,258,uva,Virginia Cavaliers,23,24,200.0
+2026,7,2025-12-15,57,fla,Florida Gators,23,18,200.0
+2026,7,2025-12-15,61,uga,Georgia Bulldogs,25,0,82.0
+2026,8,2025-12-22,12,ariz,Arizona Wildcats,1,1,1428.0
+2026,8,2025-12-22,130,mich,Michigan Wolverines,2,2,1408.0
+2026,8,2025-12-22,66,isu,Iowa State Cyclones,3,4,1320.0
+2026,8,2025-12-22,41,conn,UConn Huskies,4,5,1281.0
+2026,8,2025-12-22,2509,pur,Purdue Boilermakers,5,6,1174.0
+2026,8,2025-12-22,150,duke,Duke Blue Devils,6,3,1148.0
+2026,8,2025-12-22,2250,gonz,Gonzaga Bulldogs,7,7,1080.0
+2026,8,2025-12-22,248,hou,Houston Cougars,8,8,1061.0
+2026,8,2025-12-22,127,msu,Michigan State Spartans,9,9,985.0
+2026,8,2025-12-22,252,byu,BYU Cougars,10,10,966.0
+2026,8,2025-12-22,238,van,Vanderbilt Commodores,11,13,810.0
+2026,8,2025-12-22,153,unc,North Carolina Tar Heels,12,12,806.0
+2026,8,2025-12-22,158,neb,Nebraska Cornhuskers,13,15,704.0
+2026,8,2025-12-22,333,ala,Alabama Crimson Tide,14,16,638.0
+2026,8,2025-12-22,2641,ttu,Texas Tech Red Raiders,15,19,588.0
+2026,8,2025-12-22,97,lou,Louisville Cardinals,16,11,555.0
+2026,8,2025-12-22,2305,ku,Kansas Jayhawks,17,17,494.0
+2026,8,2025-12-22,8,ark,Arkansas Razorbacks,18,14,470.0
+2026,8,2025-12-22,2633,tenn,Tennessee Volunteers,19,20,460.0
+2026,8,2025-12-22,356,ill,Illinois Fighting Illini,20,18,429.0
+2026,8,2025-12-22,258,uva,Virginia Cavaliers,21,23,252.0
+2026,8,2025-12-22,57,fla,Florida Gators,22,23,215.0
+2026,8,2025-12-22,61,uga,Georgia Bulldogs,23,25,127.0
+2026,8,2025-12-22,30,usc,USC Trojans,24,0,92.0
+2026,8,2025-12-22,2294,iowa,Iowa Hawkeyes,25,0,79.0
+2026,10,2026-01-05,12,ariz,Arizona Wildcats,1,1,1494.0
+2026,10,2026-01-05,130,mich,Michigan Wolverines,2,2,1493.0
+2026,10,2026-01-05,66,isu,Iowa State Cyclones,3,3,1390.0
+2026,10,2026-01-05,41,conn,UConn Huskies,4,4,1343.0
+2026,10,2026-01-05,2509,pur,Purdue Boilermakers,5,5,1254.0
+2026,10,2026-01-05,150,duke,Duke Blue Devils,6,6,1206.0
+2026,10,2026-01-05,248,hou,Houston Cougars,7,8,1113.0
+2026,10,2026-01-05,2250,gonz,Gonzaga Bulldogs,8,7,1101.0
+2026,10,2026-01-05,252,byu,BYU Cougars,9,10,1039.0
+2026,10,2026-01-05,158,neb,Nebraska Cornhuskers,10,13,998.0
+2026,10,2026-01-05,238,van,Vanderbilt Commodores,11,11,936.0
+2026,10,2026-01-05,127,msu,Michigan State Spartans,12,9,834.0
+2026,10,2026-01-05,333,ala,Alabama Crimson Tide,13,14,782.0
+2026,10,2026-01-05,2641,ttu,Texas Tech Red Raiders,14,15,676.0
+2026,10,2026-01-05,8,ark,Arkansas Razorbacks,15,18,659.0
+2026,10,2026-01-05,356,ill,Illinois Fighting Illini,16,20,602.0
+2026,10,2026-01-05,153,unc,North Carolina Tar Heels,17,12,557.0
+2026,10,2026-01-05,61,uga,Georgia Bulldogs,18,23,378.0
+2026,10,2026-01-05,2294,iowa,Iowa Hawkeyes,19,25,340.0
+2026,10,2026-01-05,97,lou,Louisville Cardinals,20,16,336.0
+2026,10,2026-01-05,2633,tenn,Tennessee Volunteers,21,19,277.0
+2026,10,2026-01-05,2305,ku,Kansas Jayhawks,22,17,208.0
+2026,10,2026-01-05,258,uva,Virginia Cavaliers,23,21,183.0
+2026,10,2026-01-05,2567,smu,SMU Mustangs,24,0,142.0
+2026,10,2026-01-05,2116,ucf,UCF Knights,25,0,132.0
+2026,11,2026-01-12,12,ariz,Arizona Wildcats,1,1,1524.0
+2026,11,2026-01-12,66,isu,Iowa State Cyclones,2,3,1448.0
+2026,11,2026-01-12,41,conn,UConn Huskies,3,4,1358.0
+2026,11,2026-01-12,130,mich,Michigan Wolverines,4,2,1300.0
+2026,11,2026-01-12,2509,pur,Purdue Boilermakers,5,5,1253.0
+2026,11,2026-01-12,150,duke,Duke Blue Devils,6,6,1237.0
+2026,11,2026-01-12,248,hou,Houston Cougars,7,7,1130.0
+2026,11,2026-01-12,158,neb,Nebraska Cornhuskers,8,10,1056.0
+2026,11,2026-01-12,2250,gonz,Gonzaga Bulldogs,9,8,1050.0
+2026,11,2026-01-12,238,van,Vanderbilt Commodores,10,11,1035.0
+2026,11,2026-01-12,252,byu,BYU Cougars,11,9,1013.0
+2026,11,2026-01-12,127,msu,Michigan State Spartans,12,12,865.0
+2026,11,2026-01-12,356,ill,Illinois Fighting Illini,13,16,778.0
+2026,11,2026-01-12,153,unc,North Carolina Tar Heels,14,17,659.0
+2026,11,2026-01-12,2641,ttu,Texas Tech Red Raiders,15,14,609.0
+2026,11,2026-01-12,258,uva,Virginia Cavaliers,16,23,515.0
+2026,11,2026-01-12,8,ark,Arkansas Razorbacks,17,15,492.0
+2026,11,2026-01-12,333,ala,Alabama Crimson Tide,18,13,470.0
+2026,11,2026-01-12,57,fla,Florida Gators,19,0,349.0
+2026,11,2026-01-12,97,lou,Louisville Cardinals,20,20,336.0
+2026,11,2026-01-12,61,uga,Georgia Bulldogs,21,18,227.0
+2026,11,2026-01-12,228,clem,Clemson Tigers,22,0,218.0
+2026,11,2026-01-12,328,usu,Utah State Aggies,23,0,161.0
+2026,11,2026-01-12,2633,tenn,Tennessee Volunteers,24,21,140.0
+2026,11,2026-01-12,2550,hall,Seton Hall Pirates,25,0,136.0
+2026,12,2026-01-19,12,ariz,Arizona Wildcats,1,1,1525.0
+2026,12,2026-01-19,41,conn,UConn Huskies,2,3,1419.0
+2026,12,2026-01-19,130,mich,Michigan Wolverines,3,4,1377.0
+2026,12,2026-01-19,2509,pur,Purdue Boilermakers,4,5,1318.0
+2026,12,2026-01-19,150,duke,Duke Blue Devils,5,6,1296.0
+2026,12,2026-01-19,248,hou,Houston Cougars,6,7,1217.0
+2026,12,2026-01-19,158,neb,Nebraska Cornhuskers,7,8,1207.0
+2026,12,2026-01-19,2250,gonz,Gonzaga Bulldogs,8,9,1103.0
+2026,12,2026-01-19,66,isu,Iowa State Cyclones,9,2,1001.0
+2026,12,2026-01-19,127,msu,Michigan State Spartans,10,12,998.0
+2026,12,2026-01-19,356,ill,Illinois Fighting Illini,11,13,893.0
+2026,12,2026-01-19,2641,ttu,Texas Tech Red Raiders,12,15,805.0
+2026,12,2026-01-19,252,byu,BYU Cougars,13,11,791.0
+2026,12,2026-01-19,258,uva,Virginia Cavaliers,14,16,713.0
+2026,12,2026-01-19,238,van,Vanderbilt Commodores,15,10,656.0
+2026,12,2026-01-19,57,fla,Florida Gators,16,19,651.0
+2026,12,2026-01-19,333,ala,Alabama Crimson Tide,17,18,571.0
+2026,12,2026-01-19,228,clem,Clemson Tigers,18,22,449.0
+2026,12,2026-01-19,2305,ku,Kansas Jayhawks,19,0,305.0
+2026,12,2026-01-19,8,ark,Arkansas Razorbacks,20,17,298.0
+2026,12,2026-01-19,61,uga,Georgia Bulldogs,21,21,263.0
+2026,12,2026-01-19,153,unc,North Carolina Tar Heels,22,14,220.0
+2026,12,2026-01-19,97,lou,Louisville Cardinals,23,20,195.0
+2026,12,2026-01-19,139,slu,Saint Louis Billikens,24,0,187.0
+2026,12,2026-01-19,193,m-oh,Miami (OH) RedHawks,25,0,99.0
+2026,13,2026-01-26,12,ariz,Arizona Wildcats,1,1,1500.0
+2026,13,2026-01-26,41,conn,UConn Huskies,2,2,1402.0
+2026,13,2026-01-26,130,mich,Michigan Wolverines,3,3,1379.0
+2026,13,2026-01-26,150,duke,Duke Blue Devils,4,5,1326.0
+2026,13,2026-01-26,158,neb,Nebraska Cornhuskers,5,7,1283.0
+2026,13,2026-01-26,2250,gonz,Gonzaga Bulldogs,6,8,1097.0
+2026,13,2026-01-26,127,msu,Michigan State Spartans,7,10,1072.0
+2026,13,2026-01-26,66,isu,Iowa State Cyclones,8,9,1070.0
+2026,13,2026-01-26,356,ill,Illinois Fighting Illini,9,11,1060.0
+2026,13,2026-01-26,248,hou,Houston Cougars,10,6,983.0
+2026,13,2026-01-26,2641,ttu,Texas Tech Red Raiders,11,12,939.0
+2026,13,2026-01-26,2509,pur,Purdue Boilermakers,12,4,864.0
+2026,13,2026-01-26,252,byu,BYU Cougars,13,13,837.0
+2026,13,2026-01-26,2305,ku,Kansas Jayhawks,14,19,614.0
+2026,13,2026-01-26,8,ark,Arkansas Razorbacks,15,20,568.0
+2026,13,2026-01-26,153,unc,North Carolina Tar Heels,16,22,528.0
+2026,13,2026-01-26,258,uva,Virginia Cavaliers,17,14,509.0
+2026,13,2026-01-26,238,van,Vanderbilt Commodores,18,15,497.0
+2026,13,2026-01-26,57,fla,Florida Gators,19,16,389.0
+2026,13,2026-01-26,97,lou,Louisville Cardinals,20,23,297.0
+2026,13,2026-01-26,139,slu,Saint Louis Billikens,21,24,286.0
+2026,13,2026-01-26,228,clem,Clemson Tigers,22,18,245.0
+2026,13,2026-01-26,333,ala,Alabama Crimson Tide,23,17,202.0
+2026,13,2026-01-26,193,m-oh,Miami (OH) RedHawks,24,25,140.0
+2026,13,2026-01-26,2599,sju,St. John's Red Storm,25,0,133.0
+2026,14,2026-02-02,12,ariz,Arizona Wildcats,1,1,1475.0
+2026,14,2026-02-02,130,mich,Michigan Wolverines,2,3,1388.0
+2026,14,2026-02-02,41,conn,UConn Huskies,3,2,1367.0
+2026,14,2026-02-02,150,duke,Duke Blue Devils,4,4,1314.0
+2026,14,2026-02-02,356,ill,Illinois Fighting Illini,5,9,1172.0
+2026,14,2026-02-02,2250,gonz,Gonzaga Bulldogs,6,6,1167.0
+2026,14,2026-02-02,66,isu,Iowa State Cyclones,7,8,1130.0
+2026,14,2026-02-02,248,hou,Houston Cougars,8,10,1067.0
+2026,14,2026-02-02,158,neb,Nebraska Cornhuskers,9,5,1036.0
+2026,14,2026-02-02,127,msu,Michigan State Spartans,10,7,950.0
+2026,14,2026-02-02,2305,ku,Kansas Jayhawks,11,14,847.0
+2026,14,2026-02-02,2509,pur,Purdue Boilermakers,12,12,697.0
+2026,14,2026-02-02,2641,ttu,Texas Tech Red Raiders,13,11,638.0
+2026,14,2026-02-02,153,unc,North Carolina Tar Heels,14,16,633.0
+2026,14,2026-02-02,238,van,Vanderbilt Commodores,15,18,627.0
+2026,14,2026-02-02,252,byu,BYU Cougars,16,13,622.0
+2026,14,2026-02-02,57,fla,Florida Gators,17,19,618.0
+2026,14,2026-02-02,258,uva,Virginia Cavaliers,18,17,578.0
+2026,14,2026-02-02,139,slu,Saint Louis Billikens,19,21,353.0
+2026,14,2026-02-02,228,clem,Clemson Tigers,20,22,284.0
+2026,14,2026-02-02,8,ark,Arkansas Razorbacks,21,15,276.0
+2026,14,2026-02-02,2599,sju,St. John's Red Storm,22,25,199.0
+2026,14,2026-02-02,193,m-oh,Miami (OH) RedHawks,23,24,170.0
+2026,14,2026-02-02,97,lou,Louisville Cardinals,24,20,148.0
+2026,14,2026-02-02,2633,tenn,Tennessee Volunteers,25,0,134.0
+2026,15,2026-02-09,12,ariz,Arizona Wildcats,1,1,1475.0
+2026,15,2026-02-09,130,mich,Michigan Wolverines,2,2,1416.0
+2026,15,2026-02-09,248,hou,Houston Cougars,3,8,1275.0
+2026,15,2026-02-09,150,duke,Duke Blue Devils,4,4,1254.0
+2026,15,2026-02-09,66,isu,Iowa State Cyclones,5,7,1247.0
+2026,15,2026-02-09,41,conn,UConn Huskies,6,3,1227.0
+2026,15,2026-02-09,158,neb,Nebraska Cornhuskers,7,9,1091.0
+2026,15,2026-02-09,356,ill,Illinois Fighting Illini,8,5,1060.0
+2026,15,2026-02-09,2305,ku,Kansas Jayhawks,9,11,966.0
+2026,15,2026-02-09,127,msu,Michigan State Spartans,10,10,929.0
+2026,15,2026-02-09,153,unc,North Carolina Tar Heels,11,14,863.0
+2026,15,2026-02-09,2250,gonz,Gonzaga Bulldogs,12,6,803.0
+2026,15,2026-02-09,2509,pur,Purdue Boilermakers,13,12,785.0
+2026,15,2026-02-09,57,fla,Florida Gators,14,17,718.0
+2026,15,2026-02-09,258,uva,Virginia Cavaliers,15,18,642.0
+2026,15,2026-02-09,2641,ttu,Texas Tech Red Raiders,16,13,549.0
+2026,15,2026-02-09,2599,sju,St. John's Red Storm,17,22,524.0
+2026,15,2026-02-09,139,slu,Saint Louis Billikens,18,19,422.0
+2026,15,2026-02-09,238,van,Vanderbilt Commodores,19,15,375.0
+2026,15,2026-02-09,228,clem,Clemson Tigers,20,20,354.0
+2026,15,2026-02-09,8,ark,Arkansas Razorbacks,21,21,304.0
+2026,15,2026-02-09,252,byu,BYU Cougars,22,16,198.0
+2026,15,2026-02-09,193,m-oh,Miami (OH) RedHawks,23,23,195.0
+2026,15,2026-02-09,97,lou,Louisville Cardinals,24,24,182.0
+2026,15,2026-02-09,96,uk,Kentucky Wildcats,25,0,80.0
+2026,16,2026-02-16,130,mich,Michigan Wolverines,1,2,1524.0
+2026,16,2026-02-16,248,hou,Houston Cougars,2,3,1402.0
+2026,16,2026-02-16,150,duke,Duke Blue Devils,3,4,1397.0
+2026,16,2026-02-16,12,ariz,Arizona Wildcats,4,1,1358.0
+2026,16,2026-02-16,41,conn,UConn Huskies,5,6,1318.0
+2026,16,2026-02-16,66,isu,Iowa State Cyclones,6,5,1212.0
+2026,16,2026-02-16,2509,pur,Purdue Boilermakers,7,13,1042.0
+2026,16,2026-02-16,2305,ku,Kansas Jayhawks,8,9,1011.0
+2026,16,2026-02-16,158,neb,Nebraska Cornhuskers,9,7,982.0
+2026,16,2026-02-16,356,ill,Illinois Fighting Illini,10,8,938.0
+2026,16,2026-02-16,2250,gonz,Gonzaga Bulldogs,11,12,903.0
+2026,16,2026-02-16,57,fla,Florida Gators,12,14,895.0
+2026,16,2026-02-16,2641,ttu,Texas Tech Red Raiders,13,16,822.0
+2026,16,2026-02-16,258,uva,Virginia Cavaliers,14,15,730.0
+2026,16,2026-02-16,127,msu,Michigan State Spartans,15,10,681.0
+2026,16,2026-02-16,153,unc,North Carolina Tar Heels,16,11,594.0
+2026,16,2026-02-16,2599,sju,St. John's Red Storm,17,17,590.0
+2026,16,2026-02-16,139,slu,Saint Louis Billikens,18,18,468.0
+2026,16,2026-02-16,238,van,Vanderbilt Commodores,19,19,449.0
+2026,16,2026-02-16,8,ark,Arkansas Razorbacks,20,21,387.0
+2026,16,2026-02-16,97,lou,Louisville Cardinals,21,24,263.0
+2026,16,2026-02-16,193,m-oh,Miami (OH) RedHawks,22,23,238.0
+2026,16,2026-02-16,252,byu,BYU Cougars,23,22,214.0
+2026,16,2026-02-16,275,wis,Wisconsin Badgers,24,0,109.0
+2026,16,2026-02-16,333,ala,Alabama Crimson Tide,25,0,104.0
+2026,17,2026-02-23,150,duke,Duke Blue Devils,1,3,1520.0
+2026,17,2026-02-23,12,ariz,Arizona Wildcats,2,4,1439.0
+2026,17,2026-02-23,130,mich,Michigan Wolverines,3,1,1433.0
+2026,17,2026-02-23,66,isu,Iowa State Cyclones,4,6,1272.0
+2026,17,2026-02-23,248,hou,Houston Cougars,5,2,1251.0
+2026,17,2026-02-23,41,conn,UConn Huskies,6,5,1211.0
+2026,17,2026-02-23,57,fla,Florida Gators,7,12,1112.0
+2026,17,2026-02-23,2509,pur,Purdue Boilermakers,8,7,1062.0
+2026,17,2026-02-23,2250,gonz,Gonzaga Bulldogs,9,11,1039.0
+2026,17,2026-02-23,356,ill,Illinois Fighting Illini,10,10,895.0
+2026,17,2026-02-23,258,uva,Virginia Cavaliers,11,14,884.0
+2026,17,2026-02-23,158,neb,Nebraska Cornhuskers,12,9,858.0
+2026,17,2026-02-23,127,msu,Michigan State Spartans,13,15,856.0
+2026,17,2026-02-23,2305,ku,Kansas Jayhawks,14,8,774.0
+2026,17,2026-02-23,2599,sju,St. John's Red Storm,15,17,763.0
+2026,17,2026-02-23,2641,ttu,Texas Tech Red Raiders,16,13,592.0
+2026,17,2026-02-23,333,ala,Alabama Crimson Tide,17,25,402.0
+2026,17,2026-02-23,153,unc,North Carolina Tar Heels,18,16,388.0
+2026,17,2026-02-23,252,byu,BYU Cougars,19,23,361.0
+2026,17,2026-02-23,8,ark,Arkansas Razorbacks,20,20,356.0
+2026,17,2026-02-23,193,m-oh,Miami (OH) RedHawks,21,22,335.0
+2026,17,2026-02-23,2633,tenn,Tennessee Volunteers,22,0,288.0
+2026,17,2026-02-23,139,slu,Saint Louis Billikens,23,18,242.0
+2026,17,2026-02-23,97,lou,Louisville Cardinals,24,21,186.0
+2026,17,2026-02-23,238,van,Vanderbilt Commodores,25,19,171.0
+2026,18,2026-03-02,150,duke,Duke Blue Devils,1,1,1471.0
+2026,18,2026-03-02,12,ariz,Arizona Wildcats,2,2,1392.0
+2026,18,2026-03-02,130,mich,Michigan Wolverines,3,3,1385.0
+2026,18,2026-03-02,41,conn,UConn Huskies,4,6,1275.0
+2026,18,2026-03-02,57,fla,Florida Gators,5,7,1234.0
+2026,18,2026-03-02,66,isu,Iowa State Cyclones,6,4,1118.0
+2026,18,2026-03-02,248,hou,Houston Cougars,7,5,1094.0
+2026,18,2026-03-02,127,msu,Michigan State Spartans,8,13,1055.0
+2026,18,2026-03-02,158,neb,Nebraska Cornhuskers,9,12,1002.0
+2026,18,2026-03-02,2641,ttu,Texas Tech Red Raiders,10,16,855.0
+2026,18,2026-03-02,356,ill,Illinois Fighting Illini,11,10,838.0
+2026,18,2026-03-02,2250,gonz,Gonzaga Bulldogs,12,9,752.0
+2026,18,2026-03-02,258,uva,Virginia Cavaliers,13,11,731.0
+2026,18,2026-03-02,2305,ku,Kansas Jayhawks,14,14,722.0
+2026,18,2026-03-02,2509,pur,Purdue Boilermakers,15,8,712.0
+2026,18,2026-03-02,333,ala,Alabama Crimson Tide,16,17,657.0
+2026,18,2026-03-02,153,unc,North Carolina Tar Heels,17,18,554.0
+2026,18,2026-03-02,2599,sju,St. John's Red Storm,18,15,547.0
+2026,18,2026-03-02,193,m-oh,Miami (OH) RedHawks,19,21,360.0
+2026,18,2026-03-02,8,ark,Arkansas Razorbacks,20,20,333.0
+2026,18,2026-03-02,2608,smc,Saint Mary's Gaels,21,0,304.0
+2026,18,2026-03-02,2390,mia,Miami Hurricanes,22,0,153.0
+2026,18,2026-03-02,2633,tenn,Tennessee Volunteers,23,22,118.0
+2026,18,2026-03-02,238,van,Vanderbilt Commodores,24,25,117.0
+2026,18,2026-03-02,139,slu,Saint Louis Billikens,25,23,103.0
+2026,19,2026-03-09,150,duke,Duke Blue Devils,1,1,1519.0
+2026,19,2026-03-09,12,ariz,Arizona Wildcats,2,2,1439.0
+2026,19,2026-03-09,130,mich,Michigan Wolverines,3,3,1434.0
+2026,19,2026-03-09,57,fla,Florida Gators,4,5,1337.0
+2026,19,2026-03-09,248,hou,Houston Cougars,5,7,1241.0
+2026,19,2026-03-09,41,conn,UConn Huskies,6,4,1178.0
+2026,19,2026-03-09,66,isu,Iowa State Cyclones,7,6,1137.0
+2026,19,2026-03-09,127,msu,Michigan State Spartans,8,8,1083.0
+2026,19,2026-03-09,356,ill,Illinois Fighting Illini,9,11,1037.0
+2026,19,2026-03-09,258,uva,Virginia Cavaliers,10,13,953.0
+2026,19,2026-03-09,158,neb,Nebraska Cornhuskers,11,9,939.0
+2026,19,2026-03-09,2250,gonz,Gonzaga Bulldogs,12,12,846.0
+2026,19,2026-03-09,2599,sju,St. John's Red Storm,13,18,733.0
+2026,19,2026-03-09,2305,ku,Kansas Jayhawks,14,14,608.0
+2026,19,2026-03-09,333,ala,Alabama Crimson Tide,15,16,602.0
+2026,19,2026-03-09,2641,ttu,Texas Tech Red Raiders,16,10,554.0
+2026,19,2026-03-09,8,ark,Arkansas Razorbacks,17,20,532.0
+2026,19,2026-03-09,2509,pur,Purdue Boilermakers,18,15,529.0
+2026,19,2026-03-09,153,unc,North Carolina Tar Heels,19,17,488.0
+2026,19,2026-03-09,193,m-oh,Miami (OH) RedHawks,20,19,420.0
+2026,19,2026-03-09,2608,smc,Saint Mary's Gaels,21,21,325.0
+2026,19,2026-03-09,238,van,Vanderbilt Commodores,22,24,323.0
+2026,19,2026-03-09,275,wis,Wisconsin Badgers,23,0,201.0
+2026,19,2026-03-09,97,lou,Louisville Cardinals,24,0,140.0
+2026,19,2026-03-09,2633,tenn,Tennessee Volunteers,25,23,72.0
+2026,20,2026-03-16,150,duke,Duke Blue Devils,1,1,1418.0
+2026,20,2026-03-16,12,ariz,Arizona Wildcats,2,2,1372.0
+2026,20,2026-03-16,130,mich,Michigan Wolverines,3,3,1310.0
+2026,20,2026-03-16,57,fla,Florida Gators,4,4,1221.0
+2026,20,2026-03-16,248,hou,Houston Cougars,5,5,1214.0
+2026,20,2026-03-16,66,isu,Iowa State Cyclones,6,7,1096.0
+2026,20,2026-03-16,41,conn,UConn Huskies,7,6,1032.0
+2026,20,2026-03-16,2509,pur,Purdue Boilermakers,8,18,912.0
+2026,20,2026-03-16,258,uva,Virginia Cavaliers,9,10,903.0
+2026,20,2026-03-16,2599,sju,St. John's Red Storm,10,13,860.0
+2026,20,2026-03-16,127,msu,Michigan State Spartans,11,8,833.0
+2026,20,2026-03-16,2250,gonz,Gonzaga Bulldogs,12,12,829.0
+2026,20,2026-03-16,356,ill,Illinois Fighting Illini,13,9,801.0
+2026,20,2026-03-16,8,ark,Arkansas Razorbacks,14,17,750.0
+2026,20,2026-03-16,158,neb,Nebraska Cornhuskers,15,11,689.0
+2026,20,2026-03-16,238,van,Vanderbilt Commodores,16,22,538.0
+2026,20,2026-03-16,2305,ku,Kansas Jayhawks,17,14,503.0
+2026,20,2026-03-16,333,ala,Alabama Crimson Tide,18,15,438.0
+2026,20,2026-03-16,275,wis,Wisconsin Badgers,19,23,392.0
+2026,20,2026-03-16,2641,ttu,Texas Tech Red Raiders,20,16,376.0
+2026,20,2026-03-16,153,unc,North Carolina Tar Heels,21,19,293.0
+2026,20,2026-03-16,2608,smc,Saint Mary's Gaels,22,21,113.0
+2026,20,2026-03-16,2633,tenn,Tennessee Volunteers,23,25,112.0
+2026,20,2026-03-16,97,lou,Louisville Cardinals,23,24,112.0
+2026,20,2026-03-16,2390,mia,Miami Hurricanes,25,0,110.0

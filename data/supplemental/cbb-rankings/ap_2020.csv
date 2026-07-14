@@ -1,0 +1,476 @@
+season,week,asof_date,team_id,team_abbr,team_name,rank,previous,points
+2020,1,2019-10-21,127,msu,Michigan State Spartans,1,0,1619.0
+2020,1,2019-10-21,96,uk,Kentucky Wildcats,2,0,1497.0
+2020,1,2019-10-21,2305,ku,Kansas Jayhawks,3,0,1457.0
+2020,1,2019-10-21,150,duke,Duke Blue Devils,4,0,1399.0
+2020,1,2019-10-21,97,lou,Louisville Cardinals,5,0,1386.0
+2020,1,2019-10-21,57,fla,Florida Gators,6,0,1313.0
+2020,1,2019-10-21,120,md,Maryland Terrapins,7,0,1134.0
+2020,1,2019-10-21,2250,gonz,Gonzaga Bulldogs,8,0,1096.0
+2020,1,2019-10-21,153,unc,North Carolina Tar Heels,9,0,1060.0
+2020,1,2019-10-21,222,vill,Villanova Wildcats,10,0,1048.0
+2020,1,2019-10-21,258,uva,Virginia Cavaliers,11,0,1007.0
+2020,1,2019-10-21,2550,hall,Seton Hall Pirates,12,0,863.0
+2020,1,2019-10-21,2641,ttu,Texas Tech Red Raiders,13,0,837.0
+2020,1,2019-10-21,235,mem,Memphis Tigers,14,0,773.0
+2020,1,2019-10-21,2483,ore,Oregon Ducks,15,0,742.0
+2020,1,2019-10-21,239,bay,Baylor Bears,16,0,523.0
+2020,1,2019-10-21,328,usu,Utah State Aggies,17,0,491.0
+2020,1,2019-10-21,194,osu,Ohio State Buckeyes,18,0,407.0
+2020,1,2019-10-21,2752,xav,Xavier Musketeers,19,0,356.0
+2020,1,2019-10-21,2608,smc,Saint Mary's Gaels,20,0,330.0
+2020,1,2019-10-21,12,ariz,Arizona Wildcats,21,0,265.0
+2020,1,2019-10-21,99,lsu,LSU Tigers,22,0,234.0
+2020,1,2019-10-21,2509,pur,Purdue Boilermakers,23,0,230.0
+2020,1,2019-10-21,2,aub,Auburn Tigers,24,0,210.0
+2020,1,2019-10-21,2670,vcu,VCU Rams,25,0,193.0
+2020,2,2019-11-11,96,uk,Kentucky Wildcats,1,2,1622.0
+2020,2,2019-11-11,150,duke,Duke Blue Devils,2,4,1538.0
+2020,2,2019-11-11,127,msu,Michigan State Spartans,3,1,1451.0
+2020,2,2019-11-11,97,lou,Louisville Cardinals,4,5,1425.0
+2020,2,2019-11-11,2305,ku,Kansas Jayhawks,5,3,1354.0
+2020,2,2019-11-11,153,unc,North Carolina Tar Heels,6,9,1187.0
+2020,2,2019-11-11,120,md,Maryland Terrapins,7,7,1166.0
+2020,2,2019-11-11,2250,gonz,Gonzaga Bulldogs,8,8,1136.0
+2020,2,2019-11-11,258,uva,Virginia Cavaliers,9,11,1134.0
+2020,2,2019-11-11,222,vill,Villanova Wildcats,10,10,1064.0
+2020,2,2019-11-11,2641,ttu,Texas Tech Red Raiders,11,13,888.0
+2020,2,2019-11-11,2550,hall,Seton Hall Pirates,12,12,869.0
+2020,2,2019-11-11,235,mem,Memphis Tigers,13,14,828.0
+2020,2,2019-11-11,2483,ore,Oregon Ducks,14,15,804.0
+2020,2,2019-11-11,57,fla,Florida Gators,15,6,616.0
+2020,2,2019-11-11,194,osu,Ohio State Buckeyes,16,18,544.0
+2020,2,2019-11-11,328,usu,Utah State Aggies,17,17,507.0
+2020,2,2019-11-11,2608,smc,Saint Mary's Gaels,18,20,438.0
+2020,2,2019-11-11,12,ariz,Arizona Wildcats,19,21,415.0
+2020,2,2019-11-11,264,wash,Washington Huskies,20,0,373.0
+2020,2,2019-11-11,2752,xav,Xavier Musketeers,21,19,370.0
+2020,2,2019-11-11,2,aub,Auburn Tigers,22,24,247.0
+2020,2,2019-11-11,99,lsu,LSU Tigers,23,22,237.0
+2020,2,2019-11-11,239,bay,Baylor Bears,24,16,179.0
+2020,2,2019-11-11,38,colo,Colorado Buffaloes,25,0,151.0
+2020,3,2019-11-18,150,duke,Duke Blue Devils,1,2,1608.0
+2020,3,2019-11-18,97,lou,Louisville Cardinals,2,4,1501.0
+2020,3,2019-11-18,127,msu,Michigan State Spartans,3,3,1496.0
+2020,3,2019-11-18,2305,ku,Kansas Jayhawks,4,5,1389.0
+2020,3,2019-11-18,153,unc,North Carolina Tar Heels,5,6,1262.0
+2020,3,2019-11-18,120,md,Maryland Terrapins,6,7,1240.0
+2020,3,2019-11-18,258,uva,Virginia Cavaliers,7,9,1232.0
+2020,3,2019-11-18,2250,gonz,Gonzaga Bulldogs,8,8,1227.0
+2020,3,2019-11-18,96,uk,Kentucky Wildcats,9,1,1110.0
+2020,3,2019-11-18,194,osu,Ohio State Buckeyes,10,16,1006.0
+2020,3,2019-11-18,2483,ore,Oregon Ducks,11,14,998.0
+2020,3,2019-11-18,2641,ttu,Texas Tech Red Raiders,12,11,947.0
+2020,3,2019-11-18,2550,hall,Seton Hall Pirates,13,12,837.0
+2020,3,2019-11-18,12,ariz,Arizona Wildcats,14,19,644.0
+2020,3,2019-11-18,328,usu,Utah State Aggies,15,17,619.0
+2020,3,2019-11-18,235,mem,Memphis Tigers,16,13,574.0
+2020,3,2019-11-18,222,vill,Villanova Wildcats,17,10,560.0
+2020,3,2019-11-18,2752,xav,Xavier Musketeers,18,21,463.0
+2020,3,2019-11-18,2,aub,Auburn Tigers,19,22,420.0
+2020,3,2019-11-18,2633,tenn,Tennessee Volunteers,20,0,402.0
+2020,3,2019-11-18,2670,vcu,VCU Rams,21,0,365.0
+2020,3,2019-11-18,251,tex,Texas Longhorns,22,0,238.0
+2020,3,2019-11-18,38,colo,Colorado Buffaloes,23,25,208.0
+2020,3,2019-11-18,239,bay,Baylor Bears,24,24,179.0
+2020,3,2019-11-18,264,wash,Washington Huskies,25,20,150.0
+2020,4,2019-11-25,150,duke,Duke Blue Devils,1,1,1610.0
+2020,4,2019-11-25,97,lou,Louisville Cardinals,2,2,1512.0
+2020,4,2019-11-25,127,msu,Michigan State Spartans,3,3,1500.0
+2020,4,2019-11-25,2305,ku,Kansas Jayhawks,4,4,1383.0
+2020,4,2019-11-25,120,md,Maryland Terrapins,5,6,1262.0
+2020,4,2019-11-25,153,unc,North Carolina Tar Heels,6,5,1260.0
+2020,4,2019-11-25,258,uva,Virginia Cavaliers,7,7,1232.0
+2020,4,2019-11-25,2250,gonz,Gonzaga Bulldogs,8,8,1222.0
+2020,4,2019-11-25,96,uk,Kentucky Wildcats,9,9,1090.0
+2020,4,2019-11-25,194,osu,Ohio State Buckeyes,10,10,1033.0
+2020,4,2019-11-25,2483,ore,Oregon Ducks,11,11,1006.0
+2020,4,2019-11-25,2641,ttu,Texas Tech Red Raiders,12,12,933.0
+2020,4,2019-11-25,2550,hall,Seton Hall Pirates,13,13,866.0
+2020,4,2019-11-25,12,ariz,Arizona Wildcats,14,14,716.0
+2020,4,2019-11-25,328,usu,Utah State Aggies,15,15,702.0
+2020,4,2019-11-25,235,mem,Memphis Tigers,16,16,587.0
+2020,4,2019-11-25,2633,tenn,Tennessee Volunteers,17,20,490.0
+2020,4,2019-11-25,2,aub,Auburn Tigers,18,19,488.0
+2020,4,2019-11-25,239,bay,Baylor Bears,19,24,450.0
+2020,4,2019-11-25,2670,vcu,VCU Rams,20,21,426.0
+2020,4,2019-11-25,38,colo,Colorado Buffaloes,21,23,290.0
+2020,4,2019-11-25,222,vill,Villanova Wildcats,22,17,247.0
+2020,4,2019-11-25,264,wash,Washington Huskies,23,25,228.0
+2020,4,2019-11-25,57,fla,Florida Gators,24,0,148.0
+2020,4,2019-11-25,2752,xav,Xavier Musketeers,25,18,139.0
+2020,5,2019-12-02,97,lou,Louisville Cardinals,1,2,1599.0
+2020,5,2019-12-02,2305,ku,Kansas Jayhawks,2,4,1497.0
+2020,5,2019-12-02,120,md,Maryland Terrapins,3,5,1446.0
+2020,5,2019-12-02,130,mich,Michigan Wolverines,4,0,1429.0
+2020,5,2019-12-02,258,uva,Virginia Cavaliers,5,7,1424.0
+2020,5,2019-12-02,194,osu,Ohio State Buckeyes,6,10,1244.0
+2020,5,2019-12-02,153,unc,North Carolina Tar Heels,7,6,1162.0
+2020,5,2019-12-02,96,uk,Kentucky Wildcats,8,9,1096.0
+2020,5,2019-12-02,2250,gonz,Gonzaga Bulldogs,9,8,1095.0
+2020,5,2019-12-02,150,duke,Duke Blue Devils,10,1,1083.0
+2020,5,2019-12-02,127,msu,Michigan State Spartans,11,3,964.0
+2020,5,2019-12-02,12,ariz,Arizona Wildcats,12,14,875.0
+2020,5,2019-12-02,2483,ore,Oregon Ducks,13,11,785.0
+2020,5,2019-12-02,2,aub,Auburn Tigers,14,18,698.0
+2020,5,2019-12-02,235,mem,Memphis Tigers,15,16,652.0
+2020,5,2019-12-02,2550,hall,Seton Hall Pirates,16,13,629.0
+2020,5,2019-12-02,52,fsu,Florida State Seminoles,17,0,562.0
+2020,5,2019-12-02,239,bay,Baylor Bears,18,19,466.0
+2020,5,2019-12-02,2168,day,Dayton Flyers,19,0,386.0
+2020,5,2019-12-02,38,colo,Colorado Buffaloes,20,21,371.0
+2020,5,2019-12-02,2633,tenn,Tennessee Volunteers,21,17,331.0
+2020,5,2019-12-02,264,wash,Washington Huskies,22,23,222.0
+2020,5,2019-12-02,222,vill,Villanova Wildcats,23,22,192.0
+2020,5,2019-12-02,2086,but,Butler Bulldogs,24,0,165.0
+2020,5,2019-12-02,328,usu,Utah State Aggies,25,15,112.0
+2020,6,2019-12-09,97,lou,Louisville Cardinals,1,1,1591.0
+2020,6,2019-12-09,2305,ku,Kansas Jayhawks,2,2,1486.0
+2020,6,2019-12-09,194,osu,Ohio State Buckeyes,3,6,1464.0
+2020,6,2019-12-09,120,md,Maryland Terrapins,4,3,1428.0
+2020,6,2019-12-09,130,mich,Michigan Wolverines,5,4,1286.0
+2020,6,2019-12-09,2250,gonz,Gonzaga Bulldogs,6,9,1235.0
+2020,6,2019-12-09,150,duke,Duke Blue Devils,7,10,1232.0
+2020,6,2019-12-09,96,uk,Kentucky Wildcats,8,8,1170.0
+2020,6,2019-12-09,258,uva,Virginia Cavaliers,9,5,1060.0
+2020,6,2019-12-09,2483,ore,Oregon Ducks,10,13,905.0
+2020,6,2019-12-09,239,bay,Baylor Bears,11,18,872.0
+2020,6,2019-12-09,2,aub,Auburn Tigers,12,14,836.0
+2020,6,2019-12-09,235,mem,Memphis Tigers,13,15,756.0
+2020,6,2019-12-09,2168,day,Dayton Flyers,14,19,672.0
+2020,6,2019-12-09,12,ariz,Arizona Wildcats,15,12,654.0
+2020,6,2019-12-09,127,msu,Michigan State Spartans,16,11,637.0
+2020,6,2019-12-09,153,unc,North Carolina Tar Heels,17,7,615.0
+2020,6,2019-12-09,2086,but,Butler Bulldogs,18,24,529.0
+2020,6,2019-12-09,2633,tenn,Tennessee Volunteers,19,21,455.0
+2020,6,2019-12-09,222,vill,Villanova Wildcats,20,23,285.0
+2020,6,2019-12-09,52,fsu,Florida State Seminoles,21,17,253.0
+2020,6,2019-12-09,2550,hall,Seton Hall Pirates,22,16,250.0
+2020,6,2019-12-09,2752,xav,Xavier Musketeers,23,0,216.0
+2020,6,2019-12-09,38,colo,Colorado Buffaloes,24,20,210.0
+2020,6,2019-12-09,21,sdsu,San Diego State Aztecs,25,0,197.0
+2020,7,2019-12-16,2305,ku,Kansas Jayhawks,1,2,1607.0
+2020,7,2019-12-16,2250,gonz,Gonzaga Bulldogs,2,6,1552.0
+2020,7,2019-12-16,97,lou,Louisville Cardinals,3,1,1412.0
+2020,7,2019-12-16,150,duke,Duke Blue Devils,4,7,1387.0
+2020,7,2019-12-16,194,osu,Ohio State Buckeyes,5,3,1334.0
+2020,7,2019-12-16,96,uk,Kentucky Wildcats,6,8,1231.0
+2020,7,2019-12-16,120,md,Maryland Terrapins,7,4,1207.0
+2020,7,2019-12-16,2483,ore,Oregon Ducks,8,10,1172.0
+2020,7,2019-12-16,258,uva,Virginia Cavaliers,9,9,1121.0
+2020,7,2019-12-16,239,bay,Baylor Bears,10,11,1062.0
+2020,7,2019-12-16,235,mem,Memphis Tigers,11,13,960.0
+2020,7,2019-12-16,2,aub,Auburn Tigers,12,12,939.0
+2020,7,2019-12-16,2168,day,Dayton Flyers,13,14,879.0
+2020,7,2019-12-16,130,mich,Michigan Wolverines,14,5,723.0
+2020,7,2019-12-16,127,msu,Michigan State Spartans,15,16,656.0
+2020,7,2019-12-16,12,ariz,Arizona Wildcats,16,15,631.0
+2020,7,2019-12-16,2086,but,Butler Bulldogs,17,18,553.0
+2020,7,2019-12-16,222,vill,Villanova Wildcats,18,20,496.0
+2020,7,2019-12-16,52,fsu,Florida State Seminoles,19,21,449.0
+2020,7,2019-12-16,21,sdsu,San Diego State Aztecs,20,25,431.0
+2020,7,2019-12-16,2633,tenn,Tennessee Volunteers,21,19,367.0
+2020,7,2019-12-16,264,wash,Washington Huskies,22,0,213.0
+2020,7,2019-12-16,213,psu,Penn State Nittany Lions,23,0,182.0
+2020,7,2019-12-16,2641,ttu,Texas Tech Red Raiders,24,0,115.0
+2020,7,2019-12-16,277,wvu,West Virginia Mountaineers,25,0,76.0
+2020,8,2019-12-23,2250,gonz,Gonzaga Bulldogs,1,2,1608.0
+2020,8,2019-12-23,194,osu,Ohio State Buckeyes,2,5,1520.0
+2020,8,2019-12-23,97,lou,Louisville Cardinals,3,3,1460.0
+2020,8,2019-12-23,150,duke,Duke Blue Devils,4,4,1429.0
+2020,8,2019-12-23,2305,ku,Kansas Jayhawks,5,1,1388.0
+2020,8,2019-12-23,2483,ore,Oregon Ducks,6,8,1286.0
+2020,8,2019-12-23,239,bay,Baylor Bears,7,10,1207.0
+2020,8,2019-12-23,2,aub,Auburn Tigers,8,12,1107.0
+2020,8,2019-12-23,235,mem,Memphis Tigers,9,11,1040.0
+2020,8,2019-12-23,222,vill,Villanova Wildcats,10,18,950.0
+2020,8,2019-12-23,130,mich,Michigan Wolverines,11,14,889.0
+2020,8,2019-12-23,2086,but,Butler Bulldogs,12,17,853.0
+2020,8,2019-12-23,120,md,Maryland Terrapins,13,7,785.0
+2020,8,2019-12-23,127,msu,Michigan State Spartans,14,15,775.0
+2020,8,2019-12-23,21,sdsu,San Diego State Aztecs,15,20,763.0
+2020,8,2019-12-23,258,uva,Virginia Cavaliers,16,9,595.0
+2020,8,2019-12-23,52,fsu,Florida State Seminoles,17,19,583.0
+2020,8,2019-12-23,2168,day,Dayton Flyers,18,13,541.0
+2020,8,2019-12-23,96,uk,Kentucky Wildcats,19,6,411.0
+2020,8,2019-12-23,213,psu,Penn State Nittany Lions,20,23,332.0
+2020,8,2019-12-23,264,wash,Washington Huskies,21,22,326.0
+2020,8,2019-12-23,277,wvu,West Virginia Mountaineers,22,25,229.0
+2020,8,2019-12-23,2641,ttu,Texas Tech Red Raiders,23,24,178.0
+2020,8,2019-12-23,12,ariz,Arizona Wildcats,24,16,153.0
+2020,8,2019-12-23,2294,iowa,Iowa Hawkeyes,25,0,125.0
+2020,9,2019-12-30,2250,gonz,Gonzaga Bulldogs,1,1,1621.0
+2020,9,2019-12-30,150,duke,Duke Blue Devils,2,4,1516.0
+2020,9,2019-12-30,2305,ku,Kansas Jayhawks,3,5,1497.0
+2020,9,2019-12-30,2483,ore,Oregon Ducks,4,6,1361.0
+2020,9,2019-12-30,194,osu,Ohio State Buckeyes,5,2,1277.0
+2020,9,2019-12-30,239,bay,Baylor Bears,6,7,1267.0
+2020,9,2019-12-30,97,lou,Louisville Cardinals,7,3,1196.0
+2020,9,2019-12-30,2,aub,Auburn Tigers,8,8,1159.0
+2020,9,2019-12-30,235,mem,Memphis Tigers,9,9,1055.0
+2020,9,2019-12-30,222,vill,Villanova Wildcats,10,10,970.0
+2020,9,2019-12-30,2086,but,Butler Bulldogs,11,12,883.0
+2020,9,2019-12-30,130,mich,Michigan Wolverines,12,11,880.0
+2020,9,2019-12-30,21,sdsu,San Diego State Aztecs,13,15,780.0
+2020,9,2019-12-30,127,msu,Michigan State Spartans,14,14,747.0
+2020,9,2019-12-30,120,md,Maryland Terrapins,15,13,720.0
+2020,9,2019-12-30,277,wvu,West Virginia Mountaineers,16,22,719.0
+2020,9,2019-12-30,96,uk,Kentucky Wildcats,17,19,674.0
+2020,9,2019-12-30,52,fsu,Florida State Seminoles,18,17,531.0
+2020,9,2019-12-30,258,uva,Virginia Cavaliers,19,16,506.0
+2020,9,2019-12-30,2168,day,Dayton Flyers,20,18,483.0
+2020,9,2019-12-30,213,psu,Penn State Nittany Lions,21,20,312.0
+2020,9,2019-12-30,2641,ttu,Texas Tech Red Raiders,22,23,175.0
+2020,9,2019-12-30,2294,iowa,Iowa Hawkeyes,23,25,137.0
+2020,9,2019-12-30,2724,wich,Wichita State Shockers,24,0,135.0
+2020,9,2019-12-30,12,ariz,Arizona Wildcats,25,24,113.0
+2020,10,2020-01-06,2250,gonz,Gonzaga Bulldogs,1,1,1607.0
+2020,10,2020-01-06,150,duke,Duke Blue Devils,2,2,1545.0
+2020,10,2020-01-06,2305,ku,Kansas Jayhawks,3,3,1513.0
+2020,10,2020-01-06,239,bay,Baylor Bears,4,6,1386.0
+2020,10,2020-01-06,2,aub,Auburn Tigers,5,8,1317.0
+2020,10,2020-01-06,2086,but,Butler Bulldogs,6,11,1181.0
+2020,10,2020-01-06,21,sdsu,San Diego State Aztecs,7,13,1130.0
+2020,10,2020-01-06,127,msu,Michigan State Spartans,8,14,1129.0
+2020,10,2020-01-06,2483,ore,Oregon Ducks,9,4,1075.0
+2020,10,2020-01-06,52,fsu,Florida State Seminoles,10,18,966.0
+2020,10,2020-01-06,194,osu,Ohio State Buckeyes,11,5,924.0
+2020,10,2020-01-06,120,md,Maryland Terrapins,12,15,863.0
+2020,10,2020-01-06,97,lou,Louisville Cardinals,13,7,844.0
+2020,10,2020-01-06,96,uk,Kentucky Wildcats,14,17,811.0
+2020,10,2020-01-06,2168,day,Dayton Flyers,15,20,614.0
+2020,10,2020-01-06,222,vill,Villanova Wildcats,16,10,604.0
+2020,10,2020-01-06,277,wvu,West Virginia Mountaineers,17,16,599.0
+2020,10,2020-01-06,258,uva,Virginia Cavaliers,18,19,556.0
+2020,10,2020-01-06,130,mich,Michigan Wolverines,19,12,502.0
+2020,10,2020-01-06,213,psu,Penn State Nittany Lions,20,21,456.0
+2020,10,2020-01-06,235,mem,Memphis Tigers,21,9,455.0
+2020,10,2020-01-06,2641,ttu,Texas Tech Red Raiders,22,22,287.0
+2020,10,2020-01-06,2724,wich,Wichita State Shockers,23,24,252.0
+2020,10,2020-01-06,12,ariz,Arizona Wildcats,24,25,184.0
+2020,10,2020-01-06,38,colo,Colorado Buffaloes,25,0,81.0
+2020,11,2020-01-13,2250,gonz,Gonzaga Bulldogs,1,1,1574.0
+2020,11,2020-01-13,239,bay,Baylor Bears,2,4,1567.0
+2020,11,2020-01-13,150,duke,Duke Blue Devils,3,2,1529.0
+2020,11,2020-01-13,2,aub,Auburn Tigers,4,5,1359.0
+2020,11,2020-01-13,2086,but,Butler Bulldogs,5,6,1299.0
+2020,11,2020-01-13,2305,ku,Kansas Jayhawks,6,3,1286.0
+2020,11,2020-01-13,21,sdsu,San Diego State Aztecs,7,7,1266.0
+2020,11,2020-01-13,2483,ore,Oregon Ducks,8,9,1163.0
+2020,11,2020-01-13,52,fsu,Florida State Seminoles,9,10,1093.0
+2020,11,2020-01-13,96,uk,Kentucky Wildcats,10,14,960.0
+2020,11,2020-01-13,97,lou,Louisville Cardinals,11,13,943.0
+2020,11,2020-01-13,277,wvu,West Virginia Mountaineers,12,17,911.0
+2020,11,2020-01-13,2168,day,Dayton Flyers,13,15,842.0
+2020,11,2020-01-13,222,vill,Villanova Wildcats,14,16,822.0
+2020,11,2020-01-13,127,msu,Michigan State Spartans,15,8,735.0
+2020,11,2020-01-13,2724,wich,Wichita State Shockers,16,23,629.0
+2020,11,2020-01-13,120,md,Maryland Terrapins,17,12,616.0
+2020,11,2020-01-13,2550,hall,Seton Hall Pirates,18,0,496.0
+2020,11,2020-01-13,130,mich,Michigan Wolverines,19,19,358.0
+2020,11,2020-01-13,38,colo,Colorado Buffaloes,20,25,345.0
+2020,11,2020-01-13,194,osu,Ohio State Buckeyes,21,11,270.0
+2020,11,2020-01-13,235,mem,Memphis Tigers,22,21,232.0
+2020,11,2020-01-13,2641,ttu,Texas Tech Red Raiders,23,22,111.0
+2020,11,2020-01-13,356,ill,Illinois Fighting Illini,24,0,109.0
+2020,11,2020-01-13,156,crei,Creighton Bluejays,25,0,97.0
+2020,12,2020-01-20,239,bay,Baylor Bears,1,2,1591.0
+2020,12,2020-01-20,2250,gonz,Gonzaga Bulldogs,2,1,1588.0
+2020,12,2020-01-20,2305,ku,Kansas Jayhawks,3,6,1470.0
+2020,12,2020-01-20,21,sdsu,San Diego State Aztecs,4,7,1422.0
+2020,12,2020-01-20,52,fsu,Florida State Seminoles,5,9,1335.0
+2020,12,2020-01-20,97,lou,Louisville Cardinals,6,11,1303.0
+2020,12,2020-01-20,2168,day,Dayton Flyers,7,13,1139.0
+2020,12,2020-01-20,150,duke,Duke Blue Devils,8,3,1065.0
+2020,12,2020-01-20,222,vill,Villanova Wildcats,9,14,1055.0
+2020,12,2020-01-20,2550,hall,Seton Hall Pirates,10,18,1034.0
+2020,12,2020-01-20,127,msu,Michigan State Spartans,11,15,1004.0
+2020,12,2020-01-20,2483,ore,Oregon Ducks,12,8,886.0
+2020,12,2020-01-20,2086,but,Butler Bulldogs,13,5,867.0
+2020,12,2020-01-20,277,wvu,West Virginia Mountaineers,14,12,758.0
+2020,12,2020-01-20,96,uk,Kentucky Wildcats,15,10,755.0
+2020,12,2020-01-20,2,aub,Auburn Tigers,16,4,637.0
+2020,12,2020-01-20,120,md,Maryland Terrapins,17,17,525.0
+2020,12,2020-01-20,2641,ttu,Texas Tech Red Raiders,18,23,399.0
+2020,12,2020-01-20,2294,iowa,Iowa Hawkeyes,19,0,398.0
+2020,12,2020-01-20,235,mem,Memphis Tigers,20,22,394.0
+2020,12,2020-01-20,356,ill,Illinois Fighting Illini,21,24,280.0
+2020,12,2020-01-20,12,ariz,Arizona Wildcats,22,0,225.0
+2020,12,2020-01-20,38,colo,Colorado Buffaloes,23,20,154.0
+2020,12,2020-01-20,164,rutg,Rutgers Scarlet Knights,24,0,152.0
+2020,12,2020-01-20,248,hou,Houston Cougars,25,0,151.0
+2020,13,2020-01-27,239,bay,Baylor Bears,1,1,1578.0
+2020,13,2020-01-27,2250,gonz,Gonzaga Bulldogs,2,2,1552.0
+2020,13,2020-01-27,2305,ku,Kansas Jayhawks,3,3,1434.0
+2020,13,2020-01-27,21,sdsu,San Diego State Aztecs,4,4,1408.0
+2020,13,2020-01-27,52,fsu,Florida State Seminoles,5,5,1318.0
+2020,13,2020-01-27,97,lou,Louisville Cardinals,6,6,1277.0
+2020,13,2020-01-27,2168,day,Dayton Flyers,7,7,1163.0
+2020,13,2020-01-27,222,vill,Villanova Wildcats,8,9,1110.0
+2020,13,2020-01-27,150,duke,Duke Blue Devils,9,8,1084.0
+2020,13,2020-01-27,2550,hall,Seton Hall Pirates,10,10,1055.0
+2020,13,2020-01-27,2483,ore,Oregon Ducks,11,12,926.0
+2020,13,2020-01-27,277,wvu,West Virginia Mountaineers,12,14,874.0
+2020,13,2020-01-27,96,uk,Kentucky Wildcats,13,15,839.0
+2020,13,2020-01-27,127,msu,Michigan State Spartans,14,11,751.0
+2020,13,2020-01-27,120,md,Maryland Terrapins,15,17,650.0
+2020,13,2020-01-27,2086,but,Butler Bulldogs,16,13,631.0
+2020,13,2020-01-27,2,aub,Auburn Tigers,17,16,619.0
+2020,13,2020-01-27,2294,iowa,Iowa Hawkeyes,18,19,545.0
+2020,13,2020-01-27,356,ill,Illinois Fighting Illini,19,21,483.0
+2020,13,2020-01-27,38,colo,Colorado Buffaloes,20,23,314.0
+2020,13,2020-01-27,248,hou,Houston Cougars,21,25,296.0
+2020,13,2020-01-27,99,lsu,LSU Tigers,22,0,260.0
+2020,13,2020-01-27,2724,wich,Wichita State Shockers,23,0,161.0
+2020,13,2020-01-27,213,psu,Penn State Nittany Lions,24,0,114.0
+2020,13,2020-01-27,164,rutg,Rutgers Scarlet Knights,25,24,102.0
+2020,14,2020-02-03,239,bay,Baylor Bears,1,1,1608.0
+2020,14,2020-02-03,2250,gonz,Gonzaga Bulldogs,2,2,1567.0
+2020,14,2020-02-03,2305,ku,Kansas Jayhawks,3,3,1472.0
+2020,14,2020-02-03,21,sdsu,San Diego State Aztecs,4,4,1447.0
+2020,14,2020-02-03,97,lou,Louisville Cardinals,5,6,1352.0
+2020,14,2020-02-03,2168,day,Dayton Flyers,6,7,1271.0
+2020,14,2020-02-03,150,duke,Duke Blue Devils,7,9,1242.0
+2020,14,2020-02-03,52,fsu,Florida State Seminoles,8,5,1188.0
+2020,14,2020-02-03,120,md,Maryland Terrapins,9,15,999.0
+2020,14,2020-02-03,222,vill,Villanova Wildcats,10,8,959.0
+2020,14,2020-02-03,2,aub,Auburn Tigers,11,17,926.0
+2020,14,2020-02-03,2550,hall,Seton Hall Pirates,12,10,900.0
+2020,14,2020-02-03,277,wvu,West Virginia Mountaineers,13,12,827.0
+2020,14,2020-02-03,2483,ore,Oregon Ducks,14,11,758.0
+2020,14,2020-02-03,96,uk,Kentucky Wildcats,15,13,660.0
+2020,14,2020-02-03,127,msu,Michigan State Spartans,16,14,624.0
+2020,14,2020-02-03,2294,iowa,Iowa Hawkeyes,17,18,604.0
+2020,14,2020-02-03,99,lsu,LSU Tigers,18,22,572.0
+2020,14,2020-02-03,2086,but,Butler Bulldogs,19,16,437.0
+2020,14,2020-02-03,356,ill,Illinois Fighting Illini,20,19,373.0
+2020,14,2020-02-03,156,crei,Creighton Bluejays,21,0,372.0
+2020,14,2020-02-03,213,psu,Penn State Nittany Lions,22,24,356.0
+2020,14,2020-02-03,12,ariz,Arizona Wildcats,23,0,164.0
+2020,14,2020-02-03,38,colo,Colorado Buffaloes,24,20,134.0
+2020,14,2020-02-03,248,hou,Houston Cougars,25,21,85.0
+2020,15,2020-02-10,239,bay,Baylor Bears,1,1,1583.0
+2020,15,2020-02-10,2250,gonz,Gonzaga Bulldogs,2,2,1546.0
+2020,15,2020-02-10,2305,ku,Kansas Jayhawks,3,3,1450.0
+2020,15,2020-02-10,21,sdsu,San Diego State Aztecs,4,4,1422.0
+2020,15,2020-02-10,97,lou,Louisville Cardinals,5,5,1331.0
+2020,15,2020-02-10,2168,day,Dayton Flyers,6,6,1255.0
+2020,15,2020-02-10,150,duke,Duke Blue Devils,7,7,1211.0
+2020,15,2020-02-10,52,fsu,Florida State Seminoles,8,8,1170.0
+2020,15,2020-02-10,120,md,Maryland Terrapins,9,9,1057.0
+2020,15,2020-02-10,2550,hall,Seton Hall Pirates,10,12,1013.0
+2020,15,2020-02-10,2,aub,Auburn Tigers,11,11,998.0
+2020,15,2020-02-10,96,uk,Kentucky Wildcats,12,15,853.0
+2020,15,2020-02-10,213,psu,Penn State Nittany Lions,13,22,787.0
+2020,15,2020-02-10,277,wvu,West Virginia Mountaineers,14,13,721.0
+2020,15,2020-02-10,222,vill,Villanova Wildcats,15,10,581.0
+2020,15,2020-02-10,38,colo,Colorado Buffaloes,16,24,567.0
+2020,15,2020-02-10,2483,ore,Oregon Ducks,17,14,497.0
+2020,15,2020-02-10,269,marq,Marquette Golden Eagles,18,0,425.0
+2020,15,2020-02-10,2086,but,Butler Bulldogs,19,19,414.0
+2020,15,2020-02-10,248,hou,Houston Cougars,20,25,402.0
+2020,15,2020-02-10,2294,iowa,Iowa Hawkeyes,21,17,374.0
+2020,15,2020-02-10,356,ill,Illinois Fighting Illini,22,20,235.0
+2020,15,2020-02-10,156,crei,Creighton Bluejays,23,21,213.0
+2020,15,2020-02-10,2641,ttu,Texas Tech Red Raiders,24,0,169.0
+2020,15,2020-02-10,99,lsu,LSU Tigers,25,18,160.0
+2020,16,2020-02-17,239,bay,Baylor Bears,1,1,1559.0
+2020,16,2020-02-17,2250,gonz,Gonzaga Bulldogs,2,2,1518.0
+2020,16,2020-02-17,2305,ku,Kansas Jayhawks,3,3,1434.0
+2020,16,2020-02-17,21,sdsu,San Diego State Aztecs,4,4,1404.0
+2020,16,2020-02-17,2168,day,Dayton Flyers,5,6,1294.0
+2020,16,2020-02-17,150,duke,Duke Blue Devils,6,7,1285.0
+2020,16,2020-02-17,120,md,Maryland Terrapins,7,9,1194.0
+2020,16,2020-02-17,52,fsu,Florida State Seminoles,8,8,1088.0
+2020,16,2020-02-17,213,psu,Penn State Nittany Lions,9,13,1024.0
+2020,16,2020-02-17,96,uk,Kentucky Wildcats,10,12,1011.0
+2020,16,2020-02-17,97,lou,Louisville Cardinals,11,5,837.0
+2020,16,2020-02-17,222,vill,Villanova Wildcats,12,15,824.0
+2020,16,2020-02-17,2,aub,Auburn Tigers,13,11,818.0
+2020,16,2020-02-17,2483,ore,Oregon Ducks,14,17,742.0
+2020,16,2020-02-17,156,crei,Creighton Bluejays,15,23,718.0
+2020,16,2020-02-17,2550,hall,Seton Hall Pirates,16,10,672.0
+2020,16,2020-02-17,277,wvu,West Virginia Mountaineers,17,14,552.0
+2020,16,2020-02-17,38,colo,Colorado Buffaloes,18,16,501.0
+2020,16,2020-02-17,269,marq,Marquette Golden Eagles,19,18,404.0
+2020,16,2020-02-17,2294,iowa,Iowa Hawkeyes,20,21,254.0
+2020,16,2020-02-17,2086,but,Butler Bulldogs,21,19,242.0
+2020,16,2020-02-17,248,hou,Houston Cougars,22,20,237.0
+2020,16,2020-02-17,252,byu,BYU Cougars,23,0,188.0
+2020,16,2020-02-17,12,ariz,Arizona Wildcats,24,0,102.0
+2020,16,2020-02-17,194,osu,Ohio State Buckeyes,25,0,95.0
+2020,17,2020-02-24,2305,ku,Kansas Jayhawks,1,3,1598.0
+2020,17,2020-02-24,239,bay,Baylor Bears,2,1,1532.0
+2020,17,2020-02-24,2250,gonz,Gonzaga Bulldogs,3,2,1442.0
+2020,17,2020-02-24,2168,day,Dayton Flyers,4,5,1413.0
+2020,17,2020-02-24,21,sdsu,San Diego State Aztecs,5,4,1287.0
+2020,17,2020-02-24,52,fsu,Florida State Seminoles,6,8,1247.0
+2020,17,2020-02-24,150,duke,Duke Blue Devils,7,6,1186.0
+2020,17,2020-02-24,96,uk,Kentucky Wildcats,8,10,1130.0
+2020,17,2020-02-24,120,md,Maryland Terrapins,9,7,1124.0
+2020,17,2020-02-24,156,crei,Creighton Bluejays,10,15,986.0
+2020,17,2020-02-24,97,lou,Louisville Cardinals,11,11,966.0
+2020,17,2020-02-24,222,vill,Villanova Wildcats,12,12,928.0
+2020,17,2020-02-24,2550,hall,Seton Hall Pirates,13,16,842.0
+2020,17,2020-02-24,2483,ore,Oregon Ducks,14,14,653.0
+2020,17,2020-02-24,2,aub,Auburn Tigers,15,13,643.0
+2020,17,2020-02-24,213,psu,Penn State Nittany Lions,16,9,618.0
+2020,17,2020-02-24,252,byu,BYU Cougars,17,23,598.0
+2020,17,2020-02-24,2294,iowa,Iowa Hawkeyes,18,20,489.0
+2020,17,2020-02-24,130,mich,Michigan Wolverines,19,0,329.0
+2020,17,2020-02-24,277,wvu,West Virginia Mountaineers,20,17,313.0
+2020,17,2020-02-24,38,colo,Colorado Buffaloes,21,18,291.0
+2020,17,2020-02-24,2641,ttu,Texas Tech Red Raiders,22,0,226.0
+2020,17,2020-02-24,194,osu,Ohio State Buckeyes,23,25,210.0
+2020,17,2020-02-24,127,msu,Michigan State Spartans,24,0,160.0
+2020,17,2020-02-24,248,hou,Houston Cougars,25,22,102.0
+2020,18,2020-03-02,2305,ku,Kansas Jayhawks,1,1,1600.0
+2020,18,2020-03-02,2250,gonz,Gonzaga Bulldogs,2,3,1514.0
+2020,18,2020-03-02,2168,day,Dayton Flyers,3,4,1453.0
+2020,18,2020-03-02,239,bay,Baylor Bears,4,2,1395.0
+2020,18,2020-03-02,21,sdsu,San Diego State Aztecs,5,5,1375.0
+2020,18,2020-03-02,96,uk,Kentucky Wildcats,6,8,1253.0
+2020,18,2020-03-02,52,fsu,Florida State Seminoles,7,6,1164.0
+2020,18,2020-03-02,2550,hall,Seton Hall Pirates,8,13,1145.0
+2020,18,2020-03-02,120,md,Maryland Terrapins,9,9,1041.0
+2020,18,2020-03-02,97,lou,Louisville Cardinals,10,11,948.0
+2020,18,2020-03-02,156,crei,Creighton Bluejays,11,10,843.0
+2020,18,2020-03-02,150,duke,Duke Blue Devils,12,7,809.0
+2020,18,2020-03-02,2483,ore,Oregon Ducks,13,14,802.0
+2020,18,2020-03-02,222,vill,Villanova Wildcats,14,12,779.0
+2020,18,2020-03-02,252,byu,BYU Cougars,15,17,756.0
+2020,18,2020-03-02,127,msu,Michigan State Spartans,16,24,726.0
+2020,18,2020-03-02,2,aub,Auburn Tigers,17,15,575.0
+2020,18,2020-03-02,2294,iowa,Iowa Hawkeyes,18,18,492.0
+2020,18,2020-03-02,194,osu,Ohio State Buckeyes,19,23,489.0
+2020,18,2020-03-02,213,psu,Penn State Nittany Lions,20,16,367.0
+2020,18,2020-03-02,248,hou,Houston Cougars,21,25,265.0
+2020,18,2020-03-02,258,uva,Virginia Cavaliers,22,0,219.0
+2020,18,2020-03-02,356,ill,Illinois Fighting Illini,23,0,208.0
+2020,18,2020-03-02,275,wis,Wisconsin Badgers,24,0,179.0
+2020,18,2020-03-02,130,mich,Michigan Wolverines,25,19,94.0
+2020,19,2020-03-09,2305,ku,Kansas Jayhawks,1,1,1625.0
+2020,19,2020-03-09,2250,gonz,Gonzaga Bulldogs,2,2,1546.0
+2020,19,2020-03-09,2168,day,Dayton Flyers,3,3,1507.0
+2020,19,2020-03-09,52,fsu,Florida State Seminoles,4,7,1384.0
+2020,19,2020-03-09,239,bay,Baylor Bears,5,4,1322.0
+2020,19,2020-03-09,21,sdsu,San Diego State Aztecs,6,5,1261.0
+2020,19,2020-03-09,156,crei,Creighton Bluejays,7,11,1157.0
+2020,19,2020-03-09,96,uk,Kentucky Wildcats,8,6,1118.0
+2020,19,2020-03-09,127,msu,Michigan State Spartans,9,16,995.0
+2020,19,2020-03-09,150,duke,Duke Blue Devils,10,12,990.0
+2020,19,2020-03-09,222,vill,Villanova Wildcats,11,14,989.0
+2020,19,2020-03-09,120,md,Maryland Terrapins,12,9,912.0
+2020,19,2020-03-09,2483,ore,Oregon Ducks,13,13,904.0
+2020,19,2020-03-09,252,byu,BYU Cougars,14,15,762.0
+2020,19,2020-03-09,97,lou,Louisville Cardinals,15,10,755.0
+2020,19,2020-03-09,2550,hall,Seton Hall Pirates,16,8,722.0
+2020,19,2020-03-09,258,uva,Virginia Cavaliers,17,22,560.0
+2020,19,2020-03-09,275,wis,Wisconsin Badgers,18,24,495.0
+2020,19,2020-03-09,194,osu,Ohio State Buckeyes,19,19,443.0
+2020,19,2020-03-09,2,aub,Auburn Tigers,20,17,436.0
+2020,19,2020-03-09,356,ill,Illinois Fighting Illini,21,23,241.0
+2020,19,2020-03-09,277,wvu,West Virginia Mountaineers,22,0,167.0
+2020,19,2020-03-09,248,hou,Houston Cougars,22,21,167.0
+2020,19,2020-03-09,2086,but,Butler Bulldogs,24,0,161.0
+2020,19,2020-03-09,2294,iowa,Iowa Hawkeyes,25,18,111.0

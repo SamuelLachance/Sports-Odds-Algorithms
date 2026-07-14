@@ -46,8 +46,9 @@ def test_pick_thresholds_cbb_nfl_cfb() -> None:
 
     cbb = get_pick_thresholds("cbb")
     assert cbb["bet_type"] == "moneyline"
-    assert cbb["min_market_gap_pp"] == 6.0
-    assert cbb.get("fav_mode") == "favorite"
+    assert cbb["min_market_gap_pp"] == 2.0
+    assert cbb.get("fav_mode") == "any"
+    assert cbb.get("allowed_sides") == ["away"]
     assert cbb["enabled"] is True
 
     nfl = get_pick_thresholds("nfl")

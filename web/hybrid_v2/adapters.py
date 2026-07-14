@@ -162,8 +162,7 @@ def _attach_binary_market(frame: pd.DataFrame) -> pd.DataFrame:
     mkt = frame["market_home_prob"]
     frame["has_market"] = mkt.notna().astype(float)
     frame["mkt_home_prob"] = mkt.fillna(0.5)
-    # Steam is optional for hybrid search; skip expensive row-wise open/close
-    # computation on large tables (NBA/CBB). Live path still computes steam.
+    # Prefer steam already baked into the training table (CBB full-feature build).
     if "ml_steam_pp" not in frame.columns:
         frame["ml_steam_pp"] = 0.0
     if "has_steam" not in frame.columns:

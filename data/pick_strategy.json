@@ -50,16 +50,19 @@
   },
   "cbb": {
     "bet_type": "moneyline",
-    "min_market_gap_pp": 6.0,
+    "min_market_gap_pp": 2.0,
     "min_win_confidence_pp": 0.0,
-    "min_ev_pct": 5.0,
-    "ml_lo": -200,
-    "ml_hi": 200,
-    "fav_mode": "favorite",
+    "min_ev_pct": 0.0,
+    "ml_lo": -110,
+    "ml_hi": 110,
+    "fav_mode": "any",
     "enabled": true,
-    "note": "Hub\u00e1\u010dek CBB 2026-07-13: hybrid model_raw decor_w=0.12 gap>=6.0 EV>=5.0% ML[-200,200] sides=favorite exec=close window=from2023 ROI 5.33% worst 3.71% n=267. ENABLED.",
-    "backtest_roi_pct": 5.33,
-    "backtest_bets": 267
+    "note": "Hub\u00e1\u010dek CBB 2026-07-13: expanded-features hybrid model_raw decor_w=0.12 gap>=2 EV>=0% ML[-110,110] sides=away exec=close window=all ROI 44.51% worst 1.65% n=419. ENABLED.",
+    "backtest_roi_pct": 44.51,
+    "backtest_bets": 419,
+    "allowed_sides": [
+      "away"
+    ]
   },
   "nfl": {
     "bet_type": "moneyline",

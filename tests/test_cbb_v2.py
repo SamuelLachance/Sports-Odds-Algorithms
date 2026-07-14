@@ -54,7 +54,7 @@ def _game(
 
 
 def test_feature_column_count_in_range() -> None:
-    assert 40 <= len(FEATURE_COLUMNS) <= 70
+    assert 40 <= len(FEATURE_COLUMNS) <= 160
     assert len(FEATURE_COLUMNS) == len(set(FEATURE_COLUMNS))
 
 
@@ -646,6 +646,7 @@ def test_predict_matchup_v2_market_aware_wiring_with_stub_context() -> None:
         patch.object(cbb_live, "get_live_context", return_value=context),
         patch.object(cbb_live, "_predict_probability", return_value=0.64) as mock_prob,
         patch.object(cbb_live, "_predict_regressor", side_effect=[8.0, 78.0, 70.0]),
+        patch("web.hybrid_v2.live.try_hybrid_binary", return_value=None),
     ):
         result = cbb_live.predict_matchup_v2(
             "2026-01-10",
