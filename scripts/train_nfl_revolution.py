@@ -326,6 +326,17 @@ def select_cols(cfg: RevConfig) -> list[str]:
     curves = list(CURVE_FEATURE_COLUMNS) + list(MC_FEATURE_COLUMNS)
     market = ["mkt_home_prob", "has_market", "mkt_home_spread", "has_spread"]
     cats = list(CAT_COLS)
+
+    def _uniq(cols: list[str]) -> list[str]:
+        seen: set[str] = set()
+        out: list[str] = []
+        for c in cols:
+            if c in seen:
+                continue
+            seen.add(c)
+            out.append(c)
+        return out
+
     if cfg.feature_mode == "curves_mc":
         # Still include the high-leverage NEW columns even in curves_mc mode
         boost = [
@@ -343,14 +354,18 @@ def select_cols(cfg: RevConfig) -> list[str]:
                 "spread_move",
                 "ml_steam_pp",
                 "injury_burden_diff",
+                "travel_diff",
+                "home_stand_len",
+                "explosive_def_diff",
+                "to_rate_diff",
             )
             if c in FEATURE_COLUMNS
         ]
-        return curves + core[:10] + boost + market + cats
+        return _uniq(curves + core[:10] + boost + market + cats)
     if cfg.feature_mode == "core":
-        return core + curves + market + cats
-    # full — all 105 tabular features + curves/MC + market + cats
-    return list(FEATURE_COLUMNS) + curves + market + cats
+        return _uniq(core + curves + market + cats)
+    # full — all tabular features + curves/MC + market + cats (deduped)
+    return _uniq(list(FEATURE_COLUMNS) + curves + market + cats)
 
 
 def _fit_cb_clf(train, val, cols, cfg: RevConfig):

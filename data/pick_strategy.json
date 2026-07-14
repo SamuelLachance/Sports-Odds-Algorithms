@@ -66,16 +66,16 @@
   },
   "nfl": {
     "bet_type": "moneyline",
-    "min_market_gap_pp": 2.0,
+    "min_market_gap_pp": 3.0,
     "min_win_confidence_pp": 0.0,
-    "min_ev_pct": 0.0,
-    "ml_lo": -180,
-    "ml_hi": 180,
+    "min_ev_pct": 2.0,
+    "ml_lo": -250,
+    "ml_hi": 250,
     "fav_mode": "favorite",
     "enabled": true,
-    "note": "Hub\u00e1\u010dek NFL enable 2026-07-13: hybrid model_prob decor_w=0.12 gap>=2.0 EV>=0% ML[-180,180] sides=favorite window=from2022 ROI 24.73% worst 18.01% n=73 all-season+. ENABLED.",
-    "backtest_roi_pct": 24.73,
-    "backtest_bets": 73
+    "note": "Hub\u00e1\u010dek NFL enable 2026-07-13: hybrid model_prob decor_w=0.12 gap>=3.0 EV>=2.0% ML[-250,250] sides=favorite window=from2022 ROI 5.8% worst 0.77% n=100 all-season+. ENABLED.",
+    "backtest_roi_pct": 5.8,
+    "backtest_bets": 100
   },
   "cfb": {
     "bet_type": "moneyline",

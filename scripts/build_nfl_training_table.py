@@ -33,7 +33,7 @@ def binary_home_win(home_score: int, away_score: int) -> int | None:
 
 
 def _attach_opening_lines(games: list[dict]) -> list[dict]:
-    """Join SBR opens from nfl.csv when present; never invent open=close."""
+    """Join SBR / Odds-API opens from nfl.csv when present; never invent open=close."""
     if not OPENS_CSV.is_file():
         return games
     try:
@@ -44,22 +44,62 @@ def _attach_opening_lines(games: list[dict]) -> list[dict]:
     if opens.empty or not needed.issubset(set(opens.columns)):
         return games
     opens = opens.copy()
-    opens["_day"] = opens["date"].astype(str).str[:10]
-    opens["_home"] = opens["home_key"].astype(str).str.lower().str.strip()
-    opens["_away"] = opens["away_key"].astype(str).str.lower().str.strip()
-    has_open = any(c in opens.columns for c in ("home_open_ml", "home_open_spread"))
+    opens["day"] = opens["date"].astype(str).str[:10]
+    opens["home"] = (
+        opens["home_key"].astype(str).str.lower().str.strip().replace({"wsh": "was", "lar": "la"})
+    )
+    opens["away"] = (
+        opens["away_key"].astype(str).str.lower().str.strip().replace({"wsh": "was", "lar": "la"})
+    )
+    has_open = any(c in opens.columns for c in ("home_open_ml", "home_open_spread", "open_total"))
     if not has_open:
         return games
-    lookup = { (r._day, r._home, r._away): r for r in opens.itertuples(index=False) }
+    lookup: dict[tuple[str, str, str], dict] = {}
+    for row in opens.to_dict(orient="records"):
+        key = (str(row["day"]), str(row["home"]), str(row["away"]))
+        # Prefer rows that actually carry an open line when duplicates collide.
+        prev = lookup.get(key)
+        if prev is None or (
+            prev.get("home_open_spread") in (None, "")
+            and row.get("home_open_spread") not in (None, "")
+        ):
+            lookup[key] = row
+
+    def _lookup_row(day: str, home: str, away: str) -> dict | None:
+        home = {"wsh": "was", "lar": "la"}.get(home, home)
+        away = {"wsh": "was", "lar": "la"}.get(away, away)
+        for delta in (0, -1, 1):
+            if not day:
+                break
+            try:
+                y, m, d = int(day[:4]), int(day[5:7]), int(day[8:10])
+            except ValueError:
+                return lookup.get((day, home, away))
+            from datetime import date, timedelta
+
+            cand = (date(y, m, d) + timedelta(days=delta)).isoformat()
+            row = lookup.get((cand, home, away))
+            if row is not None:
+                return row
+        return None
+
     for game in games:
-        key = (str(game.get("date") or "")[:10], str(game.get("home") or "").lower(), str(game.get("away") or "").lower())
-        row = lookup.get(key)
+        row = _lookup_row(
+            str(game.get("date") or "")[:10],
+            str(game.get("home") or "").lower(),
+            str(game.get("away") or "").lower(),
+        )
         if row is None:
             continue
-        for field in ("home_open_ml", "away_open_ml", "home_open_spread", "away_open_spread"):
-            if not hasattr(row, field):
-                continue
-            val = getattr(row, field)
+        for field in (
+            "home_open_ml",
+            "away_open_ml",
+            "home_open_spread",
+            "away_open_spread",
+            "open_total",
+            "close_total",
+        ):
+            val = row.get(field)
             if val is None or (isinstance(val, float) and val != val):
                 continue
             game[field] = val
@@ -89,6 +129,7 @@ META_COLUMNS = (
     "away_open_ml",
     "home_open_spread",
     "away_open_spread",
+    "open_total",
 )
 
 
@@ -176,8 +217,14 @@ def main() -> int:
                 "away_open_ml": game.get("away_open_ml"),
                 "home_open_spread": game.get("home_open_spread"),
                 "away_open_spread": game.get("away_open_spread"),
+                "open_total": game.get("open_total"),
             }
             row.update({col: float(features[col]) for col in FEATURE_COLUMNS})
+            # Hard gate: never write NaN feature cells.
+            for col in FEATURE_COLUMNS:
+                val = row[col]
+                if val != val:  # NaN
+                    raise ValueError(f"NaN in feature {col} for {game.get('date')} {game.get('home')}@{game.get('away')}")
             writer.writerow(row)
             written += 1
 

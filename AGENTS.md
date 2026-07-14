@@ -41,12 +41,18 @@ Build the leak-free training table, then train (walk-forward OOS + artifacts und
 # python scripts/build_nfl_pbp_epa.py --copy-supplemental
 # Optional snap shares:
 # python scripts/build_nfl_snap_shares.py --copy-supplemental
+# Optional SBR + Odds-API open/close steam cache into nfl.csv:
+# python scripts/build_nfl_open_close_cache.py
+# Optional weekly injury history:
+# python scripts/build_nfl_injury_history.py
 # Optional daily injury snapshots (PIT join once history accumulates):
 # python scripts/snapshot_espn_injuries.py
-# Optional SBR open spreads into nfl.csv (for open-line Hubáček grids):
-# python -c "from web.sbr_odds import write_sbr_cache; write_sbr_cache('nfl', list(range(2015,2026)))"
 python scripts/build_nfl_training_table.py
 python scripts/train_nfl_model.py
+# Revolution hybrid (full features) + Hubáček niche:
+# python scripts/train_nfl_revolution.py --until 23:59 --ship --max-configs 10
+# python scripts/ship_nfl_full_hybrid.py
+# python scripts/pick_robust_nfl_hubacek.py
 
 # CFB (needs data/supplemental/closing-odds/cfb.csv)
 python scripts/build_cfb_training_table.py

@@ -20,8 +20,11 @@ EPA_FIELDS = (
     "sr_off",
     "sr_def",
     "explosive_off",
+    "explosive_def",
     "pass_epa_off",
     "rush_epa_off",
+    "pass_epa_def",
+    "rush_epa_def",
     "sack_rate_off",
     "sack_rate_def",
     "qb_hit_rate_off",
@@ -29,6 +32,8 @@ EPA_FIELDS = (
     "early_down_epa_off",
     "third_down_sr_off",
     "redzone_epa_off",
+    "to_rate_off",
+    "to_rate_def",
 )
 
 

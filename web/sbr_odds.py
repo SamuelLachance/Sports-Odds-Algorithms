@@ -36,6 +36,84 @@ SBR_ARCHIVE_URLS = {
         "https://raw.githubusercontent.com/flancast90/sportsbookreview-scraper/"
         "main/data/mlb_archive_10Y.json"
     ),
+    "nfl": (
+        "https://raw.githubusercontent.com/flancast90/sportsbookreview-scraper/"
+        "main/data/nfl_archive_10Y.json"
+    ),
+}
+
+# SBR nickname / city labels → nflverse abbreviations used by the training table.
+NFL_NICK_TO_ABBR: dict[str, str] = {
+    "cardinals": "ari",
+    "arizona": "ari",
+    "falcons": "atl",
+    "atlanta": "atl",
+    "ravens": "bal",
+    "baltimore": "bal",
+    "bills": "buf",
+    "buffalo": "buf",
+    "panthers": "car",
+    "carolina": "car",
+    "bears": "chi",
+    "chicago": "chi",
+    "bengals": "cin",
+    "cincinnati": "cin",
+    "browns": "cle",
+    "cleveland": "cle",
+    "cowboys": "dal",
+    "dallas": "dal",
+    "broncos": "den",
+    "denver": "den",
+    "lions": "det",
+    "detroit": "det",
+    "packers": "gb",
+    "greenbay": "gb",
+    "texans": "hou",
+    "houston": "hou",
+    "colts": "ind",
+    "indianapolis": "ind",
+    "jaguars": "jax",
+    "jacksonville": "jax",
+    "chiefs": "kc",
+    "kansascity": "kc",
+    "raiders": "lv",
+    "lasvegas": "lv",
+    "oakland": "oak",
+    "chargers": "lac",
+    "lachargers": "lac",
+    "sandiego": "sd",
+    "rams": "la",
+    "larams": "la",
+    "stlouis": "stl",
+    "dolphins": "mia",
+    "miami": "mia",
+    "vikings": "min",
+    "minnesota": "min",
+    "patriots": "ne",
+    "newengland": "ne",
+    "saints": "no",
+    "neworleans": "no",
+    "giants": "nyg",
+    "nygiants": "nyg",
+    "jets": "nyj",
+    "nyjets": "nyj",
+    "eagles": "phi",
+    "philadelphia": "phi",
+    "steelers": "pit",
+    "pittsburgh": "pit",
+    "49ers": "sf",
+    "fortyniners": "sf",
+    "sanfrancisco": "sf",
+    "seahawks": "sea",
+    "seattle": "sea",
+    "buccaneers": "tb",
+    "tampabay": "tb",
+    "titans": "ten",
+    "tennessee": "ten",
+    "commanders": "was",
+    "washington": "was",
+    "redskins": "was",
+    "footballteam": "was",
 }
 
 
@@ -505,6 +583,94 @@ def _parse_optional_float(value: Any) -> float | None:
     return number
 
 
+def nfl_team_key(label: Any) -> str | None:
+    """Map city/nickname/full name/abbr → nflverse lowercase abbr (``was``, ``la``)."""
+    raw = str(label or "").strip()
+    if not raw:
+        return None
+    compact = (
+        raw.lower()
+        .replace(".", "")
+        .replace("-", "")
+        .replace("'", "")
+        .replace(" ", "")
+    )
+    # Common Odds API / full-name forms.
+    full_name_aliases = {
+        "cincinnatibengals": "bengals",
+        "tampabaybuccaneers": "buccaneers",
+        "washingtoncommanders": "commanders",
+        "washingtonfootballteam": "footballteam",
+        "losangelesrams": "larams",
+        "losangeleschargers": "lachargers",
+        "newyorkgiants": "nygiants",
+        "newyorkjets": "nyjets",
+        "newenglandpatriots": "newengland",
+        "neworleanssaints": "neworleans",
+        "kansascitychiefs": "kansascity",
+        "greenbaypackers": "greenbay",
+        "sanfrancisco49ers": "sanfrancisco",
+        "lasvegasraiders": "lasvegas",
+        "oaklandraiders": "oakland",
+        "sandiegochargers": "sandiego",
+        "stlouisrams": "stlouis",
+        "arizonacardinals": "cardinals",
+        "atlantafalcons": "falcons",
+        "baltimoreravens": "ravens",
+        "buffalobills": "bills",
+        "carolinapanthers": "panthers",
+        "chicagobears": "bears",
+        "clevelandbrowns": "browns",
+        "dallascowboys": "cowboys",
+        "denverbroncos": "broncos",
+        "detroitlions": "lions",
+        "houstontexans": "texans",
+        "indianapoliscolts": "colts",
+        "jacksonvillejaguars": "jaguars",
+        "miamidolphins": "dolphins",
+        "minnesotavikings": "vikings",
+        "philadelphiaeagles": "eagles",
+        "pittsburghsteelers": "steelers",
+        "seattleseahawks": "seahawks",
+        "tennesseetitans": "titans",
+    }
+    compact = full_name_aliases.get(compact, compact)
+    if compact in NFL_NICK_TO_ABBR:
+        abbr = NFL_NICK_TO_ABBR[compact]
+    else:
+        # Try last token as nickname ("Buffalo Bills" → bills).
+        parts = raw.lower().replace(".", "").split()
+        nick = parts[-1] if parts else compact
+        if nick in NFL_NICK_TO_ABBR:
+            abbr = NFL_NICK_TO_ABBR[nick]
+        else:
+            mapped = normalize_team_key("nfl", raw)
+            if mapped and mapped in NFL_NICK_TO_ABBR:
+                abbr = NFL_NICK_TO_ABBR[mapped]
+            elif mapped and len(mapped) <= 3:
+                abbr = mapped
+            else:
+                abbr = NFL_NICK_TO_ABBR.get(mapped or "", mapped or "")
+    if not abbr:
+        return None
+    # Align with nflverse / training table keys.
+    if abbr in {"wsh", "was"}:
+        return "was"
+    if abbr == "lar":
+        return "la"
+    if abbr == "jac":
+        return "jax"
+    return abbr
+
+
+def _archive_team_key(sport: str, label: Any) -> str | None:
+    """Normalize archive team labels; NFL nicknames → nflverse abbrs."""
+    sport = sport.lower()
+    if sport == "nfl":
+        return nfl_team_key(label)
+    return normalize_team_key(sport, str(label or "").strip())
+
+
 def fetch_sbr_archive_rows(sport: str) -> list[dict[str, Any]]:
     """Pre-scraped SBR archive JSON (2011-2022) when live HTML pages are empty."""
     sport = sport.lower()
@@ -523,8 +689,8 @@ def fetch_sbr_archive_rows(sport: str) -> list[dict[str, Any]]:
     for record in payload:
         if not isinstance(record, dict):
             continue
-        home_key = normalize_team_key(sport, record.get("home_team", ""))
-        away_key = normalize_team_key(sport, record.get("away_team", ""))
+        home_key = _archive_team_key(sport, record.get("home_team", ""))
+        away_key = _archive_team_key(sport, record.get("away_team", ""))
         game_date = _archive_date(record.get("date"))
         if not home_key or not away_key or not game_date:
             continue
@@ -538,6 +704,25 @@ def fetch_sbr_archive_rows(sport: str) -> list[dict[str, Any]]:
             home_ml=home_close_ml,
             away_ml=away_close_ml,
         )
+        home_open_spread = _parse_optional_float(record.get("home_open_spread"))
+        away_open_spread = _parse_optional_float(record.get("away_open_spread"))
+        home_open_spread, away_open_spread = _repair_same_sign_spreads(
+            home_open_spread,
+            away_open_spread,
+            home_ml=home_close_ml,
+            away_ml=away_close_ml,
+        )
+        open_total = _parse_optional_float(
+            record.get("open_over_under") or record.get("open_total")
+        )
+        close_total = _parse_optional_float(
+            record.get("close_over_under") or record.get("close_total")
+        )
+        # Totals are magnitudes; reject pick'em 0 that slipped through.
+        if open_total is not None and open_total <= 0:
+            open_total = None
+        if close_total is not None and close_total <= 0:
+            close_total = None
         output.append(
             {
                 "date": game_date,
@@ -547,6 +732,12 @@ def fetch_sbr_archive_rows(sport: str) -> list[dict[str, Any]]:
                 "away_close_ml": away_close_ml,
                 "home_close_spread": home_spread,
                 "away_close_spread": away_spread,
+                "home_open_ml": _parse_optional_int(record.get("home_open_ml")),
+                "away_open_ml": _parse_optional_int(record.get("away_open_ml")),
+                "home_open_spread": home_open_spread,
+                "away_open_spread": away_open_spread,
+                "open_total": open_total,
+                "close_total": close_total,
                 # Archive JSON has no juice fields — do not invent -110.
                 "home_spread_odds": None,
                 "away_spread_odds": None,
@@ -700,6 +891,8 @@ def write_sbr_cache(sport: str, seasons: list[int], path: Path | None = None) ->
         "away_open_spread",
         "home_spread_odds",
         "away_spread_odds",
+        "open_total",
+        "close_total",
         "source",
     ]
     with out.open("w", encoding="utf-8", newline="") as handle:

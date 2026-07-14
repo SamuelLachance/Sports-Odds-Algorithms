@@ -81,6 +81,11 @@ data/models/nfl_v2/oos_predictions.csv
 data/models/cfb_v2/oos_predictions.csv
 data/models/cbb_v2/oos_predictions.csv
 
+# Large Odds-API snapshot DuckDB (rebuild opens_2025.csv via
+# scripts/build_nfl_open_close_cache.py from the GitHub release asset).
+data/supplemental/nfl-opens/*.duckdb
+data/models/nfl_revolution/prepared_*.parquet
+
 # football-data.co.uk runtime cache (auto-downloaded on demand by
 # web/football_data_uk.py)
 data/supplemental/football-data-uk/

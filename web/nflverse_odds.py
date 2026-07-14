@@ -8,6 +8,8 @@ from pathlib import Path
 from typing import Any
 
 from web.closing_odds_db import ODDS_DIR, normalize_team_key
+from web.sbr_odds import nfl_team_key
+
 
 NFLVERSE_URL = "https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv"
 
@@ -55,8 +57,12 @@ def rows_from_nflverse_csv(path: Path) -> list[dict[str, Any]]:
                 "SB",
             ):
                 continue
-            home = normalize_team_key("nfl", record.get("home_team", ""))
-            away = normalize_team_key("nfl", record.get("away_team", ""))
+            home = nfl_team_key(record.get("home_team", "")) or normalize_team_key(
+                "nfl", record.get("home_team", "")
+            )
+            away = nfl_team_key(record.get("away_team", "")) or normalize_team_key(
+                "nfl", record.get("away_team", "")
+            )
             game_date = str(record.get("gameday") or "")[:10]
             if not home or not away or not game_date:
                 continue

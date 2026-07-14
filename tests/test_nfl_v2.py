@@ -67,10 +67,14 @@ def _game(
 
 
 def test_feature_columns_count_in_range() -> None:
-    assert 55 <= len(FEATURE_COLUMNS) <= 130
+    assert 55 <= len(FEATURE_COLUMNS) <= 180
+    assert len(FEATURE_COLUMNS) == len(set(FEATURE_COLUMNS))
     assert "cold_game" in FEATURE_COLUMNS
     assert "wr1_snap_share_diff" in FEATURE_COLUMNS
     assert "sack_rate_def_diff" in FEATURE_COLUMNS
+    assert "has_steam" in FEATURE_COLUMNS
+    assert "travel_diff" in FEATURE_COLUMNS
+    assert "injury_known" in FEATURE_COLUMNS
 
 
 def test_engine_features_precede_update_and_elo_moves() -> None:

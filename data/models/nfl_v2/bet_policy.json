@@ -2,52 +2,52 @@
   "stake_mode": "kelly",
   "kelly_fraction": 0.25,
   "enabled": true,
-  "enabled_note": "positive worst-season ROI (Hub\u00e1\u010dek decorrelated, live weight 0.12)",
-  "source": "search_nfl_hubacek.py",
+  "enabled_note": "positive worst-season ROI (Hub\u00e1\u010dek decorrelated, volume-preferred)",
+  "source": "search_nfl_hubacek.py + pick_robust_nfl_hubacek.py",
   "hubacek_decorrelated": true,
   "bet_type": "moneyline",
   "exec_price": "close",
   "source_oos": "hybrid",
   "prob_col": "model_prob",
   "decor_w": 0.12,
-  "min_edge_pp": 2.0,
-  "min_ev_pct": 0.0,
-  "ml_lo": -180,
-  "ml_hi": 180,
+  "min_edge_pp": 3.0,
+  "min_ev_pct": 2.0,
+  "ml_lo": -250,
+  "ml_hi": 250,
   "sides": "favorite",
   "season_window": "from2022",
   "hubacek": true,
   "backtest": {
-    "bets": 73,
-    "staked_units": 70.1,
-    "profit_units": 17.3,
-    "roi_pct": 24.73,
-    "win_rate": 0.6712,
+    "bets": 100,
+    "staked_units": 171.6,
+    "profit_units": 10.0,
+    "roi_pct": 5.8,
+    "win_rate": 0.63,
     "seasons_positive": 4,
     "seasons_total": 4,
-    "worst_season_roi": 18.01,
-    "median_season_roi": 19.91
+    "worst_season_roi": 0.77,
+    "median_season_roi": 3.32
   },
   "backtest_per_season": {
     "2022": {
-      "bets": 10,
-      "roi_pct": 20.21,
+      "bets": 26,
+      "roi_pct": 4.89,
       "profit_units": 2.2
     },
     "2023": {
-      "bets": 15,
-      "roi_pct": 19.62,
-      "profit_units": 1.7
+      "bets": 18,
+      "roi_pct": 0.77,
+      "profit_units": 0.2
     },
     "2024": {
-      "bets": 18,
-      "roi_pct": 53.58,
-      "profit_units": 6.5
+      "bets": 12,
+      "roi_pct": 1.74,
+      "profit_units": 0.4
     },
     "2025": {
-      "bets": 30,
-      "roi_pct": 18.01,
-      "profit_units": 6.9
+      "bets": 44,
+      "roi_pct": 9.42,
+      "profit_units": 7.2
     }
   }
 }
