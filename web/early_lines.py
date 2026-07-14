@@ -55,13 +55,14 @@ TRACKED_BOOKS = (
     "betrivers",
 )
 
-# Defaults sized for the free Odds API tier (cost = markets x regions per
-# call): retail US books (DK/FD/MGM/Caesars) already arrive free via ESPN, so
-# only the early/sharp offshore books are worth credits — us2 (BetOnline,
-# LowVig, Bovada, MyBookie) + eu (Pinnacle). 2 markets x 2 regions = 4 credits
-# per league per snapshot.
-_DEFAULT_REGIONS = "us2,eu"
-_DEFAULT_MARKETS = "h2h,spreads"
+# Defaults sized for the paid 20K-credit tier (cost = markets x regions per
+# call = 9 credits/league/snapshot): us retail (Bovada + DK/FD redundancy when
+# ESPN lags), us2 offshore openers (BetOnline, LowVig, MyBookie), eu sharp
+# (Pinnacle), all three markets so totals steam is captured too. All 7 leagues
+# x 4 builds/day ≈ 7.6K credits/month. Free-tier fallback: set
+# EARLY_LINES_REGIONS=us2,eu and EARLY_LINES_MARKETS=h2h,spreads (4 credits).
+_DEFAULT_REGIONS = "us,us2,eu"
+_DEFAULT_MARKETS = "h2h,spreads,totals"
 
 
 def _now_iso() -> str:
