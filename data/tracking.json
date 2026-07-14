@@ -673,8 +673,8 @@
       "model_margin": -11.15,
       "model_market_gap_pp": 6.42,
       "kelly_pct": 13.35,
-      "status": "pending",
-      "units": 0.0,
+      "status": "win",
+      "units": 2.7777777777777777,
       "stake_units": 3.0,
       "recorded_at": "2026-07-13T16:23:47.082761+00:00",
       "recorded_pre_start": true,
@@ -682,7 +682,11 @@
       "closing_source": "espn",
       "closing_snapshot_at": "2026-07-13T17:51:22.822131+00:00",
       "closing_spread_odds": -108,
-      "closing_consensus_spread": -8.5
+      "closing_consensus_spread": -8.5,
+      "graded_at": "2026-07-14T02:35:21.096650+00:00",
+      "final_score": "92\u2013101",
+      "clv_pct": 0.0,
+      "clv_payout_pct": 0.0
     }
   ]
 }
