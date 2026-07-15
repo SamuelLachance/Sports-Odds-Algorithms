@@ -70,26 +70,35 @@ def decorrelated_ders(
     return der1, der2
 
 
-class DecorrelatedLogloss:
-    """CatBoost custom objective carrying the per-row book probabilities.
+QW_OFFSET = 1.0  # weight encoding: w = 1 + q (w == 1.0 exactly => no market)
 
-    ``q`` must be aligned with the TRAINING pool's row order (NaN where no
-    market exists). CatBoost calls calc_ders_range with global document
-    indices preserved, so positional alignment holds.
+
+def encode_q_as_weights(q: np.ndarray) -> np.ndarray:
+    """Book probs -> Pool weights (1+q; rows without a market get exactly 1).
+
+    CatBoost slices custom-objective calls into thread-local ranges WITHOUT
+    exposing offsets, so external arrays cannot be positionally aligned —
+    weights are the only per-row side-channel that stays aligned. Real sample
+    weights are not used by the β arms, and the objective divides them back
+    out (derivatives are returned unweighted).
     """
+    q = np.asarray(q, dtype=float)
+    return np.where(np.isfinite(q), QW_OFFSET + np.clip(q, 1e-4, 1 - 1e-4), QW_OFFSET)
 
-    def __init__(self, q: np.ndarray, c: float):
-        self.q = np.asarray(q, dtype=float)
+
+class DecorrelatedLogloss:
+    """CatBoost custom objective; per-row book probs arrive via Pool weights."""
+
+    def __init__(self, c: float):
         self.c = float(c)
 
     def calc_ders_range(self, approxes, targets, weights):
         s = np.asarray(approxes, dtype=float)
         y = np.asarray(targets, dtype=float)
-        n = len(s)
-        q = self.q[:n] if len(self.q) >= n else np.full(n, np.nan)
-        der1, der2 = decorrelated_ders(s, y, q, self.c)
         if weights is not None:
             w = np.asarray(weights, dtype=float)
-            der1 = der1 * w
-            der2 = der2 * w
+            q = np.where(w > QW_OFFSET + 1e-9, w - QW_OFFSET, np.nan)
+        else:
+            q = np.full(len(s), np.nan)
+        der1, der2 = decorrelated_ders(s, y, q, self.c)
         return list(zip(der1.tolist(), der2.tolist()))

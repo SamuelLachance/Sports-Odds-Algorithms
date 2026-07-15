@@ -147,7 +147,7 @@ def _fit_catboost_decorrelated(train, cols, cfg):
     sigmoid(raw score)."""
     from catboost import CatBoostRegressor, Pool
 
-    from web.hubacek_v2.objective import DecorrelatedLogloss
+    from web.hubacek_v2.objective import DecorrelatedLogloss, encode_q_as_weights
 
     cat_cols = [c for c in ("home_id", "away_id") if c in train.columns and cfg.use_categoricals]
     feature_cols = [c for c in cols if c in train.columns] + cat_cols
@@ -156,12 +156,19 @@ def _fit_catboost_decorrelated(train, cols, cfg):
         if "market_home_prob" in train.columns
         else np.full(len(train), np.nan)
     )
+    # Traceability: the decorrelation strength actually reaching the objective
+    # (a silent c mix-up produced identical arms once — never again silently).
+    print(
+        f"    [decorrelated fit] c={cfg.decorrelation_c} rows={len(train)} "
+        f"q_finite={int(np.isfinite(q_train).sum())} features={len(feature_cols)}",
+        flush=True,
+    )
     model = CatBoostRegressor(
         iterations=cfg.iterations,
         depth=cfg.depth,
         learning_rate=cfg.learning_rate,
         l2_leaf_reg=cfg.l2,
-        loss_function=DecorrelatedLogloss(q_train, cfg.decorrelation_c),
+        loss_function=DecorrelatedLogloss(cfg.decorrelation_c),
         eval_metric="RMSE",
         random_seed=cfg.seed,
         verbose=False,
@@ -170,7 +177,17 @@ def _fit_catboost_decorrelated(train, cols, cfg):
         # Python custom objectives require plain boosting on CPU.
         boosting_type="Plain",
     )
-    model.fit(Pool(train[feature_cols], train["home_win"], cat_features=cat_cols or None))
+    # Book probs ride in the Pool weights (w = 1 + q): CatBoost slices custom
+    # objective calls into offset-less thread ranges, and weights are the only
+    # per-row side channel that stays aligned with each range.
+    model.fit(
+        Pool(
+            train[feature_cols],
+            train["home_win"],
+            cat_features=cat_cols or None,
+            weight=encode_q_as_weights(q_train),
+        )
+    )
     return model, feature_cols, cat_cols
 
 

@@ -53,14 +53,26 @@ def test_decorrelation_term_pushes_away_from_book() -> None:
     assert dec1[0] < base1[0]
 
 
-def test_catboost_objective_wrapper_shapes() -> None:
+def test_catboost_objective_wrapper_reads_q_from_weights() -> None:
+    from web.hubacek_v2.objective import encode_q_as_weights
+
     q = np.array([0.5, 0.7, np.nan])
-    obj = DecorrelatedLogloss(q, c=0.4)
-    ders = obj.calc_ders_range([0.1, -0.2, 0.3], [1, 0, 1], None)
-    assert len(ders) == 3
-    assert all(len(pair) == 2 for pair in ders)
-    weighted = obj.calc_ders_range([0.1, -0.2, 0.3], [1, 0, 1], [2.0, 2.0, 2.0])
-    assert weighted[0][0] == pytest.approx(2.0 * ders[0][0])
+    weights = encode_q_as_weights(q)
+    assert weights[2] == pytest.approx(1.0)  # no-market sentinel
+    obj = DecorrelatedLogloss(c=0.4)
+    ders = obj.calc_ders_range([0.1, -0.2, 0.3], [1, 0, 1], weights.tolist())
+    assert len(ders) == 3 and all(len(pair) == 2 for pair in ders)
+    # Row without a market must reduce to plain log-loss derivatives.
+    plain1, _ = decorrelated_ders(np.array([0.3]), np.array([1.0]), np.array([np.nan]), 0.4)
+    assert ders[2][0] == pytest.approx(plain1[0])
+    # Weight-encoded q must matter: same call with a different q shifts der1.
+    ders_alt = obj.calc_ders_range([0.1, -0.2, 0.3], [1, 0, 1], encode_q_as_weights(np.array([0.9, 0.7, np.nan])).tolist())
+    assert ders_alt[0][0] != pytest.approx(ders[0][0])
+    # Objective calls arrive in offset-less slices: per-row results must be
+    # invariant to slicing (regression test for the q-misalignment bug).
+    part = obj.calc_ders_range([-0.2, 0.3], [0, 1], weights[1:].tolist())
+    assert part[0][0] == pytest.approx(ders[1][0])
+    assert part[1][0] == pytest.approx(ders[2][0])
 
 
 def test_max_sharpe_allocates_only_positive_ev() -> None:

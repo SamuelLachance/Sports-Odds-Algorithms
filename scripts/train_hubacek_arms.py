@@ -36,11 +36,27 @@ def run_league(league: str) -> dict:
     frame = prepare_frame(adapter, end_season=end_season)
     print(f"=== {league} Hubacek beta arms (rows={len(frame)}) ===", flush=True)
     board: list[dict] = []
+    oos_hashes: dict[str, str] = {}
     for cfg in focused_search_space():
         if cfg.target_mode != "decorrelated":
             continue
         summary = run_config(adapter, cfg, frame, end_season)
         board.append(summary)
+        # Guard: distinct c values MUST yield distinct predictions. Identical
+        # OOS hashes mean the objective silently lost its c — hard-stop.
+        import hashlib
+
+        safe = "".join(ch if ch.isalnum() or ch in "-_" else "_" for ch in cfg.name)
+        oos_path = adapter.hybrid_dir / f"oos_{safe}.csv"
+        if oos_path.is_file():
+            digest = hashlib.md5(oos_path.read_bytes()).hexdigest()
+            dup = next((n for n, h in oos_hashes.items() if h == digest), None)
+            if dup is not None:
+                raise RuntimeError(
+                    f"{league}: OOS of {cfg.name} is byte-identical to {dup} — "
+                    "decorrelation_c is not reaching the objective; aborting."
+                )
+            oos_hashes[cfg.name] = digest
 
     def _sharpe(entry: dict) -> float:
         best = (entry.get("hubacek") or {}).get("best_opt") or {}
