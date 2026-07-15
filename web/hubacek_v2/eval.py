@@ -67,6 +67,10 @@ def evaluate_rounds(
     strategy: str = "opt",
     round_key: str = "date",
     margin_haircut: float = 0.0,
+    pi_col: str | None = None,
+    threshold_mode: str = "phi",
+    zscore_k: float = 1.0,
+    kelly_fraction: float | None = None,
 ) -> dict[str, Any] | None:
     """Simulate round-by-round betting on an OOS frame.
 
@@ -76,6 +80,21 @@ def evaluate_rounds(
     applied as a synthetic vig. 'open' uses home_open_ml/away_open_ml rows.
     Both sides of every game are candidate outcomes (the portfolio keeps at
     most one).
+
+    Beyond-the-paper extensions:
+    - ``pi_col``: column holding the π (close-predictor) probability. When
+      set, candidates are kept only if β's edge sign vs the taken price
+      AGREES with π's — i.e. the close is predicted to move our way
+      (predicted-CLV filter; triangulation the paper could not do).
+    - ``threshold_mode='zscore'``: instead of a flat |p̂−0.5|>φ, require the
+      edge to clear the price's own noise floor: p̂·o − 1 > k·σ_edge(o) with
+      σ_edge(o)=o·sqrt(p̂(1−p̂)/n_eff). ``phi`` is ignored in this mode;
+      ``zscore_k`` sets k. Rationale: the book's margin (their Fig. 4) and
+      the payout noise both scale with odds — a flat φ under/over-filters
+      the tails.
+    - ``kelly_fraction``: bankroll simulation overlay — round bets are scaled
+      by fraction×bankroll (compounding) instead of a fixed unit budget;
+      reports max drawdown and terminal bankroll alongside per-round stats.
     """
     frame = oos.copy()
     if round_key not in frame.columns:
@@ -105,7 +124,12 @@ def evaluate_rounds(
     frame["_q"] = q_home
     frame["_oh"] = o_home
     frame["_oa"] = o_away
-    frame = frame.dropna(subset=[prob_col, "_q", "_oh", "_oa", "home_win"])
+    needed = [prob_col, "_q", "_oh", "_oa", "home_win"]
+    if pi_col is not None and pi_col in frame.columns:
+        needed.append(pi_col)
+    elif pi_col is not None:
+        pi_col = None
+    frame = frame.dropna(subset=needed)
     if frame.empty:
         return None
 
@@ -125,18 +149,36 @@ def evaluate_rounds(
 
     profits: list[float] = []
     bets_placed = 0
+    clv_kept = clv_dropped = 0
     for _, day in frame.groupby(round_key, sort=True):
         ph = day[prob_col].to_numpy(dtype=float)
         yh = day["home_win"].to_numpy(dtype=float)
         oh = day["_oh"].to_numpy(dtype=float)
         oa = day["_oa"].to_numpy(dtype=float)
+        qh = day["_q"].to_numpy(dtype=float)
         gid = np.arange(len(day))
         # Candidate outcomes: home and away side of each game.
         probs = np.concatenate([ph, 1.0 - ph])
         odds = np.concatenate([oh, oa])
         wins = np.concatenate([yh, 1.0 - yh])
         gids = np.concatenate([gid, gid])
-        keep = np.abs(probs - 0.5) > phi
+        qs = np.concatenate([qh, 1.0 - qh])
+        if threshold_mode == "zscore":
+            # Edge must clear the payout's own noise floor at these odds.
+            n_eff = 25.0  # effective evidence behind a per-game estimate
+            sigma_edge = odds * np.sqrt(np.clip(probs * (1 - probs), 1e-6, None) / n_eff)
+            keep = (probs * odds - 1.0) > zscore_k * sigma_edge
+        else:
+            keep = np.abs(probs - 0.5) > phi
+        if pi_col is not None:
+            # Predicted-CLV triangulation: π forecasts the close; only keep
+            # sides where the close is predicted to move toward us too.
+            pih = day[pi_col].to_numpy(dtype=float)
+            pis = np.concatenate([pih, 1.0 - pih])
+            agree = np.sign(probs - qs) == np.sign(pis - qs)
+            clv_kept += int(np.sum(keep & agree))
+            clv_dropped += int(np.sum(keep & ~agree))
+            keep = keep & agree
         if not keep.any():
             profits.append(0.0)
             continue
@@ -163,7 +205,91 @@ def evaluate_rounds(
             "cumulative_profit_units": round(float(arr.sum()), 3),
         }
     )
+    if pi_col is not None:
+        result["clv_filter"] = {"kept": clv_kept, "dropped": clv_dropped}
+    if kelly_fraction is not None and len(arr):
+        # Compounding overlay: stake fraction×bankroll per round on the same
+        # relative allocation; reports growth + risk the flat view hides.
+        bankroll = 1.0
+        peak = 1.0
+        max_dd = 0.0
+        for r in arr:
+            bankroll *= 1.0 + kelly_fraction * float(r)
+            if bankroll <= 0:
+                bankroll = 0.0
+                max_dd = 1.0
+                break
+            peak = max(peak, bankroll)
+            max_dd = max(max_dd, 1.0 - bankroll / peak)
+        result["bankroll"] = {
+            "fraction": kelly_fraction,
+            "terminal": round(bankroll, 4),
+            "max_drawdown_pct": round(100.0 * max_dd, 2),
+        }
     return result
+
+
+def _game_key(frame: pd.DataFrame) -> pd.Series:
+    home = frame["home"] if "home" in frame.columns else frame.get("home_key", "")
+    away = frame["away"] if "away" in frame.columns else frame.get("away_key", "")
+    return frame["date"].astype(str) + "|" + home.astype(str) + "|" + away.astype(str)
+
+
+def build_ensemble_frame(
+    oos_frames: dict[str, pd.DataFrame],
+    *,
+    prob_col: str = "model_prob",
+    dispersion_cap: float | None = 0.08,
+) -> pd.DataFrame | None:
+    """β-ensemble: average the arms' probabilities per game; keep agreement.
+
+    Beyond the paper: the decorrelated arms differ by c and feature policy —
+    their mean is a lower-variance decorrelated estimate, and their DISPERSION
+    is an uncertainty signal. Rows where arms disagree more than
+    ``dispersion_cap`` get prob=NaN (excluded from betting) rather than a
+    falsely confident average. Returns the first frame's metadata columns with
+    ``model_prob`` replaced by the ensemble and ``ens_dispersion`` attached.
+    """
+    if not oos_frames:
+        return None
+    names = sorted(oos_frames)
+    base = oos_frames[names[0]].copy()
+    base["_k"] = _game_key(base)
+    probs = pd.DataFrame({"_k": base["_k"], names[0]: base[prob_col].to_numpy()})
+    for name in names[1:]:
+        f = oos_frames[name]
+        probs = probs.merge(
+            pd.DataFrame({"_k": _game_key(f), name: f[prob_col].to_numpy()}),
+            on="_k",
+            how="inner",
+        )
+    mat = probs[names].to_numpy(dtype=float)
+    mean = mat.mean(axis=1)
+    spread = mat.max(axis=1) - mat.min(axis=1)
+    if dispersion_cap is not None:
+        mean = np.where(spread <= dispersion_cap, mean, np.nan)
+    merged = base.merge(
+        pd.DataFrame({"_k": probs["_k"], "_ens": mean, "ens_dispersion": spread}),
+        on="_k",
+        how="inner",
+    )
+    merged[prob_col] = merged["_ens"]
+    return merged.drop(columns=["_k", "_ens"])
+
+
+def attach_pi_probs(
+    beta_oos: pd.DataFrame,
+    pi_oos: pd.DataFrame,
+    *,
+    pi_prob_col: str = "model_prob",
+) -> pd.DataFrame:
+    """Join the π (close-predictor) probability onto a β OOS frame as pi_prob."""
+    left = beta_oos.copy()
+    left["_k"] = _game_key(left)
+    right = pd.DataFrame({"_k": _game_key(pi_oos), "pi_prob": pi_oos[pi_prob_col].to_numpy()})
+    right = right.drop_duplicates("_k")
+    out = left.merge(right, on="_k", how="left").drop(columns=["_k"])
+    return out
 
 
 def hubacek_report(

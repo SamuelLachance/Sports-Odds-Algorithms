@@ -45,12 +45,22 @@ def ship_league(league: str) -> dict | None:
         print(f"[{league}] meta-selection has no seasons")
         return None
     latest = seasons[-1]
+    # The meta-selected candidate may be the dispersion-gated ENSEMBLE; a
+    # single .cbm cannot represent it, so ship the last single-arm pick
+    # (the live layer notes the selection; full ensemble serving is staged).
+    chosen = latest.get("candidate") or latest.get("config")
+    if chosen == "ensemble":
+        single = next((s for s in reversed(seasons) if (s.get("candidate") or "") != "ensemble"), None)
+        if single is None:
+            print(f"[{league}] only ensemble picks in meta - staging single-arm fallback not available")
+            return None
+        chosen = single["candidate"]
     cfg = next(
-        (c for c in focused_search_space() if c.name == latest["config"] and c.target_mode == "decorrelated"),
+        (c for c in focused_search_space() if c.name == chosen and c.target_mode == "decorrelated"),
         None,
     )
     if cfg is None:
-        print(f"[{league}] config {latest['config']} not in grid")
+        print(f"[{league}] config {chosen} not in grid")
         return None
 
     frame = prepare_frame(adapter, end_season=adapter.end_season)
@@ -63,7 +73,7 @@ def ship_league(league: str) -> dict | None:
     model.save_model(str(model_path))
 
     calibrator = None
-    oos_path = adapter.hybrid_dir / f"oos_{latest['config']}.csv"
+    oos_path = adapter.hybrid_dir / f"oos_{chosen}.csv"
     if oos_path.is_file():
         try:
             from sklearn.isotonic import IsotonicRegression
@@ -86,6 +96,10 @@ def ship_league(league: str) -> dict | None:
         "cat_cols": cat_cols,
         "decorrelation_c": cfg.decorrelation_c,
         "phi": latest.get("phi"),
+        "threshold_mode": latest.get("threshold_mode"),
+        "zscore_k": latest.get("zscore_k"),
+        "clv_filter": latest.get("clv_filter"),
+        "meta_candidate": latest.get("candidate"),
         "calibrator": calibrator,
         "meta_selection": {
             k: meta.get(k)

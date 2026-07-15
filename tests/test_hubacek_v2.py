@@ -151,6 +151,52 @@ def test_phi_filter_reduces_bets() -> None:
     assert loose["n_bets"] > tight["n_bets"]
 
 
+def test_clv_triangulation_filter_keeps_agreeing_sides() -> None:
+    oos = _toy_oos()
+    # π = the book itself → sign(π−q)=0 → nothing agrees → no bets at all.
+    oos["pi_prob"] = oos["market_home_prob"]
+    res = evaluate_rounds(oos, phi=0.0, strategy="unif", round_key="date", pi_col="pi_prob", margin_haircut=0.025)
+    assert res["n_bets"] == 0
+    # π = our own model → full agreement → same bets as no filter.
+    oos["pi_prob"] = oos["model_prob"]
+    with_f = evaluate_rounds(oos, phi=0.0, strategy="unif", round_key="date", pi_col="pi_prob", margin_haircut=0.025)
+    without = evaluate_rounds(oos, phi=0.0, strategy="unif", round_key="date", margin_haircut=0.025)
+    assert with_f["n_bets"] == without["n_bets"]
+    assert with_f["clv_filter"]["dropped"] == 0
+
+
+def test_zscore_threshold_scales_with_odds() -> None:
+    oos = _toy_oos()
+    z = evaluate_rounds(oos, threshold_mode="zscore", zscore_k=1.0, strategy="unif", round_key="date", margin_haircut=0.025)
+    z_loose = evaluate_rounds(oos, threshold_mode="zscore", zscore_k=0.2, strategy="unif", round_key="date", margin_haircut=0.025)
+    assert z_loose["n_bets"] > z["n_bets"]
+
+
+def test_bankroll_overlay_reports_drawdown() -> None:
+    oos = _toy_oos()
+    res = evaluate_rounds(oos, phi=0.1, strategy="opt", round_key="date", margin_haircut=0.025, kelly_fraction=0.25)
+    bk = res.get("bankroll")
+    assert bk and bk["terminal"] >= 0 and 0 <= bk["max_drawdown_pct"] <= 100
+
+
+def test_ensemble_frame_dispersion_gate() -> None:
+    from web.hubacek_v2.eval import build_ensemble_frame
+
+    a = _toy_oos(seed=1)
+    b = a.copy()
+    b["model_prob"] = np.clip(a["model_prob"] + 0.02, 0.01, 0.99)  # mild disagreement
+    c = a.copy()
+    c["model_prob"] = np.clip(a["model_prob"] - 0.02, 0.01, 0.99)
+    for f in (a, b, c):
+        f["home"] = [f"h{i}" for i in range(len(f))]
+        f["away"] = [f"x{i}" for i in range(len(f))]
+    ens = build_ensemble_frame({"m1": a, "m2": b, "m3": c}, dispersion_cap=0.08)
+    assert ens is not None and len(ens) == len(a)
+    assert ens["model_prob"].notna().all()  # spread 0.04 < cap
+    tight = build_ensemble_frame({"m1": a, "m2": b, "m3": c}, dispersion_cap=0.01)
+    assert tight["model_prob"].isna().all()  # spread 0.04 > cap → excluded
+
+
 def test_market_feature_registry() -> None:
     assert is_market_derived("mkt_home_prob")
     assert is_market_derived("ml_steam_pp")
