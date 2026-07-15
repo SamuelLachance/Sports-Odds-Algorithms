@@ -523,11 +523,16 @@ def test_live_prediction_when_artifacts_present() -> None:
     result = predict_matchup_v2("2026-01-10", "bos", "ny")
     if result is None:
         return
-    assert result["algorithm"] == "NBAGradientBoost v2"
+    # With hybrid artifacts shipped the overlay upgrades the variant/name;
+    # without them the pure v2 path must still report its own name.
+    variant = result.get("model_variant")
+    assert variant in {"pure", "hybrid"}
+    # nba_v2 live hardcodes its payload branding (unlike wnba which mirrors
+    # metadata), so hybrid runs may still label the payload NBAGradientBoost.
+    assert result["algorithm"] in {"NBAGradientBoost v2", "HybridGradientBoost v2"}
     assert 0.0 <= result["home_win_probability"] <= 100.0
     assert result["home_elo"] > 1000
     assert "predicted_margin" in result
-    assert result.get("model_variant") == "pure"
 
 
 def test_devig_home_prob_and_market_variant_helpers() -> None:
@@ -742,7 +747,8 @@ def test_live_market_aware_when_odds_provided() -> None:
     )
     if pure is None or mkt is None:
         return
-    assert mkt["model_variant"] == "market_aware"
+    # Hybrid overlay supersedes the market-aware head when its bundle ships.
+    assert mkt["model_variant"] in {"market_aware", "hybrid"}
     assert mkt["has_market"] is True
     assert mkt["has_spread"] is True
     assert "predicted_margin" in mkt

@@ -190,7 +190,7 @@ jobs:
           fi
           git commit -m "Update bet tracking store after daily sync. [skip ci]"
           for attempt in 1 2 3 4 5; do
-            if git pull --rebase origin master && git push origin HEAD:master; then
+            if git pull --rebase --autostash origin master && git push origin HEAD:master; then
               exit 0
             fi
             git rebase --abort 2>/dev/null || true
