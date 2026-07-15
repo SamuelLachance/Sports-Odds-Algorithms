@@ -1,0 +1,165 @@
+{
+ "league": "nhl",
+ "created_at": "2026-07-15T10:14:42.947440+00:00",
+ "protocol": "per-season max-Sharpe selection on prior rounds (Hubacek 2019 7.3.1), extended with pi-triangulated predicted-CLV filter, odds-aware z-score thresholding, and the dispersion-gated beta ensemble; realized next season",
+ "seasons": [
+  {
+   "season": 2019,
+   "candidate": "cb_dec6_no",
+   "price": "close",
+   "threshold_mode": "phi",
+   "phi": 0.15,
+   "zscore_k": 0.0,
+   "clv_filter": true,
+   "mean_profit_per_round_pct": -2.652,
+   "sharpe_per_round": -0.0502,
+   "n_rounds": 175,
+   "n_bets": 30,
+   "rho_model_book": 0.5401,
+   "cumulative_profit_units": -4.64,
+   "quadrants": {
+    "consensus": 42.72,
+    "upset": 30.63,
+    "missed": 13.97,
+    "spotted": 12.68,
+    "n": 852
+   }
+  },
+  {
+   "season": 2020,
+   "candidate": "ensemble",
+   "price": "close",
+   "threshold_mode": "phi",
+   "phi": 0.0,
+   "zscore_k": 0.0,
+   "clv_filter": false,
+   "mean_profit_per_round_pct": -14.357,
+   "sharpe_per_round": -0.1606,
+   "n_rounds": 139,
+   "n_bets": 385,
+   "rho_model_book": 0.6863,
+   "cumulative_profit_units": -19.956,
+   "quadrants": {
+    "consensus": 52.02,
+    "upset": 29.37,
+    "missed": 10.54,
+    "spotted": 8.07,
+    "n": 446
+   }
+  },
+  {
+   "season": 2021,
+   "candidate": "cb_dec6",
+   "price": "close",
+   "threshold_mode": "zscore",
+   "phi": 0.0,
+   "zscore_k": 1.5,
+   "clv_filter": true,
+   "mean_profit_per_round_pct": -3.886,
+   "sharpe_per_round": -0.0664,
+   "n_rounds": 223,
+   "n_bets": 71,
+   "rho_model_book": 0.8168,
+   "cumulative_profit_units": -8.665,
+   "quadrants": {
+    "consensus": 57.52,
+    "upset": 28.72,
+    "missed": 7.39,
+    "spotted": 6.36,
+    "n": 1163
+   }
+  },
+  {
+   "season": 2022,
+   "candidate": "cb_dec4_no",
+   "price": "close",
+   "threshold_mode": "zscore",
+   "phi": 0.0,
+   "zscore_k": 1.5,
+   "clv_filter": false,
+   "mean_profit_per_round_pct": 3.978,
+   "sharpe_per_round": 0.0399,
+   "n_rounds": 214,
+   "n_bets": 202,
+   "rho_model_book": 0.8221,
+   "cumulative_profit_units": 8.513,
+   "quadrants": {
+    "consensus": 54.34,
+    "upset": 32.64,
+    "missed": 7.43,
+    "spotted": 5.59,
+    "n": 1198
+   }
+  },
+  {
+   "season": 2023,
+   "candidate": "cb_dec6",
+   "price": "close",
+   "threshold_mode": "phi",
+   "phi": 0.15,
+   "zscore_k": 0.0,
+   "clv_filter": true,
+   "mean_profit_per_round_pct": 2.655,
+   "sharpe_per_round": 0.0472,
+   "n_rounds": 230,
+   "n_bets": 67,
+   "rho_model_book": 0.8591,
+   "cumulative_profit_units": 6.106,
+   "quadrants": {
+    "consensus": 55.79,
+    "upset": 33.26,
+    "missed": 5.71,
+    "spotted": 5.25,
+    "n": 1296
+   }
+  },
+  {
+   "season": 2024,
+   "candidate": "cb_dec8",
+   "price": "open",
+   "threshold_mode": "phi",
+   "phi": 0.0,
+   "zscore_k": 0.0,
+   "clv_filter": true,
+   "mean_profit_per_round_pct": 8.49,
+   "sharpe_per_round": 0.114,
+   "n_rounds": 223,
+   "n_bets": 586,
+   "rho_model_book": 0.8044,
+   "cumulative_profit_units": 18.933,
+   "quadrants": {
+    "consensus": 51.75,
+    "upset": 32.75,
+    "missed": 8.13,
+    "spotted": 7.37,
+    "n": 1316
+   }
+  },
+  {
+   "season": 2025,
+   "candidate": "cb_dec4_no",
+   "price": "open",
+   "threshold_mode": "zscore",
+   "phi": 0.0,
+   "zscore_k": 0.5,
+   "clv_filter": true,
+   "mean_profit_per_round_pct": 8.452,
+   "sharpe_per_round": 0.1198,
+   "n_rounds": 211,
+   "n_bets": 199,
+   "rho_model_book": 0.7834,
+   "cumulative_profit_units": 17.834,
+   "quadrants": {
+    "consensus": 45.19,
+    "upset": 35.13,
+    "missed": 10.06,
+    "spotted": 9.63,
+    "n": 1392
+   }
+  }
+ ],
+ "mean_profit_per_round_pct": 0.383,
+ "worst_season_profit_pct": -14.357,
+ "positive_seasons": 4,
+ "total_seasons": 7
+}

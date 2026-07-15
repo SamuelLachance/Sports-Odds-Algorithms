@@ -1,0 +1,55 @@
+{
+ "league": "cfb",
+ "created_at": "2026-07-15T11:36:17.250190+00:00",
+ "protocol": "per-season max-Sharpe selection on prior rounds (Hubacek 2019 7.3.1), extended with pi-triangulated predicted-CLV filter, odds-aware z-score thresholding, and the dispersion-gated beta ensemble; realized next season",
+ "seasons": [
+  {
+   "season": 2024,
+   "candidate": "ensemble",
+   "price": "open",
+   "threshold_mode": "zscore",
+   "phi": 0.0,
+   "zscore_k": 1.0,
+   "clv_filter": false,
+   "mean_profit_per_round_pct": -4.532,
+   "sharpe_per_round": -0.1751,
+   "n_rounds": 16,
+   "n_bets": 48,
+   "rho_model_book": 0.985,
+   "cumulative_profit_units": -0.725,
+   "quadrants": {
+    "consensus": 88.2,
+    "upset": 10.11,
+    "missed": 1.69,
+    "spotted": 0.0,
+    "n": 178
+   }
+  },
+  {
+   "season": 2025,
+   "candidate": "cb_dec6",
+   "price": "open",
+   "threshold_mode": "zscore",
+   "phi": 0.0,
+   "zscore_k": 1.0,
+   "clv_filter": false,
+   "mean_profit_per_round_pct": 6.109,
+   "sharpe_per_round": 0.1761,
+   "n_rounds": 22,
+   "n_bets": 170,
+   "rho_model_book": 0.9521,
+   "cumulative_profit_units": 1.344,
+   "quadrants": {
+    "consensus": 69.38,
+    "upset": 20.73,
+    "missed": 5.42,
+    "spotted": 4.48,
+    "n": 849
+   }
+  }
+ ],
+ "mean_profit_per_round_pct": 0.788,
+ "worst_season_profit_pct": -4.532,
+ "positive_seasons": 1,
+ "total_seasons": 2
+}
