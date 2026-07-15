@@ -64,6 +64,12 @@ python scripts/train_cbb_model.py
 
 # Quick OOS metadata summary for all v2 leagues
 python scripts/check_v2_data.py
+
+# Hubáček β (decorrelated bettor) system — paper archived in documents/
+# hubacek2019_exploiting_sports_betting_market.pdf; module web/hubacek_v2/
+python scripts/train_hubacek_arms.py --leagues nba        # β grid (c × odds-feature), writes hubacek_board.json
+python scripts/hubacek_meta_select.py --leagues nba       # §7.3.1 per-season max-Sharpe meta-selection
+python scripts/ship_hubacek_bettor.py --leagues nba       # ship model_clf_bettor.cbm + bettor_meta.json (telemetry only)
 ```
 
 Official NFL Hubáček moneyline niche is enabled when `data/pick_strategy.json` shows `nfl.enabled=true` (hybrid OOS, worst-season ROI > 0). CFB big-dog ML and top-5 club soccer (home/away) niches are likewise enabled when their decorrelated searches clear the same bar. Spread beat-close gates remain separate from Hubáček pick enable.

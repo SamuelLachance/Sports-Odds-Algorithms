@@ -51,6 +51,12 @@ def select_feature_columns(adapter: LeagueAdapter, cfg: HybridConfig) -> list[st
     if cfg.use_market:
         mkt = SOCCER_MARKET_FEATURES if adapter.multiclass else CLF_MARKET_FEATURES
         cols = cols + [c for c in mkt if c not in cols]
+    if cfg.target_mode == "decorrelated" and not cfg.use_market:
+        # A truly odds-blind Hubáček arm drops every market-derived feature
+        # (steam, line moves, totals...), not just the two direct columns.
+        from web.hubacek_v2.features import strip_market_features
+
+        cols = strip_market_features(cols)
     return cols
 
 
@@ -132,6 +138,49 @@ def _fit_catboost_binary(train, val, cols, cfg):
     )
     model.fit(train_pool, eval_set=val_pool, use_best_model=True)
     return model, feature_cols, cat_cols
+
+
+def _fit_catboost_decorrelated(train, cols, cfg):
+    """Hubáček β-model: CatBoostRegressor on raw scores with the decorrelated
+    custom objective (logloss − c·(p̂−q)²). Fixed iterations — the python
+    objective has no paired eval metric for early stopping. Prediction is
+    sigmoid(raw score)."""
+    from catboost import CatBoostRegressor, Pool
+
+    from web.hubacek_v2.objective import DecorrelatedLogloss
+
+    cat_cols = [c for c in ("home_id", "away_id") if c in train.columns and cfg.use_categoricals]
+    feature_cols = [c for c in cols if c in train.columns] + cat_cols
+    q_train = (
+        train["market_home_prob"].to_numpy(dtype=float)
+        if "market_home_prob" in train.columns
+        else np.full(len(train), np.nan)
+    )
+    model = CatBoostRegressor(
+        iterations=cfg.iterations,
+        depth=cfg.depth,
+        learning_rate=cfg.learning_rate,
+        l2_leaf_reg=cfg.l2,
+        loss_function=DecorrelatedLogloss(q_train, cfg.decorrelation_c),
+        eval_metric="RMSE",
+        random_seed=cfg.seed,
+        verbose=False,
+        allow_writing_files=False,
+        min_data_in_leaf=cfg.min_data,
+        # Python custom objectives require plain boosting on CPU.
+        boosting_type="Plain",
+    )
+    model.fit(Pool(train[feature_cols], train["home_win"], cat_features=cat_cols or None))
+    return model, feature_cols, cat_cols
+
+
+def _predict_catboost_decorrelated(model, frame, feature_cols, cat_cols):
+    from catboost import Pool
+
+    from web.hubacek_v2.objective import sigmoid
+
+    raw = model.predict(Pool(frame[feature_cols], cat_features=cat_cols or None))
+    return sigmoid(np.asarray(raw, dtype=float))
 
 
 def _fit_catboost_multi(train, val, cols, cfg):
@@ -394,6 +443,9 @@ def walk_forward(
                 if multi:
                     model, fcols, cat_cols = _fit_catboost_multi(fit, val, cols, cfg)
                     preds.append(_predict_catboost(model, test, fcols, cat_cols, multiclass=True))
+                elif cfg.target_mode == "decorrelated":
+                    model, fcols, cat_cols = _fit_catboost_decorrelated(train, cols, cfg)
+                    preds.append(_predict_catboost_decorrelated(model, test, fcols, cat_cols))
                 else:
                     model, fcols, cat_cols = _fit_catboost_binary(fit, val, cols, cfg)
                     preds.append(
@@ -618,6 +670,16 @@ def summarize(adapter: LeagueAdapter, oos: pd.DataFrame) -> dict[str, Any]:
     return summary
 
 
+def hubacek_round_key(league: str, oos: pd.DataFrame) -> pd.Series:
+    """Round grouping for betting simulation: ISO week for weekly football
+    leagues, calendar date elsewhere (paper: one league round)."""
+    dates = pd.to_datetime(oos["date"], errors="coerce")
+    if league in ("nfl", "cfb"):
+        iso = dates.dt.isocalendar()
+        return iso.year.astype(str) + "-W" + iso.week.astype(str).str.zfill(2)
+    return dates.dt.date.astype(str)
+
+
 def run_config(
     adapter: LeagueAdapter,
     cfg: HybridConfig,
@@ -627,6 +689,16 @@ def run_config(
     t0 = time.time()
     oos = walk_forward(adapter, frame, cfg, end_season)
     summary = summarize(adapter, oos)
+    if cfg.target_mode == "decorrelated" and not adapter.multiclass and not oos.empty:
+        try:
+            from web.hubacek_v2.eval import hubacek_report
+
+            oos = oos.copy()
+            oos["hub_round"] = hubacek_round_key(adapter.league, oos)
+            prices = ("close", "open") if {"home_open_ml", "away_open_ml"}.issubset(oos.columns) and oos["home_open_ml"].notna().any() else ("close",)
+            summary["hubacek"] = hubacek_report(oos, round_key="hub_round", prices=prices)
+        except Exception as exc:  # noqa: BLE001 — telemetry must not kill a run
+            summary["hubacek_error"] = str(exc)[:200]
     summary["config"] = cfg.to_dict()
     summary["league"] = adapter.league
     summary["elapsed_s"] = round(time.time() - t0, 1)

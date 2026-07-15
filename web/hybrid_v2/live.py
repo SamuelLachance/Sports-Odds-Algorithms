@@ -81,7 +81,32 @@ def try_hybrid_binary(
     row = fill_curve_proxies(features)
     row["home_id"] = str(home_id)
     row["away_id"] = str(away_id)
-    return score_hybrid_binary(league, row, market_home_prob=market_home_prob)
+    result = score_hybrid_binary(league, row, market_home_prob=market_home_prob)
+    # Hubáček β (decorrelated bettor) telemetry rides along when shipped.
+    try:
+        from web.hubacek_v2.live import score_bettor_binary
+
+        beta = score_bettor_binary(league, row)
+        if beta is not None:
+            gap = (
+                round(100.0 * (beta["home_win_prob"] - float(market_home_prob)), 2)
+                if market_home_prob is not None and np.isfinite(market_home_prob)
+                else None
+            )
+            payload = {
+                "home_win_prob_pct": round(100.0 * beta["home_win_prob"], 2),
+                "gap_vs_market_pp": gap,
+                "phi": beta.get("phi"),
+                "decorrelation_c": beta.get("decorrelation_c"),
+            }
+            # Only piggyback on a successful π result: league modules read
+            # ["home_win_prob"] first and their guard except would otherwise
+            # discard a β-only payload anyway (π ships alongside β).
+            if result is not None:
+                result["hubacek_beta"] = payload
+    except Exception:  # noqa: BLE001 — β telemetry must never break scoring
+        pass
+    return result
 
 
 @lru_cache(maxsize=16)

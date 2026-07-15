@@ -13,3 +13,6 @@ joblib>=1.3.0
 
 # Test suite (CI + local)
 pytest>=8.0.0
+# Hubacek beta system: portfolio SQP + fast custom objectives
+scipy>=1.10
+numba>=0.58

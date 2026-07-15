@@ -24,6 +24,9 @@ class HybridConfig:
     early_stopping: int = 40
     seed: int = 42
     target_mode: str = "prob"
+    # Hubáček decorrelation strength (target_mode="decorrelated" only):
+    # loss = logloss − c·(p̂ − q_book)², paper-optimal c ∈ [0.4, 0.8].
+    decorrelation_c: float = 0.0
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -198,4 +201,25 @@ def focused_search_space() -> list[HybridConfig]:
             target_mode="offset",
             early_stopping=40,
         ),
+        # Hubáček decorrelated (β) arms: logloss − c·(p̂ − q_close)², with and
+        # without odds-derived features (paper §4.4/§7 tests both). Fixed
+        # iterations (python custom objective has no early-stopping metric).
+        *[
+            HybridConfig(
+                name=f"cb_dec{str(c).replace('0.', '')}{suffix}",
+                backend="catboost",
+                depth=6,
+                learning_rate=0.05,
+                iterations=300,
+                feature_mode="full",
+                use_curves=True,
+                use_market=use_market,
+                market_blend_w=0.0,
+                target_mode="decorrelated",
+                decorrelation_c=c,
+                early_stopping=0,
+            )
+            for c in (0.2, 0.4, 0.6, 0.8)
+            for use_market, suffix in ((True, ""), (False, "_no"))
+        ],
     ]

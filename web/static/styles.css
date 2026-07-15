@@ -3103,3 +3103,20 @@ a.pick-card-link:focus-visible {
 .line-open-ev.pos {
   color: var(--accent-strong);
 }
+
+/* Hubáček β bettor telemetry chip */
+.beta-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+  font-size: 0.78rem;
+}
+
+.beta-chip span {
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent-warm) 50%, transparent);
+  color: var(--accent-warm);
+  letter-spacing: 0.04em;
+}

@@ -551,6 +551,19 @@ function pickBestPriceHint(pick) {
   return `<div><span>Best book</span><strong>${formatOdds(pick.best_available_odds)}${edge}</strong></div>`;
 }
 
+/** Hubáček β (decorrelated bettor model) telemetry chip on game cards. */
+function betaChip(game) {
+  const beta = game?.model?.hubacek_beta;
+  if (!beta || beta.home_win_prob_pct == null) return "";
+  const gap =
+    beta.gap_vs_market_pp != null
+      ? ` · ${beta.gap_vs_market_pp > 0 ? "+" : ""}${beta.gap_vs_market_pp}pp vs book`
+      : "";
+  return `<div class="beta-chip" title="Decorrelated betting model (Hubáček 2019): trained to disagree with the bookmaker where it counts. Telemetry only — official picks keep their validated gates.">
+    <span>β bettor</span><strong>home ${beta.home_win_prob_pct}%${gap}</strong>
+  </div>`;
+}
+
 /** Earliest observed opener (BetOnline & co) + EV at that price. */
 function pickOpenLineHint(pick) {
   if (pick.open_odds == null) return "";
@@ -2223,6 +2236,7 @@ function gameListCard(game) {
   return `<article class="game-card panel clickable" data-game="${eventId}" role="link" tabindex="0" aria-label="Open ${escapeHtml(awayName)} at ${escapeHtml(homeName)}">
     <div class="game-head"><div><span class="league-pill">${escapeHtml(game.league_name || "")}</span>${sparseLeaguePill(game.league)}${predictionsOnlyPill(game.league)}${lineStatusChip(game)}<h3>${matchupLinks(game.league, away, home)}</h3><p class="game-meta">${formatTime(game.start_time)}</p></div>
     <div class="win-chip"><span>${primaryAlgoShort(m)}</span><strong>${escapeHtml(fav)}</strong><small>${m.win_probability != null ? `${m.win_probability}%` : "—"}</small></div></div>
+    ${betaChip(game)}
     ${betStrip}
     <a class="btn btn-secondary btn-sm" href="#/game/${eventId}">Open algo breakdown →</a>
   </article>`;
@@ -3143,6 +3157,7 @@ function viewMethodology() {
       <ul>
         <li><strong>Favorite–longshot bias (FLB)</strong> — bettors systematically overpay for longshots and underpay for heavy favorites. Recent work on MLB moneyline markets finds the bias present in <em>opening</em> odds and gone by the close, so a capped nudge (≤1.5 pp) toward strong favorites is applied at open-like prices only.</li>
         <li><strong>Steam signal</strong> — open→current line movement as a proxy for informed money (≤1 pp).</li>
+        <li><strong>β bettor model (Hubáček 2019)</strong> — a second model per league trained with a decorrelation objective (log-loss − c·(p̂−book)²) so its disagreements with the bookmaker carry signal instead of noise; bets are sized per round by max-Sharpe portfolio optimization with confidence thresholding. Shown as telemetry while its walk-forward profit record builds; official picks keep their validated gates.</li>
         <li><strong>News keywords</strong> — injury/suspension and hot-streak heuristics from headlines (≤2 pp).</li>
         <li><strong>Sparse-sample EV caps</strong> — printed EV is capped for thin international tournaments (World Cup, friendlies, continental qualifiers) where the sample is too small to trust extreme edges.</li>
       </ul>

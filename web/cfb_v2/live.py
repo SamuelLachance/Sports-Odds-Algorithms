@@ -335,6 +335,7 @@ def predict_matchup_v2(
         margin = _predict_regressor(art["margin"], art, features, cols=margin_cols)
 
     # Prefer shipped hybrid CatBoost+market-blend win prob when available.
+    hubacek_beta = None
     try:
         from web.hybrid_v2.live import try_hybrid_binary
 
@@ -349,6 +350,7 @@ def predict_matchup_v2(
         if hybrid is not None:
             prob_home = float(hybrid["home_win_prob"])
             model_variant = "hybrid"
+            hubacek_beta = hybrid.get("hubacek_beta")
             if hybrid.get("predicted_margin") is not None:
                 margin = float(hybrid["predicted_margin"])
     except Exception:  # noqa: BLE001 — hybrid is best-effort overlay
@@ -364,6 +366,7 @@ def predict_matchup_v2(
         "model_version": "v2",
         "algorithm": "CFBGradientBoost v2",
         "model_variant": model_variant,
+        **({"hubacek_beta": hubacek_beta} if hubacek_beta else {}),
         "home_win_probability": round(prob_home * 100.0, 2),
         "features_used": len(clf_cols),
         "home_games": int(home_team.games_played),
