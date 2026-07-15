@@ -177,7 +177,9 @@
       "away_name": "Spain",
       "edge_pp": 48.99,
       "event_id": "760514",
+      "final_score": "2\u20130",
       "game_date": "7-14-2026",
+      "graded_at": "2026-07-15T01:40:18.076674+00:00",
       "home_abbr": "fra",
       "home_name": "France",
       "key": "worldcup:760514:home",
@@ -209,15 +211,57 @@
           "steam_signal": false
         },
         "steam_signal": false
+      },
+      "status": "loss",
+      "units": -1.0
+    },
+    {
+      "away_abbr": "arg",
+      "away_name": "Argentina",
+      "edge_pp": 93.0,
+      "event_id": "760515",
+      "game_date": "2026-07-15",
+      "home_abbr": "eng",
+      "home_name": "England",
+      "key": "worldcup:760515:away",
+      "league": "worldcup",
+      "market_ml": 200,
+      "model_prob": 48.26,
+      "paper": true,
+      "pick_outcome": "away",
+      "recorded_at": "2026-07-15T01:29:30.117897+00:00",
+      "signals": {
+        "away_games": 10,
+        "best_edge_outcome": "away",
+        "disagreement_signal": true,
+        "high_confidence_disagreement": true,
+        "home_games": 10,
+        "max_edge_pp": 93.0,
+        "model_best_outcome": "away",
+        "opening_steam": {
+          "implied_shifts_pp": {
+            "away": -3.03,
+            "draw": 2.3,
+            "home": 1.32
+          },
+          "model_best_outcome": "away",
+          "model_edge_pp": 16.65,
+          "opening_away_ml": 175,
+          "opening_draw_ml": 205,
+          "opening_home_ml": 180,
+          "steam_direction": null,
+          "steam_signal": false
+        },
+        "steam_signal": false
       }
     }
   ],
   "summary": {
-    "losses": 0,
-    "newly_graded": 0,
-    "picks": 5,
-    "settled": 4,
-    "units": 2.832,
+    "losses": 1,
+    "newly_graded": 1,
+    "picks": 6,
+    "settled": 5,
+    "units": 1.832,
     "wins": 4
   },
   "version": 1
