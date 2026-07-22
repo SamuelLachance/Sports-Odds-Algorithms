@@ -1,9 +1,9 @@
-"""Attach the >=20%-EV value edge to an already-built, market-blind board.json.
+"""Attach the >=15%-EV value edge to an already-built, market-blind board.json.
 
 Runs as a POST-PROCESS on the board the model produced: it never changes a model
 probability, only compares the live market to it. Freezes each game's OPENING
 consensus the first time it's seen (data/opening_odds_2026.json), flags the value
-side when EV vs that opening >= 20%, and marks whether the edge is STILL live at the
+side when EV vs that opening >= 15%, and marks whether the edge is STILL live at the
 current price (ev_cur > 0). Stale edges are cleared every run, so a badge disappears
 once the line moves past our value or the game starts (fetch_consensus drops started
 games). Cheap enough to run on a short cadence for near-live updates.
@@ -21,7 +21,7 @@ from market import odds
 PROJECT = Path(__file__).resolve().parents[1]
 BOARD = PROJECT / "site" / "data" / "board.json"
 OPENING = PROJECT / "data" / "opening_odds_2026.json"
-EV_THRESHOLD = 0.20
+EV_THRESHOLD = 0.15    # advisory gate: flag the model's edge at >=15% EV vs the opening
 
 
 def attach_and_save(board_path: Path = BOARD, opening_path: Path = OPENING,
