@@ -238,8 +238,8 @@ footer b{color:var(--muted)} footer a{color:var(--muted);text-decoration:underli
 <main><div class="wrap" id="view"><div class="loading">Loading predictions&hellip;</div></div></main>
 <footer><div class="wrap">
   <b>Research only &mdash; not betting advice.</b> A market-blind model (team Elo + FIP
-  starting-pitcher rating + per-plate-appearance TrueSkill batter/pitcher ratings) that
-  never sees the odds. Data: <b>Retrosheet</b> (free of charge,
+  starting-pitcher rating + season-to-date bullpen FIP + per-plate-appearance TrueSkill
+  batter/pitcher ratings) that never sees the odds. Data: <b>Retrosheet</b> (free of charge,
   copyrighted by Retrosheet, <a href="https://www.retrosheet.org">retrosheet.org</a>) and the
   MLB Stats API (individual, non-commercial use).
 </div></footer>
@@ -257,13 +257,13 @@ const pctI = x => Math.round(x*100);
 const sgn = v => (v>=0?"+":"")+(+v).toFixed(1);
 const tier = p => p>=0.62?"strong":(p>=0.555?"lean":"toss");
 const norm = s => (s||"").toLowerCase().normalize("NFKD").replace(/[^a-z0-9 ]+/g," ").replace(/\s+/g," ").trim();
-const LOC="en-US";
+const LOC="en-US", TZ="America/New_York";   // all clock/day display is US Eastern
 const addDays=(iso,n)=>{const d=new Date(iso+"T00:00:00");d.setDate(d.getDate()+n);return d.toISOString().slice(0,10);};
-const fmtTime=u=>new Date(u).toLocaleTimeString(LOC,{hour:"numeric",minute:"2-digit"});
-const fmtDay=(iso,gen)=>{const d=new Date(iso+"T12:00:00");
-  const md=d.toLocaleDateString(LOC,{month:"short",day:"numeric"});
+const fmtTime=u=>new Date(u).toLocaleTimeString(LOC,{hour:"numeric",minute:"2-digit",timeZone:TZ})+" ET";
+const fmtDay=(iso,gen)=>{const d=new Date(iso+"T12:00:00Z");   // noon UTC => same ET day for any viewer
+  const md=d.toLocaleDateString(LOC,{month:"short",day:"numeric",timeZone:TZ});
   if(iso===gen)return"Today &#183; "+md; if(iso===addDays(gen,1))return"Tomorrow &#183; "+md;
-  return d.toLocaleDateString(LOC,{weekday:"long"})+" &#183; "+md;};
+  return d.toLocaleDateString(LOC,{weekday:"long",timeZone:TZ})+" &#183; "+md;};
 
 /* ---------- LIVE (client-side, polls the MLB Stats API directly) ---------- */
 async function pollLive(force){
@@ -369,6 +369,7 @@ function gcard(g){
     <div class="edge"><span class="k">edge</span>
       <span class="${e.home_pitcher>=0?"p":"n"}">SP ${sgn((e.home_pitcher||0)-(e.away_pitcher||0)>=0?Math.max(e.home_pitcher||0,0):(e.away_pitcher||0))}</span>
       <span class="${e.team>=0?"p":"n"}">team ${sgn(e.team||0)}</span>
+      ${e.bullpen!=null&&Math.abs(e.bullpen)>=0.3?`<span class="${e.bullpen>=0?"p":"n"}">pen ${sgn(e.bullpen)}</span>`:""}
       ${g.tier==="lineup"?'<span class="k" style="color:var(--fav)">&middot; lineups in</span>':(g.pitcher_known?"":'<span class="k">&middot; starters tbd</span>')}</div>
   </a>`;
 }
@@ -450,12 +451,14 @@ function gamePage(pk){
           <div class="why">
             ${pRow("Team rating",e.team||0)}${pRow("Home field",e.home_field||0)}
             ${pRow(g.home_abbr+" starter",e.home_pitcher||0)}${pRow(g.away_abbr+" starter",e.away_pitcher||0)}
+            ${e.bullpen!=null?pRow("Bullpen quality",e.bullpen||0):""}
             ${g.tier==="lineup"?pRow("Lineups (TrueSkill)",e.lineup||0):""}
           </div>
           <div class="sub" style="margin-top:8px;color:var(--faint)">
             ${g.tier==="lineup"
               ? "Lineups confirmed &mdash; full model (batter/pitcher TrueSkill added)."
               : "Pre-lineup estimate; sharpens when today's lineups are posted."}
+            ${g.home_bp_fip!=null?"Bullpen = season-to-date reliever FIP ("+g.away_abbr+" "+g.away_bp_fip+" vs "+g.home_abbr+" "+g.home_bp_fip+", lower is better). ":""}
             Contributions in probability points around a 50% base. Market-blind.</div>
         </div>
         <div class="panel"><h3>Starting pitchers</h3>

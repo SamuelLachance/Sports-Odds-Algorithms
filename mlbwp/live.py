@@ -13,9 +13,19 @@ from __future__ import annotations
 import json
 import time
 import urllib.request
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 BASE = "https://statsapi.mlb.com/api/v1"
 UA = "Mozilla/5.0 (mlbwp research)"
+ET = ZoneInfo("America/New_York")     # the site's canonical game-day timezone
+
+
+def et_date(iso_utc: str) -> str:
+    """The US-Eastern calendar date of a UTC ISO timestamp (a late ET game whose
+    first pitch is after midnight UTC still belongs to the ET game day)."""
+    dt = datetime.fromisoformat(iso_utc.replace("Z", "+00:00"))
+    return dt.astimezone(ET).date().isoformat()
 
 # StatsAPI team id -> Retrosheet team code (the model's team key).
 TEAM_ID_TO_RETRO = {
@@ -49,7 +59,7 @@ def schedule(date: str, *, probables=True) -> list[dict]:
                 continue
             st = g["status"]["abstractGameState"]
             rec = {
-                "game_pk": g["gamePk"], "date": g["gameDate"][:10],
+                "game_pk": g["gamePk"], "date": et_date(g["gameDate"]),
                 "home": TEAM_ID_TO_RETRO[ht], "away": TEAM_ID_TO_RETRO[at],
                 "home_name": h["team"]["name"], "away_name": a["team"]["name"],
                 "home_abbr": h["team"].get("abbreviation", ""),
@@ -68,6 +78,41 @@ def schedule(date: str, *, probables=True) -> list[dict]:
                     rec["home_score"] = hs
                     rec["away_score"] = as_
             out.append(rec)
+    return out
+
+
+def reliever_line(game_pk) -> dict:
+    """Per-side reliever FIP-core components from a game's box score.
+
+    Returns {"home": (fip_num, outs), "away": (fip_num, outs)} where
+    fip_num = 13*HR + 3*(BB+HBP) - 2*SO over every non-starting pitcher (the
+    starter is the pitcher with gamesStarted==1). Market-free: box score only.
+    """
+    box = _get(f"{BASE}/game/{game_pk}/boxscore")
+    out = {}
+    for side in ("home", "away"):
+        t = box.get("teams", {}).get(side, {})
+        if not t.get("pitchers"):
+            # An empty pitcher list means the box score has not populated yet;
+            # raise so the caller skips caching and retries on a later build
+            # (a Final game always lists its pitchers).
+            raise ValueError(f"incomplete boxscore for {game_pk}")
+        num = 0.0
+        outs = 0
+        for pid in t.get("pitchers", []):
+            p = t.get("players", {}).get(f"ID{pid}")
+            if not p:
+                continue
+            pit = p.get("stats", {}).get("pitching", {})
+            if str(pit.get("gamesStarted", 0)) == "1":     # starter -> not bullpen
+                continue
+            hr = int(pit.get("homeRuns", 0) or 0)
+            bb = int(pit.get("baseOnBalls", 0) or 0)
+            hbp = int(pit.get("hitByPitch", 0) or 0)
+            so = int(pit.get("strikeOuts", 0) or 0)
+            num += 13 * hr + 3 * (bb + hbp) - 2 * so
+            outs += int(pit.get("outs", 0) or 0)
+        out[side] = (num, outs)
     return out
 
 

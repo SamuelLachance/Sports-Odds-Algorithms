@@ -3,10 +3,12 @@
 The frozen ratings are the model as of the last complete Retrosheet season.
 Team form for the in-progress season is applied here from StatsAPI final scores
 (a plain team-Elo walk, using the frozen pitcher adjustments in the expectation
-so the update is consistent with how the model was trained). Pitcher ratings stay
-at their career-through-last-season value — pitcher true talent is stable, and
-in-season pitcher lines require a box-score + id-crosswalk backfill that is the
-next increment, not this one. Every prediction states this limitation on its card.
+so the update is consistent with how the model was trained). Bullpen quality is
+also brought current: each team's season-to-date reliever FIP-core is loaded from
+this season's box scores (set_bullpen) and fed to the blend. Starting-pitcher
+ratings stay at their career-through-last-season value — starter true talent is
+stable, and an in-season starter backfill is a further increment. Every prediction
+states which inputs are current on its card.
 """
 
 from __future__ import annotations
@@ -44,20 +46,66 @@ class Predictor:
         self.name_index = d["name_index"]
         self.current_through = None      # set by bring_current
 
-        # Blend layer: recalibration (always) + TrueSkill lineup feature (when
-        # lineups are posted). Absent artifacts degrade to the raw FIP-Elo model.
+        # Blend layer: recalibration (always) + a season-to-date bullpen-quality
+        # term (whenever this season's reliever lines are loaded) + the TrueSkill
+        # lineup feature (when lineups are posted). Absent artifacts degrade to
+        # the raw FIP-Elo model.
         self.blend = _load(ART / "blend.json")
         self.ts = _load(ART / "ts_ratings.json") or {}
         self.mlbam_to_retro = _load(ART / "mlbam_to_retro.json") or {}
         self.TS_MU0 = 25.0
 
+        # Bullpen quality: each team's season-to-date reliever FIP-core, filled
+        # by set_bullpen() from this season's box scores. bp_fip() shrinks to the
+        # league bullpen core, matching phase0/freeze_trueskill.reliever_aggs.
+        self.bp_num: dict[str, float] = {}
+        self.bp_out: dict[str, float] = {}
+        self.bp_lg_core = (self.blend or {}).get("bp_lg_core", 0.976)
+        self.bp_prior_outs = (self.blend or {}).get("bp_prior_outs", 200.0)
+        self.bullpen_through = None       # set by set_bullpen
+
     # --- blend helpers ---------------------------------------------------
+    @staticmethod
+    def _logit(p: float) -> float:
+        p = min(max(p, 1e-9), 1 - 1e-9)
+        return math.log(p / (1 - p))
+
     def _recal(self, fip_p: float) -> float:
         if not self.blend:
             return fip_p
         b = self.blend["recal"]
-        lg = math.log(min(max(fip_p, 1e-9), 1 - 1e-9) / (1 - min(max(fip_p, 1e-9), 1 - 1e-9)))
-        return 1.0 / (1.0 + math.exp(-(b["b0"] + b["b1"] * lg)))
+        return 1.0 / (1.0 + math.exp(-(b["b0"] + b["b1"] * self._logit(fip_p))))
+
+    def _recbp(self, fip_p: float, bp_z: float) -> float:
+        b = self.blend["recbp"]
+        return 1.0 / (1.0 + math.exp(-(b["b0"] + b["b1"] * self._logit(fip_p) + b["b3"] * bp_z)))
+
+    # --- bullpen quality -------------------------------------------------
+    def bp_fip(self, team: str) -> float:
+        """Season-to-date reliever FIP-core, empirical-Bayes shrunk to the league
+        bullpen core. Identical formula to the frozen training feature."""
+        num = self.bp_num.get(team, 0.0)
+        outs = self.bp_out.get(team, 0.0)
+        prior = self.bp_prior_outs * self.bp_lg_core / 3.0
+        return (num + prior) / (outs + self.bp_prior_outs) * 3.0
+
+    def bp_edge(self, home: str, away: str) -> float:
+        """Home-minus-away bullpen differential; sign matches the frozen feature
+        (away FIP - home FIP, so positive favours the home bullpen: lower = better)."""
+        return self.bp_fip(away) - self.bp_fip(home)
+
+    def _bp_z(self, home: str, away: str):
+        if not self.blend or "bp_mu" not in self.blend:
+            return None, 0.0
+        edge = self.bp_edge(home, away)
+        return (edge - self.blend["bp_mu"]) / self.blend["bp_sd"], edge
+
+    def set_bullpen(self, team_aggs: dict, through: str | None = None) -> int:
+        """Load this season's reliever aggregates: {team: (fip_num, outs)}."""
+        self.bp_num = {t: float(v[0]) for t, v in team_aggs.items()}
+        self.bp_out = {t: float(v[1]) for t, v in team_aggs.items()}
+        self.bullpen_through = through
+        return sum(1 for v in team_aggs.values() if v[1] > 0)
 
     def _ts_mu(self, retro: str | None) -> float:
         return self.ts.get(retro or "", self.TS_MU0)
@@ -78,11 +126,11 @@ class Predictor:
         away_def = self._ts_mu(self.name_index.get(norm_name(away_sp)))
         return (home_off - away_off) + (home_def - away_def)
 
-    def _full(self, fip_p: float, edge: float) -> float:
+    def _full(self, fip_p: float, edge: float, bp_z: float) -> float:
         b = self.blend["full"]
         z = (edge - self.blend["ts_mu"]) / self.blend["ts_sd"]
-        lg = math.log(min(max(fip_p, 1e-9), 1 - 1e-9) / (1 - min(max(fip_p, 1e-9), 1 - 1e-9)))
-        return 1.0 / (1.0 + math.exp(-(b["b0"] + b["b1"] * lg + b["b2"] * z)))
+        return 1.0 / (1.0 + math.exp(
+            -(b["b0"] + b["b1"] * self._logit(fip_p) + b["b2"] * z + b["b3"] * bp_z)))
 
     # --- pitcher resolution ---------------------------------------------
     def resolve_pitcher(self, name: str):
@@ -126,16 +174,25 @@ class Predictor:
         diff = (rh + self.hfa + adj_h) - (ra + adj_a)
         fip_p = 1.0 / (1.0 + 10 ** (-diff / 400.0))
 
-        # Recalibrated FIP-Elo is the always-available number; the full model
-        # adds the TrueSkill lineup feature once lineups are posted.
+        # Tiers, cheapest first: recal (FIP-Elo, always) -> bullpen (adds this
+        # season's reliever-quality term) -> lineup (adds TrueSkill once lineups
+        # are posted). Each layer's marginal effect is reported as a contribution.
         recal_p = self._recal(fip_p)
-        served, tier, edge, lineup_pp = recal_p, "recal", None, 0.0
+        bp_z, bp_edge = self._bp_z(home, away)
+        if bp_z is not None:
+            served, tier = self._recbp(fip_p, bp_z), "bullpen"
+        else:
+            served, tier = recal_p, "recal"
+        bullpen_pp = round((served - recal_p) * 100, 1)
+        base_p = served                          # the pre-lineup served number
+
+        edge, lineup_pp = None, 0.0
         if self.blend and home_lineup and away_lineup:
             edge = self.ts_edge(home_lineup, away_lineup, home_sp, away_sp)
             if edge is not None:
-                served = self._full(fip_p, edge)
+                served = self._full(fip_p, edge, bp_z or 0.0)
                 tier = "lineup"
-                lineup_pp = round((served - recal_p) * 100, 1)
+                lineup_pp = round((served - base_p) * 100, 1)
 
         # decompose the FIP-Elo rating points into probability points (around recal_p)
         slope = recal_p * (1 - recal_p) * (2.302585 / 400.0) * self.blend["recal"]["b1"] \
@@ -145,12 +202,16 @@ class Predictor:
             "home_field": round(self.hfa * slope * 100, 1),
             "home_pitcher": round(adj_h * slope * 100, 1),
             "away_pitcher": round(-adj_a * slope * 100, 1),
+            "bullpen": bullpen_pp,
             "lineup": lineup_pp,
         }
         return {
             "home_win_prob": round(served, 4),
             "fip_prob": round(fip_p, 4), "recal_prob": round(recal_p, 4),
             "tier": tier, "ts_edge": round(edge, 3) if edge is not None else None,
+            "bullpen_edge": round(bp_edge, 3) if bp_z is not None else None,
+            "home_bp_fip": round(self.bp_fip(home), 3) if bp_z is not None else None,
+            "away_bp_fip": round(self.bp_fip(away), 3) if bp_z is not None else None,
             "home_rating": round(rh, 1), "away_rating": round(ra, 1),
             "home_pitcher_adj": adj_h, "away_pitcher_adj": adj_a,
             "home_pitcher_matched": rec_h is not None,

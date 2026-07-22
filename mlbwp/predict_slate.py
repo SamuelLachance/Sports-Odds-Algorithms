@@ -13,15 +13,59 @@ from __future__ import annotations
 
 import json
 import sys
+import time
+from collections import defaultdict
 from datetime import date, timedelta
 from pathlib import Path
 
-from mlbwp.live import TEAM_ID_TO_RETRO, _get, BASE, schedule, season_finals
+from mlbwp.live import TEAM_ID_TO_RETRO, _get, BASE, et_date, reliever_line, schedule, season_finals
 from mlbwp.serve import Predictor
 
 PROJECT = Path(__file__).resolve().parents[1]
 OUT = PROJECT / "site" / "data" / "board.json"
 FINALS_CACHE = PROJECT / "data" / "season_2026_finals.json"
+BULLPEN_CACHE = PROJECT / "data" / "season_2026_bullpen.json"
+
+
+def ensure_bullpen_cache(finals: list[dict], cache_path: Path = BULLPEN_CACHE) -> dict:
+    """Incrementally fetch reliever lines for completed games, keyed by game_pk.
+
+    Only box scores not already cached are fetched, so the first build backfills
+    the season and every later build fetches only the handful of newly-final
+    games — keeping the bullpen data current-to-today at negligible cost.
+    """
+    cache = json.loads(cache_path.read_text()) if cache_path.is_file() else {}
+    fetched = 0
+    for g in finals:
+        pk = str(g["game_pk"])
+        if pk in cache:
+            continue
+        try:
+            rl = reliever_line(g["game_pk"])
+            cache[pk] = {"home": list(rl["home"]), "away": list(rl["away"]), "date": g["date"]}
+            fetched += 1
+            time.sleep(0.15)
+        except Exception:  # noqa: BLE001 — a bad box score must not abort the build
+            continue
+    if fetched:
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        cache_path.write_text(json.dumps(cache), encoding="utf-8")
+    print(f"[bullpen] cache {len(cache)} games (+{fetched} fetched)", flush=True)
+    return cache
+
+
+def team_bullpen_aggs(finals: list[dict], cache: dict) -> dict:
+    """Aggregate cached reliever lines to season-to-date {team: (fip_num, outs)}."""
+    agg = defaultdict(lambda: [0.0, 0])
+    for g in finals:
+        rec = cache.get(str(g["game_pk"]))
+        if not rec:
+            continue
+        for side, team in (("home", g["home"]), ("away", g["away"])):
+            num, outs = rec[side]
+            agg[team][0] += num
+            agg[team][1] += outs
+    return {t: (v[0], v[1]) for t, v in agg.items()}
 
 PENDING_LEAGUES = [
     {"code": "nhl", "name": "NHL"}, {"code": "nba", "name": "NBA"},
@@ -46,7 +90,7 @@ def horizon_games(start: date, days: int) -> list[dict]:
             lu = g.get("lineups") or {}
             out.append({
                 "game_pk": g["gamePk"],
-                "date": g["gameDate"][:10], "start_utc": g["gameDate"],
+                "date": et_date(g["gameDate"]), "start_utc": g["gameDate"],
                 "state": g["status"]["abstractGameState"],
                 "home": TEAM_ID_TO_RETRO[ht], "away": TEAM_ID_TO_RETRO[at],
                 "home_abbr": h["team"].get("abbreviation", ""),
@@ -67,6 +111,11 @@ def main(days: int = 30, today: str | None = None):
     finals = json.loads(FINALS_CACHE.read_text()) if FINALS_CACHE.is_file() else \
         season_finals(pred.serve_season, end_date=(day0 - timedelta(days=1)).isoformat())
     applied = pred.bring_current(finals)
+
+    # bring bullpen quality current to the latest completed game (box scores)
+    bp_cache = ensure_bullpen_cache(finals)
+    bp_loaded = pred.set_bullpen(team_bullpen_aggs(finals, bp_cache),
+                                 through=pred.current_through)
 
     games = horizon_games(day0, days)
     cards = []
@@ -98,6 +147,9 @@ def main(days: int = 30, today: str | None = None):
             "tier": r["tier"],
             "recal_prob": r["recal_prob"],
             "ts_edge": r["ts_edge"],
+            "bullpen_edge": r["bullpen_edge"],
+            "home_bp_fip": r["home_bp_fip"],
+            "away_bp_fip": r["away_bp_fip"],
             "home_pitcher_matched": r["home_pitcher_matched"],
             "away_pitcher_matched": r["away_pitcher_matched"],
         })
@@ -111,10 +163,13 @@ def main(days: int = 30, today: str | None = None):
         "generated": day0.isoformat(),
         "model": pred.model, "version": pred.version,
         "current_through": pred.current_through,
+        "bullpen_through": pred.bullpen_through,
         "season_games_applied": applied,
+        "bullpen_teams_loaded": bp_loaded,
         "accuracy": {
             "log_loss": blend["holdout"]["full_ll"] if blend else metrics["model_log_loss"],
-            "recal_log_loss": blend["holdout"]["recal_ll"] if blend else metrics["model_log_loss"],
+            "recal_log_loss": (blend["holdout"].get("recbp_ll") or blend["holdout"]["recal_ll"])
+            if blend else metrics["model_log_loss"],
             "elo_log_loss": metrics["plain_elo_log_loss"],
             "coinflip": metrics["constant_log_loss"],
         },
