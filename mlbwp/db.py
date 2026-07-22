@@ -97,7 +97,7 @@ def build_teams(pred: Predictor, season: int) -> dict:
                 "away": _split(tr.get("records", {}), "away"),
                 "pythag": round(py, 3),
                 "luck": round(tr["wins"] / gp - py, 3) if gp else 0.0,
-                "elo": round(pred.R.get(code, 1500.0), 1),
+                "elo": round(pred.fe.R.get(code, 1500.0), 1),
                 "roster": [],
             }
     for i, t in enumerate(sorted(teams.values(), key=lambda x: -x["elo"]), 1):
@@ -117,11 +117,14 @@ def bulk_stats(season: int, group: str) -> dict:
     return out
 
 
-def build_players(teams: dict, season: int) -> dict:
+def build_players(teams: dict, season: int, pred=None) -> dict:
     id2team = {t["id"]: code for code, t in teams.items()}
     xwalk = json.loads((ART / "mlbam_to_retro.json").read_text()) if (ART / "mlbam_to_retro.json").is_file() else {}
-    ts = json.loads((ART / "ts_ratings.json").read_text()) if (ART / "ts_ratings.json").is_file() else {}
     prev = json.loads(OUT.read_text()).get("players", {}) if OUT.is_file() else {}
+    # current TrueSkill mu straight from the (replayed) engine, so player cards
+    # match the ratings the model predicted with.
+    def ts_mu(retro):
+        return pred.tse.mu.get(retro) if (pred and retro) else None
 
     hit = bulk_stats(season, "hitting")
     pit = bulk_stats(season, "pitching")
@@ -136,7 +139,7 @@ def build_players(teams: dict, season: int) -> dict:
             pid = e["person"]["id"]
             pos = e["position"]["abbreviation"]
             retro = xwalk.get(str(pid))
-            mu = ts.get(retro) if retro else None
+            mu = ts_mu(retro)
             is_p = pos in ("P", "TWP")
             rec = {
                 "id": pid, "name": e["person"]["fullName"], "team": code,
@@ -218,13 +221,18 @@ def fetch_career(pid: int, is_p: bool) -> dict:
 
 
 def main(season: int = 2026):
+    from mlbwp.predict_slate import ensure_lines_cache, build_replay
     pred = Predictor()
     finals = json.loads((PROJECT / "data" / "season_2026_finals.json").read_text()) \
         if (PROJECT / "data" / "season_2026_finals.json").is_file() else []
-    pred.bring_current(finals)
+    # apply the model to this season, same as the board build, so the standings
+    # Elo and GlassBox ratings match the numbers the predictions were made with
+    cache = ensure_lines_cache(finals)
+    games, pas, bullpen, power = build_replay(finals, cache, pred.mlbam_to_retro)
+    pred.replay_season(games, pas, bullpen=bullpen, power=power)
 
     teams = build_teams(pred, season)
-    players = build_players(teams, season)
+    players = build_players(teams, season, pred)
     payload = {"season": season, "teams": teams, "players": players,
                "team_order": [t["code"] for t in sorted(teams.values(), key=lambda x: -x["elo"])]}
     OUT.parent.mkdir(parents=True, exist_ok=True)

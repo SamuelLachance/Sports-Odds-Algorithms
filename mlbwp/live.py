@@ -17,6 +17,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 BASE = "https://statsapi.mlb.com/api/v1"
+BASE_V11 = "https://statsapi.mlb.com/api/v1.1"     # feed/live (box score + play-by-play)
 UA = "Mozilla/5.0 (mlbwp research)"
 ET = ZoneInfo("America/New_York")     # the site's canonical game-day timezone
 
@@ -81,39 +82,74 @@ def schedule(date: str, *, probables=True) -> list[dict]:
     return out
 
 
-def reliever_line(game_pk) -> dict:
-    """Per-side reliever FIP-core components from a game's box score.
+# Play outcomes that put the batter on base (matches Retrosheet's on_base
+# definition used to train the TrueSkill ratings: hit, walk, HBP, reached-on-error).
+_ON_BASE_EVENTS = {
+    "single", "double", "triple", "home_run", "walk", "intent_walk",
+    "hit_by_pitch", "field_error", "catcher_interf",
+}
 
-    Returns {"home": (fip_num, outs), "away": (fip_num, outs)} where
-    fip_num = 13*HR + 3*(BB+HBP) - 2*SO over every non-starting pitcher (the
-    starter is the pitcher with gamesStarted==1). Market-free: box score only.
-    """
-    box = _get(f"{BASE}/game/{game_pk}/boxscore")
+
+def _parse_box(box: dict) -> dict:
+    """Per-side pitching + batting lines from a boxscore dict."""
     out = {}
     for side in ("home", "away"):
         t = box.get("teams", {}).get(side, {})
         if not t.get("pitchers"):
-            # An empty pitcher list means the box score has not populated yet;
-            # raise so the caller skips caching and retries on a later build
-            # (a Final game always lists its pitchers).
-            raise ValueError(f"incomplete boxscore for {game_pk}")
-        num = 0.0
-        outs = 0
+            raise ValueError("incomplete boxscore")
+        players = t.get("players", {})
+        sp_id, sp = None, [0, 0, 0, 0, 0]
+        rel_num, rel_outs = 0.0, 0
         for pid in t.get("pitchers", []):
-            p = t.get("players", {}).get(f"ID{pid}")
-            if not p:
-                continue
-            pit = p.get("stats", {}).get("pitching", {})
-            if str(pit.get("gamesStarted", 0)) == "1":     # starter -> not bullpen
-                continue
+            pit = (players.get(f"ID{pid}") or {}).get("stats", {}).get("pitching", {})
+            o = int(pit.get("outs", 0) or 0)
             hr = int(pit.get("homeRuns", 0) or 0)
             bb = int(pit.get("baseOnBalls", 0) or 0)
             hbp = int(pit.get("hitByPitch", 0) or 0)
             so = int(pit.get("strikeOuts", 0) or 0)
-            num += 13 * hr + 3 * (bb + hbp) - 2 * so
-            outs += int(pit.get("outs", 0) or 0)
-        out[side] = (num, outs)
+            if str(pit.get("gamesStarted", 0)) == "1":
+                sp_id, sp = pid, [o, hr, bb, hbp, so]
+            else:
+                rel_num += 13 * hr + 3 * (bb + hbp) - 2 * so
+                rel_outs += o
+        bat = {}
+        for bid in t.get("batters", []):
+            b = (players.get(f"ID{bid}") or {}).get("stats", {}).get("batting", {})
+            pa = int(b.get("plateAppearances", 0) or 0)
+            if pa > 0:
+                bat[bid] = [pa, int(b.get("hits", 0) or 0), int(b.get("totalBases", 0) or 0)]
+        out[side] = {"sp_id": sp_id, "sp": sp, "rel": [rel_num, rel_outs], "bat": bat}
     return out
+
+
+def _parse_plays(all_plays: list) -> list:
+    """Completed plate appearances as (batter_mlbam, pitcher_mlbam, on_base), in order."""
+    pas = []
+    for pl in all_plays:
+        res = pl.get("result", {})
+        if res.get("type") != "atBat" or not pl.get("about", {}).get("isComplete"):
+            continue
+        m = pl.get("matchup", {})
+        b = (m.get("batter") or {}).get("id")
+        p = (m.get("pitcher") or {}).get("id")
+        if b is None or p is None:
+            continue
+        pas.append([b, p, 1 if res.get("eventType") in _ON_BASE_EVENTS else 0])
+    return pas
+
+
+def game_data(game_pk) -> dict:
+    """Everything the live ratings need from one game, in a single feed/live fetch.
+    Market-free — only who pitched/batted and the outcome.
+
+    Returns {"home": side, "away": side, "pa": [[batter,pitcher,on_base], ...]} where
+    each side is {"sp_id", "sp":[outs,HR,BB,HBP,SO], "rel":[fip_num,outs], "bat":{mlbam:[PA,H,TB]}}.
+    """
+    d = _get(f"{BASE_V11}/game/{game_pk}/feed/live")
+    live = d.get("liveData", {})
+    sides = _parse_box(live.get("boxscore", {}))
+    sides["pa"] = _parse_plays(live.get("plays", {}).get("allPlays", []))
+    return sides
 
 
 def season_finals(year: int, start_md="03-15", end_date=None) -> list[dict]:

@@ -38,6 +38,7 @@ from mlbwp.ingest import league_fip_core, load_games  # noqa: E402
 from mlbwp.rating import FipPitcherElo  # noqa: E402
 from mlbwp.train import PARAMS  # noqa: E402
 from trueskill_pa import build_feature  # noqa: E402
+from mlbwp.trueskill import MU0, SIG0, BETA, TAU  # noqa: E402
 
 ART = "mlbwp/artifacts"
 APPEAR = "data/retro_events/appearances.csv"
@@ -165,9 +166,12 @@ def main():
         print("SKIP_TS=1: reusing existing ts_ratings.json + ts_feature.csv")
     else:
         ts = build_feature()
-        ratings = {p: round(ts.mu[p], 3) for p in ts.mu if ts.n[p] >= MIN_N}
+        # Freeze (mu, var) per player so the live server can reconstruct the engine
+        # and replay this season's PAs through the identical TrueSkill.update.
+        ratings = {p: [round(ts.mu[p], 4), round(ts.var[p], 6)]
+                   for p in ts.mu if ts.n[p] >= MIN_N}
         json.dump(ratings, open(f"{ART}/ts_ratings.json", "w"))
-        print(f"froze {len(ratings)} TrueSkill ratings")
+        print(f"froze {len(ratings)} TrueSkill ratings (mu, var)")
 
     # 2. FIP-Elo per-game probability + bullpen + lineup-power differentials
     games = load_games()
@@ -223,6 +227,7 @@ def main():
                  "b2": float(full.coef_[0][1]), "b3": float(full.coef_[0][2]),
                  "b4": float(full.coef_[0][3])},
         "ts_mu": ts_mu, "ts_sd": ts_sd,
+        "ts_params": {"beta": BETA, "tau": TAU, "mu0": MU0, "sig0": SIG0},
         "bp_mu": bp_mu, "bp_sd": bp_sd,
         "pw_mu": pw_mu, "pw_sd": pw_sd,
         "bp_lg_core": round(bp_lg_core, 4), "bp_prior_outs": BP_PRIOR_OUTS,

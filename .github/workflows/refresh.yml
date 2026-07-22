@@ -40,11 +40,12 @@ jobs:
         run: |
           git config user.name "glassbox-bot"
           git config user.email "glassbox-bot@users.noreply.github.com"
-          # The bullpen cache is the persistent incremental state: committing it
-          # back means each run fetches only newly-final box scores, never the
-          # whole season. board/db/index are the deployed data.
+          # The lines cache is the persistent incremental state (per-game
+          # pitching+batting box lines): committing it back means each run fetches
+          # only newly-final box scores, never the whole season. board/db/index
+          # are the deployed data.
           git add site/data/board.json site/data/db.json site/index.html \
-                  data/season_2026_bullpen.json
+                  data/season_2026_lines.json
           if git diff --cached --quiet; then
             echo "no data change"
           else

@@ -57,7 +57,15 @@ def main():
         if ip < 3:                       # skip trivial samples
             continue
         nm = names.get(pid, pid)
-        pitchers[pid] = {"name": nm, "adj": round(m.pitcher_adj(pid), 2), "ip": round(ip, 1)}
+        s = m.pf[pid]
+        # Freeze the full decayed FIP EWMA state so serving can RECONSTRUCT the
+        # engine and replay this season's starts through FipPitcherElo.update —
+        # i.e. continue the exact training walk rather than freeze a stale value.
+        pitchers[pid] = {
+            "name": nm, "adj": round(m.pitcher_adj(pid), 2), "ip": round(ip, 1),
+            "pf": [round(s["HR"], 4), round(s["BB"], 4), round(s["HBP"], 4),
+                   round(s["SO"], 4), round(s["outs"], 4)],
+        }
         key = norm_name(nm)
         # keep the pitcher with more innings when names collide
         if key not in name_index or ip > pitchers.get(name_index[key], {}).get("ip", 0):

@@ -117,9 +117,9 @@ def test_model_produces_game_level_probability():
     """Sanity: the model's public contract is a home win probability in (0,1)."""
     from mlbwp.serve import Predictor
     p = Predictor()
-    # two known teams and pitchers from the frozen ratings
-    any_team = next(iter(p.R))
-    other = next(t for t in p.R if t != any_team)
+    # two known teams and pitchers from the reconstructed engine
+    any_team = next(iter(p.fe.R))
+    other = next(t for t in p.fe.R if t != any_team)
     out = p.predict(any_team, other, "", "")
     assert "home_win_prob" in out
     assert 0.0 < out["home_win_prob"] < 1.0

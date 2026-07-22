@@ -18,21 +18,21 @@ from collections import defaultdict
 from datetime import date, timedelta
 from pathlib import Path
 
-from mlbwp.live import TEAM_ID_TO_RETRO, _get, BASE, et_date, reliever_line, schedule, season_finals
+from mlbwp.live import TEAM_ID_TO_RETRO, _get, BASE, et_date, game_data, schedule, season_finals
 from mlbwp.serve import Predictor
 
 PROJECT = Path(__file__).resolve().parents[1]
 OUT = PROJECT / "site" / "data" / "board.json"
 FINALS_CACHE = PROJECT / "data" / "season_2026_finals.json"
-BULLPEN_CACHE = PROJECT / "data" / "season_2026_bullpen.json"
+LINES_CACHE = PROJECT / "data" / "season_2026_lines.json"
 
 
-def ensure_bullpen_cache(finals: list[dict], cache_path: Path = BULLPEN_CACHE) -> dict:
-    """Incrementally fetch reliever lines for completed games, keyed by game_pk.
-
-    Only box scores not already cached are fetched, so the first build backfills
-    the season and every later build fetches only the handful of newly-final
-    games — keeping the bullpen data current-to-today at negligible cost.
+def ensure_lines_cache(finals: list[dict], cache_path: Path = LINES_CACHE) -> dict:
+    """Incrementally fetch each completed game's box lines + plate appearances
+    (one feed/live fetch per game), keyed by game_pk. Only games not already
+    cached are fetched, so the first build backfills the season and every later
+    build fetches only newly-final games. This is the season's raw data the model
+    is applied to — never re-fetched once cached.
     """
     cache = json.loads(cache_path.read_text()) if cache_path.is_file() else {}
     fetched = 0
@@ -41,31 +41,58 @@ def ensure_bullpen_cache(finals: list[dict], cache_path: Path = BULLPEN_CACHE) -
         if pk in cache:
             continue
         try:
-            rl = reliever_line(g["game_pk"])
-            cache[pk] = {"home": list(rl["home"]), "away": list(rl["away"]), "date": g["date"]}
+            gd = game_data(g["game_pk"])
+            cache[pk] = {"date": g["date"], "home": gd["home"], "away": gd["away"], "pa": gd["pa"]}
             fetched += 1
             time.sleep(0.15)
-        except Exception:  # noqa: BLE001 — a bad box score must not abort the build
+        except Exception:  # noqa: BLE001 — a bad game feed must not abort the build
             continue
     if fetched:
         cache_path.parent.mkdir(parents=True, exist_ok=True)
         cache_path.write_text(json.dumps(cache), encoding="utf-8")
-    print(f"[bullpen] cache {len(cache)} games (+{fetched} fetched)", flush=True)
+    print(f"[lines] cache {len(cache)} games (+{fetched} fetched)", flush=True)
     return cache
 
 
-def team_bullpen_aggs(finals: list[dict], cache: dict) -> dict:
-    """Aggregate cached reliever lines to season-to-date {team: (fip_num, outs)}."""
-    agg = defaultdict(lambda: [0.0, 0])
-    for g in finals:
-        rec = cache.get(str(g["game_pk"]))
-        if not rec:
-            continue
+def build_replay(finals: list[dict], cache: dict, x: dict):
+    """Turn this season's cached data into the inputs the engines replay, using the
+    mlbam->retro crosswalk x. Returns:
+      games   [ {home,away,home_sp,away_sp(retro),y,home_line,away_line,date} ]  for FipPitcherElo.update
+      pas     [ (batter_retro, pitcher_retro, on_base) ]  date-ordered  for TrueSkill.update
+      bullpen {team: (fip_num, outs)}      season-to-date reliever aggregate
+      power   {retro: [PA, H, TB]}         season-to-date batting counts
+    """
+    games, pas = [], []
+    bullpen = defaultdict(lambda: [0.0, 0])
+    power = defaultdict(lambda: [0, 0, 0])
+    have = [g for g in finals if str(g["game_pk"]) in cache]
+    for g in sorted(have, key=lambda g: (g["date"], g["game_pk"])):
+        rec = cache[str(g["game_pk"])]
+        sides = {}
         for side, team in (("home", g["home"]), ("away", g["away"])):
-            num, outs = rec[side]
-            agg[team][0] += num
-            agg[team][1] += outs
-    return {t: (v[0], v[1]) for t, v in agg.items()}
+            s = rec[side]
+            bullpen[team][0] += s["rel"][0]
+            bullpen[team][1] += s["rel"][1]
+            for mlbam, line in (s.get("bat") or {}).items():
+                r = x.get(str(mlbam))
+                if r:
+                    power[r][0] += line[0]; power[r][1] += line[1]; power[r][2] += line[2]
+            sp_retro = x.get(str(s.get("sp_id")))
+            sp = s.get("sp") or [0, 0, 0, 0, 0]
+            sides[side] = (sp_retro or "", sp if (sp_retro and sp[0] > 0) else None)
+        games.append({
+            "home": g["home"], "away": g["away"],
+            "home_sp": sides["home"][0], "away_sp": sides["away"][0],
+            "home_line": sides["home"][1], "away_line": sides["away"][1],
+            "y": g["home_win"], "date": g["date"],
+        })
+        for b, p, ob in rec.get("pa", []):
+            br, pr = x.get(str(b)), x.get(str(p))
+            if br and pr:
+                pas.append((br, pr, ob))
+    return (games, pas,
+            {t: (v[0], v[1]) for t, v in bullpen.items()},
+            {r: v for r, v in power.items()})
 
 PENDING_LEAGUES = [
     {"code": "nhl", "name": "NHL"}, {"code": "nba", "name": "NBA"},
@@ -110,12 +137,15 @@ def main(days: int = 30, today: str | None = None):
 
     finals = json.loads(FINALS_CACHE.read_text()) if FINALS_CACHE.is_file() else \
         season_finals(pred.serve_season, end_date=(day0 - timedelta(days=1)).isoformat())
-    applied = pred.bring_current(finals)
-
-    # bring bullpen quality current to the latest completed game (box scores)
-    bp_cache = ensure_bullpen_cache(finals)
-    bp_loaded = pred.set_bullpen(team_bullpen_aggs(finals, bp_cache),
-                                 through=pred.current_through)
+    # Apply the frozen model to this season: fetch the raw data, then replay it
+    # through the same engines the model was trained with. No retraining — the
+    # coefficients are fixed; only the rating STATE is walked to today.
+    cache = ensure_lines_cache(finals)
+    games, pas, bullpen, power = build_replay(finals, cache, pred.mlbam_to_retro)
+    applied = pred.replay_season(games, pas, bullpen=bullpen, power=power)
+    bp_loaded = sum(1 for v in bullpen.values() if v[1] > 0)
+    sp_loaded = len(games)
+    bat_loaded = sum(1 for v in power.values() if v[0] > 0)
 
     games = horizon_games(day0, days)
     cards = []
@@ -167,6 +197,8 @@ def main(days: int = 30, today: str | None = None):
         "bullpen_through": pred.bullpen_through,
         "season_games_applied": applied,
         "bullpen_teams_loaded": bp_loaded,
+        "pitchers_updated": sp_loaded,
+        "batters_updated": bat_loaded,
         "accuracy": {
             "log_loss": blend["holdout"]["full_ll"] if blend else metrics["model_log_loss"],
             "recal_log_loss": (blend["holdout"].get("recbp_ll") or blend["holdout"]["recal_ll"])

@@ -16,47 +16,14 @@ the game's PAs update the ratings.
 from __future__ import annotations
 
 import csv
-import math
+import sys
 from collections import defaultdict
 
-MU0, SIG0 = 25.0, 25.0 / 3.0
-BETA = SIG0 / 2.0
-TAU = SIG0 / 100.0
-_SQRT2PI = math.sqrt(2 * math.pi)
+sys.path.insert(0, ".")
+# Single source of truth for the engine: the same class the live server replays.
+from mlbwp.trueskill import MU0, SIG0, BETA, TAU, TrueSkill1v1   # noqa: F401,E402
 
 F_DATE, F_HOME, F_VIS, F_VIS_SP, F_HOME_SP = 0, 6, 3, 101, 103
-
-
-def _pdf(x): return math.exp(-0.5 * x * x) / _SQRT2PI
-def _cdf(x): return 0.5 * (1 + math.erf(x / math.sqrt(2)))
-
-
-class TrueSkill1v1:
-    """Closed-form two-player TrueSkill. Winner/loser passed each update."""
-
-    def __init__(self, beta=BETA, tau=TAU):
-        self.beta, self.tau = beta, tau
-        self.mu = defaultdict(lambda: MU0)
-        self.var = defaultdict(lambda: SIG0 * SIG0)
-        self.n = defaultdict(int)
-
-    def update(self, winner, loser):
-        # skill drift before absorbing evidence
-        vw = self.var[winner] + self.tau ** 2
-        vl = self.var[loser] + self.tau ** 2
-        c2 = 2 * self.beta ** 2 + vw + vl
-        c = math.sqrt(c2)
-        t = (self.mu[winner] - self.mu[loser]) / c
-        denom = _cdf(t)
-        v = _pdf(t) / denom if denom > 1e-12 else -t
-        w = v * (v + t)
-        w = min(max(w, 0.0), 1.0)
-        self.mu[winner] += vw / c * v
-        self.mu[loser] -= vl / c * v
-        self.var[winner] = vw * (1 - vw / c2 * w)
-        self.var[loser] = vl * (1 - vl / c2 * w)
-        self.n[winner] += 1
-        self.n[loser] += 1
 
 
 def load_pa_by_game():
