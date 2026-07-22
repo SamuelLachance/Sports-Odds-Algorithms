@@ -111,7 +111,7 @@ table{border-collapse:collapse;width:100%;font-size:13px}
 th,td{padding:8px 10px;text-align:right;white-space:nowrap}
 th:first-child,td:first-child{text-align:left}
 thead th{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;
-  border-bottom:1px solid var(--line-2);position:sticky;top:56px;background:var(--panel)}
+  border-bottom:1px solid var(--line-2);background:var(--panel)}
 tbody tr{border-bottom:1px solid var(--line);cursor:pointer}
 tbody tr:hover{background:var(--panel-2)}
 tbody tr:last-child{border-bottom:none}
@@ -182,6 +182,46 @@ td .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
 .updated{font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-left:8px}
 .updated .dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--fav);
   margin-right:4px;animation:pulse 2s ease-in-out infinite}
+/* rating badge (GlassBox 0-100) */
+.gb{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-weight:700}
+.gb .v{font-size:15px}
+.gb .meter{width:46px;height:6px;border-radius:4px;background:var(--sunk);overflow:hidden;position:relative}
+.gb .meter i{position:absolute;left:0;top:0;bottom:0;border-radius:4px}
+.gb.hi .v{color:var(--fav)} .gb.mid .v{color:var(--ink)} .gb.lo .v{color:var(--home)}
+.gb.hi .meter i{background:var(--fav)} .gb.mid .meter i{background:var(--away)} .gb.lo .meter i{background:var(--home)}
+
+/* teams directory + team page */
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.tcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;
+  cursor:pointer;display:flex;flex-direction:column;gap:10px;transition:border-color .12s,transform .12s}
+.tcard:hover{border-color:var(--line-2);transform:translateY(-1px)}
+.tcard .h{display:flex;align-items:center;gap:10px}
+.tcard .code{font-family:var(--mono);font-weight:700;font-size:20px}
+.tcard .nm{font-size:13px;color:var(--muted);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tcard .stat{display:flex;gap:14px;font-size:12px;color:var(--muted)}
+.tcard .stat b{color:var(--ink);font-family:var(--mono)}
+.thead{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+.thead .code{font-family:var(--serif);font-size:34px;font-weight:700}
+.thead .sub{color:var(--muted);font-size:13px}
+.tstats{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:16px}
+.tstats .b{background:var(--panel);padding:10px 12px}
+.tstats .k{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.tstats .v{font-family:var(--mono);font-size:18px;font-weight:600;margin-top:3px}
+.player-link{cursor:pointer}
+.player-link:hover{color:var(--accent)}
+a.tl{color:inherit;border-bottom:1px dotted var(--line-2)} a.tl:hover{color:var(--accent);border-color:var(--accent)}
+
+/* player page */
+.phead{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+.phead .nm{font-family:var(--serif);font-size:28px;font-weight:700}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;align-items:start}
+.statgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.statgrid .b{background:var(--panel);padding:9px 10px;text-align:center}
+.statgrid .k{font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.statgrid .v{font-family:var(--mono);font-size:16px;font-weight:600;margin-top:2px}
+
 .loading,.empty{padding:60px 0;text-align:center;color:var(--muted)}
 footer{border-top:1px solid var(--line);padding:20px 0 46px;color:var(--faint);font-size:11px;line-height:1.6}
 footer b{color:var(--muted)} footer a{color:var(--muted);text-decoration:underline}
@@ -194,7 +234,7 @@ footer b{color:var(--muted)} footer a{color:var(--muted);text-decoration:underli
   <nav class="main">
     <a href="#/" data-v="board">Board</a>
     <a href="#/standings" data-v="standings">Standings</a>
-    <a href="#/rankings" data-v="rankings">Rankings</a>
+    <a href="#/teams" data-v="teams">Teams</a>
   </nav>
   <span class="grow"></span>
   <span class="updated" id="updated"></span>
@@ -310,18 +350,31 @@ function route(){
   const [v,arg]=h.split("/");
   window.scrollTo(0,0);
   if(v==="game"&&arg) return gamePage(arg);
+  if(v==="team"&&arg){setNav("teams");return teamPage(arg);}
+  if(v==="player"&&arg){setNav("teams");return playerPage(arg);}
+  if(v==="teams"){setNav("teams");return teamsPage();}
   if(v==="standings"){setNav("standings");return standings();}
-  if(v==="rankings"){setNav("rankings");return rankings();}
   setNav("board"); board();
 }
 
+/* ---------- shared helpers ---------- */
+const gbTier = v => v>=58?"hi":(v>=44?"mid":"lo");
+function gb(v){ if(v==null) return '<span class="gb lo"><span class="v">NR</span></span>';
+  return `<span class="gb ${gbTier(v)}"><span class="v">${v.toFixed(0)}</span>
+    <span class="meter"><i style="width:${Math.max(3,Math.min(100,v))}%"></i></span></span>`;}
+const teamLink = (code,label) => `<a class="tl" href="#/team/${code}">${label||code}</a>`;
+const playerLinkByName = name => { const p=findPlayerByName(name);
+  return p?`<span class="player-link" onclick="location.hash='#/player/${p.id}'">${name}</span>`:name; };
+function findPlayerByName(name){ const n=norm(name);
+  return Object.values(state.db.players||{}).find(p=>norm(p.name)===n); }
+
 /* ---------- BOARD ---------- */
-const pit = (name,db)=>{const p=db.pitchers[norm(name)];
-  return p&&p.era!=null?`<span class="era">${p.era}</span>`:"";};
+const pitEra = name=>{const p=findPlayerByName(name);
+  return p&&p.pit&&p.pit.era!=null?`<span class="era">${p.pit.era}</span>`:"";};
 function gcard(g){
-  const db=state.db, hp=g.home_win_prob, homeWin=hp>=0.5, e=g.edge||{};
-  const spA=g.away_sp==="TBD"?`<span class="tbd">TBD</span>`:`${g.away_sp} ${pit(g.away_sp,db)}`;
-  const spH=g.home_sp==="TBD"?`<span class="tbd">TBD</span>`:`${g.home_sp} ${pit(g.home_sp,db)}`;
+  const hp=g.home_win_prob, homeWin=hp>=0.5, e=g.edge||{};
+  const spA=g.away_sp==="TBD"?`<span class="tbd">TBD</span>`:`${g.away_sp} ${pitEra(g.away_sp)}`;
+  const spH=g.home_sp==="TBD"?`<span class="tbd">TBD</span>`:`${g.home_sp} ${pitEra(g.home_sp)}`;
   return `<a class="gc" href="#/game/${g.game_pk}" data-card="${g.game_pk}"
       data-pick="${g.pick}" data-home="${g.home_abbr}" data-away="${g.away_abbr}">
     <div class="top"><span class="lv" data-pk="${g.game_pk}" data-def="${fmtTime(g.start_utc)}">${fmtTime(g.start_utc)}</span>
@@ -365,10 +418,11 @@ function pRow(label,v){const w=Math.min(Math.abs(v)*3.0,50);const neg=v<0;
   return `<div class="r"><span class="lab">${label}</span>
     <div class="tr"><div class="f ${neg?"neg":""}" style="${neg?"right:50%":"left:50%"};width:${w}%"></div></div>
     <span class="v ${v>=0?"pos":"neg"}">${sgn(v)}</span></div>`;}
-function statline(p){if(!p||p.era==null)return`<span class="sub">no season line</span>`;
-  return `<div class="statline"><span>ERA <b>${p.era}</b></span><span>WHIP <b>${p.whip}</b></span>
-    <span>K/9 <b>${p.k9}</b></span><span>BB/9 <b>${p.bb9}</b></span><span>HR/9 <b>${p.hr9}</b></span>
-    <span>${p.w}-${p.l}, ${p.gs} GS</span></div>`;}
+function statline(p){if(!p||!p.pit||p.pit.era==null)return`<span class="sub">no season line</span>`;
+  const s=p.pit;
+  return `<div class="statline"><span>ERA <b>${s.era}</b></span><span>WHIP <b>${s.whip}</b></span>
+    <span>K/9 <b>${s.k9}</b></span><span>BB/9 <b>${s.bb9}</b></span><span>HR/9 <b>${s.hr9}</b></span>
+    <span>${s.w}-${s.l}, ${s.gs} GS</span></div>`;}
 function cmpRow(label,a,h,fmt,better){const f=fmt||(x=>x);
   let aw="",hw=""; if(better!=null){if(better==="hi"){a>h?aw="win":h>a?hw="win":0;}else{a<h?aw="win":h<a?hw="win":0;}}
   return `<tr><td class="a ${aw}"><span class="num">${f(a)}</span></td><td class="lbl">${label}</td><td class="h ${hw}"><span class="num">${f(h)}</span></td></tr>`;}
@@ -377,15 +431,15 @@ function gamePage(pk){
   const g=findGame(pk); if(!g){$("#view").innerHTML=`<div class="empty">Game not found. <a href="#/">Back to board</a></div>`;return;}
   const db=state.db, hp=g.home_win_prob, homeWin=hp>=0.5, e=g.edge||{};
   const A=db.teams[g.away], H=db.teams[g.home];
-  const pa=db.pitchers[norm(g.away_sp)], ph=db.pitchers[norm(g.home_sp)];
+  const pa=findPlayerByName(g.away_sp), ph=findPlayerByName(g.home_sp);
   const conf=Math.max(hp,1-hp);
   // signals
   const sig=[];
   if(H&&Math.abs(H.luck)>=0.04) sig.push([H.luck>0?"warn":"good",H.abbr+(H.luck>0?" is overperforming its run differential ("+sgn(H.luck*100)+" pts) &#8212; regression risk":" is underperforming its run differential ("+sgn(H.luck*100)+" pts) &#8212; due to bounce back")]);
   if(A&&Math.abs(A.luck)>=0.04) sig.push([A.luck>0?"warn":"good",A.abbr+(A.luck>0?" is overperforming ("+sgn(A.luck*100)+" pts) &#8212; regression risk":" is underperforming ("+sgn(A.luck*100)+" pts)")]);
   if(H&&A&&H.elo_rank<A.elo_rank&&H.record_rank>A.record_rank) sig.push(["good","We rate "+H.abbr+" higher than its record (our #"+H.elo_rank+" vs #"+H.record_rank+" by W-L)"]);
-  if(pa&&ph&&pa.matched&&ph.matched){const d=(ph.adj||0)-(pa.adj||0);
-    sig.push([d>=0?"good":"warn","Pitching edge: "+(d>=0?H.abbr:A.abbr)+" ("+(d>=0?g.home_sp:g.away_sp)+", "+sgn(Math.abs(d))+" Elo)"]);}
+  if(pa&&ph&&pa.ts100!=null&&ph.ts100!=null){const d=ph.ts100-pa.ts100;
+    if(Math.abs(d)>=6) sig.push([d>=0?"good":"warn","Pitching edge: "+(d>=0?H.abbr:A.abbr)+" ("+(d>=0?g.home_sp:g.away_sp)+", GlassBox "+(d>=0?ph.ts100:pa.ts100)+" vs "+(d>=0?pa.ts100:ph.ts100)+")"]);}
   const teamCmp = (A&&H)?`<table class="cmp">
     ${cmpRow("record",A.w+"-"+A.l,H.w+"-"+H.l,x=>x)}
     ${cmpRow("win%",A.pct,H.pct,x=>x.toFixed(3).slice(1),"hi")}
@@ -400,7 +454,7 @@ function gamePage(pk){
   </table>`:`<div class="sub">team data unavailable</div>`;
   $("#view").innerHTML=`
     <a class="back" href="#/">&lsaquo; Board</a>
-    <div class="gh"><span class="mt">${g.away_abbr} <span style="color:var(--faint)">@</span> ${g.home_abbr}</span>
+    <div class="gh"><span class="mt">${teamLink(g.away,g.away_abbr)} <span style="color:var(--faint)">@</span> ${teamLink(g.home,g.home_abbr)}</span>
       <span class="meta">${fmtDay(g.date,state.board.generated)} &middot; ${fmtTime(g.start_utc)}</span></div>
     <div class="livepanel" id="livepanel" data-pk="${g.game_pk}" data-home="${g.home_abbr}" data-away="${g.away_abbr}" data-pick="${g.pick}"></div>
     <div class="cols">
@@ -424,12 +478,12 @@ function gamePage(pk){
         </div>
         <div class="panel"><h3>Starting pitchers</h3>
           <div class="mup">
-            <div class="col a"><div class="nm">${g.away_sp}</div>
-              <div class="sub">${g.away_abbr}${pa&&pa.adj_rank?" &#183; our #"+pa.adj_rank+" SP":""}${pa&&pa.matched?" &#183; "+sgn(pa.adj)+" Elo":""}</div>
+            <div class="col a"><div class="nm">${pa?playerLinkByName(g.away_sp):g.away_sp}</div>
+              <div class="sub">${teamLink(g.away,g.away_abbr)}${pa&&pa.ts100!=null?" &middot; GlassBox "+pa.ts100:""}</div>
               ${statline(pa)}</div>
             <div class="vs">vs</div>
-            <div class="col h"><div class="nm">${g.home_sp}</div>
-              <div class="sub">${g.home_abbr}${ph&&ph.adj_rank?" &#183; our #"+ph.adj_rank+" SP":""}${ph&&ph.matched?" &#183; "+sgn(ph.adj)+" Elo":""}</div>
+            <div class="col h"><div class="nm">${ph?playerLinkByName(g.home_sp):g.home_sp}</div>
+              <div class="sub">${teamLink(g.home,g.home_abbr)}${ph&&ph.ts100!=null?" &middot; GlassBox "+ph.ts100:""}</div>
               ${statline(ph)}</div>
           </div>
         </div>
@@ -450,51 +504,108 @@ function standings(){
   const divs={}; T.forEach(t=>{(divs[t.div]=divs[t.div]||[]).push(t);});
   const order=["AL East","AL Central","AL West","NL East","NL Central","NL West"];
   let html=`<div class="eyebrow">Database</div><h1 class="pt">Standings</h1>
-    <div class="sub" style="margin-bottom:14px">Sorted by division. <b>Luck</b> = actual win% minus pythagorean; large positive = regression risk. <b>Elo</b> is our market-blind rating.</div>`;
+    <div class="sub" style="margin-bottom:14px"><b>GlassBox</b> is the roster's 0-100 TrueSkill rating (50 = league average). <b>Luck</b> = win% minus pythagorean (large + = regression risk). <b>Elo</b> is our market-blind rating. Click any team.</div>`;
   html+=order.filter(d=>divs[d]).map(d=>{
     const rows=divs[d].sort((a,b)=>a.div_rank-b.div_rank).map(t=>`
-      <tr onclick="location.hash='#/rankings'">
-        <td class="a"><span class="tm"><span class="ab">${t.abbr}</span></span></td>
+      <tr onclick="location.hash='#/team/${t.code}'">
+        <td class="a"><span class="ab" style="color:var(--accent)">${t.abbr}</span></td>
         <td><span class="num">${t.w}-${t.l}</span></td><td><span class="num">${t.pct.toFixed(3).slice(1)}</span></td>
         <td><span class="num">${t.gb}</span></td>
         <td><span class="num ${t.run_diff>=0?"pos":"neg"}">${t.run_diff>=0?"+":""}${t.run_diff}</span></td>
         <td><span class="num">${t.l10}</span></td><td><span class="num">${t.streak}</span></td>
         <td><span class="num">${t.home}</span></td><td><span class="num">${t.away}</span></td>
         <td><span class="num ${Math.abs(t.luck)>=0.04?(t.luck>0?"warnc":"pos"):""}">${sgn(t.luck*100)}</span></td>
-        <td><span class="num">${Math.round(t.elo)}</span></td><td><span class="num">#${t.elo_rank}</span></td>
+        <td><span class="num">${Math.round(t.elo)}</span></td>
+        <td>${gb(t.ts100)}</td>
       </tr>`).join("");
     return `<div class="subh">${d}</div><div class="twrap"><table>
       <thead><tr><th>Team</th><th>W-L</th><th>Pct</th><th>GB</th><th>Diff</th><th>L10</th><th>Strk</th>
-      <th>Home</th><th>Away</th><th>Luck</th><th>Elo</th><th>Rk</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+      <th>Home</th><th>Away</th><th>Luck</th><th>Elo</th><th>GlassBox</th></tr></thead><tbody>${rows}</tbody></table></div>`;
   }).join("");
   $("#view").innerHTML=html;
 }
 
-/* ---------- RANKINGS ---------- */
-function rankings(){
+/* ---------- TEAMS DIRECTORY ---------- */
+function teamsPage(){
   const db=state.db;
-  const T=Object.values(db.teams).sort((a,b)=>b.elo-a.elo);
-  const P=Object.values(db.pitchers).filter(p=>p&&p.matched&&p.adj_rank).sort((a,b)=>a.adj_rank-b.adj_rank).slice(0,30);
-  const trow=(t,i)=>`<tr onclick="location.hash='#/standings'">
-    <td class="a"><span class="num" style="color:var(--faint)">${i+1}</span> <span class="ab" style="margin-left:6px">${t.abbr}</span></td>
-    <td><span class="num">${Math.round(t.elo)}</span></td>
-    <td><span class="num">${t.w}-${t.l}</span></td>
-    <td><span class="num ${t.run_diff>=0?"pos":"neg"}">${t.run_diff>=0?"+":""}${t.run_diff}</span></td>
-    <td><span class="num ${t.elo_rank<t.record_rank?"pos":(t.elo_rank>t.record_rank?"neg":"")}">${t.elo_rank<t.record_rank?"&#9650;":(t.elo_rank>t.record_rank?"&#9660;":"&#8212;")} #${t.record_rank}</span></td>
-    <td><span class="num ${Math.abs(t.luck)>=0.04?"warnc":""}">${sgn(t.luck*100)}</span></td></tr>`;
-  const prow=p=>`<tr><td class="a"><span class="num" style="color:var(--faint)">${p.adj_rank}</span>
+  const T=Object.values(db.teams).sort((a,b)=>(b.ts100||0)-(a.ts100||0));
+  const card=t=>`<div class="tcard" onclick="location.hash='#/team/${t.code}'">
+    <div class="h"><span class="code">${t.abbr}</span><span class="nm">${t.name}</span>${gb(t.ts100)}</div>
+    <div class="stat"><span>Rec <b>${t.w}-${t.l}</b></span><span>Diff <b>${t.run_diff>=0?"+":""}${t.run_diff}</b></span>
+      <span>L10 <b>${t.l10}</b></span><span>Elo <b>${Math.round(t.elo)}</b></span></div>
+    <div class="stat"><span>Off <b>${t.ts_off??"-"}</b></span><span>Pitch <b>${t.ts_pit??"-"}</b></span>
+      <span>${t.div} #${t.div_rank}</span></div>
+  </div>`;
+  $("#view").innerHTML=`<div class="eyebrow">Database</div><h1 class="pt">Teams</h1>
+    <div class="sub" style="margin-bottom:14px">The <b>GlassBox rating</b> (0-100) is the roster's average per-plate-appearance TrueSkill rating; 50 is a league-average player. Click a team.</div>
+    <div class="tgrid">${T.map(card).join("")}</div>`;
+}
+
+/* ---------- TEAM PAGE ---------- */
+function teamPage(code){
+  const db=state.db, t=db.teams[code];
+  if(!t){$("#view").innerHTML=`<div class="empty">Team not found. <a href="#/teams">All teams</a></div>`;return;}
+  const roster=(t.roster||[]).map(id=>db.players[String(id)]).filter(Boolean);
+  const bat=roster.filter(p=>p.role==="batter");
+  const pit=roster.filter(p=>p.role==="pitcher");
+  const cell=(v,cls)=>`<td><span class="num ${cls||""}">${v==null?"-":v}</span></td>`;
+  const prow=p=>`<tr onclick="location.hash='#/player/${p.id}'">
+    <td class="a"><span class="num" style="color:var(--faint)">${p.pos}</span>
       <span style="margin-left:8px;font-weight:600">${p.name}</span></td>
-    <td><span class="num" style="color:var(--fav);font-weight:700">${sgn(p.adj)}</span></td>
-    <td><span class="num">${p.era??"-"}</span></td><td><span class="num">${p.whip??"-"}</span></td>
-    <td><span class="num">${p.k9??"-"}</span></td><td><span class="num">${p.bb9??"-"}</span></td>
-    <td><span class="num">${p.hr9??"-"}</span></td></tr>`;
-  $("#view").innerHTML=`<div class="eyebrow">Database</div><h1 class="pt">Rankings</h1>
-    <div class="subh">Team power ratings <span class="sub" style="font-weight:400">&#183; our market-blind Elo. The rank column shows how our rating compares to the standings.</span></div>
-    <div class="twrap"><table><thead><tr><th>Team</th><th>Elo</th><th>Record</th><th>Diff</th><th>vs W-L rank</th><th>Luck</th></tr></thead>
-      <tbody>${T.map(trow).join("")}</tbody></table></div>
-    <div class="subh">Starting pitchers <span class="sub" style="font-weight:400">&#183; our FIP-based adjustment (Elo pts), cross-referenced with season rates. Top ${P.length} on the current board.</span></div>
-    <div class="twrap"><table><thead><tr><th>Pitcher</th><th>Our edge</th><th>ERA</th><th>WHIP</th><th>K/9</th><th>BB/9</th><th>HR/9</th></tr></thead>
-      <tbody>${P.map(prow).join("")}</tbody></table></div>`;
+    ${p.role==="batter"
+      ? cell(p.bat&&p.bat.avg,"")+cell(p.bat&&p.bat.hr)+cell(p.bat&&p.bat.rbi)+cell(p.bat&&p.bat.ops)
+      : cell(p.pit&&p.pit.era)+cell(p.pit&&p.pit.so)+cell(p.pit&&p.pit.whip)+cell(p.pit&&(p.pit.gs>0?p.pit.gs+" GS":(p.pit.sv||0)+" SV"))}
+    <td>${gb(p.ts100)}</td></tr>`;
+  const tbl=(title,rows,cols)=>`<div class="subh">${title}</div><div class="twrap"><table>
+    <thead><tr><th>Player</th>${cols.map(c=>`<th>${c}</th>`).join("")}<th>GlassBox</th></tr></thead>
+    <tbody>${rows.map(prow).join("")}</tbody></table></div>`;
+  $("#view").innerHTML=`<a class="back" href="#/teams">&lsaquo; Teams</a>
+    <div class="thead"><span class="code">${t.abbr}</span>
+      <div><div style="font-size:15px;font-weight:600">${t.name}</div>
+        <div class="sub">${t.div} &middot; #${t.div_rank} &middot; ${t.w}-${t.l} (${t.pct.toFixed(3).slice(1)})</div></div>
+      <div style="margin-left:auto;text-align:right"><div class="sub">GlassBox rating</div>${gb(t.ts100)}
+        <div class="sub" style="margin-top:4px">off ${t.ts_off??"-"} &middot; pitch ${t.ts_pit??"-"} &middot; #${t.ts_rank||"-"} of 30</div></div>
+    </div>
+    <div class="tstats">
+      <div class="b"><div class="k">Run diff</div><div class="v ${t.run_diff>=0?"pos":"neg"}">${t.run_diff>=0?"+":""}${t.run_diff}</div></div>
+      <div class="b"><div class="k">Runs/gm</div><div class="v">${t.rs_g}</div></div>
+      <div class="b"><div class="k">Allowed/gm</div><div class="v">${t.ra_g}</div></div>
+      <div class="b"><div class="k">Last 10</div><div class="v">${t.l10}</div></div>
+      <div class="b"><div class="k">Streak</div><div class="v">${t.streak}</div></div>
+      <div class="b"><div class="k">Home</div><div class="v">${t.home}</div></div>
+      <div class="b"><div class="k">Away</div><div class="v">${t.away}</div></div>
+      <div class="b"><div class="k">Our Elo</div><div class="v">${Math.round(t.elo)} <span class="sub">#${t.elo_rank}</span></div></div>
+      <div class="b"><div class="k">Pythag luck</div><div class="v ${Math.abs(t.luck)>=0.04?"warnc":""}">${sgn(t.luck*100)}</div></div>
+    </div>
+    ${tbl("Lineup / hitters",bat.sort((a,b)=>(b.ts100||0)-(a.ts100||0)),["AVG","HR","RBI","OPS"])}
+    ${tbl("Pitching",pit.sort((a,b)=>(b.ts100||0)-(a.ts100||0)),["ERA","SO","WHIP","Role"])}`;
+}
+
+/* ---------- PLAYER PAGE ---------- */
+function playerPage(id){
+  const db=state.db, p=db.players[String(id)];
+  if(!p){$("#view").innerHTML=`<div class="empty">Player not found. <a href="#/teams">Teams</a></div>`;return;}
+  const t=db.teams[p.team];
+  const box=(k,v)=>`<div class="b"><div class="k">${k}</div><div class="v">${v==null?"-":v}</div></div>`;
+  let season="", career="";
+  if(p.role==="batter"){
+    const b=p.bat||{}, c=p.career||{};
+    season=[["PA",b.pa],["AVG",b.avg],["OBP",b.obp],["SLG",b.slg],["OPS",b.ops],["HR",b.hr],["RBI",b.rbi],["SB",b.sb]].map(([k,v])=>box(k,v)).join("");
+    career=[["G",c.g],["H",c.h],["HR",c.hr],["RBI",c.rbi],["AVG",c.avg],["OPS",c.ops],["SB",c.sb]].map(([k,v])=>box(k,v)).join("");
+  }else{
+    const b=p.pit||{}, c=p.career||{};
+    season=[["GS",b.gs],["IP",b.ip],["ERA",b.era],["WHIP",b.whip],["SO",b.so],["K/9",b.k9],["BB/9",b.bb9],["SV",b.sv]].map(([k,v])=>box(k,v)).join("");
+    career=[["W-L",(c.w!=null?c.w+"-"+c.l:null)],["ERA",c.era],["IP",c.ip],["SO",c.so],["WHIP",c.whip],["GS",c.gs],["SV",c.sv]].map(([k,v])=>box(k,v)).join("");
+  }
+  $("#view").innerHTML=`<a class="back" href="#/team/${p.team}">&lsaquo; ${t?t.name:p.team}</a>
+    <div class="phead"><span class="nm">${p.name}</span>
+      <span class="sub">${teamLink(p.team,p.team)} &middot; ${p.pos}${p.num?" &middot; #"+p.num:""}</span>
+      <span style="margin-left:auto">${gb(p.ts100)}</span></div>
+    <div class="sub" style="margin-bottom:16px">GlassBox rating (0-100) &mdash; this player's per-plate-appearance TrueSkill rating vs league-average ${p.role}s. Market-blind.</div>
+    <div class="pgrid">
+      <div class="panel"><h3>2026 season</h3><div class="statgrid">${season}</div></div>
+      <div class="panel"><h3>Career</h3><div class="statgrid">${career}</div></div>
+    </div>`;
 }
 
 boot();

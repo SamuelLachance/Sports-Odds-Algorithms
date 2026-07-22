@@ -1,34 +1,50 @@
-"""Build the MLB database the site reads: teams, pitchers, standings.
+"""Build the MLB database the site reads: teams, players, standings, ratings.
 
-Deliberately narrow. ESPN shows everything; GLASSBOX shows only what moves a
-betting decision, with the model's own ratings woven in:
+Only what matters for a betting/projection product, with the model's own ratings
+woven in:
 
   teams    — standings (record, run differential, L10, home/road, streak) joined
-             to our Elo rating and rank. The gap between our rating rank and the
-             standings rank is a regression signal; pythagorean win% vs actual is
-             a luck signal.
-  pitchers — season line (ERA, WHIP, K/9, BB/9, HR/9) for every probable starter
-             on the board, joined to our FIP adjustment and its rank.
+             to our Elo rating, plus a 0-100 GlassBox team rating (roster average
+             of the players' TrueSkill ratings). Pythagorean win% and luck too.
+  players  — every rostered player: season line, career totals, and a 0-100
+             GlassBox rating from the per-PA TrueSkill mu, normalised within role
+             (batter / pitcher) so 50 is league-average and the two roles are
+             comparable on one scale.
 
-Sources: MLB Stats API /standings (one call) and /people/{id}/stats (per pitcher).
-Market-free — no odds are fetched or stored.
+Sources: MLB Stats API (standings, rosters, bulk season stats, per-player career)
+plus the frozen TrueSkill ratings + mlbam->retro crosswalk. Market-free.
 """
 
 from __future__ import annotations
 
 import json
+import math
 import time
 from pathlib import Path
 
 from mlbwp.live import BASE, TEAM_ID_TO_RETRO, _get
-from mlbwp.serve import Predictor, norm_name
+from mlbwp.serve import Predictor
 
 PROJECT = Path(__file__).resolve().parents[1]
 OUT = PROJECT / "site" / "data" / "db.json"
 BOARD = PROJECT / "site" / "data" / "board.json"
+ART = PROJECT / "mlbwp" / "artifacts"
 
 DIV_NAME = {200: "AL West", 201: "AL East", 202: "AL Central",
             203: "NL West", 204: "NL East", 205: "NL Central"}
+POS_GROUP = {"P": "P", "C": "C", "1B": "IF", "2B": "IF", "3B": "IF", "SS": "IF",
+             "LF": "OF", "CF": "OF", "RF": "OF", "OF": "OF", "DH": "DH", "TWP": "P"}
+
+
+def _f(x):
+    try:
+        return float(x)
+    except (TypeError, ValueError):
+        return None
+
+
+def _phi(z):
+    return 0.5 * (1 + math.erf(z / math.sqrt(2)))
 
 
 def _split(records, kind):
@@ -48,10 +64,10 @@ def _l10(records):
 def pythag(rs, ra):
     if rs <= 0 and ra <= 0:
         return 0.5
-    e = 1.83
-    return rs ** e / (rs ** e + ra ** e)
+    return rs ** 1.83 / (rs ** 1.83 + ra ** 1.83)
 
 
+# ----- standings -> teams -------------------------------------------------
 def build_teams(pred: Predictor, season: int) -> dict:
     s = _get(f"{BASE}/standings?leagueId=103,104&season={season}"
              f"&standingsTypes=regularSeason&hydrate=team")
@@ -82,63 +98,123 @@ def build_teams(pred: Predictor, season: int) -> dict:
                 "pythag": round(py, 3),
                 "luck": round(tr["wins"] / gp - py, 3) if gp else 0.0,
                 "elo": round(pred.R.get(code, 1500.0), 1),
+                "roster": [],
             }
-    # our Elo rank (1 = best)
-    order = sorted(teams.values(), key=lambda t: -t["elo"])
-    for i, t in enumerate(order, 1):
+    for i, t in enumerate(sorted(teams.values(), key=lambda x: -x["elo"]), 1):
         teams[t["code"]]["elo_rank"] = i
-    # actual rank by win pct, for the regression/overperformance signal
     for i, t in enumerate(sorted(teams.values(), key=lambda x: -x["pct"]), 1):
         teams[t["code"]]["record_rank"] = i
     return teams
 
 
-def build_pitchers(pred: Predictor, season: int) -> dict:
-    # id lookup for every player this season (one call)
-    players = {p["fullName"]: p["id"]
-               for p in _get(f"{BASE}/sports/1/players?season={season}")["people"]}
-
-    # which pitchers appear on the board
-    board = json.loads(BOARD.read_text(encoding="utf-8"))
-    names = set()
-    for g in board["leagues"][0]["games"]:
-        for sp in (g["home_sp"], g["away_sp"]):
-            if sp and sp != "TBD":
-                names.add(sp)
-
+# ----- rosters + player stats + TrueSkill 0-100 ---------------------------
+def bulk_stats(season: int, group: str) -> dict:
+    d = _get(f"{BASE}/stats?stats=season&group={group}&season={season}"
+             f"&sportId=1&playerPool=all&limit=3000")
     out = {}
-    for name in sorted(names):
-        adj, rec = pred.pitcher_adj(name)
-        pid = players.get(name)
-        line = {}
-        if pid:
-            try:
-                st = _get(f"{BASE}/people/{pid}/stats?stats=season&group=pitching&season={season}")
-                sp = st["stats"][0]["splits"]
-                if sp:
-                    s0 = sp[0]["stat"]
-                    line = {
-                        "gs": s0.get("gamesStarted"), "ip": s0.get("inningsPitched"),
-                        "era": s0.get("era"), "whip": s0.get("whip"),
-                        "k9": s0.get("strikeoutsPer9Inn"), "bb9": s0.get("walksPer9Inn"),
-                        "hr9": s0.get("homeRunsPer9"), "kbb": s0.get("strikeoutWalkRatio"),
-                        "w": s0.get("wins"), "l": s0.get("losses"),
-                        "k": s0.get("strikeOuts"), "bb": s0.get("baseOnBalls"),
-                    }
-                time.sleep(0.12)
-            except Exception:  # noqa: BLE001
-                pass
-        out[norm_name(name)] = {
-            "name": name, "mlbam": pid, "adj": adj,
-            "matched": rec is not None, "career_ip": rec["ip"] if rec else 0.0,
-            **line,
-        }
-    # our FIP-adjustment rank among matched starters
-    ranked = sorted([p for p in out.values() if p["matched"]], key=lambda p: -p["adj"])
-    for i, p in enumerate(ranked, 1):
-        out[norm_name(p["name"])]["adj_rank"] = i
-    out["__n_ranked"] = len(ranked)
+    for sp in d["stats"][0]["splits"]:
+        out[sp["player"]["id"]] = sp["stat"]
     return out
+
+
+def build_players(teams: dict, season: int) -> dict:
+    id2team = {t["id"]: code for code, t in teams.items()}
+    xwalk = json.loads((ART / "mlbam_to_retro.json").read_text()) if (ART / "mlbam_to_retro.json").is_file() else {}
+    ts = json.loads((ART / "ts_ratings.json").read_text()) if (ART / "ts_ratings.json").is_file() else {}
+    prev = json.loads(OUT.read_text()).get("players", {}) if OUT.is_file() else {}
+
+    hit = bulk_stats(season, "hitting")
+    pit = bulk_stats(season, "pitching")
+
+    players = {}
+    for tid, code in id2team.items():
+        try:
+            roster = _get(f"{BASE}/teams/{tid}/roster?rosterType=active&season={season}")["roster"]
+        except Exception:  # noqa: BLE001
+            continue
+        for e in roster:
+            pid = e["person"]["id"]
+            pos = e["position"]["abbreviation"]
+            retro = xwalk.get(str(pid))
+            mu = ts.get(retro) if retro else None
+            is_p = pos in ("P", "TWP")
+            rec = {
+                "id": pid, "name": e["person"]["fullName"], "team": code,
+                "pos": pos, "grp": POS_GROUP.get(pos, "IF"),
+                "num": e.get("jerseyNumber", ""), "ts_mu": mu,
+                "role": "pitcher" if is_p else "batter",
+            }
+            hs = hit.get(pid)
+            if hs:
+                rec["bat"] = {"avg": hs.get("avg"), "obp": hs.get("obp"), "slg": hs.get("slg"),
+                              "ops": hs.get("ops"), "hr": hs.get("homeRuns"), "rbi": hs.get("rbi"),
+                              "pa": hs.get("plateAppearances"), "sb": hs.get("stolenBases"),
+                              "bb": hs.get("baseOnBalls"), "so": hs.get("strikeOuts"),
+                              "h": hs.get("hits"), "r": hs.get("runs")}
+            ps = pit.get(pid)
+            if ps:
+                rec["pit"] = {"w": ps.get("wins"), "l": ps.get("losses"), "era": ps.get("era"),
+                              "whip": ps.get("whip"), "ip": ps.get("inningsPitched"),
+                              "so": ps.get("strikeOuts"), "bb": ps.get("baseOnBalls"),
+                              "k9": ps.get("strikeoutsPer9Inn"), "bb9": ps.get("walksPer9Inn"),
+                              "hr9": ps.get("homeRunsPer9"), "gs": ps.get("gamesStarted"),
+                              "sv": ps.get("saves"), "era_": ps.get("era")}
+            # career: reuse prior db.json, else fetch once
+            pk = str(pid)
+            if pk in prev and prev[pk].get("career"):
+                rec["career"] = prev[pk]["career"]
+            else:
+                rec["career"] = fetch_career(pid, is_p)
+                time.sleep(0.05)
+            players[pk] = rec
+
+    # TrueSkill -> 0-100 within role (50 = league average roster player)
+    for role in ("batter", "pitcher"):
+        mus = [p["ts_mu"] for p in players.values() if p["role"] == role and p["ts_mu"] is not None]
+        if len(mus) < 5:
+            continue
+        m = sum(mus) / len(mus)
+        sd = (sum((x - m) ** 2 for x in mus) / len(mus)) ** 0.5 or 1.0
+        for p in players.values():
+            if p["role"] == role and p["ts_mu"] is not None:
+                p["ts100"] = round(100 * _phi((p["ts_mu"] - m) / sd), 1)
+
+    # attach roster + team GlassBox rating (0-100)
+    by_team = {}
+    for p in players.values():
+        by_team.setdefault(p["team"], []).append(p)
+    for code, ps in by_team.items():
+        teams[code]["roster"] = sorted(
+            [p["id"] for p in ps],
+            key=lambda i: -(next((q for q in ps if q["id"] == i), {}).get("ts100") or 0))
+        rated = [p["ts100"] for p in ps if p.get("ts100") is not None]
+        off = [p["ts100"] for p in ps if p["role"] == "batter" and p.get("ts100") is not None]
+        pitch = [p["ts100"] for p in ps if p["role"] == "pitcher" and p.get("ts100") is not None]
+        teams[code]["ts100"] = round(sum(rated) / len(rated), 1) if rated else None
+        teams[code]["ts_off"] = round(sum(off) / len(off), 1) if off else None
+        teams[code]["ts_pit"] = round(sum(pitch) / len(pitch), 1) if pitch else None
+    for i, code in enumerate(sorted(teams, key=lambda c: -(teams[c].get("ts100") or 0)), 1):
+        teams[code]["ts_rank"] = i
+    return players
+
+
+def fetch_career(pid: int, is_p: bool) -> dict:
+    grp = "pitching" if is_p else "hitting"
+    try:
+        d = _get(f"{BASE}/people/{pid}/stats?stats=career&group={grp}")
+        s = d["stats"][0]["splits"]
+        if not s:
+            return {}
+        c = s[-1]["stat"]
+        if is_p:
+            return {"w": c.get("wins"), "l": c.get("losses"), "era": c.get("era"),
+                    "so": c.get("strikeOuts"), "ip": c.get("inningsPitched"),
+                    "whip": c.get("whip"), "gs": c.get("gamesStarted"), "sv": c.get("saves")}
+        return {"avg": c.get("avg"), "hr": c.get("homeRuns"), "rbi": c.get("rbi"),
+                "h": c.get("hits"), "ops": c.get("ops"), "sb": c.get("stolenBases"),
+                "g": c.get("gamesPlayed")}
+    except Exception:  # noqa: BLE001
+        return {}
 
 
 def main(season: int = 2026):
@@ -148,15 +224,15 @@ def main(season: int = 2026):
     pred.bring_current(finals)
 
     teams = build_teams(pred, season)
-    pitchers = build_pitchers(pred, season)
-    payload = {"season": season, "teams": teams, "pitchers": pitchers,
+    players = build_players(teams, season)
+    payload = {"season": season, "teams": teams, "players": players,
                "team_order": [t["code"] for t in sorted(teams.values(), key=lambda x: -x["elo"])]}
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(payload, indent=1), encoding="utf-8")
-    print(f"wrote {OUT}: {len(teams)} teams, {pitchers['__n_ranked']} ranked pitchers "
-          f"({len(pitchers)-1} on the board)")
-    top = sorted(teams.values(), key=lambda t: -t["elo"])[:4]
-    print("  our top teams:", ", ".join(f"{t['abbr']} {t['elo']:.0f}(#{t['record_rank']} rec)" for t in top))
+    rated = sum(1 for p in players.values() if p.get("ts100") is not None)
+    print(f"wrote {OUT}: {len(teams)} teams, {len(players)} players ({rated} TrueSkill-rated)")
+    top = sorted(teams.values(), key=lambda t: -(t.get("ts100") or 0))[:4]
+    print("  top GlassBox teams:", ", ".join(f"{t['abbr']} {t.get('ts100')}" for t in top))
 
 
 if __name__ == "__main__":
