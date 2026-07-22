@@ -77,6 +77,12 @@ h1.pt{font-family:var(--serif);font-size:26px;margin:2px 0 14px}
 .gc .top .pill{margin-left:auto;font-family:var(--sans);font-weight:700;font-size:12px;padding:3px 10px;
   border-radius:20px;background:var(--sunk);border:1px solid var(--line-2)}
 .gc .top .pill.strong{color:var(--fav);border-color:var(--fav);background:var(--favbg)}
+.gc .top .lbadge{font-family:var(--sans);font-weight:700;font-size:10px;letter-spacing:.03em;
+  text-transform:uppercase;padding:2px 8px;border-radius:6px;border:1px solid transparent;
+  white-space:nowrap;line-height:1.55}
+.gc .top .lbadge.off{color:var(--fav);border-color:var(--fav);background:var(--favbg)}
+.gc .top .lbadge.proj{color:var(--warn);border-color:rgba(224,164,78,.5);background:rgba(224,164,78,.14)}
+.gc .top .lbadge.tbd{color:var(--faint);border-color:var(--line-2);background:var(--sunk)}
 .side{display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:9px;padding:2px 0}
 .side .ab{font-family:var(--mono);font-weight:700;font-size:15px}
 .side .who{min-width:0}
@@ -358,6 +364,9 @@ function gcard(g){
   return `<a class="gc" href="#/game/${g.game_pk}" data-card="${g.game_pk}"
       data-pick="${g.pick}" data-home="${g.home_abbr}" data-away="${g.away_abbr}">
     <div class="top"><span class="lv" data-pk="${g.game_pk}" data-def="${fmtTime(g.start_utc)}">${fmtTime(g.start_utc)}</span>
+      ${g.lineup_source==="official"?'<span class="lbadge off">Lineups in</span>'
+        :g.lineup_source==="projected"?'<span class="lbadge proj">Proj lineup</span>'
+        :(g.pitcher_known?"":'<span class="lbadge tbd">Starters TBD</span>')}
       <span class="pill ${tier(g.pick_prob)==="strong"?"strong":""}">${g.pick} ${pctI(g.pick_prob)}%</span></div>
     <div class="side ${homeWin?"":"win"}"><span class="ab">${g.away_abbr}</span>
       <span class="who"><span class="sp">${spA}</span></span><span class="pc">${pctI(1-hp)}%</span></div>
@@ -369,10 +378,7 @@ function gcard(g){
       <span class="${e.team>=0?"p":"n"}">team ${sgn(e.team||0)}</span>
       ${e.bullpen!=null&&Math.abs(e.bullpen)>=0.3?`<span class="${e.bullpen>=0?"p":"n"}">pen ${sgn(e.bullpen)}</span>`:""}
       ${e.power!=null&&Math.abs(e.power)>=0.3?`<span class="${e.power>=0?"p":"n"}">pow ${sgn(e.power)}</span>`:""}
-      ${e.baserun!=null&&Math.abs(e.baserun)>=0.3?`<span class="${e.baserun>=0?"p":"n"}">run ${sgn(e.baserun)}</span>`:""}
-      ${g.lineup_source==="official"?'<span class="k" style="color:var(--fav)">&middot; lineups in</span>'
-        :g.lineup_source==="projected"?'<span class="k" style="color:#d9a441">&middot; proj lineup</span>'
-        :(g.pitcher_known?"":'<span class="k">&middot; starters tbd</span>')}</div>
+      ${e.baserun!=null&&Math.abs(e.baserun)>=0.3?`<span class="${e.baserun>=0?"p":"n"}">run ${sgn(e.baserun)}</span>`:""}</div>
   </a>`;
 }
 function board(){
