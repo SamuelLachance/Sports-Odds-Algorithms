@@ -23,18 +23,14 @@ CSS = r"""
   --mono:ui-monospace,'SF Mono','Cascadia Code',Menlo,Consolas,monospace;
   --w:1360px;
 }
+/* Dark is the default; light applies only when the viewer explicitly toggles it
+   (data-theme="light"), which the toggle persists in localStorage. */
 :root[data-theme="light"]{
   --bg:#f4f3ef; --panel:#fff; --panel-2:#faf9f6; --sunk:#eeece6; --ink:#1a1c22;
   --muted:#6b7079; --faint:#a3a7ae; --line:#e4e1d9; --line-2:#d3cfc5;
   --accent:#c8102e; --accent-2:#c8102e12; --fav:#1c7a48; --favbg:#1c7a4812;
   --away:#356b8a; --home:#b34a35; --warn:#a9741e;
 }
-@media (prefers-color-scheme:light){:root:not([data-theme]){
-  --bg:#f4f3ef; --panel:#fff; --panel-2:#faf9f6; --sunk:#eeece6; --ink:#1a1c22;
-  --muted:#6b7079; --faint:#a3a7ae; --line:#e4e1d9; --line-2:#d3cfc5;
-  --accent:#c8102e; --accent-2:#c8102e12; --fav:#1c7a48; --favbg:#1c7a4812;
-  --away:#356b8a; --home:#b34a35; --warn:#a9741e;
-}}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;
@@ -244,8 +240,9 @@ const state = {board:null, db:null, league:"mlb", range:"today", live:{}, update
 const SAPI = "https://statsapi.mlb.com/api/v1";
 const root = document.documentElement;
 $("#tog").onclick = () => {
-  const cur = root.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");
-  root.setAttribute("data-theme", cur==="dark"?"light":"dark");
+  const next = (root.getAttribute("data-theme")||"dark")==="dark" ? "light" : "dark";
+  root.setAttribute("data-theme", next);
+  try{ localStorage.setItem("theme", next); }catch(e){}
 };
 
 const pctI = x => Math.round(x*100);
@@ -596,6 +593,7 @@ boot();
 """
 
 SHELL = f"""<style>{CSS}</style>
+<script>try{{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');}}catch(e){{document.documentElement.setAttribute('data-theme','dark');}}</script>
 <header><div class="wrap">
   <a class="brand" href="#/">GLASS<span class="b">BOX</span></a>
   <nav class="main">
