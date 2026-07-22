@@ -32,7 +32,7 @@ PENDING_LEAGUES = [
 def horizon_games(start: date, days: int) -> list[dict]:
     end = start + timedelta(days=days)
     url = (f"{BASE}/schedule?sportId=1&startDate={start}&endDate={end}"
-           f"&hydrate=probablePitcher,team")
+           f"&hydrate=probablePitcher,team,lineups")
     d = _get(url)
     out = []
     for day in d.get("dates", []):
@@ -43,6 +43,7 @@ def horizon_games(start: date, days: int) -> list[dict]:
             ht, at = h["team"]["id"], a["team"]["id"]
             if ht not in TEAM_ID_TO_RETRO or at not in TEAM_ID_TO_RETRO:
                 continue
+            lu = g.get("lineups") or {}
             out.append({
                 "game_pk": g["gamePk"],
                 "date": g["gameDate"][:10], "start_utc": g["gameDate"],
@@ -53,6 +54,8 @@ def horizon_games(start: date, days: int) -> list[dict]:
                 "home_name": h["team"]["name"], "away_name": a["team"]["name"],
                 "home_sp": (h.get("probablePitcher") or {}).get("fullName"),
                 "away_sp": (a.get("probablePitcher") or {}).get("fullName"),
+                "home_lineup": [p["id"] for p in lu.get("homePlayers", [])],
+                "away_lineup": [p["id"] for p in lu.get("awayPlayers", [])],
             })
     return out
 
@@ -74,7 +77,8 @@ def main(days: int = 30, today: str | None = None):
         # ratings are current only through yesterday, so today's results never
         # leak into the number shown for today's games.
         pitcher_known = bool(g["home_sp"]) and bool(g["away_sp"])
-        r = pred.predict(g["home"], g["away"], g.get("home_sp") or "", g.get("away_sp") or "")
+        r = pred.predict(g["home"], g["away"], g.get("home_sp") or "", g.get("away_sp") or "",
+                         home_lineup=g.get("home_lineup"), away_lineup=g.get("away_lineup"))
         if "error" in r:
             continue
         hp = r["home_win_prob"]
@@ -91,19 +95,26 @@ def main(days: int = 30, today: str | None = None):
             "pick": g["home_abbr"] if pick_home else g["away_abbr"],
             "pick_prob": round(max(hp, 1 - hp), 4),
             "edge": r["contributions_pp"],
+            "tier": r["tier"],
+            "recal_prob": r["recal_prob"],
+            "ts_edge": r["ts_edge"],
             "home_pitcher_matched": r["home_pitcher_matched"],
             "away_pitcher_matched": r["away_pitcher_matched"],
         })
     cards.sort(key=lambda c: (c["start_utc"]))
 
     metrics = json.loads((PROJECT / "mlbwp" / "artifacts" / "metrics.json").read_text())
+    # Headline accuracy is the full blended model (0.67509) when a blend is shipped,
+    # else the raw FIP-Elo. lineup_ll is the recalibration fallback.
+    blend = pred.blend
     payload = {
         "generated": day0.isoformat(),
         "model": pred.model, "version": pred.version,
         "current_through": pred.current_through,
         "season_games_applied": applied,
         "accuracy": {
-            "log_loss": metrics["model_log_loss"],
+            "log_loss": blend["holdout"]["full_ll"] if blend else metrics["model_log_loss"],
+            "recal_log_loss": blend["holdout"]["recal_ll"] if blend else metrics["model_log_loss"],
             "elo_log_loss": metrics["plain_elo_log_loss"],
             "coinflip": metrics["constant_log_loss"],
         },
