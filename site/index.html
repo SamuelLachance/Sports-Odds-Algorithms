@@ -385,9 +385,9 @@ function board(){
   let body;
   if(!games.length){body=`<div class="empty">No games in this window.</div>`;}
   else{const days=[...new Set(games.map(g=>g.date))].sort();
-    body=days.map(d=>{const gs=games.filter(g=>g.date===d),tbd=gs.some(g=>!g.pitcher_known);
+    body=days.map(d=>{const gs=games.filter(g=>g.date===d),allTbd=gs.every(g=>!g.pitcher_known);
       return `<div class="day"><span class="d">${fmtDay(d,gen)}</span><span class="c">${gs.length} games</span>
-        ${tbd?'<span class="proj">projected &#183; starters tbd</span>':""}</div>
+        ${allTbd?'<span class="proj">projected &#183; starters tbd</span>':""}</div>
         <div class="grid">${gs.map(gcard).join("")}</div>`;}).join("");}
   $("#view").innerHTML=`<div class="controls"><div class="rail">${rail}</div><div class="filters">${filts}</div></div>${body}`;
   $("#view").querySelectorAll("[data-lg]").forEach(x=>x.onclick=()=>{state.league=x.dataset.lg;board();});

@@ -178,8 +178,15 @@ def main(days: int = 30, today: str | None = None):
         # ratings are current only through yesterday, so today's results never
         # leak into the number shown for today's games.
         pitcher_known = bool(g["home_sp"]) and bool(g["away_sp"])
+        # The full "lineups in" tier layers the lineup's on-base/power/baserunning
+        # ON TOP of the starter matchup. Withhold it until BOTH starters are known,
+        # so we never show "lineups in" next to a TBD pitcher (an incomplete pick
+        # missing the biggest factor). Starters are normally set days before lineups,
+        # so this only defers the rare lineup-posted-but-pitcher-TBD edge case.
+        use_lineups = pitcher_known
         r = pred.predict(g["home"], g["away"], g.get("home_sp") or "", g.get("away_sp") or "",
-                         home_lineup=g.get("home_lineup"), away_lineup=g.get("away_lineup"))
+                         home_lineup=g.get("home_lineup") if use_lineups else None,
+                         away_lineup=g.get("away_lineup") if use_lineups else None)
         if "error" in r:
             continue
         hp = r["home_win_prob"]
