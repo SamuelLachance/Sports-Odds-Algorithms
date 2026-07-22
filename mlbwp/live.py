@@ -149,6 +149,67 @@ def _batted_balls_by_pitcher(all_plays: list) -> dict:
     return bb
 
 
+# Base labels -> number; batter destination bases by result event (for extra-base
+# credit). Mirrors the Retrosheet baserunning parser (phase0/baserunning_parse.py):
+# same run-value components, computed here from the StatsAPI structured runner
+# movements instead of Retrosheet advance strings (different source, same method).
+_BR_BASE = {"1B": 1, "2B": 2, "3B": 3, "4B": 4, "score": 4}
+_BR_DEST = {"single": 1, "double": 2, "triple": 3, "home_run": 4,
+            "walk": 1, "intent_walk": 1, "hit_by_pitch": 1, "catcher_interf": 1,
+            "field_error": 1, "fielders_choice": 1, "fielders_choice_out": 1}
+
+
+def _baserunning_by_player(all_plays: list) -> dict:
+    """{player_mlbam: [pa, sb, cs, xb, oob, gidp]} from play-by-play runner movement.
+      sb/cs  stolen bases / caught stealing (runner)
+      xb     bases taken beyond what the batted ball forces (runner)
+      oob    thrown out advancing, not a force out (runner)
+      gidp   grounded into a double/triple play (batter)
+    pa is the batter's completed plate appearances (the rate denominator)."""
+    agg: dict = {}
+
+    def cr(pid):
+        return agg.setdefault(pid, [0, 0, 0, 0, 0, 0])
+    for pl in all_plays:
+        res = pl.get("result", {})
+        ev = res.get("eventType")
+        complete = pl.get("about", {}).get("isComplete")
+        batter = (pl.get("matchup", {}).get("batter") or {}).get("id")
+        if res.get("type") == "atBat" and complete and batter is not None:
+            cr(batter)[0] += 1
+            if ev in ("grounded_into_double_play", "grounded_into_triple_play"):
+                cr(batter)[5] += 1
+        dest = _BR_DEST.get(ev, 0)
+        for rn in pl.get("runners", []):
+            mv = rn.get("movement", {})
+            de = rn.get("details", {})
+            rid = (de.get("runner") or {}).get("id")
+            mr = de.get("movementReason") or ""
+            if rid is None:
+                continue
+            if "stolen_base" in mr:
+                cr(rid)[1] += 1
+                continue
+            if "caught_stealing" in mr:
+                cr(rid)[2] += 1
+                continue
+            if "pickoff" in mr:                       # plain pickoff isn't a CS
+                continue
+            if mv.get("start") is None:               # batter-runner: the hit itself
+                continue
+            if mv.get("isOut"):
+                if mr != "r_force_out":               # a force out isn't a baserunning out
+                    cr(rid)[4] += 1
+                continue
+            end = mv.get("end")
+            if end is None:
+                continue
+            extra = (_BR_BASE.get(end, 0) - _BR_BASE.get(mv["start"], 0)) - dest
+            if extra > 0:
+                cr(rid)[3] += extra
+    return agg
+
+
 def _parse_plays(all_plays: list) -> list:
     """Completed plate appearances as (batter_mlbam, pitcher_mlbam, on_base), in order."""
     pas = []
@@ -169,8 +230,9 @@ def game_data(game_pk) -> dict:
     """Everything the live ratings need from one game, in a single feed/live fetch.
     Market-free — only who pitched/batted and the outcome.
 
-    Returns {"home": side, "away": side, "pa": [[batter,pitcher,on_base], ...]} where
-    each side is {"sp_id", "sp":[outs,HR,BB,HBP,SO], "rel":[fip_num,outs], "bat":{mlbam:[PA,H,TB]}}.
+    Returns {"home": side, "away": side, "pa": [[batter,pitcher,on_base], ...],
+             "baserun": {mlbam: [PA,SB,CS,XB,OOB,GIDP]}} where each side is
+    {"sp_id", "sp":[outs,HR,BB,HBP,SO], "rel":[fip_num,outs], "bat":{mlbam:[PA,H,TB]}}.
     """
     d = _get(f"{BASE_V11}/game/{game_pk}/feed/live")
     live = d.get("liveData", {})
@@ -183,6 +245,7 @@ def game_data(game_pk) -> dict:
         sides[side]["sp_gb"] = gb
         sides[side]["sp_pu"] = pu
     sides["pa"] = _parse_plays(plays)
+    sides["baserun"] = _baserunning_by_player(plays)
     return sides
 
 

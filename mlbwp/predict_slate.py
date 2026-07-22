@@ -42,9 +42,13 @@ def ensure_lines_cache(finals: list[dict], cache_path: Path = LINES_CACHE) -> di
             continue
         try:
             gd = game_data(g["game_pk"])
-            cache[pk] = {"date": g["date"], "home": gd["home"], "away": gd["away"], "pa": gd["pa"]}
+            cache[pk] = {"date": g["date"], "home": gd["home"], "away": gd["away"],
+                         "pa": gd["pa"], "baserun": gd["baserun"]}
             fetched += 1
             time.sleep(0.15)
+            if fetched % 200 == 0:      # checkpoint a long backfill so it can't lose it all
+                cache_path.parent.mkdir(parents=True, exist_ok=True)
+                cache_path.write_text(json.dumps(cache), encoding="utf-8")
         except Exception:  # noqa: BLE001 — a bad game feed must not abort the build
             continue
     if fetched:
@@ -63,14 +67,21 @@ def build_replay(finals: list[dict], cache: dict, x: dict, lg_hrfb=None):
       pas     [ (batter_retro, pitcher_retro, on_base) ]  date-ordered  for TrueSkill.update
       bullpen {team: (fip_num, outs)}      season-to-date reliever aggregate
       power   {retro: [PA, H, TB]}         season-to-date batting counts
+      baserun {retro: [PA,SB,CS,XB,OOB,GIDP]}  season-to-date baserunning counts
     """
     from mlbwp.ingest import to_xfip
     games, pas = [], []
     bullpen = defaultdict(lambda: [0.0, 0])
     power = defaultdict(lambda: [0, 0, 0])
+    baserun = defaultdict(lambda: [0, 0, 0, 0, 0, 0])
     have = [g for g in finals if str(g["game_pk"]) in cache]
     for g in sorted(have, key=lambda g: (g["date"], g["game_pk"])):
         rec = cache[str(g["game_pk"])]
+        for mlbam, c in (rec.get("baserun") or {}).items():
+            r = x.get(str(mlbam))
+            if r:
+                for k in range(6):
+                    baserun[r][k] += c[k]
         sides = {}
         for side, team in (("home", g["home"]), ("away", g["away"])):
             s = rec[side]
@@ -102,7 +113,8 @@ def build_replay(finals: list[dict], cache: dict, x: dict, lg_hrfb=None):
                 pas.append((br, pr, ob))
     return (games, pas,
             {t: (v[0], v[1]) for t, v in bullpen.items()},
-            {r: v for r, v in power.items()})
+            {r: v for r, v in power.items()},
+            {r: v for r, v in baserun.items()})
 
 PENDING_LEAGUES = [
     {"code": "nhl", "name": "NHL"}, {"code": "nba", "name": "NBA"},
@@ -151,8 +163,8 @@ def main(days: int = 30, today: str | None = None):
     # through the same engines the model was trained with. No retraining — the
     # coefficients are fixed; only the rating STATE is walked to today.
     cache = ensure_lines_cache(finals)
-    games, pas, bullpen, power = build_replay(finals, cache, pred.mlbam_to_retro, pred.lg_hrfb)
-    applied = pred.replay_season(games, pas, bullpen=bullpen, power=power)
+    games, pas, bullpen, power, baserun = build_replay(finals, cache, pred.mlbam_to_retro, pred.lg_hrfb)
+    applied = pred.replay_season(games, pas, bullpen=bullpen, power=power, baserun=baserun)
     bp_loaded = sum(1 for v in bullpen.values() if v[1] > 0)
     sp_loaded = len(games)
     bat_loaded = sum(1 for v in power.values() if v[0] > 0)
@@ -191,6 +203,7 @@ def main(days: int = 30, today: str | None = None):
             "home_bp_fip": r["home_bp_fip"],
             "away_bp_fip": r["away_bp_fip"],
             "power_edge": r["power_edge"],
+            "baserun_edge": r["baserun_edge"],
             "home_pitcher_matched": r["home_pitcher_matched"],
             "away_pitcher_matched": r["away_pitcher_matched"],
         })

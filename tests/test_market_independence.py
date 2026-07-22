@@ -125,4 +125,5 @@ def test_model_produces_game_level_probability():
     assert 0.0 < out["home_win_prob"] < 1.0
     # decomposition present and market-free
     assert set(out["contributions_pp"]) == {
-        "team", "home_field", "home_pitcher", "away_pitcher", "bullpen", "siera", "lineup", "power"}
+        "team", "home_field", "home_pitcher", "away_pitcher", "bullpen", "siera",
+        "lineup", "power", "baserun"}

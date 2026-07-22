@@ -54,6 +54,11 @@ BP_PRIOR_OUTS = 200.0    # empirical-Bayes shrink strength (~67 IP) for bullpen 
 PWR_PRIOR_PA = 150.0     # empirical-Bayes shrink strength (PA) for a batter's power rate
 SIERA_PRIOR = 120.0      # PA-equivalent shrink of a starter's rate to league (SIERA)
 SIERA_MIN_PA = 60        # freeze a starter's SIERA state once his EWMA PA reaches this
+# Baserunning run values (SB, CS, extra base, out-on-base, GIDP) and shrink; a
+# league-average baserunner rates 0, so the rate is centred and adds nothing.
+BR_RV = (0.20, -0.41, 0.19, -0.41, -0.25)
+BR_PRIOR_PA = 200.0
+BR_MIN_PA = 20           # freeze a batter's baserunning rating at this many career PA
 
 
 def load_siera_inputs():
@@ -170,6 +175,47 @@ def power_diffs(games, power, lu, lg_iso):
     return out, car
 
 
+def load_baserun():
+    """game_id -> [(batter, pa, sb, cs, xb, oob, gidp)] from the Retrosheet walk."""
+    by_game = defaultdict(list)
+    with open("data/retro_events/baserun.csv", encoding="utf-8") as fh:
+        for r in csv.DictReader(fh):
+            by_game[r["game_id"]].append(
+                (r["player"], int(r["pa"]), int(r["sb"]), int(r["cs"]),
+                 int(r["xb"]), int(r["oob"]), int(r["gidp"])))
+    return by_game
+
+
+def _brv(c):
+    """Run value of career counts c = [pa, sb, cs, xb, oob, gidp]."""
+    return sum(BR_RV[k] * c[1 + k] for k in range(5))
+
+
+def baserun_diffs(games, br, lu):
+    """game_id -> home-minus-away lineup baserunning-rate differential, as-of before
+    each game (leak-safe), AND the final per-batter career counts (frozen for
+    serving). Rate = run_value / (PA + prior), averaged over the actual lineup; sign
+    matches phase0/baserunning_eval.py (home_lineup - away_lineup)."""
+    car = defaultdict(lambda: [0, 0, 0, 0, 0, 0])   # batter -> career pa,sb,cs,xb,oob,gidp
+    out = {}
+    for g in games:
+        def brate(b):
+            c = car[b]
+            return _brv(c) / (c[0] + BR_PRIOR_PA)
+
+        def lineup(side):
+            bs = lu.get((g["game_id"], side), [])
+            v = [brate(b) for b in bs]
+            return sum(v) / len(v) if v else None
+        h, a = lineup(1), lineup(0)
+        out[g["game_id"]] = (h - a) if (h is not None and a is not None) else None
+        for row in br.get(g["game_id"], []):
+            c = car[row[0]]
+            for k in range(6):
+                c[k] += row[1 + k]
+    return out, car
+
+
 def logit(p):
     p = np.clip(p, EPS, 1 - EPS)
     return np.log(p / (1 - p))
@@ -199,10 +245,12 @@ def main():
 
     # 2. FIP-Elo probability + bullpen + power + SIERA differentials (one walk)
     games = load_games()
+    lu = load_lineups()
     per_game, bp_lg_core = reliever_aggs()
     bpd = bullpen_diffs(games, per_game, bp_lg_core)
     power, pwr_lg_iso = load_power()
-    pdiff, career = power_diffs(games, power, load_lineups(), pwr_lg_iso)
+    pdiff, career = power_diffs(games, power, lu, pwr_lg_iso)
+    brdiff, br_career = baserun_diffs(games, load_baserun(), lu)
     ss, bbl = load_siera_inputs()
     siera_lg = league_siera_rates(games, ss, bbl)
     sr = SieraRater(decay=PARAMS["decay"], prior=SIERA_PRIOR, lg=siera_lg)
@@ -223,34 +271,39 @@ def main():
     # 3. join features + fit the blend tiers on DEV. SIERA (like bullpen) needs no
     # lineup, so it joins BOTH the no-lineup 'recbp' tier and the 'full' tier.
     tsf = {r[0]: float(r[3]) for r in csv.reader(open("data/retro_events/ts_feature.csv")) if r[0] != "game_id"}
-    j = [(s, p, y, tsf[gid], bpd[gid], pdiff.get(gid), sdiff[gid])
-         for gid, (s, p, y) in rec.items() if gid in tsf and pdiff.get(gid) is not None]
+    j = [(s, p, y, tsf[gid], bpd[gid], pdiff.get(gid), sdiff[gid], brdiff.get(gid))
+         for gid, (s, p, y) in rec.items()
+         if gid in tsf and pdiff.get(gid) is not None and brdiff.get(gid) is not None]
     seasons = np.array([x[0] for x in j])
     lf = logit(np.array([x[1] for x in j]))
     y = np.array([x[2] for x in j], float)
     tse = np.array([x[3] for x in j]); bpe = np.array([x[4] for x in j])
     pwe = np.array([x[5] for x in j]); sie = np.array([x[6] for x in j])
+    bre = np.array([x[7] for x in j])
     dmask = np.isin(seasons, list(DEV))
     tmask = np.isin(seasons, TEST)
     ts_mu, ts_sd = float(tse[dmask].mean()), float(tse[dmask].std())
     bp_mu, bp_sd = float(bpe[dmask].mean()), float(bpe[dmask].std())
     pw_mu, pw_sd = float(pwe[dmask].mean()), float(pwe[dmask].std())
     si_mu, si_sd = float(sie[dmask].mean()), float(sie[dmask].std())
+    br_mu, br_sd = float(bre[dmask].mean()), float(bre[dmask].std())
     tsz = (tse - ts_mu) / ts_sd
     bpz = (bpe - bp_mu) / bp_sd
     pwz = (pwe - pw_mu) / pw_sd
     siz = (sie - si_mu) / si_sd
+    brz = (bre - br_mu) / br_sd
 
     recal = LogisticRegression(C=1e6, max_iter=1000).fit(lf[dmask].reshape(-1, 1), y[dmask])
     recbp = LogisticRegression(C=1e6, max_iter=1000).fit(
         np.column_stack([lf[dmask], bpz[dmask], siz[dmask]]), y[dmask])
     full = LogisticRegression(C=1e6, max_iter=1000).fit(
-        np.column_stack([lf[dmask], tsz[dmask], bpz[dmask], pwz[dmask], siz[dmask]]), y[dmask])
+        np.column_stack([lf[dmask], tsz[dmask], bpz[dmask], pwz[dmask], siz[dmask], brz[dmask]]), y[dmask])
 
     yt = y[tmask]
     p_recal = recal.predict_proba(lf[tmask].reshape(-1, 1))[:, 1]
     p_recbp = recbp.predict_proba(np.column_stack([lf[tmask], bpz[tmask], siz[tmask]]))[:, 1]
-    p_full = full.predict_proba(np.column_stack([lf[tmask], tsz[tmask], bpz[tmask], pwz[tmask], siz[tmask]]))[:, 1]
+    p_full = full.predict_proba(np.column_stack(
+        [lf[tmask], tsz[tmask], bpz[tmask], pwz[tmask], siz[tmask], brz[tmask]]))[:, 1]
 
     blend = {
         "recal": {"b0": float(recal.intercept_[0]), "b1": float(recal.coef_[0][0])},
@@ -258,32 +311,39 @@ def main():
                   "b3": float(recbp.coef_[0][1]), "b5": float(recbp.coef_[0][2])},
         "full": {"b0": float(full.intercept_[0]), "b1": float(full.coef_[0][0]),
                  "b2": float(full.coef_[0][1]), "b3": float(full.coef_[0][2]),
-                 "b4": float(full.coef_[0][3]), "b5": float(full.coef_[0][4])},
+                 "b4": float(full.coef_[0][3]), "b5": float(full.coef_[0][4]),
+                 "b6": float(full.coef_[0][5])},
         "ts_mu": ts_mu, "ts_sd": ts_sd,
         "ts_params": {"beta": BETA, "tau": TAU, "mu0": MU0, "sig0": SIG0},
         "bp_mu": bp_mu, "bp_sd": bp_sd,
         "pw_mu": pw_mu, "pw_sd": pw_sd,
         "si_mu": si_mu, "si_sd": si_sd,
+        "br_mu": br_mu, "br_sd": br_sd,
         "bp_lg_core": round(bp_lg_core, 4), "bp_prior_outs": BP_PRIOR_OUTS,
         "pwr_lg_iso": round(pwr_lg_iso, 5), "pwr_prior_pa": PWR_PRIOR_PA,
         "siera_prior": SIERA_PRIOR, "siera_lg": {k: round(v, 6) for k, v in siera_lg.items()},
+        "br_rv": list(BR_RV), "br_prior_pa": BR_PRIOR_PA,
         "holdout": {"recal_ll": round(ll(p_recal, yt), 5),
                     "recbp_ll": round(ll(p_recbp, yt), 5),
                     "full_ll": round(ll(p_full, yt), 5), "n": int(len(yt))},
     }
     json.dump(blend, open(f"{ART}/blend.json", "w"), indent=1)
 
-    # 4. freeze per-batter power counts and per-starter SIERA EWMA state
+    # 4. freeze per-batter power + baserunning counts, per-starter SIERA EWMA state
     pr = {b: [c[0], c[1], c[2]] for b, c in career.items() if c[0] >= MIN_PA}
     json.dump(pr, open(f"{ART}/power_ratings.json", "w"))
+    brr = {b: c for b, c in br_career.items() if c[0] >= BR_MIN_PA}
+    json.dump(brr, open(f"{ART}/baserun_ratings.json", "w"))
     srr = {pid: [round(x, 4) for x in e] for pid, e in sr.E.items() if e[5] >= SIERA_MIN_PA}
     json.dump(srr, open(f"{ART}/siera_ratings.json", "w"))
 
     h = blend["holdout"]
     print(f"froze blend: recal={h['recal_ll']}  recbp={h['recbp_ll']}  full={h['full_ll']}")
     print(f"  full:  + {blend['full']['b2']:.4f}*ts_z + {blend['full']['b3']:.4f}*bp_z "
-          f"+ {blend['full']['b4']:.4f}*pw_z + {blend['full']['b5']:.4f}*siera_z")
-    print(f"  froze {len(pr)} power ratings, {len(srr)} SIERA states (prior {SIERA_PRIOR:.0f}, "
+          f"+ {blend['full']['b4']:.4f}*pw_z + {blend['full']['b5']:.4f}*siera_z "
+          f"+ {blend['full']['b6']:.4f}*baserun_z")
+    print(f"  froze {len(pr)} power ratings, {len(brr)} baserunning ratings, "
+          f"{len(srr)} SIERA states (prior {SIERA_PRIOR:.0f}, "
           f"lg netGB%={siera_lg['gb']-siera_lg['fb']-siera_lg['pu']:.3f})")
 
 

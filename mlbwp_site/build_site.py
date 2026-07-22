@@ -363,6 +363,7 @@ function gcard(g){
       <span class="${e.team>=0?"p":"n"}">team ${sgn(e.team||0)}</span>
       ${e.bullpen!=null&&Math.abs(e.bullpen)>=0.3?`<span class="${e.bullpen>=0?"p":"n"}">pen ${sgn(e.bullpen)}</span>`:""}
       ${e.power!=null&&Math.abs(e.power)>=0.3?`<span class="${e.power>=0?"p":"n"}">pow ${sgn(e.power)}</span>`:""}
+      ${e.baserun!=null&&Math.abs(e.baserun)>=0.3?`<span class="${e.baserun>=0?"p":"n"}">run ${sgn(e.baserun)}</span>`:""}
       ${g.tier==="lineup"?'<span class="k" style="color:var(--fav)">&middot; lineups in</span>':(g.pitcher_known?"":'<span class="k">&middot; starters tbd</span>')}</div>
   </a>`;
 }
@@ -448,13 +449,15 @@ function gamePage(pk){
             ${e.siera!=null?pRow("Starter SIERA (K/BB/GB)",e.siera||0):""}
             ${g.tier==="lineup"?pRow("Lineup on-base (TrueSkill)",e.lineup||0):""}
             ${g.tier==="lineup"&&e.power!=null?pRow("Lineup power (ISO)",e.power||0):""}
+            ${g.tier==="lineup"&&e.baserun!=null?pRow("Lineup baserunning",e.baserun||0):""}
           </div>
           <div class="sub" style="margin-top:8px;color:var(--faint)">
             ${g.tier==="lineup"
-              ? "Lineups confirmed &mdash; full model adds the actual lineup's on-base (TrueSkill) and power (ISO)."
+              ? "Lineups confirmed &mdash; full model adds the actual lineup's on-base (TrueSkill), power (ISO) and baserunning."
               : "Pre-lineup estimate; sharpens when today's lineups are posted."}
             ${g.home_bp_fip!=null?"Bullpen = season-to-date reliever FIP ("+g.away_abbr+" "+g.away_bp_fip+" vs "+g.home_abbr+" "+g.home_bp_fip+", lower is better). ":""}
             ${g.tier==="lineup"&&e.power!=null?"Power = lineup isolated-power (extra bases per PA) vs league; on-base and power are separated because a walk and a homer are the same to the on-base rating. ":""}
+            ${g.tier==="lineup"&&e.baserun!=null?"Baserunning = the lineup's stolen bases, extra bases taken, outs on the bases and double plays, run-valued vs an average runner &mdash; the third leg of offense after on-base and power. ":""}
             Contributions in probability points around a 50% base. Market-blind.</div>
         </div>
         <div class="panel"><h3>Starting pitchers</h3>
@@ -610,7 +613,7 @@ SHELL = f"""<style>{CSS}</style>
 <footer><div class="wrap">
   <b>Research only &mdash; not betting advice.</b> A market-blind model (team Elo + xFIP &amp;
   SIERA starting-pitcher ratings + season-to-date bullpen FIP + per-plate-appearance TrueSkill
-  on-base ratings + lineup isolated-power) that never sees the odds. Data: <b>Retrosheet</b> (free of charge,
+  on-base ratings + lineup isolated-power + lineup baserunning) that never sees the odds. Data: <b>Retrosheet</b> (free of charge,
   copyrighted by Retrosheet, <a href="https://www.retrosheet.org">retrosheet.org</a>) and the
   MLB Stats API (individual, non-commercial use).
 </div></footer>

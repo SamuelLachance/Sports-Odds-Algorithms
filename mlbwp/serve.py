@@ -91,6 +91,15 @@ class Predictor:
         self.pw_season: dict[str, list] = {}
         self.pitchers_through = None
 
+        # Batter baserunning: frozen career counts {retro: [PA,SB,CS,XB,OOB,GIDP]}
+        # plus this season's counts (set_baserun_season). bat_brv run-values them
+        # and shrinks to 0 (a league-average baserunner adds nothing). The third leg
+        # of offense (with on-base + power); needs the posted lineup.
+        self.baserun = _load(ART / "baserun_ratings.json") or {}
+        self.br_rv = tuple((self.blend or {}).get("br_rv", (0.20, -0.41, 0.19, -0.41, -0.25)))
+        self.br_prior_pa = (self.blend or {}).get("br_prior_pa", 200.0)
+        self.br_season: dict[str, list] = {}
+
         # SIERA: per-starter EWMA of SO/BB/GB/FB/PU/PA, reconstructed from the
         # checkpoint and walked forward this season. A pitcher-quality signal
         # (ground balls + non-linearity) that xFIP lacks; needs no lineup.
@@ -100,12 +109,14 @@ class Predictor:
         self.siera.load_state(_load(ART / "siera_ratings.json") or {})
 
     # --- replay this season through the engines (== continue the training walk) ---
-    def replay_season(self, finals: list[dict], pas: list, bullpen=None, power=None) -> int:
+    def replay_season(self, finals: list[dict], pas: list, bullpen=None, power=None,
+                      baserun=None) -> int:
         """Continue the training walk with this season's data.
           finals: game dicts {home,away,home_sp,away_sp(retro ids),y,home_line,away_line,date}
                   replayed through FipPitcherElo.update -> team Elo + starter FIP, together, in date order.
           pas:    (batter_retro, pitcher_retro, on_base) in date order -> TrueSkill.update.
-          bullpen {team:(fip_num,outs)}, power {retro:[PA,H,TB]}: season-to-date accumulations."""
+          bullpen {team:(fip_num,outs)}, power {retro:[PA,H,TB]},
+          baserun {retro:[PA,SB,CS,XB,OOB,GIDP]}: season-to-date accumulations."""
         n = 0
         for g in sorted(finals, key=lambda x: x["date"]):
             self.fe.update(g)
@@ -121,6 +132,8 @@ class Predictor:
             self.set_bullpen(bullpen, through=self.current_through)
         if power is not None:
             self.set_power_season(power)
+        if baserun is not None:
+            self.set_baserun_season(baserun)
         self.pitchers_through = self.current_through
         return n
 
@@ -141,12 +154,14 @@ class Predictor:
         return 1.0 / (1.0 + math.exp(
             -(b["b0"] + b["b1"] * self._logit(fip_p) + b["b3"] * bp_z + b.get("b5", 0.0) * si_z)))
 
-    def _full(self, fip_p: float, edge: float, bp_z: float, pw_z: float = 0.0, si_z: float = 0.0) -> float:
+    def _full(self, fip_p: float, edge: float, bp_z: float, pw_z: float = 0.0,
+              si_z: float = 0.0, br_z: float = 0.0) -> float:
         b = self.blend["full"]
         z = (edge - self.blend["ts_mu"]) / self.blend["ts_sd"]
         return 1.0 / (1.0 + math.exp(
             -(b["b0"] + b["b1"] * self._logit(fip_p) + b["b2"] * z
-              + b["b3"] * bp_z + b.get("b4", 0.0) * pw_z + b.get("b5", 0.0) * si_z)))
+              + b["b3"] * bp_z + b.get("b4", 0.0) * pw_z + b.get("b5", 0.0) * si_z
+              + b.get("b6", 0.0) * br_z)))
 
     def _si_z(self, home_sp, away_sp):
         """Standardised home-minus-away SIERA differential; starters by name."""
@@ -209,6 +224,36 @@ class Predictor:
             return None, None
         return (e - self.blend["pw_mu"]) / self.blend["pw_sd"], e
 
+    # --- batter baserunning ---------------------------------------------
+    def bat_brv(self, retro: str | None) -> float:
+        """Run-valued baserunning rate = (SB,CS,XB,OOB,GIDP . run_values) / (PA+prior).
+        Career (frozen) + this season's counts; 0 for an unknown/league-average runner."""
+        c = self.baserun.get(retro or "") or (0, 0, 0, 0, 0, 0)
+        s = self.br_season.get(retro or "") or (0, 0, 0, 0, 0, 0)
+        pa = c[0] + s[0]
+        brv = sum(self.br_rv[k] * (c[1 + k] + s[1 + k]) for k in range(5))
+        return brv / (pa + self.br_prior_pa)
+
+    def set_baserun_season(self, counts: dict) -> int:
+        self.br_season = {r: list(v) for r, v in counts.items()}
+        return sum(1 for v in counts.values() if v[0] > 0)
+
+    def baserun_edge(self, home_lineup, away_lineup) -> float | None:
+        if not self.baserun or not home_lineup or not away_lineup \
+                or len(home_lineup) < 5 or len(away_lineup) < 5:
+            return None
+        h = [self.bat_brv(self.mlbam_to_retro.get(str(b))) for b in home_lineup]
+        a = [self.bat_brv(self.mlbam_to_retro.get(str(b))) for b in away_lineup]
+        return sum(h) / len(h) - sum(a) / len(a)
+
+    def _br_z(self, home_lineup, away_lineup):
+        if not self.blend or "br_mu" not in self.blend:
+            return None, None
+        e = self.baserun_edge(home_lineup, away_lineup)
+        if e is None:
+            return None, None
+        return (e - self.blend["br_mu"]) / self.blend["br_sd"], e
+
     # --- on-base TrueSkill ----------------------------------------------
     def _ts_mu(self, retro: str | None) -> float:
         return self.tse.mu.get(retro or "", self.tse.mu0)
@@ -264,16 +309,20 @@ class Predictor:
         siera_pp = round((served - p_bp) * 100, 1)
         base_p = served
 
-        edge, pw_edge, lineup_pp, power_pp = None, None, 0.0, 0.0
+        edge, pw_edge, br_edge = None, None, None
+        lineup_pp, power_pp, baserun_pp = 0.0, 0.0, 0.0
         if self.blend and home_lineup and away_lineup:
             edge = self.ts_edge(home_lineup, away_lineup, home_sp, away_sp)
             if edge is not None:
                 pw_z, pw_edge = self._pw_z(home_lineup, away_lineup)
-                p_ts = self._full(fip_p, edge, bp_z or 0.0, 0.0, siz)
-                served = self._full(fip_p, edge, bp_z or 0.0, pw_z or 0.0, siz)
+                br_z, br_edge = self._br_z(home_lineup, away_lineup)
+                p_ts = self._full(fip_p, edge, bp_z or 0.0, 0.0, siz, 0.0)          # lineup on-base
+                p_pw = self._full(fip_p, edge, bp_z or 0.0, pw_z or 0.0, siz, 0.0)  # + power
+                served = self._full(fip_p, edge, bp_z or 0.0, pw_z or 0.0, siz, br_z or 0.0)  # + baserunning
                 tier = "lineup"
                 lineup_pp = round((p_ts - base_p) * 100, 1)
-                power_pp = round((served - p_ts) * 100, 1)
+                power_pp = round((p_pw - p_ts) * 100, 1)
+                baserun_pp = round((served - p_pw) * 100, 1)
 
         slope = recal_p * (1 - recal_p) * (2.302585 / 400.0) * self.blend["recal"]["b1"] \
             if self.blend else recal_p * (1 - recal_p) * (2.302585 / 400.0)
@@ -286,6 +335,7 @@ class Predictor:
             "siera": siera_pp,
             "lineup": lineup_pp,
             "power": power_pp,
+            "baserun": baserun_pp,
         }
         return {
             "home_win_prob": round(served, 4),
@@ -295,6 +345,7 @@ class Predictor:
             "home_bp_fip": round(self.bp_fip(home), 3) if bp_z is not None else None,
             "away_bp_fip": round(self.bp_fip(away), 3) if bp_z is not None else None,
             "power_edge": round(pw_edge, 4) if pw_edge is not None else None,
+            "baserun_edge": round(br_edge, 4) if br_edge is not None else None,
             "siera_edge": round(si_edge, 3) if si_edge is not None else None,
             "home_rating": round(rh, 1), "away_rating": round(ra, 1),
             "home_pitcher_adj": adj_h, "away_pitcher_adj": adj_a,
