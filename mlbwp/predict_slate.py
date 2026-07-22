@@ -150,6 +150,7 @@ def main(days: int = 30, today: str | None = None):
             "bullpen_edge": r["bullpen_edge"],
             "home_bp_fip": r["home_bp_fip"],
             "away_bp_fip": r["away_bp_fip"],
+            "power_edge": r["power_edge"],
             "home_pitcher_matched": r["home_pitcher_matched"],
             "away_pitcher_matched": r["away_pitcher_matched"],
         })

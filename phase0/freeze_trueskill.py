@@ -41,11 +41,15 @@ from trueskill_pa import build_feature  # noqa: E402
 
 ART = "mlbwp/artifacts"
 APPEAR = "data/retro_events/appearances.csv"
+POWER = "data/retro_events/power.csv"
+LINEUPS = "data/retro_events/lineups.csv"
 EPS = 1e-15
 DEV = range(2002, 2016)
 TEST = [y for y in range(2016, 2025) if y != 2020]
 MIN_N = 50
+MIN_PA = 20              # freeze a batter's power rating once he has this many career PA
 BP_PRIOR_OUTS = 200.0    # empirical-Bayes shrink strength (~67 IP) for bullpen FIP
+PWR_PRIOR_PA = 150.0     # empirical-Bayes shrink strength (PA) for a batter's power rate
 
 
 def reliever_aggs():
@@ -96,6 +100,51 @@ def bullpen_diffs(games, per_game, lg_core):
     return out
 
 
+def load_power():
+    """(game_id -> list[(batter, pa, h, tb)]) and league ISO-per-PA."""
+    by_game = defaultdict(list)
+    tot_pa = tot_h = tot_tb = 0
+    with open(POWER, encoding="utf-8") as fh:
+        for r in csv.DictReader(fh):
+            pa, h, tb = int(r["pa"]), int(r["h"]), int(r["tb"])
+            by_game[r["game_id"]].append((r["batter"], pa, h, tb))
+            tot_pa += pa; tot_h += h; tot_tb += tb
+    return by_game, (tot_tb - tot_h) / tot_pa
+
+
+def load_lineups():
+    """(game_id, side) -> [batters]; Retrosheet side 0 = visitor/away, 1 = home."""
+    lu = defaultdict(list)
+    with open(LINEUPS, encoding="utf-8") as fh:
+        for r in csv.DictReader(fh):
+            lu[(r["game_id"], int(r["side"]))].append(r["batter"])
+    return lu
+
+
+def power_diffs(games, power, lu, lg_iso):
+    """game_id -> home-minus-away lineup isolated-power differential, as-of before
+    each game (leak-safe), AND the final per-batter career (PA,H,TB) through the
+    last season (frozen for serving). Sign matches phase0/power_eval.py:
+    home_lineup_ISO - away_lineup_ISO, so positive favours the home lineup."""
+    car = defaultdict(lambda: [0, 0, 0])   # batter -> career PA,H,TB (as-of)
+    prior = PWR_PRIOR_PA * lg_iso
+    out = {}
+    for g in games:
+        def bat_iso(b):
+            c = car[b]
+            return (c[2] - c[1] + prior) / (c[0] + PWR_PRIOR_PA)
+
+        def lineup(side):
+            bs = lu.get((g["game_id"], side), [])
+            v = [bat_iso(b) for b in bs]
+            return sum(v) / len(v) if v else None
+        h, a = lineup(1), lineup(0)
+        out[g["game_id"]] = (h - a) if (h is not None and a is not None) else None
+        for b, pa, hh, tb in power.get(g["game_id"], []):
+            c = car[b]; c[0] += pa; c[1] += hh; c[2] += tb
+    return out, car
+
+
 def logit(p):
     p = np.clip(p, EPS, 1 - EPS)
     return np.log(p / (1 - p))
@@ -120,10 +169,12 @@ def main():
         json.dump(ratings, open(f"{ART}/ts_ratings.json", "w"))
         print(f"froze {len(ratings)} TrueSkill ratings")
 
-    # 2. FIP-Elo per-game probability + bullpen differential (same game walk)
+    # 2. FIP-Elo per-game probability + bullpen + lineup-power differentials
     games = load_games()
     per_game, bp_lg_core = reliever_aggs()
     bpd = bullpen_diffs(games, per_game, bp_lg_core)
+    power, pwr_lg_iso = load_power()
+    pdiff, career = power_diffs(games, power, load_lineups(), pwr_lg_iso)
     m = FipPitcherElo(lg_fip=league_fip_core(games), **PARAMS)
     rec, last = {}, None
     for g in games:
@@ -133,51 +184,64 @@ def main():
         rec[g["game_id"]] = (g["season"], m.predict(g["home"], g["away"], g["home_sp"], g["away_sp"]), g["y"])
         m.update(g)
 
-    # 3. join ts_edge + bullpen diff, fit the three blend tiers on DEV
+    # 3. join ts_edge + bullpen + power, fit the blend tiers on DEV. The power
+    # term needs a lineup, so it joins the 'full' (lineup) tier alongside ts_edge.
     tsf = {r[0]: float(r[3]) for r in csv.reader(open("data/retro_events/ts_feature.csv")) if r[0] != "game_id"}
-    j = [(s, p, y, tsf[gid], bpd[gid]) for gid, (s, p, y) in rec.items() if gid in tsf]
+    j = [(s, p, y, tsf[gid], bpd[gid], pdiff.get(gid))
+         for gid, (s, p, y) in rec.items() if gid in tsf and pdiff.get(gid) is not None]
     seasons = np.array([x[0] for x in j])
     lf = logit(np.array([x[1] for x in j]))
     y = np.array([x[2] for x in j], float)
     tse = np.array([x[3] for x in j])
     bpe = np.array([x[4] for x in j])
+    pwe = np.array([x[5] for x in j])
     dmask = np.isin(seasons, list(DEV))
     tmask = np.isin(seasons, TEST)
     ts_mu, ts_sd = float(tse[dmask].mean()), float(tse[dmask].std())
     bp_mu, bp_sd = float(bpe[dmask].mean()), float(bpe[dmask].std())
+    pw_mu, pw_sd = float(pwe[dmask].mean()), float(pwe[dmask].std())
     tsz = (tse - ts_mu) / ts_sd
     bpz = (bpe - bp_mu) / bp_sd
+    pwz = (pwe - pw_mu) / pw_sd
 
     recal = LogisticRegression(C=1e6, max_iter=1000).fit(lf[dmask].reshape(-1, 1), y[dmask])
     recbp = LogisticRegression(C=1e6, max_iter=1000).fit(
         np.column_stack([lf[dmask], bpz[dmask]]), y[dmask])
     full = LogisticRegression(C=1e6, max_iter=1000).fit(
-        np.column_stack([lf[dmask], tsz[dmask], bpz[dmask]]), y[dmask])
+        np.column_stack([lf[dmask], tsz[dmask], bpz[dmask], pwz[dmask]]), y[dmask])
 
     yt = y[tmask]
     p_recal = recal.predict_proba(lf[tmask].reshape(-1, 1))[:, 1]
     p_recbp = recbp.predict_proba(np.column_stack([lf[tmask], bpz[tmask]]))[:, 1]
-    p_full = full.predict_proba(np.column_stack([lf[tmask], tsz[tmask], bpz[tmask]]))[:, 1]
+    p_full = full.predict_proba(np.column_stack([lf[tmask], tsz[tmask], bpz[tmask], pwz[tmask]]))[:, 1]
 
     blend = {
         "recal": {"b0": float(recal.intercept_[0]), "b1": float(recal.coef_[0][0])},
         "recbp": {"b0": float(recbp.intercept_[0]),
                   "b1": float(recbp.coef_[0][0]), "b3": float(recbp.coef_[0][1])},
         "full": {"b0": float(full.intercept_[0]), "b1": float(full.coef_[0][0]),
-                 "b2": float(full.coef_[0][1]), "b3": float(full.coef_[0][2])},
+                 "b2": float(full.coef_[0][1]), "b3": float(full.coef_[0][2]),
+                 "b4": float(full.coef_[0][3])},
         "ts_mu": ts_mu, "ts_sd": ts_sd,
         "bp_mu": bp_mu, "bp_sd": bp_sd,
+        "pw_mu": pw_mu, "pw_sd": pw_sd,
         "bp_lg_core": round(bp_lg_core, 4), "bp_prior_outs": BP_PRIOR_OUTS,
+        "pwr_lg_iso": round(pwr_lg_iso, 5), "pwr_prior_pa": PWR_PRIOR_PA,
         "holdout": {"recal_ll": round(ll(p_recal, yt), 5),
                     "recbp_ll": round(ll(p_recbp, yt), 5),
                     "full_ll": round(ll(p_full, yt), 5), "n": int(len(yt))},
     }
     json.dump(blend, open(f"{ART}/blend.json", "w"), indent=1)
+
+    # 4. freeze per-batter career power counts (PA,H,TB) for serving
+    pr = {b: [c[0], c[1], c[2]] for b, c in career.items() if c[0] >= MIN_PA}
+    json.dump(pr, open(f"{ART}/power_ratings.json", "w"))
+
     h = blend["holdout"]
     print(f"froze blend: recal={h['recal_ll']}  recbp={h['recbp_ll']}  full={h['full_ll']}")
-    print(f"  recal: sigmoid({blend['recal']['b0']:.3f} + {blend['recal']['b1']:.3f}*logit_fip)")
-    print(f"  recbp: + {blend['recbp']['b3']:.4f}*bp_z")
-    print(f"  full:  + {blend['full']['b2']:.4f}*ts_z + {blend['full']['b3']:.4f}*bp_z")
+    print(f"  full:  + {blend['full']['b2']:.4f}*ts_z + {blend['full']['b3']:.4f}*bp_z "
+          f"+ {blend['full']['b4']:.4f}*pw_z")
+    print(f"  froze {len(pr)} batter power ratings (lg ISO/PA={pwr_lg_iso:.3f}, prior {PWR_PRIOR_PA:.0f} PA)")
     print(f"  bp: lg_core={bp_lg_core:.3f} prior_outs={BP_PRIOR_OUTS:.0f} mu={bp_mu:.4f} sd={bp_sd:.4f}")
 
 

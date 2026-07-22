@@ -64,6 +64,14 @@ class Predictor:
         self.bp_prior_outs = (self.blend or {}).get("bp_prior_outs", 200.0)
         self.bullpen_through = None       # set by set_bullpen
 
+        # Batter power: per-batter career isolated power (extra bases per PA),
+        # frozen counts {retro: [PA,H,TB]}. A lineup feature like ts_edge (needs
+        # the posted lineup); the orthogonal power dimension the on-base rating
+        # misses. bat_iso() shrinks to league ISO, matching the frozen feature.
+        self.power = _load(ART / "power_ratings.json") or {}
+        self.pwr_lg_iso = (self.blend or {}).get("pwr_lg_iso", 0.140)
+        self.pwr_prior_pa = (self.blend or {}).get("pwr_prior_pa", 150.0)
+
     # --- blend helpers ---------------------------------------------------
     @staticmethod
     def _logit(p: float) -> float:
@@ -107,6 +115,35 @@ class Predictor:
         self.bullpen_through = through
         return sum(1 for v in team_aggs.values() if v[1] > 0)
 
+    # --- batter power ----------------------------------------------------
+    def bat_iso(self, retro: str | None) -> float:
+        """A batter's isolated power (extra bases per PA), empirical-Bayes shrunk
+        to league ISO. Identical formula to the frozen training feature."""
+        c = self.power.get(retro or "")
+        prior = self.pwr_prior_pa * self.pwr_lg_iso
+        if not c:
+            return self.pwr_lg_iso
+        pa, h, tb = c
+        return (tb - h + prior) / (pa + self.pwr_prior_pa)
+
+    def power_edge(self, home_lineup, away_lineup) -> float | None:
+        """Home-minus-away lineup isolated-power differential; sign matches the
+        frozen feature (home lineup ISO - away lineup ISO). Lineups are mlbam ids."""
+        if not self.power or not home_lineup or not away_lineup \
+                or len(home_lineup) < 5 or len(away_lineup) < 5:
+            return None
+        h = [self.bat_iso(self.mlbam_to_retro.get(str(b))) for b in home_lineup]
+        a = [self.bat_iso(self.mlbam_to_retro.get(str(b))) for b in away_lineup]
+        return sum(h) / len(h) - sum(a) / len(a)
+
+    def _pw_z(self, home_lineup, away_lineup):
+        if not self.blend or "pw_mu" not in self.blend:
+            return None, None
+        e = self.power_edge(home_lineup, away_lineup)
+        if e is None:
+            return None, None
+        return (e - self.blend["pw_mu"]) / self.blend["pw_sd"], e
+
     def _ts_mu(self, retro: str | None) -> float:
         return self.ts.get(retro or "", self.TS_MU0)
 
@@ -126,11 +163,12 @@ class Predictor:
         away_def = self._ts_mu(self.name_index.get(norm_name(away_sp)))
         return (home_off - away_off) + (home_def - away_def)
 
-    def _full(self, fip_p: float, edge: float, bp_z: float) -> float:
+    def _full(self, fip_p: float, edge: float, bp_z: float, pw_z: float = 0.0) -> float:
         b = self.blend["full"]
         z = (edge - self.blend["ts_mu"]) / self.blend["ts_sd"]
         return 1.0 / (1.0 + math.exp(
-            -(b["b0"] + b["b1"] * self._logit(fip_p) + b["b2"] * z + b["b3"] * bp_z)))
+            -(b["b0"] + b["b1"] * self._logit(fip_p) + b["b2"] * z
+              + b["b3"] * bp_z + b.get("b4", 0.0) * pw_z)))
 
     # --- pitcher resolution ---------------------------------------------
     def resolve_pitcher(self, name: str):
@@ -186,13 +224,19 @@ class Predictor:
         bullpen_pp = round((served - recal_p) * 100, 1)
         base_p = served                          # the pre-lineup served number
 
-        edge, lineup_pp = None, 0.0
+        edge, pw_edge, lineup_pp, power_pp = None, None, 0.0, 0.0
         if self.blend and home_lineup and away_lineup:
             edge = self.ts_edge(home_lineup, away_lineup, home_sp, away_sp)
             if edge is not None:
-                served = self._full(fip_p, edge, bp_z or 0.0)
+                pw_z, pw_edge = self._pw_z(home_lineup, away_lineup)
+                # p_ts adds only the on-base (TrueSkill) lineup term; served then
+                # adds the orthogonal power term, so the two contributions split
+                # the lineup effect additively.
+                p_ts = self._full(fip_p, edge, bp_z or 0.0, 0.0)
+                served = self._full(fip_p, edge, bp_z or 0.0, pw_z or 0.0)
                 tier = "lineup"
-                lineup_pp = round((served - base_p) * 100, 1)
+                lineup_pp = round((p_ts - base_p) * 100, 1)
+                power_pp = round((served - p_ts) * 100, 1)
 
         # decompose the FIP-Elo rating points into probability points (around recal_p)
         slope = recal_p * (1 - recal_p) * (2.302585 / 400.0) * self.blend["recal"]["b1"] \
@@ -204,6 +248,7 @@ class Predictor:
             "away_pitcher": round(-adj_a * slope * 100, 1),
             "bullpen": bullpen_pp,
             "lineup": lineup_pp,
+            "power": power_pp,
         }
         return {
             "home_win_prob": round(served, 4),
@@ -212,6 +257,7 @@ class Predictor:
             "bullpen_edge": round(bp_edge, 3) if bp_z is not None else None,
             "home_bp_fip": round(self.bp_fip(home), 3) if bp_z is not None else None,
             "away_bp_fip": round(self.bp_fip(away), 3) if bp_z is not None else None,
+            "power_edge": round(pw_edge, 4) if pw_edge is not None else None,
             "home_rating": round(rh, 1), "away_rating": round(ra, 1),
             "home_pitcher_adj": adj_h, "away_pitcher_adj": adj_a,
             "home_pitcher_matched": rec_h is not None,

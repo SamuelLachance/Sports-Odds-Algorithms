@@ -7,7 +7,7 @@
  "season_games_applied": 1506,
  "bullpen_teams_loaded": 30,
  "accuracy": {
-  "log_loss": 0.67492,
+  "log_loss": 0.67431,
   "recal_log_loss": 0.67544,
   "elo_log_loss": 0.67861,
   "coinflip": 0.69315
@@ -42,7 +42,8 @@
       "home_pitcher": 4.1,
       "away_pitcher": 0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6404,
@@ -50,6 +51,7 @@
      "bullpen_edge": 0.515,
      "home_bp_fip": 0.668,
      "away_bp_fip": 1.183,
+     "power_edge": null,
      "home_pitcher_matched": true,
      "away_pitcher_matched": true
     },
@@ -76,7 +78,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -1.7,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5609,
@@ -84,6 +87,7 @@
      "bullpen_edge": 0.22,
      "home_bp_fip": 0.664,
      "away_bp_fip": 0.884,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": true
     },
@@ -110,7 +114,8 @@
       "home_pitcher": -1.8,
       "away_pitcher": -1.1,
       "bullpen": -0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5092,
@@ -118,6 +123,7 @@
      "bullpen_edge": -0.821,
      "home_bp_fip": 2.027,
      "away_bp_fip": 1.207,
+     "power_edge": null,
      "home_pitcher_matched": true,
      "away_pitcher_matched": true
     },
@@ -144,7 +150,8 @@
       "home_pitcher": 1.7,
       "away_pitcher": 0.8,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6938,
@@ -152,6 +159,7 @@
      "bullpen_edge": 0.31,
      "home_bp_fip": 0.613,
      "away_bp_fip": 0.923,
+     "power_edge": null,
      "home_pitcher_matched": true,
      "away_pitcher_matched": true
     },
@@ -178,7 +186,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": 0.4,
       "bullpen": 0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4669,
@@ -186,6 +195,7 @@
      "bullpen_edge": 0.444,
      "home_bp_fip": 1.312,
      "away_bp_fip": 1.756,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": true
     },
@@ -212,7 +222,8 @@
       "home_pitcher": 1.9,
       "away_pitcher": -0.0,
       "bullpen": 0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6085,
@@ -220,6 +231,7 @@
      "bullpen_edge": 0.634,
      "home_bp_fip": 0.856,
      "away_bp_fip": 1.489,
+     "power_edge": null,
      "home_pitcher_matched": true,
      "away_pitcher_matched": false
     },
@@ -246,7 +258,8 @@
       "home_pitcher": -3.7,
       "away_pitcher": -1.3,
       "bullpen": 1.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5292,
@@ -254,6 +267,7 @@
      "bullpen_edge": 1.309,
      "home_bp_fip": 0.602,
      "away_bp_fip": 1.91,
+     "power_edge": null,
      "home_pitcher_matched": true,
      "away_pitcher_matched": true
     },
@@ -280,7 +294,8 @@
       "home_pitcher": -1.0,
       "away_pitcher": -1.3,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4496,
@@ -288,6 +303,7 @@
      "bullpen_edge": -0.101,
      "home_bp_fip": 1.289,
      "away_bp_fip": 1.189,
+     "power_edge": null,
      "home_pitcher_matched": true,
      "away_pitcher_matched": true
     },
@@ -314,7 +330,8 @@
       "home_pitcher": -0.5,
       "away_pitcher": 0.9,
       "bullpen": 0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5903,
@@ -322,6 +339,7 @@
      "bullpen_edge": 0.633,
      "home_bp_fip": 0.73,
      "away_bp_fip": 1.363,
+     "power_edge": null,
      "home_pitcher_matched": true,
      "away_pitcher_matched": true
     },
@@ -348,7 +366,8 @@
       "home_pitcher": 0.6,
       "away_pitcher": 2.5,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5398,
@@ -356,6 +375,7 @@
      "bullpen_edge": 0.021,
      "home_bp_fip": 0.801,
      "away_bp_fip": 0.822,
+     "power_edge": null,
      "home_pitcher_matched": true,
      "away_pitcher_matched": true
     },
@@ -382,7 +402,8 @@
       "home_pitcher": 5.0,
       "away_pitcher": -3.5,
       "bullpen": 0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6136,
@@ -390,6 +411,7 @@
      "bullpen_edge": 0.515,
      "home_bp_fip": 0.668,
      "away_bp_fip": 1.183,
+     "power_edge": null,
      "home_pitcher_matched": true,
      "away_pitcher_matched": true
     },
@@ -416,7 +438,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": 4.5,
       "bullpen": 0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5494,
@@ -424,6 +447,7 @@
      "bullpen_edge": 0.534,
      "home_bp_fip": 0.806,
      "away_bp_fip": 1.339,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": true
     },
@@ -450,7 +474,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -5.8,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5204,
@@ -458,6 +483,7 @@
      "bullpen_edge": 0.22,
      "home_bp_fip": 0.664,
      "away_bp_fip": 0.884,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": true
     },
@@ -484,7 +510,8 @@
       "home_pitcher": -1.6,
       "away_pitcher": -1.7,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5224,
@@ -492,6 +519,7 @@
      "bullpen_edge": 0.193,
      "home_bp_fip": 0.567,
      "away_bp_fip": 0.76,
+     "power_edge": null,
      "home_pitcher_matched": true,
      "away_pitcher_matched": true
     },
@@ -518,7 +546,8 @@
       "home_pitcher": -1.2,
       "away_pitcher": -1.6,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5159,
@@ -526,6 +555,7 @@
      "bullpen_edge": -0.008,
      "home_bp_fip": 1.081,
      "away_bp_fip": 1.073,
+     "power_edge": null,
      "home_pitcher_matched": true,
      "away_pitcher_matched": true
     },
@@ -552,7 +582,8 @@
       "home_pitcher": 0.2,
       "away_pitcher": 0.2,
       "bullpen": -0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6083,
@@ -560,6 +591,7 @@
      "bullpen_edge": -0.602,
      "home_bp_fip": 1.559,
      "away_bp_fip": 0.957,
+     "power_edge": null,
      "home_pitcher_matched": true,
      "away_pitcher_matched": true
     },
@@ -586,7 +618,8 @@
       "home_pitcher": -3.9,
       "away_pitcher": -1.2,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4751,
@@ -594,6 +627,7 @@
      "bullpen_edge": -0.662,
      "home_bp_fip": 1.359,
      "away_bp_fip": 0.697,
+     "power_edge": null,
      "home_pitcher_matched": true,
      "away_pitcher_matched": true
     },
@@ -620,7 +654,8 @@
       "home_pitcher": 6.7,
       "away_pitcher": 0.9,
       "bullpen": -0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6348,
@@ -628,6 +663,7 @@
      "bullpen_edge": 0.193,
      "home_bp_fip": 0.567,
      "away_bp_fip": 0.76,
+     "power_edge": null,
      "home_pitcher_matched": true,
      "away_pitcher_matched": true
     },
@@ -654,7 +690,8 @@
       "home_pitcher": 0.6,
       "away_pitcher": 0.0,
       "bullpen": 0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5927,
@@ -662,6 +699,7 @@
      "bullpen_edge": 0.633,
      "home_bp_fip": 0.73,
      "away_bp_fip": 1.363,
+     "power_edge": null,
      "home_pitcher_matched": true,
      "away_pitcher_matched": true
     },
@@ -688,7 +726,8 @@
       "home_pitcher": 3.3,
       "away_pitcher": -3.4,
       "bullpen": 0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5026,
@@ -696,6 +735,7 @@
      "bullpen_edge": 0.534,
      "home_bp_fip": 0.806,
      "away_bp_fip": 1.339,
+     "power_edge": null,
      "home_pitcher_matched": true,
      "away_pitcher_matched": true
     },
@@ -722,7 +762,8 @@
       "home_pitcher": -0.2,
       "away_pitcher": -0.0,
       "bullpen": -0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5399,
@@ -730,6 +771,7 @@
      "bullpen_edge": -0.333,
      "home_bp_fip": 1.189,
      "away_bp_fip": 0.856,
+     "power_edge": null,
      "home_pitcher_matched": true,
      "away_pitcher_matched": false
     },
@@ -756,7 +798,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.8,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5744,
@@ -764,6 +807,7 @@
      "bullpen_edge": 1.07,
      "home_bp_fip": 0.957,
      "away_bp_fip": 2.027,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -790,7 +834,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.7065,
@@ -798,6 +843,7 @@
      "bullpen_edge": 0.699,
      "home_bp_fip": 0.613,
      "away_bp_fip": 1.312,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -824,7 +870,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.8,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5744,
@@ -832,6 +879,7 @@
      "bullpen_edge": 1.07,
      "home_bp_fip": 0.957,
      "away_bp_fip": 2.027,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -858,7 +906,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4853,
@@ -866,6 +915,7 @@
      "bullpen_edge": 0.375,
      "home_bp_fip": 1.183,
      "away_bp_fip": 1.559,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -892,7 +942,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.7,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.529,
@@ -900,6 +951,7 @@
      "bullpen_edge": -0.9,
      "home_bp_fip": 1.756,
      "away_bp_fip": 0.856,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -926,7 +978,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5364,
@@ -934,6 +987,7 @@
      "bullpen_edge": -0.132,
      "home_bp_fip": 0.801,
      "away_bp_fip": 0.668,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -960,7 +1014,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5079,
@@ -968,6 +1023,7 @@
      "bullpen_edge": -0.316,
      "home_bp_fip": 0.884,
      "away_bp_fip": 0.567,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -994,7 +1050,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4269,
@@ -1002,6 +1059,7 @@
      "bullpen_edge": -0.101,
      "home_bp_fip": 0.923,
      "away_bp_fip": 0.822,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -1028,7 +1086,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -3.1,
       "bullpen": -0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5162,
@@ -1036,6 +1095,7 @@
      "bullpen_edge": -0.609,
      "home_bp_fip": 1.339,
      "away_bp_fip": 0.73,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": true
     },
@@ -1062,7 +1122,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5431,
@@ -1070,6 +1131,7 @@
      "bullpen_edge": 0.063,
      "home_bp_fip": 0.697,
      "away_bp_fip": 0.76,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -1096,7 +1158,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5814,
@@ -1104,6 +1167,7 @@
      "bullpen_edge": 0.142,
      "home_bp_fip": 0.664,
      "away_bp_fip": 0.806,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -1130,7 +1194,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5428,
@@ -1138,6 +1203,7 @@
      "bullpen_edge": 0.286,
      "home_bp_fip": 1.073,
      "away_bp_fip": 1.359,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -1164,7 +1230,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5309,
@@ -1172,6 +1239,7 @@
      "bullpen_edge": -0.479,
      "home_bp_fip": 1.081,
      "away_bp_fip": 0.602,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -1198,7 +1266,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5634,
@@ -1206,6 +1275,7 @@
      "bullpen_edge": 0.126,
      "home_bp_fip": 1.363,
      "away_bp_fip": 1.489,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -1232,7 +1302,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -2.1,
       "bullpen": 0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5533,
@@ -1240,6 +1311,7 @@
      "bullpen_edge": 0.722,
      "home_bp_fip": 1.189,
      "away_bp_fip": 1.91,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": true
     },
@@ -1266,7 +1338,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5633,
@@ -1274,6 +1347,7 @@
      "bullpen_edge": 0.082,
      "home_bp_fip": 1.207,
      "away_bp_fip": 1.289,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -1300,7 +1374,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.8,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5744,
@@ -1308,6 +1383,7 @@
      "bullpen_edge": 1.07,
      "home_bp_fip": 0.957,
      "away_bp_fip": 2.027,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -1334,7 +1410,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.7,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.529,
@@ -1342,6 +1419,7 @@
      "bullpen_edge": -0.9,
      "home_bp_fip": 1.756,
      "away_bp_fip": 0.856,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -1368,7 +1446,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5633,
@@ -1376,6 +1455,7 @@
      "bullpen_edge": 0.082,
      "home_bp_fip": 1.207,
      "away_bp_fip": 1.289,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -1402,7 +1482,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5814,
@@ -1410,6 +1491,7 @@
      "bullpen_edge": 0.142,
      "home_bp_fip": 0.664,
      "away_bp_fip": 0.806,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -1436,7 +1518,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5431,
@@ -1444,6 +1527,7 @@
      "bullpen_edge": 0.063,
      "home_bp_fip": 0.697,
      "away_bp_fip": 0.76,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -1470,7 +1554,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5364,
@@ -1478,6 +1563,7 @@
      "bullpen_edge": -0.132,
      "home_bp_fip": 0.801,
      "away_bp_fip": 0.668,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -1504,7 +1590,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -1.6,
       "bullpen": -0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5315,
@@ -1512,6 +1599,7 @@
      "bullpen_edge": -0.609,
      "home_bp_fip": 1.339,
      "away_bp_fip": 0.73,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": true
     },
@@ -1538,7 +1626,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4853,
@@ -1546,6 +1635,7 @@
      "bullpen_edge": 0.375,
      "home_bp_fip": 1.183,
      "away_bp_fip": 1.559,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -1572,7 +1662,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5079,
@@ -1580,6 +1671,7 @@
      "bullpen_edge": -0.316,
      "home_bp_fip": 0.884,
      "away_bp_fip": 0.567,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -1606,7 +1698,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5634,
@@ -1614,6 +1707,7 @@
      "bullpen_edge": 0.126,
      "home_bp_fip": 1.363,
      "away_bp_fip": 1.489,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -1640,7 +1734,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5428,
@@ -1648,6 +1743,7 @@
      "bullpen_edge": 0.286,
      "home_bp_fip": 1.073,
      "away_bp_fip": 1.359,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -1674,7 +1770,8 @@
       "home_pitcher": 0.4,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.7106,
@@ -1682,6 +1779,7 @@
      "bullpen_edge": 0.699,
      "home_bp_fip": 0.613,
      "away_bp_fip": 1.312,
+     "power_edge": null,
      "home_pitcher_matched": true,
      "away_pitcher_matched": false
     },
@@ -1708,7 +1806,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4269,
@@ -1716,6 +1815,7 @@
      "bullpen_edge": -0.101,
      "home_bp_fip": 0.923,
      "away_bp_fip": 0.822,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -1742,7 +1842,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -3.7,
       "bullpen": 0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5383,
@@ -1750,6 +1851,7 @@
      "bullpen_edge": 0.722,
      "home_bp_fip": 1.189,
      "away_bp_fip": 1.91,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": true
     },
@@ -1776,7 +1878,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5309,
@@ -1784,6 +1887,7 @@
      "bullpen_edge": -0.479,
      "home_bp_fip": 1.081,
      "away_bp_fip": 0.602,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -1810,7 +1914,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.547,
@@ -1818,6 +1923,7 @@
      "bullpen_edge": -0.609,
      "home_bp_fip": 1.339,
      "away_bp_fip": 0.73,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -1844,7 +1950,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.7,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.529,
@@ -1852,6 +1959,7 @@
      "bullpen_edge": -0.9,
      "home_bp_fip": 1.756,
      "away_bp_fip": 0.856,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -1878,7 +1986,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4853,
@@ -1886,6 +1995,7 @@
      "bullpen_edge": 0.375,
      "home_bp_fip": 1.183,
      "away_bp_fip": 1.559,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -1912,7 +2022,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5814,
@@ -1920,6 +2031,7 @@
      "bullpen_edge": 0.142,
      "home_bp_fip": 0.664,
      "away_bp_fip": 0.806,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -1946,7 +2058,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5079,
@@ -1954,6 +2067,7 @@
      "bullpen_edge": -0.316,
      "home_bp_fip": 0.884,
      "away_bp_fip": 0.567,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -1980,7 +2094,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.8,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5744,
@@ -1988,6 +2103,7 @@
      "bullpen_edge": 1.07,
      "home_bp_fip": 0.957,
      "away_bp_fip": 2.027,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -2014,7 +2130,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4269,
@@ -2022,6 +2139,7 @@
      "bullpen_edge": -0.101,
      "home_bp_fip": 0.923,
      "away_bp_fip": 0.822,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -2048,7 +2166,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5431,
@@ -2056,6 +2175,7 @@
      "bullpen_edge": 0.063,
      "home_bp_fip": 0.697,
      "away_bp_fip": 0.76,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -2082,7 +2202,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5634,
@@ -2090,6 +2211,7 @@
      "bullpen_edge": 0.126,
      "home_bp_fip": 1.363,
      "away_bp_fip": 1.489,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -2116,7 +2238,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5428,
@@ -2124,6 +2247,7 @@
      "bullpen_edge": 0.286,
      "home_bp_fip": 1.073,
      "away_bp_fip": 1.359,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -2150,7 +2274,8 @@
       "home_pitcher": 1.4,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.7205,
@@ -2158,6 +2283,7 @@
      "bullpen_edge": 0.699,
      "home_bp_fip": 0.613,
      "away_bp_fip": 1.312,
+     "power_edge": null,
      "home_pitcher_matched": true,
      "away_pitcher_matched": false
     },
@@ -2184,7 +2310,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5745,
@@ -2192,6 +2319,7 @@
      "bullpen_edge": 0.722,
      "home_bp_fip": 1.189,
      "away_bp_fip": 1.91,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -2218,7 +2346,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5309,
@@ -2226,6 +2355,7 @@
      "bullpen_edge": -0.479,
      "home_bp_fip": 1.081,
      "away_bp_fip": 0.602,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -2252,7 +2382,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5633,
@@ -2260,6 +2391,7 @@
      "bullpen_edge": 0.082,
      "home_bp_fip": 1.207,
      "away_bp_fip": 1.289,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -2286,7 +2418,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5364,
@@ -2294,6 +2427,7 @@
      "bullpen_edge": -0.132,
      "home_bp_fip": 0.801,
      "away_bp_fip": 0.668,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -2320,7 +2454,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5309,
@@ -2328,6 +2463,7 @@
      "bullpen_edge": -0.479,
      "home_bp_fip": 1.081,
      "away_bp_fip": 0.602,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -2354,7 +2490,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5335,
@@ -2362,6 +2499,7 @@
      "bullpen_edge": -0.073,
      "home_bp_fip": 0.957,
      "away_bp_fip": 0.884,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -2388,7 +2526,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.526,
@@ -2396,6 +2535,7 @@
      "bullpen_edge": -0.328,
      "home_bp_fip": 1.183,
      "away_bp_fip": 0.856,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -2422,7 +2562,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5178,
@@ -2430,6 +2571,7 @@
      "bullpen_edge": 0.104,
      "home_bp_fip": 0.697,
      "away_bp_fip": 0.801,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -2456,7 +2598,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.8,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5456,
@@ -2464,6 +2607,7 @@
      "bullpen_edge": -0.95,
      "home_bp_fip": 1.756,
      "away_bp_fip": 0.806,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -2490,7 +2634,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.9,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4921,
@@ -2498,6 +2643,7 @@
      "bullpen_edge": -1.18,
      "home_bp_fip": 1.91,
      "away_bp_fip": 0.73,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -2524,7 +2670,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4721,
@@ -2532,6 +2679,7 @@
      "bullpen_edge": -0.356,
      "home_bp_fip": 0.923,
      "away_bp_fip": 0.567,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -2558,7 +2706,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4945,
@@ -2566,6 +2715,7 @@
      "bullpen_edge": -0.404,
      "home_bp_fip": 1.073,
      "away_bp_fip": 0.668,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -2592,7 +2742,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5014,
@@ -2600,6 +2751,7 @@
      "bullpen_edge": 0.37,
      "home_bp_fip": 1.189,
      "away_bp_fip": 1.559,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -2626,7 +2778,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4806,
@@ -2634,6 +2787,7 @@
      "bullpen_edge": 0.069,
      "home_bp_fip": 1.289,
      "away_bp_fip": 1.359,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -2660,7 +2814,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4724,
@@ -2668,6 +2823,7 @@
      "bullpen_edge": -0.826,
      "home_bp_fip": 1.489,
      "away_bp_fip": 0.664,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -2694,7 +2850,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -1.9,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.3913,
@@ -2702,6 +2859,7 @@
      "bullpen_edge": -0.594,
      "home_bp_fip": 1.207,
      "away_bp_fip": 0.613,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": true
     },
@@ -2728,7 +2886,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5335,
@@ -2736,6 +2895,7 @@
      "bullpen_edge": -0.073,
      "home_bp_fip": 0.957,
      "away_bp_fip": 0.884,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -2762,7 +2922,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.526,
@@ -2770,6 +2931,7 @@
      "bullpen_edge": -0.328,
      "home_bp_fip": 1.183,
      "away_bp_fip": 0.856,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -2796,7 +2958,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.572,
@@ -2804,6 +2967,7 @@
      "bullpen_edge": -0.258,
      "home_bp_fip": 1.339,
      "away_bp_fip": 1.081,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -2830,7 +2994,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5178,
@@ -2838,6 +3003,7 @@
      "bullpen_edge": 0.104,
      "home_bp_fip": 0.697,
      "away_bp_fip": 0.801,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -2864,7 +3030,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.8,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5456,
@@ -2872,6 +3039,7 @@
      "bullpen_edge": -0.95,
      "home_bp_fip": 1.756,
      "away_bp_fip": 0.806,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -2898,7 +3066,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.9,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4921,
@@ -2906,6 +3075,7 @@
      "bullpen_edge": -1.18,
      "home_bp_fip": 1.91,
      "away_bp_fip": 0.73,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -2932,7 +3102,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4721,
@@ -2940,6 +3111,7 @@
      "bullpen_edge": -0.356,
      "home_bp_fip": 0.923,
      "away_bp_fip": 0.567,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -2966,7 +3138,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5703,
@@ -2974,6 +3147,7 @@
      "bullpen_edge": 0.664,
      "home_bp_fip": 1.363,
      "away_bp_fip": 2.027,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3000,7 +3174,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4945,
@@ -3008,6 +3183,7 @@
      "bullpen_edge": -0.404,
      "home_bp_fip": 1.073,
      "away_bp_fip": 0.668,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3034,7 +3210,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5014,
@@ -3042,6 +3219,7 @@
      "bullpen_edge": 0.37,
      "home_bp_fip": 1.189,
      "away_bp_fip": 1.559,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3068,7 +3246,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4806,
@@ -3076,6 +3255,7 @@
      "bullpen_edge": 0.069,
      "home_bp_fip": 1.289,
      "away_bp_fip": 1.359,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3102,7 +3282,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4724,
@@ -3110,6 +3291,7 @@
      "bullpen_edge": -0.826,
      "home_bp_fip": 1.489,
      "away_bp_fip": 0.664,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3136,7 +3318,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6403,
@@ -3144,6 +3327,7 @@
      "bullpen_edge": 0.552,
      "home_bp_fip": 0.76,
      "away_bp_fip": 1.312,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3170,7 +3354,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4103,
@@ -3178,6 +3363,7 @@
      "bullpen_edge": -0.594,
      "home_bp_fip": 1.207,
      "away_bp_fip": 0.613,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3204,7 +3390,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6042,
@@ -3212,6 +3399,7 @@
      "bullpen_edge": -0.22,
      "home_bp_fip": 0.822,
      "away_bp_fip": 0.602,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3238,7 +3426,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5178,
@@ -3246,6 +3435,7 @@
      "bullpen_edge": 0.104,
      "home_bp_fip": 0.697,
      "away_bp_fip": 0.801,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3272,7 +3462,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.526,
@@ -3280,6 +3471,7 @@
      "bullpen_edge": -0.328,
      "home_bp_fip": 1.183,
      "away_bp_fip": 0.856,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3306,7 +3498,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.8,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5456,
@@ -3314,6 +3507,7 @@
      "bullpen_edge": -0.95,
      "home_bp_fip": 1.756,
      "away_bp_fip": 0.806,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3340,7 +3534,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5335,
@@ -3348,6 +3543,7 @@
      "bullpen_edge": -0.073,
      "home_bp_fip": 0.957,
      "away_bp_fip": 0.884,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3374,7 +3570,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4721,
@@ -3382,6 +3579,7 @@
      "bullpen_edge": -0.356,
      "home_bp_fip": 0.923,
      "away_bp_fip": 0.567,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3408,7 +3606,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4103,
@@ -3416,6 +3615,7 @@
      "bullpen_edge": -0.594,
      "home_bp_fip": 1.207,
      "away_bp_fip": 0.613,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3442,7 +3642,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6403,
@@ -3450,6 +3651,7 @@
      "bullpen_edge": 0.552,
      "home_bp_fip": 0.76,
      "away_bp_fip": 1.312,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3476,7 +3678,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.572,
@@ -3484,6 +3687,7 @@
      "bullpen_edge": -0.258,
      "home_bp_fip": 1.339,
      "away_bp_fip": 1.081,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3510,7 +3714,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.9,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4921,
@@ -3518,6 +3723,7 @@
      "bullpen_edge": -1.18,
      "home_bp_fip": 1.91,
      "away_bp_fip": 0.73,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3544,7 +3750,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5703,
@@ -3552,6 +3759,7 @@
      "bullpen_edge": 0.664,
      "home_bp_fip": 1.363,
      "away_bp_fip": 2.027,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3578,7 +3786,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4945,
@@ -3586,6 +3795,7 @@
      "bullpen_edge": -0.404,
      "home_bp_fip": 1.073,
      "away_bp_fip": 0.668,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3612,7 +3822,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5014,
@@ -3620,6 +3831,7 @@
      "bullpen_edge": 0.37,
      "home_bp_fip": 1.189,
      "away_bp_fip": 1.559,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3646,7 +3858,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4806,
@@ -3654,6 +3867,7 @@
      "bullpen_edge": 0.069,
      "home_bp_fip": 1.289,
      "away_bp_fip": 1.359,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3680,7 +3894,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4724,
@@ -3688,6 +3903,7 @@
      "bullpen_edge": -0.826,
      "home_bp_fip": 1.489,
      "away_bp_fip": 0.664,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3714,7 +3930,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6042,
@@ -3722,6 +3939,7 @@
      "bullpen_edge": -0.22,
      "home_bp_fip": 0.822,
      "away_bp_fip": 0.602,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3748,7 +3966,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.572,
@@ -3756,6 +3975,7 @@
      "bullpen_edge": -0.258,
      "home_bp_fip": 1.339,
      "away_bp_fip": 1.081,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3782,7 +4002,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5703,
@@ -3790,6 +4011,7 @@
      "bullpen_edge": 0.664,
      "home_bp_fip": 1.363,
      "away_bp_fip": 2.027,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3816,7 +4038,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4945,
@@ -3824,6 +4047,7 @@
      "bullpen_edge": -0.404,
      "home_bp_fip": 1.073,
      "away_bp_fip": 0.668,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3850,7 +4074,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5014,
@@ -3858,6 +4083,7 @@
      "bullpen_edge": 0.37,
      "home_bp_fip": 1.189,
      "away_bp_fip": 1.559,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3884,7 +4110,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5266,
@@ -3892,6 +4119,7 @@
      "bullpen_edge": -0.727,
      "home_bp_fip": 1.91,
      "away_bp_fip": 1.183,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3918,7 +4146,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.485,
@@ -3926,6 +4155,7 @@
      "bullpen_edge": -0.226,
      "home_bp_fip": 0.923,
      "away_bp_fip": 0.697,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3952,7 +4182,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.9,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5773,
@@ -3960,6 +4191,7 @@
      "bullpen_edge": 1.188,
      "home_bp_fip": 0.567,
      "away_bp_fip": 1.756,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -3986,7 +4218,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4724,
@@ -3994,6 +4227,7 @@
      "bullpen_edge": -0.826,
      "home_bp_fip": 1.489,
      "away_bp_fip": 0.664,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4020,7 +4254,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5995,
@@ -4028,6 +4263,7 @@
      "bullpen_edge": 0.447,
      "home_bp_fip": 0.76,
      "away_bp_fip": 1.207,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4054,7 +4290,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6042,
@@ -4062,6 +4299,7 @@
      "bullpen_edge": -0.22,
      "home_bp_fip": 0.822,
      "away_bp_fip": 0.602,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4088,7 +4326,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.8,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5436,
@@ -4096,6 +4335,7 @@
      "bullpen_edge": -0.89,
      "home_bp_fip": 1.559,
      "away_bp_fip": 0.668,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4122,7 +4362,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5266,
@@ -4130,6 +4371,7 @@
      "bullpen_edge": -0.727,
      "home_bp_fip": 1.91,
      "away_bp_fip": 1.183,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4156,7 +4398,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4958,
@@ -4164,6 +4407,7 @@
      "bullpen_edge": -0.083,
      "home_bp_fip": 0.884,
      "away_bp_fip": 0.801,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4190,7 +4434,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5266,
@@ -4198,6 +4443,7 @@
      "bullpen_edge": 0.383,
      "home_bp_fip": 0.806,
      "away_bp_fip": 1.189,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4224,7 +4470,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5602,
@@ -4232,6 +4479,7 @@
      "bullpen_edge": 0.125,
      "home_bp_fip": 0.73,
      "away_bp_fip": 0.856,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4258,7 +4506,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5728,
@@ -4266,6 +4515,7 @@
      "bullpen_edge": -0.267,
      "home_bp_fip": 1.339,
      "away_bp_fip": 1.073,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4292,7 +4542,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.485,
@@ -4300,6 +4551,7 @@
      "bullpen_edge": -0.226,
      "home_bp_fip": 0.923,
      "away_bp_fip": 0.697,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4326,7 +4578,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.9,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5773,
@@ -4334,6 +4587,7 @@
      "bullpen_edge": 1.188,
      "home_bp_fip": 0.567,
      "away_bp_fip": 1.756,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4360,7 +4614,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5416,
@@ -4368,6 +4623,7 @@
      "bullpen_edge": -0.278,
      "home_bp_fip": 1.359,
      "away_bp_fip": 1.081,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4394,7 +4650,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.7,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5043,
@@ -4402,6 +4659,7 @@
      "bullpen_edge": 0.715,
      "home_bp_fip": 1.312,
      "away_bp_fip": 2.027,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4428,7 +4686,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.3903,
@@ -4436,6 +4695,7 @@
      "bullpen_edge": -0.676,
      "home_bp_fip": 1.289,
      "away_bp_fip": 0.613,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4462,7 +4722,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5176,
@@ -4470,6 +4731,7 @@
      "bullpen_edge": -0.532,
      "home_bp_fip": 1.489,
      "away_bp_fip": 0.957,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4496,7 +4758,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5995,
@@ -4504,6 +4767,7 @@
      "bullpen_edge": 0.447,
      "home_bp_fip": 0.76,
      "away_bp_fip": 1.207,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4530,7 +4794,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5865,
@@ -4538,6 +4803,7 @@
      "bullpen_edge": -0.158,
      "home_bp_fip": 0.822,
      "away_bp_fip": 0.664,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4564,7 +4830,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5733,
@@ -4572,6 +4839,7 @@
      "bullpen_edge": 0.762,
      "home_bp_fip": 0.602,
      "away_bp_fip": 1.363,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4598,7 +4866,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5266,
@@ -4606,6 +4875,7 @@
      "bullpen_edge": 0.383,
      "home_bp_fip": 0.806,
      "away_bp_fip": 1.189,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4632,7 +4902,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5733,
@@ -4640,6 +4911,7 @@
      "bullpen_edge": 0.762,
      "home_bp_fip": 0.602,
      "away_bp_fip": 1.363,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4666,7 +4938,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5728,
@@ -4674,6 +4947,7 @@
      "bullpen_edge": -0.267,
      "home_bp_fip": 1.339,
      "away_bp_fip": 1.073,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4700,7 +4974,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.485,
@@ -4708,6 +4983,7 @@
      "bullpen_edge": -0.226,
      "home_bp_fip": 0.923,
      "away_bp_fip": 0.697,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4734,7 +5010,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5266,
@@ -4742,6 +5019,7 @@
      "bullpen_edge": -0.727,
      "home_bp_fip": 1.91,
      "away_bp_fip": 1.183,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4768,7 +5046,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4958,
@@ -4776,6 +5055,7 @@
      "bullpen_edge": -0.083,
      "home_bp_fip": 0.884,
      "away_bp_fip": 0.801,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4802,7 +5082,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5416,
@@ -4810,6 +5091,7 @@
      "bullpen_edge": -0.278,
      "home_bp_fip": 1.359,
      "away_bp_fip": 1.081,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4836,7 +5118,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5602,
@@ -4844,6 +5127,7 @@
      "bullpen_edge": 0.125,
      "home_bp_fip": 0.73,
      "away_bp_fip": 0.856,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4870,7 +5154,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.9,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5773,
@@ -4878,6 +5163,7 @@
      "bullpen_edge": 1.188,
      "home_bp_fip": 0.567,
      "away_bp_fip": 1.756,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4904,7 +5190,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.8,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5436,
@@ -4912,6 +5199,7 @@
      "bullpen_edge": -0.89,
      "home_bp_fip": 1.559,
      "away_bp_fip": 0.668,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4938,7 +5226,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.7,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5043,
@@ -4946,6 +5235,7 @@
      "bullpen_edge": 0.715,
      "home_bp_fip": 1.312,
      "away_bp_fip": 2.027,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -4972,7 +5262,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5995,
@@ -4980,6 +5271,7 @@
      "bullpen_edge": 0.447,
      "home_bp_fip": 0.76,
      "away_bp_fip": 1.207,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5006,7 +5298,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5865,
@@ -5014,6 +5307,7 @@
      "bullpen_edge": -0.158,
      "home_bp_fip": 0.822,
      "away_bp_fip": 0.664,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5040,7 +5334,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.3903,
@@ -5048,6 +5343,7 @@
      "bullpen_edge": -0.676,
      "home_bp_fip": 1.289,
      "away_bp_fip": 0.613,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5074,7 +5370,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5176,
@@ -5082,6 +5379,7 @@
      "bullpen_edge": -0.532,
      "home_bp_fip": 1.489,
      "away_bp_fip": 0.957,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5108,7 +5406,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4958,
@@ -5116,6 +5415,7 @@
      "bullpen_edge": -0.083,
      "home_bp_fip": 0.884,
      "away_bp_fip": 0.801,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5142,7 +5442,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.9,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5773,
@@ -5150,6 +5451,7 @@
      "bullpen_edge": 1.188,
      "home_bp_fip": 0.567,
      "away_bp_fip": 1.756,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5176,7 +5478,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5266,
@@ -5184,6 +5487,7 @@
      "bullpen_edge": 0.383,
      "home_bp_fip": 0.806,
      "away_bp_fip": 1.189,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5210,7 +5514,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5602,
@@ -5218,6 +5523,7 @@
      "bullpen_edge": 0.125,
      "home_bp_fip": 0.73,
      "away_bp_fip": 0.856,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5244,7 +5550,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5266,
@@ -5252,6 +5559,7 @@
      "bullpen_edge": -0.727,
      "home_bp_fip": 1.91,
      "away_bp_fip": 1.183,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5278,7 +5586,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5728,
@@ -5286,6 +5595,7 @@
      "bullpen_edge": -0.267,
      "home_bp_fip": 1.339,
      "away_bp_fip": 1.073,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5312,7 +5622,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.485,
@@ -5320,6 +5631,7 @@
      "bullpen_edge": -0.226,
      "home_bp_fip": 0.923,
      "away_bp_fip": 0.697,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5346,7 +5658,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5416,
@@ -5354,6 +5667,7 @@
      "bullpen_edge": -0.278,
      "home_bp_fip": 1.359,
      "away_bp_fip": 1.081,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5380,7 +5694,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.8,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5436,
@@ -5388,6 +5703,7 @@
      "bullpen_edge": -0.89,
      "home_bp_fip": 1.559,
      "away_bp_fip": 0.668,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5414,7 +5730,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.7,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5043,
@@ -5422,6 +5739,7 @@
      "bullpen_edge": 0.715,
      "home_bp_fip": 1.312,
      "away_bp_fip": 2.027,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5448,7 +5766,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.3903,
@@ -5456,6 +5775,7 @@
      "bullpen_edge": -0.676,
      "home_bp_fip": 1.289,
      "away_bp_fip": 0.613,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5482,7 +5802,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5176,
@@ -5490,6 +5811,7 @@
      "bullpen_edge": -0.532,
      "home_bp_fip": 1.489,
      "away_bp_fip": 0.957,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5516,7 +5838,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5995,
@@ -5524,6 +5847,7 @@
      "bullpen_edge": 0.447,
      "home_bp_fip": 0.76,
      "away_bp_fip": 1.207,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5550,7 +5874,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5733,
@@ -5558,6 +5883,7 @@
      "bullpen_edge": 0.762,
      "home_bp_fip": 0.602,
      "away_bp_fip": 1.363,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5584,7 +5910,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5865,
@@ -5592,6 +5919,7 @@
      "bullpen_edge": -0.158,
      "home_bp_fip": 0.822,
      "away_bp_fip": 0.664,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5618,7 +5946,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.7,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.589,
@@ -5626,6 +5955,7 @@
      "bullpen_edge": 0.955,
      "home_bp_fip": 0.801,
      "away_bp_fip": 1.756,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5652,7 +5982,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5825,
@@ -5660,6 +5991,7 @@
      "bullpen_edge": 0.52,
      "home_bp_fip": 0.668,
      "away_bp_fip": 1.189,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5686,7 +6018,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6392,
@@ -5694,6 +6027,7 @@
      "bullpen_edge": 0.57,
      "home_bp_fip": 0.613,
      "away_bp_fip": 1.183,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5720,7 +6054,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5164,
@@ -5728,6 +6063,7 @@
      "bullpen_edge": -0.737,
      "home_bp_fip": 1.559,
      "away_bp_fip": 0.822,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5754,7 +6090,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5844,
@@ -5762,6 +6099,7 @@
      "bullpen_edge": 0.126,
      "home_bp_fip": 1.081,
      "away_bp_fip": 1.207,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5788,7 +6126,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5507,
@@ -5796,6 +6135,7 @@
      "bullpen_edge": -0.553,
      "home_bp_fip": 1.359,
      "away_bp_fip": 0.806,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5822,7 +6162,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4278,
@@ -5830,6 +6171,7 @@
      "bullpen_edge": 0.027,
      "home_bp_fip": 1.312,
      "away_bp_fip": 1.339,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5856,7 +6198,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5346,
@@ -5864,6 +6207,7 @@
      "bullpen_edge": -0.095,
      "home_bp_fip": 0.856,
      "away_bp_fip": 0.76,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5890,7 +6234,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5988,
@@ -5898,6 +6243,7 @@
      "bullpen_edge": 0.406,
      "home_bp_fip": 0.884,
      "away_bp_fip": 1.289,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5924,7 +6270,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.608,
@@ -5932,6 +6279,7 @@
      "bullpen_edge": 0.193,
      "home_bp_fip": 0.73,
      "away_bp_fip": 0.923,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5958,7 +6306,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5574,
@@ -5966,6 +6315,7 @@
      "bullpen_edge": -0.421,
      "home_bp_fip": 1.91,
      "away_bp_fip": 1.489,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -5992,7 +6342,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.7,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.589,
@@ -6000,6 +6351,7 @@
      "bullpen_edge": 0.955,
      "home_bp_fip": 0.801,
      "away_bp_fip": 1.756,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6026,7 +6378,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5825,
@@ -6034,6 +6387,7 @@
      "bullpen_edge": 0.52,
      "home_bp_fip": 0.668,
      "away_bp_fip": 1.189,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6060,7 +6414,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5733,
@@ -6068,6 +6423,7 @@
      "bullpen_edge": 0.409,
      "home_bp_fip": 0.664,
      "away_bp_fip": 1.073,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6094,7 +6450,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5555,
@@ -6102,6 +6459,7 @@
      "bullpen_edge": 0.13,
      "home_bp_fip": 0.567,
      "away_bp_fip": 0.697,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6128,7 +6486,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5148,
@@ -6136,6 +6495,7 @@
      "bullpen_edge": -0.664,
      "home_bp_fip": 2.027,
      "away_bp_fip": 1.363,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6162,7 +6522,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6392,
@@ -6170,6 +6531,7 @@
      "bullpen_edge": 0.57,
      "home_bp_fip": 0.613,
      "away_bp_fip": 1.183,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6196,7 +6558,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5164,
@@ -6204,6 +6567,7 @@
      "bullpen_edge": -0.737,
      "home_bp_fip": 1.559,
      "away_bp_fip": 0.822,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6230,7 +6594,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5844,
@@ -6238,6 +6603,7 @@
      "bullpen_edge": 0.126,
      "home_bp_fip": 1.081,
      "away_bp_fip": 1.207,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6264,7 +6630,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5507,
@@ -6272,6 +6639,7 @@
      "bullpen_edge": -0.553,
      "home_bp_fip": 1.359,
      "away_bp_fip": 0.806,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6298,7 +6666,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4278,
@@ -6306,6 +6675,7 @@
      "bullpen_edge": 0.027,
      "home_bp_fip": 1.312,
      "away_bp_fip": 1.339,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6332,7 +6702,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5346,
@@ -6340,6 +6711,7 @@
      "bullpen_edge": -0.095,
      "home_bp_fip": 0.856,
      "away_bp_fip": 0.76,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6366,7 +6738,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5692,
@@ -6374,6 +6747,7 @@
      "bullpen_edge": 0.355,
      "home_bp_fip": 0.602,
      "away_bp_fip": 0.957,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6400,7 +6774,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5507,
@@ -6408,6 +6783,7 @@
      "bullpen_edge": -0.553,
      "home_bp_fip": 1.359,
      "away_bp_fip": 0.806,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6434,7 +6810,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5164,
@@ -6442,6 +6819,7 @@
      "bullpen_edge": -0.737,
      "home_bp_fip": 1.559,
      "away_bp_fip": 0.822,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6468,7 +6846,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5844,
@@ -6476,6 +6855,7 @@
      "bullpen_edge": 0.126,
      "home_bp_fip": 1.081,
      "away_bp_fip": 1.207,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6502,7 +6882,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4278,
@@ -6510,6 +6891,7 @@
      "bullpen_edge": 0.027,
      "home_bp_fip": 1.312,
      "away_bp_fip": 1.339,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6536,7 +6918,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5988,
@@ -6544,6 +6927,7 @@
      "bullpen_edge": 0.406,
      "home_bp_fip": 0.884,
      "away_bp_fip": 1.289,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6570,7 +6954,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.608,
@@ -6578,6 +6963,7 @@
      "bullpen_edge": 0.193,
      "home_bp_fip": 0.73,
      "away_bp_fip": 0.923,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6604,7 +6990,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5574,
@@ -6612,6 +6999,7 @@
      "bullpen_edge": -0.421,
      "home_bp_fip": 1.91,
      "away_bp_fip": 1.489,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6638,7 +7026,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.7,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.589,
@@ -6646,6 +7035,7 @@
      "bullpen_edge": 0.955,
      "home_bp_fip": 0.801,
      "away_bp_fip": 1.756,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6672,7 +7062,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5825,
@@ -6680,6 +7071,7 @@
      "bullpen_edge": 0.52,
      "home_bp_fip": 0.668,
      "away_bp_fip": 1.189,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6706,7 +7098,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5733,
@@ -6714,6 +7107,7 @@
      "bullpen_edge": 0.409,
      "home_bp_fip": 0.664,
      "away_bp_fip": 1.073,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6740,7 +7134,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5555,
@@ -6748,6 +7143,7 @@
      "bullpen_edge": 0.13,
      "home_bp_fip": 0.567,
      "away_bp_fip": 0.697,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6774,7 +7170,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5148,
@@ -6782,6 +7179,7 @@
      "bullpen_edge": -0.664,
      "home_bp_fip": 2.027,
      "away_bp_fip": 1.363,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6808,7 +7206,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6392,
@@ -6816,6 +7215,7 @@
      "bullpen_edge": 0.57,
      "home_bp_fip": 0.613,
      "away_bp_fip": 1.183,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6842,7 +7242,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5346,
@@ -6850,6 +7251,7 @@
      "bullpen_edge": -0.095,
      "home_bp_fip": 0.856,
      "away_bp_fip": 0.76,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6876,7 +7278,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5692,
@@ -6884,6 +7287,7 @@
      "bullpen_edge": 0.355,
      "home_bp_fip": 0.602,
      "away_bp_fip": 0.957,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6910,7 +7314,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5988,
@@ -6918,6 +7323,7 @@
      "bullpen_edge": 0.406,
      "home_bp_fip": 0.884,
      "away_bp_fip": 1.289,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6944,7 +7350,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5574,
@@ -6952,6 +7359,7 @@
      "bullpen_edge": -0.421,
      "home_bp_fip": 1.91,
      "away_bp_fip": 1.489,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -6978,7 +7386,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.608,
@@ -6986,6 +7395,7 @@
      "bullpen_edge": 0.193,
      "home_bp_fip": 0.73,
      "away_bp_fip": 0.923,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7012,7 +7422,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6392,
@@ -7020,6 +7431,7 @@
      "bullpen_edge": 0.57,
      "home_bp_fip": 0.613,
      "away_bp_fip": 1.183,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7046,7 +7458,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.7,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5989,
@@ -7054,6 +7467,7 @@
      "bullpen_edge": -0.753,
      "home_bp_fip": 1.559,
      "away_bp_fip": 0.806,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7080,7 +7494,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5692,
@@ -7088,6 +7503,7 @@
      "bullpen_edge": 0.355,
      "home_bp_fip": 0.602,
      "away_bp_fip": 0.957,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7114,7 +7530,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.7,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.589,
@@ -7122,6 +7539,7 @@
      "bullpen_edge": 0.955,
      "home_bp_fip": 0.801,
      "away_bp_fip": 1.756,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7148,7 +7566,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5733,
@@ -7156,6 +7575,7 @@
      "bullpen_edge": 0.409,
      "home_bp_fip": 0.664,
      "away_bp_fip": 1.073,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7182,7 +7602,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5555,
@@ -7190,6 +7611,7 @@
      "bullpen_edge": 0.13,
      "home_bp_fip": 0.567,
      "away_bp_fip": 0.697,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7216,7 +7638,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5148,
@@ -7224,6 +7647,7 @@
      "bullpen_edge": -0.664,
      "home_bp_fip": 2.027,
      "away_bp_fip": 1.363,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7250,7 +7674,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5346,
@@ -7258,6 +7683,7 @@
      "bullpen_edge": -0.095,
      "home_bp_fip": 0.856,
      "away_bp_fip": 0.76,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7284,7 +7710,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5747,
@@ -7292,6 +7719,7 @@
      "bullpen_edge": -0.261,
      "home_bp_fip": 1.183,
      "away_bp_fip": 0.923,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7318,7 +7746,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.592,
@@ -7326,6 +7755,7 @@
      "bullpen_edge": 0.005,
      "home_bp_fip": 0.801,
      "away_bp_fip": 0.806,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7352,7 +7782,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5616,
@@ -7360,6 +7791,7 @@
      "bullpen_edge": 0.155,
      "home_bp_fip": 1.756,
      "away_bp_fip": 1.91,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7386,7 +7818,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5608,
@@ -7394,6 +7827,7 @@
      "bullpen_edge": -0.101,
      "home_bp_fip": 0.668,
      "away_bp_fip": 0.567,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7420,7 +7854,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6113,
@@ -7428,6 +7863,7 @@
      "bullpen_edge": 0.826,
      "home_bp_fip": 0.664,
      "away_bp_fip": 1.489,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7454,7 +7890,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6198,
@@ -7462,6 +7899,7 @@
      "bullpen_edge": 0.592,
      "home_bp_fip": 0.697,
      "away_bp_fip": 1.289,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7488,7 +7926,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5166,
@@ -7496,6 +7935,7 @@
      "bullpen_edge": -0.342,
      "home_bp_fip": 1.073,
      "away_bp_fip": 0.73,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7522,7 +7962,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6484,
@@ -7530,6 +7971,7 @@
      "bullpen_edge": 0.75,
      "home_bp_fip": 0.613,
      "away_bp_fip": 1.363,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7556,7 +7998,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5485,
@@ -7564,6 +8007,7 @@
      "bullpen_edge": -0.197,
      "home_bp_fip": 1.081,
      "away_bp_fip": 0.884,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7590,7 +8034,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4474,
@@ -7598,6 +8043,7 @@
      "bullpen_edge": -0.469,
      "home_bp_fip": 2.027,
      "away_bp_fip": 1.559,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7624,7 +8070,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6323,
@@ -7632,6 +8079,7 @@
      "bullpen_edge": 0.123,
      "home_bp_fip": 1.189,
      "away_bp_fip": 1.312,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7658,7 +8106,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4756,
@@ -7666,6 +8115,7 @@
      "bullpen_edge": -0.034,
      "home_bp_fip": 0.856,
      "away_bp_fip": 0.822,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7692,7 +8142,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5592,
@@ -7700,6 +8151,7 @@
      "bullpen_edge": 0.598,
      "home_bp_fip": 0.76,
      "away_bp_fip": 1.359,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7726,7 +8178,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.7,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5249,
@@ -7734,6 +8187,7 @@
      "bullpen_edge": 0.738,
      "home_bp_fip": 0.602,
      "away_bp_fip": 1.339,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7760,7 +8214,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5154,
@@ -7768,6 +8223,7 @@
      "bullpen_edge": -0.25,
      "home_bp_fip": 1.207,
      "away_bp_fip": 0.957,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7794,7 +8250,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5608,
@@ -7802,6 +8259,7 @@
      "bullpen_edge": -0.101,
      "home_bp_fip": 0.668,
      "away_bp_fip": 0.567,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7828,7 +8286,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6113,
@@ -7836,6 +8295,7 @@
      "bullpen_edge": 0.826,
      "home_bp_fip": 0.664,
      "away_bp_fip": 1.489,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7862,7 +8322,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6198,
@@ -7870,6 +8331,7 @@
      "bullpen_edge": 0.592,
      "home_bp_fip": 0.697,
      "away_bp_fip": 1.289,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7896,7 +8358,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.592,
@@ -7904,6 +8367,7 @@
      "bullpen_edge": 0.005,
      "home_bp_fip": 0.801,
      "away_bp_fip": 0.806,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7930,7 +8394,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5747,
@@ -7938,6 +8403,7 @@
      "bullpen_edge": -0.261,
      "home_bp_fip": 1.183,
      "away_bp_fip": 0.923,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7964,7 +8430,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5616,
@@ -7972,6 +8439,7 @@
      "bullpen_edge": 0.155,
      "home_bp_fip": 1.756,
      "away_bp_fip": 1.91,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -7998,7 +8466,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4474,
@@ -8006,6 +8475,7 @@
      "bullpen_edge": -0.469,
      "home_bp_fip": 2.027,
      "away_bp_fip": 1.559,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8032,7 +8502,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6484,
@@ -8040,6 +8511,7 @@
      "bullpen_edge": 0.75,
      "home_bp_fip": 0.613,
      "away_bp_fip": 1.363,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8066,7 +8538,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5592,
@@ -8074,6 +8547,7 @@
      "bullpen_edge": 0.598,
      "home_bp_fip": 0.76,
      "away_bp_fip": 1.359,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8100,7 +8574,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5154,
@@ -8108,6 +8583,7 @@
      "bullpen_edge": -0.25,
      "home_bp_fip": 1.207,
      "away_bp_fip": 0.957,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8134,7 +8610,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6323,
@@ -8142,6 +8619,7 @@
      "bullpen_edge": 0.123,
      "home_bp_fip": 1.189,
      "away_bp_fip": 1.312,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8168,7 +8646,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5485,
@@ -8176,6 +8655,7 @@
      "bullpen_edge": -0.197,
      "home_bp_fip": 1.081,
      "away_bp_fip": 0.884,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8202,7 +8682,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5166,
@@ -8210,6 +8691,7 @@
      "bullpen_edge": -0.342,
      "home_bp_fip": 1.073,
      "away_bp_fip": 0.73,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8236,7 +8718,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4756,
@@ -8244,6 +8727,7 @@
      "bullpen_edge": -0.034,
      "home_bp_fip": 0.856,
      "away_bp_fip": 0.822,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8270,7 +8754,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.7,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5249,
@@ -8278,6 +8763,7 @@
      "bullpen_edge": 0.738,
      "home_bp_fip": 0.602,
      "away_bp_fip": 1.339,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8304,7 +8790,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5616,
@@ -8312,6 +8799,7 @@
      "bullpen_edge": 0.155,
      "home_bp_fip": 1.756,
      "away_bp_fip": 1.91,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8338,7 +8826,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6113,
@@ -8346,6 +8835,7 @@
      "bullpen_edge": 0.826,
      "home_bp_fip": 0.664,
      "away_bp_fip": 1.489,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8372,7 +8862,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5747,
@@ -8380,6 +8871,7 @@
      "bullpen_edge": -0.261,
      "home_bp_fip": 1.183,
      "away_bp_fip": 0.923,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8406,7 +8898,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.592,
@@ -8414,6 +8907,7 @@
      "bullpen_edge": 0.005,
      "home_bp_fip": 0.801,
      "away_bp_fip": 0.806,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8440,7 +8934,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5608,
@@ -8448,6 +8943,7 @@
      "bullpen_edge": -0.101,
      "home_bp_fip": 0.668,
      "away_bp_fip": 0.567,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8474,7 +8970,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6198,
@@ -8482,6 +8979,7 @@
      "bullpen_edge": 0.592,
      "home_bp_fip": 0.697,
      "away_bp_fip": 1.289,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8508,7 +9006,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4474,
@@ -8516,6 +9015,7 @@
      "bullpen_edge": -0.469,
      "home_bp_fip": 2.027,
      "away_bp_fip": 1.559,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8542,7 +9042,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5166,
@@ -8550,6 +9051,7 @@
      "bullpen_edge": -0.342,
      "home_bp_fip": 1.073,
      "away_bp_fip": 0.73,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8576,7 +9078,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6484,
@@ -8584,6 +9087,7 @@
      "bullpen_edge": 0.75,
      "home_bp_fip": 0.613,
      "away_bp_fip": 1.363,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8610,7 +9114,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6323,
@@ -8618,6 +9123,7 @@
      "bullpen_edge": 0.123,
      "home_bp_fip": 1.189,
      "away_bp_fip": 1.312,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8644,7 +9150,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5485,
@@ -8652,6 +9159,7 @@
      "bullpen_edge": -0.197,
      "home_bp_fip": 1.081,
      "away_bp_fip": 0.884,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8678,7 +9186,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5154,
@@ -8686,6 +9195,7 @@
      "bullpen_edge": -0.25,
      "home_bp_fip": 1.207,
      "away_bp_fip": 0.957,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8712,7 +9222,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4756,
@@ -8720,6 +9231,7 @@
      "bullpen_edge": -0.034,
      "home_bp_fip": 0.856,
      "away_bp_fip": 0.822,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8746,7 +9258,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.7,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5249,
@@ -8754,6 +9267,7 @@
      "bullpen_edge": 0.738,
      "home_bp_fip": 0.602,
      "away_bp_fip": 1.339,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8780,7 +9294,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5592,
@@ -8788,6 +9303,7 @@
      "bullpen_edge": 0.598,
      "home_bp_fip": 0.76,
      "away_bp_fip": 1.359,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8814,7 +9330,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5034,
@@ -8822,6 +9339,7 @@
      "bullpen_edge": -0.142,
      "home_bp_fip": 0.806,
      "away_bp_fip": 0.664,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8848,7 +9366,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6116,
@@ -8856,6 +9375,7 @@
      "bullpen_edge": 0.356,
      "home_bp_fip": 0.567,
      "away_bp_fip": 0.923,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8882,7 +9402,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5293,
@@ -8890,6 +9411,7 @@
      "bullpen_edge": -0.48,
      "home_bp_fip": 1.363,
      "away_bp_fip": 0.884,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8916,7 +9438,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5086,
@@ -8924,6 +9447,7 @@
      "bullpen_edge": -0.388,
      "home_bp_fip": 1.189,
      "away_bp_fip": 0.801,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8950,7 +9474,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4796,
@@ -8958,6 +9483,7 @@
      "bullpen_edge": -0.208,
      "home_bp_fip": 1.289,
      "away_bp_fip": 1.081,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -8984,7 +9510,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6328,
@@ -8992,6 +9519,7 @@
      "bullpen_edge": 0.456,
      "home_bp_fip": 0.856,
      "away_bp_fip": 1.312,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9018,7 +9546,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4729,
@@ -9026,6 +9555,7 @@
      "bullpen_edge": -0.15,
      "home_bp_fip": 1.489,
      "away_bp_fip": 1.339,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9052,7 +9582,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4674,
@@ -9060,6 +9591,7 @@
      "bullpen_edge": -0.147,
      "home_bp_fip": 0.76,
      "away_bp_fip": 0.613,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9086,7 +9618,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5014,
@@ -9094,6 +9627,7 @@
      "bullpen_edge": 0.152,
      "home_bp_fip": 1.207,
      "away_bp_fip": 1.359,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9120,7 +9654,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.7,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.659,
@@ -9128,6 +9663,7 @@
      "bullpen_edge": 1.206,
      "home_bp_fip": 0.822,
      "away_bp_fip": 2.027,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9154,7 +9690,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5024,
@@ -9162,6 +9699,7 @@
      "bullpen_edge": -0.227,
      "home_bp_fip": 0.957,
      "away_bp_fip": 0.73,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9188,7 +9726,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5676,
@@ -9196,6 +9735,7 @@
      "bullpen_edge": 0.486,
      "home_bp_fip": 0.697,
      "away_bp_fip": 1.183,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9222,7 +9762,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4883,
@@ -9230,6 +9771,7 @@
      "bullpen_edge": -0.197,
      "home_bp_fip": 1.756,
      "away_bp_fip": 1.559,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9256,7 +9798,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5778,
@@ -9264,6 +9807,7 @@
      "bullpen_edge": -0.067,
      "home_bp_fip": 0.668,
      "away_bp_fip": 0.602,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9290,7 +9834,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5034,
@@ -9298,6 +9843,7 @@
      "bullpen_edge": -0.142,
      "home_bp_fip": 0.806,
      "away_bp_fip": 0.664,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9324,7 +9870,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6116,
@@ -9332,6 +9879,7 @@
      "bullpen_edge": 0.356,
      "home_bp_fip": 0.567,
      "away_bp_fip": 0.923,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9358,7 +9906,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5293,
@@ -9366,6 +9915,7 @@
      "bullpen_edge": -0.48,
      "home_bp_fip": 1.363,
      "away_bp_fip": 0.884,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9392,7 +9942,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.7,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5668,
@@ -9400,6 +9951,7 @@
      "bullpen_edge": 0.838,
      "home_bp_fip": 1.073,
      "away_bp_fip": 1.91,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9426,7 +9978,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5086,
@@ -9434,6 +9987,7 @@
      "bullpen_edge": -0.388,
      "home_bp_fip": 1.189,
      "away_bp_fip": 0.801,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9460,7 +10014,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4796,
@@ -9468,6 +10023,7 @@
      "bullpen_edge": -0.208,
      "home_bp_fip": 1.289,
      "away_bp_fip": 1.081,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9494,7 +10050,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6328,
@@ -9502,6 +10059,7 @@
      "bullpen_edge": 0.456,
      "home_bp_fip": 0.856,
      "away_bp_fip": 1.312,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9528,7 +10086,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4729,
@@ -9536,6 +10095,7 @@
      "bullpen_edge": -0.15,
      "home_bp_fip": 1.489,
      "away_bp_fip": 1.339,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9562,7 +10122,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4674,
@@ -9570,6 +10131,7 @@
      "bullpen_edge": -0.147,
      "home_bp_fip": 0.76,
      "away_bp_fip": 0.613,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9596,7 +10158,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5014,
@@ -9604,6 +10167,7 @@
      "bullpen_edge": 0.152,
      "home_bp_fip": 1.207,
      "away_bp_fip": 1.359,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9630,7 +10194,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.7,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.659,
@@ -9638,6 +10203,7 @@
      "bullpen_edge": 1.206,
      "home_bp_fip": 0.822,
      "away_bp_fip": 2.027,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9664,7 +10230,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5293,
@@ -9672,6 +10239,7 @@
      "bullpen_edge": -0.48,
      "home_bp_fip": 1.363,
      "away_bp_fip": 0.884,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9698,7 +10266,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5086,
@@ -9706,6 +10275,7 @@
      "bullpen_edge": -0.388,
      "home_bp_fip": 1.189,
      "away_bp_fip": 0.801,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9732,7 +10302,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4729,
@@ -9740,6 +10311,7 @@
      "bullpen_edge": -0.15,
      "home_bp_fip": 1.489,
      "away_bp_fip": 1.339,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9766,7 +10338,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6328,
@@ -9774,6 +10347,7 @@
      "bullpen_edge": 0.456,
      "home_bp_fip": 0.856,
      "away_bp_fip": 1.312,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9800,7 +10374,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5014,
@@ -9808,6 +10383,7 @@
      "bullpen_edge": 0.152,
      "home_bp_fip": 1.207,
      "away_bp_fip": 1.359,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9834,7 +10410,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4674,
@@ -9842,6 +10419,7 @@
      "bullpen_edge": -0.147,
      "home_bp_fip": 0.76,
      "away_bp_fip": 0.613,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9868,7 +10446,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5024,
@@ -9876,6 +10455,7 @@
      "bullpen_edge": -0.227,
      "home_bp_fip": 0.957,
      "away_bp_fip": 0.73,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9902,7 +10482,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5676,
@@ -9910,6 +10491,7 @@
      "bullpen_edge": 0.486,
      "home_bp_fip": 0.697,
      "away_bp_fip": 1.183,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9936,7 +10518,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4883,
@@ -9944,6 +10527,7 @@
      "bullpen_edge": -0.197,
      "home_bp_fip": 1.756,
      "away_bp_fip": 1.559,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -9970,7 +10554,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5778,
@@ -9978,6 +10563,7 @@
      "bullpen_edge": -0.067,
      "home_bp_fip": 0.668,
      "away_bp_fip": 0.602,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10004,7 +10590,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5034,
@@ -10012,6 +10599,7 @@
      "bullpen_edge": -0.142,
      "home_bp_fip": 0.806,
      "away_bp_fip": 0.664,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10038,7 +10626,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6116,
@@ -10046,6 +10635,7 @@
      "bullpen_edge": 0.356,
      "home_bp_fip": 0.567,
      "away_bp_fip": 0.923,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10072,7 +10662,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.7,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5668,
@@ -10080,6 +10671,7 @@
      "bullpen_edge": 0.838,
      "home_bp_fip": 1.073,
      "away_bp_fip": 1.91,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10106,7 +10698,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.7,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.659,
@@ -10114,6 +10707,7 @@
      "bullpen_edge": 1.206,
      "home_bp_fip": 0.822,
      "away_bp_fip": 2.027,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10140,7 +10734,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4796,
@@ -10148,6 +10743,7 @@
      "bullpen_edge": -0.208,
      "home_bp_fip": 1.289,
      "away_bp_fip": 1.081,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10174,7 +10770,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5024,
@@ -10182,6 +10779,7 @@
      "bullpen_edge": -0.227,
      "home_bp_fip": 0.957,
      "away_bp_fip": 0.73,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10208,7 +10806,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5676,
@@ -10216,6 +10815,7 @@
      "bullpen_edge": 0.486,
      "home_bp_fip": 0.697,
      "away_bp_fip": 1.183,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10242,7 +10842,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5778,
@@ -10250,6 +10851,7 @@
      "bullpen_edge": -0.067,
      "home_bp_fip": 0.668,
      "away_bp_fip": 0.602,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10276,7 +10878,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.7,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5668,
@@ -10284,6 +10887,7 @@
      "bullpen_edge": 0.838,
      "home_bp_fip": 1.073,
      "away_bp_fip": 1.91,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10310,7 +10914,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5034,
@@ -10318,6 +10923,7 @@
      "bullpen_edge": -0.142,
      "home_bp_fip": 0.806,
      "away_bp_fip": 0.664,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10344,7 +10950,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4883,
@@ -10352,6 +10959,7 @@
      "bullpen_edge": -0.197,
      "home_bp_fip": 1.756,
      "away_bp_fip": 1.559,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10378,7 +10986,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4825,
@@ -10386,6 +10995,7 @@
      "bullpen_edge": -0.563,
      "home_bp_fip": 1.363,
      "away_bp_fip": 0.801,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10412,7 +11022,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4796,
@@ -10420,6 +11031,7 @@
      "bullpen_edge": -0.208,
      "home_bp_fip": 1.289,
      "away_bp_fip": 1.081,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10446,7 +11058,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5265,
@@ -10454,6 +11067,7 @@
      "bullpen_edge": -0.208,
      "home_bp_fip": 0.822,
      "away_bp_fip": 0.613,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10480,7 +11094,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5834,
@@ -10488,6 +11103,7 @@
      "bullpen_edge": -0.37,
      "home_bp_fip": 1.559,
      "away_bp_fip": 1.189,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10514,7 +11130,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -1.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5013,
@@ -10522,6 +11139,7 @@
      "bullpen_edge": -1.213,
      "home_bp_fip": 1.91,
      "away_bp_fip": 0.697,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10548,7 +11166,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5034,
@@ -10556,6 +11175,7 @@
      "bullpen_edge": -0.52,
      "home_bp_fip": 1.183,
      "away_bp_fip": 0.664,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10582,7 +11202,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5285,
@@ -10590,6 +11211,7 @@
      "bullpen_edge": 0.116,
      "home_bp_fip": 0.957,
      "away_bp_fip": 1.073,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10616,7 +11238,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4862,
@@ -10624,6 +11247,7 @@
      "bullpen_edge": -0.137,
      "home_bp_fip": 0.806,
      "away_bp_fip": 0.668,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10650,7 +11274,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.8,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5073,
@@ -10658,6 +11283,7 @@
      "bullpen_edge": 0.833,
      "home_bp_fip": 0.923,
      "away_bp_fip": 1.756,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10684,7 +11310,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5522,
@@ -10692,6 +11319,7 @@
      "bullpen_edge": 0.03,
      "home_bp_fip": 0.73,
      "away_bp_fip": 0.76,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10718,7 +11346,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5777,
@@ -10726,6 +11355,7 @@
      "bullpen_edge": -0.456,
      "home_bp_fip": 1.339,
      "away_bp_fip": 0.884,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10752,7 +11382,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5639,
@@ -10760,6 +11391,7 @@
      "bullpen_edge": 0.288,
      "home_bp_fip": 0.567,
      "away_bp_fip": 0.856,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10786,7 +11418,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5299,
@@ -10794,6 +11427,7 @@
      "bullpen_edge": -0.757,
      "home_bp_fip": 1.359,
      "away_bp_fip": 0.602,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10820,7 +11454,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.7,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5267,
@@ -10828,6 +11463,7 @@
      "bullpen_edge": 0.738,
      "home_bp_fip": 1.289,
      "away_bp_fip": 2.027,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10854,7 +11490,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5025,
@@ -10862,6 +11499,7 @@
      "bullpen_edge": -0.408,
      "home_bp_fip": 1.489,
      "away_bp_fip": 1.081,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10888,7 +11526,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5265,
@@ -10896,6 +11535,7 @@
      "bullpen_edge": -0.208,
      "home_bp_fip": 0.822,
      "away_bp_fip": 0.613,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10922,7 +11562,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5853,
@@ -10930,6 +11571,7 @@
      "bullpen_edge": 0.105,
      "home_bp_fip": 1.207,
      "away_bp_fip": 1.312,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10956,7 +11598,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5285,
@@ -10964,6 +11607,7 @@
      "bullpen_edge": 0.116,
      "home_bp_fip": 0.957,
      "away_bp_fip": 1.073,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -10990,7 +11634,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5834,
@@ -10998,6 +11643,7 @@
      "bullpen_edge": -0.37,
      "home_bp_fip": 1.559,
      "away_bp_fip": 1.189,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11024,7 +11670,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4862,
@@ -11032,6 +11679,7 @@
      "bullpen_edge": -0.137,
      "home_bp_fip": 0.806,
      "away_bp_fip": 0.668,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11058,7 +11706,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5853,
@@ -11066,6 +11715,7 @@
      "bullpen_edge": 0.105,
      "home_bp_fip": 1.207,
      "away_bp_fip": 1.312,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11092,7 +11742,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.8,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5073,
@@ -11100,6 +11751,7 @@
      "bullpen_edge": 0.833,
      "home_bp_fip": 0.923,
      "away_bp_fip": 1.756,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11126,7 +11778,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5777,
@@ -11134,6 +11787,7 @@
      "bullpen_edge": -0.456,
      "home_bp_fip": 1.339,
      "away_bp_fip": 0.884,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11160,7 +11814,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -1.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5013,
@@ -11168,6 +11823,7 @@
      "bullpen_edge": -1.213,
      "home_bp_fip": 1.91,
      "away_bp_fip": 0.697,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11194,7 +11850,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5522,
@@ -11202,6 +11859,7 @@
      "bullpen_edge": 0.03,
      "home_bp_fip": 0.73,
      "away_bp_fip": 0.76,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11228,7 +11886,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5299,
@@ -11236,6 +11895,7 @@
      "bullpen_edge": -0.757,
      "home_bp_fip": 1.359,
      "away_bp_fip": 0.602,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11262,7 +11922,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4825,
@@ -11270,6 +11931,7 @@
      "bullpen_edge": -0.563,
      "home_bp_fip": 1.363,
      "away_bp_fip": 0.801,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11296,7 +11958,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5034,
@@ -11304,6 +11967,7 @@
      "bullpen_edge": -0.52,
      "home_bp_fip": 1.183,
      "away_bp_fip": 0.664,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11330,7 +11994,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5639,
@@ -11338,6 +12003,7 @@
      "bullpen_edge": 0.288,
      "home_bp_fip": 0.567,
      "away_bp_fip": 0.856,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11364,7 +12030,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5265,
@@ -11372,6 +12039,7 @@
      "bullpen_edge": -0.208,
      "home_bp_fip": 0.822,
      "away_bp_fip": 0.613,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11398,7 +12066,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.7,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5267,
@@ -11406,6 +12075,7 @@
      "bullpen_edge": 0.738,
      "home_bp_fip": 1.289,
      "away_bp_fip": 2.027,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11432,7 +12102,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5025,
@@ -11440,6 +12111,7 @@
      "bullpen_edge": -0.408,
      "home_bp_fip": 1.489,
      "away_bp_fip": 1.081,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11466,7 +12138,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5777,
@@ -11474,6 +12147,7 @@
      "bullpen_edge": -0.456,
      "home_bp_fip": 1.339,
      "away_bp_fip": 0.884,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11500,7 +12174,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5034,
@@ -11508,6 +12183,7 @@
      "bullpen_edge": -0.52,
      "home_bp_fip": 1.183,
      "away_bp_fip": 0.664,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11534,7 +12210,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5639,
@@ -11542,6 +12219,7 @@
      "bullpen_edge": 0.288,
      "home_bp_fip": 0.567,
      "away_bp_fip": 0.856,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11568,7 +12246,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4862,
@@ -11576,6 +12255,7 @@
      "bullpen_edge": -0.137,
      "home_bp_fip": 0.806,
      "away_bp_fip": 0.668,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11602,7 +12282,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.8,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5073,
@@ -11610,6 +12291,7 @@
      "bullpen_edge": 0.833,
      "home_bp_fip": 0.923,
      "away_bp_fip": 1.756,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11636,7 +12318,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5522,
@@ -11644,6 +12327,7 @@
      "bullpen_edge": 0.03,
      "home_bp_fip": 0.73,
      "away_bp_fip": 0.76,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11670,7 +12354,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5285,
@@ -11678,6 +12363,7 @@
      "bullpen_edge": 0.116,
      "home_bp_fip": 0.957,
      "away_bp_fip": 1.073,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11704,7 +12390,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -1.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5013,
@@ -11712,6 +12399,7 @@
      "bullpen_edge": -1.213,
      "home_bp_fip": 1.91,
      "away_bp_fip": 0.697,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11738,7 +12426,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4825,
@@ -11746,6 +12435,7 @@
      "bullpen_edge": -0.563,
      "home_bp_fip": 1.363,
      "away_bp_fip": 0.801,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11772,7 +12462,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5834,
@@ -11780,6 +12471,7 @@
      "bullpen_edge": -0.37,
      "home_bp_fip": 1.559,
      "away_bp_fip": 1.189,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11806,7 +12498,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5853,
@@ -11814,6 +12507,7 @@
      "bullpen_edge": 0.105,
      "home_bp_fip": 1.207,
      "away_bp_fip": 1.312,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11840,7 +12534,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5025,
@@ -11848,6 +12543,7 @@
      "bullpen_edge": -0.408,
      "home_bp_fip": 1.489,
      "away_bp_fip": 1.081,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11874,7 +12570,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.7,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5267,
@@ -11882,6 +12579,7 @@
      "bullpen_edge": 0.738,
      "home_bp_fip": 1.289,
      "away_bp_fip": 2.027,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11908,7 +12606,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5265,
@@ -11916,6 +12615,7 @@
      "bullpen_edge": -0.208,
      "home_bp_fip": 0.822,
      "away_bp_fip": 0.613,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11942,7 +12642,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5299,
@@ -11950,6 +12651,7 @@
      "bullpen_edge": -0.757,
      "home_bp_fip": 1.359,
      "away_bp_fip": 0.602,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -11976,7 +12678,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5105,
@@ -11984,6 +12687,7 @@
      "bullpen_edge": -0.722,
      "home_bp_fip": 1.91,
      "away_bp_fip": 1.189,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12010,7 +12714,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5105,
@@ -12018,6 +12723,7 @@
      "bullpen_edge": -0.722,
      "home_bp_fip": 1.91,
      "away_bp_fip": 1.189,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12044,7 +12750,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5777,
@@ -12052,6 +12759,7 @@
      "bullpen_edge": -0.456,
      "home_bp_fip": 1.339,
      "away_bp_fip": 0.884,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12078,7 +12786,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5673,
@@ -12086,6 +12795,7 @@
      "bullpen_edge": -0.104,
      "home_bp_fip": 0.801,
      "away_bp_fip": 0.697,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12112,7 +12822,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5485,
@@ -12120,6 +12831,7 @@
      "bullpen_edge": -0.226,
      "home_bp_fip": 1.183,
      "away_bp_fip": 0.957,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12146,7 +12858,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.565,
@@ -12154,6 +12867,7 @@
      "bullpen_edge": 0.192,
      "home_bp_fip": 0.664,
      "away_bp_fip": 0.856,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12180,7 +12894,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4855,
@@ -12188,6 +12903,7 @@
      "bullpen_edge": -0.163,
      "home_bp_fip": 0.923,
      "away_bp_fip": 0.76,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12214,7 +12930,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5357,
@@ -12222,6 +12939,7 @@
      "bullpen_edge": -0.538,
      "home_bp_fip": 2.027,
      "away_bp_fip": 1.489,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12248,7 +12966,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4945,
@@ -12256,6 +12975,7 @@
      "bullpen_edge": -0.796,
      "home_bp_fip": 1.363,
      "away_bp_fip": 0.567,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12282,7 +13002,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.591,
@@ -12290,6 +13011,7 @@
      "bullpen_edge": -0.486,
      "home_bp_fip": 1.559,
      "away_bp_fip": 1.073,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12316,7 +13038,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.3844,
@@ -12324,6 +13047,7 @@
      "bullpen_edge": -0.49,
      "home_bp_fip": 1.312,
      "away_bp_fip": 0.822,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12350,7 +13074,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4895,
@@ -12358,6 +13083,7 @@
      "bullpen_edge": -0.215,
      "home_bp_fip": 0.884,
      "away_bp_fip": 0.668,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12384,7 +13110,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5485,
@@ -12392,6 +13119,7 @@
      "bullpen_edge": -0.226,
      "home_bp_fip": 1.183,
      "away_bp_fip": 0.957,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12418,7 +13146,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6087,
@@ -12426,6 +13155,7 @@
      "bullpen_edge": 0.477,
      "home_bp_fip": 0.73,
      "away_bp_fip": 1.207,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12452,7 +13182,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5105,
@@ -12460,6 +13191,7 @@
      "bullpen_edge": -0.722,
      "home_bp_fip": 1.91,
      "away_bp_fip": 1.189,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12486,7 +13218,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5809,
@@ -12494,6 +13227,7 @@
      "bullpen_edge": -0.534,
      "home_bp_fip": 1.339,
      "away_bp_fip": 0.806,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12520,7 +13254,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5673,
@@ -12528,6 +13263,7 @@
      "bullpen_edge": -0.104,
      "home_bp_fip": 0.801,
      "away_bp_fip": 0.697,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12554,7 +13290,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.565,
@@ -12562,6 +13299,7 @@
      "bullpen_edge": 0.192,
      "home_bp_fip": 0.664,
      "away_bp_fip": 0.856,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12588,7 +13326,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4855,
@@ -12596,6 +13335,7 @@
      "bullpen_edge": -0.163,
      "home_bp_fip": 0.923,
      "away_bp_fip": 0.76,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12622,7 +13362,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5357,
@@ -12630,6 +13371,7 @@
      "bullpen_edge": -0.538,
      "home_bp_fip": 2.027,
      "away_bp_fip": 1.489,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12656,7 +13398,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4945,
@@ -12664,6 +13407,7 @@
      "bullpen_edge": -0.796,
      "home_bp_fip": 1.363,
      "away_bp_fip": 0.567,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12690,7 +13434,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6196,
@@ -12698,6 +13443,7 @@
      "bullpen_edge": -0.011,
      "home_bp_fip": 0.613,
      "away_bp_fip": 0.602,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12724,7 +13470,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5488,
@@ -12732,6 +13479,7 @@
      "bullpen_edge": 0.675,
      "home_bp_fip": 1.081,
      "away_bp_fip": 1.756,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12758,7 +13506,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.591,
@@ -12766,6 +13515,7 @@
      "bullpen_edge": -0.486,
      "home_bp_fip": 1.559,
      "away_bp_fip": 1.073,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12792,7 +13542,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6035,
@@ -12800,6 +13551,7 @@
      "bullpen_edge": -0.069,
      "home_bp_fip": 1.359,
      "away_bp_fip": 1.289,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12826,7 +13578,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.3844,
@@ -12834,6 +13587,7 @@
      "bullpen_edge": -0.49,
      "home_bp_fip": 1.312,
      "away_bp_fip": 0.822,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12860,7 +13614,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5485,
@@ -12868,6 +13623,7 @@
      "bullpen_edge": -0.226,
      "home_bp_fip": 1.183,
      "away_bp_fip": 0.957,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12894,7 +13650,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4855,
@@ -12902,6 +13659,7 @@
      "bullpen_edge": -0.163,
      "home_bp_fip": 0.923,
      "away_bp_fip": 0.76,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12928,7 +13686,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4945,
@@ -12936,6 +13695,7 @@
      "bullpen_edge": -0.796,
      "home_bp_fip": 1.363,
      "away_bp_fip": 0.567,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12962,7 +13722,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.591,
@@ -12970,6 +13731,7 @@
      "bullpen_edge": -0.486,
      "home_bp_fip": 1.559,
      "away_bp_fip": 1.073,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -12996,7 +13758,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.565,
@@ -13004,6 +13767,7 @@
      "bullpen_edge": 0.192,
      "home_bp_fip": 0.664,
      "away_bp_fip": 0.856,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13030,7 +13794,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5673,
@@ -13038,6 +13803,7 @@
      "bullpen_edge": -0.104,
      "home_bp_fip": 0.801,
      "away_bp_fip": 0.697,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13064,7 +13830,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4895,
@@ -13072,6 +13839,7 @@
      "bullpen_edge": -0.215,
      "home_bp_fip": 0.884,
      "away_bp_fip": 0.668,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13098,7 +13866,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6087,
@@ -13106,6 +13875,7 @@
      "bullpen_edge": 0.477,
      "home_bp_fip": 0.73,
      "away_bp_fip": 1.207,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13132,7 +13902,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5105,
@@ -13140,6 +13911,7 @@
      "bullpen_edge": -0.722,
      "home_bp_fip": 1.91,
      "away_bp_fip": 1.189,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13166,7 +13938,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5809,
@@ -13174,6 +13947,7 @@
      "bullpen_edge": -0.534,
      "home_bp_fip": 1.339,
      "away_bp_fip": 0.806,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13200,7 +13974,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5357,
@@ -13208,6 +13983,7 @@
      "bullpen_edge": -0.538,
      "home_bp_fip": 2.027,
      "away_bp_fip": 1.489,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13234,7 +14010,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6196,
@@ -13242,6 +14019,7 @@
      "bullpen_edge": -0.011,
      "home_bp_fip": 0.613,
      "away_bp_fip": 0.602,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13268,7 +14046,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5488,
@@ -13276,6 +14055,7 @@
      "bullpen_edge": 0.675,
      "home_bp_fip": 1.081,
      "away_bp_fip": 1.756,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13302,7 +14082,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6035,
@@ -13310,6 +14091,7 @@
      "bullpen_edge": -0.069,
      "home_bp_fip": 1.359,
      "away_bp_fip": 1.289,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13336,7 +14118,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.3844,
@@ -13344,6 +14127,7 @@
      "bullpen_edge": -0.49,
      "home_bp_fip": 1.312,
      "away_bp_fip": 0.822,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13370,7 +14154,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5105,
@@ -13378,6 +14163,7 @@
      "bullpen_edge": -0.722,
      "home_bp_fip": 1.91,
      "away_bp_fip": 1.189,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13404,7 +14190,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6087,
@@ -13412,6 +14199,7 @@
      "bullpen_edge": 0.477,
      "home_bp_fip": 0.73,
      "away_bp_fip": 1.207,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13438,7 +14226,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5809,
@@ -13446,6 +14235,7 @@
      "bullpen_edge": -0.534,
      "home_bp_fip": 1.339,
      "away_bp_fip": 0.806,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13472,7 +14262,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5357,
@@ -13480,6 +14271,7 @@
      "bullpen_edge": -0.538,
      "home_bp_fip": 2.027,
      "away_bp_fip": 1.489,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13506,7 +14298,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5128,
@@ -13514,6 +14307,7 @@
      "bullpen_edge": -0.505,
      "home_bp_fip": 1.073,
      "away_bp_fip": 0.567,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13540,7 +14334,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6196,
@@ -13548,6 +14343,7 @@
      "bullpen_edge": -0.011,
      "home_bp_fip": 0.613,
      "away_bp_fip": 0.602,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13574,7 +14370,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4895,
@@ -13582,6 +14379,7 @@
      "bullpen_edge": -0.215,
      "home_bp_fip": 0.884,
      "away_bp_fip": 0.668,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13608,7 +14406,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.6,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5488,
@@ -13616,6 +14415,7 @@
      "bullpen_edge": 0.675,
      "home_bp_fip": 1.081,
      "away_bp_fip": 1.756,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13642,7 +14442,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6035,
@@ -13650,6 +14451,7 @@
      "bullpen_edge": -0.069,
      "home_bp_fip": 1.359,
      "away_bp_fip": 1.289,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13676,7 +14478,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6032,
@@ -13684,6 +14487,7 @@
      "bullpen_edge": -0.046,
      "home_bp_fip": 0.613,
      "away_bp_fip": 0.567,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13710,7 +14514,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5763,
@@ -13718,6 +14523,7 @@
      "bullpen_edge": 0.388,
      "home_bp_fip": 0.801,
      "away_bp_fip": 1.189,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13744,7 +14550,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.5,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5072,
@@ -13752,6 +14559,7 @@
      "bullpen_edge": 0.456,
      "home_bp_fip": 0.884,
      "away_bp_fip": 1.339,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13778,7 +14586,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5981,
@@ -13786,6 +14595,7 @@
      "bullpen_edge": 0.137,
      "home_bp_fip": 0.668,
      "away_bp_fip": 0.806,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13812,7 +14622,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6133,
@@ -13820,6 +14631,7 @@
      "bullpen_edge": 0.543,
      "home_bp_fip": 0.664,
      "away_bp_fip": 1.207,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13846,7 +14658,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.9,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5647,
@@ -13854,6 +14667,7 @@
      "bullpen_edge": 1.059,
      "home_bp_fip": 0.697,
      "away_bp_fip": 1.756,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13880,7 +14694,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.2,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5828,
@@ -13888,6 +14703,7 @@
      "bullpen_edge": -0.15,
      "home_bp_fip": 1.073,
      "away_bp_fip": 0.923,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13914,7 +14730,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.6044,
@@ -13922,6 +14739,7 @@
      "bullpen_edge": 0.208,
      "home_bp_fip": 1.081,
      "away_bp_fip": 1.289,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13948,7 +14766,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.9,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5106,
@@ -13956,6 +14775,7 @@
      "bullpen_edge": -1.07,
      "home_bp_fip": 2.027,
      "away_bp_fip": 0.957,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -13982,7 +14802,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.0,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5812,
@@ -13990,6 +14811,7 @@
      "bullpen_edge": 0.131,
      "home_bp_fip": 1.359,
      "away_bp_fip": 1.489,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -14016,7 +14838,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": -0.3,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.4321,
@@ -14024,6 +14847,7 @@
      "bullpen_edge": -0.582,
      "home_bp_fip": 1.312,
      "away_bp_fip": 0.73,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -14050,7 +14874,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.8,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5751,
@@ -14058,6 +14883,7 @@
      "bullpen_edge": 1.055,
      "home_bp_fip": 0.856,
      "away_bp_fip": 1.91,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -14084,7 +14910,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.4,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.577,
@@ -14092,6 +14919,7 @@
      "bullpen_edge": 0.603,
      "home_bp_fip": 0.76,
      "away_bp_fip": 1.363,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -14118,7 +14946,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.1,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.624,
@@ -14126,6 +14955,7 @@
      "bullpen_edge": 0.362,
      "home_bp_fip": 0.822,
      "away_bp_fip": 1.183,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
@@ -14152,7 +14982,8 @@
       "home_pitcher": 0.0,
       "away_pitcher": -0.0,
       "bullpen": 0.9,
-      "lineup": 0.0
+      "lineup": 0.0,
+      "power": 0.0
      },
      "tier": "bullpen",
      "recal_prob": 0.5062,
@@ -14160,6 +14991,7 @@
      "bullpen_edge": 0.957,
      "home_bp_fip": 0.602,
      "away_bp_fip": 1.559,
+     "power_edge": null,
      "home_pitcher_matched": false,
      "away_pitcher_matched": false
     }
