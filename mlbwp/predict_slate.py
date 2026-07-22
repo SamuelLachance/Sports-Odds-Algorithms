@@ -122,6 +122,35 @@ PENDING_LEAGUES = [
 ]
 
 
+def projected_lineups(day0: date, lookback: int = 8) -> dict:
+    """Each team's most recent posted lineup (the set of 9 mlbam batter ids), used as
+    a PROJECTED lineup for an upcoming game until its official lineup posts. Order is
+    irrelevant -- the lineup features average over the 9. Walks back day by day from
+    yesterday, keeping each team's first (most recent) lineup found; teams play almost
+    daily, so this is ~1-3 schedule fetches. Market-free (only who batted)."""
+    proj: dict = {}
+    d = day0 - timedelta(days=1)
+    for _ in range(lookback):
+        if len(proj) >= len(TEAM_ID_TO_RETRO):
+            break
+        try:
+            sch = _get(f"{BASE}/schedule?sportId=1&date={d.isoformat()}&hydrate=lineups,team")
+        except Exception:  # noqa: BLE001 — a bad day must not abort the projection
+            sch = {}
+        for day in sch.get("dates", []):
+            for g in day.get("games", []):
+                if g.get("gameType") != "R":
+                    continue
+                lu = g.get("lineups") or {}
+                for key, side in (("homePlayers", "home"), ("awayPlayers", "away")):
+                    team = TEAM_ID_TO_RETRO.get(g["teams"][side]["team"]["id"])
+                    players = lu.get(key) or []
+                    if team and team not in proj and len(players) >= 9:
+                        proj[team] = [p["id"] for p in players]
+        d -= timedelta(days=1)
+    return proj
+
+
 def horizon_games(start: date, days: int) -> list[dict]:
     end = start + timedelta(days=days)
     url = (f"{BASE}/schedule?sportId=1&startDate={start}&endDate={end}"
@@ -170,6 +199,8 @@ def main(days: int = 30, today: str | None = None):
     bat_loaded = sum(1 for v in power.values() if v[0] > 0)
 
     games = horizon_games(day0, days)
+    proj = projected_lineups(day0)
+    print(f"[proj] projected lineups for {len(proj)} teams", flush=True)
     cards = []
     for g in games:
         # Keep Live and Final games: the board is a live product, so today's
@@ -178,15 +209,22 @@ def main(days: int = 30, today: str | None = None):
         # ratings are current only through yesterday, so today's results never
         # leak into the number shown for today's games.
         pitcher_known = bool(g["home_sp"]) and bool(g["away_sp"])
-        # The full "lineups in" tier layers the lineup's on-base/power/baserunning
-        # ON TOP of the starter matchup. Withhold it until BOTH starters are known,
-        # so we never show "lineups in" next to a TBD pitcher (an incomplete pick
-        # missing the biggest factor). Starters are normally set days before lineups,
-        # so this only defers the rare lineup-posted-but-pitcher-TBD edge case.
-        use_lineups = pitcher_known
+        # The full lineup tier layers the lineup's on-base/power/baserunning ON TOP
+        # of the starter matchup, so it needs BOTH starters known (never "lineups in"
+        # next to a TBD pitcher). Given known starters, prefer the OFFICIAL lineup;
+        # if it hasn't posted yet, fall back to each team's most recent lineup as a
+        # PROJECTION (flagged, so the board can say "proj lineup"), upgrading to
+        # official automatically on the next build once it drops.
+        oh, oa = g.get("home_lineup") or [], g.get("away_lineup") or []
+        home_lineup = away_lineup = None
+        lineup_source = None
+        if pitcher_known:
+            if len(oh) >= 5 and len(oa) >= 5:
+                home_lineup, away_lineup, lineup_source = oh, oa, "official"
+            elif g["home"] in proj and g["away"] in proj:
+                home_lineup, away_lineup, lineup_source = proj[g["home"]], proj[g["away"]], "projected"
         r = pred.predict(g["home"], g["away"], g.get("home_sp") or "", g.get("away_sp") or "",
-                         home_lineup=g.get("home_lineup") if use_lineups else None,
-                         away_lineup=g.get("away_lineup") if use_lineups else None)
+                         home_lineup=home_lineup, away_lineup=away_lineup)
         if "error" in r:
             continue
         hp = r["home_win_prob"]
@@ -199,6 +237,7 @@ def main(days: int = 30, today: str | None = None):
             "away_name": g["away_name"], "home_name": g["home_name"],
             "away_sp": g["away_sp"] or "TBD", "home_sp": g["home_sp"] or "TBD",
             "pitcher_known": pitcher_known,
+            "lineup_source": lineup_source,      # "official" | "projected" | None
             "home_win_prob": hp,
             "pick": g["home_abbr"] if pick_home else g["away_abbr"],
             "pick_prob": round(max(hp, 1 - hp), 4),

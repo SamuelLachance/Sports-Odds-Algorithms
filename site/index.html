@@ -370,7 +370,9 @@ function gcard(g){
       ${e.bullpen!=null&&Math.abs(e.bullpen)>=0.3?`<span class="${e.bullpen>=0?"p":"n"}">pen ${sgn(e.bullpen)}</span>`:""}
       ${e.power!=null&&Math.abs(e.power)>=0.3?`<span class="${e.power>=0?"p":"n"}">pow ${sgn(e.power)}</span>`:""}
       ${e.baserun!=null&&Math.abs(e.baserun)>=0.3?`<span class="${e.baserun>=0?"p":"n"}">run ${sgn(e.baserun)}</span>`:""}
-      ${g.tier==="lineup"?'<span class="k" style="color:var(--fav)">&middot; lineups in</span>':(g.pitcher_known?"":'<span class="k">&middot; starters tbd</span>')}</div>
+      ${g.lineup_source==="official"?'<span class="k" style="color:var(--fav)">&middot; lineups in</span>'
+        :g.lineup_source==="projected"?'<span class="k" style="color:#d9a441">&middot; proj lineup</span>'
+        :(g.pitcher_known?"":'<span class="k">&middot; starters tbd</span>')}</div>
   </a>`;
 }
 function board(){
@@ -458,9 +460,11 @@ function gamePage(pk){
             ${g.tier==="lineup"&&e.baserun!=null?pRow("Lineup baserunning",e.baserun||0):""}
           </div>
           <div class="sub" style="margin-top:8px;color:var(--faint)">
-            ${g.tier==="lineup"
-              ? "Lineups confirmed &mdash; full model adds the actual lineup's on-base (TrueSkill), power (ISO) and baserunning."
-              : "Pre-lineup estimate; sharpens when today's lineups are posted."}
+            ${g.lineup_source==="official"
+              ? "Official lineups confirmed &mdash; full model adds the actual lineup's on-base (TrueSkill), power (ISO) and baserunning."
+              : g.lineup_source==="projected"
+              ? "Projected lineup (each team's most recent) &mdash; the full model runs on the likely nine and upgrades automatically when the official lineup posts."
+              : "Pre-lineup estimate; sharpens when the starters and lineups are posted."}
             ${g.home_bp_fip!=null?"Bullpen = season-to-date reliever FIP ("+g.away_abbr+" "+g.away_bp_fip+" vs "+g.home_abbr+" "+g.home_bp_fip+", lower is better). ":""}
             ${g.tier==="lineup"&&e.power!=null?"Power = lineup isolated-power (extra bases per PA) vs league; on-base and power are separated because a walk and a homer are the same to the on-base rating. ":""}
             ${g.tier==="lineup"&&e.baserun!=null?"Baserunning = the lineup's stolen bases, extra bases taken, outs on the bases and double plays, run-valued vs an average runner &mdash; the third leg of offense after on-base and power. ":""}
