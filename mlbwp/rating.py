@@ -22,8 +22,6 @@ from __future__ import annotations
 
 from collections import defaultdict
 
-import numpy as np
-
 
 class FipPitcherElo:
     def __init__(self, *, k_team, hfa, team_regress, beta, decay,
@@ -48,7 +46,8 @@ class FipPitcherElo:
         ip = s["outs"] / 3.0
         fip = (13 * s["HR"] + 3 * (s["BB"] + s["HBP"]) - 2 * s["SO"]) / ip
         q = (ip * fip + self.prior_ip * self.lg_fip) / (ip + self.prior_ip)
-        return float(np.clip(-self.beta * (q - self.lg_fip), -self.adj_clip, self.adj_clip))
+        adj = -self.beta * (q - self.lg_fip)
+        return max(-self.adj_clip, min(self.adj_clip, adj))   # stdlib clamp (no numpy: serve path is dep-free)
 
     def pitcher_ip(self, pid: str) -> float:
         s = self.pf.get(pid)
