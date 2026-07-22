@@ -1,0 +1,19 @@
+# Large / regenerable data — never commit
+data/retrosheet/
+data/retro_events/
+data/mlb_elo.csv
+data/season_2026_finals.json
+.build-cache/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+
+# Model backtest scratch (regenerable via phase0/)
+data/mlb_glicko2_report.json
+data/mlb_rating_search.json
+data/mlb_pitcher_elo.json
+data/mlb_fip_elo.json

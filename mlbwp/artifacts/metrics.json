@@ -1,0 +1,12 @@
+{
+ "holdout": "2016-2024 (2020 excluded), n=19435",
+ "model_log_loss": 0.67663,
+ "plain_elo_log_loss": 0.67861,
+ "improvement_nats": 0.00198,
+ "improvement_ci": [
+  0.00114,
+  0.00281
+ ],
+ "significant": true,
+ "constant_log_loss": 0.69315
+}
