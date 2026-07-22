@@ -578,17 +578,7 @@
      "power_edge": -0.0164,
      "baserun_edge": 0.0001,
      "home_pitcher_matched": false,
-     "away_pitcher_matched": true,
-     "value": {
-      "side": "away",
-      "team": "BAL",
-      "ev_open": 0.1794,
-      "ev_cur": 0.1361,
-      "open_dec": 2.18,
-      "cur_dec": 2.1,
-      "available": true,
-      "books": 11
-     }
+     "away_pitcher_matched": true
     },
     {
      "game_pk": 824896,
@@ -17942,5 +17932,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-07-22T22:58:11.978911+00:00"
+ "value_updated": "2026-07-22T23:43:06.233290+00:00"
 }
