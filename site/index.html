@@ -469,7 +469,7 @@ function gamePage(pk){
             ${g.lineup_source==="official"
               ? "Official lineups confirmed &mdash; full model adds the actual lineup's on-base (TrueSkill), power (ISO) and baserunning."
               : g.lineup_source==="projected"
-              ? "Projected lineup (each team's most recent) &mdash; the full model runs on the likely nine and upgrades automatically when the official lineup posts."
+              ? "Projected lineup &mdash; the injury-aware likely nine (most-frequent recent starters still on the active roster, IL'd players excluded). The full model runs on it and upgrades automatically when the official lineup posts."
               : "Pre-lineup estimate; sharpens when the starters and lineups are posted."}
             ${g.home_bp_fip!=null?"Bullpen = season-to-date reliever FIP ("+g.away_abbr+" "+g.away_bp_fip+" vs "+g.home_abbr+" "+g.home_bp_fip+", lower is better). ":""}
             ${g.tier==="lineup"&&e.power!=null?"Power = lineup isolated-power (extra bases per PA) vs league; on-base and power are separated because a walk and a homer are the same to the on-base rating. ":""}
