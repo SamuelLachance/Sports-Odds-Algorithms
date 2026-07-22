@@ -1,0 +1,57 @@
+name: Refresh value edges
+
+# Near-live update of the >=20%-EV value badges: pulls current odds, recomputes the
+# edge vs each game's frozen opening consensus, and redeploys the site. Does NOT
+# rebuild the model (cheap: one odds request + a static rebuild). ~every 20 min
+# (GitHub may delay short crons) = ~1 API request/run, well within the 20k budget.
+
+on:
+  schedule:
+    - cron: "*/20 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: board-deploy      # shared with the full refresh so deploys don't collide
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  edges:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Update value edges from live odds
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: python refresh_odds.py
+
+      - name: Commit board + opening-odds cache
+        run: |
+          git config user.name "glassbox-bot"
+          git config user.email "glassbox-bot@users.noreply.github.com"
+          git add site/data/board.json site/index.html data/opening_odds_2026.json
+          if git diff --cached --quiet; then
+            echo "no edge change"
+          else
+            git commit -m "Refresh value edges"
+            git pull --rebase -X ours --autostash origin master || true
+            git push || echo "push skipped (race with full refresh); next run retries"
+          fi
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4

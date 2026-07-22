@@ -8,7 +8,9 @@ Order matters — team form is fetched once and reused:
 
 Needs only the frozen model (mlbwp/artifacts/ratings.json), the MLB Stats API, and
 the Python standard library — no Retrosheet, no third-party packages — so it runs in
-a minimal CI job. Market-free throughout.
+a minimal CI job. The MODEL is market-blind; a final post-process (market/) compares
+the live market to the model's OUTPUT to flag >=20%-EV value edges (needs ODDS_API_KEY,
+skipped gracefully without it).
 """
 
 from __future__ import annotations
@@ -19,6 +21,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+from market import edges          # market-comparison layer, OUTSIDE the mlbwp model pkg
 from mlbwp import db as db_mod
 from mlbwp import predict_slate
 from mlbwp.live import season_finals
@@ -42,8 +45,10 @@ def main(horizon_days: int = 30) -> int:
     FINALS.write_text(json.dumps(finals), encoding="utf-8")
     print(f"[refresh] {len(finals)} completed {season} games -> {FINALS.name}", flush=True)
 
-    # 2. board  3. db  4. shell
+    # 2. board  3. value edges (market post-process)  4. db  5. shell
     predict_slate.main(days=horizon_days, today=today.isoformat())
+    n_edges = edges.attach_and_save()
+    print(f"[refresh] {n_edges} value edges (>=20% EV vs opening consensus)", flush=True)
     db_mod.main(season=season)
     build_site.build()
     print("[refresh] done", flush=True)

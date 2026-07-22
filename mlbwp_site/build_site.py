@@ -99,6 +99,15 @@ h1.pt{font-family:var(--serif);font-size:26px;margin:2px 0 14px}
 .gc .top .lbadge.tbd{color:var(--faint);border-color:var(--line-2);background:var(--sunk)}
 .gc .pj{font-family:var(--mono);font-size:8.5px;text-transform:uppercase;letter-spacing:.04em;
   color:var(--warn);border:1px solid rgba(224,164,78,.45);border-radius:4px;padding:0 3px;vertical-align:1px}
+.gc.hasval{border-color:#e8b23a;box-shadow:0 0 0 1px rgba(232,178,58,.35),0 6px 18px rgba(232,178,58,.14)}
+.gc .valbar{display:flex;align-items:center;gap:6px;margin-bottom:3px;padding:5px 9px;border-radius:8px;
+  background:linear-gradient(90deg,rgba(232,178,58,.20),rgba(232,178,58,.06));border:1px solid rgba(232,178,58,.5);
+  font-family:var(--sans);font-size:12px;font-weight:700;color:var(--ink)}
+.gc .valbar .vt{font-family:var(--mono);font-size:9px;letter-spacing:.09em;background:#e8b23a;color:#181200;
+  padding:1px 6px;border-radius:4px}
+.gc .valbar b{color:#d99a1e}
+.gc .valbar .vodds{color:var(--muted);font-weight:600;font-size:11px;font-family:var(--mono)}
+.gc .valbar .vlive{margin-left:auto;color:var(--fav);font-size:10px;font-weight:700;letter-spacing:.03em}
 .side{display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:9px;padding:2px 0}
 .side .ab{font-family:var(--mono);font-weight:700;font-size:15px}
 .side .who{min-width:0}
@@ -358,8 +367,13 @@ function gcard(g){
   const spTag=(nm,proj)=>nm==="TBD"?`<span class="tbd">TBD</span>`
     :`${nm} ${pitEra(nm)}${proj?' <span class="pj">proj</span>':''}`;
   const spA=spTag(g.away_sp,g.away_sp_proj), spH=spTag(g.home_sp,g.home_sp_proj);
-  return `<a class="gc" href="#/game/${g.game_pk}" data-card="${g.game_pk}"
+  const val=g.value;
+  const valbar = (val&&val.available)
+    ? `<div class="valbar"><span class="vt">EDGE</span> ${val.team} <b>+${Math.round(val.ev_cur*100)}% EV</b>
+        <span class="vodds">@ ${val.cur_dec}</span><span class="vlive">● live</span></div>` : "";
+  return `<a class="gc${val&&val.available?' hasval':''}" href="#/game/${g.game_pk}" data-card="${g.game_pk}"
       data-pick="${g.pick}" data-home="${g.home_abbr}" data-away="${g.away_abbr}">
+    ${valbar}
     <div class="top"><span class="lv" data-pk="${g.game_pk}" data-def="${fmtTime(g.start_utc)}">${fmtTime(g.start_utc)}</span>
       ${g.lineup_source==="official"?'<span class="lbadge off">Lineups in</span>'
         :g.sp_projected?'<span class="lbadge proj">Projected</span>'
