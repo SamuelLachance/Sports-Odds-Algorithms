@@ -18,3 +18,6 @@ data/mlb_rating_search.json
 data/mlb_pitcher_elo.json
 data/mlb_fip_elo.json
 site/data/predictions.json
+
+# Local reference papers (copyrighted; keep local, do not redistribute publicly)
+documents/*.pdf
