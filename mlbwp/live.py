@@ -98,7 +98,7 @@ def _parse_box(box: dict) -> dict:
         if not t.get("pitchers"):
             raise ValueError("incomplete boxscore")
         players = t.get("players", {})
-        sp_id, sp = None, [0, 0, 0, 0, 0]
+        sp_id, sp, sp_bf = None, [0, 0, 0, 0, 0], 0
         rel_num, rel_outs = 0.0, 0
         for pid in t.get("pitchers", []):
             pit = (players.get(f"ID{pid}") or {}).get("stats", {}).get("pitching", {})
@@ -109,6 +109,7 @@ def _parse_box(box: dict) -> dict:
             so = int(pit.get("strikeOuts", 0) or 0)
             if str(pit.get("gamesStarted", 0)) == "1":
                 sp_id, sp = pid, [o, hr, bb, hbp, so]
+                sp_bf = int(pit.get("battersFaced", 0) or 0)
             else:
                 rel_num += 13 * hr + 3 * (bb + hbp) - 2 * so
                 rel_outs += o
@@ -118,15 +119,17 @@ def _parse_box(box: dict) -> dict:
             pa = int(b.get("plateAppearances", 0) or 0)
             if pa > 0:
                 bat[bid] = [pa, int(b.get("hits", 0) or 0), int(b.get("totalBases", 0) or 0)]
-        out[side] = {"sp_id": sp_id, "sp": sp, "rel": [rel_num, rel_outs], "bat": bat}
+        out[side] = {"sp_id": sp_id, "sp": sp, "sp_bf": sp_bf,
+                     "rel": [rel_num, rel_outs], "bat": bat}
     return out
 
 
-def _fly_balls_by_pitcher(all_plays: list) -> dict:
-    """{pitcher_mlbam: non-HR fly balls} from a game's plays, for xFIP. A fly ball
-    is a completed batted ball with hitData trajectory 'fly_ball' (matches the
-    Retrosheet /F definition; HRs are added back in the xFIP formula)."""
-    fb: dict = {}
+def _batted_balls_by_pitcher(all_plays: list) -> dict:
+    """{pitcher_mlbam: [gb, fb, pu]} non-HR batted balls by trajectory (ground/fly/
+    pop), for xFIP (fly balls) and SIERA (net ground-ball rate). Matches the
+    Retrosheet /G,/F,/P definitions; HRs are excluded (added back in the formulas)."""
+    bb: dict = {}
+    _idx = {"ground_ball": 0, "fly_ball": 1, "popup": 2}
     for pl in all_plays:
         res = pl.get("result", {})
         if res.get("type") != "atBat" or not pl.get("about", {}).get("isComplete"):
@@ -138,11 +141,12 @@ def _fly_balls_by_pitcher(all_plays: list) -> dict:
             hd = pe.get("hitData")
             if hd and hd.get("trajectory"):
                 traj = hd["trajectory"]
-        if traj == "fly_ball":
+        i = _idx.get(traj)
+        if i is not None:
             pid = (pl.get("matchup", {}).get("pitcher") or {}).get("id")
             if pid is not None:
-                fb[pid] = fb.get(pid, 0) + 1
-    return fb
+                bb.setdefault(pid, [0, 0, 0])[i] += 1
+    return bb
 
 
 def _parse_plays(all_plays: list) -> list:
@@ -172,9 +176,12 @@ def game_data(game_pk) -> dict:
     live = d.get("liveData", {})
     plays = live.get("plays", {}).get("allPlays", [])
     sides = _parse_box(live.get("boxscore", {}))
-    fbc = _fly_balls_by_pitcher(plays)
+    bbc = _batted_balls_by_pitcher(plays)
     for side in ("home", "away"):
-        sides[side]["sp_fb"] = fbc.get(sides[side].get("sp_id"), 0)
+        gb, fb, pu = bbc.get(sides[side].get("sp_id"), [0, 0, 0])
+        sides[side]["sp_fb"] = fb
+        sides[side]["sp_gb"] = gb
+        sides[side]["sp_pu"] = pu
     sides["pa"] = _parse_plays(plays)
     return sides
 

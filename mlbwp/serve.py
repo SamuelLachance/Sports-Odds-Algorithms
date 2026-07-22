@@ -27,6 +27,7 @@ from pathlib import Path
 
 from mlbwp.rating import FipPitcherElo
 from mlbwp.trueskill import TrueSkill1v1
+from mlbwp.siera import SieraRater
 
 ART = Path(__file__).resolve().parent / "artifacts"
 
@@ -90,6 +91,14 @@ class Predictor:
         self.pw_season: dict[str, list] = {}
         self.pitchers_through = None
 
+        # SIERA: per-starter EWMA of SO/BB/GB/FB/PU/PA, reconstructed from the
+        # checkpoint and walked forward this season. A pitcher-quality signal
+        # (ground balls + non-linearity) that xFIP lacks; needs no lineup.
+        b = self.blend or {}
+        self.siera = SieraRater(decay=self.params["decay"], prior=b.get("siera_prior", 120.0),
+                                lg=b.get("siera_lg", {"so": .186, "bb": .078, "gb": .310, "fb": .195, "pu": .031}))
+        self.siera.load_state(_load(ART / "siera_ratings.json") or {})
+
     # --- replay this season through the engines (== continue the training walk) ---
     def replay_season(self, finals: list[dict], pas: list, bullpen=None, power=None) -> int:
         """Continue the training walk with this season's data.
@@ -100,6 +109,10 @@ class Predictor:
         n = 0
         for g in sorted(finals, key=lambda x: x["date"]):
             self.fe.update(g)
+            for sp_key, sl_key in (("home_sp", "home_sline"), ("away_sp", "away_sline")):
+                sl = g.get(sl_key)
+                if sl:
+                    self.siera.update(g[sp_key], *sl)      # so,bb,gb,fb,pu,pa
             self.current_through = g["date"]
             n += 1
         for batter, pitcher, on_base in pas:
@@ -123,16 +136,26 @@ class Predictor:
         b = self.blend["recal"]
         return 1.0 / (1.0 + math.exp(-(b["b0"] + b["b1"] * self._logit(fip_p))))
 
-    def _recbp(self, fip_p: float, bp_z: float) -> float:
+    def _recbp(self, fip_p: float, bp_z: float, si_z: float = 0.0) -> float:
         b = self.blend["recbp"]
-        return 1.0 / (1.0 + math.exp(-(b["b0"] + b["b1"] * self._logit(fip_p) + b["b3"] * bp_z)))
+        return 1.0 / (1.0 + math.exp(
+            -(b["b0"] + b["b1"] * self._logit(fip_p) + b["b3"] * bp_z + b.get("b5", 0.0) * si_z)))
 
-    def _full(self, fip_p: float, edge: float, bp_z: float, pw_z: float = 0.0) -> float:
+    def _full(self, fip_p: float, edge: float, bp_z: float, pw_z: float = 0.0, si_z: float = 0.0) -> float:
         b = self.blend["full"]
         z = (edge - self.blend["ts_mu"]) / self.blend["ts_sd"]
         return 1.0 / (1.0 + math.exp(
             -(b["b0"] + b["b1"] * self._logit(fip_p) + b["b2"] * z
-              + b["b3"] * bp_z + b.get("b4", 0.0) * pw_z)))
+              + b["b3"] * bp_z + b.get("b4", 0.0) * pw_z + b.get("b5", 0.0) * si_z)))
+
+    def _si_z(self, home_sp, away_sp):
+        """Standardised home-minus-away SIERA differential; starters by name."""
+        if not self.blend or "si_mu" not in self.blend:
+            return None, None
+        hp = self.name_index.get(norm_name(home_sp))
+        ap = self.name_index.get(norm_name(away_sp))
+        edge = self.siera.value(hp) - self.siera.value(ap)
+        return (edge - self.blend["si_mu"]) / self.blend["si_sd"], edge
 
     # --- bullpen quality -------------------------------------------------
     def bp_fip(self, team: str) -> float:
@@ -228,11 +251,17 @@ class Predictor:
 
         recal_p = self._recal(fip_p)
         bp_z, bp_edge = self._bp_z(home, away)
-        if bp_z is not None:
-            served, tier = self._recbp(fip_p, bp_z), "bullpen"
+        si_z, si_edge = self._si_z(home_sp, away_sp)
+        siz = si_z or 0.0
+        if bp_z is not None or si_z is not None:
+            p_bp = self._recbp(fip_p, bp_z or 0.0, 0.0)          # bullpen only
+            served = self._recbp(fip_p, bp_z or 0.0, siz)        # + SIERA
+            tier = "bullpen"
         else:
-            served, tier = recal_p, "recal"
-        bullpen_pp = round((served - recal_p) * 100, 1)
+            p_bp = served = recal_p
+            tier = "recal"
+        bullpen_pp = round((p_bp - recal_p) * 100, 1)
+        siera_pp = round((served - p_bp) * 100, 1)
         base_p = served
 
         edge, pw_edge, lineup_pp, power_pp = None, None, 0.0, 0.0
@@ -240,8 +269,8 @@ class Predictor:
             edge = self.ts_edge(home_lineup, away_lineup, home_sp, away_sp)
             if edge is not None:
                 pw_z, pw_edge = self._pw_z(home_lineup, away_lineup)
-                p_ts = self._full(fip_p, edge, bp_z or 0.0, 0.0)
-                served = self._full(fip_p, edge, bp_z or 0.0, pw_z or 0.0)
+                p_ts = self._full(fip_p, edge, bp_z or 0.0, 0.0, siz)
+                served = self._full(fip_p, edge, bp_z or 0.0, pw_z or 0.0, siz)
                 tier = "lineup"
                 lineup_pp = round((p_ts - base_p) * 100, 1)
                 power_pp = round((served - p_ts) * 100, 1)
@@ -254,6 +283,7 @@ class Predictor:
             "home_pitcher": round(adj_h * slope * 100, 1),
             "away_pitcher": round(-adj_a * slope * 100, 1),
             "bullpen": bullpen_pp,
+            "siera": siera_pp,
             "lineup": lineup_pp,
             "power": power_pp,
         }
@@ -265,6 +295,7 @@ class Predictor:
             "home_bp_fip": round(self.bp_fip(home), 3) if bp_z is not None else None,
             "away_bp_fip": round(self.bp_fip(away), 3) if bp_z is not None else None,
             "power_edge": round(pw_edge, 4) if pw_edge is not None else None,
+            "siera_edge": round(si_edge, 3) if si_edge is not None else None,
             "home_rating": round(rh, 1), "away_rating": round(ra, 1),
             "home_pitcher_adj": adj_h, "away_pitcher_adj": adj_a,
             "home_pitcher_matched": rec_h is not None,

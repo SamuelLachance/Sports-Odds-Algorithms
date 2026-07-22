@@ -448,6 +448,7 @@ function gamePage(pk){
             ${pRow("Team rating",e.team||0)}${pRow("Home field",e.home_field||0)}
             ${pRow(g.home_abbr+" starter",e.home_pitcher||0)}${pRow(g.away_abbr+" starter",e.away_pitcher||0)}
             ${e.bullpen!=null?pRow("Bullpen quality",e.bullpen||0):""}
+            ${e.siera!=null?pRow("Starter SIERA (K/BB/GB)",e.siera||0):""}
             ${g.tier==="lineup"?pRow("Lineup on-base (TrueSkill)",e.lineup||0):""}
             ${g.tier==="lineup"&&e.power!=null?pRow("Lineup power (ISO)",e.power||0):""}
           </div>
@@ -609,8 +610,8 @@ SHELL = f"""<style>{CSS}</style>
 </div></header>
 <main><div class="wrap" id="view"><div class="loading">Loading predictions&hellip;</div></div></main>
 <footer><div class="wrap">
-  <b>Research only &mdash; not betting advice.</b> A market-blind model (team Elo + xFIP
-  starting-pitcher rating + season-to-date bullpen FIP + per-plate-appearance TrueSkill
+  <b>Research only &mdash; not betting advice.</b> A market-blind model (team Elo + xFIP &amp;
+  SIERA starting-pitcher ratings + season-to-date bullpen FIP + per-plate-appearance TrueSkill
   on-base ratings + lineup isolated-power) that never sees the odds. Data: <b>Retrosheet</b> (free of charge,
   copyrighted by Retrosheet, <a href="https://www.retrosheet.org">retrosheet.org</a>) and the
   MLB Stats API (individual, non-commercial use).

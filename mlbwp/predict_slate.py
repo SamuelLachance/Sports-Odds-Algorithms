@@ -82,14 +82,18 @@ def build_replay(finals: list[dict], cache: dict, x: dict, lg_hrfb=None):
                     power[r][0] += line[0]; power[r][1] += line[1]; power[r][2] += line[2]
             sp_retro = x.get(str(s.get("sp_id")))
             sp = s.get("sp") or [0, 0, 0, 0, 0]
-            line = None
+            line = sline = None
             if sp_retro and sp[0] > 0:
                 line = to_xfip(sp, s.get("sp_fb", 0), lg_hrfb) if lg_hrfb else sp
-            sides[side] = (sp_retro or "", line)
+                # SIERA line: SO, BB, GB, FB, PU, PA(battersFaced)
+                sline = [sp[4], sp[2], s.get("sp_gb", 0), s.get("sp_fb", 0),
+                         s.get("sp_pu", 0), s.get("sp_bf", 0)]
+            sides[side] = (sp_retro or "", line, sline)
         games.append({
             "home": g["home"], "away": g["away"],
             "home_sp": sides["home"][0], "away_sp": sides["away"][0],
             "home_line": sides["home"][1], "away_line": sides["away"][1],
+            "home_sline": sides["home"][2], "away_sline": sides["away"][2],
             "y": g["home_win"], "date": g["date"],
         })
         for b, p, ob in rec.get("pa", []):
