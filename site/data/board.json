@@ -14,12 +14,15 @@
    "code": "mlb",
    "name": "MLB",
    "active": true,
-   "n_games": 413,
+   "n_games": 411,
    "games": [
     {
+     "game_pk": 823437,
      "date": "2026-07-21",
      "start_utc": "2026-07-21T22:40:00Z",
      "state": "Live",
+     "home": "PHI",
+     "away": "LAN",
      "away_abbr": "LAD",
      "home_abbr": "PHI",
      "away_name": "Los Angeles Dodgers",
@@ -40,55 +43,12 @@
      "away_pitcher_matched": true
     },
     {
-     "date": "2026-07-21",
-     "start_utc": "2026-07-21T23:07:00Z",
-     "state": "Live",
-     "away_abbr": "TB",
-     "home_abbr": "TOR",
-     "away_name": "Tampa Bay Rays",
-     "home_name": "Toronto Blue Jays",
-     "away_sp": "Drew Rasmussen",
-     "home_sp": "Kevin Gausman",
-     "pitcher_known": true,
-     "home_win_prob": 0.5272,
-     "pick": "TOR",
-     "pick_prob": 0.5272,
-     "edge": {
-      "team": -3.2,
-      "home_field": 3.8,
-      "home_pitcher": 3.6,
-      "away_pitcher": -1.5
-     },
-     "home_pitcher_matched": true,
-     "away_pitcher_matched": true
-    },
-    {
-     "date": "2026-07-21",
-     "start_utc": "2026-07-21T23:15:00Z",
-     "state": "Live",
-     "away_abbr": "SD",
-     "home_abbr": "ATL",
-     "away_name": "San Diego Padres",
-     "home_name": "Atlanta Braves",
-     "away_sp": "Walker Buehler",
-     "home_sp": "Reynaldo L\u00f3pez",
-     "pitcher_known": true,
-     "home_win_prob": 0.6007,
-     "pick": "ATL",
-     "pick_prob": 0.6007,
-     "edge": {
-      "team": 1.0,
-      "home_field": 3.7,
-      "home_pitcher": 2.2,
-      "away_pitcher": 2.9
-     },
-     "home_pitcher_matched": true,
-     "away_pitcher_matched": true
-    },
-    {
+     "game_pk": 824085,
      "date": "2026-07-21",
      "start_utc": "2026-07-21T23:40:00Z",
      "state": "Live",
+     "home": "KCA",
+     "away": "SFN",
      "away_abbr": "SF",
      "home_abbr": "KC",
      "away_name": "San Francisco Giants",
@@ -109,9 +69,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 823760,
      "date": "2026-07-21",
      "start_utc": "2026-07-21T23:40:00Z",
      "state": "Live",
+     "home": "MIL",
+     "away": "NYN",
      "away_abbr": "NYM",
      "home_abbr": "MIL",
      "away_name": "New York Mets",
@@ -132,9 +95,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824652,
      "date": "2026-07-22",
      "start_utc": "2026-07-22T00:05:00Z",
      "state": "Live",
+     "home": "CHN",
+     "away": "DET",
      "away_abbr": "DET",
      "home_abbr": "CHC",
      "away_name": "Detroit Tigers",
@@ -155,9 +121,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 822871,
      "date": "2026-07-22",
      "start_utc": "2026-07-22T00:05:00Z",
      "state": "Live",
+     "home": "TEX",
+     "away": "CHA",
      "away_abbr": "CWS",
      "home_abbr": "TEX",
      "away_name": "Chicago White Sox",
@@ -178,9 +147,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824165,
      "date": "2026-07-22",
      "start_utc": "2026-07-22T00:10:00Z",
      "state": "Live",
+     "home": "HOU",
+     "away": "MIA",
      "away_abbr": "MIA",
      "home_abbr": "HOU",
      "away_name": "Miami Marlins",
@@ -201,9 +173,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 824329,
      "date": "2026-07-22",
      "start_utc": "2026-07-22T00:40:00Z",
      "state": "Live",
+     "home": "COL",
+     "away": "WAS",
      "away_abbr": "WSH",
      "home_abbr": "COL",
      "away_name": "Washington Nationals",
@@ -224,9 +199,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 824005,
      "date": "2026-07-22",
      "start_utc": "2026-07-22T01:38:00Z",
      "state": "Live",
+     "home": "ANA",
+     "away": "SLN",
      "away_abbr": "STL",
      "home_abbr": "LAA",
      "away_name": "St. Louis Cardinals",
@@ -247,9 +225,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 825056,
      "date": "2026-07-22",
      "start_utc": "2026-07-22T01:40:00Z",
      "state": "Live",
+     "home": "ARI",
+     "away": "ATH",
      "away_abbr": "ATH",
      "home_abbr": "AZ",
      "away_name": "Athletics",
@@ -270,9 +251,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 823114,
      "date": "2026-07-22",
      "start_utc": "2026-07-22T01:40:00Z",
      "state": "Live",
+     "home": "SEA",
+     "away": "CIN",
      "away_abbr": "CIN",
      "home_abbr": "SEA",
      "away_name": "Cincinnati Reds",
@@ -293,9 +277,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 823518,
      "date": "2026-07-22",
      "start_utc": "2026-07-22T17:05:00Z",
      "state": "Preview",
+     "home": "NYA",
+     "away": "PIT",
      "away_abbr": "PIT",
      "home_abbr": "NYY",
      "away_name": "Pittsburgh Pirates",
@@ -316,9 +303,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 824735,
      "date": "2026-07-22",
      "start_utc": "2026-07-22T17:35:00Z",
      "state": "Preview",
+     "home": "BOS",
+     "away": "BAL",
      "away_abbr": "BAL",
      "home_abbr": "BOS",
      "away_name": "Baltimore Orioles",
@@ -339,9 +329,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 824083,
      "date": "2026-07-22",
      "start_utc": "2026-07-22T18:10:00Z",
      "state": "Preview",
+     "home": "KCA",
+     "away": "SFN",
      "away_abbr": "SF",
      "home_abbr": "KC",
      "away_name": "San Francisco Giants",
@@ -362,9 +355,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 823761,
      "date": "2026-07-22",
      "start_utc": "2026-07-22T18:10:00Z",
      "state": "Preview",
+     "home": "MIL",
+     "away": "NYN",
      "away_abbr": "NYM",
      "home_abbr": "MIL",
      "away_name": "New York Mets",
@@ -385,9 +381,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 824327,
      "date": "2026-07-22",
      "start_utc": "2026-07-22T19:10:00Z",
      "state": "Preview",
+     "home": "COL",
+     "away": "WAS",
      "away_abbr": "WSH",
      "home_abbr": "COL",
      "away_name": "Washington Nationals",
@@ -408,9 +407,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 825055,
      "date": "2026-07-22",
      "start_utc": "2026-07-22T19:40:00Z",
      "state": "Preview",
+     "home": "ARI",
+     "away": "ATH",
      "away_abbr": "ATH",
      "home_abbr": "AZ",
      "away_name": "Athletics",
@@ -431,9 +433,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823110,
      "date": "2026-07-22",
      "start_utc": "2026-07-22T19:40:00Z",
      "state": "Preview",
+     "home": "SEA",
+     "away": "CIN",
      "away_abbr": "CIN",
      "home_abbr": "SEA",
      "away_name": "Cincinnati Reds",
@@ -454,9 +459,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 824004,
      "date": "2026-07-22",
      "start_utc": "2026-07-22T20:07:00Z",
      "state": "Preview",
+     "home": "ANA",
+     "away": "SLN",
      "away_abbr": "STL",
      "home_abbr": "LAA",
      "away_name": "St. Louis Cardinals",
@@ -477,9 +485,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 824408,
      "date": "2026-07-22",
      "start_utc": "2026-07-22T22:40:00Z",
      "state": "Preview",
+     "home": "CLE",
+     "away": "MIN",
      "away_abbr": "MIN",
      "home_abbr": "CLE",
      "away_name": "Minnesota Twins",
@@ -500,9 +511,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 823438,
      "date": "2026-07-22",
      "start_utc": "2026-07-22T22:40:00Z",
      "state": "Preview",
+     "home": "PHI",
+     "away": "LAN",
      "away_abbr": "LAD",
      "home_abbr": "PHI",
      "away_name": "Los Angeles Dodgers",
@@ -523,9 +537,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 823519,
      "date": "2026-07-22",
      "start_utc": "2026-07-22T23:05:00Z",
      "state": "Preview",
+     "home": "NYA",
+     "away": "PIT",
      "away_abbr": "PIT",
      "home_abbr": "NYY",
      "away_name": "Pittsburgh Pirates",
@@ -546,9 +563,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 822784,
      "date": "2026-07-22",
      "start_utc": "2026-07-22T23:07:00Z",
      "state": "Preview",
+     "home": "TOR",
+     "away": "TBA",
      "away_abbr": "TB",
      "home_abbr": "TOR",
      "away_name": "Tampa Bay Rays",
@@ -569,9 +589,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 824732,
      "date": "2026-07-22",
      "start_utc": "2026-07-22T23:10:00Z",
      "state": "Preview",
+     "home": "BOS",
+     "away": "BAL",
      "away_abbr": "BAL",
      "home_abbr": "BOS",
      "away_name": "Baltimore Orioles",
@@ -592,9 +615,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 824896,
      "date": "2026-07-22",
      "start_utc": "2026-07-22T23:15:00Z",
      "state": "Preview",
+     "home": "ATL",
+     "away": "SDN",
      "away_abbr": "SD",
      "home_abbr": "ATL",
      "away_name": "San Diego Padres",
@@ -615,9 +641,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 822873,
      "date": "2026-07-23",
      "start_utc": "2026-07-23T00:05:00Z",
      "state": "Preview",
+     "home": "TEX",
+     "away": "CHA",
      "away_abbr": "CWS",
      "home_abbr": "TEX",
      "away_name": "Chicago White Sox",
@@ -638,9 +667,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 824650,
      "date": "2026-07-23",
      "start_utc": "2026-07-23T00:10:00Z",
      "state": "Preview",
+     "home": "CHN",
+     "away": "DET",
      "away_abbr": "DET",
      "home_abbr": "CHC",
      "away_name": "Detroit Tigers",
@@ -661,9 +693,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 824166,
      "date": "2026-07-23",
      "start_utc": "2026-07-23T00:10:00Z",
      "state": "Preview",
+     "home": "HOU",
+     "away": "MIA",
      "away_abbr": "MIA",
      "home_abbr": "HOU",
      "away_name": "Miami Marlins",
@@ -684,9 +719,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 824893,
      "date": "2026-07-23",
      "start_utc": "2026-07-23T16:15:00Z",
      "state": "Preview",
+     "home": "ATL",
+     "away": "SDN",
      "away_abbr": "SD",
      "home_abbr": "ATL",
      "away_name": "San Diego Padres",
@@ -707,9 +745,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 824406,
      "date": "2026-07-23",
      "start_utc": "2026-07-23T17:10:00Z",
      "state": "Preview",
+     "home": "CLE",
+     "away": "MIN",
      "away_abbr": "MIN",
      "home_abbr": "CLE",
      "away_name": "Minnesota Twins",
@@ -730,9 +771,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 822785,
      "date": "2026-07-23",
      "start_utc": "2026-07-23T19:07:00Z",
      "state": "Preview",
+     "home": "TOR",
+     "away": "TBA",
      "away_abbr": "TB",
      "home_abbr": "TOR",
      "away_name": "Tampa Bay Rays",
@@ -753,9 +797,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 823042,
      "date": "2026-07-23",
      "start_utc": "2026-07-23T21:15:00Z",
      "state": "Preview",
+     "home": "SLN",
+     "away": "ARI",
      "away_abbr": "AZ",
      "home_abbr": "STL",
      "away_name": "Arizona Diamondbacks",
@@ -776,9 +823,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824247,
      "date": "2026-07-23",
      "start_utc": "2026-07-23T22:40:00Z",
      "state": "Preview",
+     "home": "DET",
+     "away": "KCA",
      "away_abbr": "KC",
      "home_abbr": "DET",
      "away_name": "Kansas City Royals",
@@ -799,9 +849,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823759,
      "date": "2026-07-24",
      "start_utc": "2026-07-24T20:10:00Z",
      "state": "Preview",
+     "home": "MIL",
+     "away": "COL",
      "away_abbr": "COL",
      "home_abbr": "MIL",
      "away_name": "Colorado Rockies",
@@ -822,9 +875,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824248,
      "date": "2026-07-24",
      "start_utc": "2026-07-24T22:40:00Z",
      "state": "Preview",
+     "home": "DET",
+     "away": "KCA",
      "away_abbr": "KC",
      "home_abbr": "DET",
      "away_name": "Kansas City Royals",
@@ -845,9 +901,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823352,
      "date": "2026-07-24",
      "start_utc": "2026-07-24T22:40:00Z",
      "state": "Preview",
+     "home": "PIT",
+     "away": "CHN",
      "away_abbr": "CHC",
      "home_abbr": "PIT",
      "away_name": "Chicago Cubs",
@@ -868,9 +927,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822707,
      "date": "2026-07-24",
      "start_utc": "2026-07-24T22:45:00Z",
      "state": "Preview",
+     "home": "WAS",
+     "away": "ARI",
      "away_abbr": "AZ",
      "home_abbr": "WSH",
      "away_name": "Arizona Diamondbacks",
@@ -891,9 +953,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823434,
      "date": "2026-07-24",
      "start_utc": "2026-07-24T22:45:00Z",
      "state": "Preview",
+     "home": "PHI",
+     "away": "NYA",
      "away_abbr": "NYY",
      "home_abbr": "PHI",
      "away_name": "New York Yankees",
@@ -914,9 +979,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824812,
      "date": "2026-07-24",
      "start_utc": "2026-07-24T23:05:00Z",
      "state": "Preview",
+     "home": "BAL",
+     "away": "ATL",
      "away_abbr": "ATL",
      "home_abbr": "BAL",
      "away_name": "Atlanta Braves",
@@ -937,9 +1005,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823601,
      "date": "2026-07-24",
      "start_utc": "2026-07-24T23:10:00Z",
      "state": "Preview",
+     "home": "NYN",
+     "away": "LAN",
      "away_abbr": "LAD",
      "home_abbr": "NYM",
      "away_name": "Los Angeles Dodgers",
@@ -960,9 +1031,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822952,
      "date": "2026-07-24",
      "start_utc": "2026-07-24T23:10:00Z",
      "state": "Preview",
+     "home": "TBA",
+     "away": "CLE",
      "away_abbr": "CLE",
      "home_abbr": "TB",
      "away_name": "Cleveland Guardians",
@@ -983,9 +1057,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 823843,
      "date": "2026-07-24",
      "start_utc": "2026-07-24T23:10:00Z",
      "state": "Preview",
+     "home": "MIA",
+     "away": "SDN",
      "away_abbr": "SD",
      "home_abbr": "MIA",
      "away_name": "San Diego Padres",
@@ -1006,9 +1083,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824733,
      "date": "2026-07-24",
      "start_utc": "2026-07-24T23:15:00Z",
      "state": "Preview",
+     "home": "BOS",
+     "away": "TOR",
      "away_abbr": "TOR",
      "home_abbr": "BOS",
      "away_name": "Toronto Blue Jays",
@@ -1029,9 +1109,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824573,
      "date": "2026-07-24",
      "start_utc": "2026-07-24T23:40:00Z",
      "state": "Preview",
+     "home": "CHA",
+     "away": "HOU",
      "away_abbr": "HOU",
      "home_abbr": "CWS",
      "away_name": "Houston Astros",
@@ -1052,9 +1135,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822872,
      "date": "2026-07-25",
      "start_utc": "2026-07-25T00:05:00Z",
      "state": "Preview",
+     "home": "TEX",
+     "away": "SEA",
      "away_abbr": "SEA",
      "home_abbr": "TEX",
      "away_name": "Seattle Mariners",
@@ -1075,9 +1161,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823680,
      "date": "2026-07-25",
      "start_utc": "2026-07-25T00:10:00Z",
      "state": "Preview",
+     "home": "MIN",
+     "away": "ATH",
      "away_abbr": "ATH",
      "home_abbr": "MIN",
      "away_name": "Athletics",
@@ -1098,9 +1187,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823031,
      "date": "2026-07-25",
      "start_utc": "2026-07-25T00:15:00Z",
      "state": "Preview",
+     "home": "SLN",
+     "away": "CIN",
      "away_abbr": "CIN",
      "home_abbr": "STL",
      "away_name": "Cincinnati Reds",
@@ -1121,9 +1213,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 823196,
      "date": "2026-07-25",
      "start_utc": "2026-07-25T02:15:00Z",
      "state": "Preview",
+     "home": "SFN",
+     "away": "ANA",
      "away_abbr": "LAA",
      "home_abbr": "SF",
      "away_name": "Los Angeles Angels",
@@ -1144,9 +1239,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824244,
      "date": "2026-07-25",
      "start_utc": "2026-07-25T17:10:00Z",
      "state": "Preview",
+     "home": "DET",
+     "away": "KCA",
      "away_abbr": "KC",
      "home_abbr": "DET",
      "away_name": "Kansas City Royals",
@@ -1167,9 +1265,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822704,
      "date": "2026-07-25",
      "start_utc": "2026-07-25T20:05:00Z",
      "state": "Preview",
+     "home": "WAS",
+     "away": "ARI",
      "away_abbr": "AZ",
      "home_abbr": "WSH",
      "away_name": "Arizona Diamondbacks",
@@ -1190,9 +1291,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823197,
      "date": "2026-07-25",
      "start_utc": "2026-07-25T20:05:00Z",
      "state": "Preview",
+     "home": "SFN",
+     "away": "ANA",
      "away_abbr": "LAA",
      "home_abbr": "SF",
      "away_name": "Los Angeles Angels",
@@ -1213,9 +1317,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824734,
      "date": "2026-07-25",
      "start_utc": "2026-07-25T20:10:00Z",
      "state": "Preview",
+     "home": "BOS",
+     "away": "TOR",
      "away_abbr": "TOR",
      "home_abbr": "BOS",
      "away_name": "Toronto Blue Jays",
@@ -1236,9 +1343,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823841,
      "date": "2026-07-25",
      "start_utc": "2026-07-25T20:10:00Z",
      "state": "Preview",
+     "home": "MIA",
+     "away": "SDN",
      "away_abbr": "SD",
      "home_abbr": "MIA",
      "away_name": "San Diego Padres",
@@ -1259,9 +1369,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823435,
      "date": "2026-07-25",
      "start_utc": "2026-07-25T22:05:00Z",
      "state": "Preview",
+     "home": "PHI",
+     "away": "NYA",
      "away_abbr": "NYY",
      "home_abbr": "PHI",
      "away_name": "New York Yankees",
@@ -1282,9 +1395,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822948,
      "date": "2026-07-25",
      "start_utc": "2026-07-25T22:10:00Z",
      "state": "Preview",
+     "home": "TBA",
+     "away": "CLE",
      "away_abbr": "CLE",
      "home_abbr": "TB",
      "away_name": "Cleveland Guardians",
@@ -1305,9 +1421,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 823355,
      "date": "2026-07-25",
      "start_utc": "2026-07-25T22:40:00Z",
      "state": "Preview",
+     "home": "PIT",
+     "away": "CHN",
      "away_abbr": "CHC",
      "home_abbr": "PIT",
      "away_name": "Chicago Cubs",
@@ -1328,9 +1447,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824811,
      "date": "2026-07-25",
      "start_utc": "2026-07-25T23:05:00Z",
      "state": "Preview",
+     "home": "BAL",
+     "away": "ATL",
      "away_abbr": "ATL",
      "home_abbr": "BAL",
      "away_name": "Atlanta Braves",
@@ -1351,9 +1473,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823679,
      "date": "2026-07-25",
      "start_utc": "2026-07-25T23:10:00Z",
      "state": "Preview",
+     "home": "MIN",
+     "away": "ATH",
      "away_abbr": "ATH",
      "home_abbr": "MIN",
      "away_name": "Athletics",
@@ -1374,9 +1499,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824571,
      "date": "2026-07-25",
      "start_utc": "2026-07-25T23:10:00Z",
      "state": "Preview",
+     "home": "CHA",
+     "away": "HOU",
      "away_abbr": "HOU",
      "home_abbr": "CWS",
      "away_name": "Houston Astros",
@@ -1397,9 +1525,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823758,
      "date": "2026-07-25",
      "start_utc": "2026-07-25T23:10:00Z",
      "state": "Preview",
+     "home": "MIL",
+     "away": "COL",
      "away_abbr": "COL",
      "home_abbr": "MIL",
      "away_name": "Colorado Rockies",
@@ -1420,9 +1551,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823600,
      "date": "2026-07-25",
      "start_utc": "2026-07-25T23:15:00Z",
      "state": "Preview",
+     "home": "NYN",
+     "away": "LAN",
      "away_abbr": "LAD",
      "home_abbr": "NYM",
      "away_name": "Los Angeles Dodgers",
@@ -1443,9 +1577,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823027,
      "date": "2026-07-25",
      "start_utc": "2026-07-25T23:15:00Z",
      "state": "Preview",
+     "home": "SLN",
+     "away": "CIN",
      "away_abbr": "CIN",
      "home_abbr": "STL",
      "away_name": "Cincinnati Reds",
@@ -1466,9 +1603,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 822869,
      "date": "2026-07-25",
      "start_utc": "2026-07-25T23:15:00Z",
      "state": "Preview",
+     "home": "TEX",
+     "away": "SEA",
      "away_abbr": "SEA",
      "home_abbr": "TEX",
      "away_name": "Seattle Mariners",
@@ -1489,9 +1629,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822950,
      "date": "2026-07-26",
      "start_utc": "2026-07-26T16:15:00Z",
      "state": "Preview",
+     "home": "TBA",
+     "away": "CLE",
      "away_abbr": "CLE",
      "home_abbr": "TB",
      "away_name": "Cleveland Guardians",
@@ -1512,9 +1655,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822706,
      "date": "2026-07-26",
      "start_utc": "2026-07-26T17:35:00Z",
      "state": "Preview",
+     "home": "WAS",
+     "away": "ARI",
      "away_abbr": "AZ",
      "home_abbr": "WSH",
      "away_name": "Arizona Diamondbacks",
@@ -1535,9 +1681,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823354,
      "date": "2026-07-26",
      "start_utc": "2026-07-26T17:35:00Z",
      "state": "Preview",
+     "home": "PIT",
+     "away": "CHN",
      "away_abbr": "CHC",
      "home_abbr": "PIT",
      "away_name": "Chicago Cubs",
@@ -1558,9 +1707,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824730,
      "date": "2026-07-26",
      "start_utc": "2026-07-26T17:35:00Z",
      "state": "Preview",
+     "home": "BOS",
+     "away": "TOR",
      "away_abbr": "TOR",
      "home_abbr": "BOS",
      "away_name": "Toronto Blue Jays",
@@ -1581,9 +1733,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824810,
      "date": "2026-07-26",
      "start_utc": "2026-07-26T17:35:00Z",
      "state": "Preview",
+     "home": "BAL",
+     "away": "ATL",
      "away_abbr": "ATL",
      "home_abbr": "BAL",
      "away_name": "Atlanta Braves",
@@ -1604,9 +1759,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824246,
      "date": "2026-07-26",
      "start_utc": "2026-07-26T17:40:00Z",
      "state": "Preview",
+     "home": "DET",
+     "away": "KCA",
      "away_abbr": "KC",
      "home_abbr": "DET",
      "away_name": "Kansas City Royals",
@@ -1627,9 +1785,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823599,
      "date": "2026-07-26",
      "start_utc": "2026-07-26T17:40:00Z",
      "state": "Preview",
+     "home": "NYN",
+     "away": "LAN",
      "away_abbr": "LAD",
      "home_abbr": "NYM",
      "away_name": "Los Angeles Dodgers",
@@ -1650,9 +1811,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823840,
      "date": "2026-07-26",
      "start_utc": "2026-07-26T17:40:00Z",
      "state": "Preview",
+     "home": "MIA",
+     "away": "SDN",
      "away_abbr": "SD",
      "home_abbr": "MIA",
      "away_name": "San Diego Padres",
@@ -1673,9 +1837,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823678,
      "date": "2026-07-26",
      "start_utc": "2026-07-26T18:10:00Z",
      "state": "Preview",
+     "home": "MIN",
+     "away": "ATH",
      "away_abbr": "ATH",
      "home_abbr": "MIN",
      "away_name": "Athletics",
@@ -1696,9 +1863,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824572,
      "date": "2026-07-26",
      "start_utc": "2026-07-26T18:10:00Z",
      "state": "Preview",
+     "home": "CHA",
+     "away": "HOU",
      "away_abbr": "HOU",
      "home_abbr": "CWS",
      "away_name": "Houston Astros",
@@ -1719,9 +1889,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823755,
      "date": "2026-07-26",
      "start_utc": "2026-07-26T18:10:00Z",
      "state": "Preview",
+     "home": "MIL",
+     "away": "COL",
      "away_abbr": "COL",
      "home_abbr": "MIL",
      "away_name": "Colorado Rockies",
@@ -1742,9 +1915,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823028,
      "date": "2026-07-26",
      "start_utc": "2026-07-26T18:15:00Z",
      "state": "Preview",
+     "home": "SLN",
+     "away": "CIN",
      "away_abbr": "CIN",
      "home_abbr": "STL",
      "away_name": "Cincinnati Reds",
@@ -1765,9 +1941,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822870,
      "date": "2026-07-26",
      "start_utc": "2026-07-26T18:35:00Z",
      "state": "Preview",
+     "home": "TEX",
+     "away": "SEA",
      "away_abbr": "SEA",
      "home_abbr": "TEX",
      "away_name": "Seattle Mariners",
@@ -1788,9 +1967,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823194,
      "date": "2026-07-26",
      "start_utc": "2026-07-26T20:05:00Z",
      "state": "Preview",
+     "home": "SFN",
+     "away": "ANA",
      "away_abbr": "LAA",
      "home_abbr": "SF",
      "away_name": "Los Angeles Angels",
@@ -1811,9 +1993,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823433,
      "date": "2026-07-26",
      "start_utc": "2026-07-26T23:20:00Z",
      "state": "Preview",
+     "home": "PHI",
+     "away": "NYA",
      "away_abbr": "NYY",
      "home_abbr": "PHI",
      "away_name": "New York Yankees",
@@ -1834,9 +2019,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822868,
      "date": "2026-07-27",
      "start_utc": "2026-07-27T18:35:00Z",
      "state": "Preview",
+     "home": "TEX",
+     "away": "SEA",
      "away_abbr": "SEA",
      "home_abbr": "TEX",
      "away_name": "Seattle Mariners",
@@ -1857,9 +2045,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824245,
      "date": "2026-07-27",
      "start_utc": "2026-07-27T22:40:00Z",
      "state": "Preview",
+     "home": "DET",
+     "away": "BAL",
      "away_abbr": "BAL",
      "home_abbr": "DET",
      "away_name": "Baltimore Orioles",
@@ -1880,9 +2071,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823353,
      "date": "2026-07-27",
      "start_utc": "2026-07-27T22:40:00Z",
      "state": "Preview",
+     "home": "PIT",
+     "away": "ARI",
      "away_abbr": "AZ",
      "home_abbr": "PIT",
      "away_name": "Arizona Diamondbacks",
@@ -1903,9 +2097,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823839,
      "date": "2026-07-27",
      "start_utc": "2026-07-27T22:40:00Z",
      "state": "Preview",
+     "home": "MIA",
+     "away": "PHI",
      "away_abbr": "PHI",
      "home_abbr": "MIA",
      "away_name": "Philadelphia Phillies",
@@ -1926,9 +2123,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822705,
      "date": "2026-07-27",
      "start_utc": "2026-07-27T22:45:00Z",
      "state": "Preview",
+     "home": "WAS",
+     "away": "TOR",
      "away_abbr": "TOR",
      "home_abbr": "WSH",
      "away_name": "Toronto Blue Jays",
@@ -1949,9 +2149,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824490,
      "date": "2026-07-27",
      "start_utc": "2026-07-27T23:10:00Z",
      "state": "Preview",
+     "home": "CIN",
+     "away": "CLE",
      "away_abbr": "CLE",
      "home_abbr": "CIN",
      "away_name": "Cleveland Guardians",
@@ -1972,9 +2175,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823597,
      "date": "2026-07-27",
      "start_utc": "2026-07-27T23:10:00Z",
      "state": "Preview",
+     "home": "NYN",
+     "away": "ATL",
      "away_abbr": "ATL",
      "home_abbr": "NYM",
      "away_name": "Atlanta Braves",
@@ -1995,9 +2201,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824570,
      "date": "2026-07-27",
      "start_utc": "2026-07-27T23:40:00Z",
      "state": "Preview",
+     "home": "CHA",
+     "away": "NYA",
      "away_abbr": "NYY",
      "home_abbr": "CWS",
      "away_name": "New York Yankees",
@@ -2018,9 +2227,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823025,
      "date": "2026-07-27",
      "start_utc": "2026-07-27T23:45:00Z",
      "state": "Preview",
+     "home": "SLN",
+     "away": "CHN",
      "away_abbr": "CHC",
      "home_abbr": "STL",
      "away_name": "Chicago Cubs",
@@ -2041,9 +2253,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824001,
      "date": "2026-07-28",
      "start_utc": "2026-07-28T01:38:00Z",
      "state": "Preview",
+     "home": "ANA",
+     "away": "HOU",
      "away_abbr": "HOU",
      "home_abbr": "LAA",
      "away_name": "Houston Astros",
@@ -2064,9 +2279,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824977,
      "date": "2026-07-28",
      "start_utc": "2026-07-28T01:40:00Z",
      "state": "Preview",
+     "home": "ATH",
+     "away": "BOS",
      "away_abbr": "BOS",
      "home_abbr": "ATH",
      "away_name": "Boston Red Sox",
@@ -2087,9 +2305,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823195,
      "date": "2026-07-28",
      "start_utc": "2026-07-28T01:45:00Z",
      "state": "Preview",
+     "home": "SFN",
+     "away": "MIL",
      "away_abbr": "MIL",
      "home_abbr": "SF",
      "away_name": "Milwaukee Brewers",
@@ -2110,9 +2331,12 @@
      "away_pitcher_matched": true
     },
     {
+     "game_pk": 824243,
      "date": "2026-07-28",
      "start_utc": "2026-07-28T22:40:00Z",
      "state": "Preview",
+     "home": "DET",
+     "away": "BAL",
      "away_abbr": "BAL",
      "home_abbr": "DET",
      "away_name": "Baltimore Orioles",
@@ -2133,9 +2357,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823350,
      "date": "2026-07-28",
      "start_utc": "2026-07-28T22:40:00Z",
      "state": "Preview",
+     "home": "PIT",
+     "away": "ARI",
      "away_abbr": "AZ",
      "home_abbr": "PIT",
      "away_name": "Arizona Diamondbacks",
@@ -2156,9 +2383,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822949,
      "date": "2026-07-28",
      "start_utc": "2026-07-28T22:40:00Z",
      "state": "Preview",
+     "home": "TBA",
+     "away": "TEX",
      "away_abbr": "TEX",
      "home_abbr": "TB",
      "away_name": "Texas Rangers",
@@ -2179,9 +2409,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823838,
      "date": "2026-07-28",
      "start_utc": "2026-07-28T22:40:00Z",
      "state": "Preview",
+     "home": "MIA",
+     "away": "PHI",
      "away_abbr": "PHI",
      "home_abbr": "MIA",
      "away_name": "Philadelphia Phillies",
@@ -2202,9 +2435,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822703,
      "date": "2026-07-28",
      "start_utc": "2026-07-28T22:45:00Z",
      "state": "Preview",
+     "home": "WAS",
+     "away": "TOR",
      "away_abbr": "TOR",
      "home_abbr": "WSH",
      "away_name": "Toronto Blue Jays",
@@ -2225,9 +2461,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824489,
      "date": "2026-07-28",
      "start_utc": "2026-07-28T23:10:00Z",
      "state": "Preview",
+     "home": "CIN",
+     "away": "CLE",
      "away_abbr": "CLE",
      "home_abbr": "CIN",
      "away_name": "Cleveland Guardians",
@@ -2248,9 +2487,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823598,
      "date": "2026-07-28",
      "start_utc": "2026-07-28T23:10:00Z",
      "state": "Preview",
+     "home": "NYN",
+     "away": "ATL",
      "away_abbr": "ATL",
      "home_abbr": "NYM",
      "away_name": "Atlanta Braves",
@@ -2271,9 +2513,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823676,
      "date": "2026-07-28",
      "start_utc": "2026-07-28T23:40:00Z",
      "state": "Preview",
+     "home": "MIN",
+     "away": "KCA",
      "away_abbr": "KC",
      "home_abbr": "MIN",
      "away_name": "Kansas City Royals",
@@ -2294,9 +2539,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824569,
      "date": "2026-07-28",
      "start_utc": "2026-07-28T23:40:00Z",
      "state": "Preview",
+     "home": "CHA",
+     "away": "NYA",
      "away_abbr": "NYY",
      "home_abbr": "CWS",
      "away_name": "New York Yankees",
@@ -2317,9 +2565,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823026,
      "date": "2026-07-28",
      "start_utc": "2026-07-28T23:45:00Z",
      "state": "Preview",
+     "home": "SLN",
+     "away": "CHN",
      "away_abbr": "CHC",
      "home_abbr": "STL",
      "away_name": "Chicago Cubs",
@@ -2340,9 +2591,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824003,
      "date": "2026-07-29",
      "start_utc": "2026-07-29T01:38:00Z",
      "state": "Preview",
+     "home": "ANA",
+     "away": "HOU",
      "away_abbr": "HOU",
      "home_abbr": "LAA",
      "away_name": "Houston Astros",
@@ -2363,9 +2617,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824976,
      "date": "2026-07-29",
      "start_utc": "2026-07-29T01:40:00Z",
      "state": "Preview",
+     "home": "ATH",
+     "away": "BOS",
      "away_abbr": "BOS",
      "home_abbr": "ATH",
      "away_name": "Boston Red Sox",
@@ -2386,9 +2643,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823275,
      "date": "2026-07-29",
      "start_utc": "2026-07-29T01:40:00Z",
      "state": "Preview",
+     "home": "SDN",
+     "away": "COL",
      "away_abbr": "COL",
      "home_abbr": "SD",
      "away_name": "Colorado Rockies",
@@ -2409,9 +2669,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823193,
      "date": "2026-07-29",
      "start_utc": "2026-07-29T01:45:00Z",
      "state": "Preview",
+     "home": "SFN",
+     "away": "MIL",
      "away_abbr": "MIL",
      "home_abbr": "SF",
      "away_name": "Milwaukee Brewers",
@@ -2432,9 +2695,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823923,
      "date": "2026-07-29",
      "start_utc": "2026-07-29T02:10:00Z",
      "state": "Preview",
+     "home": "LAN",
+     "away": "SEA",
      "away_abbr": "SEA",
      "home_abbr": "LAD",
      "away_name": "Seattle Mariners",
@@ -2455,9 +2721,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823837,
      "date": "2026-07-29",
      "start_utc": "2026-07-29T16:10:00Z",
      "state": "Preview",
+     "home": "MIA",
+     "away": "PHI",
      "away_abbr": "PHI",
      "home_abbr": "MIA",
      "away_name": "Philadelphia Phillies",
@@ -2478,9 +2747,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823351,
      "date": "2026-07-29",
      "start_utc": "2026-07-29T16:35:00Z",
      "state": "Preview",
+     "home": "PIT",
+     "away": "ARI",
      "away_abbr": "AZ",
      "home_abbr": "PIT",
      "away_name": "Arizona Diamondbacks",
@@ -2501,9 +2773,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822702,
      "date": "2026-07-29",
      "start_utc": "2026-07-29T17:05:00Z",
      "state": "Preview",
+     "home": "WAS",
+     "away": "TOR",
      "away_abbr": "TOR",
      "home_abbr": "WSH",
      "away_name": "Toronto Blue Jays",
@@ -2524,9 +2799,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824242,
      "date": "2026-07-29",
      "start_utc": "2026-07-29T17:10:00Z",
      "state": "Preview",
+     "home": "DET",
+     "away": "BAL",
      "away_abbr": "BAL",
      "home_abbr": "DET",
      "away_name": "Baltimore Orioles",
@@ -2547,9 +2825,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823596,
      "date": "2026-07-29",
      "start_utc": "2026-07-29T17:10:00Z",
      "state": "Preview",
+     "home": "NYN",
+     "away": "ATL",
      "away_abbr": "ATL",
      "home_abbr": "NYM",
      "away_name": "Atlanta Braves",
@@ -2570,9 +2851,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823192,
      "date": "2026-07-29",
      "start_utc": "2026-07-29T19:45:00Z",
      "state": "Preview",
+     "home": "SFN",
+     "away": "MIL",
      "away_abbr": "MIL",
      "home_abbr": "SF",
      "away_name": "Milwaukee Brewers",
@@ -2593,9 +2877,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823273,
      "date": "2026-07-29",
      "start_utc": "2026-07-29T20:10:00Z",
      "state": "Preview",
+     "home": "SDN",
+     "away": "COL",
      "away_abbr": "COL",
      "home_abbr": "SD",
      "away_name": "Colorado Rockies",
@@ -2616,9 +2903,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822947,
      "date": "2026-07-29",
      "start_utc": "2026-07-29T22:40:00Z",
      "state": "Preview",
+     "home": "TBA",
+     "away": "TEX",
      "away_abbr": "TEX",
      "home_abbr": "TB",
      "away_name": "Texas Rangers",
@@ -2639,9 +2929,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824487,
      "date": "2026-07-29",
      "start_utc": "2026-07-29T23:10:00Z",
      "state": "Preview",
+     "home": "CIN",
+     "away": "CLE",
      "away_abbr": "CLE",
      "home_abbr": "CIN",
      "away_name": "Cleveland Guardians",
@@ -2662,9 +2955,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823677,
      "date": "2026-07-29",
      "start_utc": "2026-07-29T23:40:00Z",
      "state": "Preview",
+     "home": "MIN",
+     "away": "KCA",
      "away_abbr": "KC",
      "home_abbr": "MIN",
      "away_name": "Kansas City Royals",
@@ -2685,9 +2981,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824567,
      "date": "2026-07-29",
      "start_utc": "2026-07-29T23:40:00Z",
      "state": "Preview",
+     "home": "CHA",
+     "away": "NYA",
      "away_abbr": "NYY",
      "home_abbr": "CWS",
      "away_name": "New York Yankees",
@@ -2708,9 +3007,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823022,
      "date": "2026-07-29",
      "start_utc": "2026-07-29T23:45:00Z",
      "state": "Preview",
+     "home": "SLN",
+     "away": "CHN",
      "away_abbr": "CHC",
      "home_abbr": "STL",
      "away_name": "Chicago Cubs",
@@ -2731,9 +3033,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824002,
      "date": "2026-07-30",
      "start_utc": "2026-07-30T01:38:00Z",
      "state": "Preview",
+     "home": "ANA",
+     "away": "HOU",
      "away_abbr": "HOU",
      "home_abbr": "LAA",
      "away_name": "Houston Astros",
@@ -2754,9 +3059,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824973,
      "date": "2026-07-30",
      "start_utc": "2026-07-30T01:40:00Z",
      "state": "Preview",
+     "home": "ATH",
+     "away": "BOS",
      "away_abbr": "BOS",
      "home_abbr": "ATH",
      "away_name": "Boston Red Sox",
@@ -2777,9 +3085,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823924,
      "date": "2026-07-30",
      "start_utc": "2026-07-30T02:10:00Z",
      "state": "Preview",
+     "home": "LAN",
+     "away": "SEA",
      "away_abbr": "SEA",
      "home_abbr": "LAD",
      "away_name": "Seattle Mariners",
@@ -2800,9 +3111,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822946,
      "date": "2026-07-30",
      "start_utc": "2026-07-30T16:10:00Z",
      "state": "Preview",
+     "home": "TBA",
+     "away": "TEX",
      "away_abbr": "TEX",
      "home_abbr": "TB",
      "away_name": "Texas Rangers",
@@ -2823,9 +3137,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823674,
      "date": "2026-07-30",
      "start_utc": "2026-07-30T17:40:00Z",
      "state": "Preview",
+     "home": "MIN",
+     "away": "KCA",
      "away_abbr": "KC",
      "home_abbr": "MIN",
      "away_name": "Kansas City Royals",
@@ -2846,9 +3163,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824568,
      "date": "2026-07-30",
      "start_utc": "2026-07-30T18:10:00Z",
      "state": "Preview",
+     "home": "CHA",
+     "away": "NYA",
      "away_abbr": "NYY",
      "home_abbr": "CWS",
      "away_name": "New York Yankees",
@@ -2869,9 +3189,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823023,
      "date": "2026-07-30",
      "start_utc": "2026-07-30T18:15:00Z",
      "state": "Preview",
+     "home": "SLN",
+     "away": "CHN",
      "away_abbr": "CHC",
      "home_abbr": "STL",
      "away_name": "Chicago Cubs",
@@ -2892,9 +3215,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824488,
      "date": "2026-07-30",
      "start_utc": "2026-07-30T23:10:00Z",
      "state": "Preview",
+     "home": "CIN",
+     "away": "PIT",
      "away_abbr": "PIT",
      "home_abbr": "CIN",
      "away_name": "Pittsburgh Pirates",
@@ -2915,9 +3241,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823595,
      "date": "2026-07-30",
      "start_utc": "2026-07-30T23:10:00Z",
      "state": "Preview",
+     "home": "NYN",
+     "away": "MIA",
      "away_abbr": "MIA",
      "home_abbr": "NYM",
      "away_name": "Miami Marlins",
@@ -2938,9 +3267,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824894,
      "date": "2026-07-30",
      "start_utc": "2026-07-30T23:15:00Z",
      "state": "Preview",
+     "home": "ATL",
+     "away": "WAS",
      "away_abbr": "WSH",
      "home_abbr": "ATL",
      "away_name": "Washington Nationals",
@@ -2961,9 +3293,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824974,
      "date": "2026-07-31",
      "start_utc": "2026-07-31T01:40:00Z",
      "state": "Preview",
+     "home": "ATH",
+     "away": "BOS",
      "away_abbr": "BOS",
      "home_abbr": "ATH",
      "away_name": "Boston Red Sox",
@@ -2984,9 +3319,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823271,
      "date": "2026-07-31",
      "start_utc": "2026-07-31T01:40:00Z",
      "state": "Preview",
+     "home": "SDN",
+     "away": "SFN",
      "away_abbr": "SF",
      "home_abbr": "SD",
      "away_name": "San Francisco Giants",
@@ -3007,9 +3345,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823921,
      "date": "2026-07-31",
      "start_utc": "2026-07-31T02:10:00Z",
      "state": "Preview",
+     "home": "LAN",
+     "away": "SEA",
      "away_abbr": "SEA",
      "home_abbr": "LAD",
      "away_name": "Seattle Mariners",
@@ -3030,9 +3371,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824651,
      "date": "2026-07-31",
      "start_utc": "2026-07-31T18:20:00Z",
      "state": "Preview",
+     "home": "CHN",
+     "away": "NYA",
      "away_abbr": "NYY",
      "home_abbr": "CHC",
      "away_name": "New York Yankees",
@@ -3053,9 +3397,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824486,
      "date": "2026-07-31",
      "start_utc": "2026-07-31T22:10:00Z",
      "state": "Preview",
+     "home": "CIN",
+     "away": "PIT",
      "away_abbr": "PIT",
      "home_abbr": "CIN",
      "away_name": "Pittsburgh Pirates",
@@ -3076,9 +3423,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824809,
      "date": "2026-07-31",
      "start_utc": "2026-07-31T23:05:00Z",
      "state": "Preview",
+     "home": "BAL",
+     "away": "PHI",
      "away_abbr": "PHI",
      "home_abbr": "BAL",
      "away_name": "Philadelphia Phillies",
@@ -3099,9 +3449,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822782,
      "date": "2026-07-31",
      "start_utc": "2026-07-31T23:07:00Z",
      "state": "Preview",
+     "home": "TOR",
+     "away": "SLN",
      "away_abbr": "STL",
      "home_abbr": "TOR",
      "away_name": "St. Louis Cardinals",
@@ -3122,9 +3475,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824407,
      "date": "2026-07-31",
      "start_utc": "2026-07-31T23:10:00Z",
      "state": "Preview",
+     "home": "CLE",
+     "away": "ARI",
      "away_abbr": "AZ",
      "home_abbr": "CLE",
      "away_name": "Arizona Diamondbacks",
@@ -3145,9 +3501,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822945,
      "date": "2026-07-31",
      "start_utc": "2026-07-31T23:10:00Z",
      "state": "Preview",
+     "home": "TBA",
+     "away": "CHA",
      "away_abbr": "CWS",
      "home_abbr": "TB",
      "away_name": "Chicago White Sox",
@@ -3168,9 +3527,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823593,
      "date": "2026-07-31",
      "start_utc": "2026-07-31T23:10:00Z",
      "state": "Preview",
+     "home": "NYN",
+     "away": "MIA",
      "away_abbr": "MIA",
      "home_abbr": "NYM",
      "away_name": "Miami Marlins",
@@ -3191,9 +3553,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824892,
      "date": "2026-07-31",
      "start_utc": "2026-07-31T23:15:00Z",
      "state": "Preview",
+     "home": "ATL",
+     "away": "WAS",
      "away_abbr": "WSH",
      "home_abbr": "ATL",
      "away_name": "Washington Nationals",
@@ -3214,9 +3579,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824164,
      "date": "2026-08-01",
      "start_utc": "2026-08-01T00:15:00Z",
      "state": "Preview",
+     "home": "HOU",
+     "away": "TEX",
      "away_abbr": "TEX",
      "home_abbr": "HOU",
      "away_name": "Texas Rangers",
@@ -3237,9 +3605,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824325,
      "date": "2026-08-01",
      "start_utc": "2026-08-01T00:40:00Z",
      "state": "Preview",
+     "home": "COL",
+     "away": "KCA",
      "away_abbr": "KC",
      "home_abbr": "COL",
      "away_name": "Kansas City Royals",
@@ -3260,9 +3631,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823999,
      "date": "2026-08-01",
      "start_utc": "2026-08-01T01:38:00Z",
      "state": "Preview",
+     "home": "ANA",
+     "away": "MIL",
      "away_abbr": "MIL",
      "home_abbr": "LAA",
      "away_name": "Milwaukee Brewers",
@@ -3283,9 +3657,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824975,
      "date": "2026-08-01",
      "start_utc": "2026-08-01T01:40:00Z",
      "state": "Preview",
+     "home": "ATH",
+     "away": "DET",
      "away_abbr": "DET",
      "home_abbr": "ATH",
      "away_name": "Detroit Tigers",
@@ -3306,9 +3683,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823272,
      "date": "2026-08-01",
      "start_utc": "2026-08-01T01:45:00Z",
      "state": "Preview",
+     "home": "SDN",
+     "away": "SFN",
      "away_abbr": "SF",
      "home_abbr": "SD",
      "away_name": "San Francisco Giants",
@@ -3329,9 +3709,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823922,
      "date": "2026-08-01",
      "start_utc": "2026-08-01T02:10:00Z",
      "state": "Preview",
+     "home": "LAN",
+     "away": "BOS",
      "away_abbr": "BOS",
      "home_abbr": "LAD",
      "away_name": "Boston Red Sox",
@@ -3352,9 +3735,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823111,
      "date": "2026-08-01",
      "start_utc": "2026-08-01T02:10:00Z",
      "state": "Preview",
+     "home": "SEA",
+     "away": "MIN",
      "away_abbr": "MIN",
      "home_abbr": "SEA",
      "away_name": "Minnesota Twins",
@@ -3375,9 +3761,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822781,
      "date": "2026-08-01",
      "start_utc": "2026-08-01T19:07:00Z",
      "state": "Preview",
+     "home": "TOR",
+     "away": "SLN",
      "away_abbr": "STL",
      "home_abbr": "TOR",
      "away_name": "St. Louis Cardinals",
@@ -3398,9 +3787,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823109,
      "date": "2026-08-01",
      "start_utc": "2026-08-01T20:10:00Z",
      "state": "Preview",
+     "home": "SEA",
+     "away": "MIN",
      "away_abbr": "MIN",
      "home_abbr": "SEA",
      "away_name": "Minnesota Twins",
@@ -3421,9 +3813,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822944,
      "date": "2026-08-01",
      "start_utc": "2026-08-01T20:10:00Z",
      "state": "Preview",
+     "home": "TBA",
+     "away": "CHA",
      "away_abbr": "CWS",
      "home_abbr": "TB",
      "away_name": "Chicago White Sox",
@@ -3444,9 +3839,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823594,
      "date": "2026-08-01",
      "start_utc": "2026-08-01T20:10:00Z",
      "state": "Preview",
+     "home": "NYN",
+     "away": "MIA",
      "away_abbr": "MIA",
      "home_abbr": "NYM",
      "away_name": "Miami Marlins",
@@ -3467,9 +3865,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824485,
      "date": "2026-08-01",
      "start_utc": "2026-08-01T22:40:00Z",
      "state": "Preview",
+     "home": "CIN",
+     "away": "PIT",
      "away_abbr": "PIT",
      "home_abbr": "CIN",
      "away_name": "Pittsburgh Pirates",
@@ -3490,9 +3891,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824808,
      "date": "2026-08-01",
      "start_utc": "2026-08-01T23:05:00Z",
      "state": "Preview",
+     "home": "BAL",
+     "away": "PHI",
      "away_abbr": "PHI",
      "home_abbr": "BAL",
      "away_name": "Philadelphia Phillies",
@@ -3513,9 +3917,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824162,
      "date": "2026-08-01",
      "start_utc": "2026-08-01T23:10:00Z",
      "state": "Preview",
+     "home": "HOU",
+     "away": "TEX",
      "away_abbr": "TEX",
      "home_abbr": "HOU",
      "away_name": "Texas Rangers",
@@ -3536,9 +3943,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824405,
      "date": "2026-08-01",
      "start_utc": "2026-08-01T23:15:00Z",
      "state": "Preview",
+     "home": "CLE",
+     "away": "ARI",
      "away_abbr": "AZ",
      "home_abbr": "CLE",
      "away_name": "Arizona Diamondbacks",
@@ -3559,9 +3969,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824890,
      "date": "2026-08-01",
      "start_utc": "2026-08-01T23:15:00Z",
      "state": "Preview",
+     "home": "ATL",
+     "away": "WAS",
      "away_abbr": "WSH",
      "home_abbr": "ATL",
      "away_name": "Washington Nationals",
@@ -3582,9 +3995,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824649,
      "date": "2026-08-01",
      "start_utc": "2026-08-01T23:15:00Z",
      "state": "Preview",
+     "home": "CHN",
+     "away": "NYA",
      "away_abbr": "NYY",
      "home_abbr": "CHC",
      "away_name": "New York Yankees",
@@ -3605,9 +4021,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824326,
      "date": "2026-08-02",
      "start_utc": "2026-08-02T00:10:00Z",
      "state": "Preview",
+     "home": "COL",
+     "away": "KCA",
      "away_abbr": "KC",
      "home_abbr": "COL",
      "away_name": "Kansas City Royals",
@@ -3628,9 +4047,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823269,
      "date": "2026-08-02",
      "start_utc": "2026-08-02T00:40:00Z",
      "state": "Preview",
+     "home": "SDN",
+     "away": "SFN",
      "away_abbr": "SF",
      "home_abbr": "SD",
      "away_name": "San Francisco Giants",
@@ -3651,9 +4073,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823920,
      "date": "2026-08-02",
      "start_utc": "2026-08-02T01:10:00Z",
      "state": "Preview",
+     "home": "LAN",
+     "away": "BOS",
      "away_abbr": "BOS",
      "home_abbr": "LAD",
      "away_name": "Boston Red Sox",
@@ -3674,9 +4099,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824000,
      "date": "2026-08-02",
      "start_utc": "2026-08-02T01:38:00Z",
      "state": "Preview",
+     "home": "ANA",
+     "away": "MIL",
      "away_abbr": "MIL",
      "home_abbr": "LAA",
      "away_name": "Milwaukee Brewers",
@@ -3697,9 +4125,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824972,
      "date": "2026-08-02",
      "start_utc": "2026-08-02T01:40:00Z",
      "state": "Preview",
+     "home": "ATH",
+     "away": "DET",
      "away_abbr": "DET",
      "home_abbr": "ATH",
      "away_name": "Detroit Tigers",
@@ -3720,9 +4151,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824807,
      "date": "2026-08-02",
      "start_utc": "2026-08-02T17:35:00Z",
      "state": "Preview",
+     "home": "BAL",
+     "away": "PHI",
      "away_abbr": "PHI",
      "home_abbr": "BAL",
      "away_name": "Philadelphia Phillies",
@@ -3743,9 +4177,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824891,
      "date": "2026-08-02",
      "start_utc": "2026-08-02T17:35:00Z",
      "state": "Preview",
+     "home": "ATL",
+     "away": "WAS",
      "away_abbr": "WSH",
      "home_abbr": "ATL",
      "away_name": "Washington Nationals",
@@ -3766,9 +4203,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822783,
      "date": "2026-08-02",
      "start_utc": "2026-08-02T17:37:00Z",
      "state": "Preview",
+     "home": "TOR",
+     "away": "SLN",
      "away_abbr": "STL",
      "home_abbr": "TOR",
      "away_name": "St. Louis Cardinals",
@@ -3789,9 +4229,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824404,
      "date": "2026-08-02",
      "start_utc": "2026-08-02T17:40:00Z",
      "state": "Preview",
+     "home": "CLE",
+     "away": "ARI",
      "away_abbr": "AZ",
      "home_abbr": "CLE",
      "away_name": "Arizona Diamondbacks",
@@ -3812,9 +4255,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824483,
      "date": "2026-08-02",
      "start_utc": "2026-08-02T17:40:00Z",
      "state": "Preview",
+     "home": "CIN",
+     "away": "PIT",
      "away_abbr": "PIT",
      "home_abbr": "CIN",
      "away_name": "Pittsburgh Pirates",
@@ -3835,9 +4281,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822943,
      "date": "2026-08-02",
      "start_utc": "2026-08-02T17:40:00Z",
      "state": "Preview",
+     "home": "TBA",
+     "away": "CHA",
      "away_abbr": "CWS",
      "home_abbr": "TB",
      "away_name": "Chicago White Sox",
@@ -3858,9 +4307,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823592,
      "date": "2026-08-02",
      "start_utc": "2026-08-02T17:40:00Z",
      "state": "Preview",
+     "home": "NYN",
+     "away": "MIA",
      "away_abbr": "MIA",
      "home_abbr": "NYM",
      "away_name": "Miami Marlins",
@@ -3881,9 +4333,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824163,
      "date": "2026-08-02",
      "start_utc": "2026-08-02T18:10:00Z",
      "state": "Preview",
+     "home": "HOU",
+     "away": "TEX",
      "away_abbr": "TEX",
      "home_abbr": "HOU",
      "away_name": "Texas Rangers",
@@ -3904,9 +4359,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824648,
      "date": "2026-08-02",
      "start_utc": "2026-08-02T18:20:00Z",
      "state": "Preview",
+     "home": "CHN",
+     "away": "NYA",
      "away_abbr": "NYY",
      "home_abbr": "CHC",
      "away_name": "New York Yankees",
@@ -3927,9 +4385,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824323,
      "date": "2026-08-02",
      "start_utc": "2026-08-02T19:10:00Z",
      "state": "Preview",
+     "home": "COL",
+     "away": "KCA",
      "away_abbr": "KC",
      "home_abbr": "COL",
      "away_name": "Kansas City Royals",
@@ -3950,9 +4411,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823996,
      "date": "2026-08-02",
      "start_utc": "2026-08-02T19:15:00Z",
      "state": "Preview",
+     "home": "ANA",
+     "away": "MIL",
      "away_abbr": "MIL",
      "home_abbr": "LAA",
      "away_name": "Milwaukee Brewers",
@@ -3973,9 +4437,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824971,
      "date": "2026-08-02",
      "start_utc": "2026-08-02T20:05:00Z",
      "state": "Preview",
+     "home": "ATH",
+     "away": "DET",
      "away_abbr": "DET",
      "home_abbr": "ATH",
      "away_name": "Detroit Tigers",
@@ -3996,9 +4463,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823270,
      "date": "2026-08-02",
      "start_utc": "2026-08-02T20:10:00Z",
      "state": "Preview",
+     "home": "SDN",
+     "away": "SFN",
      "away_abbr": "SF",
      "home_abbr": "SD",
      "away_name": "San Francisco Giants",
@@ -4019,9 +4489,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823107,
      "date": "2026-08-02",
      "start_utc": "2026-08-02T20:10:00Z",
      "state": "Preview",
+     "home": "SEA",
+     "away": "MIN",
      "away_abbr": "MIN",
      "home_abbr": "SEA",
      "away_name": "Minnesota Twins",
@@ -4042,9 +4515,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823919,
      "date": "2026-08-02",
      "start_utc": "2026-08-02T23:20:00Z",
      "state": "Preview",
+     "home": "LAN",
+     "away": "BOS",
      "away_abbr": "BOS",
      "home_abbr": "LAD",
      "away_name": "Boston Red Sox",
@@ -4065,9 +4541,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823431,
      "date": "2026-08-03",
      "start_utc": "2026-08-03T22:40:00Z",
      "state": "Preview",
+     "home": "PHI",
+     "away": "WAS",
      "away_abbr": "WSH",
      "home_abbr": "PHI",
      "away_name": "Washington Nationals",
@@ -4088,9 +4567,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823520,
      "date": "2026-08-03",
      "start_utc": "2026-08-03T23:05:00Z",
      "state": "Preview",
+     "home": "NYA",
+     "away": "SLN",
      "away_abbr": "STL",
      "home_abbr": "NYY",
      "away_name": "St. Louis Cardinals",
@@ -4111,9 +4593,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823757,
      "date": "2026-08-03",
      "start_utc": "2026-08-03T23:40:00Z",
      "state": "Preview",
+     "home": "MIL",
+     "away": "PIT",
      "away_abbr": "PIT",
      "home_abbr": "MIL",
      "away_name": "Pittsburgh Pirates",
@@ -4134,9 +4619,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824647,
      "date": "2026-08-04",
      "start_utc": "2026-08-04T00:05:00Z",
      "state": "Preview",
+     "home": "CHN",
+     "away": "LAN",
      "away_abbr": "LAD",
      "home_abbr": "CHC",
      "away_name": "Los Angeles Dodgers",
@@ -4157,9 +4645,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822867,
      "date": "2026-08-04",
      "start_utc": "2026-08-04T00:05:00Z",
      "state": "Preview",
+     "home": "TEX",
+     "away": "SFN",
      "away_abbr": "SF",
      "home_abbr": "TEX",
      "away_name": "San Francisco Giants",
@@ -4180,9 +4671,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824160,
      "date": "2026-08-04",
      "start_utc": "2026-08-04T00:10:00Z",
      "state": "Preview",
+     "home": "HOU",
+     "away": "TOR",
      "away_abbr": "TOR",
      "home_abbr": "HOU",
      "away_name": "Toronto Blue Jays",
@@ -4203,9 +4697,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824324,
      "date": "2026-08-04",
      "start_utc": "2026-08-04T00:40:00Z",
      "state": "Preview",
+     "home": "COL",
+     "away": "TBA",
      "away_abbr": "TB",
      "home_abbr": "COL",
      "away_name": "Tampa Bay Rays",
@@ -4226,9 +4723,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 825095,
      "date": "2026-08-04",
      "start_utc": "2026-08-04T01:40:00Z",
      "state": "Preview",
+     "home": "ARI",
+     "away": "SDN",
      "away_abbr": "SD",
      "home_abbr": "AZ",
      "away_name": "San Diego Padres",
@@ -4249,9 +4749,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824805,
      "date": "2026-08-04",
      "start_utc": "2026-08-04T22:35:00Z",
      "state": "Preview",
+     "home": "BAL",
+     "away": "ANA",
      "away_abbr": "LAA",
      "home_abbr": "BAL",
      "away_name": "Los Angeles Angels",
@@ -4272,9 +4775,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824403,
      "date": "2026-08-04",
      "start_utc": "2026-08-04T22:40:00Z",
      "state": "Preview",
+     "home": "CLE",
+     "away": "NYN",
      "away_abbr": "NYM",
      "home_abbr": "CLE",
      "away_name": "New York Mets",
@@ -4295,9 +4801,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824484,
      "date": "2026-08-04",
      "start_utc": "2026-08-04T22:40:00Z",
      "state": "Preview",
+     "home": "CIN",
+     "away": "ATH",
      "away_abbr": "ATH",
      "home_abbr": "CIN",
      "away_name": "Athletics",
@@ -4318,9 +4827,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823432,
      "date": "2026-08-04",
      "start_utc": "2026-08-04T22:40:00Z",
      "state": "Preview",
+     "home": "PHI",
+     "away": "WAS",
      "away_abbr": "WSH",
      "home_abbr": "PHI",
      "away_name": "Washington Nationals",
@@ -4341,9 +4853,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823517,
      "date": "2026-08-04",
      "start_utc": "2026-08-04T23:05:00Z",
      "state": "Preview",
+     "home": "NYA",
+     "away": "SLN",
      "away_abbr": "STL",
      "home_abbr": "NYY",
      "away_name": "St. Louis Cardinals",
@@ -4364,9 +4879,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824731,
      "date": "2026-08-04",
      "start_utc": "2026-08-04T23:10:00Z",
      "state": "Preview",
+     "home": "BOS",
+     "away": "CHA",
      "away_abbr": "CWS",
      "home_abbr": "BOS",
      "away_name": "Chicago White Sox",
@@ -4387,9 +4905,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824888,
      "date": "2026-08-04",
      "start_utc": "2026-08-04T23:15:00Z",
      "state": "Preview",
+     "home": "ATL",
+     "away": "MIA",
      "away_abbr": "MIA",
      "home_abbr": "ATL",
      "away_name": "Miami Marlins",
@@ -4410,9 +4931,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824084,
      "date": "2026-08-04",
      "start_utc": "2026-08-04T23:40:00Z",
      "state": "Preview",
+     "home": "KCA",
+     "away": "MIN",
      "away_abbr": "MIN",
      "home_abbr": "KC",
      "away_name": "Minnesota Twins",
@@ -4433,9 +4957,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823756,
      "date": "2026-08-04",
      "start_utc": "2026-08-04T23:40:00Z",
      "state": "Preview",
+     "home": "MIL",
+     "away": "PIT",
      "away_abbr": "PIT",
      "home_abbr": "MIL",
      "away_name": "Pittsburgh Pirates",
@@ -4456,9 +4983,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824645,
      "date": "2026-08-05",
      "start_utc": "2026-08-05T00:05:00Z",
      "state": "Preview",
+     "home": "CHN",
+     "away": "LAN",
      "away_abbr": "LAD",
      "home_abbr": "CHC",
      "away_name": "Los Angeles Dodgers",
@@ -4479,9 +5009,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822865,
      "date": "2026-08-05",
      "start_utc": "2026-08-05T00:05:00Z",
      "state": "Preview",
+     "home": "TEX",
+     "away": "SFN",
      "away_abbr": "SF",
      "home_abbr": "TEX",
      "away_name": "San Francisco Giants",
@@ -4502,9 +5035,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824161,
      "date": "2026-08-05",
      "start_utc": "2026-08-05T00:10:00Z",
      "state": "Preview",
+     "home": "HOU",
+     "away": "TOR",
      "away_abbr": "TOR",
      "home_abbr": "HOU",
      "away_name": "Toronto Blue Jays",
@@ -4525,9 +5061,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824321,
      "date": "2026-08-05",
      "start_utc": "2026-08-05T00:40:00Z",
      "state": "Preview",
+     "home": "COL",
+     "away": "TBA",
      "away_abbr": "TB",
      "home_abbr": "COL",
      "away_name": "Tampa Bay Rays",
@@ -4548,9 +5087,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 825054,
      "date": "2026-08-05",
      "start_utc": "2026-08-05T01:40:00Z",
      "state": "Preview",
+     "home": "ARI",
+     "away": "SDN",
      "away_abbr": "SD",
      "home_abbr": "AZ",
      "away_name": "San Diego Padres",
@@ -4571,9 +5113,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823108,
      "date": "2026-08-05",
      "start_utc": "2026-08-05T01:40:00Z",
      "state": "Preview",
+     "home": "SEA",
+     "away": "DET",
      "away_abbr": "DET",
      "home_abbr": "SEA",
      "away_name": "Detroit Tigers",
@@ -4594,9 +5139,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824158,
      "date": "2026-08-05",
      "start_utc": "2026-08-05T18:10:00Z",
      "state": "Preview",
+     "home": "HOU",
+     "away": "TOR",
      "away_abbr": "TOR",
      "home_abbr": "HOU",
      "away_name": "Toronto Blue Jays",
@@ -4617,9 +5165,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824646,
      "date": "2026-08-05",
      "start_utc": "2026-08-05T18:20:00Z",
      "state": "Preview",
+     "home": "CHN",
+     "away": "LAN",
      "away_abbr": "LAD",
      "home_abbr": "CHC",
      "away_name": "Los Angeles Dodgers",
@@ -4640,9 +5191,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822866,
      "date": "2026-08-05",
      "start_utc": "2026-08-05T18:35:00Z",
      "state": "Preview",
+     "home": "TEX",
+     "away": "SFN",
      "away_abbr": "SF",
      "home_abbr": "TEX",
      "away_name": "San Francisco Giants",
@@ -4663,9 +5217,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824322,
      "date": "2026-08-05",
      "start_utc": "2026-08-05T19:10:00Z",
      "state": "Preview",
+     "home": "COL",
+     "away": "TBA",
      "away_abbr": "TB",
      "home_abbr": "COL",
      "away_name": "Tampa Bay Rays",
@@ -4686,9 +5243,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824806,
      "date": "2026-08-05",
      "start_utc": "2026-08-05T22:35:00Z",
      "state": "Preview",
+     "home": "BAL",
+     "away": "ANA",
      "away_abbr": "LAA",
      "home_abbr": "BAL",
      "away_name": "Los Angeles Angels",
@@ -4709,9 +5269,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824402,
      "date": "2026-08-05",
      "start_utc": "2026-08-05T22:40:00Z",
      "state": "Preview",
+     "home": "CLE",
+     "away": "NYN",
      "away_abbr": "NYM",
      "home_abbr": "CLE",
      "away_name": "New York Mets",
@@ -4732,9 +5295,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824482,
      "date": "2026-08-05",
      "start_utc": "2026-08-05T22:40:00Z",
      "state": "Preview",
+     "home": "CIN",
+     "away": "ATH",
      "away_abbr": "ATH",
      "home_abbr": "CIN",
      "away_name": "Athletics",
@@ -4755,9 +5321,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823429,
      "date": "2026-08-05",
      "start_utc": "2026-08-05T22:40:00Z",
      "state": "Preview",
+     "home": "PHI",
+     "away": "WAS",
      "away_abbr": "WSH",
      "home_abbr": "PHI",
      "away_name": "Washington Nationals",
@@ -4778,9 +5347,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823516,
      "date": "2026-08-05",
      "start_utc": "2026-08-05T23:05:00Z",
      "state": "Preview",
+     "home": "NYA",
+     "away": "SLN",
      "away_abbr": "STL",
      "home_abbr": "NYY",
      "away_name": "St. Louis Cardinals",
@@ -4801,9 +5373,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824728,
      "date": "2026-08-05",
      "start_utc": "2026-08-05T23:10:00Z",
      "state": "Preview",
+     "home": "BOS",
+     "away": "CHA",
      "away_abbr": "CWS",
      "home_abbr": "BOS",
      "away_name": "Chicago White Sox",
@@ -4824,9 +5399,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824889,
      "date": "2026-08-05",
      "start_utc": "2026-08-05T23:15:00Z",
      "state": "Preview",
+     "home": "ATL",
+     "away": "MIA",
      "away_abbr": "MIA",
      "home_abbr": "ATL",
      "away_name": "Miami Marlins",
@@ -4847,9 +5425,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824082,
      "date": "2026-08-05",
      "start_utc": "2026-08-05T23:40:00Z",
      "state": "Preview",
+     "home": "KCA",
+     "away": "MIN",
      "away_abbr": "MIN",
      "home_abbr": "KC",
      "away_name": "Minnesota Twins",
@@ -4870,9 +5451,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823753,
      "date": "2026-08-05",
      "start_utc": "2026-08-05T23:40:00Z",
      "state": "Preview",
+     "home": "MIL",
+     "away": "PIT",
      "away_abbr": "PIT",
      "home_abbr": "MIL",
      "away_name": "Pittsburgh Pirates",
@@ -4893,9 +5477,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 825052,
      "date": "2026-08-06",
      "start_utc": "2026-08-06T01:40:00Z",
      "state": "Preview",
+     "home": "ARI",
+     "away": "SDN",
      "away_abbr": "SD",
      "home_abbr": "AZ",
      "away_name": "San Diego Padres",
@@ -4916,9 +5503,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823106,
      "date": "2026-08-06",
      "start_utc": "2026-08-06T01:40:00Z",
      "state": "Preview",
+     "home": "SEA",
+     "away": "DET",
      "away_abbr": "DET",
      "home_abbr": "SEA",
      "away_name": "Detroit Tigers",
@@ -4939,9 +5529,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824804,
      "date": "2026-08-06",
      "start_utc": "2026-08-06T16:35:00Z",
      "state": "Preview",
+     "home": "BAL",
+     "away": "ANA",
      "away_abbr": "LAA",
      "home_abbr": "BAL",
      "away_name": "Los Angeles Angels",
@@ -4962,9 +5555,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824481,
      "date": "2026-08-06",
      "start_utc": "2026-08-06T16:40:00Z",
      "state": "Preview",
+     "home": "CIN",
+     "away": "ATH",
      "away_abbr": "ATH",
      "home_abbr": "CIN",
      "away_name": "Athletics",
@@ -4985,9 +5581,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824401,
      "date": "2026-08-06",
      "start_utc": "2026-08-06T17:10:00Z",
      "state": "Preview",
+     "home": "CLE",
+     "away": "NYN",
      "away_abbr": "NYM",
      "home_abbr": "CLE",
      "away_name": "New York Mets",
@@ -5008,9 +5607,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823754,
      "date": "2026-08-06",
      "start_utc": "2026-08-06T18:10:00Z",
      "state": "Preview",
+     "home": "MIL",
+     "away": "PIT",
      "away_abbr": "PIT",
      "home_abbr": "MIL",
      "away_name": "Pittsburgh Pirates",
@@ -5031,9 +5633,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824664,
      "date": "2026-08-06",
      "start_utc": "2026-08-06T18:20:00Z",
      "state": "Preview",
+     "home": "CHN",
+     "away": "TOR",
      "away_abbr": "TOR",
      "home_abbr": "CHC",
      "away_name": "Toronto Blue Jays",
@@ -5054,9 +5659,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823105,
      "date": "2026-08-06",
      "start_utc": "2026-08-06T20:10:00Z",
      "state": "Preview",
+     "home": "SEA",
+     "away": "DET",
      "away_abbr": "DET",
      "home_abbr": "SEA",
      "away_name": "Detroit Tigers",
@@ -5077,9 +5685,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823430,
      "date": "2026-08-06",
      "start_utc": "2026-08-06T22:05:00Z",
      "state": "Preview",
+     "home": "PHI",
+     "away": "WAS",
      "away_abbr": "WSH",
      "home_abbr": "PHI",
      "away_name": "Washington Nationals",
@@ -5100,9 +5711,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824729,
      "date": "2026-08-06",
      "start_utc": "2026-08-06T23:10:00Z",
      "state": "Preview",
+     "home": "BOS",
+     "away": "CHA",
      "away_abbr": "CWS",
      "home_abbr": "BOS",
      "away_name": "Chicago White Sox",
@@ -5123,9 +5737,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824885,
      "date": "2026-08-06",
      "start_utc": "2026-08-06T23:15:00Z",
      "state": "Preview",
+     "home": "ATL",
+     "away": "MIA",
      "away_abbr": "MIA",
      "home_abbr": "ATL",
      "away_name": "Miami Marlins",
@@ -5146,9 +5763,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824080,
      "date": "2026-08-06",
      "start_utc": "2026-08-06T23:40:00Z",
      "state": "Preview",
+     "home": "KCA",
+     "away": "MIN",
      "away_abbr": "MIN",
      "home_abbr": "KC",
      "away_name": "Minnesota Twins",
@@ -5169,9 +5789,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 825053,
      "date": "2026-08-07",
      "start_utc": "2026-08-07T01:40:00Z",
      "state": "Preview",
+     "home": "ARI",
+     "away": "SDN",
      "away_abbr": "SD",
      "home_abbr": "AZ",
      "away_name": "San Diego Padres",
@@ -5192,9 +5815,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823349,
      "date": "2026-08-07",
      "start_utc": "2026-08-07T22:40:00Z",
      "state": "Preview",
+     "home": "PIT",
+     "away": "NYN",
      "away_abbr": "NYM",
      "home_abbr": "PIT",
      "away_name": "New York Mets",
@@ -5215,9 +5841,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823428,
      "date": "2026-08-07",
      "start_utc": "2026-08-07T22:40:00Z",
      "state": "Preview",
+     "home": "PHI",
+     "away": "TOR",
      "away_abbr": "TOR",
      "home_abbr": "PHI",
      "away_name": "Toronto Blue Jays",
@@ -5238,9 +5867,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822699,
      "date": "2026-08-07",
      "start_utc": "2026-08-07T22:45:00Z",
      "state": "Preview",
+     "home": "WAS",
+     "away": "CIN",
      "away_abbr": "CIN",
      "home_abbr": "WSH",
      "away_name": "Cincinnati Reds",
@@ -5261,9 +5893,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823515,
      "date": "2026-08-07",
      "start_utc": "2026-08-07T23:05:00Z",
      "state": "Preview",
+     "home": "NYA",
+     "away": "ATL",
      "away_abbr": "ATL",
      "home_abbr": "NYY",
      "away_name": "Atlanta Braves",
@@ -5284,9 +5919,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824727,
      "date": "2026-08-07",
      "start_utc": "2026-08-07T23:10:00Z",
      "state": "Preview",
+     "home": "BOS",
+     "away": "ATH",
      "away_abbr": "ATH",
      "home_abbr": "BOS",
      "away_name": "Athletics",
@@ -5307,9 +5945,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823836,
      "date": "2026-08-07",
      "start_utc": "2026-08-07T23:10:00Z",
      "state": "Preview",
+     "home": "MIA",
+     "away": "ANA",
      "away_abbr": "LAA",
      "home_abbr": "MIA",
      "away_name": "Los Angeles Angels",
@@ -5330,9 +5971,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824566,
      "date": "2026-08-07",
      "start_utc": "2026-08-07T23:40:00Z",
      "state": "Preview",
+     "home": "CHA",
+     "away": "CLE",
      "away_abbr": "CLE",
      "home_abbr": "CWS",
      "away_name": "Cleveland Guardians",
@@ -5353,9 +5997,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823750,
      "date": "2026-08-07",
      "start_utc": "2026-08-07T23:40:00Z",
      "state": "Preview",
+     "home": "MIL",
+     "away": "MIN",
      "away_abbr": "MIN",
      "home_abbr": "MIL",
      "away_name": "Minnesota Twins",
@@ -5376,9 +6023,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822863,
      "date": "2026-08-08",
      "start_utc": "2026-08-08T00:05:00Z",
      "state": "Preview",
+     "home": "TEX",
+     "away": "BAL",
      "away_abbr": "BAL",
      "home_abbr": "TEX",
      "away_name": "Baltimore Orioles",
@@ -5399,9 +6049,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824081,
      "date": "2026-08-08",
      "start_utc": "2026-08-08T00:10:00Z",
      "state": "Preview",
+     "home": "KCA",
+     "away": "CHN",
      "away_abbr": "CHC",
      "home_abbr": "KC",
      "away_name": "Chicago Cubs",
@@ -5422,9 +6075,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823024,
      "date": "2026-08-08",
      "start_utc": "2026-08-08T00:15:00Z",
      "state": "Preview",
+     "home": "SLN",
+     "away": "COL",
      "away_abbr": "COL",
      "home_abbr": "STL",
      "away_name": "Colorado Rockies",
@@ -5445,9 +6101,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 825051,
      "date": "2026-08-08",
      "start_utc": "2026-08-08T01:40:00Z",
      "state": "Preview",
+     "home": "ARI",
+     "away": "LAN",
      "away_abbr": "LAD",
      "home_abbr": "AZ",
      "away_name": "Los Angeles Dodgers",
@@ -5468,9 +6127,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823266,
      "date": "2026-08-08",
      "start_utc": "2026-08-08T01:40:00Z",
      "state": "Preview",
+     "home": "SDN",
+     "away": "HOU",
      "away_abbr": "HOU",
      "home_abbr": "SD",
      "away_name": "Houston Astros",
@@ -5491,9 +6153,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823103,
      "date": "2026-08-08",
      "start_utc": "2026-08-08T01:40:00Z",
      "state": "Preview",
+     "home": "SEA",
+     "away": "TBA",
      "away_abbr": "TB",
      "home_abbr": "SEA",
      "away_name": "Tampa Bay Rays",
@@ -5514,9 +6179,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823191,
      "date": "2026-08-08",
      "start_utc": "2026-08-08T02:15:00Z",
      "state": "Preview",
+     "home": "SFN",
+     "away": "DET",
      "away_abbr": "DET",
      "home_abbr": "SF",
      "away_name": "Detroit Tigers",
@@ -5537,9 +6205,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823514,
      "date": "2026-08-08",
      "start_utc": "2026-08-08T19:05:00Z",
      "state": "Preview",
+     "home": "NYA",
+     "away": "ATL",
      "away_abbr": "ATL",
      "home_abbr": "NYY",
      "away_name": "Atlanta Braves",
@@ -5560,9 +6231,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824726,
      "date": "2026-08-08",
      "start_utc": "2026-08-08T20:10:00Z",
      "state": "Preview",
+     "home": "BOS",
+     "away": "ATH",
      "away_abbr": "ATH",
      "home_abbr": "BOS",
      "away_name": "Athletics",
@@ -5583,9 +6257,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823834,
      "date": "2026-08-08",
      "start_utc": "2026-08-08T20:10:00Z",
      "state": "Preview",
+     "home": "MIA",
+     "away": "ANA",
      "away_abbr": "LAA",
      "home_abbr": "MIA",
      "away_name": "Los Angeles Angels",
@@ -5606,9 +6283,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823426,
      "date": "2026-08-08",
      "start_utc": "2026-08-08T22:05:00Z",
      "state": "Preview",
+     "home": "PHI",
+     "away": "TOR",
      "away_abbr": "TOR",
      "home_abbr": "PHI",
      "away_name": "Toronto Blue Jays",
@@ -5629,9 +6309,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823348,
      "date": "2026-08-08",
      "start_utc": "2026-08-08T22:40:00Z",
      "state": "Preview",
+     "home": "PIT",
+     "away": "NYN",
      "away_abbr": "NYM",
      "home_abbr": "PIT",
      "away_name": "New York Mets",
@@ -5652,9 +6335,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822701,
      "date": "2026-08-08",
      "start_utc": "2026-08-08T22:45:00Z",
      "state": "Preview",
+     "home": "WAS",
+     "away": "CIN",
      "away_abbr": "CIN",
      "home_abbr": "WSH",
      "away_name": "Cincinnati Reds",
@@ -5675,9 +6361,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824079,
      "date": "2026-08-08",
      "start_utc": "2026-08-08T23:10:00Z",
      "state": "Preview",
+     "home": "KCA",
+     "away": "CHN",
      "away_abbr": "CHC",
      "home_abbr": "KC",
      "away_name": "Chicago Cubs",
@@ -5698,9 +6387,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823752,
      "date": "2026-08-08",
      "start_utc": "2026-08-08T23:10:00Z",
      "state": "Preview",
+     "home": "MIL",
+     "away": "MIN",
      "away_abbr": "MIN",
      "home_abbr": "MIL",
      "away_name": "Minnesota Twins",
@@ -5721,9 +6413,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823267,
      "date": "2026-08-08",
      "start_utc": "2026-08-08T23:15:00Z",
      "state": "Preview",
+     "home": "SDN",
+     "away": "HOU",
      "away_abbr": "HOU",
      "home_abbr": "SD",
      "away_name": "Houston Astros",
@@ -5744,9 +6439,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823188,
      "date": "2026-08-08",
      "start_utc": "2026-08-08T23:15:00Z",
      "state": "Preview",
+     "home": "SFN",
+     "away": "DET",
      "away_abbr": "DET",
      "home_abbr": "SF",
      "away_name": "Detroit Tigers",
@@ -5767,9 +6465,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823021,
      "date": "2026-08-08",
      "start_utc": "2026-08-08T23:15:00Z",
      "state": "Preview",
+     "home": "SLN",
+     "away": "COL",
      "away_abbr": "COL",
      "home_abbr": "STL",
      "away_name": "Colorado Rockies",
@@ -5790,9 +6491,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822864,
      "date": "2026-08-08",
      "start_utc": "2026-08-08T23:15:00Z",
      "state": "Preview",
+     "home": "TEX",
+     "away": "BAL",
      "away_abbr": "BAL",
      "home_abbr": "TEX",
      "away_name": "Baltimore Orioles",
@@ -5813,9 +6517,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824565,
      "date": "2026-08-08",
      "start_utc": "2026-08-08T23:15:00Z",
      "state": "Preview",
+     "home": "CHA",
+     "away": "CLE",
      "away_abbr": "CLE",
      "home_abbr": "CWS",
      "away_name": "Cleveland Guardians",
@@ -5836,9 +6543,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 825049,
      "date": "2026-08-09",
      "start_utc": "2026-08-09T00:10:00Z",
      "state": "Preview",
+     "home": "ARI",
+     "away": "LAN",
      "away_abbr": "LAD",
      "home_abbr": "AZ",
      "away_name": "Los Angeles Dodgers",
@@ -5859,9 +6569,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823102,
      "date": "2026-08-09",
      "start_utc": "2026-08-09T01:50:00Z",
      "state": "Preview",
+     "home": "SEA",
+     "away": "TBA",
      "away_abbr": "TB",
      "home_abbr": "SEA",
      "away_name": "Tampa Bay Rays",
@@ -5882,9 +6595,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822700,
      "date": "2026-08-09",
      "start_utc": "2026-08-09T16:15:00Z",
      "state": "Preview",
+     "home": "WAS",
+     "away": "CIN",
      "away_abbr": "CIN",
      "home_abbr": "WSH",
      "away_name": "Cincinnati Reds",
@@ -5905,9 +6621,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824724,
      "date": "2026-08-09",
      "start_utc": "2026-08-09T17:35:00Z",
      "state": "Preview",
+     "home": "BOS",
+     "away": "ATH",
      "away_abbr": "ATH",
      "home_abbr": "BOS",
      "away_name": "Athletics",
@@ -5928,9 +6647,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823345,
      "date": "2026-08-09",
      "start_utc": "2026-08-09T17:35:00Z",
      "state": "Preview",
+     "home": "PIT",
+     "away": "NYN",
      "away_abbr": "NYM",
      "home_abbr": "PIT",
      "away_name": "New York Mets",
@@ -5951,9 +6673,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823425,
      "date": "2026-08-09",
      "start_utc": "2026-08-09T17:35:00Z",
      "state": "Preview",
+     "home": "PHI",
+     "away": "TOR",
      "away_abbr": "TOR",
      "home_abbr": "PHI",
      "away_name": "Toronto Blue Jays",
@@ -5974,9 +6699,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823513,
      "date": "2026-08-09",
      "start_utc": "2026-08-09T17:35:00Z",
      "state": "Preview",
+     "home": "NYA",
+     "away": "ATL",
      "away_abbr": "ATL",
      "home_abbr": "NYY",
      "away_name": "Atlanta Braves",
@@ -5997,9 +6725,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823835,
      "date": "2026-08-09",
      "start_utc": "2026-08-09T17:40:00Z",
      "state": "Preview",
+     "home": "MIA",
+     "away": "ANA",
      "away_abbr": "LAA",
      "home_abbr": "MIA",
      "away_name": "Los Angeles Angels",
@@ -6020,9 +6751,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824078,
      "date": "2026-08-09",
      "start_utc": "2026-08-09T18:10:00Z",
      "state": "Preview",
+     "home": "KCA",
+     "away": "CHN",
      "away_abbr": "CHC",
      "home_abbr": "KC",
      "away_name": "Chicago Cubs",
@@ -6043,9 +6777,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824564,
      "date": "2026-08-09",
      "start_utc": "2026-08-09T18:10:00Z",
      "state": "Preview",
+     "home": "CHA",
+     "away": "CLE",
      "away_abbr": "CLE",
      "home_abbr": "CWS",
      "away_name": "Cleveland Guardians",
@@ -6066,9 +6803,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823751,
      "date": "2026-08-09",
      "start_utc": "2026-08-09T18:10:00Z",
      "state": "Preview",
+     "home": "MIL",
+     "away": "MIN",
      "away_abbr": "MIN",
      "home_abbr": "MIL",
      "away_name": "Minnesota Twins",
@@ -6089,9 +6829,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823020,
      "date": "2026-08-09",
      "start_utc": "2026-08-09T18:15:00Z",
      "state": "Preview",
+     "home": "SLN",
+     "away": "COL",
      "away_abbr": "COL",
      "home_abbr": "STL",
      "away_name": "Colorado Rockies",
@@ -6112,9 +6855,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822862,
      "date": "2026-08-09",
      "start_utc": "2026-08-09T18:35:00Z",
      "state": "Preview",
+     "home": "TEX",
+     "away": "BAL",
      "away_abbr": "BAL",
      "home_abbr": "TEX",
      "away_name": "Baltimore Orioles",
@@ -6135,9 +6881,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823190,
      "date": "2026-08-09",
      "start_utc": "2026-08-09T20:05:00Z",
      "state": "Preview",
+     "home": "SFN",
+     "away": "DET",
      "away_abbr": "DET",
      "home_abbr": "SF",
      "away_name": "Detroit Tigers",
@@ -6158,9 +6907,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 825050,
      "date": "2026-08-09",
      "start_utc": "2026-08-09T20:10:00Z",
      "state": "Preview",
+     "home": "ARI",
+     "away": "LAN",
      "away_abbr": "LAD",
      "home_abbr": "AZ",
      "away_name": "Los Angeles Dodgers",
@@ -6181,9 +6933,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823104,
      "date": "2026-08-09",
      "start_utc": "2026-08-09T20:10:00Z",
      "state": "Preview",
+     "home": "SEA",
+     "away": "TBA",
      "away_abbr": "TB",
      "home_abbr": "SEA",
      "away_name": "Tampa Bay Rays",
@@ -6204,9 +6959,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823268,
      "date": "2026-08-10",
      "start_utc": "2026-08-10T00:20:00Z",
      "state": "Preview",
+     "home": "SDN",
+     "away": "HOU",
      "away_abbr": "HOU",
      "home_abbr": "SD",
      "away_name": "Houston Astros",
@@ -6227,9 +6985,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822780,
      "date": "2026-08-10",
      "start_utc": "2026-08-10T23:07:00Z",
      "state": "Preview",
+     "home": "TOR",
+     "away": "BOS",
      "away_abbr": "BOS",
      "home_abbr": "TOR",
      "away_name": "Boston Red Sox",
@@ -6250,9 +7011,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824887,
      "date": "2026-08-10",
      "start_utc": "2026-08-10T23:15:00Z",
      "state": "Preview",
+     "home": "ATL",
+     "away": "NYN",
      "away_abbr": "NYM",
      "home_abbr": "ATL",
      "away_name": "New York Mets",
@@ -6273,9 +7037,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823675,
      "date": "2026-08-10",
      "start_utc": "2026-08-10T23:40:00Z",
      "state": "Preview",
+     "home": "MIN",
+     "away": "BAL",
      "away_abbr": "BAL",
      "home_abbr": "MIN",
      "away_name": "Baltimore Orioles",
@@ -6296,9 +7063,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823018,
      "date": "2026-08-10",
      "start_utc": "2026-08-10T23:45:00Z",
      "state": "Preview",
+     "home": "SLN",
+     "away": "PHI",
      "away_abbr": "PHI",
      "home_abbr": "STL",
      "away_name": "Philadelphia Phillies",
@@ -6319,9 +7089,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823998,
      "date": "2026-08-11",
      "start_utc": "2026-08-11T01:38:00Z",
      "state": "Preview",
+     "home": "ANA",
+     "away": "TEX",
      "away_abbr": "TEX",
      "home_abbr": "LAA",
      "away_name": "Texas Rangers",
@@ -6342,9 +7115,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 825048,
      "date": "2026-08-11",
      "start_utc": "2026-08-11T01:40:00Z",
      "state": "Preview",
+     "home": "ARI",
+     "away": "COL",
      "away_abbr": "COL",
      "home_abbr": "AZ",
      "away_name": "Colorado Rockies",
@@ -6365,9 +7141,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824969,
      "date": "2026-08-11",
      "start_utc": "2026-08-11T01:40:00Z",
      "state": "Preview",
+     "home": "ATH",
+     "away": "TBA",
      "away_abbr": "TB",
      "home_abbr": "ATH",
      "away_name": "Tampa Bay Rays",
@@ -6388,9 +7167,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823265,
      "date": "2026-08-11",
      "start_utc": "2026-08-11T01:40:00Z",
      "state": "Preview",
+     "home": "SDN",
+     "away": "MIL",
      "away_abbr": "MIL",
      "home_abbr": "SD",
      "away_name": "Milwaukee Brewers",
@@ -6411,9 +7193,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823189,
      "date": "2026-08-11",
      "start_utc": "2026-08-11T01:45:00Z",
      "state": "Preview",
+     "home": "SFN",
+     "away": "HOU",
      "away_abbr": "HOU",
      "home_abbr": "SF",
      "away_name": "Houston Astros",
@@ -6434,9 +7219,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823918,
      "date": "2026-08-11",
      "start_utc": "2026-08-11T02:10:00Z",
      "state": "Preview",
+     "home": "LAN",
+     "away": "KCA",
      "away_abbr": "KC",
      "home_abbr": "LAD",
      "away_name": "Kansas City Royals",
@@ -6457,9 +7245,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824240,
      "date": "2026-08-11",
      "start_utc": "2026-08-11T22:40:00Z",
      "state": "Preview",
+     "home": "DET",
+     "away": "CLE",
      "away_abbr": "CLE",
      "home_abbr": "DET",
      "away_name": "Cleveland Guardians",
@@ -6480,9 +7271,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823832,
      "date": "2026-08-11",
      "start_utc": "2026-08-11T22:40:00Z",
      "state": "Preview",
+     "home": "MIA",
+     "away": "PIT",
      "away_abbr": "PIT",
      "home_abbr": "MIA",
      "away_name": "Pittsburgh Pirates",
@@ -6503,9 +7297,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822697,
      "date": "2026-08-11",
      "start_utc": "2026-08-11T22:45:00Z",
      "state": "Preview",
+     "home": "WAS",
+     "away": "CHN",
      "away_abbr": "CHC",
      "home_abbr": "WSH",
      "away_name": "Chicago Cubs",
@@ -6526,9 +7323,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823512,
      "date": "2026-08-11",
      "start_utc": "2026-08-11T23:05:00Z",
      "state": "Preview",
+     "home": "NYA",
+     "away": "SEA",
      "away_abbr": "SEA",
      "home_abbr": "NYY",
      "away_name": "Seattle Mariners",
@@ -6549,9 +7349,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822778,
      "date": "2026-08-11",
      "start_utc": "2026-08-11T23:07:00Z",
      "state": "Preview",
+     "home": "TOR",
+     "away": "BOS",
      "away_abbr": "BOS",
      "home_abbr": "TOR",
      "away_name": "Boston Red Sox",
@@ -6572,9 +7375,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824886,
      "date": "2026-08-11",
      "start_utc": "2026-08-11T23:15:00Z",
      "state": "Preview",
+     "home": "ATL",
+     "away": "NYN",
      "away_abbr": "NYM",
      "home_abbr": "ATL",
      "away_name": "New York Mets",
@@ -6595,9 +7401,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823673,
      "date": "2026-08-11",
      "start_utc": "2026-08-11T23:40:00Z",
      "state": "Preview",
+     "home": "MIN",
+     "away": "BAL",
      "away_abbr": "BAL",
      "home_abbr": "MIN",
      "away_name": "Baltimore Orioles",
@@ -6618,9 +7427,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824563,
      "date": "2026-08-11",
      "start_utc": "2026-08-11T23:40:00Z",
      "state": "Preview",
+     "home": "CHA",
+     "away": "CIN",
      "away_abbr": "CIN",
      "home_abbr": "CWS",
      "away_name": "Cincinnati Reds",
@@ -6641,9 +7453,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823019,
      "date": "2026-08-11",
      "start_utc": "2026-08-11T23:45:00Z",
      "state": "Preview",
+     "home": "SLN",
+     "away": "PHI",
      "away_abbr": "PHI",
      "home_abbr": "STL",
      "away_name": "Philadelphia Phillies",
@@ -6664,9 +7479,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823997,
      "date": "2026-08-12",
      "start_utc": "2026-08-12T01:38:00Z",
      "state": "Preview",
+     "home": "ANA",
+     "away": "TEX",
      "away_abbr": "TEX",
      "home_abbr": "LAA",
      "away_name": "Texas Rangers",
@@ -6687,9 +7505,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 825046,
      "date": "2026-08-12",
      "start_utc": "2026-08-12T01:40:00Z",
      "state": "Preview",
+     "home": "ARI",
+     "away": "COL",
      "away_abbr": "COL",
      "home_abbr": "AZ",
      "away_name": "Colorado Rockies",
@@ -6710,9 +7531,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824970,
      "date": "2026-08-12",
      "start_utc": "2026-08-12T01:40:00Z",
      "state": "Preview",
+     "home": "ATH",
+     "away": "TBA",
      "away_abbr": "TB",
      "home_abbr": "ATH",
      "away_name": "Tampa Bay Rays",
@@ -6733,9 +7557,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823264,
      "date": "2026-08-12",
      "start_utc": "2026-08-12T01:40:00Z",
      "state": "Preview",
+     "home": "SDN",
+     "away": "MIL",
      "away_abbr": "MIL",
      "home_abbr": "SD",
      "away_name": "Milwaukee Brewers",
@@ -6756,9 +7583,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823186,
      "date": "2026-08-12",
      "start_utc": "2026-08-12T01:45:00Z",
      "state": "Preview",
+     "home": "SFN",
+     "away": "HOU",
      "away_abbr": "HOU",
      "home_abbr": "SF",
      "away_name": "Houston Astros",
@@ -6779,9 +7609,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823917,
      "date": "2026-08-12",
      "start_utc": "2026-08-12T02:10:00Z",
      "state": "Preview",
+     "home": "LAN",
+     "away": "KCA",
      "away_abbr": "KC",
      "home_abbr": "LAD",
      "away_name": "Kansas City Royals",
@@ -6802,9 +7635,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823672,
      "date": "2026-08-12",
      "start_utc": "2026-08-12T17:40:00Z",
      "state": "Preview",
+     "home": "MIN",
+     "away": "BAL",
      "away_abbr": "BAL",
      "home_abbr": "MIN",
      "away_name": "Baltimore Orioles",
@@ -6825,9 +7661,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823017,
      "date": "2026-08-12",
      "start_utc": "2026-08-12T18:15:00Z",
      "state": "Preview",
+     "home": "SLN",
+     "away": "PHI",
      "away_abbr": "PHI",
      "home_abbr": "STL",
      "away_name": "Philadelphia Phillies",
@@ -6848,9 +7687,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824967,
      "date": "2026-08-12",
      "start_utc": "2026-08-12T19:05:00Z",
      "state": "Preview",
+     "home": "ATH",
+     "away": "TBA",
      "away_abbr": "TB",
      "home_abbr": "ATH",
      "away_name": "Tampa Bay Rays",
@@ -6871,9 +7713,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 825047,
      "date": "2026-08-12",
      "start_utc": "2026-08-12T19:40:00Z",
      "state": "Preview",
+     "home": "ARI",
+     "away": "COL",
      "away_abbr": "COL",
      "home_abbr": "AZ",
      "away_name": "Colorado Rockies",
@@ -6894,9 +7739,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823187,
      "date": "2026-08-12",
      "start_utc": "2026-08-12T19:45:00Z",
      "state": "Preview",
+     "home": "SFN",
+     "away": "HOU",
      "away_abbr": "HOU",
      "home_abbr": "SF",
      "away_name": "Houston Astros",
@@ -6917,9 +7765,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823263,
      "date": "2026-08-12",
      "start_utc": "2026-08-12T20:10:00Z",
      "state": "Preview",
+     "home": "SDN",
+     "away": "MIL",
      "away_abbr": "MIL",
      "home_abbr": "SD",
      "away_name": "Milwaukee Brewers",
@@ -6940,9 +7791,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824241,
      "date": "2026-08-12",
      "start_utc": "2026-08-12T22:40:00Z",
      "state": "Preview",
+     "home": "DET",
+     "away": "CLE",
      "away_abbr": "CLE",
      "home_abbr": "DET",
      "away_name": "Cleveland Guardians",
@@ -6963,9 +7817,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823833,
      "date": "2026-08-12",
      "start_utc": "2026-08-12T22:40:00Z",
      "state": "Preview",
+     "home": "MIA",
+     "away": "PIT",
      "away_abbr": "PIT",
      "home_abbr": "MIA",
      "away_name": "Pittsburgh Pirates",
@@ -6986,9 +7843,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822698,
      "date": "2026-08-12",
      "start_utc": "2026-08-12T22:45:00Z",
      "state": "Preview",
+     "home": "WAS",
+     "away": "CHN",
      "away_abbr": "CHC",
      "home_abbr": "WSH",
      "away_name": "Chicago Cubs",
@@ -7009,9 +7869,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823511,
      "date": "2026-08-12",
      "start_utc": "2026-08-12T23:05:00Z",
      "state": "Preview",
+     "home": "NYA",
+     "away": "SEA",
      "away_abbr": "SEA",
      "home_abbr": "NYY",
      "away_name": "Seattle Mariners",
@@ -7032,9 +7895,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822779,
      "date": "2026-08-12",
      "start_utc": "2026-08-12T23:07:00Z",
      "state": "Preview",
+     "home": "TOR",
+     "away": "BOS",
      "away_abbr": "BOS",
      "home_abbr": "TOR",
      "away_name": "Boston Red Sox",
@@ -7055,9 +7921,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824883,
      "date": "2026-08-12",
      "start_utc": "2026-08-12T23:15:00Z",
      "state": "Preview",
+     "home": "ATL",
+     "away": "NYN",
      "away_abbr": "NYM",
      "home_abbr": "ATL",
      "away_name": "New York Mets",
@@ -7078,9 +7947,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824562,
      "date": "2026-08-12",
      "start_utc": "2026-08-12T23:40:00Z",
      "state": "Preview",
+     "home": "CHA",
+     "away": "CIN",
      "away_abbr": "CIN",
      "home_abbr": "CWS",
      "away_name": "Cincinnati Reds",
@@ -7101,9 +7973,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823916,
      "date": "2026-08-13",
      "start_utc": "2026-08-13T02:10:00Z",
      "state": "Preview",
+     "home": "LAN",
+     "away": "KCA",
      "away_abbr": "KC",
      "home_abbr": "LAD",
      "away_name": "Kansas City Royals",
@@ -7124,9 +7999,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823994,
      "date": "2026-08-13",
      "start_utc": "2026-08-13T02:10:00Z",
      "state": "Preview",
+     "home": "ANA",
+     "away": "TEX",
      "away_abbr": "TEX",
      "home_abbr": "LAA",
      "away_name": "Texas Rangers",
@@ -7147,9 +8025,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824238,
      "date": "2026-08-13",
      "start_utc": "2026-08-13T17:10:00Z",
      "state": "Preview",
+     "home": "DET",
+     "away": "CLE",
      "away_abbr": "CLE",
      "home_abbr": "DET",
      "away_name": "Cleveland Guardians",
@@ -7170,9 +8051,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823829,
      "date": "2026-08-13",
      "start_utc": "2026-08-13T17:10:00Z",
      "state": "Preview",
+     "home": "MIA",
+     "away": "PIT",
      "away_abbr": "PIT",
      "home_abbr": "MIA",
      "away_name": "Pittsburgh Pirates",
@@ -7193,9 +8077,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823508,
      "date": "2026-08-13",
      "start_utc": "2026-08-13T17:35:00Z",
      "state": "Preview",
+     "home": "NYA",
+     "away": "SEA",
      "away_abbr": "SEA",
      "home_abbr": "NYY",
      "away_name": "Seattle Mariners",
@@ -7216,9 +8103,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824561,
      "date": "2026-08-13",
      "start_utc": "2026-08-13T18:10:00Z",
      "state": "Preview",
+     "home": "CHA",
+     "away": "CIN",
      "away_abbr": "CIN",
      "home_abbr": "CWS",
      "away_name": "Cincinnati Reds",
@@ -7239,9 +8129,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822776,
      "date": "2026-08-13",
      "start_utc": "2026-08-13T19:07:00Z",
      "state": "Preview",
+     "home": "TOR",
+     "away": "BOS",
      "away_abbr": "BOS",
      "home_abbr": "TOR",
      "away_name": "Boston Red Sox",
@@ -7262,9 +8155,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822696,
      "date": "2026-08-13",
      "start_utc": "2026-08-13T20:05:00Z",
      "state": "Preview",
+     "home": "WAS",
+     "away": "CHN",
      "away_abbr": "CHC",
      "home_abbr": "WSH",
      "away_name": "Chicago Cubs",
@@ -7285,9 +8181,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823669,
      "date": "2026-08-13",
      "start_utc": "2026-08-13T23:30:00Z",
      "state": "Preview",
+     "home": "MIN",
+     "away": "PHI",
      "away_abbr": "PHI",
      "home_abbr": "MIN",
      "away_name": "Philadelphia Phillies",
@@ -7308,9 +8207,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823995,
      "date": "2026-08-14",
      "start_utc": "2026-08-14T02:07:00Z",
      "state": "Preview",
+     "home": "ANA",
+     "away": "TEX",
      "away_abbr": "TEX",
      "home_abbr": "LAA",
      "away_name": "Texas Rangers",
@@ -7331,9 +8233,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823915,
      "date": "2026-08-14",
      "start_utc": "2026-08-14T02:10:00Z",
      "state": "Preview",
+     "home": "LAN",
+     "away": "MIL",
      "away_abbr": "MIL",
      "home_abbr": "LAD",
      "away_name": "Milwaukee Brewers",
@@ -7354,9 +8259,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824643,
      "date": "2026-08-14",
      "start_utc": "2026-08-14T18:20:00Z",
      "state": "Preview",
+     "home": "CHN",
+     "away": "SLN",
      "away_abbr": "STL",
      "home_abbr": "CHC",
      "away_name": "St. Louis Cardinals",
@@ -7377,9 +8285,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824479,
      "date": "2026-08-14",
      "start_utc": "2026-08-14T22:10:00Z",
      "state": "Preview",
+     "home": "CIN",
+     "away": "MIA",
      "away_abbr": "MIA",
      "home_abbr": "CIN",
      "away_name": "Miami Marlins",
@@ -7400,9 +8311,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823346,
      "date": "2026-08-14",
      "start_utc": "2026-08-14T22:40:00Z",
      "state": "Preview",
+     "home": "PIT",
+     "away": "BOS",
      "away_abbr": "BOS",
      "home_abbr": "PIT",
      "away_name": "Boston Red Sox",
@@ -7423,9 +8337,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824237,
      "date": "2026-08-14",
      "start_utc": "2026-08-14T22:40:00Z",
      "state": "Preview",
+     "home": "DET",
+     "away": "CHA",
      "away_abbr": "CWS",
      "home_abbr": "DET",
      "away_name": "Chicago White Sox",
@@ -7446,9 +8363,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822777,
      "date": "2026-08-14",
      "start_utc": "2026-08-14T23:07:00Z",
      "state": "Preview",
+     "home": "TOR",
+     "away": "NYA",
      "away_abbr": "NYY",
      "home_abbr": "TOR",
      "away_name": "New York Yankees",
@@ -7469,9 +8389,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823591,
      "date": "2026-08-14",
      "start_utc": "2026-08-14T23:10:00Z",
      "state": "Preview",
+     "home": "NYN",
+     "away": "WAS",
      "away_abbr": "WSH",
      "home_abbr": "NYM",
      "away_name": "Washington Nationals",
@@ -7492,9 +8415,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824399,
      "date": "2026-08-14",
      "start_utc": "2026-08-14T23:10:00Z",
      "state": "Preview",
+     "home": "CLE",
+     "away": "SDN",
      "away_abbr": "SD",
      "home_abbr": "CLE",
      "away_name": "San Diego Padres",
@@ -7515,9 +8441,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822942,
      "date": "2026-08-14",
      "start_utc": "2026-08-14T23:10:00Z",
      "state": "Preview",
+     "home": "TBA",
+     "away": "BAL",
      "away_abbr": "BAL",
      "home_abbr": "TB",
      "away_name": "Baltimore Orioles",
@@ -7538,9 +8467,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824882,
      "date": "2026-08-14",
      "start_utc": "2026-08-14T23:15:00Z",
      "state": "Preview",
+     "home": "ATL",
+     "away": "ARI",
      "away_abbr": "AZ",
      "home_abbr": "ATL",
      "away_name": "Arizona Diamondbacks",
@@ -7561,9 +8493,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824159,
      "date": "2026-08-15",
      "start_utc": "2026-08-15T00:10:00Z",
      "state": "Preview",
+     "home": "HOU",
+     "away": "SEA",
      "away_abbr": "SEA",
      "home_abbr": "HOU",
      "away_name": "Seattle Mariners",
@@ -7584,9 +8519,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823993,
      "date": "2026-08-15",
      "start_utc": "2026-08-15T01:38:00Z",
      "state": "Preview",
+     "home": "ANA",
+     "away": "KCA",
      "away_abbr": "KC",
      "home_abbr": "LAA",
      "away_name": "Kansas City Royals",
@@ -7607,9 +8545,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824968,
      "date": "2026-08-15",
      "start_utc": "2026-08-15T01:40:00Z",
      "state": "Preview",
+     "home": "ATH",
+     "away": "TEX",
      "away_abbr": "TEX",
      "home_abbr": "ATH",
      "away_name": "Texas Rangers",
@@ -7630,9 +8571,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823913,
      "date": "2026-08-15",
      "start_utc": "2026-08-15T02:10:00Z",
      "state": "Preview",
+     "home": "LAN",
+     "away": "MIL",
      "away_abbr": "MIL",
      "home_abbr": "LAD",
      "away_name": "Milwaukee Brewers",
@@ -7653,9 +8597,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823185,
      "date": "2026-08-15",
      "start_utc": "2026-08-15T02:15:00Z",
      "state": "Preview",
+     "home": "SFN",
+     "away": "COL",
      "away_abbr": "COL",
      "home_abbr": "SF",
      "away_name": "Colorado Rockies",
@@ -7676,9 +8623,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824239,
      "date": "2026-08-15",
      "start_utc": "2026-08-15T17:10:00Z",
      "state": "Preview",
+     "home": "DET",
+     "away": "CHA",
      "away_abbr": "CWS",
      "home_abbr": "DET",
      "away_name": "Chicago White Sox",
@@ -7699,9 +8649,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824644,
      "date": "2026-08-15",
      "start_utc": "2026-08-15T18:20:00Z",
      "state": "Preview",
+     "home": "CHN",
+     "away": "SLN",
      "away_abbr": "STL",
      "home_abbr": "CHC",
      "away_name": "St. Louis Cardinals",
@@ -7722,9 +8675,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822775,
      "date": "2026-08-15",
      "start_utc": "2026-08-15T19:07:00Z",
      "state": "Preview",
+     "home": "TOR",
+     "away": "NYA",
      "away_abbr": "NYY",
      "home_abbr": "TOR",
      "away_name": "New York Yankees",
@@ -7745,9 +8701,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823184,
      "date": "2026-08-15",
      "start_utc": "2026-08-15T20:05:00Z",
      "state": "Preview",
+     "home": "SFN",
+     "away": "COL",
      "away_abbr": "COL",
      "home_abbr": "SF",
      "away_name": "Colorado Rockies",
@@ -7768,9 +8727,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823588,
      "date": "2026-08-15",
      "start_utc": "2026-08-15T20:10:00Z",
      "state": "Preview",
+     "home": "NYN",
+     "away": "WAS",
      "away_abbr": "WSH",
      "home_abbr": "NYM",
      "away_name": "Washington Nationals",
@@ -7791,9 +8753,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822941,
      "date": "2026-08-15",
      "start_utc": "2026-08-15T22:10:00Z",
      "state": "Preview",
+     "home": "TBA",
+     "away": "BAL",
      "away_abbr": "BAL",
      "home_abbr": "TB",
      "away_name": "Baltimore Orioles",
@@ -7814,9 +8779,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824480,
      "date": "2026-08-15",
      "start_utc": "2026-08-15T22:40:00Z",
      "state": "Preview",
+     "home": "CIN",
+     "away": "MIA",
      "away_abbr": "MIA",
      "home_abbr": "CIN",
      "away_name": "Miami Marlins",
@@ -7837,9 +8805,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824400,
      "date": "2026-08-15",
      "start_utc": "2026-08-15T23:10:00Z",
      "state": "Preview",
+     "home": "CLE",
+     "away": "SDN",
      "away_abbr": "SD",
      "home_abbr": "CLE",
      "away_name": "San Diego Padres",
@@ -7860,9 +8831,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824157,
      "date": "2026-08-15",
      "start_utc": "2026-08-15T23:10:00Z",
      "state": "Preview",
+     "home": "HOU",
+     "away": "SEA",
      "away_abbr": "SEA",
      "home_abbr": "HOU",
      "away_name": "Seattle Mariners",
@@ -7883,9 +8857,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823671,
      "date": "2026-08-15",
      "start_utc": "2026-08-15T23:10:00Z",
      "state": "Preview",
+     "home": "MIN",
+     "away": "PHI",
      "away_abbr": "PHI",
      "home_abbr": "MIN",
      "away_name": "Philadelphia Phillies",
@@ -7906,9 +8883,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823347,
      "date": "2026-08-15",
      "start_utc": "2026-08-15T23:15:00Z",
      "state": "Preview",
+     "home": "PIT",
+     "away": "BOS",
      "away_abbr": "BOS",
      "home_abbr": "PIT",
      "away_name": "Boston Red Sox",
@@ -7929,9 +8909,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824884,
      "date": "2026-08-15",
      "start_utc": "2026-08-15T23:15:00Z",
      "state": "Preview",
+     "home": "ATL",
+     "away": "ARI",
      "away_abbr": "AZ",
      "home_abbr": "ATL",
      "away_name": "Arizona Diamondbacks",
@@ -7952,9 +8935,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823914,
      "date": "2026-08-15",
      "start_utc": "2026-08-15T23:15:00Z",
      "state": "Preview",
+     "home": "LAN",
+     "away": "MIL",
      "away_abbr": "MIL",
      "home_abbr": "LAD",
      "away_name": "Milwaukee Brewers",
@@ -7975,9 +8961,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823990,
      "date": "2026-08-16",
      "start_utc": "2026-08-16T01:38:00Z",
      "state": "Preview",
+     "home": "ANA",
+     "away": "KCA",
      "away_abbr": "KC",
      "home_abbr": "LAA",
      "away_name": "Kansas City Royals",
@@ -7998,9 +8987,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824966,
      "date": "2026-08-16",
      "start_utc": "2026-08-16T01:40:00Z",
      "state": "Preview",
+     "home": "ATH",
+     "away": "TEX",
      "away_abbr": "TEX",
      "home_abbr": "ATH",
      "away_name": "Texas Rangers",
@@ -8021,9 +9013,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822940,
      "date": "2026-08-16",
      "start_utc": "2026-08-16T16:15:00Z",
      "state": "Preview",
+     "home": "TBA",
+     "away": "BAL",
      "away_abbr": "BAL",
      "home_abbr": "TB",
      "away_name": "Baltimore Orioles",
@@ -8044,9 +9039,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823344,
      "date": "2026-08-16",
      "start_utc": "2026-08-16T17:35:00Z",
      "state": "Preview",
+     "home": "PIT",
+     "away": "BOS",
      "away_abbr": "BOS",
      "home_abbr": "PIT",
      "away_name": "Boston Red Sox",
@@ -8067,9 +9065,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824880,
      "date": "2026-08-16",
      "start_utc": "2026-08-16T17:35:00Z",
      "state": "Preview",
+     "home": "ATL",
+     "away": "ARI",
      "away_abbr": "AZ",
      "home_abbr": "ATL",
      "away_name": "Arizona Diamondbacks",
@@ -8090,9 +9091,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822774,
      "date": "2026-08-16",
      "start_utc": "2026-08-16T17:37:00Z",
      "state": "Preview",
+     "home": "TOR",
+     "away": "NYA",
      "away_abbr": "NYY",
      "home_abbr": "TOR",
      "away_name": "New York Yankees",
@@ -8113,9 +9117,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823590,
      "date": "2026-08-16",
      "start_utc": "2026-08-16T17:40:00Z",
      "state": "Preview",
+     "home": "NYN",
+     "away": "WAS",
      "away_abbr": "WSH",
      "home_abbr": "NYM",
      "away_name": "Washington Nationals",
@@ -8136,9 +9143,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824397,
      "date": "2026-08-16",
      "start_utc": "2026-08-16T17:40:00Z",
      "state": "Preview",
+     "home": "CLE",
+     "away": "SDN",
      "away_abbr": "SD",
      "home_abbr": "CLE",
      "away_name": "San Diego Padres",
@@ -8159,9 +9169,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824236,
      "date": "2026-08-16",
      "start_utc": "2026-08-16T17:40:00Z",
      "state": "Preview",
+     "home": "DET",
+     "away": "CHA",
      "away_abbr": "CWS",
      "home_abbr": "DET",
      "away_name": "Chicago White Sox",
@@ -8182,9 +9195,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824477,
      "date": "2026-08-16",
      "start_utc": "2026-08-16T17:40:00Z",
      "state": "Preview",
+     "home": "CIN",
+     "away": "MIA",
      "away_abbr": "MIA",
      "home_abbr": "CIN",
      "away_name": "Miami Marlins",
@@ -8205,9 +9221,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823670,
      "date": "2026-08-16",
      "start_utc": "2026-08-16T18:10:00Z",
      "state": "Preview",
+     "home": "MIN",
+     "away": "PHI",
      "away_abbr": "PHI",
      "home_abbr": "MIN",
      "away_name": "Philadelphia Phillies",
@@ -8228,9 +9247,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824642,
      "date": "2026-08-16",
      "start_utc": "2026-08-16T19:10:00Z",
      "state": "Preview",
+     "home": "CHN",
+     "away": "SLN",
      "away_abbr": "STL",
      "home_abbr": "CHC",
      "away_name": "St. Louis Cardinals",
@@ -8251,9 +9273,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823182,
      "date": "2026-08-16",
      "start_utc": "2026-08-16T20:05:00Z",
      "state": "Preview",
+     "home": "SFN",
+     "away": "COL",
      "away_abbr": "COL",
      "home_abbr": "SF",
      "away_name": "Colorado Rockies",
@@ -8274,9 +9299,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824965,
      "date": "2026-08-16",
      "start_utc": "2026-08-16T20:05:00Z",
      "state": "Preview",
+     "home": "ATH",
+     "away": "TEX",
      "away_abbr": "TEX",
      "home_abbr": "ATH",
      "away_name": "Texas Rangers",
@@ -8297,9 +9325,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823991,
      "date": "2026-08-16",
      "start_utc": "2026-08-16T20:07:00Z",
      "state": "Preview",
+     "home": "ANA",
+     "away": "KCA",
      "away_abbr": "KC",
      "home_abbr": "LAA",
      "away_name": "Kansas City Royals",
@@ -8320,9 +9351,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823912,
      "date": "2026-08-16",
      "start_utc": "2026-08-16T20:10:00Z",
      "state": "Preview",
+     "home": "LAN",
+     "away": "MIL",
      "away_abbr": "MIL",
      "home_abbr": "LAD",
      "away_name": "Milwaukee Brewers",
@@ -8343,9 +9377,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824156,
      "date": "2026-08-16",
      "start_utc": "2026-08-16T23:20:00Z",
      "state": "Preview",
+     "home": "HOU",
+     "away": "SEA",
      "away_abbr": "SEA",
      "home_abbr": "HOU",
      "away_name": "Seattle Mariners",
@@ -8366,9 +9403,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824514,
      "date": "2026-08-17",
      "start_utc": "2026-08-17T17:40:00Z",
      "state": "Preview",
+     "home": "CIN",
+     "away": "SLN",
      "away_abbr": "STL",
      "home_abbr": "CIN",
      "away_name": "St. Louis Cardinals",
@@ -8389,9 +9429,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824478,
      "date": "2026-08-17",
      "start_utc": "2026-08-17T22:40:00Z",
      "state": "Preview",
+     "home": "CIN",
+     "away": "SLN",
      "away_abbr": "STL",
      "home_abbr": "CIN",
      "away_name": "St. Louis Cardinals",
@@ -8412,9 +9455,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822939,
      "date": "2026-08-17",
      "start_utc": "2026-08-17T22:40:00Z",
      "state": "Preview",
+     "home": "TBA",
+     "away": "BAL",
      "away_abbr": "BAL",
      "home_abbr": "TB",
      "away_name": "Baltimore Orioles",
@@ -8435,9 +9481,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823427,
      "date": "2026-08-17",
      "start_utc": "2026-08-17T22:40:00Z",
      "state": "Preview",
+     "home": "PHI",
+     "away": "MIA",
      "away_abbr": "MIA",
      "home_abbr": "PHI",
      "away_name": "Miami Marlins",
@@ -8458,9 +9507,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823343,
      "date": "2026-08-17",
      "start_utc": "2026-08-17T23:05:00Z",
      "state": "Preview",
+     "home": "PIT",
+     "away": "DET",
      "away_abbr": "DET",
      "home_abbr": "PIT",
      "away_name": "Detroit Tigers",
@@ -8481,9 +9533,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824725,
      "date": "2026-08-17",
      "start_utc": "2026-08-17T23:10:00Z",
      "state": "Preview",
+     "home": "BOS",
+     "away": "ARI",
      "away_abbr": "AZ",
      "home_abbr": "BOS",
      "away_name": "Arizona Diamondbacks",
@@ -8504,9 +9559,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823589,
      "date": "2026-08-17",
      "start_utc": "2026-08-17T23:10:00Z",
      "state": "Preview",
+     "home": "NYN",
+     "away": "SDN",
      "away_abbr": "SD",
      "home_abbr": "NYM",
      "away_name": "San Diego Padres",
@@ -8527,9 +9585,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824077,
      "date": "2026-08-17",
      "start_utc": "2026-08-17T23:40:00Z",
      "state": "Preview",
+     "home": "KCA",
+     "away": "ATH",
      "away_abbr": "ATH",
      "home_abbr": "KC",
      "away_name": "Athletics",
@@ -8550,9 +9611,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823668,
      "date": "2026-08-17",
      "start_utc": "2026-08-17T23:40:00Z",
      "state": "Preview",
+     "home": "MIN",
+     "away": "ATL",
      "away_abbr": "ATL",
      "home_abbr": "MIN",
      "away_name": "Atlanta Braves",
@@ -8573,9 +9637,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824641,
      "date": "2026-08-18",
      "start_utc": "2026-08-18T00:05:00Z",
      "state": "Preview",
+     "home": "CHN",
+     "away": "CHA",
      "away_abbr": "CWS",
      "home_abbr": "CHC",
      "away_name": "Chicago White Sox",
@@ -8596,9 +9663,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824320,
      "date": "2026-08-18",
      "start_utc": "2026-08-18T00:40:00Z",
      "state": "Preview",
+     "home": "COL",
+     "away": "LAN",
      "away_abbr": "LAD",
      "home_abbr": "COL",
      "away_name": "Los Angeles Dodgers",
@@ -8619,9 +9689,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824803,
      "date": "2026-08-18",
      "start_utc": "2026-08-18T22:35:00Z",
      "state": "Preview",
+     "home": "BAL",
+     "away": "NYA",
      "away_abbr": "NYY",
      "home_abbr": "BAL",
      "away_name": "New York Yankees",
@@ -8642,9 +9715,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823341,
      "date": "2026-08-18",
      "start_utc": "2026-08-18T22:40:00Z",
      "state": "Preview",
+     "home": "PIT",
+     "away": "DET",
      "away_abbr": "DET",
      "home_abbr": "PIT",
      "away_name": "Detroit Tigers",
@@ -8665,9 +9741,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824398,
      "date": "2026-08-18",
      "start_utc": "2026-08-18T22:40:00Z",
      "state": "Preview",
+     "home": "CLE",
+     "away": "SFN",
      "away_abbr": "SF",
      "home_abbr": "CLE",
      "away_name": "San Francisco Giants",
@@ -8688,9 +9767,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824475,
      "date": "2026-08-18",
      "start_utc": "2026-08-18T22:40:00Z",
      "state": "Preview",
+     "home": "CIN",
+     "away": "SLN",
      "away_abbr": "STL",
      "home_abbr": "CIN",
      "away_name": "St. Louis Cardinals",
@@ -8711,9 +9793,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822938,
      "date": "2026-08-18",
      "start_utc": "2026-08-18T22:40:00Z",
      "state": "Preview",
+     "home": "TBA",
+     "away": "TOR",
      "away_abbr": "TOR",
      "home_abbr": "TB",
      "away_name": "Toronto Blue Jays",
@@ -8734,9 +9819,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823423,
      "date": "2026-08-18",
      "start_utc": "2026-08-18T22:40:00Z",
      "state": "Preview",
+     "home": "PHI",
+     "away": "MIA",
      "away_abbr": "MIA",
      "home_abbr": "PHI",
      "away_name": "Miami Marlins",
@@ -8757,9 +9845,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824723,
      "date": "2026-08-18",
      "start_utc": "2026-08-18T23:10:00Z",
      "state": "Preview",
+     "home": "BOS",
+     "away": "ARI",
      "away_abbr": "AZ",
      "home_abbr": "BOS",
      "away_name": "Arizona Diamondbacks",
@@ -8780,9 +9871,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823586,
      "date": "2026-08-18",
      "start_utc": "2026-08-18T23:10:00Z",
      "state": "Preview",
+     "home": "NYN",
+     "away": "SDN",
      "away_abbr": "SD",
      "home_abbr": "NYM",
      "away_name": "San Diego Padres",
@@ -8803,9 +9897,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824075,
      "date": "2026-08-18",
      "start_utc": "2026-08-18T23:40:00Z",
      "state": "Preview",
+     "home": "KCA",
+     "away": "ATH",
      "away_abbr": "ATH",
      "home_abbr": "KC",
      "away_name": "Athletics",
@@ -8826,9 +9923,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823667,
      "date": "2026-08-18",
      "start_utc": "2026-08-18T23:40:00Z",
      "state": "Preview",
+     "home": "MIN",
+     "away": "ATL",
      "away_abbr": "ATL",
      "home_abbr": "MIN",
      "away_name": "Atlanta Braves",
@@ -8849,9 +9949,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823749,
      "date": "2026-08-18",
      "start_utc": "2026-08-18T23:40:00Z",
      "state": "Preview",
+     "home": "MIL",
+     "away": "SEA",
      "away_abbr": "SEA",
      "home_abbr": "MIL",
      "away_name": "Seattle Mariners",
@@ -8872,9 +9975,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822859,
      "date": "2026-08-19",
      "start_utc": "2026-08-19T00:05:00Z",
      "state": "Preview",
+     "home": "TEX",
+     "away": "WAS",
      "away_abbr": "WSH",
      "home_abbr": "TEX",
      "away_name": "Washington Nationals",
@@ -8895,9 +10001,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824639,
      "date": "2026-08-19",
      "start_utc": "2026-08-19T00:05:00Z",
      "state": "Preview",
+     "home": "CHN",
+     "away": "CHA",
      "away_abbr": "CWS",
      "home_abbr": "CHC",
      "away_name": "Chicago White Sox",
@@ -8918,9 +10027,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824154,
      "date": "2026-08-19",
      "start_utc": "2026-08-19T00:10:00Z",
      "state": "Preview",
+     "home": "HOU",
+     "away": "ANA",
      "away_abbr": "LAA",
      "home_abbr": "HOU",
      "away_name": "Los Angeles Angels",
@@ -8941,9 +10053,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824319,
      "date": "2026-08-19",
      "start_utc": "2026-08-19T00:40:00Z",
      "state": "Preview",
+     "home": "COL",
+     "away": "LAN",
      "away_abbr": "LAD",
      "home_abbr": "COL",
      "away_name": "Los Angeles Dodgers",
@@ -8964,9 +10079,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823342,
      "date": "2026-08-19",
      "start_utc": "2026-08-19T16:35:00Z",
      "state": "Preview",
+     "home": "PIT",
+     "away": "DET",
      "away_abbr": "DET",
      "home_abbr": "PIT",
      "away_name": "Detroit Tigers",
@@ -8987,9 +10105,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823587,
      "date": "2026-08-19",
      "start_utc": "2026-08-19T17:10:00Z",
      "state": "Preview",
+     "home": "NYN",
+     "away": "SDN",
      "away_abbr": "SD",
      "home_abbr": "NYM",
      "away_name": "San Diego Padres",
@@ -9010,9 +10131,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823664,
      "date": "2026-08-19",
      "start_utc": "2026-08-19T17:40:00Z",
      "state": "Preview",
+     "home": "MIN",
+     "away": "ATL",
      "away_abbr": "ATL",
      "home_abbr": "MIN",
      "away_name": "Atlanta Braves",
@@ -9033,9 +10157,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824640,
      "date": "2026-08-19",
      "start_utc": "2026-08-19T18:20:00Z",
      "state": "Preview",
+     "home": "CHN",
+     "away": "CHA",
      "away_abbr": "CWS",
      "home_abbr": "CHC",
      "away_name": "Chicago White Sox",
@@ -9056,9 +10183,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824722,
      "date": "2026-08-19",
      "start_utc": "2026-08-19T20:10:00Z",
      "state": "Preview",
+     "home": "BOS",
+     "away": "ARI",
      "away_abbr": "AZ",
      "home_abbr": "BOS",
      "away_name": "Arizona Diamondbacks",
@@ -9079,9 +10209,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823424,
      "date": "2026-08-19",
      "start_utc": "2026-08-19T22:05:00Z",
      "state": "Preview",
+     "home": "PHI",
+     "away": "MIA",
      "away_abbr": "MIA",
      "home_abbr": "PHI",
      "away_name": "Miami Marlins",
@@ -9102,9 +10235,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824801,
      "date": "2026-08-19",
      "start_utc": "2026-08-19T22:35:00Z",
      "state": "Preview",
+     "home": "BAL",
+     "away": "NYA",
      "away_abbr": "NYY",
      "home_abbr": "BAL",
      "away_name": "New York Yankees",
@@ -9125,9 +10261,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824394,
      "date": "2026-08-19",
      "start_utc": "2026-08-19T22:40:00Z",
      "state": "Preview",
+     "home": "CLE",
+     "away": "SFN",
      "away_abbr": "SF",
      "home_abbr": "CLE",
      "away_name": "San Francisco Giants",
@@ -9148,9 +10287,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824476,
      "date": "2026-08-19",
      "start_utc": "2026-08-19T22:40:00Z",
      "state": "Preview",
+     "home": "CIN",
+     "away": "SLN",
      "away_abbr": "STL",
      "home_abbr": "CIN",
      "away_name": "St. Louis Cardinals",
@@ -9171,9 +10313,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822937,
      "date": "2026-08-19",
      "start_utc": "2026-08-19T22:40:00Z",
      "state": "Preview",
+     "home": "TBA",
+     "away": "TOR",
      "away_abbr": "TOR",
      "home_abbr": "TB",
      "away_name": "Toronto Blue Jays",
@@ -9194,9 +10339,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824076,
      "date": "2026-08-19",
      "start_utc": "2026-08-19T23:40:00Z",
      "state": "Preview",
+     "home": "KCA",
+     "away": "ATH",
      "away_abbr": "ATH",
      "home_abbr": "KC",
      "away_name": "Athletics",
@@ -9217,9 +10365,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823748,
      "date": "2026-08-19",
      "start_utc": "2026-08-19T23:40:00Z",
      "state": "Preview",
+     "home": "MIL",
+     "away": "SEA",
      "away_abbr": "SEA",
      "home_abbr": "MIL",
      "away_name": "Seattle Mariners",
@@ -9240,9 +10391,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822860,
      "date": "2026-08-20",
      "start_utc": "2026-08-20T00:05:00Z",
      "state": "Preview",
+     "home": "TEX",
+     "away": "WAS",
      "away_abbr": "WSH",
      "home_abbr": "TEX",
      "away_name": "Washington Nationals",
@@ -9263,9 +10417,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824155,
      "date": "2026-08-20",
      "start_utc": "2026-08-20T00:10:00Z",
      "state": "Preview",
+     "home": "HOU",
+     "away": "ANA",
      "away_abbr": "LAA",
      "home_abbr": "HOU",
      "away_name": "Los Angeles Angels",
@@ -9286,9 +10443,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824318,
      "date": "2026-08-20",
      "start_utc": "2026-08-20T00:40:00Z",
      "state": "Preview",
+     "home": "COL",
+     "away": "LAN",
      "away_abbr": "LAD",
      "home_abbr": "COL",
      "away_name": "Los Angeles Dodgers",
@@ -9309,9 +10469,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824474,
      "date": "2026-08-20",
      "start_utc": "2026-08-20T16:40:00Z",
      "state": "Preview",
+     "home": "CIN",
+     "away": "SLN",
      "away_abbr": "STL",
      "home_abbr": "CIN",
      "away_name": "St. Louis Cardinals",
@@ -9332,9 +10495,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824395,
      "date": "2026-08-20",
      "start_utc": "2026-08-20T17:10:00Z",
      "state": "Preview",
+     "home": "CLE",
+     "away": "SFN",
      "away_abbr": "SF",
      "home_abbr": "CLE",
      "away_name": "San Francisco Giants",
@@ -9355,9 +10521,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822934,
      "date": "2026-08-20",
      "start_utc": "2026-08-20T17:10:00Z",
      "state": "Preview",
+     "home": "TBA",
+     "away": "TOR",
      "away_abbr": "TOR",
      "home_abbr": "TB",
      "away_name": "Toronto Blue Jays",
@@ -9378,9 +10547,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824074,
      "date": "2026-08-20",
      "start_utc": "2026-08-20T18:10:00Z",
      "state": "Preview",
+     "home": "KCA",
+     "away": "ATH",
      "away_abbr": "ATH",
      "home_abbr": "KC",
      "away_name": "Athletics",
@@ -9401,9 +10573,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824589,
      "date": "2026-08-20",
      "start_utc": "2026-08-20T18:10:00Z",
      "state": "Preview",
+     "home": "CHA",
+     "away": "ATL",
      "away_abbr": "ATL",
      "home_abbr": "CWS",
      "away_name": "Atlanta Braves",
@@ -9424,9 +10599,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 823747,
      "date": "2026-08-20",
      "start_utc": "2026-08-20T18:10:00Z",
      "state": "Preview",
+     "home": "MIL",
+     "away": "SEA",
      "away_abbr": "SEA",
      "home_abbr": "MIL",
      "away_name": "Seattle Mariners",
@@ -9447,9 +10625,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824802,
      "date": "2026-08-20",
      "start_utc": "2026-08-20T22:35:00Z",
      "state": "Preview",
+     "home": "BAL",
+     "away": "NYA",
      "away_abbr": "NYY",
      "home_abbr": "BAL",
      "away_name": "New York Yankees",
@@ -9470,9 +10651,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 822861,
      "date": "2026-08-21",
      "start_utc": "2026-08-21T00:05:00Z",
      "state": "Preview",
+     "home": "TEX",
+     "away": "WAS",
      "away_abbr": "WSH",
      "home_abbr": "TEX",
      "away_name": "Washington Nationals",
@@ -9493,9 +10677,12 @@
      "away_pitcher_matched": false
     },
     {
+     "game_pk": 824153,
      "date": "2026-08-21",
      "start_utc": "2026-08-21T00:10:00Z",
      "state": "Preview",
+     "home": "HOU",
+     "away": "ANA",
      "away_abbr": "LAA",
      "home_abbr": "HOU",
      "away_name": "Los Angeles Angels",

@@ -1,295 +1,437 @@
-"""Generate the GLASSBOX predictions board — a data-first, multi-league page.
+"""Generate the GLASSBOX SPA shell (site/index.html).
 
-Reads site/data/board.json and emits a single self-contained index.html: a
-league rail, date-range filters, and dense prediction rows. Rendering only —
-no market data, no model logic here.
+The page fetches ./data/board.json and ./data/db.json at runtime and renders four
+views through a hash router: the predictions board, a per-game deep dive, the
+standings, and the model's rankings. Rendering only; no model logic, no market
+data. The data files are produced by mlbwp.predict_slate and mlbwp.db.
 """
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
-PROJECT = Path(__file__).resolve().parents[1]
-SITE = PROJECT / "site"
+SITE = Path(__file__).resolve().parents[1] / "site"
 
-
-def load():
-    board = json.loads((SITE / "data" / "board.json").read_text(encoding="utf-8"))
-    ratings = json.loads((PROJECT / "mlbwp" / "artifacts" / "ratings.json").read_text(encoding="utf-8"))
-    return board, ratings
-
-
-CSS = """
+CSS = r"""
 :root{
-  --paper:#f5f4f1; --raised:#fff; --sunk:#efede8; --ink:#191b20; --muted:#71757d;
-  --faint:#a2a5ab; --line:#e2e0d9; --line-2:#d2cfc6;
-  --accent:#c8102e; --accent-2:#c8102e14;
-  --fav:#1f6f43; --favbg:#1f6f4316; --away:#3f6c86; --home:#b23b2e;
+  --bg:#0d0f13; --panel:#151820; --panel-2:#1b1f28; --sunk:#0a0c10; --ink:#e9e7e1;
+  --muted:#8b929c; --faint:#5a616c; --line:#232833; --line-2:#333a47;
+  --accent:#ff4d5e; --accent-2:#ff4d5e18; --fav:#4ec98a; --favbg:#4ec98a16;
+  --away:#5aa0c9; --home:#e07a5f; --warn:#e0a44e;
   --sans:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
   --serif:Georgia,'Times New Roman',serif;
   --mono:ui-monospace,'SF Mono','Cascadia Code',Menlo,Consolas,monospace;
+  --w:1360px;
 }
-@media (prefers-color-scheme:dark){:root{
-  --paper:#101216; --raised:#181b21; --sunk:#0c0e12; --ink:#e9e7e1; --muted:#8b9098;
-  --faint:#5c616b; --line:#242830; --line-2:#333844;
-  --accent:#ff4d5e; --accent-2:#ff4d5e1c; --fav:#54c185; --favbg:#54c1851c;
-  --away:#63a6c9; --home:#e28066;
+:root[data-theme="light"]{
+  --bg:#f4f3ef; --panel:#fff; --panel-2:#faf9f6; --sunk:#eeece6; --ink:#1a1c22;
+  --muted:#6b7079; --faint:#a3a7ae; --line:#e4e1d9; --line-2:#d3cfc5;
+  --accent:#c8102e; --accent-2:#c8102e12; --fav:#1c7a48; --favbg:#1c7a4812;
+  --away:#356b8a; --home:#b34a35; --warn:#a9741e;
+}
+@media (prefers-color-scheme:light){:root:not([data-theme]){
+  --bg:#f4f3ef; --panel:#fff; --panel-2:#faf9f6; --sunk:#eeece6; --ink:#1a1c22;
+  --muted:#6b7079; --faint:#a3a7ae; --line:#e4e1d9; --line-2:#d3cfc5;
+  --accent:#c8102e; --accent-2:#c8102e12; --fav:#1c7a48; --favbg:#1c7a4812;
+  --away:#356b8a; --home:#b34a35; --warn:#a9741e;
 }}
-:root[data-theme="light"]{--paper:#f5f4f1;--raised:#fff;--sunk:#efede8;--ink:#191b20;
-  --muted:#71757d;--faint:#a2a5ab;--line:#e2e0d9;--line-2:#d2cfc6;--accent:#c8102e;
-  --accent-2:#c8102e14;--fav:#1f6f43;--favbg:#1f6f4316;--away:#3f6c86;--home:#b23b2e;}
-:root[data-theme="dark"]{--paper:#101216;--raised:#181b21;--sunk:#0c0e12;--ink:#e9e7e1;
-  --muted:#8b9098;--faint:#5c616b;--line:#242830;--line-2:#333844;--accent:#ff4d5e;
-  --accent-2:#ff4d5e1c;--fav:#54c185;--favbg:#54c1851c;--away:#63a6c9;--home:#e28066;}
 *{box-sizing:border-box}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
-  font-size:14px;line-height:1.4;-webkit-font-smoothing:antialiased}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;
+  line-height:1.4;-webkit-font-smoothing:antialiased}
 .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
-.wrap{max-width:1000px;margin:0 auto;padding:0 16px}
+.wrap{max-width:var(--w);margin:0 auto;padding:0 18px}
+a{color:inherit;text-decoration:none}
 
-/* top bar */
-header{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--paper) 90%,transparent);
+/* nav */
+header{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--bg) 92%,transparent);
   backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-header .wrap{display:flex;align-items:center;gap:14px;height:54px}
-.brand{font-family:var(--serif);font-weight:700;font-size:20px;letter-spacing:.01em}
+header .wrap{display:flex;align-items:center;gap:20px;height:56px}
+.brand{font-family:var(--serif);font-weight:700;font-size:21px;flex:none}
 .brand .b{color:var(--accent)}
-.tag{font-size:11px;color:var(--muted);border-left:1px solid var(--line-2);padding-left:12px}
-.spacer{flex:1}
-.stat{font-family:var(--mono);font-size:11.5px;color:var(--muted);text-align:right;line-height:1.3}
-.stat b{color:var(--ink)}
-.tog{border:1px solid var(--line-2);background:var(--raised);color:var(--muted);border-radius:7px;
-  width:32px;height:30px;cursor:pointer;font-size:14px;flex:none}
+nav.main{display:flex;gap:2px}
+nav.main a{font-weight:600;font-size:13.5px;color:var(--muted);padding:7px 13px;border-radius:8px}
+nav.main a:hover{color:var(--ink);background:var(--panel)}
+nav.main a.on{color:var(--ink);background:var(--accent-2);box-shadow:inset 0 0 0 1px var(--line-2)}
+.grow{flex:1}
+.acc{font-family:var(--mono);font-size:11.5px;color:var(--muted);text-align:right;line-height:1.25}
+.acc b{color:var(--ink)}
+.tog{border:1px solid var(--line-2);background:var(--panel);color:var(--muted);border-radius:8px;
+  width:34px;height:32px;cursor:pointer;font-size:14px;flex:none}
 .tog:hover{color:var(--ink);border-color:var(--accent)}
 
-/* league rail */
-.rail{display:flex;gap:6px;overflow-x:auto;padding:12px 0 4px;scrollbar-width:none}
-.rail::-webkit-scrollbar{display:none}
-.lg{flex:none;border:1px solid var(--line-2);background:var(--raised);border-radius:9px;
-  padding:7px 13px;cursor:pointer;font-weight:600;font-size:13px;color:var(--muted);
-  display:flex;align-items:center;gap:7px}
-.lg .n{font-family:var(--mono);font-size:11px;color:var(--faint);font-weight:500}
-.lg[aria-selected="true"]{border-color:var(--accent);color:var(--ink);background:var(--accent-2)}
-.lg[disabled]{opacity:.5;cursor:not-allowed}
+main{padding:16px 0 60px;min-height:70vh}
+.eyebrow{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:700}
+h1.pt{font-family:var(--serif);font-size:26px;margin:2px 0 14px}
+
+/* controls row */
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:14px}
+.rail{display:flex;gap:6px;flex-wrap:wrap}
+.lg{border:1px solid var(--line-2);background:var(--panel);border-radius:9px;padding:7px 13px;
+  cursor:pointer;font-weight:600;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:7px}
+.lg .n{font-family:var(--mono);font-size:11px;color:var(--faint)}
+.lg.on{border-color:var(--accent);color:var(--ink);background:var(--accent-2)}
+.lg[disabled]{opacity:.45;cursor:not-allowed}
 .lg .soon{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.filters{display:flex;gap:3px;margin-left:auto;background:var(--panel);border:1px solid var(--line);
+  border-radius:10px;padding:3px}
+.filt{border:none;background:none;color:var(--muted);font-weight:600;font-size:13px;padding:6px 13px;
+  border-radius:7px;cursor:pointer}
+.filt.on{background:var(--ink);color:var(--bg)}
+.filt:hover:not(.on){color:var(--ink)}
 
-/* date filters */
-.filters{display:flex;gap:4px;padding:12px 0;border-bottom:1px solid var(--line);
-  position:sticky;top:54px;background:var(--paper);z-index:20}
-.filt{border:none;background:none;color:var(--muted);font-weight:600;font-size:13px;
-  padding:6px 12px;border-radius:8px;cursor:pointer}
-.filt[aria-selected="true"]{background:var(--ink);color:var(--paper)}
-.filt:hover:not([aria-selected="true"]){background:var(--sunk);color:var(--ink)}
-.note{font-size:11.5px;color:var(--muted);margin-left:auto;align-self:center}
-
-/* board */
-main{padding:8px 0 40px}
-.daygroup{margin-top:18px}
-.dayhead{display:flex;align-items:baseline;gap:10px;padding:6px 2px;position:sticky;top:107px;
-  background:var(--paper);z-index:10}
-.dayhead .d{font-family:var(--serif);font-size:15px;font-weight:700}
-.dayhead .c{font-family:var(--mono);font-size:11px;color:var(--faint)}
-.dayhead .proj{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);
-  margin-left:auto;border:1px solid var(--line-2);border-radius:5px;padding:1px 6px}
-
-.row{display:grid;grid-template-columns:52px 1fr 150px 92px 26px;align-items:center;gap:10px;
-  padding:9px 8px;border-bottom:1px solid var(--line);cursor:pointer}
-.row:hover{background:var(--raised)}
-.time{font-family:var(--mono);font-size:11.5px;color:var(--muted);text-align:center}
-.time .st{display:block;font-size:9px;color:var(--accent);font-weight:700;letter-spacing:.04em}
-
-.match{min-width:0}
-.side{display:flex;align-items:center;gap:8px;padding:1px 0}
-.side .ab{font-family:var(--mono);font-weight:700;font-size:14px;width:34px;letter-spacing:.02em}
-.side .pit{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.side.win .ab{color:var(--fav)}
-.side.win .pit{color:var(--ink)}
+/* BOARD: big responsive grid */
+.day{margin:18px 0 8px;display:flex;align-items:baseline;gap:10px}
+.day .d{font-family:var(--serif);font-size:16px;font-weight:700}
+.day .c{font-family:var(--mono);font-size:11px;color:var(--faint)}
+.day .proj{margin-left:auto;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);
+  border:1px solid var(--line-2);border-radius:5px;padding:1px 7px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:10px}
+.gc{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 13px;
+  cursor:pointer;display:flex;flex-direction:column;gap:9px;transition:border-color .12s,transform .12s}
+.gc:hover{border-color:var(--line-2);transform:translateY(-1px)}
+.gc .top{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.gc .top .live{color:var(--accent);font-weight:700;letter-spacing:.04em}
+.gc .top .pill{margin-left:auto;font-family:var(--sans);font-weight:700;font-size:12px;padding:3px 10px;
+  border-radius:20px;background:var(--sunk);border:1px solid var(--line-2)}
+.gc .top .pill.strong{color:var(--fav);border-color:var(--fav);background:var(--favbg)}
+.side{display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:9px;padding:2px 0}
+.side .ab{font-family:var(--mono);font-weight:700;font-size:15px}
+.side .who{min-width:0}
+.side .who .sp{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.side .who .sp .era{color:var(--faint);font-family:var(--mono)}
+.side .pc{font-family:var(--mono);font-size:14px;font-weight:600;text-align:right}
+.side.win .ab,.side.win .pc{color:var(--fav)}
 .side .tbd{color:var(--faint);font-style:italic}
-
-.prob{display:flex;flex-direction:column;gap:3px}
-.pbar{height:7px;border-radius:5px;background:var(--away);position:relative;overflow:hidden}
+.pbar{height:6px;border-radius:4px;background:var(--away);position:relative;overflow:hidden;margin-top:1px}
 .pbar .h{position:absolute;right:0;top:0;bottom:0;background:var(--home)}
-.pbar .mid{position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--ink);opacity:.3}
-.pends{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--muted)}
+.pbar .mid{position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--ink);opacity:.35}
+.gc .edge{display:flex;gap:6px;flex-wrap:wrap;font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.gc .edge .k{color:var(--faint)}
+.gc .edge .p{color:var(--fav)}.gc .edge .n{color:var(--home)}
 
-.pick{text-align:right}
-.pick .w{font-family:var(--mono);font-weight:700;font-size:14px}
-.pick .pc{font-family:var(--mono);font-size:11px;color:var(--muted);display:block}
-.pick.strong .w{color:var(--fav)}
-.pick.lean .w{color:var(--ink)}
-.pick.toss .w{color:var(--muted)}
-.exp{color:var(--faint);text-align:center;font-size:15px;transition:transform .15s}
-.row[aria-expanded="true"] .exp{transform:rotate(90deg);color:var(--accent)}
+/* tables (standings, rankings) */
+.twrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:8px 10px;text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+thead th{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;
+  border-bottom:1px solid var(--line-2);position:sticky;top:56px;background:var(--panel)}
+tbody tr{border-bottom:1px solid var(--line);cursor:pointer}
+tbody tr:hover{background:var(--panel-2)}
+tbody tr:last-child{border-bottom:none}
+td .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.tm{display:flex;align-items:center;gap:8px}
+.tm .ab{font-family:var(--mono);font-weight:700;width:34px}
+.pos{color:var(--fav)}.neg{color:var(--home)}.warnc{color:var(--warn)}
+.subh{font-family:var(--serif);font-size:16px;font-weight:700;margin:22px 0 8px}
 
-.detail{grid-column:1/-1;padding:4px 8px 12px;display:none;gap:8px;flex-wrap:wrap;align-items:center}
-.row[aria-expanded="true"]+.detail{display:flex}
-.chip{font-family:var(--mono);font-size:11px;padding:2px 9px;border-radius:6px;border:1px solid var(--line-2);
-  background:var(--sunk);font-variant-numeric:tabular-nums}
-.chip b{font-family:var(--sans);color:var(--muted);font-weight:600}
-.chip .p{color:var(--fav)}.chip .n{color:var(--home)}
-.detail .lead{font-size:11.5px;color:var(--muted)}
+/* GAME PAGE */
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-weight:600;font-size:13px;margin-bottom:10px}
+.back:hover{color:var(--accent)}
+.gh{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+.gh .mt{font-family:var(--serif);font-size:24px;font-weight:700}
+.gh .meta{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.gh .live{color:var(--accent);font-weight:700}
+.cols{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;align-items:start}
+@media(max-width:860px){.cols{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 16px}
+.panel h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;font-weight:700}
+.proj{display:flex;align-items:center;gap:16px;margin-bottom:6px}
+.proj .big{font-family:var(--mono);font-size:46px;font-weight:600;line-height:1}
+.proj .big .u{font-size:19px;color:var(--muted)}
+.proj .pk{font-size:13px;color:var(--muted)}
+.proj .pk b{font-family:var(--mono);font-size:18px;color:var(--ink);display:block}
+.proj .pk .cf{color:var(--fav);font-weight:700}
+.bigbar{height:12px;border-radius:7px;background:var(--away);position:relative;overflow:hidden;margin:10px 0 4px}
+.bigbar .h{position:absolute;right:0;top:0;bottom:0;background:var(--home)}
+.bigbar .mid{position:absolute;left:50%;top:-3px;bottom:-3px;width:2px;background:var(--ink);opacity:.4}
+.barlab{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.why{margin-top:14px;display:flex;flex-direction:column;gap:7px}
+.why .r{display:grid;grid-template-columns:96px 1fr 52px;align-items:center;gap:9px;font-size:12.5px}
+.why .r .lab{color:var(--muted)}
+.why .r .tr{height:16px;background:var(--sunk);border-radius:4px;position:relative;overflow:hidden}
+.why .r .tr .f{position:absolute;top:0;bottom:0;left:50%;background:var(--fav)}
+.why .r .tr .f.neg{background:var(--home)}
+.why .r .v{font-family:var(--mono);text-align:right;font-weight:600}
+.signals{display:flex;flex-direction:column;gap:8px}
+.sig{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;padding:8px 10px;border-radius:8px;
+  background:var(--sunk);border-left:3px solid var(--line-2)}
+.sig.warn{border-left-color:var(--warn)}.sig.good{border-left-color:var(--fav)}
+.sig .ic{font-family:var(--mono);font-weight:700;color:var(--muted)}
+.mup{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center}
+.mup .col{display:flex;flex-direction:column;gap:6px}
+.mup .col.a{text-align:left}.mup .col.h{text-align:right}
+.mup .nm{font-weight:700;font-size:14px}
+.mup .sub{font-size:11.5px;color:var(--muted)}
+.mup .vs{font-family:var(--mono);color:var(--faint);font-size:12px}
+.statline{display:flex;gap:10px;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.mup .col.h .statline{justify-content:flex-end}
+.statline b{color:var(--ink)}
+.cmp{width:100%;font-size:13px}
+.cmp td{padding:6px 8px}
+.cmp .lbl{text-align:center;color:var(--muted);font-size:11px;letter-spacing:.04em;text-transform:uppercase}
+.cmp .a{text-align:left}.cmp .h{text-align:right}
+.cmp .win{color:var(--fav);font-weight:700}
 
-.empty{padding:50px 0;text-align:center;color:var(--muted)}
-
-footer{border-top:1px solid var(--line);padding:18px 0 40px;color:var(--faint);font-size:11px;line-height:1.6}
-footer b{color:var(--muted)}
-footer a{color:var(--muted)}
+.loading,.empty{padding:60px 0;text-align:center;color:var(--muted)}
+footer{border-top:1px solid var(--line);padding:20px 0 46px;color:var(--faint);font-size:11px;line-height:1.6}
+footer b{color:var(--muted)} footer a{color:var(--muted);text-decoration:underline}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
-
-@media (max-width:640px){
-  .row{grid-template-columns:44px 1fr 78px 22px;gap:8px}
-  .prob{display:none}
-  .tag{display:none}
-}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto}}
+@media(max-width:560px){.grid{grid-template-columns:1fr}.acc{display:none}nav.main a{padding:7px 9px}}
 """
 
 JS = r"""
-const B = JSON.parse(document.getElementById("board-data").textContent);
+const $ = s => document.querySelector(s);
+const state = {board:null, db:null, league:"mlb", range:"today"};
 const root = document.documentElement;
-document.getElementById("tog").onclick = () => {
-  const cur = root.getAttribute("data-theme")
-    || (matchMedia("(prefers-color-scheme:dark)").matches ? "dark":"light");
+$("#tog").onclick = () => {
+  const cur = root.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");
   root.setAttribute("data-theme", cur==="dark"?"light":"dark");
 };
 
-const GEN = B.generated;
-const addDays = (iso,n)=>{const d=new Date(iso+"T00:00:00");d.setDate(d.getDate()+n);
-  return d.toISOString().slice(0,10);};
-const RANGES = {
-  today:  [GEN, GEN],
-  tomorrow:[addDays(GEN,1), addDays(GEN,1)],
-  week:   [GEN, addDays(GEN,6)],
-  month:  [GEN, addDays(GEN,60)],
-};
-let active = {league:"mlb", range:"today"};
-
-const LOC = "en-US";  // keep dates in English to match the UI, whatever the OS locale
-const fmtDay = iso => {
-  const d = new Date(iso+"T12:00:00");
-  const wd = d.toLocaleDateString(LOC,{weekday:"long"});
-  const md = d.toLocaleDateString(LOC,{month:"short",day:"numeric"});
-  if (iso===GEN) return "Today · "+md;
-  if (iso===addDays(GEN,1)) return "Tomorrow · "+md;
-  return wd+" · "+md;
-};
-const fmtTime = utc => new Date(utc).toLocaleTimeString(LOC,{hour:"numeric",minute:"2-digit"});
-const pct = x => Math.round(x*100);
+const pctI = x => Math.round(x*100);
+const sgn = v => (v>=0?"+":"")+(+v).toFixed(1);
 const tier = p => p>=0.62?"strong":(p>=0.555?"lean":"toss");
-const sgn = v => (v>=0?"+":"")+v.toFixed(1);
+const norm = s => (s||"").toLowerCase().normalize("NFKD").replace(/[^a-z0-9 ]+/g," ").replace(/\s+/g," ").trim();
+const LOC="en-US";
+const addDays=(iso,n)=>{const d=new Date(iso+"T00:00:00");d.setDate(d.getDate()+n);return d.toISOString().slice(0,10);};
+const fmtTime=u=>new Date(u).toLocaleTimeString(LOC,{hour:"numeric",minute:"2-digit"});
+const fmtDay=(iso,gen)=>{const d=new Date(iso+"T12:00:00");
+  const md=d.toLocaleDateString(LOC,{month:"short",day:"numeric"});
+  if(iso===gen)return"Today · "+md; if(iso===addDays(gen,1))return"Tomorrow · "+md;
+  return d.toLocaleDateString(LOC,{weekday:"long"})+" · "+md;};
 
-function leagueRail(){
-  const el = document.getElementById("rail");
-  el.innerHTML = B.leagues.map(l=>{
-    if(!l.active) return `<button class="lg" disabled><span>${l.name}</span><span class="soon">soon</span></button>`;
-    const sel = l.code===active.league;
-    return `<button class="lg" data-lg="${l.code}" aria-selected="${sel}">
-      <span>${l.name}</span><span class="n">${l.n_games}</span></button>`;
+async function boot(){
+  try{
+    const [b,db] = await Promise.all([
+      fetch("./data/board.json").then(r=>r.json()),
+      fetch("./data/db.json").then(r=>r.json()),
+    ]);
+    state.board=b; state.db=db;
+    const a=b.accuracy;
+    $("#acc").innerHTML=`<b>${a.log_loss.toFixed(3)}</b> log loss<br>coin flip ${a.coinflip.toFixed(3)}`;
+    route();
+  }catch(e){ $("#view").innerHTML=`<div class="empty">Could not load data. ${e}</div>`; }
+}
+window.addEventListener("hashchange", route);
+
+function setNav(v){document.querySelectorAll("nav.main a").forEach(a=>a.classList.toggle("on",a.dataset.v===v));}
+
+function route(){
+  const h=location.hash.replace(/^#\//,"");
+  const [v,arg]=h.split("/");
+  window.scrollTo(0,0);
+  if(v==="game"&&arg) return gamePage(arg);
+  if(v==="standings"){setNav("standings");return standings();}
+  if(v==="rankings"){setNav("rankings");return rankings();}
+  setNav("board"); board();
+}
+
+/* ---------- BOARD ---------- */
+const pit = (name,db)=>{const p=db.pitchers[norm(name)];
+  return p&&p.era!=null?`<span class="era">${p.era}</span>`:"";};
+function gcard(g){
+  const db=state.db, hp=g.home_win_prob, homeWin=hp>=0.5, e=g.edge||{};
+  const spA=g.away_sp==="TBD"?`<span class="tbd">TBD</span>`:`${g.away_sp} ${pit(g.away_sp,db)}`;
+  const spH=g.home_sp==="TBD"?`<span class="tbd">TBD</span>`:`${g.home_sp} ${pit(g.home_sp,db)}`;
+  return `<a class="gc" href="#/game/${g.game_pk}">
+    <div class="top">${g.state==="Live"?'<span class="live">LIVE</span>':""}<span>${fmtTime(g.start_utc)}</span>
+      <span class="pill ${tier(g.pick_prob)==="strong"?"strong":""}">${g.pick} ${pctI(g.pick_prob)}%</span></div>
+    <div class="side ${homeWin?"":"win"}"><span class="ab">${g.away_abbr}</span>
+      <span class="who"><span class="sp">${spA}</span></span><span class="pc">${pctI(1-hp)}%</span></div>
+    <div class="side ${homeWin?"win":""}"><span class="ab">${g.home_abbr}</span>
+      <span class="who"><span class="sp">${spH}</span></span><span class="pc">${pctI(hp)}%</span></div>
+    <div class="pbar"><div class="h" style="width:${pctI(hp)}%"></div><div class="mid"></div></div>
+    <div class="edge"><span class="k">edge</span>
+      <span class="${e.home_pitcher>=0?"p":"n"}">SP ${sgn((e.home_pitcher||0)-(e.away_pitcher||0)>=0?Math.max(e.home_pitcher||0,0):(e.away_pitcher||0))}</span>
+      <span class="${e.team>=0?"p":"n"}">team ${sgn(e.team||0)}</span>
+      ${g.pitcher_known?"":'<span class="k">· starters tbd</span>'}</div>
+  </a>`;
+}
+function board(){
+  const b=state.board, lg=b.leagues.find(l=>l.code===state.league), gen=b.generated;
+  const R={today:[gen,gen],tomorrow:[addDays(gen,1),addDays(gen,1)],week:[gen,addDays(gen,6)],month:[gen,addDays(gen,60)]}[state.range];
+  const games=(lg.games||[]).filter(g=>g.date>=R[0]&&g.date<=R[1]);
+  const rail=b.leagues.map(l=>l.active
+    ?`<button class="lg ${l.code===state.league?"on":""}" data-lg="${l.code}"><span>${l.name}</span><span class="n">${l.n_games}</span></button>`
+    :`<button class="lg" disabled><span>${l.name}</span><span class="soon">soon</span></button>`).join("");
+  const filts=[["today","Today"],["tomorrow","Tomorrow"],["week","Week"],["month","Month"]]
+    .map(([k,t])=>`<button class="filt ${k===state.range?"on":""}" data-r="${k}">${t}</button>`).join("");
+  let body;
+  if(!games.length){body=`<div class="empty">No games in this window.</div>`;}
+  else{const days=[...new Set(games.map(g=>g.date))].sort();
+    body=days.map(d=>{const gs=games.filter(g=>g.date===d),tbd=gs.some(g=>!g.pitcher_known);
+      return `<div class="day"><span class="d">${fmtDay(d,gen)}</span><span class="c">${gs.length} games</span>
+        ${tbd?'<span class="proj">projected · starters tbd</span>':""}</div>
+        <div class="grid">${gs.map(gcard).join("")}</div>`;}).join("");}
+  $("#view").innerHTML=`<div class="controls"><div class="rail">${rail}</div><div class="filters">${filts}</div></div>${body}`;
+  $("#view").querySelectorAll("[data-lg]").forEach(x=>x.onclick=()=>{state.league=x.dataset.lg;board();});
+  $("#view").querySelectorAll("[data-r]").forEach(x=>x.onclick=()=>{state.range=x.dataset.r;board();});
+}
+
+/* ---------- GAME PAGE ---------- */
+function findGame(pk){for(const l of state.board.leagues){const g=(l.games||[]).find(x=>String(x.game_pk)===String(pk));if(g)return g;}return null;}
+function pRow(label,v){const w=Math.min(Math.abs(v)*3.0,50);const neg=v<0;
+  return `<div class="r"><span class="lab">${label}</span>
+    <div class="tr"><div class="f ${neg?"neg":""}" style="${neg?"right:50%":"left:50%"};width:${w}%"></div></div>
+    <span class="v ${v>=0?"pos":"neg"}">${sgn(v)}</span></div>`;}
+function statline(p){if(!p||p.era==null)return`<span class="sub">no season line</span>`;
+  return `<div class="statline"><span>ERA <b>${p.era}</b></span><span>WHIP <b>${p.whip}</b></span>
+    <span>K/9 <b>${p.k9}</b></span><span>BB/9 <b>${p.bb9}</b></span><span>HR/9 <b>${p.hr9}</b></span>
+    <span>${p.w}-${p.l}, ${p.gs} GS</span></div>`;}
+function cmpRow(label,a,h,fmt,better){const f=fmt||(x=>x);
+  let aw="",hw=""; if(better!=null){if(better==="hi"){a>h?aw="win":h>a?hw="win":0;}else{a<h?aw="win":h<a?hw="win":0;}}
+  return `<tr><td class="a ${aw}"><span class="num">${f(a)}</span></td><td class="lbl">${label}</td><td class="h ${hw}"><span class="num">${f(h)}</span></td></tr>`;}
+function gamePage(pk){
+  setNav("");
+  const g=findGame(pk); if(!g){$("#view").innerHTML=`<div class="empty">Game not found. <a href="#/">Back to board</a></div>`;return;}
+  const db=state.db, hp=g.home_win_prob, homeWin=hp>=0.5, e=g.edge||{};
+  const A=db.teams[g.away], H=db.teams[g.home];
+  const pa=db.pitchers[norm(g.away_sp)], ph=db.pitchers[norm(g.home_sp)];
+  const conf=Math.max(hp,1-hp);
+  // signals
+  const sig=[];
+  if(H&&Math.abs(H.luck)>=0.04) sig.push([H.luck>0?"warn":"good",H.abbr+(H.luck>0?" is overperforming its run differential ("+sgn(H.luck*100)+" pts) — regression risk":" is underperforming its run differential ("+sgn(H.luck*100)+" pts) — due to bounce back")]);
+  if(A&&Math.abs(A.luck)>=0.04) sig.push([A.luck>0?"warn":"good",A.abbr+(A.luck>0?" is overperforming ("+sgn(A.luck*100)+" pts) — regression risk":" is underperforming ("+sgn(A.luck*100)+" pts)")]);
+  if(H&&A&&H.elo_rank<A.elo_rank&&H.record_rank>A.record_rank) sig.push(["good","We rate "+H.abbr+" higher than its record (our #"+H.elo_rank+" vs #"+H.record_rank+" by W-L)"]);
+  if(pa&&ph&&pa.matched&&ph.matched){const d=(ph.adj||0)-(pa.adj||0);
+    sig.push([d>=0?"good":"warn","Pitching edge: "+(d>=0?H.abbr:A.abbr)+" ("+(d>=0?g.home_sp:g.away_sp)+", "+sgn(Math.abs(d))+" Elo)"]);}
+  const teamCmp = (A&&H)?`<table class="cmp">
+    ${cmpRow("record",A.w+"-"+A.l,H.w+"-"+H.l,x=>x)}
+    ${cmpRow("win%",A.pct,H.pct,x=>x.toFixed(3).slice(1),"hi")}
+    ${cmpRow("run diff",A.run_diff,H.run_diff,x=>(x>=0?"+":"")+x,"hi")}
+    ${cmpRow("runs/gm",A.rs_g,H.rs_g,x=>x,"hi")}
+    ${cmpRow("allowed/gm",A.ra_g,H.ra_g,x=>x,"lo")}
+    ${cmpRow("last 10",A.l10,H.l10,x=>x)}
+    ${cmpRow("home / away",A.away,H.home,x=>x)}
+    ${cmpRow("streak",A.streak,H.streak,x=>x)}
+    ${cmpRow("our Elo",A.elo,H.elo,x=>Math.round(x),"hi")}
+    ${cmpRow("Elo rank","#"+A.elo_rank,"#"+H.elo_rank,x=>x)}
+  </table>`:`<div class="sub">team data unavailable</div>`;
+  $("#view").innerHTML=`
+    <a class="back" href="#/">‹ Board</a>
+    <div class="gh"><span class="mt">${g.away_abbr} <span style="color:var(--faint)">@</span> ${g.home_abbr}</span>
+      <span class="meta">${g.state==="Live"?'<span class="live">LIVE</span> · ':""}${fmtDay(g.date,state.board.generated)} · ${fmtTime(g.start_utc)}</span></div>
+    <div class="cols">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="panel"><h3>Our projection</h3>
+          <div class="proj"><div class="big">${pctI(hp)}<span class="u">%</span></div>
+            <div class="pk">${g.home_abbr} win probability<b>Pick: ${g.pick} <span class="cf">${pctI(conf)}%</span></b>
+            ${g.pitcher_known?"":'<span class="sub">starters not set — team-only</span>'}</div></div>
+          <div class="bigbar"><div class="h" style="width:${pctI(hp)}%"></div><div class="mid"></div></div>
+          <div class="barlab"><span>${g.away_abbr} ${pctI(1-hp)}%</span><span>${pctI(hp)}% ${g.home_abbr}</span></div>
+          <div class="why">
+            ${pRow("Team rating",e.team||0)}${pRow("Home field",e.home_field||0)}
+            ${pRow(g.home_abbr+" starter",e.home_pitcher||0)}${pRow(g.away_abbr+" starter",e.away_pitcher||0)}
+          </div>
+          <div class="sub" style="margin-top:8px;color:var(--faint)">Contributions in probability points around a 50% base. Market-blind.</div>
+        </div>
+        <div class="panel"><h3>Starting pitchers</h3>
+          <div class="mup">
+            <div class="col a"><div class="nm">${g.away_sp}</div>
+              <div class="sub">${g.away_abbr}${pa&&pa.adj_rank?" · our #"+pa.adj_rank+" SP":""}${pa&&pa.matched?" · "+sgn(pa.adj)+" Elo":""}</div>
+              ${statline(pa)}</div>
+            <div class="vs">vs</div>
+            <div class="col h"><div class="nm">${g.home_sp}</div>
+              <div class="sub">${g.home_abbr}${ph&&ph.adj_rank?" · our #"+ph.adj_rank+" SP":""}${ph&&ph.matched?" · "+sgn(ph.adj)+" Elo":""}</div>
+              ${statline(ph)}</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="panel"><h3>${g.away_abbr} vs ${g.home_abbr}</h3>${teamCmp}</div>
+        <div class="panel"><h3>Signals</h3><div class="signals">
+          ${sig.length?sig.map(([c,t])=>`<div class="sig ${c}"><span class="ic">!</span><span>${t}</span></div>`).join(""):'<div class="sub">No standout signals.</div>'}
+        </div></div>
+      </div>
+    </div>`;
+}
+
+/* ---------- STANDINGS ---------- */
+function standings(){
+  const db=state.db, T=Object.values(db.teams);
+  const divs={}; T.forEach(t=>{(divs[t.div]=divs[t.div]||[]).push(t);});
+  const order=["AL East","AL Central","AL West","NL East","NL Central","NL West"];
+  let html=`<div class="eyebrow">Database</div><h1 class="pt">Standings</h1>
+    <div class="sub" style="margin-bottom:14px">Sorted by division. <b>Luck</b> = actual win% minus pythagorean; large positive = regression risk. <b>Elo</b> is our market-blind rating.</div>`;
+  html+=order.filter(d=>divs[d]).map(d=>{
+    const rows=divs[d].sort((a,b)=>a.div_rank-b.div_rank).map(t=>`
+      <tr onclick="location.hash='#/rankings'">
+        <td class="a"><span class="tm"><span class="ab">${t.abbr}</span></span></td>
+        <td><span class="num">${t.w}-${t.l}</span></td><td><span class="num">${t.pct.toFixed(3).slice(1)}</span></td>
+        <td><span class="num">${t.gb}</span></td>
+        <td><span class="num ${t.run_diff>=0?"pos":"neg"}">${t.run_diff>=0?"+":""}${t.run_diff}</span></td>
+        <td><span class="num">${t.l10}</span></td><td><span class="num">${t.streak}</span></td>
+        <td><span class="num">${t.home}</span></td><td><span class="num">${t.away}</span></td>
+        <td><span class="num ${Math.abs(t.luck)>=0.04?(t.luck>0?"warnc":"pos"):""}">${sgn(t.luck*100)}</span></td>
+        <td><span class="num">${Math.round(t.elo)}</span></td><td><span class="num">#${t.elo_rank}</span></td>
+      </tr>`).join("");
+    return `<div class="subh">${d}</div><div class="twrap"><table>
+      <thead><tr><th>Team</th><th>W-L</th><th>Pct</th><th>GB</th><th>Diff</th><th>L10</th><th>Strk</th>
+      <th>Home</th><th>Away</th><th>Luck</th><th>Elo</th><th>Rk</th></tr></thead><tbody>${rows}</tbody></table></div>`;
   }).join("");
-  el.querySelectorAll("[data-lg]").forEach(b=>b.onclick=()=>{active.league=b.dataset.lg;render();});
+  $("#view").innerHTML=html;
 }
 
-function row(g){
-  const hp=g.home_win_prob, homeWin=hp>=0.5;
-  const st = g.state==="Live" ? `<span class="st">LIVE</span>` : "";
-  const away = `<div class="side ${homeWin?"":"win"}">
-    <span class="ab">${g.away_abbr}</span>
-    <span class="pit ${g.away_sp==="TBD"?"tbd":""}">${g.away_sp}</span></div>`;
-  const home = `<div class="side ${homeWin?"win":""}">
-    <span class="ab">${g.home_abbr}</span>
-    <span class="pit ${g.home_sp==="TBD"?"tbd":""}">${g.home_sp}</span></div>`;
-  const bar = `<div class="prob"><div class="pbar"><div class="h" style="width:${pct(hp)}%"></div>
-      <div class="mid"></div></div>
-    <div class="pends"><span>${g.away_abbr} ${pct(1-hp)}</span><span>${pct(hp)} ${g.home_abbr}</span></div></div>`;
-  const e = g.edge||{};
-  const detail = `<div class="detail">
-    <span class="lead">Why ${g.pick}:</span>
-    ${chip("Team",e.team)}${chip("Home",e.home_field)}
-    ${chip(g.home_abbr+" SP",e.home_pitcher)}${chip(g.away_abbr+" SP",e.away_pitcher)}
-    ${g.pitcher_known?"":'<span class="lead">Starters not set — team-only forecast.</span>'}
-  </div>`;
-  return `<div class="row" tabindex="0" aria-expanded="false">
-    <div class="time">${fmtTime(g.start_utc)}${st}</div>
-    <div class="match">${away}${home}</div>
-    ${bar}
-    <div class="pick ${tier(g.pick_prob)}"><span class="w">${g.pick}</span>
-      <span class="pc">${pct(g.pick_prob)}%</span></div>
-    <div class="exp">›</div>
-  </div>${detail}`;
-}
-function chip(label,v){v=v||0;return `<span class="chip"><b>${label}</b> <span class="${v>=0?"p":"n"}">${sgn(v)}</span></span>`;}
-
-function render(){
-  document.querySelectorAll(".filt").forEach(f=>f.setAttribute("aria-selected", f.dataset.r===active.range));
-  leagueRail();
-  const lg = B.leagues.find(l=>l.code===active.league);
-  const [lo,hi] = RANGES[active.range];
-  const games = (lg.games||[]).filter(g=>g.date>=lo && g.date<=hi);
-  const board = document.getElementById("board");
-  if(!games.length){board.innerHTML=`<div class="empty">No games in this window.</div>`;return;}
-  const days=[...new Set(games.map(g=>g.date))].sort();
-  board.innerHTML = days.map(d=>{
-    const gs=games.filter(g=>g.date===d);
-    const anyTbd=gs.some(g=>!g.pitcher_known);
-    return `<section class="daygroup"><div class="dayhead">
-      <span class="d">${fmtDay(d)}</span><span class="c">${gs.length} games</span>
-      ${anyTbd?'<span class="proj">projected · starters tbd</span>':''}
-    </div>${gs.map(row).join("")}</section>`;
-  }).join("");
-  board.querySelectorAll(".row").forEach(r=>{
-    const t=()=>r.setAttribute("aria-expanded", r.getAttribute("aria-expanded")!=="true");
-    r.onclick=t; r.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();t();}};
-  });
+/* ---------- RANKINGS ---------- */
+function rankings(){
+  const db=state.db;
+  const T=Object.values(db.teams).sort((a,b)=>b.elo-a.elo);
+  const P=Object.values(db.pitchers).filter(p=>p&&p.matched&&p.adj_rank).sort((a,b)=>a.adj_rank-b.adj_rank).slice(0,30);
+  const trow=(t,i)=>`<tr onclick="location.hash='#/standings'">
+    <td class="a"><span class="num" style="color:var(--faint)">${i+1}</span> <span class="ab" style="margin-left:6px">${t.abbr}</span></td>
+    <td><span class="num">${Math.round(t.elo)}</span></td>
+    <td><span class="num">${t.w}-${t.l}</span></td>
+    <td><span class="num ${t.run_diff>=0?"pos":"neg"}">${t.run_diff>=0?"+":""}${t.run_diff}</span></td>
+    <td><span class="num ${t.elo_rank<t.record_rank?"pos":(t.elo_rank>t.record_rank?"neg":"")}">${t.elo_rank<t.record_rank?"▲":(t.elo_rank>t.record_rank?"▼":"—")} #${t.record_rank}</span></td>
+    <td><span class="num ${Math.abs(t.luck)>=0.04?"warnc":""}">${sgn(t.luck*100)}</span></td></tr>`;
+  const prow=p=>`<tr><td class="a"><span class="num" style="color:var(--faint)">${p.adj_rank}</span>
+      <span style="margin-left:8px;font-weight:600">${p.name}</span></td>
+    <td><span class="num" style="color:var(--fav);font-weight:700">${sgn(p.adj)}</span></td>
+    <td><span class="num">${p.era??"-"}</span></td><td><span class="num">${p.whip??"-"}</span></td>
+    <td><span class="num">${p.k9??"-"}</span></td><td><span class="num">${p.bb9??"-"}</span></td>
+    <td><span class="num">${p.hr9??"-"}</span></td></tr>`;
+  $("#view").innerHTML=`<div class="eyebrow">Database</div><h1 class="pt">Rankings</h1>
+    <div class="subh">Team power ratings <span class="sub" style="font-weight:400">· our market-blind Elo. The rank column shows how our rating compares to the standings.</span></div>
+    <div class="twrap"><table><thead><tr><th>Team</th><th>Elo</th><th>Record</th><th>Diff</th><th>vs W-L rank</th><th>Luck</th></tr></thead>
+      <tbody>${T.map(trow).join("")}</tbody></table></div>
+    <div class="subh">Starting pitchers <span class="sub" style="font-weight:400">· our FIP-based adjustment (Elo pts), cross-referenced with season rates. Top ${P.length} on the current board.</span></div>
+    <div class="twrap"><table><thead><tr><th>Pitcher</th><th>Our edge</th><th>ERA</th><th>WHIP</th><th>K/9</th><th>BB/9</th><th>HR/9</th></tr></thead>
+      <tbody>${P.map(prow).join("")}</tbody></table></div>`;
 }
 
-document.querySelectorAll(".filt").forEach(f=>f.onclick=()=>{active.range=f.dataset.r;render();});
-render();
+boot();
 """
+
+SHELL = f"""<style>{CSS}</style>
+<header><div class="wrap">
+  <a class="brand" href="#/">GLASS<span class="b">BOX</span></a>
+  <nav class="main">
+    <a href="#/" data-v="board">Board</a>
+    <a href="#/standings" data-v="standings">Standings</a>
+    <a href="#/rankings" data-v="rankings">Rankings</a>
+  </nav>
+  <span class="grow"></span>
+  <span class="acc" id="acc"></span>
+  <button class="tog" id="tog" aria-label="Toggle theme">&#9681;</button>
+</div></header>
+<main><div class="wrap" id="view"><div class="loading">Loading predictions&hellip;</div></div></main>
+<footer><div class="wrap">
+  <b>Research only &mdash; not betting advice.</b> A market-blind model (team Elo + FIP
+  starting-pitcher rating) that never sees the odds. Data: <b>Retrosheet</b> (free of charge,
+  copyrighted by Retrosheet, <a href="https://www.retrosheet.org">retrosheet.org</a>) and the
+  MLB Stats API (individual, non-commercial use).
+</div></footer>
+<script>{JS}</script>"""
 
 
 def build():
-    board, ratings = load()
-    acc = board["accuracy"]
-    data_json = json.dumps(board)
-
-    body = f"""<style>{CSS}</style>
-<script id="board-data" type="application/json">{data_json}</script>
-
-<header><div class="wrap">
-  <span class="brand">GLASS<span class="b">BOX</span></span>
-  <span class="tag">market-blind predictions</span>
-  <span class="spacer"></span>
-  <span class="stat"><b>{acc['log_loss']:.3f}</b> log loss<br>coin flip {acc['coinflip']:.3f}</span>
-  <button class="tog" id="tog" aria-label="Toggle theme">&#9681;</button>
-</div></header>
-
-<div class="wrap">
-  <nav class="rail" id="rail"></nav>
-  <div class="filters">
-    <button class="filt" data-r="today" aria-selected="true">Today</button>
-    <button class="filt" data-r="tomorrow">Tomorrow</button>
-    <button class="filt" data-r="week">This week</button>
-    <button class="filt" data-r="month">Month</button>
-    <span class="note">tap a game for the why</span>
-  </div>
-  <main id="board"></main>
-  <footer>
-    <b>Research only &mdash; not betting advice.</b> A market-blind statistical model
-    (team Elo + FIP starting-pitcher rating); it never sees the odds. Team form current
-    through {board['current_through']}; pitcher ratings through {ratings['trained_through_season']}.
-    Data: <b>Retrosheet</b> (obtained free of charge and copyrighted by Retrosheet,
-    <a href="https://www.retrosheet.org">www.retrosheet.org</a>) and the MLB Stats API
-    (individual, non-commercial use).
-  </footer>
-</div>
-
-<script>{JS}</script>"""
-
-    body_ascii = body.encode("ascii", "xmlcharrefreplace").decode("ascii")
+    body = SHELL.encode("ascii", "xmlcharrefreplace").decode("ascii")
     SITE.mkdir(exist_ok=True)
-    (SITE / "index.html").write_text(body_ascii, encoding="utf-8")
-    n = board["leagues"][0]["n_games"]
-    print(f"wrote {SITE/'index.html'} ({len(body_ascii):,} bytes, {n} MLB games)")
+    (SITE / "index.html").write_text(body, encoding="utf-8")
+    print(f"wrote {SITE/'index.html'} ({len(body):,} bytes)")
 
 
 if __name__ == "__main__":

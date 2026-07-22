@@ -44,6 +44,7 @@ def horizon_games(start: date, days: int) -> list[dict]:
             if ht not in TEAM_ID_TO_RETRO or at not in TEAM_ID_TO_RETRO:
                 continue
             out.append({
+                "game_pk": g["gamePk"],
                 "date": g["gameDate"][:10], "start_utc": g["gameDate"],
                 "state": g["status"]["abstractGameState"],
                 "home": TEAM_ID_TO_RETRO[ht], "away": TEAM_ID_TO_RETRO[at],
@@ -76,7 +77,9 @@ def main(days: int = 30, today: str | None = None):
         hp = r["home_win_prob"]
         pick_home = hp >= 0.5
         cards.append({
+            "game_pk": g["game_pk"],
             "date": g["date"], "start_utc": g["start_utc"], "state": g["state"],
+            "home": g["home"], "away": g["away"],
             "away_abbr": g["away_abbr"], "home_abbr": g["home_abbr"],
             "away_name": g["away_name"], "home_name": g["home_name"],
             "away_sp": g["away_sp"] or "TBD", "home_sp": g["home_sp"] or "TBD",

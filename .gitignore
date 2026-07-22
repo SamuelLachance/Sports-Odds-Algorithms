@@ -17,3 +17,4 @@ data/mlb_glicko2_report.json
 data/mlb_rating_search.json
 data/mlb_pitcher_elo.json
 data/mlb_fip_elo.json
+site/data/predictions.json
