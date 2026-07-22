@@ -54,14 +54,17 @@ def ensure_lines_cache(finals: list[dict], cache_path: Path = LINES_CACHE) -> di
     return cache
 
 
-def build_replay(finals: list[dict], cache: dict, x: dict):
+def build_replay(finals: list[dict], cache: dict, x: dict, lg_hrfb=None):
     """Turn this season's cached data into the inputs the engines replay, using the
-    mlbam->retro crosswalk x. Returns:
+    mlbam->retro crosswalk x. Starter lines are transformed to xFIP (actual HR ->
+    expected HR from fly balls) with the frozen league HR/FB, matching training.
+    Returns:
       games   [ {home,away,home_sp,away_sp(retro),y,home_line,away_line,date} ]  for FipPitcherElo.update
       pas     [ (batter_retro, pitcher_retro, on_base) ]  date-ordered  for TrueSkill.update
       bullpen {team: (fip_num, outs)}      season-to-date reliever aggregate
       power   {retro: [PA, H, TB]}         season-to-date batting counts
     """
+    from mlbwp.ingest import to_xfip
     games, pas = [], []
     bullpen = defaultdict(lambda: [0.0, 0])
     power = defaultdict(lambda: [0, 0, 0])
@@ -79,7 +82,10 @@ def build_replay(finals: list[dict], cache: dict, x: dict):
                     power[r][0] += line[0]; power[r][1] += line[1]; power[r][2] += line[2]
             sp_retro = x.get(str(s.get("sp_id")))
             sp = s.get("sp") or [0, 0, 0, 0, 0]
-            sides[side] = (sp_retro or "", sp if (sp_retro and sp[0] > 0) else None)
+            line = None
+            if sp_retro and sp[0] > 0:
+                line = to_xfip(sp, s.get("sp_fb", 0), lg_hrfb) if lg_hrfb else sp
+            sides[side] = (sp_retro or "", line)
         games.append({
             "home": g["home"], "away": g["away"],
             "home_sp": sides["home"][0], "away_sp": sides["away"][0],
@@ -141,7 +147,7 @@ def main(days: int = 30, today: str | None = None):
     # through the same engines the model was trained with. No retraining — the
     # coefficients are fixed; only the rating STATE is walked to today.
     cache = ensure_lines_cache(finals)
-    games, pas, bullpen, power = build_replay(finals, cache, pred.mlbam_to_retro)
+    games, pas, bullpen, power = build_replay(finals, cache, pred.mlbam_to_retro, pred.lg_hrfb)
     applied = pred.replay_season(games, pas, bullpen=bullpen, power=power)
     bp_loaded = sum(1 for v in bullpen.values() if v[1] > 0)
     sp_loaded = len(games)

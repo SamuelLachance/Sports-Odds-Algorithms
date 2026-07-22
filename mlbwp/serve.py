@@ -50,6 +50,7 @@ class Predictor:
         self.params = d["params"]
         self.hfa = d["params"]["hfa"]
         self.lg_fip = d.get("league_fip", 1.2)
+        self.lg_hrfb = d.get("league_hrfb")     # xFIP: league HR per fly ball
         self.pitchers = d["pitchers"]
         self.name_index = d["name_index"]
         self.current_through = None      # set by replay_season

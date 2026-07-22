@@ -122,6 +122,29 @@ def _parse_box(box: dict) -> dict:
     return out
 
 
+def _fly_balls_by_pitcher(all_plays: list) -> dict:
+    """{pitcher_mlbam: non-HR fly balls} from a game's plays, for xFIP. A fly ball
+    is a completed batted ball with hitData trajectory 'fly_ball' (matches the
+    Retrosheet /F definition; HRs are added back in the xFIP formula)."""
+    fb: dict = {}
+    for pl in all_plays:
+        res = pl.get("result", {})
+        if res.get("type") != "atBat" or not pl.get("about", {}).get("isComplete"):
+            continue
+        if res.get("eventType") == "home_run":
+            continue
+        traj = None
+        for pe in pl.get("playEvents", []):
+            hd = pe.get("hitData")
+            if hd and hd.get("trajectory"):
+                traj = hd["trajectory"]
+        if traj == "fly_ball":
+            pid = (pl.get("matchup", {}).get("pitcher") or {}).get("id")
+            if pid is not None:
+                fb[pid] = fb.get(pid, 0) + 1
+    return fb
+
+
 def _parse_plays(all_plays: list) -> list:
     """Completed plate appearances as (batter_mlbam, pitcher_mlbam, on_base), in order."""
     pas = []
@@ -147,8 +170,12 @@ def game_data(game_pk) -> dict:
     """
     d = _get(f"{BASE_V11}/game/{game_pk}/feed/live")
     live = d.get("liveData", {})
+    plays = live.get("plays", {}).get("allPlays", [])
     sides = _parse_box(live.get("boxscore", {}))
-    sides["pa"] = _parse_plays(live.get("plays", {}).get("allPlays", []))
+    fbc = _fly_balls_by_pitcher(plays)
+    for side in ("home", "away"):
+        sides[side]["sp_fb"] = fbc.get(sides[side].get("sp_id"), 0)
+    sides["pa"] = _parse_plays(plays)
     return sides
 
 

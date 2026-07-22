@@ -17,6 +17,7 @@ import unicodedata
 from pathlib import Path
 
 from mlbwp import MODEL_NAME, MODEL_VERSION
+from mlbwp import ingest
 from mlbwp.ingest import league_fip_core, load_games, pitcher_names
 from mlbwp.rating import FipPitcherElo
 
@@ -77,6 +78,7 @@ def main():
         "serve_season": serve_season,
         "trained_through_season": last_season,
         "params": PARAMS, "league_fip": round(lg_fip, 4),
+        "league_hrfb": round(ingest.LEAGUE_HRFB, 5) if ingest.LEAGUE_HRFB else None,
         "teams": dict(sorted(teams.items())),
         "pitchers": pitchers,
         "name_index": name_index,

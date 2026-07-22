@@ -228,7 +228,7 @@ def main(season: int = 2026):
     # apply the model to this season, same as the board build, so the standings
     # Elo and GlassBox ratings match the numbers the predictions were made with
     cache = ensure_lines_cache(finals)
-    games, pas, bullpen, power = build_replay(finals, cache, pred.mlbam_to_retro)
+    games, pas, bullpen, power = build_replay(finals, cache, pred.mlbam_to_retro, pred.lg_hrfb)
     pred.replay_season(games, pas, bullpen=bullpen, power=power)
 
     teams = build_teams(pred, season)

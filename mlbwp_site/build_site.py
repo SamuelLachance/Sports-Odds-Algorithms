@@ -609,7 +609,7 @@ SHELL = f"""<style>{CSS}</style>
 </div></header>
 <main><div class="wrap" id="view"><div class="loading">Loading predictions&hellip;</div></div></main>
 <footer><div class="wrap">
-  <b>Research only &mdash; not betting advice.</b> A market-blind model (team Elo + FIP
+  <b>Research only &mdash; not betting advice.</b> A market-blind model (team Elo + xFIP
   starting-pitcher rating + season-to-date bullpen FIP + per-plate-appearance TrueSkill
   on-base ratings + lineup isolated-power) that never sees the odds. Data: <b>Retrosheet</b> (free of charge,
   copyrighted by Retrosheet, <a href="https://www.retrosheet.org">retrosheet.org</a>) and the
