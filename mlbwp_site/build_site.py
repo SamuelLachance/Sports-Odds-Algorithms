@@ -114,10 +114,6 @@ h1.pt{font-family:var(--serif);font-size:26px;margin:2px 0 14px}
   margin-right:5px;vertical-align:middle;animation:pulse 1.4s ease-in-out infinite}
 .lv.final{color:var(--ink);font-weight:600}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.gc.hit{box-shadow:inset 0 0 0 1.5px var(--fav)}
-.gc.miss{box-shadow:inset 0 0 0 1.5px var(--home)}
-.gc .res{margin-left:6px;font-weight:700}
-.gc .res.hit{color:var(--fav)}.gc .res.miss{color:var(--home)}
 
 /* tables (standings, rankings) */
 .twrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
@@ -191,8 +187,6 @@ td .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
 .livepanel.live .st{color:var(--accent);font-weight:700}
 .livepanel .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);
   margin-right:5px;animation:pulse 1.4s ease-in-out infinite}
-.livepanel .res{margin-left:auto;font-weight:700;font-size:13px}
-.livepanel .res.hit{color:var(--fav)}.livepanel .res.miss{color:var(--home)}
 .updated{font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-left:8px}
 .updated .dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--fav);
   margin-right:4px;animation:pulse 2s ease-in-out infinite}
@@ -267,7 +261,6 @@ const fmtDay=(iso,gen)=>{const d=new Date(iso+"T12:00:00");
   return d.toLocaleDateString(LOC,{weekday:"long"})+" · "+md;};
 
 /* ---------- LIVE (client-side, polls the MLB Stats API directly) ---------- */
-const winner = l => l.hs>l.as ? "home" : (l.as>l.hs ? "away" : null);
 async function pollLive(force){
   if(!force && document.hidden) return;   // skip recurring polls in a hidden tab; always run the first
   try{
@@ -297,23 +290,12 @@ function applyLive(){
     if(b){el.className="lv "+b.cls; el.innerHTML=b.html;}
     else{el.className="lv"; el.textContent=el.dataset.def;}
   });
-  document.querySelectorAll(".gc[data-card]").forEach(c=>{
-    const l=state.live[c.dataset.card]; c.classList.remove("hit","miss");
-    const old=c.querySelector(".res"); if(old) old.remove();
-    if(l&&l.state==="Final"){const w=winner(l); if(w){
-      const won=(w==="home"?c.dataset.home:c.dataset.away)===c.dataset.pick;
-      c.classList.add(won?"hit":"miss");
-    }}
-  });
   const gp=document.querySelector("#livepanel[data-pk]");
   if(gp){const l=state.live[gp.dataset.pk];
     if(l&&(l.state==="Live"||l.state==="Final")){
       gp.style.display="flex"; gp.className="livepanel "+(l.state==="Live"?"live":"");
-      let res=""; if(l.state==="Final"){const w=winner(l);
-        if(w){const won=(w==="home"?gp.dataset.home:gp.dataset.away)===gp.dataset.pick;
-          res=`<span class="res ${won?"hit":"miss"}">pick ${won?"hit":"missed"}</span>`;}}
       gp.innerHTML=`<span class="sc">${gp.dataset.away} ${l.as} &ndash; ${l.hs} ${gp.dataset.home}</span>
-        <span class="st">${l.state==="Live"?`<span class="dot"></span>${l.half||""} ${l.inning||""}`:"Final"}</span>${res}`;
+        <span class="st">${l.state==="Live"?`<span class="dot"></span>${l.half||""} ${l.inning||""}`:"Final"}</span>`;
     } else gp.style.display="none";
   }
   const u=$("#updated");
