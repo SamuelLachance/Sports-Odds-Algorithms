@@ -83,6 +83,8 @@ h1.pt{font-family:var(--serif);font-size:26px;margin:2px 0 14px}
 .gc .top .lbadge.off{color:var(--fav);border-color:var(--fav);background:var(--favbg)}
 .gc .top .lbadge.proj{color:var(--warn);border-color:rgba(224,164,78,.5);background:rgba(224,164,78,.14)}
 .gc .top .lbadge.tbd{color:var(--faint);border-color:var(--line-2);background:var(--sunk)}
+.gc .pj{font-family:var(--mono);font-size:8.5px;text-transform:uppercase;letter-spacing:.04em;
+  color:var(--warn);border:1px solid rgba(224,164,78,.45);border-radius:4px;padding:0 3px;vertical-align:1px}
 .side{display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:9px;padding:2px 0}
 .side .ab{font-family:var(--mono);font-weight:700;font-size:15px}
 .side .who{min-width:0}
@@ -359,12 +361,14 @@ const pitEra = name=>{const p=findPlayerByName(name);
   return p&&p.pit&&p.pit.era!=null?`<span class="era">${p.pit.era}</span>`:"";};
 function gcard(g){
   const hp=g.home_win_prob, homeWin=hp>=0.5, e=g.edge||{};
-  const spA=g.away_sp==="TBD"?`<span class="tbd">TBD</span>`:`${g.away_sp} ${pitEra(g.away_sp)}`;
-  const spH=g.home_sp==="TBD"?`<span class="tbd">TBD</span>`:`${g.home_sp} ${pitEra(g.home_sp)}`;
+  const spTag=(nm,proj)=>nm==="TBD"?`<span class="tbd">TBD</span>`
+    :`${nm} ${pitEra(nm)}${proj?' <span class="pj">proj</span>':''}`;
+  const spA=spTag(g.away_sp,g.away_sp_proj), spH=spTag(g.home_sp,g.home_sp_proj);
   return `<a class="gc" href="#/game/${g.game_pk}" data-card="${g.game_pk}"
       data-pick="${g.pick}" data-home="${g.home_abbr}" data-away="${g.away_abbr}">
     <div class="top"><span class="lv" data-pk="${g.game_pk}" data-def="${fmtTime(g.start_utc)}">${fmtTime(g.start_utc)}</span>
       ${g.lineup_source==="official"?'<span class="lbadge off">Lineups in</span>'
+        :g.sp_projected?'<span class="lbadge proj">Projected</span>'
         :g.lineup_source==="projected"?'<span class="lbadge proj">Proj lineup</span>'
         :(g.pitcher_known?"":'<span class="lbadge tbd">Starters TBD</span>')}
       <span class="pill ${tier(g.pick_prob)==="strong"?"strong":""}">${g.pick} ${pctI(g.pick_prob)}%</span></div>
@@ -469,7 +473,9 @@ function gamePage(pk){
             ${g.lineup_source==="official"
               ? "Official lineups confirmed &mdash; full model adds the actual lineup's on-base (TrueSkill), power (ISO) and baserunning."
               : g.lineup_source==="projected"
-              ? "Projected lineup &mdash; the injury-aware likely nine (most-frequent recent starters still on the active roster, IL'd players excluded). The full model runs on it and upgrades automatically when the official lineup posts."
+              ? ("Projected lineup &mdash; the injury-aware likely nine (most-frequent recent starters still on the active roster, IL'd players excluded)"
+                 +(g.sp_projected?", plus a near-term rotation-projected starter (today/tomorrow only, where rest is reliable)":"")
+                 +". The full model runs on it and upgrades automatically when the official lineup posts.")
               : "Pre-lineup estimate; sharpens when the starters and lineups are posted."}
             ${g.home_bp_fip!=null?"Bullpen = season-to-date reliever FIP ("+g.away_abbr+" "+g.away_bp_fip+" vs "+g.home_abbr+" "+g.home_bp_fip+", lower is better). ":""}
             ${g.tier==="lineup"&&e.power!=null?"Power = lineup isolated-power (extra bases per PA) vs league; on-base and power are separated because a walk and a homer are the same to the on-base rating. ":""}

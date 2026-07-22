@@ -148,6 +148,8 @@ def horizon_games(start: date, days: int) -> list[dict]:
                 "home_name": h["team"]["name"], "away_name": a["team"]["name"],
                 "home_sp": (h.get("probablePitcher") or {}).get("fullName"),
                 "away_sp": (a.get("probablePitcher") or {}).get("fullName"),
+                "home_sp_id": (h.get("probablePitcher") or {}).get("id"),
+                "away_sp_id": (a.get("probablePitcher") or {}).get("id"),
                 "home_lineup": [p["id"] for p in lu.get("homePlayers", [])],
                 "away_lineup": [p["id"] for p in lu.get("awayPlayers", [])],
             })
@@ -172,6 +174,15 @@ def main(days: int = 30, today: str | None = None):
 
     games = horizon_games(day0, days)
     projector = Projector(day0)
+    # Per team, the pitcher ids that already have a scheduled (official) start, with the
+    # date -- so a near-term starter projection can skip anyone the team is already
+    # starting on/before that game day (doubleheader game 1, or today's arm when
+    # projecting tomorrow).
+    sched_sp: dict = defaultdict(list)
+    for g in games:
+        for team, sid, in ((g["home"], g.get("home_sp_id")), (g["away"], g.get("away_sp_id"))):
+            if sid:
+                sched_sp[team].append((g["date"], sid))
     print(f"[proj] injury-aware projector: rosters for {len(projector.active)} teams", flush=True)
     cards = []
     for g in games:
@@ -180,13 +191,23 @@ def main(days: int = 30, today: str | None = None):
         # score + pick result. The projection stays a pre-game number — team
         # ratings are current only through yesterday, so today's results never
         # leak into the number shown for today's games.
-        # Starter: the official probable only (MLB sets it ~2 days ahead). Guard
-        # against a stub/blank name so an unknown starter can never read as "known".
+        # Starter: the official probable; if it's TBD, a near-term (<=24-48h) rotation
+        # projection (most-rested regular the team isn't already starting). Guard against
+        # a stub/blank name so an unknown starter can never read as "known".
         def _sp(x):
             x = (x or "").strip()
             return x if x and x.upper() != "TBD" else None
-        h_sp, a_sp = _sp(g["home_sp"]), _sp(g["away_sp"])
+
+        def _project_sp(team, official):
+            if official:
+                return official, False
+            excl = {sid for d, sid in sched_sp[team] if d <= g["date"]}
+            s = projector.starter(team, g["date"], exclude_ids=excl)
+            return (s[1], True) if s else (None, False)
+        h_sp, h_sp_proj = _project_sp(g["home"], _sp(g["home_sp"]))
+        a_sp, a_sp_proj = _project_sp(g["away"], _sp(g["away_sp"]))
         pitcher_known = bool(h_sp) and bool(a_sp)
+        sp_projected = pitcher_known and (h_sp_proj or a_sp_proj)
 
         # Lineup: the full tier needs both starters known (never a full pick next to a
         # TBD starter). Prefer the OFFICIAL lineup; else an injury-aware PROJECTION
@@ -215,7 +236,9 @@ def main(days: int = 30, today: str | None = None):
             "away_abbr": g["away_abbr"], "home_abbr": g["home_abbr"],
             "away_name": g["away_name"], "home_name": g["home_name"],
             "away_sp": a_sp or "TBD", "home_sp": h_sp or "TBD",
+            "away_sp_proj": a_sp_proj, "home_sp_proj": h_sp_proj,
             "pitcher_known": pitcher_known,
+            "sp_projected": sp_projected,
             "lineup_source": lineup_source,      # "official" | "projected" | None
             "home_win_prob": hp,
             "pick": g["home_abbr"] if pick_home else g["away_abbr"],
