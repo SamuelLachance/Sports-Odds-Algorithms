@@ -68,8 +68,11 @@ def main(days: int = 30, today: str | None = None):
     games = horizon_games(day0, days)
     cards = []
     for g in games:
-        if g["state"] == "Final":
-            continue
+        # Keep Live and Final games: the board is a live product, so today's
+        # in-progress and completed games stay on it and the client overlays the
+        # score + pick result. The projection stays a pre-game number — team
+        # ratings are current only through yesterday, so today's results never
+        # leak into the number shown for today's games.
         pitcher_known = bool(g["home_sp"]) and bool(g["away_sp"])
         r = pred.predict(g["home"], g["away"], g.get("home_sp") or "", g.get("away_sp") or "")
         if "error" in r:

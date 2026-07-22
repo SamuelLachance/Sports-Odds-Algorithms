@@ -1,0 +1,56 @@
+name: Refresh predictions
+
+# Rebuilds the pre-game projections + database 6x/day and deploys them. Commits
+# pushed by the CI token do not trigger other workflows, so this job deploys to
+# Pages itself rather than relying on pages.yml. Live in-game scores update
+# separately, client-side, straight from the MLB Stats API.
+
+on:
+  schedule:
+    # every 4 hours = 6 runs/day (UTC), catching probable-pitcher announcements
+    # and overnight standings updates.
+    - cron: "0 */4 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: refresh
+  cancel-in-progress: true
+
+permissions:
+  contents: write   # commit the refreshed data back to the repo
+  pages: write      # deploy
+  id-token: write
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Rebuild board + database
+        run: python refresh.py
+
+      - name: Commit refreshed data (keeps the repo's fallback current)
+        run: |
+          git config user.name "glassbox-bot"
+          git config user.email "glassbox-bot@users.noreply.github.com"
+          git add site/data/board.json site/data/db.json site/index.html
+          if git diff --cached --quiet; then
+            echo "no data change"
+          else
+            git commit -m "Refresh projections"
+            git push
+          fi
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -95,6 +95,15 @@ h1.pt{font-family:var(--serif);font-size:26px;margin:2px 0 14px}
 .gc .edge{display:flex;gap:6px;flex-wrap:wrap;font-family:var(--mono);font-size:10.5px;color:var(--muted)}
 .gc .edge .k{color:var(--faint)}
 .gc .edge .p{color:var(--fav)}.gc .edge .n{color:var(--home)}
+.lv.live{color:var(--accent);font-weight:700}
+.lv.live .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);
+  margin-right:5px;vertical-align:middle;animation:pulse 1.4s ease-in-out infinite}
+.lv.final{color:var(--ink);font-weight:600}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.gc.hit{box-shadow:inset 0 0 0 1.5px var(--fav)}
+.gc.miss{box-shadow:inset 0 0 0 1.5px var(--home)}
+.gc .res{margin-left:6px;font-weight:700}
+.gc .res.hit{color:var(--fav)}.gc .res.miss{color:var(--home)}
 
 /* tables (standings, rankings) */
 .twrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
@@ -160,6 +169,19 @@ td .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
 .cmp .a{text-align:left}.cmp .h{text-align:right}
 .cmp .win{color:var(--fav);font-weight:700}
 
+.livepanel{background:var(--sunk);border:1px solid var(--line-2);border-radius:10px;padding:11px 15px;
+  margin-bottom:12px;display:none;align-items:center;gap:14px}
+.livepanel .sc{font-family:var(--mono);font-size:22px;font-weight:700}
+.livepanel .st{font-size:12px;color:var(--muted)}
+.livepanel.live{border-color:var(--accent)}
+.livepanel.live .st{color:var(--accent);font-weight:700}
+.livepanel .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);
+  margin-right:5px;animation:pulse 1.4s ease-in-out infinite}
+.livepanel .res{margin-left:auto;font-weight:700;font-size:13px}
+.livepanel .res.hit{color:var(--fav)}.livepanel .res.miss{color:var(--home)}
+.updated{font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-left:8px}
+.updated .dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--fav);
+  margin-right:4px;animation:pulse 2s ease-in-out infinite}
 .loading,.empty{padding:60px 0;text-align:center;color:var(--muted)}
 footer{border-top:1px solid var(--line);padding:20px 0 46px;color:var(--faint);font-size:11px;line-height:1.6}
 footer b{color:var(--muted)} footer a{color:var(--muted);text-decoration:underline}
@@ -175,6 +197,7 @@ footer b{color:var(--muted)} footer a{color:var(--muted);text-decoration:underli
     <a href="#/rankings" data-v="rankings">Rankings</a>
   </nav>
   <span class="grow"></span>
+  <span class="updated" id="updated"></span>
   <span class="acc" id="acc"></span>
   <button class="tog" id="tog" aria-label="Toggle theme">&#9681;</button>
 </div></header>
@@ -187,7 +210,8 @@ footer b{color:var(--muted)} footer a{color:var(--muted);text-decoration:underli
 </div></footer>
 <script>
 const $ = s => document.querySelector(s);
-const state = {board:null, db:null, league:"mlb", range:"today"};
+const state = {board:null, db:null, league:"mlb", range:"today", live:{}, updated:null};
+const SAPI = "https://statsapi.mlb.com/api/v1";
 const root = document.documentElement;
 $("#tog").onclick = () => {
   const cur = root.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");
@@ -206,16 +230,74 @@ const fmtDay=(iso,gen)=>{const d=new Date(iso+"T12:00:00");
   if(iso===gen)return"Today &#183; "+md; if(iso===addDays(gen,1))return"Tomorrow &#183; "+md;
   return d.toLocaleDateString(LOC,{weekday:"long"})+" &#183; "+md;};
 
+/* ---------- LIVE (client-side, polls the MLB Stats API directly) ---------- */
+const winner = l => l.hs>l.as ? "home" : (l.as>l.hs ? "away" : null);
+async function pollLive(force){
+  if(!force && document.hidden) return;   // skip recurring polls in a hidden tab; always run the first
+  try{
+    const t=new Date(), dd=n=>{const x=new Date(t);x.setDate(x.getDate()+n);return x.toISOString().slice(0,10);};
+    const r=await fetch(`${SAPI}/schedule?sportId=1&startDate=${dd(-1)}&endDate=${dd(1)}&hydrate=linescore`);
+    const d=await r.json(); const m={};
+    for(const day of d.dates||[]) for(const g of day.games||[]){
+      const ls=g.linescore||{};
+      m[g.game_pk||g.gamePk]={state:g.status.abstractGameState,
+        as:g.teams.away.score, hs:g.teams.home.score,
+        inning:ls.currentInningOrdinal, half:ls.inningState, top:ls.isTopInning};
+    }
+    state.live=m; state.updated=new Date();
+    applyLive();
+  }catch(e){/* StatsAPI hiccup &#8212; keep the last good state, try again next tick */}
+}
+function liveBadge(pk){
+  const l=state.live[pk]; if(!l) return null;
+  if(l.state==="Live") return {cls:"live",
+    html:`<span class="dot"></span>${l.as}-${l.hs} &middot; ${(l.half||"").slice(0,3)} ${l.inning||""}`};
+  if(l.state==="Final") return {cls:"final", html:`Final ${l.as}-${l.hs}`, fin:l};
+  return null;
+}
+function applyLive(){
+  document.querySelectorAll(".lv[data-pk]").forEach(el=>{
+    const b=liveBadge(el.dataset.pk);
+    if(b){el.className="lv "+b.cls; el.innerHTML=b.html;}
+    else{el.className="lv"; el.textContent=el.dataset.def;}
+  });
+  document.querySelectorAll(".gc[data-card]").forEach(c=>{
+    const l=state.live[c.dataset.card]; c.classList.remove("hit","miss");
+    const old=c.querySelector(".res"); if(old) old.remove();
+    if(l&&l.state==="Final"){const w=winner(l); if(w){
+      const won=(w==="home"?c.dataset.home:c.dataset.away)===c.dataset.pick;
+      c.classList.add(won?"hit":"miss");
+    }}
+  });
+  const gp=document.querySelector("#livepanel[data-pk]");
+  if(gp){const l=state.live[gp.dataset.pk];
+    if(l&&(l.state==="Live"||l.state==="Final")){
+      gp.style.display="flex"; gp.className="livepanel "+(l.state==="Live"?"live":"");
+      let res=""; if(l.state==="Final"){const w=winner(l);
+        if(w){const won=(w==="home"?gp.dataset.home:gp.dataset.away)===gp.dataset.pick;
+          res=`<span class="res ${won?"hit":"miss"}">pick ${won?"hit":"missed"}</span>`;}}
+      gp.innerHTML=`<span class="sc">${gp.dataset.away} ${l.as} &ndash; ${l.hs} ${gp.dataset.home}</span>
+        <span class="st">${l.state==="Live"?`<span class="dot"></span>${l.half||""} ${l.inning||""}`:"Final"}</span>${res}`;
+    } else gp.style.display="none";
+  }
+  const u=$("#updated");
+  if(u&&state.updated) u.innerHTML=`<span class="dot"></span>live &middot; updated ${state.updated.toLocaleTimeString(LOC,{hour:"numeric",minute:"2-digit",second:"2-digit"})}`;
+}
+
 async function boot(){
   try{
+    const bust = "?t=" + Math.floor(Date.now()/60000);   // fresh each minute; beats stale caches
     const [b,db] = await Promise.all([
-      fetch("./data/board.json").then(r=>r.json()),
-      fetch("./data/db.json").then(r=>r.json()),
+      fetch("./data/board.json"+bust, {cache:"no-cache"}).then(r=>r.json()),
+      fetch("./data/db.json"+bust, {cache:"no-cache"}).then(r=>r.json()),
     ]);
     state.board=b; state.db=db;
     const a=b.accuracy;
     $("#acc").innerHTML=`<b>${a.log_loss.toFixed(3)}</b> log loss<br>coin flip ${a.coinflip.toFixed(3)}`;
     route();
+    pollLive(true);                 // first poll always runs, even if the tab loads hidden
+    setInterval(pollLive, 25000);   // MLB Stats API caches ~20s; poll a touch slower
+    document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) pollLive(true); });
   }catch(e){ $("#view").innerHTML=`<div class="empty">Could not load data. ${e}</div>`; }
 }
 window.addEventListener("hashchange", route);
@@ -239,8 +321,9 @@ function gcard(g){
   const db=state.db, hp=g.home_win_prob, homeWin=hp>=0.5, e=g.edge||{};
   const spA=g.away_sp==="TBD"?`<span class="tbd">TBD</span>`:`${g.away_sp} ${pit(g.away_sp,db)}`;
   const spH=g.home_sp==="TBD"?`<span class="tbd">TBD</span>`:`${g.home_sp} ${pit(g.home_sp,db)}`;
-  return `<a class="gc" href="#/game/${g.game_pk}">
-    <div class="top">${g.state==="Live"?'<span class="live">LIVE</span>':""}<span>${fmtTime(g.start_utc)}</span>
+  return `<a class="gc" href="#/game/${g.game_pk}" data-card="${g.game_pk}"
+      data-pick="${g.pick}" data-home="${g.home_abbr}" data-away="${g.away_abbr}">
+    <div class="top"><span class="lv" data-pk="${g.game_pk}" data-def="${fmtTime(g.start_utc)}">${fmtTime(g.start_utc)}</span>
       <span class="pill ${tier(g.pick_prob)==="strong"?"strong":""}">${g.pick} ${pctI(g.pick_prob)}%</span></div>
     <div class="side ${homeWin?"":"win"}"><span class="ab">${g.away_abbr}</span>
       <span class="who"><span class="sp">${spA}</span></span><span class="pc">${pctI(1-hp)}%</span></div>
@@ -272,6 +355,7 @@ function board(){
   $("#view").innerHTML=`<div class="controls"><div class="rail">${rail}</div><div class="filters">${filts}</div></div>${body}`;
   $("#view").querySelectorAll("[data-lg]").forEach(x=>x.onclick=()=>{state.league=x.dataset.lg;board();});
   $("#view").querySelectorAll("[data-r]").forEach(x=>x.onclick=()=>{state.range=x.dataset.r;board();});
+  applyLive();
 }
 
 /* ---------- GAME PAGE ---------- */
@@ -314,9 +398,10 @@ function gamePage(pk){
     ${cmpRow("Elo rank","#"+A.elo_rank,"#"+H.elo_rank,x=>x)}
   </table>`:`<div class="sub">team data unavailable</div>`;
   $("#view").innerHTML=`
-    <a class="back" href="#/">&#8249; Board</a>
+    <a class="back" href="#/">&lsaquo; Board</a>
     <div class="gh"><span class="mt">${g.away_abbr} <span style="color:var(--faint)">@</span> ${g.home_abbr}</span>
-      <span class="meta">${g.state==="Live"?'<span class="live">LIVE</span> &#183; ':""}${fmtDay(g.date,state.board.generated)} &#183; ${fmtTime(g.start_utc)}</span></div>
+      <span class="meta">${fmtDay(g.date,state.board.generated)} &middot; ${fmtTime(g.start_utc)}</span></div>
+    <div class="livepanel" id="livepanel" data-pk="${g.game_pk}" data-home="${g.home_abbr}" data-away="${g.away_abbr}" data-pick="${g.pick}"></div>
     <div class="cols">
       <div style="display:flex;flex-direction:column;gap:14px">
         <div class="panel"><h3>Our projection</h3>
@@ -350,6 +435,7 @@ function gamePage(pk){
         </div></div>
       </div>
     </div>`;
+  applyLive();
 }
 
 /* ---------- STANDINGS ---------- */

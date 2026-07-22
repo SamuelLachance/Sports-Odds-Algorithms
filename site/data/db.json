@@ -51,7 +51,7 @@
    "luck": -0.033,
    "elo": 1525.9,
    "elo_rank": 4,
-   "record_rank": 5
+   "record_rank": 6
   },
   "BOS": {
    "code": "BOS",
@@ -139,20 +139,20 @@
    "div": "AL Central",
    "div_rank": 1,
    "w": 53,
-   "l": 46,
-   "pct": 0.535,
+   "l": 47,
+   "pct": 0.53,
    "gb": "-",
    "rs": 479,
-   "ra": 427,
-   "run_diff": 52,
-   "rs_g": 4.84,
-   "ra_g": 4.31,
-   "streak": "W2",
+   "ra": 437,
+   "run_diff": 42,
+   "rs_g": 4.79,
+   "ra_g": 4.37,
+   "streak": "L1",
    "l10": "6-4",
    "home": "31-17",
-   "away": "22-29",
-   "pythag": 0.552,
-   "luck": -0.017,
+   "away": "22-30",
+   "pythag": 0.542,
+   "luck": -0.012,
    "elo": 1498.6,
    "elo_rank": 16,
    "record_rank": 8
@@ -167,7 +167,7 @@
    "w": 54,
    "l": 48,
    "pct": 0.529,
-   "gb": "0.5",
+   "gb": "-",
    "rs": 410,
    "ra": 410,
    "run_diff": 0,
@@ -193,7 +193,7 @@
    "w": 49,
    "l": 53,
    "pct": 0.48,
-   "gb": "5.5",
+   "gb": "5.0",
    "rs": 485,
    "ra": 521,
    "run_diff": -36,
@@ -217,20 +217,20 @@
    "div": "AL Central",
    "div_rank": 4,
    "w": 47,
-   "l": 53,
-   "pct": 0.47,
+   "l": 54,
+   "pct": 0.465,
    "gb": "6.5",
-   "rs": 426,
-   "ra": 393,
-   "run_diff": 33,
-   "rs_g": 4.26,
-   "ra_g": 3.93,
-   "streak": "W1",
-   "l10": "7-3",
+   "rs": 428,
+   "ra": 404,
+   "run_diff": 24,
+   "rs_g": 4.24,
+   "ra_g": 4.0,
+   "streak": "L1",
+   "l10": "6-4",
    "home": "27-23",
-   "away": "20-30",
-   "pythag": 0.537,
-   "luck": -0.067,
+   "away": "20-31",
+   "pythag": 0.526,
+   "luck": -0.061,
    "elo": 1490.6,
    "elo_rank": 22,
    "record_rank": 22
@@ -242,24 +242,50 @@
    "abbr": "KC",
    "div": "AL Central",
    "div_rank": 5,
-   "w": 41,
+   "w": 42,
    "l": 60,
-   "pct": 0.406,
-   "gb": "13.0",
-   "rs": 430,
-   "ra": 528,
-   "run_diff": -98,
-   "rs_g": 4.26,
-   "ra_g": 5.23,
-   "streak": "W1",
+   "pct": 0.412,
+   "gb": "12.0",
+   "rs": 433,
+   "ra": 530,
+   "run_diff": -97,
+   "rs_g": 4.25,
+   "ra_g": 5.2,
+   "streak": "W2",
    "l10": "4-6",
-   "home": "24-27",
+   "home": "25-27",
    "away": "17-33",
-   "pythag": 0.407,
-   "luck": -0.001,
+   "pythag": 0.409,
+   "luck": 0.003,
    "elo": 1472.4,
    "elo_rank": 28,
    "record_rank": 28
+  },
+  "TEX": {
+   "code": "TEX",
+   "id": 140,
+   "name": "Texas Rangers",
+   "abbr": "TEX",
+   "div": "AL West",
+   "div_rank": 1,
+   "w": 51,
+   "l": 50,
+   "pct": 0.505,
+   "gb": "-",
+   "rs": 425,
+   "ra": 453,
+   "run_diff": -28,
+   "rs_g": 4.21,
+   "ra_g": 4.49,
+   "streak": "W1",
+   "l10": "5-5",
+   "home": "25-23",
+   "away": "26-27",
+   "pythag": 0.471,
+   "luck": 0.034,
+   "elo": 1499.1,
+   "elo_rank": 15,
+   "record_rank": 15
   },
   "SEA": {
    "code": "SEA",
@@ -267,7 +293,7 @@
    "name": "Seattle Mariners",
    "abbr": "SEA",
    "div": "AL West",
-   "div_rank": 1,
+   "div_rank": 2,
    "w": 51,
    "l": 50,
    "pct": 0.505,
@@ -285,33 +311,7 @@
    "luck": -0.019,
    "elo": 1505.8,
    "elo_rank": 12,
-   "record_rank": 15
-  },
-  "TEX": {
-   "code": "TEX",
-   "id": 140,
-   "name": "Texas Rangers",
-   "abbr": "TEX",
-   "div": "AL West",
-   "div_rank": 2,
-   "w": 50,
-   "l": 50,
-   "pct": 0.5,
-   "gb": "0.5",
-   "rs": 415,
-   "ra": 453,
-   "run_diff": -38,
-   "rs_g": 4.15,
-   "ra_g": 4.53,
-   "streak": "L2",
-   "l10": "5-5",
-   "home": "24-23",
-   "away": "26-27",
-   "pythag": 0.46,
-   "luck": 0.04,
-   "elo": 1499.1,
-   "elo_rank": 15,
-   "record_rank": 17
+   "record_rank": 16
   },
   "HOU": {
    "code": "HOU",
@@ -320,21 +320,21 @@
    "abbr": "HOU",
    "div": "AL West",
    "div_rank": 3,
-   "w": 48,
+   "w": 49,
    "l": 54,
-   "pct": 0.471,
-   "gb": "3.5",
-   "rs": 463,
-   "ra": 513,
-   "run_diff": -50,
+   "pct": 0.476,
+   "gb": "3.0",
+   "rs": 468,
+   "ra": 516,
+   "run_diff": -48,
    "rs_g": 4.54,
-   "ra_g": 5.03,
-   "streak": "W1",
-   "l10": "3-7",
-   "home": "24-27",
+   "ra_g": 5.01,
+   "streak": "W2",
+   "l10": "4-6",
+   "home": "25-27",
    "away": "24-27",
-   "pythag": 0.453,
-   "luck": 0.017,
+   "pythag": 0.455,
+   "luck": 0.02,
    "elo": 1498.5,
    "elo_rank": 17,
    "record_rank": 21
@@ -425,20 +425,20 @@
    "div": "NL East",
    "div_rank": 2,
    "w": 56,
-   "l": 45,
-   "pct": 0.554,
-   "gb": "2.5",
-   "rs": 442,
-   "ra": 452,
-   "run_diff": -10,
-   "rs_g": 4.38,
-   "ra_g": 4.48,
-   "streak": "W1",
-   "l10": "6-4",
-   "home": "27-23",
+   "l": 46,
+   "pct": 0.549,
+   "gb": "3.0",
+   "rs": 443,
+   "ra": 454,
+   "run_diff": -11,
+   "rs_g": 4.34,
+   "ra_g": 4.45,
+   "streak": "L1",
+   "l10": "5-5",
+   "home": "27-24",
    "away": "29-22",
-   "pythag": 0.49,
-   "luck": 0.065,
+   "pythag": 0.489,
+   "luck": 0.06,
    "elo": 1522.3,
    "elo_rank": 5,
    "record_rank": 7
@@ -451,23 +451,23 @@
    "div": "NL East",
    "div_rank": 3,
    "w": 52,
-   "l": 49,
-   "pct": 0.515,
-   "gb": "6.5",
-   "rs": 452,
-   "ra": 436,
-   "run_diff": 16,
-   "rs_g": 4.48,
+   "l": 50,
+   "pct": 0.51,
+   "gb": "7.0",
+   "rs": 455,
+   "ra": 441,
+   "run_diff": 14,
+   "rs_g": 4.46,
    "ra_g": 4.32,
-   "streak": "L7",
-   "l10": "3-7",
+   "streak": "L8",
+   "l10": "2-8",
    "home": "31-20",
-   "away": "21-29",
-   "pythag": 0.516,
-   "luck": -0.002,
+   "away": "21-30",
+   "pythag": 0.514,
+   "luck": -0.004,
    "elo": 1508.2,
    "elo_rank": 10,
-   "record_rank": 11
+   "record_rank": 13
   },
   "WAS": {
    "code": "WAS",
@@ -493,7 +493,7 @@
    "luck": -0.011,
    "elo": 1495.6,
    "elo_rank": 19,
-   "record_rank": 16
+   "record_rank": 17
   },
   "NYN": {
    "code": "NYN",
@@ -502,24 +502,24 @@
    "abbr": "NYM",
    "div": "NL East",
    "div_rank": 5,
-   "w": 42,
+   "w": 43,
    "l": 59,
-   "pct": 0.416,
-   "gb": "16.5",
-   "rs": 412,
+   "pct": 0.422,
+   "gb": "16.0",
+   "rs": 416,
    "ra": 479,
-   "run_diff": -67,
+   "run_diff": -63,
    "rs_g": 4.08,
-   "ra_g": 4.74,
-   "streak": "L1",
-   "l10": "4-6",
+   "ra_g": 4.7,
+   "streak": "W1",
+   "l10": "5-5",
    "home": "21-28",
-   "away": "21-31",
-   "pythag": 0.431,
-   "luck": -0.016,
+   "away": "22-31",
+   "pythag": 0.436,
+   "luck": -0.014,
    "elo": 1475.5,
    "elo_rank": 26,
-   "record_rank": 27
+   "record_rank": 26
   },
   "MIL": {
    "code": "MIL",
@@ -529,23 +529,23 @@
    "div": "NL Central",
    "div_rank": 1,
    "w": 63,
-   "l": 37,
-   "pct": 0.63,
+   "l": 38,
+   "pct": 0.624,
    "gb": "-",
    "rs": 510,
-   "ra": 374,
-   "run_diff": 136,
-   "rs_g": 5.1,
+   "ra": 378,
+   "run_diff": 132,
+   "rs_g": 5.05,
    "ra_g": 3.74,
-   "streak": "W4",
-   "l10": "6-4",
-   "home": "33-18",
+   "streak": "L1",
+   "l10": "5-5",
+   "home": "33-19",
    "away": "30-19",
-   "pythag": 0.638,
-   "luck": -0.008,
+   "pythag": 0.634,
+   "luck": -0.01,
    "elo": 1550.6,
    "elo_rank": 1,
-   "record_rank": 1
+   "record_rank": 2
   },
   "CHN": {
    "code": "CHN",
@@ -554,24 +554,24 @@
    "abbr": "CHC",
    "div": "NL Central",
    "div_rank": 2,
-   "w": 56,
+   "w": 57,
    "l": 44,
-   "pct": 0.56,
-   "gb": "7.0",
-   "rs": 508,
-   "ra": 448,
-   "run_diff": 60,
-   "rs_g": 5.08,
-   "ra_g": 4.48,
-   "streak": "L1",
+   "pct": 0.564,
+   "gb": "6.0",
+   "rs": 519,
+   "ra": 450,
+   "run_diff": 69,
+   "rs_g": 5.14,
+   "ra_g": 4.46,
+   "streak": "W1",
    "l10": "6-4",
-   "home": "29-21",
+   "home": "30-21",
    "away": "27-23",
-   "pythag": 0.557,
-   "luck": 0.003,
+   "pythag": 0.565,
+   "luck": -0.001,
    "elo": 1526.4,
    "elo_rank": 3,
-   "record_rank": 6
+   "record_rank": 5
   },
   "SLN": {
    "code": "SLN",
@@ -583,7 +583,7 @@
    "w": 51,
    "l": 48,
    "pct": 0.515,
-   "gb": "11.5",
+   "gb": "11.0",
    "rs": 446,
    "ra": 443,
    "run_diff": 3,
@@ -597,7 +597,7 @@
    "luck": 0.012,
    "elo": 1503.0,
    "elo_rank": 14,
-   "record_rank": 12
+   "record_rank": 11
   },
   "PIT": {
    "code": "PIT",
@@ -609,7 +609,7 @@
    "w": 52,
    "l": 49,
    "pct": 0.515,
-   "gb": "11.5",
+   "gb": "11.0",
    "rs": 538,
    "ra": 487,
    "run_diff": 51,
@@ -623,7 +623,7 @@
    "luck": -0.031,
    "elo": 1493.9,
    "elo_rank": 21,
-   "record_rank": 13
+   "record_rank": 12
   },
   "CIN": {
    "code": "CIN",
@@ -635,7 +635,7 @@
    "w": 45,
    "l": 54,
    "pct": 0.455,
-   "gb": "17.5",
+   "gb": "17.0",
    "rs": 414,
    "ra": 481,
    "run_diff": -67,
@@ -658,24 +658,24 @@
    "abbr": "LAD",
    "div": "NL West",
    "div_rank": 1,
-   "w": 63,
+   "w": 64,
    "l": 38,
-   "pct": 0.624,
+   "pct": 0.627,
    "gb": "-",
-   "rs": 524,
-   "ra": 372,
-   "run_diff": 152,
-   "rs_g": 5.19,
-   "ra_g": 3.68,
-   "streak": "L2",
+   "rs": 526,
+   "ra": 373,
+   "run_diff": 153,
+   "rs_g": 5.16,
+   "ra_g": 3.66,
+   "streak": "W1",
    "l10": "4-6",
    "home": "31-19",
-   "away": "32-19",
+   "away": "33-19",
    "pythag": 0.652,
-   "luck": -0.028,
+   "luck": -0.025,
    "elo": 1541.4,
    "elo_rank": 2,
-   "record_rank": 2
+   "record_rank": 1
   },
   "ARI": {
    "code": "ARI",
@@ -687,7 +687,7 @@
    "w": 51,
    "l": 49,
    "pct": 0.51,
-   "gb": "11.5",
+   "gb": "12.0",
    "rs": 435,
    "ra": 449,
    "run_diff": -14,
@@ -713,7 +713,7 @@
    "w": 50,
    "l": 51,
    "pct": 0.495,
-   "gb": "13.0",
+   "gb": "13.5",
    "rs": 415,
    "ra": 443,
    "run_diff": -28,
@@ -737,23 +737,23 @@
    "div": "NL West",
    "div_rank": 4,
    "w": 42,
-   "l": 58,
-   "pct": 0.42,
-   "gb": "20.5",
-   "rs": 411,
-   "ra": 473,
-   "run_diff": -62,
-   "rs_g": 4.11,
-   "ra_g": 4.73,
-   "streak": "L3",
+   "l": 59,
+   "pct": 0.416,
+   "gb": "21.5",
+   "rs": 413,
+   "ra": 476,
+   "run_diff": -63,
+   "rs_g": 4.09,
+   "ra_g": 4.71,
+   "streak": "L4",
    "l10": "4-6",
    "home": "22-25",
-   "away": "20-33",
-   "pythag": 0.436,
-   "luck": -0.016,
+   "away": "20-34",
+   "pythag": 0.435,
+   "luck": -0.02,
    "elo": 1475.1,
    "elo_rank": 27,
-   "record_rank": 26
+   "record_rank": 27
   },
   "COL": {
    "code": "COL",
@@ -765,7 +765,7 @@
    "w": 40,
    "l": 62,
    "pct": 0.392,
-   "gb": "23.5",
+   "gb": "24.0",
    "rs": 487,
    "ra": 581,
    "run_diff": -94,
@@ -801,7 +801,7 @@
    "l": 7,
    "k": 108,
    "bb": 35,
-   "adj_rank": 32
+   "adj_rank": 33
   },
   "anthony kay": {
    "name": "Anthony Kay",
@@ -821,7 +821,7 @@
    "l": 4,
    "k": 76,
    "bb": 38,
-   "adj_rank": 25
+   "adj_rank": 26
   },
   "bailey ober": {
    "name": "Bailey Ober",
@@ -841,7 +841,7 @@
    "l": 3,
    "k": 58,
    "bb": 21,
-   "adj_rank": 43
+   "adj_rank": 45
   },
   "brady singer": {
    "name": "Brady Singer",
@@ -861,7 +861,7 @@
    "l": 9,
    "k": 82,
    "bb": 31,
-   "adj_rank": 27
+   "adj_rank": 28
   },
   "brandon sproat": {
    "name": "Brandon Sproat",
@@ -878,10 +878,29 @@
    "hr9": "1.66",
    "kbb": "2.12",
    "w": 3,
-   "l": 4,
+   "l": 5,
    "k": 91,
    "bb": 43,
-   "adj_rank": 18
+   "adj_rank": 19
+  },
+  "braydon fisher": {
+   "name": "Braydon Fisher",
+   "mlbam": 680755,
+   "adj": 0.0,
+   "matched": false,
+   "career_ip": 0.0,
+   "gs": 6,
+   "ip": "49.1",
+   "era": "3.65",
+   "whip": "1.18",
+   "k9": "9.12",
+   "bb9": "4.01",
+   "hr9": "1.09",
+   "kbb": "2.27",
+   "w": 3,
+   "l": 3,
+   "k": 50,
+   "bb": 22
   },
   "bubba chandler": {
    "name": "Bubba Chandler",
@@ -921,7 +940,7 @@
    "l": 4,
    "k": 119,
    "bb": 32,
-   "adj_rank": 40
+   "adj_rank": 42
   },
   "cal quantrill": {
    "name": "Cal Quantrill",
@@ -941,7 +960,7 @@
    "l": 2,
    "k": 31,
    "bb": 14,
-   "adj_rank": 55
+   "adj_rank": 58
   },
   "carson palmquist": {
    "name": "Carson Palmquist",
@@ -961,7 +980,7 @@
    "l": 1,
    "k": 14,
    "bb": 3,
-   "adj_rank": 57
+   "adj_rank": 60
   },
   "chase burns": {
    "name": "Chase Burns",
@@ -970,17 +989,17 @@
    "matched": true,
    "career_ip": 30.0,
    "gs": 19,
-   "ip": "103.2",
-   "era": "2.52",
+   "ip": "106.2",
+   "era": "2.45",
    "whip": "1.12",
-   "k9": "10.24",
-   "bb9": "3.30",
-   "hr9": "1.04",
-   "kbb": "3.11",
+   "k9": "10.46",
+   "bb9": "3.29",
+   "hr9": "1.01",
+   "kbb": "3.18",
    "w": 11,
    "l": 1,
-   "k": 118,
-   "bb": 38,
+   "k": 124,
+   "bb": 39,
    "adj_rank": 7
   },
   "chris sale": {
@@ -1021,7 +1040,7 @@
    "l": 1,
    "k": 72,
    "bb": 26,
-   "adj_rank": 44
+   "adj_rank": 46
   },
   "colin rea": {
    "name": "Colin Rea",
@@ -1041,7 +1060,7 @@
    "l": 6,
    "k": 76,
    "bb": 37,
-   "adj_rank": 34
+   "adj_rank": 35
   },
   "david peterson": {
    "name": "David Peterson",
@@ -1057,7 +1076,7 @@
    "bb9": "3.84",
    "hr9": "0.91",
    "kbb": "1.95",
-   "w": 4,
+   "w": 5,
    "l": 7,
    "k": 74,
    "bb": 38,
@@ -1081,7 +1100,7 @@
    "l": 2,
    "k": 29,
    "bb": 7,
-   "adj_rank": 22
+   "adj_rank": 23
   },
   "drew rasmussen": {
    "name": "Drew Rasmussen",
@@ -1101,7 +1120,26 @@
    "l": 5,
    "k": 103,
    "bb": 18,
-   "adj_rank": 21
+   "adj_rank": 22
+  },
+  "eduardo rivera": {
+   "name": "Eduardo Rivera",
+   "mlbam": 700842,
+   "adj": 0.0,
+   "matched": false,
+   "career_ip": 0.0,
+   "gs": 2,
+   "ip": "9.1",
+   "era": "2.89",
+   "whip": "0.96",
+   "k9": "8.68",
+   "bb9": "3.86",
+   "hr9": "0.96",
+   "kbb": "2.25",
+   "w": 0,
+   "l": 0,
+   "k": 9,
+   "bb": 4
   },
   "emerson hancock": {
    "name": "Emerson Hancock",
@@ -1121,7 +1159,7 @@
    "l": 4,
    "k": 94,
    "bb": 25,
-   "adj_rank": 53
+   "adj_rank": 56
   },
   "eric lauer": {
    "name": "Eric Lauer",
@@ -1141,7 +1179,7 @@
    "l": 5,
    "k": 47,
    "bb": 27,
-   "adj_rank": 51
+   "adj_rank": 54
   },
   "framber valdez": {
    "name": "Framber Valdez",
@@ -1158,7 +1196,7 @@
    "hr9": "0.91",
    "kbb": "2.32",
    "w": 5,
-   "l": 6,
+   "l": 7,
    "k": 88,
    "bb": 38,
    "adj_rank": 10
@@ -1219,7 +1257,7 @@
    "l": 5,
    "k": 145,
    "bb": 37,
-   "adj_rank": 31
+   "adj_rank": 32
   },
   "gerrit cole": {
    "name": "Gerrit Cole",
@@ -1259,7 +1297,7 @@
    "l": 8,
    "k": 59,
    "bb": 32,
-   "adj_rank": 45
+   "adj_rank": 47
   },
   "griffin jax": {
    "name": "Griffin Jax",
@@ -1279,7 +1317,7 @@
    "l": 7,
    "k": 77,
    "bb": 26,
-   "adj_rank": 56
+   "adj_rank": 59
   },
   "hunter dobbins": {
    "name": "Hunter Dobbins",
@@ -1299,7 +1337,7 @@
    "l": 1,
    "k": 23,
    "bb": 10,
-   "adj_rank": 28
+   "adj_rank": 29
   },
   "hunter greene": {
    "name": "Hunter Greene",
@@ -1348,18 +1386,18 @@
    "matched": true,
    "career_ip": 17.7,
    "gs": 7,
-   "ip": "58.2",
-   "era": "7.21",
-   "whip": "1.47",
-   "k9": "11.05",
-   "bb9": "3.68",
-   "hr9": "1.69",
-   "kbb": "3.00",
+   "ip": "60.2",
+   "era": "6.97",
+   "whip": "1.45",
+   "k9": "10.98",
+   "bb9": "3.56",
+   "hr9": "1.63",
+   "kbb": "3.08",
    "w": 2,
    "l": 5,
-   "k": 72,
+   "k": 74,
    "bb": 24,
-   "adj_rank": 39
+   "adj_rank": 41
   },
   "jacob misiorowski": {
    "name": "Jacob Misiorowski",
@@ -1379,7 +1417,7 @@
    "l": 4,
    "k": 173,
    "bb": 28,
-   "adj_rank": 24
+   "adj_rank": 25
   },
   "jake bennett": {
    "name": "Jake Bennett",
@@ -1434,11 +1472,11 @@
    "bb9": "1.77",
    "hr9": "0.67",
    "kbb": "3.81",
-   "w": 10,
+   "w": 11,
    "l": 2,
    "k": 80,
    "bb": 21,
-   "adj_rank": 58
+   "adj_rank": 61
   },
   "keider montero": {
    "name": "Keider Montero",
@@ -1458,7 +1496,26 @@
    "l": 5,
    "k": 70,
    "bb": 22,
-   "adj_rank": 37
+   "adj_rank": 38
+  },
+  "kendry rojas": {
+   "name": "Kendry Rojas",
+   "mlbam": 696070,
+   "adj": 0.0,
+   "matched": false,
+   "career_ip": 0.0,
+   "gs": 3,
+   "ip": "21.2",
+   "era": "3.32",
+   "whip": "1.57",
+   "k9": "9.97",
+   "bb9": "7.48",
+   "hr9": "0.42",
+   "kbb": "1.33",
+   "w": 1,
+   "l": 1,
+   "k": 24,
+   "bb": 18
   },
   "kevin gausman": {
    "name": "Kevin Gausman",
@@ -1487,17 +1544,17 @@
    "matched": false,
    "career_ip": 0.0,
    "gs": 1,
-   "ip": "2.0",
-   "era": "0.00",
-   "whip": "0.50",
-   "k9": "13.50",
+   "ip": "4.0",
+   "era": "2.25",
+   "whip": "1.25",
+   "k9": "9.00",
    "bb9": "4.50",
    "hr9": "0.00",
-   "kbb": "3.00",
+   "kbb": "2.00",
    "w": 0,
    "l": 0,
-   "k": 3,
-   "bb": 1
+   "k": 4,
+   "bb": 2
   },
   "kumar rocker": {
    "name": "Kumar Rocker",
@@ -1517,7 +1574,7 @@
    "l": 8,
    "k": 86,
    "bb": 36,
-   "adj_rank": 47
+   "adj_rank": 49
   },
   "kyle bradish": {
    "name": "Kyle Bradish",
@@ -1557,7 +1614,7 @@
    "l": 8,
    "k": 106,
    "bb": 45,
-   "adj_rank": 30
+   "adj_rank": 31
   },
   "logan henderson": {
    "name": "Logan Henderson",
@@ -1577,7 +1634,7 @@
    "l": 1,
    "k": 38,
    "bb": 7,
-   "adj_rank": 20
+   "adj_rank": 21
   },
   "luinder avila": {
    "name": "Luinder Avila",
@@ -1593,7 +1650,7 @@
    "bb9": "5.00",
    "hr9": "0.86",
    "kbb": "1.63",
-   "w": 4,
+   "w": 5,
    "l": 3,
    "k": 57,
    "bb": 35
@@ -1605,17 +1662,37 @@
    "matched": false,
    "career_ip": 0.0,
    "gs": 16,
-   "ip": "89.2",
-   "era": "4.92",
+   "ip": "91.2",
+   "era": "4.91",
    "whip": "1.37",
-   "k9": "8.23",
-   "bb9": "2.91",
-   "hr9": "1.30",
-   "kbb": "2.83",
+   "k9": "8.15",
+   "bb9": "2.95",
+   "hr9": "1.37",
+   "kbb": "2.77",
    "w": 3,
    "l": 8,
-   "k": 82,
-   "bb": 29
+   "k": 83,
+   "bb": 30
+  },
+  "martin perez": {
+   "name": "Mart\u00edn P\u00e9rez",
+   "mlbam": 527048,
+   "adj": -9.32,
+   "matched": true,
+   "career_ip": 111.9,
+   "gs": 14,
+   "ip": "81.1",
+   "era": "3.54",
+   "whip": "1.19",
+   "k9": "6.86",
+   "bb9": "3.54",
+   "hr9": "1.11",
+   "kbb": "1.94",
+   "w": 6,
+   "l": 6,
+   "k": 62,
+   "bb": 32,
+   "adj_rank": 51
   },
   "matthew liberatore": {
    "name": "Matthew Liberatore",
@@ -1624,18 +1701,18 @@
    "matched": true,
    "career_ip": 96.1,
    "gs": 20,
-   "ip": "94.2",
-   "era": "5.42",
-   "whip": "1.53",
-   "k9": "8.56",
-   "bb9": "3.52",
-   "hr9": "1.71",
-   "kbb": "2.43",
+   "ip": "97.2",
+   "era": "5.25",
+   "whip": "1.52",
+   "k9": "8.57",
+   "bb9": "3.41",
+   "hr9": "1.66",
+   "kbb": "2.51",
    "w": 5,
    "l": 6,
-   "k": 90,
+   "k": 93,
    "bb": 37,
-   "adj_rank": 41
+   "adj_rank": 43
   },
   "max fried": {
    "name": "Max Fried",
@@ -1675,7 +1752,7 @@
    "l": 8,
    "k": 62,
    "bb": 40,
-   "adj_rank": 19
+   "adj_rank": 20
   },
   "michael king": {
    "name": "Michael King",
@@ -1695,7 +1772,7 @@
    "l": 7,
    "k": 96,
    "bb": 45,
-   "adj_rank": 23
+   "adj_rank": 24
   },
   "michael lorenzen": {
    "name": "Michael Lorenzen",
@@ -1715,7 +1792,7 @@
    "l": 9,
    "k": 78,
    "bb": 39,
-   "adj_rank": 48
+   "adj_rank": 50
   },
   "michael mcgreevy": {
    "name": "Michael McGreevy",
@@ -1735,7 +1812,7 @@
    "l": 7,
    "k": 71,
    "bb": 24,
-   "adj_rank": 38
+   "adj_rank": 39
   },
   "mitch keller": {
    "name": "Mitch Keller",
@@ -1755,7 +1832,7 @@
    "l": 7,
    "k": 77,
    "bb": 35,
-   "adj_rank": 35
+   "adj_rank": 36
   },
   "noah schultz": {
    "name": "Noah Schultz",
@@ -1776,6 +1853,26 @@
    "k": 49,
    "bb": 29
   },
+  "parker messick": {
+   "name": "Parker Messick",
+   "mlbam": 800048,
+   "adj": 14.17,
+   "matched": true,
+   "career_ip": 34.5,
+   "gs": 20,
+   "ip": "117.2",
+   "era": "2.68",
+   "whip": "1.05",
+   "k9": "8.87",
+   "bb9": "2.75",
+   "hr9": "0.84",
+   "kbb": "3.22",
+   "w": 8,
+   "l": 5,
+   "k": 116,
+   "bb": 36,
+   "adj_rank": 16
+  },
   "peter lambert": {
    "name": "Peter Lambert",
    "mlbam": 663567,
@@ -1794,7 +1891,7 @@
    "l": 5,
    "k": 91,
    "bb": 36,
-   "adj_rank": 54
+   "adj_rank": 57
   },
   "reid detmers": {
    "name": "Reid Detmers",
@@ -1814,7 +1911,7 @@
    "l": 6,
    "k": 130,
    "bb": 35,
-   "adj_rank": 46
+   "adj_rank": 48
   },
   "reynaldo lopez": {
    "name": "Reynaldo L\u00f3pez",
@@ -1854,7 +1951,7 @@
    "l": 7,
    "k": 61,
    "bb": 35,
-   "adj_rank": 17
+   "adj_rank": 18
   },
   "robert gasser": {
    "name": "Robert Gasser",
@@ -1874,7 +1971,7 @@
    "l": 4,
    "k": 48,
    "bb": 14,
-   "adj_rank": 33
+   "adj_rank": 34
   },
   "sandy alcantara": {
    "name": "Sandy Alcantara",
@@ -1894,7 +1991,7 @@
    "l": 5,
    "k": 107,
    "bb": 37,
-   "adj_rank": 29
+   "adj_rank": 30
   },
   "seth lugo": {
    "name": "Seth Lugo",
@@ -1914,7 +2011,7 @@
    "l": 6,
    "k": 89,
    "bb": 36,
-   "adj_rank": 49
+   "adj_rank": 52
   },
   "shane bieber": {
    "name": "Shane Bieber",
@@ -1973,7 +2070,7 @@
    "l": 6,
    "k": 77,
    "bb": 31,
-   "adj_rank": 42
+   "adj_rank": 44
   },
   "taj bradley": {
    "name": "Taj Bradley",
@@ -1993,7 +2090,7 @@
    "l": 4,
    "k": 124,
    "bb": 43,
-   "adj_rank": 36
+   "adj_rank": 37
   },
   "tanner bibee": {
    "name": "Tanner Bibee",
@@ -2013,7 +2110,7 @@
    "l": 9,
    "k": 92,
    "bb": 35,
-   "adj_rank": 26
+   "adj_rank": 27
   },
   "tatsuya imai": {
    "name": "Tatsuya Imai",
@@ -2029,7 +2126,7 @@
    "bb9": "5.59",
    "hr9": "1.40",
    "kbb": "1.97",
-   "w": 5,
+   "w": 6,
    "l": 4,
    "k": 71,
    "bb": 36
@@ -2049,10 +2146,10 @@
    "hr9": "1.41",
    "kbb": "2.33",
    "w": 2,
-   "l": 8,
+   "l": 9,
    "k": 77,
    "bb": 33,
-   "adj_rank": 16
+   "adj_rank": 17
   },
   "tyler phillips": {
    "name": "Tyler Phillips",
@@ -2069,10 +2166,10 @@
    "hr9": "1.02",
    "kbb": "1.61",
    "w": 2,
-   "l": 4,
+   "l": 5,
    "k": 58,
    "bb": 36,
-   "adj_rank": 50
+   "adj_rank": 53
   },
   "walbert urena": {
    "name": "Walbert Ure\u00f1a",
@@ -2081,17 +2178,17 @@
    "matched": false,
    "career_ip": 0.0,
    "gs": 16,
-   "ip": "83.1",
-   "era": "2.81",
-   "whip": "1.31",
-   "k9": "8.64",
-   "bb9": "4.97",
-   "hr9": "0.54",
+   "ip": "85.2",
+   "era": "2.73",
+   "whip": "1.30",
+   "k9": "8.61",
+   "bb9": "4.94",
+   "hr9": "0.53",
    "kbb": "1.74",
    "w": 5,
    "l": 7,
-   "k": 80,
-   "bb": 46
+   "k": 82,
+   "bb": 47
   },
   "walker buehler": {
    "name": "Walker Buehler",
@@ -2111,7 +2208,27 @@
    "l": 5,
    "k": 84,
    "bb": 40,
-   "adj_rank": 52
+   "adj_rank": 55
+  },
+  "will warren": {
+   "name": "Will Warren",
+   "mlbam": 701542,
+   "adj": -1.47,
+   "matched": true,
+   "career_ip": 90.8,
+   "gs": 19,
+   "ip": "98.1",
+   "era": "4.03",
+   "whip": "1.36",
+   "k9": "8.79",
+   "bb9": "3.02",
+   "hr9": "1.28",
+   "kbb": "2.91",
+   "w": 7,
+   "l": 4,
+   "k": 96,
+   "bb": 33,
+   "adj_rank": 40
   },
   "zac thornton": {
    "name": "Zac Thornton",
@@ -2127,7 +2244,7 @@
    "bb9": "2.31",
    "hr9": "0.39",
    "kbb": "2.83",
-   "w": 0,
+   "w": 1,
    "l": 1,
    "k": 17,
    "bb": 6
@@ -2147,12 +2264,12 @@
    "hr9": "0.99",
    "kbb": "5.32",
    "w": 10,
-   "l": 1,
+   "l": 2,
    "k": 117,
    "bb": 22,
    "adj_rank": 4
   },
-  "__n_ranked": 58
+  "__n_ranked": 61
  },
  "team_order": [
   "MIL",
