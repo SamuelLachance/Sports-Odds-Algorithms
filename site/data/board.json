@@ -32,34 +32,34 @@
      "home_abbr": "ATL",
      "away_name": "San Diego Padres",
      "home_name": "Atlanta Braves",
-     "away_sp": "Griffin Canning",
+     "away_sp": "Kyle Hart",
      "home_sp": "Chris Sale",
      "away_sp_proj": false,
      "home_sp_proj": false,
      "pitcher_known": true,
      "sp_projected": false,
-     "lineup_source": "projected",
-     "home_win_prob": 0.647,
+     "lineup_source": "official",
+     "home_win_prob": 0.6754,
      "pick": "ATL",
-     "pick_prob": 0.647,
+     "pick_prob": 0.6754,
      "edge": {
-      "team": 1.7,
-      "home_field": 4.9,
-      "home_pitcher": 6.7,
-      "away_pitcher": -0.7,
-      "bullpen": -1.3,
-      "siera": 3.7,
-      "lineup": -0.6,
-      "power": 1.1,
-      "baserun": -0.1
+      "team": 1.6,
+      "home_field": 4.8,
+      "home_pitcher": 6.6,
+      "away_pitcher": 1.4,
+      "bullpen": -1.6,
+      "siera": 4.5,
+      "lineup": -1.1,
+      "power": 1.9,
+      "baserun": -0.0
      },
      "tier": "lineup",
-     "recal_prob": 0.6183,
-     "ts_edge": 0.914,
+     "recal_prob": 0.6386,
+     "ts_edge": 0.597,
      "bullpen_edge": 0.09,
      "home_bp_fip": 0.65,
      "away_bp_fip": 0.74,
-     "power_edge": 0.0116,
+     "power_edge": 0.0205,
      "baserun_edge": -0.0001,
      "home_pitcher_matched": true,
      "away_pitcher_matched": true
@@ -17846,5 +17846,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-07-23T13:12:21.088316+00:00"
+ "value_updated": "2026-07-23T14:23:55.448658+00:00"
 }
