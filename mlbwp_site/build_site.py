@@ -253,7 +253,9 @@ footer b{color:var(--muted)} footer a{color:var(--muted);text-decoration:underli
 
 JS = r"""
 const $ = s => document.querySelector(s);
-const state = {board:null, db:null, league:"mlb", range:"today", live:{}, updated:null};
+const state = {board:null, db:null, nfl:null,
+  league:(localStorage.getItem("league")||"mlb"), range:"today", live:{}, updated:null};
+function setLeague(lg){state.league=lg; try{localStorage.setItem("league",lg);}catch(e){}}
 const SAPI = "https://statsapi.mlb.com/api/v1";
 const root = document.documentElement;
 $("#tog").onclick = () => {
@@ -415,7 +417,7 @@ function board(){
         ${allTbd?'<span class="proj">projected · starters tbd</span>':""}</div>
         <div class="grid">${gs.map(gcard).join("")}</div>`;}).join("");}
   $("#view").innerHTML=`<div class="controls"><div class="rail">${rail}</div><div class="filters">${filts}</div></div>${body}`;
-  $("#view").querySelectorAll("[data-lg]").forEach(x=>x.onclick=()=>{state.league=x.dataset.lg;board();});
+  $("#view").querySelectorAll("[data-lg]").forEach(x=>x.onclick=()=>{setLeague(x.dataset.lg);board();});
   $("#view").querySelectorAll("[data-r]").forEach(x=>x.onclick=()=>{state.range=x.dataset.r;board();});
   applyLive();
 }
@@ -468,7 +470,94 @@ function nflPage(){
         <tbody>${cal}</tbody></table></div>
         <div class="sub" style="margin-top:8px">When this model says 75%, it means 75%. Accuracy ladder: home-always ${mc.acc_home}% &middot; Elo ${mc.acc_elo}% &middot; <b>GlassBox ${mc.accuracy}%</b> &middot; closing line ${mc.acc_close}%.</div></div>
     </div>`;
-  $("#view").querySelectorAll("[data-lg]").forEach(x=>x.onclick=()=>{state.league=x.dataset.lg;board();});
+  $("#view").querySelectorAll("[data-lg]").forEach(x=>x.onclick=()=>{setLeague(x.dataset.lg);board();});
+}
+
+function nflStandings(){
+  const n=state.nfl, T=Object.values(n.teams);
+  const divs={}; T.forEach(t=>{(divs[t.div]=divs[t.div]||[]).push(t);});
+  const order=n.divisions;
+  let html=`<div class="eyebrow">Database &middot; NFL</div><h1 class="pt">Standings <span class="sub" style="font-weight:400">2025 final</span></h1>
+    <div class="sub" style="margin-bottom:14px"><b>Elo</b> is the 2026 preseason rating (regressed). <b>Units</b> are pass/run EPA vs league. Click any team.</div>`;
+  html+=order.filter(d=>divs[d]).map(d=>{
+    const rows=divs[d].sort((a,b)=>a.div_rank-b.div_rank).map(t=>`
+      <tr onclick="location.hash='#/team/${t.code}'">
+        <td class="a"><span class="ab" style="color:var(--accent)">${t.abbr}</span> <span class="sub">${t.name}</span></td>
+        <td><span class="num">${t.w}-${t.l}${t.t?"-"+t.t:""}</span></td>
+        <td><span class="num">${t.pct.toFixed(3).slice(1)}</span></td>
+        <td><span class="num ${t.pt_diff>=0?"pos":"neg"}">${t.pt_diff>=0?"+":""}${t.pt_diff}</span></td>
+        <td><span class="num">${t.l10}</span></td><td><span class="num">${t.streak}</span></td>
+        <td><span class="num">${t.home}</span></td><td><span class="num">${t.away}</span></td>
+        <td><span class="num">${t.elo?t.elo.toFixed(0):"-"}</span></td>
+        <td><span class="num">#${t.rank||"-"}</span></td></tr>`).join("");
+    return `<div class="subh">${d}</div><div class="twrap"><table>
+      <thead><tr><th>Team</th><th>W-L</th><th>Pct</th><th>Pt diff</th><th>L10</th><th>Strk</th>
+      <th>Home</th><th>Away</th><th>Elo 26</th><th>Power</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  }).join("");
+  $("#view").innerHTML=html;
+}
+
+function nflTeams(){
+  const n=state.nfl, T=Object.values(n.teams).sort((a,b)=>(a.rank||99)-(b.rank||99));
+  const card=t=>`<div class="tcard" onclick="location.hash='#/team/${t.code}'">
+    <div class="tt"><span class="ab" style="color:var(--accent)">${t.abbr}</span>
+      <span class="tn">${t.name}</span></div>
+    <div class="sub">${t.div} &middot; ${t.w}-${t.l}${t.t?"-"+t.t:""} &middot; Elo ${t.elo?t.elo.toFixed(0):"-"} &middot; Power #${t.rank||"-"}</div></div>`;
+  $("#view").innerHTML=`<div class="eyebrow">Database &middot; NFL</div><h1 class="pt">Teams</h1>
+    <div class="grid" style="margin-top:12px">${T.map(card).join("")}</div>`;
+}
+
+function nflTeamPage(code){
+  const n=state.nfl, t=n.teams[code];
+  if(!t){$("#view").innerHTML=`<div class="empty">Team not found. <a href="#/teams">All teams</a></div>`;return;}
+  const P=t.roster.map(id=>n.players[id]).filter(Boolean);
+  const OFFP=["QB","RB","FB","WR","TE"], OLP=["T","G","C","OT","OG","OL","LT","RT","LG","RG"];
+  const grp=p=>OFFP.includes(p.pos)?"off":(OLP.includes(p.pos)?"ol":"def");
+  const statStr=p=>{const s=p.stats||{};
+    if(p.pos==="QB")return `${s.pass_yds||0} yds &middot; ${s.pass_td||0} TD &middot; ${s.ints||0} INT`;
+    if(["RB","FB"].includes(p.pos))return `${s.rush_yds||0} rush &middot; ${s.rec||0} rec &middot; ${(s.rush_td||0)+(s.rec_td||0)} TD`;
+    if(["WR","TE"].includes(p.pos))return `${s.rec||0} rec &middot; ${s.rec_yds||0} yds &middot; ${s.rec_td||0} TD`;
+    return `${s.tak||0} tkl &middot; ${s.sk||0} sk &middot; ${s.dint||0} INT &middot; ${s.pd||0} PD`;};
+  const prow=p=>`<tr onclick="location.hash='#/player/${p.id}'">
+    <td class="a"><span class="player-link">${p.name}</span> <span class="sub">${p.pos}</span></td>
+    <td>${p.rating?gb(p.rating.r):gb(null)}</td>
+    <td><span class="num">${Math.round((p.snap_share||0)*100)}%</span></td>
+    <td class="sub">${statStr(p)}</td></tr>`;
+  const tbl=(title,rows)=>rows.length?`<div class="subh">${title}</div><div class="twrap"><table>
+    <thead><tr><th>Player</th><th>GlassBox</th><th>Snap %</th><th>2025</th></tr></thead>
+    <tbody>${rows.map(prow).join("")}</tbody></table></div>`:"";
+  const off=P.filter(p=>grp(p)==="off"), ol=P.filter(p=>grp(p)==="ol"), def=P.filter(p=>grp(p)==="def");
+  $("#view").innerHTML=`<a class="back" href="#/teams">&lsaquo; Teams</a>
+    <div class="eyebrow">${t.div}</div><h1 class="pt">${t.name}</h1>
+    <div class="sub" style="margin-bottom:14px">${t.w}-${t.l}${t.t?"-"+t.t:""} in 2025 &middot; ${t.pf} PF / ${t.pa} PA
+      &middot; Elo <b>${t.elo?t.elo.toFixed(0):"-"}</b> (power #${t.rank})
+      &middot; units: pass off ${t.off_pass>=0?"+":""}${t.off_pass} / run off ${t.off_run>=0?"+":""}${t.off_run}
+      / pass def ${t.def_pass>=0?"+":""}${t.def_pass} / run def ${t.def_run>=0?"+":""}${t.def_run}</div>
+    ${tbl("Offense",off)}${tbl("Offensive line",ol)}${tbl("Defense",def)}`;
+}
+
+function nflPlayerPage(id){
+  const n=state.nfl, p=n.players[id];
+  if(!p){$("#view").innerHTML=`<div class="empty">Player not found.</div>`;return;}
+  const t=n.teams[p.team], s=p.stats||{};
+  const srow=(k,v)=>v?`<tr><td class="a">${k}</td><td><span class="num">${v.toLocaleString()}</span></td></tr>`:"";
+  let srows="";
+  if(p.pos==="QB") srows=srow("Pass yards",s.pass_yds)+srow("Pass TD",s.pass_td)+srow("INT",s.ints)+srow("Rush yards",s.rush_yds)+srow("Rush TD",s.rush_td);
+  else if(["RB","FB"].includes(p.pos)) srows=srow("Rush yards",s.rush_yds)+srow("Rush TD",s.rush_td)+srow("Receptions",s.rec)+srow("Rec yards",s.rec_yds)+srow("Rec TD",s.rec_td);
+  else if(["WR","TE"].includes(p.pos)) srows=srow("Targets",s.tgt)+srow("Receptions",s.rec)+srow("Rec yards",s.rec_yds)+srow("Rec TD",s.rec_td);
+  else srows=srow("Solo tackles",s.tak)+srow("Sacks",s.sk)+srow("INT",s.dint)+srow("Passes defended",s.pd);
+  $("#view").innerHTML=`<a class="back" href="#/team/${p.team}">&lsaquo; ${t?t.name:p.team}</a>
+    <div class="eyebrow">${p.pos} &middot; ${t?t.name:p.team}</div><h1 class="pt">${p.name}</h1>
+    <div class="grid" style="margin-top:12px">
+      <div class="panel"><h3>GlassBox rating</h3>
+        <div style="display:flex;align-items:center;gap:14px;margin:6px 0">${p.rating?gb(p.rating.r):gb(null)}
+          ${p.rating?`<span class="sub">tier <b>${p.rating.tier}</b> &middot; n_eff ${p.rating.n_eff.toFixed(0)}</span>`:`<span class="sub">not enough sample</span>`}</div>
+        ${p.board?`<div class="sub">Per-play value: z ${p.board.z>=0?"+":""}${p.board.z.toFixed(2)}
+          (conservative ${p.board.cons>=0?"+":""}${p.board.cons.toFixed(2)}) over ${p.board.n.toLocaleString()} plays, opponent-adjusted.</div>`
+          :`<div class="sub">No per-play board entry.</div>`}
+        <div class="sub" style="margin-top:6px">Snap share ${Math.round((p.snap_share||0)*100)}%</div></div>
+      <div class="panel"><h3>2025 season</h3><div class="twrap"><table><tbody>${srows||`<tr><td class="sub">No stats recorded.</td></tr>`}</tbody></table></div></div>
+    </div>`;
 }
 
 /* ---------- GAME PAGE ---------- */
@@ -570,6 +659,7 @@ function gamePage(pk){
 
 /* ---------- STANDINGS ---------- */
 function standings(){
+  if(state.league==="nfl"&&state.nfl) return nflStandings();
   const db=state.db, T=Object.values(db.teams);
   const divs={}; T.forEach(t=>{(divs[t.div]=divs[t.div]||[]).push(t);});
   const order=["AL East","AL Central","AL West","NL East","NL Central","NL West"];
@@ -597,6 +687,7 @@ function standings(){
 
 /* ---------- TEAMS DIRECTORY ---------- */
 function teamsPage(){
+  if(state.league==="nfl"&&state.nfl) return nflTeams();
   const db=state.db;
   const T=Object.values(db.teams).sort((a,b)=>(b.ts100||0)-(a.ts100||0));
   const card=t=>`<div class="tcard" onclick="location.hash='#/team/${t.code}'">
@@ -613,6 +704,7 @@ function teamsPage(){
 
 /* ---------- TEAM PAGE ---------- */
 function teamPage(code){
+  if(state.league==="nfl"&&state.nfl) return nflTeamPage(code);
   const db=state.db, t=db.teams[code];
   if(!t){$("#view").innerHTML=`<div class="empty">Team not found. <a href="#/teams">All teams</a></div>`;return;}
   const roster=(t.roster||[]).map(id=>db.players[String(id)]).filter(Boolean);
@@ -653,6 +745,7 @@ function teamPage(code){
 
 /* ---------- PLAYER PAGE ---------- */
 function playerPage(id){
+  if(state.league==="nfl"&&state.nfl&&state.nfl.players[id]) return nflPlayerPage(id);
   const db=state.db, p=db.players[String(id)];
   if(!p){$("#view").innerHTML=`<div class="empty">Player not found. <a href="#/teams">Teams</a></div>`;return;}
   const t=db.teams[p.team];
