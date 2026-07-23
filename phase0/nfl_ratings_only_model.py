@@ -71,13 +71,33 @@ for v in plays_by_gid.values():
 print(f"[{time.time()-T0:.0f}s] {sum(len(v) for v in plays_by_gid.values()):,} plays, "
       f"{len(ctx):,} ctx rows", flush=True)
 
+prot_of = {}
+try:
+    with open("data/nfl_play_prot.csv") as fh:
+        rd = csv.DictReader(fh)
+        for r in rd:
+            prot_of[(r["game_id"], int(float(r["play_id"])))] = (
+                r["passer_player_id"], r["rusher_player_id"], r["receiver_player_id"])
+    print(f"[{time.time()-T0:.0f}s] protagonists for {len(prot_of):,} plays", flush=True)
+except FileNotFoundError:
+    print("no protagonist file; micro-matches unavailable", flush=True)
+GPOS = {}
+_PM = {"QB":"QB","RB":"RB","FB":"RB","HB":"RB","WR":"WR","TE":"TE",
+       "T":"OL","G":"OL","C":"OL","OT":"OL","OG":"OL","OL":"OL","LT":"OL","RT":"OL","LG":"OL","RG":"OL",
+       "DE":"DL","DT":"DL","NT":"DL","DL":"DL","EDGE":"DL",
+       "LB":"LB","ILB":"LB","OLB":"LB","MLB":"LB",
+       "CB":"DB","S":"DB","SS":"DB","FS":"DB","SAF":"DB","DB":"DB"}
+for r in csv.DictReader(open("data/nfl_players.csv", encoding="utf-8")):
+    if r.get("gsis_id"):
+        GPOS[r["gsis_id"]] = _PM.get(r.get("position") or "")
+
 G16 = [(i, g) for i, g in enumerate(games) if g["season"] >= 2016]
 seas16 = np.array([g["season"] for _, g in G16])
 y16 = np.array([g["y"] for _, g in G16])
 
 def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                widen2=1.5 ** 2, playoff_mult=1.0, dead_mult=1.0, opp_k=0.0,
-               opp_mode="league", flat_scale=1.0, role_r=0.0):
+               opp_mode="league", flat_scale=1.0, role_r=0.0, micro="off"):
     """One engine walk -> per-game ts_diff feature (pre-game, leak-free).
 
     Game importance: playoff snaps x playoff_mult; 'useless' late-season games
@@ -174,37 +194,59 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 wgt *= down_mult
             if qtr >= 4 and adiff <= 8:
                 wgt *= late_mult
-            wgt *= gmult
-            sum_O = sum(mu[p] for p in O); sum_D = sum(mu[p] for p in D)
-            c2 = (len(O) + len(D)) * BETA * BETA + sum(s2[p] for p in O) + sum(s2[p] for p in D)
-            c = sqrt(c2)
-            t = (sum_O - sum_D) / c
-            # opponent-quality amplifier: your update scales with THEIR strength
-            wgt *= flat_scale
-            if opp_k:
-                if opp_mode == "self":
-                    rel = sum_D / len(D) - sum_O / len(O)
-                    w_O = wgt * min(2.0, max(0.3, 1.0 + opp_k * rel))
-                    w_D = wgt * min(2.0, max(0.3, 1.0 - opp_k * rel))
+            wgt *= gmult * flat_scale
+
+            def duel(A, B, base_wgt, won):
+                if not A or not B:
+                    return
+                sA = sum(mu[p] for p in A); sB = sum(mu[p] for p in B)
+                c2 = (len(A) + len(B)) * BETA * BETA + sum(s2[p] for p in A) + sum(s2[p] for p in B)
+                c = sqrt(c2)
+                t = (sA - sB) / c
+                if opp_k:
+                    if opp_mode == "self":
+                        rel = sB / len(B) - sA / len(A)
+                        w_A = base_wgt * min(2.0, max(0.3, 1.0 + opp_k * rel))
+                        w_B = base_wgt * min(2.0, max(0.3, 1.0 - opp_k * rel))
+                    else:
+                        anchor = MU0 if opp_mode == "abs" else lg_mu
+                        w_A = base_wgt * min(2.0, max(0.3, 1.0 + opp_k * (sB / len(B) - anchor)))
+                        w_B = base_wgt * min(2.0, max(0.3, 1.0 + opp_k * (sA / len(A) - anchor)))
                 else:
-                    anchor = MU0 if opp_mode == "abs" else lg_mu
-                    w_O = wgt * min(2.0, max(0.3, 1.0 + opp_k * (sum_D / len(D) - anchor)))
-                    w_D = wgt * min(2.0, max(0.3, 1.0 + opp_k * (sum_O / len(O) - anchor)))
-            else:
-                w_O = w_D = wgt
-            if epa > 0:
-                win, lose, tt, w_win_, w_lose_ = O, D, t, w_O, w_D
-            else:
-                win, lose, tt, w_win_, w_lose_ = D, O, -t, w_D, w_O
-            v = v_win(tt); w = v * (v + tt)
-            for p in win:
-                rm = role_m.get(p, 1.0) if role_r else 1.0
-                mu[p] += rm * w_win_ * (s2[p] / c) * v
-                s2[p] = max(s2[p] * (1.0 - rm * w_win_ * (s2[p] / c2) * w), SIG2_FLOOR)
-            for p in lose:
-                rm = role_m.get(p, 1.0) if role_r else 1.0
-                mu[p] -= rm * w_lose_ * (s2[p] / c) * v
-                s2[p] = max(s2[p] * (1.0 - rm * w_lose_ * (s2[p] / c2) * w), SIG2_FLOOR)
+                    w_A = w_B = base_wgt
+                if won:
+                    win, lose, tt, w_win_, w_lose_ = A, B, t, w_A, w_B
+                else:
+                    win, lose, tt, w_win_, w_lose_ = B, A, -t, w_B, w_A
+                v = v_win(tt); w = v * (v + tt)
+                for p in win:
+                    rm = role_m.get(p, 1.0) if role_r else 1.0
+                    mu[p] += rm * w_win_ * (s2[p] / c) * v
+                    s2[p] = max(s2[p] * (1.0 - rm * w_win_ * (s2[p] / c2) * w), SIG2_FLOOR)
+                for p in lose:
+                    rm = role_m.get(p, 1.0) if role_r else 1.0
+                    mu[p] -= rm * w_lose_ * (s2[p] / c) * v
+                    s2[p] = max(s2[p] * (1.0 - rm * w_lose_ * (s2[p] / c2) * w), SIG2_FLOOR)
+
+            micro_done = False
+            if micro != "off":
+                pr = prot_of.get((gid, pid_))
+                if pr:
+                    passer, rusher, receiver = pr
+                    Oset = set(O)
+                    ol = [p for p in O if GPOS.get(p) == "OL"]
+                    box = [p for p in D if GPOS.get(p) in ("DL", "LB")]
+                    dbs = [p for p in D if GPOS.get(p) == "DB"]
+                    if passer and passer in Oset:
+                        duel([passer] + ol, box, wgt, epa > 0)          # protection/QB match
+                        if receiver and receiver in Oset:
+                            duel([receiver], dbs, wgt, epa > 0)          # coverage match
+                        micro_done = True
+                    elif rusher and rusher in Oset:
+                        duel([rusher] + ol, box, wgt, epa > 0)           # run-box match
+                        micro_done = True
+            if micro != "replace" or not micro_done:
+                duel(O, D, wgt, epa > 0)                                 # full 11v11
         # 3. snap-share walk
         for team in (g["home"], g["away"]):
             tbl = snaps.get((g["gid"], team))
@@ -245,9 +287,8 @@ def trial(name, **kw):
 SHIP = dict(tau=0.30, use_lev=True, down_mult=1.25, late_mult=1.5,
             playoff_mult=1.5, dead_mult=0.5, opp_k=0.3, opp_mode="league")
 trial("shipped engine v3 (context+importance+opp)", **SHIP)
-trial("+ depth-chart role r=0.25", **SHIP, role_r=0.25)
-trial("+ depth-chart role r=0.5", **SHIP, role_r=0.5)
-trial("+ depth-chart role r=0.75", **SHIP, role_r=0.75)
+trial("micro-matches REPLACE 11v11", **SHIP, micro="replace")
+trial("micro-matches ADD to 11v11", **SHIP, micro="add")
 
 best_name = min(results, key=lambda k: results[k][0])
 best_ll, best_kw = results[best_name]

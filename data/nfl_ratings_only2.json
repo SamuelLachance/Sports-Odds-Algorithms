@@ -1,9 +1,8 @@
 {
  "dev": {
   "shipped engine v3 (context+importance+opp)": 0.66748,
-  "+ depth-chart role r=0.25": 0.66937,
-  "+ depth-chart role r=0.5": 0.67053,
-  "+ depth-chart role r=0.75": 0.67164
+  "micro-matches REPLACE 11v11": 0.67598,
+  "micro-matches ADD to 11v11": 0.68798
  },
  "winner": "shipped engine v3 (context+importance+opp)",
  "winner_kw": {
