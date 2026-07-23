@@ -1,0 +1,23 @@
+{
+ "base_ll": 0.61952,
+ "variants": {
+  "A REPLACE rq -> 11v11 TS": {
+   "ll": 0.62299,
+   "delta": -0.00347,
+   "ci": [
+    -0.00653,
+    -0.00037
+   ]
+  },
+  "B ADD rq_ts as 15th": {
+   "ll": 0.6198,
+   "delta": -0.00027,
+   "ci": [
+    -0.00135,
+    0.00081
+   ]
+  }
+ },
+ "verdict": "keep current",
+ "spec": "player value = clamp(mu-25,+-3), share-weighted actives, zero pre-2016"
+}

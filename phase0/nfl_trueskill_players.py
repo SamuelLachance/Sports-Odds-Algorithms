@@ -69,7 +69,10 @@ try:
     with open("data/nfl_play_ctx.csv") as fh:
         rd = csv.reader(fh); next(rd)
         for gid, pid_, wp in rd:
-            wp_of[(gid, pid_)] = float(wp)
+            # ctx stores play_id as a float-string ("58.0"); normalize to int so
+            # the lookup below (int keys) actually hits — audit-caught bug: the
+            # original string key never matched and garbage weighting was inert
+            wp_of[(gid, int(float(pid_)))] = float(wp)
     print(f"[{time.time()-T0:.0f}s] wp context: {len(wp_of):,} plays", flush=True)
 except FileNotFoundError:
     print("no wp context; garbage-time down-weight disabled", flush=True)

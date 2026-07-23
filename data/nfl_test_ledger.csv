@@ -1,0 +1,50 @@
+n,metric,test,model_ll,challenger_ll,delta,verdict
+1,TEST,plain Elo baseline,,0.63984,,baseline
+2,TEST,Glicko-2,0.63984,0.64060,-0.00076,rejected: inside noise
+3,TEST,QB-adjusted Elo (in-engine),0.63984,0.63296,+0.00689,KEPT: SIG
+4,TEST,stacked architecture,0.63296,0.63059,+0.00237,KEPT: SIG
+5,TEST,rest/bye,0.63059,0.63011,+0.00048,rejected: n.s.
+6,TEST,off/def TrueSkill,0.63059,0.62964,+0.00094,rejected: n.s.
+7,TEST,replacement-level QB prior,0.63059,0.62806,+0.00253,KEPT: SIG
+8,TEST,draft pedigree,0.62806,0.62706,+0.00100,rejected: n.s.
+9,TEST,EPA/play rating,0.62806,0.62652,+0.00154,rejected: n.s.
+10,TEST,SRS margin,0.62806,0.63044,-0.00238,rejected: WORSE
+11,TEST,big test all near-misses,0.62806,0.62743,+0.00063,ADOPTED (Samuel): current model
+12,DEV,macro TrueSkill add,0.62865,0.62860,-0.00005,parked
+13,DEV,macro TrueSkill replace Elo,0.62865,0.62871,+0.00006,rejected
+14,DEV,coach regime change,0.62865,0.62875,+0.00009,rejected
+15,DEV,coach rating,0.62865,0.62856,-0.00009,parked
+16,DEV,rolling HFA,0.62865,0.62871,+0.00006,rejected
+17,DEV,turnover margin,0.62865,0.62888,+0.00023,rejected
+18,DEV,fumble-recovery luck,0.62865,0.62829,-0.00037,parked
+19,DEV,travel tz distance,0.62865,0.62914,+0.00048,rejected
+20,DEV,early-kick circadian,0.62865,0.62810,-0.00056,into big test
+21,DEV,per-team HFA,0.62865,0.62815,-0.00050,into big test
+22,DEV,bundle early+teamHFA,0.62865,0.62756,-0.00110,gate not met
+23,DEV,non-QB missing production,0.62359,0.62332,-0.00027,parked
+24,TEST2 2021-25,snap-count absence (secondary protocol),0.62716,0.62509,+0.00207,"parked: n.s., best absence result"
+25,TEST2 2023-25,RAPM all-22 ridge (secondary protocol),0.62244,0.62588,-0.00344,"rejected: n.s., negative point"
+26,TEST,snap absence -> main model (11 features),0.62743,0.62719,+0.00024,KEPT: current model
+27,TEST,player rating system -> roster quality (12 features),0.62692,0.62460,+0.00232,"KEPT: SIG CI[+0.00068,+0.00394], current model"
+28,TEST,ML-learned composite weights (player-level ridge),0.62460,0.62548,-0.00089,"rejected: worse — usage=team-importance, ML target purified it away"
+29,TEST,rep-centered ratings in roster_quality,0.62460,0.62686,-0.00226,rejected: SIG worse — aggregate needs neutral prior; display table uses rep prior
+30,TEST,evidence floor n_eff>=5 in roster_quality,0.62461,0.62452,+0.00010,KEPT (within wobble): current model
+31,TEST,WOWY value-weighted absence,0.62461,0.62838,-0.00377,rejected: SIG worse — measurement not feature; absence already priced
+32,TEST,per-play TrueSkill ratings in roster_quality,0.62461,0.62679,-0.00218,rejected: SIG worse — binarized duels lose EPA magnitude; TS = leaderboard tool
+33,TEST,final board rating in roster_quality,0.62461,0.62574,-0.00113,rejected: SIG worse — display vs predictive objectives; composite stays
+34,TEST,QB-specific strong prior in roster_quality,0.62461,0.62468,-0.00008,rejected: model prefers trusting hot thin-sample QBs; board handles rankings
+35,TEST,"rating-system tune: decay .95, clamp 1.5",0.62460,0.62315,+0.00145,KEPT: current model (CI grazes zero)
+36,TEST,coordinate-descent all-component tune + blend ridge,0.62317,0.62536,-0.00219,rejected: greedy multi-knob DEV overfit; tuning road closed
+37,TEST,injury reports: playing-hurt qsh share,0.62317,0.62929,-0.00612,rejected: SIG worse — 2016 Probable-abolition changed Questionable semantics at split boundary
+38,TEST2 16-20/21-25,"injury qsh, era-consistent modern tag",0.61983,0.62006,-0.00024,null: public tags carry nothing; market edge = non-public severity info
+39,EVAL,nfelo benchmark (eval-only; feature REFUSED: market in update loop),0.62115,0.61599-0.60759,—,"ladder = market content; nfelo-close loses to raw close; our gap = the market, again"
+40,TEST,nfelo base swap/add (phase0 measurement),0.62317,0.62305 add / replace worse,+0.00012,"rejected: n.s. — market-blind identity costs +0.0001, not +0.004; nothing to buy"
+41,DEV,garbage-time WP filter on team EPA rating,0.62320,0.62377-0.62455,+0.0006..+0.0014,rejected at tryouts: garbage time is SIGNAL for prediction; filtering = display convention
+42,TEST,"luck features (close-game, FG/kicker, composite)",0.62317,0.62343,-0.00026,rejected: coef -1.36 right direction but Elo k already prices regression; luck channel closed
+43,TEST,pass/run split EPA ratings (add),0.62317,0.62190,+0.00127,"KEPT: current model — split pays, mismatch interactions hurt (strength is additive)"
+44,DEV,handicapper six-indicator composite (record/venue/L10/points),0.62323,0.62374-0.62602,+0.0005..+0.0028,rejected at tryouts: coarse copies of refined in-model signals
+45,DEV,conditional spots (fatigue/weather-HFA/dome-cold/final-wk),0.62325,0.62343-0.62414,+0.0002..+0.0009,rejected at tryouts: folk spots already priced or too rare
+46,TEST,reunion: all market-blind rejected features together,0.62184,0.63022,-0.00838,rejected: biggest DEV-mirage ever (DEV -0.0041) — era-broken features stack damage; ledger vindicated
+47,TEST,"training: walk-forward + recency (hl=3, C=100)",0.62186,0.61947,+0.00239,KEPT: current model — drift-aware training pays where MLB was null; learners all lose to linear
+48,TEST,"11v11 participation TS REPLACES rq player values (clamp(mu-25,+-3), share-weighted actives, zero pre-2016)",0.61952,0.62299,-0.00347,rejected SIG WORSE: 4th display-rating crossover to lose in the model; separation theorem holds (leak-audited clean)
+49,TEST,11v11 participation TS ADDED as 15th feature,0.61952,0.61980,-0.00027,rejected n.s. worse: adds nothing beyond rate6 composite (corr 0.39); model stays 14 features
