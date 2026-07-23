@@ -354,12 +354,43 @@ for j, nm in enumerate(["lgt", "qd", "epa", "early", "thfa", "rest", "luck", "ts
     assert Xs[:, j].min() >= lo - 0.3 * (hi - lo) and Xs[:, j].max() <= hi + 0.3 * (hi - lo), \
         f"serve feature {nm} out of historical range"
 
-# ================= Monte Carlo season sims (Elo updates INSIDE each sim) =================
-# Each sim walks the season chronologically: the blend's elo_logit feature is
-# re-derived from the sim's evolving Elo state (elo_logit = ln10/400 * rating diff,
-# exactly the serve formula), outcomes are sampled, and Elo updates with the tuned k.
-# Per-game MC prob = mean across sims: ~= the model prob in week 1, honestly
-# uncertainty-widened by season's end. Played games condition both W and the Elo path.
+# ================= Monte Carlo season sims (FEATURES update INSIDE each sim) =================
+# Each sim walks the season chronologically. After every simulated game the
+# outcome-driven features evolve exactly like their real walks: Elo (k update),
+# per-team HFA (residual EWMA), and — via game stats sampled conditional on the
+# simulated winner/loser (distributions fit on 2020-2025) — the EPA net rating,
+# the pass/run channel ratings, and the starting QB's rating (QbElo EWMA + EB
+# shrink to his pedigree prior). Frozen in-sim: ts_edge/luck (not inferable from
+# a winner; fabricating fumbles or play-level duels would be invention), roster
+# quality and absences (injuries cannot be honestly simulated), rest/early
+# (schedule-exact per game). Per-game MC prob = mean across sims; week 1 equals
+# the model prob by construction, late-season honestly widens with state drift.
+from nfl_qb_elo import CLIP as QB_CLIP  # noqa: E402
+
+# outcome-conditional per-game stat distributions (2020-2025): pass/run EPA sums
+w_p, w_r, l_p, l_r, cnt_p, cnt_r = [], [], [], [], [], []
+for g in games:
+    if g["season"] < 2020 or g["y"] == 0.5:
+        continue
+    tm = aggc.get(g["gid"])
+    if not tm:
+        continue
+    for t_, won in ((g["home"], g["y"] == 1.0), (g["away"], g["y"] == 0.0)):
+        pS, pN, rS, rN = tm.get(t_, (0.0, 0, 0.0, 0))
+        if pN < 10:
+            continue
+        (w_p if won else l_p).append(pS)
+        (w_r if won else l_r).append(rS)
+        cnt_p.append(pN); cnt_r.append(rN)
+MU_WP, SD_WP = float(np.mean(w_p)), float(np.std(w_p))
+MU_WR, SD_WR = float(np.mean(w_r)), float(np.std(w_r))
+MU_LP, SD_LP = float(np.mean(l_p)), float(np.std(l_p))
+MU_LR, SD_LR = float(np.mean(l_r)), float(np.std(l_r))
+N_P, N_R = float(np.mean(cnt_p)), float(np.mean(cnt_r))
+print(f"[{time.time()-T0:.0f}s] sim stat dists: win pass {MU_WP:+.1f}±{SD_WP:.1f} "
+      f"run {MU_WR:+.1f}±{SD_WR:.1f} | lose pass {MU_LP:+.1f} run {MU_LR:+.1f} "
+      f"| plays {N_P:.0f}/{N_R:.0f}", flush=True)
+
 DIVS = {
     "AFC East": ["BUF", "MIA", "NE", "NYJ"], "AFC North": ["BAL", "CIN", "CLE", "PIT"],
     "AFC South": ["HOU", "IND", "JAX", "TEN"], "AFC West": ["DEN", "KC", "LAC", "LV"],
@@ -370,26 +401,76 @@ TEAMS = [t for ts in DIVS.values() for t in ts]
 tix = {t: i for i, t in enumerate(TEAMS)}
 S = 20000
 rng = np.random.default_rng(20260723)
-c_elo = float(CLF.coef_[0][0])
-z_base = CLF.decision_function(Xs) - c_elo * Xs[:, 0]    # blend minus the elo term
+co_ = CLF.coef_[0]
+DYN = (0, 1, 2, 4, 12, 13)          # elo, qb, epa, thfa, pass, run evolve in-sim
+z_frozen = CLF.decision_function(Xs) - sum(co_[j] * Xs[:, j] for j in DYN)
 L400 = np.log(10.0) / 400.0
-Rm = np.tile(np.array([R.get(t, 1500.0) for t in TEAMS]), (S, 1))
+
+def m32(fn):                         # S x 32 state matrix from a per-team scalar
+    return np.tile(np.array([fn(t) for t in TEAMS], float), (S, 1))
+Rm = m32(lambda t: R.get(t, 1500.0))
+h0 = m32(lambda t: hfa_st.get(t, (0.0, 0.0))[0]); h1 = m32(lambda t: hfa_st.get(t, (0.0, 0.0))[1])
+eo_s = m32(lambda t: epa_off[t][0]); eo_n = m32(lambda t: epa_off[t][1])
+ed_s = m32(lambda t: epa_def[t][0]); ed_n = m32(lambda t: epa_def[t][1])
+po_s = m32(lambda t: offP[t][0]); po_n = m32(lambda t: offP[t][1])
+pd_s = m32(lambda t: dfaP[t][0]); pd_n = m32(lambda t: dfaP[t][1])
+ro_s = m32(lambda t: offR[t][0]); ro_n = m32(lambda t: offR[t][1])
+rd_s = m32(lambda t: dfaR[t][0]); rd_n = m32(lambda t: dfaR[t][1])
+q0 = m32(lambda t: (mQB.Q.get(QB26[t]) or [0.0, 0.0])[0])
+q1 = m32(lambda t: (mQB.Q.get(QB26[t]) or [0.0, 0.0])[1])
+repv = np.array([rep_map.get(QB26[t], mQB.rep) for t in TEAMS])
+QDEC, QPDB, QBETA, QLG = SP["decay"], SP["prior_db"], 1.0, lg_qb
+
+def qb_adj_col(t_i):
+    q = (q0[:, t_i] + QPDB * repv[t_i]) / (q1[:, t_i] + QPDB)
+    return np.clip(QBETA * (q - QLG), -QB_CLIP, QB_CLIP)
+
 W = np.zeros((S, 32))
 pmc = np.zeros(len(sched))
 for i, s in enumerate(sched):
     h, a = tix[s["home"]], tix[s["away"]]
     hfa_pts = 0.0 if s["neutral"] else bp["hfa"]
-    dr = Rm[:, h] + hfa_pts - Rm[:, a]
-    lgt = L400 * dr
-    p = 1.0 / (1.0 + np.exp(-(z_base[i] + c_elo * lgt)))
+    lgt = L400 * (Rm[:, h] + hfa_pts - Rm[:, a])
+    f_qb = qb_adj_col(h) - qb_adj_col(a)
+    er_oh = (eo_s[:, h] + pn_e * LG_EPA) / (eo_n[:, h] + pn_e)
+    er_dh = (ed_s[:, h] + pn_e * LG_EPA) / (ed_n[:, h] + pn_e)
+    er_oa = (eo_s[:, a] + pn_e * LG_EPA) / (eo_n[:, a] + pn_e)
+    er_da = (ed_s[:, a] + pn_e * LG_EPA) / (ed_n[:, a] + pn_e)
+    f_epa = (er_oh - er_dh) - (er_oa - er_da)
+    cp = pn_ / 2
+    f_pass = ((po_s[:, h] + cp * LGP) / (po_n[:, h] + cp) - (pd_s[:, h] + cp * LGP) / (pd_n[:, h] + cp)) \
+           - ((po_s[:, a] + cp * LGP) / (po_n[:, a] + cp) - (pd_s[:, a] + cp * LGP) / (pd_n[:, a] + cp))
+    f_run = ((ro_s[:, h] + cp * LGR) / (ro_n[:, h] + cp) - (rd_s[:, h] + cp * LGR) / (rd_n[:, h] + cp)) \
+          - ((ro_s[:, a] + cp * LGR) / (ro_n[:, a] + cp) - (rd_s[:, a] + cp * LGR) / (rd_n[:, a] + cp))
+    f_hfa = 0.0 if s["neutral"] else h0[:, h] / (h1[:, h] + 180.0)
+    z = (z_frozen[i] + co_[0] * lgt + co_[1] * f_qb + co_[2] * f_epa
+         + co_[4] * f_hfa + co_[12] * f_pass + co_[13] * f_run)
+    p = 1.0 / (1.0 + np.exp(-z))
     pmc[i] = p.mean()
     if s["hs"] is not None:                      # played: condition on the result
         o = np.full(S, 1.0 if s["hs"] > s["as"] else (0.0 if s["hs"] < s["as"] else 0.5))
     else:
         o = (rng.random(S) < p).astype(float)
-    pe_s = 1.0 / (1.0 + np.exp(-lgt))            # elo-expected, for the rating update
+    # Elo + team-HFA updates (outcome-driven, exact walk equations)
+    pe_s = 1.0 / (1.0 + np.exp(-lgt))
     d_ = bp["k"] * (o - pe_s)
     Rm[:, h] += d_; Rm[:, a] -= d_
+    if not s["neutral"]:
+        h0[:, h] = 0.991 * h0[:, h] + (o - pe_s)
+        h1[:, h] = 0.991 * h1[:, h] + 1.0
+    # game stats sampled conditional on the outcome -> EPA/pass/run/QB walks
+    for t_i, win_mask in ((h, o), (a, 1.0 - o)):
+        pS = np.where(win_mask >= 0.5, rng.normal(MU_WP, SD_WP, S), rng.normal(MU_LP, SD_LP, S))
+        rS = np.where(win_mask >= 0.5, rng.normal(MU_WR, SD_WR, S), rng.normal(MU_LR, SD_LR, S))
+        opp = a if t_i == h else h
+        eo_s[:, t_i] = d_e * eo_s[:, t_i] + (pS + rS); eo_n[:, t_i] = d_e * eo_n[:, t_i] + (N_P + N_R)
+        ed_s[:, opp] = d_e * ed_s[:, opp] + (pS + rS); ed_n[:, opp] = d_e * ed_n[:, opp] + (N_P + N_R)
+        po_s[:, t_i] = dec_ * po_s[:, t_i] + pS; po_n[:, t_i] = dec_ * po_n[:, t_i] + N_P
+        pd_s[:, opp] = dec_ * pd_s[:, opp] + pS; pd_n[:, opp] = dec_ * pd_n[:, opp] + N_P
+        ro_s[:, t_i] = dec_ * ro_s[:, t_i] + rS; ro_n[:, t_i] = dec_ * ro_n[:, t_i] + N_R
+        rd_s[:, opp] = dec_ * rd_s[:, opp] + rS; rd_n[:, opp] = dec_ * rd_n[:, opp] + N_R
+        q0[:, t_i] = QDEC * q0[:, t_i] + pS
+        q1[:, t_i] = QDEC * q1[:, t_i] + N_P
     W[:, h] += o; W[:, a] += 1.0 - o
 for s, pm in zip(sched, pmc):
     s["pmc"] = round(float(pm), 3)

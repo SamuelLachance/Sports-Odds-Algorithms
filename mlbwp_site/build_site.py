@@ -259,7 +259,8 @@ const state = {board:null, db:null, nfl:null,
   league:(localStorage.getItem("league")||"mlb"), range:"today", nflRange:"year", live:{}, updated:null};
 function setLeague(lg){state.league=lg; try{localStorage.setItem("league",lg);}catch(e){}
   const ns=document.getElementById("navseason");
-  if(ns) ns.style.display=(lg==="nfl"&&state.nfl&&state.nfl.schedule)?"":"none";}
+  if(ns) ns.style.display=(lg==="nfl"&&state.nfl&&state.nfl.schedule)?"":"none";
+  updAcc();}
 const SAPI = "https://statsapi.mlb.com/api/v1";
 const root = document.documentElement;
 $("#tog").onclick = () => {
@@ -350,6 +351,17 @@ async function pollNfl(){
   }catch(e){}
 }
 
+function updAcc(){
+  const el=$("#acc"); if(!el) return;
+  if(state.league==="nfl"&&state.nfl){
+    const mc=state.nfl.model_card;
+    el.innerHTML=`<b>${mc.test_log_loss.toFixed(3)}</b> log loss (NFL)<br>closing line ${mc.close_log_loss.toFixed(3)}`;
+  }else if(state.board&&state.board.accuracy){
+    const a=state.board.accuracy;
+    el.innerHTML=`<b>${a.log_loss.toFixed(3)}</b> log loss<br>coin flip ${a.coinflip.toFixed(3)}`;
+  }
+}
+
 async function boot(){
   try{
     const bust = "?t=" + Math.floor(Date.now()/60000);   // fresh each minute; beats stale caches
@@ -359,8 +371,7 @@ async function boot(){
       fetch("./data/nfl.json"+bust, {cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null),
     ]);
     state.board=b; state.db=db; state.nfl=nfl;
-    const a=b.accuracy;
-    $("#acc").innerHTML=`<b>${a.log_loss.toFixed(3)}</b> log loss<br>coin flip ${a.coinflip.toFixed(3)}`;
+    updAcc();
     route();
     pollLive(true); pollNfl();      // first poll always runs, even if the tab loads hidden
     setInterval(()=>{pollLive();pollNfl();}, 25000);   // both APIs cache ~20s
@@ -377,7 +388,7 @@ function route(){
   window.scrollTo(0,0);
   const ns=document.getElementById("navseason");
   if(ns) ns.style.display=(state.league==="nfl"&&state.nfl&&state.nfl.schedule)?"":"none";
-  if(v==="season"&&state.nfl&&state.nfl.schedule){state.league="nfl";if(ns)ns.style.display="";setNav("season");return nflSeason(arg);}
+  if(v==="season"&&state.nfl&&state.nfl.schedule){state.league="nfl";if(ns)ns.style.display="";updAcc();setNav("season");return nflSeason(arg);}
   if(v==="game"&&arg) return /_/.test(arg)&&state.nfl?nflGamePage(arg):gamePage(arg);
   if(v==="team"&&arg){setNav("teams");return teamPage(arg);}
   if(v==="player"&&arg){setNav("teams");return playerPage(arg);}
