@@ -45,7 +45,9 @@ header{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--bg) 9
 header .wrap{display:flex;align-items:center;gap:20px;height:56px}
 .brand{font-family:var(--serif);font-weight:700;font-size:21px;flex:none}
 .brand .b{color:var(--accent)}
-nav.main{display:flex;gap:2px}
+nav.main{display:flex;gap:2px;min-width:0;overflow-x:auto;scrollbar-width:none}
+nav.main::-webkit-scrollbar{display:none}
+nav.main a{flex:none}
 nav.main a{font-weight:600;font-size:13.5px;color:var(--muted);padding:7px 13px;border-radius:8px}
 nav.main a:hover{color:var(--ink);background:var(--panel)}
 nav.main a.on{color:var(--ink);background:var(--accent-2);box-shadow:inset 0 0 0 1px var(--line-2)}
@@ -83,6 +85,7 @@ h1.pt{font-family:var(--serif);font-size:26px;margin:2px 0 14px}
 .day .proj{margin-left:auto;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);
   border:1px solid var(--line-2);border-radius:5px;padding:1px 7px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:10px}
+.grid>*{min-width:0}
 .gc{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 13px;
   cursor:pointer;display:flex;flex-direction:column;gap:9px;transition:border-color .12s,transform .12s}
 .gc:hover{border-color:var(--line-2);transform:translateY(-1px)}
@@ -155,6 +158,8 @@ td .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
 @media(max-width:860px){.cols{grid-template-columns:1fr}}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 16px}
 .panel h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;font-weight:700}
+.panel h3 .sub{text-transform:none;letter-spacing:.01em;font-weight:400}
+.nocase{text-transform:none!important;letter-spacing:0!important}
 .proj{display:flex;align-items:center;gap:16px;margin-bottom:6px}
 .proj .big{font-family:var(--mono);font-size:46px;font-weight:600;line-height:1}
 .proj .big .u{font-size:19px;color:var(--muted)}
@@ -250,7 +255,10 @@ footer{border-top:1px solid var(--line);padding:20px 0 46px;color:var(--faint);f
 footer b{color:var(--muted)} footer a{color:var(--muted);text-decoration:underline}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto}}
-@media(max-width:560px){.grid{grid-template-columns:1fr}.acc{display:none}nav.main a{padding:7px 9px}}
+@media(max-width:860px){.updated{display:none}}
+@media(max-width:700px){.acc{display:none}header .wrap{gap:10px;padding:0 12px}
+  .brand{font-size:18px}nav.main a{padding:6px 8px;font-size:12.5px}}
+@media(max-width:560px){.grid{grid-template-columns:1fr}nav.main a{padding:6px 6px;font-size:12px}}
 """
 
 JS = r"""
@@ -748,7 +756,7 @@ function playersPage(){
     <td><span class="num">${p.ts_mu!=null?p.ts_mu.toFixed(1):"-"}</span></td>
     <td class="sub">${p.pit?`${p.pit.era!=null?p.pit.era:"-"} ERA &middot; ${p.pit.whip!=null?p.pit.whip:"-"} WHIP &middot; ${p.pit.so||0} K`:"&mdash;"}</td></tr>`;
   const tbl=(title,rows,statHdr)=>`<div class="panel"><h3>${title}</h3><div class="twrap"><table>
-    <thead><tr><th></th><th>Player</th><th>GlassBox</th><th>&mu;</th><th>${statHdr}</th></tr></thead>
+    <thead><tr><th></th><th>Player</th><th>GlassBox</th><th class="nocase">&mu;</th><th>${statHdr}</th></tr></thead>
     <tbody>${rows}</tbody></table></div></div>`;
   $("#view").innerHTML=`<div class="eyebrow">Database &middot; MLB</div><h1 class="pt">Players</h1>
     <div class="sub" style="margin-bottom:10px">Every plate appearance is a <b>TrueSkill duel</b>: batter vs pitcher, both Bayesian-updated
@@ -789,7 +797,7 @@ function nflPlayers(){
     <td><span class="num">${p.rating.mu.toFixed(1)}&thinsp;&plusmn;&thinsp;${p.rating.sigma.toFixed(1)}</span></td>
     <td><span class="num">${p.rating.n_eff.toLocaleString()}</span></td></tr>`;
   const panel=g=>`<div class="panel"><h3>${GN[g]}</h3><div class="twrap"><table>
-    <thead><tr><th></th><th>Player</th><th>Rating</th><th>&mu;&thinsp;&plusmn;&thinsp;&sigma;</th><th>Plays</th></tr></thead>
+    <thead><tr><th></th><th>Player</th><th>Rating</th><th class="nocase">&mu;&thinsp;&plusmn;&thinsp;&sigma;</th><th>Plays</th></tr></thead>
     <tbody>${byg[g].slice(0,10).map(row).join("")}</tbody></table></div></div>`;
   const proven=P.filter(p=>p.rating.n_eff>=1000).sort((a,b)=>a.rating.sigma-b.rating.sigma).slice(0,8);
   const wild=P.filter(p=>p.rating.n_eff>=300).sort((a,b)=>b.rating.sigma-a.rating.sigma).slice(0,8);
