@@ -1,0 +1,22 @@
+{
+ "dev": {
+  "baseline (old engine: tau .10, cutoff)": 0.6793,
+  "leverage only": 0.67275,
+  "full context (lev + 3rd/4th 1.25 + late 1.5)": 0.67266,
+  "recency tau .30 + full context": 0.67249,
+  "recency tau .50 + full context": 0.67241,
+  "recency tau .30 + full ctx + shrink 1/2": 0.67302,
+  "recency tau .30, context off": 0.67923
+ },
+ "winner": "recency tau .50 + full context",
+ "winner_kw": {
+  "tau": 0.5,
+  "use_lev": true,
+  "down_mult": 1.25,
+  "late_mult": 1.5
+ },
+ "test_ll": 0.66924,
+ "elo_ll": 0.63824,
+ "test_n": 1139,
+ "acc": 0.5731
+}

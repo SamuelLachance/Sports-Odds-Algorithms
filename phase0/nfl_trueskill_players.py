@@ -2,17 +2,19 @@
 defensive players actually on the field (nflverse pbp_participation, 2016-2025).
 Bayesian (mu, sigma) update for all 22 after each play; offense "wins" iff EPA > 0.
 
-Design (per the spec):
+Design (per the spec, knobs DEV-tuned vs the ratings-only game model —
+phase0/nfl_ratings_only_model.py):
   outcome        offense_win = EPA > 0 (success), processed strictly chronologically
-  filters        pass/run only (kneels/spikes/penalties already excluded upstream);
-                 garbage time (wp<.05 or >.95) down-weighted x0.25, not dropped
+  snap context   weight = 4*wp*(1-wp) leverage (garbage time fades smoothly)
+                 x 1.25 on money downs (3rd/4th) x 1.5 late-and-close (Q4/OT, one
+                 score) — every snap counts by how much it mattered
+  recency        weekly tau 0.30 (9x the old forgetting): recent snaps dominate
   noise          beta = sigma0 (NFL plays are noisy -> large beta)
-  drift          tau added to sigma once per new week a player appears in
   offseason      mu shrunk 1/3 toward the mean, sigma widened (capped at sigma0)
   position-aware ratings LADDERS are global (o-vs-d is what a play measures) but the
                  DISPLAY is normalized within position group (QB/RB/WR/TE/OL/DL/LB/DB)
                  so a great CB and a great LT are never compared to each other
-  small samples  conservative skill = mu - 2*sigma, plus shrink-to-50 below the
+  small samples  conservative skill = mu - 3*sigma, plus shrink-to-50 below the
                  qualification floor; under 50 rated snaps -> no rating shown
 
 Outputs:
@@ -32,11 +34,13 @@ T0 = time.time()
 MU0, SIG0 = 25.0, 25.0 / 3.0
 SIG0_2 = SIG0 * SIG0
 BETA = SIG0                      # noisy single plays
-TAU2 = 0.10 ** 2                 # weekly drift (added once per new week seen)
+TAU2 = 0.30 ** 2                 # weekly drift — DEV-tuned vs the ratings-only
+                                 # game model (recent snaps dominate the posterior)
 SEASON_SHRINK = 1.0 / 3.0        # offseason: mu 1/3 of the way back to MU0
 SEASON_WIDEN2 = 1.5 ** 2
 SIG2_FLOOR = 0.5 ** 2
-GARBAGE_W = 0.25                 # update weight when wp outside [.05,.95]
+DOWN_MULT = 1.25                 # money downs (3rd/4th) count more
+LATE_MULT = 1.5                  # 4th quarter / OT within one score counts more
 MIN_SNAPS_SHOW = 50
 
 POSMAP = {
@@ -63,19 +67,24 @@ def v_win(t):
     return pdf(t) / c
 
 
-# ---- load context (garbage-time wp) ----
-wp_of = {}
+# ---- load full snap context (wp leverage, down, quarter, score) ----
+ctx_of = {}
 try:
-    with open("data/nfl_play_ctx.csv") as fh:
-        rd = csv.reader(fh); next(rd)
-        for gid, pid_, wp in rd:
-            # ctx stores play_id as a float-string ("58.0"); normalize to int so
-            # the lookup below (int keys) actually hits — audit-caught bug: the
-            # original string key never matched and garbage weighting was inert
-            wp_of[(gid, int(float(pid_)))] = float(wp)
-    print(f"[{time.time()-T0:.0f}s] wp context: {len(wp_of):,} plays", flush=True)
+    with open("data/nfl_play_ctx2.csv") as fh:
+        rd = csv.DictReader(fh)
+        for r in rd:
+            try:
+                ctx_of[(r["game_id"], int(float(r["play_id"])))] = (
+                    float(r["wp"]) if r["wp"] else 0.5,
+                    int(float(r["down"])) if r["down"] else 1,
+                    int(float(r["qtr"])) if r["qtr"] else 1,
+                    abs(float(r["score_differential"])) if r["score_differential"] else 0.0,
+                )
+            except ValueError:
+                continue
+    print(f"[{time.time()-T0:.0f}s] snap context: {len(ctx_of):,} plays", flush=True)
 except FileNotFoundError:
-    print("no wp context; garbage-time down-weight disabled", flush=True)
+    print("no snap context; every play weighted 1.0", flush=True)
 
 # ---- load plays, strictly chronological ----
 plays = []
@@ -110,10 +119,18 @@ for gid, pid_, off, dfn, epa in plays:
         elif last_week.get(p) != wk:
             sig2[p] = min(sig2[p] + TAU2, SIG0_2)
         last_week[p] = wk
-    wgt = 1.0
-    wp = wp_of.get((gid, pid_))
-    if wp is not None and (wp < 0.05 or wp > 0.95):
-        wgt = GARBAGE_W
+    # context weight: smooth WP leverage (garbage time fades naturally),
+    # money downs and late-and-close boosted — DEV-tuned vs the ratings-only model
+    c_ = ctx_of.get((gid, pid_))
+    if c_ is None:
+        wgt = 1.0
+    else:
+        wp, down, qtr, adiff = c_
+        wgt = 4.0 * wp * (1.0 - wp)
+        if down >= 3:
+            wgt *= DOWN_MULT
+        if qtr >= 4 and adiff <= 8:
+            wgt *= LATE_MULT
     c2 = (len(O) + len(D)) * BETA * BETA + sum(sig2[p] for p in O) + sum(sig2[p] for p in D)
     c = sqrt(c2)
     t = (sum(mu[p] for p in O) - sum(mu[p] for p in D)) / c
@@ -250,11 +267,12 @@ for t, tm in payload["teams"].items():
     tm["gb_off"] = round(noff / nof, 1) if nof else None
     tm["gb_def"] = round(ndef / ndf, 1) if ndf else None
 payload["model_card"]["ratings"] = {
-    "system": "per-play participation TrueSkill (11v11)",
+    "system": "per-play participation TrueSkill (11v11), context-weighted",
     "plays": n_upd, "seasons": "2016-2025",
     "outcome": "offense beats defense iff EPA > 0",
-    "beta": BETA, "tau_week": sqrt(TAU2), "garbage_weight": GARBAGE_W,
-    "display": "mu - 2 sigma, z-scored within position group",
+    "beta": BETA, "tau_week": sqrt(TAU2),
+    "snap_weight": "4*wp*(1-wp) leverage x 1.25 money downs x 1.5 late-and-close",
+    "display": "mu - 3 sigma, z-scored within position group",
 }
 json.dump(payload, open("site/data/nfl.json", "w"))
 print(f"[{time.time()-T0:.0f}s] payload: {n_set} rated, {n_null} NR; team avgs redone")
