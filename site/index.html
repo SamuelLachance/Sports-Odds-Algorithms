@@ -330,6 +330,34 @@ function applyLive(){
   if(u&&state.updated) u.innerHTML=`<span class="dot"></span>live &middot; updated ${state.updated.toLocaleTimeString(LOC,{hour:"numeric",minute:"2-digit",second:"2-digit"})}`;
 }
 
+const nflToday=()=>new Date().toLocaleDateString("en-CA",{timeZone:TZ});
+function nflProb(g){const near=g.d<=addDays(nflToday(),7);
+  return {near, hp:(!near&&g.pmc!=null)?g.pmc:g.ph};}
+
+const ESPN_NFL="https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard";
+async function pollNfl(){
+  if(document.hidden||state.league!=="nfl"||!state.nfl||!state.nfl.schedule) return;
+  const today=nflToday();
+  if(!state.nfl.schedule.some(g=>g.d===today)) return;      // no NFL slate today
+  try{
+    const r=await fetch(ESPN_NFL); const data=await r.json();
+    const MAP={LAR:"LA",WSH:"WAS"};
+    (data.events||[]).forEach(ev=>{
+      const c=ev.competitions&&ev.competitions[0]; if(!c) return;
+      const H=(c.competitors||[]).find(x=>x.homeAway==="home");
+      const A=(c.competitors||[]).find(x=>x.homeAway==="away");
+      if(!H||!A) return;
+      const h=MAP[H.team.abbreviation]||H.team.abbreviation;
+      const a=MAP[A.team.abbreviation]||A.team.abbreviation;
+      const el=document.querySelector(`[data-ng="${a}_${h}"]`); if(!el) return;
+      const st=ev.status||{}, tp=st.type||{};
+      if(tp.state==="in")
+        el.innerHTML=`<span class="dot"></span>${A.score}-${H.score} &middot; Q${st.period||""} ${st.displayClock||""}`;
+      else if(tp.state==="post") el.textContent=`FINAL ${A.score}-${H.score}`;
+    });
+  }catch(e){}
+}
+
 async function boot(){
   try{
     const bust = "?t=" + Math.floor(Date.now()/60000);   // fresh each minute; beats stale caches
@@ -342,8 +370,8 @@ async function boot(){
     const a=b.accuracy;
     $("#acc").innerHTML=`<b>${a.log_loss.toFixed(3)}</b> log loss<br>coin flip ${a.coinflip.toFixed(3)}`;
     route();
-    pollLive(true);                 // first poll always runs, even if the tab loads hidden
-    setInterval(pollLive, 25000);   // MLB Stats API caches ~20s; poll a touch slower
+    pollLive(true); pollNfl();      // first poll always runs, even if the tab loads hidden
+    setInterval(()=>{pollLive();pollNfl();}, 25000);   // both APIs cache ~20s
     document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) pollLive(true); });
   }catch(e){ $("#view").innerHTML=`<div class="empty">Could not load data. ${e}</div>`; }
 }
@@ -473,14 +501,21 @@ function nflPage(){
     .map(([k,t])=>`<button class="filt ${k===state.nflRange?"on":""}" data-r="${k}">${t}</button>`).join("");
   const qbOf=c=>n.teams&&n.teams[c]&&n.teams[c].qb1?n.teams[c].qb1.name:"";
   const ncard=g=>{
-    const hp=g.ph, homeWin=hp>=0.5, done=g.hs!=null;
+    const pr=nflProb(g), hp=pr.hp, homeWin=hp>=0.5, done=g.hs!=null;
     const pick=homeWin?g.home:g.away, pp=Math.max(hp,1-hp);
-    let badge=`<span class="lbadge proj">Week ${g.w}</span>`;
+    const val=g.value;
+    const valbar=(val&&val.available)
+      ? `<div class="valbar"><span class="vt">EDGE</span> ${val.team} <b>+${Math.round(val.ev_cur*100)}% EV</b>
+          <span class="vodds">@ ${val.cur_dec}</span><span class="vlive">&#9679; live</span></div>` : "";
+    let badge=pr.near
+      ?`<span class="lbadge off">Model &middot; Wk ${g.w}</span><span class="lbadge proj">Proj QBs</span>`
+      :`<span class="lbadge proj">Sim &middot; Wk ${g.w}</span>`;
     if(done){const winner=g.hs>g.as?g.home:(g.hs<g.as?g.away:null);
       badge=winner==null?`<span class="lbadge proj">TIE</span>`
         :(winner===pick?`<span class="lbadge off">HIT</span>`:`<span class="lbadge tbd">MISS</span>`);}
-    return `<a class="gc" href="#/season/${g.w}">
-      <div class="top"><span class="lv">${done?`FINAL ${g.as}-${g.hs}`:`${g.d.slice(5)} &middot; ${g.t?g.t.slice(0,5):""} ET`}</span>
+    return `<a class="gc${val&&val.available?' hasval':''}" href="#/season/${g.w}">
+      ${valbar}
+      <div class="top"><span class="lv" data-ng="${g.away}_${g.home}">${done?`FINAL ${g.as}-${g.hs}`:`${g.d.slice(5)} &middot; ${g.t?g.t.slice(0,5):""} ET`}</span>
         ${badge}
         <span class="pill ${tier(pp)==="strong"?"strong":""}">${pick} ${pctI(pp)}%</span></div>
       <div class="side ${homeWin?"":"win"}"><span class="ab">${g.away}</span>
@@ -499,6 +534,12 @@ function nflPage(){
     `<tr onclick="location.hash='#/standings'"><td><span class="num">${i+1}</span></td><td class="a">${c}</td>
       <td><span class="num">${p.w.toFixed(1)}-${(17-p.w).toFixed(1)}</span></td>
       <td><span class="num">${p.po.toFixed(0)}%</span></td></tr>`).join("");
+  if(!games.length){
+    $("#view").innerHTML=`<div class="controls"><div class="rail">${rail}</div><div class="filters">${filts}</div></div>${cardsBody}`;
+    $("#view").querySelectorAll("[data-lg]").forEach(x=>x.onclick=()=>{setLeague(x.dataset.lg);board();});
+    $("#view").querySelectorAll("[data-r]").forEach(x=>x.onclick=()=>{state.nflRange=x.dataset.r;board();});
+    return;
+  }
   $("#view").innerHTML=`<div class="controls"><div class="rail">${rail}</div><div class="filters">${filts}</div></div>
     ${cardsBody}
     <div class="eyebrow" style="margin-top:22px">NFL &middot; ${n.season} season</div>
@@ -540,7 +581,8 @@ function nflSeason(wk){
   const chips=weeks.map(w=>`<button class="filt ${w===W?"on":""}" data-w="${w}">W${w}</button>`).join("");
   const games=sch.filter(g=>g.w===W).slice().sort((a,b)=>a.d<b.d?-1:(a.d>b.d?1:(a.t<b.t?-1:1)));
   const row=g=>{
-    const pick=g.ph>=0.5?g.home:g.away, pp=Math.round(100*Math.max(g.ph,1-g.ph)), done=g.hs!=null;
+    const hp=nflProb(g).hp;
+    const pick=hp>=0.5?g.home:g.away, pp=Math.round(100*Math.max(hp,1-hp)), done=g.hs!=null;
     let res=`<td class="sub">&mdash;</td>`;
     if(done){const winner=g.hs>g.as?g.home:(g.hs<g.as?g.away:null);
       const hit=winner==null?null:winner===pick;
@@ -548,11 +590,11 @@ function nflSeason(wk){
     return `<tr><td class="sub">${g.d.slice(5)} ${g.t?g.t.slice(0,5):""}</td>
       <td class="a">${teamLink(g.away,g.away)} <span class="sub">at</span> ${teamLink(g.home,g.home)}${g.neutral?' <span class="sub">(neutral)</span>':""}</td>
       <td><span class="pill ${pp>=65?"strong":""}">${pick} ${pp}%</span></td>
-      <td><div class="pbar" style="min-width:110px;margin:0"><div class="h" style="width:${Math.round(g.ph*100)}%"></div><div class="mid"></div></div></td>
+      <td><div class="pbar" style="min-width:110px;margin:0"><div class="h" style="width:${Math.round(nflProb(g).hp*100)}%"></div><div class="mid"></div></div></td>
       ${res}</tr>`;};
   $("#view").innerHTML=`<div class="eyebrow">NFL &middot; ${n.season} season</div>
     <h1 class="pt">Season <span class="sub" style="font-weight:400">every game, predicted &middot; market-blind</span></h1>
-    <div class="sub" style="margin-bottom:12px">Probability bar shows the <b>home</b> side. QB1s from live depth charts; predictions and the standings simulation refresh on every data build.</div>
+    <div class="sub" style="margin-bottom:12px">Games inside <b>one week</b> use the live model; anything further out uses the <b>20,000-run season simulation</b> (team strength evolves inside every sim). Probability bar shows the <b>home</b> side. Refreshes on every data build.</div>
     <div class="filters" style="flex-wrap:wrap;margin-bottom:12px">${chips}</div>
     <div class="subh">Week ${W} &middot; ${games.length} games</div>
     <div class="twrap"><table><thead><tr><th>Kickoff (ET)</th><th>Game</th><th>Pick</th><th>Home win prob</th><th>Result</th></tr></thead>
@@ -638,12 +680,13 @@ function nflTeamPage(code){
   const off=P.filter(p=>grp(p)==="off"), ol=P.filter(p=>grp(p)==="ol"), def=P.filter(p=>grp(p)==="def");
   const p26=t.proj, q=t.qb1;
   const sch=(n.schedule||[]).filter(g=>g.home===code||g.away===code);
-  const srow2=g=>{const homeG=g.home===code, opp=homeG?g.away:g.home, pw=homeG?g.ph:1-g.ph;
-    const pick=g.ph>=0.5?g.home:g.away;
+  const srow2=g=>{const homeG=g.home===code, opp=homeG?g.away:g.home;
+    const hp=nflProb(g).hp, pw=homeG?hp:1-hp;
+    const pick=hp>=0.5?g.home:g.away;
     return `<tr><td><span class="num">W${g.w}</span></td><td class="sub">${g.d.slice(5)}</td>
       <td class="a">${homeG?"vs":"at"} ${teamLink(opp,opp)}${g.neutral?' <span class="sub">(n)</span>':""}</td>
       <td><span class="num ${pw>=0.5?"pos":"neg"}">${Math.round(pw*100)}%</span></td>
-      <td><span class="pill ${Math.max(g.ph,1-g.ph)>=0.65?"strong":""}">${pick}</span></td></tr>`;};
+      <td><span class="pill ${Math.max(hp,1-hp)>=0.65?"strong":""}">${pick}</span></td></tr>`;};
   const schTbl=sch.length?`<div class="subh">2026 schedule &middot; model picks</div><div class="twrap"><table>
     <thead><tr><th>Wk</th><th>Date</th><th>Opponent</th><th>Win prob</th><th>Pick</th></tr></thead>
     <tbody>${sch.map(srow2).join("")}</tbody></table></div>`:"";

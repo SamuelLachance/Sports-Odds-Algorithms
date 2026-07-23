@@ -43,10 +43,13 @@ def _et_date(iso_utc: str) -> str:
     return datetime.fromisoformat(iso_utc.replace("Z", "+00:00")).astimezone(ET).date().isoformat()
 
 
-def fetch_consensus(api_key: str | None = None, now: datetime | None = None) -> list[dict]:
-    """Pre-game MLB games with median-consensus decimal prices across US books.
+def fetch_consensus(api_key: str | None = None, now: datetime | None = None,
+                    url: str = ODDS_URL,
+                    team_map: dict[str, str] = ODDS_TEAM_TO_RETRO) -> list[dict]:
+    """Pre-game games with median-consensus decimal prices across US books.
 
-    Returns list of {id, commence, date(ET), home, away (retro), home_dec, away_dec,
+    Defaults to MLB; pass url/team_map for another sport (see market/nfl_edges.py).
+    Returns list of {id, commence, date(ET), home, away, home_dec, away_dec,
     n_books}. Only games whose commence_time is in the future are included. Returns []
     on any failure (missing key, network, quota) so the build degrades gracefully.
     """
@@ -55,15 +58,15 @@ def fetch_consensus(api_key: str | None = None, now: datetime | None = None) -> 
         return []
     now = now or datetime.now(timezone.utc)
     try:
-        req = urllib.request.Request(ODDS_URL.format(key=key), headers={"User-Agent": "mlbwp"})
+        req = urllib.request.Request(url.format(key=key), headers={"User-Agent": "mlbwp"})
         with urllib.request.urlopen(req, timeout=30) as r:
             data = json.loads(r.read())
     except Exception:  # noqa: BLE001 — never let odds break the board build
         return []
     out = []
     for g in data:
-        home = ODDS_TEAM_TO_RETRO.get(g.get("home_team"))
-        away = ODDS_TEAM_TO_RETRO.get(g.get("away_team"))
+        home = team_map.get(g.get("home_team"))
+        away = team_map.get(g.get("away_team"))
         commence = g.get("commence_time")
         if not (home and away and commence and g.get("id")):   # id anchors the opening cache
             continue

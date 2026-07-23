@@ -339,7 +339,12 @@ for j, nm in enumerate(["lgt", "qd", "epa", "early", "thfa", "rest", "luck", "ts
     assert Xs[:, j].min() >= lo - 0.3 * (hi - lo) and Xs[:, j].max() <= hi + 0.3 * (hi - lo), \
         f"serve feature {nm} out of historical range"
 
-# ================= Monte Carlo season sims =================
+# ================= Monte Carlo season sims (Elo updates INSIDE each sim) =================
+# Each sim walks the season chronologically: the blend's elo_logit feature is
+# re-derived from the sim's evolving Elo state (elo_logit = ln10/400 * rating diff,
+# exactly the serve formula), outcomes are sampled, and Elo updates with the tuned k.
+# Per-game MC prob = mean across sims: ~= the model prob in week 1, honestly
+# uncertainty-widened by season's end. Played games condition both W and the Elo path.
 DIVS = {
     "AFC East": ["BUF", "MIA", "NE", "NYJ"], "AFC North": ["BAL", "CIN", "CLE", "PIT"],
     "AFC South": ["HOU", "IND", "JAX", "TEN"], "AFC West": ["DEN", "KC", "LAC", "LV"],
@@ -350,17 +355,30 @@ TEAMS = [t for ts in DIVS.values() for t in ts]
 tix = {t: i for i, t in enumerate(TEAMS)}
 S = 20000
 rng = np.random.default_rng(20260723)
-H = np.zeros((len(sched), 32)); A = np.zeros((len(sched), 32))
-pvec = np.zeros(len(sched)); fixed = np.full(len(sched), np.nan)
+c_elo = float(CLF.coef_[0][0])
+z_base = CLF.decision_function(Xs) - c_elo * Xs[:, 0]    # blend minus the elo term
+L400 = np.log(10.0) / 400.0
+Rm = np.tile(np.array([R.get(t, 1500.0) for t in TEAMS]), (S, 1))
+W = np.zeros((S, 32))
+pmc = np.zeros(len(sched))
 for i, s in enumerate(sched):
-    H[i, tix[s["home"]]] = 1; A[i, tix[s["away"]]] = 1
-    pvec[i] = s["ph"]
+    h, a = tix[s["home"]], tix[s["away"]]
+    hfa_pts = 0.0 if s["neutral"] else bp["hfa"]
+    dr = Rm[:, h] + hfa_pts - Rm[:, a]
+    lgt = L400 * dr
+    p = 1.0 / (1.0 + np.exp(-(z_base[i] + c_elo * lgt)))
+    pmc[i] = p.mean()
     if s["hs"] is not None:                      # played: condition on the result
-        fixed[i] = 1.0 if s["hs"] > s["as"] else (0.0 if s["hs"] < s["as"] else 0.5)
-O = (rng.random((S, len(sched))) < pvec).astype(float)
-mask = ~np.isnan(fixed)
-O[:, mask] = fixed[mask]
-W = O @ H + (1 - O) @ A                          # sims x 32 win totals
+        o = np.full(S, 1.0 if s["hs"] > s["as"] else (0.0 if s["hs"] < s["as"] else 0.5))
+    else:
+        o = (rng.random(S) < p).astype(float)
+    pe_s = 1.0 / (1.0 + np.exp(-lgt))            # elo-expected, for the rating update
+    d_ = bp["k"] * (o - pe_s)
+    Rm[:, h] += d_; Rm[:, a] -= d_
+    W[:, h] += o; W[:, a] += 1.0 - o
+for s, pm in zip(sched, pmc):
+    s["pmc"] = round(float(pm), 3)
+assert abs(sched[0]["pmc"] - sched[0]["ph"]) < 0.005, "week-1 MC must match the model prob"
 jit = rng.random((S, 32)) * 1e-3                 # random tiebreaks
 Wj = W + jit
 div_win = np.zeros(32); po = np.zeros(32)
@@ -400,7 +418,7 @@ print(f"[{time.time()-T0:.0f}s] sims done; top proj:",
 payload = json.load(open("site/data/nfl.json"))
 payload["status"] = "season"
 payload["schedule"] = [{k: s[k] for k in ("w", "d", "t", "home", "away", "neutral",
-                                          "ph", "hs", "as")} for s in sched]
+                                          "ph", "pmc", "hs", "as")} for s in sched]
 payload["proj"] = proj
 QBN = {t: v["name"] for t, v in json.load(open("data/nfl_qb2026.json"))["qb"].items()}
 for t, tm in payload["teams"].items():
