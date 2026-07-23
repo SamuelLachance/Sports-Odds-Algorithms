@@ -1,0 +1,755 @@
+{
+ "generated": "2026-07-23T19:07:28.296781Z",
+ "status": "preseason",
+ "season": 2026,
+ "model_card": {
+  "test_log_loss": 0.61947,
+  "holdout": "2016-2025, n=2,761, scored once",
+  "accuracy": 64.6,
+  "acc_home": 55.0,
+  "acc_elo": 63.6,
+  "acc_close": 66.6,
+  "close_log_loss": 0.60913,
+  "n_features": 14,
+  "n_tests": 47,
+  "training": "walk-forward yearly refit, 3-season recency half-life",
+  "calibration": [
+   {
+    "bucket": "50-60%",
+    "hit": 51.1,
+    "n": 798
+   },
+   {
+    "bucket": "60-70%",
+    "hit": 59.9,
+    "n": 764
+   },
+   {
+    "bucket": "70-80%",
+    "hit": 71.6,
+    "n": 656
+   },
+   {
+    "bucket": "80%+",
+    "hit": 82.9,
+    "n": 533
+   }
+  ]
+ },
+ "power": [
+  {
+   "code": "SEA",
+   "name": "Seahawks",
+   "elo": 1660.9,
+   "off_pass": 4.4,
+   "off_run": 1.5,
+   "def_pass": 8.2,
+   "def_run": 1.7,
+   "rank": 1
+  },
+  {
+   "code": "DEN",
+   "name": "Broncos",
+   "elo": 1607.4,
+   "off_pass": 0.8,
+   "off_run": 0.8,
+   "def_pass": 6.3,
+   "def_run": -2.5,
+   "rank": 2
+  },
+  {
+   "code": "NE",
+   "name": "Patriots",
+   "elo": 1603.7,
+   "off_pass": 1.0,
+   "off_run": 3.2,
+   "def_pass": 8.9,
+   "def_run": 0.3,
+   "rank": 3
+  },
+  {
+   "code": "HOU",
+   "name": "Texans",
+   "elo": 1596.1,
+   "off_pass": -2.4,
+   "off_run": -0.8,
+   "def_pass": 10.2,
+   "def_run": 2.2,
+   "rank": 4
+  },
+  {
+   "code": "BUF",
+   "name": "Bills",
+   "elo": 1587.3,
+   "off_pass": 6.7,
+   "off_run": 6.4,
+   "def_pass": 3.6,
+   "def_run": -4.2,
+   "rank": 5
+  },
+  {
+   "code": "LA",
+   "name": "Rams",
+   "elo": 1584.2,
+   "off_pass": 9.9,
+   "off_run": 4.1,
+   "def_pass": -0.7,
+   "def_run": -0.9,
+   "rank": 6
+  },
+  {
+   "code": "SF",
+   "name": "49ers",
+   "elo": 1566.6,
+   "off_pass": 3.2,
+   "off_run": 1.4,
+   "def_pass": -4.6,
+   "def_run": -4.1,
+   "rank": 7
+  },
+  {
+   "code": "PHI",
+   "name": "Eagles",
+   "elo": 1559.0,
+   "off_pass": 0.4,
+   "off_run": 2.5,
+   "def_pass": 4.8,
+   "def_run": -0.6,
+   "rank": 8
+  },
+  {
+   "code": "JAX",
+   "name": "Jaguars",
+   "elo": 1555.6,
+   "off_pass": 5.0,
+   "off_run": 0.6,
+   "def_pass": 6.4,
+   "def_run": -1.7,
+   "rank": 9
+  },
+  {
+   "code": "MIN",
+   "name": "Vikings",
+   "elo": 1548.4,
+   "off_pass": -7.8,
+   "off_run": 2.4,
+   "def_pass": 7.6,
+   "def_run": 1.9,
+   "rank": 10
+  },
+  {
+   "code": "DET",
+   "name": "Lions",
+   "elo": 1546.7,
+   "off_pass": 6.3,
+   "off_run": -1.1,
+   "def_pass": 0.3,
+   "def_run": -3.5,
+   "rank": 11
+  },
+  {
+   "code": "LAC",
+   "name": "Chargers",
+   "elo": 1539.1,
+   "off_pass": -6.6,
+   "off_run": 2.2,
+   "def_pass": 3.7,
+   "def_run": 1.7,
+   "rank": 12
+  },
+  {
+   "code": "CHI",
+   "name": "Bears",
+   "elo": 1533.6,
+   "off_pass": 4.4,
+   "off_run": 3.6,
+   "def_pass": -4.2,
+   "def_run": -2.6,
+   "rank": 13
+  },
+  {
+   "code": "PIT",
+   "name": "Steelers",
+   "elo": 1524.7,
+   "off_pass": -3.1,
+   "off_run": 1.8,
+   "def_pass": -1.2,
+   "def_run": -2.3,
+   "rank": 14
+  },
+  {
+   "code": "BAL",
+   "name": "Ravens",
+   "elo": 1516.1,
+   "off_pass": -0.3,
+   "off_run": 7.6,
+   "def_pass": -3.4,
+   "def_run": 1.9,
+   "rank": 15
+  },
+  {
+   "code": "GB",
+   "name": "Packers",
+   "elo": 1513.5,
+   "off_pass": 8.3,
+   "off_run": 0.5,
+   "def_pass": -5.6,
+   "def_run": -2.1,
+   "rank": 16
+  },
+  {
+   "code": "ATL",
+   "name": "Falcons",
+   "elo": 1490.5,
+   "off_pass": 0.3,
+   "off_run": 0.2,
+   "def_pass": 1.3,
+   "def_run": -2.5,
+   "rank": 17
+  },
+  {
+   "code": "DAL",
+   "name": "Cowboys",
+   "elo": 1471.7,
+   "off_pass": 5.6,
+   "off_run": 2.0,
+   "def_pass": -9.7,
+   "def_run": -5.2,
+   "rank": 18
+  },
+  {
+   "code": "MIA",
+   "name": "Dolphins",
+   "elo": 1467.6,
+   "off_pass": -0.8,
+   "off_run": 0.2,
+   "def_pass": -4.0,
+   "def_run": -4.0,
+   "rank": 19
+  },
+  {
+   "code": "TB",
+   "name": "Buccaneers",
+   "elo": 1465.6,
+   "off_pass": -1.1,
+   "off_run": 2.3,
+   "def_pass": -4.5,
+   "def_run": 0.4,
+   "rank": 20
+  },
+  {
+   "code": "KC",
+   "name": "Chiefs",
+   "elo": 1465.4,
+   "off_pass": -4.0,
+   "off_run": 1.2,
+   "def_pass": 0.3,
+   "def_run": 1.1,
+   "rank": 21
+  },
+  {
+   "code": "IND",
+   "name": "Colts",
+   "elo": 1462.6,
+   "off_pass": -1.5,
+   "off_run": 2.7,
+   "def_pass": -3.9,
+   "def_run": -0.2,
+   "rank": 22
+  },
+  {
+   "code": "CIN",
+   "name": "Bengals",
+   "elo": 1456.0,
+   "off_pass": 1.1,
+   "off_run": 3.3,
+   "def_pass": -3.2,
+   "def_run": -4.4,
+   "rank": 23
+  },
+  {
+   "code": "WAS",
+   "name": "Commanders",
+   "elo": 1455.5,
+   "off_pass": -0.7,
+   "off_run": 2.2,
+   "def_pass": -7.5,
+   "def_run": -6.5,
+   "rank": 24
+  },
+  {
+   "code": "CAR",
+   "name": "Panthers",
+   "elo": 1449.1,
+   "off_pass": -2.3,
+   "off_run": 0.7,
+   "def_pass": -3.8,
+   "def_run": -3.9,
+   "rank": 25
+  },
+  {
+   "code": "NO",
+   "name": "Saints",
+   "elo": 1442.3,
+   "off_pass": -1.6,
+   "off_run": -1.2,
+   "def_pass": 5.2,
+   "def_run": 1.3,
+   "rank": 26
+  },
+  {
+   "code": "CLE",
+   "name": "Browns",
+   "elo": 1427.8,
+   "off_pass": -12.5,
+   "off_run": 0.3,
+   "def_pass": 7.9,
+   "def_run": -2.8,
+   "rank": 27
+  },
+  {
+   "code": "NYG",
+   "name": "Giants",
+   "elo": 1404.0,
+   "off_pass": 0.2,
+   "off_run": 4.5,
+   "def_pass": 0.5,
+   "def_run": -6.2,
+   "rank": 28
+  },
+  {
+   "code": "NYJ",
+   "name": "Jets",
+   "elo": 1384.2,
+   "off_pass": -10.1,
+   "off_run": -0.4,
+   "def_pass": -13.4,
+   "def_run": -3.1,
+   "rank": 29
+  },
+  {
+   "code": "ARI",
+   "name": "Cardinals",
+   "elo": 1376.1,
+   "off_pass": -0.6,
+   "off_run": 0.5,
+   "def_pass": -9.5,
+   "def_run": -3.6,
+   "rank": 30
+  },
+  {
+   "code": "TEN",
+   "name": "Titans",
+   "elo": 1371.7,
+   "off_pass": -9.0,
+   "off_run": 1.0,
+   "def_pass": -7.2,
+   "def_run": -1.6,
+   "rank": 31
+  },
+  {
+   "code": "LV",
+   "name": "Raiders",
+   "elo": 1366.6,
+   "off_pass": -9.5,
+   "off_run": -6.6,
+   "def_pass": -1.0,
+   "def_run": -1.2,
+   "rank": 32
+  }
+ ],
+ "boards": {
+  "QB": [
+   {
+    "player": "Jordan Love",
+    "pos": "QB",
+    "z": 1.37,
+    "cons": 0.5,
+    "n": 429
+   },
+   {
+    "player": "Josh Allen",
+    "pos": "QB",
+    "z": 1.34,
+    "cons": 0.49,
+    "n": 455
+   },
+   {
+    "player": "Matthew Stafford",
+    "pos": "QB",
+    "z": 1.22,
+    "cons": 0.37,
+    "n": 458
+   },
+   {
+    "player": "Jared Goff",
+    "pos": "QB",
+    "z": 0.97,
+    "cons": 0.11,
+    "n": 446
+   },
+   {
+    "player": "Brock Purdy",
+    "pos": "QB",
+    "z": 0.99,
+    "cons": 0.1,
+    "n": 408
+   },
+   {
+    "player": "Patrick Mahomes",
+    "pos": "QB",
+    "z": 0.91,
+    "cons": 0.06,
+    "n": 446
+   },
+   {
+    "player": "Drake Maye",
+    "pos": "QB",
+    "z": 0.85,
+    "cons": -0.01,
+    "n": 437
+   },
+   {
+    "player": "Dak Prescott",
+    "pos": "QB",
+    "z": 0.8,
+    "cons": -0.06,
+    "n": 442
+   },
+   {
+    "player": "Joe Burrow",
+    "pos": "QB",
+    "z": 0.8,
+    "cons": -0.09,
+    "n": 397
+   },
+   {
+    "player": "Lamar Jackson",
+    "pos": "QB",
+    "z": 0.76,
+    "cons": -0.12,
+    "n": 417
+   },
+   {
+    "player": "Bo Nix",
+    "pos": "QB",
+    "z": 0.72,
+    "cons": -0.13,
+    "n": 448
+   },
+   {
+    "player": "Trevor Lawrence",
+    "pos": "QB",
+    "z": 0.64,
+    "cons": -0.21,
+    "n": 447
+   }
+  ],
+  "RB": [
+   {
+    "player": "Derrick Henry",
+    "pos": "RB",
+    "z": 0.55,
+    "cons": -0.63,
+    "n": 383
+   },
+   {
+    "player": "Jahmyr Gibbs",
+    "pos": "RB",
+    "z": 0.48,
+    "cons": -0.73,
+    "n": 361
+   },
+   {
+    "player": "Christian McCaffrey",
+    "pos": "RB",
+    "z": 0.43,
+    "cons": -0.74,
+    "n": 391
+   },
+   {
+    "player": "James Cook",
+    "pos": "RB",
+    "z": 0.32,
+    "cons": -0.87,
+    "n": 380
+   },
+   {
+    "player": "Kyren Williams",
+    "pos": "RB",
+    "z": 0.32,
+    "cons": -0.87,
+    "n": 376
+   },
+   {
+    "player": "Bijan Robinson",
+    "pos": "RB",
+    "z": 0.27,
+    "cons": -0.92,
+    "n": 379
+   },
+   {
+    "player": "Jonathan Taylor",
+    "pos": "RB",
+    "z": 0.24,
+    "cons": -0.94,
+    "n": 383
+   },
+   {
+    "player": "De'Von Achane",
+    "pos": "RB",
+    "z": 0.25,
+    "cons": -0.99,
+    "n": 337
+   },
+   {
+    "player": "Kareem Hunt",
+    "pos": "RB",
+    "z": 0.23,
+    "cons": -1.04,
+    "n": 311
+   },
+   {
+    "player": "Kenneth Walker III",
+    "pos": "RB",
+    "z": 0.11,
+    "cons": -1.11,
+    "n": 352
+   },
+   {
+    "player": "James Conner",
+    "pos": "RB",
+    "z": 0.21,
+    "cons": -1.12,
+    "n": 266
+   },
+   {
+    "player": "David Montgomery",
+    "pos": "RB",
+    "z": 0.13,
+    "cons": -1.13,
+    "n": 321
+   }
+  ],
+  "WR": [
+   {
+    "player": "Puka Nacua",
+    "pos": "WR",
+    "z": -0.0,
+    "cons": -0.4,
+    "n": 272
+   },
+   {
+    "player": "Alec Pierce",
+    "pos": "WR",
+    "z": -0.11,
+    "cons": -0.58,
+    "n": 153
+   },
+   {
+    "player": "George Pickens",
+    "pos": "WR",
+    "z": -0.16,
+    "cons": -0.59,
+    "n": 217
+   },
+   {
+    "player": "Amon-Ra St. Brown",
+    "pos": "WR",
+    "z": -0.24,
+    "cons": -0.63,
+    "n": 278
+   },
+   {
+    "player": "DeVonta Smith",
+    "pos": "WR",
+    "z": -0.22,
+    "cons": -0.64,
+    "n": 229
+   },
+   {
+    "player": "Stefon Diggs",
+    "pos": "WR",
+    "z": -0.25,
+    "cons": -0.66,
+    "n": 240
+   },
+   {
+    "player": "Jaxon Smith-Njigba",
+    "pos": "WR",
+    "z": -0.26,
+    "cons": -0.67,
+    "n": 242
+   },
+   {
+    "player": "Tee Higgins",
+    "pos": "WR",
+    "z": -0.26,
+    "cons": -0.69,
+    "n": 210
+   },
+   {
+    "player": "Jameson Williams",
+    "pos": "WR",
+    "z": -0.25,
+    "cons": -0.71,
+    "n": 170
+   },
+   {
+    "player": "Terry McLaurin",
+    "pos": "WR",
+    "z": -0.28,
+    "cons": -0.71,
+    "n": 211
+   },
+   {
+    "player": "Romeo Doubs",
+    "pos": "WR",
+    "z": -0.27,
+    "cons": -0.73,
+    "n": 174
+   },
+   {
+    "player": "A.J. Brown",
+    "pos": "WR",
+    "z": -0.33,
+    "cons": -0.74,
+    "n": 247
+   }
+  ],
+  "TE": [
+   {
+    "player": "George Kittle",
+    "pos": "TE",
+    "z": 0.25,
+    "cons": -0.25,
+    "n": 193
+   },
+   {
+    "player": "Tucker Kraft",
+    "pos": "TE",
+    "z": 0.07,
+    "cons": -0.51,
+    "n": 108
+   },
+   {
+    "player": "Sam LaPorta",
+    "pos": "TE",
+    "z": -0.06,
+    "cons": -0.6,
+    "n": 147
+   },
+   {
+    "player": "Dallas Goedert",
+    "pos": "TE",
+    "z": -0.14,
+    "cons": -0.65,
+    "n": 187
+   },
+   {
+    "player": "Travis Kelce",
+    "pos": "TE",
+    "z": -0.21,
+    "cons": -0.67,
+    "n": 255
+   },
+   {
+    "player": "Dalton Kincaid",
+    "pos": "TE",
+    "z": -0.13,
+    "cons": -0.68,
+    "n": 139
+   },
+   {
+    "player": "Trey McBride",
+    "pos": "TE",
+    "z": -0.2,
+    "cons": -0.68,
+    "n": 238
+   },
+   {
+    "player": "AJ Barner",
+    "pos": "TE",
+    "z": -0.17,
+    "cons": -0.76,
+    "n": 100
+   },
+   {
+    "player": "Hunter Henry",
+    "pos": "TE",
+    "z": -0.27,
+    "cons": -0.78,
+    "n": 194
+   },
+   {
+    "player": "Mark Andrews",
+    "pos": "TE",
+    "z": -0.31,
+    "cons": -0.81,
+    "n": 193
+   },
+   {
+    "player": "Darren Waller",
+    "pos": "TE",
+    "z": -0.24,
+    "cons": -0.82,
+    "n": 113
+   },
+   {
+    "player": "Colston Loveland",
+    "pos": "TE",
+    "z": -0.23,
+    "cons": -0.82,
+    "n": 98
+   }
+  ]
+ },
+ "mvp": [
+  {
+   "player": "Aaron Rodgers",
+   "pos": "QB",
+   "pts": 6.67,
+   "n_abs": 36
+  },
+  {
+   "player": "Lamar Jackson",
+   "pos": "QB",
+   "pts": 6.61,
+   "n_abs": 18
+  },
+  {
+   "player": "Tua Tagovailoa",
+   "pos": "QB",
+   "pts": 6.5,
+   "n_abs": 19
+  },
+  {
+   "player": "Patrick Mahomes",
+   "pos": "QB",
+   "pts": 6.39,
+   "n_abs": 11
+  },
+  {
+   "player": "Derek Carr",
+   "pos": "QB",
+   "pts": 6.33,
+   "n_abs": 29
+  },
+  {
+   "player": "Joe Burrow",
+   "pos": "QB",
+   "pts": 5.93,
+   "n_abs": 23
+  }
+ ],
+ "pos_values": {
+  "QB": 0.02532,
+  "RB": 0.0183,
+  "WR": 0.01561,
+  "TE": 0.00335,
+  "OL": 0.00236,
+  "DL": 0.0107,
+  "LB": 0.01962,
+  "DB": 0.01145
+ }
+}

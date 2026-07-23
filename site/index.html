@@ -325,11 +325,12 @@ function applyLive(){
 async function boot(){
   try{
     const bust = "?t=" + Math.floor(Date.now()/60000);   // fresh each minute; beats stale caches
-    const [b,db] = await Promise.all([
+    const [b,db,nfl] = await Promise.all([
       fetch("./data/board.json"+bust, {cache:"no-cache"}).then(r=>r.json()),
       fetch("./data/db.json"+bust, {cache:"no-cache"}).then(r=>r.json()),
+      fetch("./data/nfl.json"+bust, {cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null),
     ]);
-    state.board=b; state.db=db;
+    state.board=b; state.db=db; state.nfl=nfl;
     const a=b.accuracy;
     $("#acc").innerHTML=`<b>${a.log_loss.toFixed(3)}</b> log loss<br>coin flip ${a.coinflip.toFixed(3)}`;
     route();
@@ -400,12 +401,16 @@ function gcard(g){
   </a>`;
 }
 function board(){
+  if(state.league==="nfl"&&state.nfl) return nflPage();
   const b=state.board, lg=b.leagues.find(l=>l.code===state.league), gen=b.generated;
   const R={today:[gen,gen],tomorrow:[addDays(gen,1),addDays(gen,1)],week:[gen,addDays(gen,6)],month:[gen,addDays(gen,60)]}[state.range];
   const games=(lg.games||[]).filter(g=>g.date>=R[0]&&g.date<=R[1]);
-  const rail=b.leagues.map(l=>l.active
-    ?`<button class="lg ${l.code===state.league?"on":""}" data-lg="${l.code}"><span>${l.name}</span><span class="n">${l.n_games}</span></button>`
-    :`<button class="lg" disabled><span>${l.name}</span><span class="soon">soon</span></button>`).join("");
+  const rail=b.leagues.map(l=>{
+    if(l.active)
+      return `<button class="lg ${l.code===state.league?"on":""}" data-lg="${l.code}"><span>${l.name}</span><span class="n">${l.n_games}</span></button>`;
+    if(l.code==="nfl"&&state.nfl)
+      return `<button class="lg ${state.league==="nfl"?"on":""}" data-lg="nfl"><span>NFL</span><span class="n">2026</span></button>`;
+    return `<button class="lg" disabled><span>${l.name}</span><span class="soon">soon</span></button>`;}).join("");
   const filts=[["today","Today"],["tomorrow","Tomorrow"],["week","Week"],["month","Month"]]
     .map(([k,t])=>`<button class="filt ${k===state.range?"on":""}" data-r="${k}">${t}</button>`).join("");
   let body;
@@ -419,6 +424,57 @@ function board(){
   $("#view").querySelectorAll("[data-lg]").forEach(x=>x.onclick=()=>{state.league=x.dataset.lg;board();});
   $("#view").querySelectorAll("[data-r]").forEach(x=>x.onclick=()=>{state.range=x.dataset.r;board();});
   applyLive();
+}
+
+/* ---------- NFL (preseason) ---------- */
+function nflPage(){
+  const n=state.nfl, mc=n.model_card, b=state.board;
+  const rail=b.leagues.map(l=>{
+    if(l.active)
+      return `<button class="lg" data-lg="${l.code}"><span>${l.name}</span><span class="n">${l.n_games}</span></button>`;
+    if(l.code==="nfl")
+      return `<button class="lg on" data-lg="nfl"><span>NFL</span><span class="n">2026</span></button>`;
+    return `<button class="lg" disabled><span>${l.name}</span><span class="soon">soon</span></button>`;}).join("");
+  const pow=n.power.map(t=>`<tr>
+    <td><span class="num">${t.rank}</span></td>
+    <td class="a"><span class="ab" style="color:var(--accent)">${t.code}</span> <span class="sub">${t.name}</span></td>
+    <td><span class="num">${t.elo.toFixed(0)}</span></td>
+    <td><span class="num ${t.off_pass>=0?"pos":"neg"}">${t.off_pass>=0?"+":""}${t.off_pass.toFixed(1)}</span></td>
+    <td><span class="num ${t.off_run>=0?"pos":"neg"}">${t.off_run>=0?"+":""}${t.off_run.toFixed(1)}</span></td>
+    <td><span class="num ${t.def_pass>=0?"pos":"neg"}">${t.def_pass>=0?"+":""}${t.def_pass.toFixed(1)}</span></td>
+    <td><span class="num ${t.def_run>=0?"pos":"neg"}">${t.def_run>=0?"+":""}${t.def_run.toFixed(1)}</span></td></tr>`).join("");
+  const bd=pos=>n.boards[pos].map((p,i)=>`<tr><td><span class="num">${i+1}</span></td>
+    <td class="a">${p.player}</td><td><span class="num">${p.z>=0?"+":""}${p.z.toFixed(2)}</span></td>
+    <td><span class="num">${p.n.toLocaleString()}</span></td></tr>`).join("");
+  const btbl=(t,pos)=>`<div class="panel"><h3>${t}</h3><div class="twrap"><table>
+    <thead><tr><th></th><th>Player</th><th>Value z</th><th>Plays</th></tr></thead>
+    <tbody>${bd(pos)}</tbody></table></div></div>`;
+  const mvp=n.mvp.map((m,i)=>`<tr><td><span class="num">${i+1}</span></td><td class="a">${m.player}</td>
+    <td><span class="num pos">+${m.pts.toFixed(2)}</span></td><td><span class="num">${m.n_abs}</span></td></tr>`).join("");
+  const cal=mc.calibration.map(c=>`<tr><td class="a">${c.bucket}</td>
+    <td><span class="num">${c.hit.toFixed(1)}%</span></td><td><span class="num">${c.n}</span></td></tr>`).join("");
+  $("#view").innerHTML=`<div class="controls"><div class="rail">${rail}</div></div>
+    <div class="eyebrow">NFL &middot; entering the ${n.season} season</div>
+    <h1 class="pt">NFL GLASSBOX <span class="sub" style="font-weight:400">preseason &middot; weekly picks begin September</span></h1>
+    <div class="sub" style="margin-bottom:14px">Market-blind model &middot; <b>${(mc.accuracy).toFixed(1)}%</b> accurate on a locked
+      ${mc.holdout} holdout &middot; log loss <b>${mc.test_log_loss.toFixed(3)}</b> (closing line ${mc.close_log_loss.toFixed(3)})
+      &middot; ${mc.n_features} features &middot; ${mc.n_tests} documented tests &middot; ${mc.training}.</div>
+    <div class="subh">2026 preseason power ratings</div>
+    <div class="sub" style="margin-bottom:8px">Elo regressed to the season prior. Unit values = EPA/play vs league, x100 (+ = good), from the pass/run split ratings.</div>
+    <div class="twrap"><table><thead><tr><th></th><th>Team</th><th>Elo</th>
+      <th>Pass off</th><th>Run off</th><th>Pass def</th><th>Run def</th></tr></thead><tbody>${pow}</tbody></table></div>
+    <div class="grid" style="margin-top:16px">${btbl("Top QBs","QB")}${btbl("Top RBs","RB")}${btbl("Top WRs","WR")}${btbl("Top TEs","TE")}</div>
+    <div class="grid" style="margin-top:16px">
+      <div class="panel"><h3>MVP impact (with-vs-without, pts/game)</h3><div class="twrap"><table>
+        <thead><tr><th></th><th>Player</th><th>Cost when out</th><th>Absences</th></tr></thead>
+        <tbody>${mvp}</tbody></table></div>
+        <div class="sub" style="margin-top:8px">Measured team drop-off when the player misses games, opponent-adjusted. Elite QBs land inside the market's 4.5&ndash;7.0 point range.</div></div>
+      <div class="panel"><h3>Calibration (locked holdout)</h3><div class="twrap"><table>
+        <thead><tr><th>Model says</th><th>Actually wins</th><th>Games</th></tr></thead>
+        <tbody>${cal}</tbody></table></div>
+        <div class="sub" style="margin-top:8px">When this model says 75%, it means 75%. Accuracy ladder: home-always ${mc.acc_home}% &middot; Elo ${mc.acc_elo}% &middot; <b>GlassBox ${mc.accuracy}%</b> &middot; closing line ${mc.acc_close}%.</div></div>
+    </div>`;
+  $("#view").querySelectorAll("[data-lg]").forEach(x=>x.onclick=()=>{state.league=x.dataset.lg;board();});
 }
 
 /* ---------- GAME PAGE ---------- */
