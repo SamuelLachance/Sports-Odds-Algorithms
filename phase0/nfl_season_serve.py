@@ -323,8 +323,23 @@ for i, s in enumerate(sched):
         (crate(offR[h], LGR) - crate(dfaR[h], LGR)) - (crate(offR[a], LGR) - crate(dfaR[a], LGR)),
     ]
 probs = CLF.predict_proba(Xs)[:, 1]
-for s, p_ in zip(sched, probs):
+co = CLF.coef_[0]
+for i, (s, p_) in enumerate(zip(sched, probs)):
     s["ph"] = round(float(p_), 3)
+    # grouped blend contributions, converted logit -> home prob points for display
+    # (pass/run/EPA grouped because their coefs are collinear rotations; the sum is
+    # the interpretable quantity)
+    x = Xs[i]
+    scale = float(p_ * (1 - p_)) * 100.0
+    ct = {
+        "elo": co[0] * x[0], "qb": co[1] * x[1],
+        "units": co[2] * x[2] + co[12] * x[12] + co[13] * x[13],
+        "sched": co[3] * x[3] + co[5] * x[5],
+        "hfa": co[4] * x[4], "luck": co[6] * x[6], "ts": co[7] * x[7],
+        "abs": co[8] * x[8] + co[9] * x[9] + co[10] * x[10],
+        "roster": co[11] * x[11],
+    }
+    s["ct"] = {k: round(v * scale, 1) for k, v in ct.items()}
 print(f"[{time.time()-T0:.0f}s] 2026 probs: mean home {probs.mean():.3f} "
       f"min {probs.min():.3f} max {probs.max():.3f}", flush=True)
 assert 0.50 < probs.mean() < 0.62 and probs.min() > 0.05 and probs.max() < 0.95
@@ -418,7 +433,8 @@ print(f"[{time.time()-T0:.0f}s] sims done; top proj:",
 payload = json.load(open("site/data/nfl.json"))
 payload["status"] = "season"
 payload["schedule"] = [{k: s[k] for k in ("w", "d", "t", "home", "away", "neutral",
-                                          "ph", "pmc", "hs", "as")} for s in sched]
+                                          "ph", "pmc", "hs", "as", "ct",
+                                          "hrest", "arest")} for s in sched]
 payload["proj"] = proj
 QBN = {t: v["name"] for t, v in json.load(open("data/nfl_qb2026.json"))["qb"].items()}
 for t, tm in payload["teams"].items():
