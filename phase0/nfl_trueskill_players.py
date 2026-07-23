@@ -41,6 +41,12 @@ SEASON_WIDEN2 = 1.5 ** 2
 SIG2_FLOOR = 0.5 ** 2
 DOWN_MULT = 1.25                 # money downs (3rd/4th) count more
 LATE_MULT = 1.5                  # 4th quarter / OT within one score counts more
+PLAYOFF_MULT = 1.5               # postseason snaps count more
+DEAD_MULT = 0.5                  # both teams eliminated (can't reach 7 wins) counts half
+OPP_K = 0.3                      # your update scales with the OPPOSING unit's strength
+                                 # vs the RUNNING league mean (anchoring to the fixed
+                                 # prior inflates ratings; league-anchored is clean and
+                                 # generalized better) — the engine's biggest tuning win
 MIN_SNAPS_SHOW = 50
 
 POSMAP = {
@@ -86,6 +92,33 @@ try:
 except FileNotFoundError:
     print("no snap context; every play weighted 1.0", flush=True)
 
+# ---- game importance per gid: playoffs boosted, dead games (both teams unable
+# to reach 7 wins on PRE-game records) halved ----
+gmult_of = {}
+_wins = defaultdict(float); _played = defaultdict(int); _prev = None
+_rows = [r for r in csv.DictReader(open("data/nfl_games.csv"))
+         if r["home_score"] != "" and int(r["season"]) >= 2016]
+_rows.sort(key=lambda r: r["gameday"])
+for r in _rows:
+    if _prev is not None and r["season"] != _prev:
+        _wins.clear(); _played.clear()
+    _prev = r["season"]
+    h, a = r["home_team"], r["away_team"]
+    if r["game_type"] != "REG":
+        gmult_of[r["game_id"]] = PLAYOFF_MULT
+    else:
+        sched_len = 16 if int(r["season"]) < 2021 else 17
+        dead_h = _wins[h] + (sched_len - _played[h]) < 7
+        dead_a = _wins[a] + (sched_len - _played[a]) < 7
+        gmult_of[r["game_id"]] = DEAD_MULT if (dead_h and dead_a) else 1.0
+        hs, as_ = int(r["home_score"]), int(r["away_score"])
+        yv = 1.0 if hs > as_ else (0.0 if hs < as_ else 0.5)
+        _wins[h] += yv; _wins[a] += 1.0 - yv
+        _played[h] += 1; _played[a] += 1
+print(f"[{time.time()-T0:.0f}s] game importance: "
+      f"{sum(1 for v in gmult_of.values() if v == PLAYOFF_MULT)} playoff, "
+      f"{sum(1 for v in gmult_of.values() if v == DEAD_MULT)} dead games", flush=True)
+
 # ---- load plays, strictly chronological ----
 plays = []
 with open("data/nfl_rapm_plays.csv", encoding="utf-8") as fh:
@@ -100,8 +133,13 @@ sig2 = {}
 snaps = defaultdict(int)
 last_week = {}
 cur_season = None
+cur_gid = None
+lg_mu = MU0
 n_upd = 0
 for gid, pid_, off, dfn, epa in plays:
+    if gid != cur_gid:                       # refresh the league anchor per game
+        lg_mu = (sum(mu.values()) / len(mu)) if mu else MU0
+        cur_gid = gid
     season, week = gid[:4], gid[5:7]
     if cur_season is not None and season != cur_season:
         for p in mu:
@@ -120,7 +158,8 @@ for gid, pid_, off, dfn, epa in plays:
             sig2[p] = min(sig2[p] + TAU2, SIG0_2)
         last_week[p] = wk
     # context weight: smooth WP leverage (garbage time fades naturally),
-    # money downs and late-and-close boosted — DEV-tuned vs the ratings-only model
+    # money downs, late-and-close, and GAME IMPORTANCE — DEV-tuned vs the
+    # ratings-only model
     c_ = ctx_of.get((gid, pid_))
     if c_ is None:
         wgt = 1.0
@@ -131,21 +170,27 @@ for gid, pid_, off, dfn, epa in plays:
             wgt *= DOWN_MULT
         if qtr >= 4 and adiff <= 8:
             wgt *= LATE_MULT
+    wgt *= gmult_of.get(gid, 1.0)
+    sum_O = sum(mu[p] for p in O); sum_D = sum(mu[p] for p in D)
     c2 = (len(O) + len(D)) * BETA * BETA + sum(sig2[p] for p in O) + sum(sig2[p] for p in D)
     c = sqrt(c2)
-    t = (sum(mu[p] for p in O) - sum(mu[p] for p in D)) / c
+    t = (sum_O - sum_D) / c
+    # beating GREAT opponents matters more: each side's update scales with the
+    # opposing unit's mean rating (the biggest DEV win of the engine, -0.0124)
+    w_O = wgt * min(2.0, max(0.3, 1.0 + OPP_K * (sum_D / len(D) - lg_mu)))
+    w_D = wgt * min(2.0, max(0.3, 1.0 + OPP_K * (sum_O / len(O) - lg_mu)))
     if epa > 0:
-        win, lose, tt = O, D, t
+        win, lose, tt, w_win_, w_lose_ = O, D, t, w_O, w_D
     else:
-        win, lose, tt = D, O, -t
+        win, lose, tt, w_win_, w_lose_ = D, O, -t, w_D, w_O
     v = v_win(tt)
     w = v * (v + tt)
     for p in win:
-        mu[p] += wgt * (sig2[p] / c) * v
-        sig2[p] = max(sig2[p] * (1.0 - wgt * (sig2[p] / c2) * w), SIG2_FLOOR)
+        mu[p] += w_win_ * (sig2[p] / c) * v
+        sig2[p] = max(sig2[p] * (1.0 - w_win_ * (sig2[p] / c2) * w), SIG2_FLOOR)
     for p in lose:
-        mu[p] -= wgt * (sig2[p] / c) * v
-        sig2[p] = max(sig2[p] * (1.0 - wgt * (sig2[p] / c2) * w), SIG2_FLOOR)
+        mu[p] -= w_lose_ * (sig2[p] / c) * v
+        sig2[p] = max(sig2[p] * (1.0 - w_lose_ * (sig2[p] / c2) * w), SIG2_FLOOR)
     for p in O + D:
         snaps[p] += 1
     n_upd += 1

@@ -76,19 +76,37 @@ seas16 = np.array([g["season"] for _, g in G16])
 y16 = np.array([g["y"] for _, g in G16])
 
 def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
-               widen2=1.5 ** 2):
-    """One engine walk -> per-game ts_diff feature (pre-game, leak-free)."""
+               widen2=1.5 ** 2, playoff_mult=1.0, dead_mult=1.0, opp_k=0.0,
+               opp_mode="league", flat_scale=1.0):
+    """One engine walk -> per-game ts_diff feature (pre-game, leak-free).
+
+    Game importance: playoff snaps x playoff_mult; 'useless' late-season games
+    (BOTH teams mathematically short of 7 wins, pre-game records) x dead_mult.
+    Opponent quality: each side's update also scales with the OPPOSING unit's
+    mean rating, factor 1 + opp_k*(opp_mean_mu - 25), clamped [0.3, 2].
+    """
     tau2 = tau * tau
     mu, s2, lastwk = {}, {}, {}
     share2 = {}
     f = np.zeros(len(G16))
     prev = None
+    wins = defaultdict(float); played = defaultdict(int)
     for j, (i, g) in enumerate(G16):
         if prev is not None and g["season"] != prev:
             for p in mu:
                 mu[p] = MU0 + (mu[p] - MU0) * (1.0 - season_shrink)
                 s2[p] = min(s2[p] + widen2, SIG0_2)
+            wins.clear(); played.clear()
         prev = g["season"]
+        # game-importance multiplier from PRE-game standings
+        sched_len = 16 if g["season"] < 2021 else 17
+        if g["type"] != "REG":
+            gmult = playoff_mult
+        else:
+            dead_h = wins[g["home"]] + (sched_len - played[g["home"]]) < 7
+            dead_a = wins[g["away"]] + (sched_len - played[g["away"]]) < 7
+            gmult = dead_mult if (dead_h and dead_a) else 1.0
+        lg_mu = (sum(mu.values()) / len(mu)) if (opp_k and opp_mode == "league" and mu) else MU0
         # 1. feature from pre-game state
         for side, team in ((1, g["home"]), (-1, g["away"])):
             tbl = snaps.get((g["gid"], team))
@@ -127,20 +145,35 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 wgt *= down_mult
             if qtr >= 4 and adiff <= 8:
                 wgt *= late_mult
+            wgt *= gmult
+            sum_O = sum(mu[p] for p in O); sum_D = sum(mu[p] for p in D)
             c2 = (len(O) + len(D)) * BETA * BETA + sum(s2[p] for p in O) + sum(s2[p] for p in D)
             c = sqrt(c2)
-            t = (sum(mu[p] for p in O) - sum(mu[p] for p in D)) / c
-            if epa > 0:
-                win, lose, tt = O, D, t
+            t = (sum_O - sum_D) / c
+            # opponent-quality amplifier: your update scales with THEIR strength
+            wgt *= flat_scale
+            if opp_k:
+                if opp_mode == "self":
+                    rel = sum_D / len(D) - sum_O / len(O)
+                    w_O = wgt * min(2.0, max(0.3, 1.0 + opp_k * rel))
+                    w_D = wgt * min(2.0, max(0.3, 1.0 - opp_k * rel))
+                else:
+                    anchor = MU0 if opp_mode == "abs" else lg_mu
+                    w_O = wgt * min(2.0, max(0.3, 1.0 + opp_k * (sum_D / len(D) - anchor)))
+                    w_D = wgt * min(2.0, max(0.3, 1.0 + opp_k * (sum_O / len(O) - anchor)))
             else:
-                win, lose, tt = D, O, -t
+                w_O = w_D = wgt
+            if epa > 0:
+                win, lose, tt, w_win_, w_lose_ = O, D, t, w_O, w_D
+            else:
+                win, lose, tt, w_win_, w_lose_ = D, O, -t, w_D, w_O
             v = v_win(tt); w = v * (v + tt)
             for p in win:
-                mu[p] += wgt * (s2[p] / c) * v
-                s2[p] = max(s2[p] * (1.0 - wgt * (s2[p] / c2) * w), SIG2_FLOOR)
+                mu[p] += w_win_ * (s2[p] / c) * v
+                s2[p] = max(s2[p] * (1.0 - w_win_ * (s2[p] / c2) * w), SIG2_FLOOR)
             for p in lose:
-                mu[p] -= wgt * (s2[p] / c) * v
-                s2[p] = max(s2[p] * (1.0 - wgt * (s2[p] / c2) * w), SIG2_FLOOR)
+                mu[p] -= w_lose_ * (s2[p] / c) * v
+                s2[p] = max(s2[p] * (1.0 - w_lose_ * (s2[p] / c2) * w), SIG2_FLOOR)
         # 3. snap-share walk
         for team in (g["home"], g["away"]):
             tbl = snaps.get((g["gid"], team))
@@ -151,6 +184,10 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 st = share2.setdefault(pid, [0.0, 0.0])
                 st[0] = snapP["decay"] * st[0] + pct
                 st[1] = snapP["decay"] * st[1] + 1.0
+        # 4. standings walk (for next games' dead-game detection)
+        if g["type"] == "REG":
+            wins[g["home"]] += g["y"]; wins[g["away"]] += 1.0 - g["y"]
+            played[g["home"]] += 1; played[g["away"]] += 1
     return f
 
 def wf_ll(f, lo, hi):
@@ -174,13 +211,12 @@ def trial(name, **kw):
     results[name] = (ll, kw)
     print(f"  {name:<44} {ll:.5f}  [{time.time()-T0:.0f}s]", flush=True)
 
-trial("baseline (old engine: tau .10, cutoff)", tau=0.10, use_lev=False, down_mult=1.0, late_mult=1.0)
-trial("leverage only", tau=0.10, use_lev=True, down_mult=1.0, late_mult=1.0)
-trial("full context (lev + 3rd/4th 1.25 + late 1.5)", tau=0.10, use_lev=True, down_mult=1.25, late_mult=1.5)
-trial("recency tau .30 + full context", tau=0.30, use_lev=True, down_mult=1.25, late_mult=1.5)
-trial("recency tau .50 + full context", tau=0.50, use_lev=True, down_mult=1.25, late_mult=1.5)
-trial("recency tau .30 + full ctx + shrink 1/2", tau=0.30, use_lev=True, down_mult=1.25, late_mult=1.5, season_shrink=0.5)
-trial("recency tau .30, context off", tau=0.30, use_lev=False, down_mult=1.0, late_mult=1.0)
+SHIP = dict(tau=0.30, use_lev=True, down_mult=1.25, late_mult=1.5)
+trial("shipped engine (tau .30 + snap context)", **SHIP)
+trial("flat update scale x1.3 (learning-rate diag)", **SHIP, flat_scale=1.3)
+trial("flat update scale x1.5", **SHIP, flat_scale=1.5)
+trial("+ opp vs LEAGUE mean k=0.3", **SHIP, opp_k=0.3, opp_mode="league")
+trial("+ ALL-league (playoffs 1.5, dead .5, opp .3)", **SHIP, playoff_mult=1.5, dead_mult=0.5, opp_k=0.3, opp_mode="league")
 
 best_name = min(results, key=lambda k: results[k][0])
 best_ll, best_kw = results[best_name]
@@ -204,5 +240,6 @@ json.dump({"dev": {k: round(v[0], 5) for k, v in results.items()},
            "winner": best_name, "winner_kw": {k: v for k, v in best_kw.items()},
            "test_ll": round(ll_test, 5), "elo_ll": round(ll_elo, 5),
            "test_n": int(te_mask.sum()), "acc": round(acc, 4)},
-          open("data/nfl_ratings_only.json", "w"), indent=1, default=float)
-print("\nwrote data/nfl_ratings_only.json")
+          open("data/nfl_ratings_only2.json", "w"), indent=1, default=float)
+print("\nwrote data/nfl_ratings_only2.json (game-importance + opponent-quality sweep;"
+      " TEST here is the side model's SECOND look — flagged)")

@@ -1,0 +1,22 @@
+{
+ "dev": {
+  "shipped engine (tau .30 + snap context)": 0.67249,
+  "flat update scale x1.3 (learning-rate diag)": 0.67311,
+  "flat update scale x1.5": 0.67358,
+  "+ opp vs LEAGUE mean k=0.3": 0.66743,
+  "+ ALL-league (playoffs 1.5, dead .5, opp .3)": 0.66748
+ },
+ "winner": "+ opp vs LEAGUE mean k=0.3",
+ "winner_kw": {
+  "tau": 0.3,
+  "use_lev": true,
+  "down_mult": 1.25,
+  "late_mult": 1.5,
+  "opp_k": 0.3,
+  "opp_mode": "league"
+ },
+ "test_ll": 0.6616,
+ "elo_ll": 0.63824,
+ "test_n": 1139,
+ "acc": 0.603
+}
