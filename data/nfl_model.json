@@ -1,0 +1,153 @@
+{
+ "model": "NFL GLASSBOX",
+ "adopted": "2026-07-23",
+ "features": [
+  "elo_logit",
+  "qb_pedigree",
+  "epa_net",
+  "early_kick",
+  "team_hfa",
+  "rest_diff",
+  "fumble_luck",
+  "ts_edge",
+  "ol_absence",
+  "def_absence",
+  "skill_absence",
+  "roster_quality",
+  "pass_net",
+  "run_net"
+ ],
+ "component_params": {
+  "elo": {
+   "k": 47.43351932834238,
+   "hfa": 52.14162888646703,
+   "regress": 0.3647684062154459
+  },
+  "qb": {
+   "decay": 0.8010595244395629,
+   "prior_db": 650.2103644039794,
+   "season_decay": 0.3915362183690712,
+   "delta": -0.28533125161330286,
+   "pedigree_c": 0.0896317347982366,
+   "pedigree_scale": 82.89016799725033,
+   "lg_rate": 0.01571
+  },
+  "epa": {
+   "decay": 0.8813581205848026,
+   "prior_n": 754.0438610349224,
+   "season_decay": 0.7130881070009863,
+   "lg_epa": -0.02334
+  },
+  "ts": {
+   "beta": 14.396136377042895,
+   "tau": 0.10710745752560973,
+   "widen": 2.141409741082466,
+   "mu_reg": 0.5957501578776441
+  },
+  "team_hfa": {
+   "decay": 0.991,
+   "prior_n": 180.0
+  },
+  "fumble_luck": {
+   "decay": 0.9261908382499093,
+   "prior_n": 3.6913283560396857,
+   "season_decay": 0.02376314383605349
+  },
+  "rest": {
+   "clip": 7
+  },
+  "early_kick": {
+   "tz_gap_min": 2,
+   "latest_et": 14.0
+  },
+  "snap_absence": {
+   "decay": 0.8007721316186063,
+   "thresh": 0.7284183170833963,
+   "data_from": 2013,
+   "zero_before": true
+  },
+  "roster_quality": {
+   "rating_decay": 0.95,
+   "eb_prior_weeks": 6.0,
+   "share_params": {
+    "decay": 0.8007721316186063,
+    "thresh": 0.7284183170833963
+   },
+   "weights": {
+    "QB": [
+     0.5,
+     0.25,
+     0.25
+    ],
+    "SK": [
+     0.4,
+     0.15,
+     0.45
+    ],
+    "DEF": [
+     0.45,
+     0.35,
+     0.2
+    ]
+   },
+   "data_from": 2013,
+   "zero_before": true,
+   "min_n_eff_primary": 5.0,
+   "clamp": 1.5
+  },
+  "passrun_split": {
+   "source": "duel-file protagonists (passer/receiver=pass, rusher-only=run)",
+   "dynamics": "same as epa feature (decay .8814, prior_n/2 per channel, season_decay .7131)",
+   "lg_pass": 0.0043,
+   "lg_run": -0.0601,
+   "mismatch_interactions": "tested, hurt \u2014 excluded"
+  }
+ },
+ "blend_dev_fit": {
+  "coef": [
+   0.400465,
+   5.306749,
+   3.413373,
+   0.326301,
+   6.936172,
+   0.029809,
+   -0.792984,
+   0.038549,
+   -0.040356,
+   -0.041945,
+   -0.193831,
+   0.047245
+  ],
+  "intercept": 0.157828
+ },
+ "blend_production": {
+  "coef": [
+   0.30836,
+   7.18998,
+   1.09564,
+   -0.29579,
+   0.2158,
+   0.01824,
+   0.05275,
+   0.01306,
+   -0.00857,
+   -0.04141,
+   -0.11401,
+   0.10646,
+   -0.61813,
+   3.19921
+  ],
+  "intercept": 0.14504,
+  "fit": "all completed games through 2025, ties dropped, recency hl=3 seasons, C=100 (walk-forward 2026 step)",
+  "test_repro_ll": 0.61945
+ },
+ "test_ll": 0.61947,
+ "prev_stack_test_ll": 0.62806,
+ "prev_test_ll": 0.6219,
+ "training": {
+  "protocol": "walk-forward expanding refit each season",
+  "recency_half_life_seasons": 3.0,
+  "blend_C": 100.0,
+  "learner": "logistic (XGB/RF/MLP all worse)"
+ }
+}

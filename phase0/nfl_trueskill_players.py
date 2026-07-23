@@ -1,0 +1,257 @@
+"""Participation TrueSkill: every play is a match between the 11 offensive and 11
+defensive players actually on the field (nflverse pbp_participation, 2016-2025).
+Bayesian (mu, sigma) update for all 22 after each play; offense "wins" iff EPA > 0.
+
+Design (per the spec):
+  outcome        offense_win = EPA > 0 (success), processed strictly chronologically
+  filters        pass/run only (kneels/spikes/penalties already excluded upstream);
+                 garbage time (wp<.05 or >.95) down-weighted x0.25, not dropped
+  noise          beta = sigma0 (NFL plays are noisy -> large beta)
+  drift          tau added to sigma once per new week a player appears in
+  offseason      mu shrunk 1/3 toward the mean, sigma widened (capped at sigma0)
+  position-aware ratings LADDERS are global (o-vs-d is what a play measures) but the
+                 DISPLAY is normalized within position group (QB/RB/WR/TE/OL/DL/LB/DB)
+                 so a great CB and a great LT are never compared to each other
+  small samples  conservative skill = mu - 2*sigma, plus shrink-to-50 below the
+                 qualification floor; under 50 rated snaps -> no rating shown
+
+Outputs:
+  data/nfl_player_ts.csv            full ladder (all rated players)
+  data/nfl_player_ratings_2025.csv  site-schema replacement (2025 actives)
+  site/data/nfl.json                players[].rating swapped in, team averages redone
+"""
+from __future__ import annotations
+
+import csv
+import json
+import time
+from collections import defaultdict
+from math import erf, exp, pi, sqrt
+
+T0 = time.time()
+MU0, SIG0 = 25.0, 25.0 / 3.0
+SIG0_2 = SIG0 * SIG0
+BETA = SIG0                      # noisy single plays
+TAU2 = 0.10 ** 2                 # weekly drift (added once per new week seen)
+SEASON_SHRINK = 1.0 / 3.0        # offseason: mu 1/3 of the way back to MU0
+SEASON_WIDEN2 = 1.5 ** 2
+SIG2_FLOOR = 0.5 ** 2
+GARBAGE_W = 0.25                 # update weight when wp outside [.05,.95]
+MIN_SNAPS_SHOW = 50
+
+POSMAP = {
+    "QB": "QB", "RB": "RB", "FB": "RB", "HB": "RB", "WR": "WR", "TE": "TE",
+    "T": "OL", "G": "OL", "C": "OL", "OT": "OL", "OG": "OL", "OL": "OL",
+    "LT": "OL", "RT": "OL", "LG": "OL", "RG": "OL",
+    "DE": "DL", "DT": "DL", "NT": "DL", "DL": "DL", "EDGE": "DL",
+    "LB": "LB", "ILB": "LB", "OLB": "LB", "MLB": "LB",
+    "CB": "DB", "S": "DB", "SS": "DB", "FS": "DB", "SAF": "DB", "DB": "DB",
+}
+QUAL = {"QB": 150, "RB": 150, "WR": 150, "TE": 120,
+        "OL": 250, "DL": 200, "LB": 200, "DB": 200}
+OFFG = {"QB", "RB", "WR", "TE", "OL"}
+
+
+def pdf(x): return exp(-0.5 * x * x) / sqrt(2 * pi)
+def cdf(x): return 0.5 * (1.0 + erf(x / sqrt(2.0)))
+
+
+def v_win(t):
+    c = cdf(t)
+    if c < 1e-12:
+        return -t                # asymptote of the truncated-normal mean
+    return pdf(t) / c
+
+
+# ---- load context (garbage-time wp) ----
+wp_of = {}
+try:
+    with open("data/nfl_play_ctx.csv") as fh:
+        rd = csv.reader(fh); next(rd)
+        for gid, pid_, wp in rd:
+            wp_of[(gid, pid_)] = float(wp)
+    print(f"[{time.time()-T0:.0f}s] wp context: {len(wp_of):,} plays", flush=True)
+except FileNotFoundError:
+    print("no wp context; garbage-time down-weight disabled", flush=True)
+
+# ---- load plays, strictly chronological ----
+plays = []
+with open("data/nfl_rapm_plays.csv", encoding="utf-8") as fh:
+    rd = csv.reader(fh); next(rd)
+    for gid, pid_, off, dfn, epa in rd:
+        plays.append((gid, int(float(pid_)), off, dfn, float(epa)))
+plays.sort(key=lambda p: (p[0], p[1]))
+print(f"[{time.time()-T0:.0f}s] {len(plays):,} plays loaded", flush=True)
+
+mu = {}
+sig2 = {}
+snaps = defaultdict(int)
+last_week = {}
+cur_season = None
+n_upd = 0
+for gid, pid_, off, dfn, epa in plays:
+    season, week = gid[:4], gid[5:7]
+    if cur_season is not None and season != cur_season:
+        for p in mu:
+            mu[p] = MU0 + (mu[p] - MU0) * (1.0 - SEASON_SHRINK)
+            sig2[p] = min(sig2[p] + SEASON_WIDEN2, SIG0_2)
+    cur_season = season
+    O = off.split(";")
+    D = dfn.split(";")
+    if not (6 <= len(O) <= 12 and 6 <= len(D) <= 12):
+        continue                                     # malformed participation row
+    wk = (season, week)
+    for p in O + D:
+        if p not in mu:
+            mu[p] = MU0; sig2[p] = SIG0_2
+        elif last_week.get(p) != wk:
+            sig2[p] = min(sig2[p] + TAU2, SIG0_2)
+        last_week[p] = wk
+    wgt = 1.0
+    wp = wp_of.get((gid, pid_))
+    if wp is not None and (wp < 0.05 or wp > 0.95):
+        wgt = GARBAGE_W
+    c2 = (len(O) + len(D)) * BETA * BETA + sum(sig2[p] for p in O) + sum(sig2[p] for p in D)
+    c = sqrt(c2)
+    t = (sum(mu[p] for p in O) - sum(mu[p] for p in D)) / c
+    if epa > 0:
+        win, lose, tt = O, D, t
+    else:
+        win, lose, tt = D, O, -t
+    v = v_win(tt)
+    w = v * (v + tt)
+    for p in win:
+        mu[p] += wgt * (sig2[p] / c) * v
+        sig2[p] = max(sig2[p] * (1.0 - wgt * (sig2[p] / c2) * w), SIG2_FLOOR)
+    for p in lose:
+        mu[p] -= wgt * (sig2[p] / c) * v
+        sig2[p] = max(sig2[p] * (1.0 - wgt * (sig2[p] / c2) * w), SIG2_FLOOR)
+    for p in O + D:
+        snaps[p] += 1
+    n_upd += 1
+print(f"[{time.time()-T0:.0f}s] rated {n_upd:,} plays, {len(mu):,} players", flush=True)
+
+# ---- players metadata + 2025 actives ----
+names, pos_of = {}, {}
+for r in csv.DictReader(open("data/nfl_players.csv", encoding="utf-8")):
+    g = r.get("gsis_id")
+    if not g:
+        continue
+    names[g] = r.get("display_name") or g
+    pos_of[g] = POSMAP.get(r.get("position") or "", None)
+active25 = set()
+for gid, pid_, off, dfn, _ in plays:
+    if gid.startswith("2025"):
+        active25.update(off.split(";")); active25.update(dfn.split(";"))
+
+# ---- display conversion: conservative skill (TrueSkill leaderboard exposure,
+# mu - 3 sigma, so uncertainty is punished hard), within-position z among actives ----
+cons = {p: mu[p] - 3.0 * sqrt(sig2[p]) for p in mu}
+stats = {}
+for pg, floor in QUAL.items():
+    vals = [cons[p] for p in mu
+            if pos_of.get(p) == pg and p in active25 and snaps[p] >= floor]
+    m_ = sum(vals) / len(vals)
+    sd_ = sqrt(sum((v - m_) ** 2 for v in vals) / max(len(vals) - 1, 1))
+    stats[pg] = (m_, sd_, len(vals))
+print("position ladders (active, qualified):",
+      {k: (round(v[0], 2), round(v[1], 2), v[2]) for k, v in stats.items()}, flush=True)
+
+def rating_of(p):
+    pg = pos_of.get(p)
+    if pg is None or snaps[p] < MIN_SNAPS_SHOW or pg not in stats:
+        return None
+    m_, sd_, _ = stats[pg]
+    z = (cons[p] - m_) / sd_ if sd_ > 1e-9 else 0.0
+    shrink = min(snaps[p] / QUAL[pg], 1.0)           # small samples pull to 50
+    r = 50.0 + 15.0 * z * shrink
+    return max(1.0, min(99.0, r))
+
+rows = []
+for p in mu:
+    r_ = rating_of(p)
+    if r_ is None:
+        continue
+    rows.append({"gsis_id": p, "player": names.get(p, p), "bucket": pos_of[p],
+                 "mu": round(mu[p], 3), "sigma": round(sqrt(sig2[p]), 3),
+                 "snaps": snaps[p], "cons": round(cons[p], 3),
+                 "rating_0_100": round(r_, 1), "active_2025": int(p in active25)})
+rows.sort(key=lambda r: -r["rating_0_100"])
+# tiers: percentile within position among 2025 actives
+by_pg = defaultdict(list)
+for r in rows:
+    if r["active_2025"]:
+        by_pg[r["bucket"]].append(r["rating_0_100"])
+for v in by_pg.values():
+    v.sort()
+def tier_of(r):
+    v = by_pg.get(r["bucket"])
+    if not v or not r["active_2025"]:
+        return "D"
+    import bisect
+    pct = bisect.bisect_left(v, r["rating_0_100"]) / len(v)
+    return "S" if pct >= 0.90 else "A" if pct >= 0.70 else "B" if pct >= 0.40 \
+        else "C" if pct >= 0.15 else "D"
+for r in rows:
+    r["tier"] = tier_of(r)
+
+with open("data/nfl_player_ts.csv", "w", newline="", encoding="utf-8") as fh:
+    wr = csv.DictWriter(fh, fieldnames=list(rows[0]))
+    wr.writeheader(); wr.writerows(rows)
+with open("data/nfl_player_ratings_2025.csv", "w", newline="", encoding="utf-8") as fh:
+    wr = csv.DictWriter(fh, fieldnames=["player", "gsis_id", "bucket",
+                                        "rating_0_100", "tier", "n_eff"])
+    wr.writeheader()
+    for r in rows:
+        if r["active_2025"]:
+            wr.writerow({"player": r["player"], "gsis_id": r["gsis_id"],
+                         "bucket": r["bucket"], "rating_0_100": r["rating_0_100"],
+                         "tier": r["tier"], "n_eff": r["snaps"]})
+print(f"[{time.time()-T0:.0f}s] wrote {len(rows)} rated players "
+      f"({sum(r['active_2025'] for r in rows)} active 2025)", flush=True)
+
+# litmus: top-10 QBs by rating (actives) — sample-size discipline check
+qbs = [r for r in rows if r["bucket"] == "QB" and r["active_2025"]][:10]
+for i, r in enumerate(qbs, 1):
+    print(f"  QB{i:>2} {r['player']:<22} r {r['rating_0_100']:>5} "
+          f"mu {r['mu']:>6} sig {r['sigma']:<5} snaps {r['snaps']}", flush=True)
+
+# ---- swap into the site payload ----
+by_id = {r["gsis_id"]: r for r in rows}
+payload = json.load(open("site/data/nfl.json"))
+n_set = n_null = 0
+for pid, pl in payload["players"].items():
+    r = by_id.get(pid)
+    if r:
+        pl["rating"] = {"r": r["rating_0_100"], "tier": r["tier"],
+                        "n_eff": float(r["snaps"]), "bucket": r["bucket"],
+                        "mu": r["mu"], "sigma": r["sigma"]}
+        n_set += 1
+    else:
+        pl["rating"] = None
+        n_null += 1
+for t, tm in payload["teams"].items():
+    num = den = noff = nof = ndef = ndf = 0.0
+    for pid in tm["roster"]:
+        pl = payload["players"].get(pid)
+        if not pl or not pl.get("rating"):
+            continue
+        rt = pl["rating"]
+        wgt = max(pl.get("snap_share") or 0.0, 0.05)
+        num += wgt * rt["r"]; den += wgt
+        if rt["bucket"] in OFFG:
+            noff += wgt * rt["r"]; nof += wgt
+        else:
+            ndef += wgt * rt["r"]; ndf += wgt
+    tm["glassbox"] = round(num / den, 1) if den else None
+    tm["gb_off"] = round(noff / nof, 1) if nof else None
+    tm["gb_def"] = round(ndef / ndf, 1) if ndf else None
+payload["model_card"]["ratings"] = {
+    "system": "per-play participation TrueSkill (11v11)",
+    "plays": n_upd, "seasons": "2016-2025",
+    "outcome": "offense beats defense iff EPA > 0",
+    "beta": BETA, "tau_week": sqrt(TAU2), "garbage_weight": GARBAGE_W,
+    "display": "mu - 2 sigma, z-scored within position group",
+}
+json.dump(payload, open("site/data/nfl.json", "w"))
+print(f"[{time.time()-T0:.0f}s] payload: {n_set} rated, {n_null} NR; team avgs redone")

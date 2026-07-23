@@ -1,0 +1,169 @@
+{
+ "source": "depth_charts_2026",
+ "qb": {
+  "ARI": {
+   "gsis": "00-0033119",
+   "name": "Jacoby Brissett",
+   "how": "depth_chart"
+  },
+  "ATL": {
+   "gsis": "00-0036212",
+   "name": "Tua Tagovailoa",
+   "how": "depth_chart"
+  },
+  "BAL": {
+   "gsis": "00-0034796",
+   "name": "Lamar Jackson",
+   "how": "depth_chart"
+  },
+  "BUF": {
+   "gsis": "00-0034857",
+   "name": "Josh Allen",
+   "how": "depth_chart"
+  },
+  "CAR": {
+   "gsis": "00-0039150",
+   "name": "Bryce Young",
+   "how": "depth_chart"
+  },
+  "CHI": {
+   "gsis": "00-0039918",
+   "name": "Caleb Williams",
+   "how": "depth_chart"
+  },
+  "CIN": {
+   "gsis": "00-0036442",
+   "name": "Joe Burrow",
+   "how": "depth_chart"
+  },
+  "CLE": {
+   "gsis": "00-0033537",
+   "name": "Deshaun Watson",
+   "how": "depth_chart"
+  },
+  "DAL": {
+   "gsis": "00-0033077",
+   "name": "Dak Prescott",
+   "how": "depth_chart"
+  },
+  "DEN": {
+   "gsis": "00-0039732",
+   "name": "Bo Nix",
+   "how": "depth_chart"
+  },
+  "DET": {
+   "gsis": "00-0033106",
+   "name": "Jared Goff",
+   "how": "depth_chart"
+  },
+  "GB": {
+   "gsis": "00-0036264",
+   "name": "Jordan Love",
+   "how": "depth_chart"
+  },
+  "HOU": {
+   "gsis": "00-0039163",
+   "name": "C.J. Stroud",
+   "how": "depth_chart"
+  },
+  "IND": {
+   "gsis": "00-0035710",
+   "name": "Daniel Jones",
+   "how": "depth_chart"
+  },
+  "JAX": {
+   "gsis": "00-0036971",
+   "name": "Trevor Lawrence",
+   "how": "depth_chart"
+  },
+  "KC": {
+   "gsis": "00-0033873",
+   "name": "Patrick Mahomes",
+   "how": "depth_chart"
+  },
+  "LA": {
+   "gsis": "00-0026498",
+   "name": "Matthew Stafford",
+   "how": "depth_chart"
+  },
+  "LAC": {
+   "gsis": "00-0036355",
+   "name": "Justin Herbert",
+   "how": "depth_chart"
+  },
+  "LV": {
+   "gsis": "00-0029604",
+   "name": "Kirk Cousins",
+   "how": "depth_chart"
+  },
+  "MIA": {
+   "gsis": "00-0038128",
+   "name": "Malik Willis",
+   "how": "depth_chart"
+  },
+  "MIN": {
+   "gsis": "00-0035228",
+   "name": "Kyler Murray",
+   "how": "depth_chart"
+  },
+  "NE": {
+   "gsis": "00-0039851",
+   "name": "Drake Maye",
+   "how": "depth_chart"
+  },
+  "NO": {
+   "gsis": "00-0040743",
+   "name": "Tyler Shough",
+   "how": "depth_chart"
+  },
+  "NYG": {
+   "gsis": "00-0040691",
+   "name": "Jaxson Dart",
+   "how": "depth_chart"
+  },
+  "NYJ": {
+   "gsis": "00-0030565",
+   "name": "Geno Smith",
+   "how": "depth_chart"
+  },
+  "PHI": {
+   "gsis": "00-0036389",
+   "name": "Jalen Hurts",
+   "how": "depth_chart"
+  },
+  "PIT": {
+   "gsis": "00-0023459",
+   "name": "Aaron Rodgers",
+   "how": "depth_chart"
+  },
+  "SEA": {
+   "gsis": "00-0034869",
+   "name": "Sam Darnold",
+   "how": "depth_chart"
+  },
+  "SF": {
+   "gsis": "00-0037834",
+   "name": "Brock Purdy",
+   "how": "depth_chart"
+  },
+  "TB": {
+   "gsis": "00-0034855",
+   "name": "Baker Mayfield",
+   "how": "depth_chart"
+  },
+  "TEN": {
+   "gsis": "00-0040676",
+   "name": "Cam Ward",
+   "how": "depth_chart"
+  },
+  "WAS": {
+   "gsis": "00-0039910",
+   "name": "Jayden Daniels",
+   "how": "depth_chart"
+  }
+ },
+ "notes": [
+  "ARI: Jacoby Brissett latest_team=AZ",
+  "Source: depth_charts_2026.csv latest snapshot dt=2026-07-23T09:22:29Z (all 32 teams same snapshot), pos_abb=QB pos_rank=1; single unambiguous QB1 per team."
+ ]
+}

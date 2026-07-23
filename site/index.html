@@ -241,6 +241,7 @@ footer b{color:var(--muted)} footer a{color:var(--muted);text-decoration:underli
   <a class="brand" href="#/">GLASS<span class="b">BOX</span></a>
   <nav class="main">
     <a href="#/" data-v="board">Board</a>
+    <a href="#/season" data-v="season" id="navseason" style="display:none">Season</a>
     <a href="#/standings" data-v="standings">Standings</a>
     <a href="#/teams" data-v="teams">Teams</a>
   </nav>
@@ -255,13 +256,15 @@ footer b{color:var(--muted)} footer a{color:var(--muted);text-decoration:underli
   SIERA starting-pitcher ratings + season-to-date bullpen FIP + per-plate-appearance TrueSkill
   on-base ratings + lineup isolated-power + lineup baserunning) that never sees the odds. Data: <b>Retrosheet</b> (free of charge,
   copyrighted by Retrosheet, <a href="https://www.retrosheet.org">retrosheet.org</a>) and the
-  MLB Stats API (individual, non-commercial use).
+  MLB Stats API (individual, non-commercial use); NFL data from <b>nflverse</b> (community-maintained).
 </div></footer>
 <script>
 const $ = s => document.querySelector(s);
 const state = {board:null, db:null, nfl:null,
   league:(localStorage.getItem("league")||"mlb"), range:"today", live:{}, updated:null};
-function setLeague(lg){state.league=lg; try{localStorage.setItem("league",lg);}catch(e){}}
+function setLeague(lg){state.league=lg; try{localStorage.setItem("league",lg);}catch(e){}
+  const ns=document.getElementById("navseason");
+  if(ns) ns.style.display=(lg==="nfl"&&state.nfl&&state.nfl.schedule)?"":"none";}
 const SAPI = "https://statsapi.mlb.com/api/v1";
 const root = document.documentElement;
 $("#tog").onclick = () => {
@@ -349,6 +352,9 @@ function route(){
   const h=location.hash.replace(/^#\//,"");
   const [v,arg]=h.split("/");
   window.scrollTo(0,0);
+  const ns=document.getElementById("navseason");
+  if(ns) ns.style.display=(state.league==="nfl"&&state.nfl&&state.nfl.schedule)?"":"none";
+  if(v==="season"&&state.nfl&&state.nfl.schedule){state.league="nfl";if(ns)ns.style.display="";setNav("season");return nflSeason(arg);}
   if(v==="game"&&arg) return gamePage(arg);
   if(v==="team"&&arg){setNav("teams");return teamPage(arg);}
   if(v==="player"&&arg){setNav("teams");return playerPage(arg);}
@@ -455,13 +461,29 @@ function nflPage(){
     <td><span class="num pos">+${m.pts.toFixed(2)}</span></td><td><span class="num">${m.n_abs}</span></td></tr>`).join("");
   const cal=mc.calibration.map(c=>`<tr><td class="a">${c.bucket}</td>
     <td><span class="num">${c.hit.toFixed(1)}%</span></td><td><span class="num">${c.n}</span></td></tr>`).join("");
+  const sch=n.schedule||[], proj=n.proj||{};
+  const wk1=sch.filter(g=>g.w===1).map(g=>{const pick=g.ph>=0.5?g.home:g.away,pp=Math.round(100*Math.max(g.ph,1-g.ph));
+    return `<tr onclick="location.hash='#/season/1'"><td class="sub">${g.d.slice(5)}</td>
+      <td class="a">${g.away} <span class="sub">at</span> ${g.home}</td>
+      <td><span class="pill ${pp>=65?"strong":""}">${pick} ${pp}%</span></td></tr>`;}).join("");
+  const pTop=Object.entries(proj).sort((x,y)=>y[1].w-x[1].w).slice(0,8).map(([c,p],i)=>
+    `<tr onclick="location.hash='#/standings'"><td><span class="num">${i+1}</span></td><td class="a">${c}</td>
+      <td><span class="num">${p.w.toFixed(1)}-${(17-p.w).toFixed(1)}</span></td>
+      <td><span class="num">${p.po.toFixed(0)}%</span></td></tr>`).join("");
   $("#view").innerHTML=`<div class="controls"><div class="rail">${rail}</div></div>
-    <div class="eyebrow">NFL &middot; entering the ${n.season} season</div>
-    <h1 class="pt">NFL Board <span class="sub" style="font-weight:400">2026 preview &middot; game picks begin with Week 1 in September</span></h1>
-    <div class="sub" style="margin-bottom:10px">Everything is clickable &mdash; teams open team pages, players open player pages. Full <a href="#/standings" style="color:var(--accent)">Standings</a> and <a href="#/teams" style="color:var(--accent)">Teams</a> are in the top nav.</div>
+    <div class="eyebrow">NFL &middot; ${n.season} season</div>
+    <h1 class="pt">NFL Board <span class="sub" style="font-weight:400">all 272 games predicted &middot; season simulated on every build</span></h1>
+    <div class="sub" style="margin-bottom:10px">Every row is clickable &mdash; teams, players, weeks. <a href="#/season" style="color:var(--accent)">Season</a> has every weekly pick; <a href="#/standings" style="color:var(--accent)">Standings</a> has the full projections; <a href="#/teams" style="color:var(--accent)">Teams</a> has roster ratings.</div>
     <div class="sub" style="margin-bottom:14px">Market-blind model &middot; <b>${(mc.accuracy).toFixed(1)}%</b> accurate on a locked
       ${mc.holdout} holdout &middot; log loss <b>${mc.test_log_loss.toFixed(3)}</b> (closing line ${mc.close_log_loss.toFixed(3)})
       &middot; ${mc.n_features} features &middot; ${mc.n_tests} documented tests &middot; ${mc.training}.</div>
+    ${sch.length?`<div class="grid" style="margin-bottom:4px">
+      <div class="panel"><h3>Week 1 picks &middot; <a href="#/season" style="color:var(--accent)">full season &rarr;</a></h3>
+        <div class="twrap"><table><tbody>${wk1}</tbody></table></div></div>
+      <div class="panel"><h3>Projected standings &middot; <a href="#/standings" style="color:var(--accent)">all 32 &rarr;</a></h3>
+        <div class="twrap"><table><thead><tr><th></th><th>Team</th><th>Proj W-L</th><th>Playoffs</th></tr></thead><tbody>${pTop}</tbody></table></div>
+        <div class="sub" style="margin-top:8px">20,000 season simulations from the per-game model probabilities. QB1s from live depth charts; team states roll forward as games are played.</div></div>
+    </div>`:""}
     <div class="subh">2026 preseason power ratings</div>
     <div class="sub" style="margin-bottom:8px">Elo regressed to the season prior. Unit values = EPA/play vs league, x100 (+ = good), from the pass/run split ratings.</div>
     <div class="twrap"><table><thead><tr><th></th><th>Team</th><th>Elo</th>
@@ -480,12 +502,57 @@ function nflPage(){
   $("#view").querySelectorAll("[data-lg]").forEach(x=>x.onclick=()=>{setLeague(x.dataset.lg);board();});
 }
 
+function nflSeason(wk){
+  const n=state.nfl, sch=n.schedule||[];
+  if(!sch.length){$("#view").innerHTML=`<div class="empty">No schedule loaded.</div>`;return;}
+  const weeks=[...new Set(sch.map(g=>g.w))].sort((a,b)=>a-b);
+  let W=parseInt(wk)||0;
+  if(!weeks.includes(W)){const up=sch.find(g=>g.hs==null);W=up?up.w:weeks[0];}
+  const chips=weeks.map(w=>`<button class="filt ${w===W?"on":""}" data-w="${w}">W${w}</button>`).join("");
+  const games=sch.filter(g=>g.w===W).slice().sort((a,b)=>a.d<b.d?-1:(a.d>b.d?1:(a.t<b.t?-1:1)));
+  const row=g=>{
+    const pick=g.ph>=0.5?g.home:g.away, pp=Math.round(100*Math.max(g.ph,1-g.ph)), done=g.hs!=null;
+    let res=`<td class="sub">&mdash;</td>`;
+    if(done){const winner=g.hs>g.as?g.home:(g.hs<g.as?g.away:null);
+      const hit=winner==null?null:winner===pick;
+      res=`<td><span class="num">${g.as}-${g.hs}</span> ${hit==null?'<span class="sub">tie</span>':hit?'<span class="num pos">&#10003;</span>':'<span class="num neg">&#10007;</span>'}</td>`;}
+    return `<tr><td class="sub">${g.d.slice(5)} ${g.t?g.t.slice(0,5):""}</td>
+      <td class="a">${teamLink(g.away,g.away)} <span class="sub">at</span> ${teamLink(g.home,g.home)}${g.neutral?' <span class="sub">(neutral)</span>':""}</td>
+      <td><span class="pill ${pp>=65?"strong":""}">${pick} ${pp}%</span></td>
+      <td><div class="pbar" style="min-width:110px;margin:0"><div class="h" style="width:${Math.round(g.ph*100)}%"></div><div class="mid"></div></div></td>
+      ${res}</tr>`;};
+  $("#view").innerHTML=`<div class="eyebrow">NFL &middot; ${n.season} season</div>
+    <h1 class="pt">Season <span class="sub" style="font-weight:400">every game, predicted &middot; market-blind</span></h1>
+    <div class="sub" style="margin-bottom:12px">Probability bar shows the <b>home</b> side. QB1s from live depth charts; predictions and the standings simulation refresh on every data build.</div>
+    <div class="filters" style="flex-wrap:wrap;margin-bottom:12px">${chips}</div>
+    <div class="subh">Week ${W} &middot; ${games.length} games</div>
+    <div class="twrap"><table><thead><tr><th>Kickoff (ET)</th><th>Game</th><th>Pick</th><th>Home win prob</th><th>Result</th></tr></thead>
+      <tbody>${games.map(row).join("")}</tbody></table></div>`;
+  $("#view").querySelectorAll("[data-w]").forEach(x=>x.onclick=()=>{location.hash="#/season/"+x.dataset.w;});
+}
+
 function nflStandings(){
   const n=state.nfl, T=Object.values(n.teams);
   const divs={}; T.forEach(t=>{(divs[t.div]=divs[t.div]||[]).push(t);});
   const order=n.divisions;
-  let html=`<div class="eyebrow">Database &middot; NFL</div><h1 class="pt">Standings <span class="sub" style="font-weight:400">2025 final</span></h1>
-    <div class="sub" style="margin-bottom:14px"><b>Elo</b> is the 2026 preseason rating (regressed). <b>Units</b> are pass/run EPA vs league. Click any team.</div>`;
+  let html=`<div class="eyebrow">Database &middot; NFL</div><h1 class="pt">Standings <span class="sub" style="font-weight:400">2026 projected &middot; 2025 final below</span></h1>
+    <div class="sub" style="margin-bottom:14px">Projection = 20,000 season simulations of the market-blind model, refreshed on every data build. Click any team.</div>`;
+  const proj=n.proj||{};
+  if(Object.keys(proj).length){
+    html+=order.filter(d=>divs[d]).map(d=>{
+      const rows=divs[d].slice().sort((a,b)=>((proj[b.code]||{}).w||0)-((proj[a.code]||{}).w||0)).map(t=>{const p=proj[t.code]||{};
+        return `<tr onclick="location.hash='#/team/${t.code}'">
+        <td class="a"><span class="ab" style="color:var(--accent)">${t.abbr}</span> <span class="sub">${t.name}</span></td>
+        <td><span class="num">${p.w!=null?p.w.toFixed(1)+"-"+(17-p.w).toFixed(1):"-"}</span></td>
+        <td><span class="num">${p.div!=null?p.div.toFixed(0)+"%":"-"}</span></td>
+        <td><span class="num">${p.po!=null?p.po.toFixed(0)+"%":"-"}</span></td>
+        <td><span class="num">${t.elo?t.elo.toFixed(0):"-"}</span></td>
+        <td><span class="num">#${t.rank||"-"}</span></td></tr>`;}).join("");
+      return `<div class="subh">${d} &middot; projection</div><div class="twrap"><table>
+        <thead><tr><th>Team</th><th>Proj W-L</th><th>Win div</th><th>Playoffs</th><th>Elo</th><th>Power</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+    }).join("");
+    html+=`<div class="subh" style="margin-top:20px">2025 final standings</div>`;
+  }
   html+=order.filter(d=>divs[d]).map(d=>{
     const rows=divs[d].sort((a,b)=>a.div_rank-b.div_rank).map(t=>`
       <tr onclick="location.hash='#/team/${t.code}'">
@@ -505,13 +572,19 @@ function nflStandings(){
 }
 
 function nflTeams(){
-  const n=state.nfl, T=Object.values(n.teams).sort((a,b)=>(a.rank||99)-(b.rank||99));
+  const n=state.nfl, T=Object.values(n.teams).sort((a,b)=>(b.glassbox||0)-(a.glassbox||0));
   const card=t=>`<div class="tcard" onclick="location.hash='#/team/${t.code}'">
-    <div class="tt"><span class="ab" style="color:var(--accent)">${t.abbr}</span>
-      <span class="tn">${t.name}</span></div>
-    <div class="sub">${t.div} &middot; ${t.w}-${t.l}${t.t?"-"+t.t:""} &middot; Elo ${t.elo?t.elo.toFixed(0):"-"} &middot; Power #${t.rank||"-"}</div></div>`;
+    <div class="h"><span class="code" style="color:var(--accent)">${t.abbr}</span><span class="nm">${t.name}</span>${gb(t.glassbox)}</div>
+    <div class="stat"><span>Proj 26 <b>${t.proj?t.proj.w.toFixed(1)+"W":"-"}</b></span>
+      <span>PO <b>${t.proj?t.proj.po.toFixed(0)+"%":"-"}</b></span>
+      <span>Elo <b>${t.elo?t.elo.toFixed(0):"-"}</b></span><span>Power <b>#${t.rank||"-"}</b></span></div>
+    <div class="stat"><span>Off <b>${t.gb_off!=null?t.gb_off.toFixed(0):"-"}</b></span>
+      <span>Def <b>${t.gb_def!=null?t.gb_def.toFixed(0):"-"}</b></span>
+      <span>QB <b>${t.qb1?t.qb1.name:"-"}</b></span></div>
+  </div>`;
   $("#view").innerHTML=`<div class="eyebrow">Database &middot; NFL</div><h1 class="pt">Teams</h1>
-    <div class="grid" style="margin-top:12px">${T.map(card).join("")}</div>`;
+    <div class="sub" style="margin-bottom:14px">The <b>GlassBox rating</b> (0-100) is the roster's snap-weighted average <b>per-play TrueSkill</b> rating &mdash; every snap is an 11-vs-11 match, all 22 players Bayesian-updated on the outcome (344,801 plays, 2016-2025). 50 = league average at the position. Off = offensive personnel, Def = defensive. QB1 from live depth charts. Click a team.</div>
+    <div class="tgrid">${T.map(card).join("")}</div>`;
 }
 
 function nflTeamPage(code){
@@ -534,13 +607,27 @@ function nflTeamPage(code){
     <thead><tr><th>Player</th><th>GlassBox</th><th>Snap %</th><th>2025</th></tr></thead>
     <tbody>${rows.map(prow).join("")}</tbody></table></div>`:"";
   const off=P.filter(p=>grp(p)==="off"), ol=P.filter(p=>grp(p)==="ol"), def=P.filter(p=>grp(p)==="def");
+  const p26=t.proj, q=t.qb1;
+  const sch=(n.schedule||[]).filter(g=>g.home===code||g.away===code);
+  const srow2=g=>{const homeG=g.home===code, opp=homeG?g.away:g.home, pw=homeG?g.ph:1-g.ph;
+    const pick=g.ph>=0.5?g.home:g.away;
+    return `<tr><td><span class="num">W${g.w}</span></td><td class="sub">${g.d.slice(5)}</td>
+      <td class="a">${homeG?"vs":"at"} ${teamLink(opp,opp)}${g.neutral?' <span class="sub">(n)</span>':""}</td>
+      <td><span class="num ${pw>=0.5?"pos":"neg"}">${Math.round(pw*100)}%</span></td>
+      <td><span class="pill ${Math.max(g.ph,1-g.ph)>=0.65?"strong":""}">${pick}</span></td></tr>`;};
+  const schTbl=sch.length?`<div class="subh">2026 schedule &middot; model picks</div><div class="twrap"><table>
+    <thead><tr><th>Wk</th><th>Date</th><th>Opponent</th><th>Win prob</th><th>Pick</th></tr></thead>
+    <tbody>${sch.map(srow2).join("")}</tbody></table></div>`:"";
+  const projLine=p26?`<div class="sub" style="margin-bottom:14px">Projected 2026: <b>${p26.w.toFixed(1)}-${(17-p26.w).toFixed(1)}</b>
+    &middot; win division <b>${p26.div.toFixed(0)}%</b> &middot; make playoffs <b>${p26.po.toFixed(0)}%</b>
+    ${q&&q.id&&n.players[q.id]?`&middot; QB1 <span class="player-link" onclick="location.hash='#/player/${q.id}'">${q.name}</span>`:(q?`&middot; QB1 ${q.name}`:"")}</div>`:"";
   $("#view").innerHTML=`<a class="back" href="#/teams">&lsaquo; Teams</a>
     <div class="eyebrow">${t.div}</div><h1 class="pt">${t.name}</h1>
     <div class="sub" style="margin-bottom:14px">${t.w}-${t.l}${t.t?"-"+t.t:""} in 2025 &middot; ${t.pf} PF / ${t.pa} PA
       &middot; Elo <b>${t.elo?t.elo.toFixed(0):"-"}</b> (power #${t.rank})
       &middot; units: pass off ${t.off_pass>=0?"+":""}${t.off_pass} / run off ${t.off_run>=0?"+":""}${t.off_run}
       / pass def ${t.def_pass>=0?"+":""}${t.def_pass} / run def ${t.def_run>=0?"+":""}${t.def_run}</div>
-    ${tbl("Offense",off)}${tbl("Offensive line",ol)}${tbl("Defense",def)}`;
+    ${projLine}${schTbl}${tbl("Offense",off)}${tbl("Offensive line",ol)}${tbl("Defense",def)}`;
 }
 
 function nflPlayerPage(id){
@@ -556,9 +643,9 @@ function nflPlayerPage(id){
   $("#view").innerHTML=`<a class="back" href="#/team/${p.team}">&lsaquo; ${t?t.name:p.team}</a>
     <div class="eyebrow">${p.pos} &middot; ${t?t.name:p.team}</div><h1 class="pt">${p.name}</h1>
     <div class="grid" style="margin-top:12px">
-      <div class="panel"><h3>GlassBox rating</h3>
+      <div class="panel"><h3>GlassBox rating <span class="sub" style="font-weight:400">per-play TrueSkill</span></h3>
         <div style="display:flex;align-items:center;gap:14px;margin:6px 0">${p.rating?gb(p.rating.r):gb(null)}
-          ${p.rating?`<span class="sub">tier <b>${p.rating.tier}</b> &middot; n_eff ${p.rating.n_eff.toFixed(0)}</span>`:`<span class="sub">not enough sample</span>`}</div>
+          ${p.rating?`<span class="sub">tier <b>${p.rating.tier}</b> &middot; ${p.rating.n_eff.toLocaleString()} plays rated${p.rating.mu!=null?` &middot; TrueSkill &mu; ${p.rating.mu.toFixed(1)} &plusmn; ${p.rating.sigma.toFixed(1)}`:""}</span>`:`<span class="sub">not enough sample</span>`}</div>
         ${p.board?`<div class="sub">Per-play value: z ${p.board.z>=0?"+":""}${p.board.z.toFixed(2)}
           (conservative ${p.board.cons>=0?"+":""}${p.board.cons.toFixed(2)}) over ${p.board.n.toLocaleString()} plays, opponent-adjusted.</div>`
           :`<div class="sub">No per-play board entry.</div>`}
