@@ -221,6 +221,8 @@ td .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
 .tcard .nm{font-size:13px;color:var(--muted);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tcard .stat{display:flex;gap:14px;font-size:12px;color:var(--muted)}
 .tcard .stat b{color:var(--ink);font-family:var(--mono)}
+.psearch{width:100%;max-width:420px;padding:9px 14px;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--ink);font:inherit;font-size:14px;margin:2px 0 6px;outline:none}
+.psearch:focus{border-color:var(--accent)}
 .thead{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:14px}
 .thead .code{font-family:var(--serif);font-size:34px;font-weight:700}
 .thead .sub{color:var(--muted);font-size:13px}
@@ -351,6 +353,7 @@ function route(){
   if(v==="game"&&arg) return gamePage(arg);
   if(v==="team"&&arg){setNav("teams");return teamPage(arg);}
   if(v==="player"&&arg){setNav("teams");return playerPage(arg);}
+  if(v==="players"){setNav("players");return playersPage();}
   if(v==="teams"){setNav("teams");return teamsPage();}
   if(v==="standings"){setNav("standings");return standings();}
   setNav("board"); board();
@@ -672,6 +675,104 @@ function nflPlayerPage(id){
     </div>`;
 }
 
+/* ---------- PLAYERS TAB ---------- */
+function playersPage(){
+  if(state.league==="nfl"&&state.nfl) return nflPlayers();
+  const db=state.db, P=Object.values(db.players||{});
+  const bats=P.filter(p=>p.role==="batter"&&p.ts100!=null).sort((a,b)=>b.ts100-a.ts100);
+  const pits=P.filter(p=>p.role==="pitcher"&&p.ts100!=null).sort((a,b)=>b.ts100-a.ts100);
+  const brow=(p,i)=>`<tr onclick="location.hash='#/player/${p.id}'">
+    <td><span class="num">${i+1}</span></td>
+    <td class="a"><span class="player-link">${p.name}</span> <span class="sub">${p.pos} &middot; ${p.team}</span></td>
+    <td>${gb(p.ts100)}</td>
+    <td><span class="num">${p.ts_mu!=null?p.ts_mu.toFixed(1):"-"}</span></td>
+    <td class="sub">${p.bat?`${p.bat.ops!=null?p.bat.ops:"-"} OPS &middot; ${p.bat.hr||0} HR &middot; ${p.bat.sb||0} SB`:"&mdash;"}</td></tr>`;
+  const prow=(p,i)=>`<tr onclick="location.hash='#/player/${p.id}'">
+    <td><span class="num">${i+1}</span></td>
+    <td class="a"><span class="player-link">${p.name}</span> <span class="sub">${p.pos} &middot; ${p.team}</span></td>
+    <td>${gb(p.ts100)}</td>
+    <td><span class="num">${p.ts_mu!=null?p.ts_mu.toFixed(1):"-"}</span></td>
+    <td class="sub">${p.pit?`${p.pit.era!=null?p.pit.era:"-"} ERA &middot; ${p.pit.whip!=null?p.pit.whip:"-"} WHIP &middot; ${p.pit.so||0} K`:"&mdash;"}</td></tr>`;
+  const tbl=(title,rows,statHdr)=>`<div class="panel"><h3>${title}</h3><div class="twrap"><table>
+    <thead><tr><th></th><th>Player</th><th>GlassBox</th><th>&mu;</th><th>${statHdr}</th></tr></thead>
+    <tbody>${rows}</tbody></table></div></div>`;
+  $("#view").innerHTML=`<div class="eyebrow">Database &middot; MLB</div><h1 class="pt">Players</h1>
+    <div class="sub" style="margin-bottom:10px">Every plate appearance is a <b>TrueSkill duel</b>: batter vs pitcher, both Bayesian-updated
+      on the outcome. The 0-100 <b>GlassBox rating</b> comes straight from that ladder (50 = league average); &mu; is the raw skill estimate.
+      ${bats.length+pits.length} rated players. Click anyone.</div>
+    <input class="psearch" id="psearch" placeholder="Search ${P.length} players&hellip;" autocomplete="off">
+    <div id="psres"></div>
+    <div class="grid" style="margin-top:8px">
+      ${tbl("Top hitters",bats.slice(0,15).map(brow).join(""),"2026 season")}
+      ${tbl("Top pitchers",pits.slice(0,15).map(prow).join(""),"2026 season")}
+    </div>`;
+  const res=$("#psres");
+  $("#psearch").oninput=e=>{
+    const q=norm(e.target.value);
+    if(q.length<2){res.innerHTML="";return;}
+    const hits=P.filter(p=>norm(p.name).includes(q)).slice(0,20);
+    res.innerHTML=hits.length?`<div class="twrap" style="margin-bottom:6px"><table><tbody>
+      ${hits.map(p=>`<tr onclick="location.hash='#/player/${p.id}'">
+        <td class="a"><span class="player-link">${p.name}</span> <span class="sub">${p.pos} &middot; ${p.team}</span></td>
+        <td>${gb(p.ts100)}</td>
+        <td class="sub">${p.role==="pitcher"?(p.pit?`${p.pit.era!=null?p.pit.era:"-"} ERA`:""):(p.bat?`${p.bat.ops!=null?p.bat.ops:"-"} OPS`:"")}</td></tr>`).join("")}
+      </tbody></table></div>`:`<div class="sub" style="margin:6px 0 10px">No players match.</div>`;
+  };
+}
+
+function nflPlayers(){
+  const n=state.nfl, P=Object.values(n.players||{}).filter(p=>p.rating);
+  const GROUPS=["QB","RB","WR","TE","OL","DL","LB","DB"];
+  const GN={QB:"Quarterbacks",RB:"Running backs",WR:"Receivers",TE:"Tight ends",
+            OL:"Offensive line",DL:"Defensive line",LB:"Linebackers",DB:"Secondary"};
+  const byg={}; GROUPS.forEach(g=>byg[g]=[]);
+  P.forEach(p=>{if(byg[p.rating.bucket]) byg[p.rating.bucket].push(p);});
+  GROUPS.forEach(g=>byg[g].sort((a,b)=>b.rating.r-a.rating.r));
+  const row=(p,i)=>`<tr onclick="location.hash='#/player/${p.id}'">
+    <td><span class="num">${i+1}</span></td>
+    <td class="a"><span class="player-link">${p.name}</span> <span class="sub">${p.team}</span></td>
+    <td>${gb(p.rating.r)}</td>
+    <td><span class="num">${p.rating.mu.toFixed(1)}&thinsp;&plusmn;&thinsp;${p.rating.sigma.toFixed(1)}</span></td>
+    <td><span class="num">${p.rating.n_eff.toLocaleString()}</span></td></tr>`;
+  const panel=g=>`<div class="panel"><h3>${GN[g]}</h3><div class="twrap"><table>
+    <thead><tr><th></th><th>Player</th><th>Rating</th><th>&mu;&thinsp;&plusmn;&thinsp;&sigma;</th><th>Plays</th></tr></thead>
+    <tbody>${byg[g].slice(0,10).map(row).join("")}</tbody></table></div></div>`;
+  const proven=P.filter(p=>p.rating.n_eff>=1000).sort((a,b)=>a.rating.sigma-b.rating.sigma).slice(0,8);
+  const wild=P.filter(p=>p.rating.n_eff>=300).sort((a,b)=>b.rating.sigma-a.rating.sigma).slice(0,8);
+  const mini=(p,i)=>`<tr onclick="location.hash='#/player/${p.id}'">
+    <td><span class="num">${i+1}</span></td>
+    <td class="a"><span class="player-link">${p.name}</span> <span class="sub">${p.rating.bucket} &middot; ${p.team}</span></td>
+    <td>${gb(p.rating.r)}</td>
+    <td><span class="num">&sigma; ${p.rating.sigma.toFixed(2)}</span></td></tr>`;
+  $("#view").innerHTML=`<div class="eyebrow">Database &middot; NFL</div><h1 class="pt">Players</h1>
+    <div class="sub" style="margin-bottom:10px">Every snap is an <b>11-vs-11 TrueSkill match</b> &mdash; all 22 players on the field are
+      Bayesian-updated on whether the offense beat the defense (<b>344,801 plays</b>, 2016-2025, garbage time down-weighted).
+      Ratings are conservative (&mu;&thinsp;&minus;&thinsp;3&sigma;) and scored within position group, so thin samples can't fake it.
+      ${P.length} rated players. Click anyone.</div>
+    <input class="psearch" id="psearch" placeholder="Search ${P.length} rated players&hellip;" autocomplete="off">
+    <div id="psres"></div>
+    <div class="grid" style="margin-top:8px">${GROUPS.map(panel).join("")}</div>
+    <div class="grid" style="margin-top:16px">
+      <div class="panel"><h3>Bankable <span class="sub" style="font-weight:400">lowest &sigma;, 1,000+ plays &mdash; the engine is surest about these ratings</span></h3>
+        <div class="twrap"><table><tbody>${proven.map(mini).join("")}</tbody></table></div></div>
+      <div class="panel"><h3>Wild cards <span class="sub" style="font-weight:400">highest &sigma;, 300+ plays &mdash; ratings that could move fastest in 2026</span></h3>
+        <div class="twrap"><table><tbody>${wild.map(mini).join("")}</tbody></table></div></div>
+    </div>`;
+  const res=$("#psres");
+  $("#psearch").oninput=e=>{
+    const q=norm(e.target.value);
+    if(q.length<2){res.innerHTML="";return;}
+    const hits=P.filter(p=>norm(p.name).includes(q)).slice(0,20);
+    res.innerHTML=hits.length?`<div class="twrap" style="margin-bottom:6px"><table><tbody>
+      ${hits.map(p=>`<tr onclick="location.hash='#/player/${p.id}'">
+        <td class="a"><span class="player-link">${p.name}</span> <span class="sub">${p.rating.bucket} &middot; ${p.team}</span></td>
+        <td>${gb(p.rating.r)}</td>
+        <td><span class="num">${p.rating.mu.toFixed(1)}&thinsp;&plusmn;&thinsp;${p.rating.sigma.toFixed(1)}</span></td>
+        <td><span class="num">${p.rating.n_eff.toLocaleString()}</span></td></tr>`).join("")}
+      </tbody></table></div>`:`<div class="sub" style="margin:6px 0 10px">No rated players match.</div>`;
+  };
+}
+
 /* ---------- GAME PAGE ---------- */
 function findGame(pk){for(const l of state.board.leagues){const g=(l.games||[]).find(x=>String(x.game_pk)===String(pk));if(g)return g;}return null;}
 function pRow(label,v){const w=Math.min(Math.abs(v)*3.0,50);const neg=v<0;
@@ -895,6 +996,7 @@ SHELL = f"""<style>{CSS}</style>
     <a href="#/season" data-v="season" id="navseason" style="display:none">Season</a>
     <a href="#/standings" data-v="standings">Standings</a>
     <a href="#/teams" data-v="teams">Teams</a>
+    <a href="#/players" data-v="players">Players</a>
   </nav>
   <span class="grow"></span>
   <span class="updated" id="updated"></span>
