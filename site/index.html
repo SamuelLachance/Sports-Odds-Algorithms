@@ -214,6 +214,7 @@ td .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
 .tcard .stat b{color:var(--ink);font-family:var(--mono)}
 .psearch{width:100%;max-width:420px;padding:9px 14px;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--ink);font:inherit;font-size:14px;margin:2px 0 6px;outline:none}
 .psearch:focus{border-color:var(--accent)}
+.odds{font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-right:7px;font-variant-numeric:tabular-nums}
 .thead{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:14px}
 .thead .code{font-family:var(--serif);font-size:34px;font-weight:700}
 .thead .sub{color:var(--muted);font-size:13px}
@@ -287,6 +288,8 @@ $("#tog").onclick = () => {
 };
 
 const pctI = x => Math.round(x*100);
+const amOdds=p=>{p=Math.min(Math.max(p,0.01),0.99);
+  return p>=0.5?"&#8722;"+Math.round(100*p/(1-p)):"+"+Math.round(100*(1-p)/p);};
 const sgn = v => (v>=0?"+":"")+(+v).toFixed(1);
 const tier = p => p>=0.62?"strong":(p>=0.555?"lean":"toss");
 const norm = s => (s||"").toLowerCase().normalize("NFKD").replace(/[^a-z0-9 ]+/g," ").replace(/\s+/g," ").trim();
@@ -449,9 +452,9 @@ function gcard(g){
         :(g.pitcher_known?"":'<span class="lbadge tbd">Starters TBD</span>')}
       <span class="pill ${tier(g.pick_prob)==="strong"?"strong":""}">${g.pick} ${pctI(g.pick_prob)}%</span></div>
     <div class="side ${homeWin?"":"win"}"><span class="ab">${g.away_abbr}</span>
-      <span class="who"><span class="sp">${spA}</span></span><span class="pc">${pctI(1-hp)}%</span></div>
+      <span class="who"><span class="sp">${spA}</span></span><span class="odds" title="fair American odds (no vig) from the model">${amOdds(1-hp)}</span><span class="pc">${pctI(1-hp)}%</span></div>
     <div class="side ${homeWin?"win":""}"><span class="ab">${g.home_abbr}</span>
-      <span class="who"><span class="sp">${spH}</span></span><span class="pc">${pctI(hp)}%</span></div>
+      <span class="who"><span class="sp">${spH}</span></span><span class="odds" title="fair American odds (no vig) from the model">${amOdds(hp)}</span><span class="pc">${pctI(hp)}%</span></div>
     <div class="pbar"><div class="h" style="width:${pctI(hp)}%"></div><div class="mid"></div></div>
     <div class="edge"><span class="k">edge</span>
       <span class="${e.home_pitcher>=0?"p":"n"}">SP ${sgn((e.home_pitcher||0)-(e.away_pitcher||0)>=0?Math.max(e.home_pitcher||0,0):(e.away_pitcher||0))}</span>
@@ -540,9 +543,9 @@ function nflPage(){
         ${badge}
         <span class="pill ${tier(pp)==="strong"?"strong":""}">${pick} ${pctI(pp)}%</span></div>
       <div class="side ${homeWin?"":"win"}"><span class="ab">${g.away}</span>
-        <span class="who"><span class="sp">${qbOf(g.away)}</span></span><span class="pc">${pctI(1-hp)}%</span></div>
+        <span class="who"><span class="sp">${qbOf(g.away)}</span></span><span class="odds" title="fair American odds (no vig) from the model">${amOdds(1-hp)}</span><span class="pc">${pctI(1-hp)}%</span></div>
       <div class="side ${homeWin?"win":""}"><span class="ab">${g.home}</span>
-        <span class="who"><span class="sp">${qbOf(g.home)}</span></span><span class="pc">${pctI(hp)}%</span></div>
+        <span class="who"><span class="sp">${qbOf(g.home)}</span></span><span class="odds" title="fair American odds (no vig) from the model">${amOdds(hp)}</span><span class="pc">${pctI(hp)}%</span></div>
       <div class="pbar"><div class="h" style="width:${pctI(hp)}%"></div><div class="mid"></div></div>
     </a>`;};
   let cardsBody;
@@ -1029,9 +1032,9 @@ function nflGamePage(key){
         <div style="margin:8px 0 2px"><span class="pill ${conf>=0.62?"strong":""}" style="font-size:15px;padding:6px 12px">${pick} ${pctI(conf)}%</span>
           <span class="sub" style="margin-left:8px">${pr.near?"live model":"season simulation"}</span></div>
         <div class="side ${homeWin?"":"win"}" style="margin-top:10px"><span class="ab">${teamLink(away)}</span>
-          <span class="who"><span class="sp">${qcell(A)}</span></span><span class="pc">${pctI(1-hp)}%</span></div>
+          <span class="who"><span class="sp">${qcell(A)}</span></span><span class="odds" title="fair American odds (no vig) from the model">${amOdds(1-hp)}</span><span class="pc">${pctI(1-hp)}%</span></div>
         <div class="side ${homeWin?"win":""}"><span class="ab">${teamLink(home)}</span>
-          <span class="who"><span class="sp">${qcell(H)}</span></span><span class="pc">${pctI(hp)}%</span></div>
+          <span class="who"><span class="sp">${qcell(H)}</span></span><span class="odds" title="fair American odds (no vig) from the model">${amOdds(hp)}</span><span class="pc">${pctI(hp)}%</span></div>
         <div class="pbar"><div class="h" style="width:${pctI(hp)}%"></div><div class="mid"></div></div>
         <div class="sub" style="margin-top:10px">Model ${pctI(g.ph)}% home &middot; simulation ${pctI(g.pmc!=null?g.pmc:g.ph)}% home.
           Games inside a week serve the model; further out, the 20,000-run sim (team strength evolves inside every sim).</div></div>
