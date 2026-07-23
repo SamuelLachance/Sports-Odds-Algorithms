@@ -14,7 +14,9 @@ bp_z is the home-minus-away season-to-date reliever FIP-core differential: the
 model rates the STARTER via FIP but left the ~40% of relief innings to team Elo;
 the bullpen term recovers that (locked-holdout tested, phase0/bullpen_eval.py:
 +0.00017 nats, CI [+0.00004,+0.00029]). recbp is the default served tier; full is
-the best when lineups post. All coefficients are fit on DEV 2000-2015 only.
+the best when lineups post. Shipped coefficients are retrained walk-forward on every
+completed season; the locked 2000-2015->2016-2024 fit is kept only to report the
+honest out-of-sample validation number.
 """
 
 from __future__ import annotations
@@ -282,28 +284,42 @@ def main():
     bre = np.array([x[7] for x in j])
     dmask = np.isin(seasons, list(DEV))
     tmask = np.isin(seasons, TEST)
-    ts_mu, ts_sd = float(tse[dmask].mean()), float(tse[dmask].std())
-    bp_mu, bp_sd = float(bpe[dmask].mean()), float(bpe[dmask].std())
-    pw_mu, pw_sd = float(pwe[dmask].mean()), float(pwe[dmask].std())
-    si_mu, si_sd = float(sie[dmask].mean()), float(sie[dmask].std())
-    br_mu, br_sd = float(bre[dmask].mean()), float(bre[dmask].std())
-    tsz = (tse - ts_mu) / ts_sd
-    bpz = (bpe - bp_mu) / bp_sd
-    pwz = (pwe - pw_mu) / pw_sd
-    siz = (sie - si_mu) / si_sd
-    brz = (bre - br_mu) / br_sd
+    ship_through = int(seasons.max())
+    smask = seasons <= ship_through            # SHIP: train on every completed season
 
-    recal = LogisticRegression(C=1e6, max_iter=1000).fit(lf[dmask].reshape(-1, 1), y[dmask])
+    # Standardise the raw feature edges two ways: the SHIPPED model uses all completed
+    # seasons (walk-forward retraining -> stays current with the run environment); a
+    # DEV-only copy is kept purely to reproduce the honest locked-holdout validation.
+    def stdz(mask):
+        return {n: (float(a[mask].mean()), float(a[mask].std()))
+                for n, a in (("ts", tse), ("bp", bpe), ("pw", pwe), ("si", sie), ("br", bre))}
+    Sd, Dd = stdz(smask), stdz(dmask)
+    def zc(arr, name, tbl): mu, sd = tbl[name]; return (arr - mu) / sd
+
+    # ---- SHIPPED tiers: fit on ALL completed seasons (walk-forward) ----
+    tsz, bpz, pwz = zc(tse, "ts", Sd), zc(bpe, "bp", Sd), zc(pwe, "pw", Sd)
+    siz, brz = zc(sie, "si", Sd), zc(bre, "br", Sd)
+    recal = LogisticRegression(C=1e6, max_iter=1000).fit(lf[smask].reshape(-1, 1), y[smask])
     recbp = LogisticRegression(C=1e6, max_iter=1000).fit(
-        np.column_stack([lf[dmask], bpz[dmask], siz[dmask]]), y[dmask])
+        np.column_stack([lf[smask], bpz[smask], siz[smask]]), y[smask])
     full = LogisticRegression(C=1e6, max_iter=1000).fit(
-        np.column_stack([lf[dmask], tsz[dmask], bpz[dmask], pwz[dmask], siz[dmask], brz[dmask]]), y[dmask])
+        np.column_stack([lf[smask], tsz[smask], bpz[smask], pwz[smask], siz[smask], brz[smask]]), y[smask])
+    (ts_mu, ts_sd), (bp_mu, bp_sd) = Sd["ts"], Sd["bp"]
+    (pw_mu, pw_sd), (si_mu, si_sd), (br_mu, br_sd) = Sd["pw"], Sd["si"], Sd["br"]
 
+    # ---- Holdout VALIDATION: fit on DEV 2000-2015, score TEST 2016-2024 (unchanged) ----
+    tsd, bpd_, pwd = zc(tse, "ts", Dd), zc(bpe, "bp", Dd), zc(pwe, "pw", Dd)
+    sid, brd = zc(sie, "si", Dd), zc(bre, "br", Dd)
+    rc_d = LogisticRegression(C=1e6, max_iter=1000).fit(lf[dmask].reshape(-1, 1), y[dmask])
+    rb_d = LogisticRegression(C=1e6, max_iter=1000).fit(
+        np.column_stack([lf[dmask], bpd_[dmask], sid[dmask]]), y[dmask])
+    fl_d = LogisticRegression(C=1e6, max_iter=1000).fit(
+        np.column_stack([lf[dmask], tsd[dmask], bpd_[dmask], pwd[dmask], sid[dmask], brd[dmask]]), y[dmask])
     yt = y[tmask]
-    p_recal = recal.predict_proba(lf[tmask].reshape(-1, 1))[:, 1]
-    p_recbp = recbp.predict_proba(np.column_stack([lf[tmask], bpz[tmask], siz[tmask]]))[:, 1]
-    p_full = full.predict_proba(np.column_stack(
-        [lf[tmask], tsz[tmask], bpz[tmask], pwz[tmask], siz[tmask], brz[tmask]]))[:, 1]
+    p_recal = rc_d.predict_proba(lf[tmask].reshape(-1, 1))[:, 1]
+    p_recbp = rb_d.predict_proba(np.column_stack([lf[tmask], bpd_[tmask], sid[tmask]]))[:, 1]
+    p_full = fl_d.predict_proba(np.column_stack(
+        [lf[tmask], tsd[tmask], bpd_[tmask], pwd[tmask], sid[tmask], brd[tmask]]))[:, 1]
 
     blend = {
         "recal": {"b0": float(recal.intercept_[0]), "b1": float(recal.coef_[0][0])},
@@ -323,7 +339,10 @@ def main():
         "pwr_lg_iso": round(pwr_lg_iso, 5), "pwr_prior_pa": PWR_PRIOR_PA,
         "siera_prior": SIERA_PRIOR, "siera_lg": {k: round(v, 6) for k, v in siera_lg.items()},
         "br_rv": list(BR_RV), "br_prior_pa": BR_PRIOR_PA,
-        "holdout": {"recal_ll": round(ll(p_recal, yt), 5),
+        "shipped_train": f"2000-{ship_through} (all completed seasons, walk-forward)",
+        "holdout": {"note": "validation only: fit 2000-2015, scored 2016-2024; "
+                            "the shipped coefficients above are retrained on all seasons",
+                    "recal_ll": round(ll(p_recal, yt), 5),
                     "recbp_ll": round(ll(p_recbp, yt), 5),
                     "full_ll": round(ll(p_full, yt), 5), "n": int(len(yt))},
     }
