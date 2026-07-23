@@ -153,9 +153,9 @@
       "side": "home",
       "team": "TOR",
       "ev_open": 0.1786,
-      "ev_cur": 0.1907,
+      "ev_cur": 0.1846,
       "open_dec": 1.95,
-      "cur_dec": 1.97,
+      "cur_dec": 1.96,
       "available": true,
       "books": 11
      }
@@ -17856,5 +17856,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-07-23T17:39:58.689435+00:00"
+ "value_updated": "2026-07-23T18:40:33.365366+00:00"
 }
