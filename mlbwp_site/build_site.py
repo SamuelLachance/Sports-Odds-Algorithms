@@ -431,7 +431,7 @@ function nflPage(){
     if(l.code==="nfl")
       return `<button class="lg on" data-lg="nfl"><span>NFL</span><span class="n">2026</span></button>`;
     return `<button class="lg" disabled><span>${l.name}</span><span class="soon">soon</span></button>`;}).join("");
-  const pow=n.power.map(t=>`<tr>
+  const pow=n.power.map(t=>`<tr onclick="location.hash='#/team/${t.code}'">
     <td><span class="num">${t.rank}</span></td>
     <td class="a"><span class="ab" style="color:var(--accent)">${t.code}</span> <span class="sub">${t.name}</span></td>
     <td><span class="num">${t.elo.toFixed(0)}</span></td>
@@ -439,19 +439,20 @@ function nflPage(){
     <td><span class="num ${t.off_run>=0?"pos":"neg"}">${t.off_run>=0?"+":""}${t.off_run.toFixed(1)}</span></td>
     <td><span class="num ${t.def_pass>=0?"pos":"neg"}">${t.def_pass>=0?"+":""}${t.def_pass.toFixed(1)}</span></td>
     <td><span class="num ${t.def_run>=0?"pos":"neg"}">${t.def_run>=0?"+":""}${t.def_run.toFixed(1)}</span></td></tr>`).join("");
-  const bd=pos=>n.boards[pos].map((p,i)=>`<tr><td><span class="num">${i+1}</span></td>
-    <td class="a">${p.player}</td><td><span class="num">${p.z>=0?"+":""}${p.z.toFixed(2)}</span></td>
+  const bd=pos=>n.boards[pos].map((p,i)=>`<tr ${p.id?`onclick="location.hash='#/player/${p.id}'"`:""}><td><span class="num">${i+1}</span></td>
+    <td class="a"><span class="player-link">${p.player}</span></td><td><span class="num">${p.z>=0?"+":""}${p.z.toFixed(2)}</span></td>
     <td><span class="num">${p.n.toLocaleString()}</span></td></tr>`).join("");
   const btbl=(t,pos)=>`<div class="panel"><h3>${t}</h3><div class="twrap"><table>
     <thead><tr><th></th><th>Player</th><th>Value z</th><th>Plays</th></tr></thead>
     <tbody>${bd(pos)}</tbody></table></div></div>`;
-  const mvp=n.mvp.map((m,i)=>`<tr><td><span class="num">${i+1}</span></td><td class="a">${m.player}</td>
+  const mvp=n.mvp.map((m,i)=>`<tr ${m.id?`onclick="location.hash='#/player/${m.id}'"`:""}><td><span class="num">${i+1}</span></td><td class="a"><span class="player-link">${m.player}</span></td>
     <td><span class="num pos">+${m.pts.toFixed(2)}</span></td><td><span class="num">${m.n_abs}</span></td></tr>`).join("");
   const cal=mc.calibration.map(c=>`<tr><td class="a">${c.bucket}</td>
     <td><span class="num">${c.hit.toFixed(1)}%</span></td><td><span class="num">${c.n}</span></td></tr>`).join("");
   $("#view").innerHTML=`<div class="controls"><div class="rail">${rail}</div></div>
     <div class="eyebrow">NFL &middot; entering the ${n.season} season</div>
-    <h1 class="pt">NFL GLASSBOX <span class="sub" style="font-weight:400">preseason &middot; weekly picks begin September</span></h1>
+    <h1 class="pt">NFL Board <span class="sub" style="font-weight:400">2026 preview &middot; game picks begin with Week 1 in September</span></h1>
+    <div class="sub" style="margin-bottom:10px">Everything is clickable &mdash; teams open team pages, players open player pages. Full <a href="#/standings" style="color:var(--accent)">Standings</a> and <a href="#/teams" style="color:var(--accent)">Teams</a> are in the top nav.</div>
     <div class="sub" style="margin-bottom:14px">Market-blind model &middot; <b>${(mc.accuracy).toFixed(1)}%</b> accurate on a locked
       ${mc.holdout} holdout &middot; log loss <b>${mc.test_log_loss.toFixed(3)}</b> (closing line ${mc.close_log_loss.toFixed(3)})
       &middot; ${mc.n_features} features &middot; ${mc.n_tests} documented tests &middot; ${mc.training}.</div>
