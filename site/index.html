@@ -272,7 +272,8 @@ footer b{color:var(--muted)} footer a{color:var(--muted);text-decoration:underli
 <script>
 const $ = s => document.querySelector(s);
 const state = {board:null, db:null, nfl:null,
-  league:(localStorage.getItem("league")||"mlb"), range:"today", nflRange:"year", live:{}, updated:null};
+  league:(localStorage.getItem("league")||"mlb"), range:"today", nflRange:"year",
+  posKey:null, posSort:"r", posMin:0, live:{}, updated:null};
 function setLeague(lg){state.league=lg; try{localStorage.setItem("league",lg);}catch(e){}
   const ns=document.getElementById("navseason");
   if(ns) ns.style.display=(lg==="nfl"&&state.nfl&&state.nfl.schedule)?"":"none";
@@ -408,6 +409,7 @@ function route(){
   if(v==="game"&&arg) return /_/.test(arg)&&state.nfl?nflGamePage(arg):gamePage(arg);
   if(v==="team"&&arg){setNav("teams");return teamPage(arg);}
   if(v==="player"&&arg){setNav("teams");return playerPage(arg);}
+  if(v==="pos"&&arg){setNav("players");return posPage(arg);}
   if(v==="players"){setNav("players");return playersPage();}
   if(v==="teams"){setNav("teams");return teamsPage();}
   if(v==="standings"){setNav("standings");return standings();}
@@ -763,7 +765,7 @@ function playersPage(){
     <td>${gb(p.ts100)}</td>
     <td><span class="num">${p.ts_mu!=null?p.ts_mu.toFixed(1):"-"}</span></td>
     <td class="sub">${p.pit?`${p.pit.era!=null?p.pit.era:"-"} ERA &middot; ${p.pit.whip!=null?p.pit.whip:"-"} WHIP &middot; ${p.pit.so||0} K`:"&mdash;"}</td></tr>`;
-  const tbl=(title,rows,statHdr)=>`<div class="panel"><h3>${title}</h3><div class="twrap"><table>
+  const tbl=(title,rows,statHdr,key)=>`<div class="panel"><h3 style="cursor:pointer" onclick="location.hash='#/pos/${key}'">${title} <span class="sub" style="font-weight:400">all &rarr;</span></h3><div class="twrap"><table>
     <thead><tr><th></th><th>Player</th><th>GlassBox</th><th class="nocase">&mu;</th><th>${statHdr}</th></tr></thead>
     <tbody>${rows}</tbody></table></div></div>`;
   $("#view").innerHTML=`<div class="eyebrow">Database &middot; MLB</div><h1 class="pt">Players</h1>
@@ -773,8 +775,8 @@ function playersPage(){
     <input class="psearch" id="psearch" placeholder="Search ${P.length} players&hellip;" autocomplete="off">
     <div id="psres"></div>
     <div class="grid" style="margin-top:8px">
-      ${tbl("Top hitters",bats.slice(0,15).map(brow).join(""),"2026 season")}
-      ${tbl("Top pitchers",pits.slice(0,15).map(prow).join(""),"2026 season")}
+      ${tbl("Top hitters",bats.slice(0,15).map(brow).join(""),"2026 season","hitters")}
+      ${tbl("Top pitchers",pits.slice(0,15).map(prow).join(""),"2026 season","pitchers")}
     </div>`;
   const res=$("#psres");
   $("#psearch").oninput=e=>{
@@ -804,7 +806,7 @@ function nflPlayers(){
     <td>${gb(p.rating.r)}</td>
     <td><span class="num">${p.rating.mu.toFixed(1)}&thinsp;&plusmn;&thinsp;${p.rating.sigma.toFixed(1)}</span></td>
     <td><span class="num">${p.rating.n_eff.toLocaleString()}</span></td></tr>`;
-  const panel=g=>`<div class="panel"><h3>${GN[g]}</h3><div class="twrap"><table>
+  const panel=g=>`<div class="panel"><h3 style="cursor:pointer" onclick="location.hash='#/pos/${g}'">${GN[g]} <span class="sub" style="font-weight:400">full ladder &rarr;</span></h3><div class="twrap"><table>
     <thead><tr><th></th><th>Player</th><th>Rating</th><th class="nocase">&mu;&thinsp;&plusmn;&thinsp;&sigma;</th><th>Plays</th></tr></thead>
     <tbody>${byg[g].slice(0,10).map(row).join("")}</tbody></table></div></div>`;
   const proven=P.filter(p=>p.rating.n_eff>=1000).sort((a,b)=>a.rating.sigma-b.rating.sigma).slice(0,8);
@@ -841,6 +843,137 @@ function nflPlayers(){
         <td><span class="num">${p.rating.n_eff.toLocaleString()}</span></td></tr>`).join("")}
       </tbody></table></div>`:`<div class="sub" style="margin:6px 0 10px">No rated players match.</div>`;
   };
+}
+
+/* ---------- POSITION DEEP-DIVE ---------- */
+function histBars(vals){
+  const B=24, c=new Array(B).fill(0);
+  vals.forEach(v=>c[Math.max(0,Math.min(B-1,Math.floor(v/100*B)))]++);
+  const m=Math.max(...c,1);
+  return `<div style="display:flex;align-items:flex-end;gap:2px;height:56px;margin:6px 0 2px">
+    ${c.map((x,i)=>`<div style="flex:1;background:${i>=B/2?"var(--accent)":"var(--line-2)"};opacity:${x?1:.22};height:${Math.max(4,Math.round(100*x/m))}%;border-radius:2px" title="${Math.round(100*i/B)}-${Math.round(100*(i+1)/B)}: ${x}"></div>`).join("")}
+  </div><div class="sub" style="display:flex;justify-content:space-between"><span>0</span><span>50 = league avg</span><span>100</span></div>`;
+}
+function chipRow(items,cur,attr){
+  return `<div class="filters" style="margin:0 0 0 0">${items.map(([k,t])=>
+    `<button class="filt ${String(k)===String(cur)?"on":""}" data-${attr}="${k}">${t}</button>`).join("")}</div>`;
+}
+function posPage(key){
+  if(state.posKey!==key){state.posKey=key;state.posSort="r";state.posMin=0;}
+  if(state.league==="nfl"&&state.nfl) return nflPosPage(key);
+  return mlbPosPage(key);
+}
+
+function nflPosPage(key){
+  const n=state.nfl;
+  const GN={QB:"Quarterbacks",RB:"Running backs",WR:"Receivers",TE:"Tight ends",
+            OL:"Offensive line",DL:"Defensive line",LB:"Linebackers",DB:"Secondary"};
+  if(!n||!GN[key]){location.hash="#/players";return;}
+  const all=Object.values(n.players||{}).filter(p=>p.rating&&p.rating.bucket===key);
+  const mMu=all.reduce((s,p)=>s+p.rating.mu,0)/Math.max(all.length,1);
+  const mSig=all.reduce((s,p)=>s+p.rating.sigma,0)/Math.max(all.length,1);
+  const rooms={};
+  all.forEach(p=>{const w=Math.max(p.snap_share||0,0.05);
+    (rooms[p.team]=rooms[p.team]||[0,0]); rooms[p.team][0]+=w*p.rating.r; rooms[p.team][1]+=w;});
+  const best=Object.entries(rooms).map(([t,[s,w]])=>[t,s/w]).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const row=(p,i)=>{const r=p.rating;
+    return `<tr onclick="location.hash='#/player/${p.id}'">
+    <td><span class="num">${i+1}</span></td>
+    <td class="a"><span class="player-link">${p.name}</span></td>
+    <td>${teamLink(p.team)}</td>
+    <td>${gb(r.r)}</td>
+    <td><span class="num">${r.mu.toFixed(1)}&thinsp;&plusmn;&thinsp;${r.sigma.toFixed(1)}</span></td>
+    <td><span class="num">${(r.mu-3*r.sigma).toFixed(1)}</span></td>
+    <td><span class="num">${r.n_eff.toLocaleString()}</span></td>
+    <td><span class="num">${r.tier}</span></td></tr>`;};
+  const renderBody=()=>{
+    const q=norm(($("#posq")||{}).value||"");
+    let P=all.filter(p=>p.rating.n_eff>=state.posMin);
+    if(q.length>=2) P=P.filter(p=>norm(p.name).includes(q));
+    const S={r:(a,b)=>b.rating.r-a.rating.r, mu:(a,b)=>b.rating.mu-a.rating.mu,
+             sig:(a,b)=>a.rating.sigma-b.rating.sigma, n:(a,b)=>b.rating.n_eff-a.rating.n_eff};
+    P.sort(S[state.posSort]||S.r);
+    $("#posbody").innerHTML=P.map(row).join("")||`<tr><td class="sub" colspan="8">No players match.</td></tr>`;
+    $("#posn").textContent=P.length;
+  };
+  $("#view").innerHTML=`<a class="back" href="#/players">&lsaquo; Players</a>
+    <div class="eyebrow">TrueSkill ladder &middot; NFL</div><h1 class="pt">${GN[key]}</h1>
+    <div class="sub" style="margin-bottom:10px"><b>${all.length}</b> rated ${GN[key].toLowerCase()} &middot; league &mu; ${mMu.toFixed(1)}, avg &sigma; ${mSig.toFixed(2)}
+      &middot; ratings are &mu;&thinsp;&minus;&thinsp;3&sigma; z-scored within this position (50 = average ${key}). Conservative = the floor the engine will vouch for.</div>
+    <div class="grid" style="margin-bottom:14px">
+      <div class="panel"><h3>Rating distribution</h3>${histBars(all.map(p=>p.rating.r))}</div>
+      <div class="panel"><h3>Best ${key} rooms <span class="sub" style="font-weight:400">snap-weighted team average</span></h3>
+        <div class="twrap"><table><tbody>${best.map(([t,v],i)=>`<tr onclick="location.hash='#/team/${t}'">
+          <td><span class="num">${i+1}</span></td><td class="a"><span class="ab" style="color:var(--accent)">${t}</span> <span class="sub">${n.teams[t]?n.teams[t].name:""}</span></td>
+          <td>${gb(v)}</td></tr>`).join("")}</tbody></table></div></div>
+    </div>
+    <div class="controls" style="margin-bottom:10px">
+      ${chipRow([["r","Rating"],["mu","Raw &#956;"],["sig","Most certain"],["n","Most plays"]],state.posSort,"psort")}
+      ${chipRow([[0,"All"],[500,"500+ plays"],[1500,"1,500+ plays"]],state.posMin,"pmin")}
+      <input class="psearch" id="posq" placeholder="Filter by name&hellip;" autocomplete="off" style="max-width:220px;margin:0">
+    </div>
+    <div class="sub" style="margin-bottom:6px"><span id="posn">${all.length}</span> shown</div>
+    <div class="twrap"><table>
+      <thead><tr><th></th><th>Player</th><th>Team</th><th>Rating</th><th class="nocase">&mu;&thinsp;&plusmn;&thinsp;&sigma;</th><th class="nocase">&mu;&minus;3&sigma;</th><th>Plays</th><th>Tier</th></tr></thead>
+      <tbody id="posbody"></tbody></table></div>`;
+  renderBody();
+  $("#view").querySelectorAll("[data-psort]").forEach(x=>x.onclick=()=>{state.posSort=x.dataset.psort;nflPosPage(key);});
+  $("#view").querySelectorAll("[data-pmin]").forEach(x=>x.onclick=()=>{state.posMin=parseInt(x.dataset.pmin);nflPosPage(key);});
+  $("#posq").oninput=renderBody;
+}
+
+function mlbPosPage(key){
+  const db=state.db;
+  if(!db||(key!=="hitters"&&key!=="pitchers")){location.hash="#/players";return;}
+  const isBat=key==="hitters";
+  const all=Object.values(db.players||{}).filter(p=>p.role===(isBat?"batter":"pitcher")&&p.ts100!=null);
+  const mMu=all.reduce((s,p)=>s+(p.ts_mu||25),0)/Math.max(all.length,1);
+  const T=Object.values(db.teams||{}).map(t=>[t.abbr,isBat?t.ts_off:t.ts_pit,t.code])
+    .filter(x=>x[1]!=null).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const line=p=>isBat?(p.bat?`${p.bat.ops!=null?p.bat.ops:"-"} OPS &middot; ${p.bat.hr||0} HR &middot; ${p.bat.rbi||0} RBI`:"&mdash;")
+                     :(p.pit?`${p.pit.era!=null?p.pit.era:"-"} ERA &middot; ${p.pit.whip!=null?p.pit.whip:"-"} WHIP &middot; ${p.pit.so||0} K`:"&mdash;");
+  const vol=p=>isBat?((p.bat&&p.bat.pa)||0):((p.pit&&p.pit.ip)||0);
+  const row=(p,i)=>`<tr onclick="location.hash='#/player/${p.id}'">
+    <td><span class="num">${i+1}</span></td>
+    <td class="a"><span class="player-link">${p.name}</span> <span class="sub">${p.pos}</span></td>
+    <td>${teamLink(p.team)}</td>
+    <td>${gb(p.ts100)}</td>
+    <td><span class="num">${p.ts_mu!=null?p.ts_mu.toFixed(1):"-"}</span></td>
+    <td class="sub">${line(p)}</td></tr>`;
+  const renderBody=()=>{
+    const q=norm(($("#posq")||{}).value||"");
+    let P=all.filter(p=>vol(p)>=state.posMin);
+    if(q.length>=2) P=P.filter(p=>norm(p.name).includes(q));
+    const S={r:(a,b)=>b.ts100-a.ts100, mu:(a,b)=>(b.ts_mu||0)-(a.ts_mu||0),
+             vol:(a,b)=>vol(b)-vol(a)};
+    P.sort(S[state.posSort]||S.r);
+    $("#posbody").innerHTML=P.map(row).join("")||`<tr><td class="sub" colspan="6">No players match.</td></tr>`;
+    $("#posn").textContent=P.length;
+  };
+  $("#view").innerHTML=`<a class="back" href="#/players">&lsaquo; Players</a>
+    <div class="eyebrow">TrueSkill ladder &middot; MLB</div><h1 class="pt">${isBat?"Hitters":"Pitchers"}</h1>
+    <div class="sub" style="margin-bottom:10px"><b>${all.length}</b> rated ${key} &middot; league &mu; ${mMu.toFixed(1)}
+      &middot; every plate appearance is a batter-vs-pitcher TrueSkill duel; 50 = league average. Click anyone.</div>
+    <div class="grid" style="margin-bottom:14px">
+      <div class="panel"><h3>Rating distribution</h3>${histBars(all.map(p=>p.ts100))}</div>
+      <div class="panel"><h3>Best team ${isBat?"lineups":"staffs"} <span class="sub" style="font-weight:400">roster TrueSkill average</span></h3>
+        <div class="twrap"><table><tbody>${T.map(([ab,v,code],i)=>`<tr onclick="location.hash='#/team/${code}'">
+          <td><span class="num">${i+1}</span></td><td class="a"><span class="ab" style="color:var(--accent)">${ab}</span></td>
+          <td>${gb(v)}</td></tr>`).join("")}</tbody></table></div></div>
+    </div>
+    <div class="controls" style="margin-bottom:10px">
+      ${chipRow([["r","Rating"],["mu","Raw &#956;"],["vol",isBat?"Most PA":"Most IP"]],state.posSort,"psort")}
+      ${chipRow(isBat?[[0,"All"],[100,"100+ PA"],[300,"300+ PA"]]:[[0,"All"],[30,"30+ IP"],[100,"100+ IP"]],state.posMin,"pmin")}
+      <input class="psearch" id="posq" placeholder="Filter by name&hellip;" autocomplete="off" style="max-width:220px;margin:0">
+    </div>
+    <div class="sub" style="margin-bottom:6px"><span id="posn">${all.length}</span> shown</div>
+    <div class="twrap"><table>
+      <thead><tr><th></th><th>Player</th><th>Team</th><th>GlassBox</th><th class="nocase">&mu;</th><th>2026 season</th></tr></thead>
+      <tbody id="posbody"></tbody></table></div>`;
+  renderBody();
+  $("#view").querySelectorAll("[data-psort]").forEach(x=>x.onclick=()=>{state.posSort=x.dataset.psort;mlbPosPage(key);});
+  $("#view").querySelectorAll("[data-pmin]").forEach(x=>x.onclick=()=>{state.posMin=parseInt(x.dataset.pmin);mlbPosPage(key);});
+  $("#posq").oninput=renderBody;
 }
 
 /* ---------- NFL GAME PAGE ---------- */
