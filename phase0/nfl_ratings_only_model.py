@@ -77,7 +77,7 @@ y16 = np.array([g["y"] for _, g in G16])
 
 def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                widen2=1.5 ** 2, playoff_mult=1.0, dead_mult=1.0, opp_k=0.0,
-               opp_mode="league", flat_scale=1.0):
+               opp_mode="league", flat_scale=1.0, role_r=0.0):
     """One engine walk -> per-game ts_diff feature (pre-game, leak-free).
 
     Game importance: playoff snaps x playoff_mult; 'useless' late-season games
@@ -88,6 +88,12 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
     tau2 = tau * tau
     mu, s2, lastwk = {}, {}, {}
     share2 = {}
+    pos2 = {}
+    PG = {"QB":"QB","RB":"RB","FB":"RB","HB":"RB","WR":"WR","TE":"TE",
+          "T":"OL","G":"OL","C":"OL","OT":"OL","OG":"OL","OL":"OL","LT":"OL","RT":"OL","LG":"OL","RG":"OL",
+          "DE":"DL","DT":"DL","NT":"DL","DL":"DL","EDGE":"DL",
+          "LB":"LB","ILB":"LB","OLB":"LB","MLB":"LB",
+          "CB":"DB","S":"DB","SS":"DB","FS":"DB","SAF":"DB","DB":"DB"}
     f = np.zeros(len(G16))
     prev = None
     wins = defaultdict(float); played = defaultdict(int)
@@ -122,6 +128,29 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 if m_ is not None:
                     tot += (st[0] / st[1]) * max(-V_CLAMP, min(V_CLAMP, m_ - MU0))
             f[j] += side * tot
+        # role multipliers: depth-chart position by AS-OF usage within team-position
+        # (starter = hardest job -> amplified; deep backup -> discounted)
+        role_m = {}
+        if role_r:
+            for team in (g["home"], g["away"]):
+                tbl = snaps.get((g["gid"], team))
+                if not tbl:
+                    continue
+                grp = defaultdict(list)
+                for pid, (pos, op, dp) in tbl.items():
+                    pgk = PG.get(pos)
+                    st = share2.get(pid)
+                    if pgk and st and st[1] > 0:
+                        grp[pgk].append((pid, st[0] / st[1]))
+                for pgk, lst in grp.items():
+                    mx = max(s for _, s in lst)
+                    if mx <= 0:
+                        continue
+                    for pid, s in lst:
+                        g_ = pfr2gsis.get(pid)
+                        if g_:
+                            role_m[g_] = max(1.0 - role_r,
+                                             min(1.0 + role_r, 1.0 + role_r * (2.0 * s / mx - 1.0)))
         # 2. TS updates from this game's plays, context-weighted
         gid = g["gid"]
         wk = (gid[:4], gid[5:7])
@@ -169,11 +198,13 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 win, lose, tt, w_win_, w_lose_ = D, O, -t, w_D, w_O
             v = v_win(tt); w = v * (v + tt)
             for p in win:
-                mu[p] += w_win_ * (s2[p] / c) * v
-                s2[p] = max(s2[p] * (1.0 - w_win_ * (s2[p] / c2) * w), SIG2_FLOOR)
+                rm = role_m.get(p, 1.0) if role_r else 1.0
+                mu[p] += rm * w_win_ * (s2[p] / c) * v
+                s2[p] = max(s2[p] * (1.0 - rm * w_win_ * (s2[p] / c2) * w), SIG2_FLOOR)
             for p in lose:
-                mu[p] -= w_lose_ * (s2[p] / c) * v
-                s2[p] = max(s2[p] * (1.0 - w_lose_ * (s2[p] / c2) * w), SIG2_FLOOR)
+                rm = role_m.get(p, 1.0) if role_r else 1.0
+                mu[p] -= rm * w_lose_ * (s2[p] / c) * v
+                s2[p] = max(s2[p] * (1.0 - rm * w_lose_ * (s2[p] / c2) * w), SIG2_FLOOR)
         # 3. snap-share walk
         for team in (g["home"], g["away"]):
             tbl = snaps.get((g["gid"], team))
@@ -211,12 +242,12 @@ def trial(name, **kw):
     results[name] = (ll, kw)
     print(f"  {name:<44} {ll:.5f}  [{time.time()-T0:.0f}s]", flush=True)
 
-SHIP = dict(tau=0.30, use_lev=True, down_mult=1.25, late_mult=1.5)
-trial("shipped engine (tau .30 + snap context)", **SHIP)
-trial("flat update scale x1.3 (learning-rate diag)", **SHIP, flat_scale=1.3)
-trial("flat update scale x1.5", **SHIP, flat_scale=1.5)
-trial("+ opp vs LEAGUE mean k=0.3", **SHIP, opp_k=0.3, opp_mode="league")
-trial("+ ALL-league (playoffs 1.5, dead .5, opp .3)", **SHIP, playoff_mult=1.5, dead_mult=0.5, opp_k=0.3, opp_mode="league")
+SHIP = dict(tau=0.30, use_lev=True, down_mult=1.25, late_mult=1.5,
+            playoff_mult=1.5, dead_mult=0.5, opp_k=0.3, opp_mode="league")
+trial("shipped engine v3 (context+importance+opp)", **SHIP)
+trial("+ depth-chart role r=0.25", **SHIP, role_r=0.25)
+trial("+ depth-chart role r=0.5", **SHIP, role_r=0.5)
+trial("+ depth-chart role r=0.75", **SHIP, role_r=0.75)
 
 best_name = min(results, key=lambda k: results[k][0])
 best_ll, best_kw = results[best_name]

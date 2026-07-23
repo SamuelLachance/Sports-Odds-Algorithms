@@ -1,22 +1,23 @@
 {
  "dev": {
-  "shipped engine (tau .30 + snap context)": 0.67249,
-  "flat update scale x1.3 (learning-rate diag)": 0.67311,
-  "flat update scale x1.5": 0.67358,
-  "+ opp vs LEAGUE mean k=0.3": 0.66743,
-  "+ ALL-league (playoffs 1.5, dead .5, opp .3)": 0.66748
+  "shipped engine v3 (context+importance+opp)": 0.66748,
+  "+ depth-chart role r=0.25": 0.66937,
+  "+ depth-chart role r=0.5": 0.67053,
+  "+ depth-chart role r=0.75": 0.67164
  },
- "winner": "+ opp vs LEAGUE mean k=0.3",
+ "winner": "shipped engine v3 (context+importance+opp)",
  "winner_kw": {
   "tau": 0.3,
   "use_lev": true,
   "down_mult": 1.25,
   "late_mult": 1.5,
+  "playoff_mult": 1.5,
+  "dead_mult": 0.5,
   "opp_k": 0.3,
   "opp_mode": "league"
  },
- "test_ll": 0.6616,
+ "test_ll": 0.66181,
  "elo_ll": 0.63824,
  "test_n": 1139,
- "acc": 0.603
+ "acc": 0.6048
 }
