@@ -261,7 +261,7 @@ footer b{color:var(--muted)} footer a{color:var(--muted);text-decoration:underli
 <script>
 const $ = s => document.querySelector(s);
 const state = {board:null, db:null, nfl:null,
-  league:(localStorage.getItem("league")||"mlb"), range:"today", live:{}, updated:null};
+  league:(localStorage.getItem("league")||"mlb"), range:"today", nflRange:"year", live:{}, updated:null};
 function setLeague(lg){state.league=lg; try{localStorage.setItem("league",lg);}catch(e){}
   const ns=document.getElementById("navseason");
   if(ns) ns.style.display=(lg==="nfl"&&state.nfl&&state.nfl.schedule)?"":"none";}
@@ -462,24 +462,48 @@ function nflPage(){
   const cal=mc.calibration.map(c=>`<tr><td class="a">${c.bucket}</td>
     <td><span class="num">${c.hit.toFixed(1)}%</span></td><td><span class="num">${c.n}</span></td></tr>`).join("");
   const sch=n.schedule||[], proj=n.proj||{};
-  const wk1=sch.filter(g=>g.w===1).map(g=>{const pick=g.ph>=0.5?g.home:g.away,pp=Math.round(100*Math.max(g.ph,1-g.ph));
-    return `<tr onclick="location.hash='#/season/1'"><td class="sub">${g.d.slice(5)}</td>
-      <td class="a">${g.away} <span class="sub">at</span> ${g.home}</td>
-      <td><span class="pill ${pp>=65?"strong":""}">${pick} ${pp}%</span></td></tr>`;}).join("");
+  const today=new Date().toLocaleDateString("en-CA",{timeZone:TZ});
+  const NR={today:[today,today],week:[today,addDays(today,6)],month:[today,addDays(today,29)],year:["2000-01-01","2099-01-01"]}[state.nflRange];
+  const games=sch.filter(g=>g.d>=NR[0]&&g.d<=NR[1]);
+  const filts=[["today","Today"],["week","Week"],["month","Month"],["year","Year"]]
+    .map(([k,t])=>`<button class="filt ${k===state.nflRange?"on":""}" data-r="${k}">${t}</button>`).join("");
+  const qbOf=c=>n.teams&&n.teams[c]&&n.teams[c].qb1?n.teams[c].qb1.name:"";
+  const ncard=g=>{
+    const hp=g.ph, homeWin=hp>=0.5, done=g.hs!=null;
+    const pick=homeWin?g.home:g.away, pp=Math.max(hp,1-hp);
+    let badge=`<span class="lbadge proj">Week ${g.w}</span>`;
+    if(done){const winner=g.hs>g.as?g.home:(g.hs<g.as?g.away:null);
+      badge=winner==null?`<span class="lbadge proj">TIE</span>`
+        :(winner===pick?`<span class="lbadge off">HIT</span>`:`<span class="lbadge tbd">MISS</span>`);}
+    return `<a class="gc" href="#/season/${g.w}">
+      <div class="top"><span class="lv">${done?`FINAL ${g.as}-${g.hs}`:`${g.d.slice(5)} &middot; ${g.t?g.t.slice(0,5):""} ET`}</span>
+        ${badge}
+        <span class="pill ${tier(pp)==="strong"?"strong":""}">${pick} ${pctI(pp)}%</span></div>
+      <div class="side ${homeWin?"":"win"}"><span class="ab">${g.away}</span>
+        <span class="who"><span class="sp">${qbOf(g.away)}</span></span><span class="pc">${pctI(1-hp)}%</span></div>
+      <div class="side ${homeWin?"win":""}"><span class="ab">${g.home}</span>
+        <span class="who"><span class="sp">${qbOf(g.home)}</span></span><span class="pc">${pctI(hp)}%</span></div>
+      <div class="pbar"><div class="h" style="width:${pctI(hp)}%"></div><div class="mid"></div></div>
+    </a>`;};
+  let cardsBody;
+  if(!games.length){cardsBody=`<div class="empty">No NFL games in this window &mdash; the 2026 season kicks off September&nbsp;9. Pick <b>Year</b> to see every game.</div>`;}
+  else{const days=[...new Set(games.map(g=>g.d))].sort();
+    cardsBody=days.map(d=>{const gs=games.filter(g=>g.d===d);
+      return `<div class="day"><span class="d">${fmtDay(d,today)}</span><span class="c">${gs.length} games</span></div>
+        <div class="grid">${gs.map(ncard).join("")}</div>`;}).join("");}
   const pTop=Object.entries(proj).sort((x,y)=>y[1].w-x[1].w).slice(0,8).map(([c,p],i)=>
     `<tr onclick="location.hash='#/standings'"><td><span class="num">${i+1}</span></td><td class="a">${c}</td>
       <td><span class="num">${p.w.toFixed(1)}-${(17-p.w).toFixed(1)}</span></td>
       <td><span class="num">${p.po.toFixed(0)}%</span></td></tr>`).join("");
-  $("#view").innerHTML=`<div class="controls"><div class="rail">${rail}</div></div>
-    <div class="eyebrow">NFL &middot; ${n.season} season</div>
+  $("#view").innerHTML=`<div class="controls"><div class="rail">${rail}</div><div class="filters">${filts}</div></div>
+    ${cardsBody}
+    <div class="eyebrow" style="margin-top:22px">NFL &middot; ${n.season} season</div>
     <h1 class="pt">NFL Board <span class="sub" style="font-weight:400">all 272 games predicted &middot; season simulated on every build</span></h1>
     <div class="sub" style="margin-bottom:10px">Every row is clickable &mdash; teams, players, weeks. <a href="#/season" style="color:var(--accent)">Season</a> has every weekly pick; <a href="#/standings" style="color:var(--accent)">Standings</a> has the full projections; <a href="#/teams" style="color:var(--accent)">Teams</a> has roster ratings.</div>
     <div class="sub" style="margin-bottom:14px">Market-blind model &middot; <b>${(mc.accuracy).toFixed(1)}%</b> accurate on a locked
       ${mc.holdout} holdout &middot; log loss <b>${mc.test_log_loss.toFixed(3)}</b> (closing line ${mc.close_log_loss.toFixed(3)})
       &middot; ${mc.n_features} features &middot; ${mc.n_tests} documented tests &middot; ${mc.training}.</div>
     ${sch.length?`<div class="grid" style="margin-bottom:4px">
-      <div class="panel"><h3>Week 1 picks &middot; <a href="#/season" style="color:var(--accent)">full season &rarr;</a></h3>
-        <div class="twrap"><table><tbody>${wk1}</tbody></table></div></div>
       <div class="panel"><h3>Projected standings &middot; <a href="#/standings" style="color:var(--accent)">all 32 &rarr;</a></h3>
         <div class="twrap"><table><thead><tr><th></th><th>Team</th><th>Proj W-L</th><th>Playoffs</th></tr></thead><tbody>${pTop}</tbody></table></div>
         <div class="sub" style="margin-top:8px">20,000 season simulations from the per-game model probabilities. QB1s from live depth charts; team states roll forward as games are played.</div></div>
@@ -500,6 +524,7 @@ function nflPage(){
         <div class="sub" style="margin-top:8px">When this model says 75%, it means 75%. Accuracy ladder: home-always ${mc.acc_home}% &middot; Elo ${mc.acc_elo}% &middot; <b>GlassBox ${mc.accuracy}%</b> &middot; closing line ${mc.acc_close}%.</div></div>
     </div>`;
   $("#view").querySelectorAll("[data-lg]").forEach(x=>x.onclick=()=>{setLeague(x.dataset.lg);board();});
+  $("#view").querySelectorAll("[data-r]").forEach(x=>x.onclick=()=>{state.nflRange=x.dataset.r;board();});
 }
 
 function nflSeason(wk){
