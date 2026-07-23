@@ -519,7 +519,7 @@ function nflPage(){
       ? `<div class="valbar"><span class="vt">EDGE</span> ${val.team} <b>+${Math.round(val.ev_cur*100)}% EV</b>
           <span class="vodds">@ ${val.cur_dec}</span><span class="vlive">● live</span></div>` : "";
     let badge=pr.near
-      ?`<span class="lbadge off">Model &middot; Wk ${g.w}</span><span class="lbadge proj">Proj QBs</span>`
+      ?`<span class="lbadge off">Model &middot; Wk ${g.w}</span><span class="lbadge proj">Proj lineup</span>`
       :`<span class="lbadge proj">Sim &middot; Wk ${g.w}</span>`;
     if(done){const winner=g.hs>g.as?g.home:(g.hs<g.as?g.away:null);
       badge=winner==null?`<span class="lbadge proj">TIE</span>`
@@ -710,7 +710,7 @@ function nflTeamPage(code){
       &middot; Elo <b>${t.elo?t.elo.toFixed(0):"-"}</b> (power #${t.rank})
       &middot; units: pass off ${t.off_pass>=0?"+":""}${t.off_pass} / run off ${t.off_run>=0?"+":""}${t.off_run}
       / pass def ${t.def_pass>=0?"+":""}${t.def_pass} / run def ${t.def_run>=0?"+":""}${t.def_run}</div>
-    ${projLine}${schTbl}${tbl("Offense",off)}${tbl("Offensive line",ol)}${tbl("Defense",def)}`;
+    ${projLine}${t.lineup?nflLineupPanel(code,t,n).replace('class="panel"','class="panel" style="margin-bottom:14px"'):""}${schTbl}${tbl("Offense",off)}${tbl("Offensive line",ol)}${tbl("Defense",def)}`;
 }
 
 function nflPlayerPage(id){
@@ -910,7 +910,23 @@ function nflGamePage(key){
           <div style="flex:1;text-align:right"><div class="sub">${home}</div><div style="display:flex;justify-content:flex-end">${qrat(H)}</div></div>
         </div>
         <div class="sub" style="margin-top:10px">QB ratings are the per-play 11v11 TrueSkill (conservative, position-normalized).</div></div>
-    </div>`;
+    </div>
+    ${(A&&A.lineup)||(H&&H.lineup)?`<div class="grid" style="margin-top:16px">${nflLineupPanel(away,A,n)}${nflLineupPanel(home,H,n)}</div>`:""}`;
+}
+
+function nflLineupPanel(code,t,n){
+  const L=t&&t.lineup; if(!L) return "";
+  const lrow=e=>`<tr ${e.id&&n.players[e.id]?`onclick="location.hash='#/player/${e.id}'"`:""}>
+    <td><span class="sub" style="font-size:11px;letter-spacing:.04em">${e.slot}</span></td>
+    <td class="a"><span class="${e.id&&n.players[e.id]?"player-link":""}">${e.name}</span>${e.src==="usage"?' <span class="sub" title="promoted: real 2025 usage + rating beat the listed starter">&uarr; usage</span>':""}</td>
+    <td>${gb(e.r)}</td>
+    <td><span class="num">${Math.round((e.share||0)*100)}%</span></td></tr>`;
+  const tbl=(side,title)=>L[side]&&L[side].length?`<div class="subh">${title}</div><div class="twrap"><table>
+    <thead><tr><th></th><th>Player</th><th>Rating</th><th>Snap %</th></tr></thead>
+    <tbody>${L[side].map(lrow).join("")}</tbody></table></div>`:"";
+  return `<div class="panel"><h3>${code} projected lineup <span class="sub" style="font-weight:400">live depth charts &middot; ${L.dt||""}</span></h3>
+    ${tbl("off","Offense")}${tbl("def","Defense")}
+    <div class="sub" style="margin-top:8px">Depth-chart starters, cuts and injury-outs removed, promoted (&uarr;) when real usage and rating say the chart is stale. Refreshes every build.</div></div>`;
 }
 
 /* ---------- GAME PAGE ---------- */
