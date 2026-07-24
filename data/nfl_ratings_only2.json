@@ -1,8 +1,9 @@
 {
  "dev": {
   "shipped engine v3 (context+importance+opp)": 0.66748,
-  "micro-matches REPLACE 11v11": 0.67598,
-  "micro-matches ADD to 11v11": 0.68798
+  "+ salary prior k=0.5": 0.6691,
+  "+ salary prior k=1.5": 0.67321,
+  "+ salary prior k=3.0": 0.67904
  },
  "winner": "shipped engine v3 (context+importance+opp)",
  "winner_kw": {

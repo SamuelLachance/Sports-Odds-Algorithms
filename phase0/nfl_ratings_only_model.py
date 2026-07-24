@@ -91,13 +91,41 @@ for r in csv.DictReader(open("data/nfl_players.csv", encoding="utf-8")):
     if r.get("gsis_id"):
         GPOS[r["gsis_id"]] = _PM.get(r.get("position") or "")
 
+# salary priors: active contract's APY cap % per player-season, z-scored within
+# position group per season. year_signed <= season (FA/rookie deals land pre-season;
+# midseason extensions are a negligible look-ahead, noted).
+Z_SAL = {}
+try:
+    import pandas as _pd
+    _c = _pd.read_parquet("data/nfl_contracts.parquet")
+    _c = _c.dropna(subset=["gsis_id"])
+    _c = _c[(_c.year_signed > 0) & _c.apy_cap_pct.notna()]
+    _rows = []
+    for _r in _c.itertuples():
+        y0 = int(_r.year_signed)
+        span = max(int(_r.years) if _pd.notna(_r.years) and _r.years > 0 else 1, 1)
+        for s_ in range(max(2016, y0), min(2026, y0 + span)):
+            _rows.append((_r.gsis_id, s_, y0, float(_r.apy_cap_pct)))
+    _df = _pd.DataFrame(_rows, columns=["gsis", "season", "y0", "pct"])
+    _df = _df.sort_values("y0").groupby(["gsis", "season"]).tail(1)   # latest signed wins
+    _df["grp"] = _df.gsis.map(GPOS)
+    _df = _df.dropna(subset=["grp"])
+    for (_s, _g), _sub in _df.groupby(["season", "grp"]):
+        m_, sd_ = _sub.pct.mean(), max(_sub.pct.std(), 1e-6)
+        for _t in _sub.itertuples():
+            Z_SAL[(_t.gsis, _s)] = max(-2.5, min(2.5, (_t.pct - m_) / sd_))
+    print(f"[{time.time()-T0:.0f}s] salary priors: {len(Z_SAL):,} player-seasons", flush=True)
+except Exception as e:  # noqa: BLE001
+    print(f"salary priors unavailable ({type(e).__name__})", flush=True)
+
 G16 = [(i, g) for i, g in enumerate(games) if g["season"] >= 2016]
 seas16 = np.array([g["season"] for _, g in G16])
 y16 = np.array([g["y"] for _, g in G16])
 
 def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                widen2=1.5 ** 2, playoff_mult=1.0, dead_mult=1.0, opp_k=0.0,
-               opp_mode="league", flat_scale=1.0, role_r=0.0, micro="off"):
+               opp_mode="league", flat_scale=1.0, role_r=0.0, micro="off",
+               sal_k=0.0):
     """One engine walk -> per-game ts_diff feature (pre-game, leak-free).
 
     Game importance: playoff snaps x playoff_mult; 'useless' late-season games
@@ -120,7 +148,8 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
     for j, (i, g) in enumerate(G16):
         if prev is not None and g["season"] != prev:
             for p in mu:
-                mu[p] = MU0 + (mu[p] - MU0) * (1.0 - season_shrink)
+                tgt = MU0 + sal_k * Z_SAL.get((p, g["season"]), 0.0)
+                mu[p] = tgt + (mu[p] - tgt) * (1.0 - season_shrink)
                 s2[p] = min(s2[p] + widen2, SIG0_2)
             wins.clear(); played.clear()
         prev = g["season"]
@@ -174,16 +203,17 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
         # 2. TS updates from this game's plays, context-weighted
         gid = g["gid"]
         wk = (gid[:4], gid[5:7])
+        seas_now = g["season"]
         for pid_, O, D, epa in plays_by_gid.get(gid, ()):
             for p in O:
                 if p not in mu:
-                    mu[p] = MU0; s2[p] = SIG0_2
+                    mu[p] = MU0 + sal_k * Z_SAL.get((p, seas_now), 0.0); s2[p] = SIG0_2
                 elif lastwk.get(p) != wk:
                     s2[p] = min(s2[p] + tau2, SIG0_2)
                 lastwk[p] = wk
             for p in D:
                 if p not in mu:
-                    mu[p] = MU0; s2[p] = SIG0_2
+                    mu[p] = MU0 + sal_k * Z_SAL.get((p, seas_now), 0.0); s2[p] = SIG0_2
                 elif lastwk.get(p) != wk:
                     s2[p] = min(s2[p] + tau2, SIG0_2)
                 lastwk[p] = wk
@@ -287,8 +317,9 @@ def trial(name, **kw):
 SHIP = dict(tau=0.30, use_lev=True, down_mult=1.25, late_mult=1.5,
             playoff_mult=1.5, dead_mult=0.5, opp_k=0.3, opp_mode="league")
 trial("shipped engine v3 (context+importance+opp)", **SHIP)
-trial("micro-matches REPLACE 11v11", **SHIP, micro="replace")
-trial("micro-matches ADD to 11v11", **SHIP, micro="add")
+trial("+ salary prior k=0.5", **SHIP, sal_k=0.5)
+trial("+ salary prior k=1.5", **SHIP, sal_k=1.5)
+trial("+ salary prior k=3.0", **SHIP, sal_k=3.0)
 
 best_name = min(results, key=lambda k: results[k][0])
 best_ll, best_kw = results[best_name]
