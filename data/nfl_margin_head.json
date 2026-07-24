@@ -1,0 +1,37 @@
+{
+ "base_cv": 0.623,
+ "variants": {
+  "replace_a0.1": 0.62218,
+  "replace_a1": 0.62276,
+  "replace_a10": 0.62626,
+  "replace_a100": 0.63142,
+  "hybrid_15col_a1": 0.62346
+ },
+ "deltas": {
+  "replace_a0.1": 0.00082,
+  "replace_a1": 0.00024,
+  "replace_a10": -0.00326,
+  "replace_a100": -0.00842,
+  "hybrid_15col_a1": -0.00046
+ },
+ "gate": 0.002,
+ "gate_met": false,
+ "best": "replace_a0.1",
+ "sigma_per_fold_a1": [
+  13.694,
+  13.564,
+  13.723,
+  13.647,
+  13.561
+ ],
+ "sigma_mean_a1": 13.638,
+ "corr_oof_pred_margin_vs_elo_logit": 0.9208,
+ "corr_oof_pred_margin_vs_actual_margin": 0.3896,
+ "margin_coverage": {
+  "joined": 7276,
+  "total": 7276,
+  "missing_dev": 0,
+  "label_disagreements": 0
+ },
+ "notes": "alpha=1.0 is the pre-registered (a); other alphas swept (b). hybrid (c) uses nested inner 5-fold OOF for the train column."
+}

@@ -1,0 +1,25 @@
+{
+ "base": 0.623,
+ "coverage_all": 7273,
+ "n_games": 7276,
+ "coverage_dev": 3997,
+ "n_dev": 3997,
+ "league_rate_pk": 0.15158,
+ "league_rate_pkfx": 0.10427,
+ "variants": {
+  "punt_kick": {
+   "cv": 0.62266,
+   "delta": 0.00034,
+   "corr_with_epa_net": -0.1236,
+   "coef_full_dev": 2.721,
+   "feat_sd_dev": 0.03176
+  },
+  "punt_kick_fg_xp": {
+   "cv": 0.6222,
+   "delta": 0.0008,
+   "corr_with_epa_net": -0.2155,
+   "coef_full_dev": 3.0614,
+   "feat_sd_dev": 0.03455
+  }
+ }
+}

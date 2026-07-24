@@ -1,0 +1,28 @@
+{
+ "screen": "oracle_wingraph_centrality_Or(w+,w+)",
+ "base_cv": 0.623,
+ "variants": {
+  "oracle15": {
+   "cv": 0.62326,
+   "delta": -0.00026
+  },
+  "oracle15_wk4plus": {
+   "cv": 0.62336,
+   "delta": -0.00036
+  }
+ },
+ "gate": 0.002,
+ "gate_met": false,
+ "diagnostics": {
+  "corr_oracle_elo_dev_nonzero": 0.7867,
+  "n_dev_nonzero": 3637,
+  "n_dev": 3997,
+  "nonzero_all": 6611,
+  "n_games": 7276,
+  "cv_elo_only": 0.63505,
+  "cv_elo_plus_oracle": 0.63503,
+  "delta_over_bare_elo": 2e-05,
+  "fulldev_coef_elo": 0.4405,
+  "fulldev_coef_oracle": -0.0063
+ }
+}
