@@ -114,7 +114,16 @@ try:
         m_, sd_ = _sub.pct.mean(), max(_sub.pct.std(), 1e-6)
         for _t in _sub.itertuples():
             Z_SAL[(_t.gsis, _s)] = max(-2.5, min(2.5, (_t.pct - m_) / sd_))
-    print(f"[{time.time()-T0:.0f}s] salary priors: {len(Z_SAL):,} player-seasons", flush=True)
+    # Samuel's cohort variant: z vs the SIGNING-YEAR position market (frozen)
+    Z_SAL2 = {}
+    _stats = {}
+    for (_y, _g), _sub in _df.groupby(["y0", "grp"]):
+        _stats[(_y, _g)] = (_sub.pct.mean(), max(_sub.pct.std(), 1e-6))
+    for _t in _df.itertuples():
+        m_, sd_ = _stats[(_t.y0, _t.grp)]
+        Z_SAL2[(_t.gsis, _t.season)] = max(-2.5, min(2.5, (_t.pct - m_) / sd_))
+    print(f"[{time.time()-T0:.0f}s] salary priors: {len(Z_SAL):,} player-seasons "
+          f"(+ cohort variant)", flush=True)
 except Exception as e:  # noqa: BLE001
     print(f"salary priors unavailable ({type(e).__name__})", flush=True)
 
@@ -167,7 +176,7 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                beta=BETA, floor2=SIG2_FLOOR, lev_exp=1.0, draw_eps=0.05,
                hfa_t=0.0, f_ta=False, f_drop=False, f_iw=False,
                inj_sym=1.0, inj_neg=1.0, agg_k=1.0, share_p=1.0,
-               two_track=False, fus_k=0.0, fus_R=36.0):
+               two_track=False, fus_k=0.0, fus_R=36.0, sal_mode="active"):
     """One engine walk -> per-game ts_diff feature (pre-game, leak-free).
 
     Game importance: playoff snaps x playoff_mult; 'useless' late-season games
@@ -176,6 +185,7 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
     mean rating, factor 1 + opp_k*(opp_mean_mu - 25), clamped [0.3, 2].
     """
     tau2 = tau * tau
+    ZS = Z_SAL2 if sal_mode == "cohort" else Z_SAL
     mu, s2, lastwk = {}, {}, {}
     muR, s2R = {}, {}                    # run track (pass track = mu/s2)
     share2 = {}
@@ -196,7 +206,7 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
     for j, (i, g) in enumerate(G16):
         if prev is not None and g["season"] != prev:
             for p in mu:
-                tgt = MU0 + sal_k * Z_SAL.get((p, g["season"]), 0.0)
+                tgt = MU0 + sal_k * ZS.get((p, g["season"]), 0.0)
                 mu[p] = tgt + (mu[p] - tgt) * (1.0 - season_shrink)
                 s2[p] = min(s2[p] + widen2, SIG0_2)
             for p in muR:
@@ -309,7 +319,7 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
             lw_key = "R" if (two_track and trk_run) else "P"
             for p in O:
                 if p not in muD:
-                    muD[p] = MU0 + sal_k * Z_SAL.get((p, seas_now), 0.0); s2D[p] = SIG0_2
+                    muD[p] = MU0 + sal_k * ZS.get((p, seas_now), 0.0); s2D[p] = SIG0_2
                 elif lastwk.get((p, lw_key)) != wk:
                     if fus_k and GPOS.get(p) == "QB":
                         _old = lastwk.get((p, lw_key))
@@ -323,7 +333,7 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 lastwk[(p, lw_key)] = wk
             for p in D:
                 if p not in muD:
-                    muD[p] = MU0 + sal_k * Z_SAL.get((p, seas_now), 0.0); s2D[p] = SIG0_2
+                    muD[p] = MU0 + sal_k * ZS.get((p, seas_now), 0.0); s2D[p] = SIG0_2
                 elif lastwk.get((p, lw_key)) != wk:
                     s2D[p] = min(s2D[p] + tau2, SIG0_2)
                 lastwk[(p, lw_key)] = wk
@@ -491,23 +501,18 @@ def trial(name, **kw):
 print("\nDEV 2017-2021 — QB weekly stat fusion (Kalman merge at week boundary):", flush=True)
 V5 = dict(beta=60.0, lev_exp=0.5, draw_band=0.40)
 V6 = {**V5, "fus_k": 4.0, "fus_R": 36.0}
-cfg6 = {**V4, **V6}
-_, P6 = run_config(**cfg6, return_parts=True)
-ts6 = P6["qb_prec"] + P6["off_prec"] + P6["def_prec"]
+cfg7 = {**V4, **V6, "sal_k": 1.0, "sal_mode": "cohort"}
+_, P7 = run_config(**cfg7, return_parts=True)
+ts7 = P7["qb_prec"] + P7["off_prec"] + P7["def_prec"]
 full = np.zeros(len(games))
 idx_all = np.array([i for i, _ in G16])
-full[idx_all] = ts6
-np.save("data/nfl_v6_feature.npy", full)
-lgt16 = np.log(np.clip(pe[idx_all], 1e-12, 1 - 1e-12)
-               / np.clip(1 - pe[idx_all], 1e-12, 1 - 1e-12))
-for name, X in (("v6 ratings only", ts6.reshape(-1, 1)),
-                ("v6 BLEND + Elo", np.column_stack([ts6, lgt16]))):
-    lld = wf_X(X, SEL_LO, SEL_HI)[0]
-    llt, acct = wf_X(X, 2022, 2025)
-    results[name] = (lld, {})
-    print(f"  {name:<24} DEV {lld:.5f}   TEST {llt:.5f}  acc {acct*100:.1f}%", flush=True)
-print(f"  (Elo TEST ref 0.63824)", flush=True)
-base_ll = 9e9
+full[idx_all] = ts7
+np.save("data/nfl_v7_feature.npy", full)
+lld = wf_X(ts7.reshape(-1, 1), SEL_LO, SEL_HI)[0]
+llt, acct = wf_X(ts7.reshape(-1, 1), 2022, 2025)
+print(f"  v7 ratings-only  DEV {lld:.5f}   TEST {llt:.5f}  acc {acct*100:.1f}%  (Elo 0.63824)", flush=True)
+results["v7"] = (lld, {})
+base_ll = 0.63054
 print(f"\nknobs beating baseline ({base_ll:.5f}) by >= 0.0010:")
 for k, (ll, kw) in sorted(results.items(), key=lambda x: x[1][0]):
     if ll < base_ll - 0.0010 and kw:

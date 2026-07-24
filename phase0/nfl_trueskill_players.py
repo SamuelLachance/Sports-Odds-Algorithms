@@ -51,6 +51,9 @@ OPP_K = 0.3                      # your update scales with the OPPOSING unit's s
                                  # vs the RUNNING league mean (anchoring to the fixed
                                  # prior inflates ratings; league-anchored is clean and
                                  # generalized better) — the engine's biggest tuning win
+SAL_K = 1.0                      # cohort salary prior (Samuel's variant): entry rating
+                                 # and offseason target = 25 + k*z(cap%-at-signing vs the
+                                 # SIGNING-YEAR position market) — judged vs its own cohort
 FUS_K = 4.0                      # QB weekly stat fusion: obs = 25 + k*z(weekly EPA/db)
 FUS_R = 36.0                     # Kalman obs noise — DEV-swept, biggest v6 win (-0.0092)
 DRAW_BAND = 0.40                 # |EPA| below this = a DRAW (re-tuned at beta 60):
@@ -129,6 +132,42 @@ print(f"[{time.time()-T0:.0f}s] game importance: "
       f"{sum(1 for v in gmult_of.values() if v == PLAYOFF_MULT)} playoff, "
       f"{sum(1 for v in gmult_of.values() if v == DEAD_MULT)} dead games", flush=True)
 
+# ---- cohort salary priors ----
+Z_SAL = {}
+try:
+    import pandas as _pd
+    _c = _pd.read_parquet("data/nfl_contracts.parquet")
+    _c = _c.dropna(subset=["gsis_id"])
+    _c = _c[(_c.year_signed > 0) & _c.apy_cap_pct.notna()]
+    _pm = {"QB":"QB","RB":"RB","FB":"RB","HB":"RB","WR":"WR","TE":"TE",
+           "T":"OL","G":"OL","C":"OL","OT":"OL","OG":"OL","OL":"OL","LT":"OL","RT":"OL","LG":"OL","RG":"OL",
+           "DE":"DL","DT":"DL","NT":"DL","DL":"DL","EDGE":"DL",
+           "LB":"LB","ILB":"LB","OLB":"LB","MLB":"LB",
+           "CB":"DB","S":"DB","SS":"DB","FS":"DB","SAF":"DB","DB":"DB"}
+    _gp = {}
+    for _r in csv.DictReader(open("data/nfl_players.csv", encoding="utf-8")):
+        if _r.get("gsis_id"):
+            _gp[_r["gsis_id"]] = _pm.get(_r.get("position") or "")
+    _rows = []
+    for _r in _c.itertuples():
+        y0 = int(_r.year_signed)
+        span = max(int(_r.years) if _pd.notna(_r.years) and _r.years > 0 else 1, 1)
+        for s_ in range(max(2016, y0), min(2027, y0 + span)):
+            _rows.append((_r.gsis_id, s_, y0, float(_r.apy_cap_pct)))
+    _df = _pd.DataFrame(_rows, columns=["gsis", "season", "y0", "pct"])
+    _df = _df.sort_values("y0").groupby(["gsis", "season"]).tail(1)
+    _df["grp"] = _df.gsis.map(_gp)
+    _df = _df.dropna(subset=["grp"])
+    _stats = {}
+    for (_y, _g), _sub in _df.groupby(["y0", "grp"]):
+        _stats[(_y, _g)] = (_sub.pct.mean(), max(_sub.pct.std(), 1e-6))
+    for _t in _df.itertuples():
+        m_, sd_ = _stats[(_t.y0, _t.grp)]
+        Z_SAL[(_t.gsis, _t.season)] = max(-2.5, min(2.5, (_t.pct - m_) / sd_))
+    print(f"[{time.time()-T0:.0f}s] cohort salary priors: {len(Z_SAL):,}", flush=True)
+except Exception as e:  # noqa: BLE001
+    print(f"salary priors unavailable ({type(e).__name__})", flush=True)
+
 # ---- QB weekly observations (for the fusion) ----
 import sys as _sys
 _sys.path.insert(0, "phase0")
@@ -174,7 +213,8 @@ for gid, pid_, off, dfn, epa in plays:
     season, week = gid[:4], gid[5:7]
     if cur_season is not None and season != cur_season:
         for p in mu:
-            mu[p] = MU0 + (mu[p] - MU0) * (1.0 - SEASON_SHRINK)
+            tgt = MU0 + SAL_K * Z_SAL.get((p, int(season)), 0.0)
+            mu[p] = tgt + (mu[p] - tgt) * (1.0 - SEASON_SHRINK)
             sig2[p] = min(sig2[p] + SEASON_WIDEN2, SIG0_2)
     cur_season = season
     O = off.split(";")
@@ -184,7 +224,7 @@ for gid, pid_, off, dfn, epa in plays:
     wk = (season, week)
     for p in O + D:
         if p not in mu:
-            mu[p] = MU0; sig2[p] = SIG0_2
+            mu[p] = MU0 + SAL_K * Z_SAL.get((p, int(season)), 0.0); sig2[p] = SIG0_2
         elif last_week.get(p) != wk:
             if p in QB_POS:                          # fuse the completed week's line
                 _old = last_week.get(p)

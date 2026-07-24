@@ -9,7 +9,7 @@
   "team_hfa",
   "rest_diff",
   "fumble_luck",
-  "ts_player_v6",
+  "ts_player_v7",
   "ol_absence",
   "def_absence",
   "skill_absence",
@@ -122,26 +122,26 @@
  },
  "blend_production": {
   "coef": [
-   0.28642,
-   6.56516,
-   1.16959,
-   -0.28943,
-   0.1636,
-   0.01785,
-   0.0985,
-   0.09331,
-   -0.00737,
-   -0.04124,
-   -0.11226,
-   0.10254,
-   -0.64639,
-   3.33403
+   0.27306,
+   6.35448,
+   1.19928,
+   -0.29576,
+   0.16369,
+   0.01783,
+   0.16038,
+   0.1164,
+   -0.00631,
+   -0.04139,
+   -0.11126,
+   0.0992,
+   -0.60817,
+   3.35376
   ],
-  "intercept": 0.15102,
+  "intercept": 0.15543,
   "fit": "all completed games through 2025, ties dropped, recency hl=3, C=100",
-  "test_repro_ll": 0.61941
+  "test_repro_ll": 0.61919
  },
- "test_ll": 0.61945,
+ "test_ll": 0.61919,
  "prev_stack_test_ll": 0.62806,
  "prev_test_ll": 0.61947,
  "training": {
@@ -151,7 +151,7 @@
   "learner": "logistic (XGB/RF/MLP all worse)"
  },
  "component_params_ts_player_v6": {
-  "engine": "11v11 participation TrueSkill v6",
+  "engine": "11v11 participation TrueSkill v7",
   "beta": 60.0,
   "tau_week": 0.3,
   "snap_weight": "sqrt(4*wp*(1-wp)) x 1.25 money downs x 1.5 late-close x 1.5 playoffs x 0.5 dead x opp-quality(k=.3, league-anchored)",
@@ -159,6 +159,7 @@
   "qb_fusion": "weekly EPA/dropback Kalman merge k=4 R=36",
   "aggregate": "gameday actives, share-weighted, clamp(mu-25,+-3) x 1/(1+sigma^2)",
   "zero_before": 2016,
-  "ledger_row": 63
+  "ledger_row": 66,
+  "salary_prior": "cohort: 25 + 1.0*z(cap%-at-signing vs signing-year position market), entry + offseason target"
  }
 }

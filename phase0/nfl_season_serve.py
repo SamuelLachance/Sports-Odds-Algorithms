@@ -73,9 +73,9 @@ for i, g in enumerate(games):
             d2 = dfaP[opp]; d2[0] = dec_ * d2[0] + pS; d2[1] = dec_ * d2[1] + pN
             d2 = dfaR[opp]; d2[0] = dec_ * d2[0] + rS; d2[1] = dec_ * d2[1] + rN
 X14 = np.column_stack([X_of(F), f_pass, f_run])
-v6_hist = np.load("data/nfl_v6_feature.npy")
+v6_hist = np.load("data/nfl_v7_feature.npy")
 assert len(v6_hist) == len(games)
-X14[:, 7] = v6_hist                    # ledger row 63: ts_edge -> v6 player ratings
+X14[:, 7] = v6_hist                    # rows 63+66: ts_edge -> player ratings (v7 cohort)
 print(f"[{time.time()-T0:.0f}s] X14 built (col 7 = v6 player ratings)", flush=True)
 
 # ---------------- protocol check: reproduce TEST 0.61947 (walk-forward+recency) ----------------
