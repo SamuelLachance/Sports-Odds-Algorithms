@@ -1,0 +1,110 @@
+{
+ "close_ml": {
+  "pooled": {
+   "n": 4581,
+   "ll_base": 0.677,
+   "ll_stack": 0.67554,
+   "delta": 0.00147,
+   "ci": [
+    -0.00028,
+    0.00326
+   ]
+  },
+  "by_season": {
+   "2024": {
+    "n": 2370,
+    "ll_base": 0.67653,
+    "ll_stack": 0.67429,
+    "coef_extra": 0.5592
+   },
+   "2025": {
+    "n": 2211,
+    "ll_base": 0.67751,
+    "ll_stack": 0.67688,
+    "coef_extra": 0.78
+   }
+  }
+ },
+ "votes": {
+  "pooled": {
+   "n": 1453,
+   "ll_base": 0.66875,
+   "ll_stack": 0.67105,
+   "delta": -0.0023,
+   "ci": [
+    -0.0043,
+    -0.00029
+   ]
+  },
+  "by_season": {
+   "2024": {
+    "n": 790,
+    "ll_base": 0.67825,
+    "ll_stack": 0.678,
+    "coef_extra": 0.1916
+   },
+   "2025": {
+    "n": 663,
+    "ll_base": 0.65743,
+    "ll_stack": 0.66278,
+    "coef_extra": 0.0728
+   }
+  }
+ },
+ "roof": {
+  "pooled": null,
+  "note": "static attribute, no within-stadium variation"
+ },
+ "total": {
+  "pooled": {
+   "n": 4581,
+   "ll_base": 0.677,
+   "ll_stack": 0.67683,
+   "delta": 0.00018,
+   "ci": [
+    -0.00097,
+    0.00137
+   ]
+  },
+  "by_season": {
+   "2024": {
+    "n": 2370,
+    "ll_base": 0.67653,
+    "ll_stack": 0.67603,
+    "coef_extra": 0.0069
+   },
+   "2025": {
+    "n": 2211,
+    "ll_base": 0.67751,
+    "ll_stack": 0.67768,
+    "coef_extra": -0.0144
+   }
+  }
+ },
+ "votes_plus_ml": {
+  "pooled": {
+   "n": 1453,
+   "ll_base": 0.66473,
+   "ll_stack": 0.6665,
+   "delta": -0.00177,
+   "ci": [
+    -0.00305,
+    -0.00047
+   ]
+  },
+  "by_season": {
+   "2024": {
+    "n": 790,
+    "ll_base": 0.67327,
+    "ll_stack": 0.67424,
+    "coef_extra": 0.1393
+   },
+   "2025": {
+    "n": 663,
+    "ll_base": 0.65456,
+    "ll_stack": 0.65727,
+    "coef_extra": 0.0033
+   }
+  }
+ }
+}
