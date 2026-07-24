@@ -132,6 +132,19 @@ try:
 except Exception as e:  # noqa: BLE001
     print(f"FTN unavailable ({type(e).__name__})", flush=True)
 
+INJ = set()
+for _y in range(2016, 2026):
+    try:
+        for _r in csv.DictReader(open(f"data/inj_{_y}.csv", encoding="utf-8")):
+            if (_r.get("report_status") or "") in ("Questionable", "Doubtful") and _r.get("gsis_id"):
+                try:
+                    INJ.add((_r["gsis_id"], int(_r["season"]), int(_r["week"])))
+                except ValueError:
+                    continue
+    except FileNotFoundError:
+        continue
+print(f"[{time.time()-T0:.0f}s] injury tags (Q/D): {len(INJ):,} player-weeks", flush=True)
+
 G16 = [(i, g) for i, g in enumerate(games) if g["season"] >= 2016]
 seas16 = np.array([g["season"] for _, g in G16])
 y16 = np.array([g["y"] for _, g in G16])
@@ -142,7 +155,8 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                sal_k=0.0, grade="off", mov_scale=0.5, mov_cap=2.0,
                draw_band=0.0, neutral_skip=0.0, return_parts=False,
                beta=BETA, floor2=SIG2_FLOOR, lev_exp=1.0, draw_eps=0.05,
-               hfa_t=0.0, f_ta=False, f_drop=False, f_iw=False):
+               hfa_t=0.0, f_ta=False, f_drop=False, f_iw=False,
+               inj_sym=1.0, inj_neg=1.0):
     """One engine walk -> per-game ts_diff feature (pre-game, leak-free).
 
     Game importance: playoff snaps x playoff_mult; 'useless' late-season games
@@ -244,6 +258,17 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
         # 2. TS updates from this game's plays, context-weighted
         gid = g["gid"]
         wk = (gid[:4], gid[5:7])
+        inj_tag = set()
+        if inj_sym != 1.0 or inj_neg != 1.0:
+            wk_i = int(gid[5:7])
+            s_i = g["season"]
+            for team in (g["home"], g["away"]):
+                tbl = snaps.get((gid, team))
+                if tbl:
+                    for pid in tbl:
+                        g_ = pfr2gsis.get(pid)
+                        if g_ and (g_, s_i, wk_i) in INJ:
+                            inj_tag.add(g_)
         h_set = set()
         if hfa_t and not g["neutral"]:
             tbl_h = snaps.get((gid, g["home"]))
@@ -278,6 +303,8 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 n_home = sum(1 for p in O[:5] if p in h_set)
                 adv = hfa_t if n_home >= 3 else -hfa_t
             ta, dr, iw = FTN.get((gid, pid_), (False, False, False))
+            if (inj_sym != 1.0 or inj_neg != 1.0) and pid_ == plays_by_gid[gid][0][0]:
+                pass  # tag set built once per game below (cheap enough per play)
 
             def duel(A, B, base_wgt, won):
                 if not A or not B:
@@ -310,6 +337,10 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                         w_B = base_wgt * min(2.0, max(0.3, 1.0 + opp_k * (sA / len(A) - anchor)))
                 else:
                     w_A = w_B = base_wgt
+                def imul(p, delta_pos):
+                    if p not in inj_tag:
+                        return 1.0
+                    return inj_sym if delta_pos else inj_sym * inj_neg
                 if is_draw:                                  # B: TrueSkill draw update
                     e = draw_eps
                     den = cdf(e - t) - cdf(-e - t)
@@ -318,11 +349,13 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                         wd = vd * vd + ((e - t) * pdf(e - t) + (e + t) * pdf(-e - t)) / den
                         wd = max(0.0, min(1.0, wd))
                         for p in A:
-                            mu[p] += w_A * (s2[p] / c) * vd
-                            s2[p] = max(s2[p] * (1.0 - w_A * (s2[p] / c2) * wd), floor2)
+                            im = imul(p, vd >= 0)
+                            mu[p] += im * w_A * (s2[p] / c) * vd
+                            s2[p] = max(s2[p] * (1.0 - im * w_A * (s2[p] / c2) * wd), floor2)
                         for p in B:
-                            mu[p] -= w_B * (s2[p] / c) * vd
-                            s2[p] = max(s2[p] * (1.0 - w_B * (s2[p] / c2) * wd), floor2)
+                            im = imul(p, vd <= 0)
+                            mu[p] -= im * w_B * (s2[p] / c) * vd
+                            s2[p] = max(s2[p] * (1.0 - im * w_B * (s2[p] / c2) * wd), floor2)
                     return
                 if won:
                     win, lose, tt, w_win_, w_lose_ = A, B, t, w_A, w_B
@@ -332,11 +365,11 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                     w_win_ = w_win_ * 0.3                    # drop: defense credit unearned
                 v = v_win(tt); w = v * (v + tt)
                 for p in win:
-                    rm = role_m.get(p, 1.0) if role_r else 1.0
+                    rm = (role_m.get(p, 1.0) if role_r else 1.0) * imul(p, True)
                     mu[p] += rm * w_win_ * (s2[p] / c) * v
                     s2[p] = max(s2[p] * (1.0 - rm * w_win_ * (s2[p] / c2) * w), floor2)
                 for p in lose:
-                    rm = role_m.get(p, 1.0) if role_r else 1.0
+                    rm = (role_m.get(p, 1.0) if role_r else 1.0) * imul(p, False)
                     mu[p] -= rm * w_lose_ * (s2[p] / c) * v
                     s2[p] = max(s2[p] * (1.0 - rm * w_lose_ * (s2[p] / c2) * w), floor2)
 
@@ -404,7 +437,7 @@ def wf_X(X, lo, hi):
         accs.append(((p > 0.5) == (y16[te] > 0.5))[msk])
     return float(np.concatenate(lls).mean()), float(np.concatenate(accs).mean())
 
-SEL_LO, SEL_HI = 2022, 2023          # FTN exists 2022+ only; selection window
+SEL_LO, SEL_HI = 2017, 2021          # injuries cover all of DEV
 def obj(**kw):
     cfg = {**V4, **kw}
     _, P = run_config(**cfg, return_parts=True)
@@ -417,14 +450,14 @@ def trial(name, **kw):
     results[name] = (ll, kw)
     print(f"  {name:<36} {ll:.5f}  [{time.time()-T0:.0f}s]", flush=True)
 
-print("\nSELECTION 2022-2023 (FTN window) — process-flag variants:", flush=True)
+print("\nDEV 2017-2021 — injury-aware evidence discounting:", flush=True)
 V5 = dict(beta=60.0, lev_exp=0.5, draw_band=0.40)
-trial("engine v5 (no FTN)", **V5)
-trial("F1 throw-away = draw", **V5, f_ta=True)
-trial("F2 drop: defense credit x0.3", **V5, f_drop=True)
-trial("F3 INT-worthy = defense win", **V5, f_iw=True)
-trial("F4 all three", **V5, f_ta=True, f_drop=True, f_iw=True)
-base_ll = results["engine v5 (no FTN)"][0]
+trial("engine v5 (no injury awareness)", **V5)
+trial("I1 symmetric x0.5 while tagged", **V5, inj_sym=0.5)
+trial("I2 negatives x0.3 while tagged", **V5, inj_neg=0.3)
+trial("I3 negatives x0.6 while tagged", **V5, inj_neg=0.6)
+trial("I4 sym .7 + negatives x0.5", **V5, inj_sym=0.7, inj_neg=0.5)
+base_ll = results["engine v5 (no injury awareness)"][0]
 print(f"\nknobs beating baseline ({base_ll:.5f}) by >= 0.0010:")
 for k, (ll, kw) in sorted(results.items(), key=lambda x: x[1][0]):
     if ll < base_ll - 0.0010 and kw:
@@ -433,8 +466,8 @@ best_name = min(results, key=lambda k: results[k][0])
 cfg = {**V4, **results[best_name][1]}
 _, P = run_config(**cfg, return_parts=True)
 X = (P["qb_prec"] + P["off_prec"] + P["def_prec"]).reshape(-1, 1)
-ll_test, acc_test = wf_X(X, 2024, 2025)
-te_mask = (seas16 >= 2024) & (seas16 <= 2025)
+ll_test, acc_test = wf_X(X, 2022, 2025)
+te_mask = (seas16 >= 2022) & (seas16 <= 2025)
 idx_all = np.array([i for i, _ in G16])
 ll_elo = float(llv(y16[te_mask], pe[idx_all][te_mask]).mean())
 print(f"\nTEST 2022-2025: {best_name}")

@@ -1,19 +1,19 @@
 {
  "dev": {
-  "engine v5 (no FTN)": 0.64524,
-  "F1 throw-away = draw": 0.6446,
-  "F2 drop: defense credit x0.3": 0.64677,
-  "F3 INT-worthy = defense win": 0.64564,
-  "F4 all three": 0.64596
+  "engine v5 (no injury awareness)": 0.63973,
+  "I1 symmetric x0.5 while tagged": 0.64023,
+  "I2 negatives x0.3 while tagged": 0.64059,
+  "I3 negatives x0.6 while tagged": 0.6395,
+  "I4 sym .7 + negatives x0.5": 0.63984
  },
- "winner": "F1 throw-away = draw",
+ "winner": "I3 negatives x0.6 while tagged",
  "winner_cfg": {
   "beta": 60.0,
   "lev_exp": 0.5,
   "draw_band": 0.4,
-  "f_ta": true
+  "inj_neg": 0.6
  },
- "test_ll": 0.62781,
- "acc": 0.6591,
- "elo_ll": 0.62303
+ "test_ll": 0.63825,
+ "acc": 0.6549,
+ "elo_ll": 0.63824
 }
