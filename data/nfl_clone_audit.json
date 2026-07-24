@@ -1,0 +1,84 @@
+{
+ "main_test_ll": 0.61923,
+ "main_vs_elo": {
+  "pair": "main vs elo",
+  "n": 2751,
+  "agreement": 0.8273,
+  "kappa": 0.6265,
+  "acc_main": 0.655,
+  "acc_elo": 0.6365,
+  "n_discord": 475,
+  "acc_concord": 0.6762,
+  "discord_won_by_main": 0.5537
+ },
+ "main_vs_close": {
+  "pair": "main vs close",
+  "n": 2750,
+  "agreement": 0.8735,
+  "kappa": 0.7317,
+  "acc_main": 0.6549,
+  "acc_close": 0.6658,
+  "n_discord": 348,
+  "acc_concord": 0.6836,
+  "discord_won_by_main": 0.4569
+ },
+ "elo_vs_close": {
+  "pair": "elo vs close",
+  "n": 2750,
+  "agreement": 0.8215,
+  "kappa": 0.6126,
+  "acc_elo": 0.6364,
+  "acc_close": 0.6658,
+  "n_discord": 491,
+  "acc_concord": 0.6839,
+  "discord_won_by_elo": 0.4175
+ },
+ "main_vs_ratings": {
+  "pair": "main vs ratings",
+  "n": 1136,
+  "agreement": 0.8477,
+  "kappa": 0.6825,
+  "acc_main": 0.6629,
+  "acc_ratings": 0.6585,
+  "n_discord": 173,
+  "acc_concord": 0.6895,
+  "discord_won_by_main": 0.5145
+ },
+ "ratings_vs_close": {
+  "pair": "ratings vs close",
+  "n": 1136,
+  "agreement": 0.8486,
+  "kappa": 0.6818,
+  "acc_ratings": 0.6585,
+  "acc_close": 0.6761,
+  "n_discord": 172,
+  "acc_concord": 0.6971,
+  "discord_won_by_ratings": 0.4419
+ },
+ "gap_decomposition": {
+  "total_gap": 0.01027,
+  "concordant": {
+   "n": 2411,
+   "ll_main": 0.60502,
+   "ll_close": 0.599,
+   "gap_here": 0.00602,
+   "contrib_to_total_gap": 0.00526
+  },
+  "discordant": {
+   "n": 349,
+   "ll_main": 0.71878,
+   "ll_close": 0.67911,
+   "gap_here": 0.03967,
+   "contrib_to_total_gap": 0.00502
+  }
+ },
+ "prob_level": {
+  "corr_main_close": 0.8996,
+  "mean_abs_diff": 0.0688
+ },
+ "discord_detail": {
+  "n": 348,
+  "main_wins": 159,
+  "close_wins": 189
+ }
+}
