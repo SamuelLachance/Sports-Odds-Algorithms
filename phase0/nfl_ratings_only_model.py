@@ -221,6 +221,9 @@ y16 = np.array([g["y"] for _, g in G16])
 
 _MODE_DIAG = {}   # mode_vd -> offset diagnostics, snapshot at end of 2021 (pre-shrink)
 _B2_PAIRS = []    # (raw QB weekly z, oppdef mean mu) pairs from the last fus_adj>0 walk
+_TTT_DIAG = {}    # (ttt_depth, ttt_passes) -> re-walk runtime + mean |delta mu| per boundary
+_TC_DIAG = {}     # tc_w -> count of team-change sigma widenings applied
+_TNU_DIAG = {}    # t_nu -> share of duels with damp < 0.5
 
 def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                widen2=1.5 ** 2, playoff_mult=1.0, dead_mult=1.0, opp_k=0.0,
@@ -236,7 +239,8 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                age_k=0.0, age_y=0.0, age_w=0.0, skf_k=0.0, skf_R=60.0,
                dff_k=0.0, dff_R=60.0, run_w=1.0, draw_band_run=None,
                ent_d=0.0, ent_qb=False, mode_vd=0.0, mode_tau2=0.0025,
-               fus_vol=0.0, fus_adj=0.0):
+               fus_vol=0.0, fus_adj=0.0, ttt_depth=0, ttt_passes=0,
+               cont=False, tc_w=0.0, t_nu=0.0):
     """One engine walk -> per-game ts_diff feature (pre-game, leak-free).
 
     Game importance: playoff snaps x playoff_mult; 'useless' late-season games
@@ -269,6 +273,81 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
     oppdef = {}                          # (qb, season_str, week_str) -> [sum mean-def-mu, n]
     if fus_adj:
         _B2_PAIRS.clear()
+    # ---- TS3 sliver state (all default-off; default path stays bit-identical) ----
+    ttt_cache = defaultdict(list) if ttt_depth else None   # season -> [(gid, gmult)]
+    ttt_sec = 0.0; ttt_dmu = []
+    if ttt_depth:
+        assert (not two_track and not mode_vd and micro == "off" and not win_snaps
+                and not role_r and not hfa_t and inj_sym == 1.0 and inj_neg == 1.0
+                and not f_ta and not f_drop and not f_iw and not neutral_skip
+                and grade == "off" and run_w == 1.0 and draw_band_run is None
+                and not ent_d and opp_mode == "league" and opp_anchor == "alltime"
+                and not rel_clamp), "ttt re-walk supports the V7 knob subset only"
+    cop = {}                       # S2: unordered pfr-pid pair -> co-snap mass
+    c_m, c_v = 0.0, 1.0            # S2: leak-free running mean/var of the raw index
+    last_team = {}                 # S3: gsis -> last seen team
+    tc_n = 0                       # S3: widening events applied
+    tn_ct = [0, 0]                 # S4: [duels with damp<0.5, duels total]
+
+    def rewalk_game(gid_r, seas_r, gmult_r):
+        """S1: one extra forward pass over an already-walked game's plays (warm
+        start from current states). Base-track duels only; fusion, weekly tau
+        widening, share2 walk and standings walk are all SKIPPED — pure
+        re-absorption of strictly-past evidence, so walk-forward legality holds."""
+        lg = (sum(mu.values()) / len(mu)) if (opp_k and mu) else MU0
+        for pid_, O, D, epa in plays_by_gid.get(gid_r, ()):
+            for p in O:
+                if p not in mu:
+                    mu[p] = MU0 + sal_k * ZS.get((p, seas_r), 0.0); s2[p] = SIG0_2
+            for p in D:
+                if p not in mu:
+                    mu[p] = MU0 + sal_k * ZS.get((p, seas_r), 0.0); s2[p] = SIG0_2
+            wp, down, qtr, adiff, _hs = ctx.get((gid_r, pid_), (0.5, 1, 1, 0.0, 900.0))
+            wgt = ((4.0 * wp * (1.0 - wp)) ** lev_exp) if use_lev else \
+                (0.25 if (wp < 0.05 or wp > 0.95) else 1.0)
+            if down >= 3:
+                wgt *= down_mult
+            if qtr >= 4 and adiff <= 8:
+                wgt *= late_mult
+            wgt *= gmult_r * flat_scale
+            A, B = O, D
+            sA = sum(mu[p] for p in A); sB = sum(mu[p] for p in B)
+            c2 = (len(A) + len(B)) * beta * beta + sum(s2[p] for p in A) + sum(s2[p] for p in B)
+            c = sqrt(c2)
+            t = (sA - sB) / c
+            if opp_k:
+                w_A = wgt * min(2.0, max(0.3, 1.0 + opp_k * (sB / len(B) - lg)))
+                w_B = wgt * min(2.0, max(0.3, 1.0 + opp_k * (sA / len(A) - lg)))
+            else:
+                w_A = w_B = wgt
+            if t_nu:
+                _dmp = 1.0 / (1.0 + (t * t) / t_nu)
+                w_A *= _dmp; w_B *= _dmp
+            if draw_band > 0 and abs(epa) < draw_band:
+                e = draw_eps
+                den = cdf(e - t) - cdf(-e - t)
+                if den > 1e-9:
+                    vd = (pdf(-e - t) - pdf(e - t)) / den
+                    wd = vd * vd + ((e - t) * pdf(e - t) + (e + t) * pdf(-e - t)) / den
+                    wd = max(0.0, min(1.0, wd))
+                    for p in A:
+                        mu[p] += w_A * (s2[p] / c) * vd
+                        s2[p] = max(s2[p] * (1.0 - w_A * (s2[p] / c2) * wd), floor2)
+                    for p in B:
+                        mu[p] -= w_B * (s2[p] / c) * vd
+                        s2[p] = max(s2[p] * (1.0 - w_B * (s2[p] / c2) * wd), floor2)
+                continue
+            if epa > 0:
+                win, lose, tt, w_w, w_l = A, B, t, w_A, w_B
+            else:
+                win, lose, tt, w_w, w_l = B, A, -t, w_B, w_A
+            v = v_win(tt); w = v * (v + tt)
+            for p in win:
+                mu[p] += w_w * (s2[p] / c) * v
+                s2[p] = max(s2[p] * (1.0 - w_w * (s2[p] / c2) * w), floor2)
+            for p in lose:
+                mu[p] -= w_l * (s2[p] / c) * v
+                s2[p] = max(s2[p] * (1.0 - w_l * (s2[p] / c2) * w), floor2)
     share2 = {}
     pos2 = {}
     PG = {"QB":"QB","RB":"RB","FB":"RB","HB":"RB","WR":"WR","TE":"TE",
@@ -279,6 +358,8 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
     f = np.zeros(len(G16))
     KEYS = ["qb_raw", "off_raw", "def_raw", "qb_prec", "off_prec", "def_prec",
             "qb_pn", "off_pn", "def_pn", "p_prec", "r_prec", "var"]
+    if cont:
+        KEYS = KEYS + ["cont"]
     parts = {k: np.zeros(len(G16)) for k in KEYS} if return_parts else None
     gm = {"QB": MU0, "RB": MU0, "WR": MU0, "TE": MU0, "OL": MU0, "DL": MU0, "LB": MU0, "DB": MU0}
     gv = {k: 4.0 for k in gm}                      # running group mean/var (EWMA, leak-free)
@@ -287,6 +368,16 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
     act_pool, seen_season = set(), set()
     for j, (i, g) in enumerate(G16):
         if prev is not None and g["season"] != prev:
+            if ttt_depth and ttt_passes:   # S1: re-absorb past seasons BEFORE shrink/widen
+                _t0r = time.time()
+                _mu_pre = dict(mu)
+                for _ in range(ttt_passes):
+                    for s_r in range(g["season"] - ttt_depth, g["season"]):
+                        for gid_r, gm_r in ttt_cache.get(s_r, ()):
+                            rewalk_game(gid_r, s_r, gm_r)
+                if _mu_pre:
+                    ttt_dmu.append(float(np.mean([abs(mu[p] - _mu_pre[p]) for p in _mu_pre])))
+                ttt_sec += time.time() - _t0r
             if bnd_mode == "group":
                 for p in mu:
                     base = gm.get(GPOS.get(p) or "OL", MU0)
@@ -349,6 +440,8 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
             dead_h = wins[g["home"]] + (sched_len - played[g["home"]]) < thr
             dead_a = wins[g["away"]] + (sched_len - played[g["away"]]) < thr
             gmult = dead_mult if (dead_h and dead_a) else 1.0
+        if ttt_cache is not None:          # S1: remember this game for future re-walks
+            ttt_cache[g["season"]].append((g["gid"], gmult))
         if opp_k and opp_mode == "league" and mu:
             if opp_anchor == "active" and act_pool:
                 _vals = [mu[p] for p in act_pool if p in mu]
@@ -358,6 +451,20 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
         else:
             lg_mu = MU0
         lg_muR = (sum(muR.values()) / len(muR)) if (opp_k and opp_mode == "league" and muR) else MU0
+        if tc_w:               # S3: widen sigma once when a listed player switched teams
+            for team in (g["home"], g["away"]):
+                tbl = snaps.get((g["gid"], team))
+                if not tbl:
+                    continue
+                for pid in tbl:
+                    g_ = pfr2gsis.get(pid)
+                    if not g_:
+                        continue
+                    lt = last_team.get(g_)
+                    if lt is not None and lt != team and g_ in s2:
+                        s2[g_] = min(s2[g_] + tc_w * tc_w, SIG0_2)
+                        tc_n += 1
+                    last_team[g_] = team
         # 1. feature from pre-game state (+ component aggregates when requested)
         seen_mus = []
         for side, team in ((1, g["home"]), (-1, g["away"])):
@@ -408,6 +515,30 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 d_ = m_ - gm[grp]
                 gm[grp] += 0.002 * d_
                 gv[grp] = (1 - 0.002) * gv[grp] + 0.002 * d_ * d_
+        if cont and return_parts:      # S2: pre-game co-snap continuity (leak-free z)
+            _idxs = []
+            for side, team in ((1, g["home"]), (-1, g["away"])):
+                tbl = snaps.get((g["gid"], team))
+                idx = 0.0
+                if tbl:
+                    _off_l = [pid for pid, (pos, op, dp) in tbl.items() if pos not in DEFPOS]
+                    _off_l.sort(key=lambda pid: -(share2[pid][0] / share2[pid][1]
+                                if pid in share2 and share2[pid][1] > 0 else 0.0))
+                    _off_l = _off_l[:11]               # top-11 by as-of share
+                    if len(_off_l) >= 2:
+                        _vals = []
+                        for _a in range(len(_off_l)):
+                            for _b in range(_a + 1, len(_off_l)):
+                                _pr = ((_off_l[_a], _off_l[_b]) if _off_l[_a] < _off_l[_b]
+                                       else (_off_l[_b], _off_l[_a]))
+                                _vals.append(np.log1p(cop.get(_pr, 0.0)))
+                        idx = float(np.mean(_vals))
+                parts["cont"][j] += side * (idx - c_m) / sqrt(max(c_v, 1e-6))
+                _idxs.append(idx)
+            for idx in _idxs:                          # EWMA stats update AFTER
+                _dc = idx - c_m
+                c_m += 0.002 * _dc
+                c_v = (1 - 0.002) * c_v + 0.002 * _dc * _dc
         # role multipliers: depth-chart position by AS-OF usage within team-position
         # (starter = hardest job -> amplified; deep backup -> discounted)
         role_m = {}
@@ -596,6 +727,12 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                         w_B = base_wgt * min(2.0, max(0.3, 1.0 + opp_k * (sA / len(A) - anchor)))
                 else:
                     w_A = w_B = base_wgt
+                if t_nu:                     # S4: Student-t IRLS damping of surprises
+                    _dmp = 1.0 / (1.0 + (t * t) / t_nu)
+                    w_A *= _dmp; w_B *= _dmp
+                    tn_ct[1] += 1
+                    if _dmp < 0.5:
+                        tn_ct[0] += 1
                 def imul(p, delta_pos):
                     if p not in inj_tag:
                         return 1.0
@@ -689,10 +826,32 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 st = share2.setdefault(pid, [0.0, 0.0])
                 st[0] = snapP["decay"] * st[0] + pct
                 st[1] = snapP["decay"] * st[1] + 1.0
+        if cont:                       # S2: post-game co-appearance walk (offense actives)
+            for team in (g["home"], g["away"]):
+                tbl = snaps.get((g["gid"], team))
+                if not tbl:
+                    continue
+                _act = [(pid, op) for pid, (pos, op, dp) in tbl.items() if op > 0]
+                for _a in range(len(_act)):
+                    pa_, oa_ = _act[_a]
+                    for _b in range(_a + 1, len(_act)):
+                        pb_, ob_ = _act[_b]
+                        _pr = (pa_, pb_) if pa_ < pb_ else (pb_, pa_)
+                        cop[_pr] = cop.get(_pr, 0.0) + (oa_ if oa_ < ob_ else ob_)
         # 4. standings walk (for next games' dead-game detection)
         if g["type"] == "REG":
             wins[g["home"]] += g["y"]; wins[g["away"]] += 1.0 - g["y"]
             played[g["home"]] += 1; played[g["away"]] += 1
+    if ttt_depth:
+        _TTT_DIAG[(ttt_depth, ttt_passes)] = {
+            "rewalk_sec": round(ttt_sec, 1), "boundaries": len(ttt_dmu),
+            "mean_abs_dmu": round(float(np.mean(ttt_dmu)), 5) if ttt_dmu else 0.0,
+            "dmu_per_boundary": [round(x, 5) for x in ttt_dmu]}
+    if tc_w:
+        _TC_DIAG[tc_w] = tc_n
+    if t_nu:
+        _TNU_DIAG[t_nu] = {"duels": tn_ct[1],
+                           "share_damp_lt_05": round(tn_ct[0] / max(tn_ct[1], 1), 4)}
     return (f, parts) if return_parts else f
 
 def wf_ll(f, lo, hi):
@@ -741,58 +900,58 @@ V5 = dict(beta=60.0, lev_exp=0.5, draw_band=0.40)
 V6 = {**V5, "fus_k": 4.0, "fus_R": 36.0}
 V7 = {**V6, "sal_k": 1.0, "sal_mode": "cohort"}
 
-print("\nTS2 screens (DEV 2017-21, gate -0.0020):", flush=True)
-# ---- baseline: one v7 walk, must reproduce 0.62952 +/- 0.0007 ----
-ll_base, P7 = obj(**V7)
-results["baseline v7"] = (ll_base, {})
-print(f"  {'baseline v7':<36} {ll_base:.5f}  [{time.time()-T0:.0f}s]", flush=True)
-assert abs(ll_base - 0.62952) <= 0.0007, f"baseline repro FAILED: {ll_base:.5f} vs 0.62952"
+print("\nTTT ONE TEST LOOK (2022-2025): v7 vs v7+ttt(depth2, pass1)", flush=True)
 
-print("\nSCREEN A: TS2 shared-base + per-mode offsets (readout 0.58 offP + 0.42 offR):", flush=True)
-trial("A mode_vd 0 (repro)", **V7, mode_vd=0.0)
-assert abs(results["A mode_vd 0 (repro)"][0] - ll_base) < 1e-9, (
-    f"mode_vd=0 repro FAILED: {results['A mode_vd 0 (repro)'][0]:.7f} vs {ll_base:.7f}")
-for vd in (4.0, 16.0, 49.0):
-    trial(f"A mode_vd {vd:g}", **V7, mode_vd=vd)
+def wf_X_detail(X, lo, hi):
+    lls, preds, idxs = [], [], []
+    for s_ in range(lo, hi + 1):
+        tr = (seas16 < s_) & (y16 != 0.5)
+        te = seas16 == s_
+        m = LogisticRegression(C=1e6, max_iter=3000).fit(X[tr], y16[tr])
+        pp = m.predict_proba(X[te])[:, 1]
+        lls.append(llv(y16[te], pp)); preds.append(pp); idxs.append(np.where(te)[0])
+    return np.concatenate(lls), np.concatenate(preds), np.concatenate(idxs)
 
-print("\nSCREEN B1: volume-scaled QB fusion noise R_eff = scale*fus_R*MED_DB/n_db:", flush=True)
-for sc in (0.5, 1.0, 2.0):
-    trial(f"B1 vol-R scale {sc}", **V7, fus_vol=sc)
+_, P0 = obj(**V7)
+X0 = (P0["qb_prec"] + P0["off_prec"] + P0["def_prec"]).reshape(-1, 1)
+ll0v, p0v, ix = wf_X_detail(X0, 2022, 2025)
+ll0 = float(ll0v.mean())
+print(f"  v7 TEST LL {ll0:.5f} (repro vs 0.62973)", flush=True)
+assert abs(ll0 - 0.62973) <= 0.0007, f"v7 TEST repro FAILED: {ll0:.5f}"
 
-print("\nSCREEN B2: opponent-adjusted QB obs z + s_adj*(oppdef_mu - lg_mu):", flush=True)
-for sa in (0.03, 0.06):
-    trial(f"B2 s_adj {sa}", **V7, fus_adj=sa)
+_, P1 = obj(**V7, ttt_depth=2, ttt_passes=1)
+X1 = (P1["qb_prec"] + P1["off_prec"] + P1["def_prec"]).reshape(-1, 1)
+ll1v, p1v, _ = wf_X_detail(X1, 2022, 2025)
+ll1 = float(ll1v.mean())
 
-_b1 = min((results[f"B1 vol-R scale {sc}"][0], sc) for sc in (0.5, 1.0, 2.0))
-_b2 = min((results[f"B2 s_adj {sa}"][0], sa) for sa in (0.03, 0.06))
-trial(f"B1+B2 (vol {_b1[1]}, adj {_b2[1]})", **V7, fus_vol=_b1[1], fus_adj=_b2[1])
-
-print("\ndiagnostics:", flush=True)
-diag = {"MED_DB": round(MED_DB, 1)}
-for vd in sorted(_MODE_DIAG):
-    d = _MODE_DIAG[vd]
-    print(f"  A vd={vd:g}: offset share {d['share_with_offset']:.3f} "
-          f"({d['with_offset']}/{d['players']}), mean|offP| {d['mean_abs_offP']:.4f}, "
-          f"mean|offR| {d['mean_abs_offR']:.4f}, mean|off| {d['mean_abs_off']:.4f} "
-          f"(end 2021, pre-shrink)", flush=True)
-    diag[f"mode_vd_{vd:g}"] = d
-print(f"  B: median dropbacks MED_DB = {MED_DB:.1f}", flush=True)
-if len(_B2_PAIRS) > 1:
-    _arr = np.array(_B2_PAIRS)
-    _r = float(np.corrcoef(_arr[:, 0], _arr[:, 1])[0, 1])
-    diag["corr_z_oppdef"] = round(_r, 4)
-    diag["n_fusion_pairs"] = int(len(_arr))
-    print(f"  B: corr(QB weekly z, opp-def mean mu) = {_r:+.4f} over {len(_arr)} DEV "
-          f"fusion events (negative = better lines vs weak defenses)", flush=True)
-
-print(f"\nvs baseline {ll_base:.5f} (gate -0.0020):", flush=True)
-for k, (ll, kw) in sorted(results.items(), key=lambda x: x[1][0]):
-    tag = "  << GATE" if ll < ll_base - 0.0020 else ""
-    print(f"  {k:<36} {ll:.5f}  ({ll-ll_base:+.5f}){tag}", flush=True)
-json.dump({"trials": {k: round(v[0], 5) for k, v in results.items()},
-           "baseline": round(ll_base, 5), "gate": 0.0020, "diagnostics": diag},
-          open("data/nfl_ts2_screen.json", "w"), indent=1)
-print("wrote data/nfl_ts2_screen.json", flush=True)
+d = ll0v - ll1v
+rng = np.random.default_rng(7)
+bs = d[rng.integers(0, len(d), size=(10000, len(d)))].mean(axis=1)
+lo_, hi_ = np.percentile(bs, [2.5, 97.5])
+yt = y16[ix]
+msk = yt != 0.5
+acc0 = float((((p0v > 0.5) == (yt > 0.5))[msk]).mean())
+acc1 = float((((p1v > 0.5) == (yt > 0.5))[msk]).mean())
+a0 = (p0v > 0.5)[msk]; a1 = (p1v > 0.5)[msk]; yy = (yt > 0.5)[msk]
+b_ = int(((a1 == yy) & (a0 != yy)).sum()); c_ = int(((a0 == yy) & (a1 != yy)).sum())
+try:
+    from scipy.stats import binomtest
+    pmc = float(binomtest(b_, b_ + c_, 0.5).pvalue) if b_ + c_ else 1.0
+except ImportError:
+    pmc = -1.0
+print(f"  v7+ttt TEST LL {ll1:.5f}  delta {ll0-ll1:+.5f}  CI [{lo_:+.5f},{hi_:+.5f}]", flush=True)
+print(f"  acc {acc0:.4f} -> {acc1:.4f}   McNemar only-ttt-right {b_} / only-v7-right {c_}  p={pmc:.4f}", flush=True)
+verdict = "ADOPT (point estimate better)" if ll1 < ll0 else "REJECT (TEST refused)"
+print(f"  -> {verdict}", flush=True)
+json.dump({"v7_test": round(ll0, 5), "ttt_test": round(ll1, 5),
+           "delta": round(ll0 - ll1, 5), "ci": [round(float(lo_), 5), round(float(hi_), 5)],
+           "acc": [round(acc0, 4), round(acc1, 4)],
+           "mcnemar": {"b_ttt": b_, "c_v7": c_, "p": round(pmc, 4)},
+           "config": {"ttt_depth": 2, "ttt_passes": 1},
+           "dev": {"base": 0.62952, "ttt_d2": 0.62648}},
+          open("data/nfl_ttt_test.json", "w"), indent=1)
+np.save("data/nfl_v8_feature.npy", X1[:, 0])
+print("wrote data/nfl_ttt_test.json + data/nfl_v8_feature.npy (G16-aligned ttt feature)", flush=True)
 raise SystemExit(0)
 cfg = {**V4, **V7}
 _, P = run_config(**cfg, return_parts=True)

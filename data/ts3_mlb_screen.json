@@ -1,0 +1,618 @@
+{
+ "screen": "MLB per-PA TrueSkill-3 slivers: TTT boundary re-walk + team-change sigma widening + Student-t damping",
+ "protocol": {
+  "dev_seasons": "2002-2015",
+  "cv": "KFold(5, shuffle=True, random_state=7)",
+  "metric": "pooled out-of-fold DEV log loss of the 6-col blend [logit_fip, ts_z, bp_z, pw_z, siera_z, baserun_z]",
+  "gate": 0.002,
+  "n_dev_games": 34009,
+  "test_touched": false,
+  "note": "continuity screen structurally N/A in a 1v1 engine"
+ },
+ "baseline": {
+  "cv_ll": 0.676659,
+  "repro_max_abs_diff_vs_fresh_walk": 0.0,
+  "max_abs_diff_vs_shipped_csv_4dp": 4.999923913334703e-05,
+  "n_feature_games": 61634
+ },
+ "variants": [
+  {
+   "name": "s1_ttt_depth1",
+   "params": {
+    "nu": null,
+    "tc_w": 0,
+    "ttt_depth": 1
+   },
+   "cv_ll": 0.676665,
+   "delta": -6e-06
+  },
+  {
+   "name": "s1_ttt_depth3",
+   "params": {
+    "nu": null,
+    "tc_w": 0,
+    "ttt_depth": 3
+   },
+   "cv_ll": 0.676666,
+   "delta": -7e-06
+  },
+  {
+   "name": "s2_teamchange_w0.5",
+   "params": {
+    "nu": null,
+    "tc_w": 0.5,
+    "ttt_depth": 0
+   },
+   "cv_ll": 0.676662,
+   "delta": -3e-06
+  },
+  {
+   "name": "s2_teamchange_w1.5",
+   "params": {
+    "nu": null,
+    "tc_w": 1.5,
+    "ttt_depth": 0
+   },
+   "cv_ll": 0.676678,
+   "delta": -1.9e-05
+  },
+  {
+   "name": "s3_studentt_nu4",
+   "params": {
+    "nu": 4.0,
+    "tc_w": 0,
+    "ttt_depth": 0
+   },
+   "cv_ll": 0.67666,
+   "delta": -1e-06
+  },
+  {
+   "name": "s3_studentt_nu9",
+   "params": {
+    "nu": 9.0,
+    "tc_w": 0,
+    "ttt_depth": 0
+   },
+   "cv_ll": 0.676659,
+   "delta": -0.0
+  }
+ ],
+ "gate_met": false,
+ "best_variant": "s3_studentt_nu9",
+ "best_delta": -0.0,
+ "diagnostics": {
+  "total_pas": 4706391,
+  "team_change_events": 7412,
+  "team_change_players": 2896,
+  "s2_widenings_applied": {
+   "s2_teamchange_w0.5": {
+    "widenings_applied": 7412
+   },
+   "s2_teamchange_w1.5": {
+    "widenings_applied": 7412
+   }
+  },
+  "s3_damp_share": {
+   "s3_studentt_nu4": {
+    "pa_count": 4706391,
+    "share_damp_lt_0.5": 8e-06
+   },
+   "s3_studentt_nu9": {
+    "pa_count": 4706391,
+    "share_damp_lt_0.5": 0.0
+   }
+  },
+  "s1_ttt_rewalks": {
+   "s1_ttt_depth1": {
+    "n_boundary_rewalks": 25,
+    "mean_abs_mu_change_avg": 0.11213,
+    "per_rewalk": [
+     {
+      "into_season": 2001,
+      "replayed_seasons": [
+       2000
+      ],
+      "n_players": 1230,
+      "n_pas": 190247,
+      "mean_abs_mu_change": 0.08513
+     },
+     {
+      "into_season": 2002,
+      "replayed_seasons": [
+       2001
+      ],
+      "n_players": 1217,
+      "n_pas": 186973,
+      "mean_abs_mu_change": 0.10584
+     },
+     {
+      "into_season": 2003,
+      "replayed_seasons": [
+       2002
+      ],
+      "n_players": 1217,
+      "n_pas": 186654,
+      "mean_abs_mu_change": 0.1038
+     },
+     {
+      "into_season": 2004,
+      "replayed_seasons": [
+       2003
+      ],
+      "n_players": 1229,
+      "n_pas": 187492,
+      "mean_abs_mu_change": 0.1136
+     },
+     {
+      "into_season": 2005,
+      "replayed_seasons": [
+       2004
+      ],
+      "n_players": 1243,
+      "n_pas": 188584,
+      "mean_abs_mu_change": 0.11026
+     },
+     {
+      "into_season": 2006,
+      "replayed_seasons": [
+       2005
+      ],
+      "n_players": 1236,
+      "n_pas": 186327,
+      "mean_abs_mu_change": 0.11113
+     },
+     {
+      "into_season": 2007,
+      "replayed_seasons": [
+       2006
+      ],
+      "n_players": 1242,
+      "n_pas": 188096,
+      "mean_abs_mu_change": 0.09576
+     },
+     {
+      "into_season": 2008,
+      "replayed_seasons": [
+       2007
+      ],
+      "n_players": 1274,
+      "n_pas": 188652,
+      "mean_abs_mu_change": 0.10688
+     },
+     {
+      "into_season": 2009,
+      "replayed_seasons": [
+       2008
+      ],
+      "n_players": 1290,
+      "n_pas": 187662,
+      "mean_abs_mu_change": 0.10673
+     },
+     {
+      "into_season": 2010,
+      "replayed_seasons": [
+       2009
+      ],
+      "n_players": 1264,
+      "n_pas": 187104,
+      "mean_abs_mu_change": 0.1056
+     },
+     {
+      "into_season": 2011,
+      "replayed_seasons": [
+       2010
+      ],
+      "n_players": 1246,
+      "n_pas": 185569,
+      "mean_abs_mu_change": 0.1055
+     },
+     {
+      "into_season": 2012,
+      "replayed_seasons": [
+       2011
+      ],
+      "n_players": 1294,
+      "n_pas": 185255,
+      "mean_abs_mu_change": 0.10963
+     },
+     {
+      "into_season": 2013,
+      "replayed_seasons": [
+       2012
+      ],
+      "n_players": 1284,
+      "n_pas": 184204,
+      "mean_abs_mu_change": 0.10728
+     },
+     {
+      "into_season": 2014,
+      "replayed_seasons": [
+       2013
+      ],
+      "n_players": 1301,
+      "n_pas": 184887,
+      "mean_abs_mu_change": 0.10602
+     },
+     {
+      "into_season": 2015,
+      "replayed_seasons": [
+       2014
+      ],
+      "n_players": 1317,
+      "n_pas": 183942,
+      "mean_abs_mu_change": 0.11674
+     },
+     {
+      "into_season": 2016,
+      "replayed_seasons": [
+       2015
+      ],
+      "n_players": 1348,
+      "n_pas": 183632,
+      "mean_abs_mu_change": 0.10892
+     },
+     {
+      "into_season": 2017,
+      "replayed_seasons": [
+       2016
+      ],
+      "n_players": 1353,
+      "n_pas": 184589,
+      "mean_abs_mu_change": 0.10924
+     },
+     {
+      "into_season": 2018,
+      "replayed_seasons": [
+       2017
+      ],
+      "n_players": 1357,
+      "n_pas": 185292,
+      "mean_abs_mu_change": 0.11498
+     },
+     {
+      "into_season": 2019,
+      "replayed_seasons": [
+       2018
+      ],
+      "n_players": 1378,
+      "n_pas": 185145,
+      "mean_abs_mu_change": 0.10959
+     },
+     {
+      "into_season": 2020,
+      "replayed_seasons": [
+       2019
+      ],
+      "n_players": 1410,
+      "n_pas": 186509,
+      "mean_abs_mu_change": 0.10914
+     },
+     {
+      "into_season": 2021,
+      "replayed_seasons": [
+       2020
+      ],
+      "n_players": 1285,
+      "n_pas": 66489,
+      "mean_abs_mu_change": 0.18509
+     },
+     {
+      "into_season": 2022,
+      "replayed_seasons": [
+       2021
+      ],
+      "n_players": 1506,
+      "n_pas": 181793,
+      "mean_abs_mu_change": 0.1251
+     },
+     {
+      "into_season": 2023,
+      "replayed_seasons": [
+       2022
+      ],
+      "n_players": 1493,
+      "n_pas": 182013,
+      "mean_abs_mu_change": 0.12379
+     },
+     {
+      "into_season": 2024,
+      "replayed_seasons": [
+       2023
+      ],
+      "n_players": 1454,
+      "n_pas": 184034,
+      "mean_abs_mu_change": 0.11555
+     },
+     {
+      "into_season": 2025,
+      "replayed_seasons": [
+       2024
+      ],
+      "n_players": 1452,
+      "n_pas": 182374,
+      "mean_abs_mu_change": 0.11202
+     }
+    ]
+   },
+   "s1_ttt_depth3": {
+    "n_boundary_rewalks": 25,
+    "mean_abs_mu_change_avg": 0.0688,
+    "per_rewalk": [
+     {
+      "into_season": 2001,
+      "replayed_seasons": [
+       2000
+      ],
+      "n_players": 1230,
+      "n_pas": 190247,
+      "mean_abs_mu_change": 0.08513
+     },
+     {
+      "into_season": 2002,
+      "replayed_seasons": [
+       2000,
+       2001
+      ],
+      "n_players": 1499,
+      "n_pas": 377220,
+      "mean_abs_mu_change": 0.05643
+     },
+     {
+      "into_season": 2003,
+      "replayed_seasons": [
+       2000,
+       2001,
+       2002
+      ],
+      "n_players": 1731,
+      "n_pas": 563874,
+      "mean_abs_mu_change": 0.04635
+     },
+     {
+      "into_season": 2004,
+      "replayed_seasons": [
+       2001,
+       2002,
+       2003
+      ],
+      "n_players": 1712,
+      "n_pas": 561119,
+      "mean_abs_mu_change": 0.06852
+     },
+     {
+      "into_season": 2005,
+      "replayed_seasons": [
+       2002,
+       2003,
+       2004
+      ],
+      "n_players": 1725,
+      "n_pas": 562730,
+      "mean_abs_mu_change": 0.06404
+     },
+     {
+      "into_season": 2006,
+      "replayed_seasons": [
+       2003,
+       2004,
+       2005
+      ],
+      "n_players": 1756,
+      "n_pas": 562403,
+      "mean_abs_mu_change": 0.07334
+     },
+     {
+      "into_season": 2007,
+      "replayed_seasons": [
+       2004,
+       2005,
+       2006
+      ],
+      "n_players": 1778,
+      "n_pas": 563007,
+      "mean_abs_mu_change": 0.07073
+     },
+     {
+      "into_season": 2008,
+      "replayed_seasons": [
+       2005,
+       2006,
+       2007
+      ],
+      "n_players": 1767,
+      "n_pas": 563075,
+      "mean_abs_mu_change": 0.06847
+     },
+     {
+      "into_season": 2009,
+      "replayed_seasons": [
+       2006,
+       2007,
+       2008
+      ],
+      "n_players": 1805,
+      "n_pas": 564410,
+      "mean_abs_mu_change": 0.06901
+     },
+     {
+      "into_season": 2010,
+      "replayed_seasons": [
+       2007,
+       2008,
+       2009
+      ],
+      "n_players": 1810,
+      "n_pas": 563418,
+      "mean_abs_mu_change": 0.05931
+     },
+     {
+      "into_season": 2011,
+      "replayed_seasons": [
+       2008,
+       2009,
+       2010
+      ],
+      "n_players": 1791,
+      "n_pas": 560335,
+      "mean_abs_mu_change": 0.05939
+     },
+     {
+      "into_season": 2012,
+      "replayed_seasons": [
+       2009,
+       2010,
+       2011
+      ],
+      "n_players": 1816,
+      "n_pas": 557928,
+      "mean_abs_mu_change": 0.07235
+     },
+     {
+      "into_season": 2013,
+      "replayed_seasons": [
+       2010,
+       2011,
+       2012
+      ],
+      "n_players": 1799,
+      "n_pas": 555028,
+      "mean_abs_mu_change": 0.07112
+     },
+     {
+      "into_season": 2014,
+      "replayed_seasons": [
+       2011,
+       2012,
+       2013
+      ],
+      "n_players": 1824,
+      "n_pas": 554346,
+      "mean_abs_mu_change": 0.06341
+     },
+     {
+      "into_season": 2015,
+      "replayed_seasons": [
+       2012,
+       2013,
+       2014
+      ],
+      "n_players": 1842,
+      "n_pas": 553033,
+      "mean_abs_mu_change": 0.0681
+     },
+     {
+      "into_season": 2016,
+      "replayed_seasons": [
+       2013,
+       2014,
+       2015
+      ],
+      "n_players": 1877,
+      "n_pas": 552461,
+      "mean_abs_mu_change": 0.06943
+     },
+     {
+      "into_season": 2017,
+      "replayed_seasons": [
+       2014,
+       2015,
+       2016
+      ],
+      "n_players": 1919,
+      "n_pas": 552163,
+      "mean_abs_mu_change": 0.06876
+     },
+     {
+      "into_season": 2018,
+      "replayed_seasons": [
+       2015,
+       2016,
+       2017
+      ],
+      "n_players": 1950,
+      "n_pas": 553513,
+      "mean_abs_mu_change": 0.06785
+     },
+     {
+      "into_season": 2019,
+      "replayed_seasons": [
+       2016,
+       2017,
+       2018
+      ],
+      "n_players": 1957,
+      "n_pas": 555026,
+      "mean_abs_mu_change": 0.06845
+     },
+     {
+      "into_season": 2020,
+      "replayed_seasons": [
+       2017,
+       2018,
+       2019
+      ],
+      "n_players": 1966,
+      "n_pas": 556946,
+      "mean_abs_mu_change": 0.06281
+     },
+     {
+      "into_season": 2021,
+      "replayed_seasons": [
+       2018,
+       2019,
+       2020
+      ],
+      "n_players": 1931,
+      "n_pas": 438143,
+      "mean_abs_mu_change": 0.07461
+     },
+     {
+      "into_season": 2022,
+      "replayed_seasons": [
+       2019,
+       2020,
+       2021
+      ],
+      "n_players": 1981,
+      "n_pas": 434791,
+      "mean_abs_mu_change": 0.07956
+     },
+     {
+      "into_season": 2023,
+      "replayed_seasons": [
+       2020,
+       2021,
+       2022
+      ],
+      "n_players": 2055,
+      "n_pas": 430295,
+      "mean_abs_mu_change": 0.09024
+     },
+     {
+      "into_season": 2024,
+      "replayed_seasons": [
+       2021,
+       2022,
+       2023
+      ],
+      "n_players": 2179,
+      "n_pas": 547840,
+      "mean_abs_mu_change": 0.06946
+     },
+     {
+      "into_season": 2025,
+      "replayed_seasons": [
+       2022,
+       2023,
+       2024
+      ],
+      "n_players": 2116,
+      "n_pas": 548421,
+      "mean_abs_mu_change": 0.07322
+     }
+    ]
+   }
+  }
+ },
+ "runtime_sec": 114.7
+}

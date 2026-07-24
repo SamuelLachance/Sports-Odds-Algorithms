@@ -1,0 +1,71 @@
+{
+ "trials": {
+  "baseline v7": 0.62952,
+  "S1 ttt depth 1 pass 1": 0.62693,
+  "S1 ttt depth 3 pass 1": 0.62651,
+  "S2 cont 2-col": 0.6304,
+  "S3 tc_w 1": 0.6297,
+  "S3 tc_w 2": 0.63051,
+  "S3 tc_w 3": 0.63181,
+  "S4 t_nu 4": 0.62949,
+  "S4 t_nu 9": 0.62951
+ },
+ "baseline": 0.62952,
+ "gate": 0.002,
+ "diagnostics": {
+  "S1_d1p1": {
+   "rewalk_sec": 7.6,
+   "boundaries": 9,
+   "mean_abs_dmu": 0.52836,
+   "dmu_per_boundary": [
+    1.06825,
+    0.76194,
+    0.57976,
+    0.49804,
+    0.44734,
+    0.41989,
+    0.37022,
+    0.31734,
+    0.29245
+   ]
+  },
+  "S1_d3p1": {
+   "rewalk_sec": 20.3,
+   "boundaries": 9,
+   "mean_abs_dmu": 0.79477,
+   "dmu_per_boundary": [
+    1.06825,
+    1.10783,
+    1.04462,
+    0.86547,
+    0.74208,
+    0.66113,
+    0.60246,
+    0.55318,
+    0.5079
+   ]
+  },
+  "S2": {
+   "corr_cont_ts_dev": 0.5497,
+   "dev_coef_by_year": [
+    0.348,
+    0.3365,
+    0.1034,
+    0.027,
+    0.0519
+   ],
+   "dev_coef_mean": 0.1734
+  },
+  "S3_tc_w_1_events": 5650,
+  "S3_tc_w_2_events": 5650,
+  "S3_tc_w_3_events": 5650,
+  "S4_t_nu_4": {
+   "duels": 344801,
+   "share_damp_lt_05": 0.0
+  },
+  "S4_t_nu_9": {
+   "duels": 344801,
+   "share_damp_lt_05": 0.0
+  }
+ }
+}

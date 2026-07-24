@@ -1,0 +1,14 @@
+{
+ "trials": {
+  "baseline v7": 0.62952,
+  "ttt depth 2 pass 1": 0.62648,
+  "ttt depth 3 pass 1": 0.62651,
+  "ttt depth 4 pass 1": 0.62692,
+  "ttt depth 6 pass 1": 0.62714,
+  "ttt depth 9 pass 1": 0.62714,
+  "ttt depth 3 pass 2": 0.63103,
+  "ttt d2p1 shrink 1/4": 0.62663,
+  "ttt d2p1 shrink 1/6": 0.62698
+ },
+ "baseline": 0.62952
+}
