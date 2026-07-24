@@ -35,7 +35,9 @@ from math import erf, exp, pi, sqrt
 T0 = time.time()
 MU0, SIG0 = 25.0, 25.0 / 3.0
 SIG0_2 = SIG0 * SIG0
-BETA = SIG0                      # noisy single plays
+BETA = 60.0                      # DEV-swept: single plays are ~7x noisier than the
+                                 # prior scale suggested; big beta = smooth learning
+                                 # (U-curve peak 45-60; the sweep's biggest win)
 TAU2 = 0.30 ** 2                 # weekly drift — DEV-tuned vs the ratings-only
                                  # game model (recent snaps dominate the posterior)
 SEASON_SHRINK = 1.0 / 3.0        # offseason: mu 1/3 of the way back to MU0
@@ -49,7 +51,7 @@ OPP_K = 0.3                      # your update scales with the OPPOSING unit's s
                                  # vs the RUNNING league mean (anchoring to the fixed
                                  # prior inflates ratings; league-anchored is clean and
                                  # generalized better) — the engine's biggest tuning win
-DRAW_BAND = 0.55                 # |EPA| below this = a DRAW (TrueSkill draw update):
+DRAW_BAND = 0.40                 # |EPA| below this = a DRAW (re-tuned at beta 60):
                                  # near-zero plays carry almost no win/lose information;
                                  # dose-response peaked at 0.55 (DEV -0.0088, engine's
                                  # biggest single win)
@@ -171,7 +173,7 @@ for gid, pid_, off, dfn, epa in plays:
         wgt = 1.0
     else:
         wp, down, qtr, adiff = c_
-        wgt = 4.0 * wp * (1.0 - wp)
+        wgt = (4.0 * wp * (1.0 - wp)) ** 0.5    # sqrt leverage (DEV-swept exponent)
         if down >= 3:
             wgt *= DOWN_MULT
         if qtr >= 4 and adiff <= 8:

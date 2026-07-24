@@ -1,0 +1,17 @@
+{
+ "dev": {
+  "beta 45 + lev .5 + band .40": 0.64008,
+  "beta 60 + lev .5 + band .40": 0.63973,
+  "beta 60 + lev .5 + band .55": 0.64138,
+  "beta 45 + lev .5 + band .55": 0.64171
+ },
+ "winner": "beta 60 + lev .5 + band .40",
+ "winner_cfg": {
+  "beta": 60.0,
+  "lev_exp": 0.5,
+  "draw_band": 0.4
+ },
+ "test_ll": 0.63819,
+ "acc": 0.6505,
+ "elo_ll": 0.63824
+}

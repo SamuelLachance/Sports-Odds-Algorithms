@@ -126,7 +126,8 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                widen2=1.5 ** 2, playoff_mult=1.0, dead_mult=1.0, opp_k=0.0,
                opp_mode="league", flat_scale=1.0, role_r=0.0, micro="off",
                sal_k=0.0, grade="off", mov_scale=0.5, mov_cap=2.0,
-               draw_band=0.0, neutral_skip=0.0, return_parts=False):
+               draw_band=0.0, neutral_skip=0.0, return_parts=False,
+               beta=BETA, floor2=SIG2_FLOOR, lev_exp=1.0, draw_eps=0.05):
     """One engine walk -> per-game ts_diff feature (pre-game, leak-free).
 
     Game importance: playoff snaps x playoff_mult; 'useless' late-season games
@@ -243,7 +244,7 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                     s2[p] = min(s2[p] + tau2, SIG0_2)
                 lastwk[p] = wk
             wp, down, qtr, adiff, hsec = ctx.get((gid, pid_), (0.5, 1, 1, 0.0, 900.0))
-            wgt = (4.0 * wp * (1.0 - wp)) if use_lev else \
+            wgt = ((4.0 * wp * (1.0 - wp)) ** lev_exp) if use_lev else \
                 (0.25 if (wp < 0.05 or wp > 0.95) else 1.0)
             if down >= 3:
                 wgt *= down_mult
@@ -262,7 +263,7 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                     base_wgt *= min(mov_cap, max(0.5, sqrt(abs(epa) / mov_scale)))
                 is_draw = draw_band > 0 and abs(epa) < draw_band
                 sA = sum(mu[p] for p in A); sB = sum(mu[p] for p in B)
-                c2 = (len(A) + len(B)) * BETA * BETA + sum(s2[p] for p in A) + sum(s2[p] for p in B)
+                c2 = (len(A) + len(B)) * beta * beta + sum(s2[p] for p in A) + sum(s2[p] for p in B)
                 c = sqrt(c2)
                 t = (sA - sB) / c
                 if opp_k:
@@ -277,7 +278,7 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 else:
                     w_A = w_B = base_wgt
                 if is_draw:                                  # B: TrueSkill draw update
-                    e = 0.05
+                    e = draw_eps
                     den = cdf(e - t) - cdf(-e - t)
                     if den > 1e-9:
                         vd = (pdf(-e - t) - pdf(e - t)) / den
@@ -285,10 +286,10 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                         wd = max(0.0, min(1.0, wd))
                         for p in A:
                             mu[p] += w_A * (s2[p] / c) * vd
-                            s2[p] = max(s2[p] * (1.0 - w_A * (s2[p] / c2) * wd), SIG2_FLOOR)
+                            s2[p] = max(s2[p] * (1.0 - w_A * (s2[p] / c2) * wd), floor2)
                         for p in B:
                             mu[p] -= w_B * (s2[p] / c) * vd
-                            s2[p] = max(s2[p] * (1.0 - w_B * (s2[p] / c2) * wd), SIG2_FLOOR)
+                            s2[p] = max(s2[p] * (1.0 - w_B * (s2[p] / c2) * wd), floor2)
                     return
                 if won:
                     win, lose, tt, w_win_, w_lose_ = A, B, t, w_A, w_B
@@ -298,11 +299,11 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 for p in win:
                     rm = role_m.get(p, 1.0) if role_r else 1.0
                     mu[p] += rm * w_win_ * (s2[p] / c) * v
-                    s2[p] = max(s2[p] * (1.0 - rm * w_win_ * (s2[p] / c2) * w), SIG2_FLOOR)
+                    s2[p] = max(s2[p] * (1.0 - rm * w_win_ * (s2[p] / c2) * w), floor2)
                 for p in lose:
                     rm = role_m.get(p, 1.0) if role_r else 1.0
                     mu[p] -= rm * w_lose_ * (s2[p] / c) * v
-                    s2[p] = max(s2[p] * (1.0 - rm * w_lose_ * (s2[p] / c2) * w), SIG2_FLOOR)
+                    s2[p] = max(s2[p] * (1.0 - rm * w_lose_ * (s2[p] / c2) * w), floor2)
 
             micro_done = False
             if micro != "off":
@@ -351,12 +352,10 @@ def wf_ll(f, lo, hi):
         out.append(llv(y16[te], p))
     return float(np.concatenate(out).mean()), np.concatenate(out)
 
-# ================= AGGREGATION STUDY (engine fixed at v4) =================
+# ================= CORE KNOB SWEEP (objective: sigma-discounted sum, DEV) =================
 V4 = dict(tau=0.30, use_lev=True, down_mult=1.25, late_mult=1.5,
           playoff_mult=1.5, dead_mult=0.5, opp_k=0.3, opp_mode="league",
           draw_band=0.55)
-f_v4, P = run_config(**V4, return_parts=True)
-print(f"[{time.time()-T0:.0f}s] v4 walk + component aggregates done", flush=True)
 
 def wf_X(X, lo, hi):
     lls, accs = [], []
@@ -370,36 +369,40 @@ def wf_X(X, lo, hi):
         accs.append(((p > 0.5) == (y16[te] > 0.5))[msk])
     return float(np.concatenate(lls).mean()), float(np.concatenate(accs).mean())
 
-VAR = {
-  "single raw sum (current)": [P["qb_raw"] + P["off_raw"] + P["def_raw"]],
-  "split QB / off / def": [P["qb_raw"], P["off_raw"], P["def_raw"]],
-  "sigma-discounted sum": [P["qb_prec"] + P["off_prec"] + P["def_prec"]],
-  "sigma-discounted split": [P["qb_prec"], P["off_prec"], P["def_prec"]],
-  "position-normalized sum": [P["qb_pn"] + P["off_pn"] + P["def_pn"]],
-  "position-normalized split": [P["qb_pn"], P["off_pn"], P["def_pn"]],
-  "pn split + raw QB": [P["qb_raw"], P["qb_pn"], P["off_pn"], P["def_pn"]],
-}
-print("\nDEV 2017-2021 — aggregation variants (ratings fixed, engine v4):", flush=True)
-best_name, best_ll = None, 9e9
-for name, cols in VAR.items():
-    X = np.column_stack(cols)
-    ll, _ = wf_X(X, 2017, 2021)
-    tag = ""
-    if ll < best_ll:
-        best_ll, best_name = ll, name
-        tag = "  <-- best"
-    print(f"  {name:<28} {ll:.5f}{tag}", flush=True)
+def obj(**kw):
+    cfg = {**V4, **kw}
+    _, P = run_config(**cfg, return_parts=True)
+    X = (P["qb_prec"] + P["off_prec"] + P["def_prec"]).reshape(-1, 1)
+    return wf_X(X, 2017, 2021)[0], P
 
-X_best = np.column_stack(VAR[best_name])
-ll_test, acc_test = wf_X(X_best, 2022, 2025)
+results = {}
+def trial(name, **kw):
+    ll, _ = obj(**kw)
+    results[name] = (ll, kw)
+    print(f"  {name:<36} {ll:.5f}  [{time.time()-T0:.0f}s]", flush=True)
+
+print("\nDEV 2017-2021 — core knob sweep (one at a time, prec-sum objective):", flush=True)
+trial("beta 45 + lev .5 + band .40", beta=45.0, lev_exp=0.5, draw_band=0.40)
+trial("beta 60 + lev .5 + band .40", beta=60.0, lev_exp=0.5, draw_band=0.40)
+trial("beta 60 + lev .5 + band .55", beta=60.0, lev_exp=0.5)
+trial("beta 45 + lev .5 + band .55", beta=45.0, lev_exp=0.5)
+base_ll = 0.64351
+print(f"\nknobs beating baseline ({base_ll:.5f}) by >= 0.0010:")
+for k, (ll, kw) in sorted(results.items(), key=lambda x: x[1][0]):
+    if ll < base_ll - 0.0010 and kw:
+        print(f"  {k:<36} {ll:.5f}  ({ll-base_ll:+.5f})")
+best_name = min(results, key=lambda k: results[k][0])
+cfg = {**V4, **results[best_name][1]}
+_, P = run_config(**cfg, return_parts=True)
+X = (P["qb_prec"] + P["off_prec"] + P["def_prec"]).reshape(-1, 1)
+ll_test, acc_test = wf_X(X, 2022, 2025)
 te_mask = (seas16 >= 2022) & (seas16 <= 2025)
 idx_all = np.array([i for i, _ in G16])
 ll_elo = float(llv(y16[te_mask], pe[idx_all][te_mask]).mean())
-print(f"\nTEST 2022-2025 (n={int(te_mask.sum())}):")
-print(f"  ratings-only, {best_name:<26} LL {ll_test:.5f}  acc {acc_test*100:.1f}%")
-print(f"  plain team Elo                       LL {ll_elo:.5f}")
-json.dump({"dev": {k: round(wf_X(np.column_stack(v), 2017, 2021)[0], 5) for k, v in VAR.items()},
-           "winner": best_name, "test_ll": round(ll_test, 5), "acc": round(acc_test, 4),
-           "elo_ll": round(ll_elo, 5)},
-          open("data/nfl_ratings_agg.json", "w"), indent=1)
-print("wrote data/nfl_ratings_agg.json")
+print(f"\nTEST 2022-2025: {best_name}")
+print(f"  ratings-only LL {ll_test:.5f}  acc {acc_test*100:.1f}%  |  Elo {ll_elo:.5f}")
+json.dump({"dev": {k: round(v[0], 5) for k, v in results.items()},
+           "winner": best_name, "winner_cfg": {k: v for k, v in results[best_name][1].items()},
+           "test_ll": round(ll_test, 5), "acc": round(acc_test, 4), "elo_ll": round(ll_elo, 5)},
+          open("data/nfl_knob_sweep.json", "w"), indent=1)
+print("wrote data/nfl_knob_sweep.json")
