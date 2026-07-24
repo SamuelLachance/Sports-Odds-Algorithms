@@ -158,11 +158,15 @@ QBOBS = {}
 _rates = [ln[0] / ln[1] for (q_, s_, w_), ln in qbw.items()
           if 2016 <= s_ <= 2021 and ln[1] >= 10]
 _SDQB = float(np.std(_rates)) if _rates else 0.15
+_dbs = [ln[1] for (q_, s_, w_), ln in qbw.items()
+        if 2016 <= s_ <= 2021 and ln[1] >= 10]
+MED_DB = float(np.median(_dbs)) if _dbs else 30.0
 for (q_, s_, w_), ln in qbw.items():
     if s_ >= 2016 and ln[1] >= 10:
         z_ = max(-2.5, min(2.5, (ln[0] / ln[1] - lg_qb) / _SDQB))
-        QBOBS[(q_, str(s_), f"{w_:02d}")] = z_
-print(f"[{time.time()-T0:.0f}s] QB weekly obs: {len(QBOBS):,} lines (sd {_SDQB:.3f})", flush=True)
+        QBOBS[(q_, str(s_), f"{w_:02d}")] = (z_, float(ln[1]))
+print(f"[{time.time()-T0:.0f}s] QB weekly obs: {len(QBOBS):,} lines (sd {_SDQB:.3f}, "
+      f"median db {MED_DB:.1f})", flush=True)
 
 BYEAR = {}
 for _r in csv.DictReader(open("data/nfl_players.csv", encoding="utf-8")):
@@ -215,6 +219,9 @@ G16 = [(i, g) for i, g in enumerate(games) if g["season"] >= 2016]
 seas16 = np.array([g["season"] for _, g in G16])
 y16 = np.array([g["y"] for _, g in G16])
 
+_MODE_DIAG = {}   # mode_vd -> offset diagnostics, snapshot at end of 2021 (pre-shrink)
+_B2_PAIRS = []    # (raw QB weekly z, oppdef mean mu) pairs from the last fus_adj>0 walk
+
 def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                widen2=1.5 ** 2, playoff_mult=1.0, dead_mult=1.0, opp_k=0.0,
                opp_mode="league", flat_scale=1.0, role_r=0.0, micro="off",
@@ -228,7 +235,8 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                dead_scale=False, share_bnd=False, win_snaps=0,
                age_k=0.0, age_y=0.0, age_w=0.0, skf_k=0.0, skf_R=60.0,
                dff_k=0.0, dff_R=60.0, run_w=1.0, draw_band_run=None,
-               ent_d=0.0, ent_qb=False):
+               ent_d=0.0, ent_qb=False, mode_vd=0.0, mode_tau2=0.0025,
+               fus_vol=0.0, fus_adj=0.0):
     """One engine walk -> per-game ts_diff feature (pre-game, leak-free).
 
     Game importance: playoff snaps x playoff_mult; 'useless' late-season games
@@ -257,6 +265,10 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
     def push_event(p, delta):
         ev_q[p].append((delta, 0))
     muR, s2R = {}, {}                    # run track (pass track = mu/s2)
+    offP, offR = {}, {}                  # TS2 per-mode offsets [mu, s2], lazy-created
+    oppdef = {}                          # (qb, season_str, week_str) -> [sum mean-def-mu, n]
+    if fus_adj:
+        _B2_PAIRS.clear()
     share2 = {}
     pos2 = {}
     PG = {"QB":"QB","RB":"RB","FB":"RB","HB":"RB","WR":"WR","TE":"TE",
@@ -307,6 +319,21 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
             for p in muR:
                 muR[p] = MU0 + (muR[p] - MU0) * (1.0 - season_shrink)
                 s2R[p] = min(s2R[p] + widen2, SIG0_2)
+            if mode_vd:
+                if prev == 2021:          # snapshot end-of-DEV offset state (pre-shrink)
+                    _n_off = len(set(offP) | set(offR))
+                    _allo = ([abs(st[0]) for st in offP.values()]
+                             + [abs(st[0]) for st in offR.values()])
+                    _MODE_DIAG[mode_vd] = {
+                        "players": len(mu), "with_offset": _n_off,
+                        "share_with_offset": round(_n_off / max(len(mu), 1), 4),
+                        "mean_abs_offP": round(float(np.mean([abs(st[0]) for st in offP.values()])), 4) if offP else 0.0,
+                        "mean_abs_offR": round(float(np.mean([abs(st[0]) for st in offR.values()])), 4) if offR else 0.0,
+                        "mean_abs_off": round(float(np.mean(_allo)), 4) if _allo else 0.0}
+                for _off in (offP, offR):  # offsets shrink hard toward 0
+                    for _ost in _off.values():
+                        _ost[0] *= 0.5
+                        _ost[1] = min(_ost[1] + mode_vd / 4.0, mode_vd)
             if share_bnd:
                 for st_ in share2.values():
                     st_[0] *= 0.7 ** 4; st_[1] *= 0.7 ** 4
@@ -346,6 +373,9 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 m_ = mu.get(g_) if g_ else None
                 if m_ is None:
                     continue
+                if mode_vd:               # readout: base + pass-share-weighted offsets
+                    _op = offP.get(g_); _orr = offR.get(g_)
+                    m_ = m_ + 0.58 * (_op[0] if _op else 0.0) + 0.42 * (_orr[0] if _orr else 0.0)
                 w_sh = (st[0] / st[1]) ** share_p
                 if win_snaps:
                     m_ = m_ - exp_sum.get(g_, 0.0)
@@ -423,11 +453,16 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 h_set.discard(None)
         seas_now = g["season"]
         for pid_, O, D, epa in plays_by_gid.get(gid, ()):
-            if two_track or run_w != 1.0 or draw_band_run is not None:
+            if two_track or run_w != 1.0 or draw_band_run is not None or mode_vd:
                 _pr = prot_of.get((gid, pid_))
                 trk_run = bool(_pr and not _pr[0] and _pr[1])
             else:
+                _pr = None
                 trk_run = False
+            if mode_vd and _pr:           # mode: passer -> offP, run -> offR, else base-only
+                play_off = offP if _pr[0] else (offR if trk_run else None)
+            else:
+                play_off = None
             muD = muR if (two_track and trk_run) else mu
             s2D = s2R if (two_track and trk_run) else s2
             if opp_anchor == "active":
@@ -445,23 +480,39 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                     muD[p] = MU0 - _e + sal_k * ZS.get((p, seas_now), 0.0); s2D[p] = SIG0_2
                 elif lastwk.get((p, lw_key)) != wk:
                     _gp = GPOS.get(p)
-                    _z = None; _fk = 0.0; _fR = 60.0
+                    _z = None; _ndb = 0.0; _fk = 0.0; _fR = 60.0
                     _old = lastwk.get((p, lw_key))
                     if _old:
                         if fus_k and _gp == "QB":
-                            _z = QBOBS.get((p, _old[0], _old[1])); _fk = fus_k; _fR = fus_R
+                            _qo = QBOBS.get((p, _old[0], _old[1]))
+                            if _qo is not None:
+                                _z, _ndb = _qo
+                            _fk = fus_k; _fR = fus_R
                         elif skf_k and _gp in ("RB", "WR", "TE"):
                             _z = SKOBS.get((p, _old[0], _old[1])); _fk = skf_k; _fR = skf_R
                         elif dff_k and _gp in ("DL", "LB", "DB"):
                             _z = DOBS.get((p, _old[0], _old[1])); _fk = dff_k; _fR = dff_R
                     if _z is not None:
+                        if fus_adj and _gp == "QB":   # B2: opponent-adjusted observation
+                            _od = oppdef.get((p, _old[0], _old[1]))
+                            if _od is not None and _od[1] > 0:
+                                _odm = _od[0] / _od[1]
+                                if seas_now <= 2021:
+                                    _B2_PAIRS.append((_z, _odm))
+                                _z = _z + fus_adj * (_odm - lg_mu)
                         _obs = MU0 + _fk * _z
-                        _K = s2D[p] / (s2D[p] + _fR)
+                        _Rf = (fus_vol * _fR * (MED_DB / _ndb)) if (fus_vol and _ndb) else _fR
+                        _K = s2D[p] / (s2D[p] + _Rf)
                         if win_snaps:
                             push_event(p, _K * (_obs - muD[p]))
                         muD[p] += _K * (_obs - muD[p])
                         s2D[p] = max(s2D[p] * (1.0 - _K), floor2)
                     s2D[p] = min(s2D[p] + tau2, SIG0_2)
+                    if mode_vd:                        # offsets widen with their own tau
+                        for _off in (offP, offR):
+                            _ost = _off.get(p)
+                            if _ost is not None:
+                                _ost[1] = min(_ost[1] + mode_tau2, mode_vd)
                 lastwk[(p, lw_key)] = wk
             for p in D:
                 if p not in muD:
@@ -469,7 +520,18 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                     muD[p] = MU0 - _e + sal_k * ZS.get((p, seas_now), 0.0); s2D[p] = SIG0_2
                 elif lastwk.get((p, lw_key)) != wk:
                     s2D[p] = min(s2D[p] + tau2, SIG0_2)
+                    if mode_vd:
+                        for _off in (offP, offR):
+                            _ost = _off.get(p)
+                            if _ost is not None:
+                                _ost[1] = min(_ost[1] + mode_tau2, mode_vd)
                 lastwk[(p, lw_key)] = wk
+            if fus_adj:                    # B2: record mean def mu faced by each QB
+                _dmn = sum(muD[p] for p in D) / len(D)
+                for p in O:
+                    if GPOS.get(p) == "QB":
+                        _qst = oppdef.setdefault((p, wk[0], wk[1]), [0.0, 0])
+                        _qst[0] += _dmn; _qst[1] += 1
             wp, down, qtr, adiff, hsec = ctx.get((gid, pid_), (0.5, 1, 1, 0.0, 900.0))
             wgt = ((4.0 * wp * (1.0 - wp)) ** lev_exp) if use_lev else \
                 (0.25 if (wp < 0.05 or wp > 0.95) else 1.0)
@@ -506,8 +568,21 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                     is_draw = True                           # throw-away: decision, not defeat
                 if f_iw and iw:
                     is_draw = False
-                sA = sum(muD[p] for p in A); sB = sum(muD[p] for p in B)
-                c2 = (len(A) + len(B)) * beta * beta + sum(s2D[p] for p in A) + sum(s2D[p] for p in B)
+                if play_off is not None:
+                    for p in A:
+                        if p not in play_off:
+                            play_off[p] = [0.0, mode_vd]
+                    for p in B:
+                        if p not in play_off:
+                            play_off[p] = [0.0, mode_vd]
+                    sA = sum(muD[p] + play_off[p][0] for p in A)
+                    sB = sum(muD[p] + play_off[p][0] for p in B)
+                    c2 = ((len(A) + len(B)) * beta * beta
+                          + sum(s2D[p] + play_off[p][1] for p in A)
+                          + sum(s2D[p] + play_off[p][1] for p in B))
+                else:
+                    sA = sum(muD[p] for p in A); sB = sum(muD[p] for p in B)
+                    c2 = (len(A) + len(B)) * beta * beta + sum(s2D[p] for p in A) + sum(s2D[p] for p in B)
                 c = sqrt(c2)
                 t = (sA - sB) / c + adv       # venue shifts the EXPECTED outcome
                 if opp_k:
@@ -539,6 +614,10 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                                 gd[p] += _d; gs_n[p] += 1
                             muD[p] += _d
                             s2D[p] = max(s2D[p] * (1.0 - im * w_A * (s2D[p] / c2) * wd), floor2)
+                            if play_off is not None:
+                                _ost = play_off[p]
+                                _ost[0] += im * w_A * (_ost[1] / c) * vd
+                                _ost[1] *= (1.0 - im * w_A * (_ost[1] / c2) * wd)
                         for p in B:
                             im = imul(p, vd <= 0)
                             _d = -im * w_B * (s2D[p] / c) * vd
@@ -546,6 +625,10 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                                 gd[p] += _d; gs_n[p] += 1
                             muD[p] += _d
                             s2D[p] = max(s2D[p] * (1.0 - im * w_B * (s2D[p] / c2) * wd), floor2)
+                            if play_off is not None:
+                                _ost = play_off[p]
+                                _ost[0] -= im * w_B * (_ost[1] / c) * vd
+                                _ost[1] *= (1.0 - im * w_B * (_ost[1] / c2) * wd)
                     return
                 if won:
                     win, lose, tt, w_win_, w_lose_ = A, B, t, w_A, w_B
@@ -561,6 +644,10 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                         gd[p] += _d; gs_n[p] += 1
                     muD[p] += _d
                     s2D[p] = max(s2D[p] * (1.0 - rm * w_win_ * (s2D[p] / c2) * w), floor2)
+                    if play_off is not None:
+                        _ost = play_off[p]
+                        _ost[0] += rm * w_win_ * (_ost[1] / c) * v
+                        _ost[1] *= (1.0 - rm * w_win_ * (_ost[1] / c2) * w)
                 for p in lose:
                     rm = (role_m.get(p, 1.0) if role_r else 1.0) * imul(p, False)
                     _d = -rm * w_lose_ * (s2D[p] / c) * v
@@ -568,6 +655,10 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                         gd[p] += _d; gs_n[p] += 1
                     muD[p] += _d
                     s2D[p] = max(s2D[p] * (1.0 - rm * w_lose_ * (s2D[p] / c2) * w), floor2)
+                    if play_off is not None:
+                        _ost = play_off[p]
+                        _ost[0] -= rm * w_lose_ * (_ost[1] / c) * v
+                        _ost[1] *= (1.0 - rm * w_lose_ * (_ost[1] / c2) * w)
 
             micro_done = False
             if micro != "off":
@@ -650,68 +741,58 @@ V5 = dict(beta=60.0, lev_exp=0.5, draw_band=0.40)
 V6 = {**V5, "fus_k": 4.0, "fus_R": 36.0}
 V7 = {**V6, "sal_k": 1.0, "sal_mode": "cohort"}
 
-print("\nPFF-WAR transplant screens (DEV 2017-21, gate -0.0020):", flush=True)
-# ---- batch A: one v7 walk, readout/fit-weight sweeps on cached parts ----
+print("\nTS2 screens (DEV 2017-21, gate -0.0020):", flush=True)
+# ---- baseline: one v7 walk, must reproduce 0.62952 +/- 0.0007 ----
 ll_base, P7 = obj(**V7)
 results["baseline v7"] = (ll_base, {})
 print(f"  {'baseline v7':<36} {ll_base:.5f}  [{time.time()-T0:.0f}s]", flush=True)
-qb7, off7, def7 = P7["qb_prec"], P7["off_prec"], P7["def_prec"]
-X7 = (qb7 + off7 + def7).reshape(-1, 1)
+assert abs(ll_base - 0.62952) <= 0.0007, f"baseline repro FAILED: {ll_base:.5f} vs 0.62952"
 
-print("\nT3 QB-facet amplification lam*qb + off + def (constrained Massey scalar):", flush=True)
-for lam in (0.8, 1.25, 1.5, 2.0, 3.0):
-    ll, _ = wf_X((lam * qb7 + off7 + def7).reshape(-1, 1), SEL_LO, SEL_HI)
-    results[f"lam_qb {lam}"] = (ll, {"lam": lam})
-    print(f"  {'lam_qb ' + str(lam):<36} {ll:.5f}  ({ll-ll_base:+.5f})", flush=True)
+print("\nSCREEN A: TS2 shared-base + per-mode offsets (readout 0.58 offP + 0.42 offR):", flush=True)
+trial("A mode_vd 0 (repro)", **V7, mode_vd=0.0)
+assert abs(results["A mode_vd 0 (repro)"][0] - ll_base) < 1e-9, (
+    f"mode_vd=0 repro FAILED: {results['A mode_vd 0 (repro)'][0]:.7f} vs {ll_base:.7f}")
+for vd in (4.0, 16.0, 49.0):
+    trial(f"A mode_vd {vd:g}", **V7, mode_vd=vd)
 
-print("\nT2 adjusted-wins TRAINING weights (close games count less in the fit):", flush=True)
-_mg = {}
-for _r in csv.DictReader(open("data/nfl_games.csv")):
-    if _r["home_score"] != "":
-        _mg[_r["game_id"]] = abs(float(_r["home_score"]) - float(_r["away_score"]))
-margin16 = np.array([_mg.get(g["gid"], 99.0) for _, g in G16])
+print("\nSCREEN B1: volume-scaled QB fusion noise R_eff = scale*fus_R*MED_DB/n_db:", flush=True)
+for sc in (0.5, 1.0, 2.0):
+    trial(f"B1 vol-R scale {sc}", **V7, fus_vol=sc)
 
-def wf_Xw(X, lo, hi, w):
-    lls = []
-    for s_ in range(lo, hi + 1):
-        tr = (seas16 < s_) & (y16 != 0.5)
-        te = seas16 == s_
-        m = LogisticRegression(C=1e6, max_iter=3000).fit(X[tr], y16[tr], sample_weight=w[tr])
-        lls.append(llv(y16[te], m.predict_proba(X[te])[:, 1]))
-    return float(np.concatenate(lls).mean())
+print("\nSCREEN B2: opponent-adjusted QB obs z + s_adj*(oppdef_mu - lg_mu):", flush=True)
+for sa in (0.03, 0.06):
+    trial(f"B2 s_adj {sa}", **V7, fus_adj=sa)
 
-for T_, cw in ((8, 0.5), (8, 0.7), (3, 0.5), (3, 0.7)):
-    w = np.where(margin16 <= T_, cw, 1.0)
-    ll = wf_Xw(X7, SEL_LO, SEL_HI, w)
-    results[f"adjwin T<={T_} cw={cw}"] = (ll, {"T": T_, "cw": cw})
-    print(f"  {'adjwin T<=' + str(T_) + ' cw=' + str(cw):<36} {ll:.5f}  ({ll-ll_base:+.5f})", flush=True)
-w = np.minimum(1.0, margin16 / 8.0)
-ll = wf_Xw(X7, SEL_LO, SEL_HI, w)
-results["adjwin graded |m|/8"] = (ll, {})
-print(f"  {'adjwin graded |m|/8':<36} {ll:.5f}  ({ll-ll_base:+.5f})", flush=True)
+_b1 = min((results[f"B1 vol-R scale {sc}"][0], sc) for sc in (0.5, 1.0, 2.0))
+_b2 = min((results[f"B2 s_adj {sa}"][0], sa) for sa in (0.03, 0.06))
+trial(f"B1+B2 (vol {_b1[1]}, adj {_b2[1]})", **V7, fus_vol=_b1[1], fus_adj=_b2[1])
 
-# ---- batch B: engine re-walk sweeps ----
-print("\nT1 run-play evidence discount run_w (pass facets dominate win mapping):", flush=True)
-for rw in (0.85, 0.7, 0.5, 0.3, 0.0):
-    trial(f"run_w {rw}", **V7, run_w=rw)
-
-print("\nT4 per-facet draw band (run plays get their own band, pass stays 0.40):", flush=True)
-for dbr in (0.20, 0.28, 0.55):
-    trial(f"draw_band_run {dbr}", **V7, draw_band_run=dbr)
-
-print("\nT5 debut replacement entry prior mu0 = 25 - ent_d (+ cohort salary z):", flush=True)
-for ed in (0.5, 1.0, 2.0):
-    trial(f"ent_d {ed} all-pos", **V7, ent_d=ed)
-for ed in (1.0, 2.0):
-    trial(f"ent_d {ed} QB-only", **V7, ent_d=ed, ent_qb=True)
+print("\ndiagnostics:", flush=True)
+diag = {"MED_DB": round(MED_DB, 1)}
+for vd in sorted(_MODE_DIAG):
+    d = _MODE_DIAG[vd]
+    print(f"  A vd={vd:g}: offset share {d['share_with_offset']:.3f} "
+          f"({d['with_offset']}/{d['players']}), mean|offP| {d['mean_abs_offP']:.4f}, "
+          f"mean|offR| {d['mean_abs_offR']:.4f}, mean|off| {d['mean_abs_off']:.4f} "
+          f"(end 2021, pre-shrink)", flush=True)
+    diag[f"mode_vd_{vd:g}"] = d
+print(f"  B: median dropbacks MED_DB = {MED_DB:.1f}", flush=True)
+if len(_B2_PAIRS) > 1:
+    _arr = np.array(_B2_PAIRS)
+    _r = float(np.corrcoef(_arr[:, 0], _arr[:, 1])[0, 1])
+    diag["corr_z_oppdef"] = round(_r, 4)
+    diag["n_fusion_pairs"] = int(len(_arr))
+    print(f"  B: corr(QB weekly z, opp-def mean mu) = {_r:+.4f} over {len(_arr)} DEV "
+          f"fusion events (negative = better lines vs weak defenses)", flush=True)
 
 print(f"\nvs baseline {ll_base:.5f} (gate -0.0020):", flush=True)
 for k, (ll, kw) in sorted(results.items(), key=lambda x: x[1][0]):
     tag = "  << GATE" if ll < ll_base - 0.0020 else ""
     print(f"  {k:<36} {ll:.5f}  ({ll-ll_base:+.5f}){tag}", flush=True)
-json.dump({k: round(v[0], 5) for k, v in results.items()},
-          open("data/nfl_pffwar_screen.json", "w"), indent=1)
-print("wrote data/nfl_pffwar_screen.json", flush=True)
+json.dump({"trials": {k: round(v[0], 5) for k, v in results.items()},
+           "baseline": round(ll_base, 5), "gate": 0.0020, "diagnostics": diag},
+          open("data/nfl_ts2_screen.json", "w"), indent=1)
+print("wrote data/nfl_ts2_screen.json", flush=True)
 raise SystemExit(0)
 cfg = {**V4, **V7}
 _, P = run_config(**cfg, return_parts=True)

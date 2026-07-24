@@ -1,0 +1,46 @@
+{
+ "trials": {
+  "baseline v7": 0.62952,
+  "A mode_vd 0 (repro)": 0.62952,
+  "A mode_vd 4": 0.6309,
+  "A mode_vd 16": 0.63541,
+  "A mode_vd 49": 0.64255,
+  "B1 vol-R scale 0.5": 0.6324,
+  "B1 vol-R scale 1.0": 0.63101,
+  "B1 vol-R scale 2.0": 0.63116,
+  "B2 s_adj 0.03": 0.62935,
+  "B2 s_adj 0.06": 0.62927,
+  "B1+B2 (vol 1.0, adj 0.06)": 0.63069
+ },
+ "baseline": 0.62952,
+ "gate": 0.002,
+ "diagnostics": {
+  "MED_DB": 39.0,
+  "mode_vd_4": {
+   "players": 4003,
+   "with_offset": 4003,
+   "share_with_offset": 1.0,
+   "mean_abs_offP": 0.0998,
+   "mean_abs_offR": 0.0732,
+   "mean_abs_off": 0.0864
+  },
+  "mode_vd_16": {
+   "players": 4003,
+   "with_offset": 4003,
+   "share_with_offset": 1.0,
+   "mean_abs_offP": 0.3673,
+   "mean_abs_offR": 0.2588,
+   "mean_abs_off": 0.3127
+  },
+  "mode_vd_49": {
+   "players": 4003,
+   "with_offset": 4003,
+   "share_with_offset": 1.0,
+   "mean_abs_offP": 1.0122,
+   "mean_abs_offR": 0.7,
+   "mean_abs_off": 0.855
+  },
+  "corr_z_oppdef": -0.2365,
+  "n_fusion_pairs": 3274
+ }
+}

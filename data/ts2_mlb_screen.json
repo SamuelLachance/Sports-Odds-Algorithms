@@ -1,0 +1,113 @@
+{
+ "screen": "MLB per-PA TrueSkill-2: experience-indexed dynamics + debut prior",
+ "protocol": {
+  "dev_seasons": "2002-2015",
+  "cv": "KFold(5, shuffle=True, random_state=7)",
+  "metric": "pooled out-of-fold DEV log loss of the 6-col blend [logit_fip, ts_z, bp_z, pw_z, siera_z, baserun_z]",
+  "gate": 0.002,
+  "n_dev_games": 34009,
+  "test_touched": false
+ },
+ "baseline": {
+  "cv_ll": 0.676659,
+  "repro_max_abs_diff_vs_fresh_walk": 0.0,
+  "max_abs_diff_vs_shipped_csv_4dp": 4.999923913334703e-05,
+  "n_feature_games": 61634
+ },
+ "variants": [
+  {
+   "name": "v1_dyn_ek2_N300",
+   "params": {
+    "ek": 2.0,
+    "N0": 300.0,
+    "d": 0
+   },
+   "cv_ll": 0.676659,
+   "delta": -0.0
+  },
+  {
+   "name": "v1_dyn_ek5_N300",
+   "params": {
+    "ek": 5.0,
+    "N0": 300.0,
+    "d": 0
+   },
+   "cv_ll": 0.676662,
+   "delta": -3e-06
+  },
+  {
+   "name": "v1_dyn_ek5_N1000",
+   "params": {
+    "ek": 5.0,
+    "N0": 1000.0,
+    "d": 0
+   },
+   "cv_ll": 0.67668,
+   "delta": -2.1e-05
+  },
+  {
+   "name": "v2_debut_d0.5",
+   "params": {
+    "ek": 0,
+    "N0": null,
+    "d": 0.5
+   },
+   "cv_ll": 0.676659,
+   "delta": 0.0
+  },
+  {
+   "name": "v2_debut_d1",
+   "params": {
+    "ek": 0,
+    "N0": null,
+    "d": 1.0
+   },
+   "cv_ll": 0.676659,
+   "delta": 0.0
+  }
+ ],
+ "gate_met": false,
+ "best_variant": "v2_debut_d0.5",
+ "best_delta": 0.0,
+ "diagnostics": {
+  "rookie_pa_share_n_lt_300": {
+   "bat": 0.1518,
+   "pit": 0.1868,
+   "either": 0.2968
+  },
+  "total_pas": 4706391,
+  "mean_sigma_at_career_n": {
+   "baseline_param": {
+    "n0": 8.3333,
+    "n100": 0.9131,
+    "n1000": 0.803
+   },
+   "v1_dyn_ek2_N300": {
+    "n0": 8.3333,
+    "n100": 1.0539,
+    "n1000": 0.8198
+   },
+   "v1_dyn_ek5_N300": {
+    "n0": 8.3333,
+    "n100": 1.2047,
+    "n1000": 0.8427
+   },
+   "v1_dyn_ek5_N1000": {
+    "n0": 8.3333,
+    "n100": 1.2491,
+    "n1000": 1.0498
+   },
+   "v2_debut_d0.5": {
+    "n0": 8.3333,
+    "n100": 0.9131,
+    "n1000": 0.803
+   },
+   "v2_debut_d1": {
+    "n0": 8.3333,
+    "n100": 0.9131,
+    "n1000": 0.803
+   }
+  }
+ },
+ "runtime_sec": 89.8
+}
