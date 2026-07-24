@@ -349,7 +349,67 @@ for i, s in enumerate(sched):
         (crate(offP[h], LGP) - crate(dfaP[h], LGP)) - (crate(offP[a], LGP) - crate(dfaP[a], LGP)),
         (crate(offR[h], LGR) - crate(dfaR[h], LGR)) - (crate(offR[a], LGR) - crate(dfaR[a], LGR)),
     ]
+# ---- lineup-availability MC (Samuel's MC program, part 2) ----
+# For each game with Questionable-tagged players on either roster, average the
+# win prob over K availability scenarios: each Q player independently plays
+# with the measured p=0.671. His toggles hit the two roster features (rq col
+# 11, v6 col 7) and the absence cols (8-10) via his snap share and position.
+P_Q_PLAYS = 0.671                    # measured: 9,980/14,869 Q tags played, 2016-25
+K_LINEUP = 200
+q_tagged = defaultdict(list)         # team -> [(pfr, gsis, share, posgrp, rq_val, v6_val)]
+try:
+    _q_ids = {r["gsis_id"] for r in csv.DictReader(open("data/inj_2026.csv", encoding="utf-8"))
+              if (r.get("report_status") or "") == "Questionable" and r.get("gsis_id")}
+except FileNotFoundError:
+    _q_ids = set()
+if _q_ids:
+    _g2p = {v: k for k, v in pfr2gsis.items()}
+    for t in TEAMS:
+        for pid in roster2.get(t, ()):
+            if pid not in active25:
+                continue
+            g_ = pfr2gsis.get(pid)
+            if g_ not in _q_ids:
+                continue
+            st = share2.get(pid)
+            if not st or st[1] <= 0:
+                continue
+            sh = st[0] / st[1]
+            r6 = rate6(g_)
+            rqv = sh * max(-1.5, min(1.5, r6)) if r6 is not None else 0.0
+            s6 = TS6.get(g_)
+            if s6 is not None:
+                tgt = 25.0 + 1.0 * SAL26.get(g_, 0.0)
+                mu6 = tgt + (s6[0] - tgt) * (2.0 / 3.0)
+                s26 = min(s6[1] + 1.5 ** 2, (25.0 / 3.0) ** 2)
+                v6v = sh * max(-3.0, min(3.0, mu6 - 25.0)) * (1.0 / (1.0 + s26))
+            else:
+                v6v = 0.0
+            pos = pos2.get(pid, "") if "pos2" in dir() else ""
+            grp = "ol" if pos in OLPOS else ("de" if pos in DEFPOS else "sk")
+            q_tagged[t].append((pid, g_, sh, grp, rqv, v6v))
+    print(f"[{time.time()-T0:.0f}s] lineup MC: {sum(len(v) for v in q_tagged.values())} "
+          f"Questionable starters across {sum(1 for v in q_tagged.values() if v)} teams", flush=True)
+
 probs = CLF.predict_proba(Xs)[:, 1]
+if _q_ids and any(q_tagged.values()):
+    GCOL = {"ol": 8, "de": 9, "sk": 10}
+    rng_l = np.random.default_rng(31)
+    for i, s in enumerate(sched):
+        qh, qa = q_tagged.get(s["home"], []), q_tagged.get(s["away"], [])
+        if not qh and not qa:
+            continue
+        ps = []
+        for _ in range(K_LINEUP):
+            x = Xs[i].copy()
+            for side, lst in ((1, qh), (-1, qa)):
+                for pid, g_, sh, grp, rqv, v6v in lst:
+                    if rng_l.random() >= P_Q_PLAYS:      # sits this scenario
+                        x[11] -= side * rqv
+                        x[7] -= side * v6v
+                        x[GCOL[grp]] += side * sh
+            ps.append(float(CLF.predict_proba(x.reshape(1, -1))[0, 1]))
+        probs[i] = float(np.mean(ps))
 co = CLF.coef_[0]
 for i, (s, p_) in enumerate(zip(sched, probs)):
     s["ph"] = round(float(p_), 3)
@@ -477,7 +537,9 @@ for i, s in enumerate(sched):
     if s["hs"] is not None:                      # played: condition on the result
         o = np.full(S, 1.0 if s["hs"] > s["as"] else (0.0 if s["hs"] < s["as"] else 0.5))
     else:
-        o = (rng.random(S) < p).astype(float)
+        u_half = rng.random(S // 2)
+        u = np.concatenate([u_half, 1.0 - u_half])   # antithetic pairs: ~half the MC noise
+        o = (u < p).astype(float)
     # Elo + team-HFA updates (outcome-driven, exact walk equations)
     pe_s = 1.0 / (1.0 + np.exp(-lgt))
     d_ = bp["k"] * (o - pe_s)

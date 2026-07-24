@@ -199,7 +199,7 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
           "CB":"DB","S":"DB","SS":"DB","FS":"DB","SAF":"DB","DB":"DB"}
     f = np.zeros(len(G16))
     KEYS = ["qb_raw", "off_raw", "def_raw", "qb_prec", "off_prec", "def_prec",
-            "qb_pn", "off_pn", "def_pn", "p_prec", "r_prec"]
+            "qb_pn", "off_pn", "def_pn", "p_prec", "r_prec", "var"]
     parts = {k: np.zeros(len(G16)) for k in KEYS} if return_parts else None
     gm = {"QB": MU0, "RB": MU0, "WR": MU0, "TE": MU0, "OL": MU0, "DL": MU0, "LB": MU0, "DB": MU0}
     gv = {k: 4.0 for k in gm}                      # running group mean/var (EWMA, leak-free)
@@ -276,6 +276,7 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                     prec = agg_k / (agg_k + s2.get(g_, SIG0_2))
                     parts[cat + "_raw"][j] += side * w_sh * vraw
                     parts[cat + "_prec"][j] += side * w_sh * vraw * prec
+                    parts["var"][j] += (w_sh * prec) ** 2 * s2.get(g_, SIG0_2)
                     parts[cat + "_pn"][j] += side * w_sh * vpn
                     if two_track:
                         mR = muR.get(g_)
@@ -531,13 +532,40 @@ print("\nDEV 2017-2021 — QB weekly stat fusion (Kalman merge at week boundary)
 V5 = dict(beta=60.0, lev_exp=0.5, draw_band=0.40)
 V6 = {**V5, "fus_k": 4.0, "fus_R": 36.0}
 V7 = {**V6, "sal_k": 1.0, "sal_mode": "cohort"}
-trial("engine v7 (baseline)", **V7)
-trial("A3 opp anchor: ACTIVE pool", **V7, opp_anchor="active")
-trial("A4 clamp vs running group mean", **V7, rel_clamp=True)
-trial("A11 boundary toward group mean", **V7, bnd_mode="group")
-trial("A14 dead threshold era-scaled", **V7, dead_scale=True)
-trial("A15 share boundary decay burst", **V7, share_bnd=True)
-base_ll = results["engine v7 (baseline)"][0]
+cfg = {**V4, **V7}
+_, P = run_config(**cfg, return_parts=True)
+ts = P["qb_prec"] + P["off_prec"] + P["def_prec"]
+VG = P["var"]
+print(f"  aggregate sd: median {np.sqrt(np.median(VG)):.3f}, p90 {np.sqrt(np.percentile(VG,90)):.3f}", flush=True)
+
+def wf_mc(lo, hi, n_draws=0):
+    """walk-forward; n_draws>0 -> average sigmoid over N(b*ts, b^2*V) draws."""
+    rng = np.random.default_rng(11)
+    lls, accs = [], []
+    for s_ in range(lo, hi + 1):
+        tr = (seas16 < s_) & (y16 != 0.5)
+        te = seas16 == s_
+        m = LogisticRegression(C=1e6, max_iter=3000).fit(ts[tr].reshape(-1, 1), y16[tr])
+        a_, b_ = float(m.intercept_[0]), float(m.coef_[0][0])
+        z = a_ + b_ * ts[te]
+        if n_draws:
+            zs = z[:, None] + abs(b_) * np.sqrt(VG[te])[:, None] * rng.standard_normal((int(te.sum()), n_draws))
+            p = (1.0 / (1.0 + np.exp(-zs))).mean(axis=1)
+        else:
+            p = 1.0 / (1.0 + np.exp(-z))
+        lls.append(llv(y16[te], p))
+        msk = y16[te] != 0.5
+        accs.append(((p > 0.5) == (y16[te] > 0.5))[msk])
+    return float(np.concatenate(lls).mean()), float(np.concatenate(accs).mean())
+
+print("\nMC posterior-predictive (DEV 2017-21, gate -0.0020):", flush=True)
+ll0, _ = wf_mc(2017, 2021, 0)
+print(f"  point estimate (current)   {ll0:.5f}", flush=True)
+for nd in (200, 500):
+    llm, _ = wf_mc(2017, 2021, nd)
+    print(f"  MC-PP {nd} draws            {llm:.5f}  ({ll0-llm:+.5f})", flush=True)
+results["mcpp"] = (llm, {})
+base_ll = 9e9
 print(f"\nknobs beating baseline ({base_ll:.5f}) by >= 0.0010:")
 for k, (ll, kw) in sorted(results.items(), key=lambda x: x[1][0]):
     if ll < base_ll - 0.0010 and kw:
