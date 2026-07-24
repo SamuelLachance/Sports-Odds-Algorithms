@@ -4,7 +4,9 @@ Bayesian (mu, sigma) update for all 22 after each play; offense "wins" iff EPA >
 
 Design (per the spec, knobs DEV-tuned vs the ratings-only game model —
 phase0/nfl_ratings_only_model.py):
-  outcome        offense_win = EPA > 0 (success), processed strictly chronologically
+  outcome        GRADED: |EPA| < 0.55 = DRAW (TrueSkill draw update — near-zero
+                 plays carry no win/lose signal), else offense wins iff EPA > 0;
+                 processed strictly chronologically
   snap context   weight = 4*wp*(1-wp) leverage (garbage time fades smoothly)
                  x 1.25 on money downs (3rd/4th) x 1.5 late-and-close (Q4/OT, one
                  score) — every snap counts by how much it mattered
@@ -47,6 +49,10 @@ OPP_K = 0.3                      # your update scales with the OPPOSING unit's s
                                  # vs the RUNNING league mean (anchoring to the fixed
                                  # prior inflates ratings; league-anchored is clean and
                                  # generalized better) — the engine's biggest tuning win
+DRAW_BAND = 0.55                 # |EPA| below this = a DRAW (TrueSkill draw update):
+                                 # near-zero plays carry almost no win/lose information;
+                                 # dose-response peaked at 0.55 (DEV -0.0088, engine's
+                                 # biggest single win)
 MIN_SNAPS_SHOW = 50
 
 POSMAP = {
@@ -179,6 +185,23 @@ for gid, pid_, off, dfn, epa in plays:
     # opposing unit's mean rating (the biggest DEV win of the engine, -0.0124)
     w_O = wgt * min(2.0, max(0.3, 1.0 + OPP_K * (sum_D / len(D) - lg_mu)))
     w_D = wgt * min(2.0, max(0.3, 1.0 + OPP_K * (sum_O / len(O) - lg_mu)))
+    if abs(epa) < DRAW_BAND:                     # near-zero play -> proper draw update
+        e_ = 0.05
+        den = cdf(e_ - t) - cdf(-e_ - t)
+        if den > 1e-9:
+            vd = (pdf(-e_ - t) - pdf(e_ - t)) / den
+            wd = max(0.0, min(1.0, vd * vd + ((e_ - t) * pdf(e_ - t)
+                                              + (e_ + t) * pdf(-e_ - t)) / den))
+            for p in O:
+                mu[p] += w_O * (sig2[p] / c) * vd
+                sig2[p] = max(sig2[p] * (1.0 - w_O * (sig2[p] / c2) * wd), SIG2_FLOOR)
+            for p in D:
+                mu[p] -= w_D * (sig2[p] / c) * vd
+                sig2[p] = max(sig2[p] * (1.0 - w_D * (sig2[p] / c2) * wd), SIG2_FLOOR)
+        for p in O + D:
+            snaps[p] += 1
+        n_upd += 1
+        continue
     if epa > 0:
         win, lose, tt, w_win_, w_lose_ = O, D, t, w_O, w_D
     else:

@@ -125,7 +125,8 @@ y16 = np.array([g["y"] for _, g in G16])
 def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                widen2=1.5 ** 2, playoff_mult=1.0, dead_mult=1.0, opp_k=0.0,
                opp_mode="league", flat_scale=1.0, role_r=0.0, micro="off",
-               sal_k=0.0):
+               sal_k=0.0, grade="off", mov_scale=0.5, mov_cap=2.0,
+               draw_band=0.0, neutral_skip=0.0):
     """One engine walk -> per-game ts_diff feature (pre-game, leak-free).
 
     Game importance: playoff snaps x playoff_mult; 'useless' late-season games
@@ -229,6 +230,13 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
             def duel(A, B, base_wgt, won):
                 if not A or not B:
                     return
+                if neutral_skip and abs(epa) < neutral_skip:
+                    return                                   # C: small plays don't count
+                if grade == "mov":
+                    base_wgt *= min(mov_cap, max(0.25, abs(epa) / mov_scale))
+                elif grade == "movsqrt":
+                    base_wgt *= min(mov_cap, max(0.5, sqrt(abs(epa) / mov_scale)))
+                is_draw = draw_band > 0 and abs(epa) < draw_band
                 sA = sum(mu[p] for p in A); sB = sum(mu[p] for p in B)
                 c2 = (len(A) + len(B)) * BETA * BETA + sum(s2[p] for p in A) + sum(s2[p] for p in B)
                 c = sqrt(c2)
@@ -244,6 +252,20 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                         w_B = base_wgt * min(2.0, max(0.3, 1.0 + opp_k * (sA / len(A) - anchor)))
                 else:
                     w_A = w_B = base_wgt
+                if is_draw:                                  # B: TrueSkill draw update
+                    e = 0.05
+                    den = cdf(e - t) - cdf(-e - t)
+                    if den > 1e-9:
+                        vd = (pdf(-e - t) - pdf(e - t)) / den
+                        wd = vd * vd + ((e - t) * pdf(e - t) + (e + t) * pdf(-e - t)) / den
+                        wd = max(0.0, min(1.0, wd))
+                        for p in A:
+                            mu[p] += w_A * (s2[p] / c) * vd
+                            s2[p] = max(s2[p] * (1.0 - w_A * (s2[p] / c2) * wd), SIG2_FLOOR)
+                        for p in B:
+                            mu[p] -= w_B * (s2[p] / c) * vd
+                            s2[p] = max(s2[p] * (1.0 - w_B * (s2[p] / c2) * wd), SIG2_FLOOR)
+                    return
                 if won:
                     win, lose, tt, w_win_, w_lose_ = A, B, t, w_A, w_B
                 else:
@@ -317,9 +339,10 @@ def trial(name, **kw):
 SHIP = dict(tau=0.30, use_lev=True, down_mult=1.25, late_mult=1.5,
             playoff_mult=1.5, dead_mult=0.5, opp_k=0.3, opp_mode="league")
 trial("shipped engine v3 (context+importance+opp)", **SHIP)
-trial("+ salary prior k=0.5", **SHIP, sal_k=0.5)
-trial("+ salary prior k=1.5", **SHIP, sal_k=1.5)
-trial("+ salary prior k=3.0", **SHIP, sal_k=3.0)
+trial("B draw band |epa|<0.55", **SHIP, draw_band=0.55)
+trial("B draw band |epa|<0.70", **SHIP, draw_band=0.70)
+trial("B draw band |epa|<0.90", **SHIP, draw_band=0.90)
+trial("B draw band |epa|<1.20", **SHIP, draw_band=1.20)
 
 best_name = min(results, key=lambda k: results[k][0])
 best_ll, best_kw = results[best_name]

@@ -1,11 +1,12 @@
 {
  "dev": {
   "shipped engine v3 (context+importance+opp)": 0.66748,
-  "+ salary prior k=0.5": 0.6691,
-  "+ salary prior k=1.5": 0.67321,
-  "+ salary prior k=3.0": 0.67904
+  "B draw band |epa|<0.55": 0.65872,
+  "B draw band |epa|<0.70": 0.6618,
+  "B draw band |epa|<0.90": 0.66408,
+  "B draw band |epa|<1.20": 0.67165
  },
- "winner": "shipped engine v3 (context+importance+opp)",
+ "winner": "B draw band |epa|<0.55",
  "winner_kw": {
   "tau": 0.3,
   "use_lev": true,
@@ -14,10 +15,11 @@
   "playoff_mult": 1.5,
   "dead_mult": 0.5,
   "opp_k": 0.3,
-  "opp_mode": "league"
+  "opp_mode": "league",
+  "draw_band": 0.55
  },
- "test_ll": 0.66181,
+ "test_ll": 0.65986,
  "elo_ll": 0.63824,
  "test_n": 1139,
- "acc": 0.6048
+ "acc": 0.5995
 }
