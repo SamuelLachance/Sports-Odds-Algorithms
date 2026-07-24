@@ -178,7 +178,7 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                inj_sym=1.0, inj_neg=1.0, agg_k=1.0, share_p=1.0,
                two_track=False, fus_k=0.0, fus_R=36.0, sal_mode="active",
                opp_anchor="alltime", rel_clamp=False, bnd_mode="mu0",
-               dead_scale=False, share_bnd=False):
+               dead_scale=False, share_bnd=False, win_snaps=0):
     """One engine walk -> per-game ts_diff feature (pre-game, leak-free).
 
     Game importance: playoff snaps x playoff_mult; 'useless' late-season games
@@ -189,6 +189,23 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
     tau2 = tau * tau
     ZS = Z_SAL2 if sal_mode == "cohort" else Z_SAL
     mu, s2, lastwk = {}, {}, {}
+    from collections import deque as _dq
+    ev_q = defaultdict(_dq)      # player -> deque of (delta, snaps) events
+    win_tot = defaultdict(int)   # snaps currently inside the window
+    exp_sum = defaultdict(float) # sum of deltas EXPIRED out of the window
+    gd = defaultdict(float)      # current-game delta accumulator
+    gs_n = defaultdict(int)      # current-game snap count
+    lastg = {}
+    def push_game(p):
+        if gs_n[p] or gd[p]:
+            ev_q[p].append((gd[p], gs_n[p]))
+            win_tot[p] += gs_n[p]
+            gd[p] = 0.0; gs_n[p] = 0
+            while win_tot[p] > win_snaps and ev_q[p]:
+                d0, n0 = ev_q[p].popleft()
+                exp_sum[p] += d0; win_tot[p] -= n0
+    def push_event(p, delta):
+        ev_q[p].append((delta, 0))
     muR, s2R = {}, {}                    # run track (pass track = mu/s2)
     share2 = {}
     pos2 = {}
@@ -212,12 +229,18 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 for p in mu:
                     base = gm.get(GPOS.get(p) or "OL", MU0)
                     tgt = base + sal_k * ZS.get((p, g["season"]), 0.0)
-                    mu[p] = tgt + (mu[p] - tgt) * (1.0 - season_shrink)
+                    _new = tgt + (mu[p] - tgt) * (1.0 - season_shrink)
+                    if win_snaps:
+                        push_event(p, _new - mu[p])
+                    mu[p] = _new
                     s2[p] = min(s2[p] + widen2, SIG0_2)
             else:
                 for p in mu:
                     tgt = MU0 + sal_k * ZS.get((p, g["season"]), 0.0)
-                    mu[p] = tgt + (mu[p] - tgt) * (1.0 - season_shrink)
+                    _new = tgt + (mu[p] - tgt) * (1.0 - season_shrink)
+                    if win_snaps:
+                        push_event(p, _new - mu[p])
+                    mu[p] = _new
                     s2[p] = min(s2[p] + widen2, SIG0_2)
             for p in muR:
                 muR[p] = MU0 + (muR[p] - MU0) * (1.0 - season_shrink)
@@ -262,6 +285,8 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 if m_ is None:
                     continue
                 w_sh = (st[0] / st[1]) ** share_p
+                if win_snaps:
+                    m_ = m_ - exp_sum.get(g_, 0.0)
                 if rel_clamp:
                     _base = gm.get(GPOS.get(g_) or "OL", MU0)
                     vraw = max(-V_CLAMP, min(V_CLAMP, m_ - _base))
@@ -347,6 +372,11 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 seen_season.update(O); seen_season.update(D)
                 act_pool.update(O); act_pool.update(D)
             lw_key = "R" if (two_track and trk_run) else "P"
+            if win_snaps:
+                for p in O + D:
+                    if lastg.get(p) != gid:
+                        push_game(p)
+                        lastg[p] = gid
             for p in O:
                 if p not in muD:
                     muD[p] = MU0 + sal_k * ZS.get((p, seas_now), 0.0); s2D[p] = SIG0_2
@@ -357,6 +387,8 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                         if _z is not None:
                             _obs = MU0 + fus_k * _z
                             _K = s2D[p] / (s2D[p] + fus_R)
+                            if win_snaps:
+                                push_event(p, _K * (_obs - muD[p]))
                             muD[p] += _K * (_obs - muD[p])
                             s2D[p] = max(s2D[p] * (1.0 - _K), floor2)
                     s2D[p] = min(s2D[p] + tau2, SIG0_2)
@@ -428,11 +460,17 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                         wd = max(0.0, min(1.0, wd))
                         for p in A:
                             im = imul(p, vd >= 0)
-                            muD[p] += im * w_A * (s2D[p] / c) * vd
+                            _d = im * w_A * (s2D[p] / c) * vd
+                            if win_snaps:
+                                gd[p] += _d; gs_n[p] += 1
+                            muD[p] += _d
                             s2D[p] = max(s2D[p] * (1.0 - im * w_A * (s2D[p] / c2) * wd), floor2)
                         for p in B:
                             im = imul(p, vd <= 0)
-                            muD[p] -= im * w_B * (s2D[p] / c) * vd
+                            _d = -im * w_B * (s2D[p] / c) * vd
+                            if win_snaps:
+                                gd[p] += _d; gs_n[p] += 1
+                            muD[p] += _d
                             s2D[p] = max(s2D[p] * (1.0 - im * w_B * (s2D[p] / c2) * wd), floor2)
                     return
                 if won:
@@ -444,11 +482,17 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 v = v_win(tt); w = v * (v + tt)
                 for p in win:
                     rm = (role_m.get(p, 1.0) if role_r else 1.0) * imul(p, True)
-                    muD[p] += rm * w_win_ * (s2D[p] / c) * v
+                    _d = rm * w_win_ * (s2D[p] / c) * v
+                    if win_snaps:
+                        gd[p] += _d; gs_n[p] += 1
+                    muD[p] += _d
                     s2D[p] = max(s2D[p] * (1.0 - rm * w_win_ * (s2D[p] / c2) * w), floor2)
                 for p in lose:
                     rm = (role_m.get(p, 1.0) if role_r else 1.0) * imul(p, False)
-                    muD[p] -= rm * w_lose_ * (s2D[p] / c) * v
+                    _d = -rm * w_lose_ * (s2D[p] / c) * v
+                    if win_snaps:
+                        gd[p] += _d; gs_n[p] += 1
+                    muD[p] += _d
                     s2D[p] = max(s2D[p] * (1.0 - rm * w_lose_ * (s2D[p] / c2) * w), floor2)
 
             micro_done = False
@@ -532,6 +576,12 @@ print("\nDEV 2017-2021 — QB weekly stat fusion (Kalman merge at week boundary)
 V5 = dict(beta=60.0, lev_exp=0.5, draw_band=0.40)
 V6 = {**V5, "fus_k": 4.0, "fus_R": 36.0}
 V7 = {**V6, "sal_k": 1.0, "sal_mode": "cohort"}
+print("\nSliding-window rating readout (DEV 2017-21, gate -0.0020):", flush=True)
+trial("baseline v7 (no window)", **V7)
+trial("window 4000 snaps", **V7, win_snaps=4000)
+trial("window 2000 snaps", **V7, win_snaps=2000)
+trial("window 1000 snaps", **V7, win_snaps=1000)
+raise SystemExit(0)
 cfg = {**V4, **V7}
 _, P = run_config(**cfg, return_parts=True)
 ts = P["qb_prec"] + P["off_prec"] + P["def_prec"]
@@ -565,7 +615,7 @@ for nd in (200, 500):
     llm, _ = wf_mc(2017, 2021, nd)
     print(f"  MC-PP {nd} draws            {llm:.5f}  ({ll0-llm:+.5f})", flush=True)
 results["mcpp"] = (llm, {})
-base_ll = 9e9
+base_ll = results.get("baseline v7 (no window)", (9e9,))[0]
 print(f"\nknobs beating baseline ({base_ll:.5f}) by >= 0.0010:")
 for k, (ll, kw) in sorted(results.items(), key=lambda x: x[1][0]):
     if ll < base_ll - 0.0010 and kw:
