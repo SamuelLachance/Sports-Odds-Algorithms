@@ -1,3 +1,8 @@
 {
- "v7": 0.62952
+ "engine v7 (baseline)": 0.62952,
+ "A3 opp anchor: ACTIVE pool": 0.62946,
+ "A4 clamp vs running group mean": 0.63161,
+ "A11 boundary toward group mean": 0.63026,
+ "A14 dead threshold era-scaled": 0.62955,
+ "A15 share boundary decay burst": 0.62937
 }

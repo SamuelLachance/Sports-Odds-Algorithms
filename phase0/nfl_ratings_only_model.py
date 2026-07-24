@@ -176,7 +176,9 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                beta=BETA, floor2=SIG2_FLOOR, lev_exp=1.0, draw_eps=0.05,
                hfa_t=0.0, f_ta=False, f_drop=False, f_iw=False,
                inj_sym=1.0, inj_neg=1.0, agg_k=1.0, share_p=1.0,
-               two_track=False, fus_k=0.0, fus_R=36.0, sal_mode="active"):
+               two_track=False, fus_k=0.0, fus_R=36.0, sal_mode="active",
+               opp_anchor="alltime", rel_clamp=False, bnd_mode="mu0",
+               dead_scale=False, share_bnd=False):
     """One engine walk -> per-game ts_diff feature (pre-game, leak-free).
 
     Game importance: playoff snaps x playoff_mult; 'useless' late-season games
@@ -203,15 +205,27 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
     gv = {k: 4.0 for k in gm}                      # running group mean/var (EWMA, leak-free)
     prev = None
     wins = defaultdict(float); played = defaultdict(int)
+    act_pool, seen_season = set(), set()
     for j, (i, g) in enumerate(G16):
         if prev is not None and g["season"] != prev:
-            for p in mu:
-                tgt = MU0 + sal_k * ZS.get((p, g["season"]), 0.0)
-                mu[p] = tgt + (mu[p] - tgt) * (1.0 - season_shrink)
-                s2[p] = min(s2[p] + widen2, SIG0_2)
+            if bnd_mode == "group":
+                for p in mu:
+                    base = gm.get(GPOS.get(p) or "OL", MU0)
+                    tgt = base + sal_k * ZS.get((p, g["season"]), 0.0)
+                    mu[p] = tgt + (mu[p] - tgt) * (1.0 - season_shrink)
+                    s2[p] = min(s2[p] + widen2, SIG0_2)
+            else:
+                for p in mu:
+                    tgt = MU0 + sal_k * ZS.get((p, g["season"]), 0.0)
+                    mu[p] = tgt + (mu[p] - tgt) * (1.0 - season_shrink)
+                    s2[p] = min(s2[p] + widen2, SIG0_2)
             for p in muR:
                 muR[p] = MU0 + (muR[p] - MU0) * (1.0 - season_shrink)
                 s2R[p] = min(s2R[p] + widen2, SIG0_2)
+            if share_bnd:
+                for st_ in share2.values():
+                    st_[0] *= 0.7 ** 4; st_[1] *= 0.7 ** 4
+            act_pool = set(seen_season); seen_season = set()
             wins.clear(); played.clear()
         prev = g["season"]
         # game-importance multiplier from PRE-game standings
@@ -219,10 +233,18 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
         if g["type"] != "REG":
             gmult = playoff_mult
         else:
-            dead_h = wins[g["home"]] + (sched_len - played[g["home"]]) < 7
-            dead_a = wins[g["away"]] + (sched_len - played[g["away"]]) < 7
+            thr = 7.0 * sched_len / 16.0 if dead_scale else 7.0
+            dead_h = wins[g["home"]] + (sched_len - played[g["home"]]) < thr
+            dead_a = wins[g["away"]] + (sched_len - played[g["away"]]) < thr
             gmult = dead_mult if (dead_h and dead_a) else 1.0
-        lg_mu = (sum(mu.values()) / len(mu)) if (opp_k and opp_mode == "league" and mu) else MU0
+        if opp_k and opp_mode == "league" and mu:
+            if opp_anchor == "active" and act_pool:
+                _vals = [mu[p] for p in act_pool if p in mu]
+                lg_mu = sum(_vals) / len(_vals) if _vals else MU0
+            else:
+                lg_mu = sum(mu.values()) / len(mu)
+        else:
+            lg_mu = MU0
         lg_muR = (sum(muR.values()) / len(muR)) if (opp_k and opp_mode == "league" and muR) else MU0
         # 1. feature from pre-game state (+ component aggregates when requested)
         seen_mus = []
@@ -240,7 +262,11 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 if m_ is None:
                     continue
                 w_sh = (st[0] / st[1]) ** share_p
-                vraw = max(-V_CLAMP, min(V_CLAMP, m_ - MU0))
+                if rel_clamp:
+                    _base = gm.get(GPOS.get(g_) or "OL", MU0)
+                    vraw = max(-V_CLAMP, min(V_CLAMP, m_ - _base))
+                else:
+                    vraw = max(-V_CLAMP, min(V_CLAMP, m_ - MU0))
                 tot += w_sh * vraw
                 if return_parts:
                     grp = GPOS.get(g_) or "OL"
@@ -316,6 +342,9 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 trk_run = False
             muD = muR if (two_track and trk_run) else mu
             s2D = s2R if (two_track and trk_run) else s2
+            if opp_anchor == "active":
+                seen_season.update(O); seen_season.update(D)
+                act_pool.update(O); act_pool.update(D)
             lw_key = "R" if (two_track and trk_run) else "P"
             for p in O:
                 if p not in muD:
@@ -501,18 +530,14 @@ def trial(name, **kw):
 print("\nDEV 2017-2021 — QB weekly stat fusion (Kalman merge at week boundary):", flush=True)
 V5 = dict(beta=60.0, lev_exp=0.5, draw_band=0.40)
 V6 = {**V5, "fus_k": 4.0, "fus_R": 36.0}
-cfg7 = {**V4, **V6, "sal_k": 1.0, "sal_mode": "cohort"}
-_, P7 = run_config(**cfg7, return_parts=True)
-ts7 = P7["qb_prec"] + P7["off_prec"] + P7["def_prec"]
-full = np.zeros(len(games))
-idx_all = np.array([i for i, _ in G16])
-full[idx_all] = ts7
-np.save("data/nfl_v7_feature.npy", full)
-lld = wf_X(ts7.reshape(-1, 1), SEL_LO, SEL_HI)[0]
-llt, acct = wf_X(ts7.reshape(-1, 1), 2022, 2025)
-print(f"  v7 ratings-only  DEV {lld:.5f}   TEST {llt:.5f}  acc {acct*100:.1f}%  (Elo 0.63824)", flush=True)
-results["v7"] = (lld, {})
-base_ll = 0.63054
+V7 = {**V6, "sal_k": 1.0, "sal_mode": "cohort"}
+trial("engine v7 (baseline)", **V7)
+trial("A3 opp anchor: ACTIVE pool", **V7, opp_anchor="active")
+trial("A4 clamp vs running group mean", **V7, rel_clamp=True)
+trial("A11 boundary toward group mean", **V7, bnd_mode="group")
+trial("A14 dead threshold era-scaled", **V7, dead_scale=True)
+trial("A15 share boundary decay burst", **V7, share_bnd=True)
+base_ll = results["engine v7 (baseline)"][0]
 print(f"\nknobs beating baseline ({base_ll:.5f}) by >= 0.0010:")
 for k, (ll, kw) in sorted(results.items(), key=lambda x: x[1][0]):
     if ll < base_ll - 0.0010 and kw:
