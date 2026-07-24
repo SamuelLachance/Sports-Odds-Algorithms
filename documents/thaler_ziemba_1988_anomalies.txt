@@ -1,0 +1,613 @@
+Journal of Economic Perspectives—Volume 2, Number 2—Spring 1988—Pages 161–174
+Anomalies
+Parimutuel Betting Markets:
+Racetracks and Lotteries
+Richard H. Thaler and William T. Ziemba
+Economics can be distinguished from other social sciences by the belief that most
+(all?) behavior can be explained by assuming that agents have stable, well-defined
+preferences and make rational choices consistent with those preferences in markets
+that (eventually) clear. An empirical result qualifies as an anomaly if it is difficult to
+"rationalize," or if implausible assumptions are necessary to explain it within the
+paradigm. This column will present a series of such anomalies. Of course, "difficult"
+and "implausible" are judgments, and others might disagree with my assessment.
+Therefore, I invite readers to submit brief explanations (within the paradigm or
+otherwise) for any of the anomalies I report. To be considered for publication,
+however, proposed explanations must be falsifiable, at least in principle. Future topics
+for this column will come from as many fields of empirical economics as possible.
+Readers are invited to suggest topics by sending a note with some references to (or
+better yet copies of) the relevant research. The address is: Richard Thaler, c/o Journal
+of Economic Perspectives, Johnson Graduate School of Management, Malott Hall,
+Cornell University, Ithaca, NY 14853.
+Introduction
+Economists have given great attention to stock markets in their efforts to test the
+concepts of market efficiency and rationality. Yet wagering markets are, in one key
+• Richard H. Thaler is the Henrietta Johnson Louis Professor of Economics at the Johnson
+Graduate School of Management, Cornell University, Ithaca, New York. William T. Ziemba is
+Alumni Professor of Management Science, Faculty of Commerce and Business Administration,
+University of British Columbia, Vancouver, Canada.
+
+162 Economic Perspectives
+respect, better suited for testing market efficiency and rationality. The advantage of
+wagering markets is that each asset (bet) has a well-defined termination point at
+which its value becomes certain. The absence of this property is one of the factors that
+has made it so difficult to test for rationality in the stock market. Since a stock is
+infinitely lived, its value today depends both on the present value of future cash flows
+and on the price someone will pay for the security tomorrow. Indeed, one can argue
+that wagering markets have a better chance of being efficient because the conditions
+(quick, repeated feedback) are those which usually facilitate learning. However,
+empirical research has uncovered several interesting anomalies. While there are
+numerous types of wagering markets, legal and otherwise, this column will concentrate
+on racetrack betting and lotto-type lottery games.1
+Racetrack Betting Markets
+The "market" at the racetrack convenes for about 20–30 minutes during which
+time participants place bets on any number of the six to twelve horses in the upcoming
+race. In a typical race, participants can bet on each horse, either to win, place or show
+(as well as "exotic" bets which depend on the combined outcomes of two or more
+horses). The horses that finish the race first, second or third are said to finish
+"in-the-money." All participants who have bet a horse to win realize a positive return
+on that bet only if the horse is first, while a place bet realizes a positive return if the
+horse is first or second, and a show bet realizes a positive return if the horse is first,
+second or third. There is a separate "pool" of money kept for each type of bet. Payoffs
+are determined in a "parimutuel" fashion, which means that the winning bets divide
+the money wagered on losing bets, less transactions costs.2 The transactions costs
+consist of a fixed percentage t, which includes the "track take" and "breakage," the
+additional cost incurred because all returns per dollar bet are rounded down to the
+nearest five or ten cents. These transactions costs are substantial, typically in the range
+of 15–25 percent depending on the type of wager and the locale.
+The proportion of the money in the win pool that is bet on any given horse can
+be interpreted as the subjective probability that this horse will win the race. By
+summing over many races, one can check what proportion of the horses with
+subjective probabilities between, say, .2 and .25 actually won races. The results of this
+analysis are impressive. Horses rated by the crowd as most likely to win (the
+"favorites") do win most often (about 1/3 of the time), and the correlation between
+subjective and objective probabilities is very high.3 Apparently the bettors in these
+markets have considerable expertise.
+1A future column may address other betting markets, such as NFL betting. Authors of recent papers on this
+topic are requested to send copies to Thaler.
+2Since payoffs depend only on the final odds, bettors do not know potential payoffs when they bet. In
+Britain and some other places bookies accept bets on a fixed odds system where bettors are promised a
+certain payoff if their horse wins.
+3See, for example, the studies by Weitzman (1965), Rosett (1965), Ali (1977), and Snyder (1978).
+
+Thaler and Ziemba 163
+Does the high correlation between subjective and objective probabilities imply
+that the racetrack market is efficient? That depends on the definition of market
+efficiency. If we assume for the moment that all bettors are expected value4 maxi-
+mizers with rational expectations, then two definitions of market efficiency seem
+appropriate.
+Market efficiency condition 1 (weak). No bets should have positive expected values.
+Market efficiency condition 2 (strong). All bets should have expected values equal to
+(1 – t) times the amount bet.
+While the racetrack may be surprisingly efficient, there is substantial evidence
+that both of these conditions are violated. The most robust anomalous empirical
+regularity is called the favorite-longshot bias. Specifically, the expected returns per dollar
+bet increase monotonically with the probability of the horse winning. Favorites win
+more often than the subjective probabilities imply, and longshots less often. This
+means that favorites are much better bets than longshots. Indeed, extreme favorites,
+those with odds5 of less than 3-10 (that is, with a greater than 70 percent chance to
+win) actually have positive expected values, in violation of condition 1.
+Figure 1 (taken from Ziemba and Hausch, 1986) illustrates the favorite-longshot
+bias using data from most of the previously published studies (including over 50,000
+races). Expected returns per dollar bet are plotted for horses at various market odds,
+using a transactions costs assumption of t = 15.33 percent, which applies in the state
+of California. The horizontal line indicates the point at which returns are the expected
+.8467 = (1 – t). This occurs at odds of about 9-2 (that is, about a 15 percent
+probability of winning). For odds above 18-1 there is a steep drop in the expected
+return, with returns falling to only 13.7 cents per dollar wagered at 100-1. This
+implies that the typical 100-1 shot has real odds of about 730 to 1! Below 3-10
+expected returns are positive, with returns of about 4-5 percent for the shortest odds
+horses. (This is partially explained by the $1.05 per dollar minimum payoff at nearly
+all U.S. tracks.) Although such overwhelming favorites are too rare to get very excited
+about, other profitable betting strategies are discussed below.
+Another test of market efficiency is to compare the payoffs of equivalent bets. For
+example, most tracks offer a "daily double" bet which requires bettors to select the
+winners of the first two races. Suppose a bettor is considering buying a daily double
+ticket on horse A in the first race and B in the second race. Then an alternative
+betting strategy (called a parlay) would be to bet on A in the first race, and, if A wins,
+bet the proceeds on B to win the second race. Efficiency requires that the daily double
+payoff on A and B be the same as the parlay on A and B. This proposition has been
+tested by Ali (1979) and by Asch and Quandt (1987). The conclusion from these tests
+seems to be that daily double and parlay bets are priced reasonably efficiently relative
+to each other, though bettors should prefer the daily double because it offers lower
+transactions costs.
+4Risk neutrality seems like a sensible initial assumption since most bettors probably wager a small portion
+of their total wealth. Other assumptions will be considered in the commentary section.
+5Probabilities at the racetrack are traditionally quoted as "odds." If a horse has odds of "x to 1" then the
+implicit probability the horse will win is (1 – t)/(x + 1).
+
+164 Economic Perspectives
+Fig. 1. The effective track payback less breakage for various odds levels in California
+A similar test is possible using exacta betting in which a bettor must correctly
+pick the first and second place horses in the correct order. Just as the relative amounts
+bet on different horses in the win pool can be used to calculate implicit forecasts of the
+probability of winning, similar calculations for the exacta can be made using
+the so-called Harville (1973) formula. If qi is the probability that horse i wins, then
+it is assumed that the probability that horse i is first and horse j is second is qiqj/
+(1 – qi). (Similarly, the probability that horse i is first, j is second, and k is third is
+qiqjqk/(1 – qi)(1 – qi – qj).)6 Asch and Quandt (1987) used the Harville formula to
+compare the subjective probability of winning implied by the betting in the win pool
+and the exacta pool. They found that the public did not bet in a mathematically
+consistent fashion. The implicit probabilities of winning for a given horse were often
+very different in the two pools.
+Betting Strategies
+Betting strategies at the track, as at the stock market, come in both fundamental
+and technical varieties. Fundamental strategies commonly are based on publicly
+available information used to "handicap" races. A bettor using a fundamental or
+6The Harville formulas are quite accurate considering how little data they require. However, they tend to
+overestimate the probability that a low-odds horse will finish exactly second or third. More accurate
+estimation formulas are derived in Stern (1987), but these require data on all the horses in the race.
+
+Anomalies 165
+handicapping strategy attempts to determine which horses, if any, have probabilities
+of winning (or placing or whatever) that exceed the market-determined odds by an
+amount sufficient to overcome the track take.7 Technical systems require less informa-
+tion and use only current betting data. Bettors using a technical system attempt to
+find inefficiencies in the market and bet on such "overlays" when they have positive
+expected value. Most academic research has concentrated on the latter strategies.8
+Hausch, Ziemba and Rubinstein (1981) (HZR) develop and test a strategy for
+betting in the place and show markets. They use the amounts bet in the win pool and
+the Harville formulas to calculate the probabilities of placing and showing for each
+horse based on the betting in the win pool. Using these methods they are able to
+identify horses that are underbet to place or show. The basic idea is to compare the
+proportion of the win pool bet on horse i with the amount of the place or show pool
+bet on horse i. If, for example, 40 percent of the bets in the win pool are on horse i,
+but only 15 percent of the bets in the place pool are bet on horse i, then it is profitable
+to bet on horse i to place. Such profitable betting opportunities typically occur 2 to 4
+times per racing day. Empirical studies on two seasons of racing data indicate that
+significant returns on the order of 11 percent per bet are possible in the place and
+show markets.9 This violates weak market efficiency. Moreover, publication of the
+system does not appear to have eliminated the profitable betting opportunities. At the
+recent 1987 Breeders' Cup races there were five "system" bets during the racing day.
+As luck would have it, all five bets paid off.
+Ziemba and Hausch (1986) also developed similar techniques to identify and
+exploit inefficiencies in the exacta markets. The most frequent profitable bets have the
+favorite in second position. Their plots of the probability of winning and coming in
+second versus odds as shown in Figure 2, show that short odds horses have a
+substantial probability of coming in exactly second. The betting public might easily
+underestimate this chance. The other common profitable wagers are derived from the
+extreme favorite-longshot bias. Betting extreme favorites in the first position can thus
+yield profitable bets. The public wagers a considerable amount on these super horses,
+but not as much as they should. Combinations of longshots are almost never a good
+exacta wager; such bets typically return 10 to 30 cents on the dollar.
+Asch, Malkiel and Quandt (1984, 1986) and Asch and Quandt (1986) investi-
+gated whether a drop in the odds late in the betting period might reflect inside
+information and thereby point to wagers that may have positive expected returns.
+7A useful and insightful book on handicapping, based on a multitude of actual data, is Quirin (1979). The
+current state of the art in handicapping is described in Mitchell (1987) and Quinn (1987).
+8Asch and Quandt (1986) did investigate whether the advice of professional handicappers ("touts") or
+computerized handicapping systems can be used to find profitable bets. They concluded that neither were
+very useful. See also Mitchell (1987).
+9For details on the system see Ziemba and Hausch (1987). Hausch and Ziemba (1985) extend the HZR
+results to analyze the effects of differences in transactions costs, two-horse "entries" and multiple wagers,
+and provide accurate regression models for varying wealth levels and track "handles" (the size of the
+betting pool). They also investigate how many bettors have to follow the system for the market to become
+efficient.
+
+166 Economic Perspectives
+Fig. 2. The probability of winning and placing at various odds levels in California
+Common racetrack folklore suggests that the smart money is bet late.10 This is borne
+out by Asch, Malkiel and Quandt (1982) using data at various points in the betting
+cycle from 729 races at the Atlantic City Race Course. They found that for winning
+horses the final odds tend to be lower than the "morning line odds" (predicted odds
+by the track handicapper), whereas for horses finishing out of the money the final
+odds are much higher than the morning line odds. The later in the betting period, the
+more pronounced is the effect for the winners. The final odds for winners are 96
+percent of the morning line odds, but for the money bet during the last eight minutes,
+the marginal odds are 82 percent of the morning line, and in the last five minutes they
+drop further to 79 percent. The final odds for losers are about 1.5 times the morning
+line odds. Asch and Quandt (1986) develop a logit model of the probability of
+winning, using the change in the odds during the last few minutes as one of the
+independent variables. The logit model is then used to search for profitable investment
+strategies. They could not find any profitable bets in the win pool, but they did find
+some in the place and show pools. Apparently, place and show betting on favorites
+whose odds have fallen in the last few minutes yields small profits. This is consistent
+with the Ziemba and Hausch (1987) results suggesting inefficiencies in the place and
+show pools.
+l0Asch and Quandt (1986) argue that this occurs because the smart money bettors want to withhold any
+information that their bets might convey. This implies that the public will bet more on a horse if the odds
+are lower than expected: an upward sloping demand curve! But if bettors have reservation odds for each
+horse, then they will also bet more on a horse if the odds are higher than expected. Probably the betting
+public contains a mixture of people using each strategy.
+
+Thaler and Ziemba 167
+Cross Track Betting
+A recent development in race track betting is the opportunity for bettors to wager
+at their home track on major thoroughbred races being run at another track. Cross
+track betting raises new and interesting questions about market efficiency. While
+arbitrage is made difficult by the high transactions costs and the absence of public
+telephones inside most race tracks, rational expectations would seem to imply that the
+odds at every track would be approximately the same. In fact, they frequently vary
+dramatically. For example, in the 1986 Kentucky Derby, the winner Ferdinand paid
+$16.80 for $2 at Hollywood Park in California where he had run often and was well
+known. He paid $37.40 at Aqueduct in New York, $79.60 at Woodbine in Toronto,
+$63.20 at Hialeah in Florida, and $90.00 at Evangeline in Louisiana.
+While pure arbitrage may be difficult, profitable betting strategies are possible.
+Hausch and Ziemba (1987) have developed an optimal betting model for cross track
+betting under the assumption that final odds at all tracks are known in time to
+compute and place bets at each track. The essence of the system is to assume that the
+home track odds are accurate (after correcting for the favorite-longshot bias) and then
+to select a combination of bets at other tracks to exploit the inefficiencies. If the
+discrepancies in the odds at the various tracks are large enough (as they have been at
+some races), it is even possible to create a genuine arbitrage opportunity by betting on
+every horse at the track where the odds are best. Unfortunately, in the absence of a
+sophisticated communications system, these strategies are likely impractical (and
+possibly illegal). However, a Chicago commodities trader has developed and profit-
+ably used a workable one-track system using a portable television at the cross track.
+The bettor views the home odds when they are flashed on television, and then searches
+for overlays at the cross track.
+Lotto Games
+Lottery games date at least to biblical days. Israel was divided among the seven
+tribes by lot. Christ's robe was given to a lottery winner so it would not have to be cut.
+The Sistine chapel and its paintings were supported by lotteries. The Italian lottery
+has been running continuously since 1530. Lotteries are played in over 100 countries.
+Lotteries arrived in North America with the Pilgrims, and they were used to partially
+fund the new schools such as Harvard, Princeton and Yale. Later they were used to
+pay off debts of notables such as Thomas Jefferson. Extreme corruption led to their
+demise in the late 19th century, and they were banned in the United States and
+Canada. They resurfaced in 1964 in New Hampshire. In Canada they arrived to
+repay the debts from Expo 1967 in Montreal. Since then there has been explosive
+growth in popularity and sales. However, with an expected return of between 40 and
+60 cents on the dollar, they are usually a poor investment for the rational investor.
+Even with such low payout rates, it is possible to obtain positive expected value
+bets in lotto games. This occurs because not all numbers are equally popular with the
+public. The possibility of exploiting this pattern was first formalized by Chernoff
+
+168 Economic Perspectives
+(1980) (and tested by some of his students) in the context of the Massachusetts
+numbers game. In this game the object is to pick a number from 0000 to 9999. If your
+number is drawn, then you share a portion of the total pool. A subsidiary prize is
+awarded if three numbers match. Chernoff found that certain numbers were unpopu-
+lar: those with 0's, 9's, and to a lesser extent 8's. His theoretical analysis suggested that
+there were combinations with positive expected values, inducing some of his students
+to bet systematically on the "good" numbers. However, the students did not fare very
+well. First, over time the unpopular numbers became less advantageous, due to a
+combination of learning and simple regression. Second, they fell victim to the dreaded
+"gambler's ruin." The students' bankroll was not sufficient to wait out the time needed
+to have enough hits to generate substantial profits. Finally, they were unlucky: the
+unpopular numbers came up less often than would be expected.
+The game that has attracted the most attention in North America is Lotto 6/49
+or some similar variant. In this game one chooses six of forty-nine numbers and if they
+all match then one wins the jackpot. Lesser prizes are awarded for three to five
+matches. The probability of selecting the winning combination in this game is 1 in
+13,983,816: if you play twice a week you can expect to win in 134,360 years, a long
+time horizon even for a rational economist!
+Two features make the game interesting for the rational investor. First, as in the
+numbers game, some numbers are more popular than others. Second, if the grand
+prize is not won in a given drawing, it is carried over to the next week. Thus prizes can
+be enormous.11 Ziemba and his co-workers (1986) have been studying whether these
+factors can produce favorable investment opportunities. Several estimation methods
+have been used to calculate the best numbers: simple counts of the frequency with
+which the numbers are picked, a regression of the log of payoffs on the winning
+numbers, and a sophisticated constrained maximum likelihood model. All lead to the
+same conclusion, namely that 15 to 20 of the numbers are quite unpopular. Moreover,
+the precise numbers are virtually the same from year to year. While there has been
+some learning over the years, so that these numbers are not quite as unpopular as they
+used to be, the unpopular numbers tend to remain unpopular. In fact, there are
+thousands of combinations of numbers that have expected returns over $1 even when
+there is no carryover. The expected value of betting the best numbers increases with the
+carryover and converges to about $2.25 per $1 for very large pools. The best numbers
+tend to be high numbers (non-birthdays) and those ending in 0's, 9's and 8's.
+According to the regression model, the twelve most unpopular numbers are 32, 29, 10,
+30, 40, 39, 48, 12, 42, 41, 38, and 18 which tend to be 15 percent to 30 percent less
+popular than average. Using the marginal approach (those numbers chosen two
+standard deviations less than average), one finds the nineteen most unpopular
+11 In the U.S. lottery prizes are often announced using the accounting methods favored by university fund
+raisers and agents for professional athletes, namely undiscounted nominal dollars. The present value of the
+prize after taxes is typically about one-third of the announced value. In Canada, however, prizes are paid in
+cash and incur no Canadian tax liability.
+
+Anomalies 169
+numbers to be 40, 39, 20, 30, 41, 38, 42, 46, 29, 49, 48, 32, 10, 47, 1, 37, 28, 34 and
+45. These numbers have edges from 26.7 percent down to 3.2 percent. The most
+popular number is 7, which is selected nearly 50 percent more often than the average
+number.
+The question remains—can you make money in the lotto games playing the
+unpopular numbers? While you can achieve an expected value of $2 per dollar bet,
+there may not be any arbitrage opportunity available. Consider a hypothetical
+carnival game with one million spokes. You pay $1 for a number between 1 and 1
+million, and you get $2 million if your choice comes up. While you have an edge, the
+chance of winning is so small that you probably will go bankrupt before winning the
+jackpot. To analyze this problem one needs to have an adequate model of growth of
+wealth versus security of wealth. MacLean, Ziemba and Blazenko (1987) have
+developed such a model to investigate questions such as: Can a dynasty enhance its
+long-term wealth playing lotto games? The answer is that it can. With sufficiently
+small wagers it can increase its initial stake of, say, $10 million by tenfold before
+losing $5 million with probability arbitrarily close to one, but this process takes
+thousands of years even if they play all over the world. For one lotto game it will take
+them millions of years. A more interesting question for most of us is: Can a group or
+single investor use the unpopular numbers to become rich? This is even more difficult,
+especially if one wants low risk. It is easy to bankroll, as the optimal wager can be as
+low as 10 cents per week for one of ten syndicate members, but these aspiring
+millionaires are most likely to be residing in a cemetery when their distant heirs finally
+reach the goal. It is still best to play unpopular numbers—they have an edge and you
+will win 3 to 7 times the usual prizes should you hit—but you will expect to play a
+very long time before winning.
+One of the most attractive aspects of lotto games is that the portion of the pool
+designated for the jackpot is carried over to the next draw when no one wins the
+jackpot. Indeed it is the prospect of winning a huge jackpot that is the main driving
+force behind the tremendous interest and sales of lotto tickets. Does it ever pay to buy
+all the numbers and hence "steal the pot"? Two conditions are necessary for this to be
+profitable. Roughly speaking these are: (1) a large carryover (in 6/49, $7.7 million);
+and (2) "not very many" tickets sold. While these conditions are unlikely to obtain,
+there are cases that can and have arisen in minor lotto games in Canada and
+elsewhere where it actually would have been a reasonable idea to buy the pot. It is
+important to stress, however, that even if the right conditions arose, buying the pot
+would entail enormous transactions costs since the tickets must be bought and
+redeemed one by one, and, you would have to hope that no one else tried to buy the
+pot at the same time (see Ziemba et al., 1986, for details). Similar situations sometimes
+arise in exotic racetrack betting such as the "pick six" (pick the winners of six
+consecutive races) and related exotic bets. Substantial carryovers can exist in these
+pools, and making large wagers or actually buying the pot can be profitable. In fact,
+there are at least two major syndicates that actually try to do this, one of which made
+over $1 million last year.
+
+170 Economic Perspectives
+Commentary
+Racetrack betting
+The racetrack betting market is surprisingly efficient. Market odds are remark-
+ably good estimates of winning probabilities. This implies that racetrack bettors have
+considerable expertise, and that the markets should be taken seriously. Nevertheless,
+two robust anomalies are present: the favorite-longshot bias, and the inefficiencies of
+the place and show markets. How can these anomalies be explained?
+Quandt (1986) has offered the following argument regarding the favorite-longshot
+bias (see also Rosett, 1965). The fact that bettors make wagers that are known to have
+negative expected value implies that they must be "locally" risk seeking. This implies
+that the usual risk-return relationship will be reversed. In equilibrium, investments
+(bets) with high variance will have lower average returns than investments with low
+variance. While this argument is logically consistent, we feel that it is not a satisfac-
+tory explanation of the observed behavior. The crucial issue is whether the inference
+that bettors are risk-seeking is a reasonable one to draw from the fact that they are at
+the track betting.
+What does it mean to be "locally risk seeking"? Recognizing that most racetrack
+fans, including themselves, purchase insurance, Asch and Quandt (1986) suggest that
+the utility of wealth function may have the shape proposed by Friedman and Savage
+(1948), namely concave below the current wealth level and convex above it. While
+this assumption can explain why racetrack bettors also purchase insurance, it is surely
+not an adequate explanation for bettors' other behavior such as investing. We venture
+a guess that when it comes to retirement saving, Professors Asch and Quandt would
+not be willing to accept a lower mean return in order to obtain a higher level of risk.
+Indeed, having read their coauthor's book on the stock market (Malkiel, 1985) we
+guess that when it comes to investing, many racetrack bettors display concave utility
+functions. Thus the term "locally risk seeking" may apply to racetrack bettors, but
+only if the term "locally" refers to physical location rather than wealth level!12
+It is true that racetrack fans go to the track to bet—watching a horse race is just
+not that much fun if you do not have a rooting interest. The real question is to what
+extent we can explain racetrack betting with the assumptions of rational expectations,
+expected utility maximization, and a convex utility of wealth function. Consider some
+stylized facts about racetrack bettors: First, most bring a stake that represents a small
+portion of their wealth. The average amount bet per person in 1985 was about $150
+for the day. The median is surely lower. Second, they allocate that stake over the
+12The more basic question is whether individuals display a consistent "trait" that can be captured in an
+index of risk aversion or risk seeking. Psychologists have found that most such traits are highly context
+specific, and risk taking is no exception. As Paul Slovic (1972, p. 795) has commented: "Although
+knowledge of the dynamics of risk taking is still limited, there is one important aspect that has been fairly
+well researched–that dealing with the stability of a person's characteristic risk-taking preferences as he
+moves from situation to situation. Typically, a subject is tested in a variety of risk-taking tasks involving
+problem solving, athletic, social, vocational, and pure gambling situations. The results of close to a dozen
+such studies indicate little correlation, from one setting to another, in a person's preferred level of risk
+taking."
+
+Thaler and Ziemba 171
+course of the betting day, intending to bet on nearly every race, unless they run out of
+money before the day ends. Third, groups of friends that attend the track together
+rarely bet among themselves, although they could thereby guarantee a zero sum game
+for the group and increase variance as much as they wanted. Are these facts consistent
+with maximization of a convex utility of wealth function?
+Another fact that is difficult to explain within this framework is the tendency
+(first pointed out by McGlothlin, 1956) for the favorite-longshot bias to become more
+pronounced for the last couple of races of the day. Most observers (McGlothlin, 1956;
+Kahneman and Tversky, 1979; Asch and Quandt, 1986) seem to agree on the cause.
+Bettors on average are losing toward the end of the day. They would like to go home a
+winner, but do not want to risk losing much more money. Therefore, they bet on
+longshots in an attempt to break even for the day. Notice that this behavior is hard to
+explain within a Friedman-Savage framework. Why should a reduction in wealth
+increase the tendency for risk seeking?
+We feel that a more promising way of modeling race track betting (and other
+gambling behavior) is to introduce the concept of mental accounting (Kahneman and
+Tversky, 1984; Thaler, 1985). The key assumption of mental accounting is that
+people adopt mental accounts and act as if the money in these accounts is not
+fungible. To get the feel of mental accounting, consider another thought experiment.
+A set of identical twins Art and Bart (with identical wealth levels) is at the race track,
+contemplating their bets for the last race of the day. Art has lost $100 betting so far,
+though he has another $100 in cash with him. Bart is even in the betting so far, but
+between races he read the financial page in the newspaper and discovered that a stock
+in which he holds 100 shares went down one point the previous day.
+Notice that both twins have lost $100, and thus any wealth-based explanation of
+their betting behavior must predict that they will make similar bets. However, in a
+mental accounting formulation, Art is behind in the race track account while Bart is
+even; thus they might well bet differently. (See Thaler and Johnson (1986) for
+evidence consistent with this view.) Once the concept of mental accounting is
+introduced, then it becomes much easier to understand how an individual can be risk
+neutral or risk seeking at the racetrack but risk averse with respect to retirement
+savings.
+As for the favorite-longshot bias, many behavioral factors are probably at work
+for different reasons. (1) Bettors might overestimate the chances that the long shots
+will win. (2) As in Kahneman and Tversky's (1979) prospect theory, bettors might
+overweight the small probability of winning in calculating the utility of the bet. (3)
+Bettors may derive utility simply from holding a ticket on a longshot. After all, $2 is a
+cheap thrill. (4) It is more fun to pick a long shot to win than a favorite. It is hard to
+claim much credit for predicting that a 1-5 favorite will win (much less place or
+show), but if a 20-1 longshot comes through, considerable bragging rights will have
+been earned. (5) Some bettors may choose horses for essentially irrational reasons, like
+the horse's name. Since there is no possibility of short sales, such bettors can drive the
+odds down on the worst horses, with the "smart money" simply taking the better bets
+on the favorites.
+
+172 Economic Perspectives
+The fact that the place and show pools seem to be less efficient than the win pool
+is also an interesting observation. One important factor may simply be that these bets
+are more complicated. For example, the payoff to a bet to show depends not only on
+the chance the horse will be in the money, but also on which other horses are in the
+money and how much has been bet on each. (The greater is the share of the money
+that has been bet on the horses finishing in the top three positions, the smaller is the
+payoff.) Bettors might prefer simple bets to complicated bets,13 or they might simply
+have difficulty determining when an attractive bet occurs in place and show pools.
+One important conclusion we draw from this analysis is that modeling gambling
+behavior is complicated. Bettors' behavior seems to depend on numerous factors such
+as how they have done in earlier races, and which bets will yield the best stories after
+the fact. We should emphasize that these complications apply with equal force to
+investment behavior. As Merton Miller has said (1986, S467), "[to many individual
+investors] stocks are usually more than just the abstract 'bundle of returns' of our
+economic model. Behind each holding may be a story of family business, family
+quarrels, legacies received, divorce settlements, and a host of other considerations
+almost totally irrelevant to our theories of portfolio selection. That we abstract from
+these stories in building our models is not because the stories are uninteresting but
+because they may be too interesting and thereby distract us from the pervasive market
+forces that should be our principal concern." While we sympathize with Miller's
+self-control problem—we also find the stories irresistibly interesting—we feel that to
+understand the market forces one must enrich the models to incorporate more than
+the "bundle of returns." Even professional portfolio managers seem more concerned
+with beating the S & P index than with maximizing returns. In fact, we suspect that
+portfolio managers trailing the market in the 4th quarter may behave much like the
+racetrack bettors who bet on longshots when behind at the end of the day.
+Lotteries
+What can economic theory say about lotteries? Given the dreadful payout rates,
+one prediction might be that no one will purchase lottery tickets. However, it is easy to
+rationalize the purchase of a lottery ticket by saying that for a dollar purchase, the
+customer is paying 50 cents for a fantasy. That's a pretty good deal. The existence of
+popular and unpopular numbers is more difficult to rationalize. It seems that
+economic theory yields the following paradoxical prediction: No one will choose the
+most popular numbers.
+To understand this phenomenon it is useful to point out that lotteries in North
+America did not become popular until New Jersey introduced a game which allowed
+players to choose their own numbers. The popularity of this feature seems to be
+explained by what psychologist Ellen Langer (1975) has called "the illusion of
+control." Even in purely chance games, players feel they have a better chance to win
+if they can control their own fate, rather than have it determined by purely "chance"
+factors. For example, Langer found that subjects in her experiments were more
+13For a similar example in the finance literature, see Elton, Gruber, and Rentzler (1982).
+
+Anomalies 173
+reluctant (charged a higher price) to give up a lottery ticket they had selected
+themselves, than one selected at random for them.
+A news story provides a vivid example of the illusion of control (and the
+confusion of skill and chance). One year, the winner of the Christmas drawing for the
+Spanish National Lottery, the "El Gordo," was interviewed on television. He was
+asked: "How did you do it? How did you know which ticket to buy?" Our winner
+replied that he had searched for a vendor who could sell him a ticket ending in 48.
+"Why 48?" he was asked. "Well, I dreamed of the number seven for seven nights in a
+row, and since seven times seven is 48 ..."14
+• The authors wish to thank, without implicating, Peter Asch, Werner De Bondt, Donald Hausch,
+Richard Rosett, and Richard Quandt for helpful comments on an earlier draft. Financial support
+was provided by the Alfred P. Sloan Foundation.
+References
+Ali, Mukhtar, M., "Probability and Utility
+Estimates for Racetrack Bettors," Journal of Political
+Economy, 1977, 85, 803–15.
+Ali, Mukhtar, M., " Some Evidence of the Effi-
+ciency of a Speculative Market," Econometrica,
+1979, 47, 387–92.
+Asch, Peter, and Richard E Quandt,
+"Efficiency and Profitability in Exotic Bets,"
+Economica, August 1987, 59, 278–98.
+Asch, Peter, and Richard E. Quandt, Racetrack
+Betting: The Professors' Guide to Strategies. Dover,
+MA: Auburn House, 1986.
+Asch, Peter, Burton G Malkiel, and Richard E.
+Quandt, "Market Efficiency in Racetrack
+Betting," Journal of Business, 1984, 57, 65–75.
+Asch, Peter, Burton G. Malkiel, and Richard
+E. Quandt, "Market Efficiency in Racetrack Bet-
+ting: Further Evidence and a Correction," Journal
+of Business, 1986, 59, 157–60.
+Asch, Peter, Burton G. Malkiel, and Richard
+E. Quandt, "Racetrack Betting and Informed
+Behavior," Journal of Financial Economics, 1982, 10,
+187–94.
+Chernoff, Herman, "An Analysis of the Mas-
+sachusetts Numbers Game," Cambridge, Mas-
+sachusetts, MIT Department of Mathematics,
+Technical Report No. 23, November 1980.
+Elton, E., M. Gruber, and J. Rentzler, "Intra
+Day Tests of the Efficiency of the Treasury Bills
+Futures Market," Working paper No. CSFM-38,
+Columbia University Business School, October
+1982.
+Friedman, Milton, and L. J. Savage, "The
+Utility Analysis of Choices Involving Risk," Jour-
+nal of Political Economy, August 1948, 56, 279–304.
+Harville, David A., "Assigning Probabilities to
+the Outcome of Multi-Entry Competitions," Jour-
+nal of the American Statistical Association, 1973, 68,
+312–16.
+Hausch, Donald B., and William T. Ziemba,
+"Cross Track Betting on Major Stakes Races,"
+Vancouver: University of British Columbia, Fac-
+ulty of Commerce Working Paper No. 975, June
+1987.
+Hausch, Donald B., and William T. Ziemba,
+"Transactions Costs, Extent of Inefficiencies, En-
+tries and Multiple Wagers in a Racetrack Betting
+Model," Management Science, 1985, 31, 381–94.
+Hausch, Donald B., William T. Ziemba, and
+Mark Rubinstein, "Efficiency of the Market for
+Racetrack Betting," Management Science, 1981, 27,
+1435–52.
+Kahneman, Daniel, and Amos Tversky,
+"Choices, Values, and Frames," American Psycholo-
+14This example is cited in a forthcoming book on decision making by Jay Russo and Paul Schoemaker. We
+are grateful they shared it with us.
+
+174 Economic Perspectives
+gist, 1984, 39, 341–50.
+Kahneman, Daniel, and Amos Tversky, "Pro-
+spect Theory: An Analysis of Decision Under
+Risk," Econometrica, 1979, 47, 263–91.
+Langer, Ellen J., "The Illusion of Control,"
+Journal of Personality and Social Psychology, 1975, 32,
+311–328.
+McGlothlin, William H., "Stability of Choices
+Among Uncertain Alternatives," American Journal
+of Psychology, 1956, 69, 604–15.
+MacLean, Leonard, William T. Ziemba, and
+George Blazenko, "Growth versus Security in Dy-
+namic Investment Analysis," University of British
+Columbia, Faculty of Commerce and Business
+Administration, mimeo, 1987.
+Malkiel, Burton G., A Random Walk Down Wall
+Street. New York: Norton, 1985.
+Miller, Merton H., "Behavioral Rationality in
+Finance: The Case of Dividends," Journal of Busi-
+ness, October 1986, 59, S451–68.
+Mitchell, Dick, A Winning Thoroughbred Strategy.
+Los Angeles: Cynthia Publishing Co., 1987.
+Quandt, Richard E., "Betting and Equi-
+librium," Quarterly Journal of Economics, 1986, 101,
+201–207.
+Quinn, James, The Best of Thoroughbred Handi-
+capping 1965–1986. New York: Morrow, 1987.
+Quirin, William L., Winning at the Races: Com-
+puter Discoveries in Thoroughbred Handicapping. New
+York: Morrow, 1979.
+Rosett, Richard N., "Gambling and Rational-
+ity," Journal of Political Economy, 1965, 73, 595–607.
+Slovic, Paul, "Psychological Study of Human
+Judgment: Implications for Investment Decision
+Making," Journal of Finance, 1972, 27, 779–99.
+Synder, Wayne W., "Horse Racing: Testing
+the Efficient Markets Model," Journal of Finance,
+1978, 33, 1109–18.
+Stern, Hal, "Gamma Processes, Paired Com-
+parisons and Ranking," Ph.D. dissertation, De-
+partment of Statistics, Stanford University, August
+1987.
+Thaler, Richard H., "Mental Accounting and
+Consumer Choice," Marketing Science, Summer
+1985, 4, 199–214.
+Thaler, Richard H., and Eric Johnson,
+"Hedonic Framing and the Break-Even Effect,"
+unpublished manuscript, Cornell University,
+Johnson Graduate School of Management, 1986.
+Weitzman, Martin, "Utility Analysis and
+Group Behavior: An Empirical Study," Journal of
+Political Economy, 1965, 73, 18–26.
+Ziemba, William T., and Donald B. Hausch,
+Betting at the Racetrack. Vancouver and Los Angeles:
+Dr. Z. Investments, Inc., 1986.
+Ziemba, William T., and Donald B. Hausch,
+Dr. Z's Beat the Racetrack. New York: William
+Morrow, 1987.
+Ziemba, William T., Shelby L. Brumelle,
+Antoine Gautier, and Sandra L. Schwartz, Dr.
+Z's 6 / 49 Lotto Guidebook. Vancouver and Los
+Angeles: Dr. Z. Investments, Inc., 1986.
