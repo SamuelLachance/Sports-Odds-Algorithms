@@ -126,7 +126,7 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                widen2=1.5 ** 2, playoff_mult=1.0, dead_mult=1.0, opp_k=0.0,
                opp_mode="league", flat_scale=1.0, role_r=0.0, micro="off",
                sal_k=0.0, grade="off", mov_scale=0.5, mov_cap=2.0,
-               draw_band=0.0, neutral_skip=0.0):
+               draw_band=0.0, neutral_skip=0.0, return_parts=False):
     """One engine walk -> per-game ts_diff feature (pre-game, leak-free).
 
     Game importance: playoff snaps x playoff_mult; 'useless' late-season games
@@ -144,6 +144,11 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
           "LB":"LB","ILB":"LB","OLB":"LB","MLB":"LB",
           "CB":"DB","S":"DB","SS":"DB","FS":"DB","SAF":"DB","DB":"DB"}
     f = np.zeros(len(G16))
+    KEYS = ["qb_raw", "off_raw", "def_raw", "qb_prec", "off_prec", "def_prec",
+            "qb_pn", "off_pn", "def_pn"]
+    parts = {k: np.zeros(len(G16)) for k in KEYS} if return_parts else None
+    gm = {"QB": MU0, "RB": MU0, "WR": MU0, "TE": MU0, "OL": MU0, "DL": MU0, "LB": MU0, "DB": MU0}
+    gv = {k: 4.0 for k in gm}                      # running group mean/var (EWMA, leak-free)
     prev = None
     wins = defaultdict(float); played = defaultdict(int)
     for j, (i, g) in enumerate(G16):
@@ -163,7 +168,8 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
             dead_a = wins[g["away"]] + (sched_len - played[g["away"]]) < 7
             gmult = dead_mult if (dead_h and dead_a) else 1.0
         lg_mu = (sum(mu.values()) / len(mu)) if (opp_k and opp_mode == "league" and mu) else MU0
-        # 1. feature from pre-game state
+        # 1. feature from pre-game state (+ component aggregates when requested)
+        seen_mus = []
         for side, team in ((1, g["home"]), (-1, g["away"])):
             tbl = snaps.get((g["gid"], team))
             if tbl is None:
@@ -175,9 +181,27 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                     continue
                 g_ = pfr2gsis.get(pid)
                 m_ = mu.get(g_) if g_ else None
-                if m_ is not None:
-                    tot += (st[0] / st[1]) * max(-V_CLAMP, min(V_CLAMP, m_ - MU0))
+                if m_ is None:
+                    continue
+                w_sh = st[0] / st[1]
+                vraw = max(-V_CLAMP, min(V_CLAMP, m_ - MU0))
+                tot += w_sh * vraw
+                if return_parts:
+                    grp = GPOS.get(g_) or "OL"
+                    cat = "qb" if grp == "QB" else ("def" if grp in ("DL", "LB", "DB") else "off")
+                    sd_g = sqrt(max(gv.get(grp, 4.0), 1e-6))
+                    vpn = max(-2.5, min(2.5, (m_ - gm.get(grp, MU0)) / sd_g))
+                    prec = 1.0 / (1.0 + s2.get(g_, SIG0_2))
+                    parts[cat + "_raw"][j] += side * w_sh * vraw
+                    parts[cat + "_prec"][j] += side * w_sh * vraw * prec
+                    parts[cat + "_pn"][j] += side * w_sh * vpn
+                    seen_mus.append((grp, m_))
             f[j] += side * tot
+        if return_parts:                            # update group stats AFTER the feature
+            for grp, m_ in seen_mus:
+                d_ = m_ - gm[grp]
+                gm[grp] += 0.002 * d_
+                gv[grp] = (1 - 0.002) * gv[grp] + 0.002 * d_ * d_
         # role multipliers: depth-chart position by AS-OF usage within team-position
         # (starter = hardest job -> amplified; deep backup -> discounted)
         role_m = {}
@@ -313,7 +337,7 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
         if g["type"] == "REG":
             wins[g["home"]] += g["y"]; wins[g["away"]] += 1.0 - g["y"]
             played[g["home"]] += 1; played[g["away"]] += 1
-    return f
+    return (f, parts) if return_parts else f
 
 def wf_ll(f, lo, hi):
     """walk-forward yearly refit of logistic([ts_diff]) on 2016+ history."""
@@ -327,45 +351,55 @@ def wf_ll(f, lo, hi):
         out.append(llv(y16[te], p))
     return float(np.concatenate(out).mean()), np.concatenate(out)
 
-# ================= DEV sweep (2017-2021) =================
-print("\nDEV 2017-2021 — engine knob sweep (ratings-only model LL):", flush=True)
-results = {}
-def trial(name, **kw):
-    f = run_config(**kw)
-    ll, _ = wf_ll(f, 2017, 2021)
-    results[name] = (ll, kw)
-    print(f"  {name:<44} {ll:.5f}  [{time.time()-T0:.0f}s]", flush=True)
+# ================= AGGREGATION STUDY (engine fixed at v4) =================
+V4 = dict(tau=0.30, use_lev=True, down_mult=1.25, late_mult=1.5,
+          playoff_mult=1.5, dead_mult=0.5, opp_k=0.3, opp_mode="league",
+          draw_band=0.55)
+f_v4, P = run_config(**V4, return_parts=True)
+print(f"[{time.time()-T0:.0f}s] v4 walk + component aggregates done", flush=True)
 
-SHIP = dict(tau=0.30, use_lev=True, down_mult=1.25, late_mult=1.5,
-            playoff_mult=1.5, dead_mult=0.5, opp_k=0.3, opp_mode="league")
-trial("shipped engine v3 (context+importance+opp)", **SHIP)
-trial("B draw band |epa|<0.55", **SHIP, draw_band=0.55)
-trial("B draw band |epa|<0.70", **SHIP, draw_band=0.70)
-trial("B draw band |epa|<0.90", **SHIP, draw_band=0.90)
-trial("B draw band |epa|<1.20", **SHIP, draw_band=1.20)
+def wf_X(X, lo, hi):
+    lls, accs = [], []
+    for s_ in range(lo, hi + 1):
+        tr = (seas16 < s_) & (y16 != 0.5)
+        te = seas16 == s_
+        m = LogisticRegression(C=1e6, max_iter=3000).fit(X[tr], y16[tr])
+        p = m.predict_proba(X[te])[:, 1]
+        lls.append(llv(y16[te], p))
+        msk = y16[te] != 0.5
+        accs.append(((p > 0.5) == (y16[te] > 0.5))[msk])
+    return float(np.concatenate(lls).mean()), float(np.concatenate(accs).mean())
 
-best_name = min(results, key=lambda k: results[k][0])
-best_ll, best_kw = results[best_name]
-print(f"\nDEV winner: {best_name}  ({best_ll:.5f})")
+VAR = {
+  "single raw sum (current)": [P["qb_raw"] + P["off_raw"] + P["def_raw"]],
+  "split QB / off / def": [P["qb_raw"], P["off_raw"], P["def_raw"]],
+  "sigma-discounted sum": [P["qb_prec"] + P["off_prec"] + P["def_prec"]],
+  "sigma-discounted split": [P["qb_prec"], P["off_prec"], P["def_prec"]],
+  "position-normalized sum": [P["qb_pn"] + P["off_pn"] + P["def_pn"]],
+  "position-normalized split": [P["qb_pn"], P["off_pn"], P["def_pn"]],
+  "pn split + raw QB": [P["qb_raw"], P["qb_pn"], P["off_pn"], P["def_pn"]],
+}
+print("\nDEV 2017-2021 — aggregation variants (ratings fixed, engine v4):", flush=True)
+best_name, best_ll = None, 9e9
+for name, cols in VAR.items():
+    X = np.column_stack(cols)
+    ll, _ = wf_X(X, 2017, 2021)
+    tag = ""
+    if ll < best_ll:
+        best_ll, best_name = ll, name
+        tag = "  <-- best"
+    print(f"  {name:<28} {ll:.5f}{tag}", flush=True)
 
-# ================= ONE TEST look (2022-2025) =================
-f_best = run_config(**best_kw)
-ll_test, lv_test = wf_ll(f_best, 2022, 2025)
+X_best = np.column_stack(VAR[best_name])
+ll_test, acc_test = wf_X(X_best, 2022, 2025)
 te_mask = (seas16 >= 2022) & (seas16 <= 2025)
-# benchmarks on the SAME games
 idx_all = np.array([i for i, _ in G16])
-pe16 = pe[idx_all]                       # plain-Elo probs from the 1999+ walk
-ll_elo = float(llv(y16[te_mask], pe16[te_mask]).mean())
-print(f"\nTEST 2022-2025 (n={int(te_mask.sum())}, scored once):")
-print(f"  ratings-only model (1 feature)  LL {ll_test:.5f}")
-print(f"  plain team Elo                  LL {ll_elo:.5f}")
-print(f"  home prior                      LL {float(llv(y16[te_mask], np.full(int(te_mask.sum()), y16[seas16<2022].mean())).mean()):.5f}")
-acc = float(((f_best[te_mask] > 0) == (y16[te_mask] > 0.5))[y16[te_mask] != 0.5].mean())
-print(f"  ratings-only accuracy {acc*100:.1f}%")
-json.dump({"dev": {k: round(v[0], 5) for k, v in results.items()},
-           "winner": best_name, "winner_kw": {k: v for k, v in best_kw.items()},
-           "test_ll": round(ll_test, 5), "elo_ll": round(ll_elo, 5),
-           "test_n": int(te_mask.sum()), "acc": round(acc, 4)},
-          open("data/nfl_ratings_only2.json", "w"), indent=1, default=float)
-print("\nwrote data/nfl_ratings_only2.json (game-importance + opponent-quality sweep;"
-      " TEST here is the side model's SECOND look — flagged)")
+ll_elo = float(llv(y16[te_mask], pe[idx_all][te_mask]).mean())
+print(f"\nTEST 2022-2025 (n={int(te_mask.sum())}):")
+print(f"  ratings-only, {best_name:<26} LL {ll_test:.5f}  acc {acc_test*100:.1f}%")
+print(f"  plain team Elo                       LL {ll_elo:.5f}")
+json.dump({"dev": {k: round(wf_X(np.column_stack(v), 2017, 2021)[0], 5) for k, v in VAR.items()},
+           "winner": best_name, "test_ll": round(ll_test, 5), "acc": round(acc_test, 4),
+           "elo_ll": round(ll_elo, 5)},
+          open("data/nfl_ratings_agg.json", "w"), indent=1)
+print("wrote data/nfl_ratings_agg.json")

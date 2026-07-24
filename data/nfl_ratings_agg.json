@@ -1,0 +1,15 @@
+{
+ "dev": {
+  "single raw sum (current)": 0.65872,
+  "split QB / off / def": 0.65997,
+  "sigma-discounted sum": 0.65498,
+  "sigma-discounted split": 0.65802,
+  "position-normalized sum": 0.67009,
+  "position-normalized split": 0.67217,
+  "pn split + raw QB": 0.66769
+ },
+ "winner": "sigma-discounted sum",
+ "test_ll": 0.65213,
+ "acc": 0.6268,
+ "elo_ll": 0.63824
+}
