@@ -1,0 +1,25 @@
+{
+ "glicko_test": 0.67073,
+ "elo_test": 0.66918,
+ "glicko_dev": 0.67664,
+ "glicko_cfg": {
+  "period_days": 14,
+  "so_credit": 0.6,
+  "home_adv": 32.0,
+  "season_regress": 0.4,
+  "tau": 0.5
+ },
+ "elo_dev": 0.67637,
+ "elo_cfg": {
+  "k": 8,
+  "ha": 30,
+  "regress": 0.3
+ },
+ "test_n": 9781,
+ "test_acc": 0.5841,
+ "delta_ci": [
+  -0.00281,
+  -0.00027
+ ],
+ "home_win_rate": 0.541
+}
