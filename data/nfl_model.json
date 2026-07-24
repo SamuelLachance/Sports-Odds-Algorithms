@@ -9,7 +9,7 @@
   "team_hfa",
   "rest_diff",
   "fumble_luck",
-  "ts_edge",
+  "ts_player_v6",
   "ol_absence",
   "def_absence",
   "skill_absence",
@@ -122,32 +122,43 @@
  },
  "blend_production": {
   "coef": [
-   0.30836,
-   7.18998,
-   1.09564,
-   -0.29579,
-   0.2158,
-   0.01824,
-   0.05275,
-   0.01306,
-   -0.00857,
-   -0.04141,
-   -0.11401,
-   0.10646,
-   -0.61813,
-   3.19921
+   0.28642,
+   6.56516,
+   1.16959,
+   -0.28943,
+   0.1636,
+   0.01785,
+   0.0985,
+   0.09331,
+   -0.00737,
+   -0.04124,
+   -0.11226,
+   0.10254,
+   -0.64639,
+   3.33403
   ],
-  "intercept": 0.14504,
-  "fit": "all completed games through 2025, ties dropped, recency hl=3 seasons, C=100 (walk-forward 2026 step)",
-  "test_repro_ll": 0.61945
+  "intercept": 0.15102,
+  "fit": "all completed games through 2025, ties dropped, recency hl=3, C=100",
+  "test_repro_ll": 0.61941
  },
- "test_ll": 0.61947,
+ "test_ll": 0.61945,
  "prev_stack_test_ll": 0.62806,
- "prev_test_ll": 0.6219,
+ "prev_test_ll": 0.61947,
  "training": {
   "protocol": "walk-forward expanding refit each season",
   "recency_half_life_seasons": 3.0,
   "blend_C": 100.0,
   "learner": "logistic (XGB/RF/MLP all worse)"
+ },
+ "component_params_ts_player_v6": {
+  "engine": "11v11 participation TrueSkill v6",
+  "beta": 60.0,
+  "tau_week": 0.3,
+  "snap_weight": "sqrt(4*wp*(1-wp)) x 1.25 money downs x 1.5 late-close x 1.5 playoffs x 0.5 dead x opp-quality(k=.3, league-anchored)",
+  "outcome": "draw if |EPA|<0.40 else offense wins iff EPA>0",
+  "qb_fusion": "weekly EPA/dropback Kalman merge k=4 R=36",
+  "aggregate": "gameday actives, share-weighted, clamp(mu-25,+-3) x 1/(1+sigma^2)",
+  "zero_before": 2016,
+  "ledger_row": 63
  }
 }

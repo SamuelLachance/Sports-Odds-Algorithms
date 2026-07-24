@@ -571,7 +571,7 @@ function nflPage(){
     <div class="sub" style="margin-bottom:10px">Every row is clickable &mdash; teams, players, weeks. <a href="#/season" style="color:var(--accent)">Season</a> has every weekly pick; <a href="#/standings" style="color:var(--accent)">Standings</a> has the full projections; <a href="#/teams" style="color:var(--accent)">Teams</a> has roster ratings.</div>
     <div class="sub" style="margin-bottom:14px">Market-blind model &middot; <b>${(mc.accuracy).toFixed(1)}%</b> accurate on a locked
       ${mc.holdout} holdout &middot; log loss <b>${mc.test_log_loss.toFixed(3)}</b> (closing line ${mc.close_log_loss.toFixed(3)})
-      &middot; ${mc.n_features} features &middot; ${mc.n_tests} documented tests &middot; ${mc.training}.</div>
+      &middot; ${mc.n_features} features &middot; ${mc.n_tests} documented tests &middot; ${mc.training}.${mc.ratings_model?` The <b>player-ratings engine alone</b> predicts at ${mc.ratings_model.acc}% accuracy &mdash; beating team Elo &mdash; and feeds the model as a feature.`:""}</div>
     ${sch.length?`<div class="grid" style="margin-bottom:4px">
       <div class="panel"><h3>Projected standings &middot; <a href="#/standings" style="color:var(--accent)">all 32 &rarr;</a></h3>
         <div class="twrap"><table><thead><tr><th></th><th>Team</th><th>Proj W-L</th><th>Playoffs</th></tr></thead><tbody>${pTop}</tbody></table></div>
@@ -993,7 +993,7 @@ function nflGamePage(key){
   const ct=g.ct||{};
   const LBL={elo:"Team strength (Elo)", qb:"Quarterback", units:"Pass/run units (EPA)",
              roster:"Roster quality", hfa:"Home field (team)", sched:"Rest &amp; kickoff spot",
-             ts:"Unit TrueSkill", luck:"Fumble luck", abs:"Injuries / absences"};
+             ts:"Player ratings (11v11 TS)", luck:"Fumble luck", abs:"Injuries / absences"};
   const ORDER=["elo","qb","units","roster","hfa","sched","ts","luck","abs"];
   const whyRows=ORDER.filter(k=>ct[k]!=null&&(Math.abs(ct[k])>=0.05||["elo","qb","units"].includes(k)))
     .sort((x,y)=>Math.abs(ct[y])-Math.abs(ct[x])).map(k=>pRow(LBL[k],ct[k])).join("");
@@ -1015,6 +1015,7 @@ function nflGamePage(key){
     ${cmpRow("pass def EPA",A.def_pass,H.def_pass,s1,"hi")}
     ${cmpRow("run def EPA",A.def_run,H.def_run,s1,"hi")}
     ${cmpRow("rest days",g.arest,g.hrest,x=>x==null?"-":x,"hi")}
+    ${(A&&A.rpow_rank)?cmpRow("lineup TS power","#"+A.rpow_rank,"#"+H.rpow_rank,x=>x):""}
   </table>`:`<div class="sub">team data unavailable</div>`;
   const val=g.value;
   const valbar=(val&&val.available)

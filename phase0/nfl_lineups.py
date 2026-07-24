@@ -99,15 +99,43 @@ for (t, side, grp, slot, pos), cand in sorted(slots.items(),
         "r": rating_of.get(top[1]),
     })
 
+# serve-time ratings power: projected lineup aggregated through the v6 engine
+# states (2026 boundary applied: mu shrunk 1/3, sigma widened)
+ts_state = {}
+try:
+    ts_state = json.load(open("data/nfl_ts_state.json"))
+except FileNotFoundError:
+    pass
+def rpow_of(lu):
+    tot = 0.0
+    for e in lu["off"] + lu["def"]:
+        st = ts_state.get(e["id"])
+        if not st:
+            continue
+        mu_ = 25.0 + (st[0] - 25.0) * (2.0 / 3.0)
+        s2_ = min(st[1] + 1.5 ** 2, (25.0 / 3.0) ** 2)
+        v = max(-3.0, min(3.0, mu_ - 25.0)) * (1.0 / (1.0 + s2_))
+        tot += (e.get("share") or 0.05) * v
+    return tot
+
 QBN = {}
+rp = {}
 for t, lu in lineups.items():
     if t not in payload["teams"]:
         continue
     payload["teams"][t]["lineup"] = {**lu, "dt": latest.get(t, "")[:10]}
+    if ts_state:
+        rp[t] = rpow_of(lu)
     qb = next((e for e in lu["off"] if e["slot"] == "QB"), None)
     if qb:
         payload["teams"][t]["qb1"] = {"id": qb["id"], "name": qb["name"]}
         QBN[t] = qb["name"]
+if rp:
+    order = sorted(rp, key=lambda t: -rp[t])
+    for rk, t in enumerate(order, 1):
+        payload["teams"][t]["rpow"] = round(rp[t], 2)
+        payload["teams"][t]["rpow_rank"] = rk
+    print("ratings power top-5:", [(t, round(rp[t], 2)) for t in order[:5]])
 sizes = {t: (len(l["off"]), len(l["def"])) for t, l in lineups.items()}
 assert len(lineups) == 32 and all(9 <= o <= 13 and 10 <= d <= 13 for o, d in sizes.values()), sizes
 json.dump(payload, open("site/data/nfl.json", "w"))

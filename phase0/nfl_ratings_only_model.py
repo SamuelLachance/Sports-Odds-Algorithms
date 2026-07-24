@@ -145,6 +145,16 @@ for _y in range(2016, 2026):
         continue
 print(f"[{time.time()-T0:.0f}s] injury tags (Q/D): {len(INJ):,} player-weeks", flush=True)
 
+QBOBS = {}
+_rates = [ln[0] / ln[1] for (q_, s_, w_), ln in qbw.items()
+          if 2016 <= s_ <= 2021 and ln[1] >= 10]
+_SDQB = float(np.std(_rates)) if _rates else 0.15
+for (q_, s_, w_), ln in qbw.items():
+    if s_ >= 2016 and ln[1] >= 10:
+        z_ = max(-2.5, min(2.5, (ln[0] / ln[1] - lg_qb) / _SDQB))
+        QBOBS[(q_, str(s_), f"{w_:02d}")] = z_
+print(f"[{time.time()-T0:.0f}s] QB weekly obs: {len(QBOBS):,} lines (sd {_SDQB:.3f})", flush=True)
+
 G16 = [(i, g) for i, g in enumerate(games) if g["season"] >= 2016]
 seas16 = np.array([g["season"] for _, g in G16])
 y16 = np.array([g["y"] for _, g in G16])
@@ -156,7 +166,8 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                draw_band=0.0, neutral_skip=0.0, return_parts=False,
                beta=BETA, floor2=SIG2_FLOOR, lev_exp=1.0, draw_eps=0.05,
                hfa_t=0.0, f_ta=False, f_drop=False, f_iw=False,
-               inj_sym=1.0, inj_neg=1.0):
+               inj_sym=1.0, inj_neg=1.0, agg_k=1.0, share_p=1.0,
+               two_track=False, fus_k=0.0, fus_R=36.0):
     """One engine walk -> per-game ts_diff feature (pre-game, leak-free).
 
     Game importance: playoff snaps x playoff_mult; 'useless' late-season games
@@ -166,6 +177,7 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
     """
     tau2 = tau * tau
     mu, s2, lastwk = {}, {}, {}
+    muR, s2R = {}, {}                    # run track (pass track = mu/s2)
     share2 = {}
     pos2 = {}
     PG = {"QB":"QB","RB":"RB","FB":"RB","HB":"RB","WR":"WR","TE":"TE",
@@ -175,7 +187,7 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
           "CB":"DB","S":"DB","SS":"DB","FS":"DB","SAF":"DB","DB":"DB"}
     f = np.zeros(len(G16))
     KEYS = ["qb_raw", "off_raw", "def_raw", "qb_prec", "off_prec", "def_prec",
-            "qb_pn", "off_pn", "def_pn"]
+            "qb_pn", "off_pn", "def_pn", "p_prec", "r_prec"]
     parts = {k: np.zeros(len(G16)) for k in KEYS} if return_parts else None
     gm = {"QB": MU0, "RB": MU0, "WR": MU0, "TE": MU0, "OL": MU0, "DL": MU0, "LB": MU0, "DB": MU0}
     gv = {k: 4.0 for k in gm}                      # running group mean/var (EWMA, leak-free)
@@ -187,6 +199,9 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 tgt = MU0 + sal_k * Z_SAL.get((p, g["season"]), 0.0)
                 mu[p] = tgt + (mu[p] - tgt) * (1.0 - season_shrink)
                 s2[p] = min(s2[p] + widen2, SIG0_2)
+            for p in muR:
+                muR[p] = MU0 + (muR[p] - MU0) * (1.0 - season_shrink)
+                s2R[p] = min(s2R[p] + widen2, SIG0_2)
             wins.clear(); played.clear()
         prev = g["season"]
         # game-importance multiplier from PRE-game standings
@@ -198,6 +213,7 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
             dead_a = wins[g["away"]] + (sched_len - played[g["away"]]) < 7
             gmult = dead_mult if (dead_h and dead_a) else 1.0
         lg_mu = (sum(mu.values()) / len(mu)) if (opp_k and opp_mode == "league" and mu) else MU0
+        lg_muR = (sum(muR.values()) / len(muR)) if (opp_k and opp_mode == "league" and muR) else MU0
         # 1. feature from pre-game state (+ component aggregates when requested)
         seen_mus = []
         for side, team in ((1, g["home"]), (-1, g["away"])):
@@ -213,7 +229,7 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 m_ = mu.get(g_) if g_ else None
                 if m_ is None:
                     continue
-                w_sh = st[0] / st[1]
+                w_sh = (st[0] / st[1]) ** share_p
                 vraw = max(-V_CLAMP, min(V_CLAMP, m_ - MU0))
                 tot += w_sh * vraw
                 if return_parts:
@@ -221,10 +237,16 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                     cat = "qb" if grp == "QB" else ("def" if grp in ("DL", "LB", "DB") else "off")
                     sd_g = sqrt(max(gv.get(grp, 4.0), 1e-6))
                     vpn = max(-2.5, min(2.5, (m_ - gm.get(grp, MU0)) / sd_g))
-                    prec = 1.0 / (1.0 + s2.get(g_, SIG0_2))
+                    prec = agg_k / (agg_k + s2.get(g_, SIG0_2))
                     parts[cat + "_raw"][j] += side * w_sh * vraw
                     parts[cat + "_prec"][j] += side * w_sh * vraw * prec
                     parts[cat + "_pn"][j] += side * w_sh * vpn
+                    if two_track:
+                        mR = muR.get(g_)
+                        if mR is not None:
+                            vR = max(-V_CLAMP, min(V_CLAMP, mR - MU0))
+                            parts["r_prec"][j] += side * w_sh * vR * (agg_k / (agg_k + s2R.get(g_, SIG0_2)))
+                        parts["p_prec"][j] += side * w_sh * vraw * prec
                     seen_mus.append((grp, m_))
             f[j] += side * tot
         if return_parts:                            # update group stats AFTER the feature
@@ -277,18 +299,34 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 h_set.discard(None)
         seas_now = g["season"]
         for pid_, O, D, epa in plays_by_gid.get(gid, ()):
+            if two_track:
+                _pr = prot_of.get((gid, pid_))
+                trk_run = bool(_pr and not _pr[0] and _pr[1])
+            else:
+                trk_run = False
+            muD = muR if (two_track and trk_run) else mu
+            s2D = s2R if (two_track and trk_run) else s2
+            lw_key = "R" if (two_track and trk_run) else "P"
             for p in O:
-                if p not in mu:
-                    mu[p] = MU0 + sal_k * Z_SAL.get((p, seas_now), 0.0); s2[p] = SIG0_2
-                elif lastwk.get(p) != wk:
-                    s2[p] = min(s2[p] + tau2, SIG0_2)
-                lastwk[p] = wk
+                if p not in muD:
+                    muD[p] = MU0 + sal_k * Z_SAL.get((p, seas_now), 0.0); s2D[p] = SIG0_2
+                elif lastwk.get((p, lw_key)) != wk:
+                    if fus_k and GPOS.get(p) == "QB":
+                        _old = lastwk.get((p, lw_key))
+                        _z = QBOBS.get((p, _old[0], _old[1])) if _old else None
+                        if _z is not None:
+                            _obs = MU0 + fus_k * _z
+                            _K = s2D[p] / (s2D[p] + fus_R)
+                            muD[p] += _K * (_obs - muD[p])
+                            s2D[p] = max(s2D[p] * (1.0 - _K), floor2)
+                    s2D[p] = min(s2D[p] + tau2, SIG0_2)
+                lastwk[(p, lw_key)] = wk
             for p in D:
-                if p not in mu:
-                    mu[p] = MU0 + sal_k * Z_SAL.get((p, seas_now), 0.0); s2[p] = SIG0_2
-                elif lastwk.get(p) != wk:
-                    s2[p] = min(s2[p] + tau2, SIG0_2)
-                lastwk[p] = wk
+                if p not in muD:
+                    muD[p] = MU0 + sal_k * Z_SAL.get((p, seas_now), 0.0); s2D[p] = SIG0_2
+                elif lastwk.get((p, lw_key)) != wk:
+                    s2D[p] = min(s2D[p] + tau2, SIG0_2)
+                lastwk[(p, lw_key)] = wk
             wp, down, qtr, adiff, hsec = ctx.get((gid, pid_), (0.5, 1, 1, 0.0, 900.0))
             wgt = ((4.0 * wp * (1.0 - wp)) ** lev_exp) if use_lev else \
                 (0.25 if (wp < 0.05 or wp > 0.95) else 1.0)
@@ -322,8 +360,8 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                     is_draw = True                           # throw-away: decision, not defeat
                 if f_iw and iw:
                     is_draw = False
-                sA = sum(mu[p] for p in A); sB = sum(mu[p] for p in B)
-                c2 = (len(A) + len(B)) * beta * beta + sum(s2[p] for p in A) + sum(s2[p] for p in B)
+                sA = sum(muD[p] for p in A); sB = sum(muD[p] for p in B)
+                c2 = (len(A) + len(B)) * beta * beta + sum(s2D[p] for p in A) + sum(s2D[p] for p in B)
                 c = sqrt(c2)
                 t = (sA - sB) / c + adv       # venue shifts the EXPECTED outcome
                 if opp_k:
@@ -332,7 +370,7 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                         w_A = base_wgt * min(2.0, max(0.3, 1.0 + opp_k * rel))
                         w_B = base_wgt * min(2.0, max(0.3, 1.0 - opp_k * rel))
                     else:
-                        anchor = MU0 if opp_mode == "abs" else lg_mu
+                        anchor = MU0 if opp_mode == "abs" else (lg_muR if (two_track and trk_run) else lg_mu)
                         w_A = base_wgt * min(2.0, max(0.3, 1.0 + opp_k * (sB / len(B) - anchor)))
                         w_B = base_wgt * min(2.0, max(0.3, 1.0 + opp_k * (sA / len(A) - anchor)))
                 else:
@@ -350,12 +388,12 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                         wd = max(0.0, min(1.0, wd))
                         for p in A:
                             im = imul(p, vd >= 0)
-                            mu[p] += im * w_A * (s2[p] / c) * vd
-                            s2[p] = max(s2[p] * (1.0 - im * w_A * (s2[p] / c2) * wd), floor2)
+                            muD[p] += im * w_A * (s2D[p] / c) * vd
+                            s2D[p] = max(s2D[p] * (1.0 - im * w_A * (s2D[p] / c2) * wd), floor2)
                         for p in B:
                             im = imul(p, vd <= 0)
-                            mu[p] -= im * w_B * (s2[p] / c) * vd
-                            s2[p] = max(s2[p] * (1.0 - im * w_B * (s2[p] / c2) * wd), floor2)
+                            muD[p] -= im * w_B * (s2D[p] / c) * vd
+                            s2D[p] = max(s2D[p] * (1.0 - im * w_B * (s2D[p] / c2) * wd), floor2)
                     return
                 if won:
                     win, lose, tt, w_win_, w_lose_ = A, B, t, w_A, w_B
@@ -366,12 +404,12 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 v = v_win(tt); w = v * (v + tt)
                 for p in win:
                     rm = (role_m.get(p, 1.0) if role_r else 1.0) * imul(p, True)
-                    mu[p] += rm * w_win_ * (s2[p] / c) * v
-                    s2[p] = max(s2[p] * (1.0 - rm * w_win_ * (s2[p] / c2) * w), floor2)
+                    muD[p] += rm * w_win_ * (s2D[p] / c) * v
+                    s2D[p] = max(s2D[p] * (1.0 - rm * w_win_ * (s2D[p] / c2) * w), floor2)
                 for p in lose:
                     rm = (role_m.get(p, 1.0) if role_r else 1.0) * imul(p, False)
-                    mu[p] -= rm * w_lose_ * (s2[p] / c) * v
-                    s2[p] = max(s2[p] * (1.0 - rm * w_lose_ * (s2[p] / c2) * w), floor2)
+                    muD[p] -= rm * w_lose_ * (s2D[p] / c) * v
+                    s2D[p] = max(s2D[p] * (1.0 - rm * w_lose_ * (s2D[p] / c2) * w), floor2)
 
             micro_done = False
             if micro != "off":
@@ -450,30 +488,30 @@ def trial(name, **kw):
     results[name] = (ll, kw)
     print(f"  {name:<36} {ll:.5f}  [{time.time()-T0:.0f}s]", flush=True)
 
-print("\nDEV 2017-2021 — injury-aware evidence discounting:", flush=True)
+print("\nDEV 2017-2021 — QB weekly stat fusion (Kalman merge at week boundary):", flush=True)
 V5 = dict(beta=60.0, lev_exp=0.5, draw_band=0.40)
-trial("engine v5 (no injury awareness)", **V5)
-trial("I1 symmetric x0.5 while tagged", **V5, inj_sym=0.5)
-trial("I2 negatives x0.3 while tagged", **V5, inj_neg=0.3)
-trial("I3 negatives x0.6 while tagged", **V5, inj_neg=0.6)
-trial("I4 sym .7 + negatives x0.5", **V5, inj_sym=0.7, inj_neg=0.5)
-base_ll = results["engine v5 (no injury awareness)"][0]
+V6 = {**V5, "fus_k": 4.0, "fus_R": 36.0}
+cfg6 = {**V4, **V6}
+_, P6 = run_config(**cfg6, return_parts=True)
+ts6 = P6["qb_prec"] + P6["off_prec"] + P6["def_prec"]
+full = np.zeros(len(games))
+idx_all = np.array([i for i, _ in G16])
+full[idx_all] = ts6
+np.save("data/nfl_v6_feature.npy", full)
+lgt16 = np.log(np.clip(pe[idx_all], 1e-12, 1 - 1e-12)
+               / np.clip(1 - pe[idx_all], 1e-12, 1 - 1e-12))
+for name, X in (("v6 ratings only", ts6.reshape(-1, 1)),
+                ("v6 BLEND + Elo", np.column_stack([ts6, lgt16]))):
+    lld = wf_X(X, SEL_LO, SEL_HI)[0]
+    llt, acct = wf_X(X, 2022, 2025)
+    results[name] = (lld, {})
+    print(f"  {name:<24} DEV {lld:.5f}   TEST {llt:.5f}  acc {acct*100:.1f}%", flush=True)
+print(f"  (Elo TEST ref 0.63824)", flush=True)
+base_ll = 9e9
 print(f"\nknobs beating baseline ({base_ll:.5f}) by >= 0.0010:")
 for k, (ll, kw) in sorted(results.items(), key=lambda x: x[1][0]):
     if ll < base_ll - 0.0010 and kw:
         print(f"  {k:<36} {ll:.5f}  ({ll-base_ll:+.5f})")
-best_name = min(results, key=lambda k: results[k][0])
-cfg = {**V4, **results[best_name][1]}
-_, P = run_config(**cfg, return_parts=True)
-X = (P["qb_prec"] + P["off_prec"] + P["def_prec"]).reshape(-1, 1)
-ll_test, acc_test = wf_X(X, 2022, 2025)
-te_mask = (seas16 >= 2022) & (seas16 <= 2025)
-idx_all = np.array([i for i, _ in G16])
-ll_elo = float(llv(y16[te_mask], pe[idx_all][te_mask]).mean())
-print(f"\nTEST 2022-2025: {best_name}")
-print(f"  ratings-only LL {ll_test:.5f}  acc {acc_test*100:.1f}%  |  Elo {ll_elo:.5f}")
-json.dump({"dev": {k: round(v[0], 5) for k, v in results.items()},
-           "winner": best_name, "winner_cfg": {k: v for k, v in results[best_name][1].items()},
-           "test_ll": round(ll_test, 5), "acc": round(acc_test, 4), "elo_ll": round(ll_elo, 5)},
+json.dump({k: round(v[0], 5) for k, v in results.items()},
           open("data/nfl_knob_sweep.json", "w"), indent=1)
-print("wrote data/nfl_knob_sweep.json")
+print("wrote data/nfl_knob_sweep.json + data/nfl_v5_feature.npy")

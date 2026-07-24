@@ -51,6 +51,8 @@ OPP_K = 0.3                      # your update scales with the OPPOSING unit's s
                                  # vs the RUNNING league mean (anchoring to the fixed
                                  # prior inflates ratings; league-anchored is clean and
                                  # generalized better) — the engine's biggest tuning win
+FUS_K = 4.0                      # QB weekly stat fusion: obs = 25 + k*z(weekly EPA/db)
+FUS_R = 36.0                     # Kalman obs noise — DEV-swept, biggest v6 win (-0.0092)
 DRAW_BAND = 0.40                 # |EPA| below this = a DRAW (re-tuned at beta 60):
                                  # near-zero plays carry almost no win/lose information;
                                  # dose-response peaked at 0.55 (DEV -0.0088, engine's
@@ -127,6 +129,27 @@ print(f"[{time.time()-T0:.0f}s] game importance: "
       f"{sum(1 for v in gmult_of.values() if v == PLAYOFF_MULT)} playoff, "
       f"{sum(1 for v in gmult_of.values() if v == DEAD_MULT)} dead games", flush=True)
 
+# ---- QB weekly observations (for the fusion) ----
+import sys as _sys
+_sys.path.insert(0, "phase0")
+from nfl_qb_elo import load_qb_weeks  # noqa: E402
+import numpy as _np  # noqa: E402
+qbw = load_qb_weeks()
+lg_qb = json.load(open("data/nfl_qb_elo.json"))["qb_elo"]["lg_rate"]
+_rates = [ln[0] / ln[1] for (q_, s_, w_), ln in qbw.items()
+          if 2016 <= s_ <= 2021 and ln[1] >= 10]
+SD_QB = float(_np.std(_rates)) if _rates else 0.15
+QBOBS = {}
+for (q_, s_, w_), ln in qbw.items():
+    if s_ >= 2016 and ln[1] >= 10:
+        z_ = max(-2.5, min(2.5, (ln[0] / ln[1] - lg_qb) / SD_QB))
+        QBOBS[(q_, str(s_), f"{w_:02d}")] = z_
+print(f"[{time.time()-T0:.0f}s] QB weekly obs: {len(QBOBS):,}", flush=True)
+QB_POS = set()
+for _r in csv.DictReader(open("data/nfl_players.csv", encoding="utf-8")):
+    if _r.get("gsis_id") and (_r.get("position") or "") == "QB":
+        QB_POS.add(_r["gsis_id"])
+
 # ---- load plays, strictly chronological ----
 plays = []
 with open("data/nfl_rapm_plays.csv", encoding="utf-8") as fh:
@@ -163,6 +186,14 @@ for gid, pid_, off, dfn, epa in plays:
         if p not in mu:
             mu[p] = MU0; sig2[p] = SIG0_2
         elif last_week.get(p) != wk:
+            if p in QB_POS:                          # fuse the completed week's line
+                _old = last_week.get(p)
+                _z = QBOBS.get((p, _old[0], _old[1])) if _old else None
+                if _z is not None:
+                    _obs = MU0 + FUS_K * _z
+                    _K = sig2[p] / (sig2[p] + FUS_R)
+                    mu[p] += _K * (_obs - mu[p])
+                    sig2[p] = max(sig2[p] * (1.0 - _K), SIG2_FLOOR)
             sig2[p] = min(sig2[p] + TAU2, SIG0_2)
         last_week[p] = wk
     # context weight: smooth WP leverage (garbage time fades naturally),
@@ -336,12 +367,15 @@ for t, tm in payload["teams"].items():
     tm["glassbox"] = round(num / den, 1) if den else None
     tm["gb_off"] = round(noff / nof, 1) if nof else None
     tm["gb_def"] = round(ndef / ndf, 1) if ndf else None
+json.dump({p: [round(mu[p], 4), round(sig2[p], 4), snaps[p]] for p in mu},
+          open("data/nfl_ts_state.json", "w"))
 payload["model_card"]["ratings"] = {
     "system": "per-play participation TrueSkill (11v11), context-weighted",
     "plays": n_upd, "seasons": "2016-2025",
     "outcome": "offense beats defense iff EPA > 0",
     "beta": BETA, "tau_week": sqrt(TAU2),
-    "snap_weight": "4*wp*(1-wp) leverage x 1.25 money downs x 1.5 late-and-close",
+    "snap_weight": "sqrt leverage x money downs x late-and-close x importance x opp-quality",
+    "qb_fusion": "weekly EPA/dropback line Kalman-merged (k=4, R=36)",
     "display": "mu - 3 sigma, z-scored within position group",
 }
 json.dump(payload, open("site/data/nfl.json", "w"))

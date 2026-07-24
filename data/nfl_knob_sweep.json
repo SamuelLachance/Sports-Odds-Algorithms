@@ -1,19 +1,4 @@
 {
- "dev": {
-  "engine v5 (no injury awareness)": 0.63973,
-  "I1 symmetric x0.5 while tagged": 0.64023,
-  "I2 negatives x0.3 while tagged": 0.64059,
-  "I3 negatives x0.6 while tagged": 0.6395,
-  "I4 sym .7 + negatives x0.5": 0.63984
- },
- "winner": "I3 negatives x0.6 while tagged",
- "winner_cfg": {
-  "beta": 60.0,
-  "lev_exp": 0.5,
-  "draw_band": 0.4,
-  "inj_neg": 0.6
- },
- "test_ll": 0.63825,
- "acc": 0.6549,
- "elo_ll": 0.63824
+ "v6 ratings only": 0.63054,
+ "v6 BLEND + Elo": 0.63088
 }

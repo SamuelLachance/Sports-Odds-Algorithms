@@ -1,0 +1,33 @@
+{
+ "base_ll": 0.61952,
+ "variants": {
+  "A ADD v6 as 15th": {
+   "ll": 0.61981,
+   "delta": -0.00029,
+   "ci": [
+    -0.00153,
+    0.0009
+   ],
+   "acc": 0.651
+  },
+  "B REPLACE ts_edge -> v6": {
+   "ll": 0.61945,
+   "delta": 7e-05,
+   "ci": [
+    -0.00127,
+    0.00135
+   ],
+   "acc": 0.6514
+  },
+  "C REPLACE rq -> v6": {
+   "ll": 0.62232,
+   "delta": -0.0028,
+   "ci": [
+    -0.00578,
+    0.00017
+   ],
+   "acc": 0.6481
+  }
+ },
+ "verdict": "ADOPT B REPLACE ts_edge -> v6"
+}

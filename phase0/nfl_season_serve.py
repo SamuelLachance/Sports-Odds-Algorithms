@@ -73,7 +73,10 @@ for i, g in enumerate(games):
             d2 = dfaP[opp]; d2[0] = dec_ * d2[0] + pS; d2[1] = dec_ * d2[1] + pN
             d2 = dfaR[opp]; d2[0] = dec_ * d2[0] + rS; d2[1] = dec_ * d2[1] + rN
 X14 = np.column_stack([X_of(F), f_pass, f_run])
-print(f"[{time.time()-T0:.0f}s] X14 built", flush=True)
+v6_hist = np.load("data/nfl_v6_feature.npy")
+assert len(v6_hist) == len(games)
+X14[:, 7] = v6_hist                    # ledger row 63: ts_edge -> v6 player ratings
+print(f"[{time.time()-T0:.0f}s] X14 built (col 7 = v6 player ratings)", flush=True)
 
 # ---------------- protocol check: reproduce TEST 0.61947 (walk-forward+recency) ----------------
 HL, BC = 3.0, 100.0
@@ -260,6 +263,24 @@ if r26:
 print(f"[{time.time()-T0:.0f}s] 2026 re-homing: {moved} moved, {dropped} unrostered dropped",
       flush=True)
 
+TS6 = json.load(open("data/nfl_ts_state.json"))
+def serve_v6(team):
+    tot = 0.0
+    for pid in roster2.get(team, ()):
+        if pid not in active25:
+            continue
+        st = share2.get(pid)
+        if not st or st[1] <= 0:
+            continue
+        g_ = pfr2gsis.get(pid)
+        s6 = TS6.get(g_) if g_ else None
+        if s6 is None:
+            continue
+        mu6 = 25.0 + (s6[0] - 25.0) * (2.0 / 3.0)      # 2026 boundary
+        s26 = min(s6[1] + 1.5 ** 2, (25.0 / 3.0) ** 2)
+        tot += (st[0] / st[1]) * max(-3.0, min(3.0, mu6 - 25.0)) * (1.0 / (1.0 + s26))
+    return tot
+
 def serve_rq(team):
     tot = 0.0
     for pid in roster2.get(team, ()):
@@ -316,7 +337,7 @@ for i, s in enumerate(sched):
         0.0 if s["neutral"] else hfa_st.get(h, (0.0, 0.0))[0] / (hfa_st.get(h, (0.0, 0.0))[1] + 180.0),
         max(-7, min(7, s["hrest"] - s["arest"])),
         luck_st[h][0] / (luck_st[h][1] + pn_l) - luck_st[a][0] / (luck_st[a][1] + pn_l),
-        ((tsm.mu[h + "_OFF"] - tsm.mu[a + "_DEF"]) - (tsm.mu[a + "_OFF"] - tsm.mu[h + "_DEF"])),
+        serve_v6(h) - serve_v6(a),
         0.0, 0.0, 0.0,
         serve_rq(h) - serve_rq(a),
         (crate(offP[h], LGP) - crate(dfaP[h], LGP)) - (crate(offP[a], LGP) - crate(dfaP[a], LGP)),
@@ -538,6 +559,10 @@ for t, tm in payload["teams"].items():
     tm["proj"] = proj.get(t)
     qid = QB26.get(t)
     tm["qb1"] = {"id": qid, "name": QBN.get(t, "")} if qid else None
+payload["model_card"]["ratings_model"] = {
+    "test_ll": 0.63211, "acc": 64.6, "elo_ll": 0.63824,
+    "note": "single-feature model from player ratings alone beats team Elo",
+}
 payload["model_card"]["serve"] = {
     "fit": "all completed games through 2025, recency half-life 3 seasons, C=100",
     "test_repro_ll": round(repro, 5), "sims": S,
