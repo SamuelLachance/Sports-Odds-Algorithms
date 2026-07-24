@@ -164,6 +164,16 @@ for (q_, s_, w_), ln in qbw.items():
         QBOBS[(q_, str(s_), f"{w_:02d}")] = z_
 print(f"[{time.time()-T0:.0f}s] QB weekly obs: {len(QBOBS):,} lines (sd {_SDQB:.3f})", flush=True)
 
+BYEAR = {}
+for _r in csv.DictReader(open("data/nfl_players.csv", encoding="utf-8")):
+    bd = _r.get("birth_date") or ""
+    if _r.get("gsis_id") and len(bd) >= 4:
+        try:
+            BYEAR[_r["gsis_id"]] = int(bd[:4])
+        except ValueError:
+            pass
+print(f"[{time.time()-T0:.0f}s] birth years: {len(BYEAR):,}", flush=True)
+
 G16 = [(i, g) for i, g in enumerate(games) if g["season"] >= 2016]
 seas16 = np.array([g["season"] for _, g in G16])
 y16 = np.array([g["y"] for _, g in G16])
@@ -178,7 +188,8 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                inj_sym=1.0, inj_neg=1.0, agg_k=1.0, share_p=1.0,
                two_track=False, fus_k=0.0, fus_R=36.0, sal_mode="active",
                opp_anchor="alltime", rel_clamp=False, bnd_mode="mu0",
-               dead_scale=False, share_bnd=False, win_snaps=0):
+               dead_scale=False, share_bnd=False, win_snaps=0,
+               age_k=0.0, age_y=0.0, age_w=0.0):
     """One engine walk -> per-game ts_diff feature (pre-game, leak-free).
 
     Game importance: playoff snaps x playoff_mult; 'useless' late-season games
@@ -242,6 +253,18 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                         push_event(p, _new - mu[p])
                     mu[p] = _new
                     s2[p] = min(s2[p] + widen2, SIG0_2)
+            if age_k or age_y or age_w:
+                for p in mu:
+                    by = BYEAR.get(p)
+                    if by is None:
+                        continue
+                    age = g["season"] - by
+                    if age_k and age > 29:
+                        mu[p] -= age_k * min(age - 29, 6)
+                    if age_y and age < 24:
+                        mu[p] += age_y * min(24 - age, 4)
+                    if age_w and age > 30:
+                        s2[p] = min(s2[p] + age_w * (age - 30), SIG0_2)
             for p in muR:
                 muR[p] = MU0 + (muR[p] - MU0) * (1.0 - season_shrink)
                 s2R[p] = min(s2R[p] + widen2, SIG0_2)
@@ -577,10 +600,13 @@ V5 = dict(beta=60.0, lev_exp=0.5, draw_band=0.40)
 V6 = {**V5, "fus_k": 4.0, "fus_R": 36.0}
 V7 = {**V6, "sal_k": 1.0, "sal_mode": "cohort"}
 print("\nSliding-window rating readout (DEV 2017-21, gate -0.0020):", flush=True)
-trial("baseline v7 (no window)", **V7)
-trial("window 4000 snaps", **V7, win_snaps=4000)
-trial("window 2000 snaps", **V7, win_snaps=2000)
-trial("window 1000 snaps", **V7, win_snaps=1000)
+trial("baseline v7 (no age)", **V7)
+trial("decline 0.15 mu/yr past 29", **V7, age_k=0.15)
+trial("decline 0.35 mu/yr past 29", **V7, age_k=0.35)
+trial("decline 0.7 mu/yr past 29", **V7, age_k=0.7)
+trial("growth 0.15 under 24", **V7, age_y=0.15)
+trial("sigma widen 0.5/yr past 30", **V7, age_w=0.5)
+trial("curve: decline .35 + growth .15", **V7, age_k=0.35, age_y=0.15)
 raise SystemExit(0)
 cfg = {**V4, **V7}
 _, P = run_config(**cfg, return_parts=True)
@@ -615,7 +641,7 @@ for nd in (200, 500):
     llm, _ = wf_mc(2017, 2021, nd)
     print(f"  MC-PP {nd} draws            {llm:.5f}  ({ll0-llm:+.5f})", flush=True)
 results["mcpp"] = (llm, {})
-base_ll = results.get("baseline v7 (no window)", (9e9,))[0]
+base_ll = results.get("baseline v7 (no age)", (9e9,))[0]
 print(f"\nknobs beating baseline ({base_ll:.5f}) by >= 0.0010:")
 for k, (ll, kw) in sorted(results.items(), key=lambda x: x[1][0]):
     if ll < base_ll - 0.0010 and kw:
