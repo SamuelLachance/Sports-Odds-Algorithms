@@ -118,6 +118,20 @@ try:
 except Exception as e:  # noqa: BLE001
     print(f"salary priors unavailable ({type(e).__name__})", flush=True)
 
+FTN = {}
+try:
+    import pandas as _pd2
+    for _y in (2022, 2023, 2024, 2025):
+        _f = _pd2.read_parquet(f"data/ftn_{_y}.parquet",
+                               columns=["nflverse_game_id", "nflverse_play_id",
+                                        "is_throw_away", "is_drop", "is_interception_worthy"])
+        for _r in _f.itertuples():
+            FTN[(_r.nflverse_game_id, int(_r.nflverse_play_id))] = (
+                bool(_r.is_throw_away), bool(_r.is_drop), bool(_r.is_interception_worthy))
+    print(f"[{time.time()-T0:.0f}s] FTN flags: {len(FTN):,} charted plays", flush=True)
+except Exception as e:  # noqa: BLE001
+    print(f"FTN unavailable ({type(e).__name__})", flush=True)
+
 G16 = [(i, g) for i, g in enumerate(games) if g["season"] >= 2016]
 seas16 = np.array([g["season"] for _, g in G16])
 y16 = np.array([g["y"] for _, g in G16])
@@ -128,7 +142,7 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                sal_k=0.0, grade="off", mov_scale=0.5, mov_cap=2.0,
                draw_band=0.0, neutral_skip=0.0, return_parts=False,
                beta=BETA, floor2=SIG2_FLOOR, lev_exp=1.0, draw_eps=0.05,
-               hfa_t=0.0):
+               hfa_t=0.0, f_ta=False, f_drop=False, f_iw=False):
     """One engine walk -> per-game ts_diff feature (pre-game, leak-free).
 
     Game importance: playoff snaps x playoff_mult; 'useless' late-season games
@@ -263,10 +277,13 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
             if hfa_t and h_set:
                 n_home = sum(1 for p in O[:5] if p in h_set)
                 adv = hfa_t if n_home >= 3 else -hfa_t
+            ta, dr, iw = FTN.get((gid, pid_), (False, False, False))
 
             def duel(A, B, base_wgt, won):
                 if not A or not B:
                     return
+                if f_iw and iw:
+                    won = False                              # process truth: defense won it
                 if neutral_skip and abs(epa) < neutral_skip:
                     return                                   # C: small plays don't count
                 if grade == "mov":
@@ -274,6 +291,10 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 elif grade == "movsqrt":
                     base_wgt *= min(mov_cap, max(0.5, sqrt(abs(epa) / mov_scale)))
                 is_draw = draw_band > 0 and abs(epa) < draw_band
+                if f_ta and ta:
+                    is_draw = True                           # throw-away: decision, not defeat
+                if f_iw and iw:
+                    is_draw = False
                 sA = sum(mu[p] for p in A); sB = sum(mu[p] for p in B)
                 c2 = (len(A) + len(B)) * beta * beta + sum(s2[p] for p in A) + sum(s2[p] for p in B)
                 c = sqrt(c2)
@@ -307,6 +328,8 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                     win, lose, tt, w_win_, w_lose_ = A, B, t, w_A, w_B
                 else:
                     win, lose, tt, w_win_, w_lose_ = B, A, -t, w_B, w_A
+                if f_drop and dr and not won:
+                    w_win_ = w_win_ * 0.3                    # drop: defense credit unearned
                 v = v_win(tt); w = v * (v + tt)
                 for p in win:
                     rm = role_m.get(p, 1.0) if role_r else 1.0
@@ -381,11 +404,12 @@ def wf_X(X, lo, hi):
         accs.append(((p > 0.5) == (y16[te] > 0.5))[msk])
     return float(np.concatenate(lls).mean()), float(np.concatenate(accs).mean())
 
+SEL_LO, SEL_HI = 2022, 2023          # FTN exists 2022+ only; selection window
 def obj(**kw):
     cfg = {**V4, **kw}
     _, P = run_config(**cfg, return_parts=True)
     X = (P["qb_prec"] + P["off_prec"] + P["def_prec"]).reshape(-1, 1)
-    return wf_X(X, 2017, 2021)[0], P
+    return wf_X(X, SEL_LO, SEL_HI)[0], P
 
 results = {}
 def trial(name, **kw):
@@ -393,14 +417,14 @@ def trial(name, **kw):
     results[name] = (ll, kw)
     print(f"  {name:<36} {ll:.5f}  [{time.time()-T0:.0f}s]", flush=True)
 
-print("\nDEV 2017-2021 — core knob sweep (one at a time, prec-sum objective):", flush=True)
+print("\nSELECTION 2022-2023 (FTN window) — process-flag variants:", flush=True)
 V5 = dict(beta=60.0, lev_exp=0.5, draw_band=0.40)
-trial("engine v5 (no play-level HFA)", **V5)
-trial("+ play HFA t=0.02", **V5, hfa_t=0.02)
-trial("+ play HFA t=0.05", **V5, hfa_t=0.05)
-trial("+ play HFA t=0.10", **V5, hfa_t=0.10)
-trial("+ play HFA t=0.20", **V5, hfa_t=0.20)
-base_ll = results["engine v5 (no play-level HFA)"][0]
+trial("engine v5 (no FTN)", **V5)
+trial("F1 throw-away = draw", **V5, f_ta=True)
+trial("F2 drop: defense credit x0.3", **V5, f_drop=True)
+trial("F3 INT-worthy = defense win", **V5, f_iw=True)
+trial("F4 all three", **V5, f_ta=True, f_drop=True, f_iw=True)
+base_ll = results["engine v5 (no FTN)"][0]
 print(f"\nknobs beating baseline ({base_ll:.5f}) by >= 0.0010:")
 for k, (ll, kw) in sorted(results.items(), key=lambda x: x[1][0]):
     if ll < base_ll - 0.0010 and kw:
@@ -409,8 +433,8 @@ best_name = min(results, key=lambda k: results[k][0])
 cfg = {**V4, **results[best_name][1]}
 _, P = run_config(**cfg, return_parts=True)
 X = (P["qb_prec"] + P["off_prec"] + P["def_prec"]).reshape(-1, 1)
-ll_test, acc_test = wf_X(X, 2022, 2025)
-te_mask = (seas16 >= 2022) & (seas16 <= 2025)
+ll_test, acc_test = wf_X(X, 2024, 2025)
+te_mask = (seas16 >= 2024) & (seas16 <= 2025)
 idx_all = np.array([i for i, _ in G16])
 ll_elo = float(llv(y16[te_mask], pe[idx_all][te_mask]).mean())
 print(f"\nTEST 2022-2025: {best_name}")

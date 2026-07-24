@@ -1,18 +1,19 @@
 {
  "dev": {
-  "engine v5 (no play-level HFA)": 0.63973,
-  "+ play HFA t=0.02": 0.64103,
-  "+ play HFA t=0.05": 0.64415,
-  "+ play HFA t=0.10": 0.65177,
-  "+ play HFA t=0.20": 0.66958
+  "engine v5 (no FTN)": 0.64524,
+  "F1 throw-away = draw": 0.6446,
+  "F2 drop: defense credit x0.3": 0.64677,
+  "F3 INT-worthy = defense win": 0.64564,
+  "F4 all three": 0.64596
  },
- "winner": "engine v5 (no play-level HFA)",
+ "winner": "F1 throw-away = draw",
  "winner_cfg": {
   "beta": 60.0,
   "lev_exp": 0.5,
-  "draw_band": 0.4
+  "draw_band": 0.4,
+  "f_ta": true
  },
- "test_ll": 0.63819,
- "acc": 0.6505,
- "elo_ll": 0.63824
+ "test_ll": 0.62781,
+ "acc": 0.6591,
+ "elo_ll": 0.62303
 }
