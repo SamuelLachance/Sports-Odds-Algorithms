@@ -227,7 +227,8 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                opp_anchor="alltime", rel_clamp=False, bnd_mode="mu0",
                dead_scale=False, share_bnd=False, win_snaps=0,
                age_k=0.0, age_y=0.0, age_w=0.0, skf_k=0.0, skf_R=60.0,
-               dff_k=0.0, dff_R=60.0):
+               dff_k=0.0, dff_R=60.0, run_w=1.0, draw_band_run=None,
+               ent_d=0.0, ent_qb=False):
     """One engine walk -> per-game ts_diff feature (pre-game, leak-free).
 
     Game importance: playoff snaps x playoff_mult; 'useless' late-season games
@@ -422,7 +423,7 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 h_set.discard(None)
         seas_now = g["season"]
         for pid_, O, D, epa in plays_by_gid.get(gid, ()):
-            if two_track:
+            if two_track or run_w != 1.0 or draw_band_run is not None:
                 _pr = prot_of.get((gid, pid_))
                 trk_run = bool(_pr and not _pr[0] and _pr[1])
             else:
@@ -440,7 +441,8 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                         lastg[p] = gid
             for p in O:
                 if p not in muD:
-                    muD[p] = MU0 + sal_k * ZS.get((p, seas_now), 0.0); s2D[p] = SIG0_2
+                    _e = ent_d if (ent_d and (not ent_qb or GPOS.get(p) == "QB")) else 0.0
+                    muD[p] = MU0 - _e + sal_k * ZS.get((p, seas_now), 0.0); s2D[p] = SIG0_2
                 elif lastwk.get((p, lw_key)) != wk:
                     _gp = GPOS.get(p)
                     _z = None; _fk = 0.0; _fR = 60.0
@@ -463,7 +465,8 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 lastwk[(p, lw_key)] = wk
             for p in D:
                 if p not in muD:
-                    muD[p] = MU0 + sal_k * ZS.get((p, seas_now), 0.0); s2D[p] = SIG0_2
+                    _e = ent_d if (ent_d and (not ent_qb or GPOS.get(p) == "QB")) else 0.0
+                    muD[p] = MU0 - _e + sal_k * ZS.get((p, seas_now), 0.0); s2D[p] = SIG0_2
                 elif lastwk.get((p, lw_key)) != wk:
                     s2D[p] = min(s2D[p] + tau2, SIG0_2)
                 lastwk[(p, lw_key)] = wk
@@ -475,6 +478,8 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
             if qtr >= 4 and adiff <= 8:
                 wgt *= late_mult
             wgt *= gmult * flat_scale
+            if run_w != 1.0 and trk_run:
+                wgt *= run_w              # facet importance: run evidence discounted
 
             adv = 0.0
             if hfa_t and h_set:
@@ -495,7 +500,8 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                     base_wgt *= min(mov_cap, max(0.25, abs(epa) / mov_scale))
                 elif grade == "movsqrt":
                     base_wgt *= min(mov_cap, max(0.5, sqrt(abs(epa) / mov_scale)))
-                is_draw = draw_band > 0 and abs(epa) < draw_band
+                _bnd = draw_band_run if (trk_run and draw_band_run is not None) else draw_band
+                is_draw = _bnd > 0 and abs(epa) < _bnd
                 if f_ta and ta:
                     is_draw = True                           # throw-away: decision, not defeat
                 if f_iw and iw:
@@ -640,17 +646,72 @@ def trial(name, **kw):
     results[name] = (ll, kw)
     print(f"  {name:<36} {ll:.5f}  [{time.time()-T0:.0f}s]", flush=True)
 
-print("\nDEV 2017-2021 — QB weekly stat fusion (Kalman merge at week boundary):", flush=True)
 V5 = dict(beta=60.0, lev_exp=0.5, draw_band=0.40)
 V6 = {**V5, "fus_k": 4.0, "fus_R": 36.0}
 V7 = {**V6, "sal_k": 1.0, "sal_mode": "cohort"}
-print("\nSliding-window rating readout (DEV 2017-21, gate -0.0020):", flush=True)
-trial("baseline v7 (QB fusion only)", **V7)
-trial("SK fusion k=2 R=60", **V7, skf_k=2.0, skf_R=60.0)
-trial("SK fusion k=4 R=60", **V7, skf_k=4.0, skf_R=60.0)
-trial("SK fusion k=4 R=36", **V7, skf_k=4.0, skf_R=36.0)
-trial("SK fusion k=2 R=120", **V7, skf_k=2.0, skf_R=120.0)
-trial("SK k=4 R=60 + DEF k=2 R=120", **V7, skf_k=4.0, skf_R=60.0, dff_k=2.0, dff_R=120.0)
+
+print("\nPFF-WAR transplant screens (DEV 2017-21, gate -0.0020):", flush=True)
+# ---- batch A: one v7 walk, readout/fit-weight sweeps on cached parts ----
+ll_base, P7 = obj(**V7)
+results["baseline v7"] = (ll_base, {})
+print(f"  {'baseline v7':<36} {ll_base:.5f}  [{time.time()-T0:.0f}s]", flush=True)
+qb7, off7, def7 = P7["qb_prec"], P7["off_prec"], P7["def_prec"]
+X7 = (qb7 + off7 + def7).reshape(-1, 1)
+
+print("\nT3 QB-facet amplification lam*qb + off + def (constrained Massey scalar):", flush=True)
+for lam in (0.8, 1.25, 1.5, 2.0, 3.0):
+    ll, _ = wf_X((lam * qb7 + off7 + def7).reshape(-1, 1), SEL_LO, SEL_HI)
+    results[f"lam_qb {lam}"] = (ll, {"lam": lam})
+    print(f"  {'lam_qb ' + str(lam):<36} {ll:.5f}  ({ll-ll_base:+.5f})", flush=True)
+
+print("\nT2 adjusted-wins TRAINING weights (close games count less in the fit):", flush=True)
+_mg = {}
+for _r in csv.DictReader(open("data/nfl_games.csv")):
+    if _r["home_score"] != "":
+        _mg[_r["game_id"]] = abs(float(_r["home_score"]) - float(_r["away_score"]))
+margin16 = np.array([_mg.get(g["gid"], 99.0) for _, g in G16])
+
+def wf_Xw(X, lo, hi, w):
+    lls = []
+    for s_ in range(lo, hi + 1):
+        tr = (seas16 < s_) & (y16 != 0.5)
+        te = seas16 == s_
+        m = LogisticRegression(C=1e6, max_iter=3000).fit(X[tr], y16[tr], sample_weight=w[tr])
+        lls.append(llv(y16[te], m.predict_proba(X[te])[:, 1]))
+    return float(np.concatenate(lls).mean())
+
+for T_, cw in ((8, 0.5), (8, 0.7), (3, 0.5), (3, 0.7)):
+    w = np.where(margin16 <= T_, cw, 1.0)
+    ll = wf_Xw(X7, SEL_LO, SEL_HI, w)
+    results[f"adjwin T<={T_} cw={cw}"] = (ll, {"T": T_, "cw": cw})
+    print(f"  {'adjwin T<=' + str(T_) + ' cw=' + str(cw):<36} {ll:.5f}  ({ll-ll_base:+.5f})", flush=True)
+w = np.minimum(1.0, margin16 / 8.0)
+ll = wf_Xw(X7, SEL_LO, SEL_HI, w)
+results["adjwin graded |m|/8"] = (ll, {})
+print(f"  {'adjwin graded |m|/8':<36} {ll:.5f}  ({ll-ll_base:+.5f})", flush=True)
+
+# ---- batch B: engine re-walk sweeps ----
+print("\nT1 run-play evidence discount run_w (pass facets dominate win mapping):", flush=True)
+for rw in (0.85, 0.7, 0.5, 0.3, 0.0):
+    trial(f"run_w {rw}", **V7, run_w=rw)
+
+print("\nT4 per-facet draw band (run plays get their own band, pass stays 0.40):", flush=True)
+for dbr in (0.20, 0.28, 0.55):
+    trial(f"draw_band_run {dbr}", **V7, draw_band_run=dbr)
+
+print("\nT5 debut replacement entry prior mu0 = 25 - ent_d (+ cohort salary z):", flush=True)
+for ed in (0.5, 1.0, 2.0):
+    trial(f"ent_d {ed} all-pos", **V7, ent_d=ed)
+for ed in (1.0, 2.0):
+    trial(f"ent_d {ed} QB-only", **V7, ent_d=ed, ent_qb=True)
+
+print(f"\nvs baseline {ll_base:.5f} (gate -0.0020):", flush=True)
+for k, (ll, kw) in sorted(results.items(), key=lambda x: x[1][0]):
+    tag = "  << GATE" if ll < ll_base - 0.0020 else ""
+    print(f"  {k:<36} {ll:.5f}  ({ll-ll_base:+.5f}){tag}", flush=True)
+json.dump({k: round(v[0], 5) for k, v in results.items()},
+          open("data/nfl_pffwar_screen.json", "w"), indent=1)
+print("wrote data/nfl_pffwar_screen.json", flush=True)
 raise SystemExit(0)
 cfg = {**V4, **V7}
 _, P = run_config(**cfg, return_parts=True)
