@@ -1,11 +1,12 @@
 {
  "dev": {
-  "beta 45 + lev .5 + band .40": 0.64008,
-  "beta 60 + lev .5 + band .40": 0.63973,
-  "beta 60 + lev .5 + band .55": 0.64138,
-  "beta 45 + lev .5 + band .55": 0.64171
+  "engine v5 (no play-level HFA)": 0.63973,
+  "+ play HFA t=0.02": 0.64103,
+  "+ play HFA t=0.05": 0.64415,
+  "+ play HFA t=0.10": 0.65177,
+  "+ play HFA t=0.20": 0.66958
  },
- "winner": "beta 60 + lev .5 + band .40",
+ "winner": "engine v5 (no play-level HFA)",
  "winner_cfg": {
   "beta": 60.0,
   "lev_exp": 0.5,

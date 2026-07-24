@@ -127,7 +127,8 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                opp_mode="league", flat_scale=1.0, role_r=0.0, micro="off",
                sal_k=0.0, grade="off", mov_scale=0.5, mov_cap=2.0,
                draw_band=0.0, neutral_skip=0.0, return_parts=False,
-               beta=BETA, floor2=SIG2_FLOOR, lev_exp=1.0, draw_eps=0.05):
+               beta=BETA, floor2=SIG2_FLOOR, lev_exp=1.0, draw_eps=0.05,
+               hfa_t=0.0):
     """One engine walk -> per-game ts_diff feature (pre-game, leak-free).
 
     Game importance: playoff snaps x playoff_mult; 'useless' late-season games
@@ -229,6 +230,12 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
         # 2. TS updates from this game's plays, context-weighted
         gid = g["gid"]
         wk = (gid[:4], gid[5:7])
+        h_set = set()
+        if hfa_t and not g["neutral"]:
+            tbl_h = snaps.get((gid, g["home"]))
+            if tbl_h:
+                h_set = {pfr2gsis.get(pid) for pid in tbl_h}
+                h_set.discard(None)
         seas_now = g["season"]
         for pid_, O, D, epa in plays_by_gid.get(gid, ()):
             for p in O:
@@ -252,6 +259,11 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 wgt *= late_mult
             wgt *= gmult * flat_scale
 
+            adv = 0.0
+            if hfa_t and h_set:
+                n_home = sum(1 for p in O[:5] if p in h_set)
+                adv = hfa_t if n_home >= 3 else -hfa_t
+
             def duel(A, B, base_wgt, won):
                 if not A or not B:
                     return
@@ -265,7 +277,7 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 sA = sum(mu[p] for p in A); sB = sum(mu[p] for p in B)
                 c2 = (len(A) + len(B)) * beta * beta + sum(s2[p] for p in A) + sum(s2[p] for p in B)
                 c = sqrt(c2)
-                t = (sA - sB) / c
+                t = (sA - sB) / c + adv       # venue shifts the EXPECTED outcome
                 if opp_k:
                     if opp_mode == "self":
                         rel = sB / len(B) - sA / len(A)
@@ -382,11 +394,13 @@ def trial(name, **kw):
     print(f"  {name:<36} {ll:.5f}  [{time.time()-T0:.0f}s]", flush=True)
 
 print("\nDEV 2017-2021 — core knob sweep (one at a time, prec-sum objective):", flush=True)
-trial("beta 45 + lev .5 + band .40", beta=45.0, lev_exp=0.5, draw_band=0.40)
-trial("beta 60 + lev .5 + band .40", beta=60.0, lev_exp=0.5, draw_band=0.40)
-trial("beta 60 + lev .5 + band .55", beta=60.0, lev_exp=0.5)
-trial("beta 45 + lev .5 + band .55", beta=45.0, lev_exp=0.5)
-base_ll = 0.64351
+V5 = dict(beta=60.0, lev_exp=0.5, draw_band=0.40)
+trial("engine v5 (no play-level HFA)", **V5)
+trial("+ play HFA t=0.02", **V5, hfa_t=0.02)
+trial("+ play HFA t=0.05", **V5, hfa_t=0.05)
+trial("+ play HFA t=0.10", **V5, hfa_t=0.10)
+trial("+ play HFA t=0.20", **V5, hfa_t=0.20)
+base_ll = results["engine v5 (no play-level HFA)"][0]
 print(f"\nknobs beating baseline ({base_ll:.5f}) by >= 0.0010:")
 for k, (ll, kw) in sorted(results.items(), key=lambda x: x[1][0]):
     if ll < base_ll - 0.0010 and kw:
