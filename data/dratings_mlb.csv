@@ -1,0 +1,2338 @@
+date,away_nick,home_nick,p_away,p_home,captured
+2020-07-24,Giants,Dodgers,0.375,0.625,live
+2020-07-25,Mariners,Astros,0.26899999999999996,0.731,live
+2020-07-25,Angels,Athletics,0.32799999999999996,0.672,live
+2020-07-25,Rockies,Rangers,0.442,0.5579999999999999,live
+2020-07-25,Giants,Dodgers,0.299,0.701,live
+2020-07-25,Mariners,Astros,0.275,0.725,live
+2020-07-25,Angels,Athletics,0.304,0.696,live
+2020-07-25,Giants,Dodgers,0.268,0.732,live
+2020-07-26,Angels,Athletics,0.371,0.629,live
+2020-07-26,Rockies,Rangers,0.48,0.52,live
+2020-07-26,Mariners,Astros,0.27399999999999997,0.726,live
+2020-07-26,Brewers,Cubs,0.43700000000000006,0.563,live
+2020-07-27,Giants,Dodgers,0.278,0.722,live
+2020-07-27,Angels,Athletics,0.38,0.62,live
+2020-07-27,Mariners,Astros,0.324,0.6759999999999999,live
+2020-07-28,Atlanta,Tampa Bay,0.42700000000000005,0.573,20200920082537
+2020-07-29,Tampa Bay,Atlanta,0.485,0.515,20200920073641
+2020-07-29,Mariners,Angels,0.466,0.534,live
+2020-07-29,Padres,Giants,0.45899999999999996,0.541,live
+2020-07-29,Diamondbacks,Rangers,0.483,0.517,live
+2020-07-29,Rockies,Athletics,0.391,0.609,live
+2020-07-29,Yankees,Orioles,0.7290000000000001,0.271,live
+2020-07-29,Rockies,Athletics,0.355,0.645,live
+2020-07-29,Diamondbacks,Rangers,0.485,0.515,live
+2020-07-30,Tampa Bay,Atlanta,0.48200000000000004,0.518,20200920081948
+2020-07-30,Padres,Giants,0.526,0.474,live
+2020-07-30,Yankees,Orioles,0.684,0.316,live
+2020-07-30,Mariners,Angels,0.419,0.581,live
+2020-07-31,Mariners,Angels,0.433,0.5670000000000001,live
+2020-07-31,Padres,Giants,0.518,0.48200000000000004,live
+2020-08-01,NY Mets,Atlanta,0.44799999999999995,0.552,20200805213914
+2020-08-01,Texas,San Francisco,0.49200000000000005,0.508,20200805214053
+2020-08-01,Houston,LA Angels,0.609,0.391,20200805214458
+2020-08-01,Boston,NY Yankees,0.294,0.706,20200805214837
+2020-08-01,Tampa Bay,Baltimore,0.647,0.353,20200805215442
+2020-08-01,Tampa Bay,Baltimore,0.639,0.361,20200805215757
+2020-08-01,LA Dodgers,Arizona,0.6559999999999999,0.344,20200805222256
+2020-08-01,Oakland,Seattle,0.5920000000000001,0.408,20200805223536
+2020-08-01,San Diego,Colorado,0.447,0.5529999999999999,20200805224402
+2020-08-01,Cleveland,Minnesota,0.406,0.594,20200805225249
+2020-08-01,Houston,LA Angels,0.6459999999999999,0.354,20200812090134
+2020-08-01,White Sox,Royals,0.598,0.402,live
+2020-08-02,Cincinnati,Detroit,0.51,0.49,20200805035901
+2020-08-02,Tampa Bay,Baltimore,0.585,0.415,20200805040315
+2020-08-02,NY Mets,Atlanta,0.424,0.5760000000000001,20200805041420
+2020-08-02,LA Dodgers,Arizona,0.6,0.4,20200805212743
+2020-08-02,Pittsburgh,Chicago Cubs,0.349,0.6509999999999999,20200805215221
+2020-08-02,San Diego,Colorado,0.517,0.483,20200805220412
+2020-08-02,Astros,Angels,0.555,0.445,live
+2020-08-02,Rangers,Giants,0.408,0.5920000000000001,live
+2020-08-02,Rangers,Giants,0.46,0.54,live
+2020-08-02,Padres,Rockies,0.506,0.494,live
+2020-08-02,Athletics,Mariners,0.537,0.46299999999999997,live
+2020-08-02,Athletics,Mariners,0.578,0.42200000000000004,live
+2020-08-04,Giants,Rockies,0.43,0.57,live
+2020-08-04,Athletics,Mariners,0.621,0.379,live
+2020-08-04,Dodgers,Padres,0.601,0.39899999999999997,live
+2020-08-05,Rangers,Athletics,0.43,0.57,live
+2020-08-05,Giants,Rockies,0.373,0.627,live
+2020-08-06,Rangers,Athletics,0.33899999999999997,0.6609999999999999,live
+2020-08-06,Giants,Rockies,0.365,0.635,live
+2020-08-06,Giants,Rockies,0.364,0.636,live
+2020-08-06,Angels,Mariners,0.561,0.439,live
+2020-08-06,Rangers,Athletics,0.402,0.598,live
+2020-08-08,Angels,Rangers,0.502,0.498,live
+2020-08-08,Astros,Athletics,0.517,0.483,live
+2020-08-08,Astros,Athletics,0.40700000000000003,0.593,live
+2020-08-08,Angels,Rangers,0.51,0.49,live
+2020-08-08,Giants,Dodgers,0.29100000000000004,0.7090000000000001,live
+2020-08-09,Rockies,Mariners,0.574,0.426,live
+2020-08-09,Angels,Rangers,0.47,0.53,live
+2020-08-09,Rockies,Mariners,0.643,0.35700000000000004,live
+2020-08-09,Astros,Athletics,0.44299999999999995,0.557,live
+2020-08-09,Giants,Dodgers,0.251,0.7490000000000001,live
+2020-08-09,Giants,Dodgers,0.289,0.711,live
+2020-08-11,Mariners,Rangers,0.428,0.5720000000000001,live
+2020-08-11,Giants,Astros,0.408,0.5920000000000001,live
+2020-08-11,Diamondbacks,Rockies,0.41,0.59,live
+2020-08-11,Athletics,Angels,0.601,0.39899999999999997,live
+2020-08-12,Padres,Dodgers,0.392,0.608,live
+2020-08-12,Athletics,Angels,0.537,0.46299999999999997,live
+2020-08-12,Rays,Red Sox,0.5710000000000001,0.429,live
+2020-08-12,Diamondbacks,Rockies,0.457,0.5429999999999999,live
+2020-08-12,Diamondbacks,Rockies,0.46299999999999997,0.537,live
+2020-08-12,Athletics,Angels,0.521,0.479,live
+2020-08-12,Giants,Astros,0.316,0.684,live
+2020-08-12,Nationals,Mets,0.483,0.517,live
+2020-08-12,Giants,Astros,0.35,0.65,live
+2020-08-12,Twins,Brewers,0.547,0.45299999999999996,live
+2020-08-13,Padres,Dodgers,0.387,0.613,live
+2020-08-13,Rays,Red Sox,0.5770000000000001,0.423,live
+2020-08-13,Nationals,Mets,0.526,0.474,live
+2020-08-13,Orioles,Phillies,0.419,0.581,live
+2020-08-13,Mariners,Rangers,0.429,0.5710000000000001,live
+2020-08-13,Pirates,Reds,0.368,0.632,live
+2020-08-13,Brewers,Cubs,0.396,0.604,live
+2020-08-14,Padres,Dodgers,0.42,0.58,live
+2020-08-15,Athletics,Giants,0.584,0.41600000000000004,live
+2020-08-15,Mariners,Astros,0.33899999999999997,0.6609999999999999,live
+2020-08-15,Mariners,Astros,0.31,0.69,live
+2020-08-15,Rangers,Rockies,0.495,0.505,live
+2020-08-15,Athletics,Giants,0.63,0.37,live
+2020-08-16,Padres,Diamondbacks,0.5,0.5,live
+2020-08-16,Rays,Blue Jays,0.5539999999999999,0.446,live
+2020-08-16,Dodgers,Angels,0.637,0.363,live
+2020-08-16,Brewers,Cubs,0.451,0.5489999999999999,live
+2020-08-16,Athletics,Giants,0.58,0.42,live
+2020-08-16,Mariners,Astros,0.354,0.6459999999999999,live
+2020-08-16,Rangers,Rockies,0.447,0.5529999999999999,live
+2020-08-16,Padres,Diamondbacks,0.49,0.51,live
+2020-08-18,Phillies,Red Sox,0.58,0.42,live
+2020-08-18,Rockies,Astros,0.335,0.665,live
+2020-08-18,Padres,Rangers,0.532,0.46799999999999997,live
+2020-08-18,Rockies,Astros,0.397,0.603,live
+2020-08-18,Mariners,Dodgers,0.276,0.7240000000000001,live
+2020-08-18,Nationals,Braves,0.462,0.5379999999999999,live
+2020-08-18,Athletics,Diamondbacks,0.575,0.425,live
+2020-08-18,Mariners,Dodgers,0.242,0.758,live
+2020-08-18,Padres,Rangers,0.586,0.414,live
+2020-08-18,Athletics,Diamondbacks,0.489,0.511,live
+2020-08-18,Giants,Angels,0.368,0.632,live
+2020-08-18,Giants,Angels,0.419,0.581,live
+2020-08-20,Dodgers,Mariners,0.742,0.258,live
+2020-08-20,Astros,Rockies,0.556,0.444,live
+2020-08-20,Rangers,Padres,0.42,0.58,live
+2020-08-20,Diamondbacks,Athletics,0.47100000000000003,0.529,live
+2020-08-20,Dodgers,Mariners,0.75,0.25,live
+2020-08-20,Angels,Giants,0.521,0.479,live
+2020-08-20,Astros,Rockies,0.516,0.484,live
+2020-08-21,Diamondbacks,Athletics,0.47200000000000003,0.528,live
+2020-08-21,Angels,Giants,0.488,0.512,live
+2020-08-21,Rangers,Padres,0.298,0.7020000000000001,live
+2020-08-22,Angels,Athletics,0.348,0.652,live
+2020-08-22,Rangers,Mariners,0.523,0.47700000000000004,live
+2020-08-22,Astros,Padres,0.49200000000000005,0.508,live
+2020-08-22,Diamondbacks,Giants,0.535,0.465,live
+2020-08-22,Angels,Athletics,0.423,0.5770000000000001,live
+2020-08-22,Rockies,Dodgers,0.327,0.6729999999999999,live
+2020-08-23,Diamondbacks,Giants,0.534,0.466,live
+2020-08-23,Diamondbacks,Giants,0.593,0.40700000000000003,live
+2020-08-23,Rangers,Mariners,0.542,0.45799999999999996,live
+2020-08-23,Angels,Athletics,0.371,0.629,live
+2020-08-23,Astros,Padres,0.526,0.474,live
+2020-08-23,Rockies,Dodgers,0.281,0.7190000000000001,live
+2020-08-23,Astros,Padres,0.496,0.504,live
+2020-08-23,Rangers,Mariners,0.45899999999999996,0.541,live
+2020-08-23,Rockies,Dodgers,0.292,0.708,live
+2020-08-25,Athletics,Rangers,0.546,0.45399999999999996,live
+2020-08-25,Orioles,Rays,0.375,0.625,live
+2020-08-26,Athletics,Rangers,0.611,0.389,live
+2020-08-26,Mariners,Padres,0.34700000000000003,0.653,live
+2020-08-26,Dodgers,Giants,0.685,0.315,live
+2020-08-26,Orioles,Rays,0.35600000000000004,0.644,live
+2020-08-27,Dodgers,Giants,0.6679999999999999,0.332,live
+2020-08-27,Mariners,Padres,0.321,0.679,live
+2020-08-27,Athletics,Rangers,0.5770000000000001,0.423,live
+2020-08-27,Mariners,Padres,0.32899999999999996,0.6709999999999999,live
+2020-08-27,Dodgers,Giants,0.691,0.309,live
+2020-08-29,Athletics,Astros,0.505,0.495,live
+2020-08-29,Padres,Rockies,0.535,0.465,live
+2020-08-29,Athletics,Astros,0.532,0.46799999999999997,live
+2020-08-29,Dodgers,Rangers,0.6779999999999999,0.322,live
+2020-08-29,Giants,Diamondbacks,0.37799999999999995,0.622,live
+2020-08-29,Dodgers,Rangers,0.59,0.41,live
+2020-08-30,Giants,Diamondbacks,0.45899999999999996,0.541,live
+2020-08-30,Dodgers,Rangers,0.71,0.29,live
+2020-08-30,Mariners,Angels,0.373,0.627,live
+2020-08-30,Padres,Rockies,0.5329999999999999,0.467,live
+2020-08-30,Giants,Diamondbacks,0.428,0.5720000000000001,live
+2020-08-30,Padres,Rockies,0.519,0.48100000000000004,live
+2020-08-31,Mariners,Angels,0.439,0.561,live
+2020-08-31,Orioles,Blue Jays,0.377,0.623,live
+2020-09-01,Padres,Rockies,0.493,0.507,live
+2020-09-01,Mets,Orioles,0.58,0.42,live
+2020-09-01,Rays,Yankees,0.467,0.5329999999999999,live
+2020-09-02,Mets,Orioles,0.515,0.485,live
+2020-09-02,Tigers,Brewers,0.419,0.581,live
+2020-09-02,Rangers,Astros,0.35200000000000004,0.648,live
+2020-09-02,Rays,Yankees,0.49,0.51,live
+2020-09-02,Giants,Rockies,0.47600000000000003,0.524,live
+2020-09-02,Giants,Rockies,0.488,0.512,live
+2020-09-03,Rangers,Astros,0.402,0.598,live
+2020-09-03,Yankees,Mets,0.49200000000000005,0.508,live
+2020-09-03,White Sox,Twins,0.478,0.522,live
+2020-09-03,Rangers,Astros,0.35700000000000004,0.643,live
+2020-09-04,Tigers,Twins,0.375,0.625,live
+2020-09-04,Yankees,Orioles,0.5760000000000001,0.424,live
+2020-09-04,Twins,Tigers,0.579,0.42100000000000004,live
+2020-09-05,Diamondbacks,Giants,0.47200000000000003,0.528,live
+2020-09-05,Rangers,Mariners,0.512,0.488,live
+2020-09-05,Astros,Angels,0.518,0.48200000000000004,live
+2020-09-05,Yankees,Orioles,0.7040000000000001,0.29600000000000004,live
+2020-09-05,Blue Jays,Red Sox,0.52,0.48,live
+2020-09-05,Yankees,Orioles,0.655,0.345,live
+2020-09-05,Rockies,Dodgers,0.297,0.703,live
+2020-09-05,Padres,Athletics,0.49700000000000005,0.503,live
+2020-09-05,Tigers,Twins,0.33,0.67,live
+2020-09-05,Padres,Athletics,0.474,0.526,live
+2020-09-06,Rockies,Dodgers,0.293,0.7070000000000001,live
+2020-09-06,Diamondbacks,Giants,0.47100000000000003,0.529,live
+2020-09-06,Diamondbacks,Giants,0.45799999999999996,0.542,live
+2020-09-06,Cubs,Cardinals,0.516,0.484,live
+2020-09-06,Padres,Athletics,0.48700000000000004,0.513,live
+2020-09-06,Angels,Astros,0.426,0.574,live
+2020-09-06,Rangers,Mariners,0.41100000000000003,0.589,live
+2020-09-06,Yankees,Orioles,0.598,0.402,live
+2020-09-06,Tigers,Twins,0.33899999999999997,0.6609999999999999,live
+2020-09-07,Tigers,Twins,0.34,0.66,live
+2020-09-07,Rangers,Mariners,0.423,0.5770000000000001,live
+2020-09-07,Phillies,Mets,0.484,0.516,live
+2020-09-07,Rockies,Dodgers,0.297,0.703,live
+2020-09-07,Cardinals,Cubs,0.428,0.5720000000000001,live
+2020-09-07,Yankees,Blue Jays,0.531,0.469,live
+2020-09-08,Athletics,Astros,0.493,0.507,live
+2020-09-08,Yankees,Blue Jays,0.508,0.49200000000000005,live
+2020-09-08,Astros,Athletics,0.414,0.586,live
+2020-09-08,Rockies,Padres,0.37799999999999995,0.622,live
+2020-09-08,Orioles,Mets,0.46,0.54,live
+2020-09-08,Diamondbacks,Giants,0.531,0.469,live
+2020-09-09,Yankees,Blue Jays,0.488,0.512,live
+2020-09-09,Mariners,Giants,0.42200000000000004,0.578,live
+2020-09-09,Astros,Athletics,0.40299999999999997,0.597,live
+2020-09-09,Rockies,Padres,0.353,0.647,live
+2020-09-09,Orioles,Mets,0.385,0.615,live
+2020-09-10,Mariners,Giants,0.41100000000000003,0.589,live
+2020-09-10,Angels,Rangers,0.539,0.461,live
+2020-09-10,Rockies,Padres,0.344,0.6559999999999999,live
+2020-09-10,Angels,Rangers,0.593,0.40700000000000003,live
+2020-09-10,Astros,Athletics,0.46399999999999997,0.536,live
+2020-09-10,Astros,Athletics,0.414,0.586,live
+2020-09-11,Giants,Padres,0.39899999999999997,0.601,live
+2020-09-11,Orioles,Yankees,0.349,0.6509999999999999,live
+2020-09-11,Orioles,Yankees,0.303,0.6970000000000001,live
+2020-09-12,Angels,Rockies,0.44799999999999995,0.552,live
+2020-09-12,Orioles,Yankees,0.364,0.636,live
+2020-09-12,Athletics,Rangers,0.605,0.395,live
+2020-09-12,Athletics,Rangers,0.624,0.376,live
+2020-09-12,Mariners,Diamondbacks,0.418,0.5820000000000001,live
+2020-09-12,Athletics,Rangers,0.635,0.365,live
+2020-09-13,Mariners,Diamondbacks,0.44,0.56,live
+2020-09-13,Angels,Rockies,0.466,0.534,live
+2020-09-13,Orioles,Yankees,0.377,0.623,live
+2020-09-13,Athletics,Rangers,0.5429999999999999,0.457,live
+2020-09-13,Giants,Padres,0.397,0.603,live
+2020-09-13,Mets,Blue Jays,0.465,0.535,live
+2020-09-13,Giants,Padres,0.40299999999999997,0.597,live
+2020-09-13,Angels,Rockies,0.534,0.466,live
+2020-09-13,Reds,Cardinals,0.483,0.517,live
+2020-09-14,Athletics,Mariners,0.5720000000000001,0.428,live
+2020-09-15,Athletics,Mariners,0.633,0.36700000000000005,live
+2020-09-15,Dodgers,Padres,0.569,0.431,live
+2020-09-16,Minnesota,Chi. White Sox,0.483,0.517,20200918225451
+2020-09-16,Oakland,Colorado,0.5760000000000001,0.424,20200918231226
+2020-09-16,LA Dodgers,San Diego,0.5720000000000001,0.428,20200918232159
+2020-09-16,Arizona,LA Angels,0.447,0.5529999999999999,20200918232424
+2020-09-16,Cleveland,Chicago Cubs,0.425,0.575,20200919003354
+2020-09-16,Washington,Tampa Bay,0.361,0.639,20200920063103
+2020-09-16,Oakland,Colorado,0.522,0.478,20200920071308
+2020-09-16,Toronto,NY Yankees,0.3,0.7,20200922063836
+2020-09-16,Atlanta,Baltimore,0.609,0.391,20200922071142
+2020-09-16,Kansas City,Detroit,0.53,0.47,20200922072535
+2020-09-16,LA Dodgers,San Diego,0.544,0.456,20200922073847
+2020-09-16,Boston,Miami,0.485,0.515,20200922081151
+2020-09-16,Pittsburgh,Cincinnati,0.35100000000000003,0.649,20200922083455
+2020-09-16,St. Louis,Milwaukee,0.42,0.58,20200922083903
+2020-09-16,NY Mets,Philadelphia,0.54,0.46,20200922085706
+2020-09-16,Rangers,Astros,0.35600000000000004,0.644,live
+2020-09-16,Cardinals,Brewers,0.43700000000000006,0.563,live
+2020-09-17,Minnesota,Chi. White Sox,0.446,0.5539999999999999,20200922070707
+2020-09-17,San Francisco,Seattle,0.528,0.47200000000000003,20200922072857
+2020-09-17,Cleveland,Chicago Cubs,0.522,0.478,20200922074342
+2020-09-17,Texas,Houston,0.349,0.6509999999999999,20200922081523
+2020-09-17,Orioles,Rays,0.38299999999999995,0.617,live
+2020-09-17,Diamondbacks,Angels,0.425,0.575,live
+2020-09-17,Rangers,Astros,0.326,0.674,live
+2020-09-17,Giants,Mariners,0.544,0.456,live
+2020-09-17,Rays,Orioles,0.598,0.402,live
+2020-09-18,Rays,Orioles,0.605,0.395,live
+2020-09-18,Dodgers,Rockies,0.644,0.35600000000000004,live
+2020-09-19,Atlanta,NY Mets,0.539,0.461,20201024194738
+2020-09-19,NY Yankees,Boston,0.617,0.38299999999999995,20201024195651
+2020-09-19,Royals,Brewers,0.382,0.618,live
+2020-09-19,White Sox,Reds,0.511,0.489,live
+2020-09-19,Cardinals,Pirates,0.597,0.40299999999999997,live
+2020-09-19,Rays,Orioles,0.6409999999999999,0.359,live
+2020-09-19,Dodgers,Rockies,0.637,0.363,live
+2020-09-19,Nationals,Marlins,0.5379999999999999,0.462,live
+2020-09-19,Blue Jays,Phillies,0.515,0.485,live
+2020-09-19,Giants,Athletics,0.40399999999999997,0.596,live
+2020-09-19,Guardians,Tigers,0.581,0.419,live
+2020-09-19,Padres,Mariners,0.6629999999999999,0.337,live
+2020-09-19,Giants,Athletics,0.364,0.636,live
+2020-09-19,Diamondbacks,Astros,0.392,0.608,live
+2020-09-20,Arizona,Houston,0.39899999999999997,0.601,20201024195959
+2020-09-20,Dodgers,Rockies,0.701,0.299,live
+2020-09-20,Padres,Mariners,0.613,0.387,live
+2020-09-20,Twins,Cubs,0.503,0.49700000000000005,live
+2020-09-20,Cardinals,Pirates,0.619,0.381,live
+2020-09-20,Guardians,Tigers,0.56,0.44,live
+2020-09-20,Royals,Brewers,0.475,0.525,live
+2020-09-20,White Sox,Reds,0.501,0.499,live
+2020-09-20,Nationals,Marlins,0.523,0.47700000000000004,live
+2020-09-20,Yankees,Red Sox,0.591,0.409,live
+2020-09-20,Blue Jays,Phillies,0.47,0.53,live
+2020-09-20,Braves,Mets,0.513,0.48700000000000004,live
+2020-09-20,Rays,Orioles,0.575,0.425,live
+2020-09-20,Rangers,Angels,0.449,0.551,live
+2020-09-20,Nationals,Marlins,0.47100000000000003,0.529,live
+2020-09-20,Dodgers,Rockies,0.7020000000000001,0.298,live
+2020-09-20,Twins,Cubs,0.44299999999999995,0.557,live
+2020-09-20,Padres,Mariners,0.622,0.37799999999999995,live
+2020-09-20,Giants,Athletics,0.353,0.647,live
+2020-09-20,Rangers,Angels,0.392,0.608,live
+2020-09-22,Rockies,Giants,0.51,0.49,live
+2020-09-22,Astros,Mariners,0.557,0.44299999999999995,live
+2020-09-23,Astros,Mariners,0.573,0.42700000000000005,live
+2020-09-23,Rockies,Giants,0.465,0.535,live
+2020-09-23,Athletics,Dodgers,0.39399999999999996,0.606,live
+2020-09-23,Astros,Mariners,0.625,0.375,live
+2020-09-24,Rockies,Giants,0.441,0.5589999999999999,live
+2020-09-24,Athletics,Dodgers,0.368,0.632,live
+2020-09-24,Rockies,Giants,0.384,0.616,live
+2020-09-25,Astros,Rangers,0.526,0.474,live
+2020-09-25,Athletics,Dodgers,0.39399999999999996,0.606,live
+2020-09-25,Padres,Giants,0.578,0.42200000000000004,live
+2020-09-26,Mariners,Athletics,0.33899999999999997,0.6609999999999999,live
+2020-09-26,Mariners,Athletics,0.355,0.645,live
+2020-09-26,Astros,Rangers,0.59,0.41,live
+2020-09-26,Athletics,Mariners,0.5720000000000001,0.428,live
+2020-09-26,Giants,Padres,0.382,0.618,live
+2020-09-26,Astros,Rangers,0.584,0.41600000000000004,live
+2020-09-27,Astros,Rangers,0.581,0.419,live
+2020-09-27,Padres,Giants,0.56,0.44,live
+2020-09-27,Mariners,Athletics,0.406,0.594,live
+2020-09-27,Padres,Giants,0.51,0.49,live
+2020-09-29,White Sox,Athletics,0.488,0.512,live
+2020-09-30,White Sox,Athletics,0.469,0.531,live
+2020-10-01,White Sox,Athletics,0.408,0.5920000000000001,live
+2021-04-01,Diamondbacks,Padres,0.342,0.6579999999999999,live
+2021-04-01,Rays,Marlins,0.45899999999999996,0.541,live
+2021-04-02,Rays,Marlins,0.445,0.555,live
+2021-04-02,Giants,Mariners,0.514,0.486,live
+2021-04-03,Giants,Mariners,0.522,0.478,live
+2021-04-03,Rays,Marlins,0.467,0.5329999999999999,live
+2021-04-04,Diamondbacks,Padres,0.405,0.595,live
+2021-04-04,Twins,Brewers,0.5429999999999999,0.457,live
+2021-04-04,Giants,Mariners,0.507,0.493,live
+2021-04-05,Twins,Tigers,0.652,0.348,live
+2021-04-06,White Sox,Mariners,0.529,0.47100000000000003,live
+2021-04-06,Rays,Red Sox,0.473,0.527,live
+2021-04-07,Rays,Red Sox,0.467,0.5329999999999999,live
+2021-04-07,Orioles,Yankees,0.396,0.604,live
+2021-04-07,Mets,Phillies,0.491,0.509,live
+2021-04-07,Cardinals,Marlins,0.56,0.44,live
+2021-04-07,Giants,Padres,0.43200000000000005,0.568,live
+2021-04-07,White Sox,Mariners,0.5920000000000001,0.408,live
+2021-04-07,White Sox,Mariners,0.598,0.402,live
+2021-04-08,Red Sox,Orioles,0.526,0.474,live
+2021-04-08,Diamondbacks,Rockies,0.475,0.525,live
+2021-04-08,Royals,White Sox,0.40299999999999997,0.597,live
+2021-04-08,Angels,Blue Jays,0.573,0.42700000000000005,live
+2021-04-08,Mariners,Twins,0.41100000000000003,0.589,live
+2021-04-08,Marlins,Mets,0.405,0.595,live
+2021-04-08,Diamondbacks,Rockies,0.5479999999999999,0.452,live
+2021-04-08,Cubs,Pirates,0.5710000000000001,0.429,live
+2021-04-08,Brewers,Cardinals,0.46,0.54,live
+2021-04-09,Yankees,Rays,0.546,0.45399999999999996,live
+2021-04-09,Athletics,Astros,0.424,0.5760000000000001,live
+2021-04-10,Yankees,Rays,0.561,0.439,live
+2021-04-10,Mariners,Twins,0.345,0.655,live
+2021-04-10,Brewers,Cardinals,0.442,0.5579999999999999,live
+2021-04-10,Reds,Diamondbacks,0.579,0.42100000000000004,live
+2021-04-11,Reds,Diamondbacks,0.564,0.436,live
+2021-04-11,Red Sox,Orioles,0.47100000000000003,0.529,live
+2021-04-11,Phillies,Braves,0.48100000000000004,0.519,live
+2021-04-12,Rangers,Rays,0.39399999999999996,0.606,live
+2021-04-13,Mariners,Orioles,0.44799999999999995,0.552,live
+2021-04-13,Rangers,Rays,0.397,0.603,live
+2021-04-13,Mariners,Orioles,0.473,0.527,live
+2021-04-13,Athletics,Diamondbacks,0.502,0.498,live
+2021-04-14,Rangers,Rays,0.41100000000000003,0.589,live
+2021-04-14,Tigers,Astros,0.371,0.629,live
+2021-04-15,Mariners,Orioles,0.45899999999999996,0.541,live
+2021-04-15,Mariners,Orioles,0.465,0.535,live
+2021-04-15,Rangers,Rays,0.4,0.6,live
+2021-04-16,Guardians,Reds,0.43799999999999994,0.562,live
+2021-04-16,Diamondbacks,Nationals,0.442,0.5579999999999999,live
+2021-04-17,Diamondbacks,Nationals,0.455,0.545,live
+2021-04-17,Rays,Yankees,0.42700000000000005,0.573,live
+2021-04-17,Guardians,Reds,0.45299999999999996,0.547,live
+2021-04-17,Astros,Mariners,0.536,0.46399999999999997,live
+2021-04-18,Astros,Mariners,0.488,0.512,live
+2021-04-18,Rays,Yankees,0.35700000000000004,0.643,live
+2021-04-18,Astros,Mariners,0.506,0.494,live
+2021-04-18,White Sox,Red Sox,0.517,0.483,live
+2021-04-18,Diamondbacks,Nationals,0.42700000000000005,0.573,live
+2021-04-18,Guardians,Reds,0.501,0.499,live
+2021-04-20,Dodgers,Mariners,0.647,0.353,live
+2021-04-21,Rays,Royals,0.519,0.48100000000000004,live
+2021-04-21,Diamondbacks,Reds,0.38,0.62,live
+2021-04-22,Rays,Royals,0.462,0.5379999999999999,live
+2021-04-23,Blue Jays,Rays,0.413,0.5870000000000001,live
+2021-04-23,Diamondbacks,Braves,0.46399999999999997,0.536,live
+2021-04-23,Mariners,Red Sox,0.44299999999999995,0.557,live
+2021-04-24,Mariners,Red Sox,0.415,0.585,live
+2021-04-25,Diamondbacks,Braves,0.475,0.525,live
+2021-04-25,Blue Jays,Rays,0.499,0.501,live
+2021-04-27,Athletics,Rays,0.534,0.466,live
+2021-04-27,Mariners,Astros,0.45299999999999996,0.547,live
+2021-04-28,Mariners,Astros,0.405,0.595,live
+2021-04-28,Athletics,Rays,0.43200000000000005,0.568,live
+2021-04-29,Mariners,Astros,0.373,0.627,live
+2021-04-29,Padres,Diamondbacks,0.528,0.47200000000000003,live
+2021-05-02,Astros,Rays,0.505,0.495,live
+2021-05-04,Pirates,Padres,0.374,0.626,live
+2021-05-04,Orioles,Mariners,0.483,0.517,live
+2021-05-04,Tigers,Red Sox,0.384,0.616,live
+2021-05-04,Giants,Rockies,0.525,0.475,live
+2021-05-04,Dodgers,Cubs,0.607,0.39299999999999996,live
+2021-05-04,Rays,Angels,0.589,0.41100000000000003,live
+2021-05-04,Astros,Yankees,0.483,0.517,live
+2021-05-04,Braves,Nationals,0.5,0.5,live
+2021-05-04,Rangers,Twins,0.409,0.591,live
+2021-05-04,White Sox,Reds,0.46299999999999997,0.537,live
+2021-05-04,Blue Jays,Athletics,0.498,0.502,live
+2021-05-04,Dodgers,Cubs,0.5710000000000001,0.429,live
+2021-05-04,Guardians,Royals,0.517,0.483,live
+2021-05-04,Brewers,Phillies,0.445,0.555,live
+2021-05-04,Diamondbacks,Marlins,0.46399999999999997,0.536,live
+2021-05-05,Orioles,Mariners,0.498,0.502,live
+2021-05-05,Rays,Angels,0.47700000000000004,0.523,live
+2021-05-05,Giants,Rockies,0.524,0.47600000000000003,live
+2021-05-05,Giants,Rockies,0.447,0.5529999999999999,live
+2021-05-05,White Sox,Reds,0.461,0.539,live
+2021-05-05,Guardians,Royals,0.488,0.512,live
+2021-05-05,Orioles,Mariners,0.46799999999999997,0.532,live
+2021-05-05,Pirates,Padres,0.35100000000000003,0.649,live
+2021-05-05,Blue Jays,Athletics,0.45299999999999996,0.547,live
+2021-05-06,Rays,Angels,0.515,0.485,live
+2021-05-06,Diamondbacks,Marlins,0.43799999999999994,0.562,live
+2021-05-07,Diamondbacks,Mets,0.466,0.534,live
+2021-05-07,Rays,Angels,0.491,0.509,live
+2021-05-08,Diamondbacks,Mets,0.40399999999999997,0.596,live
+2021-05-08,Mariners,Rangers,0.504,0.496,live
+2021-05-08,Rays,Athletics,0.45799999999999996,0.542,live
+2021-05-08,Rays,Athletics,0.534,0.466,live
+2021-05-09,Rays,Athletics,0.45299999999999996,0.547,live
+2021-05-11,Yankees,Rays,0.527,0.473,live
+2021-05-12,Marlins,Diamondbacks,0.49700000000000005,0.503,live
+2021-05-12,Mariners,Dodgers,0.358,0.642,live
+2021-05-13,Mariners,Dodgers,0.337,0.6629999999999999,live
+2021-05-13,Marlins,Diamondbacks,0.469,0.531,live
+2021-05-14,Mets,Rays,0.46399999999999997,0.536,live
+2021-05-15,Nationals,Diamondbacks,0.585,0.415,live
+2021-05-15,Guardians,Mariners,0.529,0.47100000000000003,live
+2021-05-16,Cardinals,Padres,0.42100000000000004,0.579,live
+2021-05-16,Cardinals,Padres,0.43200000000000005,0.568,live
+2021-05-16,Marlins,Dodgers,0.319,0.6809999999999999,live
+2021-05-16,Nationals,Diamondbacks,0.465,0.535,live
+2021-05-16,Guardians,Mariners,0.569,0.431,live
+2021-05-16,Nationals,Diamondbacks,0.552,0.44799999999999995,live
+2021-05-16,Marlins,Dodgers,0.373,0.627,live
+2021-05-18,Tigers,Mariners,0.435,0.565,live
+2021-05-18,Diamondbacks,Dodgers,0.304,0.696,live
+2021-05-19,Diamondbacks,Dodgers,0.348,0.652,live
+2021-05-19,Yankees,Rangers,0.588,0.41200000000000003,live
+2021-05-20,Diamondbacks,Dodgers,0.317,0.6829999999999999,live
+2021-05-21,Rays,Blue Jays,0.586,0.414,live
+2021-05-21,White Sox,Yankees,0.47700000000000004,0.523,live
+2021-05-21,Diamondbacks,Dodgers,0.32,0.68,live
+2021-05-22,Mariners,Padres,0.384,0.616,live
+2021-05-22,Diamondbacks,Rockies,0.48100000000000004,0.519,live
+2021-05-23,Mariners,Padres,0.327,0.6729999999999999,live
+2021-05-23,Diamondbacks,Rockies,0.467,0.5329999999999999,live
+2021-05-25,Mariners,Athletics,0.428,0.5720000000000001,live
+2021-05-26,Royals,Rays,0.344,0.6559999999999999,live
+2021-05-28,Rangers,Mariners,0.479,0.521,live
+2021-05-29,Cardinals,Diamondbacks,0.47200000000000003,0.528,live
+2021-05-30,Rangers,Mariners,0.461,0.539,live
+2021-05-30,Cardinals,Diamondbacks,0.547,0.45299999999999996,live
+2021-05-31,Athletics,Mariners,0.531,0.469,live
+2021-05-31,Rays,Yankees,0.47100000000000003,0.529,live
+2021-06-01,Mets,Diamondbacks,0.6709999999999999,0.32899999999999996,live
+2021-06-02,Rays,Yankees,0.445,0.555,live
+2021-06-03,Athletics,Mariners,0.562,0.43799999999999994,live
+2021-06-03,Diamondbacks,Brewers,0.397,0.603,live
+2021-06-03,Rays,Yankees,0.384,0.616,live
+2021-06-04,Mariners,Angels,0.41200000000000003,0.588,live
+2021-06-05,Mets,Padres,0.395,0.605,live
+2021-06-05,Mariners,Angels,0.401,0.599,live
+2021-06-05,Athletics,Rockies,0.564,0.436,live
+2021-06-05,Rays,Rangers,0.603,0.397,live
+2021-06-06,Diamondbacks,Brewers,0.308,0.6920000000000001,live
+2021-06-08,Nationals,Rays,0.34,0.66,live
+2021-06-09,Nationals,Rays,0.40700000000000003,0.593,live
+2021-06-09,Mariners,Tigers,0.46799999999999997,0.532,live
+2021-06-09,Diamondbacks,Athletics,0.354,0.6459999999999999,live
+2021-06-09,Diamondbacks,Athletics,0.34700000000000003,0.653,live
+2021-06-09,Cubs,Padres,0.39899999999999997,0.601,live
+2021-06-10,Astros,Red Sox,0.517,0.483,live
+2021-06-10,Rockies,Marlins,0.419,0.581,live
+2021-06-10,Mariners,Tigers,0.54,0.46,live
+2021-06-11,Blue Jays,White Sox,0.507,0.493,live
+2021-06-11,White Sox,Tigers,0.645,0.355,live
+2021-06-11,Royals,Athletics,0.40700000000000003,0.593,live
+2021-06-11,Giants,Nationals,0.44,0.56,live
+2021-06-11,Rockies,Reds,0.35,0.65,live
+2021-06-11,Blue Jays,Red Sox,0.457,0.5429999999999999,live
+2021-06-11,Mariners,Guardians,0.401,0.599,live
+2021-06-11,Braves,Marlins,0.5479999999999999,0.452,live
+2021-06-11,Yankees,Twins,0.528,0.47200000000000003,live
+2021-06-11,Orioles,Rays,0.34700000000000003,0.653,live
+2021-06-11,Padres,Mets,0.44299999999999995,0.557,live
+2021-06-11,Cardinals,Cubs,0.43799999999999994,0.562,live
+2021-06-12,Pirates,Brewers,0.331,0.669,live
+2021-06-12,Angels,Diamondbacks,0.5670000000000001,0.433,live
+2021-06-12,Angels,Diamondbacks,0.5660000000000001,0.434,live
+2021-06-12,Rangers,Dodgers,0.29100000000000004,0.7090000000000001,live
+2021-06-12,Astros,Twins,0.5720000000000001,0.428,live
+2021-06-12,Royals,Athletics,0.373,0.627,live
+2021-06-13,Mariners,Guardians,0.34700000000000003,0.653,live
+2021-06-15,Twins,Mariners,0.521,0.479,live
+2021-06-16,Twins,Mariners,0.496,0.504,live
+2021-06-16,Diamondbacks,Giants,0.359,0.6409999999999999,live
+2021-06-17,Twins,Mariners,0.512,0.488,live
+2021-07-03,Twins,Royals,0.485,0.515,live
+2021-07-04,Twins,Royals,0.528,0.47200000000000003,live
+2021-07-07,White Sox,Twins,0.544,0.456,live
+2021-07-07,White Sox,Twins,0.51,0.49,live
+2021-07-07,Braves,Pirates,0.598,0.402,live
+2021-07-07,Tigers,Rangers,0.41100000000000003,0.589,live
+2021-07-09,Nationals,Padres,0.441,0.5589999999999999,live
+2021-07-10,Tigers,Twins,0.39399999999999996,0.606,live
+2021-07-10,Yankees,Astros,0.532,0.46799999999999997,live
+2021-07-10,Nationals,Giants,0.46399999999999997,0.536,live
+2021-07-10,Nationals,Giants,0.396,0.604,live
+2021-07-11,White Sox,Orioles,0.619,0.381,live
+2021-07-11,Nationals,Giants,0.368,0.632,live
+2021-07-11,Tigers,Twins,0.35200000000000004,0.648,live
+2021-07-11,Rockies,Padres,0.374,0.626,live
+2021-07-16,Padres,Nationals,0.528,0.47200000000000003,live
+2021-07-17,Twins,Tigers,0.557,0.44299999999999995,live
+2021-07-17,Padres,Nationals,0.563,0.43700000000000006,live
+2021-07-17,Cubs,Diamondbacks,0.585,0.415,live
+2021-07-17,Twins,Tigers,0.579,0.42100000000000004,live
+2021-07-17,Guardians,Athletics,0.43200000000000005,0.568,live
+2021-07-17,Astros,White Sox,0.521,0.479,live
+2021-07-17,Giants,Cardinals,0.457,0.5429999999999999,live
+2021-07-17,Mets,Pirates,0.606,0.39399999999999996,live
+2021-07-18,Mariners,Angels,0.457,0.5429999999999999,live
+2021-07-18,Astros,White Sox,0.47600000000000003,0.524,live
+2021-07-18,Giants,Cardinals,0.537,0.46299999999999997,live
+2021-07-18,Mariners,Angels,0.41200000000000003,0.588,live
+2021-07-18,Twins,Tigers,0.529,0.47100000000000003,live
+2021-07-19,Twins,White Sox,0.361,0.639,live
+2021-07-20,Cubs,Cardinals,0.47200000000000003,0.528,live
+2021-07-20,Twins,White Sox,0.447,0.5529999999999999,live
+2021-07-20,Guardians,Astros,0.359,0.6409999999999999,live
+2021-07-21,Cubs,Cardinals,0.5,0.5,live
+2021-07-21,Rangers,Tigers,0.46799999999999997,0.532,live
+2021-07-21,Guardians,Astros,0.364,0.636,live
+2021-07-22,Rangers,Tigers,0.439,0.561,live
+2021-07-22,Rays,Guardians,0.55,0.45,live
+2021-07-22,Giants,Dodgers,0.374,0.626,live
+2021-07-22,Cubs,Cardinals,0.46399999999999997,0.536,live
+2021-07-22,Twins,White Sox,0.45399999999999996,0.546,live
+2021-07-22,Cubs,Cardinals,0.45799999999999996,0.542,live
+2021-07-22,Yankees,Red Sox,0.462,0.5379999999999999,live
+2021-07-22,Guardians,Astros,0.35700000000000004,0.643,live
+2021-07-22,Braves,Phillies,0.535,0.465,live
+2021-07-22,Padres,Marlins,0.595,0.405,live
+2021-07-23,Giants,Dodgers,0.39799999999999996,0.602,live
+2021-07-23,Athletics,Mariners,0.5529999999999999,0.447,live
+2021-07-23,Angels,Twins,0.501,0.499,live
+2021-09-18,Padres,Cardinals,0.48700000000000004,0.513,live
+2021-09-19,Padres,Cardinals,0.457,0.5429999999999999,live
+2021-10-03,Brewers,Dodgers,0.34,0.66,live
+2021-10-06,Yankees,Red Sox,0.528,0.47200000000000003,live
+2021-10-07,Cardinals,Dodgers,0.34,0.66,live
+2021-10-09,Dodgers,Giants,0.51,0.49,live
+2021-10-10,Dodgers,Giants,0.474,0.526,live
+2021-10-11,Rays,Red Sox,0.47,0.53,live
+2021-10-11,Brewers,Braves,0.493,0.507,live
+2021-10-12,Giants,Dodgers,0.379,0.621,live
+2021-10-12,Astros,White Sox,0.462,0.5379999999999999,live
+2021-10-12,Brewers,Braves,0.41200000000000003,0.588,live
+2021-10-13,Giants,Dodgers,0.43799999999999994,0.562,live
+2021-10-15,Dodgers,Giants,0.475,0.525,live
+2022-05-04,Mariners,Astros,0.402,0.598,live
+2022-05-05,Mets,Phillies,0.452,0.5479999999999999,live
+2022-05-06,Rays,Mariners,0.521,0.479,live
+2022-05-07,White Sox,Red Sox,0.489,0.511,live
+2022-05-08,Athletics,Twins,0.43799999999999994,0.562,live
+2022-05-08,Royals,Orioles,0.513,0.48700000000000004,live
+2022-05-08,Rays,Mariners,0.53,0.47,live
+2022-05-08,Mets,Phillies,0.523,0.47700000000000004,live
+2022-05-09,Rangers,Yankees,0.332,0.6679999999999999,live
+2022-05-10,Dodgers,Pirates,0.685,0.315,live
+2022-05-10,Phillies,Mariners,0.473,0.527,live
+2022-05-10,Guardians,White Sox,0.39399999999999996,0.606,live
+2022-05-11,Dodgers,Pirates,0.6890000000000001,0.311,live
+2022-05-11,Royals,Rangers,0.479,0.521,live
+2022-05-11,Phillies,Mariners,0.486,0.514,live
+2022-05-11,Astros,Twins,0.5479999999999999,0.452,live
+2022-05-11,Phillies,Mariners,0.442,0.5579999999999999,live
+2022-05-11,Guardians,White Sox,0.43,0.57,live
+2022-05-12,Reds,Pirates,0.47600000000000003,0.524,live
+2022-05-12,Royals,Rangers,0.507,0.493,live
+2022-05-13,Phillies,Dodgers,0.391,0.609,live
+2022-05-13,Royals,Rangers,0.467,0.5329999999999999,live
+2022-05-13,Reds,Pirates,0.53,0.47,live
+2022-05-14,Giants,Cardinals,0.542,0.45799999999999996,live
+2022-05-14,Yankees,White Sox,0.602,0.39799999999999996,live
+2022-05-14,Astros,Nationals,0.628,0.37200000000000005,live
+2022-05-14,Brewers,Marlins,0.519,0.48100000000000004,live
+2022-05-14,Orioles,Tigers,0.435,0.565,live
+2022-05-14,Reds,Pirates,0.535,0.465,live
+2022-05-14,Padres,Braves,0.447,0.5529999999999999,live
+2022-05-14,Phillies,Dodgers,0.349,0.6509999999999999,live
+2022-05-14,Angels,Athletics,0.539,0.461,live
+2022-05-14,Guardians,Twins,0.499,0.501,live
+2022-05-14,Giants,Cardinals,0.5329999999999999,0.467,live
+2022-05-14,Angels,Athletics,0.54,0.46,live
+2022-05-14,Red Sox,Rangers,0.506,0.494,live
+2022-05-14,Yankees,White Sox,0.644,0.35600000000000004,live
+2022-05-14,Red Sox,Rangers,0.49700000000000005,0.503,live
+2022-05-14,Cubs,Diamondbacks,0.45399999999999996,0.546,live
+2022-05-14,Blue Jays,Rays,0.48200000000000004,0.518,live
+2022-05-14,Royals,Rockies,0.45399999999999996,0.546,live
+2022-05-15,Angels,Athletics,0.603,0.397,live
+2022-05-15,Mariners,Mets,0.434,0.5660000000000001,live
+2022-05-15,Padres,Braves,0.483,0.517,live
+2022-05-15,Cubs,Diamondbacks,0.409,0.591,live
+2022-05-15,Phillies,Dodgers,0.387,0.613,live
+2022-05-15,Royals,Rockies,0.431,0.569,live
+2022-05-19,Yankees,Orioles,0.674,0.326,live
+2022-05-19,Diamondbacks,Cubs,0.504,0.496,live
+2022-05-19,Padres,Phillies,0.46,0.54,live
+2022-05-19,Mariners,Red Sox,0.46299999999999997,0.537,live
+2022-05-19,Cardinals,Mets,0.423,0.5770000000000001,live
+2022-05-19,White Sox,Royals,0.5720000000000001,0.428,live
+2022-05-20,Rangers,Astros,0.35600000000000004,0.644,live
+2022-05-24,Brewers,Padres,0.498,0.502,live
+2022-05-28,Brewers,Cardinals,0.523,0.47700000000000004,live
+2022-05-28,Brewers,Cardinals,0.48700000000000004,0.513,live
+2022-05-31,Padres,Cardinals,0.465,0.535,live
+2022-06-04,Padres,Brewers,0.42700000000000005,0.573,live
+2022-06-04,Padres,Brewers,0.461,0.539,live
+2022-06-21,Cardinals,Brewers,0.43200000000000005,0.568,live
+2022-06-23,Cardinals,Brewers,0.503,0.49700000000000005,live
+2022-06-23,Guardians,Twins,0.47600000000000003,0.524,live
+2022-06-23,Mariners,Athletics,0.552,0.44799999999999995,live
+2022-06-23,Giants,Braves,0.423,0.5770000000000001,live
+2022-06-23,Cubs,Pirates,0.512,0.488,live
+2022-06-23,Rockies,Marlins,0.461,0.539,live
+2022-06-23,Astros,Yankees,0.45799999999999996,0.542,live
+2022-06-23,Dodgers,Reds,0.654,0.34600000000000003,live
+2022-06-24,Dodgers,Braves,0.54,0.46,live
+2022-06-24,Red Sox,Guardians,0.537,0.46299999999999997,live
+2022-06-24,Pirates,Rays,0.336,0.664,live
+2022-06-24,Mets,Marlins,0.45799999999999996,0.542,live
+2022-06-24,Phillies,Padres,0.439,0.561,live
+2022-06-24,Astros,Yankees,0.47100000000000003,0.529,live
+2022-06-24,Orioles,White Sox,0.409,0.591,live
+2022-06-25,Tigers,Diamondbacks,0.406,0.594,live
+2022-06-25,Nationals,Rangers,0.391,0.609,live
+2022-06-25,Reds,Giants,0.382,0.618,live
+2022-06-25,Athletics,Royals,0.442,0.5579999999999999,live
+2022-06-25,Mariners,Angels,0.45899999999999996,0.541,live
+2022-06-25,Rockies,Twins,0.424,0.5760000000000001,live
+2022-06-25,Phillies,Padres,0.523,0.47700000000000004,live
+2022-06-25,Blue Jays,Brewers,0.63,0.37,live
+2022-06-25,Cubs,Cardinals,0.41,0.59,live
+2022-06-25,Orioles,White Sox,0.371,0.629,live
+2022-08-06,Padres,Dodgers,0.35200000000000004,0.648,live
+2022-08-06,Rockies,Diamondbacks,0.44299999999999995,0.557,live
+2022-08-06,Red Sox,Royals,0.526,0.474,live
+2022-08-06,Yankees,Cardinals,0.54,0.46,live
+2022-08-06,Braves,Mets,0.47,0.53,live
+2022-08-06,Braves,Mets,0.45899999999999996,0.541,live
+2022-08-06,White Sox,Rangers,0.52,0.48,live
+2022-08-06,Yankees,Cardinals,0.625,0.375,live
+2022-08-06,Pirates,Orioles,0.381,0.619,live
+2022-08-06,Reds,Brewers,0.41100000000000003,0.589,live
+2022-08-06,Blue Jays,Twins,0.522,0.478,live
+2022-08-06,Angels,Mariners,0.423,0.5770000000000001,live
+2022-08-06,Nationals,Phillies,0.342,0.6579999999999999,live
+2022-08-06,Rays,Tigers,0.632,0.368,live
+2022-08-06,Pirates,Orioles,0.419,0.581,live
+2022-08-06,Marlins,Cubs,0.521,0.479,live
+2022-08-06,Astros,Guardians,0.552,0.44799999999999995,live
+2022-08-06,Giants,Athletics,0.682,0.318,live
+2022-08-06,Blue Jays,Twins,0.5329999999999999,0.467,live
+2022-08-06,Angels,Mariners,0.38799999999999996,0.612,live
+2022-08-07,Rockies,Diamondbacks,0.424,0.5760000000000001,live
+2022-08-07,Angels,Mariners,0.424,0.5760000000000001,live
+2022-08-07,Padres,Dodgers,0.43200000000000005,0.568,live
+2022-09-12,Astros,Tigers,0.6659999999999999,0.33399999999999996,live
+2022-09-13,Orioles,Nationals,0.581,0.419,live
+2022-09-16,White Sox,Tigers,0.541,0.45899999999999996,live
+2022-09-17,Orioles,Blue Jays,0.366,0.634,live
+2022-09-17,White Sox,Tigers,0.561,0.439,live
+2022-09-18,Marlins,Nationals,0.606,0.39399999999999996,live
+2022-09-18,Orioles,Blue Jays,0.36700000000000005,0.633,live
+2022-09-18,Twins,Guardians,0.511,0.489,live
+2022-09-18,Athletics,Astros,0.289,0.711,live
+2022-09-19,Astros,Rays,0.496,0.504,live
+2022-09-19,Nationals,Braves,0.27,0.73,live
+2022-09-19,Tigers,Orioles,0.382,0.618,live
+2022-09-20,Astros,Rays,0.489,0.511,live
+2022-09-20,Nationals,Braves,0.284,0.716,live
+2022-09-20,Tigers,Orioles,0.40399999999999997,0.596,live
+2022-09-21,Angels,Rangers,0.498,0.502,live
+2022-09-21,Cubs,Marlins,0.513,0.48700000000000004,live
+2022-09-22,Braves,Phillies,0.589,0.41100000000000003,live
+2022-09-22,Cubs,Pirates,0.534,0.466,live
+2022-09-22,Red Sox,Yankees,0.419,0.581,live
+2022-09-22,Astros,Orioles,0.6609999999999999,0.33899999999999997,live
+2022-09-23,Brewers,Reds,0.584,0.41600000000000004,live
+2022-09-23,Red Sox,Yankees,0.35200000000000004,0.648,live
+2022-09-23,Braves,Phillies,0.452,0.5479999999999999,live
+2022-09-23,Diamondbacks,Dodgers,0.35100000000000003,0.649,live
+2022-09-23,Astros,Orioles,0.535,0.465,live
+2022-09-23,Nationals,Marlins,0.469,0.531,live
+2022-09-23,Blue Jays,Rays,0.449,0.551,live
+2022-09-23,Guardians,White Sox,0.504,0.496,live
+2022-09-23,Cubs,Pirates,0.535,0.465,live
+2022-09-24,Angels,Twins,0.586,0.414,live
+2022-09-24,Padres,Rockies,0.654,0.34600000000000003,live
+2022-09-24,Tigers,White Sox,0.409,0.591,live
+2022-09-24,Cardinals,Dodgers,0.39799999999999996,0.602,live
+2022-09-24,Mariners,Royals,0.537,0.46299999999999997,live
+2022-09-24,Guardians,Rangers,0.48,0.52,live
+2022-09-24,Mets,Athletics,0.613,0.387,live
+2022-09-24,Tigers,White Sox,0.387,0.613,live
+2022-09-24,Giants,Diamondbacks,0.63,0.37,live
+2022-09-25,Tigers,White Sox,0.34,0.66,live
+2022-09-27,White Sox,Twins,0.491,0.509,live
+2022-09-27,Rays,Guardians,0.442,0.5579999999999999,live
+2022-09-28,Athletics,Angels,0.4,0.6,live
+2022-09-28,Rays,Guardians,0.47700000000000004,0.523,live
+2022-09-28,Phillies,Cubs,0.597,0.40299999999999997,live
+2022-09-28,Braves,Nationals,0.5770000000000001,0.423,live
+2022-09-28,White Sox,Twins,0.501,0.499,live
+2022-09-28,Yankees,Blue Jays,0.569,0.431,live
+2022-09-28,Orioles,Red Sox,0.484,0.516,live
+2022-09-28,Diamondbacks,Astros,0.355,0.645,live
+2022-09-28,Royals,Tigers,0.489,0.511,live
+2022-09-28,Dodgers,Padres,0.516,0.484,live
+2022-09-28,Cardinals,Brewers,0.48100000000000004,0.519,live
+2022-09-28,Marlins,Mets,0.37799999999999995,0.622,live
+2022-09-28,Reds,Pirates,0.507,0.493,live
+2022-09-28,Rockies,Giants,0.406,0.594,live
+2022-09-28,Rangers,Mariners,0.377,0.623,live
+2022-09-29,Rangers,Mariners,0.442,0.5579999999999999,live
+2022-09-29,Royals,Tigers,0.496,0.504,live
+2022-09-29,Rockies,Giants,0.41100000000000003,0.589,live
+2022-09-29,Dodgers,Padres,0.518,0.48200000000000004,live
+2022-09-29,Athletics,Angels,0.384,0.616,live
+2022-09-29,Rays,Guardians,0.515,0.485,live
+2022-09-29,Diamondbacks,Astros,0.336,0.664,live
+2022-09-29,Marlins,Brewers,0.40299999999999997,0.597,live
+2022-09-30,Twins,Tigers,0.5820000000000001,0.418,live
+2022-10-01,Twins,Tigers,0.561,0.439,live
+2022-10-01,Rays,Astros,0.467,0.5329999999999999,live
+2022-10-01,Athletics,Mariners,0.282,0.718,live
+2022-10-01,Athletics,Mariners,0.35,0.65,live
+2022-10-01,Marlins,Brewers,0.41700000000000004,0.583,live
+2022-10-01,Rays,Astros,0.401,0.599,live
+2022-10-02,Rays,Astros,0.428,0.5720000000000001,live
+2022-10-02,Marlins,Brewers,0.41200000000000003,0.588,live
+2022-10-04,Tigers,Mariners,0.375,0.625,live
+2022-10-04,Phillies,Astros,0.474,0.526,live
+2022-10-04,Braves,Marlins,0.56,0.44,live
+2022-10-04,Cubs,Reds,0.494,0.506,live
+2022-10-04,Diamondbacks,Brewers,0.447,0.5529999999999999,live
+2022-10-04,Tigers,Mariners,0.361,0.639,live
+2022-10-05,Tigers,Mariners,0.376,0.624,live
+2022-10-05,Yankees,Rangers,0.57,0.43,live
+2022-10-05,Phillies,Astros,0.40700000000000003,0.593,live
+2022-10-05,Rays,Red Sox,0.517,0.483,live
+2022-10-05,Tigers,Mariners,0.38299999999999995,0.617,live
+2022-10-07,Mariners,Blue Jays,0.447,0.5529999999999999,live
+2022-10-08,Mariners,Blue Jays,0.45399999999999996,0.546,live
+2022-10-08,Rays,Guardians,0.47,0.53,live
+2022-10-11,Mariners,Astros,0.373,0.627,live
+2022-10-11,Guardians,Yankees,0.39799999999999996,0.602,live
+2022-10-11,Phillies,Braves,0.39299999999999996,0.607,live
+2022-10-14,Guardians,Yankees,0.446,0.5539999999999999,live
+2022-10-15,Braves,Phillies,0.5329999999999999,0.467,live
+2022-10-15,Astros,Mariners,0.54,0.46,live
+2022-10-15,Yankees,Guardians,0.517,0.483,live
+2022-10-16,Yankees,Guardians,0.556,0.444,live
+2022-10-18,Guardians,Yankees,0.37200000000000005,0.628,live
+2022-10-19,Phillies,Padres,0.465,0.535,live
+2022-10-19,Phillies,Padres,0.48,0.52,live
+2022-10-19,Yankees,Astros,0.37799999999999995,0.622,live
+2022-10-20,Yankees,Astros,0.451,0.5489999999999999,live
+2022-10-21,Padres,Phillies,0.523,0.47700000000000004,live
+2022-10-22,Padres,Phillies,0.508,0.49200000000000005,live
+2022-10-22,Astros,Yankees,0.47200000000000003,0.528,live
+2022-10-23,Padres,Phillies,0.485,0.515,live
+2022-10-24,Astros,Yankees,0.48,0.52,live
+2022-10-29,Phillies,Astros,0.40299999999999997,0.597,live
+2022-10-30,Phillies,Astros,0.444,0.556,live
+2022-11-02,Astros,Phillies,0.534,0.466,live
+2022-11-03,Astros,Phillies,0.498,0.502,live
+2022-11-04,Astros,Phillies,0.584,0.41600000000000004,live
+2022-11-06,Phillies,Astros,0.441,0.5589999999999999,live
+2023-03-30,Twins,Royals,0.5660000000000001,0.434,live
+2023-03-30,Phillies,Rangers,0.48200000000000004,0.518,live
+2023-03-30,Mets,Marlins,0.574,0.426,live
+2023-03-30,Blue Jays,Cardinals,0.5429999999999999,0.457,live
+2023-03-30,Orioles,Red Sox,0.424,0.5760000000000001,live
+2023-03-30,Braves,Nationals,0.6990000000000001,0.301,live
+2023-03-30,Giants,Yankees,0.37,0.63,live
+2023-03-30,White Sox,Astros,0.425,0.575,live
+2023-03-30,Pirates,Reds,0.47200000000000003,0.528,live
+2023-03-30,Tigers,Rays,0.34700000000000003,0.653,live
+2023-03-30,Brewers,Cubs,0.535,0.465,live
+2023-03-31,Rockies,Padres,0.324,0.6759999999999999,live
+2023-03-31,Guardians,Mariners,0.469,0.531,live
+2023-03-31,Diamondbacks,Dodgers,0.396,0.604,live
+2023-03-31,Angels,Athletics,0.637,0.363,live
+2023-04-01,Brewers,Cubs,0.514,0.486,live
+2023-04-01,Angels,Athletics,0.565,0.435,live
+2023-04-01,Orioles,Red Sox,0.47600000000000003,0.524,live
+2023-04-01,Tigers,Rays,0.382,0.618,live
+2023-04-01,Blue Jays,Cardinals,0.544,0.456,live
+2023-04-02,Tigers,Rays,0.34,0.66,live
+2023-04-02,Brewers,Cubs,0.522,0.478,live
+2023-04-02,Orioles,Red Sox,0.48100000000000004,0.519,live
+2023-04-02,Guardians,Mariners,0.441,0.5589999999999999,live
+2023-04-02,Giants,Yankees,0.396,0.604,live
+2023-04-03,Rays,Nationals,0.625,0.375,live
+2023-04-03,Phillies,Yankees,0.377,0.623,live
+2023-04-03,Mets,Brewers,0.518,0.48200000000000004,live
+2023-04-03,Braves,Cardinals,0.578,0.42200000000000004,live
+2023-04-04,Diamondbacks,Padres,0.359,0.6409999999999999,live
+2023-04-04,Rays,Nationals,0.596,0.40399999999999997,live
+2023-04-04,Cubs,Reds,0.52,0.48,live
+2023-04-04,Twins,Marlins,0.479,0.521,live
+2023-04-04,Tigers,Astros,0.37200000000000005,0.628,live
+2023-04-04,Phillies,Yankees,0.434,0.5660000000000001,live
+2023-04-04,Orioles,Rangers,0.43200000000000005,0.568,live
+2023-04-04,Guardians,Athletics,0.5820000000000001,0.418,live
+2023-04-05,Mets,Brewers,0.431,0.569,live
+2023-04-05,Tigers,Astros,0.317,0.6829999999999999,live
+2023-04-05,Guardians,Athletics,0.622,0.37799999999999995,live
+2023-04-05,Tigers,Astros,0.326,0.674,live
+2023-04-05,Rays,Nationals,0.6679999999999999,0.332,live
+2023-04-05,Phillies,Yankees,0.424,0.5760000000000001,live
+2023-04-05,Blue Jays,Royals,0.616,0.384,live
+2023-04-05,Braves,Cardinals,0.507,0.493,live
+2023-04-06,Padres,Braves,0.419,0.581,live
+2023-04-06,Blue Jays,Royals,0.614,0.386,live
+2023-04-06,Red Sox,Tigers,0.516,0.484,live
+2023-04-07,Yankees,Orioles,0.555,0.445,live
+2023-04-07,Padres,Braves,0.43799999999999994,0.562,live
+2023-04-07,Reds,Phillies,0.34700000000000003,0.653,live
+2023-04-07,Rangers,Cubs,0.48200000000000004,0.518,live
+2023-04-07,Marlins,Mets,0.43700000000000006,0.563,live
+2023-04-07,Athletics,Rays,0.358,0.642,live
+2023-04-08,Athletics,Rays,0.36,0.64,live
+2023-04-08,Cardinals,Brewers,0.451,0.5489999999999999,live
+2023-04-08,Marlins,Mets,0.365,0.635,live
+2023-04-08,Reds,Phillies,0.38799999999999996,0.612,live
+2023-04-08,Cardinals,Brewers,0.495,0.505,live
+2023-04-08,Nationals,Rockies,0.44,0.56,live
+2023-04-08,Dodgers,Diamondbacks,0.677,0.32299999999999995,live
+2023-04-08,Red Sox,Tigers,0.562,0.43799999999999994,live
+2023-04-09,Reds,Phillies,0.371,0.629,live
+2023-04-09,Dodgers,Diamondbacks,0.5820000000000001,0.418,live
+2023-04-09,Athletics,Rays,0.33,0.67,live
+2023-04-09,Blue Jays,Angels,0.483,0.517,live
+2023-04-09,Cardinals,Brewers,0.46799999999999997,0.532,live
+2023-04-09,Dodgers,Diamondbacks,0.581,0.419,live
+2023-04-09,Nationals,Rockies,0.456,0.544,live
+2023-04-09,Padres,Braves,0.46299999999999997,0.537,live
+2023-04-09,Red Sox,Tigers,0.534,0.466,live
+2023-04-09,Blue Jays,Angels,0.51,0.49,live
+2023-04-09,Rangers,Cubs,0.534,0.466,live
+2023-04-10,Marlins,Phillies,0.494,0.506,live
+2023-04-10,Padres,Mets,0.444,0.556,live
+2023-04-10,Mariners,Cubs,0.5720000000000001,0.428,live
+2023-04-10,Red Sox,Rays,0.42100000000000004,0.579,live
+2023-04-11,Brewers,Diamondbacks,0.508,0.49200000000000005,live
+2023-04-11,Reds,Braves,0.301,0.6990000000000001,live
+2023-04-11,Red Sox,Rays,0.382,0.618,live
+2023-04-11,Tigers,Blue Jays,0.32299999999999995,0.677,live
+2023-04-11,Astros,Pirates,0.635,0.365,live
+2023-04-11,Padres,Mets,0.515,0.485,live
+2023-04-12,Nationals,Angels,0.348,0.652,live
+2023-04-12,Brewers,Diamondbacks,0.541,0.45899999999999996,live
+2023-04-12,Tigers,Blue Jays,0.32,0.68,live
+2023-04-12,Red Sox,Rays,0.409,0.591,live
+2023-04-12,Reds,Braves,0.301,0.6990000000000001,live
+2023-04-12,Brewers,Diamondbacks,0.547,0.45299999999999996,live
+2023-04-12,Mariners,Cubs,0.49,0.51,live
+2023-04-12,Dodgers,Giants,0.588,0.41200000000000003,live
+2023-04-12,Nationals,Angels,0.358,0.642,live
+2023-04-13,Twins,Yankees,0.429,0.5710000000000001,live
+2023-04-13,Red Sox,Rays,0.408,0.5920000000000001,live
+2023-04-13,Phillies,Reds,0.565,0.435,live
+2023-04-13,Dodgers,Giants,0.62,0.38,live
+2023-04-14,Rays,Blue Jays,0.516,0.484,live
+2023-04-14,Brewers,Padres,0.439,0.561,live
+2023-04-15,Rockies,Mariners,0.371,0.629,live
+2023-04-15,Phillies,Reds,0.537,0.46299999999999997,live
+2023-04-15,Mets,Athletics,0.595,0.405,live
+2023-04-15,Brewers,Padres,0.45,0.55,live
+2023-04-15,Rays,Blue Jays,0.503,0.49700000000000005,live
+2023-04-15,Cubs,Dodgers,0.39899999999999997,0.601,live
+2023-04-16,Pirates,Cardinals,0.389,0.611,live
+2023-04-16,Mets,Athletics,0.583,0.41700000000000004,live
+2023-04-16,Angels,Red Sox,0.489,0.511,live
+2023-04-16,Cubs,Dodgers,0.374,0.626,live
+2023-04-16,Rays,Blue Jays,0.466,0.534,live
+2023-04-16,Rockies,Mariners,0.33899999999999997,0.6609999999999999,live
+2023-04-16,Phillies,Reds,0.6,0.4,live
+2023-04-17,Rays,Reds,0.606,0.39399999999999996,live
+2023-04-17,Angels,Red Sox,0.5760000000000001,0.424,live
+2023-04-18,Rays,Reds,0.528,0.47200000000000003,live
+2023-04-18,Mets,Dodgers,0.424,0.5760000000000001,live
+2023-04-18,Orioles,Nationals,0.542,0.45799999999999996,live
+2023-04-18,Brewers,Mariners,0.504,0.496,live
+2023-04-19,Rays,Reds,0.654,0.34600000000000003,live
+2023-04-19,Brewers,Mariners,0.457,0.5429999999999999,live
+2023-04-19,Cubs,Athletics,0.628,0.37200000000000005,live
+2023-04-19,Mets,Dodgers,0.38799999999999996,0.612,live
+2023-04-19,Giants,Marlins,0.512,0.488,live
+2023-04-22,Red Sox,Brewers,0.42700000000000005,0.573,live
+2023-04-25,White Sox,Blue Jays,0.359,0.6409999999999999,live
+2023-04-26,Red Sox,Orioles,0.499,0.501,live
+2023-04-27,Mariners,Phillies,0.502,0.498,live
+2023-04-29,Diamondbacks,Rockies,0.542,0.45799999999999996,live
+2023-04-30,Diamondbacks,Rockies,0.555,0.445,live
+2023-04-30,Mariners,Blue Jays,0.395,0.605,live
+2023-04-30,Orioles,Tigers,0.599,0.401,live
+2023-05-01,Guardians,Yankees,0.444,0.556,live
+2023-05-01,Blue Jays,Red Sox,0.562,0.43799999999999994,live
+2023-05-06,Rangers,Angels,0.457,0.5429999999999999,live
+2023-05-06,Nationals,Diamondbacks,0.408,0.5920000000000001,live
+2023-05-07,Nationals,Diamondbacks,0.409,0.591,live
+2023-05-09,Blue Jays,Phillies,0.498,0.502,live
+2023-05-10,Blue Jays,Phillies,0.522,0.478,live
+2023-05-10,Nationals,Giants,0.44299999999999995,0.557,live
+2023-05-12,Mets,Nationals,0.545,0.455,live
+2023-05-12,Giants,Diamondbacks,0.539,0.461,live
+2023-05-13,Reds,Marlins,0.365,0.635,live
+2023-05-13,Cubs,Twins,0.41200000000000003,0.588,live
+2023-05-13,Giants,Diamondbacks,0.508,0.49200000000000005,live
+2023-05-13,Rangers,Athletics,0.648,0.35200000000000004,live
+2023-05-13,Cubs,Twins,0.43200000000000005,0.568,live
+2023-05-13,Phillies,Rockies,0.568,0.43200000000000005,live
+2023-05-14,Giants,Diamondbacks,0.547,0.45299999999999996,live
+2023-05-14,Giants,Diamondbacks,0.413,0.5870000000000001,live
+2023-05-14,Phillies,Rockies,0.573,0.42700000000000005,live
+2023-05-14,Braves,Blue Jays,0.514,0.486,live
+2023-05-14,Padres,Dodgers,0.385,0.615,live
+2023-05-15,Angels,Orioles,0.55,0.45,live
+2023-05-16,Pirates,Tigers,0.48100000000000004,0.519,live
+2023-05-16,Diamondbacks,Athletics,0.642,0.358,live
+2023-05-16,Phillies,Giants,0.5,0.5,live
+2023-05-17,Reds,Rockies,0.525,0.475,live
+2023-05-17,Pirates,Tigers,0.44,0.56,live
+2023-05-17,Twins,Dodgers,0.46799999999999997,0.532,live
+2023-05-17,Phillies,Giants,0.515,0.485,live
+2023-05-17,Rays,Mets,0.515,0.485,live
+2023-05-17,Phillies,Giants,0.523,0.47700000000000004,live
+2023-05-17,Reds,Rockies,0.47700000000000004,0.523,live
+2023-05-17,Diamondbacks,Athletics,0.591,0.409,live
+2023-05-17,Royals,Padres,0.332,0.6679999999999999,live
+2023-05-17,Braves,Rangers,0.529,0.47100000000000003,live
+2023-05-18,Cubs,Astros,0.42100000000000004,0.579,live
+2023-05-18,Rays,Mets,0.5379999999999999,0.462,live
+2023-05-18,Braves,Rangers,0.5920000000000001,0.408,live
+2023-05-18,Yankees,Blue Jays,0.479,0.521,live
+2023-05-19,Diamondbacks,Pirates,0.573,0.42700000000000005,live
+2023-05-19,Brewers,Rays,0.385,0.615,live
+2023-05-19,Cubs,Phillies,0.478,0.522,live
+2023-05-19,Mariners,Braves,0.405,0.595,live
+2023-05-20,Mariners,Braves,0.45299999999999996,0.547,live
+2023-05-20,Rockies,Rangers,0.413,0.5870000000000001,live
+2023-05-20,Marlins,Giants,0.41600000000000004,0.584,live
+2023-05-20,Orioles,Blue Jays,0.41100000000000003,0.589,live
+2023-05-20,Brewers,Rays,0.415,0.585,live
+2023-05-20,Marlins,Giants,0.513,0.48700000000000004,live
+2023-05-20,Rockies,Rangers,0.369,0.631,live
+2023-05-20,Cubs,Phillies,0.414,0.586,live
+2023-05-21,Orioles,Blue Jays,0.402,0.598,live
+2023-05-21,Twins,Angels,0.45799999999999996,0.542,live
+2023-05-21,Rockies,Rangers,0.373,0.627,live
+2023-05-21,Dodgers,Cardinals,0.5770000000000001,0.423,live
+2023-05-21,Cubs,Phillies,0.505,0.495,live
+2023-05-21,Diamondbacks,Pirates,0.529,0.47100000000000003,live
+2023-05-21,Brewers,Rays,0.428,0.5720000000000001,live
+2023-05-21,Twins,Angels,0.488,0.512,live
+2023-05-21,Marlins,Giants,0.473,0.527,live
+2023-05-22,Diamondbacks,Phillies,0.385,0.615,live
+2023-05-22,Rangers,Pirates,0.535,0.465,live
+2023-05-22,Giants,Twins,0.43,0.57,live
+2023-05-22,Blue Jays,Rays,0.46399999999999997,0.536,live
+2023-05-22,Astros,Brewers,0.52,0.48,live
+2023-05-23,Mets,Cubs,0.517,0.483,live
+2023-05-23,Dodgers,Braves,0.377,0.623,live
+2023-05-23,Dodgers,Braves,0.43200000000000005,0.568,live
+2023-05-23,Marlins,Rockies,0.518,0.48200000000000004,live
+2023-05-24,Rangers,Pirates,0.536,0.46399999999999997,live
+2023-05-24,Dodgers,Braves,0.493,0.507,live
+2023-05-24,Astros,Brewers,0.531,0.469,live
+2023-05-24,Blue Jays,Rays,0.428,0.5720000000000001,live
+2023-05-24,Marlins,Rockies,0.542,0.45799999999999996,live
+2023-05-24,Diamondbacks,Phillies,0.531,0.469,live
+2023-05-24,Giants,Twins,0.43700000000000006,0.563,live
+2023-05-25,Orioles,Yankees,0.45399999999999996,0.546,live
+2023-05-25,Tigers,Royals,0.496,0.504,live
+2023-05-25,Blue Jays,Rays,0.46,0.54,live
+2023-05-25,Mets,Cubs,0.491,0.509,live
+2023-05-25,Padres,Nationals,0.565,0.435,live
+2023-05-25,Phillies,Braves,0.489,0.511,live
+2023-05-25,White Sox,Tigers,0.518,0.48200000000000004,live
+2023-05-25,Giants,Brewers,0.425,0.575,live
+2023-05-25,Marlins,Rockies,0.49700000000000005,0.503,live
+2023-05-25,Orioles,Yankees,0.452,0.5479999999999999,live
+2023-05-25,Red Sox,Angels,0.499,0.501,live
+2023-05-25,Athletics,Mariners,0.304,0.696,live
+2023-05-25,Marlins,Rockies,0.603,0.397,live
+2023-05-25,Cardinals,Reds,0.579,0.42100000000000004,live
+2023-05-26,White Sox,Tigers,0.524,0.47600000000000003,live
+2023-05-26,Athletics,Mariners,0.298,0.7020000000000001,live
+2023-05-26,Rangers,Orioles,0.49700000000000005,0.503,live
+2023-05-26,Phillies,Braves,0.402,0.598,live
+2023-05-26,Dodgers,Rays,0.48200000000000004,0.518,live
+2023-05-26,Reds,Cubs,0.384,0.616,live
+2023-05-26,Cardinals,Guardians,0.46399999999999997,0.536,live
+2023-05-26,Padres,Yankees,0.488,0.512,live
+2023-05-27,Nationals,Royals,0.45799999999999996,0.542,live
+2023-05-27,Pirates,Mariners,0.445,0.555,live
+2023-05-27,Astros,Athletics,0.7240000000000001,0.276,live
+2023-05-27,Mets,Rockies,0.653,0.34700000000000003,live
+2023-05-27,Marlins,Angels,0.45,0.55,live
+2023-05-27,Red Sox,Diamondbacks,0.547,0.45299999999999996,live
+2023-05-27,Giants,Brewers,0.45,0.55,live
+2023-05-27,Blue Jays,Twins,0.5579999999999999,0.442,live
+2023-05-28,Mets,Rockies,0.647,0.353,live
+2023-05-30,Brewers,Blue Jays,0.41100000000000003,0.589,live
+2023-05-30,Nationals,Dodgers,0.34700000000000003,0.653,live
+2023-06-07,Mets,Braves,0.5,0.5,live
+2023-06-07,Orioles,Brewers,0.46299999999999997,0.537,live
+2023-06-08,Twins,Rays,0.418,0.5820000000000001,live
+2023-06-08,Giants,Rockies,0.615,0.385,live
+2023-06-08,Red Sox,Guardians,0.475,0.525,live
+2023-06-08,Cubs,Angels,0.423,0.5770000000000001,live
+2023-06-08,White Sox,Yankees,0.414,0.586,live
+2023-06-08,Dodgers,Reds,0.617,0.38299999999999995,live
+2023-06-08,Cardinals,Rangers,0.449,0.551,live
+2023-06-08,Tigers,Phillies,0.332,0.6679999999999999,live
+2023-06-08,White Sox,Yankees,0.401,0.599,live
+2023-06-08,Orioles,Brewers,0.49700000000000005,0.503,live
+2023-06-08,Mets,Braves,0.39799999999999996,0.602,live
+2023-06-08,Giants,Rockies,0.595,0.405,live
+2023-06-08,Astros,Blue Jays,0.504,0.496,live
+2023-06-09,Cubs,Angels,0.484,0.516,live
+2023-06-10,Cubs,Giants,0.44799999999999995,0.552,live
+2023-06-27,Padres,Pirates,0.568,0.43200000000000005,live
+2023-06-27,Twins,Braves,0.44,0.56,live
+2023-06-27,Astros,Cardinals,0.527,0.473,live
+2023-06-27,Reds,Orioles,0.461,0.539,live
+2023-06-27,Marlins,Red Sox,0.501,0.499,live
+2023-06-27,Nationals,Mariners,0.28800000000000003,0.7120000000000001,live
+2023-06-27,Brewers,Mets,0.46399999999999997,0.536,live
+2023-06-27,Giants,Blue Jays,0.4,0.6,live
+2023-06-28,Dodgers,Rockies,0.6859999999999999,0.314,live
+2023-06-28,Nationals,Mariners,0.324,0.6759999999999999,live
+2023-06-28,Rays,Diamondbacks,0.46399999999999997,0.536,live
+2023-06-28,Phillies,Cubs,0.517,0.483,live
+2023-06-28,Guardians,Royals,0.537,0.46299999999999997,live
+2023-06-28,Padres,Pirates,0.542,0.45799999999999996,live
+2023-06-28,Twins,Braves,0.408,0.5920000000000001,live
+2023-06-28,Brewers,Mets,0.429,0.5710000000000001,live
+2023-06-28,Nationals,Mariners,0.389,0.611,live
+2023-06-28,White Sox,Angels,0.379,0.621,live
+2023-06-28,Yankees,Athletics,0.625,0.375,live
+2023-06-28,Giants,Blue Jays,0.489,0.511,live
+2023-06-28,Tigers,Rangers,0.38,0.62,live
+2023-06-28,Astros,Cardinals,0.507,0.493,live
+2023-06-28,Marlins,Red Sox,0.47100000000000003,0.529,live
+2023-06-28,Reds,Orioles,0.40299999999999997,0.597,live
+2023-06-29,Dodgers,Rockies,0.574,0.426,live
+2023-06-29,White Sox,Angels,0.447,0.5529999999999999,live
+2023-06-29,Guardians,Royals,0.585,0.415,live
+2023-06-29,Yankees,Athletics,0.58,0.42,live
+2023-06-29,Rays,Diamondbacks,0.583,0.41700000000000004,live
+2023-06-29,Phillies,Cubs,0.502,0.498,live
+2023-06-29,Tigers,Rangers,0.349,0.6509999999999999,live
+2023-09-17,Cubs,Diamondbacks,0.48200000000000004,0.518,live
+2023-09-18,Phillies,Braves,0.484,0.516,live
+2023-09-18,Brewers,Cardinals,0.581,0.419,live
+2023-09-18,Mets,Marlins,0.44799999999999995,0.552,live
+2023-09-19,Rockies,Padres,0.33799999999999997,0.662,live
+2023-09-19,Mets,Marlins,0.457,0.5429999999999999,live
+2023-09-20,Red Sox,Rangers,0.465,0.535,live
+2023-09-20,Mets,Marlins,0.48200000000000004,0.518,live
+2023-09-20,Rockies,Padres,0.32799999999999996,0.672,live
+2023-09-20,Brewers,Cardinals,0.49,0.51,live
+2023-09-21,Mets,Phillies,0.386,0.614,live
+2023-09-21,Brewers,Cardinals,0.494,0.506,live
+2023-09-21,Pirates,Cubs,0.40700000000000003,0.593,live
+2023-09-22,White Sox,Red Sox,0.355,0.645,live
+2023-09-22,Brewers,Marlins,0.532,0.46799999999999997,live
+2023-09-23,Brewers,Marlins,0.536,0.46399999999999997,live
+2023-09-23,Blue Jays,Rays,0.47700000000000004,0.523,live
+2023-09-23,Mets,Phillies,0.406,0.594,live
+2023-09-23,Rockies,Cubs,0.298,0.7020000000000001,live
+2023-09-24,Mariners,Rangers,0.44799999999999995,0.552,live
+2023-09-24,Rockies,Cubs,0.371,0.629,live
+2023-09-24,Royals,Astros,0.318,0.682,live
+2023-09-24,Brewers,Marlins,0.507,0.493,live
+2023-09-24,Diamondbacks,Yankees,0.55,0.45,live
+2023-09-24,Cardinals,Padres,0.38299999999999995,0.617,live
+2023-09-25,Diamondbacks,Yankees,0.534,0.466,live
+2023-09-26,Cubs,Braves,0.40399999999999997,0.596,live
+2023-09-26,Diamondbacks,White Sox,0.552,0.44799999999999995,live
+2023-09-26,Yankees,Blue Jays,0.387,0.613,live
+2023-09-26,Royals,Tigers,0.43799999999999994,0.562,live
+2023-09-26,Astros,Mariners,0.48700000000000004,0.513,live
+2023-09-26,Cardinals,Brewers,0.489,0.511,live
+2023-09-27,Athletics,Twins,0.297,0.703,live
+2023-09-27,Cardinals,Brewers,0.424,0.5760000000000001,live
+2023-09-27,Yankees,Blue Jays,0.513,0.48700000000000004,live
+2023-09-27,Diamondbacks,White Sox,0.514,0.486,live
+2023-09-27,Pirates,Phillies,0.39799999999999996,0.602,live
+2023-09-27,Rays,Red Sox,0.5579999999999999,0.442,live
+2023-09-27,Marlins,Mets,0.499,0.501,live
+2023-09-27,Marlins,Mets,0.43200000000000005,0.568,live
+2023-09-28,Pirates,Phillies,0.331,0.669,live
+2023-09-28,Cubs,Braves,0.455,0.545,live
+2023-09-28,Red Sox,Orioles,0.45299999999999996,0.547,live
+2023-09-28,Yankees,Blue Jays,0.389,0.611,live
+2023-09-28,Astros,Mariners,0.531,0.469,live
+2023-09-28,Cardinals,Brewers,0.397,0.603,live
+2023-09-30,Astros,Diamondbacks,0.418,0.5820000000000001,live
+2023-09-30,Marlins,Pirates,0.534,0.466,live
+2023-09-30,Rays,Blue Jays,0.423,0.5770000000000001,live
+2023-09-30,Phillies,Mets,0.513,0.48700000000000004,live
+2023-09-30,Cubs,Brewers,0.501,0.499,live
+2023-09-30,Cubs,Brewers,0.48200000000000004,0.518,live
+2023-09-30,Yankees,Royals,0.578,0.42200000000000004,live
+2023-09-30,Yankees,Royals,0.598,0.402,live
+2023-10-01,Phillies,Mets,0.539,0.461,live
+2023-10-01,Reds,Cardinals,0.498,0.502,live
+2023-10-01,Guardians,Tigers,0.469,0.531,live
+2023-10-01,Rangers,Mariners,0.449,0.551,live
+2023-10-01,Yankees,Royals,0.5589999999999999,0.441,live
+2023-10-01,Cubs,Brewers,0.486,0.514,live
+2023-10-01,Rays,Blue Jays,0.444,0.556,live
+2023-10-01,Astros,Diamondbacks,0.501,0.499,live
+2023-10-01,Astros,Diamondbacks,0.524,0.47600000000000003,live
+2023-10-01,Twins,Rockies,0.64,0.36,live
+2023-10-01,Padres,White Sox,0.5579999999999999,0.442,live
+2023-10-03,Diamondbacks,Brewers,0.376,0.624,live
+2023-10-03,Rangers,Rays,0.45,0.55,live
+2023-10-03,Blue Jays,Twins,0.51,0.49,live
+2023-10-04,Rangers,Rays,0.46399999999999997,0.536,live
+2023-10-04,Marlins,Phillies,0.415,0.585,live
+2023-10-04,Blue Jays,Twins,0.47700000000000004,0.523,live
+2023-10-04,Diamondbacks,Brewers,0.513,0.48700000000000004,live
+2023-10-05,Marlins,Phillies,0.41600000000000004,0.584,live
+2023-10-10,Astros,Twins,0.48,0.52,live
+2023-10-11,Astros,Twins,0.439,0.561,live
+2024-03-28,Yankees,Astros,0.406,0.594,live
+2024-03-29,Brewers,Mets,0.466,0.534,live
+2024-03-30,Cardinals,Dodgers,0.354,0.6459999999999999,live
+2024-03-30,Yankees,Astros,0.479,0.521,live
+2024-03-30,Cubs,Rangers,0.504,0.496,live
+2024-03-30,Yankees,Astros,0.446,0.5539999999999999,live
+2024-03-30,Brewers,Mets,0.473,0.527,live
+2024-03-31,Rockies,Diamondbacks,0.40299999999999997,0.597,live
+2024-03-31,Twins,Royals,0.586,0.414,live
+2024-03-31,Yankees,Astros,0.456,0.544,live
+2024-03-31,Cubs,Rangers,0.505,0.495,live
+2024-03-31,Cardinals,Dodgers,0.353,0.647,live
+2024-03-31,Brewers,Mets,0.466,0.534,live
+2024-04-02,Giants,Dodgers,0.392,0.608,live
+2024-04-02,Angels,Marlins,0.43200000000000005,0.568,live
+2024-04-02,Reds,Phillies,0.425,0.575,live
+2024-04-02,Guardians,Mariners,0.47700000000000004,0.523,live
+2024-04-02,Twins,Brewers,0.469,0.531,live
+2024-04-02,Royals,Orioles,0.335,0.665,live
+2024-04-02,Yankees,Diamondbacks,0.568,0.43200000000000005,live
+2024-04-02,Rangers,Rays,0.49200000000000005,0.508,live
+2024-04-02,Rockies,Cubs,0.31,0.69,live
+2024-04-02,Braves,White Sox,0.635,0.365,live
+2024-04-02,Blue Jays,Astros,0.489,0.511,live
+2024-04-03,Red Sox,Athletics,0.561,0.439,live
+2024-04-03,Pirates,Nationals,0.573,0.42700000000000005,live
+2024-04-03,Blue Jays,Astros,0.415,0.585,live
+2024-04-03,Twins,Brewers,0.493,0.507,live
+2024-04-03,Guardians,Mariners,0.43,0.57,live
+2024-04-03,Yankees,Diamondbacks,0.44299999999999995,0.557,live
+2024-04-03,Red Sox,Athletics,0.628,0.37200000000000005,live
+2024-04-03,Royals,Orioles,0.376,0.624,live
+2024-04-03,Angels,Marlins,0.461,0.539,live
+2024-04-03,Cardinals,Padres,0.456,0.544,live
+2024-04-03,Giants,Dodgers,0.341,0.659,live
+2024-04-03,Guardians,Mariners,0.41100000000000003,0.589,live
+2024-04-03,Yankees,Diamondbacks,0.46799999999999997,0.532,live
+2024-04-03,Cardinals,Padres,0.429,0.5710000000000001,live
+2024-04-03,Rangers,Rays,0.49,0.51,live
+2024-04-04,Guardians,Twins,0.451,0.5489999999999999,live
+2024-04-04,Rockies,Cubs,0.342,0.6579999999999999,live
+2024-04-04,Blue Jays,Astros,0.478,0.522,live
+2024-04-04,Reds,Phillies,0.42100000000000004,0.579,live
+2024-04-04,Giants,Dodgers,0.321,0.679,live
+2024-04-05,Padres,Giants,0.501,0.499,live
+2024-04-06,Astros,Rangers,0.473,0.527,live
+2024-04-06,Phillies,Nationals,0.598,0.402,live
+2024-04-06,Blue Jays,Yankees,0.521,0.479,live
+2024-04-06,Diamondbacks,Braves,0.318,0.682,live
+2024-04-06,Red Sox,Angels,0.503,0.49700000000000005,live
+2024-04-06,Athletics,Tigers,0.414,0.586,live
+2024-04-06,Mets,Reds,0.48,0.52,live
+2024-04-06,Marlins,Cardinals,0.42,0.58,live
+2024-04-06,Guardians,Twins,0.414,0.586,live
+2024-04-06,Mariners,Brewers,0.507,0.493,live
+2024-04-06,Astros,Rangers,0.521,0.479,live
+2024-04-06,Orioles,Pirates,0.609,0.391,live
+2024-04-06,Dodgers,Cubs,0.556,0.444,live
+2024-04-06,White Sox,Royals,0.369,0.631,live
+2024-04-07,Diamondbacks,Braves,0.358,0.642,live
+2024-04-07,Red Sox,Angels,0.509,0.491,live
+2024-04-07,Rays,Rockies,0.622,0.37799999999999995,live
+2024-04-07,Mariners,Brewers,0.486,0.514,live
+2024-04-07,Orioles,Pirates,0.56,0.44,live
+2024-04-07,White Sox,Royals,0.466,0.534,live
+2024-04-07,Red Sox,Angels,0.49200000000000005,0.508,live
+2024-04-07,Rays,Rockies,0.602,0.39799999999999996,live
+2024-04-07,Astros,Rangers,0.485,0.515,live
+2024-04-07,Mets,Reds,0.46,0.54,live
+2024-04-07,Blue Jays,Yankees,0.473,0.527,live
+2024-04-07,Padres,Giants,0.42100000000000004,0.579,live
+2024-04-07,Phillies,Nationals,0.57,0.43,live
+2024-04-07,Padres,Giants,0.509,0.491,live
+2024-04-07,Marlins,Cardinals,0.43,0.57,live
+2024-04-07,Athletics,Tigers,0.405,0.595,live
+2024-04-07,Dodgers,Cubs,0.507,0.493,live
+2024-04-08,White Sox,Guardians,0.335,0.665,live
+2024-04-09,White Sox,Guardians,0.335,0.665,live
+2024-04-09,Phillies,Cardinals,0.512,0.488,live
+2024-04-09,Nationals,Giants,0.36200000000000004,0.638,live
+2024-04-09,Astros,Rangers,0.541,0.45899999999999996,live
+2024-04-09,Rays,Angels,0.594,0.406,live
+2024-04-09,Brewers,Reds,0.466,0.534,live
+2024-04-09,Astros,Royals,0.499,0.501,live
+2024-04-10,Rays,Angels,0.547,0.45299999999999996,live
+2024-04-10,Dodgers,Twins,0.579,0.42100000000000004,live
+2024-04-10,Astros,Royals,0.514,0.486,live
+2024-04-10,Nationals,Giants,0.42200000000000004,0.578,live
+2024-04-10,White Sox,Guardians,0.336,0.664,live
+2024-04-10,Rays,Angels,0.5820000000000001,0.418,live
+2024-04-11,Athletics,Rangers,0.396,0.604,live
+2024-04-11,Mets,Braves,0.419,0.581,live
+2024-04-11,Orioles,Red Sox,0.515,0.485,live
+2024-04-12,Royals,Mets,0.47200000000000003,0.528,live
+2024-04-12,Twins,Tigers,0.504,0.496,live
+2024-04-12,Brewers,Orioles,0.488,0.512,live
+2024-04-12,Angels,Red Sox,0.47,0.53,live
+2024-04-12,Reds,White Sox,0.581,0.419,live
+2024-04-13,Royals,Mets,0.42200000000000004,0.578,live
+2024-04-13,Twins,Tigers,0.51,0.49,live
+2024-04-13,Yankees,Guardians,0.544,0.456,live
+2024-04-13,Padres,Dodgers,0.40399999999999997,0.596,live
+2024-04-13,Nationals,Athletics,0.449,0.551,live
+2024-04-14,Cardinals,Diamondbacks,0.42,0.58,live
+2024-04-14,Brewers,Orioles,0.40399999999999997,0.596,live
+2024-04-14,Royals,Mets,0.503,0.49700000000000005,live
+2024-04-14,Yankees,Guardians,0.517,0.483,live
+2024-04-14,Nationals,Athletics,0.507,0.493,live
+2024-04-14,Reds,White Sox,0.605,0.395,live
+2024-04-15,Twins,Orioles,0.43200000000000005,0.568,live
+2024-04-15,Royals,White Sox,0.629,0.371,live
+2024-04-15,Angels,Rays,0.41,0.59,live
+2024-04-16,Angels,Rays,0.369,0.631,live
+2024-04-16,Nationals,Dodgers,0.29100000000000004,0.7090000000000001,live
+2024-04-16,Reds,Mariners,0.49,0.51,live
+2024-04-16,Pirates,Mets,0.42100000000000004,0.579,live
+2024-04-16,Braves,Astros,0.531,0.469,live
+2024-04-16,Rangers,Tigers,0.51,0.49,live
+2024-04-16,Twins,Orioles,0.42,0.58,live
+2024-04-16,Guardians,Red Sox,0.534,0.466,live
+2024-04-16,Cardinals,Athletics,0.602,0.39799999999999996,live
+2024-04-17,Twins,Orioles,0.447,0.5529999999999999,live
+2024-04-17,Royals,White Sox,0.614,0.386,live
+2024-04-17,Royals,White Sox,0.595,0.405,live
+2024-04-17,Rangers,Tigers,0.429,0.5710000000000001,live
+2024-04-17,Guardians,Red Sox,0.456,0.544,live
+2024-04-17,Nationals,Dodgers,0.303,0.6970000000000001,live
+2024-04-17,Cardinals,Athletics,0.544,0.456,live
+2024-04-17,Nationals,Dodgers,0.319,0.6809999999999999,live
+2024-04-17,Braves,Astros,0.5720000000000001,0.428,live
+2024-04-18,Rangers,Tigers,0.512,0.488,live
+2024-04-19,Orioles,Royals,0.593,0.40700000000000003,live
+2024-04-19,Athletics,Guardians,0.425,0.575,live
+2024-04-19,Rangers,Braves,0.40299999999999997,0.597,live
+2024-04-19,Angels,Reds,0.426,0.574,live
+2024-04-19,Marlins,Cubs,0.387,0.613,live
+2024-04-19,Astros,Nationals,0.5720000000000001,0.428,live
+2024-04-19,Red Sox,Pirates,0.483,0.517,live
+2024-04-20,Athletics,Guardians,0.34,0.66,live
+2024-04-20,Brewers,Cardinals,0.506,0.494,live
+2024-04-20,Red Sox,Pirates,0.486,0.514,live
+2024-04-20,Marlins,Cubs,0.37,0.63,live
+2024-04-20,Rangers,Braves,0.42700000000000005,0.573,live
+2024-04-20,Astros,Nationals,0.5870000000000001,0.413,live
+2024-04-20,Orioles,Royals,0.552,0.44799999999999995,live
+2024-04-20,Angels,Reds,0.426,0.574,live
+2024-04-20,Tigers,Twins,0.41100000000000003,0.589,live
+2024-04-20,Marlins,Cubs,0.35600000000000004,0.644,live
+2024-04-21,Mets,Dodgers,0.35700000000000004,0.643,live
+2024-04-21,Astros,Nationals,0.516,0.484,live
+2024-04-21,Athletics,Guardians,0.335,0.665,live
+2024-04-21,Angels,Reds,0.37799999999999995,0.622,live
+2024-04-21,Blue Jays,Padres,0.506,0.494,live
+2024-04-21,Red Sox,Pirates,0.444,0.556,live
+2024-04-21,Marlins,Cubs,0.473,0.527,live
+2024-04-21,Rangers,Braves,0.387,0.613,live
+2024-04-22,Mariners,Rockies,0.5660000000000001,0.434,live
+2024-04-22,Diamondbacks,Cardinals,0.46299999999999997,0.537,live
+2024-04-22,Marlins,Braves,0.34700000000000003,0.653,live
+2024-04-23,Dodgers,Nationals,0.66,0.34,live
+2024-04-23,Red Sox,Guardians,0.509,0.491,live
+2024-04-23,Astros,Cubs,0.434,0.5660000000000001,live
+2024-04-23,Diamondbacks,Cardinals,0.462,0.5379999999999999,live
+2024-04-23,Marlins,Braves,0.33899999999999997,0.6609999999999999,live
+2024-04-24,Astros,Cubs,0.429,0.5710000000000001,live
+2024-04-24,Red Sox,Guardians,0.462,0.5379999999999999,live
+2024-04-24,Diamondbacks,Cardinals,0.517,0.483,live
+2024-04-24,Marlins,Braves,0.318,0.682,live
+2024-04-25,Phillies,Reds,0.586,0.414,live
+2024-04-25,White Sox,Twins,0.31,0.69,live
+2024-04-25,Red Sox,Guardians,0.441,0.5589999999999999,live
+2024-04-25,Astros,Cubs,0.494,0.506,live
+2024-04-26,Cardinals,Mets,0.425,0.575,live
+2024-04-26,Guardians,Braves,0.35700000000000004,0.643,live
+2024-04-26,Cubs,Red Sox,0.555,0.445,live
+2024-04-27,Twins,Angels,0.531,0.469,live
+2024-04-27,Cardinals,Mets,0.541,0.45899999999999996,live
+2024-04-27,Diamondbacks,Mariners,0.552,0.44799999999999995,live
+2024-04-27,Nationals,Marlins,0.40700000000000003,0.593,live
+2024-04-27,Dodgers,Blue Jays,0.599,0.401,live
+2024-04-27,Guardians,Braves,0.40299999999999997,0.597,live
+2024-04-27,Cubs,Red Sox,0.508,0.49200000000000005,live
+2024-04-28,Rays,White Sox,0.5920000000000001,0.408,live
+2024-04-28,Cubs,Red Sox,0.46,0.54,live
+2024-04-28,Phillies,Padres,0.451,0.5489999999999999,live
+2024-04-28,Royals,Tigers,0.418,0.5820000000000001,live
+2024-04-28,Diamondbacks,Mariners,0.401,0.599,live
+2024-04-28,Cardinals,Mets,0.408,0.5920000000000001,live
+2024-04-28,Guardians,Braves,0.366,0.634,live
+2024-04-29,Twins,White Sox,0.6679999999999999,0.332,live
+2024-04-29,Rays,Brewers,0.462,0.5379999999999999,live
+2024-04-30,Twins,White Sox,0.633,0.36700000000000005,live
+2024-04-30,Braves,Mariners,0.562,0.43799999999999994,live
+2024-04-30,Dodgers,Diamondbacks,0.627,0.373,live
+2024-04-30,Giants,Red Sox,0.505,0.495,live
+2024-04-30,Cubs,Mets,0.494,0.506,live
+2024-04-30,Rays,Brewers,0.368,0.632,live
+2024-04-30,Cardinals,Tigers,0.418,0.5820000000000001,live
+2024-05-01,Braves,Mariners,0.621,0.379,live
+2024-05-01,Cardinals,Tigers,0.469,0.531,live
+2024-05-01,Cubs,Mets,0.534,0.466,live
+2024-05-01,Braves,Mariners,0.514,0.486,live
+2024-05-01,Phillies,Angels,0.622,0.37799999999999995,live
+2024-05-01,Rays,Brewers,0.42200000000000004,0.578,live
+2024-05-01,Giants,Red Sox,0.428,0.5720000000000001,live
+2024-05-02,Giants,Red Sox,0.441,0.5589999999999999,live
+2024-05-02,Dodgers,Diamondbacks,0.552,0.44799999999999995,live
+2024-05-02,Yankees,Orioles,0.42700000000000005,0.573,live
+2024-05-02,Cubs,Mets,0.484,0.516,live
+2024-05-03,Mets,Rays,0.48100000000000004,0.519,live
+2024-05-03,Tigers,Yankees,0.42200000000000004,0.578,live
+2024-05-04,Mets,Rays,0.484,0.516,live
+2024-05-04,Red Sox,Twins,0.526,0.474,live
+2024-05-04,White Sox,Cardinals,0.282,0.718,live
+2024-05-04,Braves,Dodgers,0.522,0.478,live
+2024-05-04,Marlins,Athletics,0.495,0.505,live
+2024-05-04,Tigers,Yankees,0.434,0.5660000000000001,live
+2024-05-04,Red Sox,Twins,0.382,0.618,live
+2024-05-05,Braves,Dodgers,0.42100000000000004,0.579,live
+2024-05-05,Braves,Dodgers,0.43799999999999994,0.562,live
+2024-05-05,Red Sox,Twins,0.386,0.614,live
+2024-05-05,Mets,Rays,0.43700000000000006,0.563,live
+2024-05-05,White Sox,Cardinals,0.364,0.636,live
+2024-05-06,White Sox,Rays,0.36200000000000004,0.638,live
+2024-05-06,Mets,Cardinals,0.509,0.491,live
+2024-05-07,Red Sox,Braves,0.39299999999999996,0.607,live
+2024-05-07,Mets,Cardinals,0.518,0.48200000000000004,live
+2024-05-08,Giants,Rockies,0.532,0.46799999999999997,live
+2024-05-08,Red Sox,Braves,0.34299999999999997,0.657,live
+2024-05-08,Tigers,Guardians,0.40399999999999997,0.596,live
+2024-05-09,Cardinals,Brewers,0.528,0.47200000000000003,live
+2024-05-10,Guardians,White Sox,0.633,0.36700000000000005,live
+2024-05-10,Cubs,Pirates,0.48100000000000004,0.519,live
+2024-05-10,Guardians,White Sox,0.539,0.461,live
+2024-05-11,Guardians,White Sox,0.606,0.39399999999999996,live
+2024-05-11,Nationals,Red Sox,0.39,0.61,live
+2024-05-11,Braves,Mets,0.568,0.43200000000000005,live
+2024-05-11,Braves,Mets,0.5429999999999999,0.457,live
+2024-05-12,Rangers,Rockies,0.578,0.42200000000000004,live
+2024-05-12,Rangers,Rockies,0.597,0.40299999999999997,live
+2024-05-12,Cubs,Pirates,0.478,0.522,live
+2024-05-12,Nationals,Red Sox,0.452,0.5479999999999999,live
+2024-05-14,Athletics,Astros,0.365,0.635,live
+2024-05-14,Cubs,Braves,0.345,0.655,live
+2024-05-14,Guardians,Rangers,0.484,0.516,live
+2024-05-15,Guardians,Rangers,0.521,0.479,live
+2024-05-15,Nationals,White Sox,0.47200000000000003,0.528,live
+2024-05-15,Cardinals,Angels,0.569,0.431,live
+2024-05-15,Pirates,Brewers,0.40399999999999997,0.596,live
+2024-05-15,Cubs,Braves,0.418,0.5820000000000001,live
+2024-05-15,Marlins,Tigers,0.40700000000000003,0.593,live
+2024-05-15,Blue Jays,Orioles,0.392,0.608,live
+2024-05-15,Yankees,Twins,0.46799999999999997,0.532,live
+2024-05-16,Guardians,Rangers,0.42,0.58,live
+2024-05-17,Pirates,Cubs,0.506,0.494,live
+2024-05-18,Pirates,Cubs,0.355,0.645,live
+2024-05-18,Red Sox,Cardinals,0.5329999999999999,0.467,live
+2024-05-19,Mariners,Orioles,0.405,0.595,live
+2024-05-19,Pirates,Cubs,0.42100000000000004,0.579,live
+2024-05-19,Rockies,Giants,0.35700000000000004,0.643,live
+2024-05-19,Angels,Rangers,0.395,0.605,live
+2024-05-19,Tigers,Diamondbacks,0.42700000000000005,0.573,live
+2024-05-19,Rays,Blue Jays,0.531,0.469,live
+2024-05-19,White Sox,Yankees,0.265,0.735,live
+2024-05-19,Athletics,Royals,0.41,0.59,live
+2024-05-19,Reds,Dodgers,0.38,0.62,live
+2024-05-19,Nationals,Phillies,0.38,0.62,live
+2024-05-19,Tigers,Diamondbacks,0.473,0.527,live
+2024-05-19,Reds,Dodgers,0.33399999999999996,0.6659999999999999,live
+2024-05-19,Red Sox,Cardinals,0.488,0.512,live
+2024-05-19,Twins,Guardians,0.397,0.603,live
+2024-05-19,Padres,Braves,0.423,0.5770000000000001,live
+2024-05-19,Mets,Marlins,0.534,0.466,live
+2024-05-19,Brewers,Astros,0.528,0.47200000000000003,live
+2024-05-20,Twins,Nationals,0.634,0.366,live
+2024-05-20,Tigers,Royals,0.536,0.46399999999999997,live
+2024-05-20,Orioles,Cardinals,0.46399999999999997,0.536,live
+2024-05-20,Red Sox,Rays,0.505,0.495,live
+2024-05-20,White Sox,Blue Jays,0.382,0.618,live
+2024-05-20,Padres,Braves,0.423,0.5770000000000001,live
+2024-05-20,Padres,Braves,0.369,0.631,live
+2024-05-20,Mariners,Yankees,0.41700000000000004,0.583,live
+2024-05-20,Mets,Guardians,0.39799999999999996,0.602,live
+2024-05-20,Brewers,Marlins,0.537,0.46299999999999997,live
+2024-05-21,Angels,Astros,0.33799999999999997,0.662,live
+2024-05-21,Diamondbacks,Dodgers,0.34299999999999997,0.657,live
+2024-05-22,Orioles,Cardinals,0.526,0.474,live
+2024-05-27,Cubs,Cardinals,0.456,0.544,live
+2024-05-28,Cardinals,Reds,0.449,0.551,live
+2024-05-29,Cardinals,Reds,0.469,0.531,live
+2024-05-29,Phillies,Giants,0.5710000000000001,0.429,live
+2024-05-30,Diamondbacks,Mets,0.522,0.478,live
+2024-05-30,Nationals,Braves,0.377,0.623,live
+2024-06-01,Cardinals,Phillies,0.428,0.5720000000000001,live
+2024-06-01,Nationals,Guardians,0.39399999999999996,0.606,live
+2024-06-02,Cardinals,Phillies,0.442,0.5579999999999999,live
+2024-06-03,Mets,Nationals,0.48700000000000004,0.513,live
+2024-06-03,Orioles,Blue Jays,0.546,0.45399999999999996,live
+2024-06-05,Braves,Red Sox,0.49,0.51,live
+2024-06-05,Cardinals,Astros,0.33299999999999996,0.667,live
+2024-06-05,Mets,Nationals,0.5770000000000001,0.423,live
+2024-06-06,Orioles,Blue Jays,0.474,0.526,live
+2024-06-07,Braves,Nationals,0.594,0.406,live
+2024-06-08,Rockies,Cardinals,0.405,0.595,live
+2024-06-08,Braves,Nationals,0.573,0.42700000000000005,live
+2024-06-08,Orioles,Rays,0.578,0.42200000000000004,live
+2024-06-09,Braves,Nationals,0.591,0.409,live
+2024-06-10,Orioles,Rays,0.5479999999999999,0.452,live
+2024-06-11,Braves,Orioles,0.509,0.491,live
+2024-06-11,Nationals,Tigers,0.491,0.509,live
+2024-06-14,Marlins,Nationals,0.445,0.555,live
+2024-06-14,Cardinals,Cubs,0.501,0.499,live
+2024-06-19,Padres,Phillies,0.354,0.6459999999999999,live
+2024-06-19,Cardinals,Marlins,0.536,0.46399999999999997,live
+2024-06-21,White Sox,Tigers,0.355,0.645,live
+2024-06-22,Rays,Pirates,0.474,0.526,live
+2024-06-23,Diamondbacks,Phillies,0.389,0.611,live
+2024-06-23,White Sox,Tigers,0.313,0.687,live
+2024-06-23,Giants,Cardinals,0.45299999999999996,0.547,live
+2024-06-23,Rays,Pirates,0.41600000000000004,0.584,live
+2024-06-24,Braves,Cardinals,0.512,0.488,live
+2024-06-24,Pirates,Reds,0.488,0.512,live
+2024-06-25,Phillies,Tigers,0.516,0.484,live
+2024-06-25,Pirates,Reds,0.423,0.5770000000000001,live
+2024-06-26,Phillies,Tigers,0.5329999999999999,0.467,live
+2024-06-26,Braves,Cardinals,0.5529999999999999,0.447,live
+2024-06-26,Braves,Cardinals,0.5489999999999999,0.451,live
+2024-06-27,Twins,Diamondbacks,0.518,0.48200000000000004,live
+2024-06-27,Reds,Cardinals,0.523,0.47700000000000004,live
+2024-06-28,Pirates,Braves,0.34700000000000003,0.653,live
+2024-06-28,Tigers,Angels,0.588,0.41200000000000003,live
+2024-06-28,Astros,Mets,0.539,0.461,live
+2024-06-29,Tigers,Angels,0.535,0.465,live
+2024-06-29,Astros,Mets,0.507,0.493,live
+2024-06-29,Cubs,Brewers,0.405,0.595,live
+2024-06-29,Yankees,Blue Jays,0.536,0.46399999999999997,live
+2024-06-29,Twins,Mariners,0.46799999999999997,0.532,live
+2024-06-29,Reds,Cardinals,0.36700000000000005,0.633,live
+2024-06-29,Reds,Cardinals,0.44799999999999995,0.552,live
+2024-06-30,Astros,Mets,0.431,0.569,live
+2024-06-30,Twins,Mariners,0.515,0.485,live
+2024-07-01,Mets,Nationals,0.499,0.501,live
+2024-07-01,Astros,Blue Jays,0.488,0.512,live
+2024-07-02,Tigers,Twins,0.474,0.526,live
+2024-07-02,Cardinals,Pirates,0.506,0.494,live
+2024-07-02,White Sox,Guardians,0.342,0.6579999999999999,live
+2024-07-02,Brewers,Rockies,0.581,0.419,live
+2024-07-02,Astros,Blue Jays,0.461,0.539,live
+2024-07-03,Astros,Blue Jays,0.53,0.47,live
+2024-07-03,Cardinals,Pirates,0.444,0.556,live
+2024-07-04,Red Sox,Marlins,0.598,0.402,live
+2024-07-04,Tigers,Twins,0.385,0.615,live
+2024-07-04,Tigers,Twins,0.354,0.6459999999999999,live
+2024-07-04,White Sox,Guardians,0.282,0.718,live
+2024-07-04,Astros,Blue Jays,0.524,0.47600000000000003,live
+2024-07-05,White Sox,Marlins,0.469,0.531,live
+2024-07-05,Rays,Royals,0.493,0.507,live
+2024-07-06,Astros,Twins,0.425,0.575,live
+2024-07-06,Phillies,Braves,0.52,0.48,live
+2024-07-06,White Sox,Marlins,0.589,0.41100000000000003,live
+2024-07-06,Tigers,Reds,0.436,0.564,live
+2024-07-06,Royals,Rockies,0.6559999999999999,0.344,live
+2024-07-06,Astros,Twins,0.4,0.6,live
+2024-07-06,Cardinals,Nationals,0.512,0.488,live
+2024-07-06,Angels,Cubs,0.498,0.502,live
+2024-07-06,Giants,Guardians,0.47200000000000003,0.528,live
+2024-07-07,Giants,Guardians,0.465,0.535,live
+2024-07-07,Orioles,Athletics,0.575,0.425,live
+2024-07-07,Diamondbacks,Padres,0.363,0.637,live
+2024-07-07,Rays,Rangers,0.42100000000000004,0.579,live
+2024-07-07,Tigers,Reds,0.563,0.43700000000000006,live
+2024-07-07,White Sox,Marlins,0.429,0.5710000000000001,live
+2024-07-07,Diamondbacks,Padres,0.48,0.52,live
+2024-07-07,Astros,Twins,0.40299999999999997,0.597,live
+2024-07-07,Royals,Rockies,0.585,0.415,live
+2024-07-08,Cardinals,Nationals,0.48,0.52,live
+2024-07-08,Guardians,Tigers,0.583,0.41700000000000004,live
+2024-07-09,Twins,White Sox,0.6,0.4,live
+2024-07-09,Guardians,Tigers,0.575,0.425,live
+2024-07-10,Mariners,Padres,0.531,0.469,live
+2024-07-10,Nationals,Mets,0.354,0.6459999999999999,live
+2024-07-10,Guardians,Tigers,0.531,0.469,live
+2024-07-10,Mariners,Padres,0.46799999999999997,0.532,live
+2024-07-10,Rockies,Reds,0.35,0.65,live
+2024-07-10,Blue Jays,Giants,0.504,0.496,live
+2024-07-10,Dodgers,Phillies,0.488,0.512,live
+2024-07-10,Royals,Cardinals,0.39799999999999996,0.602,live
+2024-07-10,Cubs,Orioles,0.376,0.624,live
+2024-07-10,Twins,White Sox,0.642,0.358,live
+2024-07-10,Twins,White Sox,0.596,0.40399999999999997,live
+2024-07-10,Yankees,Rays,0.516,0.484,live
+2024-07-10,Royals,Cardinals,0.46,0.54,live
+2024-07-10,Athletics,Red Sox,0.40399999999999997,0.596,live
+2024-07-11,Marlins,Astros,0.29600000000000004,0.7040000000000001,live
+2024-07-11,Blue Jays,Giants,0.406,0.594,live
+2024-07-11,Nationals,Mets,0.451,0.5489999999999999,live
+2024-07-11,Pirates,Brewers,0.39399999999999996,0.606,live
+2024-07-11,Rangers,Angels,0.5670000000000001,0.433,live
+2024-07-11,Cubs,Orioles,0.44299999999999995,0.557,live
+2024-07-11,Rockies,Reds,0.36700000000000005,0.633,live
+2024-07-11,Blue Jays,Giants,0.41700000000000004,0.583,live
+2024-07-11,Pirates,Brewers,0.513,0.48700000000000004,live
+2024-07-11,Guardians,Tigers,0.449,0.551,live
+2024-07-11,Braves,Diamondbacks,0.5489999999999999,0.451,live
+2024-07-11,Dodgers,Phillies,0.439,0.561,live
+2024-07-11,Yankees,Rays,0.519,0.48100000000000004,live
+2024-07-11,Athletics,Red Sox,0.319,0.6809999999999999,live
+2024-07-12,Marlins,Astros,0.39,0.61,live
+2024-07-12,Braves,Diamondbacks,0.5329999999999999,0.467,live
+2024-07-12,Mariners,Angels,0.588,0.41200000000000003,live
+2024-07-13,Mariners,Angels,0.562,0.43799999999999994,live
+2024-07-13,Cubs,Cardinals,0.326,0.674,live
+2024-07-13,Cubs,Cardinals,0.45299999999999996,0.547,live
+2024-07-14,Cubs,Cardinals,0.452,0.5479999999999999,live
+2024-07-20,Cardinals,Braves,0.419,0.581,live
+2024-07-20,Padres,Guardians,0.442,0.5579999999999999,live
+2024-07-20,Cardinals,Braves,0.503,0.49700000000000005,live
+2024-07-21,Orioles,Rangers,0.5,0.5,live
+2024-07-21,Cardinals,Braves,0.413,0.5870000000000001,live
+2024-07-23,Padres,Nationals,0.48100000000000004,0.519,live
+2024-07-23,Cardinals,Pirates,0.41600000000000004,0.584,live
+2024-07-23,Orioles,Marlins,0.617,0.38299999999999995,live
+2024-07-24,Padres,Nationals,0.511,0.489,live
+2024-07-25,Orioles,Marlins,0.636,0.364,live
+2024-07-26,Padres,Orioles,0.373,0.627,live
+2024-07-26,Rangers,Blue Jays,0.47,0.53,live
+2024-07-27,Rangers,Blue Jays,0.511,0.489,live
+2024-07-27,Yankees,Red Sox,0.498,0.502,live
+2024-07-27,Dodgers,Astros,0.461,0.539,live
+2024-07-27,Nationals,Cardinals,0.386,0.614,live
+2024-07-28,Dodgers,Astros,0.499,0.501,live
+2024-07-28,Rockies,Giants,0.39399999999999996,0.606,live
+2024-07-28,Mariners,White Sox,0.51,0.49,live
+2024-07-29,Guardians,Tigers,0.5579999999999999,0.442,live
+2024-07-31,Rockies,Angels,0.467,0.5329999999999999,live
+2024-07-31,Royals,White Sox,0.616,0.384,live
+2024-07-31,Nationals,Diamondbacks,0.39299999999999996,0.607,live
+2024-07-31,Braves,Brewers,0.517,0.483,live
+2024-07-31,Mariners,Red Sox,0.518,0.48200000000000004,live
+2024-07-31,Rangers,Cardinals,0.498,0.502,live
+2024-07-31,Twins,Mets,0.475,0.525,live
+2024-07-31,Cubs,Reds,0.38299999999999995,0.617,live
+2024-08-01,Rockies,Angels,0.40399999999999997,0.596,live
+2024-08-01,Dodgers,Padres,0.48200000000000004,0.518,live
+2024-08-01,Royals,Tigers,0.557,0.44299999999999995,live
+2024-08-01,Athletics,Giants,0.34700000000000003,0.653,live
+2024-08-01,Pirates,Astros,0.368,0.632,live
+2024-08-01,Orioles,Guardians,0.43799999999999994,0.562,live
+2024-08-02,Marlins,Braves,0.318,0.682,live
+2024-08-02,Cardinals,Cubs,0.52,0.48,live
+2024-08-02,Rockies,Angels,0.449,0.551,live
+2024-08-02,Brewers,Nationals,0.483,0.517,live
+2024-08-02,Royals,Tigers,0.45899999999999996,0.541,live
+2024-08-02,Diamondbacks,Pirates,0.564,0.436,live
+2024-08-02,Cardinals,Cubs,0.489,0.511,live
+2024-08-03,Red Sox,Rangers,0.49200000000000005,0.508,live
+2024-08-03,White Sox,Twins,0.28800000000000003,0.7120000000000001,live
+2024-08-03,Phillies,Mariners,0.493,0.507,live
+2024-08-03,Dodgers,Athletics,0.5720000000000001,0.428,live
+2024-08-03,Rockies,Padres,0.39299999999999996,0.607,live
+2024-08-03,Rays,Astros,0.44,0.56,live
+2024-08-03,Blue Jays,Yankees,0.40399999999999997,0.596,live
+2024-08-04,Royals,Tigers,0.48700000000000004,0.513,live
+2024-08-06,Rays,Cardinals,0.45899999999999996,0.541,live
+2024-08-06,Red Sox,Royals,0.42100000000000004,0.579,live
+2024-08-07,Rays,Cardinals,0.475,0.525,live
+2024-08-08,Red Sox,Royals,0.45799999999999996,0.542,live
+2024-08-10,Astros,Red Sox,0.493,0.507,live
+2024-08-10,Guardians,Twins,0.512,0.488,live
+2024-08-10,Cardinals,Royals,0.436,0.564,live
+2024-08-10,Reds,Brewers,0.368,0.632,live
+2024-08-10,Angels,Nationals,0.48700000000000004,0.513,live
+2024-08-10,Guardians,Twins,0.494,0.506,live
+2024-08-11,Guardians,Twins,0.561,0.439,live
+2024-08-13,Cardinals,Reds,0.46,0.54,live
+2024-08-13,Royals,Twins,0.514,0.486,live
+2024-08-13,Braves,Giants,0.539,0.461,live
+2024-08-13,Astros,Rays,0.507,0.493,live
+2024-08-13,Athletics,Mets,0.36200000000000004,0.638,live
+2024-08-13,Mariners,Tigers,0.45,0.55,live
+2024-08-13,Dodgers,Brewers,0.486,0.514,live
+2024-08-13,Marlins,Phillies,0.419,0.581,live
+2024-08-13,Rangers,Red Sox,0.452,0.5479999999999999,live
+2024-08-13,Nationals,Orioles,0.426,0.574,live
+2024-08-13,Cubs,Guardians,0.46399999999999997,0.536,live
+2024-08-14,Rockies,Diamondbacks,0.344,0.6559999999999999,live
+2024-08-14,Pirates,Padres,0.46799999999999997,0.532,live
+2024-08-14,Braves,Giants,0.496,0.504,live
+2024-08-14,Royals,Twins,0.547,0.45299999999999996,live
+2024-08-14,Cubs,Guardians,0.473,0.527,live
+2024-08-14,Cardinals,Reds,0.503,0.49700000000000005,live
+2024-08-14,Yankees,White Sox,0.6579999999999999,0.342,live
+2024-08-14,Blue Jays,Angels,0.5489999999999999,0.451,live
+2024-08-14,Pirates,Padres,0.39,0.61,live
+2024-08-14,Dodgers,Brewers,0.527,0.473,live
+2024-08-14,Nationals,Orioles,0.396,0.604,live
+2024-08-14,Rangers,Red Sox,0.4,0.6,live
+2024-08-14,Rockies,Diamondbacks,0.389,0.611,live
+2024-08-14,Athletics,Mets,0.418,0.5820000000000001,live
+2024-08-14,Marlins,Phillies,0.363,0.637,live
+2024-08-14,Mariners,Tigers,0.5489999999999999,0.451,live
+2024-08-14,Astros,Rays,0.55,0.45,live
+2024-08-15,Braves,Giants,0.478,0.522,live
+2024-08-15,Dodgers,Brewers,0.523,0.47700000000000004,live
+2024-08-15,Yankees,White Sox,0.669,0.331,live
+2024-08-15,Blue Jays,Angels,0.515,0.485,live
+2024-08-16,Nationals,Phillies,0.312,0.688,live
+2024-08-16,Twins,Rangers,0.528,0.47200000000000003,live
+2024-08-17,Red Sox,Orioles,0.461,0.539,live
+2024-08-17,Dodgers,Cardinals,0.504,0.496,live
+2024-08-17,Guardians,Brewers,0.489,0.511,live
+2024-08-17,Twins,Rangers,0.495,0.505,live
+2024-08-17,Dodgers,Cardinals,0.536,0.46399999999999997,live
+2024-08-17,Twins,Rangers,0.433,0.5670000000000001,live
+2024-08-18,Padres,Rockies,0.607,0.39299999999999996,live
+2024-08-18,Braves,Angels,0.614,0.386,live
+2024-08-18,Nationals,Phillies,0.434,0.5660000000000001,live
+2024-08-18,Twins,Rangers,0.491,0.509,live
+2024-08-18,Dodgers,Cardinals,0.483,0.517,live
+2024-08-19,Orioles,Mets,0.47200000000000003,0.528,live
+2024-08-20,Guardians,Yankees,0.39299999999999996,0.607,live
+2024-08-20,White Sox,Giants,0.34,0.66,live
+2024-08-20,Twins,Padres,0.414,0.586,live
+2024-08-20,Phillies,Braves,0.486,0.514,live
+2024-08-20,Rockies,Nationals,0.45,0.55,live
+2024-08-20,Brewers,Cardinals,0.41700000000000004,0.583,live
+2024-08-21,Orioles,Mets,0.461,0.539,live
+2024-08-21,Pirates,Rangers,0.436,0.564,live
+2024-08-21,Twins,Padres,0.52,0.48,live
+2024-08-21,Guardians,Yankees,0.418,0.5820000000000001,live
+2024-08-21,Brewers,Cardinals,0.507,0.493,live
+2024-08-21,Rockies,Nationals,0.425,0.575,live
+2024-08-21,Twins,Padres,0.452,0.5479999999999999,live
+2024-08-22,Astros,Orioles,0.368,0.632,live
+2024-08-22,Phillies,Braves,0.466,0.534,live
+2024-08-22,Brewers,Cardinals,0.531,0.469,live
+2024-08-22,Rockies,Nationals,0.512,0.488,live
+2024-08-23,Mets,Padres,0.445,0.555,live
+2024-08-23,Cubs,Marlins,0.45,0.55,live
+2024-08-23,Rangers,Guardians,0.429,0.5710000000000001,live
+2024-08-24,Rockies,Yankees,0.29100000000000004,0.7090000000000001,live
+2024-08-24,Cubs,Marlins,0.56,0.44,live
+2024-08-24,Tigers,White Sox,0.536,0.46399999999999997,live
+2024-08-24,Cardinals,Twins,0.478,0.522,live
+2024-08-24,Phillies,Royals,0.545,0.455,live
+2024-08-24,Tigers,White Sox,0.6729999999999999,0.327,live
+2024-08-24,Nationals,Braves,0.405,0.595,live
+2024-08-24,Rangers,Guardians,0.441,0.5589999999999999,live
+2024-08-24,Phillies,Royals,0.457,0.5429999999999999,live
+2024-08-24,Rays,Dodgers,0.39299999999999996,0.607,live
+2024-08-24,Cardinals,Twins,0.44299999999999995,0.557,live
+2024-08-25,Cardinals,Twins,0.506,0.494,live
+2024-08-25,Rockies,Yankees,0.33899999999999997,0.6609999999999999,live
+2024-08-25,Cubs,Marlins,0.5529999999999999,0.447,live
+2024-08-25,Diamondbacks,Red Sox,0.45299999999999996,0.547,live
+2024-08-25,Rangers,Guardians,0.49,0.51,live
+2024-08-25,Mets,Padres,0.428,0.5720000000000001,live
+2024-08-25,Rays,Dodgers,0.41200000000000003,0.588,live
+2024-08-26,Royals,Guardians,0.506,0.494,live
+2024-08-26,Padres,Cardinals,0.43200000000000005,0.568,live
+2024-08-26,Braves,Twins,0.507,0.493,live
+2024-08-26,Royals,Guardians,0.462,0.5379999999999999,live
+2024-08-26,Blue Jays,Red Sox,0.485,0.515,live
+2024-08-26,Astros,Phillies,0.452,0.5479999999999999,live
+2024-08-27,Royals,Guardians,0.43700000000000006,0.563,live
+2024-08-27,Padres,Cardinals,0.5529999999999999,0.447,live
+2024-08-27,Braves,Twins,0.501,0.499,live
+2024-08-27,Astros,Phillies,0.451,0.5489999999999999,live
+2024-08-27,Marlins,Rockies,0.5,0.5,live
+2024-08-27,Blue Jays,Red Sox,0.456,0.544,live
+2024-08-27,Athletics,Reds,0.418,0.5820000000000001,live
+2024-08-28,Astros,Phillies,0.499,0.501,live
+2024-08-28,Blue Jays,Red Sox,0.498,0.502,live
+2024-08-28,Braves,Twins,0.562,0.43799999999999994,live
+2024-08-28,Giants,Brewers,0.44799999999999995,0.552,live
+2024-08-28,Cubs,Pirates,0.39,0.61,live
+2024-08-28,Royals,Guardians,0.41100000000000003,0.589,live
+2024-08-28,Padres,Cardinals,0.46399999999999997,0.536,live
+2024-08-28,Marlins,Rockies,0.43700000000000006,0.563,live
+2024-08-29,Giants,Brewers,0.42700000000000005,0.573,live
+2024-08-29,Mets,Diamondbacks,0.473,0.527,live
+2024-08-29,Giants,Brewers,0.488,0.512,live
+2024-08-29,Marlins,Rockies,0.485,0.515,live
+2024-08-29,Braves,Phillies,0.447,0.5529999999999999,live
+2024-08-29,Blue Jays,Red Sox,0.473,0.527,live
+2024-08-29,Marlins,Rockies,0.542,0.45799999999999996,live
+2024-08-30,Royals,Astros,0.47100000000000003,0.529,live
+2024-08-30,Red Sox,Tigers,0.5720000000000001,0.428,live
+2024-08-30,Braves,Phillies,0.442,0.5579999999999999,live
+2024-08-30,Cardinals,Yankees,0.43799999999999994,0.562,live
+2024-08-30,Pirates,Guardians,0.381,0.619,live
+2024-08-31,Blue Jays,Twins,0.414,0.586,live
+2024-08-31,Blue Jays,Twins,0.46799999999999997,0.532,live
+2024-08-31,Pirates,Guardians,0.441,0.5589999999999999,live
+2024-08-31,Braves,Phillies,0.43799999999999994,0.562,live
+2024-08-31,Royals,Astros,0.478,0.522,live
+2024-08-31,Padres,Rays,0.48,0.52,live
+2024-08-31,Dodgers,Diamondbacks,0.5,0.5,live
+2024-08-31,Royals,Astros,0.445,0.555,live
+2024-08-31,Marlins,Giants,0.32,0.68,live
+2024-08-31,Cardinals,Yankees,0.419,0.581,live
+2024-08-31,Athletics,Rangers,0.40399999999999997,0.596,live
+2024-09-01,Royals,Astros,0.37200000000000005,0.628,live
+2024-09-01,Padres,Rays,0.535,0.465,live
+2024-09-01,Orioles,Rockies,0.62,0.38,live
+2024-09-01,Pirates,Guardians,0.45899999999999996,0.541,live
+2024-09-01,Mets,White Sox,0.581,0.419,live
+2024-09-01,Braves,Phillies,0.456,0.544,live
+2024-09-01,Dodgers,Diamondbacks,0.483,0.517,live
+2024-09-01,Blue Jays,Twins,0.418,0.5820000000000001,live
+2024-09-01,Marlins,Giants,0.429,0.5710000000000001,live
+2024-09-02,Astros,Reds,0.562,0.43799999999999994,live
+2024-09-02,Cardinals,Brewers,0.419,0.581,live
+2024-09-02,Guardians,Royals,0.504,0.496,live
+2024-09-02,Dodgers,Diamondbacks,0.5589999999999999,0.441,live
+2024-09-03,Nationals,Marlins,0.45299999999999996,0.547,live
+2024-09-03,Phillies,Blue Jays,0.496,0.504,live
+2024-09-04,Mariners,Athletics,0.552,0.44799999999999995,live
+2024-09-04,Pirates,Cubs,0.38,0.62,live
+2024-09-04,Guardians,Royals,0.46,0.54,live
+2024-09-04,Rockies,Braves,0.306,0.6940000000000001,live
+2024-09-04,Red Sox,Mets,0.53,0.47,live
+2024-09-04,Phillies,Blue Jays,0.51,0.49,live
+2024-09-04,Twins,Rays,0.5,0.5,live
+2024-09-05,Phillies,Marlins,0.665,0.335,live
+2024-09-05,Diamondbacks,Giants,0.529,0.47100000000000003,live
+2024-09-05,Nationals,Pirates,0.496,0.504,live
+2024-09-05,Astros,Reds,0.519,0.48100000000000004,live
+2024-09-05,Rockies,Braves,0.324,0.6759999999999999,live
+2024-09-05,Tigers,Padres,0.35600000000000004,0.644,live
+2024-09-05,Mariners,Athletics,0.5489999999999999,0.451,live
+2024-09-05,Dodgers,Angels,0.607,0.39299999999999996,live
+2024-09-05,Diamondbacks,Giants,0.43700000000000006,0.563,live
+2024-09-05,Twins,Rays,0.495,0.505,live
+2024-09-06,Tigers,Padres,0.392,0.608,live
+2024-09-06,Angels,Rangers,0.368,0.632,live
+2024-09-07,Mariners,Cardinals,0.504,0.496,live
+2024-09-08,Mariners,Cardinals,0.512,0.488,live
+2024-09-11,Angels,Twins,0.368,0.632,live
+2024-09-11,Orioles,Red Sox,0.495,0.505,live
+2024-09-11,Reds,Cardinals,0.45399999999999996,0.546,live
+2024-09-11,Royals,Yankees,0.44,0.56,live
+2024-09-12,Athletics,Astros,0.371,0.629,live
+2024-09-12,Padres,Mariners,0.498,0.502,live
+2024-09-12,Brewers,Giants,0.42200000000000004,0.578,live
+2024-09-12,Athletics,Astros,0.38,0.62,live
+2024-09-12,Cubs,Dodgers,0.423,0.5770000000000001,live
+2024-09-12,Reds,Cardinals,0.418,0.5820000000000001,live
+2024-09-12,Red Sox,Yankees,0.401,0.599,live
+2024-09-12,Rays,Guardians,0.43200000000000005,0.568,live
+2024-09-12,Rockies,Tigers,0.321,0.679,live
+2024-09-12,Marlins,Nationals,0.42700000000000005,0.573,live
+2024-09-13,Red Sox,Yankees,0.43700000000000006,0.563,live
+2024-09-13,Mets,Phillies,0.41700000000000004,0.583,live
+2024-09-13,Athletics,White Sox,0.521,0.479,live
+2024-09-13,Marlins,Nationals,0.461,0.539,live
+2024-09-13,Orioles,Tigers,0.583,0.41700000000000004,live
+2024-09-13,Brewers,Giants,0.483,0.517,live
+2024-09-13,Rangers,Mariners,0.409,0.591,live
+2024-09-13,Dodgers,Braves,0.486,0.514,live
+2024-09-13,Rays,Guardians,0.389,0.611,live
+2024-09-13,Cardinals,Blue Jays,0.47700000000000004,0.523,live
+2024-09-13,Royals,Pirates,0.424,0.5760000000000001,live
+2024-09-14,Padres,Giants,0.521,0.479,live
+2024-09-14,Brewers,Diamondbacks,0.493,0.507,live
+2024-09-14,Rangers,Mariners,0.516,0.484,live
+2024-09-14,Cubs,Rockies,0.552,0.44799999999999995,live
+2024-09-14,Cardinals,Blue Jays,0.47,0.53,live
+2024-09-14,Reds,Twins,0.36200000000000004,0.638,live
+2024-09-14,Astros,Angels,0.625,0.375,live
+2024-09-17,Pirates,Cardinals,0.431,0.569,live
+2024-09-19,Pirates,Cardinals,0.43200000000000005,0.568,live
+2024-09-26,Cardinals,Rockies,0.555,0.445,live
+2024-09-27,Royals,Braves,0.414,0.586,live
+2024-09-28,Cardinals,Giants,0.48700000000000004,0.513,live
+2024-09-28,Phillies,Nationals,0.62,0.38,live
+2024-09-28,Pirates,Yankees,0.444,0.556,live
+2024-09-29,Cardinals,Giants,0.431,0.569,live
+2024-09-29,Royals,Braves,0.375,0.625,live
+2024-09-29,Marlins,Blue Jays,0.447,0.5529999999999999,live
+2024-09-29,Padres,Diamondbacks,0.43200000000000005,0.568,live
+2024-09-29,Athletics,Mariners,0.376,0.624,live
+2024-09-29,Orioles,Twins,0.469,0.531,live
+2024-09-29,Dodgers,Rockies,0.5760000000000001,0.424,live
+2024-09-29,Reds,Cubs,0.523,0.47700000000000004,live
+2024-09-29,Pirates,Yankees,0.349,0.6509999999999999,live
+2024-09-29,White Sox,Tigers,0.36200000000000004,0.638,live
+2024-09-30,Mets,Braves,0.419,0.581,live
+2024-09-30,Mets,Braves,0.47100000000000003,0.529,live
+2024-10-01,Mets,Brewers,0.42200000000000004,0.578,live
+2024-10-01,Tigers,Astros,0.46,0.54,live
+2024-10-01,Royals,Orioles,0.436,0.564,live
+2024-10-02,Royals,Orioles,0.465,0.535,live
+2024-10-02,Braves,Padres,0.37200000000000005,0.628,live
+2024-10-02,Tigers,Astros,0.41600000000000004,0.584,live
+2024-10-03,Mets,Brewers,0.426,0.574,live
+2024-10-03,Braves,Padres,0.47700000000000004,0.523,live
+2024-10-05,Mets,Phillies,0.451,0.5489999999999999,live
+2024-10-06,Padres,Dodgers,0.44,0.56,live
+2024-10-06,Mets,Phillies,0.452,0.5479999999999999,live
+2024-10-07,Royals,Yankees,0.42700000000000005,0.573,live
+2024-10-08,Phillies,Mets,0.489,0.511,live
+2024-10-09,Phillies,Mets,0.527,0.473,live
+2024-10-09,Yankees,Royals,0.5,0.5,live
+2024-10-09,Guardians,Tigers,0.474,0.526,live
+2024-10-10,Dodgers,Padres,0.43799999999999994,0.562,live
+2024-10-11,Yankees,Royals,0.535,0.465,live
+2024-10-12,Tigers,Guardians,0.5329999999999999,0.467,live
+2024-10-14,Mets,Dodgers,0.44,0.56,live
+2024-10-14,Mets,Dodgers,0.457,0.5429999999999999,live
+2024-10-14,Guardians,Yankees,0.39,0.61,live
+2024-10-15,Guardians,Yankees,0.442,0.5579999999999999,live
+2024-10-17,Dodgers,Mets,0.46399999999999997,0.536,live
+2024-10-17,Yankees,Guardians,0.5489999999999999,0.451,live
+2024-10-18,Dodgers,Mets,0.53,0.47,live
+2024-10-18,Dodgers,Mets,0.529,0.47100000000000003,live
+2024-10-19,Yankees,Guardians,0.513,0.48700000000000004,live
+2024-10-20,Yankees,Guardians,0.473,0.527,live
+2024-10-21,Mets,Dodgers,0.47200000000000003,0.528,live
+2024-10-26,Yankees,Dodgers,0.449,0.551,live
+2024-10-27,Yankees,Dodgers,0.445,0.555,live
+2024-10-29,Dodgers,Yankees,0.431,0.569,live
+2024-10-30,Dodgers,Yankees,0.45799999999999996,0.542,live
+2024-10-31,Dodgers,Yankees,0.49,0.51,live
+2025-03-27,Tigers,Dodgers,0.39299999999999996,0.607,live
+2025-03-27,Giants,Reds,0.469,0.531,live
+2025-03-27,Twins,Cardinals,0.45,0.55,live
+2025-03-27,Red Sox,Rangers,0.484,0.516,live
+2025-03-27,Phillies,Nationals,0.629,0.371,live
+2025-03-27,Braves,Padres,0.528,0.47200000000000003,live
+2025-03-27,Mets,Astros,0.43,0.57,live
+2025-03-27,Guardians,Royals,0.488,0.512,live
+2025-03-27,Brewers,Yankees,0.405,0.595,live
+2025-03-27,Pirates,Marlins,0.59,0.41,live
+2025-03-27,Angels,White Sox,0.585,0.415,live
+2025-03-27,Orioles,Blue Jays,0.503,0.49700000000000005,live
+2025-03-28,Athletics,Mariners,0.397,0.603,live
+2025-03-28,Cubs,Diamondbacks,0.47,0.53,live
+2025-03-31,Rockies,Phillies,0.313,0.687,live
+2025-04-03,Diamondbacks,Yankees,0.491,0.509,live
+2025-04-04,Dodgers,Phillies,0.556,0.444,live
+2025-04-04,Marlins,Braves,0.255,0.745,live
+2025-04-04,Mariners,Giants,0.45299999999999996,0.547,live
+2025-04-05,White Sox,Tigers,0.312,0.688,live
+2025-04-05,Marlins,Braves,0.244,0.7559999999999999,live
+2025-04-05,Dodgers,Phillies,0.484,0.516,live
+2025-04-05,Astros,Twins,0.486,0.514,live
+2025-04-06,White Sox,Tigers,0.336,0.664,live
+2025-04-06,Dodgers,Phillies,0.5539999999999999,0.446,live
+2025-04-06,Mariners,Giants,0.445,0.555,live
+2025-04-07,Yankees,Tigers,0.5670000000000001,0.433,live
+2025-04-07,Dodgers,Nationals,0.659,0.341,live
+2025-04-07,Marlins,Mets,0.293,0.7070000000000001,live
+2025-04-08,White Sox,Guardians,0.281,0.7190000000000001,live
+2025-04-08,Dodgers,Nationals,0.634,0.366,live
+2025-04-08,Yankees,Tigers,0.521,0.479,live
+2025-04-08,Marlins,Mets,0.293,0.7070000000000001,live
+2025-04-09,Padres,Athletics,0.578,0.42200000000000004,live
+2025-04-09,White Sox,Guardians,0.385,0.615,live
+2025-04-09,Dodgers,Nationals,0.665,0.335,live
+2025-04-09,Yankees,Tigers,0.517,0.483,live
+2025-04-09,Twins,Royals,0.493,0.507,live
+2025-04-09,Astros,Mariners,0.499,0.501,live
+2025-04-09,Padres,Athletics,0.547,0.45299999999999996,live
+2025-04-09,Cardinals,Pirates,0.48100000000000004,0.519,live
+2025-04-09,Rangers,Cubs,0.39799999999999996,0.602,live
+2025-04-09,Marlins,Mets,0.313,0.687,live
+2025-04-10,White Sox,Guardians,0.289,0.711,live
+2025-04-10,Brewers,Rockies,0.536,0.46399999999999997,live
+2025-04-11,Nationals,Marlins,0.562,0.43799999999999994,live
+2025-04-11,Royals,Guardians,0.44,0.56,live
+2025-04-11,Pirates,Reds,0.418,0.5820000000000001,live
+2025-04-12,Nationals,Marlins,0.489,0.511,live
+2025-04-12,Mets,Athletics,0.524,0.47600000000000003,live
+2025-04-12,Phillies,Cardinals,0.537,0.46299999999999997,live
+2025-04-12,Tigers,Twins,0.506,0.494,live
+2025-04-12,Cubs,Dodgers,0.401,0.599,live
+2025-04-12,Tigers,Twins,0.501,0.499,live
+2025-04-12,Royals,Guardians,0.462,0.5379999999999999,live
+2025-04-12,Mets,Athletics,0.601,0.39899999999999997,live
+2025-04-12,Brewers,Diamondbacks,0.43799999999999994,0.562,live
+2025-04-12,Pirates,Reds,0.442,0.5579999999999999,live
+2025-04-12,Giants,Yankees,0.47600000000000003,0.524,live
+2025-04-13,Mets,Athletics,0.551,0.449,live
+2025-04-13,Angels,Astros,0.40299999999999997,0.597,live
+2025-04-13,Rockies,Padres,0.305,0.695,live
+2025-04-13,Phillies,Cardinals,0.626,0.374,live
+2025-04-13,Nationals,Marlins,0.601,0.39899999999999997,live
+2025-04-13,Brewers,Diamondbacks,0.39399999999999996,0.606,live
+2025-04-13,Tigers,Twins,0.49200000000000005,0.508,live
+2025-04-13,Royals,Guardians,0.501,0.499,live
+2025-04-13,Pirates,Reds,0.355,0.645,live
+2025-04-13,Brewers,Diamondbacks,0.465,0.535,live
+2025-04-13,Cubs,Dodgers,0.41600000000000004,0.584,live
+2025-04-13,Rockies,Padres,0.311,0.6890000000000001,live
+2025-04-14,Giants,Phillies,0.47,0.53,live
+2025-04-14,Nationals,Pirates,0.363,0.637,live
+2025-04-15,Red Sox,Rays,0.429,0.5710000000000001,live
+2025-04-15,Athletics,White Sox,0.574,0.426,live
+2025-04-15,Mariners,Reds,0.507,0.493,live
+2025-04-15,Diamondbacks,Marlins,0.603,0.397,live
+2025-04-15,Tigers,Brewers,0.5529999999999999,0.447,live
+2025-04-15,Royals,Yankees,0.364,0.636,live
+2025-04-15,Nationals,Pirates,0.418,0.5820000000000001,live
+2025-04-15,Giants,Phillies,0.425,0.575,live
+2025-04-15,Cubs,Padres,0.42,0.58,live
+2025-04-15,Guardians,Orioles,0.441,0.5589999999999999,live
+2025-04-15,Mets,Twins,0.529,0.47100000000000003,live
+2025-04-15,Braves,Blue Jays,0.536,0.46399999999999997,live
+2025-04-15,Astros,Cardinals,0.501,0.499,live
+2025-04-15,Rockies,Dodgers,0.223,0.777,live
+2025-04-16,Tigers,Brewers,0.442,0.5579999999999999,live
+2025-04-16,Cubs,Padres,0.509,0.491,live
+2025-04-16,Nationals,Pirates,0.491,0.509,live
+2025-04-16,Giants,Phillies,0.466,0.534,live
+2025-04-16,Guardians,Orioles,0.442,0.5579999999999999,live
+2025-04-16,Cubs,Padres,0.461,0.539,live
+2025-04-16,Red Sox,Rays,0.451,0.5489999999999999,live
+2025-04-16,Astros,Cardinals,0.505,0.495,live
+2025-04-16,Royals,Yankees,0.4,0.6,live
+2025-04-16,Mets,Twins,0.486,0.514,live
+2025-04-16,Mariners,Reds,0.516,0.484,live
+2025-04-16,Athletics,White Sox,0.616,0.384,live
+2025-04-16,Angels,Rangers,0.455,0.545,live
+2025-04-16,Braves,Blue Jays,0.54,0.46,live
+2025-04-16,Rockies,Dodgers,0.28300000000000003,0.7170000000000001,live
+2025-04-16,Diamondbacks,Marlins,0.635,0.365,live
+2025-04-17,Angels,Rangers,0.486,0.514,live
+2025-04-17,Rockies,Dodgers,0.302,0.698,live
+2025-04-23,Padres,Tigers,0.45899999999999996,0.541,live
+2025-04-23,Blue Jays,Astros,0.479,0.521,live
+2025-04-26,Astros,Royals,0.536,0.46399999999999997,live
+2025-04-26,Orioles,Tigers,0.435,0.565,live
+2025-04-26,Orioles,Tigers,0.401,0.599,live
+2025-04-27,Astros,Royals,0.541,0.45899999999999996,live
+2025-04-27,Orioles,Tigers,0.395,0.605,live
+2025-04-30,Tigers,Astros,0.489,0.511,live
+2025-04-30,Braves,Rockies,0.69,0.31,live
+2025-04-30,Tigers,Astros,0.469,0.531,live
+2025-05-02,Dodgers,Braves,0.525,0.475,live
+2025-05-03,Padres,Pirates,0.5820000000000001,0.418,live
+2025-05-04,Dodgers,Braves,0.614,0.386,live
+2025-05-04,Dodgers,Braves,0.435,0.565,live
+2025-05-04,Athletics,Marlins,0.564,0.436,live
+2025-05-04,Tigers,Angels,0.622,0.37799999999999995,live
+2025-05-04,Royals,Orioles,0.467,0.5329999999999999,live
+2025-05-06,Padres,Yankees,0.48,0.52,live
+2025-05-06,Dodgers,Marlins,0.735,0.265,live
+2025-05-06,Reds,Braves,0.376,0.624,live
+2025-05-06,Pirates,Cardinals,0.501,0.499,live
+2025-05-07,Mets,Diamondbacks,0.469,0.531,live
+2025-05-07,Orioles,Twins,0.439,0.561,live
+2025-05-09,Rangers,Tigers,0.307,0.693,live
+2025-05-09,Phillies,Guardians,0.507,0.493,live
+2025-05-09,Dodgers,Diamondbacks,0.539,0.461,live
+2025-05-09,Red Sox,Royals,0.489,0.511,live
+2025-05-09,Cubs,Mets,0.467,0.5329999999999999,live
+2025-05-09,Braves,Pirates,0.557,0.44299999999999995,live
+2025-05-09,Brewers,Rays,0.5429999999999999,0.457,live
+2025-05-09,Cardinals,Nationals,0.56,0.44,live
+2025-05-09,Marlins,White Sox,0.594,0.406,live
+2025-05-10,Yankees,Athletics,0.583,0.41700000000000004,live
+2025-05-10,Braves,Pirates,0.5670000000000001,0.433,live
+2025-05-10,Giants,Twins,0.513,0.48700000000000004,live
+2025-05-10,Cardinals,Nationals,0.552,0.44799999999999995,live
+2025-05-10,Padres,Rockies,0.6890000000000001,0.311,live
+2025-05-10,Dodgers,Diamondbacks,0.509,0.491,live
+2025-05-10,Red Sox,Royals,0.504,0.496,live
+2025-05-10,Phillies,Guardians,0.508,0.49200000000000005,live
+2025-05-10,Yankees,Athletics,0.593,0.40700000000000003,live
+2025-05-10,Giants,Twins,0.505,0.495,live
+2025-05-10,Reds,Astros,0.364,0.636,live
+2025-05-10,Marlins,White Sox,0.511,0.489,live
+2025-05-10,Orioles,Angels,0.5710000000000001,0.429,live
+2025-05-10,Brewers,Rays,0.451,0.5489999999999999,live
+2025-05-10,Blue Jays,Mariners,0.42,0.58,live
+2025-05-10,Reds,Astros,0.46,0.54,live
+2025-05-10,Cubs,Mets,0.466,0.534,live
+2025-05-10,Rangers,Tigers,0.446,0.5539999999999999,live
+2025-05-11,Orioles,Angels,0.5720000000000001,0.428,live
+2025-05-11,Dodgers,Diamondbacks,0.515,0.485,live
+2025-05-11,Padres,Rockies,0.6679999999999999,0.332,live
+2025-05-11,Blue Jays,Mariners,0.46299999999999997,0.537,live
+2025-05-16,Guardians,Reds,0.532,0.46799999999999997,live
+2025-05-16,Braves,Red Sox,0.46,0.54,live
+2025-05-16,Athletics,Dodgers,0.33899999999999997,0.6609999999999999,live
+2025-05-16,Tigers,Blue Jays,0.5479999999999999,0.452,live
+2025-05-16,Cardinals,Royals,0.41100000000000003,0.589,live
+2025-05-16,Mets,Yankees,0.439,0.561,live
+2025-05-16,Rays,Marlins,0.48100000000000004,0.519,live
+2025-05-16,White Sox,Cubs,0.337,0.6629999999999999,live
+2025-05-16,Nationals,Orioles,0.46799999999999997,0.532,live
+2025-05-17,White Sox,Cubs,0.272,0.728,live
+2025-05-17,Nationals,Orioles,0.436,0.564,live
+2025-05-17,Rays,Marlins,0.578,0.42200000000000004,live
+2025-05-17,Twins,Brewers,0.517,0.483,live
+2025-05-17,Mets,Yankees,0.43,0.57,live
+2025-05-17,Astros,Rangers,0.391,0.609,live
+2025-05-17,Twins,Brewers,0.519,0.48100000000000004,live
+2025-05-17,Pirates,Phillies,0.289,0.711,live
+2025-05-17,Tigers,Blue Jays,0.544,0.456,live
+2025-05-17,Athletics,Giants,0.326,0.674,live
+2025-05-17,Astros,Rangers,0.396,0.604,live
+2025-05-17,Pirates,Phillies,0.349,0.6509999999999999,live
+2025-05-17,Rockies,Diamondbacks,0.259,0.741,live
+2025-05-17,Guardians,Reds,0.47700000000000004,0.523,live
+2025-05-17,Cardinals,Royals,0.409,0.591,live
+2025-05-17,Braves,Red Sox,0.513,0.48700000000000004,live
+2025-05-17,Angels,Dodgers,0.281,0.7190000000000001,live
+2025-05-17,Mariners,Padres,0.426,0.574,live
+2025-05-18,Athletics,Giants,0.435,0.565,live
+2025-05-18,Rockies,Diamondbacks,0.209,0.7909999999999999,live
+2025-05-18,Angels,Dodgers,0.303,0.6970000000000001,live
+2025-05-18,Mariners,Padres,0.32899999999999996,0.6709999999999999,live
+2025-06-03,Royals,Cardinals,0.44299999999999995,0.557,live
+2025-06-03,Phillies,Blue Jays,0.569,0.431,live
+2025-06-03,Tigers,White Sox,0.5920000000000001,0.408,live
+2025-06-04,Rockies,Marlins,0.39299999999999996,0.607,live
+2025-06-04,Twins,Athletics,0.585,0.415,live
+2025-06-05,Tigers,White Sox,0.662,0.33799999999999997,live
+2025-06-05,Twins,Athletics,0.518,0.48200000000000004,live
+2025-06-05,Padres,Giants,0.428,0.5720000000000001,live
+2025-06-05,Mets,Dodgers,0.45,0.55,live
+2025-06-05,Rangers,Rays,0.436,0.564,live
+2025-06-05,Cubs,Nationals,0.5920000000000001,0.408,live
+2025-06-06,Red Sox,Yankees,0.419,0.581,live
+2025-06-06,Royals,White Sox,0.622,0.37799999999999995,live
+2025-06-06,Cubs,Tigers,0.365,0.635,live
+2025-06-06,Rangers,Nationals,0.509,0.491,live
+2025-06-07,Blue Jays,Twins,0.489,0.511,live
+2025-06-07,Astros,Guardians,0.5489999999999999,0.451,live
+2025-06-07,Cubs,Tigers,0.498,0.502,live
+2025-06-07,Orioles,Athletics,0.499,0.501,live
+2025-06-07,Blue Jays,Twins,0.41,0.59,live
+2025-06-07,Phillies,Pirates,0.575,0.425,live
+2025-06-07,Mariners,Angels,0.541,0.45899999999999996,live
+2025-06-07,Royals,White Sox,0.5870000000000001,0.413,live
+2025-06-07,Mets,Rockies,0.73,0.27,live
+2025-06-07,Padres,Brewers,0.48200000000000004,0.518,live
+2025-06-07,Dodgers,Cardinals,0.619,0.381,live
+2025-06-08,Red Sox,Yankees,0.354,0.6459999999999999,live
+2025-06-08,Braves,Giants,0.48700000000000004,0.513,live
+2025-06-08,Astros,Guardians,0.46399999999999997,0.536,live
+2025-06-08,Royals,White Sox,0.5770000000000001,0.423,live
+2025-06-08,Dodgers,Cardinals,0.52,0.48,live
+2025-06-08,Diamondbacks,Reds,0.486,0.514,live
+2025-06-09,Reds,Guardians,0.41600000000000004,0.584,live
+2025-06-09,Blue Jays,Cardinals,0.493,0.507,live
+2025-06-09,Rays,Red Sox,0.5329999999999999,0.467,live
+2025-06-09,Marlins,Pirates,0.465,0.535,live
+2025-06-09,Cubs,Phillies,0.461,0.539,live
+2025-06-09,Braves,Brewers,0.5489999999999999,0.451,live
+2025-06-10,Reds,Guardians,0.484,0.516,live
+2025-06-10,Nationals,Mets,0.39799999999999996,0.602,live
+2025-06-10,Rays,Red Sox,0.534,0.466,live
+2025-06-10,Dodgers,Padres,0.493,0.507,live
+2025-06-10,Tigers,Orioles,0.515,0.485,live
+2025-06-10,Cubs,Phillies,0.516,0.484,live
+2025-06-10,Yankees,Royals,0.635,0.365,live
+2025-06-10,Rangers,Twins,0.523,0.47700000000000004,live
+2025-06-10,Braves,Brewers,0.523,0.47700000000000004,live
+2025-06-10,Athletics,Angels,0.42,0.58,live
+2025-06-10,Marlins,Pirates,0.39899999999999997,0.601,live
+2025-06-10,Blue Jays,Cardinals,0.499,0.501,live
+2025-06-10,Mariners,Diamondbacks,0.364,0.636,live
+2025-06-11,Nationals,Mets,0.376,0.624,live
+2025-06-11,Rangers,Twins,0.429,0.5710000000000001,live
+2025-06-11,White Sox,Astros,0.41,0.59,live
+2025-06-11,Giants,Rockies,0.65,0.35,live
+2025-06-11,Rays,Red Sox,0.49200000000000005,0.508,live
+2025-06-11,Reds,Guardians,0.513,0.48700000000000004,live
+2025-06-11,Dodgers,Padres,0.516,0.484,live
+2025-06-11,Athletics,Angels,0.40700000000000003,0.593,live
+2025-06-11,Dodgers,Padres,0.509,0.491,live
+2025-06-11,Yankees,Royals,0.528,0.47200000000000003,live
+2025-06-11,Braves,Brewers,0.519,0.48100000000000004,live
+2025-06-11,Tigers,Orioles,0.531,0.469,live
+2025-06-11,Blue Jays,Cardinals,0.43700000000000006,0.563,live
+2025-06-11,Cubs,Phillies,0.489,0.511,live
+2025-06-11,Mariners,Diamondbacks,0.484,0.516,live
+2025-06-11,Athletics,Angels,0.47600000000000003,0.524,live
+2025-06-11,Marlins,Pirates,0.42100000000000004,0.579,live
+2025-06-11,Mariners,Diamondbacks,0.5379999999999999,0.462,live
+2025-06-12,White Sox,Astros,0.387,0.613,live
+2025-06-12,Giants,Rockies,0.685,0.315,live
+2025-06-29,Padres,Reds,0.48700000000000004,0.513,live
+2025-06-29,Cardinals,Guardians,0.524,0.47600000000000003,live
+2025-06-29,Rays,Orioles,0.49700000000000005,0.503,live
+2025-06-29,Twins,Tigers,0.34600000000000003,0.654,live
+2025-06-29,Dodgers,Royals,0.513,0.48700000000000004,live
+2025-06-29,Athletics,Yankees,0.374,0.626,live
+2025-06-29,Cubs,Astros,0.462,0.5379999999999999,live
+2025-06-29,Nationals,Angels,0.461,0.539,live
+2025-06-30,Reds,Red Sox,0.376,0.624,live
+2025-06-30,Padres,Phillies,0.35200000000000004,0.648,live
+2025-06-30,Athletics,Rays,0.34,0.66,live
+2025-07-01,Angels,Braves,0.402,0.598,live
+2025-07-01,Giants,Diamondbacks,0.547,0.45299999999999996,live
+2025-07-01,Orioles,Rangers,0.507,0.493,live
+2025-07-01,Twins,Marlins,0.578,0.42200000000000004,live
+2025-07-01,Yankees,Blue Jays,0.551,0.449,live
+2025-07-01,Athletics,Rays,0.384,0.616,live
+2025-07-01,Royals,Mariners,0.434,0.5660000000000001,live
+2025-07-02,Giants,Diamondbacks,0.44799999999999995,0.552,live
+2025-07-02,Astros,Rockies,0.607,0.39299999999999996,live
+2025-07-02,Cardinals,Pirates,0.556,0.444,live
+2025-07-02,Royals,Mariners,0.45299999999999996,0.547,live
+2025-07-02,Padres,Phillies,0.426,0.574,live
+2025-07-02,Orioles,Rangers,0.36700000000000005,0.633,live
+2025-07-02,Brewers,Mets,0.479,0.521,live
+2025-07-02,Guardians,Cubs,0.38,0.62,live
+2025-07-02,Brewers,Mets,0.45399999999999996,0.546,live
+2025-07-02,Tigers,Nationals,0.5660000000000001,0.434,live
+2025-07-02,Athletics,Rays,0.38799999999999996,0.612,live
+2025-07-02,Angels,Braves,0.442,0.5579999999999999,live
+2025-07-02,Padres,Phillies,0.502,0.498,live
+2025-07-02,Reds,Red Sox,0.45399999999999996,0.546,live
+2025-07-02,Yankees,Blue Jays,0.462,0.5379999999999999,live
+2025-07-02,White Sox,Dodgers,0.29100000000000004,0.7090000000000001,live
+2025-07-03,Astros,Rockies,0.625,0.375,live
+2025-07-03,Giants,Diamondbacks,0.39799999999999996,0.602,live
+2025-07-03,Astros,Rockies,0.688,0.312,live
+2025-07-03,Angels,Braves,0.467,0.5329999999999999,live
+2025-07-03,Yankees,Blue Jays,0.513,0.48700000000000004,live
+2025-07-03,White Sox,Dodgers,0.3,0.7,live
+2025-07-03,Brewers,Mets,0.41,0.59,live
+2025-07-03,Orioles,Rangers,0.414,0.586,live
+2025-07-03,Tigers,Nationals,0.55,0.45,live
+2025-07-03,Royals,Mariners,0.326,0.674,live
+2025-07-03,Twins,Marlins,0.5429999999999999,0.457,live
+2025-07-03,Guardians,Cubs,0.365,0.635,live
+2025-07-04,Angels,Blue Jays,0.381,0.619,live
+2025-07-04,Rays,Twins,0.505,0.495,live
+2025-07-04,Cardinals,Cubs,0.414,0.586,live
+2025-07-04,Pirates,Mariners,0.379,0.621,live
+2025-07-04,Royals,Mariners,0.445,0.555,live
+2025-07-04,Brewers,Marlins,0.531,0.469,live
+2025-07-04,Red Sox,Nationals,0.501,0.499,live
+2025-07-04,Yankees,Mets,0.462,0.5379999999999999,live
+2025-07-04,Reds,Phillies,0.47700000000000004,0.523,live
+2025-07-05,Rays,Twins,0.46799999999999997,0.532,live
+2025-07-05,Giants,Athletics,0.478,0.522,live
+2025-07-05,Orioles,Braves,0.435,0.565,live
+2025-07-05,Astros,Dodgers,0.43700000000000006,0.563,live
+2025-07-05,Cardinals,Cubs,0.39399999999999996,0.606,live
+2025-07-05,Tigers,Guardians,0.578,0.42200000000000004,live
+2025-07-05,Astros,Dodgers,0.36200000000000004,0.638,live
+2025-07-05,Angels,Blue Jays,0.415,0.585,live
+2025-07-05,Yankees,Mets,0.537,0.46299999999999997,live
+2025-07-05,Red Sox,Nationals,0.51,0.49,live
+2025-07-05,Royals,Diamondbacks,0.524,0.47600000000000003,live
+2025-07-06,Brewers,Marlins,0.545,0.455,live
+2025-07-06,Tigers,Guardians,0.597,0.40299999999999997,live
+2025-07-06,Orioles,Braves,0.41700000000000004,0.583,live
+2025-07-06,Angels,Blue Jays,0.408,0.5920000000000001,live
+2025-07-06,Pirates,Mariners,0.373,0.627,live
+2025-07-06,Reds,Phillies,0.35700000000000004,0.643,live
+2025-07-06,White Sox,Rockies,0.5539999999999999,0.446,live
+2025-07-06,Red Sox,Nationals,0.638,0.36200000000000004,live
+2025-07-06,Royals,Diamondbacks,0.439,0.561,live
+2025-07-06,Yankees,Mets,0.588,0.41200000000000003,live
+2025-07-06,Cardinals,Cubs,0.381,0.619,live
+2025-07-06,Astros,Dodgers,0.35200000000000004,0.648,live
+2025-07-06,Pirates,Mariners,0.514,0.486,live
+2025-07-06,Rays,Twins,0.452,0.5479999999999999,live
+2025-07-06,Rangers,Padres,0.40700000000000003,0.593,live
+2025-07-07,Giants,Athletics,0.539,0.461,live
+2025-07-27,Mets,Giants,0.462,0.5379999999999999,live
+2025-07-30,Braves,Royals,0.457,0.5429999999999999,live
+2025-07-30,Pirates,Giants,0.35,0.65,live
+2025-07-30,Diamondbacks,Tigers,0.461,0.539,live
+2025-07-30,Nationals,Astros,0.48,0.52,live
+2025-07-30,Mets,Padres,0.469,0.531,live
+2025-07-30,Cubs,Brewers,0.47700000000000004,0.523,live
+2025-07-30,Dodgers,Reds,0.547,0.45299999999999996,live
+2025-07-30,Rays,Yankees,0.466,0.534,live
+2025-07-30,Marlins,Cardinals,0.45799999999999996,0.542,live
+2025-07-30,Rockies,Guardians,0.353,0.647,live
+2025-07-30,Phillies,White Sox,0.563,0.43700000000000006,live
+2025-07-31,Braves,Reds,0.45299999999999996,0.547,live
+2025-07-31,Rays,Yankees,0.505,0.495,live
+2025-07-31,Mariners,Athletics,0.585,0.415,live
+2025-07-31,Rangers,Angels,0.53,0.47,live
+2025-08-01,Dodgers,Rays,0.486,0.514,live
+2025-08-01,Braves,Reds,0.415,0.585,live
+2025-08-01,Royals,Blue Jays,0.415,0.585,live
+2025-08-01,Giants,Mets,0.474,0.526,live
+2025-08-01,Tigers,Phillies,0.449,0.551,live
+2025-08-01,Brewers,Nationals,0.551,0.449,live
+2025-08-01,Yankees,Marlins,0.579,0.42100000000000004,live
+2025-08-01,Twins,Guardians,0.515,0.485,live
+2025-08-01,Orioles,Cubs,0.483,0.517,live
+2025-08-01,Rangers,Mariners,0.43200000000000005,0.568,live
+2025-08-01,Astros,Red Sox,0.535,0.465,live
+2025-08-02,White Sox,Angels,0.435,0.565,live
+2025-08-02,Rangers,Mariners,0.395,0.605,live
+2025-08-02,Pirates,Rockies,0.607,0.39299999999999996,live
+2025-08-02,Diamondbacks,Athletics,0.522,0.478,live
+2025-08-02,Cardinals,Padres,0.413,0.5870000000000001,live
+2025-09-20,Red Sox,Rays,0.44799999999999995,0.552,live
+2025-09-21,Red Sox,Rays,0.516,0.484,live
+2025-09-24,Red Sox,Blue Jays,0.5489999999999999,0.451,live
+2025-09-24,Dodgers,Diamondbacks,0.5720000000000001,0.428,live
+2025-09-24,Rays,Orioles,0.495,0.505,live
+2025-09-24,Brewers,Padres,0.515,0.485,live
+2025-09-25,Mets,Cubs,0.45299999999999996,0.547,live
+2025-09-25,Mets,Cubs,0.423,0.5770000000000001,live
+2025-09-26,Orioles,Yankees,0.523,0.47700000000000004,live
+2025-09-26,Cardinals,Cubs,0.402,0.598,live
+2025-09-26,Rays,Blue Jays,0.462,0.5379999999999999,live
+2025-09-27,Cardinals,Cubs,0.392,0.608,live
+2025-09-28,Diamondbacks,Padres,0.402,0.598,live
+2025-09-28,Cardinals,Cubs,0.40299999999999997,0.597,live
+2025-09-28,Orioles,Yankees,0.435,0.565,live
+2025-09-28,Rangers,Guardians,0.45799999999999996,0.542,live
+2025-09-28,Pirates,Braves,0.478,0.522,live
+2025-09-28,Dodgers,Mariners,0.515,0.485,live
+2025-09-30,Tigers,Guardians,0.584,0.41600000000000004,live
+2025-09-30,Red Sox,Yankees,0.499,0.501,live
+2025-09-30,Padres,Cubs,0.47200000000000003,0.528,live
+2025-10-01,Padres,Cubs,0.446,0.5539999999999999,live
+2025-10-01,Tigers,Guardians,0.47200000000000003,0.528,live
+2025-10-01,Reds,Dodgers,0.456,0.544,live
+2025-10-01,Red Sox,Yankees,0.42200000000000004,0.578,live
+2025-10-02,Tigers,Guardians,0.51,0.49,live
+2025-10-02,Padres,Cubs,0.452,0.5479999999999999,live
+2025-10-02,Reds,Dodgers,0.353,0.647,live
+2025-10-03,Red Sox,Yankees,0.486,0.514,live
+2025-10-04,Cubs,Brewers,0.48,0.52,live
+2025-10-04,Yankees,Blue Jays,0.473,0.527,live
+2025-10-04,Dodgers,Phillies,0.474,0.526,live
+2025-10-05,Tigers,Mariners,0.41700000000000004,0.583,live
+2025-10-06,Dodgers,Phillies,0.521,0.479,live
+2025-10-06,Tigers,Mariners,0.5479999999999999,0.452,live
+2025-10-07,Cubs,Brewers,0.52,0.48,live
+2025-10-07,Mariners,Tigers,0.534,0.466,live
+2025-10-08,Blue Jays,Yankees,0.465,0.535,live
+2025-10-08,Blue Jays,Yankees,0.46299999999999997,0.537,live
+2025-10-08,Brewers,Cubs,0.48,0.52,live
+2025-10-08,Mariners,Tigers,0.486,0.514,live
+2025-10-09,Phillies,Dodgers,0.386,0.614,live
+2025-10-09,Phillies,Dodgers,0.43200000000000005,0.568,live
+2025-10-10,Brewers,Cubs,0.45799999999999996,0.542,live
+2025-10-11,Tigers,Mariners,0.529,0.47100000000000003,live
+2025-10-12,Cubs,Brewers,0.493,0.507,live
+2025-10-13,Mariners,Blue Jays,0.542,0.45799999999999996,live
+2025-10-13,Mariners,Blue Jays,0.445,0.555,live
+2025-10-14,Dodgers,Brewers,0.524,0.47600000000000003,live
+2025-10-15,Dodgers,Brewers,0.528,0.47200000000000003,live
+2025-10-16,Blue Jays,Mariners,0.462,0.5379999999999999,live
+2025-10-16,Brewers,Dodgers,0.39799999999999996,0.602,live
+2025-10-17,Blue Jays,Mariners,0.457,0.5429999999999999,live
+2025-10-17,Blue Jays,Mariners,0.49,0.51,live
+2025-10-18,Brewers,Dodgers,0.41600000000000004,0.584,live
+2025-10-20,Mariners,Blue Jays,0.5479999999999999,0.452,live
+2025-10-21,Mariners,Blue Jays,0.478,0.522,live
+2025-10-25,Dodgers,Blue Jays,0.5329999999999999,0.467,live
+2025-10-26,Dodgers,Blue Jays,0.528,0.47200000000000003,live
+2025-10-28,Blue Jays,Dodgers,0.408,0.5920000000000001,live
+2025-10-29,Blue Jays,Dodgers,0.447,0.5529999999999999,live
+2025-10-30,Blue Jays,Dodgers,0.41600000000000004,0.584,live
+2025-11-01,Dodgers,Blue Jays,0.529,0.47100000000000003,live
+2025-11-02,Dodgers,Blue Jays,0.515,0.485,live
+2026-03-14,Red Sox,Braves,0.493,0.507,live
+2026-03-15,Padres,Diamondbacks,0.491,0.509,live
+2026-03-26,Yankees,Giants,0.519,0.48100000000000004,live
