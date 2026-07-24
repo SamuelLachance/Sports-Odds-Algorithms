@@ -174,6 +174,43 @@ for _r in csv.DictReader(open("data/nfl_players.csv", encoding="utf-8")):
             pass
 print(f"[{time.time()-T0:.0f}s] birth years: {len(BYEAR):,}", flush=True)
 
+SKOBS, DOBS = {}, {}
+_effs, _woprs = [], []
+for (pid, s_, w_), o in OFFW.items():
+    if 2016 <= s_ <= 2021 and bucket(o["pos"]) == "SK":
+        opp = o["car"] + o["tgt"]
+        if opp >= 3:
+            _effs.append((o["repa"] + o["cepa"]) / opp)
+        _woprs.append(o["wopr"])
+_me, _se = (np.mean(_effs), max(np.std(_effs), 1e-6)) if _effs else (0.0, 1.0)
+_mw, _sw = (np.mean(_woprs), max(np.std(_woprs), 1e-6)) if _woprs else (0.0, 1.0)
+for (pid, s_, w_), o in OFFW.items():
+    if s_ >= 2016 and bucket(o["pos"]) == "SK":
+        opp = o["car"] + o["tgt"]
+        z_w = (o["wopr"] - _mw) / _sw
+        if opp >= 3:
+            z_e = ((o["repa"] + o["cepa"]) / opp - _me) / _se
+            z = 0.6 * z_e + 0.4 * z_w
+        else:
+            z = 0.4 * z_w - 0.3          # barely used = weak negative usage signal
+        SKOBS[(pid, str(s_), f"{w_:02d}")] = max(-2.5, min(2.5, z))
+_dr, _db_, _dt = [], [], []
+for (pid, s_, w_), d in DEFW.items():
+    if 2016 <= s_ <= 2021:
+        _dr.append(d["sack"] + 0.5 * d["tfl"] + 0.5 * d["hit"])
+        _db_.append(3.0 * d["int"] + d["pd"])
+        _dt.append(d["solo"])
+_sr = (np.mean(_dr), max(np.std(_dr), 1e-6)); _sb = (np.mean(_db_), max(np.std(_db_), 1e-6))
+_st = (np.mean(_dt), max(np.std(_dt), 1e-6))
+for (pid, s_, w_), d in DEFW.items():
+    if s_ >= 2016:
+        z = (0.45 * (d["sack"] + 0.5 * d["tfl"] + 0.5 * d["hit"] - _sr[0]) / _sr[1]
+             + 0.35 * (3.0 * d["int"] + d["pd"] - _sb[0]) / _sb[1]
+             + 0.20 * (d["solo"] - _st[0]) / _st[1])
+        DOBS[(pid, str(s_), f"{w_:02d}")] = max(-2.5, min(2.5, z))
+print(f"[{time.time()-T0:.0f}s] skill obs: {sum(1 for k in SKOBS if int(k[1])>=2016):,} | "
+      f"def obs: {len(DOBS):,}", flush=True)
+
 G16 = [(i, g) for i, g in enumerate(games) if g["season"] >= 2016]
 seas16 = np.array([g["season"] for _, g in G16])
 y16 = np.array([g["y"] for _, g in G16])
@@ -189,7 +226,8 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                two_track=False, fus_k=0.0, fus_R=36.0, sal_mode="active",
                opp_anchor="alltime", rel_clamp=False, bnd_mode="mu0",
                dead_scale=False, share_bnd=False, win_snaps=0,
-               age_k=0.0, age_y=0.0, age_w=0.0):
+               age_k=0.0, age_y=0.0, age_w=0.0, skf_k=0.0, skf_R=60.0,
+               dff_k=0.0, dff_R=60.0):
     """One engine walk -> per-game ts_diff feature (pre-game, leak-free).
 
     Game importance: playoff snaps x playoff_mult; 'useless' late-season games
@@ -404,16 +442,23 @@ def run_config(tau, use_lev, down_mult, late_mult, season_shrink=1.0 / 3.0,
                 if p not in muD:
                     muD[p] = MU0 + sal_k * ZS.get((p, seas_now), 0.0); s2D[p] = SIG0_2
                 elif lastwk.get((p, lw_key)) != wk:
-                    if fus_k and GPOS.get(p) == "QB":
-                        _old = lastwk.get((p, lw_key))
-                        _z = QBOBS.get((p, _old[0], _old[1])) if _old else None
-                        if _z is not None:
-                            _obs = MU0 + fus_k * _z
-                            _K = s2D[p] / (s2D[p] + fus_R)
-                            if win_snaps:
-                                push_event(p, _K * (_obs - muD[p]))
-                            muD[p] += _K * (_obs - muD[p])
-                            s2D[p] = max(s2D[p] * (1.0 - _K), floor2)
+                    _gp = GPOS.get(p)
+                    _z = None; _fk = 0.0; _fR = 60.0
+                    _old = lastwk.get((p, lw_key))
+                    if _old:
+                        if fus_k and _gp == "QB":
+                            _z = QBOBS.get((p, _old[0], _old[1])); _fk = fus_k; _fR = fus_R
+                        elif skf_k and _gp in ("RB", "WR", "TE"):
+                            _z = SKOBS.get((p, _old[0], _old[1])); _fk = skf_k; _fR = skf_R
+                        elif dff_k and _gp in ("DL", "LB", "DB"):
+                            _z = DOBS.get((p, _old[0], _old[1])); _fk = dff_k; _fR = dff_R
+                    if _z is not None:
+                        _obs = MU0 + _fk * _z
+                        _K = s2D[p] / (s2D[p] + _fR)
+                        if win_snaps:
+                            push_event(p, _K * (_obs - muD[p]))
+                        muD[p] += _K * (_obs - muD[p])
+                        s2D[p] = max(s2D[p] * (1.0 - _K), floor2)
                     s2D[p] = min(s2D[p] + tau2, SIG0_2)
                 lastwk[(p, lw_key)] = wk
             for p in D:
@@ -600,13 +645,12 @@ V5 = dict(beta=60.0, lev_exp=0.5, draw_band=0.40)
 V6 = {**V5, "fus_k": 4.0, "fus_R": 36.0}
 V7 = {**V6, "sal_k": 1.0, "sal_mode": "cohort"}
 print("\nSliding-window rating readout (DEV 2017-21, gate -0.0020):", flush=True)
-trial("baseline v7 (no age)", **V7)
-trial("decline 0.15 mu/yr past 29", **V7, age_k=0.15)
-trial("decline 0.35 mu/yr past 29", **V7, age_k=0.35)
-trial("decline 0.7 mu/yr past 29", **V7, age_k=0.7)
-trial("growth 0.15 under 24", **V7, age_y=0.15)
-trial("sigma widen 0.5/yr past 30", **V7, age_w=0.5)
-trial("curve: decline .35 + growth .15", **V7, age_k=0.35, age_y=0.15)
+trial("baseline v7 (QB fusion only)", **V7)
+trial("SK fusion k=2 R=60", **V7, skf_k=2.0, skf_R=60.0)
+trial("SK fusion k=4 R=60", **V7, skf_k=4.0, skf_R=60.0)
+trial("SK fusion k=4 R=36", **V7, skf_k=4.0, skf_R=36.0)
+trial("SK fusion k=2 R=120", **V7, skf_k=2.0, skf_R=120.0)
+trial("SK k=4 R=60 + DEF k=2 R=120", **V7, skf_k=4.0, skf_R=60.0, dff_k=2.0, dff_R=120.0)
 raise SystemExit(0)
 cfg = {**V4, **V7}
 _, P = run_config(**cfg, return_parts=True)
@@ -641,7 +685,7 @@ for nd in (200, 500):
     llm, _ = wf_mc(2017, 2021, nd)
     print(f"  MC-PP {nd} draws            {llm:.5f}  ({ll0-llm:+.5f})", flush=True)
 results["mcpp"] = (llm, {})
-base_ll = results.get("baseline v7 (no age)", (9e9,))[0]
+base_ll = results.get("baseline v7 (QB fusion only)", (9e9,))[0]
 print(f"\nknobs beating baseline ({base_ll:.5f}) by >= 0.0010:")
 for k, (ll, kw) in sorted(results.items(), key=lambda x: x[1][0]):
     if ll < base_ll - 0.0010 and kw:
