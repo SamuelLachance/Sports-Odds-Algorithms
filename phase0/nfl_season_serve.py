@@ -264,6 +264,7 @@ print(f"[{time.time()-T0:.0f}s] 2026 re-homing: {moved} moved, {dropped} unroste
       flush=True)
 
 TS6 = json.load(open("data/nfl_ts_state.json"))
+SAL26 = json.load(open("data/nfl_sal2026.json"))
 def serve_v6(team):
     tot = 0.0
     for pid in roster2.get(team, ()):
@@ -276,7 +277,8 @@ def serve_v6(team):
         s6 = TS6.get(g_) if g_ else None
         if s6 is None:
             continue
-        mu6 = 25.0 + (s6[0] - 25.0) * (2.0 / 3.0)      # 2026 boundary
+        tgt = 25.0 + 1.0 * SAL26.get(g_, 0.0)          # cohort salary target (row 66)
+        mu6 = tgt + (s6[0] - tgt) * (2.0 / 3.0)        # 2026 boundary, walk-consistent
         s26 = min(s6[1] + 1.5 ** 2, (25.0 / 3.0) ** 2)
         tot += (st[0] / st[1]) * max(-3.0, min(3.0, mu6 - 25.0)) * (1.0 / (1.0 + s26))
     return tot
@@ -311,8 +313,12 @@ for r in csv.DictReader(open("data/nfl_games.csv")):
         kick = int(r["gametime"].split(":")[0]) + int(r["gametime"].split(":")[1]) / 60.0
     except (ValueError, IndexError, AttributeError):
         kick = 13.0
+    intl = any(k in (r.get("stadium") or "") for k in
+               ("Tottenham", "Wembley", "Allianz", "Olympic", "Bernab", "Croke",
+                "Deutsche Bank", "Estadio", "Azteca"))
     sched.append({"w": int(r["week"]), "d": r["gameday"], "t": r["gametime"],
-                  "home": h, "away": a, "neutral": 1 if r["location"] == "Neutral" else 0,
+                  "home": h, "away": a,
+                  "neutral": 1 if (r["location"] == "Neutral" or intl) else 0,
                   "hrest": int(r["home_rest"]), "arest": int(r["away_rest"]),
                   "kick": kick,
                   "hs": int(r["home_score"]) if r["home_score"] != "" else None,

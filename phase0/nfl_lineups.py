@@ -102,8 +102,10 @@ for (t, side, grp, slot, pos), cand in sorted(slots.items(),
 # serve-time ratings power: projected lineup aggregated through the v6 engine
 # states (2026 boundary applied: mu shrunk 1/3, sigma widened)
 ts_state = {}
+sal26 = {}
 try:
     ts_state = json.load(open("data/nfl_ts_state.json"))
+    sal26 = json.load(open("data/nfl_sal2026.json"))
 except FileNotFoundError:
     pass
 def rpow_of(lu):
@@ -112,7 +114,8 @@ def rpow_of(lu):
         st = ts_state.get(e["id"])
         if not st:
             continue
-        mu_ = 25.0 + (st[0] - 25.0) * (2.0 / 3.0)
+        tgt = 25.0 + sal26.get(e["id"], 0.0)
+        mu_ = tgt + (st[0] - tgt) * (2.0 / 3.0)
         s2_ = min(st[1] + 1.5 ** 2, (25.0 / 3.0) ** 2)
         v = max(-3.0, min(3.0, mu_ - 25.0)) * (1.0 / (1.0 + s2_))
         tot += (e.get("share") or 0.05) * v

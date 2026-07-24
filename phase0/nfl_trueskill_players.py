@@ -409,6 +409,8 @@ for t, tm in payload["teams"].items():
     tm["gb_def"] = round(ndef / ndf, 1) if ndf else None
 json.dump({p: [round(mu[p], 4), round(sig2[p], 4), snaps[p]] for p in mu},
           open("data/nfl_ts_state.json", "w"))
+json.dump({p: round(z, 3) for (p, s_), z in Z_SAL.items() if s_ == 2026},
+          open("data/nfl_sal2026.json", "w"))
 payload["model_card"]["ratings"] = {
     "system": "per-play participation TrueSkill (11v11), context-weighted",
     "plays": n_upd, "seasons": "2016-2025",
