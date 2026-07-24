@@ -40,8 +40,12 @@ jobs:
         run: |
           git config user.name "glassbox-bot"
           git config user.email "glassbox-bot@users.noreply.github.com"
-          git add site/data/board.json site/data/nfl.json site/index.html \
-                  data/opening_odds_2026.json data/nfl_opening_odds_2026.json
+          # opening caches appear only once books post lines for that sport's
+          # window (NFL cache is absent all offseason) — add what exists
+          for f in site/data/board.json site/data/nfl.json site/index.html \
+                   data/opening_odds_2026.json data/nfl_opening_odds_2026.json; do
+            if [ -f "$f" ]; then git add "$f"; fi
+          done
           if git diff --cached --quiet; then
             echo "no edge change"
           else
