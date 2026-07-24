@@ -180,5 +180,43 @@ if dd.any():
           f"main right {res['discord_detail']['main_wins']}, "
           f"close right {res['discord_detail']['close_wins']}", flush=True)
 
+# ---- McNemar exact paired tests on discordant picks (one game = one obs) ----
+try:
+    from scipy.stats import binomtest
+    def _btest(b_, n_):
+        return float(binomtest(b_, n_, 0.5).pvalue)
+except ImportError:                      # normal approx fallback
+    from math import erf as _erf, sqrt as _sqrt
+    def _btest(b_, n_):
+        z_ = abs(b_ - n_ / 2.0) / _sqrt(n_ / 4.0)
+        return 2.0 * (1.0 - 0.5 * (1.0 + _erf(z_ / _sqrt(2.0))))
+
+def mcnemar(p1, p2, mask, n1, n2):
+    m = mask & ~np.isnan(p1) & ~np.isnan(p2) & (y != 0.5)
+    a1, a2 = p1[m] > 0.5, p2[m] > 0.5
+    yy = y[m] > 0.5
+    r1, r2 = a1 == yy, a2 == yy
+    b = int((r1 & ~r2).sum())            # n1 right, n2 wrong
+    c = int((~r1 & r2).sum())            # n2 right, n1 wrong
+    pv = _btest(b, b + c) if b + c else 1.0
+    out = {"pair": f"{n1} vs {n2}", "n": int(m.sum()),
+           f"acc_{n1}": round(float(r1.mean()), 4), f"acc_{n2}": round(float(r2.mean()), 4),
+           "b_only_" + n1: b, "b_only_" + n2: c, "p_exact": round(pv, 4),
+           "sig_5pct": pv < 0.05}
+    print(f"  {out['pair']:<22} acc {out[f'acc_{n1}']:.4f} vs {out[f'acc_{n2}']:.4f}   "
+          f"only-{n1}-right {b} / only-{n2}-right {c}   exact p {pv:.4f}"
+          f"{'  << SIG' if pv < 0.05 else ''}", flush=True)
+    return out
+
+print("\nMcNemar exact paired tests (discordant picks, ties excluded):", flush=True)
+res["mcnemar"] = {
+    "main_vs_elo": mcnemar(p_main, p_elo, test, "main", "elo"),
+    "main_vs_close": mcnemar(p_main, mkt, test, "main", "close"),
+    "elo_vs_close": mcnemar(p_elo, mkt, test, "elo", "close"),
+    "ratings_vs_elo_22_25": mcnemar(p_rat, p_elo, m22, "ratings", "elo"),
+    "main_vs_ratings_22_25": mcnemar(p_main, p_rat, m22, "main", "ratings"),
+    "ratings_vs_close_22_25": mcnemar(p_rat, mkt, m22, "ratings", "close"),
+}
+
 json.dump(res, open("data/nfl_clone_audit.json", "w"), indent=1)
 print("\nwrote data/nfl_clone_audit.json", flush=True)
