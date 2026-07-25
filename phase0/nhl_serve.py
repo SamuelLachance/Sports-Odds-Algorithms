@@ -103,12 +103,31 @@ def main():
     cur_ll = float(llv(y, np.clip(pp, EPS, 1 - EPS)).mean()) if len(y) else None
     cur_acc = float(((pp > 0.5) == (y > 0.5)).mean()) if len(y) else None
 
+    # ---- player ratings (RAPM xG/60, teammate-adjusted; display only) ----
+    players = {}
+    try:
+        rap = json.load(open("data/nhl_rapm2_ratings.json"))
+        nm = json.load(open("data/nhl_player_names.json"))
+        for pid_, v in rap.items():
+            info = nm.get(pid_)
+            if not info or v["toi_min"] < 500:
+                continue
+            players[pid_] = {"name": info["name"], "pos": info["pos"], "team": info["team"],
+                             "off": v["off"], "def": v["def"], "net": v["net"],
+                             "rating": v["rating"], "toi": v["toi_min"]}
+        for t, tm in teams.items():
+            roster = [p for p in players.values() if p["team"] == t]
+            tm["top"] = sorted(roster, key=lambda x: -x["net"])[:5]
+    except FileNotFoundError:
+        pass
+
     payload = {
         "status": "offseason" if True else "season",
         "as_of": model["as_of"],
         "cur_season": CUR_SEASON,
         "schedule": sched,
         "teams": teams,
+        "players": players,
         "model_card": {
             "test_ll": model["test_ll"],
             "test_delta_vs_elo": model["test_delta_vs_elo"],
