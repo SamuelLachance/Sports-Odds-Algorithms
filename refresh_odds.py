@@ -7,7 +7,7 @@ the badge appears/updates/disappears near-live. Needs ODDS_API_KEY in the enviro
 
 from __future__ import annotations
 
-from market import edges, nfl_edges
+from market import edges, nfl_edges, nhl_edges
 from mlbwp_site import build_site
 
 
@@ -16,6 +16,8 @@ def main() -> int:
     print(f"[value] MLB: {n} games with >=15% EV vs opening consensus")
     m = nfl_edges.attach_and_save()
     print(f"[value] NFL: {m} games with >=15% EV vs opening consensus (7-day window)")
+    k = nhl_edges.attach_and_save()
+    print(f"[value] NHL: {k} games with >=15% EV vs opening consensus (7-day window)")
     build_site.build()
     return 0
 
