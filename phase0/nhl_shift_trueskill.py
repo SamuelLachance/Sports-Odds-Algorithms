@@ -102,9 +102,11 @@ def main():
 
     mu, s2, lastseen = {}, {}, {}
     toi = defaultdict(float)         # running TOI share proxy (shots-on-ice count)
+    team_of = {}                     # player -> most-recent team (for lineup lookup)
     prev_season = None
     n_matches = 0
     n_draw = 0
+    feat_rows = []                   # (game_id, home_agg, away_agg) pre-game, leak-safe
     for gi, gid in enumerate(games):
         date, home, away, season = meta[gid]
         if prev_season is not None and season != prev_season:
@@ -113,6 +115,18 @@ def main():
                 s2[p] = min(s2[p] + SEASON_WIDEN2, SIG0_2)
         prev_season = season
         gidx = index_shifts(shifts[gid])
+        # pre-game team aggregate: TOI-weighted mean of on-ice skaters' pre-game
+        # mu (leak-safe — reads ratings before this game's shots update them).
+        def team_agg(tm):
+            skaters = {p for (t, pe), lst in gidx.items() if t == tm
+                       for (_, _, p) in lst if p not in goalies}
+            num = den = 0.0
+            for p in skaters:
+                if p in mu:
+                    wt = min(toi.get(p, 0.0), 3000.0) + 50.0   # prior-shrunk weight
+                    num += wt * (mu[p] - MU0); den += wt
+            return num / den if den else 0.0
+        feat_rows.append((gid, round(team_agg(home), 4), round(team_agg(away), 4)))
         for period, sec, steam, xg, goal in shots[gid]:
             dteam = away if steam == home else home
             O = [p for p in on_ice(gidx, period, sec, steam) if p not in goalies]
@@ -175,6 +189,11 @@ def main():
     print(f"\n{len(out):,} rated skaters (>=200 on-ice shots) -> data/nhl_shift_ratings.json")
     top = sorted(out.items(), key=lambda x: -x[1]["rating"])[:10]
     print("top skaters (by shift-TS rating):", [(p, v["rating"]) for p, v in top])
+    with open("data/nhl_shift_features.csv", "w", newline="", encoding="utf-8") as fh:
+        w = csv.writer(fh)
+        w.writerow(["game_id", "home_agg", "away_agg"])
+        w.writerows(feat_rows)
+    print(f"wrote data/nhl_shift_features.csv: {len(feat_rows):,} games")
 
 
 if __name__ == "__main__":
