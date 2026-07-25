@@ -110,7 +110,7 @@ def main():
         nm = json.load(open("data/nhl_player_names.json"))
         for pid_, v in rap.items():
             info = nm.get(pid_)
-            if not info or v["toi_min"] < 500:
+            if not info or v["toi_min"] < 1000:   # established players only (display)
                 continue
             players[pid_] = {"name": info["name"], "pos": info["pos"], "team": info["team"],
                              "off": v["off"], "def": v["def"], "net": v["net"],
