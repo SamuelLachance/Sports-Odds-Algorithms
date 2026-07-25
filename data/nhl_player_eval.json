@@ -1,0 +1,47 @@
+{
+ "corr": 0.12321584288932748,
+ "n_test": 9218,
+ "shift_ts": {
+  "name": "shift-TS agg",
+  "base": 0.6624,
+  "with": 0.66239,
+  "delta": 1e-05,
+  "ci": [
+   -3e-05,
+   5e-05
+  ],
+  "sig": "n.s.",
+  "coefs": [
+   -0.005
+  ]
+ },
+ "rapm": {
+  "name": "RAPM agg",
+  "base": 0.6624,
+  "with": 0.6624,
+  "delta": -0.0,
+  "ci": [
+   -1e-05,
+   0.0
+  ],
+  "sig": "n.s.",
+  "coefs": [
+   0.019
+  ]
+ },
+ "blend": {
+  "name": "shift-TS + RAPM",
+  "base": 0.6624,
+  "with": 0.66239,
+  "delta": 1e-05,
+  "ci": [
+   -3e-05,
+   4e-05
+  ],
+  "sig": "n.s.",
+  "coefs": [
+   -0.005,
+   0.018
+  ]
+ }
+}
