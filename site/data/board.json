@@ -197,7 +197,7 @@
      "game_pk": 824810,
      "date": "2026-07-26",
      "start_utc": "2026-07-26T17:35:00Z",
-     "state": "Live",
+     "state": "Final",
      "home": "BAL",
      "away": "ATL",
      "away_abbr": "ATL",
@@ -369,7 +369,7 @@
      "game_pk": 823678,
      "date": "2026-07-26",
      "start_utc": "2026-07-26T18:10:00Z",
-     "state": "Live",
+     "state": "Final",
      "home": "MIN",
      "away": "ATH",
      "away_abbr": "ATH",
@@ -498,7 +498,7 @@
      "game_pk": 823028,
      "date": "2026-07-26",
      "start_utc": "2026-07-26T18:15:00Z",
-     "state": "Live",
+     "state": "Final",
      "home": "SLN",
      "away": "CIN",
      "away_abbr": "CIN",
@@ -541,7 +541,7 @@
      "game_pk": 822870,
      "date": "2026-07-26",
      "start_utc": "2026-07-26T18:35:00Z",
-     "state": "Live",
+     "state": "Final",
      "home": "TEX",
      "away": "SEA",
      "away_abbr": "SEA",
@@ -584,7 +584,7 @@
      "game_pk": 823194,
      "date": "2026-07-26",
      "start_utc": "2026-07-26T20:05:00Z",
-     "state": "Live",
+     "state": "Final",
      "home": "SFN",
      "away": "ANA",
      "away_abbr": "LAA",
@@ -627,7 +627,7 @@
      "game_pk": 823433,
      "date": "2026-07-26",
      "start_utc": "2026-07-26T23:20:00Z",
-     "state": "Preview",
+     "state": "Final",
      "home": "PHI",
      "away": "NYA",
      "away_abbr": "NYY",
@@ -18061,5 +18061,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-07-27T00:04:16.511965+00:00"
+ "value_updated": "2026-07-27T03:50:38.670611+00:00"
 }
