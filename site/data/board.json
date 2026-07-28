@@ -793,7 +793,17 @@
      "power_edge": 0.0157,
      "baserun_edge": 0.0012,
      "home_pitcher_matched": true,
-     "away_pitcher_matched": true
+     "away_pitcher_matched": true,
+     "value": {
+      "side": "away",
+      "team": "CLE",
+      "ev_open": 0.2727,
+      "ev_cur": 0.2727,
+      "open_dec": 2.41,
+      "cur_dec": 2.41,
+      "available": true,
+      "books": 6
+     }
     },
     {
      "game_pk": 823598,
@@ -18061,5 +18071,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-07-27T23:46:46.903084+00:00"
+ "value_updated": "2026-07-28T02:51:05.730731+00:00"
 }
