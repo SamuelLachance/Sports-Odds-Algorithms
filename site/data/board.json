@@ -38,10 +38,10 @@
      "home_sp_proj": false,
      "pitcher_known": true,
      "sp_projected": false,
-     "lineup_source": "projected",
-     "home_win_prob": 0.3999,
+     "lineup_source": "official",
+     "home_win_prob": 0.3953,
      "pick": "PHI",
-     "pick_prob": 0.6001,
+     "pick_prob": 0.6047,
      "edge": {
       "team": -2.5,
       "home_field": 5.1,
@@ -49,18 +49,18 @@
       "away_pitcher": -6.7,
       "bullpen": 1.7,
       "siera": -3.5,
-      "lineup": 1.2,
-      "power": -2.2,
-      "baserun": -1.8
+      "lineup": 0.8,
+      "power": -1.9,
+      "baserun": -2.1
      },
      "tier": "lineup",
      "recal_prob": 0.4456,
-     "ts_edge": -0.628,
+     "ts_edge": -1.228,
      "bullpen_edge": 0.0,
      "home_bp_fip": 0.776,
      "away_bp_fip": 0.776,
-     "power_edge": -0.0214,
-     "baserun_edge": -0.0025,
+     "power_edge": -0.0189,
+     "baserun_edge": -0.003,
      "home_pitcher_matched": true,
      "away_pitcher_matched": true
     },
@@ -17889,5 +17889,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-07-29T14:20:42.122918+00:00"
+ "value_updated": "2026-07-29T14:26:31.406246+00:00"
 }
