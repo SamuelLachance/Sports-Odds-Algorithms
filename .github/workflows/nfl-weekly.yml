@@ -1,0 +1,49 @@
+name: NFL weekly data refresh
+
+# In-season weekly fetch: games spine, injuries, snap counts, weekly stats,
+# rosters — the small tracked inputs. The pbp re-pull + feature walks + serve
+# are LOCAL-ONLY (the 50-98MB play tables are gitignored, so nfl_weekly.py
+# auto-detects their absence here and stops after the fetch layer); a local
+# run completes the chain and commits the payload. Market-blind.
+
+on:
+  schedule:
+    - cron: "0 9 * * 2"     # Tuesdays 09:00 UTC (after MNF)
+  workflow_dispatch:
+
+concurrency:
+  group: nfl-weekly
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  weekly:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run weekly NFL chain (fetch-only in CI)
+        run: python phase0/nfl_weekly.py
+
+      - name: Commit refreshed data
+        run: |
+          git config user.name "glassbox-bot"
+          git config user.email "glassbox-bot@users.noreply.github.com"
+          # add-only-existing: 2026 files appear as nflverse publishes them
+          for f in data/nfl_games.csv data/inj_2026.csv data/snap_2026.csv \
+                   data/nfl_player_stats_2026.csv data/roster_2026.csv; do
+            if [ -f "$f" ]; then git add "$f"; fi
+          done
+          if git diff --cached --quiet; then
+            echo "no data change"
+          else
+            git commit -m "NFL weekly data refresh"
+            # -X theirs: on conflict keep THIS run's fresh fetches
+            git pull --rebase -X theirs --autostash origin master || true
+            git push || echo "push skipped (race); next run retries"
+          fi
