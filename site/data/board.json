@@ -411,9 +411,9 @@
       "side": "home",
       "team": "SD",
       "ev_open": 0.1507,
-      "ev_cur": 0.0421,
+      "ev_cur": 0.0229,
       "open_dec": 1.8,
-      "cur_dec": 1.63,
+      "cur_dec": 1.6,
       "available": true,
       "books": 11
      }
@@ -17952,5 +17952,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-07-30T21:19:40.458940+00:00"
+ "value_updated": "2026-07-30T22:32:50.977412+00:00"
 }
