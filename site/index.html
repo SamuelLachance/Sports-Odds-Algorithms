@@ -378,6 +378,30 @@ async function pollNfl(){
   }catch(e){}
 }
 
+const ESPN_NHL="https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/scoreboard";
+async function pollNhl(){
+  if(document.hidden||state.league!=="nhl"||!state.nhl||!state.nhl.schedule) return;
+  const today=nflToday();
+  if(!state.nhl.schedule.some(g=>g.d===today&&g.hs==null)) return;   // no live NHL slate today
+  try{
+    const r=await fetch(ESPN_NHL); const data=await r.json();
+    const MAP={LA:"LAK",NJ:"NJD",SJ:"SJS",TB:"TBL",UTAH:"UTA"};    // ESPN -> NHL-API codes
+    (data.events||[]).forEach(ev=>{
+      const c=ev.competitions&&ev.competitions[0]; if(!c) return;
+      const H=(c.competitors||[]).find(x=>x.homeAway==="home");
+      const A=(c.competitors||[]).find(x=>x.homeAway==="away");
+      if(!H||!A) return;
+      const h=MAP[H.team.abbreviation]||H.team.abbreviation;
+      const a=MAP[A.team.abbreviation]||A.team.abbreviation;
+      const el=document.querySelector(`[data-ng="nhl_${a}_${h}"]`); if(!el) return;
+      const st=ev.status||{}, tp=st.type||{};
+      if(tp.state==="in")
+        el.innerHTML=`<span class="dot"></span>${A.score}-${H.score} &middot; P${st.period||""} ${st.displayClock||""}`;
+      else if(tp.state==="post") el.textContent=`FINAL ${A.score}-${H.score}`;
+    });
+  }catch(e){}
+}
+
 function updAcc(){
   const el=$("#acc"); if(!el) return;
   if(state.league==="nfl"&&state.nfl){
@@ -404,8 +428,8 @@ async function boot(){
     state.board=b; state.db=db; state.nfl=nfl; state.nhl=nhl;
     updAcc();
     route();
-    pollLive(true); pollNfl();      // first poll always runs, even if the tab loads hidden
-    setInterval(()=>{pollLive();pollNfl();}, 25000);   // both APIs cache ~20s
+    pollLive(true); pollNfl(); pollNhl();   // first poll always runs, even if the tab loads hidden
+    setInterval(()=>{pollLive();pollNfl();pollNhl();}, 25000);   // all APIs cache ~20s
     document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) pollLive(true); });
   }catch(e){ $("#view").innerHTML=`<div class="empty">Could not load data. ${e}</div>`; }
 }
@@ -507,7 +531,10 @@ function board(){
 /* ---------- NHL ---------- */
 const NHL_CITY={ANA:"Anaheim",BOS:"Boston",BUF:"Buffalo",CGY:"Calgary",CAR:"Carolina",CHI:"Chicago",COL:"Colorado",CBJ:"Columbus",DAL:"Dallas",DET:"Detroit",EDM:"Edmonton",FLA:"Florida",LAK:"Los Angeles",MIN:"Minnesota",MTL:"Montreal",NSH:"Nashville",NJD:"New Jersey",NYI:"NY Islanders",NYR:"NY Rangers",OTT:"Ottawa",PHI:"Philadelphia",PIT:"Pittsburgh",SJS:"San Jose",SEA:"Seattle",STL:"St. Louis",TBL:"Tampa Bay",TOR:"Toronto",VAN:"Vancouver",VGK:"Vegas",WSH:"Washington",WPG:"Winnipeg",UTA:"Utah",ARI:"Arizona",ATL:"Atlanta",PHX:"Phoenix"};
 const nhlCity=c=>NHL_CITY[c]||c;
-function nhlRailBtn(on){return `<button class="lg ${on?"on":""}" data-lg="nhl"><span>NHL</span><span class="n">2026</span></button>`;}
+const nhlCS=()=>String((state.nhl&&state.nhl.cur_season)||20252026);
+const nhlYear=()=>nhlCS().slice(4);                       // "2026"
+const nhlSeasLbl=()=>nhlCS().slice(0,4)+"&ndash;"+nhlCS().slice(6);   // "2025&#8211;26"
+function nhlRailBtn(on){return `<button class="lg ${on?"on":""}" data-lg="nhl"><span>NHL</span><span class="n">${nhlYear()}</span></button>`;}
 function nhlRail(){const b=state.board;
   return b.leagues.map(l=>{
     if(l.active) return `<button class="lg" data-lg="${l.code}"><span>${l.name}</span><span class="n">${l.n_games}</span></button>`;
@@ -523,9 +550,10 @@ function nhlCard(g){
   let badge=`<span class="lbadge off">Model</span>`+(g.playoff?`<span class="lbadge proj">Playoff</span>`:"");
   if(done){const winner=g.hs>g.as?g.home:g.away;
     badge=(winner===pick?`<span class="lbadge off">HIT</span>`:`<span class="lbadge tbd">MISS</span>`)+((g.last&&g.last!=="REG")?`<span class="lbadge proj">${g.last}</span>`:"");}
+  const ng=done?"":` data-ng="nhl_${g.away}_${g.home}"`;    // live-score hook (nhl_ prefix: codes overlap NFL)
   return `<a class="gc${val&&val.available?' hasval':''}" href="#/game/nhl-${g.id}">
     ${valbar}
-    <div class="top"><span class="lv">${done?`FINAL ${g.as}-${g.hs}`:g.d.slice(5)}</span>${badge}
+    <div class="top"><span class="lv"${ng}>${done?`FINAL ${g.as}-${g.hs}`:g.d.slice(5)}</span>${badge}
       <span class="pill ${tier(pp)==="strong"?"strong":""}">${pick} ${pctI(pp)}%</span></div>
     <div class="side ${homeWin?"":"win"}"><span class="ab">${g.away}</span><span class="who"><span class="sp">${nhlCity(g.away)}</span></span><span class="odds" title="fair American odds (no vig) from the model">${amOdds(1-hp)}</span><span class="pc">${pctI(1-hp)}%</span></div>
     <div class="side ${homeWin?"win":""}"><span class="ab">${g.home}</span><span class="who"><span class="sp">${nhlCity(g.home)}</span></span><span class="odds" title="fair American odds (no vig) from the model">${amOdds(hp)}</span><span class="pc">${pctI(hp)}%</span></div>
@@ -539,7 +567,7 @@ function nhlPage(){
   const filts=[["today","Today"],["week","Week"],["month","Month"],["year","Year"]]
     .map(([k,t])=>`<button class="filt ${k===state.nhlRange?"on":""}" data-r="${k}">${t}</button>`).join("");
   let cards;
-  if(!games.length){cards=`<div class="empty">No NHL games in this window &mdash; the season runs October&nbsp;&ndash;&nbsp;June. Pick <b>Year</b> to see every 2025&ndash;26 game with its model pick and result.</div>`;}
+  if(!games.length){cards=`<div class="empty">No NHL games in this window &mdash; the season runs October&nbsp;&ndash;&nbsp;June. Pick <b>Year</b> to see every ${nhlSeasLbl()} game with its model pick and result.</div>`;}
   else{const days=[...new Set(games.map(g=>g.d))].sort();
     if(state.nhlRange==="year") days.reverse();   // offseason: newest games first
     cards=days.map(d=>{const gs=games.filter(g=>g.d===d);
@@ -555,7 +583,7 @@ function nhlPage(){
     <div class="b"><span class="k">vs bare Elo</span><span class="v pos">&minus;${(mc.test_delta_vs_elo).toFixed(4)}</span></div>
     <div class="b"><span class="k">Base Elo</span><span class="v">${mc.baseline_elo_test.toFixed(4)}</span></div>
     <div class="b"><span class="k">Home win rate</span><span class="v">${(mc.home_win_rate*100).toFixed(1)}%</span></div>
-    <div class="b"><span class="k">2025&ndash;26 acc</span><span class="v">${mc.cur_season_acc?(mc.cur_season_acc*100).toFixed(1)+"%":"&mdash;"}</span></div>
+    <div class="b"><span class="k">${nhlSeasLbl()} acc</span><span class="v">${mc.cur_season_acc?(mc.cur_season_acc*100).toFixed(1)+"%":"&mdash;"}</span></div>
     <div class="b"><span class="k">Features</span><span class="v" style="font-size:12px">${mc.features.join(" &middot; ")}</span></div>
   </div></div>`;
   $("#view").innerHTML=`<div class="controls"><div class="rail">${nhlRail()}</div><div class="filters">${filts}</div></div>
@@ -577,7 +605,7 @@ function nhlTeams(){
       <div class="stat"><span>Elo <b>${t.elo.toFixed(0)}</b></span><span>xG <b>${sgn(t.xg)}</b></span><span>Pts <b>${t.pts}</b></span></div>
       <div class="stat"><span>Rec <b>${t.w}-${t.l}-${t.otl}</b></span><span>GF <b>${t.gf}</b></span><span>GA <b>${t.ga}</b></span></div></div>`).join("");
   $("#view").innerHTML=`<div class="controls"><div class="rail">${nhlRail()}</div></div>
-    <h1 class="pt">NHL teams <span class="sub">GLASSBOX ratings &middot; 2025&ndash;26</span></h1>
+    <h1 class="pt">NHL teams <span class="sub">GLASSBOX ratings &middot; ${nhlSeasLbl()}</span></h1>
     <div class="tgrid">${cards}</div>`;
   nhlWire();
 }
@@ -667,7 +695,7 @@ function nhlStandings(){
       <td><span class="num">${t.elo.toFixed(0)}</span></td>
       <td><span class="num ${t.xg>=0?"pos":"neg"}">${sgn(t.xg)}</span></td></tr>`).join("");
   $("#view").innerHTML=`<div class="controls"><div class="rail">${nhlRail()}</div></div>
-    <h1 class="pt">NHL standings <span class="sub">2025&ndash;26 final &middot; GLASSBOX ratings</span></h1>
+    <h1 class="pt">NHL standings <span class="sub">${nhlSeasLbl()} &middot; GLASSBOX ratings</span></h1>
     <div class="twrap"><table>
       <thead><tr><th></th><th>Team</th><th>Record</th><th>Pts</th><th>GF-GA</th><th>Elo</th><th>xG</th></tr></thead>
       <tbody>${rows}</tbody></table></div>`;
