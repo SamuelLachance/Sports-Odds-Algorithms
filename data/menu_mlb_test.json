@@ -1,0 +1,77 @@
+{
+ "sharp": {
+  "n_flag": 311,
+  "coef_close": 0.0802,
+  "ci_close": [
+   -0.1361,
+   0.3191
+  ],
+  "oot_dll": -0.00526,
+  "coef_model": 0.1439,
+  "ci_model": [
+   -0.1046,
+   0.3833
+  ],
+  "n_model": 264
+ },
+ "rlm": {
+  "n_flag": 129,
+  "coef_close": 0.1378,
+  "ci_close": [
+   -0.214,
+   0.4714
+  ],
+  "oot_dll": 0.00273,
+  "coef_model": 0.0,
+  "ci_model": [
+   0.0,
+   0.0
+  ],
+  "n_model": 0
+ },
+ "book_needs": {
+  "n_flag": 926,
+  "coef_close": 0.0307,
+  "ci_close": [
+   -0.0899,
+   0.1713
+  ],
+  "oot_dll": -0.0002,
+  "coef_model": 0.0251,
+  "ci_model": [
+   -0.1962,
+   0.2303
+  ],
+  "n_model": 596
+ },
+ "squares": {
+  "n_flag": 811,
+  "coef_close": -0.0263,
+  "ci_close": [
+   -0.1768,
+   0.1156
+  ],
+  "oot_dll": 0.00032,
+  "coef_model": 0.1007,
+  "ci_model": [
+   -0.1498,
+   0.36
+  ],
+  "n_model": 503
+ },
+ "model_best": {
+  "n_flag": 109,
+  "coef_close": 0.0749,
+  "ci_close": [
+   -0.3326,
+   0.4821
+  ],
+  "oot_dll": -0.0054,
+  "coef_model": -0.1061,
+  "ci_model": [
+   -0.6328,
+   0.4619
+  ],
+  "n_model": 66
+ }
+}
