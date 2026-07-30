@@ -606,11 +606,12 @@ function nhlTeamPage(code){
     return `<tr onclick="location.hash='#/game/nhl-${g.id}'"><td>${g.d.slice(5)}</td>
       <td class="a">${home?"vs":"@"} <span class="ab">${opp}</span></td>
       <td><span class="num">${pctI(hp)}%</span></td><td>${res}</td></tr>`;}).join("");
-  const top=(t.top||[]).map(p=>`<tr onclick="location.hash='#/player/${Object.keys(n.players).find(id=>n.players[id].name===p.name)||''}'">
+  const top=(t.top||[]).map(pid=>{const p=n.players[pid];if(!p)return "";
+    return `<tr onclick="location.hash='#/player/${pid}'">
     <td class="a"><span class="player-link">${p.name}</span> <span class="sub">${p.pos}</span></td>
     <td><span class="gb ${gbTier(p.rating)}">${p.rating.toFixed(0)}</span></td>
     <td><span class="num ${p.off>=0?"pos":"neg"}">${sgn(p.off)}</span></td>
-    <td><span class="num ${p.def>=0?"pos":"neg"}">${sgn(p.def)}</span></td></tr>`).join("");
+    <td><span class="num ${p.def>=0?"pos":"neg"}">${sgn(p.def)}</span></td></tr>`;}).join("");
   $("#view").innerHTML=`<a class="back" href="#/teams">&larr; Teams</a>
     <h1 class="pt">${nhlCity(code)} <span class="sub">${code} &middot; #${t.rank} &middot; ${t.w}-${t.l}-${t.otl}, ${t.pts} pts</span></h1>
     <div class="statgrid">

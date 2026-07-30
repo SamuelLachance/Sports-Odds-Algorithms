@@ -176,8 +176,10 @@ def main():
                              "off": v["off"], "def": v["def"], "net": v["net"],
                              "rating": v["rating"], "toi": v["toi_min"]}
         for t, tm in teams.items():
-            roster = [p for p in players.values() if p["team"] == t]
-            tm["top"] = sorted(roster, key=lambda x: -x["net"])[:5]
+            roster = [(pid, p) for pid, p in players.items() if p["team"] == t]
+            # ids only — the SPA renders from players[pid] (no duplicate dicts)
+            tm["top"] = [pid for pid, p in
+                         sorted(roster, key=lambda x: -x[1]["net"])[:5]]
     except (FileNotFoundError, json.JSONDecodeError):
         pass    # missing or corrupt ratings/names file: serve without players
 
