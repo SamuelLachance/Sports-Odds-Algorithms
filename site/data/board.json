@@ -25,7 +25,7 @@
      "game_pk": 822946,
      "date": "2026-07-30",
      "start_utc": "2026-07-30T16:10:00Z",
-     "state": "Live",
+     "state": "Final",
      "home": "TBA",
      "away": "TEX",
      "away_abbr": "TEX",
@@ -68,7 +68,7 @@
      "game_pk": 823674,
      "date": "2026-07-30",
      "start_utc": "2026-07-30T17:40:00Z",
-     "state": "Live",
+     "state": "Final",
      "home": "MIN",
      "away": "KCA",
      "away_abbr": "KC",
@@ -111,7 +111,7 @@
      "game_pk": 824568,
      "date": "2026-07-30",
      "start_utc": "2026-07-30T18:10:00Z",
-     "state": "Preview",
+     "state": "Live",
      "home": "CHA",
      "away": "NYA",
      "away_abbr": "NYY",
@@ -154,7 +154,7 @@
      "game_pk": 823023,
      "date": "2026-07-30",
      "start_utc": "2026-07-30T18:15:00Z",
-     "state": "Preview",
+     "state": "Live",
      "home": "SLN",
      "away": "CHN",
      "away_abbr": "CHC",
@@ -253,10 +253,10 @@
      "home_sp_proj": false,
      "pitcher_known": true,
      "sp_projected": false,
-     "lineup_source": "projected",
-     "home_win_prob": 0.5392,
+     "lineup_source": "official",
+     "home_win_prob": 0.5485,
      "pick": "NYM",
-     "pick_prob": 0.5392,
+     "pick_prob": 0.5485,
      "edge": {
       "team": -4.3,
       "home_field": 5.2,
@@ -266,16 +266,16 @@
       "siera": 0.6,
       "lineup": -0.0,
       "power": 1.9,
-      "baserun": -0.2
+      "baserun": 0.7
      },
      "tier": "lineup",
      "recal_prob": 0.5128,
-     "ts_edge": -1.114,
+     "ts_edge": -1.093,
      "bullpen_edge": -0.07,
      "home_bp_fip": 0.835,
      "away_bp_fip": 0.765,
-     "power_edge": 0.0181,
-     "baserun_edge": -0.0003,
+     "power_edge": 0.0185,
+     "baserun_edge": 0.0009,
      "home_pitcher_matched": true,
      "away_pitcher_matched": true
     },
@@ -296,10 +296,10 @@
      "home_sp_proj": false,
      "pitcher_known": true,
      "sp_projected": false,
-     "lineup_source": "projected",
-     "home_win_prob": 0.594,
+     "lineup_source": "official",
+     "home_win_prob": 0.6108,
      "pick": "ATL",
-     "pick_prob": 0.594,
+     "pick_prob": 0.6108,
      "edge": {
       "team": 4.7,
       "home_field": 5.0,
@@ -307,18 +307,18 @@
       "away_pitcher": -0.5,
       "bullpen": 0.6,
       "siera": -0.3,
-      "lineup": -1.2,
-      "power": 2.5,
-      "baserun": -0.6
+      "lineup": -1.1,
+      "power": 3.1,
+      "baserun": 0.5
      },
      "tier": "lineup",
      "recal_prob": 0.5834,
-     "ts_edge": -0.67,
+     "ts_edge": -0.621,
      "bullpen_edge": 0.941,
      "home_bp_fip": 0.776,
      "away_bp_fip": 1.717,
-     "power_edge": 0.0253,
-     "baserun_edge": -0.0008,
+     "power_edge": 0.0315,
+     "baserun_edge": 0.0007,
      "home_pitcher_matched": true,
      "away_pitcher_matched": true
     },
@@ -411,9 +411,9 @@
       "side": "home",
       "team": "SD",
       "ev_open": 0.1507,
-      "ev_cur": 0.0548,
+      "ev_cur": 0.0421,
       "open_dec": 1.8,
-      "cur_dec": 1.65,
+      "cur_dec": 1.63,
       "available": true,
       "books": 11
      }
@@ -17952,5 +17952,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-07-30T19:59:04.743993+00:00"
+ "value_updated": "2026-07-30T21:19:07.072251+00:00"
 }
