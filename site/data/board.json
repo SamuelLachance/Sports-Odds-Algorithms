@@ -803,7 +803,17 @@
      "power_edge": 0.0253,
      "baserun_edge": -0.0008,
      "home_pitcher_matched": true,
-     "away_pitcher_matched": false
+     "away_pitcher_matched": false,
+     "value": {
+      "side": "home",
+      "team": "ATL",
+      "ev_open": 0.1554,
+      "ev_cur": 0.1554,
+      "open_dec": 1.78,
+      "cur_dec": 1.78,
+      "available": true,
+      "books": 7
+     }
     },
     {
      "game_pk": 824164,
@@ -17942,5 +17952,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-07-30T18:19:32.126036+00:00"
+ "value_updated": "2026-07-30T19:59:04.743993+00:00"
 }
