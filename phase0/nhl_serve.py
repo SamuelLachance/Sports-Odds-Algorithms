@@ -183,6 +183,19 @@ def main():
     except (FileNotFoundError, json.JSONDecodeError):
         pass    # missing or corrupt ratings/names file: serve without players
 
+    # carry the edge layer's fields forward: odds.yml owns them, but a re-serve
+    # must not blank the badges for up to 20 min until its next cycle
+    value_updated = None
+    try:
+        old = json.load(open("site/data/nhl.json", encoding="utf-8"))
+        old_val = {g["id"]: g["value"] for g in old.get("schedule", []) if "value" in g}
+        for s in sched:
+            if s["id"] in old_val:
+                s["value"] = old_val[s["id"]]
+        value_updated = old.get("value_updated")
+    except (FileNotFoundError, json.JSONDecodeError):
+        pass
+
     payload = {
         "status": "season" if n_upcoming else "offseason",
         "as_of": model["as_of"],
@@ -201,6 +214,8 @@ def main():
             "n_games_train": 17709,
         },
     }
+    if value_updated:
+        payload["value_updated"] = value_updated
     json.dump(payload, open("site/data/nhl.json", "w"))
     print(f"wrote site/data/nhl.json: {len(sched)} games, {len(teams)} teams")
     print(f"current-season model LL {cur_ll:.5f}  acc {cur_acc:.4f} (n={len(done)})")
