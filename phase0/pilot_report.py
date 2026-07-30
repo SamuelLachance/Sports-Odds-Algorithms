@@ -17,7 +17,7 @@ import sys
 import numpy as np
 
 sys.path.insert(0, "phase0")
-from ev_gate_audit import BUCKETS, bets_at, exp_vs_real, load, roi  # noqa: E402
+from ev_gate_audit import BUCKETS, exp_vs_real, load, roi  # noqa: E402
 from luck_gap_eval import build_luck  # noqa: E402
 
 
@@ -51,7 +51,7 @@ def main():
     md = ["# Paper-pilot health report (MLB backtest, 2010-2021 vs opening)\n"]
     out = {}
     for gate in (0.15, 0.20):
-        bets, gaps = [], []
+        bets = []
         for g, gap in zip(rows, keyed):
             p = g["p"]
             cands = []

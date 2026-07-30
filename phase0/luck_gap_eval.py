@@ -22,7 +22,7 @@ from collections import defaultdict
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 
-from ev_gate_audit import bets_at, exp_vs_real, load, roi
+from ev_gate_audit import exp_vs_real, load, roi
 
 F_DATE, F_VIS, F_HOME, F_VIS_R, F_HOME_R = 0, 3, 6, 9, 10
 PYTH_EXP = 1.83
@@ -143,7 +143,6 @@ def main():
                           "ci": [round(float(lo), 4), round(float(hi), 4)], "sig": sig}
 
     # ---- overlay on the EV bet sets: fading luck vs riding luck ----
-    gap_of = {(g["date"]): None for g in J}
     ev_rows = []
     for g in J:
         ev_rows.append({"date": g["date"], "season": g["season"], "p": g["p"],
