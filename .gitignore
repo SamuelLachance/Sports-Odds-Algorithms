@@ -21,3 +21,20 @@ site/data/predictions.json
 
 # Local reference papers (copyrighted; keep local, do not redistribute publicly)
 documents/*.pdf
+
+# Big raw play/shift tables (50-540MB) — local-only artifacts; the weekly
+# chains re-pull them (nflverse pbp / NHL shiftcharts / MoneyPuck)
+data/nfl_plays.csv
+data/nfl_plays_wp.csv
+data/nfl_duel_plays.csv
+data/nfl_turnovers.csv
+data/nfl_rapm_plays.csv
+data/nfl_play_ctx.csv
+data/nfl_play_ctx2.csv
+data/nfl_play_prot.csv
+data/nfl_fgs.csv
+data/nhl_shifts.csv
+data/ftn_*.parquet
+data/*.parquet
+catboost_info/
+documents/*.pdf
