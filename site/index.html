@@ -266,11 +266,16 @@ footer b{color:var(--muted)} footer a{color:var(--muted);text-decoration:underli
 </div></header>
 <main><div class="wrap" id="view"><div class="loading">Loading predictions&hellip;</div></div></main>
 <footer><div class="wrap">
-  <b>Research only &mdash; not betting advice.</b> A market-blind model (team Elo + xFIP &amp;
-  SIERA starting-pitcher ratings + season-to-date bullpen FIP + per-plate-appearance TrueSkill
-  on-base ratings + lineup isolated-power + lineup baserunning) that never sees the odds. Data: <b>Retrosheet</b> (free of charge,
-  copyrighted by Retrosheet, <a href="https://www.retrosheet.org">retrosheet.org</a>) and the
-  MLB Stats API (individual, non-commercial use); NFL data from <b>nflverse</b> (community-maintained).
+  <b>Research only &mdash; not betting advice.</b> Market-blind models that never see the odds.
+  <b>MLB</b>: team Elo + xFIP &amp; SIERA starting-pitcher ratings + season-to-date bullpen FIP +
+  per-plate-appearance TrueSkill on-base ratings + lineup isolated-power + lineup baserunning.
+  <b>NFL</b>: 14-feature blend around an 11v11 per-snap participation TrueSkill.
+  <b>NHL</b>: tuned Elo + rest &amp; back-to-back + an expected-goals team rating (updated on shot
+  quality, never on results); skater cards show teammate-adjusted xG/60 (RAPM, display only).
+  Data: <b>Retrosheet</b> (free of charge, copyrighted by Retrosheet,
+  <a href="https://www.retrosheet.org">retrosheet.org</a>) and the MLB Stats API (individual,
+  non-commercial use); NFL data from <b>nflverse</b> (community-maintained); NHL data from the
+  NHL Stats API and shot xG from <b>MoneyPuck.com</b> (used with attribution, non-commercial research).
 </div></footer>
 <script>
 const $ = s => document.querySelector(s);
@@ -536,6 +541,7 @@ function nhlPage(){
   let cards;
   if(!games.length){cards=`<div class="empty">No NHL games in this window &mdash; the season runs October&nbsp;&ndash;&nbsp;June. Pick <b>Year</b> to see every 2025&ndash;26 game with its model pick and result.</div>`;}
   else{const days=[...new Set(games.map(g=>g.d))].sort();
+    if(state.nhlRange==="year") days.reverse();   // offseason: newest games first
     cards=days.map(d=>{const gs=games.filter(g=>g.d===d);
       return `<div class="day"><span class="d">${fmtDay(d,today)}</span><span class="c">${gs.length} games</span></div>
         <div class="grid">${gs.map(nhlCard).join("")}</div>`;}).join("");}
