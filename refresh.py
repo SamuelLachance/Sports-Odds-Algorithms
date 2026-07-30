@@ -9,7 +9,7 @@ Order matters — team form is fetched once and reused:
 Needs only the frozen model (mlbwp/artifacts/ratings.json), the MLB Stats API, and
 the Python standard library — no Retrosheet, no third-party packages — so it runs in
 a minimal CI job. The MODEL is market-blind; a final post-process (market/) compares
-the live market to the model's OUTPUT to flag >=15%-EV value edges (needs ODDS_API_KEY,
+the live market to the model's OUTPUT to flag >=20%-EV value edges (needs ODDS_API_KEY,
 skipped gracefully without it).
 """
 
@@ -48,7 +48,7 @@ def main(horizon_days: int = 30) -> int:
     # 2. board  3. value edges (market post-process)  4. db  5. shell
     predict_slate.main(days=horizon_days, today=today.isoformat())
     n_edges = edges.attach_and_save()
-    print(f"[refresh] {n_edges} value edges (>=15% EV vs opening consensus)", flush=True)
+    print(f"[refresh] {n_edges} value edges (>=20% EV vs opening consensus)", flush=True)
     db_mod.main(season=season)
 
     # NHL: incremental spine update + re-serve. Runs as subprocesses so this

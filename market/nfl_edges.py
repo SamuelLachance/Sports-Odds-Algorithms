@@ -1,11 +1,11 @@
-"""Attach the >=15%-EV value edge to the NFL schedule in site/data/nfl.json.
+"""Attach the >=20%-EV value edge to the NFL schedule in site/data/nfl.json.
 
 Same contract as market/edges.py (MLB): a POST-PROCESS on the market-blind model's
 output — never changes a model probability, only compares the live market to it.
 Only games inside the LIVE-MODEL window (kickoff within the next 7 days, unplayed)
 are eligible, matching the serving policy: model probs under a week out, Monte
 Carlo beyond. Opening consensus is frozen on first sighting; the badge shows only
-while EV vs that opening >= 15% and the current price still clears (ev_cur > 0).
+while EV vs that opening >= 20% and the current price still clears (ev_cur > 0).
 Preseason: The Odds API has no NFL h2h events in range -> no-op, degrades clean.
 """
 
@@ -21,7 +21,7 @@ from market import odds
 PROJECT = Path(__file__).resolve().parents[1]
 NFL_JSON = PROJECT / "site" / "data" / "nfl.json"
 OPENING = PROJECT / "data" / "nfl_opening_odds_2026.json"
-EV_THRESHOLD = 0.15
+EV_THRESHOLD = 0.20
 LIVE_WINDOW_DAYS = 7
 
 NFL_ODDS_URL = ("https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds"

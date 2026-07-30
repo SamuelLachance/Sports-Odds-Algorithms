@@ -56,7 +56,7 @@ refresh_odds.py  edge-layer refresh (needs ODDS_API_KEY, server-side only)
   (`phase0/nhl_serve.py`), site rebuild. Stdlib-only critical path; NHL steps
   skip gracefully if numpy/sklearn are absent.
 - **`.github/workflows/odds.yml`** — `refresh_odds.py` re-prices the three
-  edge layers against frozen opening odds (≥15% EV, 7-day window).
+  edge layers against frozen opening odds (≥20% EV, 7-day window).
 - **`.github/workflows/pages.yml`** — deploys `site/`.
 
 Run locally:

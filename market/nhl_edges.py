@@ -1,9 +1,9 @@
-"""Attach the >=15%-EV value edge to the NHL schedule in site/data/nhl.json.
+"""Attach the >=20%-EV value edge to the NHL schedule in site/data/nhl.json.
 
 Same POST-PROCESS contract as the MLB/NFL edge layers: compares the live market
 to the market-blind model's probability, never changes a model number. Only games
 inside the live window (puck-drop within 7 days, unplayed) are eligible. Opening
-consensus frozen on first sighting; badge shows while EV vs opening >= 15% and the
+consensus frozen on first sighting; badge shows while EV vs opening >= 20% and the
 current price still clears. Offseason: no NHL h2h events in range -> clean no-op.
 """
 from __future__ import annotations
@@ -18,7 +18,7 @@ from market import odds
 PROJECT = Path(__file__).resolve().parents[1]
 NHL_JSON = PROJECT / "site" / "data" / "nhl.json"
 OPENING = PROJECT / "data" / "nhl_opening_odds_2026.json"
-EV_THRESHOLD = 0.15
+EV_THRESHOLD = 0.20
 LIVE_WINDOW_DAYS = 7
 
 NHL_ODDS_URL = ("https://api.the-odds-api.com/v4/sports/icehockey_nhl/odds"
