@@ -18,7 +18,6 @@ sys.path.insert(0, "phase0")
 from nhl_glicko2_eval import llv, load_games, run_elo  # noqa: E402
 from nhl_features_eval import build_features  # noqa: E402
 
-CUR_SEASON = 20252026
 EPS = 1e-9
 
 
@@ -26,11 +25,43 @@ def sig(x):
     return 1.0 / (1.0 + np.exp(-x))
 
 
+def final_states(games, model):
+    """Walk Elo + xG-Elo + last-game-date to the end of the spine (mirrors the
+    freeze walk) so upcoming games are predicted from CURRENT states."""
+    from datetime import date
+    from collections import defaultdict
+    from nhl_features_eval import XG_HA, XG_K, XG_REGRESS, load_team_xg
+    cfg = model["elo_cfg"]
+    R, xg, last = {}, defaultdict(float), {}
+    txg = load_team_xg()
+    prev = None
+    for g in games:
+        if prev is not None and g["season"] != prev:
+            for t in R:
+                R[t] = 1500 + (R[t] - 1500) * (1 - cfg["regress"])
+            for t in xg:
+                xg[t] *= (1 - XG_REGRESS)
+        prev = g["season"]
+        rh = R.setdefault(g["home"], 1500.0); ra = R.setdefault(g["away"], 1500.0)
+        pe = 1.0 / (1.0 + 10 ** (-((rh + cfg["ha"]) - ra) / 400.0))
+        R[g["home"]] += cfg["k"] * (g["y"] - pe)
+        R[g["away"]] += cfg["k"] * ((1 - g["y"]) - (1 - pe))
+        last[g["home"]] = g["date"]; last[g["away"]] = g["date"]
+        tx = txg.get(g["game_id"])
+        if tx and g["home"] in tx and g["away"] in tx:
+            hxgf, _ = tx[g["home"]]; axgf, _ = tx[g["away"]]
+            err = (hxgf - axgf) - (xg[g["home"]] - xg[g["away"]] + XG_HA)
+            xg[g["home"]] += XG_K / 100.0 * err
+            xg[g["away"]] -= XG_K / 100.0 * err
+    return R, xg, last
+
+
 def main():
     model = json.load(open("data/nhl_model.json"))
     b = model["blend"]
     c = b["coefs"]
     games = load_games()
+    CUR_SEASON = max(g["season"] for g in games)      # auto-rolls to new seasons
     e_out = run_elo(games, **model["elo_cfg"])
     p = np.clip(np.array([o[1] for o in e_out]), EPS, 1 - EPS)
     elogit = np.log(p / (1 - p))
@@ -64,6 +95,36 @@ def main():
         if r:
             s["hs"] = int(r["home_goals"]); s["as"] = int(r["away_goals"])
             s["last"] = r["last_period"]
+
+    # ---- upcoming slate: predict from CURRENT states (in-season only) ----
+    import os
+    from datetime import date as _date
+    n_upcoming = 0
+    if os.path.exists("data/nhl_upcoming.json"):
+        upcoming = json.load(open("data/nhl_upcoming.json"))
+        if upcoming:
+            R, xg_st, last = final_states(games, model)
+            from nhl_features_eval import XG_HA
+            for u in upcoming:
+                h, a = u["home"], u["away"]
+                if h not in R or a not in R:
+                    continue                      # refuse unresolved teams
+                elp = 1.0 / (1.0 + 10 ** (-((R[h] + model["elo_cfg"]["ha"]) - R[a]) / 400.0))
+                elogit_u = float(np.log(max(elp, EPS) / max(1 - elp, EPS)))
+                d = _date.fromisoformat(u["d"])
+                def rst(team):
+                    lg = last.get(team)
+                    return min((d - _date.fromisoformat(lg)).days, 5) if lg else 3
+                hb2b = 1.0 if (last.get(h) and (d - _date.fromisoformat(last[h])).days <= 1) else 0.0
+                ab2b = 1.0 if (last.get(a) and (d - _date.fromisoformat(last[a])).days <= 1) else 0.0
+                xgd = (xg_st.get(h, 0.0) + XG_HA) - xg_st.get(a, 0.0)
+                z = (b["intercept"] + c["elo_logit"] * elogit_u + c["rest"] * (rst(h) - rst(a))
+                     + c["b2b_home"] * hb2b + c["b2b_away"] * ab2b + c["xg"] * xgd)
+                sched.append({"id": u["id"], "d": u["d"], "home": h, "away": a,
+                              "hp": round(float(sig(z)), 4), "hs": None, "as": None,
+                              "y": None, "ot": None, "playoff": u.get("playoff", 0)})
+                n_upcoming += 1
+            sched.sort(key=lambda s: (s["d"], s["id"]))
 
     # ---- team ratings + standings (current season record) ----
     rec = defaultdict(lambda: {"w": 0, "l": 0, "otl": 0, "gf": 0, "ga": 0})
@@ -122,7 +183,7 @@ def main():
         pass
 
     payload = {
-        "status": "offseason" if True else "season",
+        "status": "season" if n_upcoming else "offseason",
         "as_of": model["as_of"],
         "cur_season": CUR_SEASON,
         "schedule": sched,

@@ -50,6 +50,18 @@ def main(horizon_days: int = 30) -> int:
     n_edges = edges.attach_and_save()
     print(f"[refresh] {n_edges} value edges (>=15% EV vs opening consensus)", flush=True)
     db_mod.main(season=season)
+
+    # NHL: incremental spine update + re-serve. Runs as subprocesses so this
+    # module stays importable in the minimal CI job; needs numpy/sklearn, so it
+    # degrades to a skip (keeping the committed nhl.json) when they're absent.
+    import subprocess
+    for step in ("phase0/nhl_update.py", "phase0/nhl_serve.py"):
+        r = subprocess.run([sys.executable, step], capture_output=True, text=True,
+                           cwd=str(PROJECT), timeout=900)
+        tail = (r.stdout or r.stderr or "").strip().splitlines()
+        print(f"[refresh] {step}: {'ok' if r.returncode == 0 else 'SKIPPED'} "
+              f"({tail[-1][:100] if tail else ''})", flush=True)
+
     build_site.build()
     print("[refresh] done", flush=True)
     return 0
