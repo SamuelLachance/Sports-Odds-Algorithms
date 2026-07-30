@@ -1,0 +1,60 @@
+name: NHL weekly player refresh
+
+# In-season weekly chain: spine append, current-season MoneyPuck xG re-pull,
+# roster name map, and re-serve of site/data/nhl.json. The shift pull and RAPM
+# rebuild are LOCAL-ONLY: data/nhl_shifts.csv (~536 MB, untracked — far over
+# GitHub's 100 MB push limit) never lives in CI, so nhl_weekly.py skips those
+# two steps here and the committed nhl_rapm2_ratings.json is kept as-is until
+# a local run refreshes it. Market-blind — no odds sources in this chain.
+
+on:
+  schedule:
+    - cron: "0 10 * * 1"    # Mondays 10:00 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: nhl-weekly
+  cancel-in-progress: false
+
+permissions:
+  contents: write   # commit the refreshed data back to the repo
+
+jobs:
+  weekly:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install model deps
+        run: pip install numpy scipy scikit-learn
+
+      - name: Run weekly NHL chain
+        run: python phase0/nhl_weekly.py
+
+      - name: Commit refreshed data
+        run: |
+          git config user.name "glassbox-bot"
+          git config user.email "glassbox-bot@users.noreply.github.com"
+          # add-only-existing: some outputs are absent in CI (shifts-dependent
+          # steps skipped) or in the offseason. data/nhl_shifts.csv is
+          # deliberately NOT listed (untracked local artifact, ~536 MB).
+          for f in data/nhl_games.csv data/nhl_upcoming.json \
+                   data/nhl_team_xg.csv data/nhl_goalie_xg.csv \
+                   data/nhl_rapm2_ratings.json data/nhl_player_names.json \
+                   site/data/nhl.json; do
+            if [ -f "$f" ]; then git add "$f"; fi
+          done
+          if git diff --cached --quiet; then
+            echo "no data change"
+          else
+            git commit -m "NHL weekly player-data refresh"
+            # -X theirs: on a data-file conflict keep THIS run's fresh outputs
+            # (rebase replays our commit onto remote; "theirs" = our commit —
+            # same convention as refresh.yml; "ours" would silently discard
+            # the just-regenerated files, e.g. when odds.yml touches nhl.json)
+            git pull --rebase -X theirs --autostash origin master || true
+            git push || echo "push skipped (race with another refresh); next run retries"
+          fi

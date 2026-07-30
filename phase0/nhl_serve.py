@@ -28,7 +28,6 @@ def sig(x):
 def final_states(games, model):
     """Walk Elo + xG-Elo + last-game-date to the end of the spine (mirrors the
     freeze walk) so upcoming games are predicted from CURRENT states."""
-    from datetime import date
     from collections import defaultdict
     from nhl_features_eval import XG_HA, XG_K, XG_REGRESS, load_team_xg
     cfg = model["elo_cfg"]
@@ -179,8 +178,8 @@ def main():
         for t, tm in teams.items():
             roster = [p for p in players.values() if p["team"] == t]
             tm["top"] = sorted(roster, key=lambda x: -x["net"])[:5]
-    except FileNotFoundError:
-        pass
+    except (FileNotFoundError, json.JSONDecodeError):
+        pass    # missing or corrupt ratings/names file: serve without players
 
     payload = {
         "status": "season" if n_upcoming else "offseason",

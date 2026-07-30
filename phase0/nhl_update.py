@@ -14,6 +14,7 @@ import csv
 import datetime as dt
 import gzip
 import json
+import os
 import time
 import urllib.request
 
@@ -87,10 +88,12 @@ def main() -> int:
     if new_rows:
         allr = rows + [{k: str(v) for k, v in r.items()} for r in new_rows]
         allr.sort(key=lambda r: (r["date"], int(r["game_id"])))
-        with open(SPINE, "w", newline="", encoding="utf-8") as fh:
+        # temp + os.replace: an interrupted rewrite must never truncate the spine
+        with open(SPINE + ".tmp", "w", newline="", encoding="utf-8") as fh:
             w = csv.DictWriter(fh, fieldnames=list(allr[0].keys()))
             w.writeheader()
             w.writerows(allr)
+        os.replace(SPINE + ".tmp", SPINE)
     # dedupe upcoming by id, keep earliest listing
     ded = {}
     for u in upcoming:

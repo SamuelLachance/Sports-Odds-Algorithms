@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 import sys
 from collections import defaultdict
 
@@ -29,8 +30,18 @@ sys.path.insert(0, "phase0")
 from nhl_shift_trueskill import load_shifts  # noqa: E402
 
 LAMBDA = 150.0
-FIT_SEASONS = {20222023, 20232024, 20242025, 20252026}   # trailing window for current ratings
 MIN_TOI = 400.0        # min 5v5 seconds to be rated
+
+
+def _fit_seasons(n: int = 4) -> set[int]:
+    """Trailing window for current ratings: the latest n distinct seasons in the
+    spine (auto-rolls each season; was hardcoded {20222023..20252026})."""
+    with open("data/nhl_games.csv", encoding="utf-8") as fh:
+        seasons = sorted({int(r["season"]) for r in csv.DictReader(fh)})
+    return set(seasons[-n:])
+
+
+FIT_SEASONS = _fit_seasons()
 
 
 def stints_for_game(gshifts, goalies):
@@ -54,6 +65,7 @@ def stints_for_game(gshifts, goalies):
 
 
 def main():
+    print(f"[nhl_rapm2] FIT_SEASONS (derived): {sorted(FIT_SEASONS)}", flush=True)
     meta = {}
     for r in csv.DictReader(open("data/nhl_games.csv", encoding="utf-8")):
         meta[int(r["game_id"])] = (r["date"], r["home"], r["away"], int(r["season"]))
@@ -129,7 +141,12 @@ def main():
     nets = np.array([v["net"] for v in out.values()])
     for v in out.values():
         v["rating"] = round(float(50 + 15 * (v["net"] - nets.mean()) / (nets.std() + 1e-9)), 1)
-    json.dump(out, open("data/nhl_rapm2_ratings.json", "w"))
+    # temp + os.replace: a kill mid-dump (e.g. nhl_weekly timeout) must not
+    # leave truncated JSON that bricks every later nhl_serve run
+    tmp = "data/nhl_rapm2_ratings.json.tmp"
+    with open(tmp, "w") as fh:
+        json.dump(out, fh)
+    os.replace(tmp, "data/nhl_rapm2_ratings.json")
     print(f"{len(out):,} rated -> data/nhl_rapm2_ratings.json")
 
 
