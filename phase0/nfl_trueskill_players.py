@@ -300,9 +300,12 @@ for r in csv.DictReader(open("data/nfl_players.csv", encoding="utf-8")):
         continue
     names[g] = r.get("display_name") or g
     pos_of[g] = POSMAP.get(r.get("position") or "", None)
+# actives = players seen in the LATEST season with participation data (today
+# "2025"); once 2026 rows land in nfl_rapm_plays.csv the gate advances
+LATEST_PART = max(p[0][:4] for p in plays)
 active25 = set()
 for gid, pid_, off, dfn, _ in plays:
-    if gid.startswith("2025"):
+    if gid.startswith(LATEST_PART):
         active25.update(off.split(";")); active25.update(dfn.split(";"))
 
 # ---- display conversion: conservative skill (TrueSkill leaderboard exposure,
@@ -409,6 +412,15 @@ for t, tm in payload["teams"].items():
     tm["gb_def"] = round(ndef / ndf, 1) if ndf else None
 json.dump({p: [round(mu[p], 4), round(sig2[p], 4), snaps[p]] for p in mu},
           open("data/nfl_ts_state.json", "w"))
+# last-walked-season meta: the serve keys its TS-state 2026-boundary guard off
+# this, NOT off nfl_games.csv — participation data (nfl_rapm_plays.csv) can lag
+# the schedule spine, in which case this walk never crossed into 2026 and the
+# offseason shrink/widen must still be applied at serve time. Sidecar file so
+# nfl_ts_state.json's format (and bytes) stay unchanged.
+json.dump({"last_walked_season": int(cur_season)},
+          open("data/nfl_ts_state_meta.json", "w"))
+# TODO-2027: the serving-season literal below (and the sal2026 filename) is
+# correct for the 2026 season only; bump both when serving 2027.
 json.dump({p: round(z, 3) for (p, s_), z in Z_SAL.items() if s_ == 2026},
           open("data/nfl_sal2026.json", "w"))
 payload["model_card"]["ratings"] = {

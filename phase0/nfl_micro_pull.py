@@ -15,12 +15,18 @@ first = not os.path.exists(OUT)
 done = set()
 if not first:
     done = set(pd.read_csv(OUT, usecols=["game_id"]).game_id.str[:4].unique())
-for y in range(2016, 2026):
+for y in range(2016, 2027):
     if str(y) in done:
         print(f"{y}: done, skip", flush=True)
         continue
     fp = os.path.join(TMP, f"pbp_prot_{y}.parquet")
-    urllib.request.urlretrieve(BURL.format(y=y), fp)
+    try:
+        urllib.request.urlretrieve(BURL.format(y=y), fp)
+    except OSError as e:   # 404 etc: season parquet not published yet (e.g. 2026 preseason)
+        print(f"{y}: not available yet ({e}), skip", flush=True)
+        if os.path.exists(fp):
+            os.remove(fp)
+        continue
     pbp = pd.read_parquet(fp, columns=COLS)
     pbp = pbp[pbp.play_type.isin(["pass", "run"]) & pbp.epa.notna()]
     pbp = pbp.drop(columns=["play_type", "epa"])

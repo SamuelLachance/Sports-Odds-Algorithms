@@ -16,6 +16,13 @@ Feature semantics for future games (preseason serve):
 
 Outputs into site/data/nfl.json: schedule[272] with p_home, proj{} per team,
 teams[].glassbox roster averages, serve block in model_card.
+
+Determinism note: run with PYTHONHASHSEED=0 for byte-reproducible payloads.
+Hash-randomized set/dict iteration in the feature prelude feeds order-dependent
+float accumulation and the lbfgs fits, jittering repro LL / coefficients by
+~1e-5 between otherwise identical runs (0.61918/0.61915/0.61919 observed at
+HEAD); do not tighten the repro tolerance or diff payloads across runs without
+pinning the seed.
 """
 from __future__ import annotations
 
@@ -32,6 +39,17 @@ T0 = time.time()
 coord_src = open("phase0/nfl_coord_tune.py", encoding="utf-8").read()
 exec(coord_src.split("X_CUR0 = X_of(F)")[0])  # full feature prelude  # noqa: S102
 print(f"[{time.time()-T0:.0f}s] prelude done ({len(games)} games)", flush=True)
+
+# In-season guard for every post-walk manual 2026-boundary transform below.
+# Those transforms assume each feature walk ended on a 2025 game; once a 2026
+# final lands in nfl_games.csv the in-walk season-change trigger fires instead,
+# and applying the manual transform again would double-regress the states.
+# Today (zero played 2026 games) the last walked game is a 2025 game, so
+# APPLY_2026_BOUNDARY is True and behavior is unchanged.
+LAST_WALK_SEASON = games[-1]["season"]
+APPLY_2026_BOUNDARY = LAST_WALK_SEASON < 2026
+print(f"[{time.time()-T0:.0f}s] last walked season {LAST_WALK_SEASON} -> "
+      f"manual 2026 boundary transforms {'ON' if APPLY_2026_BOUNDARY else 'OFF'}", flush=True)
 
 # ---------------- pass/run channels + end states (training_eval block) ----------------
 aggc = defaultdict(lambda: defaultdict(lambda: [0.0, 0, 0.0, 0]))
@@ -74,6 +92,13 @@ for i, g in enumerate(games):
             d2 = dfaR[opp]; d2[0] = dec_ * d2[0] + rS; d2[1] = dec_ * d2[1] + rN
 X14 = np.column_stack([X_of(F), f_pass, f_run])
 v6_hist = np.load("data/nfl_v7_feature.npy")
+if len(v6_hist) != len(games):
+    raise SystemExit(
+        f"data/nfl_v7_feature.npy is stale: {len(v6_hist)} rows vs {len(games)} games "
+        "in the spine "
+        + ("(new finals landed in data/nfl_games.csv)" if len(v6_hist) < len(games)
+           else "(npy has MORE rows than the spine — was data/nfl_games.csv rolled back?)")
+        + ". Regenerate it: python phase0/nfl_v7_feature_gen.py")
 assert len(v6_hist) == len(games)
 X14[:, 7] = v6_hist                    # rows 63+66: ts_edge -> player ratings (v7 cohort)
 print(f"[{time.time()-T0:.0f}s] X14 built (col 7 = v6 player ratings)", flush=True)
@@ -96,7 +121,10 @@ print(f"[{time.time()-T0:.0f}s] TEST reproduction LL {repro:.5f} (ledger 0.61947
 assert abs(repro - 0.61947) < 0.0005, "feature build does not reproduce the shipped model"
 
 # ---------------- production serving fit (the 2026 step of the walk-forward) ----------------
-tr = (y != 0.5)
+# Coefficients are frozen through 2025 by protocol (no in-season refits): 2026
+# rows are excluded from the fit mask explicitly, and the recency weight stays
+# anchored at 2025. Today no 2026 game has a score, so this is a no-op.
+tr = (y != 0.5) & (seasons < 2026)
 w_ = 0.5 ** ((2025 - seasons[tr]) / HL)
 CLF = LogisticRegression(C=BC, max_iter=5000).fit(X14[tr], y[tr], sample_weight=w_)
 print(f"[{time.time()-T0:.0f}s] serving blend fit on {int(tr.sum())} games", flush=True)
@@ -119,8 +147,9 @@ for g in games:
     d_ = bp["k"] * (g["y"] - p_)
     R[g["home"]] += d_
     R[g["away"]] -= d_
-for t in R:                                   # 2026 season boundary
-    R[t] = 1500.0 + (R[t] - 1500.0) * (1.0 - bp["regress"])
+if APPLY_2026_BOUNDARY:
+    for t in R:                               # 2026 season boundary
+        R[t] = 1500.0 + (R[t] - 1500.0) * (1.0 - bp["regress"])
 
 # QB Elo (pedigree config = shipped qd_ped), then roll into 2026
 mQB = QbElo(k=0.0, hfa=0.0, regress=0.0, beta=1.0, lg_rate=lg_qb, rep_delta=pedP["delta"],
@@ -133,7 +162,8 @@ for g in games:
     prev = g["season"]
     mQB.predict(g)
     mQB.update(g, 0.5, qbw)
-mQB.new_season()
+if APPLY_2026_BOUNDARY:
+    mQB.new_season()
 QB26 = {t: v["gsis"] for t, v in json.load(open("data/nfl_qb2026.json"))["qb"].items()}
 assert len(QB26) == 32
 
@@ -152,14 +182,16 @@ for g in games:
             s_, n_ = tm.get(t_off, (0.0, 0))
             o = epa_off[t_off]; o[0] = d_e * o[0] + s_; o[1] = d_e * o[1] + n_
             dd = epa_def[opp]; dd[0] = d_e * dd[0] + s_; dd[1] = d_e * dd[1] + n_
-for st in list(epa_off.values()) + list(epa_def.values()):
-    st[0] *= (1 - sd_e); st[1] *= (1 - sd_e)
+if APPLY_2026_BOUNDARY:
+    for st in list(epa_off.values()) + list(epa_def.values()):
+        st[0] *= (1 - sd_e); st[1] *= (1 - sd_e)
 def erate(st): return (st[0] + pn_e * LG_EPA) / (st[1] + pn_e)
 
 # pass/run boundary into 2026 (states already at end-2025 from the block above)
-for st in (list(offP.values()) + list(offR.values())
-           + list(dfaP.values()) + list(dfaR.values())):
-    st[0] *= (1 - sd_); st[1] *= (1 - sd_)
+if APPLY_2026_BOUNDARY:
+    for st in (list(offP.values()) + list(offR.values())
+               + list(dfaP.values()) + list(dfaR.values())):
+        st[0] *= (1 - sd_); st[1] *= (1 - sd_)
 
 # per-team HFA state (walk has no boundary logic)
 hfa_st = {}
@@ -186,8 +218,9 @@ for g in games:
             s_ = luck_st[team]
             s_[0] = d_l * s_[0] + (rec - 0.5 * tot)
             s_[1] = d_l * s_[1] + tot
-for st in luck_st.values():
-    st[0] *= (1 - sd_l); st[1] *= (1 - sd_l)
+if APPLY_2026_BOUNDARY:
+    for st in luck_st.values():
+        st[0] *= (1 - sd_l); st[1] *= (1 - sd_l)
 
 # TrueSkill unit states (expensive walk)
 from mlbwp.trueskill import TrueSkill1v1  # noqa: E402
@@ -205,9 +238,10 @@ for g in games:
             tsm.update(pos_ + "_OFF", dfn + "_DEF")
         else:
             tsm.update(dfn + "_DEF", pos_ + "_OFF")
-for k2 in list(tsm.mu.keys()):
-    tsm.mu[k2] = MU0 + (tsm.mu[k2] - MU0) * (1 - tsP["mu_reg"])
-    tsm.var[k2] = min(tsm.var[k2] + tsP["widen"] ** 2, SIG0 * SIG0)
+if APPLY_2026_BOUNDARY:
+    for k2 in list(tsm.mu.keys()):
+        tsm.mu[k2] = MU0 + (tsm.mu[k2] - MU0) * (1 - tsP["mu_reg"])
+        tsm.var[k2] = min(tsm.var[k2] + tsP["widen"] ** 2, SIG0 * SIG0)
 print(f"[{time.time()-T0:.0f}s] state walks done", flush=True)
 
 # roster-quality expected lineup: share walk (STATE already end-2025 from prelude)
@@ -229,9 +263,12 @@ for g in games:
                     roster2[team2.get(pid)].discard(pid)
                 team2[pid] = team
                 roster2[team].add(pid)
+# actives = players seen in the LATEST season with snap data (today "2025");
+# once snap_2026.csv lands the gate advances automatically
+LATEST_SNAP = max(gid[:4] for (gid, _t) in snaps)
 active25 = set()
 for (gid, team), tbl in snaps.items():
-    if gid.startswith("2025"):
+    if gid.startswith(LATEST_SNAP):
         active25.update(tbl.keys())
 
 # 2026 re-homing from live rosters: movers count for their NEW team's roster
@@ -265,6 +302,17 @@ print(f"[{time.time()-T0:.0f}s] 2026 re-homing: {moved} moved, {dropped} unroste
 
 TS6 = json.load(open("data/nfl_ts_state.json"))
 SAL26 = json.load(open("data/nfl_sal2026.json"))
+# TS-state boundary guard keyed off the state's OWN last-walked season (meta
+# sidecar written by nfl_trueskill_players.py), not off nfl_games.csv: 2026
+# finals can land in the games spine while nflverse participation data still
+# ends in 2025, in which case nfl_ts_state.json never got the in-walk 2026
+# shrink and the serve must still apply it. Missing meta (pre-meta state file)
+# falls back to the games-based guard, i.e. today's behavior.
+try:
+    _ts_last = json.load(open("data/nfl_ts_state_meta.json"))["last_walked_season"]
+    APPLY_TS26_BOUNDARY = _ts_last < 2026
+except (FileNotFoundError, json.JSONDecodeError, KeyError):
+    APPLY_TS26_BOUNDARY = APPLY_2026_BOUNDARY
 def serve_v6(team):
     tot = 0.0
     for pid in roster2.get(team, ()):
@@ -277,9 +325,12 @@ def serve_v6(team):
         s6 = TS6.get(g_) if g_ else None
         if s6 is None:
             continue
-        tgt = 25.0 + 1.0 * SAL26.get(g_, 0.0)          # cohort salary target (row 66)
-        mu6 = tgt + (s6[0] - tgt) * (2.0 / 3.0)        # 2026 boundary, walk-consistent
-        s26 = min(s6[1] + 1.5 ** 2, (25.0 / 3.0) ** 2)
+        if APPLY_TS26_BOUNDARY:
+            tgt = 25.0 + 1.0 * SAL26.get(g_, 0.0)      # cohort salary target (row 66)
+            mu6 = tgt + (s6[0] - tgt) * (2.0 / 3.0)    # 2026 boundary, walk-consistent
+            s26 = min(s6[1] + 1.5 ** 2, (25.0 / 3.0) ** 2)
+        else:                                          # state already inside 2026
+            mu6, s26 = s6[0], s6[1]
         tot += (st[0] / st[1]) * max(-3.0, min(3.0, mu6 - 25.0)) * (1.0 / (1.0 + s26))
     return tot
 
@@ -307,6 +358,8 @@ sched = []
 for r in csv.DictReader(open("data/nfl_games.csv")):
     if r["season"] != "2026":
         continue
+    if r["game_type"] != "REG":
+        continue   # playoff rows appear in January; the serve covers the REG season
     h = FR.get(r["home_team"], r["home_team"])
     a = FR.get(r["away_team"], r["away_team"])
     try:
@@ -379,9 +432,12 @@ if _q_ids:
             rqv = sh * max(-1.5, min(1.5, r6)) if r6 is not None else 0.0
             s6 = TS6.get(g_)
             if s6 is not None:
-                tgt = 25.0 + 1.0 * SAL26.get(g_, 0.0)
-                mu6 = tgt + (s6[0] - tgt) * (2.0 / 3.0)
-                s26 = min(s6[1] + 1.5 ** 2, (25.0 / 3.0) ** 2)
+                if APPLY_TS26_BOUNDARY:
+                    tgt = 25.0 + 1.0 * SAL26.get(g_, 0.0)
+                    mu6 = tgt + (s6[0] - tgt) * (2.0 / 3.0)
+                    s26 = min(s6[1] + 1.5 ** 2, (25.0 / 3.0) ** 2)
+                else:                                  # state already inside 2026
+                    mu6, s26 = s6[0], s6[1]
                 v6v = sh * max(-3.0, min(3.0, mu6 - 25.0)) * (1.0 / (1.0 + s26))
             else:
                 v6v = 0.0
@@ -396,6 +452,9 @@ if _q_ids and any(q_tagged.values()):
     GCOL = {"ol": 8, "de": 9, "sk": 10}
     rng_l = np.random.default_rng(31)
     for i, s in enumerate(sched):
+        if s["hs"] is not None:
+            continue    # played: ph is ledger-frozen; Q-toggling here is post-hoc
+            # (and would trip the week-1 pmc==ph assert on a rerun)
         qh, qa = q_tagged.get(s["home"], []), q_tagged.get(s["away"], [])
         if not qh and not qa:
             continue
@@ -601,6 +660,45 @@ print(f"[{time.time()-T0:.0f}s] sims done; top proj:",
 
 # ================= payload =================
 payload = json.load(open("site/data/nfl.json"))
+
+# ph-freeze: ph is the PRE-game prediction. A rerun recomputes it from current
+# (post-hoc) rosters/injuries/QB inputs, which would silently rewrite the
+# prediction history of games already played. Pre-game predictions persist in
+# data/nfl_ph_ledger.json — a sidecar no other chain step touches. The prior
+# payload is NOT a safe source: in the documented weekly order nfl_site_data.py
+# rebuilds site/data/nfl.json from scratch (no schedule key) before this script
+# runs, destroying any ph history stored there. For every schedule row with
+# final scores, restore ph AND its ct breakdown from the ledger (so the
+# displayed contributions keep decomposing the displayed probability); unplayed
+# rows get a fresh ph and refresh their ledger entry. Today zero 2026 games are
+# played -> payload unchanged (0 frozen; ledger seeded with pre-game values).
+LEDGER = "data/nfl_ph_ledger.json"
+try:
+    ledger = json.load(open(LEDGER))
+except (FileNotFoundError, json.JSONDecodeError):
+    # bootstrap from any schedule still in the payload (pre-ledger payloads)
+    ledger = {f'{r["w"]}|{r["home"]}|{r["away"]}': {"ph": r["ph"], "ct": r.get("ct")}
+              for r in payload.get("schedule", []) if r.get("ph") is not None}
+ph_frozen = 0
+for s in sched:
+    key = f'{s["w"]}|{s["home"]}|{s["away"]}'
+    if s["hs"] is not None and s["as"] is not None:
+        ent = ledger.get(key)
+        if ent is not None:
+            s["ph"] = ent["ph"]
+            if ent.get("ct") is not None:
+                s["ct"] = ent["ct"]
+            ph_frozen += 1
+        else:
+            print(f"WARNING ph-freeze: no ledger entry for played game {key}; "
+                  f"keeping recomputed (post-hoc) ph", flush=True)
+            ledger[key] = {"ph": s["ph"], "ct": s["ct"]}
+    else:
+        ledger[key] = {"ph": s["ph"], "ct": s["ct"]}
+json.dump(ledger, open(LEDGER, "w"))
+print(f"[{time.time()-T0:.0f}s] ph-freeze: {ph_frozen} played games keep their "
+      f"ledger pre-game ph ({len(ledger)} ledger rows)", flush=True)
+
 payload["status"] = "season"
 payload["schedule"] = [{k: s[k] for k in ("w", "d", "t", "home", "away", "neutral",
                                           "ph", "pmc", "hs", "as", "ct",

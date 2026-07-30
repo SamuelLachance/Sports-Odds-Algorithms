@@ -104,6 +104,14 @@ try:
     for _r in _c.itertuples():
         y0 = int(_r.year_signed)
         span = max(int(_r.years) if _pd.notna(_r.years) and _r.years > 0 else 1, 1)
+        # FROZEN at min(2026, ...) — deliberately NOT matched to
+        # nfl_trueskill_players.py's min(2027, ...): including season-2026 contract
+        # rows changes the SIGNING-YEAR cohort stats below (Z_SAL2 mean/std pool one
+        # row per covered season), which measurably shifts ~9.6k pre-2026 z-values
+        # (max |dz| ~0.52) and would break the v7 TEST repro assert (0.62973) and
+        # byte-repro of data/nfl_v7_feature.npy (nfl_v7_feature_gen.py uses the same
+        # 2026 cap). The 2026 keys would be unused here anyway: this harness's walk
+        # ends at the last played 2025 game.
         for s_ in range(max(2016, y0), min(2026, y0 + span)):
             _rows.append((_r.gsis_id, s_, y0, float(_r.apy_cap_pct)))
     _df = _pd.DataFrame(_rows, columns=["gsis", "season", "y0", "pct"])

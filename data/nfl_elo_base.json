@@ -1,0 +1,18 @@
+{
+ "protocol": {
+  "dev": "1999-2015 scored from 2001",
+  "test": "2016-2025",
+  "ties": 0.5,
+  "neutral_hfa": 0,
+  "playoffs": "included"
+ },
+ "dev_ll": 0.63455,
+ "params": {
+  "k": 47.43351932834238,
+  "hfa": 52.14162888646703,
+  "regress": 0.3647684062154459
+ },
+ "test_n": 2761,
+ "test_ll": 0.63984,
+ "home_prior_test_ll": 0.68904
+}

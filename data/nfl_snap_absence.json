@@ -1,0 +1,10 @@
+{
+ "winner": "all",
+ "dev_cv_base": 0.62654,
+ "dev_cv": 0.62442,
+ "params": {
+  "decay": 0.8007721316186063,
+  "thresh": 0.7284183170833963
+ },
+ "gate_met": true
+}

@@ -1,0 +1,19 @@
+{
+ "winner": "V2 joint",
+ "params": {
+  "delta": -0.24820561266012658,
+  "decay": 0.8010595244395629,
+  "prior_db": 650.2103644039794,
+  "season_decay": 0.3915362183690712
+ },
+ "dev_cv": 0.62865,
+ "dev_cv_base": 0.63082,
+ "test_base": 0.63059,
+ "test_new": 0.62806,
+ "delta_ll": 0.00253,
+ "ci": [
+  0.00046,
+  0.00465
+ ],
+ "verdict": "SIG improvement"
+}

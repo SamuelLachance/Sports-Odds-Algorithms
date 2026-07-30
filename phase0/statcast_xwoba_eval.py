@@ -1,0 +1,156 @@
+"""UPPER-BOUND gate: does lineup xwOBA add over the full model, Statcast era?
+
+Statcast is 2015+, so this uses a SEPARATE era split: fit the increment on 2015-2019,
+test on 2021-2024 (2020 excluded). The feature is the home-minus-away lineup mean of
+each batter's CURRENT-SEASON xwOBA (Baseball Savant expected_statistics leaderboard).
+That full-season xwOBA is LEAKY (uses the whole season incl. future games) -- on
+purpose: it is the best case. If even the leaky version doesn't beat the base, an
+honest as-of xwOBA won't either, and we stop before the heavy per-BBE pull.
+"""
+
+from __future__ import annotations
+
+import csv
+import json
+import os
+import sys
+from collections import defaultdict
+
+_T = os.environ.get("NHL_EVAL_THREADS", "4")
+for _v in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS"):
+    os.environ.setdefault(_v, _T)
+
+import numpy as np  # noqa: E402
+from sklearn.linear_model import LogisticRegression  # noqa: E402
+
+sys.path.insert(0, ".")
+sys.path.insert(0, "phase0")
+from mlbwp.ingest import league_fip_core, load_games  # noqa: E402
+from mlbwp.rating import FipPitcherElo  # noqa: E402
+from mlbwp.siera import SieraRater  # noqa: E402
+from mlbwp.train import PARAMS  # noqa: E402
+import freeze_trueskill as FZ  # noqa: E402
+
+EPS = 1e-15
+TRAIN = {2015, 2016, 2017, 2018, 2019}
+TEST = {2021, 2022, 2023, 2024}
+LG_XWOBA = 0.318
+
+
+def logit(p):
+    p = np.clip(p, EPS, 1 - EPS)
+    return np.log(p / (1 - p))
+
+
+def ll_vec(p, y):
+    p = np.clip(p, EPS, 1 - EPS)
+    return -(y * np.log(p) + (1 - y) * np.log(1 - p))
+
+
+def ll(p, y):
+    return float(ll_vec(p, y).mean())
+
+
+def boot(a, b, n=10000, seed=7):
+    d = a - b
+    rng = np.random.default_rng(seed)
+    bs = d[rng.integers(0, len(d), size=(n, len(d)))].mean(axis=1)
+    return d.mean(), np.percentile(bs, 2.5), np.percentile(bs, 97.5)
+
+
+def load_xwoba():
+    m2r = {int(k): v for k, v in json.load(open("mlbwp/artifacts/mlbam_to_retro.json")).items()}
+    xw, wo = {}, {}
+    for r in csv.DictReader(open("data/statcast_xwoba_batter.csv")):
+        retro = m2r.get(int(r["mlbam"]))
+        if retro and int(r["pa"]) >= 25:
+            xw[(int(r["season"]), retro)] = float(r["xwoba"])
+            wo[(int(r["season"]), retro)] = float(r["woba"])
+    return xw, wo
+
+
+def main():
+    games = load_games()
+    lu = FZ.load_lineups()
+    bpd = FZ.bullpen_diffs(games, *FZ.reliever_aggs())
+    power, lgiso = FZ.load_power()
+    pdiff, _ = FZ.power_diffs(games, power, lu, lgiso)
+    brdiff, _ = FZ.baserun_diffs(games, FZ.load_baserun(), lu)
+    tsf = {r[0]: float(r[3]) for r in csv.reader(open("data/retro_events/ts_feature.csv")) if r[0] != "game_id"}
+    ss, bbl = FZ.load_siera_inputs()
+    slg = FZ.league_siera_rates(games, ss, bbl)
+    B = json.load(open("mlbwp/artifacts/blend.json"))
+    fb = B["full"]
+    xw, wo = load_xwoba()
+
+    def z(v, mu, sd_):
+        return (v - B[mu]) / B[sd_]
+
+    def lineup_mean(gid, side, tbl, season):
+        bs = lu.get((gid, side), [])
+        v = [tbl.get((season, b), LG_XWOBA) for b in bs]
+        return sum(v) / len(v) if v else None
+
+    def diff(gid, side_pair, tbl, season):
+        h = lineup_mean(gid, 1, tbl, season)
+        a = lineup_mean(gid, 0, tbl, season)
+        return (h - a) if (h is not None and a is not None) else None
+
+    sr = SieraRater(PARAMS["decay"], 120.0, slg)
+    m = FipPitcherElo(lg_fip=league_fip_core(games), **PARAMS)
+    rows = []
+    prev = None
+    for g in games:
+        if prev is not None and g["season"] != prev:
+            m.new_season()
+        prev = g["season"]
+        gid = g["game_id"]; s = g["season"]
+        p = m.predict(g["home"], g["away"], g["home_sp"], g["away_sp"])
+        lf = logit(np.array([p]))[0]
+        sd = sr.edge(g["home_sp"], g["away_sp"])
+        ts, pw, br = tsf.get(gid), pdiff.get(gid), brdiff.get(gid)
+        if (s in TRAIN or s in TEST) and ts is not None and pw is not None and br is not None:
+            fl = (fb["b0"] + fb["b1"] * lf + fb["b2"] * z(ts, "ts_mu", "ts_sd")
+                  + fb["b3"] * z(bpd[gid], "bp_mu", "bp_sd") + fb["b4"] * z(pw, "pw_mu", "pw_sd")
+                  + fb["b5"] * z(sd, "si_mu", "si_sd") + fb["b6"] * z(br, "br_mu", "br_sd"))
+            xd = diff(gid, None, xw, s)              # leaky current-season xwOBA
+            xp = diff(gid, None, xw, s - 1)          # leak-free prior-season xwOBA
+            wd = diff(gid, None, wo, s)              # leaky current-season wOBA
+            wp = diff(gid, None, wo, s - 1)          # leak-free prior-season wOBA
+            if None not in (xd, xp, wd, wp):
+                rows.append((s, fl, g["y"], xd, xp, wd, wp))
+        m.update(g)
+        for pid in (g["home_sp"], g["away_sp"]):
+            so, bb, bf = ss.get((gid, pid), (0, 0, 0))
+            gb, fbb, pu = bbl.get((gid, pid), (0, 0, 0))
+            sr.update(pid, so, bb, gb, fbb, pu, bf)
+
+    a = np.array(rows, float)
+    seas = a[:, 0]; fl = a[:, 1]; y = a[:, 2]
+    dm = np.isin(seas, list(TRAIN)); tm = np.isin(seas, list(TEST))
+    yt = y[tm]
+
+    def zc(col):
+        v = a[:, col]
+        return (v - v[dm].mean()) / (v[dm].std() or 1.0)
+
+    def fit(cols):
+        X = np.column_stack([fl] + cols)
+        mdl = LogisticRegression(C=1e6, max_iter=1000).fit(X[dm], y[dm])
+        return mdl, mdl.predict_proba(X[tm])[:, 1]
+    _, p_base = fit([])
+    print(f"Statcast era: train 2015-19 (n={int(dm.sum()):,}), test 2021-24 (n={len(yt):,})")
+    print(f"  base full model   LL={ll(p_base, yt):.5f}\n")
+    for name, col, leaky in [("xwOBA  current-season", 3, "LEAKY  upper bound"),
+                             ("xwOBA  PRIOR-season  ", 4, "leak-free shippable"),
+                             ("wOBA   current-season", 5, "leaky (de-noise ctrl)"),
+                             ("wOBA   PRIOR-season  ", 6, "leak-free (ctrl)")]:
+        mdl, p_x = fit([zc(col)])
+        d, lo, hi = boot(ll_vec(p_base, yt), ll_vec(p_x, yt))
+        sig = "HELPS" if lo > 0 else ("HURTS" if hi < 0 else "n.s.")
+        print(f"  + {name} [{leaky:19s}] LL={ll(p_x, yt):.5f} d={d:+.5f} "
+              f"CI[{lo:+.5f},{hi:+.5f}] {sig}")
+
+
+if __name__ == "__main__":
+    main()
