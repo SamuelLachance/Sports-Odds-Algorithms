@@ -18,7 +18,15 @@ from collections import defaultdict
 from datetime import date, timedelta
 from pathlib import Path
 
-from mlbwp.live import TEAM_ID_TO_RETRO, _get, BASE, et_date, game_data, schedule, season_finals
+from mlbwp.live import TEAM_ID_TO_RETRO, _get, BASE, et_date, game_data, season_finals
+
+from mlbwp.projection import Projector
+from mlbwp.serve import Predictor
+
+PROJECT = Path(__file__).resolve().parents[1]
+OUT = PROJECT / "site" / "data" / "board.json"
+FINALS_CACHE = PROJECT / "data" / "season_2026_finals.json"
+LINES_CACHE = PROJECT / "data" / "season_2026_lines.json"
 
 def _write_atomic(path, text):
     """tmp + os.replace: an interrupted run must never truncate a live file."""
@@ -28,8 +36,6 @@ def _write_atomic(path, text):
         fh.write(text)
     os.replace(tmp, str(path))
 
-
-
 def _realized_2026():
     """Graded pre-game ledger stats, or None (display-gated at n >= 100)."""
     try:
@@ -38,13 +44,7 @@ def _realized_2026():
         return r if r and r["n"] >= 100 else None
     except Exception:  # noqa: BLE001  — tracking must never break the board
         return None
-from mlbwp.projection import Projector
-from mlbwp.serve import Predictor
 
-PROJECT = Path(__file__).resolve().parents[1]
-OUT = PROJECT / "site" / "data" / "board.json"
-FINALS_CACHE = PROJECT / "data" / "season_2026_finals.json"
-LINES_CACHE = PROJECT / "data" / "season_2026_lines.json"
 
 
 def ensure_lines_cache(finals: list[dict], cache_path: Path = LINES_CACHE) -> dict:

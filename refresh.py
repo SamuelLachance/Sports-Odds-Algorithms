@@ -28,6 +28,9 @@ from mlbwp.live import season_finals
 from mlbwp.serve import Predictor
 from mlbwp_site import build_site
 
+PROJECT = Path(__file__).resolve().parent
+FINALS = PROJECT / "data" / "season_2026_finals.json"
+
 def _write_atomic(path, text):
     """tmp + os.replace: an interrupted run must never truncate a live file."""
     import os
@@ -36,9 +39,6 @@ def _write_atomic(path, text):
         fh.write(text)
     os.replace(tmp, str(path))
 
-
-PROJECT = Path(__file__).resolve().parent
-FINALS = PROJECT / "data" / "season_2026_finals.json"
 
 
 def main(horizon_days: int = 30) -> int:
