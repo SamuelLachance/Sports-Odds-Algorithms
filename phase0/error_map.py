@@ -776,11 +776,12 @@ def nfl_market(hold):
 
 
 NHL_FLOOR_SKIP = (
-    "SKIPPED — no historical NHL closing line exists anywhere in the repo. "
-    "data/nhl_games.csv carries no price columns, market/odds.py is a LIVE "
-    "The-Odds-API puller (MLB only, no history), and the NHL ledger stores model "
-    "numbers only. An entropy floor without a price proxy would be invented, so "
-    "it is not reported.")
+    "MOVED — this was skipped when error_map was written because no historical NHL "
+    "closing line existed in the repo. One has since been sourced (SBR publishes NHL "
+    "open/close moneylines as inline HTML, not as the .xlsx the MLB loader uses): "
+    "phase0/nhl_odds_load.py -> data/odds_nhl.csv, and the floor is computed with "
+    "THIS FILE's floor_block() by phase0/nhl_floor.py -> data/nhl_floor.json "
+    "(DEV join 0.9997, 0 result mismatches). See documents/nhl_odds_sources.md.")
 
 
 # ======================================================================= main

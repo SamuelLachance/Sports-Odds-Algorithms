@@ -148,7 +148,31 @@ Odds used as an evaluation benchmark only (sanctioned).
 |---|---|---|---|---|---|
 | MLB 2010-15 | 13,930 | 0.679233 | 0.676351 | 0.678391 | **+0.00288** [0.0015, 0.0041] |
 | NFL 2006-15 | 2,531 | 0.622080 | 0.610363 | 0.606654 | **+0.01172** [0.0039, 0.0190] |
-| NHL | — | — | — | — | skipped — no historical closing line exists in the repo; inventing one would be worse than reporting nothing |
+| NHL 2011-18 | 7,927 | 0.672423 | 0.670717 | 0.674176 | **+0.00171** [−0.0002, 0.0036] n.s. |
+
+**NHL filled in 2026-07-31.** The NHL cell was blank only because no historical
+closing line existed in the repo, not because none exists: SportsbookReviewsOnline
+publishes NHL open/close moneylines back to 2007-08 as **inline HTML tables**, not
+as the `.xlsx` workbooks the MLB loader consumes — which is why every filename
+guess 404'd. `phase0/nhl_odds_load.py` → `data/odds_nhl.csv` (15,203 games,
+2010-11..2022-23); `phase0/nhl_floor.py` → `data/nhl_floor.json` runs the same
+`floor_block()` as the rows above. DEV join rate **0.9997** with **0 result
+mismatches in 15,200 joined games**; devigged mean home prob 0.5476 vs realized
+0.5494; closing overround 1.0331. Full sourcing and validation record in
+`documents/nhl_odds_sources.md`. Odds are EVALUATION-only here, as in the rows
+above.
+
+Two things stand out. **(1) NHL is the one league whose gap to the close is not
+significant** — +0.00171 with a CI straddling zero on n=7,927, versus MLB's
+clearly-positive +0.00288 and NFL's +0.01172. On DEV, our NHL model is
+statistically indistinguishable from the closing line. **(2) The NHL close is
+mildly UNDER-confident on DEV** (recal slope 1.114 ± 0.068, z=+1.67 n.s.), which
+makes mean H(p_mkt) = 0.674176 sit *above* both the market's realized loss and
+our own. That is not "we beat the floor" — it is the concavity caveat already
+recorded above showing its teeth: E[H(p_mkt)] is an **upper** bound on the
+irreducible loss, and when the quoted line is a little too flat the bound is
+loose enough to be exceeded. Read the NHL floor column as an upper bound only;
+the honest NHL statement is the us→market gap, and it is ~0.
 
 **The honest headline: the market-vs-floor comparison is nearly circular.** If the
 close is calibrated then E[LL_mkt | p_mkt] = H(p_mkt) *identically* — the two
@@ -159,9 +183,9 @@ loss (the market's probability is a coarsening of the truth, H is concave), so t
 real floor sits at or below these numbers and is not identified by the market
 alone.
 
-**So the answer to "how far from the theoretical limit": MLB ~0.0029, NFL ~0.0117
-in log loss** — and since the market sits essentially *at* the floor, our gap to
-the market IS our gap to the limit.
+**So the answer to "how far from the theoretical limit": MLB ~0.0029, NFL ~0.0117,
+NHL ~0.0017 (n.s.) in log loss** — and since the market sits essentially *at* the
+floor, our gap to the market IS our gap to the limit.
 
 ### Where that leaves the program
 

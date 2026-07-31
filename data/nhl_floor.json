@@ -1,0 +1,252 @@
+{
+ "generated": "2026-07-31T16:44:19",
+ "what": "NHL theoretical-floor estimate on DEV, using the newly sourced historical closing moneyline. Completes the error_map.py floor table.",
+ "protocol": {
+  "read_only": true,
+  "models_touched": 0,
+  "test_looks_spent": 0,
+  "market_blind_models": true,
+  "dev_seasons": [
+   20112012,
+   20172018
+  ],
+  "test_never_touched": [
+   20182019,
+   20252026
+  ],
+  "odds_use": "EVALUATION ONLY -- benchmark + proxy for the true probability in the entropy floor. No odds enter any feature or training signal. Sanctioned use.",
+  "harness": "phase0/nhl_depth_eval.py Ctx + LOSO, shipped Elo/xG params (identical to phase0/error_map.py::nhl_league)"
+ },
+ "source": {
+  "url_pattern": "https://www.sportsbookreviewsonline.com/scoresoddsarchives/nhl-odds-<slug>",
+  "loader": "phase0/nhl_odds_load.py",
+  "file": "data/odds_nhl.csv",
+  "rows_total": 15203,
+  "format": "season page renders the whole season as one HTML table, two rows per game (V then H), American Open/Close moneylines"
+ },
+ "join": {
+  "dev_games": 7929,
+  "joined": 7927,
+  "join_rate": 0.9997,
+  "unmatched": 2,
+  "ambiguous": 0,
+  "result_mismatches": 0,
+  "per_season": {
+   "20112012": {
+    "dev_games": 1148,
+    "joined": 1148,
+    "join_rate": 1.0
+   },
+   "20122013": {
+    "dev_games": 672,
+    "joined": 672,
+    "join_rate": 1.0
+   },
+   "20132014": {
+    "dev_games": 1148,
+    "joined": 1147,
+    "join_rate": 0.9991
+   },
+   "20142015": {
+    "dev_games": 1230,
+    "joined": 1230,
+    "join_rate": 1.0
+   },
+   "20152016": {
+    "dev_games": 1230,
+    "joined": 1230,
+    "join_rate": 1.0
+   },
+   "20162017": {
+    "dev_games": 1230,
+    "joined": 1230,
+    "join_rate": 1.0
+   },
+   "20172018": {
+    "dev_games": 1271,
+    "joined": 1270,
+    "join_rate": 0.9992
+   }
+  }
+ },
+ "market_sanity": {
+  "mean_devigged_home_prob": 0.547624,
+  "devigged_home_favourite_rate": 0.707708,
+  "realized_home_win_rate": 0.549388,
+  "mean_closing_overround": 1.033127
+ },
+ "floor": {
+  "odds_use": "EVALUATION ONLY \u2014 the closing line is never a feature and never a training signal. It is used here as the benchmark and as the proxy for the true probability in the entropy floor. Sanctioned use.",
+  "devig": "multiplicative (data/devig_method_test.json convention)",
+  "n": 7927,
+  "coverage_note": "data/odds_nhl.csv (SportsbookReviewsOnline NHL archive, scraped by phase0/nhl_odds_load.py) covers 2010-11..2022-23; the DEV era is 20112012-20172018 and 7927 of 7929 DEV games joined (0.9997). 2 unmatched, 0 ambiguous. Every joined game's SBR final score agrees with the NHL API result (asserted, 0 mismatches).",
+  "our_ll": 0.672423,
+  "market_ll": 0.670717,
+  "entropy_floor": 0.674176,
+  "gap_us_to_market": 0.001705,
+  "gap_us_to_market_ci": [
+   -0.00025,
+   0.003576
+  ],
+  "gap_market_to_floor": -0.003459,
+  "gap_market_to_floor_se": 0.002114,
+  "gap_market_to_floor_ci": [
+   -0.007691,
+   0.000742
+  ],
+  "floor_caveats": [
+   "The floor is an ESTIMATE and it rests on the close being calibrated. If it is, then E[LL_mkt | p_mkt] = H(p_mkt) EXACTLY, so market_ll and entropy_floor are the same quantity measured two ways and gap_market_to_floor is pure sampling noise. Read it as a calibration check, not as headroom.",
+   "mean H(p_mkt) is an UPPER bound on the true irreducible loss: p_mkt is a coarsening (conditional expectation) of the true probability and H is concave, so E[H(p_mkt)] >= E[H(p_true)]. The real floor is at or below this number and is NOT identified by the market alone \u2014 which is why the floor_sensitivity curve is reported instead of a single number.",
+   "n is modest, so the floor carries sampling error of roughly the same size as gap_market_to_floor_se."
+  ],
+  "noise_equivalent": {
+   "s_noise_equivalent": 0.0,
+   "ll_at_s": 0.674176,
+   "reading": "our model is loss-equivalent to the closing line blurred by this many logit-units of noise; compare directly against the s column of floor_sensitivity, which is EXTRA information beyond the close"
+  },
+  "market_calibration": {
+   "deciles": [
+    {
+     "decile": "D01 [0.236,0.436]",
+     "n": 789,
+     "mean_pred": 0.396341,
+     "realized": 0.396705,
+     "gap": -0.000363,
+     "gap_se": 0.017416,
+     "z": -0.020871
+    },
+    {
+     "decile": "D02 [0.436,0.478]",
+     "n": 765,
+     "mean_pred": 0.455099,
+     "realized": 0.40915,
+     "gap": 0.045949,
+     "gap_se": 0.017777,
+     "z": 2.58478
+    },
+    {
+     "decile": "D03 [0.478,0.504]",
+     "n": 804,
+     "mean_pred": 0.488994,
+     "realized": 0.49005,
+     "gap": -0.001056,
+     "gap_se": 0.01763,
+     "z": -0.059907
+    },
+    {
+     "decile": "D04 [0.504,0.528]",
+     "n": 787,
+     "mean_pred": 0.515225,
+     "realized": 0.533672,
+     "gap": -0.018448,
+     "gap_se": 0.017783,
+     "z": -1.037392
+    },
+    {
+     "decile": "D05 [0.528,0.553]",
+     "n": 786,
+     "mean_pred": 0.538144,
+     "realized": 0.534351,
+     "gap": 0.003793,
+     "gap_se": 0.017792,
+     "z": 0.213163
+    },
+    {
+     "decile": "D06 [0.553,0.571]",
+     "n": 652,
+     "mean_pred": 0.558686,
+     "realized": 0.552147,
+     "gap": 0.006539,
+     "gap_se": 0.019475,
+     "z": 0.335751
+    },
+    {
+     "decile": "D07 [0.571,0.596]",
+     "n": 876,
+     "mean_pred": 0.580206,
+     "realized": 0.578767,
+     "gap": 0.001438,
+     "gap_se": 0.016682,
+     "z": 0.086226
+    },
+    {
+     "decile": "D08 [0.596,0.626]",
+     "n": 867,
+     "mean_pred": 0.607314,
+     "realized": 0.621684,
+     "gap": -0.01437,
+     "gap_se": 0.01647,
+     "z": -0.872461
+    },
+    {
+     "decile": "D09 [0.626,0.655]",
+     "n": 790,
+     "mean_pred": 0.637344,
+     "realized": 0.636709,
+     "gap": 0.000636,
+     "gap_se": 0.017111,
+     "z": 0.037144
+    },
+    {
+     "decile": "D10 [0.655,0.837]",
+     "n": 811,
+     "mean_pred": 0.685536,
+     "realized": 0.722565,
+     "gap": -0.037028,
+     "gap_se": 0.015722,
+     "z": -2.355183
+    }
+   ],
+   "recal_intercept": -0.013797,
+   "recal_slope": 1.114071,
+   "recal_slope_se": 0.068116,
+   "recal_slope_z_vs_1": 1.674649,
+   "ll_after_insample_recal": 0.670533,
+   "recal_gain_insample": 0.000184,
+   "reading": "slope 1 / intercept 0 = perfectly calibrated close. The recal gain is IN-SAMPLE (2 free parameters) so it is an upper bound on real miscalibration."
+  },
+  "equivalent_shrink": {
+   "c_equivalent": 0.775,
+   "c_equivalent_ll": 0.672421,
+   "c_optimal": 1.095,
+   "c_optimal_ll": 0.67055
+  },
+  "floor_sensitivity": [
+   {
+    "s": 0.0,
+    "floor": 0.674176,
+    "cal_drift_mean_abs": 0.0
+   },
+   {
+    "s": 0.1,
+    "floor": 0.673064,
+    "cal_drift_mean_abs": 0.000184
+   },
+   {
+    "s": 0.2,
+    "floor": 0.669769,
+    "cal_drift_mean_abs": 0.000725
+   },
+   {
+    "s": 0.3,
+    "floor": 0.664416,
+    "cal_drift_mean_abs": 0.001597
+   },
+   {
+    "s": 0.5,
+    "floor": 0.648331,
+    "cal_drift_mean_abs": 0.00416
+   },
+   {
+    "s": 0.75,
+    "floor": 0.620692,
+    "cal_drift_mean_abs": 0.008394
+   },
+   {
+    "s": 1.0,
+    "floor": 0.588253,
+    "cal_drift_mean_abs": 0.013131
+   }
+  ]
+ }
+}
