@@ -38,3 +38,4 @@ data/ftn_*.parquet
 data/*.parquet
 catboost_info/
 documents/*.pdf
+data/nhl_dressed.csv
