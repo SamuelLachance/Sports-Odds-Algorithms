@@ -49,6 +49,16 @@ def main(horizon_days: int = 30) -> int:
     predict_slate.main(days=horizon_days, today=today.isoformat())
     n_edges = edges.attach_and_save()
     print(f"[refresh] {n_edges} value edges (>=20% EV vs opening consensus)", flush=True)
+
+    # pre-game prediction ledger: archive today's board probs before games
+    # start, grade yesterday's from finals (honest season-to-date tracking)
+    from mlbwp import pred_ledger
+    st = pred_ledger.update()
+    rz = pred_ledger.realized()
+    print(f"[refresh] pred ledger: {st['new']} new, {st['graded']} graded, "
+          f"{st['n']} total" + (f"; realized 2026: LL {rz['log_loss']} "
+          f"acc {rz['acc']:.1%} (n={rz['n']})" if rz else ""), flush=True)
+
     db_mod.main(season=season)
 
     # NHL: incremental spine update + re-serve. Runs as subprocesses so this
