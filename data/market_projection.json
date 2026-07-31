@@ -1,0 +1,3355 @@
+{
+ "generated": "2026-07-31T17:29:37",
+ "what": "DEV-only projection of the closing line onto each model's own feature space, plus the outcome test of the unexplained residual. Third leg of the floor programme after phase0/error_map.py and phase0/market_gap.py.",
+ "protocol": {
+  "read_only": true,
+  "models_touched": 0,
+  "features_created": 0,
+  "test_looks_spent": 0,
+  "market_blind_models": true,
+  "odds_use": "DIAGNOSTIC / EVALUATION ONLY. Regressions in this file put the closing line on one side of the equals sign in order to MEASURE information overlap. They are measuring devices, not predictors: no coefficient estimated here is used to fit, tune, select or serve any model, and no served model in this repo sees an odds value. The residual-test gains are UPPER BOUNDS on missing information, not gains available to a market-blind forecaster.",
+  "leagues": "MLB + NHL (NFL already carried by phase0/market_gap.py)",
+  "loaders": "error_map.mlb_league / error_map.nhl_league unchanged; slicing labels captured by market_gap's spies; feature matrices captured from mlb_depth_eval.full_cols and nhl_depth_eval.Ctx; joins re-verified against data/error_map.json and data/nhl_floor.json.",
+  "standardisation": "features are z-scored on the joined DEV sample so that our weight and the market-implied weight are in identical logits-per-SD units and can be compared directly."
+ },
+ "leagues": {
+  "mlb": {
+   "join_check": {
+    "n": 13930,
+    "our_ll": 0.679233,
+    "market_ll": 0.676351,
+    "recorded_our_ll": 0.679233,
+    "recorded_market_ll": 0.676351,
+    "reproduces_recorded_floor": true
+   },
+   "feature_sd_raw": {
+    "lf": 0.227975,
+    "ts": 1.208743,
+    "bp": 0.452733,
+    "pw": 0.016377,
+    "si": 0.615124,
+    "br": 0.002588
+   },
+   "projection": {
+    "n": 13930,
+    "seasons": [
+     2010,
+     2015
+    ],
+    "features": [
+     "lf",
+     "ts",
+     "bp",
+     "pw",
+     "si",
+     "br"
+    ],
+    "r2_market_on_our_features": 0.813799,
+    "r2_ours_on_our_features": 0.998066,
+    "r2_ours_reading": "machine check: must be ~1.0 because our forecast is a logistic linear in exactly these columns (fold-to-fold weight variation is the only thing that keeps it below 1).",
+    "unexplained_share_of_close": 0.186201,
+    "residual_sd_logit": 0.13727,
+    "residual_sd_as_prob_shift": 0.026311,
+    "residual_p90_as_prob_shift": 0.054453,
+    "sd_logit_close": 0.318116,
+    "sd_logit_ours": 0.328839,
+    "corr_logit_ours_close": 0.88539,
+    "intercept_market": 0.148848,
+    "intercept_ours": 0.17501,
+    "per_feature": [
+     {
+      "feature": "lf",
+      "our_weight": 0.159255,
+      "our_weight_se": 0.000194,
+      "market_implied_weight": 0.172931,
+      "market_weight_se": 0.001845,
+      "market_minus_ours": 0.013676,
+      "market_over_ours": 1.085875,
+      "diff_t": 7.371454,
+      "outcome_fit_weight": 0.158933,
+      "outcome_fit_se": 0.027338,
+      "lean": "market leans HARDER"
+     },
+     {
+      "feature": "ts",
+      "our_weight": 0.032088,
+      "our_weight_se": 0.000139,
+      "market_implied_weight": 0.052416,
+      "market_weight_se": 0.001324,
+      "market_minus_ours": 0.020327,
+      "market_over_ours": 1.633487,
+      "diff_t": 15.270039,
+      "outcome_fit_weight": 0.049505,
+      "outcome_fit_se": 0.019581,
+      "lean": "market leans HARDER"
+     },
+     {
+      "feature": "bp",
+      "our_weight": 0.032145,
+      "our_weight_se": 0.000138,
+      "market_implied_weight": 0.009475,
+      "market_weight_se": 0.001307,
+      "market_minus_ours": -0.02267,
+      "market_over_ours": 0.294767,
+      "diff_t": -17.246875,
+      "outcome_fit_weight": 0.023107,
+      "outcome_fit_se": 0.019327,
+      "lean": "market leans LIGHTER"
+     },
+     {
+      "feature": "pw",
+      "our_weight": 0.06447,
+      "our_weight_se": 0.000133,
+      "market_implied_weight": 0.044877,
+      "market_weight_se": 0.001262,
+      "market_minus_ours": -0.019593,
+      "market_over_ours": 0.696092,
+      "diff_t": -15.435534,
+      "outcome_fit_weight": 0.066372,
+      "outcome_fit_se": 0.018664,
+      "lean": "market leans LIGHTER"
+     },
+     {
+      "feature": "si",
+      "our_weight": -0.105236,
+      "our_weight_se": 0.000164,
+      "market_implied_weight": -0.076309,
+      "market_weight_se": 0.001559,
+      "market_minus_ours": 0.028927,
+      "market_over_ours": 0.725125,
+      "diff_t": 18.451158,
+      "outcome_fit_weight": -0.094358,
+      "outcome_fit_se": 0.02306,
+      "lean": "market leans HARDER"
+     },
+     {
+      "feature": "br",
+      "our_weight": 0.096798,
+      "our_weight_se": 0.000131,
+      "market_implied_weight": 0.035905,
+      "market_weight_se": 0.001242,
+      "market_minus_ours": -0.060893,
+      "market_over_ours": 0.370925,
+      "diff_t": -48.759582,
+      "outcome_fit_weight": 0.051439,
+      "outcome_fit_se": 0.018368,
+      "lean": "market leans LIGHTER"
+     }
+    ]
+   },
+   "residual_test": {
+    "n": 13930,
+    "b_residual": 1.055716,
+    "b_residual_se": 0.126341,
+    "b_residual_t": 8.356061,
+    "b_ours": 0.919763,
+    "b_ours_se": 0.053519,
+    "b_ours_t": 17.185885,
+    "our_ll": 0.679233,
+    "market_ll": 0.676351,
+    "gap_us_to_market": 0.002882,
+    "ll_recal_ours_only_insample": 0.679123,
+    "ll_plus_residual_insample": 0.676595,
+    "gain_insample": 0.002528,
+    "ll_recal_ours_only_loso": 0.679276,
+    "ll_plus_residual_loso": 0.676835,
+    "gain_loso": 0.002441,
+    "gain_vs_shipped_loso": 0.002398,
+    "gain_vs_shipped_loso_ci": [
+     0.001159,
+     0.00356
+    ],
+    "residual_recovers_share_of_market_gap": 0.832072,
+    "beats_market": false,
+    "verdict": "residual CARRIES outcome information our features cannot represent",
+    "reading": "b_residual is the outcome weight on the part of the close our feature space cannot span, with our own forecast already in the equation. t<2 means the close's orthogonal component is not informative \u2014 i.e. everything the close knows, our features already span. Positive and significant means the close holds information outside our span. The LOSO gain is the honest size of that information; the in-sample gain is its optimistic ceiling.",
+    "warning": "UPPER BOUND / DIAGNOSTIC ONLY. This quantity is only realisable by a forecaster who can see the closing line, which no served model in this repo may do. It measures how much information is missing, not a gain that is available to us.",
+    "ll_plus_residual_nested": 0.676851,
+    "gain_vs_shipped_nested": 0.002382,
+    "gain_vs_shipped_nested_ci": [
+     0.001143,
+     0.003553
+    ],
+    "note": "projection AND augmentation re-fitted per fold; the residual for a held-out season is defined only by other seasons.",
+    "nested_recovers_share_of_market_gap": 0.826509
+   },
+   "symmetry": {
+    "encompassing_y_on_both": {
+     "n": 13930,
+     "intercept": 0.003819,
+     "b_ours": 0.027978,
+     "b_ours_se": 0.112814,
+     "b_ours_t": 0.248001,
+     "b_market": 1.040991,
+     "b_market_se": 0.117379,
+     "b_market_t": 8.868594,
+     "reading": "b_ours is the weight the outcome data puts on OUR forecast once the close is in the equation; t<2 means the close encompasses us."
+    },
+    "our_orthogonal_component": {
+     "sd_logit": 0.152861,
+     "b": 0.027978,
+     "se": 0.112814,
+     "t": 0.248001,
+     "ll_close_only_loso": 0.67638,
+     "ll_close_plus_our_orthogonal_loso": 0.676476,
+     "gain_loso": -9.6e-05,
+     "reading": "the exact mirror of the residual test: the part of OUR forecast the close cannot span, tested for outcome information with the close already in the equation."
+    },
+    "classification_rule": "BOTH informative -> 'we know different things'; only the close's residual informative -> 'the close knows strictly more'; neither -> 'we know the same things'."
+   },
+   "classification": "THE CLOSE KNOWS STRICTLY MORE \u2014 its orthogonal part predicts, ours does not",
+   "coverage_note": "odds_mlb.csv covers 2010+, DEV is 2002-2015 -> overlap 2010-2015; doubleheaders and duplicate price rows dropped, exactly as error_map does."
+  },
+  "nhl": {
+   "join_check": {
+    "n": 7927,
+    "our_ll": 0.672423,
+    "market_ll": 0.670717,
+    "recorded_our_ll": 0.672423,
+    "recorded_market_ll": 0.670717,
+    "reproduces_recorded_floor": true,
+    "unmatched": 2,
+    "ambiguous": 0,
+    "result_mismatches": 0,
+    "join_rate": 0.999748
+   },
+   "feature_sd_raw": {
+    "elo_logit": 0.326128,
+    "rest_diff": 1.1116,
+    "b2b_home": 0.307795,
+    "b2b_away": 0.428269,
+    "xg_diff": 0.490867
+   },
+   "projection": {
+    "n": 7927,
+    "seasons": [
+     20112012,
+     20172018
+    ],
+    "features": [
+     "elo_logit",
+     "rest_diff",
+     "b2b_home",
+     "b2b_away",
+     "xg_diff"
+    ],
+    "r2_market_on_our_features": 0.792142,
+    "r2_ours_on_our_features": 0.997083,
+    "r2_ours_reading": "machine check: must be ~1.0 because our forecast is a logistic linear in exactly these columns (fold-to-fold weight variation is the only thing that keeps it below 1).",
+    "unexplained_share_of_close": 0.207858,
+    "residual_sd_logit": 0.158794,
+    "residual_sd_as_prob_shift": 0.030136,
+    "residual_p90_as_prob_shift": 0.061911,
+    "sd_logit_close": 0.348297,
+    "sd_logit_ours": 0.374183,
+    "corr_logit_ours_close": 0.875145,
+    "intercept_market": 0.196482,
+    "intercept_ours": 0.20464,
+    "per_feature": [
+     {
+      "feature": "elo_logit",
+      "our_weight": 0.228004,
+      "our_weight_se": 0.000264,
+      "market_implied_weight": 0.23477,
+      "market_weight_se": 0.002074,
+      "market_minus_ours": 0.006765,
+      "market_over_ours": 1.029672,
+      "diff_t": 3.23537,
+      "outcome_fit_weight": 0.22789,
+      "outcome_fit_se": 0.026887,
+      "lean": "market leans HARDER"
+     },
+     {
+      "feature": "rest_diff",
+      "our_weight": -0.00882,
+      "our_weight_se": 0.000296,
+      "market_implied_weight": 0.008812,
+      "market_weight_se": 0.002329,
+      "market_minus_ours": 0.017633,
+      "market_over_ours": -0.999067,
+      "diff_t": 7.510936,
+      "outcome_fit_weight": -0.009643,
+      "outcome_fit_se": 0.029915,
+      "lean": "market leans HARDER"
+     },
+     {
+      "feature": "b2b_home",
+      "our_weight": -0.075927,
+      "our_weight_se": 0.00026,
+      "market_implied_weight": -0.034401,
+      "market_weight_se": 0.002047,
+      "market_minus_ours": 0.041525,
+      "market_over_ours": 0.453088,
+      "diff_t": 20.128087,
+      "outcome_fit_weight": -0.075521,
+      "outcome_fit_se": 0.026294,
+      "lean": "market leans HARDER"
+     },
+     {
+      "feature": "b2b_away",
+      "our_weight": 0.096044,
+      "our_weight_se": 0.000285,
+      "market_implied_weight": 0.054151,
+      "market_weight_se": 0.002242,
+      "market_minus_ours": -0.041893,
+      "market_over_ours": 0.563813,
+      "diff_t": -18.536505,
+      "outcome_fit_weight": 0.096455,
+      "outcome_fit_se": 0.028949,
+      "lean": "market leans LIGHTER"
+     },
+     {
+      "feature": "xg_diff",
+      "our_weight": 0.183443,
+      "our_weight_se": 0.000264,
+      "market_implied_weight": 0.106226,
+      "market_weight_se": 0.002073,
+      "market_minus_ours": -0.077217,
+      "market_over_ours": 0.57907,
+      "diff_t": -36.942051,
+      "outcome_fit_weight": 0.183641,
+      "outcome_fit_se": 0.026844,
+      "lean": "market leans LIGHTER"
+     }
+    ]
+   },
+   "residual_test": {
+    "n": 7927,
+    "b_residual": 0.834722,
+    "b_residual_se": 0.145285,
+    "b_residual_t": 5.745408,
+    "b_ours": 0.982735,
+    "b_ours_se": 0.063335,
+    "b_ours_t": 15.516525,
+    "our_ll": 0.672423,
+    "market_ll": 0.670717,
+    "gap_us_to_market": 0.001705,
+    "ll_recal_ours_only_insample": 0.672416,
+    "ll_plus_residual_insample": 0.670318,
+    "gain_insample": 0.002098,
+    "ll_recal_ours_only_loso": 0.672662,
+    "ll_plus_residual_loso": 0.670571,
+    "gain_loso": 0.00209,
+    "gain_vs_shipped_loso": 0.001852,
+    "gain_vs_shipped_loso_ci": [
+     0.000454,
+     0.003191
+    ],
+    "residual_recovers_share_of_market_gap": 1.085766,
+    "beats_market": true,
+    "verdict": "residual CARRIES outcome information our features cannot represent",
+    "reading": "b_residual is the outcome weight on the part of the close our feature space cannot span, with our own forecast already in the equation. t<2 means the close's orthogonal component is not informative \u2014 i.e. everything the close knows, our features already span. Positive and significant means the close holds information outside our span. The LOSO gain is the honest size of that information; the in-sample gain is its optimistic ceiling.",
+    "warning": "UPPER BOUND / DIAGNOSTIC ONLY. This quantity is only realisable by a forecaster who can see the closing line, which no served model in this repo may do. It measures how much information is missing, not a gain that is available to us.",
+    "ll_plus_residual_nested": 0.670595,
+    "gain_vs_shipped_nested": 0.001827,
+    "gain_vs_shipped_nested_ci": [
+     0.000423,
+     0.003175
+    ],
+    "note": "projection AND augmentation re-fitted per fold; the residual for a held-out season is defined only by other seasons.",
+    "nested_recovers_share_of_market_gap": 1.070926
+   },
+   "symmetry": {
+    "encompassing_y_on_both": {
+     "n": 7927,
+     "intercept": -0.020051,
+     "b_ours": 0.315768,
+     "b_ours_se": 0.127202,
+     "b_ours_t": 2.482414,
+     "b_market": 0.818377,
+     "b_market_se": 0.136895,
+     "b_market_t": 5.978139,
+     "reading": "b_ours is the weight the outcome data puts on OUR forecast once the close is in the equation; t<2 means the close encompasses us."
+    },
+    "our_orthogonal_component": {
+     "sd_logit": 0.181052,
+     "b": 0.315768,
+     "se": 0.127202,
+     "t": 2.482414,
+     "ll_close_only_loso": 0.670671,
+     "ll_close_plus_our_orthogonal_loso": 0.670378,
+     "gain_loso": 0.000292,
+     "reading": "the exact mirror of the residual test: the part of OUR forecast the close cannot span, tested for outcome information with the close already in the equation."
+    },
+    "classification_rule": "BOTH informative -> 'we know different things'; only the close's residual informative -> 'the close knows strictly more'; neither -> 'we know the same things'."
+   },
+   "classification": "WE KNOW DIFFERENT THINGS \u2014 both sides hold information the other lacks",
+   "market_gap_decomposition": {
+    "n": 7927,
+    "our_ll": 0.672423,
+    "market_ll": 0.670717,
+    "gap": 0.001705,
+    "total_gap_nats": 13.517576,
+    "gap_ci": [
+     -0.00025,
+     0.003576
+    ],
+    "kl_if_market_truth": 0.003994,
+    "kl_if_we_truth": 0.00398,
+    "lambda_market_credit": 0.712955,
+    "lambda_ci": [
+     0.467961,
+     0.946993
+    ],
+    "gap_minus_kl_null": -0.002289,
+    "lambda_reading": "1.0 = the close is the truth and our disagreements are pure noise around it; 0.5 = the truth sits midway and we are as informative as the close; 0 = we are the truth. A CI that excludes 1.0 is evidence we hold information the close lacks.",
+    "coverage_note": "data/odds_nhl.csv (SBR archive via phase0/nhl_odds_load.py) covers 2010-11..2022-23; DEV is 20112012-20172018, join rate 0.9997, 0 result mismatches.",
+    "slices": {
+     "pred_decile": [
+      {
+       "dim": "pred_decile",
+       "slice": "D09 [0.626,0.664]",
+       "n": 793,
+       "our_ll": 0.660864,
+       "market_ll": 0.654787,
+       "gap": 0.006077,
+       "gap_se": 0.003031,
+       "total_gap": 4.818703,
+       "share_of_total_gap": 0.356477,
+       "n_share": 0.100038,
+       "kl_if_market_truth": 0.003633,
+       "kl_if_we_truth": 0.003583,
+       "lambda_market_credit": 1.338689,
+       "mean_abs_disagree": 0.031309,
+       "base_rate": 0.629256,
+       "gap_ci": [
+        0.000219,
+        0.012307
+       ],
+       "gap_sig": "market SIG better",
+       "lambda_ci": [
+        0.528745,
+        2.200033
+       ]
+      },
+      {
+       "dim": "pred_decile",
+       "slice": "D02 [0.430,0.472]",
+       "n": 793,
+       "our_ll": 0.69274,
+       "market_ll": 0.688696,
+       "gap": 0.004044,
+       "gap_se": 0.003376,
+       "total_gap": 3.206905,
+       "share_of_total_gap": 0.23724,
+       "n_share": 0.100038,
+       "kl_if_market_truth": 0.004475,
+       "kl_if_we_truth": 0.004485,
+       "lambda_market_credit": 0.95188,
+       "mean_abs_disagree": 0.038182,
+       "base_rate": 0.479193,
+       "gap_ci": [
+        -0.002825,
+        0.010716
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.18189,
+        1.686438
+       ]
+      },
+      {
+       "dim": "pred_decile",
+       "slice": "D05 [0.529,0.551]",
+       "n": 792,
+       "our_ll": 0.690511,
+       "market_ll": 0.686589,
+       "gap": 0.003922,
+       "gap_se": 0.002889,
+       "total_gap": 3.10649,
+       "share_of_total_gap": 0.229811,
+       "n_share": 0.099912,
+       "kl_if_market_truth": 0.003393,
+       "kl_if_we_truth": 0.00342,
+       "lambda_market_credit": 1.077723,
+       "mean_abs_disagree": 0.032895,
+       "base_rate": 0.540404,
+       "gap_ci": [
+        -0.001557,
+        0.009449
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.269385,
+        1.907914
+       ]
+      },
+      {
+       "dim": "pred_decile",
+       "slice": "D03 [0.472,0.503]",
+       "n": 792,
+       "our_ll": 0.693912,
+       "market_ll": 0.69072,
+       "gap": 0.003191,
+       "gap_se": 0.003139,
+       "total_gap": 2.527521,
+       "share_of_total_gap": 0.18698,
+       "n_share": 0.099912,
+       "kl_if_market_truth": 0.003889,
+       "kl_if_we_truth": 0.00392,
+       "lambda_market_credit": 0.910637,
+       "mean_abs_disagree": 0.034589,
+       "base_rate": 0.464646,
+       "gap_ci": [
+        -0.002518,
+        0.009538
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.181195,
+        1.723416
+       ]
+      },
+      {
+       "dim": "pred_decile",
+       "slice": "D08 [0.599,0.626]",
+       "n": 793,
+       "our_ll": 0.664726,
+       "market_ll": 0.661838,
+       "gap": 0.002889,
+       "gap_se": 0.002955,
+       "total_gap": 2.290672,
+       "share_of_total_gap": 0.169459,
+       "n_share": 0.100038,
+       "kl_if_market_truth": 0.003364,
+       "kl_if_we_truth": 0.003362,
+       "lambda_market_credit": 0.92931,
+       "mean_abs_disagree": 0.031095,
+       "base_rate": 0.619168,
+       "gap_ci": [
+        -0.00293,
+        0.009016
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.083429,
+        1.874482
+       ]
+      },
+      {
+       "dim": "pred_decile",
+       "slice": "D06 [0.551,0.574]",
+       "n": 793,
+       "our_ll": 0.681306,
+       "market_ll": 0.679364,
+       "gap": 0.001942,
+       "gap_se": 0.002983,
+       "total_gap": 1.540076,
+       "share_of_total_gap": 0.113931,
+       "n_share": 0.100038,
+       "kl_if_market_truth": 0.003558,
+       "kl_if_we_truth": 0.003579,
+       "lambda_market_credit": 0.773605,
+       "mean_abs_disagree": 0.033299,
+       "base_rate": 0.576293,
+       "gap_ci": [
+        -0.004003,
+        0.007694
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.054146,
+        1.573712
+       ]
+      },
+      {
+       "dim": "pred_decile",
+       "slice": "D04 [0.503,0.529]",
+       "n": 793,
+       "our_ll": 0.692909,
+       "market_ll": 0.691864,
+       "gap": 0.001045,
+       "gap_se": 0.003267,
+       "total_gap": 0.828974,
+       "share_of_total_gap": 0.061326,
+       "n_share": 0.100038,
+       "kl_if_market_truth": 0.004128,
+       "kl_if_we_truth": 0.004179,
+       "lambda_market_credit": 0.628888,
+       "mean_abs_disagree": 0.035071,
+       "base_rate": 0.506936,
+       "gap_ci": [
+        -0.005207,
+        0.007501
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.107003,
+        1.409576
+       ]
+      },
+      {
+       "dim": "pred_decile",
+       "slice": "D07 [0.574,0.599]",
+       "n": 793,
+       "our_ll": 0.67471,
+       "market_ll": 0.675716,
+       "gap": -0.001006,
+       "gap_se": 0.002932,
+       "total_gap": -0.797611,
+       "share_of_total_gap": -0.059005,
+       "n_share": 0.100038,
+       "kl_if_market_truth": 0.003448,
+       "kl_if_we_truth": 0.003454,
+       "lambda_market_credit": 0.354694,
+       "mean_abs_disagree": 0.033042,
+       "base_rate": 0.596469,
+       "gap_ci": [
+        -0.006593,
+        0.004749
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.454934,
+        1.182271
+       ]
+      },
+      {
+       "dim": "pred_decile",
+       "slice": "D10 [0.664,0.827]",
+       "n": 793,
+       "our_ll": 0.606752,
+       "market_ll": 0.607764,
+       "gap": -0.001011,
+       "gap_se": 0.003466,
+       "total_gap": -0.801956,
+       "share_of_total_gap": -0.059327,
+       "n_share": 0.100038,
+       "kl_if_market_truth": 0.005094,
+       "kl_if_we_truth": 0.004914,
+       "lambda_market_credit": 0.389951,
+       "mean_abs_disagree": 0.037613,
+       "base_rate": 0.701135,
+       "gap_ci": [
+        -0.007579,
+        0.005772
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.261493,
+        1.068702
+       ]
+      },
+      {
+       "dim": "pred_decile",
+       "slice": "D01 [0.239,0.430]",
+       "n": 792,
+       "our_ll": 0.665837,
+       "market_ll": 0.66988,
+       "gap": -0.004043,
+       "gap_se": 0.003527,
+       "total_gap": -3.202197,
+       "share_of_total_gap": -0.236891,
+       "n_share": 0.099912,
+       "kl_if_market_truth": 0.004962,
+       "kl_if_we_truth": 0.004909,
+       "lambda_market_credit": 0.087714,
+       "mean_abs_disagree": 0.038552,
+       "base_rate": 0.380051,
+       "gap_ci": [
+        -0.010729,
+        0.00304
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.606185,
+        0.808569
+       ]
+      }
+     ],
+     "month": [
+      {
+       "dim": "month",
+       "slice": "02",
+       "n": 1226,
+       "our_ll": 0.682054,
+       "market_ll": 0.677534,
+       "gap": 0.00452,
+       "gap_se": 0.002699,
+       "total_gap": 5.540976,
+       "share_of_total_gap": 0.409909,
+       "n_share": 0.154661,
+       "kl_if_market_truth": 0.004465,
+       "kl_if_we_truth": 0.004446,
+       "lambda_market_credit": 1.006075,
+       "mean_abs_disagree": 0.036143,
+       "base_rate": 0.51876,
+       "gap_ci": [
+        -0.000838,
+        0.010051
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.405823,
+        1.634919
+       ]
+      },
+      {
+       "dim": "month",
+       "slice": "01",
+       "n": 1187,
+       "our_ll": 0.674034,
+       "market_ll": 0.67096,
+       "gap": 0.003074,
+       "gap_se": 0.002348,
+       "total_gap": 3.649316,
+       "share_of_total_gap": 0.269968,
+       "n_share": 0.149741,
+       "kl_if_market_truth": 0.003309,
+       "kl_if_we_truth": 0.003283,
+       "lambda_market_credit": 0.964464,
+       "mean_abs_disagree": 0.031664,
+       "base_rate": 0.547599,
+       "gap_ci": [
+        -0.001292,
+        0.007502
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.302556,
+        1.641227
+       ]
+      },
+      {
+       "dim": "month",
+       "slice": "11",
+       "n": 1206,
+       "our_ll": 0.67634,
+       "market_ll": 0.674265,
+       "gap": 0.002075,
+       "gap_se": 0.002351,
+       "total_gap": 2.502128,
+       "share_of_total_gap": 0.185102,
+       "n_share": 0.152138,
+       "kl_if_market_truth": 0.003381,
+       "kl_if_we_truth": 0.003372,
+       "lambda_market_credit": 0.806516,
+       "mean_abs_disagree": 0.03215,
+       "base_rate": 0.547264,
+       "gap_ci": [
+        -0.002571,
+        0.006822
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.12375,
+        1.521131
+       ]
+      },
+      {
+       "dim": "month",
+       "slice": "10",
+       "n": 949,
+       "our_ll": 0.677686,
+       "market_ll": 0.675186,
+       "gap": 0.0025,
+       "gap_se": 0.002968,
+       "total_gap": 2.372306,
+       "share_of_total_gap": 0.175498,
+       "n_share": 0.119717,
+       "kl_if_market_truth": 0.004107,
+       "kl_if_we_truth": 0.004083,
+       "lambda_market_credit": 0.803805,
+       "mean_abs_disagree": 0.035317,
+       "base_rate": 0.539515,
+       "gap_ci": [
+        -0.003643,
+        0.00842
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.064412,
+        1.528882
+       ]
+      },
+      {
+       "dim": "month",
+       "slice": "03",
+       "n": 1529,
+       "our_ll": 0.667527,
+       "market_ll": 0.666292,
+       "gap": 0.001234,
+       "gap_se": 0.002274,
+       "total_gap": 1.887263,
+       "share_of_total_gap": 0.139615,
+       "n_share": 0.192885,
+       "kl_if_market_truth": 0.004031,
+       "kl_if_we_truth": 0.004029,
+       "lambda_market_credit": 0.65303,
+       "mean_abs_disagree": 0.035235,
+       "base_rate": 0.552649,
+       "gap_ci": [
+        -0.003289,
+        0.005621
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.098543,
+        1.196358
+       ]
+      },
+      {
+       "dim": "month",
+       "slice": "04",
+       "n": 610,
+       "our_ll": 0.666835,
+       "market_ll": 0.665449,
+       "gap": 0.001385,
+       "gap_se": 0.00461,
+       "total_gap": 0.844986,
+       "share_of_total_gap": 0.06251,
+       "n_share": 0.076952,
+       "kl_if_market_truth": 0.006321,
+       "kl_if_we_truth": 0.006338,
+       "lambda_market_credit": 0.610097,
+       "mean_abs_disagree": 0.043256,
+       "base_rate": 0.557377,
+       "gap_ci": [
+        -0.007231,
+        0.010071
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.072336,
+        1.276241
+       ]
+      },
+      {
+       "dim": "month",
+       "slice": "12",
+       "n": 1220,
+       "our_ll": 0.66214,
+       "market_ll": 0.664828,
+       "gap": -0.002688,
+       "gap_se": 0.002354,
+       "total_gap": -3.279398,
+       "share_of_total_gap": -0.242603,
+       "n_share": 0.153904,
+       "kl_if_market_truth": 0.003498,
+       "kl_if_we_truth": 0.003473,
+       "lambda_market_credit": 0.112668,
+       "mean_abs_disagree": 0.032416,
+       "base_rate": 0.583607,
+       "gap_ci": [
+        -0.007424,
+        0.001977
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.55973,
+        0.784133
+       ]
+      }
+     ],
+     "season_maturity": [
+      {
+       "dim": "season_maturity",
+       "slice": "team-games 55+",
+       "n": 2333,
+       "our_ll": 0.671535,
+       "market_ll": 0.668506,
+       "gap": 0.003029,
+       "gap_se": 0.001986,
+       "total_gap": 7.066472,
+       "share_of_total_gap": 0.522762,
+       "n_share": 0.294311,
+       "kl_if_market_truth": 0.004624,
+       "kl_if_we_truth": 0.00462,
+       "lambda_market_credit": 0.827439,
+       "mean_abs_disagree": 0.037297,
+       "base_rate": 0.54222,
+       "gap_ci": [
+        -0.000798,
+        0.006758
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.412612,
+        1.223609
+       ]
+      },
+      {
+       "dim": "season_maturity",
+       "slice": "team-games 5-14",
+       "n": 1046,
+       "our_ll": 0.684764,
+       "market_ll": 0.681609,
+       "gap": 0.003155,
+       "gap_se": 0.002789,
+       "total_gap": 3.300151,
+       "share_of_total_gap": 0.244138,
+       "n_share": 0.131954,
+       "kl_if_market_truth": 0.004007,
+       "kl_if_we_truth": 0.003983,
+       "lambda_market_credit": 0.893345,
+       "mean_abs_disagree": 0.034568,
+       "base_rate": 0.521033,
+       "gap_ci": [
+        -0.002431,
+        0.008694
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.19889,
+        1.589103
+       ]
+      },
+      {
+       "dim": "season_maturity",
+       "slice": "team-games 0-4",
+       "n": 544,
+       "our_ll": 0.67174,
+       "market_ll": 0.66784,
+       "gap": 0.0039,
+       "gap_se": 0.003832,
+       "total_gap": 2.121585,
+       "share_of_total_gap": 0.15695,
+       "n_share": 0.068626,
+       "kl_if_market_truth": 0.00408,
+       "kl_if_we_truth": 0.00407,
+       "lambda_market_credit": 0.977954,
+       "mean_abs_disagree": 0.035785,
+       "base_rate": 0.551471,
+       "gap_ci": [
+        -0.003513,
+        0.011346
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.083035,
+        1.933667
+       ]
+      },
+      {
+       "dim": "season_maturity",
+       "slice": "team-games 30-54",
+       "n": 2455,
+       "our_ll": 0.670052,
+       "market_ll": 0.669372,
+       "gap": 0.000679,
+       "gap_se": 0.001747,
+       "total_gap": 1.667022,
+       "share_of_total_gap": 0.123323,
+       "n_share": 0.309701,
+       "kl_if_market_truth": 0.003803,
+       "kl_if_we_truth": 0.003785,
+       "lambda_market_credit": 0.58827,
+       "mean_abs_disagree": 0.033439,
+       "base_rate": 0.559267,
+       "gap_ci": [
+        -0.002956,
+        0.004157
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.105619,
+        1.04677
+       ]
+      },
+      {
+       "dim": "season_maturity",
+       "slice": "team-games 15-29",
+       "n": 1549,
+       "our_ll": 0.669423,
+       "market_ll": 0.669835,
+       "gap": -0.000412,
+       "gap_se": 0.002062,
+       "total_gap": -0.637654,
+       "share_of_total_gap": -0.047172,
+       "n_share": 0.195408,
+       "kl_if_market_truth": 0.00331,
+       "kl_if_we_truth": 0.003294,
+       "lambda_market_credit": 0.436457,
+       "mean_abs_disagree": 0.031802,
+       "base_rate": 0.562944,
+       "gap_ci": [
+        -0.004629,
+        0.003703
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.211332,
+        1.070644
+       ]
+      }
+     ],
+     "favourite_side": [
+      {
+       "dim": "favourite_side",
+       "slice": "home favourite",
+       "n": 5618,
+       "our_ll": 0.667712,
+       "market_ll": 0.665859,
+       "gap": 0.001853,
+       "gap_se": 0.001158,
+       "total_gap": 10.411305,
+       "share_of_total_gap": 0.770205,
+       "n_share": 0.708717,
+       "kl_if_market_truth": 0.003805,
+       "kl_if_we_truth": 0.003787,
+       "lambda_market_credit": 0.74293,
+       "mean_abs_disagree": 0.033508,
+       "base_rate": 0.593272,
+       "gap_ci": [
+        -0.000373,
+        0.004207
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.451405,
+        1.050463
+       ]
+      },
+      {
+       "dim": "favourite_side",
+       "slice": "away favourite",
+       "n": 2309,
+       "our_ll": 0.683883,
+       "market_ll": 0.682538,
+       "gap": 0.001345,
+       "gap_se": 0.001965,
+       "total_gap": 3.106271,
+       "share_of_total_gap": 0.229795,
+       "n_share": 0.291283,
+       "kl_if_market_truth": 0.004455,
+       "kl_if_we_truth": 0.00445,
+       "lambda_market_credit": 0.650772,
+       "mean_abs_disagree": 0.037136,
+       "base_rate": 0.442616,
+       "gap_ci": [
+        -0.002633,
+        0.005317
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.20292,
+        1.104037
+       ]
+      }
+     ],
+     "rest": [
+      {
+       "dim": "rest",
+       "slice": "rest_diff 0",
+       "n": 3852,
+       "our_ll": 0.670679,
+       "market_ll": 0.669062,
+       "gap": 0.001617,
+       "gap_se": 0.00139,
+       "total_gap": 6.22813,
+       "share_of_total_gap": 0.460743,
+       "n_share": 0.485934,
+       "kl_if_market_truth": 0.003729,
+       "kl_if_we_truth": 0.003729,
+       "lambda_market_credit": 0.716766,
+       "mean_abs_disagree": 0.033435,
+       "base_rate": 0.547508,
+       "gap_ci": [
+        -0.001044,
+        0.004308
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.359328,
+        1.076973
+       ]
+      },
+      {
+       "dim": "rest",
+       "slice": "rest_diff -1",
+       "n": 1080,
+       "our_ll": 0.681048,
+       "market_ll": 0.678015,
+       "gap": 0.003032,
+       "gap_se": 0.002813,
+       "total_gap": 3.274943,
+       "share_of_total_gap": 0.242273,
+       "n_share": 0.136243,
+       "kl_if_market_truth": 0.004309,
+       "kl_if_we_truth": 0.004297,
+       "lambda_market_credit": 0.851692,
+       "mean_abs_disagree": 0.035994,
+       "base_rate": 0.518519,
+       "gap_ci": [
+        -0.002264,
+        0.008502
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.241286,
+        1.489412
+       ]
+      },
+      {
+       "dim": "rest",
+       "slice": "rest_diff >=+2",
+       "n": 845,
+       "our_ll": 0.673078,
+       "market_ll": 0.669514,
+       "gap": 0.003564,
+       "gap_se": 0.003222,
+       "total_gap": 3.011788,
+       "share_of_total_gap": 0.222805,
+       "n_share": 0.106598,
+       "kl_if_market_truth": 0.004381,
+       "kl_if_we_truth": 0.004345,
+       "lambda_market_credit": 0.906418,
+       "mean_abs_disagree": 0.036123,
+       "base_rate": 0.556213,
+       "gap_ci": [
+        -0.002632,
+        0.009655
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.202152,
+        1.607038
+       ]
+      },
+      {
+       "dim": "rest",
+       "slice": "rest_diff +1",
+       "n": 1777,
+       "our_ll": 0.669192,
+       "market_ll": 0.668789,
+       "gap": 0.000403,
+       "gap_se": 0.002143,
+       "total_gap": 0.716134,
+       "share_of_total_gap": 0.052978,
+       "n_share": 0.224171,
+       "kl_if_market_truth": 0.004178,
+       "kl_if_we_truth": 0.004146,
+       "lambda_market_credit": 0.546509,
+       "mean_abs_disagree": 0.035275,
+       "base_rate": 0.57794,
+       "gap_ci": [
+        -0.003841,
+        0.004749
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.03944,
+        1.070475
+       ]
+      },
+      {
+       "dim": "rest",
+       "slice": "rest_diff <=-2",
+       "n": 373,
+       "our_ll": 0.679366,
+       "market_ll": 0.678598,
+       "gap": 0.000768,
+       "gap_se": 0.004726,
+       "total_gap": 0.28658,
+       "share_of_total_gap": 0.021201,
+       "n_share": 0.047054,
+       "kl_if_market_truth": 0.004076,
+       "kl_if_we_truth": 0.004051,
+       "lambda_market_credit": 0.593008,
+       "mean_abs_disagree": 0.035168,
+       "base_rate": 0.506702,
+       "gap_ci": [
+        -0.00817,
+        0.01032
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.529417,
+        1.779586
+       ]
+      }
+     ],
+     "b2b": [
+      {
+       "dim": "b2b",
+       "slice": "b2b: neither",
+       "n": 5547,
+       "our_ll": 0.675391,
+       "market_ll": 0.673569,
+       "gap": 0.001822,
+       "gap_se": 0.001151,
+       "total_gap": 10.107118,
+       "share_of_total_gap": 0.747702,
+       "n_share": 0.69976,
+       "kl_if_market_truth": 0.003687,
+       "kl_if_we_truth": 0.003683,
+       "lambda_market_credit": 0.746926,
+       "mean_abs_disagree": 0.033226,
+       "base_rate": 0.541554,
+       "gap_ci": [
+        -0.00046,
+        0.00406
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.436965,
+        1.053219
+       ]
+      },
+      {
+       "dim": "b2b",
+       "slice": "b2b: both",
+       "n": 378,
+       "our_ll": 0.678161,
+       "market_ll": 0.666598,
+       "gap": 0.011563,
+       "gap_se": 0.004741,
+       "total_gap": 4.370857,
+       "share_of_total_gap": 0.323346,
+       "n_share": 0.047685,
+       "kl_if_market_truth": 0.004092,
+       "kl_if_we_truth": 0.004102,
+       "lambda_market_credit": 1.911888,
+       "mean_abs_disagree": 0.036068,
+       "base_rate": 0.529101,
+       "gap_ci": [
+        0.002111,
+        0.021278
+       ],
+       "gap_sig": "market SIG better",
+       "lambda_ci": [
+        0.766438,
+        3.052776
+       ]
+      },
+      {
+       "dim": "b2b",
+       "slice": "b2b: home",
+       "n": 462,
+       "our_ll": 0.670495,
+       "market_ll": 0.671084,
+       "gap": -0.00059,
+       "gap_se": 0.004967,
+       "total_gap": -0.272477,
+       "share_of_total_gap": -0.020157,
+       "n_share": 0.058282,
+       "kl_if_market_truth": 0.005788,
+       "kl_if_we_truth": 0.005781,
+       "lambda_market_credit": 0.448706,
+       "mean_abs_disagree": 0.04247,
+       "base_rate": 0.5,
+       "gap_ci": [
+        -0.010674,
+        0.008908
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.390725,
+        1.256522
+       ]
+      },
+      {
+       "dim": "b2b",
+       "slice": "b2b: away",
+       "n": 1540,
+       "our_ll": 0.6609,
+       "market_ll": 0.661347,
+       "gap": -0.000447,
+       "gap_se": 0.002402,
+       "total_gap": -0.687923,
+       "share_of_total_gap": -0.050891,
+       "n_share": 0.194273,
+       "kl_if_market_truth": 0.004538,
+       "kl_if_we_truth": 0.004482,
+       "lambda_market_credit": 0.447342,
+       "mean_abs_disagree": 0.036644,
+       "base_rate": 0.597403,
+       "gap_ci": [
+        -0.005297,
+        0.004489
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.078766,
+        0.988444
+       ]
+      }
+     ],
+     "season": [
+      {
+       "dim": "season",
+       "slice": "20162017",
+       "n": 1230,
+       "our_ll": 0.672101,
+       "market_ll": 0.667211,
+       "gap": 0.00489,
+       "gap_se": 0.002599,
+       "total_gap": 6.014723,
+       "share_of_total_gap": 0.444956,
+       "n_share": 0.155166,
+       "kl_if_market_truth": 0.004304,
+       "kl_if_we_truth": 0.004293,
+       "lambda_market_credit": 1.068173,
+       "mean_abs_disagree": 0.036098,
+       "base_rate": 0.55935,
+       "gap_ci": [
+        -0.000198,
+        0.009959
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.4763,
+        1.67077
+       ]
+      },
+      {
+       "dim": "season",
+       "slice": "20152016",
+       "n": 1230,
+       "our_ll": 0.681277,
+       "market_ll": 0.677372,
+       "gap": 0.003905,
+       "gap_se": 0.002709,
+       "total_gap": 4.803544,
+       "share_of_total_gap": 0.355355,
+       "n_share": 0.155166,
+       "kl_if_market_truth": 0.004443,
+       "kl_if_we_truth": 0.004429,
+       "lambda_market_credit": 0.939383,
+       "mean_abs_disagree": 0.036023,
+       "base_rate": 0.529268,
+       "gap_ci": [
+        -0.001585,
+        0.009085
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.320529,
+        1.545819
+       ]
+      },
+      {
+       "dim": "season",
+       "slice": "20172018",
+       "n": 1270,
+       "our_ll": 0.669486,
+       "market_ll": 0.668217,
+       "gap": 0.001269,
+       "gap_se": 0.002483,
+       "total_gap": 1.611437,
+       "share_of_total_gap": 0.119211,
+       "n_share": 0.160212,
+       "kl_if_market_truth": 0.003931,
+       "kl_if_we_truth": 0.003922,
+       "lambda_market_credit": 0.661006,
+       "mean_abs_disagree": 0.034175,
+       "base_rate": 0.56378,
+       "gap_ci": [
+        -0.003663,
+        0.0059
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.039291,
+        1.264917
+       ]
+      },
+      {
+       "dim": "season",
+       "slice": "20142015",
+       "n": 1230,
+       "our_ll": 0.665502,
+       "market_ll": 0.664911,
+       "gap": 0.00059,
+       "gap_se": 0.002364,
+       "total_gap": 0.725983,
+       "share_of_total_gap": 0.053707,
+       "n_share": 0.155166,
+       "kl_if_market_truth": 0.003422,
+       "kl_if_we_truth": 0.003424,
+       "lambda_market_credit": 0.586306,
+       "mean_abs_disagree": 0.031847,
+       "base_rate": 0.541463,
+       "gap_ci": [
+        -0.004055,
+        0.005281
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.089119,
+        1.27411
+       ]
+      },
+      {
+       "dim": "season",
+       "slice": "20122013",
+       "n": 672,
+       "our_ll": 0.670111,
+       "market_ll": 0.669232,
+       "gap": 0.000879,
+       "gap_se": 0.003562,
+       "total_gap": 0.590594,
+       "share_of_total_gap": 0.043691,
+       "n_share": 0.084774,
+       "kl_if_market_truth": 0.004269,
+       "kl_if_we_truth": 0.004255,
+       "lambda_market_credit": 0.602281,
+       "mean_abs_disagree": 0.036519,
+       "base_rate": 0.5625,
+       "gap_ci": [
+        -0.00602,
+        0.007951
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.226387,
+        1.429335
+       ]
+      },
+      {
+       "dim": "season",
+       "slice": "20132014",
+       "n": 1147,
+       "our_ll": 0.674631,
+       "market_ll": 0.674137,
+       "gap": 0.000494,
+       "gap_se": 0.002618,
+       "total_gap": 0.566107,
+       "share_of_total_gap": 0.041879,
+       "n_share": 0.144695,
+       "kl_if_market_truth": 0.003987,
+       "kl_if_we_truth": 0.003946,
+       "lambda_market_credit": 0.559618,
+       "mean_abs_disagree": 0.034629,
+       "base_rate": 0.533566,
+       "gap_ci": [
+        -0.004874,
+        0.005569
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.111333,
+        1.205725
+       ]
+      },
+      {
+       "dim": "season",
+       "slice": "20112012",
+       "n": 1148,
+       "our_ll": 0.67309,
+       "market_ll": 0.673783,
+       "gap": -0.000692,
+       "gap_se": 0.002533,
+       "total_gap": -0.794812,
+       "share_of_total_gap": -0.058798,
+       "n_share": 0.144821,
+       "kl_if_market_truth": 0.003711,
+       "kl_if_we_truth": 0.0037,
+       "lambda_market_credit": 0.405844,
+       "mean_abs_disagree": 0.033491,
+       "base_rate": 0.560976,
+       "gap_ci": [
+        -0.005841,
+        0.003994
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.29934,
+        1.042465
+       ]
+      }
+     ],
+     "team": [
+      {
+       "dim": "team",
+       "slice": "MTL",
+       "n": 537,
+       "our_ll": 0.681866,
+       "market_ll": 0.669113,
+       "gap": 0.012753,
+       "gap_se": 0.004103,
+       "total_gap": 6.84846,
+       "share_of_total_gap": 0.506634,
+       "n_share": 0.067743,
+       "kl_if_market_truth": 0.004544,
+       "kl_if_we_truth": 0.004538,
+       "lambda_market_credit": 1.903976,
+       "mean_abs_disagree": 0.036648,
+       "base_rate": 0.528864,
+       "gap_ci": [
+        0.004659,
+        0.02068
+       ],
+       "gap_sig": "market SIG better",
+       "lambda_ci": [
+        1.015779,
+        2.798482
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "CBJ",
+       "n": 530,
+       "our_ll": 0.676493,
+       "market_ll": 0.667852,
+       "gap": 0.008642,
+       "gap_se": 0.003904,
+       "total_gap": 4.579996,
+       "share_of_total_gap": 0.338818,
+       "n_share": 0.06686,
+       "kl_if_market_truth": 0.004028,
+       "kl_if_we_truth": 0.004031,
+       "lambda_market_credit": 1.572425,
+       "mean_abs_disagree": 0.034072,
+       "base_rate": 0.535849,
+       "gap_ci": [
+        0.001341,
+        0.016554
+       ],
+       "gap_sig": "market SIG better",
+       "lambda_ci": [
+        0.673933,
+        2.476129
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "PHI",
+       "n": 536,
+       "our_ll": 0.685299,
+       "market_ll": 0.678574,
+       "gap": 0.006725,
+       "gap_se": 0.003744,
+       "total_gap": 3.604794,
+       "share_of_total_gap": 0.266675,
+       "n_share": 0.067617,
+       "kl_if_market_truth": 0.003776,
+       "kl_if_we_truth": 0.00376,
+       "lambda_market_credit": 1.391383,
+       "mean_abs_disagree": 0.033642,
+       "base_rate": 0.578358,
+       "gap_ci": [
+        -0.000496,
+        0.014078
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.437834,
+        2.342253
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "TOR",
+       "n": 537,
+       "our_ll": 0.669174,
+       "market_ll": 0.662518,
+       "gap": 0.006656,
+       "gap_se": 0.004448,
+       "total_gap": 3.574169,
+       "share_of_total_gap": 0.264409,
+       "n_share": 0.067743,
+       "kl_if_market_truth": 0.005366,
+       "kl_if_we_truth": 0.005343,
+       "lambda_market_credit": 1.120456,
+       "mean_abs_disagree": 0.039967,
+       "base_rate": 0.566108,
+       "gap_ci": [
+        -0.002202,
+        0.015413
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.291867,
+        1.946551
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "CHI",
+       "n": 530,
+       "our_ll": 0.671122,
+       "market_ll": 0.665053,
+       "gap": 0.006069,
+       "gap_se": 0.003501,
+       "total_gap": 3.216439,
+       "share_of_total_gap": 0.237945,
+       "n_share": 0.06686,
+       "kl_if_market_truth": 0.003329,
+       "kl_if_we_truth": 0.003327,
+       "lambda_market_credit": 1.411581,
+       "mean_abs_disagree": 0.032034,
+       "base_rate": 0.554717,
+       "gap_ci": [
+        -0.000812,
+        0.012786
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.376592,
+        2.466316
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "NSH",
+       "n": 530,
+       "our_ll": 0.673651,
+       "market_ll": 0.668052,
+       "gap": 0.005599,
+       "gap_se": 0.003782,
+       "total_gap": 2.967527,
+       "share_of_total_gap": 0.219531,
+       "n_share": 0.06686,
+       "kl_if_market_truth": 0.003722,
+       "kl_if_we_truth": 0.003744,
+       "lambda_market_credit": 1.251495,
+       "mean_abs_disagree": 0.033307,
+       "base_rate": 0.564151,
+       "gap_ci": [
+        -0.00169,
+        0.013114
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.27471,
+        2.319169
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "OTT",
+       "n": 537,
+       "our_ll": 0.692065,
+       "market_ll": 0.686977,
+       "gap": 0.005087,
+       "gap_se": 0.004292,
+       "total_gap": 2.731853,
+       "share_of_total_gap": 0.202096,
+       "n_share": 0.067743,
+       "kl_if_market_truth": 0.004754,
+       "kl_if_we_truth": 0.004737,
+       "lambda_market_credit": 1.035067,
+       "mean_abs_disagree": 0.039051,
+       "base_rate": 0.527002,
+       "gap_ci": [
+        -0.003636,
+        0.01342
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.127408,
+        1.924225
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "COL",
+       "n": 530,
+       "our_ll": 0.675288,
+       "market_ll": 0.670613,
+       "gap": 0.004675,
+       "gap_se": 0.003527,
+       "total_gap": 2.477724,
+       "share_of_total_gap": 0.183296,
+       "n_share": 0.06686,
+       "kl_if_market_truth": 0.003437,
+       "kl_if_we_truth": 0.003444,
+       "lambda_market_credit": 1.179997,
+       "mean_abs_disagree": 0.032139,
+       "base_rate": 0.556604,
+       "gap_ci": [
+        -0.002371,
+        0.01185
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.1516,
+        2.198497
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "MIN",
+       "n": 530,
+       "our_ll": 0.677486,
+       "market_ll": 0.673946,
+       "gap": 0.00354,
+       "gap_se": 0.003726,
+       "total_gap": 1.876114,
+       "share_of_total_gap": 0.138791,
+       "n_share": 0.06686,
+       "kl_if_market_truth": 0.003712,
+       "kl_if_we_truth": 0.003698,
+       "lambda_market_credit": 0.976827,
+       "mean_abs_disagree": 0.033881,
+       "base_rate": 0.566038,
+       "gap_ci": [
+        -0.003798,
+        0.010774
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.016171,
+        1.958258
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "NJD",
+       "n": 537,
+       "our_ll": 0.670661,
+       "market_ll": 0.66755,
+       "gap": 0.003111,
+       "gap_se": 0.003782,
+       "total_gap": 1.670398,
+       "share_of_total_gap": 0.123572,
+       "n_share": 0.067743,
+       "kl_if_market_truth": 0.00392,
+       "kl_if_we_truth": 0.003906,
+       "lambda_market_credit": 0.896565,
+       "mean_abs_disagree": 0.035239,
+       "base_rate": 0.547486,
+       "gap_ci": [
+        -0.003983,
+        0.01029
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.000939,
+        1.806187
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "TBL",
+       "n": 537,
+       "our_ll": 0.661224,
+       "market_ll": 0.658473,
+       "gap": 0.002751,
+       "gap_se": 0.003745,
+       "total_gap": 1.477172,
+       "share_of_total_gap": 0.109278,
+       "n_share": 0.067743,
+       "kl_if_market_truth": 0.003911,
+       "kl_if_we_truth": 0.003903,
+       "lambda_market_credit": 0.851505,
+       "mean_abs_disagree": 0.034357,
+       "base_rate": 0.590317,
+       "gap_ci": [
+        -0.004874,
+        0.010131
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.125708,
+        1.778569
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "FLA",
+       "n": 537,
+       "our_ll": 0.668098,
+       "market_ll": 0.666215,
+       "gap": 0.001883,
+       "gap_se": 0.003723,
+       "total_gap": 1.011092,
+       "share_of_total_gap": 0.074798,
+       "n_share": 0.067743,
+       "kl_if_market_truth": 0.003677,
+       "kl_if_we_truth": 0.003664,
+       "lambda_market_credit": 0.755571,
+       "mean_abs_disagree": 0.033475,
+       "base_rate": 0.553073,
+       "gap_ci": [
+        -0.005518,
+        0.008958
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.242136,
+        1.723254
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "DET",
+       "n": 531,
+       "our_ll": 0.681404,
+       "market_ll": 0.679846,
+       "gap": 0.001558,
+       "gap_se": 0.003508,
+       "total_gap": 0.82737,
+       "share_of_total_gap": 0.061207,
+       "n_share": 0.066986,
+       "kl_if_market_truth": 0.00328,
+       "kl_if_we_truth": 0.003278,
+       "lambda_market_credit": 0.737443,
+       "mean_abs_disagree": 0.031375,
+       "base_rate": 0.53484,
+       "gap_ci": [
+        -0.005547,
+        0.008261
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.322692,
+        1.776498
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "BUF",
+       "n": 536,
+       "our_ll": 0.647638,
+       "market_ll": 0.646137,
+       "gap": 0.001501,
+       "gap_se": 0.003776,
+       "total_gap": 0.804648,
+       "share_of_total_gap": 0.059526,
+       "n_share": 0.067617,
+       "kl_if_market_truth": 0.003954,
+       "kl_if_we_truth": 0.00389,
+       "lambda_market_credit": 0.687328,
+       "mean_abs_disagree": 0.033339,
+       "base_rate": 0.529851,
+       "gap_ci": [
+        -0.005626,
+        0.00902
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.210836,
+        1.667031
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "NYR",
+       "n": 535,
+       "our_ll": 0.674458,
+       "market_ll": 0.673099,
+       "gap": 0.00136,
+       "gap_se": 0.00389,
+       "total_gap": 0.727367,
+       "share_of_total_gap": 0.053809,
+       "n_share": 0.067491,
+       "kl_if_market_truth": 0.004099,
+       "kl_if_we_truth": 0.004079,
+       "lambda_market_credit": 0.66505,
+       "mean_abs_disagree": 0.035001,
+       "base_rate": 0.519626,
+       "gap_ci": [
+        -0.006167,
+        0.008664
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.25844,
+        1.564278
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "STL",
+       "n": 530,
+       "our_ll": 0.665223,
+       "market_ll": 0.664423,
+       "gap": 0.0008,
+       "gap_se": 0.00373,
+       "total_gap": 0.423987,
+       "share_of_total_gap": 0.031366,
+       "n_share": 0.06686,
+       "kl_if_market_truth": 0.003778,
+       "kl_if_we_truth": 0.003743,
+       "lambda_market_credit": 0.604021,
+       "mean_abs_disagree": 0.034038,
+       "base_rate": 0.54717,
+       "gap_ci": [
+        -0.006303,
+        0.00857
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.356435,
+        1.618156
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "CAR",
+       "n": 537,
+       "our_ll": 0.678178,
+       "market_ll": 0.677527,
+       "gap": 0.000651,
+       "gap_se": 0.003598,
+       "total_gap": 0.349637,
+       "share_of_total_gap": 0.025865,
+       "n_share": 0.067743,
+       "kl_if_market_truth": 0.003481,
+       "kl_if_we_truth": 0.003468,
+       "lambda_market_credit": 0.592745,
+       "mean_abs_disagree": 0.032811,
+       "base_rate": 0.553073,
+       "gap_ci": [
+        -0.006576,
+        0.00724
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.446551,
+        1.565346
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "ARI",
+       "n": 328,
+       "our_ll": 0.647201,
+       "market_ll": 0.646219,
+       "gap": 0.000982,
+       "gap_se": 0.004547,
+       "total_gap": 0.322045,
+       "share_of_total_gap": 0.023824,
+       "n_share": 0.041378,
+       "kl_if_market_truth": 0.003532,
+       "kl_if_we_truth": 0.003485,
+       "lambda_market_credit": 0.636595,
+       "mean_abs_disagree": 0.032664,
+       "base_rate": 0.54878,
+       "gap_ci": [
+        -0.008112,
+        0.009795
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.644903,
+        1.909873
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "EDM",
+       "n": 528,
+       "our_ll": 0.657317,
+       "market_ll": 0.656783,
+       "gap": 0.000535,
+       "gap_se": 0.004516,
+       "total_gap": 0.282474,
+       "share_of_total_gap": 0.020897,
+       "n_share": 0.066608,
+       "kl_if_market_truth": 0.00551,
+       "kl_if_we_truth": 0.005425,
+       "lambda_market_credit": 0.545025,
+       "mean_abs_disagree": 0.040712,
+       "base_rate": 0.547348,
+       "gap_ci": [
+        -0.008486,
+        0.009339
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.283992,
+        1.352199
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "NYI",
+       "n": 537,
+       "our_ll": 0.685739,
+       "market_ll": 0.685236,
+       "gap": 0.000503,
+       "gap_se": 0.004078,
+       "total_gap": 0.27014,
+       "share_of_total_gap": 0.019984,
+       "n_share": 0.067743,
+       "kl_if_market_truth": 0.004158,
+       "kl_if_we_truth": 0.004151,
+       "lambda_market_credit": 0.560104,
+       "mean_abs_disagree": 0.034141,
+       "base_rate": 0.500931,
+       "gap_ci": [
+        -0.007149,
+        0.008467
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.35321,
+        1.574612
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "ANA",
+       "n": 525,
+       "our_ll": 0.672355,
+       "market_ll": 0.672217,
+       "gap": 0.000139,
+       "gap_se": 0.00372,
+       "total_gap": 0.072817,
+       "share_of_total_gap": 0.005387,
+       "n_share": 0.066229,
+       "kl_if_market_truth": 0.003755,
+       "kl_if_we_truth": 0.003707,
+       "lambda_market_credit": 0.515361,
+       "mean_abs_disagree": 0.033494,
+       "base_rate": 0.569524,
+       "gap_ci": [
+        -0.007057,
+        0.007733
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.437964,
+        1.508102
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "LAK",
+       "n": 524,
+       "our_ll": 0.687182,
+       "market_ll": 0.687446,
+       "gap": -0.000264,
+       "gap_se": 0.003886,
+       "total_gap": -0.138327,
+       "share_of_total_gap": -0.010233,
+       "n_share": 0.066103,
+       "kl_if_market_truth": 0.003935,
+       "kl_if_we_truth": 0.003945,
+       "lambda_market_credit": 0.467143,
+       "mean_abs_disagree": 0.034959,
+       "base_rate": 0.562977,
+       "gap_ci": [
+        -0.007965,
+        0.007363
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.52858,
+        1.408452
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "SJS",
+       "n": 525,
+       "our_ll": 0.689145,
+       "market_ll": 0.689506,
+       "gap": -0.000362,
+       "gap_se": 0.003575,
+       "total_gap": -0.189813,
+       "share_of_total_gap": -0.014042,
+       "n_share": 0.066229,
+       "kl_if_market_truth": 0.003242,
+       "kl_if_we_truth": 0.003238,
+       "lambda_market_credit": 0.443854,
+       "mean_abs_disagree": 0.031441,
+       "base_rate": 0.542857,
+       "gap_ci": [
+        -0.007029,
+        0.00641
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.543999,
+        1.55225
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "WSH",
+       "n": 537,
+       "our_ll": 0.660472,
+       "market_ll": 0.661272,
+       "gap": -0.0008,
+       "gap_se": 0.003798,
+       "total_gap": -0.429787,
+       "share_of_total_gap": -0.031795,
+       "n_share": 0.067743,
+       "kl_if_market_truth": 0.003906,
+       "kl_if_we_truth": 0.003906,
+       "lambda_market_credit": 0.397552,
+       "mean_abs_disagree": 0.033478,
+       "base_rate": 0.564246,
+       "gap_ci": [
+        -0.008271,
+        0.007005
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.549845,
+        1.397628
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "VAN",
+       "n": 528,
+       "our_ll": 0.673942,
+       "market_ll": 0.675216,
+       "gap": -0.001275,
+       "gap_se": 0.003649,
+       "total_gap": -0.672998,
+       "share_of_total_gap": -0.049787,
+       "n_share": 0.066608,
+       "kl_if_market_truth": 0.003516,
+       "kl_if_we_truth": 0.003512,
+       "lambda_market_credit": 0.318362,
+       "mean_abs_disagree": 0.03215,
+       "base_rate": 0.528409,
+       "gap_ci": [
+        -0.008794,
+        0.006113
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.737773,
+        1.373614
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "CGY",
+       "n": 528,
+       "our_ll": 0.674023,
+       "market_ll": 0.675327,
+       "gap": -0.001304,
+       "gap_se": 0.003963,
+       "total_gap": -0.688675,
+       "share_of_total_gap": -0.050947,
+       "n_share": 0.066608,
+       "kl_if_market_truth": 0.00421,
+       "kl_if_we_truth": 0.00421,
+       "lambda_market_credit": 0.345123,
+       "mean_abs_disagree": 0.036086,
+       "base_rate": 0.543561,
+       "gap_ci": [
+        -0.009296,
+        0.005901
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.620077,
+        1.195141
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "BOS",
+       "n": 537,
+       "our_ll": 0.670882,
+       "market_ll": 0.672233,
+       "gap": -0.001351,
+       "gap_se": 0.004293,
+       "total_gap": -0.725642,
+       "share_of_total_gap": -0.053681,
+       "n_share": 0.067743,
+       "kl_if_market_truth": 0.004876,
+       "kl_if_we_truth": 0.004869,
+       "lambda_market_credit": 0.360964,
+       "mean_abs_disagree": 0.038203,
+       "base_rate": 0.534451,
+       "gap_ci": [
+        -0.010075,
+        0.006931
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.540098,
+        1.236749
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "PIT",
+       "n": 537,
+       "our_ll": 0.651039,
+       "market_ll": 0.653886,
+       "gap": -0.002847,
+       "gap_se": 0.004006,
+       "total_gap": -1.528824,
+       "share_of_total_gap": -0.113099,
+       "n_share": 0.067743,
+       "kl_if_market_truth": 0.004619,
+       "kl_if_we_truth": 0.004585,
+       "lambda_market_credit": 0.188859,
+       "mean_abs_disagree": 0.037248,
+       "base_rate": 0.581006,
+       "gap_ci": [
+        -0.010203,
+        0.004803
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.639053,
+        1.011977
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "DAL",
+       "n": 526,
+       "our_ll": 0.680553,
+       "market_ll": 0.68542,
+       "gap": -0.004867,
+       "gap_se": 0.003647,
+       "total_gap": -2.560241,
+       "share_of_total_gap": -0.189401,
+       "n_share": 0.066355,
+       "kl_if_market_truth": 0.003498,
+       "kl_if_we_truth": 0.003494,
+       "lambda_market_credit": -0.196359,
+       "mean_abs_disagree": 0.032601,
+       "base_rate": 0.545627,
+       "gap_ci": [
+        -0.012187,
+        0.002505
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -1.211701,
+        0.840219
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "VGK",
+       "n": 82,
+       "our_ll": 0.661895,
+       "market_ll": 0.697761,
+       "gap": -0.035866,
+       "gap_se": 0.015367,
+       "total_gap": -2.941016,
+       "share_of_total_gap": -0.21757,
+       "n_share": 0.010344,
+       "kl_if_market_truth": 0.010302,
+       "kl_if_we_truth": 0.010329,
+       "lambda_market_credit": -1.237818,
+       "mean_abs_disagree": 0.058453,
+       "base_rate": 0.585366,
+       "gap_ci": [
+        -0.06727,
+        -0.006157
+       ],
+       "gap_sig": "we SIG better",
+       "lambda_ci": [
+        -2.400365,
+        0.168386
+       ]
+      },
+      {
+       "dim": "team",
+       "slice": "WPG",
+       "n": 535,
+       "our_ll": 0.666112,
+       "market_ll": 0.672104,
+       "gap": -0.005992,
+       "gap_se": 0.003403,
+       "total_gap": -3.20575,
+       "share_of_total_gap": -0.237154,
+       "n_share": 0.067491,
+       "kl_if_market_truth": 0.003113,
+       "kl_if_we_truth": 0.00312,
+       "lambda_market_credit": -0.46076,
+       "mean_abs_disagree": 0.0308,
+       "base_rate": 0.553271,
+       "gap_ci": [
+        -0.012934,
+        0.000841
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -1.506087,
+        0.638831
+       ]
+      }
+     ]
+    },
+    "heterogeneity": {
+     "pred_decile": {
+      "k_slices_tested": 10,
+      "df": 9,
+      "Q": 7.706127,
+      "Q_over_df": 0.856236,
+      "median_slice_gap_se": 0.003139,
+      "mde_slice_vs_pooled": 0.008789,
+      "power_note": "a slice gap must differ from the pooled gap by about 0.00879 nats to be detectable here; 'uniform' means 'no difference bigger than that', not 'identical'.",
+      "p": 0.564011,
+      "verdict": "uniform within noise",
+      "top_slice": "D09 [0.626,0.664]",
+      "top_slice_share": 0.356477,
+      "top_slice_n_share": 0.100038,
+      "top3_share": 0.823528,
+      "top3_n_share": 0.299987,
+      "lambda_range": [
+       0.087714,
+       1.338689
+      ]
+     },
+     "month": {
+      "k_slices_tested": 7,
+      "df": 6,
+      "Q": 5.054689,
+      "Q_over_df": 0.842448,
+      "median_slice_gap_se": 0.002354,
+      "mde_slice_vs_pooled": 0.006591,
+      "power_note": "a slice gap must differ from the pooled gap by about 0.00659 nats to be detectable here; 'uniform' means 'no difference bigger than that', not 'identical'.",
+      "p": 0.536818,
+      "verdict": "uniform within noise",
+      "top_slice": "02",
+      "top_slice_share": 0.409909,
+      "top_slice_n_share": 0.154661,
+      "top3_share": 0.864979,
+      "top3_n_share": 0.456541,
+      "lambda_range": [
+       0.112668,
+       1.006075
+      ]
+     },
+     "season_maturity": {
+      "k_slices_tested": 5,
+      "df": 4,
+      "Q": 2.441903,
+      "Q_over_df": 0.610476,
+      "median_slice_gap_se": 0.002062,
+      "mde_slice_vs_pooled": 0.005774,
+      "power_note": "a slice gap must differ from the pooled gap by about 0.00577 nats to be detectable here; 'uniform' means 'no difference bigger than that', not 'identical'.",
+      "p": 0.655068,
+      "verdict": "uniform within noise",
+      "top_slice": "team-games 55+",
+      "top_slice_share": 0.522762,
+      "top_slice_n_share": 0.294311,
+      "top3_share": 0.92385,
+      "top3_n_share": 0.494891,
+      "lambda_range": [
+       0.436457,
+       0.977954
+      ]
+     },
+     "favourite_side": {
+      "k_slices_tested": 2,
+      "df": 1,
+      "Q": 0.04989,
+      "Q_over_df": 0.04989,
+      "median_slice_gap_se": 0.001965,
+      "mde_slice_vs_pooled": 0.005502,
+      "power_note": "a slice gap must differ from the pooled gap by about 0.00550 nats to be detectable here; 'uniform' means 'no difference bigger than that', not 'identical'.",
+      "p": 0.823254,
+      "verdict": "uniform within noise",
+      "top_slice": "home favourite",
+      "top_slice_share": 0.770205,
+      "top_slice_n_share": 0.708717,
+      "top3_share": 1.0,
+      "top3_n_share": 1.0,
+      "lambda_range": [
+       0.650772,
+       0.74293
+      ]
+     },
+     "rest": {
+      "k_slices_tested": 5,
+      "df": 4,
+      "Q": 0.967891,
+      "Q_over_df": 0.241973,
+      "median_slice_gap_se": 0.002813,
+      "mde_slice_vs_pooled": 0.007876,
+      "power_note": "a slice gap must differ from the pooled gap by about 0.00788 nats to be detectable here; 'uniform' means 'no difference bigger than that', not 'identical'.",
+      "p": 0.914625,
+      "verdict": "uniform within noise",
+      "top_slice": "rest_diff 0",
+      "top_slice_share": 0.460743,
+      "top_slice_n_share": 0.485934,
+      "top3_share": 0.925821,
+      "top3_n_share": 0.728775,
+      "lambda_range": [
+       0.546509,
+       0.906418
+      ]
+     },
+     "b2b": {
+      "k_slices_tested": 4,
+      "df": 3,
+      "Q": 5.349987,
+      "Q_over_df": 1.783329,
+      "median_slice_gap_se": 0.004741,
+      "mde_slice_vs_pooled": 0.013275,
+      "power_note": "a slice gap must differ from the pooled gap by about 0.01327 nats to be detectable here; 'uniform' means 'no difference bigger than that', not 'identical'.",
+      "p": 0.147892,
+      "verdict": "uniform within noise",
+      "top_slice": "b2b: neither",
+      "top_slice_share": 0.747702,
+      "top_slice_n_share": 0.69976,
+      "top3_share": 1.050891,
+      "top3_n_share": 0.805727,
+      "lambda_range": [
+       0.447342,
+       1.911888
+      ]
+     },
+     "season": {
+      "k_slices_tested": 7,
+      "df": 6,
+      "Q": 3.577895,
+      "Q_over_df": 0.596316,
+      "median_slice_gap_se": 0.002599,
+      "mde_slice_vs_pooled": 0.007277,
+      "power_note": "a slice gap must differ from the pooled gap by about 0.00728 nats to be detectable here; 'uniform' means 'no difference bigger than that', not 'identical'.",
+      "p": 0.733579,
+      "verdict": "uniform within noise",
+      "top_slice": "20162017",
+      "top_slice_share": 0.444956,
+      "top_slice_n_share": 0.155166,
+      "top3_share": 0.919522,
+      "top3_n_share": 0.470544,
+      "lambda_range": [
+       0.405844,
+       1.068173
+      ]
+     },
+     "team": {
+      "k_slices_tested": 31,
+      "df": 30,
+      "Q": 36.771349,
+      "Q_over_df": 1.225712,
+      "median_slice_gap_se": 0.003782,
+      "mde_slice_vs_pooled": 0.01059,
+      "power_note": "a slice gap must differ from the pooled gap by about 0.01059 nats to be detectable here; 'uniform' means 'no difference bigger than that', not 'identical'.",
+      "p": 0.183901,
+      "verdict": "uniform within noise",
+      "top_slice": "MTL",
+      "top_slice_share": 0.253317,
+      "top_slice_n_share": 0.033872,
+      "top3_share": 0.556063,
+      "top3_n_share": 0.10111,
+      "lambda_range": [
+       -1.237818,
+       1.903976
+      ]
+     }
+    },
+    "ranked_by_total_gap": [
+     {
+      "dim": "favourite_side",
+      "slice": "home favourite",
+      "n": 5618,
+      "our_ll": 0.667712,
+      "market_ll": 0.665859,
+      "gap": 0.001853,
+      "gap_se": 0.001158,
+      "total_gap": 10.411305,
+      "share_of_total_gap": 0.770205,
+      "n_share": 0.708717,
+      "kl_if_market_truth": 0.003805,
+      "kl_if_we_truth": 0.003787,
+      "lambda_market_credit": 0.74293,
+      "mean_abs_disagree": 0.033508,
+      "base_rate": 0.593272,
+      "gap_ci": [
+       -0.000373,
+       0.004207
+      ],
+      "gap_sig": "n.s.",
+      "lambda_ci": [
+       0.451405,
+       1.050463
+      ]
+     },
+     {
+      "dim": "b2b",
+      "slice": "b2b: neither",
+      "n": 5547,
+      "our_ll": 0.675391,
+      "market_ll": 0.673569,
+      "gap": 0.001822,
+      "gap_se": 0.001151,
+      "total_gap": 10.107118,
+      "share_of_total_gap": 0.747702,
+      "n_share": 0.69976,
+      "kl_if_market_truth": 0.003687,
+      "kl_if_we_truth": 0.003683,
+      "lambda_market_credit": 0.746926,
+      "mean_abs_disagree": 0.033226,
+      "base_rate": 0.541554,
+      "gap_ci": [
+       -0.00046,
+       0.00406
+      ],
+      "gap_sig": "n.s.",
+      "lambda_ci": [
+       0.436965,
+       1.053219
+      ]
+     },
+     {
+      "dim": "season_maturity",
+      "slice": "team-games 55+",
+      "n": 2333,
+      "our_ll": 0.671535,
+      "market_ll": 0.668506,
+      "gap": 0.003029,
+      "gap_se": 0.001986,
+      "total_gap": 7.066472,
+      "share_of_total_gap": 0.522762,
+      "n_share": 0.294311,
+      "kl_if_market_truth": 0.004624,
+      "kl_if_we_truth": 0.00462,
+      "lambda_market_credit": 0.827439,
+      "mean_abs_disagree": 0.037297,
+      "base_rate": 0.54222,
+      "gap_ci": [
+       -0.000798,
+       0.006758
+      ],
+      "gap_sig": "n.s.",
+      "lambda_ci": [
+       0.412612,
+       1.223609
+      ]
+     },
+     {
+      "dim": "rest",
+      "slice": "rest_diff 0",
+      "n": 3852,
+      "our_ll": 0.670679,
+      "market_ll": 0.669062,
+      "gap": 0.001617,
+      "gap_se": 0.00139,
+      "total_gap": 6.22813,
+      "share_of_total_gap": 0.460743,
+      "n_share": 0.485934,
+      "kl_if_market_truth": 0.003729,
+      "kl_if_we_truth": 0.003729,
+      "lambda_market_credit": 0.716766,
+      "mean_abs_disagree": 0.033435,
+      "base_rate": 0.547508,
+      "gap_ci": [
+       -0.001044,
+       0.004308
+      ],
+      "gap_sig": "n.s.",
+      "lambda_ci": [
+       0.359328,
+       1.076973
+      ]
+     },
+     {
+      "dim": "month",
+      "slice": "02",
+      "n": 1226,
+      "our_ll": 0.682054,
+      "market_ll": 0.677534,
+      "gap": 0.00452,
+      "gap_se": 0.002699,
+      "total_gap": 5.540976,
+      "share_of_total_gap": 0.409909,
+      "n_share": 0.154661,
+      "kl_if_market_truth": 0.004465,
+      "kl_if_we_truth": 0.004446,
+      "lambda_market_credit": 1.006075,
+      "mean_abs_disagree": 0.036143,
+      "base_rate": 0.51876,
+      "gap_ci": [
+       -0.000838,
+       0.010051
+      ],
+      "gap_sig": "n.s.",
+      "lambda_ci": [
+       0.405823,
+       1.634919
+      ]
+     },
+     {
+      "dim": "pred_decile",
+      "slice": "D09 [0.626,0.664]",
+      "n": 793,
+      "our_ll": 0.660864,
+      "market_ll": 0.654787,
+      "gap": 0.006077,
+      "gap_se": 0.003031,
+      "total_gap": 4.818703,
+      "share_of_total_gap": 0.356477,
+      "n_share": 0.100038,
+      "kl_if_market_truth": 0.003633,
+      "kl_if_we_truth": 0.003583,
+      "lambda_market_credit": 1.338689,
+      "mean_abs_disagree": 0.031309,
+      "base_rate": 0.629256,
+      "gap_ci": [
+       0.000219,
+       0.012307
+      ],
+      "gap_sig": "market SIG better",
+      "lambda_ci": [
+       0.528745,
+       2.200033
+      ]
+     },
+     {
+      "dim": "b2b",
+      "slice": "b2b: both",
+      "n": 378,
+      "our_ll": 0.678161,
+      "market_ll": 0.666598,
+      "gap": 0.011563,
+      "gap_se": 0.004741,
+      "total_gap": 4.370857,
+      "share_of_total_gap": 0.323346,
+      "n_share": 0.047685,
+      "kl_if_market_truth": 0.004092,
+      "kl_if_we_truth": 0.004102,
+      "lambda_market_credit": 1.911888,
+      "mean_abs_disagree": 0.036068,
+      "base_rate": 0.529101,
+      "gap_ci": [
+       0.002111,
+       0.021278
+      ],
+      "gap_sig": "market SIG better",
+      "lambda_ci": [
+       0.766438,
+       3.052776
+      ]
+     },
+     {
+      "dim": "month",
+      "slice": "01",
+      "n": 1187,
+      "our_ll": 0.674034,
+      "market_ll": 0.67096,
+      "gap": 0.003074,
+      "gap_se": 0.002348,
+      "total_gap": 3.649316,
+      "share_of_total_gap": 0.269968,
+      "n_share": 0.149741,
+      "kl_if_market_truth": 0.003309,
+      "kl_if_we_truth": 0.003283,
+      "lambda_market_credit": 0.964464,
+      "mean_abs_disagree": 0.031664,
+      "base_rate": 0.547599,
+      "gap_ci": [
+       -0.001292,
+       0.007502
+      ],
+      "gap_sig": "n.s.",
+      "lambda_ci": [
+       0.302556,
+       1.641227
+      ]
+     },
+     {
+      "dim": "season_maturity",
+      "slice": "team-games 5-14",
+      "n": 1046,
+      "our_ll": 0.684764,
+      "market_ll": 0.681609,
+      "gap": 0.003155,
+      "gap_se": 0.002789,
+      "total_gap": 3.300151,
+      "share_of_total_gap": 0.244138,
+      "n_share": 0.131954,
+      "kl_if_market_truth": 0.004007,
+      "kl_if_we_truth": 0.003983,
+      "lambda_market_credit": 0.893345,
+      "mean_abs_disagree": 0.034568,
+      "base_rate": 0.521033,
+      "gap_ci": [
+       -0.002431,
+       0.008694
+      ],
+      "gap_sig": "n.s.",
+      "lambda_ci": [
+       0.19889,
+       1.589103
+      ]
+     },
+     {
+      "dim": "rest",
+      "slice": "rest_diff -1",
+      "n": 1080,
+      "our_ll": 0.681048,
+      "market_ll": 0.678015,
+      "gap": 0.003032,
+      "gap_se": 0.002813,
+      "total_gap": 3.274943,
+      "share_of_total_gap": 0.242273,
+      "n_share": 0.136243,
+      "kl_if_market_truth": 0.004309,
+      "kl_if_we_truth": 0.004297,
+      "lambda_market_credit": 0.851692,
+      "mean_abs_disagree": 0.035994,
+      "base_rate": 0.518519,
+      "gap_ci": [
+       -0.002264,
+       0.008502
+      ],
+      "gap_sig": "n.s.",
+      "lambda_ci": [
+       0.241286,
+       1.489412
+      ]
+     },
+     {
+      "dim": "pred_decile",
+      "slice": "D02 [0.430,0.472]",
+      "n": 793,
+      "our_ll": 0.69274,
+      "market_ll": 0.688696,
+      "gap": 0.004044,
+      "gap_se": 0.003376,
+      "total_gap": 3.206905,
+      "share_of_total_gap": 0.23724,
+      "n_share": 0.100038,
+      "kl_if_market_truth": 0.004475,
+      "kl_if_we_truth": 0.004485,
+      "lambda_market_credit": 0.95188,
+      "mean_abs_disagree": 0.038182,
+      "base_rate": 0.479193,
+      "gap_ci": [
+       -0.002825,
+       0.010716
+      ],
+      "gap_sig": "n.s.",
+      "lambda_ci": [
+       0.18189,
+       1.686438
+      ]
+     },
+     {
+      "dim": "pred_decile",
+      "slice": "D05 [0.529,0.551]",
+      "n": 792,
+      "our_ll": 0.690511,
+      "market_ll": 0.686589,
+      "gap": 0.003922,
+      "gap_se": 0.002889,
+      "total_gap": 3.10649,
+      "share_of_total_gap": 0.229811,
+      "n_share": 0.099912,
+      "kl_if_market_truth": 0.003393,
+      "kl_if_we_truth": 0.00342,
+      "lambda_market_credit": 1.077723,
+      "mean_abs_disagree": 0.032895,
+      "base_rate": 0.540404,
+      "gap_ci": [
+       -0.001557,
+       0.009449
+      ],
+      "gap_sig": "n.s.",
+      "lambda_ci": [
+       0.269385,
+       1.907914
+      ]
+     },
+     {
+      "dim": "favourite_side",
+      "slice": "away favourite",
+      "n": 2309,
+      "our_ll": 0.683883,
+      "market_ll": 0.682538,
+      "gap": 0.001345,
+      "gap_se": 0.001965,
+      "total_gap": 3.106271,
+      "share_of_total_gap": 0.229795,
+      "n_share": 0.291283,
+      "kl_if_market_truth": 0.004455,
+      "kl_if_we_truth": 0.00445,
+      "lambda_market_credit": 0.650772,
+      "mean_abs_disagree": 0.037136,
+      "base_rate": 0.442616,
+      "gap_ci": [
+       -0.002633,
+       0.005317
+      ],
+      "gap_sig": "n.s.",
+      "lambda_ci": [
+       0.20292,
+       1.104037
+      ]
+     },
+     {
+      "dim": "rest",
+      "slice": "rest_diff >=+2",
+      "n": 845,
+      "our_ll": 0.673078,
+      "market_ll": 0.669514,
+      "gap": 0.003564,
+      "gap_se": 0.003222,
+      "total_gap": 3.011788,
+      "share_of_total_gap": 0.222805,
+      "n_share": 0.106598,
+      "kl_if_market_truth": 0.004381,
+      "kl_if_we_truth": 0.004345,
+      "lambda_market_credit": 0.906418,
+      "mean_abs_disagree": 0.036123,
+      "base_rate": 0.556213,
+      "gap_ci": [
+       -0.002632,
+       0.009655
+      ],
+      "gap_sig": "n.s.",
+      "lambda_ci": [
+       0.202152,
+       1.607038
+      ]
+     },
+     {
+      "dim": "pred_decile",
+      "slice": "D03 [0.472,0.503]",
+      "n": 792,
+      "our_ll": 0.693912,
+      "market_ll": 0.69072,
+      "gap": 0.003191,
+      "gap_se": 0.003139,
+      "total_gap": 2.527521,
+      "share_of_total_gap": 0.18698,
+      "n_share": 0.099912,
+      "kl_if_market_truth": 0.003889,
+      "kl_if_we_truth": 0.00392,
+      "lambda_market_credit": 0.910637,
+      "mean_abs_disagree": 0.034589,
+      "base_rate": 0.464646,
+      "gap_ci": [
+       -0.002518,
+       0.009538
+      ],
+      "gap_sig": "n.s.",
+      "lambda_ci": [
+       0.181195,
+       1.723416
+      ]
+     },
+     {
+      "dim": "month",
+      "slice": "11",
+      "n": 1206,
+      "our_ll": 0.67634,
+      "market_ll": 0.674265,
+      "gap": 0.002075,
+      "gap_se": 0.002351,
+      "total_gap": 2.502128,
+      "share_of_total_gap": 0.185102,
+      "n_share": 0.152138,
+      "kl_if_market_truth": 0.003381,
+      "kl_if_we_truth": 0.003372,
+      "lambda_market_credit": 0.806516,
+      "mean_abs_disagree": 0.03215,
+      "base_rate": 0.547264,
+      "gap_ci": [
+       -0.002571,
+       0.006822
+      ],
+      "gap_sig": "n.s.",
+      "lambda_ci": [
+       0.12375,
+       1.521131
+      ]
+     },
+     {
+      "dim": "month",
+      "slice": "10",
+      "n": 949,
+      "our_ll": 0.677686,
+      "market_ll": 0.675186,
+      "gap": 0.0025,
+      "gap_se": 0.002968,
+      "total_gap": 2.372306,
+      "share_of_total_gap": 0.175498,
+      "n_share": 0.119717,
+      "kl_if_market_truth": 0.004107,
+      "kl_if_we_truth": 0.004083,
+      "lambda_market_credit": 0.803805,
+      "mean_abs_disagree": 0.035317,
+      "base_rate": 0.539515,
+      "gap_ci": [
+       -0.003643,
+       0.00842
+      ],
+      "gap_sig": "n.s.",
+      "lambda_ci": [
+       0.064412,
+       1.528882
+      ]
+     },
+     {
+      "dim": "pred_decile",
+      "slice": "D08 [0.599,0.626]",
+      "n": 793,
+      "our_ll": 0.664726,
+      "market_ll": 0.661838,
+      "gap": 0.002889,
+      "gap_se": 0.002955,
+      "total_gap": 2.290672,
+      "share_of_total_gap": 0.169459,
+      "n_share": 0.100038,
+      "kl_if_market_truth": 0.003364,
+      "kl_if_we_truth": 0.003362,
+      "lambda_market_credit": 0.92931,
+      "mean_abs_disagree": 0.031095,
+      "base_rate": 0.619168,
+      "gap_ci": [
+       -0.00293,
+       0.009016
+      ],
+      "gap_sig": "n.s.",
+      "lambda_ci": [
+       0.083429,
+       1.874482
+      ]
+     },
+     {
+      "dim": "season_maturity",
+      "slice": "team-games 0-4",
+      "n": 544,
+      "our_ll": 0.67174,
+      "market_ll": 0.66784,
+      "gap": 0.0039,
+      "gap_se": 0.003832,
+      "total_gap": 2.121585,
+      "share_of_total_gap": 0.15695,
+      "n_share": 0.068626,
+      "kl_if_market_truth": 0.00408,
+      "kl_if_we_truth": 0.00407,
+      "lambda_market_credit": 0.977954,
+      "mean_abs_disagree": 0.035785,
+      "base_rate": 0.551471,
+      "gap_ci": [
+       -0.003513,
+       0.011346
+      ],
+      "gap_sig": "n.s.",
+      "lambda_ci": [
+       0.083035,
+       1.933667
+      ]
+     },
+     {
+      "dim": "month",
+      "slice": "03",
+      "n": 1529,
+      "our_ll": 0.667527,
+      "market_ll": 0.666292,
+      "gap": 0.001234,
+      "gap_se": 0.002274,
+      "total_gap": 1.887263,
+      "share_of_total_gap": 0.139615,
+      "n_share": 0.192885,
+      "kl_if_market_truth": 0.004031,
+      "kl_if_we_truth": 0.004029,
+      "lambda_market_credit": 0.65303,
+      "mean_abs_disagree": 0.035235,
+      "base_rate": 0.552649,
+      "gap_ci": [
+       -0.003289,
+       0.005621
+      ],
+      "gap_sig": "n.s.",
+      "lambda_ci": [
+       0.098543,
+       1.196358
+      ]
+     }
+    ],
+    "contrasts": [
+     {
+      "contrast": "cold start: team-games 0-4",
+      "why": "if the close's edge lives here, the missing information is roster/offseason",
+      "n_in": 544,
+      "n_out": 7383,
+      "gap_in": 0.0039,
+      "gap_out": 0.001544,
+      "diff": 0.002356,
+      "diff_ci": [
+       -0.005383,
+       0.010071
+      ],
+      "verdict": "n.s. \u2014 no concentration",
+      "lambda_in": 0.977954,
+      "lambda_out": 0.692969,
+      "share_of_total_gap": 0.15695,
+      "n_share": 0.068626
+     },
+     {
+      "contrast": "cold start: team-games 0-14",
+      "why": "wider cold-start window, more power",
+      "n_in": 1590,
+      "n_out": 6337,
+      "gap_in": 0.00341,
+      "gap_out": 0.001278,
+      "diff": 0.002132,
+      "diff_ci": [
+       -0.002751,
+       0.007313
+      ],
+      "verdict": "n.s. \u2014 no concentration",
+      "lambda_in": 0.92267,
+      "lambda_out": 0.659758,
+      "share_of_total_gap": 0.401088,
+      "n_share": 0.20058
+     },
+     {
+      "contrast": "back-to-back either side",
+      "why": "fatigue is schedule information both sides can see; does the close price it better than our b2b terms?",
+      "n_in": 2380,
+      "n_out": 5547,
+      "gap_in": 0.001433,
+      "gap_out": 0.001822,
+      "diff": -0.000389,
+      "diff_ci": [
+       -0.004819,
+       0.003865
+      ],
+      "verdict": "n.s. \u2014 no concentration",
+      "lambda_in": 0.650766,
+      "lambda_out": 0.746926,
+      "share_of_total_gap": 0.252298,
+      "n_share": 0.30024
+     },
+     {
+      "contrast": "October",
+      "why": "calendar version of the cold-start test",
+      "n_in": 949,
+      "n_out": 6978,
+      "gap_in": 0.0025,
+      "gap_out": 0.001597,
+      "diff": 0.000903,
+      "diff_ci": [
+       -0.005293,
+       0.007102
+      ],
+      "verdict": "n.s. \u2014 no concentration",
+      "lambda_in": 0.803805,
+      "lambda_out": 0.700219,
+      "share_of_total_gap": 0.175498,
+      "n_share": 0.119717
+     },
+     {
+      "contrast": "top 5% disagreement",
+      "why": "where we and the close differ most",
+      "n_in": 397,
+      "n_out": 7530,
+      "gap_in": 0.010889,
+      "gap_out": 0.001221,
+      "diff": 0.009668,
+      "diff_ci": [
+       -0.012095,
+       0.032255
+      ],
+      "verdict": "n.s. \u2014 no concentration",
+      "lambda_in": 0.725111,
+      "lambda_out": 0.707683,
+      "share_of_total_gap": 0.319803,
+      "n_share": 0.050082
+     }
+    ],
+    "disagreement": {
+     "buckets": [
+      {
+       "dim": "disagreement",
+       "slice": "|dp| 0.00-0.01",
+       "n": 1478,
+       "our_ll": 0.673899,
+       "market_ll": 0.674016,
+       "gap": -0.000116,
+       "gap_se": 0.0003,
+       "total_gap": -0.171995,
+       "share_of_total_gap": -0.012724,
+       "n_share": 0.186451,
+       "kl_if_market_truth": 6.6e-05,
+       "kl_if_we_truth": 6.6e-05,
+       "lambda_market_credit": -0.384577,
+       "mean_abs_disagree": 0.004837,
+       "base_rate": 0.535183,
+       "gap_ci": [
+        -0.000714,
+        0.000487
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -4.835201,
+        4.271732
+       ],
+       "gap_minus_kl_null": -0.000182
+      },
+      {
+       "dim": "disagreement",
+       "slice": "|dp| 0.01-0.02",
+       "n": 1359,
+       "our_ll": 0.665741,
+       "market_ll": 0.665842,
+       "gap": -0.000101,
+       "gap_se": 0.000838,
+       "total_gap": -0.136845,
+       "share_of_total_gap": -0.010123,
+       "n_share": 0.171439,
+       "kl_if_market_truth": 0.000486,
+       "kl_if_we_truth": 0.000485,
+       "lambda_market_credit": 0.396088,
+       "mean_abs_disagree": 0.01496,
+       "base_rate": 0.562178,
+       "gap_ci": [
+        -0.001751,
+        0.001474
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -1.296898,
+        2.031079
+       ],
+       "gap_minus_kl_null": -0.000587
+      },
+      {
+       "dim": "disagreement",
+       "slice": "|dp| 0.02-0.04",
+       "n": 2290,
+       "our_ll": 0.674671,
+       "market_ll": 0.672756,
+       "gap": 0.001915,
+       "gap_se": 0.001285,
+       "total_gap": 4.384793,
+       "share_of_total_gap": 0.324377,
+       "n_share": 0.288886,
+       "kl_if_market_truth": 0.001902,
+       "kl_if_we_truth": 0.001898,
+       "lambda_market_credit": 1.003483,
+       "mean_abs_disagree": 0.029631,
+       "base_rate": 0.545415,
+       "gap_ci": [
+        -0.000533,
+        0.004433
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.359567,
+        1.664656
+       ],
+       "gap_minus_kl_null": 1.3e-05
+      },
+      {
+       "dim": "disagreement",
+       "slice": "|dp| 0.04-0.07",
+       "n": 1999,
+       "our_ll": 0.669288,
+       "market_ll": 0.665823,
+       "gap": 0.003465,
+       "gap_se": 0.002428,
+       "total_gap": 6.927526,
+       "share_of_total_gap": 0.512483,
+       "n_share": 0.252176,
+       "kl_if_market_truth": 0.00599,
+       "kl_if_we_truth": 0.00597,
+       "lambda_market_credit": 0.788943,
+       "mean_abs_disagree": 0.052921,
+       "base_rate": 0.557779,
+       "gap_ci": [
+        -0.001185,
+        0.008495
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.399343,
+        1.207238
+       ],
+       "gap_minus_kl_null": -0.002525
+      },
+      {
+       "dim": "disagreement",
+       "slice": "|dp| 0.07-0.12",
+       "n": 740,
+       "our_ll": 0.681881,
+       "market_ll": 0.678001,
+       "gap": 0.00388,
+       "gap_se": 0.006547,
+       "total_gap": 2.871089,
+       "share_of_total_gap": 0.212397,
+       "n_share": 0.093352,
+       "kl_if_market_truth": 0.015925,
+       "kl_if_we_truth": 0.015809,
+       "lambda_market_credit": 0.620429,
+       "mean_abs_disagree": 0.086481,
+       "base_rate": 0.545946,
+       "gap_ci": [
+        -0.008367,
+        0.016816
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.233793,
+        1.025226
+       ],
+       "gap_minus_kl_null": -0.012045
+      },
+      {
+       "dim": "disagreement",
+       "slice": "|dp| 0.12-1.01",
+       "n": 61,
+       "our_ll": 0.689061,
+       "market_ll": 0.694913,
+       "gap": -0.005852,
+       "gap_se": 0.039662,
+       "total_gap": -0.356992,
+       "share_of_total_gap": -0.026409,
+       "n_share": 0.007695,
+       "kl_if_market_truth": 0.045799,
+       "kl_if_we_truth": 0.046169,
+       "lambda_market_credit": 0.438376,
+       "mean_abs_disagree": 0.145436,
+       "base_rate": 0.52459,
+       "gap_ci": [
+        -0.084105,
+        0.070578
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.376368,
+        1.286326
+       ],
+       "gap_minus_kl_null": -0.051651
+      }
+     ],
+     "quantiles": [
+      {
+       "dim": "disagreement_quantile",
+       "slice": "Q1 lowest 50%",
+       "n": 3964,
+       "our_ll": 0.672031,
+       "market_ll": 0.672086,
+       "gap": -5.5e-05,
+       "gap_se": 0.000529,
+       "total_gap": -0.216854,
+       "share_of_total_gap": -0.016042,
+       "n_share": 0.500063,
+       "kl_if_market_truth": 0.000554,
+       "kl_if_we_truth": 0.000554,
+       "lambda_market_credit": 0.450364,
+       "mean_abs_disagree": 0.013932,
+       "base_rate": 0.543391,
+       "gap_ci": [
+        -0.001091,
+        0.000959
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.480737,
+        1.362186
+       ]
+      },
+      {
+       "dim": "disagreement_quantile",
+       "slice": "Q2 50-80%",
+       "n": 2377,
+       "our_ll": 0.668437,
+       "market_ll": 0.663625,
+       "gap": 0.004812,
+       "gap_se": 0.001715,
+       "total_gap": 11.439169,
+       "share_of_total_gap": 0.846244,
+       "n_share": 0.299861,
+       "kl_if_market_truth": 0.003596,
+       "kl_if_we_truth": 0.003589,
+       "lambda_market_credit": 1.169333,
+       "mean_abs_disagree": 0.040887,
+       "base_rate": 0.570046,
+       "gap_ci": [
+        0.001548,
+        0.008176
+       ],
+       "gap_sig": "market SIG better",
+       "lambda_ci": [
+        0.714423,
+        1.640097
+       ]
+      },
+      {
+       "dim": "disagreement_quantile",
+       "slice": "Q3 80-95%",
+       "n": 1189,
+       "our_ll": 0.676917,
+       "market_ll": 0.678623,
+       "gap": -0.001705,
+       "gap_se": 0.004007,
+       "total_gap": -2.0277,
+       "share_of_total_gap": -0.150005,
+       "n_share": 0.149994,
+       "kl_if_market_truth": 0.009538,
+       "kl_if_we_truth": 0.009491,
+       "lambda_market_credit": 0.40916,
+       "mean_abs_disagree": 0.067101,
+       "base_rate": 0.536585,
+       "gap_ci": [
+        -0.009966,
+        0.00598
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        -0.01993,
+        0.810522
+       ]
+      },
+      {
+       "dim": "disagreement_quantile",
+       "slice": "Q4 top 5%",
+       "n": 397,
+       "our_ll": 0.686731,
+       "market_ll": 0.675842,
+       "gap": 0.010889,
+       "gap_se": 0.011034,
+       "total_gap": 4.322961,
+       "share_of_total_gap": 0.319803,
+       "n_share": 0.050082,
+       "kl_if_market_truth": 0.024129,
+       "kl_if_we_truth": 0.024036,
+       "lambda_market_credit": 0.725111,
+       "mean_abs_disagree": 0.105274,
+       "base_rate": 0.523929,
+       "gap_ci": [
+        -0.01136,
+        0.032773
+       ],
+       "gap_sig": "n.s.",
+       "lambda_ci": [
+        0.263715,
+        1.188663
+       ]
+      }
+     ],
+     "opposite_favourite": {
+      "n": 1036,
+      "our_side_win_rate": 0.472973,
+      "market_side_win_rate": 0.527027,
+      "our_ll": 0.698838,
+      "market_ll": 0.691234,
+      "gap": 0.007604
+     },
+     "encompassing_all": {
+      "n": 7927,
+      "intercept": -0.020051,
+      "b_ours": 0.315768,
+      "b_ours_se": 0.127202,
+      "b_ours_t": 2.482414,
+      "b_market": 0.818377,
+      "b_market_se": 0.136895,
+      "b_market_t": 5.978139,
+      "reading": "b_ours is the weight the outcome data puts on OUR forecast once the close is in the equation; t<2 means the close encompasses us."
+     },
+     "encompassing_top20pct_disagreement": {
+      "n": 1586,
+      "intercept": -0.03582,
+      "b_ours": 0.465537,
+      "b_ours_se": 0.16057,
+      "b_ours_t": 2.899279,
+      "b_market": 0.593438,
+      "b_market_se": 0.1918,
+      "b_market_t": 3.094052,
+      "reading": "b_ours is the weight the outcome data puts on OUR forecast once the close is in the equation; t<2 means the close encompasses us."
+     }
+    },
+    "join_check": {
+     "n": 7927,
+     "our_ll": 0.672423,
+     "market_ll": 0.670717,
+     "recorded_our_ll": 0.672423,
+     "recorded_market_ll": 0.670717,
+     "reproduces_recorded_floor": true,
+     "unmatched": 2,
+     "ambiguous": 0,
+     "result_mismatches": 0,
+     "join_rate": 0.999748
+    }
+   },
+   "coverage_note": "first NHL market-gap decomposition \u2014 the closing line only entered the repo on 2026-07-31, which is why this cell was blank in data/market_gap.json."
+  }
+ }
+}

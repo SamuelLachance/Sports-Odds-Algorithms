@@ -1,0 +1,2217 @@
+{
+ "generated": "2026-07-31T17:45:50",
+ "what": "NFL headroom deep-dive: is the +0.01172 DEV gap to the closing line estimation noise in our ratings, or information outside our feature span?",
+ "protocol": {
+  "league": "NFL",
+  "dev_scored": [
+   2006,
+   2015
+  ],
+  "dev_trained_from": 1999,
+  "test_never_touched": [
+   2016,
+   2025
+  ],
+  "test_looks_spent": 0,
+  "models_served_touched": 0,
+  "features_created": 0,
+  "market_blind_models": true,
+  "odds_use": "EVALUATION / DIAGNOSTIC ONLY. Q2 regresses logit(p_close) ON our features; that regression is a MEASURING DEVICE for information overlap, NOT a predictor. Nothing fitted in this file is served, frozen, blended or consumed by any model. The closing line is never a feature and never a training signal for a served model.",
+  "reuse": "X14 from nfl_depth_eval.build_main(); walk-forward verbatim from error_map.nfl_league; market join + floor re-verification from market_gap.nfl_join / check_join against data/error_map.json.",
+  "join_check": {
+   "n": 2531,
+   "our_ll": 0.622035,
+   "market_ll": 0.610363,
+   "error_map_our_ll": 0.622061,
+   "error_map_market_ll": 0.610363,
+   "delta_our_ll_vs_error_map": -2.6e-05,
+   "delta_market_ll_vs_error_map": 0.0,
+   "reproduces_error_map_floor": true
+  }
+ },
+ "headline": {
+  "Q1_is_the_gap_sample_starved": "NO, not on the blend-coefficient axis. Across a 14x range of training data (266 -> 3,711 games) DEV log loss on a fixed 2013-2015 window moves by at most 0.005185 in total, and every extrapolation of the remaining descent beyond full history lands at 0.000574 (range [-0.000997, 0.002656]). The 1-feature control curve is flat, which is what the small residual descent being parameter-count-driven looks like. The one place short history DOES cost measurably is the four snap-absence columns that only exist from 2013: 0.001317 over joined DEV. Rating-state noise is a separate channel this pass does not identify.",
+  "Q1_calibration_or_refinement": "REFINEMENT, overwhelmingly: 0.011546 of the 0.011671 gap (99%) is the refinement term, and the calibration term is NEGATIVE (-0.001061) \u2014 inside its own bins our forecast is slightly BETTER calibrated than the close. A cross-fitted Platt map on our own output recovers -0.000102 (CI straddles 0) and 99% of the gap survives recalibrating BOTH sides. The error map's calibration null is confirmed, not contradicted: there is nothing to fix by rescaling.",
+  "Q2_how_much_of_the_market_do_we_span": "R2 = 0.834092 of the closing line's logit variance lives inside our 13 live DEV features (0.775493 for our finished forecast alone). The un-spanned residual is 0.355886 logits of sd and it is worth 0.008918 (76% of the gap, t=6.881526) when added to our forecast. Splitting the gap: re-weighting our OWN features the way the market does buys 0.002423, everything else (0.009248) is outside our span.",
+  "Q3_practical_ceiling": "Of the 0.011671 gap: ~79% is information outside our feature span, ~16% is our own estimation noise (mostly the short-history absence block, not the blend's sample size), and the re-weighting channel is small and overlaps the noise channel. With n=2,531 the gap itself is only known to a factor of ~4, so the correct summary is directional: the NFL gap is dominated by MISSING INFORMATION, and the sample-starvation hypothesis is rejected for the blend and merely unbounded for the ratings."
+ },
+ "feature_availability": {
+  "features": [
+   {
+    "col": 0,
+    "feature": "elo_logit",
+    "first_season_nonzero": 1999,
+    "nonzero_share_in_dev_scored": 1.0,
+    "sd_in_dev_scored": 0.752348,
+    "live_on_dev": true
+   },
+   {
+    "col": 1,
+    "feature": "qb_delta",
+    "first_season_nonzero": 1999,
+    "nonzero_share_in_dev_scored": 1.0,
+    "sd_in_dev_scored": 0.049801,
+    "live_on_dev": true
+   },
+   {
+    "col": 2,
+    "feature": "epa_rating",
+    "first_season_nonzero": 1999,
+    "nonzero_share_in_dev_scored": 1.0,
+    "sd_in_dev_scored": 0.056267,
+    "live_on_dev": true
+   },
+   {
+    "col": 3,
+    "feature": "early_down",
+    "first_season_nonzero": 1999,
+    "nonzero_share_in_dev_scored": 0.082521,
+    "sd_in_dev_scored": 0.275156,
+    "live_on_dev": true
+   },
+   {
+    "col": 4,
+    "feature": "thfa",
+    "first_season_nonzero": 1999,
+    "nonzero_share_in_dev_scored": 0.989497,
+    "sd_in_dev_scored": 0.013616,
+    "live_on_dev": true
+   },
+   {
+    "col": 5,
+    "feature": "rest",
+    "first_season_nonzero": 1999,
+    "nonzero_share_in_dev_scored": 0.329332,
+    "sd_in_dev_scored": 2.544401,
+    "live_on_dev": true
+   },
+   {
+    "col": 6,
+    "feature": "fumble_luck",
+    "first_season_nonzero": 1999,
+    "nonzero_share_in_dev_scored": 1.0,
+    "sd_in_dev_scored": 0.079694,
+    "live_on_dev": true
+   },
+   {
+    "col": 7,
+    "feature": "v7_participation_ts",
+    "first_season_nonzero": 2016,
+    "nonzero_share_in_dev_scored": 0.0,
+    "sd_in_dev_scored": 0.0,
+    "live_on_dev": false
+   },
+   {
+    "col": 8,
+    "feature": "absence_ol",
+    "first_season_nonzero": 2013,
+    "nonzero_share_in_dev_scored": 0.261815,
+    "sd_in_dev_scored": 0.878647,
+    "live_on_dev": true
+   },
+   {
+    "col": 9,
+    "feature": "absence_def",
+    "first_season_nonzero": 2013,
+    "nonzero_share_in_dev_scored": 0.262566,
+    "sd_in_dev_scored": 0.903403,
+    "live_on_dev": true
+   },
+   {
+    "col": 10,
+    "feature": "absence_skill",
+    "first_season_nonzero": 2013,
+    "nonzero_share_in_dev_scored": 0.173293,
+    "sd_in_dev_scored": 0.431336,
+    "live_on_dev": true
+   },
+   {
+    "col": 11,
+    "feature": "roster_quality",
+    "first_season_nonzero": 2013,
+    "nonzero_share_in_dev_scored": 0.293698,
+    "sd_in_dev_scored": 1.166434,
+    "live_on_dev": true
+   },
+   {
+    "col": 12,
+    "feature": "epa_pass",
+    "first_season_nonzero": 1999,
+    "nonzero_share_in_dev_scored": 1.0,
+    "sd_in_dev_scored": 0.092978,
+    "live_on_dev": true
+   },
+   {
+    "col": 13,
+    "feature": "epa_run",
+    "first_season_nonzero": 1999,
+    "nonzero_share_in_dev_scored": 1.0,
+    "sd_in_dev_scored": 0.043882,
+    "live_on_dev": true
+   }
+  ],
+  "dead_on_dev": [
+   "v7_participation_ts"
+  ],
+  "late_arriving_on_dev": [
+   "absence_ol",
+   "absence_def",
+   "absence_skill",
+   "roster_quality"
+  ],
+  "n_live_on_dev": 13,
+  "protocol_note": "first_season_nonzero scans the whole spine, so it can report that a COLUMN becomes nonzero in 2016. That is a data-availability fact about an input matrix \u2014 no outcome is read, no model is scored and no loss is computed outside DEV. It does not spend a TEST look.",
+  "why_this_matters": "The +0.01172 gap is measured on a DEV era where the shipped 14-feature matrix is not 14 features. v7_participation_ts is identically zero for every DEV game (it starts in 2016, i.e. TEST era only), and absence_ol, absence_def, absence_skill, roster_quality exist only for the last three DEV seasons. So the DEV model whose gap we are decomposing is strictly weaker than the model that is served, and part of the NFL-vs-MLB gap difference is this availability asymmetry rather than anything about football. This is a measurement caveat on the gap, NOT a claim that the TEST-era model closes it \u2014 that would require a TEST look, which is not spent."
+ },
+ "Q1a_learning_curve": {
+  "forward_HL3_shipped": {
+   "curve": "forward, shipped HL=3",
+   "why": "the brief's specification: fixed 1999 start, training END walks forward. Training QUANTITY and RECENCY to the window both improve, so this curve confounds the two.",
+   "HL": 3.0,
+   "C": 100.0,
+   "k_active_at_full_history": 10,
+   "n_scored": 799,
+   "score_window": [
+    2013,
+    2015
+   ],
+   "market_ll_on_same_games": 0.613468,
+   "market_is_flat_by_construction": true,
+   "points": [
+    {
+     "train_seasons": "1999-2001",
+     "n_seasons": 3,
+     "n_train": 777,
+     "n_eff": 750.637616,
+     "k_active": 10,
+     "k_over_2neff": 0.006661,
+     "ll": 0.625811,
+     "ll_minus_full_history": 0.004912,
+     "ll_minus_full_history_ci": [
+      -0.006968,
+      0.016641
+     ]
+    },
+    {
+     "train_seasons": "1999-2002",
+     "n_seasons": 4,
+     "n_train": 1043,
+     "n_eff": 978.801138,
+     "k_active": 10,
+     "k_over_2neff": 0.005108,
+     "ll": 0.621263,
+     "ll_minus_full_history": 0.000365,
+     "ll_minus_full_history_ci": [
+      -0.00999,
+      0.009765
+     ]
+    },
+    {
+     "train_seasons": "1999-2003",
+     "n_seasons": 5,
+     "n_train": 1310,
+     "n_eff": 1187.010667,
+     "k_active": 10,
+     "k_over_2neff": 0.004212,
+     "ll": 0.620935,
+     "ll_minus_full_history": 3.6e-05,
+     "ll_minus_full_history_ci": [
+      -0.009139,
+      0.008777
+     ]
+    },
+    {
+     "train_seasons": "1999-2004",
+     "n_seasons": 6,
+     "n_train": 1577,
+     "n_eff": 1372.438302,
+     "k_active": 10,
+     "k_over_2neff": 0.003643,
+     "ll": 0.624262,
+     "ll_minus_full_history": 0.003363,
+     "ll_minus_full_history_ci": [
+      -0.002991,
+      0.009563
+     ]
+    },
+    {
+     "train_seasons": "1999-2005",
+     "n_seasons": 7,
+     "n_train": 1844,
+     "n_eff": 1534.504749,
+     "k_active": 10,
+     "k_over_2neff": 0.003258,
+     "ll": 0.622346,
+     "ll_minus_full_history": 0.001447,
+     "ll_minus_full_history_ci": [
+      -0.005932,
+      0.008469
+     ]
+    },
+    {
+     "train_seasons": "1999-2006",
+     "n_seasons": 8,
+     "n_train": 2111,
+     "n_eff": 1673.846885,
+     "k_active": 10,
+     "k_over_2neff": 0.002987,
+     "ll": 0.621976,
+     "ll_minus_full_history": 0.001078,
+     "ll_minus_full_history_ci": [
+      -0.004462,
+      0.006329
+     ]
+    },
+    {
+     "train_seasons": "1999-2007",
+     "n_seasons": 9,
+     "n_train": 2378,
+     "n_eff": 1791.970815,
+     "k_active": 10,
+     "k_over_2neff": 0.00279,
+     "ll": 0.621801,
+     "ll_minus_full_history": 0.000902,
+     "ll_minus_full_history_ci": [
+      -0.004282,
+      0.005938
+     ]
+    },
+    {
+     "train_seasons": "1999-2008",
+     "n_seasons": 10,
+     "n_train": 2644,
+     "n_eff": 1890.309249,
+     "k_active": 10,
+     "k_over_2neff": 0.002645,
+     "ll": 0.62201,
+     "ll_minus_full_history": 0.001111,
+     "ll_minus_full_history_ci": [
+      -0.004791,
+      0.006573
+     ]
+    },
+    {
+     "train_seasons": "1999-2009",
+     "n_seasons": 11,
+     "n_train": 2911,
+     "n_eff": 1972.06507,
+     "k_active": 10,
+     "k_over_2neff": 0.002535,
+     "ll": 0.620723,
+     "ll_minus_full_history": -0.000176,
+     "ll_minus_full_history_ci": [
+      -0.005413,
+      0.004643
+     ]
+    },
+    {
+     "train_seasons": "1999-2010",
+     "n_seasons": 12,
+     "n_train": 3178,
+     "n_eff": 2039.443687,
+     "k_active": 10,
+     "k_over_2neff": 0.002452,
+     "ll": 0.624842,
+     "ll_minus_full_history": 0.003944,
+     "ll_minus_full_history_ci": [
+      -0.000935,
+      0.008502
+     ]
+    },
+    {
+     "train_seasons": "1999-2011",
+     "n_seasons": 13,
+     "n_train": 3445,
+     "n_eff": 2094.571805,
+     "k_active": 10,
+     "k_over_2neff": 0.002387,
+     "ll": 0.62076,
+     "ll_minus_full_history": -0.000138,
+     "ll_minus_full_history_ci": [
+      -0.002506,
+      0.001994
+     ]
+    },
+    {
+     "train_seasons": "1999-2012",
+     "n_seasons": 14,
+     "n_train": 3711,
+     "n_eff": 2138.934035,
+     "k_active": 10,
+     "k_over_2neff": 0.002338,
+     "ll": 0.620899,
+     "ll_minus_full_history": 0.0,
+     "ll_minus_full_history_ci": [
+      0.0,
+      0.0
+     ]
+    }
+   ],
+   "gap_to_market_at_full_history": 0.007431,
+   "shipped_walk_forward_on_same_games": 0.623978,
+   "shipped_reference_note": "the shipped walk-forward refits per season and so, for the 2014 and 2015 folds, can train the snap-absence columns that every curve point above is structurally unable to use (they do not exist before 2013). It is the fair upper reference, not another curve point.",
+   "flattening": {
+    "fit": "LL = L_inf + c / n_eff; points ordered smallest -> largest training set",
+    "all_points": {
+     "L_inf": 0.62022,
+     "L_inf_ci": [
+      0.594323,
+      0.646506
+     ],
+     "slope_c": 3.045695,
+     "slope_c_ci": [
+      -10.1258,
+      16.215386
+     ],
+     "remaining_descent_to_L_inf": 0.000679,
+     "remaining_descent_ci": [
+      -0.005366,
+      0.007134
+     ],
+     "still_descending": false
+    },
+    "last5": {
+     "L_inf": 0.617057,
+     "L_inf_ci": [
+      0.56878,
+      0.670277
+     ],
+     "slope_c": 9.690442,
+     "slope_c_ci": [
+      -80.212111,
+      95.871428
+     ],
+     "remaining_descent_to_L_inf": 0.003842,
+     "remaining_descent_ci": [
+      -0.037365,
+      0.043122
+     ],
+     "still_descending": false
+    },
+    "two_point": {
+     "L_inf": 0.618243,
+     "slope_c": 5.680499,
+     "slope_c_ci": [
+      -8.058093,
+      19.245102
+     ],
+     "remaining_descent_to_L_inf": 0.002656,
+     "remaining_descent_ci": [
+      -0.003767,
+      0.008998
+     ],
+     "still_descending": false,
+     "endpoints": [
+      "1999-2001",
+      "1999-2012"
+     ]
+    },
+    "total_spread_across_curve": 0.005088,
+    "ll_smallest_minus_ll_largest": 0.004912,
+    "reading": "remaining_descent_to_L_inf is how much DEV log loss this blend would still shed at unlimited training games with nothing else changed. total_spread_across_curve is the model-free version: the whole observed range from the smallest training set to the largest. If the spread is small, no extrapolation can rescue a large sample-starvation claim."
+   }
+  },
+  "forward_HLinf": {
+   "curve": "forward, unweighted",
+   "why": "same spans with no recency discount.",
+   "HL": "inf",
+   "C": 100.0,
+   "k_active_at_full_history": 10,
+   "n_scored": 799,
+   "score_window": [
+    2013,
+    2015
+   ],
+   "market_ll_on_same_games": 0.613468,
+   "market_is_flat_by_construction": true,
+   "points": [
+    {
+     "train_seasons": "1999-2001",
+     "n_seasons": 3,
+     "n_train": 777,
+     "n_eff": 777.0,
+     "k_active": 10,
+     "k_over_2neff": 0.006435,
+     "ll": 0.625652,
+     "ll_minus_full_history": 0.004535,
+     "ll_minus_full_history_ci": [
+      -0.00451,
+      0.013403
+     ]
+    },
+    {
+     "train_seasons": "1999-2002",
+     "n_seasons": 4,
+     "n_train": 1043,
+     "n_eff": 1043.0,
+     "k_active": 10,
+     "k_over_2neff": 0.004794,
+     "ll": 0.621874,
+     "ll_minus_full_history": 0.000757,
+     "ll_minus_full_history_ci": [
+      -0.006559,
+      0.007838
+     ]
+    },
+    {
+     "train_seasons": "1999-2003",
+     "n_seasons": 5,
+     "n_train": 1310,
+     "n_eff": 1310.0,
+     "k_active": 10,
+     "k_over_2neff": 0.003817,
+     "ll": 0.623014,
+     "ll_minus_full_history": 0.001896,
+     "ll_minus_full_history_ci": [
+      -0.00481,
+      0.00826
+     ]
+    },
+    {
+     "train_seasons": "1999-2004",
+     "n_seasons": 6,
+     "n_train": 1577,
+     "n_eff": 1577.0,
+     "k_active": 10,
+     "k_over_2neff": 0.003171,
+     "ll": 0.622479,
+     "ll_minus_full_history": 0.001362,
+     "ll_minus_full_history_ci": [
+      -0.00276,
+      0.005293
+     ]
+    },
+    {
+     "train_seasons": "1999-2005",
+     "n_seasons": 7,
+     "n_train": 1844,
+     "n_eff": 1844.0,
+     "k_active": 10,
+     "k_over_2neff": 0.002711,
+     "ll": 0.621697,
+     "ll_minus_full_history": 0.00058,
+     "ll_minus_full_history_ci": [
+      -0.003937,
+      0.004992
+     ]
+    },
+    {
+     "train_seasons": "1999-2006",
+     "n_seasons": 8,
+     "n_train": 2111,
+     "n_eff": 2111.0,
+     "k_active": 10,
+     "k_over_2neff": 0.002369,
+     "ll": 0.621128,
+     "ll_minus_full_history": 1e-05,
+     "ll_minus_full_history_ci": [
+      -0.002808,
+      0.002696
+     ]
+    },
+    {
+     "train_seasons": "1999-2007",
+     "n_seasons": 9,
+     "n_train": 2378,
+     "n_eff": 2378.0,
+     "k_active": 10,
+     "k_over_2neff": 0.002103,
+     "ll": 0.620867,
+     "ll_minus_full_history": -0.00025,
+     "ll_minus_full_history_ci": [
+      -0.002363,
+      0.001748
+     ]
+    },
+    {
+     "train_seasons": "1999-2008",
+     "n_seasons": 10,
+     "n_train": 2644,
+     "n_eff": 2644.0,
+     "k_active": 10,
+     "k_over_2neff": 0.001891,
+     "ll": 0.621066,
+     "ll_minus_full_history": -5.1e-05,
+     "ll_minus_full_history_ci": [
+      -0.002283,
+      0.002037
+     ]
+    },
+    {
+     "train_seasons": "1999-2009",
+     "n_seasons": 11,
+     "n_train": 2911,
+     "n_eff": 2911.0,
+     "k_active": 10,
+     "k_over_2neff": 0.001718,
+     "ll": 0.620467,
+     "ll_minus_full_history": -0.000651,
+     "ll_minus_full_history_ci": [
+      -0.002714,
+      0.001281
+     ]
+    },
+    {
+     "train_seasons": "1999-2010",
+     "n_seasons": 12,
+     "n_train": 3178,
+     "n_eff": 3178.0,
+     "k_active": 10,
+     "k_over_2neff": 0.001573,
+     "ll": 0.621759,
+     "ll_minus_full_history": 0.000641,
+     "ll_minus_full_history_ci": [
+      -0.000705,
+      0.002018
+     ]
+    },
+    {
+     "train_seasons": "1999-2011",
+     "n_seasons": 13,
+     "n_train": 3445,
+     "n_eff": 3445.0,
+     "k_active": 10,
+     "k_over_2neff": 0.001451,
+     "ll": 0.620827,
+     "ll_minus_full_history": -0.00029,
+     "ll_minus_full_history_ci": [
+      -0.001021,
+      0.000402
+     ]
+    },
+    {
+     "train_seasons": "1999-2012",
+     "n_seasons": 14,
+     "n_train": 3711,
+     "n_eff": 3711.0,
+     "k_active": 10,
+     "k_over_2neff": 0.001347,
+     "ll": 0.621117,
+     "ll_minus_full_history": 0.0,
+     "ll_minus_full_history_ci": [
+      0.0,
+      0.0
+     ]
+    }
+   ],
+   "gap_to_market_at_full_history": 0.007649,
+   "shipped_walk_forward_on_same_games": 0.623978,
+   "shipped_reference_note": "the shipped walk-forward refits per season and so, for the 2014 and 2015 folds, can train the snap-absence columns that every curve point above is structurally unable to use (they do not exist before 2013). It is the fair upper reference, not another curve point.",
+   "flattening": {
+    "fit": "LL = L_inf + c / n_eff; points ordered smallest -> largest training set",
+    "all_points": {
+     "L_inf": 0.619616,
+     "L_inf_ci": [
+      0.596161,
+      0.643599
+     ],
+     "slope_c": 3.977489,
+     "slope_c_ci": [
+      -5.021109,
+      13.14293
+     ],
+     "remaining_descent_to_L_inf": 0.001501,
+     "remaining_descent_ci": [
+      -0.000873,
+      0.003988
+     ],
+     "still_descending": false
+    },
+    "last5": {
+     "L_inf": 0.621623,
+     "L_inf_ci": [
+      0.598803,
+      0.644274
+     ],
+     "slope_c": -1.802932,
+     "slope_c_ci": [
+      -23.219648,
+      17.875175
+     ],
+     "remaining_descent_to_L_inf": -0.000505,
+     "remaining_descent_ci": [
+      -0.006114,
+      0.004769
+     ],
+     "still_descending": false
+    },
+    "two_point": {
+     "L_inf": 0.619916,
+     "slope_c": 4.456444,
+     "slope_c_ci": [
+      -4.431975,
+      13.172166
+     ],
+     "remaining_descent_to_L_inf": 0.001201,
+     "remaining_descent_ci": [
+      -0.001194,
+      0.003549
+     ],
+     "still_descending": false,
+     "endpoints": [
+      "1999-2001",
+      "1999-2012"
+     ]
+    },
+    "total_spread_across_curve": 0.005185,
+    "ll_smallest_minus_ll_largest": 0.004535,
+    "reading": "remaining_descent_to_L_inf is how much DEV log loss this blend would still shed at unlimited training games with nothing else changed. total_spread_across_curve is the model-free version: the whole observed range from the smallest training set to the largest. If the spread is small, no extrapolation can rescue a large sample-starvation claim."
+   }
+  },
+  "backward_HL3_shipped": {
+   "curve": "backward, shipped HL=3",
+   "why": "training END pinned at 2012 so recency to the window is CONSTANT and only quantity varies. Under HL=3 an extra season 10 years back carries weight 0.1, so this curve is expected to flatten by construction, not by saturation.",
+   "HL": 3.0,
+   "C": 100.0,
+   "k_active_at_full_history": 10,
+   "n_scored": 799,
+   "score_window": [
+    2013,
+    2015
+   ],
+   "market_ll_on_same_games": 0.613468,
+   "market_is_flat_by_construction": true,
+   "points": [
+    {
+     "train_seasons": "2012-2012",
+     "n_seasons": 1,
+     "n_train": 266,
+     "n_eff": 266.0,
+     "k_active": 10,
+     "k_over_2neff": 0.018797,
+     "ll": 0.624193,
+     "ll_minus_full_history": 0.003295,
+     "ll_minus_full_history_ci": [
+      -0.000479,
+      0.007438
+     ]
+    },
+    {
+     "train_seasons": "2011-2012",
+     "n_seasons": 2,
+     "n_train": 533,
+     "n_eff": 526.038548,
+     "k_active": 10,
+     "k_over_2neff": 0.009505,
+     "ll": 0.622212,
+     "ll_minus_full_history": 0.001313,
+     "ll_minus_full_history_ci": [
+      -0.004588,
+      0.007342
+     ]
+    },
+    {
+     "train_seasons": "2010-2012",
+     "n_seasons": 3,
+     "n_train": 800,
+     "n_eff": 772.861743,
+     "k_active": 10,
+     "k_over_2neff": 0.006469,
+     "ll": 0.623009,
+     "ll_minus_full_history": 0.00211,
+     "ll_minus_full_history_ci": [
+      -0.001133,
+      0.00562
+     ]
+    },
+    {
+     "train_seasons": "2009-2012",
+     "n_seasons": 4,
+     "n_train": 1067,
+     "n_eff": 1001.474632,
+     "k_active": 10,
+     "k_over_2neff": 0.004993,
+     "ll": 0.621742,
+     "ll_minus_full_history": 0.000843,
+     "ll_minus_full_history_ci": [
+      -0.002081,
+      0.003894
+     ]
+    },
+    {
+     "train_seasons": "2008-2012",
+     "n_seasons": 5,
+     "n_train": 1333,
+     "n_eff": 1207.678817,
+     "k_active": 10,
+     "k_over_2neff": 0.00414,
+     "ll": 0.62101,
+     "ll_minus_full_history": 0.000112,
+     "ll_minus_full_history_ci": [
+      -0.001627,
+      0.001853
+     ]
+    },
+    {
+     "train_seasons": "2007-2012",
+     "n_seasons": 6,
+     "n_train": 1600,
+     "n_eff": 1391.256656,
+     "k_active": 10,
+     "k_over_2neff": 0.003594,
+     "ll": 0.621181,
+     "ll_minus_full_history": 0.000282,
+     "ll_minus_full_history_ci": [
+      -0.000841,
+      0.001415
+     ]
+    },
+    {
+     "train_seasons": "2006-2012",
+     "n_seasons": 7,
+     "n_train": 1867,
+     "n_eff": 1551.14288,
+     "k_active": 10,
+     "k_over_2neff": 0.003223,
+     "ll": 0.621397,
+     "ll_minus_full_history": 0.000499,
+     "ll_minus_full_history_ci": [
+      -0.000776,
+      0.001751
+     ]
+    },
+    {
+     "train_seasons": "2005-2012",
+     "n_seasons": 8,
+     "n_train": 2134,
+     "n_eff": 1688.194044,
+     "k_active": 10,
+     "k_over_2neff": 0.002962,
+     "ll": 0.620497,
+     "ll_minus_full_history": -0.000401,
+     "ll_minus_full_history_ci": [
+      -0.001189,
+      0.000383
+     ]
+    },
+    {
+     "train_seasons": "2004-2012",
+     "n_seasons": 9,
+     "n_train": 2401,
+     "n_eff": 1804.076257,
+     "k_active": 10,
+     "k_over_2neff": 0.002772,
+     "ll": 0.621184,
+     "ll_minus_full_history": 0.000285,
+     "ll_minus_full_history_ci": [
+      -0.000456,
+      0.001028
+     ]
+    },
+    {
+     "train_seasons": "2003-2012",
+     "n_seasons": 10,
+     "n_train": 2668,
+     "n_eff": 1900.931923,
+     "k_active": 10,
+     "k_over_2neff": 0.00263,
+     "ll": 0.62122,
+     "ll_minus_full_history": 0.000321,
+     "ll_minus_full_history_ci": [
+      -0.000177,
+      0.000861
+     ]
+    },
+    {
+     "train_seasons": "2002-2012",
+     "n_seasons": 11,
+     "n_train": 2934,
+     "n_eff": 1980.802193,
+     "k_active": 10,
+     "k_over_2neff": 0.002524,
+     "ll": 0.620781,
+     "ll_minus_full_history": -0.000118,
+     "ll_minus_full_history_ci": [
+      -0.000616,
+      0.000395
+     ]
+    },
+    {
+     "train_seasons": "2001-2012",
+     "n_seasons": 12,
+     "n_train": 3193,
+     "n_eff": 2044.645889,
+     "k_active": 10,
+     "k_over_2neff": 0.002445,
+     "ll": 0.620678,
+     "ll_minus_full_history": -0.000221,
+     "ll_minus_full_history_ci": [
+      -0.000813,
+      0.000369
+     ]
+    },
+    {
+     "train_seasons": "2000-2012",
+     "n_seasons": 13,
+     "n_train": 3452,
+     "n_eff": 2096.706523,
+     "k_active": 10,
+     "k_over_2neff": 0.002385,
+     "ll": 0.620879,
+     "ll_minus_full_history": -2e-05,
+     "ll_minus_full_history_ci": [
+      -0.000351,
+      0.000301
+     ]
+    },
+    {
+     "train_seasons": "1999-2012",
+     "n_seasons": 14,
+     "n_train": 3711,
+     "n_eff": 2138.934035,
+     "k_active": 10,
+     "k_over_2neff": 0.002338,
+     "ll": 0.620899,
+     "ll_minus_full_history": 0.0,
+     "ll_minus_full_history_ci": [
+      0.0,
+      0.0
+     ]
+    }
+   ],
+   "gap_to_market_at_full_history": 0.007431,
+   "shipped_walk_forward_on_same_games": 0.623978,
+   "shipped_reference_note": "the shipped walk-forward refits per season and so, for the 2014 and 2015 folds, can train the snap-absence columns that every curve point above is structurally unable to use (they do not exist before 2013). It is the fair upper reference, not another curve point.",
+   "flattening": {
+    "fit": "LL = L_inf + c / n_eff; points ordered smallest -> largest training set",
+    "all_points": {
+     "L_inf": 0.620468,
+     "L_inf_ci": [
+      0.596993,
+      0.643908
+     ],
+     "slope_c": 1.041692,
+     "slope_c_ci": [
+      -0.399842,
+      2.639877
+     ],
+     "remaining_descent_to_L_inf": 0.000431,
+     "remaining_descent_ci": [
+      -0.000357,
+      0.001244
+     ],
+     "still_descending": false
+    },
+    "last5": {
+     "L_inf": 0.618515,
+     "L_inf_ci": [
+      0.59536,
+      0.643028
+     ],
+     "slope_c": 4.821467,
+     "slope_c_ci": [
+      -3.00244,
+      13.200979
+     ],
+     "remaining_descent_to_L_inf": 0.002384,
+     "remaining_descent_ci": [
+      -0.001151,
+      0.006197
+     ],
+     "still_descending": false
+    },
+    "two_point": {
+     "L_inf": 0.620431,
+     "slope_c": 1.000857,
+     "slope_c_ci": [
+      -0.14556,
+      2.259416
+     ],
+     "remaining_descent_to_L_inf": 0.000468,
+     "remaining_descent_ci": [
+      -6.8e-05,
+      0.001056
+     ],
+     "still_descending": false,
+     "endpoints": [
+      "2012-2012",
+      "1999-2012"
+     ]
+    },
+    "total_spread_across_curve": 0.003696,
+    "ll_smallest_minus_ll_largest": 0.003295,
+    "reading": "remaining_descent_to_L_inf is how much DEV log loss this blend would still shed at unlimited training games with nothing else changed. total_spread_across_curve is the model-free version: the whole observed range from the smallest training set to the largest. If the spread is small, no extrapolation can rescue a large sample-starvation claim."
+   }
+  },
+  "backward_HLinf": {
+   "curve": "backward, unweighted",
+   "why": "THE CLEAN INSTRUMENT for 'is the gap sample-starved': end pinned at 2012, no recency discount, so every extra season is pure extra evidence.",
+   "HL": "inf",
+   "C": 100.0,
+   "k_active_at_full_history": 10,
+   "n_scored": 799,
+   "score_window": [
+    2013,
+    2015
+   ],
+   "market_ll_on_same_games": 0.613468,
+   "market_is_flat_by_construction": true,
+   "points": [
+    {
+     "train_seasons": "2012-2012",
+     "n_seasons": 1,
+     "n_train": 266,
+     "n_eff": 266.0,
+     "k_active": 10,
+     "k_over_2neff": 0.018797,
+     "ll": 0.624193,
+     "ll_minus_full_history": 0.003076,
+     "ll_minus_full_history_ci": [
+      -0.004092,
+      0.010833
+     ]
+    },
+    {
+     "train_seasons": "2011-2012",
+     "n_seasons": 2,
+     "n_train": 533,
+     "n_eff": 533.0,
+     "k_active": 10,
+     "k_over_2neff": 0.009381,
+     "ll": 0.622152,
+     "ll_minus_full_history": 0.001034,
+     "ll_minus_full_history_ci": [
+      -0.00835,
+      0.010353
+     ]
+    },
+    {
+     "train_seasons": "2010-2012",
+     "n_seasons": 3,
+     "n_train": 800,
+     "n_eff": 800.0,
+     "k_active": 10,
+     "k_over_2neff": 0.00625,
+     "ll": 0.623621,
+     "ll_minus_full_history": 0.002504,
+     "ll_minus_full_history_ci": [
+      -0.004743,
+      0.009807
+     ]
+    },
+    {
+     "train_seasons": "2009-2012",
+     "n_seasons": 4,
+     "n_train": 1067,
+     "n_eff": 1067.0,
+     "k_active": 10,
+     "k_over_2neff": 0.004686,
+     "ll": 0.62166,
+     "ll_minus_full_history": 0.000542,
+     "ll_minus_full_history_ci": [
+      -0.006186,
+      0.007516
+     ]
+    },
+    {
+     "train_seasons": "2008-2012",
+     "n_seasons": 5,
+     "n_train": 1333,
+     "n_eff": 1333.0,
+     "k_active": 10,
+     "k_over_2neff": 0.003751,
+     "ll": 0.620923,
+     "ll_minus_full_history": -0.000195,
+     "ll_minus_full_history_ci": [
+      -0.004256,
+      0.00404
+     ]
+    },
+    {
+     "train_seasons": "2007-2012",
+     "n_seasons": 6,
+     "n_train": 1600,
+     "n_eff": 1600.0,
+     "k_active": 10,
+     "k_over_2neff": 0.003125,
+     "ll": 0.623427,
+     "ll_minus_full_history": 0.00231,
+     "ll_minus_full_history_ci": [
+      -0.001424,
+      0.006295
+     ]
+    },
+    {
+     "train_seasons": "2006-2012",
+     "n_seasons": 7,
+     "n_train": 1867,
+     "n_eff": 1867.0,
+     "k_active": 10,
+     "k_over_2neff": 0.002678,
+     "ll": 0.62384,
+     "ll_minus_full_history": 0.002722,
+     "ll_minus_full_history_ci": [
+      -0.001565,
+      0.0071
+     ]
+    },
+    {
+     "train_seasons": "2005-2012",
+     "n_seasons": 8,
+     "n_train": 2134,
+     "n_eff": 2134.0,
+     "k_active": 10,
+     "k_over_2neff": 0.002343,
+     "ll": 0.619963,
+     "ll_minus_full_history": -0.001154,
+     "ll_minus_full_history_ci": [
+      -0.004377,
+      0.002259
+     ]
+    },
+    {
+     "train_seasons": "2004-2012",
+     "n_seasons": 9,
+     "n_train": 2401,
+     "n_eff": 2401.0,
+     "k_active": 10,
+     "k_over_2neff": 0.002082,
+     "ll": 0.623468,
+     "ll_minus_full_history": 0.002351,
+     "ll_minus_full_history_ci": [
+      -0.000828,
+      0.005636
+     ]
+    },
+    {
+     "train_seasons": "2003-2012",
+     "n_seasons": 10,
+     "n_train": 2668,
+     "n_eff": 2668.0,
+     "k_active": 10,
+     "k_over_2neff": 0.001874,
+     "ll": 0.623575,
+     "ll_minus_full_history": 0.002458,
+     "ll_minus_full_history_ci": [
+      -0.000156,
+      0.005299
+     ]
+    },
+    {
+     "train_seasons": "2002-2012",
+     "n_seasons": 11,
+     "n_train": 2934,
+     "n_eff": 2934.0,
+     "k_active": 10,
+     "k_over_2neff": 0.001704,
+     "ll": 0.622655,
+     "ll_minus_full_history": 0.001538,
+     "ll_minus_full_history_ci": [
+      -0.000675,
+      0.003819
+     ]
+    },
+    {
+     "train_seasons": "2001-2012",
+     "n_seasons": 12,
+     "n_train": 3193,
+     "n_eff": 3193.0,
+     "k_active": 10,
+     "k_over_2neff": 0.001566,
+     "ll": 0.622433,
+     "ll_minus_full_history": 0.001316,
+     "ll_minus_full_history_ci": [
+      -0.0005,
+      0.003303
+     ]
+    },
+    {
+     "train_seasons": "2000-2012",
+     "n_seasons": 13,
+     "n_train": 3452,
+     "n_eff": 3452.0,
+     "k_active": 10,
+     "k_over_2neff": 0.001448,
+     "ll": 0.622256,
+     "ll_minus_full_history": 0.001139,
+     "ll_minus_full_history_ci": [
+      0.000171,
+      0.00218
+     ]
+    },
+    {
+     "train_seasons": "1999-2012",
+     "n_seasons": 14,
+     "n_train": 3711,
+     "n_eff": 3711.0,
+     "k_active": 10,
+     "k_over_2neff": 0.001347,
+     "ll": 0.621117,
+     "ll_minus_full_history": 0.0,
+     "ll_minus_full_history_ci": [
+      0.0,
+      0.0
+     ]
+    }
+   ],
+   "gap_to_market_at_full_history": 0.007649,
+   "shipped_walk_forward_on_same_games": 0.623978,
+   "shipped_reference_note": "the shipped walk-forward refits per season and so, for the 2014 and 2015 folds, can train the snap-absence columns that every curve point above is structurally unable to use (they do not exist before 2013). It is the fair upper reference, not another curve point.",
+   "flattening": {
+    "fit": "LL = L_inf + c / n_eff; points ordered smallest -> largest training set",
+    "all_points": {
+     "L_inf": 0.622114,
+     "L_inf_ci": [
+      0.599409,
+      0.645045
+     ],
+     "slope_c": 0.465626,
+     "slope_c_ci": [
+      -1.840975,
+      2.985461
+     ],
+     "remaining_descent_to_L_inf": -0.000997,
+     "remaining_descent_ci": [
+      -0.003385,
+      0.001321
+     ],
+     "still_descending": false
+    },
+    "last5": {
+     "L_inf": 0.616046,
+     "L_inf_ci": [
+      0.593849,
+      0.638607
+     ],
+     "slope_c": 20.029217,
+     "slope_c_ci": [
+      -4.781825,
+      44.925337
+     ],
+     "remaining_descent_to_L_inf": 0.005071,
+     "remaining_descent_ci": [
+      -0.001298,
+      0.011535
+     ],
+     "still_descending": false
+    },
+    "two_point": {
+     "L_inf": 0.62088,
+     "slope_c": 0.881441,
+     "slope_c_ci": [
+      -1.172641,
+      3.104108
+     ],
+     "remaining_descent_to_L_inf": 0.000238,
+     "remaining_descent_ci": [
+      -0.000316,
+      0.000836
+     ],
+     "still_descending": false,
+     "endpoints": [
+      "2012-2012",
+      "1999-2012"
+     ]
+    },
+    "total_spread_across_curve": 0.00423,
+    "ll_smallest_minus_ll_largest": 0.003076,
+    "reading": "remaining_descent_to_L_inf is how much DEV log loss this blend would still shed at unlimited training games with nothing else changed. total_spread_across_curve is the model-free version: the whole observed range from the smallest training set to the largest. If the spread is small, no extrapolation can rescue a large sample-starvation claim."
+   }
+  },
+  "backward_HLinf_elo_only": {
+   "curve": "backward, unweighted, 1 feature (Elo logit)",
+   "why": "POSITIVE CONTROL. A 2-parameter model must saturate almost immediately. If the many-feature curve is still descending where this one is flat, the descent is parameter-count-driven estimation noise, not a missing-history problem.",
+   "HL": "inf",
+   "C": 100.0,
+   "k_active_at_full_history": 2,
+   "n_scored": 799,
+   "score_window": [
+    2013,
+    2015
+   ],
+   "market_ll_on_same_games": 0.613468,
+   "market_is_flat_by_construction": true,
+   "points": [
+    {
+     "train_seasons": "2012-2012",
+     "n_seasons": 1,
+     "n_train": 266,
+     "n_eff": 266.0,
+     "k_active": 2,
+     "k_over_2neff": 0.003759,
+     "ll": 0.627421,
+     "ll_minus_full_history": 0.000163,
+     "ll_minus_full_history_ci": [
+      -0.000282,
+      0.000582
+     ]
+    },
+    {
+     "train_seasons": "2011-2012",
+     "n_seasons": 2,
+     "n_train": 533,
+     "n_eff": 533.0,
+     "k_active": 2,
+     "k_over_2neff": 0.001876,
+     "ll": 0.627107,
+     "ll_minus_full_history": -0.000151,
+     "ll_minus_full_history_ci": [
+      -0.00102,
+      0.000734
+     ]
+    },
+    {
+     "train_seasons": "2010-2012",
+     "n_seasons": 3,
+     "n_train": 800,
+     "n_eff": 800.0,
+     "k_active": 2,
+     "k_over_2neff": 0.00125,
+     "ll": 0.627891,
+     "ll_minus_full_history": 0.000633,
+     "ll_minus_full_history_ci": [
+      -0.000825,
+      0.002082
+     ]
+    },
+    {
+     "train_seasons": "2009-2012",
+     "n_seasons": 4,
+     "n_train": 1067,
+     "n_eff": 1067.0,
+     "k_active": 2,
+     "k_over_2neff": 0.000937,
+     "ll": 0.62734,
+     "ll_minus_full_history": 8.2e-05,
+     "ll_minus_full_history_ci": [
+      -0.000565,
+      0.000748
+     ]
+    },
+    {
+     "train_seasons": "2008-2012",
+     "n_seasons": 5,
+     "n_train": 1333,
+     "n_eff": 1333.0,
+     "k_active": 2,
+     "k_over_2neff": 0.00075,
+     "ll": 0.627232,
+     "ll_minus_full_history": -2.7e-05,
+     "ll_minus_full_history_ci": [
+      -0.000667,
+      0.000607
+     ]
+    },
+    {
+     "train_seasons": "2007-2012",
+     "n_seasons": 6,
+     "n_train": 1600,
+     "n_eff": 1600.0,
+     "k_active": 2,
+     "k_over_2neff": 0.000625,
+     "ll": 0.627124,
+     "ll_minus_full_history": -0.000134,
+     "ll_minus_full_history_ci": [
+      -0.000982,
+      0.000732
+     ]
+    },
+    {
+     "train_seasons": "2006-2012",
+     "n_seasons": 7,
+     "n_train": 1867,
+     "n_eff": 1867.0,
+     "k_active": 2,
+     "k_over_2neff": 0.000536,
+     "ll": 0.627498,
+     "ll_minus_full_history": 0.00024,
+     "ll_minus_full_history_ci": [
+      -0.001071,
+      0.001592
+     ]
+    },
+    {
+     "train_seasons": "2005-2012",
+     "n_seasons": 8,
+     "n_train": 2134,
+     "n_eff": 2134.0,
+     "k_active": 2,
+     "k_over_2neff": 0.000469,
+     "ll": 0.627254,
+     "ll_minus_full_history": -4e-06,
+     "ll_minus_full_history_ci": [
+      -0.000938,
+      0.000917
+     ]
+    },
+    {
+     "train_seasons": "2004-2012",
+     "n_seasons": 9,
+     "n_train": 2401,
+     "n_eff": 2401.0,
+     "k_active": 2,
+     "k_over_2neff": 0.000416,
+     "ll": 0.627278,
+     "ll_minus_full_history": 2e-05,
+     "ll_minus_full_history_ci": [
+      -0.000973,
+      0.001019
+     ]
+    },
+    {
+     "train_seasons": "2003-2012",
+     "n_seasons": 10,
+     "n_train": 2668,
+     "n_eff": 2668.0,
+     "k_active": 2,
+     "k_over_2neff": 0.000375,
+     "ll": 0.627192,
+     "ll_minus_full_history": -6.6e-05,
+     "ll_minus_full_history_ci": [
+      -0.000396,
+      0.000269
+     ]
+    },
+    {
+     "train_seasons": "2002-2012",
+     "n_seasons": 11,
+     "n_train": 2934,
+     "n_eff": 2934.0,
+     "k_active": 2,
+     "k_over_2neff": 0.000341,
+     "ll": 0.627305,
+     "ll_minus_full_history": 4.7e-05,
+     "ll_minus_full_history_ci": [
+      -0.000104,
+      0.000188
+     ]
+    },
+    {
+     "train_seasons": "2001-2012",
+     "n_seasons": 12,
+     "n_train": 3193,
+     "n_eff": 3193.0,
+     "k_active": 2,
+     "k_over_2neff": 0.000313,
+     "ll": 0.627328,
+     "ll_minus_full_history": 7e-05,
+     "ll_minus_full_history_ci": [
+      -0.000157,
+      0.000289
+     ]
+    },
+    {
+     "train_seasons": "2000-2012",
+     "n_seasons": 13,
+     "n_train": 3452,
+     "n_eff": 3452.0,
+     "k_active": 2,
+     "k_over_2neff": 0.00029,
+     "ll": 0.627314,
+     "ll_minus_full_history": 5.6e-05,
+     "ll_minus_full_history_ci": [
+      -0.000216,
+      0.000322
+     ]
+    },
+    {
+     "train_seasons": "1999-2012",
+     "n_seasons": 14,
+     "n_train": 3711,
+     "n_eff": 3711.0,
+     "k_active": 2,
+     "k_over_2neff": 0.000269,
+     "ll": 0.627258,
+     "ll_minus_full_history": 0.0,
+     "ll_minus_full_history_ci": [
+      0.0,
+      0.0
+     ]
+    }
+   ],
+   "gap_to_market_at_full_history": 0.01379,
+   "shipped_walk_forward_on_same_games": 0.623978,
+   "shipped_reference_note": "the shipped walk-forward refits per season and so, for the 2014 and 2015 folds, can train the snap-absence columns that every curve point above is structurally unable to use (they do not exist before 2013). It is the fair upper reference, not another curve point.",
+   "flattening": {
+    "fit": "LL = L_inf + c / n_eff; points ordered smallest -> largest training set",
+    "all_points": {
+     "L_inf": 0.627291,
+     "L_inf_ci": [
+      0.605386,
+      0.64977
+     ],
+     "slope_c": 0.038714,
+     "slope_c_ci": [
+      -0.069821,
+      0.14019
+     ],
+     "remaining_descent_to_L_inf": -3.3e-05,
+     "remaining_descent_ci": [
+      -0.000592,
+      0.000519
+     ],
+     "still_descending": false
+    },
+    "last5": {
+     "L_inf": 0.627488,
+     "L_inf_ci": [
+      0.606149,
+      0.649493
+     ],
+     "slope_c": -0.657786,
+     "slope_c_ci": [
+      -2.783868,
+      1.621514
+     ],
+     "remaining_descent_to_L_inf": -0.00023,
+     "remaining_descent_ci": [
+      -0.000926,
+      0.000496
+     ],
+     "still_descending": false
+    },
+    "two_point": {
+     "L_inf": 0.627246,
+     "slope_c": 0.046767,
+     "slope_c_ci": [
+      -0.080731,
+      0.166877
+     ],
+     "remaining_descent_to_L_inf": 1.3e-05,
+     "remaining_descent_ci": [
+      -2.2e-05,
+      4.5e-05
+     ],
+     "still_descending": false,
+     "endpoints": [
+      "2012-2012",
+      "1999-2012"
+     ]
+    },
+    "total_spread_across_curve": 0.000784,
+    "ll_smallest_minus_ll_largest": 0.000163,
+    "reading": "remaining_descent_to_L_inf is how much DEV log loss this blend would still shed at unlimited training games with nothing else changed. total_spread_across_curve is the model-free version: the whole observed range from the smallest training set to the largest. If the spread is small, no extrapolation can rescue a large sample-starvation claim."
+   }
+  },
+  "_reading": "The market's loss on the identical games is printed with every curve and is FLAT by construction \u2014 the close does not learn from our training data. It is the reference line. Compare the shape of our curve to it, not the levels across windows.",
+  "_structural_caveat": "Every curve point trains on seasons <= 2012, where the four snap-absence columns (they begin in 2013) and the v7 participation column (2016+, TEST era) are identically zero \u2014 so a curve point is a ~10-parameter model even though the shipped matrix has 14 columns. That is exactly why the shipped walk-forward reference sits BELOW the curve's own full-history point: it may use columns the curve cannot. The curve is still a valid pure-quantity instrument because the live column set is IDENTICAL at every point on it.",
+  "late_arriving_feature_cost": {
+   "what": "cost of the four snap-absence columns (live only from 2013) inside the shipped walk-forward, joined DEV games. DIAGNOSTIC ONLY \u2014 not a proposal, no adoption, no TEST look.",
+   "n_all_dev": 2531,
+   "ll_with": 0.622035,
+   "ll_without": 0.620718,
+   "cost_of_including": 0.001317,
+   "cost_ci": [
+    -0.0013,
+    0.00393
+   ],
+   "n_2013_2015": 799,
+   "ll_with_2013_2015": 0.623978,
+   "ll_without_2013_2015": 0.619806,
+   "cost_of_including_2013_2015": 0.004172,
+   "cost_ci_2013_2015": [
+    -0.003618,
+    0.012137
+   ],
+   "reading": "a positive cost means the columns HURT on DEV. They are the newest data in the matrix and the least-estimated; whatever they cost here is estimation noise attributable to features whose history is genuinely short, which is the sharpest concrete instance of the sample-starvation question this pass asks."
+  }
+ },
+ "Q1b_murphy_decomposition": {
+  "what": "Splits our excess loss over the close into a CALIBRATION part (recoverable by a monotone remap of our own output) and a REFINEMENT part (information: how sharply the forecast separates).",
+  "n": 2531,
+  "our_ll": 0.622035,
+  "market_ll": 0.610363,
+  "gap": 0.011671,
+  "gap_ci": [
+   0.003933,
+   0.019026
+  ],
+  "binned_degroot_fienberg": {
+   "bins": 10,
+   "ours": {
+    "CAL": 0.001573,
+    "REF": 0.621168,
+    "WITHIN": -0.000706,
+    "total_check": 0.622035,
+    "table": [
+     {
+      "n": 254,
+      "pbar": 0.243888,
+      "obs": 0.255906,
+      "kl_cal": 0.000387,
+      "entropy_ref": 0.56873
+     },
+     {
+      "n": 253,
+      "pbar": 0.368817,
+      "obs": 0.418972,
+      "kl_cal": 0.005313,
+      "entropy_ref": 0.679958
+     },
+     {
+      "n": 253,
+      "pbar": 0.442058,
+      "obs": 0.426877,
+      "kl_cal": 0.000468,
+      "entropy_ref": 0.682415
+     },
+     {
+      "n": 253,
+      "pbar": 0.499313,
+      "obs": 0.490119,
+      "kl_cal": 0.000169,
+      "entropy_ref": 0.692952
+     },
+     {
+      "n": 253,
+      "pbar": 0.553956,
+      "obs": 0.545455,
+      "kl_cal": 0.000146,
+      "entropy_ref": 0.689009
+     },
+     {
+      "n": 253,
+      "pbar": 0.605041,
+      "obs": 0.573123,
+      "kl_cal": 0.002113,
+      "entropy_ref": 0.682415
+     },
+     {
+      "n": 253,
+      "pbar": 0.655572,
+      "obs": 0.632411,
+      "kl_cal": 0.001176,
+      "entropy_ref": 0.65766
+     },
+     {
+      "n": 253,
+      "pbar": 0.707972,
+      "obs": 0.6917,
+      "kl_cal": 0.000634,
+      "entropy_ref": 0.617734
+     },
+     {
+      "n": 253,
+      "pbar": 0.770808,
+      "obs": 0.806324,
+      "kl_cal": 0.003712,
+      "entropy_ref": 0.491509
+     },
+     {
+      "n": 253,
+      "pbar": 0.854431,
+      "obs": 0.833992,
+      "kl_cal": 0.001618,
+      "entropy_ref": 0.449499
+     }
+    ]
+   },
+   "market": {
+    "CAL": 0.002635,
+    "REF": 0.609622,
+    "WITHIN": -0.001893,
+    "total_check": 0.610363,
+    "table": [
+     {
+      "n": 254,
+      "pbar": 0.243707,
+      "obs": 0.287402,
+      "kl_cal": 0.004989,
+      "entropy_ref": 0.599809
+     },
+     {
+      "n": 253,
+      "pbar": 0.355721,
+      "obs": 0.335968,
+      "kl_cal": 0.000859,
+      "entropy_ref": 0.638325
+     },
+     {
+      "n": 253,
+      "pbar": 0.43053,
+      "obs": 0.41502,
+      "kl_cal": 0.000492,
+      "entropy_ref": 0.678634
+     },
+     {
+      "n": 253,
+      "pbar": 0.512798,
+      "obs": 0.494071,
+      "kl_cal": 0.000702,
+      "entropy_ref": 0.693077
+     },
+     {
+      "n": 253,
+      "pbar": 0.578104,
+      "obs": 0.498024,
+      "kl_cal": 0.012982,
+      "entropy_ref": 0.693139
+     },
+     {
+      "n": 253,
+      "pbar": 0.629569,
+      "obs": 0.600791,
+      "kl_cal": 0.001758,
+      "entropy_ref": 0.67269
+     },
+     {
+      "n": 253,
+      "pbar": 0.674699,
+      "obs": 0.644269,
+      "kl_cal": 0.002078,
+      "entropy_ref": 0.650922
+     },
+     {
+      "n": 253,
+      "pbar": 0.725619,
+      "obs": 0.731225,
+      "kl_cal": 7.9e-05,
+      "entropy_ref": 0.582036
+     },
+     {
+      "n": 253,
+      "pbar": 0.779513,
+      "obs": 0.794466,
+      "kl_cal": 0.000661,
+      "entropy_ref": 0.507979
+     },
+     {
+      "n": 253,
+      "pbar": 0.853061,
+      "obs": 0.873518,
+      "kl_cal": 0.001738,
+      "entropy_ref": 0.379644
+     }
+    ]
+   },
+   "delta_CAL": -0.001061,
+   "delta_REF": 0.011546,
+   "delta_WITHIN": 0.001187,
+   "null_bias_per_side": 0.001976,
+   "null_note": "each bin's obs rate costs 1 df, so E[CAL] under perfect calibration is about k/(2n) = 0.00198 nats for BOTH sides. The bias cancels in delta_CAL, which is why delta_CAL is the number to read and the raw CALs are not.",
+   "share_of_gap_from_refinement": 0.989238
+  },
+  "cross_fitted_platt": {
+   "method": "leave-one-season-out a + b*logit(p); no in-sample df spent",
+   "ours": {
+    "pooled_intercept": 0.00454,
+    "pooled_slope": 0.931843,
+    "pooled_slope_se": 0.057299,
+    "slope_minus_1_t": -1.189504,
+    "per_season": {
+     "2006": [
+      0.006362,
+      0.962567
+     ],
+     "2007": [
+      0.007813,
+      0.924769
+     ],
+     "2008": [
+      0.008752,
+      0.924711
+     ],
+     "2009": [
+      -0.000887,
+      0.929478
+     ],
+     "2010": [
+      0.006052,
+      0.947397
+     ],
+     "2011": [
+      0.005184,
+      0.915809
+     ],
+     "2012": [
+      0.007819,
+      0.912892
+     ],
+     "2013": [
+      -0.012181,
+      0.923012
+     ],
+     "2014": [
+      0.004108,
+      0.931328
+     ],
+     "2015": [
+      0.012226,
+      0.94752
+     ]
+    }
+   },
+   "market": {
+    "pooled_intercept": -0.050185,
+    "pooled_slope": 0.995324,
+    "pooled_slope_se": 0.056538,
+    "slope_minus_1_t": -0.0827,
+    "per_season": {
+     "2006": [
+      -0.051307,
+      1.040967
+     ],
+     "2007": [
+      -0.046996,
+      0.989284
+     ],
+     "2008": [
+      -0.04057,
+      0.986793
+     ],
+     "2009": [
+      -0.054582,
+      0.997114
+     ],
+     "2010": [
+      -0.047467,
+      1.001524
+     ],
+     "2011": [
+      -0.050702,
+      0.98657
+     ],
+     "2012": [
+      -0.050098,
+      0.980338
+     ],
+     "2013": [
+      -0.063243,
+      0.98051
+     ],
+     "2014": [
+      -0.050572,
+      0.980457
+     ],
+     "2015": [
+      -0.046354,
+      1.010311
+     ]
+    }
+   },
+   "our_ll_recalibrated": 0.622136,
+   "market_ll_recalibrated": 0.610589,
+   "our_calibration_gain": -0.000102,
+   "our_calibration_gain_ci": [
+    -0.001019,
+    0.000847
+   ],
+   "market_calibration_gain": -0.000226,
+   "gap_after_both_recalibrated": 0.011547,
+   "gap_after_both_recalibrated_ci": [
+    0.003823,
+    0.018657
+   ],
+   "share_of_gap_surviving_recalibration": 0.989348,
+   "reading": "our slope < 1 would mean our forecast is OVER-dispersed, the exact signature of additive estimation noise on the rating scale. A slope at 1 says the composite forecast carries no DETECTABLE attenuation, which bounds how much of the gap can be pure rating noise."
+  },
+  "discrimination": {
+   "our_auc": 0.699005,
+   "market_auc": 0.717921,
+   "our_sd_logit": 0.838808,
+   "market_sd_logit": 0.860493,
+   "sd_ratio_market_over_ours": 1.025852
+  }
+ },
+ "Q2_market_projection": {
+  "what": "Projection of logit(p_close) onto our 14-feature span, DEV only. MEASURING DEVICE, NOT A MODEL \u2014 see the docstring. Nothing fitted here is served, frozen or consumed by any predictor.",
+  "n": 2531,
+  "columns_used": [
+   "elo_logit",
+   "qb_delta",
+   "epa_rating",
+   "early_down",
+   "thfa",
+   "rest",
+   "fumble_luck",
+   "absence_ol",
+   "absence_def",
+   "absence_skill",
+   "roster_quality",
+   "epa_pass",
+   "epa_run"
+  ],
+  "columns_dropped_dead_on_dev": [
+   "v7_participation_ts"
+  ],
+  "columns_note": "a column that is identically zero on DEV carries no information and makes the design singular, so it is dropped. The span being measured is therefore 13-dimensional, not 14.",
+  "R2_close_on_X14": 0.834092,
+  "R2_close_on_our_forecast_alone": 0.775493,
+  "R2_our_forecast_on_X14": 0.967263,
+  "R2_note": "R2_our_forecast_on_X14 ~ 1 confirms our shipped blend really is a linear map of X14 (the walk-forward refits make it a mixture of ten such maps), so the two weight vectors below are directly comparable.",
+  "residual_sd_logit": 0.355886,
+  "close_sd_logit": 0.860493,
+  "residual_share_of_close_variance": 0.165908,
+  "scale_market_over_ours": 0.95262,
+  "residual_value": {
+   "method": "y ~ a + b_us*logit(p_ours) + b_r*residual, leave-one-season-out cross-fitted for the log losses; pooled coefficients reported for the t-stats.",
+   "b_ours": 0.942588,
+   "b_ours_se": 0.057427,
+   "b_ours_t": 16.413612,
+   "b_residual": 0.847816,
+   "b_residual_se": 0.123202,
+   "b_residual_t": 6.881526,
+   "per_season_coefs_b_ours_b_resid": [
+    [
+     0.984293,
+     0.930078
+    ],
+    [
+     0.941457,
+     0.782049
+    ],
+    [
+     0.932463,
+     0.825009
+    ],
+    [
+     0.943265,
+     0.848845
+    ],
+    [
+     0.95185,
+     0.812893
+    ],
+    [
+     0.933989,
+     0.857369
+    ],
+    [
+     0.922553,
+     0.825599
+    ],
+    [
+     0.937627,
+     0.806007
+    ],
+    [
+     0.936673,
+     0.849103
+    ],
+    [
+     0.940602,
+     0.946237
+    ]
+   ],
+   "our_ll": 0.622035,
+   "market_ll": 0.610363,
+   "ll_ours_plus_residual": 0.613117,
+   "gain_from_residual": 0.008918,
+   "gain_from_residual_ci": [
+    0.003034,
+    0.014708
+   ],
+   "share_of_gap_recovered_by_residual": 0.764082,
+   "not_a_feature": "the residual is computed FROM the closing line, so 'ours + residual' is a market-derived object and can never be a served model here. It is quoted only to price the un-spanned information, which is the whole point of Q2."
+  },
+  "span_decomposition": {
+   "method": "the projection X14@gamma, cross-fitted by season and Platt-mapped to a probability, is 'the market's opinion restricted to OUR features'. It splits the gap into a WITHIN-SPAN re-weighting part and an OUTSIDE-SPAN information part.",
+   "ll_ours": 0.622035,
+   "ll_market_projected_onto_our_features": 0.619611,
+   "ll_market": 0.610363,
+   "within_span_reweighting": 0.002423,
+   "within_span_ci": [
+    -0.001307,
+    0.006289
+   ],
+   "outside_span_information": 0.009248,
+   "outside_span_ci": [
+    0.002667,
+    0.015653
+   ],
+   "caveat": "within_span_reweighting is an UPPER bound on what better weights could buy: the market's weights are estimated against a near-noiseless target (the close itself) while ours are estimated against binary outcomes, so most of this term is our own estimation noise rather than a different opinion. It therefore OVERLAPS component (a) of the apportionment and must not be added to it."
+  },
+  "per_feature_weights": [
+   {
+    "feature": "epa_pass",
+    "market_weight_per_sd": 0.467878,
+    "our_weight_per_sd": 0.007817,
+    "our_weight_per_sd_scale_matched": 0.007447,
+    "diff_market_minus_ours": 0.460431,
+    "diff_t": 2.664598,
+    "ratio_market_over_ours": 59.850062
+   },
+   {
+    "feature": "epa_rating",
+    "market_weight_per_sd": -0.272721,
+    "our_weight_per_sd": 0.110367,
+    "our_weight_per_sd_scale_matched": 0.105138,
+    "diff_market_minus_ours": -0.37786,
+    "diff_t": -1.861229,
+    "ratio_market_over_ours": -2.47103
+   },
+   {
+    "feature": "epa_run",
+    "market_weight_per_sd": 0.258406,
+    "our_weight_per_sd": 0.168436,
+    "our_weight_per_sd_scale_matched": 0.160456,
+    "diff_market_minus_ours": 0.09795,
+    "diff_t": 1.358974,
+    "ratio_market_over_ours": 1.534146
+   },
+   {
+    "feature": "early_down",
+    "market_weight_per_sd": 0.011659,
+    "our_weight_per_sd": 0.102545,
+    "our_weight_per_sd_scale_matched": 0.097687,
+    "diff_market_minus_ours": -0.086028,
+    "diff_t": -11.335469,
+    "ratio_market_over_ours": 0.113692
+   },
+   {
+    "feature": "qb_delta",
+    "market_weight_per_sd": 0.213093,
+    "our_weight_per_sd": 0.308723,
+    "our_weight_per_sd_scale_matched": 0.294096,
+    "diff_market_minus_ours": -0.081003,
+    "diff_t": -7.52757,
+    "ratio_market_over_ours": 0.690239
+   },
+   {
+    "feature": "absence_skill",
+    "market_weight_per_sd": -0.010241,
+    "our_weight_per_sd": -0.057487,
+    "our_weight_per_sd_scale_matched": -0.054763,
+    "diff_market_minus_ours": 0.044522,
+    "diff_t": 5.528543,
+    "ratio_market_over_ours": 0.17815
+   },
+   {
+    "feature": "fumble_luck",
+    "market_weight_per_sd": -0.032898,
+    "our_weight_per_sd": -0.078713,
+    "our_weight_per_sd_scale_matched": -0.074984,
+    "diff_market_minus_ours": 0.042086,
+    "diff_t": 5.529975,
+    "ratio_market_over_ours": 0.417946
+   },
+   {
+    "feature": "absence_ol",
+    "market_weight_per_sd": -0.013532,
+    "our_weight_per_sd": 0.016737,
+    "our_weight_per_sd_scale_matched": 0.015944,
+    "diff_market_minus_ours": -0.029476,
+    "diff_t": -3.761573,
+    "ratio_market_over_ours": -0.808538
+   },
+   {
+    "feature": "thfa",
+    "market_weight_per_sd": 0.009759,
+    "our_weight_per_sd": 0.036968,
+    "our_weight_per_sd_scale_matched": 0.035216,
+    "diff_market_minus_ours": -0.025457,
+    "diff_t": -3.11976,
+    "ratio_market_over_ours": 0.263987
+   },
+   {
+    "feature": "rest",
+    "market_weight_per_sd": 0.052255,
+    "our_weight_per_sd": 0.076866,
+    "our_weight_per_sd_scale_matched": 0.073224,
+    "diff_market_minus_ours": -0.020969,
+    "diff_t": -2.769764,
+    "ratio_market_over_ours": 0.679823
+   },
+   {
+    "feature": "roster_quality",
+    "market_weight_per_sd": 0.017915,
+    "our_weight_per_sd": 0.03333,
+    "our_weight_per_sd_scale_matched": 0.031751,
+    "diff_market_minus_ours": -0.013836,
+    "diff_t": -1.632965,
+    "ratio_market_over_ours": 0.537515
+   },
+   {
+    "feature": "elo_logit",
+    "market_weight_per_sd": 0.345958,
+    "our_weight_per_sd": 0.371718,
+    "our_weight_per_sd_scale_matched": 0.354106,
+    "diff_market_minus_ours": -0.008147,
+    "diff_t": -0.616693,
+    "ratio_market_over_ours": 0.930702
+   },
+   {
+    "feature": "absence_def",
+    "market_weight_per_sd": -0.025943,
+    "our_weight_per_sd": -0.034172,
+    "our_weight_per_sd_scale_matched": -0.032553,
+    "diff_market_minus_ours": 0.006611,
+    "diff_t": 0.828714,
+    "ratio_market_over_ours": 0.75917
+   }
+  ],
+  "per_block_weights": [
+   {
+    "block": "team_rating (elo, qb)",
+    "members": [
+     "elo_logit",
+     "qb_delta"
+    ],
+    "market_contribution_sd_logits": 0.497635,
+    "our_contribution_sd_logits": 0.601645,
+    "our_contribution_sd_scale_matched": 0.57314,
+    "ratio_market_over_ours": 0.868262,
+    "corr_market_vs_our_contribution": 0.99708,
+    "partial_R2_in_close_projection": 0.09158
+   },
+   {
+    "block": "epa (rating, pass, run)",
+    "members": [
+     "epa_rating",
+     "epa_pass",
+     "epa_run"
+    ],
+    "market_contribution_sd_logits": 0.313928,
+    "our_contribution_sd_logits": 0.251501,
+    "our_contribution_sd_scale_matched": 0.239585,
+    "ratio_market_over_ours": 1.310297,
+    "corr_market_vs_our_contribution": 0.918065,
+    "partial_R2_in_close_projection": 0.047572
+   },
+   {
+    "block": "situational (thfa, rest, early, luck)",
+    "members": [
+     "thfa",
+     "rest",
+     "early_down",
+     "fumble_luck"
+    ],
+    "market_contribution_sd_logits": 0.063977,
+    "our_contribution_sd_logits": 0.15463,
+    "our_contribution_sd_scale_matched": 0.147304,
+    "ratio_market_over_ours": 0.43432,
+    "corr_market_vs_our_contribution": 0.828073,
+    "partial_R2_in_close_projection": 0.00546
+   },
+   {
+    "block": "availability (absence x3, roster_q)",
+    "members": [
+     "absence_ol",
+     "absence_def",
+     "absence_skill",
+     "roster_quality"
+    ],
+    "market_contribution_sd_logits": 0.040623,
+    "our_contribution_sd_logits": 0.077207,
+    "our_contribution_sd_scale_matched": 0.073549,
+    "ratio_market_over_ours": 0.552326,
+    "corr_market_vs_our_contribution": 0.73405,
+    "partial_R2_in_close_projection": 0.002067
+   }
+  ],
+  "block_note": "epa_rating / epa_pass / epa_run are three summaries of the same EPA walk and are strongly collinear, so their individual coefficients split arbitrarily between them and the per-feature table must not be read one row at a time. The block table is the collinearity-robust version: contribution sd is the logits of spread a block generates, and partial_R2 is what the close's projection loses when the block is removed entirely.",
+  "weight_caveat": "the market weights are precise (target = the close, R2 0.834); ours are the effective weights of a blend fit to binary outcomes on 2,531 games. A large diff_t means the market's loading differs from ours by more than the two estimates' noise, NOT that the market is right."
+ },
+ "Q3_apportionment": {
+  "gap_to_close": 0.011671,
+  "n": 2531,
+  "components": [
+   {
+    "component": "(a) estimation noise in our own fit",
+    "estimate": 0.001891,
+    "ci": [
+     -0.002297,
+     0.006586
+    ],
+    "share_of_gap": 0.161976,
+    "instrument": "a1 + a2 below; the CI is their combined range, not a bootstrap",
+    "a1_blend_coefficient_sample_size": {
+     "estimate": 0.000574,
+     "range_across_curves_and_estimators": [
+      -0.000997,
+      0.002656
+     ],
+     "estimator_grid": {
+      "forward_HL3_shipped": {
+       "all_points": 0.000679,
+       "last5": 0.003842,
+       "two_point": 0.002656,
+       "total_spread": 0.005088
+      },
+      "forward_HLinf": {
+       "all_points": 0.001501,
+       "last5": -0.000505,
+       "two_point": 0.001201,
+       "total_spread": 0.005185
+      },
+      "backward_HL3_shipped": {
+       "all_points": 0.000431,
+       "last5": 0.002384,
+       "two_point": 0.000468,
+       "total_spread": 0.003696
+      },
+      "backward_HLinf": {
+       "all_points": -0.000997,
+       "last5": 0.005071,
+       "two_point": 0.000238,
+       "total_spread": 0.00423
+      }
+     },
+     "model_free_ceiling": 0.005185,
+     "ceiling_note": "the largest TOTAL spread any curve shows across a 14x range of training data (266 -> 3,711 games). Whatever is left beyond 3,711 is a fraction of that, so this is the ceiling on this channel and it does not depend on any extrapolation being right.",
+     "positive_control": "the 1-feature Elo-only curve is flat to +/-0.0008 over the same range, confirming that what little descent the many-feature curves show is parameter-count-driven estimation noise and not a missing-history problem."
+    },
+    "a2_short_history_features": {
+     "estimate": 0.001317,
+     "ci": [
+      -0.0013,
+      0.00393
+     ],
+     "on_2013_2015_only": 0.004172,
+     "note": "a SEPARATE estimation-noise channel the curve cannot see: the four snap-absence columns exist only from 2013, so their coefficients are fitted on one or two seasons. Measured directly by re-running the shipped walk-forward with the block zeroed. DIAGNOSTIC."
+    },
+    "a3_rating_state_noise": {
+     "estimate": null,
+     "note": "NOT IDENTIFIED by anything in this file. Every instrument here varies the BLEND's training sample; the ratings themselves are as-of walks seeded in 1999 and carry their own estimation error, which no curve in this pass can vary. The only handle on it is indirect: additive noise on the rating scale makes a forecast over-dispersed, and our cross-fitted recalibration slope is 0.931843 (t=-1.189504 from 1, n.s.), with the whole calibration channel worth -0.00010. So the DETECTABLE part is ~0 \u2014 but a rating error that is correlated with the features, rather than additive white noise, would not show up this way and remains unbounded."
+    },
+    "corroboration": {
+     "analytic_parameter_noise_k_over_2neff": 0.002779,
+     "k_live_params_per_fold": [
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      14,
+      14
+     ],
+     "note": "shipped HL=3 weights: mean over the ten DEV folds of k*sum(w^2)/(2*sum(w)^2) with k = the LIVE parameter count of that fold, the leading estimation-risk term of a correctly specified unpenalised likelihood. Independent of the curve.",
+     "vs_measured": 0.002205,
+     "vs_measured_note": "the analytic term OVER-predicts the measured curve descent by roughly 5x. Two reasons, both real: the shipped fit is ridge-penalised (C=100), which trades the variance the formula prices for a little bias, and the 14 columns are far from 14 independent directions \u2014 the team-rating block alone carries most of the signal. So the naive k/(2n) reading of 'NFL has too few games for 14 features' is an overstatement, and the curve, not the formula, is the evidence.",
+     "calibration_deficit_upper_bound": -0.000102,
+     "calibration_ci": [
+      -0.001019,
+      0.000847
+     ],
+     "calibration_note": "additive noise on the rating scale shows up as over-dispersion, so what a cross-fitted Platt map recovers is an upper bound on the DETECTABLE part."
+    }
+   },
+   {
+    "component": "(b) information outside our feature span",
+    "estimate": 0.009248,
+    "ci": [
+     0.002667,
+     0.015653
+    ],
+    "share_of_gap": 0.792359,
+    "instrument": "loss of the close projected onto X14, minus loss of the close",
+    "corroboration": {
+     "residual_conditional_gain": 0.008918,
+     "note": "what the un-spanned residual of the close buys when added to OUR forecast, cross-fitted."
+    }
+   },
+   {
+    "component": "(c) within-span re-weighting",
+    "estimate": 0.002423,
+    "ci": [
+     -0.001307,
+     0.006289
+    ],
+    "share_of_gap": 0.2076,
+    "instrument": "our loss minus the loss of the projection of the close onto X14",
+    "overlaps": "(a) \u2014 do NOT add. Most of a weight difference against a near-noiseless target is our own estimation noise."
+   }
+  ],
+  "residual_unattributed": 0.000533,
+  "honest_reading": [
+   "n = 2531 DEV games. The gap's own 95% CI is [0.003933, 0.019026] \u2014 it spans a factor of ~4. Every apportionment inherits that width and no component is separated from any other at anything like 2 SE.",
+   "(a) and (c) are two views of the same estimation-noise channel and overlap almost completely; they must never be added. (b) is the only component that is information by construction.",
+   "The components do not have to sum to the gap: (b) is measured against the close and (a) against our own past, so their sum is a coincidence of arithmetic, not an identity. residual_unattributed is reported for exactly that reason.",
+   "a3 (noise in the RATINGS, as opposed to the blend coefficients) is not identified by any instrument in this pass. The 16-games-a-season intuition lives mostly in a3, so 'the gap is not sample-starved' is established for the BLEND and only weakly bounded for the RATINGS.",
+   "The DEV era is feature-degraded: one of the 14 columns is structurally absent and four more exist for only the last three seasons. The gap being decomposed belongs to a weaker model than the one served, and closing that loop would cost a TEST look, which is not spent here."
+  ]
+ }
+}
