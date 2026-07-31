@@ -1,0 +1,5 @@
+row,type,candidate,dev_delta,dev_ci,verdict
+1,DEV,"catcher framing (Savant; AUDIT-FIXED metric: pct_tot rate-above-league, rv_tot pre-2018 is unbackfilled zeros)",-0.00019,"[-0.00033,-0.00005]","KILLED at DEV (SIG WORSE, sign-unstable folds; first screen was 69% constant-zero artifact - caught by adversarial audit pre-look)"
+2,DEV,team/lineup OAA (prior season),-0.00007,"[-0.00027,+0.00012]","KILLED at DEV (right-sign coefs, zero increment - DER + outcomes already price fielding)"
+3,DEV,lineup sprint speed (prior season),-0.00013,"[-0.00026,-0.00001]",KILLED at DEV (SIG WORSE - baserunning counts already in base)
+4,DEV,starter stuff: FB velo + whiff% (prior season),-0.00006,[n.s.],KILLED at DEV (velo right-sign null; whiff SIG WORSE; xFIP/SIERA absorb stuff through outcomes)
