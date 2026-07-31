@@ -258,8 +258,11 @@ def main(days: int = 30, today: str | None = None):
     cards.sort(key=lambda c: (c["start_utc"]))
 
     metrics = json.loads((PROJECT / "mlbwp" / "artifacts" / "metrics.json").read_text())
-    # Headline accuracy is the full blended model (0.67509) when a blend is shipped,
-    # else the raw FIP-Elo. lineup_ll is the recalibration fallback.
+    # Headline accuracy is the FULL blended tier (lineups) when a blend is shipped,
+    # else the raw FIP-Elo. fallback_log_loss is the NO-LINEUP tier (fip+bullpen+SIERA,
+    # tier "bullpen") scored on the SAME paired holdout — it is worse than log_loss
+    # because it has fewer features, not because recalibration hurts (holdout ladder:
+    # raw fip 0.67663 > recal 0.67477 > recbp 0.67411 > full 0.67274).
     blend = pred.blend
     payload = {
         "generated": day0.isoformat(),
@@ -272,7 +275,7 @@ def main(days: int = 30, today: str | None = None):
         "batters_updated": bat_loaded,
         "accuracy": {
             "log_loss": blend["holdout"]["full_ll"] if blend else metrics["model_log_loss"],
-            "recal_log_loss": (blend["holdout"].get("recbp_ll") or blend["holdout"]["recal_ll"])
+            "fallback_log_loss": (blend["holdout"].get("recbp_ll") or blend["holdout"]["recal_ll"])
             if blend else metrics["model_log_loss"],
             "elo_log_loss": metrics["plain_elo_log_loss"],
             "coinflip": metrics["constant_log_loss"],

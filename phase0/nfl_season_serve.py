@@ -672,6 +672,10 @@ payload = json.load(open("site/data/nfl.json"))
 # displayed contributions keep decomposing the displayed probability); unplayed
 # rows get a fresh ph and refresh their ledger entry. Today zero 2026 games are
 # played -> payload unchanged (0 frozen; ledger seeded with pre-game values).
+# pmc is frozen the same way: the season-sim starts from states that already
+# walked every played game's real result, so a rerun's pmc for a played game is
+# post-hoc (rehearsal: 0.623 vs frozen pre-game 0.611) — restore the ledger's
+# last pre-game pmc alongside ph/ct.
 LEDGER = "data/nfl_ph_ledger.json"
 
 def _dump_atomic(obj, path, **kw):
@@ -684,7 +688,8 @@ try:
     ledger = json.load(open(LEDGER))
 except (FileNotFoundError, json.JSONDecodeError):
     # bootstrap from any schedule still in the payload (pre-ledger payloads)
-    ledger = {f'{r["w"]}|{r["home"]}|{r["away"]}': {"ph": r["ph"], "ct": r.get("ct")}
+    ledger = {f'{r["w"]}|{r["home"]}|{r["away"]}': {"ph": r["ph"], "ct": r.get("ct"),
+                                                   "pmc": r.get("pmc")}
               for r in payload.get("schedule", []) if r.get("ph") is not None}
 ph_frozen = 0
 for s in sched:
@@ -695,13 +700,15 @@ for s in sched:
             s["ph"] = ent["ph"]
             if ent.get("ct") is not None:
                 s["ct"] = ent["ct"]
+            if ent.get("pmc") is not None:
+                s["pmc"] = ent["pmc"]
             ph_frozen += 1
         else:
             print(f"WARNING ph-freeze: no ledger entry for played game {key}; "
-                  f"keeping recomputed (post-hoc) ph", flush=True)
-            ledger[key] = {"ph": s["ph"], "ct": s["ct"]}
+                  f"keeping recomputed (post-hoc) ph/pmc", flush=True)
+            ledger[key] = {"ph": s["ph"], "ct": s["ct"], "pmc": s["pmc"]}
     else:
-        ledger[key] = {"ph": s["ph"], "ct": s["ct"]}
+        ledger[key] = {"ph": s["ph"], "ct": s["ct"], "pmc": s["pmc"]}
 _dump_atomic(ledger, LEDGER)
 print(f"[{time.time()-T0:.0f}s] ph-freeze: {ph_frozen} played games keep their "
       f"ledger pre-game ph ({len(ledger)} ledger rows)", flush=True)

@@ -47,7 +47,8 @@ jobs:
           # only newly-final box scores, never the whole season. The opening-odds
           # cache freezes each game's opening consensus. board/db/index deploy.
           git add site/data/board.json site/data/db.json site/index.html \
-                  data/season_2026_lines.json data/opening_odds_2026.json
+                  data/season_2026_lines.json data/opening_odds_2026.json \
+                  data/mlb_pred_ledger.json
           if git diff --cached --quiet; then
             echo "no data change"
           else

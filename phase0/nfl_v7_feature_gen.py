@@ -483,6 +483,25 @@ print(f"  v7 ratings-only  DEV {lld:.5f}   TEST {llt:.5f}  acc {acct*100:.1f}%  
       f"ledger's 0.62486 came from a different sweep-selection context, not this "
       f"config; TEST match + npy prefix identity are the real gates)", flush=True)
 
+# tripwire: current-season rows all-zero while that season's snap table exists
+# on disk means the walk did NOT consume the data (gid/team key drift, stale
+# prelude glob, ...). All-zero with NO snap file is the expected pre-data state
+# and stays silent. Loud warning, not a crash: the historical prefix is intact
+# and may still ship, but column 7 would silently serve zeros for the season.
+CUR_SEASON = max(g["season"] for g in games)
+if CUR_SEASON >= 2026:
+    _cur_ix = np.array([i for i, g in enumerate(games) if g["season"] == CUR_SEASON])
+    _snap_path = f"data/snap_{CUR_SEASON}.csv"
+    if len(_cur_ix) and not np.any(full[_cur_ix]) and os.path.exists(_snap_path):
+        with open(_snap_path, encoding="utf-8") as _fh:
+            _n_snap = sum(1 for _ in _fh) - 1
+        if _n_snap > 100:
+            print(f"WARNING v7 tripwire: all {len(_cur_ix)} season-{CUR_SEASON} rows "
+                  f"of the feature are 0.0 but {_snap_path} has {_n_snap:,} data rows "
+                  f"— the walk did not use the snap/participation data (check the "
+                  f"prelude snap glob and gid/team keys). Column 7 will serve zeros "
+                  f"for {CUR_SEASON} games until this is fixed.", flush=True)
+
 OUT = "data/nfl_v7_feature.npy"
 if os.path.exists(OUT):
     old = np.load(OUT)
