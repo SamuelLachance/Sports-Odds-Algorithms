@@ -89,4 +89,86 @@ precisely the sin the protocol exists to prevent. If a lower bar for
 zero-complexity corrections is ever wanted, it must be pre-registered in its own
 document first, before any candidate is screened against it.
 
-Round 2 (axes G-I: calibration, training cadence, ensembling) remains open.
+### Round 2 — 2026-07-31. Axes G-I + error map + floor. **0 adoptions, 0 TEST looks.**
+
+| axis | MLB | NFL | NHL |
+|---|---|---|---|
+| G calibration | nested −0.000021 | null | null |
+| H training cadence | nested −0.000013 | null | null |
+| I ensembling | nested −0.000089 | null | null |
+
+Largest raw gain anywhere: **+0.000008**, 250x below gate, and it inverts when
+re-selected honestly. Three findings explain *why* these had to be null:
+
+1. **Platt-on-a-rating is not calibration, it is a reparametrization** the blend
+   already performs — verified algebraically (post-hoc Platt on the blend's own
+   training predictions returns exactly (b0,b1)=(0,1) to 8 decimals). The round-1
+   "free parameter" lesson, applied to the calibration axis.
+2. **There is no calibration drift.** Per-season Platt slopes: Q=12.65 on 13 df
+   (Q/df=0.97); intercepts Q/df=1.07. The season-to-season wobble is *exactly*
+   sampling noise. The apparent cost of a "stale" curve decomposes into the
+   oracle's own in-sample degrees of freedom (+0.000137 predicted vs +0.000234
+   measured). No disease -> recency weighting (axis H) had nothing to cure, which
+   is why it is monotonically harmful: half-life 0.5 seasons costs +0.000605,
+   1-season windows +0.001252. **Expanding-window training is optimal.**
+3. **Per-tier calibration IS load-bearing** — the one calibration choice that is
+   not free. The Elo slope falls 1.31 -> 0.70 as features are added; pinning one
+   shared curve costs 1.8 fold-sd. Correctly shipped.
+
+### The error map (phase0/error_map.py, data/error_map.json)
+
+Ranking slices by total excess loss produced a **noise ordering** — almost every
+slice has *negative* excess (the model beats a slice-label oracle nearly
+everywhere). Two better instruments were built: shortfall against the dimension's
+own mean, and an in-slice recalibration likelihood ratio whose null expectation
+is exactly 1.0 nat per slice at any n.
+
+**What a PERFECT slice-conditional recalibration would buy, net of that null:**
+
+| dimension | MLB | NFL | NHL |
+|---|---|---|---|
+| probability decile | −0.000039 | −0.000763 | +0.000666 |
+| month / week | +0.000017 | +0.000113 | +0.000005 |
+| favourite side | −0.000045 | −0.000178 | −0.000203 |
+| rest | −0.000023 | −0.000917 | −0.000322 |
+| team | −0.000006 | −0.000034 | −0.000228 |
+
+**One cell in the entire map clears a gate, and it is in-sample on the model's own
+output.** Conclusion: the models are not mis-specified anywhere we can find. The
+common theme in the shortfall lists is early-season cold start (MLB team-games
+0-9 cal_gap +0.028±0.011; NFL weeks 1-2; NHL team-games 5-14 +0.029±0.015) — a
+real, cross-league, mechanistically sensible pattern that still nets ~0 once the
+null is subtracted.
+
+### The floor — how far is the theoretical limit?
+
+Odds used as an evaluation benchmark only (sanctioned).
+
+| league | n | our DEV | market | entropy floor | us -> market |
+|---|---|---|---|---|---|
+| MLB 2010-15 | 13,930 | 0.679233 | 0.676351 | 0.678391 | **+0.00288** [0.0015, 0.0041] |
+| NFL 2006-15 | 2,531 | 0.622080 | 0.610363 | 0.606654 | **+0.01172** [0.0039, 0.0190] |
+| NHL | — | — | — | — | skipped — no historical closing line exists in the repo; inventing one would be worse than reporting nothing |
+
+**The honest headline: the market-vs-floor comparison is nearly circular.** If the
+close is calibrated then E[LL_mkt | p_mkt] = H(p_mkt) *identically* — the two
+columns are one quantity measured twice, and both gaps are consistent with zero
+(−0.0020±0.0014, +0.0037±0.0073). That is confirmation the market is calibrated,
+NOT headroom. Also mean H(p_mkt) is an **upper bound** on the true irreducible
+loss (the market's probability is a coarsening of the truth, H is concave), so the
+real floor sits at or below these numbers and is not identified by the market
+alone.
+
+**So the answer to "how far from the theoretical limit": MLB ~0.0029, NFL ~0.0117
+in log loss** — and since the market sits essentially *at* the floor, our gap to
+the market IS our gap to the limit.
+
+### Where that leaves the program
+
+Rounds 1-2 closed all 9 axes x 3 leagues with zero adoptions. Combined with ~60
+prior channel nulls and the error map showing no exploitable residual structure,
+the evidence is consistent: **the remaining gap is missing INFORMATION, not
+mis-specification.** No re-parameterization, calibration, ensembling or model
+class recovers it. Future rounds should be aimed at information the public record
+does not contain (the in-season lineup/injury archives now accruing), not at
+further optimization of the existing components.

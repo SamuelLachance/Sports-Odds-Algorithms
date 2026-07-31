@@ -1,0 +1,2509 @@
+{
+ "axis_g": {
+  "pre_blend": {
+   "shipped": {
+    "name": "G pre-blend shipped",
+    "base_ll": 0.676686,
+    "ll": 0.676686,
+    "delta": 0.0,
+    "fold_deltas": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "fold_sd": 0.0,
+    "n_sd": null,
+    "ci": [
+     0.0,
+     0.0
+    ],
+    "sig": "n.s.",
+    "fold_coefs": []
+   },
+   "platt": {
+    "name": "G pre-blend platt",
+    "base_ll": 0.676686,
+    "ll": 0.676686,
+    "delta": 0.0,
+    "fold_deltas": [
+     0.0,
+     -0.0,
+     0.0,
+     0.0,
+     -0.0
+    ],
+    "fold_sd": 0.0,
+    "n_sd": 0.04,
+    "ci": [
+     -0.0,
+     0.0
+    ],
+    "sig": "n.s.",
+    "fold_coefs": [
+     {
+      "b0": -0.02104636526225886,
+      "b1": 1.2498336941350396
+     },
+     {
+      "b0": -0.03510419823313074,
+      "b1": 1.3476129913614172
+     },
+     {
+      "b0": -0.047007804354428036,
+      "b1": 1.3300603835438343
+     },
+     {
+      "b0": -0.01916183976551538,
+      "b1": 1.311987237244443
+     },
+     {
+      "b0": -0.02790198520670125,
+      "b1": 1.327438029453631
+     }
+    ]
+   },
+   "beta": {
+    "name": "G pre-blend beta",
+    "base_ll": 0.676686,
+    "ll": 0.676701,
+    "delta": -1.5e-05,
+    "fold_deltas": [
+     -3.2e-05,
+     -4e-06,
+     -2.3e-05,
+     -7e-06,
+     -2e-06
+    ],
+    "fold_sd": 1.3e-05,
+    "n_sd": -1.06,
+    "ci": [
+     -3.1e-05,
+     2e-06
+    ],
+    "sig": "n.s.",
+    "fold_coefs": [
+     {
+      "b0": 0.5532169215796278,
+      "a": 1.6913942481863253,
+      "c": 0.8670228807225533
+     },
+     {
+      "b0": 0.12707266918618035,
+      "a": 1.4722054957673731,
+      "c": 1.2396046015484876
+     },
+     {
+      "b0": -0.5749077089832647,
+      "a": 0.9246313521929829,
+      "c": 1.6817615182937626
+     },
+     {
+      "b0": -0.34200248699385183,
+      "a": 1.0641480965528647,
+      "c": 1.5271949635373985
+     },
+     {
+      "b0": -0.18898968810552244,
+      "a": 1.203738177191214,
+      "c": 1.4347530174657097
+     }
+    ]
+   },
+   "isotonic": {
+    "name": "G pre-blend isotonic",
+    "base_ll": 0.676686,
+    "ll": 0.676916,
+    "delta": -0.00023,
+    "fold_deltas": [
+     -2.1e-05,
+     -0.000387,
+     -0.000228,
+     -0.000144,
+     -0.000438
+    ],
+    "fold_sd": 0.000172,
+    "n_sd": -1.42,
+    "ci": [
+     -0.000367,
+     -9.1e-05
+    ],
+    "sig": "SIG WORSE",
+    "fold_coefs": [
+     {
+      "n_knots": 66
+     },
+     {
+      "n_knots": 76
+     },
+     {
+      "n_knots": 74
+     },
+     {
+      "n_knots": 78
+     },
+     {
+      "n_knots": 62
+     }
+    ]
+   },
+   "_nested_choice": {
+    "label": "G pre-blend calibrator (4 cells)",
+    "n_cells": 4,
+    "best_params": {
+     "pre_cal": "platt"
+    },
+    "base_ll": 0.676686,
+    "raw_ll": 0.676686,
+    "raw_delta": 0.0,
+    "nested_ll": 0.676686,
+    "nested_delta": -0.0,
+    "optimism": 0.0,
+    "raw_fold_deltas": [
+     0.0,
+     -0.0,
+     0.0,
+     0.0,
+     -0.0
+    ],
+    "nested_fold_deltas": [
+     0.0,
+     -0.0,
+     0.0,
+     0.0,
+     -0.0
+    ],
+    "fold_sd_raw": 0.0,
+    "fold_sd_nested": 0.0,
+    "n_sd_nested": -0.41,
+    "fold_picks": [
+     {
+      "pre_cal": "shipped"
+     },
+     {
+      "pre_cal": "platt"
+     },
+     {
+      "pre_cal": "platt"
+     },
+     {
+      "pre_cal": "shipped"
+     },
+     {
+      "pre_cal": "platt"
+     }
+    ]
+   },
+   "note": "shipped and platt are algebraically identical: a logistic blend with an intercept absorbs any affine map of one of its columns. The measured delta between them is pure numerical noise and is the control for this screen."
+  },
+  "post_blend": {
+   "none": {
+    "name": "G post-blend none",
+    "base_ll": 0.676686,
+    "ll": 0.676686,
+    "delta": 0.0,
+    "fold_deltas": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "fold_sd": 0.0,
+    "n_sd": null,
+    "ci": [
+     0.0,
+     0.0
+    ],
+    "sig": "n.s.",
+    "fold_coefs": []
+   },
+   "platt": {
+    "name": "G post-blend platt",
+    "base_ll": 0.676686,
+    "ll": 0.676701,
+    "delta": -1.5e-05,
+    "fold_deltas": [
+     -9.8e-05,
+     1.4e-05,
+     1.4e-05,
+     -6e-06,
+     1.3e-05
+    ],
+    "fold_sd": 4.9e-05,
+    "n_sd": -0.26,
+    "ci": [
+     -3.2e-05,
+     3e-06
+    ],
+    "sig": "n.s.",
+    "fold_coefs": [
+     {
+      "b0": 0.0034206794584476477,
+      "b1": 0.983172610935484
+     },
+     {
+      "b0": 0.0022702156644902266,
+      "b1": 0.9897311174035998
+     },
+     {
+      "b0": 0.0008706391085282182,
+      "b1": 0.9953281999752017
+     },
+     {
+      "b0": 0.0016228401120754108,
+      "b1": 0.9959993710454477
+     },
+     {
+      "b0": 0.0017503325442024815,
+      "b1": 0.9892404542714431
+     }
+    ]
+   },
+   "beta": {
+    "name": "G post-blend beta",
+    "base_ll": 0.676686,
+    "ll": 0.676748,
+    "delta": -6.2e-05,
+    "fold_deltas": [
+     -0.000266,
+     -3.6e-05,
+     2.7e-05,
+     -2.9e-05,
+     2.3e-05
+    ],
+    "fold_sd": 0.000121,
+    "n_sd": -0.47,
+    "ci": [
+     -0.000118,
+     -8e-06
+    ],
+    "sig": "SIG WORSE",
+    "fold_coefs": [
+     {
+      "b0": 0.6894331046653979,
+      "a": 1.5106916876573315,
+      "c": 0.5322169711566543
+     },
+     {
+      "b0": 0.3761701442346949,
+      "a": 1.2760988768258332,
+      "c": 0.7446971823099747
+     },
+     {
+      "b0": 0.10419513962236308,
+      "a": 1.0738859024402367,
+      "c": 0.9271057228661478
+     },
+     {
+      "b0": -0.10609683816732271,
+      "a": 0.9131308814747799,
+      "c": 1.0664127665254064
+     },
+     {
+      "b0": 0.07016683075066818,
+      "a": 1.0417364073950488,
+      "c": 0.9444686375241216
+     }
+    ]
+   },
+   "isotonic": {
+    "name": "G post-blend isotonic",
+    "base_ll": 0.676686,
+    "ll": 0.677746,
+    "delta": -0.001059,
+    "fold_deltas": [
+     -0.002158,
+     -0.000392,
+     -0.000206,
+     -0.002122,
+     -0.000102
+    ],
+    "fold_sd": 0.00105,
+    "n_sd": -0.95,
+    "ci": [
+     -0.001953,
+     -0.000305
+    ],
+    "sig": "SIG WORSE",
+    "fold_coefs": [
+     {
+      "n_knots": 68
+     },
+     {
+      "n_knots": 92
+     },
+     {
+      "n_knots": 72
+     },
+     {
+      "n_knots": 86
+     },
+     {
+      "n_knots": 68
+     }
+    ]
+   },
+   "in_sample_platt_identity": {
+    "b0": 0.0,
+    "b1": 1.0,
+    "note": "fitting Platt on the blend's own training predictions returns (0,1) exactly \u2014 a post-hoc curve can only do work if it is fitted out of sample"
+   },
+   "_nested_choice": {
+    "label": "G post-blend calibrator (4 cells)",
+    "n_cells": 4,
+    "best_params": {
+     "post_cal": "none"
+    },
+    "base_ll": 0.676686,
+    "raw_ll": 0.676686,
+    "raw_delta": 0.0,
+    "nested_ll": 0.676707,
+    "nested_delta": -2.1e-05,
+    "optimism": 2.1e-05,
+    "raw_fold_deltas": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "nested_fold_deltas": [
+     -9.8e-05,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "fold_sd_raw": 0.0,
+    "fold_sd_nested": 4.4e-05,
+    "n_sd_nested": -0.45,
+    "fold_picks": [
+     {
+      "post_cal": "platt"
+     },
+     {
+      "post_cal": "none"
+     },
+     {
+      "post_cal": "none"
+     },
+     {
+      "post_cal": "none"
+     },
+     {
+      "post_cal": "none"
+     }
+    ]
+   }
+  },
+  "per_tier": {
+   "per_tier_slopes": {
+    "recal": [
+     1.2498,
+     1.3476,
+     1.3301,
+     1.312,
+     1.3274
+    ],
+    "recbp": [
+     0.9684,
+     1.1309,
+     1.0525,
+     1.0493,
+     1.0987
+    ],
+    "full": [
+     0.658,
+     0.7566,
+     0.7022,
+     0.6912,
+     0.7091
+    ],
+    "shared_platt": [
+     1.2498,
+     1.3476,
+     1.3301,
+     1.312,
+     1.3274
+    ]
+   },
+   "shared": {
+    "per_tier": {
+     "name": "G tier-cal per_tier",
+     "base_ll": 0.676686,
+     "ll": 0.676686,
+     "delta": 0.0,
+     "fold_deltas": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "fold_sd": 0.0,
+     "n_sd": null,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "sig": "n.s."
+    },
+    "shared_offset": {
+     "name": "G tier-cal shared_offset",
+     "base_ll": 0.676686,
+     "ll": 0.677584,
+     "delta": -0.000898,
+     "fold_deltas": [
+      -0.000263,
+      -0.001645,
+      -0.000891,
+      -0.000724,
+      -0.001
+     ],
+     "fold_sd": 0.0005,
+     "n_sd": -1.81,
+     "ci": [
+      -0.001364,
+      -0.000434
+     ],
+     "sig": "SIG WORSE"
+    }
+   },
+   "note": "the shipped serve chain gives the recal tier its own Platt and lets recbp/full refit their own Elo slope; this measures whether freezing one marginal curve across all tiers costs anything.",
+   "_nested_choice": {
+    "label": "G shared vs per-tier calibration",
+    "n_cells": 2,
+    "best_params": {
+     "tier_cal": "per_tier"
+    },
+    "base_ll": 0.676686,
+    "raw_ll": 0.676686,
+    "raw_delta": 0.0,
+    "nested_ll": 0.676686,
+    "nested_delta": 0.0,
+    "optimism": 0.0,
+    "raw_fold_deltas": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "nested_fold_deltas": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "fold_sd_raw": 0.0,
+    "fold_sd_nested": 0.0,
+    "n_sd_nested": null,
+    "fold_picks": [
+     {
+      "tier_cal": "per_tier"
+     },
+     {
+      "tier_cal": "per_tier"
+     },
+     {
+      "tier_cal": "per_tier"
+     },
+     {
+      "tier_cal": "per_tier"
+     },
+     {
+      "tier_cal": "per_tier"
+     }
+    ]
+   }
+  },
+  "drift": {
+   "per_season_platt": {
+    "2002": {
+     "n": 2425,
+     "b0": -0.0942,
+     "se0": 0.0481,
+     "b1": 1.7611,
+     "se1": 0.1646,
+     "home_rate": 0.5419
+    },
+    "2003": {
+     "n": 2429,
+     "b0": 0.0066,
+     "se0": 0.0465,
+     "b1": 1.3041,
+     "se1": 0.1479,
+     "home_rate": 0.5496
+    },
+    "2004": {
+     "n": 2428,
+     "b0": -0.0782,
+     "se0": 0.0486,
+     "b1": 1.4321,
+     "se1": 0.1708,
+     "home_rate": 0.535
+    },
+    "2005": {
+     "n": 2430,
+     "b0": -0.0374,
+     "se0": 0.0483,
+     "b1": 1.2431,
+     "se1": 0.1699,
+     "home_rate": 0.5374
+    },
+    "2006": {
+     "n": 2429,
+     "b0": 0.0288,
+     "se0": 0.0493,
+     "b1": 1.0469,
+     "se1": 0.1853,
+     "home_rate": 0.5463
+    },
+    "2007": {
+     "n": 2431,
+     "b0": -0.0231,
+     "se0": 0.0518,
+     "b1": 1.2618,
+     "se1": 0.2105,
+     "home_rate": 0.5422
+    },
+    "2008": {
+     "n": 2428,
+     "b0": 0.0146,
+     "se0": 0.052,
+     "b1": 1.4129,
+     "se1": 0.2148,
+     "home_rate": 0.5564
+    },
+    "2009": {
+     "n": 2430,
+     "b0": 0.0037,
+     "se0": 0.049,
+     "b1": 1.2717,
+     "se1": 0.1801,
+     "home_rate": 0.5486
+    },
+    "2010": {
+     "n": 2430,
+     "b0": 0.0688,
+     "se0": 0.0481,
+     "b1": 1.1384,
+     "se1": 0.1709,
+     "home_rate": 0.5593
+    },
+    "2011": {
+     "n": 2429,
+     "b0": -0.1008,
+     "se0": 0.0501,
+     "b1": 1.3517,
+     "se1": 0.1919,
+     "home_rate": 0.5257
+    },
+    "2012": {
+     "n": 2430,
+     "b0": -0.0837,
+     "se0": 0.0493,
+     "b1": 1.4228,
+     "se1": 0.1814,
+     "home_rate": 0.5329
+    },
+    "2013": {
+     "n": 2431,
+     "b0": -0.0294,
+     "se0": 0.0484,
+     "b1": 1.2157,
+     "se1": 0.1741,
+     "home_rate": 0.5381
+    },
+    "2014": {
+     "n": 2430,
+     "b0": -0.0628,
+     "se0": 0.0502,
+     "b1": 1.2182,
+     "se1": 0.1953,
+     "home_rate": 0.53
+    },
+    "2015": {
+     "n": 2429,
+     "b0": -0.0196,
+     "se0": 0.0505,
+     "b1": 1.2268,
+     "se1": 0.1967,
+     "home_rate": 0.5414
+    }
+   },
+   "slope_heterogeneity": {
+    "pooled": 1.3136,
+    "Q": 12.65,
+    "df": 13,
+    "excess_over_noise": 0.97,
+    "reading": "Q/df >> 1 means the season-to-season curve really moves; Q/df ~ 1 means the wobble is sampling noise"
+   },
+   "intercept_heterogeneity": {
+    "pooled": -0.0289,
+    "Q": 13.92,
+    "df": 13,
+    "excess_over_noise": 1.07,
+    "reading": "Q/df >> 1 means the season-to-season curve really moves; Q/df ~ 1 means the wobble is sampling noise"
+   },
+   "stale_vs_fresh": {
+    "fit_2002_2008": {
+     "platt_ll_on_2013_2015": 0.681803,
+     "platt_b0b1": [
+      -0.0281,
+      1.3645
+     ],
+     "full_blend_ll_on_2013_2015": 0.680422,
+     "n_train": 17000
+    },
+    "fit_2009_2012": {
+     "platt_ll_on_2013_2015": 0.681648,
+     "platt_b0b1": [
+      -0.0269,
+      1.2888
+     ],
+     "full_blend_ll_on_2013_2015": 0.680033,
+     "n_train": 9719
+    },
+    "fit_2010_2012": {
+     "platt_ll_on_2013_2015": 0.681616,
+     "platt_b0b1": [
+      -0.0371,
+      1.2945
+     ],
+     "full_blend_ll_on_2013_2015": 0.680199,
+     "n_train": 7289
+    },
+    "fit_2012_only": {
+     "platt_ll_on_2013_2015": 0.681841,
+     "platt_b0b1": [
+      -0.0837,
+      1.4228
+     ],
+     "full_blend_ll_on_2013_2015": 0.681225,
+     "n_train": 2430
+    },
+    "fit_2013_2015_oracle": {
+     "platt_ll_on_2013_2015": 0.681569,
+     "platt_b0b1": [
+      -0.0372,
+      1.2199
+     ],
+     "full_blend_ll_on_2013_2015": 0.679885,
+     "n_train": 7290
+    }
+   },
+   "staleness_cost": {
+    "platt_2002_2008_minus_oracle": 0.000234,
+    "full_2002_2008_minus_oracle": 0.000537,
+    "note": "the oracle is fitted IN SAMPLE on 2013-2015 so it is an optimistic floor, not an achievable target; the gap it shows is an upper bound on what perfect freshness could buy."
+   }
+  },
+  "deciles": {
+   "full_oof": {
+    "label": "full-tier OOF, all DEV",
+    "n": 34009,
+    "bins": [
+     {
+      "decile": 1,
+      "n": 3401,
+      "p_lo": 0.2303,
+      "p_hi": 0.4371,
+      "pred": 0.3982,
+      "obs": 0.3922,
+      "obs_ci": [
+       0.376,
+       0.4088
+      ],
+      "obs_minus_pred": -0.006,
+      "z": -0.71
+     },
+     {
+      "decile": 2,
+      "n": 3401,
+      "p_lo": 0.4371,
+      "p_hi": 0.4733,
+      "pred": 0.4566,
+      "obs": 0.4534,
+      "obs_ci": [
+       0.4367,
+       0.4702
+      ],
+      "obs_minus_pred": -0.0032,
+      "z": -0.38
+     },
+     {
+      "decile": 3,
+      "n": 3401,
+      "p_lo": 0.4733,
+      "p_hi": 0.4998,
+      "pred": 0.4873,
+      "obs": 0.4937,
+      "obs_ci": [
+       0.4769,
+       0.5105
+      ],
+      "obs_minus_pred": 0.0064,
+      "z": 0.75
+     },
+     {
+      "decile": 4,
+      "n": 3401,
+      "p_lo": 0.4999,
+      "p_hi": 0.5224,
+      "pred": 0.5112,
+      "obs": 0.5184,
+      "obs_ci": [
+       0.5016,
+       0.5351
+      ],
+      "obs_minus_pred": 0.0071,
+      "z": 0.83
+     },
+     {
+      "decile": 5,
+      "n": 3401,
+      "p_lo": 0.5225,
+      "p_hi": 0.543,
+      "pred": 0.5328,
+      "obs": 0.5407,
+      "obs_ci": [
+       0.5239,
+       0.5574
+      ],
+      "obs_minus_pred": 0.0079,
+      "z": 0.93
+     },
+     {
+      "decile": 6,
+      "n": 3400,
+      "p_lo": 0.543,
+      "p_hi": 0.5639,
+      "pred": 0.5535,
+      "obs": 0.5453,
+      "obs_ci": [
+       0.5285,
+       0.562
+      ],
+      "obs_minus_pred": -0.0082,
+      "z": -0.97
+     },
+     {
+      "decile": 7,
+      "n": 3401,
+      "p_lo": 0.5639,
+      "p_hi": 0.5858,
+      "pred": 0.5745,
+      "obs": 0.5831,
+      "obs_ci": [
+       0.5664,
+       0.5995
+      ],
+      "obs_minus_pred": 0.0085,
+      "z": 1.01
+     },
+     {
+      "decile": 8,
+      "n": 3401,
+      "p_lo": 0.5858,
+      "p_hi": 0.6107,
+      "pred": 0.5978,
+      "obs": 0.5898,
+      "obs_ci": [
+       0.5732,
+       0.6062
+      ],
+      "obs_minus_pred": -0.008,
+      "z": -0.95
+     },
+     {
+      "decile": 9,
+      "n": 3401,
+      "p_lo": 0.6107,
+      "p_hi": 0.644,
+      "pred": 0.6261,
+      "obs": 0.6216,
+      "obs_ci": [
+       0.6052,
+       0.6377
+      ],
+      "obs_minus_pred": -0.0045,
+      "z": -0.55
+     },
+     {
+      "decile": 10,
+      "n": 3401,
+      "p_lo": 0.644,
+      "p_hi": 0.813,
+      "pred": 0.6787,
+      "obs": 0.6795,
+      "obs_ci": [
+       0.6636,
+       0.695
+      ],
+      "obs_minus_pred": 0.0008,
+      "z": 0.1
+     }
+    ],
+    "ece": 0.00608,
+    "cal_intercept": 0.0015,
+    "cal_slope": 0.993,
+    "n_bins_outside_ci": 0
+   },
+   "raw_fip_elo": {
+    "label": "raw FIP-Elo, uncalibrated",
+    "n": 34009,
+    "bins": [
+     {
+      "decile": 1,
+      "n": 3401,
+      "p_lo": 0.3145,
+      "p_hi": 0.4641,
+      "pred": 0.4348,
+      "obs": 0.4055,
+      "obs_ci": [
+       0.3891,
+       0.4221
+      ],
+      "obs_minus_pred": -0.0293,
+      "z": -3.45
+     },
+     {
+      "decile": 2,
+      "n": 3401,
+      "p_lo": 0.4641,
+      "p_hi": 0.4897,
+      "pred": 0.4779,
+      "obs": 0.4687,
+      "obs_ci": [
+       0.452,
+       0.4855
+      ],
+      "obs_minus_pred": -0.0092,
+      "z": -1.08
+     },
+     {
+      "decile": 3,
+      "n": 3401,
+      "p_lo": 0.4897,
+      "p_hi": 0.508,
+      "pred": 0.4992,
+      "obs": 0.4846,
+      "obs_ci": [
+       0.4678,
+       0.5014
+      ],
+      "obs_minus_pred": -0.0146,
+      "z": -1.7
+     },
+     {
+      "decile": 4,
+      "n": 3401,
+      "p_lo": 0.508,
+      "p_hi": 0.5238,
+      "pred": 0.5161,
+      "obs": 0.5116,
+      "obs_ci": [
+       0.4948,
+       0.5284
+      ],
+      "obs_minus_pred": -0.0045,
+      "z": -0.52
+     },
+     {
+      "decile": 5,
+      "n": 3401,
+      "p_lo": 0.5238,
+      "p_hi": 0.5385,
+      "pred": 0.5313,
+      "obs": 0.5298,
+      "obs_ci": [
+       0.513,
+       0.5466
+      ],
+      "obs_minus_pred": -0.0015,
+      "z": -0.17
+     },
+     {
+      "decile": 6,
+      "n": 3400,
+      "p_lo": 0.5386,
+      "p_hi": 0.553,
+      "pred": 0.5457,
+      "obs": 0.565,
+      "obs_ci": [
+       0.5483,
+       0.5816
+      ],
+      "obs_minus_pred": 0.0193,
+      "z": 2.26
+     },
+     {
+      "decile": 7,
+      "n": 3401,
+      "p_lo": 0.553,
+      "p_hi": 0.5684,
+      "pred": 0.5607,
+      "obs": 0.5681,
+      "obs_ci": [
+       0.5514,
+       0.5846
+      ],
+      "obs_minus_pred": 0.0074,
+      "z": 0.87
+     },
+     {
+      "decile": 8,
+      "n": 3401,
+      "p_lo": 0.5684,
+      "p_hi": 0.5863,
+      "pred": 0.577,
+      "obs": 0.5966,
+      "obs_ci": [
+       0.58,
+       0.613
+      ],
+      "obs_minus_pred": 0.0195,
+      "z": 2.31
+     },
+     {
+      "decile": 9,
+      "n": 3401,
+      "p_lo": 0.5863,
+      "p_hi": 0.6108,
+      "pred": 0.5975,
+      "obs": 0.6142,
+      "obs_ci": [
+       0.5978,
+       0.6305
+      ],
+      "obs_minus_pred": 0.0167,
+      "z": 1.99
+     },
+     {
+      "decile": 10,
+      "n": 3401,
+      "p_lo": 0.6109,
+      "p_hi": 0.7653,
+      "pred": 0.6371,
+      "obs": 0.6736,
+      "obs_ci": [
+       0.6577,
+       0.6892
+      ],
+      "obs_minus_pred": 0.0365,
+      "z": 4.43
+     }
+    ],
+    "ece": 0.01586,
+    "cal_intercept": -0.0302,
+    "cal_slope": 1.3148,
+    "n_bins_outside_ci": 5
+   },
+   "full_oof_20": {
+    "label": "full-tier OOF, 20 bins",
+    "n": 34009,
+    "bins": [
+     {
+      "decile": 1,
+      "n": 1701,
+      "p_lo": 0.2303,
+      "p_hi": 0.4073,
+      "pred": 0.3729,
+      "obs": 0.3757,
+      "obs_ci": [
+       0.353,
+       0.3989
+      ],
+      "obs_minus_pred": 0.0027,
+      "z": 0.23
+     },
+     {
+      "decile": 2,
+      "n": 1700,
+      "p_lo": 0.4073,
+      "p_hi": 0.4371,
+      "pred": 0.4235,
+      "obs": 0.4088,
+      "obs_ci": [
+       0.3857,
+       0.4324
+      ],
+      "obs_minus_pred": -0.0146,
+      "z": -1.22
+     },
+     {
+      "decile": 3,
+      "n": 1701,
+      "p_lo": 0.4371,
+      "p_hi": 0.4576,
+      "pred": 0.4477,
+      "obs": 0.4521,
+      "obs_ci": [
+       0.4286,
+       0.4758
+      ],
+      "obs_minus_pred": 0.0044,
+      "z": 0.37
+     },
+     {
+      "decile": 4,
+      "n": 1700,
+      "p_lo": 0.4576,
+      "p_hi": 0.4733,
+      "pred": 0.4656,
+      "obs": 0.4547,
+      "obs_ci": [
+       0.4312,
+       0.4785
+      ],
+      "obs_minus_pred": -0.0109,
+      "z": -0.9
+     },
+     {
+      "decile": 5,
+      "n": 1701,
+      "p_lo": 0.4733,
+      "p_hi": 0.4877,
+      "pred": 0.4807,
+      "obs": 0.4721,
+      "obs_ci": [
+       0.4484,
+       0.4958
+      ],
+      "obs_minus_pred": -0.0086,
+      "z": -0.71
+     },
+     {
+      "decile": 6,
+      "n": 1700,
+      "p_lo": 0.4877,
+      "p_hi": 0.4998,
+      "pred": 0.4939,
+      "obs": 0.5153,
+      "obs_ci": [
+       0.4915,
+       0.539
+      ],
+      "obs_minus_pred": 0.0214,
+      "z": 1.77
+     },
+     {
+      "decile": 7,
+      "n": 1700,
+      "p_lo": 0.4999,
+      "p_hi": 0.5112,
+      "pred": 0.5056,
+      "obs": 0.4965,
+      "obs_ci": [
+       0.4727,
+       0.5202
+      ],
+      "obs_minus_pred": -0.0091,
+      "z": -0.75
+     },
+     {
+      "decile": 8,
+      "n": 1701,
+      "p_lo": 0.5112,
+      "p_hi": 0.5224,
+      "pred": 0.5169,
+      "obs": 0.5403,
+      "obs_ci": [
+       0.5165,
+       0.5638
+      ],
+      "obs_minus_pred": 0.0234,
+      "z": 1.93
+     },
+     {
+      "decile": 9,
+      "n": 1700,
+      "p_lo": 0.5225,
+      "p_hi": 0.5329,
+      "pred": 0.5277,
+      "obs": 0.5594,
+      "obs_ci": [
+       0.5357,
+       0.5829
+      ],
+      "obs_minus_pred": 0.0318,
+      "z": 2.62
+     },
+     {
+      "decile": 10,
+      "n": 1701,
+      "p_lo": 0.5329,
+      "p_hi": 0.543,
+      "pred": 0.5379,
+      "obs": 0.522,
+      "obs_ci": [
+       0.4983,
+       0.5457
+      ],
+      "obs_minus_pred": -0.0159,
+      "z": -1.32
+     },
+     {
+      "decile": 11,
+      "n": 1700,
+      "p_lo": 0.543,
+      "p_hi": 0.5536,
+      "pred": 0.5484,
+      "obs": 0.53,
+      "obs_ci": [
+       0.5062,
+       0.5536
+      ],
+      "obs_minus_pred": -0.0184,
+      "z": -1.52
+     },
+     {
+      "decile": 12,
+      "n": 1700,
+      "p_lo": 0.5536,
+      "p_hi": 0.5639,
+      "pred": 0.5587,
+      "obs": 0.5606,
+      "obs_ci": [
+       0.5369,
+       0.584
+      ],
+      "obs_minus_pred": 0.0019,
+      "z": 0.16
+     },
+     {
+      "decile": 13,
+      "n": 1701,
+      "p_lo": 0.5639,
+      "p_hi": 0.5744,
+      "pred": 0.5691,
+      "obs": 0.5785,
+      "obs_ci": [
+       0.5549,
+       0.6017
+      ],
+      "obs_minus_pred": 0.0093,
+      "z": 0.78
+     },
+     {
+      "decile": 14,
+      "n": 1700,
+      "p_lo": 0.5744,
+      "p_hi": 0.5858,
+      "pred": 0.5799,
+      "obs": 0.5876,
+      "obs_ci": [
+       0.5641,
+       0.6108
+      ],
+      "obs_minus_pred": 0.0077,
+      "z": 0.64
+     },
+     {
+      "decile": 15,
+      "n": 1701,
+      "p_lo": 0.5858,
+      "p_hi": 0.5976,
+      "pred": 0.5916,
+      "obs": 0.5897,
+      "obs_ci": [
+       0.5661,
+       0.6128
+      ],
+      "obs_minus_pred": -0.002,
+      "z": -0.17
+     },
+     {
+      "decile": 16,
+      "n": 1700,
+      "p_lo": 0.5977,
+      "p_hi": 0.6107,
+      "pred": 0.6041,
+      "obs": 0.59,
+      "obs_ci": [
+       0.5664,
+       0.6132
+      ],
+      "obs_minus_pred": -0.0141,
+      "z": -1.18
+     },
+     {
+      "decile": 17,
+      "n": 1700,
+      "p_lo": 0.6107,
+      "p_hi": 0.6255,
+      "pred": 0.618,
+      "obs": 0.6241,
+      "obs_ci": [
+       0.6008,
+       0.6468
+      ],
+      "obs_minus_pred": 0.0061,
+      "z": 0.52
+     },
+     {
+      "decile": 18,
+      "n": 1701,
+      "p_lo": 0.6255,
+      "p_hi": 0.644,
+      "pred": 0.6343,
+      "obs": 0.619,
+      "obs_ci": [
+       0.5957,
+       0.6418
+      ],
+      "obs_minus_pred": -0.0152,
+      "z": -1.3
+     },
+     {
+      "decile": 19,
+      "n": 1700,
+      "p_lo": 0.644,
+      "p_hi": 0.6714,
+      "pred": 0.6565,
+      "obs": 0.6618,
+      "obs_ci": [
+       0.6389,
+       0.6839
+      ],
+      "obs_minus_pred": 0.0053,
+      "z": 0.46
+     },
+     {
+      "decile": 20,
+      "n": 1701,
+      "p_lo": 0.6714,
+      "p_hi": 0.813,
+      "pred": 0.7009,
+      "obs": 0.6972,
+      "obs_ci": [
+       0.675,
+       0.7186
+      ],
+      "obs_minus_pred": -0.0037,
+      "z": -0.33
+     }
+    ],
+    "ece": 0.01132,
+    "cal_intercept": 0.0015,
+    "cal_slope": 0.993,
+    "n_bins_outside_ci": 1
+   },
+   "full_oof_2002_2008": {
+    "label": "full-tier OOF, 2002-2008",
+    "n": 17000,
+    "bins": [
+     {
+      "decile": 1,
+      "n": 1700,
+      "p_lo": 0.2303,
+      "p_hi": 0.4367,
+      "pred": 0.3969,
+      "obs": 0.3853,
+      "obs_ci": [
+       0.3624,
+       0.4087
+      ],
+      "obs_minus_pred": -0.0116,
+      "z": -0.97
+     },
+     {
+      "decile": 2,
+      "n": 1700,
+      "p_lo": 0.4367,
+      "p_hi": 0.4734,
+      "pred": 0.4564,
+      "obs": 0.4641,
+      "obs_ci": [
+       0.4405,
+       0.4879
+      ],
+      "obs_minus_pred": 0.0077,
+      "z": 0.64
+     },
+     {
+      "decile": 3,
+      "n": 1700,
+      "p_lo": 0.4735,
+      "p_hi": 0.5,
+      "pred": 0.4875,
+      "obs": 0.4947,
+      "obs_ci": [
+       0.471,
+       0.5185
+      ],
+      "obs_minus_pred": 0.0072,
+      "z": 0.6
+     },
+     {
+      "decile": 4,
+      "n": 1700,
+      "p_lo": 0.5,
+      "p_hi": 0.5224,
+      "pred": 0.5113,
+      "obs": 0.5006,
+      "obs_ci": [
+       0.4768,
+       0.5243
+      ],
+      "obs_minus_pred": -0.0107,
+      "z": -0.89
+     },
+     {
+      "decile": 5,
+      "n": 1700,
+      "p_lo": 0.5224,
+      "p_hi": 0.5428,
+      "pred": 0.5326,
+      "obs": 0.5435,
+      "obs_ci": [
+       0.5198,
+       0.5671
+      ],
+      "obs_minus_pred": 0.0109,
+      "z": 0.9
+     },
+     {
+      "decile": 6,
+      "n": 1700,
+      "p_lo": 0.5428,
+      "p_hi": 0.5638,
+      "pred": 0.5536,
+      "obs": 0.5429,
+      "obs_ci": [
+       0.5192,
+       0.5665
+      ],
+      "obs_minus_pred": -0.0107,
+      "z": -0.89
+     },
+     {
+      "decile": 7,
+      "n": 1700,
+      "p_lo": 0.5638,
+      "p_hi": 0.5855,
+      "pred": 0.5743,
+      "obs": 0.5906,
+      "obs_ci": [
+       0.567,
+       0.6137
+      ],
+      "obs_minus_pred": 0.0163,
+      "z": 1.36
+     },
+     {
+      "decile": 8,
+      "n": 1700,
+      "p_lo": 0.5855,
+      "p_hi": 0.6105,
+      "pred": 0.5976,
+      "obs": 0.5959,
+      "obs_ci": [
+       0.5724,
+       0.619
+      ],
+      "obs_minus_pred": -0.0017,
+      "z": -0.14
+     },
+     {
+      "decile": 9,
+      "n": 1700,
+      "p_lo": 0.6105,
+      "p_hi": 0.6438,
+      "pred": 0.6257,
+      "obs": 0.6282,
+      "obs_ci": [
+       0.605,
+       0.6509
+      ],
+      "obs_minus_pred": 0.0025,
+      "z": 0.22
+     },
+     {
+      "decile": 10,
+      "n": 1700,
+      "p_lo": 0.6438,
+      "p_hi": 0.813,
+      "pred": 0.6793,
+      "obs": 0.6953,
+      "obs_ci": [
+       0.673,
+       0.7167
+      ],
+      "obs_minus_pred": 0.0159,
+      "z": 1.41
+     }
+    ],
+    "ece": 0.00953,
+    "cal_intercept": 0.0019,
+    "cal_slope": 1.0546,
+    "n_bins_outside_ci": 0
+   },
+   "full_oof_2009_2015": {
+    "label": "full-tier OOF, 2009-2015",
+    "n": 17009,
+    "bins": [
+     {
+      "decile": 1,
+      "n": 1701,
+      "p_lo": 0.2773,
+      "p_hi": 0.4378,
+      "pred": 0.3995,
+      "obs": 0.3927,
+      "obs_ci": [
+       0.3698,
+       0.4161
+      ],
+      "obs_minus_pred": -0.0068,
+      "z": -0.58
+     },
+     {
+      "decile": 2,
+      "n": 1701,
+      "p_lo": 0.4379,
+      "p_hi": 0.4731,
+      "pred": 0.4568,
+      "obs": 0.4497,
+      "obs_ci": [
+       0.4262,
+       0.4735
+      ],
+      "obs_minus_pred": -0.0071,
+      "z": -0.59
+     },
+     {
+      "decile": 3,
+      "n": 1701,
+      "p_lo": 0.4732,
+      "p_hi": 0.4996,
+      "pred": 0.487,
+      "obs": 0.4932,
+      "obs_ci": [
+       0.4695,
+       0.517
+      ],
+      "obs_minus_pred": 0.0062,
+      "z": 0.51
+     },
+     {
+      "decile": 4,
+      "n": 1701,
+      "p_lo": 0.4996,
+      "p_hi": 0.5225,
+      "pred": 0.5111,
+      "obs": 0.5344,
+      "obs_ci": [
+       0.5106,
+       0.558
+      ],
+      "obs_minus_pred": 0.0232,
+      "z": 1.92
+     },
+     {
+      "decile": 5,
+      "n": 1701,
+      "p_lo": 0.5225,
+      "p_hi": 0.5432,
+      "pred": 0.533,
+      "obs": 0.5403,
+      "obs_ci": [
+       0.5165,
+       0.5638
+      ],
+      "obs_minus_pred": 0.0073,
+      "z": 0.6
+     },
+     {
+      "decile": 6,
+      "n": 1700,
+      "p_lo": 0.5432,
+      "p_hi": 0.5639,
+      "pred": 0.5534,
+      "obs": 0.5465,
+      "obs_ci": [
+       0.5227,
+       0.57
+      ],
+      "obs_minus_pred": -0.007,
+      "z": -0.58
+     },
+     {
+      "decile": 7,
+      "n": 1701,
+      "p_lo": 0.5639,
+      "p_hi": 0.5862,
+      "pred": 0.5748,
+      "obs": 0.572,
+      "obs_ci": [
+       0.5484,
+       0.5953
+      ],
+      "obs_minus_pred": -0.0028,
+      "z": -0.23
+     },
+     {
+      "decile": 8,
+      "n": 1701,
+      "p_lo": 0.5862,
+      "p_hi": 0.6109,
+      "pred": 0.5981,
+      "obs": 0.5902,
+      "obs_ci": [
+       0.5667,
+       0.6134
+      ],
+      "obs_minus_pred": -0.0078,
+      "z": -0.66
+     },
+     {
+      "decile": 9,
+      "n": 1701,
+      "p_lo": 0.611,
+      "p_hi": 0.6443,
+      "pred": 0.6266,
+      "obs": 0.6126,
+      "obs_ci": [
+       0.5892,
+       0.6355
+      ],
+      "obs_minus_pred": -0.014,
+      "z": -1.19
+     },
+     {
+      "decile": 10,
+      "n": 1701,
+      "p_lo": 0.6443,
+      "p_hi": 0.7954,
+      "pred": 0.6781,
+      "obs": 0.6626,
+      "obs_ci": [
+       0.6397,
+       0.6846
+      ],
+      "obs_minus_pred": -0.0155,
+      "z": -1.37
+     }
+    ],
+    "ece": 0.00977,
+    "cal_intercept": 0.0012,
+    "cal_slope": 0.9313,
+    "n_bins_outside_ci": 0
+   }
+  },
+  "axis_best": {
+   "label": "G best calibration variant",
+   "n_cells": 6,
+   "best_params": {
+    "where": "pre",
+    "cal": "shipped"
+   },
+   "base_ll": 0.676686,
+   "raw_ll": 0.676686,
+   "raw_delta": 0.0,
+   "nested_ll": 0.676707,
+   "nested_delta": -2.1e-05,
+   "optimism": 2.1e-05,
+   "raw_fold_deltas": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "nested_fold_deltas": [
+    -9.8e-05,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "fold_sd_raw": 0.0,
+   "fold_sd_nested": 4.4e-05,
+   "n_sd_nested": -0.45,
+   "fold_picks": [
+    {
+     "where": "post",
+     "cal": "platt"
+    },
+    {
+     "where": "pre",
+     "cal": "shipped"
+    },
+    {
+     "where": "pre",
+     "cal": "shipped"
+    },
+    {
+     "where": "pre",
+     "cal": "shipped"
+    },
+    {
+     "where": "pre",
+     "cal": "shipped"
+    }
+   ]
+  },
+  "seconds": 24
+ },
+ "_meta": {
+  "dev": "2002-2015",
+  "folds": 5,
+  "objective_GI": "pooled 5-fold season-grouped OOF log loss, FULL tier",
+  "objective_H": "walk-forward per-season refit, FULL tier",
+  "gate": 0.002,
+  "market_blind": true,
+  "updated": "2026-07-31 15:59:09"
+ },
+ "axis_h": {
+  "baseline_wf_ll": 0.678863,
+  "baseline_wf_fold_ll": [
+   0.679686,
+   0.676485,
+   0.67855,
+   0.678288,
+   0.680895
+  ],
+  "n_scored": 26727,
+  "note": "walk-forward objective: seasons 2005-2015 scored with a blend fitted only on strictly earlier games. NOT comparable to the 5-fold OOF number used by axes G and I.",
+  "half_life": {
+   "label": "H exponential half-life",
+   "n_cells": 8,
+   "best_params": {
+    "half_life_seasons": 12.0
+   },
+   "base_ll": 0.678863,
+   "raw_ll": 0.678858,
+   "raw_delta": 5e-06,
+   "nested_ll": 0.678874,
+   "nested_delta": -1.1e-05,
+   "optimism": 1.5e-05,
+   "raw_fold_deltas": [
+    -7e-06,
+    1.1e-05,
+    -2e-05,
+    3e-05,
+    1.6e-05
+   ],
+   "nested_fold_deltas": [
+    -1.2e-05,
+    1.1e-05,
+    -6.8e-05,
+    0.0,
+    1.6e-05
+   ],
+   "fold_sd_raw": 2e-05,
+   "fold_sd_nested": 3.4e-05,
+   "n_sd_nested": -0.32,
+   "fold_picks": [
+    {
+     "half_life_seasons": 8.0
+    },
+    {
+     "half_life_seasons": 12.0
+    },
+    {
+     "half_life_seasons": 5.0
+    },
+    {
+     "half_life_seasons": null
+    },
+    {
+     "half_life_seasons": 12.0
+    }
+   ]
+  },
+  "window": {
+   "label": "H rectangular window",
+   "n_cells": 6,
+   "best_params": {
+    "window_seasons": null
+   },
+   "base_ll": 0.678863,
+   "raw_ll": 0.678863,
+   "raw_delta": 0.0,
+   "nested_ll": 0.678863,
+   "nested_delta": 0.0,
+   "optimism": 0.0,
+   "raw_fold_deltas": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "nested_fold_deltas": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "fold_sd_raw": 0.0,
+   "fold_sd_nested": 0.0,
+   "n_sd_nested": null,
+   "fold_picks": [
+    {
+     "window_seasons": null
+    },
+    {
+     "window_seasons": null
+    },
+    {
+     "window_seasons": null
+    },
+    {
+     "window_seasons": null
+    },
+    {
+     "window_seasons": null
+    }
+   ]
+  },
+  "refit_cadence": {
+   "label": "H refit cadence",
+   "n_cells": 7,
+   "best_params": {
+    "refit_every_games": 250,
+    "refit_every_seasons": 1
+   },
+   "base_ll": 0.678863,
+   "raw_ll": 0.678855,
+   "raw_delta": 8e-06,
+   "nested_ll": 0.678876,
+   "nested_delta": -1.3e-05,
+   "optimism": 2.1e-05,
+   "raw_fold_deltas": [
+    -2.1e-05,
+    -1e-06,
+    5.7e-05,
+    -9e-06,
+    3e-05
+   ],
+   "nested_fold_deltas": [
+    -2.1e-05,
+    -6.9e-05,
+    3.5e-05,
+    -2.5e-05,
+    1.9e-05
+   ],
+   "fold_sd_raw": 3.2e-05,
+   "fold_sd_nested": 4.1e-05,
+   "n_sd_nested": -0.3,
+   "fold_picks": [
+    {
+     "refit_every_games": 250,
+     "refit_every_seasons": 1
+    },
+    {
+     "refit_every_games": 1000,
+     "refit_every_seasons": 1
+    },
+    {
+     "refit_every_games": 100,
+     "refit_every_seasons": 1
+    },
+    {
+     "refit_every_games": 100,
+     "refit_every_seasons": 1
+    },
+    {
+     "refit_every_games": 100,
+     "refit_every_seasons": 1
+    }
+   ]
+  },
+  "joint_hl_window": {
+   "label": "H half-life x window (joint)",
+   "n_cells": 48,
+   "best_params": {
+    "half_life_seasons": 12.0,
+    "window_seasons": null
+   },
+   "base_ll": 0.678863,
+   "raw_ll": 0.678858,
+   "raw_delta": 5e-06,
+   "nested_ll": 0.678874,
+   "nested_delta": -1.1e-05,
+   "optimism": 1.5e-05,
+   "raw_fold_deltas": [
+    -7e-06,
+    1.1e-05,
+    -2e-05,
+    3e-05,
+    1.6e-05
+   ],
+   "nested_fold_deltas": [
+    -1.2e-05,
+    1.1e-05,
+    -6.8e-05,
+    0.0,
+    1.6e-05
+   ],
+   "fold_sd_raw": 2e-05,
+   "fold_sd_nested": 3.4e-05,
+   "n_sd_nested": -0.32,
+   "fold_picks": [
+    {
+     "half_life_seasons": 8.0,
+     "window_seasons": null
+    },
+    {
+     "half_life_seasons": 12.0,
+     "window_seasons": null
+    },
+    {
+     "half_life_seasons": 5.0,
+     "window_seasons": null
+    },
+    {
+     "half_life_seasons": null,
+     "window_seasons": null
+    },
+    {
+     "half_life_seasons": 12.0,
+     "window_seasons": null
+    }
+   ]
+  },
+  "warm_start_history_cap": {
+   "ll_on_2008_2015": {
+    "1": 0.679621,
+    "2": 0.679014,
+    "3": 0.678838,
+    "4": 0.678829,
+    "6": 0.678619,
+    "None": 0.678555
+   },
+   "note": "with the scored span fixed, 'warm-start length' and 'training window' are the SAME knob; reported separately only to show the identity explicitly."
+  },
+  "per_season_convergence": {
+   "2005": {
+    "wf_ll": 0.677728,
+    "insample_oracle_ll": 0.676661
+   },
+   "2006": {
+    "wf_ll": 0.681089,
+    "insample_oracle_ll": 0.680554
+   },
+   "2007": {
+    "wf_ll": 0.680241,
+    "insample_oracle_ll": 0.67969
+   },
+   "2008": {
+    "wf_ll": 0.677848,
+    "insample_oracle_ll": 0.677355
+   },
+   "2009": {
+    "wf_ll": 0.675123,
+    "insample_oracle_ll": 0.675392
+   },
+   "2010": {
+    "wf_ll": 0.676262,
+    "insample_oracle_ll": 0.676024
+   },
+   "2011": {
+    "wf_ll": 0.680839,
+    "insample_oracle_ll": 0.680134
+   },
+   "2012": {
+    "wf_ll": 0.677623,
+    "insample_oracle_ll": 0.677266
+   },
+   "2013": {
+    "wf_ll": 0.678953,
+    "insample_oracle_ll": 0.67887
+   },
+   "2014": {
+    "wf_ll": 0.682441,
+    "insample_oracle_ll": 0.682176
+   },
+   "2015": {
+    "wf_ll": 0.679349,
+    "insample_oracle_ll": 0.679213
+   }
+  },
+  "seconds": 11
+ },
+ "axis_i": {
+  "tier_average": {
+   "full_only (shipped)": {
+    "name": "I full_only (shipped)",
+    "base_ll": 0.676686,
+    "ll": 0.676686,
+    "delta": 0.0,
+    "fold_deltas": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "fold_sd": 0.0,
+    "n_sd": null,
+    "ci": [
+     0.0,
+     0.0
+    ],
+    "sig": "n.s."
+   },
+   "mean_prob_3tier": {
+    "name": "I mean_prob_3tier",
+    "base_ll": 0.676686,
+    "ll": 0.677212,
+    "delta": -0.000525,
+    "fold_deltas": [
+     -0.001065,
+     -0.000695,
+     -0.000436,
+     -4.7e-05,
+     -0.000313
+    ],
+    "fold_sd": 0.000388,
+    "n_sd": -1.32,
+    "ci": [
+     -0.000901,
+     -0.000137
+    ],
+    "sig": "SIG WORSE"
+   },
+   "mean_logit_3tier": {
+    "name": "I mean_logit_3tier",
+    "base_ll": 0.676686,
+    "ll": 0.677211,
+    "delta": -0.000524,
+    "fold_deltas": [
+     -0.00106,
+     -0.000698,
+     -0.000432,
+     -4.9e-05,
+     -0.000313
+    ],
+    "fold_sd": 0.000386,
+    "n_sd": -1.32,
+    "ci": [
+     -0.0009,
+     -0.000137
+    ],
+    "sig": "SIG WORSE"
+   },
+   "mean_logit_full_recbp": {
+    "name": "I mean_logit_full_recbp",
+    "base_ll": 0.676686,
+    "ll": 0.676951,
+    "delta": -0.000265,
+    "fold_deltas": [
+     -0.000854,
+     -0.000239,
+     -0.000258,
+     5.9e-05,
+     8.3e-05
+    ],
+    "fold_sd": 0.000378,
+    "n_sd": -0.64,
+    "ci": [
+     -0.000529,
+     6e-06
+    ],
+    "sig": "n.s."
+   },
+   "logit_0.75full_0.25recbp": {
+    "name": "I logit_0.75full_0.25recbp",
+    "base_ll": 0.676686,
+    "ll": 0.676737,
+    "delta": -5.1e-05,
+    "fold_deltas": [
+     -0.000361,
+     -4.4e-05,
+     -4.8e-05,
+     0.000128,
+     0.00013
+    ],
+    "fold_sd": 0.0002,
+    "n_sd": -0.2,
+    "ci": [
+     -0.000183,
+     8.4e-05
+    ],
+    "sig": "n.s."
+   },
+   "logit_0.9full_0.1recal": {
+    "name": "I logit_0.9full_0.1recal",
+    "base_ll": 0.676686,
+    "ll": 0.676681,
+    "delta": 5e-06,
+    "fold_deltas": [
+     -5.2e-05,
+     -6.1e-05,
+     2.7e-05,
+     0.000102,
+     1.2e-05
+    ],
+    "fold_sd": 6.6e-05,
+    "n_sd": 0.09,
+    "ci": [
+     -6e-05,
+     7.2e-05
+    ],
+    "sig": "n.s."
+   },
+   "_nested_choice": {
+    "label": "I tier averaging",
+    "n_cells": 6,
+    "best_params": {
+     "variant": "logit_0.9full_0.1recal"
+    },
+    "base_ll": 0.676686,
+    "raw_ll": 0.676681,
+    "raw_delta": 5e-06,
+    "nested_ll": 0.676775,
+    "nested_delta": -8.9e-05,
+    "optimism": 9.4e-05,
+    "raw_fold_deltas": [
+     -5.2e-05,
+     -6.1e-05,
+     2.7e-05,
+     0.000102,
+     1.2e-05
+    ],
+    "nested_fold_deltas": [
+     -0.000361,
+     -6.1e-05,
+     0.0,
+     0.0,
+     1.2e-05
+    ],
+    "fold_sd_raw": 6.6e-05,
+    "fold_sd_nested": 0.000159,
+    "n_sd_nested": -0.52,
+    "fold_picks": [
+     {
+      "variant": "logit_0.75full_0.25recbp"
+     },
+     {
+      "variant": "logit_0.9full_0.1recal"
+     },
+     {
+      "variant": "full_only (shipped)"
+     },
+     {
+      "variant": "full_only (shipped)"
+     },
+     {
+      "variant": "logit_0.9full_0.1recal"
+     }
+    ]
+   },
+   "note": "in DEV every scored game has a complete feature set, so tier selection is degenerate (always 'full'); averaging tiers is therefore a pure shrinkage device toward the simpler nested models."
+  },
+  "bagging": {
+   "B10_seed3": {
+    "name": "I bagged blend B=10 seed=3",
+    "base_ll": 0.676686,
+    "ll": 0.676738,
+    "delta": -5.1e-05,
+    "fold_deltas": [
+     -1e-05,
+     -9.6e-05,
+     -8.6e-05,
+     -5.6e-05,
+     1.4e-05
+    ],
+    "fold_sd": 4.8e-05,
+    "n_sd": -0.99,
+    "ci": [
+     -0.000104,
+     2e-06
+    ],
+    "sig": "n.s."
+   },
+   "B50_seed3": {
+    "name": "I bagged blend B=50 seed=3",
+    "base_ll": 0.676686,
+    "ll": 0.676698,
+    "delta": -1.2e-05,
+    "fold_deltas": [
+     -8.2e-05,
+     1e-05,
+     6e-06,
+     2e-05,
+     -1.4e-05
+    ],
+    "fold_sd": 4.1e-05,
+    "n_sd": -0.29,
+    "ci": [
+     -3.5e-05,
+     1.2e-05
+    ],
+    "sig": "n.s."
+   },
+   "B200_seed3": {
+    "name": "I bagged blend B=200 seed=3",
+    "base_ll": 0.676686,
+    "ll": 0.67671,
+    "delta": -2.4e-05,
+    "fold_deltas": [
+     -4.1e-05,
+     -2e-05,
+     -2.4e-05,
+     -3.1e-05,
+     8e-06
+    ],
+    "fold_sd": 1.8e-05,
+    "n_sd": -1.18,
+    "ci": [
+     -3.6e-05,
+     -1.1e-05
+    ],
+    "sig": "SIG WORSE"
+   },
+   "B200_seed99": {
+    "name": "I bagged blend B=200 seed=99",
+    "base_ll": 0.676686,
+    "ll": 0.676692,
+    "delta": -6e-06,
+    "fold_deltas": [
+     5e-06,
+     -1.4e-05,
+     -1.7e-05,
+     -1.4e-05,
+     1.6e-05
+    ],
+    "fold_sd": 1.5e-05,
+    "n_sd": -0.32,
+    "ci": [
+     -1.8e-05,
+     5e-06
+    ],
+    "sig": "n.s."
+   },
+   "_nested_choice": {
+    "label": "I bagged blend",
+    "n_cells": 4,
+    "best_params": {
+     "bag_B": 200,
+     "seed": 99
+    },
+    "base_ll": 0.676686,
+    "raw_ll": 0.676692,
+    "raw_delta": -6e-06,
+    "nested_ll": 0.676711,
+    "nested_delta": -2.5e-05,
+    "optimism": 1.9e-05,
+    "raw_fold_deltas": [
+     5e-06,
+     -1.4e-05,
+     -1.7e-05,
+     -1.4e-05,
+     1.6e-05
+    ],
+    "nested_fold_deltas": [
+     -8.2e-05,
+     -1.4e-05,
+     -1.7e-05,
+     -1.4e-05,
+     1.6e-05
+    ],
+    "fold_sd_raw": 1.5e-05,
+    "fold_sd_nested": 3.6e-05,
+    "n_sd_nested": -0.61,
+    "fold_picks": [
+     {
+      "bag_B": 50,
+      "seed": 3
+     },
+     {
+      "bag_B": 200,
+      "seed": 99
+     },
+     {
+      "bag_B": 200,
+      "seed": 99
+     },
+     {
+      "bag_B": 200,
+      "seed": 99
+     },
+     {
+      "bag_B": 200,
+      "seed": 99
+     }
+    ]
+   },
+   "seed_audit": "no stochasticity exists in the shipped chain: FIP-Elo and the per-PA TrueSkill walk are deterministic given the fixed Retrosheet event order, and the blend is fit by Newton-IRLS. Seed-averaging has nothing to average; bagging is screened as the nearest analogue."
+  },
+  "recency_ensemble": {
+   "expanding only (baseline)": {
+    "wf_ll": 0.678863,
+    "delta_vs_wf_baseline": 0.0,
+    "fold_deltas": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "fold_sd": 0.0
+   },
+   "hl {3, None}": {
+    "wf_ll": 0.67886,
+    "delta_vs_wf_baseline": 3e-06,
+    "fold_deltas": [
+     -2e-05,
+     2.3e-05,
+     -5.3e-05,
+     7.9e-05,
+     -3e-06
+    ],
+    "fold_sd": 5e-05
+   },
+   "hl {1,3,None}": {
+    "wf_ll": 0.678891,
+    "delta_vs_wf_baseline": -2.8e-05,
+    "fold_deltas": [
+     -8.5e-05,
+     3.5e-05,
+     -0.000165,
+     0.000213,
+     -0.000111
+    ],
+    "fold_sd": 0.000151
+   },
+   "hl {1,2,3,5,None}": {
+    "wf_ll": 0.678889,
+    "delta_vs_wf_baseline": -2.6e-05,
+    "fold_deltas": [
+     -7.3e-05,
+     3.2e-05,
+     -0.000158,
+     0.000188,
+     -9.6e-05
+    ],
+    "fold_sd": 0.000136
+   },
+   "win {3,5,8} + expanding": {
+    "wf_ll": 0.678879,
+    "delta_vs_wf_baseline": -1.6e-05,
+    "fold_deltas": [
+     2.9e-05,
+     4.2e-05,
+     -0.000156,
+     2.8e-05,
+     -4.3e-05
+    ],
+    "fold_sd": 8.3e-05
+   },
+   "all 8": {
+    "wf_ll": 0.678891,
+    "delta_vs_wf_baseline": -2.8e-05,
+    "fold_deltas": [
+     -2.7e-05,
+     4.1e-05,
+     -0.000185,
+     0.000129,
+     -9.7e-05
+    ],
+    "fold_sd": 0.000121
+   },
+   "_nested_choice": {
+    "label": "I recency-window ensemble",
+    "n_cells": 6,
+    "best_params": {
+     "members": [
+      "3.0",
+      "None"
+     ]
+    },
+    "base_ll": 0.678863,
+    "raw_ll": 0.67886,
+    "raw_delta": 3e-06,
+    "nested_ll": 0.678897,
+    "nested_delta": -3.4e-05,
+    "optimism": 3.7e-05,
+    "raw_fold_deltas": [
+     -2e-05,
+     2.3e-05,
+     -5.3e-05,
+     7.9e-05,
+     -3e-06
+    ],
+    "nested_fold_deltas": [
+     -2e-05,
+     0.0,
+     -0.000156,
+     0.0,
+     -3e-06
+    ],
+    "fold_sd_raw": 5e-05,
+    "fold_sd_nested": 6.8e-05,
+    "n_sd_nested": -0.53,
+    "fold_picks": [
+     {
+      "members": [
+       "3.0",
+       "None"
+      ]
+     },
+     {
+      "members": [
+       "None"
+      ]
+     },
+     {
+      "members": [
+       "win3",
+       "win5",
+       "win8",
+       "None"
+      ]
+     },
+     {
+      "members": [
+       "None"
+      ]
+     },
+     {
+      "members": [
+       "3.0",
+       "None"
+      ]
+     }
+    ]
+   },
+   "seconds": 1
+  },
+  "axis_best": {
+   "label": "I best ensembling variant (5-fold obj)",
+   "n_cells": 10,
+   "best_params": {
+    "family": "tier_avg",
+    "variant": "logit_0.9full_0.1recal"
+   },
+   "base_ll": 0.676686,
+   "raw_ll": 0.676681,
+   "raw_delta": 5e-06,
+   "nested_ll": 0.676775,
+   "nested_delta": -8.9e-05,
+   "optimism": 9.4e-05,
+   "raw_fold_deltas": [
+    -5.2e-05,
+    -6.1e-05,
+    2.7e-05,
+    0.000102,
+    1.2e-05
+   ],
+   "nested_fold_deltas": [
+    -0.000361,
+    -6.1e-05,
+    0.0,
+    0.0,
+    1.2e-05
+   ],
+   "fold_sd_raw": 6.6e-05,
+   "fold_sd_nested": 0.000159,
+   "n_sd_nested": -0.52,
+   "fold_picks": [
+    {
+     "family": "tier_avg",
+     "variant": "logit_0.75full_0.25recbp"
+    },
+    {
+     "family": "tier_avg",
+     "variant": "logit_0.9full_0.1recal"
+    },
+    {
+     "family": "tier_avg",
+     "variant": "full_only (shipped)"
+    },
+    {
+     "family": "tier_avg",
+     "variant": "full_only (shipped)"
+    },
+    {
+     "family": "tier_avg",
+     "variant": "logit_0.9full_0.1recal"
+    }
+   ]
+  },
+  "seconds": 48
+ },
+ "summary": {
+  "rows": [
+   {
+    "axis": "G calibration",
+    "objective": "5-fold OOF, full tier",
+    "best_candidate": {
+     "where": "pre",
+     "cal": "shipped"
+    },
+    "raw_delta": 0.0,
+    "nested_delta": -2.1e-05,
+    "optimism": 2.1e-05,
+    "fold_sd": 4.4e-05,
+    "nested_in_noise_units": -0.48,
+    "gate": 0.002,
+    "verdict": "NULL \u2014 not adopted, no TEST look spent"
+   },
+   {
+    "axis": "H training cadence",
+    "objective": "walk-forward 2005-2015",
+    "best_candidate": {
+     "refit_every_games": 250,
+     "refit_every_seasons": 1
+    },
+    "raw_delta": 8e-06,
+    "nested_delta": -1.3e-05,
+    "optimism": 2.1e-05,
+    "fold_sd": 4.1e-05,
+    "nested_in_noise_units": -0.32,
+    "gate": 0.002,
+    "verdict": "NULL \u2014 not adopted, no TEST look spent"
+   },
+   {
+    "axis": "I ensembling",
+    "objective": "5-fold OOF, full tier",
+    "best_candidate": {
+     "family": "tier_avg",
+     "variant": "logit_0.9full_0.1recal"
+    },
+    "raw_delta": 5e-06,
+    "nested_delta": -8.9e-05,
+    "optimism": 9.4e-05,
+    "fold_sd": 0.000159,
+    "nested_in_noise_units": -0.56,
+    "gate": 0.002,
+    "verdict": "NULL \u2014 not adopted, no TEST look spent"
+   }
+  ],
+  "drift_decomposition": {
+   "platt": {
+    "k_params": 2,
+    "n_scored": 7290,
+    "measured_stale_minus_fresh": 0.000234,
+    "expected_from_in_sample_fit_alone": 0.000137,
+    "residual_true_drift": 9.7e-05
+   },
+   "full_blend": {
+    "k_params": 7,
+    "n_scored": 7290,
+    "measured_stale_minus_fresh": 0.000537,
+    "expected_from_in_sample_fit_alone": 0.00048,
+    "residual_true_drift": 5.7e-05
+   }
+  },
+  "headline": "axes G, H and I are all NULL. Every nested estimate is negative; the largest raw gain on any axis is +0.000008 (H, intra-season refit every 250 games), 250x below the +0.0020 gate and negative once re-selected honestly.",
+  "structural_findings": [
+   "Platt calibration of the Elo channel is ALGEBRAICALLY the shipped blend: a logistic with an intercept absorbs any affine map of one of its columns exactly. Measured delta 0.000000 confirms it. The same identity means a post-hoc Platt fitted on the blend's own training predictions returns (b0,b1)=(0,1) to 8 decimals \u2014 it can only do work if fitted out of sample.",
+   "There is NO calibration drift inside DEV. Per-season Platt slopes have Q=12.65 on 13 df (Q/df=0.97) and intercepts Q=13.92 on 13 df (Q/df=1.07): the season-to-season wobble is exactly sampling noise.",
+   "The apparent 'staleness cost' of a 2002-2008 curve on 2013-2015 is the oracle's in-sample advantage, not drift: measured +0.000234 vs +0.000137 expected from fitting 2 parameters in sample on 7,290 games; +0.000537 vs +0.000480 expected for the 7-parameter blend. Residual true drift is under 0.0001 on both.",
+   "Recency weighting is monotonically HARMFUL and the damage scales with how much data it throws away (half-life 0.5 seasons +0.000605 worse, window of 1 season +0.001252 worse). With no drift to track, discarding history buys nothing and costs coefficient variance.",
+   "Tier averaging is a strict loss: the full tier dominates, and averaging in the nested tiers costs up to +0.000525. In DEV every scored game has a complete feature set, so tier selection is degenerate and tier-averaging is pure shrinkage toward a worse model.",
+   "Nothing in the shipped MLB chain is stochastic \u2014 FIP-Elo and the per-PA TrueSkill walk are deterministic given the fixed Retrosheet event order, and the blend is fit by Newton-IRLS \u2014 so seed-averaging has nothing to average. Bagging, the nearest analogue, is null-to-worse at every B.",
+   "The blend is already well calibrated where it matters: 0 of 10 OOF probability deciles fall outside their 95% Wilson interval, ECE 0.0061, calibration slope 0.9930. The raw FIP-Elo it is built from is NOT: slope 1.3148, 5 of 10 deciles outside CI, monotone under-dispersion peaking at +0.0365 (z=+4.43) in the top decile \u2014 repaired entirely by the single linear-in-logit term the blend already fits."
+  ],
+  "caveat": "nested CV inside DEV estimates transfer to another 2002-2015 season block, not to 2016-2024. No TEST-era number was computed, printed or looked at by this process."
+ }
+}

@@ -1,0 +1,1686 @@
+{
+ "axis_G_calibration": {
+  "no_existing_calibration_layer": {
+   "checked": [
+    "data/nhl_model.json",
+    "phase0/nhl_serve.py",
+    "phase0/nhl_weekly.py"
+   ],
+   "finding": "data/nhl_model.json holds only elo_cfg/glicko_cfg/xg_cfg and a 5-coefficient blend; no calibration map is stored or applied anywhere in the serving path. Claim VERIFIED."
+  },
+  "baseline_dev": 0.6724,
+  "decile_table_uncalibrated": [
+   {
+    "decile": 1,
+    "p_lo": 0.2385,
+    "p_hi": 0.4297,
+    "n": 793,
+    "pred": 0.3889,
+    "obs": 0.3796,
+    "obs_ci95": [
+     0.3465,
+     0.4139
+    ],
+    "resid": -0.0094,
+    "flag": ""
+   },
+   {
+    "decile": 2,
+    "p_lo": 0.4297,
+    "p_hi": 0.4723,
+    "n": 793,
+    "pred": 0.4533,
+    "obs": 0.4792,
+    "obs_ci95": [
+     0.4446,
+     0.514
+    ],
+    "resid": 0.0259,
+    "flag": ""
+   },
+   {
+    "decile": 3,
+    "p_lo": 0.4723,
+    "p_hi": 0.5025,
+    "n": 793,
+    "pred": 0.488,
+    "obs": 0.4641,
+    "obs_ci95": [
+     0.4296,
+     0.4989
+    ],
+    "resid": -0.0239,
+    "flag": ""
+   },
+   {
+    "decile": 4,
+    "p_lo": 0.5025,
+    "p_hi": 0.5289,
+    "n": 793,
+    "pred": 0.5156,
+    "obs": 0.5069,
+    "obs_ci95": [
+     0.4722,
+     0.5416
+    ],
+    "resid": -0.0087,
+    "flag": ""
+   },
+   {
+    "decile": 5,
+    "p_lo": 0.5289,
+    "p_hi": 0.5514,
+    "n": 793,
+    "pred": 0.5403,
+    "obs": 0.541,
+    "obs_ci95": [
+     0.5062,
+     0.5754
+    ],
+    "resid": 0.0007,
+    "flag": ""
+   },
+   {
+    "decile": 6,
+    "p_lo": 0.5514,
+    "p_hi": 0.5743,
+    "n": 793,
+    "pred": 0.5624,
+    "obs": 0.575,
+    "obs_ci95": [
+     0.5403,
+     0.609
+    ],
+    "resid": 0.0126,
+    "flag": ""
+   },
+   {
+    "decile": 7,
+    "p_lo": 0.5743,
+    "p_hi": 0.5989,
+    "n": 793,
+    "pred": 0.5865,
+    "obs": 0.5977,
+    "obs_ci95": [
+     0.5632,
+     0.6313
+    ],
+    "resid": 0.0112,
+    "flag": ""
+   },
+   {
+    "decile": 8,
+    "p_lo": 0.5989,
+    "p_hi": 0.6261,
+    "n": 793,
+    "pred": 0.6122,
+    "obs": 0.6179,
+    "obs_ci95": [
+     0.5836,
+     0.6511
+    ],
+    "resid": 0.0057,
+    "flag": ""
+   },
+   {
+    "decile": 9,
+    "p_lo": 0.6261,
+    "p_hi": 0.6643,
+    "n": 793,
+    "pred": 0.6438,
+    "obs": 0.6305,
+    "obs_ci95": [
+     0.5964,
+     0.6634
+    ],
+    "resid": -0.0132,
+    "flag": ""
+   },
+   {
+    "decile": 10,
+    "p_lo": 0.6644,
+    "p_hi": 0.8266,
+    "n": 792,
+    "pred": 0.7021,
+    "obs": 0.7008,
+    "obs_ci95": [
+     0.668,
+     0.7316
+    ],
+    "resid": -0.0014,
+    "flag": ""
+   }
+  ],
+  "calibration_slope_overall": {
+   "intercept": 0.0035,
+   "slope": 0.9808
+  },
+  "calibration_slope_by_season": {
+   "20112012": {
+    "intercept": 0.0709,
+    "slope": 0.9499
+   },
+   "20122013": {
+    "intercept": 0.061,
+    "slope": 1.0695
+   },
+   "20132014": {
+    "intercept": -0.0579,
+    "slope": 0.939
+   },
+   "20142015": {
+    "intercept": -0.0661,
+    "slope": 1.1273
+   },
+   "20152016": {
+    "intercept": -0.0713,
+    "slope": 0.8686
+   },
+   "20162017": {
+    "intercept": 0.0575,
+    "slope": 0.9354
+   },
+   "20172018": {
+    "intercept": 0.0543,
+    "slope": 1.0243
+   }
+  },
+  "regional_residuals": {
+   "underdog_home  p<0.45": {
+    "n": 1113,
+    "pred": 0.4037,
+    "obs": 0.3971,
+    "obs_ci95": [
+     0.3688,
+     0.4262
+    ],
+    "resid": -0.0066
+   },
+   "coinflip 0.45-0.55": {
+    "n": 2799,
+    "pred": 0.5051,
+    "obs": 0.503,
+    "obs_ci95": [
+     0.4845,
+     0.5215
+    ],
+    "resid": -0.0021
+   },
+   "fav 0.55-0.65": {
+    "n": 2960,
+    "pred": 0.5953,
+    "obs": 0.6051,
+    "obs_ci95": [
+     0.5873,
+     0.6225
+    ],
+    "resid": 0.0097
+   },
+   "heavy fav p>0.65": {
+    "n": 1057,
+    "pred": 0.6907,
+    "obs": 0.6755,
+    "obs_ci95": [
+     0.6467,
+     0.703
+    ],
+    "resid": -0.0152
+   }
+  },
+  "in_sample_upper_bound_gain_by_family": {
+   "note": "fit and scored on the SAME pooled OOF predictions -> an unattainable ceiling, quoted to bound the whole axis",
+   "gain": {
+    "platt": 1e-05,
+    "hinge@0.4": 0.00012,
+    "hinge@0.9": 3e-05,
+    "bend@0.25": 2e-05,
+    "beta": 1e-05,
+    "iso": 0.00262
+   }
+  },
+  "rows": [
+   {
+    "gain": -0.0,
+    "fold_sd": 0.0,
+    "fold_se": 0.0,
+    "sigma": -0.42,
+    "n_pos_folds": 3,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.0,
+     0.0
+    ],
+    "sig": "n.s.",
+    "name": "platt | insample",
+    "dev": 0.6724
+   },
+   {
+    "gain": -0.0,
+    "fold_sd": 7e-05,
+    "fold_se": 3e-05,
+    "sigma": -0.18,
+    "n_pos_folds": 4,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.0001,
+     9e-05
+    ],
+    "sig": "n.s.",
+    "name": "platt | oof",
+    "dev": 0.6724
+   },
+   {
+    "gain": -0.0,
+    "fold_sd": 0.0,
+    "fold_se": 0.0,
+    "sigma": -0.31,
+    "n_pos_folds": 5,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.0,
+     0.0
+    ],
+    "sig": "n.s.",
+    "name": "temp | insample",
+    "dev": 0.6724
+   },
+   {
+    "gain": -0.0,
+    "fold_sd": 8e-05,
+    "fold_se": 3e-05,
+    "sigma": -0.07,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -9e-05,
+     8e-05
+    ],
+    "sig": "n.s.",
+    "name": "temp | oof",
+    "dev": 0.6724
+   },
+   {
+    "gain": -5e-05,
+    "fold_sd": 0.00016,
+    "fold_se": 6e-05,
+    "sigma": -0.84,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00024,
+     0.00013
+    ],
+    "sig": "n.s.",
+    "name": "temp | oof_last3",
+    "dev": 0.67245
+   },
+   {
+    "gain": -9e-05,
+    "fold_sd": 0.00023,
+    "fold_se": 9e-05,
+    "sigma": -1.01,
+    "n_pos_folds": 3,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00033,
+     0.00015
+    ],
+    "sig": "n.s.",
+    "name": "platt | oof_last3",
+    "dev": 0.67249
+   },
+   {
+    "gain": -0.0001,
+    "fold_sd": 0.00023,
+    "fold_se": 9e-05,
+    "sigma": -1.15,
+    "n_pos_folds": 3,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00036,
+     0.00015
+    ],
+    "sig": "n.s.",
+    "name": "temp | oof_last2",
+    "dev": 0.6725
+   },
+   {
+    "gain": -0.00017,
+    "fold_sd": 0.00031,
+    "fold_se": 0.00012,
+    "sigma": -1.44,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00039,
+     6e-05
+    ],
+    "sig": "n.s.",
+    "name": "bend@0.5 | insample",
+    "dev": 0.67257
+   },
+   {
+    "gain": -0.00017,
+    "fold_sd": 0.00039,
+    "fold_se": 0.00015,
+    "sigma": -1.19,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00042,
+     8e-05
+    ],
+    "sig": "n.s.",
+    "name": "bend@0.5 | oof",
+    "dev": 0.67257
+   },
+   {
+    "gain": -0.00018,
+    "fold_sd": 0.00023,
+    "fold_se": 9e-05,
+    "sigma": -2.16,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00037,
+     0.0
+    ],
+    "sig": "n.s.",
+    "name": "bend@0.25 | insample",
+    "dev": 0.67258
+   },
+   {
+    "gain": -0.0002,
+    "fold_sd": 0.00026,
+    "fold_se": 0.0001,
+    "sigma": -2.02,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.0004,
+     2e-05
+    ],
+    "sig": "n.s.",
+    "name": "bend@0.25 | oof",
+    "dev": 0.6726
+   },
+   {
+    "gain": -0.00021,
+    "fold_sd": 0.00024,
+    "fold_se": 9e-05,
+    "sigma": -2.4,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00037,
+     -7e-05
+    ],
+    "sig": "SIG WORSE",
+    "name": "beta | insample",
+    "dev": 0.67261
+   },
+   {
+    "gain": -0.00023,
+    "fold_sd": 0.00023,
+    "fold_se": 9e-05,
+    "sigma": -2.53,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.0004,
+     -6e-05
+    ],
+    "sig": "SIG WORSE",
+    "name": "beta | oof",
+    "dev": 0.67262
+   },
+   {
+    "gain": -0.00033,
+    "fold_sd": 0.00061,
+    "fold_se": 0.00023,
+    "sigma": -1.45,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00081,
+     0.00017
+    ],
+    "sig": "n.s.",
+    "name": "platt | oof_last2",
+    "dev": 0.67273
+   },
+   {
+    "gain": -0.00036,
+    "fold_sd": 0.00063,
+    "fold_se": 0.00024,
+    "sigma": -1.49,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00081,
+     0.0001
+    ],
+    "sig": "n.s.",
+    "name": "hinge@0.4 | insample",
+    "dev": 0.67276
+   },
+   {
+    "gain": -0.00036,
+    "fold_sd": 0.00067,
+    "fold_se": 0.00025,
+    "sigma": -1.42,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00082,
+     0.0001
+    ],
+    "sig": "n.s.",
+    "name": "hinge@0.4 | oof",
+    "dev": 0.67276
+   },
+   {
+    "gain": -0.00041,
+    "fold_sd": 0.00063,
+    "fold_se": 0.00024,
+    "sigma": -1.7,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00088,
+     0.00014
+    ],
+    "sig": "n.s.",
+    "name": "hinge@0.9 | oof_last3",
+    "dev": 0.6728
+   },
+   {
+    "gain": -0.00065,
+    "fold_sd": 0.00058,
+    "fold_se": 0.00022,
+    "sigma": -2.99,
+    "n_pos_folds": 0,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00129,
+     -1e-05
+    ],
+    "sig": "SIG WORSE",
+    "name": "bend@0.25 | oof_last3",
+    "dev": 0.67305
+   },
+   {
+    "gain": -0.00067,
+    "fold_sd": 0.00083,
+    "fold_se": 0.00032,
+    "sigma": -2.11,
+    "n_pos_folds": 0,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00127,
+     -5e-05
+    ],
+    "sig": "SIG WORSE",
+    "name": "bend@0.5 | oof_last3",
+    "dev": 0.67306
+   },
+   {
+    "gain": -0.00086,
+    "fold_sd": 0.00095,
+    "fold_se": 0.00036,
+    "sigma": -2.4,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00146,
+     -0.00026
+    ],
+    "sig": "SIG WORSE",
+    "name": "beta | oof_last3",
+    "dev": 0.67326
+   },
+   {
+    "gain": -0.00091,
+    "fold_sd": 0.00102,
+    "fold_se": 0.00039,
+    "sigma": -2.35,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00162,
+     -0.00023
+    ],
+    "sig": "SIG WORSE",
+    "name": "hinge@0.4 | oof_last3",
+    "dev": 0.67331
+   },
+   {
+    "gain": -0.00099,
+    "fold_sd": 0.00198,
+    "fold_se": 0.00075,
+    "sigma": -1.32,
+    "n_pos_folds": 3,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00197,
+     0.0
+    ],
+    "sig": "n.s.",
+    "name": "hinge@0.9 | oof_last2",
+    "dev": 0.67338
+   },
+   {
+    "gain": -0.00106,
+    "fold_sd": 0.00113,
+    "fold_se": 0.00043,
+    "sigma": -2.5,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00201,
+     -0.00011
+    ],
+    "sig": "SIG WORSE",
+    "name": "bend@0.25 | oof_last2",
+    "dev": 0.67346
+   },
+   {
+    "gain": -0.00131,
+    "fold_sd": 0.00174,
+    "fold_se": 0.00066,
+    "sigma": -1.99,
+    "n_pos_folds": 3,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00233,
+     -0.00026
+    ],
+    "sig": "SIG WORSE",
+    "name": "bend@0.5 | oof_last2",
+    "dev": 0.67371
+   },
+   {
+    "gain": -0.00145,
+    "fold_sd": 0.00187,
+    "fold_se": 0.00071,
+    "sigma": -2.05,
+    "n_pos_folds": 3,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00244,
+     -0.00046
+    ],
+    "sig": "SIG WORSE",
+    "name": "beta | oof_last2",
+    "dev": 0.67385
+   },
+   {
+    "gain": -0.00158,
+    "fold_sd": 0.0019,
+    "fold_se": 0.00072,
+    "sigma": -2.2,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00268,
+     -0.00048
+    ],
+    "sig": "SIG WORSE",
+    "name": "hinge@0.4 | oof_last2",
+    "dev": 0.67398
+   },
+   {
+    "gain": -0.00172,
+    "fold_sd": 0.00108,
+    "fold_se": 0.00041,
+    "sigma": -4.2,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00422,
+     0.00018
+    ],
+    "sig": "n.s.",
+    "name": "iso | oof_last3",
+    "dev": 0.67412
+   },
+   {
+    "gain": -0.0024,
+    "fold_sd": 0.00298,
+    "fold_se": 0.00113,
+    "sigma": -2.13,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00566,
+     -4e-05
+    ],
+    "sig": "SIG WORSE",
+    "name": "iso | oof",
+    "dev": 0.6748
+   },
+   {
+    "gain": -0.00302,
+    "fold_sd": 0.00446,
+    "fold_se": 0.00169,
+    "sigma": -1.79,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00674,
+     -0.00011
+    ],
+    "sig": "SIG WORSE",
+    "name": "iso | insample",
+    "dev": 0.67542
+   },
+   {
+    "gain": -0.00417,
+    "fold_sd": 0.0034,
+    "fold_se": 0.00128,
+    "sigma": -3.24,
+    "n_pos_folds": 0,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00811,
+     -0.00091
+    ],
+    "sig": "SIG WORSE",
+    "name": "iso | oof_last2",
+    "dev": 0.67657
+   },
+   {
+    "gain": -0.00716,
+    "fold_sd": 0.0168,
+    "fold_se": 0.00635,
+    "sigma": -1.13,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.01427,
+     -0.00161
+    ],
+    "sig": "SIG WORSE",
+    "name": "hinge@0.9 | oof",
+    "dev": 0.67956
+   },
+   {
+    "gain": -0.01002,
+    "fold_sd": 0.02384,
+    "fold_se": 0.00901,
+    "sigma": -1.11,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.01869,
+     -0.00295
+    ],
+    "sig": "SIG WORSE",
+    "name": "hinge@0.9 | insample",
+    "dev": 0.68242
+   }
+  ],
+  "nested": {
+   "raw_best": "identity",
+   "raw_best_ll": 0.6724,
+   "raw_gain": 0.0,
+   "nested_ll": 0.67244,
+   "nested_gain": -5e-05,
+   "optimism": 5e-05,
+   "loso_picks": {
+    "20112012": "temp | oof",
+    "20122013": "temp | oof",
+    "20132014": "temp | insample",
+    "20142015": "platt | oof",
+    "20152016": "temp | insample",
+    "20162017": "identity",
+    "20172018": "temp | oof"
+   }
+  },
+  "decile_table_after_best_honest_calibrator": {
+   "calibrator": "platt | insample",
+   "table": [
+    {
+     "decile": 1,
+     "p_lo": 0.2385,
+     "p_hi": 0.4297,
+     "n": 793,
+     "pred": 0.3889,
+     "obs": 0.3796,
+     "obs_ci95": [
+      0.3465,
+      0.4139
+     ],
+     "resid": -0.0094,
+     "flag": ""
+    },
+    {
+     "decile": 2,
+     "p_lo": 0.4297,
+     "p_hi": 0.4723,
+     "n": 793,
+     "pred": 0.4533,
+     "obs": 0.4792,
+     "obs_ci95": [
+      0.4446,
+      0.514
+     ],
+     "resid": 0.0259,
+     "flag": ""
+    },
+    {
+     "decile": 3,
+     "p_lo": 0.4723,
+     "p_hi": 0.5025,
+     "n": 793,
+     "pred": 0.488,
+     "obs": 0.4641,
+     "obs_ci95": [
+      0.4296,
+      0.4989
+     ],
+     "resid": -0.0239,
+     "flag": ""
+    },
+    {
+     "decile": 4,
+     "p_lo": 0.5025,
+     "p_hi": 0.5289,
+     "n": 793,
+     "pred": 0.5156,
+     "obs": 0.5069,
+     "obs_ci95": [
+      0.4722,
+      0.5416
+     ],
+     "resid": -0.0087,
+     "flag": ""
+    },
+    {
+     "decile": 5,
+     "p_lo": 0.5289,
+     "p_hi": 0.5514,
+     "n": 793,
+     "pred": 0.5403,
+     "obs": 0.541,
+     "obs_ci95": [
+      0.5062,
+      0.5754
+     ],
+     "resid": 0.0007,
+     "flag": ""
+    },
+    {
+     "decile": 6,
+     "p_lo": 0.5514,
+     "p_hi": 0.5743,
+     "n": 793,
+     "pred": 0.5624,
+     "obs": 0.575,
+     "obs_ci95": [
+      0.5403,
+      0.609
+     ],
+     "resid": 0.0126,
+     "flag": ""
+    },
+    {
+     "decile": 7,
+     "p_lo": 0.5743,
+     "p_hi": 0.5989,
+     "n": 793,
+     "pred": 0.5865,
+     "obs": 0.5977,
+     "obs_ci95": [
+      0.5632,
+      0.6313
+     ],
+     "resid": 0.0112,
+     "flag": ""
+    },
+    {
+     "decile": 8,
+     "p_lo": 0.5989,
+     "p_hi": 0.6261,
+     "n": 793,
+     "pred": 0.6122,
+     "obs": 0.6179,
+     "obs_ci95": [
+      0.5836,
+      0.6511
+     ],
+     "resid": 0.0057,
+     "flag": ""
+    },
+    {
+     "decile": 9,
+     "p_lo": 0.6261,
+     "p_hi": 0.6643,
+     "n": 793,
+     "pred": 0.6438,
+     "obs": 0.6305,
+     "obs_ci95": [
+      0.5964,
+      0.6634
+     ],
+     "resid": -0.0132,
+     "flag": ""
+    },
+    {
+     "decile": 10,
+     "p_lo": 0.6644,
+     "p_hi": 0.8266,
+     "n": 792,
+     "pred": 0.7021,
+     "obs": 0.7008,
+     "obs_ci95": [
+      0.668,
+      0.7316
+     ],
+     "resid": -0.0014,
+     "flag": ""
+    }
+   ],
+   "calibration_slope": {
+    "intercept": 0.0035,
+    "slope": 0.9808
+   }
+  }
+ },
+ "axis_H_cadence": {
+  "baseline_dev": 0.6724,
+  "baseline_protocol": "blend fitted on the OTHER 6 eval seasons (LOSO) \u2014 the DEV analogue of the shipped 'fit once on all warm games'; it uses FUTURE seasons, so any walk-forward variant is handicapped by data volume as well as by cadence.",
+  "H4_frozen_restricted": {
+   "frozen on seasons < 20122013 (scored 20122013..20172018)": {
+    "n_train_seasons": 2,
+    "scored_seasons": [
+     20122013,
+     20132014,
+     20142015,
+     20152016,
+     20162017,
+     20172018
+    ],
+    "n_scored": 6781,
+    "frozen_ll": 0.67193,
+    "loso_baseline_ll_same_rows": 0.67228,
+    "walkforward_expanding_ll_same_rows": 0.6721,
+    "gain_vs_loso_baseline": 0.00035,
+    "per_season_delta": {
+     "20122013": -0.0004,
+     "20132014": 0.00051,
+     "20142015": 0.0005,
+     "20152016": 0.00131,
+     "20162017": -0.00035,
+     "20172018": 0.00019
+    },
+    "_n_weighted_check": 6781
+   },
+   "frozen on seasons < 20142015 (scored 20142015..20172018)": {
+    "n_train_seasons": 4,
+    "scored_seasons": [
+     20142015,
+     20152016,
+     20162017,
+     20172018
+    ],
+    "n_scored": 4961,
+    "frozen_ll": 0.67189,
+    "loso_baseline_ll_same_rows": 0.67203,
+    "walkforward_expanding_ll_same_rows": 0.67189,
+    "gain_vs_loso_baseline": 0.00014,
+    "per_season_delta": {
+     "20142015": -0.0003,
+     "20152016": 0.00054,
+     "20162017": 0.00053,
+     "20172018": -0.00021
+    },
+    "_n_weighted_check": 4961
+   },
+   "frozen on seasons < 20152016 (scored 20152016..20172018)": {
+    "n_train_seasons": 5,
+    "scored_seasons": [
+     20152016,
+     20162017,
+     20172018
+    ],
+    "n_scored": 3731,
+    "frozen_ll": 0.67372,
+    "loso_baseline_ll_same_rows": 0.67418,
+    "walkforward_expanding_ll_same_rows": 0.6739,
+    "gain_vs_loso_baseline": 0.00046,
+    "per_season_delta": {
+     "20152016": 0.00097,
+     "20162017": 0.00022,
+     "20172018": 0.0002
+    },
+    "_n_weighted_check": 3731
+   }
+  },
+  "rows": [
+   {
+    "gain": -3e-05,
+    "fold_sd": 0.0001,
+    "fold_se": 4e-05,
+    "sigma": -0.81,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00018,
+     0.00013
+    ],
+    "sig": "n.s.",
+    "name": "H6 LOSO + |season distance| half-life 3",
+    "dev": 0.67243
+   },
+   {
+    "gain": -5e-05,
+    "fold_sd": 0.00015,
+    "fold_se": 6e-05,
+    "sigma": -0.85,
+    "n_pos_folds": 3,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00027,
+     0.00018
+    ],
+    "sig": "n.s.",
+    "name": "H6 LOSO + |season distance| half-life 2",
+    "dev": 0.67245
+   },
+   {
+    "gain": -9e-05,
+    "fold_sd": 0.0003,
+    "fold_se": 0.00011,
+    "sigma": -0.81,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00048,
+     0.00029
+    ],
+    "sig": "n.s.",
+    "name": "H6 LOSO + |season distance| half-life 1",
+    "dev": 0.67249
+   },
+   {
+    "gain": -0.00044,
+    "fold_sd": 0.00118,
+    "fold_se": 0.00045,
+    "sigma": -0.97,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00096,
+     0.00011
+    ],
+    "sig": "n.s.",
+    "name": "H5 expanding + 4 in-season refits",
+    "dev": 0.67283
+   },
+   {
+    "gain": -0.00047,
+    "fold_sd": 0.00129,
+    "fold_se": 0.00049,
+    "sigma": -0.96,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00098,
+     7e-05
+    ],
+    "sig": "n.s.",
+    "name": "H5 expanding + 8 in-season refits",
+    "dev": 0.67287
+   },
+   {
+    "gain": -0.00058,
+    "fold_sd": 0.00158,
+    "fold_se": 0.0006,
+    "sigma": -0.96,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00112,
+     -2e-05
+    ],
+    "sig": "SIG WORSE",
+    "name": "H5 expanding + 2 in-season refits",
+    "dev": 0.67297
+   },
+   {
+    "gain": -0.00068,
+    "fold_sd": 0.0023,
+    "fold_se": 0.00087,
+    "sigma": -0.78,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.0013,
+     -4e-05
+    ],
+    "sig": "SIG WORSE",
+    "name": "H1 walk-forward expanding",
+    "dev": 0.67308
+   },
+   {
+    "gain": -0.00075,
+    "fold_sd": 0.00228,
+    "fold_se": 0.00086,
+    "sigma": -0.87,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00138,
+     -9e-05
+    ],
+    "sig": "SIG WORSE",
+    "name": "H3 expanding + season half-life 5",
+    "dev": 0.67315
+   },
+   {
+    "gain": -0.0008,
+    "fold_sd": 0.00227,
+    "fold_se": 0.00086,
+    "sigma": -0.93,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00145,
+     -0.00012
+    ],
+    "sig": "SIG WORSE",
+    "name": "H3 expanding + season half-life 3",
+    "dev": 0.6732
+   },
+   {
+    "gain": -0.00081,
+    "fold_sd": 0.00224,
+    "fold_se": 0.00085,
+    "sigma": -0.96,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00146,
+     -0.00016
+    ],
+    "sig": "SIG WORSE",
+    "name": "H2 rolling window 4 season(s)",
+    "dev": 0.67321
+   },
+   {
+    "gain": -0.00087,
+    "fold_sd": 0.00227,
+    "fold_se": 0.00086,
+    "sigma": -1.01,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00155,
+     -0.00017
+    ],
+    "sig": "SIG WORSE",
+    "name": "H3 expanding + season half-life 2",
+    "dev": 0.67326
+   },
+   {
+    "gain": -0.00097,
+    "fold_sd": 0.00223,
+    "fold_se": 0.00084,
+    "sigma": -1.15,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.0017,
+     -0.00026
+    ],
+    "sig": "SIG WORSE",
+    "name": "H2 rolling window 3 season(s)",
+    "dev": 0.67337
+   },
+   {
+    "gain": -0.00107,
+    "fold_sd": 0.00229,
+    "fold_se": 0.00086,
+    "sigma": -1.24,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00186,
+     -0.00029
+    ],
+    "sig": "SIG WORSE",
+    "name": "H3 expanding + season half-life 1",
+    "dev": 0.67347
+   },
+   {
+    "gain": -0.00168,
+    "fold_sd": 0.00227,
+    "fold_se": 0.00086,
+    "sigma": -1.97,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00262,
+     -0.00079
+    ],
+    "sig": "SIG WORSE",
+    "name": "H2 rolling window 2 season(s)",
+    "dev": 0.67408
+   },
+   {
+    "gain": -0.00177,
+    "fold_sd": 0.00232,
+    "fold_se": 0.00088,
+    "sigma": -2.02,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00299,
+     -0.00053
+    ],
+    "sig": "SIG WORSE",
+    "name": "H2 rolling window 1 season(s)",
+    "dev": 0.67417
+   }
+  ],
+  "nested": {
+   "raw_best": "BASELINE (single/LOSO fit)",
+   "raw_best_ll": 0.6724,
+   "raw_gain": 0.0,
+   "nested_ll": 0.67333,
+   "nested_gain": -0.00093,
+   "optimism": 0.00093,
+   "loso_picks": {
+    "20112012": "H1 walk-forward expanding",
+    "20122013": "BASELINE (single/LOSO fit)",
+    "20132014": "BASELINE (single/LOSO fit)",
+    "20142015": "BASELINE (single/LOSO fit)",
+    "20152016": "BASELINE (single/LOSO fit)",
+    "20162017": "H6 LOSO + |season distance| half-life 1",
+    "20172018": "BASELINE (single/LOSO fit)"
+   }
+  },
+  "late4_only": {
+   "seasons": [
+    20142015,
+    20152016,
+    20162017,
+    20172018
+   ],
+   "scores": {
+    "BASELINE (single/LOSO fit)": 0.67203,
+    "H1 walk-forward expanding": 0.67189,
+    "H2 rolling window 1 season(s)": 0.67326,
+    "H2 rolling window 2 season(s)": 0.67297,
+    "H2 rolling window 3 season(s)": 0.67236,
+    "H2 rolling window 4 season(s)": 0.67211,
+    "H3 expanding + season half-life 1": 0.6724,
+    "H3 expanding + season half-life 2": 0.67215,
+    "H3 expanding + season half-life 3": 0.67206,
+    "H3 expanding + season half-life 5": 0.67199,
+    "H5 expanding + 2 in-season refits": 0.67196,
+    "H5 expanding + 4 in-season refits": 0.67206,
+    "H5 expanding + 8 in-season refits": 0.67202,
+    "H6 LOSO + |season distance| half-life 1": 0.67218,
+    "H6 LOSO + |season distance| half-life 2": 0.6721,
+    "H6 LOSO + |season distance| half-life 3": 0.67207
+   }
+  },
+  "coefficient_stability_across_folds": {
+   "intercept": {
+    "mean": 0.0052,
+    "sd": 0.0081,
+    "cv": 1.556
+   },
+   "elo_logit": {
+    "mean": 0.6997,
+    "sd": 0.0216,
+    "cv": 0.031
+   },
+   "rest": {
+    "mean": -0.0085,
+    "sd": 0.0103,
+    "cv": 1.204
+   },
+   "b2b_home": {
+    "mean": -0.2474,
+    "sd": 0.0435,
+    "cv": 0.176
+   },
+   "b2b_away": {
+    "mean": 0.2246,
+    "sd": 0.0275,
+    "cv": 0.122
+   },
+   "xg": {
+    "mean": 0.3746,
+    "sd": 0.0079,
+    "cv": 0.021
+   }
+  }
+ },
+ "axis_I_ensembling": {
+  "baseline_dev": 0.6724,
+  "elo_only_blend_dev": 0.67543,
+  "rows": [
+   {
+    "gain": 1e-05,
+    "fold_sd": 6e-05,
+    "fold_se": 2e-05,
+    "sigma": 0.27,
+    "n_pos_folds": 4,
+    "n_folds": 7,
+    "boot_ci": [
+     -8e-05,
+     9e-05
+    ],
+    "sig": "n.s.",
+    "name": "I3 shrink toward base rate 0.549 w=0.02",
+    "dev": 0.67239
+   },
+   {
+    "gain": -1e-05,
+    "fold_sd": 4e-05,
+    "fold_se": 2e-05,
+    "sigma": -0.51,
+    "n_pos_folds": 3,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.0001,
+     8e-05
+    ],
+    "sig": "n.s.",
+    "name": "I1 full x elo-only w=0.05 (logit)",
+    "dev": 0.67241
+   },
+   {
+    "gain": -1e-05,
+    "fold_sd": 4e-05,
+    "fold_se": 2e-05,
+    "sigma": -0.47,
+    "n_pos_folds": 3,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.0001,
+     8e-05
+    ],
+    "sig": "n.s.",
+    "name": "I1 full x elo-only w=0.05 (prob)",
+    "dev": 0.67241
+   },
+   {
+    "gain": -1e-05,
+    "fold_sd": 0.00016,
+    "fold_se": 6e-05,
+    "sigma": -0.17,
+    "n_pos_folds": 4,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00022,
+     0.0002
+    ],
+    "sig": "n.s.",
+    "name": "I3 shrink toward base rate 0.549 w=0.05",
+    "dev": 0.67241
+   },
+   {
+    "gain": -3e-05,
+    "fold_sd": 9e-05,
+    "fold_se": 3e-05,
+    "sigma": -0.96,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00021,
+     0.00014
+    ],
+    "sig": "n.s.",
+    "name": "I1 full x elo-only w=0.1 (logit)",
+    "dev": 0.67243
+   },
+   {
+    "gain": -3e-05,
+    "fold_sd": 9e-05,
+    "fold_se": 3e-05,
+    "sigma": -0.93,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00021,
+     0.00014
+    ],
+    "sig": "n.s.",
+    "name": "I1 full x elo-only w=0.1 (prob)",
+    "dev": 0.67243
+   },
+   {
+    "gain": -7e-05,
+    "fold_sd": 0.00013,
+    "fold_se": 5e-05,
+    "sigma": -1.43,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00033,
+     0.00018
+    ],
+    "sig": "n.s.",
+    "name": "I1 full x elo-only w=0.15 (logit)",
+    "dev": 0.67247
+   },
+   {
+    "gain": -7e-05,
+    "fold_sd": 0.00013,
+    "fold_se": 5e-05,
+    "sigma": -1.39,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00033,
+     0.00018
+    ],
+    "sig": "n.s.",
+    "name": "I1 full x elo-only w=0.15 (prob)",
+    "dev": 0.67247
+   },
+   {
+    "gain": -0.00011,
+    "fold_sd": 0.00033,
+    "fold_se": 0.00012,
+    "sigma": -0.89,
+    "n_pos_folds": 4,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00053,
+     0.00031
+    ],
+    "sig": "n.s.",
+    "name": "I3 shrink toward base rate 0.549 w=0.1",
+    "dev": 0.67251
+   },
+   {
+    "gain": -0.00012,
+    "fold_sd": 0.00017,
+    "fold_se": 7e-05,
+    "sigma": -1.89,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00047,
+     0.00021
+    ],
+    "sig": "n.s.",
+    "name": "I1 full x elo-only w=0.2 (logit)",
+    "dev": 0.67252
+   },
+   {
+    "gain": -0.00012,
+    "fold_sd": 0.00018,
+    "fold_se": 7e-05,
+    "sigma": -1.86,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00048,
+     0.00021
+    ],
+    "sig": "n.s.",
+    "name": "I1 full x elo-only w=0.2 (prob)",
+    "dev": 0.67252
+   },
+   {
+    "gain": -0.00027,
+    "fold_sd": 0.00026,
+    "fold_se": 0.0001,
+    "sigma": -2.84,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.0008,
+     0.00023
+    ],
+    "sig": "n.s.",
+    "name": "I1 full x elo-only w=0.3 (logit)",
+    "dev": 0.67267
+   },
+   {
+    "gain": -0.00028,
+    "fold_sd": 0.00026,
+    "fold_se": 0.0001,
+    "sigma": -2.8,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00081,
+     0.00023
+    ],
+    "sig": "n.s.",
+    "name": "I1 full x elo-only w=0.3 (prob)",
+    "dev": 0.67268
+   },
+   {
+    "gain": -0.00049,
+    "fold_sd": 0.00034,
+    "fold_se": 0.00013,
+    "sigma": -3.79,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00118,
+     0.00018
+    ],
+    "sig": "n.s.",
+    "name": "I1 full x elo-only w=0.4 (logit)",
+    "dev": 0.67289
+   },
+   {
+    "gain": -0.00049,
+    "fold_sd": 0.00035,
+    "fold_se": 0.00013,
+    "sigma": -3.76,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00119,
+     0.00018
+    ],
+    "sig": "n.s.",
+    "name": "I1 full x elo-only w=0.4 (prob)",
+    "dev": 0.67289
+   },
+   {
+    "gain": -0.00076,
+    "fold_sd": 0.00042,
+    "fold_se": 0.00016,
+    "sigma": -4.75,
+    "n_pos_folds": 0,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00163,
+     8e-05
+    ],
+    "sig": "n.s.",
+    "name": "I1 full x elo-only w=0.5 (logit)",
+    "dev": 0.67316
+   },
+   {
+    "gain": -0.00076,
+    "fold_sd": 0.00043,
+    "fold_se": 0.00016,
+    "sigma": -4.72,
+    "n_pos_folds": 0,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00164,
+     8e-05
+    ],
+    "sig": "n.s.",
+    "name": "I1 full x elo-only w=0.5 (prob)",
+    "dev": 0.67316
+   },
+   {
+    "gain": -0.00079,
+    "fold_sd": 0.00226,
+    "fold_se": 0.00085,
+    "sigma": -0.93,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00144,
+     -0.00014
+    ],
+    "sig": "SIG WORSE",
+    "name": "I2 avg recency-window blends 3+4+99",
+    "dev": 0.67319
+   },
+   {
+    "gain": -0.00096,
+    "fold_sd": 0.00228,
+    "fold_se": 0.00086,
+    "sigma": -1.12,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.0017,
+     -0.00023
+    ],
+    "sig": "SIG WORSE",
+    "name": "I2 avg recency-window blends 1+2+3+4+99",
+    "dev": 0.67336
+   },
+   {
+    "gain": -0.00096,
+    "fold_sd": 0.00228,
+    "fold_se": 0.00086,
+    "sigma": -1.12,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.0017,
+     -0.00023
+    ],
+    "sig": "SIG WORSE",
+    "name": "I2L avg (logit) recency-window blends 1+2+3+4+99",
+    "dev": 0.67336
+   },
+   {
+    "gain": -0.00097,
+    "fold_sd": 0.00222,
+    "fold_se": 0.00084,
+    "sigma": -1.15,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00164,
+     -0.00028
+    ],
+    "sig": "SIG WORSE",
+    "name": "I2 avg recency-window blends 2+4+99",
+    "dev": 0.67336
+   },
+   {
+    "gain": -0.00106,
+    "fold_sd": 0.0022,
+    "fold_se": 0.00083,
+    "sigma": -1.27,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00177,
+     -0.00037
+    ],
+    "sig": "SIG WORSE",
+    "name": "I2 avg recency-window blends 2+3+4",
+    "dev": 0.67346
+   },
+   {
+    "gain": -0.00122,
+    "fold_sd": 0.00233,
+    "fold_se": 0.00088,
+    "sigma": -1.38,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00208,
+     -0.00036
+    ],
+    "sig": "SIG WORSE",
+    "name": "I2 avg recency-window blends 1+2+3",
+    "dev": 0.67361
+   },
+   {
+    "gain": -0.00122,
+    "fold_sd": 0.00233,
+    "fold_se": 0.00088,
+    "sigma": -1.38,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00208,
+     -0.00036
+    ],
+    "sig": "SIG WORSE",
+    "name": "I2L avg (logit) recency-window blends 1+2+3",
+    "dev": 0.67362
+   }
+  ],
+  "nested": {
+   "raw_best": "I3 shrink toward base rate 0.549 w=0.02",
+   "raw_best_ll": 0.67239,
+   "raw_gain": 1e-05,
+   "nested_ll": 0.67329,
+   "nested_gain": -0.00089,
+   "optimism": 0.0009,
+   "loso_picks": {
+    "20112012": "I2 avg recency-window blends 3+4+99",
+    "20122013": "I3 shrink toward base rate 0.549 w=0.02",
+    "20132014": "I1 full x elo-only w=0.05 (prob)",
+    "20142015": "I3 shrink toward base rate 0.549 w=0.05",
+    "20152016": "BASELINE (full blend)",
+    "20162017": "I3 shrink toward base rate 0.549 w=0.02",
+    "20172018": "I3 shrink toward base rate 0.549 w=0.02"
+   }
+  }
+ },
+ "_fold_noise": {
+  "per_season_baseline_ll": {
+   "20112012": 0.67309,
+   "20122013": 0.67011,
+   "20132014": 0.67464,
+   "20142015": 0.6655,
+   "20152016": 0.68128,
+   "20162017": 0.6721,
+   "20172018": 0.66932
+  },
+  "sd_across_folds": 0.00494,
+  "se_of_mean": 0.00187,
+  "note": "1 UNPAIRED noise unit. Paired comparisons are far tighter and carry their own fold_se in every row below."
+ },
+ "_protocol": {
+  "league": "NHL",
+  "round": 2,
+  "axes": "G calibration, H cadence, I ensembling",
+  "dev_eval_seasons": [
+   20112012,
+   20122013,
+   20132014,
+   20142015,
+   20152016,
+   20162017,
+   20172018
+  ],
+  "n_dev_games": 7929,
+  "train_pool_from_season": 20102011,
+  "test_era_never_touched": [
+   20182019,
+   20252026
+  ],
+  "eval": "leave-one-season-out CV on DEV only",
+  "baseline_dev_ll": 0.6724,
+  "pre_registered_gate": 0.0005,
+  "test_looks_spent": 0,
+  "market_blind": true,
+  "generated": "2026-07-31"
+ }
+}
