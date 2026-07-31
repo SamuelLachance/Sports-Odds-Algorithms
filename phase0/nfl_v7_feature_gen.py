@@ -490,5 +490,5 @@ if os.path.exists(OUT):
     print(f"existing npy: {len(old)} rows | new: {len(full)} rows | "
           f"identical on common prefix: {np.array_equal(old[:n], full[:n])} | "
           f"full array_equal: {np.array_equal(old, full)}", flush=True)
-np.save(OUT, full)
+np.save(OUT + ".tmp.npy", full); os.replace(OUT + ".tmp.npy", OUT)
 print(f"[{time.time()-T0:.0f}s] wrote {OUT} ({len(full)} rows)", flush=True)

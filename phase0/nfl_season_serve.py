@@ -673,6 +673,13 @@ payload = json.load(open("site/data/nfl.json"))
 # rows get a fresh ph and refresh their ledger entry. Today zero 2026 games are
 # played -> payload unchanged (0 frozen; ledger seeded with pre-game values).
 LEDGER = "data/nfl_ph_ledger.json"
+
+def _dump_atomic(obj, path, **kw):
+    import os as _os
+    with open(path + ".tmp", "w") as _fh:
+        json.dump(obj, _fh, **kw)
+    _os.replace(path + ".tmp", path)
+
 try:
     ledger = json.load(open(LEDGER))
 except (FileNotFoundError, json.JSONDecodeError):
@@ -695,7 +702,7 @@ for s in sched:
             ledger[key] = {"ph": s["ph"], "ct": s["ct"]}
     else:
         ledger[key] = {"ph": s["ph"], "ct": s["ct"]}
-json.dump(ledger, open(LEDGER, "w"))
+_dump_atomic(ledger, LEDGER)
 print(f"[{time.time()-T0:.0f}s] ph-freeze: {ph_frozen} played games keep their "
       f"ledger pre-game ph ({len(ledger)} ledger rows)", flush=True)
 
@@ -735,9 +742,10 @@ payload["model_card"]["serve"] = {
     "qb_source": "nflverse depth charts 2026-07-23",
     "generated": "2026-07-23",
 }
-json.dump(payload, open("site/data/nfl.json", "w"))
+_dump_atomic(payload, "site/data/nfl.json")
 json.dump({"repro_ll": round(repro, 5), "mean_home": round(float(probs.mean()), 4),
            "proj": proj, "coef": [round(float(c), 5) for c in CLF.coef_[0]],
            "intercept": round(float(CLF.intercept_[0]), 5)},
-          open("data/nfl_season_2026.json", "w"), indent=1)
+          open("data/nfl_season_2026.json.tmp", "w"), indent=1)
+import os as _os_; _os_.replace("data/nfl_season_2026.json.tmp", "data/nfl_season_2026.json")
 print(f"[{time.time()-T0:.0f}s] wrote site/data/nfl.json + data/nfl_season_2026.json")
