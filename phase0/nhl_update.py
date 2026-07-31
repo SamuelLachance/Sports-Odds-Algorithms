@@ -5,6 +5,9 @@ full pull).
   data/nhl_games.csv      += completed games since the last row (deduped)
   data/nhl_upcoming.json   = scheduled games in the next 10 days (for serving
                              predictions in-season; empty file in the offseason)
+  data/nhl_lineup_archive.jsonl += game-day pre-game roster/scratch snapshots
+                             from the gamecenter landing endpoint (see
+                             archive_lineups)
 
 Standard library only, so it can run in the minimal CI refresh job.
 """
@@ -19,9 +22,11 @@ import time
 import urllib.request
 
 API = "https://api-web.nhle.com/v1/schedule/{}"
+LANDING = "https://api-web.nhle.com/v1/gamecenter/{}/landing"
 HEADERS = {"User-Agent": "glassbox-nhl/1.0 (research)", "Accept-Encoding": "gzip"}
 SPINE = "data/nhl_games.csv"
 UPCOMING = "data/nhl_upcoming.json"
+LINEUP_ARCHIVE = "data/nhl_lineup_archive.jsonl"
 
 
 def get(url):
@@ -30,6 +35,109 @@ def get(url):
     if raw[:2] == b"\x1f\x8b":
         raw = gzip.decompress(raw)
     return json.loads(raw)
+
+
+def _lineup_subset(payload):
+    """Minimal raw-ish roster subset of a gamecenter landing payload.
+
+    Observed structure (2026-07 probe): a far-future FUT game exposes only
+    matchup.goalieComparison (season-stat goalie lists per side); rosterSpots
+    and scratches are absent pre-game, and a FINAL game's scratches live in the
+    right-rail endpoint instead. What landing shows for a PRE/game-day game
+    once lineups post is exactly what this archive exists to discover, so all
+    candidate keys are handled defensively.
+    """
+    out = {}
+    rs = payload.get("rosterSpots")
+    if rs:
+        out["rosterSpots"] = [
+            {k: p.get(k) for k in ("teamId", "playerId", "positionCode",
+                                   "sweaterNumber")}
+            for p in rs if isinstance(p, dict)]
+    if payload.get("scratches"):
+        out["scratches"] = payload["scratches"]
+    gi = (payload.get("summary") or {}).get("gameInfo") or {}
+    for side in ("homeTeam", "awayTeam"):
+        sc = (gi.get(side) or {}).get("scratches")
+        if sc:
+            out.setdefault("gameInfoScratches", {})[side] = [
+                p.get("id") for p in sc if isinstance(p, dict)]
+    gc = (payload.get("matchup") or {}).get("goalieComparison") or {}
+    for side in ("homeTeam", "awayTeam"):
+        goalies = (gc.get(side) or {}).get("leaders") or []
+        ids = [g.get("playerId") for g in goalies
+               if isinstance(g, dict) and g.get("playerId")]
+        if ids:
+            out.setdefault("goalieComparison", {})[side] = ids
+    return out
+
+
+def _pid_set(obj):
+    """All player ids in a lineup subset (dedup key: same set = same line)."""
+    ids = set()
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            if k in ("playerId", "id") and isinstance(v, int):
+                ids.add(v)
+            else:
+                ids |= _pid_set(v)
+    elif isinstance(obj, list):
+        for v in obj:
+            if isinstance(v, int):
+                ids.add(v)
+            else:
+                ids |= _pid_set(v)
+    return ids
+
+
+def archive_lineups(upcoming, today_iso):
+    """Snapshot game-day pre-game rosters to data/nhl_lineup_archive.jsonl.
+
+    Why this exists: ledger row 10 (scratch-absence) was the most promising
+    null — its deployable version needs ANNOUNCED lineups valued with RAPM
+    weights, and nobody archives announced lineups historically. This logger
+    captures them ourselves from October on so the row-10 reopen condition can
+    eventually be tested. One JSON line per (game, fetch) with whatever roster
+    info the landing payload exposes; a (gid, player-id-set) already archived
+    is skipped, so the 6x/day CI cadence stores only genuine changes.
+    """
+    todays = [u for u in upcoming if u.get("d") == today_iso]
+    if not todays:
+        print("[nhl_update] 0 lineups archived")
+        return 0
+    seen = set()  # (gid, frozenset(player ids)) pairs already on disk
+    if os.path.exists(LINEUP_ARCHIVE):
+        for line in open(LINEUP_ARCHIVE, encoding="utf-8"):
+            try:
+                rec = json.loads(line)
+            except ValueError:
+                continue
+            seen.add((rec.get("gid"), frozenset(_pid_set(rec.get("lineup")))))
+    n = 0
+    with open(LINEUP_ARCHIVE, "a", encoding="utf-8") as fh:
+        for u in todays:
+            try:
+                payload = get(LANDING.format(u["id"]))
+            except Exception as ex:  # noqa: BLE001
+                print(f"[nhl_update] landing fetch failed for {u['id']}: {ex}")
+                continue
+            sub = _lineup_subset(payload)
+            key = (u["id"], frozenset(_pid_set(sub)))
+            if not sub or key in seen:
+                continue
+            seen.add(key)
+            # append-only jsonl: a partial line at worst, never a truncation
+            fh.write(json.dumps({
+                "gid": u["id"],
+                "t_fetch": dt.datetime.now(dt.timezone.utc).isoformat(
+                    timespec="seconds"),
+                "home": u.get("home"), "away": u.get("away"),
+                "state": payload.get("gameState"),
+                "lineup": sub}) + "\n")
+            n += 1
+            time.sleep(0.2)
+    print(f"[nhl_update] {n} lineups archived")
+    return n
 
 
 def main() -> int:
@@ -102,6 +210,7 @@ def main() -> int:
               open(UPCOMING, "w"), indent=0)
     print(f"[nhl_update] +{len(new_rows)} finals, {len(ded)} upcoming "
           f"({n_req} requests)")
+    archive_lineups(list(ded.values()), today.isoformat())
     return 0
 
 
