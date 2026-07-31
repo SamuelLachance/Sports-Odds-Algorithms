@@ -1,0 +1,1796 @@
+{
+ "axis_c": {
+  "baseline_dev": 0.6724,
+  "rows": [
+   {
+    "name": "IRLS vs sklearn max|coef diff|",
+    "value": 0.004544
+   },
+   {
+    "name": "logistic (shipped class)",
+    "dev": 0.6724,
+    "train_ll": 0.6718,
+    "train_cv_gap": 0.0006
+   },
+   {
+    "gain": -0.00343,
+    "fold_sd": 0.00306,
+    "fold_se": 0.00116,
+    "sigma": -2.97,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.0052,
+     -0.00157
+    ],
+    "sig": "SIG WORSE",
+    "name": "HistGB 100x8lv lr0.06",
+    "dev": 0.67583,
+    "train_ll": 0.65995,
+    "train_cv_gap": 0.01588
+   },
+   {
+    "gain": -0.00214,
+    "fold_sd": 0.00189,
+    "fold_se": 0.00072,
+    "sigma": -3.0,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00343,
+     -0.00083
+    ],
+    "sig": "SIG WORSE",
+    "name": "HistGB 250x4lv lr0.03",
+    "dev": 0.67454,
+    "train_ll": 0.66653,
+    "train_cv_gap": 0.00801
+   },
+   {
+    "gain": -0.00227,
+    "fold_sd": 0.00195,
+    "fold_se": 0.00074,
+    "sigma": -3.08,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00366,
+     -0.0009
+    ],
+    "sig": "SIG WORSE",
+    "name": "HistGB 60x3lv lr0.05",
+    "dev": 0.67467,
+    "train_ll": 0.67075,
+    "train_cv_gap": 0.00392
+   },
+   {
+    "gain": -9e-05,
+    "fold_sd": 0.00026,
+    "fold_se": 0.0001,
+    "sigma": -0.93,
+    "n_pos_folds": 3,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00029,
+     0.00011
+    ],
+    "sig": "n.s.",
+    "name": "stack logistic+GBM w=0.15",
+    "dev": 0.67249
+   },
+   {
+    "gain": -0.00026,
+    "fold_sd": 0.00053,
+    "fold_se": 0.0002,
+    "sigma": -1.32,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00065,
+     0.00013
+    ],
+    "sig": "n.s.",
+    "name": "stack logistic+GBM w=0.3",
+    "dev": 0.67266
+   },
+   {
+    "gain": -0.00062,
+    "fold_sd": 0.0009,
+    "fold_se": 0.00034,
+    "sigma": -1.83,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00126,
+     3e-05
+    ],
+    "sig": "n.s.",
+    "name": "stack logistic+GBM w=0.5",
+    "dev": 0.67302
+   }
+  ]
+ },
+ "_protocol": {
+  "dev_seasons": [
+   20112012,
+   20172018
+  ],
+  "eval": "leave-one-season-out CV on DEV only",
+  "test_looks_spent": 0,
+  "market_blind": true
+ },
+ "axis_bd_shipped": {
+  "core": "shipped",
+  "baseline_dev": 0.6724,
+  "rows": [
+   {
+    "gain": 0.00015,
+    "fold_sd": 0.00033,
+    "fold_se": 0.00013,
+    "sigma": 1.19,
+    "n_pos_folds": 5,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00027,
+     0.00057
+    ],
+    "sig": "n.s.",
+    "name": "+ |xg - elo/scale| disagree",
+    "dev": 0.67225,
+    "k": 6
+   },
+   {
+    "gain": 0.00013,
+    "fold_sd": 0.00078,
+    "fold_se": 0.00029,
+    "sigma": 0.45,
+    "n_pos_folds": 6,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00038,
+     0.00065
+    ],
+    "sig": "n.s.",
+    "name": "+ xg x b2b_diff",
+    "dev": 0.67227,
+    "k": 6
+   },
+   {
+    "gain": 0.0001,
+    "fold_sd": 0.00012,
+    "fold_se": 5e-05,
+    "sigma": 2.09,
+    "n_pos_folds": 7,
+    "n_folds": 7,
+    "boot_ci": [
+     -1e-05,
+     0.0002
+    ],
+    "sig": "n.s.",
+    "name": "b2b as signed diff",
+    "dev": 0.6723,
+    "k": 4
+   },
+   {
+    "gain": 9e-05,
+    "fold_sd": 0.00016,
+    "fold_se": 6e-05,
+    "sigma": 1.6,
+    "n_pos_folds": 4,
+    "n_folds": 7,
+    "boot_ci": [
+     -2e-05,
+     0.00022
+    ],
+    "sig": "n.s.",
+    "name": "rest dropped",
+    "dev": 0.6723,
+    "k": 4
+   },
+   {
+    "gain": 6e-05,
+    "fold_sd": 0.00061,
+    "fold_se": 0.00023,
+    "sigma": 0.26,
+    "n_pos_folds": 3,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00042,
+     0.00056
+    ],
+    "sig": "n.s.",
+    "name": "rest split h/a (2 terms)",
+    "dev": 0.67234,
+    "k": 6
+   },
+   {
+    "gain": 0.0,
+    "fold_sd": 0.0,
+    "fold_se": 0.0,
+    "sigma": 0.0,
+    "n_pos_folds": 0,
+    "n_folds": 7,
+    "boot_ci": [
+     0.0,
+     0.0
+    ],
+    "sig": "n.s.",
+    "name": "BASELINE (shipped form)",
+    "dev": 0.6724,
+    "k": 5
+   },
+   {
+    "gain": 0.0,
+    "fold_sd": 0.0002,
+    "fold_se": 8e-05,
+    "sigma": 0.03,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00014,
+     0.00014
+    ],
+    "sig": "n.s.",
+    "name": "rest sqrt-signed",
+    "dev": 0.6724,
+    "k": 5
+   },
+   {
+    "gain": -0.0,
+    "fold_sd": 0.0,
+    "fold_se": 0.0,
+    "sigma": -0.31,
+    "n_pos_folds": 3,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.0,
+     0.0
+    ],
+    "sig": "n.s.",
+    "name": "b2b both + signed",
+    "dev": 0.6724,
+    "k": 6
+   },
+   {
+    "gain": 0.0,
+    "fold_sd": 0.00026,
+    "fold_se": 0.0001,
+    "sigma": 0.03,
+    "n_pos_folds": 3,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.0003,
+     0.00031
+    ],
+    "sig": "n.s.",
+    "name": "+ b2b_h x b2b_a",
+    "dev": 0.6724,
+    "k": 6
+   },
+   {
+    "gain": -0.00012,
+    "fold_sd": 0.00036,
+    "fold_se": 0.00014,
+    "sigma": -0.86,
+    "n_pos_folds": 3,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00036,
+     0.00011
+    ],
+    "sig": "n.s.",
+    "name": "+ xg x elo",
+    "dev": 0.67252,
+    "k": 6
+   },
+   {
+    "gain": -0.00017,
+    "fold_sd": 0.00023,
+    "fold_se": 9e-05,
+    "sigma": -1.92,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00032,
+     -3e-05
+    ],
+    "sig": "SIG WORSE",
+    "name": "+ elo^2 (shrink strong)",
+    "dev": 0.67257,
+    "k": 6
+   },
+   {
+    "gain": -0.00017,
+    "fold_sd": 0.00095,
+    "fold_se": 0.00036,
+    "sigma": -0.47,
+    "n_pos_folds": 3,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00079,
+     0.00044
+    ],
+    "sig": "n.s.",
+    "name": "+ all D interactions",
+    "dev": 0.67257,
+    "k": 9
+   },
+   {
+    "gain": -0.00018,
+    "fold_sd": 0.00028,
+    "fold_se": 0.0001,
+    "sigma": -1.73,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00042,
+     4e-05
+    ],
+    "sig": "n.s.",
+    "name": "+ b2b_h x rest",
+    "dev": 0.67258,
+    "k": 7
+   },
+   {
+    "gain": -0.00022,
+    "fold_sd": 0.00118,
+    "fold_se": 0.00045,
+    "sigma": -0.5,
+    "n_pos_folds": 3,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00085,
+     0.00041
+    ],
+    "sig": "n.s.",
+    "name": "rest linear + hinges(+-1)",
+    "dev": 0.67262,
+    "k": 7
+   },
+   {
+    "gain": -0.00028,
+    "fold_sd": 0.00089,
+    "fold_se": 0.00033,
+    "sigma": -0.83,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00091,
+     0.00034
+    ],
+    "sig": "n.s.",
+    "name": "xg tanh(x/0.40)",
+    "dev": 0.67268,
+    "k": 5
+   },
+   {
+    "gain": -0.00033,
+    "fold_sd": 0.00032,
+    "fold_se": 0.00012,
+    "sigma": -2.73,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00054,
+     -0.00012
+    ],
+    "sig": "SIG WORSE",
+    "name": "xg + xg^2",
+    "dev": 0.67273,
+    "k": 6
+   },
+   {
+    "gain": -0.00055,
+    "fold_sd": 0.00116,
+    "fold_se": 0.00044,
+    "sigma": -1.25,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00135,
+     0.00022
+    ],
+    "sig": "n.s.",
+    "name": "xg tanh(x/0.25)",
+    "dev": 0.67295,
+    "k": 5
+   },
+   {
+    "gain": -0.00058,
+    "fold_sd": 0.00071,
+    "fold_se": 0.00027,
+    "sigma": -2.15,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00101,
+     -0.00016
+    ],
+    "sig": "SIG WORSE",
+    "name": "rest as 5 bins",
+    "dev": 0.67298,
+    "k": 8
+   },
+   {
+    "gain": -0.00062,
+    "fold_sd": 0.00134,
+    "fold_se": 0.00051,
+    "sigma": -1.22,
+    "n_pos_folds": 3,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00153,
+     0.00032
+    ],
+    "sig": "n.s.",
+    "name": "b2b dropped",
+    "dev": 0.67302,
+    "k": 3
+   },
+   {
+    "gain": -0.00086,
+    "fold_sd": 0.00145,
+    "fold_se": 0.00055,
+    "sigma": -1.58,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.0018,
+     3e-05
+    ],
+    "sig": "n.s.",
+    "name": "xg tanh(x/0.15)",
+    "dev": 0.67326,
+    "k": 5
+   },
+   {
+    "gain": -0.00303,
+    "fold_sd": 0.00085,
+    "fold_se": 0.00032,
+    "sigma": -9.43,
+    "n_pos_folds": 0,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00479,
+     -0.00135
+    ],
+    "sig": "SIG WORSE",
+    "name": "xg dropped",
+    "dev": 0.67543,
+    "k": 4
+   },
+   {
+    "gain": -0.00457,
+    "fold_sd": 0.00175,
+    "fold_se": 0.00066,
+    "sigma": -6.91,
+    "n_pos_folds": 0,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00665,
+     -0.00249
+    ],
+    "sig": "SIG WORSE",
+    "name": "elo dropped",
+    "dev": 0.67697,
+    "k": 4
+   }
+  ]
+ },
+ "axis_e": {
+  "baseline_dev": 0.6724,
+  "rows": [
+   {
+    "gain": 1e-05,
+    "fold_sd": 8e-05,
+    "fold_se": 3e-05,
+    "sigma": 0.33,
+    "n_pos_folds": 5,
+    "n_folds": 7,
+    "boot_ci": [
+     -9e-05,
+     0.00011
+    ],
+    "sig": "n.s.",
+    "name": "blend C=0.02",
+    "dev": 0.67239
+   },
+   {
+    "gain": 1e-05,
+    "fold_sd": 3e-05,
+    "fold_se": 1e-05,
+    "sigma": 0.53,
+    "n_pos_folds": 5,
+    "n_folds": 7,
+    "boot_ci": [
+     -3e-05,
+     5e-05
+    ],
+    "sig": "n.s.",
+    "name": "blend C=0.05",
+    "dev": 0.67239
+   },
+   {
+    "gain": 0.0,
+    "fold_sd": 2e-05,
+    "fold_se": 1e-05,
+    "sigma": 0.6,
+    "n_pos_folds": 5,
+    "n_folds": 7,
+    "boot_ci": [
+     -2e-05,
+     2e-05
+    ],
+    "sig": "n.s.",
+    "name": "blend C=0.1",
+    "dev": 0.67239
+   },
+   {
+    "gain": 0.0,
+    "fold_sd": 1e-05,
+    "fold_se": 0.0,
+    "sigma": 0.64,
+    "n_pos_folds": 5,
+    "n_folds": 7,
+    "boot_ci": [
+     -1e-05,
+     1e-05
+    ],
+    "sig": "n.s.",
+    "name": "blend C=0.3",
+    "dev": 0.6724
+   },
+   {
+    "gain": 0.0,
+    "fold_sd": 0.0,
+    "fold_se": 0.0,
+    "sigma": 0.66,
+    "n_pos_folds": 5,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.0,
+     0.0
+    ],
+    "sig": "n.s.",
+    "name": "blend C=1",
+    "dev": 0.6724
+   },
+   {
+    "gain": 0.0,
+    "fold_sd": 0.0,
+    "fold_se": 0.0,
+    "sigma": 0.67,
+    "n_pos_folds": 5,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.0,
+     0.0
+    ],
+    "sig": "n.s.",
+    "name": "blend C=3",
+    "dev": 0.6724
+   },
+   {
+    "gain": 0.0,
+    "fold_sd": 0.0,
+    "fold_se": 0.0,
+    "sigma": 0.67,
+    "n_pos_folds": 5,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.0,
+     0.0
+    ],
+    "sig": "n.s.",
+    "name": "blend C=10",
+    "dev": 0.6724
+   },
+   {
+    "gain": -0.0,
+    "fold_sd": 0.0,
+    "fold_se": 0.0,
+    "sigma": -0.41,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.0,
+     0.0
+    ],
+    "sig": "n.s.",
+    "name": "blend C=1e+06",
+    "dev": 0.6724
+   },
+   {
+    "gain": -0.00025,
+    "fold_sd": 0.00041,
+    "fold_se": 0.00015,
+    "sigma": -1.65,
+    "n_pos_folds": 3,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00067,
+     0.00016
+    ],
+    "sig": "n.s.",
+    "name": "within-season shrink elo n0=5 xg n0=0",
+    "dev": 0.67265
+   },
+   {
+    "gain": -0.00036,
+    "fold_sd": 0.00055,
+    "fold_se": 0.00021,
+    "sigma": -1.7,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.0009,
+     0.0002
+    ],
+    "sig": "n.s.",
+    "name": "within-season shrink elo n0=10 xg n0=0",
+    "dev": 0.67275
+   },
+   {
+    "gain": -0.00039,
+    "fold_sd": 0.00036,
+    "fold_se": 0.00014,
+    "sigma": -2.89,
+    "n_pos_folds": 0,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00086,
+     6e-05
+    ],
+    "sig": "n.s.",
+    "name": "within-season shrink elo n0=0 xg n0=10",
+    "dev": 0.67279
+   },
+   {
+    "gain": -0.00055,
+    "fold_sd": 0.00079,
+    "fold_se": 0.0003,
+    "sigma": -1.84,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00124,
+     0.00015
+    ],
+    "sig": "n.s.",
+    "name": "within-season shrink elo n0=20 xg n0=0",
+    "dev": 0.67295
+   },
+   {
+    "gain": -0.00062,
+    "fold_sd": 0.00045,
+    "fold_se": 0.00017,
+    "sigma": -3.68,
+    "n_pos_folds": 0,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00124,
+     -1e-05
+    ],
+    "sig": "SIG WORSE",
+    "name": "within-season shrink elo n0=0 xg n0=30",
+    "dev": 0.67302
+   },
+   {
+    "gain": -0.00084,
+    "fold_sd": 0.00107,
+    "fold_se": 0.0004,
+    "sigma": -2.08,
+    "n_pos_folds": 3,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00172,
+     3e-05
+    ],
+    "sig": "n.s.",
+    "name": "within-season shrink elo n0=40 xg n0=0",
+    "dev": 0.67324
+   },
+   {
+    "gain": -0.00088,
+    "fold_sd": 0.00074,
+    "fold_se": 0.00028,
+    "sigma": -3.13,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00165,
+     -0.00011
+    ],
+    "sig": "SIG WORSE",
+    "name": "within-season shrink elo n0=5 xg n0=10",
+    "dev": 0.67327
+   },
+   {
+    "gain": -0.00105,
+    "fold_sd": 0.00089,
+    "fold_se": 0.00034,
+    "sigma": -3.1,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00193,
+     -0.0002
+    ],
+    "sig": "SIG WORSE",
+    "name": "within-season shrink elo n0=10 xg n0=10",
+    "dev": 0.67345
+   },
+   {
+    "gain": -0.00117,
+    "fold_sd": 0.00075,
+    "fold_se": 0.00028,
+    "sigma": -4.14,
+    "n_pos_folds": 0,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00209,
+     -0.00028
+    ],
+    "sig": "SIG WORSE",
+    "name": "within-season shrink elo n0=5 xg n0=30",
+    "dev": 0.67357
+   },
+   {
+    "gain": -0.00131,
+    "fold_sd": 0.00111,
+    "fold_se": 0.00042,
+    "sigma": -3.14,
+    "n_pos_folds": 0,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00232,
+     -0.00032
+    ],
+    "sig": "SIG WORSE",
+    "name": "within-season shrink elo n0=20 xg n0=10",
+    "dev": 0.67371
+   },
+   {
+    "gain": -0.00138,
+    "fold_sd": 0.00093,
+    "fold_se": 0.00035,
+    "sigma": -3.93,
+    "n_pos_folds": 0,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00242,
+     -0.00038
+    ],
+    "sig": "SIG WORSE",
+    "name": "within-season shrink elo n0=10 xg n0=30",
+    "dev": 0.67377
+   },
+   {
+    "gain": -0.00167,
+    "fold_sd": 0.00136,
+    "fold_se": 0.00051,
+    "sigma": -3.26,
+    "n_pos_folds": 0,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00283,
+     -0.00054
+    ],
+    "sig": "SIG WORSE",
+    "name": "within-season shrink elo n0=40 xg n0=10",
+    "dev": 0.67407
+   },
+   {
+    "gain": -0.00169,
+    "fold_sd": 0.00117,
+    "fold_se": 0.00044,
+    "sigma": -3.81,
+    "n_pos_folds": 0,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00285,
+     -0.00056
+    ],
+    "sig": "SIG WORSE",
+    "name": "within-season shrink elo n0=20 xg n0=30",
+    "dev": 0.67409
+   },
+   {
+    "gain": -0.0021,
+    "fold_sd": 0.00144,
+    "fold_se": 0.00055,
+    "sigma": -3.84,
+    "n_pos_folds": 0,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00339,
+     -0.00081
+    ],
+    "sig": "SIG WORSE",
+    "name": "within-season shrink elo n0=40 xg n0=30",
+    "dev": 0.67449
+   }
+  ]
+ },
+ "axis_a": {
+  "n_dev": 7929,
+  "n_combos": 21000,
+  "shipped_cfg": {
+   "elo": [
+    8,
+    30,
+    0.3
+   ],
+   "xg": [
+    6.0,
+    0.15,
+    0.3
+   ]
+  },
+  "shipped_dev_loso": 0.6724,
+  "shipped_rank": 3864,
+  "shipped_pctile": 18.4,
+  "greedy_repro_cfg": {
+   "elo": [
+    8,
+    35,
+    0.3
+   ],
+   "xg": [
+    4.0,
+    0.05,
+    0.3
+   ]
+  },
+  "greedy_repro_dev": 0.67234,
+  "joint_best_cfg": {
+   "elo": [
+    6,
+    15,
+    0.15
+   ],
+   "xg": [
+    4.0,
+    0.05,
+    0.45
+   ]
+  },
+  "joint_best_dev": 0.6722,
+  "joint_vs_shipped": {
+   "gain": 0.0002,
+   "fold_sd": 0.00062,
+   "fold_se": 0.00023,
+   "sigma": 0.86,
+   "n_pos_folds": 5,
+   "n_folds": 7,
+   "boot_ci": [
+    -0.00029,
+    0.00069
+   ],
+   "sig": "n.s."
+  },
+  "nested_dev": 0.67246,
+  "nested_vs_shipped": {
+   "gain": -7e-05,
+   "fold_sd": 0.00057,
+   "fold_se": 0.00022,
+   "sigma": -0.3,
+   "n_pos_folds": 4,
+   "n_folds": 7,
+   "boot_ci": [
+    -0.00057,
+    0.00043
+   ],
+   "sig": "n.s."
+  },
+  "search_optimism": 0.00026,
+  "nested_picks": {
+   "20112012": {
+    "elo": [
+     6,
+     15,
+     0.22
+    ],
+    "xg": [
+     4.0,
+     0.1,
+     0.3
+    ]
+   },
+   "20122013": {
+    "elo": [
+     6,
+     15,
+     0.15
+    ],
+    "xg": [
+     4.0,
+     0.05,
+     0.45
+    ]
+   },
+   "20132014": {
+    "elo": [
+     4,
+     15,
+     0.3
+    ],
+    "xg": [
+     4.0,
+     0.05,
+     0.3
+    ]
+   },
+   "20142015": {
+    "elo": [
+     4,
+     15,
+     0.3
+    ],
+    "xg": [
+     4.0,
+     0.05,
+     0.15
+    ]
+   },
+   "20152016": {
+    "elo": [
+     6,
+     15,
+     0.22
+    ],
+    "xg": [
+     4.0,
+     0.05,
+     0.45
+    ]
+   },
+   "20162017": {
+    "elo": [
+     6,
+     15,
+     0.15
+    ],
+    "xg": [
+     6.0,
+     0.05,
+     0.38
+    ]
+   },
+   "20172018": {
+    "elo": [
+     4,
+     15,
+     0.22
+    ],
+    "xg": [
+     4.0,
+     0.05,
+     0.45
+    ]
+   }
+  },
+  "profiles": {
+   "elo_k": [
+    [
+     4,
+     0.67226
+    ],
+    [
+     6,
+     0.6722
+    ],
+    [
+     8,
+     0.67226
+    ],
+    [
+     10,
+     0.67237
+    ],
+    [
+     13,
+     0.6726
+    ],
+    [
+     16,
+     0.67284
+    ]
+   ],
+   "elo_ha": [
+    [
+     15,
+     0.6722
+    ],
+    [
+     20,
+     0.6722
+    ],
+    [
+     25,
+     0.6722
+    ],
+    [
+     30,
+     0.6722
+    ],
+    [
+     35,
+     0.67221
+    ],
+    [
+     40,
+     0.67221
+    ],
+    [
+     45,
+     0.67221
+    ]
+   ],
+   "elo_regress": [
+    [
+     0.15,
+     0.6722
+    ],
+    [
+     0.22,
+     0.67221
+    ],
+    [
+     0.3,
+     0.67225
+    ],
+    [
+     0.38,
+     0.67231
+    ],
+    [
+     0.45,
+     0.67239
+    ]
+   ],
+   "xg_k": [
+    [
+     2.0,
+     0.67234
+    ],
+    [
+     4.0,
+     0.6722
+    ],
+    [
+     6.0,
+     0.67223
+    ],
+    [
+     9.0,
+     0.67241
+    ],
+    [
+     13.0,
+     0.67276
+    ]
+   ],
+   "xg_ha": [
+    [
+     0.05,
+     0.6722
+    ],
+    [
+     0.1,
+     0.67221
+    ],
+    [
+     0.15,
+     0.67221
+    ],
+    [
+     0.22,
+     0.67223
+    ]
+   ],
+   "xg_regress": [
+    [
+     0.15,
+     0.67226
+    ],
+    [
+     0.22,
+     0.67223
+    ],
+    [
+     0.3,
+     0.67221
+    ],
+    [
+     0.38,
+     0.6722
+    ],
+    [
+     0.45,
+     0.6722
+    ]
+   ]
+  },
+  "grid_score_sd": 0.00034,
+  "combos_within_1se_of_best": 4973,
+  "top10": [
+   {
+    "elo": [
+     6,
+     15,
+     0.15
+    ],
+    "xg": [
+     4.0,
+     0.05,
+     0.45
+    ],
+    "dev": 0.6722
+   },
+   {
+    "elo": [
+     6,
+     15,
+     0.15
+    ],
+    "xg": [
+     4.0,
+     0.05,
+     0.38
+    ],
+    "dev": 0.6722
+   },
+   {
+    "elo": [
+     6,
+     20,
+     0.15
+    ],
+    "xg": [
+     4.0,
+     0.05,
+     0.45
+    ],
+    "dev": 0.6722
+   },
+   {
+    "elo": [
+     6,
+     20,
+     0.15
+    ],
+    "xg": [
+     4.0,
+     0.05,
+     0.38
+    ],
+    "dev": 0.6722
+   },
+   {
+    "elo": [
+     6,
+     25,
+     0.15
+    ],
+    "xg": [
+     4.0,
+     0.05,
+     0.45
+    ],
+    "dev": 0.6722
+   },
+   {
+    "elo": [
+     6,
+     25,
+     0.15
+    ],
+    "xg": [
+     4.0,
+     0.05,
+     0.38
+    ],
+    "dev": 0.6722
+   },
+   {
+    "elo": [
+     6,
+     30,
+     0.15
+    ],
+    "xg": [
+     4.0,
+     0.05,
+     0.45
+    ],
+    "dev": 0.6722
+   },
+   {
+    "elo": [
+     6,
+     30,
+     0.15
+    ],
+    "xg": [
+     4.0,
+     0.05,
+     0.38
+    ],
+    "dev": 0.6722
+   },
+   {
+    "elo": [
+     6,
+     15,
+     0.15
+    ],
+    "xg": [
+     4.0,
+     0.1,
+     0.45
+    ],
+    "dev": 0.67221
+   },
+   {
+    "elo": [
+     6,
+     35,
+     0.15
+    ],
+    "xg": [
+     4.0,
+     0.05,
+     0.45
+    ],
+    "dev": 0.67221
+   }
+  ],
+  "seconds": 760.3
+ },
+ "axis_bd_joint": {
+  "core": "joint",
+  "baseline_dev": 0.6722,
+  "rows": [
+   {
+    "gain": 0.0001,
+    "fold_sd": 0.00012,
+    "fold_se": 5e-05,
+    "sigma": 2.17,
+    "n_pos_folds": 7,
+    "n_folds": 7,
+    "boot_ci": [
+     -1e-05,
+     0.0002
+    ],
+    "sig": "n.s.",
+    "name": "b2b as signed diff",
+    "dev": 0.6721,
+    "k": 4
+   },
+   {
+    "gain": 9e-05,
+    "fold_sd": 0.00014,
+    "fold_se": 5e-05,
+    "sigma": 1.6,
+    "n_pos_folds": 4,
+    "n_folds": 7,
+    "boot_ci": [
+     -3e-05,
+     0.00021
+    ],
+    "sig": "n.s.",
+    "name": "rest dropped",
+    "dev": 0.67211,
+    "k": 4
+   },
+   {
+    "gain": 9e-05,
+    "fold_sd": 0.00074,
+    "fold_se": 0.00028,
+    "sigma": 0.31,
+    "n_pos_folds": 5,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00038,
+     0.00056
+    ],
+    "sig": "n.s.",
+    "name": "+ xg x b2b_diff",
+    "dev": 0.67211,
+    "k": 6
+   },
+   {
+    "gain": 6e-05,
+    "fold_sd": 0.00061,
+    "fold_se": 0.00023,
+    "sigma": 0.28,
+    "n_pos_folds": 3,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00042,
+     0.00056
+    ],
+    "sig": "n.s.",
+    "name": "rest split h/a (2 terms)",
+    "dev": 0.67213,
+    "k": 6
+   },
+   {
+    "gain": 5e-05,
+    "fold_sd": 0.00035,
+    "fold_se": 0.00013,
+    "sigma": 0.41,
+    "n_pos_folds": 4,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00033,
+     0.00045
+    ],
+    "sig": "n.s.",
+    "name": "+ |xg - elo/scale| disagree",
+    "dev": 0.67214,
+    "k": 6
+   },
+   {
+    "gain": 0.0,
+    "fold_sd": 0.0,
+    "fold_se": 0.0,
+    "sigma": 0.0,
+    "n_pos_folds": 0,
+    "n_folds": 7,
+    "boot_ci": [
+     0.0,
+     0.0
+    ],
+    "sig": "n.s.",
+    "name": "BASELINE (shipped form)",
+    "dev": 0.6722,
+    "k": 5
+   },
+   {
+    "gain": 0.0,
+    "fold_sd": 0.00019,
+    "fold_se": 7e-05,
+    "sigma": 0.01,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00014,
+     0.00014
+    ],
+    "sig": "n.s.",
+    "name": "rest sqrt-signed",
+    "dev": 0.6722,
+    "k": 5
+   },
+   {
+    "gain": -0.0,
+    "fold_sd": 0.0,
+    "fold_se": 0.0,
+    "sigma": -0.3,
+    "n_pos_folds": 3,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.0,
+     0.0
+    ],
+    "sig": "n.s.",
+    "name": "b2b both + signed",
+    "dev": 0.6722,
+    "k": 6
+   },
+   {
+    "gain": 0.0,
+    "fold_sd": 0.00026,
+    "fold_se": 0.0001,
+    "sigma": 0.03,
+    "n_pos_folds": 3,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.0003,
+     0.00031
+    ],
+    "sig": "n.s.",
+    "name": "+ b2b_h x b2b_a",
+    "dev": 0.6722,
+    "k": 6
+   },
+   {
+    "gain": -0.0001,
+    "fold_sd": 0.00026,
+    "fold_se": 0.0001,
+    "sigma": -0.98,
+    "n_pos_folds": 3,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.0003,
+     0.0001
+    ],
+    "sig": "n.s.",
+    "name": "+ xg x elo",
+    "dev": 0.6723,
+    "k": 6
+   },
+   {
+    "gain": -0.00011,
+    "fold_sd": 0.00032,
+    "fold_se": 0.00012,
+    "sigma": -0.91,
+    "n_pos_folds": 4,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00031,
+     9e-05
+    ],
+    "sig": "n.s.",
+    "name": "+ elo^2 (shrink strong)",
+    "dev": 0.67231,
+    "k": 6
+   },
+   {
+    "gain": -0.00019,
+    "fold_sd": 0.00028,
+    "fold_se": 0.00011,
+    "sigma": -1.74,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00042,
+     4e-05
+    ],
+    "sig": "n.s.",
+    "name": "+ b2b_h x rest",
+    "dev": 0.67238,
+    "k": 7
+   },
+   {
+    "gain": -0.0002,
+    "fold_sd": 0.0009,
+    "fold_se": 0.00034,
+    "sigma": -0.57,
+    "n_pos_folds": 3,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00076,
+     0.00037
+    ],
+    "sig": "n.s.",
+    "name": "+ all D interactions",
+    "dev": 0.67239,
+    "k": 9
+   },
+   {
+    "gain": -0.00022,
+    "fold_sd": 0.00119,
+    "fold_se": 0.00045,
+    "sigma": -0.5,
+    "n_pos_folds": 3,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00086,
+     0.00041
+    ],
+    "sig": "n.s.",
+    "name": "rest linear + hinges(+-1)",
+    "dev": 0.67242,
+    "k": 7
+   },
+   {
+    "gain": -0.00025,
+    "fold_sd": 0.00058,
+    "fold_se": 0.00022,
+    "sigma": -1.13,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00084,
+     0.00033
+    ],
+    "sig": "n.s.",
+    "name": "xg tanh(x/0.40)",
+    "dev": 0.67245,
+    "k": 5
+   },
+   {
+    "gain": -0.00037,
+    "fold_sd": 0.00044,
+    "fold_se": 0.00017,
+    "sigma": -2.2,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00062,
+     -0.00012
+    ],
+    "sig": "SIG WORSE",
+    "name": "xg + xg^2",
+    "dev": 0.67257,
+    "k": 6
+   },
+   {
+    "gain": -0.00042,
+    "fold_sd": 0.00083,
+    "fold_se": 0.00031,
+    "sigma": -1.34,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.0012,
+     0.00034
+    ],
+    "sig": "n.s.",
+    "name": "xg tanh(x/0.25)",
+    "dev": 0.67262,
+    "k": 5
+   },
+   {
+    "gain": -0.00058,
+    "fold_sd": 0.00073,
+    "fold_se": 0.00028,
+    "sigma": -2.09,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00101,
+     -0.00016
+    ],
+    "sig": "SIG WORSE",
+    "name": "rest as 5 bins",
+    "dev": 0.67278,
+    "k": 8
+   },
+   {
+    "gain": -0.00063,
+    "fold_sd": 0.00134,
+    "fold_se": 0.00051,
+    "sigma": -1.24,
+    "n_pos_folds": 3,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00153,
+     0.00031
+    ],
+    "sig": "n.s.",
+    "name": "b2b dropped",
+    "dev": 0.67282,
+    "k": 3
+   },
+   {
+    "gain": -0.00063,
+    "fold_sd": 0.00107,
+    "fold_se": 0.0004,
+    "sigma": -1.55,
+    "n_pos_folds": 2,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00157,
+     0.0003
+    ],
+    "sig": "n.s.",
+    "name": "xg tanh(x/0.15)",
+    "dev": 0.67283,
+    "k": 5
+   },
+   {
+    "gain": -0.00344,
+    "fold_sd": 0.00069,
+    "fold_se": 0.00026,
+    "sigma": -13.23,
+    "n_pos_folds": 0,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00531,
+     -0.00163
+    ],
+    "sig": "SIG WORSE",
+    "name": "xg dropped",
+    "dev": 0.67564,
+    "k": 4
+   },
+   {
+    "gain": -0.00411,
+    "fold_sd": 0.00146,
+    "fold_se": 0.00055,
+    "sigma": -7.45,
+    "n_pos_folds": 0,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00607,
+     -0.00218
+    ],
+    "sig": "SIG WORSE",
+    "name": "elo dropped",
+    "dev": 0.6763,
+    "k": 4
+   }
+  ]
+ },
+ "headline": {
+  "dev_baseline_shipped": 0.6724,
+  "dev_joint_core": 0.6722,
+  "joint_cfg": {
+   "elo": [
+    6,
+    15,
+    0.15
+   ],
+   "xg": [
+    4.0,
+    0.05,
+    0.45
+   ]
+  },
+  "stats": {
+   "gain": 0.0002,
+   "fold_sd": 0.00062,
+   "fold_se": 0.00023,
+   "sigma": 0.86,
+   "n_pos_folds": 5,
+   "n_folds": 7,
+   "boot_ci": [
+    -0.00029,
+    0.00069
+   ],
+   "sig": "n.s."
+  }
+ },
+ "shortlist": [
+  {
+   "rank": 1,
+   "axis": "A",
+   "change": "joint 6-param core re-tune",
+   "raw_gain": 0.0002,
+   "raw_sigma": 0.86,
+   "honest_gain": -7e-05,
+   "honest_sigma": -0.3,
+   "search_optimism": 0.00026,
+   "verdict": "NULL \u2014 nested gain is negative; the whole raw gain is search optimism",
+   "confidence": "high"
+  },
+  {
+   "rank": 2,
+   "axis": "B/D",
+   "change": "+ |xg - elo/scale| disagree",
+   "raw_gain": 0.00015,
+   "raw_sigma": 1.19,
+   "honest_gain": null,
+   "honest_sigma": null,
+   "search_optimism": null,
+   "verdict": "n.s.",
+   "confidence": "high"
+  },
+  {
+   "rank": 3,
+   "axis": "B/D",
+   "change": "+ xg x b2b_diff",
+   "raw_gain": 0.00013,
+   "raw_sigma": 0.45,
+   "honest_gain": null,
+   "honest_sigma": null,
+   "search_optimism": null,
+   "verdict": "n.s.",
+   "confidence": "high"
+  },
+  {
+   "rank": 4,
+   "axis": "B/D",
+   "change": "b2b as signed diff",
+   "raw_gain": 0.0001,
+   "raw_sigma": 2.09,
+   "honest_gain": null,
+   "honest_sigma": null,
+   "search_optimism": null,
+   "verdict": "n.s.",
+   "confidence": "high"
+  },
+  {
+   "rank": 5,
+   "axis": "B/D",
+   "change": "rest dropped",
+   "raw_gain": 9e-05,
+   "raw_sigma": 1.6,
+   "honest_gain": null,
+   "honest_sigma": null,
+   "search_optimism": null,
+   "verdict": "n.s.",
+   "confidence": "high"
+  },
+  {
+   "rank": 6,
+   "axis": "E",
+   "change": "blend C=0.02",
+   "raw_gain": 1e-05,
+   "raw_sigma": 0.33,
+   "honest_gain": null,
+   "honest_sigma": null,
+   "search_optimism": null,
+   "verdict": "n.s.",
+   "confidence": "high"
+  },
+  {
+   "rank": 7,
+   "axis": "E",
+   "change": "blend C=0.05",
+   "raw_gain": 1e-05,
+   "raw_sigma": 0.53,
+   "honest_gain": null,
+   "honest_sigma": null,
+   "search_optimism": null,
+   "verdict": "n.s.",
+   "confidence": "high"
+  },
+  {
+   "rank": 8,
+   "axis": "E",
+   "change": "blend C=0.1",
+   "raw_gain": 0.0,
+   "raw_sigma": 0.6,
+   "honest_gain": null,
+   "honest_sigma": null,
+   "search_optimism": null,
+   "verdict": "n.s.",
+   "confidence": "high"
+  },
+  {
+   "rank": 9,
+   "axis": "E",
+   "change": "blend C=0.3",
+   "raw_gain": 0.0,
+   "raw_sigma": 0.64,
+   "honest_gain": null,
+   "honest_sigma": null,
+   "search_optimism": null,
+   "verdict": "n.s.",
+   "confidence": "high"
+  },
+  {
+   "rank": 10,
+   "axis": "C",
+   "change": "stack logistic+GBM w=0.15",
+   "raw_gain": -9e-05,
+   "raw_sigma": -0.93,
+   "honest_gain": null,
+   "honest_sigma": null,
+   "search_optimism": null,
+   "verdict": "n.s.",
+   "confidence": "high"
+  },
+  {
+   "rank": 11,
+   "axis": "C",
+   "change": "stack logistic+GBM w=0.3",
+   "raw_gain": -0.00026,
+   "raw_sigma": -1.32,
+   "honest_gain": null,
+   "honest_sigma": null,
+   "search_optimism": null,
+   "verdict": "n.s.",
+   "confidence": "high"
+  },
+  {
+   "rank": 12,
+   "axis": "C",
+   "change": "stack logistic+GBM w=0.5",
+   "raw_gain": -0.00062,
+   "raw_sigma": -1.83,
+   "honest_gain": null,
+   "honest_sigma": null,
+   "search_optimism": null,
+   "verdict": "n.s.",
+   "confidence": "high"
+  },
+  {
+   "rank": 13,
+   "axis": "C",
+   "change": "HistGB 250x4lv lr0.03",
+   "raw_gain": -0.00214,
+   "raw_sigma": -3.0,
+   "honest_gain": null,
+   "honest_sigma": null,
+   "search_optimism": null,
+   "verdict": "SIG WORSE",
+   "confidence": "high"
+  }
+ ]
+}
