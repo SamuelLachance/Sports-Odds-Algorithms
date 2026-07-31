@@ -198,7 +198,7 @@
      "game_pk": 824488,
      "date": "2026-07-30",
      "start_utc": "2026-07-30T23:10:00Z",
-     "state": "Live",
+     "state": "Final",
      "home": "CIN",
      "away": "PIT",
      "away_abbr": "PIT",
@@ -241,7 +241,7 @@
      "game_pk": 823595,
      "date": "2026-07-30",
      "start_utc": "2026-07-30T23:10:00Z",
-     "state": "Live",
+     "state": "Final",
      "home": "NYN",
      "away": "MIA",
      "away_abbr": "MIA",
@@ -17933,5 +17933,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-07-31T01:57:29.596818+00:00"
+ "value_updated": "2026-07-31T03:39:11.070772+00:00"
 }
