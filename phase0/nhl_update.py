@@ -23,6 +23,8 @@ import urllib.request
 
 API = "https://api-web.nhle.com/v1/schedule/{}"
 LANDING = "https://api-web.nhle.com/v1/gamecenter/{}/landing"
+RIGHT_RAIL = "https://api-web.nhle.com/v1/gamecenter/{}/right-rail"
+PLAY_BY_PLAY = "https://api-web.nhle.com/v1/gamecenter/{}/play-by-play"
 HEADERS = {"User-Agent": "glassbox-nhl/1.0 (research)", "Accept-Encoding": "gzip"}
 SPINE = "data/nhl_games.csv"
 UPCOMING = "data/nhl_upcoming.json"
@@ -37,7 +39,7 @@ def get(url):
     return json.loads(raw)
 
 
-def _lineup_subset(payload):
+def _lineup_subset(payload, rail=None, pbp=None):
     """Minimal raw-ish roster subset of a gamecenter landing payload.
 
     Observed structure (2026-07 probe): a far-future FUT game exposes only
@@ -69,6 +71,23 @@ def _lineup_subset(payload):
                if isinstance(g, dict) and g.get("playerId")]
         if ids:
             out.setdefault("goalieComparison", {})[side] = ids
+
+    # --- the two endpoints that actually carry the payload we came for ---
+    rgi = ((rail or {}).get("gameInfo") or {})
+    for side in ("homeTeam", "awayTeam"):
+        sc = (rgi.get(side) or {}).get("scratches")
+        if sc:
+            out.setdefault("railScratches", {})[side] = [
+                p.get("id") for p in sc if isinstance(p, dict) and p.get("id")]
+        coach = ((rgi.get(side) or {}).get("headCoach") or {}).get("default")
+        if coach:
+            out.setdefault("headCoach", {})[side] = coach
+    prs = (pbp or {}).get("rosterSpots")
+    if prs:
+        out["dressed"] = [
+            {k: q.get(k) for k in ("teamId", "playerId", "positionCode",
+                                   "sweaterNumber")}
+            for q in prs if isinstance(q, dict)]
     return out
 
 
@@ -116,12 +135,34 @@ def archive_lineups(upcoming, today_iso):
     n = 0
     with open(LINEUP_ARCHIVE, "a", encoding="utf-8") as fh:
         for u in todays:
-            try:
-                payload = get(LANDING.format(u["id"]))
-            except Exception as ex:  # noqa: BLE001
-                print(f"[nhl_update] landing fetch failed for {u['id']}: {ex}")
+            # VERIFIED 2026-07-31 on a FINAL game: `landing` carries NEITHER
+            # scratches NOR the dressed roster. Scratches live in `right-rail`
+            # (gameInfo.{home,away}Team.scratches) and the dressed roster in
+            # `play-by-play` (rosterSpots). Fetching landing alone -- the
+            # original implementation -- archived only a goalie-stats widget,
+            # i.e. none of the information this archive exists to capture.
+            payload, rail, pbp = None, None, None
+            for name, url, required in (("landing", LANDING, True),
+                                        ("right-rail", RIGHT_RAIL, False),
+                                        ("play-by-play", PLAY_BY_PLAY, False)):
+                try:
+                    d = get(url.format(u["id"]))
+                except Exception as ex:  # noqa: BLE001
+                    print(f"[nhl_update] {name} fetch failed for {u['id']}: {ex}")
+                    if required:
+                        d = None
+                        break
+                    d = None
+                if name == "landing":
+                    payload = d
+                elif name == "right-rail":
+                    rail = d
+                else:
+                    pbp = d
+                time.sleep(0.15)
+            if payload is None:
                 continue
-            sub = _lineup_subset(payload)
+            sub = _lineup_subset(payload, rail, pbp)
             key = (u["id"], frozenset(_pid_set(sub)))
             if not sub or key in seen:
                 continue

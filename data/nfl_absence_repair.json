@@ -1,0 +1,1350 @@
+{
+ "generated": "2026-07-31",
+ "pre_registration": "documents/nfl_absence_prereg.md",
+ "protocol": {
+  "league": "NFL",
+  "harness": "main split, shipped 14-feature blend",
+  "dev_train_from": 1999,
+  "dev_scored": [
+   2006,
+   2015
+  ],
+  "test_era_never_touched": [
+   2016,
+   2025
+  ],
+  "test_looks_spent": 0,
+  "metric": "walk-forward DEV log loss (the blend's own objective)",
+  "training_protocol": {
+   "model": "logistic",
+   "C": 100.0,
+   "recency_half_life": 3.0
+  },
+  "market_blind": true
+ },
+ "bar": {
+  "nested_gain_at_least": 0.001,
+  "positive_seasons_at_least": 7,
+  "of_seasons": 10,
+  "source": "documents/nfl_absence_prereg.md, fixed in advance",
+  "no_rescreening": true
+ },
+ "structural_facts": {
+  "n_scored_games": 2670,
+  "block_columns": {
+   "8": "absence_ol",
+   "9": "absence_def",
+   "10": "absence_skill",
+   "11": "roster_quality"
+  },
+  "first_season_block_is_nonzero": 2013,
+  "live_seasons_within_dev": [
+   2013,
+   2014,
+   2015
+  ],
+  "nonzero_rows_per_block_col_in_dev": {
+   "absence_ol": 700,
+   "absence_def": 702,
+   "absence_skill": 464,
+   "roster_quality": 785
+  },
+  "col7_v7_nonzero_in_dev": 0,
+  "col7_note": "column 7 (v7 11v11 participation TrueSkill) is identically zero across ALL of DEV -- nflverse participation data begins 2016. Explicitly OUT OF SCOPE per the pre-registration; it is left in every candidate matrix, where it carries a coefficient of exactly zero and cannot affect any comparison.",
+  "live_block_seasons_available_to_each_training_fold": {
+   "2006": 0,
+   "2007": 0,
+   "2008": 0,
+   "2009": 0,
+   "2010": 0,
+   "2011": 0,
+   "2012": 0,
+   "2013": 0,
+   "2014": 1,
+   "2015": 2
+  },
+  "folds_whose_prediction_can_possibly_differ": [
+   2014,
+   2015
+  ],
+  "max_attainable_positive_seasons": 2
+ },
+ "baseline": {
+  "dev_ll": 0.622919,
+  "recorded_in_prereg": 0.62296,
+  "abs_difference": 4.1e-05,
+  "jitter_tolerance": 0.0005,
+  "reproduced": true,
+  "per_season": {
+   "2006": 0.660578,
+   "2007": 0.613544,
+   "2008": 0.616307,
+   "2009": 0.600771,
+   "2010": 0.644336,
+   "2011": 0.610255,
+   "2012": 0.610791,
+   "2013": 0.616592,
+   "2014": 0.618985,
+   "2015": 0.637032
+  },
+  "unpaired_fold_sd": 0.018443,
+  "unpaired_fold_se": 0.005832,
+  "jitter_note": "build_main() accumulates league EPA rates over dict iteration order, so the matrix reproduces to ~3e-5 in log loss across processes; every comparison below is PAIRED against the baseline computed in THIS process, so the jitter cancels."
+ },
+ "candidates": {
+  "1_DROP": {
+   "description": "remove absence_ol / absence_def / absence_skill / roster_quality from the blend entirely (14 -> 10 cols)",
+   "pre_declared_grid": null,
+   "variants": {
+    "DROP": {
+     "dev_ll": 0.621678,
+     "gain": 0.001241,
+     "per_season_delta": {
+      "2006": 0.0,
+      "2007": 0.0,
+      "2008": 0.0,
+      "2009": 0.0,
+      "2010": 0.0,
+      "2011": 0.0,
+      "2012": 0.0,
+      "2013": 0.0,
+      "2014": 0.018112,
+      "2015": -0.0057
+     },
+     "n_seasons": 10,
+     "n_positive": 1,
+     "n_negative": 1,
+     "n_identical": 8,
+     "sign_epsilon": 1e-06,
+     "fold_sd": 0.006193,
+     "fold_se": 0.001958,
+     "gain_in_fold_se": 0.633796,
+     "n_folds_that_can_differ": 2,
+     "live_folds": {
+      "seasons": [
+       "2014",
+       "2015"
+      ],
+      "mean_delta_on_live_folds": 0.006206,
+      "sd_across_live_folds": 0.016838
+     },
+     "paired_bootstrap_game_level": {
+      "delta": 0.001241,
+      "ci95": [
+       -0.001134,
+       0.003735
+      ],
+      "se": 0.001252,
+      "gain_in_bootstrap_se": 0.991648,
+      "n_games": 2670
+     },
+     "identity_check": {
+      "max_abs_per_game_ll_diff_folds_2006_2013": 0.0,
+      "max_abs_per_game_ll_diff_all_dev": 0.858035
+     }
+    }
+   },
+   "RAW": {
+    "best_variant": "DROP",
+    "dev_ll": 0.621678,
+    "raw_gain": 0.001241,
+    "per_season_delta": {
+     "2006": 0.0,
+     "2007": 0.0,
+     "2008": 0.0,
+     "2009": 0.0,
+     "2010": 0.0,
+     "2011": 0.0,
+     "2012": 0.0,
+     "2013": 0.0,
+     "2014": 0.018112,
+     "2015": -0.0057
+    },
+    "n_positive": 1,
+    "n_negative": 1,
+    "n_identical": 8,
+    "fold_sd": 0.006193,
+    "fold_se": 0.001958,
+    "gain_in_fold_se": 0.633796,
+    "note": "RAW is the in-sample-selected number: for SHRINK/GATE it picks the grid point using the same ten seasons it is scored on, so it is optimistic by construction. DROP and POOL have no selection freedom, so their RAW and NESTED are identical by definition."
+   },
+   "NESTED": {
+    "pool_size": 1,
+    "pool": [
+     "DROP"
+    ],
+    "tiebreak": "first",
+    "raw_best": "DROP",
+    "raw_best_ll": 0.621678,
+    "raw_gain": 0.001241,
+    "nested_ll": 0.621678,
+    "nested_gain": 0.001241,
+    "search_optimism": 0.0,
+    "loso_picks": {
+     "2006": "DROP",
+     "2007": "DROP",
+     "2008": "DROP",
+     "2009": "DROP",
+     "2010": "DROP",
+     "2011": "DROP",
+     "2012": "DROP",
+     "2013": "DROP",
+     "2014": "DROP",
+     "2015": "DROP"
+    },
+    "nested_per_season_delta": {
+     "2006": 0.0,
+     "2007": 0.0,
+     "2008": 0.0,
+     "2009": 0.0,
+     "2010": 0.0,
+     "2011": 0.0,
+     "2012": 0.0,
+     "2013": 0.0,
+     "2014": 0.018112,
+     "2015": -0.0057
+    },
+    "nested_n_positive": 1,
+    "nested_n_negative": 1,
+    "nested_n_identical": 8,
+    "sign_epsilon": 1e-06
+   },
+   "NESTED_tiebreak_sensitivity": {
+    "nested_gain_tiebreak_first": 0.001241,
+    "nested_gain_tiebreak_last": 0.001241,
+    "loso_picks_tiebreak_last": {
+     "2006": "DROP",
+     "2007": "DROP",
+     "2008": "DROP",
+     "2009": "DROP",
+     "2010": "DROP",
+     "2011": "DROP",
+     "2012": "DROP",
+     "2013": "DROP",
+     "2014": "DROP",
+     "2015": "DROP"
+    },
+    "tie_is_binding": false,
+    "why": "two variants that differ ONLY on the held-out fold score identically on the nine selection folds, so the LOSO choice between them is a coin flip. Where that happens the nested gain is not a single number but a range, and both ends are reported. The verdict uses the conservative end (lexicographically first, which is the lower min_live / larger C_block, i.e. closer to the shipped model)."
+   },
+   "VERDICT_vs_prereg_bar": {
+    "nested_gain": 0.001241,
+    "bar_nested_gain": 0.001,
+    "clause_1_magnitude_met": true,
+    "nested_positive_seasons": 1,
+    "bar_positive_seasons": ">= 7 of 10",
+    "clause_2_sign_count_met": false,
+    "clause_2_attainable_maximum": 2,
+    "clause_2_satisfiable_at_all": false,
+    "VERDICT": "REJECT",
+    "nested_gain_if_tie_broken_the_other_way": 0.001241,
+    "clause_1_magnitude_met_under_either_tiebreak": true
+   }
+  },
+  "2_POOL": {
+   "description": "absence_ol + absence_def + absence_skill collapsed to one total-absence column; roster_quality kept separate (4 params -> 2)",
+   "pre_declared_grid": null,
+   "variants": {
+    "POOL": {
+     "dev_ll": 0.621594,
+     "gain": 0.001325,
+     "per_season_delta": {
+      "2006": 0.0,
+      "2007": 0.0,
+      "2008": -0.0,
+      "2009": 0.0,
+      "2010": -0.0,
+      "2011": -0.0,
+      "2012": 0.0,
+      "2013": 0.0,
+      "2014": 0.014176,
+      "2015": -0.000923
+     },
+     "n_seasons": 10,
+     "n_positive": 1,
+     "n_negative": 1,
+     "n_identical": 8,
+     "sign_epsilon": 1e-06,
+     "fold_sd": 0.004524,
+     "fold_se": 0.001431,
+     "gain_in_fold_se": 0.926271,
+     "n_folds_that_can_differ": 2,
+     "live_folds": {
+      "seasons": [
+       "2014",
+       "2015"
+      ],
+      "mean_delta_on_live_folds": 0.006626,
+      "sd_across_live_folds": 0.010677
+     },
+     "paired_bootstrap_game_level": {
+      "delta": 0.001325,
+      "ci95": [
+       -0.000431,
+       0.003159
+      ],
+      "se": 0.000922,
+      "gain_in_bootstrap_se": 1.437523,
+      "n_games": 2670
+     },
+     "identity_check": {
+      "max_abs_per_game_ll_diff_folds_2006_2013": 1.4e-05,
+      "max_abs_per_game_ll_diff_all_dev": 0.468921
+     }
+    }
+   },
+   "RAW": {
+    "best_variant": "POOL",
+    "dev_ll": 0.621594,
+    "raw_gain": 0.001325,
+    "per_season_delta": {
+     "2006": 0.0,
+     "2007": 0.0,
+     "2008": -0.0,
+     "2009": 0.0,
+     "2010": -0.0,
+     "2011": -0.0,
+     "2012": 0.0,
+     "2013": 0.0,
+     "2014": 0.014176,
+     "2015": -0.000923
+    },
+    "n_positive": 1,
+    "n_negative": 1,
+    "n_identical": 8,
+    "fold_sd": 0.004524,
+    "fold_se": 0.001431,
+    "gain_in_fold_se": 0.926271,
+    "note": "RAW is the in-sample-selected number: for SHRINK/GATE it picks the grid point using the same ten seasons it is scored on, so it is optimistic by construction. DROP and POOL have no selection freedom, so their RAW and NESTED are identical by definition."
+   },
+   "NESTED": {
+    "pool_size": 1,
+    "pool": [
+     "POOL"
+    ],
+    "tiebreak": "first",
+    "raw_best": "POOL",
+    "raw_best_ll": 0.621594,
+    "raw_gain": 0.001325,
+    "nested_ll": 0.621594,
+    "nested_gain": 0.001325,
+    "search_optimism": 0.0,
+    "loso_picks": {
+     "2006": "POOL",
+     "2007": "POOL",
+     "2008": "POOL",
+     "2009": "POOL",
+     "2010": "POOL",
+     "2011": "POOL",
+     "2012": "POOL",
+     "2013": "POOL",
+     "2014": "POOL",
+     "2015": "POOL"
+    },
+    "nested_per_season_delta": {
+     "2006": 0.0,
+     "2007": 0.0,
+     "2008": -0.0,
+     "2009": 0.0,
+     "2010": -0.0,
+     "2011": -0.0,
+     "2012": 0.0,
+     "2013": 0.0,
+     "2014": 0.014176,
+     "2015": -0.000923
+    },
+    "nested_n_positive": 1,
+    "nested_n_negative": 1,
+    "nested_n_identical": 8,
+    "sign_epsilon": 1e-06
+   },
+   "NESTED_tiebreak_sensitivity": {
+    "nested_gain_tiebreak_first": 0.001325,
+    "nested_gain_tiebreak_last": 0.001325,
+    "loso_picks_tiebreak_last": {
+     "2006": "POOL",
+     "2007": "POOL",
+     "2008": "POOL",
+     "2009": "POOL",
+     "2010": "POOL",
+     "2011": "POOL",
+     "2012": "POOL",
+     "2013": "POOL",
+     "2014": "POOL",
+     "2015": "POOL"
+    },
+    "tie_is_binding": false,
+    "why": "two variants that differ ONLY on the held-out fold score identically on the nine selection folds, so the LOSO choice between them is a coin flip. Where that happens the nested gain is not a single number but a range, and both ends are reported. The verdict uses the conservative end (lexicographically first, which is the lower min_live / larger C_block, i.e. closer to the shipped model)."
+   },
+   "VERDICT_vs_prereg_bar": {
+    "nested_gain": 0.001325,
+    "bar_nested_gain": 0.001,
+    "clause_1_magnitude_met": true,
+    "nested_positive_seasons": 1,
+    "bar_positive_seasons": ">= 7 of 10",
+    "clause_2_sign_count_met": false,
+    "clause_2_attainable_maximum": 2,
+    "clause_2_satisfiable_at_all": false,
+    "VERDICT": "REJECT",
+    "nested_gain_if_tie_broken_the_other_way": 0.001325,
+    "clause_1_magnitude_met_under_either_tiebreak": true
+   }
+  },
+  "3_SHRINK": {
+   "description": "block-only ridge C_block over the pre-declared grid; the rest of the blend keeps the shipped C=100",
+   "pre_declared_grid": [
+    100.0,
+    30.0,
+    10.0,
+    3.0,
+    1.0,
+    0.3,
+    0.1,
+    0.03,
+    0.01,
+    0.001
+   ],
+   "variants": {
+    "SHRINK C_block=100": {
+     "dev_ll": 0.622919,
+     "gain": 0.0,
+     "per_season_delta": {
+      "2006": 0.0,
+      "2007": 0.0,
+      "2008": 0.0,
+      "2009": 0.0,
+      "2010": 0.0,
+      "2011": 0.0,
+      "2012": 0.0,
+      "2013": 0.0,
+      "2014": 0.0,
+      "2015": 0.0
+     },
+     "n_seasons": 10,
+     "n_positive": 0,
+     "n_negative": 0,
+     "n_identical": 10,
+     "sign_epsilon": 1e-06,
+     "fold_sd": 0.0,
+     "fold_se": 0.0,
+     "gain_in_fold_se": null,
+     "n_folds_that_can_differ": 0,
+     "paired_bootstrap_game_level": {
+      "delta": 0.0,
+      "ci95": [
+       0.0,
+       0.0
+      ],
+      "se": 0.0,
+      "gain_in_bootstrap_se": null,
+      "n_games": 2670
+     },
+     "identity_check": {
+      "max_abs_per_game_ll_diff_folds_2006_2013": 0.0,
+      "max_abs_per_game_ll_diff_all_dev": 0.0
+     }
+    },
+    "SHRINK C_block=30": {
+     "dev_ll": 0.622974,
+     "gain": -5.5e-05,
+     "per_season_delta": {
+      "2006": 0.0,
+      "2007": 0.0,
+      "2008": 0.0,
+      "2009": 0.0,
+      "2010": 0.0,
+      "2011": 0.0,
+      "2012": 0.0,
+      "2013": 0.0,
+      "2014": -0.000599,
+      "2015": 4.7e-05
+     },
+     "n_seasons": 10,
+     "n_positive": 1,
+     "n_negative": 1,
+     "n_identical": 8,
+     "sign_epsilon": 1e-06,
+     "fold_sd": 0.000192,
+     "fold_se": 6.1e-05,
+     "gain_in_fold_se": -0.911191,
+     "n_folds_that_can_differ": 2,
+     "live_folds": {
+      "seasons": [
+       "2014",
+       "2015"
+      ],
+      "mean_delta_on_live_folds": -0.000276,
+      "sd_across_live_folds": 0.000456
+     },
+     "paired_bootstrap_game_level": {
+      "delta": -5.5e-05,
+      "ci95": [
+       -0.000159,
+       4.7e-05
+      ],
+      "se": 5.3e-05,
+      "gain_in_bootstrap_se": -1.044216,
+      "n_games": 2670
+     },
+     "identity_check": {
+      "max_abs_per_game_ll_diff_folds_2006_2013": 0.0,
+      "max_abs_per_game_ll_diff_all_dev": 0.026
+     }
+    },
+    "SHRINK C_block=10": {
+     "dev_ll": 0.622871,
+     "gain": 4.8e-05,
+     "per_season_delta": {
+      "2006": 0.0,
+      "2007": 0.0,
+      "2008": 0.0,
+      "2009": 0.0,
+      "2010": 0.0,
+      "2011": 0.0,
+      "2012": 0.0,
+      "2013": 0.0,
+      "2014": 0.000407,
+      "2015": 7.2e-05
+     },
+     "n_seasons": 10,
+     "n_positive": 2,
+     "n_negative": 0,
+     "n_identical": 8,
+     "sign_epsilon": 1e-06,
+     "fold_sd": 0.000128,
+     "fold_se": 4.1e-05,
+     "gain_in_fold_se": 1.180745,
+     "n_folds_that_can_differ": 2,
+     "live_folds": {
+      "seasons": [
+       "2014",
+       "2015"
+      ],
+      "mean_delta_on_live_folds": 0.000239,
+      "sd_across_live_folds": 0.000237
+     },
+     "paired_bootstrap_game_level": {
+      "delta": 4.8e-05,
+      "ci95": [
+       -9e-05,
+       0.000187
+      ],
+      "se": 7.1e-05,
+      "gain_in_bootstrap_se": 0.67642,
+      "n_games": 2670
+     },
+     "identity_check": {
+      "max_abs_per_game_ll_diff_folds_2006_2013": 0.0,
+      "max_abs_per_game_ll_diff_all_dev": 0.030665
+     }
+    },
+    "SHRINK C_block=3": {
+     "dev_ll": 0.62295,
+     "gain": -3.1e-05,
+     "per_season_delta": {
+      "2006": 0.0,
+      "2007": 0.0,
+      "2008": 0.0,
+      "2009": 0.0,
+      "2010": 0.0,
+      "2011": 0.0,
+      "2012": 0.0,
+      "2013": 0.0,
+      "2014": -0.00013,
+      "2015": -0.000178
+     },
+     "n_seasons": 10,
+     "n_positive": 0,
+     "n_negative": 2,
+     "n_identical": 8,
+     "sign_epsilon": 1e-06,
+     "fold_sd": 6.6e-05,
+     "fold_se": 2.1e-05,
+     "gain_in_fold_se": -1.477677,
+     "n_folds_that_can_differ": 2,
+     "live_folds": {
+      "seasons": [
+       "2014",
+       "2015"
+      ],
+      "mean_delta_on_live_folds": -0.000154,
+      "sd_across_live_folds": 3.4e-05
+     },
+     "paired_bootstrap_game_level": {
+      "delta": -3.1e-05,
+      "ci95": [
+       -0.000124,
+       6.5e-05
+      ],
+      "se": 4.8e-05,
+      "gain_in_bootstrap_se": -0.640998,
+      "n_games": 2670
+     },
+     "identity_check": {
+      "max_abs_per_game_ll_diff_folds_2006_2013": 0.0,
+      "max_abs_per_game_ll_diff_all_dev": 0.022352
+     }
+    },
+    "SHRINK C_block=1": {
+     "dev_ll": 0.622801,
+     "gain": 0.000118,
+     "per_season_delta": {
+      "2006": 0.0,
+      "2007": 0.0,
+      "2008": 0.0,
+      "2009": 0.0,
+      "2010": 0.0,
+      "2011": 0.0,
+      "2012": 0.0,
+      "2013": 0.0,
+      "2014": 0.001234,
+      "2015": -5e-05
+     },
+     "n_seasons": 10,
+     "n_positive": 1,
+     "n_negative": 1,
+     "n_identical": 8,
+     "sign_epsilon": 1e-06,
+     "fold_sd": 0.000392,
+     "fold_se": 0.000124,
+     "gain_in_fold_se": 0.954109,
+     "n_folds_that_can_differ": 2,
+     "live_folds": {
+      "seasons": [
+       "2014",
+       "2015"
+      ],
+      "mean_delta_on_live_folds": 0.000592,
+      "sd_across_live_folds": 0.000908
+     },
+     "paired_bootstrap_game_level": {
+      "delta": 0.000118,
+      "ci95": [
+       -4.5e-05,
+       0.000283
+      ],
+      "se": 8.4e-05,
+      "gain_in_bootstrap_se": 1.404852,
+      "n_games": 2670
+     },
+     "identity_check": {
+      "max_abs_per_game_ll_diff_folds_2006_2013": 0.0,
+      "max_abs_per_game_ll_diff_all_dev": 0.046255
+     }
+    },
+    "SHRINK C_block=0.3": {
+     "dev_ll": 0.623688,
+     "gain": -0.000769,
+     "per_season_delta": {
+      "2006": 0.0,
+      "2007": 0.0,
+      "2008": 0.0,
+      "2009": 0.0,
+      "2010": 0.0,
+      "2011": 0.0,
+      "2012": 0.0,
+      "2013": 0.0,
+      "2014": -0.007509,
+      "2015": -0.000182
+     },
+     "n_seasons": 10,
+     "n_positive": 0,
+     "n_negative": 2,
+     "n_identical": 8,
+     "sign_epsilon": 1e-06,
+     "fold_sd": 0.002369,
+     "fold_se": 0.000749,
+     "gain_in_fold_se": -1.026666,
+     "n_folds_that_can_differ": 2,
+     "live_folds": {
+      "seasons": [
+       "2014",
+       "2015"
+      ],
+      "mean_delta_on_live_folds": -0.003845,
+      "sd_across_live_folds": 0.005181
+     },
+     "paired_bootstrap_game_level": {
+      "delta": -0.000769,
+      "ci95": [
+       -0.001183,
+       -0.000365
+      ],
+      "se": 0.00021,
+      "gain_in_bootstrap_se": -3.656859,
+      "n_games": 2670
+     },
+     "identity_check": {
+      "max_abs_per_game_ll_diff_folds_2006_2013": 0.0,
+      "max_abs_per_game_ll_diff_all_dev": 0.146406
+     }
+    },
+    "SHRINK C_block=0.1": {
+     "dev_ll": 0.622326,
+     "gain": 0.000594,
+     "per_season_delta": {
+      "2006": 0.0,
+      "2007": 0.0,
+      "2008": 0.0,
+      "2009": 0.0,
+      "2010": 0.0,
+      "2011": 0.0,
+      "2012": 0.0,
+      "2013": 0.0,
+      "2014": 0.006286,
+      "2015": -0.000351
+     },
+     "n_seasons": 10,
+     "n_positive": 1,
+     "n_negative": 1,
+     "n_identical": 8,
+     "sign_epsilon": 1e-06,
+     "fold_sd": 0.002003,
+     "fold_se": 0.000633,
+     "gain_in_fold_se": 0.93692,
+     "n_folds_that_can_differ": 2,
+     "live_folds": {
+      "seasons": [
+       "2014",
+       "2015"
+      ],
+      "mean_delta_on_live_folds": 0.002968,
+      "sd_across_live_folds": 0.004693
+     },
+     "paired_bootstrap_game_level": {
+      "delta": 0.000594,
+      "ci95": [
+       2e-06,
+       0.001193
+      ],
+      "se": 0.000305,
+      "gain_in_bootstrap_se": 1.948717,
+      "n_games": 2670
+     },
+     "identity_check": {
+      "max_abs_per_game_ll_diff_folds_2006_2013": 0.0,
+      "max_abs_per_game_ll_diff_all_dev": 0.17908
+     }
+    },
+    "SHRINK C_block=0.03": {
+     "dev_ll": 0.621369,
+     "gain": 0.00155,
+     "per_season_delta": {
+      "2006": 0.0,
+      "2007": 0.0,
+      "2008": 0.0,
+      "2009": 0.0,
+      "2010": 0.0,
+      "2011": 0.0,
+      "2012": 0.0,
+      "2013": 0.0,
+      "2014": 0.014798,
+      "2015": 0.000705
+     },
+     "n_seasons": 10,
+     "n_positive": 2,
+     "n_negative": 0,
+     "n_identical": 8,
+     "sign_epsilon": 1e-06,
+     "fold_sd": 0.00466,
+     "fold_se": 0.001474,
+     "gain_in_fold_se": 1.052029,
+     "n_folds_that_can_differ": 2,
+     "live_folds": {
+      "seasons": [
+       "2014",
+       "2015"
+      ],
+      "mean_delta_on_live_folds": 0.007751,
+      "sd_across_live_folds": 0.009965
+     },
+     "paired_bootstrap_game_level": {
+      "delta": 0.00155,
+      "ci95": [
+       8.9e-05,
+       0.003028
+      ],
+      "se": 0.000752,
+      "gain_in_bootstrap_se": 2.061533,
+      "n_games": 2670
+     },
+     "identity_check": {
+      "max_abs_per_game_ll_diff_folds_2006_2013": 0.0,
+      "max_abs_per_game_ll_diff_all_dev": 0.399033
+     }
+    },
+    "SHRINK C_block=0.01": {
+     "dev_ll": 0.621072,
+     "gain": 0.001847,
+     "per_season_delta": {
+      "2006": 0.0,
+      "2007": 0.0,
+      "2008": 0.0,
+      "2009": 0.0,
+      "2010": 0.0,
+      "2011": 0.0,
+      "2012": 0.0,
+      "2013": 0.0,
+      "2014": 0.018118,
+      "2015": 0.000349
+     },
+     "n_seasons": 10,
+     "n_positive": 2,
+     "n_negative": 0,
+     "n_identical": 8,
+     "sign_epsilon": 1e-06,
+     "fold_sd": 0.005718,
+     "fold_se": 0.001808,
+     "gain_in_fold_se": 1.021258,
+     "n_folds_that_can_differ": 2,
+     "live_folds": {
+      "seasons": [
+       "2014",
+       "2015"
+      ],
+      "mean_delta_on_live_folds": 0.009234,
+      "sd_across_live_folds": 0.012565
+     },
+     "paired_bootstrap_game_level": {
+      "delta": 0.001847,
+      "ci95": [
+       -1.5e-05,
+       0.003743
+      ],
+      "se": 0.000966,
+      "gain_in_bootstrap_se": 1.911656,
+      "n_games": 2670
+     },
+     "identity_check": {
+      "max_abs_per_game_ll_diff_folds_2006_2013": 0.0,
+      "max_abs_per_game_ll_diff_all_dev": 0.503737
+     }
+    },
+    "SHRINK C_block=0.001": {
+     "dev_ll": 0.621574,
+     "gain": 0.001345,
+     "per_season_delta": {
+      "2006": 0.0,
+      "2007": 0.0,
+      "2008": 0.0,
+      "2009": 0.0,
+      "2010": 0.0,
+      "2011": 0.0,
+      "2012": 0.0,
+      "2013": 0.0,
+      "2014": 0.018285,
+      "2015": -0.004834
+     },
+     "n_seasons": 10,
+     "n_positive": 1,
+     "n_negative": 1,
+     "n_identical": 8,
+     "sign_epsilon": 1e-06,
+     "fold_sd": 0.006143,
+     "fold_se": 0.001943,
+     "gain_in_fold_se": 0.692469,
+     "n_folds_that_can_differ": 2,
+     "live_folds": {
+      "seasons": [
+       "2014",
+       "2015"
+      ],
+      "mean_delta_on_live_folds": 0.006726,
+      "sd_across_live_folds": 0.016347
+     },
+     "paired_bootstrap_game_level": {
+      "delta": 0.001345,
+      "ci95": [
+       -0.000958,
+       0.003752
+      ],
+      "se": 0.001215,
+      "gain_in_bootstrap_se": 1.107466,
+      "n_games": 2670
+     },
+     "identity_check": {
+      "max_abs_per_game_ll_diff_folds_2006_2013": 0.0,
+      "max_abs_per_game_ll_diff_all_dev": 0.810167
+     }
+    }
+   },
+   "RAW": {
+    "best_variant": "SHRINK C_block=0.01",
+    "dev_ll": 0.621072,
+    "raw_gain": 0.001847,
+    "per_season_delta": {
+     "2006": 0.0,
+     "2007": 0.0,
+     "2008": 0.0,
+     "2009": 0.0,
+     "2010": 0.0,
+     "2011": 0.0,
+     "2012": 0.0,
+     "2013": 0.0,
+     "2014": 0.018118,
+     "2015": 0.000349
+    },
+    "n_positive": 2,
+    "n_negative": 0,
+    "n_identical": 8,
+    "fold_sd": 0.005718,
+    "fold_se": 0.001808,
+    "gain_in_fold_se": 1.021258,
+    "note": "RAW is the in-sample-selected number: for SHRINK/GATE it picks the grid point using the same ten seasons it is scored on, so it is optimistic by construction. DROP and POOL have no selection freedom, so their RAW and NESTED are identical by definition."
+   },
+   "NESTED": {
+    "pool_size": 10,
+    "pool": [
+     "SHRINK C_block=0.001",
+     "SHRINK C_block=0.01",
+     "SHRINK C_block=0.03",
+     "SHRINK C_block=0.1",
+     "SHRINK C_block=0.3",
+     "SHRINK C_block=1",
+     "SHRINK C_block=10",
+     "SHRINK C_block=100",
+     "SHRINK C_block=3",
+     "SHRINK C_block=30"
+    ],
+    "tiebreak": "first",
+    "raw_best": "SHRINK C_block=0.01",
+    "raw_best_ll": 0.621072,
+    "raw_gain": 0.001847,
+    "nested_ll": 0.621923,
+    "nested_gain": 0.000996,
+    "search_optimism": 0.00085,
+    "loso_picks": {
+     "2006": "SHRINK C_block=0.01",
+     "2007": "SHRINK C_block=0.01",
+     "2008": "SHRINK C_block=0.01",
+     "2009": "SHRINK C_block=0.01",
+     "2010": "SHRINK C_block=0.01",
+     "2011": "SHRINK C_block=0.01",
+     "2012": "SHRINK C_block=0.01",
+     "2013": "SHRINK C_block=0.01",
+     "2014": "SHRINK C_block=0.03",
+     "2015": "SHRINK C_block=0.001"
+    },
+    "nested_per_season_delta": {
+     "2006": 0.0,
+     "2007": 0.0,
+     "2008": 0.0,
+     "2009": 0.0,
+     "2010": 0.0,
+     "2011": 0.0,
+     "2012": 0.0,
+     "2013": 0.0,
+     "2014": 0.014798,
+     "2015": -0.004834
+    },
+    "nested_n_positive": 1,
+    "nested_n_negative": 1,
+    "nested_n_identical": 8,
+    "sign_epsilon": 1e-06
+   },
+   "NESTED_tiebreak_sensitivity": {
+    "nested_gain_tiebreak_first": 0.000996,
+    "nested_gain_tiebreak_last": 0.000996,
+    "loso_picks_tiebreak_last": {
+     "2006": "SHRINK C_block=0.01",
+     "2007": "SHRINK C_block=0.01",
+     "2008": "SHRINK C_block=0.01",
+     "2009": "SHRINK C_block=0.01",
+     "2010": "SHRINK C_block=0.01",
+     "2011": "SHRINK C_block=0.01",
+     "2012": "SHRINK C_block=0.01",
+     "2013": "SHRINK C_block=0.01",
+     "2014": "SHRINK C_block=0.03",
+     "2015": "SHRINK C_block=0.001"
+    },
+    "tie_is_binding": false,
+    "why": "two variants that differ ONLY on the held-out fold score identically on the nine selection folds, so the LOSO choice between them is a coin flip. Where that happens the nested gain is not a single number but a range, and both ends are reported. The verdict uses the conservative end (lexicographically first, which is the lower min_live / larger C_block, i.e. closer to the shipped model)."
+   },
+   "VERDICT_vs_prereg_bar": {
+    "nested_gain": 0.000996,
+    "bar_nested_gain": 0.001,
+    "clause_1_magnitude_met": false,
+    "nested_positive_seasons": 1,
+    "bar_positive_seasons": ">= 7 of 10",
+    "clause_2_sign_count_met": false,
+    "clause_2_attainable_maximum": 2,
+    "clause_2_satisfiable_at_all": false,
+    "VERDICT": "REJECT",
+    "nested_gain_if_tie_broken_the_other_way": 0.000996,
+    "clause_1_magnitude_met_under_either_tiebreak": false
+   }
+  },
+  "4_GATE": {
+   "description": "block zeroed until >= M LIVE training seasons exist, over the pre-declared grid",
+   "pre_declared_grid": [
+    1,
+    2,
+    3
+   ],
+   "variants": {
+    "GATE min_live=1": {
+     "dev_ll": 0.622919,
+     "gain": 0.0,
+     "per_season_delta": {
+      "2006": 0.0,
+      "2007": 0.0,
+      "2008": 0.0,
+      "2009": 0.0,
+      "2010": 0.0,
+      "2011": 0.0,
+      "2012": 0.0,
+      "2013": 0.0,
+      "2014": 0.0,
+      "2015": 0.0
+     },
+     "n_seasons": 10,
+     "n_positive": 0,
+     "n_negative": 0,
+     "n_identical": 10,
+     "sign_epsilon": 1e-06,
+     "fold_sd": 0.0,
+     "fold_se": 0.0,
+     "gain_in_fold_se": null,
+     "n_folds_that_can_differ": 0,
+     "paired_bootstrap_game_level": {
+      "delta": 0.0,
+      "ci95": [
+       0.0,
+       0.0
+      ],
+      "se": 0.0,
+      "gain_in_bootstrap_se": null,
+      "n_games": 2670
+     },
+     "identity_check": {
+      "max_abs_per_game_ll_diff_folds_2006_2013": 0.0,
+      "max_abs_per_game_ll_diff_all_dev": 0.0
+     }
+    },
+    "GATE min_live=2": {
+     "dev_ll": 0.621108,
+     "gain": 0.001811,
+     "per_season_delta": {
+      "2006": 0.0,
+      "2007": 0.0,
+      "2008": 0.0,
+      "2009": 0.0,
+      "2010": 0.0,
+      "2011": 0.0,
+      "2012": 0.0,
+      "2013": 0.0,
+      "2014": 0.018112,
+      "2015": 0.0
+     },
+     "n_seasons": 10,
+     "n_positive": 1,
+     "n_negative": 0,
+     "n_identical": 9,
+     "sign_epsilon": 1e-06,
+     "fold_sd": 0.005727,
+     "fold_se": 0.001811,
+     "gain_in_fold_se": 1.0,
+     "n_folds_that_can_differ": 1,
+     "live_folds": {
+      "seasons": [
+       "2014"
+      ],
+      "mean_delta_on_live_folds": 0.018112,
+      "sd_across_live_folds": null
+     },
+     "paired_bootstrap_game_level": {
+      "delta": 0.001811,
+      "ci95": [
+       1.9e-05,
+       0.003651
+      ],
+      "se": 0.000935,
+      "gain_in_bootstrap_se": 1.936744,
+      "n_games": 2670
+     },
+     "identity_check": {
+      "max_abs_per_game_ll_diff_folds_2006_2013": 0.0,
+      "max_abs_per_game_ll_diff_all_dev": 0.576496
+     }
+    },
+    "GATE min_live=3": {
+     "dev_ll": 0.621678,
+     "gain": 0.001241,
+     "per_season_delta": {
+      "2006": 0.0,
+      "2007": 0.0,
+      "2008": 0.0,
+      "2009": 0.0,
+      "2010": 0.0,
+      "2011": 0.0,
+      "2012": 0.0,
+      "2013": 0.0,
+      "2014": 0.018112,
+      "2015": -0.0057
+     },
+     "n_seasons": 10,
+     "n_positive": 1,
+     "n_negative": 1,
+     "n_identical": 8,
+     "sign_epsilon": 1e-06,
+     "fold_sd": 0.006193,
+     "fold_se": 0.001958,
+     "gain_in_fold_se": 0.633796,
+     "n_folds_that_can_differ": 2,
+     "live_folds": {
+      "seasons": [
+       "2014",
+       "2015"
+      ],
+      "mean_delta_on_live_folds": 0.006206,
+      "sd_across_live_folds": 0.016838
+     },
+     "paired_bootstrap_game_level": {
+      "delta": 0.001241,
+      "ci95": [
+       -0.001134,
+       0.003735
+      ],
+      "se": 0.001252,
+      "gain_in_bootstrap_se": 0.991648,
+      "n_games": 2670
+     },
+     "identity_check": {
+      "max_abs_per_game_ll_diff_folds_2006_2013": 0.0,
+      "max_abs_per_game_ll_diff_all_dev": 0.858035
+     }
+    }
+   },
+   "RAW": {
+    "best_variant": "GATE min_live=2",
+    "dev_ll": 0.621108,
+    "raw_gain": 0.001811,
+    "per_season_delta": {
+     "2006": 0.0,
+     "2007": 0.0,
+     "2008": 0.0,
+     "2009": 0.0,
+     "2010": 0.0,
+     "2011": 0.0,
+     "2012": 0.0,
+     "2013": 0.0,
+     "2014": 0.018112,
+     "2015": 0.0
+    },
+    "n_positive": 1,
+    "n_negative": 0,
+    "n_identical": 9,
+    "fold_sd": 0.005727,
+    "fold_se": 0.001811,
+    "gain_in_fold_se": 1.0,
+    "note": "RAW is the in-sample-selected number: for SHRINK/GATE it picks the grid point using the same ten seasons it is scored on, so it is optimistic by construction. DROP and POOL have no selection freedom, so their RAW and NESTED are identical by definition."
+   },
+   "NESTED": {
+    "pool_size": 3,
+    "pool": [
+     "GATE min_live=1",
+     "GATE min_live=2",
+     "GATE min_live=3"
+    ],
+    "tiebreak": "first",
+    "raw_best": "GATE min_live=2",
+    "raw_best_ll": 0.621108,
+    "raw_gain": 0.001811,
+    "nested_ll": 0.622919,
+    "nested_gain": 0.0,
+    "search_optimism": 0.001811,
+    "loso_picks": {
+     "2006": "GATE min_live=2",
+     "2007": "GATE min_live=2",
+     "2008": "GATE min_live=2",
+     "2009": "GATE min_live=2",
+     "2010": "GATE min_live=2",
+     "2011": "GATE min_live=2",
+     "2012": "GATE min_live=2",
+     "2013": "GATE min_live=2",
+     "2014": "GATE min_live=1",
+     "2015": "GATE min_live=2"
+    },
+    "nested_per_season_delta": {
+     "2006": 0.0,
+     "2007": 0.0,
+     "2008": 0.0,
+     "2009": 0.0,
+     "2010": 0.0,
+     "2011": 0.0,
+     "2012": 0.0,
+     "2013": 0.0,
+     "2014": 0.0,
+     "2015": 0.0
+    },
+    "nested_n_positive": 0,
+    "nested_n_negative": 0,
+    "nested_n_identical": 10,
+    "sign_epsilon": 1e-06
+   },
+   "NESTED_tiebreak_sensitivity": {
+    "nested_gain_tiebreak_first": 0.0,
+    "nested_gain_tiebreak_last": 0.001241,
+    "loso_picks_tiebreak_last": {
+     "2006": "GATE min_live=2",
+     "2007": "GATE min_live=2",
+     "2008": "GATE min_live=2",
+     "2009": "GATE min_live=2",
+     "2010": "GATE min_live=2",
+     "2011": "GATE min_live=2",
+     "2012": "GATE min_live=2",
+     "2013": "GATE min_live=2",
+     "2014": "GATE min_live=2",
+     "2015": "GATE min_live=3"
+    },
+    "tie_is_binding": true,
+    "why": "two variants that differ ONLY on the held-out fold score identically on the nine selection folds, so the LOSO choice between them is a coin flip. Where that happens the nested gain is not a single number but a range, and both ends are reported. The verdict uses the conservative end (lexicographically first, which is the lower min_live / larger C_block, i.e. closer to the shipped model)."
+   },
+   "VERDICT_vs_prereg_bar": {
+    "nested_gain": 0.0,
+    "bar_nested_gain": 0.001,
+    "clause_1_magnitude_met": false,
+    "nested_positive_seasons": 0,
+    "bar_positive_seasons": ">= 7 of 10",
+    "clause_2_sign_count_met": false,
+    "clause_2_attainable_maximum": 2,
+    "clause_2_satisfiable_at_all": false,
+    "VERDICT": "REJECT",
+    "nested_gain_if_tie_broken_the_other_way": 0.001241,
+    "clause_1_magnitude_met_under_either_tiebreak": false
+   }
+  }
+ },
+ "cross_family_nested": {
+  "pool_size": 16,
+  "pool": [
+   "BASE",
+   "DROP",
+   "GATE min_live=1",
+   "GATE min_live=2",
+   "GATE min_live=3",
+   "POOL",
+   "SHRINK C_block=0.001",
+   "SHRINK C_block=0.01",
+   "SHRINK C_block=0.03",
+   "SHRINK C_block=0.1",
+   "SHRINK C_block=0.3",
+   "SHRINK C_block=1",
+   "SHRINK C_block=10",
+   "SHRINK C_block=100",
+   "SHRINK C_block=3",
+   "SHRINK C_block=30"
+  ],
+  "tiebreak": "first",
+  "raw_best": "SHRINK C_block=0.01",
+  "raw_best_ll": 0.621072,
+  "raw_gain": 0.001847,
+  "nested_ll": 0.621923,
+  "nested_gain": 0.000996,
+  "search_optimism": 0.00085,
+  "loso_picks": {
+   "2006": "SHRINK C_block=0.01",
+   "2007": "SHRINK C_block=0.01",
+   "2008": "SHRINK C_block=0.01",
+   "2009": "SHRINK C_block=0.01",
+   "2010": "SHRINK C_block=0.01",
+   "2011": "SHRINK C_block=0.01",
+   "2012": "SHRINK C_block=0.01",
+   "2013": "SHRINK C_block=0.01",
+   "2014": "SHRINK C_block=0.03",
+   "2015": "SHRINK C_block=0.001"
+  },
+  "nested_per_season_delta": {
+   "2006": 0.0,
+   "2007": 0.0,
+   "2008": 0.0,
+   "2009": 0.0,
+   "2010": 0.0,
+   "2011": 0.0,
+   "2012": 0.0,
+   "2013": 0.0,
+   "2014": 0.014798,
+   "2015": -0.004834
+  },
+  "nested_n_positive": 1,
+  "nested_n_negative": 1,
+  "nested_n_identical": 8,
+  "sign_epsilon": 1e-06,
+  "nested_gain_tiebreak_last": 0.000996,
+  "what": "LOSO selection over EVERY candidate variant AND the shipped baseline at once -- what this whole screen is worth if you let it choose freely. It is not the pre-registered per-candidate test; it is reported because a four-family screen with a 15-cell pool has more search optimism than any single family does, and the pre-registration's method standard demands the optimism be quantified rather than assumed away."
+ },
+ "fold_noise": {
+  "unpaired_fold_sd_of_baseline": 0.018443,
+  "unpaired_fold_se_of_baseline": 0.005832,
+  "paired_fold_se_drop_vs_base": 0.001958,
+  "game_level_paired_bootstrap_se_drop_vs_base": 0.001252,
+  "build_main_process_jitter": 3e-05,
+  "reading": "all four candidates can only move two of the ten folds, so the paired per-season SD is dominated by eight structural zeros and UNDERSTATES the noise on the two folds that actually move. The live-fold spread inside each variant block, and the game-level bootstrap, are the honest scales."
+ },
+ "run_to_run_jitter_on_the_gain": {
+  "observations_across_5_processes": {
+   "baseline_dev_ll": [
+    0.622929,
+    0.622923,
+    0.622886,
+    0.622919,
+    0.62292
+   ],
+   "nested_gain_1_DROP": [
+    0.001251,
+    0.001245,
+    0.001207,
+    0.001241,
+    0.001242
+   ],
+   "nested_gain_2_POOL": [
+    0.001335,
+    0.001329,
+    0.001292,
+    0.001329,
+    0.001326
+   ],
+   "nested_gain_3_SHRINK": [
+    0.001006,
+    0.001,
+    0.000963,
+    0.000996,
+    0.000997
+   ],
+   "nested_gain_4_GATE": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "raw_gain_3_SHRINK": [
+    0.001856,
+    0.001851,
+    0.001813,
+    0.001847,
+    0.001848
+   ]
+  },
+  "spread": {
+   "baseline_dev_ll": 4.3e-05,
+   "nested_gain_1_DROP": 4.4e-05,
+   "nested_gain_2_POOL": 4.3e-05,
+   "nested_gain_3_SHRINK": 4.3e-05,
+   "nested_gain_4_GATE": 0.0,
+   "raw_gain_3_SHRINK": 4.3e-05
+  },
+  "cause": "build_main() accumulates league EPA rates over dict iteration order. Both the baseline and every candidate are rebuilt from that same jittered X14, so the jitter does NOT fully cancel in the paired gain.",
+  "consequence": "+/-2e-5 on DROP and POOL, which is 2% of the bar and changes nothing. On SHRINK it is decisive: the nested gain straddles the +0.0010 magnitude clause, landing above it in 3 of 5 processes and below it in 2. A candidate whose bar-crossing depends on dict ordering has not cleared the bar in any meaningful sense."
+ },
+ "outcome": {
+  "adopted": [],
+  "all_rejected": true,
+  "test_look_owed": false,
+  "prereg_defect": {
+   "clause": "positive in >= 7 of 10 seasons",
+   "status": "UNSATISFIABLE BY CONSTRUCTION",
+   "why": "the block is identically zero before 2013, so for every fold trained entirely on pre-2013 seasons the four coefficients are exactly zero under the ridge and EVERY candidate reproduces the shipped prediction bit-for-bit. Only 2 of the 10 scored folds ([2014, 2015]) can differ from the baseline at all, so no candidate could ever be positive in 7. The sign-count clause was written for a feature live across the whole split and does not describe this block. It is REPORTED AS A DEFECT, not silently replaced: the magnitude clause is evaluated as written and both clauses are shown separately so the reader can see exactly which one each candidate fails."
+  }
+ }
+}
