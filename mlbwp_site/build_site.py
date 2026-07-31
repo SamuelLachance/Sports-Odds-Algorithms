@@ -436,6 +436,7 @@ function route(){
   if(v==="game"&&arg){
     if(arg.slice(0,4)==="nhl-"&&state.nhl) return nhlGamePage(arg.slice(4));
     return /_/.test(arg)&&state.nfl?nflGamePage(arg):gamePage(arg);}
+  if(v==="record"){setNav("record");return recordPage();}
   if(v==="team"&&arg){setNav("teams");return teamPage(arg);}
   if(v==="player"&&arg){setNav("teams");return playerPage(arg);}
   if(v==="pos"&&arg){setNav("players");return posPage(arg);}
@@ -1519,6 +1520,157 @@ function playerPage(id){
     </div>`;
 }
 
+/* ---------- TRACK RECORD (#/record) ---------- */
+/* Every graded PRE-GAME pick, per league, scored honestly. MLB comes from the
+   served ledger block (board.record.mlb): the board is forward-only, so a played
+   game's probability lives nowhere else. NFL/NHL are read straight off their
+   payload schedules, where each played game still carries its frozen pre-game
+   probability (ph / hp). No market numbers, no refitting - the model's own picks,
+   graded against the result. */
+const REC_ROWS=300;                 // rows rendered; rollups always use every graded pick
+const REC_LG=["mlb","nfl","nhl"];
+const REC_NAME={mlb:"MLB",nfl:"NFL",nhl:"NHL"};
+const LL_COIN=Math.log(2);          // 0.6931 - the coin-flip log loss
+const recLeague=()=>REC_LG.indexOf(state.league)>=0?state.league:"mlb";
+const recMlb=()=>(state.board&&state.board.record&&state.board.record.mlb)||null;
+const recMonth=k=>/^\d{4}-\d{2}$/.test(k)
+  ?new Date(k+"-01T12:00:00Z").toLocaleDateString(LOC,{month:"short",year:"numeric",timeZone:TZ}):k;
+
+function recRows(lg){
+  if(lg==="mlb"){const m=recMlb(); if(!m) return [];
+    return (m.rows||[]).map(r=>({d:r.d,away:r.away,home:r.home,p:r.p,pick:r.pick,y:r.y,
+      hs:r.hs,as:r.as,per:(r.d||"").slice(0,7),href:null}));}
+  if(lg==="nfl"){const n=state.nfl; if(!n||!n.schedule) return [];
+    return n.schedule.filter(g=>g.hs!=null&&g.as!=null&&g.ph!=null)
+      .map(g=>({d:g.d,away:g.away,home:g.home,p:g.ph,pick:g.ph>=0.5?g.home:g.away,
+        y:g.hs>g.as?1:(g.hs<g.as?0:null),hs:g.hs,as:g.as,per:"Wk "+g.w,
+        href:"#/game/"+g.w+"_"+g.away+"_"+g.home}))
+      .sort((a,b)=>a.d<b.d?1:(a.d>b.d?-1:0));}
+  if(lg==="nhl"){const n=state.nhl; if(!n||!n.schedule) return [];
+    return n.schedule.filter(g=>g.hs!=null&&g.as!=null&&g.hp!=null)
+      .map(g=>({d:g.d,away:g.away,home:g.home,p:g.hp,pick:g.hp>=0.5?g.home:g.away,
+        y:g.y!=null?g.y:(g.hs>g.as?1:0),hs:g.hs,as:g.as,per:(g.d||"").slice(0,7),
+        href:"#/game/nhl-"+g.id}))
+      .sort((a,b)=>a.d<b.d?1:(a.d>b.d?-1:0));}
+  return [];
+}
+function recScore(rows){            // log loss / accuracy / Brier over graded rows
+  const g=rows.filter(r=>r.y!=null&&r.p!=null);
+  if(!g.length) return null;
+  let ll=0,br=0,c=0;
+  g.forEach(r=>{const p=Math.min(Math.max(r.p,1e-9),1-1e-9);
+    ll+=-(r.y*Math.log(p)+(1-r.y)*Math.log(1-p));
+    br+=(r.p-r.y)*(r.p-r.y);
+    if((r.p>=0.5)===(r.y===1))c++;});
+  return {n:g.length,correct:c,acc:c/g.length,ll:ll/g.length,brier:br/g.length,
+    ties:rows.length-g.length};
+}
+function recPeriods(rows){          // oldest-first buckets with a running cumulative
+  const asc=rows.slice().reverse(), keys=[], m={};
+  asc.forEach(r=>{const k=r.per||"?";
+    if(!m[k]){m[k]={n:0,c:0,ll:0};keys.push(k);}
+    if(r.y==null) return;
+    const p=Math.min(Math.max(r.p,1e-9),1-1e-9), o=m[k];
+    o.n++; o.ll+=-(r.y*Math.log(p)+(1-r.y)*Math.log(1-p));
+    if((r.p>=0.5)===(r.y===1))o.c++;});
+  let cn=0,cc=0,cll=0;
+  return keys.map(k=>{const o=m[k]; cn+=o.n; cc+=o.c; cll+=o.ll;
+    return {k,n:o.n,c:o.c,acc:o.n?o.c/o.n:null,ll:o.n?o.ll/o.n:null,
+      cacc:cn?cc/cn:null,cll:cn?cll/cn:null,cn};});
+}
+function recHoldout(lg){
+  if(lg==="nfl"&&state.nfl) return {v:state.nfl.model_card.test_log_loss,lab:"locked NFL holdout"};
+  if(lg==="nhl"&&state.nhl) return {v:state.nhl.model_card.test_ll,lab:"locked NHL test"};
+  if(lg==="mlb"&&state.board&&state.board.accuracy) return {v:state.board.accuracy.log_loss,lab:"locked MLB holdout"};
+  return null;
+}
+function recSource(lg){
+  const m=recMlb();
+  if(lg==="mlb") return `Every pick is archived <b>before first pitch</b> in the prediction ledger and graded from the
+    final score &mdash; nothing is back-filled. Tracking began <b>${(m&&m.since)||"&mdash;"}</b>, so the sample starts there and
+    grows one slate a day${m&&m.n_pending?` (${m.n_pending} picks logged and still waiting on results)`:""}.`;
+  if(lg==="nfl") return `Picks are the <b>frozen pre-game</b> probabilities shipped in the NFL payload (<span class="mono">ph</span>),
+    scored against the final. The 2026 season has not kicked off yet, so nothing is graded.`;
+  return `Picks are the <b>frozen pre-game</b> probabilities shipped in the NHL payload (<span class="mono">hp</span>) &mdash; the
+    leak-safe replay: each game is predicted from ratings that have only seen earlier games, then scored against the final.`;
+}
+function recSection(lg){
+  const rows=recRows(lg), srv=lg==="mlb"?(recMlb()||{}).rollup:null;
+  const s=srv?{n:srv.n,correct:Math.round(srv.acc*srv.n),acc:srv.acc,ll:srv.log_loss,
+               brier:srv.brier,ties:0}:recScore(rows);
+  const ho=recHoldout(lg);
+  if(!s) return `<div class="empty">No graded ${REC_NAME[lg]} picks yet.<br>
+    <span class="sub">${recSource(lg)}</span></div>`;
+  const dCoin=s.ll-LL_COIN, dHo=ho?s.ll-ho.v:null;
+  const box=(k,v,cls)=>`<div class="b"><span class="k">${k}</span><span class="v${cls?" "+cls:""}">${v}</span></div>`;
+  const tiles=[
+    box("Graded picks",s.n),
+    box("Correct",s.correct),
+    box("Pick accuracy",(s.acc*100).toFixed(1)+"%",s.acc>=0.5?"pos":"neg"),
+    box("Log loss",s.ll.toFixed(4)),
+    box("vs coin flip",(dCoin<=0?"&minus;":"+")+Math.abs(dCoin).toFixed(4),dCoin<=0?"pos":"neg"),
+    ho?box("vs "+ho.lab,(dHo<=0?"&minus;":"+")+Math.abs(dHo).toFixed(4),dHo<=0?"pos":"warnc"):"",
+    box("Brier",s.brier.toFixed(4)),
+  ].join("");
+  const warn=s.n<30?`<div class="signals" style="margin-top:12px"><div class="sig warn"><span class="ic">!</span>
+    <span><b>n=${s.n} &mdash; not yet meaningful.</b> A handful of games says nothing about a model: at this sample the
+    log loss can swing by tenths on one result. Treat it as a receipt that the picks were made, not as evidence.</span></div></div>`
+    :(s.n<200?`<div class="signals" style="margin-top:12px"><div class="sig"><span class="ic">i</span>
+    <span>n=${s.n} &mdash; a thin sample. Differences smaller than ~0.02 log loss are noise here.</span></div></div>`:"");
+  const per=recPeriods(rows).reverse().map(o=>`<tr>
+    <td class="a">${recMonth(o.k)}</td><td><span class="num">${o.n}</span></td>
+    <td><span class="num">${o.c}</span></td>
+    <td><span class="num">${o.acc==null?"&mdash;":(o.acc*100).toFixed(1)+"%"}</span></td>
+    <td><span class="num">${o.ll==null?"&mdash;":o.ll.toFixed(4)}</span></td>
+    <td><span class="num">${o.cacc==null?"&mdash;":(o.cacc*100).toFixed(1)+"%"}</span></td>
+    <td><span class="num">${o.cll==null?"&mdash;":o.cll.toFixed(4)}</span></td></tr>`).join("");
+  const shown=rows.slice(0,REC_ROWS);
+  const pick=r=>{
+    if(r.y==null) return `<td><span class="num">${r.as}-${r.hs}</span></td><td><span class="sub">TIE</span></td>`;
+    const hit=(r.p>=0.5)===(r.y===1);
+    return `<td><span class="num">${r.as}-${r.hs}</span></td>
+      <td><span class="num ${hit?"pos":"neg"}">${hit?"HIT &#10003;":"MISS &#10007;"}</span></td>`;};
+  const body=shown.map(r=>`<tr ${r.href?`onclick="location.hash='${r.href}'"`:""}>
+    <td class="a"><span class="sub">${(r.d||"").slice(5)}</span></td>
+    <td class="a">${r.away} <span class="sub">@</span> ${r.home}</td>
+    <td class="a"><span class="ab" style="color:var(--accent)">${r.pick}</span></td>
+    <td><span class="num">${pctI(Math.max(r.p,1-r.p))}%</span></td>
+    <td><span class="num">${amOdds(Math.max(r.p,1-r.p))}</span></td>
+    ${pick(r)}</tr>`).join("");
+  return `${warn}
+    <div class="statgrid" style="margin-top:12px">${tiles}</div>
+    <div class="sub" style="margin:10px 2px 0">${recSource(lg)}</div>
+    <div class="cols" style="margin-top:16px">
+      <div class="panel"><h3>Every graded pick <span class="sub">${shown.length<rows.length?`most recent ${shown.length} of ${rows.length}`:`all ${rows.length}`}</span></h3>
+        <div class="twrap"><table>
+          <thead><tr><th>Date</th><th>Matchup</th><th>Pick</th><th>Prob</th><th>Fair odds</th><th>Final</th><th>Result</th></tr></thead>
+          <tbody>${body}</tbody></table></div></div>
+      <div class="panel"><h3>By ${lg==="nfl"?"week":"month"} <span class="sub">running cumulative</span></h3>
+        <div class="twrap"><table>
+          <thead><tr><th>${lg==="nfl"?"Week":"Month"}</th><th>Picks</th><th>Hits</th><th>Acc</th><th>LL</th><th>Cum acc</th><th>Cum LL</th></tr></thead>
+          <tbody>${per}</tbody></table></div>
+        <div class="sub" style="margin-top:8px">Cumulative columns run oldest &rarr; newest, so the top row is the
+          season-to-date number and the bottom row is where tracking started.</div></div>
+    </div>`;
+}
+function recordPage(){
+  const lg=recLeague(), b=state.board;
+  const rail=b.leagues.map(l=>{
+    if(l.code==="nhl"&&state.nhl) return "";        // the live NHL button is appended below
+    if(l.code==="mlb"||(l.code==="nfl"&&state.nfl))
+      return `<button class="lg ${lg===l.code?"on":""}" data-lg="${l.code}"><span>${l.name}</span><span class="n">${recRows(l.code).length}</span></button>`;
+    return `<button class="lg" disabled><span>${l.name}</span><span class="soon">soon</span></button>`;}).join("")
+    +(state.nhl?`<button class="lg ${lg==="nhl"?"on":""}" data-lg="nhl"><span>NHL</span><span class="n">${recRows("nhl").length}</span></button>`:"");
+  $("#view").innerHTML=`<div class="controls"><div class="rail">${rail}</div></div>
+    <div class="eyebrow">Track record &middot; ${REC_NAME[lg]}</div>
+    <h1 class="pt">Every pick, graded <span class="sub" style="font-weight:400">pre-game probability vs what actually happened</span></h1>
+    <div class="sub" style="margin-bottom:4px">Market-blind models: the odds are never an input, so this is the model's
+      own forecast scored on its own. <b>Log loss</b> is the honest scoreboard (lower is better) &mdash; a coin flip is
+      ${LL_COIN.toFixed(4)}; picking right often but with overconfident probabilities still scores badly.</div>
+    ${recSection(lg)}`;
+  $("#view").querySelectorAll("[data-lg]").forEach(x=>x.onclick=()=>{setLeague(x.dataset.lg);recordPage();});
+}
+
 boot();
 """
 
@@ -1529,6 +1681,7 @@ SHELL = f"""<style>{CSS}</style>
   <nav class="main">
     <a href="#/" data-v="board">Board</a>
     <a href="#/season" data-v="season" id="navseason" style="display:none">Season</a>
+    <a href="#/record" data-v="record">Track record</a>
     <a href="#/standings" data-v="standings">Standings</a>
     <a href="#/teams" data-v="teams">Teams</a>
     <a href="#/players" data-v="players">Players</a>

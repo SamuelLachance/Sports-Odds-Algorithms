@@ -67,6 +67,10 @@ def main(horizon_days: int = 30) -> int:
     print(f"[refresh] pred ledger: {st['new']} new, {st['graded']} graded, "
           f"{st['n']} total" + (f"; realized 2026: LL {rz['log_loss']} "
           f"acc {rz['acc']:.1%} (n={rz['n']})" if rz else ""), flush=True)
+    # the board was written BEFORE this grading pass — refresh only its record
+    # block so #/record shows today's results instead of yesterday's
+    print(f"[refresh] track record: {predict_slate.attach_record()} graded rows "
+          f"-> board.json", flush=True)
 
     db_mod.main(season=season)
 

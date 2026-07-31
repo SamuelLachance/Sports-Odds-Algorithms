@@ -1,0 +1,458 @@
+{
+ "baseline_cv": 0.623,
+ "baseline_folds": [
+  0.60653,
+  0.65683,
+  0.61975,
+  0.61489,
+  0.61696
+ ],
+ "gate": -0.002,
+ "coverage": {
+  "scored_rows": 3997,
+  "scored_seasons": [
+   2001,
+   2015
+  ],
+  "weather_rows": 3997,
+  "weather_pct": 1.0,
+  "outdoor_rows": 3087,
+  "outdoor_with_weather": 3087,
+  "referee_rows": 3997,
+  "distinct_refs": 71,
+  "games_csv_wind_rows": 2800
+ },
+ "candidates": {
+  "W1  wind (Open-Meteo actual)": {
+   "cv": 0.62353,
+   "delta": 0.00054,
+   "folds": [
+    0.60655,
+    0.6569,
+    0.62047,
+    0.61635,
+    0.61737
+   ],
+   "fold_delta_min": 2e-05,
+   "fold_delta_max": 0.00146,
+   "n_cols": 1,
+   "gate_met": false
+  },
+  "W2  temp (Open-Meteo actual)": {
+   "cv": 0.62331,
+   "delta": 0.00031,
+   "folds": [
+    0.60699,
+    0.6567,
+    0.61925,
+    0.61728,
+    0.61632
+   ],
+   "fold_delta_min": -0.00064,
+   "fold_delta_max": 0.00239,
+   "n_cols": 1,
+   "gate_met": false
+  },
+  "W3  precip flag": {
+   "cv": 0.62361,
+   "delta": 0.00062,
+   "folds": [
+    0.60741,
+    0.6573,
+    0.61993,
+    0.61494,
+    0.61848
+   ],
+   "fold_delta_min": 5e-05,
+   "fold_delta_max": 0.00152,
+   "n_cols": 1,
+   "gate_met": false
+  },
+  "W4  dome flag": {
+   "cv": 0.62348,
+   "delta": 0.00049,
+   "folds": [
+    0.60665,
+    0.65687,
+    0.62032,
+    0.61583,
+    0.61772
+   ],
+   "fold_delta_min": 4e-05,
+   "fold_delta_max": 0.00095,
+   "n_cols": 1,
+   "gate_met": false
+  },
+  "W5  wind+temp+precip+dome (block)": {
+   "cv": 0.62426,
+   "delta": 0.00126,
+   "folds": [
+    0.60834,
+    0.65632,
+    0.62045,
+    0.61786,
+    0.61829
+   ],
+   "fold_delta_min": -0.00051,
+   "fold_delta_max": 0.00298,
+   "n_cols": 4,
+   "gate_met": false
+  },
+  "W6  wind x pass_net": {
+   "cv": 0.62322,
+   "delta": 0.00022,
+   "folds": [
+    0.60677,
+    0.65721,
+    0.61977,
+    0.61514,
+    0.61718
+   ],
+   "fold_delta_min": 2e-05,
+   "fold_delta_max": 0.00039,
+   "n_cols": 1,
+   "gate_met": false
+  },
+  "W7  wind x elo_logit": {
+   "cv": 0.62326,
+   "delta": 0.00026,
+   "folds": [
+    0.6066,
+    0.65744,
+    0.61975,
+    0.61533,
+    0.61716
+   ],
+   "fold_delta_min": -0.0,
+   "fold_delta_max": 0.00061,
+   "n_cols": 1,
+   "gate_met": false
+  },
+  "W8  precip x elo_logit": {
+   "cv": 0.62317,
+   "delta": 0.00017,
+   "folds": [
+    0.60667,
+    0.6573,
+    0.61963,
+    0.61511,
+    0.61711
+   ],
+   "fold_delta_min": -0.00012,
+   "fold_delta_max": 0.00047,
+   "n_cols": 1,
+   "gate_met": false
+  },
+  "W9  acclimation |T-norm| edge": {
+   "cv": 0.62345,
+   "delta": 0.00045,
+   "folds": [
+    0.60712,
+    0.65777,
+    0.61974,
+    0.61561,
+    0.61699
+   ],
+   "fold_delta_min": -1e-05,
+   "fold_delta_max": 0.00095,
+   "n_cols": 1,
+   "gate_met": false
+  },
+  "W10 cold-only acclim edge": {
+   "cv": 0.62264,
+   "delta": -0.00036,
+   "folds": [
+    0.60584,
+    0.65582,
+    0.6184,
+    0.61593,
+    0.61718
+   ],
+   "fold_delta_min": -0.00135,
+   "fold_delta_max": 0.00105,
+   "n_cols": 1,
+   "gate_met": false
+  },
+  "W11 FULL weather block (8 cols)": {
+   "cv": 0.6245,
+   "delta": 0.00151,
+   "folds": [
+    0.60986,
+    0.65559,
+    0.6199,
+    0.61837,
+    0.61878
+   ],
+   "fold_delta_min": -0.00124,
+   "fold_delta_max": 0.00348,
+   "n_cols": 8,
+   "gate_met": false
+  },
+  "W12 games.csv wind (2nd source)": {
+   "cv": 0.62336,
+   "delta": 0.00037,
+   "folds": [
+    0.60656,
+    0.65672,
+    0.62093,
+    0.61555,
+    0.61702
+   ],
+   "fold_delta_min": -0.0001,
+   "fold_delta_max": 0.00118,
+   "n_cols": 1,
+   "gate_met": false
+  },
+  "W13 games.csv wind+temp": {
+   "cv": 0.6235,
+   "delta": 0.0005,
+   "folds": [
+    0.60708,
+    0.65622,
+    0.61999,
+    0.61835,
+    0.61584
+   ],
+   "fold_delta_min": -0.00112,
+   "fold_delta_max": 0.00346,
+   "n_cols": 2,
+   "gate_met": false
+  },
+  "T1  travel dist diff (km)": {
+   "cv": 0.62269,
+   "delta": -0.0003,
+   "folds": [
+    0.60676,
+    0.65668,
+    0.61923,
+    0.6147,
+    0.61607
+   ],
+   "fold_delta_min": -0.00089,
+   "fold_delta_max": 0.00023,
+   "n_cols": 1,
+   "gate_met": false
+  },
+  "T2  travel log-dist diff": {
+   "cv": 0.62244,
+   "delta": -0.00056,
+   "folds": [
+    0.60621,
+    0.65621,
+    0.61913,
+    0.61477,
+    0.61585
+   ],
+   "fold_delta_min": -0.00111,
+   "fold_delta_max": -0.00011,
+   "n_cols": 1,
+   "gate_met": false
+  },
+  "T3  tz shift (home-away)": {
+   "cv": 0.62313,
+   "delta": 0.00013,
+   "folds": [
+    0.60806,
+    0.65664,
+    0.6196,
+    0.6145,
+    0.61683
+   ],
+   "fold_delta_min": -0.00039,
+   "fold_delta_max": 0.00153,
+   "n_cols": 1,
+   "gate_met": false
+  },
+  "T4  body-clock diff": {
+   "cv": 0.62319,
+   "delta": 0.00019,
+   "folds": [
+    0.60802,
+    0.65683,
+    0.61958,
+    0.61458,
+    0.6169
+   ],
+   "fold_delta_min": -0.00031,
+   "fold_delta_max": 0.00149,
+   "n_cols": 1,
+   "gate_met": false
+  },
+  "T5  away body-clock hour": {
+   "cv": 0.6229,
+   "delta": -9e-05,
+   "folds": [
+    0.60658,
+    0.6569,
+    0.61941,
+    0.61478,
+    0.61683
+   ],
+   "fold_delta_min": -0.00034,
+   "fold_delta_max": 7e-05,
+   "n_cols": 1,
+   "gate_met": false
+  },
+  "T6  days since last away game": {
+   "cv": 0.62298,
+   "delta": -1e-05,
+   "folds": [
+    0.60615,
+    0.65651,
+    0.6205,
+    0.615,
+    0.61673
+   ],
+   "fold_delta_min": -0.00039,
+   "fold_delta_max": 0.00075,
+   "n_cols": 1,
+   "gate_met": false
+  },
+  "T7  consecutive road games": {
+   "cv": 0.62295,
+   "delta": -5e-05,
+   "folds": [
+    0.60624,
+    0.65644,
+    0.61984,
+    0.61539,
+    0.61681
+   ],
+   "fold_delta_min": -0.00038,
+   "fold_delta_max": 0.0005,
+   "n_cols": 1,
+   "gate_met": false
+  },
+  "T8  FULL travel block (dist+tz+body+road)": {
+   "cv": 0.62281,
+   "delta": -0.00019,
+   "folds": [
+    0.60681,
+    0.65594,
+    0.62014,
+    0.6155,
+    0.61563
+   ],
+   "fold_delta_min": -0.00133,
+   "fold_delta_max": 0.00061,
+   "n_cols": 5,
+   "gate_met": false
+  },
+  "O1  ref EWMA home-resid (0.995/30)": {
+   "cv": 0.6235,
+   "delta": 0.0005,
+   "folds": [
+    0.60671,
+    0.65768,
+    0.62033,
+    0.61507,
+    0.61767
+   ],
+   "fold_delta_min": 0.00018,
+   "fold_delta_max": 0.00085,
+   "n_cols": 1,
+   "gate_met": false
+  },
+  "O2  ref EWMA home-resid (0.99/15)": {
+   "cv": 0.62311,
+   "delta": 0.00012,
+   "folds": [
+    0.60649,
+    0.65698,
+    0.62021,
+    0.61483,
+    0.61703
+   ],
+   "fold_delta_min": -5e-05,
+   "fold_delta_max": 0.00046,
+   "n_cols": 1,
+   "gate_met": false
+  },
+  "O3  ref EWMA total points": {
+   "cv": 0.62422,
+   "delta": 0.00123,
+   "folds": [
+    0.60656,
+    0.65696,
+    0.62135,
+    0.61894,
+    0.61729
+   ],
+   "fold_delta_min": 3e-05,
+   "fold_delta_max": 0.00406,
+   "n_cols": 1,
+   "gate_met": false
+  },
+  "O4  ref total x elo_logit": {
+   "cv": 0.62372,
+   "delta": 0.00073,
+   "folds": [
+    0.60639,
+    0.65973,
+    0.61999,
+    0.61463,
+    0.61785
+   ],
+   "fold_delta_min": -0.00026,
+   "fold_delta_max": 0.0029,
+   "n_cols": 1,
+   "gate_met": false
+  },
+  "O5  FULL officials block": {
+   "cv": 0.6252,
+   "delta": 0.0022,
+   "folds": [
+    0.60669,
+    0.66101,
+    0.62199,
+    0.61807,
+    0.61823
+   ],
+   "fold_delta_min": 0.00015,
+   "fold_delta_max": 0.00418,
+   "n_cols": 3,
+   "gate_met": false
+  }
+ },
+ "lrt_insample": {
+  "weather (8 cols)": {
+   "chi2": 7.166,
+   "df": 8,
+   "p": 0.5189
+  },
+  "travel (5 cols)": {
+   "chi2": 6.998,
+   "df": 5,
+   "p": 0.2208
+  },
+  "officials (3 cols)": {
+   "chi2": 1.557,
+   "df": 3,
+   "p": 0.6692
+  }
+ },
+ "outdoor_subset": {
+  "n": 3087,
+  "base": 0.61679,
+  "wind only": {
+   "cv": 0.61697,
+   "delta": 0.00017
+  },
+  "wind+temp+precip": {
+   "cv": 0.61761,
+   "delta": 0.00082
+  },
+  "wind x pass_net": {
+   "cv": 0.61725,
+   "delta": 0.00046
+  },
+  "acclimation edge": {
+   "cv": 0.61742,
+   "delta": 0.00063
+  },
+  "full weather (6, no dome)": {
+   "cv": 0.61802,
+   "delta": 0.00123
+  }
+ }
+}

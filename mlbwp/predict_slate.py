@@ -27,6 +27,8 @@ PROJECT = Path(__file__).resolve().parents[1]
 OUT = PROJECT / "site" / "data" / "board.json"
 FINALS_CACHE = PROJECT / "data" / "season_2026_finals.json"
 LINES_CACHE = PROJECT / "data" / "season_2026_lines.json"
+PRED_LEDGER = PROJECT / "data" / "mlb_pred_ledger.json"
+RECORD_CAP = 400          # graded rows shipped to the site (rollup uses them all)
 
 def _write_atomic(path, text):
     """tmp + os.replace: an interrupted run must never truncate a live file."""
@@ -45,6 +47,72 @@ def _realized_2026():
     except Exception:  # noqa: BLE001  — tracking must never break the board
         return None
 
+
+
+def record_block(ledger_path: Path = PRED_LEDGER, cap: int = RECORD_CAP) -> dict:
+    """Graded pre-game picks, for the site's public track-record page.
+
+    The board is forward-only: a game's pre-game probability disappears from it
+    the day after it is played, so nothing on the site could ever show what the
+    model actually PICKED and whether it hit. data/mlb_pred_ledger.json keeps
+    those pre-game numbers; this ships the graded ones (newest first, capped)
+    plus a rollup over EVERY graded row, so the page's headline never depends on
+    where the cap fell.
+
+    Shape: {"rows": [{d, away, home, p, pick, y, hs, as, sp}], "rollup":
+    {n, log_loss, acc, brier} | None, "since": "YYYY-MM-DD" | None, "n_pending"}
+    Pick convention matches the board's: home when p >= 0.5.
+    """
+    import math
+    try:
+        ledger = json.loads(Path(ledger_path).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {"rows": [], "rollup": None, "since": None, "n_pending": 0}
+    rows = []
+    for e in ledger.values():
+        if e.get("y") is None or e.get("p") is None:
+            continue
+        p = round(float(e["p"]), 4)
+        rows.append({
+            "d": e.get("d"), "away": e.get("away"), "home": e.get("home"),
+            "p": p, "pick": e.get("home") if p >= 0.5 else e.get("away"),
+            "y": int(e["y"]), "hs": e.get("hs"), "as": e.get("as"),
+            "sp": 1 if e.get("sp_known") else 0,
+        })
+    rows.sort(key=lambda r: (r["d"] or "", r["home"] or ""), reverse=True)
+    rollup = None
+    if rows:
+        eps, n = 1e-9, len(rows)
+        ll = sum(-(r["y"] * math.log(max(r["p"], eps))
+                   + (1 - r["y"]) * math.log(max(1 - r["p"], eps))) for r in rows) / n
+        rollup = {
+            "n": n,
+            "log_loss": round(ll, 5),
+            "acc": round(sum((r["p"] >= 0.5) == (r["y"] == 1) for r in rows) / n, 4),
+            "brier": round(sum((r["p"] - r["y"]) ** 2 for r in rows) / n, 5),
+        }
+    recs = sorted(e["rec"] for e in ledger.values() if e.get("rec"))
+    return {"rows": rows[:cap], "rollup": rollup,
+            "since": recs[0][:10] if recs else None,
+            "n_pending": sum(1 for e in ledger.values() if e.get("y") is None)}
+
+
+def attach_record(board_path: Path = OUT, ledger_path: Path = PRED_LEDGER) -> int:
+    """Rewrite only the record block of an existing board.json.
+
+    refresh.py grades the ledger AFTER the board is written, so the block the
+    board build shipped is always one cycle behind the grading. Re-reading the
+    board and replacing one key keeps every other post-process (market edges)
+    intact. Returns the number of graded rows shipped.
+    """
+    try:
+        payload = json.loads(Path(board_path).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return 0
+    blk = record_block(ledger_path)
+    payload.setdefault("record", {})["mlb"] = blk
+    _write_atomic(board_path, json.dumps(payload, indent=1))
+    return len(blk["rows"])
 
 
 def ensure_lines_cache(finals: list[dict], cache_path: Path = LINES_CACHE) -> dict:
@@ -302,6 +370,9 @@ def main(days: int = 30, today: str | None = None):
             # games grade; the site shows it once n >= 100)
             "realized_2026": _realized_2026(),
         },
+        # graded pre-game picks for the #/record track-record page (the board
+        # itself is forward-only, so this is the only place played games live)
+        "record": {"mlb": record_block()},
         "leagues": [
             {"code": "mlb", "name": "MLB", "active": True,
              "n_games": len(cards), "games": cards},
