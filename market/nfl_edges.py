@@ -58,6 +58,7 @@ def attach_and_save(payload_path: Path = NFL_JSON, opening_path: Path = OPENING,
                 if g.get("hs") is None and today.isoformat() <= g["d"] <= horizon]
     for g in sched:
         g.pop("value", None)                       # stale badges cleared every run
+        g.pop("mkt", None)
     if not eligible:
         payload["value_updated"] = now
         payload_path.write_text(json.dumps(payload), encoding="utf-8")
@@ -76,6 +77,12 @@ def attach_and_save(payload_path: Path = NFL_JSON, opening_path: Path = OPENING,
         if not cand:
             continue
         g = cand[0]
+        # Unconditional price feed for market/edge_ledger.py (see market/edges.py):
+        # written BEFORE the EV gate, so a badge that vanishes when the model prob
+        # moves cannot truncate a recorded bet's price path short of the close.
+        c["mkt"] = {"home_dec": round(g["home_dec"], 3),
+                    "away_dec": round(g["away_dec"], 3),
+                    "books": g["n_books"], "ts": now}
         op = cache.get(g["id"])
         if not op:
             continue

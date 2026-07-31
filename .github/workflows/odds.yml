@@ -36,23 +36,36 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: python refresh_odds.py
 
-      - name: Commit board + opening-odds cache
+      - name: Commit board + opening-odds cache + edge ledger
         run: |
           git config user.name "glassbox-bot"
           git config user.email "glassbox-bot@users.noreply.github.com"
           # opening caches appear only once books post lines for that sport's
-          # window (NFL cache is absent all offseason) — add what exists
+          # window (NFL cache is absent all offseason) — add what exists.
+          # data/edge_ledger.json is the durable live-CLV evidence stream: it must
+          # survive every cycle or the promotion gate stops accruing.
           for f in site/data/board.json site/data/nfl.json site/data/nhl.json site/index.html \
                    data/opening_odds_2026.json data/nfl_opening_odds_2026.json \
-                   data/nhl_opening_odds_2026.json; do
+                   data/nhl_opening_odds_2026.json data/edge_ledger.json; do
             if [ -f "$f" ]; then git add "$f"; fi
           done
           if git diff --cached --quiet; then
             echo "no edge change"
           else
             git commit -m "Refresh value edges"
-            git pull --rebase -X ours --autostash origin master || true
-            git push || echo "push skipped (race with full refresh); next run retries"
+            # data/edge_ledger.json is ORDER-SENSITIVE state on an ephemeral runner:
+            # board/opening caches regenerate idempotently, ledger rows do not. A
+            # swallowed push failure discards this cycle's records permanently —
+            # record_open needs a strictly-pre-game sighting, so unlike a touch or a
+            # grade it cannot self-heal next cycle, and the loss lands hardest on rows
+            # recorded closest to start (the shortest CLV windows). Retry the race,
+            # then FAIL the job loudly rather than lose the evidence silently.
+            for i in 1 2 3; do
+              if git push; then exit 0; fi
+              echo "push rejected (race with a concurrent writer); rebasing and retrying"
+              git pull --rebase -X ours --autostash origin master
+            done
+            git push
           fi
 
       - uses: actions/configure-pages@v5

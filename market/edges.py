@@ -7,6 +7,14 @@ side when EV vs that opening >= 20%, and marks whether the edge is STILL live at
 current price (ev_cur > 0). Stale edges are cleared every run, so a badge disappears
 once the line moves past our value or the game starts (fetch_consensus drops started
 games). Cheap enough to run on a short cadence for near-live updates.
+
+It also attaches an UNCONDITIONAL market quote (`mkt`: both sides' current consensus
+decimals) to every pre-game card the odds feed covers, badge or no badge. The badge
+is NOT a price feed: ev_open is recomputed each run against the CURRENT model
+probability, so a routine model update (new probable starter, new lineup) can drop
+the badge days before first pitch. market/edge_ledger.py rolls a recorded bet's
+closing price forward from `mkt`, so the close it freezes is the real close rather
+than the last price at which the badge happened to fire.
 """
 
 from __future__ import annotations
@@ -62,6 +70,7 @@ def attach_and_save(board_path: Path = BOARD, opening_path: Path = OPENING,
     n = 0
     for c in cards:
         c.pop("value", None)                       # recompute fresh each run
+        c.pop("mkt", None)
         # Never put a pre-game EV badge on a game that has already started. This is
         # also what stops a doubleheader's started game 1 from inheriting the surviving
         # game 2's line (game 1's live odds are dropped, collapsing the match key).
@@ -76,6 +85,11 @@ def attach_and_save(board_path: Path = BOARD, opening_path: Path = OPENING,
         else:                                      # doubleheader -> nearest first pitch
             g = min(cand, key=lambda x: abs(((_dt(x["commence"]) or now_dt)
                                              - (cs or now_dt)).total_seconds()))
+        # Unconditional price feed for the ledger's closing line: written BEFORE the
+        # EV gate so that losing the badge never truncates a recorded bet's price path.
+        c["mkt"] = {"home_dec": round(g["home_dec"], 3),
+                    "away_dec": round(g["away_dec"], 3),
+                    "books": g["n_books"], "ts": now}
         op = cache.get(g["id"])
         if not op:
             continue
