@@ -91,10 +91,24 @@ def record_block(ledger_path: Path = PRED_LEDGER, cap: int = RECORD_CAP) -> dict
             "acc": round(sum((r["p"] >= 0.5) == (r["y"] == 1) for r in rows) / n, 4),
             "brier": round(sum((r["p"] - r["y"]) ** 2 for r in rows) / n, 5),
         }
+    # PENDING: locked-in pre-game picks whose games have not been graded yet.
+    # These are the receipts that matter most — published before the result
+    # exists, so nobody can claim they were written after the fact.
+    pending = []
+    for e in ledger.values():
+        if e.get("y") is not None or e.get("p") is None:
+            continue
+        p = round(float(e["p"]), 4)
+        pending.append({
+            "d": e.get("d"), "away": e.get("away"), "home": e.get("home"),
+            "p": p, "pick": e.get("home") if p >= 0.5 else e.get("away"),
+            "sp": 1 if e.get("sp_known") else 0, "rec": (e.get("rec") or "")[:16],
+        })
+    pending.sort(key=lambda r: (r["d"] or "", r["home"] or ""))   # soonest first
     recs = sorted(e["rec"] for e in ledger.values() if e.get("rec"))
     return {"rows": rows[:cap], "rollup": rollup,
             "since": recs[0][:10] if recs else None,
-            "n_pending": sum(1 for e in ledger.values() if e.get("y") is None)}
+            "pending": pending[:cap], "n_pending": len(pending)}
 
 
 def attach_record(board_path: Path = OUT, ledger_path: Path = PRED_LEDGER) -> int:

@@ -239,6 +239,28 @@ a.tl{color:inherit;border-bottom:1px dotted var(--line-2)} a.tl:hover{color:var(
 .cols2{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
 @media(max-width:640px){.cols2{grid-template-columns:1fr}}
 
+/* ---- track record ---- */
+.rechero{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+@media(max-width:520px){.rechero{grid-template-columns:1fr}}
+.rechero .rh{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.rechero .rhk{display:block;font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.rechero .rhv{display:block;font-family:var(--mono);font-size:38px;font-weight:700;line-height:1.1;margin-top:4px}
+.rechero .rhv i{font-style:normal;font-size:20px;font-weight:600;color:var(--muted);margin-left:1px}
+.rechero .rhs{display:block;font-size:11px;color:var(--muted);margin-top:3px}
+.rechero .rhs.pos,.rechero .rhv.pos{color:var(--fav)}
+.rechero .rhs.neg,.rechero .rhv.neg{color:var(--warn)}
+.chip{display:inline-block;font-family:var(--sans);font-weight:700;font-size:10px;letter-spacing:.04em;
+  padding:2px 8px;border-radius:999px;border:1px solid var(--line-2);color:var(--muted);background:var(--sunk)}
+.chip.hit{color:var(--fav);border-color:var(--fav);background:var(--favbg)}
+.chip.miss{color:var(--warn);border-color:rgba(224,164,78,.5);background:rgba(224,164,78,.14)}
+.chip.pend{color:var(--muted);border-style:dashed}
+td.cf{white-space:nowrap}
+.cbar{display:inline-block;width:52px;height:5px;border-radius:3px;background:var(--sunk);
+  box-shadow:inset 0 0 0 1px var(--line-2);vertical-align:middle;margin-right:7px;overflow:hidden}
+.cbar i{display:block;height:100%;background:var(--accent);border-radius:3px}
+tr.recrow{cursor:default}
+tr.recrow[onclick]{cursor:pointer}
+
 .loading,.empty{padding:60px 0;text-align:center;color:var(--muted)}
 footer{border-top:1px solid var(--line);padding:20px 0 46px;color:var(--faint);font-size:11px;line-height:1.6}
 footer b{color:var(--muted)} footer a{color:var(--muted);text-decoration:underline}
@@ -1592,6 +1614,64 @@ function recPeriods(rows){          // oldest-first buckets with a running cumul
     return {k,n:o.n,c:o.c,acc:o.n?o.c/o.n:null,ll:o.n?o.ll/o.n:null,
       cacc:cn?cc/cn:null,cll:cn?cll/cn:null,cn};});
 }
+/* True pending count: the MLB list is capped by the payload, so the headline
+   must come from the server's own total, not from the shipped rows. */
+function recPendTotal(lg){
+  const m=lg==="mlb"?recMlb():null;
+  return m&&m.n_pending!=null?m.n_pending:recPending(lg).length;
+}
+function recPending(lg){            // locked-in picks whose games are not graded yet
+  if(lg==="mlb"){const m=recMlb(); if(!m) return [];
+    return (m.pending||[]).map(r=>({d:r.d,away:r.away,home:r.home,p:r.p,pick:r.pick,
+      sp:r.sp,href:null}));}
+  if(lg==="nfl"){const n=state.nfl; if(!n||!n.schedule) return [];
+    return n.schedule.filter(g=>g.hs==null&&g.ph!=null)
+      .map(g=>({d:g.d,away:g.away,home:g.home,p:g.ph,pick:g.ph>=0.5?g.home:g.away,
+        sp:1,href:"#/game/"+g.w+"_"+g.away+"_"+g.home}))
+      .sort((a,b)=>a.d<b.d?-1:(a.d>b.d?1:0));}
+  if(lg==="nhl"){const n=state.nhl; if(!n||!n.schedule) return [];
+    return n.schedule.filter(g=>g.hs==null&&g.hp!=null)
+      .map(g=>({d:g.d,away:g.away,home:g.home,p:g.hp,pick:g.hp>=0.5?g.home:g.away,
+        sp:1,href:"#/game/nhl-"+g.id}))
+      .sort((a,b)=>a.d<b.d?-1:(a.d>b.d?1:0));}
+  return [];
+}
+/* Cumulative-accuracy curve: the picture the tables cannot draw. Plots running
+   pick accuracy against the 50% line so drift is visible at a glance. Pure
+   inline SVG - no library, themes via currentColor/CSS vars. */
+function recChart(rows){
+  const asc=rows.slice().reverse().filter(r=>r.y!=null&&r.p!=null);
+  if(asc.length<8) return "";
+  const W=680,H=140,PL=34,PR=8,PT=10,PB=18, iw=W-PL-PR, ih=H-PT-PB;
+  let c=0; const pts=asc.map((r,i)=>{ if((r.p>=0.5)===(r.y===1))c++;
+    return {x:i+1,acc:c/(i+1)};});
+  const lo=Math.max(0.30,Math.min(0.45,Math.min.apply(null,pts.slice(Math.floor(pts.length/4)).map(o=>o.acc))-0.05));
+  const hi=Math.min(0.90,Math.max(0.65,Math.max.apply(null,pts.slice(Math.floor(pts.length/4)).map(o=>o.acc))+0.05));
+  const X=i=>PL+(i-1)/Math.max(1,pts.length-1)*iw, Y=v=>PT+(1-(v-lo)/(hi-lo))*ih;
+  const d=pts.map((o,i)=>(i?"L":"M")+X(o.x).toFixed(1)+" "+Y(o.acc).toFixed(1)).join(" ");
+  const area=d+` L ${X(pts.length).toFixed(1)} ${Y(lo).toFixed(1)} L ${X(1).toFixed(1)} ${Y(lo).toFixed(1)} Z`;
+  const last=pts[pts.length-1], y50=Y(0.5);
+  const ticks=[lo,(lo+hi)/2,hi].map(v=>`<text x="${PL-6}" y="${(Y(v)+3).toFixed(1)}" text-anchor="end"
+      font-size="9" fill="var(--muted)">${(v*100).toFixed(0)}%</text>
+    <line x1="${PL}" y1="${Y(v).toFixed(1)}" x2="${W-PR}" y2="${Y(v).toFixed(1)}"
+      stroke="var(--line-2)" stroke-width="1" opacity=".5"/>`).join("");
+  return `<div class="panel" style="margin-top:16px"><h3>Accuracy over time
+      <span class="sub">running cumulative, oldest &rarr; newest</span></h3>
+    <div class="twrap"><svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}"
+        preserveAspectRatio="none" role="img" aria-label="Cumulative pick accuracy">
+      ${ticks}
+      ${(y50>PT&&y50<H-PB)?`<line x1="${PL}" y1="${y50.toFixed(1)}" x2="${W-PR}" y2="${y50.toFixed(1)}"
+        stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 3" opacity=".8"/>
+        <text x="${W-PR}" y="${(y50-4).toFixed(1)}" text-anchor="end" font-size="9"
+          fill="var(--muted)">coin flip</text>`:""}
+      <path d="${area}" fill="var(--accent)" opacity=".10"/>
+      <path d="${d}" fill="none" stroke="var(--accent)" stroke-width="2"
+        stroke-linejoin="round" stroke-linecap="round"/>
+      <circle cx="${X(last.x).toFixed(1)}" cy="${Y(last.acc).toFixed(1)}" r="3.5" fill="var(--accent)"/>
+      <text x="${PL}" y="${H-5}" font-size="9" fill="var(--muted)">pick 1</text>
+      <text x="${W-PR}" y="${H-5}" text-anchor="end" font-size="9" fill="var(--muted)">pick ${pts.length}</text>
+    </svg></div></div>`;
+}
 function recHoldout(lg){
   if(lg==="nfl"&&state.nfl) return {v:state.nfl.model_card.test_log_loss,lab:"locked NFL holdout"};
   if(lg==="nhl"&&state.nhl) return {v:state.nhl.model_card.test_ll,lab:"locked NHL test"};
@@ -1613,18 +1693,46 @@ function recSection(lg){
   const s=srv?{n:srv.n,correct:Math.round(srv.acc*srv.n),acc:srv.acc,ll:srv.log_loss,
                brier:srv.brier,ties:0}:recScore(rows);
   const ho=recHoldout(lg);
-  if(!s) return `<div class="empty">No graded ${REC_NAME[lg]} picks yet.<br>
-    <span class="sub">${recSource(lg)}</span></div>`;
+  if(!s){                     // nothing graded yet - but the pending picks still count as receipts
+    const pend0=recPending(lg), ps0=pend0.slice(0,REC_ROWS);
+    const rows0=ps0.map(r=>`<tr class="recrow" ${r.href?`onclick="location.hash='${r.href}'"`:""}>
+      <td class="a"><span class="sub">${(r.d||"").slice(5)}</span></td>
+      <td class="a">${r.away} <span class="sub">@</span> ${r.home}</td>
+      <td class="a"><span class="ab" style="color:var(--accent)">${r.pick}</span></td>
+      <td class="cf"><span class="cbar"><i style="width:${((Math.max(r.p,1-r.p)-0.5)*200).toFixed(0)}%"></i></span>
+        <span class="num">${pctI(Math.max(r.p,1-r.p))}%</span></td>
+      <td><span class="num">${amOdds(Math.max(r.p,1-r.p))}</span></td>
+      <td><span class="chip pend">PENDING</span></td></tr>`).join("");
+    return `<div class="empty" style="margin-top:12px">No ${REC_NAME[lg]} picks have been graded yet.<br>
+        <span class="sub">${recSource(lg)}</span></div>
+      ${pend0.length?`<div class="panel" style="margin-top:16px"><h3>Pending picks
+          <span class="sub">${ps0.length<recPendTotal(lg)?`next ${ps0.length} of ${recPendTotal(lg)}`:`all ${ps0.length}`} &middot; locked in, awaiting the result</span></h3>
+        <div class="twrap"><table>
+          <thead><tr><th>Date</th><th>Matchup</th><th>Pick</th><th>Confidence</th><th>Fair odds</th><th>Status</th></tr></thead>
+          <tbody>${rows0}</tbody></table></div>
+        <div class="sub" style="margin-top:8px">Written down <b>before</b> a ball is snapped &mdash; each will show up
+          as a HIT or MISS once it is played.</div></div>`:""}`;
+  }
   const dCoin=s.ll-LL_COIN, dHo=ho?s.ll-ho.v:null;
   const box=(k,v,cls)=>`<div class="b"><span class="k">${k}</span><span class="v${cls?" "+cls:""}">${v}</span></div>`;
+  // Two headline numbers first (what the model got right, and how well-calibrated
+  // it was); the comparison deltas below them. Six tiles = a clean 3x2 / 2x3 grid
+  // at every breakpoint, instead of an orphaned seventh.
+  const hero=`<div class="rechero">
+    <div class="rh"><span class="rhk">Pick accuracy</span>
+      <span class="rhv ${s.acc>=0.5?"pos":"neg"}">${(s.acc*100).toFixed(1)}<i>%</i></span>
+      <span class="rhs">${s.correct} of ${s.n} graded</span></div>
+    <div class="rh"><span class="rhk">Log loss</span>
+      <span class="rhv">${s.ll.toFixed(4)}</span>
+      <span class="rhs ${dCoin<=0?"pos":"neg"}">${dCoin<=0?"&minus;":"+"}${Math.abs(dCoin).toFixed(4)} vs coin flip</span></div>
+  </div>`;
   const tiles=[
     box("Graded picks",s.n),
     box("Correct",s.correct),
-    box("Pick accuracy",(s.acc*100).toFixed(1)+"%",s.acc>=0.5?"pos":"neg"),
-    box("Log loss",s.ll.toFixed(4)),
+    box("Brier",s.brier.toFixed(4)),
     box("vs coin flip",(dCoin<=0?"&minus;":"+")+Math.abs(dCoin).toFixed(4),dCoin<=0?"pos":"neg"),
     ho?box("vs "+ho.lab,(dHo<=0?"&minus;":"+")+Math.abs(dHo).toFixed(4),dHo<=0?"pos":"warnc"):"",
-    box("Brier",s.brier.toFixed(4)),
+    box("Pending",recPendTotal(lg)),
   ].join("");
   const warn=s.n<30?`<div class="signals" style="margin-top:12px"><div class="sig warn"><span class="ic">!</span>
     <span><b>n=${s.n} &mdash; not yet meaningful.</b> A handful of games says nothing about a model: at this sample the
@@ -1639,33 +1747,54 @@ function recSection(lg){
     <td><span class="num">${o.cacc==null?"&mdash;":(o.cacc*100).toFixed(1)+"%"}</span></td>
     <td><span class="num">${o.cll==null?"&mdash;":o.cll.toFixed(4)}</span></td></tr>`).join("");
   const shown=rows.slice(0,REC_ROWS);
-  const pick=r=>{
-    if(r.y==null) return `<td><span class="num">${r.as}-${r.hs}</span></td><td><span class="sub">TIE</span></td>`;
+  // confidence bar: how far the pick sits from a coin flip, so the eye can scan
+  // conviction down the column instead of reading every percentage
+  const conf=p=>{const c=Math.max(p,1-p);
+    return `<span class="cbar"><i style="width:${((c-0.5)*200).toFixed(0)}%"></i></span>
+      <span class="num">${pctI(c)}%</span>`;};
+  const outcome=r=>{
+    if(r.y==null) return `<td><span class="num">${r.as}&ndash;${r.hs}</span></td><td><span class="chip">TIE</span></td>`;
     const hit=(r.p>=0.5)===(r.y===1);
-    return `<td><span class="num">${r.as}-${r.hs}</span></td>
-      <td><span class="num ${hit?"pos":"neg"}">${hit?"HIT &#10003;":"MISS &#10007;"}</span></td>`;};
-  const body=shown.map(r=>`<tr ${r.href?`onclick="location.hash='${r.href}'"`:""}>
+    return `<td><span class="num">${r.as}&ndash;${r.hs}</span></td>
+      <td><span class="chip ${hit?"hit":"miss"}">${hit?"HIT":"MISS"}</span></td>`;};
+  const body=shown.map(r=>`<tr class="recrow" ${r.href?`onclick="location.hash='${r.href}'"`:""}>
     <td class="a"><span class="sub">${(r.d||"").slice(5)}</span></td>
     <td class="a">${r.away} <span class="sub">@</span> ${r.home}</td>
     <td class="a"><span class="ab" style="color:var(--accent)">${r.pick}</span></td>
-    <td><span class="num">${pctI(Math.max(r.p,1-r.p))}%</span></td>
+    <td class="cf">${conf(r.p)}</td>
+    ${outcome(r)}</tr>`).join("");
+  const pend=recPending(lg), pshown=pend.slice(0,REC_ROWS);
+  const pbody=pshown.map(r=>`<tr class="recrow" ${r.href?`onclick="location.hash='${r.href}'"`:""}>
+    <td class="a"><span class="sub">${(r.d||"").slice(5)}</span></td>
+    <td class="a">${r.away} <span class="sub">@</span> ${r.home}</td>
+    <td class="a"><span class="ab" style="color:var(--accent)">${r.pick}</span></td>
+    <td class="cf">${conf(r.p)}</td>
     <td><span class="num">${amOdds(Math.max(r.p,1-r.p))}</span></td>
-    ${pick(r)}</tr>`).join("");
+    <td><span class="chip pend">PENDING</span></td></tr>`).join("");
+  const pendPanel=`<div class="panel"><h3>Pending picks
+      <span class="sub">${pend.length?`${pshown.length<recPendTotal(lg)?`next ${pshown.length} of ${recPendTotal(lg)}`:`all ${pend.length}`} &middot; locked in, awaiting the result`:"none right now"}</span></h3>
+    ${pend.length?`<div class="twrap"><table>
+        <thead><tr><th>Date</th><th>Matchup</th><th>Pick</th><th>Confidence</th><th>Fair odds</th><th>Status</th></tr></thead>
+        <tbody>${pbody}</tbody></table></div>
+      <div class="sub" style="margin-top:8px">These were written down <b>before</b> the games are played &mdash; every one
+        of them will appear above with a HIT or MISS, whichever way it lands.</div>`
+    :`<div class="empty">No picks waiting on a result${lg==="nfl"?" &mdash; the 2026 season has not started.":"."}</div>`}</div>`;
   return `${warn}
+    ${hero}
     <div class="statgrid" style="margin-top:12px">${tiles}</div>
     <div class="sub" style="margin:10px 2px 0">${recSource(lg)}</div>
-    <div class="cols" style="margin-top:16px">
-      <div class="panel"><h3>Every graded pick <span class="sub">${shown.length<rows.length?`most recent ${shown.length} of ${rows.length}`:`all ${rows.length}`}</span></h3>
-        <div class="twrap"><table>
-          <thead><tr><th>Date</th><th>Matchup</th><th>Pick</th><th>Prob</th><th>Fair odds</th><th>Final</th><th>Result</th></tr></thead>
-          <tbody>${body}</tbody></table></div></div>
-      <div class="panel"><h3>By ${lg==="nfl"?"week":"month"} <span class="sub">running cumulative</span></h3>
-        <div class="twrap"><table>
-          <thead><tr><th>${lg==="nfl"?"Week":"Month"}</th><th>Picks</th><th>Hits</th><th>Acc</th><th>LL</th><th>Cum acc</th><th>Cum LL</th></tr></thead>
-          <tbody>${per}</tbody></table></div>
-        <div class="sub" style="margin-top:8px">Cumulative columns run oldest &rarr; newest, so the top row is the
-          season-to-date number and the bottom row is where tracking started.</div></div>
-    </div>`;
+    ${recChart(rows)}
+    <div style="margin-top:16px">${pendPanel}</div>
+    <div class="panel" style="margin-top:16px"><h3>Every graded pick <span class="sub">${shown.length<rows.length?`most recent ${shown.length} of ${rows.length}`:`all ${rows.length}`}</span></h3>
+      <div class="twrap"><table>
+        <thead><tr><th>Date</th><th>Matchup</th><th>Pick</th><th>Confidence</th><th>Final</th><th>Result</th></tr></thead>
+        <tbody>${body}</tbody></table></div></div>
+    <div class="panel" style="margin-top:16px"><h3>By ${lg==="nfl"?"week":"month"} <span class="sub">running cumulative</span></h3>
+      <div class="twrap"><table>
+        <thead><tr><th>${lg==="nfl"?"Week":"Month"}</th><th>Picks</th><th>Hits</th><th>Acc</th><th>LL</th><th>Cum acc</th><th>Cum LL</th></tr></thead>
+        <tbody>${per}</tbody></table></div>
+      <div class="sub" style="margin-top:8px">Cumulative columns run oldest &rarr; newest, so the top row is the
+        season-to-date number and the bottom row is where tracking started.</div></div>`;
 }
 function recordPage(){
   const lg=recLeague(), b=state.board;
