@@ -187,6 +187,26 @@ alone.
 NHL ~0.0017 (n.s.) in log loss** — and since the market sits essentially *at* the
 floor, our gap to the market IS our gap to the limit.
 
+### Correction — how much of NFL's gap was the DEV crippling? Only 12%.
+
+Answered 2026-07-31 **without spending a TEST look**, because the number was
+already recorded: the shipped NFL model card carries `test_log_loss` 0.61947 and
+`close_log_loss` 0.60913 on TEST 2016-2025 (n=2,761) — a look spent and published
+long ago, on the era where the v7 participation feature IS live.
+
+| measurement | model | gap to close |
+|---|---|---|
+| DEV 2006-2015 | crippled (v7 identically zero, absence live 2 of 10 seasons) | +0.01172 |
+| **TEST 2016-2025** | **full served model** | **+0.01034** |
+
+So the availability asymmetry explains **0.00138 — about 12%** of the gap, not
+the bulk. My earlier framing ("part of NFL's 4x gap is an availability
+asymmetry, not football") was directionally right and quantitatively minor.
+**NFL's full-model gap is still 3.6x MLB's and 6.0x NHL's.** The league really is
+harder for us relative to its market, and the DEV caveat does not explain that
+away. It remains a caveat for interpreting DEV-era NFL numbers, which is where
+all screening happens.
+
 ### Where that leaves the program
 
 Rounds 1-2 closed all 9 axes x 3 leagues with zero adoptions. Combined with ~60
