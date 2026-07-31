@@ -56,6 +56,35 @@ accounting policy: the same numbers, correctly labelled and correctly separated.
 The edge layer's own gate (≥20% EV vs the opening price, unchanged) is a separate
 question from whether a forecast is published as a pick.
 
+## Implementation notes (added 2026-07-31, no rule changed)
+
+These record how the rules above land on the actual code, including where the
+implementation is weaker than the table implies. They are disclosures, not
+amendments.
+
+- **Other leagues are tiered by the same column.** The tier is decided by *what
+  the model actually has*, not by which sport it is. The shipped NHL model is
+  Elo + rest + back-to-back + an expected-goals **team** rating — no roster, no
+  lineup, no goalie — so every NHL forecast is **EARLY**, and NHL is therefore
+  not published as picks today. NFL is **PROJECTED** inside a week of kickoff,
+  where the live model has depth charts and lineup power, and **EARLY** beyond
+  that, where the number is the 20,000-run season simulation off team strength.
+  A tier chip means the same thing on every league's page or it means nothing.
+- **CONFIRMED is a start-time-selected subsample.** Rule 4 grades the last
+  *pre-game* forecast, and the refresh runs every 4 hours. A game whose lineups
+  post 2½ hours before a first pitch that falls before the next refresh is
+  graded PROJECTED even though the lineups were public. Every label is true of
+  the forecast it is attached to; the tier *populations* are not random samples
+  of the slate, so the three tiers are not a controlled comparison.
+- **CONFIRMED needs a lineup card, not nine names.** Serving accepts an official
+  lineup at ≥5 batters per side and pads the rest with roster averages
+  (unchanged — touching it would change probabilities). The UI says "official
+  lineup card posted" rather than "both batting orders".
+- **PROJECTED includes rotation-projected starters.** `pitcher_known` is true
+  for a near-term rotation projection as well as an announced probable; the
+  model conditions on a named arm either way, so both are PROJECTED. Those rows
+  ship `sp_proj` and are marked *SP proj* wherever they are listed.
+
 ## Honest note on the evidence
 
 Whether the EARLY tier is *worth publishing at all* is an empirical question we

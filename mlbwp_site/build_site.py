@@ -94,6 +94,15 @@ h1.pt{font-family:var(--serif);font-size:26px;margin:2px 0 14px}
 .gc .top .pill{margin-left:auto;font-family:var(--sans);font-weight:700;font-size:12px;padding:3px 10px;
   border-radius:20px;background:var(--sunk);border:1px solid var(--line-2)}
 .gc .top .pill.strong{color:var(--fav);border-color:var(--fav);background:var(--favbg)}
+.gc .top .pill.leanp{color:var(--muted);font-weight:600}
+.gc .top .pill.early{color:var(--faint);font-weight:600;letter-spacing:.06em;font-size:10.5px;
+  text-transform:uppercase;background:transparent;border-style:dashed}
+.gc.early{border-style:dashed;opacity:.92}
+.gc.early:hover{opacity:1}
+.gc .earlyn{font-size:11px;line-height:1.5;color:var(--faint);border-top:1px dashed var(--line-2);padding-top:8px}
+.polnote{font-size:12px;line-height:1.6;color:var(--muted);background:var(--panel);border:1px solid var(--line);
+  border-radius:10px;padding:10px 13px;margin-bottom:14px}
+.polnote a{color:var(--accent);text-decoration:none} .polnote a:hover{text-decoration:underline}
 .gc .top .lbadge{font-family:var(--sans);font-weight:700;font-size:10px;letter-spacing:.03em;
   text-transform:uppercase;padding:2px 8px;border-radius:6px;border:1px solid transparent;
   white-space:nowrap;line-height:1.55}
@@ -268,6 +277,26 @@ a.tl{color:inherit;border-bottom:1px dotted var(--line-2)} a.tl:hover{color:var(
 .chip.hit{color:var(--fav);border-color:var(--fav);background:var(--favbg)}
 .chip.miss{color:var(--warn);border-color:rgba(224,164,78,.5);background:rgba(224,164,78,.14)}
 .chip.pend{color:var(--muted);border-style:dashed}
+.chip.lean{color:var(--muted);border-color:var(--line-2);background:transparent;font-weight:600}
+.chip.pick{color:var(--accent);border-color:var(--accent);background:var(--accent-2)}
+.chip.t-CONFIRMED{color:var(--fav);border-color:var(--fav);background:var(--favbg)}
+.chip.t-PROJECTED{color:var(--warn);border-color:rgba(224,164,78,.5);background:rgba(224,164,78,.14)}
+.chip.t-EARLY{color:var(--faint);border-color:var(--line-2);background:var(--sunk)}
+.tiergrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:14px}
+.tiergrid .tc{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.tiergrid .tc .hd{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.tiergrid .tc .tv{display:block;font-family:var(--mono);font-size:30px;font-weight:700;line-height:1.1}
+.tiergrid .tc .tv.pos{color:var(--fav)} .tiergrid .tc .tv.neg{color:var(--warn)}
+.tiergrid .tc .tl{display:block;font-size:11px;color:var(--muted);margin-top:3px}
+.tiergrid .tc .thin{display:block;font-size:12px;color:var(--faint);line-height:1.5}
+details.sched{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:0;margin-top:16px}
+details.sched>summary{cursor:pointer;list-style:none;padding:14px 16px;font-size:12px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);font-weight:700}
+details.sched>summary::-webkit-details-marker{display:none}
+details.sched>summary .sub{text-transform:none;letter-spacing:.01em;font-weight:400}
+details.sched>summary:before{content:"\25B8";display:inline-block;margin-right:8px;color:var(--faint)}
+details.sched[open]>summary:before{transform:rotate(90deg)}
+details.sched .body{padding:0 16px 15px}
 td.cf{white-space:nowrap}
 .cbar{display:inline-block;width:52px;height:5px;border-radius:3px;background:var(--sunk);
   box-shadow:inset 0 0 0 1px var(--line-2);vertical-align:middle;margin-right:7px;overflow:hidden}
@@ -308,6 +337,16 @@ const amOdds=p=>{p=Math.min(Math.max(p,0.01),0.99);
   return p>=0.5?"−"+Math.round(100*p/(1-p)):"+"+Math.round(100*(1-p)/p);};
 const sgn = v => (v>=0?"+":"")+(+v).toFixed(1);
 const tier = p => p>=0.62?"strong":(p>=0.555?"lean":"toss");
+/* documents/pick_policy.md, applied on the BOARD as well as on #/record.
+   infoTier mirrors mlbwp/pred_ledger.info_tier exactly, off the same card
+   fields, so the board and the ledger can never disagree about what a
+   forecast is. Rule 1: EARLY is shown as a scheduled game with a labelled
+   lean, never as a pick. Rule 2: outside EARLY, a forecast inside 55/45 is a
+   LEAN, not a PICK - the call is stated on the card, not implied by size. */
+const POL_LEAN_MAX=0.55;
+const infoTier = g => g.lineup_source==="official"?"CONFIRMED"
+  :(g.pitcher_known?"PROJECTED":"EARLY");
+const callOf = pp => pp<=POL_LEAN_MAX?"LEAN":"PICK";
 const norm = s => (s||"").toLowerCase().normalize("NFKD").replace(/[^a-z0-9 ]+/g," ").replace(/\s+/g," ").trim();
 const LOC="en-US", TZ="America/New_York";   // all clock/day display is US Eastern
 const addDays=(iso,n)=>{const d=new Date(iso+"T00:00:00");d.setDate(d.getDate()+n);return d.toISOString().slice(0,10);};
@@ -420,10 +459,13 @@ function updAcc(){
     const mc=state.nhl.model_card;
     el.innerHTML=`<b>${mc.test_ll.toFixed(3)}</b> log loss (NHL)<br>base Elo ${mc.baseline_elo_test.toFixed(3)}`;
   }else if(state.board&&state.board.accuracy){
+    /* Policy rule 3: realized accuracy is NEVER shown as one pooled headline.
+       board.accuracy.realized_2026 mixes CONFIRMED, PROJECTED and EARLY rows
+       and would sit in the persistent header on every page, so it is not
+       rendered here - #/record reports it per tier. The header keeps the
+       locked holdout number, which is a single, well-defined thing. */
     const a=state.board.accuracy;
-    el.innerHTML=(a.realized_2026&&a.realized_2026.n>=100)
-      ?`<b>${a.realized_2026.log_loss.toFixed(3)}</b> log loss &middot; 2026 (n=${a.realized_2026.n})<br>${(a.realized_2026.acc*100).toFixed(1)}% picks &middot; holdout ${a.log_loss.toFixed(3)}`
-      :`<b>${a.log_loss.toFixed(3)}</b> log loss<br>coin flip ${a.coinflip.toFixed(3)}`;
+    el.innerHTML=`<b>${a.log_loss.toFixed(3)}</b> log loss<br>coin flip ${a.coinflip.toFixed(3)}`;
   }
 }
 
@@ -484,6 +526,7 @@ const pitEra = name=>{const p=findPlayerByName(name);
   return p&&p.pit&&p.pit.era!=null?`<span class="era">${p.pit.era}</span>`:"";};
 function gcard(g){
   const hp=g.home_win_prob, homeWin=hp>=0.5, e=g.edge||{};
+  const it=infoTier(g), early=it==="EARLY", call=callOf(g.pick_prob);
   const spTag=(nm,proj)=>nm==="TBD"?`<span class="tbd">TBD</span>`
     :`${nm} ${pitEra(nm)}${proj?' <span class="pj">proj</span>':''}`;
   const spA=spTag(g.away_sp,g.away_sp_proj), spH=spTag(g.home_sp,g.home_sp_proj);
@@ -491,7 +534,15 @@ function gcard(g){
   const valbar = (val&&val.available)
     ? `<div class="valbar"><span class="vt">EDGE</span> ${val.team} <b>+${Math.round(val.ev_cur*100)}% EV</b>
         <span class="vodds">@ ${val.cur_dec}</span><span class="vlive">● live</span></div>` : "";
-  return `<a class="gc${val&&val.available?' hasval':''}" href="#/game/${g.game_pk}" data-card="${g.game_pk}"
+  /* Rule 1: an EARLY card is a SCHEDULED game. No pick pill and no fair price
+     - a no-vig price on a team-ratings-only number invites reading it as
+     tradeable. The lean is still shown, labelled as pre-information. */
+  const pill=early
+    ? `<span class="pill early" title="no starter announced - not published as a pick">SCHEDULED</span>`
+    : `<span class="pill ${call==="PICK"&&tier(g.pick_prob)==="strong"?"strong":""}${call==="LEAN"?" leanp":""}"
+        >${call} &middot; ${g.pick} ${pctI(g.pick_prob)}%</span>`;
+  const odds=p=>early?"":`<span class="odds" title="fair American odds (no vig) from the model">${amOdds(p)}</span>`;
+  return `<a class="gc${val&&val.available?' hasval':''}${early?' early':''}" href="#/game/${g.game_pk}" data-card="${g.game_pk}"
       data-pick="${g.pick}" data-home="${g.home_abbr}" data-away="${g.away_abbr}">
     ${valbar}
     <div class="top"><span class="lv" data-pk="${g.game_pk}" data-def="${fmtTime(g.start_utc)}">${fmtTime(g.start_utc)}</span>
@@ -499,12 +550,14 @@ function gcard(g){
         :g.sp_projected?'<span class="lbadge proj">Projected</span>'
         :g.lineup_source==="projected"?'<span class="lbadge proj">Proj lineup</span>'
         :(g.pitcher_known?"":'<span class="lbadge tbd">Starters TBD</span>')}
-      <span class="pill ${tier(g.pick_prob)==="strong"?"strong":""}">${g.pick} ${pctI(g.pick_prob)}%</span></div>
+      ${pill}</div>
     <div class="side ${homeWin?"":"win"}"><span class="ab">${g.away_abbr}</span>
-      <span class="who"><span class="sp">${spA}</span></span><span class="odds" title="fair American odds (no vig) from the model">${amOdds(1-hp)}</span><span class="pc">${pctI(1-hp)}%</span></div>
+      <span class="who"><span class="sp">${spA}</span></span>${odds(1-hp)}<span class="pc">${pctI(1-hp)}%</span></div>
     <div class="side ${homeWin?"win":""}"><span class="ab">${g.home_abbr}</span>
-      <span class="who"><span class="sp">${spH}</span></span><span class="odds" title="fair American odds (no vig) from the model">${amOdds(hp)}</span><span class="pc">${pctI(hp)}%</span></div>
+      <span class="who"><span class="sp">${spH}</span></span>${odds(hp)}<span class="pc">${pctI(hp)}%</span></div>
     <div class="pbar"><div class="h" style="width:${pctI(hp)}%"></div><div class="mid"></div></div>
+    ${early?`<div class="earlyn">Not a pick &mdash; no starter announced, team ratings only.
+      Current lean <b>${g.pick} ${pctI(g.pick_prob)}%</b>; it becomes a pick when the starters are named.</div>`:""}
     <div class="edge"><span class="k">edge</span>
       <span class="${e.home_pitcher>=0?"p":"n"}">SP ${sgn((e.home_pitcher||0)-(e.away_pitcher||0)>=0?Math.max(e.home_pitcher||0,0):(e.away_pitcher||0))}</span>
       <span class="${e.team>=0?"p":"n"}">team ${sgn(e.team||0)}</span>
@@ -519,22 +572,33 @@ function board(){
   const b=state.board, lg=b.leagues.find(l=>l.code===state.league), gen=b.generated;
   const R={today:[gen,gen],tomorrow:[addDays(gen,1),addDays(gen,1)],week:[gen,addDays(gen,6)],month:[gen,addDays(gen,60)]}[state.range];
   const games=(lg.games||[]).filter(g=>g.date>=R[0]&&g.date<=R[1]);
+  // Rule 1 accounting, on the board itself: the league badge counts PICKS
+  // (CONFIRMED + PROJECTED), not every scheduled game on the 30-day horizon.
+  const nPick=(lg.games||[]).filter(g=>infoTier(g)!=="EARLY").length;
   const rail=b.leagues.map(l=>{
     if(l.active)
-      return `<button class="lg ${l.code===state.league?"on":""}" data-lg="${l.code}"><span>${l.name}</span><span class="n">${l.n_games}</span></button>`;
+      return `<button class="lg ${l.code===state.league?"on":""}" data-lg="${l.code}" title="${nPick} picks &middot; ${l.n_games} games on the board"><span>${l.name}</span><span class="n">${nPick}</span></button>`;
     if(l.code==="nfl"&&state.nfl)
       return `<button class="lg ${state.league==="nfl"?"on":""}" data-lg="nfl"><span>NFL</span><span class="n">2026</span></button>`;
     return `<button class="lg" disabled><span>${l.name}</span><span class="soon">soon</span></button>`;}).join("")+(state.nhl?nhlRailBtn(state.league==="nhl"):"");
   const filts=[["today","Today"],["tomorrow","Tomorrow"],["week","Week"],["month","Month"]]
     .map(([k,t])=>`<button class="filt ${k===state.range?"on":""}" data-r="${k}">${t}</button>`).join("");
+  const legend=`<div class="polnote">Picks are published only once the starters are named
+    (<span class="chip t-CONFIRMED">CONFIRMED</span> lineups posted,
+    <span class="chip t-PROJECTED">PROJECTED</span> starters named). Games with no starter announced are
+    <b>scheduled, not picks</b> &mdash; the model has team ratings only, so its lean is shown and labelled
+    pre-information. Outside 55/45 a forecast is a <b>PICK</b>; inside it is a <b>LEAN</b>.
+    <a href="#/record">Track record by tier &rsaquo;</a></div>`;
   let body;
   if(!games.length){body=`<div class="empty">No games in this window.</div>`;}
   else{const days=[...new Set(games.map(g=>g.date))].sort();
-    body=days.map(d=>{const gs=games.filter(g=>g.date===d),allTbd=gs.every(g=>!g.pitcher_known);
-      return `<div class="day"><span class="d">${fmtDay(d,gen)}</span><span class="c">${gs.length} games</span>
-        ${allTbd?'<span class="proj">projected · starters tbd</span>':""}</div>
+    body=days.map(d=>{const gs=games.filter(g=>g.date===d);
+      const np=gs.filter(g=>infoTier(g)!=="EARLY").length;
+      return `<div class="day"><span class="d">${fmtDay(d,gen)}</span>
+        <span class="c">${gs.length} game${gs.length===1?"":"s"} &middot; ${np} pick${np===1?"":"s"}</span>
+        ${np?"":'<span class="proj">scheduled · starters tbd</span>'}</div>
         <div class="grid">${gs.map(gcard).join("")}</div>`;}).join("");}
-  $("#view").innerHTML=`<div class="controls"><div class="rail">${rail}</div><div class="filters">${filts}</div></div>${body}`;
+  $("#view").innerHTML=`<div class="controls"><div class="rail">${rail}</div><div class="filters">${filts}</div></div>${legend}${body}`;
   $("#view").querySelectorAll("[data-lg]").forEach(x=>x.onclick=()=>{setLeague(x.dataset.lg);board();});
   $("#view").querySelectorAll("[data-r]").forEach(x=>x.onclick=()=>{state.range=x.dataset.r;board();});
   applyLive();
@@ -1347,7 +1411,7 @@ function gamePage(pk){
   const db=state.db, hp=g.home_win_prob, homeWin=hp>=0.5, e=g.edge||{};
   const A=db.teams[g.away], H=db.teams[g.home];
   const pa=findPlayerByName(g.away_sp), ph=findPlayerByName(g.home_sp);
-  const conf=Math.max(hp,1-hp);
+  const conf=Math.max(hp,1-hp), gTier=infoTier(g);
   // signals
   const sig=[];
   if(H&&Math.abs(H.luck)>=0.04) sig.push([H.luck>0?"warn":"good",H.abbr+(H.luck>0?" is overperforming its run differential ("+sgn(H.luck*100)+" pts) — regression risk":" is underperforming its run differential ("+sgn(H.luck*100)+" pts) — due to bounce back")]);
@@ -1376,8 +1440,11 @@ function gamePage(pk){
       <div style="display:flex;flex-direction:column;gap:14px">
         <div class="panel"><h3>Our projection</h3>
           <div class="proj"><div class="big">${pctI(hp)}<span class="u">%</span></div>
-            <div class="pk">${g.home_abbr} win probability<b>Pick: ${g.pick} <span class="cf">${pctI(conf)}%</span></b>
-            ${g.pitcher_known?"":'<span class="sub">starters not set — team-only</span>'}</div></div>
+            <div class="pk">${g.home_abbr} win probability<b>${gTier==="EARLY"?"Lean":callOf(conf)==="LEAN"?"Lean":"Pick"}: ${g.pick} <span class="cf">${pctI(conf)}%</span></b>
+            <span class="sub">${gTier==="EARLY"
+              ?"scheduled, not a pick — no starter announced, team ratings only"
+              :callOf(conf)==="LEAN"?"inside 55/45 — the model has a side, not a case"
+              :(gTier==="CONFIRMED"?"official lineup posted":"starters named, lineup projected")}</span></div></div>
           <div class="bigbar"><div class="h" style="width:${pctI(hp)}%"></div><div class="mid"></div></div>
           <div class="barlab"><span>${g.away_abbr} ${pctI(1-hp)}%</span><span>${pctI(hp)}% ${g.home_abbr}</span></div>
           <div class="why">
@@ -1553,6 +1620,34 @@ const REC_ROWS=300;                 // rows rendered; rollups always use every g
 const REC_LG=["mlb","nfl","nhl"];
 const REC_NAME={mlb:"MLB",nfl:"NFL",nhl:"NHL"};
 const LL_COIN=Math.log(2);          // 0.6931 - the coin-flip log loss
+/* documents/pick_policy.md. Information tiers are the honest unit: a forecast
+   made 30 days out with team ratings only is a different product from one made
+   with both lineups posted, and the two are never pooled into a headline.
+
+   The tier is decided by the policy's "what the model actually has" column, per
+   league - NOT by which league it is. MLB stamps it server-side
+   (mlbwp/pred_ledger.py). For the other two:
+     NHL - site/data/nhl.json model_card features are Elo, rest, back-to-back and
+       an xG TEAM rating. No roster, no lineup, no goalie. That is team ratings
+       only, i.e. EARLY, and the same chip therefore means the same thing on
+       every league's page. It becomes PROJECTED when a lineup/goalie input
+       actually ships in the model, not when the archive merely exists.
+     NFL - the payload carries live depth charts and a lineup-power rating, so a
+       forecast served by the live model (inside a week, nflProb().near) is
+       PROJECTED. Outside that window the number is the 20k-run season
+       simulation off team strength alone - EARLY, exactly like a 30-days-out
+       MLB game. A Week 18 game in September is not a pick. */
+const REC_TIERS=["CONFIRMED","PROJECTED","EARLY"];
+const REC_TIER_NOTE={CONFIRMED:"official lineup card posted",
+  PROJECTED:"starters named or rotation-projected, lineup projected",
+  EARLY:"no starter - team ratings only"};
+const REC_MIN_N=30;                 // below this a tier's rate is not reported as a number
+const LEAN_MAX=0.55;                // inside 55/45 -> a lean, not a pick
+const recIsLean=p=>Math.max(p,1-p)<=LEAN_MAX;
+/* One fallback for a missing server tier, shared by every reader (a stale
+   cached board.json must not render EARLY in one table and PROJECTED in
+   another). Mirrors mlbwp/pred_ledger.entry_tier. */
+const recTierOf=r=>REC_TIERS.indexOf(r.tier)>=0?r.tier:(r.sp?"PROJECTED":"EARLY");
 const recLeague=()=>REC_LG.indexOf(state.league)>=0?state.league:"mlb";
 const recMlb=()=>(state.board&&state.board.record&&state.board.record.mlb)||null;
 const recMonth=k=>/^\d{4}-\d{2}$/.test(k)
@@ -1561,20 +1656,40 @@ const recMonth=k=>/^\d{4}-\d{2}$/.test(k)
 function recRows(lg){
   if(lg==="mlb"){const m=recMlb(); if(!m) return [];
     return (m.rows||[]).map(r=>({d:r.d,away:r.away,home:r.home,p:r.p,pick:r.pick,y:r.y,
-      hs:r.hs,as:r.as,per:(r.d||"").slice(0,7),href:null}));}
+      hs:r.hs,as:r.as,sp:r.sp,tier:recTierOf(r),per:(r.d||"").slice(0,7),href:null}));}
   if(lg==="nfl"){const n=state.nfl; if(!n||!n.schedule) return [];
     return n.schedule.filter(g=>g.hs!=null&&g.as!=null&&g.ph!=null)
       .map(g=>({d:g.d,away:g.away,home:g.home,p:g.ph,pick:g.ph>=0.5?g.home:g.away,
-        y:g.hs>g.as?1:(g.hs<g.as?0:null),hs:g.hs,as:g.as,per:"Wk "+g.w,
+        y:g.hs>g.as?1:(g.hs<g.as?0:null),hs:g.hs,as:g.as,tier:"PROJECTED",per:"Wk "+g.w,
         href:"#/game/"+g.w+"_"+g.away+"_"+g.home}))
       .sort((a,b)=>a.d<b.d?1:(a.d>b.d?-1:0));}
   if(lg==="nhl"){const n=state.nhl; if(!n||!n.schedule) return [];
     return n.schedule.filter(g=>g.hs!=null&&g.as!=null&&g.hp!=null)
       .map(g=>({d:g.d,away:g.away,home:g.home,p:g.hp,pick:g.hp>=0.5?g.home:g.away,
-        y:g.y!=null?g.y:(g.hs>g.as?1:0),hs:g.hs,as:g.as,per:(g.d||"").slice(0,7),
-        href:"#/game/nhl-"+g.id}))
+        y:g.y!=null?g.y:(g.hs>g.as?1:0),hs:g.hs,as:g.as,tier:"EARLY",
+        per:(g.d||"").slice(0,7),href:"#/game/nhl-"+g.id}))
       .sort((a,b)=>a.d<b.d?1:(a.d>b.d?-1:0));}
   return [];
+}
+const recPicks=lg=>recRows(lg).filter(r=>r.tier!=="EARLY");   // graded PICKS only
+/* Per-tier scores. MLB ships them from the server (computed over EVERY graded
+   row, not just the shipped page); NFL/NHL are scored client-side. */
+/* Policy rule 2 inside rule 3: a graded LEAN is not a graded PICK, so each tier
+   carries BOTH - `pick` (the tier's headline rate, leans excluded) and `lean`
+   (reported beside it, never folded into it). */
+const recSrv=o=>o?{n:o.n,correct:Math.round(o.acc*o.n),acc:o.acc,ll:o.log_loss,
+  brier:o.brier,ties:0}:null;
+function recByTier(lg){
+  const out={};
+  if(lg==="mlb"){const m=recMlb(), bt=(m&&m.by_tier)||{};
+    REC_TIERS.forEach(t=>{const o=bt[t]; if(o) out[t]={...recSrv(o),
+      pick:recSrv(o.pick),lean:recSrv(o.lean)};});
+    return out;}
+  const rows=recRows(lg);
+  REC_TIERS.forEach(t=>{const sub=rows.filter(r=>r.tier===t), s=recScore(sub);
+    if(s) out[t]={...s,pick:recScore(sub.filter(r=>!recIsLean(r.p))),
+      lean:recScore(sub.filter(r=>recIsLean(r.p)))};});
+  return out;
 }
 function recScore(rows){            // log loss / accuracy / Brier over graded rows
   const g=rows.filter(r=>r.y!=null&&r.p!=null);
@@ -1601,26 +1716,54 @@ function recPeriods(rows){          // oldest-first buckets with a running cumul
       cacc:cn?cc/cn:null,cll:cn?cll/cn:null,cn};});
 }
 /* True pending count: the MLB list is capped by the payload, so the headline
-   must come from the server's own total, not from the shipped rows. */
+   must come from the server's own total, not from the shipped rows. Policy
+   rule 1 - this counts PICKS (CONFIRMED + PROJECTED); EARLY games are counted
+   separately by recSchedTotal and never presented as picks. */
 function recPendTotal(lg){
   const m=lg==="mlb"?recMlb():null;
   return m&&m.n_pending!=null?m.n_pending:recPending(lg).length;
 }
-function recPending(lg){            // locked-in picks whose games are not graded yet
-  if(lg==="mlb"){const m=recMlb(); if(!m) return [];
-    return (m.pending||[]).map(r=>({d:r.d,away:r.away,home:r.home,p:r.p,pick:r.pick,
-      sp:r.sp,href:null}));}
+function recSchedTotal(lg){
+  const m=lg==="mlb"?recMlb():null;
+  return m&&m.n_scheduled!=null?m.n_scheduled:recScheduled(lg).length;
+}
+/* Every ungraded forecast, tier-stamped. recPending / recScheduled split it on
+   rule 1: PICKS are CONFIRMED + PROJECTED, everything EARLY is a scheduled
+   game. MLB arrives already split (and capped) from the server. */
+function recUngraded(lg){
   if(lg==="nfl"){const n=state.nfl; if(!n||!n.schedule) return [];
     return n.schedule.filter(g=>g.hs==null&&g.ph!=null)
       .map(g=>({d:g.d,away:g.away,home:g.home,p:g.ph,pick:g.ph>=0.5?g.home:g.away,
-        sp:1,href:"#/game/"+g.w+"_"+g.away+"_"+g.home}))
+        sp:1,tier:nflProb(g).near?"PROJECTED":"EARLY",
+        href:"#/game/"+g.w+"_"+g.away+"_"+g.home}))
       .sort((a,b)=>a.d<b.d?-1:(a.d>b.d?1:0));}
   if(lg==="nhl"){const n=state.nhl; if(!n||!n.schedule) return [];
     return n.schedule.filter(g=>g.hs==null&&g.hp!=null)
       .map(g=>({d:g.d,away:g.away,home:g.home,p:g.hp,pick:g.hp>=0.5?g.home:g.away,
-        sp:1,href:"#/game/nhl-"+g.id}))
+        sp:1,tier:"EARLY",href:"#/game/nhl-"+g.id}))
       .sort((a,b)=>a.d<b.d?-1:(a.d>b.d?1:0));}
   return [];
+}
+function recPending(lg){            // locked-in PICKS whose games are not graded yet
+  if(lg==="mlb"){const m=recMlb(); if(!m) return [];
+    return (m.pending||[]).map(r=>({d:r.d,away:r.away,home:r.home,p:r.p,pick:r.pick,
+      sp:r.sp,spp:r.spp,tier:recTierOf(r),href:null}));}
+  return recUngraded(lg).filter(r=>r.tier!=="EARLY");
+}
+/* EARLY games: scheduled, NOT picks. Shown collapsed and labelled
+   pre-information. */
+function recScheduled(lg){
+  if(lg!=="mlb") return recUngraded(lg).filter(r=>r.tier==="EARLY");
+  const m=recMlb(); if(!m) return [];
+  return (m.scheduled||[]).map(r=>({d:r.d,away:r.away,home:r.home,p:r.p,pick:r.pick,
+    sp:r.sp,spp:r.spp,tier:"EARLY",href:null}));
+}
+/* The lean count must come from the server's uncapped total when it ships one:
+   counting leans in the capped `pending` array and subtracting from the
+   uncapped n_pending makes the two halves stop summing to the stated total. */
+function recLeanTotal(lg){
+  const m=lg==="mlb"?recMlb():null;
+  return m&&m.n_lean!=null?m.n_lean:recPending(lg).filter(r=>recIsLean(r.p)).length;
 }
 /* Cumulative-accuracy curve: the picture the tables cannot draw. Plots running
    pick accuracy against the 50% line so drift is visible at a glance. Pure
@@ -1642,7 +1785,7 @@ function recChart(rows){
     <line x1="${PL}" y1="${Y(v).toFixed(1)}" x2="${W-PR}" y2="${Y(v).toFixed(1)}"
       stroke="var(--line-2)" stroke-width="1" opacity=".5"/>`).join("");
   return `<div class="panel" style="margin-top:16px"><h3>Accuracy over time
-      <span class="sub">running cumulative, oldest &rarr; newest</span></h3>
+      <span class="sub">running cumulative, oldest &rarr; newest &middot; all tiers pooled</span></h3>
     <div class="twrap"><svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}"
         preserveAspectRatio="none" role="img" aria-label="Cumulative pick accuracy">
       ${ticks}
@@ -1668,57 +1811,173 @@ function recSource(lg){
   const m=recMlb();
   if(lg==="mlb") return `Every pick is archived <b>before first pitch</b> in the prediction ledger and graded from the
     final score &mdash; nothing is back-filled. Tracking began <b>${(m&&m.since)||"&mdash;"}</b>, so the sample starts there and
-    grows one slate a day${m&&m.n_pending?` (${m.n_pending} picks logged and still waiting on results)`:""}.`;
+    grows one slate a day${m&&m.n_pending?` (${m.n_pending} picks logged and still waiting on results)`:""}. A game is
+    re-forecast every refresh while it is still pre-game, so what gets graded is the <b>last, most-informed</b> version
+    &mdash; and the tier stamp records which it was.`;
   if(lg==="nfl") return `Picks are the <b>frozen pre-game</b> probabilities shipped in the NFL payload (<span class="mono">ph</span>),
-    scored against the final. The 2026 season has not kicked off yet, so nothing is graded.`;
+    scored against the final. The 2026 season has not kicked off yet, so nothing is graded. Only games inside a week of
+    kickoff are served by the live model and published as picks; the rest of the schedule is the season simulation and
+    sits in <b>scheduled</b> &mdash; a Week 18 game in September is not a pick.`;
   return `Picks are the <b>frozen pre-game</b> probabilities shipped in the NHL payload (<span class="mono">hp</span>) &mdash; the
-    leak-safe replay: each game is predicted from ratings that have only seen earlier games, then scored against the final.`;
+    leak-safe replay: each game is predicted from ratings that have only seen earlier games, then scored against the final.
+    The shipped NHL model has no roster, lineup or goalie input, so every NHL forecast is <b>EARLY</b> under the same rule
+    the MLB page uses &mdash; team ratings only, published for transparency and not counted as picks.`;
+}
+/* Policy rule 3: accuracy and log loss are reported PER TIER and never pooled
+   into a headline. A tier with too few graded rows says so instead of printing
+   a number nobody should read. */
+function recTierGrid(lg){
+  const bt=recByTier(lg);
+  // Only tiers the league can actually produce (see the REC_TIERS comment):
+  // MLB all three, NFL live-model + simulation, NHL team ratings only.
+  const applies=lg==="mlb"?REC_TIERS:(lg==="nfl"?["PROJECTED","EARLY"]:["EARLY"]);
+  const note=t=>(lg==="nfl"&&t==="PROJECTED")
+    ?"live model: ratings + depth charts, no inactives feed"
+    :(lg!=="mlb"&&t==="EARLY")
+    ?(lg==="nhl"?"team ratings only - no roster, lineup or goalie input"
+                :"season simulation from team strength only")
+    :REC_TIER_NOTE[t];
+  const cards=applies.map(t=>{
+    const s=bt[t], early=t==="EARLY";
+    // Rule 1: an EARLY tier has no picks in it, so its card scores every graded
+    // forecast and never uses the word. Rules 2+3 elsewhere: the headline is
+    // scored over PICKS only and the leans are reported under it, not inside it.
+    const head=early?s:(s&&s.pick), ln=early?null:(s&&s.lean);
+    const unit=early?"graded forecast":"graded pick";
+    const hd=`<div class="hd"><span class="chip t-${t}">${t}</span>
+      <span class="sub" style="font-size:11px">${note(t)}</span></div>`;
+    const foot=early?`<span class="thin" style="margin-top:6px">Not published as picks &mdash; shown so the
+      tier can be judged, never counted in a pick rate.</span>`:"";
+    const leanline=ln?`<span class="tl">plus ${ln.n} graded lean${ln.n===1?"":"s"} (inside 55/45)
+      &mdash; ${(ln.acc*100).toFixed(1)}%, log loss <b class="mono">${ln.ll.toFixed(4)}</b>, counted separately</span>`:"";
+    if(!s) return `<div class="tc">${hd}<span class="thin">Nothing graded at this tier yet.</span>${foot}</div>`;
+    if(!head) return `<div class="tc">${hd}<span class="thin"><b>No graded picks</b> at this tier &mdash;
+      all ${s.n} graded forecast${s.n===1?"":"s"} here sat inside 55/45 (leans).</span>${leanline}${foot}</div>`;
+    if(head.n<REC_MIN_N) return `<div class="tc">${hd}
+      <span class="thin"><b>${head.n} ${unit}${head.n===1?"":"s"}</b> &mdash; too few to score. An accuracy or log
+      loss on ${head.n} game${head.n===1?"":"s"} is noise, so no rate is reported for this tier yet
+      (needs ${REC_MIN_N}).</span>${leanline}${foot}</div>`;
+    const d=head.ll-LL_COIN;
+    return `<div class="tc">${hd}
+      <span class="tv ${head.acc>=0.5?"pos":"neg"}">${(head.acc*100).toFixed(1)}%</span>
+      <span class="tl">${head.correct} of ${head.n} ${unit}s</span>
+      <span class="tl">log loss <b class="mono">${head.ll.toFixed(4)}</b>
+        <span class="${d<=0?"pos":"neg"}">${d<=0?"&minus;":"+"}${Math.abs(d).toFixed(4)} vs coin flip</span></span>
+      ${leanline}${foot}</div>`;}).join("");
+  return `<div class="tiergrid">${cards}</div>`;
 }
 function recSection(lg){
   const rows=recRows(lg), srv=lg==="mlb"?(recMlb()||{}).rollup:null;
   const s=srv?{n:srv.n,correct:Math.round(srv.acc*srv.n),acc:srv.acc,ll:srv.log_loss,
                brier:srv.brier,ties:0}:recScore(rows);
   const ho=recHoldout(lg);
-  if(!s){                     // nothing graded yet - but the pending picks still count as receipts
-    const pend0=recPending(lg), ps0=pend0.slice(0,REC_ROWS);
-    const rows0=ps0.map(r=>`<tr class="recrow" ${r.href?`onclick="location.hash='${r.href}'"`:""}>
-      <td class="a"><span class="sub">${(r.d||"").slice(5)}</span></td>
-      <td class="a">${r.away} <span class="sub">@</span> ${r.home}</td>
-      <td class="a"><span class="ab" style="color:var(--accent)">${r.pick}</span></td>
-      <td class="cf"><span class="cbar"><i style="width:${((Math.max(r.p,1-r.p)-0.5)*200).toFixed(0)}%"></i></span>
-        <span class="num">${pctI(Math.max(r.p,1-r.p))}%</span></td>
-      <td><span class="num">${amOdds(Math.max(r.p,1-r.p))}</span></td>
-      <td><span class="chip pend">PENDING</span></td></tr>`).join("");
-    return `<div class="empty" style="margin-top:12px">No ${REC_NAME[lg]} picks have been graded yet.<br>
+  // confidence bar: how far the pick sits from a coin flip, so the eye can scan
+  // conviction down the column instead of reading every percentage
+  const conf=p=>{const c=Math.max(p,1-p);
+    return `<span class="cbar"><i style="width:${((c-0.5)*200).toFixed(0)}%"></i></span>
+      <span class="num">${pctI(c)}%</span>`;};
+  const tierChip=t=>`<span class="chip t-${t}">${t}</span>`;
+  // Policy rule 2: inside 55/45 the model is not claiming much - say so.
+  const callChip=p=>recIsLean(p)?`<span class="chip lean">LEAN</span>`:`<span class="chip pick">PICK</span>`;
+
+  const tiers=`<div class="panel" style="margin-top:16px"><h3>Track record by information tier
+      <span class="sub">never pooled &mdash; a 30-days-out forecast and a lineups-posted forecast are different products</span></h3>
+    ${recTierGrid(lg)}
+    <div class="sub" style="margin-top:10px">Tiers describe what the model actually had when the graded forecast was
+      made. ${lg==="mlb"
+        ?`<b>CONFIRMED</b> the official lineup card is posted (a partial card is used as far as it goes and padded
+          with roster averages), <b>PROJECTED</b> both starters known &mdash; an announced probable or, inside a day
+          or two, a rotation projection &mdash; with a projected lineup, <b>EARLY</b> team ratings only.
+          <br><b>How CONFIRMED is sampled:</b> the tier is the state at the <i>last pre-game refresh</i>, and the
+          refresh runs every 4 hours. A game whose lineups post 2&frac12; hours before a first pitch that falls
+          before the next refresh is graded PROJECTED even though the lineups were public. Every label is true of
+          the forecast it is attached to, but CONFIRMED is a start-time-selected subset of lineups-posted games,
+          not all of them &mdash; do not read the three tiers as a controlled comparison.`
+        :lg==="nfl"
+        ?`<b>PROJECTED</b> is the live model (ratings, depth charts and lineup power) inside a week of kickoff.
+          Beyond that the number is the 20,000-run season simulation off team strength alone, which is
+          <b>EARLY</b> &mdash; the same information state as a 30-days-out MLB game, so it is not published as a
+          pick. NFL has no confirmed-inactives feed in the payload, so there is no CONFIRMED tier.`
+        :`The shipped NHL model is Elo + rest + back-to-back + an expected-goals <i>team</i> rating. It has no
+          roster, no lineup and no starting-goalie input, so by the policy's own &ldquo;what the model actually
+          has&rdquo; column every NHL forecast is <b>EARLY</b> &mdash; team ratings only. The chip means the same
+          thing here as it does on the MLB page, which is the point of having it. A PROJECTED tier arrives when a
+          lineup or goalie feature actually ships in the model, not when the archive merely exists.`}</div></div>`;
+
+  // PENDING = picks only (CONFIRMED + PROJECTED). EARLY rides in its own block.
+  const pend=recPending(lg), pshown=pend.slice(0,REC_ROWS);
+  const nLean=recLeanTotal(lg), nPick=recPendTotal(lg)-nLean;
+  const pbody=pshown.map(r=>`<tr class="recrow" ${r.href?`onclick="location.hash='${r.href}'"`:""}>
+    <td class="a"><span class="sub">${(r.d||"").slice(5)}</span></td>
+    <td class="a">${r.away} <span class="sub">@</span> ${r.home}</td>
+    <td class="a">${tierChip(r.tier)}${r.spp?' <span class="sub" style="font-size:10px" title="no probable announced yet — the starter is this model\'s own rotation projection">SP proj</span>':""}</td>
+    <td class="a"><span class="ab" style="color:var(--accent)">${r.pick}</span></td>
+    <td class="cf">${conf(r.p)}</td>
+    <td><span class="num">${amOdds(Math.max(r.p,1-r.p))}</span></td>
+    <td>${callChip(r.p)}</td></tr>`).join("");
+  const pendPanel=`<div class="panel"><h3>Pending picks
+      <span class="sub">${pend.length?`${pshown.length<recPendTotal(lg)?`next ${pshown.length} of ${recPendTotal(lg)}`:`all ${pend.length}`} &middot; locked in, awaiting the result`:"none right now"}</span></h3>
+    ${pend.length?`<div class="twrap"><table>
+        <thead><tr><th>Date</th><th>Matchup</th><th>Tier</th><th>Pick</th><th>Confidence</th><th>Fair odds</th><th>Call</th></tr></thead>
+        <tbody>${pbody}</tbody></table></div>
+      <div class="sub" style="margin-top:8px">Only CONFIRMED and PROJECTED forecasts are published as picks
+        &mdash; ${nPick} pick${nPick===1?"":"s"} and ${nLean}
+        lean${nLean===1?"":"s"} of ${recPendTotal(lg)} (a lean is a forecast inside 55/45: the model has a side,
+        not a case). Written down <b>before</b> the games are played &mdash; every one will appear with a HIT or
+        MISS, and the graded table keeps the PICK/LEAN call so a lean is never counted as a pick afterwards.
+        ${lg==="mlb"?`An <span class="sub" style="font-size:10px">SP proj</span> mark means no probable has been
+        announced yet and the starter is this model's own rotation projection.`:""}</div>`
+    :`<div class="empty">No picks waiting on a result${lg==="nfl"?" &mdash; the 2026 season has not started.":"."}</div>`}</div>`;
+
+  // SCHEDULED = EARLY tier. Collapsed, labelled pre-information, not counted.
+  const sch=recScheduled(lg), sshown=sch.slice(0,REC_ROWS);
+  const sbody=sshown.map(r=>`<tr class="recrow">
+    <td class="a"><span class="sub">${(r.d||"").slice(5)}</span></td>
+    <td class="a">${r.away} <span class="sub">@</span> ${r.home}</td>
+    <td class="a"><span class="ab">${r.pick}</span></td>
+    <td class="cf">${conf(r.p)}</td>
+    <td><span class="chip t-EARLY">PRE-INFO</span></td></tr>`).join("");
+  const schPanel=sch.length?`<details class="sched"><summary>Scheduled games &mdash; not picks
+      <span class="sub">${recSchedTotal(lg)} EARLY-tier games on the board</span></summary>
+    <div class="body">
+      <div class="sub" style="margin-bottom:10px">${lg==="mlb"
+        ?`These are future games with <b>no starter announced</b>: the model has team ratings and nothing else.`
+        :lg==="nfl"
+        ?`These are games more than a week out, where the number is the season simulation off team strength &mdash;
+          no depth charts, no matchup detail.`
+        :`The shipped NHL model has no roster, lineup or goalie input, so every forecast is team ratings only.`}
+        The lean below is what it currently thinks, published for transparency and
+        <b>excluded from the pick count</b>. ${lg==="nhl"
+          ?`They stay scheduled until a lineup or goalie feature actually ships in the model.`
+          :`Each becomes a real pick once the ${lg==="mlb"?"starters and lineups arrive":"game enters the live-model window"}
+            &mdash; and it is that later, more-informed forecast that gets graded.`}</div>
+      <div class="twrap"><table>
+        <thead><tr><th>Date</th><th>Matchup</th><th>Lean</th><th>Confidence</th><th>Information</th></tr></thead>
+        <tbody>${sbody}</tbody></table></div>
+      ${sshown.length<recSchedTotal(lg)?`<div class="sub" style="margin-top:8px">Showing the next ${sshown.length}
+        of ${recSchedTotal(lg)}.</div>`:""}
+    </div></details>`:"";
+
+  if(!s){                     // nothing graded yet - the pending picks are still receipts
+    return `<div class="empty" style="margin-top:12px">No ${REC_NAME[lg]} forecasts have been graded yet.<br>
         <span class="sub">${recSource(lg)}</span></div>
-      ${pend0.length?`<div class="panel" style="margin-top:16px"><h3>Pending picks
-          <span class="sub">${ps0.length<recPendTotal(lg)?`next ${ps0.length} of ${recPendTotal(lg)}`:`all ${ps0.length}`} &middot; locked in, awaiting the result</span></h3>
-        <div class="twrap"><table>
-          <thead><tr><th>Date</th><th>Matchup</th><th>Pick</th><th>Confidence</th><th>Fair odds</th><th>Status</th></tr></thead>
-          <tbody>${rows0}</tbody></table></div>
-        <div class="sub" style="margin-top:8px">Written down <b>before</b> a ball is snapped &mdash; each will show up
-          as a HIT or MISS once it is played.</div></div>`:""}`;
+      ${tiers}
+      <div style="margin-top:16px">${pendPanel}</div>
+      ${schPanel}`;
   }
   const dCoin=s.ll-LL_COIN, dHo=ho?s.ll-ho.v:null;
   const box=(k,v,cls)=>`<div class="b"><span class="k">${k}</span><span class="v${cls?" "+cls:""}">${v}</span></div>`;
-  // Two headline numbers first (what the model got right, and how well-calibrated
-  // it was); the comparison deltas below them. Six tiles = a clean 3x2 / 2x3 grid
-  // at every breakpoint, instead of an orphaned seventh.
-  const hero=`<div class="rechero">
-    <div class="rh"><span class="rhk">Pick accuracy</span>
-      <span class="rhv ${s.acc>=0.5?"pos":"neg"}">${(s.acc*100).toFixed(1)}<i>%</i></span>
-      <span class="rhs">${s.correct} of ${s.n} graded</span></div>
-    <div class="rh"><span class="rhk">Log loss</span>
-      <span class="rhv">${s.ll.toFixed(4)}</span>
-      <span class="rhs ${dCoin<=0?"pos":"neg"}">${dCoin<=0?"&minus;":"+"}${Math.abs(dCoin).toFixed(4)} vs coin flip</span></div>
-  </div>`;
+  // Pooled tiles are kept for continuity ONLY (policy rule 3 forbids a pooled
+  // headline): they live below the per-tier grid and are labelled as a mixture.
   const tiles=[
-    box("Graded picks",s.n),
+    box("Graded (all tiers)",s.n),
     box("Correct",s.correct),
     box("Brier",s.brier.toFixed(4)),
+    box("Log loss",s.ll.toFixed(4)),
     box("vs coin flip",(dCoin<=0?"&minus;":"+")+Math.abs(dCoin).toFixed(4),dCoin<=0?"pos":"neg"),
     ho?box("vs "+ho.lab,(dHo<=0?"&minus;":"+")+Math.abs(dHo).toFixed(4),dHo<=0?"pos":"warnc"):"",
-    box("Pending",recPendTotal(lg)),
+    box("Pending picks",recPendTotal(lg)),
+    recSchedTotal(lg)?box("Scheduled",recSchedTotal(lg)):"",
   ].join("");
   const warn=s.n<30?`<div class="signals" style="margin-top:12px"><div class="sig warn"><span class="ic">!</span>
     <span><b>n=${s.n} &mdash; not yet meaningful.</b> A handful of games says nothing about a model: at this sample the
@@ -1733,11 +1992,6 @@ function recSection(lg){
     <td><span class="num">${o.cacc==null?"&mdash;":(o.cacc*100).toFixed(1)+"%"}</span></td>
     <td><span class="num">${o.cll==null?"&mdash;":o.cll.toFixed(4)}</span></td></tr>`).join("");
   const shown=rows.slice(0,REC_ROWS);
-  // confidence bar: how far the pick sits from a coin flip, so the eye can scan
-  // conviction down the column instead of reading every percentage
-  const conf=p=>{const c=Math.max(p,1-p);
-    return `<span class="cbar"><i style="width:${((c-0.5)*200).toFixed(0)}%"></i></span>
-      <span class="num">${pctI(c)}%</span>`;};
   const outcome=r=>{
     if(r.y==null) return `<td><span class="num">${r.as}&ndash;${r.hs}</span></td><td><span class="chip">TIE</span></td>`;
     const hit=(r.p>=0.5)===(r.y===1);
@@ -1746,36 +2000,30 @@ function recSection(lg){
   const body=shown.map(r=>`<tr class="recrow" ${r.href?`onclick="location.hash='${r.href}'"`:""}>
     <td class="a"><span class="sub">${(r.d||"").slice(5)}</span></td>
     <td class="a">${r.away} <span class="sub">@</span> ${r.home}</td>
+    <td class="a">${tierChip(r.tier)}</td>
+    <td class="a">${callChip(r.p)}</td>
     <td class="a"><span class="ab" style="color:var(--accent)">${r.pick}</span></td>
     <td class="cf">${conf(r.p)}</td>
     ${outcome(r)}</tr>`).join("");
-  const pend=recPending(lg), pshown=pend.slice(0,REC_ROWS);
-  const pbody=pshown.map(r=>`<tr class="recrow" ${r.href?`onclick="location.hash='${r.href}'"`:""}>
-    <td class="a"><span class="sub">${(r.d||"").slice(5)}</span></td>
-    <td class="a">${r.away} <span class="sub">@</span> ${r.home}</td>
-    <td class="a"><span class="ab" style="color:var(--accent)">${r.pick}</span></td>
-    <td class="cf">${conf(r.p)}</td>
-    <td><span class="num">${amOdds(Math.max(r.p,1-r.p))}</span></td>
-    <td><span class="chip pend">PENDING</span></td></tr>`).join("");
-  const pendPanel=`<div class="panel"><h3>Pending picks
-      <span class="sub">${pend.length?`${pshown.length<recPendTotal(lg)?`next ${pshown.length} of ${recPendTotal(lg)}`:`all ${pend.length}`} &middot; locked in, awaiting the result`:"none right now"}</span></h3>
-    ${pend.length?`<div class="twrap"><table>
-        <thead><tr><th>Date</th><th>Matchup</th><th>Pick</th><th>Confidence</th><th>Fair odds</th><th>Status</th></tr></thead>
-        <tbody>${pbody}</tbody></table></div>
-      <div class="sub" style="margin-top:8px">These were written down <b>before</b> the games are played &mdash; every one
-        of them will appear above with a HIT or MISS, whichever way it lands.</div>`
-    :`<div class="empty">No picks waiting on a result${lg==="nfl"?" &mdash; the 2026 season has not started.":"."}</div>`}</div>`;
+  const nGPick=rows.filter(r=>r.tier!=="EARLY"&&!recIsLean(r.p)).length;
   return `${warn}
-    ${hero}
-    <div class="statgrid" style="margin-top:12px">${tiles}</div>
+    ${tiers}
+    <div class="subh">All tiers pooled <span class="sub" style="font-weight:400;font-family:var(--sans)">&mdash; a mixture of
+      different products, kept for continuity. Read the tier grid above, not this.</span></div>
+    <div class="statgrid">${tiles}</div>
     <div class="sub" style="margin:10px 2px 0">${recSource(lg)}</div>
     ${recChart(rows)}
     <div style="margin-top:16px">${pendPanel}</div>
-    <div class="panel" style="margin-top:16px"><h3>Every graded pick <span class="sub">${shown.length<rows.length?`most recent ${shown.length} of ${rows.length}`:`all ${rows.length}`}</span></h3>
+    ${schPanel}
+    <div class="panel" style="margin-top:16px"><h3>Every graded forecast <span class="sub">${shown.length<rows.length?`most recent ${shown.length} of ${rows.length}`:`all ${rows.length}`} &middot; ${nGPick} of them graded PICKS &middot; tier and call stamped per row</span></h3>
       <div class="twrap"><table>
-        <thead><tr><th>Date</th><th>Matchup</th><th>Pick</th><th>Confidence</th><th>Final</th><th>Result</th></tr></thead>
-        <tbody>${body}</tbody></table></div></div>
-    <div class="panel" style="margin-top:16px"><h3>By ${lg==="nfl"?"week":"month"} <span class="sub">running cumulative</span></h3>
+        <thead><tr><th>Date</th><th>Matchup</th><th>Tier</th><th>Call</th><th>Pick</th><th>Confidence</th><th>Final</th><th>Result</th></tr></thead>
+        <tbody>${body}</tbody></table></div>
+      <div class="sub" style="margin-top:8px">This listing pools every tier and both calls, so it is a mixture, not a
+        record. The number that counts is the per-tier, picks-only grid above. A row marked
+        <span class="chip lean">LEAN</span> sat inside 55/45 and an <span class="chip t-EARLY">EARLY</span> row was
+        never published as a pick &mdash; neither is inside any pick rate on this page.</div></div>
+    <div class="panel" style="margin-top:16px"><h3>By ${lg==="nfl"?"week":"month"} <span class="sub">running cumulative, all tiers</span></h3>
       <div class="twrap"><table>
         <thead><tr><th>${lg==="nfl"?"Week":"Month"}</th><th>Picks</th><th>Hits</th><th>Acc</th><th>LL</th><th>Cum acc</th><th>Cum LL</th></tr></thead>
         <tbody>${per}</tbody></table></div>
@@ -1786,16 +2034,20 @@ function recordPage(){
   const lg=recLeague(), b=state.board;
   const rail=b.leagues.map(l=>{
     if(l.code==="nhl"&&state.nhl) return "";        // the live NHL button is appended below
+    // Rule 1: the badge on a page titled "Every pick, graded" counts graded
+    // PICKS. EARLY rows are graded forecasts but were never published as picks.
     if(l.code==="mlb"||(l.code==="nfl"&&state.nfl))
-      return `<button class="lg ${lg===l.code?"on":""}" data-lg="${l.code}"><span>${l.name}</span><span class="n">${recRows(l.code).length}</span></button>`;
+      return `<button class="lg ${lg===l.code?"on":""}" data-lg="${l.code}" title="graded picks (EARLY-tier forecasts excluded)"><span>${l.name}</span><span class="n">${recPicks(l.code).length}</span></button>`;
     return `<button class="lg" disabled><span>${l.name}</span><span class="soon">soon</span></button>`;}).join("")
-    +(state.nhl?`<button class="lg ${lg==="nhl"?"on":""}" data-lg="nhl"><span>NHL</span><span class="n">${recRows("nhl").length}</span></button>`:"");
+    +(state.nhl?`<button class="lg ${lg==="nhl"?"on":""}" data-lg="nhl" title="graded picks (EARLY-tier forecasts excluded)"><span>NHL</span><span class="n">${recPicks("nhl").length}</span></button>`:"");
   $("#view").innerHTML=`<div class="controls"><div class="rail">${rail}</div></div>
     <div class="eyebrow">Track record &middot; ${REC_NAME[lg]}</div>
-    <h1 class="pt">Every pick, graded <span class="sub" style="font-weight:400">pre-game probability vs what actually happened</span></h1>
+    <h1 class="pt">Every forecast, graded <span class="sub" style="font-weight:400">pre-game probability vs what actually happened</span></h1>
     <div class="sub" style="margin-bottom:4px">Market-blind models: the odds are never an input, so this is the model's
       own forecast scored on its own. <b>Log loss</b> is the honest scoreboard (lower is better) &mdash; a coin flip is
-      ${LL_COIN.toFixed(4)}; picking right often but with overconfident probabilities still scores badly.</div>
+      ${LL_COIN.toFixed(4)}; picking right often but with overconfident probabilities still scores badly.
+      Results are split by <b>information tier</b> and never pooled into one headline: a forecast made before the
+      starters are known is a different product from one made with the lineups posted.</div>
     ${recSection(lg)}`;
   $("#view").querySelectorAll("[data-lg]").forEach(x=>x.onclick=()=>{setLeague(x.dataset.lg);recordPage();});
 }

@@ -29,6 +29,7 @@ FINALS_CACHE = PROJECT / "data" / "season_2026_finals.json"
 LINES_CACHE = PROJECT / "data" / "season_2026_lines.json"
 PRED_LEDGER = PROJECT / "data" / "mlb_pred_ledger.json"
 RECORD_CAP = 400          # graded rows shipped to the site (rollup uses them all)
+LEAN_MAX = 0.55           # policy rule 2: a forecast inside 55/45 is a LEAN, not a pick
 
 def _write_atomic(path, text):
     """tmp + os.replace: an interrupted run must never truncate a live file."""
@@ -59,15 +60,53 @@ def record_block(ledger_path: Path = PRED_LEDGER, cap: int = RECORD_CAP) -> dict
     plus a rollup over EVERY graded row, so the page's headline never depends on
     where the cap fell.
 
-    Shape: {"rows": [{d, away, home, p, pick, y, hs, as, sp}], "rollup":
-    {n, log_loss, acc, brier} | None, "since": "YYYY-MM-DD" | None, "n_pending"}
+    Every row carries its information `tier` (CONFIRMED / PROJECTED / EARLY —
+    see mlbwp.pred_ledger for the mapping), and documents/pick_policy.md governs
+    what that tier means for the product:
+      - rule 1: only CONFIRMED and PROJECTED forecasts are PICKS. EARLY ones are
+        SCHEDULED games, shipped in their own list and excluded from n_pending.
+      - rule 2: a forecast inside 55/45 is a LEAN, not a pick. Every row carries
+        `lean` so a graded LEAN is never silently counted as a graded PICK, and
+        each tier's headline rate is scored over PICKS only (`by_tier[t].pick`),
+        with the leans reported beside it instead of mixed into it.
+      - rule 3: the track record splits by tier, so `by_tier` is the number the
+        site reports. `rollup` (all tiers pooled) is kept for continuity only.
+
+    Shape: {"rows": [{d, away, home, p, pick, lean, y, hs, as, sp, spp, tier}],
+            "rollup": {n, log_loss, acc, brier} | None,
+            "by_tier": {TIER: {n, log_loss, acc, brier, n_lean,
+                               pick: {...}|None, lean: {...}|None}},
+            "since": "YYYY-MM-DD" | None,
+            "pending":   [{d, away, home, p, pick, lean, sp, spp, tier, rec}],
+            "scheduled": [{...same...}],                             # EARLY only
+            "n_pending": int,      # PICKS awaiting a result (EARLY excluded)
+            "n_scheduled": int,    # EARLY games on the board
+            "n_lean": int}         # of n_pending, how many sit inside 55/45
     Pick convention matches the board's: home when p >= 0.5.
     """
     import math
+    from mlbwp.pred_ledger import TIERS, entry_tier
+    empty = {"rows": [], "rollup": None, "by_tier": {}, "since": None,
+             "pending": [], "scheduled": [], "n_pending": 0, "n_scheduled": 0,
+             "n_lean": 0}
     try:
         ledger = json.loads(Path(ledger_path).read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
-        return {"rows": [], "rollup": None, "since": None, "n_pending": 0}
+        return empty
+
+    def _score(rs):
+        if not rs:
+            return None
+        eps, n = 1e-9, len(rs)
+        ll = sum(-(r["y"] * math.log(max(r["p"], eps))
+                   + (1 - r["y"]) * math.log(max(1 - r["p"], eps))) for r in rs) / n
+        return {"n": n, "log_loss": round(ll, 5),
+                "acc": round(sum((r["p"] >= 0.5) == (r["y"] == 1) for r in rs) / n, 4),
+                "brier": round(sum((r["p"] - r["y"]) ** 2 for r in rs) / n, 5)}
+
+    def _is_lean(p):                       # policy rule 2: inside 55/45
+        return max(p, 1 - p) <= LEAN_MAX
+
     rows = []
     for e in ledger.values():
         if e.get("y") is None or e.get("p") is None:
@@ -76,39 +115,52 @@ def record_block(ledger_path: Path = PRED_LEDGER, cap: int = RECORD_CAP) -> dict
         rows.append({
             "d": e.get("d"), "away": e.get("away"), "home": e.get("home"),
             "p": p, "pick": e.get("home") if p >= 0.5 else e.get("away"),
+            "lean": 1 if _is_lean(p) else 0,
             "y": int(e["y"]), "hs": e.get("hs"), "as": e.get("as"),
             "sp": 1 if e.get("sp_known") else 0,
+            "spp": 1 if e.get("sp_proj") else 0, "tier": entry_tier(e),
         })
     rows.sort(key=lambda r: (r["d"] or "", r["home"] or ""), reverse=True)
-    rollup = None
-    if rows:
-        eps, n = 1e-9, len(rows)
-        ll = sum(-(r["y"] * math.log(max(r["p"], eps))
-                   + (1 - r["y"]) * math.log(max(1 - r["p"], eps))) for r in rows) / n
-        rollup = {
-            "n": n,
-            "log_loss": round(ll, 5),
-            "acc": round(sum((r["p"] >= 0.5) == (r["y"] == 1) for r in rows) / n, 4),
-            "brier": round(sum((r["p"] - r["y"]) ** 2 for r in rows) / n, 5),
-        }
+    rollup = _score(rows)
+    # Per tier, and inside each tier per CALL: a graded LEAN is not a graded
+    # PICK, so the tier's headline rate is scored over picks only and the leans
+    # are reported next to it rather than folded into it (policy rules 2 + 3).
+    by_tier = {}
+    for t in TIERS:
+        sub = [r for r in rows if r["tier"] == t]
+        if not sub:
+            continue
+        by_tier[t] = {**_score(sub),
+                      "n_lean": sum(r["lean"] for r in sub),
+                      "pick": _score([r for r in sub if not r["lean"]]),
+                      "lean": _score([r for r in sub if r["lean"]])}
+
     # PENDING: locked-in pre-game picks whose games have not been graded yet.
     # These are the receipts that matter most — published before the result
-    # exists, so nobody can claim they were written after the fact.
-    pending = []
+    # exists, so nobody can claim they were written after the fact. EARLY rows
+    # are not picks (policy rule 1); they ride along as `scheduled`.
+    pending, scheduled = [], []
     for e in ledger.values():
         if e.get("y") is not None or e.get("p") is None:
             continue
         p = round(float(e["p"]), 4)
-        pending.append({
+        tier = entry_tier(e)
+        (scheduled if tier == "EARLY" else pending).append({
             "d": e.get("d"), "away": e.get("away"), "home": e.get("home"),
             "p": p, "pick": e.get("home") if p >= 0.5 else e.get("away"),
-            "sp": 1 if e.get("sp_known") else 0, "rec": (e.get("rec") or "")[:16],
+            "lean": 1 if _is_lean(p) else 0,
+            "sp": 1 if e.get("sp_known") else 0,
+            "spp": 1 if e.get("sp_proj") else 0, "tier": tier,
+            "rec": (e.get("rec") or "")[:16],
         })
-    pending.sort(key=lambda r: (r["d"] or "", r["home"] or ""))   # soonest first
+    for lst in (pending, scheduled):
+        lst.sort(key=lambda r: (r["d"] or "", r["home"] or ""))    # soonest first
     recs = sorted(e["rec"] for e in ledger.values() if e.get("rec"))
-    return {"rows": rows[:cap], "rollup": rollup,
+    return {"rows": rows[:cap], "rollup": rollup, "by_tier": by_tier,
             "since": recs[0][:10] if recs else None,
-            "pending": pending[:cap], "n_pending": len(pending)}
+            "pending": pending[:cap], "scheduled": scheduled[:cap],
+            "n_pending": len(pending), "n_scheduled": len(scheduled),
+            "n_lean": sum(r["lean"] for r in pending)}
 
 
 def attach_record(board_path: Path = OUT, ledger_path: Path = PRED_LEDGER) -> int:
@@ -380,8 +432,10 @@ def main(days: int = 30, today: str | None = None):
             if blend else metrics["model_log_loss"],
             "elo_log_loss": metrics["plain_elo_log_loss"],
             "coinflip": metrics["constant_log_loss"],
-            # graded pre-game predictions from the ledger (None until enough
-            # games grade; the site shows it once n >= 100)
+            # graded pre-game predictions from the ledger, POOLED over every
+            # information tier. Kept for continuity/inspection only: policy
+            # rule 3 forbids a pooled headline, so the site header does NOT
+            # render this — #/record reports realized numbers per tier.
             "realized_2026": _realized_2026(),
         },
         # graded pre-game picks for the #/record track-record page (the board
