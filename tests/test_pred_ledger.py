@@ -76,4 +76,4 @@ def test_realized_math(tmp_path):
     assert r["n"] == 2 and r["acc"] == 0.5
     import math
     exp = (-(math.log(0.7)) - math.log(0.4)) / 2
-    assert abs(r["log_loss"] - exp) < 1e-6
+    assert abs(r["log_loss"] - exp) < 1e-4      # stored value is 5-dp rounded
