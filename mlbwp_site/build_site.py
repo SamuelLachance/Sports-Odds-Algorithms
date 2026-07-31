@@ -399,7 +399,9 @@ function updAcc(){
     el.innerHTML=`<b>${mc.test_ll.toFixed(3)}</b> log loss (NHL)<br>base Elo ${mc.baseline_elo_test.toFixed(3)}`;
   }else if(state.board&&state.board.accuracy){
     const a=state.board.accuracy;
-    el.innerHTML=`<b>${a.log_loss.toFixed(3)}</b> log loss<br>coin flip ${a.coinflip.toFixed(3)}`;
+    el.innerHTML=(a.realized_2026&&a.realized_2026.n>=100)
+      ?`<b>${a.realized_2026.log_loss.toFixed(3)}</b> log loss &middot; 2026 (n=${a.realized_2026.n})<br>${(a.realized_2026.acc*100).toFixed(1)}% picks &middot; holdout ${a.log_loss.toFixed(3)}`
+      :`<b>${a.log_loss.toFixed(3)}</b> log loss<br>coin flip ${a.coinflip.toFixed(3)}`;
   }
 }
 

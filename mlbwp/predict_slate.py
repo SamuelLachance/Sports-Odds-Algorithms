@@ -19,6 +19,16 @@ from datetime import date, timedelta
 from pathlib import Path
 
 from mlbwp.live import TEAM_ID_TO_RETRO, _get, BASE, et_date, game_data, schedule, season_finals
+
+
+def _realized_2026():
+    """Graded pre-game ledger stats, or None (display-gated at n >= 100)."""
+    try:
+        from mlbwp.pred_ledger import realized
+        r = realized()
+        return r if r and r["n"] >= 100 else None
+    except Exception:  # noqa: BLE001  — tracking must never break the board
+        return None
 from mlbwp.projection import Projector
 from mlbwp.serve import Predictor
 
@@ -279,6 +289,9 @@ def main(days: int = 30, today: str | None = None):
             if blend else metrics["model_log_loss"],
             "elo_log_loss": metrics["plain_elo_log_loss"],
             "coinflip": metrics["constant_log_loss"],
+            # graded pre-game predictions from the ledger (None until enough
+            # games grade; the site shows it once n >= 100)
+            "realized_2026": _realized_2026(),
         },
         "leagues": [
             {"code": "mlb", "name": "MLB", "active": True,

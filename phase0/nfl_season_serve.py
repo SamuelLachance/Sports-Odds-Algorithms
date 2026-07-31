@@ -746,7 +746,7 @@ payload["model_card"]["ratings_model"] = {
 payload["model_card"]["serve"] = {
     "fit": "all completed games through 2025, recency half-life 3 seasons, C=100",
     "test_repro_ll": round(repro, 5), "sims": S,
-    "qb_source": "nflverse depth charts 2026-07-23",
+    "qb_source": "nflverse depth charts (live, regenerated each refresh)",
     "generated": "2026-07-23",
 }
 _dump_atomic(payload, "site/data/nfl.json")

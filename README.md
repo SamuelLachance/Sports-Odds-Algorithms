@@ -34,6 +34,18 @@ identifiability frontier: ~50 screened challengers (TrueSkill-2/3, TTT,
 RAPM, external predictors, sheet signals) are recorded as nulls in the
 ledgers and in `documents/`.
 
+**Research completeness (as of 2026-07-30):** every protocol-compatible
+channel has been tested. MLB: platoon, fatigue, form, schedule, DER, BABIP,
+bullpen, power, SIERA, baserunning (shipped); lineup-absence and catcher
+framing (DEV nulls — the framing proxy itself validates against known elite
+framers). NFL: 14 shipped features; TS2/TS3/TTT, PFF-WAR transplants,
+coordinator/coach, SRS, RAPM all null or DEV-mirage. NHL: Elo+rest+B2B+xG
+shipped; Glicko-2, goalie level *and* starter-delta, player-rating
+aggregates, scratch-absence, PP/PK split, dead-game weighting all null
+(scratch-absence is the closest miss and re-opens when announced-lineup
+data accrues via the in-season archiver). Every claim traces to a ledger
+row or a committed DEV report.
+
 ## Repo map
 
 ```
