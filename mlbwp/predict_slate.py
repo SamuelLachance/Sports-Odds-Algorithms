@@ -20,6 +20,15 @@ from pathlib import Path
 
 from mlbwp.live import TEAM_ID_TO_RETRO, _get, BASE, et_date, game_data, schedule, season_finals
 
+def _write_atomic(path, text):
+    """tmp + os.replace: an interrupted run must never truncate a live file."""
+    import os
+    tmp = str(path) + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as fh:
+        fh.write(text)
+    os.replace(tmp, str(path))
+
+
 
 def _realized_2026():
     """Graded pre-game ledger stats, or None (display-gated at n >= 100)."""
@@ -59,12 +68,12 @@ def ensure_lines_cache(finals: list[dict], cache_path: Path = LINES_CACHE) -> di
             time.sleep(0.15)
             if fetched % 200 == 0:      # checkpoint a long backfill so it can't lose it all
                 cache_path.parent.mkdir(parents=True, exist_ok=True)
-                cache_path.write_text(json.dumps(cache), encoding="utf-8")
+                _write_atomic(cache_path, json.dumps(cache))
         except Exception:  # noqa: BLE001 — a bad game feed must not abort the build
             continue
     if fetched:
         cache_path.parent.mkdir(parents=True, exist_ok=True)
-        cache_path.write_text(json.dumps(cache), encoding="utf-8")
+        _write_atomic(cache_path, json.dumps(cache))
     print(f"[lines] cache {len(cache)} games (+{fetched} fetched)", flush=True)
     return cache
 
@@ -300,7 +309,7 @@ def main(days: int = 30, today: str | None = None):
         ],
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(json.dumps(payload, indent=1), encoding="utf-8")
+    _write_atomic(OUT, json.dumps(payload, indent=1))
     by_day = {}
     for c in cards:
         by_day[c["date"]] = by_day.get(c["date"], 0) + 1

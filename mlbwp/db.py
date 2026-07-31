@@ -17,6 +17,15 @@ plus the frozen TrueSkill ratings + mlbam->retro crosswalk. Market-free.
 
 from __future__ import annotations
 
+def _write_atomic(path, text):
+    """tmp + os.replace: an interrupted run must never truncate a live file."""
+    import os
+    tmp = str(path) + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as fh:
+        fh.write(text)
+    os.replace(tmp, str(path))
+
+
 import json
 import math
 import time
@@ -236,7 +245,7 @@ def main(season: int = 2026):
     payload = {"season": season, "teams": teams, "players": players,
                "team_order": [t["code"] for t in sorted(teams.values(), key=lambda x: -x["elo"])]}
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(json.dumps(payload, indent=1), encoding="utf-8")
+    _write_atomic(OUT, json.dumps(payload, indent=1))
     rated = sum(1 for p in players.values() if p.get("ts100") is not None)
     print(f"wrote {OUT}: {len(teams)} teams, {len(players)} players ({rated} TrueSkill-rated)")
     top = sorted(teams.values(), key=lambda t: -(t.get("ts100") or 0))[:4]

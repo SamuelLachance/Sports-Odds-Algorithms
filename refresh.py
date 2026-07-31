@@ -28,6 +28,15 @@ from mlbwp.live import season_finals
 from mlbwp.serve import Predictor
 from mlbwp_site import build_site
 
+def _write_atomic(path, text):
+    """tmp + os.replace: an interrupted run must never truncate a live file."""
+    import os
+    tmp = str(path) + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as fh:
+        fh.write(text)
+    os.replace(tmp, str(path))
+
+
 PROJECT = Path(__file__).resolve().parent
 FINALS = PROJECT / "data" / "season_2026_finals.json"
 
@@ -42,7 +51,7 @@ def main(horizon_days: int = 30) -> int:
     # 1. refresh this season's finals so team form is current through yesterday
     finals = season_finals(season, end_date=(today - timedelta(days=1)).isoformat())
     FINALS.parent.mkdir(parents=True, exist_ok=True)
-    FINALS.write_text(json.dumps(finals), encoding="utf-8")
+    _write_atomic(FINALS, json.dumps(finals))
     print(f"[refresh] {len(finals)} completed {season} games -> {FINALS.name}", flush=True)
 
     # 2. board  3. value edges (market post-process)  4. db  5. shell

@@ -216,7 +216,9 @@ def main():
     }
     if value_updated:
         payload["value_updated"] = value_updated
-    json.dump(payload, open("site/data/nhl.json", "w"))
+    with open("site/data/nhl.json.tmp", "w") as _fh:
+        json.dump(payload, _fh)
+    import os as _os; _os.replace("site/data/nhl.json.tmp", "site/data/nhl.json")
     print(f"wrote site/data/nhl.json: {len(sched)} games, {len(teams)} teams")
     print(f"current-season model LL {cur_ll:.5f}  acc {cur_acc:.4f} (n={len(done)})")
     print("top teams:", [(t, teams[t]["pts"], teams[t]["elo"])

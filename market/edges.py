@@ -11,6 +11,15 @@ games). Cheap enough to run on a short cadence for near-live updates.
 
 from __future__ import annotations
 
+def _write_atomic(path, text):
+    """tmp + os.replace: an interrupted run must never truncate a live file."""
+    import os
+    tmp = str(path) + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as fh:
+        fh.write(text)
+    os.replace(tmp, str(path))
+
+
 import json
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
@@ -85,8 +94,8 @@ def attach_and_save(board_path: Path = BOARD, opening_path: Path = OPENING,
         }
         n += 1
     payload["value_updated"] = now
-    board_path.write_text(json.dumps(payload, indent=1), encoding="utf-8")
+    _write_atomic(board_path, json.dumps(payload, indent=1))
     cutoff = (now_dt.date() - timedelta(days=2)).isoformat()   # bound the cache: drop past games
     cache = {k: v for k, v in cache.items() if v.get("date", "9999") >= cutoff}
-    opening_path.write_text(json.dumps(cache), encoding="utf-8")
+    _write_atomic(opening_path, json.dumps(cache))
     return n
