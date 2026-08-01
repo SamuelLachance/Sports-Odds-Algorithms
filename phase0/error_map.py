@@ -510,6 +510,13 @@ def mlb_league():
         "rest": decompose(rest_lab, ll, y, p, "rest", gx),
         "starter_depth": decompose(sp_lab, ll, y, p, "starter_depth", gx),
         "team": _team_dim(home, away, ll, y, p, gx),
+        # HOME games only, i.e. one slice per BALLPARK. The `team` dimension
+        # above pools each franchise's home and away games, so a venue effect —
+        # which by construction applies to only half of them — arrives diluted
+        # by about a factor of two. This is the sharp version, and the project's
+        # only test of the park channel: park factors are not a feature and the
+        # spine carries no venue column, so the home team is the proxy.
+        "home_venue": decompose(home, ll, y, p, "home_venue", gx),
         "season": decompose(np.array([str(s) for s in seas]), ll, y, p, "season", gx),
     }
 

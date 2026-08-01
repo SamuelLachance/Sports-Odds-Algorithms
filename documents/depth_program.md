@@ -216,3 +216,54 @@ mis-specification.** No re-parameterization, calibration, ensembling or model
 class recovers it. Future rounds should be aimed at information the public record
 does not contain (the in-season lineup/injury archives now accruing), not at
 further optimization of the existing components.
+
+---
+
+## Round 3 — the park channel (MLB), 2026-08-01
+
+The one classic MLB channel with no entry anywhere in this repo: ballpark.
+`weather`, `umpire`, `temperature` and `altitude` appear in no document; `park`
+appeared once, in prose. Park factors are not a feature and the spine carries no
+venue column.
+
+The error map's `team` dimension was NOT a test of it: it pools each franchise's
+home and away games ("every game the team appears in, either side"), so a venue
+effect — which by construction applies to only half of them — arrives diluted by
+about a factor of two. Added a `home_venue` dimension (home games only, i.e. one
+slice per ballpark) so the channel gets a sharp test rather than an inferred one.
+
+**Result on MLB DEV (n=34,009, ll 0.676686, 32 ballparks):**
+
+| test | outcome |
+|---|---|
+| ballparks with a fixable mis-scaling, Bonferroni α=0.00156 | **0 of 32** |
+| smallest `recal_p` | CHN (Wrigley) 0.0290 — does not survive |
+| total recalibration gain across all 32 parks | 36.45 nats vs **32.0 expected under the null** |
+| **log-loss if every ballpark were perfectly recalibrated** | **0.000131** |
+
+That last row is the number that closes it. Perfect per-park recalibration — an
+in-sample ceiling that would itself be overfitting — is worth 0.00013 against a
+gap to the closing line of 0.00288. **The park channel can account for at most
+~4.5% of MLB's remaining gap, and realistically none of it.** Not adopted, and
+not worth a data acquisition (venue, weather, umpire) to pursue.
+
+### A Coors result that is not about Coors
+
+The pooled `team` dimension has exactly one slice surviving Bonferroni: COL at
+`recal_p` 0.0010. Coors Field is the textbook park effect, so the obvious read is
+a park defect. It is not.
+
+| slice | n | recal_a | recal_b | recal_p | excess/game | verdict |
+|---|---|---|---|---|---|---|
+| COL, home + away | 2,269 | +0.157 | 1.011 | **0.0010** | −0.00776 | SIG **better** |
+| COL, home only (Coors) | 1,135 | +0.075 | 0.916 | 0.4947 | −0.00760 | n.s. |
+
+At Coors itself the model is fine. The slope is ~1 in both, so the pooled result
+is an intercept shift, not mis-scaling — and `excess_sig` reads "SIG better",
+meaning the model already beats its own base rate on COL games. It is a
+calibration offset on a slice we are good at, and since home is null it lives in
+Colorado's road games — a property of the team, not the ballpark. Adding a
+team-specific intercept for one of 32 slices would be textbook overfitting.
+
+**Round 3 verdict: no adoption.** Consistent with Rounds 1-2 — the remaining gap
+is missing information, and the ballpark is not the missing information.
