@@ -365,3 +365,34 @@ def test_nhl_edges_noop_when_all_played(tmp_path):
                                      opening_path=tmp_path / "open.json") == 0
     out = json.loads(p.read_text(encoding="utf-8"))
     assert "value_updated" in out                            # touched, cleanly
+
+
+def test_tier_rule_has_a_single_source():
+    """The tier rule must exist ONCE. It is stamped server-side by
+    pred_ledger.info_tier and rendered client-side by the SPA's infoTier; two
+    hand-maintained copies would drift silently, and a drift here is dishonest
+    rather than merely buggy — the site would label a card one tier while the
+    ledger stamped it another.
+
+    build_site.py therefore substitutes the JS emitted by pred_ledger instead of
+    retyping it. This pins that wiring: the rule text must NOT appear literally
+    in build_site.py's source, and the built page must contain exactly the
+    generated text.
+    """
+    from pathlib import Path
+
+    from mlbwp.pred_ledger import TIER_JS
+
+    src = (Path(__file__).resolve().parents[1] / "mlbwp_site" / "build_site.py"
+           ).read_text(encoding="utf-8")
+    rule = 'g.lineup_source==="official"?"CONFIRMED"'
+    assert rule not in src, (
+        "the tier rule was retyped into build_site.py — it must come from "
+        "mlbwp.pred_ledger.TIER_JS so the two copies cannot drift")
+    assert "{TIER_JS}" in src and "JS.replace(" in src
+
+    built = Path(__file__).resolve().parents[1] / "site" / "index.html"
+    if built.is_file():
+        html = built.read_text(encoding="utf-8")
+        assert "{TIER_JS}" not in html, "placeholder leaked into the built page"
+        assert TIER_JS.split("\n")[0] in html, "generated rule missing from the page"

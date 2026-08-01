@@ -82,6 +82,17 @@ def info_tier(card: dict) -> str:
     return "PROJECTED" if card.get("pitcher_known") else "EARLY"
 
 
+# The SPA needs the identical rule client-side. Two hand-maintained copies of a
+# policy rule WILL drift — and a drift here is silent and dishonest: the site
+# would label a card one tier while the ledger stamps it another. So the JS is
+# generated from this module instead of retyped in build_site.py, making this
+# file the single source of truth. Keep it a pure expression of `info_tier`.
+TIER_JS = (
+    'const infoTier = g => g.lineup_source==="official"?"CONFIRMED"\n'
+    '  :(g.pitcher_known?"PROJECTED":"EARLY");'
+)
+
+
 def entry_tier(entry: dict) -> str:
     """Tier of a stored ledger entry, with the pre-stamp fallback."""
     t = entry.get("tier")

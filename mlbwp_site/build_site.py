@@ -8,6 +8,8 @@ data. The data files are produced by mlbwp.predict_slate and mlbwp.db.
 
 from __future__ import annotations
 
+from mlbwp.pred_ledger import TIER_JS  # single source of truth for the tier rule
+
 from pathlib import Path
 
 SITE = Path(__file__).resolve().parents[1] / "site"
@@ -344,8 +346,7 @@ const tier = p => p>=0.62?"strong":(p>=0.555?"lean":"toss");
    lean, never as a pick. Rule 2: outside EARLY, a forecast inside 55/45 is a
    LEAN, not a PICK - the call is stated on the card, not implied by size. */
 const POL_LEAN_MAX=0.55;
-const infoTier = g => g.lineup_source==="official"?"CONFIRMED"
-  :(g.pitcher_known?"PROJECTED":"EARLY");
+{TIER_JS}
 const callOf = pp => pp<=POL_LEAN_MAX?"LEAN":"PICK";
 const norm = s => (s||"").toLowerCase().normalize("NFKD").replace(/[^a-z0-9 ]+/g," ").replace(/\s+/g," ").trim();
 const LOC="en-US", TZ="America/New_York";   // all clock/day display is US Eastern
@@ -2058,6 +2059,14 @@ function recordPage(){
 
 boot();
 """
+
+# The tier rule is owned by mlbwp/pred_ledger.py so the Python stamp and the
+# JS label can never drift (a drift there is silent and dishonest). JS is a
+# RAW string -- it is full of ${...} template literals -- so this is an
+# explicit substitution, not an f-string; the assert makes a missed or
+# renamed placeholder a hard build failure instead of broken site JS.
+assert "{TIER_JS}" in JS, "tier-rule placeholder missing from JS"
+JS = JS.replace("{TIER_JS}", TIER_JS)
 
 SHELL = f"""<style>{CSS}</style>
 <script>try{{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');}}catch(e){{document.documentElement.setAttribute('data-theme','dark');}}</script>
