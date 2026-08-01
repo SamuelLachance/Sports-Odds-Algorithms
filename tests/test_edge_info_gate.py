@@ -1,0 +1,76 @@
+"""The EV badge may never appear on a forecast made before the information exists.
+
+documents/pick_policy.md rule 1 governs picks; an EV badge is a STRONGER claim
+than a pick — it asserts the market is mispriced by >=20% — so it must clear at
+least the same information bar. An EARLY-tier card has no named starter (team
+ratings only), and a "value bet" on a game whose pitchers are unknown is a claim
+we cannot support.
+
+Today the exposure is latent: the odds feed carries nothing beyond ~2 days out,
+so every quoted game is PROJECTED or CONFIRMED. These tests make the gate
+structural instead of dependent on a provider's posting window.
+"""
+from __future__ import annotations
+
+import json
+
+from market import edges
+
+
+def _card(pk, date, **kw):
+    c = {"game_pk": pk, "date": date, "home": "BOS", "away": "NYA",
+         "home_abbr": "BOS", "away_abbr": "NYA",
+         "start_utc": f"{date}T23:10:00Z", "state": "Preview",
+         "home_win_prob": 0.75}          # far above any plausible market price
+    c.update(kw)
+    return c
+
+
+def _board(cards):
+    return {"leagues": [{"code": "mlb", "active": True, "games": cards}]}
+
+
+def _live(date):
+    # a price so long that a 0.75 model prob clears +20% EV comfortably
+    return [{"id": "g1", "date": date, "home": "BOS", "away": "NYA",
+             "home_dec": 2.10, "away_dec": 1.80, "commence": f"{date}T23:10:00Z",
+             "n_books": 8}]
+
+
+def _run(tmp_path, card, monkeypatch, date="2026-08-01"):
+    monkeypatch.setattr(edges.odds, "fetch_consensus", lambda key=None: _live(date))
+    bp = tmp_path / "board.json"
+    bp.write_text(json.dumps(_board([card])), encoding="utf-8")
+    op = tmp_path / "open.json"
+    edges.attach_and_save(board_path=bp, opening_path=op, api_key="x")
+    out = json.loads(bp.read_text(encoding="utf-8"))
+    return out["leagues"][0]["games"][0]
+
+
+def test_early_tier_never_gets_a_badge(tmp_path, monkeypatch):
+    """No named starter -> no EV badge, however large the modelled edge."""
+    g = _run(tmp_path, _card(1, "2026-08-01", pitcher_known=False,
+                             lineup_source=None), monkeypatch)
+    assert "value" not in g
+    assert "mkt" not in g          # not even quoted: the card is gated out entirely
+
+
+def test_projected_tier_is_eligible(tmp_path, monkeypatch):
+    """A named (announced or rotation-projected) starter clears the bar."""
+    g = _run(tmp_path, _card(2, "2026-08-01", pitcher_known=True,
+                             sp_projected=True, lineup_source="projected"),
+             monkeypatch)
+    assert g.get("mkt"), "a quoted, eligible card must carry the consensus quote"
+
+
+def test_confirmed_tier_is_eligible(tmp_path, monkeypatch):
+    g = _run(tmp_path, _card(3, "2026-08-01", pitcher_known=True,
+                             lineup_source="official"), monkeypatch)
+    assert g.get("mkt")
+
+
+def test_official_lineups_without_pitcher_flag_still_eligible(tmp_path, monkeypatch):
+    """lineup_source=='official' implies the starters are known even if the
+    pitcher_known flag is missing — the gate must not reject on a missing flag."""
+    g = _run(tmp_path, _card(4, "2026-08-01", lineup_source="official"), monkeypatch)
+    assert g.get("mkt")

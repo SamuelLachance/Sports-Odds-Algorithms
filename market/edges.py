@@ -71,6 +71,15 @@ def attach_and_save(board_path: Path = BOARD, opening_path: Path = OPENING,
     for c in cards:
         c.pop("value", None)                       # recompute fresh each run
         c.pop("mkt", None)
+        # POLICY GATE (documents/pick_policy.md rule 1). An EV badge is a stronger
+        # claim than a pick -- it says "the market is wrong by 20%" -- so it must
+        # never appear on a forecast made before the information exists. An
+        # EARLY-tier card has no named starter: team ratings only. Today this is
+        # latent (the odds feed carries nothing beyond ~2 days, so all quoted
+        # games are PROJECTED or CONFIRMED), but the gate makes it structural
+        # rather than dependent on a provider's posting window.
+        if not (c.get("pitcher_known") or c.get("lineup_source") == "official"):
+            continue
         # Never put a pre-game EV badge on a game that has already started. This is
         # also what stops a doubleheader's started game 1 from inheriting the surviving
         # game 2's line (game 1's live odds are dropped, collapsing the match key).
