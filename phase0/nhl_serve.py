@@ -17,6 +17,7 @@ import numpy as np
 sys.path.insert(0, "phase0")
 from nhl_glicko2_eval import llv, load_games, run_elo  # noqa: E402
 from nhl_features_eval import build_features  # noqa: E402
+from nhl_contributions import contributions  # noqa: E402
 from nhl_season_boundary import (  # noqa: E402
     current_season, display_teams, fmt_metric, is_playoff,
 )
@@ -105,6 +106,11 @@ def main():
             "as": g["away_goals"] if "away_goals" in g else None,
             "y": g["y"], "ot": g["so"] or None,
             "playoff": 1 if is_playoff(g["game_id"]) else 0,
+            # exact decomposition: 0.5 + sum(ct)/100 == hp (see nhl_contributions)
+            "ct": contributions(b["intercept"], c, float(elogit[i]),
+                                float(F["rest_diff"][i]), float(F["b2b_home"][i]),
+                                float(F["b2b_away"][i]),
+                                float(np.nan_to_num(F["xg_diff"])[i])),
         })
 
     # spine dicts lack goals; reload raw for scores
@@ -139,7 +145,9 @@ def main():
                  + c["b2b_home"] * hb2b + c["b2b_away"] * ab2b + c["xg"] * xgd)
             sched.append({"id": u["id"], "d": u["d"], "home": h, "away": a,
                           "hp": round(float(sig(z)), 4), "hs": None, "as": None,
-                          "y": None, "ot": None, "playoff": u.get("playoff", 0)})
+                          "y": None, "ot": None, "playoff": u.get("playoff", 0),
+                          "ct": contributions(b["intercept"], c, elogit_u,
+                                              rst(h) - rst(a), hb2b, ab2b, xgd)})
             n_upcoming += 1
         sched.sort(key=lambda s: (s["d"], s["id"]))
 

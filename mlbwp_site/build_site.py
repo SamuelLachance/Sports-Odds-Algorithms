@@ -8,10 +8,14 @@ data. The data files are produced by mlbwp.predict_slate and mlbwp.db.
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
 from mlbwp.pred_ledger import TIER_JS  # single source of truth for the tier rule
 from mlbwp.predict_slate import LEAN_JS  # single source of truth for the lean threshold
 
-from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "phase0"))
+from nhl_contributions import CT_JS  # noqa: E402 — single source for the NHL ct keys
 
 SITE = Path(__file__).resolve().parents[1] / "site"
 
@@ -348,6 +352,7 @@ const tier = p => p>=0.62?"strong":(p>=0.555?"lean":"toss");
    LEAN, not a PICK - the call is stated on the card, not implied by size. */
 {LEAN_JS}
 {TIER_JS}
+{CT_JS}
 const callOf = pp => pp<=POL_LEAN_MAX?"LEAN":"PICK";
 const norm = s => (s||"").toLowerCase().normalize("NFKD").replace(/[^a-z0-9 ]+/g," ").replace(/\s+/g," ").trim();
 const LOC="en-US", TZ="America/New_York";   // all clock/day display is US Eastern
@@ -790,6 +795,12 @@ function nhlGamePage(id){
   const th=n.teams[g.home]||{}, ta=n.teams[g.away]||{}, hp=g.hp, done=g.hs!=null;
   const pick=hp>=0.5?g.home:g.away, pp=Math.max(hp,1-hp);
   const cmpRow=(lbl,av,hv,fmt)=>`<tr><td class="tr">${fmt?fmt(av):av}</td><td class="f">${lbl}</td><td class="r">${fmt?fmt(hv):hv}</td></tr>`;
+  const ct=g.ct||{};
+  const NLBL={elo:"Team strength (Elo + home ice)", rest:"Rest advantage",
+              b2b:"Back-to-back", xg:"Expected-goals rating"};
+  // elo always shows: it is the model's core and a 0.0 there is information.
+  const nWhy=NHL_CT.filter(k=>ct[k]!=null&&(Math.abs(ct[k])>=0.05||k==="elo"))
+    .sort((x,y)=>Math.abs(ct[y])-Math.abs(ct[x])).map(k=>pRow(NLBL[k],ct[k])).join("");
   const val=g.value;
   const valbar=(val&&val.available)?`<div class="valbar" style="margin-bottom:14px"><span class="vt">EDGE</span> ${val.team} <b>+${Math.round(val.ev_cur*100)}% EV</b> <span class="vodds">@ ${val.cur_dec} (open ${val.open_dec})</span></div>`:"";
   const res=done?`<div class="mup"><span class="statline">Final: <b>${g.away} ${g.as} &ndash; ${g.hs} ${g.home}</b>${g.last&&g.last!=="REG"?" ("+g.last+")":""} &middot; model ${((hp>=.5)===(g.hs>g.as)?'<span class="pos">HIT</span>':'<span class="neg">MISS</span>')}</span></div>`:"";
@@ -801,6 +812,11 @@ function nhlGamePage(id){
       <span class="ab">${g.home}</span></div>
     <div class="pbar" style="margin:10px 0 18px"><div class="h" style="width:${pctI(hp)}%"></div><div class="mid"></div></div>
     ${res}
+    <div class="panel why"><h3>Why &mdash; model contributions <span class="sub" style="font-weight:400">home prob points</span></h3>
+      ${nWhy||`<div class="sub">no contribution data</div>`}
+      <div class="sub" style="margin-top:10px">Each bar is one term's push on the home win probability away from 50/50,
+        taken straight from the market-blind model's own coefficients. These are exact:
+        50% plus the bars equals the number above.</div></div>
     <div class="panel"><h3>Head to head</h3><div class="twrap cmp"><table>
       <thead><tr><th class="tr">${g.away}</th><th class="f"></th><th class="r">${g.home}</th></tr></thead>
       <tbody>
@@ -2067,8 +2083,9 @@ boot();
 # explicit substitution, not an f-string; the assert makes a missed or
 # renamed placeholder a hard build failure instead of broken site JS.
 assert "{TIER_JS}" in JS, "tier-rule placeholder missing from JS"
+assert "{CT_JS}" in JS, "NHL contribution-key placeholder missing from JS"
 assert "{LEAN_JS}" in JS, "lean-threshold placeholder missing from JS"
-JS = JS.replace("{TIER_JS}", TIER_JS).replace("{LEAN_JS}", LEAN_JS)
+JS = JS.replace("{TIER_JS}", TIER_JS).replace("{LEAN_JS}", LEAN_JS).replace("{CT_JS}", CT_JS)
 
 SHELL = f"""<style>{CSS}</style>
 <script>try{{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');}}catch(e){{document.documentElement.setAttribute('data-theme','dark');}}</script>
