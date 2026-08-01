@@ -380,3 +380,94 @@ could not be counted — was kept and re-confirmed killable.
 
 **Rule:** when adding a tolerance-based guard, check whether the empty/first
 case is already inside the tolerance before writing a branch for it.
+
+---
+
+## Round 4 — ten unscreened channels, NFL environment + NHL xG decomposition, 2026-08-01
+
+Samuel asked for continued NHL/NFL model work. The standing claim here is that
+the remaining gap is missing INFORMATION rather than mis-specification, which is
+only credible if the channels a critic would name first have actually been
+tried. Six NFL columns sat in `data/nfl_games.csv` unscreened; four NHL channels
+follow from `nhl_team_xg.csv` carrying xgf/xga/shots/gf/ga.
+
+The adoption bar was **pre-registered before any result was seen**
+(`documents/channel_screen_prereg_2026_08_01.md`, committed while the screens
+were still running): nested ≥ +0.0010, raw-to-nested gap under 60%, sign
+consistency ≥6/10 NFL seasons (≥5/7 NHL), plus survival of an independent
+adversarial rebuild.
+
+**All ten baselines reproduced. All ten channels are NULL as named.**
+
+| channel | league | raw | nested | verdict |
+|---|---|---|---|---|
+| wind | NFL | −0.00012 | −0.00036 | NULL |
+| temperature | NFL | +0.00059 | −0.00031 | NULL |
+| roof | NFL | +0.00036 | −0.00229 | NULL |
+| surface | NFL | +0.00049 | −0.00005 | NULL |
+| divisional | NFL | +0.00117 | +0.00117 | NULL — see below |
+| referee | NFL | +0.00069 | +0.00044 | NULL |
+| time-varying home ice | NHL | +0.00015 | −0.00012 | NULL |
+| shot quality | NHL | +0.00137 | +0.00106 | NULL as named — see below |
+| finishing above expected | NHL | +0.00011 | −0.00004 | NULL |
+| goaltending above expected | NHL | +0.00064 | −0.00082 | NULL |
+
+### Two that cleared the numeric bar and were killed anyway
+
+**Divisional games.** Nested = raw = +0.00117 with ZERO search optimism and 9 of
+10 seasons — it passes every numeric criterion I pre-registered. It is still a
+null, for reasons the bar did not contain:
+
+- the positive cell is `div × z(qb_delta)`, whose fitted coefficient is
+  **positive** in every fold, i.e. the QB edge is AMPLIFIED in divisional games —
+  the opposite of the hypothesis under test, so a post-hoc discovery;
+- game-level bootstrap (20k resamples) gives [−0.00081, +0.00306], P(δ≤0)=0.121;
+- 2015 — the DEV season adjacent to TEST — is −0.00584 while the other nine are
+  positive;
+- **the decisive test: re-scoring the pre-DEV 2002-2005 window, never part of the
+  search, gives −0.0019, negative in 4 of 4 seasons.** Pooled 2002-2015 the gain
+  collapses to +0.000275. The positive DEV block is bracketed by negatives on
+  both sides in time;
+- ~15% of the effect is a ridge parameterisation artifact (`D*zq` vs `(1−D)*zq`
+  span the same space yet differ by 1.8e-4).
+
+A meaningless index-parity coin-flip partition also cleared +4.9e-4 on the same
+search, which calibrates how much of this is search pressure.
+
+**Shot quality.** Nested +0.00106 for the quality/volume PAIR, but the
+decomposition kills the named channel outright: quality ALONE is worth
+**+0.00007**, below the solver-noise floor, and is actively harmful at any
+meaningful learning rate — its optimum sits at the smallest rate in the grid,
+the signature of a channel with no team-level persistence. Robust across a 3×3
+sweep of the HA constant and season regression. The hypothesis that the single
+xG rating "collapses two skills" is wrong: one of the two skills is empty.
+
+A methodological note from that screen worth keeping: the first version returned
+a FALSE null for quality because `quality_diff` has std 0.007 and lbfgs at C=1e6
+silently returned an exactly-zero coefficient. A StandardScaler fixed it. Screens
+of small-scale features need that check.
+
+### What my own bar got wrong
+
+The pre-registered criteria would have ADMITTED divisional games. What killed it
+was an out-of-search temporal window — scoring seasons that were never part of
+the search — and I had not required that. **Added to the standing bar: any
+candidate must be re-scored on a temporal window outside the search before
+adoption.** The DEV/TEST split alone does not provide this, because DEV is where
+the searching happens.
+
+Separately, my workflow gated adversarial verification on the agents'
+self-assigned verdict strings rather than on my own pre-registered numbers, so
+neither of the two candidates that cleared the bar numerically got a verifier.
+It did not matter here only because both agents self-rejected with more rigor
+than my gate demanded — which is luck, not design. Gate on the numbers.
+
+### The one live follow-up
+
+Shot VOLUME, not quality, is where the movement was: volume-only over the Elo
+core scored 0.67189 vs the shipped xG rating's 0.67293, and a re-tuned single-xG
+control confirms this is not the shipped rating merely being mis-tuned (re-tuning
+buys +0.00005, nested −0.00001). But volume-only nested is +0.00076 with a CI
+spanning zero, halving to +0.00031 under forward-temporal validation — **below
+the bar already**. It is being screened on its own terms with two adversarial
+lenses before anything further is claimed.
