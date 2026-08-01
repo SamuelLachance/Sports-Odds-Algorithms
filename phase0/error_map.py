@@ -612,7 +612,14 @@ def nfl_league():
     scored = (seasons >= N.MAIN_LO) & (seasons <= N.MAIN_HI)
     assert seasons[scored].max() <= 2015 < 2016, "TEST-era NFL game scored"
     ll_all = float(llv(y_all[scored], pred[scored]).mean())
-    log(f"NFL main DEV wf ll {ll_all:.6f} n={int(scored.sum())} (recorded 0.62292)")
+    # Report BOTH counts. The scored set includes ties; everything downstream
+    # analyses `m = scored & (y != 0.5)`, so the payload's `n` is the smaller
+    # one. Printing only the first invites exactly the confusion it caused once:
+    # comparing this log line to the artifact's n looks like the DEV set drifted
+    # when it is simply two different quantities four ties apart.
+    log(f"NFL main DEV wf ll {ll_all:.6f} n={int(scored.sum())} scored "
+        f"({int(((y_all == 0.5) & scored).sum())} ties -> "
+        f"{int((scored & (y_all != 0.5)).sum())} analysed) (recorded 0.62292)")
     assert abs(ll_all - 0.62292) < 5e-4, "NFL baseline not reproduced"
 
     ties = int(((y_all == 0.5) & scored).sum())

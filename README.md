@@ -81,6 +81,28 @@ aggregates, scratch-absence, PP/PK split, dead-game weighting all null
 data accrues via the in-season archiver). Every claim traces to a ledger
 row or a committed DEV report.
 
+**Environment channels, screened 2026-08-01 (`documents/depth_program.md` Rounds 3–3c).**
+The error map's `team` dimension pools each franchise's home *and* away games,
+so it never sharply tested a venue effect. A `home_venue` dimension (home games
+only, one slice per ballpark/stadium/arena) now does, in all three leagues:
+
+| league | venue slices | survive Bonferroni | ll ceiling if every venue were perfectly recalibrated |
+|---|---|---|---|
+| MLB | 32 | **0** | ~0.00013 |
+| NFL | 33 | **0** | ~0.0066 |
+| NHL | 31 | **0** | ~0.0017 |
+
+Null everywhere; ceilings are quoted to two significant figures because the
+NFL/NHL harnesses fit through sklearn's iterative solver and reproduce to
+~1e-4, not exactly (the DEV asserts carry a 5e-4 tolerance for the same
+reason). MLB's ceiling caps the entire park channel at ~4.5% of its gap
+to the closing line — and that is an in-sample bound that would itself be
+overfitting, so park factors, weather and umpire data are not worth acquiring.
+The one Bonferroni survivor anywhere, COL in the pooled `team` slice, is **not**
+a Coors effect: at Coors itself it is n.s. (p=0.49), so it lives in Colorado's
+road games — a team property. NFL broadcast slot was screened too and is
+likewise null, with a *negative* recalibration ceiling.
+
 ## Pick policy
 
 Full text in [`documents/pick_policy.md`](documents/pick_policy.md), written and
@@ -108,6 +130,30 @@ its number and tier are immutable.
 
 The same gate now sits in front of the edge layer: `market/edges.py` will not
 quote a game whose starter is unknown.
+
+## Why each pick — and what the bars actually mean
+
+Every game page shows a per-feature breakdown in home-probability points, taken
+from the model's own coefficients. The three leagues do not give the same
+*guarantee*, and the site now says so per panel rather than implying one rule:
+
+| league | construction | guarantee |
+|---|---|---|
+| **NHL** | sequential deltas through a single logistic | **exact**: `0.5 + Σ(bars)/100 = the served probability` |
+| **MLB** | exact deltas for the five feature terms | **exact** from `recal_prob`; the four baseline terms are a slope linearisation and are *not* additive with them |
+| **NFL** | `coefficient × feature × scale` | **faithful, not additive** — Spearman 0.9999 against the served probability, but the bars do not sum to it |
+
+NFL's cannot be exact: it is a logit-space attribution, so it omits the
+intercept and the sigmoid's curvature. Its caption used to read "push on the
+home win probability vs a 50/50 game", which invited readers to add the bars to
+50% — only 11 of 272 games land within 1pp of that, with errors reaching
+0.179. The caption now states the limitation, and a test asserts that only the
+league whose construction *is* exact may advertise exactness.
+
+Verified continuously: NHL's identity holds to 0.0014 across all 1,312 served
+games (rounding budget 0.00205), and the NHL key order is generated from
+`phase0/nhl_contributions.py` rather than retyped, so the payload and the page
+cannot drift.
 
 ## Track record (`#/record`)
 
