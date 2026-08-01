@@ -66,6 +66,44 @@ PAYLOAD_CHAIN = [
 CUR = "2026"
 
 
+SHRINK_TOL = 5          # rows an upstream correction may legitimately remove
+
+
+def csv_rows(data: bytes) -> int:
+    """Data rows in a CSV blob (header excluded); -1 if it does not parse."""
+    try:
+        n = data.count(b"\n")
+    except (TypeError, AttributeError):
+        return -1
+    if n == 0:
+        return -1
+    return n - 1 if data.endswith(b"\n") else n
+
+
+def fetch_is_safe(n_new: int, n_prev: int, tol: int = SHRINK_TOL) -> bool:
+    """Whether a freshly fetched table may replace the one on disk.
+
+    These are append-mostly tables: completed games and logged injuries do not
+    un-happen, so the row count is monotonically non-decreasing apart from the
+    odd upstream correction. A materially SMALLER file is a truncated response,
+    not reality.
+
+    This matters most for data/nfl_games.csv, which is a REQUIRED full rewrite
+    of the spine the whole NFL model replays from. Byte size alone does not
+    catch it: a partial response can be megabytes and still be short thousands
+    of rows. A stale-spine tripwire does exist downstream (nfl_season_guards
+    .v7_npy_error asks "was nfl_games.csv rolled back?") but it only fires at
+    SERVE time, after the bad file has been committed — by then the good copy
+    is gone. Refusing the write keeps it.
+
+    `tol` allows the handful of rows a genuine upstream correction removes
+    while still blocking a truncation, which loses thousands.
+    """
+    if n_prev <= 0 or n_new < 0:
+        return True                      # first fetch, or not a countable table
+    return n_new >= n_prev - tol
+
+
 def fetch(path: str, url: str, required: bool) -> None:
     tmp = path + ".tmp"
     try:
@@ -73,10 +111,21 @@ def fetch(path: str, url: str, required: bool) -> None:
         data = urllib.request.urlopen(req, timeout=120).read()
         if len(data) < 1000:
             raise OSError(f"suspiciously small ({len(data)} bytes)")
+        n_new = csv_rows(data)
+        n_prev = csv_rows(Path(path).read_bytes()) if os.path.exists(path) else 0
+        if not fetch_is_safe(n_new, n_prev):
+            # Skip, don't raise: one bad upstream table must not stop the rest
+            # of the weekly chain. The previous good file stays, and next week's
+            # fetch clears the bar on its own.
+            print(f"[nfl_weekly] fetch {path}: REFUSED — {n_new:,} rows vs "
+                  f"{n_prev:,} on disk, that is a truncated response, not an "
+                  f"upstream correction. Keeping the existing file.", flush=True)
+            return
         with open(tmp, "wb") as fh:
             fh.write(data)
         os.replace(tmp, path)
-        print(f"[nfl_weekly] fetch {path}: ok ({len(data):,} bytes)", flush=True)
+        print(f"[nfl_weekly] fetch {path}: ok ({len(data):,} bytes, "
+              f"{n_new:,} rows)", flush=True)
     except OSError as ex:
         if os.path.exists(tmp):
             os.remove(tmp)
