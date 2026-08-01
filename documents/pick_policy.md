@@ -128,3 +128,21 @@ land: NFL injuries in September, NHL goalie confirmations in October.
 The two open items are both waiting on data, not on a decision: the NFL
 information gate (September injury feed) and the NHL one (October goalie
 confirmations). Both are wired the day their feeds land.
+
+## Addendum 2026-08-01 — the CLV gate carries a measured quality caveat
+
+The live edge ledger's "closing" price is only as fresh as the last scheduled
+run that saw the game. `odds.yml` asks for every 20 minutes, but **GitHub runs
+schedules best-effort**, and the observed cadence on 2026-07-31/08-01 was ~1h
+with gaps up to 3h (`refresh.yml`, a 4h cron, skipped two consecutive slots).
+
+A stale final observation biases CLV **toward zero** — we miss the last market
+move, which is exactly the move the closing line is defined by. So the ledger
+now reports `close_lag_median_min` / `close_lag_p90_min` beside every CLV figure:
+how many minutes before first pitch our last observation actually was.
+
+**Rule: the promotion gate is read alongside the lag, never on its own.** A
+passing gate with a median lag of hours is not evidence of beating the close; it
+is evidence of beating a price the market had already moved past. This is a
+limitation we can measure but not remove on free scheduled runners — measuring
+it is the honest response, and it is pinned by a test.

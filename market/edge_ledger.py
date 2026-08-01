@@ -644,6 +644,25 @@ def _stale_unsettled(rows: list[dict], now: datetime) -> int:
     return n
 
 
+
+def _close_lag_mins(rows: list[dict]) -> list[float]:
+    """Minutes between our LAST pre-game observation and first pitch/puck drop.
+
+    Our "closing" price is only as fresh as the last cron that saw the game. The
+    odds job is scheduled every 20 minutes but GitHub runs schedules on a
+    best-effort basis, and the observed cadence has been ~1h with multi-hour
+    gaps. A stale last observation biases CLV toward zero (we miss the final
+    move), so the gate must be read alongside this number rather than on its own.
+    Measured, not assumed — every CLV figure carries its own quality metric.
+    """
+    out = []
+    for r in rows:
+        st, ts = _dt(r.get("start_utc")), _dt(r.get("ts_last_pregame"))
+        if st and ts:
+            out.append((st - ts).total_seconds() / 60.0)
+    return [m for m in out if m >= 0]
+
+
 def _stats(rows: list[dict], now: datetime | None = None) -> dict:
     now = now or datetime.now(timezone.utc)
     graded = [r for r in rows if r.get("clv_pts") is not None]
@@ -674,7 +693,22 @@ def _stats(rows: list[dict], now: datetime | None = None) -> dict:
         "roi": round(_roi(bets), 5), "n_bets": n,
         "expected_wins": round(exp, 2), "realized_wins": int(real), "z": round(z, 3),
         "gate": gate, "gate_needs": max(0, GATE_MIN_GRADED - len(clv)),
+        # price-freshness quality metric (see _close_lag_mins): how stale the
+        # recorded "close" actually was. A large median here means CLV is
+        # measured against a price the market had already moved past.
+        **_lag_block(_close_lag_mins(clv)),
     }
+
+
+def _lag_block(lags: list[float]) -> dict:
+    if not lags:
+        return {"close_lag_n": 0, "close_lag_median_min": None,
+                "close_lag_p90_min": None}
+    srt = sorted(lags)
+    med = srt[len(srt) // 2]
+    p90 = srt[min(len(srt) - 1, int(round(0.9 * (len(srt) - 1))))]
+    return {"close_lag_n": len(srt), "close_lag_median_min": round(med, 1),
+            "close_lag_p90_min": round(p90, 1)}
 
 
 def report(ledger_path=LEDGER, now: datetime | None = None) -> dict:

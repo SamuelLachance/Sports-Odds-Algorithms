@@ -660,3 +660,32 @@ def test_atomic_write_leaves_no_tmp_file(tmp_path):
     EL.save({"v": 1, "rows": {}}, lp, NOW)
     assert lp.is_file() and not (tmp_path / "ledger.json.tmp").exists()
     assert json.loads(lp.read_text(encoding="utf-8"))["updated"] == "2026-07-31T12:00:00Z"
+
+
+def test_close_lag_is_measured_not_assumed():
+    """Every CLV figure must carry how STALE its 'close' actually was.
+
+    Our closing price is only as fresh as the last cron that saw the game. The
+    odds job is scheduled every 20 minutes, but GitHub runs schedules
+    best-effort and the observed cadence has been ~1h with multi-hour gaps
+    (measured 2026-08-01). A stale last observation biases CLV toward zero
+    because the final market move is missed — so the promotion gate must be
+    read alongside this metric, never on its own.
+    """
+    from market.edge_ledger import _close_lag_mins, _lag_block
+
+    rows = [
+        {"start_utc": "2026-08-01T23:10:00Z", "ts_last_pregame": "2026-08-01T23:00:00Z"},
+        {"start_utc": "2026-08-01T23:10:00Z", "ts_last_pregame": "2026-08-01T21:10:00Z"},
+        {"start_utc": "2026-08-01T23:10:00Z", "ts_last_pregame": "2026-08-01T22:10:00Z"},
+        {"start_utc": None, "ts_last_pregame": "2026-08-01T22:10:00Z"},   # unusable
+        {"start_utc": "2026-08-01T23:10:00Z", "ts_last_pregame": None},   # unusable
+    ]
+    assert _close_lag_mins(rows) == [10.0, 120.0, 60.0]
+    b = _lag_block(_close_lag_mins(rows))
+    assert b["close_lag_n"] == 3
+    assert b["close_lag_median_min"] == 60.0
+    assert b["close_lag_p90_min"] == 120.0
+    # empty is reported as unknown, never as zero (which would read as "fresh")
+    empty = _lag_block([])
+    assert empty["close_lag_n"] == 0 and empty["close_lag_median_min"] is None
