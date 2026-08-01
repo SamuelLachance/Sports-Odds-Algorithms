@@ -1380,8 +1380,10 @@ function nflGamePage(key){
           Games inside a week serve the model; further out, the 20,000-run sim (team strength evolves inside every sim).</div></div>
       <div class="panel why"><h3>Why &mdash; blend contributions <span class="sub" style="font-weight:400">home prob points</span></h3>
         ${whyRows||`<div class="sub">no contribution data</div>`}
-        <div class="sub" style="margin-top:10px">Each bar = one feature group's push on the home win probability vs a 50/50 game,
-          from the market-blind blend's own coefficients. Pass/run/EPA are grouped (their split is collinear; the sum is what the model believes).</div></div>
+        <div class="sub" style="margin-top:10px">Each bar is one feature group's push, taken from the market-blind blend's own
+          coefficients and scaled to home-probability points. They rank and size the model's reasons faithfully, but they do
+          <b>not</b> add up to the probability above &mdash; the blend combines them through a logistic curve, not by addition.
+          Pass/run/EPA are grouped (their split is collinear; the sum is what the model believes).</div></div>
     </div>
     <div class="grid" style="margin-top:16px">
       <div class="panel"><h3>Head to head</h3>${teamCmp}</div>

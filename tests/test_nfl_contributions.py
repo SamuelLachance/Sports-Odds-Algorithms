@@ -162,3 +162,34 @@ def test_contributions_and_probability_agree_on_direction():
     assert not wrong, (
         f"{len(wrong)} home favourites have a net-negative breakdown, e.g. "
         f"{wrong[0]['away']}@{wrong[0]['home']}")
+
+
+def test_the_site_does_not_claim_the_nfl_bars_add_up():
+    """The caption is a factual claim and it was wrong.
+
+    It read "one feature group's push on the home win probability vs a 50/50
+    game", which invites the reader to add the bars to 50% and expect the
+    number shown. Measured on the shipped payload, only 11 of 272 games land
+    within 1pp of that identity and errors reach -0.179 — an 18-point miss.
+
+    NHL's breakdown IS exact and its caption says so (iteration 84). Building
+    the accurate one next to this is what exposed the overclaim, so this pins
+    the distinction: the NFL panel must not assert additivity, and must say the
+    bars combine through a logistic.
+    """
+    src = (ROOT / "mlbwp_site" / "build_site.py").read_text(encoding="utf-8")
+    nfl_panel = src.split("Why &mdash; blend contributions", 1)[1].split("</div></div>", 1)[0]
+    assert "vs a 50/50 game" not in nfl_panel, "the caption implies additivity again"
+    assert "not</b> add up" in nfl_panel or "not add up" in nfl_panel
+    assert "logistic" in nfl_panel
+
+
+def test_only_the_exact_league_advertises_exactness():
+    """NHL may claim its bars sum; NFL may not. If NFL's construction ever
+    changes to an exact one, move the claim deliberately rather than by
+    copy-paste."""
+    src = (ROOT / "mlbwp_site" / "build_site.py").read_text(encoding="utf-8")
+    nhl_panel = src.split("Why &mdash; model contributions", 1)[1].split("</div></div>", 1)[0]
+    assert "exact" in nhl_panel.lower()
+    nfl_panel = src.split("Why &mdash; blend contributions", 1)[1].split("</div></div>", 1)[0]
+    assert "exact" not in nfl_panel.lower()
