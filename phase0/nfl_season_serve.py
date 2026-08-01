@@ -511,7 +511,8 @@ for j, nm in enumerate(["lgt", "qd", "epa", "early", "thfa", "rest", "luck", "ts
 # quality and absences (injuries cannot be honestly simulated), rest/early
 # (schedule-exact per game). Per-game MC prob = mean across sims; week 1 equals
 # the model prob by construction, late-season honestly widens with state drift.
-from nfl_qb_elo import CLIP as QB_CLIP  # noqa: E402
+from nfl_qb_elo import CLIP as QB_CLIP
+import nfl_ph_freeze  # noqa: E402
 
 # outcome-conditional per-game stat distributions (2020-2025): pass/run EPA sums
 w_p, w_r, l_p, l_r, cnt_p, cnt_r = [], [], [], [], [], []
@@ -687,28 +688,11 @@ def _dump_atomic(obj, path, **kw):
 try:
     ledger = json.load(open(LEDGER))
 except (FileNotFoundError, json.JSONDecodeError):
-    # bootstrap from any schedule still in the payload (pre-ledger payloads)
-    ledger = {f'{r["w"]}|{r["home"]}|{r["away"]}': {"ph": r["ph"], "ct": r.get("ct"),
-                                                   "pmc": r.get("pmc")}
-              for r in payload.get("schedule", []) if r.get("ph") is not None}
-ph_frozen = 0
-for s in sched:
-    key = f'{s["w"]}|{s["home"]}|{s["away"]}'
-    if s["hs"] is not None and s["as"] is not None:
-        ent = ledger.get(key)
-        if ent is not None:
-            s["ph"] = ent["ph"]
-            if ent.get("ct") is not None:
-                s["ct"] = ent["ct"]
-            if ent.get("pmc") is not None:
-                s["pmc"] = ent["pmc"]
-            ph_frozen += 1
-        else:
-            print(f"WARNING ph-freeze: no ledger entry for played game {key}; "
-                  f"keeping recomputed (post-hoc) ph/pmc", flush=True)
-            ledger[key] = {"ph": s["ph"], "ct": s["ct"], "pmc": s["pmc"]}
-    else:
-        ledger[key] = {"ph": s["ph"], "ct": s["ct"], "pmc": s["pmc"]}
+    ledger = nfl_ph_freeze.bootstrap_from_payload(payload)
+# extracted to phase0/nfl_ph_freeze.py so the honesty mechanism is TESTABLE
+# (tests/test_nfl_ph_freeze.py); the semantics are unchanged.
+ledger, ph_frozen, _orphans = nfl_ph_freeze.freeze(
+    sched, ledger, warn=lambda m: print(m, flush=True))
 _dump_atomic(ledger, LEDGER)
 print(f"[{time.time()-T0:.0f}s] ph-freeze: {ph_frozen} played games keep their "
       f"ledger pre-game ph ({len(ledger)} ledger rows)", flush=True)
