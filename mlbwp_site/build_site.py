@@ -622,7 +622,11 @@ function nhlWire(){
 function nhlCard(g){
   const hp=g.hp, homeWin=hp>=0.5, done=g.hs!=null;
   const pick=homeWin?g.home:g.away, pp=Math.max(hp,1-hp), val=g.value;
-  const valbar=(val&&val.available)?`<div class="valbar"><span class="vt">EDGE</span> ${val.team} <b>+${Math.round(val.ev_cur*100)}% EV</b><span class="vodds">@ ${val.cur_dec}</span><span class="vlive">&#9679; live</span></div>`:"";
+  /* The NHL badge is priced WITHOUT goalie confirmation. Our own measurement
+     (data/market_projection.json) puts the closing line's orthogonal information
+     - goalie/scratch news - at +0.00183, MORE than our entire 0.00171 gap to the
+     market. Disclosing that is not optional; see documents/pick_policy.md. */
+  const valbar=(val&&val.available)?`<div class="valbar" title="Priced before starting goalies are confirmed — the one thing our own measurement says the market knows and we do not."><span class="vt">EDGE</span> ${val.team} <b>+${Math.round(val.ev_cur*100)}% EV</b><span class="vodds">@ ${val.cur_dec}</span><span class="vlive">no goalie conf.</span></div>`:"";
   let badge=`<span class="lbadge off">Model</span>`+(g.playoff?`<span class="lbadge proj">Playoff</span>`:"");
   if(done){const winner=g.hs>g.as?g.home:g.away;
     badge=(winner===pick?`<span class="lbadge off">HIT</span>`:`<span class="lbadge tbd">MISS</span>`)+((g.last&&g.last!=="REG")?`<span class="lbadge proj">${g.last}</span>`:"");}

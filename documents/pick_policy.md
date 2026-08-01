@@ -92,3 +92,22 @@ cannot answer yet: the prediction ledger began on 2026-07-31 and has 3 graded
 rows. Once each tier has a real sample, its realized log loss against the
 coin-flip baseline decides whether it stays. Until then the tiers are separated
 and labelled, and no claim is made about them.
+
+## Addendum 2026-07-31 — the EV badge, per league
+
+An EV badge is a **stronger** claim than a pick: it asserts the market is
+mispriced by >=20%. It must therefore clear at least the same information bar,
+and the bar differs by league because the leagues expose different information.
+
+| league | information gate today | known deficit at badge time |
+|---|---|---|
+| **MLB** | **ENFORCED** — an EARLY card (no named starter) is skipped before it can be quoted or badged (`market/edges.py`, 4 tests). Latent when added: the odds feed reaches ~2 days, so no EARLY game was being badged. | none material |
+| **NFL** | none needed *today*: there is no EARLY analogue — rosters and QBs are known a week out, so every pre-kickoff card is PROJECTED. | the badge window is 7 days but the **final injury report lands Friday**, so a badge placed early in the week is priced without it. A gate becomes possible when the 2026 injury feed lands (September) — pending, not forgotten. |
+| **NHL** | none possible yet: the payload carries no information-state field because no goalie/lineup feed exists until the archive has volume (October). | **quantified and material.** `data/market_projection.json` measured that the closing line's information orthogonal to our features is worth **+0.00183** — *more than our entire 0.00171 gap to the market* — and the weight table points at goalie confirmation and scratches as its content. Starting goalies are confirmed on game-day morning, so a badge placed days ahead is priced **without the single thing we know the market has and we lack.** |
+
+**Decision.** MLB is gated structurally. NFL and NHL are **disclosed rather than
+gated**, because a window number I cannot justify from data would be a guess
+dressed as a safeguard — and shortening the window reduces exposure without
+removing it (we have no goalie feed at *any* horizon yet). The NHL badge carries
+the deficit in its own tooltip, and both gates are wired the day their feeds
+land: NFL injuries in September, NHL goalie confirmations in October.
