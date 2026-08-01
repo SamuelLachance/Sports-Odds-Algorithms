@@ -111,3 +111,20 @@ dressed as a safeguard — and shortening the window reduces exposure without
 removing it (we have no goalie feed at *any* horizon yet). The NHL badge carries
 the deficit in its own tooltip, and both gates are wired the day their feeds
 land: NFL injuries in September, NHL goalie confirmations in October.
+
+## Audit closed 2026-07-31 — every public surface checked
+
+| surface | verdict |
+|---|---|
+| track-record page | **FIXED** — tiers stamped, never pooled, leans separated, small samples say "too few to score" |
+| pending picks | **FIXED** — 420 -> 42 picks + 378 scheduled (collapsed, excluded from counts) |
+| MLB EV badge | **GATED** — EARLY cards skipped before quoting; 4 tests |
+| NFL / NHL EV badge | **DISCLOSED** — no gate possible yet; NHL badge names its measured goalie deficit, NFL gate pending the September injury feed |
+| board cards | already honest — each card labels "Lineups in" / "Projected" / "Starters TBD", default view is today |
+| public copy / footer | already honest — no "beats the market" or "profitable" claim anywhere; the closing line is displayed beside our own number, which *reveals* we are worse |
+| per-game deep-dive | already honest — an uninformed game reads "Pre-lineup estimate; sharpens when the starters and lineups are posted", and contribution rows for a tier's missing data are not rendered at all |
+| gate propagation | verified: 378 EARLY cards carry **0** badges and **0** quotes, so no downstream page can render a claim it has no data for |
+
+The two open items are both waiting on data, not on a decision: the NFL
+information gate (September injury feed) and the NHL one (October goalie
+confirmations). Both are wired the day their feeds land.
