@@ -195,6 +195,7 @@ def ensure_lines_cache(finals: list[dict], cache_path: Path = LINES_CACHE) -> di
     """
     cache = json.loads(cache_path.read_text()) if cache_path.is_file() else {}
     fetched = 0
+    failed = []
     for g in finals:
         pk = str(g["game_pk"])
         if pk in cache:
@@ -208,12 +209,26 @@ def ensure_lines_cache(finals: list[dict], cache_path: Path = LINES_CACHE) -> di
             if fetched % 200 == 0:      # checkpoint a long backfill so it can't lose it all
                 cache_path.parent.mkdir(parents=True, exist_ok=True)
                 _write_atomic(cache_path, json.dumps(cache))
-        except Exception:  # noqa: BLE001 — a bad game feed must not abort the build
+        except Exception as exc:  # noqa: BLE001 — a bad game feed must not abort the build
+            # Skipping is right and self-healing (an uncached pk is retried next
+            # run), but a game that fails EVERY run is never cached and its plate
+            # appearances, baserunning and bullpen work stay permanently absent
+            # from the replay. Silence made that indistinguishable from success.
+            failed.append((pk, g.get("date"), f"{type(exc).__name__}: {str(exc)[:60]}"))
             continue
     if fetched:
         cache_path.parent.mkdir(parents=True, exist_ok=True)
         _write_atomic(cache_path, json.dumps(cache))
-    print(f"[lines] cache {len(cache)} games (+{fetched} fetched)", flush=True)
+    # Coverage, not cache size: the cache also holds games outside the current
+    # finals window, so len(cache) alone cannot answer "is every completed game
+    # in the replay?" — which is the only question that matters here.
+    covered = sum(1 for g in finals if str(g["game_pk"]) in cache)
+    print(f"[lines] cache {len(cache)} games (+{fetched} fetched); "
+          f"replay coverage {covered}/{len(finals)} finals", flush=True)
+    if failed:
+        print(f"WARNING lines: {len(failed)} game feed(s) failed and are MISSING "
+              f"from the replay (retried next run). First: {failed[0][0]} "
+              f"{failed[0][1]} ({failed[0][2]})", flush=True)
     return cache
 
 
