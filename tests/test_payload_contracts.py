@@ -355,6 +355,52 @@ def test_nhl_contract():
     assert {"name", "pos", "team", "off", "def", "net", "rating", "toi"} <= set(p)
 
 
+def test_nhl_opening_night_keeps_every_number_the_spa_dereferences():
+    """October shape: the season has rolled, no game has been played.
+
+    The standings row calls `t.elo.toFixed(0)` with no guard, so a team present
+    with a null elo throws and blanks the league. Since the boundary fix, all 32
+    teams appear from opening night with 0-0-0 records — this pins that the
+    *ratings* come with them rather than arriving a week later.
+    """
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "phase0"))
+    from nhl_season_boundary import display_teams
+
+    rated = {"TOR": 1550.0, "MTL": 1480.0, "BOS": 1520.0}
+    kept = display_teams(rated, {"TOR", "MTL"}, {"TOR", "MTL", "BOS"})
+    # the serve's team-assembly shape for a club with no completed games
+    for code, elo in kept.items():
+        t = {"elo": elo, "xg": 0.0, "rank": 1, "w": 0, "l": 0, "otl": 0,
+             "gf": 0, "ga": 0, "pts": 0}
+        for k in ("elo", "xg", "pts", "w", "l", "otl", "rank"):
+            assert t[k] is not None, f"{code}.{k} is null on opening night"
+            assert isinstance(t[k], (int, float))
+
+
+def test_nhl_nullable_model_card_fields_are_the_ones_the_spa_guards():
+    """The serve may emit null for the realized-season metrics and ONLY those.
+
+    The SPA calls .toFixed() unguarded on the frozen TEST numbers and guards
+    only `cur_season_acc`. If a future change makes another model_card field
+    nullable without adding a guard, the NHL view throws on opening night —
+    when no one is looking at a hockey site to notice.
+    """
+    js = (Path(__file__).resolve().parents[1] / "mlbwp_site" / "build_site.py"
+          ).read_text(encoding="utf-8")
+    assert 'mc.cur_season_acc?' in js, "cur_season_acc lost its null guard"
+    for unguarded in ("mc.test_ll.toFixed", "mc.baseline_elo_test.toFixed"):
+        assert unguarded in js, f"{unguarded} missing — did the model card change?"
+
+    serve = (Path(__file__).resolve().parents[1] / "phase0" / "nhl_serve.py"
+             ).read_text(encoding="utf-8")
+    # the two realized metrics are the only conditional emissions in the card
+    assert serve.count("if cur_ll is not None else None") == 1
+    assert serve.count("if cur_acc is not None else None") == 1
+    assert "if cur_ll else None" not in serve, (
+        "truthiness check is back: an accuracy of 0.0 would serialize as null")
+
+
 def test_nhl_probs_sane():
     """Model probabilities must be probabilities, and not degenerate."""
     n = _load("nhl.json")
