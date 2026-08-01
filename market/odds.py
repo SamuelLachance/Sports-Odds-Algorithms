@@ -43,6 +43,43 @@ def _et_date(iso_utc: str) -> str:
     return datetime.fromisoformat(iso_utc.replace("Z", "+00:00")).astimezone(ET).date().isoformat()
 
 
+# Why the last fetch returned what it did. `fetch_consensus` degrades to [] on
+# every failure so the board build never breaks — but that collapsed FIVE very
+# different situations into one indistinguishable empty list, and downstream all
+# of them printed "0 games with >=20% EV", which reads as "no edges qualify
+# today". A dead API key looked exactly like a quiet market.
+#
+# Found live on 2026-08-01: the opening-odds cache had not captured a game since
+# 2026-07-29 while the board carried 36 pending picks. The edge layer had been
+# silently dead for ~3 days, and the edge ledger — the durable evidence stream
+# the live-CLV promotion gate depends on — held zero rows.
+LAST_FETCH: dict = {"reason": "not_called"}
+
+
+def _record(reason: str, **extra) -> None:
+    LAST_FETCH.clear()
+    LAST_FETCH.update(reason=reason, **extra)
+
+
+def fetch_status() -> str:
+    """One line describing the last fetch, for the refresh log."""
+    r = LAST_FETCH.get("reason", "not_called")
+    if r == "ok":
+        return f"ok: {LAST_FETCH['n_used']} priced of {LAST_FETCH['n_raw']} returned"
+    if r == "no_api_key":
+        return "NO ODDS: ODDS_API_KEY is unset — the edge layer is disabled"
+    if r == "fetch_failed":
+        return (f"NO ODDS: the request failed ({LAST_FETCH.get('error')}) — "
+                f"check the key, the quota and the endpoint")
+    if r == "empty_response":
+        return "NO ODDS: the API returned zero games — out of quota, or no slate"
+    if r == "all_filtered":
+        sk = LAST_FETCH.get("skipped", {})
+        return (f"NO ODDS USABLE: {LAST_FETCH['n_raw']} games returned but none "
+                f"priced ({sk}) — likely a team-name map drift or thin books")
+    return f"odds fetch never ran ({r})"
+
+
 def fetch_consensus(api_key: str | None = None, now: datetime | None = None,
                     url: str = ODDS_URL,
                     team_map: dict[str, str] = ODDS_TEAM_TO_RETRO) -> list[dict]:
@@ -55,25 +92,31 @@ def fetch_consensus(api_key: str | None = None, now: datetime | None = None,
     """
     key = api_key or os.environ.get("ODDS_API_KEY")
     if not key:
+        _record("no_api_key")
         return []
     now = now or datetime.now(timezone.utc)
     try:
         req = urllib.request.Request(url.format(key=key), headers={"User-Agent": "mlbwp"})
         with urllib.request.urlopen(req, timeout=30) as r:
             data = json.loads(r.read())
-    except Exception:  # noqa: BLE001 — never let odds break the board build
+    except Exception as exc:  # noqa: BLE001 — never let odds break the board build
+        _record("fetch_failed", error=f"{type(exc).__name__}: {str(exc)[:120]}")
         return []
+    skipped = {"unmapped_team": 0, "already_started": 0, "too_few_books": 0}
     out = []
     for g in data:
         home = team_map.get(g.get("home_team"))
         away = team_map.get(g.get("away_team"))
         commence = g.get("commence_time")
         if not (home and away and commence and g.get("id")):   # id anchors the opening cache
+            skipped["unmapped_team"] += 1
             continue
         try:
             if datetime.fromisoformat(commence.replace("Z", "+00:00")) <= now:
+                skipped["already_started"] += 1
                 continue                      # already started -> live prices, skip
         except ValueError:
+            skipped["unmapped_team"] += 1
             continue
         hp, ap = [], []
         for bk in g.get("bookmakers", []):
@@ -85,6 +128,7 @@ def fetch_consensus(api_key: str | None = None, now: datetime | None = None,
                 if isinstance(dh, (int, float)) and isinstance(da, (int, float)) and dh > 1 and da > 1:
                     hp.append(dh); ap.append(da)
         if len(hp) < 3:                       # need a real consensus
+            skipped["too_few_books"] += 1
             continue
         out.append({
             "id": g.get("id"), "commence": commence, "date": _et_date(commence),
@@ -93,6 +137,8 @@ def fetch_consensus(api_key: str | None = None, now: datetime | None = None,
             "away_dec": round(statistics.median(ap), 4),
             "n_books": len(hp),
         })
+    _record("ok" if out else ("empty_response" if not data else "all_filtered"),
+            n_raw=len(data), n_used=len(out), skipped=skipped)
     return out
 
 

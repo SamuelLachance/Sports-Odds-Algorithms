@@ -20,7 +20,7 @@ cleanly when a payload is missing or no edges fired (offseason).
 
 from __future__ import annotations
 
-from market import EV_THRESHOLD, edge_ledger, edges, nfl_edges, nhl_edges
+from market import EV_THRESHOLD, edge_ledger, edges, nfl_edges, nhl_edges, odds
 from mlbwp_site import build_site
 
 
@@ -28,12 +28,20 @@ EV_PCT = round(EV_THRESHOLD * 100)   # log copy must never outlive the constant
 
 
 def main() -> int:
+    # Each league prints WHY the fetch produced what it did. Without this, a dead
+    # key, an exhausted quota and a genuinely quiet market all print the same
+    # "0 games" line, which reads as "no edges qualify today". That is how the
+    # edge layer stayed silently dead for three days while the ledger — the
+    # evidence stream the live-CLV promotion gate depends on — accrued nothing.
     n = edges.attach_and_save()
-    print(f"[value] MLB: {n} games with >={EV_PCT}% EV vs opening consensus")
+    print(f"[value] MLB: {n} games with >={EV_PCT}% EV vs opening consensus"
+          f"  [odds {odds.fetch_status()}]")
     m = nfl_edges.attach_and_save()
-    print(f"[value] NFL: {m} games with >={EV_PCT}% EV vs opening consensus (7-day window)")
+    print(f"[value] NFL: {m} games with >={EV_PCT}% EV vs opening consensus (7-day window)"
+          f"  [odds {odds.fetch_status()}]")
     k = nhl_edges.attach_and_save()
-    print(f"[value] NHL: {k} games with >={EV_PCT}% EV vs opening consensus (7-day window)")
+    print(f"[value] NHL: {k} games with >={EV_PCT}% EV vs opening consensus (7-day window)"
+          f"  [odds {odds.fetch_status()}]")
 
     for st in edge_ledger.update_all():
         print(f"[ledger] {st['league']}: {st['recorded']} recorded, "
