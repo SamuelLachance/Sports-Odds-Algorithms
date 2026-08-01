@@ -86,6 +86,67 @@ def test_payload_records_a_real_season():
     assert src.index("season = season or") < src.index('"season": season')
 
 
+# ---- the roster-failure path, actually executed ---------------------------
+
+def _roster_entry(pid, name, pos="1B"):
+    return {"person": {"id": pid, "fullName": name},
+            "position": {"abbreviation": pos}, "jerseyNumber": "9"}
+
+
+def test_a_total_outage_warns_per_team_and_in_summary(monkeypatch, capsys):
+    """The handler had never been executed by a test — only write_is_safe was
+    covered, in isolation. An exception handler that itself raises (a typo in
+    the warning's f-string, say) would only surface during a real outage, which
+    is precisely when nobody can afford a second failure."""
+    monkeypatch.setattr(db, "bulk_stats", lambda season, group: {})
+    monkeypatch.setattr(db, "_get", lambda *a, **k: (_ for _ in ()).throw(
+        TimeoutError("simulated API timeout")))
+
+    teams = {"TOR": {"id": 141}, "BOS": {"id": 111}}
+    players = db.build_players(teams, 2026, pred=None)
+
+    assert players == {}, "no rosters fetched means no players"
+    out = capsys.readouterr().out
+    assert "roster fetch failed for TOR" in out
+    assert "roster fetch failed for BOS" in out
+    assert "2/2 rosters unavailable" in out, "the summary line must fire"
+
+
+def test_a_partial_outage_keeps_what_it_could_fetch(monkeypatch, capsys):
+    """The realistic degraded-API case, and the one the write guard is for: some
+    teams answer, some do not. The survivors must still be built."""
+    monkeypatch.setattr(db, "bulk_stats", lambda season, group: {})
+
+    def flaky(url, *a, **k):
+        if "/141/" in url:
+            raise ConnectionError("simulated blip")
+        return {"roster": [_roster_entry(1, "A Batter"), _roster_entry(2, "B Batter")]}
+
+    monkeypatch.setattr(db, "_get", flaky)
+    monkeypatch.setattr(db, "fetch_career", lambda pid, is_p: {})
+
+    teams = {"TOR": {"id": 141}, "BOS": {"id": 111}}
+    players = db.build_players(teams, 2026, pred=None)
+
+    assert len(players) == 2, "the reachable team's roster must survive"
+    assert {p["team"] for p in players.values()} == {"BOS"}
+    out = capsys.readouterr().out
+    assert "roster fetch failed for TOR" in out
+    assert "1/2 rosters unavailable" in out
+
+
+def test_a_clean_run_prints_no_warning(monkeypatch, capsys):
+    """The summary must not cry wolf — a warning on every healthy run would
+    train everyone to ignore it."""
+    monkeypatch.setattr(db, "bulk_stats", lambda season, group: {})
+    monkeypatch.setattr(db, "_get",
+                        lambda *a, **k: {"roster": [_roster_entry(1, "A Batter")]})
+    monkeypatch.setattr(db, "fetch_career", lambda pid, is_p: {})
+
+    db.build_players({"BOS": {"id": 111}}, 2026, pred=None)
+    assert "unavailable" not in capsys.readouterr().out
+
+
 # ---- pure helpers ----------------------------------------------------------
 
 def test_pythag_is_a_probability_and_symmetric():
