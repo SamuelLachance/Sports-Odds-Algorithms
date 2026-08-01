@@ -173,8 +173,14 @@ def test_lean_threshold_is_exactly_55_45():
     from mlbwp.predict_slate import LEAN_MAX
     from mlbwp_site.build_site import JS
     assert LEAN_MAX == 0.55
-    assert "const LEAN_MAX=0.55;" in JS
+    # ONE source: the JS constant is generated from LEAN_MAX, and the record
+    # page's constant aliases the board's rather than re-typing the number.
+    # Three hand-typed copies is three chances for the board and the record
+    # page to disagree about what counts as a lean.
+    assert f"const POL_LEAN_MAX={LEAN_MAX};" in JS
+    assert "const LEAN_MAX=POL_LEAN_MAX;" in JS
     assert "const recIsLean=p=>Math.max(p,1-p)<=LEAN_MAX;" in JS
+    assert JS.count("LEAN_MAX=0.55") == 1, "the threshold was re-typed somewhere"
 
     def lean(p):
         return max(p, 1 - p) <= LEAN_MAX

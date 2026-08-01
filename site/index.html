@@ -1660,7 +1660,7 @@ const REC_TIER_NOTE={CONFIRMED:"official lineup card posted",
   PROJECTED:"starters named or rotation-projected, lineup projected",
   EARLY:"no starter - team ratings only"};
 const REC_MIN_N=30;                 // below this a tier's rate is not reported as a number
-const LEAN_MAX=0.55;                // inside 55/45 -> a lean, not a pick
+const LEAN_MAX=POL_LEAN_MAX;        // one source: see mlbwp/predict_slate.LEAN_MAX
 const recIsLean=p=>Math.max(p,1-p)<=LEAN_MAX;
 /* One fallback for a missing server tier, shared by every reader (a stale
    cached board.json must not render EARLY in one table and PROJECTED in

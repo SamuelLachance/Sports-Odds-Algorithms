@@ -9,6 +9,7 @@ data. The data files are produced by mlbwp.predict_slate and mlbwp.db.
 from __future__ import annotations
 
 from mlbwp.pred_ledger import TIER_JS  # single source of truth for the tier rule
+from mlbwp.predict_slate import LEAN_JS  # single source of truth for the lean threshold
 
 from pathlib import Path
 
@@ -345,7 +346,7 @@ const tier = p => p>=0.62?"strong":(p>=0.555?"lean":"toss");
    forecast is. Rule 1: EARLY is shown as a scheduled game with a labelled
    lean, never as a pick. Rule 2: outside EARLY, a forecast inside 55/45 is a
    LEAN, not a PICK - the call is stated on the card, not implied by size. */
-const POL_LEAN_MAX=0.55;
+{LEAN_JS}
 {TIER_JS}
 const callOf = pp => pp<=POL_LEAN_MAX?"LEAN":"PICK";
 const norm = s => (s||"").toLowerCase().normalize("NFKD").replace(/[^a-z0-9 ]+/g," ").replace(/\s+/g," ").trim();
@@ -1647,7 +1648,7 @@ const REC_TIER_NOTE={CONFIRMED:"official lineup card posted",
   PROJECTED:"starters named or rotation-projected, lineup projected",
   EARLY:"no starter - team ratings only"};
 const REC_MIN_N=30;                 // below this a tier's rate is not reported as a number
-const LEAN_MAX=0.55;                // inside 55/45 -> a lean, not a pick
+const LEAN_MAX=POL_LEAN_MAX;        // one source: see mlbwp/predict_slate.LEAN_MAX
 const recIsLean=p=>Math.max(p,1-p)<=LEAN_MAX;
 /* One fallback for a missing server tier, shared by every reader (a stale
    cached board.json must not render EARLY in one table and PROJECTED in
@@ -2066,7 +2067,8 @@ boot();
 # explicit substitution, not an f-string; the assert makes a missed or
 # renamed placeholder a hard build failure instead of broken site JS.
 assert "{TIER_JS}" in JS, "tier-rule placeholder missing from JS"
-JS = JS.replace("{TIER_JS}", TIER_JS)
+assert "{LEAN_JS}" in JS, "lean-threshold placeholder missing from JS"
+JS = JS.replace("{TIER_JS}", TIER_JS).replace("{LEAN_JS}", LEAN_JS)
 
 SHELL = f"""<style>{CSS}</style>
 <script>try{{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');}}catch(e){{document.documentElement.setAttribute('data-theme','dark');}}</script>

@@ -30,6 +30,10 @@ LINES_CACHE = PROJECT / "data" / "season_2026_lines.json"
 PRED_LEDGER = PROJECT / "data" / "mlb_pred_ledger.json"
 RECORD_CAP = 400          # graded rows shipped to the site (rollup uses them all)
 LEAN_MAX = 0.55           # policy rule 2: a forecast inside 55/45 is a LEAN, not a pick
+# The SPA needs the SAME number in two places (the board labels a call, the
+# record page counts leans). Three hand-typed copies of one policy constant
+# is three chances to disagree, so the JS is generated from this one.
+LEAN_JS = f"const POL_LEAN_MAX={LEAN_MAX};"
 
 def _write_atomic(path, text):
     """tmp + os.replace: an interrupted run must never truncate a live file."""
