@@ -18,7 +18,7 @@ from market import odds
 PROJECT = Path(__file__).resolve().parents[1]
 NHL_JSON = PROJECT / "site" / "data" / "nhl.json"
 OPENING = PROJECT / "data" / "nhl_opening_odds_2026.json"
-EV_THRESHOLD = 0.20
+from market import EV_THRESHOLD   # single source (market/__init__.py)
 LIVE_WINDOW_DAYS = 7
 
 NHL_ODDS_URL = ("https://api.the-odds-api.com/v4/sports/icehockey_nhl/odds"

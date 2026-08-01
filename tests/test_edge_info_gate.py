@@ -74,3 +74,39 @@ def test_official_lineups_without_pitcher_flag_still_eligible(tmp_path, monkeypa
     pitcher_known flag is missing — the gate must not reject on a missing flag."""
     g = _run(tmp_path, _card(4, "2026-08-01", lineup_source="official"), monkeypatch)
     assert g.get("mkt")
+
+
+def test_ev_threshold_has_a_single_source():
+    """The badge threshold must exist ONCE.
+
+    It was previously re-typed in edges.py, nfl_edges.py and nhl_edges.py with
+    no test at all, so the three leagues could have silently disagreed while the
+    site and the logs claimed one figure. Same drift class as the tier rule and
+    the lean threshold, but with money attached: the badge asserts the market is
+    mispriced, so the leagues disagreeing about WHEN it fires is a correctness
+    bug the reader cannot see.
+    """
+    import re
+    from pathlib import Path
+
+    from market import EV_THRESHOLD, edges, nfl_edges, nhl_edges
+
+    assert edges.EV_THRESHOLD == nfl_edges.EV_THRESHOLD == nhl_edges.EV_THRESHOLD \
+        == EV_THRESHOLD == 0.20
+
+    root = Path(__file__).resolve().parents[1]
+    # exactly one assignment across the whole market package
+    assigns = []
+    for f in sorted((root / "market").glob("*.py")):
+        for ln in f.read_text(encoding="utf-8").splitlines():
+            if re.match(r"\s*EV_THRESHOLD\s*=", ln):
+                assigns.append(f"{f.name}: {ln.strip()}")
+    assert len(assigns) == 1, f"threshold assigned in more than one place: {assigns}"
+    assert assigns[0].startswith("__init__.py"), assigns[0]
+
+    # and the operator copy must be derived, never hand-typed
+    for name in ("refresh.py", "refresh_odds.py"):
+        src = (root / name).read_text(encoding="utf-8")
+        assert ">=20%" not in src, (
+            f"{name} hard-codes the threshold in its log copy; use EV_PCT so the "
+            "message cannot outlive the constant")

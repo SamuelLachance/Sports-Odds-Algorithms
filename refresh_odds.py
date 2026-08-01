@@ -1,7 +1,8 @@
 """Refresh the board's live EV edges + rebuild the site (fast, no model rebuild).
 
 Run on a short cadence between full refreshes: pulls current odds, recomputes the
->=20%-EV value edges against the frozen opening consensus, and rebuilds index.html so
+value edges (threshold: market/__init__.py) against the frozen opening consensus,
+and rebuilds index.html so
 the badge appears/updates/disappears near-live. Needs ODDS_API_KEY in the environment.
 
 After each league's attach_and_save, market/edge_ledger.py reads that league's freshly
@@ -19,17 +20,20 @@ cleanly when a payload is missing or no edges fired (offseason).
 
 from __future__ import annotations
 
-from market import edge_ledger, edges, nfl_edges, nhl_edges
+from market import EV_THRESHOLD, edge_ledger, edges, nfl_edges, nhl_edges
 from mlbwp_site import build_site
+
+
+EV_PCT = round(EV_THRESHOLD * 100)   # log copy must never outlive the constant
 
 
 def main() -> int:
     n = edges.attach_and_save()
-    print(f"[value] MLB: {n} games with >=20% EV vs opening consensus")
+    print(f"[value] MLB: {n} games with >={EV_PCT}% EV vs opening consensus")
     m = nfl_edges.attach_and_save()
-    print(f"[value] NFL: {m} games with >=20% EV vs opening consensus (7-day window)")
+    print(f"[value] NFL: {m} games with >={EV_PCT}% EV vs opening consensus (7-day window)")
     k = nhl_edges.attach_and_save()
-    print(f"[value] NHL: {k} games with >=20% EV vs opening consensus (7-day window)")
+    print(f"[value] NHL: {k} games with >={EV_PCT}% EV vs opening consensus (7-day window)")
 
     for st in edge_ledger.update_all():
         print(f"[ledger] {st['league']}: {st['recorded']} recorded, "

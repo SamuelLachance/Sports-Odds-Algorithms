@@ -21,7 +21,7 @@ from market import odds
 PROJECT = Path(__file__).resolve().parents[1]
 NFL_JSON = PROJECT / "site" / "data" / "nfl.json"
 OPENING = PROJECT / "data" / "nfl_opening_odds_2026.json"
-EV_THRESHOLD = 0.20
+from market import EV_THRESHOLD   # single source (market/__init__.py)
 LIVE_WINDOW_DAYS = 7
 
 NFL_ODDS_URL = ("https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds"

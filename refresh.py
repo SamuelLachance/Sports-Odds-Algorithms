@@ -9,7 +9,8 @@ Order matters — team form is fetched once and reused:
 Needs only the frozen model (mlbwp/artifacts/ratings.json), the MLB Stats API, and
 the Python standard library — no Retrosheet, no third-party packages — so it runs in
 a minimal CI job. The MODEL is market-blind; a final post-process (market/) compares
-the live market to the model's OUTPUT to flag >=20%-EV value edges (needs ODDS_API_KEY,
+the live market to the model's OUTPUT to flag value edges above the threshold in
+market/__init__.py (needs ODDS_API_KEY,
 skipped gracefully without it).
 """
 
@@ -21,7 +22,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from market import edges          # market-comparison layer, OUTSIDE the mlbwp model pkg
+from market import EV_THRESHOLD, edges          # market-comparison layer, OUTSIDE the mlbwp model pkg
 from mlbwp import db as db_mod
 from mlbwp import predict_slate
 from mlbwp.live import season_finals
@@ -30,6 +31,9 @@ from mlbwp_site import build_site
 
 PROJECT = Path(__file__).resolve().parent
 FINALS = PROJECT / "data" / "season_2026_finals.json"
+
+EV_PCT = round(EV_THRESHOLD * 100)   # log copy must never outlive the constant
+
 
 def _write_atomic(path, text):
     """tmp + os.replace: an interrupted run must never truncate a live file."""
@@ -57,7 +61,7 @@ def main(horizon_days: int = 30) -> int:
     # 2. board  3. value edges (market post-process)  4. db  5. shell
     predict_slate.main(days=horizon_days, today=today.isoformat())
     n_edges = edges.attach_and_save()
-    print(f"[refresh] {n_edges} value edges (>=20% EV vs opening consensus)", flush=True)
+    print(f"[refresh] {n_edges} value edges (>={EV_PCT}% EV vs opening consensus)", flush=True)
 
     # pre-game prediction ledger: archive today's board probs before games
     # start, grade yesterday's from finals (honest season-to-date tracking)

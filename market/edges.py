@@ -38,8 +38,9 @@ from market import odds
 PROJECT = Path(__file__).resolve().parents[1]
 BOARD = PROJECT / "site" / "data" / "board.json"
 OPENING = PROJECT / "data" / "opening_odds_2026.json"
-EV_THRESHOLD = 0.20    # advisory gate: >=20% EV vs the opening (15% set failed the
-                       # calibration audit: mid-dog bucket z=-4.5, data/ev_gate_audit.json)
+# Single source: market/__init__.py. The 15% gate failed the calibration
+# audit (mid-dog bucket z=-4.5, see data/ev_gate_audit.json), hence 20%.
+from market import EV_THRESHOLD
 
 
 def attach_and_save(board_path: Path = BOARD, opening_path: Path = OPENING,
