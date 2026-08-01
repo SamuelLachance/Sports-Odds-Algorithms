@@ -133,3 +133,39 @@ def test_the_refresh_prints_the_status_for_every_league():
     src = (ROOT / "refresh_odds.py").read_text(encoding="utf-8")
     assert src.count("odds.fetch_status()") == 3, (
         "each league's fetch is separate; one shared status would misreport two")
+
+
+def test_a_league_that_never_fetched_says_so_instead_of_inheriting(monkeypatch):
+    """The bug this test failed to catch the first time.
+
+    LAST_FETCH is module-global and an edge layer short-circuits WITHOUT
+    fetching when it has no eligible games. In the August offseason the live log
+    read "ok: 15 priced of 15 returned" for NFL and NHL — MLB's numbers under
+    their names. Counting three fetch_status() calls proved nothing; the calls
+    were there and all three reported the same league.
+
+    The masked direction is the dangerous one: a real NFL fetch failure would be
+    hidden by MLB's success on the line above it.
+    """
+    _patch_http(monkeypatch, [_api_game()])
+    assert len(odds.fetch_consensus(api_key="k")) == 1
+    assert odds.fetch_status() == "ok: 1 priced of 1 returned"
+
+    odds.reset_status()                       # next league's turn; it never fetches
+    assert odds.LAST_FETCH["reason"] == "not_called"
+    assert "not fetched" in odds.fetch_status()
+    assert "priced" not in odds.fetch_status(), "the previous league's result leaked"
+
+
+def test_the_refresh_resets_between_leagues():
+    """Pin the wiring, not just the helper: one reset per league, each before
+    that league's attach_and_save."""
+    import re
+
+    src = (ROOT / "refresh_odds.py").read_text(encoding="utf-8")
+    code = "\n".join(ln.split("#")[0] for ln in src.splitlines())
+    # the ORDER is the contract: every attach must be preceded by its own reset
+    seq = [m.group(1) or m.group(2) for m in re.finditer(
+        r"odds\.(reset_status)\(\)|(?:\w+_)?edges\.(attach_and_save)\(\)", code)]
+    assert seq == ["reset_status", "attach_and_save"] * 3, (
+        f"resets and fetches are not paired one-to-one, in order: {seq}")

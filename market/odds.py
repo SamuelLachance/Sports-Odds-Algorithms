@@ -64,9 +64,24 @@ def _record(reason: str, **extra) -> None:
     LAST_FETCH.update(reason=reason, **extra)
 
 
+def reset_status() -> None:
+    """Clear the record before a league's turn.
+
+    LAST_FETCH is module-global, and an edge layer short-circuits without
+    fetching when it has no eligible games (every offseason). Without this reset
+    that league prints the PREVIOUS league's result under its own name — in
+    August, NFL and NHL both reported MLB's "15 priced of 15 returned". The
+    harmless-looking direction hides the dangerous one: a real NFL fetch failure
+    would be masked by MLB's success on the line above it.
+    """
+    _record("not_called")
+
+
 def fetch_status() -> str:
     """One line describing the last fetch, for the refresh log."""
     r = LAST_FETCH.get("reason", "not_called")
+    if r == "not_called":
+        return "not fetched — no eligible games in the window"
     if r == "ok":
         return f"ok: {LAST_FETCH['n_used']} priced of {LAST_FETCH['n_raw']} returned"
     if r == "no_api_key":

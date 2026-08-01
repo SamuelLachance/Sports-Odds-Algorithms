@@ -33,12 +33,19 @@ def main() -> int:
     # "0 games" line, which reads as "no edges qualify today". That is how the
     # edge layer stayed silently dead for three days while the ledger — the
     # evidence stream the live-CLV promotion gate depends on — accrued nothing.
+    # reset_status() before each league, because the record is module-global and
+    # an edge layer short-circuits without fetching when it has no eligible
+    # games. Without the reset, an offseason league prints the PREVIOUS league's
+    # result under its own name.
+    odds.reset_status()
     n = edges.attach_and_save()
     print(f"[value] MLB: {n} games with >={EV_PCT}% EV vs opening consensus"
           f"  [odds {odds.fetch_status()}]")
+    odds.reset_status()
     m = nfl_edges.attach_and_save()
     print(f"[value] NFL: {m} games with >={EV_PCT}% EV vs opening consensus (7-day window)"
           f"  [odds {odds.fetch_status()}]")
+    odds.reset_status()
     k = nhl_edges.attach_and_save()
     print(f"[value] NHL: {k} games with >={EV_PCT}% EV vs opening consensus (7-day window)"
           f"  [odds {odds.fetch_status()}]")
