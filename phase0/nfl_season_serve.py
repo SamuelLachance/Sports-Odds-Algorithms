@@ -46,8 +46,9 @@ print(f"[{time.time()-T0:.0f}s] prelude done ({len(games)} games)", flush=True)
 # and applying the manual transform again would double-regress the states.
 # Today (zero played 2026 games) the last walked game is a 2025 game, so
 # APPLY_2026_BOUNDARY is True and behavior is unchanged.
+import nfl_season_guards                      # extracted + tested (tests/test_nfl_season_guards.py)
 LAST_WALK_SEASON = games[-1]["season"]
-APPLY_2026_BOUNDARY = LAST_WALK_SEASON < 2026
+APPLY_2026_BOUNDARY = nfl_season_guards.apply_2026_boundary(LAST_WALK_SEASON)
 print(f"[{time.time()-T0:.0f}s] last walked season {LAST_WALK_SEASON} -> "
       f"manual 2026 boundary transforms {'ON' if APPLY_2026_BOUNDARY else 'OFF'}", flush=True)
 
@@ -92,14 +93,9 @@ for i, g in enumerate(games):
             d2 = dfaR[opp]; d2[0] = dec_ * d2[0] + rS; d2[1] = dec_ * d2[1] + rN
 X14 = np.column_stack([X_of(F), f_pass, f_run])
 v6_hist = np.load("data/nfl_v7_feature.npy")
-if len(v6_hist) != len(games):
-    raise SystemExit(
-        f"data/nfl_v7_feature.npy is stale: {len(v6_hist)} rows vs {len(games)} games "
-        "in the spine "
-        + ("(new finals landed in data/nfl_games.csv)" if len(v6_hist) < len(games)
-           else "(npy has MORE rows than the spine — was data/nfl_games.csv rolled back?)")
-        + ". Regenerate it: python phase0/nfl_v7_feature_gen.py")
-assert len(v6_hist) == len(games)
+_v7_err = nfl_season_guards.v7_npy_error(len(v6_hist), len(games))
+if _v7_err:
+    raise SystemExit(_v7_err)
 X14[:, 7] = v6_hist                    # rows 63+66: ts_edge -> player ratings (v7 cohort)
 print(f"[{time.time()-T0:.0f}s] X14 built (col 7 = v6 player ratings)", flush=True)
 
