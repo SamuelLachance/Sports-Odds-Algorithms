@@ -471,3 +471,64 @@ buys +0.00005, nested −0.00001). But volume-only nested is +0.00076 with a CI
 spanning zero, halving to +0.00031 under forward-temporal validation — **below
 the bar already**. It is being screened on its own terms with two adversarial
 lenses before anything further is claimed.
+
+### Round 4b — the shot-differential observable, screened + doubly refuted
+
+The one live lead out of Round 4. Replace the NHL rating's observable with plain
+shot differential (Corsi/Fenwick-style) instead of xG margin, on the mechanistic
+argument that shot volume is more repeatable season to season and should
+therefore give a less noisy rating. Screened definitively, then attacked by two
+independent rebuilds with different lenses (leakage/temporal, redundancy/spec).
+
+Baseline reproduced by all three agents to 5dp: DEV LOSO Elo-only 0.67631,
+elo+rest+b2b 0.67543, shipped +xg_diff **0.67239** — so the shipped xG rating is
+worth **+0.00303** over the core, a clean DEV reproduction of its known ~+0.00282.
+
+| variant | raw | nested | bootstrap CI | verdict |
+|---|---|---|---|---|
+| REPLACE xG with shot-diff | +0.00077 (k=0.10) | +0.00061 | [−0.00077, +0.00199] | spans zero |
+| ADD alongside xG | +0.00092 (k=0.15) | +0.00080 | [−0.00023, +0.00183] | spans zero |
+
+**NULL — and this time the MECHANISM is refuted, not just the number.**
+
+The candidate's whole rationale is that shot volume is *more* repeatable and so
+should age *better*. The data says the opposite. Per-season value over the
+rest/b2b core across all 8 DEV seasons:
+
+```
++0.00584 +0.00607 +0.00417 +0.00450 +0.00326 +0.00630 +0.00212 +0.00070
+trend −0.00060/season, r = −0.74
+```
+
+while the shipped **xG rating is flat: −0.00009/season, r = −0.27**. Shot
+differential was genuinely the better observable in the early 2010s and decays to
+approximately zero exactly at the TEST boundary. Forward-temporal splits show the
+same thing and flip sign as the scored window moves later (+0.00036 → −0.00152).
+
+That also answers the follow-up the screen raised — whether the decay is an era
+effect shared by both ratings. It is not. It is volume-specific. The substantive
+reading is the familiar one from public hockey analytics: the league moved past
+raw shot counts, and xG did not lose its edge. **This is evidence the shipped
+choice of observable is correct and durable, not merely untested.**
+
+Two further findings from the refutations:
+
+- **Concentration.** Excluding the two carrier seasons (2011-12, 2015-16), nested
+  ADD falls to **+0.00002** (CI [−0.00129, +0.00131]) and REPLACE to −0.00041.
+  Five of seven seasons contain literally nothing, at the solver-noise floor.
+- **Collinearity.** corr(shot_diff, xg_diff) = 0.751; with both present the xG
+  standardized coefficient collapses +0.1840 → +0.0737 while shot takes +0.1442 —
+  a 60% reallocation, i.e. largely one signal split across two columns. Though
+  43.4% of shot-diff variance does survive projecting out elo and xG, and a
+  control adding a *second xG rating at a different timescale* buys only +0.00013
+  versus +0.00092 for xG+shot, so the content is not purely a "faster rating"
+  artifact. Real, distinct, and still not worth shipping.
+
+Leakage was tested directly and found absent: perturbing game *i*'s own box score
+moves feature[i] by exactly 0; flipping every outcome moves the shot feature by 0;
+updates flush before the season-regression boundary; and a deliberate
+read-after-update positive control shifts LL by +0.01081, **13× the candidate's
+honest effect**, confirming the harness would have detected leakage had it existed.
+
+**Verdict: keep `xg_diff` exactly as shipped. The volume/differential observable
+is closed alongside shot quality.**
