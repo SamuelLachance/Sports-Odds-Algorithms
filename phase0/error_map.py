@@ -628,6 +628,15 @@ def nfl_league():
         "rest": decompose(rest_lab, ll, y, p, "rest", gx),
         "bye": decompose(bye, ll, y, p, "bye", gx),
         "team": _team_dim(home, away, ll, y, p, gx),
+        # HOME games only — one slice per STADIUM, the sharp version of `team`
+        # (which pools home and away and so halves any venue signal). Neutral
+        # games get their own bucket rather than being charged to the nominal
+        # home team's building: London, Mexico and the Super Bowl are not that
+        # team's stadium, and the slice doubles as a test of whether the model
+        # mishandles games where home advantage should not apply at all.
+        "home_venue": decompose(
+            np.array([("(neutral site)" if g.get("neutral") else g["home"]) for g in G]),
+            ll, y, p, "home_venue", gx),
         "season": decompose(np.array([str(s) for s in seas]), ll, y, p, "season", gx),
     }
     out = {
@@ -700,6 +709,12 @@ def nhl_league():
         "rest": decompose(rest_lab, ll, y, p, "rest", gx),
         "b2b": decompose(b2b, ll, y, p, "b2b", gx),
         "team": _team_dim(home, away, ll, y, p, gx),
+        # HOME games only — one slice per ARENA. Caveat: the loaded NHL spine
+        # carries no neutral flag (data/nhl_games.csv has the column, but
+        # load_games drops it), so the handful of outdoor games per season are
+        # charged to the nominal home team. At ~2-4 of ~1,300 games a year the
+        # contamination is negligible, but it is not zero.
+        "home_venue": decompose(home, ll, y, p, "home_venue", gx),
         "season": decompose(np.array([str(s) for s in seas]), ll, y, p, "season", gx),
     }
     out = {

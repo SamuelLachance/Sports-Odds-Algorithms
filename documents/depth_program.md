@@ -267,3 +267,47 @@ team-specific intercept for one of 32 slices would be textbook overfitting.
 
 **Round 3 verdict: no adoption.** Consistent with Rounds 1-2 — the remaining gap
 is missing information, and the ballpark is not the missing information.
+
+### Round 3b — the venue channel in NFL and NHL, 2026-08-01
+
+The MLB screen exposed a structural gap rather than a one-league oversight: all
+three leagues share `_team_dim`, which pools home and away games, so none of
+them had a sharp venue test. Added `home_venue` to NFL and NHL too. NFL gets a
+proper one because its game records carry `neutral`, so London, Mexico and the
+Super Bowl go to their own bucket instead of being charged to the nominal home
+team's stadium. NHL's loaded spine drops the `neutral` column that
+data/nhl_games.csv actually has, so its ~2-4 outdoor games a season are charged
+to the nominal home arena — negligible, but stated.
+
+| league | venue slices | significant excess | `recal_p` < Bonferroni | smallest p | ll ceiling if every venue were perfectly recalibrated |
+|---|---|---|---|---|---|
+| MLB | 32 | 15 | **0** | CHN 0.0290 | 0.000131 |
+| NFL | 33 | 3 | **0** | NO 0.0084 | 0.006604 |
+| NHL | 31 | 3 | **0** | MIN 0.0159 | 0.001709 |
+
+**Zero venues survive multiple-comparison control in any league.** The channel is
+null league-wide, not just in baseball.
+
+NFL's ceiling (0.0066) looks large against its 0.01034 gap, but it is an
+in-sample bound fitting 33 free parameters to ~2,500 games; its aggregate
+recalibration gain is 50.6 nats against a null of 33, i.e. about 3 sd — which is
+what 33 noisy slices produce. No individual stadium is close.
+
+#### The neutral-site slice: checked, and it is noise
+
+Worth writing down because it looks exactly like a real defect. NFL neutral-site
+games score +0.09207/game excess with `recal_a` −0.927 — a large correction
+pulling the home side DOWN, which is precisely the signature of a model applying
+home advantage where none exists.
+
+It is not that. **`mean_pred` on those games is 0.4942** — essentially even, so
+home advantage IS already zeroed. A model that failed to zero it would predict
+near 0.57. Both paths handle it: `nfl_season_serve.py` sets `hfa_pts = 0.0 if
+s["neutral"]` and skips the travel/timezone terms, and the research harness's
+`team_hfa()` guards with `if not g["neutral"]`.
+
+The slice looks bad because those 28 games went 8-20 against the nominal home
+team: against an expected 13.8 wins that is z = −2.2, p ≈ 0.03, and with 33
+slices tested one such is expected. `excess_sig` is n.s. with a bootstrap CI of
+[−0.055, +0.365]. **No action.** Recorded so the next person to notice the
+−0.927 intercept does not spend a day on it.
