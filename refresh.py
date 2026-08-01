@@ -26,7 +26,7 @@ from market import EV_THRESHOLD, edges          # market-comparison layer, OUTSI
 from mlbwp import db as db_mod
 from mlbwp import season_paths
 from mlbwp import predict_slate
-from mlbwp.live import season_finals
+from mlbwp.live import finals_write_is_safe, season_finals
 from mlbwp.serve import Predictor
 from mlbwp_site import build_site
 
@@ -55,9 +55,25 @@ def main(horizon_days: int = 30) -> int:
 
     # 1. refresh this season's finals so team form is current through yesterday
     finals = season_finals(season, end_date=(today - timedelta(days=1)).isoformat())
-    FINALS.parent.mkdir(parents=True, exist_ok=True)
-    _write_atomic(FINALS, json.dumps(finals))
-    print(f"[refresh] {len(finals)} completed {season} games -> {FINALS.name}", flush=True)
+    n_prev = len(json.loads(FINALS.read_text())) if FINALS.is_file() else 0
+    if finals_write_is_safe(len(finals), n_prev):
+        FINALS.parent.mkdir(parents=True, exist_ok=True)
+        _write_atomic(FINALS, json.dumps(finals))
+        print(f"[refresh] {len(finals)} completed {season} games -> {FINALS.name}",
+              flush=True)
+    else:
+        # Completed games never un-complete: a shrunken walk is failed requests,
+        # not reality. Writing it would replay the model on an incomplete season
+        # and strand the missing games as picks that can never grade.
+        #
+        # Keep the cached file and CONTINUE rather than aborting: everything
+        # downstream reads this file, so the rest of the chain then rebuilds
+        # from the last good finals — a board that is a few hours stale but
+        # correct, instead of no board at all. The next walk clears the bar on
+        # its own once more games complete.
+        print(f"[refresh] WARNING: finals walk returned {len(finals)} games vs "
+              f"{n_prev} cached — REFUSING to overwrite; rebuilding from the "
+              f"cached finals instead", flush=True)
 
     # 2. board  3. value edges (market post-process)  4. db  5. shell
     predict_slate.main(days=horizon_days, today=today.isoformat())

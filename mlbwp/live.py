@@ -260,15 +260,38 @@ def season_finals(year: int, start_md="03-15", end_date=None) -> list[dict]:
     y0 = _date(year, int(start_md[:2]), int(start_md[3:]))
     y1 = _date.fromisoformat(end_date) if end_date else _date(year, 11, 1)
     out = []
+    failed = []
     d = y0
     while d <= y1:
         try:
             for g in schedule(d.isoformat(), probables=True):
                 if "home_win" in g:
                     out.append(g)
-        except Exception:  # noqa: BLE001 — a single bad day must not abort the backfill
-            pass
+        except Exception as exc:  # noqa: BLE001 — a bad day must not abort the backfill
+            # Skipping the day is right; doing it silently is not. This list is
+            # the model's replay input AND the ledger's grading source, so a
+            # dropped day means ratings walked without those games and picks
+            # that can never grade.
+            failed.append((d.isoformat(), str(exc)[:80]))
         time.sleep(0.25)
         d += timedelta(days=1)
+    if failed:
+        print(f"WARNING live: {len(failed)} day(s) failed in the {year} finals walk; "
+              f"those games are MISSING from the replay and cannot grade. "
+              f"First: {failed[0][0]} ({failed[0][1]})")
     out.sort(key=lambda g: g["date"])
     return out
+
+
+def finals_write_is_safe(n_new: int, n_prev: int) -> bool:
+    """Whether a freshly walked finals list may overwrite the cached one.
+
+    Completed games never un-complete, so within a season the count is
+    monotonically non-decreasing. A smaller result is a failed walk, not
+    reality — and writing it would replay the model on an incomplete season and
+    strand the missing games as ungradeable picks.
+
+    Strict, and self-healing: a block keeps the good file for one cycle, and the
+    next walk (with more games completed) clears the bar on its own.
+    """
+    return n_new >= n_prev
