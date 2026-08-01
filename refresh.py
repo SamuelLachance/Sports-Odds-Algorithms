@@ -24,13 +24,14 @@ from zoneinfo import ZoneInfo
 
 from market import EV_THRESHOLD, edges          # market-comparison layer, OUTSIDE the mlbwp model pkg
 from mlbwp import db as db_mod
+from mlbwp import season_paths
 from mlbwp import predict_slate
 from mlbwp.live import season_finals
 from mlbwp.serve import Predictor
 from mlbwp_site import build_site
 
 PROJECT = Path(__file__).resolve().parent
-FINALS = PROJECT / "data" / "season_2026_finals.json"
+FINALS = season_paths.finals_cache()   # season-derived; see mlbwp/season_paths.py
 
 EV_PCT = round(EV_THRESHOLD * 100)   # log copy must never outlive the constant
 

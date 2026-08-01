@@ -67,9 +67,12 @@ import json
 import os
 from datetime import datetime, timezone
 
+from mlbwp import season_paths
+
 LEDGER = "data/mlb_pred_ledger.json"
 BOARD = "site/data/board.json"
-FINALS = "data/season_2026_finals.json"
+# Season-derived: grading 2027 picks against a 2026 finals file grades nothing.
+FINALS = str(season_paths.finals_cache())
 
 
 TIERS = ("CONFIRMED", "PROJECTED", "EARLY")

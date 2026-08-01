@@ -21,12 +21,13 @@ from pathlib import Path
 from mlbwp.live import TEAM_ID_TO_RETRO, _get, BASE, et_date, game_data, season_finals
 
 from mlbwp.projection import Projector
+from mlbwp import season_paths
 from mlbwp.serve import Predictor
 
 PROJECT = Path(__file__).resolve().parents[1]
 OUT = PROJECT / "site" / "data" / "board.json"
-FINALS_CACHE = PROJECT / "data" / "season_2026_finals.json"
-LINES_CACHE = PROJECT / "data" / "season_2026_lines.json"
+FINALS_CACHE = season_paths.finals_cache()   # season-derived; see mlbwp/season_paths.py
+LINES_CACHE = season_paths.lines_cache()
 PRED_LEDGER = PROJECT / "data" / "mlb_pred_ledger.json"
 RECORD_CAP = 400          # graded rows shipped to the site (rollup uses them all)
 LEAN_MAX = 0.55           # policy rule 2: a forecast inside 55/45 is a LEAN, not a pick

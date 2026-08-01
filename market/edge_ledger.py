@@ -116,7 +116,9 @@ LEDGER = PROJECT / "data" / "edge_ledger.json"
 BOARD = PROJECT / "site" / "data" / "board.json"
 NFL_JSON = PROJECT / "site" / "data" / "nfl.json"
 NHL_JSON = PROJECT / "site" / "data" / "nhl.json"
-MLB_FINALS = PROJECT / "data" / "season_2026_finals.json"
+from mlbwp import season_paths           # noqa: E402  (PROJECT must resolve first)
+
+MLB_FINALS = season_paths.finals_cache()  # season-derived; see mlbwp/season_paths.py
 MLB_PRED_LEDGER = PROJECT / "data" / "mlb_pred_ledger.json"
 
 ET = ZoneInfo("America/New_York")

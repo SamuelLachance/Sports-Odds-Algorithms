@@ -229,11 +229,14 @@ def fetch_career(pid: int, is_p: bool) -> dict:
         return {}
 
 
-def main(season: int = 2026):
+def main(season: int | None = None):
+    from mlbwp import season_paths
     from mlbwp.predict_slate import ensure_lines_cache, build_replay
     pred = Predictor()
-    finals = json.loads((PROJECT / "data" / "season_2026_finals.json").read_text()) \
-        if (PROJECT / "data" / "season_2026_finals.json").is_file() else []
+    # The season parameter used to be decorative: refresh.py passed the live
+    # serve season while the body read a hardcoded 2026 path regardless.
+    fin_path = season_paths.finals_cache(season or pred.serve_season)
+    finals = json.loads(fin_path.read_text()) if fin_path.is_file() else []
     # apply the model to this season, same as the board build, so the standings
     # Elo and GlassBox ratings match the numbers the predictions were made with
     cache = ensure_lines_cache(finals)
