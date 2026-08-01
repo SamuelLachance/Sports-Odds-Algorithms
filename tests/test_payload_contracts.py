@@ -239,10 +239,41 @@ def test_board_page_applies_rule_1_not_just_the_record_page():
     picks = [g for g in lg["games"] if tier(g) != "EARLY"]
     early = [g for g in lg["games"] if tier(g) == "EARLY"]
     # the board's pick/scheduled split and the ledger's pending/scheduled split
-    # are two views of ONE rule applied to the same cards, so neither ledger
-    # bucket can exceed its board bucket
+    # The board's pick/scheduled split and the ledger's pending/scheduled split
+    # are two views of ONE rule. They are NOT the same population, though: the
+    # ledger keeps a game pending until the FINALS file catches up, while the
+    # board drops it once played. (Observed 2026-08-01: 36 pending vs 31 eligible
+    # cards — the 5 extras were all previous-day games, played and awaiting
+    # grading. An earlier version of this test asserted pending <= board picks
+    # and failed the moment real games were played; that invariant only holds
+    # before first pitch.)
+    #
+    # The invariant that DOES hold, and is the one rule 1 actually claims: every
+    # pending row still resident on the board is non-EARLY, and every ledger row
+    # that left the board is in the past.
+    import datetime as _dt
+    from mlbwp.pred_ledger import entry_tier
     m = b["record"]["mlb"]
-    assert m["n_pending"] <= len(picks)
+    by_pk = {str(g["game_pk"]): g for g in lg["games"]}
+    led_path = Path(__file__).resolve().parents[1] / "data" / "mlb_pred_ledger.json"
+    if led_path.is_file():
+        led = json.loads(led_path.read_text(encoding="utf-8"))
+        today = _dt.date.today().isoformat()
+        resident = off_board = 0
+        for pk, e in led.items():
+            if e.get("y") is not None or entry_tier(e) == "EARLY":
+                continue
+            if pk in by_pk:
+                resident += 1
+                assert tier(by_pk[pk]) != "EARLY", (
+                    f"game {pk} is published as a pending PICK while its board card "
+                    "is EARLY — rule 1 is broken")
+            else:
+                off_board += 1
+                assert (e.get("d") or "9999") <= today, (
+                    f"game {pk} is pending but absent from the board with a FUTURE "
+                    f"date {e.get('d')} — it should still be on the board")
+        assert resident + off_board == m["n_pending"]
     assert m["n_scheduled"] <= len(early)
     assert len(picks) < len(lg["games"]), "every card is a pick — rule 1 is not applied"
 
