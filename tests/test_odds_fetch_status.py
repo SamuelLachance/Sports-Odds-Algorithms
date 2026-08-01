@@ -2,17 +2,19 @@
 and a dead pipeline.
 
 `fetch_consensus` degrades to [] on every failure so the board build never
-breaks. That is correct, but it collapsed five very different situations into
-one indistinguishable empty list, and every caller printed the same line:
-"0 games with >=20% EV vs opening consensus". A dead API key was reported in
-exactly the words of a market with no value in it.
+breaks. That is correct, but it collapses five very different situations into
+one indistinguishable empty list, and every caller prints the same "0 games"
+line. A dead API key would be reported in exactly the words of a market with no
+value in it.
 
-Found live on 2026-08-01: `data/opening_odds_2026.json` held 40 entries all
-captured 2026-07-29T19:23:35Z, for games dated 2026-07-30, while the board
-carried 36 pending picks — and refresh_odds.py completed in 0.56s, too fast to
-have made three HTTP calls. The edge layer had been dead for ~3 days and
-data/edge_ledger.json, the evidence stream the live-CLV promotion gate depends
-on, held zero rows. Nothing anywhere said so.
+Written precautionarily on 2026-08-01, NOT in response to an outage. I had
+concluded the layer was dead for days after reading three of the forty entries
+in data/opening_odds_2026.json and generalising their shared capture timestamp
+to all of them. It was wrong: that day's 06:37Z run priced 15 games across 10
+books, and the empty edge ledger reflects a strict EV gate no game had cleared,
+not a broken fetch. The gap these tests close is still real — had the key
+actually died, the evidence available to notice it would have been the same
+"0 games" line either way.
 """
 from __future__ import annotations
 

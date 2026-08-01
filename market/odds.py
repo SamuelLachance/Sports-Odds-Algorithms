@@ -44,15 +44,18 @@ def _et_date(iso_utc: str) -> str:
 
 
 # Why the last fetch returned what it did. `fetch_consensus` degrades to [] on
-# every failure so the board build never breaks — but that collapsed FIVE very
+# every failure so the board build never breaks — but that collapses FIVE very
 # different situations into one indistinguishable empty list, and downstream all
-# of them printed "0 games with >=20% EV", which reads as "no edges qualify
-# today". A dead API key looked exactly like a quiet market.
+# of them print the same "0 games" line, which reads as "no edges qualify
+# today". A dead API key would look exactly like a quiet market.
 #
-# Found live on 2026-08-01: the opening-odds cache had not captured a game since
-# 2026-07-29 while the board carried 36 pending picks. The edge layer had been
-# silently dead for ~3 days, and the edge ledger — the durable evidence stream
-# the live-CLV promotion gate depends on — held zero rows.
+# This is PRECAUTIONARY, not a response to an outage. It was written on
+# 2026-08-01 after I wrongly concluded from a 3-of-40 sample of the opening-odds
+# cache that the layer had been dead for days; it had not — that day's 06:37Z
+# run priced 15 games across 10 books. The weakness it addresses is real all the
+# same: had the key actually died, the logs would have said "0 games" and
+# nothing else, and the empty edge ledger would have looked like a strict EV
+# gate rather than a broken pipeline.
 LAST_FETCH: dict = {"reason": "not_called"}
 
 
