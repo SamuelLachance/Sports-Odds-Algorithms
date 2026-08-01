@@ -91,8 +91,39 @@ def _lineup_subset(payload, rail=None, pbp=None):
     return out
 
 
+def _canon(obj):
+    """Order-insensitive canonical form, for comparing two lineup snapshots.
+
+    The API is free to return rosterSpots in any order, so a raw dump would
+    treat a re-ordering as a change and archive a duplicate every cycle. Sorting
+    every list by its own canonical text makes the fingerprint depend on content
+    and nothing else.
+    """
+    if isinstance(obj, dict):
+        return {k: _canon(v) for k, v in sorted(obj.items())}
+    if isinstance(obj, list):
+        return sorted((_canon(v) for v in obj), key=lambda v: json.dumps(v, sort_keys=True))
+    return obj
+
+
+def lineup_fingerprint(sub) -> str:
+    """Dedup key for an archived snapshot: its full canonical content.
+
+    NOT the set of player ids, which is what this used to be. `_pid_set`
+    flattens every id in the subset into one set, so a player moving from
+    `dressed` to `railScratches` leaves that set UNCHANGED — the snapshot keys
+    identically to the previous one and is dropped as a duplicate.
+
+    A late scratch is precisely the event this archive exists to capture (ledger
+    row 10), and it was the one change the key could not see. Keying on content
+    means any difference — a scratch, a goalie swap, a coach change — is
+    archived, and an identical re-fetch still is not.
+    """
+    return json.dumps(_canon(sub), sort_keys=True, separators=(",", ":"))
+
+
 def _pid_set(obj):
-    """All player ids in a lineup subset (dedup key: same set = same line)."""
+    """All player ids in a lineup subset (kept for reading archived records)."""
     ids = set()
     if isinstance(obj, dict):
         for k, v in obj.items():
@@ -131,7 +162,7 @@ def archive_lineups(upcoming, today_iso):
                 rec = json.loads(line)
             except ValueError:
                 continue
-            seen.add((rec.get("gid"), frozenset(_pid_set(rec.get("lineup")))))
+            seen.add((rec.get("gid"), lineup_fingerprint(rec.get("lineup"))))
     n = 0
     with open(LINEUP_ARCHIVE, "a", encoding="utf-8") as fh:
         for u in todays:
@@ -163,7 +194,7 @@ def archive_lineups(upcoming, today_iso):
             if payload is None:
                 continue
             sub = _lineup_subset(payload, rail, pbp)
-            key = (u["id"], frozenset(_pid_set(sub)))
+            key = (u["id"], lineup_fingerprint(sub))
             if not sub or key in seen:
                 continue
             seen.add(key)
