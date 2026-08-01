@@ -98,9 +98,16 @@ def fetch_is_safe(n_new: int, n_prev: int, tol: int = SHRINK_TOL) -> bool:
 
     `tol` allows the handful of rows a genuine upstream correction removes
     while still blocking a truncation, which loses thousands.
+
+    Only ONE special case, and it is load-bearing: n_new < 0 means csv_rows
+    could not count the table, which is not evidence of truncation — without
+    this, an uncountable body would compare -1 >= n_prev - tol and be REFUSED.
+    A companion `n_prev <= 0` case for the first fetch was written and removed:
+    counts are never negative, so `n_new >= 0 - tol` already admits it. Same
+    redundancy I had written into nhl_xg_update.season_block_is_safe.
     """
-    if n_prev <= 0 or n_new < 0:
-        return True                      # first fetch, or not a countable table
+    if n_new < 0:
+        return True
     return n_new >= n_prev - tol
 
 

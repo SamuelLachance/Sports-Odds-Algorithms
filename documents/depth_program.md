@@ -344,3 +344,39 @@ under-rates home teams on short weeks) but at n=124 with recal_p 0.372 that is
 noise, and it points the opposite way from the usual "TNF is chaos" intuition.
 
 **No adoption.** Broadcast window carries nothing the model is missing.
+
+---
+
+## Guard-branch necessity sweep, 2026-08-01
+
+Not a research round — a code-health sweep, recorded because it produced a rule
+worth keeping.
+
+Mutation testing is usually read one way: a surviving mutant means the tests are
+too weak. Iteration 82 hit the other reading. A mutation that disables a branch
+and CANNOT be killed at any tolerance does not mean the test is weak; it means
+**the branch is dead**. The test was fine; the code had a special case that
+merely looked necessary.
+
+Swept every early-return branch in the repo's pure predicates (40 candidates,
+most of them legitimate loop filters) and checked, for each, whether the code
+after it already handles the case:
+
+| guard | branch | verdict |
+|---|---|---|
+| `db.pythag` | `rs<=0 and ra<=0` | NECESSARY — otherwise ZeroDivisionError |
+| `nfl_weekly.csv_rows` | `n == 0` | NECESSARY — general expr returns 0, not −1 |
+| `nfl_season_guards.v7_npy_error` | `n_npy == n_games` | NECESSARY — else builds an error string |
+| `nhl_season_boundary.season_of_game_id` | `len(s) != 10` | NECESSARY — a 5-digit id would decode to 20262027 |
+| `pred_ledger.entry_tier` | `t in TIERS` | NECESSARY — else the stamp is discarded |
+| `nfl_weekly.fetch_is_safe` | `n_prev <= 0` | **DEAD — removed** |
+| `nhl_xg_update.season_block_is_safe` | `n_cur_old <= 0` | **DEAD — removed (iter 82)** |
+
+Both dead branches are the same mistake, written by me, twice: a "first
+time / empty" special case that the tolerance comparison already admits, because
+row counts are never negative and `n_new >= 0 - tol` is trivially true. The
+half of the NFL guard that IS load-bearing — `n_new < 0`, meaning the table
+could not be counted — was kept and re-confirmed killable.
+
+**Rule:** when adding a tolerance-based guard, check whether the empty/first
+case is already inside the tolerance before writing a branch for it.
