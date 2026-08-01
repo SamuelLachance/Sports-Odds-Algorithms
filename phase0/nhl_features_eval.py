@@ -24,7 +24,11 @@ from collections import defaultdict
 from datetime import date
 
 import numpy as np
-from sklearn.linear_model import LogisticRegression
+
+# sklearn is imported lazily, inside the two eval functions that fit models.
+# `build_features` — the only thing the SERVE path calls — needs numpy alone, and
+# a module-level sklearn import made the whole NHL serve unimportable without it.
+# That is why phase0/nhl_serve.py has been skipping on every CI run.
 
 sys.path.insert(0, "phase0")
 from nhl_glicko2_eval import (DEV_END, DEV_START, DEV_WARM_BEFORE, TEST_END,  # noqa: E402
@@ -108,6 +112,8 @@ def main():
     F = build_features(games)
     dev = (seas >= DEV_WARM_BEFORE) & (seas <= DEV_END)
     test = (seas >= TEST_START) & (seas <= TEST_END)
+
+    from sklearn.linear_model import LogisticRegression   # eval-only dependency
 
     def run(cols, name, mask_extra=None):
         m_dev, m_test = dev.copy(), test.copy()

@@ -49,12 +49,21 @@ jobs:
           git add site/data/board.json site/data/db.json site/index.html \
                   data/season_2026_lines.json data/opening_odds_2026.json \
                   data/mlb_pred_ledger.json
-          # NHL announced-lineup archive (ledger row 10 reopen): the file only
-          # exists on NHL game days once nhl_update.py snapshots a landing
-          # payload — add it only when present
-          if [ -f data/nhl_lineup_archive.jsonl ]; then
-            git add data/nhl_lineup_archive.jsonl
-          fi
+          # NHL incremental state from phase0/nhl_update.py. This job runs that
+          # step every 4h but only ever committed the lineup archive, so the
+          # spine appends and the upcoming slate were fetched and then thrown
+          # away six times a day — nhl-weekly.yml re-did the same work on
+          # Mondays. Keeping them costs nothing and leaves the weekly chain less
+          # to catch up on. The re-SERVE still belongs to nhl-weekly.yml, which
+          # has the numpy/scipy/sklearn it needs; nothing here changes how often
+          # NHL predictions are regenerated.
+          #
+          # add-only-existing: the lineup archive appears only on NHL game days,
+          # and upcoming is absent before the first in-season run.
+          for f in data/nhl_lineup_archive.jsonl data/nhl_games.csv \
+                   data/nhl_upcoming.json; do
+            if [ -f "$f" ]; then git add "$f"; fi
+          done
           if git diff --cached --quiet; then
             echo "no data change"
           else
