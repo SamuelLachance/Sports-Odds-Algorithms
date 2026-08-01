@@ -279,8 +279,41 @@ def season_finals(year: int, start_md="03-15", end_date=None) -> list[dict]:
         print(f"WARNING live: {len(failed)} day(s) failed in the {year} finals walk; "
               f"those games are MISSING from the replay and cannot grade. "
               f"First: {failed[0][0]} ({failed[0][1]})")
+    out = dedupe_finals(out)
     out.sort(key=lambda g: g["date"])
     return out
+
+
+def dedupe_finals(games: list[dict]) -> list[dict]:
+    """One entry per game_pk, keeping the latest date.
+
+    The walk asks the schedule endpoint one day at a time, and a suspended or
+    postponed game is listed under BOTH its original date and the date it was
+    actually completed — same game_pk, same final score. Found live: game_pk
+    824912 (SF @ ATL) appeared as 2026-06-16 and again as 2026-06-17, so the
+    season's finals list held 1653 entries for 1652 distinct games.
+
+    A duplicate is not cosmetic. The replay walks this list in order, so the
+    game's result was applied to both teams' Elo TWICE, and its plate
+    appearances were counted twice into the batter/pitcher ratings, power,
+    baserunning and bullpen aggregates.
+
+    The later date wins because that is when the game actually concluded, which
+    is when its result could legitimately enter a leak-safe replay.
+    """
+    best: dict = {}
+    unkeyed: list[dict] = []
+    for g in games:
+        pk = g.get("game_pk")
+        if pk is None:
+            # Cannot identify it, so cannot claim it is a duplicate. Keying
+            # these together would collapse every unidentified game into one.
+            unkeyed.append(g)
+            continue
+        prev = best.get(str(pk))
+        if prev is None or str(g.get("date", "")) > str(prev.get("date", "")):
+            best[str(pk)] = g
+    return list(best.values()) + unkeyed
 
 
 def finals_write_is_safe(n_new: int, n_prev: int) -> bool:
