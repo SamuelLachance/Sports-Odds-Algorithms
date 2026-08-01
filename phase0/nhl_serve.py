@@ -17,6 +17,9 @@ import numpy as np
 sys.path.insert(0, "phase0")
 from nhl_glicko2_eval import llv, load_games, run_elo  # noqa: E402
 from nhl_features_eval import build_features  # noqa: E402
+from nhl_season_boundary import (  # noqa: E402
+    current_season, display_teams, fmt_metric, is_playoff,
+)
 
 EPS = 1e-9
 
@@ -56,11 +59,29 @@ def final_states(games, model):
 
 
 def main():
+    import os
     model = json.load(open("data/nhl_model.json"))
     b = model["blend"]
     c = b["coefs"]
     games = load_games()
-    CUR_SEASON = max(g["season"] for g in games)      # auto-rolls to new seasons
+
+    # Upcoming is loaded BEFORE the season is derived, on purpose: the spine
+    # holds only COMPLETED games, so deriving the season from it alone leaves
+    # the payload a season stale from the day the new schedule posts until the
+    # first new final lands. See phase0/nhl_season_boundary.py.
+    upcoming = []
+    if os.path.exists("data/nhl_upcoming.json"):
+        try:
+            upcoming = json.load(open("data/nhl_upcoming.json")) or []
+        except json.JSONDecodeError:
+            upcoming = []
+    CUR_SEASON = current_season((g["season"] for g in games),
+                                (u["id"] for u in upcoming))
+    # Newest completed season strictly before the served one — empty in the
+    # ordinary case (they are the same season), non-empty only across the
+    # boundary, which is exactly when the team set needs it.
+    _prior = [s for s in {g["season"] for g in games} if s < CUR_SEASON]
+    PREV_SEASON = max(_prior) if _prior else CUR_SEASON
     e_out = run_elo(games, **model["elo_cfg"])
     p = np.clip(np.array([o[1] for o in e_out]), EPS, 1 - EPS)
     elogit = np.log(p / (1 - p))
@@ -83,7 +104,7 @@ def main():
             "hs": g["home_goals"] if "home_goals" in g else None,
             "as": g["away_goals"] if "away_goals" in g else None,
             "y": g["y"], "ot": g["so"] or None,
-            "playoff": 1 if str(g["game_id"])[4:6] == "03" else 0,
+            "playoff": 1 if is_playoff(g["game_id"]) else 0,
         })
 
     # spine dicts lack goals; reload raw for scores
@@ -96,34 +117,31 @@ def main():
             s["last"] = r["last_period"]
 
     # ---- upcoming slate: predict from CURRENT states (in-season only) ----
-    import os
     from datetime import date as _date
     n_upcoming = 0
-    if os.path.exists("data/nhl_upcoming.json"):
-        upcoming = json.load(open("data/nhl_upcoming.json"))
-        if upcoming:
-            R, xg_st, last = final_states(games, model)
-            from nhl_features_eval import XG_HA
-            for u in upcoming:
-                h, a = u["home"], u["away"]
-                if h not in R or a not in R:
-                    continue                      # refuse unresolved teams
-                elp = 1.0 / (1.0 + 10 ** (-((R[h] + model["elo_cfg"]["ha"]) - R[a]) / 400.0))
-                elogit_u = float(np.log(max(elp, EPS) / max(1 - elp, EPS)))
-                d = _date.fromisoformat(u["d"])
-                def rst(team):
-                    lg = last.get(team)
-                    return min((d - _date.fromisoformat(lg)).days, 5) if lg else 3
-                hb2b = 1.0 if (last.get(h) and (d - _date.fromisoformat(last[h])).days <= 1) else 0.0
-                ab2b = 1.0 if (last.get(a) and (d - _date.fromisoformat(last[a])).days <= 1) else 0.0
-                xgd = (xg_st.get(h, 0.0) + XG_HA) - xg_st.get(a, 0.0)
-                z = (b["intercept"] + c["elo_logit"] * elogit_u + c["rest"] * (rst(h) - rst(a))
-                     + c["b2b_home"] * hb2b + c["b2b_away"] * ab2b + c["xg"] * xgd)
-                sched.append({"id": u["id"], "d": u["d"], "home": h, "away": a,
-                              "hp": round(float(sig(z)), 4), "hs": None, "as": None,
-                              "y": None, "ot": None, "playoff": u.get("playoff", 0)})
-                n_upcoming += 1
-            sched.sort(key=lambda s: (s["d"], s["id"]))
+    if upcoming:
+        R, xg_st, last = final_states(games, model)
+        from nhl_features_eval import XG_HA
+        for u in upcoming:
+            h, a = u["home"], u["away"]
+            if h not in R or a not in R:
+                continue                      # refuse unresolved teams
+            elp = 1.0 / (1.0 + 10 ** (-((R[h] + model["elo_cfg"]["ha"]) - R[a]) / 400.0))
+            elogit_u = float(np.log(max(elp, EPS) / max(1 - elp, EPS)))
+            d = _date.fromisoformat(u["d"])
+            def rst(team):
+                lg = last.get(team)
+                return min((d - _date.fromisoformat(lg)).days, 5) if lg else 3
+            hb2b = 1.0 if (last.get(h) and (d - _date.fromisoformat(last[h])).days <= 1) else 0.0
+            ab2b = 1.0 if (last.get(a) and (d - _date.fromisoformat(last[a])).days <= 1) else 0.0
+            xgd = (xg_st.get(h, 0.0) + XG_HA) - xg_st.get(a, 0.0)
+            z = (b["intercept"] + c["elo_logit"] * elogit_u + c["rest"] * (rst(h) - rst(a))
+                 + c["b2b_home"] * hb2b + c["b2b_away"] * ab2b + c["xg"] * xgd)
+            sched.append({"id": u["id"], "d": u["d"], "home": h, "away": a,
+                          "hp": round(float(sig(z)), 4), "hs": None, "as": None,
+                          "y": None, "ot": None, "playoff": u.get("playoff", 0)})
+            n_upcoming += 1
+        sched.sort(key=lambda s: (s["d"], s["id"]))
 
     # ---- team ratings + standings (current season record) ----
     rec = defaultdict(lambda: {"w": 0, "l": 0, "otl": 0, "gf": 0, "ga": 0})
@@ -142,9 +160,15 @@ def main():
             rec[h]["otl" if ot else "l"] += 1
 
     elo_r = model["elo_ratings"]; xg_r = model["xg_ratings"]
-    # current teams = those that played this season (drops defunct ATL/PHX/ARI codes)
-    current = {t for t in rec}
-    cur_elo = {t: elo_r[t] for t in elo_r if t in current}
+    # Active teams = those on the current season's schedule (played OR upcoming)
+    # unioned with the previous season's. Keying off played games alone listed
+    # 2 of 32 clubs on opening night; the 10-day upcoming window does not name
+    # every team either, hence the previous season. Defunct codes (ATL/PHX/ARI)
+    # appear in neither and are still dropped.
+    cur_teams = {t for s in sched for t in (s["home"], s["away"])}
+    prev_teams = {t for g in games if g["season"] == PREV_SEASON
+                  for t in (g["home"], g["away"])}
+    cur_elo = display_teams(elo_r, cur_teams, prev_teams)
     ranks = {t: i + 1 for i, t in enumerate(sorted(cur_elo, key=lambda x: -cur_elo[x]))}
     teams = {}
     for t in cur_elo:
@@ -208,8 +232,10 @@ def main():
             "test_delta_vs_elo": model["test_delta_vs_elo"],
             "baseline_elo_test": model["baseline_elo_test"],
             "home_win_rate": model["home_win_rate"],
-            "cur_season_ll": round(cur_ll, 5) if cur_ll else None,
-            "cur_season_acc": round(cur_acc, 4) if cur_acc else None,
+            # `is not None`, not truthiness: an accuracy of 0.0 is a real
+            # measurement and must not serialize as null.
+            "cur_season_ll": round(cur_ll, 5) if cur_ll is not None else None,
+            "cur_season_acc": round(cur_acc, 4) if cur_acc is not None else None,
             "features": ["Elo (k8,ha30)", "rest", "back-to-back", "xG team rating"],
             "n_games_train": 17709,
         },
@@ -220,7 +246,10 @@ def main():
         json.dump(payload, _fh)
     import os as _os; _os.replace("site/data/nhl.json.tmp", "site/data/nhl.json")
     print(f"wrote site/data/nhl.json: {len(sched)} games, {len(teams)} teams")
-    print(f"current-season model LL {cur_ll:.5f}  acc {cur_acc:.4f} (n={len(done)})")
+    # fmt_metric, not an f-string spec: both are None until the season's first
+    # game is played, and `f"{None:.5f}"` raises TypeError.
+    print(f"current-season model LL {fmt_metric(cur_ll, 5)}  "
+          f"acc {fmt_metric(cur_acc, 4)} (n={len(done)})")
     print("top teams:", [(t, teams[t]["pts"], teams[t]["elo"])
                          for t in list(teams)[:5]])
 
