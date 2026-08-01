@@ -137,6 +137,28 @@ def aggregate(season: int, raw: bytes, want_shots: bool):
     return team_rows, goalie_rows, shot_rows
 
 
+SEASON_SHRINK_TOL = 4      # rows a genuine re-score may remove (2 per game)
+
+
+def season_block_is_safe(n_new: int, n_cur_old: int, tol: int = SEASON_SHRINK_TOL) -> bool:
+    """Whether a freshly aggregated season block may replace the one on disk.
+
+    Within a season, played games only accumulate, so the current-season row
+    count is monotonically non-decreasing bar the odd re-score. A materially
+    SMALLER block means MoneyPuck served a partial zip — a read taken mid-publish
+    — not games disappearing.
+
+    `main()` only rejects a fully EMPTY parse, which a partial one passes: a zip
+    carrying 10 of 800 games is non-empty and would replace the whole block.
+
+    One comparison, deliberately. An `if n_cur_old <= 0: return True` guard for
+    the first block of a season looks necessary and is not: row counts are never
+    negative, so `n_new >= 0 - tol` already holds. Mutation testing caught it as
+    unkillable dead code.
+    """
+    return n_new >= n_cur_old - tol
+
+
 def replace_season(path: str, season: int, new_rows: list[dict]):
     """Stage a rewrite of `path`: keep every non-current-season row exactly as
     read, append the fresh current-season block (ids sort after prior seasons).
@@ -164,6 +186,17 @@ def replace_season(path: str, season: int, new_rows: list[dict]):
             n_old += 1
             if not is_cur(row):
                 keep.append(row)
+    n_cur_old = n_old - len(keep)
+    if not season_block_is_safe(len(new_rows), n_cur_old):
+        # main() already refuses a fully EMPTY parse, but a PARTIAL one slipped
+        # through: a zip carrying 10 of the season's 800 games is non-empty, so
+        # the current season's block would be replaced by those 10. Prior
+        # seasons survive by design — the current one is what the model serves
+        # from, and the xG team rating is a shipped feature.
+        print(f"  {path}: REFUSED — {len(new_rows):,} season-{season} rows vs "
+              f"{n_cur_old:,} on disk. That is a partial MoneyPuck publish, not "
+              f"games being removed. Keeping the existing file.")
+        return lambda: None
     tmp = path + ".tmp"
     with open(tmp, "w", newline="", encoding="utf-8") as fh:
         w = csv.writer(fh)
