@@ -311,3 +311,36 @@ team: against an expected 13.8 wins that is z = −2.2, p ≈ 0.03, and with 33
 slices tested one such is expected. `excess_sig` is n.s. with a bootstrap CI of
 [−0.055, +0.365]. **No action.** Recorded so the next person to notice the
 −0.927 intercept does not spend a day on it.
+
+### Round 3c — NFL broadcast slot, 2026-08-01
+
+Same lens as the venue screens: `kick` (ET kickoff hour) already feeds the NFL
+travel feature but had never been a SLICE, so prime-time and Thursday games
+could have been systematically mispriced with nothing to show it. Added a
+`kickoff_slot` dimension (weekday + hour -> the slate a game sat in). Distinct
+from the existing `rest` dimension, which captures Thursday's short week but not
+the slot itself.
+
+| slot | n | base | mean_p | cal_gap | excess/g | sig | recal_p |
+|---|---|---|---|---|---|---|---|
+| Sun early (1pm) | 1424 | 0.562 | 0.577 | +0.015 | −0.06372 | SIG better | 0.3163 |
+| Sun late (4pm) | 710 | 0.576 | 0.569 | −0.007 | −0.05694 | SIG better | 0.6101 |
+| Mon night | 172 | 0.558 | 0.559 | +0.001 | −0.07500 | SIG better | 0.6605 |
+| Sun night | 165 | 0.558 | 0.554 | −0.003 | −0.03535 | n.s. | 0.8835 |
+| Thu night | 124 | 0.597 | 0.548 | −0.049 | −0.09063 | SIG better | 0.3719 |
+| Sat / other | 71 | 0.549 | 0.588 | +0.039 | −0.03776 | n.s. | 0.6567 |
+
+**Null, and about as clean as a null gets.** Nothing survives Bonferroni
+(α=0.0083), and two aggregate numbers settle it:
+
+- `recal_total` **3.6 nats against a null of 6.0** — the dimension carries LESS
+  apparent structure than chance produces.
+- ceiling if every slot were perfectly recalibrated: **−0.000903**, i.e.
+  negative. The in-sample gain does not even cover the parameter cost.
+
+Every slot is already "SIG better" than its own base rate except the two
+smallest. Thursday night has the largest calibration gap (−0.049: the model
+under-rates home teams on short weeks) but at n=124 with recal_p 0.372 that is
+noise, and it points the opposite way from the usual "TNF is chaos" intuition.
+
+**No adoption.** Broadcast window carries nothing the model is missing.

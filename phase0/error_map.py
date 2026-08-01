@@ -572,6 +572,25 @@ def _team_dim(home, away, ll, y, p, global_excess=None):
     return rows
 
 
+def _nfl_slot(G):
+    """Broadcast window: weekday + ET kickoff hour -> the slate a game sat in."""
+    from datetime import date as _d
+    out = []
+    for g in G:
+        wd = _d.fromisoformat(g["date"]).weekday()      # Mon=0 ... Sun=6
+        k = float(g["kick"])
+        if wd == 6:
+            out.append("Sun early (1pm)" if k < 15 else
+                       "Sun late (4pm)" if k < 19 else "Sun night")
+        elif wd == 0:
+            out.append("Mon night")
+        elif wd == 3:
+            out.append("Thu night")
+        else:
+            out.append("Sat / other")
+    return np.array(out)
+
+
 # =================================================================== N F L ===
 def nfl_league():
     import nfl_depth_eval as N
@@ -637,6 +656,13 @@ def nfl_league():
         "home_venue": decompose(
             np.array([("(neutral site)" if g.get("neutral") else g["home"]) for g in G]),
             ll, y, p, "home_venue", gx),
+        # Broadcast slot. `kick` (ET hour) already feeds the travel feature but
+        # was never a slice, so prime-time and Thursday games could be
+        # systematically mispriced with nothing to show it. Distinct from the
+        # `rest` dimension: that captures Thursday's short week, this captures
+        # the slot itself — national audience, different scheduling, and the
+        # league's own habit of putting bad teams in bad windows.
+        "kickoff_slot": decompose(_nfl_slot(G), ll, y, p, "kickoff_slot", gx),
         "season": decompose(np.array([str(s) for s in seas]), ll, y, p, "season", gx),
     }
     out = {
