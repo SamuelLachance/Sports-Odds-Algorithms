@@ -111,6 +111,12 @@ def test_no_module_hardcodes_a_season_year_any_more():
 
 def test_db_main_season_argument_actually_reaches_the_path():
     """It accepted a season and ignored it — refresh.py passed the live season
-    while the body read a hardcoded 2026 path. Pin that the wiring is real."""
-    src = (ROOT / "mlbwp" / "db.py").read_text(encoding="utf-8")
-    assert "season_paths.finals_cache(season or pred.serve_season)" in src
+    while the body read a hardcoded 2026 path. Pin the property, not the exact
+    expression: the season must be resolved, then used to build the path."""
+    import inspect
+
+    from mlbwp import db
+    src = inspect.getsource(db.main)
+    assert "season = season or pred.serve_season" in src, "season is never resolved"
+    assert "season_paths.finals_cache(season)" in src, "the path ignores the season"
+    assert src.index("season = season or") < src.index("finals_cache(season)")

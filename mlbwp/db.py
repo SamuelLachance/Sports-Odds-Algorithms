@@ -70,6 +70,21 @@ def _l10(records):
     return 0, 0
 
 
+def write_is_safe(n_new: int, n_prev: int, floor: float = 0.8) -> bool:
+    """Whether a rebuilt player set is a refresh rather than a fetch failure.
+
+    build_players skips a team whose roster request fails, so a degraded API
+    silently yields a payload missing whole rosters — and main() would write it
+    straight over the last good db.json. Nothing downstream can tell "this team
+    has no players" from "we could not ask".
+
+    A first build (n_prev == 0) always writes. Otherwise the new set must retain
+    `floor` of the previous one: routine churn (call-ups, IL moves) is a couple
+    of players, while a lost roster is ~26.
+    """
+    return True if n_prev <= 0 else n_new >= floor * n_prev
+
+
 def pythag(rs, ra):
     if rs <= 0 and ra <= 0:
         return 0.5
@@ -139,10 +154,16 @@ def build_players(teams: dict, season: int, pred=None) -> dict:
     pit = bulk_stats(season, "pitching")
 
     players = {}
+    n_failed = 0
     for tid, code in id2team.items():
         try:
             roster = _get(f"{BASE}/teams/{tid}/roster?rosterType=active&season={season}")["roster"]
-        except Exception:  # noqa: BLE001
+        except Exception as exc:  # noqa: BLE001
+            # Skipping is right (one team must not fail the build) but silence
+            # is not: an empty roster on the site is indistinguishable from a
+            # team we simply could not ask about.
+            n_failed += 1
+            print(f"WARNING db: roster fetch failed for {code} ({tid}): {exc}")
             continue
         for e in roster:
             pid = e["person"]["id"]
@@ -207,6 +228,9 @@ def build_players(teams: dict, season: int, pred=None) -> dict:
         teams[code]["ts_pit"] = round(sum(pitch) / len(pitch), 1) if pitch else None
     for i, code in enumerate(sorted(teams, key=lambda c: -(teams[c].get("ts100") or 0)), 1):
         teams[code]["ts_rank"] = i
+    if n_failed:
+        print(f"WARNING db: {n_failed}/{len(id2team)} rosters unavailable; "
+              f"those teams ship with no players")
     return players
 
 
@@ -233,9 +257,13 @@ def main(season: int | None = None):
     from mlbwp import season_paths
     from mlbwp.predict_slate import ensure_lines_cache, build_replay
     pred = Predictor()
+    # Resolve ONCE, here: `season` reaches build_teams, build_players and the
+    # payload as well as the finals path, so defaulting it at only one of those
+    # four sites leaves None flowing into the other three.
+    season = season or pred.serve_season
     # The season parameter used to be decorative: refresh.py passed the live
     # serve season while the body read a hardcoded 2026 path regardless.
-    fin_path = season_paths.finals_cache(season or pred.serve_season)
+    fin_path = season_paths.finals_cache(season)
     finals = json.loads(fin_path.read_text()) if fin_path.is_file() else []
     # apply the model to this season, same as the board build, so the standings
     # Elo and GlassBox ratings match the numbers the predictions were made with
@@ -243,10 +271,22 @@ def main(season: int | None = None):
     games, pas, bullpen, power, baserun = build_replay(finals, cache, pred.mlbam_to_retro, pred.lg_hrfb)
     pred.replay_season(games, pas, bullpen=bullpen, power=power, baserun=baserun)
 
+    n_prev = len(json.loads(OUT.read_text()).get("players", {})) if OUT.is_file() else 0
+
     teams = build_teams(pred, season)
     players = build_players(teams, season, pred)
     payload = {"season": season, "teams": teams, "players": players,
                "team_order": [t["code"] for t in sorted(teams.values(), key=lambda x: -x["elo"])]}
+    if not write_is_safe(len(players), n_prev):
+        # Skip, don't raise: this runs before the NHL serve and build_site.build(),
+        # so raising would turn a transient API blip into "the site did not
+        # rebuild at all". Keeping the last good database is the whole point of
+        # the guard; the rest of the chain should still finish.
+        print(f"WARNING db: REFUSING to overwrite {OUT.name} — rebuilt "
+              f"{len(players)} players vs {n_prev} previously. That is roster "
+              f"fetches failing, not roster churn. Keeping the last good "
+              f"database; it will refresh on the next run.")
+        return
     OUT.parent.mkdir(parents=True, exist_ok=True)
     _write_atomic(OUT, json.dumps(payload, indent=1))
     rated = sum(1 for p in players.values() if p.get("ts100") is not None)
