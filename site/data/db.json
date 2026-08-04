@@ -6566,7 +6566,7 @@
    "team": "CHA",
    "pos": "P",
    "grp": "P",
-   "num": "",
+   "num": "50",
    "ts_mu": 30.321452244110098,
    "role": "pitcher",
    "pit": {
@@ -16433,7 +16433,7 @@
    "id": 656537,
    "name": "Derek Hill",
    "team": "PHI",
-   "pos": "RF",
+   "pos": "CF",
    "grp": "OF",
    "num": "49",
    "ts_mu": 26.577074300176324,
@@ -26443,7 +26443,7 @@
    "team": "SDN",
    "pos": "P",
    "grp": "P",
-   "num": "38",
+   "num": "39",
    "ts_mu": 28.82683895575181,
    "role": "pitcher",
    "pit": {
