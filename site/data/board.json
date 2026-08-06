@@ -6357,10 +6357,10 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": false,
      "mkt": {
-      "home_dec": 1.51,
-      "away_dec": 2.7,
+      "home_dec": 1.52,
+      "away_dec": 2.67,
       "books": 11,
-      "ts": "2026-08-06T10:47:31.069833+00:00"
+      "ts": "2026-08-06T12:22:58.533912+00:00"
      }
     },
     {
@@ -6406,10 +6406,10 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 1.63,
-      "away_dec": 2.42,
+      "home_dec": 1.62,
+      "away_dec": 2.45,
       "books": 11,
-      "ts": "2026-08-06T10:47:31.069833+00:00"
+      "ts": "2026-08-06T12:22:58.533912+00:00"
      }
     },
     {
@@ -6455,10 +6455,10 @@
      "home_pitcher_matched": false,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 1.93,
-      "away_dec": 1.96,
+      "home_dec": 1.87,
+      "away_dec": 2.02,
       "books": 11,
-      "ts": "2026-08-06T10:47:31.069833+00:00"
+      "ts": "2026-08-06T12:22:58.533912+00:00"
      }
     },
     {
@@ -6504,10 +6504,10 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 1.75,
-      "away_dec": 2.22,
+      "home_dec": 1.77,
+      "away_dec": 2.17,
       "books": 11,
-      "ts": "2026-08-06T10:47:31.069833+00:00"
+      "ts": "2026-08-06T12:22:58.533912+00:00"
      }
     },
     {
@@ -6553,10 +6553,10 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 2.075,
-      "away_dec": 1.83,
-      "books": 10,
-      "ts": "2026-08-06T10:47:31.069833+00:00"
+      "home_dec": 2.05,
+      "away_dec": 1.86,
+      "books": 11,
+      "ts": "2026-08-06T12:22:58.533912+00:00"
      }
     },
     {
@@ -6602,10 +6602,10 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 1.78,
+      "home_dec": 1.79,
       "away_dec": 2.11,
       "books": 11,
-      "ts": "2026-08-06T10:47:31.069833+00:00"
+      "ts": "2026-08-06T12:22:58.533912+00:00"
      }
     },
     {
@@ -6652,9 +6652,9 @@
      "away_pitcher_matched": true,
      "mkt": {
       "home_dec": 1.29,
-      "away_dec": 3.75,
+      "away_dec": 3.8,
       "books": 11,
-      "ts": "2026-08-06T10:47:31.069833+00:00"
+      "ts": "2026-08-06T12:22:58.533912+00:00"
      }
     },
     {
@@ -6700,10 +6700,10 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": false,
      "mkt": {
-      "home_dec": 1.54,
-      "away_dec": 2.6,
+      "home_dec": 1.53,
+      "away_dec": 2.65,
       "books": 11,
-      "ts": "2026-08-06T10:47:31.069833+00:00"
+      "ts": "2026-08-06T12:22:58.533912+00:00"
      }
     },
     {
@@ -6749,10 +6749,10 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 1.67,
-      "away_dec": 2.3,
+      "home_dec": 1.71,
+      "away_dec": 2.27,
       "books": 11,
-      "ts": "2026-08-06T10:47:31.069833+00:00"
+      "ts": "2026-08-06T12:22:58.533912+00:00"
      }
     },
     {
@@ -6798,10 +6798,10 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 1.81,
-      "away_dec": 2.05,
+      "home_dec": 1.82,
+      "away_dec": 2.08,
       "books": 11,
-      "ts": "2026-08-06T10:47:31.069833+00:00"
+      "ts": "2026-08-06T12:22:58.533912+00:00"
      }
     },
     {
@@ -6848,9 +6848,9 @@
      "away_pitcher_matched": true,
      "mkt": {
       "home_dec": 1.92,
-      "away_dec": 1.95,
+      "away_dec": 1.94,
       "books": 11,
-      "ts": "2026-08-06T10:47:31.069833+00:00"
+      "ts": "2026-08-06T12:22:58.533912+00:00"
      }
     },
     {
@@ -24420,5 +24420,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-08-06T10:47:31.069833+00:00"
+ "value_updated": "2026-08-06T12:22:58.533912+00:00"
 }
