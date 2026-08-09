@@ -44,9 +44,13 @@ jobs:
           # window (NFL cache is absent all offseason) — add what exists.
           # data/edge_ledger.json is the durable live-CLV evidence stream: it must
           # survive every cycle or the promotion gate stops accruing.
+          # data/mlb_pred_ledger.json rides along for the same reason: this job
+          # archives each pick's freshest pre-game consensus price into it (units
+          # settlement), and an uncommitted price is a settlement that never happens.
           for f in site/data/board.json site/data/nfl.json site/data/nhl.json site/index.html \
                    data/opening_odds_2026.json data/nfl_opening_odds_2026.json \
-                   data/nhl_opening_odds_2026.json data/edge_ledger.json; do
+                   data/nhl_opening_odds_2026.json data/edge_ledger.json \
+                   data/mlb_pred_ledger.json; do
             if [ -f "$f" ]; then git add "$f"; fi
           done
           if git diff --cached --quiet; then

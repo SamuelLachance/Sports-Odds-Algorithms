@@ -16,6 +16,11 @@ from the fetch the badge already made, and the ledger rolls the close off that r
 than off the badge (the badge re-gates on the CURRENT model probability, so it can
 vanish mid-week and would otherwise freeze a stale price as the "close"). No-ops
 cleanly when a payload is missing or no edges fired (offseason).
+
+The same `mkt` quotes are also archived into the MLB prediction ledger
+(mlbwp/pred_ledger.py) each cycle, so every published pick carries the freshest
+strictly-PRE-game consensus price — the number its flat-1u units settlement on the
+track-record page is graded against.
 """
 
 from __future__ import annotations
@@ -50,6 +55,18 @@ def main() -> int:
     print(f"[value] NHL: {k} games with >={EV_PCT}% EV vs opening consensus (7-day window)"
           f"  [odds {odds.fetch_status()}]")
 
+    # Units settlement price: archive this cycle's consensus quotes into the MLB
+    # prediction ledger while the games are still strictly pre-game. edges
+    # .attach_and_save just rewrote the board with fresh `mkt` quotes, and this
+    # job runs ~every 20 minutes vs refresh.py's 4h — without this call a graded
+    # pick would settle in units at a price hours older than the real close.
+    # Leak-safe by construction (pred_ledger writes strictly pre-game only);
+    # grading no-ops here because the finals cache is not in this checkout.
+    from mlbwp import pred_ledger
+    st = pred_ledger.update()
+    print(f"[units] MLB pred ledger: {st['new']} new, {st['updated']} updated "
+          f"(pre-game consensus prices archived)")
+
     for st in edge_ledger.update_all():
         print(f"[ledger] {st['league']}: {st['recorded']} recorded, "
               f"{st['touched']} touched, {st['closed']} CLV-graded, "
@@ -59,7 +76,9 @@ def main() -> int:
     ov = rep["overall"]
     print(f"[ledger] total {ov['n_recorded']} recorded / {ov['n_clv_graded']} "
           f"CLV-graded / {ov['n_settled']} settled "
-          f"({ov['n_clv_censored']} censored, {ov['n_stale_unsettled']} closed-unsettled)")
+          f"({ov['n_clv_censored']} censored, {ov['n_stale_unsettled']} closed-unsettled); "
+          f"units {ov['units_net']:+.2f}u on {ov['units_staked']:.0f}u staked "
+          f"(ROI {ov['roi']:+.2%})")
 
     build_site.build()
     return 0

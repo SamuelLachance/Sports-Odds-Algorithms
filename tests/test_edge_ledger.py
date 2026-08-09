@@ -585,6 +585,27 @@ def test_report_math_on_a_hand_computed_fixture(tmp_path):
     assert EL.format_report(rep)                      # renders without raising
 
 
+def test_units_accounting_in_report(tmp_path):
+    """Flat 1u per settled bet: units_net = sum(dec-1 | -1) and roi is that same
+    quantity per unit staked, so the two can never disagree."""
+    lp = tmp_path / "ledger.json"
+    rows = {
+        "a": _row("mlb", 0.60, 2.50, +0.01, 1),   # +1.50u
+        "b": _row("mlb", 0.55, 2.00, -0.01, 0),   # -1.00u
+        "c": _row("nfl", 0.50, 1.80, +0.02, 1),   # +0.80u
+        "d": _row("nfl", 0.55, 2.20, None, None, n_obs=1),   # unsettled: no stake
+    }
+    lp.write_text(json.dumps({"v": 1, "rows": rows}), encoding="utf-8")
+    rep = EL.report(lp)
+    m = rep["leagues"]["mlb"]
+    assert m["units_staked"] == 2.0
+    assert m["units_net"] == pytest.approx(0.50)
+    assert m["roi"] == pytest.approx(m["units_net"] / m["units_staked"], abs=1e-5)
+    ov = rep["overall"]
+    assert ov["units_staked"] == 3.0 and ov["units_net"] == pytest.approx(1.30)
+    assert "u " in EL.format_report(rep) or "units" in EL.format_report(rep)
+
+
 def test_single_observation_rows_are_excluded_from_clv(tmp_path):
     """A row recorded once and never seen again pre-game has a structural clv of 0;
     counting it would dilute the gate toward a false zero."""

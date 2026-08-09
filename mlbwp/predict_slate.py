@@ -77,23 +77,46 @@ def record_block(ledger_path: Path = PRED_LEDGER, cap: int = RECORD_CAP) -> dict
       - rule 3: the track record splits by tier, so `by_tier` is the number the
         site reports. `rollup` (all tiers pooled) is kept for continuity only.
 
-    Shape: {"rows": [{d, away, home, p, pick, lean, y, hs, as, sp, spp, tier}],
+    Shape: {"rows": [{d, away, home, p, pick, lean, y, hs, as, sp, spp, tier,
+                      dec, u}],
             "rollup": {n, log_loss, acc, brier} | None,
             "by_tier": {TIER: {n, log_loss, acc, brier, n_lean,
                                pick: {...}|None, lean: {...}|None}},
             "since": "YYYY-MM-DD" | None,
-            "pending":   [{d, away, home, p, pick, lean, sp, spp, tier, rec}],
+            "pending":   [{d, away, home, p, pick, lean, sp, spp, tier, rec, dec}],
             "scheduled": [{...same...}],                             # EARLY only
             "n_pending": int,      # PICKS awaiting a result (EARLY excluded)
             "n_scheduled": int,    # EARLY games on the board
-            "n_lean": int}         # of n_pending, how many sit inside 55/45
+            "n_lean": int,         # of n_pending, how many sit inside 55/45
+            "units": {...} | None} # full units accounting, see below
     Pick convention matches the board's: home when p >= 0.5.
+
+    UNITS (the P&L the accuracy tables cannot show). Every graded row whose
+    ledger entry archived a pre-game consensus price (hdec/adec, written by
+    mlbwp/pred_ledger.py from the edge layer's `mkt` quote) is settled at a
+    FLAT 1-UNIT stake on the pick side: u = dec - 1 on a hit, -1 on a miss.
+    The price is the last observed strictly-pre-game consensus (median across
+    US books) — frozen before first pitch, so nothing is settled against a
+    price that knew the result. Policy rules still apply:
+      - the headline units record covers PICKS only (CONFIRMED + PROJECTED,
+        outside 55/45); leans and EARLY forecasts are settled separately and
+        never folded in;
+      - a graded pick with NO archived price cannot be settled and is counted
+        in n_unpriced instead of being silently dropped (the odds feed reaches
+        ~2 days out and tracking of prices started later than tracking of
+        picks, so early rows are legitimately unpriced).
+    Shape: {"stake": 1.0, "priced_since": "YYYY-MM-DD"|None, "n_unpriced": int,
+            "pick": {n, w, l, staked, net, roi, avg_dec} | None,   # headline
+            "lean": {...} | None, "early": {...} | None,           # beside it
+            "by_tier": {TIER: {...}},                              # picks only
+            "by_month": [{k, n, net, cum}],                        # picks only
+            "curve": [[d, cum], ...]}                              # picks only
     """
     import math
     from mlbwp.pred_ledger import TIERS, entry_tier
     empty = {"rows": [], "rollup": None, "by_tier": {}, "since": None,
              "pending": [], "scheduled": [], "n_pending": 0, "n_scheduled": 0,
-             "n_lean": 0}
+             "n_lean": 0, "units": None}
     try:
         ledger = json.loads(Path(ledger_path).read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
@@ -112,11 +135,18 @@ def record_block(ledger_path: Path = PRED_LEDGER, cap: int = RECORD_CAP) -> dict
     def _is_lean(p):                       # policy rule 2: inside 55/45
         return max(p, 1 - p) <= LEAN_MAX
 
+    def _pick_dec(e, p):
+        """Archived pre-game consensus decimal of the PICK side, or None."""
+        dec = e.get("hdec") if p >= 0.5 else e.get("adec")
+        return round(float(dec), 3) if isinstance(dec, (int, float)) and dec > 1 else None
+
     rows = []
     for e in ledger.values():
         if e.get("y") is None or e.get("p") is None:
             continue
         p = round(float(e["p"]), 4)
+        dec = _pick_dec(e, p)
+        hit = (p >= 0.5) == (int(e["y"]) == 1)
         rows.append({
             "d": e.get("d"), "away": e.get("away"), "home": e.get("home"),
             "p": p, "pick": e.get("home") if p >= 0.5 else e.get("away"),
@@ -124,6 +154,8 @@ def record_block(ledger_path: Path = PRED_LEDGER, cap: int = RECORD_CAP) -> dict
             "y": int(e["y"]), "hs": e.get("hs"), "as": e.get("as"),
             "sp": 1 if e.get("sp_known") else 0,
             "spp": 1 if e.get("sp_proj") else 0, "tier": entry_tier(e),
+            # units settlement: flat 1u on the pick at the archived price
+            "dec": dec, "u": (round(dec - 1, 4) if hit else -1.0) if dec else None,
         })
     rows.sort(key=lambda r: (r["d"] or "", r["home"] or ""), reverse=True)
     rollup = _score(rows)
@@ -139,6 +171,54 @@ def record_block(ledger_path: Path = PRED_LEDGER, cap: int = RECORD_CAP) -> dict
                       "n_lean": sum(r["lean"] for r in sub),
                       "pick": _score([r for r in sub if not r["lean"]]),
                       "lean": _score([r for r in sub if r["lean"]])}
+
+    # UNITS: the full P&L accounting the accuracy tables cannot show (see the
+    # docstring). Flat 1u per settled forecast at the archived pre-game price;
+    # split by call/tier under the same policy rules as the rates.
+    def _u_stats(rs):
+        priced = [r for r in rs if r["u"] is not None]
+        if not priced:
+            return None
+        net = sum(r["u"] for r in priced)
+        w = sum(1 for r in priced if r["u"] > 0)
+        return {"n": len(priced), "w": w, "l": len(priced) - w,
+                "staked": float(len(priced)), "net": round(net, 3),
+                "roi": round(net / len(priced), 4),
+                "avg_dec": round(sum(r["dec"] for r in priced) / len(priced), 3)}
+
+    u_picks = [r for r in rows if r["tier"] != "EARLY" and not r["lean"]]
+    u_leans = [r for r in rows if r["tier"] != "EARLY" and r["lean"]]
+    u_early = [r for r in rows if r["tier"] == "EARLY"]
+    priced_picks = sorted((r for r in u_picks if r["u"] is not None),
+                          key=lambda r: (r["d"] or "", r["home"] or ""))
+    units = None
+    if any(r["u"] is not None for r in rows):
+        months, morder, cum = {}, [], 0.0
+        curve = []
+        for r in priced_picks:
+            k = (r["d"] or "?")[:7]
+            if k not in months:
+                months[k] = {"k": k, "n": 0, "net": 0.0}
+                morder.append(k)
+            months[k]["n"] += 1
+            months[k]["net"] += r["u"]
+            cum += r["u"]
+            curve.append([r["d"], round(cum, 3)])
+        c = 0.0
+        by_month = []
+        for k in morder:
+            m = months[k]
+            c += m["net"]
+            by_month.append({"k": k, "n": m["n"], "net": round(m["net"], 3),
+                             "cum": round(c, 3)})
+        units = {"stake": 1.0,
+                 "priced_since": priced_picks[0]["d"] if priced_picks else None,
+                 "n_unpriced": sum(1 for r in u_picks if r["u"] is None),
+                 "pick": _u_stats(u_picks), "lean": _u_stats(u_leans),
+                 "early": _u_stats(u_early),
+                 "by_tier": {t: s for t in ("CONFIRMED", "PROJECTED")
+                             if (s := _u_stats([r for r in u_picks if r["tier"] == t]))},
+                 "by_month": by_month, "curve": curve}
 
     # PENDING: locked-in pre-game picks whose games have not been graded yet.
     # These are the receipts that matter most — published before the result
@@ -157,6 +237,7 @@ def record_block(ledger_path: Path = PRED_LEDGER, cap: int = RECORD_CAP) -> dict
             "sp": 1 if e.get("sp_known") else 0,
             "spp": 1 if e.get("sp_proj") else 0, "tier": tier,
             "rec": (e.get("rec") or "")[:16],
+            "dec": _pick_dec(e, p),        # what 1u pays if it lands (or None yet)
         })
     for lst in (pending, scheduled):
         lst.sort(key=lambda r: (r["d"] or "", r["home"] or ""))    # soonest first
@@ -165,7 +246,7 @@ def record_block(ledger_path: Path = PRED_LEDGER, cap: int = RECORD_CAP) -> dict
             "since": recs[0][:10] if recs else None,
             "pending": pending[:cap], "scheduled": scheduled[:cap],
             "n_pending": len(pending), "n_scheduled": len(scheduled),
-            "n_lean": sum(r["lean"] for r in pending)}
+            "n_lean": sum(r["lean"] for r in pending), "units": units}
 
 
 def attach_record(board_path: Path = OUT, ledger_path: Path = PRED_LEDGER) -> int:
