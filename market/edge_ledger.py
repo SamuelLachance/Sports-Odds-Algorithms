@@ -608,11 +608,17 @@ def _exp_vs_real(bets):
         return len(bets), exp, real, float((real - exp) / math.sqrt(var)) if var > 0 else 0.0
 
 
+def _units_net(bets):
+    """Flat 1u per settled bet: dec-1 on a win, -1 on a loss. The ROI below is
+    this same quantity per unit staked, so the two can never disagree."""
+    return sum((b["odds"] - 1) if b["win"] else -1.0 for b in bets)
+
+
 def _roi(bets):
     """Flat-stake ROI per unit staked — identical definition to ev_gate_audit.roi."""
     if not bets:
         return 0.0
-    return sum((b["odds"] - 1) if b["win"] else -1.0 for b in bets) / len(bets)
+    return _units_net(bets) / len(bets)
 
 
 def _mean_t(xs: list[float]) -> tuple[float, float, float]:
@@ -693,6 +699,7 @@ def _stats(rows: list[dict], now: datetime | None = None) -> dict:
         "t_clv": round(t_clv, 3) if math.isfinite(t_clv) else None,
         "pct_positive_clv": round(pos, 4),
         "roi": round(_roi(bets), 5), "n_bets": n,
+        "units_staked": float(len(bets)), "units_net": round(_units_net(bets), 3),
         "expected_wins": round(exp, 2), "realized_wins": int(real), "z": round(z, 3),
         "gate": gate, "gate_needs": max(0, GATE_MIN_GRADED - len(clv)),
         # price-freshness quality metric (see _close_lag_mins): how stale the
@@ -732,7 +739,7 @@ def format_report(rep: dict) -> str:
          f">={rep['gate_min_graded']} CLV-graded)",
          f"{'league':<8} {'rec':>5} {'clv-gr':>7} {'cens':>5} {'avgCLV':>8} "
          f"{'+/-SE':>8} {'t':>6} {'CLV+':>7} {'settled':>8} {'void':>5} "
-         f"{'ROI':>8} {'z':>7}  gate"]
+         f"{'units':>8} {'ROI':>8} {'z':>7}  gate"]
     for name in list(rep["leagues"]) + ["overall"]:
         s = rep["leagues"][name] if name in rep["leagues"] else rep["overall"]
         gate = s["gate"] + (f" ({s['gate_needs']} more)" if s["gate"] == "PENDING" else "")
@@ -743,6 +750,7 @@ def format_report(rep: dict) -> str:
                  f"{(f'{t:+.2f}' if t is not None else 'inf'):>6} "
                  f"{s['pct_positive_clv']:>7.1%} {s['n_settled']:>8} "
                  f"{s.get('n_stale_unsettled', 0):>5} "
+                 f"{s.get('units_net', 0.0):>+7.2f}u "
                  f"{s['roi']:>+8.2%} {s['z']:>+7.2f}  {gate}")
     return "\n".join(L)
 

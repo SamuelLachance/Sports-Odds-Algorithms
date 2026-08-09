@@ -7,7 +7,8 @@ accuracy is the frozen TEST-era number). This ledger fixes that, mirroring
 the NFL ph-ledger and the NHL leak-safe replay:
 
   data/mlb_pred_ledger.json = { game_pk: {d, home, away, p, rp, sp_known,
-                                          sp_proj, tier, rec,  y?, hs?, as?} }
+                                          sp_proj, tier, rec, hdec?, adec?,
+                                          y?, hs?, as?} }
 
 Rules (leak-safe by construction):
   - a game's entry is written/updated ONLY while the game is strictly
@@ -57,9 +58,17 @@ lineups were public. CONFIRMED is therefore a start-time-selected subsample of
 lineups-posted games, not all of them. Every label is true of the forecast it
 is attached to; the tier *populations* are not random samples of the slate.
 
-Runs inside refresh.py (stdlib-only). Games that were never seen pre-game
-(e.g. ledger deployed mid-season, refresh outage) simply have no entry —
-they are excluded from realized accuracy rather than back-filled post-hoc.
+MARKET PRICE (units tracking, post-process only). The edge layer attaches an
+unconditional both-sides consensus quote (`mkt`, median decimal across US books)
+to every pre-game card the odds feed covers (market/edges.py). Each pre-game
+write archives it as `hdec`/`adec` so a graded pick can later be settled in
+UNITS (flat 1u at the last pre-game consensus price) — without a price frozen
+BEFORE first pitch there is nothing honest to settle against. A cycle whose
+board carries no quote for the game (odds fetch skipped/failed, feed horizon)
+carries the previous write's price forward: the stored price is the LAST
+OBSERVED strictly-pre-game consensus, mirroring the edge ledger's
+last_pregame_dec. The model never sees these numbers; they ride on the entry
+the same way the market post-process rides on the board.
 """
 from __future__ import annotations
 
@@ -149,6 +158,16 @@ def update(board_path: str = BOARD, finals_path: str = FINALS,
                "sp_proj": bool(g.get("sp_projected")),
                "tier": info_tier(g),          # re-stamped on every pre-game write
                "rec": now.strftime("%Y-%m-%dT%H:%MZ")}
+        # Consensus price for units settlement (see MARKET PRICE above): archive
+        # this cycle's both-sides quote, else carry the last observed one forward
+        # so a quote-less cycle never erases the price a graded pick settles at.
+        mkt = g.get("mkt") or {}
+        hdec, adec = mkt.get("home_dec"), mkt.get("away_dec")
+        if (isinstance(hdec, (int, float)) and hdec > 1
+                and isinstance(adec, (int, float)) and adec > 1):
+            rec["hdec"], rec["adec"] = round(float(hdec), 3), round(float(adec), 3)
+        elif ent is not None and ent.get("hdec") is not None:
+            rec["hdec"], rec["adec"] = ent["hdec"], ent.get("adec")
         if ent is None:
             n_new += 1
         elif ent.get("p") != rec["p"] or ent.get("tier") != rec["tier"]:

@@ -192,6 +192,60 @@ def test_sp_proj_is_recorded(tmp_path):
     assert ent["tier"] == "PROJECTED" and ent["sp_proj"] is True
 
 
+def test_market_price_is_archived_pregame_and_carried_forward(tmp_path):
+    """Units tracking needs a price frozen BEFORE first pitch: each pre-game
+    write archives the card's consensus quote (mkt -> hdec/adec), a quote-less
+    cycle carries the last observed price forward instead of erasing it, and a
+    graded row's price is as immutable as everything else on it."""
+    game = {"game_pk": 1, "date": "2026-07-30", "home_abbr": "TB", "away_abbr": "TEX",
+            "home_win_prob": 0.61, "pitcher_known": True,
+            "state": "Preview", "start_utc": "2026-07-30T23:10:00Z"}
+    bp = _write(tmp_path, "board.json", _board([game]))
+    fp = _write(tmp_path, "finals.json", [])
+    lp = str(tmp_path / "ledger.json")
+
+    # no quote on the card yet -> no price on the entry
+    pred_ledger.update(bp, fp, lp, now=NOW)
+    assert "hdec" not in json.load(open(lp))["1"]
+
+    # the odds feed reaches the game: the quote is archived
+    game["mkt"] = {"home_dec": 1.804, "away_dec": 2.156, "books": 9, "ts": "x"}
+    _write(tmp_path, "board.json", _board([game]))
+    pred_ledger.update(bp, fp, lp, now=NOW)
+    ent = json.load(open(lp))["1"]
+    assert ent["hdec"] == 1.804 and ent["adec"] == 2.156
+
+    # a later cycle WITHOUT a quote (odds fetch failed/skipped) must not erase it
+    del game["mkt"]
+    game["home_win_prob"] = 0.63
+    _write(tmp_path, "board.json", _board([game]))
+    pred_ledger.update(bp, fp, lp, now=NOW)
+    ent = json.load(open(lp))["1"]
+    assert ent["p"] == 0.63 and ent["hdec"] == 1.804 and ent["adec"] == 2.156
+
+    # a fresh quote replaces the old one: the stored price is the LAST observed
+    game["mkt"] = {"home_dec": 1.72, "away_dec": 2.30}
+    _write(tmp_path, "board.json", _board([game]))
+    pred_ledger.update(bp, fp, lp, now=NOW)
+    assert json.load(open(lp))["1"]["hdec"] == 1.72
+
+    # a junk quote (dec <= 1) is ignored, keeping the carried-forward price
+    game["mkt"] = {"home_dec": 1.0, "away_dec": 0.0}
+    _write(tmp_path, "board.json", _board([game]))
+    pred_ledger.update(bp, fp, lp, now=NOW)
+    assert json.load(open(lp))["1"]["hdec"] == 1.72
+
+    # graded -> the price is frozen with the rest of the row
+    _write(tmp_path, "finals.json",
+           [{"game_pk": 1, "home_win": 1, "home_score": 5, "away_score": 2}])
+    pred_ledger.update(bp, fp, lp, now=NOW)
+    game["mkt"] = {"home_dec": 9.99, "away_dec": 9.99}     # post-hoc price attempt
+    _write(tmp_path, "board.json", _board([game]))
+    pred_ledger.update(bp, fp, lp, now=NOW)
+    ent = json.load(open(lp))["1"]
+    assert ent["y"] == 1 and ent["hdec"] == 1.72 and ent["adec"] == 2.30
+
+
 def test_realized_math(tmp_path):
     lp = str(tmp_path / "ledger.json")
     json.dump({"1": {"p": 0.7, "y": 1}, "2": {"p": 0.6, "y": 0},
