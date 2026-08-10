@@ -1,0 +1,59 @@
+name: Actions watchdog
+
+# Unsticks the scheduled pipeline automatically. All deploying workflows share
+# the `board-deploy` concurrency group (cancel-in-progress: false) so Pages
+# deploys serialize — which means ONE run wedged in `waiting` (a Pages
+# environment approval that never resolves, observed 2026-08-06: it held the
+# group for 4 days) or hung `in_progress` blocks the group forever, and every
+# later cron gets queued then replaced by the next, all showing "cancelled".
+#
+# This watchdog cancels any run that has sat in a non-running state longer
+# than a stuck run plausibly could, or run longer than any legitimate job
+# does. Cancelled cron runs cost nothing: the next schedule re-fires within
+# 20 minutes (odds) / 4 hours (refresh) and every producer is idempotent.
+#
+# Deliberately NOT in the board-deploy group — it must run precisely when
+# that group is deadlocked.
+
+on:
+  schedule:
+    - cron: "17,47 * * * *"
+  workflow_dispatch:
+
+permissions:
+  actions: write
+
+concurrency:
+  group: watchdog
+  cancel-in-progress: false
+
+jobs:
+  unstick:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            // Minutes a run may sit in each state before it is presumed stuck.
+            //   waiting     — environment approval; normally resolves in seconds.
+            //   queued/pending — behind the concurrency group or a runner;
+            //                 the longest legitimate hold is one full refresh
+            //                 run (~30 min), so 40 min means the head is stuck.
+            //   in_progress — refresh.py's worst case (season lines backfill +
+            //                 NHL steps) stays under an hour; 3h is a hang.
+            const LIMITS = { waiting: 30, queued: 40, pending: 40, in_progress: 180 };
+            const now = Date.now();
+            for (const [status, limit] of Object.entries(LIMITS)) {
+              const runs = await github.paginate(github.rest.actions.listWorkflowRunsForRepo,
+                { owner: context.repo.owner, repo: context.repo.repo, status, per_page: 100 });
+              for (const r of runs) {
+                if (r.id === context.runId) continue;      // never cancel ourselves
+                const age = (now - new Date(r.run_started_at || r.created_at).getTime()) / 60000;
+                if (age <= limit) continue;
+                core.notice(`cancelling "${r.name}" #${r.run_number} — ${status} for ${Math.round(age)} min: ${r.html_url}`);
+                // A race (the run finished/was replaced meanwhile) is fine — log and move on.
+                await github.rest.actions.cancelWorkflowRun(
+                  { owner: context.repo.owner, repo: context.repo.repo, run_id: r.id }
+                ).catch(e => core.warning(`run ${r.id}: ${e.message}`));
+              }
+            }
