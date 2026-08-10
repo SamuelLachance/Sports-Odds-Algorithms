@@ -13,8 +13,17 @@ structural instead of dependent on a provider's posting window.
 from __future__ import annotations
 
 import json
+from datetime import datetime, timedelta, timezone
 
 from market import edges
+
+# The fixture game must be in the FUTURE. edges.py drops any card whose
+# start_utc has passed (it must never badge a game already under way), so a
+# hardcoded date turns these tests into a time bomb: they were written on
+# 2026-07-31 with "2026-08-01" meaning tomorrow, and began failing on 2026-08-02
+# — three green tests that quietly stopped exercising the eligibility path they
+# exist to cover. Derive it from the clock instead.
+FUTURE = (datetime.now(timezone.utc) + timedelta(days=2)).date().isoformat()
 
 
 def _card(pk, date, **kw):
@@ -37,7 +46,7 @@ def _live(date):
              "n_books": 8}]
 
 
-def _run(tmp_path, card, monkeypatch, date="2026-08-01"):
+def _run(tmp_path, card, monkeypatch, date=FUTURE):
     monkeypatch.setattr(edges.odds, "fetch_consensus", lambda key=None: _live(date))
     bp = tmp_path / "board.json"
     bp.write_text(json.dumps(_board([card])), encoding="utf-8")
@@ -49,7 +58,7 @@ def _run(tmp_path, card, monkeypatch, date="2026-08-01"):
 
 def test_early_tier_never_gets_a_badge(tmp_path, monkeypatch):
     """No named starter -> no EV badge, however large the modelled edge."""
-    g = _run(tmp_path, _card(1, "2026-08-01", pitcher_known=False,
+    g = _run(tmp_path, _card(1, FUTURE, pitcher_known=False,
                              lineup_source=None), monkeypatch)
     assert "value" not in g
     assert "mkt" not in g          # not even quoted: the card is gated out entirely
@@ -57,14 +66,14 @@ def test_early_tier_never_gets_a_badge(tmp_path, monkeypatch):
 
 def test_projected_tier_is_eligible(tmp_path, monkeypatch):
     """A named (announced or rotation-projected) starter clears the bar."""
-    g = _run(tmp_path, _card(2, "2026-08-01", pitcher_known=True,
+    g = _run(tmp_path, _card(2, FUTURE, pitcher_known=True,
                              sp_projected=True, lineup_source="projected"),
              monkeypatch)
     assert g.get("mkt"), "a quoted, eligible card must carry the consensus quote"
 
 
 def test_confirmed_tier_is_eligible(tmp_path, monkeypatch):
-    g = _run(tmp_path, _card(3, "2026-08-01", pitcher_known=True,
+    g = _run(tmp_path, _card(3, FUTURE, pitcher_known=True,
                              lineup_source="official"), monkeypatch)
     assert g.get("mkt")
 
@@ -72,7 +81,7 @@ def test_confirmed_tier_is_eligible(tmp_path, monkeypatch):
 def test_official_lineups_without_pitcher_flag_still_eligible(tmp_path, monkeypatch):
     """lineup_source=='official' implies the starters are known even if the
     pitcher_known flag is missing — the gate must not reject on a missing flag."""
-    g = _run(tmp_path, _card(4, "2026-08-01", lineup_source="official"), monkeypatch)
+    g = _run(tmp_path, _card(4, FUTURE, lineup_source="official"), monkeypatch)
     assert g.get("mkt")
 
 
@@ -110,3 +119,18 @@ def test_ev_threshold_has_a_single_source():
         assert ">=20%" not in src, (
             f"{name} hard-codes the threshold in its log copy; use EV_PCT so the "
             "message cannot outlive the constant")
+
+
+def test_the_fixture_game_is_actually_in_the_future():
+    """The guard against this file rotting again.
+
+    Three tests here assert that an ELIGIBLE card receives a quote. If the
+    fixture date ever slips into the past, edges.py drops the card before the
+    eligibility logic runs and all three pass-or-fail on the wrong reason —
+    which is exactly how they broke. Pin the precondition explicitly so the
+    failure names itself.
+    """
+    start = datetime.fromisoformat(f"{FUTURE}T23:10:00+00:00")
+    assert start > datetime.now(timezone.utc), (
+        f"fixture game {FUTURE} is not in the future; the eligibility tests "
+        f"would be exercising edges.py's started-game guard instead")
