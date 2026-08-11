@@ -215,7 +215,8 @@ refresh_odds.py  edge-layer refresh (needs ODDS_API_KEY, server-side only)
   (`phase0/nhl_serve.py`), site rebuild. Stdlib-only critical path; NHL steps
   skip gracefully if numpy/sklearn are absent.
 - **`.github/workflows/odds.yml`** — `refresh_odds.py` re-prices the three
-  edge layers against frozen opening odds (≥20% EV, 7-day window).
+  edge layers against frozen opening odds (≥8% EV — `market/__init__.py`,
+  the only gate tracked; 7-day window).
 - **`.github/workflows/pages.yml`** — deploys `site/`.
 
 Run locally:
@@ -239,9 +240,13 @@ bug there would surface in September, in production, on a game day.
 `phase0/pilot_report.py` emits the pilot health report (calibration-z per
 Kaunitz eq. 8, odds-bucket ROI, fade/ride-luck arms, per-season z) to
 `data/pilot_report.md`. Standing findings: the 15%-EV gate's mid-dog bucket
-is broken (selection winner's curse, z −4.5); the 20% gate is healthy;
-fade-luck bets dominate ride-luck. Promotion to live money requires
-sustained **live** positive CLV — no historical backtest qualifies by itself.
+is broken (selection winner's curse, z −4.5); the "20% gate is healthy" claim
+was **overturned** by the walk-forward audit
+(`documents/bet_logic_verdict_2026_08_10.md`): the higher the gate, the worse
+the winner's curse (+10.66 pts of claimed-vs-delivered win rate at ≥20%), and
+net-of-vig EV first reaches zero at ≈+8% — which is why ≥8% is now the single
+tracked gate. Promotion to live money requires sustained **live** positive
+CLV — no historical backtest qualifies by itself.
 
 ## Attributions
 

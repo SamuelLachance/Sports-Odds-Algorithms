@@ -1,4 +1,4 @@
-"""Attach the >=20%-EV value edge to an already-built, market-blind board.json.
+"""Attach the EV-threshold value edge (market/__init__.py) to an already-built, market-blind board.json.
 
 Runs as a POST-PROCESS on the board the model produced: it never changes a model
 probability, only compares the live market to it. Freezes each game's OPENING

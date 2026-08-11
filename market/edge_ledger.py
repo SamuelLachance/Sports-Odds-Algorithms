@@ -1,7 +1,7 @@
 """LIVE EDGE LEDGER — the durable evidence stream behind the CLV promotion gate.
 
 The three edge layers (market/edges.py, market/nfl_edges.py, market/nhl_edges.py)
-recompute the >=20%-EV value badge from scratch every 20-minute cycle and store
+recompute the EV-threshold value badge (market/__init__.py) from scratch every 20-minute cycle and store
 NOTHING: data/*_opening_odds_2026.json caches first-sighting PRICES, never the fact
 that an edge FIRED, the model probability behind it, or what the price did next. So
 the documented promotion gate — "live avg CLV > 0 with >=100 CLV-graded bets per
