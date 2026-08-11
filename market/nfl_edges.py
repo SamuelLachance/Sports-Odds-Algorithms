@@ -1,4 +1,4 @@
-"""Attach the >=20%-EV value edge to the NFL schedule in site/data/nfl.json.
+"""Attach the EV-threshold value edge (market/__init__.py) to the NFL schedule in site/data/nfl.json.
 
 Same contract as market/edges.py (MLB): a POST-PROCESS on the market-blind model's
 output — never changes a model probability, only compares the live market to it.

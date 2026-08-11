@@ -1,7 +1,7 @@
 """The EV badge may never appear on a forecast made before the information exists.
 
 documents/pick_policy.md rule 1 governs picks; an EV badge is a STRONGER claim
-than a pick — it asserts the market is mispriced by >=20% — so it must clear at
+than a pick — it asserts the market is mispriced by the EV threshold — so it must clear at
 least the same information bar. An EARLY-tier card has no named starter (team
 ratings only), and a "value bet" on a game whose pitchers are unknown is a claim
 we cannot support.
@@ -100,8 +100,11 @@ def test_ev_threshold_has_a_single_source():
 
     from market import EV_THRESHOLD, edges, nfl_edges, nhl_edges
 
+    # 0.08: where CLV first covers the opening vig — break-even, not profit
+    # (documents/bet_logic_verdict_2026_08_10.md; >=20% was the worst
+    # winner's-curse cell and is no longer tracked).
     assert edges.EV_THRESHOLD == nfl_edges.EV_THRESHOLD == nhl_edges.EV_THRESHOLD \
-        == EV_THRESHOLD == 0.20
+        == EV_THRESHOLD == 0.08
 
     root = Path(__file__).resolve().parents[1]
     # exactly one assignment across the whole market package
@@ -113,12 +116,14 @@ def test_ev_threshold_has_a_single_source():
     assert len(assigns) == 1, f"threshold assigned in more than one place: {assigns}"
     assert assigns[0].startswith("__init__.py"), assigns[0]
 
-    # and the operator copy must be derived, never hand-typed
+    # and the operator copy must be derived, never hand-typed — for the CURRENT
+    # value and any stale copy of the previous one
     for name in ("refresh.py", "refresh_odds.py"):
         src = (root / name).read_text(encoding="utf-8")
-        assert ">=20%" not in src, (
-            f"{name} hard-codes the threshold in its log copy; use EV_PCT so the "
-            "message cannot outlive the constant")
+        for pct in (round(EV_THRESHOLD * 100), 20):
+            assert f">={pct}%" not in src, (
+                f"{name} hard-codes a threshold in its log copy; use EV_PCT so "
+                "the message cannot outlive the constant")
 
 
 def test_the_fixture_game_is_actually_in_the_future():

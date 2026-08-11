@@ -129,6 +129,25 @@ The two open items are both waiting on data, not on a decision: the NFL
 information gate (September injury feed) and the NHL one (October goalie
 confirmations). Both are wired the day their feeds land.
 
+## Addendum 2026-08-11 — the EV badge threshold moves from 20% to 8%
+
+Decision by Samuel, grounded in the walk-forward audit
+(`documents/bet_logic_verdict_2026_08_10.md`): **the ≥8% gate is the only one
+tracked.** The audit overturned the earlier "20% gate is healthy" reading —
+the winner's curse *grows* with the gate (at ≥20% the model claims 49.7% and
+delivers 39.0%, +10.66 pts of overstatement), and net-of-vig EV first crosses
+zero at ≈+8% (+0.06 pts, indistinguishable from zero). So 20% selected the
+model's worst errors while 8% is where the open question actually lives:
+whether a cheaper entry (best price instead of median consensus) turns
+break-even into profit.
+
+Unchanged by this addendum: the badge is a **disagreement indicator, not a
+profit claim** (the audit's own wording); the information gates per league
+above; and the promotion bar — ≥100 CLV-graded live bets with mean CLV > 0 by
+≥2 standard errors, read alongside the close-lag caveat below. Rows recorded
+under the old 20% gate remain in the ledger untouched (graded rows are
+immutable); they simply stop accruing.
+
 ## Addendum 2026-08-01 — the CLV gate carries a measured quality caveat
 
 The live edge ledger's "closing" price is only as fresh as the last scheduled
