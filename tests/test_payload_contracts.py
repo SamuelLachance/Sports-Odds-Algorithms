@@ -117,8 +117,7 @@ def test_record_block_grades_only_finished_games(tmp_path):
     assert ru["log_loss"] == pytest.approx(-math.log(0.6), abs=1e-5)
     assert record_block(tmp_path / "missing.json") == {
         "rows": [], "rollup": None, "by_tier": {}, "since": None, "pending": [],
-        "scheduled": [], "n_pending": 0, "n_scheduled": 0, "n_lean": 0,
-        "units": None}
+        "scheduled": [], "n_pending": 0, "n_scheduled": 0, "n_lean": 0}
 
 
 def test_record_block_splits_by_tier_and_excludes_early_from_picks(tmp_path):
@@ -168,78 +167,80 @@ def test_record_block_splits_by_tier_and_excludes_early_from_picks(tmp_path):
     assert blk["n_lean"] == 1
 
 
-def test_record_block_units_settle_at_the_archived_pregame_price(tmp_path):
-    """Units tracking: every graded row with an archived pre-game consensus
-    price (hdec/adec) settles a FLAT 1u stake on the pick side — dec-1 on a
-    hit, -1 on a miss — and the summary obeys the same policy splits as the
-    rates: picks are the headline, leans and EARLY beside, unpriced disclosed."""
+def test_units_track_only_the_badge_bets(tmp_path):
+    """Decision 2026-08-12: units = the EDGE-badge bets and nothing else, a
+    flat 1u at the price recorded when the badge fired (the edge-ledger row IS
+    the bet slip). record_block ships NO units and stakes NO pick; the site
+    block comes from edge_ledger.site_block."""
+    from market import edge_ledger as EL
     from mlbwp.predict_slate import record_block
-    ledger = {
-        # CONFIRMED pick, home side (p>=0.5) at 1.80: HIT -> +0.80u
-        "1": {"d": "2026-07-01", "home": "LAD", "away": "SEA", "p": 0.62,
-              "tier": "CONFIRMED", "rec": "2026-07-01T00:00Z",
-              "hdec": 1.80, "adec": 2.10, "y": 1, "hs": 5, "as": 1},
-        # PROJECTED pick, away side (p<0.5) at 2.40: MISS -> -1.00u
-        "2": {"d": "2026-07-02", "home": "NYY", "away": "BOS", "p": 0.40,
-              "tier": "PROJECTED", "rec": "2026-07-02T00:00Z",
-              "hdec": 1.60, "adec": 2.40, "y": 1, "hs": 4, "as": 2},
-        # CONFIRMED pick with NO archived price: counted unpriced, never settled
-        "3": {"d": "2026-07-03", "home": "SD", "away": "SF", "p": 0.60,
-              "tier": "CONFIRMED", "rec": "2026-07-03T00:00Z", "y": 1,
-              "hs": 3, "as": 2},
-        # lean (inside 55/45) with a price: settled BESIDE the picks, not in them
-        "4": {"d": "2026-07-04", "home": "TB", "away": "TEX", "p": 0.54,
-              "tier": "CONFIRMED", "rec": "2026-07-04T00:00Z",
-              "hdec": 1.90, "adec": 1.95, "y": 1, "hs": 6, "as": 5},
-        # EARLY with a price: transparency only, never in the headline
-        "5": {"d": "2026-07-05", "home": "CHC", "away": "MIL", "p": 0.60,
-              "tier": "EARLY", "rec": "2026-07-05T00:00Z",
-              "hdec": 2.00, "adec": 1.85, "y": 0, "hs": 1, "as": 4},
-        # pending pick ships its price so the page can show what 1u pays
-        "6": {"d": "2026-08-01", "home": "HOU", "away": "LAA", "p": 0.61,
-              "tier": "CONFIRMED", "rec": "2026-08-01T00:00Z",
-              "hdec": 1.75, "adec": 2.15},
-    }
+
+    # picks carry no stake: a graded pick with an archived price still ships
+    # no units fields
+    ledger = {"1": {"d": "2026-07-01", "home": "LAD", "away": "SEA", "p": 0.62,
+                    "tier": "CONFIRMED", "rec": "2026-07-01T00:00Z",
+                    "hdec": 1.80, "adec": 2.10, "y": 1, "hs": 5, "as": 1}}
     p = tmp_path / "led.json"
     p.write_text(json.dumps(ledger), encoding="utf-8")
     blk = record_block(p)
+    assert "units" not in blk
+    assert "u" not in blk["rows"][0] and "dec" not in blk["rows"][0]
 
-    by_home = {r["home"]: r for r in blk["rows"]}
-    assert by_home["LAD"]["dec"] == 1.80 and by_home["LAD"]["u"] == pytest.approx(0.80)
-    assert by_home["NYY"]["dec"] == 2.40 and by_home["NYY"]["u"] == -1.0
-    assert by_home["SD"]["dec"] is None and by_home["SD"]["u"] is None
+    # the badge bets settle 1u at dec_at_record: +1.50 (win at 2.50), -1.00
+    rows = {
+        "a": {"league": "mlb", "d": "2026-08-12", "away": "CIN", "home": "CHA",
+              "team": "CIN", "side": "away", "dec_at_record": 2.50,
+              "ev_at_record": 0.10, "y": 1},
+        "b": {"league": "mlb", "d": "2026-08-12", "away": "PHI", "home": "SLN",
+              "team": "PHI", "side": "away", "dec_at_record": 1.64,
+              "ev_at_record": 0.13, "y": 0},
+        "c": {"league": "mlb", "d": "2026-08-13", "away": "NYN", "home": "ATL",
+              "team": "ATL", "side": "home", "dec_at_record": 1.62,
+              "ev_at_record": 0.11, "y": None},        # open bet
+        "d": {"league": "nfl", "d": "2026-09-13", "away": "BUF", "home": "NYJ",
+              "team": "BUF", "side": "away", "dec_at_record": 2.00,
+              "ev_at_record": 0.09, "y": 1},
+    }
+    lp = tmp_path / "edge.json"
+    lp.write_text(json.dumps({"v": 1, "updated": "x", "rows": rows}),
+                  encoding="utf-8")
+    blk = EL.site_block(lp)
+    m = blk["leagues"]["mlb"]
+    assert m["n_open"] == 1
+    assert m["settled"]["n"] == 2 and m["settled"]["w"] == 1
+    assert m["settled"]["net"] == pytest.approx(0.50)     # +1.50 - 1.00
+    assert m["settled"]["roi"] == pytest.approx(0.25)
+    assert m["curve"] == [["2026-08-12", 1.5], ["2026-08-12", 0.5]]
+    assert blk["overall"]["settled"]["n"] == 3
+    assert blk["overall"]["settled"]["net"] == pytest.approx(1.50)
+    assert [pb["team"] for pb in blk["pending"]] == ["ATL"]
+    assert blk["pending"][0]["dec"] == 1.62 and blk["pending"][0]["league"] == "mlb"
 
-    u = blk["units"]
-    assert u["stake"] == 1.0 and u["n_unpriced"] == 1
-    assert u["priced_since"] == "2026-07-01"
-    # headline = the two priced PICKS only: +0.80 - 1.00
-    assert u["pick"]["n"] == 2 and u["pick"]["w"] == 1 and u["pick"]["l"] == 1
-    assert u["pick"]["staked"] == 2.0
-    assert u["pick"]["net"] == pytest.approx(-0.20)
-    assert u["pick"]["roi"] == pytest.approx(-0.10)
-    # leans and EARLY are settled beside the headline, never inside it
-    assert u["lean"]["n"] == 1 and u["lean"]["net"] == pytest.approx(0.90)
-    assert u["early"]["n"] == 1 and u["early"]["net"] == -1.0
-    assert u["by_tier"]["CONFIRMED"]["net"] == pytest.approx(0.80)
-    assert u["by_tier"]["PROJECTED"]["net"] == -1.0
-    # cumulative series run oldest -> newest over priced picks only
-    assert u["curve"] == [["2026-07-01", 0.8], ["2026-07-02", -0.2]]
-    assert u["by_month"] == [{"k": "2026-07", "n": 2, "net": -0.2, "cum": -0.2}]
-    # the pending pick carries the price a settled 1u bet would pay
-    assert {r["home"]: r["dec"] for r in blk["pending"]} == {"HOU": 1.75}
+    # attach_bets writes it into board.json under record.bets, preserving the
+    # rest of the payload
+    bp = tmp_path / "board.json"
+    bp.write_text(json.dumps({"generated": "2026-08-12",
+                              "record": {"mlb": {"rows": []}}}), encoding="utf-8")
+    assert EL.attach_bets(bp, lp)
+    board = json.loads(bp.read_text(encoding="utf-8"))
+    assert board["record"]["mlb"] == {"rows": []}
+    assert board["record"]["bets"]["overall"]["settled"]["n"] == 3
+    assert not EL.attach_bets(tmp_path / "missing_board.json", lp)   # no-op
 
 
 def test_units_wired_into_the_spa():
     """A units block nobody renders is invisible: pin the panel, the chart and
-    the settlement columns into the record page."""
+    the badge-bets source into the record page."""
     from mlbwp_site.build_site import JS
     for fn in ("function recUnitsPanel(", "function recUnitsChart(",
-               "const recUnits=", "const fmtU="):
+               "const recBets=", "const recUnits=", "const fmtU="):
         assert fn in JS, fn
     assert "${recUnitsPanel(lg)}" in JS                # rendered in recSection
-    assert "u.pick" in JS and "u.by_month" in JS and "u.curve" in JS
-    assert "n_unpriced" in JS                          # unpriced picks disclosed
-    assert "<th>Price</th><th>Units</th>" in JS        # settlement columns
+    assert "record||{}).bets" in JS                    # reads board.record.bets
+    assert "u.settled" in JS and "u.by_month" in JS and "u.curve" in JS
+    # units are the badge bets ONLY — no pick-staking column anywhere
+    assert "<th>Price</th><th>Units</th>" not in JS
+    assert "EDGE badge" in JS
 
 
 def test_lean_threshold_is_exactly_55_45():

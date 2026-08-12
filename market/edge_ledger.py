@@ -720,6 +720,89 @@ def _lag_block(lags: list[float]) -> dict:
             "close_lag_p90_min": round(p90, 1)}
 
 
+def site_block(ledger_path=LEDGER, now: datetime | None = None) -> dict:
+    """Units accounting of the BADGE BETS, for the site's #/record page.
+
+    Decision 2026-08-12: units track the EDGE-badge bets and nothing else — a
+    flat 1u on the recorded side at dec_at_record, settled by `y`. Model picks
+    without a badge are scored on accuracy/log loss only; they carry no stake.
+    The ledger rows ARE the bet slips, so this is a pure read of them.
+
+    Shape: {"updated", "stake": 1.0,
+            "overall":  {n_open, settled:{n,w,l,staked,net,roi,avg_dec}|None,
+                         by_month:[{k,n,net,cum}], curve:[[d,cum],...]},
+            "leagues":  {lg: same shape},
+            "pending":  [{league,d,away,home,team,side,dec,ev}]}  # open bets
+    """
+    now = now or datetime.now(timezone.utc)
+    ledger = load(ledger_path)
+    rows = sorted(ledger.get("rows", {}).values(),
+                  key=lambda r: (r.get("d") or "", r.get("ts_record") or ""))
+
+    def _u(r):
+        return round(float(r["dec_at_record"]) - 1.0, 4) if r["y"] == 1 else -1.0
+
+    def _stats(rs):
+        settled = [r for r in rs if r.get("y") is not None]
+        out = {"n_open": sum(1 for r in rs if r.get("y") is None),
+               "settled": None, "by_month": [], "curve": []}
+        if not settled:
+            return out
+        w = sum(1 for r in settled if r["y"] == 1)
+        net = sum(_u(r) for r in settled)
+        out["settled"] = {
+            "n": len(settled), "w": w, "l": len(settled) - w,
+            "staked": float(len(settled)), "net": round(net, 3),
+            "roi": round(net / len(settled), 4),
+            "avg_dec": round(sum(float(r["dec_at_record"]) for r in settled)
+                             / len(settled), 3)}
+        months, order, cum = {}, [], 0.0
+        for r in settled:
+            k = (r.get("d") or "?")[:7]
+            if k not in months:
+                months[k] = {"k": k, "n": 0, "net": 0.0}
+                order.append(k)
+            months[k]["n"] += 1
+            months[k]["net"] += _u(r)
+            cum += _u(r)
+            out["curve"].append([r.get("d"), round(cum, 3)])
+        c = 0.0
+        for k in order:
+            c += months[k]["net"]
+            out["by_month"].append({"k": k, "n": months[k]["n"],
+                                    "net": round(months[k]["net"], 3),
+                                    "cum": round(c, 3)})
+        return out
+
+    pending = [{"league": r.get("league"), "d": r.get("d"),
+                "away": r.get("away"), "home": r.get("home"),
+                "team": r.get("team"), "side": r.get("side"),
+                "dec": r.get("dec_at_record"), "ev": r.get("ev_at_record")}
+               for r in rows if r.get("y") is None]
+    return {"updated": ledger.get("updated"), "stake": 1.0,
+            "overall": _stats(rows),
+            "leagues": {lg: _stats([r for r in rows if r.get("league") == lg])
+                        for lg in LEAGUES},
+            "pending": pending}
+
+
+def attach_bets(board_path=BOARD, ledger_path=LEDGER,
+                now: datetime | None = None) -> bool:
+    """Write the badge-bet units block into board.json (record.bets).
+
+    The board build (predict_slate) knows nothing about the market layer, so
+    the block rides on afterwards, the same way the edges themselves do. A
+    missing/unreadable board is a no-op — offseason path.
+    """
+    try:
+        payload = json.loads(Path(board_path).read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return False
+    payload.setdefault("record", {})["bets"] = site_block(ledger_path, now)
+    _write_atomic(board_path, json.dumps(payload, indent=1))
+    return True
+
+
 def report(ledger_path=LEDGER, now: datetime | None = None) -> dict:
     now = now or datetime.now(timezone.utc)
     ledger = load(ledger_path)
