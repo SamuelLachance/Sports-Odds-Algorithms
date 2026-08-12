@@ -1706,7 +1706,7 @@ const recMonth=k=>/^\d{4}-\d{2}$/.test(k)
 function recRows(lg){
   if(lg==="mlb"){const m=recMlb(); if(!m) return [];
     return (m.rows||[]).map(r=>({d:r.d,away:r.away,home:r.home,p:r.p,pick:r.pick,y:r.y,
-      hs:r.hs,as:r.as,sp:r.sp,dec:r.dec,u:r.u,tier:recTierOf(r),per:(r.d||"").slice(0,7),href:null}));}
+      hs:r.hs,as:r.as,sp:r.sp,tier:recTierOf(r),per:(r.d||"").slice(0,7),href:null}));}
   if(lg==="nfl"){const n=state.nfl; if(!n||!n.schedule) return [];
     return n.schedule.filter(g=>g.hs!=null&&g.as!=null&&g.ph!=null)
       .map(g=>({d:g.d,away:g.away,home:g.home,p:g.ph,pick:g.ph>=0.5?g.home:g.away,
@@ -1797,7 +1797,7 @@ function recUngraded(lg){
 function recPending(lg){            // locked-in PICKS whose games are not graded yet
   if(lg==="mlb"){const m=recMlb(); if(!m) return [];
     return (m.pending||[]).map(r=>({d:r.d,away:r.away,home:r.home,p:r.p,pick:r.pick,
-      sp:r.sp,spp:r.spp,dec:r.dec,tier:recTierOf(r),href:null}));}
+      sp:r.sp,spp:r.spp,tier:recTierOf(r),href:null}));}
   return recUngraded(lg).filter(r=>r.tier!=="EARLY");
 }
 /* EARLY games: scheduled, NOT picks. Shown collapsed and labelled
@@ -1852,16 +1852,19 @@ function recChart(rows){
     </svg></div></div>`;
 }
 /* ---------- UNITS (#/record) ----------
-   The full P&L accounting the accuracy tables cannot show: every graded PICK
-   settled at a FLAT 1u stake on the archived pre-game consensus price (median
-   across US books, frozen before first pitch &#8212; mlbwp/pred_ledger.py). The
-   block is computed SERVER-side over every graded row (predict_slate
-   .record_block), so the headline never depends on the shipped-row cap.
-   Policy rules hold here too: the headline is PICKS only; leans and EARLY
-   forecasts are settled separately and never folded in; graded picks with no
-   archived price are disclosed as unpriced, not silently dropped. */
+   Units track the EDGE-BADGE BETS and nothing else (decision 2026-08-12):
+   a flat 1u on the badge side at the price RECORDED when the badge fired
+   (market/edge_ledger.py &#8212; the ledger rows are the bet slips), settled on the
+   result. Model picks without a badge carry NO stake: they are scored on
+   accuracy/log loss in the tables below, never in units. The block ships as
+   board.record.bets, computed server-side over every ledger row. */
 const fmtU=v=>(v>0?"+":(v<0?"&minus;":""))+Math.abs(v).toFixed(2)+"u";
-const recUnits=lg=>lg==="mlb"?(((recMlb()||{}).units)||null):null;
+/* MLB ledger rows carry Retrosheet team codes; show the everyday abbrs. */
+const RETRO2ABBR={SLN:"STL",CHA:"CWS",NYN:"NYM",NYA:"NYY",LAN:"LAD",SDN:"SD",
+  SFN:"SF",CHN:"CHC",KCA:"KC",ANA:"LAA",TBA:"TB",WAS:"WSH"};
+const abbrOf=c=>RETRO2ABBR[c]||c;
+const recBets=()=>((state.board||{}).record||{}).bets||null;
+const recUnits=lg=>{const b=recBets();return b&&b.leagues&&b.leagues[lg]?b.leagues[lg]:null;};
 function recUnitsChart(u){
   const pts=(u.curve||[]).map((c,i)=>({x:i+1,v:c[1],d:c[0]}));
   if(pts.length<8) return "";
@@ -1892,57 +1895,55 @@ function recUnitsChart(u){
   </svg></div>`;
 }
 function recUnitsPanel(lg){
-  const head=`<h3>Units <span class="sub">flat 1u per pick &middot; pre-game consensus price</span></h3>`;
-  const u=recUnits(lg);
-  if(!u) return `<div class="panel" style="margin-top:16px">${head}
-    <div class="empty">No priced picks settled yet &mdash; units start accruing once pre-game prices are
-      archived${lg==="mlb"?"":" (MLB first)"}.</div></div>`;
-  const p=u.pick;
+  const head=`<h3>Units <span class="sub">EDGE bets only &mdash; flat 1u per badge at the recorded price</span></h3>`;
+  const u=recUnits(lg), all=recBets();
+  const open=all?(all.pending||[]).filter(p=>p.league===lg):[];
+  if(!u||(!u.settled&&!open.length))
+    return `<div class="panel" style="margin-top:16px">${head}
+      <div class="empty">No ${REC_NAME[lg]} EDGE bet yet. A unit is staked only when a game carries the value
+        badge (model vs opening consensus above the EV threshold) &mdash; picks without a badge are scored on
+        accuracy below and are never staked.</div></div>`;
+  const s=u.settled;
   const box=(k,v,cls)=>`<div class="b"><div class="k">${k}</div><div class="v${cls?" "+cls:""}">${v}</div></div>`;
-  const tiles=p?[
-    box("Record",`${p.w}&ndash;${p.l}`),
-    box("Units net",fmtU(p.net),p.net>=0?"pos":"neg"),
-    box("ROI",(p.roi>=0?"+":"&minus;")+Math.abs(p.roi*100).toFixed(1)+"%",p.roi>=0?"pos":"neg"),
-    box("Staked",p.staked.toFixed(0)+"u"),
-    box("Avg price",p.avg_dec.toFixed(2)),
+  const tiles=s?[
+    box("Record",`${s.w}&ndash;${s.l}`),
+    box("Units net",fmtU(s.net),s.net>=0?"pos":"neg"),
+    box("ROI",(s.roi>=0?"+":"&minus;")+Math.abs(s.roi*100).toFixed(1)+"%",s.roi>=0?"pos":"neg"),
+    box("Staked",s.staked.toFixed(0)+"u"),
+    box("Avg price",s.avg_dec.toFixed(2)),
   ].join(""):"";
-  const side=(lbl,s,note)=>s?`<tr><td class="a">${lbl}</td><td><span class="num">${s.n}</span></td>
-    <td><span class="num">${s.w}&ndash;${s.l}</span></td>
-    <td><span class="num ${s.net>=0?"pos":"neg"}">${fmtU(s.net)}</span></td>
-    <td><span class="num ${s.roi>=0?"pos":"neg"}">${(s.roi>=0?"+":"&minus;")+Math.abs(s.roi*100).toFixed(1)}%</span></td>
-    <td><span class="num">${s.avg_dec.toFixed(2)}</span></td>
-    <td class="a"><span class="sub">${note}</span></td></tr>`:"";
-  const split=`<div class="twrap" style="margin-top:10px"><table>
-    <thead><tr><th>Slice</th><th>Bets</th><th>W&ndash;L</th><th>Units</th><th>ROI</th><th>Avg price</th><th></th></tr></thead>
-    <tbody>
-      ${side("CONFIRMED picks",(u.by_tier||{}).CONFIRMED,"official lineup card posted")}
-      ${side("PROJECTED picks",(u.by_tier||{}).PROJECTED,"starters named, lineup projected")}
-      ${side("Leans",u.lean,"inside 55/45 &mdash; never in the headline")}
-      ${side("EARLY forecasts",u.early,"not picks &mdash; transparency only")}
-    </tbody></table></div>`;
+  const obody=open.map(p=>`<tr>
+    <td class="a"><span class="sub">${(p.d||"").slice(5)}</span></td>
+    <td class="a">${abbrOf(p.away)} <span class="sub">@</span> ${abbrOf(p.home)}</td>
+    <td class="a"><span class="ab" style="color:var(--accent)">${p.team}</span></td>
+    <td><span class="num">${p.dec!=null?p.dec.toFixed(2):"&mdash;"}</span></td>
+    <td><span class="num">${p.ev!=null?"+"+(p.ev*100).toFixed(1)+"%":"&mdash;"}</span></td></tr>`).join("");
+  const openTbl=open.length?`<div class="subh" style="margin-top:12px">Open bets <span class="sub"
+      style="font-weight:400;font-family:var(--sans)">1u each, locked at the recorded price</span></div>
+    <div class="twrap"><table>
+      <thead><tr><th>Date</th><th>Matchup</th><th>Bet</th><th>Price</th><th>EV @ record</th></tr></thead>
+      <tbody>${obody}</tbody></table></div>`:"";
   const months=(u.by_month||[]).slice().reverse().map(o=>`<tr>
     <td class="a">${recMonth(o.k)}</td><td><span class="num">${o.n}</span></td>
     <td><span class="num ${o.net>=0?"pos":"neg"}">${fmtU(o.net)}</span></td>
     <td><span class="num ${o.cum>=0?"pos":"neg"}">${fmtU(o.cum)}</span></td></tr>`).join("");
-  const monthTbl=months?`<div class="twrap" style="margin-top:10px"><table>
-    <thead><tr><th>Month</th><th>Bets</th><th>Units</th><th>Cum units</th></tr></thead>
-    <tbody>${months}</tbody></table></div>`:"";
-  const unpriced=u.n_unpriced?` ${u.n_unpriced} graded pick${u.n_unpriced===1?"":"s"} had no archived price
-    (tracking started ${u.priced_since?`on ${u.priced_since}`:"later than pick tracking"}) &mdash; excluded, never back-filled.`:"";
-  const thin=p&&p.n<30?`<div class="sub" style="margin-top:8px"><b>n=${p.n} &mdash; not yet meaningful.</b>
-    Units swing hard at this sample; treat it as the accounting existing, not evidence of an edge.</div>`:"";
+  const monthTbl=months?`<details class="sched" style="margin-top:10px"><summary>By month</summary><div class="body">
+    <div class="twrap"><table>
+      <thead><tr><th>Month</th><th>Bets</th><th>Units</th><th>Cum units</th></tr></thead>
+      <tbody>${months}</tbody></table></div></div></details>`:"";
+  const thin=s&&s.n<30?`<div class="sub" style="margin-top:8px"><b>n=${s.n} settled &mdash; not yet meaningful.</b>
+    Units swing hard at this sample.</div>`:"";
   return `<div class="panel" style="margin-top:16px">${head}
-    ${p?`<div class="statgrid" style="margin-top:10px;grid-template-columns:repeat(auto-fit,minmax(110px,1fr))">${tiles}</div>`:`<div class="empty">Priced picks are recorded but none has settled yet.</div>`}
+    ${s?`<div class="statgrid" style="margin-top:10px;grid-template-columns:repeat(auto-fit,minmax(110px,1fr))">${tiles}</div>`
+      :`<div class="empty">Tracking starts here &mdash; ${open.length} open bet${open.length===1?"":"s"}, none settled yet.</div>`}
     ${recUnitsChart(u)}
     ${thin}
-    <details class="sched" style="margin-top:10px"><summary>Breakdown &amp; method</summary><div class="body">
-      ${split}
-      ${monthTbl}
-      <div class="sub" style="margin-top:10px">1 unit on the model's pick at the <b>last strictly-pre-game</b>
-        consensus price (median across US books, archived before first pitch). A win banks
-        price&nbsp;&minus;&nbsp;1, a loss costs 1. Headline covers picks only; leans and EARLY are settled
-        beside it, never inside.${unpriced}</div>
-    </div></details></div>`;
+    ${openTbl}
+    ${monthTbl}
+    <div class="sub" style="margin-top:10px">Every unit is a bet the <b>EDGE badge</b> fired and the site marked
+      takeable: 1u on the badge side at the consensus price <b>recorded at that moment</b> (never re-priced); a win
+      banks price&nbsp;&minus;&nbsp;1, a loss costs 1. Picks without a badge are never staked. This is a live
+      evaluation of the badge, not a profit promise.</div></div>`;
 }
 function recSource(lg){
   const m=recMlb();
@@ -2023,8 +2024,6 @@ function recSection(lg){
   // PENDING = picks only (CONFIRMED + PROJECTED). EARLY rides in its own block.
   const pend=recPending(lg), pshown=pend.slice(0,REC_ROWS);
   const nLean=recLeanTotal(lg), nPick=recPendTotal(lg)-nLean;
-  // market price column only when the ledger archives one (units tracking)
-  const hasPD=pshown.some(r=>r.dec!=null);
   const pbody=pshown.map(r=>`<tr class="recrow" ${r.href?`onclick="location.hash='${r.href}'"`:""}>
     <td class="a"><span class="sub">${(r.d||"").slice(5)}</span></td>
     <td class="a">${r.away} <span class="sub">@</span> ${r.home}</td>
@@ -2032,12 +2031,11 @@ function recSection(lg){
     <td class="a"><span class="ab" style="color:var(--accent)">${r.pick}</span></td>
     <td class="cf">${conf(r.p)}</td>
     <td><span class="num">${amOdds(Math.max(r.p,1-r.p))}</span></td>
-    ${hasPD?`<td>${r.dec!=null?`<span class="num" title="last pre-game consensus price of the pick (median decimal across US books) &#8212; the price a settled 1u bet pays">${r.dec.toFixed(2)}</span>`:`<span class="sub">&mdash;</span>`}</td>`:""}
     <td>${callChip(r.p)}</td></tr>`).join("");
   const pendPanel=`<div class="panel"><h3>Pending picks
       <span class="sub">${pend.length?`${pshown.length<recPendTotal(lg)?`next ${pshown.length} of ${recPendTotal(lg)}`:`all ${pend.length}`} &middot; locked in, awaiting the result`:"none right now"}</span></h3>
     ${pend.length?`<div class="twrap"><table>
-        <thead><tr><th>Date</th><th>Matchup</th><th>Tier</th><th>Pick</th><th>Confidence</th><th>Fair odds</th>${hasPD?"<th>Mkt price</th>":""}<th>Call</th></tr></thead>
+        <thead><tr><th>Date</th><th>Matchup</th><th>Tier</th><th>Pick</th><th>Confidence</th><th>Fair odds</th><th>Call</th></tr></thead>
         <tbody>${pbody}</tbody></table></div>
       <div class="sub" style="margin-top:8px">${nPick} pick${nPick===1?"":"s"} + ${nLean}
         lean${nLean===1?"":"s"} (inside 55/45), written down <b>before</b> the games are played &mdash;
@@ -2092,10 +2090,6 @@ function recSection(lg){
     const hit=(r.p>=0.5)===(r.y===1);
     return `<td><span class="num">${r.as}&ndash;${r.hs}</span></td>
       <td><span class="chip ${hit?"hit":"miss"}">${hit?"HIT":"MISS"}</span></td>`;};
-  // units columns only when this league's ledger archives pre-game prices
-  const hasU=shown.some(r=>r.u!=null);
-  const ucells=r=>hasU?`<td>${r.dec!=null?`<span class="num">${r.dec.toFixed(2)}</span>`:`<span class="sub">&mdash;</span>`}</td>
-    <td>${r.u!=null?`<span class="num ${r.u>0?"pos":"neg"}">${fmtU(r.u)}</span>`:`<span class="sub" title="no pre-game price archived for this game &#8212; excluded from every units number">&mdash;</span>`}</td>`:"";
   const body=shown.map(r=>`<tr class="recrow" ${r.href?`onclick="location.hash='${r.href}'"`:""}>
     <td class="a"><span class="sub">${(r.d||"").slice(5)}</span></td>
     <td class="a">${r.away} <span class="sub">@</span> ${r.home}</td>
@@ -2103,7 +2097,7 @@ function recSection(lg){
     <td class="a">${callChip(r.p)}</td>
     <td class="a"><span class="ab" style="color:var(--accent)">${r.pick}</span></td>
     <td class="cf">${conf(r.p)}</td>
-    ${outcome(r)}${ucells(r)}</tr>`).join("");
+    ${outcome(r)}</tr>`).join("");
   const nGPick=rows.filter(r=>r.tier!=="EARLY"&&!recIsLean(r.p)).length;
   // One glance: units P&L, then per-tier accuracy, then the pending receipts.
   // Everything else (full graded listing, monthly rollups, accuracy curve,
@@ -2119,7 +2113,7 @@ function recSection(lg){
         <div class="sub" style="margin-bottom:10px">${recSource(lg)}</div>
         ${recChart(rows)}
         <div class="twrap" style="margin-top:10px"><table>
-          <thead><tr><th>Date</th><th>Matchup</th><th>Tier</th><th>Call</th><th>Pick</th><th>Confidence</th><th>Final</th><th>Result</th>${hasU?"<th>Price</th><th>Units</th>":""}</tr></thead>
+          <thead><tr><th>Date</th><th>Matchup</th><th>Tier</th><th>Call</th><th>Pick</th><th>Confidence</th><th>Final</th><th>Result</th></tr></thead>
           <tbody>${body}</tbody></table></div>
         <div class="sub" style="margin-top:8px">${shown.length<rows.length?`Most recent ${shown.length} of ${rows.length}. `:""}This
           listing pools every tier and both calls &mdash; a <span class="chip lean">LEAN</span> or

@@ -92,6 +92,9 @@ def main(horizon_days: int = 30) -> int:
     # block so #/record shows today's results instead of yesterday's
     print(f"[refresh] track record: {predict_slate.attach_record()} graded rows "
           f"-> board.json", flush=True)
+    # units = the badge bets only (edge ledger); re-attach their P&L block
+    from market import edge_ledger
+    edge_ledger.attach_bets()
 
     db_mod.main(season=season)
 

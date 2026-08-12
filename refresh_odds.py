@@ -72,6 +72,9 @@ def main() -> int:
               f"{st['touched']} touched, {st['closed']} CLV-graded, "
               f"{st['settled']} settled"
               + ("" if st["payload"] else " (no payload -> no-op)"))
+    # Units track the BADGE BETS and nothing else (pick policy addendum
+    # 2026-08-12): ship their P&L block onto the board for #/record.
+    edge_ledger.attach_bets()
     rep = edge_ledger.report()
     ov = rep["overall"]
     print(f"[ledger] total {ov['n_recorded']} recorded / {ov['n_clv_graded']} "
