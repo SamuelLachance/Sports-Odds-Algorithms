@@ -229,7 +229,7 @@ python refresh.py
 python -m pytest tests -q
 ```
 
-143 tests. Beyond unit coverage they enforce two things that are otherwise
+280+ tests. Beyond unit coverage they enforce two things that are otherwise
 invisible: **payload contracts** (the built JSON actually has the keys the SPA
 reads — the site's missing build gate) and the honesty mechanisms above. The
 guards that first fire on NFL opening day are covered specifically because a
