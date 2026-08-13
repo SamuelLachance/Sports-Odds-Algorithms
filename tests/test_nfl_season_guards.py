@@ -76,7 +76,8 @@ def test_shipped_artifacts_currently_agree():
     broken and the next run would stop."""
     import csv
 
-    import numpy as np
+    import pytest
+    np = pytest.importorskip("numpy")   # stdlib-only CI: skip, don't fail
     root = Path(__file__).resolve().parents[1]
     npy, spine = root / "data" / "nfl_v7_feature.npy", root / "data" / "nfl_games.csv"
     if not (npy.is_file() and spine.is_file()):

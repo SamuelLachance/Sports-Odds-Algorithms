@@ -22,8 +22,12 @@ import re
 import sys
 from pathlib import Path
 
-import numpy as np
 import pytest
+
+# The minimal CI job is stdlib-only by design: without numpy these checks
+# SKIP (same convention as test_nhl_serving / test_edge_ledger) instead of
+# breaking collection for the whole suite.
+np = pytest.importorskip("numpy")
 
 PHASE0 = Path(__file__).resolve().parents[1] / "phase0"
 FILES = [PHASE0 / "mlb_depth_eval.py", PHASE0 / "mlb_depth_axes.py"]
