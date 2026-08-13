@@ -235,20 +235,27 @@ def test_units_track_only_the_badge_bets(tmp_path):
         "d": {"league": "nfl", "d": "2026-09-13", "away": "BUF", "home": "NYJ",
               "team": "BUF", "side": "away", "dec_at_record": 2.00,
               "ev_at_record": 0.09, "y": 1},
+        # unsettled long past its date: postponed/cancelled -> VOID, the
+        # sportsbook convention (stake returned, never open, never staked)
+        "e": {"league": "mlb", "d": "2026-07-20", "away": "COL", "home": "AZ",
+              "team": "COL", "side": "away", "dec_at_record": 2.10,
+              "ev_at_record": 0.09, "y": None},
     }
     lp = tmp_path / "edge.json"
     lp.write_text(json.dumps({"v": 1, "updated": "x", "rows": rows}),
                   encoding="utf-8")
-    blk = EL.site_block(lp)
+    from datetime import datetime, timezone
+    blk = EL.site_block(lp, now=datetime(2026, 8, 13, 5, 0, tzinfo=timezone.utc))
     m = blk["leagues"]["mlb"]
     assert m["n_open"] == 1
     assert m["settled"]["n"] == 2 and m["settled"]["w"] == 1
     assert m["settled"]["net"] == pytest.approx(0.50)     # +1.50 - 1.00
     assert m["settled"]["roi"] == pytest.approx(0.25)
     assert m["curve"] == [["2026-08-12", 1.5], ["2026-08-12", 0.5]]
+    assert m["n_void"] == 1                               # COL@AZ voided
     assert blk["overall"]["settled"]["n"] == 3
     assert blk["overall"]["settled"]["net"] == pytest.approx(1.50)
-    assert [pb["team"] for pb in blk["pending"]] == ["ATL"]
+    assert [pb["team"] for pb in blk["pending"]] == ["ATL"]   # void never listed
     assert blk["pending"][0]["dec"] == 1.62 and blk["pending"][0]["league"] == "mlb"
 
     # attach_bets writes it into board.json under record.bets, preserving the

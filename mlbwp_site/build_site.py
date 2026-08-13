@@ -1935,7 +1935,8 @@ function recUnitsPanel(lg){
     <div class="sub" style="margin-top:10px">Every unit is a bet the <b>EDGE badge</b> fired and the site marked
       takeable: 1u on the badge side at the consensus price <b>recorded at that moment</b> (never re-priced); a win
       banks price&nbsp;&minus;&nbsp;1, a loss costs 1. Picks without a badge are never staked. This is a live
-      evaluation of the badge, not a profit promise.</div></div>`;
+      evaluation of the badge, not a profit promise.${u.n_void?` ${u.n_void} bet${u.n_void===1?"":"s"} on
+      postponed/cancelled games ${u.n_void===1?"was":"were"} <b>voided</b> &mdash; stake returned, counted nowhere.`:""}</div></div>`;
 }
 function recSource(lg){
   const m=recMlb();

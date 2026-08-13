@@ -7408,6 +7408,7 @@
    "stake": 1.0,
    "overall": {
     "n_open": 6,
+    "n_void": 0,
     "settled": null,
     "by_month": [],
     "curve": []
@@ -7415,18 +7416,21 @@
    "leagues": {
     "mlb": {
      "n_open": 6,
+     "n_void": 0,
      "settled": null,
      "by_month": [],
      "curve": []
     },
     "nfl": {
      "n_open": 0,
+     "n_void": 0,
      "settled": null,
      "by_month": [],
      "curve": []
     },
     "nhl": {
      "n_open": 0,
+     "n_void": 0,
      "settled": null,
      "by_month": [],
      "curve": []
