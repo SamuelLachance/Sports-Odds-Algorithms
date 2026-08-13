@@ -729,10 +729,14 @@ def site_block(ledger_path=LEDGER, now: datetime | None = None) -> dict:
     The ledger rows ARE the bet slips, so this is a pure read of them.
 
     Shape: {"updated", "stake": 1.0,
-            "overall":  {n_open, settled:{n,w,l,staked,net,roi,avg_dec}|None,
+            "overall":  {n_open, n_void,
+                         settled:{n,w,l,staked,net,roi,avg_dec}|None,
                          by_month:[{k,n,net,cum}], curve:[[d,cum],...]},
             "leagues":  {lg: same shape},
             "pending":  [{league,d,away,home,team,side,dec,ev}]}  # open bets
+    n_void: unsettled bets long past their date (postponed/cancelled) — the
+    stake is void/returned, the sportsbook convention; never staked, never
+    listed as open.
     """
     now = now or datetime.now(timezone.utc)
     ledger = load(ledger_path)
@@ -742,9 +746,20 @@ def site_block(ledger_path=LEDGER, now: datetime | None = None) -> dict:
     def _u(r):
         return round(float(r["dec_at_record"]) - 1.0, 4) if r["y"] == 1 else -1.0
 
+    def _is_void(r):
+        """Unsettled long past its date = postponed/cancelled: the stake is
+        VOID (returned), the sportsbook convention. Without this a rainout
+        sits in the open-bets table forever."""
+        if r.get("y") is not None:
+            return False
+        d = _date(r.get("d"))
+        return d is not None and (now.date() - d).days >= STALE_UNSETTLED_DAYS
+
     def _stats(rs):
         settled = [r for r in rs if r.get("y") is not None]
-        out = {"n_open": sum(1 for r in rs if r.get("y") is None),
+        out = {"n_open": sum(1 for r in rs
+                             if r.get("y") is None and not _is_void(r)),
+               "n_void": sum(1 for r in rs if _is_void(r)),
                "settled": None, "by_month": [], "curve": []}
         if not settled:
             return out
@@ -778,7 +793,7 @@ def site_block(ledger_path=LEDGER, now: datetime | None = None) -> dict:
                 "away": r.get("away"), "home": r.get("home"),
                 "team": r.get("team"), "side": r.get("side"),
                 "dec": r.get("dec_at_record"), "ev": r.get("ev_at_record")}
-               for r in rows if r.get("y") is None]
+               for r in rows if r.get("y") is None and not _is_void(r)]
     return {"updated": ledger.get("updated"), "stake": 1.0,
             "overall": _stats(rows),
             "leagues": {lg: _stats([r for r in rows if r.get("league") == lg])
