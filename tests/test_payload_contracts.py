@@ -79,6 +79,41 @@ def test_board_record_contract():
         assert 0.0 <= ru["acc"] <= 1.0 and ru["log_loss"] > 0
 
 
+def test_board_bets_contract():
+    """#/record's Units panel reads board.record.bets — the badge-bet P&L
+    (edge_ledger.site_block). A serve regression here silently blanks the
+    units tracker on the live site, so the shipped shape is pinned like every
+    other payload the SPA dereferences."""
+    b = _load("board.json")
+    bets = (b.get("record") or {}).get("bets")
+    assert bets, "board.json lost the record.bets block"
+    assert bets.get("stake") == 1.0
+    assert set(bets["leagues"]) == {"mlb", "nfl", "nhl"}      # recUnits(lg)
+    for blk in [bets["overall"], *bets["leagues"].values()]:
+        assert {"n_open", "settled", "by_month", "curve"} <= set(blk)
+        s = blk["settled"]
+        if s is None:
+            assert blk["by_month"] == [] and blk["curve"] == []
+            continue
+        assert {"n", "w", "l", "staked", "net", "roi", "avg_dec"} <= set(s)
+        assert s["w"] + s["l"] == s["n"] and s["staked"] == float(s["n"])
+        assert s["roi"] == pytest.approx(s["net"] / s["staked"], abs=1e-3)
+        assert s["avg_dec"] > 1.0
+        # one curve point per settled bet, ending at the season-to-date net
+        assert len(blk["curve"]) == s["n"]
+        assert blk["curve"][-1][1] == pytest.approx(s["net"], abs=1e-3)
+        assert sum(m["n"] for m in blk["by_month"]) == s["n"]
+        assert blk["by_month"][-1]["cum"] == pytest.approx(s["net"], abs=1e-3)
+    # league blocks partition the overall book
+    assert sum(blk["n_open"] for blk in bets["leagues"].values()) \
+        == bets["overall"]["n_open"]
+    for p in bets["pending"]:                                  # open-bets table
+        assert {"league", "d", "away", "home", "team", "side", "dec", "ev"} <= set(p)
+        assert p["league"] in ("mlb", "nfl", "nhl") and p["side"] in ("home", "away")
+        assert p["dec"] is None or p["dec"] > 1.0
+    assert len(bets["pending"]) == bets["overall"]["n_open"]
+
+
 def test_record_page_reads_played_games_from_nfl_and_nhl():
     """NFL/NHL track-record sections are computed client-side from the payload
     schedules: a played game must keep its frozen pre-game prob AND its score."""
