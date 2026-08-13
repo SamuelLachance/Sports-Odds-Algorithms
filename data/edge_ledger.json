@@ -80,10 +80,10 @@
    "imp_at_record": 0.568182,
    "imp_close": null,
    "key": "mlb|823915",
-   "last_pregame_dec": 1.7,
+   "last_pregame_dec": 1.69,
    "league": "mlb",
    "n_missed": 0,
-   "n_obs": 7,
+   "n_obs": 8,
    "open_dec": 1.76,
    "p_home": 0.6302,
    "p_model": 0.6302,
@@ -92,7 +92,7 @@
    "start_utc": "2026-08-14T02:10:00Z",
    "team": "LAD",
    "ts_close": null,
-   "ts_last_pregame": "2026-08-13T03:27:48Z",
+   "ts_last_pregame": "2026-08-13T05:21:41Z",
    "ts_record": "2026-08-12T19:31:22Z",
    "y": null
   },
@@ -193,6 +193,6 @@
    "y": null
   }
  },
- "updated": "2026-08-13T03:27:48Z",
+ "updated": "2026-08-13T05:21:41Z",
  "v": 1
 }
