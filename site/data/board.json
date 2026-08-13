@@ -7614,7 +7614,7 @@
    "n_lean": 20
   },
   "bets": {
-   "updated": "2026-08-13T17:17:04Z",
+   "updated": "2026-08-13T18:12:25Z",
    "stake": 1.0,
    "overall": {
     "n_open": 1,
@@ -7909,13 +7909,7 @@
      "power_edge": 0.004,
      "baserun_edge": -0.0018,
      "home_pitcher_matched": true,
-     "away_pitcher_matched": true,
-     "mkt": {
-      "home_dec": 1.61,
-      "away_dec": 2.43,
-      "books": 11,
-      "ts": "2026-08-13T17:17:04.379307+00:00"
-     }
+     "away_pitcher_matched": true
     },
     {
      "game_pk": 822776,
@@ -7960,10 +7954,10 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 2.24,
+      "home_dec": 2.25,
       "away_dec": 1.71,
       "books": 11,
-      "ts": "2026-08-13T17:17:04.379307+00:00"
+      "ts": "2026-08-13T18:12:25.522454+00:00"
      }
     },
     {
@@ -8010,9 +8004,9 @@
      "away_pitcher_matched": true,
      "mkt": {
       "home_dec": 2.3,
-      "away_dec": 1.68,
+      "away_dec": 1.69,
       "books": 11,
-      "ts": "2026-08-13T17:17:04.379307+00:00"
+      "ts": "2026-08-13T18:12:25.522454+00:00"
      }
     },
     {
@@ -8059,9 +8053,9 @@
      "away_pitcher_matched": true,
      "mkt": {
       "home_dec": 1.94,
-      "away_dec": 1.94,
+      "away_dec": 1.95,
       "books": 11,
-      "ts": "2026-08-13T17:17:04.379307+00:00"
+      "ts": "2026-08-13T18:12:25.522454+00:00"
      }
     },
     {
@@ -8108,9 +8102,9 @@
      "away_pitcher_matched": true,
      "mkt": {
       "home_dec": 2.34,
-      "away_dec": 1.66,
+      "away_dec": 1.67,
       "books": 11,
-      "ts": "2026-08-13T17:17:04.379307+00:00"
+      "ts": "2026-08-13T18:12:25.522454+00:00"
      }
     },
     {
@@ -8156,18 +8150,18 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": false,
      "mkt": {
-      "home_dec": 1.7,
+      "home_dec": 1.71,
       "away_dec": 2.28,
       "books": 11,
-      "ts": "2026-08-13T17:17:04.379307+00:00"
+      "ts": "2026-08-13T18:12:25.522454+00:00"
      },
      "value": {
       "side": "home",
       "team": "LAD",
       "ev_open": 0.116,
-      "ev_cur": 0.078,
+      "ev_cur": 0.0843,
       "open_dec": 1.76,
-      "cur_dec": 1.7,
+      "cur_dec": 1.71,
       "available": true,
       "books": 11
      }
@@ -25610,5 +25604,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-08-13T17:17:04.379307+00:00"
+ "value_updated": "2026-08-13T18:12:25.522454+00:00"
 }
