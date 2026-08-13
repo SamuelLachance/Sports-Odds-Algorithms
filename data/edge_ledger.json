@@ -83,7 +83,7 @@
    "last_pregame_dec": 1.71,
    "league": "mlb",
    "n_missed": 0,
-   "n_obs": 18,
+   "n_obs": 19,
    "open_dec": 1.76,
    "p_home": 0.6302,
    "p_model": 0.6302,
@@ -92,7 +92,7 @@
    "start_utc": "2026-08-14T02:10:00Z",
    "team": "LAD",
    "ts_close": null,
-   "ts_last_pregame": "2026-08-13T18:12:25Z",
+   "ts_last_pregame": "2026-08-13T19:29:57Z",
    "ts_record": "2026-08-12T19:31:22Z",
    "y": null
   },
@@ -193,6 +193,6 @@
    "y": 1
   }
  },
- "updated": "2026-08-13T18:12:25Z",
+ "updated": "2026-08-13T19:29:57Z",
  "v": 1
 }
