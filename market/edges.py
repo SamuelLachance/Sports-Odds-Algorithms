@@ -99,6 +99,8 @@ def attach_and_save(board_path: Path = BOARD, opening_path: Path = OPENING,
         # EV gate so that losing the badge never truncates a recorded bet's price path.
         c["mkt"] = {"home_dec": round(g["home_dec"], 3),
                     "away_dec": round(g["away_dec"], 3),
+                    "home_best": round(g["home_best"], 3) if g.get("home_best") else None,
+                    "away_best": round(g["away_best"], 3) if g.get("away_best") else None,
                     "books": g["n_books"], "ts": now}
         op = cache.get(g["id"])
         if not op:

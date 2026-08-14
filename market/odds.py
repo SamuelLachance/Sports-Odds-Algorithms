@@ -153,6 +153,12 @@ def fetch_consensus(api_key: str | None = None, now: datetime | None = None,
             "home": home, "away": away,
             "home_dec": round(statistics.median(hp), 4),
             "away_dec": round(statistics.median(ap), 4),
+            # Best available price across the same books, same snapshot. The
+            # walk-forward audit's one open question is whether best-price
+            # entry (vs this median) covers the vig — these two fields are the
+            # measurement side of that question and cost zero extra requests.
+            "home_best": round(max(hp), 4),
+            "away_best": round(max(ap), 4),
             "n_books": len(hp),
         })
     _record("ok" if out else ("empty_response" if not data else "all_filtered"),

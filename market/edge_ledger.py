@@ -23,6 +23,12 @@ WHAT IT RECORDS  (data/edge_ledger.json, {"v":1,"updated":ts,"rows":{key:row}})
            This is the p the EV and the Kaunitz z are computed against.
   dec_at_record   CONSENSUS decimal price of our side at the moment the edge was
                   recorded (median across US books, market/odds.fetch_consensus)
+  best_dec_at_record / ev_best_at_record
+                  BEST book price for our side in the SAME snapshot, and the EV
+                  at it. Measurement only (the audit's open question: does
+                  best-price entry cover the vig?): units settle at the median,
+                  and CLV never sees this field — best-entry vs consensus-close
+                  would manufacture CLV out of the vig spread.
   imp_at_record   1 / dec_at_record  (vig-inclusive implied probability)
   ev_at_record    p_model * dec_at_record - 1   (EV at the price we actually logged)
   ev_open, open_dec   the badge's headline EV vs the frozen OPENING consensus
@@ -347,6 +353,15 @@ def record_open(league: str, entries: list[dict], ledger: dict,
         p_home = float(e["p_home"])
         p_side = p_home if e["side"] == "home" else 1.0 - p_home
         dec = float(e["dec"])
+        # Best available price for OUR side at the same record instant, from
+        # the same snapshot the consensus came from (odds.fetch_consensus).
+        # MEASUREMENT ONLY: units settle at dec_at_record (median) and CLV
+        # stays median-vs-median — mixing a best entry into the consensus
+        # close would manufacture CLV out of the vig spread (documented
+        # lesson). This field exists to answer the audit's one open question:
+        # does best-price entry cover the vig where the median does not?
+        best = (e.get("mkt") or {}).get(f"{e['side']}_best")
+        best = float(best) if isinstance(best, (int, float)) and best > 1 else None
         rows[key] = {
             "league": league, "key": key, "gid": e.get("gid"), "d": e["d"],
             "home": e["home"], "away": e["away"],
@@ -354,6 +369,8 @@ def record_open(league: str, entries: list[dict], ledger: dict,
             "p_home": round(p_home, 6), "p_model": round(p_side, 6),
             "dec_at_record": round(dec, 4), "imp_at_record": round(1.0 / dec, 6),
             "ev_at_record": round(p_side * dec - 1.0, 6),
+            "best_dec_at_record": round(best, 4) if best else None,
+            "ev_best_at_record": round(p_side * best - 1.0, 6) if best else None,
             "ev_open": e.get("ev_open"), "ev_cur": e.get("ev_cur"),
             "open_dec": e.get("open_dec"),
             "books": e.get("books"), "start_utc": e.get("start_utc"),
@@ -683,6 +700,13 @@ def _stats(rows: list[dict], now: datetime | None = None) -> dict:
     settled = [r for r in rows if r.get("y") is not None]
     bets = [{"p": r["p_model"], "win": r["y"] == 1, "odds": r["dec_at_record"]}
             for r in settled]
+    # Hypothetical settle at the BEST book price recorded at the same instant
+    # (see best_dec_at_record in record_open): the audit's open question —
+    # whether best-price entry covers the vig — measured live, in parallel,
+    # never mixed into the real (median-priced) units or into CLV.
+    bets_best = [{"p": r["p_model"], "win": r["y"] == 1,
+                  "odds": r["best_dec_at_record"]}
+                 for r in settled if r.get("best_dec_at_record")]
     n, exp, real, z = _exp_vs_real(bets)
     avg_clv, se_clv, t_clv = _mean_t([r["clv_pts"] for r in clv])
     pos = sum(1 for r in clv if r["clv_pts"] > 0) / len(clv) if clv else 0.0
@@ -700,6 +724,8 @@ def _stats(rows: list[dict], now: datetime | None = None) -> dict:
         "pct_positive_clv": round(pos, 4),
         "roi": round(_roi(bets), 5), "n_bets": n,
         "units_staked": float(len(bets)), "units_net": round(_units_net(bets), 3),
+        "n_best": len(bets_best), "roi_best": round(_roi(bets_best), 5),
+        "units_net_best": round(_units_net(bets_best), 3),
         "expected_wins": round(exp, 2), "realized_wins": int(real), "z": round(z, 3),
         "gate": gate, "gate_needs": max(0, GATE_MIN_GRADED - len(clv)),
         # price-freshness quality metric (see _close_lag_mins): how stale the
@@ -837,7 +863,7 @@ def format_report(rep: dict) -> str:
          f">={rep['gate_min_graded']} CLV-graded)",
          f"{'league':<8} {'rec':>5} {'clv-gr':>7} {'cens':>5} {'avgCLV':>8} "
          f"{'+/-SE':>8} {'t':>6} {'CLV+':>7} {'settled':>8} {'void':>5} "
-         f"{'units':>8} {'ROI':>8} {'z':>7}  gate"]
+         f"{'units':>8} {'ROI':>8} {'ROIbest':>8} {'z':>7}  gate"]
     for name in list(rep["leagues"]) + ["overall"]:
         s = rep["leagues"][name] if name in rep["leagues"] else rep["overall"]
         gate = s["gate"] + (f" ({s['gate_needs']} more)" if s["gate"] == "PENDING" else "")
@@ -849,7 +875,8 @@ def format_report(rep: dict) -> str:
                  f"{s['pct_positive_clv']:>7.1%} {s['n_settled']:>8} "
                  f"{s.get('n_stale_unsettled', 0):>5} "
                  f"{s.get('units_net', 0.0):>+7.2f}u "
-                 f"{s['roi']:>+8.2%} {s['z']:>+7.2f}  {gate}")
+                 f"{s['roi']:>+8.2%} "
+                 f"{s.get('roi_best', 0.0):>+8.2%} {s['z']:>+7.2f}  {gate}")
     return "\n".join(L)
 
 
