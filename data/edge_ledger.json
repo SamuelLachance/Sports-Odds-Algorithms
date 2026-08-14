@@ -115,7 +115,7 @@
    "last_pregame_dec": 1.91,
    "league": "mlb",
    "n_missed": 0,
-   "n_obs": 4,
+   "n_obs": 5,
    "open_dec": 1.91,
    "p_home": 0.5678,
    "p_model": 0.5678,
@@ -124,7 +124,7 @@
    "start_utc": "2026-08-15T01:38:00Z",
    "team": "LAA",
    "ts_close": null,
-   "ts_last_pregame": "2026-08-14T03:02:10Z",
+   "ts_last_pregame": "2026-08-14T05:09:28Z",
    "ts_record": "2026-08-13T22:06:55Z",
    "y": null
   },
@@ -225,6 +225,6 @@
    "y": 1
   }
  },
- "updated": "2026-08-14T03:02:10Z",
+ "updated": "2026-08-14T05:09:28Z",
  "v": 1
 }
