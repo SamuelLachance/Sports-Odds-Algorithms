@@ -115,7 +115,7 @@
    "last_pregame_dec": 1.95,
    "league": "mlb",
    "n_missed": 0,
-   "n_obs": 12,
+   "n_obs": 13,
    "open_dec": 1.91,
    "p_home": 0.5678,
    "p_model": 0.5678,
@@ -124,7 +124,7 @@
    "start_utc": "2026-08-15T01:38:00Z",
    "team": "LAA",
    "ts_close": null,
-   "ts_last_pregame": "2026-08-14T14:01:07Z",
+   "ts_last_pregame": "2026-08-14T15:10:17Z",
    "ts_record": "2026-08-13T22:06:55Z",
    "y": null
   },
@@ -144,10 +144,10 @@
    "imp_at_record": 0.434783,
    "imp_close": null,
    "key": "mlb|824237",
-   "last_pregame_dec": 2.33,
+   "last_pregame_dec": 2.18,
    "league": "mlb",
    "n_missed": 0,
-   "n_obs": 7,
+   "n_obs": 8,
    "open_dec": 2.305,
    "p_home": 0.5231,
    "p_model": 0.4769,
@@ -156,7 +156,7 @@
    "start_utc": "2026-08-14T22:40:00Z",
    "team": "CWS",
    "ts_close": null,
-   "ts_last_pregame": "2026-08-14T14:01:07Z",
+   "ts_last_pregame": "2026-08-14T15:10:17Z",
    "ts_record": "2026-08-14T06:47:44Z",
    "y": null
   },
@@ -277,7 +277,7 @@
    "last_pregame_dec": 1.91,
    "league": "mlb",
    "n_missed": 0,
-   "n_obs": 6,
+   "n_obs": 7,
    "open_dec": 1.93,
    "p_home": 0.401,
    "p_model": 0.599,
@@ -286,11 +286,11 @@
    "start_utc": "2026-08-15T01:40:00Z",
    "team": "TEX",
    "ts_close": null,
-   "ts_last_pregame": "2026-08-14T14:01:07Z",
+   "ts_last_pregame": "2026-08-14T15:10:17Z",
    "ts_record": "2026-08-14T08:19:10Z",
    "y": null
   }
  },
- "updated": "2026-08-14T14:01:07Z",
+ "updated": "2026-08-14T15:10:17Z",
  "v": 1
 }
