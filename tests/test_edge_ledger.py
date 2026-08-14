@@ -33,8 +33,11 @@ def _mlb_game(pk=1, p=0.60, side="home", cur=2.10, state="Preview", start=START,
         g["value"] = {"side": side, "team": "CHC" if side == "home" else "NYY",
                       "ev_open": 0.24, "ev_cur": ev_cur, "open_dec": 2.2,
                       "cur_dec": cur, "available": available, "books": 8}
-    if mkt is not None:                       # (home_dec, away_dec) consensus quote
-        g["mkt"] = {"home_dec": mkt[0], "away_dec": mkt[1], "books": 8, "ts": "t"}
+    if mkt is not None:      # (home_dec, away_dec[, home_best, away_best])
+        g["mkt"] = {"home_dec": mkt[0], "away_dec": mkt[1],
+                    "home_best": mkt[2] if len(mkt) > 2 else None,
+                    "away_best": mkt[3] if len(mkt) > 3 else None,
+                    "books": 8, "ts": "t"}
     g.update(kw)
     return g
 
@@ -583,6 +586,46 @@ def test_report_math_on_a_hand_computed_fixture(tmp_path):
     assert rep["leagues"]["nhl"]["n_recorded"] == 0
     assert rep["overall"]["n_recorded"] == 4 and rep["overall"]["n_settled"] == 3
     assert EL.format_report(rep)                      # renders without raising
+
+
+def test_best_price_is_recorded_and_reported_beside_the_median(tmp_path):
+    """The audit's one open question — does best-price entry cover the vig? —
+    accrues live: record_open captures the best book price for OUR side from
+    the same mkt snapshot, and the report settles a parallel hypothetical
+    ROI at it. Units and CLV stay on the median (mixing a best entry into a
+    consensus close manufactures CLV out of the vig spread)."""
+    bp, lp = _paths(tmp_path)
+    _write(tmp_path, "board.json",
+           _board([_mlb_game(p=0.65, side="home", cur=1.80,
+                             mkt=(1.80, 2.10, 1.92, 2.25))]))
+    EL.update("mlb", bp, lp, now=NOW,
+              results_path=_write(tmp_path, "f.json", []))
+    row = next(iter(_rows(lp).values()))
+    assert row["dec_at_record"] == 1.80          # units/CLV price: the median
+    assert row["best_dec_at_record"] == 1.92     # measurement: best book
+    assert row["ev_best_at_record"] == pytest.approx(0.65 * 1.92 - 1, abs=1e-6)
+
+    # settle: hypothetical ROI at best runs beside the real one, never inside
+    obj = json.loads(lp.read_text(encoding="utf-8"))
+    k = next(iter(obj["rows"]))
+    obj["rows"][k]["y"] = 1
+    obj["rows"][k]["roi"] = 0.80
+    lp.write_text(json.dumps(obj), encoding="utf-8")
+    m = EL.report(lp)["leagues"]["mlb"]
+    assert m["units_net"] == pytest.approx(0.80)         # at the median
+    assert m["n_best"] == 1
+    assert m["units_net_best"] == pytest.approx(0.92)    # at the best price
+    assert m["roi_best"] == pytest.approx(0.92)
+
+    # a snapshot with no best price records None and is excluded from the
+    # best-price sample instead of polluting it
+    _write(tmp_path, "board.json",
+           _board([_mlb_game(pk=2, side="away", cur=2.40, mkt=(1.60, 2.40))]))
+    EL.update("mlb", bp, lp, now=NOW,
+              results_path=_write(tmp_path, "f2.json", []))
+    r2 = [r for r in _rows(lp).values() if r["gid"] == "2"][0]
+    assert r2["best_dec_at_record"] is None
+    assert EL.report(lp)["leagues"]["mlb"]["n_best"] == 1
 
 
 def test_units_accounting_in_report(tmp_path):
