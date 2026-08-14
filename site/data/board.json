@@ -7812,7 +7812,7 @@
    "n_lean": 18
   },
   "bets": {
-   "updated": "2026-08-14T18:09:49Z",
+   "updated": "2026-08-14T19:19:31Z",
    "stake": 1.0,
    "overall": {
     "n_open": 4,
@@ -8016,15 +8016,7 @@
      "power_edge": 0.0313,
      "baserun_edge": 0.0062,
      "home_pitcher_matched": true,
-     "away_pitcher_matched": true,
-     "mkt": {
-      "home_dec": 1.53,
-      "away_dec": 2.65,
-      "home_best": 1.56,
-      "away_best": 2.75,
-      "books": 11,
-      "ts": "2026-08-14T18:09:49.798224+00:00"
-     }
+     "away_pitcher_matched": true
     },
     {
      "game_pk": 824479,
@@ -8071,10 +8063,10 @@
      "mkt": {
       "home_dec": 1.88,
       "away_dec": 2.02,
-      "home_best": 1.9,
+      "home_best": 1.89,
       "away_best": 2.05,
       "books": 11,
-      "ts": "2026-08-14T18:09:49.798224+00:00"
+      "ts": "2026-08-14T19:19:31.358843+00:00"
      }
     },
     {
@@ -8120,12 +8112,12 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": false,
      "mkt": {
-      "home_dec": 2.08,
+      "home_dec": 2.07,
       "away_dec": 1.83,
-      "home_best": 2.12,
+      "home_best": 2.16,
       "away_best": 1.86,
       "books": 11,
-      "ts": "2026-08-14T18:09:49.798224+00:00"
+      "ts": "2026-08-14T19:19:31.358843+00:00"
      }
     },
     {
@@ -8176,7 +8168,7 @@
       "home_best": 1.79,
       "away_best": 2.2,
       "books": 11,
-      "ts": "2026-08-14T18:09:49.798224+00:00"
+      "ts": "2026-08-14T19:19:31.358843+00:00"
      },
      "value": {
       "side": "away",
@@ -8233,11 +8225,11 @@
      "away_pitcher_matched": true,
      "mkt": {
       "home_dec": 1.86,
-      "away_dec": 2.04,
+      "away_dec": 2.05,
       "home_best": 1.88,
       "away_best": 2.06,
       "books": 11,
-      "ts": "2026-08-14T18:09:49.798224+00:00"
+      "ts": "2026-08-14T19:19:31.358843+00:00"
      }
     },
     {
@@ -8283,12 +8275,12 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 1.77,
-      "away_dec": 2.16,
-      "home_best": 1.79,
-      "away_best": 2.2,
+      "home_dec": 1.84,
+      "away_dec": 2.05,
+      "home_best": 1.87,
+      "away_best": 2.08,
       "books": 11,
-      "ts": "2026-08-14T18:09:49.798224+00:00"
+      "ts": "2026-08-14T19:19:31.358843+00:00"
      }
     },
     {
@@ -8339,7 +8331,7 @@
       "home_best": 1.65,
       "away_best": 2.5,
       "books": 11,
-      "ts": "2026-08-14T18:09:49.798224+00:00"
+      "ts": "2026-08-14T19:19:31.358843+00:00"
      }
     },
     {
@@ -8385,12 +8377,12 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 1.53,
+      "home_dec": 1.52,
       "away_dec": 2.69,
       "home_best": 1.54,
-      "away_best": 2.75,
+      "away_best": 2.77,
       "books": 11,
-      "ts": "2026-08-14T18:09:49.798224+00:00"
+      "ts": "2026-08-14T19:19:31.358843+00:00"
      }
     },
     {
@@ -8441,7 +8433,7 @@
       "home_best": 2.35,
       "away_best": 1.71,
       "books": 11,
-      "ts": "2026-08-14T18:09:49.798224+00:00"
+      "ts": "2026-08-14T19:19:31.358843+00:00"
      }
     },
     {
@@ -8492,7 +8484,7 @@
       "home_best": 1.88,
       "away_best": 2.06,
       "books": 11,
-      "ts": "2026-08-14T18:09:49.798224+00:00"
+      "ts": "2026-08-14T19:19:31.358843+00:00"
      }
     },
     {
@@ -8539,11 +8531,11 @@
      "away_pitcher_matched": true,
      "mkt": {
       "home_dec": 1.95,
-      "away_dec": 1.91,
+      "away_dec": 1.92,
       "home_best": 2.01,
       "away_best": 1.95,
       "books": 11,
-      "ts": "2026-08-14T18:09:49.798224+00:00"
+      "ts": "2026-08-14T19:19:31.358843+00:00"
      },
      "value": {
       "side": "home",
@@ -8600,19 +8592,19 @@
      "away_pitcher_matched": true,
      "mkt": {
       "home_dec": 1.98,
-      "away_dec": 1.91,
+      "away_dec": 1.92,
       "home_best": 2.0,
       "away_best": 1.94,
       "books": 11,
-      "ts": "2026-08-14T18:09:49.798224+00:00"
+      "ts": "2026-08-14T19:19:31.358843+00:00"
      },
      "value": {
       "side": "away",
       "team": "TEX",
       "ev_open": 0.1561,
-      "ev_cur": 0.1441,
+      "ev_cur": 0.1501,
       "open_dec": 1.93,
-      "cur_dec": 1.91,
+      "cur_dec": 1.92,
       "available": true,
       "books": 11
      }
@@ -8660,12 +8652,12 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 1.56,
-      "away_dec": 2.58,
-      "home_best": 1.58,
+      "home_dec": 1.57,
+      "away_dec": 2.54,
+      "home_best": 1.59,
       "away_best": 2.65,
       "books": 11,
-      "ts": "2026-08-14T18:09:49.798224+00:00"
+      "ts": "2026-08-14T19:19:31.358843+00:00"
      }
     },
     {
@@ -8714,9 +8706,9 @@
       "home_dec": 1.79,
       "away_dec": 2.14,
       "home_best": 1.81,
-      "away_best": 2.18,
+      "away_best": 2.16,
       "books": 11,
-      "ts": "2026-08-14T18:09:49.798224+00:00"
+      "ts": "2026-08-14T19:19:31.358843+00:00"
      }
     },
     {
@@ -8762,12 +8754,12 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 1.62,
-      "away_dec": 2.37,
-      "home_best": 1.64,
+      "home_dec": 1.64,
+      "away_dec": 2.385,
+      "home_best": 1.7,
       "away_best": 2.42,
-      "books": 5,
-      "ts": "2026-08-14T18:09:49.798224+00:00"
+      "books": 4,
+      "ts": "2026-08-14T19:19:31.358843+00:00"
      }
     },
     {
@@ -8817,8 +8809,8 @@
       "away_dec": 2.49,
       "home_best": 1.59,
       "away_best": 2.54,
-      "books": 6,
-      "ts": "2026-08-14T18:09:49.798224+00:00"
+      "books": 5,
+      "ts": "2026-08-14T19:19:31.358843+00:00"
      }
     },
     {
@@ -8908,11 +8900,11 @@
      "away_pitcher_matched": true,
      "mkt": {
       "home_dec": 1.56,
-      "away_dec": 2.525,
+      "away_dec": 2.54,
       "home_best": 1.59,
       "away_best": 2.6,
-      "books": 6,
-      "ts": "2026-08-14T18:09:49.798224+00:00"
+      "books": 5,
+      "ts": "2026-08-14T19:19:31.358843+00:00"
      }
     },
     {
@@ -8999,7 +8991,15 @@
      "power_edge": -0.0237,
      "baserun_edge": 0.0011,
      "home_pitcher_matched": true,
-     "away_pitcher_matched": true
+     "away_pitcher_matched": true,
+     "mkt": {
+      "home_dec": 1.69,
+      "away_dec": 2.25,
+      "home_best": 1.76,
+      "away_best": 2.31,
+      "books": 5,
+      "ts": "2026-08-14T19:19:31.358843+00:00"
+     }
     },
     {
      "game_pk": 824480,
@@ -9044,12 +9044,12 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 1.885,
+      "home_dec": 1.89,
       "away_dec": 1.96,
       "home_best": 1.91,
       "away_best": 2.0,
-      "books": 6,
-      "ts": "2026-08-14T18:09:49.798224+00:00"
+      "books": 5,
+      "ts": "2026-08-14T19:19:31.358843+00:00"
      }
     },
     {
@@ -9138,12 +9138,12 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 1.805,
+      "home_dec": 1.81,
       "away_dec": 2.08,
       "home_best": 1.83,
       "away_best": 2.12,
-      "books": 6,
-      "ts": "2026-08-14T18:09:49.798224+00:00"
+      "books": 5,
+      "ts": "2026-08-14T19:19:31.358843+00:00"
      }
     },
     {
@@ -9190,21 +9190,21 @@
      "away_pitcher_matched": true,
      "mkt": {
       "home_dec": 2.28,
-      "away_dec": 1.675,
+      "away_dec": 1.68,
       "home_best": 2.34,
       "away_best": 1.68,
-      "books": 6,
-      "ts": "2026-08-14T18:09:49.798224+00:00"
+      "books": 5,
+      "ts": "2026-08-14T19:19:31.358843+00:00"
      },
      "value": {
       "side": "away",
       "team": "PHI",
       "ev_open": 0.1119,
-      "ev_cur": 0.1119,
+      "ev_cur": 0.1152,
       "open_dec": 1.675,
-      "cur_dec": 1.675,
+      "cur_dec": 1.68,
       "available": true,
-      "books": 6
+      "books": 5
      }
     },
     {
@@ -9250,12 +9250,12 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 2.045,
-      "away_dec": 1.82,
+      "home_dec": 2.05,
+      "away_dec": 1.83,
       "home_best": 2.09,
       "away_best": 1.83,
-      "books": 6,
-      "ts": "2026-08-14T18:09:49.798224+00:00"
+      "books": 5,
+      "ts": "2026-08-14T19:19:31.358843+00:00"
      }
     },
     {
@@ -9306,7 +9306,7 @@
       "home_best": 1.75,
       "away_best": 2.3,
       "books": 5,
-      "ts": "2026-08-14T18:09:49.798224+00:00"
+      "ts": "2026-08-14T19:19:31.358843+00:00"
      }
     },
     {
@@ -9352,12 +9352,12 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 2.195,
-      "away_dec": 1.72,
+      "home_dec": 2.22,
+      "away_dec": 1.7,
       "home_best": 2.24,
-      "away_best": 1.75,
-      "books": 6,
-      "ts": "2026-08-14T18:09:49.798224+00:00"
+      "away_best": 1.74,
+      "books": 5,
+      "ts": "2026-08-14T19:19:31.358843+00:00"
      }
     },
     {
@@ -9403,12 +9403,12 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 1.69,
-      "away_dec": 2.27,
-      "home_best": 1.7,
-      "away_best": 2.29,
+      "home_dec": 1.66,
+      "away_dec": 2.34,
+      "home_best": 1.68,
+      "away_best": 2.34,
       "books": 4,
-      "ts": "2026-08-14T18:09:49.798224+00:00"
+      "ts": "2026-08-14T19:19:31.358843+00:00"
      }
     },
     {
@@ -26290,5 +26290,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-08-14T18:09:49.798224+00:00"
+ "value_updated": "2026-08-14T19:19:31.358843+00:00"
 }
