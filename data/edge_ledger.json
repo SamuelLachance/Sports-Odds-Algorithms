@@ -1,5 +1,39 @@
 {
  "rows": {
+  "mlb|822775": {
+   "away": "NYA",
+   "best_dec_at_record": 2.56,
+   "books": 4,
+   "clv_censored": false,
+   "clv_pts": null,
+   "d": "2026-08-15",
+   "dec_at_record": 2.5,
+   "dec_close": null,
+   "ev_at_record": 0.2295,
+   "ev_best_at_record": 0.259008,
+   "ev_cur": 0.2295,
+   "ev_open": 0.2295,
+   "gid": "822775",
+   "home": "TOR",
+   "imp_at_record": 0.4,
+   "imp_close": null,
+   "key": "mlb|822775",
+   "last_pregame_dec": 2.5,
+   "league": "mlb",
+   "n_missed": 0,
+   "n_obs": 1,
+   "open_dec": 2.5,
+   "p_home": 0.4918,
+   "p_model": 0.4918,
+   "roi": null,
+   "side": "home",
+   "start_utc": "2026-08-15T19:07:00Z",
+   "team": "TOR",
+   "ts_close": null,
+   "ts_last_pregame": "2026-08-15T03:42:47Z",
+   "ts_record": "2026-08-15T03:42:47Z",
+   "y": null
+  },
   "mlb|823017": {
    "away": "PHI",
    "books": 7,
@@ -53,7 +87,7 @@
    "last_pregame_dec": 1.68,
    "league": "mlb",
    "n_missed": 0,
-   "n_obs": 12,
+   "n_obs": 13,
    "open_dec": 1.675,
    "p_home": 0.3362,
    "p_model": 0.6638,
@@ -62,7 +96,7 @@
    "start_utc": "2026-08-15T23:10:00Z",
    "team": "PHI",
    "ts_close": null,
-   "ts_last_pregame": "2026-08-15T02:55:10Z",
+   "ts_last_pregame": "2026-08-15T03:42:47Z",
    "ts_record": "2026-08-14T18:09:49Z",
    "y": null
   },
@@ -311,7 +345,7 @@
    "last_pregame_dec": 1.76,
    "league": "mlb",
    "n_missed": 0,
-   "n_obs": 8,
+   "n_obs": 9,
    "open_dec": 1.775,
    "p_home": 0.3627,
    "p_model": 0.6373,
@@ -320,7 +354,7 @@
    "start_utc": "2026-08-16T01:40:00Z",
    "team": "TEX",
    "ts_close": null,
-   "ts_last_pregame": "2026-08-15T02:55:10Z",
+   "ts_last_pregame": "2026-08-15T03:42:47Z",
    "ts_record": "2026-08-14T21:28:39Z",
    "y": null
   },
@@ -359,6 +393,6 @@
    "y": null
   }
  },
- "updated": "2026-08-15T02:55:10Z",
+ "updated": "2026-08-15T03:42:47Z",
  "v": 1
 }
