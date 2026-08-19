@@ -52,10 +52,10 @@
    "imp_at_record": 0.561798,
    "imp_close": null,
    "key": "mlb|822860",
-   "last_pregame_dec": 1.795,
+   "last_pregame_dec": 1.73,
    "league": "mlb",
    "n_missed": 0,
-   "n_obs": 13,
+   "n_obs": 14,
    "open_dec": 1.78,
    "p_home": 0.6084,
    "p_model": 0.6084,
@@ -64,7 +64,7 @@
    "start_utc": "2026-08-20T00:05:00Z",
    "team": "TEX",
    "ts_close": null,
-   "ts_last_pregame": "2026-08-19T04:03:30Z",
+   "ts_last_pregame": "2026-08-19T04:55:39Z",
    "ts_record": "2026-08-18T19:30:56Z",
    "y": null
   },
@@ -125,14 +125,14 @@
    "open_dec": 1.785,
    "p_home": 0.61,
    "p_model": 0.61,
-   "roi": null,
+   "roi": 0.785,
    "side": "home",
    "start_utc": "2026-08-18T22:40:00Z",
    "team": "PIT",
    "ts_close": "2026-08-18T22:58:25Z",
    "ts_last_pregame": "2026-08-18T22:30:20Z",
    "ts_record": "2026-08-17T18:45:04Z",
-   "y": null
+   "y": 1
   },
   "mlb|823343": {
    "away": "DET",
@@ -223,7 +223,7 @@
    "last_pregame_dec": 1.77,
    "league": "mlb",
    "n_missed": 0,
-   "n_obs": 14,
+   "n_obs": 15,
    "open_dec": 1.79,
    "p_home": 0.6036,
    "p_model": 0.6036,
@@ -232,7 +232,7 @@
    "start_utc": "2026-08-19T22:05:00Z",
    "team": "PHI",
    "ts_close": null,
-   "ts_last_pregame": "2026-08-19T04:03:30Z",
+   "ts_last_pregame": "2026-08-19T04:55:39Z",
    "ts_record": "2026-08-18T18:51:36Z",
    "y": null
   },
@@ -489,14 +489,14 @@
    "open_dec": 1.99,
    "p_home": 0.59,
    "p_model": 0.59,
-   "roi": null,
+   "roi": -1.0,
    "side": "home",
    "start_utc": "2026-08-18T22:40:00Z",
    "team": "CIN",
    "ts_close": "2026-08-18T22:58:25Z",
    "ts_last_pregame": "2026-08-18T22:30:20Z",
    "ts_record": "2026-08-17T18:45:04Z",
-   "y": null
+   "y": 0
   },
   "mlb|824477": {
    "away": "MIA",
@@ -657,14 +657,14 @@
    "open_dec": 1.62,
    "p_home": 0.6723,
    "p_model": 0.6723,
-   "roi": null,
+   "roi": 0.58,
    "side": "home",
    "start_utc": "2026-08-19T00:05:00Z",
    "team": "CHC",
    "ts_close": "2026-08-19T01:44:54Z",
    "ts_last_pregame": "2026-08-18T23:56:25Z",
    "ts_record": "2026-08-18T20:58:28Z",
-   "y": null
+   "y": 1
   },
   "mlb|824641": {
    "away": "CHA",
@@ -903,6 +903,6 @@
    "y": 0
   }
  },
- "updated": "2026-08-19T04:03:30Z",
+ "updated": "2026-08-19T04:55:39Z",
  "v": 1
 }
