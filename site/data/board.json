@@ -8720,7 +8720,7 @@
    "n_lean": 5
   },
   "bets": {
-   "updated": "2026-08-19T19:57:16Z",
+   "updated": "2026-08-19T20:38:33Z",
    "stake": 1.0,
    "overall": {
     "n_open": 3,
@@ -9541,7 +9541,7 @@
       "home_dec": 1.62,
       "away_dec": 2.43,
       "home_best": 1.64,
-      "away_best": 2.48,
+      "away_best": 2.52,
       "books": 11,
       "ts": "2026-08-19T20:37:57.297413+00:00"
      }
@@ -9589,7 +9589,7 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 1.81,
+      "home_dec": 1.8,
       "away_dec": 2.1,
       "home_best": 1.85,
       "away_best": 2.16,
