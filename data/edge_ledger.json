@@ -155,7 +155,7 @@
    "last_pregame_dec": 1.93,
    "league": "mlb",
    "n_missed": 0,
-   "n_obs": 35,
+   "n_obs": 36,
    "open_dec": 1.97,
    "p_home": 0.5524,
    "p_model": 0.5524,
@@ -164,7 +164,7 @@
    "start_utc": "2026-08-22T02:10:00Z",
    "team": "SEA",
    "ts_close": null,
-   "ts_last_pregame": "2026-08-21T20:58:33Z",
+   "ts_last_pregame": "2026-08-21T21:32:56Z",
    "ts_record": "2026-08-20T18:47:01Z",
    "y": null
   },
@@ -325,7 +325,7 @@
    "last_pregame_dec": 2.73,
    "league": "mlb",
    "n_missed": 0,
-   "n_obs": 30,
+   "n_obs": 31,
    "open_dec": 2.94,
    "p_home": 0.5803,
    "p_model": 0.4197,
@@ -334,7 +334,7 @@
    "start_utc": "2026-08-21T23:05:00Z",
    "team": "TOR",
    "ts_close": null,
-   "ts_last_pregame": "2026-08-21T20:58:33Z",
+   "ts_last_pregame": "2026-08-21T21:32:56Z",
    "ts_record": "2026-08-20T21:59:53Z",
    "y": null
   },
@@ -520,10 +520,10 @@
    "imp_at_record": 0.497512,
    "imp_close": null,
    "key": "mlb|824072",
-   "last_pregame_dec": 1.91,
+   "last_pregame_dec": 1.9,
    "league": "mlb",
    "n_missed": 0,
-   "n_obs": 22,
+   "n_obs": 23,
    "open_dec": 2.03,
    "p_home": 0.5385,
    "p_model": 0.5385,
@@ -532,7 +532,7 @@
    "start_utc": "2026-08-22T00:10:00Z",
    "team": "KC",
    "ts_close": null,
-   "ts_last_pregame": "2026-08-21T20:58:33Z",
+   "ts_last_pregame": "2026-08-21T21:32:56Z",
    "ts_record": "2026-08-21T05:36:28Z",
    "y": null
   },
@@ -856,10 +856,10 @@
    "imp_at_record": 0.442478,
    "imp_close": null,
    "key": "mlb|824559",
-   "last_pregame_dec": 2.25,
+   "last_pregame_dec": 2.11,
    "league": "mlb",
    "n_missed": 0,
-   "n_obs": 22,
+   "n_obs": 23,
    "open_dec": 2.28,
    "p_home": 0.5223,
    "p_model": 0.4777,
@@ -868,7 +868,7 @@
    "start_utc": "2026-08-21T23:40:00Z",
    "team": "NYM",
    "ts_close": null,
-   "ts_last_pregame": "2026-08-21T20:58:33Z",
+   "ts_last_pregame": "2026-08-21T21:32:56Z",
    "ts_record": "2026-08-21T05:36:28Z",
    "y": null
   },
@@ -1175,6 +1175,6 @@
    "y": 0
   }
  },
- "updated": "2026-08-21T20:58:33Z",
+ "updated": "2026-08-21T21:32:56Z",
  "v": 1
 }
