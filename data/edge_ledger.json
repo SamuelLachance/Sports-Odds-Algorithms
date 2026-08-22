@@ -155,7 +155,7 @@
    "last_pregame_dec": 2.01,
    "league": "mlb",
    "n_missed": 0,
-   "n_obs": 1,
+   "n_obs": 2,
    "open_dec": 2.0,
    "p_home": 0.4357,
    "p_model": 0.5643,
@@ -164,7 +164,7 @@
    "start_utc": "2026-08-22T23:15:00Z",
    "team": "CHC",
    "ts_close": null,
-   "ts_last_pregame": "2026-08-22T01:43:35Z",
+   "ts_last_pregame": "2026-08-22T02:57:30Z",
    "ts_record": "2026-08-22T01:43:35Z",
    "y": null
   },
@@ -173,10 +173,10 @@
    "best_dec_at_record": 1.97,
    "books": 3,
    "clv_censored": false,
-   "clv_pts": null,
+   "clv_pts": 0.010521,
    "d": "2026-08-21",
    "dec_at_record": 1.97,
-   "dec_close": null,
+   "dec_close": 1.93,
    "ev_at_record": 0.088228,
    "ev_best_at_record": 0.088228,
    "ev_cur": 0.0882,
@@ -184,7 +184,7 @@
    "gid": "823101",
    "home": "SEA",
    "imp_at_record": 0.507614,
-   "imp_close": null,
+   "imp_close": 0.518135,
    "key": "mlb|823101",
    "last_pregame_dec": 1.93,
    "league": "mlb",
@@ -197,7 +197,7 @@
    "side": "home",
    "start_utc": "2026-08-22T02:10:00Z",
    "team": "SEA",
-   "ts_close": null,
+   "ts_close": "2026-08-22T02:57:30Z",
    "ts_last_pregame": "2026-08-22T01:43:35Z",
    "ts_record": "2026-08-20T18:47:01Z",
    "y": null
@@ -325,7 +325,7 @@
    "last_pregame_dec": 1.76,
    "league": "mlb",
    "n_missed": 0,
-   "n_obs": 1,
+   "n_obs": 2,
    "open_dec": 1.77,
    "p_home": 0.6341,
    "p_model": 0.6341,
@@ -334,7 +334,7 @@
    "start_utc": "2026-08-22T22:05:00Z",
    "team": "PHI",
    "ts_close": null,
-   "ts_last_pregame": "2026-08-22T01:43:35Z",
+   "ts_last_pregame": "2026-08-22T02:57:30Z",
    "ts_record": "2026-08-22T01:43:35Z",
    "y": null
   },
@@ -961,7 +961,7 @@
    "last_pregame_dec": 2.0,
    "league": "mlb",
    "n_missed": 0,
-   "n_obs": 6,
+   "n_obs": 7,
    "open_dec": 2.035,
    "p_home": 0.4398,
    "p_model": 0.5602,
@@ -970,7 +970,7 @@
    "start_utc": "2026-08-22T23:10:00Z",
    "team": "NYM",
    "ts_close": null,
-   "ts_last_pregame": "2026-08-22T01:43:35Z",
+   "ts_last_pregame": "2026-08-22T02:57:30Z",
    "ts_record": "2026-08-21T21:57:36Z",
    "y": null
   },
@@ -1277,6 +1277,6 @@
    "y": 0
   }
  },
- "updated": "2026-08-22T01:43:35Z",
+ "updated": "2026-08-22T02:57:30Z",
  "v": 1
 }
