@@ -1034,9 +1034,9 @@
     683357,
     806188,
     640459,
+    691277,
     691788,
-    694795,
-    686482
+    694795
    ],
    "elo_rank": 14,
    "record_rank": 14,
@@ -3474,7 +3474,7 @@
    "id": 682987,
    "name": "Spencer Jones",
    "team": "NYA",
-   "pos": "CF",
+   "pos": "RF",
    "grp": "OF",
    "num": "78",
    "ts_mu": null,
@@ -9473,8 +9473,8 @@
    "id": 680664,
    "name": "Eduardo Valencia",
    "team": "DET",
-   "pos": "C",
-   "grp": "C",
+   "pos": "DH",
+   "grp": "DH",
    "num": "32",
    "ts_mu": null,
    "role": "batter",
@@ -17893,6 +17893,39 @@
    },
    "ts100": 52.7
   },
+  "691277": {
+   "id": 691277,
+   "name": "Deyvison De Los Santos",
+   "team": "MIA",
+   "pos": "3B",
+   "grp": "IF",
+   "num": "63",
+   "ts_mu": null,
+   "role": "batter",
+   "bat": {
+    "avg": ".286",
+    "obp": ".286",
+    "slg": ".429",
+    "ops": ".715",
+    "hr": 0,
+    "rbi": 0,
+    "pa": 7,
+    "sb": 0,
+    "bb": 0,
+    "so": 3,
+    "h": 2,
+    "r": 0
+   },
+   "career": {
+    "avg": ".286",
+    "hr": 0,
+    "rbi": 0,
+    "h": 2,
+    "ops": ".715",
+    "sb": 0,
+    "g": 3
+   }
+  },
   "665923": {
    "id": 665923,
    "name": "Esteury Ruiz",
@@ -18287,25 +18320,6 @@
     "g": 127
    },
    "ts100": 33.3
-  },
-  "686482": {
-   "id": 686482,
-   "name": "Logan Driscoll",
-   "team": "MIA",
-   "pos": "C",
-   "grp": "C",
-   "num": "33",
-   "ts_mu": null,
-   "role": "batter",
-   "career": {
-    "avg": ".171",
-    "hr": 1,
-    "rbi": 5,
-    "h": 6,
-    "ops": ".446",
-    "sb": 0,
-    "g": 15
-   }
   },
   "656848": {
    "id": 656848,
