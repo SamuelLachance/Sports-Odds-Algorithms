@@ -495,7 +495,7 @@
    "last_pregame_dec": 2.04,
    "league": "mlb",
    "n_missed": 0,
-   "n_obs": 38,
+   "n_obs": 39,
    "open_dec": 2.115,
    "p_home": 0.4874,
    "p_model": 0.5126,
@@ -504,7 +504,7 @@
    "start_utc": "2026-08-23T23:10:00Z",
    "team": "ATL",
    "ts_close": null,
-   "ts_last_pregame": "2026-08-23T17:54:25Z",
+   "ts_last_pregame": "2026-08-23T18:34:52Z",
    "ts_record": "2026-08-22T18:39:21Z",
    "y": null
   },
@@ -791,7 +791,7 @@
    "last_pregame_dec": 2.43,
    "league": "mlb",
    "n_missed": 0,
-   "n_obs": 38,
+   "n_obs": 39,
    "open_dec": 2.395,
    "p_home": 0.5108,
    "p_model": 0.5108,
@@ -800,7 +800,7 @@
    "start_utc": "2026-08-23T19:10:00Z",
    "team": "COL",
    "ts_close": null,
-   "ts_last_pregame": "2026-08-23T17:54:25Z",
+   "ts_last_pregame": "2026-08-23T18:34:52Z",
    "ts_record": "2026-08-22T18:39:21Z",
    "y": null
   },
@@ -1413,6 +1413,6 @@
    "y": 0
   }
  },
- "updated": "2026-08-23T17:54:25Z",
+ "updated": "2026-08-23T18:34:52Z",
  "v": 1
 }
