@@ -223,7 +223,7 @@
    "last_pregame_dec": 1.65,
    "league": "mlb",
    "n_missed": 0,
-   "n_obs": 14,
+   "n_obs": 15,
    "open_dec": 1.775,
    "p_home": 0.368,
    "p_model": 0.632,
@@ -232,7 +232,7 @@
    "start_utc": "2026-08-25T01:45:00Z",
    "team": "CIN",
    "ts_close": null,
-   "ts_last_pregame": "2026-08-24T04:10:30Z",
+   "ts_last_pregame": "2026-08-24T05:05:53Z",
    "ts_record": "2026-08-23T19:01:44Z",
    "y": null
   },
@@ -257,7 +257,7 @@
    "last_pregame_dec": 1.95,
    "league": "mlb",
    "n_missed": 0,
-   "n_obs": 14,
+   "n_obs": 15,
    "open_dec": 1.83,
    "p_home": 0.6155,
    "p_model": 0.6155,
@@ -266,7 +266,7 @@
    "start_utc": "2026-08-25T01:40:00Z",
    "team": "SD",
    "ts_close": null,
-   "ts_last_pregame": "2026-08-24T04:10:30Z",
+   "ts_last_pregame": "2026-08-24T05:05:53Z",
    "ts_record": "2026-08-23T19:01:44Z",
    "y": null
   },
@@ -397,14 +397,14 @@
    "open_dec": 1.525,
    "p_home": 0.7405,
    "p_model": 0.7405,
-   "roi": null,
+   "roi": 0.525,
    "side": "home",
    "start_utc": "2026-08-23T17:35:00Z",
    "team": "PHI",
    "ts_close": "2026-08-23T17:54:25Z",
    "ts_last_pregame": "2026-08-23T17:28:45Z",
    "ts_record": "2026-08-22T19:04:26Z",
-   "y": null
+   "y": 1
   },
   "mlb|823422": {
    "away": "SLN",
@@ -567,14 +567,14 @@
    "open_dec": 2.115,
    "p_home": 0.4874,
    "p_model": 0.5126,
-   "roi": null,
+   "roi": 1.115,
    "side": "away",
    "start_utc": "2026-08-23T23:10:00Z",
    "team": "ATL",
    "ts_close": "2026-08-23T23:28:21Z",
    "ts_last_pregame": "2026-08-23T22:56:32Z",
    "ts_record": "2026-08-22T18:39:21Z",
-   "y": null
+   "y": 1
   },
   "mlb|823747": {
    "away": "SEA",
@@ -863,14 +863,14 @@
    "open_dec": 2.395,
    "p_home": 0.5108,
    "p_model": 0.5108,
-   "roi": null,
+   "roi": -1.0,
    "side": "home",
    "start_utc": "2026-08-23T19:10:00Z",
    "team": "COL",
    "ts_close": "2026-08-23T19:40:10Z",
    "ts_last_pregame": "2026-08-23T19:01:44Z",
    "ts_record": "2026-08-22T18:39:21Z",
-   "y": null
+   "y": 0
   },
   "mlb|824320": {
    "away": "LAN",
@@ -1337,14 +1337,14 @@
    "open_dec": 1.965,
    "p_home": 0.5621,
    "p_model": 0.5621,
-   "roi": null,
+   "roi": -1.0,
    "side": "home",
    "start_utc": "2026-08-23T17:35:00Z",
    "team": "BAL",
    "ts_close": "2026-08-23T17:54:25Z",
    "ts_last_pregame": "2026-08-23T17:28:45Z",
    "ts_record": "2026-08-22T18:39:21Z",
-   "y": null
+   "y": 0
   },
   "mlb|824880": {
    "away": "ARI",
@@ -1481,6 +1481,6 @@
    "y": 0
   }
  },
- "updated": "2026-08-24T04:10:30Z",
+ "updated": "2026-08-24T05:05:53Z",
  "v": 1
 }
