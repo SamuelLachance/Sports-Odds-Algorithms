@@ -304,6 +304,40 @@
    "ts_record": "2026-08-20T18:47:01Z",
    "y": 1
   },
+  "mlb|823177": {
+   "away": "ARI",
+   "best_dec_at_record": 1.88,
+   "books": 11,
+   "clv_censored": false,
+   "clv_pts": null,
+   "d": "2026-08-29",
+   "dec_at_record": 1.86,
+   "dec_close": null,
+   "ev_at_record": 0.070616,
+   "ev_best_at_record": 0.082128,
+   "ev_cur": 0.0706,
+   "ev_open": 0.1512,
+   "gid": "823177",
+   "home": "SFN",
+   "imp_at_record": 0.537634,
+   "imp_close": null,
+   "key": "mlb|823177",
+   "last_pregame_dec": 1.86,
+   "league": "mlb",
+   "n_missed": 0,
+   "n_obs": 1,
+   "open_dec": 2.0,
+   "p_home": 0.4244,
+   "p_model": 0.5756,
+   "roi": null,
+   "side": "away",
+   "start_utc": "2026-08-29T20:05:00Z",
+   "team": "AZ",
+   "ts_close": null,
+   "ts_last_pregame": "2026-08-29T19:58:42Z",
+   "ts_record": "2026-08-29T19:58:42Z",
+   "y": null
+  },
   "mlb|823181": {
    "away": "CIN",
    "best_dec_at_record": 1.98,
@@ -1889,6 +1923,6 @@
    "y": 1
   }
  },
- "updated": "2026-08-29T17:22:24Z",
+ "updated": "2026-08-29T19:58:42Z",
  "v": 1
 }
