@@ -157,7 +157,7 @@
    "last_pregame_dec": 1.61,
    "league": "mlb",
    "n_missed": 0,
-   "n_obs": 1,
+   "n_obs": 2,
    "open_dec": 1.61,
    "p_home": 0.6721,
    "p_model": 0.6721,
@@ -166,7 +166,7 @@
    "start_utc": "2026-08-31T22:40:00Z",
    "team": "TB",
    "ts_close": null,
-   "ts_last_pregame": "2026-08-30T19:40:32Z",
+   "ts_last_pregame": "2026-08-30T22:33:17Z",
    "ts_record": "2026-08-30T19:40:32Z",
    "y": null
   },
@@ -1888,6 +1888,40 @@
    "ts_record": "2026-08-11T22:50:18Z",
    "y": 1
   },
+  "mlb|824911": {
+   "away": "SFN",
+   "best_dec_at_record": 1.65,
+   "books": 4,
+   "clv_censored": false,
+   "clv_pts": null,
+   "d": "2026-08-31",
+   "dec_at_record": 1.625,
+   "dec_close": null,
+   "ev_at_record": 0.089887,
+   "ev_best_at_record": 0.106655,
+   "ev_cur": 0.0899,
+   "ev_open": 0.0899,
+   "gid": "824911",
+   "home": "ATL",
+   "imp_at_record": 0.615385,
+   "imp_close": null,
+   "key": "mlb|824911",
+   "last_pregame_dec": 1.625,
+   "league": "mlb",
+   "n_missed": 0,
+   "n_obs": 1,
+   "open_dec": 1.625,
+   "p_home": 0.6707,
+   "p_model": 0.6707,
+   "roi": null,
+   "side": "home",
+   "start_utc": "2026-08-31T22:05:00Z",
+   "team": "ATL",
+   "ts_close": null,
+   "ts_last_pregame": "2026-08-30T22:33:17Z",
+   "ts_record": "2026-08-30T22:33:17Z",
+   "y": null
+  },
   "mlb|824963": {
    "away": "MIN",
    "best_dec_at_record": 2.21,
@@ -2025,6 +2059,6 @@
    "y": 1
   }
  },
- "updated": "2026-08-30T19:40:32Z",
+ "updated": "2026-08-30T22:33:17Z",
  "v": 1
 }
