@@ -835,7 +835,7 @@
    "last_pregame_dec": 2.54,
    "league": "mlb",
    "n_missed": 0,
-   "n_obs": 3,
+   "n_obs": 4,
    "open_dec": 2.555,
    "p_home": 0.5656,
    "p_model": 0.4344,
@@ -844,7 +844,7 @@
    "start_utc": "2026-09-05T20:10:00Z",
    "team": "SF",
    "ts_close": null,
-   "ts_last_pregame": "2026-09-05T01:04:57Z",
+   "ts_last_pregame": "2026-09-05T05:51:14Z",
    "ts_record": "2026-09-04T21:01:55Z",
    "y": null
   },
@@ -1645,14 +1645,14 @@
    "open_dec": 2.16,
    "p_home": 0.5103,
    "p_model": 0.5103,
-   "roi": null,
+   "roi": -1.0,
    "side": "home",
    "start_utc": "2026-09-05T00:40:00Z",
    "team": "COL",
    "ts_close": "2026-09-05T01:04:57Z",
    "ts_last_pregame": "2026-09-04T23:04:46Z",
    "ts_record": "2026-09-04T01:04:01Z",
-   "y": null
+   "y": 0
   },
   "mlb|824315": {
    "away": "CLE",
@@ -1747,14 +1747,14 @@
    "open_dec": 2.34,
    "p_home": 0.4685,
    "p_model": 0.4685,
-   "roi": null,
+   "roi": -1.0,
    "side": "home",
    "start_utc": "2026-09-04T22:10:00Z",
    "team": "CIN",
    "ts_close": "2026-09-04T23:04:46Z",
    "ts_last_pregame": "2026-09-04T21:01:55Z",
    "ts_record": "2026-09-03T20:45:56Z",
-   "y": null
+   "y": 0
   },
   "mlb|824474": {
    "away": "SLN",
@@ -2501,6 +2501,6 @@
    "y": 1
   }
  },
- "updated": "2026-09-05T01:04:57Z",
+ "updated": "2026-09-05T05:51:14Z",
  "v": 1
 }
