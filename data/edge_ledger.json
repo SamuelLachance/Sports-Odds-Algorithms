@@ -835,7 +835,7 @@
    "last_pregame_dec": 2.56,
    "league": "mlb",
    "n_missed": 0,
-   "n_obs": 5,
+   "n_obs": 6,
    "open_dec": 2.555,
    "p_home": 0.5656,
    "p_model": 0.4344,
@@ -844,7 +844,7 @@
    "start_utc": "2026-09-05T20:10:00Z",
    "team": "SF",
    "ts_close": null,
-   "ts_last_pregame": "2026-09-05T10:17:15Z",
+   "ts_last_pregame": "2026-09-05T13:28:52Z",
    "ts_record": "2026-09-04T21:01:55Z",
    "y": null
   },
@@ -2501,6 +2501,6 @@
    "y": 1
   }
  },
- "updated": "2026-09-05T10:17:15Z",
+ "updated": "2026-09-05T13:28:52Z",
  "v": 1
 }
