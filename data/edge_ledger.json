@@ -832,10 +832,10 @@
    "imp_at_record": 0.391389,
    "imp_close": null,
    "key": "mlb|823577",
-   "last_pregame_dec": 2.56,
+   "last_pregame_dec": 2.41,
    "league": "mlb",
    "n_missed": 0,
-   "n_obs": 6,
+   "n_obs": 7,
    "open_dec": 2.555,
    "p_home": 0.5656,
    "p_model": 0.4344,
@@ -844,7 +844,7 @@
    "start_utc": "2026-09-05T20:10:00Z",
    "team": "SF",
    "ts_close": null,
-   "ts_last_pregame": "2026-09-05T13:28:52Z",
+   "ts_last_pregame": "2026-09-05T16:15:10Z",
    "ts_record": "2026-09-04T21:01:55Z",
    "y": null
   },
@@ -2501,6 +2501,6 @@
    "y": 1
   }
  },
- "updated": "2026-09-05T13:28:52Z",
+ "updated": "2026-09-05T16:15:10Z",
  "v": 1
 }
