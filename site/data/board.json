@@ -8530,7 +8530,7 @@
    "n_lean": 4
   },
   "bets": {
-   "updated": "2026-09-10T06:38:04Z",
+   "updated": "2026-09-10T11:49:57Z",
    "stake": 1.0,
    "overall": {
     "n_open": 6,
@@ -9456,12 +9456,12 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 1.83,
-      "away_dec": 2.03,
-      "home_best": 1.86,
-      "away_best": 2.09,
+      "home_dec": 1.85,
+      "away_dec": 2.0,
+      "home_best": 1.87,
+      "away_best": 2.05,
       "books": 11,
-      "ts": "2026-09-10T06:38:04.487427+00:00"
+      "ts": "2026-09-10T11:49:57.709376+00:00"
      }
     },
     {
@@ -9507,12 +9507,12 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 1.54,
-      "away_dec": 2.55,
-      "home_best": 1.57,
-      "away_best": 2.6,
+      "home_dec": 1.53,
+      "away_dec": 2.6,
+      "home_best": 1.55,
+      "away_best": 2.65,
       "books": 11,
-      "ts": "2026-09-10T06:38:04.487427+00:00"
+      "ts": "2026-09-10T11:49:57.709376+00:00"
      }
     },
     {
@@ -9558,12 +9558,12 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 1.77,
-      "away_dec": 2.1,
-      "home_best": 1.8,
-      "away_best": 2.15,
+      "home_dec": 1.79,
+      "away_dec": 2.08,
+      "home_best": 1.82,
+      "away_best": 2.11,
       "books": 11,
-      "ts": "2026-09-10T06:38:04.487427+00:00"
+      "ts": "2026-09-10T11:49:57.709376+00:00"
      }
     },
     {
@@ -9610,11 +9610,11 @@
      "away_pitcher_matched": true,
      "mkt": {
       "home_dec": 1.3,
-      "away_dec": 3.7,
+      "away_dec": 3.66,
       "home_best": 1.32,
-      "away_best": 3.8,
+      "away_best": 3.77,
       "books": 11,
-      "ts": "2026-09-10T06:38:04.487427+00:00"
+      "ts": "2026-09-10T11:49:57.709376+00:00"
      }
     },
     {
@@ -9661,11 +9661,11 @@
      "away_pitcher_matched": true,
      "mkt": {
       "home_dec": 1.93,
-      "away_dec": 1.91,
-      "home_best": 1.96,
-      "away_best": 1.94,
+      "away_dec": 1.93,
+      "home_best": 1.94,
+      "away_best": 1.97,
       "books": 11,
-      "ts": "2026-09-10T06:38:04.487427+00:00"
+      "ts": "2026-09-10T11:49:57.709376+00:00"
      }
     },
     {
@@ -19581,5 +19581,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-09-10T06:38:04.487427+00:00"
+ "value_updated": "2026-09-10T11:49:57.709376+00:00"
 }
