@@ -8698,7 +8698,7 @@
    "n_lean": 10
   },
   "bets": {
-   "updated": "2026-09-09T23:29:32Z",
+   "updated": "2026-09-10T01:27:10Z",
    "stake": 1.0,
    "overall": {
     "n_open": 10,
@@ -10103,15 +10103,7 @@
      "power_edge": 0.006,
      "baserun_edge": 0.0001,
      "home_pitcher_matched": false,
-     "away_pitcher_matched": true,
-     "mkt": {
-      "home_dec": 2.02,
-      "away_dec": 1.84,
-      "home_best": 2.06,
-      "away_best": 1.86,
-      "books": 11,
-      "ts": "2026-09-09T23:29:32.090952+00:00"
-     }
+     "away_pitcher_matched": true
     },
     {
      "game_pk": 824549,
@@ -10154,15 +10146,7 @@
      "power_edge": -0.0031,
      "baserun_edge": 0.0003,
      "home_pitcher_matched": true,
-     "away_pitcher_matched": false,
-     "mkt": {
-      "home_dec": 1.76,
-      "away_dec": 2.12,
-      "home_best": 1.8,
-      "away_best": 2.18,
-      "books": 11,
-      "ts": "2026-09-09T23:29:32.090952+00:00"
-     }
+     "away_pitcher_matched": false
     },
     {
      "game_pk": 823739,
@@ -10205,25 +10189,7 @@
      "power_edge": -0.0236,
      "baserun_edge": 0.002,
      "home_pitcher_matched": true,
-     "away_pitcher_matched": true,
-     "mkt": {
-      "home_dec": 1.76,
-      "away_dec": 2.12,
-      "home_best": 1.8,
-      "away_best": 2.19,
-      "books": 11,
-      "ts": "2026-09-09T23:29:32.090952+00:00"
-     },
-     "value": {
-      "side": "home",
-      "team": "MIL",
-      "ev_open": 0.0801,
-      "ev_cur": 0.074,
-      "open_dec": 1.77,
-      "cur_dec": 1.76,
-      "available": true,
-      "books": 11
-     }
+     "away_pitcher_matched": true
     },
     {
      "game_pk": 823900,
@@ -10270,10 +10236,10 @@
      "mkt": {
       "home_dec": 1.35,
       "away_dec": 3.34,
-      "home_best": 1.37,
+      "home_best": 1.41,
       "away_best": 3.42,
       "books": 11,
-      "ts": "2026-09-09T23:29:32.090952+00:00"
+      "ts": "2026-09-10T01:27:09.747587+00:00"
      }
     },
     {
@@ -10319,12 +10285,12 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 1.86,
-      "away_dec": 2.0,
-      "home_best": 1.89,
-      "away_best": 2.02,
-      "books": 9,
-      "ts": "2026-09-09T23:29:32.090952+00:00"
+      "home_dec": 1.85,
+      "away_dec": 1.99,
+      "home_best": 1.87,
+      "away_best": 2.05,
+      "books": 11,
+      "ts": "2026-09-10T01:27:09.747587+00:00"
      }
     },
     {
@@ -10370,12 +10336,12 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 1.575,
-      "away_dec": 2.435,
-      "home_best": 1.59,
-      "away_best": 2.45,
-      "books": 6,
-      "ts": "2026-09-09T23:29:32.090952+00:00"
+      "home_dec": 1.57,
+      "away_dec": 2.5,
+      "home_best": 1.61,
+      "away_best": 2.54,
+      "books": 11,
+      "ts": "2026-09-10T01:27:09.747587+00:00"
      }
     },
     {
@@ -10423,10 +10389,10 @@
      "mkt": {
       "home_dec": 1.77,
       "away_dec": 2.1,
-      "home_best": 1.81,
-      "away_best": 2.12,
-      "books": 9,
-      "ts": "2026-09-09T23:29:32.090952+00:00"
+      "home_best": 1.8,
+      "away_best": 2.14,
+      "books": 11,
+      "ts": "2026-09-10T01:27:09.747587+00:00"
      }
     },
     {
@@ -10473,11 +10439,11 @@
      "away_pitcher_matched": true,
      "mkt": {
       "home_dec": 1.3,
-      "away_dec": 3.74,
-      "home_best": 1.31,
-      "away_best": 3.86,
-      "books": 9,
-      "ts": "2026-09-09T23:29:32.090952+00:00"
+      "away_dec": 3.7,
+      "home_best": 1.32,
+      "away_best": 3.8,
+      "books": 11,
+      "ts": "2026-09-10T01:27:09.747587+00:00"
      }
     },
     {
@@ -10527,8 +10493,8 @@
       "away_dec": 1.91,
       "home_best": 1.93,
       "away_best": 1.93,
-      "books": 6,
-      "ts": "2026-09-09T23:29:32.090952+00:00"
+      "books": 7,
+      "ts": "2026-09-10T01:27:09.747587+00:00"
      }
     },
     {
@@ -20444,5 +20410,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-09-09T23:29:32.090952+00:00"
+ "value_updated": "2026-09-10T01:27:09.747587+00:00"
 }
