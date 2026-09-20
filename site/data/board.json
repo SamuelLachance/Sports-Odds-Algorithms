@@ -6970,10 +6970,10 @@
    "n_lean": 8
   },
   "bets": {
-   "updated": "2026-09-20T17:31:37Z",
+   "updated": "2026-09-20T19:42:53Z",
    "stake": 1.0,
    "overall": {
-    "n_open": 19,
+    "n_open": 21,
     "n_void": 5,
     "settled": {
      "n": 117,
@@ -7471,7 +7471,7 @@
    },
    "leagues": {
     "mlb": {
-     "n_open": 5,
+     "n_open": 7,
      "n_void": 0,
      "settled": {
       "n": 117,
@@ -8104,6 +8104,26 @@
      "ev": 0.108536
     },
     {
+     "league": "mlb",
+     "d": "2026-09-20",
+     "away": "NYA",
+     "home": "ARI",
+     "team": "AZ",
+     "side": "home",
+     "dec": 1.82,
+     "ev": 0.017562
+    },
+    {
+     "league": "mlb",
+     "d": "2026-09-21",
+     "away": "TOR",
+     "home": "BAL",
+     "team": "BAL",
+     "side": "home",
+     "dec": 1.9,
+     "ev": 0.08946
+    },
+    {
      "league": "nfl",
      "d": "2026-09-24",
      "away": "ATL",
@@ -8611,25 +8631,7 @@
      "power_edge": -0.0081,
      "baserun_edge": -0.0001,
      "home_pitcher_matched": true,
-     "away_pitcher_matched": false,
-     "mkt": {
-      "home_dec": 2.38,
-      "away_dec": 1.61,
-      "home_best": 2.42,
-      "away_best": 1.64,
-      "books": 11,
-      "ts": "2026-09-20T18:40:56.555643+00:00"
-     },
-     "value": {
-      "side": "home",
-      "team": "COL",
-      "ev_open": 0.1566,
-      "ev_cur": 0.1664,
-      "open_dec": 2.36,
-      "cur_dec": 2.38,
-      "available": true,
-      "books": 11
-     }
+     "away_pitcher_matched": false
     },
     {
      "game_pk": 823975,
@@ -8676,10 +8678,10 @@
      "mkt": {
       "home_dec": 2.0,
       "away_dec": 1.87,
-      "home_best": 2.07,
-      "away_best": 1.91,
+      "home_best": 2.04,
+      "away_best": 1.89,
       "books": 11,
-      "ts": "2026-09-20T18:40:56.555643+00:00"
+      "ts": "2026-09-20T19:42:53.771968+00:00"
      }
     },
     {
@@ -8730,7 +8732,7 @@
       "home_best": 1.38,
       "away_best": 3.36,
       "books": 11,
-      "ts": "2026-09-20T18:40:56.555643+00:00"
+      "ts": "2026-09-20T19:42:53.771968+00:00"
      }
     },
     {
@@ -8779,9 +8781,9 @@
       "home_dec": 1.65,
       "away_dec": 2.29,
       "home_best": 1.7,
-      "away_best": 2.4,
+      "away_best": 2.36,
       "books": 11,
-      "ts": "2026-09-20T18:40:56.555643+00:00"
+      "ts": "2026-09-20T19:42:53.771968+00:00"
      },
      "value": {
       "side": "home",
@@ -8837,20 +8839,20 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 1.85,
-      "away_dec": 2.0,
-      "home_best": 1.88,
-      "away_best": 2.06,
+      "home_dec": 1.82,
+      "away_dec": 2.05,
+      "home_best": 1.85,
+      "away_best": 2.11,
       "books": 11,
-      "ts": "2026-09-20T18:40:56.555643+00:00"
+      "ts": "2026-09-20T19:42:53.771968+00:00"
      },
      "value": {
       "side": "home",
       "team": "AZ",
       "ev_open": 0.0902,
-      "ev_cur": 0.0343,
+      "ev_cur": 0.0176,
       "open_dec": 1.95,
-      "cur_dec": 1.85,
+      "cur_dec": 1.82,
       "available": true,
       "books": 11
      }
@@ -8903,7 +8905,7 @@
       "home_best": 2.8,
       "away_best": 1.5,
       "books": 11,
-      "ts": "2026-09-20T18:40:56.555643+00:00"
+      "ts": "2026-09-20T19:42:53.771968+00:00"
      }
     },
     {
@@ -8947,7 +8949,25 @@
      "power_edge": 0.0315,
      "baserun_edge": -0.0001,
      "home_pitcher_matched": true,
-     "away_pitcher_matched": true
+     "away_pitcher_matched": true,
+     "mkt": {
+      "home_dec": 1.9,
+      "away_dec": 1.95,
+      "home_best": 1.91,
+      "away_best": 1.96,
+      "books": 3,
+      "ts": "2026-09-20T19:42:53.771968+00:00"
+     },
+     "value": {
+      "side": "home",
+      "team": "BAL",
+      "ev_open": 0.0895,
+      "ev_cur": 0.0895,
+      "open_dec": 1.9,
+      "cur_dec": 1.9,
+      "available": true,
+      "books": 3
+     }
     },
     {
      "game_pk": 824221,
@@ -12842,5 +12862,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-09-20T18:40:56.555643+00:00"
+ "value_updated": "2026-09-20T19:42:53.771968+00:00"
 }
