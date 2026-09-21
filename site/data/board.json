@@ -6970,11 +6970,11 @@
    "n_lean": 14
   },
   "bets": {
-   "updated": "2026-09-20T22:17:53Z",
+   "updated": "2026-09-21T00:19:19Z",
    "stake": 1.0,
    "overall": {
-    "n_open": 21,
-    "n_void": 5,
+    "n_open": 20,
+    "n_void": 6,
     "settled": {
      "n": 117,
      "w": 61,
@@ -7968,8 +7968,8 @@
      ]
     },
     "nfl": {
-     "n_open": 14,
-     "n_void": 5,
+     "n_open": 13,
+     "n_void": 6,
      "settled": null,
      "by_month": [],
      "curve": []
@@ -7983,16 +7983,6 @@
     }
    },
    "pending": [
-    {
-     "league": "nfl",
-     "d": "2026-09-14",
-     "away": "DEN",
-     "home": "KC",
-     "team": "DEN",
-     "side": "away",
-     "dec": 2.2,
-     "ev": 0.089
-    },
     {
      "league": "nfl",
      "d": "2026-09-20",
@@ -8846,15 +8836,7 @@
      "power_edge": 0.0198,
      "baserun_edge": -0.0057,
      "home_pitcher_matched": true,
-     "away_pitcher_matched": true,
-     "mkt": {
-      "home_dec": 2.75,
-      "away_dec": 1.48,
-      "home_best": 2.84,
-      "away_best": 1.49,
-      "books": 11,
-      "ts": "2026-09-20T22:21:28.143957+00:00"
-     }
+     "away_pitcher_matched": true
     },
     {
      "game_pk": 824787,
@@ -8903,8 +8885,8 @@
       "away_dec": 1.94,
       "home_best": 1.95,
       "away_best": 1.96,
-      "books": 7,
-      "ts": "2026-09-20T22:21:28.143957+00:00"
+      "books": 9,
+      "ts": "2026-09-21T00:19:19.486778+00:00"
      },
      "value": {
       "side": "home",
@@ -8914,7 +8896,7 @@
       "open_dec": 1.9,
       "cur_dec": 1.91,
       "available": true,
-      "books": 7
+      "books": 9
      }
     },
     {
@@ -8958,7 +8940,15 @@
      "power_edge": 0.0076,
      "baserun_edge": -0.0046,
      "home_pitcher_matched": true,
-     "away_pitcher_matched": false
+     "away_pitcher_matched": false,
+     "mkt": {
+      "home_dec": 1.64,
+      "away_dec": 2.32,
+      "home_best": 1.67,
+      "away_best": 2.36,
+      "books": 8,
+      "ts": "2026-09-21T00:19:19.486778+00:00"
+     }
     },
     {
      "game_pk": 823169,
@@ -9004,11 +8994,11 @@
      "away_pitcher_matched": true,
      "mkt": {
       "home_dec": 2.0,
-      "away_dec": 1.85,
+      "away_dec": 1.83,
       "home_best": 2.06,
       "away_best": 1.91,
-      "books": 7,
-      "ts": "2026-09-20T22:21:28.143957+00:00"
+      "books": 10,
+      "ts": "2026-09-21T00:19:19.486778+00:00"
      }
     },
     {
@@ -12818,5 +12808,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-09-20T22:21:28.143957+00:00"
+ "value_updated": "2026-09-21T00:19:19.486778+00:00"
 }
