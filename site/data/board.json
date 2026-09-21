@@ -6790,7 +6790,7 @@
    "n_lean": 10
   },
   "bets": {
-   "updated": "2026-09-21T05:10:08Z",
+   "updated": "2026-09-21T10:49:50Z",
    "stake": 1.0,
    "overall": {
     "n_open": 16,
@@ -8066,10 +8066,10 @@
      "mkt": {
       "home_dec": 1.91,
       "away_dec": 1.93,
-      "home_best": 1.95,
-      "away_best": 1.96,
+      "home_best": 1.93,
+      "away_best": 1.98,
       "books": 11,
-      "ts": "2026-09-21T05:10:08.705864+00:00"
+      "ts": "2026-09-21T10:49:50.068237+00:00"
      },
      "value": {
       "side": "home",
@@ -8127,10 +8127,10 @@
      "mkt": {
       "home_dec": 1.65,
       "away_dec": 2.3,
-      "home_best": 1.69,
-      "away_best": 2.33,
+      "home_best": 1.68,
+      "away_best": 2.34,
       "books": 11,
-      "ts": "2026-09-21T05:10:08.705864+00:00"
+      "ts": "2026-09-21T10:49:50.068237+00:00"
      },
      "value": {
       "side": "away",
@@ -8186,12 +8186,12 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 1.98,
-      "away_dec": 1.85,
+      "home_dec": 1.99,
+      "away_dec": 1.86,
       "home_best": 2.04,
-      "away_best": 1.93,
-      "books": 9,
-      "ts": "2026-09-21T05:10:08.705864+00:00"
+      "away_best": 1.89,
+      "books": 11,
+      "ts": "2026-09-21T10:49:50.068237+00:00"
      }
     },
     {
@@ -12001,5 +12001,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-09-21T05:10:08.705864+00:00"
+ "value_updated": "2026-09-21T10:49:50.068237+00:00"
 }
