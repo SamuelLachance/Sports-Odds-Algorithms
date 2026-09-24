@@ -1,4 +1,7 @@
-/* MLB pages: players, positions, game, standings, teams, player. */
+/* MLB pages: players, positions, game, standings, teams, player.
+   Every link these pages draw is league-qualified (siteHref("mlb",...)): a bare
+   #/team/SEA opened in a new tab or shared resolves against the READER's last
+   league and opened the Seattle Seahawks or Kraken instead of the Mariners. */
 /* ---------- PLAYERS TAB ---------- */
 function playersPage(){
   if(state.league==="nfl"&&state.nfl) return nflPlayers();
@@ -6,19 +9,19 @@ function playersPage(){
   const db=state.db, P=Object.values(db.players||{});
   const bats=P.filter(p=>p.role==="batter"&&p.ts100!=null).sort((a,b)=>b.ts100-a.ts100);
   const pits=P.filter(p=>p.role==="pitcher"&&p.ts100!=null).sort((a,b)=>b.ts100-a.ts100);
-  const brow=(p,i)=>`<tr onclick="location.hash='#/player/${p.id}'">
+  const brow=(p,i)=>`<tr onclick="location.hash='${siteHref("mlb","player",p.id)}'">
     <td><span class="num">${i+1}</span></td>
     <td class="a"><span class="player-link">${p.name}</span> <span class="sub">${p.pos} &middot; ${p.team}</span></td>
     <td>${gb(p.ts100)}</td>
     <td><span class="num">${p.ts_mu!=null?p.ts_mu.toFixed(1):"-"}</span></td>
     <td class="sub">${p.bat?`${p.bat.ops!=null?p.bat.ops:"-"} OPS &middot; ${p.bat.hr||0} HR &middot; ${p.bat.sb||0} SB`:"&mdash;"}</td></tr>`;
-  const prow=(p,i)=>`<tr onclick="location.hash='#/player/${p.id}'">
+  const prow=(p,i)=>`<tr onclick="location.hash='${siteHref("mlb","player",p.id)}'">
     <td><span class="num">${i+1}</span></td>
     <td class="a"><span class="player-link">${p.name}</span> <span class="sub">${p.pos} &middot; ${p.team}</span></td>
     <td>${gb(p.ts100)}</td>
     <td><span class="num">${p.ts_mu!=null?p.ts_mu.toFixed(1):"-"}</span></td>
     <td class="sub">${p.pit?`${p.pit.era!=null?p.pit.era:"-"} ERA &middot; ${p.pit.whip!=null?p.pit.whip:"-"} WHIP &middot; ${p.pit.so||0} K`:"&mdash;"}</td></tr>`;
-  const tbl=(title,rows,statHdr,key)=>`<div class="panel"><h3 style="cursor:pointer" onclick="location.hash='#/pos/${key}'">${title} <span class="sub" style="font-weight:400">all &rarr;</span></h3><div class="twrap"><table>
+  const tbl=(title,rows,statHdr,key)=>`<div class="panel"><h3 style="cursor:pointer" onclick="location.hash='${siteHref("mlb","pos",key)}'">${title} <span class="sub" style="font-weight:400">all &rarr;</span></h3><div class="twrap"><table>
     <thead><tr><th></th><th>Player</th><th>GlassBox</th><th class="nocase">&mu;</th><th>${statHdr}</th></tr></thead>
     <tbody>${rows}</tbody></table></div></div>`;
   $("#view").innerHTML=`<div class="eyebrow">Database &middot; MLB</div><h1 class="pt">Players</h1>
@@ -37,7 +40,7 @@ function playersPage(){
     if(q.length<2){res.innerHTML="";return;}
     const hits=P.filter(p=>norm(p.name).includes(q)).slice(0,20);
     res.innerHTML=hits.length?`<div class="twrap" style="margin-bottom:6px"><table><tbody>
-      ${hits.map(p=>`<tr onclick="location.hash='#/player/${p.id}'">
+      ${hits.map(p=>`<tr onclick="location.hash='${siteHref("mlb","player",p.id)}'">
         <td class="a"><span class="player-link">${p.name}</span> <span class="sub">${p.pos} &middot; ${p.team}</span></td>
         <td>${gb(p.ts100)}</td>
         <td class="sub">${p.role==="pitcher"?(p.pit?`${p.pit.era!=null?p.pit.era:"-"} ERA`:""):(p.bat?`${p.bat.ops!=null?p.bat.ops:"-"} OPS`:"")}</td></tr>`).join("")}
@@ -80,10 +83,10 @@ function mlbPosPage(key){
   const line=p=>isBat?(p.bat?`${p.bat.ops!=null?p.bat.ops:"-"} OPS &middot; ${p.bat.hr||0} HR &middot; ${p.bat.rbi||0} RBI`:"&mdash;")
                      :(p.pit?`${p.pit.era!=null?p.pit.era:"-"} ERA &middot; ${p.pit.whip!=null?p.pit.whip:"-"} WHIP &middot; ${p.pit.so||0} K`:"&mdash;");
   const vol=p=>isBat?((p.bat&&p.bat.pa)||0):((p.pit&&p.pit.ip)||0);
-  const row=(p,i)=>`<tr onclick="location.hash='#/player/${p.id}'">
+  const row=(p,i)=>`<tr onclick="location.hash='${siteHref("mlb","player",p.id)}'">
     <td><span class="num">${i+1}</span></td>
     <td class="a"><span class="player-link">${p.name}</span> <span class="sub">${p.pos}</span></td>
-    <td>${teamLink(p.team)}</td>
+    <td>${teamLink(p.team,p.team,"mlb")}</td>
     <td>${gb(p.ts100)}</td>
     <td><span class="num">${p.ts_mu!=null?p.ts_mu.toFixed(1):"-"}</span></td>
     <td class="sub">${line(p)}</td></tr>`;
@@ -97,14 +100,14 @@ function mlbPosPage(key){
     $("#posbody").innerHTML=P.map(row).join("")||`<tr><td class="sub" colspan="6">No players match.</td></tr>`;
     $("#posn").textContent=P.length;
   };
-  $("#view").innerHTML=`<a class="back" href="#/players">&lsaquo; Players</a>
+  $("#view").innerHTML=`<a class="back" href="${siteHref("mlb","players")}">&lsaquo; Players</a>
     <div class="eyebrow">TrueSkill ladder &middot; MLB</div><h1 class="pt">${isBat?"Hitters":"Pitchers"}</h1>
     <div class="sub" style="margin-bottom:10px"><b>${all.length}</b> rated ${key} &middot; league &mu; ${mMu.toFixed(1)}
       &middot; every plate appearance is a batter-vs-pitcher TrueSkill duel; 50 = league average. Click anyone.</div>
     <div class="grid" style="margin-bottom:14px">
       <div class="panel"><h3>Rating distribution</h3>${histBars(all.map(p=>p.ts100))}</div>
       <div class="panel"><h3>Best team ${isBat?"lineups":"staffs"} <span class="sub" style="font-weight:400">roster TrueSkill average</span></h3>
-        <div class="twrap"><table><tbody>${T.map(([ab,v,code],i)=>`<tr onclick="location.hash='#/team/${code}'">
+        <div class="twrap"><table><tbody>${T.map(([ab,v,code],i)=>`<tr onclick="location.hash='${siteHref("mlb","team",code)}'">
           <td><span class="num">${i+1}</span></td><td class="a"><span class="ab" style="color:var(--accent)">${ab}</span></td>
           <td>${gb(v)}</td></tr>`).join("")}</tbody></table></div></div>
     </div>
@@ -139,7 +142,7 @@ function cmpRow(label,a,h,fmt,better){const f=fmt||(x=>x);
   return `<tr><td class="a ${aw}"><span class="num">${f(a)}</span></td><td class="lbl">${label}</td><td class="h ${hw}"><span class="num">${f(h)}</span></td></tr>`;}
 function gamePage(pk){
   setNav("");
-  const g=findGame(pk); if(!g){$("#view").innerHTML=`<div class="empty">Game not found. <a href="#/">Back to board</a></div>`;return;}
+  const g=findGame(pk); if(!g){$("#view").innerHTML=`<div class="empty">Game not found. <a href="${siteHref("mlb","")}">Back to board</a></div>`;return;}
   const db=state.db, hp=g.home_win_prob, homeWin=hp>=0.5, e=g.edge||{};
   const A=db.teams[g.away], H=db.teams[g.home];
   const pa=findPlayerByName(g.away_sp), ph=findPlayerByName(g.home_sp);
@@ -164,8 +167,8 @@ function gamePage(pk){
     ${cmpRow("Elo rank","#"+A.elo_rank,"#"+H.elo_rank,x=>x)}
   </table>`:`<div class="sub">team data unavailable</div>`;
   $("#view").innerHTML=`
-    <a class="back" href="#/">&lsaquo; Board</a>
-    <div class="gh"><span class="mt">${teamLink(g.away,g.away_abbr)} <span style="color:var(--faint)">@</span> ${teamLink(g.home,g.home_abbr)}</span>
+    <a class="back" href="${siteHref("mlb","")}">&lsaquo; Board</a>
+    <div class="gh"><span class="mt">${teamLink(g.away,g.away_abbr,"mlb")} <span style="color:var(--faint)">@</span> ${teamLink(g.home,g.home_abbr,"mlb")}</span>
       <span class="meta">${fmtDay(g.date,state.board.generated)} &middot; ${fmtTime(g.start_utc)}</span></div>
     <div class="livepanel" id="livepanel" data-pk="${g.game_pk}" data-home="${g.home_abbr}" data-away="${g.away_abbr}" data-pick="${g.pick}"></div>
     <div class="cols">
@@ -204,11 +207,11 @@ function gamePage(pk){
         <div class="panel"><h3>Starting pitchers</h3>
           <div class="mup">
             <div class="col a"><div class="nm">${pa?playerLinkByName(g.away_sp):g.away_sp}</div>
-              <div class="sub">${teamLink(g.away,g.away_abbr)}${pa&&pa.ts100!=null?" &middot; GlassBox "+pa.ts100:""}</div>
+              <div class="sub">${teamLink(g.away,g.away_abbr,"mlb")}${pa&&pa.ts100!=null?" &middot; GlassBox "+pa.ts100:""}</div>
               ${statline(pa)}</div>
             <div class="vs">vs</div>
             <div class="col h"><div class="nm">${ph?playerLinkByName(g.home_sp):g.home_sp}</div>
-              <div class="sub">${teamLink(g.home,g.home_abbr)}${ph&&ph.ts100!=null?" &middot; GlassBox "+ph.ts100:""}</div>
+              <div class="sub">${teamLink(g.home,g.home_abbr,"mlb")}${ph&&ph.ts100!=null?" &middot; GlassBox "+ph.ts100:""}</div>
               ${statline(ph)}</div>
           </div>
         </div>
@@ -234,7 +237,7 @@ function standings(){
     <div class="sub" style="margin-bottom:14px"><b>GlassBox</b> is the roster's 0-100 TrueSkill rating (50 = league average). <b>Luck</b> = win% minus pythagorean (large + = regression risk). <b>Elo</b> is our market-blind rating. Click any team.</div>`;
   html+=order.filter(d=>divs[d]).map(d=>{
     const rows=divs[d].sort((a,b)=>a.div_rank-b.div_rank).map(t=>`
-      <tr onclick="location.hash='#/team/${t.code}'">
+      <tr onclick="location.hash='${siteHref("mlb","team",t.code)}'">
         <td class="a"><span class="ab" style="color:var(--accent)">${t.abbr}</span></td>
         <td><span class="num">${t.w}-${t.l}</span></td><td><span class="num">${t.pct.toFixed(3).slice(1)}</span></td>
         <td><span class="num">${t.gb}</span></td>
@@ -258,7 +261,7 @@ function teamsPage(){
   if(state.league==="nhl"&&state.nhl) return nhlTeams();
   const db=state.db;
   const T=Object.values(db.teams).sort((a,b)=>(b.ts100||0)-(a.ts100||0));
-  const card=t=>`<div class="tcard" onclick="location.hash='#/team/${t.code}'">
+  const card=t=>`<div class="tcard" onclick="location.hash='${siteHref("mlb","team",t.code)}'">
     <div class="h"><span class="code">${t.abbr}</span><span class="nm">${t.name}</span>${gb(t.ts100)}</div>
     <div class="stat"><span>Rec <b>${t.w}-${t.l}</b></span><span>Diff <b>${t.run_diff>=0?"+":""}${t.run_diff}</b></span>
       <span>L10 <b>${t.l10}</b></span><span>Elo <b>${Math.round(t.elo)}</b></span></div>
@@ -275,12 +278,12 @@ function teamPage(code){
   if(state.league==="nfl"&&state.nfl) return nflTeamPage(code);
   if(state.league==="nhl"&&state.nhl) return nhlTeamPage(code);
   const db=state.db, t=db.teams[code];
-  if(!t){$("#view").innerHTML=`<div class="empty">Team not found. <a href="#/teams">All teams</a></div>`;return;}
+  if(!t){$("#view").innerHTML=`<div class="empty">Team not found. <a href="${siteHref("mlb","teams")}">All teams</a></div>`;return;}
   const roster=(t.roster||[]).map(id=>db.players[String(id)]).filter(Boolean);
   const bat=roster.filter(p=>p.role==="batter");
   const pit=roster.filter(p=>p.role==="pitcher");
   const cell=(v,cls)=>`<td><span class="num ${cls||""}">${v==null?"-":v}</span></td>`;
-  const prow=p=>`<tr onclick="location.hash='#/player/${p.id}'">
+  const prow=p=>`<tr onclick="location.hash='${siteHref("mlb","player",p.id)}'">
     <td class="a"><span class="num" style="color:var(--faint)">${p.pos}</span>
       <span style="margin-left:8px;font-weight:600">${p.name}</span></td>
     ${p.role==="batter"
@@ -290,7 +293,7 @@ function teamPage(code){
   const tbl=(title,rows,cols)=>`<div class="subh">${title}</div><div class="twrap"><table>
     <thead><tr><th>Player</th>${cols.map(c=>`<th>${c}</th>`).join("")}<th>GlassBox</th></tr></thead>
     <tbody>${rows.map(prow).join("")}</tbody></table></div>`;
-  $("#view").innerHTML=`<a class="back" href="#/teams">&lsaquo; Teams</a>
+  $("#view").innerHTML=`<a class="back" href="${siteHref("mlb","teams")}">&lsaquo; Teams</a>
     <div class="thead"><span class="code">${t.abbr}</span>
       <div><div style="font-size:15px;font-weight:600">${t.name}</div>
         <div class="sub">${t.div} &middot; #${t.div_rank} &middot; ${t.w}-${t.l} (${t.pct.toFixed(3).slice(1)})</div></div>
@@ -317,7 +320,7 @@ function playerPage(id){
   if(state.league==="nfl"&&state.nfl&&state.nfl.players[id]) return nflPlayerPage(id);
   if(state.league==="nhl"&&state.nhl&&state.nhl.players[id]) return nhlPlayerPage(id);
   const db=state.db, p=db.players[String(id)];
-  if(!p){$("#view").innerHTML=`<div class="empty">Player not found. <a href="#/teams">Teams</a></div>`;return;}
+  if(!p){$("#view").innerHTML=`<div class="empty">Player not found. <a href="${siteHref("mlb","teams")}">Teams</a></div>`;return;}
   const t=db.teams[p.team];
   const box=(k,v)=>`<div class="b"><div class="k">${k}</div><div class="v">${v==null?"-":v}</div></div>`;
   let season="", career="";
@@ -330,9 +333,9 @@ function playerPage(id){
     season=[["GS",b.gs],["IP",b.ip],["ERA",b.era],["WHIP",b.whip],["SO",b.so],["K/9",b.k9],["BB/9",b.bb9],["SV",b.sv]].map(([k,v])=>box(k,v)).join("");
     career=[["W-L",(c.w!=null?c.w+"-"+c.l:null)],["ERA",c.era],["IP",c.ip],["SO",c.so],["WHIP",c.whip],["GS",c.gs],["SV",c.sv]].map(([k,v])=>box(k,v)).join("");
   }
-  $("#view").innerHTML=`<a class="back" href="#/team/${p.team}">&lsaquo; ${t?t.name:p.team}</a>
+  $("#view").innerHTML=`<a class="back" href="${siteHref("mlb","team",p.team)}">&lsaquo; ${t?t.name:p.team}</a>
     <div class="phead"><span class="nm">${p.name}</span>
-      <span class="sub">${teamLink(p.team,p.team)} &middot; ${p.pos}${p.num?" &middot; #"+p.num:""}</span>
+      <span class="sub">${teamLink(p.team,p.team,"mlb")} &middot; ${p.pos}${p.num?" &middot; #"+p.num:""}</span>
       <span style="margin-left:auto">${gb(p.ts100)}</span></div>
     <div class="sub" style="margin-bottom:16px">GlassBox rating (0-100) &mdash; this player's per-plate-appearance TrueSkill rating vs league-average ${p.role}s. Market-blind.</div>
     <div class="pgrid">

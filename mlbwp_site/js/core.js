@@ -8,7 +8,7 @@ const SITE_LGS=["mlb","nfl","nhl"];
 const SITE_NAME={mlb:"MLB",nfl:"NFL",nhl:"NHL"};
 const siteStoredLeague=()=>{let v=null;try{v=localStorage.getItem("league");}catch(e){}
   return SITE_LGS.indexOf(v)>=0?v:"mlb";};
-const state = {board:null, db:null, nfl:null, nhl:null, failed:{},
+const state = {board:null, db:null, nfl:null, nhl:null, failed:{}, loading:{}, waitingFor:null, booted:false,
   league:siteStoredLeague(), range:"today", nflRange:"year", nhlRange:"year",
   posKey:null, posSort:"r", posMin:0, nhlSort:"net", live:{}, updated:null,
   liveNfl:{}, liveNhl:{}, liveAt:{}};
@@ -47,6 +47,16 @@ const LOC="en-US", TZ="America/New_York";   // all clock/day display is US Easte
 // Calendar arithmetic on "YYYY-MM-DD" at noon UTC: a local-midnight Date read back
 // through toISOString() returned the previous day for every viewer east of UTC.
 const addDays=(iso,n)=>{const d=new Date(iso+"T12:00:00Z");d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10);};
+/* Every "which day is it" on the site is the US Eastern calendar day, whatever
+   the visitor's clock says: a game's tier, the board windows and the live
+   look-back must not depend on where the reader is. Built from the parts, not
+   from a locale's date string ("en-CA" is YYYY-MM-DD only by convention). */
+const SITE_ET_FMT=new Intl.DateTimeFormat("en-US",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit",
+  hour:"2-digit",minute:"2-digit",hourCycle:"h23"});
+function siteEtParts(ms){const o={};
+  SITE_ET_FMT.formatToParts(new Date(ms==null?Date.now():ms)).forEach(p=>{o[p.type]=p.value;});
+  return o;}
+const siteEtDate=ms=>{const o=siteEtParts(ms); return `${o.year}-${o.month}-${o.day}`;};
 /* Anything from a URL, a payload or a feed that lands in innerHTML as text. */
 const siteEsc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmtTime=u=>new Date(u).toLocaleTimeString(LOC,{hour:"numeric",minute:"2-digit",timeZone:TZ})+" ET";
@@ -62,7 +72,8 @@ async function pollLive(force){
   // stamp; polling it under an NFL/NHL page made the header claim "live" data.
   if(state.league!=="mlb") return;
   try{
-    const t=new Date(), dd=n=>{const x=new Date(t);x.setDate(x.getDate()+n);return x.toISOString().slice(0,10);};
+    // yesterday..tomorrow on the US Eastern calendar (MLB's official game dates)
+    const today=nflToday(), dd=n=>addDays(today,n);
     const r=await fetch(`${SAPI}/schedule?sportId=1&startDate=${dd(-1)}&endDate=${dd(1)}&hydrate=linescore`);
     const d=await r.json(); const m={};
     for(const day of d.dates||[]) for(const g of day.games||[]){
@@ -99,14 +110,29 @@ function applyLive(){
   siteFreshness();
 }
 
-const nflToday=()=>new Date().toLocaleDateString("en-CA",{timeZone:TZ});
-/* Which number an NFL game shows, and in which information tier.
-   `near`/`hp` are unchanged: inside a week (and for played games) the live
-   model's ph, further out the season simulation's pmc - the number shown is
-   the number the ledger freezes. `tier` is the policy tier (siteTier): the
-   stamp the serve wrote when the number was locked, so a stale forecast is
-   not promoted to PROJECTED just because its date came near. */
-function nflProb(g){const near=g.d<=addDays(nflToday(),7);
+const nflToday=()=>siteEtDate();
+/* The policy's "inside a week of kickoff": phase0/nfl_ph_freeze.TIER_WINDOW_DAYS
+   x 24 h, read from the serve's model card when it ships the number. */
+function siteNflWindowDays(){
+  const s=state.nfl&&state.nfl.model_card&&state.nfl.model_card.serve, d=s&&+s.tier_window_days;
+  return d>0?d:7;}
+/* Is the game inside that window NOW? Kickoff (start_utc) minus the current
+   instant - the same clock the freeze stamps tiers with, and an absolute one,
+   so it reads the same for every visitor. A row without start_utc falls back to
+   the US Eastern date rule. A played or started game is always inside. */
+function nflNear(g){
+  const st=g&&g.start_utc?Date.parse(g.start_utc):NaN;
+  if(Number.isFinite(st)) return st-Date.now()<=siteNflWindowDays()*864e5;
+  return !!(g&&g.d)&&g.d<=addDays(nflToday(),siteNflWindowDays());
+}
+/* Which number an NFL game shows, and in which information tier: inside the
+   window (and for played games) the live model's ph, further out the season
+   simulation's pmc. `tier` is the policy tier (siteTier): the stamp the serve
+   wrote when the number was locked, so a stale forecast is not promoted to
+   PROJECTED just because its date came near. A PROJECTED stamp is always
+   `near` (it was served inside the window, and now is later), so a PROJECTED
+   card never shows the simulation's number. */
+function nflProb(g){const near=nflNear(g);
   return {near, hp:(!near&&g.pmc!=null)?g.pmc:g.ph, tier:siteTier("nfl",g)};}
 
 /* ---------- shared: information tier for any league's row ----------
@@ -125,12 +151,11 @@ function siteTier(lg,g){
   const at=g.frozen_at||g.rec||null;
   // phase0/nfl_ph_freeze.tier_for: kickoff minus lock time against 7 x 24 h
   // when both clocks exist, else the US Eastern date rule
-  const st=at&&g.start_utc?Date.parse(g.start_utc):NaN, sv=at?Date.parse(at):NaN;
-  if(Number.isFinite(st)&&Number.isFinite(sv)) return st-sv<=7*864e5?"PROJECTED":"EARLY";
-  if(at&&g.d&&Number.isFinite(sv)){const served=new Date(sv).toLocaleDateString("en-CA",{timeZone:TZ});
-    return g.d<=addDays(served,7)?"PROJECTED":"EARLY";}
+  const st=at&&g.start_utc?Date.parse(g.start_utc):NaN, sv=at?Date.parse(at):NaN, W=siteNflWindowDays();
+  if(Number.isFinite(st)&&Number.isFinite(sv)) return st-sv<=W*864e5?"PROJECTED":"EARLY";
+  if(at&&g.d&&Number.isFinite(sv)) return g.d<=addDays(siteEtDate(sv),W)?"PROJECTED":"EARLY";
   if(g.hs!=null&&g.as!=null) return "EARLY";
-  return g.d<=addDays(nflToday(),7)?"PROJECTED":"EARLY";
+  return nflNear(g)?"PROJECTED":"EARLY";
 }
 /* The MLB-standard pick pill for any league (gcard's rule): EARLY is a
    SCHEDULED game with no call; otherwise PICK/LEAN on the 55/45 band, green
@@ -171,16 +196,15 @@ function siteEspnIngest(lg,data){
     const h=C.map[H.team.abbreviation]||H.team.abbreviation;
     const a=C.map[A.team.abbreviation]||A.team.abbreviation;
     const st=ev.status||{}, tp=st.type||{};
-    const d=ev.date?new Date(ev.date).toLocaleDateString("en-CA",{timeZone:TZ}):"";
+    const t=ev.date?Date.parse(ev.date):NaN, d=Number.isFinite(t)?siteEtDate(t):"";
     out[`${a}_${h}|${d}`]={st:tp.state, as:A.score, hs:H.score, d, a, h,
       det:tp.state==="in"?(tp.shortDetail||`${C.per}${st.period||""} ${st.displayClock||""}`)
          :tp.state==="post"?(tp.shortDetail||"Final").replace(/^FINAL/i,"Final"):""};
   });
   state.liveAt[lg]=new Date();
 }
-// minutes since midnight, US Eastern
-const siteNowEtMin=()=>{const s=new Date().toLocaleTimeString("en-GB",{hour12:false,timeZone:TZ});
-  return (+s.slice(0,2))*60+(+s.slice(3,5));};
+// minutes since midnight, US Eastern (h23: midnight is 0, never "24")
+const siteNowEtMin=()=>{const o=siteEtParts(); return (+o.hour%24)*60+(+o.minute);};
 /* Rows the live layer should resolve: unscored games that have started (or
    finished) inside the look-back window and are not already final in the cache. */
 function siteLiveNeeded(lg){
@@ -275,23 +299,59 @@ function siteApplyLive(){
   });
 }
 
+/* The header's accuracy line: ONE meaning in every league. The model's locked
+   test-set log loss against the same market-free comparator, a plain TEAM Elo
+   scored on the same held-out games. It used to read "coin flip" on MLB, the
+   market's "closing line" on NFL and a "base Elo" from a different harness on
+   NHL, so the same slot changed meaning with the league. The closing line stays
+   on the NFL board's accuracy ladder, where it is labelled as the market.
+   The comparator must be scored on the model's OWN holdout: NFL's
+   ratings_model.elo_ll (0.638) is team Elo on TEST 2022-2025 only, n=1,139,
+   so pairing it with the 2016-2025, n=2,761 log loss was false. Only a
+   model_card.elo_log_loss (same holdout) is used; without it the line falls
+   back to the labelled coin flip.
+   Policy rule 3: realized accuracy is NEVER a pooled headline -
+   board.accuracy.realized_2026 mixes CONFIRMED, PROJECTED and EARLY rows, so it
+   is not rendered here; #/record reports it per tier. */
+const siteNum=v=>typeof v==="number"&&Number.isFinite(v)?v:null;
+function siteAccLine(lg){
+  let ll=null, elo=null, span="", extra="", close=null;
+  if(lg==="mlb"){const a=state.board&&state.board.accuracy; if(!a) return null;
+    ll=siteNum(a.log_loss); elo=siteNum(a.elo_log_loss);
+    span=a.holdout?String(a.holdout):"";}
+  else if(lg==="nfl"){const mc=state.nfl&&state.nfl.model_card; if(!mc) return null;
+    ll=siteNum(mc.test_log_loss);
+    elo=siteNum(mc.elo_log_loss);      // same holdout only; never ratings_model.elo_ll (TEST 2022-2025)
+    close=siteNum(mc.close_log_loss);  // the NFL board's ladder prints it, labelled as the market
+    span=mc.holdout?String(mc.holdout):"";}
+  else if(lg==="nhl"){const mc=state.nhl&&state.nhl.model_card; if(!mc) return null;
+    ll=siteNum(mc.test_ll);
+    // test_delta_vs_elo (and its CI) is measured against the bare-Elo baseline
+    // of the SAME harness, so ll+delta IS that baseline. Payloads before
+    // 2026-09-24 shipped a baseline_elo_test from another report (0.66918
+    // against a 0.66953 delta base), which made the card's numbers not add up.
+    const dl=siteNum(mc.test_delta_vs_elo);
+    elo=ll!=null&&dl!=null?ll+dl:siteNum(mc.baseline_elo_test);
+    span=mc.test_seasons?String(mc.test_seasons)+(mc.test_n?", n="+Number(mc.test_n).toLocaleString(LOC):""):"";
+    const ci=Array.isArray(mc.test_ci)&&mc.test_ci.length===2?mc.test_ci.map(siteNum):null;
+    const r4=x=>(Math.sign(x)*Math.round(Math.abs(x)*1e4+1e-9)/1e4).toFixed(4);   // 0.00535 -> "0.0054", as the card rounds it
+    if(dl!=null&&ci&&ci[0]!=null&&ci[1]!=null) extra=` The feature model ${dl>=0?"beats":"trails"} bare Elo by`
+      +` ${r4(Math.abs(dl))} (95% CI ${r4(ci[0])} to ${r4(ci[1])}).`;
+    if(mc.baseline_def) extra+=` Elo baseline: ${String(mc.baseline_def)}.`;}
+  if(ll==null) return null;
+  const cmp=elo!=null?{k:"team Elo",v:elo}:{k:"coin flip",v:Math.log(2)};
+  return {ll, cmp, title:`${SITE_NAME[lg]} model log loss on its locked test set${span?` (${span})`:""}, lower is better,`
+    +` compared with ${elo!=null?"a plain team-Elo model scored on the same games":"a coin flip (this build has no team-Elo score on these same games)"}.`
+    +`${extra}${elo!=null?` Coin flip = ${Math.log(2).toFixed(3)}.`:""} Market-free: the odds are never an input.`
+    // only a board that actually prints the closing line may point to it
+    +(close!=null?` The closing-line benchmark is shown on the board, labelled as the market.`:"")};
+}
 function updAcc(){
   const el=$("#acc"); if(!el) return;
-  if(state.league==="nfl"&&state.nfl&&state.nfl.model_card){
-    const mc=state.nfl.model_card;
-    el.innerHTML=`<b>${mc.test_log_loss.toFixed(3)}</b> log loss (NFL)<br>closing line ${mc.close_log_loss.toFixed(3)}`;
-  }else if(state.league==="nhl"&&state.nhl&&state.nhl.model_card){
-    const mc=state.nhl.model_card;
-    el.innerHTML=`<b>${mc.test_ll.toFixed(3)}</b> log loss (NHL)<br>base Elo ${mc.baseline_elo_test.toFixed(3)}`;
-  }else if(state.league==="mlb"&&state.board&&state.board.accuracy){
-    /* Policy rule 3: realized accuracy is NEVER shown as one pooled headline.
-       board.accuracy.realized_2026 mixes CONFIRMED, PROJECTED and EARLY rows
-       and would sit in the persistent header on every page, so it is not
-       rendered here - #/record reports it per tier. The header keeps the
-       locked holdout number, which is a single, well-defined thing. */
-    const a=state.board.accuracy;
-    el.innerHTML=`<b>${a.log_loss.toFixed(3)}</b> log loss<br>coin flip ${a.coinflip.toFixed(3)}`;
-  }else el.innerHTML="";
+  const a=siteAccLine(state.league);
+  if(!a){el.innerHTML=""; el.removeAttribute("title"); return;}
+  el.innerHTML=`<b>${a.ll.toFixed(3)}</b> ${SITE_NAME[state.league]} log loss<br>${a.cmp.k} ${a.cmp.v.toFixed(3)}`;
+  el.setAttribute("title",a.title);
 }
 
 /* ---------- FRESHNESS: how old is the data on screen, per league ----------
@@ -374,44 +434,91 @@ async function siteFetch(f){
   if(!r.ok) throw new Error(f+" HTTP "+r.status);
   return r.json();
 }
-const SITE_FILE={mlb:["board.json","db.json"],nfl:["nfl.json"],nhl:["nhl.json"]};
+/* ---------- BOOT: each league draws as soon as ITS data is in ----------
+   The first paint used to wait for all four payloads (about 3.3 MB): an MLB
+   reader downloaded the NFL and NHL files, an NHL reader MLB's player database,
+   before anything was drawn. Now the page draws the league it opens on once
+   that league's files are in (plus the small board.json, which carries the
+   rails' placeholders and the record's units); the other leagues fill in
+   behind it. Until then their rail buttons say "loading", and opening one
+   shows a loading line that turns into the page when the data lands - never
+   "unavailable" for a file that is still on its way. A legacy link naming a
+   team or a player with no league waits for everything: resolving it needs
+   every league's ids. */
+const SITE_LG_FILES={mlb:["board","db"],nfl:["nfl"],nhl:["nhl"]};
+const SITE_FILES=["board","db","nfl","nhl"];
+const siteFileDone={};
+function siteSetFile(k,v){ if(k==="board") state.board=v; else if(k==="db") state.db=v; else state[k]=v; }
+const siteLgOfFile=k=>(k==="board"||k==="db")?"mlb":k;
+function siteLgSettled(lg){
+  state.loading[lg]=false;
+  state.failed[lg]=lg==="mlb"?!(state.board&&state.db):!state[lg];
+  // In season the boards open on the coming week in date order, as MLB opens
+  // on today; "Year" (every game, and NHL newest-first) is the offseason view.
+  if(lg==="nfl"&&state.nfl&&state.nfl.status==="season"&&state.nflRange==="year") state.nflRange="week";
+  if(lg==="nhl"&&state.nhl&&state.nhl.status==="season"&&state.nhlRange==="year") state.nhlRange="week";
+}
+function siteApplyFile(k,v){
+  siteSetFile(k,v); siteFileDone[k]=true;
+  const lg=siteLgOfFile(k);
+  if(!SITE_LG_FILES[lg].every(f=>siteFileDone[f])) return;
+  siteLgSettled(lg);
+  if(state.booted) siteLeagueIn(lg);
+}
+/* A league's data landed after the first paint: refresh the chrome, draw the
+   page that was waiting for it, else update its rail button in place (a full
+   redraw would reset the reader's scroll and inputs). */
+function siteLeagueIn(lg){
+  siteLeaguesTidy(); updAcc(); siteNavHrefs(); siteFreshness(); siteFooter();
+  if(state.waitingFor===lg){state.waitingFor=null; route(true);}
+  else siteRailPatch(lg);
+  if(lg===state.league) sitePollNow();
+}
+/* The league the first paint draws, from the URL alone; null = wait for all. */
+function siteBootLeague(P){
+  if(P.v==="player"&&P.arg) return null;              // player ids resolve across leagues
+  if(P.v==="team"&&P.arg&&!P.lg) return null;          // a bare team code may be any league's
+  return siteLeagueOfId(P.v,P.arg)||P.lg||state.league;
+}
 async function siteReload(lg){
-  try{
-    if(lg==="mlb"){const [b,db]=await Promise.all(SITE_FILE.mlb.map(siteFetch)); state.board=b; state.db=db;}
-    else state[lg]=await siteFetch(SITE_FILE[lg][0]);
-    state.failed[lg]=false;
-  }catch(e){state.failed[lg]=true;}
+  state.loading[lg]=true;
+  const fs=SITE_LG_FILES[lg];
+  const got=await Promise.allSettled(fs.map(f=>siteFetch(f+".json")));
+  // a retry never replaces a good file with a failed fetch
+  fs.forEach((f,i)=>{if(got[i].status==="fulfilled") siteSetFile(f,got[i].value);});
+  siteLgSettled(lg);
   siteLeaguesTidy(); updAcc(); siteNavHrefs(); siteFreshness(); siteFooter(); route(true);
 }
 function siteUnavailable(lg,v){
+  const rec=v==="record";
+  const wire=()=>rec
+    ?$("#view").querySelectorAll(".rail [data-lg]").forEach(x=>x.onclick=()=>{location.hash=siteHref(x.dataset.lg,"record");})
+    :siteWireRail();
+  const rail=`<div class="controls"><div class="rail">${siteRail(lg,rec&&typeof recBadge==="function"?recBadge:undefined)}</div></div>`;
+  if(state.loading[lg]){           // still on its way: say so, and draw the page when it lands
+    state.waitingFor=lg;
+    $("#view").innerHTML=`${rail}<div class="loading">Loading ${SITE_NAME[lg]} data&hellip;</div>`;
+    wire(); return;
+  }
   const f=state.failed[lg];
-  $("#view").innerHTML=`<div class="controls"><div class="rail">${siteRail(lg)}</div></div>
+  $("#view").innerHTML=`${rail}
     <div class="empty">${SITE_NAME[lg]} data ${f?"could not be loaded":"is being rebuilt &mdash; this build is incomplete"}.<br>
       <span class="sub">Nothing is drawn rather than a half-built page.</span>
       <div style="margin-top:14px"><button class="filt on" id="siteretry">Retry</button>
       ${lg!=="mlb"&&siteOk("mlb")?` &nbsp;<a class="tl" href="${siteHref("mlb",v&&SITE_LIST.indexOf(v)>=0?v:"")}">View MLB instead</a>`:""}</div></div>`;
-  siteWireRail();
+  wire();
   const b=$("#siteretry"); if(b) b.onclick=()=>{b.disabled=true; b.textContent="Loading..."; siteReload(lg);};
 }
 
 async function boot(){
-  const got=await Promise.allSettled([siteFetch("board.json"),siteFetch("db.json"),
-    siteFetch("nfl.json"),siteFetch("nhl.json")]);
-  const val=i=>got[i].status==="fulfilled"?got[i].value:null;
-  state.board=val(0); state.db=val(1); state.nfl=val(2); state.nhl=val(3);
-  state.failed={mlb:!state.board||!state.db, nfl:!state.nfl, nhl:!state.nhl};
-  if(!siteOk("mlb")&&!siteOk("nfl")&&!siteOk("nhl")){
-    $("#view").innerHTML=`<div class="empty">The prediction data could not be loaded.<br>
-      <span class="sub">A network hiccup or a deploy in progress &mdash; nothing is wrong with your browser.</span>
-      <div style="margin-top:14px"><button class="filt on" onclick="location.reload()">Retry</button></div></div>`;
-    return;
-  }
-  siteLeaguesTidy();
-  // In season the boards open on the coming week in date order, as MLB opens
-  // on today; "Year" (every game, and NHL newest-first) is the offseason view.
-  if(state.nfl&&state.nfl.status==="season"&&state.nflRange==="year") state.nflRange="week";
-  if(state.nhl&&state.nhl.status==="season"&&state.nhlRange==="year") state.nhlRange="week";
-  updAcc(); siteNavHrefs();
+  SITE_LGS.forEach(l=>{state.loading[l]=true;});
+  const first=siteBootLeague(siteParse(location.hash));
+  const got={};
+  SITE_FILES.forEach(k=>{got[k]=siteFetch(k+".json").then(v=>v,()=>null).then(v=>siteApplyFile(k,v));});
+  const need=first?["board",...SITE_LG_FILES[first].filter(f=>f!=="board")]:SITE_FILES;
+  await Promise.all(need.map(k=>got[k]));
+  state.booted=true;
+  siteLeaguesTidy(); updAcc(); siteNavHrefs();
   route(true);
   siteFreshness(); siteFooter();
   sitePollNow();   // first poll always runs, even if the tab loads hidden
@@ -419,6 +526,12 @@ async function boot(){
   document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) sitePollNow(); });
   // Re-apply cached NFL/NHL scores after every render of the view.
   try{new MutationObserver(()=>siteApplyLive()).observe($("#view"),{childList:true});}catch(e){}
+  await Promise.all(SITE_FILES.map(k=>got[k]));
+  if(!siteOk("mlb")&&!siteOk("nfl")&&!siteOk("nhl")){
+    $("#view").innerHTML=`<div class="empty">The prediction data could not be loaded.<br>
+      <span class="sub">A network hiccup or a deploy in progress &mdash; nothing is wrong with your browser.</span>
+      <div style="margin-top:14px"><button class="filt on" onclick="location.reload()">Retry</button></div></div>`;
+  }
 }
 /* board.json lists every league the MLB builder knows, with NHL/NFL as
    inactive placeholders. The live NHL button is drawn from nhl.json, so the
@@ -431,6 +544,19 @@ function siteLeaguesTidy(){
     .map((l,i)=>[l,i]).sort((x,y)=>(rank(x[0].code)-rank(y[0].code))||(x[1]-y[1])).map(x=>x[0]);
 }
 window.addEventListener("hashchange", ()=>route(true));
+window.addEventListener("resize", ()=>siteNavFit(true));
+{const nv=document.querySelector("nav.main");
+  if(nv&&nv.addEventListener) nv.addEventListener("scroll",()=>siteNavFit(),{passive:true});}
+/* A link inside a clickable row or card (a team link in a schedule row): the
+   click ran the row's own navigation first and then the link's, leaving a
+   history entry the reader never opened, so Back went to a page they had not
+   seen. The link wins; the row's handler stands down for this one click. */
+document.addEventListener("click",e=>{
+  const t=e.target, a=t&&t.closest?t.closest("a[href]"):null; if(!a) return;
+  for(let p=a.parentElement;p&&p!==document.body;p=p.parentElement){
+    if(typeof p.onclick==="function"){const h=p.onclick, el=p; el.onclick=null; setTimeout(()=>{el.onclick=h;},0);}
+  }
+},true);
 
 /* ---------- ROUTER ----------
    URLs carry the league: #/nfl/team/BUF, #/nhl/player/8474600, #/mlb/standings,
@@ -491,6 +617,7 @@ function route(fromUrl){
   const P=siteParse(location.hash);
   let v=P.v, arg=P.arg, lg;
   window.scrollTo(0,0);
+  state.waitingFor=null;          // a page still waiting on a payload is replaced by this route
   const own=siteLeagueOfId(v,arg);
   if(fromUrl===true){
     // the URL decides: a decisive id first, then an explicit prefix, then a
@@ -519,9 +646,11 @@ function route(fromUrl){
   siteTitle(lg,v);
 }
 function siteDispatch(lg,v,arg){
+  const nav=()=>setNav(v===""?"board":(SITE_LIST.indexOf(v)>=0||v==="season"?v:""));
+  if(state.loading[lg]){nav();return siteUnavailable(lg,v);}      // on its way: wait, then draw
   const needs=lg==="mlb"?(v===""?!!state.board:!!(state.board&&state.db)):siteOk(lg);
-  if(!needs&&v!=="record"){setNav(v===""?"board":(SITE_LIST.indexOf(v)>=0?v:""));return siteUnavailable(lg,v);}
-  if(v==="season"){setNav("season");return nflSeason(arg);}
+  if(!needs&&v!=="record"){nav();return siteUnavailable(lg,v);}
+  if(v==="season"){setNav("season");nflSeason(arg);return siteSeasonRail();}
   if(v==="game"&&arg){setNav("");
     if(lg==="nhl") return nhlGamePage(arg.replace(/^nhl-/,""));
     if(lg==="nfl") return nflGamePage(arg);
@@ -559,12 +688,30 @@ function siteTeamRoute(lg,code){
   if(siteHasTeam(lg,code)) return teamPage(code);
   const c=SITE_LGS.filter(l=>l!==lg&&siteHasTeam(l,code));
   if(!c.length) return siteNotFound(lg,"team",code);
-  const nm=l=>l==="mlb"?state.db.teams[code].name:(l==="nfl"?state.nfl.teams[code].name:nhlCity(code));
+  const nm=l=>siteEsc(siteTeamName(l,code));
   const C=siteEsc(code);   // a team code is only printed once it exists in a league, but never raw
   $("#view").innerHTML=`<div class="empty">${C} is not an ${SITE_NAME[lg]} team. Did you mean
     ${c.map(l=>`<a class="tl" href="${siteHref(l,"team",code)}">${SITE_NAME[l]} ${C} &middot; ${nm(l)}</a>`).join(" or ")}?</div>`;
 }
-function setNav(v){document.querySelectorAll("nav.main a").forEach(a=>a.classList.toggle("on",a.dataset.v===v));}
+/* A team's full name, from its league's payload ("Colorado Avalanche", "Buffalo
+   Bills", "Tampa Bay Rays"); the NHL city map only for a payload without names. */
+function siteTeamName(lg,code){
+  const T=lg==="mlb"?(state.db&&state.db.teams):(state[lg]&&state[lg].teams), t=T&&T[code];
+  if(t&&t.name) return String(t.name);
+  return lg==="nhl"?nhlCity(code):String(code);
+}
+/* The Season page (nfl.js) is a top-level NFL view like the board, so it gets
+   the league rail the board has - drawn here unless the page drew its own. A
+   click on another league opens that league's board; NFL is where you are. */
+function siteSeasonRail(){
+  const V=$("#view"); if(!V||!V.insertAdjacentHTML||V.querySelector(".rail")) return;
+  V.insertAdjacentHTML("afterbegin",`<div class="controls"><div class="rail">${siteRail("nfl")}</div></div>`);
+  V.querySelectorAll(".rail [data-lg]").forEach(x=>x.onclick=()=>{
+    if(x.dataset.lg==="nfl"&&siteOk("nfl")) return;
+    setLeague(x.dataset.lg); board();});
+}
+function setNav(v){document.querySelectorAll("nav.main a").forEach(a=>a.classList.toggle("on",a.dataset.v===v));
+  siteNavFit(true);}
 /* Nav links follow the current league so middle-click / copy-link are exact. */
 function siteNavHrefs(){
   const lg=state.league;
@@ -574,6 +721,22 @@ function siteNavHrefs(){
   // the Season view is NFL-only
   const ns=document.getElementById("navseason");
   if(ns) ns.style.display=(lg==="nfl"&&siteOk("nfl")&&state.nfl.schedule&&state.nfl.schedule.length)?"":"none";
+  const fr=document.getElementById("ft-rec"); if(fr&&fr.setAttribute) fr.setAttribute("href",siteHref(lg,"record"));
+  siteNavFit();
+}
+/* The nav scrolls sideways when it does not fit (phones, and 560-700px windows,
+   where NFL's extra Season item pushes Players off the edge). A fade on each
+   clipped edge says there is more, and the current section is scrolled into
+   view, so the highlighted item is never the one hidden. */
+function siteNavFit(reveal){
+  const nav=document.querySelector("nav.main");
+  if(!nav||typeof nav.scrollWidth!=="number"||!nav.classList||!nav.getBoundingClientRect) return;
+  const over=nav.scrollWidth>nav.clientWidth+1;
+  if(reveal&&over){const a=nav.querySelector("a.on");
+    if(a&&a.offsetParent!==null){const r=a.getBoundingClientRect(), n=nav.getBoundingClientRect();
+      if(r.left<n.left||r.right>n.right) nav.scrollLeft+=(r.left-n.left)-(n.width-r.width)/2;}}
+  nav.classList.toggle("ovf",over&&nav.scrollLeft+nav.clientWidth<nav.scrollWidth-2);
+  nav.classList.toggle("ovl",over&&nav.scrollLeft>2);
 }
 function siteTitle(lg,v){
   const L=SITE_NAME[lg]||"";
@@ -585,8 +748,7 @@ function siteTitle(lg,v){
     // heading without its trailing subtitle ("Roman Josi", not "Roman Josi D ...")
     let x="";
     const P=siteParse(location.hash);
-    if(v==="team"&&P.arg&&siteHasTeam(lg,P.arg))
-      x=lg==="mlb"?state.db.teams[P.arg].name:(lg==="nfl"?state.nfl.teams[P.arg].name:nhlCity(P.arg));
+    if(v==="team"&&P.arg&&siteHasTeam(lg,P.arg)) x=siteTeamName(lg,P.arg);
     else{const h=document.querySelector("#view h1, #view .gh .mt, #view .phead .nm, #view .thead .code");
       if(h){const c=h.cloneNode(true), last=c.lastElementChild;
         if(last&&last.classList.contains("sub")&&!(last.nextSibling&&last.nextSibling.textContent.trim())) last.remove();
@@ -619,15 +781,39 @@ function siteRailBadge(lg){
   return {txt:siteSeasonLbl(lg), title:`${s} season · ${c.picks} pick${c.picks===1?"":"s"} · ${c.games} ${c.what}`
     +(lg==="nhl"?" (every NHL forecast is EARLY: team ratings only, not a pick)":"")};
 }
+/* One rail button's class, tooltip and content. A league whose payload is still
+   on its way says "loading" (never "unavailable" for a file not yet arrived). */
+function siteRailBtn(lg,active,badge){
+  const on=lg===active?" on":"", N=SITE_NAME[lg];
+  if(!siteOk(lg)){
+    if(state.loading[lg]) return {cls:"lg loading"+on, title:`${N} data is loading`,
+      inner:`<span>${N}</span><span class="n">&hellip;</span>`};
+    return {cls:"lg down"+on, title:`${N} data is unavailable - click to retry`,
+      inner:`<span>${N}</span><span class="n">&mdash;</span>`};}
+  const x=(badge||siteRailBadge)(lg)||{};
+  return {cls:"lg"+on, title:x.title||"",
+    inner:`<span>${N}</span>${x.txt!=null&&x.txt!==""?`<span class="n${x.cls?" "+x.cls:""}">${x.txt}</span>`:""}`};
+}
+let siteRailBadgeFn=null;          // the badge rule of the rail on screen (the record page counts graded picks)
 function siteRail(active,badge){
   const b=state.board;
-  const btn=lg=>{
-    if(!siteOk(lg)) return `<button class="lg down ${lg===active?"on":""}" data-lg="${lg}" title="${SITE_NAME[lg]} data is unavailable - click to retry"><span>${SITE_NAME[lg]}</span><span class="n">&mdash;</span></button>`;
-    const x=(badge||siteRailBadge)(lg)||{};
-    return `<button class="lg ${lg===active?"on":""}" data-lg="${lg}" title="${x.title||""}"><span>${SITE_NAME[lg]}</span>${x.txt!=null&&x.txt!==""?`<span class="n${x.cls?" "+x.cls:""}">${x.txt}</span>`:""}</button>`;};
+  siteRailBadgeFn=badge||null;
+  const btn=lg=>{const x=siteRailBtn(lg,active,badge);
+    return `<button class="${x.cls}" data-lg="${lg}" title="${x.title}">${x.inner}</button>`;};
   const soon=((b&&b.leagues)||[]).filter(l=>SITE_LGS.indexOf(l.code)<0)
     .map(l=>`<button class="lg" disabled><span>${l.name}</span><span class="soon">soon</span></button>`);
   return SITE_LGS.map(btn).join("")+soon.join("");
+}
+/* A league's data arrived after the page was drawn: update its rail button in
+   place - the element, and the click handler the page wired onto it, stay. */
+function siteRailPatch(lg){
+  const V=$("#view"); if(!V||!V.querySelectorAll) return;
+  V.querySelectorAll(`.rail [data-lg="${lg}"]`).forEach(el=>{
+    const x=siteRailBtn(lg,el.classList.contains("on")?lg:null,siteRailBadgeFn);
+    // the tooltip is markup-escaped text (entities), as siteRail writes it:
+    // parse it the same way instead of assigning the raw string
+    const tmp=document.createElement("div"); tmp.innerHTML=`<i title="${x.title}"></i>`;
+    el.className=x.cls; el.title=tmp.firstChild.title; el.innerHTML=x.inner;});
 }
 /* Board-style rail wiring: switch league, redraw the board (board() keeps the
    URL and nav in step when it is called off-route). */
@@ -713,7 +899,9 @@ function board(){
     if(SITE_LIST.indexOf(cur.v)>=0){location.hash=siteHref(state.league,cur.v);return;}
     siteSetHash(siteHref(state.league,""),cur.v!=="");
     setNav("board"); siteTitle(state.league,"");
+    state.waitingFor=null;
   }
+  if(state.loading[state.league]) return siteUnavailable(state.league,"");   // draws itself when the data lands
   if(state.league!=="mlb"&&!siteOk(state.league)) return siteUnavailable(state.league,"");
   if(state.league==="nfl") return nflPage();
   if(state.league==="nhl") return nhlPage();

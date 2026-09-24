@@ -15,6 +15,11 @@ Who exists, and on which team, comes from the CURRENT weekly roster
     the reserve lists (injured reserve, PUP, ...), DEV the practice squad.
     Nobody vanishes because he is hurt; he is flagged.
 
+Snap tables are keyed by pfr id. They join to players through the weekly
+roster's pfr ids first (it knows this year's rookies and corrects stale ids in
+nfl_players.csv), then nfl_players.csv, then an unambiguous (name, team) key
+from the roster; the build prints how many snap players stay unmapped.
+
 The games floor (nfl_season_guards.roster_min_games) now only ORDERS the active
 roster (players with real current-season usage first) and gates the lineup
 step's usage flip exactly as before; it never decides whether a player exists.
@@ -222,6 +227,33 @@ for r in csv.DictReader(open("data/nfl_players.csv", encoding="utf-8")):
         pfr2gsis[r["pfr_id"]] = g_
     bio[g_] = r
 
+# The weekly roster carries pfr ids nfl_players.csv does not have yet (this
+# year's rookies), and a (name, team) key for the few it has no pfr id for
+# either. Both must be in place BEFORE the snap tables are read: the snap
+# tables are keyed by pfr id, and an unmapped row silently lost the player's
+# usage (2026-09-24: 187 snap players, 42 every-down starters, most of them
+# rookies, showed 0 games and a 0% snap share while playing every snap).
+ROSTER = f"data/roster_{SERVE_SEASON}.csv"
+roster_rows = list(csv.DictReader(open(ROSTER, encoding="utf-8"))) \
+    if os.path.exists(ROSTER) else []
+name_key = NP.name_key
+_by_name_team = defaultdict(set)
+for r in roster_rows:
+    g_ = r.get("gsis_id")
+    if not g_:
+        continue
+    if r.get("pfr_id"):
+        # the current roster wins over nfl_players.csv, which still hands some
+        # rookies' pfr ids to someone else (WoodPe00 -> a retired 'Pete Woods',
+        # JacaGa00 -> a placeholder id, not Gabe Jacas' gsis id)
+        pfr2gsis[r["pfr_id"]] = g_
+    t = INJ_FR.get(r["team"], FR.get(r["team"], r["team"]))
+    _by_name_team[(name_key(r.get("full_name", "")), t)].add(g_)
+# only an unambiguous (name, team) pair identifies a player
+by_name_team = {k: next(iter(v)) for k, v in _by_name_team.items() if len(v) == 1}
+unmapped_snaps = {}                 # season -> {pfr id: (name, team)} still unresolved
+
+
 # ---- snap tables: stats season (share + games) and the season before ----
 def snap_usage(season: int):
     """gsis -> [off/def pct sum, games, st pct sum, position, last team]."""
@@ -230,13 +262,15 @@ def snap_usage(season: int):
     p = f"data/snap_{season}.csv"
     if not os.path.exists(p):
         return use, weeks
+    miss = unmapped_snaps.setdefault(season, {})
     for r in csv.DictReader(open(p, encoding="utf-8")):
         if r.get("game_type", "REG") != "REG":
             continue            # regular season only, like the stat lines
         t = FR.get(r["team"], r["team"])
         weeks[t].add(r.get("week"))
-        g_ = pfr2gsis.get(r["pfr_player_id"])
+        g_ = pfr2gsis.get(r["pfr_player_id"]) or by_name_team.get((name_key(r["player"]), t))
         if not g_:
+            miss[r["pfr_player_id"]] = (r["player"], t)
             continue
         e = use.setdefault(g_, [0.0, 0, 0.0, "", t])
         e[0] += f2(r["offense_pct"]) + f2(r["defense_pct"])
@@ -249,6 +283,9 @@ def snap_usage(season: int):
 
 snap_cur, weeks_seen = snap_usage(STATS_SEASON)
 snap_prev, _ = snap_usage(PREV_SEASON)
+_miss = unmapped_snaps.get(STATS_SEASON, {})
+print(f"snap map {STATS_SEASON}: {len(snap_cur)} players mapped, {len(_miss)} unmapped"
+      + (f" (e.g. {sorted(v[0] + ' ' + v[1] for v in _miss.values())[:5]})" if _miss else ""))
 
 # ---- ratings + per-play board (replaced by nfl_trueskill_players downstream) ----
 ratings = {}
@@ -263,7 +300,6 @@ for r in csv.DictReader(open(sfile("data/nfl_player_board_{}.csv"), encoding="ut
                            "n": int(float(r["n_duels"]))}
 
 # ---- the current weekly roster: membership, status, bio ----
-ROSTER = f"data/roster_{SERVE_SEASON}.csv"
 # players[].status: the weekly-roster status, with the reserve list split by its
 # nflverse description code. Labels ship once, in payload.status_labels.
 STATUS_LABELS = {"ACT": "Active", "IR": "Injured reserve",
@@ -273,8 +309,6 @@ STATUS_LABELS = {"ACT": "Active", "IR": "Injured reserve",
 RES_CODE = {"R01": "IR", "R48": "IR-R", "R04": "PUP"}
 RESERVE = ("IR", "IR-R", "PUP", "RES", "EXE")
 KEEP = ("ACT", "RES", "EXE", "DEV")
-roster_rows = list(csv.DictReader(open(ROSTER, encoding="utf-8"))) \
-    if os.path.exists(ROSTER) else []
 latest_wk = {}
 for r in roster_rows:
     t = INJ_FR.get(r["team"], FR.get(r["team"], r["team"]))
@@ -296,8 +330,6 @@ for r in roster_rows:
     # one row per player; an active row beats a reserve/practice-squad duplicate
     if prev_r is None or (r["status"] == "ACT" and prev_r["status"] != "ACT"):
         current[g_] = dict(r, team=t)
-    if r.get("pfr_id"):
-        pfr2gsis.setdefault(r["pfr_id"], g_)
 
 
 def status_of(r: dict) -> str:

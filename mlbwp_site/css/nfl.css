@@ -38,3 +38,25 @@
 .nfl-rgrid .v{font-size:14px}
 .nfl-bio{font-size:12.5px;color:var(--muted);margin:0 0 8px}
 .nfl-legend{font-size:11px;line-height:1.5;color:var(--faint);margin-top:8px}
+/* board: a window of several NFL weeks, one bar per week; bye teams */
+.nfl-wkbar{margin:22px 0 4px;padding:8px 0 6px;border-bottom:1px solid var(--line);font-size:13px}
+.nfl-wkbar b{font-family:var(--serif);font-size:16px}
+.nfl-bye{font-size:12px;margin:2px 0 6px}
+.nfl-wkbar .nfl-bye{margin:4px 0 0}
+/* projected wins: the simulation's spread beside the mean */
+.nfl-sd{font-size:.86em}
+/* standings: clinch marks and the playoff cut line */
+.nfl-cl{display:inline-block;font-family:var(--mono);font-size:10px;font-weight:700;line-height:1;padding:2px 4px;margin-left:4px;
+  border-radius:4px;border:1px solid var(--line-2);color:var(--muted);vertical-align:1px}
+.nfl-cl-z,.nfl-cl-x{color:var(--fav);border-color:var(--fav);background:var(--favbg)}
+.nfl-cl-e{color:var(--faint);border-style:dashed}
+tr.nfl-cut td{border-top:2px dashed var(--faint)}
+/* players: what a starter is worth, one bar per position */
+.nfl-pv .r{display:grid;grid-template-columns:130px 1fr 48px;align-items:center;gap:10px;padding:3px 0;font-size:12.5px}
+.nfl-pv .bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.nfl-pv .bar i{display:block;height:100%;background:var(--accent)}
+.nfl-pv .num{text-align:right}
+@media(max-width:560px){.nfl-pv .r{grid-template-columns:104px 1fr 42px}}
+/* board: the model card reference table */
+.nfl-kv td{vertical-align:top;font-size:12.5px}
+.nfl-kv td:first-child{white-space:nowrap;width:1%}

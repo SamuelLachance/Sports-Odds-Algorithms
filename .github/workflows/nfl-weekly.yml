@@ -1,14 +1,56 @@
-name: NFL weekly data refresh
+name: NFL weekly model refresh
 
-# In-season weekly fetch: games spine, injuries, snap counts, weekly stats,
-# rosters — the small tracked inputs. The pbp re-pull + feature walks + serve
-# are LOCAL-ONLY (the 50-98MB play tables are gitignored, so nfl_weekly.py
-# auto-detects their absence here and stops after the fetch layer); a local
-# run completes the chain and commits the payload. Market-blind.
+# The full NFL model chain in CI (phase0/nfl_weekly.py): fetch (games spine,
+# injuries, snaps, weekly stats, rosters) -> current-season pbp re-pull ->
+# nfl_site_data -> nfl_site_db -> nfl_trueskill_players -> nfl_lineups ->
+# nfl_v7_feature_gen -> nfl_season_serve -> results attach. Every step builds a
+# STAGING payload + ledger; they replace site/data/nfl.json and
+# data/nfl_ph_ledger.json only after the last step succeeded, the payload
+# validated and no played or kicked-off game's pre-game number moved.
+#
+# Inputs not in git persist in actions/cache: the five reduced play tables
+# (0.6-98 MB, gitignored) and ~110 MB of frozen nflverse downloads (players,
+# weekly stats, draft picks, snap counts). On a cache miss they come from the
+# optional `nfl-ci-inputs` release (the owner's exact local inputs, see
+# phase0/nfl_ci_inputs.py) and anything still missing is rebuilt from nflverse
+# - the static files by URL, the play tables by running the existing pull
+# scripts for every season. Two tiny research outputs
+# (data/nfl_player_board_2025.csv, data/nfl_wowy.json) have no upstream and
+# must be committed; the input check names them when they are not. Whenever
+# the input bootstrap fails, the chain step still runs its fetch layer and the
+# tables are committed, but the model does not run and the job stays red
+# (NFL_WEEKLY_INPUTS carries the bootstrap's outcome).
+#
+# The current-season pbp re-pull is verified, not trusted: the pull scripts
+# exit 0 on a failed season download, so nfl_weekly.py checks that every
+# re-pulled table kept its season rows (and restores it when not).
+#
+# Measured 2026-09-24 (local, week 3): cold bootstrap 3m08s, chain 3m04s,
+# peak memory 2.0 GB (nfl_v7_feature_gen). Timeouts below are ~5x that.
+#
+# Tuesday: after MNF - new finals, walked ratings, next week's forecasts.
+# Friday: after the TNF final and the week's practice reports. nflverse
+# rebuilds injuries_2026 once a day (its cron: 07:07 UTC), so the NFL's
+# Friday-afternoon game designations reach the data on SATURDAY; a Saturday
+# ~14:00 UTC run (manual dispatch, or a third cron) is what serves them.
+#
+# Cache: keyed on the input set's content (nfl_ci_inputs.py digest), so an
+# unchanged set is not saved again; in season the re-pulled current-season
+# rows change it about twice a week, and GitHub evicts entries unused for 7
+# days. A cache from nflverse rather than the owner's seed logs a warning on
+# every run and names itself in the serve's commit message.
+#
+# Publishing (phase0/nfl_ci_publish.py): the serve is committed only when the
+# chain reports a validated payload; a red chain commits the fetched tables
+# alone. If origin's pre-game ledger moved while the chain ran (a newer serve
+# landed), this serve is dropped instead of letting -X theirs pair one serve's
+# payload with another's ledger. Pages are not deployed here: odds.yml
+# redeploys site/ every 20 minutes. Market-blind: no odds source in this job.
 
 on:
   schedule:
-    - cron: "0 9 * * 2"     # Tuesdays 09:00 UTC (after MNF)
+    - cron: "0 9 * * 2"     # Tue 09:00 UTC (05:00 ET), after MNF
+    - cron: "0 20 * * 5"    # Fri 20:00 UTC (16:00 ET), after the TNF final
   workflow_dispatch:
 
 concurrency:
@@ -21,33 +63,100 @@ permissions:
 jobs:
   weekly:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PYTHONHASHSEED: "0"
+      NFL_WEEKLY_STATUS: data/nfl_weekly_status.json
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.14"
+          cache: pip
+          cache-dependency-path: .github/workflows/nfl-weekly.yml
 
-      - name: Run weekly NFL chain (fetch-only in CI)
+      # pinned to the stack the served model and its ledger were built with:
+      # the serve's lbfgs fits and the 20k-sim MC are numerically version-
+      # sensitive, and its TEST-reproduction tripwire has a 0.0005 tolerance.
+      # The second line pins every transitive dependency too (the local
+      # versions; a linux/cp314 resolve of the first line pulls exactly these).
+      - name: Install model deps
+        run: >-
+          pip install numpy==2.4.6 pandas==3.0.3 pyarrow==25.0.0 scipy==1.17.1 scikit-learn==1.9.0
+          python-dateutil==2.9.0.post0 six==1.17.0 tzdata==2026.2 joblib==1.5.3 threadpoolctl==3.6.0 narwhals==2.22.1
+
+      - name: List cached inputs
+        id: inputs
+        run: |
+          {
+            echo "paths<<EOF"
+            python phase0/nfl_ci_inputs.py paths
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      # prefix restore: the newest saved set comes back (saved sets are keyed
+      # on their content). Bump v1 if a pull script changes its output format.
+      - name: Restore play tables + static inputs
+        id: restore
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ steps.inputs.outputs.paths }}
+          key: nfl-inputs-v1-restore-${{ github.run_id }}
+          restore-keys: nfl-inputs-v1-
+
+      - name: Seed a cold cache from the nfl-ci-inputs release, if one exists
+        if: steps.restore.outputs.cache-matched-key == ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release download nfl-ci-inputs --pattern nfl_ci_inputs.tar.gz --dir "$RUNNER_TEMP"; then
+            python phase0/nfl_ci_inputs.py unpack "$RUNNER_TEMP/nfl_ci_inputs.tar.gz"
+          else
+            echo "::notice title=NFL inputs::no nfl-ci-inputs release; bootstrapping from nflverse (upstream has drifted from the local inputs, see phase0/nfl_ci_inputs.py)"
+          fi
+
+      - name: Bootstrap missing or invalid inputs
+        id: bootstrap
+        timeout-minutes: 20
+        run: python phase0/nfl_ci_inputs.py bootstrap
+
+      # Runs even when the bootstrap failed, so the fetched tables still land
+      # (as the old fetch-only job did); NFL_WEEKLY_INPUTS != success then
+      # skips the model and records it as a failure. NFL_WEEKLY_REQUIRE_CHAIN:
+      # absent tables are a failure here, never a green fetch-only run.
+      - name: Run weekly NFL chain
+        if: ${{ !cancelled() && steps.inputs.outcome == 'success' }}
+        timeout-minutes: 20
+        env:
+          NFL_WEEKLY_REQUIRE_CHAIN: "1"
+          NFL_WEEKLY_INPUTS: ${{ steps.bootstrap.outcome }}
         run: python phase0/nfl_weekly.py
 
-      # nfl_weekly.py now exits 1 when a required fetch fails, so the job goes
-      # red. The other fetches are still written atomically and guarded, so
-      # they are committed regardless.
-      - name: Commit refreshed data
-        if: always()
+      - name: Check inputs before caching
+        id: cachecheck
+        if: always() && steps.inputs.outcome == 'success'
         run: |
-          git config user.name "glassbox-bot"
-          git config user.email "glassbox-bot@users.noreply.github.com"
-          # add-only-existing: 2026 files appear as nflverse publishes them
-          for f in data/nfl_games.csv data/inj_2026.csv data/snap_2026.csv \
-                   data/nfl_player_stats_2026.csv data/roster_2026.csv; do
-            if [ -f "$f" ]; then git add "$f"; fi
-          done
-          if git diff --cached --quiet; then
-            echo "no data change"
+          if python phase0/nfl_ci_inputs.py check --cached; then
+            key="nfl-inputs-v1-$(python phase0/nfl_ci_inputs.py digest)"
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+            echo "key=$key" >> "$GITHUB_OUTPUT"
           else
-            git commit -m "NFL weekly data refresh"
-            # -X theirs: on conflict keep THIS run's fresh fetches
-            git pull --rebase -X theirs --autostash origin master || true
-            git push || echo "push skipped (race); next run retries"
+            echo "ok=false" >> "$GITHUB_OUTPUT"
           fi
+
+      # content-keyed: skipped when the set is byte-identical to the one restored
+      - name: Save play tables + static inputs
+        if: >-
+          always() && steps.cachecheck.outputs.ok == 'true'
+          && steps.cachecheck.outputs.key != steps.restore.outputs.cache-matched-key
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ steps.inputs.outputs.paths }}
+          key: ${{ steps.cachecheck.outputs.key }}
+
+      # runs after a red chain too, but then commits only the fetched tables:
+      # the live payload + ledger are staged only when the status file says a
+      # validated serve was swapped in
+      - name: Commit and push
+        if: ${{ !cancelled() }}
+        run: python phase0/nfl_ci_publish.py

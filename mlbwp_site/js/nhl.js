@@ -152,8 +152,8 @@ function nhlCard(g){
     :`<span class="lv" data-ng="nhl_${g.away}_${g.home}">${g.start_utc?fmtTime(g.start_utc):"time TBD"}</span>`);
   const call=done?nhlGrade(g,c):(c.early?NHL_SCHED_PILL:sitePill(c.tier,c.pp,c.pick));
   const ct=g.ct||{};
-  const edge=[["elo","Elo"],["xg","xG"],["rest","rest"],["b2b","B2B"]]
-    .filter(([k])=>ct[k]!=null&&(k==="elo"||k==="xg"||Math.abs(ct[k])>=0.3))
+  const edge=[["home","home"],["elo","Elo"],["xg","xG"],["rest","rest"],["b2b","B2B"]]
+    .filter(([k])=>ct[k]!=null&&(k==="home"||k==="elo"||k==="xg"||Math.abs(ct[k])>=0.3))
     .map(([k,l])=>`<span class="${ct[k]>=0?"p":"n"}">${l} ${nhlSg(ct[k],1)}</span>`).join("");
   const note=done?"":(off?`<div class="earlyn">${off} &mdash; new date to be announced. Not a pick.</div>`
     :(c.early?`<div class="earlyn">Not a pick &mdash; team ratings only, no goalie or lineup input.
@@ -193,11 +193,14 @@ function nhlPage(){
   const vs=n.value_status||{};
   const gateLine=(vs.gate_early&&vs.n_early)?` ${vs.n_early} game${vs.n_early===1?" is":"s are"} quoted by the market this week and carry
     <b>no EDGE badge</b>: a badge is a stronger claim than a pick, and an EARLY forecast is not a pick.`:"";
+  // the edge run held every badge (stale model build, feed down): say why
+  const held=n.value_blocked||(vs.state==="suppressed"&&vs.reason);
+  const heldLine=held?` <b>No EDGE badges this cycle</b>: ${siteEsc(held)}.`:"";
   const opens=(n.phase==="preseason"&&n.first_game)?` The ${nhlSeasLbl()} regular season opens <b>${fmtDay(n.first_game,today)}</b>.`:"";
   const legend=`<div class="polnote">Every NHL forecast is <span class="chip t-EARLY">EARLY</span>: the model runs on team
     ratings only &mdash; Elo, an expected-goals team rating, rest and back-to-backs &mdash; with no goalie, lineup or roster
     input. So each game is <b>scheduled, not a pick</b>: no pick pill and no fair odds; the model's lean is shown and
-    labelled pre-information, and a played game grades the lean, never a pick.${gateLine}${opens}
+    labelled pre-information, and a played game grades the lean, never a pick.${gateLine}${heldLine}${opens}
     <a href="${nhlH("record")}">Track record by tier &rsaquo;</a></div>`;
   let body;
   if(!games.length){
@@ -208,9 +211,11 @@ function nhlPage(){
       :(played.length?` <button class="filt on" data-r="results">Latest results</button>`:"")}</div>`;
   }else{
     const days=[...new Set(games.map(g=>g.d))].sort(); if(R==="results") days.reverse();   // results: newest first
+    // playoff games are on the board like any other slate (tagged, never
+    // filtered out: the board would be empty April-June)
     body=days.map(d=>{const gs=games.filter(g=>g.d===d), nd=gs.filter(nhlDone).length;
-      const np=gs.filter(g=>!nhlDone(g)&&siteTier("nhl",g)!=="EARLY").length;
-      return `<div class="day"><span class="d">${fmtDay(d,today)}</span>
+      const np=gs.filter(g=>!nhlDone(g)&&siteTier("nhl",g)!=="EARLY").length, po=gs.some(g=>g.playoff);
+      return `<div class="day"><span class="d">${fmtDay(d,today)}</span>${po?'<span class="chip po">Playoffs</span>':""}
         <span class="c">${gs.length} game${gs.length===1?"":"s"} &middot; ${nd===gs.length?"all final":`${np} pick${np===1?"":"s"}`}</span>
         ${np||nd===gs.length?"":'<span class="proj">scheduled &middot; team ratings only</span>'}</div>
         <div class="grid">${gs.map(nhlCard).join("")}</div>`;}).join("");
@@ -253,23 +258,34 @@ function nhlModelCard(mc){
   // labelled as such, and only once enough games are graded to read it.
   const minN=typeof REC_MIN_N!=="undefined"?REC_MIN_N:30;
   const acc=mc.cur_season_acc??null, nG=mc.cur_season_n||0, show=acc!=null&&nG>=minN;
-  // Two published references, each labelled with its own number so the tiles
-  // reconcile: the gain is against a logistic fit on the Elo term alone
-  // (test_ll + gain); the Elo core is the tuned Elo's own probabilities.
-  const dE=mc.test_delta_vs_elo, eloOnly=mc.test_ll!=null&&dE!=null?mc.test_ll+dE:null;
+  // ONE harness (nhl_serve.test_card): the model and "Elo alone" were scored on
+  // the same locked TEST games, so Elo alone - test log loss = the gain, as
+  // printed. Five decimals, the precision they were published at, so the
+  // subtraction holds on the card too (at four, 0.6695 - 0.6642 read 0.0053
+  // beside a 0.0054 gain).
+  const f5=v=>v!=null&&isFinite(v)?(+v).toFixed(5):"&mdash;";
+  const gain=mc.test_delta_vs_elo, ci=mc.test_ci;
+  const llS=mc.test_ll!=null?mc.test_ll.toFixed(5):"&mdash;", baseS=mc.baseline_elo_test!=null?mc.baseline_elo_test.toFixed(5):"&mdash;";
+  const seas=mc.test_seasons?siteEsc(String(mc.test_seasons)):"the locked TEST seasons";
+  const ciTxt=ci&&ci.length===2&&ci.every(v=>v!=null&&isFinite(v))?`95% CI ${(+ci[0]).toFixed(5)}&ndash;${(+ci[1]).toFixed(5)}`:"";
+  const nTest=mc.test_n?`${(+mc.test_n).toLocaleString(LOC)} regular-season games, `:"";
+  const raw=mc.elo_raw_test!=null&&isFinite(mc.elo_raw_test)?` The tuned Elo's own win probabilities, a different reference,
+    score ${f5(mc.elo_raw_test)} on those seasons${mc.elo_raw_n?` (${(+mc.elo_raw_n).toLocaleString(LOC)} games)`:""}; the gain is not measured against them.`:"";
   return `<div class="panel"><h3>Model card <span class="sub">market-blind &middot; locked holdout</span></h3><div class="statgrid">
-    ${box("Test log loss",mc.test_ll!=null?mc.test_ll.toFixed(4):"&mdash;","","Locked TEST holdout, published once; lower is better")}
-    ${box("vs Elo alone",dE!=null?`&minus;${dE.toFixed(4)}${eloOnly!=null?` <span class="sub" style="font-size:11px">(${eloOnly.toFixed(4)})</span>`:""}`:"&mdash;","pos",
-      `Log-loss gain over a logistic fit on the Elo term alone (${eloOnly!=null?eloOnly.toFixed(4):"published"}) on the same TEST games - published once`)}
-    ${box("Tuned Elo core",mc.baseline_elo_test!=null?mc.baseline_elo_test.toFixed(4):"&mdash;","",
-      "The tuned Elo's own win probabilities, no blend, on the TEST holdout - published once. A different reference from the Elo-alone fit beside it, so the two tiles do not subtract to the gain")}
-    ${box("Coin flip","0.6931")}
+    ${box("Test log loss",llS,"",`Locked TEST holdout (${seas}), scored once; lower is better`)}
+    ${box("Elo alone",baseS,"",`Same TEST games: ${siteEsc(mc.baseline_def||"a logistic fit on the Elo term alone")}`)}
+    ${box("Gain vs Elo",f5(gain),"pos",
+      `Elo alone minus the model's test log loss, on the same games${ciTxt?` (${ciTxt})`:""}; lower log loss is better, so a positive gain means the model beats Elo`)}
+    ${box("Coin flip","0.69315","","Log loss of a 50% forecast on every game")}
     ${box("Home win rate",mc.home_win_rate!=null?(mc.home_win_rate*100).toFixed(1)+"%":"&mdash;")}
-    ${box("Games trained",mc.n_games_train?mc.n_games_train.toLocaleString(LOC):"&mdash;")}
+    ${box("Games trained",mc.n_games_train?mc.n_games_train.toLocaleString(LOC):"&mdash;","","The served coefficients: the same blend refit on every xG-covered regular-season game from 2011-12 on")}
     ${box(`${nhlSeasLbl()} leans right`,show?(acc*100).toFixed(1)+"%":"&mdash;","",
       show?`${nG} graded EARLY-tier forecasts (leans included) - not picks`:`${nG} graded so far - a rate is shown from ${minN}`)}
   </div>
-  <div class="sub" style="margin-top:10px;font-size:12px">Inputs: ${(mc.features||[]).map(siteEsc).join(" &middot; ")}.
+  <div class="sub" style="margin-top:10px;font-size:12px">TEST: ${nTest}${seas}, scored once, with coefficients fit on the
+    earlier seasons. Elo alone ${baseS} &minus; model ${llS} = gain ${f5(gain)}${ciTxt?` (${ciTxt})`:""}: the baseline is
+    ${siteEsc(mc.baseline_def||"a logistic fit on the Elo term alone, on the same games")}.${raw}</div>
+  <div class="sub" style="margin-top:6px;font-size:12px">Inputs: ${(mc.features||[]).map(siteEsc).join(" &middot; ")}.
     No goalie, lineup or roster input, which is why every forecast is EARLY.
     <a class="tl" href="${nhlH("record")}">Graded forecasts by tier</a></div></div>`;
 }
@@ -293,6 +309,13 @@ function nhlGamePage(id){
   const eqn=`50% ${m10>=0?"+":"&minus;"} ${(Math.abs(m10)/10).toFixed(1)} = ${(t10/10).toFixed(1)}%, ${g.home}'s home win probability`
     +(s10!==m10&&why?` (each bar is rounded to 0.1 pt, so the bars add to ${nhlSg(s10/10,1)})`:"");
   const rest=v=>v==null?"?":(v>=5?"5+":v);
+  // home ice is its own bar (nhl_contributions); a row frozen before the split
+  // (no ct.home) still carries it inside Team Elo, and says so
+  const hi=(n.model_card&&n.model_card.home_ice)||{}, hiElo=hi.elo!=null?hi.elo:30;
+  const homeTxt=ct.home!=null
+    ?`Home ice is ${g.home}'s edge over an equal team on equal rest: +${hiElo} Elo${hi.xg!=null?`, +${(+hi.xg).toFixed(2)} expected goals`:""} and the
+      model's intercept; Team Elo and xG rating are the two teams' rating gaps alone.`
+    :`Team Elo includes ${g.home}'s home ice (+${hiElo} Elo).`;
   const b2bTxt=[[g.away,g.ab2b],[g.home,g.hb2b]].filter(x=>x[1]).map(x=>x[0]);
   // result / live: a played game gets the MLB final panel from the payload's
   // official result; an unplayed one gets the live hook (ESPN, display only)
@@ -316,6 +339,8 @@ function nhlGamePage(id){
       <span class="chip t-${c.tier}" title="${c.early?NHL_EARLY_WHY:""}">${c.tier}</span>${g.playoff?'<span class="chip po">PLAYOFF</span>':""}</div>
     ${panel}
     ${nhlValbar(g,true)}
+    ${!done&&!nhlBadge(g)&&g.value_blocked?`<div class="sub" style="font-size:12px;margin:0 0 12px" title="market/sched_edges.py: why this quoted game carries no badge">Market-quoted,
+      <b>no EDGE badge</b>: ${siteEsc(g.value_blocked)}.</div>`:""}
     <div class="cols nhl-cols">
       <div style="display:flex;flex-direction:column;gap:14px">
         <div class="panel"><h3>${done?"Pre-game forecast":(c.early?"Current lean":"Our projection")} <span class="sub">${c.early?(done?"EARLY tier &mdash; graded as a lean, not a pick":"scheduled, not a pick"):""}</span></h3>
@@ -330,8 +355,7 @@ function nhlGamePage(id){
           <div class="why" style="margin-top:6px">${why||'<div class="sub">no contribution data</div>'}</div>
           <div class="sub" style="margin-top:10px;font-size:12px;color:var(--faint)">Each bar is one model term's push on ${g.home}'s
             win probability, in points around 50%, taken straight from the market-blind model's coefficients: ${eqn}.
-            The lean above is the larger side.
-            Team Elo includes ${g.home}'s home ice (+30 Elo). Rest: ${g.away} ${rest(g.arest)} days, ${g.home} ${rest(g.hrest)}
+            The lean above is the larger side. ${homeTxt} Rest: ${g.away} ${rest(g.arest)} days, ${g.home} ${rest(g.hrest)}
             ${b2bTxt.length?`&middot; back-to-back: ${b2bTxt.join(" and ")}`:"&middot; neither team on a back-to-back"}.</div>
         </div>
         <div class="panel"><h3>Goaltending <span class="sub">display only &mdash; not a model input</span></h3>
@@ -346,7 +370,7 @@ function nhlGamePage(id){
         <div class="panel"><h3>${g.away} vs ${g.home}</h3>${nhlH2H(g)}</div>
         <div class="panel"><h3>What the model knows <span class="sub">and what it does not</span></h3><div class="signals">
           <div class="sig good"><span class="ic">+</span><span><b>Team strength</b>: Elo from every result through
-            ${nhlDateOnly(n.ratings_through)||"the last final"}, home ice worth +30, pulled 30% back toward average between seasons.</span></div>
+            ${nhlDateOnly(n.ratings_through)||"the last final"}, home ice worth +${hiElo}, pulled 30% back toward average between seasons.</span></div>
           <div class="sig good"><span class="ic">+</span><span><b>Shot quality</b>: an expected-goals team rating (MoneyPuck xG),
             updated on chances created and allowed, never on results.</span></div>
           <div class="sig good"><span class="ic">+</span><span><b>Schedule</b>: rest days and back-to-backs from the league calendar.</span></div>
@@ -442,11 +466,11 @@ function nhlTeams(){
   const n=state.nhl, T=n.teams||{}, P=n.proj||{};
   const S=state.nhlTeamSort||"elo";
   const key={elo:c=>-(T[c].elo||0),gb:c=>-(T[c].glassbox==null?-1:T[c].glassbox),proj:c=>-((P[c]&&P[c].pts)||0)}[S]||(c=>-(T[c].elo||0));
-  const codes=Object.keys(T).sort((a,b)=>key(a)-key(b));
+  const codes=Object.keys(T).sort((a,b)=>key(a)-key(b)), nT=codes.length;
   const card=c=>{const t=T[c], p=P[c], r=nhlRecOf(t);
     return `<div class="tcard" ${nhlRow(nhlH("team",c))}>
       <div class="h"><span class="code">${c}</span><span class="nm">${nhlName(c)}</span>${gb(t.glassbox)}</div>
-      <div class="stat"><span>Elo <b>${Math.round(t.elo)}</b> #${t.rank}</span><span>xG <b>${nhlSg(t.xg,2)}</b></span>
+      <div class="stat"><span title="the model's Elo rating and its rank among the ${nT} teams">Elo <b>${Math.round(t.elo)}</b> #${t.rank} of ${nT}</span><span>xG <b>${nhlSg(t.xg,2)}</b></span>
         ${p?`<span>Proj <b>${p.pts.toFixed(0)}</b> pts</span>`:""}</div>
       <div class="stat"><span${r&&!r.cur?` title="${r.lbl} final record"`:""}>${r?(r.cur?"Rec":"Last season")+` <b>${nhlWLO(r.r)}</b>`:"Rec <b>&mdash;</b>"}</span>
         <span>${siteEsc(t.div||"")}</span>${p?`<span>Playoffs <b>${nhlOdds(p.po,t.clinch)}</b></span>`:""}</div></div>`;};
@@ -480,8 +504,8 @@ function nhlTeamPage(code){
       tile("Home",r.home||"-"),tile("Away",r.away||"-"),
       luck!=null?`<div class="b" title="(goal diff - expected-goal diff) per game: finishing and goaltending beyond the chances. Large + = regression risk"><div class="k">Goals vs xG</div><div class="v ${Math.abs(luck)>=0.3?(luck>0?"warnc":"pos"):""}">${nhlSg(luck,2)}</div></div>`:""]
     :[]).concat([
-      tile("Our Elo",Math.round(t.elo),"",`#${t.rank}`),
-      tile("xG rating",nhlSg(t.xg,2),+Math.abs(t.xg).toFixed(2)===0?"":(t.xg>0?"pos":"neg"),`#${I.xgR[code]}`),
+      tile("Our Elo",Math.round(t.elo),"",`#${t.rank} of ${I.nT}`),
+      tile("xG rating",nhlSg(t.xg,2),+Math.abs(t.xg).toFixed(2)===0?"":(t.xg>0?"pos":"neg"),`#${I.xgR[code]} of ${I.nT}`),
       pr?tile("Proj points",pr.pts.toFixed(0),"",`&plusmn;${pr.sd.toFixed(0)}`):"",
       pr?tile("Playoff odds",nhlOdds(pr.po,cur?t.clinch:null)):""]).join("");
   const opens=!cur&&n.first_game?` &middot; season opens ${nhlShortDay(n.first_game)}`:"";

@@ -17,6 +17,8 @@ Contents:
   TEAM_INFO / DIVS / CONF             team names and league structure
   et_to_utc / et_date                 kickoff times (US Eastern -> UTC)
   standings                           records + NFL division tiebreakers
+  conference_seeding / clinch_flags   playoff picture (wild-card tiebreakers)
+                                      and sufficient-condition clinch marks
   exact_contrib                       telescoped, exactly-additive breakdown
 """
 from __future__ import annotations
@@ -103,6 +105,20 @@ TEAM_INFO = {
     "TEN": ("Tennessee", "Titans"), "WAS": ("Washington", "Commanders"),
 }
 DISPLAY_ABBR = {"LA": "LAR"}
+
+
+_NAME_SUFFIX = {"jr", "sr", "ii", "iii", "iv", "v"}
+
+
+def name_key(name: str) -> str:
+    """A player-name join key: 'Michael Penix Jr.' and 'michael penix' ->
+    'michael penix'; accents, apostrophes, periods, hyphens and generational
+    suffixes do not matter ('T.J. Watt' -> 'tj watt')."""
+    import re
+    import unicodedata
+    x = unicodedata.normalize("NFKD", name or "").encode("ascii", "ignore").decode().lower()
+    x = re.sub(r"[^a-z]+", " ", re.sub(r"['.]", "", x))
+    return " ".join(w for w in x.split() if w not in _NAME_SUFFIX)
 
 
 def team_names(code: str) -> dict:
@@ -333,6 +349,162 @@ def standings(games: list[dict]) -> dict:
     return out
 
 
+# ------------------------------------------------ conference seeding + clinch
+# The wild-card tiebreak steps (NFL rules, "to break a tie for the Wild Card
+# berth"), used both to order the four division winners (seeds 1-4) and the
+# rest of the conference (5, 6, 7, then the chasers). Division mates tied in
+# the group are first reduced to their best club by the division steps. The
+# two "combined ranking in points scored and allowed" steps are not modelled;
+# like the division order, the fallback after net points is alphabetical, a
+# reproducible stand-in for the coin toss.
+def _wc_h2h(book: _Book, t: str, group: list[str]) -> float:
+    """Two clubs: their games against each other, when they met. Three or more:
+    only a sweep counts (+1 beat every other club, -1 lost to every other)."""
+    others = [o for o in group if o != t]
+    vs = [(o, r) for (o, r, *_x) in book.vs[t] if o in others]
+    if len(group) == 2:
+        return _pct([r for _o, r in vs]) if vs else 0.5
+    res = defaultdict(list)
+    for o, r in vs:
+        res[o].append(r)
+    if set(res) != set(others):
+        return 0.0
+    if all(min(x) == 1.0 for x in res.values()):
+        return 1.0
+    if all(max(x) == 0.0 for x in res.values()):
+        return -1.0
+    return 0.0
+
+
+def _wc_common(book: _Book, t: str, group: list[str]) -> float:
+    """Win percentage in common games, only when every tied club has at least
+    four of them (the rule's minimum); otherwise the step does not separate."""
+    common = None
+    for c in group:
+        opps = {o for (o, *_x) in book.vs[c]}
+        common = opps if common is None else common & opps
+    common = (common or set()) - set(group)
+    if min(sum(1 for (o, *_x) in book.vs[c] if o in common) for c in group) < 4:
+        return 0.0
+    return book.pct_vs(t, common)
+
+
+def _wc_conf_net(book: _Book, t: str, _group) -> float:
+    return float(sum(pf - pa for (o, _r, pf, pa, _h) in book.vs[t] if CONF.get(o) == CONF[t]))
+
+
+WC_STEPS = (_wc_h2h, lambda b, t, g: b.conf(t, g), _wc_common,
+            lambda b, t, g: b.sov(t, g), lambda b, t, g: b.sos(t, g),
+            _wc_conf_net, lambda b, t, g: b.net_pts(t, g))
+
+
+def _best_wc(book: _Book, group: list[str]) -> str:
+    """The club that wins a wild-card-style tie among `group` (equal win %)."""
+    if len(group) == 1:
+        return group[0]
+    by_div = defaultdict(list)
+    for t in group:
+        by_div[TEAM_DIV[t]].append(t)
+    if len(by_div) < len(group):          # division mates: keep each division's best
+        group = [_best_of(book, v) for v in by_div.values()]
+        if len(group) == 1:
+            return group[0]
+    for step in WC_STEPS:
+        vals = {t: step(book, t, group) for t in group}
+        top = max(vals.values())
+        best = [t for t in group if abs(vals[t] - top) < 1e-9]
+        if len(best) == 1:
+            return best[0]
+        if len(best) < len(group):
+            return _best_wc(book, best)
+    return sorted(group)[0]
+
+
+def rank_wc(book: _Book, teams: list[str]) -> list[str]:
+    order, left = [], list(teams)
+    while left:
+        top = max(book.pct(t) for t in left)
+        tied = [t for t in left if abs(book.pct(t) - top) < 1e-9]
+        win = _best_wc(book, tied)
+        order.append(win)
+        left.remove(win)
+    return order
+
+
+def conference_seeding(games: list[dict]) -> dict:
+    """{'AFC': [16 codes], 'NFC': [...]}: seeds 1-4 are the division winners,
+    5-7 the wild cards, then the rest in wild-card order ('if the season ended
+    today')."""
+    book = _Book(games)
+    out = {}
+    for conf in ("AFC", "NFC"):
+        divs = [d for d in DIVS if d.startswith(conf)]
+        winners = [rank_division(book, DIVS[d])[0] for d in divs]
+        rest = [t for d in divs for t in DIVS[d] if t not in winners]
+        out[conf] = rank_wc(book, winners) + rank_wc(book, rest)
+    return out
+
+
+def remaining_games(rows: list[dict], season: int) -> dict:
+    """team -> regular-season games of `season` not yet final."""
+    out = defaultdict(int)
+    for r in rows:
+        if str(r.get("season")) != str(season) or r.get("game_type") != "REG":
+            continue
+        if r.get("home_score", "") != "" and r.get("away_score", "") != "":
+            continue
+        for side in ("home_team", "away_team"):
+            out[FR.get(r[side], r[side])] += 1
+    return dict(out)
+
+
+def clinch_flags(games: list[dict], remaining: dict) -> dict:
+    """team -> 'z' clinched the division, 'x' clinched a playoff berth, 'e'
+    eliminated from the playoffs. Sufficient conditions only, so a flag is
+    never wrong; it may appear a week later than the league's own, which also
+    resolves tiebreakers. Win % counts a tie as half a win.
+
+      z: the club's worst case beats every division rival's best case.
+      x: at most four other conference clubs can still finish level with or
+         above the club's worst case. Missing the playoffs needs five: the
+         club's division winner, three non-winners ahead for the wild cards
+         and at least one more division winner (a non-winner's own division
+         winner finishes above it, and only two non-winners share the club's
+         division).
+      e: a division rival and at least three sure non-winners (each club
+         beyond the first per division) finish strictly above the club's
+         best case, whatever happens.
+    Empty unless the whole season's schedule is known (every club the same
+    number of games, finals plus remaining). Seven playoff clubs per
+    conference (the format since 2020); the x rule does not hold for six.
+    """
+    book = _Book(games)
+    tot = {t: len(book.res[t]) + remaining.get(t, 0) for t in TEAMS}
+    if len(set(tot.values())) != 1 or next(iter(tot.values())) < 16:
+        return {}
+    pts = {t: sum(book.res[t]) for t in TEAMS}
+    lo = {t: pts[t] / tot[t] for t in TEAMS}
+    hi = {t: (pts[t] + remaining.get(t, 0)) / tot[t] for t in TEAMS}
+    out = {}
+    for t in TEAMS:
+        rivals = [u for u in DIVS[TEAM_DIV[t]] if u != t]
+        confs = [u for u in TEAMS if CONF[u] == CONF[t] and u != t]
+        if all(lo[t] > hi[u] for u in rivals):
+            out[t] = "z"
+            continue
+        if sum(1 for u in confs if hi[u] >= lo[t]) <= 4:
+            out[t] = "x"
+            continue
+        above = [u for u in confs if lo[u] > hi[t]]
+        if any(u in above for u in rivals):
+            per = defaultdict(int)
+            for u in above:
+                per[TEAM_DIV[u]] += 1
+            if sum(c - 1 for c in per.values()) >= 3:
+                out[t] = "e"
+    return out
+
+
 POST_ROUNDS = ("WC", "DIV", "CON", "SB")
 
 
@@ -381,10 +553,24 @@ def apply_standings(payload: dict, rows: list[dict], season: int | None = None) 
     prev_games = final_rows(rows, season - 1)
     st, st_prev = standings(cur), standings(prev_games)
     post_prev = postseason(rows, season - 1)
+    # the playoff picture: only once a game is played (before that every club
+    # is 0-0 and the order would be the alphabet)
+    seed = {}
+    if cur:
+        for order in conference_seeding(cur).values():
+            seed.update({t: i for i, t in enumerate(order, 1)})
+    # the clinch rules assume the seven-club format (2020 on)
+    flags = (clinch_flags(cur, remaining_games(rows, season))
+             if cur and int(season) >= 2020 else {})
     for t, tm in teams.items():
         if t not in st:
             continue
         tm.update(st[t])
+        for k, v in (("conf_seed", seed.get(t)), ("clinch", flags.get(t))):
+            if v is None:
+                tm.pop(k, None)
+            else:
+                tm[k] = v
         if prev_games:
             p = st_prev[t]
             tm["prev"] = {"season": season - 1, "w": p["w"], "l": p["l"], "t": p["t"],

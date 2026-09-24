@@ -132,6 +132,41 @@ for m in mvp:
     ids = _by_name.get(m["player"], [])
     m["id"] = ids[0] if len(ids) == 1 else None
 
+# ---- model card ----
+# The LIVE payload: carries forward what only the published file holds.
+try:
+    _prev = json.load(open(NP.LIVE, encoding="utf-8"))
+except (FileNotFoundError, json.JSONDecodeError):
+    _prev = {}
+_prev_mc = _prev.get("model_card") or {}
+MODEL = json.load(open("data/nfl_model.json", encoding="utf-8"))
+# The headline TEST numbers belong to the serve: nfl_season_serve.py re-measures
+# test_log_loss / accuracy / n_tests on every run and overwrites these three.
+# Until it runs, the card keeps the last served values (else the adopted
+# model's own file) - never a literal typed once and left behind (it read
+# 0.61947 / 64.6% / 47 tests long after the model had moved on).
+with open("data/nfl_test_ledger.csv", "rb") as _fh:      # cp1252 bytes in old rows
+    N_TESTS = _fh.read().rstrip(b"\n").count(b"\n")
+# Measured ONCE, when the model then served (TEST log loss 0.61947, ledger row
+# 47) was adopted and scored on the locked 2016-2025 holdout. The locked-split
+# rule forbids re-measuring anything on TEST here, and the serve does not
+# re-measure these, so they ship WITH their provenance and the page labels
+# them. The calibration buckets are that model's; the home-always / Elo /
+# closing-line accuracies and the closing line's log loss are properties of
+# the holdout games and of those baselines, not of the served blend.
+MEASURED = {
+    "asof": "2026-07-23", "ledger_row": 47, "model_test_ll": 0.61947,
+    "holdout": "2016-2025", "n": 2761,
+    "keys": ["calibration", "acc_home", "acc_elo", "acc_close", "close_log_loss"],
+    "note": "measured once at adoption of the 2026-07-23 model (TEST log loss "
+            "0.61947); not re-measured for later models",
+}
+# The ratings-only model the page cites: engine v7 (ledger row 66, TEST
+# 2022-2025, scored once), with team Elo on the same games. The serve still
+# writes the v6 row-62 numbers under ratings_model; this block is the current
+# engine's and carries its source.
+RATINGS_ONLY = {"test_ll": 0.62973, "acc": 65.8, "elo_ll": 0.63824,
+                "seasons": "2022-2025", "engine": "v7", "ledger_row": 66}
 payload = {
     "generated": NP.now_utc_iso(),
     "status": "preseason" if PRESEASON else "season", "season": 2026,
@@ -141,27 +176,34 @@ payload = {
     "boards_season": BOARD_SEASON,
     "mvp_source": "one-off with-vs-without study, 2016-2025 absences (fixed table)",
     "model_card": {
-        "test_log_loss": 0.61947, "holdout": "2016-2025, n=2,761, scored once",
-        "accuracy": 64.6, "acc_home": 55.0, "acc_elo": 63.6, "acc_close": 66.6,
-        "close_log_loss": 0.60913, "n_features": 14, "n_tests": 47,
+        "test_log_loss": _prev_mc.get("test_log_loss", MODEL["test_ll"]),
+        "accuracy": _prev_mc.get("accuracy"),
+        "n_tests": N_TESTS,
+        "holdout": "2016-2025, n=2,761, scored once",
+        "acc_home": 55.0, "acc_elo": 63.6, "acc_close": 66.6,
+        "close_log_loss": 0.60913, "n_features": len(MODEL["features"]),
         "training": "walk-forward yearly refit, 3-season recency half-life",
         "calibration": [{"bucket": "50-60%", "hit": 51.1, "n": 798},
                         {"bucket": "60-70%", "hit": 59.9, "n": 764},
                         {"bucket": "70-80%", "hit": 71.6, "n": 656},
                         {"bucket": "80%+", "hit": 82.9, "n": 533}],
+        "measured": MEASURED,
+        "ratings_only": RATINGS_ONLY,
     },
     "power": power, "boards": boards, "mvp": mvp,
     "pos_values": wowy.get("pos_values_epa_play", {}),
+    # what pos_values is (phase0/nfl_wowy_eval.py): the unit's EPA/play drop per
+    # full-time absent starter at the position, a with-vs-without fit on
+    # 2013-2025. Display only - the WOWY feature lost its one TEST look.
+    "pos_values_source": {"what": "unit EPA per play lost per full-time absent starter",
+                          "seasons": "2013-2025", "test_ll": wowy.get("test_wowy"),
+                          "model_ll": wowy.get("test_current"), "adopted": False},
 }
 # carry forward the one enrichment that lives only in the published payload,
 # else a rebuild silently drops it: 'value_updated' (written by
 # market/nfl_edges.py). Read from the LIVE file, whatever this run writes to.
-try:
-    _prev = json.load(open(NP.LIVE, encoding="utf-8"))
-    if "value_updated" in _prev:
-        payload["value_updated"] = _prev["value_updated"]
-except (FileNotFoundError, json.JSONDecodeError):
-    pass
+if "value_updated" in _prev:
+    payload["value_updated"] = _prev["value_updated"]
 _out = NP.payload_path()
 NP.dump_atomic(payload, _out, indent=1)
 print(f"wrote {_out}  ({len(power)} teams, "

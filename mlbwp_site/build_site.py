@@ -74,7 +74,7 @@ SHELL = f"""<!doctype html>
 <main><div class="wrap" id="view"><div class="loading">Loading predictions&hellip;</div></div></main>
 <footer><div class="wrap">
   <b>Research only &mdash; not betting advice.</b> Market-blind models that never see the odds; every
-  pick is locked before the game and graded in public on the <a href="#/record">track record</a>, split
+  pick is locked before the game and graded in public on the <a href="#/record" id="ft-rec">track record</a>, split
   by information tier.
   <b>MLB</b>: team Elo + xFIP &amp; SIERA starting-pitcher ratings + season-to-date bullpen FIP +
   per-plate-appearance TrueSkill on-base ratings + lineup isolated-power + lineup baserunning.

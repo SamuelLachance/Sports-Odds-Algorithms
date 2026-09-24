@@ -1,0 +1,815 @@
+{
+ "pick": "nhl_boxel",
+ "round": 2,
+ "prereg": {
+  "prereg_sha1_16": "c706f73e6271cd83",
+  "frozen_at_utc": "2026-09-24T17:08Z",
+  "module_hashes_match": true
+ },
+ "mode": "FULL",
+ "protocol": {
+  "doc": "documents/breakthrough_program_prereg_2026_09_24.md",
+  "harness": "phase0/nhl_depth_eval.py Ctx, LOSO over 2011-12..2017-18",
+  "test_seasons_touched": 0,
+  "market_blind": true,
+  "bar": "P nested gain >= 0.001 and 10k paired bootstrap CI lo > 0 and every gate passes"
+ },
+ "box_info": {
+  "present": true,
+  "rows": 374817,
+  "games": 9371,
+  "valid_sides": 18742,
+  "coverage": 1.0,
+  "per_season_skater_means": {
+   "2010": {
+    "G": 0.1518,
+    "A": 0.2595,
+    "SOG": 1.6887,
+    "BLK": 0.7885,
+    "PIM": 0.664,
+    "toi_s": 990.6425
+   },
+   "2011": {
+    "G": 0.1478,
+    "A": 0.2529,
+    "SOG": 1.6526,
+    "BLK": 0.7859,
+    "PIM": 0.6091,
+    "toi_s": 992.3999
+   },
+   "2012": {
+    "G": 0.1474,
+    "A": 0.2534,
+    "SOG": 1.619,
+    "BLK": 0.7947,
+    "PIM": 0.631,
+    "toi_s": 991.289
+   },
+   "2013": {
+    "G": 0.1484,
+    "A": 0.2537,
+    "SOG": 1.6689,
+    "BLK": 0.7851,
+    "PIM": 0.5941,
+    "toi_s": 992.6154
+   },
+   "2014": {
+    "G": 0.1479,
+    "A": 0.2539,
+    "SOG": 1.6621,
+    "BLK": 0.804,
+    "PIM": 0.5247,
+    "toi_s": 993.8611
+   },
+   "2015": {
+    "G": 0.1483,
+    "A": 0.2482,
+    "SOG": 1.6519,
+    "BLK": 0.7869,
+    "PIM": 0.5268,
+    "toi_s": 989.1397
+   },
+   "2016": {
+    "G": 0.1514,
+    "A": 0.2538,
+    "SOG": 1.6788,
+    "BLK": 0.7903,
+    "PIM": 0.4965,
+    "toi_s": 989.6104
+   },
+   "2017": {
+    "G": 0.1628,
+    "A": 0.2744,
+    "SOG": 1.7749,
+    "BLK": 0.818,
+    "PIM": 0.4632,
+    "toi_s": 989.8919
+   }
+  },
+  "all_zero_stat_seasons": [],
+  "share_sides_exactly_one_starter": 1.0
+ },
+ "close_diag_eval_only": {
+  "n_joined": 7927,
+  "overall": {
+   "n": 7927,
+   "close_ll": 0.670717,
+   "C0_minus_close": 0.001705,
+   "C1_minus_close": 0.001511,
+   "P_minus_close": 0.000838,
+   "D1_minus_close": 0.001435
+  },
+  "non_no1_goalie": {
+   "n": 4651,
+   "close_ll": 0.669005,
+   "C0_minus_close": 0.002742,
+   "C1_minus_close": 0.002339,
+   "P_minus_close": 0.002243,
+   "D1_minus_close": 0.00306
+  },
+  "top4_absent": {
+   "n": 2424,
+   "close_ll": 0.661924,
+   "C0_minus_close": 0.001683,
+   "C1_minus_close": 0.001707,
+   "P_minus_close": 0.000606,
+   "D1_minus_close": 0.001244
+  },
+  "team_games_0_5": {
+   "n": 656,
+   "close_ll": 0.667218,
+   "C0_minus_close": 0.002651,
+   "C1_minus_close": 0.002213,
+   "P_minus_close": 0.002772,
+   "D1_minus_close": 0.004781
+  }
+ },
+ "sibling_comparison": {
+  "rule": "within 0.0002 nats on DEV -> the simpler wins (gmar > boxel > rapmel)",
+  "nhl_gmar": {
+   "primary_dev_ll": 0.671757,
+   "boxel_P_dev_ll": 0.671535,
+   "boxel_minus_sibling": -0.000222
+  },
+  "nhl_rapmel": {
+   "primary_dev_ll": 0.672107,
+   "boxel_P_dev_ll": 0.671535,
+   "boxel_minus_sibling": -0.000572
+  }
+ },
+ "verdict": {
+  "primary_arm": "P (lineup sum L + starting-goalie level G inside the W/L Elo)",
+  "baseline_dev_ll": 0.672398,
+  "candidate_dev_ll": 0.671535,
+  "nested_gain": 0.000864,
+  "boot_ci_10k": [
+   -0.000146,
+   0.001864
+  ],
+  "late_dev_2015_18": {
+   "gain": 0.001631,
+   "boot_ci_10k": [
+    0.000294,
+    0.002962
+   ],
+   "n": 3731
+  },
+  "gates": {
+   "S1": true,
+   "S2": true,
+   "S3": true,
+   "S4a": true,
+   "S4b": true,
+   "S4c": true,
+   "S4d": true,
+   "coverage": true,
+   "W2_W5": true,
+   "W4": true,
+   "W6_projected_diag": true
+  },
+  "failed_gates": [],
+  "clears_bar": false,
+  "information_tier": "CONFIRMED only: needs tonight's dressed lineup and starting goalie"
+ },
+ "arms": {
+  "C0_shipped_baseline": {
+   "dev_ll": 0.672398,
+   "n": 7929
+  },
+  "C1_reference_G_inside_only": {
+   "dev_ll": 0.672199,
+   "gain": 0.0002,
+   "boot_ci_10k": [
+    -0.00028,
+    0.000681
+   ],
+   "fold_sd": 0.00077,
+   "fold_se": 0.00029,
+   "sigma": 0.69,
+   "n_pos_folds": 4,
+   "n_folds": 7,
+   "per_season_gain": {
+    "20112012": -0.000104,
+    "20122013": -0.000431,
+    "20132014": -0.001238,
+    "20142015": 0.000555,
+    "20152016": 0.000708,
+    "20162017": 0.000869,
+    "20172018": 0.000623
+   },
+   "late_dev_2015_18": {
+    "gain": 0.000732,
+    "boot_ci_10k": [
+     0.000168,
+     0.001301
+    ],
+    "n": 3731
+   },
+   "nested_pick": {
+    "20112012": {
+     "beta": 0,
+     "gamma": 180
+    },
+    "20122013": {
+     "beta": 0,
+     "gamma": 180
+    },
+    "20132014": {
+     "beta": 0,
+     "gamma": 180
+    },
+    "20142015": {
+     "beta": 0,
+     "gamma": 180
+    },
+    "20152016": {
+     "beta": 0,
+     "gamma": 120
+    },
+    "20162017": {
+     "beta": 0,
+     "gamma": 120
+    },
+    "20172018": {
+     "beta": 0,
+     "gamma": 180
+    }
+   },
+   "optimistic_best": {
+    "beta": 0,
+    "gamma": 180,
+    "ll": 0.672108,
+    "gain": 0.00029
+   }
+  },
+  "P_PRIMARY_L_and_G_inside": {
+   "dev_ll": 0.671535,
+   "gain": 0.000864,
+   "boot_ci_10k": [
+    -0.000146,
+    0.001864
+   ],
+   "fold_sd": 0.00119,
+   "fold_se": 0.00045,
+   "sigma": 1.91,
+   "n_pos_folds": 5,
+   "n_folds": 7,
+   "per_season_gain": {
+    "20112012": -0.000666,
+    "20122013": 0.000261,
+    "20132014": -0.000574,
+    "20142015": 0.001635,
+    "20152016": 0.001305,
+    "20162017": 0.002601,
+    "20172018": 0.001006
+   },
+   "late_dev_2015_18": {
+    "gain": 0.001631,
+    "boot_ci_10k": [
+     0.000294,
+     0.002962
+    ],
+    "n": 3731
+   },
+   "nested_pick": {
+    "20112012": {
+     "beta": 30,
+     "gamma": 180
+    },
+    "20122013": {
+     "beta": 30,
+     "gamma": 180
+    },
+    "20132014": {
+     "beta": 30,
+     "gamma": 180
+    },
+    "20142015": {
+     "beta": 30,
+     "gamma": 180
+    },
+    "20152016": {
+     "beta": 30,
+     "gamma": 120
+    },
+    "20162017": {
+     "beta": 30,
+     "gamma": 180
+    },
+    "20172018": {
+     "beta": 30,
+     "gamma": 180
+    }
+   },
+   "optimistic_best": {
+    "beta": 30,
+    "gamma": 180,
+    "ll": 0.671497,
+    "gain": 0.000901
+   },
+   "picks_at_grid_edge": [
+    "20112012",
+    "20122013",
+    "20132014",
+    "20142015",
+    "20162017",
+    "20172018"
+   ],
+   "cell_ll": {
+    "b0_g0": 0.672398,
+    "b0_g60": 0.672234,
+    "b0_g120": 0.672139,
+    "b0_g180": 0.672108,
+    "b15_g0": 0.671834,
+    "b15_g60": 0.671686,
+    "b15_g120": 0.671601,
+    "b15_g180": 0.671573,
+    "b30_g0": 0.67176,
+    "b30_g60": 0.671625,
+    "b30_g120": 0.671539,
+    "b30_g180": 0.671497,
+    "b45_g0": 0.671921,
+    "b45_g60": 0.671798,
+    "b45_g120": 0.67171,
+    "b45_g180": 0.671655,
+    "b60_g0": 0.672154,
+    "b60_g60": 0.672041,
+    "b60_g120": 0.671954,
+    "b60_g180": 0.671891
+   }
+  },
+  "A2_L_inside_only": {
+   "dev_ll": 0.67184,
+   "gain": 0.000559,
+   "boot_ci_10k": [
+    -0.000329,
+    0.00143
+   ],
+   "fold_sd": 0.00062,
+   "fold_se": 0.00023,
+   "sigma": 2.39,
+   "n_pos_folds": 6,
+   "n_folds": 7,
+   "per_season_gain": {
+    "20112012": -0.000681,
+    "20122013": 0.000524,
+    "20132014": 0.00051,
+    "20142015": 0.001135,
+    "20152016": 0.000715,
+    "20162017": 0.001173,
+    "20172018": 0.000438
+   },
+   "late_dev_2015_18": {
+    "gain": 0.000772,
+    "boot_ci_10k": [
+     -0.000318,
+     0.001853
+    ],
+    "n": 3731
+   },
+   "nested_pick": {
+    "20112012": {
+     "beta": 30,
+     "gamma": 0
+    },
+    "20122013": {
+     "beta": 30,
+     "gamma": 0
+    },
+    "20132014": {
+     "beta": 30,
+     "gamma": 0
+    },
+    "20142015": {
+     "beta": 30,
+     "gamma": 0
+    },
+    "20152016": {
+     "beta": 30,
+     "gamma": 0
+    },
+    "20162017": {
+     "beta": 15,
+     "gamma": 0
+    },
+    "20172018": {
+     "beta": 30,
+     "gamma": 0
+    }
+   },
+   "optimistic_best": {
+    "beta": 30,
+    "gamma": 0,
+    "ll": 0.67176,
+    "gain": 0.000639
+   }
+  },
+  "A3_G_inside_dL_beside": {
+   "dev_ll": 0.671934,
+   "gain": 0.000464,
+   "boot_ci_10k": [
+    -0.000242,
+    0.001183
+   ],
+   "fold_sd": 0.00079,
+   "fold_se": 0.0003,
+   "sigma": 1.55,
+   "n_pos_folds": 5,
+   "n_folds": 7,
+   "per_season_gain": {
+    "20112012": 0.000474,
+    "20122013": -0.000386,
+    "20132014": -0.001008,
+    "20142015": 0.000991,
+    "20152016": 0.001072,
+    "20162017": 0.000697,
+    "20172018": 0.000913
+   },
+   "late_dev_2015_18": {
+    "gain": 0.000894,
+    "boot_ci_10k": [
+     -8.5e-05,
+     0.001843
+    ],
+    "n": 3731
+   },
+   "nested_pick": {
+    "20112012": {
+     "beta": 0,
+     "gamma": 180
+    },
+    "20122013": {
+     "beta": 0,
+     "gamma": 180
+    },
+    "20132014": {
+     "beta": 0,
+     "gamma": 180
+    },
+    "20142015": {
+     "beta": 0,
+     "gamma": 180
+    },
+    "20152016": {
+     "beta": 0,
+     "gamma": 120
+    },
+    "20162017": {
+     "beta": 0,
+     "gamma": 120
+    },
+    "20172018": {
+     "beta": 0,
+     "gamma": 180
+    }
+   },
+   "optimistic_best": {
+    "beta": 0,
+    "gamma": 180,
+    "ll": 0.671844,
+    "gain": 0.000554
+   }
+  },
+  "D1_serving_projected_inputs_DIAGNOSTIC": {
+   "dev_ll": 0.672134,
+   "gain": 0.000265,
+   "boot_ci_10k": [
+    -0.000716,
+    0.001252
+   ],
+   "fold_sd": 0.00149,
+   "fold_se": 0.00056,
+   "sigma": 0.47,
+   "n_pos_folds": 5,
+   "n_folds": 7,
+   "per_season_gain": {
+    "20112012": -0.002669,
+    "20122013": -0.000884,
+    "20132014": 0.001041,
+    "20142015": 0.000533,
+    "20152016": 0.000665,
+    "20162017": 0.001803,
+    "20172018": 0.000685
+   },
+   "late_dev_2015_18": {
+    "gain": 0.001047,
+    "boot_ci_10k": [
+     -0.000256,
+     0.002338
+    ],
+    "n": 3731
+   },
+   "note": "never eligible: P's per-season cells and blend weights (fit on actual day-of inputs), tonight's feature from the previous-game lineup and gmar project_starters",
+   "selfcheck_actual_inputs_reproduce_P_max_abs_dp": 2.220446049250313e-16,
+   "projected_starter_correct_share": 0.666351,
+   "share_sides_projected_L_differs": 0.703935,
+   "corr_projected_vs_actual_Ltil": 0.966191
+  }
+ },
+ "secondary": {
+  "lineup_increment_P_vs_C1": {
+   "gain": 0.000664,
+   "boot_ci_10k": [
+    -0.000249,
+    0.001563
+   ],
+   "late_dev_2015_18": {
+    "gain": 0.000898,
+    "boot_ci_10k": [
+     -0.000298,
+     0.002106
+    ]
+   }
+  },
+  "inside_minus_beside_P_vs_A3": {
+   "gain": 0.000399,
+   "boot_ci_10k": [
+    -0.000341,
+    0.001152
+   ]
+  },
+  "P_minus_D1_value_of_confirmation": {
+   "loss": 0.000599,
+   "boot_ci_10k": [
+    6e-06,
+    0.00118
+   ],
+   "share_of_P_gain_kept_by_D1": 0.306457
+  }
+ },
+ "sanity": {
+  "S1": {
+   "ll": 0.672398,
+   "n": 7929,
+   "pass": true
+  },
+  "S2": {
+   "drop_xg_cost": 0.003031,
+   "expected": 0.00303,
+   "pass": true
+  },
+  "S3": {
+   "max_abs_diff_vs_run_elo_arr": 0.0,
+   "design_00_equals_shipped": true,
+   "pass": true
+  },
+  "S4a_dressed_vs_shift_charts": {
+   "match_share": 0.998879,
+   "n_sides": 18740,
+   "pass": true
+  },
+  "S4b_box_starter_vs_first_shot": {
+   "match_share": 0.999893,
+   "n_sides": 18742,
+   "pass": true
+  },
+  "S4c_C1_equals_gmar": {
+   "status": "compared per game vs bt_nhl_gmar_gl.gl_elo, gamma in GAMMAS",
+   "max_abs_diff_p": 0.0,
+   "pass": true,
+   "gmar_json_arm": "A1 GL new col1 (gamma nested)",
+   "gmar_A1_dev_ll": 0.672199,
+   "C1_dev_ll": 0.672199
+  },
+  "S4d_face_validity": {
+   "n_team_seasons": 211,
+   "corr_meanL_vs_GF_per_game": 0.769927,
+   "pass": true,
+   "top10_v_at_2016_01_01": [
+    {
+     "pid": 8475794,
+     "pos": "F",
+     "v_gsl_per_h": 2.859362,
+     "games": 393,
+     "T_h": 24.784753,
+     "name": "Tyler Seguin"
+    },
+    {
+     "pid": 8474141,
+     "pos": "F",
+     "v_gsl_per_h": 2.732971,
+     "games": 371,
+     "T_h": 25.770797,
+     "name": "Patrick Kane"
+    },
+    {
+     "pid": 8473994,
+     "pos": "F",
+     "v_gsl_per_h": 2.698861,
+     "games": 383,
+     "T_h": 25.905077,
+     "name": "Jamie Benn"
+    },
+    {
+     "pid": 8471214,
+     "pos": "F",
+     "v_gsl_per_h": 2.686042,
+     "games": 400,
+     "T_h": 26.388494,
+     "name": "Alex Ovechkin"
+    },
+    {
+     "pid": 8475765,
+     "pos": "F",
+     "v_gsl_per_h": 2.562907,
+     "games": 217,
+     "T_h": 21.833872,
+     "name": null
+    },
+    {
+     "pid": 8475791,
+     "pos": "F",
+     "v_gsl_per_h": 2.415578,
+     "games": 339,
+     "T_h": 24.593258,
+     "name": "Taylor Hall"
+    },
+    {
+     "pid": 8467875,
+     "pos": "F",
+     "v_gsl_per_h": 2.410566,
+     "games": 394,
+     "T_h": 24.194066,
+     "name": null
+    },
+    {
+     "pid": 8470794,
+     "pos": "F",
+     "v_gsl_per_h": 2.409554,
+     "games": 404,
+     "T_h": 26.170216,
+     "name": null
+    },
+    {
+     "pid": 8470041,
+     "pos": "F",
+     "v_gsl_per_h": 2.401494,
+     "games": 381,
+     "T_h": 22.340127,
+     "name": null
+    },
+    {
+     "pid": 8471215,
+     "pos": "F",
+     "v_gsl_per_h": 2.400735,
+     "games": 315,
+     "T_h": 24.345385,
+     "name": "Evgeni Malkin"
+    }
+   ]
+  }
+ },
+ "walk_forward": {
+  "W4": {
+   "mask_hash_all_arms": "d5512699fe7b19cb",
+   "no_nan_masked": true,
+   "fallback_sides_nhl_dressed": 0,
+   "fallback_players_without_history": 0,
+   "projected_empty_sides": 33,
+   "goalie_info": {
+    "source": "bt_nhl_gmar_gl.gl_elo(mode='new') [pick nhl_gmar shared module]",
+    "module_sha1_16": "a20d3a2b59f2ac10",
+    "prev_starter_fallback_sides": 0
+   },
+   "dressed_fb_unmatched_rows": 0
+  },
+  "W2_W5": {
+   "2012-02-01": {
+    "W2_pre_cutoff_bit_identical": true,
+    "W2_post_cutoff_changed": {
+     "Lh": true,
+     "La": true,
+     "Lth": true,
+     "Lta": true,
+     "dLh": true,
+     "dLa": true,
+     "Gh": true,
+     "Ga": true,
+     "elo_30_120": true,
+     "elo_0_120": true
+    },
+    "W5_through_cutoff_date_identical": true,
+    "n_pre": 1978,
+    "n_on_cutoff_date": 5
+   },
+   "2015-01-15": {
+    "W2_pre_cutoff_bit_identical": true,
+    "W2_post_cutoff_changed": {
+     "Lh": true,
+     "La": true,
+     "Lth": true,
+     "Lta": true,
+     "dLh": true,
+     "dLa": true,
+     "Gh": true,
+     "Ga": true,
+     "elo_30_120": true,
+     "elo_0_120": true
+    },
+    "W5_through_cutoff_date_identical": true,
+    "n_pre": 5054,
+    "n_on_cutoff_date": 10
+   },
+   "2017-12-01": {
+    "W2_pre_cutoff_bit_identical": true,
+    "W2_post_cutoff_changed": {
+     "Lh": true,
+     "La": true,
+     "Lth": true,
+     "Lta": true,
+     "dLh": true,
+     "dLa": true,
+     "Gh": true,
+     "Ga": true,
+     "elo_30_120": true,
+     "elo_0_120": true
+    },
+    "W5_through_cutoff_date_identical": true,
+    "n_pre": 8487,
+    "n_on_cutoff_date": 8
+   }
+  },
+  "W6_projected": {
+   "2012-02-01": {
+    "pre_cutoff_bit_identical": true,
+    "post_cutoff_changed": {
+     "Lph": true,
+     "Lpa": true,
+     "Gph": true,
+     "Gpa": true,
+     "p_proj": true
+    }
+   },
+   "2015-01-15": {
+    "pre_cutoff_bit_identical": true,
+    "post_cutoff_changed": {
+     "Lph": true,
+     "Lpa": true,
+     "Gph": true,
+     "Gpa": true,
+     "p_proj": true
+    }
+   },
+   "2017-12-01": {
+    "pre_cutoff_bit_identical": true,
+    "post_cutoff_changed": {
+     "Lph": true,
+     "Lpa": true,
+     "Gph": true,
+     "Gpa": true,
+     "p_proj": true
+    }
+   }
+  }
+ },
+ "lineup_diag": {
+  "fallback_sides": 0,
+  "fallback_players_without_history": 0,
+  "vbar_by_season": {
+   "20112012": {
+    "F": 1.803422,
+    "D": 0.998925
+   },
+   "20122013": {
+    "F": 1.76656,
+    "D": 0.998322
+   },
+   "20132014": {
+    "F": 1.755439,
+    "D": 0.997475
+   },
+   "20142015": {
+    "F": 1.749488,
+    "D": 1.028858
+   },
+   "20152016": {
+    "F": 1.75223,
+    "D": 1.045328
+   },
+   "20162017": {
+    "F": 1.748523,
+    "D": 1.049444
+   },
+   "20172018": {
+    "F": 1.764727,
+    "D": 1.066239
+   }
+  },
+  "entrant_pool_final": {
+   "F": {
+    "gsl_per_h": 1.46565,
+    "games": 14994
+   },
+   "D": {
+    "gsl_per_h": 0.909061,
+    "games": 7760
+   }
+  },
+  "pos_mean_final": {
+   "F": 1.747918,
+   "D": 1.043357
+  },
+  "sd_L_final": 0.366809
+ },
+ "seconds": 33.7
+}

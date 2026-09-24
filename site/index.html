@@ -50,6 +50,11 @@ header .wrap{display:flex;align-items:center;gap:20px;height:56px}
 nav.main{display:flex;gap:2px;min-width:0;overflow-x:auto;scrollbar-width:none}
 nav.main::-webkit-scrollbar{display:none}
 nav.main a{flex:none}
+/* a fade on whichever edge is clipped (siteNavFit sets .ovf/.ovl from the real overflow) */
+nav.main.ovf{-webkit-mask-image:linear-gradient(to right,#000 82%,transparent);mask-image:linear-gradient(to right,#000 82%,transparent)}
+nav.main.ovl{-webkit-mask-image:linear-gradient(to left,#000 82%,transparent);mask-image:linear-gradient(to left,#000 82%,transparent)}
+nav.main.ovf.ovl{-webkit-mask-image:linear-gradient(to right,transparent,#000 18%,#000 82%,transparent);
+  mask-image:linear-gradient(to right,transparent,#000 18%,#000 82%,transparent)}
 nav.main a{font-weight:600;font-size:13.5px;color:var(--muted);padding:7px 13px;border-radius:8px}
 nav.main a:hover{color:var(--ink);background:var(--panel)}
 nav.main a.on{color:var(--ink);background:var(--accent-2);box-shadow:inset 0 0 0 1px var(--line-2)}
@@ -76,6 +81,8 @@ h1.pt{font-family:var(--serif);font-size:26px;margin:2px 0 14px}
 .lg .n.early{border:1px dashed var(--line-2);border-radius:4px;padding:0 4px}
 .lg.down{border-style:dashed}
 .lg.down .n{color:var(--warn)}
+.lg.loading{cursor:progress}
+.lg.loading .n{animation:pulse 1.4s ease-in-out infinite}
 .filters{display:flex;gap:3px;margin-left:auto;background:var(--panel);border:1px solid var(--line);
   border-radius:10px;padding:3px}
 .filt{border:none;background:none;color:var(--muted);font-weight:600;font-size:13px;padding:6px 13px;
@@ -352,8 +359,7 @@ footer b{color:var(--muted)} footer a{color:var(--muted);text-decoration:underli
   .brand{font-size:18px}nav.main a{padding:6px 8px;font-size:12.5px}}
 @media(max-width:560px){.grid{grid-template-columns:1fr}.wrap{padding:0 12px}
   header .wrap{flex-wrap:wrap;height:auto;row-gap:4px;padding:8px 12px 6px}
-  nav.main{order:5;flex:1 0 100%;
-    -webkit-mask-image:linear-gradient(to right,#000 85%,transparent);mask-image:linear-gradient(to right,#000 85%,transparent)}
+  nav.main{order:5;flex:1 0 100%}
   nav.main a{padding:5px 8px;font-size:12px}
   .filters{margin-left:0}}
 /* NHL-specific styles. Everything else comes from the core tokens and
@@ -420,6 +426,28 @@ tbody tr.nhl-cut{border-bottom:2px dashed var(--accent)}
 .nfl-rgrid .v{font-size:14px}
 .nfl-bio{font-size:12.5px;color:var(--muted);margin:0 0 8px}
 .nfl-legend{font-size:11px;line-height:1.5;color:var(--faint);margin-top:8px}
+/* board: a window of several NFL weeks, one bar per week; bye teams */
+.nfl-wkbar{margin:22px 0 4px;padding:8px 0 6px;border-bottom:1px solid var(--line);font-size:13px}
+.nfl-wkbar b{font-family:var(--serif);font-size:16px}
+.nfl-bye{font-size:12px;margin:2px 0 6px}
+.nfl-wkbar .nfl-bye{margin:4px 0 0}
+/* projected wins: the simulation's spread beside the mean */
+.nfl-sd{font-size:.86em}
+/* standings: clinch marks and the playoff cut line */
+.nfl-cl{display:inline-block;font-family:var(--mono);font-size:10px;font-weight:700;line-height:1;padding:2px 4px;margin-left:4px;
+  border-radius:4px;border:1px solid var(--line-2);color:var(--muted);vertical-align:1px}
+.nfl-cl-z,.nfl-cl-x{color:var(--fav);border-color:var(--fav);background:var(--favbg)}
+.nfl-cl-e{color:var(--faint);border-style:dashed}
+tr.nfl-cut td{border-top:2px dashed var(--faint)}
+/* players: what a starter is worth, one bar per position */
+.nfl-pv .r{display:grid;grid-template-columns:130px 1fr 48px;align-items:center;gap:10px;padding:3px 0;font-size:12.5px}
+.nfl-pv .bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.nfl-pv .bar i{display:block;height:100%;background:var(--accent)}
+.nfl-pv .num{text-align:right}
+@media(max-width:560px){.nfl-pv .r{grid-template-columns:104px 1fr 42px}}
+/* board: the model card reference table */
+.nfl-kv td{vertical-align:top;font-size:12.5px}
+.nfl-kv td:first-child{white-space:nowrap;width:1%}
 </style>
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');}catch(e){document.documentElement.setAttribute('data-theme','dark');}</script>
 </head>
@@ -442,7 +470,7 @@ tbody tr.nhl-cut{border-bottom:2px dashed var(--accent)}
 <main><div class="wrap" id="view"><div class="loading">Loading predictions&hellip;</div></div></main>
 <footer><div class="wrap">
   <b>Research only &mdash; not betting advice.</b> Market-blind models that never see the odds; every
-  pick is locked before the game and graded in public on the <a href="#/record">track record</a>, split
+  pick is locked before the game and graded in public on the <a href="#/record" id="ft-rec">track record</a>, split
   by information tier.
   <b>MLB</b>: team Elo + xFIP &amp; SIERA starting-pitcher ratings + season-to-date bullpen FIP +
   per-plate-appearance TrueSkill on-base ratings + lineup isolated-power + lineup baserunning.
@@ -468,7 +496,7 @@ const SITE_LGS=["mlb","nfl","nhl"];
 const SITE_NAME={mlb:"MLB",nfl:"NFL",nhl:"NHL"};
 const siteStoredLeague=()=>{let v=null;try{v=localStorage.getItem("league");}catch(e){}
   return SITE_LGS.indexOf(v)>=0?v:"mlb";};
-const state = {board:null, db:null, nfl:null, nhl:null, failed:{},
+const state = {board:null, db:null, nfl:null, nhl:null, failed:{}, loading:{}, waitingFor:null, booted:false,
   league:siteStoredLeague(), range:"today", nflRange:"year", nhlRange:"year",
   posKey:null, posSort:"r", posMin:0, nhlSort:"net", live:{}, updated:null,
   liveNfl:{}, liveNhl:{}, liveAt:{}};
@@ -501,13 +529,23 @@ const tier = p => p>=0.62?"strong":(p>=0.555?"lean":"toss");
 const POL_LEAN_MAX=0.55;
 const infoTier = g => g.lineup_source==="official"?"CONFIRMED"
   :(g.pitcher_known?"PROJECTED":"EARLY");
-const NHL_CT=["elo", "rest", "b2b", "xg"];
+const NHL_CT=["home", "elo", "rest", "b2b", "xg"];
 const callOf = pp => pp<=POL_LEAN_MAX?"LEAN":"PICK";
 const norm = s => (s||"").toLowerCase().normalize("NFKD").replace(/[^a-z0-9 ]+/g," ").replace(/\s+/g," ").trim();
 const LOC="en-US", TZ="America/New_York";   // all clock/day display is US Eastern
 // Calendar arithmetic on "YYYY-MM-DD" at noon UTC: a local-midnight Date read back
 // through toISOString() returned the previous day for every viewer east of UTC.
 const addDays=(iso,n)=>{const d=new Date(iso+"T12:00:00Z");d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10);};
+/* Every "which day is it" on the site is the US Eastern calendar day, whatever
+   the visitor's clock says: a game's tier, the board windows and the live
+   look-back must not depend on where the reader is. Built from the parts, not
+   from a locale's date string ("en-CA" is YYYY-MM-DD only by convention). */
+const SITE_ET_FMT=new Intl.DateTimeFormat("en-US",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit",
+  hour:"2-digit",minute:"2-digit",hourCycle:"h23"});
+function siteEtParts(ms){const o={};
+  SITE_ET_FMT.formatToParts(new Date(ms==null?Date.now():ms)).forEach(p=>{o[p.type]=p.value;});
+  return o;}
+const siteEtDate=ms=>{const o=siteEtParts(ms); return `${o.year}-${o.month}-${o.day}`;};
 /* Anything from a URL, a payload or a feed that lands in innerHTML as text. */
 const siteEsc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmtTime=u=>new Date(u).toLocaleTimeString(LOC,{hour:"numeric",minute:"2-digit",timeZone:TZ})+" ET";
@@ -523,7 +561,8 @@ async function pollLive(force){
   // stamp; polling it under an NFL/NHL page made the header claim "live" data.
   if(state.league!=="mlb") return;
   try{
-    const t=new Date(), dd=n=>{const x=new Date(t);x.setDate(x.getDate()+n);return x.toISOString().slice(0,10);};
+    // yesterday..tomorrow on the US Eastern calendar (MLB's official game dates)
+    const today=nflToday(), dd=n=>addDays(today,n);
     const r=await fetch(`${SAPI}/schedule?sportId=1&startDate=${dd(-1)}&endDate=${dd(1)}&hydrate=linescore`);
     const d=await r.json(); const m={};
     for(const day of d.dates||[]) for(const g of day.games||[]){
@@ -560,14 +599,29 @@ function applyLive(){
   siteFreshness();
 }
 
-const nflToday=()=>new Date().toLocaleDateString("en-CA",{timeZone:TZ});
-/* Which number an NFL game shows, and in which information tier.
-   `near`/`hp` are unchanged: inside a week (and for played games) the live
-   model's ph, further out the season simulation's pmc - the number shown is
-   the number the ledger freezes. `tier` is the policy tier (siteTier): the
-   stamp the serve wrote when the number was locked, so a stale forecast is
-   not promoted to PROJECTED just because its date came near. */
-function nflProb(g){const near=g.d<=addDays(nflToday(),7);
+const nflToday=()=>siteEtDate();
+/* The policy's "inside a week of kickoff": phase0/nfl_ph_freeze.TIER_WINDOW_DAYS
+   x 24 h, read from the serve's model card when it ships the number. */
+function siteNflWindowDays(){
+  const s=state.nfl&&state.nfl.model_card&&state.nfl.model_card.serve, d=s&&+s.tier_window_days;
+  return d>0?d:7;}
+/* Is the game inside that window NOW? Kickoff (start_utc) minus the current
+   instant - the same clock the freeze stamps tiers with, and an absolute one,
+   so it reads the same for every visitor. A row without start_utc falls back to
+   the US Eastern date rule. A played or started game is always inside. */
+function nflNear(g){
+  const st=g&&g.start_utc?Date.parse(g.start_utc):NaN;
+  if(Number.isFinite(st)) return st-Date.now()<=siteNflWindowDays()*864e5;
+  return !!(g&&g.d)&&g.d<=addDays(nflToday(),siteNflWindowDays());
+}
+/* Which number an NFL game shows, and in which information tier: inside the
+   window (and for played games) the live model's ph, further out the season
+   simulation's pmc. `tier` is the policy tier (siteTier): the stamp the serve
+   wrote when the number was locked, so a stale forecast is not promoted to
+   PROJECTED just because its date came near. A PROJECTED stamp is always
+   `near` (it was served inside the window, and now is later), so a PROJECTED
+   card never shows the simulation's number. */
+function nflProb(g){const near=nflNear(g);
   return {near, hp:(!near&&g.pmc!=null)?g.pmc:g.ph, tier:siteTier("nfl",g)};}
 
 /* ---------- shared: information tier for any league's row ----------
@@ -586,12 +640,11 @@ function siteTier(lg,g){
   const at=g.frozen_at||g.rec||null;
   // phase0/nfl_ph_freeze.tier_for: kickoff minus lock time against 7 x 24 h
   // when both clocks exist, else the US Eastern date rule
-  const st=at&&g.start_utc?Date.parse(g.start_utc):NaN, sv=at?Date.parse(at):NaN;
-  if(Number.isFinite(st)&&Number.isFinite(sv)) return st-sv<=7*864e5?"PROJECTED":"EARLY";
-  if(at&&g.d&&Number.isFinite(sv)){const served=new Date(sv).toLocaleDateString("en-CA",{timeZone:TZ});
-    return g.d<=addDays(served,7)?"PROJECTED":"EARLY";}
+  const st=at&&g.start_utc?Date.parse(g.start_utc):NaN, sv=at?Date.parse(at):NaN, W=siteNflWindowDays();
+  if(Number.isFinite(st)&&Number.isFinite(sv)) return st-sv<=W*864e5?"PROJECTED":"EARLY";
+  if(at&&g.d&&Number.isFinite(sv)) return g.d<=addDays(siteEtDate(sv),W)?"PROJECTED":"EARLY";
   if(g.hs!=null&&g.as!=null) return "EARLY";
-  return g.d<=addDays(nflToday(),7)?"PROJECTED":"EARLY";
+  return nflNear(g)?"PROJECTED":"EARLY";
 }
 /* The MLB-standard pick pill for any league (gcard's rule): EARLY is a
    SCHEDULED game with no call; otherwise PICK/LEAN on the 55/45 band, green
@@ -632,16 +685,15 @@ function siteEspnIngest(lg,data){
     const h=C.map[H.team.abbreviation]||H.team.abbreviation;
     const a=C.map[A.team.abbreviation]||A.team.abbreviation;
     const st=ev.status||{}, tp=st.type||{};
-    const d=ev.date?new Date(ev.date).toLocaleDateString("en-CA",{timeZone:TZ}):"";
+    const t=ev.date?Date.parse(ev.date):NaN, d=Number.isFinite(t)?siteEtDate(t):"";
     out[`${a}_${h}|${d}`]={st:tp.state, as:A.score, hs:H.score, d, a, h,
       det:tp.state==="in"?(tp.shortDetail||`${C.per}${st.period||""} ${st.displayClock||""}`)
          :tp.state==="post"?(tp.shortDetail||"Final").replace(/^FINAL/i,"Final"):""};
   });
   state.liveAt[lg]=new Date();
 }
-// minutes since midnight, US Eastern
-const siteNowEtMin=()=>{const s=new Date().toLocaleTimeString("en-GB",{hour12:false,timeZone:TZ});
-  return (+s.slice(0,2))*60+(+s.slice(3,5));};
+// minutes since midnight, US Eastern (h23: midnight is 0, never "24")
+const siteNowEtMin=()=>{const o=siteEtParts(); return (+o.hour%24)*60+(+o.minute);};
 /* Rows the live layer should resolve: unscored games that have started (or
    finished) inside the look-back window and are not already final in the cache. */
 function siteLiveNeeded(lg){
@@ -736,23 +788,59 @@ function siteApplyLive(){
   });
 }
 
+/* The header's accuracy line: ONE meaning in every league. The model's locked
+   test-set log loss against the same market-free comparator, a plain TEAM Elo
+   scored on the same held-out games. It used to read "coin flip" on MLB, the
+   market's "closing line" on NFL and a "base Elo" from a different harness on
+   NHL, so the same slot changed meaning with the league. The closing line stays
+   on the NFL board's accuracy ladder, where it is labelled as the market.
+   The comparator must be scored on the model's OWN holdout: NFL's
+   ratings_model.elo_ll (0.638) is team Elo on TEST 2022-2025 only, n=1,139,
+   so pairing it with the 2016-2025, n=2,761 log loss was false. Only a
+   model_card.elo_log_loss (same holdout) is used; without it the line falls
+   back to the labelled coin flip.
+   Policy rule 3: realized accuracy is NEVER a pooled headline -
+   board.accuracy.realized_2026 mixes CONFIRMED, PROJECTED and EARLY rows, so it
+   is not rendered here; #/record reports it per tier. */
+const siteNum=v=>typeof v==="number"&&Number.isFinite(v)?v:null;
+function siteAccLine(lg){
+  let ll=null, elo=null, span="", extra="", close=null;
+  if(lg==="mlb"){const a=state.board&&state.board.accuracy; if(!a) return null;
+    ll=siteNum(a.log_loss); elo=siteNum(a.elo_log_loss);
+    span=a.holdout?String(a.holdout):"";}
+  else if(lg==="nfl"){const mc=state.nfl&&state.nfl.model_card; if(!mc) return null;
+    ll=siteNum(mc.test_log_loss);
+    elo=siteNum(mc.elo_log_loss);      // same holdout only; never ratings_model.elo_ll (TEST 2022-2025)
+    close=siteNum(mc.close_log_loss);  // the NFL board's ladder prints it, labelled as the market
+    span=mc.holdout?String(mc.holdout):"";}
+  else if(lg==="nhl"){const mc=state.nhl&&state.nhl.model_card; if(!mc) return null;
+    ll=siteNum(mc.test_ll);
+    // test_delta_vs_elo (and its CI) is measured against the bare-Elo baseline
+    // of the SAME harness, so ll+delta IS that baseline. Payloads before
+    // 2026-09-24 shipped a baseline_elo_test from another report (0.66918
+    // against a 0.66953 delta base), which made the card's numbers not add up.
+    const dl=siteNum(mc.test_delta_vs_elo);
+    elo=ll!=null&&dl!=null?ll+dl:siteNum(mc.baseline_elo_test);
+    span=mc.test_seasons?String(mc.test_seasons)+(mc.test_n?", n="+Number(mc.test_n).toLocaleString(LOC):""):"";
+    const ci=Array.isArray(mc.test_ci)&&mc.test_ci.length===2?mc.test_ci.map(siteNum):null;
+    const r4=x=>(Math.sign(x)*Math.round(Math.abs(x)*1e4+1e-9)/1e4).toFixed(4);   // 0.00535 -> "0.0054", as the card rounds it
+    if(dl!=null&&ci&&ci[0]!=null&&ci[1]!=null) extra=` The feature model ${dl>=0?"beats":"trails"} bare Elo by`
+      +` ${r4(Math.abs(dl))} (95% CI ${r4(ci[0])} to ${r4(ci[1])}).`;
+    if(mc.baseline_def) extra+=` Elo baseline: ${String(mc.baseline_def)}.`;}
+  if(ll==null) return null;
+  const cmp=elo!=null?{k:"team Elo",v:elo}:{k:"coin flip",v:Math.log(2)};
+  return {ll, cmp, title:`${SITE_NAME[lg]} model log loss on its locked test set${span?` (${span})`:""}, lower is better,`
+    +` compared with ${elo!=null?"a plain team-Elo model scored on the same games":"a coin flip (this build has no team-Elo score on these same games)"}.`
+    +`${extra}${elo!=null?` Coin flip = ${Math.log(2).toFixed(3)}.`:""} Market-free: the odds are never an input.`
+    // only a board that actually prints the closing line may point to it
+    +(close!=null?` The closing-line benchmark is shown on the board, labelled as the market.`:"")};
+}
 function updAcc(){
   const el=$("#acc"); if(!el) return;
-  if(state.league==="nfl"&&state.nfl&&state.nfl.model_card){
-    const mc=state.nfl.model_card;
-    el.innerHTML=`<b>${mc.test_log_loss.toFixed(3)}</b> log loss (NFL)<br>closing line ${mc.close_log_loss.toFixed(3)}`;
-  }else if(state.league==="nhl"&&state.nhl&&state.nhl.model_card){
-    const mc=state.nhl.model_card;
-    el.innerHTML=`<b>${mc.test_ll.toFixed(3)}</b> log loss (NHL)<br>base Elo ${mc.baseline_elo_test.toFixed(3)}`;
-  }else if(state.league==="mlb"&&state.board&&state.board.accuracy){
-    /* Policy rule 3: realized accuracy is NEVER shown as one pooled headline.
-       board.accuracy.realized_2026 mixes CONFIRMED, PROJECTED and EARLY rows
-       and would sit in the persistent header on every page, so it is not
-       rendered here - #/record reports it per tier. The header keeps the
-       locked holdout number, which is a single, well-defined thing. */
-    const a=state.board.accuracy;
-    el.innerHTML=`<b>${a.log_loss.toFixed(3)}</b> log loss<br>coin flip ${a.coinflip.toFixed(3)}`;
-  }else el.innerHTML="";
+  const a=siteAccLine(state.league);
+  if(!a){el.innerHTML=""; el.removeAttribute("title"); return;}
+  el.innerHTML=`<b>${a.ll.toFixed(3)}</b> ${SITE_NAME[state.league]} log loss<br>${a.cmp.k} ${a.cmp.v.toFixed(3)}`;
+  el.setAttribute("title",a.title);
 }
 
 /* ---------- FRESHNESS: how old is the data on screen, per league ----------
@@ -835,44 +923,91 @@ async function siteFetch(f){
   if(!r.ok) throw new Error(f+" HTTP "+r.status);
   return r.json();
 }
-const SITE_FILE={mlb:["board.json","db.json"],nfl:["nfl.json"],nhl:["nhl.json"]};
+/* ---------- BOOT: each league draws as soon as ITS data is in ----------
+   The first paint used to wait for all four payloads (about 3.3 MB): an MLB
+   reader downloaded the NFL and NHL files, an NHL reader MLB's player database,
+   before anything was drawn. Now the page draws the league it opens on once
+   that league's files are in (plus the small board.json, which carries the
+   rails' placeholders and the record's units); the other leagues fill in
+   behind it. Until then their rail buttons say "loading", and opening one
+   shows a loading line that turns into the page when the data lands - never
+   "unavailable" for a file that is still on its way. A legacy link naming a
+   team or a player with no league waits for everything: resolving it needs
+   every league's ids. */
+const SITE_LG_FILES={mlb:["board","db"],nfl:["nfl"],nhl:["nhl"]};
+const SITE_FILES=["board","db","nfl","nhl"];
+const siteFileDone={};
+function siteSetFile(k,v){ if(k==="board") state.board=v; else if(k==="db") state.db=v; else state[k]=v; }
+const siteLgOfFile=k=>(k==="board"||k==="db")?"mlb":k;
+function siteLgSettled(lg){
+  state.loading[lg]=false;
+  state.failed[lg]=lg==="mlb"?!(state.board&&state.db):!state[lg];
+  // In season the boards open on the coming week in date order, as MLB opens
+  // on today; "Year" (every game, and NHL newest-first) is the offseason view.
+  if(lg==="nfl"&&state.nfl&&state.nfl.status==="season"&&state.nflRange==="year") state.nflRange="week";
+  if(lg==="nhl"&&state.nhl&&state.nhl.status==="season"&&state.nhlRange==="year") state.nhlRange="week";
+}
+function siteApplyFile(k,v){
+  siteSetFile(k,v); siteFileDone[k]=true;
+  const lg=siteLgOfFile(k);
+  if(!SITE_LG_FILES[lg].every(f=>siteFileDone[f])) return;
+  siteLgSettled(lg);
+  if(state.booted) siteLeagueIn(lg);
+}
+/* A league's data landed after the first paint: refresh the chrome, draw the
+   page that was waiting for it, else update its rail button in place (a full
+   redraw would reset the reader's scroll and inputs). */
+function siteLeagueIn(lg){
+  siteLeaguesTidy(); updAcc(); siteNavHrefs(); siteFreshness(); siteFooter();
+  if(state.waitingFor===lg){state.waitingFor=null; route(true);}
+  else siteRailPatch(lg);
+  if(lg===state.league) sitePollNow();
+}
+/* The league the first paint draws, from the URL alone; null = wait for all. */
+function siteBootLeague(P){
+  if(P.v==="player"&&P.arg) return null;              // player ids resolve across leagues
+  if(P.v==="team"&&P.arg&&!P.lg) return null;          // a bare team code may be any league's
+  return siteLeagueOfId(P.v,P.arg)||P.lg||state.league;
+}
 async function siteReload(lg){
-  try{
-    if(lg==="mlb"){const [b,db]=await Promise.all(SITE_FILE.mlb.map(siteFetch)); state.board=b; state.db=db;}
-    else state[lg]=await siteFetch(SITE_FILE[lg][0]);
-    state.failed[lg]=false;
-  }catch(e){state.failed[lg]=true;}
+  state.loading[lg]=true;
+  const fs=SITE_LG_FILES[lg];
+  const got=await Promise.allSettled(fs.map(f=>siteFetch(f+".json")));
+  // a retry never replaces a good file with a failed fetch
+  fs.forEach((f,i)=>{if(got[i].status==="fulfilled") siteSetFile(f,got[i].value);});
+  siteLgSettled(lg);
   siteLeaguesTidy(); updAcc(); siteNavHrefs(); siteFreshness(); siteFooter(); route(true);
 }
 function siteUnavailable(lg,v){
+  const rec=v==="record";
+  const wire=()=>rec
+    ?$("#view").querySelectorAll(".rail [data-lg]").forEach(x=>x.onclick=()=>{location.hash=siteHref(x.dataset.lg,"record");})
+    :siteWireRail();
+  const rail=`<div class="controls"><div class="rail">${siteRail(lg,rec&&typeof recBadge==="function"?recBadge:undefined)}</div></div>`;
+  if(state.loading[lg]){           // still on its way: say so, and draw the page when it lands
+    state.waitingFor=lg;
+    $("#view").innerHTML=`${rail}<div class="loading">Loading ${SITE_NAME[lg]} data&hellip;</div>`;
+    wire(); return;
+  }
   const f=state.failed[lg];
-  $("#view").innerHTML=`<div class="controls"><div class="rail">${siteRail(lg)}</div></div>
+  $("#view").innerHTML=`${rail}
     <div class="empty">${SITE_NAME[lg]} data ${f?"could not be loaded":"is being rebuilt &mdash; this build is incomplete"}.<br>
       <span class="sub">Nothing is drawn rather than a half-built page.</span>
       <div style="margin-top:14px"><button class="filt on" id="siteretry">Retry</button>
       ${lg!=="mlb"&&siteOk("mlb")?` &nbsp;<a class="tl" href="${siteHref("mlb",v&&SITE_LIST.indexOf(v)>=0?v:"")}">View MLB instead</a>`:""}</div></div>`;
-  siteWireRail();
+  wire();
   const b=$("#siteretry"); if(b) b.onclick=()=>{b.disabled=true; b.textContent="Loading..."; siteReload(lg);};
 }
 
 async function boot(){
-  const got=await Promise.allSettled([siteFetch("board.json"),siteFetch("db.json"),
-    siteFetch("nfl.json"),siteFetch("nhl.json")]);
-  const val=i=>got[i].status==="fulfilled"?got[i].value:null;
-  state.board=val(0); state.db=val(1); state.nfl=val(2); state.nhl=val(3);
-  state.failed={mlb:!state.board||!state.db, nfl:!state.nfl, nhl:!state.nhl};
-  if(!siteOk("mlb")&&!siteOk("nfl")&&!siteOk("nhl")){
-    $("#view").innerHTML=`<div class="empty">The prediction data could not be loaded.<br>
-      <span class="sub">A network hiccup or a deploy in progress &mdash; nothing is wrong with your browser.</span>
-      <div style="margin-top:14px"><button class="filt on" onclick="location.reload()">Retry</button></div></div>`;
-    return;
-  }
-  siteLeaguesTidy();
-  // In season the boards open on the coming week in date order, as MLB opens
-  // on today; "Year" (every game, and NHL newest-first) is the offseason view.
-  if(state.nfl&&state.nfl.status==="season"&&state.nflRange==="year") state.nflRange="week";
-  if(state.nhl&&state.nhl.status==="season"&&state.nhlRange==="year") state.nhlRange="week";
-  updAcc(); siteNavHrefs();
+  SITE_LGS.forEach(l=>{state.loading[l]=true;});
+  const first=siteBootLeague(siteParse(location.hash));
+  const got={};
+  SITE_FILES.forEach(k=>{got[k]=siteFetch(k+".json").then(v=>v,()=>null).then(v=>siteApplyFile(k,v));});
+  const need=first?["board",...SITE_LG_FILES[first].filter(f=>f!=="board")]:SITE_FILES;
+  await Promise.all(need.map(k=>got[k]));
+  state.booted=true;
+  siteLeaguesTidy(); updAcc(); siteNavHrefs();
   route(true);
   siteFreshness(); siteFooter();
   sitePollNow();   // first poll always runs, even if the tab loads hidden
@@ -880,6 +1015,12 @@ async function boot(){
   document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) sitePollNow(); });
   // Re-apply cached NFL/NHL scores after every render of the view.
   try{new MutationObserver(()=>siteApplyLive()).observe($("#view"),{childList:true});}catch(e){}
+  await Promise.all(SITE_FILES.map(k=>got[k]));
+  if(!siteOk("mlb")&&!siteOk("nfl")&&!siteOk("nhl")){
+    $("#view").innerHTML=`<div class="empty">The prediction data could not be loaded.<br>
+      <span class="sub">A network hiccup or a deploy in progress &mdash; nothing is wrong with your browser.</span>
+      <div style="margin-top:14px"><button class="filt on" onclick="location.reload()">Retry</button></div></div>`;
+  }
 }
 /* board.json lists every league the MLB builder knows, with NHL/NFL as
    inactive placeholders. The live NHL button is drawn from nhl.json, so the
@@ -892,6 +1033,19 @@ function siteLeaguesTidy(){
     .map((l,i)=>[l,i]).sort((x,y)=>(rank(x[0].code)-rank(y[0].code))||(x[1]-y[1])).map(x=>x[0]);
 }
 window.addEventListener("hashchange", ()=>route(true));
+window.addEventListener("resize", ()=>siteNavFit(true));
+{const nv=document.querySelector("nav.main");
+  if(nv&&nv.addEventListener) nv.addEventListener("scroll",()=>siteNavFit(),{passive:true});}
+/* A link inside a clickable row or card (a team link in a schedule row): the
+   click ran the row's own navigation first and then the link's, leaving a
+   history entry the reader never opened, so Back went to a page they had not
+   seen. The link wins; the row's handler stands down for this one click. */
+document.addEventListener("click",e=>{
+  const t=e.target, a=t&&t.closest?t.closest("a[href]"):null; if(!a) return;
+  for(let p=a.parentElement;p&&p!==document.body;p=p.parentElement){
+    if(typeof p.onclick==="function"){const h=p.onclick, el=p; el.onclick=null; setTimeout(()=>{el.onclick=h;},0);}
+  }
+},true);
 
 /* ---------- ROUTER ----------
    URLs carry the league: #/nfl/team/BUF, #/nhl/player/8474600, #/mlb/standings,
@@ -952,6 +1106,7 @@ function route(fromUrl){
   const P=siteParse(location.hash);
   let v=P.v, arg=P.arg, lg;
   window.scrollTo(0,0);
+  state.waitingFor=null;          // a page still waiting on a payload is replaced by this route
   const own=siteLeagueOfId(v,arg);
   if(fromUrl===true){
     // the URL decides: a decisive id first, then an explicit prefix, then a
@@ -980,9 +1135,11 @@ function route(fromUrl){
   siteTitle(lg,v);
 }
 function siteDispatch(lg,v,arg){
+  const nav=()=>setNav(v===""?"board":(SITE_LIST.indexOf(v)>=0||v==="season"?v:""));
+  if(state.loading[lg]){nav();return siteUnavailable(lg,v);}      // on its way: wait, then draw
   const needs=lg==="mlb"?(v===""?!!state.board:!!(state.board&&state.db)):siteOk(lg);
-  if(!needs&&v!=="record"){setNav(v===""?"board":(SITE_LIST.indexOf(v)>=0?v:""));return siteUnavailable(lg,v);}
-  if(v==="season"){setNav("season");return nflSeason(arg);}
+  if(!needs&&v!=="record"){nav();return siteUnavailable(lg,v);}
+  if(v==="season"){setNav("season");nflSeason(arg);return siteSeasonRail();}
   if(v==="game"&&arg){setNav("");
     if(lg==="nhl") return nhlGamePage(arg.replace(/^nhl-/,""));
     if(lg==="nfl") return nflGamePage(arg);
@@ -1020,12 +1177,30 @@ function siteTeamRoute(lg,code){
   if(siteHasTeam(lg,code)) return teamPage(code);
   const c=SITE_LGS.filter(l=>l!==lg&&siteHasTeam(l,code));
   if(!c.length) return siteNotFound(lg,"team",code);
-  const nm=l=>l==="mlb"?state.db.teams[code].name:(l==="nfl"?state.nfl.teams[code].name:nhlCity(code));
+  const nm=l=>siteEsc(siteTeamName(l,code));
   const C=siteEsc(code);   // a team code is only printed once it exists in a league, but never raw
   $("#view").innerHTML=`<div class="empty">${C} is not an ${SITE_NAME[lg]} team. Did you mean
     ${c.map(l=>`<a class="tl" href="${siteHref(l,"team",code)}">${SITE_NAME[l]} ${C} &middot; ${nm(l)}</a>`).join(" or ")}?</div>`;
 }
-function setNav(v){document.querySelectorAll("nav.main a").forEach(a=>a.classList.toggle("on",a.dataset.v===v));}
+/* A team's full name, from its league's payload ("Colorado Avalanche", "Buffalo
+   Bills", "Tampa Bay Rays"); the NHL city map only for a payload without names. */
+function siteTeamName(lg,code){
+  const T=lg==="mlb"?(state.db&&state.db.teams):(state[lg]&&state[lg].teams), t=T&&T[code];
+  if(t&&t.name) return String(t.name);
+  return lg==="nhl"?nhlCity(code):String(code);
+}
+/* The Season page (nfl.js) is a top-level NFL view like the board, so it gets
+   the league rail the board has - drawn here unless the page drew its own. A
+   click on another league opens that league's board; NFL is where you are. */
+function siteSeasonRail(){
+  const V=$("#view"); if(!V||!V.insertAdjacentHTML||V.querySelector(".rail")) return;
+  V.insertAdjacentHTML("afterbegin",`<div class="controls"><div class="rail">${siteRail("nfl")}</div></div>`);
+  V.querySelectorAll(".rail [data-lg]").forEach(x=>x.onclick=()=>{
+    if(x.dataset.lg==="nfl"&&siteOk("nfl")) return;
+    setLeague(x.dataset.lg); board();});
+}
+function setNav(v){document.querySelectorAll("nav.main a").forEach(a=>a.classList.toggle("on",a.dataset.v===v));
+  siteNavFit(true);}
 /* Nav links follow the current league so middle-click / copy-link are exact. */
 function siteNavHrefs(){
   const lg=state.league;
@@ -1035,6 +1210,22 @@ function siteNavHrefs(){
   // the Season view is NFL-only
   const ns=document.getElementById("navseason");
   if(ns) ns.style.display=(lg==="nfl"&&siteOk("nfl")&&state.nfl.schedule&&state.nfl.schedule.length)?"":"none";
+  const fr=document.getElementById("ft-rec"); if(fr&&fr.setAttribute) fr.setAttribute("href",siteHref(lg,"record"));
+  siteNavFit();
+}
+/* The nav scrolls sideways when it does not fit (phones, and 560-700px windows,
+   where NFL's extra Season item pushes Players off the edge). A fade on each
+   clipped edge says there is more, and the current section is scrolled into
+   view, so the highlighted item is never the one hidden. */
+function siteNavFit(reveal){
+  const nav=document.querySelector("nav.main");
+  if(!nav||typeof nav.scrollWidth!=="number"||!nav.classList||!nav.getBoundingClientRect) return;
+  const over=nav.scrollWidth>nav.clientWidth+1;
+  if(reveal&&over){const a=nav.querySelector("a.on");
+    if(a&&a.offsetParent!==null){const r=a.getBoundingClientRect(), n=nav.getBoundingClientRect();
+      if(r.left<n.left||r.right>n.right) nav.scrollLeft+=(r.left-n.left)-(n.width-r.width)/2;}}
+  nav.classList.toggle("ovf",over&&nav.scrollLeft+nav.clientWidth<nav.scrollWidth-2);
+  nav.classList.toggle("ovl",over&&nav.scrollLeft>2);
 }
 function siteTitle(lg,v){
   const L=SITE_NAME[lg]||"";
@@ -1046,8 +1237,7 @@ function siteTitle(lg,v){
     // heading without its trailing subtitle ("Roman Josi", not "Roman Josi D ...")
     let x="";
     const P=siteParse(location.hash);
-    if(v==="team"&&P.arg&&siteHasTeam(lg,P.arg))
-      x=lg==="mlb"?state.db.teams[P.arg].name:(lg==="nfl"?state.nfl.teams[P.arg].name:nhlCity(P.arg));
+    if(v==="team"&&P.arg&&siteHasTeam(lg,P.arg)) x=siteTeamName(lg,P.arg);
     else{const h=document.querySelector("#view h1, #view .gh .mt, #view .phead .nm, #view .thead .code");
       if(h){const c=h.cloneNode(true), last=c.lastElementChild;
         if(last&&last.classList.contains("sub")&&!(last.nextSibling&&last.nextSibling.textContent.trim())) last.remove();
@@ -1080,15 +1270,39 @@ function siteRailBadge(lg){
   return {txt:siteSeasonLbl(lg), title:`${s} season &#183; ${c.picks} pick${c.picks===1?"":"s"} &#183; ${c.games} ${c.what}`
     +(lg==="nhl"?" (every NHL forecast is EARLY: team ratings only, not a pick)":"")};
 }
+/* One rail button's class, tooltip and content. A league whose payload is still
+   on its way says "loading" (never "unavailable" for a file not yet arrived). */
+function siteRailBtn(lg,active,badge){
+  const on=lg===active?" on":"", N=SITE_NAME[lg];
+  if(!siteOk(lg)){
+    if(state.loading[lg]) return {cls:"lg loading"+on, title:`${N} data is loading`,
+      inner:`<span>${N}</span><span class="n">&hellip;</span>`};
+    return {cls:"lg down"+on, title:`${N} data is unavailable - click to retry`,
+      inner:`<span>${N}</span><span class="n">&mdash;</span>`};}
+  const x=(badge||siteRailBadge)(lg)||{};
+  return {cls:"lg"+on, title:x.title||"",
+    inner:`<span>${N}</span>${x.txt!=null&&x.txt!==""?`<span class="n${x.cls?" "+x.cls:""}">${x.txt}</span>`:""}`};
+}
+let siteRailBadgeFn=null;          // the badge rule of the rail on screen (the record page counts graded picks)
 function siteRail(active,badge){
   const b=state.board;
-  const btn=lg=>{
-    if(!siteOk(lg)) return `<button class="lg down ${lg===active?"on":""}" data-lg="${lg}" title="${SITE_NAME[lg]} data is unavailable - click to retry"><span>${SITE_NAME[lg]}</span><span class="n">&mdash;</span></button>`;
-    const x=(badge||siteRailBadge)(lg)||{};
-    return `<button class="lg ${lg===active?"on":""}" data-lg="${lg}" title="${x.title||""}"><span>${SITE_NAME[lg]}</span>${x.txt!=null&&x.txt!==""?`<span class="n${x.cls?" "+x.cls:""}">${x.txt}</span>`:""}</button>`;};
+  siteRailBadgeFn=badge||null;
+  const btn=lg=>{const x=siteRailBtn(lg,active,badge);
+    return `<button class="${x.cls}" data-lg="${lg}" title="${x.title}">${x.inner}</button>`;};
   const soon=((b&&b.leagues)||[]).filter(l=>SITE_LGS.indexOf(l.code)<0)
     .map(l=>`<button class="lg" disabled><span>${l.name}</span><span class="soon">soon</span></button>`);
   return SITE_LGS.map(btn).join("")+soon.join("");
+}
+/* A league's data arrived after the page was drawn: update its rail button in
+   place - the element, and the click handler the page wired onto it, stay. */
+function siteRailPatch(lg){
+  const V=$("#view"); if(!V||!V.querySelectorAll) return;
+  V.querySelectorAll(`.rail [data-lg="${lg}"]`).forEach(el=>{
+    const x=siteRailBtn(lg,el.classList.contains("on")?lg:null,siteRailBadgeFn);
+    // the tooltip is markup-escaped text (entities), as siteRail writes it:
+    // parse it the same way instead of assigning the raw string
+    const tmp=document.createElement("div"); tmp.innerHTML=`<i title="${x.title}"></i>`;
+    el.className=x.cls; el.title=tmp.firstChild.title; el.innerHTML=x.inner;});
 }
 /* Board-style rail wiring: switch league, redraw the board (board() keeps the
    URL and nav in step when it is called off-route). */
@@ -1174,7 +1388,9 @@ function board(){
     if(SITE_LIST.indexOf(cur.v)>=0){location.hash=siteHref(state.league,cur.v);return;}
     siteSetHash(siteHref(state.league,""),cur.v!=="");
     setNav("board"); siteTitle(state.league,"");
+    state.waitingFor=null;
   }
+  if(state.loading[state.league]) return siteUnavailable(state.league,"");   // draws itself when the data lands
   if(state.league!=="mlb"&&!siteOk(state.league)) return siteUnavailable(state.league,"");
   if(state.league==="nfl") return nflPage();
   if(state.league==="nhl") return nhlPage();
@@ -1378,8 +1594,8 @@ function nhlCard(g){
     :`<span class="lv" data-ng="nhl_${g.away}_${g.home}">${g.start_utc?fmtTime(g.start_utc):"time TBD"}</span>`);
   const call=done?nhlGrade(g,c):(c.early?NHL_SCHED_PILL:sitePill(c.tier,c.pp,c.pick));
   const ct=g.ct||{};
-  const edge=[["elo","Elo"],["xg","xG"],["rest","rest"],["b2b","B2B"]]
-    .filter(([k])=>ct[k]!=null&&(k==="elo"||k==="xg"||Math.abs(ct[k])>=0.3))
+  const edge=[["home","home"],["elo","Elo"],["xg","xG"],["rest","rest"],["b2b","B2B"]]
+    .filter(([k])=>ct[k]!=null&&(k==="home"||k==="elo"||k==="xg"||Math.abs(ct[k])>=0.3))
     .map(([k,l])=>`<span class="${ct[k]>=0?"p":"n"}">${l} ${nhlSg(ct[k],1)}</span>`).join("");
   const note=done?"":(off?`<div class="earlyn">${off} &mdash; new date to be announced. Not a pick.</div>`
     :(c.early?`<div class="earlyn">Not a pick &mdash; team ratings only, no goalie or lineup input.
@@ -1419,11 +1635,14 @@ function nhlPage(){
   const vs=n.value_status||{};
   const gateLine=(vs.gate_early&&vs.n_early)?` ${vs.n_early} game${vs.n_early===1?" is":"s are"} quoted by the market this week and carry
     <b>no EDGE badge</b>: a badge is a stronger claim than a pick, and an EARLY forecast is not a pick.`:"";
+  // the edge run held every badge (stale model build, feed down): say why
+  const held=n.value_blocked||(vs.state==="suppressed"&&vs.reason);
+  const heldLine=held?` <b>No EDGE badges this cycle</b>: ${siteEsc(held)}.`:"";
   const opens=(n.phase==="preseason"&&n.first_game)?` The ${nhlSeasLbl()} regular season opens <b>${fmtDay(n.first_game,today)}</b>.`:"";
   const legend=`<div class="polnote">Every NHL forecast is <span class="chip t-EARLY">EARLY</span>: the model runs on team
     ratings only &mdash; Elo, an expected-goals team rating, rest and back-to-backs &mdash; with no goalie, lineup or roster
     input. So each game is <b>scheduled, not a pick</b>: no pick pill and no fair odds; the model's lean is shown and
-    labelled pre-information, and a played game grades the lean, never a pick.${gateLine}${opens}
+    labelled pre-information, and a played game grades the lean, never a pick.${gateLine}${heldLine}${opens}
     <a href="${nhlH("record")}">Track record by tier &rsaquo;</a></div>`;
   let body;
   if(!games.length){
@@ -1434,9 +1653,11 @@ function nhlPage(){
       :(played.length?` <button class="filt on" data-r="results">Latest results</button>`:"")}</div>`;
   }else{
     const days=[...new Set(games.map(g=>g.d))].sort(); if(R==="results") days.reverse();   // results: newest first
+    // playoff games are on the board like any other slate (tagged, never
+    // filtered out: the board would be empty April-June)
     body=days.map(d=>{const gs=games.filter(g=>g.d===d), nd=gs.filter(nhlDone).length;
-      const np=gs.filter(g=>!nhlDone(g)&&siteTier("nhl",g)!=="EARLY").length;
-      return `<div class="day"><span class="d">${fmtDay(d,today)}</span>
+      const np=gs.filter(g=>!nhlDone(g)&&siteTier("nhl",g)!=="EARLY").length, po=gs.some(g=>g.playoff);
+      return `<div class="day"><span class="d">${fmtDay(d,today)}</span>${po?'<span class="chip po">Playoffs</span>':""}
         <span class="c">${gs.length} game${gs.length===1?"":"s"} &middot; ${nd===gs.length?"all final":`${np} pick${np===1?"":"s"}`}</span>
         ${np||nd===gs.length?"":'<span class="proj">scheduled &middot; team ratings only</span>'}</div>
         <div class="grid">${gs.map(nhlCard).join("")}</div>`;}).join("");
@@ -1479,23 +1700,34 @@ function nhlModelCard(mc){
   // labelled as such, and only once enough games are graded to read it.
   const minN=typeof REC_MIN_N!=="undefined"?REC_MIN_N:30;
   const acc=mc.cur_season_acc??null, nG=mc.cur_season_n||0, show=acc!=null&&nG>=minN;
-  // Two published references, each labelled with its own number so the tiles
-  // reconcile: the gain is against a logistic fit on the Elo term alone
-  // (test_ll + gain); the Elo core is the tuned Elo's own probabilities.
-  const dE=mc.test_delta_vs_elo, eloOnly=mc.test_ll!=null&&dE!=null?mc.test_ll+dE:null;
+  // ONE harness (nhl_serve.test_card): the model and "Elo alone" were scored on
+  // the same locked TEST games, so Elo alone - test log loss = the gain, as
+  // printed. Five decimals, the precision they were published at, so the
+  // subtraction holds on the card too (at four, 0.6695 - 0.6642 read 0.0053
+  // beside a 0.0054 gain).
+  const f5=v=>v!=null&&isFinite(v)?(+v).toFixed(5):"&mdash;";
+  const gain=mc.test_delta_vs_elo, ci=mc.test_ci;
+  const llS=mc.test_ll!=null?mc.test_ll.toFixed(5):"&mdash;", baseS=mc.baseline_elo_test!=null?mc.baseline_elo_test.toFixed(5):"&mdash;";
+  const seas=mc.test_seasons?siteEsc(String(mc.test_seasons)):"the locked TEST seasons";
+  const ciTxt=ci&&ci.length===2&&ci.every(v=>v!=null&&isFinite(v))?`95% CI ${(+ci[0]).toFixed(5)}&ndash;${(+ci[1]).toFixed(5)}`:"";
+  const nTest=mc.test_n?`${(+mc.test_n).toLocaleString(LOC)} regular-season games, `:"";
+  const raw=mc.elo_raw_test!=null&&isFinite(mc.elo_raw_test)?` The tuned Elo's own win probabilities, a different reference,
+    score ${f5(mc.elo_raw_test)} on those seasons${mc.elo_raw_n?` (${(+mc.elo_raw_n).toLocaleString(LOC)} games)`:""}; the gain is not measured against them.`:"";
   return `<div class="panel"><h3>Model card <span class="sub">market-blind &middot; locked holdout</span></h3><div class="statgrid">
-    ${box("Test log loss",mc.test_ll!=null?mc.test_ll.toFixed(4):"&mdash;","","Locked TEST holdout, published once; lower is better")}
-    ${box("vs Elo alone",dE!=null?`&minus;${dE.toFixed(4)}${eloOnly!=null?` <span class="sub" style="font-size:11px">(${eloOnly.toFixed(4)})</span>`:""}`:"&mdash;","pos",
-      `Log-loss gain over a logistic fit on the Elo term alone (${eloOnly!=null?eloOnly.toFixed(4):"published"}) on the same TEST games - published once`)}
-    ${box("Tuned Elo core",mc.baseline_elo_test!=null?mc.baseline_elo_test.toFixed(4):"&mdash;","",
-      "The tuned Elo's own win probabilities, no blend, on the TEST holdout - published once. A different reference from the Elo-alone fit beside it, so the two tiles do not subtract to the gain")}
-    ${box("Coin flip","0.6931")}
+    ${box("Test log loss",llS,"",`Locked TEST holdout (${seas}), scored once; lower is better`)}
+    ${box("Elo alone",baseS,"",`Same TEST games: ${siteEsc(mc.baseline_def||"a logistic fit on the Elo term alone")}`)}
+    ${box("Gain vs Elo",f5(gain),"pos",
+      `Elo alone minus the model's test log loss, on the same games${ciTxt?` (${ciTxt})`:""}; lower log loss is better, so a positive gain means the model beats Elo`)}
+    ${box("Coin flip","0.69315","","Log loss of a 50% forecast on every game")}
     ${box("Home win rate",mc.home_win_rate!=null?(mc.home_win_rate*100).toFixed(1)+"%":"&mdash;")}
-    ${box("Games trained",mc.n_games_train?mc.n_games_train.toLocaleString(LOC):"&mdash;")}
+    ${box("Games trained",mc.n_games_train?mc.n_games_train.toLocaleString(LOC):"&mdash;","","The served coefficients: the same blend refit on every xG-covered regular-season game from 2011-12 on")}
     ${box(`${nhlSeasLbl()} leans right`,show?(acc*100).toFixed(1)+"%":"&mdash;","",
       show?`${nG} graded EARLY-tier forecasts (leans included) - not picks`:`${nG} graded so far - a rate is shown from ${minN}`)}
   </div>
-  <div class="sub" style="margin-top:10px;font-size:12px">Inputs: ${(mc.features||[]).map(siteEsc).join(" &middot; ")}.
+  <div class="sub" style="margin-top:10px;font-size:12px">TEST: ${nTest}${seas}, scored once, with coefficients fit on the
+    earlier seasons. Elo alone ${baseS} &minus; model ${llS} = gain ${f5(gain)}${ciTxt?` (${ciTxt})`:""}: the baseline is
+    ${siteEsc(mc.baseline_def||"a logistic fit on the Elo term alone, on the same games")}.${raw}</div>
+  <div class="sub" style="margin-top:6px;font-size:12px">Inputs: ${(mc.features||[]).map(siteEsc).join(" &middot; ")}.
     No goalie, lineup or roster input, which is why every forecast is EARLY.
     <a class="tl" href="${nhlH("record")}">Graded forecasts by tier</a></div></div>`;
 }
@@ -1519,6 +1751,13 @@ function nhlGamePage(id){
   const eqn=`50% ${m10>=0?"+":"&minus;"} ${(Math.abs(m10)/10).toFixed(1)} = ${(t10/10).toFixed(1)}%, ${g.home}'s home win probability`
     +(s10!==m10&&why?` (each bar is rounded to 0.1 pt, so the bars add to ${nhlSg(s10/10,1)})`:"");
   const rest=v=>v==null?"?":(v>=5?"5+":v);
+  // home ice is its own bar (nhl_contributions); a row frozen before the split
+  // (no ct.home) still carries it inside Team Elo, and says so
+  const hi=(n.model_card&&n.model_card.home_ice)||{}, hiElo=hi.elo!=null?hi.elo:30;
+  const homeTxt=ct.home!=null
+    ?`Home ice is ${g.home}'s edge over an equal team on equal rest: +${hiElo} Elo${hi.xg!=null?`, +${(+hi.xg).toFixed(2)} expected goals`:""} and the
+      model's intercept; Team Elo and xG rating are the two teams' rating gaps alone.`
+    :`Team Elo includes ${g.home}'s home ice (+${hiElo} Elo).`;
   const b2bTxt=[[g.away,g.ab2b],[g.home,g.hb2b]].filter(x=>x[1]).map(x=>x[0]);
   // result / live: a played game gets the MLB final panel from the payload's
   // official result; an unplayed one gets the live hook (ESPN, display only)
@@ -1542,6 +1781,8 @@ function nhlGamePage(id){
       <span class="chip t-${c.tier}" title="${c.early?NHL_EARLY_WHY:""}">${c.tier}</span>${g.playoff?'<span class="chip po">PLAYOFF</span>':""}</div>
     ${panel}
     ${nhlValbar(g,true)}
+    ${!done&&!nhlBadge(g)&&g.value_blocked?`<div class="sub" style="font-size:12px;margin:0 0 12px" title="market/sched_edges.py: why this quoted game carries no badge">Market-quoted,
+      <b>no EDGE badge</b>: ${siteEsc(g.value_blocked)}.</div>`:""}
     <div class="cols nhl-cols">
       <div style="display:flex;flex-direction:column;gap:14px">
         <div class="panel"><h3>${done?"Pre-game forecast":(c.early?"Current lean":"Our projection")} <span class="sub">${c.early?(done?"EARLY tier &mdash; graded as a lean, not a pick":"scheduled, not a pick"):""}</span></h3>
@@ -1556,8 +1797,7 @@ function nhlGamePage(id){
           <div class="why" style="margin-top:6px">${why||'<div class="sub">no contribution data</div>'}</div>
           <div class="sub" style="margin-top:10px;font-size:12px;color:var(--faint)">Each bar is one model term's push on ${g.home}'s
             win probability, in points around 50%, taken straight from the market-blind model's coefficients: ${eqn}.
-            The lean above is the larger side.
-            Team Elo includes ${g.home}'s home ice (+30 Elo). Rest: ${g.away} ${rest(g.arest)} days, ${g.home} ${rest(g.hrest)}
+            The lean above is the larger side. ${homeTxt} Rest: ${g.away} ${rest(g.arest)} days, ${g.home} ${rest(g.hrest)}
             ${b2bTxt.length?`&middot; back-to-back: ${b2bTxt.join(" and ")}`:"&middot; neither team on a back-to-back"}.</div>
         </div>
         <div class="panel"><h3>Goaltending <span class="sub">display only &mdash; not a model input</span></h3>
@@ -1572,7 +1812,7 @@ function nhlGamePage(id){
         <div class="panel"><h3>${g.away} vs ${g.home}</h3>${nhlH2H(g)}</div>
         <div class="panel"><h3>What the model knows <span class="sub">and what it does not</span></h3><div class="signals">
           <div class="sig good"><span class="ic">+</span><span><b>Team strength</b>: Elo from every result through
-            ${nhlDateOnly(n.ratings_through)||"the last final"}, home ice worth +30, pulled 30% back toward average between seasons.</span></div>
+            ${nhlDateOnly(n.ratings_through)||"the last final"}, home ice worth +${hiElo}, pulled 30% back toward average between seasons.</span></div>
           <div class="sig good"><span class="ic">+</span><span><b>Shot quality</b>: an expected-goals team rating (MoneyPuck xG),
             updated on chances created and allowed, never on results.</span></div>
           <div class="sig good"><span class="ic">+</span><span><b>Schedule</b>: rest days and back-to-backs from the league calendar.</span></div>
@@ -1668,11 +1908,11 @@ function nhlTeams(){
   const n=state.nhl, T=n.teams||{}, P=n.proj||{};
   const S=state.nhlTeamSort||"elo";
   const key={elo:c=>-(T[c].elo||0),gb:c=>-(T[c].glassbox==null?-1:T[c].glassbox),proj:c=>-((P[c]&&P[c].pts)||0)}[S]||(c=>-(T[c].elo||0));
-  const codes=Object.keys(T).sort((a,b)=>key(a)-key(b));
+  const codes=Object.keys(T).sort((a,b)=>key(a)-key(b)), nT=codes.length;
   const card=c=>{const t=T[c], p=P[c], r=nhlRecOf(t);
     return `<div class="tcard" ${nhlRow(nhlH("team",c))}>
       <div class="h"><span class="code">${c}</span><span class="nm">${nhlName(c)}</span>${gb(t.glassbox)}</div>
-      <div class="stat"><span>Elo <b>${Math.round(t.elo)}</b> #${t.rank}</span><span>xG <b>${nhlSg(t.xg,2)}</b></span>
+      <div class="stat"><span title="the model's Elo rating and its rank among the ${nT} teams">Elo <b>${Math.round(t.elo)}</b> #${t.rank} of ${nT}</span><span>xG <b>${nhlSg(t.xg,2)}</b></span>
         ${p?`<span>Proj <b>${p.pts.toFixed(0)}</b> pts</span>`:""}</div>
       <div class="stat"><span${r&&!r.cur?` title="${r.lbl} final record"`:""}>${r?(r.cur?"Rec":"Last season")+` <b>${nhlWLO(r.r)}</b>`:"Rec <b>&mdash;</b>"}</span>
         <span>${siteEsc(t.div||"")}</span>${p?`<span>Playoffs <b>${nhlOdds(p.po,t.clinch)}</b></span>`:""}</div></div>`;};
@@ -1706,8 +1946,8 @@ function nhlTeamPage(code){
       tile("Home",r.home||"-"),tile("Away",r.away||"-"),
       luck!=null?`<div class="b" title="(goal diff - expected-goal diff) per game: finishing and goaltending beyond the chances. Large + = regression risk"><div class="k">Goals vs xG</div><div class="v ${Math.abs(luck)>=0.3?(luck>0?"warnc":"pos"):""}">${nhlSg(luck,2)}</div></div>`:""]
     :[]).concat([
-      tile("Our Elo",Math.round(t.elo),"",`#${t.rank}`),
-      tile("xG rating",nhlSg(t.xg,2),+Math.abs(t.xg).toFixed(2)===0?"":(t.xg>0?"pos":"neg"),`#${I.xgR[code]}`),
+      tile("Our Elo",Math.round(t.elo),"",`#${t.rank} of ${I.nT}`),
+      tile("xG rating",nhlSg(t.xg,2),+Math.abs(t.xg).toFixed(2)===0?"":(t.xg>0?"pos":"neg"),`#${I.xgR[code]} of ${I.nT}`),
       pr?tile("Proj points",pr.pts.toFixed(0),"",`&plusmn;${pr.sd.toFixed(0)}`):"",
       pr?tile("Playoff odds",nhlOdds(pr.po,cur?t.clinch:null)):""]).join("");
   const opens=!cur&&n.first_game?` &middot; season opens ${nhlShortDay(n.first_game)}`:"";
@@ -2113,7 +2353,26 @@ const nflPct=p=>p==null?"-":(p>=1?"1.000":(+p).toFixed(3).slice(1));   // (1).to
 const nflPo=v=>v==null?"-":(v<0.5?"&lt;1%":(v>=99.5?"&gt;99%":(+v).toFixed(0)+"%"));
 const nflSgn=v=>v==null?"-":(v>0?"+":"")+v;
 const nflS1=v=>v==null?"-":((+v>=0?"+":"")+(+v).toFixed(1));
-const nflS2=v=>v==null?"-":((+v>=0?"+":"")+(+v).toFixed(2));
+const nflS2=v=>{if(v==null) return "-"; const s=(+v).toFixed(2);   // -0.004 is "0.00", not "+0.00"
+  return /^-?0\.00$/.test(s)?"0.00":(+v>0?"+":"")+s;};
+/* Projected wins with the simulation's spread: "12.4 &plusmn;2.1". */
+const nflProjW=p=>p&&p.w!=null?`${p.w.toFixed(1)}${p.sd!=null?`<span class="sub nfl-sd" title="1 sd across the season simulations"> &plusmn;${(+p.sd).toFixed(1)}</span>`:""}`:"-";
+/* Clinch marks from the builder (nfl_payload.clinch_flags: sufficient
+   conditions, so a mark is never wrong). */
+const NFL_CLINCH={z:"clinched the division",x:"clinched a playoff berth",e:"eliminated from the playoffs"};
+const nflClinch=t=>t&&NFL_CLINCH[t.clinch]?` <span class="nfl-cl nfl-cl-${t.clinch}" title="${NFL_CLINCH[t.clinch]}">${t.clinch}</span>`:"";
+const NFL_CLINCH_NOTE=`<b>z</b> clinched the division &middot; <b>x</b> clinched a playoff berth &middot; <b>e</b> eliminated.
+  Marked from sufficient conditions on the remaining schedule, so a mark is never wrong; it can appear a week after
+  the league's own, which also works through the tiebreakers.`;
+/* Teams with no game in week w (a week that has games). */
+function nflByes(w){
+  const sch=(state.nfl&&state.nfl.schedule)||[], gs=sch.filter(g=>g.w===w);
+  if(!gs.length) return [];
+  const on=new Set(); gs.forEach(g=>{on.add(g.home); on.add(g.away);});
+  return Object.keys(state.nfl.teams||{}).filter(t=>!on.has(t)).sort();
+}
+const nflByeLine=w=>{const b=nflByes(w);
+  return b.length?`<div class="sub nfl-bye">Bye: ${b.map(t=>nflTL(t)).join(", ")}</div>`:"";};
 const nflPerG=(x,gp)=>gp?(x/gp).toFixed(1):"-";
 const nflNum=v=>v==null?"-":(typeof v==="number"?v.toLocaleString(LOC):v);
 const nflKick=g=>g.start_utc||(g.d+"T"+(g.t||"00:00")+":00");
@@ -2320,6 +2579,13 @@ function nflCallCount(games){
     nE:cs.filter(c=>c.call==="EARLY").length};
 }
 const nflCallWords=k=>`${k.nP} pick${k.nP===1?"":"s"}${k.nL?` &middot; ${k.nL} lean${k.nL===1?"":"s"}`:""}`;
+/* A window's counts, as the board heading and the week bars print them. */
+function nflWinWords(games){
+  const nF=games.filter(g=>g.hs!=null&&g.as!=null).length, kc=nflCallCount(games);
+  return `${games.length} game${games.length===1?"":"s"} &middot; ${nflCallWords(kc)}${kc.nE?` &middot; ${kc.nE} scheduled`:""}${nF?` &middot; ${nF} final`:""}`;
+}
+const nflSpan=games=>games.length?(games[0].d===games[games.length-1].d?nflShortDay(games[0].d)
+  :`${nflShortDay(games[0].d)} &ndash; ${nflShortDay(games[games.length-1].d)}`):"";
 function nflDay(d,gs,today){
   const k=nflCallCount(gs);
   const fin=gs.filter(g=>g.hs!=null&&g.as!=null), nf=fin.length, open=gs.length-nf;
@@ -2337,11 +2603,16 @@ function nflPage(){
   const weeks=[...new Set(sch.map(g=>g.w))].sort((a,b)=>a-b), cw=nflCurWeek();
   const W=(state.nflWk!=null&&weeks.indexOf(state.nflWk)>=0)?state.nflWk:cw;
   let games, title;
+  // NFL windows are NFL weeks (Thursday to Monday), never rolling calendar
+  // days that cut a week in two: Week steps week by week, "4 weeks" is this
+  // week and the three after it.
+  const W4=cw!=null?weeks.filter(w=>w>=cw&&w<cw+4):[];
   if(R==="today"){games=sch.filter(g=>g.d===today); title="Today";}
   else if(R==="week"){games=sch.filter(g=>g.w===W); title=W!=null?`Week ${W}`:"This week";}
-  else if(R==="month"){games=sch.filter(g=>g.d>=today&&g.d<=addDays(today,29)); title="Next 30 days";}
+  else if(R==="month"){games=sch.filter(g=>W4.indexOf(g.w)>=0);
+    title=W4.length>1?`Weeks ${W4[0]}&ndash;${W4[W4.length-1]}`:(W4.length?`Week ${W4[0]}`:"Next 4 weeks");}
   else{games=sch; title=`${n.season} season`;}
-  const filts=[["today","Today"],["week","Week"],["month","Month"],["year","Season"]]
+  const filts=[["today","Today"],["week","Week"],["month","4 weeks"],["year","Season"]]
     .map(([k,t])=>`<button class="filt ${k===R?"on":""}" data-r="${k}">${t}</button>`).join("");
   // pinned VALUE strip (post-process EDGE layer, never a model input)
   const vg=sch.filter(g=>g.hs==null&&g.d>=today&&g.value&&g.value.available).sort((a,b)=>(b.value.ev_cur||0)-(a.value.ev_cur||0));
@@ -2349,17 +2620,19 @@ function nflPage(){
     when:`${g.away}@${g.home} &middot; ${fmtDay(g.d,today)}`})),
     "NFL badges are priced off the weekly model build; injury and depth-chart news after that build is not in it.");
   const vs=n.value_status, vhold=vs&&vs.state==="suppressed"
-    ?`<div class="polnote warn">EDGE badges are held for this build: ${siteEsc(vs.reason||"the model build is stale")}.</div>`:"";
+    ?`<div class="polnote warn">EDGE badges are held for this build: ${siteEsc(vs.reason||"the model build is stale")}.</div>`
+    :(vs&&vs.state==="live"&&vs.n_blocked&&vs.n_quoted!=null
+      ?`<div class="sub" style="margin:0 0 8px">EDGE layer: ${vs.n_badges||0} badge${vs.n_badges===1?"":"s"} from ${vs.n_quoted} quoted game${vs.n_quoted===1?"":"s"};
+        ${vs.n_blocked} held${vs.n_early?` (${vs.n_early} because the forecast is EARLY &mdash; not a pick, so no price claim)`:""}.</div>`:"");
   // heading for the window
-  const nF=games.filter(g=>g.hs!=null&&g.as!=null).length, kc=nflCallCount(games);
-  const span=games.length?(games[0].d===games[games.length-1].d?nflShortDay(games[0].d)
-    :`${nflShortDay(games[0].d)} &ndash; ${nflShortDay(games[games.length-1].d)}`):"";
+  const span=nflSpan(games);
   const stepper=R==="week"&&W!=null?`<div class="filters nfl-stp">
       ${W>weeks[0]?`<button class="filt" data-wk="${W-1}">&lsaquo; Wk ${W-1}</button>`:""}
       <button class="filt ${W===cw?"on":""}" data-wk="${cw}">This week</button>
       ${W<weeks[weeks.length-1]?`<button class="filt" data-wk="${W+1}">Wk ${W+1} &rsaquo;</button>`:""}</div>`:"";
   const head=`<div class="nfl-wkh"><div><div class="eyebrow">NFL &middot; ${n.season} season</div>
-      <h1 class="pt">${title} <span class="sub">${span?span+" &middot; ":""}${games.length} game${games.length===1?"":"s"} &middot; ${nflCallWords(kc)}${kc.nE?` &middot; ${kc.nE} scheduled`:""}${nF?` &middot; ${nF} final`:""}</span></h1></div>
+      <h1 class="pt">${title} <span class="sub">${span?span+" &middot; ":""}${nflWinWords(games)}</span></h1>
+      ${R==="week"&&W!=null?nflByeLine(W):""}</div>
     ${stepper}</div>`;
   let cards;
   if(!sch.length) cards=`<div class="empty">The ${n.season} NFL schedule is not in this build (${nflFreshLine()}).</div>`;
@@ -2370,8 +2643,12 @@ function nflPage(){
         <div style="margin-top:12px"><button class="filt on" data-wk="${nx.w}">Show Week ${nx.w}</button></div></div>`
       :`<div class="empty">The ${n.season} regular season is complete &mdash; every result is on the <a class="tl" href="#/season">Season</a> page.</div>`;
   }else{
-    const days=[...new Set(games.map(g=>g.d))].sort();
-    cards=days.map(d=>nflDay(d,games.filter(g=>g.d===d),today)).join("");
+    const dayBlocks=gs=>[...new Set(gs.map(g=>g.d))].sort().map(d=>nflDay(d,gs.filter(g=>g.d===d),today)).join("");
+    const wks=[...new Set(games.map(g=>g.w))].sort((a,b)=>a-b);
+    // a window of several weeks is grouped under a bar per NFL week
+    cards=wks.length>1?wks.map(w=>{const gw=games.filter(g=>g.w===w);
+        return `<div class="nfl-wkbar"><b>Week ${w}</b> <span class="sub">${nflSpan(gw)} &middot; ${nflWinWords(gw)}</span>${nflByeLine(w)}</div>${dayBlocks(gw)}`;}).join("")
+      :dayBlocks(games);
   }
   // ---- season outlook, ratings, boards (always drawn, whatever the window)
   const rs=nflRS(), rsCur=rs===n.season;
@@ -2379,10 +2656,12 @@ function nflPage(){
     return `<tr ${nflRow(nflH("team",c))}><td><span class="num">${i+1}</span></td>
       <td class="a"><span class="ab" style="color:var(--accent)">${c}</span> <span class="sub">${t.nick||""}</span></td>
       <td><span class="num">${rsCur?nflRec(t):"-"}</span></td>
-      <td><span class="num">${p.w.toFixed(1)}-${(17-p.w).toFixed(1)}</span></td>
+      <td><span class="num">${nflProjW(p)}</span></td>
       <td><span class="num">${nflPo(p.div)}</span></td><td><span class="num">${nflPo(p.po)}</span></td></tr>`;}).join("");
   const cal=(mc.calibration||[]).map(c=>`<tr><td class="a">${c.bucket}</td>
     <td><span class="num">${c.hit.toFixed(1)}%</span></td><td><span class="num">${c.n}</span></td></tr>`).join("");
+  // numbers measured once, with their provenance (model_card.measured)
+  const ms=mc.measured||null, msWhen=ms?`measured ${nflShortDay(ms.asof)}`:"";
   const pow=(n.power||[]).map(p=>{const t=T[p.code]||{};
     return `<tr ${nflRow(nflH("team",p.code))}><td><span class="num">${p.rank}</span></td>
       <td class="a"><span class="ab" style="color:var(--accent)">${p.code}</span> <span class="sub">${t.nick||p.nick||""}</span></td>
@@ -2398,33 +2677,53 @@ function nflPage(){
     <td><span class="num">${nflS2(p.cons)}</span></td><td><span class="num">${nflNum(p.n)}</span></td></tr>`).join("");
   const bs=n.boards_season||n.player_board_season||"";
   const btbl=(t,pos)=>`<div class="panel"><h3>${t} <span class="sub">${bs} per-play value</span></h3><div class="twrap"><table>
-    <thead><tr><th></th><th class="a">Player</th><th>Value z</th><th>Floor</th><th>Plays</th></tr></thead>
+    <thead><tr><th></th><th class="a">Player</th><th title="value per play vs the 2001-2015 norm for the position (0 = that era's average among players with 100+ plays)">Value z</th>
+      <th title="z minus two standard errors: the ranking key">Floor &darr;</th><th>Plays</th></tr></thead>
     <tbody>${bd(pos)}</tbody></table></div></div>`;
   const mvp=(n.mvp||[]).map((m,i)=>`<tr ${m.id&&n.players[m.id]?nflRow(nflH("player",m.id)):""}><td><span class="num">${i+1}</span></td>
     <td class="a">${nflPL(m.id,m.player)} <span class="sub">${m.pos||""}</span></td>
     <td><span class="num pos">+${m.pts.toFixed(2)}</span></td><td><span class="num">${m.n_abs}</span></td></tr>`).join("");
   const sv=mc.serve||{};
+  // ratings alone vs team Elo, as log loss on the same games (ratings_only is
+  // the current engine's measurement; ratings_model the serve's older block)
+  const ro=mc.ratings_only||mc.ratings_model||null;
+  const roLine=ro&&ro.test_ll!=null&&ro.elo_ll!=null
+    ?` Player ratings alone${ro.engine?" (engine "+siteEsc(ro.engine)+")":""} score log loss <b>${(+ro.test_ll).toFixed(3)}</b> against team Elo's
+      ${(+ro.elo_ll).toFixed(3)} on the same games${ro.seasons?" (TEST "+siteEsc(ro.seasons)+")":""}, and feed the blend as a feature.`:"";
   const model=`<div class="sub" style="margin:0 0 4px">Market-blind ${mc.n_features||14}-feature blend around an 11-vs-11
     per-snap TrueSkill (${nflRatingsLine()}) &middot; <b>${mc.accuracy!=null?mc.accuracy.toFixed(1)+"%":"-"}</b> accurate on a locked holdout
     (${mc.holdout||"scored once"}) &middot; log loss <b>${mc.test_log_loss!=null?mc.test_log_loss.toFixed(3):"-"}</b>
-    (closing line ${mc.close_log_loss!=null?mc.close_log_loss.toFixed(3):"-"}) &middot; ${mc.training||""}.${mc.ratings_model
-    ?` The player-ratings engine alone predicts at ${mc.ratings_model.acc}% &mdash; ahead of team Elo &mdash; and feeds the blend as a feature.`:""}
+    (closing line ${mc.close_log_loss!=null?mc.close_log_loss.toFixed(3):"-"}${ms?`, ${msWhen}`:""}) &middot; ${mc.training||""}.${roLine}
     The season simulation re-runs at every serve (${sv.sims?sv.sims.toLocaleString(LOC)+" runs":"Monte Carlo"}); team strength evolves inside every run.</div>`;
+  // the model card's remaining fields, as a reference table
+  const rt=mc.ratings||{};
+  const det=[["Fit",sv.fit],["Season simulation",sv.sims?sv.sims.toLocaleString(LOC)+" runs per serve":null],
+    ["QB1 source",sv.qb_source],["QB in training",mc.qb_identity],["Tests on the ledger",mc.n_tests],
+    ["Player ratings",rt.system],["Snap outcome",rt.outcome],["Rating scale",rt.display],
+    ["TrueSkill beta / weekly tau",rt.beta!=null&&rt.tau_week!=null?`${rt.beta} / ${rt.tau_week}`:null],
+    ["Snap weight",rt.snap_weight],["QB fusion",rt.qb_fusion],["Ratings through",rt.through_season],
+    ["Blend intercept",sv.intercept!=null?`${sv.intercept} logit: ${sv.base||"the average home edge"}`:null]]
+    .filter(([,v])=>v!=null&&v!=="");
+  const details=det.length?`<details class="sched"><summary>Model card <span class="sub">&middot; this build's settings</span></summary>
+    <div class="body"><div class="twrap"><table class="nfl-kv"><tbody>${det.map(([k,v])=>`<tr><td class="a"><span class="sub">${k}</span></td>
+      <td class="a">${siteEsc(String(v))}</td></tr>`).join("")}</tbody></table></div></div></details>`:"";
   $("#view").innerHTML=`<div class="controls"><div class="rail">${siteRail("nfl")}</div><div class="filters">${filts}</div></div>
     ${vstrip}${vhold}${nflLegend()}${head}${cards}
     <div class="subh" style="margin-top:28px">Season outlook</div>
-    ${model}
+    ${model}${details}
     <div class="grid" style="margin-top:10px">
       ${Object.keys(proj).length?`<div class="panel"><h3>Projected standings <span class="sub">top 8 &middot; <a class="tl" href="${nflH("standings")}">all 32 &rarr;</a></span></h3>
-        <div class="twrap"><table><thead><tr><th></th><th class="a">Team</th><th>${rs}</th><th>Proj W-L</th><th>Div</th><th>Playoffs</th></tr></thead><tbody>${pTop}</tbody></table></div>
-        <div class="sub" style="margin-top:8px">Mean of ${sv.sims?sv.sims.toLocaleString(LOC):"the"} season simulations of the market-blind model;
+        <div class="twrap"><table><thead><tr><th></th><th class="a">Team</th><th>${rs}</th><th>Proj wins</th><th>Div</th><th>Playoffs</th></tr></thead><tbody>${pTop}</tbody></table></div>
+        <div class="sub" style="margin-top:8px">Mean (&plusmn; one standard deviation) of ${sv.sims?sv.sims.toLocaleString(LOC):"the"} season simulations of the market-blind model;
           played games are fixed at their results${sv.proj_through?` (through Week ${sv.proj_through.w})`:""}.</div></div>`
         :`<div class="panel"><h3>Projected standings</h3><div class="sub">The season projection is not in this build.</div></div>`}
-      <div class="panel"><h3>Calibration <span class="sub">locked holdout</span></h3><div class="twrap"><table>
+      <div class="panel"><h3>Calibration <span class="sub">locked holdout${ms?" &middot; "+msWhen:""}</span></h3><div class="twrap"><table>
         <thead><tr><th class="a">Model says</th><th>Actually wins</th><th>Games</th></tr></thead><tbody>${cal}</tbody></table></div>
-        <div class="sub" style="margin-top:8px">Pick-side probability bucket vs how often the pick actually won, on the locked holdout.${mc.accuracy!=null&&mc.acc_home!=null
-          ?` Accuracy ladder: home-always ${mc.acc_home}% &middot; Elo ${mc.acc_elo}% &middot; <b>GlassBox ${mc.accuracy}%</b>
-          &middot; closing line ${mc.acc_close}%.`:""}</div></div>
+        <div class="sub" style="margin-top:8px">Pick-side probability bucket vs how often the pick actually won, on the ${ms&&ms.holdout?ms.holdout+" ":""}locked holdout.${ms
+          ?` Measured once, ${nflShortDay(ms.asof)}, for the model then served (TEST log loss ${(+ms.model_test_ll).toFixed(5)}${ms.ledger_row?", ledger row "+ms.ledger_row:""});
+          the served model${mc.test_log_loss!=null?" ("+mc.test_log_loss.toFixed(5)+")":""} has not been re-bucketed.`:""}${mc.acc_home!=null
+          ?` Accuracy on the same games: home-always ${mc.acc_home}% &middot; Elo ${mc.acc_elo}% &middot; closing line ${mc.acc_close}%${ms?" ("+msWhen+")":""}${mc.accuracy!=null
+            ?` &middot; <b>GlassBox ${mc.accuracy}%</b> (the served model, re-measured at every serve)`:""}.`:""}</div></div>
     </div>
     <div class="subh">${powTitle}</div>
     <div class="sub" style="margin-bottom:8px">Elo is our market-blind team rating, walked through every final. Unit values are EPA per
@@ -2433,8 +2732,10 @@ function nflPage(){
     <div class="twrap"><table><thead><tr><th>#</th><th class="a">Team</th><th>${rs}</th><th>Elo</th>
       <th>Pass off</th><th>Run off</th><th>Pass def</th><th>Run def</th><th>GlassBox</th><th>Lineup #</th></tr></thead><tbody>${pow}</tbody></table></div>
     <div class="grid" style="margin-top:16px">${btbl("Top QBs","QB")}${btbl("Top RBs","RB")}${btbl("Top WRs","WR")}${btbl("Top TEs","TE")}</div>
-    <div class="sub" style="margin-top:6px">Per-play value boards: opponent-adjusted value per play as a z-score within the position,
-      ranked by the conservative floor so a small sample cannot top the list (${bs} season, fixed).</div>
+    <div class="sub" style="margin-top:6px">Per-play value boards: opponent-adjusted EPA per play, shrunk toward a replacement
+      player and scored as a z against the 2001-2015 norm for the position (0 = that era's average among players with 100+ plays;
+      today's receivers and tight ends mostly sit below it). Ranked by the <b>floor</b> (z minus two standard errors), so a small
+      sample cannot top the list (${bs} season, fixed).</div>
     ${mvp?`<div class="grid" style="margin-top:16px"><div class="panel"><h3>MVP impact <span class="sub">with-vs-without, points per game</span></h3><div class="twrap"><table>
       <thead><tr><th></th><th class="a">Player</th><th>Cost when out</th><th>Absences</th></tr></thead><tbody>${mvp}</tbody></table></div>
       <div class="sub" style="margin-top:8px">Measured team drop-off when the player missed games, opponent-adjusted &mdash;
@@ -2470,7 +2771,9 @@ function nflSeason(wk){
       <td class="a">${res}</td></tr>`;};
   const nF=games.filter(g=>g.hs!=null).length, kc=nflCallCount(games);
   const tally=nflTally(games);
-  $("#view").innerHTML=`<div class="eyebrow">NFL &middot; ${n.season} season</div>
+  // the board's league rail: the page is NFL-only, the rail leads to the others
+  $("#view").innerHTML=`<div class="controls"><div class="rail">${siteRail("nfl")}</div></div>
+    <div class="eyebrow">NFL &middot; ${n.season} season</div>
     <h1 class="pt">Season <span class="sub">every game, forecast before kickoff &middot; market-blind</span></h1>
     <div class="sub" style="margin-bottom:10px">Inside a week of kickoff the <b>live model</b> runs on projected depth-chart lineups
       (${nflTierChip("PROJECTED")} &mdash; a PICK outside 55/45, a LEAN inside). Further out the number is a
@@ -2481,11 +2784,13 @@ function nflSeason(wk){
     <div class="filters" style="flex-wrap:wrap;margin:0 0 12px">${chips}</div>
     <div class="subh">Week ${W} <span class="sub" style="font-family:var(--sans);font-size:13px;font-weight:400">&middot; ${games.length} games
       &middot; ${nflCallWords(kc)}${kc.nE?` &middot; ${kc.nE} scheduled`:""} &middot; ${nF} final</span></div>
+    ${nflByeLine(W)}
     ${tally?`<div class="sub" style="margin-bottom:8px">This week, by tier: ${tally}</div>`:""}
     <div class="twrap nfl-season"><table><thead><tr><th class="a">Kickoff (ET)</th><th class="a">Game</th><th class="a">Tier</th>
       <th class="a">Call</th><th class="pbc">Home win prob</th><th>Home</th><th class="a">Result</th></tr></thead>
       <tbody>${games.map(row).join("")}</tbody></table></div>`;
   $("#view").querySelectorAll("[data-w]").forEach(x=>x.onclick=()=>{location.hash="#/season/"+x.dataset.w;});
+  siteWireRail();
 }
 
 /* ---------- NFL STANDINGS ---------- */
@@ -2495,28 +2800,63 @@ function nflLuckCell(t){
   if((t.gp||0)<NFL_LUCK_MIN_G) return `<span class="sub" title="shown from ${NFL_LUCK_MIN_G} games (${t.gp||0} played): a smaller sample is noise">&ndash;</span>`;
   return `<span class="num ${Math.abs(t.luck)>=0.10?(t.luck>0?"warnc":"pos"):""}">${sgn(t.luck*100)}</span>`;
 }
+/* The playoff picture of one conference, 'if the season ended today': the
+   builder's seeds (nfl_payload.conference_seeding, NFL wild-card tiebreakers),
+   a cut line under seed 7, and the simulation's playoff odds beside them. */
+function nflPicture(conf){
+  const n=state.nfl, proj=n.proj||{};
+  const L=Object.values(n.teams||{}).filter(t=>t.conf_seed!=null&&String(t.div||"").indexOf(conf)===0)
+    .sort((a,b)=>a.conf_seed-b.conf_seed);
+  if(!L.length) return "";
+  const row=t=>{const p=proj[t.code]||t.proj||{}, s=t.conf_seed;
+    return `<tr ${nflRow(nflH("team",t.code))}${s===8?' class="nfl-cut"':""}>
+      <td><span class="num">${s<=7?s:"&ndash;"}</span></td>
+      <td class="a"><span class="ab" style="color:var(--accent)">${t.code}</span>${nflClinch(t)}
+        <span class="sub">${s<=4?"leads "+siteEsc(t.div.replace(conf+" ","")):(s<=7?"wild card":"")}</span></td>
+      <td><span class="num">${nflRec(t)}</span></td><td><span class="num">${t.div_rec||"-"}</span></td>
+      <td><span class="num">${t.conf_rec||"-"}</span></td><td><span class="num">${nflPo(p.po)}</span></td></tr>`;};
+  return `<div class="panel"><h3>${conf} <span class="sub">seeds 1-4 lead their divisions, 5-7 are the wild cards</span></h3><div class="twrap"><table>
+    <thead><tr><th>Seed</th><th class="a">Team</th><th>W-L</th><th>Div</th><th>Conf</th><th>Playoffs</th></tr></thead>
+    <tbody>${L.map(row).join("")}</tbody></table></div></div>`;
+}
 function nflStandings(){
   const n=state.nfl, T=n.teams||{}, proj=n.proj||{}, hasProj=Object.keys(proj).length>0;
   const rs=nflRS(), cur=rs===n.season, thr=n.standings_through;
   const divs={}; Object.values(T).forEach(t=>{(divs[t.div]=divs[t.div]||[]).push(t);});
   const order=(n.divisions||Object.keys(divs).sort()).filter(d=>divs[d]);
   const sv=(n.model_card&&n.model_card.serve)||{};
+  // the race view exists once a game of the standings season is played
+  const hasSeed=cur&&!!(thr&&thr.w)&&Object.values(T).some(t=>t.conf_seed!=null);
+  const view=hasSeed&&state.nflStand==="po"?"po":"div";
+  const seedCell=t=>t.conf_seed!=null&&t.conf_seed<=7?`<span class="num">${t.conf_seed}</span>`:`<span class="sub">&ndash;</span>`;
   const row=t=>{const p=proj[t.code]||t.proj||{};
     return `<tr ${nflRow(nflH("team",t.code))}>
-      <td class="a"><span class="ab" style="color:var(--accent)">${t.code}</span> <span class="sub">${t.nick||t.name}</span></td>
+      <td class="a"><span class="ab" style="color:var(--accent)">${t.code}</span>${nflClinch(t)} <span class="sub">${t.nick||t.name}</span></td>
       <td><span class="num">${nflRec(t)}</span></td><td><span class="num">${nflPct(t.pct)}</span></td>
       <td><span class="num ${t.pt_diff>0?"pos":(t.pt_diff<0?"neg":"")}">${nflSgn(t.pt_diff)}</span></td>
       <td><span class="num">${t.home||"-"}</span></td><td><span class="num">${t.away||"-"}</span></td>
-      <td><span class="num">${t.div_rec||"-"}</span></td><td><span class="num">${t.streak||"-"}</span></td>
-      ${hasProj?`<td><span class="num" title="${p.sd!=null?"&plusmn; "+p.sd+" wins (1 sd)":""}">${p.w!=null?p.w.toFixed(1)+"-"+(17-p.w).toFixed(1):"-"}</span></td>
+      <td><span class="num">${t.div_rec||"-"}</span></td><td><span class="num">${t.conf_rec||"-"}</span></td>
+      <td><span class="num">${t.streak||"-"}</span></td>
+      ${hasSeed?`<td>${seedCell(t)}</td>`:""}
+      ${hasProj?`<td><span class="num">${nflProjW(p)}</span></td>
       <td><span class="num">${nflPo(p.div)}</span></td><td><span class="num">${nflPo(p.po)}</span></td>`:""}
       <td>${gb(t.glassbox)}</td>
       <td><span class="num">${t.elo?t.elo.toFixed(0):"-"}</span> <span class="sub">#${t.rank||"-"}</span></td>
       <td>${nflLuckCell(t)}</td></tr>`;};
-  const head=`<thead><tr><th class="a">Team</th><th>W-L</th><th>Pct</th><th>Diff</th><th>Home</th><th>Away</th><th>Div</th><th>Strk</th>
-    ${hasProj?"<th>Proj W-L</th><th>Win div</th><th>Playoffs</th>":""}<th>GlassBox</th><th>Elo</th><th>Luck</th></tr></thead>`;
-  const tables=order.map(d=>`<div class="subh">${d}</div><div class="twrap"><table>${head}
+  const head=`<thead><tr><th class="a">Team</th><th>W-L</th><th>Pct</th><th>Diff</th><th>Home</th><th>Away</th><th>Div</th><th>Conf</th><th>Strk</th>
+    ${hasSeed?'<th title="conference seed if the season ended today">Seed</th>':""}
+    ${hasProj?"<th>Proj wins</th><th>Win div</th><th>Playoffs</th>":""}<th>GlassBox</th><th>Elo</th><th>Luck</th></tr></thead>`;
+  const tables=view==="po"
+    ?`<div class="grid" style="margin-top:6px">${nflPicture("AFC")}${nflPicture("NFC")}</div>
+      <div class="sub" style="margin-top:8px">Seeds apply the NFL tiebreakers: division order by the division steps, seeding by the
+        wild-card steps (head-to-head or sweep, conference record, common games, strength of victory and of schedule, net points; the
+        points-ranking steps are not modelled and the coin toss is the alphabet). <b>Playoffs</b> is the season simulation's
+        probability. The dashed line is the cut after seed 7. ${NFL_CLINCH_NOTE}</div>`
+    :order.map(d=>`<div class="subh">${d}</div><div class="twrap"><table>${head}
     <tbody>${divs[d].slice().sort((a,b)=>(a.div_rank||9)-(b.div_rank||9)).map(row).join("")}</tbody></table></div>`).join("");
+  const toggle=hasSeed?`<div class="filters" style="margin:0 0 10px;display:inline-flex">
+      <button class="filt ${view==="div"?"on":""}" data-st="div">By division</button>
+      <button class="filt ${view==="po"?"on":""}" data-st="po">Playoff picture</button></div>`:"";
   // the previous season's final table, collapsed (teams[].prev)
   const anyPrev=Object.values(T).some(t=>t.prev), ps=anyPrev?(Object.values(T).find(t=>t.prev).prev.season):null;
   const prevRow=t=>{const q=t.prev||{};
@@ -2532,14 +2872,16 @@ function nflStandings(){
   $("#view").innerHTML=`<div class="eyebrow">Database &middot; NFL</div>
     <h1 class="pt">Standings <span class="sub">${rs}${cur?(thr&&thr.w?` &middot; through Week ${thr.w}`:" &middot; no games played yet"):" final"}${hasProj?` &middot; ${n.season} projections`:""}</span></h1>
     <div class="sub" style="margin-bottom:6px"><b>W-L</b> is the ${rs} regular season${cur&&thr&&thr.w?` through Week ${thr.w}`:""}; division order applies
-      the NFL tiebreak steps. ${hasProj?`<b>Proj W-L</b>, <b>Win div</b> and <b>Playoffs</b> are the mean over ${sv.sims?sv.sims.toLocaleString(LOC):"the"}
+      the NFL tiebreak steps. <b>Div</b> and <b>Conf</b> are the records inside the division and the conference, the first tiebreakers.
+      ${hasSeed?"<b>Seed</b> is the conference seed if the season ended today (1-4 division leaders, 5-7 wild cards). ":""}${hasProj?`<b>Proj wins</b> (&plusmn; one standard deviation), <b>Win div</b> and <b>Playoffs</b> are over ${sv.sims?sv.sims.toLocaleString(LOC):"the"}
       season simulations of the market-blind model, played games fixed at their results.`:""} <b>GlassBox</b> is the roster's
       snap-weighted per-play TrueSkill (50 = league average). <b>Elo</b> is our market-blind team rating (# = its rank).
       <b>Luck</b> = win% minus the Pythagorean expectation from points scored and allowed, in percentage points (amber = due to regress);
-      it is shown from ${NFL_LUCK_MIN_G} games. Click any team.</div>
+      it is shown from ${NFL_LUCK_MIN_G} games.${Object.values(T).some(t=>t.clinch)?" "+NFL_CLINCH_NOTE:""} Click any team.</div>
     <div class="sub" style="margin-bottom:12px">Data: ${nflFreshLine()}</div>
     ${hasProj?"":`<div class="polnote warn">The season projection is not in this build &mdash; showing records only.</div>`}
-    ${tables}${prev}`;
+    ${toggle}${tables}${prev}`;
+  $("#view").querySelectorAll("[data-st]").forEach(x=>x.onclick=()=>{state.nflStand=x.dataset.st; nflStandings();});
 }
 
 /* ---------- NFL TEAMS ---------- */
@@ -2549,8 +2891,8 @@ function nflTeams(){
   const card=(t,i)=>{const p=t.proj;
     return `<div class="tcard" ${nflRow(nflH("team",t.code))}>
     <div class="h"><span class="code">${t.code}</span><span class="nm">${t.name}</span>${gb(t.glassbox)}</div>
-    <div class="stat"><span>${rs} <b>${nflRec(t)}</b></span><span>Diff <b>${nflSgn(t.pt_diff)}</b></span>
-      <span>Proj <b>${p?p.w.toFixed(1)+"W":"-"}</b></span><span>PO <b>${p?nflPo(p.po):"-"}</b></span></div>
+    <div class="stat"><span>${rs} <b>${nflRec(t)}</b>${nflClinch(t)}</span><span>Diff <b>${nflSgn(t.pt_diff)}</b></span>
+      <span>Proj <b>${p?nflProjW(p):"-"}</b> W</span><span>PO <b>${p?nflPo(p.po):"-"}</b></span></div>
     <div class="stat"><span>Off <b>${t.gb_off!=null?t.gb_off.toFixed(0):"-"}</b></span><span>Def <b>${t.gb_def!=null?t.gb_def.toFixed(0):"-"}</b></span>
       <span>QB <b>${siteEsc(qbShort(t.qb1))}</b></span></div>
     <div class="stat"><span>${t.div} #${t.div_rank||"-"}</span><span>Elo <b>${t.elo?t.elo.toFixed(0):"-"}</b> #${t.rank||"-"}</span><span>GlassBox #${i+1}</span></div>
@@ -2574,7 +2916,8 @@ const NFL_COLS={
     ["Rush yds","rush_yds",["QB","RB"]],["Rec","rec",["RB","WR","TE"]],["Rec yds","rec_yds",["RB","WR","TE"]],
     ["TD",s=>(s.rush_td||0)+(s.rec_td||0),["RB","WR","TE"]]],
   "Offensive line":[],
-  "Defense":[["Tkl","tak",["DL","LB","DB"]],["Ast","ast",["DL","LB","DB"]],["TFL","tfl",["DL","LB","DB"]],
+  // Tkl = combined (solo + assisted), as box scores print it; Solo and Ast split it
+  "Defense":[["Tkl",s=>(s.tak||0)+(s.ast||0),["DL","LB","DB"]],["Solo","tak",["DL","LB","DB"]],["Ast","ast",["DL","LB","DB"]],["TFL","tfl",["DL","LB","DB"]],
     ["Sacks","sk",["DL","LB","DB"]],["INT","dint",["DL","LB","DB"]],["PD","pd",["DL","LB","DB"]],["FF","ff",["DL","LB","DB"]]],
   "Special teams":[["FG",s=>s.fga!=null?`${s.fgm||0}/${s.fga}`:null,[]],["Long",s=>s.fg_long!=null?s.fg_long:(s.punt_long!=null?s.punt_long:null),[]],
     ["XP",s=>s.xpa!=null?`${s.xpm||0}/${s.xpa}`:null,[]],["Punts","punts",["P"]],["Avg",s=>s.punts?(s.punt_yds/s.punts).toFixed(1):null,[]],["In 20","punt_in20",["P"]]]
@@ -2664,7 +3007,7 @@ function nflTeamPage(code){
   $("#view").innerHTML=`<a class="back" href="${nflH("teams")}">&lsaquo; Teams</a>
     <div class="thead"><span class="code">${t.code}</span>
       <div><div style="font-size:15px;font-weight:600">${t.name}</div>
-        <div class="sub">${t.div} &middot; #${t.div_rank||"-"} &middot; ${nflRec(t)} (${nflPct(t.pct)}) in ${rs}${cur&&n.standings_through&&n.standings_through.w?` through Week ${n.standings_through.w}`:""}${prev&&prev.season!==rs?` &middot; ${prev.season}: ${nflRec(prev)}${prev.post?" ("+(NFL_POST[prev.post]||prev.post)+")":""}`:""}</div>
+        <div class="sub">${t.div} &middot; #${t.div_rank||"-"}${cur?nflClinch(t):""} &middot; ${nflRec(t)} (${nflPct(t.pct)}) in ${rs}${cur&&n.standings_through&&n.standings_through.w?` through Week ${n.standings_through.w}`:""}${prev&&prev.season!==rs?` &middot; ${prev.season}: ${nflRec(prev)}${prev.post?" ("+(NFL_POST[prev.post]||prev.post)+")":""}`:""}</div>
         <div class="sub">QB1 ${q&&q.id&&n.players[q.id]?nflPL(q.id,q.name):(q?siteEsc(q.name):"-")}${t.lineup&&t.lineup.dt?` &middot; depth chart ${nflShortDay(t.lineup.dt)}`:""}</div></div>
       <div style="margin-left:auto;text-align:right"><div class="sub">GlassBox rating</div>${gb(t.glassbox)}
         <div class="sub" style="margin-top:4px">off ${t.gb_off!=null?t.gb_off.toFixed(0):"-"} &middot; def ${t.gb_def!=null?t.gb_def.toFixed(0):"-"} &middot; #${gbRank||"-"} of 32</div></div>
@@ -2672,10 +3015,12 @@ function nflTeamPage(code){
     <div class="tstats">
       ${kpi("Point diff",nflSgn(t.pt_diff),t.pt_diff>0?"pos":(t.pt_diff<0?"neg":""))}
       ${kpi("Pts/gm",nflPerG(t.pf,t.gp))}${kpi("Allowed/gm",nflPerG(t.pa,t.gp))}
-      ${kpi("Home",t.home||"-")}${kpi("Away",t.away||"-")}${kpi("Division",t.div_rec||"-")}${kpi("Streak",t.streak||"-")}
+      ${kpi("Home",t.home||"-")}${kpi("Away",t.away||"-")}${kpi("Division",t.div_rec||"-")}${kpi("Conference",t.conf_rec||"-")}${kpi("Streak",t.streak||"-")}
+      ${cur&&t.conf_seed!=null&&n.standings_through&&n.standings_through.w
+        ?kpi("Seed today",`<a class="tl" href="${nflH("standings")}" title="conference seed if the season ended today">${siteEsc(String(t.div||"").split(" ")[0])} ${t.conf_seed<=7?"#"+t.conf_seed:"out ("+t.conf_seed+")"}</a>`):""}
       ${kpi("Our Elo",`${t.elo?t.elo.toFixed(0):"-"} <span class="sub">#${t.rank||"-"}</span>`)}
       ${kpi("Lineup TS",t.rpow_rank?`#${t.rpow_rank} <span class="sub">of 32</span>`:"-")}
-      ${kpi("Proj wins",p26.w!=null?`${p26.w.toFixed(1)}${p26.sd!=null?` <span class="sub">&plusmn;${p26.sd}</span>`:""}`:"-")}
+      ${kpi("Proj wins",nflProjW(p26))}
       ${kpi("Win division",nflPo(p26.div))}${kpi("Playoffs",nflPo(p26.po))}
       ${luck}
     </div>
@@ -2704,7 +3049,7 @@ function nflStatBoxes(fam,s,career){
     case "K": L=[["FG",`${v("fgm")}/${v("fga")}`],["FG%",pct(v("fgm"),v("fga"))],["Long",s.fg_long!=null?s.fg_long:null],["XP",`${v("xpm")}/${v("xpa")}`]]; break;
     case "P": L=[["Punts",v("punts")],["Yds",v("punt_yds")],["Avg",rate(v("punt_yds"),v("punts"))],["In 20",v("punt_in20")],["Long",s.punt_long!=null?s.punt_long:null]]; break;
     case "OL": case "LS": L=[]; break;
-    default: L=[["Tkl",v("tak")],["Ast",v("ast")],["TFL",v("tfl")],["Sacks",v("sk")],["QB hits",v("qbh")],["INT",v("dint")],["PD",v("pd")],["FF",v("ff")]];
+    default: L=[["Tkl",v("tak")+v("ast")],["Solo",v("tak")],["Ast",v("ast")],["TFL",v("tfl")],["Sacks",v("sk")],["QB hits",v("qbh")],["INT",v("dint")],["PD",v("pd")],["FF",v("ff")]];
   }
   const lead=career
     ?[["Seasons",career.seasons!=null?career.seasons:null],["Years",career.first!=null?`${career.first}&ndash;${String(career.last).slice(2)}`:null]]
@@ -2793,6 +3138,19 @@ function nflPlayers(){
     <td class="a"><span class="player-link">${siteEsc(p.name)}</span> <span class="sub">${p.rating.bucket} &middot; ${p.team}</span></td>
     <td>${gb(p.rating.r)}</td>
     <td><span class="num">&sigma; ${p.rating.sigma.toFixed(2)}</span></td></tr>`;
+  // what a starter at each position is worth to his unit (pos_values: a
+  // with-vs-without study, display only)
+  const pv=n.pos_values||{}, pvs=n.pos_values_source||{};
+  const pvK=Object.keys(pv).filter(k=>NFL_GN[k]&&pv[k]!=null).sort((a,b)=>pv[b]-pv[a]);
+  const pvTop=pvK.length?Math.max(...pvK.map(k=>pv[k]),1e-9):1;
+  const pvPanel=pvK.length?`<div class="panel" style="margin-top:16px"><h3>What a starter is worth
+      <span class="sub">unit EPA per play lost when a full-time starter is out, &times;100</span></h3>
+    <div class="nfl-pv">${pvK.map(k=>`<div class="r"><span class="k">${NFL_GN[k]}</span>
+      <span class="bar"><i style="width:${Math.max(2,Math.round(100*pv[k]/pvTop))}%"></i></span>
+      <span class="num">${(pv[k]*100).toFixed(2)}</span></div>`).join("")}</div>
+    <div class="sub" style="margin-top:8px">With-vs-without study${pvs.seasons?" over "+siteEsc(pvs.seasons):""}: how far the unit's EPA per play
+      drops, on average, when a full-time starter at the position misses the game. A description of the past, not a model input${pvs.adopted===false
+      ?" &mdash; the with-vs-without feature was scored once on the locked holdout and not adopted":""}.</div></div>`:"";
   const r=(n.model_card&&n.model_card.ratings)||{};
   $("#view").innerHTML=`<div class="eyebrow">Database &middot; NFL</div><h1 class="pt">Players</h1>
     <div class="sub" style="margin-bottom:10px">Every snap is an <b>11-vs-11 TrueSkill match</b> &mdash; all 22 players on the field are
@@ -2809,7 +3167,7 @@ function nflPlayers(){
         <div class="twrap"><table><tbody>${proven.map(mini).join("")}</tbody></table></div></div>
       <div class="panel"><h3>Wild cards <span class="sub">highest &sigma;, 300+ plays &mdash; the most room to move once new snaps are rated</span></h3>
         <div class="twrap"><table><tbody>${wild.map(mini).join("")}</tbody></table></div></div>
-    </div>`;
+    </div>${pvPanel}`;
   const res=$("#psres");
   $("#psearch").oninput=e=>{
     const q=norm(e.target.value);
@@ -2915,20 +3273,24 @@ function nflLineupPanel(code,t,opt){
   const n=state.nfl, L=t&&t.lineup; if(!L) return "";
   const st=nflSS(), age=L.dt?Math.round((Date.parse(nflToday()+"T12:00:00Z")-Date.parse(L.dt+"T12:00:00Z"))/864e5):null;
   const stale=age!=null&&age>7;
-  const lrow=e=>{const p=e.id?n.players[e.id]:null;
+  // a starter with no rated snaps is a rookie or not yet rated, and one with
+  // no current-season game has no share yet: say so, not "NR" and "0%"
+  const lrow=e=>{const p=e.id?n.players[e.id]:null, noG=!p||!(p.snap_g>0);
+    const rc=e.r!=null?gb(e.r)
+      :`<span class="sub" title="no rated snaps through ${(n.model_card&&n.model_card.ratings&&n.model_card.ratings.through_season)||"the last rated season"}">${p&&p.exp===0?"rookie":"not rated"}</span>`;
     return `<tr ${p?nflRow(nflH("player",e.id)):""}>
     <td class="a"><span class="sub" style="font-size:11px;letter-spacing:.04em">${e.slot}</span></td>
     <td class="a"><span class="${p?"player-link":""}">${siteEsc(e.name)}</span>${p?" "+nflStatusChip(p):""}${e.src==="usage"
       ?` <span class="sub" title="promoted: real ${st} usage and rating beat the listed starter">&uarr; usage</span>`:""}</td>
-    <td>${gb(e.r)}</td>
-    <td><span class="num">${Math.round((e.share||0)*100)}%</span></td></tr>`;};
+    <td>${rc}</td>
+    <td>${noG?`<span class="sub" title="no ${st} regular-season snaps yet">&ndash;</span>`:`<span class="num">${Math.round((e.share||0)*100)}%</span>`}</td></tr>`;};
   const tbl=(side,title)=>L[side]&&L[side].length?`<div class="subh">${title}</div><div class="twrap"><table>
     <thead><tr><th class="a"></th><th class="a">Player</th><th>Rating</th><th>${st} snap %</th></tr></thead>
     <tbody>${L[side].map(lrow).join("")}</tbody></table></div>`:"";
   return `<div class="panel"><h3>${code} ${opt&&opt.title?opt.title:"projected lineup"} <span class="sub ${stale?"warnc":""}">depth chart ${L.dt?nflShortDay(L.dt):"?"}${stale?` &mdash; ${age} days old`:""}${L.inj_week?` &middot; injury report wk ${L.inj_week}`:""}</span></h3>
     ${tbl("off","Offense")}${tbl("def","Defense")}
     <div class="sub" style="margin-top:8px">Depth-chart starters with Out/Doubtful players removed, promoted (&uarr;) when real usage and
-      rating say the chart is stale. Re-read at every model serve.</div></div>`;
+      rating say the chart is stale. Snap % is the ${st} regular season (&ndash; = no snaps yet). Re-read at every model serve.</div></div>`;
 }
 function nflGamePage(key){
   const n=state.nfl, sch=n.schedule||[], today=nflToday();
@@ -3018,6 +3380,7 @@ function nflGamePage(key){
     ${hasRec?cmpRow("pts / gm",gp(A)?A.pf/gp(A):null,gp(H)?H.pf/gp(H):null,x=>x==null?"-":x.toFixed(1),"hi"):""}
     ${hasRec?cmpRow("allowed / gm",gp(A)?A.pa/gp(A):null,gp(H)?H.pa/gp(H):null,x=>x==null?"-":x.toFixed(1),"lo"):""}
     ${hasRec?cmpRow("away / home",A.away||"-",H.home||"-"):""}
+    ${hasRec?cmpRow("div / conf",`${A.div_rec||"-"} / ${A.conf_rec||"-"}`,`${H.div_rec||"-"} / ${H.conf_rec||"-"}`):""}
     ${hasRec?cmpRow("streak",A.streak||"-",H.streak||"-"):""}
     ${A.prev&&H.prev&&A.prev.season!==rs?cmpRow(`${A.prev.season} record`,nflRec(A.prev),nflRec(H.prev)):""}
     ${cmpRow("our Elo",A.elo,H.elo,f0,"hi")}
@@ -3030,7 +3393,9 @@ function nflGamePage(key){
     ${cmpRow("pass def EPA",A.def_pass,H.def_pass,nflS1,"hi")}
     ${cmpRow("run def EPA",A.def_run,H.def_run,nflS1,"hi")}
     ${cmpRow("rest days",g.arest,g.hrest,x=>x==null?"-":x,"hi")}
-    ${A.proj&&H.proj?cmpRow(`proj ${n.season} wins`,A.proj.w,H.proj.w,x=>x==null?"-":x.toFixed(1),"hi"):""}
+    ${A.proj&&H.proj?(()=>{const a=A.proj.w, h=H.proj.w;     // cmpRow's markup, with each side's own spread
+      return `<tr><td class="a ${a>h?"win":""}"><span class="num">${nflProjW(A.proj)}</span></td><td class="lbl">proj ${n.season} wins</td>
+        <td class="h ${h>a?"win":""}"><span class="num">${nflProjW(H.proj)}</span></td></tr>`;})():""}
     ${A.proj&&H.proj?cmpRow("playoff odds",A.proj.po,H.proj.po,nflPo,"hi"):""}
   </table>`;
   // ---- signals
@@ -3061,7 +3426,8 @@ function nflGamePage(key){
     ?`<div class="panel"><h3>Injury report <span class="sub">Week ${g.w}</span></h3>${injList(away,A)}${injList(home,H)}
       <div class="sub" style="margin-top:8px">Out/Doubtful players are removed from the projected lineups; Questionable players enter through the
         availability simulation.</div></div>`:"";
-  const val=nflValBar(g);
+  const val=nflValBar(g)||(!c.done&&!overdue&&g.value_blocked
+    ?`<div class="sub" style="margin:0 0 8px">No EDGE badge on this game: ${siteEsc(g.value_blocked)}.</div>`:"");
   const live=c.done
     ?`<div class="livepanel" style="display:flex"><span class="sc">${away} ${g.as} &ndash; ${g.hs} ${home}</span><span class="st">Final</span></div>`
     :`<div class="livepanel" id="livepanel" data-ng="${away}_${home}" data-d="${g.d}" data-away="${away}" data-home="${home}"></div>`;
@@ -3102,7 +3468,10 @@ function nflGamePage(key){
     ${lineups}`;
 }
 
-/* MLB pages: players, positions, game, standings, teams, player. */
+/* MLB pages: players, positions, game, standings, teams, player.
+   Every link these pages draw is league-qualified (siteHref("mlb",...)): a bare
+   #/team/SEA opened in a new tab or shared resolves against the READER's last
+   league and opened the Seattle Seahawks or Kraken instead of the Mariners. */
 /* ---------- PLAYERS TAB ---------- */
 function playersPage(){
   if(state.league==="nfl"&&state.nfl) return nflPlayers();
@@ -3110,19 +3479,19 @@ function playersPage(){
   const db=state.db, P=Object.values(db.players||{});
   const bats=P.filter(p=>p.role==="batter"&&p.ts100!=null).sort((a,b)=>b.ts100-a.ts100);
   const pits=P.filter(p=>p.role==="pitcher"&&p.ts100!=null).sort((a,b)=>b.ts100-a.ts100);
-  const brow=(p,i)=>`<tr onclick="location.hash='#/player/${p.id}'">
+  const brow=(p,i)=>`<tr onclick="location.hash='${siteHref("mlb","player",p.id)}'">
     <td><span class="num">${i+1}</span></td>
     <td class="a"><span class="player-link">${p.name}</span> <span class="sub">${p.pos} &middot; ${p.team}</span></td>
     <td>${gb(p.ts100)}</td>
     <td><span class="num">${p.ts_mu!=null?p.ts_mu.toFixed(1):"-"}</span></td>
     <td class="sub">${p.bat?`${p.bat.ops!=null?p.bat.ops:"-"} OPS &middot; ${p.bat.hr||0} HR &middot; ${p.bat.sb||0} SB`:"&mdash;"}</td></tr>`;
-  const prow=(p,i)=>`<tr onclick="location.hash='#/player/${p.id}'">
+  const prow=(p,i)=>`<tr onclick="location.hash='${siteHref("mlb","player",p.id)}'">
     <td><span class="num">${i+1}</span></td>
     <td class="a"><span class="player-link">${p.name}</span> <span class="sub">${p.pos} &middot; ${p.team}</span></td>
     <td>${gb(p.ts100)}</td>
     <td><span class="num">${p.ts_mu!=null?p.ts_mu.toFixed(1):"-"}</span></td>
     <td class="sub">${p.pit?`${p.pit.era!=null?p.pit.era:"-"} ERA &middot; ${p.pit.whip!=null?p.pit.whip:"-"} WHIP &middot; ${p.pit.so||0} K`:"&mdash;"}</td></tr>`;
-  const tbl=(title,rows,statHdr,key)=>`<div class="panel"><h3 style="cursor:pointer" onclick="location.hash='#/pos/${key}'">${title} <span class="sub" style="font-weight:400">all &rarr;</span></h3><div class="twrap"><table>
+  const tbl=(title,rows,statHdr,key)=>`<div class="panel"><h3 style="cursor:pointer" onclick="location.hash='${siteHref("mlb","pos",key)}'">${title} <span class="sub" style="font-weight:400">all &rarr;</span></h3><div class="twrap"><table>
     <thead><tr><th></th><th>Player</th><th>GlassBox</th><th class="nocase">&mu;</th><th>${statHdr}</th></tr></thead>
     <tbody>${rows}</tbody></table></div></div>`;
   $("#view").innerHTML=`<div class="eyebrow">Database &middot; MLB</div><h1 class="pt">Players</h1>
@@ -3141,7 +3510,7 @@ function playersPage(){
     if(q.length<2){res.innerHTML="";return;}
     const hits=P.filter(p=>norm(p.name).includes(q)).slice(0,20);
     res.innerHTML=hits.length?`<div class="twrap" style="margin-bottom:6px"><table><tbody>
-      ${hits.map(p=>`<tr onclick="location.hash='#/player/${p.id}'">
+      ${hits.map(p=>`<tr onclick="location.hash='${siteHref("mlb","player",p.id)}'">
         <td class="a"><span class="player-link">${p.name}</span> <span class="sub">${p.pos} &middot; ${p.team}</span></td>
         <td>${gb(p.ts100)}</td>
         <td class="sub">${p.role==="pitcher"?(p.pit?`${p.pit.era!=null?p.pit.era:"-"} ERA`:""):(p.bat?`${p.bat.ops!=null?p.bat.ops:"-"} OPS`:"")}</td></tr>`).join("")}
@@ -3184,10 +3553,10 @@ function mlbPosPage(key){
   const line=p=>isBat?(p.bat?`${p.bat.ops!=null?p.bat.ops:"-"} OPS &middot; ${p.bat.hr||0} HR &middot; ${p.bat.rbi||0} RBI`:"&mdash;")
                      :(p.pit?`${p.pit.era!=null?p.pit.era:"-"} ERA &middot; ${p.pit.whip!=null?p.pit.whip:"-"} WHIP &middot; ${p.pit.so||0} K`:"&mdash;");
   const vol=p=>isBat?((p.bat&&p.bat.pa)||0):((p.pit&&p.pit.ip)||0);
-  const row=(p,i)=>`<tr onclick="location.hash='#/player/${p.id}'">
+  const row=(p,i)=>`<tr onclick="location.hash='${siteHref("mlb","player",p.id)}'">
     <td><span class="num">${i+1}</span></td>
     <td class="a"><span class="player-link">${p.name}</span> <span class="sub">${p.pos}</span></td>
-    <td>${teamLink(p.team)}</td>
+    <td>${teamLink(p.team,p.team,"mlb")}</td>
     <td>${gb(p.ts100)}</td>
     <td><span class="num">${p.ts_mu!=null?p.ts_mu.toFixed(1):"-"}</span></td>
     <td class="sub">${line(p)}</td></tr>`;
@@ -3201,14 +3570,14 @@ function mlbPosPage(key){
     $("#posbody").innerHTML=P.map(row).join("")||`<tr><td class="sub" colspan="6">No players match.</td></tr>`;
     $("#posn").textContent=P.length;
   };
-  $("#view").innerHTML=`<a class="back" href="#/players">&lsaquo; Players</a>
+  $("#view").innerHTML=`<a class="back" href="${siteHref("mlb","players")}">&lsaquo; Players</a>
     <div class="eyebrow">TrueSkill ladder &middot; MLB</div><h1 class="pt">${isBat?"Hitters":"Pitchers"}</h1>
     <div class="sub" style="margin-bottom:10px"><b>${all.length}</b> rated ${key} &middot; league &mu; ${mMu.toFixed(1)}
       &middot; every plate appearance is a batter-vs-pitcher TrueSkill duel; 50 = league average. Click anyone.</div>
     <div class="grid" style="margin-bottom:14px">
       <div class="panel"><h3>Rating distribution</h3>${histBars(all.map(p=>p.ts100))}</div>
       <div class="panel"><h3>Best team ${isBat?"lineups":"staffs"} <span class="sub" style="font-weight:400">roster TrueSkill average</span></h3>
-        <div class="twrap"><table><tbody>${T.map(([ab,v,code],i)=>`<tr onclick="location.hash='#/team/${code}'">
+        <div class="twrap"><table><tbody>${T.map(([ab,v,code],i)=>`<tr onclick="location.hash='${siteHref("mlb","team",code)}'">
           <td><span class="num">${i+1}</span></td><td class="a"><span class="ab" style="color:var(--accent)">${ab}</span></td>
           <td>${gb(v)}</td></tr>`).join("")}</tbody></table></div></div>
     </div>
@@ -3243,7 +3612,7 @@ function cmpRow(label,a,h,fmt,better){const f=fmt||(x=>x);
   return `<tr><td class="a ${aw}"><span class="num">${f(a)}</span></td><td class="lbl">${label}</td><td class="h ${hw}"><span class="num">${f(h)}</span></td></tr>`;}
 function gamePage(pk){
   setNav("");
-  const g=findGame(pk); if(!g){$("#view").innerHTML=`<div class="empty">Game not found. <a href="#/">Back to board</a></div>`;return;}
+  const g=findGame(pk); if(!g){$("#view").innerHTML=`<div class="empty">Game not found. <a href="${siteHref("mlb","")}">Back to board</a></div>`;return;}
   const db=state.db, hp=g.home_win_prob, homeWin=hp>=0.5, e=g.edge||{};
   const A=db.teams[g.away], H=db.teams[g.home];
   const pa=findPlayerByName(g.away_sp), ph=findPlayerByName(g.home_sp);
@@ -3268,8 +3637,8 @@ function gamePage(pk){
     ${cmpRow("Elo rank","#"+A.elo_rank,"#"+H.elo_rank,x=>x)}
   </table>`:`<div class="sub">team data unavailable</div>`;
   $("#view").innerHTML=`
-    <a class="back" href="#/">&lsaquo; Board</a>
-    <div class="gh"><span class="mt">${teamLink(g.away,g.away_abbr)} <span style="color:var(--faint)">@</span> ${teamLink(g.home,g.home_abbr)}</span>
+    <a class="back" href="${siteHref("mlb","")}">&lsaquo; Board</a>
+    <div class="gh"><span class="mt">${teamLink(g.away,g.away_abbr,"mlb")} <span style="color:var(--faint)">@</span> ${teamLink(g.home,g.home_abbr,"mlb")}</span>
       <span class="meta">${fmtDay(g.date,state.board.generated)} &middot; ${fmtTime(g.start_utc)}</span></div>
     <div class="livepanel" id="livepanel" data-pk="${g.game_pk}" data-home="${g.home_abbr}" data-away="${g.away_abbr}" data-pick="${g.pick}"></div>
     <div class="cols">
@@ -3308,11 +3677,11 @@ function gamePage(pk){
         <div class="panel"><h3>Starting pitchers</h3>
           <div class="mup">
             <div class="col a"><div class="nm">${pa?playerLinkByName(g.away_sp):g.away_sp}</div>
-              <div class="sub">${teamLink(g.away,g.away_abbr)}${pa&&pa.ts100!=null?" &middot; GlassBox "+pa.ts100:""}</div>
+              <div class="sub">${teamLink(g.away,g.away_abbr,"mlb")}${pa&&pa.ts100!=null?" &middot; GlassBox "+pa.ts100:""}</div>
               ${statline(pa)}</div>
             <div class="vs">vs</div>
             <div class="col h"><div class="nm">${ph?playerLinkByName(g.home_sp):g.home_sp}</div>
-              <div class="sub">${teamLink(g.home,g.home_abbr)}${ph&&ph.ts100!=null?" &middot; GlassBox "+ph.ts100:""}</div>
+              <div class="sub">${teamLink(g.home,g.home_abbr,"mlb")}${ph&&ph.ts100!=null?" &middot; GlassBox "+ph.ts100:""}</div>
               ${statline(ph)}</div>
           </div>
         </div>
@@ -3338,7 +3707,7 @@ function standings(){
     <div class="sub" style="margin-bottom:14px"><b>GlassBox</b> is the roster's 0-100 TrueSkill rating (50 = league average). <b>Luck</b> = win% minus pythagorean (large + = regression risk). <b>Elo</b> is our market-blind rating. Click any team.</div>`;
   html+=order.filter(d=>divs[d]).map(d=>{
     const rows=divs[d].sort((a,b)=>a.div_rank-b.div_rank).map(t=>`
-      <tr onclick="location.hash='#/team/${t.code}'">
+      <tr onclick="location.hash='${siteHref("mlb","team",t.code)}'">
         <td class="a"><span class="ab" style="color:var(--accent)">${t.abbr}</span></td>
         <td><span class="num">${t.w}-${t.l}</span></td><td><span class="num">${t.pct.toFixed(3).slice(1)}</span></td>
         <td><span class="num">${t.gb}</span></td>
@@ -3362,7 +3731,7 @@ function teamsPage(){
   if(state.league==="nhl"&&state.nhl) return nhlTeams();
   const db=state.db;
   const T=Object.values(db.teams).sort((a,b)=>(b.ts100||0)-(a.ts100||0));
-  const card=t=>`<div class="tcard" onclick="location.hash='#/team/${t.code}'">
+  const card=t=>`<div class="tcard" onclick="location.hash='${siteHref("mlb","team",t.code)}'">
     <div class="h"><span class="code">${t.abbr}</span><span class="nm">${t.name}</span>${gb(t.ts100)}</div>
     <div class="stat"><span>Rec <b>${t.w}-${t.l}</b></span><span>Diff <b>${t.run_diff>=0?"+":""}${t.run_diff}</b></span>
       <span>L10 <b>${t.l10}</b></span><span>Elo <b>${Math.round(t.elo)}</b></span></div>
@@ -3379,12 +3748,12 @@ function teamPage(code){
   if(state.league==="nfl"&&state.nfl) return nflTeamPage(code);
   if(state.league==="nhl"&&state.nhl) return nhlTeamPage(code);
   const db=state.db, t=db.teams[code];
-  if(!t){$("#view").innerHTML=`<div class="empty">Team not found. <a href="#/teams">All teams</a></div>`;return;}
+  if(!t){$("#view").innerHTML=`<div class="empty">Team not found. <a href="${siteHref("mlb","teams")}">All teams</a></div>`;return;}
   const roster=(t.roster||[]).map(id=>db.players[String(id)]).filter(Boolean);
   const bat=roster.filter(p=>p.role==="batter");
   const pit=roster.filter(p=>p.role==="pitcher");
   const cell=(v,cls)=>`<td><span class="num ${cls||""}">${v==null?"-":v}</span></td>`;
-  const prow=p=>`<tr onclick="location.hash='#/player/${p.id}'">
+  const prow=p=>`<tr onclick="location.hash='${siteHref("mlb","player",p.id)}'">
     <td class="a"><span class="num" style="color:var(--faint)">${p.pos}</span>
       <span style="margin-left:8px;font-weight:600">${p.name}</span></td>
     ${p.role==="batter"
@@ -3394,7 +3763,7 @@ function teamPage(code){
   const tbl=(title,rows,cols)=>`<div class="subh">${title}</div><div class="twrap"><table>
     <thead><tr><th>Player</th>${cols.map(c=>`<th>${c}</th>`).join("")}<th>GlassBox</th></tr></thead>
     <tbody>${rows.map(prow).join("")}</tbody></table></div>`;
-  $("#view").innerHTML=`<a class="back" href="#/teams">&lsaquo; Teams</a>
+  $("#view").innerHTML=`<a class="back" href="${siteHref("mlb","teams")}">&lsaquo; Teams</a>
     <div class="thead"><span class="code">${t.abbr}</span>
       <div><div style="font-size:15px;font-weight:600">${t.name}</div>
         <div class="sub">${t.div} &middot; #${t.div_rank} &middot; ${t.w}-${t.l} (${t.pct.toFixed(3).slice(1)})</div></div>
@@ -3421,7 +3790,7 @@ function playerPage(id){
   if(state.league==="nfl"&&state.nfl&&state.nfl.players[id]) return nflPlayerPage(id);
   if(state.league==="nhl"&&state.nhl&&state.nhl.players[id]) return nhlPlayerPage(id);
   const db=state.db, p=db.players[String(id)];
-  if(!p){$("#view").innerHTML=`<div class="empty">Player not found. <a href="#/teams">Teams</a></div>`;return;}
+  if(!p){$("#view").innerHTML=`<div class="empty">Player not found. <a href="${siteHref("mlb","teams")}">Teams</a></div>`;return;}
   const t=db.teams[p.team];
   const box=(k,v)=>`<div class="b"><div class="k">${k}</div><div class="v">${v==null?"-":v}</div></div>`;
   let season="", career="";
@@ -3434,9 +3803,9 @@ function playerPage(id){
     season=[["GS",b.gs],["IP",b.ip],["ERA",b.era],["WHIP",b.whip],["SO",b.so],["K/9",b.k9],["BB/9",b.bb9],["SV",b.sv]].map(([k,v])=>box(k,v)).join("");
     career=[["W-L",(c.w!=null?c.w+"-"+c.l:null)],["ERA",c.era],["IP",c.ip],["SO",c.so],["WHIP",c.whip],["GS",c.gs],["SV",c.sv]].map(([k,v])=>box(k,v)).join("");
   }
-  $("#view").innerHTML=`<a class="back" href="#/team/${p.team}">&lsaquo; ${t?t.name:p.team}</a>
+  $("#view").innerHTML=`<a class="back" href="${siteHref("mlb","team",p.team)}">&lsaquo; ${t?t.name:p.team}</a>
     <div class="phead"><span class="nm">${p.name}</span>
-      <span class="sub">${teamLink(p.team,p.team)} &middot; ${p.pos}${p.num?" &middot; #"+p.num:""}</span>
+      <span class="sub">${teamLink(p.team,p.team,"mlb")} &middot; ${p.pos}${p.num?" &middot; #"+p.num:""}</span>
       <span style="margin-left:auto">${gb(p.ts100)}</span></div>
     <div class="sub" style="margin-bottom:16px">GlassBox rating (0-100) &mdash; this player's per-plate-appearance TrueSkill rating vs league-average ${p.role}s. Market-blind.</div>
     <div class="pgrid">

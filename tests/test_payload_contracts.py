@@ -112,7 +112,12 @@ def test_board_bets_contract():
         assert {"league", "d", "away", "home", "team", "side", "dec", "ev"} <= set(p)
         assert p["league"] in ("mlb", "nfl", "nhl") and p["side"] in ("home", "away")
         assert p["dec"] is None or p["dec"] > 1.0
-    assert len(bets["pending"]) == bets["overall"]["n_open"]
+    # pending = EVERY unsettled, non-void bet (market/edge_ledger.attach_bets):
+    # not started (n_open) plus started-but-no-result (n_awaiting, which includes
+    # n_overdue). Equality with n_open alone held only while nothing was awaiting.
+    ov = bets["overall"]
+    assert len(bets["pending"]) == ov["n_open"] + ov["n_awaiting"]
+    assert sum(1 for p in bets["pending"] if p.get("status") == "open") == ov["n_open"]
 
 
 def test_record_page_reads_played_games_from_nfl_and_nhl():
