@@ -18,6 +18,7 @@ sys.path.insert(0, "phase0")
 from nhl_glicko2_eval import llv, load_games, run_elo  # noqa: E402
 from nhl_features_eval import build_features  # noqa: E402
 from nhl_contributions import contributions  # noqa: E402
+from nhl_serve_guards import needs_boundary_regression, schedule_rest  # noqa: E402
 from nhl_season_boundary import (  # noqa: E402
     current_season, display_teams, fmt_metric, is_playoff,
 )
@@ -125,29 +126,37 @@ def main():
     # ---- upcoming slate: predict from CURRENT states (in-season only) ----
     from datetime import date as _date
     n_upcoming = 0
+    R, xg_st, last = final_states(games, model)
+    from nhl_features_eval import XG_HA, XG_REGRESS
+    # Season boundary: the walk regresses ratings only when it crosses into a
+    # game of the new season. Before opening night there is none, so apply the
+    # model's own between-season regression here, once (nhl_serve_guards).
+    last_walked = max((g["season"] for g in games), default=CUR_SEASON)
+    if needs_boundary_regression(last_walked, CUR_SEASON):
+        rg = model["elo_cfg"]["regress"]
+        R = {t: 1500 + (r - 1500) * (1 - rg) for t, r in R.items()}
+        xg_st = {t: v * (1 - XG_REGRESS) for t, v in xg_st.items()}
+        print(f"[nhl_serve] season boundary {last_walked} -> {CUR_SEASON}: "
+              f"ratings regressed {rg:.0%} toward the mean before serving")
     if upcoming:
-        R, xg_st, last = final_states(games, model)
-        from nhl_features_eval import XG_HA
-        for u in upcoming:
+        served = [u for u in upcoming if u["home"] in R and u["away"] in R]  # refuse unresolved teams
+        # rest/b2b from each team's previous game PLAYED OR SCHEDULED
+        rests = schedule_rest(last, served)
+        for u, (rh, ra, hb2b, ab2b) in zip(served, rests):
             h, a = u["home"], u["away"]
-            if h not in R or a not in R:
-                continue                      # refuse unresolved teams
             elp = 1.0 / (1.0 + 10 ** (-((R[h] + model["elo_cfg"]["ha"]) - R[a]) / 400.0))
             elogit_u = float(np.log(max(elp, EPS) / max(1 - elp, EPS)))
-            d = _date.fromisoformat(u["d"])
-            def rst(team):
-                lg = last.get(team)
-                return min((d - _date.fromisoformat(lg)).days, 5) if lg else 3
-            hb2b = 1.0 if (last.get(h) and (d - _date.fromisoformat(last[h])).days <= 1) else 0.0
-            ab2b = 1.0 if (last.get(a) and (d - _date.fromisoformat(last[a])).days <= 1) else 0.0
             xgd = (xg_st.get(h, 0.0) + XG_HA) - xg_st.get(a, 0.0)
-            z = (b["intercept"] + c["elo_logit"] * elogit_u + c["rest"] * (rst(h) - rst(a))
+            z = (b["intercept"] + c["elo_logit"] * elogit_u + c["rest"] * (rh - ra)
                  + c["b2b_home"] * hb2b + c["b2b_away"] * ab2b + c["xg"] * xgd)
-            sched.append({"id": u["id"], "d": u["d"], "home": h, "away": a,
-                          "hp": round(float(sig(z)), 4), "hs": None, "as": None,
-                          "y": None, "ot": None, "playoff": u.get("playoff", 0),
-                          "ct": contributions(b["intercept"], c, elogit_u,
-                                              rst(h) - rst(a), hb2b, ab2b, xgd)})
+            row = {"id": u["id"], "d": u["d"], "home": h, "away": a,
+                   "hp": round(float(sig(z)), 4), "hs": None, "as": None,
+                   "y": None, "ot": None, "playoff": u.get("playoff", 0),
+                   "ct": contributions(b["intercept"], c, elogit_u,
+                                       rh - ra, hb2b, ab2b, xgd)}
+            if u.get("t"):
+                row["start_utc"] = u["t"]       # puck drop, for the card and the ledger
+            sched.append(row)
             n_upcoming += 1
         sched.sort(key=lambda s: (s["d"], s["id"]))
 
@@ -167,7 +176,10 @@ def main():
             rec[a]["w"] += 1
             rec[h]["otl" if ot else "l"] += 1
 
-    elo_r = model["elo_ratings"]; xg_r = model["xg_ratings"]
+    # current walked states (boundary-regressed), not the model freeze: the
+    # frozen table never moved in-season
+    elo_r = {t: round(v, 1) for t, v in R.items()}
+    xg_r = {t: round(v, 4) for t, v in xg_st.items()}
     # Active teams = those on the current season's schedule (played OR upcoming)
     # unioned with the previous season's. Keying off played games alone listed
     # 2 of 32 clubs on opening night; the 10-day upcoming window does not name
