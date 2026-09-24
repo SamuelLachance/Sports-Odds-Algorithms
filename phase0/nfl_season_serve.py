@@ -37,6 +37,9 @@ import numpy as np
 from sklearn.linear_model import LogisticRegression
 
 T0 = time.time()
+# QB feature keyed on the STARTER (first passer), not nflverse's post-game
+# primary passer - ledger row 77. Must be set before the prelude loads games.
+os.environ.setdefault("NFL_QB_STARTER", "1")
 coord_src = open("phase0/nfl_coord_tune.py", encoding="utf-8").read()
 exec(coord_src.split("X_CUR0 = X_of(F)")[0])  # full feature prelude  # noqa: S102
 print(f"[{time.time()-T0:.0f}s] prelude done ({len(games)} games)", flush=True)
@@ -114,8 +117,8 @@ for s_ in sorted(np.unique(seasons[test])):
     for k2, gi in enumerate(np.where(te)[0]):
         p_wf[pos[gi]] = pp[k2]
 repro = float(llv(y[test], p_wf).mean())
-print(f"[{time.time()-T0:.0f}s] TEST reproduction LL {repro:.5f} (ledger 0.61947)", flush=True)
-assert abs(repro - 0.61947) < 0.0005, "feature build does not reproduce the shipped model"
+print(f"[{time.time()-T0:.0f}s] TEST reproduction LL {repro:.5f} (ledger row 77: 0.61958)", flush=True)
+assert abs(repro - 0.61958) < 0.0005, "feature build does not reproduce the shipped model"
 
 # ---------------- production serving fit (the 2026 step of the walk-forward) ----------------
 # Coefficients are frozen through 2025 by protocol (no in-season refits): 2026
@@ -841,6 +844,15 @@ payload["model_card"]["ratings_model"] = {
     "test_ll": 0.63211, "acc": 64.6, "elo_ll": 0.63824,
     "note": "single-feature model from player ratings alone beats team Elo",
 }
+# The card's headline TEST numbers are the ones THIS serve just measured, not a
+# literal typed in once and left behind by later model changes (it read
+# 0.61947 / 47 tests after the model had moved on; ledger row 77 is 0.61958).
+_yt = y[test]
+payload["model_card"]["test_log_loss"] = round(repro, 5)
+payload["model_card"]["accuracy"] = round(100.0 * float(((p_wf > 0.5) == (_yt > 0.5))[_yt != 0.5].mean()), 1)
+# binary: older ledger rows carry cp1252 bytes (an em-dash), so a strict utf-8 read fails
+payload["model_card"]["n_tests"] = open("data/nfl_test_ledger.csv", "rb").read().rstrip(b"\n").count(b"\n")
+payload["model_card"]["qb_identity"] = "starter (first passer) - ledger row 77"
 payload["model_card"]["serve"] = {
     "fit": "all completed games through 2025, recency half-life 3 seasons, C=100",
     "test_repro_ll": round(repro, 5), "sims": S,
