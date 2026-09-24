@@ -26,7 +26,55 @@ from nfl_elo import DEV_SCORE_FROM, DEV_YEARS, TEST_YEARS, ll, load_games, run_e
 CLIP = 150.0
 
 
-def load_games_qb():
+STARTER_FR = {"STL": "LA", "SD": "LAC", "OAK": "LV", "JAC": "JAX"}
+
+
+def first_passers(path="data/nfl_duel_plays.csv"):
+    """(game_id, team) -> the game's FIRST passer: the de-facto starter, which is
+    what is knowable before kickoff. {} when the (local-only) play table is absent."""
+    if not os.path.exists(path):
+        return {}
+    first = {}
+    with open(path, encoding="utf-8") as fh:
+        for r in csv.DictReader(fh):
+            if not r.get("passer_player_id"):
+                continue
+            k = (r["game_id"], STARTER_FR.get(r["posteam"], r["posteam"]))
+            if k not in first:
+                first[k] = r["passer_player_id"]
+    return first
+
+
+def apply_starters(games, raw, qbw, first):
+    """Replace nflverse's listed QB with the game's first passer where they differ.
+
+    nflverse home_qb_id / away_qb_id is the POST-GAME primary passer (most
+    attempts), not the starter: in 2014_17_BUF_NE Brady threw New England's
+    first 17 passes and Garoppolo, who threw 20, is listed. Keying the QB
+    feature on the listed passer leaks who ended up playing - concentrated in
+    late-season rest games and in-game injuries - worth ~0.001 on DEV
+    (breakthrough audit 2026-09-24). Serving uses the depth-chart QB1, i.e. the
+    starter, so training on the starter also removes a train/serve mismatch.
+
+    Only a first passer who has a QB weekly line that week is used (a trick-play
+    pass by a receiver is not a start). Returns the number of sides changed.
+    """
+    n = 0
+    for g, r in zip(games, raw):
+        for key, team in (("home_qb", g["home"]), ("away_qb", g["away"])):
+            f = first.get((r["game_id"], team))
+            if f and f != g[key] and (f, g["season"], g["week"]) in qbw:
+                g[key] = f
+                n += 1
+    return n
+
+
+def load_games_qb(starter=None):
+    """Games with each side's QB. `starter` (default: env NFL_QB_STARTER=="1")
+    swaps nflverse's post-game primary passer for the first passer - see
+    apply_starters. Off by default so every ledger row keeps reproducing."""
+    if starter is None:
+        starter = os.environ.get("NFL_QB_STARTER") == "1"
     games = load_games()
     qb = {}
     for r in csv.DictReader(open("data/nfl_games.csv")):
@@ -41,6 +89,11 @@ def load_games_qb():
     for g, r in zip(games, raw):
         g["home_qb"], g["away_qb"] = r["home_qb_id"], r["away_qb_id"]
         g["week"] = int(r["week"])
+    if starter:
+        first = first_passers()
+        n = apply_starters(games, raw, load_qb_weeks(), first) if first else 0
+        print(f"[nfl_qb_elo] starter QB: {n} sides use the first passer instead of "
+              f"the listed primary passer" + ("" if first else " (play table absent)"), flush=True)
     return games
 
 
