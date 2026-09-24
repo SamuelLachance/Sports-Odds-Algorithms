@@ -41,6 +41,11 @@ header .wrap{display:flex;align-items:center;gap:20px;height:56px}
 nav.main{display:flex;gap:2px;min-width:0;overflow-x:auto;scrollbar-width:none}
 nav.main::-webkit-scrollbar{display:none}
 nav.main a{flex:none}
+/* a fade on whichever edge is clipped (siteNavFit sets .ovf/.ovl from the real overflow) */
+nav.main.ovf{-webkit-mask-image:linear-gradient(to right,#000 82%,transparent);mask-image:linear-gradient(to right,#000 82%,transparent)}
+nav.main.ovl{-webkit-mask-image:linear-gradient(to left,#000 82%,transparent);mask-image:linear-gradient(to left,#000 82%,transparent)}
+nav.main.ovf.ovl{-webkit-mask-image:linear-gradient(to right,transparent,#000 18%,#000 82%,transparent);
+  mask-image:linear-gradient(to right,transparent,#000 18%,#000 82%,transparent)}
 nav.main a{font-weight:600;font-size:13.5px;color:var(--muted);padding:7px 13px;border-radius:8px}
 nav.main a:hover{color:var(--ink);background:var(--panel)}
 nav.main a.on{color:var(--ink);background:var(--accent-2);box-shadow:inset 0 0 0 1px var(--line-2)}
@@ -67,6 +72,8 @@ h1.pt{font-family:var(--serif);font-size:26px;margin:2px 0 14px}
 .lg .n.early{border:1px dashed var(--line-2);border-radius:4px;padding:0 4px}
 .lg.down{border-style:dashed}
 .lg.down .n{color:var(--warn)}
+.lg.loading{cursor:progress}
+.lg.loading .n{animation:pulse 1.4s ease-in-out infinite}
 .filters{display:flex;gap:3px;margin-left:auto;background:var(--panel);border:1px solid var(--line);
   border-radius:10px;padding:3px}
 .filt{border:none;background:none;color:var(--muted);font-weight:600;font-size:13px;padding:6px 13px;
@@ -343,7 +350,6 @@ footer b{color:var(--muted)} footer a{color:var(--muted);text-decoration:underli
   .brand{font-size:18px}nav.main a{padding:6px 8px;font-size:12.5px}}
 @media(max-width:560px){.grid{grid-template-columns:1fr}.wrap{padding:0 12px}
   header .wrap{flex-wrap:wrap;height:auto;row-gap:4px;padding:8px 12px 6px}
-  nav.main{order:5;flex:1 0 100%;
-    -webkit-mask-image:linear-gradient(to right,#000 85%,transparent);mask-image:linear-gradient(to right,#000 85%,transparent)}
+  nav.main{order:5;flex:1 0 100%}
   nav.main a{padding:5px 8px;font-size:12px}
   .filters{margin-left:0}}

@@ -1,0 +1,51 @@
+{
+ "pick": "nhl_boxel",
+ "round": 2,
+ "frozen_at_utc": "2026-09-24T17:08Z",
+ "frozen_state": "written while phase0/bt_nhl_boxel_fetch.py was still pulling (about 500 of 9,371 DEV games on disk); no analysis code had opened data/bt_nhl_boxel_box.csv and no box-score statistic had been read. Nothing below may change after the screen runs; amendments go in a new dated key.",
+ "protocol": "documents/breakthrough_program_prereg_2026_09_24.md (binding). DEV = 2011-12..2017-18 scored by leave-one-season-out through phase0/nhl_depth_eval.py Ctx (mask n = 7,929); 2010-11 warm-up only; no TEST-season game is loaded, rated or scored. Market-blind: odds appear only in the evaluation-side close diagnostic (rows dated < 2018-07-01).",
+ "construction_frozen": {
+  "lineup_value": "phase0/bt_nhl_nhl_boxel.py lineup_pass (round-1 spec, unchanged): GSL = 0.75 G + 0.65 A + 0.075 SOG + 0.05 BLK - 0.075 PIM per skater-game; per-player decayed sums (0.99 per game, x0.8 at season boundaries) carried across teams and seasons; v = (S + mu*T0)/(T + T0), T0 = 10 h; mu = walk-forward position mean (entrants: walk-forward entrant pool from completed seasons); m = EWMA(0.8) of own prior TOI; L = sum over TONIGHT'S DRESSED SKATERS (box-score list) of (v - vbar_pos) m / 60; Ltil = L / walk-forward sd of team-game L.",
+  "goalie_level": "phase0/bt_nhl_gmar_gl.py gl_elo(mode='new') G_h/G_a for tonight's first-shot starter (bt_nhl_anatomy_build.load_starters); never win_goalie, never a max-shots starter.",
+  "elo": "phase0/bt_nhl_nhl_boxel.py elo_cell: E = (R_h + beta Ltil_h + gamma G_h + 30) - (R_a + beta Ltil_a + gamma G_a); shipped k 8 / ha 30 / regress 0.30, not re-tuned; logit of this probability replaces blend column 1; rest_diff, b2b_home, b2b_away, xg_diff unchanged; blend refit per fold.",
+  "grid": {"beta": [0, 15, 30, 45, 60], "gamma": [0, 60, 120, 180]},
+  "cell_selection": "nested: for each outer season, the cell with the lowest n-weighted inner-LOSO pair loss over the other six seasons (round-1 Evaluator.nested)",
+  "module_sha1_16_lf_normalised": {
+   "phase0/bt_nhl_nhl_boxel.py": "3b81943417e3e15c",
+   "phase0/bt_nhl_gmar_gl.py": "4890ce6efc1d007e",
+   "phase0/bt_nhl_anatomy_build.py": "8cfbfd95778db6db",
+   "phase0/nhl_depth_eval.py": "36f028b835c8acf2"
+  }
+ },
+ "arms": {
+  "P_PRIMARY": "lineup sum L AND starting-goalie level G, both INSIDE the W/L Elo (round-1 C3); (beta, gamma) nested over the full 5 x 4 grid.",
+  "A2_L_only": "lineup sum L inside, gamma = 0; beta nested over {0,15,30,45,60} (round-1 C2).",
+  "A3_G_inside_dL_beside": "G inside (gamma nested over {0,60,120,180}) plus dLtil = tonight's Ltil minus the team's trailing-10 mean Ltil as an extra blend column (round-1 C4)."
+ },
+ "references_not_arms": {
+  "C0": "shipped blend, DEV LOSO 0.672398 (the baseline every gain is measured against).",
+  "C1": "G inside only, gamma nested (round-1 C1 = gmar A1, DEV 0.672199); needed for the lineup increment P vs C1."
+ },
+ "dropped_from_round1_script": ["C5 on-ice process add-on", "C1b stand-in goalie build"],
+ "bar": "P nested gain vs C0 >= +0.00100 nats AND 10k paired game bootstrap 95% CI lower bound > 0 (seed 20260924) AND every gate below passes. A2/A3 are reported with the same statistics but only P decides eligibility; if P fails, no arm is promoted on this screen.",
+ "gates": {
+  "S1": "shipped DEV LOSO reproduced: n = 7,929 and |LL - 0.672398| < 2e-6",
+  "S2": "dropping xg_diff costs 0.00303 +- 0.0002 (the known effect)",
+  "S3": "(beta, gamma) = (0, 0) cell equals nhl_depth_eval.run_elo_arr exactly, and its design equals the shipped design",
+  "S4a": "box-score dressed skater set equals data/nhl_dressed.csv (shift charts) on >= 99% of sides",
+  "S4b": "box-score starter flag equals the first-shot starter on >= 99.5% of sides",
+  "S4c": "C1 cells equal bt_nhl_gmar_gl.gl_elo per game (max |dp| <= 1e-12)",
+  "S4d": "face validity: team-season mean L correlates positively with goals for per game",
+  "coverage": ">= 95% of DEV game-sides have a box side with >= 15 skaters",
+  "W2": "everything dated on/after each of 3 cutoffs scrambled -> every feature before the cutoff bit-identical",
+  "W5": "results, GA/xGA and box production/TOI scrambled from the cutoff (lineups and starters kept) -> every feature THROUGH the cutoff date bit-identical",
+  "W4": "no NaN in any scored feature; one mask (identical hash) for every arm"
+ },
+ "secondary_readouts_non_gating": {
+  "late_dev": "gain and 10k bootstrap CI on 2015-16..2017-18 (n about 3,731) for every arm",
+  "lineup_increment": "P vs C1 paired gain and CI",
+  "inside_vs_beside": "P vs A3 paired gain and CI",
+  "close_diag": "evaluation only: model minus de-vigged close LL on DEV slices (overall, non-#1 goalie, top-4 absent, team games 0-5)",
+  "D1_serving_projected_inputs": "SERVING DIAGNOSTIC, never eligible: the same per-season cells P picked, the same blend weights (fit on seasons != s with ACTUAL day-of inputs), but tonight's feature is computed from PROJECTED inputs: lineup = the team's previous game's dressed skaters, goalie = bt_nhl_gmar_gl.project_starters (modal starter over the last 20, rotated on a back-to-back). Team ratings and player state evolve exactly as in P (history uses the actual lineups). Measures how much of P survives before lineups and starters are confirmed (the PROJECTED / EARLY tiers)."
+ }
+}

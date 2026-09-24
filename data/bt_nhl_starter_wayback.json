@@ -1,0 +1,745 @@
+{
+ "generated": "2026-09-24T13:26:00",
+ "protocol": {
+  "source": "Internet Archive captures of nhl.com RO reports, 2022-23..2025-26; pre-game = header shows no start time and no Final",
+  "no_model_metric": true,
+  "market_use": "none"
+ },
+ "n_pregame_captures": 28,
+ "by_minutes_before_start": {
+  "[60,inf) min before": {
+   "team_sides": 0,
+   "with_bold_goalie": 0
+  },
+  "[30,60) min before": {
+   "team_sides": 6,
+   "with_bold_goalie": 0
+  },
+  "[20,30) min before": {
+   "team_sides": 14,
+   "with_bold_goalie": 0
+  },
+  "[15,20) min before": {
+   "team_sides": 2,
+   "with_bold_goalie": 2
+  },
+  "[10,15) min before": {
+   "team_sides": 4,
+   "with_bold_goalie": 2
+  },
+  "[5,10) min before": {
+   "team_sides": 16,
+   "with_bold_goalie": 12
+  },
+  "[0,5) min before": {
+   "team_sides": 4,
+   "with_bold_goalie": 4
+  },
+  "[-inf,0) min before": {
+   "team_sides": 10,
+   "with_bold_goalie": 10
+  }
+ },
+ "captures": [
+  {
+   "gid": 2025020911,
+   "type": 2,
+   "matchup": "PHI@WSH",
+   "capture_utc": "2026-02-25T23:02:43+00:00",
+   "gen_local": "2026-02-25-18.02.22",
+   "start_utc": "2026-02-26T00:00:00Z",
+   "venue_offset": "-05:00",
+   "gen_min_before_start": 57.6,
+   "capture_min_before_start": 57.3,
+   "n_tables": 2,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 2
+   },
+   "bold_goalie": {
+    "away": 0,
+    "home": 0
+   },
+   "bold_skaters": {
+    "away": 0,
+    "home": 0
+   },
+   "wayback": "https://web.archive.org/web/20260225230243/https://www.nhl.com/scores/htmlreports/20252026/RO020911.HTM"
+  },
+  {
+   "gid": 2022020022,
+   "type": 2,
+   "matchup": "MTL@DET",
+   "capture_utc": "2022-10-14T22:06:27+00:00",
+   "gen_local": "2022-10-14-18.05.28",
+   "start_utc": "2022-10-14T23:00:00Z",
+   "venue_offset": "-04:00",
+   "gen_min_before_start": 54.5,
+   "capture_min_before_start": 53.5,
+   "n_tables": 4,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 2
+   },
+   "bold_goalie": {
+    "away": 0,
+    "home": 0
+   },
+   "bold_skaters": {
+    "away": 0,
+    "home": 0
+   },
+   "wayback": "https://web.archive.org/web/20221014220627/https://www.nhl.com/scores/htmlreports/20222023/RO020022.HTM"
+  },
+  {
+   "gid": 2022020088,
+   "type": 2,
+   "matchup": "ANA@DET",
+   "capture_utc": "2022-10-23T20:29:33+00:00",
+   "gen_local": "2022-10-23-16.29.17",
+   "start_utc": "2022-10-23T21:00:00Z",
+   "venue_offset": "-04:00",
+   "gen_min_before_start": 30.7,
+   "capture_min_before_start": 30.4,
+   "n_tables": 2,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 2
+   },
+   "bold_goalie": {
+    "away": 0,
+    "home": 0
+   },
+   "bold_skaters": {
+    "away": 0,
+    "home": 0
+   },
+   "wayback": "https://web.archive.org/web/20221023202933/https://www.nhl.com/scores/htmlreports/20222023/RO020088.HTM"
+  },
+  {
+   "gid": 2022020111,
+   "type": 2,
+   "matchup": "DET@BOS",
+   "capture_utc": "2022-10-27T22:32:26+00:00",
+   "gen_local": "2022-10-27-18.31.27",
+   "start_utc": "2022-10-27T23:00:00Z",
+   "venue_offset": "-04:00",
+   "gen_min_before_start": 28.6,
+   "capture_min_before_start": 27.6,
+   "n_tables": 2,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 2
+   },
+   "bold_goalie": {
+    "away": 0,
+    "home": 0
+   },
+   "bold_skaters": {
+    "away": 0,
+    "home": 0
+   },
+   "wayback": "https://web.archive.org/web/20221027223226/https://www.nhl.com/scores/htmlreports/20222023/RO020111.HTM"
+  },
+  {
+   "gid": 2024030311,
+   "type": 3,
+   "matchup": "FLA@CAR",
+   "capture_utc": "2025-05-20T23:33:20+00:00",
+   "gen_local": "2025-05-20-19.32.28",
+   "start_utc": "2025-05-21T00:00:00Z",
+   "venue_offset": "-04:00",
+   "gen_min_before_start": 27.5,
+   "capture_min_before_start": 26.7,
+   "n_tables": 2,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 2
+   },
+   "bold_goalie": {
+    "away": 0,
+    "home": 0
+   },
+   "bold_skaters": {
+    "away": 0,
+    "home": 0
+   },
+   "wayback": "https://web.archive.org/web/20250520233320/https://www.nhl.com/scores/htmlreports/20242025/RO030311.HTM"
+  },
+  {
+   "gid": 2022020311,
+   "type": 2,
+   "matchup": "NSH@DET",
+   "capture_utc": "2022-11-23T23:33:16+00:00",
+   "gen_local": "2022-11-23-18.33.05",
+   "start_utc": "2022-11-24T00:00:00Z",
+   "venue_offset": "-05:00",
+   "gen_min_before_start": 26.9,
+   "capture_min_before_start": 26.7,
+   "n_tables": 2,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 3
+   },
+   "bold_goalie": {
+    "away": 0,
+    "home": 0
+   },
+   "bold_skaters": {
+    "away": 0,
+    "home": 0
+   },
+   "wayback": "https://web.archive.org/web/20221123233316/https://www.nhl.com/scores/htmlreports/20222023/RO020311.HTM"
+  },
+  {
+   "gid": 2022020102,
+   "type": 2,
+   "matchup": "NJD@DET",
+   "capture_utc": "2022-10-25T22:34:41+00:00",
+   "gen_local": "2022-10-25-18.34.29",
+   "start_utc": "2022-10-25T23:00:00Z",
+   "venue_offset": "-04:00",
+   "gen_min_before_start": 25.5,
+   "capture_min_before_start": 25.3,
+   "n_tables": 2,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 2
+   },
+   "bold_goalie": {
+    "away": 0,
+    "home": 0
+   },
+   "bold_skaters": {
+    "away": 0,
+    "home": 0
+   },
+   "wayback": "https://web.archive.org/web/20221025223441/https://www.nhl.com/scores/htmlreports/20222023/RO020102.HTM"
+  },
+  {
+   "gid": 2024020664,
+   "type": 2,
+   "matchup": "CHI@DET",
+   "capture_utc": "2025-01-10T23:35:49+00:00",
+   "gen_local": "2025-01-10-18.35.36",
+   "start_utc": "2025-01-11T00:00:00Z",
+   "venue_offset": "-05:00",
+   "gen_min_before_start": 24.4,
+   "capture_min_before_start": 24.2,
+   "n_tables": 4,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 2
+   },
+   "bold_goalie": {
+    "away": 0,
+    "home": 0
+   },
+   "bold_skaters": {
+    "away": 0,
+    "home": 0
+   },
+   "wayback": "https://web.archive.org/web/20250110233549/https://www.nhl.com/scores/htmlreports/20242025/RO020664.HTM"
+  },
+  {
+   "gid": 2024020573,
+   "type": 2,
+   "matchup": "NJD@CAR",
+   "capture_utc": "2024-12-28T23:37:40+00:00",
+   "gen_local": "2024-12-28-18.37.01",
+   "start_utc": "2024-12-29T00:00:00Z",
+   "venue_offset": "-05:00",
+   "gen_min_before_start": 23.0,
+   "capture_min_before_start": 22.3,
+   "n_tables": 2,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 3
+   },
+   "bold_goalie": {
+    "away": 0,
+    "home": 0
+   },
+   "bold_skaters": {
+    "away": 0,
+    "home": 0
+   },
+   "wayback": "https://web.archive.org/web/20241228233740/https://www.nhl.com/scores/htmlreports/20242025/RO020573.HTM"
+  },
+  {
+   "gid": 2024020850,
+   "type": 2,
+   "matchup": "VGK@NYI",
+   "capture_utc": "2025-02-05T00:07:49+00:00",
+   "gen_local": "2025-02-04-19.07.12",
+   "start_utc": "2025-02-05T00:30:00Z",
+   "venue_offset": "-05:00",
+   "gen_min_before_start": 22.8,
+   "capture_min_before_start": 22.2,
+   "n_tables": 4,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 2
+   },
+   "bold_goalie": {
+    "away": 0,
+    "home": 0
+   },
+   "bold_skaters": {
+    "away": 0,
+    "home": 0
+   },
+   "wayback": "https://web.archive.org/web/20250205000749/https://www.nhl.com/scores/htmlreports/20242025/RO020850.HTM"
+  },
+  {
+   "gid": 2022020279,
+   "type": 2,
+   "matchup": "DET@CBJ",
+   "capture_utc": "2022-11-19T23:41:17+00:00",
+   "gen_local": "2022-11-19-18.40.47",
+   "start_utc": "2022-11-20T00:00:00Z",
+   "venue_offset": "-05:00",
+   "gen_min_before_start": 19.2,
+   "capture_min_before_start": 18.7,
+   "n_tables": 4,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 2
+   },
+   "bold_goalie": {
+    "away": 1,
+    "home": 1
+   },
+   "bold_skaters": {
+    "away": 0,
+    "home": 0
+   },
+   "wayback": "https://web.archive.org/web/20221119234117/https://www.nhl.com/scores/htmlreports/20222023/RO020279.HTM"
+  },
+  {
+   "gid": 2022021269,
+   "type": 2,
+   "matchup": "VGK@DAL",
+   "capture_utc": "2023-04-08T19:16:30+00:00",
+   "gen_local": "2023-04-08-14.15.55",
+   "start_utc": "2023-04-08T19:30:00Z",
+   "venue_offset": "-05:00",
+   "gen_min_before_start": 14.1,
+   "capture_min_before_start": 13.5,
+   "n_tables": 4,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 2
+   },
+   "bold_goalie": {
+    "away": 1,
+    "home": 1
+   },
+   "bold_skaters": {
+    "away": 0,
+    "home": 0
+   },
+   "wayback": "https://web.archive.org/web/20230408191630/https://www.nhl.com/scores/htmlreports/20222023/RO021269.HTM"
+  },
+  {
+   "gid": 2022020132,
+   "type": 2,
+   "matchup": "MIN@DET",
+   "capture_utc": "2022-10-29T22:47:46+00:00",
+   "gen_local": "2022-10-29-18.47.08",
+   "start_utc": "2022-10-29T23:00:00Z",
+   "venue_offset": "-04:00",
+   "gen_min_before_start": 12.9,
+   "capture_min_before_start": 12.2,
+   "n_tables": 2,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 2
+   },
+   "bold_goalie": {
+    "away": 0,
+    "home": 0
+   },
+   "bold_skaters": {
+    "away": 0,
+    "home": 0
+   },
+   "wayback": "https://web.archive.org/web/20221029224746/https://www.nhl.com/scores/htmlreports/20222023/RO020132.HTM"
+  },
+  {
+   "gid": 2024020396,
+   "type": 2,
+   "matchup": "DET@BOS",
+   "capture_utc": "2024-12-03T23:51:35+00:00",
+   "gen_local": "2024-12-03-18.50.39",
+   "start_utc": "2024-12-04T00:00:00Z",
+   "venue_offset": "-05:00",
+   "gen_min_before_start": 9.3,
+   "capture_min_before_start": 8.4,
+   "n_tables": 4,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 2
+   },
+   "bold_goalie": {
+    "away": 1,
+    "home": 1
+   },
+   "bold_skaters": {
+    "away": 0,
+    "home": 0
+   },
+   "wayback": "https://web.archive.org/web/20241203235135/https://www.nhl.com/scores/htmlreports/20242025/RO020396.HTM"
+  },
+  {
+   "gid": 2024020399,
+   "type": 2,
+   "matchup": "FLA@PIT",
+   "capture_utc": "2024-12-03T23:51:35+00:00",
+   "gen_local": "2024-12-03-18.50.51",
+   "start_utc": "2024-12-04T00:00:00Z",
+   "venue_offset": "-05:00",
+   "gen_min_before_start": 9.2,
+   "capture_min_before_start": 8.4,
+   "n_tables": 4,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 2
+   },
+   "bold_goalie": {
+    "away": 1,
+    "home": 0
+   },
+   "bold_skaters": {
+    "away": 5,
+    "home": 0
+   },
+   "wayback": "https://web.archive.org/web/20241203235135/https://www.nhl.com/scores/htmlreports/20242025/RO020399.HTM"
+  },
+  {
+   "gid": 2024020398,
+   "type": 2,
+   "matchup": "NYI@MTL",
+   "capture_utc": "2024-12-03T23:51:36+00:00",
+   "gen_local": "2024-12-03-18.50.52",
+   "start_utc": "2024-12-04T00:00:00Z",
+   "venue_offset": "-05:00",
+   "gen_min_before_start": 9.1,
+   "capture_min_before_start": 8.4,
+   "n_tables": 4,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 2
+   },
+   "bold_goalie": {
+    "away": 1,
+    "home": 1
+   },
+   "bold_skaters": {
+    "away": 5,
+    "home": 0
+   },
+   "wayback": "https://web.archive.org/web/20241203235136/https://www.nhl.com/scores/htmlreports/20242025/RO020398.HTM"
+  },
+  {
+   "gid": 2022020255,
+   "type": 2,
+   "matchup": "DET@ANA",
+   "capture_utc": "2022-11-16T02:51:16+00:00",
+   "gen_local": "2022-11-15-18.51.04",
+   "start_utc": "2022-11-16T03:00:00Z",
+   "venue_offset": "-08:00",
+   "gen_min_before_start": 8.9,
+   "capture_min_before_start": 8.7,
+   "n_tables": 2,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 2
+   },
+   "bold_goalie": {
+    "away": 0,
+    "home": 0
+   },
+   "bold_skaters": {
+    "away": 0,
+    "home": 0
+   },
+   "wayback": "https://web.archive.org/web/20221116025116/https://www.nhl.com/scores/htmlreports/20222023/RO020255.HTM"
+  },
+  {
+   "gid": 2024020400,
+   "type": 2,
+   "matchup": "SJS@WSH",
+   "capture_utc": "2024-12-03T23:51:35+00:00",
+   "gen_local": "2024-12-03-18.51.03",
+   "start_utc": "2024-12-04T00:00:00Z",
+   "venue_offset": "-05:00",
+   "gen_min_before_start": 8.9,
+   "capture_min_before_start": 8.4,
+   "n_tables": 4,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 2
+   },
+   "bold_goalie": {
+    "away": 1,
+    "home": 1
+   },
+   "bold_skaters": {
+    "away": 5,
+    "home": 0
+   },
+   "wayback": "https://web.archive.org/web/20241203235135/https://www.nhl.com/scores/htmlreports/20242025/RO020400.HTM"
+  },
+  {
+   "gid": 2024020401,
+   "type": 2,
+   "matchup": "SEA@CAR",
+   "capture_utc": "2024-12-03T23:51:33+00:00",
+   "gen_local": "2024-12-03-18.51.11",
+   "start_utc": "2024-12-04T00:00:00Z",
+   "venue_offset": "-05:00",
+   "gen_min_before_start": 8.8,
+   "capture_min_before_start": 8.4,
+   "n_tables": 3,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 3
+   },
+   "bold_goalie": {
+    "away": 1,
+    "home": 0
+   },
+   "bold_skaters": {
+    "away": 5,
+    "home": 0
+   },
+   "wayback": "https://web.archive.org/web/20241203235133/https://www.nhl.com/scores/htmlreports/20242025/RO020401.HTM"
+  },
+  {
+   "gid": 2024020397,
+   "type": 2,
+   "matchup": "COL@BUF",
+   "capture_utc": "2024-12-03T23:51:33+00:00",
+   "gen_local": "2024-12-03-18.51.24",
+   "start_utc": "2024-12-04T00:00:00Z",
+   "venue_offset": "-05:00",
+   "gen_min_before_start": 8.6,
+   "capture_min_before_start": 8.4,
+   "n_tables": 4,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 2
+   },
+   "bold_goalie": {
+    "away": 1,
+    "home": 1
+   },
+   "bold_skaters": {
+    "away": 0,
+    "home": 0
+   },
+   "wayback": "https://web.archive.org/web/20241203235133/https://www.nhl.com/scores/htmlreports/20242025/RO020397.HTM"
+  },
+  {
+   "gid": 2022020542,
+   "type": 2,
+   "matchup": "VAN@EDM",
+   "capture_utc": "2022-12-24T01:55:00+00:00",
+   "gen_local": "2022-12-23-18.54.31",
+   "start_utc": "2022-12-24T02:00:00Z",
+   "venue_offset": "-07:00",
+   "gen_min_before_start": 5.5,
+   "capture_min_before_start": 5.0,
+   "n_tables": 4,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 2
+   },
+   "bold_goalie": {
+    "away": 1,
+    "home": 1
+   },
+   "bold_skaters": {
+    "away": 5,
+    "home": 5
+   },
+   "wayback": "https://web.archive.org/web/20221224015500/https://www.nhl.com/scores/htmlreports/20222023/RO020542.HTM"
+  },
+  {
+   "gid": 2025020817,
+   "type": 2,
+   "matchup": "FLA@MIN",
+   "capture_utc": "2026-01-25T01:55:52+00:00",
+   "gen_local": "2026-01-24-19.55.05",
+   "start_utc": "2026-01-25T02:00:00Z",
+   "venue_offset": "-06:00",
+   "gen_min_before_start": 4.9,
+   "capture_min_before_start": 4.1,
+   "n_tables": 4,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 2
+   },
+   "bold_goalie": {
+    "away": 1,
+    "home": 1
+   },
+   "bold_skaters": {
+    "away": 5,
+    "home": 5
+   },
+   "wayback": "https://web.archive.org/web/20260125015552/https://www.nhl.com/scores/htmlreports/20252026/RO020817.HTM"
+  },
+  {
+   "gid": 2025020759,
+   "type": 2,
+   "matchup": "CAR@NJD",
+   "capture_utc": "2026-01-17T23:56:21+00:00",
+   "gen_local": "2026-01-17-18.55.32",
+   "start_utc": "2026-01-18T00:00:00Z",
+   "venue_offset": "-05:00",
+   "gen_min_before_start": 4.5,
+   "capture_min_before_start": 3.6,
+   "n_tables": 4,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 2
+   },
+   "bold_goalie": {
+    "away": 1,
+    "home": 1
+   },
+   "bold_skaters": {
+    "away": 5,
+    "home": 5
+   },
+   "wayback": "https://web.archive.org/web/20260117235621/https://www.nhl.com/scores/htmlreports/20252026/RO020759.HTM"
+  },
+  {
+   "gid": 2025020774,
+   "type": 2,
+   "matchup": "MIN@TOR",
+   "capture_utc": "2026-01-20T00:35:21+00:00",
+   "gen_local": "2026-01-19-19.35.01",
+   "start_utc": "2026-01-20T00:30:00Z",
+   "venue_offset": "-05:00",
+   "gen_min_before_start": -5.0,
+   "capture_min_before_start": -5.3,
+   "n_tables": 4,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 2
+   },
+   "bold_goalie": {
+    "away": 1,
+    "home": 1
+   },
+   "bold_skaters": {
+    "away": 5,
+    "home": 5
+   },
+   "wayback": "https://web.archive.org/web/20260120003521/https://www.nhl.com/scores/htmlreports/20252026/RO020774.HTM"
+  },
+  {
+   "gid": 2022030413,
+   "type": 3,
+   "matchup": "VGK@FLA",
+   "capture_utc": "2023-06-09T00:09:49+00:00",
+   "gen_local": "2023-06-08-20.08.53",
+   "start_utc": "2023-06-09T00:00:00Z",
+   "venue_offset": "-04:00",
+   "gen_min_before_start": -8.9,
+   "capture_min_before_start": -9.8,
+   "n_tables": 4,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 2
+   },
+   "bold_goalie": {
+    "away": 1,
+    "home": 1
+   },
+   "bold_skaters": {
+    "away": 5,
+    "home": 5
+   },
+   "wayback": "https://web.archive.org/web/20230609000949/https://www.nhl.com/scores/htmlreports/20222023/RO030413.HTM"
+  },
+  {
+   "gid": 2025021111,
+   "type": 2,
+   "matchup": "COL@WSH",
+   "capture_utc": "2026-03-22T16:39:19+00:00",
+   "gen_local": "2026-03-22-12.38.58",
+   "start_utc": "2026-03-22T16:30:00Z",
+   "venue_offset": "-04:00",
+   "gen_min_before_start": -9.0,
+   "capture_min_before_start": -9.3,
+   "n_tables": 4,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 2
+   },
+   "bold_goalie": {
+    "away": 1,
+    "home": 1
+   },
+   "bold_skaters": {
+    "away": 5,
+    "home": 5
+   },
+   "wayback": "https://web.archive.org/web/20260322163919/https://www.nhl.com/scores/htmlreports/20252026/RO021111.HTM"
+  },
+  {
+   "gid": 2023030313,
+   "type": 3,
+   "matchup": "NYR@FLA",
+   "capture_utc": "2024-05-26T19:10:45+00:00",
+   "gen_local": "2024-05-26-15.10.23",
+   "start_utc": "2024-05-26T19:00:00Z",
+   "venue_offset": "-04:00",
+   "gen_min_before_start": -10.4,
+   "capture_min_before_start": -10.8,
+   "n_tables": 4,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 2
+   },
+   "bold_goalie": {
+    "away": 1,
+    "home": 1
+   },
+   "bold_skaters": {
+    "away": 5,
+    "home": 5
+   },
+   "wayback": "https://web.archive.org/web/20240526191045/https://www.nhl.com/scores/htmlreports/20232024/RO030313.HTM"
+  },
+  {
+   "gid": 2025021044,
+   "type": 2,
+   "matchup": "BOS@WSH",
+   "capture_utc": "2026-03-14T19:13:24+00:00",
+   "gen_local": "2026-03-14-15.12.53",
+   "start_utc": "2026-03-14T19:00:00Z",
+   "venue_offset": "-04:00",
+   "gen_min_before_start": -12.9,
+   "capture_min_before_start": -13.4,
+   "n_tables": 4,
+   "dressed_goalies": {
+    "away": 2,
+    "home": 2
+   },
+   "bold_goalie": {
+    "away": 1,
+    "home": 1
+   },
+   "bold_skaters": {
+    "away": 5,
+    "home": 5
+   },
+   "wayback": "https://web.archive.org/web/20260314191324/https://www.nhl.com/scores/htmlreports/20252026/RO021044.HTM"
+  }
+ ]
+}

@@ -1,0 +1,224 @@
+{
+ "generated": "2026-09-24T13:10:59",
+ "protocol": {
+  "dev_only": true,
+  "test_touched": false,
+  "outcomes_read": false,
+  "market_use": "none",
+  "warm": 20102011,
+  "scored": [
+   20112012,
+   20122013,
+   20132014,
+   20142015,
+   20152016,
+   20162017,
+   20172018
+  ],
+  "starter_source": "first-shot goalie (== official starter on 300/300 sampled DEV sides)",
+  "rules_fixed_a_priori": true,
+  "window": 20
+ },
+ "all": {
+  "team_games": 16281,
+  "non1_share": 0.3552,
+  "b2b_second_night_share": 0.1736,
+  "prev": {
+   "accuracy": 0.5845,
+   "non1_recall": 0.326,
+   "non1_precision": 0.3662
+  },
+  "modal": {
+   "accuracy": 0.6448,
+   "non1_recall": 0.0,
+   "non1_precision": null
+  },
+  "b2b": {
+   "accuracy": 0.6662,
+   "non1_recall": 0.1743,
+   "non1_precision": 0.5362
+  },
+  "on_b2b_second_nights": {
+   "n": 2826,
+   "non1_share": 0.5527,
+   "b2b_rule_accuracy": 0.5708
+  }
+ },
+ "by_season": {
+  "20112012": {
+   "team_games": 2460,
+   "non1_share": 0.3411,
+   "b2b_second_night_share": 0.1691,
+   "prev": {
+    "accuracy": 0.6171,
+    "non1_recall": 0.3576,
+    "non1_precision": 0.3995
+   },
+   "modal": {
+    "accuracy": 0.6589,
+    "non1_recall": 0.0,
+    "non1_precision": null
+   },
+   "b2b": {
+    "accuracy": 0.6622,
+    "non1_recall": 0.1549,
+    "non1_precision": 0.4779
+   },
+   "on_b2b_second_nights": {
+    "n": 416,
+    "non1_share": 0.4832,
+    "b2b_rule_accuracy": 0.5361
+   }
+  },
+  "20122013": {
+   "team_games": 1440,
+   "non1_share": 0.3347,
+   "b2b_second_night_share": 0.1826,
+   "prev": {
+    "accuracy": 0.6278,
+    "non1_recall": 0.3299,
+    "non1_precision": 0.3869
+   },
+   "modal": {
+    "accuracy": 0.6653,
+    "non1_recall": 0.0,
+    "non1_precision": null
+   },
+   "b2b": {
+    "accuracy": 0.6521,
+    "non1_recall": 0.1473,
+    "non1_precision": 0.3966
+   },
+   "on_b2b_second_nights": {
+    "n": 263,
+    "non1_share": 0.4677,
+    "b2b_rule_accuracy": 0.4601
+   }
+  },
+  "20132014": {
+   "team_games": 2460,
+   "non1_share": 0.3947,
+   "b2b_second_night_share": 0.1793,
+   "prev": {
+    "accuracy": 0.574,
+    "non1_recall": 0.3625,
+    "non1_precision": 0.4112
+   },
+   "modal": {
+    "accuracy": 0.6053,
+    "non1_recall": 0.0,
+    "non1_precision": null
+   },
+   "b2b": {
+    "accuracy": 0.6236,
+    "non1_recall": 0.1483,
+    "non1_precision": 0.5161
+   },
+   "on_b2b_second_nights": {
+    "n": 441,
+    "non1_share": 0.5646,
+    "b2b_rule_accuracy": 0.5374
+   }
+  },
+  "20142015": {
+   "team_games": 2460,
+   "non1_share": 0.3378,
+   "b2b_second_night_share": 0.1683,
+   "prev": {
+    "accuracy": 0.6016,
+    "non1_recall": 0.3297,
+    "non1_precision": 0.3586
+   },
+   "modal": {
+    "accuracy": 0.6622,
+    "non1_recall": 0.0,
+    "non1_precision": null
+   },
+   "b2b": {
+    "accuracy": 0.6837,
+    "non1_recall": 0.1793,
+    "non1_precision": 0.5399
+   },
+   "on_b2b_second_nights": {
+    "n": 414,
+    "non1_share": 0.5628,
+    "b2b_rule_accuracy": 0.5652
+   }
+  },
+  "20152016": {
+   "team_games": 2460,
+   "non1_share": 0.3711,
+   "b2b_second_night_share": 0.1687,
+   "prev": {
+    "accuracy": 0.565,
+    "non1_recall": 0.3176,
+    "non1_precision": 0.3648
+   },
+   "modal": {
+    "accuracy": 0.6289,
+    "non1_recall": 0.0,
+    "non1_precision": null
+   },
+   "b2b": {
+    "accuracy": 0.6618,
+    "non1_recall": 0.1884,
+    "non1_precision": 0.589
+   },
+   "on_b2b_second_nights": {
+    "n": 415,
+    "non1_share": 0.5976,
+    "b2b_rule_accuracy": 0.5976
+   }
+  },
+  "20162017": {
+   "team_games": 2460,
+   "non1_share": 0.3386,
+   "b2b_second_night_share": 0.1809,
+   "prev": {
+    "accuracy": 0.565,
+    "non1_recall": 0.2737,
+    "non1_precision": 0.3081
+   },
+   "modal": {
+    "accuracy": 0.6614,
+    "non1_recall": 0.0,
+    "non1_precision": null
+   },
+   "b2b": {
+    "accuracy": 0.687,
+    "non1_recall": 0.1933,
+    "non1_precision": 0.5495
+   },
+   "on_b2b_second_nights": {
+    "n": 445,
+    "non1_share": 0.5303,
+    "b2b_rule_accuracy": 0.6112
+   }
+  },
+  "20172018": {
+   "team_games": 2541,
+   "non1_share": 0.3597,
+   "b2b_second_night_share": 0.17,
+   "prev": {
+    "accuracy": 0.56,
+    "non1_recall": 0.3085,
+    "non1_precision": 0.3394
+   },
+   "modal": {
+    "accuracy": 0.6403,
+    "non1_recall": 0.0,
+    "non1_precision": null
+   },
+   "b2b": {
+    "accuracy": 0.6867,
+    "non1_recall": 0.198,
+    "non1_precision": 0.6263
+   },
+   "on_b2b_second_nights": {
+    "n": 432,
+    "non1_share": 0.6296,
+    "b2b_rule_accuracy": 0.6435
+   }
+  }
+ }
+}

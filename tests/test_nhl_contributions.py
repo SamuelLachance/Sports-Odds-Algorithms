@@ -97,8 +97,8 @@ def test_the_breakdown_has_teeth():
 def test_the_key_order_is_shared_with_the_spa():
     """The SPA renders NHL_CT in this order; generating it from here is what
     stops the two drifting, the same way pred_ledger emits its tier rule."""
-    assert C.KEYS == ("elo", "rest", "b2b", "xg")
-    assert C.CT_JS == 'const NHL_CT=["elo", "rest", "b2b", "xg"];'
+    assert C.KEYS == ("home", "elo", "rest", "b2b", "xg")
+    assert C.CT_JS == 'const NHL_CT=["home", "elo", "rest", "b2b", "xg"];'
 
 
 # ---- against the shipped payload -------------------------------------------

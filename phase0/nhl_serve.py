@@ -42,7 +42,7 @@ import numpy as np
 sys.path.insert(0, "phase0")
 from nhl_glicko2_eval import llv, load_games, run_elo  # noqa: E402
 from nhl_features_eval import build_features  # noqa: E402
-from nhl_contributions import contributions  # noqa: E402
+from nhl_contributions import contributions, home_elogit  # noqa: E402
 from nhl_serve_guards import needs_boundary_regression, schedule_rest  # noqa: E402
 from nhl_season_boundary import (  # noqa: E402
     current_season, display_teams, fmt_metric, is_playoff,
@@ -50,6 +50,11 @@ from nhl_season_boundary import (  # noqa: E402
 
 EPS = 1e-9
 PAYLOAD = "site/data/nhl.json"
+FEATURES_REPORT = "data/nhl_features_report.json"   # the one TEST look (blend vs Elo)
+ELO_REPORT = "data/nhl_glicko2_report.json"         # the one TEST look (tuned Elo)
+# fields the edge layer (market/sched_edges.py) owns on a schedule row; a
+# re-serve carries them forward until its next cycle rewrites them
+EDGE_ROW_KEYS = ("value", "mkt", "value_blocked")
 
 
 def sig(x):
@@ -95,7 +100,7 @@ def _load(path, default=None):
 
 def started(row, now_iso: str) -> bool:
     """Puck has dropped (or the game is over but not yet in the spine)."""
-    if row.get("state") in ("LIVE", "CRIT", "OFF", "FINAL"):
+    if row.get("state") in ("LIVE", "CRIT", "OVER", "OFF", "FINAL"):
         return True
     t = row.get("start_utc")
     return bool(t) and t <= now_iso
@@ -123,6 +128,86 @@ def hold_started(sched, ledger, now_iso):
         else:
             to_freeze.append(s)
     return to_freeze, held
+
+
+def carry_edge(sched: list[dict], old: dict) -> int:
+    """Copy the edge layer's row fields (EDGE_ROW_KEYS) from the previous
+    payload onto the same unplayed games. Returns the badges dropped.
+
+    One exception: a `value` badge with no `tier` stamp on an EARLY row. It was
+    priced before the EARLY gate (market/sched_edges.py stamps every badge it
+    writes), on an older forecast; the site never shows it on an EARLY row
+    (nhlBadge) and the edge ledger refuses it, so it is dropped instead of being
+    carried forward forever. Its `mkt` price feed is still carried. The
+    top-level `value_blocked` (the priced build was stale) is never carried:
+    this serve is a fresh build.
+    """
+    prev = {g["id"]: g for g in old.get("schedule", [])
+            if any(k in g for k in EDGE_ROW_KEYS)}
+    dropped = 0
+    for s in sched:
+        o = prev.get(s["id"])
+        if not o or s.get("hs") is not None:
+            continue
+        for k in EDGE_ROW_KEYS:
+            if k not in o:
+                continue
+            if (k == "value" and not (o[k] or {}).get("tier")
+                    and s.get("tier", "EARLY") == "EARLY"):
+                dropped += 1
+                continue
+            s[k] = o[k]
+    return dropped
+
+
+def test_card(model: dict, feat_rep: dict | None = None,
+              elo_rep: dict | None = None) -> dict:
+    """The model card's locked-TEST numbers, all from ONE harness, read-only.
+
+    The one TEST look (phase0/nhl_features_eval.py, data/nhl_features_report.json
+    'all') scored the served blend (`with` = test_ll) and a logistic fit on the
+    Elo term alone (`base`) on the SAME games; the published gain and its 95% CI
+    are base - with. `baseline_elo_test` is that same-harness base, so on the
+    card test_ll + gain == baseline_elo_test. (It used to be the tuned Elo's raw
+    probabilities from a different harness - 0.66918 on one more game - so the
+    card printed 0.6692 - 0.6642 next to a 0.0054 gain.) That raw-Elo number is
+    a different reference; it ships as `elo_raw_test`, labelled, never as the
+    baseline. Nothing here is scored on TEST: every number was published by the
+    one look (locked-split rule), and the model's TEST accuracy and calibration
+    were never published, so the card carries none.
+    """
+    from nhl_glicko2_eval import DEV_END, DEV_WARM_BEFORE, TEST_END, TEST_START
+    from nhl_site_teams import season_label
+    ll, gain = model["test_ll"], model["test_delta_vs_elo"]
+    a = (feat_rep or {}).get("all") or {}
+    same = a.get("with") is not None and abs(a["with"] - ll) < 1e-9
+    base = a["base"] if same and a.get("base") is not None else round(ll + gain, 5)
+    if abs(base - ll - gain) > 1e-5 + 1e-12:
+        raise ValueError(f"NHL model card does not reconcile: {base} - {ll} != {gain}")
+    er = elo_rep or {}
+    return {
+        "test_ll": ll,
+        "test_delta_vs_elo": gain,
+        "test_ci": model.get("test_ci") or (a.get("ci") if same else None),
+        "baseline_elo_test": base,
+        "baseline_def": (f"a logistic fit on the Elo term alone, fit on "
+                         f"{season_label(DEV_WARM_BEFORE)} to {season_label(DEV_END)} like the "
+                         "model and scored on the same TEST games"),
+        "test_n": a.get("n") if same else None,
+        "test_seasons": f"{season_label(TEST_START)} to {season_label(TEST_END)}",
+        "elo_raw_test": model.get("baseline_elo_test"),
+        "elo_raw_n": er.get("test_n"),
+    }
+
+
+def train_count(games: list[dict], F: dict, as_of: str | None) -> int:
+    """Games the served blend was fit on (phase0/nhl_freeze.py): the warm,
+    xG-covered regular-season history through the model's as_of date."""
+    from nhl_glicko2_eval import DEV_WARM_BEFORE
+    xg = F["xg_diff"]
+    return int(sum(1 for i, g in enumerate(games)
+                   if g["season"] >= DEV_WARM_BEFORE and not np.isnan(xg[i])
+                   and (as_of is None or g["date"] <= as_of)))
 
 
 def team_xg_totals(path="data/nhl_team_xg.csv") -> dict:
@@ -202,6 +287,7 @@ def main():
         sched_src = old.get("sources", {}).get("schedule")
     start_by_id = {g["id"]: g.get("t") for g in season_games if g.get("t")}
 
+    HOME_ELOGIT = home_elogit(model["elo_cfg"]["ha"])
     e_out = run_elo(games, **model["elo_cfg"])
     p = np.clip(np.array([o[1] for o in e_out]), EPS, 1 - EPS)
     elogit = np.log(p / (1 - p))
@@ -234,11 +320,15 @@ def main():
             "as": g["away_goals"] if "away_goals" in g else None,
             "y": g["y"], "ot": g["so"] or None,
             "playoff": 1 if is_playoff(g["game_id"]) else 0,
-            # exact decomposition: 0.5 + sum(ct)/100 == hp (see nhl_contributions)
+            # exact decomposition: 0.5 + sum(ct)/100 == hp (see nhl_contributions);
+            # home ice is its own term: the +ha Elo points, and the +XG_HA goals
+            # whenever the xG term is on (a game with no xG row serves xg 0)
             "ct": contributions(b["intercept"], c, float(elogit[i]),
                                 float(F["rest_diff"][i]), float(F["b2b_home"][i]),
                                 float(F["b2b_away"][i]),
-                                float(np.nan_to_num(F["xg_diff"])[i])),
+                                float(np.nan_to_num(F["xg_diff"])[i]),
+                                home_elogit=HOME_ELOGIT,
+                                home_xg=0.0 if np.isnan(F["xg_diff"][i]) else XG_HA),
             "hrest": rh, "arest": ra, "hb2b": hb2b, "ab2b": ab2b,
         }
         if start_by_id.get(g["game_id"]):
@@ -289,7 +379,8 @@ def main():
                "hp": round(float(sig(z)), 4), "hs": None, "as": None,
                "y": None, "ot": None, "playoff": u.get("playoff", 0),
                "ct": contributions(b["intercept"], c, elogit_u,
-                                   rh - ra, hb2b, ab2b, xgd),
+                                   rh - ra, hb2b, ab2b, xgd,
+                                   home_elogit=HOME_ELOGIT, home_xg=XG_HA),
                "hrest": int(rh), "arest": int(ra), "hb2b": int(hb2b), "ab2b": int(ab2b)}
         if u.get("t"):
             row["start_utc"] = u["t"]       # puck drop, for the card and the ledger
@@ -520,16 +611,14 @@ def main():
     else:
         phase = "playoffs"
 
-    # carry the edge layer's fields forward: odds.yml owns them, but a re-serve
-    # must not blank the badges (or the price feed) until its next cycle
-    value_updated = None
-    old_val = {g["id"]: g for g in old.get("schedule", []) if "value" in g or "mkt" in g}
-    for s in sched:
-        o = old_val.get(s["id"])
-        if o and s["hs"] is None:
-            for k in ("value", "mkt"):
-                if k in o:
-                    s[k] = o[k]
+    # carry the edge layer's fields forward (carry_edge): odds.yml owns them,
+    # but a re-serve must not blank the badges, the price feed, the reason a
+    # quoted game carries no badge, or the last edge run's status line until
+    # its next cycle
+    n_stale_badges = carry_edge(sched, old)
+    if n_stale_badges:
+        print(f"[nhl_serve] dropped {n_stale_badges} pre-gate EDGE badge(s) with no tier stamp "
+              f"on EARLY rows (never shown, refused by the edge ledger)")
     value_updated = old.get("value_updated")
 
     _cav = SP.coverage_caveat(rapm_info["coverage"])
@@ -590,21 +679,24 @@ def main():
         "proj_info": proj_info,
         "prev_season": prev_block,
         "model_card": {
-            "test_ll": model["test_ll"],
-            "test_delta_vs_elo": model["test_delta_vs_elo"],
-            "baseline_elo_test": model["baseline_elo_test"],
+            # one harness: test_ll + test_delta_vs_elo == baseline_elo_test
+            **test_card(model, _load(FEATURES_REPORT), _load(ELO_REPORT)),
             "home_win_rate": model["home_win_rate"],
+            # the home edge inside the inputs; ct.home = these + the intercept
+            "home_ice": {"elo": model["elo_cfg"]["ha"], "xg": XG_HA},
             # `is not None`, not truthiness: an accuracy of 0.0 is a real
             # measurement and must not serialize as null.
             "cur_season_ll": round(cur_ll, 5) if cur_ll is not None else None,
             "cur_season_acc": round(cur_acc, 4) if cur_acc is not None else None,
             "cur_season_n": len(done),
             "features": ["Elo (k8,ha30)", "rest", "back-to-back", "xG team rating"],
-            "n_games_train": 17709,
+            "n_games_train": train_count(games, F, model.get("as_of")),
         },
     }
     if value_updated:
         payload["value_updated"] = value_updated
+    if old.get("value_status"):
+        payload["value_status"] = old["value_status"]
     with open(PAYLOAD + ".tmp", "w", encoding="utf-8") as _fh:
         json.dump(payload, _fh, separators=(",", ":"))
     os.replace(PAYLOAD + ".tmp", PAYLOAD)

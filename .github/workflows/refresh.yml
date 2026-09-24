@@ -69,8 +69,9 @@ jobs:
           # NFL finals attached by phase0/nfl_results_attach.py (scores,
           # standings, tier receipts; never a pre-game number) and the games
           # spine it fetched. Without these the NFL side froze between the
-          # manual model runs. The pre-game ledger is read-only here (CI never
-          # writes it; it is only re-synced from origin below, never edited).
+          # manual model runs. The pre-game ledger is read-only in THIS job
+          # (only nfl-weekly.yml's serve writes it); here it is only re-synced from
+          # origin below, never edited.
           for f in site/data/nfl.json data/nfl_games.csv; do
             if [ -f "$f" ]; then git add "$f"; fi
           done

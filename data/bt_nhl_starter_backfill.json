@@ -1,0 +1,31 @@
+{
+ "generated": "2026-09-24T13:10:17",
+ "protocol": {
+  "seasons": [
+   20112012,
+   20122013,
+   20132014,
+   20142015,
+   20152016,
+   20162017,
+   20172018
+  ],
+  "dev_only": true,
+  "test_touched": false,
+  "market_use": "none",
+  "sample": "random.Random(7).sample of 8141 DEV regular-season games, n=150",
+  "requests": 150
+ },
+ "fetch_failures": 0,
+ "counts": {
+  "sides": 300,
+  "has_flag": 300,
+  "exactly_one_official": 300,
+  "relief_used": 20,
+  "compared": 300,
+  "agree": 300
+ },
+ "official_flag_coverage": 1.0,
+ "first_shot_equals_official": 1.0,
+ "mismatches": []
+}

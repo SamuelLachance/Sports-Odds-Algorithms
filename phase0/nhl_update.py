@@ -15,9 +15,9 @@ cached and failure-tolerant).
 
 "Today" is the US-Eastern date, not the runner's UTC date: a 00:00-04:00 UTC
 run is still the previous evening in North America, and a UTC date dropped that
-night's games from the upcoming slate. Games in progress (LIVE/CRIT) are kept
-in the slate with their `state`, so a serve during a game does not drop its
-row, pick and badge until the final.
+night's games from the upcoming slate. Games in progress or just over
+(LIVE/CRIT/OVER) are kept in the slate with their `state`, so a serve during a
+game does not drop its row, pick and badge until the result is official.
 
 Standard library only, so it can run in the minimal CI refresh job.
 
@@ -52,8 +52,11 @@ UPCOMING = "data/nhl_upcoming.json"
 LINEUP_ARCHIVE = "data/nhl_lineup_archive.jsonl"
 
 # gameState values: FUT (scheduled), PRE (pre-game), LIVE/CRIT (in progress),
-# OFF/FINAL (done). Only the last two are results.
-UNPLAYED_STATES = ("FUT", "PRE", "LIVE", "CRIT")
+# OVER (the horn has gone, the result is not official yet), OFF/FINAL (done).
+# Only the last two are results; an OVER game stays on the slate, like a live
+# one, until the league makes it official - it used to be in neither list.
+IN_PROGRESS_STATES = ("LIVE", "CRIT", "OVER")
+UNPLAYED_STATES = ("FUT", "PRE") + IN_PROGRESS_STATES
 
 REQ_TIMEOUT = 20            # seconds per request (was 45)
 UPDATE_BUDGET_S = 600.0     # the whole run, site fetch included
@@ -271,8 +274,9 @@ def collect_week(data: dict, seen: set, today_iso: str) -> tuple[list, list]:
 
     Finals (OFF/FINAL) not yet in `seen` become spine rows (and are added to
     `seen`). Unplayed games dated today (US-Eastern) or later are the slate;
-    a game in progress (LIVE/CRIT) is kept whatever its date, so a game that
-    started before midnight is not lost from the slate until it is final.
+    a game in progress or just over (LIVE/CRIT/OVER) is kept whatever its
+    date, so a game that started before midnight is not lost from the slate
+    until it is official.
     """
     new_rows, upcoming = [], []
     for wk in data.get("gameWeek", []):
@@ -299,7 +303,7 @@ def collect_week(data: dict, seen: set, today_iso: str) -> tuple[list, list]:
                     "neutral": 1 if g.get("neutralSite") else 0,
                     "win_goalie": (g.get("winningGoalie") or {}).get("playerId", "")})
             elif state in UNPLAYED_STATES and gdate and (
-                    gdate >= today_iso or state in ("LIVE", "CRIT")):
+                    gdate >= today_iso or state in IN_PROGRESS_STATES):
                 upcoming.append({
                     "id": gid, "d": gdate, "season": g.get("season"),
                     "playoff": 1 if gtype == 3 else 0,
@@ -361,7 +365,7 @@ def main() -> int:
           f"({n_req} requests)")
     # pre-game snapshots only: an in-progress game's roster is not a lineup
     # announcement (the archive's purpose), and it was never archived before
-    archive_lineups([u for u in ded.values() if u.get("state") not in ("LIVE", "CRIT")],
+    archive_lineups([u for u in ded.values() if u.get("state") not in IN_PROGRESS_STATES],
                     today.isoformat(), deadline=t0 + ARCHIVE_BUDGET_S)
     try:
         import nhl_site_fetch

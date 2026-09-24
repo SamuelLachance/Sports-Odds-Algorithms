@@ -9,10 +9,19 @@ Two layers, auto-detected (documents/nfl_weekly_datagraph.md section 4):
     4. data/nfl_player_stats_2026.csv  nflverse stats_player_week_2026 (404-skip)
     5. data/roster_2026.csv      nflverse weekly roster 2026
 
-  CHAIN (local-only — needs the gitignored 50-98MB play tables):
+  CHAIN (needs the gitignored 0.6-98MB play tables + untracked static inputs;
+  runs locally, and in CI since 2026-09-24 - .github/workflows/nfl-weekly.yml
+  restores them from actions/cache or rebuilds them with
+  phase0/nfl_ci_inputs.py, then sets NFL_WEEKLY_REQUIRE_CHAIN so their absence
+  is a failure instead of a green fetch-only run):
     6. current-season pbp re-pull: delete 2026 rows from the five serve-chain
        reducers, re-run their pull scripts (season-granular done-sets would
-       otherwise freeze 2026 after its first pull)
+       otherwise freeze 2026 after its first pull). The pull scripts log a
+       failed season download as "not available yet" and exit 0, so the exit
+       code proves nothing: each re-pulled table must come back with at least
+       the season rows it lost (fetch_is_safe) and, once the season has
+       settled finals, with some rows at all. Otherwise the pre-strip table is
+       restored and the run fails before the payload chain (repull_table).
     7. payload chain in order: nfl_site_data -> nfl_site_db ->
        nfl_trueskill_players -> nfl_lineups -> nfl_v7_feature_gen ->
        nfl_season_serve -> nfl_results_attach
@@ -35,17 +44,26 @@ results step copied the unpublished serve's receipt onto the published
 number. Commit the two files in one commit (a successful run prints the
 command).
 
-Schedule: the forecasts only move when this runs locally (CI attaches finals
-every 4 h but cannot re-serve). Run it at least Thu ~15:00 ET (after the
-first injury report, before TNF), Sat ~12:00 ET (final designations) and
-Sun ~10:30 ET (before the early slate). Games that have kicked off are locked
-by the freeze (nfl_ph_freeze.has_started), so a run during a slate is safe.
+Schedule: CI serves Tuesday 09:00 UTC (after MNF: finals, ratings, next
+week) and Friday 20:00 UTC (the TNF final and the Wednesday/Thursday practice
+reports). It does NOT serve Sunday's final injury designations: nflverse
+rebuilds injuries_{season} once a day (~07:07 UTC), so the NFL's Friday-
+afternoon game statuses reach the data on Saturday, and only a Saturday run
+(manual dispatch, or a local run) serves them. refresh.yml attaches finals
+every 4 h but never re-serves. Extra local runs remain useful Thu ~15:00 ET
+(before TNF) and Sun ~10:30 ET (before the early slate). Games that have
+kicked off are locked by the freeze (nfl_ph_freeze.has_started), so a run
+during a slate is safe.
 
 Failure is loud: a missing optional file skips its fetch with a message, but a
-failed required fetch, a failed step or a failed validation makes the run exit
-1 (after the remaining fetches, so good files are still written). The workflow
-commits with `if: always()`, so good fetches are never lost to a red job.
-Market-blind.
+failed required fetch, a failed or silently empty re-pull, a failed step or a
+failed validation makes the run exit 1 (after the remaining fetches, so good
+files are still written). With NFL_WEEKLY_STATUS set, the run also writes a
+status file saying whether a validated payload was published; CI
+(phase0/nfl_ci_publish.py) commits the serve only when it was, else just the
+fetched tables. In CI, NFL_WEEKLY_INPUTS carries the input bootstrap's outcome:
+anything but "success" runs the fetch layer only and records the skipped chain
+as a failure, so the tables still land while the job stays red. Market-blind.
 """
 from __future__ import annotations
 
@@ -84,32 +102,61 @@ REDUCERS = [
     ("data/nfl_play_ctx2.csv", "phase0/nfl_play_ctx2_pull.py"),
     ("data/nfl_rapm_plays.csv", "phase0/nfl_participation_pull.py"),
 ]
+# Reducers whose current-season rows may legitimately stay empty after a good
+# re-pull: nflverse publishes pbp_participation after the season (local table
+# 2026-09-24, week 3: 0 season-2026 rows). The other four reduce the season's
+# pbp parquet itself, so once the season has settled finals an empty re-pull
+# is a failed download.
+CUR_OPTIONAL = {"data/nfl_rapm_plays.csv"}
+# Age (days) a final needs before its pbp is surely published: nflverse
+# rebuilds the season parquet nightly. Guards only the first days of a season,
+# when no earlier re-pull count exists to compare against.
+SETTLE_DAYS = 2
+KEEP_SUFFIX = ".prev"     # pre-strip copy of a table, restored if its re-pull fails
 
+# Per-step kill timeouts, ~10-20x the runtimes measured on the full in-season
+# chain (local run 2026-09-24, week 3, 7,308-game spine): site_data 34 s,
+# site_db 5 s, trueskill_players 22 s, lineups ~10 s (incl. the 53 MB depth-
+# chart download), v7_feature_gen 51 s, season_serve 40 s, results_attach
+# <1 s, each current-season pbp re-pull 1-2 s. They used to be 15-90 minutes
+# each (worst case >4 h for a hung chain); a hang now fails within minutes.
 PAYLOAD_CHAIN = [
-    ("phase0/nfl_site_data.py", 1800),
-    ("phase0/nfl_site_db.py", 900),
-    ("phase0/nfl_trueskill_players.py", 3600),
-    ("phase0/nfl_lineups.py", 900),
+    ("phase0/nfl_site_data.py", 600),
+    ("phase0/nfl_site_db.py", 300),
+    ("phase0/nfl_trueskill_players.py", 600),
+    ("phase0/nfl_lineups.py", 600),
     # new finals make the frozen v7 feature column one row short per game, and
     # nfl_season_serve refuses to run on a stale column (nfl_season_guards
     # .v7_npy_error). It was never in this chain, so the first in-season run
     # (2026-09-24) stopped at serve and left the site on the July payload.
-    ("phase0/nfl_v7_feature_gen.py", 5400),
-    ("phase0/nfl_season_serve.py", 1800),
+    ("phase0/nfl_v7_feature_gen.py", 900),
+    ("phase0/nfl_season_serve.py", 900),
 ]
+PULL_TIMEOUT = 900        # one current-season parquet per reducer
 
 CUR = "2026"
 # runs last on the staged payload, with the spine this run already fetched
-FINAL_STEP = ("phase0/nfl_results_attach.py", 600, ["--no-fetch", "--full"])
+FINAL_STEP = ("phase0/nfl_results_attach.py", 300, ["--no-fetch", "--full"])
 
 LEDGER_LIVE = "data/nfl_ph_ledger.json"
 LEDGER_STAGING = "data/nfl_ph_ledger_staging.json"
-# what a successful local run publishes; commit them in ONE commit so the
-# payload never reaches origin without the ledger that receipts it
-PUBLISH = ["site/data/nfl.json", LEDGER_LIVE, "data/nfl_games.csv",
-           "data/inj_2026.csv", "data/roster_2026.csv", "data/snap_2026.csv",
-           "data/nfl_player_stats_2026.csv", "data/nfl_player_ts.csv",
-           "data/nfl_season_2026.json"]
+FETCHED = [p for p, _, _ in FETCHES]
+# small tracked files the chain rewrites in place. They ride with the payload
+# so the repository always holds the state that built it.
+# data/depth_charts_2026.csv is deliberately absent: 53 MB, re-downloaded by
+# nfl_lineups on every run (committing it twice a week would bloat history).
+DERIVED = ["data/nfl_season_2026.json", "data/nfl_v7_feature.npy",
+           "data/nfl_qb2026.json", "data/nfl_player_ts.csv",
+           "data/nfl_ts_state.json", "data/nfl_ts_state_meta.json",
+           "data/nfl_sal2026.json", "data/nfl_player_ratings_2025.csv"]
+# what a successful run publishes; commit them in ONE commit so the payload
+# never reaches origin without the ledger that receipts it
+PUBLISH = ["site/data/nfl.json", LEDGER_LIVE] + FETCHED + DERIVED
+
+# CI switches (all unset in a local run)
+REQUIRE_CHAIN_ENV = "NFL_WEEKLY_REQUIRE_CHAIN"   # absent tables = failure
+STATUS_ENV = "NFL_WEEKLY_STATUS"                 # path of the status JSON
+INPUTS_ENV = "NFL_WEEKLY_INPUTS"                 # input bootstrap outcome
 
 
 SHRINK_TOL = 5          # rows an upstream correction may legitimately remove
@@ -190,9 +237,13 @@ def fetch(path: str, url: str, required: bool) -> str:
         return "failed" if required else "skip"
 
 
-def strip_current_season(path: str) -> int:
+def strip_current_season(path: str, keep: str | None = None) -> int:
     """Drop season-2026 rows (game_id prefix) so the pull re-fetches them.
-    Atomic tmp+replace; returns rows dropped."""
+    Atomic tmp+replace; returns rows dropped.
+
+    With `keep`, the table as it was before the strip is moved there (also
+    when nothing was dropped: a pull killed mid-append must be undoable), so
+    a failed re-pull can put it back (repull_table)."""
     tmp = path + ".tmp"
     dropped = 0
     with open(path, encoding="utf-8") as src, \
@@ -207,11 +258,101 @@ def strip_current_season(path: str) -> int:
                 dropped += 1
                 continue
             w.writerow(row)
-    if dropped:
+    if keep:
+        os.replace(path, keep)
+        os.replace(tmp, path)
+    elif dropped:
         os.replace(tmp, path)
     else:
         os.remove(tmp)
     return dropped
+
+
+def count_current(path: str) -> int:
+    """Season-2026 rows in a reduced play table (game_id prefix)."""
+    n = 0
+    with open(path, encoding="utf-8", newline="") as fh:
+        rd = csv.reader(fh)
+        gi = next(rd).index("game_id")
+        for row in rd:
+            if len(row) > gi and row[gi][:4] == CUR:
+                n += 1
+    return n
+
+
+def season_state(spine: str = "data/nfl_games.csv", today=None) -> tuple[bool, bool]:
+    """(started, settled): the spine has a season-2026 final, and one of them
+    was played at least SETTLE_DAYS ago (its pbp is surely published)."""
+    from datetime import date, datetime, timedelta, timezone
+    today = today or datetime.now(timezone.utc).date()
+    cutoff = (today - timedelta(days=SETTLE_DAYS)).isoformat()
+    started = settled = False
+    with open(spine, encoding="utf-8", newline="") as fh:
+        for r in csv.DictReader(fh):
+            if r["game_id"][:4] != CUR or (r.get("home_score") or "") == "":
+                continue
+            started = True
+            day = (r.get("gameday") or "")[:10]
+            try:
+                date.fromisoformat(day)
+            except ValueError:
+                continue
+            if day <= cutoff:
+                settled = True
+                break
+    return started, settled
+
+
+def repull_table(path: str, script: str, need_rows: bool) -> str | None:
+    """Strip the table's season-2026 rows, re-run its pull script and verify
+    the result; None when the table is good, else why it is not (the pre-
+    strip table is then restored, so the next run compares against it again).
+
+    The pull scripts catch a failed season download (404, 5xx, reset) as "not
+    available yet, skip" and exit 0. Trusting that exit code let a transient
+    GitHub error publish a serve with this season's plays missing (reviewed
+    2026-09-24: unplayed forecasts moved 1.9 pp on average, 5.8 pp at most).
+    The season's rows only ever grow, so the re-pulled count must clear the
+    count it replaced (fetch_is_safe, same tolerance as the fetched tables);
+    and with need_rows (a pbp-derived table, the season has settled finals)
+    zero rows is a failure even when the table had none before. An upstream
+    re-processing that removes more than SHRINK_TOL of the season's plays
+    turns runs red until the next week's plays outgrow it: loud, and it
+    clears on its own."""
+    keep = path + KEEP_SUFFIX
+    if os.path.exists(keep):
+        # an earlier run died between strip and verification: its pre-strip
+        # table is the last verified state
+        os.replace(keep, path)
+        print(f"[nfl_weekly] {path}: restored {keep} left by an interrupted run",
+              flush=True)
+    n_prev = strip_current_season(path, keep=keep)
+    print(f"[nfl_weekly] {path}: dropped {n_prev:,} season-{CUR} rows", flush=True)
+    why = None
+    if not run_step(script, PULL_TIMEOUT):
+        why = f"{script} failed"
+    else:
+        try:
+            n_new = count_current(path)
+        except (OSError, ValueError, StopIteration, csv.Error) as ex:
+            why = f"{script} left {path} unreadable ({ex})"
+        else:
+            if not fetch_is_safe(n_new, n_prev):
+                why = (f"{script} exited 0 but left {n_new:,} season-{CUR} rows "
+                       f"in {path} (had {n_prev:,}): its season download failed "
+                       f"or came back truncated")
+            elif need_rows and n_new == 0:
+                why = (f"{script} exited 0 but left no season-{CUR} rows in {path} "
+                       f"although the spine has {CUR} finals older than "
+                       f"{SETTLE_DAYS} days: its season download failed")
+            else:
+                print(f"[nfl_weekly] {path}: {n_new:,} season-{CUR} rows "
+                      f"(had {n_prev:,})", flush=True)
+    if why:
+        os.replace(keep, path)
+        return f"{why} — {path} restored to its pre-strip rows, payload not rebuilt"
+    os.remove(keep)
+    return None
 
 
 def run_step(step: str, tmo: int, args=(), env=None) -> bool:
@@ -339,32 +480,49 @@ def publish_hint() -> str:
 
 def main() -> int:
     os.chdir(PROJECT)
+    status = os.environ.get(STATUS_ENV)
+    if status and os.path.exists(status):
+        os.remove(status)       # a crash below must not leave last run's verdict
     failures = []
     for path, url, required in FETCHES:
         st = fetch(path, url, required)
         if required and st in ("failed", "refused"):
             failures.append(f"required fetch {path}: {st}")
 
+    inputs = os.environ.get(INPUTS_ENV)
+    if inputs is not None and inputs != "success":
+        # CI: the input bootstrap failed (a play table could not be rebuilt,
+        # a frozen research file is not committed ...). The fetched tables
+        # above still get committed; the model does not run on broken inputs.
+        failures.append(f"model inputs not ready (input bootstrap: "
+                        f"{inputs or 'did not run'}) — the chain did not run, "
+                        f"only the fetched tables can be committed")
+        return _finish(failures)
+
     have_tables = all(os.path.exists(p) for p, _ in REDUCERS)
     if not have_tables:
-        print("[nfl_weekly] play tables absent (CI) — fetch-only run, chain skipped",
-              flush=True)
+        if os.environ.get(REQUIRE_CHAIN_ENV):
+            # CI promised the chain: a green fetch-only run here would leave
+            # the site on the last serve with nobody told
+            failures.append(f"play tables absent but {REQUIRE_CHAIN_ENV} is set "
+                            f"— the model chain did not run (bootstrap them with "
+                            f"phase0/nfl_ci_inputs.py)")
+        else:
+            print("[nfl_weekly] play tables absent — fetch-only run, chain skipped",
+                  flush=True)
         return _finish(failures)
 
     # in-season only: re-pull current-season pbp (done-sets freeze a season
     # after first pull, so stale 2026 rows must be dropped first)
-    season_started = any(
-        r["game_id"][:4] == CUR and r.get("home_score", "") != ""
-        for r in csv.DictReader(open("data/nfl_games.csv", encoding="utf-8")))
+    season_started, settled = season_state("data/nfl_games.csv")
     if season_started:
         for path, script in REDUCERS:
-            n = strip_current_season(path)
-            print(f"[nfl_weekly] {path}: dropped {n:,} season-{CUR} rows", flush=True)
-            if not run_step(script, 3600):
-                # the table just lost its current-season rows: a model built on
-                # it would silently miss this season's plays
-                failures.append(f"{script} failed after {path} was stripped — "
-                                f"payload not rebuilt")
+            err = repull_table(path, script,
+                               need_rows=settled and path not in CUR_OPTIONAL)
+            if err:
+                # a model built on this table would silently miss (part of)
+                # this season's plays
+                failures.append(err)
                 return _finish(failures)
     else:
         print(f"[nfl_weekly] no {CUR} finals yet — pbp re-pull skipped", flush=True)
@@ -375,15 +533,32 @@ def main() -> int:
     if not built:
         print(f"[nfl_weekly] publish the payload and its ledger in ONE commit: "
               f"{publish_hint()}", flush=True)
-    return _finish(failures)
+    return _finish(failures, published=not built)
 
 
-def _finish(failures: list[str]) -> int:
+def write_status(path: str, failures: list[str], published: bool) -> None:
+    """Machine-readable outcome for CI. `published` is True only when
+    build_payload swapped a validated payload + ledger onto the live files:
+    the one case in which they may be committed."""
+    from datetime import datetime, timezone
+    tmp = path + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as fh:
+        json.dump({"published": bool(published), "ok": not failures,
+                   "failures": failures,
+                   "at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")},
+                  fh, indent=1)
+    os.replace(tmp, path)
+
+
+def _finish(failures: list[str], published: bool = False) -> int:
     for f in failures:
         print(f"[nfl_weekly] FAILURE: {f}", flush=True)
         if os.environ.get("GITHUB_ACTIONS"):
             print(f"::error title=NFL weekly::{f}", flush=True)
-    print(f"[nfl_weekly] done ({'FAILED' if failures else 'ok'})", flush=True)
+    if os.environ.get(STATUS_ENV):
+        write_status(os.environ[STATUS_ENV], failures, published)
+    print(f"[nfl_weekly] done ({'FAILED' if failures else 'ok'}"
+          f"{', payload published' if published else ''})", flush=True)
     return 1 if failures else 0
 
 
