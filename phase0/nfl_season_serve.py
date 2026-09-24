@@ -421,8 +421,10 @@ P_Q_PLAYS = 0.671                    # measured: 9,980/14,869 Q tags played, 201
 K_LINEUP = 200
 q_tagged = defaultdict(list)         # team -> [(pfr, gsis, share, posgrp, rq_val, v6_val)]
 try:
-    _q_ids = {r["gsis_id"] for r in csv.DictReader(open("data/inj_2026.csv", encoding="utf-8"))
-              if (r.get("report_status") or "") == "Questionable" and r.get("gsis_id")}
+    from nfl_season_guards import current_injury_status  # latest report only
+    _q_ids = {g for g, st in current_injury_status(
+                  list(csv.DictReader(open("data/inj_2026.csv", encoding="utf-8")))).items()
+              if st == "Questionable"}
 except FileNotFoundError:
     _q_ids = set()
 if _q_ids:

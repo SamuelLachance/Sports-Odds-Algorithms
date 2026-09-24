@@ -15,6 +15,7 @@ re-derived from the same resolution so all surfaces agree.
 from __future__ import annotations
 
 import csv
+import sys
 import json
 import os
 import urllib.request
@@ -40,18 +41,19 @@ players = payload["players"]
 
 # current rosters (drop cut/traded players from stale depth rows)
 FR = {"JAC": "JAX", "WSH": "WAS", "AZ": "ARI", "LAR": "LA"}
-on_roster = defaultdict(set)
-for r in csv.DictReader(open("data/roster_2026.csv", encoding="utf-8")):
-    if r.get("gsis_id") and r.get("team"):
-        on_roster[FR.get(r["team"], r["team"])].add(r["gsis_id"])
+sys.path.insert(0, "phase0")
+from nfl_season_guards import active_roster  # noqa: E402  latest week, ACT only
+on_roster = defaultdict(set, active_roster(
+    list(csv.DictReader(open("data/roster_2026.csv", encoding="utf-8")))))
 
 # injury report (in-season only; preseason file doesn't exist yet)
 ruled_out = set()
 try:
-    for r in csv.DictReader(open("data/inj_2026.csv", encoding="utf-8")):
-        if (r.get("report_status") or "") in ("Out", "Doubtful"):
-            ruled_out.add(r.get("gsis_id"))
-    print(f"injury report: {len(ruled_out)} ruled out/doubtful")
+    sys.path.insert(0, "phase0")
+    from nfl_season_guards import current_injury_status  # noqa: E402
+    _inj = current_injury_status(list(csv.DictReader(open("data/inj_2026.csv", encoding="utf-8"))))
+    ruled_out = {g for g, st in _inj.items() if st in ("Out", "Doubtful")}
+    print(f"injury report (latest week per team): {len(ruled_out)} ruled out/doubtful")
 except FileNotFoundError:
     pass
 
