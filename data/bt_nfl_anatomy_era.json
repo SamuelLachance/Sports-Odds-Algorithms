@@ -1,0 +1,978 @@
+{
+ "2006-2012": [
+  {
+   "slice": "2006-2012: all",
+   "n": 1732,
+   "model_ll": 0.62114,
+   "market_ll": 0.60893,
+   "gap": 0.01221,
+   "gap_ci": [
+    0.00356,
+    0.02093
+   ],
+   "sig": "market SIG better",
+   "share_of_gap": 0.7129,
+   "n_share": 0.6843,
+   "mean_abs_disagree_prob": 0.066,
+   "mean_r_logit": 0.0452,
+   "bias_model": -0.0049,
+   "bias_market": -0.0146,
+   "share_of_era_gap": 1.0
+  },
+  {
+   "slice": "2006-2012: QB flux (either side non-estab or changed)",
+   "n": 907,
+   "model_ll": 0.62729,
+   "market_ll": 0.60394,
+   "gap": 0.02335,
+   "gap_ci": [
+    0.01078,
+    0.03571
+   ],
+   "sig": "market SIG better",
+   "share_of_gap": 0.714,
+   "n_share": 0.3584,
+   "mean_abs_disagree_prob": 0.0671,
+   "mean_r_logit": 0.0329,
+   "bias_model": 0.0119,
+   "bias_market": 0.0053,
+   "share_of_era_gap": 1.0015
+  },
+  {
+   "slice": "2006-2012: QB stable both sides",
+   "n": 825,
+   "model_ll": 0.61437,
+   "market_ll": 0.61441,
+   "gap": -4e-05,
+   "gap_ci": [
+    -0.01225,
+    0.01228
+   ],
+   "sig": "n.s.",
+   "share_of_gap": -0.0011,
+   "n_share": 0.326,
+   "mean_abs_disagree_prob": 0.0648,
+   "mean_r_logit": 0.0588,
+   "bias_model": -0.0235,
+   "bias_market": -0.0365,
+   "share_of_era_gap": -0.0015
+  },
+  {
+   "slice": "2006-2012: PD-residual extreme 40%",
+   "n": 597,
+   "model_ll": 0.62903,
+   "market_ll": 0.60624,
+   "gap": 0.02279,
+   "gap_ci": [
+    0.00622,
+    0.03956
+   ],
+   "sig": "market SIG better",
+   "share_of_gap": 0.4587,
+   "n_share": 0.2359,
+   "mean_abs_disagree_prob": 0.0744,
+   "mean_r_logit": 0.0599,
+   "bias_model": 0.0,
+   "bias_market": -0.0123,
+   "share_of_era_gap": 0.6434
+  },
+  {
+   "slice": "2006-2012: PD-residual middle 60%",
+   "n": 905,
+   "model_ll": 0.61104,
+   "market_ll": 0.60865,
+   "gap": 0.00239,
+   "gap_ci": [
+    -0.00855,
+    0.01342
+   ],
+   "sig": "n.s.",
+   "share_of_gap": 0.073,
+   "n_share": 0.3576,
+   "mean_abs_disagree_prob": 0.0593,
+   "mean_r_logit": 0.0393,
+   "bias_model": -0.0204,
+   "bias_market": -0.0298,
+   "share_of_era_gap": 0.1024
+  },
+  {
+   "slice": "2006-2012: weeks 1-2",
+   "n": 146,
+   "model_ll": 0.64263,
+   "market_ll": 0.60306,
+   "gap": 0.03957,
+   "gap_ci": [
+    0.01132,
+    0.06795
+   ],
+   "sig": "market SIG better",
+   "share_of_gap": 0.1948,
+   "n_share": 0.0577,
+   "mean_abs_disagree_prob": 0.0696,
+   "mean_r_logit": 0.0515,
+   "bias_model": 0.0602,
+   "bias_market": 0.0512,
+   "share_of_era_gap": 0.2733
+  },
+  {
+   "slice": "2006-2012: weeks 3-8",
+   "n": 546,
+   "model_ll": 0.61592,
+   "market_ll": 0.6149,
+   "gap": 0.00102,
+   "gap_ci": [
+    -0.0139,
+    0.01562
+   ],
+   "sig": "n.s.",
+   "share_of_gap": 0.0189,
+   "n_share": 0.2157,
+   "mean_abs_disagree_prob": 0.0661,
+   "mean_r_logit": 0.0411,
+   "bias_model": 0.0181,
+   "bias_market": 0.0096,
+   "share_of_era_gap": 0.0264
+  },
+  {
+   "slice": "2006-2012: weeks 9-16",
+   "n": 857,
+   "model_ll": 0.6141,
+   "market_ll": 0.61005,
+   "gap": 0.00405,
+   "gap_ci": [
+    -0.00737,
+    0.0153
+   ],
+   "sig": "n.s.",
+   "share_of_gap": 0.1169,
+   "n_share": 0.3386,
+   "mean_abs_disagree_prob": 0.0613,
+   "mean_r_logit": 0.0445,
+   "bias_model": -0.0316,
+   "bias_market": -0.0416,
+   "share_of_era_gap": 0.164
+  },
+  {
+   "slice": "2006-2012: week 17",
+   "n": 108,
+   "model_ll": 0.61155,
+   "market_ll": 0.52677,
+   "gap": 0.08478,
+   "gap_ci": [
+    0.02941,
+    0.14437
+   ],
+   "sig": "market SIG better",
+   "share_of_gap": 0.3087,
+   "n_share": 0.0427,
+   "mean_abs_disagree_prob": 0.0993,
+   "mean_r_logit": 0.0497,
+   "bias_model": 0.0295,
+   "bias_market": 0.0164,
+   "share_of_era_gap": 0.4331
+  },
+  {
+   "slice": "2006-2012: wk17 one team clinched playoff",
+   "n": 43,
+   "model_ll": 0.60088,
+   "market_ll": 0.44131,
+   "gap": 0.15958,
+   "gap_ci": [
+    0.04859,
+    0.28051
+   ],
+   "sig": "market SIG better",
+   "share_of_gap": 0.2314,
+   "n_share": 0.017,
+   "mean_abs_disagree_prob": 0.1356,
+   "mean_r_logit": 0.1003,
+   "bias_model": 0.0407,
+   "bias_market": 0.0161,
+   "share_of_era_gap": 0.3245
+  },
+  {
+   "slice": "2006-2012: playoffs",
+   "n": 75,
+   "model_ll": 0.71154,
+   "market_ll": 0.68244,
+   "gap": 0.0291,
+   "gap_ci": [
+    -0.0088,
+    0.06626
+   ],
+   "sig": "n.s.",
+   "share_of_gap": 0.0736,
+   "n_share": 0.0296,
+   "mean_abs_disagree_prob": 0.0631,
+   "mean_r_logit": 0.0658,
+   "bias_model": -0.0438,
+   "bias_market": -0.0556,
+   "share_of_era_gap": 0.1032
+  },
+  {
+   "slice": "2006-2012: primetime",
+   "n": 290,
+   "model_ll": 0.61504,
+   "market_ll": 0.59272,
+   "gap": 0.02231,
+   "gap_ci": [
+    0.00167,
+    0.0426
+   ],
+   "sig": "market SIG better",
+   "share_of_gap": 0.2182,
+   "n_share": 0.1146,
+   "mean_abs_disagree_prob": 0.0709,
+   "mean_r_logit": 0.0685,
+   "bias_model": 0.0168,
+   "bias_market": 0.0022,
+   "share_of_era_gap": 0.3061
+  },
+  {
+   "slice": "2006-2012: primetime & PD-extreme",
+   "n": 97,
+   "model_ll": 0.611,
+   "market_ll": 0.57331,
+   "gap": 0.03769,
+   "gap_ci": [
+    0.00076,
+    0.07536
+   ],
+   "sig": "market SIG better",
+   "share_of_gap": 0.1233,
+   "n_share": 0.0383,
+   "mean_abs_disagree_prob": 0.0809,
+   "mean_r_logit": 0.0749,
+   "bias_model": 0.0219,
+   "bias_market": 0.0065,
+   "share_of_era_gap": 0.1729
+  },
+  {
+   "slice": "2006-2012: primetime & not PD-extreme",
+   "n": 193,
+   "model_ll": 0.61707,
+   "market_ll": 0.60248,
+   "gap": 0.01459,
+   "gap_ci": [
+    -0.00951,
+    0.03891
+   ],
+   "sig": "n.s.",
+   "share_of_gap": 0.0949,
+   "n_share": 0.0763,
+   "mean_abs_disagree_prob": 0.0658,
+   "mean_r_logit": 0.0653,
+   "bias_model": 0.0142,
+   "bias_market": 0.0001,
+   "share_of_era_gap": 0.1332
+  },
+  {
+   "slice": "2006-2012: |O+D injury diff|>=2",
+   "n": 471,
+   "model_ll": 0.60675,
+   "market_ll": 0.6055,
+   "gap": 0.00125,
+   "gap_ci": [
+    -0.01558,
+    0.0186
+   ],
+   "sig": "n.s.",
+   "share_of_gap": 0.0199,
+   "n_share": 0.1861,
+   "mean_abs_disagree_prob": 0.0616,
+   "mean_r_logit": 0.0466,
+   "bias_model": 0.0136,
+   "bias_market": 0.0037,
+   "share_of_era_gap": 0.0278
+  },
+  {
+   "slice": "2006-2012: home market favourite",
+   "n": 1154,
+   "model_ll": 0.60697,
+   "market_ll": 0.59146,
+   "gap": 0.01551,
+   "gap_ci": [
+    0.00534,
+    0.02631
+   ],
+   "sig": "market SIG better",
+   "share_of_gap": 0.6036,
+   "n_share": 0.4559,
+   "mean_abs_disagree_prob": 0.0645,
+   "mean_r_logit": 0.1384,
+   "bias_model": 0.0048,
+   "bias_market": -0.0262,
+   "share_of_era_gap": 0.8466
+  },
+  {
+   "slice": "2006-2012: away market favourite",
+   "n": 578,
+   "model_ll": 0.64943,
+   "market_ll": 0.64382,
+   "gap": 0.00561,
+   "gap_ci": [
+    -0.0099,
+    0.02109
+   ],
+   "sig": "n.s.",
+   "share_of_gap": 0.1093,
+   "n_share": 0.2284,
+   "mean_abs_disagree_prob": 0.069,
+   "mean_r_logit": -0.1407,
+   "bias_model": -0.0243,
+   "bias_market": 0.0086,
+   "share_of_era_gap": 0.1534
+  },
+  {
+   "slice": "2006-2012: different favourite (model vs close)",
+   "n": 226,
+   "model_ll": 0.7261,
+   "market_ll": 0.68024,
+   "gap": 0.04585,
+   "gap_ci": [
+    0.00625,
+    0.08758
+   ],
+   "sig": "market SIG better",
+   "share_of_gap": 0.3494,
+   "n_share": 0.0893,
+   "mean_abs_disagree_prob": 0.1316,
+   "mean_r_logit": 0.0607,
+   "bias_model": 0.0214,
+   "bias_market": 0.0072,
+   "share_of_era_gap": 0.4901
+  }
+ ],
+ "2013-2015": [
+  {
+   "slice": "2013-2015: all",
+   "n": 799,
+   "model_ll": 0.62412,
+   "market_ll": 0.61347,
+   "gap": 0.01066,
+   "gap_ci": [
+    -0.00336,
+    0.02474
+   ],
+   "sig": "n.s.",
+   "share_of_gap": 0.2871,
+   "n_share": 0.3157,
+   "mean_abs_disagree_prob": 0.0757,
+   "mean_r_logit": 0.0163,
+   "bias_model": 0.0022,
+   "bias_market": -0.0027,
+   "share_of_era_gap": 1.0
+  },
+  {
+   "slice": "2013-2015: QB flux (either side non-estab or changed)",
+   "n": 385,
+   "model_ll": 0.61866,
+   "market_ll": 0.61646,
+   "gap": 0.00221,
+   "gap_ci": [
+    -0.0175,
+    0.02204
+   ],
+   "sig": "n.s.",
+   "share_of_gap": 0.0286,
+   "n_share": 0.1521,
+   "mean_abs_disagree_prob": 0.075,
+   "mean_r_logit": 0.0198,
+   "bias_model": -0.0016,
+   "bias_market": -0.0074,
+   "share_of_era_gap": 0.0997
+  },
+  {
+   "slice": "2013-2015: QB stable both sides",
+   "n": 414,
+   "model_ll": 0.6292,
+   "market_ll": 0.61069,
+   "gap": 0.01851,
+   "gap_ci": [
+    -0.0011,
+    0.03799
+   ],
+   "sig": "n.s.",
+   "share_of_gap": 0.2584,
+   "n_share": 0.1636,
+   "mean_abs_disagree_prob": 0.0764,
+   "mean_r_logit": 0.0131,
+   "bias_model": 0.0057,
+   "bias_market": 0.0017,
+   "share_of_era_gap": 0.9003
+  },
+  {
+   "slice": "2013-2015: PD-residual extreme 40%",
+   "n": 267,
+   "model_ll": 0.6422,
+   "market_ll": 0.60315,
+   "gap": 0.03905,
+   "gap_ci": [
+    0.00939,
+    0.06928
+   ],
+   "sig": "market SIG better",
+   "share_of_gap": 0.3516,
+   "n_share": 0.1055,
+   "mean_abs_disagree_prob": 0.0951,
+   "mean_r_logit": 0.0039,
+   "bias_model": -0.0196,
+   "bias_market": -0.0224,
+   "share_of_era_gap": 1.2246
+  },
+  {
+   "slice": "2013-2015: PD-residual middle 60%",
+   "n": 388,
+   "model_ll": 0.60939,
+   "market_ll": 0.61562,
+   "gap": -0.00623,
+   "gap_ci": [
+    -0.02267,
+    0.00993
+   ],
+   "sig": "n.s.",
+   "share_of_gap": -0.0815,
+   "n_share": 0.1533,
+   "mean_abs_disagree_prob": 0.0609,
+   "mean_r_logit": 0.0003,
+   "bias_model": 0.0065,
+   "bias_market": 0.0043,
+   "share_of_era_gap": -0.2839
+  },
+  {
+   "slice": "2013-2015: weeks 1-2",
+   "n": 96,
+   "model_ll": 0.65628,
+   "market_ll": 0.64507,
+   "gap": 0.01121,
+   "gap_ci": [
+    -0.02864,
+    0.05136
+   ],
+   "sig": "n.s.",
+   "share_of_gap": 0.0363,
+   "n_share": 0.0379,
+   "mean_abs_disagree_prob": 0.0824,
+   "mean_r_logit": 0.0703,
+   "bias_model": 0.0558,
+   "bias_market": 0.0409,
+   "share_of_era_gap": 0.1264
+  },
+  {
+   "slice": "2013-2015: weeks 3-8",
+   "n": 263,
+   "model_ll": 0.60146,
+   "market_ll": 0.59404,
+   "gap": 0.00742,
+   "gap_ci": [
+    -0.01566,
+    0.03057
+   ],
+   "sig": "n.s.",
+   "share_of_gap": 0.0658,
+   "n_share": 0.1039,
+   "mean_abs_disagree_prob": 0.0702,
+   "mean_r_logit": 0.0017,
+   "bias_model": 0.016,
+   "bias_market": 0.0147,
+   "share_of_era_gap": 0.2292
+  },
+  {
+   "slice": "2013-2015: weeks 9-16",
+   "n": 359,
+   "model_ll": 0.65335,
+   "market_ll": 0.63461,
+   "gap": 0.01874,
+   "gap_ci": [
+    -0.00217,
+    0.04107
+   ],
+   "sig": "n.s.",
+   "share_of_gap": 0.2269,
+   "n_share": 0.1418,
+   "mean_abs_disagree_prob": 0.075,
+   "mean_r_logit": 0.018,
+   "bias_model": -0.0195,
+   "bias_market": -0.0257,
+   "share_of_era_gap": 0.7903
+  },
+  {
+   "slice": "2013-2015: week 17",
+   "n": 48,
+   "model_ll": 0.47859,
+   "market_ll": 0.53295,
+   "gap": -0.05436,
+   "gap_ci": [
+    -0.12026,
+    0.00675
+   ],
+   "sig": "n.s.",
+   "share_of_gap": -0.088,
+   "n_share": 0.019,
+   "mean_abs_disagree_prob": 0.0851,
+   "mean_r_logit": 0.0752,
+   "bias_model": -0.0086,
+   "bias_market": -0.027,
+   "share_of_era_gap": -0.3065
+  },
+  {
+   "slice": "2013-2015: wk17 one team clinched playoff",
+   "n": 21,
+   "model_ll": 0.38428,
+   "market_ll": 0.41062,
+   "gap": -0.02634,
+   "gap_ci": [
+    -0.0722,
+    0.01968
+   ],
+   "sig": "n.s.",
+   "share_of_gap": -0.0187,
+   "n_share": 0.0083,
+   "mean_abs_disagree_prob": 0.0564,
+   "mean_r_logit": -0.0063,
+   "bias_model": 0.1118,
+   "bias_market": 0.1157,
+   "share_of_era_gap": -0.065
+  },
+  {
+   "slice": "2013-2015: playoffs",
+   "n": 33,
+   "model_ll": 0.60488,
+   "market_ll": 0.56348,
+   "gap": 0.0414,
+   "gap_ci": [
+    -0.03024,
+    0.11648
+   ],
+   "sig": "n.s.",
+   "share_of_gap": 0.0461,
+   "n_share": 0.013,
+   "mean_abs_disagree_prob": 0.0944,
+   "mean_r_logit": -0.1277,
+   "bias_model": -0.0117,
+   "bias_market": 0.0179,
+   "share_of_era_gap": 0.1605
+  },
+  {
+   "slice": "2013-2015: primetime",
+   "n": 160,
+   "model_ll": 0.65054,
+   "market_ll": 0.61372,
+   "gap": 0.03682,
+   "gap_ci": [
+    0.00534,
+    0.06759
+   ],
+   "sig": "market SIG better",
+   "share_of_gap": 0.1986,
+   "n_share": 0.0632,
+   "mean_abs_disagree_prob": 0.0809,
+   "mean_r_logit": 0.0525,
+   "bias_model": -0.0153,
+   "bias_market": -0.0281,
+   "share_of_era_gap": 0.6919
+  },
+  {
+   "slice": "2013-2015: primetime & PD-extreme",
+   "n": 50,
+   "model_ll": 0.63911,
+   "market_ll": 0.54571,
+   "gap": 0.0934,
+   "gap_ci": [
+    0.03394,
+    0.15332
+   ],
+   "sig": "market SIG better",
+   "share_of_gap": 0.1575,
+   "n_share": 0.0198,
+   "mean_abs_disagree_prob": 0.0976,
+   "mean_r_logit": -0.025,
+   "bias_model": -0.0098,
+   "bias_market": -0.0038,
+   "share_of_era_gap": 0.5485
+  },
+  {
+   "slice": "2013-2015: primetime & not PD-extreme",
+   "n": 110,
+   "model_ll": 0.65573,
+   "market_ll": 0.64464,
+   "gap": 0.0111,
+   "gap_ci": [
+    -0.02596,
+    0.04791
+   ],
+   "sig": "n.s.",
+   "share_of_gap": 0.0412,
+   "n_share": 0.0435,
+   "mean_abs_disagree_prob": 0.0733,
+   "mean_r_logit": 0.0878,
+   "bias_model": -0.0178,
+   "bias_market": -0.0392,
+   "share_of_era_gap": 0.1434
+  },
+  {
+   "slice": "2013-2015: |O+D injury diff|>=2",
+   "n": 342,
+   "model_ll": 0.61501,
+   "market_ll": 0.61639,
+   "gap": -0.00138,
+   "gap_ci": [
+    -0.02316,
+    0.02048
+   ],
+   "sig": "n.s.",
+   "share_of_gap": -0.0159,
+   "n_share": 0.1351,
+   "mean_abs_disagree_prob": 0.0736,
+   "mean_r_logit": -0.0229,
+   "bias_model": 0.0273,
+   "bias_market": 0.031,
+   "share_of_era_gap": -0.0554
+  },
+  {
+   "slice": "2013-2015: home market favourite",
+   "n": 535,
+   "model_ll": 0.60981,
+   "market_ll": 0.60146,
+   "gap": 0.00835,
+   "gap_ci": [
+    -0.00863,
+    0.02582
+   ],
+   "sig": "n.s.",
+   "share_of_gap": 0.1506,
+   "n_share": 0.2114,
+   "mean_abs_disagree_prob": 0.074,
+   "mean_r_logit": 0.0737,
+   "bias_model": 0.0229,
+   "bias_market": 0.0026,
+   "share_of_era_gap": 0.5246
+  },
+  {
+   "slice": "2013-2015: away market favourite",
+   "n": 264,
+   "model_ll": 0.65312,
+   "market_ll": 0.63779,
+   "gap": 0.01533,
+   "gap_ci": [
+    -0.00915,
+    0.04023
+   ],
+   "sig": "n.s.",
+   "share_of_gap": 0.1365,
+   "n_share": 0.1043,
+   "mean_abs_disagree_prob": 0.0792,
+   "mean_r_logit": -0.0999,
+   "bias_model": -0.0398,
+   "bias_market": -0.0133,
+   "share_of_era_gap": 0.4754
+  },
+  {
+   "slice": "2013-2015: different favourite (model vs close)",
+   "n": 139,
+   "model_ll": 0.72786,
+   "market_ll": 0.69263,
+   "gap": 0.03523,
+   "gap_ci": [
+    -0.01704,
+    0.08595
+   ],
+   "sig": "n.s.",
+   "share_of_gap": 0.1651,
+   "n_share": 0.0549,
+   "mean_abs_disagree_prob": 0.1319,
+   "mean_r_logit": 0.0563,
+   "bias_model": -0.02,
+   "bias_market": -0.0337,
+   "share_of_era_gap": 0.5751
+  }
+ ],
+ "wk17_clinched_detail": {
+  "2006-2012": {
+   "n": 43,
+   "model_p_clinched": 0.72,
+   "close_p_clinched": 0.61,
+   "win_rate_clinched": 0.605,
+   "mean_oriented_absence_feature": 0.0
+  },
+  "2013-2015": {
+   "n": 21,
+   "model_p_clinched": 0.711,
+   "close_p_clinched": 0.683,
+   "win_rate_clinched": 0.714,
+   "mean_oriented_absence_feature": -0.618
+  }
+ },
+ "per_season": [
+  {
+   "season": 2006,
+   "qb_flux": {
+    "n": 116,
+    "gap": 0.0018
+   },
+   "qb_stable": {
+    "n": 104,
+    "gap": -0.0097
+   },
+   "pd_extreme": {
+    "n": 75,
+    "gap": 0.0026
+   },
+   "pd_middle": {
+    "n": 141,
+    "gap": -0.0054
+   },
+   "week17": {
+    "n": 15,
+    "gap": -0.0095
+   },
+   "weeks1_2": {
+    "n": 0,
+    "gap": null
+   }
+  },
+  {
+   "season": 2007,
+   "qb_flux": {
+    "n": 162,
+    "gap": 0.0343
+   },
+   "qb_stable": {
+    "n": 104,
+    "gap": 0.0108
+   },
+   "pd_extreme": {
+    "n": 90,
+    "gap": 0.0458
+   },
+   "pd_middle": {
+    "n": 129,
+    "gap": 0.0153
+   },
+   "week17": {
+    "n": 16,
+    "gap": 0.2079
+   },
+   "weeks1_2": {
+    "n": 31,
+    "gap": 0.0436
+   }
+  },
+  {
+   "season": 2008,
+   "qb_flux": {
+    "n": 106,
+    "gap": 0.016
+   },
+   "qb_stable": {
+    "n": 87,
+    "gap": 0.0014
+   },
+   "pd_extreme": {
+    "n": 78,
+    "gap": 0.017
+   },
+   "pd_middle": {
+    "n": 115,
+    "gap": 0.0043
+   },
+   "week17": {
+    "n": 13,
+    "gap": 0.0943
+   },
+   "weeks1_2": {
+    "n": 0,
+    "gap": null
+   }
+  },
+  {
+   "season": 2009,
+   "qb_flux": {
+    "n": 138,
+    "gap": 0.0217
+   },
+   "qb_stable": {
+    "n": 115,
+    "gap": 0.0067
+   },
+   "pd_extreme": {
+    "n": 90,
+    "gap": 0.0385
+   },
+   "pd_middle": {
+    "n": 128,
+    "gap": -0.0087
+   },
+   "week17": {
+    "n": 16,
+    "gap": 0.2163
+   },
+   "weeks1_2": {
+    "n": 19,
+    "gap": 0.049
+   }
+  },
+  {
+   "season": 2010,
+   "qb_flux": {
+    "n": 133,
+    "gap": 0.0272
+   },
+   "qb_stable": {
+    "n": 134,
+    "gap": -0.0033
+   },
+   "pd_extreme": {
+    "n": 85,
+    "gap": 0.0295
+   },
+   "pd_middle": {
+    "n": 134,
+    "gap": -0.0003
+   },
+   "week17": {
+    "n": 16,
+    "gap": 0.0484
+   },
+   "weeks1_2": {
+    "n": 32,
+    "gap": 0.0007
+   }
+  },
+  {
+   "season": 2011,
+   "qb_flux": {
+    "n": 142,
+    "gap": 0.0256
+   },
+   "qb_stable": {
+    "n": 125,
+    "gap": 0.0075
+   },
+   "pd_extreme": {
+    "n": 99,
+    "gap": 0.022
+   },
+   "pd_middle": {
+    "n": 120,
+    "gap": 0.0016
+   },
+   "week17": {
+    "n": 16,
+    "gap": -0.0067
+   },
+   "weeks1_2": {
+    "n": 32,
+    "gap": 0.0719
+   }
+  },
+  {
+   "season": 2012,
+   "qb_flux": {
+    "n": 110,
+    "gap": 0.0314
+   },
+   "qb_stable": {
+    "n": 156,
+    "gap": -0.0099
+   },
+   "pd_extreme": {
+    "n": 80,
+    "gap": -0.0023
+   },
+   "pd_middle": {
+    "n": 138,
+    "gap": 0.0103
+   },
+   "week17": {
+    "n": 16,
+    "gap": 0.0386
+   },
+   "weeks1_2": {
+    "n": 32,
+    "gap": 0.0366
+   }
+  },
+  {
+   "season": 2013,
+   "qb_flux": {
+    "n": 123,
+    "gap": 0.0047
+   },
+   "qb_stable": {
+    "n": 143,
+    "gap": 0.0404
+   },
+   "pd_extreme": {
+    "n": 81,
+    "gap": 0.033
+   },
+   "pd_middle": {
+    "n": 137,
+    "gap": 0.0143
+   },
+   "week17": {
+    "n": 16,
+    "gap": -0.0365
+   },
+   "weeks1_2": {
+    "n": 32,
+    "gap": 0.0603
+   }
+  },
+  {
+   "season": 2014,
+   "qb_flux": {
+    "n": 128,
+    "gap": 0.0122
+   },
+   "qb_stable": {
+    "n": 138,
+    "gap": 0.0271
+   },
+   "pd_extreme": {
+    "n": 92,
+    "gap": 0.059
+   },
+   "pd_middle": {
+    "n": 126,
+    "gap": -0.006
+   },
+   "week17": {
+    "n": 16,
+    "gap": 0.048
+   },
+   "weeks1_2": {
+    "n": 32,
+    "gap": 0.0273
+   }
+  },
+  {
+   "season": 2015,
+   "qb_flux": {
+    "n": 134,
+    "gap": -0.0097
+   },
+   "qb_stable": {
+    "n": 133,
+    "gap": -0.0139
+   },
+   "pd_extreme": {
+    "n": 94,
+    "gap": 0.0247
+   },
+   "pd_middle": {
+    "n": 125,
+    "gap": -0.0289
+   },
+   "week17": {
+    "n": 16,
+    "gap": -0.1745
+   },
+   "weeks1_2": {
+    "n": 32,
+    "gap": -0.054
+   }
+  }
+ ]
+}

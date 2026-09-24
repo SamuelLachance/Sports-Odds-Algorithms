@@ -1,0 +1,20 @@
+{
+ "[20102011]": {
+  "n_players": 891,
+  "n_name_map_labels": 40,
+  "infer_positions_share_sides_3F2D": 0.09203499453797816,
+  "infer_positions_D_share": 0.5443322109988776,
+  "replacement_share_sides_3F2D": 0.9905803255006658,
+  "replacement_D_share": 0.34118967452300786,
+  "replacement_unsupervised_agreement_with_name_map": 1.0
+ },
+ "[20142015, 20152016, 20162017]": {
+  "n_players": 1217,
+  "n_name_map_labels": 246,
+  "infer_positions_share_sides_3F2D": 0.14496831600249235,
+  "infer_positions_D_share": 0.44124897288414133,
+  "replacement_share_sides_3F2D": 0.9915206070592121,
+  "replacement_D_share": 0.3352506162695152,
+  "replacement_unsupervised_agreement_with_name_map": 1.0
+ }
+}

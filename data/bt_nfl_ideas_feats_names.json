@@ -1,0 +1,1 @@
+{"names": ["oppadj_incr_net", "oppadj_incr_pass", "oppadj_incr_run", "oppadj_net", "oppadj_pass", "oppadj_run", "lev_po", "lev_bye", "pre_net", "pre_pyth_luck", "pre_qb_new", "pre_pdg", "qb_shock_change"], "note": "as-of candidate features, pre-2016 spine rows aligned with data/bt_nfl_ideas_dev_X.npy"}

@@ -1,0 +1,468 @@
+{
+ "n_dev": 2531,
+ "our_ll": 0.6220662256355898,
+ "market_ll": 0.610363276793764,
+ "gap": 0.011702948841825996,
+ "r_sd": 0.4158825218248148,
+ "probes": {
+  "qb_shock d=0.6": {
+   "n": 2531,
+   "slope_logit_per_sd": -0.02191,
+   "t": -2.65,
+   "r2": 0.00278,
+   "seasons_pos": 4,
+   "seasons_n": 10,
+   "note": ""
+  },
+  "qb_shock d=0.6 | QB-change games": {
+   "n": 488,
+   "slope_logit_per_sd": 0.05375,
+   "t": 2.59,
+   "r2": 0.01364,
+   "seasons_pos": 8,
+   "seasons_n": 10,
+   "note": ""
+  },
+  "qb_shock d=0.8": {
+   "n": 2531,
+   "slope_logit_per_sd": -0.02965,
+   "t": -3.59,
+   "r2": 0.00508,
+   "seasons_pos": 3,
+   "seasons_n": 10,
+   "note": ""
+  },
+  "qb_shock d=0.8 | QB-change games": {
+   "n": 488,
+   "slope_logit_per_sd": 0.05359,
+   "t": 2.58,
+   "r2": 0.01356,
+   "seasons_pos": 8,
+   "seasons_n": 10,
+   "note": ""
+  },
+  "qb_shock d=0.9": {
+   "n": 2531,
+   "slope_logit_per_sd": -0.03187,
+   "t": -3.86,
+   "r2": 0.00587,
+   "seasons_pos": 3,
+   "seasons_n": 10,
+   "note": ""
+  },
+  "qb_shock d=0.9 | QB-change games": {
+   "n": 488,
+   "slope_logit_per_sd": 0.05044,
+   "t": 2.43,
+   "r2": 0.01201,
+   "seasons_pos": 7,
+   "seasons_n": 10,
+   "note": ""
+  },
+  "qb_delta (shipped col 1) all": {
+   "n": 2531,
+   "slope_logit_per_sd": -0.03782,
+   "t": -4.59,
+   "r2": 0.00827,
+   "seasons_pos": 3,
+   "seasons_n": 10,
+   "note": ""
+  },
+  "qb_delta | QB-change games": {
+   "n": 488,
+   "slope_logit_per_sd": 0.01078,
+   "t": 0.52,
+   "r2": 0.00055,
+   "seasons_pos": 5,
+   "seasons_n": 10,
+   "note": ""
+  },
+  "qb_shock d=.8 residualised on qb_delta": {
+   "n": 2531,
+   "slope_logit_per_sd": -0.00911,
+   "t": -1.1,
+   "r2": 0.00048,
+   "seasons_pos": 3,
+   "seasons_n": 10,
+   "note": ""
+  },
+  "prev-season wp | wk1-2": {
+   "n": 242,
+   "slope_logit_per_sd": 0.04222,
+   "t": 1.56,
+   "r2": 0.01,
+   "seasons_pos": 6,
+   "seasons_n": 8,
+   "note": ""
+  },
+  "prev-season wp | wk1-4": {
+   "n": 500,
+   "slope_logit_per_sd": 0.06008,
+   "t": 3.21,
+   "r2": 0.02022,
+   "seasons_pos": 6,
+   "seasons_n": 8,
+   "note": ""
+  },
+  "prev-season pdg | wk1-2": {
+   "n": 242,
+   "slope_logit_per_sd": 0.08808,
+   "t": 3.3,
+   "r2": 0.04353,
+   "seasons_pos": 7,
+   "seasons_n": 8,
+   "note": ""
+  },
+  "prev-season pdg | wk1-4": {
+   "n": 500,
+   "slope_logit_per_sd": 0.09813,
+   "t": 5.33,
+   "r2": 0.05396,
+   "seasons_pos": 7,
+   "seasons_n": 8,
+   "note": ""
+  },
+  "prev-season pyth_luck | wk1-2": {
+   "n": 242,
+   "slope_logit_per_sd": -0.07865,
+   "t": -2.94,
+   "r2": 0.03471,
+   "seasons_pos": 2,
+   "seasons_n": 8,
+   "note": ""
+  },
+  "prev-season pyth_luck | wk1-4": {
+   "n": 500,
+   "slope_logit_per_sd": -0.06101,
+   "t": -3.26,
+   "r2": 0.02086,
+   "seasons_pos": 3,
+   "seasons_n": 8,
+   "note": ""
+  },
+  "prev-season net_epa | wk1-2": {
+   "n": 242,
+   "slope_logit_per_sd": 0.09601,
+   "t": 3.62,
+   "r2": 0.05172,
+   "seasons_pos": 7,
+   "seasons_n": 8,
+   "note": ""
+  },
+  "prev-season net_epa | wk1-4": {
+   "n": 500,
+   "slope_logit_per_sd": 0.09848,
+   "t": 5.35,
+   "r2": 0.05434,
+   "seasons_pos": 7,
+   "seasons_n": 8,
+   "note": ""
+  },
+  "prev-season late_net | wk1-2": {
+   "n": 242,
+   "slope_logit_per_sd": 0.05427,
+   "t": 2.01,
+   "r2": 0.01652,
+   "seasons_pos": 7,
+   "seasons_n": 8,
+   "note": ""
+  },
+  "prev-season late_net | wk1-4": {
+   "n": 500,
+   "slope_logit_per_sd": 0.06543,
+   "t": 3.5,
+   "r2": 0.02399,
+   "seasons_pos": 7,
+   "seasons_n": 8,
+   "note": ""
+  },
+  "prev-season qb_new | wk1-2": {
+   "n": 242,
+   "slope_logit_per_sd": -0.08735,
+   "t": -3.28,
+   "r2": 0.04281,
+   "seasons_pos": 2,
+   "seasons_n": 8,
+   "note": ""
+  },
+  "prev-season qb_new | wk1-4": {
+   "n": 500,
+   "slope_logit_per_sd": -0.08378,
+   "t": -4.52,
+   "r2": 0.03933,
+   "seasons_pos": 1,
+   "seasons_n": 8,
+   "note": ""
+  },
+  "prev-season coach_new | wk1-2": {
+   "n": 242,
+   "slope_logit_per_sd": -0.01142,
+   "t": -0.42,
+   "r2": 0.00073,
+   "seasons_pos": 3,
+   "seasons_n": 8,
+   "note": ""
+  },
+  "prev-season coach_new | wk1-4": {
+   "n": 500,
+   "slope_logit_per_sd": -0.022,
+   "t": -1.16,
+   "r2": 0.00271,
+   "seasons_pos": 3,
+   "seasons_n": 8,
+   "note": ""
+  },
+  "prev-season net_epa | wk5-17": {
+   "n": 1923,
+   "slope_logit_per_sd": -0.00201,
+   "t": -0.21,
+   "r2": 2e-05,
+   "seasons_pos": 5,
+   "seasons_n": 10,
+   "note": ""
+  },
+  "prev-season pdg | wk5-17": {
+   "n": 1923,
+   "slope_logit_per_sd": 0.00278,
+   "t": 0.29,
+   "r2": 5e-05,
+   "seasons_pos": 6,
+   "seasons_n": 10,
+   "note": ""
+  },
+  "lev_po diff | wk11-17": {
+   "n": 1094,
+   "slope_logit_per_sd": 0.05183,
+   "t": 3.99,
+   "r2": 0.01438,
+   "seasons_pos": 9,
+   "seasons_n": 10,
+   "note": ""
+  },
+  "lev_bye diff | wk11-17": {
+   "n": 1094,
+   "slope_logit_per_sd": -0.02174,
+   "t": -1.66,
+   "r2": 0.00253,
+   "seasons_pos": 5,
+   "seasons_n": 10,
+   "note": ""
+  },
+  "lev_total diff | wk11-17": {
+   "n": 1094,
+   "slope_logit_per_sd": 0.04167,
+   "t": 3.2,
+   "r2": 0.0093,
+   "seasons_pos": 7,
+   "seasons_n": 10,
+   "note": ""
+  },
+  "lev_total diff | wk15-17": {
+   "n": 473,
+   "slope_logit_per_sd": 0.06629,
+   "t": 2.96,
+   "r2": 0.01829,
+   "seasons_pos": 8,
+   "seasons_n": 10,
+   "note": ""
+  },
+  "lev_total diff | wk17": {
+   "n": 156,
+   "slope_logit_per_sd": 0.13769,
+   "t": 2.78,
+   "r2": 0.0478,
+   "seasons_pos": 7,
+   "seasons_n": 9,
+   "note": ""
+  },
+  "opp-adj minus raw net EPA": {
+   "n": 2531,
+   "slope_logit_per_sd": 0.07587,
+   "t": 9.33,
+   "r2": 0.03328,
+   "seasons_pos": 10,
+   "seasons_n": 10,
+   "note": ""
+  },
+  "opp-adj net EPA (level)": {
+   "n": 2531,
+   "slope_logit_per_sd": 0.01022,
+   "t": 1.24,
+   "r2": 0.0006,
+   "seasons_pos": 8,
+   "seasons_n": 10,
+   "note": ""
+  },
+  "Out/D skill usage share diff (2009-15)": {
+   "n": 1775,
+   "slope_logit_per_sd": -0.02943,
+   "t": -3.01,
+   "r2": 0.00509,
+   "seasons_pos": 0,
+   "seasons_n": 7,
+   "note": ""
+  },
+  "Out/D skill usage share diff (2009-12)": {
+   "n": 1009,
+   "slope_logit_per_sd": -0.01701,
+   "t": -1.39,
+   "r2": 0.00192,
+   "seasons_pos": 0,
+   "seasons_n": 4,
+   "note": ""
+  },
+  "Out/D def usage share diff (2009-15)": {
+   "n": 1775,
+   "slope_logit_per_sd": -0.01995,
+   "t": -2.04,
+   "r2": 0.00234,
+   "seasons_pos": 2,
+   "seasons_n": 7,
+   "note": ""
+  },
+  "Out/D OL count diff (2009-15)": {
+   "n": 1775,
+   "slope_logit_per_sd": 0.00079,
+   "t": 0.08,
+   "r2": 0.0,
+   "seasons_pos": 4,
+   "seasons_n": 7,
+   "note": ""
+  },
+  "Out/D OL count diff (2009-12)": {
+   "n": 1009,
+   "slope_logit_per_sd": 0.0238,
+   "t": 1.95,
+   "r2": 0.00376,
+   "seasons_pos": 3,
+   "seasons_n": 4,
+   "note": ""
+  }
+ },
+ "slices": {
+  "QB change either side": {
+   "n": 488,
+   "gap": 0.01812,
+   "se": 0.00947,
+   "share_of_total_gap": 0.298,
+   "mean_abs_r": 0.3532
+  },
+  "QB change none": {
+   "n": 2043,
+   "gap": 0.01017,
+   "se": 0.00413,
+   "share_of_total_gap": 0.702,
+   "mean_abs_r": 0.3195
+  },
+  "weeks 1-2": {
+   "n": 242,
+   "gap": 0.02827,
+   "se": 0.01197,
+   "share_of_total_gap": 0.231,
+   "mean_abs_r": 0.3371
+  },
+  "weeks 3-4": {
+   "n": 258,
+   "gap": 0.00336,
+   "se": 0.0119,
+   "share_of_total_gap": 0.029,
+   "mean_abs_r": 0.331
+  },
+  "wk17 REG": {
+   "n": 156,
+   "gap": 0.04189,
+   "se": 0.02351,
+   "share_of_total_gap": 0.221,
+   "mean_abs_r": 0.4534
+  },
+  "wk15-16 REG": {
+   "n": 317,
+   "gap": 0.00421,
+   "se": 0.01093,
+   "share_of_total_gap": 0.045,
+   "mean_abs_r": 0.3246
+  },
+  "|lev diff|>0.3 wk11-17": {
+   "n": 130,
+   "gap": 0.03733,
+   "se": 0.01995,
+   "share_of_total_gap": 0.164,
+   "mean_abs_r": 0.3965
+  },
+  "|lev diff|<=0.3 wk11-17": {
+   "n": 964,
+   "gap": 0.01124,
+   "se": 0.00632,
+   "share_of_total_gap": 0.366,
+   "mean_abs_r": 0.3234
+  },
+  "top |dp|>0.12": {
+   "n": 423,
+   "gap": 0.05205,
+   "se": 0.01769,
+   "share_of_total_gap": 0.743,
+   "mean_abs_r": 0.7459
+  },
+  "top |dp|>0.12 & no QB change & wk3-14": {
+   "n": 202,
+   "gap": 0.0142,
+   "se": 0.02503,
+   "share_of_total_gap": 0.097,
+   "mean_abs_r": 0.7122
+  }
+ },
+ "slope_by_bucket": {
+  "wk1-2": {
+   "n": 242,
+   "a": 0.0584,
+   "b": 1.0018,
+   "corr": 0.809
+  },
+  "wk3-4": {
+   "n": 258,
+   "a": 0.0255,
+   "b": 1.0197,
+   "corr": 0.8617
+  },
+  "wk5-8": {
+   "n": 551,
+   "a": 0.0425,
+   "b": 0.9518,
+   "corr": 0.8985
+  },
+  "wk9-13": {
+   "n": 744,
+   "a": 0.0751,
+   "b": 0.9023,
+   "corr": 0.9007
+  },
+  "wk14-17": {
+   "n": 628,
+   "a": 0.0869,
+   "b": 0.8353,
+   "corr": 0.8815
+  },
+  "playoffs": {
+   "n": 108,
+   "a": 0.0377,
+   "b": 0.9436,
+   "corr": 0.7935
+  }
+ },
+ "qb_change_rate": 0.19280916633741604,
+ "corr_shock_qdelta": 0.5894287248530994,
+ "lev_coverage": 1094,
+ "epa_raw_repro_corr": 0.9999999999993162,
+ "corr_adj_raw": 0.9965615451574313,
+ "top_dis": {
+  "n": 423,
+  "share_qb_change": 0.23167848699763594,
+  "share_qb_change_all": 0.19280916633741604,
+  "share_wk1_2": 0.11347517730496454,
+  "share_wk1_2_all": 0.09561438166732517,
+  "share_wk15_17": 0.22458628841607564,
+  "share_wk15_17_all": 0.18688265507704466,
+  "share_playoffs": 0.05673758865248227,
+  "share_playoffs_all": 0.04267088107467404
+ }
+}

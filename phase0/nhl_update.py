@@ -9,7 +9,25 @@ full pull).
                              from the gamecenter landing endpoint (see
                              archive_lineups)
 
+then runs phase0/nhl_site_fetch.py (rosters, production stats, standings
+identity, the full season schedule - display data for the site, each step
+cached and failure-tolerant).
+
+"Today" is the US-Eastern date, not the runner's UTC date: a 00:00-04:00 UTC
+run is still the previous evening in North America, and a UTC date dropped that
+night's games from the upcoming slate. Games in progress (LIVE/CRIT) are kept
+in the slate with their `state`, so a serve during a game does not drop its
+row, pick and badge until the final.
+
 Standard library only, so it can run in the minimal CI refresh job.
+
+Bounded in wall-clock time: refresh.py runs this under a 900 s subprocess
+timeout, and a run that overshoots aborts the whole refresh (MLB deploy
+included). REQ_TIMEOUT per request; the schedule walk stops after
+SCHEDULE_BUDGET_S, the lineup archive at ARCHIVE_BUDGET_S (or after
+MAX_CONSEC_FAIL failed games in a row), and the site fetch gets what is left of
+UPDATE_BUDGET_S, capped at its own BUDGET_S. Worst case ~UPDATE_BUDGET_S plus
+one request, far under 900 s.
 """
 from __future__ import annotations
 
@@ -18,8 +36,11 @@ import datetime as dt
 import gzip
 import json
 import os
+import sys
 import time
 import urllib.request
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 API = "https://api-web.nhle.com/v1/schedule/{}"
 LANDING = "https://api-web.nhle.com/v1/gamecenter/{}/landing"
@@ -30,10 +51,31 @@ SPINE = "data/nhl_games.csv"
 UPCOMING = "data/nhl_upcoming.json"
 LINEUP_ARCHIVE = "data/nhl_lineup_archive.jsonl"
 
+# gameState values: FUT (scheduled), PRE (pre-game), LIVE/CRIT (in progress),
+# OFF/FINAL (done). Only the last two are results.
+UNPLAYED_STATES = ("FUT", "PRE", "LIVE", "CRIT")
 
-def get(url):
+REQ_TIMEOUT = 20            # seconds per request (was 45)
+UPDATE_BUDGET_S = 600.0     # the whole run, site fetch included
+SCHEDULE_BUDGET_S = 180.0   # the /schedule walk (spine finals + slate)
+ARCHIVE_BUDGET_S = 330.0    # schedule walk + lineup archive, from the start
+MAX_CONSEC_FAIL = 3         # lineup archive: failed games in a row before stopping
+
+
+def et_today() -> dt.date:
+    """The US-Eastern calendar date (the NHL's schedule date)."""
+    try:
+        from zoneinfo import ZoneInfo
+        return dt.datetime.now(ZoneInfo("America/New_York")).date()
+    except Exception:  # noqa: BLE001  (no tz database: EDT/EST by month)
+        now = dt.datetime.now(dt.timezone.utc)
+        off = 4 if 3 <= now.month <= 10 else 5
+        return (now - dt.timedelta(hours=off)).date()
+
+
+def get(url, timeout=REQ_TIMEOUT):
     req = urllib.request.Request(url, headers=HEADERS)
-    raw = urllib.request.urlopen(req, timeout=45).read()
+    raw = urllib.request.urlopen(req, timeout=timeout).read()
     if raw[:2] == b"\x1f\x8b":
         raw = gzip.decompress(raw)
     return json.loads(raw)
@@ -140,7 +182,7 @@ def _pid_set(obj):
     return ids
 
 
-def archive_lineups(upcoming, today_iso):
+def archive_lineups(upcoming, today_iso, deadline=None):
     """Snapshot game-day pre-game rosters to data/nhl_lineup_archive.jsonl.
 
     Why this exists: ledger row 10 (scratch-absence) was the most promising
@@ -150,6 +192,10 @@ def archive_lineups(upcoming, today_iso):
     eventually be tested. One JSON line per (game, fetch) with whatever roster
     info the landing payload exposes; a (gid, player-id-set) already archived
     is skipped, so the 6x/day CI cadence stores only genuine changes.
+
+    Stops (what was archived stays archived) once `deadline` - a
+    time.monotonic() value - passes, or after MAX_CONSEC_FAIL games in a row
+    whose required `landing` request failed.
     """
     todays = [u for u in upcoming if u.get("d") == today_iso]
     if not todays:
@@ -163,9 +209,15 @@ def archive_lineups(upcoming, today_iso):
             except ValueError:
                 continue
             seen.add((rec.get("gid"), lineup_fingerprint(rec.get("lineup"))))
-    n = 0
+    n = fails = 0
     with open(LINEUP_ARCHIVE, "a", encoding="utf-8") as fh:
         for u in todays:
+            if deadline is not None and time.monotonic() >= deadline:
+                print("[nhl_update] lineup archive: time budget spent, stopping")
+                break
+            if fails >= MAX_CONSEC_FAIL:
+                print(f"[nhl_update] lineup archive: {fails} games in a row failed, stopping")
+                break
             # VERIFIED 2026-07-31 on a FINAL game: `landing` carries NEITHER
             # scratches NOR the dressed roster. Scratches live in `right-rail`
             # (gameInfo.{home,away}Team.scratches) and the dressed roster in
@@ -192,7 +244,9 @@ def archive_lineups(upcoming, today_iso):
                     pbp = d
                 time.sleep(0.15)
             if payload is None:
+                fails += 1
                 continue
+            fails = 0
             sub = _lineup_subset(payload, rail, pbp)
             key = (u["id"], lineup_fingerprint(sub))
             if not sub or key in seen:
@@ -212,11 +266,56 @@ def archive_lineups(upcoming, today_iso):
     return n
 
 
+def collect_week(data: dict, seen: set, today_iso: str) -> tuple[list, list]:
+    """One /schedule/{date} answer -> (new finals for the spine, unplayed games).
+
+    Finals (OFF/FINAL) not yet in `seen` become spine rows (and are added to
+    `seen`). Unplayed games dated today (US-Eastern) or later are the slate;
+    a game in progress (LIVE/CRIT) is kept whatever its date, so a game that
+    started before midnight is not lost from the slate until it is final.
+    """
+    new_rows, upcoming = [], []
+    for wk in data.get("gameWeek", []):
+        gdate = wk.get("date")
+        for g in wk.get("games", []):
+            gid = g.get("id")
+            gtype = g.get("gameType")
+            if gtype not in (2, 3) or gid is None:
+                continue
+            h, a = g.get("homeTeam", {}), g.get("awayTeam", {})
+            state = g.get("gameState")
+            if state in ("OFF", "FINAL") and gid not in seen:
+                hs, as_ = h.get("score"), a.get("score")
+                if hs is None or as_ is None:
+                    continue
+                seen.add(gid)
+                new_rows.append({
+                    "game_id": gid, "date": gdate, "season": g.get("season"),
+                    "type": gtype, "away": (a.get("abbrev") or "").strip(),
+                    "home": (h.get("abbrev") or "").strip(),
+                    "away_goals": as_, "home_goals": hs,
+                    "home_win": 1 if hs > as_ else 0,
+                    "last_period": (g.get("gameOutcome") or {}).get("lastPeriodType", "REG"),
+                    "neutral": 1 if g.get("neutralSite") else 0,
+                    "win_goalie": (g.get("winningGoalie") or {}).get("playerId", "")})
+            elif state in UNPLAYED_STATES and gdate and (
+                    gdate >= today_iso or state in ("LIVE", "CRIT")):
+                upcoming.append({
+                    "id": gid, "d": gdate, "season": g.get("season"),
+                    "playoff": 1 if gtype == 3 else 0,
+                    "home": (h.get("abbrev") or "").strip(),
+                    "away": (a.get("abbrev") or "").strip(),
+                    "t": (g.get("startTimeUTC") or ""),
+                    "state": state})
+    return new_rows, upcoming
+
+
 def main() -> int:
+    t0 = time.monotonic()
     rows = list(csv.DictReader(open(SPINE, encoding="utf-8")))
     seen = {int(r["game_id"]) for r in rows}
     last_date = max(r["date"] for r in rows)
-    today = dt.date.today()
+    today = et_today()
     start = min(dt.date.fromisoformat(last_date) - dt.timedelta(days=3), today)
     end = today + dt.timedelta(days=10)
 
@@ -224,42 +323,18 @@ def main() -> int:
     cursor = start.isoformat()
     n_req = 0
     while cursor <= end.isoformat() and n_req < 12:
+        if time.monotonic() - t0 >= SCHEDULE_BUDGET_S:
+            print(f"[nhl_update] schedule walk stopped at {cursor}: time budget spent")
+            break
         try:
             data = get(API.format(cursor))
         except Exception as ex:  # noqa: BLE001
             print(f"[nhl_update] fetch failed at {cursor}: {ex}")
             break
         n_req += 1
-        for wk in data.get("gameWeek", []):
-            gdate = wk.get("date")
-            for g in wk.get("games", []):
-                gid = g.get("id")
-                gtype = g.get("gameType")
-                if gtype not in (2, 3) or gid is None:
-                    continue
-                h, a = g.get("homeTeam", {}), g.get("awayTeam", {})
-                state = g.get("gameState")
-                if state in ("OFF", "FINAL") and gid not in seen:
-                    hs, as_ = h.get("score"), a.get("score")
-                    if hs is None or as_ is None:
-                        continue
-                    seen.add(gid)
-                    new_rows.append({
-                        "game_id": gid, "date": gdate, "season": g.get("season"),
-                        "type": gtype, "away": (a.get("abbrev") or "").strip(),
-                        "home": (h.get("abbrev") or "").strip(),
-                        "away_goals": as_, "home_goals": hs,
-                        "home_win": 1 if hs > as_ else 0,
-                        "last_period": (g.get("gameOutcome") or {}).get("lastPeriodType", "REG"),
-                        "neutral": 1 if g.get("neutralSite") else 0,
-                        "win_goalie": (g.get("winningGoalie") or {}).get("playerId", "")})
-                elif state in ("FUT", "PRE") and gdate and gdate >= today.isoformat():
-                    upcoming.append({
-                        "id": gid, "d": gdate, "season": g.get("season"),
-                        "playoff": 1 if gtype == 3 else 0,
-                        "home": (h.get("abbrev") or "").strip(),
-                        "away": (a.get("abbrev") or "").strip(),
-                        "t": (g.get("startTimeUTC") or "")})
+        nr, up = collect_week(data, seen, today.isoformat())
+        new_rows += nr
+        upcoming += up
         nxt = data.get("nextStartDate")
         cursor = nxt if nxt and nxt > cursor else (
             dt.date.fromisoformat(cursor) + dt.timedelta(days=7)).isoformat()
@@ -278,11 +353,26 @@ def main() -> int:
     ded = {}
     for u in upcoming:
         ded.setdefault(u["id"], u)
-    json.dump(sorted(ded.values(), key=lambda u: (u["d"], u["id"])),
-              open(UPCOMING, "w"), indent=0)
+    # temp + os.replace, like the spine: a killed run never leaves half a slate
+    with open(UPCOMING + ".tmp", "w", encoding="utf-8") as fh:
+        json.dump(sorted(ded.values(), key=lambda u: (u["d"], u["id"])), fh, indent=0)
+    os.replace(UPCOMING + ".tmp", UPCOMING)
     print(f"[nhl_update] +{len(new_rows)} finals, {len(ded)} upcoming "
           f"({n_req} requests)")
-    archive_lineups(list(ded.values()), today.isoformat())
+    # pre-game snapshots only: an in-progress game's roster is not a lineup
+    # announcement (the archive's purpose), and it was never archived before
+    archive_lineups([u for u in ded.values() if u.get("state") not in ("LIVE", "CRIT")],
+                    today.isoformat(), deadline=t0 + ARCHIVE_BUDGET_S)
+    try:
+        import nhl_site_fetch
+        left = UPDATE_BUDGET_S - (time.monotonic() - t0)
+        if left < 15:
+            print(f"[nhl_update] site fetch skipped: {left:.0f}s of the time budget left; "
+                  f"display caches kept")
+        else:
+            nhl_site_fetch.main(budget_s=min(nhl_site_fetch.BUDGET_S, left))
+    except Exception as ex:  # noqa: BLE001  (display data never fails the spine step)
+        print(f"[nhl_update] site fetch failed: {ex}")
     return 0
 
 

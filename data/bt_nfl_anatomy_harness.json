@@ -1,0 +1,43 @@
+{
+ "full": {
+  "ll_all_nonties": 0.62263,
+  "ll_market_mask": 0.62199,
+  "n_all": 2666,
+  "n_mask": 2531
+ },
+ "drop qd": {
+  "cost_nats": 0.00603,
+  "ci": [
+   0.00183,
+   0.01018
+  ]
+ },
+ "drop elo lgt": {
+  "cost_nats": 0.00361,
+  "ci": [
+   1e-05,
+   0.00728
+  ]
+ },
+ "drop epa+pass+run": {
+  "cost_nats": 0.00174,
+  "ci": [
+   -0.00182,
+   0.00526
+  ]
+ },
+ "drop absence+rq": {
+  "cost_nats": -0.00125,
+  "ci": [
+   -0.00369,
+   0.00114
+  ]
+ },
+ "elo only": {
+  "cost_nats": 0.01022,
+  "ci": [
+   0.00341,
+   0.01711
+  ]
+ }
+}

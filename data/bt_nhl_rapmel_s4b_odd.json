@@ -1,0 +1,15 @@
+{
+ "half": "odd",
+ "sse": 818206732.5704874,
+ "sse0": 821774189.903647,
+ "r2_this_half": 0.004341164978152734,
+ "positions": {
+  "share_sides_3F2D": 0.9915206070592121,
+  "share_sides_3F2D_unsupervised": 0.9915206070592121,
+  "unsupervised_agreement_with_name_map": 1.0,
+  "n_name_map_labels": 246,
+  "worst_team_season_3F2D": 0.8659791514199525,
+  "D_share_players": 0.3352506162695152
+ },
+ "seconds": 6.9
+}

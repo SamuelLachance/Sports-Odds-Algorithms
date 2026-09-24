@@ -1,0 +1,2035 @@
+{
+ "candidate": "nhl_rapmel",
+ "title": "Walk-forward stint-RAPM lineup power plus goalie level, INSIDE both team ratings (the full MLB transplant)",
+ "protocol": {
+  "dev_seasons_scored": [
+   20112012,
+   20122013,
+   20132014,
+   20142015,
+   20152016,
+   20162017,
+   20172018
+  ],
+  "n_dev": 7929,
+  "eval": "LOSO over DEV seasons, nested (gamma,beta) grids",
+  "market_blind": true,
+  "test_seasons_touched": 0,
+  "pre_declared_variants": [
+   "B3 primary",
+   "B4 beside control",
+   "B5 no Jan-1 refits"
+  ],
+  "bar": "nested B3 gain >= +0.00100 AND 95% CI lo > 0 AND all sanity + walk-forward checks pass"
+ },
+ "harness_sanity": {
+  "S1": {
+   "shipped_dev_loso_ll": 0.672398,
+   "n": 7929,
+   "target": 0.672398,
+   "pass": true
+  },
+  "S2": {
+   "drop_xg_cost": 0.00303,
+   "target": 0.00303,
+   "tol": 0.0002,
+   "recorded_0811_sweep": 0.00304,
+   "ledger_row5_TEST_recorded": 0.00316,
+   "pass": true
+  },
+  "S3": {
+   "elo_cell00_vs_run_elo_arr_maxabs": 0.0,
+   "xg_cell00_vs_run_xg_arr_maxabs": 0.0,
+   "xg_nan_pattern_identical": true,
+   "blend_pred_maxabs": 0.0,
+   "pass": true
+  },
+  "S4b": {
+   "heldout_stint_R2_2014_17_odd_even": 0.00402,
+   "halves": [
+    0.00434,
+    0.00371
+   ],
+   "expected_order": [
+    0.01,
+    0.014
+   ],
+   "stop_if_leq": 0.0,
+   "decomposition_same_split": {
+    "context_only": 0.00342,
+    "players_only": 0.00095,
+    "team_season_indicators_only": 0.00053,
+    "players_plus_context": 0.00434,
+    "note": "odd-gid fit, even-gid scored half; exact normal-equation solve agrees with sparse_cg to 6e-5 in coefficients"
+   },
+   "stop_rule_triggered": false,
+   "within_expected_order": false,
+   "pass_rule": "conservative, fixed before any arm was scored: positive AND within the expected order (0.008..0.02)",
+   "pass": false
+  },
+  "S4c": {
+   "split_half_r_net_ge_1000min": 0.3702,
+   "n_players": 627,
+   "r_F": 0.3931,
+   "r_D": 0.3255,
+   "expected": [
+    0.3,
+    0.5
+   ],
+   "pass": true
+  },
+  "S4d": {
+   "kept_5v5_stint_xg_over_all_strict5v5_xg": 0.9739,
+   "strength_leak_dropped_share": 0.1263,
+   "pass": true
+  },
+  "positions": {
+   "why_not_infer_positions": {
+    "[20102011]": {
+     "n_players": 891,
+     "n_name_map_labels": 40,
+     "infer_positions_share_sides_3F2D": 0.09203499453797816,
+     "infer_positions_D_share": 0.5443322109988776,
+     "replacement_share_sides_3F2D": 0.9905803255006658,
+     "replacement_D_share": 0.34118967452300786,
+     "replacement_unsupervised_agreement_with_name_map": 1.0
+    },
+    "[20142015, 20152016, 20162017]": {
+     "n_players": 1217,
+     "n_name_map_labels": 246,
+     "infer_positions_share_sides_3F2D": 0.14496831600249235,
+     "infer_positions_D_share": 0.44124897288414133,
+     "replacement_share_sides_3F2D": 0.9915206070592121,
+     "replacement_D_share": 0.3352506162695152,
+     "replacement_unsupervised_agreement_with_name_map": 1.0
+    }
+   },
+   "per_fit": {
+    "pre_20112012": {
+     "share_sides_3F2D": 0.9905803255006658,
+     "share_sides_3F2D_unsupervised": 0.9905803255006658,
+     "unsupervised_agreement_with_name_map": 1.0,
+     "n_name_map_labels": 40,
+     "worst_team_season_3F2D": 0.958292508653406,
+     "D_share_players": 0.34118967452300786
+    },
+    "jan_20112012": {
+     "share_sides_3F2D": 0.9905583264257847,
+     "share_sides_3F2D_unsupervised": 0.9905583264257847,
+     "unsupervised_agreement_with_name_map": 1.0,
+     "n_name_map_labels": 53,
+     "worst_team_season_3F2D": 0.958292508653406,
+     "D_share_players": 0.34545454545454546
+    },
+    "pre_20122013": {
+     "share_sides_3F2D": 0.9904308654261461,
+     "share_sides_3F2D_unsupervised": 0.9904308654261461,
+     "unsupervised_agreement_with_name_map": 1.0,
+     "n_name_map_labels": 57,
+     "worst_team_season_3F2D": 0.958292508653406,
+     "D_share_players": 0.34220532319391633
+    },
+    "pre_20132014": {
+     "share_sides_3F2D": 0.9898988835931049,
+     "share_sides_3F2D_unsupervised": 0.9898988835931049,
+     "unsupervised_agreement_with_name_map": 1.0,
+     "n_name_map_labels": 79,
+     "worst_team_season_3F2D": 0.9507322391490114,
+     "D_share_players": 0.34133790737564323
+    },
+    "jan_20132014": {
+     "share_sides_3F2D": 0.9892556982051387,
+     "share_sides_3F2D_unsupervised": 0.9892556982051387,
+     "unsupervised_agreement_with_name_map": 1.0,
+     "n_name_map_labels": 106,
+     "worst_team_season_3F2D": 0.9507322391490114,
+     "D_share_players": 0.34824281150159747
+    },
+    "pre_20142015": {
+     "share_sides_3F2D": 0.9853237560346048,
+     "share_sides_3F2D_unsupervised": 0.9853237560346048,
+     "unsupervised_agreement_with_name_map": 1.0,
+     "n_name_map_labels": 113,
+     "worst_team_season_3F2D": 0.8826403517205814,
+     "D_share_players": 0.3392857142857143
+    },
+    "jan_20142015": {
+     "share_sides_3F2D": 0.985446260999747,
+     "share_sides_3F2D_unsupervised": 0.985446260999747,
+     "unsupervised_agreement_with_name_map": 1.0,
+     "n_name_map_labels": 136,
+     "worst_team_season_3F2D": 0.8678697971420785,
+     "D_share_players": 0.3341288782816229
+    },
+    "pre_20152016": {
+     "share_sides_3F2D": 0.9847224972837326,
+     "share_sides_3F2D_unsupervised": 0.9847224972837326,
+     "unsupervised_agreement_with_name_map": 1.0,
+     "n_name_map_labels": 145,
+     "worst_team_season_3F2D": 0.8659791514199525,
+     "D_share_players": 0.3440207972270364
+    },
+    "jan_20152016": {
+     "share_sides_3F2D": 0.9860965694932537,
+     "share_sides_3F2D_unsupervised": 0.9860965694932537,
+     "unsupervised_agreement_with_name_map": 1.0,
+     "n_name_map_labels": 172,
+     "worst_team_season_3F2D": 0.8659791514199525,
+     "D_share_players": 0.3379143088116411
+    },
+    "pre_20162017": {
+     "share_sides_3F2D": 0.9869883213423671,
+     "share_sides_3F2D_unsupervised": 0.9869883213423671,
+     "unsupervised_agreement_with_name_map": 1.0,
+     "n_name_map_labels": 196,
+     "worst_team_season_3F2D": 0.8659791514199525,
+     "D_share_players": 0.33694745621351124
+    },
+    "jan_20162017": {
+     "share_sides_3F2D": 0.9878805196299981,
+     "share_sides_3F2D_unsupervised": 0.9878805196299981,
+     "unsupervised_agreement_with_name_map": 1.0,
+     "n_name_map_labels": 233,
+     "worst_team_season_3F2D": 0.8659791514199525,
+     "D_share_players": 0.3328149300155521
+    },
+    "pre_20172018": {
+     "share_sides_3F2D": 0.9915206070592121,
+     "share_sides_3F2D_unsupervised": 0.9915206070592121,
+     "unsupervised_agreement_with_name_map": 1.0,
+     "n_name_map_labels": 246,
+     "worst_team_season_3F2D": 0.8659791514199525,
+     "D_share_players": 0.3352506162695152
+    },
+    "jan_20172018": {
+     "share_sides_3F2D": 0.9909221371073851,
+     "share_sides_3F2D_unsupervised": 0.9916825334975358,
+     "unsupervised_agreement_with_name_map": 0.9963503649635036,
+     "n_name_map_labels": 274,
+     "worst_team_season_3F2D": 0.8659791514199525,
+     "D_share_players": 0.3361801242236025
+    }
+   },
+   "pass": true
+  },
+  "S4a": {
+   "B1_gain_exact": 0.0001998502443546165,
+   "gmar_A1_gain_exact": 0.0001998502443546165,
+   "abs_diff_gain": 0.0,
+   "B1_dev_ll": 0.672199,
+   "gmar_A1_dev_ll": 0.672199,
+   "picks_equal": true,
+   "G_arrays_vs_gmar_feats_maxabs": 9.996344030316351e-17,
+   "note": "gmar stores no per-game A1 predictions; B1 is built by the same gl_elo + GM.nested code on the same inputs, so equality of the exact pooled gain (a mean over 7,929 per-game losses), picks and the per-game G arrays is the per-game check available",
+   "pass": true
+  }
+ },
+ "walk_forward": {
+  "W1": {
+   "statement": "one ordered pass per run; per-player m5 / appearance / debutant-pool state, per-goalie N/X (gl_elo), per-team R, X, 10-lineup window are read for game i before any of game i's result, TOI, GA/xGA is applied; runtime write-index guards (assert last write < i) in bt_nhl_rapmel.build_P and gl_elo",
+   "runtime_guards_raised": 0,
+   "pass": true
+  },
+  "W2": {
+   "cutoffs": {
+    "2012-02-01": {
+     "n_pre_games": 1978,
+     "n_features_checked": 30,
+     "mismatched_features": [],
+     "n_features_changed_after_cutoff": 30,
+     "pass": true,
+     "n_games_permuted_after": 7393,
+     "n_moved": 7393,
+     "value_files_refit_on_dropped_stints": 11
+    },
+    "2015-01-15": {
+     "n_pre_games": 5054,
+     "n_features_checked": 30,
+     "mismatched_features": [],
+     "n_features_changed_after_cutoff": 30,
+     "pass": true,
+     "n_games_permuted_after": 4317,
+     "n_moved": 4316,
+     "value_files_refit_on_dropped_stints": 6
+    },
+    "2017-12-01": {
+     "n_pre_games": 8487,
+     "n_features_checked": 30,
+     "mismatched_features": [],
+     "n_features_changed_after_cutoff": 30,
+     "pass": true,
+     "n_games_permuted_after": 884,
+     "n_moved": 884,
+     "value_files_refit_on_dropped_stints": 1
+    }
+   },
+   "pass": true,
+   "note": "y, goalie GA/xGA rows, dressed lists, starters and per-game 5v5 TOI permuted among games on/after each cutoff; every stint on/after the cutoff dropped and every value file with cutoff >= the date refit (bt_nhl_rapmel_fit.py fit <name> --drop); P, dP, G and every Elo / xG-Elo cell of every arm rebuilt and compared bitwise before it"
+  },
+  "W3": {
+   "ridge_fits": {
+    "pre_20112012": {
+     "cutoff": "2011-10-05",
+     "max_train_date": 20110410,
+     "first_use": "2011-10-06"
+    },
+    "jan_20112012": {
+     "cutoff": "2011-12-31",
+     "max_train_date": 20111231,
+     "first_use": "2012-01-01"
+    },
+    "pre_20122013": {
+     "cutoff": "2013-01-18",
+     "max_train_date": 20120407,
+     "first_use": "2013-01-19"
+    },
+    "pre_20132014": {
+     "cutoff": "2013-09-30",
+     "max_train_date": 20130428,
+     "first_use": "2013-10-01"
+    },
+    "jan_20132014": {
+     "cutoff": "2013-12-31",
+     "max_train_date": 20131231,
+     "first_use": "2014-01-01"
+    },
+    "pre_20142015": {
+     "cutoff": "2014-10-07",
+     "max_train_date": 20140413,
+     "first_use": "2014-10-08"
+    },
+    "jan_20142015": {
+     "cutoff": "2014-12-31",
+     "max_train_date": 20141231,
+     "first_use": "2015-01-01"
+    },
+    "pre_20152016": {
+     "cutoff": "2015-10-06",
+     "max_train_date": 20150411,
+     "first_use": "2015-10-07"
+    },
+    "jan_20152016": {
+     "cutoff": "2015-12-31",
+     "max_train_date": 20151231,
+     "first_use": "2016-01-01"
+    },
+    "pre_20162017": {
+     "cutoff": "2016-10-11",
+     "max_train_date": 20160410,
+     "first_use": "2016-10-12"
+    },
+    "jan_20162017": {
+     "cutoff": "2016-12-31",
+     "max_train_date": 20161231,
+     "first_use": "2017-01-01"
+    },
+    "pre_20172018": {
+     "cutoff": "2017-10-03",
+     "max_train_date": 20170409,
+     "first_use": "2017-10-04"
+    },
+    "jan_20172018": {
+     "cutoff": "2017-12-31",
+     "max_train_date": 20171231,
+     "first_use": "2018-01-01"
+    }
+   },
+   "v_repl": "computed inside each fit from its own window (dates <= cutoff)",
+   "debutant_m5_prior": "committed only at date change; asserted last_committed_date < today",
+   "gl_m_E_xbar": "bt_nhl_gmar_gl (completed seasons / strictly earlier dates)",
+   "pass": true
+  },
+  "W4": {
+   "eval_mask_sha1": "d5512699fe7b19cb015d10a04892a17e92ffd364",
+   "y_sha1": "701354619cf8f6755a167d0eca73897aa94b5c88",
+   "gmar_mask_sha1": "d5512699fe7b19cb015d10a04892a17e92ffd364",
+   "identical_across_arms": true,
+   "identical_to_gmar_mask": true,
+   "n_masked": 7929,
+   "nan_personnel_terms_on_masked_games": {},
+   "dressed_fallback_sides_masked": 1,
+   "pass": true
+  },
+  "W5": {
+   "statement": "same-game inputs are only tonight's starting goalie identity (first-shot goalie) and tonight's dressed-skater membership (announced lineup; when a side's dressed list is missing the team's previous lineup is used). Tonight's 5v5 TOI, stints, xG, GA and result enter only post-prediction updates or later ridge fits whose cutoff precedes use. win_goalie, max-shots starters, nhl_rapm*/shift rating files and odds never enter a feature.",
+   "pass": true
+  }
+ },
+ "arms": {
+  "B0 shipped blend (reproduction)": {
+   "gain": 0.0,
+   "fold_sd": 0.0,
+   "fold_se": 0.0,
+   "sigma": 0.0,
+   "n_pos_folds": 0,
+   "n_folds": 7,
+   "sig": "n.s.",
+   "boot_ci_4k_seed7": [
+    0.0,
+    0.0
+   ],
+   "boot_ci_10k": [
+    0.0,
+    0.0
+   ],
+   "gain_exact": 0.0,
+   "dev_ll": 0.672398,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.0,
+    "boot_ci_10k": [
+     0.0,
+     0.0
+    ]
+   }
+  },
+  "B1 GL only (gamma nested)": {
+   "gain": 0.0002,
+   "fold_sd": 0.00077,
+   "fold_se": 0.00029,
+   "sigma": 0.69,
+   "n_pos_folds": 4,
+   "n_folds": 7,
+   "sig": "n.s.",
+   "boot_ci_4k_seed7": [
+    -0.00029,
+    0.00068
+   ],
+   "boot_ci_10k": [
+    -0.00028,
+    0.00068
+   ],
+   "gain_exact": 0.0001998502443546165,
+   "dev_ll": 0.672199,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.00073,
+    "boot_ci_10k": [
+     0.00016,
+     0.0013
+    ]
+   },
+   "picks_c_star_per_season": {
+    "20112012": 180.0,
+    "20122013": 180.0,
+    "20132014": 180.0,
+    "20142015": 180.0,
+    "20152016": 120.0,
+    "20162017": 120.0,
+    "20172018": 180.0
+   },
+   "cell_loso_ll": {
+    "0": 0.672398,
+    "60": 0.672234,
+    "120": 0.672139,
+    "180": 0.672108
+   },
+   "best_single_cell_OPTIMISTIC": {
+    "cell": 180.0,
+    "gain": 0.00029
+   }
+  },
+  "B2 P only inside both ratings": {
+   "gain": 0.0001,
+   "fold_sd": 0.00049,
+   "fold_se": 0.00019,
+   "sigma": 0.54,
+   "n_pos_folds": 4,
+   "n_folds": 7,
+   "sig": "n.s.",
+   "boot_ci_4k_seed7": [
+    -0.00037,
+    0.00058
+   ],
+   "boot_ci_10k": [
+    -0.00037,
+    0.00057
+   ],
+   "gain_exact": 9.968247406160776e-05,
+   "dev_ll": 0.672299,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.00011,
+    "boot_ci_10k": [
+     -0.00063,
+     0.00086
+    ]
+   },
+   "picks_c_star_per_season": {
+    "20112012": [
+     120.0,
+     1.0
+    ],
+    "20122013": [
+     120.0,
+     0.5
+    ],
+    "20132014": [
+     180.0,
+     0.0
+    ],
+    "20142015": [
+     120.0,
+     0.0
+    ],
+    "20152016": [
+     120.0,
+     1.0
+    ],
+    "20162017": [
+     60.0,
+     1.0
+    ],
+    "20172018": [
+     120.0,
+     1.0
+    ]
+   },
+   "cell_loso_ll": {
+    "0,0": 0.672398,
+    "0,0.5": 0.67232,
+    "0,1": 0.672265,
+    "60,0": 0.672261,
+    "60,0.5": 0.672216,
+    "60,1": 0.672191,
+    "120,0": 0.672198,
+    "120,0.5": 0.67218,
+    "120,1": 0.672181,
+    "180,0": 0.672199,
+    "180,0.5": 0.672206,
+    "180,1": 0.67223
+   },
+   "best_single_cell_OPTIMISTIC": {
+    "cell": [
+     120.0,
+     0.5
+    ],
+    "gain": 0.00022
+   }
+  },
+  "B3 GL + P inside both ratings [PRIMARY]": {
+   "gain": 0.00029,
+   "fold_sd": 0.001,
+   "fold_se": 0.00038,
+   "sigma": 0.77,
+   "n_pos_folds": 4,
+   "n_folds": 7,
+   "sig": "n.s.",
+   "boot_ci_4k_seed7": [
+    -0.00034,
+    0.00094
+   ],
+   "boot_ci_10k": [
+    -0.00035,
+    0.00094
+   ],
+   "gain_exact": 0.0002909179811843575,
+   "dev_ll": 0.672107,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.00081,
+    "boot_ci_10k": [
+     -0.0001,
+     0.00172
+    ]
+   },
+   "picks_c_star_per_season": {
+    "20112012": [
+     180.0,
+     0.5
+    ],
+    "20122013": [
+     180.0,
+     0.0
+    ],
+    "20132014": [
+     180.0,
+     0.0
+    ],
+    "20142015": [
+     120.0,
+     0.0
+    ],
+    "20152016": [
+     120.0,
+     1.0
+    ],
+    "20162017": [
+     120.0,
+     0.5
+    ],
+    "20172018": [
+     120.0,
+     1.0
+    ]
+   },
+   "cell_loso_ll": {
+    "0,0": 0.672398,
+    "0,0.5": 0.67232,
+    "0,1": 0.672265,
+    "60,0": 0.6721,
+    "60,0.5": 0.672055,
+    "60,1": 0.672031,
+    "120,0": 0.671946,
+    "120,0.5": 0.671929,
+    "120,1": 0.671931,
+    "180,0": 0.671911,
+    "180,0.5": 0.671918,
+    "180,1": 0.671942
+   },
+   "best_single_cell_OPTIMISTIC": {
+    "cell": [
+     180.0,
+     0.0
+    ],
+    "gain": 0.00049
+   }
+  },
+  "B4 GL inside + dP beside (BESIDE control)": {
+   "gain": 7e-05,
+   "fold_sd": 0.00084,
+   "fold_se": 0.00032,
+   "sigma": 0.21,
+   "n_pos_folds": 3,
+   "n_folds": 7,
+   "sig": "n.s.",
+   "boot_ci_4k_seed7": [
+    -0.00049,
+    0.00063
+   ],
+   "boot_ci_10k": [
+    -0.00048,
+    0.00062
+   ],
+   "gain_exact": 6.765658280102383e-05,
+   "dev_ll": 0.672331,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.00053,
+    "boot_ci_10k": [
+     -0.0002,
+     0.00124
+    ]
+   },
+   "picks_c_star_per_season": {
+    "20112012": 180.0,
+    "20122013": 180.0,
+    "20132014": 180.0,
+    "20142015": 180.0,
+    "20152016": 120.0,
+    "20162017": 120.0,
+    "20172018": 180.0
+   },
+   "cell_loso_ll": {
+    "0": 0.672527,
+    "60": 0.672365,
+    "120": 0.672271,
+    "180": 0.672241
+   },
+   "best_single_cell_OPTIMISTIC": {
+    "cell": 180.0,
+    "gain": 0.00016
+   },
+   "coef_dP_diff_all_dev_descriptive_gamma0": 0.53773
+  },
+  "B5 B3 without Jan-1 refits": {
+   "gain": 0.0005,
+   "fold_sd": 0.00091,
+   "fold_se": 0.00035,
+   "sigma": 1.44,
+   "n_pos_folds": 5,
+   "n_folds": 7,
+   "sig": "n.s.",
+   "boot_ci_4k_seed7": [
+    -0.00024,
+    0.00125
+   ],
+   "boot_ci_10k": [
+    -0.00023,
+    0.00123
+   ],
+   "gain_exact": 0.0004980946438165271,
+   "dev_ll": 0.6719,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.00109,
+    "boot_ci_10k": [
+     3e-05,
+     0.00215
+    ]
+   },
+   "picks_c_star_per_season": {
+    "20112012": [
+     180.0,
+     1.0
+    ],
+    "20122013": [
+     180.0,
+     0.5
+    ],
+    "20132014": [
+     180.0,
+     0.5
+    ],
+    "20142015": [
+     180.0,
+     0.5
+    ],
+    "20152016": [
+     120.0,
+     1.0
+    ],
+    "20162017": [
+     120.0,
+     1.0
+    ],
+    "20172018": [
+     180.0,
+     1.0
+    ]
+   },
+   "cell_loso_ll": {
+    "0,0": 0.672398,
+    "0,0.5": 0.6723,
+    "0,1": 0.672222,
+    "60,0": 0.672056,
+    "60,0.5": 0.67199,
+    "60,1": 0.671944,
+    "120,0": 0.671856,
+    "120,0.5": 0.671818,
+    "120,1": 0.671798,
+    "180,0": 0.671775,
+    "180,0.5": 0.67176,
+    "180,1": 0.671763
+   },
+   "best_single_cell_OPTIMISTIC": {
+    "cell": [
+     180.0,
+     0.5
+    ],
+    "gain": 0.00064
+   }
+  }
+ },
+ "value_diagnostics": {
+  "S4b": {
+   "heldout_stint_R2_2014_17_odd_even": 0.00402,
+   "halves": [
+    0.00434,
+    0.00371
+   ],
+   "expected_order": [
+    0.01,
+    0.014
+   ],
+   "stop_if_leq": 0.0,
+   "decomposition_same_split": {
+    "context_only": 0.00342,
+    "players_only": 0.00095,
+    "team_season_indicators_only": 0.00053,
+    "players_plus_context": 0.00434,
+    "note": "odd-gid fit, even-gid scored half; exact normal-equation solve agrees with sparse_cg to 6e-5 in coefficients"
+   },
+   "stop_rule_triggered": false,
+   "within_expected_order": false,
+   "pass_rule": "conservative, fixed before any arm was scored: positive AND within the expected order (0.008..0.02)",
+   "pass": false
+  },
+  "S4c": {
+   "split_half_r_net_ge_1000min": 0.3702,
+   "n_players": 627,
+   "r_F": 0.3931,
+   "r_D": 0.3255,
+   "expected": [
+    0.3,
+    0.5
+   ],
+   "pass": true
+  },
+  "corr_Pdiff_vs_shipped_xgelo_diff": 0.5649,
+  "corr_expected": [
+   0.3,
+   0.6
+  ],
+  "corr_dPdiff_vs_anatomy_abs_toi_diff": -0.1545,
+  "n_for_abs_toi_corr": 7384,
+  "sd_P_side_goals": 0.1044,
+  "sd_P_diff_goals": 0.1447,
+  "sd_dP_diff_goals": 0.0379,
+  "sd_G_diff_goals": 0.0891,
+  "corr_Pdiff_Gdiff": 0.0595,
+  "mean_unvalued_skaters_per_game": 1.493,
+  "mean_prior_minutes_skaters_per_game": 0.12,
+  "debutant_m5_prior_final": {
+   "F": 10.732192798461805,
+   "D": 13.796277777777762
+  },
+  "debutant_games_final": {
+   "F": 3814,
+   "D": 600
+  },
+  "v_repl_by_fit": {
+   "pre_20112012": {
+    "F": -0.027736949554719774,
+    "D": 0.0030856485024059886
+   },
+   "jan_20112012": {
+    "F": -0.026050901540685404,
+    "D": 0.007895578374824139
+   },
+   "pre_20122013": {
+    "F": -0.015540612587338317,
+    "D": 0.012739354115711109
+   },
+   "pre_20132014": {
+    "F": -0.021982852371660387,
+    "D": -0.0009310012208589266
+   },
+   "jan_20132014": {
+    "F": -0.013643628814777924,
+    "D": 0.004773932218706749
+   },
+   "pre_20142015": {
+    "F": -0.0001173466336928122,
+    "D": -0.017010142281820934
+   },
+   "jan_20142015": {
+    "F": -0.015205162952571565,
+    "D": -0.011115422396246678
+   },
+   "pre_20152016": {
+    "F": -0.02505582935675452,
+    "D": -0.025848652072301304
+   },
+   "jan_20152016": {
+    "F": -0.020470153192736203,
+    "D": -0.014684015977171233
+   },
+   "pre_20162017": {
+    "F": -0.029632962243453694,
+    "D": -0.01111044911078396
+   },
+   "jan_20162017": {
+    "F": -0.02601705934041221,
+    "D": -0.021695877099659627
+   },
+   "pre_20172018": {
+    "F": -0.023436818908777135,
+    "D": -0.015910739905579185
+   },
+   "jan_20172018": {
+    "F": -0.036426591786601216,
+    "D": -0.008991366359522877
+   }
+  },
+  "first_use_by_fit": {
+   "pre_20112012": "2011-10-06",
+   "jan_20112012": "2012-01-01",
+   "pre_20122013": "2013-01-19",
+   "pre_20132014": "2013-10-01",
+   "jan_20132014": "2014-01-01",
+   "pre_20142015": "2014-10-08",
+   "jan_20142015": "2015-01-01",
+   "pre_20152016": "2015-10-07",
+   "jan_20152016": "2016-01-01",
+   "pre_20162017": "2016-10-12",
+   "jan_20162017": "2017-01-01",
+   "pre_20172018": "2017-10-04",
+   "jan_20172018": "2018-01-01"
+  },
+  "P_in_2010_11": "0 for every game (no fit precedes it; never scored)",
+  "top10_v_by_cutoff": {
+   "2011-10-05": [
+    {
+     "pid": 8466158,
+     "name": null,
+     "pos": "D",
+     "v": 0.1687,
+     "net_raw": 0.3563,
+     "toi5_min_window": 1252.0
+    },
+    {
+     "pid": 8470794,
+     "name": null,
+     "pos": "F",
+     "v": 0.1387,
+     "net_raw": 0.334,
+     "toi5_min_window": 990.0
+    },
+    {
+     "pid": 8470151,
+     "name": null,
+     "pos": "D",
+     "v": 0.1323,
+     "net_raw": 0.2558,
+     "toi5_min_window": 1494.0
+    },
+    {
+     "pid": 8470834,
+     "name": null,
+     "pos": "D",
+     "v": 0.1312,
+     "net_raw": 0.2587,
+     "toi5_min_window": 1434.0
+    },
+    {
+     "pid": 8462077,
+     "name": null,
+     "pos": "F",
+     "v": 0.1295,
+     "net_raw": 0.3426,
+     "toi5_min_window": 847.0
+    },
+    {
+     "pid": 8469622,
+     "name": null,
+     "pos": "F",
+     "v": 0.1248,
+     "net_raw": 0.2852,
+     "toi5_min_window": 1085.0
+    },
+    {
+     "pid": 8470176,
+     "name": null,
+     "pos": "F",
+     "v": 0.1196,
+     "net_raw": 0.3077,
+     "toi5_min_window": 886.0
+    },
+    {
+     "pid": 8467330,
+     "name": null,
+     "pos": "F",
+     "v": 0.1168,
+     "net_raw": 0.2983,
+     "toi5_min_window": 897.0
+    },
+    {
+     "pid": 8471266,
+     "name": null,
+     "pos": "F",
+     "v": 0.1113,
+     "net_raw": 0.2392,
+     "toi5_min_window": 1213.0
+    },
+    {
+     "pid": 8470905,
+     "name": null,
+     "pos": "D",
+     "v": 0.1082,
+     "net_raw": 0.2964,
+     "toi5_min_window": 801.0
+    }
+   ],
+   "2011-12-31": [
+    {
+     "pid": 8470794,
+     "name": null,
+     "pos": "F",
+     "v": 0.2009,
+     "net_raw": 0.3904,
+     "toi5_min_window": 1478.0
+    },
+    {
+     "pid": 8467514,
+     "name": null,
+     "pos": "F",
+     "v": 0.1873,
+     "net_raw": 0.3842,
+     "toi5_min_window": 1325.0
+    },
+    {
+     "pid": 8471266,
+     "name": null,
+     "pos": "F",
+     "v": 0.1869,
+     "net_raw": 0.3594,
+     "toi5_min_window": 1510.0
+    },
+    {
+     "pid": 8470151,
+     "name": null,
+     "pos": "D",
+     "v": 0.1721,
+     "net_raw": 0.2811,
+     "toi5_min_window": 2199.0
+    },
+    {
+     "pid": 8470834,
+     "name": null,
+     "pos": "D",
+     "v": 0.1654,
+     "net_raw": 0.2779,
+     "toi5_min_window": 2049.0
+    },
+    {
+     "pid": 8470613,
+     "name": "Brent Burns",
+     "pos": "D",
+     "v": 0.1648,
+     "net_raw": 0.2824,
+     "toi5_min_window": 1952.0
+    },
+    {
+     "pid": 8470257,
+     "name": null,
+     "pos": "F",
+     "v": 0.1629,
+     "net_raw": 0.3113,
+     "toi5_min_window": 1529.0
+    },
+    {
+     "pid": 8470619,
+     "name": null,
+     "pos": "F",
+     "v": 0.1622,
+     "net_raw": 0.321,
+     "toi5_min_window": 1423.0
+    },
+    {
+     "pid": 8467330,
+     "name": null,
+     "pos": "F",
+     "v": 0.1594,
+     "net_raw": 0.3243,
+     "toi5_min_window": 1347.0
+    },
+    {
+     "pid": 8473604,
+     "name": null,
+     "pos": "F",
+     "v": 0.1576,
+     "net_raw": 0.2864,
+     "toi5_min_window": 1704.0
+    }
+   ],
+   "2013-01-18": [
+    {
+     "pid": 8471266,
+     "name": null,
+     "pos": "F",
+     "v": 0.2522,
+     "net_raw": 0.4296,
+     "toi5_min_window": 1981.0
+    },
+    {
+     "pid": 8470794,
+     "name": null,
+     "pos": "F",
+     "v": 0.2371,
+     "net_raw": 0.3884,
+     "toi5_min_window": 2183.0
+    },
+    {
+     "pid": 8467514,
+     "name": null,
+     "pos": "F",
+     "v": 0.2347,
+     "net_raw": 0.4181,
+     "toi5_min_window": 1783.0
+    },
+    {
+     "pid": 8470176,
+     "name": null,
+     "pos": "F",
+     "v": 0.2287,
+     "net_raw": 0.4187,
+     "toi5_min_window": 1678.0
+    },
+    {
+     "pid": 8467330,
+     "name": null,
+     "pos": "F",
+     "v": 0.195,
+     "net_raw": 0.3319,
+     "toi5_min_window": 1985.0
+    },
+    {
+     "pid": 8468508,
+     "name": null,
+     "pos": "F",
+     "v": 0.1921,
+     "net_raw": 0.3192,
+     "toi5_min_window": 2106.0
+    },
+    {
+     "pid": 8469581,
+     "name": null,
+     "pos": "F",
+     "v": 0.1876,
+     "net_raw": 0.3738,
+     "toi5_min_window": 1404.0
+    },
+    {
+     "pid": 8473604,
+     "name": null,
+     "pos": "F",
+     "v": 0.1754,
+     "net_raw": 0.2962,
+     "toi5_min_window": 2023.0
+    },
+    {
+     "pid": 8469492,
+     "name": null,
+     "pos": "D",
+     "v": 0.1664,
+     "net_raw": 0.265,
+     "toi5_min_window": 2351.0
+    },
+    {
+     "pid": 8474053,
+     "name": null,
+     "pos": "F",
+     "v": 0.1615,
+     "net_raw": 0.2659,
+     "toi5_min_window": 2154.0
+    }
+   ],
+   "2013-09-30": [
+    {
+     "pid": 8471266,
+     "name": null,
+     "pos": "F",
+     "v": 0.2746,
+     "net_raw": 0.4547,
+     "toi5_min_window": 2124.0
+    },
+    {
+     "pid": 8473604,
+     "name": null,
+     "pos": "F",
+     "v": 0.2542,
+     "net_raw": 0.3868,
+     "toi5_min_window": 2673.0
+    },
+    {
+     "pid": 8468508,
+     "name": null,
+     "pos": "F",
+     "v": 0.2507,
+     "net_raw": 0.377,
+     "toi5_min_window": 2765.0
+    },
+    {
+     "pid": 8474053,
+     "name": null,
+     "pos": "F",
+     "v": 0.2408,
+     "net_raw": 0.362,
+     "toi5_min_window": 2769.0
+    },
+    {
+     "pid": 8470176,
+     "name": null,
+     "pos": "F",
+     "v": 0.2306,
+     "net_raw": 0.4221,
+     "toi5_min_window": 1678.0
+    },
+    {
+     "pid": 8467514,
+     "name": null,
+     "pos": "F",
+     "v": 0.2204,
+     "net_raw": 0.3463,
+     "toi5_min_window": 2440.0
+    },
+    {
+     "pid": 8469581,
+     "name": null,
+     "pos": "F",
+     "v": 0.2148,
+     "net_raw": 0.3755,
+     "toi5_min_window": 1863.0
+    },
+    {
+     "pid": 8470613,
+     "name": "Brent Burns",
+     "pos": "D",
+     "v": 0.2132,
+     "net_raw": 0.307,
+     "toi5_min_window": 3165.0
+    },
+    {
+     "pid": 8467875,
+     "name": null,
+     "pos": "F",
+     "v": 0.2124,
+     "net_raw": 0.3186,
+     "toi5_min_window": 2788.0
+    },
+    {
+     "pid": 8471215,
+     "name": "Evgeni Malkin",
+     "pos": "F",
+     "v": 0.2009,
+     "net_raw": 0.3328,
+     "toi5_min_window": 2124.0
+    }
+   ],
+   "2013-12-31": [
+    {
+     "pid": 8470613,
+     "name": "Brent Burns",
+     "pos": "D",
+     "v": 0.3166,
+     "net_raw": 0.4423,
+     "toi5_min_window": 3509.0
+    },
+    {
+     "pid": 8474053,
+     "name": null,
+     "pos": "F",
+     "v": 0.2948,
+     "net_raw": 0.4198,
+     "toi5_min_window": 3287.0
+    },
+    {
+     "pid": 8468508,
+     "name": null,
+     "pos": "F",
+     "v": 0.2881,
+     "net_raw": 0.4087,
+     "toi5_min_window": 3330.0
+    },
+    {
+     "pid": 8471266,
+     "name": null,
+     "pos": "F",
+     "v": 0.2736,
+     "net_raw": 0.4276,
+     "toi5_min_window": 2476.0
+    },
+    {
+     "pid": 8470176,
+     "name": null,
+     "pos": "F",
+     "v": 0.2649,
+     "net_raw": 0.4516,
+     "toi5_min_window": 1977.0
+    },
+    {
+     "pid": 8467514,
+     "name": null,
+     "pos": "F",
+     "v": 0.2622,
+     "net_raw": 0.3854,
+     "toi5_min_window": 2966.0
+    },
+    {
+     "pid": 8473604,
+     "name": null,
+     "pos": "F",
+     "v": 0.2566,
+     "net_raw": 0.3653,
+     "toi5_min_window": 3291.0
+    },
+    {
+     "pid": 8474027,
+     "name": null,
+     "pos": "D",
+     "v": 0.2481,
+     "net_raw": 0.3844,
+     "toi5_min_window": 2537.0
+    },
+    {
+     "pid": 8465058,
+     "name": null,
+     "pos": "D",
+     "v": 0.2366,
+     "net_raw": 0.3603,
+     "toi5_min_window": 2666.0
+    },
+    {
+     "pid": 8470610,
+     "name": null,
+     "pos": "F",
+     "v": 0.2357,
+     "net_raw": 0.36,
+     "toi5_min_window": 2643.0
+    }
+   ],
+   "2014-10-07": [
+    {
+     "pid": 8470613,
+     "name": "Brent Burns",
+     "pos": "D",
+     "v": 0.3375,
+     "net_raw": 0.5132,
+     "toi5_min_window": 2678.0
+    },
+    {
+     "pid": 8466138,
+     "name": null,
+     "pos": "F",
+     "v": 0.2833,
+     "net_raw": 0.4172,
+     "toi5_min_window": 2948.0
+    },
+    {
+     "pid": 8470610,
+     "name": null,
+     "pos": "F",
+     "v": 0.2568,
+     "net_raw": 0.3808,
+     "toi5_min_window": 2886.0
+    },
+    {
+     "pid": 8468508,
+     "name": null,
+     "pos": "F",
+     "v": 0.2405,
+     "net_raw": 0.3586,
+     "toi5_min_window": 2837.0
+    },
+    {
+     "pid": 8467875,
+     "name": null,
+     "pos": "F",
+     "v": 0.2341,
+     "net_raw": 0.3542,
+     "toi5_min_window": 2718.0
+    },
+    {
+     "pid": 8473604,
+     "name": null,
+     "pos": "F",
+     "v": 0.227,
+     "net_raw": 0.3483,
+     "toi5_min_window": 2609.0
+    },
+    {
+     "pid": 8474027,
+     "name": null,
+     "pos": "D",
+     "v": 0.2227,
+     "net_raw": 0.3318,
+     "toi5_min_window": 2846.0
+    },
+    {
+     "pid": 8471685,
+     "name": null,
+     "pos": "F",
+     "v": 0.2155,
+     "net_raw": 0.315,
+     "toi5_min_window": 3017.0
+    },
+    {
+     "pid": 8471709,
+     "name": null,
+     "pos": "D",
+     "v": 0.2129,
+     "net_raw": 0.2934,
+     "toi5_min_window": 3687.0
+    },
+    {
+     "pid": 8467514,
+     "name": null,
+     "pos": "F",
+     "v": 0.2091,
+     "net_raw": 0.3356,
+     "toi5_min_window": 2302.0
+    }
+   ],
+   "2014-12-31": [
+    {
+     "pid": 8466138,
+     "name": null,
+     "pos": "F",
+     "v": 0.3251,
+     "net_raw": 0.4561,
+     "toi5_min_window": 3458.0
+    },
+    {
+     "pid": 8470613,
+     "name": "Brent Burns",
+     "pos": "D",
+     "v": 0.2927,
+     "net_raw": 0.4154,
+     "toi5_min_window": 3326.0
+    },
+    {
+     "pid": 8470610,
+     "name": null,
+     "pos": "F",
+     "v": 0.257,
+     "net_raw": 0.3655,
+     "toi5_min_window": 3298.0
+    },
+    {
+     "pid": 8473604,
+     "name": null,
+     "pos": "F",
+     "v": 0.2423,
+     "net_raw": 0.3516,
+     "toi5_min_window": 3091.0
+    },
+    {
+     "pid": 8470187,
+     "name": null,
+     "pos": "D",
+     "v": 0.2418,
+     "net_raw": 0.3324,
+     "toi5_min_window": 3719.0
+    },
+    {
+     "pid": 8470257,
+     "name": null,
+     "pos": "F",
+     "v": 0.2408,
+     "net_raw": 0.3723,
+     "toi5_min_window": 2550.0
+    },
+    {
+     "pid": 8475166,
+     "name": "John Tavares",
+     "pos": "F",
+     "v": 0.2321,
+     "net_raw": 0.3233,
+     "toi5_min_window": 3550.0
+    },
+    {
+     "pid": 8468508,
+     "name": null,
+     "pos": "F",
+     "v": 0.2306,
+     "net_raw": 0.3272,
+     "toi5_min_window": 3327.0
+    },
+    {
+     "pid": 8471709,
+     "name": null,
+     "pos": "D",
+     "v": 0.2273,
+     "net_raw": 0.3008,
+     "toi5_min_window": 4313.0
+    },
+    {
+     "pid": 8467096,
+     "name": null,
+     "pos": "D",
+     "v": 0.2258,
+     "net_raw": 0.3097,
+     "toi5_min_window": 3752.0
+    }
+   ],
+   "2015-10-06": [
+    {
+     "pid": 8471709,
+     "name": null,
+     "pos": "D",
+     "v": 0.3075,
+     "net_raw": 0.4363,
+     "toi5_min_window": 3325.0
+    },
+    {
+     "pid": 8466138,
+     "name": null,
+     "pos": "F",
+     "v": 0.3014,
+     "net_raw": 0.4505,
+     "toi5_min_window": 2815.0
+    },
+    {
+     "pid": 8467096,
+     "name": null,
+     "pos": "D",
+     "v": 0.2719,
+     "net_raw": 0.3982,
+     "toi5_min_window": 3000.0
+    },
+    {
+     "pid": 8473533,
+     "name": "Jordan Staal",
+     "pos": "F",
+     "v": 0.2546,
+     "net_raw": 0.3954,
+     "toi5_min_window": 2518.0
+    },
+    {
+     "pid": 8474162,
+     "name": null,
+     "pos": "D",
+     "v": 0.246,
+     "net_raw": 0.3542,
+     "toi5_min_window": 3168.0
+    },
+    {
+     "pid": 8470613,
+     "name": "Brent Burns",
+     "pos": "D",
+     "v": 0.2303,
+     "net_raw": 0.3474,
+     "toi5_min_window": 2742.0
+    },
+    {
+     "pid": 8475848,
+     "name": "Brendan Gallagher",
+     "pos": "F",
+     "v": 0.2281,
+     "net_raw": 0.3497,
+     "toi5_min_window": 2614.0
+    },
+    {
+     "pid": 8470834,
+     "name": null,
+     "pos": "D",
+     "v": 0.2198,
+     "net_raw": 0.3157,
+     "toi5_min_window": 3192.0
+    },
+    {
+     "pid": 8469459,
+     "name": null,
+     "pos": "F",
+     "v": 0.2183,
+     "net_raw": 0.3302,
+     "toi5_min_window": 2719.0
+    },
+    {
+     "pid": 8470257,
+     "name": null,
+     "pos": "F",
+     "v": 0.2168,
+     "net_raw": 0.3382,
+     "toi5_min_window": 2488.0
+    }
+   ],
+   "2015-12-31": [
+    {
+     "pid": 8466138,
+     "name": null,
+     "pos": "F",
+     "v": 0.3551,
+     "net_raw": 0.5049,
+     "toi5_min_window": 3304.0
+    },
+    {
+     "pid": 8471709,
+     "name": null,
+     "pos": "D",
+     "v": 0.3035,
+     "net_raw": 0.4121,
+     "toi5_min_window": 3892.0
+    },
+    {
+     "pid": 8473533,
+     "name": "Jordan Staal",
+     "pos": "F",
+     "v": 0.2848,
+     "net_raw": 0.4161,
+     "toi5_min_window": 3023.0
+    },
+    {
+     "pid": 8469459,
+     "name": null,
+     "pos": "F",
+     "v": 0.2745,
+     "net_raw": 0.3931,
+     "toi5_min_window": 3226.0
+    },
+    {
+     "pid": 8470613,
+     "name": "Brent Burns",
+     "pos": "D",
+     "v": 0.2578,
+     "net_raw": 0.363,
+     "toi5_min_window": 3413.0
+    },
+    {
+     "pid": 8470834,
+     "name": null,
+     "pos": "D",
+     "v": 0.2384,
+     "net_raw": 0.3252,
+     "toi5_min_window": 3829.0
+    },
+    {
+     "pid": 8471873,
+     "name": null,
+     "pos": "D",
+     "v": 0.2382,
+     "net_raw": 0.3228,
+     "toi5_min_window": 3920.0
+    },
+    {
+     "pid": 8474161,
+     "name": null,
+     "pos": "F",
+     "v": 0.2335,
+     "net_raw": 0.3329,
+     "toi5_min_window": 3273.0
+    },
+    {
+     "pid": 8474162,
+     "name": null,
+     "pos": "D",
+     "v": 0.2324,
+     "net_raw": 0.3177,
+     "toi5_min_window": 3795.0
+    },
+    {
+     "pid": 8473422,
+     "name": "Nick Foligno",
+     "pos": "F",
+     "v": 0.218,
+     "net_raw": 0.3163,
+     "toi5_min_window": 3092.0
+    }
+   ],
+   "2016-10-11": [
+    {
+     "pid": 8471873,
+     "name": null,
+     "pos": "D",
+     "v": 0.3132,
+     "net_raw": 0.4302,
+     "toi5_min_window": 3731.0
+    },
+    {
+     "pid": 8470613,
+     "name": "Brent Burns",
+     "pos": "D",
+     "v": 0.2941,
+     "net_raw": 0.4013,
+     "toi5_min_window": 3822.0
+    },
+    {
+     "pid": 8466138,
+     "name": null,
+     "pos": "F",
+     "v": 0.2851,
+     "net_raw": 0.4062,
+     "toi5_min_window": 3281.0
+    },
+    {
+     "pid": 8471709,
+     "name": null,
+     "pos": "D",
+     "v": 0.2755,
+     "net_raw": 0.3798,
+     "toi5_min_window": 3681.0
+    },
+    {
+     "pid": 8474218,
+     "name": null,
+     "pos": "D",
+     "v": 0.2595,
+     "net_raw": 0.3689,
+     "toi5_min_window": 3307.0
+    },
+    {
+     "pid": 8473422,
+     "name": "Nick Foligno",
+     "pos": "F",
+     "v": 0.2419,
+     "net_raw": 0.3553,
+     "toi5_min_window": 2975.0
+    },
+    {
+     "pid": 8475848,
+     "name": "Brendan Gallagher",
+     "pos": "F",
+     "v": 0.2335,
+     "net_raw": 0.3498,
+     "toi5_min_window": 2797.0
+    },
+    {
+     "pid": 8474161,
+     "name": null,
+     "pos": "F",
+     "v": 0.232,
+     "net_raw": 0.3341,
+     "toi5_min_window": 3165.0
+    },
+    {
+     "pid": 8470834,
+     "name": null,
+     "pos": "D",
+     "v": 0.2307,
+     "net_raw": 0.3145,
+     "toi5_min_window": 3837.0
+    },
+    {
+     "pid": 8475799,
+     "name": "Nino Niederreiter",
+     "pos": "F",
+     "v": 0.2286,
+     "net_raw": 0.3345,
+     "toi5_min_window": 3009.0
+    }
+   ],
+   "2016-12-31": [
+    {
+     "pid": 8470613,
+     "name": "Brent Burns",
+     "pos": "D",
+     "v": 0.318,
+     "net_raw": 0.4174,
+     "toi5_min_window": 4462.0
+    },
+    {
+     "pid": 8471873,
+     "name": null,
+     "pos": "D",
+     "v": 0.314,
+     "net_raw": 0.418,
+     "toi5_min_window": 4208.0
+    },
+    {
+     "pid": 8471709,
+     "name": null,
+     "pos": "D",
+     "v": 0.3095,
+     "net_raw": 0.4113,
+     "toi5_min_window": 4236.0
+    },
+    {
+     "pid": 8470834,
+     "name": null,
+     "pos": "D",
+     "v": 0.2716,
+     "net_raw": 0.3539,
+     "toi5_min_window": 4600.0
+    },
+    {
+     "pid": 8474218,
+     "name": null,
+     "pos": "D",
+     "v": 0.2706,
+     "net_raw": 0.3674,
+     "toi5_min_window": 3895.0
+    },
+    {
+     "pid": 8466138,
+     "name": null,
+     "pos": "F",
+     "v": 0.2583,
+     "net_raw": 0.3531,
+     "toi5_min_window": 3798.0
+    },
+    {
+     "pid": 8475848,
+     "name": "Brendan Gallagher",
+     "pos": "F",
+     "v": 0.2568,
+     "net_raw": 0.3673,
+     "toi5_min_window": 3237.0
+    },
+    {
+     "pid": 8475799,
+     "name": "Nino Niederreiter",
+     "pos": "F",
+     "v": 0.2364,
+     "net_raw": 0.3317,
+     "toi5_min_window": 3456.0
+    },
+    {
+     "pid": 8468508,
+     "name": null,
+     "pos": "F",
+     "v": 0.2328,
+     "net_raw": 0.322,
+     "toi5_min_window": 3637.0
+    },
+    {
+     "pid": 8473533,
+     "name": "Jordan Staal",
+     "pos": "F",
+     "v": 0.2309,
+     "net_raw": 0.3282,
+     "toi5_min_window": 3310.0
+    }
+   ],
+   "2017-10-03": [
+    {
+     "pid": 8475166,
+     "name": "John Tavares",
+     "pos": "F",
+     "v": 0.2565,
+     "net_raw": 0.3555,
+     "toi5_min_window": 3610.0
+    },
+    {
+     "pid": 8470834,
+     "name": null,
+     "pos": "D",
+     "v": 0.2541,
+     "net_raw": 0.339,
+     "toi5_min_window": 4166.0
+    },
+    {
+     "pid": 8475848,
+     "name": "Brendan Gallagher",
+     "pos": "F",
+     "v": 0.2459,
+     "net_raw": 0.3802,
+     "toi5_min_window": 2553.0
+    },
+    {
+     "pid": 8471873,
+     "name": null,
+     "pos": "D",
+     "v": 0.2413,
+     "net_raw": 0.3334,
+     "toi5_min_window": 3651.0
+    },
+    {
+     "pid": 8471215,
+     "name": "Evgeni Malkin",
+     "pos": "F",
+     "v": 0.2306,
+     "net_raw": 0.3539,
+     "toi5_min_window": 2607.0
+    },
+    {
+     "pid": 8471218,
+     "name": null,
+     "pos": "F",
+     "v": 0.2266,
+     "net_raw": 0.3208,
+     "toi5_min_window": 3353.0
+    },
+    {
+     "pid": 8473533,
+     "name": "Jordan Staal",
+     "pos": "F",
+     "v": 0.2254,
+     "net_raw": 0.3374,
+     "toi5_min_window": 2805.0
+    },
+    {
+     "pid": 8475692,
+     "name": "Mats Zuccarello",
+     "pos": "F",
+     "v": 0.2146,
+     "net_raw": 0.3023,
+     "toi5_min_window": 3412.0
+    },
+    {
+     "pid": 8470638,
+     "name": null,
+     "pos": "F",
+     "v": 0.2015,
+     "net_raw": 0.2913,
+     "toi5_min_window": 3127.0
+    },
+    {
+     "pid": 8476453,
+     "name": "Nikita Kucherov",
+     "pos": "F",
+     "v": 0.2008,
+     "net_raw": 0.2905,
+     "toi5_min_window": 3116.0
+    }
+   ],
+   "2017-12-31": [
+    {
+     "pid": 8475848,
+     "name": "Brendan Gallagher",
+     "pos": "F",
+     "v": 0.2756,
+     "net_raw": 0.4018,
+     "toi5_min_window": 3042.0
+    },
+    {
+     "pid": 8476525,
+     "name": null,
+     "pos": "D",
+     "v": 0.2601,
+     "net_raw": 0.4501,
+     "toi5_min_window": 1908.0
+    },
+    {
+     "pid": 8473618,
+     "name": null,
+     "pos": "F",
+     "v": 0.2598,
+     "net_raw": 0.3907,
+     "toi5_min_window": 2766.0
+    },
+    {
+     "pid": 8471873,
+     "name": null,
+     "pos": "D",
+     "v": 0.2461,
+     "net_raw": 0.3271,
+     "toi5_min_window": 4233.0
+    },
+    {
+     "pid": 8475166,
+     "name": "John Tavares",
+     "pos": "F",
+     "v": 0.2426,
+     "net_raw": 0.3243,
+     "toi5_min_window": 4143.0
+    },
+    {
+     "pid": 8470834,
+     "name": null,
+     "pos": "D",
+     "v": 0.2281,
+     "net_raw": 0.2962,
+     "toi5_min_window": 4673.0
+    },
+    {
+     "pid": 8473533,
+     "name": "Jordan Staal",
+     "pos": "F",
+     "v": 0.2279,
+     "net_raw": 0.3232,
+     "toi5_min_window": 3335.0
+    },
+    {
+     "pid": 8470638,
+     "name": null,
+     "pos": "F",
+     "v": 0.2202,
+     "net_raw": 0.3062,
+     "toi5_min_window": 3565.0
+    },
+    {
+     "pid": 8474578,
+     "name": "Erik Karlsson",
+     "pos": "D",
+     "v": 0.2191,
+     "net_raw": 0.2754,
+     "toi5_min_window": 5428.0
+    },
+    {
+     "pid": 8475172,
+     "name": "Nazem Kadri",
+     "pos": "F",
+     "v": 0.2135,
+     "net_raw": 0.2949,
+     "toi5_min_window": 3655.0
+    }
+   ]
+  }
+ },
+ "market_eval_diagnostic": {
+  "n_joined": 7927,
+  "close_ll": 0.670717,
+  "note": "EVALUATION ONLY: multiplicative de-vig of the SBR close on DEV games; odds never enter a feature or a fit",
+  "B0": {
+   "model_minus_close_all": 0.00171,
+   "non1_goalie": {
+    "n": 4651,
+    "model_minus_close": 0.00274
+   },
+   "top4_absent": {
+    "n": 2417,
+    "model_minus_close": 0.00176
+   },
+   "team_games_0_5": {
+    "n": 656,
+    "model_minus_close": 0.00265
+   }
+  },
+  "B1": {
+   "model_minus_close_all": 0.00151,
+   "non1_goalie": {
+    "n": 4651,
+    "model_minus_close": 0.00234
+   },
+   "top4_absent": {
+    "n": 2417,
+    "model_minus_close": 0.00178
+   },
+   "team_games_0_5": {
+    "n": 656,
+    "model_minus_close": 0.00221
+   }
+  },
+  "B2": {
+   "model_minus_close_all": 0.0016,
+   "non1_goalie": {
+    "n": 4651,
+    "model_minus_close": 0.00256
+   },
+   "top4_absent": {
+    "n": 2417,
+    "model_minus_close": 0.00128
+   },
+   "team_games_0_5": {
+    "n": 656,
+    "model_minus_close": 0.00165
+   }
+  },
+  "B3": {
+   "model_minus_close_all": 0.00142,
+   "non1_goalie": {
+    "n": 4651,
+    "model_minus_close": 0.00225
+   },
+   "top4_absent": {
+    "n": 2417,
+    "model_minus_close": 0.0013
+   },
+   "team_games_0_5": {
+    "n": 656,
+    "model_minus_close": 0.00136
+   }
+  },
+  "B4": {
+   "model_minus_close_all": 0.00164,
+   "non1_goalie": {
+    "n": 4651,
+    "model_minus_close": 0.00234
+   },
+   "top4_absent": {
+    "n": 2417,
+    "model_minus_close": 0.00182
+   },
+   "team_games_0_5": {
+    "n": 656,
+    "model_minus_close": 0.00245
+   }
+  },
+  "B5": {
+   "model_minus_close_all": 0.00121,
+   "non1_goalie": {
+    "n": 4651,
+    "model_minus_close": 0.00213
+   },
+   "top4_absent": {
+    "n": 2417,
+    "model_minus_close": 0.00088
+   },
+   "team_games_0_5": {
+    "n": 656,
+    "model_minus_close": 0.00056
+   }
+  },
+  "B3_gap_closed_share": 0.1696
+ },
+ "comparisons": {
+  "B3_minus_gmar_primary_A3_nested_gain": -0.000351,
+  "gmar_primary_A3_nested_gain": 0.000642,
+  "rule": "within 0.0002 -> the simpler (gmar) wins",
+  "B3_minus_B1_gain (skater term inside, given GL)": 9.1e-05,
+  "B3_minus_B4_gain (inside vs beside)": 0.000223,
+  "B3_minus_B5_gain (Jan-1 refits)": -0.000207
+ },
+ "verdict": {
+  "primary_arm": "B3",
+  "nested_gain": 0.000291,
+  "boot_ci_10k": [
+   -0.00035,
+   0.00094
+  ],
+  "boot_ci_4k_seed7": [
+   -0.00034,
+   0.00094
+  ],
+  "sanity_pass": false,
+  "walk_forward_pass": true,
+  "failed_checks": [
+   "S4b"
+  ],
+  "clears_bar": false,
+  "baseline_dev_ll": 0.672398,
+  "candidate_dev_ll": 0.672107
+ },
+ "seconds": 30.7
+}

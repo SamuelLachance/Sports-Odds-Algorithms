@@ -1,0 +1,349 @@
+{
+ "n": 7927,
+ "model_ll": 0.6724181227022652,
+ "close_ll": 0.6707173438835902,
+ "gap": 0.0017007788186751344,
+ "slices": {
+  "gp 0-5": {
+   "n": 544,
+   "frac": 0.0686,
+   "model": 0.67172,
+   "close": 0.66784,
+   "gap": 0.00388,
+   "share_of_total_gap": 0.157
+  },
+  "gp 5-10": {
+   "n": 534,
+   "frac": 0.0674,
+   "model": 0.6807,
+   "close": 0.68039,
+   "gap": 0.00032,
+   "share_of_total_gap": 0.012
+  },
+  "gp 10-20": {
+   "n": 1033,
+   "frac": 0.1303,
+   "model": 0.68068,
+   "close": 0.67924,
+   "gap": 0.00144,
+   "share_of_total_gap": 0.111
+  },
+  "gp 20-40": {
+   "n": 2057,
+   "frac": 0.2595,
+   "model": 0.66638,
+   "close": 0.66572,
+   "gap": 0.00067,
+   "share_of_total_gap": 0.102
+  },
+  "gp 40-60": {
+   "n": 1869,
+   "frac": 0.2358,
+   "model": 0.67741,
+   "close": 0.67523,
+   "gap": 0.00219,
+   "share_of_total_gap": 0.303
+  },
+  "gp 60-90": {
+   "n": 1890,
+   "frac": 0.2384,
+   "model": 0.66739,
+   "close": 0.66514,
+   "gap": 0.00225,
+   "share_of_total_gap": 0.315
+  },
+  "season 20112012": {
+   "n": 1148,
+   "frac": 0.1448,
+   "model": 0.67312,
+   "close": 0.67378,
+   "gap": -0.00067,
+   "share_of_total_gap": -0.057
+  },
+  "season 20122013": {
+   "n": 672,
+   "frac": 0.0848,
+   "model": 0.6701,
+   "close": 0.66923,
+   "gap": 0.00086,
+   "share_of_total_gap": 0.043
+  },
+  "season 20132014": {
+   "n": 1147,
+   "frac": 0.1447,
+   "model": 0.67462,
+   "close": 0.67414,
+   "gap": 0.00048,
+   "share_of_total_gap": 0.041
+  },
+  "season 20142015": {
+   "n": 1230,
+   "frac": 0.1552,
+   "model": 0.66551,
+   "close": 0.66491,
+   "gap": 0.0006,
+   "share_of_total_gap": 0.055
+  },
+  "season 20152016": {
+   "n": 1230,
+   "frac": 0.1552,
+   "model": 0.68129,
+   "close": 0.67737,
+   "gap": 0.00392,
+   "share_of_total_gap": 0.358
+  },
+  "season 20162017": {
+   "n": 1230,
+   "frac": 0.1552,
+   "model": 0.67207,
+   "close": 0.66721,
+   "gap": 0.00486,
+   "share_of_total_gap": 0.443
+  },
+  "season 20172018": {
+   "n": 1270,
+   "frac": 0.1602,
+   "model": 0.66946,
+   "close": 0.66822,
+   "gap": 0.00125,
+   "share_of_total_gap": 0.117
+  },
+  "no backup": {
+   "n": 3166,
+   "frac": 0.3994,
+   "model": 0.67182,
+   "close": 0.67111,
+   "gap": 0.0007,
+   "share_of_total_gap": 0.165
+  },
+  "home backup only": {
+   "n": 1505,
+   "frac": 0.1899,
+   "model": 0.67798,
+   "close": 0.6755,
+   "gap": 0.00248,
+   "share_of_total_gap": 0.277
+  },
+  "away backup only": {
+   "n": 2121,
+   "frac": 0.2676,
+   "model": 0.66801,
+   "close": 0.66565,
+   "gap": 0.00237,
+   "share_of_total_gap": 0.372
+  },
+  "both backups": {
+   "n": 1135,
+   "frac": 0.1432,
+   "model": 0.67495,
+   "close": 0.67274,
+   "gap": 0.00221,
+   "share_of_total_gap": 0.186
+  },
+  "no b2b": {
+   "n": 5547,
+   "frac": 0.6998,
+   "model": 0.67539,
+   "close": 0.67357,
+   "gap": 0.00182,
+   "share_of_total_gap": 0.748
+  },
+  "home b2b": {
+   "n": 840,
+   "frac": 0.106,
+   "model": 0.67391,
+   "close": 0.66907,
+   "gap": 0.00484,
+   "share_of_total_gap": 0.302
+  },
+  "away b2b": {
+   "n": 1918,
+   "frac": 0.242,
+   "model": 0.66431,
+   "close": 0.66238,
+   "gap": 0.00193,
+   "share_of_total_gap": 0.275
+  },
+  "away b2b & away backup": {
+   "n": 1102,
+   "frac": 0.139,
+   "model": 0.6637,
+   "close": 0.66216,
+   "gap": 0.00154,
+   "share_of_total_gap": 0.126
+  },
+  "away b2b & away usual": {
+   "n": 816,
+   "frac": 0.1029,
+   "model": 0.66515,
+   "close": 0.66269,
+   "gap": 0.00246,
+   "share_of_total_gap": 0.149
+  },
+  "home b2b & home backup": {
+   "n": 408,
+   "frac": 0.0515,
+   "model": 0.6728,
+   "close": 0.66794,
+   "gap": 0.00487,
+   "share_of_total_gap": 0.147
+  },
+  "absent nan (masked early season)": {
+   "n": 865,
+   "frac": 0.1091,
+   "model": 0.67592,
+   "close": 0.67141,
+   "gap": 0.00451,
+   "share_of_total_gap": 0.289
+  },
+  "|absent|<5": {
+   "n": 1239,
+   "frac": 0.1563,
+   "model": 0.67132,
+   "close": 0.67287,
+   "gap": -0.00156,
+   "share_of_total_gap": -0.143
+  },
+  "5<=|absent|<20": {
+   "n": 2856,
+   "frac": 0.3603,
+   "model": 0.67509,
+   "close": 0.67579,
+   "gap": -0.00071,
+   "share_of_total_gap": -0.15
+  },
+  "|absent|>=20": {
+   "n": 2967,
+   "frac": 0.3743,
+   "model": 0.66929,
+   "close": 0.66473,
+   "gap": 0.00456,
+   "share_of_total_gap": 1.003
+  },
+  "month 10": {
+   "n": 949,
+   "frac": 0.1197,
+   "model": 0.67766,
+   "close": 0.67519,
+   "gap": 0.00247,
+   "share_of_total_gap": 0.174
+  },
+  "month 11": {
+   "n": 1206,
+   "frac": 0.1521,
+   "model": 0.67633,
+   "close": 0.67426,
+   "gap": 0.00207,
+   "share_of_total_gap": 0.185
+  },
+  "month 12": {
+   "n": 1220,
+   "frac": 0.1539,
+   "model": 0.66216,
+   "close": 0.66483,
+   "gap": -0.00267,
+   "share_of_total_gap": -0.241
+  },
+  "month 01": {
+   "n": 1187,
+   "frac": 0.1497,
+   "model": 0.67405,
+   "close": 0.67096,
+   "gap": 0.00309,
+   "share_of_total_gap": 0.272
+  },
+  "month 02": {
+   "n": 1226,
+   "frac": 0.1547,
+   "model": 0.68203,
+   "close": 0.67753,
+   "gap": 0.0045,
+   "share_of_total_gap": 0.409
+  },
+  "month 03": {
+   "n": 1529,
+   "frac": 0.1929,
+   "model": 0.66753,
+   "close": 0.66629,
+   "gap": 0.00124,
+   "share_of_total_gap": 0.14
+  },
+  "month 04": {
+   "n": 610,
+   "frac": 0.077,
+   "model": 0.6668,
+   "close": 0.66545,
+   "gap": 0.00135,
+   "share_of_total_gap": 0.061
+  },
+  "|dlogit| 0-0.1": {
+   "n": 3342,
+   "frac": 0.4216,
+   "model": 0.67204,
+   "close": 0.67248,
+   "gap": -0.00044,
+   "share_of_total_gap": -0.108
+  },
+  "|dlogit| 0.1-0.2": {
+   "n": 2488,
+   "frac": 0.3139,
+   "model": 0.67326,
+   "close": 0.66983,
+   "gap": 0.00343,
+   "share_of_total_gap": 0.633
+  },
+  "|dlogit| 0.2-0.35": {
+   "n": 1677,
+   "frac": 0.2116,
+   "model": 0.67128,
+   "close": 0.66975,
+   "gap": 0.00154,
+   "share_of_total_gap": 0.191
+  },
+  "|dlogit| 0.35-5": {
+   "n": 420,
+   "frac": 0.053,
+   "model": 0.67497,
+   "close": 0.66586,
+   "gap": 0.00911,
+   "share_of_total_gap": 0.284
+  }
+ },
+ "residual_ols": {
+  "const": [
+   0.0256,
+   8.66
+  ],
+  "backup_home": [
+   -0.0419,
+   -10.98
+  ],
+  "backup_away": [
+   0.0476,
+   12.88
+  ],
+  "absent_diff(awayminushome,min)": [
+   0.0016,
+   22.36
+  ],
+  "b2b_home": [
+   0.0785,
+   13.08
+  ],
+  "b2b_away": [
+   -0.042,
+   -9.49
+  ],
+  "early_gp<10": [
+   0.0043,
+   0.83
+  ],
+  "model_logit": [
+   -0.1903,
+   -37.79
+  ]
+ },
+ "residual_sd": 0.18185181509324572,
+ "residual_r2": 0.2384262586697221,
+ "cond_shift_ll": 0.6714052161772222
+}

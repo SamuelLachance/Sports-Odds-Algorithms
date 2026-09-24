@@ -1,0 +1,252 @@
+{
+ "pick": "nhl_boxel",
+ "protocol": {
+  "prereg": "documents/breakthrough_program_prereg_2026_09_24.md",
+  "dev_seasons_scored": [
+   20112012,
+   20172018
+  ],
+  "test_seasons_touched": 0,
+  "eval": "leave-one-season-out over 2011-12..2017-18, nested cell selection",
+  "market_blind": true,
+  "bar": "nested C3 gain >= 0.001 and 10k-boot CI lo > 0"
+ },
+ "box_info": {
+  "present": false
+ },
+ "goalie_info": {
+  "source": "bt_nhl_gmar_gl.gl_elo(mode='new') [pick nhl_gmar shared module]",
+  "module_sha1_16": "4890ce6efc1d007e",
+  "prev_starter_fallback_sides": 0
+ },
+ "close_diag_eval_only": {
+  "n_joined": 7927,
+  "overall": {
+   "n": 7927,
+   "close_ll": 0.670717,
+   "C0_minus_close": 0.001705,
+   "C1_minus_close": 0.001511
+  },
+  "non_no1_goalie": {
+   "n": 4651,
+   "close_ll": 0.669005,
+   "C0_minus_close": 0.002742,
+   "C1_minus_close": 0.002339
+  },
+  "top4_absent": {
+   "n": 2424,
+   "close_ll": 0.661924,
+   "C0_minus_close": 0.001683,
+   "C1_minus_close": 0.001707
+  },
+  "team_games_0_5": {
+   "n": 656,
+   "close_ll": 0.667218,
+   "C0_minus_close": 0.002651,
+   "C1_minus_close": 0.002213
+  }
+ },
+ "status": "PRIMARY NOT RUN -- data/bt_nhl_boxel_box.csv absent or < 95% coverage. The boxscore fetch (phase0/bt_nhl_boxel_fetch.py, ~9,371 public api-web.nhle.com JSON documents) requires the user's OK and was NOT run. Only S1-S3, C1 (GL only) and the goalie/Elo walk-forward proofs ran.",
+ "sanity": {
+  "S1": {
+   "ll": 0.672398,
+   "n": 7929,
+   "pass": true
+  },
+  "S2": {
+   "drop_xg_cost": 0.003031,
+   "expected": 0.00303,
+   "pass": true
+  },
+  "S3": {
+   "max_abs_diff": 0.0,
+   "pass": true
+  },
+  "S4c": {
+   "status": "compared per game vs bt_nhl_gmar_gl.gl_elo, gamma in GAMMAS",
+   "max_abs_diff_p": 0.0,
+   "pass": true,
+   "gmar_json_arm": "A1 GL new col1 (gamma nested)",
+   "gmar_A1_dev_ll": 0.672199,
+   "boxel_C1_dev_ll": 0.672199,
+   "A1_vs_C1_ll_absdiff": 0.0
+  }
+ },
+ "walk_forward": {
+  "W1": "one ordered pass per module (lineup_pass, gmar gl_elo, elo_cell); state read into tonight's features BEFORE tonight's box stats/result/GA are folded in; league-level means date-batched",
+  "W3": "asserted in-loop: last absorbed date < tonight for every league mean (pos means, sd_L, running vbar, league goalie rate, xbar); entrant pools and fixed vbar come from seasons < current season",
+  "W4_mask_hash": "d5512699fe7b19cb",
+  "W2_W5_goalie_and_elo_only": {
+   "2012-02-01": {
+    "W2_pre_cutoff_bit_identical": true,
+    "W2_post_cutoff_changed": {
+     "Gh": true,
+     "Ga": true,
+     "elo_30_120": true,
+     "elo_0_120": true
+    },
+    "W5_through_cutoff_date_identical": true,
+    "n_pre": 1978,
+    "n_on_cutoff_date": 5
+   },
+   "2015-01-15": {
+    "W2_pre_cutoff_bit_identical": true,
+    "W2_post_cutoff_changed": {
+     "Gh": true,
+     "Ga": true,
+     "elo_30_120": true,
+     "elo_0_120": true
+    },
+    "W5_through_cutoff_date_identical": true,
+    "n_pre": 5054,
+    "n_on_cutoff_date": 10
+   },
+   "2017-12-01": {
+    "W2_pre_cutoff_bit_identical": true,
+    "W2_post_cutoff_changed": {
+     "Gh": true,
+     "Ga": true,
+     "elo_30_120": true,
+     "elo_0_120": true
+    },
+    "W5_through_cutoff_date_identical": true,
+    "n_pre": 8487,
+    "n_on_cutoff_date": 8
+   }
+  },
+  "W4": {
+   "mask_hash_all_arms": "d5512699fe7b19cb",
+   "no_nan_masked": true,
+   "goalie_info": {
+    "source": "bt_nhl_gmar_gl.gl_elo(mode='new') [pick nhl_gmar shared module]",
+    "module_sha1_16": "4890ce6efc1d007e",
+    "prev_starter_fallback_sides": 0
+   }
+  }
+ },
+ "arms": {
+  "C1_GL_only": {
+   "dev_ll": 0.672199,
+   "gain": 0.0002,
+   "boot_ci_10k": [
+    -0.00028,
+    0.000681
+   ],
+   "fold_sd": 0.00077,
+   "fold_se": 0.00029,
+   "sigma": 0.69,
+   "n_pos_folds": 4,
+   "n_folds": 7,
+   "per_season_gain": {
+    "20112012": -0.000104,
+    "20122013": -0.000431,
+    "20132014": -0.001238,
+    "20142015": 0.000555,
+    "20152016": 0.000708,
+    "20162017": 0.000869,
+    "20172018": 0.000623
+   },
+   "late_dev_2015_18": {
+    "gain": 0.000732,
+    "boot_ci_10k": [
+     0.000168,
+     0.001301
+    ],
+    "n": 3731
+   },
+   "nested_pick": {
+    "20112012": {
+     "gamma": 180
+    },
+    "20122013": {
+     "gamma": 180
+    },
+    "20132014": {
+     "gamma": 180
+    },
+    "20142015": {
+     "gamma": 180
+    },
+    "20152016": {
+     "gamma": 120
+    },
+    "20162017": {
+     "gamma": 120
+    },
+    "20172018": {
+     "gamma": 180
+    }
+   },
+   "optimistic_best": {
+    "gamma": 180,
+    "ll": 0.672108,
+    "gain": 0.00029
+   },
+   "cell_ll": {
+    "gamma=0": 0.672398,
+    "gamma=60": 0.672234,
+    "gamma=120": 0.672139,
+    "gamma=180": 0.672108
+   }
+  },
+  "C1b_standin_boxel_GL_disclosed": {
+   "dev_ll": 0.672315,
+   "gain": 8.4e-05,
+   "boot_ci_10k": [
+    -0.00038,
+    0.000557
+   ],
+   "fold_sd": 0.00105,
+   "fold_se": 0.0004,
+   "sigma": 0.21,
+   "n_pos_folds": 5,
+   "n_folds": 7,
+   "per_season_gain": {
+    "20112012": 7e-06,
+    "20122013": -0.000726,
+    "20132014": -0.002003,
+    "20142015": 0.000445,
+    "20152016": 0.000776,
+    "20162017": 0.000915,
+    "20172018": 0.000643
+   },
+   "late_dev_2015_18": {
+    "gain": 0.000777,
+    "boot_ci_10k": [
+     0.000279,
+     0.001282
+    ],
+    "n": 3731
+   },
+   "note": "boxel's stand-in goalie build, run before bt_nhl_gmar_gl.py existed; diagnostic only",
+   "nested_pick": {
+    "20112012": {
+     "gamma": 120
+    },
+    "20122013": {
+     "gamma": 180
+    },
+    "20132014": {
+     "gamma": 180
+    },
+    "20142015": {
+     "gamma": 120
+    },
+    "20152016": {
+     "gamma": 120
+    },
+    "20162017": {
+     "gamma": 120
+    },
+    "20172018": {
+     "gamma": 120
+    }
+   }
+  }
+ },
+ "bar": {
+  "eligible": false,
+  "reason": "primary C3 not run"
+ },
+ "seconds": 8.0
+}

@@ -1,0 +1,744 @@
+{
+ "pick": "nhl_boxel",
+ "protocol": {
+  "prereg": "documents/breakthrough_program_prereg_2026_09_24.md",
+  "dev_seasons_scored": [
+   "#",
+   "#"
+  ],
+  "test_seasons_touched": "#",
+  "eval": "leave-one-season-out over 2011-12..2017-18, nested cell selection",
+  "market_blind": true,
+  "bar": "nested C3 gain >= 0.001 and 10k-boot CI lo > 0"
+ },
+ "box_info": {
+  "present": "SYNTHETIC (smoke-full)"
+ },
+ "goalie_info": {
+  "source": "bt_nhl_gmar_gl.gl_elo(mode='new') [pick nhl_gmar shared module]",
+  "module_sha1_16": "4890ce6efc1d007e",
+  "prev_starter_fallback_sides": "#"
+ },
+ "close_diag_eval_only": {
+  "n_joined": "#",
+  "overall": {
+   "n": "#",
+   "close_ll": "#",
+   "C0_minus_close": "#",
+   "C1_minus_close": "#",
+   "C3_minus_close": "#"
+  },
+  "non_no1_goalie": {
+   "n": "#",
+   "close_ll": "#",
+   "C0_minus_close": "#",
+   "C1_minus_close": "#",
+   "C3_minus_close": "#"
+  },
+  "top4_absent": {
+   "n": "#",
+   "close_ll": "#",
+   "C0_minus_close": "#",
+   "C1_minus_close": "#",
+   "C3_minus_close": "#"
+  },
+  "team_games_0_5": {
+   "n": "#",
+   "close_ll": "#",
+   "C0_minus_close": "#",
+   "C1_minus_close": "#",
+   "C3_minus_close": "#"
+  }
+ },
+ "sibling_comparison": {
+  "rule": "within 0.0002 nats -> simpler wins: gmar > boxel > rapmel",
+  "nhl_gmar": {
+   "primary_dev_ll": "#",
+   "boxel_C3_dev_ll": "#",
+   "boxel_minus_sibling": "#"
+  },
+  "nhl_rapmel": "n/a (no result file)"
+ },
+ "bar": {
+  "nested_gain": "#",
+  "ci": [
+   "#",
+   "#"
+  ],
+  "sanity_and_walk_forward_pass": true,
+  "clears": false
+ },
+ "status": "COMPLETE",
+ "sanity": {
+  "S1": {
+   "ll": "#",
+   "n": "#",
+   "pass": true
+  },
+  "S2": {
+   "drop_xg_cost": "#",
+   "expected": "#",
+   "pass": true
+  },
+  "S3": {
+   "max_abs_diff": "#",
+   "pass": true
+  },
+  "S4c": {
+   "status": "compared per game vs bt_nhl_gmar_gl.gl_elo, gamma in GAMMAS",
+   "max_abs_diff_p": "#",
+   "pass": true,
+   "gmar_json_arm": "A1 GL new col1 (gamma nested)",
+   "gmar_A1_dev_ll": "#",
+   "boxel_C1_dev_ll": "#",
+   "A1_vs_C1_ll_absdiff": "#"
+  },
+  "S4a_dressed_vs_nhl_dressed": {
+   "match_share": "#",
+   "n_sides": "#",
+   "pass": true
+  },
+  "S4b_box_starter_vs_first_shot": {
+   "match_share": "#",
+   "n_sides": "#",
+   "pass": true
+  },
+  "S4d_face_validity": {
+   "n_team_seasons": "#",
+   "corr_meanL_vs_GF_per_game": "#",
+   "pass": true,
+   "top10_v_at_2016_01_01": [
+    {
+     "pid": "#",
+     "pos": "F",
+     "v_gsl_per_h": "#",
+     "games": "#",
+     "T_h": "#",
+     "name": "Teuvo Teravainen"
+    },
+    {
+     "pid": "#",
+     "pos": "F",
+     "v_gsl_per_h": "#",
+     "games": "#",
+     "T_h": "#",
+     "name": null
+    },
+    {
+     "pid": "#",
+     "pos": "F",
+     "v_gsl_per_h": "#",
+     "games": "#",
+     "T_h": "#",
+     "name": null
+    },
+    {
+     "pid": "#",
+     "pos": "F",
+     "v_gsl_per_h": "#",
+     "games": "#",
+     "T_h": "#",
+     "name": null
+    },
+    {
+     "pid": "#",
+     "pos": "F",
+     "v_gsl_per_h": "#",
+     "games": "#",
+     "T_h": "#",
+     "name": null
+    },
+    {
+     "pid": "#",
+     "pos": "F",
+     "v_gsl_per_h": "#",
+     "games": "#",
+     "T_h": "#",
+     "name": null
+    },
+    {
+     "pid": "#",
+     "pos": "F",
+     "v_gsl_per_h": "#",
+     "games": "#",
+     "T_h": "#",
+     "name": "John Carlson"
+    },
+    {
+     "pid": "#",
+     "pos": "F",
+     "v_gsl_per_h": "#",
+     "games": "#",
+     "T_h": "#",
+     "name": null
+    },
+    {
+     "pid": "#",
+     "pos": "F",
+     "v_gsl_per_h": "#",
+     "games": "#",
+     "T_h": "#",
+     "name": null
+    },
+    {
+     "pid": "#",
+     "pos": "F",
+     "v_gsl_per_h": "#",
+     "games": "#",
+     "T_h": "#",
+     "name": null
+    }
+   ]
+  }
+ },
+ "walk_forward": {
+  "W1": "one ordered pass per module (lineup_pass, gmar gl_elo, elo_cell); state read into tonight's features BEFORE tonight's box stats/result/GA are folded in; league-level means date-batched",
+  "W3": "asserted in-loop: last absorbed date < tonight for every league mean (pos means, sd_L, running vbar, league goalie rate, xbar); entrant pools and fixed vbar come from seasons < current season",
+  "W4_mask_hash": "d5512699fe7b19cb",
+  "W2_W5": {
+   "2012-02-01": {
+    "W2_pre_cutoff_bit_identical": true,
+    "W2_post_cutoff_changed": {
+     "Lh": true,
+     "La": true,
+     "Lth": true,
+     "Lta": true,
+     "dLh": true,
+     "dLa": true,
+     "Gh": true,
+     "Ga": true,
+     "elo_30_120": true,
+     "elo_0_120": true
+    },
+    "W5_through_cutoff_date_identical": true,
+    "n_pre": "#",
+    "n_on_cutoff_date": "#"
+   },
+   "2015-01-15": {
+    "W2_pre_cutoff_bit_identical": true,
+    "W2_post_cutoff_changed": {
+     "Lh": true,
+     "La": true,
+     "Lth": true,
+     "Lta": true,
+     "dLh": true,
+     "dLa": true,
+     "Gh": true,
+     "Ga": true,
+     "elo_30_120": true,
+     "elo_0_120": true
+    },
+    "W5_through_cutoff_date_identical": true,
+    "n_pre": "#",
+    "n_on_cutoff_date": "#"
+   },
+   "2017-12-01": {
+    "W2_pre_cutoff_bit_identical": true,
+    "W2_post_cutoff_changed": {
+     "Lh": true,
+     "La": true,
+     "Lth": true,
+     "Lta": true,
+     "dLh": true,
+     "dLa": true,
+     "Gh": true,
+     "Ga": true,
+     "elo_30_120": true,
+     "elo_0_120": true
+    },
+    "W5_through_cutoff_date_identical": true,
+    "n_pre": "#",
+    "n_on_cutoff_date": "#"
+   }
+  },
+  "W4": {
+   "mask_hash_all_arms": "d5512699fe7b19cb",
+   "no_nan_masked": true,
+   "fallback_sides_nhl_dressed": "#",
+   "fallback_players_without_history": "#",
+   "goalie_info": {
+    "source": "bt_nhl_gmar_gl.gl_elo(mode='new') [pick nhl_gmar shared module]",
+    "module_sha1_16": "4890ce6efc1d007e",
+    "prev_starter_fallback_sides": "#"
+   }
+  },
+  "W5": "same-game inputs = tonight's dressed skater list (with roster position) and tonight's first-shot starter; W5 test scrambles results, GA/xGA and box production/TOI from the cutoff date on with lineups kept and asserts features THROUGH the cutoff date are bit-identical"
+ },
+ "arms": {
+  "C1_GL_only": {
+   "dev_ll": "#",
+   "gain": "#",
+   "boot_ci_10k": [
+    "#",
+    "#"
+   ],
+   "fold_sd": "#",
+   "fold_se": "#",
+   "sigma": "#",
+   "n_pos_folds": "#",
+   "n_folds": "#",
+   "per_season_gain": {
+    "20112012": "#",
+    "20122013": "#",
+    "20132014": "#",
+    "20142015": "#",
+    "20152016": "#",
+    "20162017": "#",
+    "20172018": "#"
+   },
+   "late_dev_2015_18": {
+    "gain": "#",
+    "boot_ci_10k": [
+     "#",
+     "#"
+    ],
+    "n": "#"
+   },
+   "nested_pick": {
+    "20112012": {
+     "gamma": "#"
+    },
+    "20122013": {
+     "gamma": "#"
+    },
+    "20132014": {
+     "gamma": "#"
+    },
+    "20142015": {
+     "gamma": "#"
+    },
+    "20152016": {
+     "gamma": "#"
+    },
+    "20162017": {
+     "gamma": "#"
+    },
+    "20172018": {
+     "gamma": "#"
+    }
+   },
+   "optimistic_best": {
+    "gamma": "#",
+    "ll": "#",
+    "gain": "#"
+   },
+   "cell_ll": {
+    "gamma=0": "#",
+    "gamma=60": "#",
+    "gamma=120": "#",
+    "gamma=180": "#"
+   }
+  },
+  "C1b_standin_boxel_GL_disclosed": {
+   "dev_ll": "#",
+   "gain": "#",
+   "boot_ci_10k": [
+    "#",
+    "#"
+   ],
+   "fold_sd": "#",
+   "fold_se": "#",
+   "sigma": "#",
+   "n_pos_folds": "#",
+   "n_folds": "#",
+   "per_season_gain": {
+    "20112012": "#",
+    "20122013": "#",
+    "20132014": "#",
+    "20142015": "#",
+    "20152016": "#",
+    "20162017": "#",
+    "20172018": "#"
+   },
+   "late_dev_2015_18": {
+    "gain": "#",
+    "boot_ci_10k": [
+     "#",
+     "#"
+    ],
+    "n": "#"
+   },
+   "note": "boxel's stand-in goalie build, run before bt_nhl_gmar_gl.py existed; diagnostic only",
+   "nested_pick": {
+    "20112012": {
+     "gamma": "#"
+    },
+    "20122013": {
+     "gamma": "#"
+    },
+    "20132014": {
+     "gamma": "#"
+    },
+    "20142015": {
+     "gamma": "#"
+    },
+    "20152016": {
+     "gamma": "#"
+    },
+    "20162017": {
+     "gamma": "#"
+    },
+    "20172018": {
+     "gamma": "#"
+    }
+   }
+  },
+  "C0_shipped": {
+   "dev_ll": "#",
+   "n": "#"
+  },
+  "C2_L_only": {
+   "dev_ll": "#",
+   "gain": "#",
+   "boot_ci_10k": [
+    "#",
+    "#"
+   ],
+   "fold_sd": "#",
+   "fold_se": "#",
+   "sigma": "#",
+   "n_pos_folds": "#",
+   "n_folds": "#",
+   "per_season_gain": {
+    "20112012": "#",
+    "20122013": "#",
+    "20132014": "#",
+    "20142015": "#",
+    "20152016": "#",
+    "20162017": "#",
+    "20172018": "#"
+   },
+   "late_dev_2015_18": {
+    "gain": "#",
+    "boot_ci_10k": [
+     "#",
+     "#"
+    ],
+    "n": "#"
+   },
+   "nested_pick": {
+    "20112012": {
+     "beta": "#",
+     "gamma": "#"
+    },
+    "20122013": {
+     "beta": "#",
+     "gamma": "#"
+    },
+    "20132014": {
+     "beta": "#",
+     "gamma": "#"
+    },
+    "20142015": {
+     "beta": "#",
+     "gamma": "#"
+    },
+    "20152016": {
+     "beta": "#",
+     "gamma": "#"
+    },
+    "20162017": {
+     "beta": "#",
+     "gamma": "#"
+    },
+    "20172018": {
+     "beta": "#",
+     "gamma": "#"
+    }
+   },
+   "optimistic_best": {
+    "beta": "#",
+    "gamma": "#",
+    "ll": "#",
+    "gain": "#"
+   }
+  },
+  "C3_GL_plus_L_inside_PRIMARY": {
+   "dev_ll": "#",
+   "gain": "#",
+   "boot_ci_10k": [
+    "#",
+    "#"
+   ],
+   "fold_sd": "#",
+   "fold_se": "#",
+   "sigma": "#",
+   "n_pos_folds": "#",
+   "n_folds": "#",
+   "per_season_gain": {
+    "20112012": "#",
+    "20122013": "#",
+    "20132014": "#",
+    "20142015": "#",
+    "20152016": "#",
+    "20162017": "#",
+    "20172018": "#"
+   },
+   "late_dev_2015_18": {
+    "gain": "#",
+    "boot_ci_10k": [
+     "#",
+     "#"
+    ],
+    "n": "#"
+   },
+   "nested_pick": {
+    "20112012": {
+     "beta": "#",
+     "gamma": "#"
+    },
+    "20122013": {
+     "beta": "#",
+     "gamma": "#"
+    },
+    "20132014": {
+     "beta": "#",
+     "gamma": "#"
+    },
+    "20142015": {
+     "beta": "#",
+     "gamma": "#"
+    },
+    "20152016": {
+     "beta": "#",
+     "gamma": "#"
+    },
+    "20162017": {
+     "beta": "#",
+     "gamma": "#"
+    },
+    "20172018": {
+     "beta": "#",
+     "gamma": "#"
+    }
+   },
+   "optimistic_best": {
+    "beta": "#",
+    "gamma": "#",
+    "ll": "#",
+    "gain": "#"
+   },
+   "cell_ll": {
+    "b0_g0": "#",
+    "b0_g60": "#",
+    "b0_g120": "#",
+    "b0_g180": "#",
+    "b15_g0": "#",
+    "b15_g60": "#",
+    "b15_g120": "#",
+    "b15_g180": "#",
+    "b30_g0": "#",
+    "b30_g60": "#",
+    "b30_g120": "#",
+    "b30_g180": "#",
+    "b45_g0": "#",
+    "b45_g60": "#",
+    "b45_g120": "#",
+    "b45_g180": "#",
+    "b60_g0": "#",
+    "b60_g60": "#",
+    "b60_g120": "#",
+    "b60_g180": "#"
+   }
+  },
+  "C4_GL_inside_dLtil_beside": {
+   "dev_ll": "#",
+   "gain": "#",
+   "boot_ci_10k": [
+    "#",
+    "#"
+   ],
+   "fold_sd": "#",
+   "fold_se": "#",
+   "sigma": "#",
+   "n_pos_folds": "#",
+   "n_folds": "#",
+   "per_season_gain": {
+    "20112012": "#",
+    "20122013": "#",
+    "20132014": "#",
+    "20142015": "#",
+    "20152016": "#",
+    "20162017": "#",
+    "20172018": "#"
+   },
+   "late_dev_2015_18": {
+    "gain": "#",
+    "boot_ci_10k": [
+     "#",
+     "#"
+    ],
+    "n": "#"
+   },
+   "nested_pick": {
+    "20112012": {
+     "beta": "#",
+     "gamma": "#"
+    },
+    "20122013": {
+     "beta": "#",
+     "gamma": "#"
+    },
+    "20132014": {
+     "beta": "#",
+     "gamma": "#"
+    },
+    "20142015": {
+     "beta": "#",
+     "gamma": "#"
+    },
+    "20152016": {
+     "beta": "#",
+     "gamma": "#"
+    },
+    "20162017": {
+     "beta": "#",
+     "gamma": "#"
+    },
+    "20172018": {
+     "beta": "#",
+     "gamma": "#"
+    }
+   },
+   "optimistic_best": {
+    "beta": "#",
+    "gamma": "#",
+    "ll": "#",
+    "gain": "#"
+   }
+  },
+  "C3_vs_C4_inside_minus_beside": {
+   "gain": "#",
+   "boot_ci_10k": [
+    "#",
+    "#"
+   ]
+  },
+  "C3_vs_C1_lineup_increment": {
+   "gain": "#",
+   "boot_ci_10k": [
+    "#",
+    "#"
+   ]
+  },
+  "C5_onice_process": {
+   "dev_ll": "#",
+   "gain": "#",
+   "boot_ci_10k": [
+    "#",
+    "#"
+   ],
+   "fold_sd": "#",
+   "fold_se": "#",
+   "sigma": "#",
+   "n_pos_folds": "#",
+   "n_folds": "#",
+   "per_season_gain": {
+    "20112012": "#",
+    "20122013": "#",
+    "20132014": "#",
+    "20142015": "#",
+    "20152016": "#",
+    "20162017": "#",
+    "20172018": "#"
+   },
+   "late_dev_2015_18": {
+    "gain": "#",
+    "boot_ci_10k": [
+     "#",
+     "#"
+    ],
+    "n": "#"
+   },
+   "note": "optional diagnostic, never gating: GSL += 0.15 x on-ice 5v5 (xGF - xGA) per game from nhl_rapmel's DEV stint cache",
+   "nested_pick": {
+    "20112012": {
+     "beta": "#",
+     "gamma": "#"
+    },
+    "20122013": {
+     "beta": "#",
+     "gamma": "#"
+    },
+    "20132014": {
+     "beta": "#",
+     "gamma": "#"
+    },
+    "20142015": {
+     "beta": "#",
+     "gamma": "#"
+    },
+    "20152016": {
+     "beta": "#",
+     "gamma": "#"
+    },
+    "20162017": {
+     "beta": "#",
+     "gamma": "#"
+    },
+    "20172018": {
+     "beta": "#",
+     "gamma": "#"
+    }
+   },
+   "optimistic_best": {
+    "beta": "#",
+    "gamma": "#",
+    "ll": "#",
+    "gain": "#"
+   },
+   "players_games_with_onice": "#"
+  }
+ },
+ "lineup_diag": {
+  "fallback_sides": "#",
+  "fallback_players_without_history": "#",
+  "vbar_by_season": {
+   "20112012": {
+    "F": "#",
+    "D": "#"
+   },
+   "20122013": {
+    "F": "#",
+    "D": "#"
+   },
+   "20132014": {
+    "F": "#",
+    "D": "#"
+   },
+   "20142015": {
+    "F": "#",
+    "D": "#"
+   },
+   "20152016": {
+    "F": "#",
+    "D": "#"
+   },
+   "20162017": {
+    "F": "#",
+    "D": "#"
+   },
+   "20172018": {
+    "F": "#",
+    "D": "#"
+   }
+  },
+  "entrant_pool_final": {
+   "F": {
+    "gsl_per_h": "#",
+    "games": "#"
+   },
+   "D": {
+    "gsl_per_h": "#",
+    "games": "#"
+   }
+  },
+  "pos_mean_final": {
+   "F": "#",
+   "D": "#"
+  },
+  "sd_L_final": "#"
+ },
+ "seconds": "#",
+ "mode": "SMOKE-FULL: full pipeline on SYNTHETIC production; every number redacted (plumbing test only, carries no result)"
+}

@@ -1,0 +1,409 @@
+{
+ "era": {
+  "early 2011-12..2014-15": {
+   "n": 4197,
+   "model_minus_close": 0.00026,
+   "mc_ci": [
+    -0.00243,
+    0.00281
+   ],
+   "model_minus_open": -0.00211,
+   "mo_ci": [
+    -0.00489,
+    0.00061
+   ],
+   "open_to_close": 0.00237,
+   "oc_ci": [
+    0.00079,
+    0.00393
+   ]
+  },
+  "late 2015-16..2017-18": {
+   "n": 3730,
+   "model_minus_close": 0.00333,
+   "mc_ci": [
+    0.00044,
+    0.00627
+   ],
+   "model_minus_open": 0.00204,
+   "mo_ci": [
+    -0.00101,
+    0.00512
+   ],
+   "open_to_close": 0.00129,
+   "oc_ci": [
+    -0.00073,
+    0.00318
+   ]
+  }
+ },
+ "goalie_why": {
+  "both teams start their #1 (modal of last 20)": {
+   "n": 3259,
+   "model_minus_close": 0.00045,
+   "mc_ci": [
+    -0.00252,
+    0.00332
+   ],
+   "model_minus_open": -0.00011,
+   "mo_ci": [
+    -0.00306,
+    0.00281
+   ],
+   "open_to_close": 0.00056,
+   "oc_ci": [
+    -0.00134,
+    0.00242
+   ]
+  },
+  "any non-#1 starter": {
+   "n": 4651,
+   "model_minus_close": 0.00274,
+   "mc_ci": [
+    0.00022,
+    0.0053
+   ],
+   "model_minus_open": -4e-05,
+   "mo_ci": [
+    -0.00269,
+    0.00271
+   ],
+   "open_to_close": 0.00278,
+   "oc_ci": [
+    0.00109,
+    0.00447
+   ]
+  },
+  "non-#1 SPELL (same non-#1 as prev game), any": {
+   "n": 1853,
+   "model_minus_close": 0.00328,
+   "mc_ci": [
+    -0.00092,
+    0.00742
+   ],
+   "model_minus_open": 0.0002,
+   "mo_ci": [
+    -0.00403,
+    0.00435
+   ],
+   "open_to_close": 0.00308,
+   "oc_ci": [
+    0.00069,
+    0.00557
+   ]
+  },
+  "non-#1 ONE-OFF (#1 started prev game), any": {
+   "n": 2798,
+   "model_minus_close": 0.00239,
+   "mc_ci": [
+    -0.00099,
+    0.00574
+   ],
+   "model_minus_open": -0.0002,
+   "mo_ci": [
+    -0.00377,
+    0.0034
+   ],
+   "open_to_close": 0.00258,
+   "oc_ci": [
+    0.00031,
+    0.00494
+   ]
+  },
+  "one-off non-#1 on that team's b2b": {
+   "n": 1223,
+   "model_minus_close": 0.00386,
+   "mc_ci": [
+    -0.00148,
+    0.00922
+   ],
+   "model_minus_open": 0.00161,
+   "mo_ci": [
+    -0.00459,
+    0.00772
+   ],
+   "open_to_close": 0.00225,
+   "oc_ci": [
+    -0.00128,
+    0.00587
+   ]
+  },
+  "one-off non-#1 NOT on b2b": {
+   "n": 1899,
+   "model_minus_close": 0.00114,
+   "mc_ci": [
+    -0.00286,
+    0.00516
+   ],
+   "model_minus_open": -0.00084,
+   "mo_ci": [
+    -0.00479,
+    0.00323
+   ],
+   "open_to_close": 0.00198,
+   "oc_ci": [
+    -0.0007,
+    0.00467
+   ]
+  },
+  "home non-#1 only": {
+   "n": 1499,
+   "model_minus_close": 0.00113,
+   "mc_ci": [
+    -0.00354,
+    0.00569
+   ],
+   "model_minus_open": -0.002,
+   "mo_ci": [
+    -0.00653,
+    0.00256
+   ],
+   "open_to_close": 0.00313,
+   "oc_ci": [
+    0.00014,
+    0.00625
+   ]
+  },
+  "away non-#1 only": {
+   "n": 2123,
+   "model_minus_close": 0.0034,
+   "mc_ci": [
+    -0.00039,
+    0.00711
+   ],
+   "model_minus_open": -7e-05,
+   "mo_ci": [
+    -0.00404,
+    0.0039
+   ],
+   "open_to_close": 0.00347,
+   "oc_ci": [
+    0.00107,
+    0.00584
+   ]
+  }
+ },
+ "goalie_x_era": {
+  "early: both teams start their #1 (modal of last 20)": {
+   "n": 1722,
+   "model_minus_close": -0.0003,
+   "mc_ci": [
+    -0.00431,
+    0.00359
+   ],
+   "model_minus_open": -0.00228,
+   "mo_ci": [
+    -0.00632,
+    0.00194
+   ],
+   "open_to_close": 0.00198,
+   "oc_ci": [
+    -0.00031,
+    0.00434
+   ]
+  },
+  "early: any non-#1 starter": {
+   "n": 2462,
+   "model_minus_close": 0.00066,
+   "mc_ci": [
+    -0.00275,
+    0.0042
+   ],
+   "model_minus_open": -0.00198,
+   "mo_ci": [
+    -0.00565,
+    0.00167
+   ],
+   "open_to_close": 0.00263,
+   "oc_ci": [
+    0.00052,
+    0.00477
+   ]
+  },
+  "early: non-#1 SPELL (same non-#1 as prev game), any": {
+   "n": 1035,
+   "model_minus_close": 0.00291,
+   "mc_ci": [
+    -0.00267,
+    0.00833
+   ],
+   "model_minus_open": -0.00094,
+   "mo_ci": [
+    -0.00648,
+    0.00455
+   ],
+   "open_to_close": 0.00385,
+   "oc_ci": [
+    0.00079,
+    0.00681
+   ]
+  },
+  "late: both teams start their #1 (modal of last 20)": {
+   "n": 1537,
+   "model_minus_close": 0.00129,
+   "mc_ci": [
+    -0.00305,
+    0.00573
+   ],
+   "model_minus_open": 0.00232,
+   "mo_ci": [
+    -0.00204,
+    0.00664
+   ],
+   "open_to_close": -0.00103,
+   "oc_ci": [
+    -0.00406,
+    0.00189
+   ]
+  },
+  "late: any non-#1 starter": {
+   "n": 2189,
+   "model_minus_close": 0.00509,
+   "mc_ci": [
+    0.00125,
+    0.00902
+   ],
+   "model_minus_open": 0.00214,
+   "mo_ci": [
+    -0.00199,
+    0.0062
+   ],
+   "open_to_close": 0.00295,
+   "oc_ci": [
+    0.0003,
+    0.00555
+   ]
+  },
+  "late: non-#1 SPELL (same non-#1 as prev game), any": {
+   "n": 818,
+   "model_minus_close": 0.00375,
+   "mc_ci": [
+    -0.00267,
+    0.01013
+   ],
+   "model_minus_open": 0.00165,
+   "mo_ci": [
+    -0.00484,
+    0.00808
+   ],
+   "open_to_close": 0.0021,
+   "oc_ci": [
+    -0.00188,
+    0.00613
+   ]
+  }
+ },
+ "direction": {
+  "mean_move_toward_backup_logit": -0.0328,
+  "line moved AGAINST backup team (< -0.02)": {
+   "n": 1933,
+   "model_minus_close": 0.00459,
+   "mc_ci": [
+    0.00036,
+    0.00885
+   ],
+   "model_minus_open": -0.0006,
+   "mo_ci": [
+    -0.00475,
+    0.00351
+   ],
+   "open_to_close": 0.00519,
+   "oc_ci": [
+    0.00219,
+    0.00823
+   ]
+  },
+  "line flat (|move| <= 0.02)": {
+   "n": 594,
+   "model_minus_close": 0.00313,
+   "mc_ci": [
+    -0.00363,
+    0.01015
+   ],
+   "model_minus_open": 0.00332,
+   "mo_ci": [
+    -0.00357,
+    0.01025
+   ],
+   "open_to_close": -0.00019,
+   "oc_ci": [
+    -0.00057,
+    0.00019
+   ]
+  },
+  "line moved TOWARD backup team (> +0.02)": {
+   "n": 1095,
+   "model_minus_close": -0.00165,
+   "mc_ci": [
+    -0.00686,
+    0.00358
+   ],
+   "model_minus_open": -0.00362,
+   "mo_ci": [
+    -0.00919,
+    0.00185
+   ],
+   "open_to_close": 0.00197,
+   "oc_ci": [
+    -0.00125,
+    0.00508
+   ]
+  }
+ },
+ "reference_usual": {
+  "moved toward home (> +0.02)": {
+   "n": 1256,
+   "model_minus_close": 0.00281,
+   "mc_ci": [
+    -0.00167,
+    0.00754
+   ],
+   "model_minus_open": 0.00131,
+   "mo_ci": [
+    -0.00355,
+    0.00635
+   ],
+   "open_to_close": 0.0015,
+   "oc_ci": [
+    -0.00148,
+    0.00448
+   ]
+  },
+  "flat": {
+   "n": 564,
+   "model_minus_close": 0.00244,
+   "mc_ci": [
+    -0.00406,
+    0.00908
+   ],
+   "model_minus_open": 0.00271,
+   "mo_ci": [
+    -0.004,
+    0.00939
+   ],
+   "open_to_close": -0.00027,
+   "oc_ci": [
+    -0.00062,
+    6e-05
+   ]
+  },
+  "moved toward away (< -0.02)": {
+   "n": 1439,
+   "model_minus_close": -0.00239,
+   "mc_ci": [
+    -0.00718,
+    0.00219
+   ],
+   "model_minus_open": -0.00245,
+   "mo_ci": [
+    -0.00683,
+    0.00196
+   ],
+   "open_to_close": 6e-05,
+   "oc_ci": [
+    -0.0032,
+    0.00324
+   ]
+  }
+ }
+}

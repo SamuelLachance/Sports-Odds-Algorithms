@@ -1,16 +1,25 @@
-"""Build site/data/nfl.json — the NFL GLASSBOX preseason payload (entering 2026).
+"""Build the NFL GLASSBOX payload skeleton (site/data/nfl.json) — step 1 of the chain.
 
-Power ratings from end-of-2025 model states (Elo regressed to preseason + pass/run
-unit EPA), player boards from the shipped continuous board, WOWY MVP table, and the
-model card (measured numbers only).
+Power ratings from the model states walked through the latest final (Elo, plus
+pass/run unit EPA; regressed to a preseason prior only while no game of the
+serve season has been played), player boards from the shipped continuous board,
+the WOWY MVP table, and the model card (measured numbers only).
+
+Writes the payload the chain is building: under phase0/nfl_weekly.py that is a
+STAGING copy (NFL_PAYLOAD), swapped onto the live file only after the whole
+chain validated, so the site never sees this schedule-less intermediate state.
 """
 from __future__ import annotations
 
 import csv
 import json
+import sys
 from collections import defaultdict
 
 import numpy as np
+
+sys.path.insert(0, "phase0")
+import nfl_payload as NP  # noqa: E402
 
 coord_src = open("phase0/nfl_coord_tune.py", encoding="utf-8").read()
 exec(coord_src.split("X_CUR0 = X_of(F)")[0])  # noqa: S102
@@ -69,22 +78,15 @@ for g in games:
     d = bp["k"] * (g["y"] - p)
     R[g["home"]] += d
     R[g["away"]] -= d
-if games[-1]["season"] < 2026:      # else the in-walk trigger already regressed at the
+PRESEASON = games[-1]["season"] < 2026
+if PRESEASON:                       # else the in-walk trigger already regressed at the
     for t in R:                     # 2025->2026 boundary; reapplying would double-regress
         R[t] = 1500.0 + (R[t] - 1500.0) * (1.0 - bp["regress"])   # -> 2026 preseason
 
-NAMES = {"ARI": "Cardinals", "ATL": "Falcons", "BAL": "Ravens", "BUF": "Bills",
-         "CAR": "Panthers", "CHI": "Bears", "CIN": "Bengals", "CLE": "Browns",
-         "DAL": "Cowboys", "DEN": "Broncos", "DET": "Lions", "GB": "Packers",
-         "HOU": "Texans", "IND": "Colts", "JAX": "Jaguars", "KC": "Chiefs",
-         "LA": "Rams", "LAC": "Chargers", "LV": "Raiders", "MIA": "Dolphins",
-         "MIN": "Vikings", "NE": "Patriots", "NO": "Saints", "NYG": "Giants",
-         "NYJ": "Jets", "PHI": "Eagles", "PIT": "Steelers", "SEA": "Seahawks",
-         "SF": "49ers", "TB": "Buccaneers", "TEN": "Titans", "WAS": "Commanders"}
 power = []
-for t, name in NAMES.items():
+for t in NP.TEAMS:
     power.append({
-        "code": t, "name": name, "elo": round(R.get(t, 1500.0), 1),
+        "code": t, **NP.team_names(t), "elo": round(R.get(t, 1500.0), 1),
         "off_pass": round((crate(offP[t], LGP) - LGP) * 100, 1),
         "off_run": round((crate(offR[t], LGR) - LGR) * 100, 1),
         "def_pass": round((LGP - crate(dfaP[t], LGP)) * 100, 1),
@@ -95,11 +97,17 @@ for i, p_ in enumerate(power, 1):
     p_["rank"] = i
 
 # ---- player boards ----
+BOARD_SEASON = 2025                  # the per-play board is a full-season table
+BOARD_CSV = f"data/nfl_player_board_{BOARD_SEASON}.csv"
+
+
 def load_board(pos_filter, floor, k=12):
-    rows = [r for r in csv.DictReader(open("data/nfl_player_board_2025.csv", encoding="utf-8"))
+    rows = [r for r in csv.DictReader(open(BOARD_CSV, encoding="utf-8"))
             if r["pos"] in pos_filter and float(r["n_duels"]) >= floor]
     rows.sort(key=lambda r: -float(r["conservative_z"]))
-    return [{"player": r["player"], "pos": r["pos"], "z": round(float(r["z"]), 2),
+    # the gsis id is in the board table itself: every row links to its player
+    return [{"player": r["player"], "id": r.get("gsis_id") or None, "pos": r["pos"],
+             "z": round(float(r["z"]), 2),
              "cons": round(float(r["conservative_z"]), 2), "n": int(float(r["n_duels"]))}
             for r in rows[:k]]
 
@@ -113,10 +121,25 @@ mvp = [{"player": "Aaron Rodgers", "pos": "QB", "pts": 6.67, "n_abs": 36},
        {"player": "Patrick Mahomes", "pos": "QB", "pts": 6.39, "n_abs": 11},
        {"player": "Derek Carr", "pos": "QB", "pts": 6.33, "n_abs": 29},
        {"player": "Joe Burrow", "pos": "QB", "pts": 5.93, "n_abs": 23}]
+# The with-vs-without study is a one-off (data/nfl_wowy.json keeps only the
+# position values, not per-player splits), so these rows are a fixed table:
+# resolve their ids by exact, unique display name so they link like the boards.
+_by_name = defaultdict(list)
+for r in csv.DictReader(open("data/nfl_players.csv", encoding="utf-8")):
+    if r.get("gsis_id") and r.get("position") == "QB":
+        _by_name[r.get("display_name", "")].append(r["gsis_id"])
+for m in mvp:
+    ids = _by_name.get(m["player"], [])
+    m["id"] = ids[0] if len(ids) == 1 else None
 
 payload = {
-    "generated": __import__("datetime").datetime.utcnow().isoformat() + "Z",
-    "status": "preseason", "season": 2026,
+    "generated": NP.now_utc_iso(),
+    "status": "preseason" if PRESEASON else "season", "season": 2026,
+    # what the power table is: states walked through this final (a preseason
+    # prior only while no 2026 game has been played)
+    "power_asof": games[-1]["date"], "power_preseason": PRESEASON,
+    "boards_season": BOARD_SEASON,
+    "mvp_source": "one-off with-vs-without study, 2016-2025 absences (fixed table)",
     "model_card": {
         "test_log_loss": 0.61947, "holdout": "2016-2025, n=2,761, scored once",
         "accuracy": 64.6, "acc_home": 55.0, "acc_elo": 63.6, "acc_close": 66.6,
@@ -130,24 +153,18 @@ payload = {
     "power": power, "boards": boards, "mvp": mvp,
     "pos_values": wowy.get("pos_values_epa_play", {}),
 }
-# carry forward enrichments that live only in the prior payload, else a rebuild
-# silently drops them: 'value_updated' (written by market/nfl_edges.py) and the
-# gsis 'id' fields on boards/mvp rows (hand-patched in 537deb4; site/index.html
-# needs them for player-page links)
+# carry forward the one enrichment that lives only in the published payload,
+# else a rebuild silently drops it: 'value_updated' (written by
+# market/nfl_edges.py). Read from the LIVE file, whatever this run writes to.
 try:
-    _prev = json.load(open("site/data/nfl.json"))
+    _prev = json.load(open(NP.LIVE, encoding="utf-8"))
     if "value_updated" in _prev:
         payload["value_updated"] = _prev["value_updated"]
-    _pid = {e["player"]: e["id"]
-            for grp in list(_prev.get("boards", {}).values()) + [_prev.get("mvp", [])]
-            for e in grp if e.get("id")}
-    for grp in list(payload["boards"].values()) + [payload["mvp"]]:
-        for e in grp:
-            if e["player"] in _pid:
-                e["id"] = _pid[e["player"]]
 except (FileNotFoundError, json.JSONDecodeError):
     pass
-json.dump(payload, open("site/data/nfl.json", "w"), indent=1)
-print(f"wrote site/data/nfl.json  ({len(power)} teams, "
-      f"{sum(len(v) for v in boards.values())} board players)")
+_out = NP.payload_path()
+NP.dump_atomic(payload, _out, indent=1)
+print(f"wrote {_out}  ({len(power)} teams, "
+      f"{sum(len(v) for v in boards.values())} board players, "
+      f"{sum(1 for m in mvp if m['id'])}/{len(mvp)} MVP ids)")
 print("top-5 power:", [(p['code'], p['elo']) for p in power[:5]])

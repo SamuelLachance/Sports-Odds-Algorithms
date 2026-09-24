@@ -1,0 +1,207 @@
+{
+ "seasons": {
+  "2002": {
+   "ok": true,
+   "steps": {
+    "d_div": 2,
+    "d_common": 1,
+    "w_conf": 2,
+    "w_h2h": 1
+   },
+   "coin_reached": 0,
+   "po_miss": [],
+   "bye_miss": [],
+   "dw_miss": [],
+   "hybrid_agrees": true
+  },
+  "2003": {
+   "ok": true,
+   "steps": {
+    "d_h2h": 1,
+    "w_conf": 1
+   },
+   "coin_reached": 0,
+   "po_miss": [],
+   "bye_miss": [],
+   "dw_miss": [],
+   "hybrid_agrees": true
+  },
+  "2004": {
+   "ok": true,
+   "steps": {
+    "w_conf": 1,
+    "w_h2h": 1
+   },
+   "coin_reached": 0,
+   "po_miss": [],
+   "bye_miss": [],
+   "dw_miss": [],
+   "hybrid_agrees": true
+  },
+  "2005": {
+   "ok": true,
+   "steps": {
+    "d_div": 2,
+    "w_conf": 1
+   },
+   "coin_reached": 0,
+   "po_miss": [],
+   "bye_miss": [],
+   "dw_miss": [],
+   "hybrid_agrees": true
+  },
+  "2006": {
+   "ok": true,
+   "steps": {
+    "d_div": 1,
+    "w_h2h": 1,
+    "w_conf": 1,
+    "w_sov": 1
+   },
+   "coin_reached": 0,
+   "po_miss": [],
+   "bye_miss": [],
+   "dw_miss": [],
+   "hybrid_agrees": true
+  },
+  "2007": {
+   "ok": true,
+   "steps": {
+    "d_h2h": 1,
+    "w_common4": 1
+   },
+   "coin_reached": 0,
+   "po_miss": [],
+   "bye_miss": [],
+   "dw_miss": [],
+   "hybrid_agrees": true
+  },
+  "2008": {
+   "ok": true,
+   "steps": {
+    "d_conf": 1,
+    "d_div": 1,
+    "w_conf": 1
+   },
+   "coin_reached": 0,
+   "po_miss": [],
+   "bye_miss": [],
+   "dw_miss": [],
+   "hybrid_agrees": true
+  },
+  "2009": {
+   "ok": true,
+   "steps": {
+    "d_div": 1,
+    "w_conf": 2,
+    "w_common4": 1,
+    "d_h2h": 1
+   },
+   "coin_reached": 0,
+   "po_miss": [],
+   "bye_miss": [],
+   "dw_miss": [],
+   "hybrid_agrees": true
+  },
+  "2010": {
+   "ok": true,
+   "steps": {
+    "d_div": 2,
+    "d_h2h": 1,
+    "w_sov": 1
+   },
+   "coin_reached": 0,
+   "po_miss": [],
+   "bye_miss": [],
+   "dw_miss": [],
+   "hybrid_agrees": true
+  },
+  "2011": {
+   "ok": true,
+   "steps": {
+    "d_h2h": 1,
+    "d_common": 1,
+    "w_h2h": 1,
+    "w_conf": 1
+   },
+   "coin_reached": 0,
+   "po_miss": [],
+   "bye_miss": [],
+   "dw_miss": [],
+   "hybrid_agrees": true
+  },
+  "2012": {
+   "ok": true,
+   "steps": {
+    "d_div": 2,
+    "w_h2h": 1
+   },
+   "coin_reached": 0,
+   "po_miss": [],
+   "bye_miss": [],
+   "dw_miss": [],
+   "hybrid_agrees": true
+  },
+  "2013": {
+   "ok": true,
+   "steps": {},
+   "coin_reached": 0,
+   "po_miss": [],
+   "bye_miss": [],
+   "dw_miss": [],
+   "hybrid_agrees": true
+  },
+  "2014": {
+   "ok": true,
+   "steps": {
+    "w_conf": 2
+   },
+   "coin_reached": 0,
+   "po_miss": [],
+   "bye_miss": [],
+   "dw_miss": [],
+   "hybrid_agrees": true
+  },
+  "2015": {
+   "ok": true,
+   "steps": {
+    "w_sweep": 1,
+    "w_common4": 2
+   },
+   "coin_reached": 0,
+   "po_miss": [],
+   "bye_miss": [],
+   "dw_miss": [],
+   "hybrid_agrees": true
+  }
+ },
+ "pass": true,
+ "synthetic": {
+  "format_2019_vs_2020": {
+   "2019": {
+    "n_po": 12,
+    "n_bye": 4,
+    "ok": true,
+    "hybrid_equals_engine_200": true
+   },
+   "2020": {
+    "n_po": 14,
+    "n_bye": 2,
+    "ok": true,
+    "hybrid_equals_engine_200": true
+   }
+  },
+  "hand_cases": {
+   "div2_h2h": true,
+   "div3_h2h_then_restart": true,
+   "wc3_conf_then_restart": true,
+   "wc3_sweep": true,
+   "sweep_triple": [
+    "BAL",
+    "DEN",
+    "HOU"
+   ]
+  },
+  "pass": true
+ }
+}

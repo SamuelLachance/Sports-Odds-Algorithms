@@ -1,0 +1,21 @@
+{
+ "real_gain": 0.0020574973400464547,
+ "placebo_gains": [
+  0.000494,
+  -0.001046,
+  -0.000221,
+  -1.3e-05,
+  0.000695,
+  -0.000362,
+  -0.000224,
+  -0.000147,
+  -0.00067,
+  -0.001501,
+  -0.000385,
+  -0.000188
+ ],
+ "placebo_mean": -0.0002973401598991195,
+ "placebo_max": 0.0006949178139403767,
+ "note": "sign-flip is NOT a control for a z-scored linear column (the fit can flip the coef); reported for completeness",
+ "flip_gain": 0.0020574973400464547
+}

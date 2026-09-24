@@ -1,0 +1,162 @@
+{
+ "n": 4515,
+ "teams": 32,
+ "gamedays": 825,
+ "anchors_shipped_full_1999_2015": {
+  "LG_EPA": -0.02334277198923507,
+  "LGP": 0.004263951340531205,
+  "LGR": -0.06006504432835479
+ },
+ "epa_params": {
+  "decay": 0.8813581205848026,
+  "prior_n": 754.0438610349224,
+  "season_decay": 0.7130881070009863
+ },
+ "qb_params": {
+  "delta": -0.24820561266012658,
+  "decay": 0.8010595244395629,
+  "prior_db": 650.2103644039794,
+  "season_decay": 0.3915362183690712
+ },
+ "max_season_read": {
+  "nfl_games.csv": 2015,
+  "data/nfl_plays.csv": 2015,
+  "data/nfl_duel_plays.csv": 2015,
+  "qb_weeks": 2015
+ },
+ "identity_max_abs_diff": {
+  "epa_net": 6.245004513516506e-17,
+  "pass_net": 1.1102230246251565e-16,
+  "run_net": 8.326672684688674e-17,
+  "QJ_stale_vs_quick2_FE_Q": 6.938893903907228e-18
+ },
+ "perturbation": [
+  {
+   "cut": "2000-01-15",
+   "n_before": 252,
+   "bit_identical_before": true,
+   "changed_on_or_after": true
+  },
+  {
+   "cut": "2000-01-23",
+   "n_before": 256,
+   "bit_identical_before": true,
+   "changed_on_or_after": true
+  },
+  {
+   "cut": "2000-10-22",
+   "n_before": 360,
+   "bit_identical_before": true,
+   "changed_on_or_after": true
+  },
+  {
+   "cut": "2000-10-30",
+   "n_before": 386,
+   "bit_identical_before": true,
+   "changed_on_or_after": true
+  },
+  {
+   "cut": "2002-01-20",
+   "n_before": 772,
+   "bit_identical_before": true,
+   "changed_on_or_after": true
+  },
+  {
+   "cut": "2003-10-27",
+   "n_before": 1159,
+   "bit_identical_before": true,
+   "changed_on_or_after": true
+  },
+  {
+   "cut": "2004-09-11",
+   "n_before": 1312,
+   "bit_identical_before": true,
+   "changed_on_or_after": true
+  },
+  {
+   "cut": "2004-09-26",
+   "n_before": 1343,
+   "bit_identical_before": true,
+   "changed_on_or_after": true
+  },
+  {
+   "cut": "2004-12-06",
+   "n_before": 1502,
+   "bit_identical_before": true,
+   "changed_on_or_after": true
+  },
+  {
+   "cut": "2005-11-06",
+   "n_before": 1694,
+   "bit_identical_before": true,
+   "changed_on_or_after": true
+  },
+  {
+   "cut": "2005-12-26",
+   "n_before": 1817,
+   "bit_identical_before": true,
+   "changed_on_or_after": true
+  },
+  {
+   "cut": "2008-09-28",
+   "n_before": 2426,
+   "bit_identical_before": true,
+   "changed_on_or_after": true
+  },
+  {
+   "cut": "2008-11-02",
+   "n_before": 2495,
+   "bit_identical_before": true,
+   "changed_on_or_after": true
+  },
+  {
+   "cut": "2008-11-27",
+   "n_before": 2555,
+   "bit_identical_before": true,
+   "changed_on_or_after": true
+  },
+  {
+   "cut": "2009-12-14",
+   "n_before": 2853,
+   "bit_identical_before": true,
+   "changed_on_or_after": true
+  },
+  {
+   "cut": "2010-10-11",
+   "n_before": 2988,
+   "bit_identical_before": true,
+   "changed_on_or_after": true
+  },
+  {
+   "cut": "2010-11-21",
+   "n_before": 3058,
+   "bit_identical_before": true,
+   "changed_on_or_after": true
+  },
+  {
+   "cut": "2010-12-20",
+   "n_before": 3136,
+   "bit_identical_before": true,
+   "changed_on_or_after": true
+  },
+  {
+   "cut": "2011-12-17",
+   "n_before": 3389,
+   "bit_identical_before": true,
+   "changed_on_or_after": true
+  },
+  {
+   "cut": "2014-12-28",
+   "n_before": 4221,
+   "bit_identical_before": true,
+   "changed_on_or_after": true
+  }
+ ],
+ "feat_cols": [
+  "net_joint",
+  "pass_joint",
+  "run_joint",
+  "QJ_retro"
+ ],
+ "secs": 52.1
+}

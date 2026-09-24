@@ -349,9 +349,15 @@ for r in rows:
 for v in by_pg.values():
     v.sort()
 def tier_of(r):
+    """Percentile grade within the position among latest-season actives.
+
+    A player who was not active in the reference season has no percentile:
+    he gets no grade (None), not "D". Returning "D" there made a 66.8-rated
+    receiver read as bottom-15% at his position.
+    """
     v = by_pg.get(r["bucket"])
     if not v or not r["active_2025"]:
-        return "D"
+        return None
     import bisect
     pct = bisect.bisect_left(v, r["rating_0_100"]) / len(v)
     return "S" if pct >= 0.90 else "A" if pct >= 0.70 else "B" if pct >= 0.40 \
@@ -382,14 +388,22 @@ for i, r in enumerate(qbs, 1):
 
 # ---- swap into the site payload ----
 by_id = {r["gsis_id"]: r for r in rows}
-payload = json.load(open("site/data/nfl.json"))
+import sys as _sys  # noqa: E402
+_sys.path.insert(0, "phase0")
+import nfl_payload as _NP  # noqa: E402
+_PAYLOAD = _NP.payload_path()     # staging copy under nfl_weekly.py
+payload = _NP.load(_PAYLOAD)
 n_set = n_null = 0
+# Served grade for a player with no percentile (not active in the reference
+# season). The CSVs keep it empty/None; the payload serves a dash, because the
+# shipped front end prints the field verbatim ("tier null" on a player page).
+NO_TIER = "–"             # en dash
 for pid, pl in payload["players"].items():
     r = by_id.get(pid)
     if r:
-        pl["rating"] = {"r": r["rating_0_100"], "tier": r["tier"],
+        pl["rating"] = {"r": r["rating_0_100"], "tier": r["tier"] or NO_TIER,
                         "n_eff": float(r["snaps"]), "bucket": r["bucket"],
-                        "mu": r["mu"], "sigma": r["sigma"]}
+                        "mu": round(r["mu"], 2), "sigma": round(r["sigma"], 2)}
         n_set += 1
     else:
         pl["rating"] = None
@@ -425,12 +439,20 @@ json.dump({p: round(z, 3) for (p, s_), z in Z_SAL.items() if s_ == 2026},
           open("data/nfl_sal2026.json", "w"))
 payload["model_card"]["ratings"] = {
     "system": "per-play participation TrueSkill (11v11), context-weighted",
-    "plays": n_upd, "seasons": "2016-2025",
+    "plays": n_upd,
+    # computed from the walk, not typed: the participation data the engine
+    # actually saw (nflverse publishes a season's participation after it ends,
+    # so in-season the ratings stay at the last completed season)
+    "seasons": f"{min(p[0][:4] for p in plays)}-{LATEST_PART}",
+    "through_season": int(LATEST_PART),
+    "tiers": "grade = percentile within position among "
+             f"{LATEST_PART} actives: S top 10%, A 70-90th, B 40-70th, "
+             "C 15-40th, D bottom 15%; " + NO_TIER + " (no grade) if not active that season",
     "outcome": "offense beats defense iff EPA > 0",
     "beta": BETA, "tau_week": sqrt(TAU2),
     "snap_weight": "sqrt leverage x money downs x late-and-close x importance x opp-quality",
     "qb_fusion": "weekly EPA/dropback line Kalman-merged (k=4, R=36)",
     "display": "mu - 3 sigma, z-scored within position group",
 }
-json.dump(payload, open("site/data/nfl.json", "w"))
+_NP.dump_atomic(payload, _PAYLOAD, separators=(",", ":"))
 print(f"[{time.time()-T0:.0f}s] payload: {n_set} rated, {n_null} NR; team avgs redone")

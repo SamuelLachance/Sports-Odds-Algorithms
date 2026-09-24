@@ -1,0 +1,18 @@
+{
+ "name": "jan_20152016",
+ "cutoff": "2015-12-31",
+ "window_seasons": [
+  20122013,
+  20132014,
+  20142015
+ ],
+ "season_through_cutoff": 20152016,
+ "drop": "2012-02-01",
+ "n_stints": 0,
+ "max_train_date": 0,
+ "v_repl": {
+  "F": 0.0,
+  "D": 0.0
+ },
+ "empty_window": true
+}

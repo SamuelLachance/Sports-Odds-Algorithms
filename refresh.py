@@ -92,6 +92,31 @@ def main(horizon_days: int = 30) -> int:
     # block so #/record shows today's results instead of yesterday's
     print(f"[refresh] track record: {predict_slate.attach_record()} graded rows "
           f"-> board.json", flush=True)
+    # NFL: attach this cycle's finals to site/data/nfl.json (standard library,
+    # fetches data/nfl_games.csv behind the truncation guard, recomputes
+    # standings). It never touches a pre-game number; the model chain itself
+    # stays local (phase0/nfl_weekly.py). Runs BEFORE the units block so NFL
+    # EDGE bets settle from results that landed since the last cycle. A failure
+    # is annotated, never fatal: MLB's build and deploy must not depend on it.
+    import os
+    import subprocess
+    try:
+        r = subprocess.run([sys.executable, "phase0/nfl_results_attach.py"],
+                           capture_output=True, text=True, cwd=str(PROJECT), timeout=600)
+        rc = r.returncode
+        tail = (r.stdout or r.stderr or "").strip().splitlines()
+    except (subprocess.TimeoutExpired, OSError) as ex:
+        # a stalled spine download or a missing interpreter: annotate and move
+        # on, exactly like a non-zero exit
+        rc, tail = 1, [f"{type(ex).__name__}: {ex}"]
+    msg = tail[-1][:160] if tail else ""
+    print(f"[refresh] phase0/nfl_results_attach.py: "
+          f"{'ok' if rc == 0 else 'FAILED'} ({msg})", flush=True)
+    if rc != 0 and os.environ.get("GITHUB_ACTIONS"):
+        keys = ("INVALID", "NEW ERROR", "REFUSED", "WARNING")
+        for ln in [x for x in tail if any(k in x for k in keys)][:5] or [msg]:
+            print(f"::error title=NFL results attach::{ln[:300]}", flush=True)
+
     # units = the badge bets only (edge ledger); re-attach their P&L block
     from market import edge_ledger
     edge_ledger.attach_bets()

@@ -29,6 +29,7 @@ from __future__ import annotations
 import copy
 import csv
 import json
+import os
 import time
 from collections import defaultdict
 
@@ -350,6 +351,12 @@ TZ = {"BUF": 0, "MIA": 0, "NE": 0, "NYJ": 0, "BAL": 0, "CIN": 0, "CLE": 0, "PIT"
       "DET": 0, "CHI": 1, "GB": 1, "MIN": 1, "DAL": 1, "HOU": 1, "TEN": 1, "KC": 1,
       "NO": 1, "DEN": 2, "ARI": 2, "SEA": 3, "SF": 3, "LAC": 3, "LV": 3, "LA": 3}
 FR = {"STL": "LA", "SD": "LAC", "OAK": "LV", "JAC": "JAX", "WSH": "WAS"}
+import nfl_payload  # noqa: E402  (stdlib helpers shared with the CI results step)
+# Display-only venue flag. The model's own `neutral` input below keeps its
+# original expression; this wider list only labels games played abroad.
+INTL_VENUES = ("Tottenham", "Wembley", "Allianz", "Olympic", "Bernab", "Croke",
+               "Deutsche Bank", "Estadio", "Azteca", "Cricket", "Maracan",
+               "Stade de France", "Munich", "Banorte", "Arena Corinthians")
 sched = []
 for r in csv.DictReader(open("data/nfl_games.csv")):
     if r["season"] != "2026":
@@ -371,7 +378,16 @@ for r in csv.DictReader(open("data/nfl_games.csv")):
                   "hrest": int(r["home_rest"]), "arest": int(r["away_rest"]),
                   "kick": kick,
                   "hs": int(r["home_score"]) if r["home_score"] != "" else None,
-                  "as": int(r["away_score"]) if r["away_score"] != "" else None})
+                  "as": int(r["away_score"]) if r["away_score"] != "" else None,
+                  # nflverse game id: a stable key that survives a flexed date
+                  "id": r["game_id"],
+                  "start_utc": nfl_payload.et_to_utc(r["gameday"], r["gametime"]),
+                  "intl": 1 if any(k in (r.get("stadium") or "") for k in INTL_VENUES) else 0,
+                  # actual starting QBs (a post-game fact, never a model input)
+                  "_qbs": {"h": {"id": r.get("home_qb_id") or None,
+                                 "name": r.get("home_qb_name") or None},
+                           "a": {"id": r.get("away_qb_id") or None,
+                                 "name": r.get("away_qb_name") or None}}})
 sched.sort(key=lambda s: (s["d"], s["t"]))
 assert len(sched) == 272
 
@@ -384,6 +400,7 @@ for i, s in enumerate(sched):
     early = 0.0
     if not s["neutral"] and TZ[a] - TZ[h] >= 2 and s["kick"] <= 14.0:
         early = 1.0
+    s["early"] = int(early)          # emitted so the page can say why 'sched' moved
     Xs[i] = [
         np.log(p_elo / (1 - p_elo)),
         mQB.qb_adj(QB26[h]) - mQB.qb_adj(QB26[a]),
@@ -481,6 +498,8 @@ if _q_ids and any(q_tagged.values()):
         qa = q_tagged.get(s["away"], []) if s["w"] == nxt_wk.get(s["away"]) else []
         if not qh and not qa:
             continue
+        # named on the row so the page can say whose availability moved ph
+        s["_q"] = {"h": [e[1] for e in qh], "a": [e[1] for e in qa]}
         ps = []
         for _ in range(K_LINEUP):
             x = Xs[i].copy()
@@ -681,8 +700,6 @@ print(f"[{time.time()-T0:.0f}s] sims done; top proj:",
       sorted(proj.items(), key=lambda kv: -kv[1]["w"])[:5], flush=True)
 
 # ================= payload =================
-payload = json.load(open("site/data/nfl.json"))
-
 # ph-freeze: ph is the PRE-game prediction. A rerun recomputes it from current
 # (post-hoc) rosters/injuries/QB inputs, which would silently rewrite the
 # prediction history of games already played. Pre-game predictions persist in
@@ -698,37 +715,108 @@ payload = json.load(open("site/data/nfl.json"))
 # walked every played game's real result, so a rerun's pmc for a played game is
 # post-hoc (rehearsal: 0.623 vs frozen pre-game 0.611) — restore the ledger's
 # last pre-game pmc alongside ph/ct.
-LEDGER = "data/nfl_ph_ledger.json"
+# The weekly chain stages the ledger beside the payload (NFL_LEDGER) and swaps
+# both onto the live files only after the gate passes. Writing the live ledger
+# directly left it holding a serve whose payload never went live whenever the
+# gate then failed, and the CI results step copied that serve's receipt onto
+# the published (older) number.
+LEDGER = os.environ.get("NFL_LEDGER") or "data/nfl_ph_ledger.json"
+PAYLOAD = nfl_payload.payload_path()      # the staging copy under nfl_weekly.py
+payload = nfl_payload.load(PAYLOAD)
+SERVED_AT = nfl_payload.now_utc_iso()
 
 def _dump_atomic(obj, path, **kw):
-    import os as _os
-    with open(path + ".tmp", "w") as _fh:
-        json.dump(obj, _fh, **kw)
-    _os.replace(path + ".tmp", path)
+    nfl_payload.dump_atomic(obj, path, **kw)
+
+# What each forecast was built from, recorded on the row so it can freeze with
+# ph: the QB1s the QB feature used, and the Questionable players the
+# availability MC toggled (next game only). A played game then shows the
+# quarterbacks its pre-game number assumed, not whoever is QB1 today.
+QBN = {t: v["name"] for t, v in json.load(open("data/nfl_qb2026.json"))["qb"].items()}
+_pl = payload.get("players") or {}
+n_q_hidden = 0
+for s_ in sched:
+    s_["qb"] = {"h": {"id": QB26.get(s_["home"]), "name": QBN.get(s_["home"], "")},
+                "a": {"id": QB26.get(s_["away"]), "name": QBN.get(s_["away"], "")}}
+    qq = s_.pop("_q", None)
+    # Display-only receipt of the availability MC (the MC above is unchanged).
+    # Named only when the MC actually moved the number (ct.avail rounds away
+    # from 0) and only players on the active roster: a Questionable tag on a
+    # player the weekly roster already has on IR, or a toggle that moved
+    # nothing, is not a reason ph moved.
+    if not qq or round((s_.get("ct") or {}).get("avail", 0.0), 1) == 0.0:
+        n_q_hidden += bool(qq and (qq["h"] or qq["a"]))
+        continue
+    q_ = {side: [{"id": g_, "name": (_pl.get(g_) or {}).get("name", g_),
+                  "pos": (_pl.get(g_) or {}).get("pos", "")}
+                 for g_ in ids if (_pl.get(g_) or {}).get("status") == "ACT"]
+          for side, ids in qq.items()}
+    if q_["h"] or q_["a"]:
+        s_["q"] = q_
+    else:
+        n_q_hidden += 1
+print(f"[{time.time()-T0:.0f}s] Q receipts: {sum(1 for s_ in sched if s_.get('q'))} rows "
+      f"name their Questionable starters ({n_q_hidden} hidden: no move / not active)",
+      flush=True)
 
 try:
-    ledger = json.load(open(LEDGER))
-except (FileNotFoundError, json.JSONDecodeError):
+    ledger = json.load(open(LEDGER, encoding="utf-8"))
+except (FileNotFoundError, json.JSONDecodeError) as _ex:
+    # Bootstrapping from the payload is only safe before any game is played: the
+    # payload the chain hands this script was rebuilt from scratch and carries
+    # no pre-game numbers, so every played game would become a replay and the
+    # swapped-in ledger would lose them for good.
+    if any(s_["hs"] is not None for s_ in sched):
+        raise SystemExit(f"ph-freeze: ledger {LEDGER} unreadable ({_ex}) while "
+                         f"{sum(s_['hs'] is not None for s_ in sched)} games are "
+                         f"played - refusing to serve (restore the ledger first)")
     ledger = nfl_ph_freeze.bootstrap_from_payload(payload)
 # extracted to phase0/nfl_ph_freeze.py so the honesty mechanism is TESTABLE
-# (tests/test_nfl_ph_freeze.py); the semantics are unchanged.
+# (tests/test_nfl_ph_freeze.py). Every unplayed write is stamped with the serve
+# time and its information tier (PROJECTED inside a week of the game, else
+# EARLY); played rows restore both, so the record grades each forecast in the
+# tier it was actually published in (documents/pick_policy.md).
 ledger, ph_frozen, _orphans = nfl_ph_freeze.freeze(
-    sched, ledger, warn=lambda m: print(m, flush=True))
+    sched, ledger, warn=lambda m: print(m, flush=True), now_utc=SERVED_AT)
 _dump_atomic(ledger, LEDGER)
 # Ledger rows written before the availability term existed carry no "avail";
 # those pre-game forecasts had no MC adjustment, so 0.0 is the true value.
 for s_ in sched:
     if s_.get("ct") is not None:
         s_["ct"].setdefault("avail", 0.0)
-print(f"[{time.time()-T0:.0f}s] ph-freeze: {ph_frozen} played games keep their "
-      f"ledger pre-game ph ({len(ledger)} ledger rows)", flush=True)
+print(f"[{time.time()-T0:.0f}s] ph-freeze: {ph_frozen} played or kicked-off games "
+      f"keep their ledger pre-game ph, {_orphans} replays ({len(ledger)} ledger rows)",
+      flush=True)
 
+# Exact, additive breakdown beside the slope-scaled `ct`: the intercept (the
+# average home edge, applied at neutral sites too) as `base`, then each group
+# telescoped through the sigmoid, so 50 + sum(cx) == 100*ph. Derived only from
+# the frozen ph and ct.
+INTERCEPT = float(CLF.intercept_[0])
+n_cx = 0
+for s_ in sched:
+    cx = nfl_payload.exact_contrib(s_["ph"], s_.get("ct"), INTERCEPT)
+    if cx is not None:
+        s_["cx"] = cx
+        n_cx += 1
+    if s_["hs"] is not None and s_["as"] is not None:
+        s_["qb_start"] = s_["_qbs"]
+print(f"[{time.time()-T0:.0f}s] exact breakdown on {n_cx}/{len(sched)} games", flush=True)
+
+ROW_KEYS = ("id", "w", "d", "t", "start_utc", "home", "away", "neutral", "intl",
+            "ph", "pmc", "hs", "as", "ct", "cx", "hrest", "arest", "early",
+            "tier", "frozen_at", "replay", "qb", "q", "qb_start")
 payload["status"] = "season"
-payload["schedule"] = [{k: s[k] for k in ("w", "d", "t", "home", "away", "neutral",
-                                          "ph", "pmc", "hs", "as", "ct",
-                                          "hrest", "arest")} for s in sched]
+payload["schedule"] = [{k: s[k] for k in ROW_KEYS if s.get(k) is not None
+                        or k in ("hs", "as")} for s in sched]
 payload["proj"] = proj
-QBN = {t: v["name"] for t, v in json.load(open("data/nfl_qb2026.json"))["qb"].items()}
+payload["served_at"] = SERVED_AT
+payload["tracking_since"] = nfl_ph_freeze.tracking_since(ledger)
+_fin = [s_ for s_ in sched if s_["hs"] is not None and s_["as"] is not None]
+payload["results_through"] = ({"w": max(s_["w"] for s_ in _fin),
+                               "d": max(s_["d"] for s_ in _fin), "n": len(_fin)}
+                              if _fin else None)
+payload["results_updated"] = SERVED_AT
 for t, tm in payload["teams"].items():
     P = [payload["players"][pid] for pid in tm["roster"] if pid in payload["players"]]
     num = den = 0.0
@@ -757,12 +845,25 @@ payload["model_card"]["serve"] = {
     "fit": "all completed games through 2025, recency half-life 3 seasons, C=100",
     "test_repro_ll": round(repro, 5), "sims": S,
     "qb_source": "nflverse depth charts (live, regenerated each refresh)",
-    "generated": "2026-07-23",
+    # when THIS serve ran (was the literal "2026-07-23" on every serve)
+    "generated": SERVED_AT, "served_at": SERVED_AT,
+    "intercept": round(INTERCEPT, 5),
+    "cx_order": ["base"] + list(nfl_payload.CX_ORDER),
+    # cx.base is the blend's intercept, not a home edge the row earned: the
+    # locked model applies it at neutral sites too (neutral=1 rows show
+    # base +3.9 beside hfa 0.0)
+    "base": "model intercept (the average home edge; the model applies it "
+            "at neutral sites too)",
+    # the finals the season simulation (proj, pmc) conditioned on; the CI
+    # results step attaches later finals without re-simulating, so a record
+    # past this week means proj is older than the standings beside it
+    "proj_through": payload["results_through"],
+    "tier_window_days": nfl_ph_freeze.TIER_WINDOW_DAYS,
 }
-_dump_atomic(payload, "site/data/nfl.json")
+_dump_atomic(payload, PAYLOAD, separators=(",", ":"))
 json.dump({"repro_ll": round(repro, 5), "mean_home": round(float(probs.mean()), 4),
            "proj": proj, "coef": [round(float(c), 5) for c in CLF.coef_[0]],
            "intercept": round(float(CLF.intercept_[0]), 5)},
           open("data/nfl_season_2026.json.tmp", "w"), indent=1)
 import os as _os_; _os_.replace("data/nfl_season_2026.json.tmp", "data/nfl_season_2026.json")
-print(f"[{time.time()-T0:.0f}s] wrote site/data/nfl.json + data/nfl_season_2026.json")
+print(f"[{time.time()-T0:.0f}s] wrote {PAYLOAD} + data/nfl_season_2026.json")

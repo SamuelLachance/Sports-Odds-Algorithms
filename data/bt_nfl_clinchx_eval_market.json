@@ -1,0 +1,44 @@
+{
+ "note": "EVAL ONLY; de-vigged closing moneyline; DEV 2006-2015",
+ "n_dev_with_close": 2535,
+ "home_locked": {
+  "n": 43,
+  "p_base": 0.7418,
+  "p_A1": 0.6298,
+  "p_close": 0.6563,
+  "home_win": 0.6047,
+  "ll_base": 0.75355,
+  "ll_A1": 0.71582,
+  "ll_close": 0.66024
+ },
+ "away_locked": {
+  "n": 38,
+  "p_base": 0.4057,
+  "p_A1": 0.5172,
+  "p_close": 0.4966,
+  "home_win": 0.6053,
+  "ll_base": 0.74131,
+  "ll_A1": 0.65237,
+  "ll_close": 0.63813
+ },
+ "any_locked": {
+  "n": 75,
+  "p_base": 0.5865,
+  "p_A1": 0.5783,
+  "p_close": 0.5904,
+  "home_win": 0.6133,
+  "ll_base": 0.75042,
+  "ll_A1": 0.68417,
+  "ll_close": 0.64054
+ },
+ "not_locked": {
+  "n": 2460,
+  "p_base": 0.5696,
+  "p_A1": 0.5693,
+  "p_close": 0.5779,
+  "home_win": 0.5659,
+  "ll_base": 0.61841,
+  "ll_A1": 0.61852,
+  "ll_close": 0.60988
+ }
+}

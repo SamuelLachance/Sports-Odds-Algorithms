@@ -1,0 +1,194 @@
+{
+ "mode": "SMOKE (synthetic production on real lineups; NO log-loss computed)",
+ "W2_W5": {
+  "2012-02-01": {
+   "W2_pre_cutoff_bit_identical": true,
+   "W2_post_cutoff_changed": {
+    "Lh": true,
+    "La": true,
+    "Lth": true,
+    "Lta": true,
+    "dLh": true,
+    "dLa": true,
+    "Gh": true,
+    "Ga": true,
+    "elo_30_120": true,
+    "elo_0_120": true
+   },
+   "W5_through_cutoff_date_identical": true,
+   "n_pre": 1978,
+   "n_on_cutoff_date": 5
+  },
+  "2015-01-15": {
+   "W2_pre_cutoff_bit_identical": true,
+   "W2_post_cutoff_changed": {
+    "Lh": true,
+    "La": true,
+    "Lth": true,
+    "Lta": true,
+    "dLh": true,
+    "dLa": true,
+    "Gh": true,
+    "Ga": true,
+    "elo_30_120": true,
+    "elo_0_120": true
+   },
+   "W5_through_cutoff_date_identical": true,
+   "n_pre": 5054,
+   "n_on_cutoff_date": 10
+  },
+  "2017-12-01": {
+   "W2_pre_cutoff_bit_identical": true,
+   "W2_post_cutoff_changed": {
+    "Lh": true,
+    "La": true,
+    "Lth": true,
+    "Lta": true,
+    "dLh": true,
+    "dLa": true,
+    "Gh": true,
+    "Ga": true,
+    "elo_30_120": true,
+    "elo_0_120": true
+   },
+   "W5_through_cutoff_date_identical": true,
+   "n_pre": 8487,
+   "n_on_cutoff_date": 8
+  }
+ },
+ "W4_no_nan_masked": true,
+ "mask_hash": "d5512699fe7b19cb",
+ "S4a_synthetic": {
+  "match_share": 1.0,
+  "n_sides": 18740,
+  "pass": true
+ },
+ "S4b_synthetic": {
+  "match_share": 1.0,
+  "n_sides": 18740,
+  "pass": true
+ },
+ "lineup_diag": {
+  "fallback_sides": 2,
+  "fallback_players_without_history": 0,
+  "vbar_by_season": {
+   "20112012": {
+    "F": 1.777686,
+    "D": 1.256573
+   },
+   "20122013": {
+    "F": 1.764926,
+    "D": 1.245618
+   },
+   "20132014": {
+    "F": 1.773769,
+    "D": 1.242322
+   },
+   "20142015": {
+    "F": 1.774293,
+    "D": 1.248239
+   },
+   "20152016": {
+    "F": 1.790461,
+    "D": 1.247245
+   },
+   "20162017": {
+    "F": 1.788452,
+    "D": 1.254817
+   },
+   "20172018": {
+    "F": 1.790119,
+    "D": 1.253178
+   }
+  },
+  "top10_v_at_2016_01_01": [
+   {
+    "pid": 8476882,
+    "pos": "F",
+    "v_gsl_per_h": 2.091074,
+    "games": 72,
+    "T_h": 10.802409
+   },
+   {
+    "pid": 8474660,
+    "pos": "F",
+    "v_gsl_per_h": 2.075005,
+    "games": 21,
+    "T_h": 3.861995
+   },
+   {
+    "pid": 8473465,
+    "pos": "F",
+    "v_gsl_per_h": 2.065216,
+    "games": 310,
+    "T_h": 16.088907
+   },
+   {
+    "pid": 8475185,
+    "pos": "F",
+    "v_gsl_per_h": 2.043137,
+    "games": 216,
+    "T_h": 15.828314
+   },
+   {
+    "pid": 8474743,
+    "pos": "F",
+    "v_gsl_per_h": 2.009282,
+    "games": 91,
+    "T_h": 11.187421
+   },
+   {
+    "pid": 8470039,
+    "pos": "F",
+    "v_gsl_per_h": 2.008466,
+    "games": 360,
+    "T_h": 18.394911
+   },
+   {
+    "pid": 8474590,
+    "pos": "F",
+    "v_gsl_per_h": 2.00685,
+    "games": 410,
+    "T_h": 17.616867
+   },
+   {
+    "pid": 8475268,
+    "pos": "F",
+    "v_gsl_per_h": 2.001652,
+    "games": 242,
+    "T_h": 16.190341
+   },
+   {
+    "pid": 8474642,
+    "pos": "F",
+    "v_gsl_per_h": 1.999772,
+    "games": 206,
+    "T_h": 14.979131
+   },
+   {
+    "pid": 8475233,
+    "pos": "F",
+    "v_gsl_per_h": 1.996525,
+    "games": 219,
+    "T_h": 16.134021
+   }
+  ],
+  "entrant_pool_final": {
+   "F": {
+    "gsl_per_h": 1.800475,
+    "games": 14933
+   },
+   "D": {
+    "gsl_per_h": 1.243454,
+    "games": 7822
+   }
+  },
+  "pos_mean_final": {
+   "F": 1.783584,
+   "D": 1.253023
+  },
+  "sd_L_final": 0.119106
+ },
+ "sd_Ltil_masked": 0.885303,
+ "seconds": 14.5
+}

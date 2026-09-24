@@ -1,0 +1,68 @@
+{
+ "model_ll": 0.6724181227022652,
+ "close_ll": 0.6707173438835902,
+ "combo_ll": 0.6703789296306901,
+ "oof_shift": {
+  "backup": 0.00015,
+  "gdelta": 0.00028,
+  "backup+gdelta": 0.00035,
+  "absent": 0.0004,
+  "b2b": -0.00027,
+  "turnover": -1e-05,
+  "backup+gdelta+absent+b2b+turnover": 0.0005
+ },
+ "goalie_load": {
+  "const": [
+   0.0353,
+   10.81
+  ],
+  "delta_vs_usual": [
+   0.1945,
+   9.2
+  ],
+  "usual_level_diff": [
+   0.4079,
+   23.58
+  ],
+  "backup_h": [
+   -0.0304,
+   -6.82
+  ],
+  "backup_a": [
+   0.0305,
+   7.07
+  ],
+  "model_logit": [
+   -0.2323,
+   -40.61
+  ]
+ },
+ "turnover_load": {
+  "const": [
+   0.0583,
+   2.6
+  ],
+  "imported_h": [
+   -0.0002,
+   -1.51
+  ],
+  "imported_a": [
+   -0.0001,
+   -0.79
+  ],
+  "lost_h": [
+   -0.0003,
+   -2.43
+  ],
+  "lost_a": [
+   0.0004,
+   2.8
+  ],
+  "model_logit": [
+   -0.2754,
+   -15.29
+  ]
+ },
+ "goalie_split_half_r": 0.1309007374642167,
+ "goalie_obs_sd": 0.13895241577774675
+}
