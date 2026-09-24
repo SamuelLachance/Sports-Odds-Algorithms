@@ -45,6 +45,10 @@ def _players():
     except json.JSONDecodeError:
         pytest.skip("site/data/nhl.json is not readable JSON")
     ps = payload.get("players") or {}
+    # the payload now carries every rostered player: goalies (their own GSAx
+    # scale) and skaters below the display floor (rating null) are not ranked
+    ps = {k: p for k, p in ps.items()
+          if p.get("pos") != "G" and p.get("rating") is not None}
     if len(ps) < 100:
         pytest.skip(f"only {len(ps)} rated skaters served — nothing to rank")
     return ps

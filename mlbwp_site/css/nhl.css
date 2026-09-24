@@ -1,1 +1,24 @@
-/* NHL-specific styles. */
+/* NHL-specific styles. Everything else comes from the core tokens and
+   components (.gc cards, .pill, .chip, .gb meters, .cmp, .panel, .twrap). */
+/* a played card grades its lean with a chip where the pill sits */
+.gc.nhl .top .chip{margin-left:auto}
+/* the EDGE bar's disclosure: priced before starting goalies are confirmed */
+.valbar .vlive.nog{color:var(--warn)}
+/* official clinch mark (x/y/z/p/e) before a team code */
+.nhl-cl{display:inline-block;min-width:11px;font-family:var(--mono);font-size:10px;font-weight:700;
+  color:var(--muted);margin-right:4px;text-transform:lowercase}
+/* wild-card cut line: the last playoff spot sits above it */
+tbody tr.nhl-cut{border-bottom:2px dashed var(--accent)}
+/* a W-L-OT line is wider than a single stat */
+.statgrid .v.nhl-sm{font-size:14px}
+/* phone width: a grid item keeps its table's natural width (min-width:auto)
+   and pushes the page sideways even though the table sits in a scrolling
+   .twrap; a chip row that cannot wrap does the same (players: 7 chips) */
+.nhl-cols>*{min-width:0}
+.nhl-chips .filters{flex-wrap:wrap}
+/* why a player has no rating, in words */
+.nhl-nr{display:inline-block;max-width:460px;white-space:normal;font-size:11.5px;color:var(--muted);line-height:1.4}
+@media(max-width:560px){
+  .gc.nhl .side .who .sp .era{display:none}
+  .nhl-nr{max-width:240px}
+}

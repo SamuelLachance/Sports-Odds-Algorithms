@@ -391,6 +391,7 @@ def test_nfl_records_and_grades_from_hs_as(tmp_path):
     lp = tmp_path / "ledger.json"
     game = {"w": 1, "d": "2026-09-13", "t": "13:00", "home": "SEA", "away": "NE",
             "ph": 0.611, "hs": None, "as": None,
+            "tier": "PROJECTED",        # undated build: only a stamped row passes
             "value": {"side": "away", "team": "NE", "ev_open": 0.25, "ev_cur": 0.05,
                       "open_dec": 3.3, "cur_dec": 3.2, "available": True, "books": 9}}
     p = _write(tmp_path, "nfl.json", {"schedule": [game]})
@@ -418,6 +419,7 @@ def test_nhl_uses_payload_id_and_hs_grading(tmp_path):
     lp = tmp_path / "ledger.json"
     game = {"id": 2026020123, "d": "2026-11-02", "home": "COL", "away": "DAL",
             "hp": 0.55, "hs": None, "as": None,
+            "tier": "PROJECTED",        # not EARLY: the EARLY gate is tested elsewhere
             "value": {"side": "home", "team": "COL", "ev_open": 0.21, "ev_cur": 0.02,
                       "open_dec": 2.3, "cur_dec": 2.2, "available": True, "books": 7}}
     p = _write(tmp_path, "nhl.json", {"schedule": [game]})
@@ -436,7 +438,7 @@ def test_blank_payload_does_not_prematurely_freeze_a_dateless_row(tmp_path):
     must not close a row on game day; only a long-stale date force-grades it."""
     lp = tmp_path / "ledger.json"
     game = {"id": 7, "d": "2026-11-02", "home": "COL", "away": "DAL", "hp": 0.55,
-            "hs": None, "as": None,
+            "hs": None, "as": None, "tier": "PROJECTED",   # EARLY gate: tested elsewhere
             "value": {"side": "home", "team": "COL", "ev_open": 0.21, "ev_cur": 0.02,
                       "open_dec": 2.3, "cur_dec": 2.2, "available": True, "books": 7}}
     p = _write(tmp_path, "nhl.json", {"schedule": [game]})

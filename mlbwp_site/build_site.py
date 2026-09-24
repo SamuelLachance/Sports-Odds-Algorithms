@@ -40,8 +40,22 @@ assert "{CT_JS}" in JS, "NHL contribution-key placeholder missing from JS"
 assert "{LEAN_JS}" in JS, "lean-threshold placeholder missing from JS"
 JS = JS.replace("{TIER_JS}", TIER_JS).replace("{LEAN_JS}", LEAN_JS).replace("{CT_JS}", CT_JS)
 
-SHELL = f"""<style>{CSS}</style>
+# A real document head: without the viewport meta, phones lay the page out at a
+# 980px virtual width and every max-width @media rule in the CSS is dead; without
+# a doctype the page renders in quirks mode. route() sets document.title per view.
+SHELL = f"""<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GLASSBOX &middot; market-blind MLB, NFL &amp; NHL predictions</title>
+<meta name="description" content="Market-blind model predictions for MLB, NFL and NHL games, with every pick graded in public by information tier. The models never see the odds.">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#0d0f13">
+<style>{CSS}</style>
 <script>try{{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');}}catch(e){{document.documentElement.setAttribute('data-theme','dark');}}</script>
+</head>
+<body>
 <header><div class="wrap">
   <a class="brand" href="#/">GLASS<span class="b">BOX</span></a>
   <nav class="main">
@@ -59,18 +73,27 @@ SHELL = f"""<style>{CSS}</style>
 </div></header>
 <main><div class="wrap" id="view"><div class="loading">Loading predictions&hellip;</div></div></main>
 <footer><div class="wrap">
-  <b>Research only &mdash; not betting advice.</b> Market-blind models that never see the odds.
+  <b>Research only &mdash; not betting advice.</b> Market-blind models that never see the odds; every
+  pick is locked before the game and graded in public on the <a href="#/record">track record</a>, split
+  by information tier.
   <b>MLB</b>: team Elo + xFIP &amp; SIERA starting-pitcher ratings + season-to-date bullpen FIP +
   per-plate-appearance TrueSkill on-base ratings + lineup isolated-power + lineup baserunning.
-  <b>NFL</b>: 14-feature blend around an 11v11 per-snap participation TrueSkill.
+  <b>NFL</b>: 14-feature blend around an 11v11 per-snap participation TrueSkill<span id="ft-nfl"></span>.
   <b>NHL</b>: tuned Elo + rest &amp; back-to-back + an expected-goals team rating (updated on shot
-  quality, never on results); skater cards show teammate-adjusted xG/60 (RAPM, display only).
+  quality, never on results); no lineup or goalie input, so every NHL forecast is published as an
+  EARLY-tier lean, not a pick; skater cards show teammate-adjusted xG/60 (RAPM, display only).
   Data: <b>Retrosheet</b> (free of charge, copyrighted by Retrosheet,
   <a href="https://www.retrosheet.org">retrosheet.org</a>) and the MLB Stats API (individual,
   non-commercial use); NFL data from <b>nflverse</b> (community-maintained); NHL data from the
-  NHL Stats API and shot xG from <b>MoneyPuck.com</b> (used with attribution, non-commercial research).
+  NHL Stats API and shot xG from <b>MoneyPuck.com</b> (used with attribution, non-commercial research);
+  NFL and NHL live scores from ESPN's public scoreboard (display only &mdash; never a model input,
+  never used to grade).
+  <br><span id="ft-fresh"></span>
 </div></footer>
-<script>{JS}</script>"""
+<script>{JS}</script>
+</body>
+</html>
+"""
 
 
 def build():

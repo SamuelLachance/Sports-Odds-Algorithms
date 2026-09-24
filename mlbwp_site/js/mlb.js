@@ -61,12 +61,17 @@ function chipRow(items,cur,attr){
 function posPage(key){
   if(state.posKey!==key){state.posKey=key;state.posSort="r";state.posMin=0;}
   if(state.league==="nfl"&&state.nfl) return nflPosPage(key);
+  // NHL has no position ladders: its players page carries the position
+  // filters. Render it in place. Redirecting by writing location.hash here
+  // fought route()'s own canonical-hash rewrite and looped forever
+  // (188 hashchanges in 1.5s on #/nhl/pos/X).
+  if(state.league==="nhl") return playersPage();
   return mlbPosPage(key);
 }
 
 function mlbPosPage(key){
   const db=state.db;
-  if(!db||(key!=="hitters"&&key!=="pitchers")){location.hash="#/players";return;}
+  if(!db||(key!=="hitters"&&key!=="pitchers")) return playersPage();   // render, never re-route mid-route
   const isBat=key==="hitters";
   const all=Object.values(db.players||{}).filter(p=>p.role===(isBat?"batter":"pitcher")&&p.ts100!=null);
   const mMu=all.reduce((s,p)=>s+(p.ts_mu||25),0)/Math.max(all.length,1);

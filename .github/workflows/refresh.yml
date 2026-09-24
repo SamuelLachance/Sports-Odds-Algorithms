@@ -66,10 +66,34 @@ jobs:
           for f in data/nhl_lineup_archive.jsonl data/nhl_games.csv                    data/nhl_upcoming.json site/data/nhl.json                    data/nhl_hp_ledger.json; do
             if [ -f "$f" ]; then git add "$f"; fi
           done
+          # NFL finals attached by phase0/nfl_results_attach.py (scores,
+          # standings, tier receipts; never a pre-game number) and the games
+          # spine it fetched. Without these the NFL side froze between the
+          # manual model runs. The pre-game ledger is read-only here (CI never
+          # writes it; it is only re-synced from origin below, never edited).
+          for f in site/data/nfl.json data/nfl_games.csv; do
+            if [ -f "$f" ]; then git add "$f"; fi
+          done
           if git diff --cached --quiet; then
             echo "no data change"
           else
             git commit -m "Refresh projections"
+            # NFL: a local serve (payload + pre-game ledger, one commit) may have
+            # reached origin while this run was working. -X theirs below would
+            # silently revert its single-line nfl.json to this run's older copy
+            # while its ledger stays, and the next attach would grade the older
+            # number with the newer receipt. Instead, take origin's payload and
+            # ledger and re-attach this cycle's finals on top of them.
+            git fetch --quiet origin master || true
+            if git rev-parse --verify --quiet origin/master >/dev/null && \
+               ! git diff --quiet HEAD~1 origin/master -- site/data/nfl.json data/nfl_ph_ledger.json; then
+              echo "origin carries a newer NFL payload/ledger: re-attaching finals on top of it"
+              git checkout origin/master -- site/data/nfl.json data/nfl_ph_ledger.json
+              python phase0/nfl_results_attach.py --no-fetch || \
+                echo "::error title=NFL results attach::re-attach on origin's NFL serve failed; origin's payload is kept unmodified"
+              git add site/data/nfl.json data/nfl_ph_ledger.json
+              git commit --amend --no-edit
+            fi
             # -X theirs: on a data-file conflict keep THIS run's full rebuild
             # (rebase replays our commit onto remote; "theirs" = our commit)
             git pull --rebase -X theirs --autostash origin master || true

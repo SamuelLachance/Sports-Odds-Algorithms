@@ -186,9 +186,11 @@ def test_the_site_does_not_claim_the_nfl_bars_add_up():
 
 
 def test_only_the_exact_league_advertises_exactness():
-    """NHL may claim its bars sum; NFL may not. If NFL's construction ever
-    changes to an exact one, move the claim deliberately rather than by
-    copy-paste."""
+    """NHL may claim its bars sum; NFL's slope-scaled `ct` may not. If NFL's
+    construction ever changes to an exact one, move the claim deliberately
+    rather than by copy-paste. (It did: the serve now emits the telescoped
+    `cx`, drawn under "Why &mdash; exact contributions" and pinned in
+    tests/test_nfl_pages_render.py; `ct` remains the labelled fallback.)"""
     src = frontend_src()
     nhl_panel = src.split("Why &mdash; model contributions", 1)[1].split("</div></div>", 1)[0]
     assert "exact" in nhl_panel.lower()

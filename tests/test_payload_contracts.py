@@ -236,11 +236,13 @@ def test_units_track_only_the_badge_bets(tmp_path):
         "d": {"league": "nfl", "d": "2026-09-13", "away": "BUF", "home": "NYJ",
               "team": "BUF", "side": "away", "dec_at_record": 2.00,
               "ev_at_record": 0.09, "y": 1},
-        # unsettled long past its date: postponed/cancelled -> VOID, the
-        # sportsbook convention (stake returned, never open, never staked)
+        # postponed/cancelled ON EVIDENCE (grade() sets void_reason) -> VOID,
+        # the sportsbook convention (stake returned, never open, never staked).
+        # Age alone is not evidence: see tests/test_edge_freshness_settlement.py
         "e": {"league": "mlb", "d": "2026-07-20", "away": "COL", "home": "AZ",
               "team": "COL", "side": "away", "dec_at_record": 2.10,
-              "ev_at_record": 0.09, "y": None},
+              "ev_at_record": 0.09, "y": None,
+              "void_reason": "no final although results through 2026-08-12 were read"},
     }
     lp = tmp_path / "edge.json"
     lp.write_text(json.dumps({"v": 1, "updated": "x", "rows": rows}),
@@ -421,9 +423,11 @@ def test_tiers_follow_the_information_column_not_the_league():
     feats = " ".join(n["model_card"]["features"]).lower()
     for word in ("roster", "lineup", "goalie"):
         assert word not in feats, f"NHL model gained a {word} input — retier it"
-    assert 'y:g.y!=null?g.y:(g.hs>g.as?1:0),hs:g.hs,as:g.as,tier:"EARLY"' in JS
-    assert 'sp:1,tier:"EARLY",href:"#/game/nhl-"+g.id' in JS
-    assert 'sp:1,tier:nflProb(g).near?"PROJECTED":"EARLY",' in JS
+    # rows carry the tier stamped when their number was locked; with no stamp an
+    # NHL row is EARLY and a played NFL row is EARLY (behaviour pinned by
+    # tests/test_shared_frontend.py, which runs the page script)
+    assert 'tier:siteTier("nhl",g)' in JS and 'if(lg==="nhl") return "EARLY";' in JS
+    assert 'tier:siteTier("nfl",g)' in JS
 
 
 def test_record_block_tier_falls_back_for_pre_stamp_entries(tmp_path):

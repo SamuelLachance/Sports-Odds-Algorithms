@@ -30,7 +30,11 @@ jobs:
       - name: Run weekly NFL chain (fetch-only in CI)
         run: python phase0/nfl_weekly.py
 
+      # nfl_weekly.py now exits 1 when a required fetch fails, so the job goes
+      # red. The other fetches are still written atomically and guarded, so
+      # they are committed regardless.
       - name: Commit refreshed data
+        if: always()
         run: |
           git config user.name "glassbox-bot"
           git config user.email "glassbox-bot@users.noreply.github.com"

@@ -36,7 +36,10 @@ try:
 except Exception as e:  # noqa: BLE001 — build degrades to the local copy
     print(f"depth chart refresh skipped ({type(e).__name__}); using local copy")
 
-payload = json.load(open("site/data/nfl.json"))
+sys.path.insert(0, "phase0")
+import nfl_payload as NP  # noqa: E402
+PAYLOAD = NP.payload_path()        # staging copy under nfl_weekly.py
+payload = NP.load(PAYLOAD)
 players = payload["players"]
 
 # current rosters (drop cut/traded players from stale depth rows)
@@ -48,19 +51,39 @@ on_roster = defaultdict(set, active_roster(
 
 # injury report (in-season only; preseason file doesn't exist yet)
 ruled_out = set()
+inj_week = {}
 try:
     sys.path.insert(0, "phase0")
-    from nfl_season_guards import current_injury_status  # noqa: E402
-    _inj = current_injury_status(list(csv.DictReader(open("data/inj_2026.csv", encoding="utf-8"))))
+    from nfl_season_guards import INJ_FR, current_injury_status  # noqa: E402
+    _rows = list(csv.DictReader(open("data/inj_2026.csv", encoding="utf-8")))
+    _inj = current_injury_status(_rows)
     ruled_out = {g for g, st in _inj.items() if st in ("Out", "Doubtful")}
+    for _r in _rows:
+        _t = INJ_FR.get(_r.get("team", ""), _r.get("team", ""))
+        try:
+            inj_week[_t] = max(inj_week.get(_t, -1), int(_r.get("week") or 0))
+        except ValueError:
+            pass
     print(f"injury report (latest week per team): {len(ruled_out)} ruled out/doubtful")
 except FileNotFoundError:
     pass
 
-# 2025 usage (snap share) + ratings from the payload's player table
+# usage (snap share) + ratings from the payload's player table.
+# The player table now holds EVERY rostered player (nfl_site_db builds it from
+# the weekly roster). The usage flip below was tuned when it held only players
+# at or above the games floor, and that floor is what stops a backup's one
+# emergency start from out-voting the listed starter; so the flip still sees
+# exactly that set (share 0 / rating None below the floor), while the lineup
+# DISPLAYS every starter's real share and rating.
+from nfl_season_guards import roster_min_games  # noqa: E402
+def _qualified(p):
+    tm = payload["teams"].get(p.get("team"), {})
+    return (p.get("snap_g") or 0) >= roster_min_games(tm.get("snap_weeks", 0))
 share_of = {pid: (p.get("snap_share") or 0.0) for pid, p in players.items()}
 rating_of = {pid: (p["rating"]["r"] if p.get("rating") else None)
              for pid, p in players.items()}
+flip_share = {pid: (share_of[pid] if _qualified(p) else 0.0) for pid, p in players.items()}
+flip_rating = {pid: (rating_of[pid] if _qualified(p) else None) for pid, p in players.items()}
 
 # ---- latest snapshot per team ----
 latest = defaultdict(str)
@@ -80,18 +103,34 @@ for r in csv.DictReader(open(DC, encoding="utf-8")):
 
 n_flip = 0
 lineups = defaultdict(lambda: {"off": [], "def": []})
-for (t, side, grp, slot, pos), cand in sorted(slots.items(),
-                                              key=lambda kv: (kv[0][0], kv[0][1], int(kv[0][3]))):
+# A player fills ONE slot. When a starter is ruled out, the next man at his slot
+# can already start elsewhere (KC 2026-09-24: LT1 Josh Simmons out, LT2 Kahlil
+# Benson is also RT1, and he was listed at both). Slots claim in order of their
+# best eligible depth rank, so a player stays where he ranks highest and the
+# other slot takes its next unused candidate. Output keeps the slot order.
+eligible = {}
+for key, cand in slots.items():
+    t = key[0]
     cand.sort()
     ok = [c for c in cand if c[1] in on_roster.get(t, ()) and c[1] not in ruled_out]
     if not ok:
         ok = [c for c in cand if c[1] not in ruled_out] or cand
+    eligible[key] = ok
+used = defaultdict(set)                      # (team, side) -> gsis already placed
+chosen = {}
+for key in sorted(eligible, key=lambda k: (k[0], k[1], eligible[k][0][0], int(k[3]))):
+    free = [c for c in eligible[key] if c[1] not in used[(key[0], key[1])]]
+    chosen[key] = free or eligible[key]      # nobody left: keep the depth order
+    used[(key[0], key[1])].add(chosen[key][0][1])
+for (t, side, grp, slot, pos), cand in sorted(slots.items(),
+                                              key=lambda kv: (kv[0][0], kv[0][1], int(kv[0][3]))):
+    ok = chosen[(t, side, grp, slot, pos)]
     top = ok[0]
     src = "depth"
-    if len(ok) > 1:                             # smart flip: usage + quality contradict
+    if len(ok) > 1 and ok[1][1] not in {e["id"] for e in lineups[t][side]}:  # smart flip
         nxt = ok[1]
-        s0, s1 = share_of.get(top[1], 0.0), share_of.get(nxt[1], 0.0)
-        r0, r1 = rating_of.get(top[1]), rating_of.get(nxt[1])
+        s0, s1 = flip_share.get(top[1], 0.0), flip_share.get(nxt[1], 0.0)
+        r0, r1 = flip_rating.get(top[1]), flip_rating.get(nxt[1])
         if s1 - s0 > 0.35 and r0 is not None and r1 is not None and r1 > r0 + 5:
             top, src = nxt, "usage"
             n_flip += 1
@@ -128,7 +167,9 @@ rp = {}
 for t, lu in lineups.items():
     if t not in payload["teams"]:
         continue
-    payload["teams"][t]["lineup"] = {**lu, "dt": latest.get(t, "")[:10]}
+    payload["teams"][t]["lineup"] = {**lu, "dt": latest.get(t, "")[:10],
+                                     # the injury report the outs came from
+                                     "inj_week": inj_week.get(t)}
     if ts_state:
         rp[t] = rpow_of(lu)
     qb = next((e for e in lu["off"] if e["slot"] == "QB"), None)
@@ -169,6 +210,6 @@ if len(qb26) == 32:
 else:
     print(f"nfl_qb2026.json NOT regenerated ({len(qb26)}/32 QB1s); keeping prior file")
 
-json.dump(payload, open("site/data/nfl.json", "w"))
+NP.dump_atomic(payload, PAYLOAD, separators=(",", ":"))
 print(f"lineups attached for {len(lineups)} teams ({n_flip} usage flips); "
       f"sample SEA off: {[(e['slot'], e['name']) for e in lineups['SEA']['off']][:6]}")

@@ -165,3 +165,29 @@ passing gate with a median lag of hours is not evidence of beating the close; it
 is evidence of beating a price the market had already moved past. This is a
 limitation we can measure but not remove on free scheduled runners — measuring
 it is the honest response, and it is pinned by a test.
+
+## Update 2026-09-24 — NFL and NHL EV badges are now GATED on EARLY
+
+Both open items above assumed a gate could be wired only once each league's
+payload said what the model knew. As of today both payloads do: every NFL and NHL
+schedule row carries a `tier` stamped by the serve (NFL: `phase0/nfl_ph_freeze.py`,
+PROJECTED inside 7 days of kickoff, EARLY beyond; NHL: `phase0/nhl_hp_freeze.py`,
+EARLY for every game because the shipped model has no goalie or lineup input).
+
+`market/sched_edges.py` therefore applies MLB's rule to both leagues
+(`GATE_EARLY = True`): **no EV badge and no ledger row on an EARLY forecast**, plus
+a freshness guard — no badge from a model build older than 8 days (NFL, weekly
+chain) or 36 hours (NHL, 4-hourly serve), and none on a game further than 7 days
+past the build.
+
+| league | badge today | why |
+|---|---|---|
+| MLB | GATED on EARLY (unchanged) | |
+| NFL | GATED on EARLY — badges only inside the 7-day PROJECTED window | the July 30 payload was badged for eight weeks (up to +106% EV) with no age check |
+| NHL | GATED on EARLY — **no NHL badges** until a goalie-aware model can stamp PROJECTED | the close's goalie/scratch information is worth more than our entire gap to the market; opening-week badges (+23% EV) were also inflated by the skipped season regression fixed today |
+
+Consequence: the units tracker (`board.record.bets`) records no new NHL bets and
+no NFL bets beyond a week out. Bets already recorded stay in the ledger untouched
+(first record wins), and rows priced from a stale build are flagged rather than
+rewritten. To reverse the decision, set `GATE_EARLY = False` in
+`market/sched_edges.py`; the freshness guard stays either way.

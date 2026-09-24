@@ -1,1 +1,40 @@
-/* NFL-specific styles. */
+/* NFL-specific styles. Every rule is scoped to an nfl-* class or an NFL-only
+   container and uses the core tokens; no new colours or fonts. */
+/* board card: a played game's score sits in the fair-odds column, the grade
+   chip pinned right where the pick pill sits on an unplayed card */
+.gc.nflc .side .nsc{grid-column:3;font-family:var(--mono);font-size:14px;font-weight:700;color:var(--ink);text-align:right}
+.gc.nflc .side .nsc.lo{color:var(--muted);font-weight:600}
+.gc.nflc .top .nfl-r{margin-left:auto;display:inline-flex;align-items:center;gap:6px}
+.gc.nflc .top .chip{font-size:9.5px;padding:1px 7px}
+/* board heading with the week stepper */
+.nfl-wkh{display:flex;align-items:flex-end;flex-wrap:wrap;gap:6px 12px;margin:4px 0 2px}
+.nfl-wkh h1.pt{margin-bottom:6px}
+.nfl-wkh .filters{margin:0 0 8px auto}
+.nfl-stp .filt[disabled]{opacity:.35;cursor:default}
+/* why bars: longer group labels than MLB's, plus a direction legend */
+.why.nflwhy .r{grid-template-columns:150px 1fr 52px}
+@media(max-width:560px){.why.nflwhy .r{grid-template-columns:112px 1fr 46px;font-size:12px}}
+.nfl-dir{display:flex;justify-content:space-between;gap:8px;font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:4px}
+.nfl-dir .c{color:var(--faint);font-family:var(--sans)}
+.nfl-defs{font-size:11.5px;line-height:1.55;color:var(--muted);margin-top:8px}
+.nfl-defs b{color:var(--ink);font-weight:600}
+/* played game: the model's number for the winner, log loss and the grade */
+.nfl-result{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px;font-size:12.5px;color:var(--muted)}
+.nfl-result b{color:var(--ink);font-family:var(--mono)}
+/* injury report and roster status chips */
+.chip.nfl-out{color:var(--accent);border-color:var(--accent);background:var(--accent-2)}
+.chip.nfl-dbt{color:var(--warn);border-color:rgba(224,164,78,.5);background:rgba(224,164,78,.14)}
+.chip.nfl-q{color:var(--warn);border-color:rgba(224,164,78,.5);background:transparent;border-style:dashed}
+.chip.nfl-res{color:var(--muted);background:transparent;border-style:dashed}
+.nfl-injr{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:12.5px;padding:3px 0}
+/* team directory: three fact rows wrap on a narrow card */
+.nflt .tcard .stat{flex-wrap:wrap;row-gap:3px}
+/* season table: the probability bar column goes on phones */
+.nfl-season .pbar{min-width:110px;margin:0}
+@media(max-width:560px){.nfl-season .pbc{display:none}}
+/* game page QBs: columns start at the top when one statline is longer */
+.nflqb .mup{align-items:start}
+/* player page */
+.nfl-rgrid .v{font-size:14px}
+.nfl-bio{font-size:12.5px;color:var(--muted);margin:0 0 8px}
+.nfl-legend{font-size:11px;line-height:1.5;color:var(--faint);margin-top:8px}
