@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 
 import pytest
+from frontend_src import frontend_src  # noqa: E402
 
 SITE = Path(__file__).resolve().parents[1] / "site" / "data"
 TIERS = ("CONFIRMED", "PROJECTED", "EARLY")
@@ -504,8 +505,7 @@ def test_nhl_nullable_model_card_fields_are_the_ones_the_spa_guards():
     nullable without adding a guard, the NHL view throws on opening night —
     when no one is looking at a hockey site to notice.
     """
-    js = (Path(__file__).resolve().parents[1] / "mlbwp_site" / "build_site.py"
-          ).read_text(encoding="utf-8")
+    js = frontend_src()
     assert 'mc.cur_season_acc?' in js, "cur_season_acc lost its null guard"
     for unguarded in ("mc.test_ll.toFixed", "mc.baseline_elo_test.toFixed"):
         assert unguarded in js, f"{unguarded} missing — did the model card change?"
@@ -584,8 +584,7 @@ def test_tier_rule_has_a_single_source():
 
     from mlbwp.pred_ledger import TIER_JS
 
-    src = (Path(__file__).resolve().parents[1] / "mlbwp_site" / "build_site.py"
-           ).read_text(encoding="utf-8")
+    src = frontend_src()
     rule = 'g.lineup_source==="official"?"CONFIRMED"'
     assert rule not in src, (
         "the tier rule was retyped into build_site.py — it must come from "

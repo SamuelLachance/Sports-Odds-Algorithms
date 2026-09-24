@@ -27,6 +27,7 @@ import math
 from pathlib import Path
 
 import pytest
+from frontend_src import frontend_src  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 NFL_JSON = ROOT / "site" / "data" / "nfl.json"
@@ -177,7 +178,7 @@ def test_the_site_does_not_claim_the_nfl_bars_add_up():
     the distinction: the NFL panel must not assert additivity, and must say the
     bars combine through a logistic.
     """
-    src = (ROOT / "mlbwp_site" / "build_site.py").read_text(encoding="utf-8")
+    src = frontend_src()
     nfl_panel = src.split("Why &mdash; blend contributions", 1)[1].split("</div></div>", 1)[0]
     assert "vs a 50/50 game" not in nfl_panel, "the caption implies additivity again"
     assert "not</b> add up" in nfl_panel or "not add up" in nfl_panel
@@ -188,7 +189,7 @@ def test_only_the_exact_league_advertises_exactness():
     """NHL may claim its bars sum; NFL may not. If NFL's construction ever
     changes to an exact one, move the claim deliberately rather than by
     copy-paste."""
-    src = (ROOT / "mlbwp_site" / "build_site.py").read_text(encoding="utf-8")
+    src = frontend_src()
     nhl_panel = src.split("Why &mdash; model contributions", 1)[1].split("</div></div>", 1)[0]
     assert "exact" in nhl_panel.lower()
     nfl_panel = src.split("Why &mdash; blend contributions", 1)[1].split("</div></div>", 1)[0]

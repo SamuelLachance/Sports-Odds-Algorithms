@@ -305,6 +305,8 @@ footer b{color:var(--muted)} footer a{color:var(--muted);text-decoration:underli
 @media(max-width:700px){.acc{display:none}header .wrap{gap:10px;padding:0 12px}
   .brand{font-size:18px}nav.main a{padding:6px 8px;font-size:12.5px}}
 @media(max-width:560px){.grid{grid-template-columns:1fr}nav.main a{padding:6px 6px;font-size:12px}}
+/* NHL-specific styles. */
+/* NFL-specific styles. */
 </style>
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');}catch(e){document.documentElement.setAttribute('data-theme','dark');}</script>
 <header><div class="wrap">
@@ -335,7 +337,8 @@ footer b{color:var(--muted)} footer a{color:var(--muted);text-decoration:underli
   non-commercial use); NFL data from <b>nflverse</b> (community-maintained); NHL data from the
   NHL Stats API and shot xG from <b>MoneyPuck.com</b> (used with attribution, non-commercial research).
 </div></footer>
-<script>
+<script>/* core: state, polling, boot, router, shared helpers, MLB board. */
+
 const $ = s => document.querySelector(s);
 const state = {board:null, db:null, nfl:null, nhl:null,
   league:(localStorage.getItem("league")||"mlb"), range:"today", nflRange:"year", nhlRange:"year",
@@ -643,6 +646,8 @@ const nhlCity=c=>NHL_CITY[c]||c;
 const nhlCS=()=>String((state.nhl&&state.nhl.cur_season)||20252026);
 const nhlYear=()=>nhlCS().slice(4);                       // "2026"
 const nhlSeasLbl=()=>nhlCS().slice(0,4)+"&ndash;"+nhlCS().slice(6);   // "2025&#8211;26"
+
+/* NHL: rail, board, cards, teams, players, standings, game page. */
 function nhlRailBtn(on){return `<button class="lg ${on?"on":""}" data-lg="nhl"><span>NHL</span><span class="n">${nhlYear()}</span></button>`;}
 function nhlRail(){const b=state.board;
   return b.leagues.map(l=>{
@@ -854,6 +859,8 @@ function nhlGamePage(id){
       </tbody></table></div></div>`;
 }
 
+
+/* NFL: board, season, standings, teams, players, positions, game page. */
 /* ---------- NFL (preseason) ---------- */
 function nflPage(){
   const n=state.nfl, mc=n.model_card, b=state.board;
@@ -1114,52 +1121,6 @@ function nflPlayerPage(id){
     </div>`;
 }
 
-/* ---------- PLAYERS TAB ---------- */
-function playersPage(){
-  if(state.league==="nfl"&&state.nfl) return nflPlayers();
-  if(state.league==="nhl"&&state.nhl) return nhlPlayers();
-  const db=state.db, P=Object.values(db.players||{});
-  const bats=P.filter(p=>p.role==="batter"&&p.ts100!=null).sort((a,b)=>b.ts100-a.ts100);
-  const pits=P.filter(p=>p.role==="pitcher"&&p.ts100!=null).sort((a,b)=>b.ts100-a.ts100);
-  const brow=(p,i)=>`<tr onclick="location.hash='#/player/${p.id}'">
-    <td><span class="num">${i+1}</span></td>
-    <td class="a"><span class="player-link">${p.name}</span> <span class="sub">${p.pos} &middot; ${p.team}</span></td>
-    <td>${gb(p.ts100)}</td>
-    <td><span class="num">${p.ts_mu!=null?p.ts_mu.toFixed(1):"-"}</span></td>
-    <td class="sub">${p.bat?`${p.bat.ops!=null?p.bat.ops:"-"} OPS &middot; ${p.bat.hr||0} HR &middot; ${p.bat.sb||0} SB`:"&mdash;"}</td></tr>`;
-  const prow=(p,i)=>`<tr onclick="location.hash='#/player/${p.id}'">
-    <td><span class="num">${i+1}</span></td>
-    <td class="a"><span class="player-link">${p.name}</span> <span class="sub">${p.pos} &middot; ${p.team}</span></td>
-    <td>${gb(p.ts100)}</td>
-    <td><span class="num">${p.ts_mu!=null?p.ts_mu.toFixed(1):"-"}</span></td>
-    <td class="sub">${p.pit?`${p.pit.era!=null?p.pit.era:"-"} ERA &middot; ${p.pit.whip!=null?p.pit.whip:"-"} WHIP &middot; ${p.pit.so||0} K`:"&mdash;"}</td></tr>`;
-  const tbl=(title,rows,statHdr,key)=>`<div class="panel"><h3 style="cursor:pointer" onclick="location.hash='#/pos/${key}'">${title} <span class="sub" style="font-weight:400">all &rarr;</span></h3><div class="twrap"><table>
-    <thead><tr><th></th><th>Player</th><th>GlassBox</th><th class="nocase">&mu;</th><th>${statHdr}</th></tr></thead>
-    <tbody>${rows}</tbody></table></div></div>`;
-  $("#view").innerHTML=`<div class="eyebrow">Database &middot; MLB</div><h1 class="pt">Players</h1>
-    <div class="sub" style="margin-bottom:10px">Every plate appearance is a <b>TrueSkill duel</b>: batter vs pitcher, both Bayesian-updated
-      on the outcome. The 0-100 <b>GlassBox rating</b> comes straight from that ladder (50 = league average); &mu; is the raw skill estimate.
-      ${bats.length+pits.length} rated players. Click anyone.</div>
-    <input class="psearch" id="psearch" placeholder="Search ${P.length} players&hellip;" autocomplete="off">
-    <div id="psres"></div>
-    <div class="grid" style="margin-top:8px">
-      ${tbl("Top hitters",bats.slice(0,15).map(brow).join(""),"2026 season","hitters")}
-      ${tbl("Top pitchers",pits.slice(0,15).map(prow).join(""),"2026 season","pitchers")}
-    </div>`;
-  const res=$("#psres");
-  $("#psearch").oninput=e=>{
-    const q=norm(e.target.value);
-    if(q.length<2){res.innerHTML="";return;}
-    const hits=P.filter(p=>norm(p.name).includes(q)).slice(0,20);
-    res.innerHTML=hits.length?`<div class="twrap" style="margin-bottom:6px"><table><tbody>
-      ${hits.map(p=>`<tr onclick="location.hash='#/player/${p.id}'">
-        <td class="a"><span class="player-link">${p.name}</span> <span class="sub">${p.pos} &middot; ${p.team}</span></td>
-        <td>${gb(p.ts100)}</td>
-        <td class="sub">${p.role==="pitcher"?(p.pit?`${p.pit.era!=null?p.pit.era:"-"} ERA`:""):(p.bat?`${p.bat.ops!=null?p.bat.ops:"-"} OPS`:"")}</td></tr>`).join("")}
-      </tbody></table></div>`:`<div class="sub" style="margin:6px 0 10px">No players match.</div>`;
-  };
-}
-
 function nflPlayers(){
   const n=state.nfl, P=Object.values(n.players||{}).filter(p=>p.rating);
   const GROUPS=["QB","RB","WR","TE","OL","DL","LB","DB"];
@@ -1211,25 +1172,6 @@ function nflPlayers(){
         <td><span class="num">${p.rating.n_eff.toLocaleString()}</span></td></tr>`).join("")}
       </tbody></table></div>`:`<div class="sub" style="margin:6px 0 10px">No rated players match.</div>`;
   };
-}
-
-/* ---------- POSITION DEEP-DIVE ---------- */
-function histBars(vals){
-  const B=24, c=new Array(B).fill(0);
-  vals.forEach(v=>c[Math.max(0,Math.min(B-1,Math.floor(v/100*B)))]++);
-  const m=Math.max(...c,1);
-  return `<div style="display:flex;align-items:flex-end;gap:2px;height:56px;margin:6px 0 2px">
-    ${c.map((x,i)=>`<div style="flex:1;background:${i>=B/2?"var(--accent)":"var(--line-2)"};opacity:${x?1:.22};height:${Math.max(4,Math.round(100*x/m))}%;border-radius:2px" title="${Math.round(100*i/B)}-${Math.round(100*(i+1)/B)}: ${x}"></div>`).join("")}
-  </div><div class="sub" style="display:flex;justify-content:space-between"><span>0</span><span>50 = league avg</span><span>100</span></div>`;
-}
-function chipRow(items,cur,attr){
-  return `<div class="filters" style="margin:0 0 0 0">${items.map(([k,t])=>
-    `<button class="filt ${String(k)===String(cur)?"on":""}" data-${attr}="${k}">${t}</button>`).join("")}</div>`;
-}
-function posPage(key){
-  if(state.posKey!==key){state.posKey=key;state.posSort="r";state.posMin=0;}
-  if(state.league==="nfl"&&state.nfl) return nflPosPage(key);
-  return mlbPosPage(key);
 }
 
 function nflPosPage(key){
@@ -1287,60 +1229,6 @@ function nflPosPage(key){
   renderBody();
   $("#view").querySelectorAll("[data-psort]").forEach(x=>x.onclick=()=>{state.posSort=x.dataset.psort;nflPosPage(key);});
   $("#view").querySelectorAll("[data-pmin]").forEach(x=>x.onclick=()=>{state.posMin=parseInt(x.dataset.pmin);nflPosPage(key);});
-  $("#posq").oninput=renderBody;
-}
-
-function mlbPosPage(key){
-  const db=state.db;
-  if(!db||(key!=="hitters"&&key!=="pitchers")){location.hash="#/players";return;}
-  const isBat=key==="hitters";
-  const all=Object.values(db.players||{}).filter(p=>p.role===(isBat?"batter":"pitcher")&&p.ts100!=null);
-  const mMu=all.reduce((s,p)=>s+(p.ts_mu||25),0)/Math.max(all.length,1);
-  const T=Object.values(db.teams||{}).map(t=>[t.abbr,isBat?t.ts_off:t.ts_pit,t.code])
-    .filter(x=>x[1]!=null).sort((a,b)=>b[1]-a[1]).slice(0,6);
-  const line=p=>isBat?(p.bat?`${p.bat.ops!=null?p.bat.ops:"-"} OPS &middot; ${p.bat.hr||0} HR &middot; ${p.bat.rbi||0} RBI`:"&mdash;")
-                     :(p.pit?`${p.pit.era!=null?p.pit.era:"-"} ERA &middot; ${p.pit.whip!=null?p.pit.whip:"-"} WHIP &middot; ${p.pit.so||0} K`:"&mdash;");
-  const vol=p=>isBat?((p.bat&&p.bat.pa)||0):((p.pit&&p.pit.ip)||0);
-  const row=(p,i)=>`<tr onclick="location.hash='#/player/${p.id}'">
-    <td><span class="num">${i+1}</span></td>
-    <td class="a"><span class="player-link">${p.name}</span> <span class="sub">${p.pos}</span></td>
-    <td>${teamLink(p.team)}</td>
-    <td>${gb(p.ts100)}</td>
-    <td><span class="num">${p.ts_mu!=null?p.ts_mu.toFixed(1):"-"}</span></td>
-    <td class="sub">${line(p)}</td></tr>`;
-  const renderBody=()=>{
-    const q=norm(($("#posq")||{}).value||"");
-    let P=all.filter(p=>vol(p)>=state.posMin);
-    if(q.length>=2) P=P.filter(p=>norm(p.name).includes(q));
-    const S={r:(a,b)=>b.ts100-a.ts100, mu:(a,b)=>(b.ts_mu||0)-(a.ts_mu||0),
-             vol:(a,b)=>vol(b)-vol(a)};
-    P.sort(S[state.posSort]||S.r);
-    $("#posbody").innerHTML=P.map(row).join("")||`<tr><td class="sub" colspan="6">No players match.</td></tr>`;
-    $("#posn").textContent=P.length;
-  };
-  $("#view").innerHTML=`<a class="back" href="#/players">&lsaquo; Players</a>
-    <div class="eyebrow">TrueSkill ladder &middot; MLB</div><h1 class="pt">${isBat?"Hitters":"Pitchers"}</h1>
-    <div class="sub" style="margin-bottom:10px"><b>${all.length}</b> rated ${key} &middot; league &mu; ${mMu.toFixed(1)}
-      &middot; every plate appearance is a batter-vs-pitcher TrueSkill duel; 50 = league average. Click anyone.</div>
-    <div class="grid" style="margin-bottom:14px">
-      <div class="panel"><h3>Rating distribution</h3>${histBars(all.map(p=>p.ts100))}</div>
-      <div class="panel"><h3>Best team ${isBat?"lineups":"staffs"} <span class="sub" style="font-weight:400">roster TrueSkill average</span></h3>
-        <div class="twrap"><table><tbody>${T.map(([ab,v,code],i)=>`<tr onclick="location.hash='#/team/${code}'">
-          <td><span class="num">${i+1}</span></td><td class="a"><span class="ab" style="color:var(--accent)">${ab}</span></td>
-          <td>${gb(v)}</td></tr>`).join("")}</tbody></table></div></div>
-    </div>
-    <div class="controls" style="margin-bottom:10px">
-      ${chipRow([["r","Rating"],["mu","Raw &#956;"],["vol",isBat?"Most PA":"Most IP"]],state.posSort,"psort")}
-      ${chipRow(isBat?[[0,"All"],[100,"100+ PA"],[300,"300+ PA"]]:[[0,"All"],[30,"30+ IP"],[100,"100+ IP"]],state.posMin,"pmin")}
-      <input class="psearch" id="posq" placeholder="Filter by name&hellip;" autocomplete="off" style="max-width:220px;margin:0">
-    </div>
-    <div class="sub" style="margin-bottom:6px"><span id="posn">${all.length}</span> shown</div>
-    <div class="twrap"><table>
-      <thead><tr><th></th><th>Player</th><th>Team</th><th>GlassBox</th><th class="nocase">&mu;</th><th>2026 season</th></tr></thead>
-      <tbody id="posbody"></tbody></table></div>`;
-  renderBody();
-  $("#view").querySelectorAll("[data-psort]").forEach(x=>x.onclick=()=>{state.posSort=x.dataset.psort;mlbPosPage(key);});
-  $("#view").querySelectorAll("[data-pmin]").forEach(x=>x.onclick=()=>{state.posMin=parseInt(x.dataset.pmin);mlbPosPage(key);});
   $("#posq").oninput=renderBody;
 }
 
@@ -1439,6 +1327,127 @@ function nflLineupPanel(code,t,n){
   return `<div class="panel"><h3>${code} projected lineup <span class="sub" style="font-weight:400">live depth charts &middot; ${L.dt||""}</span></h3>
     ${tbl("off","Offense")}${tbl("def","Defense")}
     <div class="sub" style="margin-top:8px">Depth-chart starters, cuts and injury-outs removed, promoted (&uarr;) when real usage and rating say the chart is stale. Refreshes every build.</div></div>`;
+}
+
+
+/* MLB pages: players, positions, game, standings, teams, player. */
+/* ---------- PLAYERS TAB ---------- */
+function playersPage(){
+  if(state.league==="nfl"&&state.nfl) return nflPlayers();
+  if(state.league==="nhl"&&state.nhl) return nhlPlayers();
+  const db=state.db, P=Object.values(db.players||{});
+  const bats=P.filter(p=>p.role==="batter"&&p.ts100!=null).sort((a,b)=>b.ts100-a.ts100);
+  const pits=P.filter(p=>p.role==="pitcher"&&p.ts100!=null).sort((a,b)=>b.ts100-a.ts100);
+  const brow=(p,i)=>`<tr onclick="location.hash='#/player/${p.id}'">
+    <td><span class="num">${i+1}</span></td>
+    <td class="a"><span class="player-link">${p.name}</span> <span class="sub">${p.pos} &middot; ${p.team}</span></td>
+    <td>${gb(p.ts100)}</td>
+    <td><span class="num">${p.ts_mu!=null?p.ts_mu.toFixed(1):"-"}</span></td>
+    <td class="sub">${p.bat?`${p.bat.ops!=null?p.bat.ops:"-"} OPS &middot; ${p.bat.hr||0} HR &middot; ${p.bat.sb||0} SB`:"&mdash;"}</td></tr>`;
+  const prow=(p,i)=>`<tr onclick="location.hash='#/player/${p.id}'">
+    <td><span class="num">${i+1}</span></td>
+    <td class="a"><span class="player-link">${p.name}</span> <span class="sub">${p.pos} &middot; ${p.team}</span></td>
+    <td>${gb(p.ts100)}</td>
+    <td><span class="num">${p.ts_mu!=null?p.ts_mu.toFixed(1):"-"}</span></td>
+    <td class="sub">${p.pit?`${p.pit.era!=null?p.pit.era:"-"} ERA &middot; ${p.pit.whip!=null?p.pit.whip:"-"} WHIP &middot; ${p.pit.so||0} K`:"&mdash;"}</td></tr>`;
+  const tbl=(title,rows,statHdr,key)=>`<div class="panel"><h3 style="cursor:pointer" onclick="location.hash='#/pos/${key}'">${title} <span class="sub" style="font-weight:400">all &rarr;</span></h3><div class="twrap"><table>
+    <thead><tr><th></th><th>Player</th><th>GlassBox</th><th class="nocase">&mu;</th><th>${statHdr}</th></tr></thead>
+    <tbody>${rows}</tbody></table></div></div>`;
+  $("#view").innerHTML=`<div class="eyebrow">Database &middot; MLB</div><h1 class="pt">Players</h1>
+    <div class="sub" style="margin-bottom:10px">Every plate appearance is a <b>TrueSkill duel</b>: batter vs pitcher, both Bayesian-updated
+      on the outcome. The 0-100 <b>GlassBox rating</b> comes straight from that ladder (50 = league average); &mu; is the raw skill estimate.
+      ${bats.length+pits.length} rated players. Click anyone.</div>
+    <input class="psearch" id="psearch" placeholder="Search ${P.length} players&hellip;" autocomplete="off">
+    <div id="psres"></div>
+    <div class="grid" style="margin-top:8px">
+      ${tbl("Top hitters",bats.slice(0,15).map(brow).join(""),"2026 season","hitters")}
+      ${tbl("Top pitchers",pits.slice(0,15).map(prow).join(""),"2026 season","pitchers")}
+    </div>`;
+  const res=$("#psres");
+  $("#psearch").oninput=e=>{
+    const q=norm(e.target.value);
+    if(q.length<2){res.innerHTML="";return;}
+    const hits=P.filter(p=>norm(p.name).includes(q)).slice(0,20);
+    res.innerHTML=hits.length?`<div class="twrap" style="margin-bottom:6px"><table><tbody>
+      ${hits.map(p=>`<tr onclick="location.hash='#/player/${p.id}'">
+        <td class="a"><span class="player-link">${p.name}</span> <span class="sub">${p.pos} &middot; ${p.team}</span></td>
+        <td>${gb(p.ts100)}</td>
+        <td class="sub">${p.role==="pitcher"?(p.pit?`${p.pit.era!=null?p.pit.era:"-"} ERA`:""):(p.bat?`${p.bat.ops!=null?p.bat.ops:"-"} OPS`:"")}</td></tr>`).join("")}
+      </tbody></table></div>`:`<div class="sub" style="margin:6px 0 10px">No players match.</div>`;
+  };
+}
+
+/* ---------- POSITION DEEP-DIVE ---------- */
+function histBars(vals){
+  const B=24, c=new Array(B).fill(0);
+  vals.forEach(v=>c[Math.max(0,Math.min(B-1,Math.floor(v/100*B)))]++);
+  const m=Math.max(...c,1);
+  return `<div style="display:flex;align-items:flex-end;gap:2px;height:56px;margin:6px 0 2px">
+    ${c.map((x,i)=>`<div style="flex:1;background:${i>=B/2?"var(--accent)":"var(--line-2)"};opacity:${x?1:.22};height:${Math.max(4,Math.round(100*x/m))}%;border-radius:2px" title="${Math.round(100*i/B)}-${Math.round(100*(i+1)/B)}: ${x}"></div>`).join("")}
+  </div><div class="sub" style="display:flex;justify-content:space-between"><span>0</span><span>50 = league avg</span><span>100</span></div>`;
+}
+function chipRow(items,cur,attr){
+  return `<div class="filters" style="margin:0 0 0 0">${items.map(([k,t])=>
+    `<button class="filt ${String(k)===String(cur)?"on":""}" data-${attr}="${k}">${t}</button>`).join("")}</div>`;
+}
+function posPage(key){
+  if(state.posKey!==key){state.posKey=key;state.posSort="r";state.posMin=0;}
+  if(state.league==="nfl"&&state.nfl) return nflPosPage(key);
+  return mlbPosPage(key);
+}
+
+function mlbPosPage(key){
+  const db=state.db;
+  if(!db||(key!=="hitters"&&key!=="pitchers")){location.hash="#/players";return;}
+  const isBat=key==="hitters";
+  const all=Object.values(db.players||{}).filter(p=>p.role===(isBat?"batter":"pitcher")&&p.ts100!=null);
+  const mMu=all.reduce((s,p)=>s+(p.ts_mu||25),0)/Math.max(all.length,1);
+  const T=Object.values(db.teams||{}).map(t=>[t.abbr,isBat?t.ts_off:t.ts_pit,t.code])
+    .filter(x=>x[1]!=null).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const line=p=>isBat?(p.bat?`${p.bat.ops!=null?p.bat.ops:"-"} OPS &middot; ${p.bat.hr||0} HR &middot; ${p.bat.rbi||0} RBI`:"&mdash;")
+                     :(p.pit?`${p.pit.era!=null?p.pit.era:"-"} ERA &middot; ${p.pit.whip!=null?p.pit.whip:"-"} WHIP &middot; ${p.pit.so||0} K`:"&mdash;");
+  const vol=p=>isBat?((p.bat&&p.bat.pa)||0):((p.pit&&p.pit.ip)||0);
+  const row=(p,i)=>`<tr onclick="location.hash='#/player/${p.id}'">
+    <td><span class="num">${i+1}</span></td>
+    <td class="a"><span class="player-link">${p.name}</span> <span class="sub">${p.pos}</span></td>
+    <td>${teamLink(p.team)}</td>
+    <td>${gb(p.ts100)}</td>
+    <td><span class="num">${p.ts_mu!=null?p.ts_mu.toFixed(1):"-"}</span></td>
+    <td class="sub">${line(p)}</td></tr>`;
+  const renderBody=()=>{
+    const q=norm(($("#posq")||{}).value||"");
+    let P=all.filter(p=>vol(p)>=state.posMin);
+    if(q.length>=2) P=P.filter(p=>norm(p.name).includes(q));
+    const S={r:(a,b)=>b.ts100-a.ts100, mu:(a,b)=>(b.ts_mu||0)-(a.ts_mu||0),
+             vol:(a,b)=>vol(b)-vol(a)};
+    P.sort(S[state.posSort]||S.r);
+    $("#posbody").innerHTML=P.map(row).join("")||`<tr><td class="sub" colspan="6">No players match.</td></tr>`;
+    $("#posn").textContent=P.length;
+  };
+  $("#view").innerHTML=`<a class="back" href="#/players">&lsaquo; Players</a>
+    <div class="eyebrow">TrueSkill ladder &middot; MLB</div><h1 class="pt">${isBat?"Hitters":"Pitchers"}</h1>
+    <div class="sub" style="margin-bottom:10px"><b>${all.length}</b> rated ${key} &middot; league &mu; ${mMu.toFixed(1)}
+      &middot; every plate appearance is a batter-vs-pitcher TrueSkill duel; 50 = league average. Click anyone.</div>
+    <div class="grid" style="margin-bottom:14px">
+      <div class="panel"><h3>Rating distribution</h3>${histBars(all.map(p=>p.ts100))}</div>
+      <div class="panel"><h3>Best team ${isBat?"lineups":"staffs"} <span class="sub" style="font-weight:400">roster TrueSkill average</span></h3>
+        <div class="twrap"><table><tbody>${T.map(([ab,v,code],i)=>`<tr onclick="location.hash='#/team/${code}'">
+          <td><span class="num">${i+1}</span></td><td class="a"><span class="ab" style="color:var(--accent)">${ab}</span></td>
+          <td>${gb(v)}</td></tr>`).join("")}</tbody></table></div></div>
+    </div>
+    <div class="controls" style="margin-bottom:10px">
+      ${chipRow([["r","Rating"],["mu","Raw &#956;"],["vol",isBat?"Most PA":"Most IP"]],state.posSort,"psort")}
+      ${chipRow(isBat?[[0,"All"],[100,"100+ PA"],[300,"300+ PA"]]:[[0,"All"],[30,"30+ IP"],[100,"100+ IP"]],state.posMin,"pmin")}
+      <input class="psearch" id="posq" placeholder="Filter by name&hellip;" autocomplete="off" style="max-width:220px;margin:0">
+    </div>
+    <div class="sub" style="margin-bottom:6px"><span id="posn">${all.length}</span> shown</div>
+    <div class="twrap"><table>
+      <thead><tr><th></th><th>Player</th><th>Team</th><th>GlassBox</th><th class="nocase">&mu;</th><th>2026 season</th></tr></thead>
+      <tbody id="posbody"></tbody></table></div>`;
+  renderBody();
+  $("#view").querySelectorAll("[data-psort]").forEach(x=>x.onclick=()=>{state.posSort=x.dataset.psort;mlbPosPage(key);});
+  $("#view").querySelectorAll("[data-pmin]").forEach(x=>x.onclick=()=>{state.posMin=parseInt(x.dataset.pmin);mlbPosPage(key);});
+  $("#posq").oninput=renderBody;
 }
 
 /* ---------- GAME PAGE ---------- */
@@ -1666,6 +1675,8 @@ function playerPage(id){
    payload schedules, where each played game still carries its frozen pre-game
    probability (ph / hp). No market numbers, no refitting - the model's own picks,
    graded against the result. */
+
+/* Track record: every league's graded history, tiers, units. */
 const REC_ROWS=300;                 // rows rendered; rollups always use every graded pick
 const REC_LG=["mlb","nfl","nhl"];
 const REC_NAME={mlb:"MLB",nfl:"NFL",nhl:"NHL"};
@@ -2145,4 +2156,5 @@ function recordPage(){
 }
 
 boot();
+
 </script>
