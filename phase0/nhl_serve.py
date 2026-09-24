@@ -160,6 +160,19 @@ def main():
             n_upcoming += 1
         sched.sort(key=lambda s: (s["d"], s["id"]))
 
+    # ---- pre-game freeze: played rows get the number published before puck drop
+    import nhl_hp_freeze
+    from datetime import datetime, timezone
+    _now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    _ledger = nhl_hp_freeze.load()
+    # every NHL forecast is EARLY: the model has no lineup or goalie input
+    # (documents/pick_policy.md). The tier is stored so a future goalie-aware
+    # model can stamp PROJECTED without rewriting history.
+    _ledger, _nf, _nr = nhl_hp_freeze.freeze(sched, _ledger, _now, CUR_SEASON, "EARLY")
+    nhl_hp_freeze.save(_ledger)
+    print(f"[nhl_serve] hp-freeze: {_nf} played games restored to their pre-game hp, "
+          f"{_nr} replays ({len(_ledger)} ledger rows)")
+
     # ---- team ratings + standings (current season record) ----
     rec = defaultdict(lambda: {"w": 0, "l": 0, "otl": 0, "gf": 0, "ga": 0})
     for s in sched:
@@ -242,6 +255,7 @@ def main():
 
     payload = {
         "status": "season" if n_upcoming else "offseason",
+        "served_at": _now,
         "as_of": model["as_of"],
         "cur_season": CUR_SEASON,
         "schedule": sched,
