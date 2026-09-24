@@ -33,6 +33,12 @@ jobs:
         with:
           python-version: "3.12"
 
+      # nhl_serve.py needs numpy. Without it refresh.py skipped the NHL
+      # re-serve every cycle and nhl.json only moved on Mondays - a week of lag
+      # on results, standings and ratings once the season is under way.
+      - name: Install numpy for the NHL serve
+        run: pip install numpy
+
       - name: Rebuild board + database
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}   # server-side only; EV edge layer
@@ -49,19 +55,15 @@ jobs:
           git add site/data/board.json site/data/db.json site/index.html \
                   data/season_2026_lines.json data/opening_odds_2026.json \
                   data/mlb_pred_ledger.json
-          # NHL incremental state from phase0/nhl_update.py. This job runs that
-          # step every 4h but only ever committed the lineup archive, so the
-          # spine appends and the upcoming slate were fetched and then thrown
-          # away six times a day — nhl-weekly.yml re-did the same work on
-          # Mondays. Keeping them costs nothing and leaves the weekly chain less
-          # to catch up on. The re-SERVE still belongs to nhl-weekly.yml, which
-          # has the numpy/scipy/sklearn it needs; nothing here changes how often
-          # NHL predictions are regenerated.
+          # NHL incremental state from phase0/nhl_update.py plus the re-served
+          # payload. The serve runs here every 4h (numpy installed above); the
+          # pre-game freeze ledger must be committed with it, or the next run
+          # would grade played games against replays instead of the numbers
+          # published before puck drop.
           #
           # add-only-existing: the lineup archive appears only on NHL game days,
           # and upcoming is absent before the first in-season run.
-          for f in data/nhl_lineup_archive.jsonl data/nhl_games.csv \
-                   data/nhl_upcoming.json; do
+          for f in data/nhl_lineup_archive.jsonl data/nhl_games.csv                    data/nhl_upcoming.json site/data/nhl.json                    data/nhl_hp_ledger.json; do
             if [ -f "$f" ]; then git add "$f"; fi
           done
           if git diff --cached --quiet; then

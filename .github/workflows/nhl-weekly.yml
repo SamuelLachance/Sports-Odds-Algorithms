@@ -44,7 +44,7 @@ jobs:
           for f in data/nhl_games.csv data/nhl_upcoming.json \
                    data/nhl_team_xg.csv data/nhl_goalie_xg.csv \
                    data/nhl_rapm2_ratings.json data/nhl_player_names.json \
-                   site/data/nhl.json; do
+                   site/data/nhl.json data/nhl_hp_ledger.json; do
             if [ -f "$f" ]; then git add "$f"; fi
           done
           if git diff --cached --quiet; then
