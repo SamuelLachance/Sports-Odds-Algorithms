@@ -86,3 +86,49 @@ def test_questionable_tags_only_touch_each_teams_next_game():
             assert g["ct"].get("avail", 0.0) == 0.0, (
                 f"week {g['w']} {g['away']}@{g['home']} carries an availability "
                 f"adjustment but is not either team's next game")
+
+
+# ---- 5. injury reports and rosters: the CURRENT week only ----------------------
+from nfl_season_guards import active_roster, current_injury_status  # noqa: E402
+
+
+def _inj(team, week, gid, status="", practice=""):
+    return {"team": team, "week": str(week), "gsis_id": gid,
+            "report_status": status, "practice_status": practice}
+
+
+def test_a_week_one_out_does_not_bench_a_healthy_week_three_player():
+    """The Tua case: Out wk1, Doubtful wk2, full practice wk3 -> available."""
+    rows = [_inj("ATL", 1, "tua", "Out", "Did Not Participate In Practice"),
+            _inj("ATL", 2, "tua", "Doubtful", "Did Not Participate In Practice"),
+            _inj("ATL", 3, "tua", "", "Full Participation in Practice")]
+    assert "tua" not in current_injury_status(rows)
+
+
+def test_a_player_absent_from_the_latest_report_is_healthy():
+    rows = [_inj("ATL", 1, "p", "Out"), _inj("ATL", 3, "q", "Questionable")]
+    st = current_injury_status(rows)
+    assert "p" not in st and st["q"] == "Questionable"
+
+
+def test_no_designation_yet_but_did_not_practise_carries_the_prior_status():
+    rows = [_inj("DAL", 2, "p", "Out", "Did Not Participate In Practice"),
+            _inj("DAL", 3, "p", "", "Did Not Participate In Practice")]
+    assert current_injury_status(rows)["p"] == "Out"
+
+
+def test_report_week_is_per_team_and_capped_by_next_game():
+    rows = [_inj("A", 3, "a"), _inj("A", 2, "x", "Out"), _inj("B", 2, "y", "Out"),
+            _inj("B", 4, "z", "Questionable")]
+    st = current_injury_status(rows, next_week={"A": 3, "B": 3})
+    assert "x" not in st            # A's latest report is week 3
+    assert st.get("y") == "Out"     # B's week-4 row is beyond its next game
+    assert "z" not in st
+
+
+def test_active_roster_is_latest_week_act_only():
+    rows = [{"team": "ATL", "week": "3", "status": "ACT", "gsis_id": "a"},
+            {"team": "ATL", "week": "3", "status": "RES", "gsis_id": "ir"},
+            {"team": "ATL", "week": "3", "status": "DEV", "gsis_id": "ps"},
+            {"team": "ATL", "week": "2", "status": "ACT", "gsis_id": "gone"}]
+    assert active_roster(rows) == {"ATL": {"a"}}

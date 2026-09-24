@@ -67,3 +67,93 @@ def roster_min_games(weeks_seen: int, full: int = ROSTER_MIN_GAMES) -> int:
     """
     return max(1, min(full, weeks_seen))
 
+
+INJ_FR = {"JAC": "JAX", "WSH": "WAS", "AZ": "ARI", "LAR": "LA"}
+
+
+def current_injury_status(rows, next_week=None):
+    """gsis_id -> report_status from each team's LATEST injury report only.
+
+    An NFL injury report lists only the players who are injured THAT week; a
+    player absent from it is healthy. Reading every report ever filed (as both
+    nfl_lineups and nfl_season_serve did) keeps a player ruled out forever
+    once he has appeared as Out or Doubtful once: on 2026-09-24 it benched
+    Tua Tagovailoa for ATL@GB on a week-1 tag although he practised in full on
+    the week-3 report, made Cooper Rush QB1, and moved GB from 65% to 77%.
+
+    `next_week` (team -> week of the team's next unplayed game) caps the report
+    week so a stale future row cannot leak in; without it, each team's newest
+    report is used. Rows with no status (full participants) still define the
+    report week but carry no status, so they never exclude anyone.
+    """
+    latest = {}
+    for r in rows:
+        t = INJ_FR.get(r.get("team", ""), r.get("team", ""))
+        try:
+            w = int(r.get("week") or 0)
+        except ValueError:
+            continue
+        cap = (next_week or {}).get(t)
+        if cap is not None and w > cap:
+            continue
+        if w > latest.get(t, -1):
+            latest[t] = w
+    # Mid-week the newest report carries practice participation but no game
+    # designation yet (those land Friday). A player who did not practise and
+    # has no designation keeps the status he had on his previous report, so a
+    # week-2 Out is not read as healthy on a Wednesday.
+    prev_status = {}                       # (gsis, week) -> status
+    for r in rows:
+        try:
+            w = int(r.get("week") or 0)
+        except ValueError:
+            continue
+        st = (r.get("report_status") or "").strip()
+        if st and r.get("gsis_id"):
+            prev_status[(r["gsis_id"], w)] = st
+    out = {}
+    for r in rows:
+        t = INJ_FR.get(r.get("team", ""), r.get("team", ""))
+        try:
+            w = int(r.get("week") or 0)
+        except ValueError:
+            continue
+        gid = r.get("gsis_id")
+        if w != latest.get(t) or not gid:
+            continue
+        st = (r.get("report_status") or "").strip()
+        if not st and "Did Not Participate" in (r.get("practice_status") or ""):
+            earlier = [pw for (pg, pw) in prev_status if pg == gid and pw < w]
+            if earlier:
+                st = prev_status[(gid, max(earlier))]
+        if st:
+            out[gid] = st
+    return out
+
+
+def active_roster(rows):
+    """team -> gsis ids on the team's LATEST weekly roster with status ACT.
+
+    The weekly roster file also carries injured reserve (RES), practice squad
+    (DEV), cut, retired and exempt rows, and every past week. Treating all of
+    them as available put IR players into projected lineups.
+    """
+    latest = {}
+    for r in rows:
+        t = INJ_FR.get(r.get("team", ""), r.get("team", ""))
+        try:
+            w = int(r.get("week") or 0)
+        except ValueError:
+            continue
+        latest[t] = max(latest.get(t, -1), w)
+    out = {}
+    for r in rows:
+        t = INJ_FR.get(r.get("team", ""), r.get("team", ""))
+        try:
+            w = int(r.get("week") or 0)
+        except ValueError:
+            continue
+        if w == latest.get(t) and r.get("status") == "ACT" and r.get("gsis_id"):
+            out.setdefault(t, set()).add(r["gsis_id"])
+    return out
+
