@@ -1,0 +1,74 @@
+{
+ "20102011": {
+  "rows": 965566,
+  "cols_used_equal": true,
+  "team_idx_equal": true
+ },
+ "20112012": {
+  "rows": 965110,
+  "cols_used_equal": true,
+  "team_idx_equal": true
+ },
+ "20122013": {
+  "rows": 567568,
+  "cols_used_equal": true,
+  "team_idx_equal": true
+ },
+ "20132014": {
+  "rows": 978842,
+  "cols_used_equal": true,
+  "team_idx_equal": true
+ },
+ "20142015": {
+  "rows": 989203,
+  "cols_used_equal": true,
+  "team_idx_equal": true
+ },
+ "20152016": {
+  "rows": 986317,
+  "cols_used_equal": true,
+  "team_idx_equal": true
+ },
+ "20162017": {
+  "rows": 981674,
+  "cols_used_equal": true,
+  "team_idx_equal": true
+ },
+ "20172018": {
+  "rows": 999395,
+  "cols_used_equal": true,
+  "team_idx_equal": true
+ },
+ "20182019": {
+  "rows": 984966,
+  "games": 1271
+ },
+ "20192020": {
+  "rows": 832155,
+  "games": 1082
+ },
+ "20202021": {
+  "rows": 667309,
+  "games": 868
+ },
+ "20212022": {
+  "rows": 1012942,
+  "games": 1312
+ },
+ "20222023": {
+  "rows": 1003561,
+  "games": 1312
+ },
+ "20232024": {
+  "rows": 994649,
+  "games": 1312
+ },
+ "20242025": {
+  "rows": 953245,
+  "games": 1255
+ },
+ "20252026": {
+  "rows": 609090,
+  "games": 807
+ }
+}

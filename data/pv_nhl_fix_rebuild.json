@@ -1,0 +1,344 @@
+{
+ "amendment": "data/pv_nhl_serve_prereg.json -> amendment_1",
+ "note": "DEV rows: fixed full vs fixed DEV (reproduction) and fixed vs original (change). TEST rows: feature values only; no TEST outcome is read.",
+ "wf_xg_fill_perturbation": {
+  "cutoff": 20150115,
+  "missing_xg_shots_dev": 469,
+  "fills_before_cutoff": 285,
+  "fills_before_cutoff_bit_identical": true,
+  "fills_after_cutoff_changed_share": 1.0,
+  "fallback_uses_dev": 0,
+  "pass": true
+ },
+ "wf_stints_perturbation": {
+  "season": 20142015,
+  "cutoff": 20150115,
+  "intervals_before_cutoff": 142931,
+  "pre_cutoff_bit_identical": true,
+  "post_cutoff_xg_changed": true,
+  "pass": true
+ },
+ "wf_faceoff_mbar_per_date": {
+  "dates": 1710,
+  "dates_with_more_than_one_mbar": 0,
+  "pass": true
+ },
+ "stints": {
+  "20102011": {
+   "fixed_vs_orig_non_xg_arrays_identical": true,
+   "fixed_vs_orig_xg_max_abs": 0.0,
+   "fixed_vs_orig_xg_intervals_changed": 0,
+   "full_vs_dev_fixed_identical": true,
+   "toi5_full_vs_dev_byte_identical": true,
+   "toi5_fixed_vs_orig_byte_identical": true
+  },
+  "20112012": {
+   "fixed_vs_orig_non_xg_arrays_identical": true,
+   "fixed_vs_orig_xg_max_abs": 0.0025346670454914344,
+   "fixed_vs_orig_xg_intervals_changed": 3,
+   "full_vs_dev_fixed_identical": true,
+   "toi5_full_vs_dev_byte_identical": true,
+   "toi5_fixed_vs_orig_byte_identical": true
+  },
+  "20122013": {
+   "fixed_vs_orig_non_xg_arrays_identical": true,
+   "fixed_vs_orig_xg_max_abs": 0.0002497914042311894,
+   "fixed_vs_orig_xg_intervals_changed": 2,
+   "full_vs_dev_fixed_identical": true,
+   "toi5_full_vs_dev_byte_identical": true,
+   "toi5_fixed_vs_orig_byte_identical": true
+  },
+  "20132014": {
+   "fixed_vs_orig_non_xg_arrays_identical": true,
+   "fixed_vs_orig_xg_max_abs": 0.0010480934111030682,
+   "fixed_vs_orig_xg_intervals_changed": 2,
+   "full_vs_dev_fixed_identical": true,
+   "toi5_full_vs_dev_byte_identical": true,
+   "toi5_fixed_vs_orig_byte_identical": true
+  },
+  "20142015": {
+   "fixed_vs_orig_non_xg_arrays_identical": true,
+   "fixed_vs_orig_xg_max_abs": 0.0006634944371866486,
+   "fixed_vs_orig_xg_intervals_changed": 3,
+   "full_vs_dev_fixed_identical": true,
+   "toi5_full_vs_dev_byte_identical": true,
+   "toi5_fixed_vs_orig_byte_identical": true
+  },
+  "20152016": {
+   "fixed_vs_orig_non_xg_arrays_identical": true,
+   "fixed_vs_orig_xg_max_abs": 0.006477223318583913,
+   "fixed_vs_orig_xg_intervals_changed": 2,
+   "full_vs_dev_fixed_identical": true,
+   "toi5_full_vs_dev_byte_identical": true,
+   "toi5_fixed_vs_orig_byte_identical": true
+  },
+  "20162017": {
+   "fixed_vs_orig_non_xg_arrays_identical": true,
+   "fixed_vs_orig_xg_max_abs": 0.001688243352775426,
+   "fixed_vs_orig_xg_intervals_changed": 1,
+   "full_vs_dev_fixed_identical": true,
+   "toi5_full_vs_dev_byte_identical": true,
+   "toi5_fixed_vs_orig_byte_identical": true
+  },
+  "20172018": {
+   "fixed_vs_orig_non_xg_arrays_identical": true,
+   "fixed_vs_orig_xg_max_abs": 0.005318881633127437,
+   "fixed_vs_orig_xg_intervals_changed": 2,
+   "full_vs_dev_fixed_identical": true,
+   "toi5_full_vs_dev_byte_identical": true,
+   "toi5_fixed_vs_orig_byte_identical": true
+  }
+ },
+ "stints_dev_xg_fills": {
+  "20102011": {
+   "filled": 87,
+   "fallback": 0
+  },
+  "20112012": {
+   "filled": 71,
+   "fallback": 0
+  },
+  "20122013": {
+   "filled": 35,
+   "fallback": 0
+  },
+  "20132014": {
+   "filled": 69,
+   "fallback": 0
+  },
+  "20142015": {
+   "filled": 47,
+   "fallback": 0
+  },
+  "20152016": {
+   "filled": 60,
+   "fallback": 0
+  },
+  "20162017": {
+   "filled": 45,
+   "fallback": 0
+  },
+  "20172018": {
+   "filled": 55,
+   "fallback": 0
+  }
+ },
+ "stints_full_xg_fallback_uses": 0,
+ "stints_test_structure_unchanged": {
+  "20182019": {
+   "non_xg_arrays_identical": true,
+   "toi5_identical": true
+  },
+  "20192020": {
+   "non_xg_arrays_identical": true,
+   "toi5_identical": true
+  },
+  "20202021": {
+   "non_xg_arrays_identical": true,
+   "toi5_identical": true
+  },
+  "20212022": {
+   "non_xg_arrays_identical": true,
+   "toi5_identical": true
+  },
+  "20222023": {
+   "non_xg_arrays_identical": true,
+   "toi5_identical": true
+  },
+  "20232024": {
+   "non_xg_arrays_identical": true,
+   "toi5_identical": true
+  },
+  "20242025": {
+   "non_xg_arrays_identical": true,
+   "toi5_identical": true
+  },
+  "20252026": {
+   "non_xg_arrays_identical": true,
+   "toi5_identical": true
+  }
+ },
+ "fits": {
+  "n_dev": 46,
+  "full_vs_dev_fixed_bit_identical": true,
+  "fixed_vs_orig_max_abs_d_xg_120000_730": 0.0001425990621923036
+ },
+ "values_csv": {
+  "rows_dev": 337332,
+  "rows_full": 689368,
+  "dev_prefix_text_identical": true,
+  "remaining_rows_all_test": true
+ },
+ "values_change_dev": {
+  "d_xga": {
+   "max": 0.00013999999999999777,
+   "mean": 1.4063139791990764e-06,
+   "share_changed": 0.09878047115988317,
+   "n": 293064
+  },
+  "d_ga": {
+   "max": 0.0,
+   "mean": 0.0,
+   "share_changed": 0.0,
+   "n": 293064
+  },
+  "d_gax": {
+   "max": 0.00023000000000000104,
+   "mean": 1.8798282968907891e-06,
+   "share_changed": 0.11524786394780662,
+   "n": 293064
+  },
+  "d_ca": {
+   "max": 0.0,
+   "mean": 0.0,
+   "share_changed": 0.0,
+   "n": 293064
+  }
+ },
+ "duels_csv": {
+  "rows_dev": 362712,
+  "rows_full": 741172,
+  "dev_prefix_text_identical": true,
+  "remaining_rows_all_test": true
+ },
+ "duels_fo_bitwise": true,
+ "duels_fo_p_winner_unchanged_vs_orig": true,
+ "duels_change_dev": {
+  "fo_rating": {
+   "max": 0.0003670000000000062,
+   "mean": 4.645528489984985e-05,
+   "share_changed": 0.825401420410684,
+   "n": 362712
+  },
+  "fo_g60": {
+   "max": 8.150000000001212e-05,
+   "mean": 1.8623212825288392e-06,
+   "share_changed": 0.8244474955336465,
+   "n": 362712
+  },
+  "dd_g60": {
+   "max": 8.099999999999774e-05,
+   "mean": 1.8622845050486324e-06,
+   "share_changed": 0.5181438717219171,
+   "n": 362712
+  }
+ },
+ "compose_skater_games": {
+  "rows": 362712,
+  "bitwise": true,
+  "bad_cols": []
+ },
+ "compose_goalie_games": {
+  "rows": 40306,
+  "bitwise": true,
+  "bad_cols": []
+ },
+ "compose_team_games": {
+  "rows": 20152,
+  "bitwise": true,
+  "bad_cols": []
+ },
+ "game_features": {
+  "rows_dev": 10076,
+  "rows_full": 20591,
+  "dev_prefix_text_identical": true,
+  "remaining_rows_all_test": true,
+  "dev_slice_sha256": "a8dbe8640a5f9fd3e35575c15c06076072705c8488c3b731d30a69377dadf2d2",
+  "dev_file_sha256": "a8dbe8640a5f9fd3e35575c15c06076072705c8488c3b731d30a69377dadf2d2",
+  "dev_slice_hash_matches_dev_file": true,
+  "full_file_sha256": "be502f8fa3abe81c400f4907604535e6a70e923f6c6d0cdadb10e98e801b1902"
+ },
+ "weights": {
+  "goalie_rule_fixed_dev": "G2 REJECTED (worse or n.s.); the goalie value is the 1v1 saving rating",
+  "dev_seasons_equal_dev_file": true,
+  "test_seasons_all_frozen": true,
+  "frozen_w_fixed": {
+   "ev_shot": 1.1386270591821173,
+   "ev_fin": 0.6214500790063697,
+   "ev_a1": 1.1699587500946587,
+   "ev_a2": 0.5011044856312867,
+   "ev_def": 1.900766407980243,
+   "pp_xg": 0.9382134649990495,
+   "pp_ast": 0.07047084730477397,
+   "duels": 0.6061340284147582,
+   "goalie": 0.883026062385991
+  },
+  "frozen_n_train_games": 8141,
+  "frozen_w_original": {
+   "ev_shot": 1.1386198055357348,
+   "ev_fin": 0.6214464201771545,
+   "ev_a1": 1.1699619673403325,
+   "ev_a2": 0.501136948512812,
+   "ev_def": 1.900778946179567,
+   "pp_xg": 0.9382017632994977,
+   "pp_ast": 0.07044813538145266,
+   "duels": 0.6061470721149809,
+   "goalie": 0.8830194024002108
+  },
+  "w_20172018_fixed_vs_orig_max_abs": 3.6999999999953737e-05
+ },
+ "dev_feature_change": {
+  "lv_home": {
+   "max": 0.00018800000000002148,
+   "mean": 1.0267070265978347e-05,
+   "share_changed": 0.9644700277888051,
+   "n": 10076
+  },
+  "lv_away": {
+   "max": 0.00018700000000004824,
+   "mean": 1.0468836840015952e-05,
+   "share_changed": 0.9686383485510123,
+   "n": 10076
+  },
+  "lv_last_diff (S1 column)": {
+   "max": 0.00020200000000003548,
+   "mean": 1.2943859300477209e-05,
+   "share_changed": 0.9606518282988871,
+   "n": 10064
+  },
+  "wLU_ev_def_home": {
+   "max": 0.0001820000000000016,
+   "mean": 4.959706232631962e-06,
+   "share_changed": 0.5762207225089321,
+   "n": 10076
+  },
+  "wLU_duels_home": {
+   "max": 6.799999999999862e-05,
+   "mean": 7.7254863040889e-06,
+   "share_changed": 0.9655617308455736,
+   "n": 10076
+  },
+  "sd_lv_home_orig": 0.23940185775292505
+ },
+ "serve_lv_last_dev_equal": true,
+ "test_feature_change_features_only": {
+  "rows": 10515,
+  "lv_home": {
+   "max": 0.00394300000000003,
+   "mean": 0.00010494417498811226,
+   "share_changed": 0.9870660960532572,
+   "n": 10515
+  },
+  "lv_away": {
+   "max": 0.003941000000000028,
+   "mean": 0.00010334835948644833,
+   "share_changed": 0.9896338563956253,
+   "n": 10515
+  }
+ },
+ "serve_lv_last_file": {
+  "rows": 20591,
+  "games_in_feature_file": 20591,
+  "sha256": "61f7559f9b3803927c4a76efcd1dc4079fa39c0d78e72abf8603dbc6ca873a2c",
+  "blank_sides_test": 2
+ },
+ "ALL_CHECKS_PASS": true,
+ "files": {
+  "dev_features": "C:\\Users\\Admin\\Projects\\Sports-Odds-Algorithms\\data\\pv_nhl_fix_compose_game_features.csv",
+  "dev_features_sha256": "a8dbe8640a5f9fd3e35575c15c06076072705c8488c3b731d30a69377dadf2d2",
+  "full_features": "C:\\Users\\Admin\\Projects\\Sports-Odds-Algorithms\\data\\pv_nhl_fix_full_compose_game_features.csv",
+  "full_features_sha256": "be502f8fa3abe81c400f4907604535e6a70e923f6c6d0cdadb10e98e801b1902",
+  "full_serve_lv_last": "C:\\Users\\Admin\\Projects\\Sports-Odds-Algorithms\\data\\pv_nhl_fix_full_serve_lv_last.csv"
+ },
+ "seconds": 37.3
+}

@@ -1,0 +1,109 @@
+{
+ "split": "DEV 2013-2015 (snap seasons) only",
+ "A_presence_proxy_vs_snaps": {
+  "DB|0-20": {
+   "recall_credit_only": 0.41,
+   "recall_credit_or_fill": 0.616
+  },
+  "DB|20-40": {
+   "recall_credit_only": 0.86,
+   "recall_credit_or_fill": 0.945
+  },
+  "DB|40-60": {
+   "recall_credit_only": 0.947,
+   "recall_credit_or_fill": 0.986
+  },
+  "DB|60-80": {
+   "recall_credit_only": 0.979,
+   "recall_credit_or_fill": 0.991
+  },
+  "DB|80-100": {
+   "recall_credit_only": 0.991,
+   "recall_credit_or_fill": 0.996
+  },
+  "DL|0-20": {
+   "recall_credit_only": 0.445,
+   "recall_credit_or_fill": 0.681
+  },
+  "DL|20-40": {
+   "recall_credit_only": 0.765,
+   "recall_credit_or_fill": 0.899
+  },
+  "DL|40-60": {
+   "recall_credit_only": 0.903,
+   "recall_credit_or_fill": 0.977
+  },
+  "DL|60-80": {
+   "recall_credit_only": 0.952,
+   "recall_credit_or_fill": 0.989
+  },
+  "DL|80-100": {
+   "recall_credit_only": 0.969,
+   "recall_credit_or_fill": 0.996
+  },
+  "LB|0-20": {
+   "recall_credit_only": 0.436,
+   "recall_credit_or_fill": 0.606
+  },
+  "LB|20-40": {
+   "recall_credit_only": 0.853,
+   "recall_credit_or_fill": 0.941
+  },
+  "LB|40-60": {
+   "recall_credit_only": 0.954,
+   "recall_credit_or_fill": 0.989
+  },
+  "LB|60-80": {
+   "recall_credit_only": 0.98,
+   "recall_credit_or_fill": 0.996
+  },
+  "LB|80-100": {
+   "recall_credit_only": 0.995,
+   "recall_credit_or_fill": 0.997
+  },
+  "present_rows_without_def_snaps": {
+   "credit": 0.021,
+   "fill": 0.521
+  },
+  "n_snap_rows": 30102
+ },
+ "B_per_snap_exposure": {
+  "n_player_seasons_2014_2015": 795,
+  "future_pressure_per_game": {
+   "team_exposure": 0.738,
+   "snap_exposure": 0.706
+  },
+  "future_sacks_per_game": {
+   "team_exposure": 0.655,
+   "snap_exposure": 0.609
+  },
+  "future_pressure_per_snap_share": {
+   "team_exposure": 0.594,
+   "snap_exposure": 0.643
+  },
+  "future_stops_per_game": {
+   "team_exposure": 0.539,
+   "snap_exposure": 0.454
+  },
+  "note": "snap variant = same engine, exposure scaled by defense_pct on 2013+ games only; history before 2013 is identical, so this isolates 1-2 seasons of snap information"
+ },
+ "C_offensive_line_attribution": {
+  "n_team_games": 1280,
+  "share_games_with_missing_regular": 0.338,
+  "pressure_residual_per_missing_regular (fraction of expected)": [
+   -0.0101,
+   0.0211
+  ],
+  "sack_residual_per_missing_regular (fraction of expected)": [
+   -0.0019,
+   0.0323
+  ],
+  "ol_holding_falsestart_per_snap": {
+   "split_half_spearman_brown": 0.052,
+   "n_player_seasons": 616,
+   "year_over_year_r": 0.18,
+   "n_pairs": 275
+  },
+  "limits": "No DEV play records which lineman allowed a pressure or a run stop; before 2013 not even OL participation exists. Individual OL value on DEV = (unit protection factor, shared with the QB) x snap share + charged penalties. The unit factor is the measurable object."
+ }
+}

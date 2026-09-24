@@ -1,0 +1,29 @@
+{
+ "rows": 362712,
+ "games": 10076,
+ "seasons": [
+  20102011,
+  20112012,
+  20122013,
+  20132014,
+  20142015,
+  20152016,
+  20162017,
+  20172018
+ ],
+ "events_nonSO": 2611917,
+ "xg_missing_unblocked": 556,
+ "unblocked": 847218,
+ "rebound_share_of_attempts": 0.03547091899490423,
+ "rush_share_of_attempts": 0.025264452644526446,
+ "individual_rows_not_in_skater_base": 2542,
+ "ev5_events_with_5v5_onice_share": 0.9990079634098942,
+ "shift_state_equals_pbp_state_at_attempts": 0.9958285011421543,
+ "toi_shift_sum_vs_roster_toi_exact_share": 0.999983455395747,
+ "toi_shift_sum_vs_roster_toi_within60_share": 0.9999944851319157,
+ "goals_ind_vs_onice_ev": [
+  36331.0,
+  36324.19921875
+ ],
+ "seconds": 16.5
+}

@@ -1,0 +1,181 @@
+{
+ "mode": "pre",
+ "target": "g",
+ "sets": {
+  "ctx": {
+   "XGA": {
+    "gain_vs_base": 174.34,
+    "ci": [
+     123.08,
+     225.21
+    ]
+   },
+   "XGA+GA": {
+    "gain_vs_base": 178.67,
+    "ci": [
+     127.74,
+     230.88
+    ],
+    "gain_vs_XGA_alone": 4.32,
+    "ci_vs_XGA_alone": [
+     -4.09,
+     12.73
+    ],
+    "n_extra_params_per_season": 1
+   },
+   "XGA+GAX": {
+    "gain_vs_base": 183.54,
+    "ci": [
+     130.38,
+     236.02
+    ],
+    "gain_vs_XGA_alone": 9.19,
+    "ci_vs_XGA_alone": [
+     -2.95,
+     20.76
+    ],
+    "n_extra_params_per_season": 1
+   },
+   "XGA+CA": {
+    "gain_vs_base": 184.37,
+    "ci": [
+     132.11,
+     235.62
+    ],
+    "gain_vs_XGA_alone": 10.03,
+    "ci_vs_XGA_alone": [
+     -2.39,
+     22.18
+    ],
+    "n_extra_params_per_season": 1
+   },
+   "XGA+CA+GA": {
+    "gain_vs_base": 188.11,
+    "ci": [
+     135.3,
+     241.03
+    ],
+    "gain_vs_XGA_alone": 13.77,
+    "ci_vs_XGA_alone": [
+     -0.95,
+     28.31
+    ],
+    "n_extra_params_per_season": 2
+   },
+   "CA": {
+    "gain_vs_base": 120.84,
+    "ci": [
+     78.46,
+     163.38
+    ],
+    "gain_vs_XGA_alone": -53.5,
+    "ci_vs_XGA_alone": [
+     -87.1,
+     -20.25
+    ],
+    "n_extra_params_per_season": 0
+   },
+   "GA": {
+    "gain_vs_base": 64.68,
+    "ci": [
+     33.45,
+     95.41
+    ],
+    "gain_vs_XGA_alone": -109.66,
+    "ci_vs_XGA_alone": [
+     -151.04,
+     -67.1
+    ],
+    "n_extra_params_per_season": 0
+   }
+  },
+  "fe": {
+   "XGA": {
+    "gain_vs_base": 44.01,
+    "ci": [
+     18.74,
+     69.09
+    ]
+   },
+   "XGA+GA": {
+    "gain_vs_base": 46.79,
+    "ci": [
+     20.46,
+     72.9
+    ],
+    "gain_vs_XGA_alone": 2.78,
+    "ci_vs_XGA_alone": [
+     -3.83,
+     9.45
+    ],
+    "n_extra_params_per_season": 1
+   },
+   "XGA+GAX": {
+    "gain_vs_base": 48.7,
+    "ci": [
+     21.97,
+     75.13
+    ],
+    "gain_vs_XGA_alone": 4.69,
+    "ci_vs_XGA_alone": [
+     -3.88,
+     13.23
+    ],
+    "n_extra_params_per_season": 1
+   },
+   "XGA+CA": {
+    "gain_vs_base": 51.05,
+    "ci": [
+     23.42,
+     78.06
+    ],
+    "gain_vs_XGA_alone": 7.04,
+    "ci_vs_XGA_alone": [
+     -3.41,
+     17.21
+    ],
+    "n_extra_params_per_season": 1
+   },
+   "XGA+CA+GA": {
+    "gain_vs_base": 53.97,
+    "ci": [
+     25.6,
+     82.26
+    ],
+    "gain_vs_XGA_alone": 9.97,
+    "ci_vs_XGA_alone": [
+     -2.37,
+     22.06
+    ],
+    "n_extra_params_per_season": 2
+   },
+   "CA": {
+    "gain_vs_base": 19.43,
+    "ci": [
+     2.33,
+     36.17
+    ],
+    "gain_vs_XGA_alone": -24.58,
+    "ci_vs_XGA_alone": [
+     -41.93,
+     -7.2
+    ],
+    "n_extra_params_per_season": 0
+   },
+   "GA": {
+    "gain_vs_base": 18.04,
+    "ci": [
+     1.38,
+     34.17
+    ],
+    "gain_vs_XGA_alone": -25.97,
+    "ci_vs_XGA_alone": [
+     -46.3,
+     -4.4
+    ],
+    "n_extra_params_per_season": 0
+   }
+  }
+ },
+ "note": "each extra rating adds one fitted slope per season (7 in total): a gain below ~1 deviance unit per extra parameter (chi2_1 mean) is noise"
+}

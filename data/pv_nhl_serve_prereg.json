@@ -1,0 +1,36 @@
+{
+ "written": "2026-09-24T21:10:43+00:00",
+ "why": "The player-value candidate cleared the DEV bar using tonight's ACTUAL dressed lineup (A1 +0.00160). The site serves every 4 h and the official game roster posts ~1 h before puck drop, so the servable input is a PROJECTED lineup. The screen's own diagnostic D1 (team's previous-10-game mean lineup value) gave +0.00099 CI [-0.00001,+0.00195]. This pre-registers the servable construction that will receive the NHL TEST look.",
+ "primary": "S1",
+ "arms": {
+  "S1": "shipped blend (tuned Elo logit, rest_diff, b2b_home, b2b_away, xg_diff) + ONE column: lv_last_home - lv_last_away, where lv_last(team, game) = that team's lineup value LV from its PREVIOUS game in date order (walk-forward values as of before that game; the previous game's dressed roster). No goalie term. First game with no previous game: 0."
+ },
+ "references_not_arms": {
+  "A1_actual_lineup": "pv_nhl_screen.json A1 (day-of ceiling)",
+  "D1_prev10": "pv_nhl_screen.json D1"
+ },
+ "bar": {
+  "delta_min": 0.001,
+  "ci_lo_gt": 0.0,
+  "bootstrap": "10k paired, GM.arm_stats"
+ },
+ "harness": "phase0/nhl_depth_eval.py Ctx + LOSO over DEV 2011-12..2017-18, n=7929",
+ "features": {
+  "file": "data/pv_nhl_compose_game_features.csv",
+  "sha256": "7b43adf02081457ff59a49a11a6f8e7f44bd3af2d13737ece716dc8b9cb80ef5"
+ },
+ "test_rule": "If S1 clears on DEV, it receives the single NHL TEST look (lead engineer). If not, no TEST look is taken for this program.",
+ "test_protocol": {
+  "written": "2026-09-24T21:11:57+00:00",
+  "dev_result_seen": "S1 +0.00118 CI [+0.00006,+0.00228] cleared (data/pv_nhl_serve_screen.json)",
+  "features": "Every pv_nhl component rating walks forward continuously through 2018-19..2025-26 with its DEV hyperparameters unchanged (as serving would). Compose weights for all TEST seasons are FROZEN at the weights the DEV walk-forward assigns to 2018-19 (fit on 2011-12..2017-18 only). lv_last as in S1. The extended pipeline must reproduce every DEV feature bitwise.",
+  "fit_and_score": "Shipped NHL TEST protocol: blend coefficients (baseline 4-feature blend, and S1 = blend + lv_last diff) fit on DEV 2011-12..2017-18 regular season, scored ONCE on TEST 2018-19..2025-26 regular season, identical game masks, paired bootstrap 10k.",
+  "adopt_rule": "Ship if TEST delta > 0 with bootstrap CI lower bound > 0. Ledger row either way."
+ },
+ "amendment_1": {
+  "written": "2026-09-24T22:37:35+00:00",
+  "finding": "Independent verification (perturbation test, cutoff 2022-01-15) found a walk-forward leak in phase0/pv_nhl_defense_onice_stints.py build_season: missing unblocked-shot xG is filled with a WHOLE-SEASON mean per event type, which includes shots after the RAPM fit cutoff. Effect ~7e-5 on d_xga, ~8e-5 on LV; present in the DEV features too. Also: faceoff league mean updated within a date (does not reach lv_last).",
+  "remedy": "Fill missing xG from strictly EARLIER shots only (running per-type mean by date), in ONE shared implementation used for every season; rebuild stints -> fit -> values -> compose for DEV and TEST; re-run the S1 DEV screen on the fixed features and report it beside the original (+0.00118). The TEST look is taken on the fixed features only if S1 still clears the unchanged bar (+0.00100, CI lower bound > 0). The pinned feature sha256 above is superseded by the fixed file's hash, recorded at rebuild time.",
+  "unchanged": "S1 definition, bar, TEST fit/score protocol and adopt rule."
+ }
+}

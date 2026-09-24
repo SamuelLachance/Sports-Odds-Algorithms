@@ -1,0 +1,30 @@
+{
+ "written": "2026-09-24T16:39:39",
+ "status": "PRE-REGISTRATION, written before any game-level log-loss was computed on the compose features",
+ "harness": "phase0/nhl_depth_eval.py Ctx/Folds: DEV regular season, LOSO over 2011-12..2017-18, n=7,929; shipped blend [elo_logit, rest_diff, b2b_home, b2b_away, xg_diff]",
+ "sanity": {
+  "S1": "shipped DEV LOSO LL must reproduce 0.672398 (n=7,929)",
+  "S2": "dropping xg_diff must cost +0.00303 +/- 0.0002",
+  "S3": "feature coverage of every eval game; harness home/away codes equal the feature file's"
+ },
+ "features": "data/pv_nhl_compose_game_features.csv (walk-forward: season-s weights fit on seasons 2011-12..s-1; components pre-game)",
+ "feature_file_sha256": "7b43adf02081457ff59a49a11a6f8e7f44bd3af2d13737ece716dc8b9cb80ef5",
+ "weights_file_sha256": "5a25b5ff8a15c518056fa0f4543de0521115883a359468180839ec09f396c21a",
+ "arms": {
+  "C1 PRIMARY": "blend + (lv_home - lv_away) + (gv_home - gv_away)",
+  "C2": "blend + ((lv+gv)_home - (lv+gv)_away)  [one column: personnel value]",
+  "C3": "blend + lv diff",
+  "C4": "blend + gv diff",
+  "C5": "blend + lv diff + gv diff + lv_dev diff + gv_dev diff (tonight minus the team's previous-10 mean)",
+  "C6 control": "blend + incumbent RAPM lineup power P diff (bt_nhl_rapmel_feats.csv)",
+  "C7 inside": "W/L Elo updated net of personnel value: E=(R_h+g*(lv+gv)_h+30)-(R_a+g*(lv+gv)_a), g nested over {0,60,120,180,240} Elo/goal (round-1 nested protocol, bt_nhl_nhl_gmar.nested), rest of the blend shipped"
+ },
+ "bar": "documents/breakthrough_program_prereg_2026_09_24.md: NHL gain >= +0.00100 nats with bootstrap 95% CI lower bound > 0 (10k game bootstrap), sanity reproduced, adversarial audit sound. Only C1 is the candidate; C2-C7 are secondary/diagnostic and cannot be promoted in place of C1 by this screen.",
+ "design_choices_made_on_DEV_before_this_screen": [
+  "component set, prior weights and tau declared in phase0/pv_nhl_compose_core.py before any fit",
+  "goalie experience-prior variant G2 evaluated at the goals level (per-start squared error) and REJECTED by its declared rule",
+  "goal-level validation (E1-E3) already seen: composite beats the incumbent RAPM on future goals"
+ ],
+ "market_blind": true,
+ "test_seasons_touched": 0
+}

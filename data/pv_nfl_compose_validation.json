@@ -1,0 +1,930 @@
+{
+ "A_game_margin": {
+  "n_games": 2670,
+  "base_r": 0.3937,
+  "hfa_only_mse": 227.454,
+  "base_mse": 192.486,
+  "candidates": {
+   "LV (lineup value, pts)": {
+    "r_margin": 0.3625,
+    "oos_mse_gain_vs_hfa_only": 28.863,
+    "oos_mse_gain_beyond_base": 0.546,
+    "partial_r_beyond_base": 0.0908,
+    "seasons_r": {
+     "2006": 0.347,
+     "2007": 0.373,
+     "2008": 0.333,
+     "2009": 0.401,
+     "2010": 0.344,
+     "2011": 0.386,
+     "2012": 0.329,
+     "2013": 0.39,
+     "2014": 0.339,
+     "2015": 0.401
+    }
+   },
+   "LVX (no day-of info)": {
+    "r_margin": 0.3633,
+    "oos_mse_gain_vs_hfa_only": 29.013,
+    "oos_mse_gain_beyond_base": 0.621,
+    "partial_r_beyond_base": 0.092,
+    "seasons_r": {
+     "2006": 0.347,
+     "2007": 0.373,
+     "2008": 0.333,
+     "2009": 0.401,
+     "2010": 0.344,
+     "2011": 0.386,
+     "2012": 0.329,
+     "2013": 0.399,
+     "2014": 0.342,
+     "2015": 0.398
+    }
+   },
+   "QV (starter QB)": {
+    "r_margin": 0.3205,
+    "oos_mse_gain_vs_hfa_only": 22.789,
+    "oos_mse_gain_beyond_base": 0.121,
+    "partial_r_beyond_base": 0.0676,
+    "seasons_r": {
+     "2006": 0.268,
+     "2007": 0.38,
+     "2008": 0.223,
+     "2009": 0.351,
+     "2010": 0.331,
+     "2011": 0.358,
+     "2012": 0.327,
+     "2013": 0.358,
+     "2014": 0.315,
+     "2015": 0.296
+    }
+   },
+   "LV - QV (non-QB lineup)": {
+    "r_margin": 0.2782,
+    "oos_mse_gain_vs_hfa_only": 16.254,
+    "oos_mse_gain_beyond_base": 0.396,
+    "partial_r_beyond_base": 0.055,
+    "seasons_r": {
+     "2006": 0.309,
+     "2007": 0.257,
+     "2008": 0.348,
+     "2009": 0.311,
+     "2010": 0.244,
+     "2011": 0.268,
+     "2012": 0.209,
+     "2013": 0.258,
+     "2014": 0.264,
+     "2015": 0.319
+    }
+   },
+   "TS (11v11 analog, lineup)": {
+    "r_margin": 0.3775,
+    "oos_mse_gain_vs_hfa_only": 31.652,
+    "oos_mse_gain_beyond_base": 0.351,
+    "partial_r_beyond_base": 0.0737,
+    "seasons_r": {
+     "2006": 0.294,
+     "2007": 0.401,
+     "2008": 0.38,
+     "2009": 0.445,
+     "2010": 0.346,
+     "2011": 0.411,
+     "2012": 0.397,
+     "2013": 0.398,
+     "2014": 0.337,
+     "2015": 0.383
+    }
+   },
+   "TSX (11v11 analog, expected)": {
+    "r_margin": 0.377,
+    "oos_mse_gain_vs_hfa_only": 31.569,
+    "oos_mse_gain_beyond_base": 0.301,
+    "partial_r_beyond_base": 0.0721,
+    "seasons_r": {
+     "2006": 0.294,
+     "2007": 0.401,
+     "2008": 0.38,
+     "2009": 0.445,
+     "2010": 0.346,
+     "2011": 0.411,
+     "2012": 0.397,
+     "2013": 0.396,
+     "2014": 0.334,
+     "2015": 0.376
+    }
+   },
+   "LV, EPA-target weights (robustness)": {
+    "r_margin": 0.3634,
+    "partial_r_beyond_base": 0.089,
+    "r_with_LV": 0.9959
+   }
+  },
+  "paired": {
+   "d_lv minus d_ts": {
+    "r_diff": -0.0151,
+    "r_diff_ci": [
+     -0.0368,
+     0.0068
+    ],
+    "oos_mse_gain_diff": -2.789,
+    "oos_mse_gain_diff_ci": [
+     -5.9956,
+     0.3184
+    ],
+    "beyond_base_mse_gain_diff": 0.195,
+    "beyond_base_mse_gain_diff_ci": [
+     -0.4179,
+     0.8134
+    ],
+    "partial_r_diff": 0.0171,
+    "partial_r_diff_ci": [
+     -0.0247,
+     0.0596
+    ],
+    "seasons_a_better_r": 3
+   },
+   "d_lvx minus d_tsx": {
+    "r_diff": -0.0137,
+    "r_diff_ci": [
+     -0.0355,
+     0.008
+    ],
+    "oos_mse_gain_diff": -2.557,
+    "oos_mse_gain_diff_ci": [
+     -5.7335,
+     0.5387
+    ],
+    "beyond_base_mse_gain_diff": 0.32,
+    "beyond_base_mse_gain_diff_ci": [
+     -0.2947,
+     0.9385
+    ],
+    "partial_r_diff": 0.0199,
+    "partial_r_diff_ci": [
+     -0.0222,
+     0.0616
+    ],
+    "seasons_a_better_r": 4
+   },
+   "d_nq minus d_ts": {
+    "r_diff": -0.0994,
+    "r_diff_ci": [
+     -0.1291,
+     -0.0712
+    ],
+    "oos_mse_gain_diff": -15.398,
+    "oos_mse_gain_diff_ci": [
+     -19.3797,
+     -11.6365
+    ],
+    "beyond_base_mse_gain_diff": 0.045,
+    "beyond_base_mse_gain_diff_ci": [
+     -0.5415,
+     0.6054
+    ],
+    "partial_r_diff": -0.0187,
+    "partial_r_diff_ci": [
+     -0.0612,
+     0.0238
+    ],
+    "seasons_a_better_r": 1
+   }
+  },
+  "joint_beyond_base": {
+   "coef_per_sd_pts": {
+    "BASE": 3.566,
+    "LV": 1.645,
+    "TS": 1.226
+   },
+   "ci": {
+    "BASE": [
+     2.3916,
+     4.6949
+    ],
+    "LV": [
+     0.6524,
+     2.6427
+    ],
+    "TS": [
+     0.0352,
+     2.4162
+    ]
+   },
+   "corr_LV_TS": 0.819,
+   "corr_LV_BASE": 0.791,
+   "corr_TS_BASE": 0.876
+  }
+ },
+ "B_next_period": {
+  "fut_margin": {
+   "lv": {
+    "r": 0.4642,
+    "partial_r_beyond_todate": 0.1908
+   },
+   "lvx": {
+    "r": 0.4638,
+    "partial_r_beyond_todate": 0.1901
+   },
+   "qv": {
+    "r": 0.4406,
+    "partial_r_beyond_todate": 0.1987
+   },
+   "ts": {
+    "r": 0.5321,
+    "partial_r_beyond_todate": 0.2443
+   },
+   "tsx": {
+    "r": 0.5322,
+    "partial_r_beyond_todate": 0.2442
+   },
+   "todate_margin": {
+    "r": 0.5082,
+    "partial_r_beyond_todate": null
+   },
+   "lvx-tsx": {
+    "r_diff": -0.0684,
+    "r_diff_ci": [
+     -0.1174,
+     -0.0253
+    ],
+    "partial_r_diff": -0.0541,
+    "partial_r_diff_ci": [
+     -0.1321,
+     0.0193
+    ]
+   },
+   "lv-ts": {
+    "r_diff": -0.0679,
+    "r_diff_ci": [
+     -0.1168,
+     -0.0242
+    ],
+    "partial_r_diff": -0.0535,
+    "partial_r_diff_ci": [
+     -0.1311,
+     0.0208
+    ]
+   },
+   "by_checkpoint_r": {
+    "4": {
+     "lvx": 0.48,
+     "tsx": 0.567,
+     "todate_margin": 0.508
+    },
+    "8": {
+     "lvx": 0.47,
+     "tsx": 0.52,
+     "todate_margin": 0.533
+    },
+    "12": {
+     "lvx": 0.45,
+     "tsx": 0.52,
+     "todate_margin": 0.52
+    }
+   }
+  },
+  "fut_epa": {
+   "lv": {
+    "r": 0.4818,
+    "partial_r_beyond_todate": 0.203
+   },
+   "lvx": {
+    "r": 0.4815,
+    "partial_r_beyond_todate": 0.2023
+   },
+   "qv": {
+    "r": 0.4585,
+    "partial_r_beyond_todate": 0.2133
+   },
+   "ts": {
+    "r": 0.5475,
+    "partial_r_beyond_todate": 0.242
+   },
+   "tsx": {
+    "r": 0.5481,
+    "partial_r_beyond_todate": 0.2432
+   },
+   "todate_margin": {
+    "r": 0.5025,
+    "partial_r_beyond_todate": null
+   },
+   "lvx-tsx": {
+    "r_diff": -0.0665,
+    "r_diff_ci": [
+     -0.1146,
+     -0.0237
+    ],
+    "partial_r_diff": -0.0409,
+    "partial_r_diff_ci": [
+     -0.117,
+     0.0352
+    ]
+   },
+   "lv-ts": {
+    "r_diff": -0.0657,
+    "r_diff_ci": [
+     -0.1131,
+     -0.0226
+    ],
+    "partial_r_diff": -0.039,
+    "partial_r_diff_ci": [
+     -0.1159,
+     0.0362
+    ]
+   },
+   "by_checkpoint_r": {
+    "4": {
+     "lvx": 0.502,
+     "tsx": 0.591,
+     "todate_margin": 0.51
+    },
+    "8": {
+     "lvx": 0.497,
+     "tsx": 0.549,
+     "todate_margin": 0.536
+    },
+    "12": {
+     "lvx": 0.457,
+     "tsx": 0.521,
+     "todate_margin": 0.497
+    }
+   }
+  },
+  "preseason_week1_to_season": {
+   "n_team_seasons": 320,
+   "season_margin": {
+    "lvx": 0.3899,
+    "lv": 0.3897,
+    "qv": 0.3721,
+    "tsx": 0.4378,
+    "ts": 0.4285,
+    "lvx-tsx": -0.0479,
+    "lvx-tsx_ci": [
+     -0.1269,
+     0.0305
+    ]
+   },
+   "season_epa": {
+    "lvx": 0.4054,
+    "lv": 0.4056,
+    "qv": 0.3837,
+    "tsx": 0.4508,
+    "ts": 0.4415,
+    "lvx-tsx": -0.0454,
+    "lvx-tsx_ci": [
+     -0.1284,
+     0.0315
+    ]
+   }
+  },
+  "offseason_roster_change": {
+   "n_team_seasons": 288,
+   "lvx": {
+    "r_delta_vs_dmargin": 0.1192,
+    "partial_r": 0.0952,
+    "sd_delta": 2.5876
+   },
+   "tsx": {
+    "r_delta_vs_dmargin": 0.0583,
+    "partial_r": 0.1125,
+    "sd_delta": 0.0297
+   },
+   "qv": {
+    "r_delta_vs_dmargin": 0.1501,
+    "partial_r": 0.1366,
+    "sd_delta": 2.0096
+   },
+   "lvx_minus_tsx_partial_r": -0.0173,
+   "ci": [
+    -0.1684,
+    0.1287
+   ],
+   "non_qb_delta_partial_r_beyond_qb_delta": -0.0088
+  },
+  "n_checkpoints": 960
+ },
+ "C_snap_era": {
+  "n_games": 801,
+  "d_lv": {
+   "r_margin": 0.3735,
+   "partial_r_beyond_base": 0.1525
+  },
+  "d_lvx": {
+   "r_margin": 0.3764,
+   "partial_r_beyond_base": 0.1567
+  },
+  "d_miss": {
+   "r_margin": -0.046,
+   "partial_r_beyond_base": -0.025
+  },
+  "d_ts": {
+   "r_margin": 0.3716,
+   "partial_r_beyond_base": 0.1289
+  },
+  "d_tsx": {
+   "r_margin": 0.3679,
+   "partial_r_beyond_base": 0.1218
+  },
+  "rq": {
+   "r_margin": 0.3206,
+   "partial_r_beyond_base": 0.1165
+  },
+  "d_nq": {
+   "r_margin": 0.2793,
+   "partial_r_beyond_base": 0.0835
+  },
+  "miss_partial_r_beyond_base_and_lvx": -0.0078,
+  "miss_partial_r_beyond_base_lvx_and_shipped_absence_rq": -0.0191,
+  "d_lv minus rq": {
+   "r_diff": 0.053,
+   "r_diff_ci": [
+    -0.0026,
+    0.1098
+   ],
+   "partial_r_diff": 0.036,
+   "partial_r_diff_ci": [
+    -0.0458,
+    0.1227
+   ]
+  },
+  "d_nq minus rq": {
+   "r_diff": -0.0412,
+   "r_diff_ci": [
+    -0.0963,
+    0.0141
+   ],
+   "partial_r_diff": -0.033,
+   "partial_r_diff_ci": [
+    -0.1064,
+    0.043
+   ]
+  },
+  "d_lv minus d_ts": {
+   "r_diff": 0.002,
+   "r_diff_ci": [
+    -0.0346,
+    0.0393
+   ],
+   "partial_r_diff": 0.0236,
+   "partial_r_diff_ci": [
+    -0.0403,
+    0.0874
+   ]
+  },
+  "d_miss minus rq": {
+   "r_diff": -0.3666,
+   "r_diff_ci": [
+    -0.4531,
+    -0.2789
+   ],
+   "partial_r_diff": -0.1415,
+   "partial_r_diff_ci": [
+    -0.2363,
+    -0.0509
+   ]
+  },
+  "absent_regular_also_absent_next_game": 0.629,
+  "n_absent_regular_team_games": 2519
+ },
+ "D_leak_probe_team_rating_vs_own_margin": {
+  "lv": {
+   "r_prev_game": 0.3698,
+   "r_this_game": 0.2422,
+   "r_next_game": 0.2354
+  },
+  "lvx": {
+   "r_prev_game": 0.3686,
+   "r_this_game": 0.2421,
+   "r_next_game": 0.2367
+  },
+  "ts": {
+   "r_prev_game": 0.4814,
+   "r_this_game": 0.2719,
+   "r_next_game": 0.2707
+  },
+  "qv": {
+   "r_prev_game": 0.3407,
+   "r_this_game": 0.2379,
+   "r_next_game": 0.2302
+  }
+ },
+ "E_player_yoy": {
+  "QB": {
+   "n": 222,
+   "yoy_r_mean_value": 0.839,
+   "yoy_r_end_value": 0.874,
+   "stayers_r": 0.846,
+   "movers_r": 0.618,
+   "n_movers": 27,
+   "sd_value_pts_per_game": 2.203
+  },
+  "WR": {
+   "n": 823,
+   "yoy_r_mean_value": 0.8,
+   "yoy_r_end_value": 0.822,
+   "stayers_r": 0.802,
+   "movers_r": 0.788,
+   "n_movers": 144,
+   "sd_value_pts_per_game": 0.222
+  },
+  "TE": {
+   "n": 433,
+   "yoy_r_mean_value": 0.815,
+   "yoy_r_end_value": 0.827,
+   "stayers_r": 0.82,
+   "movers_r": 0.815,
+   "n_movers": 74,
+   "sd_value_pts_per_game": 0.151
+  },
+  "RB": {
+   "n": 637,
+   "yoy_r_mean_value": 0.542,
+   "yoy_r_end_value": 0.643,
+   "stayers_r": 0.515,
+   "movers_r": 0.693,
+   "n_movers": 113,
+   "sd_value_pts_per_game": 0.232
+  },
+  "DL": {
+   "n": 1314,
+   "yoy_r_mean_value": 0.852,
+   "yoy_r_end_value": 0.904,
+   "stayers_r": 0.856,
+   "movers_r": 0.842,
+   "n_movers": 243,
+   "sd_value_pts_per_game": 0.409
+  },
+  "LB": {
+   "n": 977,
+   "yoy_r_mean_value": 0.861,
+   "yoy_r_end_value": 0.895,
+   "stayers_r": 0.866,
+   "movers_r": 0.823,
+   "n_movers": 151,
+   "sd_value_pts_per_game": 0.506
+  },
+  "DB": {
+   "n": 1296,
+   "yoy_r_mean_value": 0.809,
+   "yoy_r_end_value": 0.861,
+   "stayers_r": 0.815,
+   "movers_r": 0.774,
+   "n_movers": 262,
+   "sd_value_pts_per_game": 0.495
+  }
+ },
+ "E_face_validity": {
+  "2010": {
+   "QB": {
+    "top": [
+     "Philip Rivers (LAC) +5.35",
+     "Tom Brady (NE) +5.31",
+     "Aaron Rodgers (GB) +5.15",
+     "Peyton Manning (IND) +3.86",
+     "Drew Brees (NO) +3.36",
+     "Matt Ryan (ATL) +2.86",
+     "Ben Roethlisberger (PIT) +2.76",
+     "Matt Schaub (HOU) +2.21"
+    ],
+    "bottom": [
+     "Mark Sanchez (NYJ) -1.18",
+     "Matt Hasselbeck (SEA) -2.04",
+     "Alex Smith (SF) -2.17",
+     "Sam Bradford (LA) -3.15",
+     "Jimmy Clausen (CAR) -8.18"
+    ]
+   },
+   "WR": {
+    "top": [
+     "Greg Jennings (GB) +0.83",
+     "Dwayne Bowe (KC) +0.58",
+     "Hakeem Nicks (NYG) +0.48",
+     "Marques Colston (NO) +0.46",
+     "Brandon Lloyd (DEN) +0.44",
+     "Mike Wallace (PIT) +0.43",
+     "Kenny Britt (TEN) +0.42",
+     "Steve Smith (NYG) +0.40"
+    ],
+    "bottom": [
+     "Early Doucet (ARI) -0.29",
+     "Danny Amendola (LA) -0.35",
+     "Eddie Royal (DEN) -0.35",
+     "Chansi Stuckey (CLE) -0.40",
+     "Dexter McCluster (KC) -0.43"
+    ]
+   },
+   "TE": {
+    "top": [
+     "Antonio Gates (LAC) +0.44",
+     "Rob Gronkowski (NE) +0.39",
+     "Tony Gonzalez (ATL) +0.29",
+     "Heath Miller (PIT) +0.28",
+     "Vernon Davis (SF) +0.24",
+     "Zach Miller (LV) +0.19",
+     "Brent Celek (PHI) +0.17",
+     "Visanthe Shiancoe (MIN) +0.17"
+    ],
+    "bottom": [
+     "Martellus Bennett (DAL) -0.15",
+     "Delanie Walker (SF) -0.16",
+     "Mike Sellers (WAS) -0.17",
+     "Dante Rosario (CAR) -0.20",
+     "Jermaine Gresham (CIN) -0.28"
+    ]
+   },
+   "RB": {
+    "top": [
+     "Jamaal Charles (KC) +1.72",
+     "Arian Foster (HOU) +0.98",
+     "Chris Ivory (NO) +0.81",
+     "BenJarvus Green-Ellis (NE) +0.78",
+     "LeGarrette Blount (TB) +0.66",
+     "Adrian Peterson (MIN) +0.54",
+     "Mike Tolbert (LAC) +0.42",
+     "LeSean McCoy (PHI) +0.31"
+    ],
+    "bottom": [
+     "Ahmad Bradshaw (NYG) -0.39",
+     "Marshawn Lynch (SEA) -0.42",
+     "Steven Jackson (LA) -0.58",
+     "Jahvid Best (DET) -0.71",
+     "Cedric Benson (CIN) -0.86"
+    ]
+   },
+   "DL": {
+    "top": [
+     "Jared Allen (MIN) +1.50",
+     "Justin Tuck (NYG) +1.39",
+     "Ndamukong Suh (DET) +1.22",
+     "Julius Peppers (CHI) +1.08",
+     "Charles Johnson (CAR) +1.04",
+     "Mario Williams (HOU) +1.00",
+     "Kyle Williams (BUF) +0.84",
+     "Ray Edwards (MIN) +0.80"
+    ],
+    "bottom": [
+     "Ray McDonald (SF) -0.61",
+     "Nick Eason (PIT) -0.62",
+     "Derreck Robinson (CLE) -0.76",
+     "Ryan McBean (DEN) -0.79",
+     "Keyunta Dawson (IND) -0.82"
+    ]
+   },
+   "LB": {
+    "top": [
+     "James Harrison (PIT) +1.97",
+     "DeMarcus Ware (DAL) +1.77",
+     "Cameron Wake (MIA) +1.48",
+     "Terrell Suggs (BAL) +1.34",
+     "Clay Matthews (GB) +1.33",
+     "LaMarr Woodley (PIT) +1.25",
+     "Brian Cushing (HOU) +1.24",
+     "Trent Cole (PHI) +1.16"
+    ],
+    "bottom": [
+     "Will Herring (SEA) -0.69",
+     "Dannell Ellerbe (BAL) -0.70",
+     "Philip Wheeler (IND) -0.78",
+     "Marvin Mitchell (NO) -0.84",
+     "Scott Shanle (NO) -1.10"
+    ]
+   },
+   "DB": {
+    "top": [
+     "Charles Woodson (GB) +2.67",
+     "Terrell Thomas (NYG) +2.24",
+     "Asante Samuel (PHI) +1.51",
+     "Aqib Talib (TB) +1.48",
+     "Kelvin Hayden (IND) +1.46",
+     "Ronde Barber (TB) +1.44",
+     "Tramon Williams (GB) +1.39",
+     "Antoine Winfield (MIN) +1.37"
+    ],
+    "bottom": [
+     "Jim Leonhard (NYJ) -0.73",
+     "Aaron Francisco (IND) -0.79",
+     "Eugene Wilson (HOU) -1.01",
+     "Marcus Trufant (SEA) -1.09",
+     "Reggie Nelson (CIN) -1.10"
+    ]
+   }
+  },
+  "2015": {
+   "QB": {
+    "top": [
+     "Russell Wilson (SEA) +4.90",
+     "Carson Palmer (ARI) +4.23",
+     "Ben Roethlisberger (PIT) +3.86",
+     "Andy Dalton (CIN) +2.87",
+     "Tom Brady (NE) +2.84",
+     "Kirk Cousins (WAS) +2.71",
+     "Drew Brees (NO) +2.46",
+     "Cam Newton (CAR) +2.19"
+    ],
+    "bottom": [
+     "Sam Bradford (PHI) -1.74",
+     "Blake Bortles (JAX) -1.99",
+     "Brian Hoyer (HOU) -2.04",
+     "Derek Carr (LV) -2.50",
+     "Nick Foles (LA) -3.31"
+    ]
+   },
+   "WR": {
+    "top": [
+     "Odell Beckham Jr. (NYG) +1.25",
+     "Julio Jones (ATL) +0.93",
+     "DeAndre Hopkins (HOU) +0.91",
+     "Antonio Brown (PIT) +0.86",
+     "Doug Baldwin (SEA) +0.86",
+     "Sammy Watkins (BUF) +0.85",
+     "Calvin Johnson (DET) +0.76",
+     "Jeremy Maclin (KC) +0.73"
+    ],
+    "bottom": [
+     "Keshawn Martin (NE) -0.37",
+     "Harry Douglas (TEN) -0.38",
+     "Davante Adams (GB) -0.42",
+     "De'Anthony Thomas (KC) -0.46",
+     "Dexter McCluster (TEN) -0.76"
+    ]
+   },
+   "TE": {
+    "top": [
+     "Rob Gronkowski (NE) +0.81",
+     "Greg Olsen (CAR) +0.75",
+     "Jordan Reed (WAS) +0.43",
+     "Jordan Matthews (PHI) +0.42",
+     "Travis Kelce (KC) +0.40",
+     "Tyler Eifert (CIN) +0.31",
+     "Gary Barnidge (CLE) +0.28",
+     "Jimmy Graham (SEA) +0.22"
+    ],
+    "bottom": [
+     "Coby Fleener (IND) -0.22",
+     "James Hanna (DAL) -0.23",
+     "Jacob Tamme (ATL) -0.24",
+     "Jack Doyle (IND) -0.29",
+     "Martellus Bennett (CHI) -0.37"
+    ]
+   },
+   "RB": {
+    "top": [
+     "David Johnson (ARI) +0.78",
+     "Thomas Rawls (SEA) +0.53",
+     "Karlos Williams (BUF) +0.53",
+     "Spencer Ware (KC) +0.48",
+     "Doug Martin (TB) +0.36",
+     "Jeremy Langford (CHI) +0.34",
+     "Adrian Peterson (MIN) +0.31",
+     "Joique Bell (DET) +0.29"
+    ],
+    "bottom": [
+     "Antonio Andrews (TEN) -0.60",
+     "Chris Ivory (NYJ) -0.67",
+     "Javorius Allen (BAL) -0.67",
+     "Matt Jones (WAS) -0.75",
+     "Melvin Gordon (LAC) -1.20"
+    ]
+   },
+   "DL": {
+    "top": [
+     "J.J. Watt (HOU) +2.58",
+     "Aaron Donald (LA) +1.52",
+     "Ndamukong Suh (MIA) +1.14",
+     "Muhammad Wilkerson (NYJ) +1.11",
+     "Carlos Dunlap (CIN) +1.11",
+     "Fletcher Cox (PHI) +1.06",
+     "Michael Bennett (SEA) +1.04",
+     "Ezekiel Ansah (DET) +1.02"
+    ],
+    "bottom": [
+     "Tony Jerod-Eddie (SF) -0.60",
+     "Will Clarke (CIN) -0.61",
+     "Demarcus Dobbs (SEA) -0.62",
+     "Taylor Hart (PHI) -0.64",
+     "Kedric Golston (WAS) -0.68"
+    ]
+   },
+   "LB": {
+    "top": [
+     "Justin Houston (KC) +1.50",
+     "Khalil Mack (LV) +1.26",
+     "Luke Kuechly (CAR) +1.26",
+     "Von Miller (DEN) +1.07",
+     "Lavonte David (TB) +1.03",
+     "Karlos Dansby (CLE) +0.83",
+     "Clay Matthews (GB) +0.83",
+     "Melvin Ingram (LAC) +0.83"
+    ],
+    "bottom": [
+     "Chris Carter (CIN) -0.69",
+     "Vincent Rey (CIN) -0.69",
+     "Mark Herzlich (NYG) -0.69",
+     "Corey Lemonier (SF) -0.75",
+     "Emmanuel Lamur (CIN) -0.91"
+    ]
+   },
+   "DB": {
+    "top": [
+     "Marcus Peters (KC) +1.99",
+     "Trumaine Johnson (LA) +1.78",
+     "Vontae Davis (IND) +1.56",
+     "Janoris Jenkins (LA) +1.52",
+     "Tyrann Mathieu (ARI) +1.42",
+     "Dominique Rodgers-Cromartie (NYG) +1.14",
+     "Aqib Talib (DEN) +1.10",
+     "Kam Chancellor (SEA) +1.06"
+    ],
+    "bottom": [
+     "Michael Thomas (MIA) -0.88",
+     "Devin McCourty (NE) -0.90",
+     "Josh Evans (JAX) -0.94",
+     "Mike Mitchell (PIT) -1.06",
+     "Robert Blanton (MIN) -1.20"
+    ]
+   }
+  }
+ },
+ "E_value_scale_by_position": {
+  "DB": {
+   "count": 2054.0,
+   "mean": 0.061,
+   "std": 0.478,
+   "min": -1.35,
+   "10%": -0.458,
+   "50%": -0.014,
+   "90%": 0.681,
+   "max": 2.849
+  },
+  "DL": {
+   "count": 1994.0,
+   "mean": 0.004,
+   "std": 0.401,
+   "min": -0.803,
+   "10%": -0.429,
+   "50%": -0.067,
+   "90%": 0.539,
+   "max": 2.746
+  },
+  "LB": {
+   "count": 1526.0,
+   "mean": 0.021,
+   "std": 0.483,
+   "min": -1.256,
+   "10%": -0.521,
+   "50%": -0.07,
+   "90%": 0.672,
+   "max": 1.924
+  },
+  "OL": {
+   "count": 81.0,
+   "mean": 0.002,
+   "std": 0.03,
+   "min": -0.085,
+   "10%": -0.013,
+   "50%": 0.003,
+   "90%": 0.004,
+   "max": 0.143
+  },
+  "QB": {
+   "count": 362.0,
+   "mean": 0.078,
+   "std": 2.171,
+   "min": -5.426,
+   "10%": -2.717,
+   "50%": -0.02,
+   "90%": 2.985,
+   "max": 6.019
+  },
+  "RB": {
+   "count": 1044.0,
+   "mean": -0.014,
+   "std": 0.223,
+   "min": -0.912,
+   "10%": -0.27,
+   "50%": -0.003,
+   "90%": 0.204,
+   "max": 1.156
+  },
+  "TE": {
+   "count": 701.0,
+   "mean": -0.001,
+   "std": 0.146,
+   "min": -0.396,
+   "10%": -0.133,
+   "50%": -0.022,
+   "90%": 0.145,
+   "max": 0.958
+  },
+  "WR": {
+   "count": 1303.0,
+   "mean": 0.024,
+   "std": 0.222,
+   "min": -0.716,
+   "10%": -0.226,
+   "50%": 0.002,
+   "90%": 0.297,
+   "max": 1.13
+  }
+ }
+}

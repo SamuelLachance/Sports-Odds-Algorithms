@@ -1,0 +1,21 @@
+{
+ "games": 1230,
+ "games_no_events": 0,
+ "shift_rows_no_roster": 0,
+ "dup_player_intervals": 0,
+ "ev1551": 105692,
+ "ev1551_in_kept": 105349,
+ "ev_in_kept_not1551": 170,
+ "kept_seconds": 3454641.0,
+ "faceoff_starts": 45976,
+ "kept_intervals": 264673,
+ "alt_conv_ev1551_in_kept": 104983,
+ "xg_filled": 87,
+ "xg_fill_fallback": 0,
+ "season": 20102011,
+ "share_1551_events_in_kept": 0.9967547212655641,
+ "share_1551_events_in_kept_ALT_convention": 0.9932918290882943,
+ "share_kept_events_not_1551": 0.0016110842597067826,
+ "kept_hours": 959.6225,
+ "seconds": 23.2
+}

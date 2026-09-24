@@ -1,0 +1,21 @@
+{
+ "games": 1312,
+ "games_no_events": 0,
+ "shift_rows_no_roster": 0,
+ "dup_player_intervals": 7,
+ "ev1551": 119790,
+ "ev1551_in_kept": 119431,
+ "ev_in_kept_not1551": 76,
+ "kept_seconds": 3794851.0,
+ "faceoff_starts": 49281,
+ "kept_intervals": 442783,
+ "alt_conv_ev1551_in_kept": 119234,
+ "xg_filled": 72,
+ "xg_fill_fallback": 0,
+ "season": 20222023,
+ "share_1551_events_in_kept": 0.997003088738626,
+ "share_1551_events_in_kept_ALT_convention": 0.9953585441188747,
+ "share_kept_events_not_1551": 0.0006359460115307053,
+ "kept_hours": 1054.1252777777777,
+ "seconds": 24.4
+}

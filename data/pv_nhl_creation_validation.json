@@ -1,0 +1,3895 @@
+{
+ "component": "NHL creation",
+ "protocol": {
+  "dev_only": true,
+  "max_gid": 2018000000,
+  "eval_seasons": [
+   20112012,
+   20122013,
+   20132014,
+   20142015,
+   20152016,
+   20162017,
+   20172018
+  ],
+  "test_seasons_touched": 0,
+  "market_inputs": 0
+ },
+ "reliability": {
+  "F": {
+   "ixg_ev": {
+    "split_half_r": 0.569,
+    "split_half_n": 2619,
+    "spearman_brown_full_season": 0.725,
+    "median_half_minutes": 452,
+    "k_minutes_implied": 342,
+    "yoy_r": 0.639,
+    "yoy_n": 1798
+   },
+   "icf_ev": {
+    "split_half_r": 0.819,
+    "split_half_n": 2619,
+    "spearman_brown_full_season": 0.901,
+    "median_half_minutes": 452,
+    "k_minutes_implied": 100,
+    "yoy_r": 0.807,
+    "yoy_n": 1798
+   },
+   "iff_ev": {
+    "split_half_r": 0.772,
+    "split_half_n": 2619,
+    "spearman_brown_full_season": 0.872,
+    "median_half_minutes": 452,
+    "k_minutes_implied": 133,
+    "yoy_r": 0.784,
+    "yoy_n": 1798
+   },
+   "isf_ev": {
+    "split_half_r": 0.716,
+    "split_half_n": 2619,
+    "spearman_brown_full_season": 0.835,
+    "median_half_minutes": 452,
+    "k_minutes_implied": 179,
+    "yoy_r": 0.751,
+    "yoy_n": 1798
+   },
+   "g_ev": {
+    "split_half_r": 0.252,
+    "split_half_n": 2619,
+    "spearman_brown_full_season": 0.402,
+    "median_half_minutes": 452,
+    "k_minutes_implied": 1343,
+    "yoy_r": 0.371,
+    "yoy_n": 1798
+   },
+   "a1_ev": {
+    "split_half_r": 0.255,
+    "split_half_n": 2619,
+    "spearman_brown_full_season": 0.407,
+    "median_half_minutes": 452,
+    "k_minutes_implied": 1316,
+    "yoy_r": 0.353,
+    "yoy_n": 1798
+   },
+   "a2_ev": {
+    "split_half_r": 0.121,
+    "split_half_n": 2619,
+    "spearman_brown_full_season": 0.215,
+    "median_half_minutes": 452,
+    "k_minutes_implied": 3289,
+    "yoy_r": 0.192,
+    "yoy_n": 1798
+   },
+   "ireb_ev": {
+    "split_half_r": 0.174,
+    "split_half_n": 2619,
+    "spearman_brown_full_season": 0.297,
+    "median_half_minutes": 452,
+    "k_minutes_implied": 2138,
+    "yoy_r": 0.236,
+    "yoy_n": 1798
+   },
+   "irush_ev": {
+    "split_half_r": 0.234,
+    "split_half_n": 2619,
+    "spearman_brown_full_season": 0.379,
+    "median_half_minutes": 452,
+    "k_minutes_implied": 1482,
+    "yoy_r": 0.303,
+    "yoy_n": 1798
+   },
+   "irc_ev": {
+    "split_half_r": 0.181,
+    "split_half_n": 2619,
+    "spearman_brown_full_season": 0.307,
+    "median_half_minutes": 452,
+    "k_minutes_implied": 2041,
+    "yoy_r": 0.31,
+    "yoy_n": 1798
+   },
+   "on_gf_ev": {
+    "split_half_r": 0.376,
+    "split_half_n": 2619,
+    "spearman_brown_full_season": 0.546,
+    "median_half_minutes": 452,
+    "k_minutes_implied": 750,
+    "yoy_r": 0.453,
+    "yoy_n": 1798
+   },
+   "on_xgf_ev": {
+    "split_half_r": 0.605,
+    "split_half_n": 2619,
+    "spearman_brown_full_season": 0.754,
+    "median_half_minutes": 452,
+    "k_minutes_implied": 294,
+    "yoy_r": 0.562,
+    "yoy_n": 1798
+   },
+   "on_cf_ev": {
+    "split_half_r": 0.765,
+    "split_half_n": 2619,
+    "spearman_brown_full_season": 0.867,
+    "median_half_minutes": 452,
+    "k_minutes_implied": 139,
+    "yoy_r": 0.63,
+    "yoy_n": 1798
+   },
+   "pts_ev (cre_ev raw)": {
+    "split_half_r": 0.398,
+    "split_half_n": 2619,
+    "spearman_brown_full_season": 0.569,
+    "median_half_minutes": 452,
+    "k_minutes_implied": 683,
+    "yoy_r": 0.48,
+    "yoy_n": 1798
+   },
+   "pts_ev+ixg (cre_evx raw)": {
+    "split_half_r": 0.465,
+    "split_half_n": 2619,
+    "spearman_brown_full_season": 0.635,
+    "median_half_minutes": 452,
+    "k_minutes_implied": 519,
+    "yoy_r": 0.531,
+    "yoy_n": 1798
+   },
+   "fin_ev (g-ixg)": {
+    "split_half_r": 0.101,
+    "split_half_n": 2619,
+    "spearman_brown_full_season": 0.183,
+    "median_half_minutes": 452,
+    "k_minutes_implied": 4029,
+    "yoy_r": 0.189,
+    "yoy_n": 1798
+   },
+   "rel_gf": {
+    "split_half_r": 0.393,
+    "split_half_n": 2619,
+    "spearman_brown_full_season": 0.564,
+    "median_half_minutes": 452,
+    "k_minutes_implied": 698,
+    "yoy_r": 0.455,
+    "yoy_n": 1798
+   },
+   "rel_xgf": {
+    "split_half_r": 0.602,
+    "split_half_n": 2619,
+    "spearman_brown_full_season": 0.752,
+    "median_half_minutes": 452,
+    "k_minutes_implied": 298,
+    "yoy_r": 0.591,
+    "yoy_n": 1798
+   },
+   "ixg_pp": {
+    "split_half_r": 0.304,
+    "split_half_n": 1462,
+    "spearman_brown_full_season": 0.467,
+    "median_half_minutes": 92,
+    "k_minutes_implied": 210,
+    "yoy_r": 0.397,
+    "yoy_n": 1017
+   },
+   "g_pp": {
+    "split_half_r": 0.165,
+    "split_half_n": 1462,
+    "spearman_brown_full_season": 0.283,
+    "median_half_minutes": 92,
+    "k_minutes_implied": 466,
+    "yoy_r": 0.236,
+    "yoy_n": 1017
+   },
+   "a1_pp": {
+    "split_half_r": 0.191,
+    "split_half_n": 1462,
+    "spearman_brown_full_season": 0.321,
+    "median_half_minutes": 92,
+    "k_minutes_implied": 389,
+    "yoy_r": 0.276,
+    "yoy_n": 1017
+   },
+   "on_gf_pp": {
+    "split_half_r": 0.194,
+    "split_half_n": 1462,
+    "spearman_brown_full_season": 0.325,
+    "median_half_minutes": 92,
+    "k_minutes_implied": 381,
+    "yoy_r": 0.282,
+    "yoy_n": 1017
+   },
+   "on_xgf_pp": {
+    "split_half_r": 0.329,
+    "split_half_n": 1462,
+    "spearman_brown_full_season": 0.495,
+    "median_half_minutes": 92,
+    "k_minutes_implied": 187,
+    "yoy_r": 0.376,
+    "yoy_n": 1017
+   },
+   "pts_pp (cre_pp raw)": {
+    "split_half_r": 0.244,
+    "split_half_n": 1462,
+    "spearman_brown_full_season": 0.392,
+    "median_half_minutes": 92,
+    "k_minutes_implied": 285,
+    "yoy_r": 0.334,
+    "yoy_n": 1017
+   },
+   "pdrawn": {
+    "split_half_r": 0.562,
+    "split_half_n": 2619,
+    "spearman_brown_full_season": 0.72,
+    "median_half_minutes": 452,
+    "k_minutes_implied": 352,
+    "yoy_r": 0.727,
+    "yoy_n": 1798
+   }
+  },
+  "D": {
+   "ixg_ev": {
+    "split_half_r": 0.633,
+    "split_half_n": 1544,
+    "spearman_brown_full_season": 0.776,
+    "median_half_minutes": 544,
+    "k_minutes_implied": 315,
+    "yoy_r": 0.688,
+    "yoy_n": 1084
+   },
+   "icf_ev": {
+    "split_half_r": 0.812,
+    "split_half_n": 1544,
+    "spearman_brown_full_season": 0.896,
+    "median_half_minutes": 544,
+    "k_minutes_implied": 126,
+    "yoy_r": 0.752,
+    "yoy_n": 1084
+   },
+   "iff_ev": {
+    "split_half_r": 0.759,
+    "split_half_n": 1544,
+    "spearman_brown_full_season": 0.863,
+    "median_half_minutes": 544,
+    "k_minutes_implied": 173,
+    "yoy_r": 0.736,
+    "yoy_n": 1084
+   },
+   "isf_ev": {
+    "split_half_r": 0.713,
+    "split_half_n": 1544,
+    "spearman_brown_full_season": 0.833,
+    "median_half_minutes": 544,
+    "k_minutes_implied": 219,
+    "yoy_r": 0.719,
+    "yoy_n": 1084
+   },
+   "g_ev": {
+    "split_half_r": 0.203,
+    "split_half_n": 1544,
+    "spearman_brown_full_season": 0.338,
+    "median_half_minutes": 544,
+    "k_minutes_implied": 2131,
+    "yoy_r": 0.274,
+    "yoy_n": 1084
+   },
+   "a1_ev": {
+    "split_half_r": 0.165,
+    "split_half_n": 1544,
+    "spearman_brown_full_season": 0.284,
+    "median_half_minutes": 544,
+    "k_minutes_implied": 2744,
+    "yoy_r": 0.245,
+    "yoy_n": 1084
+   },
+   "a2_ev": {
+    "split_half_r": 0.106,
+    "split_half_n": 1544,
+    "spearman_brown_full_season": 0.192,
+    "median_half_minutes": 544,
+    "k_minutes_implied": 4567,
+    "yoy_r": 0.092,
+    "yoy_n": 1084
+   },
+   "ireb_ev": {
+    "split_half_r": 0.138,
+    "split_half_n": 1544,
+    "spearman_brown_full_season": 0.242,
+    "median_half_minutes": 544,
+    "k_minutes_implied": 3406,
+    "yoy_r": 0.196,
+    "yoy_n": 1084
+   },
+   "irush_ev": {
+    "split_half_r": 0.17,
+    "split_half_n": 1544,
+    "spearman_brown_full_season": 0.29,
+    "median_half_minutes": 544,
+    "k_minutes_implied": 2659,
+    "yoy_r": 0.196,
+    "yoy_n": 1084
+   },
+   "irc_ev": {
+    "split_half_r": 0.157,
+    "split_half_n": 1544,
+    "spearman_brown_full_season": 0.271,
+    "median_half_minutes": 544,
+    "k_minutes_implied": 2930,
+    "yoy_r": 0.257,
+    "yoy_n": 1084
+   },
+   "on_gf_ev": {
+    "split_half_r": 0.144,
+    "split_half_n": 1544,
+    "spearman_brown_full_season": 0.252,
+    "median_half_minutes": 544,
+    "k_minutes_implied": 3236,
+    "yoy_r": 0.248,
+    "yoy_n": 1084
+   },
+   "on_xgf_ev": {
+    "split_half_r": 0.469,
+    "split_half_n": 1544,
+    "spearman_brown_full_season": 0.639,
+    "median_half_minutes": 544,
+    "k_minutes_implied": 615,
+    "yoy_r": 0.379,
+    "yoy_n": 1084
+   },
+   "on_cf_ev": {
+    "split_half_r": 0.688,
+    "split_half_n": 1544,
+    "spearman_brown_full_season": 0.815,
+    "median_half_minutes": 544,
+    "k_minutes_implied": 246,
+    "yoy_r": 0.504,
+    "yoy_n": 1084
+   },
+   "pts_ev (cre_ev raw)": {
+    "split_half_r": 0.283,
+    "split_half_n": 1544,
+    "spearman_brown_full_season": 0.441,
+    "median_half_minutes": 544,
+    "k_minutes_implied": 1377,
+    "yoy_r": 0.362,
+    "yoy_n": 1084
+   },
+   "pts_ev+ixg (cre_evx raw)": {
+    "split_half_r": 0.359,
+    "split_half_n": 1544,
+    "spearman_brown_full_season": 0.528,
+    "median_half_minutes": 544,
+    "k_minutes_implied": 972,
+    "yoy_r": 0.439,
+    "yoy_n": 1084
+   },
+   "fin_ev (g-ixg)": {
+    "split_half_r": 0.043,
+    "split_half_n": 1544,
+    "spearman_brown_full_season": 0.082,
+    "median_half_minutes": 544,
+    "k_minutes_implied": 12177,
+    "yoy_r": 0.047,
+    "yoy_n": 1084
+   },
+   "rel_gf": {
+    "split_half_r": 0.09,
+    "split_half_n": 1544,
+    "spearman_brown_full_season": 0.165,
+    "median_half_minutes": 544,
+    "k_minutes_implied": 5520,
+    "yoy_r": 0.19,
+    "yoy_n": 1084
+   },
+   "rel_xgf": {
+    "split_half_r": 0.277,
+    "split_half_n": 1544,
+    "spearman_brown_full_season": 0.433,
+    "median_half_minutes": 544,
+    "k_minutes_implied": 1423,
+    "yoy_r": 0.326,
+    "yoy_n": 1084
+   },
+   "ixg_pp": {
+    "split_half_r": 0.339,
+    "split_half_n": 576,
+    "spearman_brown_full_season": 0.506,
+    "median_half_minutes": 94,
+    "k_minutes_implied": 184,
+    "yoy_r": 0.318,
+    "yoy_n": 388
+   },
+   "g_pp": {
+    "split_half_r": 0.134,
+    "split_half_n": 576,
+    "spearman_brown_full_season": 0.237,
+    "median_half_minutes": 94,
+    "k_minutes_implied": 609,
+    "yoy_r": 0.201,
+    "yoy_n": 388
+   },
+   "a1_pp": {
+    "split_half_r": 0.085,
+    "split_half_n": 576,
+    "spearman_brown_full_season": 0.158,
+    "median_half_minutes": 94,
+    "k_minutes_implied": 1010,
+    "yoy_r": 0.165,
+    "yoy_n": 388
+   },
+   "on_gf_pp": {
+    "split_half_r": 0.083,
+    "split_half_n": 576,
+    "spearman_brown_full_season": 0.153,
+    "median_half_minutes": 94,
+    "k_minutes_implied": 1048,
+    "yoy_r": 0.177,
+    "yoy_n": 388
+   },
+   "on_xgf_pp": {
+    "split_half_r": 0.286,
+    "split_half_n": 576,
+    "spearman_brown_full_season": 0.444,
+    "median_half_minutes": 94,
+    "k_minutes_implied": 236,
+    "yoy_r": 0.3,
+    "yoy_n": 388
+   },
+   "pts_pp (cre_pp raw)": {
+    "split_half_r": 0.125,
+    "split_half_n": 576,
+    "spearman_brown_full_season": 0.223,
+    "median_half_minutes": 94,
+    "k_minutes_implied": 659,
+    "yoy_r": 0.178,
+    "yoy_n": 388
+   },
+   "pdrawn": {
+    "split_half_r": 0.483,
+    "split_half_n": 1544,
+    "spearman_brown_full_season": 0.652,
+    "median_half_minutes": 544,
+    "k_minutes_implied": 582,
+    "yoy_r": 0.592,
+    "yoy_n": 1084
+   }
+  }
+ },
+ "hyper_grid_cre_ev_vs_T_on_gf": {
+  "H=80.0|prior=all": {
+   "F": 0.4851,
+   "D": 0.2366,
+   "mean": 0.3608
+  },
+  "H=80.0|prior=fringe": {
+   "F": 0.4815,
+   "D": 0.2405,
+   "mean": 0.361
+  },
+  "H=160.0|prior=all": {
+   "F": 0.485,
+   "D": 0.2322,
+   "mean": 0.3586
+  },
+  "H=160.0|prior=fringe": {
+   "F": 0.4804,
+   "D": 0.2349,
+   "mean": 0.3577
+  },
+  "H=320.0|prior=all": {
+   "F": 0.4803,
+   "D": 0.2269,
+   "mean": 0.3536
+  },
+  "H=320.0|prior=fringe": {
+   "F": 0.4749,
+   "D": 0.2288,
+   "mean": 0.3519
+  },
+  "H=inf|prior=all": {
+   "F": 0.4721,
+   "D": 0.2194,
+   "mean": 0.3457
+  },
+  "H=inf|prior=fringe": {
+   "F": 0.4662,
+   "D": 0.2206,
+   "mean": 0.3434
+  }
+ },
+ "chosen": {
+  "half_life_games": 80.0,
+  "prior": "fringe"
+ },
+ "predict_season_start": {
+  "F": {
+   "n_player_seasons": 2274,
+   "n_players": 626,
+   "T_on_gf": {
+    "cre_ev": {
+     "r": 0.4815,
+     "ci": [
+      0.4433,
+      0.5166
+     ],
+     "delta_vs_rapm_off": 0.1367,
+     "delta_ci": [
+      0.0866,
+      0.1811
+     ]
+    },
+    "cre_evx": {
+     "r": 0.4778,
+     "ci": [
+      0.4373,
+      0.5175
+     ],
+     "delta_vs_rapm_off": 0.133,
+     "delta_ci": [
+      0.0894,
+      0.175
+     ]
+    },
+    "g_ev_hat": {
+     "r": 0.388,
+     "ci": [
+      0.3409,
+      0.4343
+     ],
+     "delta_vs_rapm_off": 0.0432,
+     "delta_ci": [
+      -0.0118,
+      0.0948
+     ]
+    },
+    "a1_ev_hat": {
+     "r": 0.3762,
+     "ci": [
+      0.3351,
+      0.415
+     ],
+     "delta_vs_rapm_off": 0.0314,
+     "delta_ci": [
+      -0.0251,
+      0.081
+     ]
+    },
+    "a2_ev_hat": {
+     "r": 0.2809,
+     "ci": [
+      0.2318,
+      0.3265
+     ],
+     "delta_vs_rapm_off": -0.064,
+     "delta_ci": [
+      -0.1264,
+      -0.0025
+     ]
+    },
+    "ixg_ev_hat": {
+     "r": 0.3029,
+     "ci": [
+      0.2488,
+      0.3553
+     ],
+     "delta_vs_rapm_off": -0.0419,
+     "delta_ci": [
+      -0.0933,
+      0.0068
+     ]
+    },
+    "icf_ev_hat": {
+     "r": 0.2544,
+     "ci": [
+      0.1987,
+      0.3116
+     ],
+     "delta_vs_rapm_off": -0.0905,
+     "delta_ci": [
+      -0.1508,
+      -0.0293
+     ]
+    },
+    "fin_ev_hat": {
+     "r": 0.0847,
+     "ci": [
+      0.0313,
+      0.138
+     ],
+     "delta_vs_rapm_off": -0.2601,
+     "delta_ci": [
+      -0.34,
+      -0.1812
+     ]
+    },
+    "irush_ev_hat": {
+     "r": 0.1454,
+     "ci": [
+      0.0888,
+      0.2005
+     ],
+     "delta_vs_rapm_off": -0.1994,
+     "delta_ci": [
+      -0.2651,
+      -0.1278
+     ]
+    },
+    "ireb_ev_hat": {
+     "r": 0.0908,
+     "ci": [
+      0.0386,
+      0.1437
+     ],
+     "delta_vs_rapm_off": -0.2541,
+     "delta_ci": [
+      -0.3121,
+      -0.1986
+     ]
+    },
+    "irc_ev_hat": {
+     "r": 0.117,
+     "ci": [
+      0.0644,
+      0.1692
+     ],
+     "delta_vs_rapm_off": -0.2278,
+     "delta_ci": [
+      -0.2823,
+      -0.1766
+     ]
+    },
+    "on_gf_ev_hat": {
+     "r": 0.4946,
+     "ci": [
+      0.455,
+      0.5298
+     ],
+     "delta_vs_rapm_off": 0.1498,
+     "delta_ci": [
+      0.102,
+      0.1939
+     ]
+    },
+    "on_xgf_ev_hat": {
+     "r": 0.4714,
+     "ci": [
+      0.4285,
+      0.5077
+     ],
+     "delta_vs_rapm_off": 0.1266,
+     "delta_ci": [
+      0.0944,
+      0.1557
+     ]
+    },
+    "on_cf_ev_hat": {
+     "r": 0.4365,
+     "ci": [
+      0.3947,
+      0.4767
+     ],
+     "delta_vs_rapm_off": 0.0917,
+     "delta_ci": [
+      0.0513,
+      0.1303
+     ]
+    },
+    "rel_gf_hat": {
+     "r": 0.4454,
+     "ci": [
+      0.4038,
+      0.4858
+     ],
+     "delta_vs_rapm_off": 0.1006,
+     "delta_ci": [
+      0.0505,
+      0.1487
+     ]
+    },
+    "rel_xgf_hat": {
+     "r": 0.4614,
+     "ci": [
+      0.42,
+      0.5017
+     ],
+     "delta_vs_rapm_off": 0.1166,
+     "delta_ci": [
+      0.0831,
+      0.1486
+     ]
+    },
+    "rapm_off": {
+     "r": 0.3448,
+     "ci": [
+      0.2967,
+      0.3912
+     ],
+     "delta_vs_rapm_off": 0.0,
+     "delta_ci": [
+      0.0,
+      0.0
+     ]
+    },
+    "rapm_off_s": {
+     "r": 0.3295,
+     "ci": [
+      0.2838,
+      0.3749
+     ],
+     "delta_vs_rapm_off": -0.0154,
+     "delta_ci": [
+      -0.0238,
+      -0.0062
+     ]
+    },
+    "rapm_net_v": {
+     "r": 0.2497,
+     "ci": [
+      0.1961,
+      0.3009
+     ],
+     "delta_vs_rapm_off": -0.0951,
+     "delta_ci": [
+      -0.1338,
+      -0.058
+     ]
+    }
+   },
+   "T_rel_gf": {
+    "cre_ev": {
+     "r": 0.4834,
+     "ci": [
+      0.449,
+      0.5142
+     ],
+     "delta_vs_rapm_off": 0.1457,
+     "delta_ci": [
+      0.1049,
+      0.1904
+     ]
+    },
+    "cre_evx": {
+     "r": 0.4725,
+     "ci": [
+      0.4361,
+      0.5113
+     ],
+     "delta_vs_rapm_off": 0.1349,
+     "delta_ci": [
+      0.0988,
+      0.1766
+     ]
+    },
+    "g_ev_hat": {
+     "r": 0.3741,
+     "ci": [
+      0.3295,
+      0.417
+     ],
+     "delta_vs_rapm_off": 0.0365,
+     "delta_ci": [
+      -0.0129,
+      0.0882
+     ]
+    },
+    "a1_ev_hat": {
+     "r": 0.3878,
+     "ci": [
+      0.3472,
+      0.4214
+     ],
+     "delta_vs_rapm_off": 0.0502,
+     "delta_ci": [
+      0.0028,
+      0.1
+     ]
+    },
+    "ixg_ev_hat": {
+     "r": 0.2876,
+     "ci": [
+      0.2317,
+      0.3447
+     ],
+     "delta_vs_rapm_off": -0.0501,
+     "delta_ci": [
+      -0.0985,
+      -0.0037
+     ]
+    },
+    "on_gf_ev_hat": {
+     "r": 0.4791,
+     "ci": [
+      0.4436,
+      0.5125
+     ],
+     "delta_vs_rapm_off": 0.1415,
+     "delta_ci": [
+      0.099,
+      0.1857
+     ]
+    },
+    "on_xgf_ev_hat": {
+     "r": 0.4476,
+     "ci": [
+      0.4068,
+      0.4845
+     ],
+     "delta_vs_rapm_off": 0.1099,
+     "delta_ci": [
+      0.0812,
+      0.1417
+     ]
+    },
+    "rel_gf_hat": {
+     "r": 0.4971,
+     "ci": [
+      0.4606,
+      0.5325
+     ],
+     "delta_vs_rapm_off": 0.1594,
+     "delta_ci": [
+      0.1156,
+      0.2059
+     ]
+    },
+    "rapm_off": {
+     "r": 0.3376,
+     "ci": [
+      0.2893,
+      0.3817
+     ],
+     "delta_vs_rapm_off": 0.0,
+     "delta_ci": [
+      0.0,
+      0.0
+     ]
+    }
+   },
+   "T_pts": {
+    "cre_ev": {
+     "r": 0.5296,
+     "ci": [
+      0.4898,
+      0.567
+     ],
+     "delta_vs_rapm_off": 0.1626,
+     "delta_ci": [
+      0.1178,
+      0.2079
+     ]
+    },
+    "cre_evx": {
+     "r": 0.5218,
+     "ci": [
+      0.4767,
+      0.562
+     ],
+     "delta_vs_rapm_off": 0.1548,
+     "delta_ci": [
+      0.1165,
+      0.1964
+     ]
+    },
+    "g_ev_hat": {
+     "r": 0.4145,
+     "ci": [
+      0.3649,
+      0.4621
+     ],
+     "delta_vs_rapm_off": 0.0475,
+     "delta_ci": [
+      -0.0008,
+      0.099
+     ]
+    },
+    "a1_ev_hat": {
+     "r": 0.4291,
+     "ci": [
+      0.3848,
+      0.471
+     ],
+     "delta_vs_rapm_off": 0.0621,
+     "delta_ci": [
+      0.0095,
+      0.114
+     ]
+    },
+    "ixg_ev_hat": {
+     "r": 0.3245,
+     "ci": [
+      0.2617,
+      0.3835
+     ],
+     "delta_vs_rapm_off": -0.0425,
+     "delta_ci": [
+      -0.0918,
+      0.0052
+     ]
+    },
+    "on_gf_ev_hat": {
+     "r": 0.5081,
+     "ci": [
+      0.4662,
+      0.5454
+     ],
+     "delta_vs_rapm_off": 0.1411,
+     "delta_ci": [
+      0.0943,
+      0.1885
+     ]
+    },
+    "on_xgf_ev_hat": {
+     "r": 0.472,
+     "ci": [
+      0.4297,
+      0.5127
+     ],
+     "delta_vs_rapm_off": 0.1049,
+     "delta_ci": [
+      0.0723,
+      0.1391
+     ]
+    },
+    "rel_gf_hat": {
+     "r": 0.4734,
+     "ci": [
+      0.4293,
+      0.5111
+     ],
+     "delta_vs_rapm_off": 0.1064,
+     "delta_ci": [
+      0.0581,
+      0.1566
+     ]
+    },
+    "rapm_off": {
+     "r": 0.367,
+     "ci": [
+      0.3152,
+      0.4133
+     ],
+     "delta_vs_rapm_off": 0.0,
+     "delta_ci": [
+      0.0,
+      0.0
+     ]
+    }
+   },
+   "T_on_xgf": {
+    "cre_ev": {
+     "r": 0.4428,
+     "ci": [
+      0.3955,
+      0.4848
+     ],
+     "delta_vs_rapm_off": -0.0301,
+     "delta_ci": [
+      -0.0691,
+      0.0108
+     ]
+    },
+    "cre_evx": {
+     "r": 0.501,
+     "ci": [
+      0.4569,
+      0.5414
+     ],
+     "delta_vs_rapm_off": 0.0281,
+     "delta_ci": [
+      -0.0093,
+      0.0631
+     ]
+    },
+    "g_ev_hat": {
+     "r": 0.3757,
+     "ci": [
+      0.3233,
+      0.4238
+     ],
+     "delta_vs_rapm_off": -0.0972,
+     "delta_ci": [
+      -0.1467,
+      -0.0483
+     ]
+    },
+    "a1_ev_hat": {
+     "r": 0.3384,
+     "ci": [
+      0.289,
+      0.3882
+     ],
+     "delta_vs_rapm_off": -0.1345,
+     "delta_ci": [
+      -0.1831,
+      -0.0841
+     ]
+    },
+    "ixg_ev_hat": {
+     "r": 0.4214,
+     "ci": [
+      0.3655,
+      0.4731
+     ],
+     "delta_vs_rapm_off": -0.0515,
+     "delta_ci": [
+      -0.1002,
+      -0.0095
+     ]
+    },
+    "on_gf_ev_hat": {
+     "r": 0.468,
+     "ci": [
+      0.4262,
+      0.5082
+     ],
+     "delta_vs_rapm_off": -0.0049,
+     "delta_ci": [
+      -0.0455,
+      0.0362
+     ]
+    },
+    "on_xgf_ev_hat": {
+     "r": 0.5986,
+     "ci": [
+      0.5617,
+      0.6311
+     ],
+     "delta_vs_rapm_off": 0.1257,
+     "delta_ci": [
+      0.1014,
+      0.1503
+     ]
+    },
+    "rel_gf_hat": {
+     "r": 0.4392,
+     "ci": [
+      0.395,
+      0.486
+     ],
+     "delta_vs_rapm_off": -0.0337,
+     "delta_ci": [
+      -0.0792,
+      0.0145
+     ]
+    },
+    "rapm_off": {
+     "r": 0.4729,
+     "ci": [
+      0.4283,
+      0.5138
+     ],
+     "delta_vs_rapm_off": 0.0,
+     "delta_ci": [
+      0.0,
+      0.0
+     ]
+    }
+   }
+  },
+  "D": {
+   "n_player_seasons": 1303,
+   "n_players": 360,
+   "T_on_gf": {
+    "cre_ev": {
+     "r": 0.2405,
+     "ci": [
+      0.1797,
+      0.298
+     ],
+     "delta_vs_rapm_off": 0.0269,
+     "delta_ci": [
+      -0.035,
+      0.0896
+     ]
+    },
+    "cre_evx": {
+     "r": 0.2586,
+     "ci": [
+      0.1989,
+      0.3162
+     ],
+     "delta_vs_rapm_off": 0.045,
+     "delta_ci": [
+      -0.0133,
+      0.1069
+     ]
+    },
+    "g_ev_hat": {
+     "r": 0.2006,
+     "ci": [
+      0.1421,
+      0.2597
+     ],
+     "delta_vs_rapm_off": -0.013,
+     "delta_ci": [
+      -0.083,
+      0.0597
+     ]
+    },
+    "a1_ev_hat": {
+     "r": 0.191,
+     "ci": [
+      0.123,
+      0.2538
+     ],
+     "delta_vs_rapm_off": -0.0226,
+     "delta_ci": [
+      -0.0905,
+      0.0464
+     ]
+    },
+    "a2_ev_hat": {
+     "r": 0.1062,
+     "ci": [
+      0.0472,
+      0.1661
+     ],
+     "delta_vs_rapm_off": -0.1074,
+     "delta_ci": [
+      -0.1779,
+      -0.0314
+     ]
+    },
+    "ixg_ev_hat": {
+     "r": 0.2316,
+     "ci": [
+      0.1749,
+      0.2902
+     ],
+     "delta_vs_rapm_off": 0.018,
+     "delta_ci": [
+      -0.0377,
+      0.0817
+     ]
+    },
+    "icf_ev_hat": {
+     "r": 0.2098,
+     "ci": [
+      0.1492,
+      0.2692
+     ],
+     "delta_vs_rapm_off": -0.0038,
+     "delta_ci": [
+      -0.0673,
+      0.0577
+     ]
+    },
+    "fin_ev_hat": {
+     "r": -0.0867,
+     "ci": [
+      -0.1504,
+      -0.0184
+     ],
+     "delta_vs_rapm_off": -0.3003,
+     "delta_ci": [
+      -0.3995,
+      -0.2019
+     ]
+    },
+    "irush_ev_hat": {
+     "r": 0.1085,
+     "ci": [
+      0.0458,
+      0.1679
+     ],
+     "delta_vs_rapm_off": -0.1051,
+     "delta_ci": [
+      -0.1753,
+      -0.0362
+     ]
+    },
+    "ireb_ev_hat": {
+     "r": 0.1571,
+     "ci": [
+      0.0919,
+      0.2205
+     ],
+     "delta_vs_rapm_off": -0.0565,
+     "delta_ci": [
+      -0.1242,
+      0.0107
+     ]
+    },
+    "irc_ev_hat": {
+     "r": 0.1444,
+     "ci": [
+      0.0858,
+      0.2103
+     ],
+     "delta_vs_rapm_off": -0.0692,
+     "delta_ci": [
+      -0.1317,
+      -0.0047
+     ]
+    },
+    "on_gf_ev_hat": {
+     "r": 0.2533,
+     "ci": [
+      0.1919,
+      0.3071
+     ],
+     "delta_vs_rapm_off": 0.0397,
+     "delta_ci": [
+      -0.0253,
+      0.1062
+     ]
+    },
+    "on_xgf_ev_hat": {
+     "r": 0.2788,
+     "ci": [
+      0.2211,
+      0.3361
+     ],
+     "delta_vs_rapm_off": 0.0652,
+     "delta_ci": [
+      0.0217,
+      0.11
+     ]
+    },
+    "on_cf_ev_hat": {
+     "r": 0.2777,
+     "ci": [
+      0.222,
+      0.337
+     ],
+     "delta_vs_rapm_off": 0.0641,
+     "delta_ci": [
+      0.0145,
+      0.115
+     ]
+    },
+    "rel_gf_hat": {
+     "r": 0.0333,
+     "ci": [
+      -0.0369,
+      0.097
+     ],
+     "delta_vs_rapm_off": -0.1803,
+     "delta_ci": [
+      -0.263,
+      -0.0966
+     ]
+    },
+    "rel_xgf_hat": {
+     "r": 0.183,
+     "ci": [
+      0.1202,
+      0.2426
+     ],
+     "delta_vs_rapm_off": -0.0306,
+     "delta_ci": [
+      -0.0942,
+      0.0299
+     ]
+    },
+    "rapm_off": {
+     "r": 0.2136,
+     "ci": [
+      0.1553,
+      0.2677
+     ],
+     "delta_vs_rapm_off": 0.0,
+     "delta_ci": [
+      0.0,
+      0.0
+     ]
+    },
+    "rapm_off_s": {
+     "r": 0.2065,
+     "ci": [
+      0.148,
+      0.2602
+     ],
+     "delta_vs_rapm_off": -0.007,
+     "delta_ci": [
+      -0.0182,
+      0.0047
+     ]
+    },
+    "rapm_net_v": {
+     "r": 0.1998,
+     "ci": [
+      0.1359,
+      0.2564
+     ],
+     "delta_vs_rapm_off": -0.0138,
+     "delta_ci": [
+      -0.0646,
+      0.0357
+     ]
+    }
+   },
+   "T_rel_gf": {
+    "cre_ev": {
+     "r": 0.2356,
+     "ci": [
+      0.168,
+      0.2921
+     ],
+     "delta_vs_rapm_off": 0.0606,
+     "delta_ci": [
+      -0.0016,
+      0.1174
+     ]
+    },
+    "cre_evx": {
+     "r": 0.2563,
+     "ci": [
+      0.1943,
+      0.3112
+     ],
+     "delta_vs_rapm_off": 0.0813,
+     "delta_ci": [
+      0.028,
+      0.1322
+     ]
+    },
+    "g_ev_hat": {
+     "r": 0.2259,
+     "ci": [
+      0.1651,
+      0.2803
+     ],
+     "delta_vs_rapm_off": 0.0509,
+     "delta_ci": [
+      -0.0101,
+      0.1094
+     ]
+    },
+    "a1_ev_hat": {
+     "r": 0.1886,
+     "ci": [
+      0.118,
+      0.2457
+     ],
+     "delta_vs_rapm_off": 0.0135,
+     "delta_ci": [
+      -0.0485,
+      0.0748
+     ]
+    },
+    "ixg_ev_hat": {
+     "r": 0.2338,
+     "ci": [
+      0.1748,
+      0.2901
+     ],
+     "delta_vs_rapm_off": 0.0588,
+     "delta_ci": [
+      0.0083,
+      0.1093
+     ]
+    },
+    "on_gf_ev_hat": {
+     "r": 0.1622,
+     "ci": [
+      0.0999,
+      0.2239
+     ],
+     "delta_vs_rapm_off": -0.0128,
+     "delta_ci": [
+      -0.0821,
+      0.0525
+     ]
+    },
+    "on_xgf_ev_hat": {
+     "r": 0.16,
+     "ci": [
+      0.099,
+      0.2173
+     ],
+     "delta_vs_rapm_off": -0.015,
+     "delta_ci": [
+      -0.0586,
+      0.0298
+     ]
+    },
+    "rel_gf_hat": {
+     "r": 0.1663,
+     "ci": [
+      0.1039,
+      0.2238
+     ],
+     "delta_vs_rapm_off": -0.0087,
+     "delta_ci": [
+      -0.0756,
+      0.0539
+     ]
+    },
+    "rapm_off": {
+     "r": 0.175,
+     "ci": [
+      0.1142,
+      0.2342
+     ],
+     "delta_vs_rapm_off": 0.0,
+     "delta_ci": [
+      0.0,
+      0.0
+     ]
+    }
+   },
+   "T_pts": {
+    "cre_ev": {
+     "r": 0.466,
+     "ci": [
+      0.3767,
+      0.5458
+     ],
+     "delta_vs_rapm_off": 0.1434,
+     "delta_ci": [
+      0.0797,
+      0.2037
+     ]
+    },
+    "cre_evx": {
+     "r": 0.4902,
+     "ci": [
+      0.4095,
+      0.5588
+     ],
+     "delta_vs_rapm_off": 0.1676,
+     "delta_ci": [
+      0.1088,
+      0.2236
+     ]
+    },
+    "g_ev_hat": {
+     "r": 0.3775,
+     "ci": [
+      0.2742,
+      0.4768
+     ],
+     "delta_vs_rapm_off": 0.0549,
+     "delta_ci": [
+      -0.031,
+      0.1234
+     ]
+    },
+    "a1_ev_hat": {
+     "r": 0.3925,
+     "ci": [
+      0.3161,
+      0.4666
+     ],
+     "delta_vs_rapm_off": 0.0698,
+     "delta_ci": [
+      0.0045,
+      0.1375
+     ]
+    },
+    "ixg_ev_hat": {
+     "r": 0.4225,
+     "ci": [
+      0.3426,
+      0.4887
+     ],
+     "delta_vs_rapm_off": 0.0999,
+     "delta_ci": [
+      0.0434,
+      0.1579
+     ]
+    },
+    "on_gf_ev_hat": {
+     "r": 0.2841,
+     "ci": [
+      0.219,
+      0.352
+     ],
+     "delta_vs_rapm_off": -0.0385,
+     "delta_ci": [
+      -0.1094,
+      0.038
+     ]
+    },
+    "on_xgf_ev_hat": {
+     "r": 0.3257,
+     "ci": [
+      0.2599,
+      0.391
+     ],
+     "delta_vs_rapm_off": 0.0031,
+     "delta_ci": [
+      -0.0413,
+      0.0543
+     ]
+    },
+    "rel_gf_hat": {
+     "r": 0.14,
+     "ci": [
+      0.0545,
+      0.229
+     ],
+     "delta_vs_rapm_off": -0.1826,
+     "delta_ci": [
+      -0.2596,
+      -0.1094
+     ]
+    },
+    "rapm_off": {
+     "r": 0.3226,
+     "ci": [
+      0.243,
+      0.4013
+     ],
+     "delta_vs_rapm_off": 0.0,
+     "delta_ci": [
+      0.0,
+      0.0
+     ]
+    }
+   },
+   "T_on_xgf": {
+    "cre_ev": {
+     "r": 0.2791,
+     "ci": [
+      0.198,
+      0.3551
+     ],
+     "delta_vs_rapm_off": 0.0022,
+     "delta_ci": [
+      -0.0566,
+      0.0708
+     ]
+    },
+    "cre_evx": {
+     "r": 0.3301,
+     "ci": [
+      0.2548,
+      0.3968
+     ],
+     "delta_vs_rapm_off": 0.0532,
+     "delta_ci": [
+      0.0012,
+      0.1183
+     ]
+    },
+    "g_ev_hat": {
+     "r": 0.227,
+     "ci": [
+      0.1464,
+      0.3069
+     ],
+     "delta_vs_rapm_off": -0.0498,
+     "delta_ci": [
+      -0.1181,
+      0.0226
+     ]
+    },
+    "a1_ev_hat": {
+     "r": 0.2407,
+     "ci": [
+      0.1776,
+      0.3069
+     ],
+     "delta_vs_rapm_off": -0.0362,
+     "delta_ci": [
+      -0.0981,
+      0.0376
+     ]
+    },
+    "ixg_ev_hat": {
+     "r": 0.3402,
+     "ci": [
+      0.2761,
+      0.3977
+     ],
+     "delta_vs_rapm_off": 0.0633,
+     "delta_ci": [
+      0.0138,
+      0.1233
+     ]
+    },
+    "on_gf_ev_hat": {
+     "r": 0.1778,
+     "ci": [
+      0.1121,
+      0.2485
+     ],
+     "delta_vs_rapm_off": -0.0991,
+     "delta_ci": [
+      -0.172,
+      -0.0214
+     ]
+    },
+    "on_xgf_ev_hat": {
+     "r": 0.3995,
+     "ci": [
+      0.3438,
+      0.4506
+     ],
+     "delta_vs_rapm_off": 0.1227,
+     "delta_ci": [
+      0.0791,
+      0.1729
+     ]
+    },
+    "rel_gf_hat": {
+     "r": 0.0647,
+     "ci": [
+      -0.0092,
+      0.1406
+     ],
+     "delta_vs_rapm_off": -0.2122,
+     "delta_ci": [
+      -0.2895,
+      -0.1307
+     ]
+    },
+    "rapm_off": {
+     "r": 0.2769,
+     "ci": [
+      0.2028,
+      0.3417
+     ],
+     "delta_vs_rapm_off": 0.0,
+     "delta_ci": [
+      0.0,
+      0.0
+     ]
+    }
+   }
+  },
+  "label": "season-start walk-forward -> season s"
+ },
+ "predict_team_changers": {
+  "F": {
+   "n_player_seasons": 507,
+   "n_players": 325,
+   "T_on_gf": {
+    "cre_ev": {
+     "r": 0.4669,
+     "ci": [
+      0.3957,
+      0.5351
+     ],
+     "delta_vs_rapm_off": 0.1075,
+     "delta_ci": [
+      0.0133,
+      0.1915
+     ]
+    },
+    "cre_evx": {
+     "r": 0.4698,
+     "ci": [
+      0.3953,
+      0.5445
+     ],
+     "delta_vs_rapm_off": 0.1103,
+     "delta_ci": [
+      0.0283,
+      0.1914
+     ]
+    },
+    "g_ev_hat": {
+     "r": 0.3996,
+     "ci": [
+      0.3157,
+      0.4893
+     ],
+     "delta_vs_rapm_off": 0.0401,
+     "delta_ci": [
+      -0.0683,
+      0.138
+     ]
+    },
+    "a1_ev_hat": {
+     "r": 0.3523,
+     "ci": [
+      0.2727,
+      0.4288
+     ],
+     "delta_vs_rapm_off": -0.0071,
+     "delta_ci": [
+      -0.102,
+      0.095
+     ]
+    },
+    "a2_ev_hat": {
+     "r": 0.23,
+     "ci": [
+      0.1625,
+      0.3013
+     ],
+     "delta_vs_rapm_off": -0.1295,
+     "delta_ci": [
+      -0.2276,
+      -0.0229
+     ]
+    },
+    "ixg_ev_hat": {
+     "r": 0.3146,
+     "ci": [
+      0.2148,
+      0.4106
+     ],
+     "delta_vs_rapm_off": -0.0448,
+     "delta_ci": [
+      -0.125,
+      0.0333
+     ]
+    },
+    "icf_ev_hat": {
+     "r": 0.2437,
+     "ci": [
+      0.1463,
+      0.3441
+     ],
+     "delta_vs_rapm_off": -0.1158,
+     "delta_ci": [
+      -0.2166,
+      -0.0118
+     ]
+    },
+    "fin_ev_hat": {
+     "r": 0.0691,
+     "ci": [
+      -0.032,
+      0.1582
+     ],
+     "delta_vs_rapm_off": -0.2904,
+     "delta_ci": [
+      -0.4431,
+      -0.1477
+     ]
+    },
+    "irush_ev_hat": {
+     "r": 0.1668,
+     "ci": [
+      0.0717,
+      0.2597
+     ],
+     "delta_vs_rapm_off": -0.1927,
+     "delta_ci": [
+      -0.3083,
+      -0.082
+     ]
+    },
+    "ireb_ev_hat": {
+     "r": 0.0984,
+     "ci": [
+      0.0119,
+      0.1895
+     ],
+     "delta_vs_rapm_off": -0.2611,
+     "delta_ci": [
+      -0.3554,
+      -0.1696
+     ]
+    },
+    "irc_ev_hat": {
+     "r": 0.1155,
+     "ci": [
+      0.0208,
+      0.2154
+     ],
+     "delta_vs_rapm_off": -0.244,
+     "delta_ci": [
+      -0.3288,
+      -0.1518
+     ]
+    },
+    "on_gf_ev_hat": {
+     "r": 0.4607,
+     "ci": [
+      0.396,
+      0.5288
+     ],
+     "delta_vs_rapm_off": 0.1013,
+     "delta_ci": [
+      0.0129,
+      0.1867
+     ]
+    },
+    "on_xgf_ev_hat": {
+     "r": 0.4312,
+     "ci": [
+      0.3571,
+      0.4997
+     ],
+     "delta_vs_rapm_off": 0.0718,
+     "delta_ci": [
+      0.0177,
+      0.1291
+     ]
+    },
+    "on_cf_ev_hat": {
+     "r": 0.3996,
+     "ci": [
+      0.3254,
+      0.469
+     ],
+     "delta_vs_rapm_off": 0.0402,
+     "delta_ci": [
+      -0.039,
+      0.1215
+     ]
+    },
+    "rel_gf_hat": {
+     "r": 0.4537,
+     "ci": [
+      0.3833,
+      0.5198
+     ],
+     "delta_vs_rapm_off": 0.0942,
+     "delta_ci": [
+      -0.0042,
+      0.183
+     ]
+    },
+    "rel_xgf_hat": {
+     "r": 0.4837,
+     "ci": [
+      0.4059,
+      0.5449
+     ],
+     "delta_vs_rapm_off": 0.1242,
+     "delta_ci": [
+      0.0492,
+      0.1924
+     ]
+    },
+    "rapm_off": {
+     "r": 0.3594,
+     "ci": [
+      0.2694,
+      0.4361
+     ],
+     "delta_vs_rapm_off": 0.0,
+     "delta_ci": [
+      0.0,
+      0.0
+     ]
+    },
+    "rapm_off_s": {
+     "r": 0.3612,
+     "ci": [
+      0.2721,
+      0.4373
+     ],
+     "delta_vs_rapm_off": 0.0017,
+     "delta_ci": [
+      -0.0138,
+      0.0176
+     ]
+    },
+    "rapm_net_v": {
+     "r": 0.2403,
+     "ci": [
+      0.1447,
+      0.3287
+     ],
+     "delta_vs_rapm_off": -0.1191,
+     "delta_ci": [
+      -0.1917,
+      -0.0491
+     ]
+    }
+   },
+   "T_rel_gf": {
+    "cre_ev": {
+     "r": 0.4883,
+     "ci": [
+      0.4218,
+      0.5466
+     ],
+     "delta_vs_rapm_off": 0.1554,
+     "delta_ci": [
+      0.0751,
+      0.2294
+     ]
+    },
+    "cre_evx": {
+     "r": 0.4846,
+     "ci": [
+      0.4155,
+      0.5512
+     ],
+     "delta_vs_rapm_off": 0.1517,
+     "delta_ci": [
+      0.0771,
+      0.2186
+     ]
+    },
+    "g_ev_hat": {
+     "r": 0.3942,
+     "ci": [
+      0.3167,
+      0.4746
+     ],
+     "delta_vs_rapm_off": 0.0613,
+     "delta_ci": [
+      -0.0422,
+      0.1624
+     ]
+    },
+    "a1_ev_hat": {
+     "r": 0.3712,
+     "ci": [
+      0.2833,
+      0.4456
+     ],
+     "delta_vs_rapm_off": 0.0383,
+     "delta_ci": [
+      -0.0598,
+      0.118
+     ]
+    },
+    "ixg_ev_hat": {
+     "r": 0.3137,
+     "ci": [
+      0.2326,
+      0.3979
+     ],
+     "delta_vs_rapm_off": -0.0192,
+     "delta_ci": [
+      -0.0947,
+      0.0557
+     ]
+    },
+    "on_gf_ev_hat": {
+     "r": 0.4704,
+     "ci": [
+      0.403,
+      0.5264
+     ],
+     "delta_vs_rapm_off": 0.1375,
+     "delta_ci": [
+      0.0636,
+      0.2109
+     ]
+    },
+    "on_xgf_ev_hat": {
+     "r": 0.4177,
+     "ci": [
+      0.3502,
+      0.4905
+     ],
+     "delta_vs_rapm_off": 0.0848,
+     "delta_ci": [
+      0.0312,
+      0.1358
+     ]
+    },
+    "rel_gf_hat": {
+     "r": 0.4592,
+     "ci": [
+      0.3884,
+      0.5276
+     ],
+     "delta_vs_rapm_off": 0.1263,
+     "delta_ci": [
+      0.0434,
+      0.2095
+     ]
+    },
+    "rapm_off": {
+     "r": 0.3329,
+     "ci": [
+      0.2588,
+      0.4127
+     ],
+     "delta_vs_rapm_off": 0.0,
+     "delta_ci": [
+      0.0,
+      0.0
+     ]
+    }
+   },
+   "T_pts": {
+    "cre_ev": {
+     "r": 0.4962,
+     "ci": [
+      0.4196,
+      0.5596
+     ],
+     "delta_vs_rapm_off": 0.1412,
+     "delta_ci": [
+      0.0535,
+      0.2292
+     ]
+    },
+    "cre_evx": {
+     "r": 0.4864,
+     "ci": [
+      0.4063,
+      0.5628
+     ],
+     "delta_vs_rapm_off": 0.1314,
+     "delta_ci": [
+      0.0522,
+      0.2142
+     ]
+    },
+    "g_ev_hat": {
+     "r": 0.4064,
+     "ci": [
+      0.3212,
+      0.4848
+     ],
+     "delta_vs_rapm_off": 0.0515,
+     "delta_ci": [
+      -0.0447,
+      0.1534
+     ]
+    },
+    "a1_ev_hat": {
+     "r": 0.3873,
+     "ci": [
+      0.2999,
+      0.4762
+     ],
+     "delta_vs_rapm_off": 0.0323,
+     "delta_ci": [
+      -0.0664,
+      0.1267
+     ]
+    },
+    "ixg_ev_hat": {
+     "r": 0.305,
+     "ci": [
+      0.2137,
+      0.3945
+     ],
+     "delta_vs_rapm_off": -0.05,
+     "delta_ci": [
+      -0.1268,
+      0.0308
+     ]
+    },
+    "on_gf_ev_hat": {
+     "r": 0.4711,
+     "ci": [
+      0.4016,
+      0.5332
+     ],
+     "delta_vs_rapm_off": 0.1162,
+     "delta_ci": [
+      0.0315,
+      0.2037
+     ]
+    },
+    "on_xgf_ev_hat": {
+     "r": 0.4238,
+     "ci": [
+      0.3512,
+      0.4918
+     ],
+     "delta_vs_rapm_off": 0.0689,
+     "delta_ci": [
+      0.0104,
+      0.1268
+     ]
+    },
+    "rel_gf_hat": {
+     "r": 0.4497,
+     "ci": [
+      0.3758,
+      0.5183
+     ],
+     "delta_vs_rapm_off": 0.0947,
+     "delta_ci": [
+      0.0002,
+      0.1835
+     ]
+    },
+    "rapm_off": {
+     "r": 0.355,
+     "ci": [
+      0.2754,
+      0.429
+     ],
+     "delta_vs_rapm_off": 0.0,
+     "delta_ci": [
+      0.0,
+      0.0
+     ]
+    }
+   },
+   "T_on_xgf": {
+    "cre_ev": {
+     "r": 0.4477,
+     "ci": [
+      0.3785,
+      0.509
+     ],
+     "delta_vs_rapm_off": -0.0068,
+     "delta_ci": [
+      -0.0993,
+      0.0729
+     ]
+    },
+    "cre_evx": {
+     "r": 0.4908,
+     "ci": [
+      0.4175,
+      0.5509
+     ],
+     "delta_vs_rapm_off": 0.0363,
+     "delta_ci": [
+      -0.0401,
+      0.1103
+     ]
+    },
+    "g_ev_hat": {
+     "r": 0.3771,
+     "ci": [
+      0.2926,
+      0.4451
+     ],
+     "delta_vs_rapm_off": -0.0774,
+     "delta_ci": [
+      -0.1761,
+      0.0085
+     ]
+    },
+    "a1_ev_hat": {
+     "r": 0.3364,
+     "ci": [
+      0.2587,
+      0.4134
+     ],
+     "delta_vs_rapm_off": -0.1181,
+     "delta_ci": [
+      -0.2176,
+      -0.0214
+     ]
+    },
+    "ixg_ev_hat": {
+     "r": 0.394,
+     "ci": [
+      0.3182,
+      0.4713
+     ],
+     "delta_vs_rapm_off": -0.0605,
+     "delta_ci": [
+      -0.1288,
+      0.0163
+     ]
+    },
+    "on_gf_ev_hat": {
+     "r": 0.4533,
+     "ci": [
+      0.386,
+      0.5147
+     ],
+     "delta_vs_rapm_off": -0.0012,
+     "delta_ci": [
+      -0.0896,
+      0.084
+     ]
+    },
+    "on_xgf_ev_hat": {
+     "r": 0.5229,
+     "ci": [
+      0.453,
+      0.5861
+     ],
+     "delta_vs_rapm_off": 0.0684,
+     "delta_ci": [
+      0.0244,
+      0.1126
+     ]
+    },
+    "rel_gf_hat": {
+     "r": 0.465,
+     "ci": [
+      0.3951,
+      0.5299
+     ],
+     "delta_vs_rapm_off": 0.0105,
+     "delta_ci": [
+      -0.0762,
+      0.0993
+     ]
+    },
+    "rapm_off": {
+     "r": 0.4545,
+     "ci": [
+      0.3707,
+      0.533
+     ],
+     "delta_vs_rapm_off": 0.0,
+     "delta_ci": [
+      0.0,
+      0.0
+     ]
+    }
+   }
+  },
+  "D": {
+   "n_player_seasons": 274,
+   "n_players": 197,
+   "T_on_gf": {
+    "cre_ev": {
+     "r": 0.1007,
+     "ci": [
+      0.0096,
+      0.1922
+     ],
+     "delta_vs_rapm_off": -0.024,
+     "delta_ci": [
+      -0.1639,
+      0.1137
+     ]
+    },
+    "cre_evx": {
+     "r": 0.1486,
+     "ci": [
+      0.0571,
+      0.2455
+     ],
+     "delta_vs_rapm_off": 0.024,
+     "delta_ci": [
+      -0.1051,
+      0.1439
+     ]
+    },
+    "g_ev_hat": {
+     "r": 0.1,
+     "ci": [
+      -0.014,
+      0.2179
+     ],
+     "delta_vs_rapm_off": -0.0247,
+     "delta_ci": [
+      -0.1767,
+      0.1294
+     ]
+    },
+    "a1_ev_hat": {
+     "r": 0.0721,
+     "ci": [
+      -0.0194,
+      0.1551
+     ],
+     "delta_vs_rapm_off": -0.0526,
+     "delta_ci": [
+      -0.1963,
+      0.0834
+     ]
+    },
+    "a2_ev_hat": {
+     "r": 0.0157,
+     "ci": [
+      -0.0965,
+      0.1258
+     ],
+     "delta_vs_rapm_off": -0.1089,
+     "delta_ci": [
+      -0.2668,
+      0.0328
+     ]
+    },
+    "ixg_ev_hat": {
+     "r": 0.1792,
+     "ci": [
+      0.0702,
+      0.2922
+     ],
+     "delta_vs_rapm_off": 0.0546,
+     "delta_ci": [
+      -0.0598,
+      0.1707
+     ]
+    },
+    "icf_ev_hat": {
+     "r": 0.0952,
+     "ci": [
+      -0.0156,
+      0.2
+     ],
+     "delta_vs_rapm_off": -0.0295,
+     "delta_ci": [
+      -0.1438,
+      0.0907
+     ]
+    },
+    "fin_ev_hat": {
+     "r": -0.1125,
+     "ci": [
+      -0.2305,
+      -0.0033
+     ],
+     "delta_vs_rapm_off": -0.2372,
+     "delta_ci": [
+      -0.4234,
+      -0.0242
+     ]
+    },
+    "irush_ev_hat": {
+     "r": -0.0143,
+     "ci": [
+      -0.1125,
+      0.0895
+     ],
+     "delta_vs_rapm_off": -0.139,
+     "delta_ci": [
+      -0.2811,
+      0.0002
+     ]
+    },
+    "ireb_ev_hat": {
+     "r": 0.1364,
+     "ci": [
+      0.0311,
+      0.2485
+     ],
+     "delta_vs_rapm_off": 0.0118,
+     "delta_ci": [
+      -0.11,
+      0.1387
+     ]
+    },
+    "irc_ev_hat": {
+     "r": 0.089,
+     "ci": [
+      -0.0491,
+      0.2317
+     ],
+     "delta_vs_rapm_off": -0.0356,
+     "delta_ci": [
+      -0.1774,
+      0.1069
+     ]
+    },
+    "on_gf_ev_hat": {
+     "r": 0.1173,
+     "ci": [
+      -0.0029,
+      0.2412
+     ],
+     "delta_vs_rapm_off": -0.0073,
+     "delta_ci": [
+      -0.1684,
+      0.1369
+     ]
+    },
+    "on_xgf_ev_hat": {
+     "r": 0.1549,
+     "ci": [
+      0.019,
+      0.2803
+     ],
+     "delta_vs_rapm_off": 0.0303,
+     "delta_ci": [
+      -0.0576,
+      0.1208
+     ]
+    },
+    "on_cf_ev_hat": {
+     "r": 0.1045,
+     "ci": [
+      -0.0361,
+      0.2437
+     ],
+     "delta_vs_rapm_off": -0.0201,
+     "delta_ci": [
+      -0.1163,
+      0.0873
+     ]
+    },
+    "rel_gf_hat": {
+     "r": 0.0818,
+     "ci": [
+      -0.0322,
+      0.1797
+     ],
+     "delta_vs_rapm_off": -0.0428,
+     "delta_ci": [
+      -0.203,
+      0.0979
+     ]
+    },
+    "rel_xgf_hat": {
+     "r": 0.2009,
+     "ci": [
+      0.091,
+      0.3112
+     ],
+     "delta_vs_rapm_off": 0.0763,
+     "delta_ci": [
+      -0.0401,
+      0.1938
+     ]
+    },
+    "rapm_off": {
+     "r": 0.1246,
+     "ci": [
+      -0.0034,
+      0.2518
+     ],
+     "delta_vs_rapm_off": 0.0,
+     "delta_ci": [
+      0.0,
+      0.0
+     ]
+    },
+    "rapm_off_s": {
+     "r": 0.1162,
+     "ci": [
+      -0.0174,
+      0.2382
+     ],
+     "delta_vs_rapm_off": -0.0085,
+     "delta_ci": [
+      -0.0277,
+      0.0123
+     ]
+    },
+    "rapm_net_v": {
+     "r": 0.0914,
+     "ci": [
+      -0.0465,
+      0.216
+     ],
+     "delta_vs_rapm_off": -0.0332,
+     "delta_ci": [
+      -0.1293,
+      0.0654
+     ]
+    }
+   },
+   "T_rel_gf": {
+    "cre_ev": {
+     "r": 0.1752,
+     "ci": [
+      0.0582,
+      0.2762
+     ],
+     "delta_vs_rapm_off": 0.0222,
+     "delta_ci": [
+      -0.0878,
+      0.1474
+     ]
+    },
+    "cre_evx": {
+     "r": 0.2269,
+     "ci": [
+      0.1171,
+      0.3148
+     ],
+     "delta_vs_rapm_off": 0.0738,
+     "delta_ci": [
+      -0.0288,
+      0.1958
+     ]
+    },
+    "g_ev_hat": {
+     "r": 0.1673,
+     "ci": [
+      0.0557,
+      0.2676
+     ],
+     "delta_vs_rapm_off": 0.0142,
+     "delta_ci": [
+      -0.101,
+      0.1564
+     ]
+    },
+    "a1_ev_hat": {
+     "r": 0.1583,
+     "ci": [
+      0.0324,
+      0.2547
+     ],
+     "delta_vs_rapm_off": 0.0052,
+     "delta_ci": [
+      -0.1431,
+      0.1349
+     ]
+    },
+    "ixg_ev_hat": {
+     "r": 0.2388,
+     "ci": [
+      0.1344,
+      0.322
+     ],
+     "delta_vs_rapm_off": 0.0858,
+     "delta_ci": [
+      -0.0039,
+      0.2028
+     ]
+    },
+    "on_gf_ev_hat": {
+     "r": 0.1728,
+     "ci": [
+      0.0595,
+      0.294
+     ],
+     "delta_vs_rapm_off": 0.0198,
+     "delta_ci": [
+      -0.1313,
+      0.1786
+     ]
+    },
+    "on_xgf_ev_hat": {
+     "r": 0.1688,
+     "ci": [
+      0.0678,
+      0.2754
+     ],
+     "delta_vs_rapm_off": 0.0157,
+     "delta_ci": [
+      -0.0606,
+      0.1062
+     ]
+    },
+    "rel_gf_hat": {
+     "r": 0.1834,
+     "ci": [
+      0.0673,
+      0.2906
+     ],
+     "delta_vs_rapm_off": 0.0304,
+     "delta_ci": [
+      -0.1134,
+      0.1871
+     ]
+    },
+    "rapm_off": {
+     "r": 0.1531,
+     "ci": [
+      0.0374,
+      0.2478
+     ],
+     "delta_vs_rapm_off": 0.0,
+     "delta_ci": [
+      0.0,
+      0.0
+     ]
+    }
+   },
+   "T_pts": {
+    "cre_ev": {
+     "r": 0.294,
+     "ci": [
+      0.1851,
+      0.3895
+     ],
+     "delta_vs_rapm_off": 0.1659,
+     "delta_ci": [
+      0.0378,
+      0.2721
+     ]
+    },
+    "cre_evx": {
+     "r": 0.33,
+     "ci": [
+      0.2169,
+      0.4418
+     ],
+     "delta_vs_rapm_off": 0.2019,
+     "delta_ci": [
+      0.0819,
+      0.3122
+     ]
+    },
+    "g_ev_hat": {
+     "r": 0.2363,
+     "ci": [
+      0.1307,
+      0.3406
+     ],
+     "delta_vs_rapm_off": 0.1082,
+     "delta_ci": [
+      -0.0156,
+      0.2336
+     ]
+    },
+    "a1_ev_hat": {
+     "r": 0.2175,
+     "ci": [
+      0.0962,
+      0.3196
+     ],
+     "delta_vs_rapm_off": 0.0894,
+     "delta_ci": [
+      -0.0741,
+      0.2228
+     ]
+    },
+    "ixg_ev_hat": {
+     "r": 0.2841,
+     "ci": [
+      0.1417,
+      0.4175
+     ],
+     "delta_vs_rapm_off": 0.156,
+     "delta_ci": [
+      0.0297,
+      0.2677
+     ]
+    },
+    "on_gf_ev_hat": {
+     "r": 0.1421,
+     "ci": [
+      0.0166,
+      0.2686
+     ],
+     "delta_vs_rapm_off": 0.014,
+     "delta_ci": [
+      -0.1387,
+      0.156
+     ]
+    },
+    "on_xgf_ev_hat": {
+     "r": 0.1038,
+     "ci": [
+      -0.0213,
+      0.224
+     ],
+     "delta_vs_rapm_off": -0.0243,
+     "delta_ci": [
+      -0.1116,
+      0.0563
+     ]
+    },
+    "rel_gf_hat": {
+     "r": 0.0942,
+     "ci": [
+      -0.0439,
+      0.2231
+     ],
+     "delta_vs_rapm_off": -0.0339,
+     "delta_ci": [
+      -0.1967,
+      0.1039
+     ]
+    },
+    "rapm_off": {
+     "r": 0.1281,
+     "ci": [
+      0.0161,
+      0.259
+     ],
+     "delta_vs_rapm_off": 0.0,
+     "delta_ci": [
+      0.0,
+      0.0
+     ]
+    }
+   },
+   "T_on_xgf": {
+    "cre_ev": {
+     "r": 0.1198,
+     "ci": [
+      0.0029,
+      0.2358
+     ],
+     "delta_vs_rapm_off": -0.0359,
+     "delta_ci": [
+      -0.1628,
+      0.1168
+     ]
+    },
+    "cre_evx": {
+     "r": 0.1732,
+     "ci": [
+      0.0506,
+      0.2874
+     ],
+     "delta_vs_rapm_off": 0.0176,
+     "delta_ci": [
+      -0.116,
+      0.1597
+     ]
+    },
+    "g_ev_hat": {
+     "r": 0.1107,
+     "ci": [
+      -0.0055,
+      0.2289
+     ],
+     "delta_vs_rapm_off": -0.045,
+     "delta_ci": [
+      -0.1906,
+      0.1128
+     ]
+    },
+    "a1_ev_hat": {
+     "r": 0.1245,
+     "ci": [
+      0.0112,
+      0.2384
+     ],
+     "delta_vs_rapm_off": -0.0312,
+     "delta_ci": [
+      -0.18,
+      0.1254
+     ]
+    },
+    "ixg_ev_hat": {
+     "r": 0.205,
+     "ci": [
+      0.0833,
+      0.3361
+     ],
+     "delta_vs_rapm_off": 0.0493,
+     "delta_ci": [
+      -0.0819,
+      0.1824
+     ]
+    },
+    "on_gf_ev_hat": {
+     "r": 0.0582,
+     "ci": [
+      -0.0621,
+      0.2037
+     ],
+     "delta_vs_rapm_off": -0.0975,
+     "delta_ci": [
+      -0.2373,
+      0.061
+     ]
+    },
+    "on_xgf_ev_hat": {
+     "r": 0.1697,
+     "ci": [
+      0.0385,
+      0.2868
+     ],
+     "delta_vs_rapm_off": 0.014,
+     "delta_ci": [
+      -0.0842,
+      0.1168
+     ]
+    },
+    "rel_gf_hat": {
+     "r": 0.0142,
+     "ci": [
+      -0.1072,
+      0.1431
+     ],
+     "delta_vs_rapm_off": -0.1415,
+     "delta_ci": [
+      -0.307,
+      0.0252
+     ]
+    },
+    "rapm_off": {
+     "r": 0.1556,
+     "ci": [
+      0.0298,
+      0.2736
+     ],
+     "delta_vs_rapm_off": 0.0,
+     "delta_ci": [
+      0.0,
+      0.0
+     ]
+    }
+   }
+  },
+  "label": "team changers only"
+ },
+ "incremental_R2": {
+  "F": {
+   "T_on_gf": {
+    "rapm_off": {
+     "R2_base": 0.1189,
+     "R2_plus_cre_ev": 0.2511,
+     "R2_plus_cre_evx": 0.2338
+    },
+    "on_xgf_ev_hat": {
+     "R2_base": 0.2222,
+     "R2_plus_cre_ev": 0.2733,
+     "R2_plus_cre_evx": 0.2558
+    },
+    "on_gf_ev_hat": {
+     "R2_base": 0.2447,
+     "R2_plus_cre_ev": 0.25,
+     "R2_plus_cre_evx": 0.2579
+    },
+    "rapm_off+on_xgf+on_gf": {
+     "R2_base": 0.2737,
+     "R2_plus_cre_ev": 0.2779,
+     "R2_plus_cre_evx": 0.2756
+    },
+    "cre_ev_alone": 0.2319,
+    "cre_ev+rapm_off": 0.2511
+   },
+   "T_rel_gf": {
+    "rapm_off": {
+     "R2_base": 0.114,
+     "R2_plus_cre_ev": 0.2504,
+     "R2_plus_cre_evx": 0.228
+    },
+    "on_xgf_ev_hat": {
+     "R2_base": 0.2003,
+     "R2_plus_cre_ev": 0.2626,
+     "R2_plus_cre_evx": 0.2416
+    },
+    "on_gf_ev_hat": {
+     "R2_base": 0.2295,
+     "R2_plus_cre_ev": 0.2422,
+     "R2_plus_cre_evx": 0.2463
+    },
+    "rapm_off+on_xgf+on_gf": {
+     "R2_base": 0.2537,
+     "R2_plus_cre_ev": 0.2643,
+     "R2_plus_cre_evx": 0.2579
+    },
+    "cre_ev_alone": 0.2336,
+    "cre_ev+rapm_off": 0.2504
+   }
+  },
+  "D": {
+   "T_on_gf": {
+    "rapm_off": {
+     "R2_base": 0.0456,
+     "R2_plus_cre_ev": 0.0706,
+     "R2_plus_cre_evx": 0.0747
+    },
+    "on_xgf_ev_hat": {
+     "R2_base": 0.0777,
+     "R2_plus_cre_ev": 0.093,
+     "R2_plus_cre_evx": 0.0957
+    },
+    "on_gf_ev_hat": {
+     "R2_base": 0.0642,
+     "R2_plus_cre_ev": 0.0768,
+     "R2_plus_cre_evx": 0.0869
+    },
+    "rapm_off+on_xgf+on_gf": {
+     "R2_base": 0.094,
+     "R2_plus_cre_ev": 0.0989,
+     "R2_plus_cre_evx": 0.1031
+    },
+    "cre_ev_alone": 0.0578,
+    "cre_ev+rapm_off": 0.0706
+   },
+   "T_rel_gf": {
+    "rapm_off": {
+     "R2_base": 0.0306,
+     "R2_plus_cre_ev": 0.0607,
+     "R2_plus_cre_evx": 0.0677
+    },
+    "on_xgf_ev_hat": {
+     "R2_base": 0.0256,
+     "R2_plus_cre_ev": 0.0586,
+     "R2_plus_cre_evx": 0.0668
+    },
+    "on_gf_ev_hat": {
+     "R2_base": 0.0263,
+     "R2_plus_cre_ev": 0.0563,
+     "R2_plus_cre_evx": 0.0671
+    },
+    "rapm_off+on_xgf+on_gf": {
+     "R2_base": 0.0432,
+     "R2_plus_cre_ev": 0.0613,
+     "R2_plus_cre_evx": 0.0689
+    },
+    "cre_ev_alone": 0.0555,
+    "cre_ev+rapm_off": 0.0607
+   }
+  }
+ },
+ "power_play": {
+  "F": {
+   "n": 1188,
+   "T_pp_on_gf": {
+    "cre_pp": 0.2495,
+    "g_pp_hat": 0.1695,
+    "a1_pp_hat": 0.1508,
+    "ixg_pp_hat": 0.1839,
+    "on_gf_pp_hat": 0.3086,
+    "on_xgf_pp_hat": 0.3352,
+    "cre_ev": 0.1648,
+    "rapm_off": 0.2037
+   },
+   "T_pp_pts": {
+    "cre_pp": 0.3819,
+    "g_pp_hat": 0.1315,
+    "a1_pp_hat": 0.3019,
+    "ixg_pp_hat": 0.1174,
+    "on_gf_pp_hat": 0.3072,
+    "on_xgf_pp_hat": 0.3441,
+    "cre_ev": 0.2761,
+    "rapm_off": 0.1878
+   }
+  },
+  "D": {
+   "n": 457,
+   "T_pp_on_gf": {
+    "cre_pp": 0.1845,
+    "g_pp_hat": 0.1384,
+    "a1_pp_hat": 0.1153,
+    "ixg_pp_hat": 0.1985,
+    "on_gf_pp_hat": 0.1627,
+    "on_xgf_pp_hat": 0.2519,
+    "cre_ev": 0.1549,
+    "rapm_off": 0.1568
+   },
+   "T_pp_pts": {
+    "cre_pp": 0.2436,
+    "g_pp_hat": 0.1638,
+    "a1_pp_hat": 0.1732,
+    "ixg_pp_hat": 0.2281,
+    "on_gf_pp_hat": 0.1361,
+    "on_xgf_pp_hat": 0.1655,
+    "cre_ev": 0.2882,
+    "rapm_off": 0.2172
+   }
+  }
+ },
+ "predict_midseason": {
+  "F": {
+   "n_player_seasons": 1855,
+   "n_players": 561,
+   "T_on_gf": {
+    "cre_ev": 0.4227,
+    "cre_evx": 0.4169,
+    "g_ev_hat": 0.3221,
+    "a1_ev_hat": 0.3336,
+    "a2_ev_hat": 0.2288,
+    "ixg_ev_hat": 0.2507,
+    "icf_ev_hat": 0.2025,
+    "fin_ev_hat": 0.0644,
+    "irush_ev_hat": 0.1058,
+    "ireb_ev_hat": 0.094,
+    "irc_ev_hat": 0.0994,
+    "on_gf_ev_hat": 0.4552,
+    "on_xgf_ev_hat": 0.4306,
+    "on_cf_ev_hat": 0.3965,
+    "rel_gf_hat": 0.3975,
+    "rel_xgf_hat": 0.4041,
+    "rapm_off": 0.2941,
+    "rapm_off_s": 0.288,
+    "rapm_net_v": 0.2199
+   },
+   "T_rel_gf": {
+    "cre_ev": 0.4017,
+    "cre_evx": 0.3849,
+    "g_ev_hat": 0.2869,
+    "a1_ev_hat": 0.3342,
+    "a2_ev_hat": 0.2256,
+    "ixg_ev_hat": 0.2133,
+    "icf_ev_hat": 0.1903,
+    "fin_ev_hat": 0.0696,
+    "irush_ev_hat": 0.1052,
+    "ireb_ev_hat": 0.0782,
+    "irc_ev_hat": 0.1025,
+    "on_gf_ev_hat": 0.4085,
+    "on_xgf_ev_hat": 0.3684,
+    "on_cf_ev_hat": 0.3299,
+    "rel_gf_hat": 0.4415,
+    "rel_xgf_hat": 0.4503,
+    "rapm_off": 0.2781,
+    "rapm_off_s": 0.2753,
+    "rapm_net_v": 0.2061
+   },
+   "T_pts": {
+    "cre_ev": 0.4677,
+    "cre_evx": 0.4549,
+    "g_ev_hat": 0.348,
+    "a1_ev_hat": 0.3844,
+    "a2_ev_hat": 0.2362,
+    "ixg_ev_hat": 0.2634,
+    "icf_ev_hat": 0.2362,
+    "fin_ev_hat": 0.0787,
+    "irush_ev_hat": 0.1574,
+    "ireb_ev_hat": 0.0744,
+    "irc_ev_hat": 0.1077,
+    "on_gf_ev_hat": 0.4579,
+    "on_xgf_ev_hat": 0.4121,
+    "on_cf_ev_hat": 0.3755,
+    "rel_gf_hat": 0.4232,
+    "rel_xgf_hat": 0.4219,
+    "rapm_off": 0.305,
+    "rapm_off_s": 0.3023,
+    "rapm_net_v": 0.2165
+   },
+   "T_on_xgf": {
+    "cre_ev": 0.3954,
+    "cre_evx": 0.4623,
+    "g_ev_hat": 0.3208,
+    "a1_ev_hat": 0.2966,
+    "a2_ev_hat": 0.1994,
+    "ixg_ev_hat": 0.3954,
+    "icf_ev_hat": 0.2925,
+    "fin_ev_hat": -0.1141,
+    "irush_ev_hat": 0.145,
+    "ireb_ev_hat": 0.2382,
+    "irc_ev_hat": 0.2394,
+    "on_gf_ev_hat": 0.4305,
+    "on_xgf_ev_hat": 0.5925,
+    "on_cf_ev_hat": 0.5416,
+    "rel_gf_hat": 0.393,
+    "rel_xgf_hat": 0.4615,
+    "rapm_off": 0.4254,
+    "rapm_off_s": 0.4215,
+    "rapm_net_v": 0.3252
+   }
+  },
+  "D": {
+   "n_player_seasons": 1145,
+   "n_players": 333,
+   "T_on_gf": {
+    "cre_ev": 0.2487,
+    "cre_evx": 0.2669,
+    "g_ev_hat": 0.2023,
+    "a1_ev_hat": 0.187,
+    "a2_ev_hat": 0.1307,
+    "ixg_ev_hat": 0.2383,
+    "icf_ev_hat": 0.1991,
+    "fin_ev_hat": -0.0911,
+    "irush_ev_hat": 0.1264,
+    "ireb_ev_hat": 0.1735,
+    "irc_ev_hat": 0.1572,
+    "on_gf_ev_hat": 0.2559,
+    "on_xgf_ev_hat": 0.2753,
+    "on_cf_ev_hat": 0.287,
+    "rel_gf_hat": 0.0312,
+    "rel_xgf_hat": 0.1782,
+    "rapm_off": 0.1974,
+    "rapm_off_s": 0.1998,
+    "rapm_net_v": 0.1879
+   },
+   "T_rel_gf": {
+    "cre_ev": 0.2242,
+    "cre_evx": 0.2402,
+    "g_ev_hat": 0.2038,
+    "a1_ev_hat": 0.1619,
+    "a2_ev_hat": 0.0923,
+    "ixg_ev_hat": 0.214,
+    "icf_ev_hat": 0.171,
+    "fin_ev_hat": -0.0555,
+    "irush_ev_hat": 0.1402,
+    "ireb_ev_hat": 0.1502,
+    "irc_ev_hat": 0.1435,
+    "on_gf_ev_hat": 0.1503,
+    "on_xgf_ev_hat": 0.1269,
+    "on_cf_ev_hat": 0.1652,
+    "rel_gf_hat": 0.1526,
+    "rel_xgf_hat": 0.236,
+    "rapm_off": 0.1542,
+    "rapm_off_s": 0.1576,
+    "rapm_net_v": 0.1404
+   },
+   "T_pts": {
+    "cre_ev": 0.4381,
+    "cre_evx": 0.4617,
+    "g_ev_hat": 0.3469,
+    "a1_ev_hat": 0.3493,
+    "a2_ev_hat": 0.2111,
+    "ixg_ev_hat": 0.3998,
+    "icf_ev_hat": 0.3643,
+    "fin_ev_hat": -0.1439,
+    "irush_ev_hat": 0.2812,
+    "ireb_ev_hat": 0.2526,
+    "irc_ev_hat": 0.2703,
+    "on_gf_ev_hat": 0.2484,
+    "on_xgf_ev_hat": 0.293,
+    "on_cf_ev_hat": 0.3297,
+    "rel_gf_hat": 0.1226,
+    "rel_xgf_hat": 0.2748,
+    "rapm_off": 0.3061,
+    "rapm_off_s": 0.3188,
+    "rapm_net_v": 0.2541
+   },
+   "T_on_xgf": {
+    "cre_ev": 0.2788,
+    "cre_evx": 0.3381,
+    "g_ev_hat": 0.252,
+    "a1_ev_hat": 0.2271,
+    "a2_ev_hat": 0.0711,
+    "ixg_ev_hat": 0.3606,
+    "icf_ev_hat": 0.3213,
+    "fin_ev_hat": -0.2027,
+    "irush_ev_hat": 0.1723,
+    "ireb_ev_hat": 0.247,
+    "irc_ev_hat": 0.2756,
+    "on_gf_ev_hat": 0.1781,
+    "on_xgf_ev_hat": 0.4731,
+    "on_cf_ev_hat": 0.4478,
+    "rel_gf_hat": 0.0425,
+    "rel_xgf_hat": 0.1597,
+    "rapm_off": 0.3198,
+    "rapm_off_s": 0.3196,
+    "rapm_net_v": 0.259
+   }
+  },
+  "label": "value at first game on/after Jan 1 -> rest of season"
+ },
+ "lineup_team_game": {
+  "n_team_games": 16273,
+  "target": "team 5v5 GF/60 in the game (TOI-weighted)",
+  "R2_team_ewma_only": 0.00872,
+  "cre_ev": {
+   "r": 0.094,
+   "R2_alone": 0.00884,
+   "R2_team_ewma_plus": 0.01105,
+   "delta_R2_over_team_ewma": 0.00233
+  },
+  "cre_evx": {
+   "r": 0.1056,
+   "R2_alone": 0.01114,
+   "R2_team_ewma_plus": 0.01152,
+   "delta_R2_over_team_ewma": 0.00281
+  },
+  "ixg_ev_hat": {
+   "r": 0.0882,
+   "R2_alone": 0.00778,
+   "R2_team_ewma_plus": 0.01059,
+   "delta_R2_over_team_ewma": 0.00187
+  },
+  "on_gf_ev_hat": {
+   "r": 0.093,
+   "R2_alone": 0.00865,
+   "R2_team_ewma_plus": 0.01034,
+   "delta_R2_over_team_ewma": 0.00163
+  },
+  "on_xgf_ev_hat": {
+   "r": 0.0849,
+   "R2_alone": 0.0072,
+   "R2_team_ewma_plus": 0.00978,
+   "delta_R2_over_team_ewma": 0.00106
+  },
+  "rapm_off_s": {
+   "r": 0.0662,
+   "R2_alone": 0.00438,
+   "R2_team_ewma_plus": 0.00879,
+   "delta_R2_over_team_ewma": 7e-05
+  },
+  "R2_team_ewma+cre_ev+rapm_off_s": 0.01105,
+  "R2_team_ewma+rapm_off_s": 0.00879
+ },
+ "face_validity": {
+  "as_of": "each player's first regular-season game of 2017-18 (walk-forward)",
+  "F": {
+   "n_eligible": 366,
+   "min_prior_ev_minutes": 600,
+   "top_cre_ev": [
+    {
+     "name": "Sidney Crosby",
+     "team": "PIT",
+     "cre_ev": 1.996,
+     "g_ev_hat": 0.822,
+     "a1_ev_hat": 0.759,
+     "ixg_ev_hat": 0.78,
+     "rapm_off": 0.244,
+     "prior_min_ev": 1733.034
+    },
+    {
+     "name": "Connor McDavid",
+     "team": "EDM",
+     "cre_ev": 1.919,
+     "g_ev_hat": 0.747,
+     "a1_ev_hat": 0.784,
+     "ixg_ev_hat": 0.919,
+     "rapm_off": 0.297,
+     "prior_min_ev": 1267.092
+    },
+    {
+     "name": "Evgeni Malkin",
+     "team": "PIT",
+     "cre_ev": 1.903,
+     "g_ev_hat": 0.88,
+     "a1_ev_hat": 0.657,
+     "ixg_ev_hat": 0.71,
+     "rapm_off": 0.286,
+     "prior_min_ev": 1599.287
+    },
+    {
+     "name": "Patrick Kane",
+     "team": "CHI",
+     "cre_ev": 1.89,
+     "g_ev_hat": 0.86,
+     "a1_ev_hat": 0.672,
+     "ixg_ev_hat": 0.647,
+     "rapm_off": -0.027,
+     "prior_min_ev": 1895.903
+    },
+    {
+     "name": "Mark Scheifele",
+     "team": "WPG",
+     "cre_ev": 1.865,
+     "g_ev_hat": 0.726,
+     "a1_ev_hat": 0.691,
+     "ixg_ev_hat": 0.712,
+     "rapm_off": 0.091,
+     "prior_min_ev": 1621.937
+    },
+    {
+     "name": "Jake Guentzel",
+     "team": "PIT",
+     "cre_ev": 1.849,
+     "g_ev_hat": 0.938,
+     "a1_ev_hat": 0.571,
+     "ixg_ev_hat": 0.81,
+     "rapm_off": 0.222,
+     "prior_min_ev": 715.554
+    },
+    {
+     "name": "Nikita Kucherov",
+     "team": "TBL",
+     "cre_ev": 1.841,
+     "g_ev_hat": 0.833,
+     "a1_ev_hat": 0.633,
+     "ixg_ev_hat": 0.759,
+     "rapm_off": 0.228,
+     "prior_min_ev": 1555.586
+    },
+    {
+     "name": "Ryan Getzlaf",
+     "team": "ANA",
+     "cre_ev": 1.824,
+     "g_ev_hat": 0.502,
+     "a1_ev_hat": 0.905,
+     "ixg_ev_hat": 0.508,
+     "rapm_off": 0.132,
+     "prior_min_ev": 1752.131
+    },
+    {
+     "name": "Steven Stamkos",
+     "team": "TBL",
+     "cre_ev": 1.819,
+     "g_ev_hat": 0.896,
+     "a1_ev_hat": 0.627,
+     "ixg_ev_hat": 0.803,
+     "rapm_off": 0.02,
+     "prior_min_ev": 1630.713
+    },
+    {
+     "name": "Blake Wheeler",
+     "team": "WPG",
+     "cre_ev": 1.807,
+     "g_ev_hat": 0.715,
+     "a1_ev_hat": 0.748,
+     "ixg_ev_hat": 0.749,
+     "rapm_off": 0.224,
+     "prior_min_ev": 1645.198
+    },
+    {
+     "name": "Jeff Skinner",
+     "team": "CAR",
+     "cre_ev": 1.806,
+     "g_ev_hat": 0.966,
+     "a1_ev_hat": 0.559,
+     "ixg_ev_hat": 1.011,
+     "rapm_off": 0.108,
+     "prior_min_ev": 1609.179
+    },
+    {
+     "name": "Brad Marchand",
+     "team": "BOS",
+     "cre_ev": 1.802,
+     "g_ev_hat": 0.815,
+     "a1_ev_hat": 0.637,
+     "ixg_ev_hat": 0.792,
+     "rapm_off": 0.132,
+     "prior_min_ev": 1605.004
+    },
+    {
+     "name": "Vladimir Tarasenko",
+     "team": "STL",
+     "cre_ev": 1.785,
+     "g_ev_hat": 0.91,
+     "a1_ev_hat": 0.519,
+     "ixg_ev_hat": 0.85,
+     "rapm_off": 0.22,
+     "prior_min_ev": 1590.335
+    },
+    {
+     "name": "Aleksander Barkov",
+     "team": "FLA",
+     "cre_ev": 1.769,
+     "g_ev_hat": 0.827,
+     "a1_ev_hat": 0.61,
+     "ixg_ev_hat": 0.707,
+     "rapm_off": -0.091,
+     "prior_min_ev": 1457.279
+    },
+    {
+     "name": "Brandon Saad",
+     "team": "CHI",
+     "cre_ev": 1.768,
+     "g_ev_hat": 0.843,
+     "a1_ev_hat": 0.551,
+     "ixg_ev_hat": 0.873,
+     "rapm_off": 0.24,
+     "prior_min_ev": 1564.89
+    }
+   ],
+   "bottom_cre_ev": [
+    {
+     "name": "Jacob de la Rose",
+     "team": "MTL",
+     "cre_ev": 1.093,
+     "g_ev_hat": 0.445,
+     "a1_ev_hat": 0.367,
+     "ixg_ev_hat": 0.48,
+     "rapm_off": -0.187,
+     "prior_min_ev": 612.123
+    },
+    {
+     "name": "Pierre-Edouard Bellemare",
+     "team": "VGK",
+     "cre_ev": 1.106,
+     "g_ev_hat": 0.49,
+     "a1_ev_hat": 0.353,
+     "ixg_ev_hat": 0.533,
+     "rapm_off": -0.083,
+     "prior_min_ev": 1004.359
+    },
+    {
+     "name": "Jacob Josefson",
+     "team": "BUF",
+     "cre_ev": 1.107,
+     "g_ev_hat": 0.405,
+     "a1_ev_hat": 0.381,
+     "ixg_ev_hat": 0.586,
+     "rapm_off": -0.077,
+     "prior_min_ev": 1116.14
+    },
+    {
+     "name": "Zac Rinaldo",
+     "team": "ARI",
+     "cre_ev": 1.127,
+     "g_ev_hat": 0.432,
+     "a1_ev_hat": 0.42,
+     "ixg_ev_hat": 0.485,
+     "rapm_off": -0.252,
+     "prior_min_ev": 853.321
+    },
+    {
+     "name": "Derek MacKenzie",
+     "team": "FLA",
+     "cre_ev": 1.128,
+     "g_ev_hat": 0.461,
+     "a1_ev_hat": 0.364,
+     "ixg_ev_hat": 0.517,
+     "rapm_off": -0.178,
+     "prior_min_ev": 1116.871
+    },
+    {
+     "name": "Tanner Glass",
+     "team": "CGY",
+     "cre_ev": 1.141,
+     "g_ev_hat": 0.454,
+     "a1_ev_hat": 0.357,
+     "ixg_ev_hat": 0.463,
+     "rapm_off": -0.047,
+     "prior_min_ev": 1079.336
+    },
+    {
+     "name": "Curtis Lazar",
+     "team": "CGY",
+     "cre_ev": 1.148,
+     "g_ev_hat": 0.455,
+     "a1_ev_hat": 0.39,
+     "ixg_ev_hat": 0.592,
+     "rapm_off": -0.085,
+     "prior_min_ev": 992.576
+    },
+    {
+     "name": "Matt Hendricks",
+     "team": "WPG",
+     "cre_ev": 1.151,
+     "g_ev_hat": 0.526,
+     "a1_ev_hat": 0.323,
+     "ixg_ev_hat": 0.543,
+     "rapm_off": -0.116,
+     "prior_min_ev": 1130.723
+    },
+    {
+     "name": "Chris Kelly",
+     "team": "ANA",
+     "cre_ev": 1.16,
+     "g_ev_hat": 0.446,
+     "a1_ev_hat": 0.424,
+     "ixg_ev_hat": 0.512,
+     "rapm_off": -0.083,
+     "prior_min_ev": 1227.969
+    },
+    {
+     "name": "Nicolas Deslauriers",
+     "team": "MTL",
+     "cre_ev": 1.168,
+     "g_ev_hat": 0.475,
+     "a1_ev_hat": 0.397,
+     "ixg_ev_hat": 0.543,
+     "rapm_off": -0.328,
+     "prior_min_ev": 907.92
+    }
+   ],
+   "top_rapm_off": [
+    {
+     "name": "Brendan Gallagher",
+     "team": "MTL",
+     "cre_ev": 1.6,
+     "g_ev_hat": 0.677,
+     "a1_ev_hat": 0.587,
+     "ixg_ev_hat": 0.951,
+     "rapm_off": 0.435,
+     "prior_min_ev": 1448.842
+    },
+    {
+     "name": "Connor McDavid",
+     "team": "EDM",
+     "cre_ev": 1.919,
+     "g_ev_hat": 0.747,
+     "a1_ev_hat": 0.784,
+     "ixg_ev_hat": 0.919,
+     "rapm_off": 0.297,
+     "prior_min_ev": 1267.092
+    },
+    {
+     "name": "Jordan Staal",
+     "team": "CAR",
+     "cre_ev": 1.497,
+     "g_ev_hat": 0.579,
+     "a1_ev_hat": 0.511,
+     "ixg_ev_hat": 0.761,
+     "rapm_off": 0.297,
+     "prior_min_ev": 1590.62
+    },
+    {
+     "name": "Evgeni Malkin",
+     "team": "PIT",
+     "cre_ev": 1.903,
+     "g_ev_hat": 0.88,
+     "a1_ev_hat": 0.657,
+     "ixg_ev_hat": 0.71,
+     "rapm_off": 0.286,
+     "prior_min_ev": 1599.287
+    },
+    {
+     "name": "David Pastrnak",
+     "team": "BOS",
+     "cre_ev": 1.688,
+     "g_ev_hat": 0.767,
+     "a1_ev_hat": 0.567,
+     "ixg_ev_hat": 0.796,
+     "rapm_off": 0.258,
+     "prior_min_ev": 1261.952
+    },
+    {
+     "name": "Nazem Kadri",
+     "team": "TOR",
+     "cre_ev": 1.551,
+     "g_ev_hat": 0.67,
+     "a1_ev_hat": 0.548,
+     "ixg_ev_hat": 0.86,
+     "rapm_off": 0.245,
+     "prior_min_ev": 1571.582
+    },
+    {
+     "name": "Sidney Crosby",
+     "team": "PIT",
+     "cre_ev": 1.996,
+     "g_ev_hat": 0.822,
+     "a1_ev_hat": 0.759,
+     "ixg_ev_hat": 0.78,
+     "rapm_off": 0.244,
+     "prior_min_ev": 1733.034
+    },
+    {
+     "name": "Brandon Saad",
+     "team": "CHI",
+     "cre_ev": 1.768,
+     "g_ev_hat": 0.843,
+     "a1_ev_hat": 0.551,
+     "ixg_ev_hat": 0.873,
+     "rapm_off": 0.24,
+     "prior_min_ev": 1564.89
+    },
+    {
+     "name": "John Tavares",
+     "team": "NYI",
+     "cre_ev": 1.743,
+     "g_ev_hat": 0.779,
+     "a1_ev_hat": 0.612,
+     "ixg_ev_hat": 0.873,
+     "rapm_off": 0.238,
+     "prior_min_ev": 1785.441
+    },
+    {
+     "name": "Anders Lee",
+     "team": "NYI",
+     "cre_ev": 1.651,
+     "g_ev_hat": 0.854,
+     "a1_ev_hat": 0.474,
+     "ixg_ev_hat": 0.862,
+     "rapm_off": 0.236,
+     "prior_min_ev": 1298.791
+    }
+   ]
+  },
+  "D": {
+   "n_eligible": 204,
+   "min_prior_ev_minutes": 600,
+   "top_cre_ev": [
+    {
+     "name": "Brent Burns",
+     "team": "SJS",
+     "cre_ev": 1.039,
+     "g_ev_hat": 0.358,
+     "a1_ev_hat": 0.363,
+     "ixg_ev_hat": 0.339,
+     "rapm_off": 0.266,
+     "prior_min_ev": 2072.853
+    },
+    {
+     "name": "Erik Karlsson",
+     "team": "OTT",
+     "cre_ev": 1.018,
+     "g_ev_hat": 0.29,
+     "a1_ev_hat": 0.368,
+     "ixg_ev_hat": 0.253,
+     "rapm_off": 0.184,
+     "prior_min_ev": 2326.826
+    },
+    {
+     "name": "Victor Hedman",
+     "team": "TBL",
+     "cre_ev": 0.905,
+     "g_ev_hat": 0.215,
+     "a1_ev_hat": 0.369,
+     "ixg_ev_hat": 0.233,
+     "rapm_off": 0.032,
+     "prior_min_ev": 2035.498
+    },
+    {
+     "name": "Dougie Hamilton",
+     "team": "CGY",
+     "cre_ev": 0.879,
+     "g_ev_hat": 0.232,
+     "a1_ev_hat": 0.274,
+     "ixg_ev_hat": 0.259,
+     "rapm_off": 0.115,
+     "prior_min_ev": 1778.234
+    },
+    {
+     "name": "Dustin Byfuglien",
+     "team": "WPG",
+     "cre_ev": 0.857,
+     "g_ev_hat": 0.289,
+     "a1_ev_hat": 0.271,
+     "ixg_ev_hat": 0.324,
+     "rapm_off": 0.218,
+     "prior_min_ev": 2190.001
+    },
+    {
+     "name": "Roman Josi",
+     "team": "NSH",
+     "cre_ev": 0.852,
+     "g_ev_hat": 0.219,
+     "a1_ev_hat": 0.305,
+     "ixg_ev_hat": 0.231,
+     "rapm_off": 0.097,
+     "prior_min_ev": 2138.188
+    },
+    {
+     "name": "Tyson Barrie",
+     "team": "COL",
+     "cre_ev": 0.849,
+     "g_ev_hat": 0.218,
+     "a1_ev_hat": 0.358,
+     "ixg_ev_hat": 0.229,
+     "rapm_off": -0.013,
+     "prior_min_ev": 1983.194
+    },
+    {
+     "name": "Ryan Ellis",
+     "team": "NSH",
+     "cre_ev": 0.832,
+     "g_ev_hat": 0.251,
+     "a1_ev_hat": 0.297,
+     "ixg_ev_hat": 0.181,
+     "rapm_off": 0.034,
+     "prior_min_ev": 1929.372
+    },
+    {
+     "name": "Brady Skjei",
+     "team": "NYR",
+     "cre_ev": 0.829,
+     "g_ev_hat": 0.215,
+     "a1_ev_hat": 0.295,
+     "ixg_ev_hat": 0.174,
+     "rapm_off": -0.029,
+     "prior_min_ev": 1047.487
+    },
+    {
+     "name": "John Klingberg",
+     "team": "DAL",
+     "cre_ev": 0.822,
+     "g_ev_hat": 0.162,
+     "a1_ev_hat": 0.349,
+     "ixg_ev_hat": 0.202,
+     "rapm_off": 0.212,
+     "prior_min_ev": 1861.179
+    },
+    {
+     "name": "Kris Letang",
+     "team": "PIT",
+     "cre_ev": 0.808,
+     "g_ev_hat": 0.191,
+     "a1_ev_hat": 0.25,
+     "ixg_ev_hat": 0.231,
+     "rapm_off": 0.135,
+     "prior_min_ev": 2131.126
+    },
+    {
+     "name": "Alex Goligoski",
+     "team": "ARI",
+     "cre_ev": 0.805,
+     "g_ev_hat": 0.182,
+     "a1_ev_hat": 0.297,
+     "ixg_ev_hat": 0.154,
+     "rapm_off": 0.114,
+     "prior_min_ev": 2042.589
+    },
+    {
+     "name": "P.K. Subban",
+     "team": "NSH",
+     "cre_ev": 0.796,
+     "g_ev_hat": 0.195,
+     "a1_ev_hat": 0.285,
+     "ixg_ev_hat": 0.129,
+     "rapm_off": 0.114,
+     "prior_min_ev": 2149.305
+    },
+    {
+     "name": "Oscar Klefbom",
+     "team": "EDM",
+     "cre_ev": 0.789,
+     "g_ev_hat": 0.23,
+     "a1_ev_hat": 0.298,
+     "ixg_ev_hat": 0.21,
+     "rapm_off": 0.095,
+     "prior_min_ev": 1653.891
+    },
+    {
+     "name": "John Carlson",
+     "team": "WSH",
+     "cre_ev": 0.786,
+     "g_ev_hat": 0.185,
+     "a1_ev_hat": 0.314,
+     "ixg_ev_hat": 0.25,
+     "rapm_off": 0.084,
+     "prior_min_ev": 1910.388
+    }
+   ],
+   "bottom_cre_ev": [
+    {
+     "name": "Mark Borowiecki",
+     "team": "OTT",
+     "cre_ev": 0.542,
+     "g_ev_hat": 0.109,
+     "a1_ev_hat": 0.199,
+     "ixg_ev_hat": 0.112,
+     "rapm_off": -0.077,
+     "prior_min_ev": 1266.165
+    },
+    {
+     "name": "Andy Greene",
+     "team": "NJD",
+     "cre_ev": 0.568,
+     "g_ev_hat": 0.106,
+     "a1_ev_hat": 0.204,
+     "ixg_ev_hat": 0.136,
+     "rapm_off": -0.035,
+     "prior_min_ev": 1959.304
+    },
+    {
+     "name": "Jon Merrill",
+     "team": "VGK",
+     "cre_ev": 0.573,
+     "g_ev_hat": 0.107,
+     "a1_ev_hat": 0.195,
+     "ixg_ev_hat": 0.111,
+     "rapm_off": -0.142,
+     "prior_min_ev": 1582.249
+    },
+    {
+     "name": "Dmitry Kulikov",
+     "team": "WPG",
+     "cre_ev": 0.573,
+     "g_ev_hat": 0.11,
+     "a1_ev_hat": 0.191,
+     "ixg_ev_hat": 0.125,
+     "rapm_off": -0.048,
+     "prior_min_ev": 1961.519
+    },
+    {
+     "name": "Ben Lovejoy",
+     "team": "NJD",
+     "cre_ev": 0.576,
+     "g_ev_hat": 0.135,
+     "a1_ev_hat": 0.202,
+     "ixg_ev_hat": 0.142,
+     "rapm_off": -0.023,
+     "prior_min_ev": 1847.451
+    },
+    {
+     "name": "Josh Gorges",
+     "team": "BUF",
+     "cre_ev": 0.577,
+     "g_ev_hat": 0.105,
+     "a1_ev_hat": 0.202,
+     "ixg_ev_hat": 0.087,
+     "rapm_off": -0.13,
+     "prior_min_ev": 1863.285
+    },
+    {
+     "name": "Brenden Dillon",
+     "team": "SJS",
+     "cre_ev": 0.58,
+     "g_ev_hat": 0.118,
+     "a1_ev_hat": 0.176,
+     "ixg_ev_hat": 0.139,
+     "rapm_off": 0.094,
+     "prior_min_ev": 1747.458
+    },
+    {
+     "name": "Adam McQuaid",
+     "team": "BOS",
+     "cre_ev": 0.582,
+     "g_ev_hat": 0.122,
+     "a1_ev_hat": 0.189,
+     "ixg_ev_hat": 0.092,
+     "rapm_off": -0.007,
+     "prior_min_ev": 1706.77
+    },
+    {
+     "name": "Marc Staal",
+     "team": "NYR",
+     "cre_ev": 0.584,
+     "g_ev_hat": 0.123,
+     "a1_ev_hat": 0.197,
+     "ixg_ev_hat": 0.144,
+     "rapm_off": -0.056,
+     "prior_min_ev": 1947.387
+    },
+    {
+     "name": "Carl Gunnarsson",
+     "team": "STL",
+     "cre_ev": 0.587,
+     "g_ev_hat": 0.111,
+     "a1_ev_hat": 0.204,
+     "ixg_ev_hat": 0.098,
+     "rapm_off": -0.097,
+     "prior_min_ev": 1587.951
+    }
+   ],
+   "top_rapm_off": [
+    {
+     "name": "Brent Burns",
+     "team": "SJS",
+     "cre_ev": 1.039,
+     "g_ev_hat": 0.358,
+     "a1_ev_hat": 0.363,
+     "ixg_ev_hat": 0.339,
+     "rapm_off": 0.266,
+     "prior_min_ev": 2072.853
+    },
+    {
+     "name": "Colin Miller",
+     "team": "VGK",
+     "cre_ev": 0.711,
+     "g_ev_hat": 0.2,
+     "a1_ev_hat": 0.229,
+     "ixg_ev_hat": 0.192,
+     "rapm_off": 0.244,
+     "prior_min_ev": 941.749
+    },
+    {
+     "name": "Justin Faulk",
+     "team": "CAR",
+     "cre_ev": 0.743,
+     "g_ev_hat": 0.248,
+     "a1_ev_hat": 0.228,
+     "ixg_ev_hat": 0.23,
+     "rapm_off": 0.222,
+     "prior_min_ev": 2042.851
+    },
+    {
+     "name": "Dustin Byfuglien",
+     "team": "WPG",
+     "cre_ev": 0.857,
+     "g_ev_hat": 0.289,
+     "a1_ev_hat": 0.271,
+     "ixg_ev_hat": 0.324,
+     "rapm_off": 0.218,
+     "prior_min_ev": 2190.001
+    },
+    {
+     "name": "John Klingberg",
+     "team": "DAL",
+     "cre_ev": 0.822,
+     "g_ev_hat": 0.162,
+     "a1_ev_hat": 0.349,
+     "ixg_ev_hat": 0.202,
+     "rapm_off": 0.212,
+     "prior_min_ev": 1861.179
+    },
+    {
+     "name": "Radko Gudas",
+     "team": "PHI",
+     "cre_ev": 0.75,
+     "g_ev_hat": 0.189,
+     "a1_ev_hat": 0.28,
+     "ixg_ev_hat": 0.17,
+     "rapm_off": 0.195,
+     "prior_min_ev": 1724.311
+    },
+    {
+     "name": "Erik Karlsson",
+     "team": "OTT",
+     "cre_ev": 1.018,
+     "g_ev_hat": 0.29,
+     "a1_ev_hat": 0.368,
+     "ixg_ev_hat": 0.253,
+     "rapm_off": 0.184,
+     "prior_min_ev": 2326.826
+    },
+    {
+     "name": "Anton Stralman",
+     "team": "TBL",
+     "cre_ev": 0.685,
+     "g_ev_hat": 0.175,
+     "a1_ev_hat": 0.224,
+     "ixg_ev_hat": 0.19,
+     "rapm_off": 0.184,
+     "prior_min_ev": 1914.96
+    },
+    {
+     "name": "Matt Hunwick",
+     "team": "PIT",
+     "cre_ev": 0.678,
+     "g_ev_hat": 0.117,
+     "a1_ev_hat": 0.281,
+     "ixg_ev_hat": 0.154,
+     "rapm_off": 0.182,
+     "prior_min_ev": 1750.827
+    },
+    {
+     "name": "Jake Muzzin",
+     "team": "LAK",
+     "cre_ev": 0.713,
+     "g_ev_hat": 0.174,
+     "a1_ev_hat": 0.256,
+     "ixg_ev_hat": 0.171,
+     "rapm_off": 0.182,
+     "prior_min_ev": 1930.9
+    }
+   ]
+  }
+ },
+ "walk_forward_audit": {
+  "cut_date": "2015-01-15",
+  "rows_checked": 195029,
+  "rows_on_cut_date": 360,
+  "columns_checked": 37,
+  "nan_pattern_mismatches": 0,
+  "max_abs_diff": 9.094947017729282e-13,
+  "max_rel_diff": 1.7763568394002505e-15,
+  "max_abs_diff_rows_on_cut_date": 9.094947017729282e-13,
+  "tolerance_rel": 1e-06,
+  "pass": true
+ },
+ "files": {
+  "wf": "C:\\Users\\Admin\\Projects\\Sports-Odds-Algorithms\\data/pv_nhl_creation_wf.parquet",
+  "rows": 362712,
+  "games": 10076
+ },
+ "seconds": 57.8
+}

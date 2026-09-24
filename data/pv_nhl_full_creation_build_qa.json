@@ -1,0 +1,33 @@
+{
+ "rows": 741172,
+ "games": 20591,
+ "seasons": [
+  20102011,
+  20112012,
+  20122013,
+  20132014,
+  20142015,
+  20152016,
+  20162017,
+  20172018,
+  20182019,
+  20192020,
+  20202021,
+  20212022,
+  20222023,
+  20232024,
+  20242025,
+  20252026
+ ],
+ "events_nonSO": 5362323,
+ "xg_missing_unblocked": 2469,
+ "unblocked": 1753604,
+ "rebound_share_of_attempts": 0.040028910238958285,
+ "rush_share_of_attempts": 0.025269361032063353,
+ "individual_rows_not_in_skater_base": 4420,
+ "ev5_events_with_5v5_onice_share": 0.9685163009472026,
+ "shift_state_equals_pbp_state_at_attempts": 0.966187129862778,
+ "toi_shift_sum_vs_roster_toi_exact_share": 0.9991821182443176,
+ "toi_shift_sum_vs_roster_toi_within60_share": 0.9998528090558534,
+ "seconds": 40.1
+}

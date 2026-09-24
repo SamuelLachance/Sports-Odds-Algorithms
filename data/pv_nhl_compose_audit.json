@@ -1,0 +1,79 @@
+{
+ "n_games": 10076,
+ "cutoffs": {
+  "2013-02-15": {
+   "A1_target_permutation": {
+    "n_pre": 2830,
+    "identical_pre": true,
+    "max_abs_diff_pre": 0.0,
+    "n_post_games_moved": 6635,
+    "pass": true
+   },
+   "A2_truncation": {
+    "n_kept": 2838,
+    "identical": true,
+    "max_abs_diff": 0.0,
+    "pass": true
+   },
+   "A3_input_perturbation": {
+    "n_pre": 2830,
+    "identical_pre": true,
+    "max_abs_diff_pre": 0.0,
+    "n_post_games_moved": 7246,
+    "pass": true
+   }
+  },
+  "2015-01-15": {
+   "A1_target_permutation": {
+    "n_pre": 5408,
+    "identical_pre": true,
+    "max_abs_diff_pre": 0.0,
+    "n_post_games_moved": 3993,
+    "pass": true
+   },
+   "A2_truncation": {
+    "n_kept": 5418,
+    "identical": true,
+    "max_abs_diff": 0.0,
+    "pass": true
+   },
+   "A3_input_perturbation": {
+    "n_pre": 5408,
+    "identical_pre": true,
+    "max_abs_diff_pre": 0.0,
+    "n_post_games_moved": 4668,
+    "pass": true
+   }
+  },
+  "2017-02-01": {
+   "A1_target_permutation": {
+    "n_pre": 8157,
+    "identical_pre": true,
+    "max_abs_diff_pre": 0.0,
+    "n_post_games_moved": 1355,
+    "pass": true
+   },
+   "A2_truncation": {
+    "n_kept": 8160,
+    "identical": true,
+    "max_abs_diff": 0.0,
+    "pass": true
+   },
+   "A3_input_perturbation": {
+    "n_pre": 8157,
+    "identical_pre": true,
+    "max_abs_diff_pre": 0.0,
+    "n_post_games_moved": 1919,
+    "pass": true
+   }
+  }
+ },
+ "A4_same_game_facts": {
+  "n": 10076,
+  "identical": true,
+  "max_abs_diff": 0.0,
+  "pass": true
+ },
+ "pass": true,
+ "seconds": 7.1
+}

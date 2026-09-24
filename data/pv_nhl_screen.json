@@ -1,0 +1,410 @@
+{
+ "protocol": {
+  "dev_only": true,
+  "n": 7929,
+  "seasons": [
+   20112012,
+   20122013,
+   20132014,
+   20142015,
+   20152016,
+   20162017,
+   20172018
+  ],
+  "test_seasons_touched": 0,
+  "market_inputs": 0,
+  "prereg": "data/pv_nhl_screen_prereg.json",
+  "prereg_sha256": "9d0c1fbdac3e7a1671670ce5c85ba1f57fc729ca89e7d7cefbec296f18efece0",
+  "eval_mask_sha1": "d5512699fe7b19cb015d10a04892a17e92ffd364",
+  "y_sha1": "701354619cf8f6755a167d0eca73897aa94b5c88",
+  "gamma_grid_elo_per_goal": [
+   0.0,
+   60.0,
+   120.0,
+   180.0,
+   240.0
+  ],
+  "n_gv_missing_all_dev_games_set_to_0": 0
+ },
+ "sanity": {
+  "S1": {
+   "shipped_dev_loso_ll": 0.672398,
+   "n": 7929,
+   "target": 0.672398,
+   "pass": true
+  },
+  "S2": {
+   "drop_xg_cost": 0.00303,
+   "target": 0.00303,
+   "tol": 0.0002,
+   "pass": true
+  },
+  "S4": {
+   "feature_coverage": 1.0,
+   "home_away_code_match": 1.0,
+   "pass": true
+  },
+  "S3": {
+   "gamma0_elo_bitwise_equals_run_elo_arr": true,
+   "A1_gamma0_design_equals_blend_plus_lv": true,
+   "pass": true
+  },
+  "S5": {
+   "blend_plus_lv_gain": 0.0014023160529037261,
+   "compose_C3_gain_exact": 0.0014023160529037261,
+   "pass": true
+  }
+ },
+ "arms": {
+  "A1 PRIMARY goalie-in-Elo + lv (xG kept)": {
+   "gain": 0.0016,
+   "fold_sd": 0.00106,
+   "fold_se": 0.0004,
+   "sigma": 4.02,
+   "n_pos_folds": 6,
+   "n_folds": 7,
+   "sig": "SIG",
+   "boot_ci_4k_seed7": [
+    0.00035,
+    0.0028
+   ],
+   "boot_ci_10k": [
+    0.00038,
+    0.00283
+   ],
+   "gain_exact": 0.0016043124337423724,
+   "dev_ll": 0.670794,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.00195,
+    "boot_ci_10k": [
+     6e-05,
+     0.00381
+    ]
+   },
+   "per_season_gain": {
+    "20112012": -3e-05,
+    "20122013": 0.00103,
+    "20132014": 0.00084,
+    "20142015": 0.0031,
+    "20152016": 0.00254,
+    "20162017": 0.00161,
+    "20172018": 0.00172
+   },
+   "picks": {
+    "20112012": 240.0,
+    "20122013": 240.0,
+    "20132014": 240.0,
+    "20142015": 180.0,
+    "20152016": 240.0,
+    "20162017": 180.0,
+    "20172018": 240.0
+   },
+   "cell_loso_ll_OPTIMISTIC": {
+    "0": 0.670996,
+    "60": 0.670889,
+    "120": 0.670813,
+    "180": 0.670769,
+    "240": 0.67075
+   },
+   "best_single_cell_OPTIMISTIC": {
+    "gamma": 240.0,
+    "gain": 0.00165
+   },
+   "coef_modal_cell_all_dev_descriptive": [
+    0.0741,
+    0.3853,
+    -0.0083,
+    -0.2351,
+    0.2162,
+    0.2624,
+    0.4938
+   ]
+  },
+  "A2 lv replaces xG": {
+   "gain": 0.00028,
+   "fold_sd": 0.00155,
+   "fold_se": 0.00059,
+   "sigma": 0.48,
+   "n_pos_folds": 3,
+   "n_folds": 7,
+   "sig": "n.s.",
+   "boot_ci_4k_seed7": [
+    -0.00166,
+    0.00219
+   ],
+   "boot_ci_10k": [
+    -0.0016,
+    0.00222
+   ],
+   "gain_exact": 0.0002825321595628259,
+   "dev_ll": 0.672116,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.00023,
+    "boot_ci_10k": [
+     -0.00272,
+     0.00313
+    ]
+   },
+   "per_season_gain": {
+    "20112012": -0.00196,
+    "20122013": -3e-05,
+    "20132014": -2e-05,
+    "20142015": 0.00299,
+    "20152016": 0.00114,
+    "20162017": -0.00077,
+    "20172018": 0.00031
+   },
+   "coef_all_dev_descriptive": [
+    0.1005,
+    0.4545,
+    -0.0074,
+    -0.2376,
+    0.217,
+    0.6795
+   ]
+  },
+  "A3 goalie-in-Elo + lv replaces xG": {
+   "gain": 0.00029,
+   "fold_sd": 0.00186,
+   "fold_se": 0.0007,
+   "sigma": 0.41,
+   "n_pos_folds": 3,
+   "n_folds": 7,
+   "sig": "n.s.",
+   "boot_ci_4k_seed7": [
+    -0.00175,
+    0.00225
+   ],
+   "boot_ci_10k": [
+    -0.00166,
+    0.00227
+   ],
+   "gain_exact": 0.0002853948432778553,
+   "dev_ll": 0.672113,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.00059,
+    "boot_ci_10k": [
+     -0.00242,
+     0.0036
+    ]
+   },
+   "per_season_gain": {
+    "20112012": -0.00227,
+    "20122013": -0.00118,
+    "20132014": -0.00068,
+    "20142015": 0.00345,
+    "20152016": 0.00119,
+    "20162017": -0.00022,
+    "20172018": 0.00078
+   },
+   "picks": {
+    "20112012": 240.0,
+    "20122013": 240.0,
+    "20132014": 240.0,
+    "20142015": 120.0,
+    "20152016": 180.0,
+    "20162017": 120.0,
+    "20172018": 120.0
+   },
+   "cell_loso_ll_OPTIMISTIC": {
+    "0": 0.672116,
+    "60": 0.672027,
+    "120": 0.671976,
+    "180": 0.671958,
+    "240": 0.671967
+   },
+   "best_single_cell_OPTIMISTIC": {
+    "gamma": 180.0,
+    "gain": 0.00044
+   },
+   "coef_modal_cell_all_dev_descriptive": [
+    0.1077,
+    0.4061,
+    -0.0077,
+    -0.2309,
+    0.2099,
+    0.7034
+   ]
+  }
+ },
+ "diagnostics_not_arms": {
+  "D1 serving (no day-of info)": {
+   "gain": 0.00099,
+   "fold_sd": 0.00135,
+   "fold_se": 0.00051,
+   "sigma": 1.93,
+   "n_pos_folds": 5,
+   "n_folds": 7,
+   "sig": "n.s.",
+   "boot_ci_4k_seed7": [
+    -2e-05,
+    0.00193
+   ],
+   "boot_ci_10k": [
+    -1e-05,
+    0.00195
+   ],
+   "gain_exact": 0.0009857874700689934,
+   "dev_ll": 0.671413,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.00147,
+    "boot_ci_10k": [
+     -1e-05,
+     0.00294
+    ]
+   },
+   "picks": {
+    "20112012": 240.0,
+    "20122013": 240.0,
+    "20132014": 240.0,
+    "20142015": 240.0,
+    "20152016": 180.0,
+    "20162017": 240.0,
+    "20172018": 180.0
+   },
+   "nan_projected_side_values_masked_set_to_0": 3,
+   "note": "NOT an arm. Tonight's lineup and starter replaced by the team's previous-10-game mean lv / gv: no day-of information.",
+   "share_of_A1_gain_retained": 0.614
+  },
+  "D3": [
+   {
+    "contrast": "A1 vs blend+lv (value of goalie inside the Elo)",
+    "gain": 0.0002,
+    "boot_ci_10k": [
+     -0.00023,
+     0.00063
+    ],
+    "late_dev_2015_18": {
+     "gain": 0.00059,
+     "boot_ci_10k": [
+      3e-05,
+      0.00115
+     ]
+    }
+   },
+   {
+    "contrast": "A3 vs A1 (dropping xG once lv is in)",
+    "gain": -0.00132,
+    "boot_ci_10k": [
+     -0.0024,
+     -0.00024
+    ],
+    "late_dev_2015_18": {
+     "gain": -0.00137,
+     "boot_ci_10k": [
+      -0.00298,
+      0.00028
+     ]
+    }
+   },
+   {
+    "contrast": "A2 vs blend+lv (dropping xG, goalie not in)",
+    "gain": -0.00112,
+    "boot_ci_10k": [
+     -0.00216,
+     -8e-05
+    ],
+    "late_dev_2015_18": {
+     "gain": -0.00114,
+     "boot_ci_10k": [
+      -0.00269,
+      0.00043
+     ]
+    }
+   }
+  ],
+  "D4 placebo (post-hoc)": {
+   "gain_exact": -6.218379914373698e-05,
+   "boot_ci_10k": [
+    -0.00013,
+    0.0
+   ],
+   "n_pos_folds": 0,
+   "dev_ll": 0.672461,
+   "picks": {
+    "20112012": 0.0,
+    "20122013": 0.0,
+    "20132014": 0.0,
+    "20142015": 0.0,
+    "20152016": 0.0,
+    "20162017": 0.0,
+    "20172018": 0.0
+   }
+  },
+  "corr": {
+   "lv_diff_vs_xg_diff": 0.625,
+   "lv_diff_vs_elo_logit": 0.721,
+   "gv_diff_sd_masked": 0.0938,
+   "elo180_vs_shipped_elo_logit": 0.974
+  }
+ },
+ "walk_forward": {
+  "W1": {
+   "feature_sha256_matches_prereg_and_audited_file": true,
+   "weights_sha256_matches": true,
+   "compose_audit_pass": true,
+   "pass": true
+  },
+  "W2": {
+   "cutoffs": {
+    "2013-02-15": {
+     "n_pre": 2655,
+     "n_after": 6716,
+     "pre_identical_all_gammas": true,
+     "post_changed": true,
+     "pass": true
+    },
+    "2015-01-15": {
+     "n_pre": 5054,
+     "n_after": 4317,
+     "pre_identical_all_gammas": true,
+     "post_changed": true,
+     "pass": true
+    },
+    "2017-02-01": {
+     "n_pre": 7623,
+     "n_after": 1748,
+     "pre_identical_all_gammas": true,
+     "post_changed": true,
+     "pass": true
+    }
+   },
+   "pass": true
+  },
+  "W3": {
+   "identical_mask_all_arms": true,
+   "eval_mask_sha1": "d5512699fe7b19cb015d10a04892a17e92ffd364",
+   "y_sha1": "701354619cf8f6755a167d0eca73897aa94b5c88",
+   "nan_in_any_design": false,
+   "pass": true
+  }
+ },
+ "verdict": {
+  "primary": "A1",
+  "baseline_dev_ll": 0.672398,
+  "candidate_dev_ll": 0.670794,
+  "gain": 0.0016043124337423724,
+  "boot_ci_10k": [
+   0.00038,
+   0.00283
+  ],
+  "late_dev_2015_18": {
+   "n": 3731,
+   "gain": 0.00195,
+   "boot_ci_10k": [
+    6e-05,
+    0.00381
+   ]
+  },
+  "sanity_pass": true,
+  "walk_forward_pass": true,
+  "bar": "+0.00100, 10k CI lo > 0",
+  "clears_bar": true,
+  "day_of_information": "lv needs tonight's dressed skaters (official game roster, public before puck drop); gv needs tonight's confirmed starting goalie (first goalie to face a shot; confirmed at warmups, usually projected from the morning skate). Neither is known when the opening line is posted."
+ },
+ "seconds": 8.8
+}

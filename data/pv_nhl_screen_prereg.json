@@ -1,0 +1,43 @@
+{
+ "written": "2026-09-24",
+ "status": "PRE-REGISTRATION of the NHL game-level DEV screen phase0/pv_nhl_screen.py. Written before that script existed and before any log-loss for arms A1-A3 was computed.",
+ "harness": "phase0/nhl_depth_eval.py Ctx/Folds: DEV regular season, LOSO over 2011-12..2017-18, n=7,929; shipped blend [elo_logit(k=8,ha=30,reg=0.30), rest_diff, b2b_home, b2b_away, xg_diff(6.0,0.15,0.30)], logistic C=1e6",
+ "features": {
+  "file": "data/pv_nhl_compose_game_features.csv",
+  "sha256": "7b43adf02081457ff59a49a11a6f8e7f44bd3af2d13737ece716dc8b9cb80ef5",
+  "weights_file": "data/pv_nhl_compose_weights.json",
+  "weights_sha256": "5a25b5ff8a15c518056fa0f4543de0521115883a359468180839ec09f396c21a",
+  "lv": "tonight's dressed-skater lineup value (composite goals/60 x expected minutes / 60 summed over the dressed skaters), goals/game, walk-forward",
+  "gv": "tonight's confirmed starting goalie's value (1v1 saving rating x league xGA/team-game x walk-forward weight), goals saved/game vs the average goalie, walk-forward",
+  "audit": "same file (hash-identical) passed data/pv_nhl_compose_audit.json A1-A4 (target permutation, truncation, input perturbation, same-game-fact scramble) at three cutoffs"
+ },
+ "primary": "A1",
+ "arms": {
+  "A1 PRIMARY": "Goalie INSIDE the W/L Elo, MLB starter-adjustment style: E = (R_h + g*gv_h + 30) - (R_a + g*gv_a), p = 1/(1+10^(-E/400)), R_h += 8(y-p), R_a -= 8(y-p), season regress 0.30; the team rating therefore learns strength NET of its starting goalie. Blend column 1 = logit(p); rest_diff, b2b_home, b2b_away, xg_diff (shipped) kept; plus (lv_home - lv_away) as a feature. g nested over {0,60,120,180,240} Elo per goal/game with bt_nhl_nhl_gmar.nested (inner pair-loss selection, ties to the first grid value); the bar is judged on the NESTED prediction only.",
+  "A2": "Lineup value REPLACES the xG team rating: [shipped elo_logit, rest_diff, b2b_home, b2b_away, (lv_home - lv_away)]; xg_diff removed. No hyperparameter.",
+  "A3": "A1 + A2: goalie-inside Elo column (g nested over the same grid) + rest_diff, b2b_home, b2b_away + (lv_home - lv_away); xg_diff removed."
+ },
+ "bar": "documents/breakthrough_program_prereg_2026_09_24.md: A1 nested gain vs the shipped blend >= +0.00100 nats AND 10,000-draw paired game bootstrap (seed 7) 95% CI lower bound > 0 AND every sanity check passes AND every walk-forward check passes. A2 and A3 are pre-declared secondary arms and cannot be promoted in place of A1 by this screen.",
+ "statistics": "bt_nhl_nhl_gmar.arm_stats unmodified: paired per-game log-loss difference vs p0 = LOSO shipped blend; 10k bootstrap seed 7; harness 4k bootstrap seed 7; per-season fold deltas; late-DEV readout on seasons 2015-16..2017-18 with its own 10k CI. Identical eval mask (sha1 recorded) for every arm.",
+ "sanity": {
+  "S1": "shipped DEV LOSO LL reproduces 0.672398 with n=7,929",
+  "S2": "dropping xg_diff costs +0.00303 +/- 0.0002",
+  "S3": "the inside-Elo at g=0 equals nhl_depth_eval.run_elo_arr(8,30,0.30) bitwise over all DEV games, and the A1 g=0 design equals [shipped blend, lv diff]",
+  "S4": "every eval game has lv and gv; the feature file's home codes (TEAM_FIX) equal the harness's",
+  "S5": "the A1 g=0 cell (shipped blend + lv diff) reproduces pv_nhl_compose_screen.json 'C3 lv' gain_exact to 1e-9 (feature-join check)"
+ },
+ "walk_forward": {
+  "W1": "feature file sha256 equals the audited file",
+  "W2": "inside-Elo perturbation at cutoffs 2013-02-15, 2015-01-15, 2017-02-01: permute y among games on/after the cutoff and replace gv with noise there; for every g the pre-cutoff probabilities must be bitwise identical and some post-cutoff probability must change",
+  "W3": "identical eval mask and y hash across arms; no NaN in any masked design"
+ },
+ "diagnostics_not_arms": {
+  "D1 serving": "A1 with tonight's lv and gv replaced by the team's previous-10-game means (lv - lv_dev, gv - gv_dev; NaN at a team's first game -> 0), g nested the same way. Measures what survives WITHOUT day-of lineup and starter information. Not eligible for the bar.",
+  "D2": "per-g cell LOSO LL (optimistic, single-cell, reported only)",
+  "D3": "paired A3-vs-A1 and A2-vs-(blend+lv) contrasts; descriptive all-DEV coefficients"
+ },
+ "disclosure": "Read before this pre-registration: data/pv_nhl_compose_screen.json (C1 blend+lv+gv +0.00159; C3 blend+lv +0.00140; C7 (lv+gv) inside the Elo, g nested over {0,60,120,180,240}, picks 180/240, +0.00131) and data/bt_nhl_gmar.json (round-1 GSAx-goalie inside the Elo, +0.00020 n.s.). The three arms were specified by the task, not chosen after those results; the g grid is copied from C7. The component hyperparameters and composite weights were chosen on DEV by their owners (walk-forward weights).",
+ "day_of_information": "lv needs tonight's dressed skaters (official game roster, public before puck drop); gv needs tonight's confirmed starting goalie (first goalie to face a shot; confirmed at warmups, usually projected from the morning skate). Neither is known when the opening line is posted.",
+ "market_blind": true,
+ "test_seasons_touched": 0
+}

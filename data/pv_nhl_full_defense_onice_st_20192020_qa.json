@@ -1,0 +1,19 @@
+{
+ "games": 1082,
+ "games_no_events": 0,
+ "shift_rows_no_roster": 0,
+ "dup_player_intervals": 0,
+ "ev1551": 96337,
+ "ev1551_in_kept": 93838,
+ "ev_in_kept_not1551": 2514,
+ "kept_seconds": 3116597.0,
+ "faceoff_starts": 40926,
+ "kept_intervals": 243693,
+ "alt_conv_ev1551_in_kept": 93626,
+ "season": 20192020,
+ "share_1551_events_in_kept": 0.9740598108722506,
+ "share_1551_events_in_kept_ALT_convention": 0.9718592025909049,
+ "share_kept_events_not_1551": 0.026091829956824974,
+ "kept_hours": 865.7213888888889,
+ "seconds": 12.7
+}

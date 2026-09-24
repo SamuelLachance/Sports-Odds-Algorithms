@@ -1,0 +1,111 @@
+{
+ "protocol": {
+  "n_dev": 7929,
+  "eval": "LOSO 2011-12..2017-18",
+  "market_blind": true,
+  "test_seasons_touched": 0,
+  "arms_pre_declared": [
+   "G1 D_xga",
+   "G2 D_ga",
+   "G3 D_gax",
+   "G4 dD_xga",
+   "G5 D_ca"
+  ]
+ },
+ "S1": {
+  "shipped_dev_loso_ll": 0.672398,
+  "target": 0.672398,
+  "pass": true
+ },
+ "S2": {
+  "drop_xg_cost": 0.00303,
+  "target": 0.00303,
+  "pass": true
+ },
+ "coverage_missing_games": 0,
+ "G1": {
+  "feature": "D_xga",
+  "gain": 0.00014,
+  "fold_sd": 0.00061,
+  "fold_se": 0.00023,
+  "sigma": 0.6,
+  "n_pos_folds": 5,
+  "n_folds": 7,
+  "boot_ci": [
+   -0.00039,
+   0.00068
+  ],
+  "sig": "n.s.",
+  "coverage": 1.0,
+  "feature_sd": 0.12921,
+  "coef_full": 0.4486
+ },
+ "G2": {
+  "feature": "D_ga",
+  "gain": -3e-05,
+  "fold_sd": 0.00018,
+  "fold_se": 7e-05,
+  "sigma": -0.36,
+  "n_pos_folds": 4,
+  "n_folds": 7,
+  "boot_ci": [
+   -0.00016,
+   0.00011
+  ],
+  "sig": "n.s.",
+  "coverage": 1.0,
+  "feature_sd": 0.14369,
+  "coef_full": 0.1093
+ },
+ "G3": {
+  "feature": "D_gax",
+  "gain": 6e-05,
+  "fold_sd": 0.00055,
+  "fold_se": 0.00021,
+  "sigma": 0.3,
+  "n_pos_folds": 4,
+  "n_folds": 7,
+  "boot_ci": [
+   -0.00043,
+   0.00054
+  ],
+  "sig": "n.s.",
+  "coverage": 1.0,
+  "feature_sd": 0.16743,
+  "coef_full": 0.3142
+ },
+ "G4": {
+  "feature": "dD_xga",
+  "gain": -0.00011,
+  "fold_sd": 0.00013,
+  "fold_se": 5e-05,
+  "sigma": -2.1,
+  "n_pos_folds": 3,
+  "n_folds": 7,
+  "boot_ci": [
+   -0.0002,
+   -0.0
+  ],
+  "sig": "SIG WORSE",
+  "coverage": 0.9996,
+  "feature_sd": 0.03414,
+  "coef_full": 0.1103
+ },
+ "G5": {
+  "feature": "D_ca",
+  "gain": 0.00011,
+  "fold_sd": 0.00052,
+  "fold_se": 0.0002,
+  "sigma": 0.59,
+  "n_pos_folds": 4,
+  "n_folds": 7,
+  "boot_ci": [
+   -0.00037,
+   0.00059
+  ],
+  "sig": "n.s.",
+  "coverage": 1.0,
+  "feature_sd": 2.40841,
+  "coef_full": 0.0207
+ }
+}
