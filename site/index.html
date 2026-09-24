@@ -1358,8 +1358,8 @@ function nflGamePage(key){
   const ct=g.ct||{};
   const LBL={elo:"Team strength (Elo)", qb:"Quarterback", units:"Pass/run units (EPA)",
              roster:"Roster quality", hfa:"Home field (team)", sched:"Rest &amp; kickoff spot",
-             ts:"Player ratings (11v11 TS)", luck:"Fumble luck", abs:"Injuries / absences"};
-  const ORDER=["elo","qb","units","roster","hfa","sched","ts","luck","abs"];
+             ts:"Player ratings (11v11 TS)", luck:"Fumble luck", abs:"Injuries / absences", avail:"Questionable players (availability sim)"};
+  const ORDER=["elo","qb","units","roster","hfa","sched","ts","luck","abs","avail"];
   const whyRows=ORDER.filter(k=>ct[k]!=null&&(Math.abs(ct[k])>=0.05||["elo","qb","units"].includes(k)))
     .sort((x,y)=>Math.abs(ct[y])-Math.abs(ct[x])).map(k=>pRow(LBL[k],ct[k])).join("");
   const qcell=t=>{const q=t&&t.qb1; if(!q)return "-";

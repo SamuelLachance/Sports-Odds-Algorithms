@@ -49,3 +49,21 @@ def v7_npy_error(n_npy: int, n_games: int, gen_cmd: str = V7_GEN) -> str | None:
                   "rolled back?)")
     return (f"data/nfl_v7_feature.npy is stale: {n_npy} rows vs {n_games} games "
             f"in the spine {cause}. Regenerate it: {gen_cmd}")
+
+
+ROSTER_MIN_GAMES = 3
+
+
+def roster_min_games(weeks_seen: int, full: int = ROSTER_MIN_GAMES) -> int:
+    """Games a player must appear in to make the displayed roster.
+
+    The floor exists to keep one-off call-ups and garbage-time snaps off the
+    roster, and 3 is right once a season is under way. It is wrong in weeks 1-2:
+    nobody has 3 games yet, so a fixed floor of 3 empties every roster and
+    with it the whole player layer of the site (it did, on 2026-09-24: 0 players
+    in nfl.json, which left TrueSkill nothing to rate). The floor therefore
+    scales with how many weeks the team actually has in the snap table, never
+    exceeding `full`, never below 1.
+    """
+    return max(1, min(full, weeks_seen))
+

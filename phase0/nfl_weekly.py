@@ -60,6 +60,11 @@ PAYLOAD_CHAIN = [
     ("phase0/nfl_site_db.py", 900),
     ("phase0/nfl_trueskill_players.py", 3600),
     ("phase0/nfl_lineups.py", 900),
+    # new finals make the frozen v7 feature column one row short per game, and
+    # nfl_season_serve refuses to run on a stale column (nfl_season_guards
+    # .v7_npy_error). It was never in this chain, so the first in-season run
+    # (2026-09-24) stopped at serve and left the site on the July payload.
+    ("phase0/nfl_v7_feature_gen.py", 5400),
     ("phase0/nfl_season_serve.py", 1800),
 ]
 

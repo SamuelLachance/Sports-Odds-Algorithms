@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import csv
 import json
+import sys
 import os
 from collections import defaultdict
 
@@ -17,6 +18,9 @@ DIVS = {
 }
 TEAM_DIV = {t: d for d, ts in DIVS.items() for t in ts}
 FR = {"STL": "LA", "SD": "LAC", "OAK": "LV", "JAC": "JAX", "WSH": "WAS"}
+
+sys.path.insert(0, "phase0")
+from nfl_season_guards import roster_min_games  # noqa: E402
 
 payload = json.load(open("site/data/nfl.json"))
 power_by = {p["code"]: p for p in payload["power"]}
@@ -111,8 +115,10 @@ for r in csv.DictReader(open(sfile("data/nfl_player_stats_{}.csv"), encoding="ut
 
 # rosters: display-season actives from snap tables, with snap share
 roster = defaultdict(lambda: defaultdict(lambda: [0.0, 0, ""]))
+weeks_seen = defaultdict(set)    # team -> weeks present in the snap table
 for r in csv.DictReader(open(sfile("data/snap_{}.csv"))):
     t = FR.get(r["team"], r["team"])
+    weeks_seen[t].add(r.get("week"))
     g_ = pfr2gsis.get(r["pfr_player_id"])
     if not g_:
         continue
@@ -130,8 +136,10 @@ for d, ts in DIVS.items():
         gp = rc["w"] + rc["l"] + rc["t"]
         pw = power_by.get(t, {})
         roster_ids = []
+        # early-season floor: a fixed 3 empties every roster in weeks 1-2
+        floor = roster_min_games(len(weeks_seen[t]))
         for g_, (sh, n_, pos) in sorted(roster[t].items(), key=lambda kv: -kv[1][0]):
-            if n_ < 3:
+            if n_ < floor:
                 continue
             st = stat.get(g_, {})
             players[g_] = {

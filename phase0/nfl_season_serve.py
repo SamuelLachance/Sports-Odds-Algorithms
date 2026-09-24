@@ -398,6 +398,20 @@ for i, s in enumerate(sched):
         (crate(offP[h], LGP) - crate(dfaP[h], LGP)) - (crate(offP[a], LGP) - crate(dfaP[a], LGP)),
         (crate(offR[h], LGR) - crate(dfaR[h], LGR)) - (crate(offR[a], LGR) - crate(dfaR[a], LGR)),
     ]
+# The 32 teams. Defined here, ahead of the lineup MC below, which iterates
+# them. It used to sit ~130 lines further down beside the season sim, and
+# the MC only runs when inj_2026.csv carries Questionable tags - i.e. never
+# before week 1 - so the NameError stayed dormant until the first in-season
+# serve (2026-09-24) and froze the site on the July payload.
+DIVS = {
+    "AFC East": ["BUF", "MIA", "NE", "NYJ"], "AFC North": ["BAL", "CIN", "CLE", "PIT"],
+    "AFC South": ["HOU", "IND", "JAX", "TEN"], "AFC West": ["DEN", "KC", "LAC", "LV"],
+    "NFC East": ["DAL", "NYG", "PHI", "WAS"], "NFC North": ["CHI", "DET", "GB", "MIN"],
+    "NFC South": ["ATL", "CAR", "NO", "TB"], "NFC West": ["ARI", "LA", "SEA", "SF"],
+}
+TEAMS = [t for ts in DIVS.values() for t in ts]
+tix = {t: i for i, t in enumerate(TEAMS)}
+
 # ---- lineup-availability MC (Samuel's MC program, part 2) ----
 # For each game with Questionable-tagged players on either roster, average the
 # win prob over K availability scenarios: each Q player independently plays
@@ -444,14 +458,25 @@ if _q_ids:
           f"Questionable starters across {sum(1 for v in q_tagged.values() if v)} teams", flush=True)
 
 probs = CLF.predict_proba(Xs)[:, 1]
+p_det = probs.copy()                 # before the availability MC below
 if _q_ids and any(q_tagged.values()):
     GCOL = {"ol": 8, "de": 9, "sk": 10}
     rng_l = np.random.default_rng(31)
+    # A Questionable tag is a statement about the team's NEXT game only. Applying
+    # this week's tags to every unplayed game (as this loop originally did)
+    # shaded forecasts months out on injuries that will have long resolved:
+    # the first in-season serve moved 217 of 240 upcoming games this way.
+    nxt_wk = {}
+    for s in sched:
+        if s["hs"] is None:
+            for t in (s["home"], s["away"]):
+                nxt_wk[t] = min(nxt_wk.get(t, 99), s["w"])
     for i, s in enumerate(sched):
         if s["hs"] is not None:
             continue    # played: ph is ledger-frozen; Q-toggling here is post-hoc
             # (and would trip the week-1 pmc==ph assert on a rerun)
-        qh, qa = q_tagged.get(s["home"], []), q_tagged.get(s["away"], [])
+        qh = q_tagged.get(s["home"], []) if s["w"] == nxt_wk.get(s["home"]) else []
+        qa = q_tagged.get(s["away"], []) if s["w"] == nxt_wk.get(s["away"]) else []
         if not qh and not qa:
             continue
         ps = []
@@ -480,6 +505,12 @@ for i, (s, p_) in enumerate(zip(sched, probs)):
         "hfa": co[4] * x[4], "luck": co[6] * x[6], "ts": co[7] * x[7],
         "abs": co[8] * x[8] + co[9] * x[9] + co[10] * x[10],
         "roster": co[11] * x[11],
+        # The Questionable-tag availability MC moves ph off the deterministic
+        # blend (x above assumes every Q player plays). Without this term the
+        # bars explain a probability the page does not show - the faithfulness
+        # test caught it on the first in-season serve (rho 0.9971 < 0.999).
+        # Exactly the logit shift the MC applied; 0 when no Q starters.
+        "avail": float(np.log(p_ / (1 - p_)) - np.log(p_det[i] / (1 - p_det[i]))),
     }
     s["ct"] = {k: round(v * scale, 1) for k, v in ct.items()}
 print(f"[{time.time()-T0:.0f}s] 2026 probs: mean home {probs.mean():.3f} "
@@ -534,14 +565,6 @@ print(f"[{time.time()-T0:.0f}s] sim stat dists: win pass {MU_WP:+.1f}±{SD_WP:.1
       f"run {MU_WR:+.1f}±{SD_WR:.1f} | lose pass {MU_LP:+.1f} run {MU_LR:+.1f} "
       f"| plays {N_P:.0f}/{N_R:.0f}", flush=True)
 
-DIVS = {
-    "AFC East": ["BUF", "MIA", "NE", "NYJ"], "AFC North": ["BAL", "CIN", "CLE", "PIT"],
-    "AFC South": ["HOU", "IND", "JAX", "TEN"], "AFC West": ["DEN", "KC", "LAC", "LV"],
-    "NFC East": ["DAL", "NYG", "PHI", "WAS"], "NFC North": ["CHI", "DET", "GB", "MIN"],
-    "NFC South": ["ATL", "CAR", "NO", "TB"], "NFC West": ["ARI", "LA", "SEA", "SF"],
-}
-TEAMS = [t for ts in DIVS.values() for t in ts]
-tix = {t: i for i, t in enumerate(TEAMS)}
 S = 20000
 rng = np.random.default_rng(20260723)
 co_ = CLF.coef_[0]
@@ -690,6 +713,11 @@ except (FileNotFoundError, json.JSONDecodeError):
 ledger, ph_frozen, _orphans = nfl_ph_freeze.freeze(
     sched, ledger, warn=lambda m: print(m, flush=True))
 _dump_atomic(ledger, LEDGER)
+# Ledger rows written before the availability term existed carry no "avail";
+# those pre-game forecasts had no MC adjustment, so 0.0 is the true value.
+for s_ in sched:
+    if s_.get("ct") is not None:
+        s_["ct"].setdefault("avail", 0.0)
 print(f"[{time.time()-T0:.0f}s] ph-freeze: {ph_frozen} played games keep their "
       f"ledger pre-game ph ({len(ledger)} ledger rows)", flush=True)
 
