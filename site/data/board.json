@@ -14,9 +14,9 @@
   "elo_log_loss": 0.67861,
   "coinflip": 0.69315,
   "realized_2026": {
-   "n": 736,
-   "log_loss": 0.6629,
-   "acc": 0.5842
+   "n": 739,
+   "log_loss": 0.66347,
+   "acc": 0.5846
   }
  },
  "record": {
@@ -5700,7 +5700,7 @@
      "sp": 1,
      "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-24",
@@ -5712,19 +5712,19 @@
      "sp": 1,
      "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-24",
      "away": "CLE",
      "home": "BOS",
-     "p": 0.6566,
+     "p": 0.6487,
      "pick": "BOS",
      "lean": 0,
      "sp": 1,
      "spp": 0,
-     "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "tier": "CONFIRMED",
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-24",
@@ -5736,7 +5736,7 @@
      "sp": 1,
      "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T15:14"
     },
     {
      "d": "2026-09-24",
@@ -5748,7 +5748,7 @@
      "sp": 1,
      "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T15:14"
     },
     {
      "d": "2026-09-24",
@@ -5760,7 +5760,7 @@
      "sp": 1,
      "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T15:14"
     },
     {
      "d": "2026-09-24",
@@ -5772,7 +5772,7 @@
      "sp": 1,
      "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-24",
@@ -5784,19 +5784,19 @@
      "sp": 1,
      "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-24",
      "away": "MIL",
      "home": "PHI",
-     "p": 0.51,
+     "p": 0.5213,
      "pick": "PHI",
      "lean": 1,
      "sp": 1,
      "spp": 0,
-     "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "tier": "CONFIRMED",
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-24",
@@ -5808,7 +5808,7 @@
      "sp": 1,
      "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T15:14"
     },
     {
      "d": "2026-09-24",
@@ -5820,7 +5820,7 @@
      "sp": 1,
      "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-24",
@@ -5832,7 +5832,7 @@
      "sp": 1,
      "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T15:14"
     },
     {
      "d": "2026-09-25",
@@ -5844,7 +5844,7 @@
      "sp": 1,
      "spp": 1,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-25",
@@ -5856,7 +5856,7 @@
      "sp": 1,
      "spp": 1,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-25",
@@ -5868,43 +5868,43 @@
      "sp": 1,
      "spp": 1,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-25",
      "away": "COL",
      "home": "CWS",
-     "p": 0.6279,
+     "p": 0.6329,
      "pick": "CWS",
      "lean": 0,
      "sp": 1,
-     "spp": 1,
+     "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-25",
      "away": "PIT",
      "home": "DET",
-     "p": 0.5212,
-     "pick": "DET",
+     "p": 0.4866,
+     "pick": "PIT",
      "lean": 1,
      "sp": 1,
-     "spp": 1,
+     "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-25",
      "away": "CLE",
      "home": "KC",
-     "p": 0.5344,
-     "pick": "KC",
-     "lean": 1,
+     "p": 0.4425,
+     "pick": "CLE",
+     "lean": 0,
      "sp": 1,
-     "spp": 1,
+     "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-25",
@@ -5916,7 +5916,7 @@
      "sp": 1,
      "spp": 1,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-25",
@@ -5928,7 +5928,7 @@
      "sp": 1,
      "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-25",
@@ -5940,7 +5940,7 @@
      "sp": 1,
      "spp": 1,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-25",
@@ -5952,7 +5952,7 @@
      "sp": 1,
      "spp": 1,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-25",
@@ -5964,7 +5964,7 @@
      "sp": 1,
      "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-25",
@@ -5976,7 +5976,7 @@
      "sp": 1,
      "spp": 1,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-25",
@@ -5988,7 +5988,7 @@
      "sp": 1,
      "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-25",
@@ -6000,7 +6000,7 @@
      "sp": 1,
      "spp": 1,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-25",
@@ -6012,7 +6012,7 @@
      "sp": 1,
      "spp": 1,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-25",
@@ -6024,7 +6024,19 @@
      "sp": 1,
      "spp": 1,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
+    },
+    {
+     "d": "2026-09-26",
+     "away": "COL",
+     "home": "CWS",
+     "p": 0.6404,
+     "pick": "CWS",
+     "lean": 0,
+     "sp": 1,
+     "spp": 0,
+     "tier": "PROJECTED",
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-26",
@@ -6036,7 +6048,7 @@
      "sp": 1,
      "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-26",
@@ -6048,7 +6060,43 @@
      "sp": 1,
      "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
+    },
+    {
+     "d": "2026-09-26",
+     "away": "NYM",
+     "home": "WSH",
+     "p": 0.4881,
+     "pick": "NYM",
+     "lean": 1,
+     "sp": 1,
+     "spp": 0,
+     "tier": "PROJECTED",
+     "rec": "2026-09-24T19:57"
+    },
+    {
+     "d": "2026-09-27",
+     "away": "COL",
+     "home": "CWS",
+     "p": 0.6021,
+     "pick": "CWS",
+     "lean": 0,
+     "sp": 1,
+     "spp": 0,
+     "tier": "PROJECTED",
+     "rec": "2026-09-24T19:57"
+    },
+    {
+     "d": "2026-09-27",
+     "away": "PIT",
+     "home": "DET",
+     "p": 0.4173,
+     "pick": "PIT",
+     "lean": 0,
+     "sp": 1,
+     "spp": 0,
+     "tier": "PROJECTED",
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-27",
@@ -6060,7 +6108,7 @@
      "sp": 1,
      "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-27",
@@ -6072,7 +6120,19 @@
      "sp": 1,
      "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
+    },
+    {
+     "d": "2026-09-27",
+     "away": "NYM",
+     "home": "WSH",
+     "p": 0.4908,
+     "pick": "NYM",
+     "lean": 1,
+     "sp": 1,
+     "spp": 0,
+     "tier": "PROJECTED",
+     "rec": "2026-09-24T19:57"
     }
    ],
    "scheduled": [
@@ -6086,7 +6146,7 @@
      "sp": 0,
      "spp": 0,
      "tier": "EARLY",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-26",
@@ -6098,19 +6158,7 @@
      "sp": 0,
      "spp": 0,
      "tier": "EARLY",
-     "rec": "2026-09-24T13:29"
-    },
-    {
-     "d": "2026-09-26",
-     "away": "COL",
-     "home": "CWS",
-     "p": 0.647,
-     "pick": "CWS",
-     "lean": 0,
-     "sp": 0,
-     "spp": 0,
-     "tier": "EARLY",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-26",
@@ -6122,31 +6170,31 @@
      "sp": 0,
      "spp": 0,
      "tier": "EARLY",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-26",
      "away": "CLE",
      "home": "KC",
-     "p": 0.4735,
+     "p": 0.4887,
      "pick": "CLE",
      "lean": 1,
      "sp": 0,
      "spp": 0,
      "tier": "EARLY",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-26",
      "away": "ATL",
      "home": "MIA",
-     "p": 0.4968,
+     "p": 0.4833,
      "pick": "ATL",
      "lean": 1,
      "sp": 0,
      "spp": 0,
      "tier": "EARLY",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-26",
@@ -6158,7 +6206,7 @@
      "sp": 0,
      "spp": 0,
      "tier": "EARLY",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-26",
@@ -6170,7 +6218,7 @@
      "sp": 0,
      "spp": 0,
      "tier": "EARLY",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-26",
@@ -6182,19 +6230,19 @@
      "sp": 0,
      "spp": 0,
      "tier": "EARLY",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-26",
      "away": "AZ",
      "home": "SD",
-     "p": 0.5764,
+     "p": 0.532,
      "pick": "SD",
-     "lean": 0,
+     "lean": 1,
      "sp": 0,
      "spp": 0,
      "tier": "EARLY",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-26",
@@ -6206,7 +6254,7 @@
      "sp": 0,
      "spp": 0,
      "tier": "EARLY",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-26",
@@ -6218,19 +6266,7 @@
      "sp": 0,
      "spp": 0,
      "tier": "EARLY",
-     "rec": "2026-09-24T13:29"
-    },
-    {
-     "d": "2026-09-26",
-     "away": "NYM",
-     "home": "WSH",
-     "p": 0.5116,
-     "pick": "WSH",
-     "lean": 1,
-     "sp": 0,
-     "spp": 0,
-     "tier": "EARLY",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-27",
@@ -6242,31 +6278,7 @@
      "sp": 0,
      "spp": 0,
      "tier": "EARLY",
-     "rec": "2026-09-24T13:29"
-    },
-    {
-     "d": "2026-09-27",
-     "away": "COL",
-     "home": "CWS",
-     "p": 0.647,
-     "pick": "CWS",
-     "lean": 0,
-     "sp": 0,
-     "spp": 0,
-     "tier": "EARLY",
-     "rec": "2026-09-24T13:29"
-    },
-    {
-     "d": "2026-09-27",
-     "away": "PIT",
-     "home": "DET",
-     "p": 0.521,
-     "pick": "DET",
-     "lean": 1,
-     "sp": 0,
-     "spp": 0,
-     "tier": "EARLY",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-27",
@@ -6278,19 +6290,19 @@
      "sp": 0,
      "spp": 0,
      "tier": "EARLY",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-27",
      "away": "ATL",
      "home": "MIA",
-     "p": 0.4833,
+     "p": 0.496,
      "pick": "ATL",
      "lean": 1,
      "sp": 0,
      "spp": 0,
      "tier": "EARLY",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-27",
@@ -6302,7 +6314,7 @@
      "sp": 0,
      "spp": 0,
      "tier": "EARLY",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-27",
@@ -6314,19 +6326,19 @@
      "sp": 0,
      "spp": 0,
      "tier": "EARLY",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-27",
      "away": "TB",
      "home": "PHI",
-     "p": 0.5224,
+     "p": 0.6201,
      "pick": "PHI",
-     "lean": 1,
+     "lean": 0,
      "sp": 0,
      "spp": 0,
      "tier": "EARLY",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-27",
@@ -6338,7 +6350,7 @@
      "sp": 0,
      "spp": 0,
      "tier": "EARLY",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-27",
@@ -6350,7 +6362,7 @@
      "sp": 0,
      "spp": 0,
      "tier": "EARLY",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     },
     {
      "d": "2026-09-27",
@@ -6362,24 +6374,12 @@
      "sp": 0,
      "spp": 0,
      "tier": "EARLY",
-     "rec": "2026-09-24T13:29"
-    },
-    {
-     "d": "2026-09-27",
-     "away": "NYM",
-     "home": "WSH",
-     "p": 0.5368,
-     "pick": "WSH",
-     "lean": 1,
-     "sp": 0,
-     "spp": 0,
-     "tier": "EARLY",
-     "rec": "2026-09-24T13:29"
+     "rec": "2026-09-24T19:57"
     }
    ],
-   "n_pending": 32,
-   "n_scheduled": 25,
-   "n_lean": 13
+   "n_pending": 37,
+   "n_scheduled": 20,
+   "n_lean": 14
   },
   "bets": {
    "updated": "2026-09-24T19:18:13Z",
@@ -7981,7 +7981,7 @@
      "game_pk": 823326,
      "date": "2026-09-24",
      "start_utc": "2026-09-24T16:35:00Z",
-     "state": "Preview",
+     "state": "Final",
      "home": "PIT",
      "away": "SLN",
      "away_abbr": "STL",
@@ -7994,10 +7994,10 @@
      "home_sp_proj": false,
      "pitcher_known": true,
      "sp_projected": false,
-     "lineup_source": "projected",
-     "home_win_prob": 0.6802,
+     "lineup_source": "official",
+     "home_win_prob": 0.6724,
      "pick": "PIT",
-     "pick_prob": 0.6802,
+     "pick_prob": 0.6724,
      "edge": {
       "team": 1.8,
       "home_field": 4.9,
@@ -8005,18 +8005,18 @@
       "away_pitcher": -0.0,
       "bullpen": -0.9,
       "siera": 2.8,
-      "lineup": 2.6,
-      "power": 1.5,
-      "baserun": 0.4
+      "lineup": 2.5,
+      "power": 0.4,
+      "baserun": 0.8
      },
      "tier": "lineup",
      "recal_prob": 0.6162,
-     "ts_edge": 5.732,
+     "ts_edge": 5.648,
      "bullpen_edge": 0.325,
      "home_bp_fip": 0.811,
      "away_bp_fip": 1.137,
-     "power_edge": 0.0162,
-     "baserun_edge": 0.0006,
+     "power_edge": 0.004,
+     "baserun_edge": 0.0012,
      "home_pitcher_matched": true,
      "away_pitcher_matched": false
     },
@@ -8024,7 +8024,7 @@
      "game_pk": 824059,
      "date": "2026-09-24",
      "start_utc": "2026-09-24T18:10:00Z",
-     "state": "Preview",
+     "state": "Live",
      "home": "KCA",
      "away": "CHA",
      "away_abbr": "CWS",
@@ -8037,7 +8037,7 @@
      "home_sp_proj": false,
      "pitcher_known": true,
      "sp_projected": false,
-     "lineup_source": "projected",
+     "lineup_source": "official",
      "home_win_prob": 0.5712,
      "pick": "KC",
      "pick_prob": 0.5712,
@@ -8067,7 +8067,7 @@
      "game_pk": 824623,
      "date": "2026-09-24",
      "start_utc": "2026-09-24T18:20:00Z",
-     "state": "Preview",
+     "state": "Live",
      "home": "CHN",
      "away": "MIA",
      "away_abbr": "MIA",
@@ -8080,10 +8080,10 @@
      "home_sp_proj": false,
      "pitcher_known": true,
      "sp_projected": false,
-     "lineup_source": "projected",
-     "home_win_prob": 0.5454,
+     "lineup_source": "official",
+     "home_win_prob": 0.565,
      "pick": "CHC",
-     "pick_prob": 0.5454,
+     "pick_prob": 0.565,
      "edge": {
       "team": 4.9,
       "home_field": 5.0,
@@ -8091,18 +8091,18 @@
       "away_pitcher": -0.6,
       "bullpen": -1.6,
       "siera": -0.2,
-      "lineup": -5.2,
-      "power": 1.6,
-      "baserun": 1.8
+      "lineup": -4.8,
+      "power": 2.0,
+      "baserun": 2.8
      },
      "tier": "lineup",
      "recal_prob": 0.5823,
-     "ts_edge": -5.292,
+     "ts_edge": -4.719,
      "bullpen_edge": -0.528,
      "home_bp_fip": 1.459,
      "away_bp_fip": 0.932,
-     "power_edge": 0.0152,
-     "baserun_edge": 0.0024,
+     "power_edge": 0.0198,
+     "baserun_edge": 0.0039,
      "home_pitcher_matched": false,
      "away_pitcher_matched": true
     },
@@ -8110,7 +8110,7 @@
      "game_pk": 822842,
      "date": "2026-09-24",
      "start_utc": "2026-09-24T18:35:00Z",
-     "state": "Preview",
+     "state": "Live",
      "home": "TEX",
      "away": "NYN",
      "away_abbr": "NYM",
@@ -8123,10 +8123,10 @@
      "home_sp_proj": false,
      "pitcher_known": true,
      "sp_projected": false,
-     "lineup_source": "projected",
-     "home_win_prob": 0.5867,
+     "lineup_source": "official",
+     "home_win_prob": 0.5863,
      "pick": "TEX",
-     "pick_prob": 0.5867,
+     "pick_prob": 0.5863,
      "edge": {
       "team": -0.2,
       "home_field": 5.1,
@@ -8134,18 +8134,18 @@
       "away_pitcher": -0.0,
       "bullpen": -0.9,
       "siera": 0.3,
-      "lineup": 2.8,
-      "power": -0.7,
-      "baserun": 2.2
+      "lineup": 3.0,
+      "power": 0.6,
+      "baserun": 0.7
      },
      "tier": "lineup",
      "recal_prob": 0.5492,
-     "ts_edge": 4.62,
+     "ts_edge": 4.813,
      "bullpen_edge": -0.449,
      "home_bp_fip": 1.274,
      "away_bp_fip": 0.825,
-     "power_edge": -0.007,
-     "baserun_edge": 0.0031,
+     "power_edge": 0.0063,
+     "baserun_edge": 0.001,
      "home_pitcher_matched": true,
      "away_pitcher_matched": false
     },
@@ -8153,7 +8153,7 @@
      "game_pk": 824298,
      "date": "2026-09-24",
      "start_utc": "2026-09-24T19:10:00Z",
-     "state": "Preview",
+     "state": "Live",
      "home": "COL",
      "away": "ARI",
      "away_abbr": "AZ",
@@ -8166,10 +8166,10 @@
      "home_sp_proj": false,
      "pitcher_known": true,
      "sp_projected": false,
-     "lineup_source": "projected",
-     "home_win_prob": 0.3831,
+     "lineup_source": "official",
+     "home_win_prob": 0.3792,
      "pick": "AZ",
-     "pick_prob": 0.6169,
+     "pick_prob": 0.6208,
      "edge": {
       "team": -15.7,
       "home_field": 4.7,
@@ -8178,17 +8178,17 @@
       "bullpen": 2.6,
       "siera": 0.2,
       "lineup": 3.4,
-      "power": 0.1,
-      "baserun": -3.7
+      "power": -0.5,
+      "baserun": -3.4
      },
      "tier": "lineup",
      "recal_prob": 0.357,
-     "ts_edge": -1.478,
+     "ts_edge": -1.475,
      "bullpen_edge": -0.412,
      "home_bp_fip": 1.267,
      "away_bp_fip": 0.855,
-     "power_edge": 0.0012,
-     "baserun_edge": -0.0051,
+     "power_edge": -0.005,
+     "baserun_edge": -0.0048,
      "home_pitcher_matched": true,
      "away_pitcher_matched": true
     },
@@ -8203,44 +8203,44 @@
      "home_abbr": "PHI",
      "away_name": "Milwaukee Brewers",
      "home_name": "Philadelphia Phillies",
-     "away_sp": "Bryse Wilson",
+     "away_sp": "Shane Drohan",
      "home_sp": "Andrew Painter",
      "away_sp_proj": false,
      "home_sp_proj": false,
      "pitcher_known": true,
      "sp_projected": false,
-     "lineup_source": "projected",
-     "home_win_prob": 0.51,
+     "lineup_source": "official",
+     "home_win_prob": 0.5213,
      "pick": "PHI",
-     "pick_prob": 0.51,
+     "pick_prob": 0.5213,
      "edge": {
       "team": -7.0,
-      "home_field": 5.2,
+      "home_field": 5.1,
       "home_pitcher": 0.0,
-      "away_pitcher": 2.6,
-      "bullpen": 0.5,
-      "siera": 1.4,
-      "lineup": -2.1,
-      "power": 0.9,
-      "baserun": 1.0
+      "away_pitcher": -0.0,
+      "bullpen": 1.0,
+      "siera": 0.0,
+      "lineup": 1.7,
+      "power": 1.3,
+      "baserun": 1.2
      },
      "tier": "lineup",
-     "recal_prob": 0.4942,
-     "ts_edge": -4.821,
+     "recal_prob": 0.4687,
+     "ts_edge": 0.023,
      "bullpen_edge": -0.201,
      "home_bp_fip": 0.831,
      "away_bp_fip": 0.629,
-     "power_edge": 0.0088,
-     "baserun_edge": 0.0013,
+     "power_edge": 0.0128,
+     "baserun_edge": 0.0017,
      "home_pitcher_matched": false,
-     "away_pitcher_matched": true,
+     "away_pitcher_matched": false,
      "mkt": {
-      "home_dec": 1.75,
-      "away_dec": 2.14,
-      "home_best": 1.78,
-      "away_best": 2.2,
+      "home_dec": 1.735,
+      "away_dec": 2.155,
+      "home_best": 1.77,
+      "away_best": 2.18,
       "books": 10,
-      "ts": "2026-09-24T19:18:13.462923+00:00"
+      "ts": "2026-09-24T19:57:37.937447+00:00"
      }
     },
     {
@@ -8260,10 +8260,10 @@
      "home_sp_proj": false,
      "pitcher_known": true,
      "sp_projected": false,
-     "lineup_source": "projected",
-     "home_win_prob": 0.6566,
+     "lineup_source": "official",
+     "home_win_prob": 0.6487,
      "pick": "BOS",
-     "pick_prob": 0.6566,
+     "pick_prob": 0.6487,
      "edge": {
       "team": 3.2,
       "home_field": 4.9,
@@ -8272,32 +8272,32 @@
       "bullpen": -1.0,
       "siera": 1.3,
       "lineup": 1.9,
-      "power": 0.3,
-      "baserun": 2.7
+      "power": 0.2,
+      "baserun": 2.0
      },
      "tier": "lineup",
      "recal_prob": 0.6048,
-     "ts_edge": 4.71,
+     "ts_edge": 4.752,
      "bullpen_edge": 0.1,
      "home_bp_fip": 0.504,
      "away_bp_fip": 0.604,
-     "power_edge": 0.0036,
-     "baserun_edge": 0.004,
+     "power_edge": 0.0024,
+     "baserun_edge": 0.0029,
      "home_pitcher_matched": true,
      "away_pitcher_matched": false,
      "mkt": {
       "home_dec": 1.77,
       "away_dec": 2.1,
-      "home_best": 1.81,
+      "home_best": 1.82,
       "away_best": 2.13,
       "books": 11,
-      "ts": "2026-09-24T19:18:13.462923+00:00"
+      "ts": "2026-09-24T19:57:37.937447+00:00"
      },
      "value": {
       "side": "home",
       "team": "BOS",
-      "ev_open": 0.1294,
-      "ev_cur": 0.1622,
+      "ev_open": 0.1158,
+      "ev_cur": 0.1482,
       "open_dec": 1.72,
       "cur_dec": 1.77,
       "available": true,
@@ -8347,12 +8347,12 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 1.67,
+      "home_dec": 1.66,
       "away_dec": 2.29,
-      "home_best": 1.68,
+      "home_best": 1.69,
       "away_best": 2.33,
       "books": 11,
-      "ts": "2026-09-24T19:18:13.462923+00:00"
+      "ts": "2026-09-24T19:57:37.937447+00:00"
      }
     },
     {
@@ -8403,7 +8403,7 @@
       "home_best": 1.46,
       "away_best": 3.0,
       "books": 11,
-      "ts": "2026-09-24T19:18:13.462923+00:00"
+      "ts": "2026-09-24T19:57:37.937447+00:00"
      }
     },
     {
@@ -8449,12 +8449,12 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 2.41,
-      "away_dec": 1.62,
-      "home_best": 2.45,
-      "away_best": 1.63,
+      "home_dec": 2.42,
+      "away_dec": 1.6,
+      "home_best": 2.48,
+      "away_best": 1.62,
       "books": 11,
-      "ts": "2026-09-24T19:18:13.462923+00:00"
+      "ts": "2026-09-24T19:57:37.937447+00:00"
      }
     },
     {
@@ -8505,7 +8505,7 @@
       "home_best": 1.47,
       "away_best": 2.93,
       "books": 11,
-      "ts": "2026-09-24T19:18:13.462923+00:00"
+      "ts": "2026-09-24T19:57:37.937447+00:00"
      }
     },
     {
@@ -8556,7 +8556,7 @@
       "home_best": 1.6,
       "away_best": 2.53,
       "books": 11,
-      "ts": "2026-09-24T19:18:13.462923+00:00"
+      "ts": "2026-09-24T19:57:37.937447+00:00"
      }
     },
     {
@@ -8656,44 +8656,44 @@
      "home_abbr": "DET",
      "away_name": "Pittsburgh Pirates",
      "home_name": "Detroit Tigers",
-     "away_sp": "Wilber Dotel",
+     "away_sp": "Bubba Chandler",
      "home_sp": "Jackson Jobe",
-     "away_sp_proj": true,
+     "away_sp_proj": false,
      "home_sp_proj": false,
      "pitcher_known": true,
-     "sp_projected": true,
+     "sp_projected": false,
      "lineup_source": "projected",
-     "home_win_prob": 0.5212,
-     "pick": "DET",
-     "pick_prob": 0.5212,
+     "home_win_prob": 0.4866,
+     "pick": "PIT",
+     "pick_prob": 0.5134,
      "edge": {
       "team": -2.8,
       "home_field": 5.2,
       "home_pitcher": 0.4,
-      "away_pitcher": -0.0,
-      "bullpen": 0.0,
-      "siera": 0.6,
-      "lineup": 3.3,
+      "away_pitcher": -0.9,
+      "bullpen": 0.2,
+      "siera": 0.5,
+      "lineup": 0.7,
       "power": -0.1,
       "baserun": -3.0
      },
      "tier": "lineup",
-     "recal_prob": 0.5143,
-     "ts_edge": 3.704,
+     "recal_prob": 0.5052,
+     "ts_edge": -0.245,
      "bullpen_edge": -0.281,
      "home_bp_fip": 1.093,
      "away_bp_fip": 0.811,
      "power_edge": -0.0011,
      "baserun_edge": -0.0041,
      "home_pitcher_matched": true,
-     "away_pitcher_matched": false,
+     "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 1.985,
+      "home_dec": 1.95,
       "away_dec": 1.89,
       "home_best": 2.02,
       "away_best": 1.93,
-      "books": 4,
-      "ts": "2026-09-24T19:18:13.462923+00:00"
+      "books": 5,
+      "ts": "2026-09-24T19:57:37.937447+00:00"
      }
     },
     {
@@ -8739,12 +8739,12 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 1.675,
+      "home_dec": 1.65,
       "away_dec": 2.3,
       "home_best": 1.7,
       "away_best": 2.36,
-      "books": 4,
-      "ts": "2026-09-24T19:18:13.462923+00:00"
+      "books": 5,
+      "ts": "2026-09-24T19:57:37.937447+00:00"
      }
     },
     {
@@ -8930,30 +8930,30 @@
      "home_abbr": "KC",
      "away_name": "Cleveland Guardians",
      "home_name": "Kansas City Royals",
-     "away_sp": "Tanner Bibee",
+     "away_sp": "Gavin Williams",
      "home_sp": "Noah Cameron",
-     "away_sp_proj": true,
-     "home_sp_proj": true,
+     "away_sp_proj": false,
+     "home_sp_proj": false,
      "pitcher_known": true,
-     "sp_projected": true,
+     "sp_projected": false,
      "lineup_source": "projected",
-     "home_win_prob": 0.5344,
-     "pick": "KC",
-     "pick_prob": 0.5344,
+     "home_win_prob": 0.4425,
+     "pick": "CLE",
+     "pick_prob": 0.5575,
      "edge": {
-      "team": -5.7,
-      "home_field": 5.2,
+      "team": -5.6,
+      "home_field": 5.1,
       "home_pitcher": 2.3,
-      "away_pitcher": -1.3,
-      "bullpen": -1.0,
-      "siera": 0.7,
-      "lineup": 1.9,
-      "power": 1.0,
+      "away_pitcher": -7.4,
+      "bullpen": 0.1,
+      "siera": -3.3,
+      "lineup": 1.8,
+      "power": 0.9,
       "baserun": 1.8
      },
      "tier": "lineup",
-     "recal_prob": 0.4918,
-     "ts_edge": 1.58,
+     "recal_prob": 0.4292,
+     "ts_edge": 0.47,
      "bullpen_edge": -1.213,
      "home_bp_fip": 1.817,
      "away_bp_fip": 0.604,
@@ -8973,37 +8973,45 @@
      "home_abbr": "CWS",
      "away_name": "Colorado Rockies",
      "home_name": "Chicago White Sox",
-     "away_sp": "Ryan Feltner",
-     "home_sp": "Sean Newcomb",
-     "away_sp_proj": true,
-     "home_sp_proj": true,
+     "away_sp": "Tomoyuki Sugano",
+     "home_sp": "Sean Burke",
+     "away_sp_proj": false,
+     "home_sp_proj": false,
      "pitcher_known": true,
-     "sp_projected": true,
+     "sp_projected": false,
      "lineup_source": "projected",
-     "home_win_prob": 0.6279,
+     "home_win_prob": 0.6329,
      "pick": "CWS",
-     "pick_prob": 0.6279,
+     "pick_prob": 0.6329,
      "edge": {
-      "team": 11.7,
+      "team": 11.5,
       "home_field": 4.5,
-      "home_pitcher": 0.0,
-      "away_pitcher": 0.8,
-      "bullpen": -1.9,
-      "siera": 1.2,
-      "lineup": -2.8,
+      "home_pitcher": 1.5,
+      "away_pitcher": 0.1,
+      "bullpen": -2.1,
+      "siera": 1.5,
+      "lineup": -3.3,
       "power": -0.7,
       "baserun": -0.3
      },
      "tier": "lineup",
-     "recal_prob": 0.6729,
-     "ts_edge": 0.188,
+     "recal_prob": 0.6815,
+     "ts_edge": -0.477,
      "bullpen_edge": 0.276,
      "home_bp_fip": 0.991,
      "away_bp_fip": 1.267,
      "power_edge": -0.0072,
      "baserun_edge": -0.0005,
      "home_pitcher_matched": true,
-     "away_pitcher_matched": true
+     "away_pitcher_matched": true,
+     "mkt": {
+      "home_dec": 1.46,
+      "away_dec": 2.82,
+      "home_best": 1.47,
+      "away_best": 2.9,
+      "books": 6,
+      "ts": "2026-09-24T19:57:37.937447+00:00"
+     }
     },
     {
      "game_pk": 823735,
@@ -9048,12 +9056,12 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 1.59,
-      "away_dec": 2.475,
+      "home_dec": 1.58,
+      "away_dec": 2.5,
       "home_best": 1.6,
-      "away_best": 2.5,
-      "books": 4,
-      "ts": "2026-09-24T19:18:13.462923+00:00"
+      "away_best": 2.51,
+      "books": 5,
+      "ts": "2026-09-24T19:57:37.937447+00:00"
      }
     },
     {
@@ -9155,7 +9163,7 @@
      "home_name": "San Diego Padres",
      "away_sp": "Brandon Pfaadt",
      "home_sp": "Casey Mize",
-     "away_sp_proj": true,
+     "away_sp_proj": false,
      "home_sp_proj": true,
      "pitcher_known": true,
      "sp_projected": true,
@@ -9228,12 +9236,12 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 1.79,
-      "away_dec": 2.15,
+      "home_dec": 1.775,
+      "away_dec": 2.135,
       "home_best": 1.79,
       "away_best": 2.15,
-      "books": 3,
-      "ts": "2026-09-24T19:18:13.462923+00:00"
+      "books": 4,
+      "ts": "2026-09-24T19:57:37.937447+00:00"
      }
     },
     {
@@ -9376,37 +9384,37 @@
      "home_abbr": "WSH",
      "away_name": "New York Mets",
      "home_name": "Washington Nationals",
-     "away_sp": "TBD",
+     "away_sp": "Jonah Tong",
      "home_sp": "Jake Irvin",
      "away_sp_proj": false,
      "home_sp_proj": false,
-     "pitcher_known": false,
+     "pitcher_known": true,
      "sp_projected": false,
-     "lineup_source": null,
-     "home_win_prob": 0.5116,
-     "pick": "WSH",
-     "pick_prob": 0.5116,
+     "lineup_source": "projected",
+     "home_win_prob": 0.4881,
+     "pick": "NYM",
+     "pick_prob": 0.5119,
      "edge": {
       "team": -2.4,
       "home_field": 5.2,
       "home_pitcher": 0.7,
-      "away_pitcher": -0.0,
-      "bullpen": -1.2,
-      "siera": 0.2,
-      "lineup": 0.0,
-      "power": 0.0,
-      "baserun": 0.0
+      "away_pitcher": -1.2,
+      "bullpen": -1.0,
+      "siera": -1.0,
+      "lineup": 0.5,
+      "power": -1.7,
+      "baserun": 0.9
      },
-     "tier": "bullpen",
-     "recal_prob": 0.5219,
-     "ts_edge": null,
+     "tier": "lineup",
+     "recal_prob": 0.5102,
+     "ts_edge": 0.593,
      "bullpen_edge": -0.982,
      "home_bp_fip": 1.807,
      "away_bp_fip": 0.825,
-     "power_edge": null,
-     "baserun_edge": null,
+     "power_edge": -0.016,
+     "baserun_edge": 0.0013,
      "home_pitcher_matched": true,
-     "away_pitcher_matched": false
+     "away_pitcher_matched": true
     },
     {
      "game_pk": 823165,
@@ -9506,35 +9514,35 @@
      "away_name": "Atlanta Braves",
      "home_name": "Miami Marlins",
      "away_sp": "TBD",
-     "home_sp": "Sandy Alcantara",
+     "home_sp": "TBD",
      "away_sp_proj": false,
      "home_sp_proj": false,
      "pitcher_known": false,
      "sp_projected": false,
      "lineup_source": null,
-     "home_win_prob": 0.4968,
+     "home_win_prob": 0.4833,
      "pick": "ATL",
-     "pick_prob": 0.5032,
+     "pick_prob": 0.5167,
      "edge": {
       "team": -6.5,
       "home_field": 5.2,
-      "home_pitcher": 1.8,
+      "home_pitcher": 0.0,
       "away_pitcher": -0.0,
-      "bullpen": 0.7,
-      "siera": -0.1,
+      "bullpen": 1.0,
+      "siera": 0.0,
       "lineup": 0.0,
       "power": 0.0,
       "baserun": 0.0
      },
      "tier": "bullpen",
-     "recal_prob": 0.4913,
+     "recal_prob": 0.4734,
      "ts_edge": null,
      "bullpen_edge": -0.14,
      "home_bp_fip": 0.932,
      "away_bp_fip": 0.792,
      "power_edge": null,
      "baserun_edge": null,
-     "home_pitcher_matched": true,
+     "home_pitcher_matched": false,
      "away_pitcher_matched": false
     },
     {
@@ -9549,35 +9557,35 @@
      "away_name": "Cleveland Guardians",
      "home_name": "Kansas City Royals",
      "away_sp": "TBD",
-     "home_sp": "TBD",
+     "home_sp": "Michael Wacha",
      "away_sp_proj": false,
      "home_sp_proj": false,
      "pitcher_known": false,
      "sp_projected": false,
      "lineup_source": null,
-     "home_win_prob": 0.4735,
+     "home_win_prob": 0.4887,
      "pick": "CLE",
-     "pick_prob": 0.5265,
+     "pick_prob": 0.5113,
      "edge": {
       "team": -5.7,
       "home_field": 5.2,
-      "home_pitcher": 0.0,
+      "home_pitcher": 1.4,
       "away_pitcher": -0.0,
-      "bullpen": -0.8,
-      "siera": 0.0,
+      "bullpen": -1.1,
+      "siera": 0.3,
       "lineup": 0.0,
       "power": 0.0,
       "baserun": 0.0
      },
      "tier": "bullpen",
-     "recal_prob": 0.4817,
+     "recal_prob": 0.4962,
      "ts_edge": null,
      "bullpen_edge": -1.213,
      "home_bp_fip": 1.817,
      "away_bp_fip": 0.604,
      "power_edge": null,
      "baserun_edge": null,
-     "home_pitcher_matched": false,
+     "home_pitcher_matched": true,
      "away_pitcher_matched": false
     },
     {
@@ -9591,37 +9599,37 @@
      "home_abbr": "CWS",
      "away_name": "Colorado Rockies",
      "home_name": "Chicago White Sox",
-     "away_sp": "TBD",
-     "home_sp": "TBD",
+     "away_sp": "Jose Quintana",
+     "home_sp": "Davis Martin",
      "away_sp_proj": false,
      "home_sp_proj": false,
-     "pitcher_known": false,
+     "pitcher_known": true,
      "sp_projected": false,
-     "lineup_source": null,
-     "home_win_prob": 0.647,
+     "lineup_source": "projected",
+     "home_win_prob": 0.6404,
      "pick": "CWS",
-     "pick_prob": 0.647,
+     "pick_prob": 0.6404,
      "edge": {
-      "team": 11.8,
-      "home_field": 4.6,
-      "home_pitcher": 0.0,
-      "away_pitcher": -0.0,
-      "bullpen": -1.8,
-      "siera": 0.0,
-      "lineup": 0.0,
-      "power": 0.0,
-      "baserun": 0.0
+      "team": 11.4,
+      "home_field": 4.4,
+      "home_pitcher": 0.7,
+      "away_pitcher": 1.6,
+      "bullpen": -2.2,
+      "siera": 1.4,
+      "lineup": -3.0,
+      "power": -0.7,
+      "baserun": -0.3
      },
-     "tier": "bullpen",
-     "recal_prob": 0.6649,
-     "ts_edge": null,
+     "tier": "lineup",
+     "recal_prob": 0.6879,
+     "ts_edge": 0.402,
      "bullpen_edge": 0.276,
      "home_bp_fip": 0.991,
      "away_bp_fip": 1.267,
-     "power_edge": null,
-     "baserun_edge": null,
-     "home_pitcher_matched": false,
-     "away_pitcher_matched": false
+     "power_edge": -0.0072,
+     "baserun_edge": -0.0005,
+     "home_pitcher_matched": true,
+     "away_pitcher_matched": true
     },
     {
      "game_pk": 823733,
@@ -9806,29 +9814,29 @@
      "home_abbr": "SD",
      "away_name": "Arizona Diamondbacks",
      "home_name": "San Diego Padres",
-     "away_sp": "TBD",
+     "away_sp": "Corbin Burnes",
      "home_sp": "TBD",
      "away_sp_proj": false,
      "home_sp_proj": false,
      "pitcher_known": false,
      "sp_projected": false,
      "lineup_source": null,
-     "home_win_prob": 0.5764,
+     "home_win_prob": 0.532,
      "pick": "SD",
-     "pick_prob": 0.5764,
+     "pick_prob": 0.532,
      "edge": {
-      "team": 4.0,
-      "home_field": 5.0,
+      "team": 4.1,
+      "home_field": 5.1,
       "home_pitcher": 0.0,
-      "away_pitcher": -0.0,
-      "bullpen": -0.3,
-      "siera": 0.0,
+      "away_pitcher": -3.4,
+      "bullpen": 0.3,
+      "siera": -1.7,
       "lineup": 0.0,
       "power": 0.0,
       "baserun": 0.0
      },
      "tier": "bullpen",
-     "recal_prob": 0.5795,
+     "recal_prob": 0.546,
      "ts_edge": null,
      "bullpen_edge": 0.272,
      "home_bp_fip": 0.583,
@@ -9836,7 +9844,7 @@
      "power_edge": null,
      "baserun_edge": null,
      "home_pitcher_matched": false,
-     "away_pitcher_matched": false
+     "away_pitcher_matched": true
     },
     {
      "game_pk": 824949,
@@ -9935,37 +9943,37 @@
      "home_abbr": "WSH",
      "away_name": "New York Mets",
      "home_name": "Washington Nationals",
-     "away_sp": "TBD",
+     "away_sp": "Sean Manaea",
      "home_sp": "DJ Herz",
      "away_sp_proj": false,
      "home_sp_proj": false,
-     "pitcher_known": false,
+     "pitcher_known": true,
      "sp_projected": false,
-     "lineup_source": null,
-     "home_win_prob": 0.5368,
-     "pick": "WSH",
-     "pick_prob": 0.5368,
+     "lineup_source": "projected",
+     "home_win_prob": 0.4908,
+     "pick": "NYM",
+     "pick_prob": 0.5092,
      "edge": {
       "team": -2.4,
-      "home_field": 5.1,
-      "home_pitcher": 2.0,
-      "away_pitcher": -0.0,
-      "bullpen": -1.4,
-      "siera": 1.6,
-      "lineup": 0.0,
-      "power": 0.0,
-      "baserun": 0.0
+      "home_field": 5.2,
+      "home_pitcher": 2.1,
+      "away_pitcher": -2.4,
+      "bullpen": -1.0,
+      "siera": -0.4,
+      "lineup": 0.1,
+      "power": -1.7,
+      "baserun": 0.9
      },
-     "tier": "bullpen",
-     "recal_prob": 0.5354,
-     "ts_edge": null,
+     "tier": "lineup",
+     "recal_prob": 0.5117,
+     "ts_edge": -0.051,
      "bullpen_edge": -0.982,
      "home_bp_fip": 1.807,
      "away_bp_fip": 0.825,
-     "power_edge": null,
-     "baserun_edge": null,
+     "power_edge": -0.016,
+     "baserun_edge": 0.0013,
      "home_pitcher_matched": true,
-     "away_pitcher_matched": false
+     "away_pitcher_matched": true
     },
     {
      "game_pk": 824948,
@@ -10065,35 +10073,35 @@
      "away_name": "Tampa Bay Rays",
      "home_name": "Philadelphia Phillies",
      "away_sp": "TBD",
-     "home_sp": "TBD",
+     "home_sp": "Zack Wheeler",
      "away_sp_proj": false,
      "home_sp_proj": false,
      "pitcher_known": false,
      "sp_projected": false,
      "lineup_source": null,
-     "home_win_prob": 0.5224,
+     "home_win_prob": 0.6201,
      "pick": "PHI",
-     "pick_prob": 0.5224,
+     "pick_prob": 0.6201,
      "edge": {
-      "team": -2.7,
-      "home_field": 5.2,
-      "home_pitcher": 0.0,
+      "team": -2.6,
+      "home_field": 5.0,
+      "home_pitcher": 7.1,
       "away_pitcher": -0.0,
-      "bullpen": 1.0,
-      "siera": 0.0,
+      "bullpen": -0.3,
+      "siera": 3.9,
       "lineup": 0.0,
       "power": 0.0,
       "baserun": 0.0
      },
      "tier": "bullpen",
-     "recal_prob": 0.5119,
+     "recal_prob": 0.5842,
      "ts_edge": null,
      "bullpen_edge": 0.355,
      "home_bp_fip": 0.831,
      "away_bp_fip": 1.186,
      "power_edge": null,
      "baserun_edge": null,
-     "home_pitcher_matched": false,
+     "home_pitcher_matched": true,
      "away_pitcher_matched": false
     },
     {
@@ -10151,7 +10159,7 @@
      "away_name": "Cleveland Guardians",
      "home_name": "Kansas City Royals",
      "away_sp": "TBD",
-     "home_sp": "TBD",
+     "home_sp": "Daniel Lynch IV",
      "away_sp_proj": false,
      "home_sp_proj": false,
      "pitcher_known": false,
@@ -10193,37 +10201,37 @@
      "home_abbr": "DET",
      "away_name": "Pittsburgh Pirates",
      "home_name": "Detroit Tigers",
-     "away_sp": "TBD",
+     "away_sp": "Jared Jones",
      "home_sp": "River Ryan",
      "away_sp_proj": false,
      "home_sp_proj": false,
-     "pitcher_known": false,
+     "pitcher_known": true,
      "sp_projected": false,
-     "lineup_source": null,
-     "home_win_prob": 0.521,
-     "pick": "DET",
-     "pick_prob": 0.521,
+     "lineup_source": "projected",
+     "home_win_prob": 0.4173,
+     "pick": "PIT",
+     "pick_prob": 0.5827,
      "edge": {
       "team": -2.8,
-      "home_field": 5.2,
+      "home_field": 5.1,
       "home_pitcher": 0.6,
-      "away_pitcher": -0.0,
-      "bullpen": -0.0,
-      "siera": 0.4,
-      "lineup": 0.0,
-      "power": 0.0,
-      "baserun": 0.0
+      "away_pitcher": -5.0,
+      "bullpen": 0.9,
+      "siera": -2.6,
+      "lineup": -0.2,
+      "power": -0.1,
+      "baserun": -3.0
      },
-     "tier": "bullpen",
-     "recal_prob": 0.5172,
-     "ts_edge": null,
+     "tier": "lineup",
+     "recal_prob": 0.4672,
+     "ts_edge": -1.898,
      "bullpen_edge": -0.281,
      "home_bp_fip": 1.093,
      "away_bp_fip": 0.811,
-     "power_edge": null,
-     "baserun_edge": null,
+     "power_edge": -0.0011,
+     "baserun_edge": -0.0041,
      "home_pitcher_matched": true,
-     "away_pitcher_matched": false
+     "away_pitcher_matched": true
     },
     {
      "game_pk": 823246,
@@ -10236,7 +10244,7 @@
      "home_abbr": "SD",
      "away_name": "Arizona Diamondbacks",
      "home_name": "San Diego Padres",
-     "away_sp": "TBD",
+     "away_sp": "Michael Soroka",
      "home_sp": "TBD",
      "away_sp_proj": false,
      "home_sp_proj": false,
@@ -10365,37 +10373,37 @@
      "home_abbr": "CWS",
      "away_name": "Colorado Rockies",
      "home_name": "Chicago White Sox",
-     "away_sp": "TBD",
-     "home_sp": "TBD",
+     "away_sp": "Kyle Freeland",
+     "home_sp": "Anthony Kay",
      "away_sp_proj": false,
      "home_sp_proj": false,
-     "pitcher_known": false,
+     "pitcher_known": true,
      "sp_projected": false,
-     "lineup_source": null,
-     "home_win_prob": 0.647,
+     "lineup_source": "projected",
+     "home_win_prob": 0.6021,
      "pick": "CWS",
-     "pick_prob": 0.647,
+     "pick_prob": 0.6021,
      "edge": {
-      "team": 11.8,
+      "team": 11.9,
       "home_field": 4.6,
-      "home_pitcher": 0.0,
-      "away_pitcher": -0.0,
-      "bullpen": -1.8,
-      "siera": 0.0,
-      "lineup": 0.0,
-      "power": 0.0,
-      "baserun": 0.0
+      "home_pitcher": 1.0,
+      "away_pitcher": -1.5,
+      "bullpen": -1.7,
+      "siera": -0.1,
+      "lineup": -2.9,
+      "power": -0.7,
+      "baserun": -0.3
      },
-     "tier": "bullpen",
-     "recal_prob": 0.6649,
-     "ts_edge": null,
+     "tier": "lineup",
+     "recal_prob": 0.6592,
+     "ts_edge": 0.017,
      "bullpen_edge": 0.276,
      "home_bp_fip": 0.991,
      "away_bp_fip": 1.267,
-     "power_edge": null,
-     "baserun_edge": null,
-     "home_pitcher_matched": false,
-     "away_pitcher_matched": false
+     "power_edge": -0.0072,
+     "baserun_edge": -0.0005,
+     "home_pitcher_matched": true,
+     "away_pitcher_matched": true
     },
     {
      "game_pk": 823814,
@@ -10409,35 +10417,35 @@
      "away_name": "Atlanta Braves",
      "home_name": "Miami Marlins",
      "away_sp": "TBD",
-     "home_sp": "TBD",
+     "home_sp": "Janson Junk",
      "away_sp_proj": false,
      "home_sp_proj": false,
      "pitcher_known": false,
      "sp_projected": false,
      "lineup_source": null,
-     "home_win_prob": 0.4833,
+     "home_win_prob": 0.496,
      "pick": "ATL",
-     "pick_prob": 0.5167,
+     "pick_prob": 0.504,
      "edge": {
       "team": -6.5,
       "home_field": 5.2,
-      "home_pitcher": 0.0,
+      "home_pitcher": 1.7,
       "away_pitcher": -0.0,
-      "bullpen": 1.0,
-      "siera": 0.0,
+      "bullpen": 0.7,
+      "siera": -0.1,
       "lineup": 0.0,
       "power": 0.0,
       "baserun": 0.0
      },
      "tier": "bullpen",
-     "recal_prob": 0.4734,
+     "recal_prob": 0.4907,
      "ts_edge": null,
      "bullpen_edge": -0.14,
      "home_bp_fip": 0.932,
      "away_bp_fip": 0.792,
      "power_edge": null,
      "baserun_edge": null,
-     "home_pitcher_matched": false,
+     "home_pitcher_matched": true,
      "away_pitcher_matched": false
     },
     {
@@ -10549,5 +10557,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-09-24T19:18:13.462923+00:00"
+ "value_updated": "2026-09-24T19:57:37.937447+00:00"
 }
