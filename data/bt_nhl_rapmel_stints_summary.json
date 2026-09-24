@@ -1,0 +1,111 @@
+{
+ "per_season": [
+  {
+   "season": 20102011,
+   "games_with_shots": 1230,
+   "games_stinted": 1230,
+   "games_in_keep": 1230,
+   "stints": 226852,
+   "xg_in_kept_stints_all_strength": 4892.987800000184,
+   "xg_in_kept_stints_strict5v5": 4277.4372000001,
+   "all_strict5v5_xg_season": 4399.976800000168,
+   "all_strict5v5_xg_games_with_shifts": 4399.976800000002,
+   "team_code_mismatch_games": 0,
+   "seconds": 9.9
+  },
+  {
+   "season": 20112012,
+   "games_with_shots": 1230,
+   "games_stinted": 1230,
+   "games_in_keep": 1230,
+   "stints": 230784,
+   "xg_in_kept_stints_all_strength": 4853.907000000168,
+   "xg_in_kept_stints_strict5v5": 4276.432400000095,
+   "all_strict5v5_xg_season": 4387.321000000195,
+   "all_strict5v5_xg_games_with_shifts": 4387.320999999985,
+   "team_code_mismatch_games": 0,
+   "seconds": 10.1
+  },
+  {
+   "season": 20122013,
+   "games_with_shots": 720,
+   "games_stinted": 720,
+   "games_in_keep": 720,
+   "stints": 134899,
+   "xg_in_kept_stints_all_strength": 2824.0775000000253,
+   "xg_in_kept_stints_strict5v5": 2483.1237000000037,
+   "all_strict5v5_xg_season": 2548.0492000000154,
+   "all_strict5v5_xg_games_with_shifts": 2548.0491999999977,
+   "team_code_mismatch_games": 0,
+   "seconds": 5.8
+  },
+  {
+   "season": 20132014,
+   "games_with_shots": 1230,
+   "games_stinted": 1230,
+   "games_in_keep": 1230,
+   "stints": 232407,
+   "xg_in_kept_stints_all_strength": 4863.257500000184,
+   "xg_in_kept_stints_strict5v5": 4253.103100000111,
+   "all_strict5v5_xg_season": 4364.98480000016,
+   "all_strict5v5_xg_games_with_shifts": 4364.984800000001,
+   "team_code_mismatch_games": 1,
+   "seconds": 10.2
+  },
+  {
+   "season": 20142015,
+   "games_with_shots": 1230,
+   "games_stinted": 1230,
+   "games_in_keep": 1230,
+   "stints": 235557,
+   "xg_in_kept_stints_all_strength": 4987.148000000096,
+   "xg_in_kept_stints_strict5v5": 4351.125000000066,
+   "all_strict5v5_xg_season": 4464.140100000137,
+   "all_strict5v5_xg_games_with_shifts": 4464.140099999982,
+   "team_code_mismatch_games": 0,
+   "seconds": 10.4
+  },
+  {
+   "season": 20152016,
+   "games_with_shots": 1230,
+   "games_stinted": 1230,
+   "games_in_keep": 1230,
+   "stints": 238112,
+   "xg_in_kept_stints_all_strength": 4993.0128000001705,
+   "xg_in_kept_stints_strict5v5": 4319.239800000095,
+   "all_strict5v5_xg_season": 4442.265900000105,
+   "all_strict5v5_xg_games_with_shifts": 4442.265899999989,
+   "team_code_mismatch_games": 0,
+   "seconds": 10.6
+  },
+  {
+   "season": 20162017,
+   "games_with_shots": 1230,
+   "games_stinted": 1230,
+   "games_in_keep": 1230,
+   "stints": 238028,
+   "xg_in_kept_stints_all_strength": 5199.918100000177,
+   "xg_in_kept_stints_strict5v5": 4552.948300000122,
+   "all_strict5v5_xg_season": 4672.539600000251,
+   "all_strict5v5_xg_games_with_shifts": 4672.539599999998,
+   "team_code_mismatch_games": 0,
+   "seconds": 10.4
+  },
+  {
+   "season": 20172018,
+   "games_with_shots": 1271,
+   "games_stinted": 1271,
+   "games_in_keep": 1271,
+   "stints": 241395,
+   "xg_in_kept_stints_all_strength": 5595.746200000197,
+   "xg_in_kept_stints_strict5v5": 4869.383500000187,
+   "all_strict5v5_xg_season": 4999.804400000363,
+   "all_strict5v5_xg_games_with_shifts": 4999.804400000018,
+   "team_code_mismatch_games": 0,
+   "seconds": 10.5
+  }
+ ],
+ "S4d_kept_over_all_strict5v5": 0.9738531852973793,
+ "strength_leak_dropped_share": 0.12633485904780173,
+ "toi5_rows": 337272
+}

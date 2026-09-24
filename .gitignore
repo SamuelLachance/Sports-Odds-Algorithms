@@ -39,3 +39,8 @@ data/*.parquet
 catboost_info/
 documents/*.pdf
 data/nhl_dressed.csv
+
+# breakthrough-program research caches (rebuildable, up to ~50 MB each)
+data/bt_*.npy
+data/bt_*.npz
+data/bt_*.csv

@@ -1,0 +1,20 @@
+{
+ "DEV 2006-2015": {
+  "gain": -0.000183,
+  "ci": [
+   -0.0026,
+   0.002226
+  ],
+  "seasons_pos": 5,
+  "n_locked_games": 22
+ },
+ "pre-DEV 2002-2005 (already viewed by the proxy)": {
+  "gain": -0.044591,
+  "ci": [
+   -0.108739,
+   0.004021
+  ],
+  "seasons_pos": 3,
+  "n_locked_games": 11
+ }
+}

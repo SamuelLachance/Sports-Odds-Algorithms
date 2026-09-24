@@ -1,0 +1,29 @@
+{
+ "baseline": 0.6229368799678564,
+ "results": {
+  "slow EPA net add": {
+   "gain": -0.000344,
+   "ci": [
+    -0.001055,
+    0.000361
+   ],
+   "seasons_pos": 4
+  },
+  "slow Elo add": {
+   "gain": -0.000458,
+   "ci": [
+    -0.0011,
+    0.000181
+   ],
+   "seasons_pos": 4
+  },
+  "slow EPA + slow Elo add": {
+   "gain": -0.00064,
+   "ci": [
+    -0.001463,
+    0.000182
+   ],
+   "seasons_pos": 5
+  }
+ }
+}

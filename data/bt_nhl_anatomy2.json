@@ -1,0 +1,459 @@
+{
+ "generated": "2026-09-24T10:34:51",
+ "protocol": {
+  "dev_only": true,
+  "test_touched": false,
+  "market_use": "evaluation only; descriptive"
+ },
+ "descriptors": {
+  "backup_diff (a-h)": {
+   "sd": 0.6724,
+   "nonzero_share": 0.458,
+   "market_coef": 0.0427,
+   "market_t": 15.3,
+   "outcome_coef_beyond_model": 0.0596,
+   "dLL_loso_beyond_model": 5e-05,
+   "ci": [
+    -0.00038,
+    0.00051
+   ],
+   "outcome_coef_beyond_close": 0.0171,
+   "z_beyond_close": 0.49
+  },
+  "share_diff (h-a)": {
+   "sd": 0.3619,
+   "nonzero_share": 0.94,
+   "market_coef": 0.0936,
+   "market_t": 18.1,
+   "outcome_coef_beyond_model": 0.111,
+   "dLL_loso_beyond_model": 0.00011,
+   "ci": [
+    -0.00032,
+    0.00056
+   ],
+   "outcome_coef_beyond_close": 0.0185,
+   "z_beyond_close": 0.28
+  },
+  "notmodal_diff (a-h)": {
+   "sd": 0.6714,
+   "nonzero_share": 0.457,
+   "market_coef": 0.0423,
+   "market_t": 15.1,
+   "outcome_coef_beyond_model": 0.0656,
+   "dLL_loso_beyond_model": 8e-05,
+   "ci": [
+    -0.00038,
+    0.00057
+   ],
+   "outcome_coef_beyond_close": 0.0231,
+   "z_beyond_close": 0.66
+  },
+  "log_career_starts_diff (h-a)": {
+   "sd": 1.4661,
+   "nonzero_share": 0.994,
+   "market_coef": 0.0223,
+   "market_t": 17.5,
+   "outcome_coef_beyond_model": 0.0165,
+   "dLL_loso_beyond_model": -0.00013,
+   "ci": [
+    -0.00041,
+    0.00016
+   ],
+   "outcome_coef_beyond_close": -0.0067,
+   "z_beyond_close": -0.42
+  },
+  "gsax_delta_diff (h-a)": {
+   "sd": 0.1556,
+   "nonzero_share": 0.587,
+   "market_coef": 0.0351,
+   "market_t": 2.9,
+   "outcome_coef_beyond_model": 0.4054,
+   "dLL_loso_beyond_model": 0.00029,
+   "ci": [
+    -0.00043,
+    0.00098
+   ],
+   "outcome_coef_beyond_close": 0.3656,
+   "z_beyond_close": 2.47
+  },
+  "gsax_level_diff (h-a)": {
+   "sd": 0.1913,
+   "nonzero_share": 1.0,
+   "market_coef": 0.3061,
+   "market_t": 32.3,
+   "outcome_coef_beyond_model": 0.2707,
+   "dLL_loso_beyond_model": 0.00011,
+   "ci": [
+    -0.00045,
+    0.00067
+   ],
+   "outcome_coef_beyond_close": -0.0445,
+   "z_beyond_close": -0.35
+  },
+  "elite_usual_out (a-h)": {
+   "sd": 0.3287,
+   "nonzero_share": 0.108,
+   "market_coef": 0.0004,
+   "market_t": 0.1,
+   "outcome_coef_beyond_model": 0.104,
+   "dLL_loso_beyond_model": 1e-05,
+   "ci": [
+    -0.0004,
+    0.0004
+   ],
+   "outcome_coef_beyond_close": 0.1002,
+   "z_beyond_close": 1.43
+  },
+  "absent_toi_diff (a-h) min": {
+   "sd": 22.7439,
+   "nonzero_share": 0.909,
+   "market_coef": 0.0016,
+   "market_t": 18.9,
+   "outcome_coef_beyond_model": 0.0032,
+   "dLL_loso_beyond_model": 0.00052,
+   "ci": [
+    -0.00024,
+    0.00128
+   ],
+   "outcome_coef_beyond_close": 0.0017,
+   "z_beyond_close": 1.59
+  },
+  "absent_top4_diff (a-h)": {
+   "sd": 0.5877,
+   "nonzero_share": 0.28,
+   "market_coef": 0.0485,
+   "market_t": 15.2,
+   "outcome_coef_beyond_model": 0.1359,
+   "dLL_loso_beyond_model": 0.00073,
+   "ci": [
+    -0.00013,
+    0.00157
+   ],
+   "outcome_coef_beyond_close": 0.0854,
+   "z_beyond_close": 2.15
+  },
+  "absent_n_diff (a-h)": {
+   "sd": 1.4299,
+   "nonzero_share": 0.673,
+   "market_coef": 0.0194,
+   "market_t": 14.7,
+   "outcome_coef_beyond_model": 0.044,
+   "dLL_loso_beyond_model": 0.00038,
+   "ci": [
+    -0.00029,
+    0.00107
+   ],
+   "outcome_coef_beyond_close": 0.0256,
+   "z_beyond_close": 1.56
+  },
+  "new_skaters_diff (a-h)": {
+   "sd": 0.7244,
+   "nonzero_share": 0.349,
+   "market_coef": 0.0187,
+   "market_t": 7.2,
+   "outcome_coef_beyond_model": 0.0607,
+   "dLL_loso_beyond_model": 4e-05,
+   "ci": [
+    -0.00047,
+    0.00052
+   ],
+   "outcome_coef_beyond_close": 0.0422,
+   "z_beyond_close": 1.32
+  },
+  "ptspct_diff (h-a)": {
+   "sd": 0.196,
+   "nonzero_share": 0.965,
+   "market_coef": 0.2329,
+   "market_t": 19.9,
+   "outcome_coef_beyond_model": 0.1275,
+   "dLL_loso_beyond_model": -0.0,
+   "ci": [
+    -0.00021,
+    0.00021
+   ],
+   "outcome_coef_beyond_close": -0.0045,
+   "z_beyond_close": -0.03
+  },
+  "form10_diff (h-a)": {
+   "sd": 0.2398,
+   "nonzero_share": 0.789,
+   "market_coef": 0.1257,
+   "market_t": 13.6,
+   "outcome_coef_beyond_model": -0.1141,
+   "dLL_loso_beyond_model": 1e-05,
+   "ci": [
+    -0.00024,
+    0.00026
+   ],
+   "outcome_coef_beyond_close": -0.1675,
+   "z_beyond_close": -1.48
+  },
+  "dead_diff (a-h)": {
+   "sd": 0.2215,
+   "nonzero_share": 0.049,
+   "market_coef": 0.1099,
+   "market_t": 13.0,
+   "outcome_coef_beyond_model": 0.2182,
+   "dLL_loso_beyond_model": 4e-05,
+   "ci": [
+    -0.00049,
+    0.00056
+   ],
+   "outcome_coef_beyond_close": 0.1087,
+   "z_beyond_close": 1.01
+  },
+  "elim_diff (a-h)": {
+   "sd": 0.2166,
+   "nonzero_share": 0.047,
+   "market_coef": 0.1482,
+   "market_t": 16.6,
+   "outcome_coef_beyond_model": 0.0978,
+   "dLL_loso_beyond_model": -6e-05,
+   "ci": [
+    -0.0003,
+    0.00017
+   ],
+   "outcome_coef_beyond_close": -0.032,
+   "z_beyond_close": -0.28
+  },
+  "lock_diff (a-h)": {
+   "sd": 0.2,
+   "nonzero_share": 0.04,
+   "market_coef": -0.0276,
+   "market_t": -2.8,
+   "outcome_coef_beyond_model": 0.1671,
+   "dLL_loso_beyond_model": 5e-05,
+   "ci": [
+    -0.00029,
+    0.0004
+   ],
+   "outcome_coef_beyond_close": 0.1668,
+   "z_beyond_close": 1.42
+  },
+  "both_b2b": {
+   "sd": 0.2131,
+   "nonzero_share": 0.048,
+   "market_coef": 0.0342,
+   "market_t": 3.8,
+   "outcome_coef_beyond_model": -0.0834,
+   "dLL_loso_beyond_model": -5e-05,
+   "ci": [
+    -0.00026,
+    0.00017
+   ],
+   "outcome_coef_beyond_close": -0.1225,
+   "z_beyond_close": -1.14
+  },
+  "gconsec_diff (h-a)": {
+   "sd": 3.595,
+   "nonzero_share": 0.736,
+   "market_coef": 0.003,
+   "market_t": 5.8,
+   "outcome_coef_beyond_model": 0.0218,
+   "dLL_loso_beyond_model": 0.00062,
+   "ci": [
+    -0.00022,
+    0.00144
+   ],
+   "outcome_coef_beyond_close": 0.0189,
+   "z_beyond_close": 2.94
+  }
+ },
+ "joint_blocks": {
+  "GOALIE block (backup, share, career, gsax delta)": {
+   "dLL_loso": -3e-05,
+   "ci": [
+    -0.0008,
+    0.00075
+   ],
+   "market_r2_gain": 0.0423
+  },
+  "SKATER block (absent toi, top4, new)": {
+   "dLL_loso": 0.00071,
+   "ci": [
+    -0.00024,
+    0.00169
+   ],
+   "market_r2_gain": 0.0418
+  },
+  "STAKES block (elim, lock)": {
+   "dLL_loso": 2e-05,
+   "ci": [
+    -0.00054,
+    0.00055
+   ],
+   "market_r2_gain": 0.0304
+  },
+  "GOALIE+SKATER": {
+   "dLL_loso": 0.00069,
+   "ci": [
+    -0.00061,
+    0.00191
+   ],
+   "market_r2_gain": 0.0816
+  }
+ },
+ "open_to_close": {
+  "any backup goalie": {
+   "n": 4700,
+   "open_to_close": 0.00294,
+   "oc_ci": [
+    0.00127,
+    0.00462
+   ],
+   "share_of_oc_gain": 0.937,
+   "model_minus_close": 0.00269,
+   "mc_ci": [
+    9e-05,
+    0.00525
+   ],
+   "model_minus_open": -0.00025,
+   "mo_ci": [
+    -0.00295,
+    0.0024
+   ],
+   "mean_abs_line_move_logit": 0.0885
+  },
+  "no backup goalie": {
+   "n": 3227,
+   "open_to_close": 0.00029,
+   "oc_ci": [
+    -0.00157,
+    0.00213
+   ],
+   "share_of_oc_gain": 0.063,
+   "model_minus_close": 0.00027,
+   "mc_ci": [
+    -0.00268,
+    0.00327
+   ],
+   "model_minus_open": -1e-05,
+   "mo_ci": [
+    -0.003,
+    0.00296
+   ],
+   "mean_abs_line_move_logit": 0.0817
+  },
+  "any top-4 skater absent": {
+   "n": 2424,
+   "open_to_close": 0.00419,
+   "oc_ci": [
+    0.00188,
+    0.00647
+   ],
+   "share_of_oc_gain": 0.689,
+   "model_minus_close": 0.00168,
+   "mc_ci": [
+    -0.00206,
+    0.00548
+   ],
+   "model_minus_open": -0.00251,
+   "mo_ci": [
+    -0.00601,
+    0.00112
+   ],
+   "mean_abs_line_move_logit": 0.0883
+  },
+  "backup OR top-4 absent": {
+   "n": 5621,
+   "open_to_close": 0.00274,
+   "oc_ci": [
+    0.00117,
+    0.00419
+   ],
+   "share_of_oc_gain": 1.045,
+   "model_minus_close": 0.00199,
+   "mc_ci": [
+    -0.00031,
+    0.0044
+   ],
+   "model_minus_open": -0.00075,
+   "mo_ci": [
+    -0.00313,
+    0.00173
+   ],
+   "mean_abs_line_move_logit": 0.0879
+  },
+  "fully usual lineups (no backup, no top-4 absent)": {
+   "n": 2124,
+   "open_to_close": -0.00044,
+   "oc_ci": [
+    -0.00272,
+    0.00182
+   ],
+   "share_of_oc_gain": -0.063,
+   "model_minus_close": 0.00216,
+   "mc_ci": [
+    -0.00149,
+    0.0059
+   ],
+   "model_minus_open": 0.0026,
+   "mo_ci": [
+    -0.00099,
+    0.00612
+   ],
+   "mean_abs_line_move_logit": 0.0798
+  }
+ },
+ "line_move_regression": {
+  "const": [
+   -0.0056,
+   -4.4
+  ],
+  "backup_diff": [
+   0.032,
+   17.1
+  ],
+  "absent_toi_diff": [
+   0.0008,
+   12.2
+  ],
+  "absent_top4_diff": [
+   0.0117,
+   4.7
+  ]
+ },
+ "elite_goalie_out": {
+  "n": 880,
+  "model_minus_close": 0.00115,
+  "ci": [
+   -0.00554,
+   0.00758
+  ],
+  "open_to_close": 0.00366
+ },
+ "worst_team_seasons": [
+  [
+   "CHI 20122013",
+   0.03138
+  ],
+  [
+   "MTL 20152016",
+   0.03001
+  ],
+  [
+   "NSH 20122013",
+   0.02911
+  ],
+  [
+   "CBJ 20152016",
+   0.02638
+  ],
+  [
+   "CBJ 20122013",
+   0.02589
+  ],
+  [
+   "NSH 20172018",
+   0.02241
+  ],
+  [
+   "TOR 20162017",
+   0.0199
+  ],
+  [
+   "TOR 20172018",
+   0.01939
+  ]
+ ]
+}

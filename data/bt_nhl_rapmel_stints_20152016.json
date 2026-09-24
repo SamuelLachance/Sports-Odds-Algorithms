@@ -1,0 +1,13 @@
+{
+ "season": 20152016,
+ "games_with_shots": 1230,
+ "games_stinted": 1230,
+ "games_in_keep": 1230,
+ "stints": 238112,
+ "xg_in_kept_stints_all_strength": 4993.0128000001705,
+ "xg_in_kept_stints_strict5v5": 4319.239800000095,
+ "all_strict5v5_xg_season": 4442.265900000105,
+ "all_strict5v5_xg_games_with_shifts": 4442.265899999989,
+ "team_code_mismatch_games": 0,
+ "seconds": 10.6
+}

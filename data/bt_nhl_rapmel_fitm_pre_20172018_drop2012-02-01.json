@@ -1,0 +1,18 @@
+{
+ "name": "pre_20172018",
+ "cutoff": "2017-10-03",
+ "window_seasons": [
+  20142015,
+  20152016,
+  20162017
+ ],
+ "season_through_cutoff": null,
+ "drop": "2012-02-01",
+ "n_stints": 0,
+ "max_train_date": 0,
+ "v_repl": {
+  "F": 0.0,
+  "D": 0.0
+ },
+ "empty_window": true
+}

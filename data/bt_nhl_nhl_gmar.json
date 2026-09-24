@@ -1,0 +1,713 @@
+{
+ "candidate": "nhl_gmar",
+ "title": "Day-of personnel composite: starting-goalie level inside the W/L Elo (reliability-calibrated EB prior) + absent-regular deficit in minutes above replacement beside the blend",
+ "protocol": {
+  "dev_seasons_scored": [
+   20112012,
+   20122013,
+   20132014,
+   20142015,
+   20152016,
+   20162017,
+   20172018
+  ],
+  "n_dev": 7929,
+  "eval": "LOSO over DEV seasons, nested grids",
+  "market_blind": true,
+  "test_seasons_touched": 0,
+  "bar": "nested A3 gain >= +0.00100 AND 95% CI lo > 0 AND S1-S4, W1-W5 pass"
+ },
+ "harness_sanity": {
+  "S1": {
+   "shipped_dev_loso_ll": 0.672398,
+   "n": 7929,
+   "target": 0.672398,
+   "pass": true
+  },
+  "S2": {
+   "drop_xg_cost": 0.00303,
+   "target": 0.00303,
+   "tol": 0.0002,
+   "recorded_0811_sweep": 0.00304,
+   "ledger_row5_TEST_recorded": 0.00316,
+   "pass": true
+  },
+  "S3": {
+   "gamma0_vs_run_elo_arr_maxabs": 0.0,
+   "blend_pred_maxabs_diff": 0.0,
+   "blend_ll": 0.672398,
+   "pass": true
+  },
+  "S4a": {
+   "probe_dev_ll": 0.672103,
+   "gain": 0.00029,
+   "ci": [
+    -0.00013,
+    0.00073
+   ],
+   "target": {
+    "dev_ll": 0.672103,
+    "gain": 0.00029,
+    "ci": [
+     -0.00013,
+     0.00073
+    ]
+   },
+   "pass": true
+  },
+  "S4b": {
+   "share_games_equal_all_dev": 1.0,
+   "share_games_equal_masked": 1.0,
+   "n_games": 9371,
+   "n_mismatch": 0,
+   "pass": true
+  }
+ },
+ "walk_forward": {
+  "W1": {
+   "statement": "single ordered pass; every per-goalie (N, X, appearance count), per-player (m_p, last team), per-team (R, 10-game window, previous starter) state for game i is read before any of game i's result, GA, xGA or TOI is applied; enforced at runtime by write-index guards (assert last write < i) in gl_elo and build_mar",
+   "runtime_guards_raised": 0,
+   "pass": true
+  },
+  "W2": {
+   "cutoffs": {
+    "2012-02-01": {
+     "n_pre_games": 1978,
+     "n_features_checked": 53,
+     "mismatched_features": [],
+     "n_features_changed_after_cutoff": 45,
+     "pass": true,
+     "n_games_permuted_after": 7393,
+     "n_moved": 7393
+    },
+    "2015-01-15": {
+     "n_pre_games": 5054,
+     "n_features_checked": 53,
+     "mismatched_features": [],
+     "n_features_changed_after_cutoff": 45,
+     "pass": true,
+     "n_games_permuted_after": 4317,
+     "n_moved": 4316
+    },
+    "2017-12-01": {
+     "n_pre_games": 8487,
+     "n_features_checked": 53,
+     "mismatched_features": [],
+     "n_features_changed_after_cutoff": 45,
+     "pass": true,
+     "n_games_permuted_after": 884,
+     "n_moved": 884
+    }
+   },
+   "pass": true,
+   "note": "y, goalie GA/xGA rows, dressed lists (membership+TOI) and starters permuted among games on/after each cutoff; all personnel features (GL p for every gamma, G, D, raw absent TOI, rho, A5 cells, A6 projection arm, probe arm) rebuilt and compared bitwise before it"
+  },
+  "W3": {
+   "m_E_by_season": {
+    "20102011": {
+     "m_E": -0.004,
+     "evidence_xga": 0.0,
+     "from_seasons": [],
+     "fallback": true
+    },
+    "20112012": {
+     "m_E": -0.004,
+     "evidence_xga": 0,
+     "from_seasons": [],
+     "fallback": true
+    },
+    "20122013": {
+     "m_E": -0.004,
+     "evidence_xga": 453.2,
+     "from_seasons": [
+      20112012
+     ],
+     "fallback": true
+    },
+    "20132014": {
+     "m_E": -0.004,
+     "evidence_xga": 762.5,
+     "from_seasons": [
+      20112012,
+      20122013
+     ],
+     "fallback": true
+    },
+    "20142015": {
+     "m_E": -0.022245,
+     "evidence_xga": 1984.8,
+     "from_seasons": [
+      20112012,
+      20122013,
+      20132014
+     ],
+     "fallback": false
+    },
+    "20152016": {
+     "m_E": -0.005748,
+     "evidence_xga": 3446.2,
+     "from_seasons": [
+      20112012,
+      20122013,
+      20132014,
+      20142015
+     ],
+     "fallback": false
+    },
+    "20162017": {
+     "m_E": -0.005585,
+     "evidence_xga": 5518.2,
+     "from_seasons": [
+      20112012,
+      20122013,
+      20132014,
+      20142015,
+      20152016
+     ],
+     "fallback": false
+    },
+    "20172018": {
+     "m_E": -0.004763,
+     "evidence_xga": 7166.9,
+     "from_seasons": [
+      20112012,
+      20122013,
+      20132014,
+      20142015,
+      20152016,
+      20162017
+     ],
+     "fallback": false
+    }
+   },
+   "m_E_uses_completed_seasons_only": true,
+   "rho_xbar": "committed only on date change; assert last_committed_date < today inside both loops",
+   "pass": true
+  },
+  "W4": {
+   "eval_mask_sha1": "d5512699fe7b19cb015d10a04892a17e92ffd364",
+   "y_sha1": "701354619cf8f6755a167d0eca73897aa94b5c88",
+   "identical_across_arms": true,
+   "n_masked": 7929,
+   "nan_personnel_features_on_masked_games": {},
+   "pass": true
+  },
+  "W5": {
+   "statement": "the only same-game inputs are tonight's starting-goalie identity (first-shot goalie; 99.99% = sole dressed goalie; confirmed at warmups) and tonight's dressed-skater membership (announced lineup). Tonight's GA/xGA/TOI/result enter only the post-game update. nhl_games.csv win_goalie, max-shots starters, all-season RAPM/shift ratings and odds are never read by any feature path.",
+   "pass": true
+  }
+ },
+ "arms": {
+  "A0 shipped blend (reproduction)": {
+   "gain": 0.0,
+   "fold_sd": 0.0,
+   "fold_se": 0.0,
+   "sigma": 0.0,
+   "n_pos_folds": 0,
+   "n_folds": 7,
+   "sig": "n.s.",
+   "boot_ci_4k_seed7": [
+    0.0,
+    0.0
+   ],
+   "boot_ci_10k": [
+    0.0,
+    0.0
+   ],
+   "gain_exact": 0.0,
+   "dev_ll": 0.672398,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.0,
+    "boot_ci_10k": [
+     0.0,
+     0.0
+    ]
+   }
+  },
+  "A1 GL new col1 (gamma nested)": {
+   "gain": 0.0002,
+   "fold_sd": 0.00077,
+   "fold_se": 0.00029,
+   "sigma": 0.69,
+   "n_pos_folds": 4,
+   "n_folds": 7,
+   "sig": "n.s.",
+   "boot_ci_4k_seed7": [
+    -0.00029,
+    0.00068
+   ],
+   "boot_ci_10k": [
+    -0.00028,
+    0.00068
+   ],
+   "gain_exact": 0.0001998502443546165,
+   "dev_ll": 0.672199,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.00073,
+    "boot_ci_10k": [
+     0.00016,
+     0.0013
+    ]
+   },
+   "picks": {
+    "20112012": 180.0,
+    "20122013": 180.0,
+    "20132014": 180.0,
+    "20142015": 180.0,
+    "20152016": 120.0,
+    "20162017": 120.0,
+    "20172018": 180.0
+   },
+   "cell_loso_ll": {
+    "0": 0.672398,
+    "60": 0.672234,
+    "120": 0.672139,
+    "180": 0.672108
+   },
+   "best_single_cell_OPTIMISTIC": {
+    "gamma": 180.0,
+    "gain": 0.00029
+   }
+  },
+  "A2 shipped + mar_diff": {
+   "gain": 0.00047,
+   "fold_sd": 0.00116,
+   "fold_se": 0.00044,
+   "sigma": 1.08,
+   "n_pos_folds": 5,
+   "n_folds": 7,
+   "sig": "n.s.",
+   "boot_ci_4k_seed7": [
+    -0.00028,
+    0.00121
+   ],
+   "boot_ci_10k": [
+    -0.00029,
+    0.00122
+   ],
+   "gain_exact": 0.00047019825645938694,
+   "dev_ll": 0.671928,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.00021,
+    "boot_ci_10k": [
+     -0.00086,
+     0.00131
+    ]
+   },
+   "coef_mar_diff_all_dev_descriptive": 0.01225
+  },
+  "A3 GL new (gamma nested) + mar_diff [PRIMARY]": {
+   "gain": 0.00064,
+   "fold_sd": 0.00127,
+   "fold_se": 0.00048,
+   "sigma": 1.34,
+   "n_pos_folds": 4,
+   "n_folds": 7,
+   "sig": "n.s.",
+   "boot_ci_4k_seed7": [
+    -0.00023,
+    0.00152
+   ],
+   "boot_ci_10k": [
+    -0.00024,
+    0.00154
+   ],
+   "gain_exact": 0.0006417681987916795,
+   "dev_ll": 0.671757,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.00091,
+    "boot_ci_10k": [
+     -0.00032,
+     0.00217
+    ]
+   },
+   "picks": {
+    "20112012": 180.0,
+    "20122013": 180.0,
+    "20132014": 180.0,
+    "20142015": 180.0,
+    "20152016": 120.0,
+    "20162017": 120.0,
+    "20172018": 180.0
+   },
+   "cell_loso_ll": {
+    "0": 0.671928,
+    "60": 0.671775,
+    "120": 0.67169,
+    "180": 0.671668
+   },
+   "best_single_cell_OPTIMISTIC": {
+    "gamma": 180.0,
+    "gain": 0.00073
+   }
+  },
+  "A4 probe c=64 col1 + anatomy SKATER block": {
+   "gain": 0.0009,
+   "fold_sd": 0.00128,
+   "fold_se": 0.00048,
+   "sigma": 1.86,
+   "n_pos_folds": 4,
+   "n_folds": 7,
+   "sig": "n.s.",
+   "boot_ci_4k_seed7": [
+    -0.00012,
+    0.00192
+   ],
+   "boot_ci_10k": [
+    -0.00012,
+    0.00193
+   ],
+   "gain_exact": 0.0009000343953838454,
+   "dev_ll": 0.671498,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.00103,
+    "boot_ci_10k": [
+     -0.00044,
+     0.00256
+    ]
+   },
+   "note": "anchor; skater block z-scored on the DEV mask (NaN->0) as specified"
+  },
+  "A5 GL new + D inside Elo ((gamma,delta) nested)": {
+   "gain": 0.00065,
+   "fold_sd": 0.00105,
+   "fold_se": 0.0004,
+   "sigma": 1.64,
+   "n_pos_folds": 5,
+   "n_folds": 7,
+   "sig": "n.s.",
+   "boot_ci_4k_seed7": [
+    -2e-05,
+    0.00134
+   ],
+   "boot_ci_10k": [
+    -3e-05,
+    0.00135
+   ],
+   "gain_exact": 0.0006502972036794289,
+   "dev_ll": 0.671748,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.00099,
+    "boot_ci_10k": [
+     0.00011,
+     0.00188
+    ]
+   },
+   "picks": {
+    "20112012": [
+     180.0,
+     2.0
+    ],
+    "20122013": [
+     180.0,
+     2.0
+    ],
+    "20132014": [
+     180.0,
+     2.0
+    ],
+    "20142015": [
+     180.0,
+     2.0
+    ],
+    "20152016": [
+     120.0,
+     2.0
+    ],
+    "20162017": [
+     120.0,
+     2.0
+    ],
+    "20172018": [
+     120.0,
+     2.0
+    ]
+   },
+   "cell_loso_ll": {
+    "0,0": 0.672398,
+    "0,0.5": 0.672227,
+    "0,1": 0.672086,
+    "0,2": 0.671903,
+    "60,0": 0.672234,
+    "60,0.5": 0.672064,
+    "60,1": 0.671924,
+    "60,2": 0.671744,
+    "120,0": 0.672139,
+    "120,0.5": 0.671972,
+    "120,1": 0.671836,
+    "120,2": 0.671658,
+    "180,0": 0.672108,
+    "180,0.5": 0.671946,
+    "180,1": 0.671813,
+    "180,2": 0.671638
+   },
+   "best_single_cell_OPTIMISTIC": {
+    "gamma_delta": [
+     180.0,
+     2.0
+    ],
+    "gain": 0.00076
+   }
+  },
+  "A6 A3 with projected starter (serving diag)": {
+   "gain": 0.00032,
+   "fold_sd": 0.00147,
+   "fold_se": 0.00055,
+   "sigma": 0.57,
+   "n_pos_folds": 5,
+   "n_folds": 7,
+   "sig": "n.s.",
+   "boot_ci_4k_seed7": [
+    -0.00056,
+    0.0012
+   ],
+   "boot_ci_10k": [
+    -0.00055,
+    0.00119
+   ],
+   "gain_exact": 0.00031528410710598357,
+   "dev_ll": 0.672083,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.00041,
+    "boot_ci_10k": [
+     -0.00078,
+     0.00162
+    ]
+   },
+   "gamma_per_season_from_A3": {
+    "20112012": 180.0,
+    "20122013": 180.0,
+    "20132014": 180.0,
+    "20142015": 180.0,
+    "20152016": 120.0,
+    "20162017": 120.0,
+    "20172018": 180.0
+   },
+   "projection_hit_rate_masked": 0.6664
+  }
+ },
+ "gl_diagnostics": {
+  "sd_G_diff_goals": 0.0891,
+  "sd_G_team_goals": 0.0633,
+  "share_absG_diff_gt_0.05": 0.5614,
+  "corr_G_teamR_by_gamma": {
+   "0": 0.2359,
+   "60": 0.2108,
+   "120": 0.1849,
+   "180": 0.1584
+  },
+  "face_validity": {
+   "date": "2015-12-01",
+   "xbar": 2.6691,
+   "Price": {
+    "r_per_xga": 0.05734,
+    "G_goals": 0.15305,
+    "appearances": 313,
+    "X": 388.03796,
+    "N": 45.18716,
+    "entrant": false
+   },
+   "Condon": {
+    "r_per_xga": -0.00122,
+    "G_goals": -0.00327,
+    "appearances": 14,
+    "X": 30.43468,
+    "N": 1.77222,
+    "entrant": true
+   },
+   "G_price_minus_condon_goals": 0.1563,
+   "elo_logit_gap_by_gamma": {
+    "0": 0.0,
+    "60": 0.054,
+    "120": 0.108,
+    "180": 0.162
+   },
+   "ideas_screen_reference_logit": 0.09
+  },
+  "starter_fallback_games_masked": 0,
+  "starter_fallback_games_all_dev": 0,
+  "m_E": {
+   "20102011": {
+    "m_E": -0.004,
+    "evidence_xga": 0.0,
+    "from_seasons": [],
+    "fallback": true
+   },
+   "20112012": {
+    "m_E": -0.004,
+    "evidence_xga": 0,
+    "from_seasons": [],
+    "fallback": true
+   },
+   "20122013": {
+    "m_E": -0.004,
+    "evidence_xga": 453.2,
+    "from_seasons": [
+     20112012
+    ],
+    "fallback": true
+   },
+   "20132014": {
+    "m_E": -0.004,
+    "evidence_xga": 762.5,
+    "from_seasons": [
+     20112012,
+     20122013
+    ],
+    "fallback": true
+   },
+   "20142015": {
+    "m_E": -0.022245,
+    "evidence_xga": 1984.8,
+    "from_seasons": [
+     20112012,
+     20122013,
+     20132014
+    ],
+    "fallback": false
+   },
+   "20152016": {
+    "m_E": -0.005748,
+    "evidence_xga": 3446.2,
+    "from_seasons": [
+     20112012,
+     20122013,
+     20132014,
+     20142015
+    ],
+    "fallback": false
+   },
+   "20162017": {
+    "m_E": -0.005585,
+    "evidence_xga": 5518.2,
+    "from_seasons": [
+     20112012,
+     20122013,
+     20132014,
+     20142015,
+     20152016
+    ],
+    "fallback": false
+   },
+   "20172018": {
+    "m_E": -0.004763,
+    "evidence_xga": 7166.9,
+    "from_seasons": [
+     20112012,
+     20122013,
+     20132014,
+     20142015,
+     20152016,
+     20162017
+    ],
+    "fallback": false
+   }
+  }
+ },
+ "mar_diagnostics": {
+  "missing_dressed_side_games_masked": 1,
+  "missing_share_masked": 0.00013,
+  "missing_under_0.5pct": true,
+  "rho_first_masked_game": 13.68,
+  "rho_last_masked_game": 13.996,
+  "rho_by_season_start": {
+   "20112012": 13.68,
+   "20122013": 13.861,
+   "20132014": 13.913,
+   "20142015": 13.895,
+   "20152016": 14.025,
+   "20162017": 13.996,
+   "20172018": 14.004
+  },
+  "mean_D_side": 3.154,
+  "share_side_D_pos": 0.5753,
+  "sd_mar_diff": 5.753,
+  "mean_absent_regulars_side": 1.579
+ },
+ "market_eval_diagnostic": {
+  "n_joined": 7927,
+  "close_ll": 0.670717,
+  "note": "EVALUATION ONLY: multiplicative de-vig of the SBR close; odds never enter a feature or a fit",
+  "A0": {
+   "model_minus_close_all": 0.00171,
+   "non1_goalie": {
+    "n": 4651,
+    "model_minus_close": 0.00274
+   },
+   "top4_absent": {
+    "n": 2417,
+    "model_minus_close": 0.00176
+   }
+  },
+  "A1": {
+   "model_minus_close_all": 0.00151,
+   "non1_goalie": {
+    "n": 4651,
+    "model_minus_close": 0.00234
+   },
+   "top4_absent": {
+    "n": 2417,
+    "model_minus_close": 0.00178
+   }
+  },
+  "A2": {
+   "model_minus_close_all": 0.00123,
+   "non1_goalie": {
+    "n": 4651,
+    "model_minus_close": 0.00226
+   },
+   "top4_absent": {
+    "n": 2417,
+    "model_minus_close": -0.0009
+   }
+  },
+  "A3": {
+   "model_minus_close_all": 0.00107,
+   "non1_goalie": {
+    "n": 4651,
+    "model_minus_close": 0.00189
+   },
+   "top4_absent": {
+    "n": 2417,
+    "model_minus_close": -0.00079
+   }
+  },
+  "A6": {
+   "model_minus_close_all": 0.00139,
+   "non1_goalie": {
+    "n": 4651,
+    "model_minus_close": 0.00246
+   },
+   "top4_absent": {
+    "n": 2417,
+    "model_minus_close": -0.00064
+   }
+  },
+  "A3_gap_closed_share": 0.3743
+ },
+ "verdict": {
+  "primary_arm": "A3",
+  "nested_gain": 0.000642,
+  "boot_ci_10k": [
+   -0.00024,
+   0.00154
+  ],
+  "boot_ci_4k_seed7": [
+   -0.00023,
+   0.00152
+  ],
+  "sanity_pass": true,
+  "walk_forward_pass": true,
+  "clears_bar": false,
+  "baseline_dev_ll": 0.672398,
+  "candidate_dev_ll": 0.671757
+ },
+ "seconds": 26.2
+}

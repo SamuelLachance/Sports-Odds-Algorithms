@@ -1,0 +1,98 @@
+{
+ "descriptors": {
+  "absent_toi_diff (a-h)": {
+   "sd": 22.944,
+   "market_coef": 0.0015,
+   "market_t": 18.4,
+   "outcome_coef": 0.0031,
+   "dLL_loso": 0.00049,
+   "ci": [
+    -0.00026,
+    0.00123
+   ],
+   "coef_beyond_close": 0.0016,
+   "z_beyond_close": 1.56
+  },
+  "add_toi_diff (h-a)": {
+   "sd": 27.135,
+   "market_coef": -0.0008,
+   "market_t": -11.2,
+   "outcome_coef": -0.0017,
+   "dLL_loso": 0.00024,
+   "ci": [
+    -0.00026,
+    0.00071
+   ],
+   "coef_beyond_close": -0.001,
+   "z_beyond_close": -1.11
+  },
+  "net_lineup_toi_diff (h-a)": {
+   "sd": 23.429,
+   "market_coef": 0.0004,
+   "market_t": 4.7,
+   "outcome_coef": 0.0007,
+   "dLL_loso": -8e-05,
+   "ci": [
+    -0.00027,
+    0.00012
+   ],
+   "coef_beyond_close": 0.0002,
+   "z_beyond_close": 0.22
+  },
+  "goalie_return_diff (h-a)": {
+   "sd": 0.268,
+   "market_coef": -0.0086,
+   "market_t": -1.2,
+   "outcome_coef": -0.0598,
+   "dLL_loso": -4e-05,
+   "ci": [
+    -0.00023,
+    0.00016
+   ],
+   "coef_beyond_close": -0.052,
+   "z_beyond_close": -0.6
+  }
+ },
+ "slices": {
+  "veteran goalie returning (either)": {
+   "n": 582,
+   "model_minus_close": 0.00396,
+   "mc_ci": [
+    -0.0036,
+    0.01133
+   ],
+   "model_minus_open": -0.0014,
+   "open_to_close": 0.00536
+  },
+  "|add toi diff| >= 30 min": {
+   "n": 2044,
+   "model_minus_close": 0.00181,
+   "mc_ci": [
+    -0.00218,
+    0.0059
+   ],
+   "model_minus_open": -0.0007,
+   "open_to_close": 0.00251
+  },
+  "|net lineup toi diff| >= 30 min": {
+   "n": 1539,
+   "model_minus_close": 0.00335,
+   "mc_ci": [
+    -0.00101,
+    0.00792
+   ],
+   "model_minus_open": -0.0001,
+   "open_to_close": 0.00345
+  },
+  "|net lineup toi diff| < 10 min": {
+   "n": 2961,
+   "model_minus_close": -0.00041,
+   "mc_ci": [
+    -0.00348,
+    0.00269
+   ],
+   "model_minus_open": -0.00168,
+   "open_to_close": 0.00126
+  }
+ }
+}

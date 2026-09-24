@@ -1,0 +1,258 @@
+{
+ "with block (csv refit)": [
+  {
+   "slice": "2013-15 all",
+   "n": 799,
+   "model_ll": 0.62386,
+   "market_ll": 0.61347,
+   "gap": 0.01039,
+   "gap_ci": [
+    -0.00381,
+    0.02464
+   ],
+   "sig": "n.s.",
+   "share_of_gap": 0.2822,
+   "n_share": 0.3157,
+   "mean_abs_disagree_prob": 0.0754,
+   "mean_r_logit": 0.0165,
+   "bias_model": 0.0022,
+   "bias_market": -0.0027
+  },
+  {
+   "slice": "2013-15 QB flux",
+   "n": 385,
+   "model_ll": 0.61848,
+   "market_ll": 0.61646,
+   "gap": 0.00202,
+   "gap_ci": [
+    -0.01746,
+    0.0222
+   ],
+   "sig": "n.s.",
+   "share_of_gap": 0.0265,
+   "n_share": 0.1521,
+   "mean_abs_disagree_prob": 0.0747,
+   "mean_r_logit": 0.0199,
+   "bias_model": -0.0016,
+   "bias_market": -0.0074
+  },
+  {
+   "slice": "2013-15 QB stable",
+   "n": 414,
+   "model_ll": 0.62886,
+   "market_ll": 0.61069,
+   "gap": 0.01817,
+   "gap_ci": [
+    -0.00164,
+    0.03836
+   ],
+   "sig": "n.s.",
+   "share_of_gap": 0.2557,
+   "n_share": 0.1636,
+   "mean_abs_disagree_prob": 0.076,
+   "mean_r_logit": 0.0132,
+   "bias_model": 0.0057,
+   "bias_market": 0.0017
+  },
+  {
+   "slice": "2013-15 week 17",
+   "n": 48,
+   "model_ll": 0.47991,
+   "market_ll": 0.53295,
+   "gap": -0.05304,
+   "gap_ci": [
+    -0.11595,
+    0.00654
+   ],
+   "sig": "n.s.",
+   "share_of_gap": -0.0865,
+   "n_share": 0.019,
+   "mean_abs_disagree_prob": 0.0845,
+   "mean_r_logit": 0.0714,
+   "bias_model": -0.0093,
+   "bias_market": -0.027
+  },
+  {
+   "slice": "2013-15 wk17 one team clinched playoff",
+   "n": 21,
+   "model_ll": 0.38605,
+   "market_ll": 0.41062,
+   "gap": -0.02458,
+   "gap_ci": [
+    -0.07034,
+    0.02288
+   ],
+   "sig": "n.s.",
+   "share_of_gap": -0.0175,
+   "n_share": 0.0083,
+   "mean_abs_disagree_prob": 0.0561,
+   "mean_r_logit": -0.0066,
+   "bias_model": 0.1119,
+   "bias_market": 0.1157
+  },
+  {
+   "slice": "2013-15 PD-extreme",
+   "n": 267,
+   "model_ll": 0.64204,
+   "market_ll": 0.60315,
+   "gap": 0.03889,
+   "gap_ci": [
+    0.00921,
+    0.0684
+   ],
+   "sig": "market SIG better",
+   "share_of_gap": 0.353,
+   "n_share": 0.1055,
+   "mean_abs_disagree_prob": 0.0945,
+   "mean_r_logit": 0.0044,
+   "bias_model": -0.0195,
+   "bias_market": -0.0224
+  },
+  {
+   "slice": "2013-15 PD-middle",
+   "n": 388,
+   "model_ll": 0.60905,
+   "market_ll": 0.61562,
+   "gap": -0.00656,
+   "gap_ci": [
+    -0.02315,
+    0.00996
+   ],
+   "sig": "n.s.",
+   "share_of_gap": -0.0865,
+   "n_share": 0.1533,
+   "mean_abs_disagree_prob": 0.0607,
+   "mean_r_logit": 0.0005,
+   "bias_model": 0.0065,
+   "bias_market": 0.0043
+  }
+ ],
+ "WITHOUT absence+rq block": [
+  {
+   "slice": "2013-15 all",
+   "n": 799,
+   "model_ll": 0.61968,
+   "market_ll": 0.61347,
+   "gap": 0.00621,
+   "gap_ci": [
+    -0.00641,
+    0.01871
+   ],
+   "sig": "n.s.",
+   "share_of_gap": 0.1902,
+   "n_share": 0.3157,
+   "mean_abs_disagree_prob": 0.0654,
+   "mean_r_logit": 0.0198,
+   "bias_model": 0.0021,
+   "bias_market": -0.0027
+  },
+  {
+   "slice": "2013-15 QB flux",
+   "n": 385,
+   "model_ll": 0.61909,
+   "market_ll": 0.61646,
+   "gap": 0.00264,
+   "gap_ci": [
+    -0.01633,
+    0.02126
+   ],
+   "sig": "n.s.",
+   "share_of_gap": 0.0389,
+   "n_share": 0.1521,
+   "mean_abs_disagree_prob": 0.0672,
+   "mean_r_logit": 0.0265,
+   "bias_model": -0.0007,
+   "bias_market": -0.0074
+  },
+  {
+   "slice": "2013-15 QB stable",
+   "n": 414,
+   "model_ll": 0.62022,
+   "market_ll": 0.61069,
+   "gap": 0.00953,
+   "gap_ci": [
+    -0.00685,
+    0.02606
+   ],
+   "sig": "n.s.",
+   "share_of_gap": 0.1512,
+   "n_share": 0.1636,
+   "mean_abs_disagree_prob": 0.0636,
+   "mean_r_logit": 0.0136,
+   "bias_model": 0.0047,
+   "bias_market": 0.0017
+  },
+  {
+   "slice": "2013-15 week 17",
+   "n": 48,
+   "model_ll": 0.48634,
+   "market_ll": 0.53295,
+   "gap": -0.04661,
+   "gap_ci": [
+    -0.0977,
+    -0.00097
+   ],
+   "sig": "model SIG better",
+   "share_of_gap": -0.0858,
+   "n_share": 0.019,
+   "mean_abs_disagree_prob": 0.0617,
+   "mean_r_logit": 0.0708,
+   "bias_model": -0.0124,
+   "bias_market": -0.027
+  },
+  {
+   "slice": "2013-15 wk17 one team clinched playoff",
+   "n": 21,
+   "model_ll": 0.39657,
+   "market_ll": 0.41062,
+   "gap": -0.01405,
+   "gap_ci": [
+    -0.05886,
+    0.03066
+   ],
+   "sig": "n.s.",
+   "share_of_gap": -0.0113,
+   "n_share": 0.0083,
+   "mean_abs_disagree_prob": 0.054,
+   "mean_r_logit": -0.0156,
+   "bias_model": 0.1086,
+   "bias_market": 0.1157
+  },
+  {
+   "slice": "2013-15 PD-extreme",
+   "n": 267,
+   "model_ll": 0.62557,
+   "market_ll": 0.60315,
+   "gap": 0.02243,
+   "gap_ci": [
+    -0.00207,
+    0.04756
+   ],
+   "sig": "n.s.",
+   "share_of_gap": 0.2296,
+   "n_share": 0.1055,
+   "mean_abs_disagree_prob": 0.0757,
+   "mean_r_logit": 0.0203,
+   "bias_model": -0.0177,
+   "bias_market": -0.0224
+  },
+  {
+   "slice": "2013-15 PD-middle",
+   "n": 388,
+   "model_ll": 0.61212,
+   "market_ll": 0.61562,
+   "gap": -0.00349,
+   "gap_ci": [
+    -0.01909,
+    0.01196
+   ],
+   "sig": "n.s.",
+   "share_of_gap": -0.052,
+   "n_share": 0.1533,
+   "mean_abs_disagree_prob": 0.0572,
+   "mean_r_logit": 0.0018,
+   "bias_model": 0.0067,
+   "bias_market": 0.0043
+  }
+ ]
+}

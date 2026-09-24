@@ -1,0 +1,22 @@
+{
+ "baseline": 0.6229368799678564,
+ "raw_walk_corr": 0.9999999999999999,
+ "results": {
+  "E phase fade x (elo, qb, epa)": {
+   "gain": -0.00087,
+   "ci": [
+    -0.002613,
+    0.000913
+   ],
+   "seasons_pos": 4
+  },
+  "W leverage-weighted epa_net (replace col 2)": {
+   "gain": 0.000153,
+   "ci": [
+    -0.000206,
+    0.000537
+   ],
+   "seasons_pos": 6
+  }
+ }
+}

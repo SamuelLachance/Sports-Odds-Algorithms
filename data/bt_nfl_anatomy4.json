@@ -1,0 +1,211 @@
+{
+ "recalibration": {
+  "loso_recal_gain_vs_shipped": -0.0001,
+  "ci": [
+   -0.00105,
+   0.00089
+  ],
+  "slope_all_dev": [
+   0.0046,
+   0.9316
+  ]
+ },
+ "vars": [
+  {
+   "var": "late: seed-locked (wk16-17) diff",
+   "n_nonzero": 15,
+   "coef_all_dev": -0.7948,
+   "slope_on_logit_p": 0.9389,
+   "loso_gain": -0.00018,
+   "loso_ci": [
+    -0.00122,
+    0.00083
+   ],
+   "loso_gain_on_nonzero_games": -0.02706,
+   "market_gap_in_support": 0.25755,
+   "market_gap_share_in_support": 0.1303
+  },
+  {
+   "var": "late: clinched div + bye-safe (wk16-17) diff",
+   "n_nonzero": 22,
+   "coef_all_dev": -1.3965,
+   "slope_on_logit_p": 0.9558,
+   "loso_gain": 0.00121,
+   "loso_ci": [
+    -0.00133,
+    0.00391
+   ],
+   "loso_gain_on_nonzero_games": 0.13757,
+   "market_gap_in_support": 0.29955,
+   "market_gap_share_in_support": 0.2222
+  },
+  {
+   "var": "late: clinched division (wk17) diff",
+   "n_nonzero": 46,
+   "coef_all_dev": -0.623,
+   "slope_on_logit_p": 0.9479,
+   "loso_gain": 0.00031,
+   "loso_ci": [
+    -0.00105,
+    0.00173
+   ],
+   "loso_gain_on_nonzero_games": 0.01816,
+   "market_gap_in_support": 0.13284,
+   "market_gap_share_in_support": 0.206
+  },
+  {
+   "var": "late: clinched playoff spot (wk17) diff",
+   "n_nonzero": 64,
+   "coef_all_dev": -0.3525,
+   "slope_on_logit_p": 0.9443,
+   "loso_gain": -0.00014,
+   "loso_ci": [
+    -0.001,
+    0.00078
+   ],
+   "loso_gain_on_nonzero_games": -0.0043,
+   "market_gap_in_support": 0.09857,
+   "market_gap_share_in_support": 0.2127
+  },
+  {
+   "var": "late: eliminated (wk14+) diff",
+   "n_nonzero": 236,
+   "coef_all_dev": 0.2692,
+   "slope_on_logit_p": 0.968,
+   "loso_gain": 0.00014,
+   "loso_ci": [
+    -0.00115,
+    0.00144
+   ],
+   "loso_gain_on_nonzero_games": 0.00239,
+   "market_gap_in_support": 0.00686,
+   "market_gap_share_in_support": 0.0546
+  },
+  {
+   "var": "margin: season PD/g diff (>=3 games, else 0)",
+   "n_nonzero": 2150,
+   "coef_all_dev": 0.0202,
+   "slope_on_logit_p": 0.755,
+   "loso_gain": 0.00128,
+   "loso_ci": [
+    -0.0009,
+    0.00342
+   ],
+   "loso_gain_on_nonzero_games": 0.0018,
+   "market_gap_in_support": 0.01105,
+   "market_gap_share_in_support": 0.8012
+  },
+  {
+   "var": "margin: season PD/g diff, weeks 9+ only",
+   "n_nonzero": 1477,
+   "coef_all_dev": 0.0182,
+   "slope_on_logit_p": 0.8277,
+   "loso_gain": 0.00045,
+   "loso_ci": [
+    -0.00121,
+    0.00212
+   ],
+   "loso_gain_on_nonzero_games": 0.00177,
+   "market_gap_in_support": 0.01375,
+   "market_gap_share_in_support": 0.6848
+  },
+  {
+   "var": "offseason: prior PD/g beyond record (wk1-4)",
+   "n_nonzero": 500,
+   "coef_all_dev": 0.0486,
+   "slope_on_logit_p": 0.9271,
+   "loso_gain": 4e-05,
+   "loso_ci": [
+    -0.00144,
+    0.0015
+   ],
+   "loso_gain_on_nonzero_games": 0.0002,
+   "market_gap_in_support": 0.01544,
+   "market_gap_share_in_support": 0.2603
+  },
+  {
+   "var": "offseason: prior-season PD/g (wk1-4)",
+   "n_nonzero": 499,
+   "coef_all_dev": 0.0069,
+   "slope_on_logit_p": 0.9226,
+   "loso_gain": -0.00041,
+   "loso_ci": [
+    -0.00099,
+    0.00016
+   ],
+   "loso_gain_on_nonzero_games": -0.00182,
+   "market_gap_in_support": 0.0153,
+   "market_gap_share_in_support": 0.2574
+  },
+  {
+   "var": "offseason: QB != last season primary (wk1-4)",
+   "n_nonzero": 204,
+   "coef_all_dev": -0.1661,
+   "slope_on_logit_p": 0.924,
+   "loso_gain": -0.00041,
+   "loso_ci": [
+    -0.00137,
+    0.00051
+   ],
+   "loso_gain_on_nonzero_games": -0.00491,
+   "market_gap_in_support": 0.02566,
+   "market_gap_share_in_support": 0.1765
+  },
+  {
+   "var": "qb: non-established starter diff",
+   "n_nonzero": 999,
+   "coef_all_dev": -0.1306,
+   "slope_on_logit_p": 0.8909,
+   "loso_gain": 0.00033,
+   "loso_ci": [
+    -0.00107,
+    0.00172
+   ],
+   "loso_gain_on_nonzero_games": 0.00154,
+   "market_gap_in_support": 0.02165,
+   "market_gap_share_in_support": 0.7294
+  },
+  {
+   "var": "inj: Out+Doubtful count diff (2009+)",
+   "n_nonzero": 1460,
+   "coef_all_dev": -0.0253,
+   "slope_on_logit_p": 0.9313,
+   "loso_gain": -0.00029,
+   "loso_ci": [
+    -0.00118,
+    0.0006
+   ],
+   "loso_gain_on_nonzero_games": -0.00051,
+   "market_gap_in_support": 0.01242,
+   "market_gap_share_in_support": 0.6113
+  },
+  {
+   "var": "inj: snap-weighted O+D diff (2012+)",
+   "n_nonzero": 750,
+   "coef_all_dev": -0.0406,
+   "slope_on_logit_p": 0.9315,
+   "loso_gain": -0.00027,
+   "loso_ci": [
+    -0.00087,
+    0.00029
+   ],
+   "loso_gain_on_nonzero_games": -0.00092,
+   "market_gap_in_support": 0.00964,
+   "market_gap_share_in_support": 0.2438
+  },
+  {
+   "var": "coach: interim diff",
+   "n_nonzero": 96,
+   "coef_all_dev": 0.2725,
+   "slope_on_logit_p": 0.9435,
+   "loso_gain": 0.0002,
+   "loso_ci": [
+    -0.00073,
+    0.00116
+   ],
+   "loso_gain_on_nonzero_games": 0.00497,
+   "market_gap_in_support": 0.04659,
+   "market_gap_share_in_support": 0.1508
+  }
+ ]
+}

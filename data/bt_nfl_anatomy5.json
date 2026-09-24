@@ -1,0 +1,155 @@
+{
+ "k_points_per_epa_by_season": {
+  "2006": 0.776,
+  "2007": 0.779,
+  "2008": 0.783,
+  "2009": 0.783,
+  "2010": 0.784,
+  "2011": 0.785,
+  "2012": 0.79,
+  "2013": 0.791,
+  "2014": 0.793,
+  "2015": 0.794
+ },
+ "variants": [
+  {
+   "var": "M1",
+   "label": "season-to-date PD/g",
+   "n_live": 2157,
+   "corr_r_perp": 0.0355,
+   "corr_r_perp_2013_15": -0.0716,
+   "corr_outcome_resid": 0.0192,
+   "corr_outcome_resid_2013_15": 0.032,
+   "loso_gain_all": 0.00128,
+   "loso_ci_all": [
+    -0.00089,
+    0.00344
+   ],
+   "loso_gain_2013_15": 0.00241,
+   "loso_ci_2013_15": [
+    -0.00138,
+    0.00602
+   ],
+   "coef_all_dev": 0.0202
+  },
+  {
+   "var": "M2",
+   "label": "capped (14) PD/g",
+   "n_live": 2157,
+   "corr_r_perp": 0.0012,
+   "corr_r_perp_2013_15": -0.1382,
+   "corr_outcome_resid": 0.0216,
+   "corr_outcome_resid_2013_15": 0.0253,
+   "loso_gain_all": 0.00157,
+   "loso_ci_all": [
+    -0.00075,
+    0.00381
+   ],
+   "loso_gain_2013_15": 0.00209,
+   "loso_ci_2013_15": [
+    -0.002,
+    0.00609
+   ],
+   "coef_all_dev": 0.033
+  },
+  {
+   "var": "M3",
+   "label": "EWMA capped-21 margin, carry-over",
+   "n_live": 2531,
+   "corr_r_perp": 0.0598,
+   "corr_r_perp_2013_15": -0.0541,
+   "corr_outcome_resid": 0.0149,
+   "corr_outcome_resid_2013_15": 0.0376,
+   "loso_gain_all": 0.00164,
+   "loso_ci_all": [
+    -0.00103,
+    0.00434
+   ],
+   "loso_gain_2013_15": 0.00488,
+   "loso_ci_2013_15": [
+    0.00029,
+    0.00946
+   ],
+   "coef_all_dev": 0.0441
+  },
+  {
+   "var": "M4",
+   "label": "opponent-adjusted PD/g",
+   "n_live": 2157,
+   "corr_r_perp": 0.0819,
+   "corr_r_perp_2013_15": -0.0341,
+   "corr_outcome_resid": 0.0334,
+   "corr_outcome_resid_2013_15": 0.0262,
+   "loso_gain_all": 0.00256,
+   "loso_ci_all": [
+    -0.00038,
+    0.00552
+   ],
+   "loso_gain_2013_15": 0.0023,
+   "loso_ci_2013_15": [
+    -0.00269,
+    0.0071
+   ],
+   "coef_all_dev": 0.0302
+  },
+  {
+   "var": "M5",
+   "label": "NON-EPA margin (margin - k*EPA diff)",
+   "n_live": 2157,
+   "corr_r_perp": 0.1033,
+   "corr_r_perp_2013_15": 0.0364,
+   "corr_outcome_resid": 0.05,
+   "corr_outcome_resid_2013_15": 0.0552,
+   "loso_gain_all": 0.00117,
+   "loso_ci_all": [
+    -0.00093,
+    0.00324
+   ],
+   "loso_gain_2013_15": 0.00169,
+   "loso_ci_2013_15": [
+    -0.00147,
+    0.0048
+   ],
+   "coef_all_dev": 0.0398
+  },
+  {
+   "var": "M6",
+   "label": "EPA-implied margin (k*EPA diff)",
+   "n_live": 2157,
+   "corr_r_perp": 0.0041,
+   "corr_r_perp_2013_15": -0.0958,
+   "corr_outcome_resid": 0.0042,
+   "corr_outcome_resid_2013_15": 0.0171,
+   "loso_gain_all": 0.0002,
+   "loso_ci_all": [
+    -0.00109,
+    0.00148
+   ],
+   "loso_gain_2013_15": 0.00103,
+   "loso_ci_2013_15": [
+    -0.00098,
+    0.00298
+   ],
+   "coef_all_dev": 0.013
+  }
+ ],
+ "joint_M5_M6": {
+  "loso_gain": 0.00151,
+  "ci": [
+   -0.00099,
+   0.00401
+  ],
+  "coefs_all_dev": [
+   0.0641,
+   0.7874,
+   0.0416,
+   0.0144
+  ]
+ },
+ "close_projection_on[1,logit_p,nonEPA,EPAimplied]": [
+  0.1347,
+  0.7057,
+  0.0189,
+  0.0224
+ ]
+}

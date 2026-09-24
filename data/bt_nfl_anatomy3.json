@@ -1,0 +1,460 @@
+{
+ "qd_reproduction_max_abs_err": 4.992334174530599e-07,
+ "H1_one_side_in_flux": {
+  "n": 999,
+  "r_oriented_on_dq": {
+   "slope": 0.3938,
+   "t": 1.1,
+   "corr": 0.0365,
+   "n": 999
+  },
+  "outcome_resid_oriented_on_dq": {
+   "slope": 0.1316,
+   "t": 0.35,
+   "corr": 0.0113,
+   "n": 999
+  },
+  "mean_dq": -0.005,
+  "sd_dq": 0.0398
+ },
+ "H1_slices_by_dq": {
+  "quartiles": [
+   -0.0303,
+   -0.0049,
+   0.0217
+  ],
+  "slices": [
+   {
+    "slice": "big downgrade (dq <= q25)",
+    "n": 250,
+    "model_ll": 0.65166,
+    "market_ll": 0.62215,
+    "gap": 0.02951,
+    "gap_ci": [
+     0.00415,
+     0.05516
+    ],
+    "sig": "market SIG better",
+    "share_of_gap": 0.2488,
+    "n_share": 0.0988,
+    "mean_abs_disagree_prob": 0.0727,
+    "mean_r_logit": -0.0366,
+    "bias_model": -0.0031,
+    "bias_market": 0.0042
+   },
+   {
+    "slice": "mild downgrade (q25,q50]",
+    "n": 250,
+    "model_ll": 0.62444,
+    "market_ll": 0.60706,
+    "gap": 0.01738,
+    "gap_ci": [
+     -0.00754,
+     0.04389
+    ],
+    "sig": "n.s.",
+    "share_of_gap": 0.1465,
+    "n_share": 0.0988,
+    "mean_abs_disagree_prob": 0.0667,
+    "mean_r_logit": 0.0137,
+    "bias_model": -0.0144,
+    "bias_market": -0.0178
+   },
+   {
+    "slice": "mild change (q50,q75]",
+    "n": 249,
+    "model_ll": 0.58815,
+    "market_ll": 0.57229,
+    "gap": 0.01586,
+    "gap_ci": [
+     -0.00672,
+     0.03806
+    ],
+    "sig": "n.s.",
+    "share_of_gap": 0.1332,
+    "n_share": 0.0984,
+    "mean_abs_disagree_prob": 0.0664,
+    "mean_r_logit": -0.0247,
+    "bias_model": -0.0656,
+    "bias_market": -0.0618
+   },
+   {
+    "slice": "upgrade/near-equal (dq > q75)",
+    "n": 250,
+    "model_ll": 0.61692,
+    "market_ll": 0.59308,
+    "gap": 0.02384,
+    "gap_ci": [
+     0.0011,
+     0.04632
+    ],
+    "sig": "market SIG better",
+    "share_of_gap": 0.201,
+    "n_share": 0.0988,
+    "mean_abs_disagree_prob": 0.0705,
+    "mean_r_logit": -0.0199,
+    "bias_model": 0.0139,
+    "bias_market": 0.0183
+   }
+  ]
+ },
+ "H1_slices_by_stint": [
+  {
+   "slice": "first start of stint",
+   "n": 270,
+   "model_ll": 0.60972,
+   "market_ll": 0.58916,
+   "gap": 0.02056,
+   "gap_ci": [
+    -0.00481,
+    0.04684
+   ],
+   "sig": "n.s.",
+   "share_of_gap": 0.1872,
+   "n_share": 0.1067,
+   "mean_abs_disagree_prob": 0.0749,
+   "mean_r_logit": -0.0831,
+   "bias_model": -0.0421,
+   "bias_market": -0.0252
+  },
+  {
+   "slice": "starts 2-4 of stint",
+   "n": 460,
+   "model_ll": 0.62496,
+   "market_ll": 0.59879,
+   "gap": 0.02617,
+   "gap_ci": [
+    0.00878,
+    0.04383
+   ],
+   "sig": "market SIG better",
+   "share_of_gap": 0.4059,
+   "n_share": 0.1817,
+   "mean_abs_disagree_prob": 0.0687,
+   "mean_r_logit": -0.0035,
+   "bias_model": -0.0122,
+   "bias_market": -0.0123
+  },
+  {
+   "slice": "starts 5+ of stint (still non-estab)",
+   "n": 269,
+   "model_ll": 0.62303,
+   "market_ll": 0.608,
+   "gap": 0.01503,
+   "gap_ci": [
+    -0.00573,
+    0.03535
+   ],
+   "sig": "n.s.",
+   "share_of_gap": 0.1363,
+   "n_share": 0.1063,
+   "mean_abs_disagree_prob": 0.064,
+   "mean_r_logit": 0.0268,
+   "bias_model": -0.001,
+   "bias_market": -0.0066
+  }
+ ],
+ "H2_low_evidence_in_flux": {
+  "n": 905,
+  "r_oriented_on_raw_minus_shrunk": {
+   "slope": -0.1245,
+   "t": -1.28,
+   "corr": -0.0412,
+   "n": 905
+  },
+  "outcome_resid_on_raw_minus_shrunk": {
+   "slope": -0.0666,
+   "t": -0.62,
+   "corr": -0.0204,
+   "n": 905
+  },
+  "r_oriented_on_raw_rate": {
+   "slope": -0.1145,
+   "t": -1.35,
+   "corr": -0.043,
+   "n": 905
+  },
+  "outcome_resid_on_raw_rate": {
+   "slope": -0.0481,
+   "t": -0.51,
+   "corr": -0.0167,
+   "n": 905
+  }
+ },
+ "H2_all_games_diff": {
+  "r_on_(raw-shrunk)_diff": {
+   "slope": -0.1376,
+   "t": -2.96,
+   "corr": -0.0597,
+   "n": 2531
+  },
+  "outcome_resid_on_(raw-shrunk)_diff": {
+   "slope": -0.0207,
+   "t": -0.42,
+   "corr": -0.008,
+   "n": 2531
+  }
+ },
+ "H1_all_games": {
+  "r_on_mismatch_diff": {
+   "slope": 0.5183,
+   "t": 1.72,
+   "corr": 0.0368,
+   "n": 2531
+  },
+  "outcome_resid_on_mismatch_diff": {
+   "slope": 0.2503,
+   "t": 0.81,
+   "corr": 0.0159,
+   "n": 2531
+  },
+  "outcome_offset_logit": {
+   "coef": 1.165,
+   "t": 0.8,
+   "loso_gain": -0.00031,
+   "loso_ci": [
+    -0.00103,
+    0.0004
+   ],
+   "blend_qd_coef_note": "compare with qd's own blend coefficient (data/bt_nfl_anatomy_coefs.json col qd)"
+  }
+ },
+ "market_projection_logit_close_on[1,mismatch,qd,logit_p]": [
+  0.0807,
+  0.436,
+  0.9197,
+  0.86
+ ],
+ "outcome_offset_on[1,mismatch,qd]": [
+  -0.013,
+  1.1804,
+  -0.0274
+ ],
+ "shipped_qd_coef_by_season": {
+  "2006": 5.26342,
+  "2007": 6.5127,
+  "2008": 6.6623,
+  "2009": 6.01689,
+  "2010": 6.04492,
+  "2011": 6.02814,
+  "2012": 6.68403,
+  "2013": 7.31878,
+  "2014": 6.55488,
+  "2015": 6.54752
+ },
+ "shipped_lgt_coef_by_season": {
+  "2006": 0.45714,
+  "2007": 0.4822,
+  "2008": 0.58212,
+  "2009": 0.58983,
+  "2010": 0.57178,
+  "2011": 0.47109,
+  "2012": 0.43528,
+  "2013": 0.36079,
+  "2014": 0.31023,
+  "2015": 0.3588
+ },
+ "interplay": {
+  "cells": [
+   {
+    "slice": "flux & PD-extreme",
+    "n": 478,
+    "model_ll": 0.6323,
+    "market_ll": 0.60212,
+    "gap": 0.03019,
+    "gap_ci": [
+     0.00998,
+     0.05069
+    ],
+    "sig": "market SIG better",
+    "share_of_gap": 0.4866,
+    "n_share": 0.1889,
+    "mean_abs_disagree_prob": 0.0817,
+    "mean_r_logit": 0.0417,
+    "bias_model": 0.0289,
+    "bias_market": 0.0203
+   },
+   {
+    "slice": "flux & not PD-extreme",
+    "n": 814,
+    "model_ll": 0.62027,
+    "market_ll": 0.61094,
+    "gap": 0.00933,
+    "gap_ci": [
+     -0.00247,
+     0.02094
+    ],
+    "sig": "n.s.",
+    "share_of_gap": 0.2561,
+    "n_share": 0.3216,
+    "mean_abs_disagree_prob": 0.0623,
+    "mean_r_logit": 0.0216,
+    "bias_model": -0.0044,
+    "bias_market": -0.0095
+   },
+   {
+    "slice": "stable & PD-extreme",
+    "n": 386,
+    "model_ll": 0.63408,
+    "market_ll": 0.60921,
+    "gap": 0.02487,
+    "gap_ci": [
+     0.00308,
+     0.04663
+    ],
+    "sig": "market SIG better",
+    "share_of_gap": 0.3237,
+    "n_share": 0.1525,
+    "mean_abs_disagree_prob": 0.0797,
+    "mean_r_logit": 0.0438,
+    "bias_model": -0.0493,
+    "bias_market": -0.0597
+   },
+   {
+    "slice": "stable & not PD-extreme",
+    "n": 853,
+    "model_ll": 0.61265,
+    "market_ll": 0.61496,
+    "gap": -0.00231,
+    "gap_ci": [
+     -0.01373,
+     0.00924
+    ],
+    "sig": "n.s.",
+    "share_of_gap": -0.0663,
+    "n_share": 0.337,
+    "mean_abs_disagree_prob": 0.0636,
+    "mean_r_logit": 0.0434,
+    "bias_model": 0.0024,
+    "bias_market": -0.0075
+   }
+  ],
+  "contrast_flux_vs_stable": {
+   "diff": 0.01089,
+   "ci": [
+    -0.00386,
+    0.02568
+   ]
+  },
+  "contrast_flux_vs_stable_within_notPD": {
+   "diff": 0.01164,
+   "ci": [
+    -0.00446,
+    0.02814
+   ]
+  },
+  "contrast_PDext_vs_not": {
+   "diff": 0.02801,
+   "ci": [
+    0.01103,
+    0.04575
+   ]
+  },
+  "contrast_PDext_vs_not_within_stable": {
+   "diff": 0.03075,
+   "ci": [
+    0.00664,
+    0.05599
+   ]
+  },
+  "contrast_wk1_2_vs_rest": {
+   "diff": 0.01836,
+   "ci": [
+    -0.00691,
+    0.04387
+   ]
+  },
+  "budget_margin_first": [
+   {
+    "slice": "margin extreme 40%",
+    "n": 864,
+    "model_ll": 0.6331,
+    "market_ll": 0.60529,
+    "gap": 0.02781,
+    "gap_ci": [
+     0.01302,
+     0.0428
+    ],
+    "sig": "market SIG better",
+    "share_of_gap": 0.8102,
+    "n_share": 0.3414,
+    "mean_abs_disagree_prob": 0.0808,
+    "mean_r_logit": 0.0426,
+    "bias_model": -0.006,
+    "bias_market": -0.0154
+   },
+   {
+    "slice": "QB flux",
+    "n": 814,
+    "model_ll": 0.62027,
+    "market_ll": 0.61094,
+    "gap": 0.00933,
+    "gap_ci": [
+     -0.00231,
+     0.02119
+    ],
+    "sig": "n.s.",
+    "share_of_gap": 0.2561,
+    "n_share": 0.3216,
+    "mean_abs_disagree_prob": 0.0623,
+    "mean_r_logit": 0.0216,
+    "bias_model": -0.0044,
+    "bias_market": -0.0095
+   },
+   {
+    "slice": "weeks 1-2",
+    "n": 115,
+    "model_ll": 0.61337,
+    "market_ll": 0.57407,
+    "gap": 0.0393,
+    "gap_ci": [
+     0.00891,
+     0.06859
+    ],
+    "sig": "market SIG better",
+    "share_of_gap": 0.1524,
+    "n_share": 0.0454,
+    "mean_abs_disagree_prob": 0.0694,
+    "mean_r_logit": 0.082,
+    "bias_model": 0.1118,
+    "bias_market": 0.0957
+   },
+   {
+    "slice": "playoffs",
+    "n": 65,
+    "model_ll": 0.62983,
+    "market_ll": 0.60388,
+    "gap": 0.02595,
+    "gap_ci": [
+     -0.01194,
+     0.06487
+    ],
+    "sig": "n.s.",
+    "share_of_gap": 0.0569,
+    "n_share": 0.0257,
+    "mean_abs_disagree_prob": 0.0695,
+    "mean_r_logit": 0.0412,
+    "bias_model": 0.0304,
+    "bias_market": 0.022
+   },
+   {
+    "slice": "remainder",
+    "n": 673,
+    "model_ll": 0.61087,
+    "market_ll": 0.62302,
+    "gap": -0.01214,
+    "gap_ci": [
+     -0.02556,
+     0.00118
+    ],
+    "sig": "n.s.",
+    "share_of_gap": -0.2756,
+    "n_share": 0.2659,
+    "mean_abs_disagree_prob": 0.0621,
+    "mean_r_logit": 0.037,
+    "bias_model": -0.0191,
+    "bias_market": -0.0279
+   }
+  ]
+ }
+}
