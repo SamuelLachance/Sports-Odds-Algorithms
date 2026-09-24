@@ -56,14 +56,17 @@ jobs:
                   data/season_2026_lines.json data/opening_odds_2026.json \
                   data/mlb_pred_ledger.json
           # NHL incremental state from phase0/nhl_update.py plus the re-served
-          # payload. The serve runs here every 4h (numpy installed above); the
+          # payload and the caches the serve just refreshed (rosters, stats,
+          # standings, career, schedule via phase0/nhl_site_fetch.py). Committing
+          # the payload without the roster cache it was built from left the repo
+          # inconsistent (payload players != committed on_roster set). The serve runs here every 4h (numpy installed above); the
           # pre-game freeze ledger must be committed with it, or the next run
           # would grade played games against replays instead of the numbers
           # published before puck drop.
           #
           # add-only-existing: the lineup archive appears only on NHL game days,
           # and upcoming is absent before the first in-season run.
-          for f in data/nhl_lineup_archive.jsonl data/nhl_games.csv                    data/nhl_upcoming.json site/data/nhl.json                    data/nhl_hp_ledger.json; do
+          for f in data/nhl_lineup_archive.jsonl data/nhl_games.csv                    data/nhl_upcoming.json site/data/nhl.json                    data/nhl_hp_ledger.json data/nhl_player_names.json                    data/nhl_site_standings.json data/nhl_site_career.json                    data/nhl_site_stats_*.json data/nhl_schedule_*.json; do
             if [ -f "$f" ]; then git add "$f"; fi
           done
           # NFL finals attached by phase0/nfl_results_attach.py (scores,
