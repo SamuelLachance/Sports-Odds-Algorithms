@@ -1,0 +1,76 @@
+{
+ "n_dev": 7929,
+ "folds": [
+  20112012,
+  20122013,
+  20132014,
+  20142015,
+  20152016,
+  20162017,
+  20172018
+ ],
+ "bar": 0.001,
+ "rows": {
+  "RAW": {
+   "dev_ll": 0.67239,
+   "delta_vs_raw": 0.0,
+   "ci": [
+    0.0,
+    0.0
+   ],
+   "clears_bar": false,
+   "verdict": "n.s."
+  },
+  "ADJ": {
+   "dev_ll": 0.67245,
+   "delta_vs_raw": -6e-05,
+   "ci": [
+    -0.00016,
+    4e-05
+   ],
+   "clears_bar": false,
+   "verdict": "n.s."
+  },
+  "EV": {
+   "dev_ll": 0.67226,
+   "delta_vs_raw": 0.00013,
+   "ci": [
+    -0.00093,
+    0.00119
+   ],
+   "clears_bar": false,
+   "verdict": "n.s."
+  },
+  "ADJEV": {
+   "dev_ll": 0.6723,
+   "delta_vs_raw": 9e-05,
+   "ci": [
+    -0.00094,
+    0.00113
+   ],
+   "clears_bar": false,
+   "verdict": "n.s."
+  },
+  "SPLIT": {
+   "dev_ll": 0.67245,
+   "delta_vs_raw": -5e-05,
+   "ci": [
+    -0.00056,
+    0.00044
+   ],
+   "clears_bar": false,
+   "verdict": "n.s."
+  },
+  "SPLITADJ": {
+   "dev_ll": 0.67246,
+   "delta_vs_raw": -7e-05,
+   "ci": [
+    -0.00058,
+    0.00044
+   ],
+   "clears_bar": false,
+   "verdict": "n.s."
+  }
+ },
+ "earns_test_look": null
+}

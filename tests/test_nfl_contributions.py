@@ -32,7 +32,7 @@ ROOT = Path(__file__).resolve().parents[1]
 NFL_JSON = ROOT / "site" / "data" / "nfl.json"
 
 # the nine groups nfl_season_serve.py emits (features are pooled into these)
-CT_KEYS = {"elo", "qb", "units", "sched", "hfa", "luck", "ts", "abs", "roster"}
+CT_KEYS = {"elo", "qb", "units", "sched", "hfa", "luck", "ts", "abs", "roster", "avail"}
 
 
 def _games():

@@ -1,0 +1,86 @@
+{
+ "n_dev": 7929,
+ "folds": [
+  20112012,
+  20122013,
+  20132014,
+  20142015,
+  20152016,
+  20162017,
+  20172018
+ ],
+ "bar": 0.001,
+ "rows": {
+  "SHIPPED": {
+   "dev_ll": 0.67239,
+   "delta": 0.0,
+   "ci": [
+    0.0,
+    0.0
+   ],
+   "clears_bar": false,
+   "verdict": "n.s."
+  },
+  "NONLIN": {
+   "dev_ll": 0.6726,
+   "delta": -0.00021,
+   "ci": [
+    -0.00043,
+    0.0
+   ],
+   "clears_bar": false,
+   "verdict": "n.s."
+  },
+  "EARLY": {
+   "dev_ll": 0.67263,
+   "delta": -0.00024,
+   "ci": [
+    -0.00046,
+    -2e-05
+   ],
+   "clears_bar": false,
+   "verdict": "SIG WORSE"
+  },
+  "OT_RATE": {
+   "dev_ll": 0.67237,
+   "delta": 2e-05,
+   "ci": [
+    -0.00035,
+    0.0004
+   ],
+   "clears_bar": false,
+   "verdict": "n.s."
+  },
+  "DENSITY": {
+   "dev_ll": 0.67259,
+   "delta": -0.0002,
+   "ci": [
+    -0.00032,
+    -7e-05
+   ],
+   "clears_bar": false,
+   "verdict": "SIG WORSE"
+  },
+  "TRIP": {
+   "dev_ll": 0.6725,
+   "delta": -0.0001,
+   "ci": [
+    -0.00024,
+    3e-05
+   ],
+   "clears_bar": false,
+   "verdict": "n.s."
+  },
+  "ALL": {
+   "dev_ll": 0.6732,
+   "delta": -0.0008,
+   "ci": [
+    -0.00132,
+    -0.00029
+   ],
+   "clears_bar": false,
+   "verdict": "SIG WORSE"
+  }
+ },
+ "earns_test_look": null
+}
