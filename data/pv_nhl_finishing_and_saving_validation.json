@@ -1,0 +1,2228 @@
+{
+ "component": "nhl finishing_and_saving",
+ "params": {
+  "G": [
+   0.07,
+   1.0,
+   0.45
+  ],
+  "F": [
+   0.16,
+   0.999,
+   1.0
+  ],
+  "D": [
+   0.1,
+   1.0,
+   1.0
+  ],
+  "TO": [
+   0.05,
+   1.0,
+   1.0
+  ],
+  "TD": [
+   0.03,
+   1.0,
+   0.8
+  ],
+  "RK": [
+   0.08,
+   1.0,
+   1.0
+  ]
+ },
+ "dev_only": true,
+ "test_seasons_touched": 0,
+ "n_dev_shots": 842861,
+ "n_dev_player_games": 403018,
+ "R_reliability": {
+  "goalie": {
+   "split_half": {
+    "min_xg_25": {
+     "n": 364,
+     "raw": {
+      "r": 0.2101,
+      "ci95": [
+       0.11,
+       0.306
+      ],
+      "r_w": 0.2329
+     },
+     "rc": {
+      "r": 0.2044,
+      "ci95": [
+       0.104,
+       0.301
+      ],
+      "r_w": 0.2288
+     },
+     "adj": {
+      "r": 0.2662,
+      "ci95": [
+       0.168,
+       0.359
+      ],
+      "r_w": 0.2959
+     },
+     "adj_ctx": {
+      "r": 0.2462,
+      "ci95": [
+       0.147,
+       0.34
+      ],
+      "r_w": 0.2741
+     }
+    },
+    "min_xg_50": {
+     "n": 199,
+     "raw": {
+      "r": 0.2469,
+      "ci95": [
+       0.112,
+       0.373
+      ],
+      "r_w": 0.2563
+     },
+     "rc": {
+      "r": 0.2453,
+      "ci95": [
+       0.11,
+       0.372
+      ],
+      "r_w": 0.2551
+     },
+     "adj": {
+      "r": 0.2826,
+      "ci95": [
+       0.149,
+       0.406
+      ],
+      "r_w": 0.2949
+     },
+     "adj_ctx": {
+      "r": 0.2589,
+      "ci95": [
+       0.124,
+       0.384
+      ],
+      "r_w": 0.2698
+     }
+    }
+   },
+   "year_over_year": {
+    "min_xg_50": {
+     "n": 262,
+     "raw": {
+      "r": 0.1152,
+      "ci95": [
+       -0.006,
+       0.233
+      ],
+      "r_w": 0.12
+     },
+     "rc": {
+      "r": 0.1132,
+      "ci95": [
+       -0.008,
+       0.231
+      ],
+      "r_w": 0.1206
+     },
+     "adj": {
+      "r": 0.1367,
+      "ci95": [
+       0.016,
+       0.254
+      ],
+      "r_w": 0.1513
+     },
+     "adj_ctx": {
+      "r": 0.0966,
+      "ci95": [
+       -0.025,
+       0.215
+      ],
+      "r_w": 0.1025
+     }
+    },
+    "min_xg_100": {
+     "n": 129,
+     "raw": {
+      "r": 0.1936,
+      "ci95": [
+       0.021,
+       0.355
+      ],
+      "r_w": 0.1827
+     },
+     "rc": {
+      "r": 0.1955,
+      "ci95": [
+       0.023,
+       0.356
+      ],
+      "r_w": 0.1862
+     },
+     "adj": {
+      "r": 0.2018,
+      "ci95": [
+       0.03,
+       0.362
+      ],
+      "r_w": 0.1951
+     },
+     "adj_ctx": {
+      "r": 0.1317,
+      "ci95": [
+       -0.042,
+       0.298
+      ],
+      "r_w": 0.1236
+     }
+    }
+   },
+   "year_over_year_changed_team": {
+    "min_xg_50": {
+     "n": 45,
+     "raw": {
+      "r": -0.0706,
+      "ci95": [
+       -0.357,
+       0.228
+      ],
+      "r_w": -0.1067
+     },
+     "rc": {
+      "r": -0.068,
+      "ci95": [
+       -0.354,
+       0.23
+      ],
+      "r_w": -0.1144
+     },
+     "adj": {
+      "r": -0.1131,
+      "ci95": [
+       -0.394,
+       0.187
+      ],
+      "r_w": -0.1575
+     },
+     "adj_ctx": {
+      "r": -0.12,
+      "ci95": [
+       -0.4,
+       0.18
+      ],
+      "r_w": -0.1648
+     }
+    }
+   },
+   "year_over_year_same_team": {
+    "min_xg_50": {
+     "n": 217,
+     "raw": {
+      "r": 0.1547,
+      "ci95": [
+       0.022,
+       0.282
+      ],
+      "r_w": 0.1607
+     },
+     "rc": {
+      "r": 0.1524,
+      "ci95": [
+       0.02,
+       0.28
+      ],
+      "r_w": 0.1629
+     },
+     "adj": {
+      "r": 0.1789,
+      "ci95": [
+       0.047,
+       0.305
+      ],
+      "r_w": 0.1913
+     },
+     "adj_ctx": {
+      "r": 0.1384,
+      "ci95": [
+       0.005,
+       0.267
+      ],
+      "r_w": 0.1428
+     }
+    }
+   },
+   "teammate_goalies_same_season": {
+    "n_pairs": 225,
+    "raw": {
+     "r": 0.1391,
+     "ci95": [
+      0.009,
+      0.265
+     ]
+    },
+    "rc": {
+     "r": 0.1258,
+     "ci95": [
+      -0.005,
+      0.252
+     ]
+    },
+    "adj": {
+     "r": 0.1432,
+     "ci95": [
+      0.013,
+      0.269
+     ]
+    },
+    "adj_ctx": {
+     "r": 0.0105,
+     "ci95": [
+      -0.12,
+      0.141
+     ]
+    }
+   },
+   "implied_EB_K_xg_from_split_half_rc": {
+    "r": 0.2044,
+    "median_half_xg": 59.5,
+    "K": 231.6
+   }
+  },
+  "shooter": {
+   "split_half": {
+    "min_xg_3": {
+     "n": 2847,
+     "raw": {
+      "r": 0.1473,
+      "ci95": [
+       0.111,
+       0.183
+      ],
+      "r_w": 0.145
+     },
+     "rc": {
+      "r": 0.142,
+      "ci95": [
+       0.106,
+       0.178
+      ],
+      "r_w": 0.1403
+     },
+     "adj": {
+      "r": 0.152,
+      "ci95": [
+       0.116,
+       0.188
+      ],
+      "r_w": 0.1522
+     },
+     "adj_ctx": {
+      "r": 0.1397,
+      "ci95": [
+       0.103,
+       0.176
+      ],
+      "r_w": 0.138
+     }
+    },
+    "min_xg_6": {
+     "n": 1427,
+     "raw": {
+      "r": 0.1276,
+      "ci95": [
+       0.076,
+       0.178
+      ],
+      "r_w": 0.1313
+     },
+     "rc": {
+      "r": 0.1224,
+      "ci95": [
+       0.071,
+       0.173
+      ],
+      "r_w": 0.1271
+     },
+     "adj": {
+      "r": 0.1389,
+      "ci95": [
+       0.088,
+       0.189
+      ],
+      "r_w": 0.1413
+     },
+     "adj_ctx": {
+      "r": 0.1226,
+      "ci95": [
+       0.071,
+       0.173
+      ],
+      "r_w": 0.1238
+     }
+    }
+   },
+   "year_over_year": {
+    "min_xg_5": {
+     "n": 2350,
+     "raw": {
+      "r": 0.2001,
+      "ci95": [
+       0.161,
+       0.239
+      ],
+      "r_w": 0.2194
+     },
+     "rc": {
+      "r": 0.1918,
+      "ci95": [
+       0.153,
+       0.23
+      ],
+      "r_w": 0.2126
+     },
+     "adj": {
+      "r": 0.2397,
+      "ci95": [
+       0.201,
+       0.277
+      ],
+      "r_w": 0.2663
+     },
+     "adj_ctx": {
+      "r": 0.2307,
+      "ci95": [
+       0.192,
+       0.269
+      ],
+      "r_w": 0.2584
+     }
+    },
+    "min_xg_10": {
+     "n": 1292,
+     "raw": {
+      "r": 0.2294,
+      "ci95": [
+       0.177,
+       0.28
+      ],
+      "r_w": 0.2406
+     },
+     "rc": {
+      "r": 0.2201,
+      "ci95": [
+       0.168,
+       0.271
+      ],
+      "r_w": 0.2333
+     },
+     "adj": {
+      "r": 0.2423,
+      "ci95": [
+       0.19,
+       0.293
+      ],
+      "r_w": 0.2663
+     },
+     "adj_ctx": {
+      "r": 0.2326,
+      "ci95": [
+       0.18,
+       0.284
+      ],
+      "r_w": 0.2568
+     }
+    }
+   },
+   "year_over_year_changed_team": {
+    "min_xg_5": {
+     "n": 449,
+     "raw": {
+      "r": 0.1009,
+      "ci95": [
+       0.008,
+       0.192
+      ],
+      "r_w": 0.1114
+     },
+     "rc": {
+      "r": 0.0886,
+      "ci95": [
+       -0.004,
+       0.18
+      ],
+      "r_w": 0.099
+     },
+     "adj": {
+      "r": 0.0968,
+      "ci95": [
+       0.004,
+       0.188
+      ],
+      "r_w": 0.099
+     },
+     "adj_ctx": {
+      "r": 0.1069,
+      "ci95": [
+       0.015,
+       0.198
+      ],
+      "r_w": 0.1148
+     }
+    }
+   },
+   "year_over_year_same_team": {
+    "min_xg_5": {
+     "n": 1901,
+     "raw": {
+      "r": 0.2247,
+      "ci95": [
+       0.182,
+       0.267
+      ],
+      "r_w": 0.2418
+     },
+     "rc": {
+      "r": 0.2178,
+      "ci95": [
+       0.175,
+       0.26
+      ],
+      "r_w": 0.2363
+     },
+     "adj": {
+      "r": 0.269,
+      "ci95": [
+       0.227,
+       0.31
+      ],
+      "r_w": 0.2925
+     },
+     "adj_ctx": {
+      "r": 0.2568,
+      "ci95": [
+       0.214,
+       0.298
+      ],
+      "r_w": 0.2812
+     }
+    }
+   },
+   "implied_EB_K_xg_from_split_half_rc": {
+    "r": 0.142,
+    "median_half_xg": 6.7,
+    "K": 40.5
+   }
+  }
+ },
+ "shooter_EB_K_used_xg": 40.5,
+ "P1_shot_level_prequential": {
+  "all_dev_2011_18": {
+   "_n_shots": 731888,
+   "_n_games": 8757,
+   "moneypuck_xg": {
+    "ll": 0.1893092,
+    "gain_vs_base_nats": -68.4,
+    "ci95": [
+     -87.6,
+     -48.6
+    ]
+   },
+   "recalibrated (base)": {
+    "ll": 0.1892158,
+    "gain_vs_base_nats": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "rc+goalie raw career GSAx": {
+    "ll": 0.189369,
+    "gain_vs_base_nats": -112.1,
+    "ci95": [
+     -158.3,
+     -67.8
+    ]
+   },
+   "rc+goalie EB GSAx (round-1, MoneyPuck xG)": {
+    "ll": 0.189186,
+    "gain_vs_base_nats": 21.8,
+    "ci95": [
+     11.5,
+     32.4
+    ]
+   },
+   "rc+goalie EB GSAx (recal xG)": {
+    "ll": 0.1891849,
+    "gain_vs_base_nats": 22.7,
+    "ci95": [
+     12.5,
+     33.0
+    ]
+   },
+   "rc+goalie 1v1": {
+    "ll": 0.1891823,
+    "gain_vs_base_nats": 24.5,
+    "ci95": [
+     11.2,
+     37.9
+    ]
+   },
+   "rc+shooter raw career": {
+    "ll": 0.1911513,
+    "gain_vs_base_nats": -1416.5,
+    "ci95": [
+     -1565.8,
+     -1272.3
+    ]
+   },
+   "rc+shooter EB": {
+    "ll": 0.1890062,
+    "gain_vs_base_nats": 153.4,
+    "ci95": [
+     121.1,
+     187.1
+    ]
+   },
+   "rc+shooter 1v1": {
+    "ll": 0.1890196,
+    "gain_vs_base_nats": 143.6,
+    "ci95": [
+     110.0,
+     178.5
+    ]
+   },
+   "rc+shooter EB+goalie EB": {
+    "ll": 0.1889679,
+    "gain_vs_base_nats": 181.5,
+    "ci95": [
+     149.1,
+     215.5
+    ]
+   },
+   "rc+shooter 1v1+goalie 1v1": {
+    "ll": 0.1889707,
+    "gain_vs_base_nats": 179.4,
+    "ci95": [
+     144.8,
+     215.1
+    ]
+   },
+   "context (rc+team+rink)": {
+    "ll": 0.1890915,
+    "gain_vs_base_nats": 91.0,
+    "ci95": [
+     61.4,
+     120.5
+    ]
+   },
+   "context+goalie EB GSAx (ctx xG)": {
+    "ll": 0.1890753,
+    "gain_vs_base_nats": 102.8,
+    "ci95": [
+     70.5,
+     134.5
+    ]
+   },
+   "context+goalie 1v1": {
+    "ll": 0.1890747,
+    "gain_vs_base_nats": 103.3,
+    "ci95": [
+     69.5,
+     137.2
+    ]
+   },
+   "context+shooter EB (ctx xG)": {
+    "ll": 0.1889058,
+    "gain_vs_base_nats": 226.9,
+    "ci95": [
+     182.7,
+     270.8
+    ]
+   },
+   "context+shooter 1v1": {
+    "ll": 0.1889001,
+    "gain_vs_base_nats": 231.1,
+    "ci95": [
+     186.0,
+     276.7
+    ]
+   },
+   "context+EB+EB": {
+    "ll": 0.1888834,
+    "gain_vs_base_nats": 243.3,
+    "ci95": [
+     198.0,
+     288.1
+    ]
+   },
+   "FULL 1v1 (context+shooter+goalie)": {
+    "ll": 0.1888678,
+    "gain_vs_base_nats": 254.7,
+    "ci95": [
+     208.9,
+     301.8
+    ]
+   },
+   "PAIR rc+goalie 1v1  vs  rc+goalie EB GSAx (recal xG)": {
+    "gain_nats": 1.9,
+    "ci95": [
+     -6.7,
+     10.4
+    ]
+   },
+   "PAIR rc+shooter 1v1  vs  rc+shooter EB": {
+    "gain_nats": -9.9,
+    "ci95": [
+     -20.9,
+     1.3
+    ]
+   },
+   "PAIR rc+shooter 1v1+goalie 1v1  vs  rc+shooter EB+goalie EB": {
+    "gain_nats": -2.0,
+    "ci95": [
+     -15.6,
+     11.9
+    ]
+   },
+   "PAIR context+goalie 1v1  vs  context+goalie EB GSAx (ctx xG)": {
+    "gain_nats": 0.4,
+    "ci95": [
+     -7.3,
+     8.0
+    ]
+   },
+   "PAIR context+goalie 1v1  vs  context (rc+team+rink)": {
+    "gain_nats": 12.3,
+    "ci95": [
+     -0.7,
+     25.7
+    ]
+   },
+   "PAIR FULL 1v1 (context+shooter+goalie)  vs  context+EB+EB": {
+    "gain_nats": 11.4,
+    "ci95": [
+     1.0,
+     22.3
+    ]
+   },
+   "PAIR FULL 1v1 (context+shooter+goalie)  vs  context+shooter 1v1": {
+    "gain_nats": 23.6,
+    "ci95": [
+     10.5,
+     37.1
+    ]
+   },
+   "PAIR context (rc+team+rink)  vs  recalibrated (base)": {
+    "gain_nats": 91.0,
+    "ci95": [
+     61.4,
+     120.5
+    ]
+   }
+  },
+  "tune_2011_15": {
+   "_n_shots": 393541,
+   "_n_games": 4764,
+   "moneypuck_xg": {
+    "ll": 0.1878251,
+    "gain_vs_base_nats": -23.8,
+    "ci95": [
+     -36.0,
+     -11.6
+    ]
+   },
+   "recalibrated (base)": {
+    "ll": 0.1877646,
+    "gain_vs_base_nats": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "rc+goalie raw career GSAx": {
+    "ll": 0.1879393,
+    "gain_vs_base_nats": -68.7,
+    "ci95": [
+     -106.1,
+     -33.3
+    ]
+   },
+   "rc+goalie EB GSAx (round-1, MoneyPuck xG)": {
+    "ll": 0.1877257,
+    "gain_vs_base_nats": 15.3,
+    "ci95": [
+     8.0,
+     22.7
+    ]
+   },
+   "rc+goalie EB GSAx (recal xG)": {
+    "ll": 0.1877254,
+    "gain_vs_base_nats": 15.4,
+    "ci95": [
+     7.9,
+     22.9
+    ]
+   },
+   "rc+goalie 1v1": {
+    "ll": 0.1877203,
+    "gain_vs_base_nats": 17.4,
+    "ci95": [
+     7.9,
+     27.1
+    ]
+   },
+   "rc+shooter raw career": {
+    "ll": 0.1899585,
+    "gain_vs_base_nats": -863.4,
+    "ci95": [
+     -972.7,
+     -749.4
+    ]
+   },
+   "rc+shooter EB": {
+    "ll": 0.187575,
+    "gain_vs_base_nats": 74.6,
+    "ci95": [
+     53.1,
+     97.2
+    ]
+   },
+   "rc+shooter 1v1": {
+    "ll": 0.1875994,
+    "gain_vs_base_nats": 65.0,
+    "ci95": [
+     42.4,
+     88.3
+    ]
+   },
+   "rc+shooter EB+goalie EB": {
+    "ll": 0.1875294,
+    "gain_vs_base_nats": 92.6,
+    "ci95": [
+     70.1,
+     116.1
+    ]
+   },
+   "rc+shooter 1v1+goalie 1v1": {
+    "ll": 0.1875423,
+    "gain_vs_base_nats": 87.5,
+    "ci95": [
+     63.9,
+     111.9
+    ]
+   },
+   "context (rc+team+rink)": {
+    "ll": 0.1875994,
+    "gain_vs_base_nats": 65.0,
+    "ci95": [
+     43.8,
+     85.5
+    ]
+   },
+   "context+goalie EB GSAx (ctx xG)": {
+    "ll": 0.1875776,
+    "gain_vs_base_nats": 73.6,
+    "ci95": [
+     50.4,
+     96.8
+    ]
+   },
+   "context+goalie 1v1": {
+    "ll": 0.187573,
+    "gain_vs_base_nats": 75.4,
+    "ci95": [
+     50.9,
+     99.8
+    ]
+   },
+   "context+shooter EB (ctx xG)": {
+    "ll": 0.1874504,
+    "gain_vs_base_nats": 123.7,
+    "ci95": [
+     93.3,
+     154.5
+    ]
+   },
+   "context+shooter 1v1": {
+    "ll": 0.1874511,
+    "gain_vs_base_nats": 123.4,
+    "ci95": [
+     92.5,
+     155.1
+    ]
+   },
+   "context+EB+EB": {
+    "ll": 0.187423,
+    "gain_vs_base_nats": 134.4,
+    "ci95": [
+     102.8,
+     166.4
+    ]
+   },
+   "FULL 1v1 (context+shooter+goalie)": {
+    "ll": 0.1874118,
+    "gain_vs_base_nats": 138.9,
+    "ci95": [
+     105.5,
+     172.2
+    ]
+   },
+   "PAIR rc+goalie 1v1  vs  rc+goalie EB GSAx (recal xG)": {
+    "gain_nats": 2.0,
+    "ci95": [
+     -3.1,
+     7.3
+    ]
+   },
+   "PAIR rc+shooter 1v1  vs  rc+shooter EB": {
+    "gain_nats": -9.6,
+    "ci95": [
+     -16.0,
+     -3.5
+    ]
+   },
+   "PAIR rc+shooter 1v1+goalie 1v1  vs  rc+shooter EB+goalie EB": {
+    "gain_nats": -5.1,
+    "ci95": [
+     -13.4,
+     3.1
+    ]
+   },
+   "PAIR context+goalie 1v1  vs  context+goalie EB GSAx (ctx xG)": {
+    "gain_nats": 1.8,
+    "ci95": [
+     -3.1,
+     7.0
+    ]
+   },
+   "PAIR context+goalie 1v1  vs  context (rc+team+rink)": {
+    "gain_nats": 10.4,
+    "ci95": [
+     1.0,
+     20.1
+    ]
+   },
+   "PAIR FULL 1v1 (context+shooter+goalie)  vs  context+EB+EB": {
+    "gain_nats": 4.4,
+    "ci95": [
+     -2.4,
+     11.1
+    ]
+   },
+   "PAIR FULL 1v1 (context+shooter+goalie)  vs  context+shooter 1v1": {
+    "gain_nats": 15.5,
+    "ci95": [
+     6.0,
+     25.1
+    ]
+   },
+   "PAIR context (rc+team+rink)  vs  recalibrated (base)": {
+    "gain_nats": 65.0,
+    "ci95": [
+     43.8,
+     85.5
+    ]
+   }
+  },
+  "check_2015_18": {
+   "_n_shots": 338347,
+   "_n_games": 3993,
+   "moneypuck_xg": {
+    "ll": 0.1910355,
+    "gain_vs_base_nats": -44.6,
+    "ci95": [
+     -60.5,
+     -29.6
+    ]
+   },
+   "recalibrated (base)": {
+    "ll": 0.1909038,
+    "gain_vs_base_nats": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "rc+goalie raw career GSAx": {
+    "ll": 0.191032,
+    "gain_vs_base_nats": -43.4,
+    "ci95": [
+     -71.2,
+     -16.0
+    ]
+   },
+   "rc+goalie EB GSAx (round-1, MoneyPuck xG)": {
+    "ll": 0.1908846,
+    "gain_vs_base_nats": 6.5,
+    "ci95": [
+     -0.9,
+     14.1
+    ]
+   },
+   "rc+goalie EB GSAx (recal xG)": {
+    "ll": 0.1908823,
+    "gain_vs_base_nats": 7.2,
+    "ci95": [
+     0.4,
+     14.5
+    ]
+   },
+   "rc+goalie 1v1": {
+    "ll": 0.1908828,
+    "gain_vs_base_nats": 7.1,
+    "ci95": [
+     -2.3,
+     16.8
+    ]
+   },
+   "rc+shooter raw career": {
+    "ll": 0.1925386,
+    "gain_vs_base_nats": -553.2,
+    "ci95": [
+     -647.5,
+     -458.9
+    ]
+   },
+   "rc+shooter EB": {
+    "ll": 0.1906708,
+    "gain_vs_base_nats": 78.8,
+    "ci95": [
+     54.8,
+     102.2
+    ]
+   },
+   "rc+shooter 1v1": {
+    "ll": 0.1906715,
+    "gain_vs_base_nats": 78.6,
+    "ci95": [
+     53.6,
+     103.2
+    ]
+   },
+   "rc+shooter EB+goalie EB": {
+    "ll": 0.190641,
+    "gain_vs_base_nats": 88.9,
+    "ci95": [
+     64.6,
+     113.3
+    ]
+   },
+   "rc+shooter 1v1+goalie 1v1": {
+    "ll": 0.190632,
+    "gain_vs_base_nats": 91.9,
+    "ci95": [
+     66.3,
+     117.8
+    ]
+   },
+   "context (rc+team+rink)": {
+    "ll": 0.190827,
+    "gain_vs_base_nats": 26.0,
+    "ci95": [
+     5.8,
+     46.4
+    ]
+   },
+   "context+goalie EB GSAx (ctx xG)": {
+    "ll": 0.1908173,
+    "gain_vs_base_nats": 29.3,
+    "ci95": [
+     8.0,
+     51.5
+    ]
+   },
+   "context+goalie 1v1": {
+    "ll": 0.1908214,
+    "gain_vs_base_nats": 27.9,
+    "ci95": [
+     4.9,
+     51.5
+    ]
+   },
+   "context+shooter EB (ctx xG)": {
+    "ll": 0.1905987,
+    "gain_vs_base_nats": 103.2,
+    "ci95": [
+     71.9,
+     134.1
+    ]
+   },
+   "context+shooter 1v1": {
+    "ll": 0.1905854,
+    "gain_vs_base_nats": 107.7,
+    "ci95": [
+     75.0,
+     139.5
+    ]
+   },
+   "context+EB+EB": {
+    "ll": 0.1905819,
+    "gain_vs_base_nats": 108.9,
+    "ci95": [
+     76.7,
+     141.2
+    ]
+   },
+   "FULL 1v1 (context+shooter+goalie)": {
+    "ll": 0.1905614,
+    "gain_vs_base_nats": 115.8,
+    "ci95": [
+     81.5,
+     149.8
+    ]
+   },
+   "PAIR rc+goalie 1v1  vs  rc+goalie EB GSAx (recal xG)": {
+    "gain_nats": -0.1,
+    "ci95": [
+     -6.6,
+     6.3
+    ]
+   },
+   "PAIR rc+shooter 1v1  vs  rc+shooter EB": {
+    "gain_nats": -0.3,
+    "ci95": [
+     -9.4,
+     8.5
+    ]
+   },
+   "PAIR rc+shooter 1v1+goalie 1v1  vs  rc+shooter EB+goalie EB": {
+    "gain_nats": 3.0,
+    "ci95": [
+     -8.3,
+     13.6
+    ]
+   },
+   "PAIR context+goalie 1v1  vs  context+goalie EB GSAx (ctx xG)": {
+    "gain_nats": -1.4,
+    "ci95": [
+     -7.1,
+     4.4
+    ]
+   },
+   "PAIR context+goalie 1v1  vs  context (rc+team+rink)": {
+    "gain_nats": 1.9,
+    "ci95": [
+     -7.3,
+     11.6
+    ]
+   },
+   "PAIR FULL 1v1 (context+shooter+goalie)  vs  context+EB+EB": {
+    "gain_nats": 6.9,
+    "ci95": [
+     -1.2,
+     15.0
+    ]
+   },
+   "PAIR FULL 1v1 (context+shooter+goalie)  vs  context+shooter 1v1": {
+    "gain_nats": 8.1,
+    "ci95": [
+     -1.2,
+     17.8
+    ]
+   },
+   "PAIR context (rc+team+rink)  vs  recalibrated (base)": {
+    "gain_nats": 26.0,
+    "ci95": [
+     5.8,
+     46.4
+    ]
+   }
+  }
+ },
+ "P2_goalie_frozen_season_start": {
+  "min_xga_40": {
+   "n_goalie_seasons": 394,
+   "p_1v1": {
+    "r_w_vs_real_rc": 0.1029,
+    "ci95": [
+     0.004,
+     0.2
+    ],
+    "r_w_vs_real_ctx": 0.0686,
+    "slope_w": 0.6776,
+    "mse_w_x1e4": 115.4452
+   },
+   "eb_raw": {
+    "r_w_vs_real_rc": 0.1128,
+    "ci95": [
+     0.014,
+     0.209
+    ],
+    "r_w_vs_real_ctx": 0.0307,
+    "slope_w": 0.5185,
+    "mse_w_x1e4": 115.8505
+   },
+   "eb_rc": {
+    "r_w_vs_real_rc": 0.1194,
+    "ci95": [
+     0.021,
+     0.216
+    ],
+    "r_w_vs_real_ctx": 0.0371,
+    "slope_w": 0.5555,
+    "mse_w_x1e4": 115.4443
+   },
+   "eb_ctx": {
+    "r_w_vs_real_rc": 0.1097,
+    "ci95": [
+     0.011,
+     0.206
+    ],
+    "r_w_vs_real_ctx": 0.0742,
+    "slope_w": 0.5821,
+    "mse_w_x1e4": 115.6528
+   },
+   "cum_rc": {
+    "r_w_vs_real_rc": 0.0892,
+    "ci95": [
+     -0.01,
+     0.186
+    ],
+    "r_w_vs_real_ctx": 0.0352,
+    "slope_w": 0.0972,
+    "mse_w_x1e4": 196.9528
+   },
+   "mse_w_x1e4_predict_zero": 118.0972
+  },
+  "min_xga_80": {
+   "n_goalie_seasons": 245,
+   "p_1v1": {
+    "r_w_vs_real_rc": 0.0757,
+    "ci95": [
+     -0.05,
+     0.199
+    ],
+    "r_w_vs_real_ctx": 0.0339,
+    "slope_w": 0.4334,
+    "mse_w_x1e4": 96.8348
+   },
+   "eb_raw": {
+    "r_w_vs_real_rc": 0.0662,
+    "ci95": [
+     -0.06,
+     0.19
+    ],
+    "r_w_vs_real_ctx": -0.0354,
+    "slope_w": 0.2666,
+    "mse_w_x1e4": 97.9642
+   },
+   "eb_rc": {
+    "r_w_vs_real_rc": 0.0772,
+    "ci95": [
+     -0.049,
+     0.201
+    ],
+    "r_w_vs_real_ctx": -0.025,
+    "slope_w": 0.3153,
+    "mse_w_x1e4": 97.2912
+   },
+   "eb_ctx": {
+    "r_w_vs_real_rc": 0.0711,
+    "ci95": [
+     -0.055,
+     0.195
+    ],
+    "r_w_vs_real_ctx": 0.027,
+    "slope_w": 0.3322,
+    "mse_w_x1e4": 97.5372
+   },
+   "cum_rc": {
+    "r_w_vs_real_rc": 0.0523,
+    "ci95": [
+     -0.074,
+     0.176
+    ],
+    "r_w_vs_real_ctx": -0.0184,
+    "slope_w": 0.0627,
+    "mse_w_x1e4": 151.9959
+   },
+   "mse_w_x1e4_predict_zero": 100.5415
+  }
+ },
+ "P2_goalie_frozen_jan1_rest_of_season": {
+  "min_xga_40": {
+   "n_goalie_seasons": 288,
+   "p_1v1": {
+    "r_w_vs_real_rc": 0.1788,
+    "ci95": [
+     0.065,
+     0.288
+    ],
+    "r_w_vs_real_ctx": 0.1242,
+    "slope_w": 0.709,
+    "mse_w_x1e4": 140.4207
+   },
+   "eb_raw": {
+    "r_w_vs_real_rc": 0.1488,
+    "ci95": [
+     0.034,
+     0.26
+    ],
+    "r_w_vs_real_ctx": 0.0442,
+    "slope_w": 0.7068,
+    "mse_w_x1e4": 141.5577
+   },
+   "eb_rc": {
+    "r_w_vs_real_rc": 0.1619,
+    "ci95": [
+     0.047,
+     0.272
+    ],
+    "r_w_vs_real_ctx": 0.0562,
+    "slope_w": 0.7803,
+    "mse_w_x1e4": 140.7468
+   },
+   "eb_ctx": {
+    "r_w_vs_real_rc": 0.1768,
+    "ci95": [
+     0.063,
+     0.287
+    ],
+    "r_w_vs_real_ctx": 0.1192,
+    "slope_w": 0.9826,
+    "mse_w_x1e4": 140.8861
+   },
+   "cum_rc": {
+    "r_w_vs_real_rc": 0.1191,
+    "ci95": [
+     0.004,
+     0.232
+    ],
+    "r_w_vs_real_ctx": 0.0432,
+    "slope_w": 0.1469,
+    "mse_w_x1e4": 207.9918
+   },
+   "mse_w_x1e4_predict_zero": 149.5796
+  },
+  "min_xga_80": {
+   "n_goalie_seasons": 131,
+   "p_1v1": {
+    "r_w_vs_real_rc": 0.0798,
+    "ci95": [
+     -0.093,
+     0.248
+    ],
+    "r_w_vs_real_ctx": 0.0157,
+    "slope_w": 0.2676,
+    "mse_w_x1e4": 116.267
+   },
+   "eb_raw": {
+    "r_w_vs_real_rc": 0.027,
+    "ci95": [
+     -0.145,
+     0.198
+    ],
+    "r_w_vs_real_ctx": -0.1126,
+    "slope_w": 0.1054,
+    "mse_w_x1e4": 117.7744
+   },
+   "eb_rc": {
+    "r_w_vs_real_rc": 0.046,
+    "ci95": [
+     -0.127,
+     0.216
+    ],
+    "r_w_vs_real_ctx": -0.0956,
+    "slope_w": 0.1824,
+    "mse_w_x1e4": 116.7214
+   },
+   "eb_ctx": {
+    "r_w_vs_real_rc": 0.059,
+    "ci95": [
+     -0.114,
+     0.228
+    ],
+    "r_w_vs_real_ctx": -0.0281,
+    "slope_w": 0.2817,
+    "mse_w_x1e4": 117.1962
+   },
+   "cum_rc": {
+    "r_w_vs_real_rc": 0.0278,
+    "ci95": [
+     -0.144,
+     0.198
+    ],
+    "r_w_vs_real_ctx": -0.0883,
+    "slope_w": 0.0442,
+    "mse_w_x1e4": 139.48
+   },
+   "mse_w_x1e4_predict_zero": 127.5137
+  }
+ },
+ "P3_shooter_frozen_season_start": {
+  "min_shots_50": {
+   "n_player_seasons": 4112,
+   "rmse_goals_xg_only": 3.4014,
+   "p_1v1": {
+    "r_w": 0.2248,
+    "ci95": [
+     0.196,
+     0.254
+    ],
+    "rmse_goals": 3.2781,
+    "slope": 0.9532
+   },
+   "p_eb": {
+    "r_w": 0.2274,
+    "ci95": [
+     0.198,
+     0.256
+    ],
+    "rmse_goals": 3.2826,
+    "slope": 0.827
+   },
+   "p_raw": {
+    "r_w": 0.1432,
+    "ci95": [
+     0.113,
+     0.173
+    ],
+    "rmse_goals": 4.4342,
+    "slope": 0.1661
+   }
+  },
+  "min_shots_100": {
+   "n_player_seasons": 3062,
+   "rmse_goals_xg_only": 3.7782,
+   "p_1v1": {
+    "r_w": 0.2211,
+    "ci95": [
+     0.187,
+     0.255
+    ],
+    "rmse_goals": 3.6363,
+    "slope": 0.9208
+   },
+   "p_eb": {
+    "r_w": 0.2262,
+    "ci95": [
+     0.192,
+     0.26
+    ],
+    "rmse_goals": 3.6428,
+    "slope": 0.8021
+   },
+   "p_raw": {
+    "r_w": 0.142,
+    "ci95": [
+     0.107,
+     0.176
+    ],
+    "rmse_goals": 4.917,
+    "slope": 0.1664
+   }
+  },
+  "min_shots_150": {
+   "n_player_seasons": 2067,
+   "rmse_goals_xg_only": 4.2022,
+   "p_1v1": {
+    "r_w": 0.2159,
+    "ci95": [
+     0.174,
+     0.257
+    ],
+    "rmse_goals": 4.0279,
+    "slope": 0.8631
+   },
+   "p_eb": {
+    "r_w": 0.2212,
+    "ci95": [
+     0.18,
+     0.262
+    ],
+    "rmse_goals": 4.0403,
+    "slope": 0.7547
+   },
+   "p_raw": {
+    "r_w": 0.1333,
+    "ci95": [
+     0.091,
+     0.175
+    ],
+    "rmse_goals": 5.4992,
+    "slope": 0.158
+   }
+  }
+ },
+ "P4_future_goals_per_game": {
+  "n_player_seasons": 3502,
+  "min_gp": 40,
+  "min_prior_gp_decayed": 20,
+  "xG only (past ixG/GP)": {
+   "r": 0.7943,
+   "rmse": 0.0666,
+   "scale": 0.967
+  },
+  "past goals/GP": {
+   "r": 0.7929,
+   "rmse": 0.0676,
+   "scale": 0.9224,
+   "r_gain_vs_xg_only_ci95": [
+    -0.0098,
+    0.0063
+   ]
+  },
+  "ixG/GP x exp(mu 1v1)": {
+   "r": 0.8044,
+   "rmse": 0.0652,
+   "scale": 0.9362,
+   "r_gain_vs_xg_only_ci95": [
+    0.006,
+    0.0142
+   ]
+  },
+  "ixG/GP x (1 + EB finishing)": {
+   "r": 0.8064,
+   "rmse": 0.0649,
+   "scale": 0.9523,
+   "r_gain_vs_xg_only_ci95": [
+    0.0084,
+    0.0157
+   ]
+  },
+  "r_by_group_F (n=2319)": {
+   "xG only (past ixG/GP)": 0.7099,
+   "past goals/GP": 0.7161,
+   "ixG/GP x exp(mu 1v1)": 0.7262,
+   "ixG/GP x (1 + EB finishing)": 0.729
+  },
+  "r_by_group_D (n=1183)": {
+   "xG only (past ixG/GP)": 0.7013,
+   "past goals/GP": 0.6602,
+   "ixG/GP x exp(mu 1v1)": 0.7073,
+   "ixG/GP x (1 + EB finishing)": 0.7089
+  }
+ },
+ "P5_unit": {
+  "n_team_games": 17514,
+  "corr_fin_pre_vs_fin_real": {
+   "r": 0.053,
+   "ci95": [
+    0.038,
+    0.068
+   ],
+   "slope": 1.2384
+  },
+  "corr_sav_pre_vs_sav_real": {
+   "r": 0.0515,
+   "ci95": [
+    0.037,
+    0.066
+   ],
+   "slope": 0.9699
+  },
+  "corr_fs_pre_vs_fs_real": {
+   "r": 0.0559,
+   "ci95": [
+    0.041,
+    0.071
+   ],
+   "slope": 1.0956
+  },
+  "corr_fs_env_pre_vs_fs_real": {
+   "r": 0.0641,
+   "ci95": [
+    0.049,
+    0.079
+   ],
+   "slope": 0.7894
+  },
+  "sd_fs_pre_goals": 0.1105,
+  "sd_fin_pre_goals": 0.0651,
+  "sd_sav_pre_goals": 0.0807,
+  "sd_fs_env_pre_goals": 0.1758
+ },
+ "P5_goal_diff_increment": {
+  "n_games": 7929,
+  "target": "home - away goals on unblocked shots at a goalie in net (excl. empty-net and shootout)",
+  "columns": "const, shipped xG-Elo diff, shipped Elo logit, [extras]",
+  "base": {
+   "rmse": 2.08045,
+   "coefs": [
+    0.0663,
+    0.4587,
+    0.7452
+   ],
+   "t_stats": [
+    2.51,
+    8.29,
+    8.95
+   ]
+  },
+  "+fs_diff": {
+   "rmse": 2.07892,
+   "coefs": [
+    0.0888,
+    0.5232,
+    0.5419,
+    0.6467
+   ],
+   "t_stats": [
+    3.26,
+    8.96,
+    5.3,
+    3.41
+   ]
+  },
+  "+fin_diff+sav_diff": {
+   "rmse": 2.07891,
+   "coefs": [
+    0.0877,
+    0.5216,
+    0.5484,
+    0.5626,
+    0.6937
+   ],
+   "t_stats": [
+    3.2,
+    8.9,
+    5.28,
+    1.87,
+    3.02
+   ]
+  },
+  "+fs_env_diff (incl. team terms)": {
+   "rmse": 2.07914,
+   "coefs": [
+    0.0972,
+    0.5443,
+    0.4834,
+    0.422
+   ],
+   "t_stats": [
+    3.45,
+    8.84,
+    4.12,
+    3.16
+   ]
+  }
+ },
+ "F_face_validity_end_of_DEV": {
+  "goalies_n (>=3000 unblocked faced, active 2016-18)": 61,
+  "goalies_top10": [
+   {
+    "name": "Antti Raanta",
+    "mu": 0.1035,
+    "sd": 0.0564,
+    "fa_n": 5269.0,
+    "dev_gsax_rc_per_xga": 0.1108
+   },
+   {
+    "name": "Marc-Andre Fleury",
+    "mu": 0.0774,
+    "sd": 0.0525,
+    "fa_n": 19763.0,
+    "dev_gsax_rc_per_xga": 0.03
+   },
+   {
+    "name": "Sergei Bobrovsky",
+    "mu": 0.0767,
+    "sd": 0.0514,
+    "fa_n": 16787.0,
+    "dev_gsax_rc_per_xga": 0.0355
+   },
+   {
+    "name": "Mike Smith",
+    "mu": 0.0734,
+    "sd": 0.0537,
+    "fa_n": 17550.0,
+    "dev_gsax_rc_per_xga": 0.0519
+   },
+   {
+    "name": "Pekka Rinne",
+    "mu": 0.0705,
+    "sd": 0.0518,
+    "fa_n": 20762.0,
+    "dev_gsax_rc_per_xga": -0.0202
+   },
+   {
+    "name": "Jonathan Quick",
+    "mu": 0.0669,
+    "sd": 0.0534,
+    "fa_n": 20021.0,
+    "dev_gsax_rc_per_xga": 0.1111
+   },
+   {
+    "name": "Roberto Luongo",
+    "mu": 0.0663,
+    "sd": 0.0581,
+    "fa_n": 16627.0,
+    "dev_gsax_rc_per_xga": 0.0622
+   },
+   {
+    "name": "John Gibson",
+    "mu": 0.0583,
+    "sd": 0.0529,
+    "fa_n": 8241.0,
+    "dev_gsax_rc_per_xga": 0.0635
+   },
+   {
+    "name": "Corey Crawford",
+    "mu": 0.0559,
+    "sd": 0.0597,
+    "fa_n": 18660.0,
+    "dev_gsax_rc_per_xga": 0.0386
+   },
+   {
+    "name": "Philipp Grubauer",
+    "mu": 0.0542,
+    "sd": 0.059,
+    "fa_n": 3853.0,
+    "dev_gsax_rc_per_xga": 0.1277
+   }
+  ],
+  "goalies_bottom10": [
+   {
+    "name": "Scott Darling",
+    "mu": -0.0923,
+    "sd": 0.0576,
+    "fa_n": 4653.0,
+    "dev_gsax_rc_per_xga": -0.055
+   },
+   {
+    "name": "Cam Ward",
+    "mu": -0.0753,
+    "sd": 0.0573,
+    "fa_n": 16107.0,
+    "dev_gsax_rc_per_xga": 0.0076
+   },
+   {
+    "name": "Carey Price",
+    "mu": -0.0716,
+    "sd": 0.0556,
+    "fa_n": 18761.0,
+    "dev_gsax_rc_per_xga": 0.0551
+   },
+   {
+    "name": "Craig Anderson",
+    "mu": -0.0642,
+    "sd": 0.0534,
+    "fa_n": 17946.0,
+    "dev_gsax_rc_per_xga": -0.0127
+   },
+   {
+    "name": "Thomas Greiss",
+    "mu": -0.0515,
+    "sd": 0.0591,
+    "fa_n": 7871.0,
+    "dev_gsax_rc_per_xga": -0.0242
+   },
+   {
+    "name": "Jake Allen",
+    "mu": -0.0471,
+    "sd": 0.0547,
+    "fa_n": 8642.0,
+    "dev_gsax_rc_per_xga": -0.0458
+   },
+   {
+    "name": "Chad Johnson",
+    "mu": -0.0432,
+    "sd": 0.0587,
+    "fa_n": 6375.0,
+    "dev_gsax_rc_per_xga": 0.0018
+   },
+   {
+    "name": "Petr Mrazek",
+    "mu": -0.0399,
+    "sd": 0.0573,
+    "fa_n": 7188.0,
+    "dev_gsax_rc_per_xga": -0.0331
+   },
+   {
+    "name": "Robin Lehner",
+    "mu": -0.0375,
+    "sd": 0.055,
+    "fa_n": 9143.0,
+    "dev_gsax_rc_per_xga": -0.062
+   },
+   {
+    "name": "Mike Condon",
+    "mu": -0.0369,
+    "sd": 0.0595,
+    "fa_n": 4921.0,
+    "dev_gsax_rc_per_xga": -0.0861
+   }
+  ],
+  "goalies_corr_mu_vs_dev_career_gsax": 0.5436,
+  "shooters_F_n (>=600 shots, active 2016-18)": 291,
+  "shooters_F_top10": [
+   {
+    "name": "Patrik Laine",
+    "mu": 0.39,
+    "sd": 0.115,
+    "sh_n": 716.0,
+    "sh_g": 80.0,
+    "sh_x": 46.744,
+    "dev_gax_per_xg": 0.711
+   },
+   {
+    "name": "Logan Couture",
+    "mu": 0.3,
+    "sd": 0.108,
+    "sh_n": 2620.0,
+    "sh_g": 225.0,
+    "sh_x": 199.306,
+    "dev_gax_per_xg": 0.129
+   },
+   {
+    "name": "Brad Marchand",
+    "mu": 0.259,
+    "sd": 0.103,
+    "sh_n": 2108.0,
+    "sh_g": 219.0,
+    "sh_x": 164.589,
+    "dev_gax_per_xg": 0.331
+   },
+   {
+    "name": "Vladimir Tarasenko",
+    "mu": 0.246,
+    "sd": 0.101,
+    "sh_n": 2110.0,
+    "sh_g": 191.0,
+    "sh_x": 141.856,
+    "dev_gax_per_xg": 0.346
+   },
+   {
+    "name": "Evgeni Malkin",
+    "mu": 0.233,
+    "sd": 0.101,
+    "sh_n": 2570.0,
+    "sh_g": 249.0,
+    "sh_x": 207.288,
+    "dev_gax_per_xg": 0.201
+   },
+   {
+    "name": "Nikita Kucherov",
+    "mu": 0.232,
+    "sd": 0.101,
+    "sh_n": 1707.0,
+    "sh_g": 165.0,
+    "sh_x": 123.176,
+    "dev_gax_per_xg": 0.34
+   },
+   {
+    "name": "Patrick Kane",
+    "mu": 0.227,
+    "sd": 0.102,
+    "sh_n": 2856.0,
+    "sh_g": 251.0,
+    "sh_x": 194.458,
+    "dev_gax_per_xg": 0.291
+   },
+   {
+    "name": "Rickard Rakell",
+    "mu": 0.225,
+    "sd": 0.109,
+    "sh_n": 1177.0,
+    "sh_g": 107.0,
+    "sh_x": 82.049,
+    "dev_gax_per_xg": 0.304
+   },
+   {
+    "name": "Phil Kessel",
+    "mu": 0.215,
+    "sd": 0.106,
+    "sh_n": 3098.0,
+    "sh_g": 251.0,
+    "sh_x": 211.425,
+    "dev_gax_per_xg": 0.187
+   },
+   {
+    "name": "Kyle Palmieri",
+    "mu": 0.214,
+    "sd": 0.109,
+    "sh_n": 1493.0,
+    "sh_g": 128.0,
+    "sh_x": 101.616,
+    "dev_gax_per_xg": 0.26
+   }
+  ],
+  "shooters_F_bottom10": [
+   {
+    "name": "JT Brown",
+    "mu": -0.27,
+    "sd": 0.131,
+    "sh_n": 675.0,
+    "sh_g": 20.0,
+    "sh_x": 41.767,
+    "dev_gax_per_xg": -0.521
+   },
+   {
+    "name": "Brooks Laich",
+    "mu": -0.226,
+    "sd": 0.124,
+    "sh_n": 977.0,
+    "sh_g": 52.0,
+    "sh_x": 76.776,
+    "dev_gax_per_xg": -0.323
+   },
+   {
+    "name": "Andrew Desjardins",
+    "mu": -0.205,
+    "sd": 0.132,
+    "sh_n": 643.0,
+    "sh_g": 24.0,
+    "sh_x": 41.529,
+    "dev_gax_per_xg": -0.422
+   },
+   {
+    "name": "Steve Bernier",
+    "mu": -0.202,
+    "sd": 0.127,
+    "sh_n": 616.0,
+    "sh_g": 34.0,
+    "sh_x": 54.728,
+    "dev_gax_per_xg": -0.379
+   },
+   {
+    "name": "Shawn Thornton",
+    "mu": -0.192,
+    "sd": 0.134,
+    "sh_n": 838.0,
+    "sh_g": 26.0,
+    "sh_x": 42.419,
+    "dev_gax_per_xg": -0.387
+   },
+   {
+    "name": "Marcus Kruger",
+    "mu": -0.186,
+    "sd": 0.13,
+    "sh_n": 814.0,
+    "sh_g": 38.0,
+    "sh_x": 52.633,
+    "dev_gax_per_xg": -0.278
+   },
+   {
+    "name": "Ryan Callahan",
+    "mu": -0.178,
+    "sd": 0.115,
+    "sh_n": 1916.0,
+    "sh_g": 130.0,
+    "sh_x": 155.023,
+    "dev_gax_per_xg": -0.161
+   },
+   {
+    "name": "Kyle Clifford",
+    "mu": -0.177,
+    "sd": 0.126,
+    "sh_n": 1001.0,
+    "sh_g": 45.0,
+    "sh_x": 64.917,
+    "dev_gax_per_xg": -0.307
+   },
+   {
+    "name": "Brendan Gallagher",
+    "mu": -0.168,
+    "sd": 0.106,
+    "sh_n": 1743.0,
+    "sh_g": 123.0,
+    "sh_x": 151.573,
+    "dev_gax_per_xg": -0.189
+   },
+   {
+    "name": "Chris Neil",
+    "mu": -0.165,
+    "sd": 0.129,
+    "sh_n": 765.0,
+    "sh_g": 41.0,
+    "sh_x": 58.438,
+    "dev_gax_per_xg": -0.298
+   }
+  ],
+  "shooters_D_n (>=600 shots, active 2016-18)": 134,
+  "shooters_D_top10": [
+   {
+    "name": "Shea Weber",
+    "mu": 0.185,
+    "sd": 0.075,
+    "sh_n": 2381.0,
+    "sh_g": 124.0,
+    "sh_x": 89.601,
+    "dev_gax_per_xg": 0.384
+   },
+   {
+    "name": "Brent Burns",
+    "mu": 0.159,
+    "sd": 0.069,
+    "sh_n": 3174.0,
+    "sh_g": 153.0,
+    "sh_x": 132.421,
+    "dev_gax_per_xg": 0.155
+   },
+   {
+    "name": "Erik Karlsson",
+    "mu": 0.153,
+    "sd": 0.073,
+    "sh_n": 2764.0,
+    "sh_g": 124.0,
+    "sh_x": 98.159,
+    "dev_gax_per_xg": 0.263
+   },
+   {
+    "name": "Mark Giordano",
+    "mu": 0.145,
+    "sd": 0.079,
+    "sh_n": 1851.0,
+    "sh_g": 90.0,
+    "sh_x": 65.683,
+    "dev_gax_per_xg": 0.37
+   },
+   {
+    "name": "P.K. Subban",
+    "mu": 0.134,
+    "sd": 0.077,
+    "sh_n": 2276.0,
+    "sh_g": 102.0,
+    "sh_x": 79.836,
+    "dev_gax_per_xg": 0.278
+   },
+   {
+    "name": "Oliver Ekman-Larsson",
+    "mu": 0.133,
+    "sd": 0.077,
+    "sh_n": 1981.0,
+    "sh_g": 102.0,
+    "sh_x": 81.248,
+    "dev_gax_per_xg": 0.255
+   },
+   {
+    "name": "Ryan Ellis",
+    "mu": 0.126,
+    "sd": 0.085,
+    "sh_n": 1140.0,
+    "sh_g": 60.0,
+    "sh_x": 41.176,
+    "dev_gax_per_xg": 0.457
+   },
+   {
+    "name": "Alec Martinez",
+    "mu": 0.123,
+    "sd": 0.084,
+    "sh_n": 1268.0,
+    "sh_g": 63.0,
+    "sh_x": 49.374,
+    "dev_gax_per_xg": 0.276
+   },
+   {
+    "name": "Mike Green",
+    "mu": 0.123,
+    "sd": 0.081,
+    "sh_n": 1557.0,
+    "sh_g": 77.0,
+    "sh_x": 59.172,
+    "dev_gax_per_xg": 0.301
+   },
+   {
+    "name": "Mathew Dumba",
+    "mu": 0.113,
+    "sd": 0.088,
+    "sh_n": 855.0,
+    "sh_g": 47.0,
+    "sh_x": 33.277,
+    "dev_gax_per_xg": 0.412
+   }
+  ],
+  "shooters_D_bottom10": [
+   {
+    "name": "Braydon Coburn",
+    "mu": -0.101,
+    "sd": 0.088,
+    "sh_n": 1222.0,
+    "sh_g": 21.0,
+    "sh_x": 34.928,
+    "dev_gax_per_xg": -0.399
+   },
+   {
+    "name": "Jay Bouwmeester",
+    "mu": -0.091,
+    "sd": 0.086,
+    "sh_n": 1255.0,
+    "sh_g": 28.0,
+    "sh_x": 39.792,
+    "dev_gax_per_xg": -0.296
+   },
+   {
+    "name": "Ryan Suter",
+    "mu": -0.08,
+    "sd": 0.081,
+    "sh_n": 1794.0,
+    "sh_g": 52.0,
+    "sh_x": 66.012,
+    "dev_gax_per_xg": -0.212
+   },
+   {
+    "name": "Matt Carle",
+    "mu": -0.077,
+    "sd": 0.089,
+    "sh_n": 876.0,
+    "sh_g": 21.0,
+    "sh_x": 30.448,
+    "dev_gax_per_xg": -0.31
+   },
+   {
+    "name": "Anton Stralman",
+    "mu": -0.077,
+    "sd": 0.085,
+    "sh_n": 1279.0,
+    "sh_g": 34.0,
+    "sh_x": 44.342,
+    "dev_gax_per_xg": -0.233
+   },
+   {
+    "name": "Brendan Smith",
+    "mu": -0.068,
+    "sd": 0.09,
+    "sh_n": 693.0,
+    "sh_g": 18.0,
+    "sh_x": 26.584,
+    "dev_gax_per_xg": -0.323
+   },
+   {
+    "name": "Matt Hunwick",
+    "mu": -0.061,
+    "sd": 0.092,
+    "sh_n": 670.0,
+    "sh_g": 13.0,
+    "sh_x": 20.556,
+    "dev_gax_per_xg": -0.368
+   },
+   {
+    "name": "John-Michael Liles",
+    "mu": -0.061,
+    "sd": 0.089,
+    "sh_n": 875.0,
+    "sh_g": 24.0,
+    "sh_x": 33.07,
+    "dev_gax_per_xg": -0.274
+   },
+   {
+    "name": "Dan Hamhuis",
+    "mu": -0.059,
+    "sd": 0.088,
+    "sh_n": 1168.0,
+    "sh_g": 27.0,
+    "sh_x": 34.438,
+    "dev_gax_per_xg": -0.216
+   },
+   {
+    "name": "Marc Staal",
+    "mu": -0.057,
+    "sd": 0.087,
+    "sh_n": 996.0,
+    "sh_g": 29.0,
+    "sh_x": 37.746,
+    "dev_gax_per_xg": -0.232
+   }
+  ],
+  "RK_low3": [
+   {
+    "entity": "RK:CAR",
+    "mu": -0.1319
+   },
+   {
+    "entity": "RK:PHI",
+    "mu": -0.1137
+   },
+   {
+    "entity": "RK:TOR",
+    "mu": -0.1111
+   }
+  ],
+  "RK_high3": [
+   {
+    "entity": "RK:COL",
+    "mu": 0.0722
+   },
+   {
+    "entity": "RK:CGY",
+    "mu": 0.0767
+   },
+   {
+    "entity": "RK:CBJ",
+    "mu": 0.077
+   }
+  ],
+  "TO_low3": [
+   {
+    "entity": "TO:CAR",
+    "mu": -0.0649
+   },
+   {
+    "entity": "TO:FLA",
+    "mu": -0.0613
+   },
+   {
+    "entity": "TO:NJD",
+    "mu": -0.0518
+   }
+  ],
+  "TO_high3": [
+   {
+    "entity": "TO:NSH",
+    "mu": 0.0363
+   },
+   {
+    "entity": "TO:ANA",
+    "mu": 0.038
+   },
+   {
+    "entity": "TO:WSH",
+    "mu": 0.0423
+   }
+  ],
+  "TD_low3": [
+   {
+    "entity": "TD:CAR",
+    "mu": -0.0452
+   },
+   {
+    "entity": "TD:NYI",
+    "mu": -0.0291
+   },
+   {
+    "entity": "TD:MIN",
+    "mu": -0.0204
+   }
+  ],
+  "TD_high3": [
+   {
+    "entity": "TD:LAK",
+    "mu": 0.0284
+   },
+   {
+    "entity": "TD:WSH",
+    "mu": 0.0301
+   },
+   {
+    "entity": "TD:PHX",
+    "mu": 0.033
+   }
+  ]
+ },
+ "W_walk_forward_audit": {
+  "2012-02-01": {
+   "values_through_cutoff_date_identical": true,
+   "n_entity_games_through_cutoff": 93227,
+   "n_later_values_changed": 357138,
+   "pass_": true
+  },
+  "2015-01-15": {
+   "values_through_cutoff_date_identical": true,
+   "n_entity_games_through_cutoff": 243791,
+   "n_later_values_changed": 207422,
+   "pass_": true
+  },
+  "2017-12-01": {
+   "values_through_cutoff_date_identical": true,
+   "n_entity_games_through_cutoff": 410198,
+   "n_later_values_changed": 41987,
+   "pass_": true
+  }
+ },
+ "seconds": 44.9
+}

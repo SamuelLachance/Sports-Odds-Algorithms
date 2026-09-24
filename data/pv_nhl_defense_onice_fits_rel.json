@@ -1,0 +1,968 @@
+{
+ "specs": [
+  {
+   "name": "one_20102011",
+   "seasons": [
+    20102011
+   ],
+   "cutoff": null,
+   "halflives": [
+    0.0
+   ],
+   "kind": "one",
+   "season": 20102011,
+   "career": false,
+   "gx_lg": [
+    1920000.0
+   ]
+  },
+  {
+   "name": "half0_20102011",
+   "seasons": [
+    20102011
+   ],
+   "cutoff": null,
+   "parity": 0,
+   "halflives": [
+    0.0
+   ],
+   "kind": "half",
+   "season": 20102011,
+   "career": false,
+   "gx_lg": [
+    1920000.0
+   ]
+  },
+  {
+   "name": "half1_20102011",
+   "seasons": [
+    20102011
+   ],
+   "cutoff": null,
+   "parity": 1,
+   "halflives": [
+    0.0
+   ],
+   "kind": "half",
+   "season": 20102011,
+   "career": false,
+   "gx_lg": [
+    1920000.0
+   ]
+  },
+  {
+   "name": "one_20112012",
+   "seasons": [
+    20112012
+   ],
+   "cutoff": null,
+   "halflives": [
+    0.0
+   ],
+   "kind": "one",
+   "season": 20112012,
+   "career": false,
+   "gx_lg": [
+    1920000.0
+   ]
+  },
+  {
+   "name": "half0_20112012",
+   "seasons": [
+    20112012
+   ],
+   "cutoff": null,
+   "parity": 0,
+   "halflives": [
+    0.0
+   ],
+   "kind": "half",
+   "season": 20112012,
+   "career": false,
+   "gx_lg": [
+    1920000.0
+   ]
+  },
+  {
+   "name": "half1_20112012",
+   "seasons": [
+    20112012
+   ],
+   "cutoff": null,
+   "parity": 1,
+   "halflives": [
+    0.0
+   ],
+   "kind": "half",
+   "season": 20112012,
+   "career": false,
+   "gx_lg": [
+    1920000.0
+   ]
+  },
+  {
+   "name": "one_20122013",
+   "seasons": [
+    20122013
+   ],
+   "cutoff": null,
+   "halflives": [
+    0.0
+   ],
+   "kind": "one",
+   "season": 20122013,
+   "career": false,
+   "gx_lg": [
+    1920000.0
+   ]
+  },
+  {
+   "name": "half0_20122013",
+   "seasons": [
+    20122013
+   ],
+   "cutoff": null,
+   "parity": 0,
+   "halflives": [
+    0.0
+   ],
+   "kind": "half",
+   "season": 20122013,
+   "career": false,
+   "gx_lg": [
+    1920000.0
+   ]
+  },
+  {
+   "name": "half1_20122013",
+   "seasons": [
+    20122013
+   ],
+   "cutoff": null,
+   "parity": 1,
+   "halflives": [
+    0.0
+   ],
+   "kind": "half",
+   "season": 20122013,
+   "career": false,
+   "gx_lg": [
+    1920000.0
+   ]
+  },
+  {
+   "name": "one_20132014",
+   "seasons": [
+    20132014
+   ],
+   "cutoff": null,
+   "halflives": [
+    0.0
+   ],
+   "kind": "one",
+   "season": 20132014,
+   "career": false,
+   "gx_lg": [
+    1920000.0
+   ]
+  },
+  {
+   "name": "half0_20132014",
+   "seasons": [
+    20132014
+   ],
+   "cutoff": null,
+   "parity": 0,
+   "halflives": [
+    0.0
+   ],
+   "kind": "half",
+   "season": 20132014,
+   "career": false,
+   "gx_lg": [
+    1920000.0
+   ]
+  },
+  {
+   "name": "half1_20132014",
+   "seasons": [
+    20132014
+   ],
+   "cutoff": null,
+   "parity": 1,
+   "halflives": [
+    0.0
+   ],
+   "kind": "half",
+   "season": 20132014,
+   "career": false,
+   "gx_lg": [
+    1920000.0
+   ]
+  },
+  {
+   "name": "one_20142015",
+   "seasons": [
+    20142015
+   ],
+   "cutoff": null,
+   "halflives": [
+    0.0
+   ],
+   "kind": "one",
+   "season": 20142015,
+   "career": false,
+   "gx_lg": [
+    1920000.0
+   ]
+  },
+  {
+   "name": "half0_20142015",
+   "seasons": [
+    20142015
+   ],
+   "cutoff": null,
+   "parity": 0,
+   "halflives": [
+    0.0
+   ],
+   "kind": "half",
+   "season": 20142015,
+   "career": false,
+   "gx_lg": [
+    1920000.0
+   ]
+  },
+  {
+   "name": "half1_20142015",
+   "seasons": [
+    20142015
+   ],
+   "cutoff": null,
+   "parity": 1,
+   "halflives": [
+    0.0
+   ],
+   "kind": "half",
+   "season": 20142015,
+   "career": false,
+   "gx_lg": [
+    1920000.0
+   ]
+  },
+  {
+   "name": "one_20152016",
+   "seasons": [
+    20152016
+   ],
+   "cutoff": null,
+   "halflives": [
+    0.0
+   ],
+   "kind": "one",
+   "season": 20152016,
+   "career": false,
+   "gx_lg": [
+    1920000.0
+   ]
+  },
+  {
+   "name": "half0_20152016",
+   "seasons": [
+    20152016
+   ],
+   "cutoff": null,
+   "parity": 0,
+   "halflives": [
+    0.0
+   ],
+   "kind": "half",
+   "season": 20152016,
+   "career": false,
+   "gx_lg": [
+    1920000.0
+   ]
+  },
+  {
+   "name": "half1_20152016",
+   "seasons": [
+    20152016
+   ],
+   "cutoff": null,
+   "parity": 1,
+   "halflives": [
+    0.0
+   ],
+   "kind": "half",
+   "season": 20152016,
+   "career": false,
+   "gx_lg": [
+    1920000.0
+   ]
+  },
+  {
+   "name": "one_20162017",
+   "seasons": [
+    20162017
+   ],
+   "cutoff": null,
+   "halflives": [
+    0.0
+   ],
+   "kind": "one",
+   "season": 20162017,
+   "career": false,
+   "gx_lg": [
+    1920000.0
+   ]
+  },
+  {
+   "name": "half0_20162017",
+   "seasons": [
+    20162017
+   ],
+   "cutoff": null,
+   "parity": 0,
+   "halflives": [
+    0.0
+   ],
+   "kind": "half",
+   "season": 20162017,
+   "career": false,
+   "gx_lg": [
+    1920000.0
+   ]
+  },
+  {
+   "name": "half1_20162017",
+   "seasons": [
+    20162017
+   ],
+   "cutoff": null,
+   "parity": 1,
+   "halflives": [
+    0.0
+   ],
+   "kind": "half",
+   "season": 20162017,
+   "career": false,
+   "gx_lg": [
+    1920000.0
+   ]
+  },
+  {
+   "name": "one_20172018",
+   "seasons": [
+    20172018
+   ],
+   "cutoff": null,
+   "halflives": [
+    0.0
+   ],
+   "kind": "one",
+   "season": 20172018,
+   "career": false,
+   "gx_lg": [
+    1920000.0
+   ]
+  },
+  {
+   "name": "half0_20172018",
+   "seasons": [
+    20172018
+   ],
+   "cutoff": null,
+   "parity": 0,
+   "halflives": [
+    0.0
+   ],
+   "kind": "half",
+   "season": 20172018,
+   "career": false,
+   "gx_lg": [
+    1920000.0
+   ]
+  },
+  {
+   "name": "half1_20172018",
+   "seasons": [
+    20172018
+   ],
+   "cutoff": null,
+   "parity": 1,
+   "halflives": [
+    0.0
+   ],
+   "kind": "half",
+   "season": 20172018,
+   "career": false,
+   "gx_lg": [
+    1920000.0
+   ]
+  },
+  {
+   "name": "h30_2015_17",
+   "seasons": [
+    20142015,
+    20152016,
+    20162017
+   ],
+   "cutoff": null,
+   "parity": 0,
+   "halflives": [
+    0.0
+   ],
+   "kind": "half3",
+   "season": 20162017,
+   "career": false,
+   "gx_lg": [
+    1920000.0
+   ]
+  },
+  {
+   "name": "h31_2015_17",
+   "seasons": [
+    20142015,
+    20152016,
+    20162017
+   ],
+   "cutoff": null,
+   "parity": 1,
+   "halflives": [
+    0.0
+   ],
+   "kind": "half3",
+   "season": 20162017,
+   "career": false,
+   "gx_lg": [
+    1920000.0
+   ]
+  }
+ ],
+ "fits": [
+  {
+   "name": "one_20102011",
+   "cutoff": 20110411,
+   "seasons": [
+    20102011
+   ],
+   "parity": null,
+   "n_intervals": 264673,
+   "max_train_date": 20110410,
+   "n_players": 891,
+   "n_goalies": 87,
+   "hours": 959.6225,
+   "goals": 4404,
+   "league": {
+    "xg": 2.2800286571021418,
+    "g": 2.2946523242212433,
+    "c": 54.89085551870657
+   },
+   "seconds": 4.7
+  },
+  {
+   "name": "half0_20102011",
+   "cutoff": 20110411,
+   "seasons": [
+    20102011
+   ],
+   "parity": 0,
+   "n_intervals": 131842,
+   "max_train_date": 20110410,
+   "n_players": 864,
+   "n_goalies": 79,
+   "hours": 479.2,
+   "goals": 2206,
+   "league": {
+    "xg": 2.269600166944908,
+    "g": 2.301752921535893,
+    "c": 54.4177796327212
+   },
+   "seconds": 3.4
+  },
+  {
+   "name": "half1_20102011",
+   "cutoff": 20110411,
+   "seasons": [
+    20102011
+   ],
+   "parity": 1,
+   "n_intervals": 132831,
+   "max_train_date": 20110410,
+   "n_players": 869,
+   "n_goalies": 81,
+   "hours": 480.4225,
+   "goals": 2198,
+   "league": {
+    "xg": 2.2904306105563332,
+    "g": 2.2875697953363967,
+    "c": 55.362727599144506
+   },
+   "seconds": 3.3
+  },
+  {
+   "name": "one_20112012",
+   "cutoff": 20120408,
+   "seasons": [
+    20112012
+   ],
+   "parity": null,
+   "n_intervals": 270352,
+   "max_train_date": 20120407,
+   "n_players": 894,
+   "n_goalies": 89,
+   "hours": 974.4633333333334,
+   "goals": 4399,
+   "league": {
+    "xg": 2.238397784875166,
+    "g": 2.2571398273921712,
+    "c": 53.99125672592435
+   },
+   "seconds": 4.8
+  },
+  {
+   "name": "half0_20112012",
+   "cutoff": 20120408,
+   "seasons": [
+    20112012
+   ],
+   "parity": 0,
+   "n_intervals": 135284,
+   "max_train_date": 20120407,
+   "n_players": 871,
+   "n_goalies": 84,
+   "hours": 486.0830555555556,
+   "goals": 2133,
+   "league": {
+    "xg": 2.240376798889536,
+    "g": 2.1940694862960664,
+    "c": 54.13683875469384
+   },
+   "seconds": 2.1
+  },
+  {
+   "name": "half1_20112012",
+   "cutoff": 20120408,
+   "seasons": [
+    20112012
+   ],
+   "parity": 1,
+   "n_intervals": 135068,
+   "max_train_date": 20120407,
+   "n_players": 873,
+   "n_goalies": 86,
+   "hours": 488.3802777777778,
+   "goals": 2266,
+   "league": {
+    "xg": 2.236428079662112,
+    "g": 2.31991350092056,
+    "c": 53.84635947966322
+   },
+   "seconds": 2.5
+  },
+  {
+   "name": "one_20122013",
+   "cutoff": 20130429,
+   "seasons": [
+    20122013
+   ],
+   "parity": null,
+   "n_intervals": 157779,
+   "max_train_date": 20130428,
+   "n_players": 839,
+   "n_goalies": 82,
+   "hours": 569.8933333333333,
+   "goals": 2561,
+   "league": {
+    "xg": 2.221290135110204,
+    "g": 2.2469117027747885,
+    "c": 53.802173506153196
+   },
+   "seconds": 3.3
+  },
+  {
+   "name": "half0_20122013",
+   "cutoff": 20130429,
+   "seasons": [
+    20122013
+   ],
+   "parity": 0,
+   "n_intervals": 78843,
+   "max_train_date": 20130428,
+   "n_players": 821,
+   "n_goalies": 81,
+   "hours": 284.4066666666667,
+   "goals": 1311,
+   "league": {
+    "xg": 2.236212895718321,
+    "g": 2.3047982935233584,
+    "c": 53.80323949274513
+   },
+   "seconds": 2.4
+  },
+  {
+   "name": "half1_20122013",
+   "cutoff": 20130428,
+   "seasons": [
+    20122013
+   ],
+   "parity": 1,
+   "n_intervals": 78936,
+   "max_train_date": 20130427,
+   "n_players": 811,
+   "n_goalies": 75,
+   "hours": 285.4866666666667,
+   "goals": 1250,
+   "league": {
+    "xg": 2.2064238275114176,
+    "g": 2.1892440977979124,
+    "c": 53.80111155220325
+   },
+   "seconds": 3.1
+  },
+  {
+   "name": "one_20132014",
+   "cutoff": 20140414,
+   "seasons": [
+    20132014
+   ],
+   "parity": null,
+   "n_intervals": 273194,
+   "max_train_date": 20140413,
+   "n_players": 886,
+   "n_goalies": 97,
+   "hours": 971.3769444444445,
+   "goals": 4360,
+   "league": {
+    "xg": 2.230000022490803,
+    "g": 2.2442369179832635,
+    "c": 54.354285740430896
+   },
+   "seconds": 4.3
+  },
+  {
+   "name": "half0_20132014",
+   "cutoff": 20140414,
+   "seasons": [
+    20132014
+   ],
+   "parity": 0,
+   "n_intervals": 138676,
+   "max_train_date": 20140413,
+   "n_players": 861,
+   "n_goalies": 88,
+   "hours": 490.4402777777778,
+   "goals": 2206,
+   "league": {
+    "xg": 2.2175690971121105,
+    "g": 2.248999623354299,
+    "c": 54.23188348337803
+   },
+   "seconds": 3.2
+  },
+  {
+   "name": "half1_20132014",
+   "cutoff": 20140414,
+   "seasons": [
+    20132014
+   ],
+   "parity": 1,
+   "n_intervals": 134518,
+   "max_train_date": 20140413,
+   "n_players": 857,
+   "n_goalies": 88,
+   "hours": 480.93666666666667,
+   "goals": 2154,
+   "league": {
+    "xg": 2.2426765907758046,
+    "g": 2.2393800985576755,
+    "c": 54.479106743091606
+   },
+   "seconds": 2.9
+  },
+  {
+   "name": "one_20142015",
+   "cutoff": 20150412,
+   "seasons": [
+    20142015
+   ],
+   "parity": null,
+   "n_intervals": 277439,
+   "max_train_date": 20150411,
+   "n_players": 882,
+   "n_goalies": 92,
+   "hours": 980.91,
+   "goals": 4376,
+   "league": {
+    "xg": 2.2580498653478136,
+    "g": 2.2305818066897065,
+    "c": 54.38164561478627
+   },
+   "seconds": 4.6
+  },
+  {
+   "name": "half0_20142015",
+   "cutoff": 20150412,
+   "seasons": [
+    20142015
+   ],
+   "parity": 0,
+   "n_intervals": 138814,
+   "max_train_date": 20150411,
+   "n_players": 863,
+   "n_goalies": 85,
+   "hours": 490.5877777777778,
+   "goals": 2185,
+   "league": {
+    "xg": 2.242458429741868,
+    "g": 2.2269205420255522,
+    "c": 53.894534673826634
+   },
+   "seconds": 3.3
+  },
+  {
+   "name": "half1_20142015",
+   "cutoff": 20150412,
+   "seasons": [
+    20142015
+   ],
+   "parity": 1,
+   "n_intervals": 138625,
+   "max_train_date": 20150411,
+   "n_players": 847,
+   "n_goalies": 86,
+   "hours": 490.3222222222222,
+   "goals": 2191,
+   "league": {
+    "xg": 2.2736497451811606,
+    "g": 2.2342450542727006,
+    "c": 54.869020372090915
+   },
+   "seconds": 3.7
+  },
+  {
+   "name": "one_20152016",
+   "cutoff": 20160411,
+   "seasons": [
+    20152016
+   ],
+   "parity": null,
+   "n_intervals": 282918,
+   "max_train_date": 20160410,
+   "n_players": 898,
+   "n_goalies": 92,
+   "hours": 978.9677777777778,
+   "goals": 4228,
+   "league": {
+    "xg": 2.2566559527641354,
+    "g": 2.1594173454806707,
+    "c": 54.063577169149816
+   },
+   "seconds": 5.3
+  },
+  {
+   "name": "half0_20152016",
+   "cutoff": 20160411,
+   "seasons": [
+    20152016
+   ],
+   "parity": 0,
+   "n_intervals": 141504,
+   "max_train_date": 20160410,
+   "n_players": 874,
+   "n_goalies": 82,
+   "hours": 489.10027777777776,
+   "goals": 2093,
+   "league": {
+    "xg": 2.2393119701740893,
+    "g": 2.1396430293492417,
+    "c": 54.056399477271476
+   },
+   "seconds": 3.6
+  },
+  {
+   "name": "half1_20152016",
+   "cutoff": 20160410,
+   "seasons": [
+    20152016
+   ],
+   "parity": 1,
+   "n_intervals": 141414,
+   "max_train_date": 20160409,
+   "n_players": 872,
+   "n_goalies": 88,
+   "hours": 489.8675,
+   "goals": 2135,
+   "league": {
+    "xg": 2.2739727715009668,
+    "g": 2.179160691411453,
+    "c": 54.070743619448116
+   },
+   "seconds": 3.4
+  },
+  {
+   "name": "one_20162017",
+   "cutoff": 20170410,
+   "seasons": [
+    20162017
+   ],
+   "parity": null,
+   "n_intervals": 282784,
+   "max_train_date": 20170409,
+   "n_players": 888,
+   "n_goalies": 95,
+   "hours": 990.7772222222222,
+   "goals": 4464,
+   "league": {
+    "xg": 2.348869038953539,
+    "g": 2.252776860366076,
+    "c": 54.944238501871986
+   },
+   "seconds": 5.1
+  },
+  {
+   "name": "half0_20162017",
+   "cutoff": 20170410,
+   "seasons": [
+    20162017
+   ],
+   "parity": 0,
+   "n_intervals": 141438,
+   "max_train_date": 20170409,
+   "n_players": 862,
+   "n_goalies": 87,
+   "hours": 496.7272222222222,
+   "goals": 2276,
+   "league": {
+    "xg": 2.362561175427157,
+    "g": 2.290995840551879,
+    "c": 55.1701190794411
+   },
+   "seconds": 3.4
+  },
+  {
+   "name": "half1_20162017",
+   "cutoff": 20170410,
+   "seasons": [
+    20162017
+   ],
+   "parity": 1,
+   "n_intervals": 141346,
+   "max_train_date": 20170409,
+   "n_players": 859,
+   "n_goalies": 83,
+   "hours": 494.05,
+   "goals": 2188,
+   "league": {
+    "xg": 2.33510270575482,
+    "g": 2.2143507742131363,
+    "c": 54.71713389333063
+   },
+   "seconds": 3.5
+  },
+  {
+   "name": "one_20172018",
+   "cutoff": 20180409,
+   "seasons": [
+    20172018
+   ],
+   "parity": null,
+   "n_intervals": 285824,
+   "max_train_date": 20180408,
+   "n_players": 890,
+   "n_goalies": 95,
+   "hours": 1024.6258333333333,
+   "goals": 4893,
+   "league": {
+    "xg": 2.4334064637060355,
+    "g": 2.3877008761734975,
+    "c": 57.41266527374627
+   },
+   "seconds": 4.9
+  },
+  {
+   "name": "half0_20172018",
+   "cutoff": 20180409,
+   "seasons": [
+    20172018
+   ],
+   "parity": 0,
+   "n_intervals": 143080,
+   "max_train_date": 20180408,
+   "n_players": 860,
+   "n_goalies": 90,
+   "hours": 511.42305555555555,
+   "goals": 2507,
+   "league": {
+    "xg": 2.4602999888026655,
+    "g": 2.4510040882656945,
+    "c": 57.33413791474008
+   },
+   "seconds": 3.5
+  },
+  {
+   "name": "half1_20172018",
+   "cutoff": 20180408,
+   "seasons": [
+    20172018
+   ],
+   "parity": 1,
+   "n_intervals": 142744,
+   "max_train_date": 20180407,
+   "n_players": 874,
+   "n_goalies": 89,
+   "hours": 513.2027777777778,
+   "goals": 2386,
+   "league": {
+    "xg": 2.4066062019476426,
+    "g": 2.32461719160176,
+    "c": 57.49092030981905
+   },
+   "seconds": 2.6
+  },
+  {
+   "name": "h30_2015_17",
+   "cutoff": 20170410,
+   "seasons": [
+    20142015,
+    20152016,
+    20162017
+   ],
+   "parity": 0,
+   "n_intervals": 421756,
+   "max_train_date": 20170409,
+   "n_players": 1184,
+   "n_goalies": 116,
+   "hours": 1476.4152777777779,
+   "goals": 6554,
+   "league": {
+    "xg": 2.2818236204654267,
+    "g": 2.2195652194363413,
+    "c": 54.37731592756103
+   },
+   "seconds": 8.0
+  },
+  {
+   "name": "h31_2015_17",
+   "cutoff": 20170410,
+   "seasons": [
+    20142015,
+    20152016,
+    20162017
+   ],
+   "parity": 1,
+   "n_intervals": 421385,
+   "max_train_date": 20170409,
+   "n_players": 1177,
+   "n_goalies": 120,
+   "hours": 1474.2397222222223,
+   "goals": 6514,
+   "league": {
+    "xg": 2.2943513141370766,
+    "g": 2.20927434724829,
+    "c": 54.55286463097834
+   },
+   "seconds": 7.3
+  }
+ ]
+}

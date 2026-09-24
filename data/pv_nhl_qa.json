@@ -1,0 +1,347 @@
+{
+ "A_coverage": {
+  "dev_spine_games": 10076,
+  "reduced_ok": 10076,
+  "not_ok": 0,
+  "not_ok_gids": [],
+  "status_counts": {
+   "ok": 10076
+  }
+ },
+ "B_goals_events_vs_games_csv": {
+  "games": 10076,
+  "exact": 10076,
+  "rate": 1.0,
+  "shootout_games": 1084,
+  "so_games_without_so_goal_events": 0,
+  "mismatches": []
+ },
+ "B_goals_payload_vs_games_csv": {
+  "games": 10076,
+  "exact": 10076,
+  "rate": 1.0,
+  "mismatches": []
+ },
+ "C_box_reconcile": {
+  "games": 9371,
+  "player_games": 374817,
+  "G": {
+   "player_game_exact": 1.0,
+   "skater_player_game_exact": 1.0,
+   "n_differ_skaters": 2,
+   "n_differ_goalies": 3,
+   "total_events": 50927.0,
+   "total_box": 50924.0,
+   "credit_to_players_not_in_box": 1.0,
+   "n_player_games_differ": 5
+  },
+  "A": {
+   "player_game_exact": 0.9989,
+   "skater_player_game_exact": 1.0,
+   "n_differ_skaters": 4,
+   "n_differ_goalies": 411,
+   "total_events": 86930.0,
+   "total_box": 86514.0,
+   "credit_to_players_not_in_box": 0.0,
+   "n_player_games_differ": 415
+  },
+  "SOG": {
+   "player_game_exact": 0.9996,
+   "skater_player_game_exact": 0.9997,
+   "n_differ_skaters": 109,
+   "n_differ_goalies": 23,
+   "total_events": 566199.0,
+   "total_box": 566073.0,
+   "credit_to_players_not_in_box": 1.0,
+   "n_player_games_differ": 132
+  },
+  "BLK": {
+   "player_game_exact": 1.0,
+   "skater_player_game_exact": 1.0,
+   "n_differ_skaters": 1,
+   "n_differ_goalies": 3,
+   "total_events": 267926.0,
+   "total_box": 267924.0,
+   "credit_to_players_not_in_box": 0.0,
+   "n_player_games_differ": 4
+  },
+  "PIM": {
+   "player_game_exact": 1.0,
+   "skater_player_game_exact": 1.0,
+   "n_differ_skaters": 15,
+   "n_differ_goalies": 0,
+   "total_events": 189900.0,
+   "total_box": 189957.0,
+   "credit_to_players_not_in_box": 0.0,
+   "n_player_games_differ": 15
+  }
+ },
+ "D_rosters": {
+  "team_games_vs_box": 18742,
+  "dressed_set_identical": 1.0,
+  "goalie_rows_vs_box": 37485,
+  "g_start_agrees_with_box_starter": 1.0,
+  "dressed_per_team_game": {
+   "17": 1,
+   "18": 2,
+   "19": 18,
+   "20": 20128,
+   "21": 3
+  },
+  "goalies_per_team_game": {
+   "1": 1,
+   "2": 20148,
+   "3": 3
+  },
+  "team_games_with_exactly_one_g_start": 1.0,
+  "players_with_zero_events_share": 0.0482,
+  "toi_rows_vs_box": 374817,
+  "toi_exact_vs_box": 0.9979,
+  "toi_within_60s_vs_box": 0.9991,
+  "roster_rows_with_toi": 1.0,
+  "dressed_with_zero_toi_share": 0.0461
+ },
+ "E_xg_join": {
+  "pbp_unblocked_nonSO_shots": 847218,
+  "with_xg": 846662,
+  "pbp_join_rate": 0.9993,
+  "moneypuck_shots_in_dev_games": 846683,
+  "moneypuck_used_rate": 1.0,
+  "exact_share_of_matched": 1.0,
+  "fuzzy_time_share_of_matched": 0.0,
+  "goal_flag_differs_share_of_matched": 0.0,
+  "pbp_join_rate_by_season": {
+   "20102011": 0.9985,
+   "20112012": 0.9993,
+   "20122013": 0.9995,
+   "20132014": 0.9994,
+   "20142015": 0.9996,
+   "20152016": 0.9994,
+   "20162017": 0.9996,
+   "20172018": 0.9995
+  },
+  "games_join_rate_lt_0.80": 1,
+  "games_join_rate_lt_0.80_gids": [
+   2010030417
+  ],
+  "dev_games_without_moneypuck_rows": 1,
+  "goals_with_xg_share": 0.9972,
+  "mean_xg_goal_vs_nongoal": [
+   0.2053,
+   0.0552
+  ]
+ },
+ "F_attribution": {
+  "events": 2619612,
+  "blank_team": 0,
+  "named_ids_not_in_rosterSpots": {
+   "shooter": 1,
+   "assist1": 0,
+   "assist2": 0,
+   "goalie": 0,
+   "blocker": 0,
+   "fo_win": 0,
+   "fo_lose": 0,
+   "hitter": 0,
+   "hittee": 0,
+   "player": 0,
+   "pen_by": 0,
+   "pen_drawn": 0,
+   "pen_served": 0
+  },
+  "penalty_team_eq_committer_team": 1.0,
+  "blocked_blocker_team_ne_shooter_team": 1.0,
+  "missing_primary_player": {
+   "goal": 0,
+   "shot-on-goal": 0,
+   "missed-shot": 0,
+   "blocked-shot": 0,
+   "faceoff": 0,
+   "hit": 0,
+   "giveaway": 0,
+   "takeaway": 0,
+   "penalty": 2033
+  },
+  "shots_on_goal_missing_goalie_nonEN": 3
+ },
+ "G_per_game_volume_by_season": {
+  "20102011": {
+   "blocked-shot": 28.7,
+   "faceoff": 58.4,
+   "giveaway": 16.1,
+   "goal": 5.7,
+   "hit": 46.4,
+   "missed-shot": 23.7,
+   "penalty": 9.5,
+   "shot-on-goal": 56.0,
+   "takeaway": 14.4
+  },
+  "20112012": {
+   "blocked-shot": 28.4,
+   "faceoff": 57.9,
+   "giveaway": 15.5,
+   "goal": 5.6,
+   "hit": 46.8,
+   "missed-shot": 23.4,
+   "penalty": 8.9,
+   "shot-on-goal": 54.6,
+   "takeaway": 13.6
+  },
+  "20122013": {
+   "blocked-shot": 28.9,
+   "faceoff": 60.1,
+   "giveaway": 15.8,
+   "goal": 5.6,
+   "hit": 49.9,
+   "missed-shot": 23.3,
+   "penalty": 9.0,
+   "shot-on-goal": 54.0,
+   "takeaway": 13.0
+  },
+  "20132014": {
+   "blocked-shot": 28.6,
+   "faceoff": 60.8,
+   "giveaway": 16.0,
+   "goal": 5.7,
+   "hit": 48.4,
+   "missed-shot": 23.8,
+   "penalty": 8.7,
+   "shot-on-goal": 55.3,
+   "takeaway": 13.0
+  },
+  "20142015": {
+   "blocked-shot": 29.2,
+   "faceoff": 61.5,
+   "giveaway": 16.8,
+   "goal": 5.6,
+   "hit": 51.1,
+   "missed-shot": 23.4,
+   "penalty": 8.0,
+   "shot-on-goal": 55.1,
+   "takeaway": 13.6
+  },
+  "20152016": {
+   "blocked-shot": 28.7,
+   "faceoff": 60.5,
+   "giveaway": 16.8,
+   "goal": 5.5,
+   "hit": 47.9,
+   "missed-shot": 23.5,
+   "penalty": 8.1,
+   "shot-on-goal": 54.5,
+   "takeaway": 12.7
+  },
+  "20162017": {
+   "blocked-shot": 28.8,
+   "faceoff": 60.3,
+   "giveaway": 18.2,
+   "goal": 5.6,
+   "hit": 45.1,
+   "missed-shot": 23.8,
+   "penalty": 7.8,
+   "shot-on-goal": 55.4,
+   "takeaway": 13.6
+  },
+  "20172018": {
+   "blocked-shot": 29.6,
+   "faceoff": 60.9,
+   "giveaway": 19.0,
+   "goal": 6.0,
+   "hit": 44.4,
+   "missed-shot": 24.7,
+   "penalty": 7.5,
+   "shot-on-goal": 58.3,
+   "takeaway": 14.6
+  }
+ },
+ "G_coverage": {
+  "xy_share": 0.9976,
+  "xy_share_by_ev": {
+   "blocked-shot": 1.0,
+   "faceoff": 1.0,
+   "giveaway": 1.0,
+   "goal": 0.9995,
+   "hit": 1.0,
+   "missed-shot": 0.9999,
+   "penalty": 0.9264,
+   "shot-on-goal": 0.9999,
+   "takeaway": 1.0
+  },
+  "sit_share": 0.9991,
+  "shot_type_share_unblocked": 0.9999,
+  "strength_5v5_share_of_unblocked": 0.7745
+ },
+ "H_team_abbrev_vs_games_csv": {
+  "games": 10076,
+  "home_eq": 1.0,
+  "away_eq": 1.0,
+  "pairs_differing": []
+ },
+ "I_geometry": {
+  "unblocked_with_dist": 1.0,
+  "dist_median_goal_vs_nongoal": [
+   17.7,
+   35.4
+  ],
+  "share_dist_gt_100": 0.0097,
+  "xg_corr_neg_dist": -0.3961
+ },
+ "J_rink_scorer_bias_home_over_road_count": {
+  "hit": {
+   "arena_ratio_p05": 0.6972,
+   "median": 0.9929,
+   "p95": 1.3116,
+   "min": 0.6348,
+   "max": 1.4948
+  },
+  "giveaway": {
+   "arena_ratio_p05": 0.4497,
+   "median": 1.01,
+   "p95": 1.712,
+   "min": 0.3472,
+   "max": 2.1807
+  },
+  "takeaway": {
+   "arena_ratio_p05": 0.5485,
+   "median": 0.9604,
+   "p95": 1.6212,
+   "min": 0.3883,
+   "max": 2.1819
+  },
+  "blocked-shot": {
+   "arena_ratio_p05": 0.7953,
+   "median": 1.0056,
+   "p95": 1.2093,
+   "min": 0.5623,
+   "max": 1.3414
+  },
+  "missed-shot": {
+   "arena_ratio_p05": 0.8035,
+   "median": 0.9864,
+   "p95": 1.268,
+   "min": 0.7058,
+   "max": 1.3976
+  },
+  "shot-on-goal": {
+   "arena_ratio_p05": 0.9157,
+   "median": 0.9961,
+   "p95": 1.0804,
+   "min": 0.8134,
+   "max": 1.1753
+  },
+  "faceoff": {
+   "arena_ratio_p05": 0.9459,
+   "median": 1.0008,
+   "p95": 1.051,
+   "min": 0.9261,
+   "max": 1.0689
+  }
+ },
+ "K_special": {
+  "penalty_shot_attempts_nonSO": 435,
+  "penalty_shot_with_xg": 2,
+  "shootout_attempt_rows": 7693,
+  "penalties_without_committer": 2033,
+  "of_which_bench_BEN": 2022
+ }
+}

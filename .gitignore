@@ -44,3 +44,15 @@ data/nhl_dressed.csv
 data/bt_*.npy
 data/bt_*.npz
 data/bt_*.csv
+
+# player-value program caches (6 GB; rebuildable from phase0/pv_*.py and the NHL/nflverse archives)
+data/pv_*.csv
+data/pv_*.parquet
+data/pv_*.npz
+data/pv_*.npy
+data/pv_*.log
+data/pv_*_logs/
+data/pv_nhl_pbp/
+data/pv_nfl_pbp*/
+data/pv_*.pkl
+data/pv_nfl_events_parts/

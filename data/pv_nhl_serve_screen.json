@@ -1,0 +1,58 @@
+{
+ "prereg": "data/pv_nhl_serve_prereg.json",
+ "prereg_sha256": "c2d6902045208330b02facc33b3280f61cfdec3fa96a08cb913eb455b88e8a6a",
+ "n": 7929,
+ "sanity": {
+  "S1_shipped": 0.672398,
+  "S1_pass": true,
+  "S2_drop_xg": 0.00303,
+  "S2_pass": true
+ },
+ "walk_forward": {
+  "lv_last_equals_same_game_lv": false,
+  "pass": true,
+  "scramble_changes_values": true
+ },
+ "n_sides_without_previous_game": 1,
+ "S1": {
+  "gain": 0.00118,
+  "fold_sd": 0.00081,
+  "fold_se": 0.0003,
+  "sigma": 3.88,
+  "n_pos_folds": 6,
+  "n_folds": 7,
+  "sig": "SIG",
+  "boot_ci_4k_seed7": [
+   6e-05,
+   0.00227
+  ],
+  "boot_ci_10k": [
+   6e-05,
+   0.00228
+  ],
+  "gain_exact": 0.0011821557796903787,
+  "dev_ll": 0.671216,
+  "late_dev_2015_18": {
+   "n": 3731,
+   "gain": 0.00128,
+   "boot_ci_10k": [
+    -0.00038,
+    0.00291
+   ]
+  },
+  "per_season_gain": {
+   "20112012": -0.00015,
+   "20122013": 0.00054,
+   "20132014": 0.00191,
+   "20142015": 0.00179,
+   "20152016": 0.0019,
+   "20162017": 0.00063,
+   "20172018": 0.00132
+  }
+ },
+ "clears_bar": true,
+ "reference_A1_actual_lineup": 0.0016043124337423724,
+ "reference_D1_prev10": 0.0009857874700689934,
+ "share_of_A1_retained": 0.737,
+ "seconds": 1.3
+}

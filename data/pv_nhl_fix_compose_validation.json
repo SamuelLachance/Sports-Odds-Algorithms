@@ -1,0 +1,1493 @@
+{
+ "protocol": {
+  "dev_only": true,
+  "test_seasons_touched": 0,
+  "market_inputs": 0,
+  "scored_seasons": [
+   20122013,
+   20132014,
+   20142015,
+   20152016,
+   20162017,
+   20172018
+  ]
+ },
+ "S0_goalie_rule": {
+  "variant": "G2 experience-bucket prior offset (declared in core)",
+  "n_starts": 13822,
+  "mse_gain_per_start": -0.004296,
+  "ci": [
+   -0.007078,
+   -0.001499
+  ],
+  "per_season": {
+   "20122013": -0.006021,
+   "20132014": -0.011176,
+   "20142015": -0.01171,
+   "20152016": -0.002337,
+   "20162017": -0.000644,
+   "20172018": 0.005083
+  },
+  "rho_by_season": {
+   "20102011": {
+    "0": 0.0,
+    "1": 0.0,
+    "2": 0.0,
+    "3": 0.0,
+    "4": 0.0
+   },
+   "20112012": {
+    "0": 0.0,
+    "1": 0.0,
+    "2": 0.0,
+    "3": 0.0,
+    "4": 0.0
+   },
+   "20122013": {
+    "0": -0.004779,
+    "1": -0.014041,
+    "2": -0.060292,
+    "3": 0.03575,
+    "4": -0.012688
+   },
+   "20132014": {
+    "0": -0.013239,
+    "1": -0.014997,
+    "2": -0.053484,
+    "3": 0.025862,
+    "4": -0.010148
+   },
+   "20142015": {
+    "0": 0.007423,
+    "1": -0.014677,
+    "2": -0.045657,
+    "3": 0.018758,
+    "4": -0.007871
+   },
+   "20152016": {
+    "0": 0.023136,
+    "1": -0.010919,
+    "2": -0.04451,
+    "3": 0.007167,
+    "4": 0.00185
+   },
+   "20162017": {
+    "0": 0.021884,
+    "1": -0.013898,
+    "2": -0.043535,
+    "3": 0.006405,
+    "4": 0.005066
+   },
+   "20172018": {
+    "0": 0.016862,
+    "1": -0.019812,
+    "2": -0.039442,
+    "3": 0.008242,
+    "4": 0.005212
+   }
+  },
+  "adopted": false,
+  "decision": "G2 REJECTED (worse or n.s.); the goalie value is the 1v1 saving rating"
+ },
+ "E1_game": {
+  "n_games": 6911,
+  "rapm_P_coverage": 1.0,
+  "gd_var": 4.473275,
+  "vs_hfa": {
+   "composite": {
+    "mse": 4.302427,
+    "r2_vs_var": 0.038193,
+    "mse_gain_vs_hfa": 0.171625,
+    "ci": [
+     0.132353,
+     0.208945
+    ]
+   },
+   "composite_prior_w": {
+    "mse": 4.330307,
+    "r2_vs_var": 0.03196,
+    "mse_gain_vs_hfa": 0.143744,
+    "ci": [
+     0.117305,
+     0.169408
+    ]
+   },
+   "composite_skaters": {
+    "mse": 4.309411,
+    "r2_vs_var": 0.036632,
+    "mse_gain_vs_hfa": 0.16464,
+    "ci": [
+     0.127175,
+     0.202045
+    ]
+   },
+   "goalie_only": {
+    "mse": 4.456898,
+    "r2_vs_var": 0.003661,
+    "mse_gain_vs_hfa": 0.017153,
+    "ci": [
+     0.008922,
+     0.025802
+    ]
+   },
+   "rapm_P": {
+    "mse": 4.356087,
+    "r2_vs_var": 0.026197,
+    "mse_gain_vs_hfa": 0.117964,
+    "ci": [
+     0.086702,
+     0.150265
+    ]
+   },
+   "composite_plus_rapm": {
+    "mse": 4.306005,
+    "r2_vs_var": 0.037393,
+    "mse_gain_vs_hfa": 0.168046,
+    "ci": [
+     0.122494,
+     0.214067
+    ]
+   },
+   "composite_refit": {
+    "mse": 4.306182,
+    "r2_vs_var": 0.037354,
+    "mse_gain_vs_hfa": 0.167869,
+    "ci": [
+     0.120884,
+     0.213209
+    ]
+   },
+   "rapm_P_face": {
+    "mse": 4.39252,
+    "r2_vs_var": 0.018053,
+    "mse_gain_vs_hfa": 0.081531,
+    "ci": [
+     0.066775,
+     0.096658
+    ]
+   },
+   "only_ev_shot": {
+    "mse": 4.412847,
+    "r2_vs_var": 0.013509,
+    "mse_gain_vs_hfa": 0.061204,
+    "ci": [
+     0.039331,
+     0.082174
+    ]
+   },
+   "only_ev_fin": {
+    "mse": 4.455906,
+    "r2_vs_var": 0.003883,
+    "mse_gain_vs_hfa": 0.018145,
+    "ci": [
+     0.002067,
+     0.03415
+    ]
+   },
+   "only_ev_a1": {
+    "mse": 4.398439,
+    "r2_vs_var": 0.01673,
+    "mse_gain_vs_hfa": 0.075612,
+    "ci": [
+     0.052125,
+     0.099233
+    ]
+   },
+   "only_ev_a2": {
+    "mse": 4.409802,
+    "r2_vs_var": 0.014189,
+    "mse_gain_vs_hfa": 0.064249,
+    "ci": [
+     0.040783,
+     0.088037
+    ]
+   },
+   "only_ev_def": {
+    "mse": 4.396918,
+    "r2_vs_var": 0.01707,
+    "mse_gain_vs_hfa": 0.077134,
+    "ci": [
+     0.05068,
+     0.103796
+    ]
+   },
+   "only_pp_xg": {
+    "mse": 4.443276,
+    "r2_vs_var": 0.006706,
+    "mse_gain_vs_hfa": 0.030776,
+    "ci": [
+     0.020207,
+     0.041493
+    ]
+   },
+   "only_pp_ast": {
+    "mse": 4.458476,
+    "r2_vs_var": 0.003308,
+    "mse_gain_vs_hfa": 0.015576,
+    "ci": [
+     0.007316,
+     0.024187
+    ]
+   },
+   "only_duels": {
+    "mse": 4.472293,
+    "r2_vs_var": 0.00022,
+    "mse_gain_vs_hfa": 0.001759,
+    "ci": [
+     -0.00718,
+     0.010658
+    ]
+   },
+   "only_goalie": {
+    "mse": 4.4538,
+    "r2_vs_var": 0.004354,
+    "mse_gain_vs_hfa": 0.020251,
+    "ci": [
+     0.00946,
+     0.031781
+    ]
+   }
+  },
+  "composite_vs_rapm": {
+   "composite": {
+    "mse": 4.302427,
+    "r2_vs_var": 0.038193,
+    "mse_gain_vs_rapm_P": 0.05366,
+    "ci": [
+     0.030581,
+     0.076246
+    ]
+   },
+   "composite_prior_w": {
+    "mse": 4.330307,
+    "r2_vs_var": 0.03196,
+    "mse_gain_vs_rapm_P": 0.02578,
+    "ci": [
+     0.003353,
+     0.04825
+    ]
+   },
+   "composite_skaters": {
+    "mse": 4.309411,
+    "r2_vs_var": 0.036632,
+    "mse_gain_vs_rapm_P": 0.046676,
+    "ci": [
+     0.025212,
+     0.068194
+    ]
+   },
+   "composite_plus_rapm": {
+    "mse": 4.306005,
+    "r2_vs_var": 0.037393,
+    "mse_gain_vs_rapm_P": 0.050082,
+    "ci": [
+     0.022344,
+     0.077273
+    ]
+   }
+  },
+  "rapm_beyond_composite": {
+   "composite_plus_rapm": {
+    "mse": 4.306005,
+    "r2_vs_var": 0.037393,
+    "mse_gain_vs_composite_refit": 0.000177,
+    "ci": [
+     -0.001081,
+     0.00141
+    ]
+   }
+  },
+  "rapm_P_wf_coefs": {
+   "20112012": [
+    0.25,
+    1.0
+   ],
+   "20122013": [
+    0.301016,
+    1.706948
+   ],
+   "20132014": [
+    0.283702,
+    2.056809
+   ],
+   "20142015": [
+    0.272083,
+    2.275913
+   ],
+   "20152016": [
+    0.265124,
+    2.361028
+   ],
+   "20162017": [
+    0.252305,
+    2.227231
+   ],
+   "20172018": [
+    0.26116,
+    2.251828
+   ]
+  },
+  "composite_plus_rapm_coefs": {
+   "20112012": [
+    0.25,
+    1.0,
+    0.0
+   ],
+   "20122013": [
+    0.305162,
+    1.16623,
+    -0.04885
+   ],
+   "20132014": [
+    0.285586,
+    1.172717,
+    0.151995
+   ],
+   "20142015": [
+    0.272572,
+    1.273678,
+    0.218111
+   ],
+   "20152016": [
+    0.264134,
+    1.202995,
+    0.003938
+   ],
+   "20162017": [
+    0.250391,
+    1.069823,
+    0.054809
+   ],
+   "20172018": [
+    0.258898,
+    1.029261,
+    0.180603
+   ]
+  },
+  "per_season_mse": {
+   "20122013": {
+    "hfa": 4.575703,
+    "composite": 4.451206,
+    "rapm_P": 4.515631,
+    "composite_prior_w": 4.481225
+   },
+   "20132014": {
+    "hfa": 4.521756,
+    "composite": 4.298871,
+    "rapm_P": 4.392219,
+    "composite_prior_w": 4.355776
+   },
+   "20142015": {
+    "hfa": 4.230531,
+    "composite": 3.951073,
+    "rapm_P": 4.047632,
+    "composite_prior_w": 4.025314
+   },
+   "20152016": {
+    "hfa": 4.094239,
+    "composite": 3.977916,
+    "rapm_P": 4.002466,
+    "composite_prior_w": 3.976883
+   },
+   "20162017": {
+    "hfa": 4.489051,
+    "composite": 4.326092,
+    "rapm_P": 4.352229,
+    "composite_prior_w": 4.33347
+   },
+   "20172018": {
+    "hfa": 4.95901,
+    "composite": 4.852747,
+    "rapm_P": 4.875193,
+    "composite_prior_w": 4.854285
+   }
+  },
+  "seasons_composite_beats_rapm": 6,
+  "season_2011_12_prior_weights": {
+   "n": 1230,
+   "mse_hfa": 4.595427,
+   "mse_composite_prior": 4.521219,
+   "mse_rapm_face": 4.570391
+  },
+  "gf_split_corr": {
+   "team_goals_for_vs_own_offence_value": 0.115061,
+   "team_goals_for_vs_minus_opp_defence_goalie_value": 0.112507,
+   "team_goals_for_vs_own_P_minus_opp_P": 0.112877,
+   "note": "descriptive correlations on team-game rows, scored seasons"
+  }
+ },
+ "E2_team_month": {
+  "n_blocks": 1124,
+  "mean_games_per_block": 12.123665,
+  "block_gd_var": 70.995551,
+  "vs_hfa": {
+   "composite": {
+    "mse": 56.755865,
+    "r2_vs_var": 0.200572,
+    "mse_gain_vs_hfa": 13.498409,
+    "ci": [
+     8.298391,
+     19.203767
+    ]
+   },
+   "composite_skaters": {
+    "mse": 57.791261,
+    "r2_vs_var": 0.185988,
+    "mse_gain_vs_hfa": 12.463013,
+    "ci": [
+     7.174828,
+     18.179121
+    ]
+   },
+   "rapm": {
+    "mse": 60.602294,
+    "r2_vs_var": 0.146393,
+    "mse_gain_vs_hfa": 9.65198,
+    "ci": [
+     5.693733,
+     13.885635
+    ]
+   },
+   "both": {
+    "mse": 56.782537,
+    "r2_vs_var": 0.200196,
+    "mse_gain_vs_hfa": 13.471738,
+    "ci": [
+     8.269318,
+     19.169606
+    ]
+   },
+   "composite_face": {
+    "mse": 56.362578,
+    "r2_vs_var": 0.206111,
+    "mse_gain_vs_hfa": 13.891696,
+    "ci": [
+     9.251566,
+     18.847457
+    ]
+   },
+   "rapm_face": {
+    "mse": 63.518311,
+    "r2_vs_var": 0.10532,
+    "mse_gain_vs_hfa": 6.735963,
+    "ci": [
+     4.727517,
+     8.821335
+    ]
+   }
+  },
+  "composite_vs_rapm": {
+   "composite": {
+    "mse": 56.755865,
+    "r2_vs_var": 0.200572,
+    "mse_gain_vs_rapm": 3.846429,
+    "ci": [
+     1.166595,
+     6.601391
+    ]
+   },
+   "composite_skaters": {
+    "mse": 57.791261,
+    "r2_vs_var": 0.185988,
+    "mse_gain_vs_rapm": 2.811033,
+    "ci": [
+     0.122334,
+     5.642269
+    ]
+   },
+   "both": {
+    "mse": 56.782537,
+    "r2_vs_var": 0.200196,
+    "mse_gain_vs_rapm": 3.819757,
+    "ci": [
+     1.158688,
+     6.6747
+    ]
+   }
+  },
+  "face_composite_vs_face_rapm": {
+   "composite_face": {
+    "mse": 56.362578,
+    "r2_vs_var": 0.206111,
+    "mse_gain_vs_rapm_face": 7.155733,
+    "ci": [
+     4.019921,
+     10.357748
+    ]
+   }
+  },
+  "corr": {
+   "composite": 0.442407,
+   "rapm": 0.373927
+  },
+  "note": "values frozen at each player's first game of the month (built only from games before the month); actual minutes in the month as weights; target = actual month GD (no EN / SO goals); blocks with >= 5 games"
+ },
+ "E3_player": {
+  "n": 3588,
+  "n_F": 2278,
+  "n_D": 1310,
+  "sample": "regular-season player-seasons 2011-12..2017-18 with >= 400 5v5 min in season s, >= 200 prior 5v5 min and an incumbent RAPM value; value at his first game of s; TOI-weighted; player-cluster bootstrap",
+  "F_gd5": {
+   "label": "on-ice 5v5 GD/60",
+   "value_col": "v_ev60",
+   "r": 0.321312,
+   "ci": [
+    0.278791,
+    0.362803
+   ],
+   "r_incumbent": 0.246923,
+   "diff": 0.074389,
+   "diff_ci": [
+    0.036792,
+    0.113485
+   ]
+  },
+  "F_rel_gd5": {
+   "label": "relative 5v5 GD/60 (on - off)",
+   "value_col": "v_ev60",
+   "r": 0.290276,
+   "ci": [
+    0.245647,
+    0.333087
+   ],
+   "r_incumbent": 0.207956,
+   "diff": 0.08232,
+   "diff_ci": [
+    0.041666,
+    0.121439
+   ]
+  },
+  "F_gd_all": {
+   "label": "on-ice GD/60 all strengths (5v5+PP+SH)",
+   "value_col": "v_all60",
+   "r": 0.445049,
+   "ci": [
+    0.394812,
+    0.495038
+   ],
+   "r_incumbent": 0.297292,
+   "diff": 0.147756,
+   "diff_ci": [
+    0.089834,
+    0.203371
+   ]
+  },
+  "F_gf5": {
+   "label": "on-ice 5v5 GF/60",
+   "value_col": "v_ev60",
+   "r": 0.408096,
+   "ci": [
+    0.362904,
+    0.448006
+   ],
+   "r_incumbent": 0.24916,
+   "diff": 0.158935,
+   "diff_ci": [
+    0.114325,
+    0.200819
+   ]
+  },
+  "F_ga5_neg": {
+   "label": "minus on-ice 5v5 GA/60",
+   "value_col": "v_ev60",
+   "r": -0.030121,
+   "ci": [
+    -0.076521,
+    0.019649
+   ],
+   "r_incumbent": 0.062048,
+   "diff": -0.092169,
+   "diff_ci": [
+    -0.133241,
+    -0.053105
+   ]
+  },
+  "F_movers_n": 406,
+  "F_movers_gd5": {
+   "r": 0.222183,
+   "ci": [
+    0.126302,
+    0.308811
+   ],
+   "r_incumbent": 0.161974,
+   "diff": 0.060209,
+   "diff_ci": [
+    -0.02915,
+    0.151724
+   ]
+  },
+  "F_movers_rel_gd5": {
+   "r": 0.244907,
+   "ci": [
+    0.146941,
+    0.339566
+   ],
+   "r_incumbent": 0.15192,
+   "diff": 0.092987,
+   "diff_ci": [
+    0.003432,
+    0.184489
+   ]
+  },
+  "D_gd5": {
+   "label": "on-ice 5v5 GD/60",
+   "value_col": "v_ev60",
+   "r": 0.225062,
+   "ci": [
+    0.167571,
+    0.281039
+   ],
+   "r_incumbent": 0.215668,
+   "diff": 0.009394,
+   "diff_ci": [
+    -0.035534,
+    0.059798
+   ]
+  },
+  "D_rel_gd5": {
+   "label": "relative 5v5 GD/60 (on - off)",
+   "value_col": "v_ev60",
+   "r": 0.144259,
+   "ci": [
+    0.083031,
+    0.203381
+   ],
+   "r_incumbent": 0.135479,
+   "diff": 0.008781,
+   "diff_ci": [
+    -0.035887,
+    0.056006
+   ]
+  },
+  "D_gd_all": {
+   "label": "on-ice GD/60 all strengths (5v5+PP+SH)",
+   "value_col": "v_all60",
+   "r": 0.278136,
+   "ci": [
+    0.19916,
+    0.345001
+   ],
+   "r_incumbent": 0.280168,
+   "diff": -0.002031,
+   "diff_ci": [
+    -0.056815,
+    0.052421
+   ]
+  },
+  "D_gf5": {
+   "label": "on-ice 5v5 GF/60",
+   "value_col": "v_ev60",
+   "r": 0.178388,
+   "ci": [
+    0.109566,
+    0.241635
+   ],
+   "r_incumbent": 0.198811,
+   "diff": -0.020423,
+   "diff_ci": [
+    -0.064882,
+    0.025952
+   ]
+  },
+  "D_ga5_neg": {
+   "label": "minus on-ice 5v5 GA/60",
+   "value_col": "v_ev60",
+   "r": 0.137913,
+   "ci": [
+    0.074048,
+    0.197005
+   ],
+   "r_incumbent": 0.103076,
+   "diff": 0.034837,
+   "diff_ci": [
+    -0.011234,
+    0.080618
+   ]
+  },
+  "D_movers_n": 211,
+  "D_movers_gd5": {
+   "r": 0.106833,
+   "ci": [
+    -0.021281,
+    0.235264
+   ],
+   "r_incumbent": 0.104032,
+   "diff": 0.002801,
+   "diff_ci": [
+    -0.107213,
+    0.110527
+   ]
+  },
+  "D_movers_rel_gd5": {
+   "r": 0.15233,
+   "ci": [
+    0.030375,
+    0.272592
+   ],
+   "r_incumbent": 0.091071,
+   "diff": 0.061258,
+   "diff_ci": [
+    -0.041382,
+    0.169377
+   ]
+  }
+ },
+ "face_validity": {
+  "top_F": [
+   {
+    "name": "Connor McDavid",
+    "v_all60": 0.699,
+    "v_ev60": 0.808,
+    "p_ev_shot": 0.402,
+    "p_ev_fin": 0.088,
+    "p_ev_a1": 0.276,
+    "p_ev_a2": 0.133,
+    "p_ev_def": -0.091,
+    "p_pp_xg": -0.222,
+    "p_pp_ast": -0.091,
+    "p_duels": 0.096
+   },
+   {
+    "name": "Auston Matthews",
+    "v_all60": 0.553,
+    "v_ev60": 0.515,
+    "p_ev_shot": 0.455,
+    "p_ev_fin": 0.185,
+    "p_ev_a1": 0.068,
+    "p_ev_a2": -0.03,
+    "p_ev_def": -0.164,
+    "p_pp_xg": 0.411,
+    "p_pp_ast": -0.039,
+    "p_duels": 0.056
+   },
+   {
+    "name": "Nikita Kucherov",
+    "v_all60": 0.537,
+    "v_ev60": 0.548,
+    "p_ev_shot": 0.137,
+    "p_ev_fin": 0.166,
+    "p_ev_a1": 0.178,
+    "p_ev_a2": 0.086,
+    "p_ev_def": -0.019,
+    "p_pp_xg": 0.517,
+    "p_pp_ast": -0.161,
+    "p_duels": 0.026
+   },
+   {
+    "name": "Filip Forsberg",
+    "v_all60": 0.499,
+    "v_ev60": 0.538,
+    "p_ev_shot": 0.125,
+    "p_ev_fin": 0.042,
+    "p_ev_a1": 0.285,
+    "p_ev_a2": 0.003,
+    "p_ev_def": 0.083,
+    "p_pp_xg": 0.233,
+    "p_pp_ast": 0.03,
+    "p_duels": 0.01
+   },
+   {
+    "name": "Patrice Bergeron",
+    "v_all60": 0.484,
+    "v_ev60": 0.551,
+    "p_ev_shot": 0.249,
+    "p_ev_fin": -0.0,
+    "p_ev_a1": 0.047,
+    "p_ev_a2": 0.02,
+    "p_ev_def": 0.236,
+    "p_pp_xg": 0.415,
+    "p_pp_ast": -0.033,
+    "p_duels": 0.011
+   },
+   {
+    "name": "Taylor Hall",
+    "v_all60": 0.476,
+    "v_ev60": 0.588,
+    "p_ev_shot": 0.306,
+    "p_ev_fin": 0.031,
+    "p_ev_a1": 0.18,
+    "p_ev_a2": 0.048,
+    "p_ev_def": 0.024,
+    "p_pp_xg": 0.05,
+    "p_pp_ast": -0.133,
+    "p_duels": 0.004
+   },
+   {
+    "name": "Brad Marchand",
+    "v_all60": 0.459,
+    "v_ev60": 0.578,
+    "p_ev_shot": 0.151,
+    "p_ev_fin": 0.186,
+    "p_ev_a1": 0.182,
+    "p_ev_a2": 0.054,
+    "p_ev_def": 0.005,
+    "p_pp_xg": 0.567,
+    "p_pp_ast": -0.072,
+    "p_duels": -0.042
+   },
+   {
+    "name": "Joe Pavelski",
+    "v_all60": 0.445,
+    "v_ev60": 0.459,
+    "p_ev_shot": 0.153,
+    "p_ev_fin": 0.075,
+    "p_ev_a1": -0.008,
+    "p_ev_a2": 0.059,
+    "p_ev_def": 0.181,
+    "p_pp_xg": 0.283,
+    "p_pp_ast": -0.079,
+    "p_duels": 0.048
+   },
+   {
+    "name": "Steven Stamkos",
+    "v_all60": 0.435,
+    "v_ev60": 0.406,
+    "p_ev_shot": 0.074,
+    "p_ev_fin": 0.118,
+    "p_ev_a1": 0.304,
+    "p_ev_a2": 0.045,
+    "p_ev_def": -0.136,
+    "p_pp_xg": 0.797,
+    "p_pp_ast": -0.054,
+    "p_duels": -0.025
+   },
+   {
+    "name": "Jason Zucker",
+    "v_all60": 0.424,
+    "v_ev60": 0.45,
+    "p_ev_shot": 0.209,
+    "p_ev_fin": 0.04,
+    "p_ev_a1": 0.044,
+    "p_ev_a2": -0.017,
+    "p_ev_def": 0.174,
+    "p_pp_xg": 0.147,
+    "p_pp_ast": 0.0,
+    "p_duels": 0.033
+   },
+   {
+    "name": "Mark Scheifele",
+    "v_all60": 0.404,
+    "v_ev60": 0.453,
+    "p_ev_shot": 0.047,
+    "p_ev_fin": 0.079,
+    "p_ev_a1": 0.293,
+    "p_ev_a2": 0.061,
+    "p_ev_def": -0.027,
+    "p_pp_xg": 0.016,
+    "p_pp_ast": 0.048,
+    "p_duels": 0.027
+   },
+   {
+    "name": "Patric Hornqvist",
+    "v_all60": 0.393,
+    "v_ev60": 0.432,
+    "p_ev_shot": 0.406,
+    "p_ev_fin": -0.072,
+    "p_ev_a1": 0.021,
+    "p_ev_a2": -0.043,
+    "p_ev_def": 0.121,
+    "p_pp_xg": 0.205,
+    "p_pp_ast": 0.061,
+    "p_duels": 0.009
+   },
+   {
+    "name": "Nino Niederreiter",
+    "v_all60": 0.391,
+    "v_ev60": 0.451,
+    "p_ev_shot": 0.142,
+    "p_ev_fin": 0.027,
+    "p_ev_a1": 0.049,
+    "p_ev_a2": -0.001,
+    "p_ev_def": 0.235,
+    "p_pp_xg": 0.172,
+    "p_pp_ast": 0.055,
+    "p_duels": -0.018
+   },
+   {
+    "name": "David Pastrnak",
+    "v_all60": 0.389,
+    "v_ev60": 0.309,
+    "p_ev_shot": 0.126,
+    "p_ev_fin": 0.12,
+    "p_ev_a1": 0.252,
+    "p_ev_a2": 0.0,
+    "p_ev_def": -0.189,
+    "p_pp_xg": 0.566,
+    "p_pp_ast": -0.035,
+    "p_duels": 0.06
+   },
+   {
+    "name": "Evgeni Malkin",
+    "v_all60": 0.386,
+    "v_ev60": 0.445,
+    "p_ev_shot": 0.12,
+    "p_ev_fin": 0.156,
+    "p_ev_a1": 0.242,
+    "p_ev_a2": -0.004,
+    "p_ev_def": -0.069,
+    "p_pp_xg": 0.741,
+    "p_pp_ast": -0.145,
+    "p_duels": -0.07
+   }
+  ],
+  "bottom_F": [
+   {
+    "name": "Radim Vrbata",
+    "v_all60": -0.282,
+    "v_ev60": -0.309,
+    "p_ev_shot": -0.09,
+    "p_ev_fin": 0.025,
+    "p_ev_a1": 0.033,
+    "p_ev_a2": -0.007,
+    "p_ev_def": -0.269,
+    "p_pp_xg": 0.262,
+    "p_pp_ast": 0.011,
+    "p_duels": -0.033
+   },
+   {
+    "name": "Victor Rask",
+    "v_all60": -0.298,
+    "v_ev60": -0.313,
+    "p_ev_shot": -0.116,
+    "p_ev_fin": 0.045,
+    "p_ev_a1": -0.088,
+    "p_ev_a2": 0.02,
+    "p_ev_def": -0.173,
+    "p_pp_xg": -0.114,
+    "p_pp_ast": 0.009,
+    "p_duels": -0.002
+   },
+   {
+    "name": "Johan Larsson",
+    "v_all60": -0.303,
+    "v_ev60": -0.325,
+    "p_ev_shot": -0.201,
+    "p_ev_fin": -0.03,
+    "p_ev_a1": -0.18,
+    "p_ev_a2": 0.006,
+    "p_ev_def": 0.08,
+    "p_pp_xg": -0.232,
+    "p_pp_ast": 0.022,
+    "p_duels": -0.024
+   },
+   {
+    "name": "Vladimir Sobotka",
+    "v_all60": -0.32,
+    "v_ev60": -0.33,
+    "p_ev_shot": -0.196,
+    "p_ev_fin": -0.018,
+    "p_ev_a1": -0.054,
+    "p_ev_a2": -0.014,
+    "p_ev_def": -0.048,
+    "p_pp_xg": -0.443,
+    "p_pp_ast": 0.04,
+    "p_duels": -0.014
+   },
+   {
+    "name": "Jonathan Drouin",
+    "v_all60": -0.323,
+    "v_ev60": -0.291,
+    "p_ev_shot": -0.103,
+    "p_ev_fin": 0.0,
+    "p_ev_a1": -0.041,
+    "p_ev_a2": 0.022,
+    "p_ev_def": -0.17,
+    "p_pp_xg": -0.333,
+    "p_pp_ast": -0.089,
+    "p_duels": -0.037
+   },
+   {
+    "name": "Matt Beleskey",
+    "v_all60": -0.326,
+    "v_ev60": -0.236,
+    "p_ev_shot": 0.022,
+    "p_ev_fin": 0.006,
+    "p_ev_a1": -0.16,
+    "p_ev_a2": -0.016,
+    "p_ev_def": -0.088,
+    "p_pp_xg": -0.274,
+    "p_pp_ast": 0.046,
+    "p_duels": -0.064
+   },
+   {
+    "name": "Cody Eakin",
+    "v_all60": -0.334,
+    "v_ev60": -0.329,
+    "p_ev_shot": -0.093,
+    "p_ev_fin": -0.037,
+    "p_ev_a1": -0.087,
+    "p_ev_a2": 0.008,
+    "p_ev_def": -0.12,
+    "p_pp_xg": -0.34,
+    "p_pp_ast": 0.05,
+    "p_duels": -0.027
+   },
+   {
+    "name": "Valtteri Filppula",
+    "v_all60": -0.344,
+    "v_ev60": -0.356,
+    "p_ev_shot": -0.283,
+    "p_ev_fin": 0.014,
+    "p_ev_a1": 0.022,
+    "p_ev_a2": -0.017,
+    "p_ev_def": -0.092,
+    "p_pp_xg": -0.372,
+    "p_pp_ast": 0.06,
+    "p_duels": -0.006
+   },
+   {
+    "name": "Antoine Vermette",
+    "v_all60": -0.389,
+    "v_ev60": -0.37,
+    "p_ev_shot": -0.177,
+    "p_ev_fin": -0.016,
+    "p_ev_a1": -0.128,
+    "p_ev_a2": -0.025,
+    "p_ev_def": -0.024,
+    "p_pp_xg": -0.159,
+    "p_pp_ast": 0.05,
+    "p_duels": 0.028
+   },
+   {
+    "name": "Alexander Burmistrov",
+    "v_all60": -0.441,
+    "v_ev60": -0.44,
+    "p_ev_shot": -0.214,
+    "p_ev_fin": -0.024,
+    "p_ev_a1": -0.091,
+    "p_ev_a2": -0.005,
+    "p_ev_def": -0.105,
+    "p_pp_xg": -0.323,
+    "p_pp_ast": 0.044,
+    "p_duels": -0.023
+   }
+  ],
+  "n_F": 239,
+  "top_D": [
+   {
+    "name": "Shea Weber",
+    "v_all60": 0.346,
+    "v_ev60": 0.347,
+    "p_ev_shot": 0.004,
+    "p_ev_fin": 0.024,
+    "p_ev_a1": 0.011,
+    "p_ev_a2": 0.013,
+    "p_ev_def": 0.294,
+    "p_pp_xg": 0.555,
+    "p_pp_ast": 0.018,
+    "p_duels": -0.005
+   },
+   {
+    "name": "Colton Parayko",
+    "v_all60": 0.312,
+    "v_ev60": 0.323,
+    "p_ev_shot": 0.043,
+    "p_ev_fin": -0.003,
+    "p_ev_a1": 0.088,
+    "p_ev_a2": 0.008,
+    "p_ev_def": 0.187,
+    "p_pp_xg": -0.078,
+    "p_pp_ast": 0.018,
+    "p_duels": 0.053
+   },
+   {
+    "name": "Roman Josi",
+    "v_all60": 0.307,
+    "v_ev60": 0.273,
+    "p_ev_shot": 0.087,
+    "p_ev_fin": 0.008,
+    "p_ev_a1": 0.148,
+    "p_ev_a2": 0.029,
+    "p_ev_def": 0.001,
+    "p_pp_xg": 0.547,
+    "p_pp_ast": -0.021,
+    "p_duels": 0.031
+   },
+   {
+    "name": "Marc-Edouard Vlasic",
+    "v_all60": 0.28,
+    "v_ev60": 0.315,
+    "p_ev_shot": 0.056,
+    "p_ev_fin": 0.004,
+    "p_ev_a1": -0.028,
+    "p_ev_a2": 0.049,
+    "p_ev_def": 0.233,
+    "p_pp_xg": -0.149,
+    "p_pp_ast": 0.02,
+    "p_duels": 0.04
+   },
+   {
+    "name": "Jaccob Slavin",
+    "v_all60": 0.272,
+    "v_ev60": 0.285,
+    "p_ev_shot": -0.015,
+    "p_ev_fin": 0.003,
+    "p_ev_a1": 0.049,
+    "p_ev_a2": 0.03,
+    "p_ev_def": 0.218,
+    "p_pp_xg": -0.103,
+    "p_pp_ast": 0.019,
+    "p_duels": 0.041
+   },
+   {
+    "name": "Jared Spurgeon",
+    "v_all60": 0.267,
+    "v_ev60": 0.255,
+    "p_ev_shot": 0.023,
+    "p_ev_fin": 0.009,
+    "p_ev_a1": 0.04,
+    "p_ev_a2": 0.019,
+    "p_ev_def": 0.164,
+    "p_pp_xg": 0.206,
+    "p_pp_ast": -0.003,
+    "p_duels": 0.044
+   },
+   {
+    "name": "Hampus Lindholm",
+    "v_all60": 0.266,
+    "v_ev60": 0.347,
+    "p_ev_shot": -0.005,
+    "p_ev_fin": 0.006,
+    "p_ev_a1": -0.01,
+    "p_ev_a2": 0.017,
+    "p_ev_def": 0.34,
+    "p_pp_xg": 0.055,
+    "p_pp_ast": 0.014,
+    "p_duels": -0.008
+   },
+   {
+    "name": "Josh Manson",
+    "v_all60": 0.263,
+    "v_ev60": 0.34,
+    "p_ev_shot": 0.045,
+    "p_ev_fin": -0.002,
+    "p_ev_a1": 0.074,
+    "p_ev_a2": 0.043,
+    "p_ev_def": 0.18,
+    "p_pp_xg": -0.106,
+    "p_pp_ast": 0.02,
+    "p_duels": -0.016
+   },
+   {
+    "name": "Brett Pesce",
+    "v_all60": 0.261,
+    "v_ev60": 0.263,
+    "p_ev_shot": 0.01,
+    "p_ev_fin": -0.003,
+    "p_ev_a1": 0.011,
+    "p_ev_a2": 0.013,
+    "p_ev_def": 0.231,
+    "p_pp_xg": -0.122,
+    "p_pp_ast": 0.02,
+    "p_duels": 0.038
+   },
+   {
+    "name": "Chris Tanev",
+    "v_all60": 0.256,
+    "v_ev60": 0.271,
+    "p_ev_shot": -0.088,
+    "p_ev_fin": 0.003,
+    "p_ev_a1": -0.05,
+    "p_ev_a2": 0.006,
+    "p_ev_def": 0.4,
+    "p_pp_xg": -0.167,
+    "p_pp_ast": 0.028,
+    "p_duels": 0.031
+   },
+   {
+    "name": "Mark Giordano",
+    "v_all60": 0.246,
+    "v_ev60": 0.331,
+    "p_ev_shot": 0.05,
+    "p_ev_fin": 0.024,
+    "p_ev_a1": -0.009,
+    "p_ev_a2": 0.031,
+    "p_ev_def": 0.235,
+    "p_pp_xg": 0.073,
+    "p_pp_ast": 0.015,
+    "p_duels": -0.005
+   },
+   {
+    "name": "Erik Karlsson",
+    "v_all60": 0.241,
+    "v_ev60": 0.266,
+    "p_ev_shot": 0.072,
+    "p_ev_fin": 0.027,
+    "p_ev_a1": 0.186,
+    "p_ev_a2": 0.07,
+    "p_ev_def": -0.09,
+    "p_pp_xg": 0.012,
+    "p_pp_ast": -0.032,
+    "p_duels": 0.035
+   },
+   {
+    "name": "Dougie Hamilton",
+    "v_all60": 0.24,
+    "v_ev60": 0.335,
+    "p_ev_shot": 0.147,
+    "p_ev_fin": 0.01,
+    "p_ev_a1": 0.058,
+    "p_ev_a2": 0.038,
+    "p_ev_def": 0.083,
+    "p_pp_xg": 0.427,
+    "p_pp_ast": 0.015,
+    "p_duels": -0.068
+   },
+   {
+    "name": "Jacob Trouba",
+    "v_all60": 0.238,
+    "v_ev60": 0.259,
+    "p_ev_shot": 0.088,
+    "p_ev_fin": -0.005,
+    "p_ev_a1": 0.096,
+    "p_ev_a2": 0.028,
+    "p_ev_def": 0.052,
+    "p_pp_xg": 0.104,
+    "p_pp_ast": 0.029,
+    "p_duels": 0.013
+   },
+   {
+    "name": "Ivan Provorov",
+    "v_all60": 0.237,
+    "v_ev60": 0.294,
+    "p_ev_shot": 0.091,
+    "p_ev_fin": 0.006,
+    "p_ev_a1": 0.031,
+    "p_ev_a2": -0.0,
+    "p_ev_def": 0.166,
+    "p_pp_xg": -0.13,
+    "p_pp_ast": 0.037,
+    "p_duels": 0.014
+   }
+  ],
+  "bottom_D": [
+   {
+    "name": "Kevin Connauton",
+    "v_all60": -0.205,
+    "v_ev60": -0.232,
+    "p_ev_shot": 0.023,
+    "p_ev_fin": 0.014,
+    "p_ev_a1": -0.052,
+    "p_ev_a2": 0.007,
+    "p_ev_def": -0.224,
+    "p_pp_xg": -0.123,
+    "p_pp_ast": 0.028,
+    "p_duels": -0.019
+   },
+   {
+    "name": "Adam McQuaid",
+    "v_all60": -0.215,
+    "v_ev60": -0.195,
+    "p_ev_shot": -0.074,
+    "p_ev_fin": 0.001,
+    "p_ev_a1": -0.076,
+    "p_ev_a2": -0.004,
+    "p_ev_def": -0.042,
+    "p_pp_xg": -0.057,
+    "p_pp_ast": 0.019,
+    "p_duels": -0.041
+   },
+   {
+    "name": "Rasmus Ristolainen",
+    "v_all60": -0.218,
+    "v_ev60": -0.303,
+    "p_ev_shot": -0.013,
+    "p_ev_fin": -0.002,
+    "p_ev_a1": -0.032,
+    "p_ev_a2": -0.008,
+    "p_ev_def": -0.248,
+    "p_pp_xg": -0.123,
+    "p_pp_ast": -0.088,
+    "p_duels": 0.034
+   },
+   {
+    "name": "Brandon Carlo",
+    "v_all60": -0.229,
+    "v_ev60": -0.216,
+    "p_ev_shot": -0.045,
+    "p_ev_fin": -0.0,
+    "p_ev_a1": -0.07,
+    "p_ev_a2": -0.028,
+    "p_ev_def": -0.072,
+    "p_pp_xg": -0.098,
+    "p_pp_ast": 0.018,
+    "p_duels": -0.052
+   },
+   {
+    "name": "Kevin Bieksa",
+    "v_all60": -0.237,
+    "v_ev60": -0.227,
+    "p_ev_shot": -0.008,
+    "p_ev_fin": -0.005,
+    "p_ev_a1": -0.046,
+    "p_ev_a2": -0.014,
+    "p_ev_def": -0.154,
+    "p_pp_xg": -0.117,
+    "p_pp_ast": 0.016,
+    "p_duels": -0.036
+   },
+   {
+    "name": "Dennis Seidenberg",
+    "v_all60": -0.246,
+    "v_ev60": -0.243,
+    "p_ev_shot": -0.044,
+    "p_ev_fin": 0.0,
+    "p_ev_a1": 0.004,
+    "p_ev_a2": 0.018,
+    "p_ev_def": -0.221,
+    "p_pp_xg": -0.126,
+    "p_pp_ast": 0.021,
+    "p_duels": -0.02
+   },
+   {
+    "name": "Brent Seabrook",
+    "v_all60": -0.252,
+    "v_ev60": -0.302,
+    "p_ev_shot": 0.013,
+    "p_ev_fin": 0.013,
+    "p_ev_a1": -0.007,
+    "p_ev_a2": 0.005,
+    "p_ev_def": -0.326,
+    "p_pp_xg": 0.001,
+    "p_pp_ast": 0.003,
+    "p_duels": -0.009
+   },
+   {
+    "name": "Dion Phaneuf",
+    "v_all60": -0.292,
+    "v_ev60": -0.349,
+    "p_ev_shot": -0.02,
+    "p_ev_fin": -0.003,
+    "p_ev_a1": -0.006,
+    "p_ev_a2": -0.02,
+    "p_ev_def": -0.3,
+    "p_pp_xg": 0.064,
+    "p_pp_ast": 0.004,
+    "p_duels": -0.009
+   },
+   {
+    "name": "John Moore",
+    "v_all60": -0.294,
+    "v_ev60": -0.336,
+    "p_ev_shot": 0.021,
+    "p_ev_fin": 0.003,
+    "p_ev_a1": -0.048,
+    "p_ev_a2": -0.021,
+    "p_ev_def": -0.291,
+    "p_pp_xg": -0.061,
+    "p_pp_ast": 0.015,
+    "p_duels": -0.027
+   },
+   {
+    "name": "Matt Bartkowski",
+    "v_all60": -0.342,
+    "v_ev60": -0.31,
+    "p_ev_shot": -0.021,
+    "p_ev_fin": -0.004,
+    "p_ev_a1": -0.035,
+    "p_ev_a2": -0.008,
+    "p_ev_def": -0.242,
+    "p_pp_xg": -0.14,
+    "p_pp_ast": 0.022,
+    "p_duels": -0.035
+   }
+  ],
+  "n_D": 175,
+  "goalies_top": [
+   {
+    "name": "Antti Raanta",
+    "gv_goals_per_60": 0.194,
+    "starts_1718": 46
+   },
+   {
+    "name": "Sergei Bobrovsky",
+    "gv_goals_per_60": 0.178,
+    "starts_1718": 65
+   },
+   {
+    "name": "Pekka Rinne",
+    "gv_goals_per_60": 0.152,
+    "starts_1718": 59
+   },
+   {
+    "name": "Philipp Grubauer",
+    "gv_goals_per_60": 0.14,
+    "starts_1718": 28
+   },
+   {
+    "name": "John Gibson",
+    "gv_goals_per_60": 0.14,
+    "starts_1718": 60
+   },
+   {
+    "name": "Marc-Andre Fleury",
+    "gv_goals_per_60": 0.134,
+    "starts_1718": 46
+   },
+   {
+    "name": "Mike Smith",
+    "gv_goals_per_60": 0.133,
+    "starts_1718": 55
+   },
+   {
+    "name": "Corey Crawford",
+    "gv_goals_per_60": 0.125,
+    "starts_1718": 27
+   },
+   {
+    "name": "Roberto Luongo",
+    "gv_goals_per_60": 0.12,
+    "starts_1718": 33
+   },
+   {
+    "name": "Jonathan Quick",
+    "gv_goals_per_60": 0.117,
+    "starts_1718": 63
+   }
+  ],
+  "goalies_bottom": [
+   {
+    "name": "Chad Johnson",
+    "gv_goals_per_60": -0.077,
+    "starts_1718": 29
+   },
+   {
+    "name": "Jaroslav Halak",
+    "gv_goals_per_60": -0.082,
+    "starts_1718": 49
+   },
+   {
+    "name": "Jake Allen",
+    "gv_goals_per_60": -0.106,
+    "starts_1718": 56
+   },
+   {
+    "name": "Thomas Greiss",
+    "gv_goals_per_60": -0.11,
+    "starts_1718": 25
+   },
+   {
+    "name": "Craig Anderson",
+    "gv_goals_per_60": -0.125,
+    "starts_1718": 55
+   },
+   {
+    "name": "Carey Price",
+    "gv_goals_per_60": -0.148,
+    "starts_1718": 48
+   },
+   {
+    "name": "Cam Ward",
+    "gv_goals_per_60": -0.159,
+    "starts_1718": 42
+   },
+   {
+    "name": "Scott Darling",
+    "gv_goals_per_60": -0.187,
+    "starts_1718": 40
+   }
+  ],
+  "snapshot": "each skater's last pre-game value of the 2017-18 REGULAR season, players with >= 1,500 prior minutes; goalies: value at their last 2017-18 regular-season start, >= 20 starts"
+ },
+ "seconds": 9.6
+}

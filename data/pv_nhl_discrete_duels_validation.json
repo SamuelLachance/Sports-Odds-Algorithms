@@ -1,0 +1,3911 @@
+{
+ "component": "NHL discrete_duels",
+ "protocol": {
+  "dev_only": true,
+  "max_gid": 2017030415,
+  "max_season": 20172018,
+  "tuning_seasons": [
+   20112012,
+   20122013,
+   20132014,
+   20142015
+  ],
+  "untouched_by_tuning": [
+   20152016,
+   20162017,
+   20172018
+  ],
+  "test_seasons_touched": 0,
+  "market_blind": true
+ },
+ "F_faceoff_ll": {
+  "rating_ll_devA": 0.68528,
+  "rating_ll_devB": 0.68479,
+  "context_only_ll_devA": 0.69184,
+  "context_only_ll_devB": 0.69182,
+  "coin_ll": 0.69315,
+  "n_devA": 286253,
+  "n_devB": 241832,
+  "gain_devB_vs_context": 0.00703,
+  "calibration_devB_deciles": [
+   {
+    "p_mean": 0.4054,
+    "y_mean": 0.4071
+   },
+   {
+    "p_mean": 0.4493,
+    "y_mean": 0.4471
+   },
+   {
+    "p_mean": 0.4731,
+    "y_mean": 0.4767
+   },
+   {
+    "p_mean": 0.492,
+    "y_mean": 0.4917
+   },
+   {
+    "p_mean": 0.5089,
+    "y_mean": 0.5082
+   },
+   {
+    "p_mean": 0.5254,
+    "y_mean": 0.5242
+   },
+   {
+    "p_mean": 0.5421,
+    "y_mean": 0.54
+   },
+   {
+    "p_mean": 0.5609,
+    "y_mean": 0.5654
+   },
+   {
+    "p_mean": 0.5847,
+    "y_mean": 0.5807
+   },
+   {
+    "p_mean": 0.6284,
+    "y_mean": 0.6233
+   }
+  ]
+ },
+ "R_reliability": {
+  "split_half": {
+   "fo_pct": {
+    "r_half": 0.703,
+    "r_full_SB": 0.825,
+    "n": 1178,
+    "r_half_F": 0.703
+   },
+   "fo_g60": {
+    "r_half": 0.674,
+    "r_full_SB": 0.805,
+    "n": 1178,
+    "r_half_F": 0.674
+   },
+   "pen_draw60": {
+    "r_half": 0.553,
+    "r_full_SB": 0.712,
+    "n": 4322,
+    "r_half_F": 0.432,
+    "r_half_D": 0.294
+   },
+   "pen_take60": {
+    "r_half": 0.442,
+    "r_full_SB": 0.613,
+    "n": 4322,
+    "r_half_F": 0.426,
+    "r_half_D": 0.474
+   },
+   "pen_net60": {
+    "r_half": 0.449,
+    "r_full_SB": 0.62,
+    "n": 4322,
+    "r_half_F": 0.359,
+    "r_half_D": 0.379
+   },
+   "pen_g60": {
+    "r_half": 0.438,
+    "r_full_SB": 0.609,
+    "n": 4322,
+    "r_half_F": 0.346,
+    "r_half_D": 0.367
+   },
+   "tk60_raw": {
+    "r_half": 0.69,
+    "r_full_SB": 0.816,
+    "n": 4322,
+    "r_half_F": 0.555,
+    "r_half_D": 0.595
+   },
+   "tk60_adj": {
+    "r_half": 0.653,
+    "r_full_SB": 0.79,
+    "n": 4322,
+    "r_half_F": 0.477,
+    "r_half_D": 0.527
+   },
+   "gv60_raw": {
+    "r_half": 0.642,
+    "r_full_SB": 0.782,
+    "n": 4322,
+    "r_half_F": 0.626,
+    "r_half_D": 0.619
+   },
+   "gv60_adj": {
+    "r_half": 0.562,
+    "r_full_SB": 0.72,
+    "n": 4322,
+    "r_half_F": 0.547,
+    "r_half_D": 0.528
+   },
+   "tkgv60_raw": {
+    "r_half": 0.664,
+    "r_full_SB": 0.798,
+    "n": 4322,
+    "r_half_F": 0.504,
+    "r_half_D": 0.538
+   },
+   "tkgv60_adj": {
+    "r_half": 0.618,
+    "r_full_SB": 0.764,
+    "n": 4322,
+    "r_half_F": 0.434,
+    "r_half_D": 0.432
+   },
+   "tkgv_g60": {
+    "r_half": 0.772,
+    "r_full_SB": 0.872,
+    "n": 4322,
+    "r_half_F": 0.321,
+    "r_half_D": 0.678
+   },
+   "dd_g60": {
+    "r_half": 0.436,
+    "r_full_SB": 0.607,
+    "n": 4322,
+    "r_half_F": 0.346,
+    "r_half_D": 0.367
+   },
+   "dd_all_g60": {
+    "r_half": 0.565,
+    "r_full_SB": 0.722,
+    "n": 4322,
+    "r_half_F": 0.366,
+    "r_half_D": 0.414
+   },
+   "pts60": {
+    "r_half": 0.749,
+    "r_full_SB": 0.857,
+    "n": 4322,
+    "r_half_F": 0.635,
+    "r_half_D": 0.608
+   }
+  },
+  "yoy": {
+   "fo_pct": {
+    "r": 0.731,
+    "n": 831,
+    "r_F": 0.731,
+    "n_F": 831,
+    "r_team_changers_F": 0.703,
+    "r_team_changers": 0.703,
+    "n_team_changers": 153
+   },
+   "fo_g60": {
+    "r": 0.7,
+    "n": 831,
+    "r_F": 0.7,
+    "n_F": 831,
+    "r_team_changers_F": 0.655,
+    "r_team_changers": 0.655,
+    "n_team_changers": 153
+   },
+   "pen_draw60": {
+    "r": 0.69,
+    "n": 3226,
+    "r_F": 0.562,
+    "n_F": 2038,
+    "r_team_changers_F": 0.514,
+    "r_D": 0.454,
+    "n_D": 1188,
+    "r_team_changers_D": 0.403,
+    "r_team_changers": 0.64,
+    "n_team_changers": 682
+   },
+   "pen_take60": {
+    "r": 0.605,
+    "n": 3226,
+    "r_F": 0.607,
+    "n_F": 2038,
+    "r_team_changers_F": 0.571,
+    "r_D": 0.599,
+    "n_D": 1188,
+    "r_team_changers_D": 0.512,
+    "r_team_changers": 0.555,
+    "n_team_changers": 682
+   },
+   "pen_net60": {
+    "r": 0.59,
+    "n": 3226,
+    "r_F": 0.508,
+    "n_F": 2038,
+    "r_team_changers_F": 0.419,
+    "r_D": 0.48,
+    "n_D": 1188,
+    "r_team_changers_D": 0.459,
+    "r_team_changers": 0.507,
+    "n_team_changers": 682
+   },
+   "pen_g60": {
+    "r": 0.581,
+    "n": 3226,
+    "r_F": 0.495,
+    "n_F": 2038,
+    "r_team_changers_F": 0.416,
+    "r_D": 0.471,
+    "n_D": 1188,
+    "r_team_changers_D": 0.468,
+    "r_team_changers": 0.508,
+    "n_team_changers": 682
+   },
+   "tk60_raw": {
+    "r": 0.75,
+    "n": 3226,
+    "r_F": 0.612,
+    "n_F": 2038,
+    "r_team_changers_F": 0.353,
+    "r_D": 0.618,
+    "n_D": 1188,
+    "r_team_changers_D": 0.365,
+    "r_team_changers": 0.585,
+    "n_team_changers": 682
+   },
+   "tk60_adj": {
+    "r": 0.752,
+    "n": 3226,
+    "r_F": 0.584,
+    "n_F": 2038,
+    "r_team_changers_F": 0.424,
+    "r_D": 0.595,
+    "n_D": 1188,
+    "r_team_changers_D": 0.449,
+    "r_team_changers": 0.662,
+    "n_team_changers": 682
+   },
+   "gv60_raw": {
+    "r": 0.688,
+    "n": 3226,
+    "r_F": 0.693,
+    "n_F": 2038,
+    "r_team_changers_F": 0.418,
+    "r_D": 0.63,
+    "n_D": 1188,
+    "r_team_changers_D": 0.305,
+    "r_team_changers": 0.413,
+    "n_team_changers": 682
+   },
+   "gv60_adj": {
+    "r": 0.656,
+    "n": 3226,
+    "r_F": 0.655,
+    "n_F": 2038,
+    "r_team_changers_F": 0.47,
+    "r_D": 0.596,
+    "n_D": 1188,
+    "r_team_changers_D": 0.47,
+    "r_team_changers": 0.499,
+    "n_team_changers": 682
+   },
+   "tkgv60_raw": {
+    "r": 0.728,
+    "n": 3226,
+    "r_F": 0.582,
+    "n_F": 2038,
+    "r_team_changers_F": 0.363,
+    "r_D": 0.528,
+    "n_D": 1188,
+    "r_team_changers_D": 0.242,
+    "r_team_changers": 0.574,
+    "n_team_changers": 682
+   },
+   "tkgv60_adj": {
+    "r": 0.717,
+    "n": 3226,
+    "r_F": 0.544,
+    "n_F": 2038,
+    "r_team_changers_F": 0.382,
+    "r_D": 0.463,
+    "n_D": 1188,
+    "r_team_changers_D": 0.382,
+    "r_team_changers": 0.623,
+    "n_team_changers": 682
+   },
+   "tkgv_g60": {
+    "r": 0.774,
+    "n": 3226,
+    "r_F": 0.327,
+    "n_F": 2038,
+    "r_team_changers_F": 0.153,
+    "r_D": 0.433,
+    "n_D": 1188,
+    "r_team_changers_D": 0.296,
+    "r_team_changers": 0.694,
+    "n_team_changers": 682
+   },
+   "dd_g60": {
+    "r": 0.573,
+    "n": 3226,
+    "r_F": 0.484,
+    "n_F": 2038,
+    "r_team_changers_F": 0.403,
+    "r_D": 0.471,
+    "n_D": 1188,
+    "r_team_changers_D": 0.468,
+    "r_team_changers": 0.499,
+    "n_team_changers": 682
+   },
+   "dd_all_g60": {
+    "r": 0.691,
+    "n": 3226,
+    "r_F": 0.493,
+    "n_F": 2038,
+    "r_team_changers_F": 0.415,
+    "r_D": 0.486,
+    "n_D": 1188,
+    "r_team_changers_D": 0.452,
+    "r_team_changers": 0.619,
+    "n_team_changers": 682
+   },
+   "pts60": {
+    "r": 0.815,
+    "n": 3226,
+    "r_F": 0.696,
+    "n_F": 2038,
+    "r_team_changers_F": 0.605,
+    "r_D": 0.694,
+    "n_D": 1188,
+    "r_team_changers_D": 0.636,
+    "r_team_changers": 0.76,
+    "n_team_changers": 682
+   }
+  },
+  "min_toi_min_per_half": 250,
+  "min_toi_min_per_season": 500,
+  "min_fo_per_half": 100,
+  "min_fo_per_season": 200
+ },
+ "P_predictive": {
+  "filter": "season TOI >= 500 min, eval seasons 2011-12..2017-18, TOI-weighted",
+  "outcomes": {
+   "DEV_all|POSADJ|realised_duel_goals60 (fo+pen)": {
+    "n": 3969,
+    "r|walk-forward DD (fo+pen)": 0.5202,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.5105,
+    "r|walk-forward PEN": 0.5065,
+    "r|walk-forward FO": 0.0735,
+    "r|walk-forward TKGV": 0.1079,
+    "r|naive last-season DD": 0.3425,
+    "r|naive last-season DD+TKGV": 0.3461,
+    "r|naive last-season PEN": 0.3318,
+    "r|naive last-season FO": 0.0672,
+    "r|naive last-season TKGV": 0.0739,
+    "r|xG-RAPM (current rating)": 0.0832,
+    "r|naive last-season on-ice GD60": 0.085,
+    "common_n": 3739,
+    "R2_rapm": 0.00692,
+    "R2_dd": 0.28809,
+    "R2_rapm+dd": 0.28877,
+    "dR2_dd_over_rapm": 0.28185,
+    "coef_rapm_dd": [
+     0.0208,
+     0.8202
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.24407,
+     0.31775
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.00094,
+    "coef_rapm_dd_tkgv": [
+     0.0177,
+     0.8139,
+     0.1657
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     1e-05,
+     0.00337
+    ]
+   },
+   "DEV_all|POSADJ|realised_duel_goals60 (fo+pen+tkgv)": {
+    "n": 3969,
+    "r|walk-forward DD (fo+pen)": 0.5136,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.5359,
+    "r|walk-forward PEN": 0.5001,
+    "r|walk-forward FO": 0.0722,
+    "r|walk-forward TKGV": 0.226,
+    "r|naive last-season DD": 0.3353,
+    "r|naive last-season DD+TKGV": 0.3574,
+    "r|naive last-season PEN": 0.3252,
+    "r|naive last-season FO": 0.064,
+    "r|naive last-season TKGV": 0.1502,
+    "r|xG-RAPM (current rating)": 0.0988,
+    "r|naive last-season on-ice GD60": 0.0772,
+    "common_n": 3739,
+    "R2_rapm": 0.00977,
+    "R2_dd": 0.27999,
+    "R2_rapm+dd": 0.28179,
+    "dR2_dd_over_rapm": 0.27203,
+    "coef_rapm_dd": [
+     0.0366,
+     0.8652
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.23549,
+     0.30705
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.02344,
+    "coef_rapm_dd_tkgv": [
+     0.0201,
+     0.8313,
+     0.89
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.01539,
+     0.03285
+    ]
+   },
+   "DEV_all|POSADJ|realised_pen_goals60": {
+    "n": 3969,
+    "r|walk-forward DD (fo+pen)": 0.4846,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.4761,
+    "r|walk-forward PEN": 0.525,
+    "r|walk-forward FO": -0.0948,
+    "r|walk-forward TKGV": 0.1029,
+    "r|naive last-season DD": 0.33,
+    "r|naive last-season DD+TKGV": 0.3343,
+    "r|naive last-season PEN": 0.3461,
+    "r|naive last-season FO": -0.0863,
+    "r|naive last-season TKGV": 0.0749,
+    "r|xG-RAPM (current rating)": 0.069,
+    "r|naive last-season on-ice GD60": 0.0814,
+    "common_n": 3739,
+    "R2_rapm": 0.00477,
+    "R2_dd": 0.25177,
+    "R2_rapm+dd": 0.25201,
+    "dR2_dd_over_rapm": 0.24724,
+    "coef_rapm_dd": [
+     0.0122,
+     0.7556
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.21216,
+     0.28192
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.00102,
+    "coef_rapm_dd_tkgv": [
+     0.0091,
+     0.7491,
+     0.1703
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     4e-05,
+     0.00338
+    ]
+   },
+   "DEV_all|POSADJ|realised_fo_goals60": {
+    "n": 3969,
+    "r|walk-forward DD (fo+pen)": 0.1851,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.179,
+    "r|walk-forward PEN": -0.0471,
+    "r|walk-forward FO": 0.7238,
+    "r|walk-forward TKGV": 0.0285,
+    "r|naive last-season DD": 0.0769,
+    "r|naive last-season DD+TKGV": 0.0739,
+    "r|naive last-season PEN": -0.037,
+    "r|naive last-season FO": 0.653,
+    "r|naive last-season TKGV": 0.0008,
+    "r|xG-RAPM (current rating)": 0.0656,
+    "r|naive last-season on-ice GD60": 0.0213,
+    "common_n": 3739,
+    "R2_rapm": 0.0043,
+    "R2_dd": 0.03442,
+    "R2_rapm+dd": 0.03654,
+    "dR2_dd_over_rapm": 0.03223,
+    "coef_rapm_dd": [
+     0.0086,
+     0.0646
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.01308,
+     0.06694
+    ],
+    "dR2_tkgv_over_rapm+dd": 1e-05,
+    "coef_rapm_dd_tkgv": [
+     0.0087,
+     0.0648,
+     -0.0046
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.0,
+     0.00351
+    ]
+   },
+   "DEV_all|POSADJ|realised_tkgv_goals60": {
+    "n": 3969,
+    "r|walk-forward DD (fo+pen)": 0.1082,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.2271,
+    "r|walk-forward PEN": 0.1058,
+    "r|walk-forward FO": 0.0141,
+    "r|walk-forward TKGV": 0.4742,
+    "r|naive last-season DD": 0.0612,
+    "r|naive last-season DD+TKGV": 0.1327,
+    "r|naive last-season PEN": 0.0605,
+    "r|naive last-season FO": 0.0053,
+    "r|naive last-season TKGV": 0.3085,
+    "r|xG-RAPM (current rating)": 0.0809,
+    "r|naive last-season on-ice GD60": -0.0076,
+    "common_n": 3739,
+    "R2_rapm": 0.00655,
+    "R2_dd": 0.01228,
+    "R2_rapm+dd": 0.01711,
+    "dR2_dd_over_rapm": 0.01056,
+    "coef_rapm_dd": [
+     0.0158,
+     0.045
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.00182,
+     0.02417
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.223,
+    "coef_rapm_dd_tkgv": [
+     0.0024,
+     0.0174,
+     0.7242
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.17926,
+     0.27369
+    ]
+   },
+   "DEV_all|POSADJ|onice_GD60_all": {
+    "n": 3969,
+    "r|walk-forward DD (fo+pen)": 0.1104,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.1173,
+    "r|walk-forward PEN": 0.1169,
+    "r|walk-forward FO": -0.0133,
+    "r|walk-forward TKGV": 0.0565,
+    "r|naive last-season DD": 0.056,
+    "r|naive last-season DD+TKGV": 0.0628,
+    "r|naive last-season PEN": 0.0526,
+    "r|naive last-season FO": 0.0204,
+    "r|naive last-season TKGV": 0.038,
+    "r|xG-RAPM (current rating)": 0.2952,
+    "r|naive last-season on-ice GD60": 0.469,
+    "common_n": 3739,
+    "R2_rapm": 0.08713,
+    "R2_dd": 0.013,
+    "R2_rapm+dd": 0.09401,
+    "dR2_dd_over_rapm": 0.00688,
+    "coef_rapm_dd": [
+     3.5265,
+     1.9795
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.00155,
+     0.01595
+    ],
+    "dR2_tkgv_over_rapm+dd": 2e-05,
+    "coef_rapm_dd_tkgv": [
+     3.5195,
+     1.9652,
+     0.3775
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.0,
+     0.00265
+    ]
+   },
+   "DEV_all|POSADJ|onice_GD60_5v5": {
+    "n": 3969,
+    "r|walk-forward DD (fo+pen)": 0.0658,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.0777,
+    "r|walk-forward PEN": 0.0625,
+    "r|walk-forward FO": 0.0141,
+    "r|walk-forward TKGV": 0.0629,
+    "r|naive last-season DD": 0.0259,
+    "r|naive last-season DD+TKGV": 0.0364,
+    "r|naive last-season PEN": 0.0231,
+    "r|naive last-season FO": 0.0171,
+    "r|naive last-season TKGV": 0.0482,
+    "r|xG-RAPM (current rating)": 0.2334,
+    "r|naive last-season on-ice GD60": 0.2532,
+    "common_n": 3739,
+    "R2_rapm": 0.05446,
+    "R2_dd": 0.00463,
+    "R2_rapm+dd": 0.05635,
+    "dR2_dd_over_rapm": 0.00189,
+    "coef_rapm_dd": [
+     2.0934,
+     0.7614
+    ],
+    "dR2_dd_over_rapm_CI": [
+     9e-05,
+     0.00678
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.00072,
+    "coef_rapm_dd_tkgv": [
+     2.0633,
+     0.7001,
+     1.6679
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.0,
+     0.00382
+    ]
+   },
+   "DEV_all|POSADJ|points60": {
+    "n": 3969,
+    "r|walk-forward DD (fo+pen)": 0.1924,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.1915,
+    "r|walk-forward PEN": 0.1963,
+    "r|walk-forward FO": -0.0004,
+    "r|walk-forward TKGV": 0.05,
+    "r|naive last-season DD": 0.1117,
+    "r|naive last-season DD+TKGV": 0.1151,
+    "r|naive last-season PEN": 0.1063,
+    "r|naive last-season FO": 0.0331,
+    "r|naive last-season TKGV": 0.0334,
+    "r|xG-RAPM (current rating)": 0.309,
+    "r|naive last-season on-ice GD60": 0.4549,
+    "common_n": 3739,
+    "R2_rapm": 0.09548,
+    "R2_dd": 0.03825,
+    "R2_rapm+dd": 0.1222,
+    "dR2_dd_over_rapm": 0.02672,
+    "coef_rapm_dd": [
+     2.131,
+     2.3159
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.01222,
+     0.04718
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.00018,
+    "coef_rapm_dd_tkgv": [
+     2.1434,
+     2.3413,
+     -0.6681
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.0,
+     0.00369
+    ]
+   },
+   "DEV_all|F|realised_duel_goals60 (fo+pen)": {
+    "n": 2513,
+    "r|walk-forward DD (fo+pen)": 0.5106,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.5086,
+    "r|walk-forward PEN": 0.491,
+    "r|walk-forward FO": 0.0866,
+    "r|walk-forward TKGV": 0.1459,
+    "r|naive last-season DD": 0.3217,
+    "r|naive last-season DD+TKGV": 0.3278,
+    "r|naive last-season PEN": 0.3074,
+    "r|naive last-season FO": 0.079,
+    "r|naive last-season TKGV": 0.0881,
+    "r|xG-RAPM (current rating)": 0.0798,
+    "r|naive last-season on-ice GD60": 0.0729,
+    "common_n": 2378,
+    "R2_rapm": 0.00637,
+    "R2_dd": 0.27628,
+    "R2_rapm+dd": 0.27633,
+    "dR2_dd_over_rapm": 0.26996,
+    "coef_rapm_dd": [
+     0.0061,
+     0.8239
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.2209,
+     0.31939
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.00239,
+    "coef_rapm_dd_tkgv": [
+     0.0006,
+     0.8099,
+     0.3285
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.00021,
+     0.00633
+    ]
+   },
+   "DEV_all|F|realised_duel_goals60 (fo+pen+tkgv)": {
+    "n": 2513,
+    "r|walk-forward DD (fo+pen)": 0.5081,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.5261,
+    "r|walk-forward PEN": 0.4886,
+    "r|walk-forward FO": 0.0861,
+    "r|walk-forward TKGV": 0.2346,
+    "r|naive last-season DD": 0.3143,
+    "r|naive last-season DD+TKGV": 0.3309,
+    "r|naive last-season PEN": 0.3007,
+    "r|naive last-season FO": 0.0757,
+    "r|naive last-season TKGV": 0.1418,
+    "r|xG-RAPM (current rating)": 0.0939,
+    "r|naive last-season on-ice GD60": 0.0647,
+    "common_n": 2378,
+    "R2_rapm": 0.00881,
+    "R2_dd": 0.2722,
+    "R2_rapm+dd": 0.27267,
+    "dR2_dd_over_rapm": 0.26386,
+    "coef_rapm_dd": [
+     0.0205,
+     0.8699
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.21329,
+     0.30623
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.01981,
+    "coef_rapm_dd_tkgv": [
+     0.0037,
+     0.8268,
+     1.0109
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.0107,
+     0.03136
+    ]
+   },
+   "DEV_all|F|realised_pen_goals60": {
+    "n": 2513,
+    "r|walk-forward DD (fo+pen)": 0.4595,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.4591,
+    "r|walk-forward PEN": 0.5169,
+    "r|walk-forward FO": -0.1121,
+    "r|walk-forward TKGV": 0.1374,
+    "r|naive last-season DD": 0.3049,
+    "r|naive last-season DD+TKGV": 0.312,
+    "r|naive last-season PEN": 0.3261,
+    "r|naive last-season FO": -0.1017,
+    "r|naive last-season TKGV": 0.0901,
+    "r|xG-RAPM (current rating)": 0.0581,
+    "r|naive last-season on-ice GD60": 0.0668,
+    "common_n": 2378,
+    "R2_rapm": 0.00337,
+    "R2_dd": 0.22599,
+    "R2_rapm+dd": 0.22606,
+    "dR2_dd_over_rapm": 0.22269,
+    "coef_rapm_dd": [
+     -0.0071,
+     0.7314
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.17925,
+     0.26672
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.00272,
+    "coef_rapm_dd_tkgv": [
+     -0.0128,
+     0.7168,
+     0.3426
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.00027,
+     0.00816
+    ]
+   },
+   "DEV_all|F|realised_fo_goals60": {
+    "n": 2513,
+    "r|walk-forward DD (fo+pen)": 0.2224,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.2166,
+    "r|walk-forward PEN": -0.057,
+    "r|walk-forward FO": 0.7235,
+    "r|walk-forward TKGV": 0.0414,
+    "r|naive last-season DD": 0.0865,
+    "r|naive last-season DD+TKGV": 0.0837,
+    "r|naive last-season PEN": -0.0415,
+    "r|naive last-season FO": 0.6529,
+    "r|naive last-season TKGV": -0.0001,
+    "r|xG-RAPM (current rating)": 0.0843,
+    "r|naive last-season on-ice GD60": 0.0277,
+    "common_n": 2378,
+    "R2_rapm": 0.00711,
+    "R2_dd": 0.04971,
+    "R2_rapm+dd": 0.05261,
+    "dR2_dd_over_rapm": 0.0455,
+    "coef_rapm_dd": [
+     0.0132,
+     0.0925
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.01185,
+     0.08674
+    ],
+    "dR2_tkgv_over_rapm+dd": 6e-05,
+    "coef_rapm_dd_tkgv": [
+     0.0134,
+     0.0931,
+     -0.0141
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.0,
+     0.00713
+    ]
+   },
+   "DEV_all|F|realised_tkgv_goals60": {
+    "n": 2513,
+    "r|walk-forward DD (fo+pen)": 0.1283,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.2167,
+    "r|walk-forward PEN": 0.1236,
+    "r|walk-forward FO": 0.021,
+    "r|walk-forward TKGV": 0.4347,
+    "r|naive last-season DD": 0.0578,
+    "r|naive last-season DD+TKGV": 0.1056,
+    "r|naive last-season PEN": 0.0565,
+    "r|naive last-season FO": 0.0077,
+    "r|naive last-season TKGV": 0.2627,
+    "r|xG-RAPM (current rating)": 0.0846,
+    "r|naive last-season on-ice GD60": -0.0159,
+    "common_n": 2378,
+    "R2_rapm": 0.00716,
+    "R2_dd": 0.01704,
+    "R2_rapm+dd": 0.02154,
+    "dR2_dd_over_rapm": 0.01439,
+    "coef_rapm_dd": [
+     0.0145,
+     0.0459
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.00297,
+     0.03249
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.17663,
+    "coef_rapm_dd_tkgv": [
+     0.0031,
+     0.0168,
+     0.6823
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.13806,
+     0.21288
+    ]
+   },
+   "DEV_all|F|onice_GD60_all": {
+    "n": 2513,
+    "r|walk-forward DD (fo+pen)": 0.0985,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.1046,
+    "r|walk-forward PEN": 0.1075,
+    "r|walk-forward FO": -0.0156,
+    "r|walk-forward TKGV": 0.0573,
+    "r|naive last-season DD": 0.0452,
+    "r|naive last-season DD+TKGV": 0.0545,
+    "r|naive last-season PEN": 0.0407,
+    "r|naive last-season FO": 0.0242,
+    "r|naive last-season TKGV": 0.0565,
+    "r|xG-RAPM (current rating)": 0.3004,
+    "r|naive last-season on-ice GD60": 0.5339,
+    "common_n": 2378,
+    "R2_rapm": 0.09024,
+    "R2_dd": 0.01021,
+    "R2_rapm+dd": 0.09382,
+    "dR2_dd_over_rapm": 0.00358,
+    "coef_rapm_dd": [
+     3.9794,
+     1.4619
+    ],
+    "dR2_dd_over_rapm_CI": [
+     6e-05,
+     0.01439
+    ],
+    "dR2_tkgv_over_rapm+dd": 2e-05,
+    "coef_rapm_dd_tkgv": [
+     3.9725,
+     1.4443,
+     0.4138
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.0,
+     0.00505
+    ]
+   },
+   "DEV_all|F|onice_GD60_5v5": {
+    "n": 2513,
+    "r|walk-forward DD (fo+pen)": 0.0577,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.0731,
+    "r|walk-forward PEN": 0.0527,
+    "r|walk-forward FO": 0.0171,
+    "r|walk-forward TKGV": 0.0867,
+    "r|naive last-season DD": 0.0225,
+    "r|naive last-season DD+TKGV": 0.0355,
+    "r|naive last-season PEN": 0.0188,
+    "r|naive last-season FO": 0.0202,
+    "r|naive last-season TKGV": 0.0736,
+    "r|xG-RAPM (current rating)": 0.2417,
+    "r|naive last-season on-ice GD60": 0.3064,
+    "common_n": 2378,
+    "R2_rapm": 0.05844,
+    "R2_dd": 0.00356,
+    "R2_rapm+dd": 0.05918,
+    "dR2_dd_over_rapm": 0.00074,
+    "coef_rapm_dd": [
+     2.3691,
+     0.4776
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.0,
+     0.00469
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.00264,
+    "coef_rapm_dd_tkgv": [
+     2.3077,
+     0.3198,
+     3.8773
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     7e-05,
+     0.00924
+    ]
+   },
+   "DEV_all|F|points60": {
+    "n": 2513,
+    "r|walk-forward DD (fo+pen)": 0.1908,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.1915,
+    "r|walk-forward PEN": 0.1965,
+    "r|walk-forward FO": -0.0007,
+    "r|walk-forward TKGV": 0.0612,
+    "r|naive last-season DD": 0.0963,
+    "r|naive last-season DD+TKGV": 0.1017,
+    "r|naive last-season PEN": 0.0893,
+    "r|naive last-season FO": 0.0379,
+    "r|naive last-season TKGV": 0.0449,
+    "r|xG-RAPM (current rating)": 0.3153,
+    "r|naive last-season on-ice GD60": 0.5038,
+    "common_n": 2378,
+    "R2_rapm": 0.09943,
+    "R2_dd": 0.0375,
+    "R2_rapm+dd": 0.12231,
+    "dR2_dd_over_rapm": 0.02288,
+    "coef_rapm_dd": [
+     2.49,
+     2.2948
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.00898,
+     0.04571
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.0001,
+    "coef_rapm_dd_tkgv": [
+     2.5008,
+     2.3226,
+     -0.6533
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.0,
+     0.00555
+    ]
+   },
+   "DEV_all|D|realised_duel_goals60 (fo+pen)": {
+    "n": 1456,
+    "r|walk-forward DD (fo+pen)": 0.5353,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.5073,
+    "r|walk-forward PEN": 0.5352,
+    "r|walk-forward FO": 0.06,
+    "r|walk-forward TKGV": 0.0556,
+    "r|naive last-season DD": 0.4075,
+    "r|naive last-season DD+TKGV": 0.3933,
+    "r|naive last-season PEN": 0.4075,
+    "r|naive last-season FO": 0.005,
+    "r|naive last-season TKGV": 0.061,
+    "r|xG-RAPM (current rating)": 0.0911,
+    "r|naive last-season on-ice GD60": 0.1102,
+    "common_n": 1361,
+    "R2_rapm": 0.00831,
+    "R2_dd": 0.30875,
+    "R2_rapm+dd": 0.3122,
+    "dR2_dd_over_rapm": 0.30389,
+    "coef_rapm_dd": [
+     0.038,
+     0.7983
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.25482,
+     0.35991
+    ],
+    "dR2_tkgv_over_rapm+dd": 4e-05,
+    "coef_rapm_dd_tkgv": [
+     0.0375,
+     0.7976,
+     0.0255
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.0,
+     0.00171
+    ]
+   },
+   "DEV_all|D|realised_duel_goals60 (fo+pen+tkgv)": {
+    "n": 1456,
+    "r|walk-forward DD (fo+pen)": 0.5101,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.5463,
+    "r|walk-forward PEN": 0.51,
+    "r|walk-forward FO": 0.0562,
+    "r|walk-forward TKGV": 0.2361,
+    "r|naive last-season DD": 0.3953,
+    "r|naive last-season DD+TKGV": 0.4422,
+    "r|naive last-season PEN": 0.3953,
+    "r|naive last-season FO": 0.0103,
+    "r|naive last-season TKGV": 0.1939,
+    "r|xG-RAPM (current rating)": 0.0904,
+    "r|naive last-season on-ice GD60": 0.1049,
+    "common_n": 1361,
+    "R2_rapm": 0.00818,
+    "R2_dd": 0.28,
+    "R2_rapm+dd": 0.28356,
+    "dR2_dd_over_rapm": 0.27538,
+    "coef_rapm_dd": [
+     0.0422,
+     0.8331
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.22051,
+     0.32553
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.03894,
+    "coef_rapm_dd_tkgv": [
+     0.0268,
+     0.8096,
+     0.8372
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.02127,
+     0.05866
+    ]
+   },
+   "DEV_all|D|realised_pen_goals60": {
+    "n": 1456,
+    "r|walk-forward DD (fo+pen)": 0.5353,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.5073,
+    "r|walk-forward PEN": 0.5352,
+    "r|walk-forward FO": 0.06,
+    "r|walk-forward TKGV": 0.0555,
+    "r|naive last-season DD": 0.4075,
+    "r|naive last-season DD+TKGV": 0.3933,
+    "r|naive last-season PEN": 0.4075,
+    "r|naive last-season FO": 0.005,
+    "r|naive last-season TKGV": 0.0609,
+    "r|xG-RAPM (current rating)": 0.091,
+    "r|naive last-season on-ice GD60": 0.1102,
+    "common_n": 1361,
+    "R2_rapm": 0.00829,
+    "R2_dd": 0.30871,
+    "R2_rapm+dd": 0.31216,
+    "dR2_dd_over_rapm": 0.30387,
+    "coef_rapm_dd": [
+     0.0379,
+     0.7982
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.24289,
+     0.35253
+    ],
+    "dR2_tkgv_over_rapm+dd": 4e-05,
+    "coef_rapm_dd_tkgv": [
+     0.0374,
+     0.7975,
+     0.0251
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.0,
+     0.00231
+    ]
+   },
+   "DEV_all|D|realised_fo_goals60": {
+    "n": 1456,
+    "r|walk-forward DD (fo+pen)": 0.0188,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.0275,
+    "r|walk-forward PEN": 0.0188,
+    "r|walk-forward FO": 0.0025,
+    "r|walk-forward TKGV": 0.0302,
+    "r|naive last-season DD": 0.0034,
+    "r|naive last-season DD+TKGV": 0.0176,
+    "r|naive last-season PEN": 0.0034,
+    "r|naive last-season FO": -0.002,
+    "r|naive last-season TKGV": 0.0324,
+    "r|xG-RAPM (current rating)": 0.0272,
+    "r|naive last-season on-ice GD60": -0.0047,
+    "common_n": 1361,
+    "R2_rapm": 0.00074,
+    "R2_dd": 0.00037,
+    "R2_rapm+dd": 0.00105,
+    "dR2_dd_over_rapm": 0.00031,
+    "coef_rapm_dd": [
+     0.0001,
+     0.0001
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.0,
+     0.00451
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.0007,
+    "coef_rapm_dd_tkgv": [
+     0.0001,
+     0.0001,
+     0.0004
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.0,
+     0.00673
+    ]
+   },
+   "DEV_all|D|realised_tkgv_goals60": {
+    "n": 1456,
+    "r|walk-forward DD (fo+pen)": 0.0599,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.23,
+    "r|walk-forward PEN": 0.0599,
+    "r|walk-forward FO": 0.0042,
+    "r|walk-forward TKGV": 0.5101,
+    "r|naive last-season DD": 0.0641,
+    "r|naive last-season DD+TKGV": 0.2289,
+    "r|naive last-season PEN": 0.0641,
+    "r|naive last-season FO": 0.0158,
+    "r|naive last-season TKGV": 0.3808,
+    "r|xG-RAPM (current rating)": 0.0202,
+    "r|naive last-season on-ice GD60": 0.0117,
+    "common_n": 1361,
+    "R2_rapm": 0.00041,
+    "R2_dd": 0.0038,
+    "R2_rapm+dd": 0.00408,
+    "dR2_dd_over_rapm": 0.00367,
+    "coef_rapm_dd": [
+     0.0043,
+     0.0348
+    ],
+    "dR2_dd_over_rapm_CI": [
+     1e-05,
+     0.01786
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.27977,
+    "coef_rapm_dd_tkgv": [
+     -0.0107,
+     0.012,
+     0.8117
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.19949,
+     0.37435
+    ]
+   },
+   "DEV_all|D|onice_GD60_all": {
+    "n": 1456,
+    "r|walk-forward DD (fo+pen)": 0.1367,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.1459,
+    "r|walk-forward PEN": 0.1368,
+    "r|walk-forward FO": -0.015,
+    "r|walk-forward TKGV": 0.0617,
+    "r|naive last-season DD": 0.0863,
+    "r|naive last-season DD+TKGV": 0.0888,
+    "r|naive last-season PEN": 0.0863,
+    "r|naive last-season FO": 0.0037,
+    "r|naive last-season TKGV": 0.0252,
+    "r|xG-RAPM (current rating)": 0.2844,
+    "r|naive last-season on-ice GD60": 0.3528,
+    "common_n": 1361,
+    "R2_rapm": 0.08089,
+    "R2_dd": 0.02025,
+    "R2_rapm+dd": 0.09674,
+    "dR2_dd_over_rapm": 0.01585,
+    "coef_rapm_dd": [
+     2.7881,
+     2.8457
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.00442,
+     0.03603
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.00034,
+    "coef_rapm_dd_tkgv": [
+     2.7675,
+     2.8142,
+     1.1211
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     1e-05,
+     0.00775
+    ]
+   },
+   "DEV_all|D|onice_GD60_5v5": {
+    "n": 1456,
+    "r|walk-forward DD (fo+pen)": 0.0846,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.0898,
+    "r|walk-forward PEN": 0.0845,
+    "r|walk-forward FO": 0.0238,
+    "r|walk-forward TKGV": 0.037,
+    "r|naive last-season DD": 0.0345,
+    "r|naive last-season DD+TKGV": 0.0375,
+    "r|naive last-season PEN": 0.0343,
+    "r|naive last-season FO": 0.0419,
+    "r|naive last-season TKGV": 0.0143,
+    "r|xG-RAPM (current rating)": 0.2164,
+    "r|naive last-season on-ice GD60": 0.1644,
+    "common_n": 1361,
+    "R2_rapm": 0.04682,
+    "R2_dd": 0.00743,
+    "R2_rapm+dd": 0.05213,
+    "dR2_dd_over_rapm": 0.00531,
+    "coef_rapm_dd": [
+     1.6556,
+     1.2599
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.00022,
+     0.01697
+    ],
+    "dR2_tkgv_over_rapm+dd": 3e-05,
+    "coef_rapm_dd_tkgv": [
+     1.6505,
+     1.2521,
+     0.2771
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.0,
+     0.00484
+    ]
+   },
+   "DEV_all|D|points60": {
+    "n": 1456,
+    "r|walk-forward DD (fo+pen)": 0.2056,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.1963,
+    "r|walk-forward PEN": 0.2056,
+    "r|walk-forward FO": -0.0474,
+    "r|walk-forward TKGV": 0.0256,
+    "r|naive last-season DD": 0.1592,
+    "r|naive last-season DD+TKGV": 0.1283,
+    "r|naive last-season PEN": 0.1593,
+    "r|naive last-season FO": -0.0472,
+    "r|naive last-season TKGV": -0.0324,
+    "r|xG-RAPM (current rating)": 0.315,
+    "r|naive last-season on-ice GD60": 0.3578,
+    "common_n": 1361,
+    "R2_rapm": 0.09921,
+    "R2_dd": 0.04358,
+    "R2_rapm+dd": 0.13557,
+    "dR2_dd_over_rapm": 0.03636,
+    "coef_rapm_dd": [
+     1.6031,
+     2.2596
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.01122,
+     0.0724
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.00065,
+    "coef_rapm_dd_tkgv": [
+     1.6179,
+     2.2822,
+     -0.8054
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.0,
+     0.01481
+    ]
+   },
+   "DEV_all|ALL|realised_duel_goals60 (fo+pen)": {
+    "n": 3969,
+    "r|walk-forward DD (fo+pen)": 0.6347,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.6198,
+    "r|walk-forward PEN": 0.6257,
+    "r|walk-forward FO": 0.0547,
+    "r|walk-forward TKGV": 0.4379,
+    "r|naive last-season DD": 0.434,
+    "r|naive last-season DD+TKGV": 0.4887,
+    "r|naive last-season PEN": 0.4252,
+    "r|naive last-season FO": 0.0607,
+    "r|naive last-season TKGV": 0.3468,
+    "r|xG-RAPM (current rating)": 0.0735,
+    "r|naive last-season on-ice GD60": 0.1596
+   },
+   "DEV_all|ALL|realised_duel_goals60 (fo+pen+tkgv)": {
+    "n": 3969,
+    "r|walk-forward DD (fo+pen)": 0.7073,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.7677,
+    "r|walk-forward PEN": 0.7033,
+    "r|walk-forward FO": 0.0371,
+    "r|walk-forward TKGV": 0.6738,
+    "r|naive last-season DD": 0.4545,
+    "r|naive last-season DD+TKGV": 0.5694,
+    "r|naive last-season PEN": 0.4478,
+    "r|naive last-season FO": 0.0485,
+    "r|naive last-season TKGV": 0.5395,
+    "r|xG-RAPM (current rating)": 0.0675,
+    "r|naive last-season on-ice GD60": 0.1859
+   },
+   "DEV_all|ALL|realised_pen_goals60": {
+    "n": 3969,
+    "r|walk-forward DD (fo+pen)": 0.6107,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.6035,
+    "r|walk-forward PEN": 0.6398,
+    "r|walk-forward FO": -0.0966,
+    "r|walk-forward TKGV": 0.4387,
+    "r|naive last-season DD": 0.4234,
+    "r|naive last-season DD+TKGV": 0.4801,
+    "r|naive last-season PEN": 0.4374,
+    "r|naive last-season FO": -0.0774,
+    "r|naive last-season TKGV": 0.3481,
+    "r|xG-RAPM (current rating)": 0.061,
+    "r|naive last-season on-ice GD60": 0.1565
+   },
+   "DEV_all|ALL|realised_fo_goals60": {
+    "n": 3969,
+    "r|walk-forward DD (fo+pen)": 0.154,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.1162,
+    "r|walk-forward PEN": -0.0276,
+    "r|walk-forward FO": 0.7228,
+    "r|walk-forward TKGV": 0.0238,
+    "r|naive last-season DD": 0.0821,
+    "r|naive last-season DD+TKGV": 0.0776,
+    "r|naive last-season PEN": -0.0252,
+    "r|naive last-season FO": 0.6525,
+    "r|naive last-season TKGV": 0.02,
+    "r|xG-RAPM (current rating)": 0.0643,
+    "r|naive last-season on-ice GD60": 0.0265
+   },
+   "DEV_all|ALL|realised_tkgv_goals60": {
+    "n": 3969,
+    "r|walk-forward DD (fo+pen)": 0.5609,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.7505,
+    "r|walk-forward PEN": 0.5689,
+    "r|walk-forward FO": -0.0146,
+    "r|walk-forward TKGV": 0.8759,
+    "r|naive last-season DD": 0.3079,
+    "r|naive last-season DD+TKGV": 0.4983,
+    "r|naive last-season PEN": 0.3082,
+    "r|naive last-season FO": 0.0032,
+    "r|naive last-season TKGV": 0.7108,
+    "r|xG-RAPM (current rating)": 0.0274,
+    "r|naive last-season on-ice GD60": 0.1627
+   },
+   "DEV_all|ALL|onice_GD60_all": {
+    "n": 3969,
+    "r|walk-forward DD (fo+pen)": 0.2248,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.2514,
+    "r|walk-forward PEN": 0.2313,
+    "r|walk-forward FO": -0.019,
+    "r|walk-forward TKGV": 0.2321,
+    "r|naive last-season DD": 0.1283,
+    "r|naive last-season DD+TKGV": 0.1731,
+    "r|naive last-season PEN": 0.1253,
+    "r|naive last-season FO": 0.02,
+    "r|naive last-season TKGV": 0.1904,
+    "r|xG-RAPM (current rating)": 0.2833,
+    "r|naive last-season on-ice GD60": 0.4926
+   },
+   "DEV_all|ALL|onice_GD60_5v5": {
+    "n": 3969,
+    "r|walk-forward DD (fo+pen)": 0.0767,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.0784,
+    "r|walk-forward PEN": 0.074,
+    "r|walk-forward FO": 0.0125,
+    "r|walk-forward TKGV": 0.0612,
+    "r|naive last-season DD": 0.0375,
+    "r|naive last-season DD+TKGV": 0.052,
+    "r|naive last-season PEN": 0.0349,
+    "r|naive last-season FO": 0.0166,
+    "r|naive last-season TKGV": 0.06,
+    "r|xG-RAPM (current rating)": 0.2308,
+    "r|naive last-season on-ice GD60": 0.2567
+   },
+   "DEV_all|ALL|points60": {
+    "n": 3969,
+    "r|walk-forward DD (fo+pen)": 0.5089,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.6001,
+    "r|walk-forward PEN": 0.5172,
+    "r|walk-forward FO": -0.0174,
+    "r|walk-forward TKGV": 0.6,
+    "r|naive last-season DD": 0.2905,
+    "r|naive last-season DD+TKGV": 0.3972,
+    "r|naive last-season PEN": 0.287,
+    "r|naive last-season FO": 0.0258,
+    "r|naive last-season TKGV": 0.4469,
+    "r|xG-RAPM (current rating)": 0.2364,
+    "r|naive last-season on-ice GD60": 0.4653
+   },
+   "DEV_A|POSADJ|realised_duel_goals60 (fo+pen)": {
+    "n": 2211,
+    "r|walk-forward DD (fo+pen)": 0.5052,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.4993,
+    "r|walk-forward PEN": 0.4909,
+    "r|walk-forward FO": 0.0859,
+    "r|walk-forward TKGV": 0.1173,
+    "r|naive last-season DD": 0.3692,
+    "r|naive last-season DD+TKGV": 0.3694,
+    "r|naive last-season PEN": 0.3607,
+    "r|naive last-season FO": 0.0629,
+    "r|naive last-season TKGV": 0.0735,
+    "r|xG-RAPM (current rating)": 0.1176,
+    "r|naive last-season on-ice GD60": 0.1052
+   },
+   "DEV_A|POSADJ|realised_duel_goals60 (fo+pen+tkgv)": {
+    "n": 2211,
+    "r|walk-forward DD (fo+pen)": 0.4991,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.5241,
+    "r|walk-forward PEN": 0.4856,
+    "r|walk-forward FO": 0.0829,
+    "r|walk-forward TKGV": 0.2336,
+    "r|naive last-season DD": 0.3607,
+    "r|naive last-season DD+TKGV": 0.3776,
+    "r|naive last-season PEN": 0.3532,
+    "r|naive last-season FO": 0.0567,
+    "r|naive last-season TKGV": 0.1449,
+    "r|xG-RAPM (current rating)": 0.1344,
+    "r|naive last-season on-ice GD60": 0.1004
+   },
+   "DEV_A|POSADJ|realised_pen_goals60": {
+    "n": 2211,
+    "r|walk-forward DD (fo+pen)": 0.468,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.4618,
+    "r|walk-forward PEN": 0.5078,
+    "r|walk-forward FO": -0.0846,
+    "r|walk-forward TKGV": 0.1058,
+    "r|naive last-season DD": 0.3565,
+    "r|naive last-season DD+TKGV": 0.3562,
+    "r|naive last-season PEN": 0.3745,
+    "r|naive last-season FO": -0.0917,
+    "r|naive last-season TKGV": 0.069,
+    "r|xG-RAPM (current rating)": 0.1009,
+    "r|naive last-season on-ice GD60": 0.1039
+   },
+   "DEV_A|POSADJ|realised_fo_goals60": {
+    "n": 2211,
+    "r|walk-forward DD (fo+pen)": 0.192,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.193,
+    "r|walk-forward PEN": -0.0416,
+    "r|walk-forward FO": 0.7386,
+    "r|walk-forward TKGV": 0.0568,
+    "r|naive last-season DD": 0.0782,
+    "r|naive last-season DD+TKGV": 0.0801,
+    "r|naive last-season PEN": -0.035,
+    "r|naive last-season FO": 0.6616,
+    "r|naive last-season TKGV": 0.0237,
+    "r|xG-RAPM (current rating)": 0.0789,
+    "r|naive last-season on-ice GD60": 0.0121
+   },
+   "DEV_A|POSADJ|realised_tkgv_goals60": {
+    "n": 2211,
+    "r|walk-forward DD (fo+pen)": 0.1025,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.22,
+    "r|walk-forward PEN": 0.1021,
+    "r|walk-forward FO": 0.0097,
+    "r|walk-forward TKGV": 0.4774,
+    "r|naive last-season DD": 0.0627,
+    "r|naive last-season DD+TKGV": 0.1273,
+    "r|naive last-season PEN": 0.0644,
+    "r|naive last-season FO": -0.0075,
+    "r|naive last-season TKGV": 0.2946,
+    "r|xG-RAPM (current rating)": 0.0953,
+    "r|naive last-season on-ice GD60": 0.0091
+   },
+   "DEV_A|POSADJ|onice_GD60_all": {
+    "n": 2211,
+    "r|walk-forward DD (fo+pen)": 0.1026,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.1188,
+    "r|walk-forward PEN": 0.1101,
+    "r|walk-forward FO": -0.0148,
+    "r|walk-forward TKGV": 0.0905,
+    "r|naive last-season DD": 0.0883,
+    "r|naive last-season DD+TKGV": 0.0974,
+    "r|naive last-season PEN": 0.0869,
+    "r|naive last-season FO": 0.0112,
+    "r|naive last-season TKGV": 0.0572,
+    "r|xG-RAPM (current rating)": 0.2914,
+    "r|naive last-season on-ice GD60": 0.5291
+   },
+   "DEV_A|POSADJ|onice_GD60_5v5": {
+    "n": 2211,
+    "r|walk-forward DD (fo+pen)": 0.0621,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.0782,
+    "r|walk-forward PEN": 0.055,
+    "r|walk-forward FO": 0.0277,
+    "r|walk-forward TKGV": 0.0789,
+    "r|naive last-season DD": 0.0478,
+    "r|naive last-season DD+TKGV": 0.055,
+    "r|naive last-season PEN": 0.0438,
+    "r|naive last-season FO": 0.0257,
+    "r|naive last-season TKGV": 0.041,
+    "r|xG-RAPM (current rating)": 0.2242,
+    "r|naive last-season on-ice GD60": 0.3004
+   },
+   "DEV_A|POSADJ|points60": {
+    "n": 2211,
+    "r|walk-forward DD (fo+pen)": 0.1779,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.1898,
+    "r|walk-forward PEN": 0.1819,
+    "r|walk-forward FO": 0.0023,
+    "r|walk-forward TKGV": 0.0946,
+    "r|naive last-season DD": 0.1449,
+    "r|naive last-season DD+TKGV": 0.1537,
+    "r|naive last-season PEN": 0.141,
+    "r|naive last-season FO": 0.0277,
+    "r|naive last-season TKGV": 0.0671,
+    "r|xG-RAPM (current rating)": 0.3049,
+    "r|naive last-season on-ice GD60": 0.518
+   },
+   "DEV_B|POSADJ|realised_duel_goals60 (fo+pen)": {
+    "n": 1758,
+    "r|walk-forward DD (fo+pen)": 0.5408,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.5256,
+    "r|walk-forward PEN": 0.5273,
+    "r|walk-forward FO": 0.0573,
+    "r|walk-forward TKGV": 0.096,
+    "r|naive last-season DD": 0.3101,
+    "r|naive last-season DD+TKGV": 0.3175,
+    "r|naive last-season PEN": 0.2971,
+    "r|naive last-season FO": 0.0724,
+    "r|naive last-season TKGV": 0.0748,
+    "r|xG-RAPM (current rating)": 0.0478,
+    "r|naive last-season on-ice GD60": 0.0634,
+    "common_n": 1659,
+    "R2_rapm": 0.00229,
+    "R2_dd": 0.31252,
+    "R2_rapm+dd": 0.31259,
+    "dR2_dd_over_rapm": 0.31031,
+    "coef_rapm_dd": [
+     -0.0061,
+     0.8814
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.26129,
+     0.36212
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.0004,
+    "coef_rapm_dd_tkgv": [
+     -0.0077,
+     0.8772,
+     0.1066
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.0,
+     0.00328
+    ]
+   },
+   "DEV_B|POSADJ|realised_duel_goals60 (fo+pen+tkgv)": {
+    "n": 1758,
+    "r|walk-forward DD (fo+pen)": 0.5334,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.552,
+    "r|walk-forward PEN": 0.5195,
+    "r|walk-forward FO": 0.0585,
+    "r|walk-forward TKGV": 0.2164,
+    "r|naive last-season DD": 0.3045,
+    "r|naive last-season DD+TKGV": 0.3328,
+    "r|naive last-season PEN": 0.2915,
+    "r|naive last-season FO": 0.0727,
+    "r|naive last-season TKGV": 0.1569,
+    "r|xG-RAPM (current rating)": 0.0625,
+    "r|naive last-season on-ice GD60": 0.0522,
+    "common_n": 1659,
+    "R2_rapm": 0.0039,
+    "R2_dd": 0.30508,
+    "R2_rapm+dd": 0.30513,
+    "dR2_dd_over_rapm": 0.30123,
+    "coef_rapm_dd": [
+     0.0053,
+     0.9339
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.25614,
+     0.34418
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.02113,
+    "coef_rapm_dd_tkgv": [
+     -0.0069,
+     0.9008,
+     0.838
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.01098,
+     0.03439
+    ]
+   },
+   "DEV_B|POSADJ|realised_pen_goals60": {
+    "n": 1758,
+    "r|walk-forward DD (fo+pen)": 0.5073,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.4956,
+    "r|walk-forward PEN": 0.548,
+    "r|walk-forward FO": -0.108,
+    "r|walk-forward TKGV": 0.0991,
+    "r|naive last-season DD": 0.2978,
+    "r|naive last-season DD+TKGV": 0.3074,
+    "r|naive last-season PEN": 0.312,
+    "r|naive last-season FO": -0.0803,
+    "r|naive last-season TKGV": 0.082,
+    "r|xG-RAPM (current rating)": 0.0362,
+    "r|naive last-season on-ice GD60": 0.0571,
+    "common_n": 1659,
+    "R2_rapm": 0.00131,
+    "R2_dd": 0.27802,
+    "R2_rapm+dd": 0.27831,
+    "dR2_dd_over_rapm": 0.277,
+    "coef_rapm_dd": [
+     -0.012,
+     0.8179
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.23156,
+     0.32147
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.00083,
+    "coef_rapm_dd_tkgv": [
+     -0.0142,
+     0.8119,
+     0.1521
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     1e-05,
+     0.00491
+    ]
+   },
+   "DEV_B|POSADJ|realised_fo_goals60": {
+    "n": 1758,
+    "r|walk-forward DD (fo+pen)": 0.176,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.1604,
+    "r|walk-forward PEN": -0.0544,
+    "r|walk-forward FO": 0.7048,
+    "r|walk-forward TKGV": -0.0073,
+    "r|naive last-season DD": 0.0753,
+    "r|naive last-season DD+TKGV": 0.0663,
+    "r|naive last-season PEN": -0.0394,
+    "r|naive last-season FO": 0.6446,
+    "r|naive last-season TKGV": -0.0244,
+    "r|xG-RAPM (current rating)": 0.0524,
+    "r|naive last-season on-ice GD60": 0.0313,
+    "common_n": 1659,
+    "R2_rapm": 0.00274,
+    "R2_dd": 0.03089,
+    "R2_rapm+dd": 0.0321,
+    "dR2_dd_over_rapm": 0.02936,
+    "coef_rapm_dd": [
+     0.0059,
+     0.0635
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.0048,
+     0.0724
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.00131,
+    "coef_rapm_dd_tkgv": [
+     0.0066,
+     0.0653,
+     -0.0455
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     1e-05,
+     0.00902
+    ]
+   },
+   "DEV_B|POSADJ|realised_tkgv_goals60": {
+    "n": 1758,
+    "r|walk-forward DD (fo+pen)": 0.1158,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.2366,
+    "r|walk-forward PEN": 0.1105,
+    "r|walk-forward FO": 0.0196,
+    "r|walk-forward TKGV": 0.4705,
+    "r|naive last-season DD": 0.0595,
+    "r|naive last-season DD+TKGV": 0.1391,
+    "r|naive last-season PEN": 0.0559,
+    "r|naive last-season FO": 0.0197,
+    "r|naive last-season TKGV": 0.3244,
+    "r|xG-RAPM (current rating)": 0.0669,
+    "r|naive last-season on-ice GD60": -0.0254,
+    "common_n": 1659,
+    "R2_rapm": 0.00447,
+    "R2_dd": 0.01461,
+    "R2_rapm+dd": 0.01763,
+    "dR2_dd_over_rapm": 0.01316,
+    "coef_rapm_dd": [
+     0.0114,
+     0.0524
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.00302,
+     0.03431
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.22301,
+    "coef_rapm_dd_tkgv": [
+     0.0007,
+     0.0236,
+     0.7314
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.17292,
+     0.27549
+    ]
+   },
+   "DEV_B|POSADJ|onice_GD60_all": {
+    "n": 1758,
+    "r|walk-forward DD (fo+pen)": 0.1207,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.1155,
+    "r|walk-forward PEN": 0.1257,
+    "r|walk-forward FO": -0.0115,
+    "r|walk-forward TKGV": 0.0148,
+    "r|naive last-season DD": 0.0182,
+    "r|naive last-season DD+TKGV": 0.022,
+    "r|naive last-season PEN": 0.0127,
+    "r|naive last-season FO": 0.0308,
+    "r|naive last-season TKGV": 0.0175,
+    "r|xG-RAPM (current rating)": 0.3011,
+    "r|naive last-season on-ice GD60": 0.4074,
+    "common_n": 1659,
+    "R2_rapm": 0.09067,
+    "R2_dd": 0.01604,
+    "R2_rapm+dd": 0.10005,
+    "dR2_dd_over_rapm": 0.00937,
+    "coef_rapm_dd": [
+     3.2987,
+     2.4178
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.00167,
+     0.02366
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.00149,
+    "coef_rapm_dd_tkgv": [
+     3.3465,
+     2.5469,
+     -3.2704
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.0,
+     0.0106
+    ]
+   },
+   "DEV_B|POSADJ|onice_GD60_5v5": {
+    "n": 1758,
+    "r|walk-forward DD (fo+pen)": 0.0707,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.0771,
+    "r|walk-forward PEN": 0.0726,
+    "r|walk-forward FO": -0.004,
+    "r|walk-forward TKGV": 0.0426,
+    "r|naive last-season DD": -0.0011,
+    "r|naive last-season DD+TKGV": 0.0132,
+    "r|naive last-season PEN": -0.0024,
+    "r|naive last-season FO": 0.0072,
+    "r|naive last-season TKGV": 0.0567,
+    "r|xG-RAPM (current rating)": 0.2463,
+    "r|naive last-season on-ice GD60": 0.2036,
+    "common_n": 1659,
+    "R2_rapm": 0.06067,
+    "R2_dd": 0.00549,
+    "R2_rapm+dd": 0.06305,
+    "dR2_dd_over_rapm": 0.00238,
+    "coef_rapm_dd": [
+     1.9588,
+     0.8588
+    ],
+    "dR2_dd_over_rapm_CI": [
+     3e-05,
+     0.00915
+    ],
+    "dR2_tkgv_over_rapm+dd": 4e-05,
+    "coef_rapm_dd_tkgv": [
+     1.9537,
+     0.8446,
+     0.3681
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.0,
+     0.00336
+    ]
+   },
+   "DEV_B|POSADJ|points60": {
+    "n": 1758,
+    "r|walk-forward DD (fo+pen)": 0.2113,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.1945,
+    "r|walk-forward PEN": 0.2146,
+    "r|walk-forward FO": -0.0038,
+    "r|walk-forward TKGV": -0.0017,
+    "r|naive last-season DD": 0.0747,
+    "r|naive last-season DD+TKGV": 0.0717,
+    "r|naive last-season PEN": 0.0678,
+    "r|naive last-season FO": 0.0388,
+    "r|naive last-season TKGV": -0.001,
+    "r|xG-RAPM (current rating)": 0.314,
+    "r|naive last-season on-ice GD60": 0.3921,
+    "common_n": 1659,
+    "R2_rapm": 0.09857,
+    "R2_dd": 0.04681,
+    "R2_rapm+dd": 0.13304,
+    "dR2_dd_over_rapm": 0.03447,
+    "coef_rapm_dd": [
+     2.0397,
+     2.8301
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.01615,
+     0.0612
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.00438,
+    "coef_rapm_dd_tkgv": [
+     2.0897,
+     2.965,
+     -3.4194
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.00015,
+     0.01472
+    ]
+   },
+   "DEV_B|F|realised_duel_goals60 (fo+pen)": {
+    "n": 1124,
+    "r|walk-forward DD (fo+pen)": 0.5383,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.5314,
+    "r|walk-forward PEN": 0.5195,
+    "r|walk-forward FO": 0.0669,
+    "r|walk-forward TKGV": 0.1175,
+    "r|naive last-season DD": 0.2927,
+    "r|naive last-season DD+TKGV": 0.3045,
+    "r|naive last-season PEN": 0.2759,
+    "r|naive last-season FO": 0.0843,
+    "r|naive last-season TKGV": 0.0983,
+    "r|xG-RAPM (current rating)": 0.048,
+    "r|naive last-season on-ice GD60": 0.0419,
+    "common_n": 1066,
+    "R2_rapm": 0.00231,
+    "R2_dd": 0.30719,
+    "R2_rapm+dd": 0.30748,
+    "dR2_dd_over_rapm": 0.30517,
+    "coef_rapm_dd": [
+     -0.0139,
+     0.8954
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.23875,
+     0.36497
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.00095,
+    "coef_rapm_dd_tkgv": [
+     -0.0169,
+     0.8877,
+     0.2118
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.0,
+     0.00696
+    ]
+   },
+   "DEV_B|F|realised_duel_goals60 (fo+pen+tkgv)": {
+    "n": 1124,
+    "r|walk-forward DD (fo+pen)": 0.5336,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.5472,
+    "r|walk-forward PEN": 0.5138,
+    "r|walk-forward FO": 0.0694,
+    "r|walk-forward TKGV": 0.2073,
+    "r|naive last-season DD": 0.2887,
+    "r|naive last-season DD+TKGV": 0.3123,
+    "r|naive last-season PEN": 0.2717,
+    "r|naive last-season FO": 0.0857,
+    "r|naive last-season TKGV": 0.155,
+    "r|xG-RAPM (current rating)": 0.0648,
+    "r|naive last-season on-ice GD60": 0.0232,
+    "common_n": 1066,
+    "R2_rapm": 0.00419,
+    "R2_dd": 0.30267,
+    "R2_rapm+dd": 0.30267,
+    "dR2_dd_over_rapm": 0.29847,
+    "coef_rapm_dd": [
+     0.0003,
+     0.9398
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.23164,
+     0.35897
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.01518,
+    "coef_rapm_dd_tkgv": [
+     -0.0123,
+     0.9071,
+     0.899
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.00481,
+     0.0309
+    ]
+   },
+   "DEV_B|F|realised_pen_goals60": {
+    "n": 1124,
+    "r|walk-forward DD (fo+pen)": 0.4911,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.4884,
+    "r|walk-forward PEN": 0.5482,
+    "r|walk-forward FO": -0.1271,
+    "r|walk-forward TKGV": 0.1231,
+    "r|naive last-season DD": 0.2766,
+    "r|naive last-season DD+TKGV": 0.2913,
+    "r|naive last-season PEN": 0.2951,
+    "r|naive last-season FO": -0.0941,
+    "r|naive last-season TKGV": 0.1101,
+    "r|xG-RAPM (current rating)": 0.0299,
+    "r|naive last-season on-ice GD60": 0.0314,
+    "common_n": 1066,
+    "R2_rapm": 0.00089,
+    "R2_dd": 0.25958,
+    "R2_rapm+dd": 0.26048,
+    "dR2_dd_over_rapm": 0.25959,
+    "coef_rapm_dd": [
+     -0.0241,
+     0.8057
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.20763,
+     0.31787
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.00211,
+    "coef_rapm_dd_tkgv": [
+     -0.0284,
+     0.7945,
+     0.3079
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     1e-05,
+     0.0102
+    ]
+   },
+   "DEV_B|F|realised_fo_goals60": {
+    "n": 1124,
+    "r|walk-forward DD (fo+pen)": 0.2098,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.1943,
+    "r|walk-forward PEN": -0.0649,
+    "r|walk-forward FO": 0.7048,
+    "r|walk-forward TKGV": -0.0116,
+    "r|naive last-season DD": 0.0838,
+    "r|naive last-season DD+TKGV": 0.0745,
+    "r|naive last-season PEN": -0.0439,
+    "r|naive last-season FO": 0.6447,
+    "r|naive last-season TKGV": -0.0333,
+    "r|xG-RAPM (current rating)": 0.0692,
+    "r|naive last-season on-ice GD60": 0.0413,
+    "common_n": 1066,
+    "R2_rapm": 0.00479,
+    "R2_dd": 0.04385,
+    "R2_rapm+dd": 0.04587,
+    "dR2_dd_over_rapm": 0.04108,
+    "coef_rapm_dd": [
+     0.0101,
+     0.0897
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.00866,
+     0.09418
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.00262,
+    "coef_rapm_dd_tkgv": [
+     0.0115,
+     0.0932,
+     -0.0961
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     1e-05,
+     0.01663
+    ]
+   },
+   "DEV_B|F|realised_tkgv_goals60": {
+    "n": 1124,
+    "r|walk-forward DD (fo+pen)": 0.1223,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.2142,
+    "r|walk-forward PEN": 0.1126,
+    "r|walk-forward FO": 0.0292,
+    "r|walk-forward TKGV": 0.4436,
+    "r|naive last-season DD": 0.0588,
+    "r|naive last-season DD+TKGV": 0.1163,
+    "r|naive last-season PEN": 0.0532,
+    "r|naive last-season FO": 0.0283,
+    "r|naive last-season TKGV": 0.2856,
+    "r|xG-RAPM (current rating)": 0.0894,
+    "r|naive last-season on-ice GD60": -0.0747,
+    "common_n": 1066,
+    "R2_rapm": 0.00798,
+    "R2_dd": 0.01636,
+    "R2_rapm+dd": 0.02197,
+    "dR2_dd_over_rapm": 0.01399,
+    "coef_rapm_dd": [
+     0.0143,
+     0.0444
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.00161,
+     0.03883
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.18631,
+    "coef_rapm_dd_tkgv": [
+     0.0046,
+     0.0194,
+     0.6872
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.13017,
+     0.23145
+    ]
+   },
+   "DEV_B|F|onice_GD60_all": {
+    "n": 1124,
+    "r|walk-forward DD (fo+pen)": 0.1027,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.0985,
+    "r|walk-forward PEN": 0.1095,
+    "r|walk-forward FO": -0.0137,
+    "r|walk-forward TKGV": 0.0096,
+    "r|naive last-season DD": 0.0039,
+    "r|naive last-season DD+TKGV": 0.0094,
+    "r|naive last-season PEN": -0.0032,
+    "r|naive last-season FO": 0.0359,
+    "r|naive last-season TKGV": 0.0273,
+    "r|xG-RAPM (current rating)": 0.3202,
+    "r|naive last-season on-ice GD60": 0.4699,
+    "common_n": 1066,
+    "R2_rapm": 0.10252,
+    "R2_dd": 0.0114,
+    "R2_rapm+dd": 0.1074,
+    "dR2_dd_over_rapm": 0.00487,
+    "coef_rapm_dd": [
+     4.0364,
+     1.7892
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.00013,
+     0.02132
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.00207,
+    "coef_rapm_dd_tkgv": [
+     4.1061,
+     1.9691,
+     -4.9448
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     1e-05,
+     0.0148
+    ]
+   },
+   "DEV_B|F|onice_GD60_5v5": {
+    "n": 1124,
+    "r|walk-forward DD (fo+pen)": 0.064,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.0718,
+    "r|walk-forward PEN": 0.0667,
+    "r|walk-forward FO": -0.0049,
+    "r|walk-forward TKGV": 0.0528,
+    "r|naive last-season DD": -0.0041,
+    "r|naive last-season DD+TKGV": 0.0078,
+    "r|naive last-season PEN": -0.0057,
+    "r|naive last-season FO": 0.0085,
+    "r|naive last-season TKGV": 0.0569,
+    "r|xG-RAPM (current rating)": 0.266,
+    "r|naive last-season on-ice GD60": 0.2479,
+    "common_n": 1066,
+    "R2_rapm": 0.07074,
+    "R2_dd": 0.00442,
+    "R2_rapm+dd": 0.07195,
+    "dR2_dd_over_rapm": 0.00121,
+    "coef_rapm_dd": [
+     2.3564,
+     0.6105
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.0,
+     0.0086
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.00021,
+    "coef_rapm_dd_tkgv": [
+     2.3421,
+     0.5704,
+     1.0979
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.0,
+     0.00733
+    ]
+   },
+   "DEV_B|F|points60": {
+    "n": 1124,
+    "r|walk-forward DD (fo+pen)": 0.193,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.1806,
+    "r|walk-forward PEN": 0.1979,
+    "r|walk-forward FO": -0.0055,
+    "r|walk-forward TKGV": -0.0026,
+    "r|naive last-season DD": 0.0416,
+    "r|naive last-season DD+TKGV": 0.0436,
+    "r|naive last-season PEN": 0.0328,
+    "r|naive last-season FO": 0.0445,
+    "r|naive last-season TKGV": 0.0153,
+    "r|xG-RAPM (current rating)": 0.3275,
+    "r|naive last-season on-ice GD60": 0.4317,
+    "common_n": 1066,
+    "R2_rapm": 0.10724,
+    "R2_dd": 0.03905,
+    "R2_rapm+dd": 0.13297,
+    "dR2_dd_over_rapm": 0.02573,
+    "coef_rapm_dd": [
+     2.5146,
+     2.5893
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.00825,
+     0.05562
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.00519,
+    "coef_rapm_dd_tkgv": [
+     2.5841,
+     2.7689,
+     -4.9359
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.0001,
+     0.02431
+    ]
+   },
+   "DEV_B|D|realised_duel_goals60 (fo+pen)": {
+    "n": 634,
+    "r|walk-forward DD (fo+pen)": 0.5462,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.5118,
+    "r|walk-forward PEN": 0.5462,
+    "r|walk-forward FO": 0.0522,
+    "r|walk-forward TKGV": 0.0723,
+    "r|naive last-season DD": 0.3689,
+    "r|naive last-season DD+TKGV": 0.356,
+    "r|naive last-season PEN": 0.369,
+    "r|naive last-season FO": 0.0042,
+    "r|naive last-season TKGV": 0.0344,
+    "r|xG-RAPM (current rating)": 0.0495,
+    "r|naive last-season on-ice GD60": 0.1055,
+    "common_n": 593,
+    "R2_rapm": 0.00245,
+    "R2_dd": 0.32569,
+    "R2_rapm+dd": 0.32574,
+    "dR2_dd_over_rapm": 0.32328,
+    "coef_rapm_dd": [
+     0.0036,
+     0.8481
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.25071,
+     0.38795
+    ],
+    "dR2_tkgv_over_rapm+dd": 3e-05,
+    "coef_rapm_dd_tkgv": [
+     0.0033,
+     0.8473,
+     0.0185
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.0,
+     0.00601
+    ]
+   },
+   "DEV_B|D|realised_duel_goals60 (fo+pen+tkgv)": {
+    "n": 634,
+    "r|walk-forward DD (fo+pen)": 0.5324,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.5642,
+    "r|walk-forward PEN": 0.5323,
+    "r|walk-forward FO": 0.041,
+    "r|walk-forward TKGV": 0.2501,
+    "r|naive last-season DD": 0.3602,
+    "r|naive last-season DD+TKGV": 0.3994,
+    "r|naive last-season PEN": 0.3603,
+    "r|naive last-season FO": -0.0018,
+    "r|naive last-season TKGV": 0.1698,
+    "r|xG-RAPM (current rating)": 0.061,
+    "r|naive last-season on-ice GD60": 0.107,
+    "common_n": 593,
+    "R2_rapm": 0.00372,
+    "R2_dd": 0.31036,
+    "R2_rapm+dd": 0.31071,
+    "dR2_dd_over_rapm": 0.30699,
+    "coef_rapm_dd": [
+     0.0118,
+     0.9199
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.2305,
+     0.37754
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.03753,
+    "coef_rapm_dd_tkgv": [
+     -0.0007,
+     0.8826,
+     0.7961
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.01468,
+     0.0691
+    ]
+   },
+   "DEV_B|D|realised_pen_goals60": {
+    "n": 634,
+    "r|walk-forward DD (fo+pen)": 0.5462,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.5118,
+    "r|walk-forward PEN": 0.5462,
+    "r|walk-forward FO": 0.0523,
+    "r|walk-forward TKGV": 0.0722,
+    "r|naive last-season DD": 0.3689,
+    "r|naive last-season DD+TKGV": 0.356,
+    "r|naive last-season PEN": 0.369,
+    "r|naive last-season FO": 0.0043,
+    "r|naive last-season TKGV": 0.0343,
+    "r|xG-RAPM (current rating)": 0.0493,
+    "r|naive last-season on-ice GD60": 0.1054,
+    "common_n": 593,
+    "R2_rapm": 0.00243,
+    "R2_dd": 0.32575,
+    "R2_rapm+dd": 0.32579,
+    "dR2_dd_over_rapm": 0.32336,
+    "coef_rapm_dd": [
+     0.0034,
+     0.8482
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.24157,
+     0.40757
+    ],
+    "dR2_tkgv_over_rapm+dd": 2e-05,
+    "coef_rapm_dd_tkgv": [
+     0.0032,
+     0.8473,
+     0.0182
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.0,
+     0.00551
+    ]
+   },
+   "DEV_B|D|realised_fo_goals60": {
+    "n": 634,
+    "r|walk-forward DD (fo+pen)": -0.0062,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.0076,
+    "r|walk-forward PEN": -0.0062,
+    "r|walk-forward FO": -0.0167,
+    "r|walk-forward TKGV": 0.0361,
+    "r|naive last-season DD": -0.0004,
+    "r|naive last-season DD+TKGV": 0.0077,
+    "r|naive last-season PEN": -0.0004,
+    "r|naive last-season FO": -0.0254,
+    "r|naive last-season TKGV": 0.0214,
+    "r|xG-RAPM (current rating)": 0.0656,
+    "r|naive last-season on-ice GD60": 0.0337,
+    "common_n": 593,
+    "R2_rapm": 0.0043,
+    "R2_dd": 2e-05,
+    "R2_rapm+dd": 0.00439,
+    "dR2_dd_over_rapm": 9e-05,
+    "coef_rapm_dd": [
+     0.0001,
+     -0.0
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.0,
+     0.00617
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.00084,
+    "coef_rapm_dd_tkgv": [
+     0.0001,
+     -0.0001,
+     0.0004
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     1e-05,
+     0.0113
+    ]
+   },
+   "DEV_B|D|realised_tkgv_goals60": {
+    "n": 634,
+    "r|walk-forward DD (fo+pen)": 0.1163,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.2836,
+    "r|walk-forward PEN": 0.1163,
+    "r|walk-forward FO": -0.0153,
+    "r|walk-forward TKGV": 0.4962,
+    "r|naive last-season DD": 0.0761,
+    "r|naive last-season DD+TKGV": 0.2128,
+    "r|naive last-season PEN": 0.0762,
+    "r|naive last-season FO": -0.0149,
+    "r|naive last-season TKGV": 0.3732,
+    "r|xG-RAPM (current rating)": 0.0445,
+    "r|naive last-season on-ice GD60": 0.0323,
+    "common_n": 593,
+    "R2_rapm": 0.00198,
+    "R2_dd": 0.01433,
+    "R2_rapm+dd": 0.01559,
+    "dR2_dd_over_rapm": 0.01361,
+    "coef_rapm_dd": [
+     0.0082,
+     0.0718
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.00012,
+     0.04923
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.26083,
+    "coef_rapm_dd_tkgv": [
+     -0.004,
+     0.0353,
+     0.7776
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.17568,
+     0.35256
+    ]
+   },
+   "DEV_B|D|onice_GD60_all": {
+    "n": 634,
+    "r|walk-forward DD (fo+pen)": 0.1682,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.1588,
+    "r|walk-forward PEN": 0.1682,
+    "r|walk-forward FO": 0.0288,
+    "r|walk-forward TKGV": 0.0254,
+    "r|naive last-season DD": 0.0648,
+    "r|naive last-season DD+TKGV": 0.0615,
+    "r|naive last-season PEN": 0.0648,
+    "r|naive last-season FO": 0.0087,
+    "r|naive last-season TKGV": 0.0031,
+    "r|xG-RAPM (current rating)": 0.2802,
+    "r|naive last-season on-ice GD60": 0.3002,
+    "common_n": 593,
+    "R2_rapm": 0.07851,
+    "R2_dd": 0.03223,
+    "R2_rapm+dd": 0.10373,
+    "dR2_dd_over_rapm": 0.02522,
+    "coef_rapm_dd": [
+     2.3548,
+     3.7205
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.00532,
+     0.05674
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.00099,
+    "coef_rapm_dd_tkgv": [
+     2.3833,
+     3.8059,
+     -1.8238
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.0,
+     0.01795
+    ]
+   },
+   "DEV_B|D|onice_GD60_5v5": {
+    "n": 634,
+    "r|walk-forward DD (fo+pen)": 0.0861,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.0889,
+    "r|walk-forward PEN": 0.0861,
+    "r|walk-forward FO": 0.0298,
+    "r|walk-forward TKGV": 0.0333,
+    "r|naive last-season DD": 0.0084,
+    "r|naive last-season DD+TKGV": 0.031,
+    "r|naive last-season PEN": 0.0083,
+    "r|naive last-season FO": 0.0102,
+    "r|naive last-season TKGV": 0.0607,
+    "r|xG-RAPM (current rating)": 0.2188,
+    "r|naive last-season on-ice GD60": 0.1344,
+    "common_n": 593,
+    "R2_rapm": 0.04789,
+    "R2_dd": 0.00837,
+    "R2_rapm+dd": 0.05345,
+    "dR2_dd_over_rapm": 0.00556,
+    "coef_rapm_dd": [
+     1.4464,
+     1.3262
+    ],
+    "dR2_dd_over_rapm_CI": [
+     2e-05,
+     0.02715
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.0,
+    "coef_rapm_dd_tkgv": [
+     1.4476,
+     1.3298,
+     -0.0825
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     0.0,
+     0.00855
+    ]
+   },
+   "DEV_B|D|points60": {
+    "n": 634,
+    "r|walk-forward DD (fo+pen)": 0.2654,
+    "r|walk-forward DD (fo+pen+tkgv)": 0.2296,
+    "r|walk-forward PEN": 0.2653,
+    "r|walk-forward FO": 0.0418,
+    "r|walk-forward TKGV": -0.0173,
+    "r|naive last-season DD": 0.1817,
+    "r|naive last-season DD+TKGV": 0.1462,
+    "r|naive last-season PEN": 0.1818,
+    "r|naive last-season FO": 0.0069,
+    "r|naive last-season TKGV": -0.0597,
+    "r|xG-RAPM (current rating)": 0.3001,
+    "r|naive last-season on-ice GD60": 0.3116,
+    "common_n": 593,
+    "R2_rapm": 0.09009,
+    "R2_dd": 0.07313,
+    "R2_rapm+dd": 0.15181,
+    "dR2_dd_over_rapm": 0.06172,
+    "coef_rapm_dd": [
+     1.4012,
+     3.3018
+    ],
+    "dR2_dd_over_rapm_CI": [
+     0.0242,
+     0.1269
+    ],
+    "dR2_tkgv_over_rapm+dd": 0.00684,
+    "coef_rapm_dd_tkgv": [
+     1.4439,
+     3.4293,
+     -2.7212
+    ],
+    "dR2_tkgv_over_rapm+dd_CI": [
+     1e-05,
+     0.03582
+    ]
+   }
+  },
+  "n_player_seasons": 3969,
+  "n_with_rapm": 3739
+ },
+ "V_face": {
+  "snapshot": "pre-game walk-forward value at each player's last DEV game (2016-17 or 2017-18), career TOI >= 3000 min",
+  "n_players": 524,
+  "top_dd_g60": [
+   {
+    "name": "Ryan O'Reilly",
+    "pos": "C",
+    "dd_g60": 0.2027,
+    "fo_g60": 0.1013,
+    "pen_g60": 0.1013
+   },
+   {
+    "name": "Johnny Gaudreau",
+    "pos": "L",
+    "dd_g60": 0.175,
+    "fo_g60": -0.0004,
+    "pen_g60": 0.1754
+   },
+   {
+    "name": "Connor McDavid",
+    "pos": "C",
+    "dd_g60": 0.1443,
+    "fo_g60": -0.0231,
+    "pen_g60": 0.1674
+   },
+   {
+    "name": "Brandon Sutter",
+    "pos": "C",
+    "dd_g60": 0.1286,
+    "fo_g60": 0.0208,
+    "pen_g60": 0.1078
+   },
+   {
+    "name": "Matt Duchene",
+    "pos": "C",
+    "dd_g60": 0.1192,
+    "fo_g60": 0.0326,
+    "pen_g60": 0.0866
+   },
+   {
+    "name": "Jeff Skinner",
+    "pos": "C",
+    "dd_g60": 0.1171,
+    "fo_g60": -0.0044,
+    "pen_g60": 0.1215
+   },
+   {
+    "name": "Nikolaj Ehlers",
+    "pos": "L",
+    "dd_g60": 0.1162,
+    "fo_g60": -0.0015,
+    "pen_g60": 0.1177
+   },
+   {
+    "name": "Claude Giroux",
+    "pos": "R",
+    "dd_g60": 0.1135,
+    "fo_g60": 0.0356,
+    "pen_g60": 0.0779
+   },
+   {
+    "name": "Chris Tierney",
+    "pos": "C",
+    "dd_g60": 0.1104,
+    "fo_g60": -0.0027,
+    "pen_g60": 0.1131
+   },
+   {
+    "name": "Tanner Pearson",
+    "pos": "L",
+    "dd_g60": 0.1091,
+    "fo_g60": -0.0019,
+    "pen_g60": 0.111
+   },
+   {
+    "name": "Kyle Palmieri",
+    "pos": "C",
+    "dd_g60": 0.104,
+    "fo_g60": -0.0066,
+    "pen_g60": 0.1106
+   },
+   {
+    "name": "Paul Byron",
+    "pos": "L",
+    "dd_g60": 0.0976,
+    "fo_g60": -0.0051,
+    "pen_g60": 0.1027
+   },
+   {
+    "name": "Anze Kopitar",
+    "pos": "C",
+    "dd_g60": 0.0964,
+    "fo_g60": 0.0312,
+    "pen_g60": 0.0651
+   },
+   {
+    "name": "Mika Zibanejad",
+    "pos": "C",
+    "dd_g60": 0.095,
+    "fo_g60": 0.0071,
+    "pen_g60": 0.0879
+   },
+   {
+    "name": "Aleksander Barkov",
+    "pos": "C",
+    "dd_g60": 0.0932,
+    "fo_g60": 0.012,
+    "pen_g60": 0.0813
+   }
+  ],
+  "bottom_dd_g60": [
+   {
+    "name": "Eric Gryba",
+    "pos": "D",
+    "dd_g60": -0.1427,
+    "fo_g60": -0.0,
+    "pen_g60": -0.1427
+   },
+   {
+    "name": "Dalton Prout",
+    "pos": "D",
+    "dd_g60": -0.14,
+    "fo_g60": -0.0,
+    "pen_g60": -0.14
+   },
+   {
+    "name": "Nikita Zadorov",
+    "pos": "D",
+    "dd_g60": -0.1288,
+    "fo_g60": -0.0,
+    "pen_g60": -0.1288
+   },
+   {
+    "name": "Matt Greene",
+    "pos": "D",
+    "dd_g60": -0.1281,
+    "fo_g60": -0.0,
+    "pen_g60": -0.1281
+   },
+   {
+    "name": "Kyle Quincey",
+    "pos": "D",
+    "dd_g60": -0.1126,
+    "fo_g60": -0.0,
+    "pen_g60": -0.1126
+   },
+   {
+    "name": "Dougie Hamilton",
+    "pos": "D",
+    "dd_g60": -0.1114,
+    "fo_g60": -0.0,
+    "pen_g60": -0.1114
+   },
+   {
+    "name": "Dustin Byfuglien",
+    "pos": "D",
+    "dd_g60": -0.1065,
+    "fo_g60": -0.0,
+    "pen_g60": -0.1065
+   },
+   {
+    "name": "Jakub Kindl",
+    "pos": "D",
+    "dd_g60": -0.1055,
+    "fo_g60": -0.0,
+    "pen_g60": -0.1055
+   },
+   {
+    "name": "Alexander Petrovic",
+    "pos": "D",
+    "dd_g60": -0.1047,
+    "fo_g60": -0.0,
+    "pen_g60": -0.1047
+   },
+   {
+    "name": "Alexander Edler",
+    "pos": "D",
+    "dd_g60": -0.1021,
+    "fo_g60": -0.0,
+    "pen_g60": -0.1021
+   },
+   {
+    "name": "Andrej Sustr",
+    "pos": "D",
+    "dd_g60": -0.093,
+    "fo_g60": -0.0,
+    "pen_g60": -0.093
+   },
+   {
+    "name": "Ian Cole",
+    "pos": "D",
+    "dd_g60": -0.0928,
+    "fo_g60": -0.0,
+    "pen_g60": -0.0928
+   },
+   {
+    "name": "Brandon Carlo",
+    "pos": "D",
+    "dd_g60": -0.0927,
+    "fo_g60": -0.0,
+    "pen_g60": -0.0927
+   },
+   {
+    "name": "Mark Borowiecki",
+    "pos": "D",
+    "dd_g60": -0.0892,
+    "fo_g60": -0.0002,
+    "pen_g60": -0.0891
+   },
+   {
+    "name": "Radko Gudas",
+    "pos": "D",
+    "dd_g60": -0.0873,
+    "fo_g60": -0.0,
+    "pen_g60": -0.0873
+   }
+  ],
+  "top_fo_rating": [
+   {
+    "name": "Antoine Vermette",
+    "pos": "C",
+    "fo_rating": 0.412,
+    "fo_nprev": 11312,
+    "fo_g60": 0.0885
+   },
+   {
+    "name": "Ryan O'Reilly",
+    "pos": "C",
+    "fo_rating": 0.3718,
+    "fo_nprev": 10426,
+    "fo_g60": 0.1013
+   },
+   {
+    "name": "Jay Beagle",
+    "pos": "C",
+    "fo_rating": 0.3568,
+    "fo_nprev": 5451,
+    "fo_g60": 0.07
+   },
+   {
+    "name": "Patrice Bergeron",
+    "pos": "C",
+    "fo_rating": 0.3417,
+    "fo_nprev": 14620,
+    "fo_g60": 0.0798
+   },
+   {
+    "name": "Boyd Gordon",
+    "pos": "C",
+    "fo_rating": 0.3083,
+    "fo_nprev": 6808,
+    "fo_g60": 0.0551
+   },
+   {
+    "name": "Jonathan Toews",
+    "pos": "C",
+    "fo_rating": 0.3011,
+    "fo_nprev": 13658,
+    "fo_g60": 0.0621
+   },
+   {
+    "name": "Jordan Staal",
+    "pos": "C",
+    "fo_rating": 0.2827,
+    "fo_nprev": 9379,
+    "fo_g60": 0.0505
+   },
+   {
+    "name": "Luke Glendening",
+    "pos": "C",
+    "fo_rating": 0.2795,
+    "fo_nprev": 4243,
+    "fo_g60": 0.0464
+   },
+   {
+    "name": "Claude Giroux",
+    "pos": "R",
+    "fo_rating": 0.2743,
+    "fo_nprev": 12978,
+    "fo_g60": 0.0356
+   },
+   {
+    "name": "Mike Fisher",
+    "pos": "C",
+    "fo_rating": 0.2595,
+    "fo_nprev": 9277,
+    "fo_g60": 0.0407
+   },
+   {
+    "name": "Vladimir Sobotka",
+    "pos": "C",
+    "fo_rating": 0.2371,
+    "fo_nprev": 2910,
+    "fo_g60": 0.0199
+   },
+   {
+    "name": "Nate Thompson",
+    "pos": "C",
+    "fo_rating": 0.2294,
+    "fo_nprev": 5810,
+    "fo_g60": 0.0303
+   },
+   {
+    "name": "Martin Hanzal",
+    "pos": "C",
+    "fo_rating": 0.2293,
+    "fo_nprev": 7633,
+    "fo_g60": 0.0372
+   },
+   {
+    "name": "Paul Stastny",
+    "pos": "C",
+    "fo_rating": 0.2114,
+    "fo_nprev": 11336,
+    "fo_g60": 0.035
+   },
+   {
+    "name": "Ryan Johansen",
+    "pos": "C",
+    "fo_rating": 0.209,
+    "fo_nprev": 8703,
+    "fo_g60": 0.0361
+   }
+  ],
+  "bottom_fo_rating_min2000fo": [
+   {
+    "name": "Mike Ribeiro",
+    "pos": "C",
+    "fo_rating": -0.4039,
+    "fo_nprev": 6253,
+    "fo_g60": -0.0363
+   },
+   {
+    "name": "Jack Eichel",
+    "pos": "C",
+    "fo_rating": -0.3746,
+    "fo_nprev": 2602,
+    "fo_g60": -0.0323
+   },
+   {
+    "name": "Connor McDavid",
+    "pos": "C",
+    "fo_rating": -0.319,
+    "fo_nprev": 2417,
+    "fo_g60": -0.0231
+   },
+   {
+    "name": "Alexander Burmistrov",
+    "pos": "C",
+    "fo_rating": -0.3102,
+    "fo_nprev": 2686,
+    "fo_g60": -0.0326
+   },
+   {
+    "name": "Evgeny Kuznetsov",
+    "pos": "C",
+    "fo_rating": -0.2972,
+    "fo_nprev": 4747,
+    "fo_g60": -0.0289
+   },
+   {
+    "name": "Stephen Gionta",
+    "pos": "R",
+    "fo_rating": -0.2966,
+    "fo_nprev": 2265,
+    "fo_g60": -0.026
+   },
+   {
+    "name": "Marcus Johansson",
+    "pos": "L",
+    "fo_rating": -0.2884,
+    "fo_nprev": 2293,
+    "fo_g60": -0.0078
+   },
+   {
+    "name": "Evgeni Malkin",
+    "pos": "C",
+    "fo_rating": -0.2656,
+    "fo_nprev": 6875,
+    "fo_g60": -0.0254
+   },
+   {
+    "name": "Alexander Steen",
+    "pos": "L",
+    "fo_rating": -0.2377,
+    "fo_nprev": 2280,
+    "fo_g60": -0.0023
+   },
+   {
+    "name": "Zemgus Girgensons",
+    "pos": "C",
+    "fo_rating": -0.2166,
+    "fo_nprev": 2212,
+    "fo_g60": -0.0043
+   },
+   {
+    "name": "Nathan MacKinnon",
+    "pos": "C",
+    "fo_rating": -0.2154,
+    "fo_nprev": 4705,
+    "fo_g60": -0.0246
+   },
+   {
+    "name": "Shawn Matthias",
+    "pos": "C",
+    "fo_rating": -0.2051,
+    "fo_nprev": 2023,
+    "fo_g60": -0.0053
+   },
+   {
+    "name": "Logan Couture",
+    "pos": "C",
+    "fo_rating": -0.1999,
+    "fo_nprev": 6761,
+    "fo_g60": -0.008
+   },
+   {
+    "name": "Artem Anisimov",
+    "pos": "C",
+    "fo_rating": -0.1965,
+    "fo_nprev": 6026,
+    "fo_g60": -0.0253
+   },
+   {
+    "name": "Alexander Wennberg",
+    "pos": "C",
+    "fo_rating": -0.1813,
+    "fo_nprev": 3746,
+    "fo_g60": -0.0147
+   }
+  ],
+  "top_pen_g60": [
+   {
+    "name": "Johnny Gaudreau",
+    "pos": "L",
+    "pen_g60": 0.1754,
+    "pen_draw_n60": 1.2255,
+    "pen_take_n60": 0.2458
+   },
+   {
+    "name": "Connor McDavid",
+    "pos": "C",
+    "pen_g60": 0.1674,
+    "pen_draw_n60": 1.2412,
+    "pen_take_n60": 0.3432
+   },
+   {
+    "name": "Jeff Skinner",
+    "pos": "C",
+    "pen_g60": 0.1215,
+    "pen_draw_n60": 1.1062,
+    "pen_take_n60": 0.4808
+   },
+   {
+    "name": "Nikolaj Ehlers",
+    "pos": "L",
+    "pen_g60": 0.1177,
+    "pen_draw_n60": 1.1237,
+    "pen_take_n60": 0.4884
+   },
+   {
+    "name": "Chris Tierney",
+    "pos": "C",
+    "pen_g60": 0.1131,
+    "pen_draw_n60": 0.8512,
+    "pen_take_n60": 0.2992
+   },
+   {
+    "name": "Tanner Pearson",
+    "pos": "L",
+    "pen_g60": 0.111,
+    "pen_draw_n60": 0.972,
+    "pen_take_n60": 0.3926
+   },
+   {
+    "name": "Kyle Palmieri",
+    "pos": "C",
+    "pen_g60": 0.1106,
+    "pen_draw_n60": 1.1717,
+    "pen_take_n60": 0.5796
+   },
+   {
+    "name": "Brandon Sutter",
+    "pos": "C",
+    "pen_g60": 0.1078,
+    "pen_draw_n60": 0.7997,
+    "pen_take_n60": 0.2677
+   },
+   {
+    "name": "Jack Eichel",
+    "pos": "C",
+    "pen_g60": 0.107,
+    "pen_draw_n60": 1.0089,
+    "pen_take_n60": 0.4622
+   },
+   {
+    "name": "Paul Byron",
+    "pos": "L",
+    "pen_g60": 0.1027,
+    "pen_draw_n60": 0.9164,
+    "pen_take_n60": 0.3801
+   },
+   {
+    "name": "Ryan O'Reilly",
+    "pos": "C",
+    "pen_g60": 0.1013,
+    "pen_draw_n60": 0.6851,
+    "pen_take_n60": 0.1273
+   },
+   {
+    "name": "Ondrej Palat",
+    "pos": "L",
+    "pen_g60": 0.0928,
+    "pen_draw_n60": 0.93,
+    "pen_take_n60": 0.4447
+   },
+   {
+    "name": "David Pastrnak",
+    "pos": "R",
+    "pen_g60": 0.0922,
+    "pen_draw_n60": 1.1383,
+    "pen_take_n60": 0.6445
+   },
+   {
+    "name": "Brayden Point",
+    "pos": "C",
+    "pen_g60": 0.0914,
+    "pen_draw_n60": 0.7927,
+    "pen_take_n60": 0.3017
+   },
+   {
+    "name": "Jordan Eberle",
+    "pos": "C",
+    "pen_g60": 0.09,
+    "pen_draw_n60": 0.8576,
+    "pen_take_n60": 0.3742
+   }
+  ],
+  "bottom_pen_g60": [
+   {
+    "name": "Eric Gryba",
+    "pos": "D",
+    "pen_g60": -0.1427,
+    "pen_draw_n60": 0.3949,
+    "pen_take_n60": 1.2413
+   },
+   {
+    "name": "Dalton Prout",
+    "pos": "D",
+    "pen_g60": -0.14,
+    "pen_draw_n60": 0.2525,
+    "pen_take_n60": 1.0575
+   },
+   {
+    "name": "Nikita Zadorov",
+    "pos": "D",
+    "pen_g60": -0.1288,
+    "pen_draw_n60": 0.3133,
+    "pen_take_n60": 1.1227
+   },
+   {
+    "name": "Matt Greene",
+    "pos": "D",
+    "pen_g60": -0.1281,
+    "pen_draw_n60": 0.2232,
+    "pen_take_n60": 1.0223
+   },
+   {
+    "name": "Kyle Quincey",
+    "pos": "D",
+    "pen_g60": -0.1126,
+    "pen_draw_n60": 0.3021,
+    "pen_take_n60": 1.0071
+   },
+   {
+    "name": "Dougie Hamilton",
+    "pos": "D",
+    "pen_g60": -0.1114,
+    "pen_draw_n60": 0.2842,
+    "pen_take_n60": 0.9687
+   },
+   {
+    "name": "Dustin Byfuglien",
+    "pos": "D",
+    "pen_g60": -0.1065,
+    "pen_draw_n60": 0.3036,
+    "pen_take_n60": 0.9669
+   },
+   {
+    "name": "Jakub Kindl",
+    "pos": "D",
+    "pen_g60": -0.1055,
+    "pen_draw_n60": 0.2705,
+    "pen_take_n60": 0.9312
+   },
+   {
+    "name": "Alexander Petrovic",
+    "pos": "D",
+    "pen_g60": -0.1047,
+    "pen_draw_n60": 0.2596,
+    "pen_take_n60": 0.9132
+   },
+   {
+    "name": "Alexander Edler",
+    "pos": "D",
+    "pen_g60": -0.1021,
+    "pen_draw_n60": 0.3146,
+    "pen_take_n60": 0.9238
+   },
+   {
+    "name": "Andrej Sustr",
+    "pos": "D",
+    "pen_g60": -0.093,
+    "pen_draw_n60": 0.1666,
+    "pen_take_n60": 0.7429
+   },
+   {
+    "name": "Ian Cole",
+    "pos": "D",
+    "pen_g60": -0.0928,
+    "pen_draw_n60": 0.5229,
+    "pen_take_n60": 1.1177
+   },
+   {
+    "name": "Brandon Carlo",
+    "pos": "D",
+    "pen_g60": -0.0927,
+    "pen_draw_n60": 0.2198,
+    "pen_take_n60": 0.8246
+   },
+   {
+    "name": "Mark Borowiecki",
+    "pos": "D",
+    "pen_g60": -0.0891,
+    "pen_draw_n60": 0.527,
+    "pen_take_n60": 1.0937
+   },
+   {
+    "name": "Radko Gudas",
+    "pos": "D",
+    "pen_g60": -0.0873,
+    "pen_draw_n60": 0.4018,
+    "pen_take_n60": 0.8644
+   }
+  ],
+  "top_tkgv_g60": [
+   {
+    "name": "Connor McDavid",
+    "pos": "C",
+    "tkgv_g60": 0.0523,
+    "tk_adj60": 2.9407,
+    "gv_adj60": 1.6103
+   },
+   {
+    "name": "Jordan Martinook",
+    "pos": "L",
+    "tkgv_g60": 0.0471,
+    "tk_adj60": 2.1979,
+    "gv_adj60": 0.8293
+   },
+   {
+    "name": "Mathieu Perreault",
+    "pos": "C",
+    "tkgv_g60": 0.0435,
+    "tk_adj60": 2.25,
+    "gv_adj60": 1.2093
+   },
+   {
+    "name": "Radek Faksa",
+    "pos": "C",
+    "tkgv_g60": 0.0427,
+    "tk_adj60": 2.1627,
+    "gv_adj60": 1.0362
+   },
+   {
+    "name": "Jeff Skinner",
+    "pos": "C",
+    "tkgv_g60": 0.0411,
+    "tk_adj60": 2.4762,
+    "gv_adj60": 2.4489
+   },
+   {
+    "name": "Jaden Schwartz",
+    "pos": "C",
+    "tkgv_g60": 0.0395,
+    "tk_adj60": 2.2085,
+    "gv_adj60": 1.3918
+   },
+   {
+    "name": "Mark Stone",
+    "pos": "R",
+    "tkgv_g60": 0.0378,
+    "tk_adj60": 3.4122,
+    "gv_adj60": 2.1897
+   },
+   {
+    "name": "Brendan Gallagher",
+    "pos": "R",
+    "tkgv_g60": 0.0374,
+    "tk_adj60": 2.0349,
+    "gv_adj60": 1.1639
+   },
+   {
+    "name": "Ryan O'Reilly",
+    "pos": "C",
+    "tkgv_g60": 0.0368,
+    "tk_adj60": 2.5292,
+    "gv_adj60": 1.3723
+   },
+   {
+    "name": "Travis Zajac",
+    "pos": "C",
+    "tkgv_g60": 0.0366,
+    "tk_adj60": 1.9175,
+    "gv_adj60": 0.995
+   },
+   {
+    "name": "Zach Parise",
+    "pos": "L",
+    "tkgv_g60": 0.0363,
+    "tk_adj60": 1.5792,
+    "gv_adj60": 1.2958
+   },
+   {
+    "name": "Patric Hornqvist",
+    "pos": "R",
+    "tkgv_g60": 0.0362,
+    "tk_adj60": 1.5325,
+    "gv_adj60": 0.8599
+   },
+   {
+    "name": "Paul Stastny",
+    "pos": "C",
+    "tkgv_g60": 0.0361,
+    "tk_adj60": 1.424,
+    "gv_adj60": 0.8003
+   },
+   {
+    "name": "Patrice Bergeron",
+    "pos": "C",
+    "tkgv_g60": 0.0361,
+    "tk_adj60": 2.1765,
+    "gv_adj60": 1.3805
+   },
+   {
+    "name": "Riley Nash",
+    "pos": "C",
+    "tkgv_g60": 0.0359,
+    "tk_adj60": 2.2327,
+    "gv_adj60": 0.9719
+   }
+  ],
+  "bottom_tkgv_g60": [
+   {
+    "name": "Brent Seabrook",
+    "pos": "D",
+    "tkgv_g60": -0.0841,
+    "tk_adj60": 0.8198,
+    "gv_adj60": 2.7504
+   },
+   {
+    "name": "Niklas Hjalmarsson",
+    "pos": "D",
+    "tkgv_g60": -0.077,
+    "tk_adj60": 1.0385,
+    "gv_adj60": 2.5877
+   },
+   {
+    "name": "Derek Forbort",
+    "pos": "D",
+    "tkgv_g60": -0.0709,
+    "tk_adj60": 0.7954,
+    "gv_adj60": 2.522
+   },
+   {
+    "name": "Keith Yandle",
+    "pos": "D",
+    "tkgv_g60": -0.069,
+    "tk_adj60": 1.0517,
+    "gv_adj60": 2.9346
+   },
+   {
+    "name": "Nikita Zaitsev",
+    "pos": "D",
+    "tkgv_g60": -0.0626,
+    "tk_adj60": 0.9504,
+    "gv_adj60": 2.4526
+   },
+   {
+    "name": "Jonathan Ericsson",
+    "pos": "D",
+    "tkgv_g60": -0.0625,
+    "tk_adj60": 0.702,
+    "gv_adj60": 2.4318
+   },
+   {
+    "name": "Ivan Provorov",
+    "pos": "D",
+    "tkgv_g60": -0.0618,
+    "tk_adj60": 0.7977,
+    "gv_adj60": 2.5793
+   },
+   {
+    "name": "Jeff Petry",
+    "pos": "D",
+    "tkgv_g60": -0.0587,
+    "tk_adj60": 1.082,
+    "gv_adj60": 2.4758
+   },
+   {
+    "name": "Jake Gardiner",
+    "pos": "D",
+    "tkgv_g60": -0.0587,
+    "tk_adj60": 1.1531,
+    "gv_adj60": 2.6556
+   },
+   {
+    "name": "Alec Martinez",
+    "pos": "D",
+    "tkgv_g60": -0.0574,
+    "tk_adj60": 0.4913,
+    "gv_adj60": 2.1249
+   },
+   {
+    "name": "Kris Letang",
+    "pos": "D",
+    "tkgv_g60": -0.0562,
+    "tk_adj60": 1.4867,
+    "gv_adj60": 2.9033
+   },
+   {
+    "name": "Brendan Smith",
+    "pos": "D",
+    "tkgv_g60": -0.0558,
+    "tk_adj60": 1.0486,
+    "gv_adj60": 2.5249
+   },
+   {
+    "name": "Ben Hutton",
+    "pos": "D",
+    "tkgv_g60": -0.0557,
+    "tk_adj60": 1.2442,
+    "gv_adj60": 2.3577
+   },
+   {
+    "name": "Morgan Rielly",
+    "pos": "D",
+    "tkgv_g60": -0.0557,
+    "tk_adj60": 1.1157,
+    "gv_adj60": 2.3702
+   },
+   {
+    "name": "Alexei Emelin",
+    "pos": "D",
+    "tkgv_g60": -0.0555,
+    "tk_adj60": 0.7991,
+    "gv_adj60": 2.1028
+   }
+  ]
+ },
+ "magnitudes_goals_per60": {
+  "C": {
+   "fo_g60": {
+    "sd": 0.0209,
+    "p05": -0.0276,
+    "p95": 0.0424
+   },
+   "pen_g60": {
+    "sd": 0.0416,
+    "p05": -0.0315,
+    "p95": 0.0984
+   },
+   "tkgv_g60": {
+    "sd": 0.0099,
+    "p05": 0.0065,
+    "p95": 0.0385
+   },
+   "dd_g60": {
+    "sd": 0.0428,
+    "p05": -0.0311,
+    "p95": 0.1086
+   },
+   "n": 1263
+  },
+  "W": {
+   "fo_g60": {
+    "sd": 0.006,
+    "p05": -0.0111,
+    "p95": 0.0001
+   },
+   "pen_g60": {
+    "sd": 0.0421,
+    "p05": -0.0455,
+    "p95": 0.0929
+   },
+   "tkgv_g60": {
+    "sd": 0.0101,
+    "p05": 0.0055,
+    "p95": 0.0394
+   },
+   "dd_g60": {
+    "sd": 0.0426,
+    "p05": -0.0485,
+    "p95": 0.0917
+   },
+   "n": 1250
+  },
+  "D": {
+   "fo_g60": {
+    "sd": 0.0,
+    "p05": -0.0,
+    "p95": -0.0
+   },
+   "pen_g60": {
+    "sd": 0.0353,
+    "p05": -0.0955,
+    "p95": 0.0182
+   },
+   "tkgv_g60": {
+    "sd": 0.0126,
+    "p05": -0.0563,
+    "p95": -0.0159
+   },
+   "dd_g60": {
+    "sd": 0.0353,
+    "p05": -0.0956,
+    "p95": 0.0182
+   },
+   "n": 1456
+  }
+ },
+ "U_unit": {
+  "n_games": 7929,
+  "missing_lineup": 0,
+  "sd": {
+   "fo_u_diff": 0.0205,
+   "pen_u_diff": 0.0602,
+   "tkgv_u_diff": 0.0313,
+   "dd_u_diff": 0.0633,
+   "P_diff": 0.1448,
+   "gd": 2.3399,
+   "st_gd": 1.0835,
+   "ddev_diff": 0.0279
+  },
+  "pen_lineup -> pen_diff_h (count)": {
+   "coef": {
+    "const": 0.2823,
+    "pen_u_diff": 4.8997
+   },
+   "t": {
+    "const": 14.02,
+    "pen_u_diff": 14.68
+   },
+   "r2": 0.02646,
+   "n": 7899
+  },
+  "pen_lineup -> special-teams GD": {
+   "coef": {
+    "const": 0.0964,
+    "pen_u_diff": 0.6952
+   },
+   "t": {
+    "const": 7.92,
+    "pen_u_diff": 3.58
+   },
+   "r2": 0.00149,
+   "n": 7911
+  },
+  "pen_lineup -> ST GD | shipped": {
+   "coef": {
+    "const": 0.0562,
+    "pen_u_diff": 0.5195,
+    "elo_logit": 0.0951,
+    "xg_diff": 0.1695
+   },
+   "t": {
+    "const": 4.12,
+    "pen_u_diff": 2.64,
+    "elo_logit": 2.18,
+    "xg_diff": 5.84
+   },
+   "r2": 0.01036,
+   "n": 7911
+  },
+  "fo_lineup -> home FO share": {
+   "coef": {
+    "const": 0.5173,
+    "fo_u_diff": 1.1893
+   },
+   "t": {
+    "const": 700.96,
+    "fo_u_diff": 32.37
+   },
+   "r2": 0.1211,
+   "n": 7911
+  },
+  "GD ~ shipped": {
+   "coef": {
+    "const": 0.0624,
+    "elo_logit": 0.8277,
+    "xg_diff": 0.5035
+   },
+   "t": {
+    "const": 2.12,
+    "elo_logit": 9.01,
+    "xg_diff": 8.27
+   },
+   "r2": 0.03691,
+   "n": 7911
+  },
+  "GD ~ shipped + P": {
+   "coef": {
+    "const": 0.0972,
+    "elo_logit": 0.6923,
+    "xg_diff": 0.4187,
+    "P_diff": 0.7844
+   },
+   "t": {
+    "const": 3.11,
+    "elo_logit": 6.89,
+    "xg_diff": 6.33,
+    "P_diff": 3.33
+   },
+   "r2": 0.03825,
+   "n": 7911
+  },
+  "GD ~ shipped + P + DD": {
+   "coef": {
+    "const": 0.0972,
+    "elo_logit": 0.6934,
+    "xg_diff": 0.4176,
+    "P_diff": 0.7824,
+    "dd_u_diff": 0.0367
+   },
+   "t": {
+    "const": 3.11,
+    "elo_logit": 6.86,
+    "xg_diff": 6.19,
+    "P_diff": 3.31,
+    "dd_u_diff": 0.09
+   },
+   "r2": 0.03825,
+   "n": 7911
+  },
+  "GD ~ shipped + P + fo + pen + tkgv": {
+   "coef": {
+    "const": 0.0976,
+    "elo_logit": 0.6917,
+    "xg_diff": 0.4171,
+    "P_diff": 0.7776,
+    "fo_u_diff": 0.2577,
+    "pen_u_diff": 0.0176,
+    "tkgv_u_diff": -0.0263
+   },
+   "t": {
+    "const": 3.12,
+    "elo_logit": 6.73,
+    "xg_diff": 6.08,
+    "P_diff": 3.25,
+    "fo_u_diff": 0.19,
+    "pen_u_diff": 0.04,
+    "tkgv_u_diff": -0.03
+   },
+   "r2": 0.03825,
+   "n": 7911
+  },
+  "GD ~ shipped + P + dDD(lineup deviation)": {
+   "coef": {
+    "const": 0.0917,
+    "elo_logit": 0.6992,
+    "xg_diff": 0.4311,
+    "P_diff": 0.7489,
+    "ddev_diff": 2.8671
+   },
+   "t": {
+    "const": 2.93,
+    "elo_logit": 6.95,
+    "xg_diff": 6.51,
+    "P_diff": 3.18,
+    "ddev_diff": 3.14
+   },
+   "r2": 0.03941,
+   "n": 7911
+  },
+  "GD ~ DD alone": {
+   "coef": {
+    "const": 0.2753,
+    "dd_u_diff": 1.1773
+   },
+   "t": {
+    "const": 10.47,
+    "dd_u_diff": 2.87
+   },
+   "r2": 0.00101,
+   "n": 7911
+  },
+  "GD ~ P alone": {
+   "coef": {
+    "const": 0.2742,
+    "P_diff": 2.4845
+   },
+   "t": {
+    "const": 10.55,
+    "P_diff": 13.98
+   },
+   "r2": 0.02364,
+   "n": 7911
+  }
+ },
+ "G_game_screen_DEV": {
+  "S1_shipped_dev_loso_ll": 0.672398,
+  "S1_target": 0.672398,
+  "S1_pass": true,
+  "S2_drop_xg_cost": 0.00303,
+  "S2_target": 0.00303,
+  "S2_pass": true,
+  "n": 7929,
+  "lineup_missing": 0,
+  "arms": {
+   "+DD(fo+pen)": {
+    "gain": -0.00015,
+    "fold_sd": 0.00011,
+    "fold_se": 4e-05,
+    "sigma": -3.61,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00026,
+     -4e-05
+    ],
+    "sig": "SIG WORSE"
+   },
+   "+DD_all(fo+pen+tkgv)": {
+    "gain": -0.00017,
+    "fold_sd": 0.00015,
+    "fold_se": 5e-05,
+    "sigma": -3.1,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.0003,
+     -4e-05
+    ],
+    "sig": "SIG WORSE"
+   },
+   "+fo,pen,tkgv separate": {
+    "gain": -0.0004,
+    "fold_sd": 0.00043,
+    "fold_se": 0.00016,
+    "sigma": -2.46,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00067,
+     -0.00014
+    ],
+    "sig": "SIG WORSE"
+   },
+   "+pen": {
+    "gain": -0.00019,
+    "fold_sd": 0.00014,
+    "fold_se": 5e-05,
+    "sigma": -3.6,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00031,
+     -6e-05
+    ],
+    "sig": "SIG WORSE"
+   },
+   "+fo": {
+    "gain": -0.00012,
+    "fold_sd": 0.00039,
+    "fold_se": 0.00015,
+    "sigma": -0.84,
+    "n_pos_folds": 5,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00033,
+     8e-05
+    ],
+    "sig": "n.s."
+   },
+   "+tkgv": {
+    "gain": -0.00011,
+    "fold_sd": 0.00015,
+    "fold_se": 6e-05,
+    "sigma": -1.93,
+    "n_pos_folds": 3,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00025,
+     3e-05
+    ],
+    "sig": "n.s."
+   },
+   "+dDD lineup deviation": {
+    "gain": 0.0003,
+    "fold_sd": 0.001,
+    "fold_se": 0.00038,
+    "sigma": 0.79,
+    "n_pos_folds": 6,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00036,
+     0.00095
+    ],
+    "sig": "n.s."
+   },
+   "+dDD_all lineup deviation": {
+    "gain": 8e-05,
+    "fold_sd": 0.00116,
+    "fold_se": 0.00044,
+    "sigma": 0.17,
+    "n_pos_folds": 5,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.0005,
+     0.00064
+    ],
+    "sig": "n.s."
+   },
+   "+P (rapmel lineup power, reference)": {
+    "gain": 0.00034,
+    "fold_sd": 0.00066,
+    "fold_se": 0.00025,
+    "sigma": 1.37,
+    "n_pos_folds": 4,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00029,
+     0.00094
+    ],
+    "sig": "n.s."
+   },
+   "+P+DD vs +P": {
+    "gain": -0.00015,
+    "fold_sd": 0.00012,
+    "fold_se": 4e-05,
+    "sigma": -3.48,
+    "n_pos_folds": 1,
+    "n_folds": 7,
+    "boot_ci": [
+     -0.00027,
+     -4e-05
+    ],
+    "sig": "SIG WORSE"
+   }
+  }
+ },
+ "goal_values_walkforward": {
+  "20102011": {
+   "fo": {
+    "EV_END": 0.012,
+    "EV_NEU": 0.004,
+    "ST_OZ": 0.02,
+    "ST_DZ": 0.02,
+    "ST_NEU": 0.004,
+    "EN_END": 0.03,
+    "EN_NEU": 0.01
+   },
+   "pen": {
+    "m2": 0.17,
+    "m4": 0.3,
+    "maj5": 0.45,
+    "ps": 0.3
+   },
+   "tkgv": {
+    "tk_O": 0.0,
+    "tk_N": 0.0,
+    "tk_D": 0.0,
+    "gv_O": 0.0,
+    "gv_N": 0.0,
+    "gv_D": 0.0
+   },
+   "fit_on": "declared prior"
+  },
+  "20112012": {
+   "fo": {
+    "EV_END": 0.017354062295288904,
+    "EV_NEU": 0.005187491657178334,
+    "ST_OZ": 0.03247896462186751,
+    "ST_DZ": 0.010872472460074174,
+    "ST_NEU": 0.005765907986900539,
+    "EN_END": 0.05485599317053757,
+    "EN_NEU": 0.03711471854408712
+   },
+   "pen": {
+    "m2": 0.17396055355134155,
+    "m4": 0.24837483902252494,
+    "maj5": 0.20014303229083502,
+    "ps": 0.4176223684725494
+   },
+   "tkgv": {
+    "tk_O": 0.03468282831287831,
+    "tk_N": 0.022384069779570817,
+    "tk_D": 0.005621818006636332,
+    "gv_O": 0.001853637521475073,
+    "gv_N": -0.024458629429605024,
+    "gv_D": -0.04339908187417482
+   },
+   "fit_on": "20102011..20102011"
+  },
+  "20122013": {
+   "fo": {
+    "EV_END": 0.013723227396904177,
+    "EV_NEU": 0.0031652510709947166,
+    "ST_OZ": 0.02984567070018363,
+    "ST_DZ": 0.00975559955852655,
+    "ST_NEU": -0.0007840411075977342,
+    "EN_END": 0.036458372019949926,
+    "EN_NEU": 0.04170824581498676
+   },
+   "pen": {
+    "m2": 0.16755887246199916,
+    "m4": 0.29240379195295374,
+    "maj5": 0.47452383211164834,
+    "ps": 0.4143690964031874
+   },
+   "tkgv": {
+    "tk_O": 0.033650692870505816,
+    "tk_N": 0.020143000602329483,
+    "tk_D": 0.005779604101542759,
+    "gv_O": 0.0011149702711492381,
+    "gv_N": -0.025723720312793262,
+    "gv_D": -0.04361748754448289
+   },
+   "fit_on": "20102011..20112012"
+  },
+  "20132014": {
+   "fo": {
+    "EV_END": 0.013058441723313122,
+    "EV_NEU": 0.0033278354268538642,
+    "ST_OZ": 0.026688130153125527,
+    "ST_DZ": 0.007470068675724443,
+    "ST_NEU": 0.005375010743675342,
+    "EN_END": 0.0434464314221853,
+    "EN_NEU": 0.06591245830222557
+   },
+   "pen": {
+    "m2": 0.16870235264202396,
+    "m4": 0.29649026481440527,
+    "maj5": 0.3936168410822362,
+    "ps": 0.4164382086956681
+   },
+   "tkgv": {
+    "tk_O": 0.035851128505933784,
+    "tk_N": 0.019599970986553764,
+    "tk_D": 0.00607541588685126,
+    "gv_O": -0.0005327824593779188,
+    "gv_N": -0.023360522423679593,
+    "gv_D": -0.045226064405734345
+   },
+   "fit_on": "20102011..20122013"
+  },
+  "20142015": {
+   "fo": {
+    "EV_END": 0.013819565121841597,
+    "EV_NEU": 0.00418261254293243,
+    "ST_OZ": 0.026144517643310102,
+    "ST_DZ": 0.010025081360425445,
+    "ST_NEU": 0.0027232738553229284,
+    "EN_END": 0.0306217720474194,
+    "EN_NEU": 0.050575114164549705
+   },
+   "pen": {
+    "m2": 0.16698494881626916,
+    "m4": 0.30575996958309387,
+    "maj5": 0.47577802061944857,
+    "ps": 0.3785289325468302
+   },
+   "tkgv": {
+    "tk_O": 0.03531154906098644,
+    "tk_N": 0.02010532462459364,
+    "tk_D": 0.006386717917609248,
+    "gv_O": -0.003893196184793739,
+    "gv_N": -0.02275514747313872,
+    "gv_D": -0.04437714754958045
+   },
+   "fit_on": "20102011..20132014"
+  },
+  "20152016": {
+   "fo": {
+    "EV_END": 0.014561731937911954,
+    "EV_NEU": 0.002606041721677033,
+    "ST_OZ": 0.02428761570891296,
+    "ST_DZ": 0.011126571468029799,
+    "ST_NEU": 0.00404292233204161,
+    "EN_END": 0.03543089667222624,
+    "EN_NEU": 0.034111033946441056
+   },
+   "pen": {
+    "m2": 0.16827566523518883,
+    "m4": 0.30423379815014223,
+    "maj5": 0.47680872060160107,
+    "ps": 0.37852893259685555
+   },
+   "tkgv": {
+    "tk_O": 0.03541177616003382,
+    "tk_N": 0.020274413904271905,
+    "tk_D": 0.00644875126207141,
+    "gv_O": -0.004956220531918993,
+    "gv_N": -0.02174375570394858,
+    "gv_D": -0.04383052270613634
+   },
+   "fit_on": "20102011..20142015"
+  },
+  "20162017": {
+   "fo": {
+    "EV_END": 0.013833083914319925,
+    "EV_NEU": 0.002303132072780947,
+    "ST_OZ": 0.0241335009435949,
+    "ST_DZ": 0.013261971903261942,
+    "ST_NEU": 0.0013341360610998386,
+    "EN_END": 0.03968596716257414,
+    "EN_NEU": 0.031595064854094454
+   },
+   "pen": {
+    "m2": 0.16873399670209446,
+    "m4": 0.30703635745106655,
+    "maj5": 0.45195578905728084,
+    "ps": 0.36405303589485705
+   },
+   "tkgv": {
+    "tk_O": 0.035730507370649235,
+    "tk_N": 0.0199295300207456,
+    "tk_D": 0.0070490923679159285,
+    "gv_O": -0.00763073734154282,
+    "gv_N": -0.022140764140311544,
+    "gv_D": -0.04392560401438669
+   },
+   "fit_on": "20102011..20152016"
+  },
+  "20172018": {
+   "fo": {
+    "EV_END": 0.014216608865587736,
+    "EV_NEU": 0.001980862788726173,
+    "ST_OZ": 0.02495584125734526,
+    "ST_DZ": 0.013161911720148578,
+    "ST_NEU": 0.0003805490315128062,
+    "EN_END": 0.03890023531130702,
+    "EN_NEU": 0.03431426114814521
+   },
+   "pen": {
+    "m2": 0.1690637170446817,
+    "m4": 0.31452843793804336,
+    "maj5": 0.4364251698250189,
+    "ps": 0.3640530368951393
+   },
+   "tkgv": {
+    "tk_O": 0.0352378672277867,
+    "tk_N": 0.019970627682311545,
+    "tk_D": 0.006166039676232933,
+    "gv_O": -0.00743148084640343,
+    "gv_N": -0.021926082773346182,
+    "gv_D": -0.04373247682463296
+   },
+   "fit_on": "20102011..20162017"
+  }
+ }
+}

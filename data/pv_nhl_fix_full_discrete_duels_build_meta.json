@@ -1,0 +1,62 @@
+{
+ "fo_theta_end": [
+  0.015503480593308661,
+  0.0032658446639319905,
+  0.2105137130794038
+ ],
+ "rows": 741172,
+ "rows_without_shift_chart": 20948,
+ "frozen_params": {
+  "sigma0": 0.2,
+  "q_season": 0.004000000000000001,
+  "mu_c": 0.0,
+  "mu_w": -0.25,
+  "mu_d": -0.3,
+  "lr": 0.0001,
+  "q_frac": 0.1,
+  "tune_ll": 0.6852769484662801,
+  "rates": {
+   "fo_n": {
+    "dev": 1.1733441053848914,
+    "lam": 0.95,
+    "delta": 0.4,
+    "n0": 0.5,
+    "dev_position_mean_only": 3.6074479285968395,
+    "dev_raw_career_rate": 1.4982490037828298
+   },
+   "pen_take_n": {
+    "dev": 0.6415532728885607,
+    "lam": 0.995,
+    "delta": 1.0,
+    "n0": 6,
+    "dev_position_mean_only": 0.6616350450407665,
+    "dev_raw_career_rate": 0.6756300287611471
+   },
+   "pen_draw_n": {
+    "dev": 0.5989348816342411,
+    "lam": 0.998,
+    "delta": 0.7,
+    "n0": 12,
+    "dev_position_mean_only": 0.6097734027325853,
+    "dev_raw_career_rate": 0.6359970001515689
+   },
+   "tk_adj": {
+    "dev": 0.8962491569958042,
+    "lam": 0.99,
+    "delta": 1.0,
+    "n0": 6,
+    "dev_position_mean_only": 0.9151815294728419,
+    "dev_raw_career_rate": 0.9324625930498911
+   },
+   "gv_adj": {
+    "dev": 0.9525021852328254,
+    "lam": 0.998,
+    "delta": 0.7,
+    "n0": 6,
+    "dev_position_mean_only": 0.9763134787612074,
+    "dev_raw_career_rate": 0.9865648424859824
+   }
+  }
+ },
+ "goal_values": "DEV walk-forward for DEV seasons; 20182019 DEV fit frozen for every TEST season"
+}

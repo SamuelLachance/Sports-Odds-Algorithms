@@ -1,0 +1,19 @@
+{
+ "games": 1271,
+ "games_no_events": 0,
+ "shift_rows_no_roster": 0,
+ "dup_player_intervals": 0,
+ "ev1551": 117182,
+ "ev1551_in_kept": 116878,
+ "ev_in_kept_not1551": 92,
+ "kept_seconds": 3701409.0,
+ "faceoff_starts": 50788,
+ "kept_intervals": 285022,
+ "alt_conv_ev1551_in_kept": 116486,
+ "season": 20182019,
+ "share_1551_events_in_kept": 0.9974057449096277,
+ "share_1551_events_in_kept_ALT_convention": 0.9940605212404635,
+ "share_kept_events_not_1551": 0.000786526459776011,
+ "kept_hours": 1028.1691666666666,
+ "seconds": 14.6
+}

@@ -1,0 +1,4039 @@
+{
+ "rate6_join": 0.8590312667674748,
+ "reliability_receiving": {
+  "ypt (raw yds/target)": {
+   "split_half": {
+    "r_half": 0.326,
+    "spearman_brown": 0.492,
+    "n": 1184
+   },
+   "yoy": {
+    "r": 0.371,
+    "n": 797
+   },
+   "yoy_2010_15": {
+    "r": 0.382,
+    "n": 456
+   }
+  },
+  "catch% (raw)": {
+   "split_half": {
+    "r_half": 0.497,
+    "spearman_brown": 0.664,
+    "n": 1184
+   },
+   "yoy": {
+    "r": 0.588,
+    "n": 797
+   },
+   "yoy_2010_15": {
+    "r": 0.562,
+    "n": 456
+   }
+  },
+  "epa/target (raw)": {
+   "split_half": {
+    "r_half": 0.249,
+    "spearman_brown": 0.398,
+    "n": 1184
+   },
+   "yoy": {
+    "r": 0.311,
+    "n": 797
+   },
+   "yoy_2010_15": {
+    "r": 0.329,
+    "n": 456
+   }
+  },
+  "yac/rec (raw)": {
+   "split_half": {
+    "r_half": 0.573,
+    "spearman_brown": 0.729,
+    "n": 1184
+   },
+   "yoy": {
+    "r": 0.679,
+    "n": 797
+   },
+   "yoy_2010_15": {
+    "r": 0.672,
+    "n": 456
+   }
+  },
+  "aDOT (air yds/target)": {
+   "split_half": {
+    "r_half": 0.896,
+    "spearman_brown": 0.945,
+    "n": 1184
+   },
+   "yoy": {
+    "r": 0.896,
+    "n": 797
+   },
+   "yoy_2010_15": {
+    "r": 0.904,
+    "n": 456
+   }
+  },
+  "xYPT opp. quality (sit.)": {
+   "split_half": {
+    "r_half": 0.815,
+    "spearman_brown": 0.898,
+    "n": 1184
+   },
+   "yoy": {
+    "r": 0.832,
+    "n": 797
+   },
+   "yoy_2010_15": {
+    "r": 0.848,
+    "n": 456
+   }
+  },
+  "YPTOE execution (sit.)": {
+   "split_half": {
+    "r_half": 0.195,
+    "spearman_brown": 0.326,
+    "n": 1184
+   },
+   "yoy": {
+    "r": 0.231,
+    "n": 797
+   },
+   "yoy_2010_15": {
+    "r": 0.229,
+    "n": 456
+   }
+  },
+  "xEPA/target opp. quality (sit.)": {
+   "split_half": {
+    "r_half": 0.831,
+    "spearman_brown": 0.908,
+    "n": 1184
+   },
+   "yoy": {
+    "r": 0.833,
+    "n": 797
+   },
+   "yoy_2010_15": {
+    "r": 0.846,
+    "n": 456
+   }
+  },
+  "CROE (sit.)": {
+   "split_half": {
+    "r_half": 0.23,
+    "spearman_brown": 0.375,
+    "n": 1184
+   },
+   "yoy": {
+    "r": 0.291,
+    "n": 797
+   },
+   "yoy_2010_15": {
+    "r": 0.272,
+    "n": 456
+   }
+  },
+  "YACOE (sit.)": {
+   "split_half": {
+    "r_half": 0.214,
+    "spearman_brown": 0.353,
+    "n": 1184
+   },
+   "yoy": {
+    "r": 0.34,
+    "n": 797
+   },
+   "yoy_2010_15": {
+    "r": 0.3,
+    "n": 456
+   }
+  },
+  "EPAOE/target (sit.)": {
+   "split_half": {
+    "r_half": 0.181,
+    "spearman_brown": 0.306,
+    "n": 1184
+   },
+   "yoy": {
+    "r": 0.252,
+    "n": 797
+   },
+   "yoy_2010_15": {
+    "r": 0.258,
+    "n": 456
+   }
+  },
+  "ypt adj (QB+def)": {
+   "split_half": {
+    "r_half": 0.302,
+    "spearman_brown": 0.464,
+    "n": 1184
+   },
+   "yoy": {
+    "r": 0.376,
+    "n": 797
+   },
+   "yoy_2010_15": {
+    "r": 0.395,
+    "n": 456
+   }
+  },
+  "xYPT adj (QB+def)": {
+   "split_half": {
+    "r_half": 0.814,
+    "spearman_brown": 0.898,
+    "n": 1184
+   },
+   "yoy": {
+    "r": 0.844,
+    "n": 797
+   },
+   "yoy_2010_15": {
+    "r": 0.862,
+    "n": 456
+   }
+  },
+  "YPTOE adj (QB+def)": {
+   "split_half": {
+    "r_half": 0.116,
+    "spearman_brown": 0.208,
+    "n": 1184
+   },
+   "yoy": {
+    "r": 0.162,
+    "n": 797
+   },
+   "yoy_2010_15": {
+    "r": 0.161,
+    "n": 456
+   }
+  },
+  "xEPA/target adj (QB+def)": {
+   "split_half": {
+    "r_half": 0.826,
+    "spearman_brown": 0.905,
+    "n": 1184
+   },
+   "yoy": {
+    "r": 0.857,
+    "n": 797
+   },
+   "yoy_2010_15": {
+    "r": 0.867,
+    "n": 456
+   }
+  },
+  "CROE adj (QB+def)": {
+   "split_half": {
+    "r_half": 0.125,
+    "spearman_brown": 0.222,
+    "n": 1184
+   },
+   "yoy": {
+    "r": 0.194,
+    "n": 797
+   },
+   "yoy_2010_15": {
+    "r": 0.158,
+    "n": 456
+   }
+  },
+  "YACOE adj (QB+def)": {
+   "split_half": {
+    "r_half": 0.185,
+    "spearman_brown": 0.312,
+    "n": 1184
+   },
+   "yoy": {
+    "r": 0.329,
+    "n": 797
+   },
+   "yoy_2010_15": {
+    "r": 0.284,
+    "n": 456
+   }
+  },
+  "EPAOE/target adj (QB+def)": {
+   "split_half": {
+    "r_half": 0.094,
+    "spearman_brown": 0.172,
+    "n": 1184
+   },
+   "yoy": {
+    "r": 0.161,
+    "n": 797
+   },
+   "yoy_2010_15": {
+    "r": 0.16,
+    "n": 456
+   }
+  },
+  "tshare": {
+   "split_half": {
+    "r_half": 0.818,
+    "spearman_brown": 0.9,
+    "n": 1184
+   },
+   "yoy": {
+    "r": 0.708,
+    "n": 797
+   },
+   "yoy_2010_15": {
+    "r": 0.7,
+    "n": 456
+   }
+  },
+  "shared_raw": {
+   "split_half": {
+    "r_half": 0.606,
+    "spearman_brown": 0.755,
+    "n": 1184
+   },
+   "yoy": {
+    "r": 0.394,
+    "n": 797
+   },
+   "yoy_2010_15": {
+    "r": 0.335,
+    "n": 456
+   }
+  },
+  "rate6_season": {
+   "split_half": {
+    "r_half": 0.795,
+    "spearman_brown": 0.886,
+    "n": 1182
+   },
+   "yoy": {
+    "r": 0.717,
+    "n": 796
+   },
+   "yoy_2010_15": {
+    "r": 0.696,
+    "n": 455
+   }
+  }
+ },
+ "reliability_rushing": {
+  "ypc (raw)": {
+   "split_half": {
+    "r_half": 0.261,
+    "spearman_brown": 0.413,
+    "n": 439
+   },
+   "yoy": {
+    "r": 0.181,
+    "n": 273
+   },
+   "yoy_2010_15": {
+    "r": 0.127,
+    "n": 141
+   }
+  },
+  "success (raw epa>0)": {
+   "split_half": {
+    "r_half": 0.206,
+    "spearman_brown": 0.342,
+    "n": 439
+   },
+   "yoy": {
+    "r": 0.289,
+    "n": 273
+   },
+   "yoy_2010_15": {
+    "r": 0.312,
+    "n": 141
+   }
+  },
+  "epa/carry (raw)": {
+   "split_half": {
+    "r_half": 0.146,
+    "spearman_brown": 0.255,
+    "n": 439
+   },
+   "yoy": {
+    "r": 0.174,
+    "n": 273
+   },
+   "yoy_2010_15": {
+    "r": 0.143,
+    "n": 141
+   }
+  },
+  "RYOE capped (sit.)": {
+   "split_half": {
+    "r_half": 0.25,
+    "spearman_brown": 0.4,
+    "n": 439
+   },
+   "yoy": {
+    "r": 0.168,
+    "n": 273
+   },
+   "yoy_2010_15": {
+    "r": 0.151,
+    "n": 141
+   }
+  },
+  "SOE (sit.)": {
+   "split_half": {
+    "r_half": 0.158,
+    "spearman_brown": 0.273,
+    "n": 439
+   },
+   "yoy": {
+    "r": 0.247,
+    "n": 273
+   },
+   "yoy_2010_15": {
+    "r": 0.284,
+    "n": 141
+   }
+  },
+  "EPAOE/carry (sit.)": {
+   "split_half": {
+    "r_half": 0.135,
+    "spearman_brown": 0.238,
+    "n": 439
+   },
+   "yoy": {
+    "r": 0.178,
+    "n": 273
+   },
+   "yoy_2010_15": {
+    "r": 0.174,
+    "n": 141
+   }
+  },
+  "ypc adj (line+def)": {
+   "split_half": {
+    "r_half": 0.175,
+    "spearman_brown": 0.298,
+    "n": 439
+   },
+   "yoy": {
+    "r": 0.254,
+    "n": 273
+   },
+   "yoy_2010_15": {
+    "r": 0.221,
+    "n": 141
+   }
+  },
+  "RYOE adj (line+def)": {
+   "split_half": {
+    "r_half": 0.085,
+    "spearman_brown": 0.157,
+    "n": 439
+   },
+   "yoy": {
+    "r": 0.153,
+    "n": 273
+   },
+   "yoy_2010_15": {
+    "r": 0.112,
+    "n": 141
+   }
+  },
+  "SOE adj (line+def)": {
+   "split_half": {
+    "r_half": -0.008,
+    "spearman_brown": -0.016,
+    "n": 439
+   },
+   "yoy": {
+    "r": 0.23,
+    "n": 273
+   },
+   "yoy_2010_15": {
+    "r": 0.282,
+    "n": 141
+   }
+  },
+  "EPAOE/carry adj (line+def)": {
+   "split_half": {
+    "r_half": -0.006,
+    "spearman_brown": -0.013,
+    "n": 439
+   },
+   "yoy": {
+    "r": 0.139,
+    "n": 273
+   },
+   "yoy_2010_15": {
+    "r": 0.17,
+    "n": 141
+   }
+  },
+  "cshare": {
+   "split_half": {
+    "r_half": 0.882,
+    "spearman_brown": 0.937,
+    "n": 439
+   },
+   "yoy": {
+    "r": 0.579,
+    "n": 273
+   },
+   "yoy_2010_15": {
+    "r": 0.543,
+    "n": 141
+   }
+  },
+  "shared_raw": {
+   "split_half": {
+    "r_half": 0.601,
+    "spearman_brown": 0.751,
+    "n": 439
+   },
+   "yoy": {
+    "r": 0.389,
+    "n": 273
+   },
+   "yoy_2010_15": {
+    "r": 0.243,
+    "n": 141
+   }
+  },
+  "rate6_season": {
+   "split_half": {
+    "r_half": 0.491,
+    "spearman_brown": 0.659,
+    "n": 436
+   },
+   "yoy": {
+    "r": 0.446,
+    "n": 271
+   },
+   "yoy_2010_15": {
+    "r": 0.375,
+    "n": 139
+   }
+  }
+ },
+ "fip_style_receiving": {
+  "n_all": 797,
+  "n_2010_15": 456,
+  "n_team_changers": 106,
+  "ypt (raw yds/target)": {
+   "ypt": 0.371,
+   "fd_t": 0.356,
+   "td_t": 0.256,
+   "yds_pg": 0.361,
+   "late_ypt": 0.382,
+   "movers_ypt": 0.166,
+   "movers_yds_pg": 0.215
+  },
+  "catch% (raw)": {
+   "ypt": -0.19,
+   "fd_t": -0.151,
+   "td_t": -0.119,
+   "yds_pg": -0.178,
+   "late_ypt": -0.212,
+   "movers_ypt": -0.249,
+   "movers_yds_pg": -0.209
+  },
+  "epa/target (raw)": {
+   "ypt": 0.266,
+   "fd_t": 0.319,
+   "td_t": 0.227,
+   "yds_pg": 0.282,
+   "late_ypt": 0.29,
+   "movers_ypt": 0.078,
+   "movers_yds_pg": 0.138
+  },
+  "yac/rec (raw)": {
+   "ypt": -0.206,
+   "fd_t": -0.345,
+   "td_t": -0.136,
+   "yds_pg": -0.21,
+   "late_ypt": -0.243,
+   "movers_ypt": -0.122,
+   "movers_yds_pg": -0.139
+  },
+  "aDOT (air yds/target)": {
+   "ypt": 0.427,
+   "fd_t": 0.418,
+   "td_t": 0.271,
+   "yds_pg": 0.412,
+   "late_ypt": 0.464,
+   "movers_ypt": 0.337,
+   "movers_yds_pg": 0.355
+  },
+  "xYPT opp. quality (sit.)": {
+   "ypt": 0.423,
+   "fd_t": 0.429,
+   "td_t": 0.242,
+   "yds_pg": 0.407,
+   "late_ypt": 0.448,
+   "movers_ypt": 0.322,
+   "movers_yds_pg": 0.307
+  },
+  "YPTOE execution (sit.)": {
+   "ypt": 0.117,
+   "fd_t": 0.101,
+   "td_t": 0.117,
+   "yds_pg": 0.12,
+   "late_ypt": 0.115,
+   "movers_ypt": -0.059,
+   "movers_yds_pg": -0.002
+  },
+  "xEPA/target opp. quality (sit.)": {
+   "ypt": 0.41,
+   "fd_t": 0.494,
+   "td_t": 0.295,
+   "yds_pg": 0.418,
+   "late_ypt": 0.431,
+   "movers_ypt": 0.297,
+   "movers_yds_pg": 0.292
+  },
+  "CROE (sit.)": {
+   "ypt": 0.098,
+   "fd_t": 0.15,
+   "td_t": 0.078,
+   "yds_pg": 0.111,
+   "late_ypt": 0.122,
+   "movers_ypt": -0.072,
+   "movers_yds_pg": 0.008
+  },
+  "YACOE (sit.)": {
+   "ypt": -0.02,
+   "fd_t": -0.081,
+   "td_t": 0.053,
+   "yds_pg": -0.018,
+   "late_ypt": -0.068,
+   "movers_ypt": -0.037,
+   "movers_yds_pg": -0.057
+  },
+  "EPAOE/target (sit.)": {
+   "ypt": 0.086,
+   "fd_t": 0.103,
+   "td_t": 0.101,
+   "yds_pg": 0.1,
+   "late_ypt": 0.112,
+   "movers_ypt": -0.063,
+   "movers_yds_pg": 0.001
+  },
+  "ypt adj (QB+def)": {
+   "ypt": 0.375,
+   "fd_t": 0.358,
+   "td_t": 0.249,
+   "yds_pg": 0.371,
+   "late_ypt": 0.396,
+   "movers_ypt": 0.164,
+   "movers_yds_pg": 0.208
+  },
+  "xYPT adj (QB+def)": {
+   "ypt": 0.421,
+   "fd_t": 0.424,
+   "td_t": 0.239,
+   "yds_pg": 0.403,
+   "late_ypt": 0.455,
+   "movers_ypt": 0.298,
+   "movers_yds_pg": 0.308
+  },
+  "YPTOE adj (QB+def)": {
+   "ypt": 0.086,
+   "fd_t": 0.058,
+   "td_t": 0.085,
+   "yds_pg": 0.101,
+   "late_ypt": 0.089,
+   "movers_ypt": -0.053,
+   "movers_yds_pg": -0.005
+  },
+  "xEPA/target adj (QB+def)": {
+   "ypt": 0.402,
+   "fd_t": 0.482,
+   "td_t": 0.283,
+   "yds_pg": 0.414,
+   "late_ypt": 0.436,
+   "movers_ypt": 0.285,
+   "movers_yds_pg": 0.294
+  },
+  "CROE adj (QB+def)": {
+   "ypt": 0.064,
+   "fd_t": 0.113,
+   "td_t": 0.051,
+   "yds_pg": 0.092,
+   "late_ypt": 0.092,
+   "movers_ypt": -0.06,
+   "movers_yds_pg": 0.026
+  },
+  "YACOE adj (QB+def)": {
+   "ypt": -0.024,
+   "fd_t": -0.096,
+   "td_t": 0.035,
+   "yds_pg": -0.026,
+   "late_ypt": -0.074,
+   "movers_ypt": -0.029,
+   "movers_yds_pg": -0.071
+  },
+  "EPAOE/target adj (QB+def)": {
+   "ypt": 0.047,
+   "fd_t": 0.056,
+   "td_t": 0.069,
+   "yds_pg": 0.073,
+   "late_ypt": 0.08,
+   "movers_ypt": -0.071,
+   "movers_yds_pg": -0.006
+  },
+  "tshare": {
+   "ypt": 0.138,
+   "fd_t": 0.218,
+   "td_t": 0.094,
+   "yds_pg": 0.572,
+   "late_ypt": 0.174,
+   "movers_ypt": 0.183,
+   "movers_yds_pg": 0.493
+  },
+  "shared_raw": {
+   "ypt": 0.118,
+   "fd_t": 0.169,
+   "td_t": 0.144,
+   "yds_pg": 0.092,
+   "late_ypt": 0.085,
+   "movers_ypt": 0.03,
+   "movers_yds_pg": -0.049
+  },
+  "rate6_season": {
+   "ypt": 0.234,
+   "fd_t": 0.299,
+   "td_t": 0.179,
+   "yds_pg": 0.48,
+   "late_ypt": 0.354,
+   "movers_ypt": 0.119,
+   "movers_yds_pg": 0.345
+  }
+ },
+ "fip_style_rushing": {
+  "n_all": 273,
+  "n_2010_15": 141,
+  "n_team_changers": 33,
+  "ypc (raw)": {
+   "ypc": 0.181,
+   "succ": 0.109,
+   "fd_c": 0.142,
+   "td_c": -0.011,
+   "yds_pg": 0.16,
+   "late_ypc": 0.127,
+   "movers_ypc": -0.133,
+   "movers_yds_pg": -0.094
+  },
+  "success (raw epa>0)": {
+   "ypc": 0.147,
+   "succ": 0.289,
+   "fd_c": 0.244,
+   "td_c": 0.126,
+   "yds_pg": 0.071,
+   "late_ypc": 0.115,
+   "movers_ypc": -0.098,
+   "movers_yds_pg": -0.129
+  },
+  "epa/carry (raw)": {
+   "ypc": 0.13,
+   "succ": 0.162,
+   "fd_c": 0.167,
+   "td_c": 0.07,
+   "yds_pg": 0.114,
+   "late_ypc": 0.115,
+   "movers_ypc": -0.092,
+   "movers_yds_pg": -0.043
+  },
+  "RYOE capped (sit.)": {
+   "ypc": 0.093,
+   "succ": 0.159,
+   "fd_c": 0.177,
+   "td_c": 0.061,
+   "yds_pg": 0.064,
+   "late_ypc": 0.074,
+   "movers_ypc": -0.228,
+   "movers_yds_pg": -0.199
+  },
+  "SOE (sit.)": {
+   "ypc": 0.157,
+   "succ": 0.244,
+   "fd_c": 0.196,
+   "td_c": 0.096,
+   "yds_pg": 0.093,
+   "late_ypc": 0.151,
+   "movers_ypc": -0.111,
+   "movers_yds_pg": -0.177
+  },
+  "EPAOE/carry (sit.)": {
+   "ypc": 0.131,
+   "succ": 0.141,
+   "fd_c": 0.155,
+   "td_c": 0.054,
+   "yds_pg": 0.113,
+   "late_ypc": 0.125,
+   "movers_ypc": -0.088,
+   "movers_yds_pg": -0.101
+  },
+  "ypc adj (line+def)": {
+   "ypc": 0.174,
+   "succ": 0.179,
+   "fd_c": 0.146,
+   "td_c": -0.045,
+   "yds_pg": 0.144,
+   "late_ypc": 0.146,
+   "movers_ypc": -0.197,
+   "movers_yds_pg": -0.177
+  },
+  "RYOE adj (line+def)": {
+   "ypc": 0.112,
+   "succ": 0.188,
+   "fd_c": 0.17,
+   "td_c": 0.019,
+   "yds_pg": 0.106,
+   "late_ypc": 0.087,
+   "movers_ypc": -0.197,
+   "movers_yds_pg": -0.138
+  },
+  "SOE adj (line+def)": {
+   "ypc": 0.187,
+   "succ": 0.264,
+   "fd_c": 0.179,
+   "td_c": 0.044,
+   "yds_pg": 0.14,
+   "late_ypc": 0.176,
+   "movers_ypc": -0.099,
+   "movers_yds_pg": -0.122
+  },
+  "EPAOE/carry adj (line+def)": {
+   "ypc": 0.17,
+   "succ": 0.163,
+   "fd_c": 0.144,
+   "td_c": 0.006,
+   "yds_pg": 0.155,
+   "late_ypc": 0.171,
+   "movers_ypc": -0.107,
+   "movers_yds_pg": -0.097
+  },
+  "cshare": {
+   "ypc": -0.06,
+   "succ": -0.013,
+   "fd_c": -0.028,
+   "td_c": -0.035,
+   "yds_pg": 0.383,
+   "late_ypc": 0.069,
+   "movers_ypc": -0.134,
+   "movers_yds_pg": 0.037
+  },
+  "shared_raw": {
+   "ypc": -0.017,
+   "succ": 0.165,
+   "fd_c": 0.175,
+   "td_c": 0.182,
+   "yds_pg": -0.061,
+   "late_ypc": -0.043,
+   "movers_ypc": -0.124,
+   "movers_yds_pg": -0.148
+  },
+  "rate6_season": {
+   "ypc": 0.104,
+   "succ": 0.045,
+   "fd_c": 0.037,
+   "td_c": 0.039,
+   "yds_pg": 0.181,
+   "late_ypc": 0.114,
+   "movers_ypc": -0.303,
+   "movers_yds_pg": -0.413
+  }
+ },
+ "per_game_receiving_n": 35769,
+ "per_game_receiving": {
+  "naive EB yds/target": {
+   "yds/target": [
+    3.103,
+    3.13
+   ],
+   "1st downs/target": [
+    3.123,
+    3.227
+   ],
+   "TD/target": [
+    0.888,
+    0.889
+   ],
+   "EPA/target (proxy)": [
+    1.486,
+    1.63
+   ]
+  },
+  "shipped rate6 SK composite": {
+   "yds/target": [
+    2.015,
+    1.954
+   ],
+   "1st downs/target": [
+    2.714,
+    2.559
+   ],
+   "TD/target": [
+    0.443,
+    0.475
+   ],
+   "EPA/target (proxy)": [
+    1.086,
+    1.08
+   ]
+  },
+  "shared-credit proxy (11v11 analog)": {
+   "yds/target": [
+    0.164,
+    0.19
+   ],
+   "1st downs/target": [
+    0.225,
+    0.262
+   ],
+   "TD/target": [
+    0.192,
+    0.247
+   ],
+   "EPA/target (proxy)": [
+    0.423,
+    0.439
+   ]
+  },
+  "NEW xYPT opportunity quality": {
+   "yds/target": [
+    3.087,
+    3.119
+   ],
+   "1st downs/target": [
+    3.037,
+    3.062
+   ],
+   "TD/target": [
+    0.667,
+    0.605
+   ],
+   "EPA/target (proxy)": [
+    0.803,
+    0.903
+   ]
+  },
+  "NEW YPTOE execution": {
+   "yds/target": [
+    0.425,
+    0.503
+   ],
+   "1st downs/target": [
+    0.395,
+    0.499
+   ],
+   "TD/target": [
+    0.154,
+    0.205
+   ],
+   "EPA/target (proxy)": [
+    0.404,
+    0.478
+   ]
+  },
+  "NEW ypt adj (QB+def, one number)": {
+   "yds/target": [
+    3.084,
+    3.195
+   ],
+   "1st downs/target": [
+    3.039,
+    3.202
+   ],
+   "TD/target": [
+    0.841,
+    0.859
+   ],
+   "EPA/target (proxy)": [
+    1.302,
+    1.459
+   ]
+  },
+  "NEW CROE": {
+   "yds/target": [
+    0.211,
+    0.342
+   ],
+   "1st downs/target": [
+    0.531,
+    0.752
+   ],
+   "TD/target": [
+    0.078,
+    0.133
+   ],
+   "EPA/target (proxy)": [
+    0.413,
+    0.546
+   ]
+  },
+  "NEW YACOE": {
+   "yds/target": [
+    -0.018,
+    -0.013
+   ],
+   "1st downs/target": [
+    0.088,
+    0.116
+   ],
+   "TD/target": [
+    -0.02,
+    -0.016
+   ],
+   "EPA/target (proxy)": [
+    -0.025,
+    -0.024
+   ]
+  },
+  "NEW EPAOE/target": {
+   "yds/target": [
+    0.25,
+    0.362
+   ],
+   "1st downs/target": [
+    0.318,
+    0.472
+   ],
+   "TD/target": [
+    0.158,
+    0.208
+   ],
+   "EPA/target (proxy)": [
+    0.447,
+    0.555
+   ]
+  },
+  "NEW v_t = xYPT + YPTOE": {
+   "yds/target": [
+    3.562,
+    3.629
+   ],
+   "1st downs/target": [
+    3.506,
+    3.571
+   ],
+   "TD/target": [
+    0.816,
+    0.783
+   ],
+   "EPA/target (proxy)": [
+    1.079,
+    1.214
+   ]
+  },
+  "NEW xEPA opportunity (EPA units)": {
+   "yds/target": [
+    3.007,
+    3.048
+   ],
+   "1st downs/target": [
+    3.955,
+    3.97
+   ],
+   "TD/target": [
+    0.976,
+    0.979
+   ],
+   "EPA/target (proxy)": [
+    1.146,
+    1.221
+   ]
+  },
+  "NEW v_e = xEPA + EPAOE": {
+   "yds/target": [
+    3.403,
+    3.527
+   ],
+   "1st downs/target": [
+    4.468,
+    4.612
+   ],
+   "TD/target": [
+    1.191,
+    1.231
+   ],
+   "EPA/target (proxy)": [
+    1.632,
+    1.754
+   ]
+  },
+  "NEW xYPT, YPTOE (2 cols)": {
+   "yds/target": [
+    3.63,
+    3.707
+   ],
+   "1st downs/target": [
+    3.549,
+    3.647
+   ],
+   "TD/target": [
+    0.855,
+    0.839
+   ],
+   "EPA/target (proxy)": [
+    1.265,
+    1.425
+   ]
+  },
+  "rate6 + NEW xYPT, YPTOE": {
+   "yds/target": [
+    3.709,
+    3.777
+   ],
+   "1st downs/target": [
+    3.92,
+    3.941
+   ],
+   "TD/target": [
+    0.762,
+    0.842
+   ],
+   "EPA/target (proxy)": [
+    1.435,
+    1.536
+   ]
+  },
+  "naive + NEW xYPT, YPTOE": {
+   "yds/target": [
+    3.735,
+    3.814
+   ],
+   "1st downs/target": [
+    3.669,
+    3.809
+   ],
+   "TD/target": [
+    0.892,
+    0.873
+   ],
+   "EPA/target (proxy)": [
+    1.447,
+    1.644
+   ]
+  },
+  "_bootstrap": {
+   "NEW xYPT, YPTOE (2 cols) vs shipped rate6 SK composite | yds/target": [
+    1.615,
+    1.25,
+    1.968
+   ],
+   "NEW xYPT, YPTOE (2 cols) vs shipped rate6 SK composite | 1st downs/target": [
+    0.835,
+    0.456,
+    1.206
+   ],
+   "NEW xYPT, YPTOE (2 cols) vs shipped rate6 SK composite | TD/target": [
+    0.412,
+    0.225,
+    0.61
+   ],
+   "NEW xYPT, YPTOE (2 cols) vs shipped rate6 SK composite | EPA/target (proxy)": [
+    0.18,
+    -0.052,
+    0.4
+   ],
+   "NEW xYPT, YPTOE (2 cols) vs naive EB yds/target | yds/target": [
+    0.527,
+    0.287,
+    0.771
+   ],
+   "NEW xYPT, YPTOE (2 cols) vs naive EB yds/target | 1st downs/target": [
+    0.425,
+    0.174,
+    0.699
+   ],
+   "NEW xYPT, YPTOE (2 cols) vs naive EB yds/target | TD/target": [
+    -0.032,
+    -0.165,
+    0.091
+   ],
+   "NEW xYPT, YPTOE (2 cols) vs naive EB yds/target | EPA/target (proxy)": [
+    -0.22,
+    -0.347,
+    -0.09
+   ],
+   "NEW xYPT, YPTOE (2 cols) vs shared-credit proxy (11v11 analog) | yds/target": [
+    3.466,
+    3.044,
+    3.911
+   ],
+   "NEW xYPT, YPTOE (2 cols) vs shared-credit proxy (11v11 analog) | 1st downs/target": [
+    3.323,
+    2.87,
+    3.757
+   ],
+   "NEW xYPT, YPTOE (2 cols) vs shared-credit proxy (11v11 analog) | TD/target": [
+    0.663,
+    0.433,
+    0.894
+   ],
+   "NEW xYPT, YPTOE (2 cols) vs shared-credit proxy (11v11 analog) | EPA/target (proxy)": [
+    0.842,
+    0.568,
+    1.106
+   ],
+   "NEW v_e = xEPA + EPAOE vs shipped rate6 SK composite | yds/target": [
+    1.388,
+    1.079,
+    1.69
+   ],
+   "NEW v_e = xEPA + EPAOE vs shipped rate6 SK composite | 1st downs/target": [
+    1.754,
+    1.392,
+    2.109
+   ],
+   "NEW v_e = xEPA + EPAOE vs shipped rate6 SK composite | TD/target": [
+    0.748,
+    0.569,
+    0.929
+   ],
+   "NEW v_e = xEPA + EPAOE vs shipped rate6 SK composite | EPA/target (proxy)": [
+    0.546,
+    0.331,
+    0.757
+   ],
+   "NEW v_e = xEPA + EPAOE vs naive EB yds/target | yds/target": [
+    0.3,
+    0.022,
+    0.551
+   ],
+   "NEW v_e = xEPA + EPAOE vs naive EB yds/target | 1st downs/target": [
+    1.344,
+    1.052,
+    1.633
+   ],
+   "NEW v_e = xEPA + EPAOE vs naive EB yds/target | TD/target": [
+    0.303,
+    0.156,
+    0.446
+   ],
+   "NEW v_e = xEPA + EPAOE vs naive EB yds/target | EPA/target (proxy)": [
+    0.146,
+    -0.037,
+    0.32
+   ]
+  }
+ },
+ "per_game_rushing_n": 11797,
+ "per_game_rushing": {
+  "naive EB yds/carry": {
+   "yds/carry": [
+    1.154,
+    0.805
+   ],
+   "1st downs/carry": [
+    0.15,
+    0.218
+   ],
+   "TD/carry": [
+    0.049,
+    0.078
+   ],
+   "success": [
+    0.434,
+    0.492
+   ]
+  },
+  "shipped rate6 SK composite": {
+   "yds/carry": [
+    0.589,
+    0.493
+   ],
+   "1st downs/carry": [
+    0.174,
+    0.257
+   ],
+   "TD/carry": [
+    0.083,
+    0.08
+   ],
+   "success": [
+    0.369,
+    0.379
+   ]
+  },
+  "shared-credit proxy (11v11 analog)": {
+   "yds/carry": [
+    -0.006,
+    -0.007
+   ],
+   "1st downs/carry": [
+    0.217,
+    0.269
+   ],
+   "TD/carry": [
+    0.186,
+    0.151
+   ],
+   "success": [
+    0.218,
+    0.274
+   ]
+  },
+  "NEW RYOE": {
+   "yds/carry": [
+    0.609,
+    0.429
+   ],
+   "1st downs/carry": [
+    0.32,
+    0.336
+   ],
+   "TD/carry": [
+    0.145,
+    0.199
+   ],
+   "success": [
+    0.423,
+    0.479
+   ]
+  },
+  "NEW SOE": {
+   "yds/carry": [
+    0.296,
+    0.298
+   ],
+   "1st downs/carry": [
+    0.365,
+    0.376
+   ],
+   "TD/carry": [
+    0.1,
+    0.14
+   ],
+   "success": [
+    0.547,
+    0.658
+   ]
+  },
+  "NEW EPAOE/carry": {
+   "yds/carry": [
+    0.524,
+    0.395
+   ],
+   "1st downs/carry": [
+    0.311,
+    0.214
+   ],
+   "TD/carry": [
+    0.209,
+    0.151
+   ],
+   "success": [
+    0.319,
+    0.322
+   ]
+  },
+  "NEW ypc adj (line+def, one number)": {
+   "yds/carry": [
+    1.211,
+    0.886
+   ],
+   "1st downs/carry": [
+    0.067,
+    0.142
+   ],
+   "TD/carry": [
+    -0.015,
+    0.014
+   ],
+   "success": [
+    0.327,
+    0.408
+   ]
+  },
+  "NEW RYOE, SOE (2 cols)": {
+   "yds/carry": [
+    0.576,
+    0.395
+   ],
+   "1st downs/carry": [
+    0.346,
+    0.44
+   ],
+   "TD/carry": [
+    0.132,
+    0.186
+   ],
+   "success": [
+    0.593,
+    0.708
+   ]
+  },
+  "rate6 + NEW RYOE, SOE": {
+   "yds/carry": [
+    0.854,
+    0.64
+   ],
+   "1st downs/carry": [
+    0.363,
+    0.516
+   ],
+   "TD/carry": [
+    0.157,
+    0.188
+   ],
+   "success": [
+    0.727,
+    0.82
+   ]
+  },
+  "naive + NEW RYOE, SOE": {
+   "yds/carry": [
+    1.129,
+    0.751
+   ],
+   "1st downs/carry": [
+    0.364,
+    0.407
+   ],
+   "TD/carry": [
+    0.131,
+    0.158
+   ],
+   "success": [
+    0.601,
+    0.716
+   ]
+  },
+  "_bootstrap": {
+   "NEW RYOE, SOE (2 cols) vs shipped rate6 SK composite | yds/carry": [
+    -0.013,
+    -0.409,
+    0.407
+   ],
+   "NEW RYOE, SOE (2 cols) vs shipped rate6 SK composite | 1st downs/carry": [
+    0.173,
+    -0.098,
+    0.456
+   ],
+   "NEW RYOE, SOE (2 cols) vs shipped rate6 SK composite | TD/carry": [
+    0.049,
+    -0.141,
+    0.234
+   ],
+   "NEW RYOE, SOE (2 cols) vs shipped rate6 SK composite | success": [
+    0.223,
+    -0.037,
+    0.505
+   ],
+   "NEW RYOE, SOE (2 cols) vs naive EB yds/carry | yds/carry": [
+    -0.579,
+    -0.844,
+    -0.311
+   ],
+   "NEW RYOE, SOE (2 cols) vs naive EB yds/carry | 1st downs/carry": [
+    0.196,
+    0.041,
+    0.347
+   ],
+   "NEW RYOE, SOE (2 cols) vs naive EB yds/carry | TD/carry": [
+    0.084,
+    -0.028,
+    0.186
+   ],
+   "NEW RYOE, SOE (2 cols) vs naive EB yds/carry | success": [
+    0.158,
+    -0.014,
+    0.324
+   ],
+   "NEW RYOE, SOE (2 cols) vs shared-credit proxy (11v11 analog) | yds/carry": [
+    0.581,
+    0.222,
+    0.925
+   ],
+   "NEW RYOE, SOE (2 cols) vs shared-credit proxy (11v11 analog) | 1st downs/carry": [
+    0.13,
+    -0.133,
+    0.4
+   ],
+   "NEW RYOE, SOE (2 cols) vs shared-credit proxy (11v11 analog) | TD/carry": [
+    -0.054,
+    -0.265,
+    0.159
+   ],
+   "NEW RYOE, SOE (2 cols) vs shared-credit proxy (11v11 analog) | success": [
+    0.375,
+    0.097,
+    0.653
+   ]
+  }
+ },
+ "per_game_receiving_production": {
+  "usage only (pre-game target share)": {
+   "rec yds/game": [
+    29.076,
+    29.669
+   ]
+  },
+  "usage x naive yds/target": {
+   "rec yds/game": [
+    31.209,
+    31.777
+   ]
+  },
+  "usage x rate6": {
+   "rec yds/game": [
+    29.415,
+    29.932
+   ]
+  },
+  "rate6 alone": {
+   "rec yds/game": [
+    20.532,
+    20.333
+   ]
+  },
+  "usage x shared proxy": {
+   "rec yds/game": [
+    29.483,
+    30.141
+   ]
+  },
+  "usage x NEW xYPT, YPTOE": {
+   "rec yds/game": [
+    31.056,
+    31.68
+   ]
+  },
+  "usage x NEW v_t": {
+   "rec yds/game": [
+    30.741,
+    31.311
+   ]
+  },
+  "_bootstrap": {
+   "usage x NEW xYPT, YPTOE vs usage x rate6 | rec yds/game": [
+    1.64,
+    1.297,
+    1.991
+   ],
+   "usage x NEW xYPT, YPTOE vs usage x naive yds/target | rec yds/game": [
+    -0.153,
+    -0.316,
+    0.008
+   ]
+  }
+ },
+ "unit_points": {
+  "r2": {
+   "as-of team model (base)": [
+    11.824,
+    12.947
+   ],
+   "base + naive skill aggregates": [
+    11.655,
+    12.908
+   ],
+   "base + shipped rate6 aggregate": [
+    11.827,
+    12.993
+   ],
+   "base + shared-credit aggregate": [
+    12.183,
+    13.384
+   ],
+   "base + NEW aggregates (v_t, ypc adj)": [
+    11.629,
+    12.869
+   ],
+   "base + NEW aggregates (v_t, RYOE)": [
+    11.637,
+    12.921
+   ],
+   "base + NEW EPA aggregates (v_e, EPAOE/c)": [
+    11.739,
+    12.902
+   ],
+   "base + rate6 + NEW": [
+    11.621,
+    12.923
+   ]
+  },
+  "mse_gain_vs_base": {
+   "base + naive skill aggregates": [
+    -0.1818,
+    -0.4401,
+    0.0695
+   ],
+   "base + shipped rate6 aggregate": [
+    0.0031,
+    -0.0977,
+    0.1007
+   ],
+   "base + shared-credit aggregate": [
+    0.3853,
+    0.0935,
+    0.6768
+   ],
+   "base + NEW aggregates (v_t, ypc adj)": [
+    -0.2094,
+    -0.3722,
+    -0.0512
+   ],
+   "base + NEW aggregates (v_t, RYOE)": [
+    -0.2007,
+    -0.3518,
+    -0.0484
+   ],
+   "base + NEW EPA aggregates (v_e, EPAOE/c)": [
+    -0.0915,
+    -0.1936,
+    0.0074
+   ],
+   "base + rate6 + NEW": [
+    -0.2176,
+    -0.4461,
+    0.0113
+   ]
+  },
+  "n": 4806,
+  "n_scored_2008_15": 4272
+ },
+ "face": {
+  "2010_T_WR": {
+   "top": [
+    {
+     "name": "Greg Jennings",
+     "team": "GB",
+     "n_xepat": 581.0,
+     "mu_xepat": 0.1629,
+     "mu_epat": 0.0777,
+     "v_e": 0.2406,
+     "mu_xypt": 1.831,
+     "mu_yptoe": 0.3835,
+     "pre_tsh": 0.2157,
+     "epa_pg_over_avg": 1.7643,
+     "rate6": 0.888
+    },
+    {
+     "name": "Sidney Rice",
+     "team": "MIN",
+     "n_xepat": 268.0,
+     "mu_xepat": 0.1292,
+     "mu_epat": 0.0658,
+     "v_e": 0.195,
+     "mu_xypt": 1.1731,
+     "mu_yptoe": 0.3218,
+     "pre_tsh": 0.1826,
+     "epa_pg_over_avg": 1.2107,
+     "rate6": 0.7659
+    },
+    {
+     "name": "Vincent Jackson",
+     "team": "LAC",
+     "n_xepat": 403.0,
+     "mu_xepat": 0.1421,
+     "mu_epat": 0.0497,
+     "v_e": 0.1918,
+     "mu_xypt": 1.8504,
+     "mu_yptoe": 0.351,
+     "pre_tsh": 0.1743,
+     "epa_pg_over_avg": 1.1363,
+     "rate6": 0.9728
+    },
+    {
+     "name": "Mike Wallace",
+     "team": "PIT",
+     "n_xepat": 180.0,
+     "mu_xepat": 0.1085,
+     "mu_epat": 0.0791,
+     "v_e": 0.1876,
+     "mu_xypt": 1.6829,
+     "mu_yptoe": 0.6937,
+     "pre_tsh": 0.1637,
+     "epa_pg_over_avg": 1.0443,
+     "rate6": 0.7985
+    },
+    {
+     "name": "Malcom Floyd",
+     "team": "LAC",
+     "n_xepat": 223.0,
+     "mu_xepat": 0.1754,
+     "mu_epat": -0.0026,
+     "v_e": 0.1727,
+     "mu_xypt": 2.0405,
+     "mu_yptoe": 0.0619,
+     "pre_tsh": 0.1645,
+     "epa_pg_over_avg": 0.9657,
+     "rate6": 0.5805
+    },
+    {
+     "name": "Dwayne Bowe",
+     "team": "KC",
+     "n_xepat": 484.0,
+     "mu_xepat": 0.0872,
+     "mu_epat": 0.0845,
+     "v_e": 0.1718,
+     "mu_xypt": 0.795,
+     "mu_yptoe": 0.1613,
+     "pre_tsh": 0.2274,
+     "epa_pg_over_avg": 1.328,
+     "rate6": 1.0223
+    },
+    {
+     "name": "Marques Colston",
+     "team": "NO",
+     "n_xepat": 595.0,
+     "mu_xepat": 0.1295,
+     "mu_epat": 0.0395,
+     "v_e": 0.169,
+     "mu_xypt": 1.0222,
+     "mu_yptoe": 0.1102,
+     "pre_tsh": 0.1739,
+     "epa_pg_over_avg": 0.9993,
+     "rate6": 0.6096
+    },
+    {
+     "name": "Kenny Britt",
+     "team": "TEN",
+     "n_xepat": 139.0,
+     "mu_xepat": 0.1172,
+     "mu_epat": 0.048,
+     "v_e": 0.1652,
+     "mu_xypt": 1.5832,
+     "mu_yptoe": 0.5096,
+     "pre_tsh": 0.1848,
+     "epa_pg_over_avg": 1.0377,
+     "rate6": 0.6537
+    },
+    {
+     "name": "Jason Avant",
+     "team": "PHI",
+     "n_xepat": 255.0,
+     "mu_xepat": 0.096,
+     "mu_epat": 0.0626,
+     "v_e": 0.1586,
+     "mu_xypt": 0.6406,
+     "mu_yptoe": 0.1829,
+     "pre_tsh": 0.1104,
+     "epa_pg_over_avg": 0.5952,
+     "rate6": 0.2511
+    },
+    {
+     "name": "Hakeem Nicks",
+     "team": "NYG",
+     "n_xepat": 193.0,
+     "mu_xepat": 0.1235,
+     "mu_epat": 0.0333,
+     "v_e": 0.1568,
+     "mu_xypt": 0.9696,
+     "mu_yptoe": 0.3329,
+     "pre_tsh": 0.2137,
+     "epa_pg_over_avg": 1.1395,
+     "rate6": 0.6404
+    },
+    {
+     "name": "Jordy Nelson",
+     "team": "GB",
+     "n_xepat": 165.0,
+     "mu_xepat": 0.091,
+     "mu_epat": 0.0651,
+     "v_e": 0.1562,
+     "mu_xypt": 1.1593,
+     "mu_yptoe": 0.1403,
+     "pre_tsh": 0.1082,
+     "epa_pg_over_avg": 0.5745,
+     "rate6": 0.5952
+    },
+    {
+     "name": "Derrick Mason",
+     "team": "BAL",
+     "n_xepat": 633.0,
+     "mu_xepat": 0.1181,
+     "mu_epat": 0.0306,
+     "v_e": 0.1486,
+     "mu_xypt": 1.1439,
+     "mu_yptoe": -0.1711,
+     "pre_tsh": 0.161,
+     "epa_pg_over_avg": 0.8135,
+     "rate6": 0.6294
+    },
+    {
+     "name": "Brandon Lloyd",
+     "team": "DEN",
+     "n_xepat": 259.0,
+     "mu_xepat": 0.1463,
+     "mu_epat": 0.0003,
+     "v_e": 0.1466,
+     "mu_xypt": 2.0576,
+     "mu_yptoe": -0.0292,
+     "pre_tsh": 0.2161,
+     "epa_pg_over_avg": 1.0771,
+     "rate6": 0.7509
+    },
+    {
+     "name": "Steve Smith",
+     "team": "NYG",
+     "n_xepat": 356.0,
+     "mu_xepat": 0.098,
+     "mu_epat": 0.0408,
+     "v_e": 0.1388,
+     "mu_xypt": 0.8637,
+     "mu_yptoe": -0.1107,
+     "pre_tsh": 0.2149,
+     "epa_pg_over_avg": 1.014,
+     "rate6": 0.6804
+    },
+    {
+     "name": "Jabar Gaffney",
+     "team": "DEN",
+     "n_xepat": 368.0,
+     "mu_xepat": 0.1051,
+     "mu_epat": 0.0295,
+     "v_e": 0.1346,
+     "mu_xypt": 1.4349,
+     "mu_yptoe": 0.0283,
+     "pre_tsh": 0.1568,
+     "epa_pg_over_avg": 0.7179,
+     "rate6": 0.3389
+    }
+   ],
+   "bottom": [
+    {
+     "name": "Johnnie Lee Higgins",
+     "team": "LV",
+     "n_xepat": 124.0,
+     "mu_xepat": 0.0418,
+     "mu_epat": -0.0619,
+     "v_e": -0.0201,
+     "mu_xypt": 0.907,
+     "mu_yptoe": -0.3604,
+     "pre_tsh": 0.1016,
+     "epa_pg_over_avg": -0.0695,
+     "rate6": -0.2942
+    },
+    {
+     "name": "Chris Chambers",
+     "team": "KC",
+     "n_xepat": 468.0,
+     "mu_xepat": 0.0615,
+     "mu_epat": -0.0837,
+     "v_e": -0.0222,
+     "mu_xypt": 0.9953,
+     "mu_yptoe": -0.4848,
+     "pre_tsh": 0.106,
+     "epa_pg_over_avg": -0.0799,
+     "rate6": 0.1272
+    },
+    {
+     "name": "Michael Clayton",
+     "team": "NYG",
+     "n_xepat": 198.0,
+     "mu_xepat": 0.0577,
+     "mu_epat": -0.0842,
+     "v_e": -0.0266,
+     "mu_xypt": 0.5469,
+     "mu_yptoe": -0.2201,
+     "pre_tsh": 0.0724,
+     "epa_pg_over_avg": -0.0654,
+     "rate6": -0.2725
+    },
+    {
+     "name": "Arnaz Battle",
+     "team": "PIT",
+     "n_xepat": 217.0,
+     "mu_xepat": -0.0044,
+     "mu_epat": -0.0297,
+     "v_e": -0.0341,
+     "mu_xypt": -0.1445,
+     "mu_yptoe": -0.0384,
+     "pre_tsh": 0.0628,
+     "epa_pg_over_avg": -0.0728,
+     "rate6": 0.6229
+    },
+    {
+     "name": "Eddie Royal",
+     "team": "DEN",
+     "n_xepat": 312.0,
+     "mu_xepat": -0.0146,
+     "mu_epat": -0.038,
+     "v_e": -0.0526,
+     "mu_xypt": 0.1841,
+     "mu_yptoe": -0.4475,
+     "pre_tsh": 0.164,
+     "epa_pg_over_avg": -0.2933,
+     "rate6": 0.0646
+    },
+    {
+     "name": "Bryant Johnson",
+     "team": "DET",
+     "n_xepat": 349.0,
+     "mu_xepat": 0.0857,
+     "mu_epat": -0.1405,
+     "v_e": -0.0548,
+     "mu_xypt": 0.6561,
+     "mu_yptoe": -0.7376,
+     "pre_tsh": 0.0838,
+     "epa_pg_over_avg": -0.1562,
+     "rate6": -0.3
+    },
+    {
+     "name": "Danny Amendola",
+     "team": "LA",
+     "n_xepat": 182.0,
+     "mu_xepat": -0.0358,
+     "mu_epat": -0.0208,
+     "v_e": -0.0566,
+     "mu_xypt": -0.6872,
+     "mu_yptoe": -0.0866,
+     "pre_tsh": 0.1725,
+     "epa_pg_over_avg": -0.332,
+     "rate6": 0.1376
+    },
+    {
+     "name": "Chansi Stuckey",
+     "team": "CLE",
+     "n_xepat": 169.0,
+     "mu_xepat": -0.0279,
+     "mu_epat": -0.0694,
+     "v_e": -0.0973,
+     "mu_xypt": -0.305,
+     "mu_yptoe": -0.1915,
+     "pre_tsh": 0.1195,
+     "epa_pg_over_avg": -0.3955,
+     "rate6": -0.1343
+    }
+   ]
+  },
+  "2010_T_TE": {
+   "top": [
+    {
+     "name": "Antonio Gates",
+     "team": "LAC",
+     "n_xepat": 523.0,
+     "mu_xepat": 0.0432,
+     "mu_epat": 0.1191,
+     "v_e": 0.1623,
+     "mu_xypt": 0.2762,
+     "mu_yptoe": 0.8714,
+     "pre_tsh": 0.153,
+     "epa_pg_over_avg": 0.8442,
+     "rate6": 0.9972
+    },
+    {
+     "name": "Tony Gonzalez",
+     "team": "ATL",
+     "n_xepat": 639.0,
+     "mu_xepat": 0.0597,
+     "mu_epat": 0.0524,
+     "v_e": 0.1121,
+     "mu_xypt": -0.177,
+     "mu_yptoe": 0.0026,
+     "pre_tsh": 0.1558,
+     "epa_pg_over_avg": 0.5934,
+     "rate6": 0.2934
+    },
+    {
+     "name": "Heath Miller",
+     "team": "PIT",
+     "n_xepat": 368.0,
+     "mu_xepat": 0.0483,
+     "mu_epat": 0.0599,
+     "v_e": 0.1082,
+     "mu_xypt": 0.125,
+     "mu_yptoe": 0.365,
+     "pre_tsh": 0.1551,
+     "epa_pg_over_avg": 0.5705,
+     "rate6": 0.4213
+    },
+    {
+     "name": "Vernon Davis",
+     "team": "SF",
+     "n_xepat": 380.0,
+     "mu_xepat": 0.0258,
+     "mu_epat": 0.0715,
+     "v_e": 0.0973,
+     "mu_xypt": 0.4825,
+     "mu_yptoe": 0.4082,
+     "pre_tsh": 0.1503,
+     "epa_pg_over_avg": 0.4972,
+     "rate6": 0.6501
+    },
+    {
+     "name": "Dallas Clark",
+     "team": "IND",
+     "n_xepat": 499.0,
+     "mu_xepat": 0.0248,
+     "mu_epat": 0.0706,
+     "v_e": 0.0955,
+     "mu_xypt": -0.0551,
+     "mu_yptoe": 0.1539,
+     "pre_tsh": 0.1617,
+     "epa_pg_over_avg": 0.5247,
+     "rate6": 0.5117
+    },
+    {
+     "name": "Brent Celek",
+     "team": "PHI",
+     "n_xepat": 278.0,
+     "mu_xepat": 0.0283,
+     "mu_epat": 0.06,
+     "v_e": 0.0884,
+     "mu_xypt": -0.0023,
+     "mu_yptoe": 0.3809,
+     "pre_tsh": 0.1389,
+     "epa_pg_over_avg": 0.4174,
+     "rate6": 0.3925
+    },
+    {
+     "name": "Zach Miller",
+     "team": "LV",
+     "n_xepat": 342.0,
+     "mu_xepat": 0.0343,
+     "mu_epat": 0.0395,
+     "v_e": 0.0738,
+     "mu_xypt": 0.2668,
+     "mu_yptoe": 0.3988,
+     "pre_tsh": 0.1617,
+     "epa_pg_over_avg": 0.4056,
+     "rate6": 0.3407
+    },
+    {
+     "name": "Visanthe Shiancoe",
+     "team": "MIN",
+     "n_xepat": 279.0,
+     "mu_xepat": 0.0447,
+     "mu_epat": 0.029,
+     "v_e": 0.0737,
+     "mu_xypt": 0.4726,
+     "mu_yptoe": 0.1255,
+     "pre_tsh": 0.1468,
+     "epa_pg_over_avg": 0.3678,
+     "rate6": 0.179
+    },
+    {
+     "name": "Kevin Boss",
+     "team": "NYG",
+     "n_xepat": 221.0,
+     "mu_xepat": 0.0777,
+     "mu_epat": -0.0048,
+     "v_e": 0.0729,
+     "mu_xypt": 0.1522,
+     "mu_yptoe": 0.3428,
+     "pre_tsh": 0.1267,
+     "epa_pg_over_avg": 0.3142,
+     "rate6": 0.1467
+    },
+    {
+     "name": "Todd Heap",
+     "team": "BAL",
+     "n_xepat": 350.0,
+     "mu_xepat": 0.0316,
+     "mu_epat": 0.0396,
+     "v_e": 0.0712,
+     "mu_xypt": 0.1929,
+     "mu_yptoe": 0.3033,
+     "pre_tsh": 0.1494,
+     "epa_pg_over_avg": 0.3617,
+     "rate6": 0.5454
+    },
+    {
+     "name": "Kellen Winslow",
+     "team": "TB",
+     "n_xepat": 534.0,
+     "mu_xepat": 0.0321,
+     "mu_epat": 0.0337,
+     "v_e": 0.0658,
+     "mu_xypt": 0.3021,
+     "mu_yptoe": -0.1076,
+     "pre_tsh": 0.1718,
+     "epa_pg_over_avg": 0.3845,
+     "rate6": 0.5147
+    },
+    {
+     "name": "Benjamin Watson",
+     "team": "CLE",
+     "n_xepat": 314.0,
+     "mu_xepat": 0.0654,
+     "mu_epat": -0.0103,
+     "v_e": 0.0552,
+     "mu_xypt": 0.5035,
+     "mu_yptoe": -0.0122,
+     "pre_tsh": 0.1588,
+     "epa_pg_over_avg": 0.2978,
+     "rate6": 0.3834
+    },
+    {
+     "name": "Greg Olsen",
+     "team": "CHI",
+     "n_xepat": 334.0,
+     "mu_xepat": 0.0807,
+     "mu_epat": -0.0265,
+     "v_e": 0.0542,
+     "mu_xypt": 0.2953,
+     "mu_yptoe": -0.252,
+     "pre_tsh": 0.1375,
+     "epa_pg_over_avg": 0.2533,
+     "rate6": 0.2755
+    },
+    {
+     "name": "Owen Daniels",
+     "team": "HOU",
+     "n_xepat": 357.0,
+     "mu_xepat": 0.0307,
+     "mu_epat": 0.0225,
+     "v_e": 0.0532,
+     "mu_xypt": 0.3634,
+     "mu_yptoe": 0.1319,
+     "pre_tsh": 0.1595,
+     "epa_pg_over_avg": 0.2885,
+     "rate6": 0.4157
+    },
+    {
+     "name": "Jason Witten",
+     "team": "DAL",
+     "n_xepat": 603.0,
+     "mu_xepat": 0.0231,
+     "mu_epat": 0.0297,
+     "v_e": 0.0528,
+     "mu_xypt": 0.2601,
+     "mu_yptoe": 0.2528,
+     "pre_tsh": 0.1909,
+     "epa_pg_over_avg": 0.3428,
+     "rate6": 0.6612
+    }
+   ],
+   "bottom": [
+    {
+     "name": "David Thomas",
+     "team": "NO",
+     "n_xepat": 132.0,
+     "mu_xepat": -0.0116,
+     "mu_epat": -0.0137,
+     "v_e": -0.0253,
+     "mu_xypt": -0.6454,
+     "mu_yptoe": -0.1554,
+     "pre_tsh": 0.0778,
+     "epa_pg_over_avg": -0.067,
+     "rate6": -0.1305
+    },
+    {
+     "name": "Bo Scaife",
+     "team": "TEN",
+     "n_xepat": 326.0,
+     "mu_xepat": -0.0157,
+     "mu_epat": -0.0131,
+     "v_e": -0.0288,
+     "mu_xypt": -0.2486,
+     "mu_yptoe": -0.1305,
+     "pre_tsh": 0.1286,
+     "epa_pg_over_avg": -0.126,
+     "rate6": -0.0001
+    },
+    {
+     "name": "Daniel Graham",
+     "team": "DEN",
+     "n_xepat": 183.0,
+     "mu_xepat": -0.0404,
+     "mu_epat": 0.0115,
+     "v_e": -0.029,
+     "mu_xypt": -0.3561,
+     "mu_yptoe": -0.0539,
+     "pre_tsh": 0.0633,
+     "epa_pg_over_avg": -0.0624,
+     "rate6": -0.4294
+    },
+    {
+     "name": "Jeff King",
+     "team": "CAR",
+     "n_xepat": 179.0,
+     "mu_xepat": -0.0096,
+     "mu_epat": -0.0206,
+     "v_e": -0.0302,
+     "mu_xypt": -0.6061,
+     "mu_yptoe": -0.2614,
+     "pre_tsh": 0.0701,
+     "epa_pg_over_avg": -0.0719,
+     "rate6": -0.1853
+    },
+    {
+     "name": "Alex Smith",
+     "team": "CLE",
+     "n_xepat": 144.0,
+     "mu_xepat": -0.0296,
+     "mu_epat": -0.0025,
+     "v_e": -0.0321,
+     "mu_xypt": -0.6144,
+     "mu_yptoe": -0.0616,
+     "pre_tsh": 0.0498,
+     "epa_pg_over_avg": -0.0542,
+     "rate6": 0.2104
+    },
+    {
+     "name": "Delanie Walker",
+     "team": "SF",
+     "n_xepat": 137.0,
+     "mu_xepat": -0.048,
+     "mu_epat": -0.0073,
+     "v_e": -0.0554,
+     "mu_xypt": -0.4674,
+     "mu_yptoe": 0.1115,
+     "pre_tsh": 0.1099,
+     "epa_pg_over_avg": -0.2068,
+     "rate6": -0.0112
+    },
+    {
+     "name": "Robert Royal",
+     "team": "CLE",
+     "n_xepat": 161.0,
+     "mu_xepat": -0.0101,
+     "mu_epat": -0.048,
+     "v_e": -0.058,
+     "mu_xypt": -0.0294,
+     "mu_yptoe": -0.1417,
+     "pre_tsh": 0.0571,
+     "epa_pg_over_avg": -0.1126,
+     "rate6": -0.201
+    },
+    {
+     "name": "Dante Rosario",
+     "team": "CAR",
+     "n_xepat": 148.0,
+     "mu_xepat": -0.0276,
+     "mu_epat": -0.0402,
+     "v_e": -0.0678,
+     "mu_xypt": -0.0656,
+     "mu_yptoe": -0.2244,
+     "pre_tsh": 0.1131,
+     "epa_pg_over_avg": -0.2606,
+     "rate6": -0.3391
+    }
+   ]
+  },
+  "2010_T_RB": {
+   "top": [
+    {
+     "name": "Matt Forte",
+     "team": "CHI",
+     "n_xepat": 222.0,
+     "mu_xepat": -0.0843,
+     "mu_epat": 0.0461,
+     "v_e": -0.0382,
+     "mu_xypt": -0.8382,
+     "mu_yptoe": 0.3829,
+     "pre_tsh": 0.1269,
+     "epa_pg_over_avg": -0.1646,
+     "rate6": 0.0611
+    },
+    {
+     "name": "Maurice Jones-Drew",
+     "team": "JAX",
+     "n_xepat": 298.0,
+     "mu_xepat": -0.1716,
+     "mu_epat": 0.1001,
+     "v_e": -0.0715,
+     "mu_xypt": -1.677,
+     "mu_yptoe": 0.5152,
+     "pre_tsh": 0.113,
+     "epa_pg_over_avg": -0.2748,
+     "rate6": 0.0613
+    },
+    {
+     "name": "Brian Westbrook",
+     "team": "SF",
+     "n_xepat": 353.0,
+     "mu_xepat": -0.1145,
+     "mu_epat": 0.0371,
+     "v_e": -0.0774,
+     "mu_xypt": -1.5288,
+     "mu_yptoe": 0.2381,
+     "pre_tsh": 0.0743,
+     "epa_pg_over_avg": -0.1956,
+     "rate6": -0.0874
+    },
+    {
+     "name": "Kevin Faulk",
+     "team": "NE",
+     "n_xepat": 277.0,
+     "mu_xepat": -0.1016,
+     "mu_epat": 0.0186,
+     "v_e": -0.083,
+     "mu_xypt": -1.4174,
+     "mu_yptoe": 0.1671,
+     "pre_tsh": 0.0974,
+     "epa_pg_over_avg": -0.2748,
+     "rate6": 0.0218
+    },
+    {
+     "name": "Joseph Addai",
+     "team": "IND",
+     "n_xepat": 264.0,
+     "mu_xepat": -0.1125,
+     "mu_epat": 0.0219,
+     "v_e": -0.0906,
+     "mu_xypt": -1.549,
+     "mu_yptoe": -0.0021,
+     "pre_tsh": 0.0656,
+     "epa_pg_over_avg": -0.2021,
+     "rate6": -0.1972
+    },
+    {
+     "name": "Darren McFadden",
+     "team": "LV",
+     "n_xepat": 129.0,
+     "mu_xepat": -0.1595,
+     "mu_epat": 0.0662,
+     "v_e": -0.0933,
+     "mu_xypt": -1.1133,
+     "mu_yptoe": 0.4864,
+     "pre_tsh": 0.1226,
+     "epa_pg_over_avg": -0.3889,
+     "rate6": 0.169
+    },
+    {
+     "name": "Cedric Benson",
+     "team": "CIN",
+     "n_xepat": 124.0,
+     "mu_xepat": -0.1124,
+     "mu_epat": 0.0191,
+     "v_e": -0.0933,
+     "mu_xypt": -1.3319,
+     "mu_yptoe": -0.0029,
+     "pre_tsh": 0.0558,
+     "epa_pg_over_avg": -0.1771,
+     "rate6": -0.3821
+    },
+    {
+     "name": "Frank Gore",
+     "team": "SF",
+     "n_xepat": 340.0,
+     "mu_xepat": -0.1596,
+     "mu_epat": 0.066,
+     "v_e": -0.0936,
+     "mu_xypt": -1.4867,
+     "mu_yptoe": 0.3037,
+     "pre_tsh": 0.1581,
+     "epa_pg_over_avg": -0.5033,
+     "rate6": 0.1208
+    },
+    {
+     "name": "Brandon Jackson",
+     "team": "GB",
+     "n_xepat": 146.0,
+     "mu_xepat": -0.1264,
+     "mu_epat": 0.0304,
+     "v_e": -0.096,
+     "mu_xypt": -1.5972,
+     "mu_yptoe": 0.2367,
+     "pre_tsh": 0.0736,
+     "epa_pg_over_avg": -0.2403,
+     "rate6": -0.094
+    },
+    {
+     "name": "Jamaal Charles",
+     "team": "KC",
+     "n_xepat": 160.0,
+     "mu_xepat": -0.1256,
+     "mu_epat": 0.027,
+     "v_e": -0.0986,
+     "mu_xypt": -1.1482,
+     "mu_yptoe": 0.2564,
+     "pre_tsh": 0.1165,
+     "epa_pg_over_avg": -0.3907,
+     "rate6": 0.1683
+    },
+    {
+     "name": "Dominic Rhodes",
+     "team": "IND",
+     "n_xepat": 124.0,
+     "mu_xepat": -0.1026,
+     "mu_epat": -0.0062,
+     "v_e": -0.1088,
+     "mu_xypt": -1.3878,
+     "mu_yptoe": -0.1243,
+     "pre_tsh": 0.0574,
+     "epa_pg_over_avg": -0.2123,
+     "rate6": -0.2624
+    },
+    {
+     "name": "Darren Sproles",
+     "team": "LAC",
+     "n_xepat": 203.0,
+     "mu_xepat": -0.1789,
+     "mu_epat": 0.0696,
+     "v_e": -0.1093,
+     "mu_xypt": -1.5748,
+     "mu_yptoe": 0.3865,
+     "pre_tsh": 0.1492,
+     "epa_pg_over_avg": -0.5544,
+     "rate6": 0.1504
+    },
+    {
+     "name": "Earnest Graham",
+     "team": "TB",
+     "n_xepat": 153.0,
+     "mu_xepat": -0.1012,
+     "mu_epat": -0.0114,
+     "v_e": -0.1126,
+     "mu_xypt": -1.5047,
+     "mu_yptoe": -0.0981,
+     "pre_tsh": 0.0622,
+     "epa_pg_over_avg": -0.2381,
+     "rate6": -0.2371
+    },
+    {
+     "name": "Kevin Smith",
+     "team": "DET",
+     "n_xepat": 122.0,
+     "mu_xepat": -0.1317,
+     "mu_epat": 0.0158,
+     "v_e": -0.1159,
+     "mu_xypt": -1.2799,
+     "mu_yptoe": 0.2129,
+     "pre_tsh": 0.0616,
+     "epa_pg_over_avg": -0.2427,
+     "rate6": -0.1175
+    },
+    {
+     "name": "Correll Buckhalter",
+     "team": "DEN",
+     "n_xepat": 155.0,
+     "mu_xepat": -0.1599,
+     "mu_epat": 0.0436,
+     "v_e": -0.1163,
+     "mu_xypt": -1.1274,
+     "mu_yptoe": 0.2329,
+     "pre_tsh": 0.0688,
+     "epa_pg_over_avg": -0.272,
+     "rate6": -0.1833
+    }
+   ],
+   "bottom": [
+    {
+     "name": "Chris Johnson",
+     "team": "TEN",
+     "n_xepat": 185.0,
+     "mu_xepat": -0.1756,
+     "mu_epat": 0.0007,
+     "v_e": -0.1749,
+     "mu_xypt": -1.4292,
+     "mu_yptoe": -0.0541,
+     "pre_tsh": 0.0955,
+     "epa_pg_over_avg": -0.5677,
+     "rate6": -0.1597
+    },
+    {
+     "name": "Mewelde Moore",
+     "team": "PIT",
+     "n_xepat": 178.0,
+     "mu_xepat": -0.1743,
+     "mu_epat": -0.0041,
+     "v_e": -0.1784,
+     "mu_xypt": -1.5637,
+     "mu_yptoe": 0.1638,
+     "pre_tsh": 0.0531,
+     "epa_pg_over_avg": -0.3217,
+     "rate6": -0.2862
+    },
+    {
+     "name": "Willis McGahee",
+     "team": "BAL",
+     "n_xepat": 142.0,
+     "mu_xepat": -0.171,
+     "mu_epat": -0.0118,
+     "v_e": -0.1829,
+     "mu_xypt": -1.9233,
+     "mu_yptoe": -0.0542,
+     "pre_tsh": 0.0395,
+     "epa_pg_over_avg": -0.2455,
+     "rate6": -0.3228
+    },
+    {
+     "name": "Marion Barber",
+     "team": "DAL",
+     "n_xepat": 190.0,
+     "mu_xepat": -0.187,
+     "mu_epat": 0.0006,
+     "v_e": -0.1865,
+     "mu_xypt": -1.587,
+     "mu_yptoe": -0.0012,
+     "pre_tsh": 0.0396,
+     "epa_pg_over_avg": -0.2508,
+     "rate6": -0.3571
+    },
+    {
+     "name": "Ladell Betts",
+     "team": "NO",
+     "n_xepat": 161.0,
+     "mu_xepat": -0.1729,
+     "mu_epat": -0.0177,
+     "v_e": -0.1906,
+     "mu_xypt": -1.4871,
+     "mu_yptoe": 0.175,
+     "pre_tsh": 0.0753,
+     "epa_pg_over_avg": -0.4881,
+     "rate6": -0.3622
+    },
+    {
+     "name": "Cadillac Williams",
+     "team": "TB",
+     "n_xepat": 146.0,
+     "mu_xepat": -0.1981,
+     "mu_epat": 0.0072,
+     "v_e": -0.1909,
+     "mu_xypt": -1.5618,
+     "mu_yptoe": 0.0806,
+     "pre_tsh": 0.1053,
+     "epa_pg_over_avg": -0.6835,
+     "rate6": -0.1128
+    },
+    {
+     "name": "Tim Hightower",
+     "team": "ARI",
+     "n_xepat": 180.0,
+     "mu_xepat": -0.194,
+     "mu_epat": 0.0005,
+     "v_e": -0.1935,
+     "mu_xypt": -1.582,
+     "mu_yptoe": -0.2047,
+     "pre_tsh": 0.0768,
+     "epa_pg_over_avg": -0.505,
+     "rate6": -0.2712
+    },
+    {
+     "name": "Julius Jones",
+     "team": "NO",
+     "n_xepat": 130.0,
+     "mu_xepat": -0.1984,
+     "mu_epat": -0.0069,
+     "v_e": -0.2052,
+     "mu_xypt": -1.7798,
+     "mu_yptoe": -0.1425,
+     "pre_tsh": 0.0531,
+     "epa_pg_over_avg": -0.3704,
+     "rate6": -0.3975
+    }
+   ]
+  },
+  "2010_R_None": {
+   "top": [
+    {
+     "name": "Jamaal Charles",
+     "pos": "RB",
+     "team": "KC",
+     "n_ryds": 487.0,
+     "mu_ryds": 0.6396,
+     "mu_rsuc": 0.0329,
+     "mu_ypca": 1.3398,
+     "mu_rawr": 1.2838,
+     "pre_csh": 0.363,
+     "yds_pg_over_avg": 6.0371,
+     "rate6": 0.1683
+    },
+    {
+     "name": "Peyton Hillis",
+     "pos": "RB",
+     "team": "CLE",
+     "n_ryds": 345.0,
+     "mu_ryds": 0.3453,
+     "mu_rsuc": 0.0205,
+     "mu_ypca": 0.5238,
+     "mu_rawr": 0.342,
+     "pre_csh": 0.5889,
+     "yds_pg_over_avg": 5.2867,
+     "rate6": -0.0227
+    },
+    {
+     "name": "Arian Foster",
+     "pos": "RB",
+     "team": "HOU",
+     "n_ryds": 349.0,
+     "mu_ryds": 0.3233,
+     "mu_rsuc": 0.0155,
+     "mu_ypca": 0.5019,
+     "mu_rawr": 0.4457,
+     "pre_csh": 0.6218,
+     "yds_pg_over_avg": 5.2265,
+     "rate6": 0.098
+    },
+    {
+     "name": "Justin Forsett",
+     "pos": "RB",
+     "team": "SEA",
+     "n_ryds": 236.0,
+     "mu_ryds": 0.2508,
+     "mu_rsuc": 0.0004,
+     "mu_ypca": 0.7064,
+     "mu_rawr": 0.4755,
+     "pre_csh": 0.2011,
+     "yds_pg_over_avg": 1.3116,
+     "rate6": -0.1855
+    },
+    {
+     "name": "Mike Tolbert",
+     "pos": "FB",
+     "team": "LAC",
+     "n_ryds": 216.0,
+     "mu_ryds": 0.1938,
+     "mu_rsuc": 0.0054,
+     "mu_ypca": 0.3086,
+     "mu_rawr": 0.124,
+     "pre_csh": 0.3915,
+     "yds_pg_over_avg": 1.9726,
+     "rate6": -0.0966
+    },
+    {
+     "name": "Brandon Jacobs",
+     "pos": "RB",
+     "team": "NYG",
+     "n_ryds": 994.0,
+     "mu_ryds": 0.1741,
+     "mu_rsuc": 0.0172,
+     "mu_ypca": 0.2941,
+     "mu_rawr": 0.4337,
+     "pre_csh": 0.291,
+     "yds_pg_over_avg": 1.3174,
+     "rate6": -0.2155
+    },
+    {
+     "name": "BenJarvus Green-Ellis",
+     "pos": "RB",
+     "team": "NE",
+     "n_ryds": 329.0,
+     "mu_ryds": 0.168,
+     "mu_rsuc": 0.0134,
+     "mu_ypca": 0.1842,
+     "mu_rawr": 0.2821,
+     "pre_csh": 0.4162,
+     "yds_pg_over_avg": 1.8182,
+     "rate6": -0.2746
+    },
+    {
+     "name": "Pierre Thomas",
+     "pos": "RB",
+     "team": "NO",
+     "n_ryds": 426.0,
+     "mu_ryds": 0.13,
+     "mu_rsuc": 0.0211,
+     "mu_ypca": 0.4019,
+     "mu_rawr": 0.346,
+     "pre_csh": 0.4005,
+     "yds_pg_over_avg": 1.3535,
+     "rate6": 0.0577
+    },
+    {
+     "name": "Jonathan Stewart",
+     "pos": "RB",
+     "team": "CAR",
+     "n_ryds": 572.0,
+     "mu_ryds": 0.1199,
+     "mu_rsuc": 0.0041,
+     "mu_ypca": 0.3769,
+     "mu_rawr": 0.2548,
+     "pre_csh": 0.4461,
+     "yds_pg_over_avg": 1.3902,
+     "rate6": -0.3489
+    },
+    {
+     "name": "Kevin Faulk",
+     "pos": "RB",
+     "team": "NE",
+     "n_ryds": 913.0,
+     "mu_ryds": 0.1179,
+     "mu_rsuc": 0.0119,
+     "mu_ypca": 0.7153,
+     "mu_rawr": 0.8667,
+     "pre_csh": 0.1568,
+     "yds_pg_over_avg": 0.481,
+     "rate6": 0.0218
+    },
+    {
+     "name": "DeAngelo Williams",
+     "pos": "RB",
+     "team": "CAR",
+     "n_ryds": 835.0,
+     "mu_ryds": 0.1099,
+     "mu_rsuc": 0.0095,
+     "mu_ypca": 0.4885,
+     "mu_rawr": 0.4471,
+     "pre_csh": 0.4039,
+     "yds_pg_over_avg": 1.1537,
+     "rate6": -0.2264
+    },
+    {
+     "name": "Derrick Ward",
+     "pos": "RB",
+     "team": "HOU",
+     "n_ryds": 516.0,
+     "mu_ryds": 0.1066,
+     "mu_rsuc": -0.0047,
+     "mu_ypca": 0.4062,
+     "mu_rawr": 0.4132,
+     "pre_csh": 0.128,
+     "yds_pg_over_avg": 0.355,
+     "rate6": -0.2557
+    },
+    {
+     "name": "Adrian Peterson",
+     "pos": "RB",
+     "team": "MIN",
+     "n_ryds": 1257.0,
+     "mu_ryds": 0.106,
+     "mu_rsuc": 0.0045,
+     "mu_ypca": 0.2576,
+     "mu_rawr": 0.235,
+     "pre_csh": 0.5313,
+     "yds_pg_over_avg": 1.4637,
+     "rate6": -0.0461
+    },
+    {
+     "name": "Felix Jones",
+     "pos": "RB",
+     "team": "DAL",
+     "n_ryds": 350.0,
+     "mu_ryds": 0.0973,
+     "mu_rsuc": 0.0079,
+     "mu_ypca": 0.6938,
+     "mu_rawr": 0.5225,
+     "pre_csh": 0.384,
+     "yds_pg_over_avg": 0.9712,
+     "rate6": 0.0077
+    },
+    {
+     "name": "Maurice Jones-Drew",
+     "pos": "RB",
+     "team": "JAX",
+     "n_ryds": 1140.0,
+     "mu_ryds": 0.0967,
+     "mu_rsuc": -0.0004,
+     "mu_ypca": 0.331,
+     "mu_rawr": 0.2622,
+     "pre_csh": 0.5658,
+     "yds_pg_over_avg": 1.4221,
+     "rate6": 0.0613
+    }
+   ],
+   "bottom": [
+    {
+     "name": "Cadillac Williams",
+     "pos": "RB",
+     "team": "TB",
+     "n_ryds": 983.0,
+     "mu_ryds": -0.1214,
+     "mu_rsuc": -0.0091,
+     "mu_ypca": -0.0677,
+     "mu_rawr": -0.3359,
+     "pre_csh": 0.2089,
+     "yds_pg_over_avg": -0.6592,
+     "rate6": -0.1128
+    },
+    {
+     "name": "Mewelde Moore",
+     "pos": "RB",
+     "team": "PIT",
+     "n_ryds": 481.0,
+     "mu_ryds": -0.1281,
+     "mu_rsuc": 0.0037,
+     "mu_ypca": 0.2479,
+     "mu_rawr": -0.0246,
+     "pre_csh": 0.0815,
+     "yds_pg_over_avg": -0.2715,
+     "rate6": -0.2862
+    },
+    {
+     "name": "Julius Jones",
+     "pos": "RB",
+     "team": "NO",
+     "n_ryds": 1306.0,
+     "mu_ryds": -0.1332,
+     "mu_rsuc": -0.0134,
+     "mu_ypca": -0.1011,
+     "mu_rawr": -0.3008,
+     "pre_csh": 0.1827,
+     "yds_pg_over_avg": -0.6331,
+     "rate6": -0.3975
+    },
+    {
+     "name": "Thomas Jones",
+     "pos": "RB",
+     "team": "KC",
+     "n_ryds": 2647.0,
+     "mu_ryds": -0.2281,
+     "mu_rsuc": -0.0138,
+     "mu_ypca": -0.2501,
+     "mu_rawr": -0.2913,
+     "pre_csh": 0.3458,
+     "yds_pg_over_avg": -2.0506,
+     "rate6": -0.3504
+    },
+    {
+     "name": "Donald Brown",
+     "pos": "RB",
+     "team": "IND",
+     "n_ryds": 220.0,
+     "mu_ryds": -0.2467,
+     "mu_rsuc": -0.0044,
+     "mu_ypca": -0.267,
+     "mu_rawr": -0.4712,
+     "pre_csh": 0.3571,
+     "yds_pg_over_avg": -2.2901,
+     "rate6": -0.1951
+    },
+    {
+     "name": "Chester Taylor",
+     "pos": "RB",
+     "team": "CHI",
+     "n_ryds": 1173.0,
+     "mu_ryds": -0.2604,
+     "mu_rsuc": -0.0138,
+     "mu_ypca": -0.2503,
+     "mu_rawr": -0.5617,
+     "pre_csh": 0.2158,
+     "yds_pg_over_avg": -1.4609,
+     "rate6": -0.3582
+    },
+    {
+     "name": "Mike Bell",
+     "pos": "RB",
+     "team": "CLE",
+     "n_ryds": 398.0,
+     "mu_ryds": -0.2776,
+     "mu_rsuc": -0.0132,
+     "mu_ypca": -0.4892,
+     "mu_rawr": -0.5411,
+     "pre_csh": 0.1451,
+     "yds_pg_over_avg": -1.0469,
+     "rate6": -0.4274
+    },
+    {
+     "name": "Brandon Jackson",
+     "pos": "RB",
+     "team": "GB",
+     "n_ryds": 363.0,
+     "mu_ryds": -0.3257,
+     "mu_rsuc": -0.0081,
+     "mu_ypca": -0.1514,
+     "mu_rawr": -0.3196,
+     "pre_csh": 0.2565,
+     "yds_pg_over_avg": -2.1719,
+     "rate6": -0.094
+    }
+   ]
+  },
+  "2015_T_WR": {
+   "top": [
+    {
+     "name": "Odell Beckham Jr.",
+     "team": "NYG",
+     "n_xepat": 281.0,
+     "mu_xepat": 0.1136,
+     "mu_epat": 0.1187,
+     "v_e": 0.2323,
+     "mu_xypt": 0.8576,
+     "mu_yptoe": 0.569,
+     "pre_tsh": 0.2273,
+     "epa_pg_over_avg": 1.7954,
+     "rate6": 1.1333
+    },
+    {
+     "name": "Doug Baldwin",
+     "team": "SEA",
+     "n_xepat": 455.0,
+     "mu_xepat": 0.0712,
+     "mu_epat": 0.1309,
+     "v_e": 0.2021,
+     "mu_xypt": 0.3953,
+     "mu_yptoe": 0.7034,
+     "pre_tsh": 0.1918,
+     "epa_pg_over_avg": 1.3174,
+     "rate6": 0.896
+    },
+    {
+     "name": "Calvin Johnson",
+     "team": "DET",
+     "n_xepat": 1326.0,
+     "mu_xepat": 0.1526,
+     "mu_epat": 0.0429,
+     "v_e": 0.1954,
+     "mu_xypt": 1.5555,
+     "mu_yptoe": 0.3877,
+     "pre_tsh": 0.1768,
+     "epa_pg_over_avg": 1.1749,
+     "rate6": 0.7318
+    },
+    {
+     "name": "DeSean Jackson",
+     "team": "WAS",
+     "n_xepat": 834.0,
+     "mu_xepat": 0.1,
+     "mu_epat": 0.0953,
+     "v_e": 0.1953,
+     "mu_xypt": 1.6516,
+     "mu_yptoe": 0.8993,
+     "pre_tsh": 0.1487,
+     "epa_pg_over_avg": 0.9873,
+     "rate6": 0.7955
+    },
+    {
+     "name": "Michael Floyd",
+     "team": "ARI",
+     "n_xepat": 395.0,
+     "mu_xepat": 0.1822,
+     "mu_epat": -0.0049,
+     "v_e": 0.1773,
+     "mu_xypt": 2.1026,
+     "mu_yptoe": -0.1357,
+     "pre_tsh": 0.156,
+     "epa_pg_over_avg": 0.9406,
+     "rate6": 0.5287
+    },
+    {
+     "name": "Sammy Watkins",
+     "team": "BUF",
+     "n_xepat": 209.0,
+     "mu_xepat": 0.1237,
+     "mu_epat": 0.0421,
+     "v_e": 0.1659,
+     "mu_xypt": 1.5976,
+     "mu_yptoe": 0.2114,
+     "pre_tsh": 0.2277,
+     "epa_pg_over_avg": 1.2838,
+     "rate6": 0.9564
+    },
+    {
+     "name": "Malcom Floyd",
+     "team": "LAC",
+     "n_xepat": 557.0,
+     "mu_xepat": 0.1749,
+     "mu_epat": -0.0179,
+     "v_e": 0.1571,
+     "mu_xypt": 2.2024,
+     "mu_yptoe": -0.0629,
+     "pre_tsh": 0.1031,
+     "epa_pg_over_avg": 0.5505,
+     "rate6": 0.1625
+    },
+    {
+     "name": "Julio Jones",
+     "team": "ATL",
+     "n_xepat": 670.0,
+     "mu_xepat": 0.0806,
+     "mu_epat": 0.0762,
+     "v_e": 0.1567,
+     "mu_xypt": 1.2376,
+     "mu_yptoe": 0.6274,
+     "pre_tsh": 0.2626,
+     "epa_pg_over_avg": 1.3995,
+     "rate6": 1.0494
+    },
+    {
+     "name": "DeAndre Hopkins",
+     "team": "HOU",
+     "n_xepat": 410.0,
+     "mu_xepat": 0.1229,
+     "mu_epat": 0.0322,
+     "v_e": 0.1551,
+     "mu_xypt": 1.305,
+     "mu_yptoe": 0.1348,
+     "pre_tsh": 0.2586,
+     "epa_pg_over_avg": 1.3633,
+     "rate6": 0.855
+    },
+    {
+     "name": "Eric Decker",
+     "team": "NYJ",
+     "n_xepat": 631.0,
+     "mu_xepat": 0.0795,
+     "mu_epat": 0.0722,
+     "v_e": 0.1516,
+     "mu_xypt": 0.6834,
+     "mu_yptoe": 0.2505,
+     "pre_tsh": 0.1953,
+     "epa_pg_over_avg": 1.0067,
+     "rate6": 0.706
+    },
+    {
+     "name": "Jeremy Maclin",
+     "team": "KC",
+     "n_xepat": 714.0,
+     "mu_xepat": 0.117,
+     "mu_epat": 0.0312,
+     "v_e": 0.1483,
+     "mu_xypt": 1.2698,
+     "mu_yptoe": 0.1883,
+     "pre_tsh": 0.2267,
+     "epa_pg_over_avg": 1.1429,
+     "rate6": 0.8183
+    },
+    {
+     "name": "Antonio Brown",
+     "team": "PIT",
+     "n_xepat": 818.0,
+     "mu_xepat": 0.0765,
+     "mu_epat": 0.0674,
+     "v_e": 0.1439,
+     "mu_xypt": 0.8291,
+     "mu_yptoe": 0.6503,
+     "pre_tsh": 0.2706,
+     "epa_pg_over_avg": 1.3237,
+     "rate6": 0.8759
+    },
+    {
+     "name": "Torrey Smith",
+     "team": "SF",
+     "n_xepat": 535.0,
+     "mu_xepat": 0.1335,
+     "mu_epat": 0.0087,
+     "v_e": 0.1421,
+     "mu_xypt": 1.8433,
+     "mu_yptoe": 0.0386,
+     "pre_tsh": 0.0923,
+     "epa_pg_over_avg": 0.446,
+     "rate6": 0.3992
+    },
+    {
+     "name": "Marques Colston",
+     "team": "NO",
+     "n_xepat": 1151.0,
+     "mu_xepat": 0.0923,
+     "mu_epat": 0.0479,
+     "v_e": 0.1401,
+     "mu_xypt": 0.6942,
+     "mu_yptoe": 0.2445,
+     "pre_tsh": 0.1118,
+     "epa_pg_over_avg": 0.5329,
+     "rate6": 0.2405
+    },
+    {
+     "name": "Allen Robinson",
+     "team": "JAX",
+     "n_xepat": 223.0,
+     "mu_xepat": 0.1099,
+     "mu_epat": 0.0271,
+     "v_e": 0.137,
+     "mu_xypt": 1.2989,
+     "mu_yptoe": 0.104,
+     "pre_tsh": 0.1939,
+     "epa_pg_over_avg": 0.9036,
+     "rate6": 0.7684
+    }
+   ],
+   "bottom": [
+    {
+     "name": "Harry Douglas",
+     "team": "TEN",
+     "n_xepat": 500.0,
+     "mu_xepat": 0.0255,
+     "mu_epat": -0.0662,
+     "v_e": -0.0408,
+     "mu_xypt": 0.4736,
+     "mu_yptoe": -0.3205,
+     "pre_tsh": 0.1332,
+     "epa_pg_over_avg": -0.1846,
+     "rate6": 0.1091
+    },
+    {
+     "name": "Louis Murphy",
+     "team": "TB",
+     "n_xepat": 354.0,
+     "mu_xepat": 0.0525,
+     "mu_epat": -0.0958,
+     "v_e": -0.0433,
+     "mu_xypt": 1.0176,
+     "mu_yptoe": -0.5138,
+     "pre_tsh": 0.1067,
+     "epa_pg_over_avg": -0.1571,
+     "rate6": -0.0052
+    },
+    {
+     "name": "Davante Adams",
+     "team": "GB",
+     "n_xepat": 174.0,
+     "mu_xepat": 0.0521,
+     "mu_epat": -0.0999,
+     "v_e": -0.0477,
+     "mu_xypt": 0.5354,
+     "mu_yptoe": -0.6311,
+     "pre_tsh": 0.1487,
+     "epa_pg_over_avg": -0.2413,
+     "rate6": 0.0311
+    },
+    {
+     "name": "Keshawn Martin",
+     "team": "NE",
+     "n_xepat": 121.0,
+     "mu_xepat": -0.0171,
+     "mu_epat": -0.0307,
+     "v_e": -0.0478,
+     "mu_xypt": 0.1194,
+     "mu_yptoe": -0.1964,
+     "pre_tsh": 0.1042,
+     "epa_pg_over_avg": -0.1694,
+     "rate6": 0.0599
+    },
+    {
+     "name": "Eddie Royal",
+     "team": "CHI",
+     "n_xepat": 628.0,
+     "mu_xepat": -0.0508,
+     "mu_epat": -0.018,
+     "v_e": -0.0687,
+     "mu_xypt": -0.2103,
+     "mu_yptoe": -0.2492,
+     "pre_tsh": 0.1262,
+     "epa_pg_over_avg": -0.2948,
+     "rate6": 0.1541
+    },
+    {
+     "name": "Tavon Austin",
+     "team": "LA",
+     "n_xepat": 192.0,
+     "mu_xepat": -0.0423,
+     "mu_epat": -0.0465,
+     "v_e": -0.0889,
+     "mu_xypt": -0.2992,
+     "mu_yptoe": -0.3606,
+     "pre_tsh": 0.1614,
+     "epa_pg_over_avg": -0.4877,
+     "rate6": 0.2326
+    },
+    {
+     "name": "Cecil Shorts",
+     "team": "HOU",
+     "n_xepat": 427.0,
+     "mu_xepat": -0.0036,
+     "mu_epat": -0.0857,
+     "v_e": -0.0892,
+     "mu_xypt": 0.3835,
+     "mu_yptoe": -0.3897,
+     "pre_tsh": 0.1323,
+     "epa_pg_over_avg": -0.4015,
+     "rate6": 0.0766
+    },
+    {
+     "name": "Dexter McCluster",
+     "team": "TEN",
+     "n_xepat": 346.0,
+     "mu_xepat": -0.1019,
+     "mu_epat": -0.0442,
+     "v_e": -0.1461,
+     "mu_xypt": -0.7415,
+     "mu_yptoe": -0.1828,
+     "pre_tsh": 0.1021,
+     "epa_pg_over_avg": -0.5073,
+     "rate6": -0.1822
+    }
+   ]
+  },
+  "2015_T_TE": {
+   "top": [
+    {
+     "name": "Rob Gronkowski",
+     "team": "NE",
+     "n_xepat": 649.0,
+     "mu_xepat": 0.0538,
+     "mu_epat": 0.1225,
+     "v_e": 0.1762,
+     "mu_xypt": 0.4631,
+     "mu_yptoe": 0.9094,
+     "pre_tsh": 0.1771,
+     "epa_pg_over_avg": 1.0615,
+     "rate6": 0.8072
+    },
+    {
+     "name": "Greg Olsen",
+     "team": "CAR",
+     "n_xepat": 921.0,
+     "mu_xepat": 0.0913,
+     "mu_epat": 0.0705,
+     "v_e": 0.1618,
+     "mu_xypt": 0.5306,
+     "mu_yptoe": 0.3608,
+     "pre_tsh": 0.1899,
+     "epa_pg_over_avg": 1.0446,
+     "rate6": 0.7076
+    },
+    {
+     "name": "Jordan Matthews",
+     "team": "PHI",
+     "n_xepat": 222.0,
+     "mu_xepat": 0.0671,
+     "mu_epat": 0.0402,
+     "v_e": 0.1073,
+     "mu_xypt": 0.4377,
+     "mu_yptoe": 0.3114,
+     "pre_tsh": 0.1607,
+     "epa_pg_over_avg": 0.5863,
+     "rate6": 0.5694
+    },
+    {
+     "name": "Tyler Eifert",
+     "team": "CIN",
+     "n_xepat": 137.0,
+     "mu_xepat": 0.043,
+     "mu_epat": 0.0626,
+     "v_e": 0.1056,
+     "mu_xypt": -0.096,
+     "mu_yptoe": 0.2725,
+     "pre_tsh": 0.1264,
+     "epa_pg_over_avg": 0.4539,
+     "rate6": 0.5529
+    },
+    {
+     "name": "Scott Chandler",
+     "team": "NE",
+     "n_xepat": 315.0,
+     "mu_xepat": 0.0701,
+     "mu_epat": 0.0336,
+     "v_e": 0.1036,
+     "mu_xypt": 0.4954,
+     "mu_yptoe": 0.0944,
+     "pre_tsh": 0.0904,
+     "epa_pg_over_avg": 0.3185,
+     "rate6": 0.0417
+    },
+    {
+     "name": "Jordan Reed",
+     "team": "WAS",
+     "n_xepat": 239.0,
+     "mu_xepat": -0.0079,
+     "mu_epat": 0.1023,
+     "v_e": 0.0944,
+     "mu_xypt": -0.5665,
+     "mu_yptoe": 0.581,
+     "pre_tsh": 0.1879,
+     "epa_pg_over_avg": 0.6027,
+     "rate6": 0.676
+    },
+    {
+     "name": "Vernon Davis",
+     "team": "DEN",
+     "n_xepat": 782.0,
+     "mu_xepat": 0.0788,
+     "mu_epat": 0.0058,
+     "v_e": 0.0846,
+     "mu_xypt": 0.906,
+     "mu_yptoe": 0.1152,
+     "pre_tsh": 0.1045,
+     "epa_pg_over_avg": 0.3008,
+     "rate6": -0.064
+    },
+    {
+     "name": "Antonio Gates",
+     "team": "LAC",
+     "n_xepat": 993.0,
+     "mu_xepat": 0.0293,
+     "mu_epat": 0.0514,
+     "v_e": 0.0806,
+     "mu_xypt": -0.0648,
+     "mu_yptoe": 0.2956,
+     "pre_tsh": 0.1435,
+     "epa_pg_over_avg": 0.3935,
+     "rate6": 0.3094
+    },
+    {
+     "name": "Travis Kelce",
+     "team": "KC",
+     "n_xepat": 200.0,
+     "mu_xepat": 0.0188,
+     "mu_epat": 0.0596,
+     "v_e": 0.0784,
+     "mu_xypt": 0.0857,
+     "mu_yptoe": 0.7141,
+     "pre_tsh": 0.2114,
+     "epa_pg_over_avg": 0.5635,
+     "rate6": 0.6344
+    },
+    {
+     "name": "Gary Barnidge",
+     "team": "CLE",
+     "n_xepat": 191.0,
+     "mu_xepat": 0.0452,
+     "mu_epat": 0.0309,
+     "v_e": 0.0761,
+     "mu_xypt": 0.4859,
+     "mu_yptoe": 0.3262,
+     "pre_tsh": 0.1672,
+     "epa_pg_over_avg": 0.4325,
+     "rate6": 0.4159
+    },
+    {
+     "name": "Timothy Wright",
+     "team": "DET",
+     "n_xepat": 123.0,
+     "mu_xepat": 0.0299,
+     "mu_epat": 0.0425,
+     "v_e": 0.0724,
+     "mu_xypt": 0.0384,
+     "mu_yptoe": 0.063,
+     "pre_tsh": 0.0657,
+     "epa_pg_over_avg": 0.1616,
+     "rate6": -0.0755
+    },
+    {
+     "name": "Heath Miller",
+     "team": "PIT",
+     "n_xepat": 817.0,
+     "mu_xepat": 0.0412,
+     "mu_epat": 0.0286,
+     "v_e": 0.0698,
+     "mu_xypt": -0.025,
+     "mu_yptoe": 0.2476,
+     "pre_tsh": 0.1163,
+     "epa_pg_over_avg": 0.2759,
+     "rate6": 0.071
+    },
+    {
+     "name": "Daniel Fells",
+     "team": "NYG",
+     "n_xepat": 177.0,
+     "mu_xepat": 0.025,
+     "mu_epat": 0.0367,
+     "v_e": 0.0617,
+     "mu_xypt": 0.1249,
+     "mu_yptoe": 0.2522,
+     "pre_tsh": 0.0634,
+     "epa_pg_over_avg": 0.133,
+     "rate6": 0.2114
+    },
+    {
+     "name": "Julius Thomas",
+     "team": "JAX",
+     "n_xepat": 264.0,
+     "mu_xepat": 0.0353,
+     "mu_epat": 0.026,
+     "v_e": 0.0613,
+     "mu_xypt": -0.0562,
+     "mu_yptoe": 0.0641,
+     "pre_tsh": 0.14,
+     "epa_pg_over_avg": 0.2916,
+     "rate6": 0.1766
+    },
+    {
+     "name": "Tony Moeaki",
+     "team": "ATL",
+     "n_xepat": 148.0,
+     "mu_xepat": 0.0624,
+     "mu_epat": -0.0046,
+     "v_e": 0.0578,
+     "mu_xypt": 0.7434,
+     "mu_yptoe": 0.1073,
+     "pre_tsh": 0.0598,
+     "epa_pg_over_avg": 0.1176,
+     "rate6": 0.1364
+    }
+   ],
+   "bottom": [
+    {
+     "name": "Coby Fleener",
+     "team": "IND",
+     "n_xepat": 339.0,
+     "mu_xepat": 0.005,
+     "mu_epat": -0.0449,
+     "v_e": -0.0399,
+     "mu_xypt": 0.1802,
+     "mu_yptoe": -0.1562,
+     "pre_tsh": 0.1194,
+     "epa_pg_over_avg": -0.162,
+     "rate6": -0.1501
+    },
+    {
+     "name": "Brandon Pettigrew",
+     "team": "DET",
+     "n_xepat": 493.0,
+     "mu_xepat": 0.0011,
+     "mu_epat": -0.0467,
+     "v_e": -0.0456,
+     "mu_xypt": -0.3176,
+     "mu_yptoe": -0.2159,
+     "pre_tsh": 0.055,
+     "epa_pg_over_avg": -0.0853,
+     "rate6": -0.3345
+    },
+    {
+     "name": "Garrett Graham",
+     "team": "HOU",
+     "n_xepat": 182.0,
+     "mu_xepat": -0.0089,
+     "mu_epat": -0.0398,
+     "v_e": -0.0487,
+     "mu_xypt": -0.0476,
+     "mu_yptoe": -0.3427,
+     "pre_tsh": 0.0632,
+     "epa_pg_over_avg": -0.1045,
+     "rate6": -0.2989
+    },
+    {
+     "name": "Martellus Bennett",
+     "team": "CHI",
+     "n_xepat": 523.0,
+     "mu_xepat": -0.0358,
+     "mu_epat": -0.0154,
+     "v_e": -0.0512,
+     "mu_xypt": -0.5274,
+     "mu_yptoe": 0.1505,
+     "pre_tsh": 0.1685,
+     "epa_pg_over_avg": -0.2931,
+     "rate6": 0.2107
+    },
+    {
+     "name": "Jacob Tamme",
+     "team": "ATL",
+     "n_xepat": 367.0,
+     "mu_xepat": -0.0034,
+     "mu_epat": -0.0478,
+     "v_e": -0.0512,
+     "mu_xypt": 0.0514,
+     "mu_yptoe": -0.2099,
+     "pre_tsh": 0.1055,
+     "epa_pg_over_avg": -0.1838,
+     "rate6": -0.1043
+    },
+    {
+     "name": "Jared Cook",
+     "team": "LA",
+     "n_xepat": 469.0,
+     "mu_xepat": 0.026,
+     "mu_epat": -0.0782,
+     "v_e": -0.0522,
+     "mu_xypt": 0.4281,
+     "mu_yptoe": 0.036,
+     "pre_tsh": 0.1412,
+     "epa_pg_over_avg": -0.2505,
+     "rate6": 0.0824
+    },
+    {
+     "name": "Alex Smith",
+     "team": "WAS",
+     "n_xepat": 196.0,
+     "mu_xepat": -0.0414,
+     "mu_epat": -0.0108,
+     "v_e": -0.0522,
+     "mu_xypt": -0.8881,
+     "mu_yptoe": -0.2009,
+     "pre_tsh": 0.0397,
+     "epa_pg_over_avg": -0.0705,
+     "rate6": -0.4442
+    },
+    {
+     "name": "Marcedes Lewis",
+     "team": "JAX",
+     "n_xepat": 582.0,
+     "mu_xepat": 0.0482,
+     "mu_epat": -0.1165,
+     "v_e": -0.0683,
+     "mu_xypt": 0.0201,
+     "mu_yptoe": -0.0479,
+     "pre_tsh": 0.0572,
+     "epa_pg_over_avg": -0.1328,
+     "rate6": -0.317
+    }
+   ]
+  },
+  "2015_T_RB": {
+   "top": [
+    {
+     "name": "Marcel Reece",
+     "team": "LV",
+     "n_xepat": 303.0,
+     "mu_xepat": -0.0659,
+     "mu_epat": 0.0248,
+     "v_e": -0.0411,
+     "mu_xypt": -0.9241,
+     "mu_yptoe": 0.1886,
+     "pre_tsh": 0.0536,
+     "epa_pg_over_avg": -0.0749,
+     "rate6": -0.1147
+    },
+    {
+     "name": "Joique Bell",
+     "team": "DET",
+     "n_xepat": 220.0,
+     "mu_xepat": -0.1289,
+     "mu_epat": 0.0864,
+     "v_e": -0.0425,
+     "mu_xypt": -1.2552,
+     "mu_yptoe": 0.6191,
+     "pre_tsh": 0.0652,
+     "epa_pg_over_avg": -0.0943,
+     "rate6": 0.0352
+    },
+    {
+     "name": "Cordarrelle Patterson",
+     "team": "MIN",
+     "n_xepat": 146.0,
+     "mu_xepat": 0.0147,
+     "mu_epat": -0.0704,
+     "v_e": -0.0557,
+     "mu_xypt": 0.2563,
+     "mu_yptoe": -0.3464,
+     "pre_tsh": 0.0492,
+     "epa_pg_over_avg": -0.0932,
+     "rate6": -0.3053
+    },
+    {
+     "name": "Theo Riddick",
+     "team": "DET",
+     "n_xepat": 159.0,
+     "mu_xepat": -0.138,
+     "mu_epat": 0.0609,
+     "v_e": -0.0771,
+     "mu_xypt": -1.2119,
+     "mu_yptoe": 0.3075,
+     "pre_tsh": 0.135,
+     "epa_pg_over_avg": -0.3538,
+     "rate6": 0.0957
+    },
+    {
+     "name": "Ahmad Bradshaw",
+     "team": "IND",
+     "n_xepat": 266.0,
+     "mu_xepat": -0.1551,
+     "mu_epat": 0.0652,
+     "v_e": -0.0899,
+     "mu_xypt": -2.0529,
+     "mu_yptoe": 0.2907,
+     "pre_tsh": 0.0678,
+     "epa_pg_over_avg": -0.2073,
+     "rate6": -0.1404
+    },
+    {
+     "name": "Le'Veon Bell",
+     "team": "PIT",
+     "n_xepat": 195.0,
+     "mu_xepat": -0.1608,
+     "mu_epat": 0.0608,
+     "v_e": -0.1,
+     "mu_xypt": -1.5498,
+     "mu_yptoe": 0.4463,
+     "pre_tsh": 0.1313,
+     "epa_pg_over_avg": -0.4464,
+     "rate6": 0.1228
+    },
+    {
+     "name": "LeSean McCoy",
+     "team": "BUF",
+     "n_xepat": 445.0,
+     "mu_xepat": -0.134,
+     "mu_epat": 0.0335,
+     "v_e": -0.1004,
+     "mu_xypt": -1.5066,
+     "mu_yptoe": 0.1718,
+     "pre_tsh": 0.1199,
+     "epa_pg_over_avg": -0.4095,
+     "rate6": -0.0375
+    },
+    {
+     "name": "Andre Ellington",
+     "team": "ARI",
+     "n_xepat": 146.0,
+     "mu_xepat": -0.1185,
+     "mu_epat": 0.0175,
+     "v_e": -0.101,
+     "mu_xypt": -1.1489,
+     "mu_yptoe": 0.0481,
+     "pre_tsh": 0.0626,
+     "epa_pg_over_avg": -0.2148,
+     "rate6": -0.22
+    },
+    {
+     "name": "Shane Vereen",
+     "team": "NYG",
+     "n_xepat": 277.0,
+     "mu_xepat": -0.1411,
+     "mu_epat": 0.0351,
+     "v_e": -0.106,
+     "mu_xypt": -1.4125,
+     "mu_yptoe": 0.154,
+     "pre_tsh": 0.1095,
+     "epa_pg_over_avg": -0.3949,
+     "rate6": -0.086
+    },
+    {
+     "name": "Frank Gore",
+     "team": "IND",
+     "n_xepat": 529.0,
+     "mu_xepat": -0.1273,
+     "mu_epat": 0.0196,
+     "v_e": -0.1077,
+     "mu_xypt": -1.497,
+     "mu_yptoe": 0.0639,
+     "pre_tsh": 0.0903,
+     "epa_pg_over_avg": -0.3306,
+     "rate6": -0.2322
+    },
+    {
+     "name": "Adrian Peterson",
+     "team": "MIN",
+     "n_xepat": 335.0,
+     "mu_xepat": -0.1264,
+     "mu_epat": 0.0152,
+     "v_e": -0.1111,
+     "mu_xypt": -1.5414,
+     "mu_yptoe": 0.0557,
+     "pre_tsh": 0.0678,
+     "epa_pg_over_avg": -0.2564,
+     "rate6": -0.2005
+    },
+    {
+     "name": "Mike Tolbert",
+     "team": "CAR",
+     "n_xepat": 263.0,
+     "mu_xepat": -0.1686,
+     "mu_epat": 0.0566,
+     "v_e": -0.112,
+     "mu_xypt": -1.9848,
+     "mu_yptoe": 0.2535,
+     "pre_tsh": 0.0478,
+     "epa_pg_over_avg": -0.182,
+     "rate6": -0.2198
+    },
+    {
+     "name": "Eddie Lacy",
+     "team": "GB",
+     "n_xepat": 134.0,
+     "mu_xepat": -0.1324,
+     "mu_epat": 0.0182,
+     "v_e": -0.1142,
+     "mu_xypt": -1.5705,
+     "mu_yptoe": 0.1101,
+     "pre_tsh": 0.0458,
+     "epa_pg_over_avg": -0.1778,
+     "rate6": -0.1748
+    },
+    {
+     "name": "Matt Forte",
+     "team": "CHI",
+     "n_xepat": 652.0,
+     "mu_xepat": -0.1559,
+     "mu_epat": 0.0414,
+     "v_e": -0.1146,
+     "mu_xypt": -1.3943,
+     "mu_yptoe": 0.4,
+     "pre_tsh": 0.1172,
+     "epa_pg_over_avg": -0.4565,
+     "rate6": -0.0206
+    },
+    {
+     "name": "Danny Woodhead",
+     "team": "LAC",
+     "n_xepat": 359.0,
+     "mu_xepat": -0.1753,
+     "mu_epat": 0.0606,
+     "v_e": -0.1147,
+     "mu_xypt": -1.7181,
+     "mu_yptoe": 0.5172,
+     "pre_tsh": 0.1334,
+     "epa_pg_over_avg": -0.52,
+     "rate6": 0.0513
+    }
+   ],
+   "bottom": [
+    {
+     "name": "Chris Johnson",
+     "team": "ARI",
+     "n_xepat": 418.0,
+     "mu_xepat": -0.157,
+     "mu_epat": -0.0141,
+     "v_e": -0.1711,
+     "mu_xypt": -1.5124,
+     "mu_yptoe": -0.0912,
+     "pre_tsh": 0.0425,
+     "epa_pg_over_avg": -0.2475,
+     "rate6": -0.3324
+    },
+    {
+     "name": "Jacquizz Rodgers",
+     "team": "CHI",
+     "n_xepat": 202.0,
+     "mu_xepat": -0.1658,
+     "mu_epat": -0.008,
+     "v_e": -0.1739,
+     "mu_xypt": -1.8204,
+     "mu_yptoe": 0.0378,
+     "pre_tsh": 0.0468,
+     "epa_pg_over_avg": -0.2768,
+     "rate6": -0.362
+    },
+    {
+     "name": "Toby Gerhart",
+     "team": "JAX",
+     "n_xepat": 132.0,
+     "mu_xepat": -0.1713,
+     "mu_epat": -0.0031,
+     "v_e": -0.1744,
+     "mu_xypt": -1.4739,
+     "mu_yptoe": 0.1921,
+     "pre_tsh": 0.0415,
+     "epa_pg_over_avg": -0.2461,
+     "rate6": -0.2737
+    },
+    {
+     "name": "Marshawn Lynch",
+     "team": "SEA",
+     "n_xepat": 358.0,
+     "mu_xepat": -0.1665,
+     "mu_epat": -0.0138,
+     "v_e": -0.1803,
+     "mu_xypt": -1.7155,
+     "mu_yptoe": 0.2133,
+     "pre_tsh": 0.0765,
+     "epa_pg_over_avg": -0.4691,
+     "rate6": -0.1657
+    },
+    {
+     "name": "Bilal Powell",
+     "team": "NYJ",
+     "n_xepat": 165.0,
+     "mu_xepat": -0.2054,
+     "mu_epat": 0.0081,
+     "v_e": -0.1972,
+     "mu_xypt": -1.6479,
+     "mu_yptoe": 0.0543,
+     "pre_tsh": 0.1189,
+     "epa_pg_over_avg": -0.7973,
+     "rate6": 0.0037
+    },
+    {
+     "name": "Justin Forsett",
+     "team": "BAL",
+     "n_xepat": 275.0,
+     "mu_xepat": -0.2002,
+     "mu_epat": -0.0015,
+     "v_e": -0.2017,
+     "mu_xypt": -2.0426,
+     "mu_yptoe": -0.1172,
+     "pre_tsh": 0.0858,
+     "epa_pg_over_avg": -0.5885,
+     "rate6": -0.2671
+    },
+    {
+     "name": "Darren McFadden",
+     "team": "DAL",
+     "n_xepat": 346.0,
+     "mu_xepat": -0.1934,
+     "mu_epat": -0.0118,
+     "v_e": -0.2052,
+     "mu_xypt": -1.6857,
+     "mu_yptoe": 0.094,
+     "pre_tsh": 0.0804,
+     "epa_pg_over_avg": -0.5609,
+     "rate6": -0.2324
+    },
+    {
+     "name": "Mark Ingram",
+     "team": "NO",
+     "n_xepat": 130.0,
+     "mu_xepat": -0.183,
+     "mu_epat": -0.041,
+     "v_e": -0.224,
+     "mu_xypt": -1.7145,
+     "mu_yptoe": -0.071,
+     "pre_tsh": 0.1022,
+     "epa_pg_over_avg": -0.7786,
+     "rate6": -0.106
+    }
+   ]
+  },
+  "2015_R_None": {
+   "top": [
+    {
+     "name": "C.J. Anderson",
+     "pos": "RB",
+     "team": "DEN",
+     "n_ryds": 389.0,
+     "mu_ryds": 0.2647,
+     "mu_rsuc": 0.0035,
+     "mu_ypca": 0.5148,
+     "mu_rawr": 0.4008,
+     "pre_csh": 0.3442,
+     "yds_pg_over_avg": 2.3684,
+     "rate6": -0.3186
+    },
+    {
+     "name": "Jamaal Charles",
+     "pos": "RB",
+     "team": "KC",
+     "n_ryds": 1320.0,
+     "mu_ryds": 0.1737,
+     "mu_rsuc": 0.0273,
+     "mu_ypca": 0.8162,
+     "mu_rawr": 0.6034,
+     "pre_csh": 0.5195,
+     "yds_pg_over_avg": 2.3454,
+     "rate6": 0.0777
+    },
+    {
+     "name": "Ryan Mathews",
+     "pos": "RB",
+     "team": "PHI",
+     "n_ryds": 1042.0,
+     "mu_ryds": 0.1566,
+     "mu_rsuc": 0.0074,
+     "mu_ypca": 0.5384,
+     "mu_rawr": 0.3405,
+     "pre_csh": 0.2774,
+     "yds_pg_over_avg": 1.1294,
+     "rate6": -0.2893
+    },
+    {
+     "name": "Justin Forsett",
+     "pos": "RB",
+     "team": "BAL",
+     "n_ryds": 777.0,
+     "mu_ryds": 0.1449,
+     "mu_rsuc": 0.0068,
+     "mu_ypca": 0.5065,
+     "mu_rawr": 0.359,
+     "pre_csh": 0.5273,
+     "yds_pg_over_avg": 1.9861,
+     "rate6": -0.2671
+    },
+    {
+     "name": "Le'Veon Bell",
+     "pos": "RB",
+     "team": "PIT",
+     "n_ryds": 637.0,
+     "mu_ryds": 0.1325,
+     "mu_rsuc": 0.0123,
+     "mu_ypca": 0.2312,
+     "mu_rawr": 0.2108,
+     "pre_csh": 0.604,
+     "yds_pg_over_avg": 2.0806,
+     "rate6": 0.1228
+    },
+    {
+     "name": "Mark Ingram",
+     "pos": "RB",
+     "team": "NO",
+     "n_ryds": 765.0,
+     "mu_ryds": 0.1076,
+     "mu_rsuc": -0.0041,
+     "mu_ypca": 0.1623,
+     "mu_rawr": 0.1387,
+     "pre_csh": 0.4845,
+     "yds_pg_over_avg": 1.3556,
+     "rate6": -0.106
+    },
+    {
+     "name": "Giovani Bernard",
+     "pos": "RB",
+     "team": "CIN",
+     "n_ryds": 507.0,
+     "mu_ryds": 0.1025,
+     "mu_rsuc": -0.0119,
+     "mu_ypca": 0.2363,
+     "mu_rawr": 0.2461,
+     "pre_csh": 0.265,
+     "yds_pg_over_avg": 0.7058,
+     "rate6": -0.0128
+    },
+    {
+     "name": "Rashad Jennings",
+     "pos": "RB",
+     "team": "NYG",
+     "n_ryds": 722.0,
+     "mu_ryds": 0.1013,
+     "mu_rsuc": 0.0119,
+     "mu_ypca": 0.1957,
+     "mu_rawr": 0.0014,
+     "pre_csh": 0.4094,
+     "yds_pg_over_avg": 1.0784,
+     "rate6": -0.0573
+    },
+    {
+     "name": "Doug Martin",
+     "pos": "RB",
+     "team": "TB",
+     "n_ryds": 853.0,
+     "mu_ryds": 0.101,
+     "mu_rsuc": 0.0104,
+     "mu_ypca": 0.0681,
+     "mu_rawr": 0.0231,
+     "pre_csh": 0.5516,
+     "yds_pg_over_avg": 1.4492,
+     "rate6": -0.26
+    },
+    {
+     "name": "LeGarrette Blount",
+     "pos": "RB",
+     "team": "NE",
+     "n_ryds": 935.0,
+     "mu_ryds": 0.0903,
+     "mu_rsuc": 0.0079,
+     "mu_ypca": 0.207,
+     "mu_rawr": 0.1076,
+     "pre_csh": 0.4923,
+     "yds_pg_over_avg": 1.1558,
+     "rate6": -0.3604
+    },
+    {
+     "name": "DeAngelo Williams",
+     "pos": "RB",
+     "team": "PIT",
+     "n_ryds": 1651.0,
+     "mu_ryds": 0.0876,
+     "mu_rsuc": -0.0058,
+     "mu_ypca": 0.1815,
+     "mu_rawr": 0.1131,
+     "pre_csh": 0.5583,
+     "yds_pg_over_avg": 1.2717,
+     "rate6": -0.0452
+    },
+    {
+     "name": "Andre Ellington",
+     "pos": "RB",
+     "team": "ARI",
+     "n_ryds": 367.0,
+     "mu_ryds": 0.0628,
+     "mu_rsuc": 0.005,
+     "mu_ypca": 0.3043,
+     "mu_rawr": 0.0084,
+     "pre_csh": 0.1795,
+     "yds_pg_over_avg": 0.2932,
+     "rate6": -0.22
+    },
+    {
+     "name": "Jonathan Stewart",
+     "pos": "RB",
+     "team": "CAR",
+     "n_ryds": 1360.0,
+     "mu_ryds": 0.0466,
+     "mu_rsuc": 0.0063,
+     "mu_ypca": 0.2853,
+     "mu_rawr": 0.123,
+     "pre_csh": 0.4429,
+     "yds_pg_over_avg": 0.5364,
+     "rate6": -0.2822
+    },
+    {
+     "name": "Pierre Thomas",
+     "pos": "RB",
+     "team": "WAS",
+     "n_ryds": 876.0,
+     "mu_ryds": 0.0429,
+     "mu_rsuc": 0.023,
+     "mu_ypca": 0.3161,
+     "mu_rawr": 0.2459,
+     "pre_csh": 0.1234,
+     "yds_pg_over_avg": 0.1377,
+     "rate6": 0.0312
+    },
+    {
+     "name": "Marshawn Lynch",
+     "pos": "RB",
+     "team": "SEA",
+     "n_ryds": 2331.0,
+     "mu_ryds": 0.0383,
+     "mu_rsuc": 0.0043,
+     "mu_ypca": 0.2168,
+     "mu_rawr": 0.173,
+     "pre_csh": 0.5162,
+     "yds_pg_over_avg": 0.5136,
+     "rate6": -0.1657
+    }
+   ],
+   "bottom": [
+    {
+     "name": "Matt Asiata",
+     "pos": "RB",
+     "team": "MIN",
+     "n_ryds": 240.0,
+     "mu_ryds": -0.1358,
+     "mu_rsuc": 0.0009,
+     "mu_ypca": -0.2999,
+     "mu_rawr": -0.2926,
+     "pre_csh": 0.0879,
+     "yds_pg_over_avg": -0.3103,
+     "rate6": -0.3068
+    },
+    {
+     "name": "Alfred Blue",
+     "pos": "RB",
+     "team": "HOU",
+     "n_ryds": 352.0,
+     "mu_ryds": -0.1389,
+     "mu_rsuc": -0.005,
+     "mu_ypca": -0.2692,
+     "mu_rawr": -0.3852,
+     "pre_csh": 0.3716,
+     "yds_pg_over_avg": -1.3423,
+     "rate6": -0.4766
+    },
+    {
+     "name": "C.J. Spiller",
+     "pos": "RB",
+     "team": "NO",
+     "n_ryds": 702.0,
+     "mu_ryds": -0.1627,
+     "mu_rsuc": -0.0091,
+     "mu_ypca": 0.0805,
+     "mu_rawr": -0.1647,
+     "pre_csh": 0.1079,
+     "yds_pg_over_avg": -0.4563,
+     "rate6": -0.2765
+    },
+    {
+     "name": "Bryce Brown",
+     "pos": "RB",
+     "team": "SEA",
+     "n_ryds": 242.0,
+     "mu_ryds": -0.1646,
+     "mu_rsuc": -0.0113,
+     "mu_ypca": -0.0888,
+     "mu_rawr": -0.1987,
+     "pre_csh": 0.1926,
+     "yds_pg_over_avg": -0.8244,
+     "rate6": -0.1948
+    },
+    {
+     "name": "Brandon Bolden",
+     "pos": "RB",
+     "team": "NE",
+     "n_ryds": 205.0,
+     "mu_ryds": -0.1791,
+     "mu_rsuc": -0.0066,
+     "mu_ypca": -0.0107,
+     "mu_rawr": -0.2135,
+     "pre_csh": 0.1989,
+     "yds_pg_over_avg": -0.926,
+     "rate6": -0.3649
+    },
+    {
+     "name": "Tre Mason",
+     "pos": "RB",
+     "team": "LA",
+     "n_ryds": 236.0,
+     "mu_ryds": -0.2335,
+     "mu_rsuc": -0.0125,
+     "mu_ypca": -0.1185,
+     "mu_rawr": -0.3411,
+     "pre_csh": 0.1619,
+     "yds_pg_over_avg": -0.9831,
+     "rate6": -0.44
+    },
+    {
+     "name": "Knile Davis",
+     "pos": "RB",
+     "team": "KC",
+     "n_ryds": 254.0,
+     "mu_ryds": -0.2547,
+     "mu_rsuc": -0.019,
+     "mu_ypca": -0.3962,
+     "mu_rawr": -0.572,
+     "pre_csh": 0.1207,
+     "yds_pg_over_avg": -0.799,
+     "rate6": -0.3435
+    },
+    {
+     "name": "Andre Williams",
+     "pos": "RB",
+     "team": "NYG",
+     "n_ryds": 300.0,
+     "mu_ryds": -0.3244,
+     "mu_rsuc": -0.0177,
+     "mu_ypca": -0.5881,
+     "mu_rawr": -0.8275,
+     "pre_csh": 0.1738,
+     "yds_pg_over_avg": -1.4663,
+     "rate6": -0.5057
+    }
+   ]
+  }
+ }
+}

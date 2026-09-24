@@ -1,0 +1,676 @@
+{
+ "split": "DEV 2006-2015 only; no season >= 2016 read",
+ "0_split_half_factor_replication_by_season_mean": {
+  "hits_ns": {
+   "defence": 0.163,
+   "offence": 0.387,
+   "stadium_scorer": 0.328
+  },
+  "sacks": {
+   "defence": 0.222,
+   "offence": 0.464,
+   "stadium_scorer": -0.137
+  },
+  "pressure": {
+   "defence": 0.26,
+   "offence": 0.463,
+   "stadium_scorer": 0.23
+  },
+  "stop_plays": {
+   "defence": 0.237,
+   "offence": 0.194,
+   "stadium_scorer": 0.043
+  },
+  "tfl_plays": {
+   "defence": 0.317,
+   "offence": 0.066,
+   "stadium_scorer": 0.039
+  }
+ },
+ "1_reliability": {
+  "front": {
+   "split_half_spearman_brown": {
+    "sacks_per_game": 0.694,
+    "hits_per_game": 0.716,
+    "pressure_per_game": 0.807,
+    "stops_per_game": 0.794,
+    "tfl_per_game": 0.508,
+    "sacks_adj": 0.7,
+    "hits_adj": 0.696,
+    "pressure_adj": 0.804,
+    "stops_adj": 0.811,
+    "tfl_adj": 0.522,
+    "CURRENT_ship_rush_per_game": 0.777,
+    "CURRENT_ship_tackles_per_game": 0.899
+   },
+   "n_player_seasons_split": 3836,
+   "year_over_year_r": {
+    "sacks_per_game": 0.63,
+    "hits_per_game": 0.626,
+    "pressure_per_game": 0.727,
+    "stops_per_game": 0.573,
+    "tfl_per_game": 0.36,
+    "sacks_adj": 0.631,
+    "hits_adj": 0.612,
+    "pressure_adj": 0.72,
+    "stops_adj": 0.594,
+    "tfl_adj": 0.372,
+    "CURRENT_ship_rush_per_game": 0.682,
+    "CURRENT_ship_tackles_per_game": 0.752
+   },
+   "n_pairs_yoy": 2536
+  },
+  "edge": {
+   "split_half_spearman_brown": {
+    "sacks_per_game": 0.693,
+    "hits_per_game": 0.708,
+    "pressure_per_game": 0.802,
+    "stops_per_game": 0.774,
+    "tfl_per_game": 0.506,
+    "sacks_adj": 0.704,
+    "hits_adj": 0.683,
+    "pressure_adj": 0.801,
+    "stops_adj": 0.797,
+    "tfl_adj": 0.517,
+    "CURRENT_ship_rush_per_game": 0.775,
+    "CURRENT_ship_tackles_per_game": 0.88
+   },
+   "n_player_seasons_split": 1900,
+   "year_over_year_r": {
+    "sacks_per_game": 0.617,
+    "hits_per_game": 0.634,
+    "pressure_per_game": 0.727,
+    "stops_per_game": 0.56,
+    "tfl_per_game": 0.386,
+    "sacks_adj": 0.622,
+    "hits_adj": 0.614,
+    "pressure_adj": 0.718,
+    "stops_adj": 0.589,
+    "tfl_adj": 0.397,
+    "CURRENT_ship_rush_per_game": 0.674,
+    "CURRENT_ship_tackles_per_game": 0.729
+   },
+   "n_pairs_yoy": 1324
+  },
+  "interior": {
+   "split_half_spearman_brown": {
+    "sacks_per_game": 0.573,
+    "hits_per_game": 0.683,
+    "pressure_per_game": 0.754,
+    "stops_per_game": 0.806,
+    "tfl_per_game": 0.508,
+    "sacks_adj": 0.567,
+    "hits_adj": 0.668,
+    "pressure_adj": 0.741,
+    "stops_adj": 0.819,
+    "tfl_adj": 0.524,
+    "CURRENT_ship_rush_per_game": 0.711,
+    "CURRENT_ship_tackles_per_game": 0.91
+   },
+   "n_player_seasons_split": 1936,
+   "year_over_year_r": {
+    "sacks_per_game": 0.505,
+    "hits_per_game": 0.537,
+    "pressure_per_game": 0.628,
+    "stops_per_game": 0.574,
+    "tfl_per_game": 0.325,
+    "sacks_adj": 0.49,
+    "hits_adj": 0.532,
+    "pressure_adj": 0.617,
+    "stops_adj": 0.589,
+    "tfl_adj": 0.337,
+    "CURRENT_ship_rush_per_game": 0.59,
+    "CURRENT_ship_tackles_per_game": 0.766
+   },
+   "n_pairs_yoy": 1212
+  }
+ },
+ "2_fip_weights": {
+  "fit_2007_2010": {
+   "th_sk": 1.742,
+   "th_ht": 0.491
+  },
+  "fit_2011_2015": {
+   "th_sk": 1.591,
+   "th_ht": 0.929
+  },
+  "hit_weight_relative_to_sack": [
+   0.282,
+   0.584
+  ],
+  "note": "weights cross-fit: each half of DEV is scored with the other half's weights"
+ },
+ "2_player_predictive_validity": {
+  "CP0_front": {
+   "n": 3467,
+   "n_players": 1028,
+   "fut_sacks_pg": {
+    "fip_pr": 0.648,
+    "th_pr": 0.651,
+    "th_sk": 0.647,
+    "th_ht": 0.571,
+    "raw_sk_pg": 0.645,
+    "raw_pr_pg": 0.655,
+    "ship_rush": 0.634
+   },
+   "fut_sacks_per_db": {
+    "fip_pr": 0.653,
+    "th_pr": 0.653,
+    "th_sk": 0.65,
+    "th_ht": 0.572,
+    "raw_sk_pg": 0.646,
+    "raw_pr_pg": 0.648,
+    "ship_rush": 0.623
+   },
+   "fut_pr_pg": {
+    "fip_pr": 0.69,
+    "th_pr": 0.712,
+    "th_sk": 0.673,
+    "th_ht": 0.66,
+    "raw_sk_pg": 0.672,
+    "raw_pr_pg": 0.728,
+    "ship_rush": 0.696
+   },
+   "fip_pr_minus_CURRENT_ship_rush_r_sacks_ci95": [
+    -0.0014,
+    0.0293
+   ],
+   "fip_pr_minus_raw_sacks_r_sacks_ci95": [
+    -0.0045,
+    0.0104
+   ],
+   "th_pr_minus_raw_pr_r_sacks_ci95": [
+    -0.0135,
+    0.0052
+   ]
+  },
+  "CP0_edge": {
+   "n": 1727,
+   "n_players": 463,
+   "fut_sacks_pg": {
+    "fip_pr": 0.633,
+    "th_pr": 0.635,
+    "th_sk": 0.634,
+    "th_ht": 0.538,
+    "raw_sk_pg": 0.631,
+    "raw_pr_pg": 0.634,
+    "ship_rush": 0.608
+   },
+   "fut_sacks_per_db": {
+    "fip_pr": 0.64,
+    "th_pr": 0.638,
+    "th_sk": 0.638,
+    "th_ht": 0.539,
+    "raw_sk_pg": 0.633,
+    "raw_pr_pg": 0.627,
+    "ship_rush": 0.594
+   },
+   "fut_pr_pg": {
+    "fip_pr": 0.684,
+    "th_pr": 0.704,
+    "th_sk": 0.665,
+    "th_ht": 0.645,
+    "raw_sk_pg": 0.668,
+    "raw_pr_pg": 0.726,
+    "ship_rush": 0.685
+   },
+   "fip_pr_minus_CURRENT_ship_rush_r_sacks_ci95": [
+    0.0026,
+    0.0486
+   ],
+   "fip_pr_minus_raw_sacks_r_sacks_ci95": [
+    -0.0095,
+    0.0126
+   ],
+   "th_pr_minus_raw_pr_r_sacks_ci95": [
+    -0.0137,
+    0.0124
+   ]
+  },
+  "CP0_front_run": {
+   "n": 3467,
+   "fut_stops_pg": {
+    "th_st": 0.56,
+    "th_tf": 0.36,
+    "raw_st_pg": 0.555,
+    "ship_tak": 0.469,
+    "ship_rush": 0.009
+   },
+   "th_st_minus_CURRENT_ship_tak_ci95": [
+    0.0624,
+    0.1204
+   ]
+  },
+  "CP8_front": {
+   "n": 3565,
+   "n_players": 1084,
+   "fut_sacks_pg": {
+    "fip_pr": 0.608,
+    "th_pr": 0.614,
+    "th_sk": 0.602,
+    "th_ht": 0.543,
+    "raw_sk_pg": 0.602,
+    "raw_pr_pg": 0.616,
+    "ship_rush": 0.602
+   },
+   "fut_sacks_per_db": {
+    "fip_pr": 0.61,
+    "th_pr": 0.613,
+    "th_sk": 0.601,
+    "th_ht": 0.542,
+    "raw_sk_pg": 0.599,
+    "raw_pr_pg": 0.609,
+    "ship_rush": 0.592
+   },
+   "fut_pr_pg": {
+    "fip_pr": 0.673,
+    "th_pr": 0.698,
+    "th_sk": 0.649,
+    "th_ht": 0.654,
+    "raw_sk_pg": 0.651,
+    "raw_pr_pg": 0.71,
+    "ship_rush": 0.679
+   },
+   "fip_pr_minus_CURRENT_ship_rush_r_sacks_ci95": [
+    -0.0076,
+    0.0199
+   ],
+   "fip_pr_minus_raw_sacks_r_sacks_ci95": [
+    -0.0012,
+    0.0142
+   ],
+   "th_pr_minus_raw_pr_r_sacks_ci95": [
+    -0.0099,
+    0.0049
+   ]
+  },
+  "CP8_edge": {
+   "n": 1741,
+   "n_players": 475,
+   "fut_sacks_pg": {
+    "fip_pr": 0.602,
+    "th_pr": 0.608,
+    "th_sk": 0.598,
+    "th_ht": 0.525,
+    "raw_sk_pg": 0.598,
+    "raw_pr_pg": 0.605,
+    "ship_rush": 0.592
+   },
+   "fut_sacks_per_db": {
+    "fip_pr": 0.604,
+    "th_pr": 0.606,
+    "th_sk": 0.597,
+    "th_ht": 0.522,
+    "raw_sk_pg": 0.594,
+    "raw_pr_pg": 0.594,
+    "ship_rush": 0.576
+   },
+   "fut_pr_pg": {
+    "fip_pr": 0.668,
+    "th_pr": 0.696,
+    "th_sk": 0.641,
+    "th_ht": 0.652,
+    "raw_sk_pg": 0.646,
+    "raw_pr_pg": 0.71,
+    "ship_rush": 0.672
+   },
+   "fip_pr_minus_CURRENT_ship_rush_r_sacks_ci95": [
+    -0.0091,
+    0.0316
+   ],
+   "fip_pr_minus_raw_sacks_r_sacks_ci95": [
+    -0.0068,
+    0.0141
+   ],
+   "th_pr_minus_raw_pr_r_sacks_ci95": [
+    -0.0073,
+    0.0138
+   ]
+  },
+  "CP8_front_run": {
+   "n": 3565,
+   "fut_stops_pg": {
+    "th_st": 0.618,
+    "th_tf": 0.394,
+    "raw_st_pg": 0.605,
+    "ship_tak": 0.473,
+    "ship_rush": 0.065
+   },
+   "th_st_minus_CURRENT_ship_tak_ci95": [
+    0.1168,
+    0.1772
+   ]
+  }
+ },
+ "2c_current_rating_best_of_grid": {
+  "best_r_future_sacks_per_game": {
+   "CP0_front": 0.638,
+   "CP0_edge": 0.614,
+   "CP8_front": 0.605,
+   "CP8_edge": 0.597
+  },
+  "ours_th_pr": {
+   "CP0_front": 0.651,
+   "CP0_edge": 0.635,
+   "CP8_front": 0.614,
+   "CP8_edge": 0.608
+  },
+  "grid": "decay .90/.95/.97/.985 x prior 3/6/12 x season carry 1/.75 (24 variants; best per checkpoint, chosen after the fact -- favours the comparator)"
+ },
+ "2b_unit_predictive_validity": {
+  "next_game_r": {
+   "pressure_rate~log(D*O*S)": 0.3374,
+   "pressure_rate~logD_only": 0.1569,
+   "pressure_rate~logO_only(opp protection)": 0.2615,
+   "sack_rate~log(D*O)": 0.2495,
+   "sack_rate~logD_only": 0.0648,
+   "sack_rate~logO_only": 0.2522,
+   "sack_rate~CURRENT_epa_def_allowed": -0.0399,
+   "points_allowed~CURRENT_epa_def_allowed": 0.1297,
+   "points_allowed~logD_pr": -0.0594,
+   "points_allowed~logD_sk": -0.0497,
+   "points_allowed~logD_st": -0.0755,
+   "points_allowed~log_agg_pr(player aggregate)": -0.0431,
+   "n_team_games": 5340
+  },
+  "next_game_partial_beyond_CURRENT_epa": {
+   "points_allowed|logD_pr": {
+    "partial_r": -0.0216,
+    "z": -1.58,
+    "n": 5340
+   },
+   "points_allowed|logD_sk": {
+    "partial_r": -0.0111,
+    "z": -0.81,
+    "n": 5340
+   },
+   "points_allowed|logD_st": {
+    "partial_r": -0.0167,
+    "z": -1.22,
+    "n": 5340
+   },
+   "points_allowed|log_agg_pr": {
+    "partial_r": -0.0187,
+    "z": -1.37,
+    "n": 5340
+   },
+   "points_allowed|logO_pr(opp protection)": {
+    "partial_r": -0.0453,
+    "z": -3.32,
+    "n": 5340
+   },
+   "points_allowed|logO_sk(opp protection)": {
+    "partial_r": -0.0274,
+    "z": -2.0,
+    "n": 5340
+   },
+   "sack_rate|log(D*O)": {
+    "partial_r": 0.2084,
+    "z": 15.92,
+    "n": 5340
+   },
+   "pressure_rate|log(D*O*S)": {
+    "partial_r": 0.3167,
+    "z": 25.71,
+    "n": 5340
+   },
+   "opp_run_success|logD_st": {
+    "partial_r": -0.1122,
+    "z": -8.3,
+    "n": 5340
+   }
+  },
+  "unit_vs_player_aggregate": {
+   "pressure_rate~logD_pr": 0.1569,
+   "pressure_rate~log_agg_pr": 0.1583,
+   "sack_rate~logD_sk": 0.0648,
+   "sack_rate~log_agg_sk": 0.0748,
+   "pressure_rate|agg beyond D": {
+    "partial_r": 0.0669,
+    "z": 4.91,
+    "n": 5340
+   },
+   "sack_rate|agg beyond D": {
+    "partial_r": 0.0404,
+    "z": 2.95,
+    "n": 5340
+   },
+   "early_season_wk1_4_pressure|agg beyond D": {
+    "partial_r": 0.0662,
+    "z": 2.34,
+    "n": 1240
+   }
+  },
+  "rest_of_season_from_game9": {
+   "n_team_seasons": 320,
+   "fut_pts_allowed~CURRENT_epa_def_allowed": 0.302,
+   "fut_pts_allowed~logD_pr": -0.171,
+   "fut_pts_allowed~logD_sk": -0.113,
+   "fut_pts_allowed|logD_pr beyond epa": {
+    "partial_r": -0.068,
+    "z": -1.22,
+    "n": 320
+   },
+   "fut_pts_allowed|logD_sk beyond epa": {
+    "partial_r": 0.0044,
+    "z": 0.08,
+    "n": 320
+   },
+   "fut_pts_allowed|logD_st beyond epa": {
+    "partial_r": 0.0056,
+    "z": 0.1,
+    "n": 320
+   },
+   "fut_sk_rate~logD_sk": 0.149,
+   "fut_sk_rate~CURRENT_epa_def_allowed": -0.117
+  },
+  "offensive_line_protection": {
+   "sacks_allowed_rate~logO_sk": 0.2522,
+   "sacks_allowed_rate|logO_sk beyond CURRENT off EPA": {
+    "partial_r": 0.2121,
+    "z": 16.23,
+    "n": 5340
+   },
+   "points_scored~logO_sk": -0.1481,
+   "points_scored|logO_sk beyond CURRENT off EPA": {
+    "partial_r": -0.0274,
+    "z": -2.0,
+    "n": 5340
+   },
+   "points_scored|logO_pr beyond CURRENT off EPA": {
+    "partial_r": -0.0453,
+    "z": -3.32,
+    "n": 5340
+   },
+   "note": "O factor = the offence's pressure/sacks ALLOWED (opp+scorer adjusted); it is QB+OL together"
+  }
+ },
+ "3_face_validity": {
+  "2009": {
+   "pass_rush_top12": [
+    "Jared Allen (DE,MIN) 0.309",
+    "DeMarcus Ware (OLB,DAL) 0.307",
+    "Aaron Kampman (DE,GB) 0.306",
+    "LaMarr Woodley (OLB,PIT) 0.279",
+    "Andre Carter (DE,WAS) 0.275",
+    "Dwight Freeney (DE,IND) 0.273",
+    "Osi Umenyiora (DE,NYG) 0.267",
+    "Mario Williams (DE,HOU) 0.265",
+    "Ray Edwards (DE,MIN) 0.263",
+    "Julius Peppers (DE,CAR) 0.259",
+    "Aaron Schobel (DE,BUF) 0.259",
+    "Leonard Little (DE,LA) 0.253"
+   ],
+   "pass_rush_bottom8_regulars(n_games>=20)": [
+    "Gabe Watson (DT,ARI) 0.011",
+    "Ronald Fields (DT,DEN) 0.014",
+    "Sione Po'uha (DT,NYJ) 0.017",
+    "Keith Bulluck (OLB,TEN) 0.017",
+    "Colin Cole (DT,SEA) 0.018",
+    "Ernie Sims (OLB,DET) 0.021",
+    "David Thornton (OLB,TEN) 0.022",
+    "Scott Shanle (OLB,NO) 0.023"
+   ],
+   "run_stop_top10": [
+    "DeMeco Ryans (ILB,HOU) 0.173",
+    "Ray Lewis (ILB,BAL) 0.170",
+    "London Fletcher (ILB,WAS) 0.165",
+    "Jon Beason (ILB,CAR) 0.165",
+    "E.J. Henderson (ILB,MIN) 0.158",
+    "Nick Barnett (ILB,GB) 0.149",
+    "Bart Scott (ILB,NYJ) 0.148",
+    "Patrick Willis (ILB,SF) 0.142",
+    "Larry Foote (ILB,DET) 0.142",
+    "Barrett Ruud (ILB,TB) 0.141"
+   ],
+   "run_stop_bottom6_regulars": [
+    "Chris Clemons (DE,PHI) 0.011",
+    "Brian Robison (DE,MIN) 0.019",
+    "Bertrand Berry (OLB,ARI) 0.020",
+    "Bobby Carpenter (ILB,DAL) 0.022",
+    "Darrell Reid (DE,DEN) 0.022",
+    "Ray McDonald (DE,SF) 0.023"
+   ],
+   "protection_best6(O_sk low)": [
+    "IND 0.65",
+    "NO 0.69",
+    "TEN 0.74",
+    "NE 0.78",
+    "ARI 0.80",
+    "HOU 0.85"
+   ],
+   "protection_worst6": [
+    "PIT 1.29",
+    "BUF 1.28",
+    "LV 1.27",
+    "JAX 1.15",
+    "SF 1.12",
+    "KC 1.12"
+   ]
+  },
+  "2012": {
+   "pass_rush_top12": [
+    "J.J. Watt (DE,HOU) 0.400",
+    "Von Miller (OLB,DEN) 0.352",
+    "Aldon Smith (DE,SF) 0.309",
+    "Clay Matthews (OLB,GB) 0.308",
+    "DeMarcus Ware (OLB,DAL) 0.300",
+    "Jason Babin (DE,JAX) 0.298",
+    "Tamba Hali (OLB,KC) 0.283",
+    "Jared Allen (DE,MIN) 0.281",
+    "Ndamukong Suh (DT,DET) 0.277",
+    "Elvis Dumervil (DE,DEN) 0.264",
+    "John Abraham (OLB,ATL) 0.243",
+    "Mario Williams (DE,BUF) 0.229"
+   ],
+   "pass_rush_bottom8_regulars(n_games>=20)": [
+    "Terrence Cody (DT,BAL) 0.006",
+    "Aubrayo Franklin (DT,LAC) 0.008",
+    "Roy Miller (DT,TB) 0.015",
+    "Casey Hampton (DT,PIT) 0.019",
+    "Quincy Black (OLB,TB) 0.020",
+    "Shaun Cody (DT,HOU) 0.021",
+    "Earl Mitchell (DT,HOU) 0.021",
+    "Ryan Pickett (DT,GB) 0.022"
+   ],
+   "run_stop_top10": [
+    "J.J. Watt (DE,HOU) 0.230",
+    "James Laurinaitis (ILB,LA) 0.216",
+    "Derrick Johnson (ILB,KC) 0.212",
+    "Karlos Dansby (ILB,MIA) 0.192",
+    "NaVorro Bowman (ILB,SF) 0.183",
+    "Curtis Lofton (ILB,NO) 0.180",
+    "Brian Cushing (ILB,HOU) 0.178",
+    "Justin Smith (DE,SF) 0.174",
+    "Anthony Spencer (ILB,DAL) 0.169",
+    "Daryl Smith (OLB,JAX) 0.162"
+   ],
+   "run_stop_bottom6_regulars": [
+    "Trevor Scott (DE,NE) 0.016",
+    "Martez Wilson (ILB,NO) 0.017",
+    "Brandon Johnson (ILB,PIT) 0.020",
+    "Dan Skuta (OLB,CIN) 0.022",
+    "Brendon Ayanbadejo (ILB,BAL) 0.023",
+    "Will Herring (ILB,NO) 0.023"
+   ],
+   "protection_best6(O_sk low)": [
+    "NO 0.74",
+    "DET 0.79",
+    "ATL 0.79",
+    "NE 0.79",
+    "NYG 0.80",
+    "DEN 0.86"
+   ],
+   "protection_worst6": [
+    "ARI 1.25",
+    "NYJ 1.24",
+    "CHI 1.21",
+    "GB 1.16",
+    "SEA 1.15",
+    "LAC 1.15"
+   ]
+  },
+  "2015": {
+   "pass_rush_top12": [
+    "J.J. Watt (DE,HOU) 0.491",
+    "Von Miller (OLB,DEN) 0.337",
+    "Ezekiel Ansah (DE,DET) 0.314",
+    "Olivier Vernon (DE,MIA) 0.311",
+    "Carlos Dunlap (DE,CIN) 0.303",
+    "Greg Hardy (DE,DAL) 0.294",
+    "Everson Griffen (DE,MIN) 0.279",
+    "Aaron Donald (DT,LA) 0.279",
+    "Michael Bennett (DE,SEA) 0.275",
+    "Muhammad Wilkerson (DE,NYJ) 0.264",
+    "DeMarcus Ware (OLB,DEN) 0.261",
+    "Cliff Avril (DE,SEA) 0.255"
+   ],
+   "pass_rush_bottom8_regulars(n_games>=20)": [
+    "Justin Durant (OLB,ATL) 0.012",
+    "B.J. Raji (DT,GB) 0.016",
+    "Rey Maualuga (OLB,CIN) 0.018",
+    "Red Bryant (DT,ARI) 0.018",
+    "Vince Wilfork (DT,HOU) 0.018",
+    "A.J. Klein (OLB,CAR) 0.019",
+    "Cam Thomas (DT,PIT) 0.020",
+    "Nick Hayden (DT,DAL) 0.022"
+   ],
+   "run_stop_top10": [
+    "Danny Trevathan (ILB,DEN) 0.188",
+    "J.J. Watt (DE,HOU) 0.183",
+    "Damon Harrison (DT,NYJ) 0.183",
+    "D'Qwell Jackson (ILB,IND) 0.173",
+    "Luke Kuechly (ILB,CAR) 0.171",
+    "Kevin Minter (ILB,ARI) 0.168",
+    "Stephen Tulloch (OLB,DET) 0.162",
+    "Brian Cushing (ILB,HOU) 0.161",
+    "Daryl Smith (OLB,BAL) 0.160",
+    "Paul Posluszny (ILB,JAX) 0.157"
+   ],
+   "run_stop_bottom6_regulars": [
+    "Ryan Davis (DE,JAX) 0.011",
+    "Dwight Freeney (DE,ARI) 0.012",
+    "Corey Lemonier (OLB,SF) 0.014",
+    "Damontre Moore (DE,MIA) 0.014",
+    "Kasim Edebali (DE,NO) 0.017",
+    "Vinny Curry (DE,PHI) 0.018"
+   ],
+   "protection_best6(O_sk low)": [
+    "BAL 0.77",
+    "NYG 0.84",
+    "LV 0.86",
+    "NO 0.88",
+    "NE 0.88",
+    "NYJ 0.88"
+   ],
+   "protection_worst6": [
+    "SF 1.32",
+    "MIN 1.26",
+    "TEN 1.24",
+    "KC 1.22",
+    "JAX 1.19",
+    "MIA 1.17"
+   ]
+  }
+ }
+}

@@ -1,0 +1,295 @@
+{
+ "note": "DEV rows of every full file vs the DEV pipeline's files; TEST: structural coverage only (no outcome read, nothing scored)",
+ "creation_pg": {
+  "rows_dev": 362712,
+  "rows_full_dev": 362712,
+  "bitwise": true,
+  "bad_cols": []
+ },
+ "creation_wf": {
+  "rows_dev": 362712,
+  "rows_full_dev": 362712,
+  "bitwise": true,
+  "bad_cols": []
+ },
+ "finishing_player_games": {
+  "rows_dev": 403018,
+  "rows_full_dev": 403018,
+  "bitwise": true,
+  "bad_cols": []
+ },
+ "finishing_entity_games": {
+  "rows_dev": 50380,
+  "rows_full_dev": 50380,
+  "bitwise": true,
+  "bad_cols": []
+ },
+ "finishing_shots": {
+  "rows_dev": 842861,
+  "rows_full_dev": 842861,
+  "bitwise": true,
+  "bad_cols": []
+ },
+ "finishing_team_games_lg_xg_pre": {
+  "bitwise": true,
+  "rows": 20152
+ },
+ "duels_csv": {
+  "rows_dev": 362712,
+  "rows_full": 741172,
+  "dev_rows_in_full": 362712,
+  "dev_prefix_text_identical": true,
+  "remaining_rows_all_test": true
+ },
+ "duels_fo": {
+  "rows_dev": 605129,
+  "rows_full_dev": 605129,
+  "bitwise": true,
+  "bad_cols": []
+ },
+ "duels_goal_values": {
+  "dev_seasons_identical": true,
+  "test_seasons_all_equal_frozen_20182019": true,
+  "frozen_fit_on": "20102011..20172018 (FROZEN: DEV walk-forward value for 20182019)"
+ },
+ "defense_stints": {
+  "20102011": {
+   "stints_identical": true,
+   "toi5_byte_identical": true
+  },
+  "20112012": {
+   "stints_identical": true,
+   "toi5_byte_identical": true
+  },
+  "20122013": {
+   "stints_identical": true,
+   "toi5_byte_identical": true
+  },
+  "20132014": {
+   "stints_identical": true,
+   "toi5_byte_identical": true
+  },
+  "20142015": {
+   "stints_identical": true,
+   "toi5_byte_identical": true
+  },
+  "20152016": {
+   "stints_identical": true,
+   "toi5_byte_identical": true
+  },
+  "20162017": {
+   "stints_identical": true,
+   "toi5_byte_identical": true
+  },
+  "20172018": {
+   "stints_identical": true,
+   "toi5_byte_identical": true
+  }
+ },
+ "defense_dev_fits": {
+  "n": 46,
+  "structure_identical": true,
+  "max_abs_diff_all_rating_arrays": 9.192646643896296e-14,
+  "max_abs_diff_compose_key_d_xg_120000_730": 3.3306690738754696e-16,
+  "note": "multithreaded OpenBLAS: ~1 ulp run-to-run; see defense_values_csv for the compose input"
+ },
+ "defense_team_csv_not_a_compose_input": {
+  "rows_dev": 18742,
+  "rows_full": 38304,
+  "dev_rows_in_full": 18742,
+  "dev_prefix_text_identical": false,
+  "remaining_rows_all_test": true
+ },
+ "defense_values_csv": {
+  "rows_dev": 337332,
+  "rows_full": 689368,
+  "dev_rows_in_full": 337332,
+  "dev_prefix_text_identical": true,
+  "remaining_rows_all_test": true
+ },
+ "compose_skater_games": {
+  "rows_dev": 362712,
+  "rows_full_dev": 362712,
+  "bitwise": true,
+  "bad_cols": []
+ },
+ "compose_goalie_games": {
+  "rows_dev": 40306,
+  "rows_full_dev": 40306,
+  "bitwise": true,
+  "bad_cols": []
+ },
+ "compose_team_games": {
+  "rows_dev": 20152,
+  "rows_full_dev": 20152,
+  "bitwise": true,
+  "bad_cols": []
+ },
+ "game_features": {
+  "rows_dev": 10076,
+  "rows_full": 20591,
+  "dev_rows_in_full": 10076,
+  "dev_prefix_text_identical": true,
+  "remaining_rows_all_test": true,
+  "dev_slice_sha256": "7b43adf02081457ff59a49a11a6f8e7f44bd3af2d13737ece716dc8b9cb80ef5",
+  "prereg_sha256": "7b43adf02081457ff59a49a11a6f8e7f44bd3af2d13737ece716dc8b9cb80ef5",
+  "dev_file_sha256_now": "7b43adf02081457ff59a49a11a6f8e7f44bd3af2d13737ece716dc8b9cb80ef5",
+  "dev_slice_hash_matches_prereg": true,
+  "dev_lv_values_equal": true
+ },
+ "serve_lv_last_dev_equal": true,
+ "weights": {
+  "dev_seasons_equal_dev_file": true,
+  "test_seasons_all_frozen": true,
+  "frozen": {
+   "source_season": 20182019,
+   "fit_on": "DEV regular season 2011-12..2017-18",
+   "n_train_games": 8141,
+   "intercept": 0.256636268828824,
+   "w": {
+    "ev_shot": 1.1386198055357348,
+    "ev_fin": 0.6214464201771545,
+    "ev_a1": 1.1699619673403325,
+    "ev_a2": 0.501136948512812,
+    "ev_def": 1.900778946179567,
+    "pp_xg": 0.9382017632994977,
+    "pp_ast": 0.07044813538145266,
+    "duels": 0.6061470721149809,
+    "goalie": 0.8830194024002108
+   },
+   "se": {
+    "ev_shot": 0.1978689635293895,
+    "ev_fin": 0.35422713090143865,
+    "ev_a1": 0.3411058606608577,
+    "ev_a2": 0.6213165028874686,
+    "ev_def": 0.1718521026549998,
+    "pp_xg": 0.3802348931431449,
+    "pp_ast": 0.41781615412765755,
+    "duels": 0.30774438440705004,
+    "goalie": 0.2002931946895702
+   },
+   "applied_to": [
+    20182019,
+    20192020,
+    20202021,
+    20212022,
+    20222023,
+    20232024,
+    20242025,
+    20252026
+   ]
+  }
+ },
+ "test_coverage": {
+  "per_season": {
+   "20182019": {
+    "games_regular": 1271,
+    "games_playoff": 87,
+    "feature_rows_regular": 1271,
+    "feature_rows_playoff": 87,
+    "lv_missing": 0,
+    "lv_last_blank_sides": 0,
+    "games_without_shift_chart": 0,
+    "n_skaters_not_18_sides": 0,
+    "starting_goalie_missing_sides": 0
+   },
+   "20192020": {
+    "games_regular": 1082,
+    "games_playoff": 130,
+    "feature_rows_regular": 1082,
+    "feature_rows_playoff": 130,
+    "lv_missing": 0,
+    "lv_last_blank_sides": 0,
+    "games_without_shift_chart": 0,
+    "n_skaters_not_18_sides": 1,
+    "starting_goalie_missing_sides": 0
+   },
+   "20202021": {
+    "games_regular": 868,
+    "games_playoff": 84,
+    "feature_rows_regular": 868,
+    "feature_rows_playoff": 84,
+    "lv_missing": 0,
+    "lv_last_blank_sides": 0,
+    "games_without_shift_chart": 0,
+    "n_skaters_not_18_sides": 17,
+    "starting_goalie_missing_sides": 0
+   },
+   "20212022": {
+    "games_regular": 1312,
+    "games_playoff": 89,
+    "feature_rows_regular": 1312,
+    "feature_rows_playoff": 89,
+    "lv_missing": 0,
+    "lv_last_blank_sides": 1,
+    "games_without_shift_chart": 0,
+    "n_skaters_not_18_sides": 16,
+    "starting_goalie_missing_sides": 0
+   },
+   "20222023": {
+    "games_regular": 1312,
+    "games_playoff": 88,
+    "feature_rows_regular": 1312,
+    "feature_rows_playoff": 88,
+    "lv_missing": 0,
+    "lv_last_blank_sides": 0,
+    "games_without_shift_chart": 0,
+    "n_skaters_not_18_sides": 17,
+    "starting_goalie_missing_sides": 0
+   },
+   "20232024": {
+    "games_regular": 1312,
+    "games_playoff": 88,
+    "feature_rows_regular": 1312,
+    "feature_rows_playoff": 88,
+    "lv_missing": 0,
+    "lv_last_blank_sides": 0,
+    "games_without_shift_chart": 0,
+    "n_skaters_not_18_sides": 11,
+    "starting_goalie_missing_sides": 0
+   },
+   "20242025": {
+    "games_regular": 1312,
+    "games_playoff": 86,
+    "feature_rows_regular": 1312,
+    "feature_rows_playoff": 86,
+    "lv_missing": 0,
+    "lv_last_blank_sides": 1,
+    "games_without_shift_chart": 57,
+    "n_skaters_not_18_sides": 7,
+    "starting_goalie_missing_sides": 0
+   },
+   "20252026": {
+    "games_regular": 1312,
+    "games_playoff": 82,
+    "feature_rows_regular": 1312,
+    "feature_rows_playoff": 82,
+    "lv_missing": 0,
+    "lv_last_blank_sides": 0,
+    "games_without_shift_chart": 525,
+    "n_skaters_not_18_sides": 1,
+    "starting_goalie_missing_sides": 0
+   }
+  },
+  "test_games_total": 10515,
+  "test_feature_rows": 10515,
+  "test_games_without_feature_row": 0,
+  "lv_last_blank_games": [
+   {
+    "gid": "2021020002",
+    "date": "2021-10-12",
+    "home": "VGK",
+    "away": "SEA"
+   },
+   {
+    "gid": "2024020005",
+    "date": "2024-10-08",
+    "home": "UTA",
+    "away": "CHI"
+   }
+  ],
+  "games_without_shift_chart_total": 582
+ },
+ "ALL_DEV_CHECKS_PASS": true,
+ "seconds": 18.1
+}

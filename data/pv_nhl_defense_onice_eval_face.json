@@ -1,0 +1,785 @@
+{
+ "fit": "pre_20172018",
+ "min_window_5v5_seconds": 180000.0,
+ "lists": {
+  "XGA": {
+   "key": "d_xg_120000_730",
+   "F": {
+    "top": [
+     [
+      "Patrice Bergeron",
+      0.147
+     ],
+     [
+      "Nino Niederreiter",
+      0.136
+     ],
+     [
+      "Mikko Koivu",
+      0.132
+     ],
+     [
+      "Mats Zuccarello",
+      0.101
+     ],
+     [
+      "David Perron",
+      0.094
+     ],
+     [
+      "Ryan Getzlaf",
+      0.09
+     ],
+     [
+      "Blake Wheeler",
+      0.085
+     ],
+     [
+      "Dustin Brown",
+      0.083
+     ],
+     [
+      "Joe Pavelski",
+      0.073
+     ],
+     [
+      "Anze Kopitar",
+      0.07
+     ]
+    ],
+    "bottom": [
+     [
+      "Phil Kessel",
+      -0.196
+     ],
+     [
+      "Jarome Iginla",
+      -0.156
+     ],
+     [
+      "Sean Monahan",
+      -0.122
+     ],
+     [
+      "Cam Atkinson",
+      -0.121
+     ],
+     [
+      "Jonathan Toews",
+      -0.12
+     ],
+     [
+      "Jamie Benn",
+      -0.1
+     ],
+     [
+      "Alex Ovechkin",
+      -0.099
+     ],
+     [
+      "Matt Duchene",
+      -0.098
+     ],
+     [
+      "Jeff Skinner",
+      -0.096
+     ],
+     [
+      "Jordan Eberle",
+      -0.095
+     ]
+    ],
+    "n": 95
+   },
+   "D": {
+    "top": [
+     [
+      "Chris Tanev",
+      0.208
+     ],
+     [
+      "Justin Braun",
+      0.166
+     ],
+     [
+      "Mattias Ekholm",
+      0.156
+     ],
+     [
+      "Hampus Lindholm",
+      0.15
+     ],
+     [
+      "Shea Weber",
+      0.145
+     ],
+     [
+      "Fedor Tyutin",
+      0.142
+     ],
+     [
+      "Niklas Hjalmarsson",
+      0.123
+     ],
+     [
+      "Marc-Edouard Vlasic",
+      0.121
+     ],
+     [
+      "Calvin de Haan",
+      0.118
+     ],
+     [
+      "Jonas Brodin",
+      0.109
+     ]
+    ],
+    "bottom": [
+     [
+      "Brent Seabrook",
+      -0.164
+     ],
+     [
+      "Keith Yandle",
+      -0.153
+     ],
+     [
+      "Morgan Rielly",
+      -0.151
+     ],
+     [
+      "Dion Phaneuf",
+      -0.147
+     ],
+     [
+      "Alex Goligoski",
+      -0.13
+     ],
+     [
+      "Dennis Wideman",
+      -0.127
+     ],
+     [
+      "Brent Burns",
+      -0.121
+     ],
+     [
+      "Justin Faulk",
+      -0.112
+     ],
+     [
+      "Dan Girardi",
+      -0.111
+     ],
+     [
+      "Rasmus Ristolainen",
+      -0.108
+     ]
+    ],
+    "n": 115
+   }
+  },
+  "GA": {
+   "key": "d_g_120000_730",
+   "F": {
+    "top": [
+     [
+      "Henrik Zetterberg",
+      0.161
+     ],
+     [
+      "Joe Pavelski",
+      0.155
+     ],
+     [
+      "Brandon Saad",
+      0.14
+     ],
+     [
+      "James Neal",
+      0.137
+     ],
+     [
+      "Daniel Sedin",
+      0.129
+     ],
+     [
+      "Loui Eriksson",
+      0.126
+     ],
+     [
+      "Shane Doan",
+      0.12
+     ],
+     [
+      "Brayden Schenn",
+      0.116
+     ],
+     [
+      "Milan Lucic",
+      0.107
+     ],
+     [
+      "Reilly Smith",
+      0.106
+     ]
+    ],
+    "bottom": [
+     [
+      "Tyler Seguin",
+      -0.207
+     ],
+     [
+      "Josh Bailey",
+      -0.203
+     ],
+     [
+      "Jeff Skinner",
+      -0.176
+     ],
+     [
+      "Valtteri Filppula",
+      -0.169
+     ],
+     [
+      "Wayne Simmonds",
+      -0.156
+     ],
+     [
+      "Matt Duchene",
+      -0.155
+     ],
+     [
+      "Nazem Kadri",
+      -0.143
+     ],
+     [
+      "Jakub Voracek",
+      -0.143
+     ],
+     [
+      "Patrick Kane",
+      -0.14
+     ],
+     [
+      "Ryan Nugent-Hopkins",
+      -0.126
+     ]
+    ],
+    "n": 95
+   },
+   "D": {
+    "top": [
+     [
+      "Drew Doughty",
+      0.239
+     ],
+     [
+      "Johnny Boychuk",
+      0.219
+     ],
+     [
+      "Shea Weber",
+      0.213
+     ],
+     [
+      "Brian Campbell",
+      0.21
+     ],
+     [
+      "Adam Larsson",
+      0.195
+     ],
+     [
+      "Ben Lovejoy",
+      0.182
+     ],
+     [
+      "Hampus Lindholm",
+      0.18
+     ],
+     [
+      "Karl Alzner",
+      0.166
+     ],
+     [
+      "Mark Giordano",
+      0.133
+     ],
+     [
+      "Jonas Brodin",
+      0.132
+     ]
+    ],
+    "bottom": [
+     [
+      "Morgan Rielly",
+      -0.273
+     ],
+     [
+      "Thomas Hickey",
+      -0.245
+     ],
+     [
+      "Justin Faulk",
+      -0.194
+     ],
+     [
+      "Erik Karlsson",
+      -0.191
+     ],
+     [
+      "Dion Phaneuf",
+      -0.187
+     ],
+     [
+      "Jake Muzzin",
+      -0.162
+     ],
+     [
+      "Oscar Klefbom",
+      -0.158
+     ],
+     [
+      "Danny DeKeyser",
+      -0.147
+     ],
+     [
+      "Jeff Petry",
+      -0.146
+     ],
+     [
+      "Tyson Barrie",
+      -0.141
+     ]
+    ],
+    "n": 115
+   }
+  },
+  "GAX": {
+   "key": "d_gx60000_480000_730",
+   "F": {
+    "top": [
+     [
+      "Patrice Bergeron",
+      0.193
+     ],
+     [
+      "Mikko Koivu",
+      0.168
+     ],
+     [
+      "Mats Zuccarello",
+      0.138
+     ],
+     [
+      "Joe Pavelski",
+      0.13
+     ],
+     [
+      "Blake Wheeler",
+      0.13
+     ],
+     [
+      "Henrik Zetterberg",
+      0.128
+     ],
+     [
+      "Nicklas Backstrom",
+      0.122
+     ],
+     [
+      "Nino Niederreiter",
+      0.12
+     ],
+     [
+      "Marcus Johansson",
+      0.113
+     ],
+     [
+      "Derick Brassard",
+      0.11
+     ]
+    ],
+    "bottom": [
+     [
+      "Phil Kessel",
+      -0.233
+     ],
+     [
+      "Jarome Iginla",
+      -0.217
+     ],
+     [
+      "Jeff Skinner",
+      -0.168
+     ],
+     [
+      "Alex Ovechkin",
+      -0.161
+     ],
+     [
+      "Matt Duchene",
+      -0.159
+     ],
+     [
+      "Josh Bailey",
+      -0.156
+     ],
+     [
+      "Tyler Seguin",
+      -0.148
+     ],
+     [
+      "Patrick Kane",
+      -0.139
+     ],
+     [
+      "Sean Monahan",
+      -0.134
+     ],
+     [
+      "Cam Atkinson",
+      -0.133
+     ]
+    ],
+    "n": 95
+   },
+   "D": {
+    "top": [
+     [
+      "Chris Tanev",
+      0.31
+     ],
+     [
+      "Shea Weber",
+      0.231
+     ],
+     [
+      "Niklas Hjalmarsson",
+      0.218
+     ],
+     [
+      "Hampus Lindholm",
+      0.213
+     ],
+     [
+      "Mattias Ekholm",
+      0.196
+     ],
+     [
+      "Justin Braun",
+      0.187
+     ],
+     [
+      "Adam Larsson",
+      0.186
+     ],
+     [
+      "Jonas Brodin",
+      0.163
+     ],
+     [
+      "Brian Campbell",
+      0.159
+     ],
+     [
+      "Ben Lovejoy",
+      0.159
+     ]
+    ],
+    "bottom": [
+     [
+      "Morgan Rielly",
+      -0.245
+     ],
+     [
+      "Dion Phaneuf",
+      -0.231
+     ],
+     [
+      "Justin Faulk",
+      -0.202
+     ],
+     [
+      "Dennis Wideman",
+      -0.189
+     ],
+     [
+      "Keith Yandle",
+      -0.182
+     ],
+     [
+      "Thomas Hickey",
+      -0.169
+     ],
+     [
+      "Brent Seabrook",
+      -0.167
+     ],
+     [
+      "Trevor Daley",
+      -0.15
+     ],
+     [
+      "Erik Karlsson",
+      -0.148
+     ],
+     [
+      "Alex Goligoski",
+      -0.146
+     ]
+    ],
+    "n": 115
+   }
+  },
+  "CA": {
+   "key": "d_c_120000_730",
+   "F": {
+    "top": [
+     [
+      "Nino Niederreiter",
+      3.396
+     ],
+     [
+      "Patrice Bergeron",
+      3.053
+     ],
+     [
+      "Tomas Tatar",
+      2.304
+     ],
+     [
+      "Mikko Koivu",
+      2.023
+     ],
+     [
+      "Jaromir Jagr",
+      1.9
+     ],
+     [
+      "Joe Thornton",
+      1.743
+     ],
+     [
+      "Michael Frolik",
+      1.703
+     ],
+     [
+      "David Perron",
+      1.459
+     ],
+     [
+      "Marcus Johansson",
+      1.333
+     ],
+     [
+      "Blake Wheeler",
+      1.31
+     ]
+    ],
+    "bottom": [
+     [
+      "Phil Kessel",
+      -2.939
+     ],
+     [
+      "Jarome Iginla",
+      -2.298
+     ],
+     [
+      "Alex Ovechkin",
+      -2.034
+     ],
+     [
+      "Cam Atkinson",
+      -1.947
+     ],
+     [
+      "Brayden Schenn",
+      -1.806
+     ],
+     [
+      "Brian Gionta",
+      -1.772
+     ],
+     [
+      "Sean Monahan",
+      -1.548
+     ],
+     [
+      "Jeff Skinner",
+      -1.443
+     ],
+     [
+      "Ryan Nugent-Hopkins",
+      -1.301
+     ],
+     [
+      "Kyle Turris",
+      -1.25
+     ]
+    ],
+    "n": 95
+   },
+   "D": {
+    "top": [
+     [
+      "Mattias Ekholm",
+      3.117
+     ],
+     [
+      "Matt Niskanen",
+      2.622
+     ],
+     [
+      "Niklas Hjalmarsson",
+      2.601
+     ],
+     [
+      "Chris Tanev",
+      2.421
+     ],
+     [
+      "Hampus Lindholm",
+      2.307
+     ],
+     [
+      "Drew Doughty",
+      2.264
+     ],
+     [
+      "Brayden McNabb",
+      2.032
+     ],
+     [
+      "Anton Stralman",
+      1.918
+     ],
+     [
+      "Fedor Tyutin",
+      1.892
+     ],
+     [
+      "Toby Enstrom",
+      1.712
+     ]
+    ],
+    "bottom": [
+     [
+      "Rasmus Ristolainen",
+      -3.783
+     ],
+     [
+      "Dan Girardi",
+      -3.52
+     ],
+     [
+      "Brent Seabrook",
+      -3.064
+     ],
+     [
+      "Kris Russell",
+      -2.309
+     ],
+     [
+      "Trevor Daley",
+      -2.279
+     ],
+     [
+      "Dion Phaneuf",
+      -2.15
+     ],
+     [
+      "Deryk Engelland",
+      -2.079
+     ],
+     [
+      "Dennis Wideman",
+      -2.061
+     ],
+     [
+      "Luke Schenn",
+      -1.922
+     ],
+     [
+      "Kevin Bieksa",
+      -1.787
+     ]
+    ],
+    "n": 115
+   }
+  }
+ },
+ "goalie_GA_column": {
+  "key": "g_g_120000_730",
+  "best": [
+   [
+    "Carey Price",
+    -0.287
+   ],
+   [
+    "Devan Dubnyk",
+    -0.226
+   ],
+   [
+    "Braden Holtby",
+    -0.204
+   ],
+   [
+    "Aaron Dell",
+    -0.203
+   ],
+   [
+    "Sergei Bobrovsky",
+    -0.192
+   ],
+   [
+    "Matt Murray",
+    -0.162
+   ],
+   [
+    "John Gibson",
+    -0.154
+   ],
+   [
+    "Antti Raanta",
+    -0.142
+   ]
+  ],
+  "worst": [
+   [
+    "Jeff Zatkoff",
+    0.171
+   ],
+   [
+    "Darcy Kuemper",
+    0.167
+   ],
+   [
+    "Jhonas Enroth",
+    0.167
+   ],
+   [
+    "Semyon Varlamov",
+    0.166
+   ],
+   [
+    "Anders Lindback",
+    0.138
+   ],
+   [
+    "Niklas Backstrom",
+    0.133
+   ],
+   [
+    "Curtis McElhinney",
+    0.119
+   ],
+   [
+    "Garret Sparks",
+    0.119
+   ]
+  ]
+ }
+}

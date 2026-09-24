@@ -1,0 +1,740 @@
+{
+ "screen": "NFL composed player value (pv_nfl_compose) - pre-registered game-level DEV screen",
+ "dev_seasons": [
+  2006,
+  2015
+ ],
+ "n_dev_games": 2670,
+ "harness": {
+  "wf": "bt_nfl_ideas_quick3.wf extracted verbatim via ast",
+  "sha256_16": {
+   "quick3.wf": "90abc14f29a0cee8",
+   "quick2.llv": "476b52ef9bb2ff5c"
+  },
+  "matrix": "data/bt_nfl_ideas_dev_X.npy",
+  "HL": 3.0,
+  "C": 100.0
+ },
+ "bar": "gain >= +0.00150 and per-game bootstrap 95% CI lower bound > 0 (PRIMARY arm vs PRIMARY ref)",
+ "bootstrap": {
+  "n": 10000,
+  "seed": 20260930,
+  "paired_same_indices_all_arms": true,
+  "season_block": "10 DEV seasons resampled with replacement"
+ },
+ "primary_ref": {
+  "name": "R0 served blend (col1 starter-keyed) [PRIMARY REF]",
+  "dev_ll": 0.623924
+ },
+ "secondary_ref": {
+  "name": "C0 cached X14 (listed QB)",
+  "dev_ll": 0.622937
+ },
+ "sanity": {
+  "H1_C0_reproduces_0.622937": 0.62293688,
+  "H2_R0_reproduces_0.623924": 0.623924,
+  "H3_drop_col1_vs_R0": {
+   "dev_ll": 0.629086,
+   "ref_dev_ll": 0.623924,
+   "gain": -0.005162,
+   "ci95_game": [
+    -0.00881,
+    -0.001544
+   ],
+   "ci95_season_block": [
+    -0.006806,
+    -0.003583
+   ],
+   "p_boot_gain_le_0": 0.9973,
+   "seasons_better": "0/10",
+   "per_season_gain": {
+    "2006": -0.00825,
+    "2007": -0.00444,
+    "2008": -0.00231,
+    "2009": -0.00614,
+    "2010": -0.00421,
+    "2011": -0.00954,
+    "2012": -0.00799,
+    "2013": -0.00372,
+    "2014": -0.00089,
+    "2015": -0.00413
+   },
+   "clears_bar": false,
+   "season_block_lo_gt_0": false
+  },
+  "H3_drop_col1_vs_C0": {
+   "dev_ll": 0.629086,
+   "ref_dev_ll": 0.622937,
+   "gain": -0.006149,
+   "ci95_game": [
+    -0.010365,
+    -0.001915
+   ],
+   "ci95_season_block": [
+    -0.008673,
+    -0.00376
+   ],
+   "p_boot_gain_le_0": 0.9984,
+   "seasons_better": "1/10",
+   "per_season_gain": {
+    "2006": -0.01273,
+    "2007": -0.00666,
+    "2008": 0.00036,
+    "2009": -0.00645,
+    "2010": -0.00463,
+    "2011": -0.01069,
+    "2012": -0.0108,
+    "2013": -0.00309,
+    "2014": -0.00276,
+    "2015": -0.00404
+   },
+   "clears_bar": false,
+   "season_block_lo_gt_0": false
+  },
+  "H4_zeroed_equals_deleted_0.629086": 0.629086,
+  "H5_identical_masks": "asserted: every run scores the same 2,670 DEV games in the same order",
+  "listed_vs_starter_col1": {
+   "dev_ll": 0.622937,
+   "ref_dev_ll": 0.623924,
+   "gain": 0.000987,
+   "ci95_game": [
+    1e-06,
+    0.002035
+   ],
+   "ci95_season_block": [
+    -0.000187,
+    0.002168
+   ],
+   "p_boot_gain_le_0": 0.0247,
+   "seasons_better": "7/10",
+   "per_season_gain": {
+    "2006": 0.00448,
+    "2007": 0.00222,
+    "2008": -0.00267,
+    "2009": 0.00031,
+    "2010": 0.00042,
+    "2011": 0.00116,
+    "2012": 0.00281,
+    "2013": -0.00062,
+    "2014": 0.00187,
+    "2015": -9e-05
+   },
+   "clears_bar": false,
+   "season_block_lo_gt_0": false
+  }
+ },
+ "arms": {
+  "A1 R0, col7 <- LV [PRIMARY]": {
+   "dev_ll": 0.623488,
+   "ref_dev_ll": 0.623924,
+   "gain": 0.000435,
+   "ci95_game": [
+    -0.000824,
+    0.001685
+   ],
+   "ci95_season_block": [
+    -0.000708,
+    0.0015
+   ],
+   "p_boot_gain_le_0": 0.239,
+   "seasons_better": "7/10",
+   "per_season_gain": {
+    "2006": 0.00156,
+    "2007": 0.0,
+    "2008": 0.00288,
+    "2009": 0.00169,
+    "2010": -0.00247,
+    "2011": -0.00049,
+    "2012": -0.00253,
+    "2013": 0.00037,
+    "2014": 0.00091,
+    "2015": 0.00243
+   },
+   "clears_bar": false,
+   "season_block_lo_gt_0": false,
+   "coefs_by_fold": {
+    "2006": {
+     "c1": 3.8269,
+     "c7": 0.006
+    },
+    "2007": {
+     "c1": 4.2558,
+     "c7": 0.0277
+    },
+    "2008": {
+     "c1": 4.4437,
+     "c7": 0.0248
+    },
+    "2009": {
+     "c1": 3.6576,
+     "c7": 0.0374
+    },
+    "2010": {
+     "c1": 4.1272,
+     "c7": 0.0393
+    },
+    "2011": {
+     "c1": 4.3921,
+     "c7": 0.03
+    },
+    "2012": {
+     "c1": 5.406,
+     "c7": 0.0247
+    },
+    "2013": {
+     "c1": 6.2214,
+     "c7": 0.0085
+    },
+    "2014": {
+     "c1": 5.8765,
+     "c7": 0.0073
+    },
+    "2015": {
+     "c1": 5.1189,
+     "c7": 0.0107
+    }
+   }
+  },
+  "A2 R0 + LV (15th col)": {
+   "dev_ll": 0.623674,
+   "ref_dev_ll": 0.623924,
+   "gain": 0.00025,
+   "ci95_game": [
+    -0.001026,
+    0.001496
+   ],
+   "ci95_season_block": [
+    -0.001022,
+    0.001413
+   ],
+   "p_boot_gain_le_0": 0.3464,
+   "seasons_better": "7/10",
+   "per_season_gain": {
+    "2006": 0.0018,
+    "2007": 0.0,
+    "2008": 0.00288,
+    "2009": 0.00143,
+    "2010": -0.00257,
+    "2011": -0.00069,
+    "2012": -0.00352,
+    "2013": 0.00011,
+    "2014": 0.00077,
+    "2015": 0.00228
+   },
+   "clears_bar": false,
+   "season_block_lo_gt_0": false,
+   "coefs_by_fold": {
+    "2006": {
+     "c1": 3.6915,
+     "c7": 0.0,
+     "x15": 0.0414
+    },
+    "2007": {
+     "c1": 4.2601,
+     "c7": 0.0,
+     "x15": 0.1626
+    },
+    "2008": {
+     "c1": 4.5126,
+     "c7": 0.0,
+     "x15": 0.1433
+    },
+    "2009": {
+     "c1": 3.7855,
+     "c7": 0.0,
+     "x15": 0.2066
+    },
+    "2010": {
+     "c1": 4.0839,
+     "c7": 0.0,
+     "x15": 0.2254
+    },
+    "2011": {
+     "c1": 4.341,
+     "c7": 0.0,
+     "x15": 0.1749
+    },
+    "2012": {
+     "c1": 5.1374,
+     "c7": 0.0,
+     "x15": 0.1461
+    },
+    "2013": {
+     "c1": 6.3297,
+     "c7": 0.0,
+     "x15": 0.0375
+    },
+    "2014": {
+     "c1": 5.8383,
+     "c7": 0.0,
+     "x15": 0.0431
+    },
+    "2015": {
+     "c1": 5.1037,
+     "c7": 0.0,
+     "x15": 0.0594
+    }
+   }
+  },
+  "A3 A1 and col1 <- QV": {
+   "dev_ll": 0.625964,
+   "ref_dev_ll": 0.623924,
+   "gain": -0.00204,
+   "ci95_game": [
+    -0.004732,
+    0.000628
+   ],
+   "ci95_season_block": [
+    -0.003734,
+    -0.000507
+   ],
+   "p_boot_gain_le_0": 0.9325,
+   "seasons_better": "1/10",
+   "per_season_gain": {
+    "2006": -0.00277,
+    "2007": -0.00118,
+    "2008": -0.00079,
+    "2009": -0.00083,
+    "2010": -0.00477,
+    "2011": -0.00319,
+    "2012": -0.00769,
+    "2013": -0.00163,
+    "2014": 0.00252,
+    "2015": -7e-05
+   },
+   "clears_bar": false,
+   "season_block_lo_gt_0": false,
+   "coefs_by_fold": {
+    "2006": {
+     "c1": 0.059,
+     "c7": -0.0146
+    },
+    "2007": {
+     "c1": 0.0494,
+     "c7": 0.0157
+    },
+    "2008": {
+     "c1": 0.0583,
+     "c7": 0.0091
+    },
+    "2009": {
+     "c1": 0.0253,
+     "c7": 0.039
+    },
+    "2010": {
+     "c1": 0.0222,
+     "c7": 0.0469
+    },
+    "2011": {
+     "c1": 0.0369,
+     "c7": 0.0299
+    },
+    "2012": {
+     "c1": 0.0538,
+     "c7": 0.0213
+    },
+    "2013": {
+     "c1": 0.077,
+     "c7": -0.0051
+    },
+    "2014": {
+     "c1": 0.0776,
+     "c7": -0.0076
+    },
+    "2015": {
+     "c1": 0.0791,
+     "c7": -0.0099
+    }
+   }
+  }
+ },
+ "secondary": {
+  "A1c C0, col7 <- LV vs C0": {
+   "dev_ll": 0.623024,
+   "ref_dev_ll": 0.622937,
+   "gain": -8.7e-05,
+   "ci95_game": [
+    -0.001182,
+    0.001026
+   ],
+   "ci95_season_block": [
+    -0.001285,
+    0.000968
+   ],
+   "p_boot_gain_le_0": 0.5611,
+   "seasons_better": "6/10",
+   "per_season_gain": {
+    "2006": 6e-05,
+    "2007": -0.00012,
+    "2008": 0.00233,
+    "2009": 0.00168,
+    "2010": -0.0025,
+    "2011": -0.00059,
+    "2012": -0.00403,
+    "2013": 0.00035,
+    "2014": 0.00053,
+    "2015": 0.0014
+   },
+   "clears_bar": false,
+   "season_block_lo_gt_0": false
+  },
+  "A2c C0 + LV (15th col) vs C0": {
+   "dev_ll": 0.623109,
+   "ref_dev_ll": 0.622937,
+   "gain": -0.000172,
+   "ci95_game": [
+    -0.001272,
+    0.000927
+   ],
+   "ci95_season_block": [
+    -0.001344,
+    0.000867
+   ],
+   "p_boot_gain_le_0": 0.6162,
+   "seasons_better": "5/10",
+   "per_season_gain": {
+    "2006": -0.00066,
+    "2007": -0.00011,
+    "2008": 0.00236,
+    "2009": 0.00161,
+    "2010": -0.0023,
+    "2011": -0.00051,
+    "2012": -0.00409,
+    "2013": 0.0008,
+    "2014": 0.00037,
+    "2015": 0.00083
+   },
+   "clears_bar": false,
+   "season_block_lo_gt_0": false
+  },
+  "A3 A1 and col1 <- QV vs C0": {
+   "dev_ll": 0.625964,
+   "ref_dev_ll": 0.622937,
+   "gain": -0.003027,
+   "ci95_game": [
+    -0.006093,
+    -5e-06
+   ],
+   "ci95_season_block": [
+    -0.005403,
+    -0.000876
+   ],
+   "p_boot_gain_le_0": 0.9756,
+   "seasons_better": "3/10",
+   "per_season_gain": {
+    "2006": -0.00725,
+    "2007": -0.0034,
+    "2008": 0.00188,
+    "2009": -0.00113,
+    "2010": -0.00519,
+    "2011": -0.00435,
+    "2012": -0.0105,
+    "2013": -0.00101,
+    "2014": 0.00064,
+    "2015": 2e-05
+   },
+   "clears_bar": false,
+   "season_block_lo_gt_0": false
+  }
+ },
+ "converged_sensitivity_posthoc": {
+  "tol": 1e-10,
+  "harness_default_tol": 0.0001,
+  "iters_by_fold": {
+   "C0 cached X14 (listed QB)": [
+    194,
+    254,
+    169,
+    224,
+    201,
+    192,
+    204,
+    284,
+    340,
+    411
+   ],
+   "R0 served blend (col1 starter-keyed) [PRIMARY REF]": [
+    254,
+    231,
+    173,
+    282,
+    186,
+    196,
+    192,
+    151,
+    480,
+    390
+   ],
+   "H3 drop col 1 (zeroed)": [
+    136,
+    148,
+    177,
+    143,
+    149,
+    132,
+    120,
+    108,
+    306,
+    332
+   ],
+   "A1 R0, col7 <- LV [PRIMARY]": [
+    534,
+    520,
+    500,
+    589,
+    545,
+    279,
+    623,
+    526,
+    923,
+    649
+   ],
+   "A2 R0 + LV (15th col)": [
+    273,
+    204,
+    239,
+    341,
+    322,
+    244,
+    233,
+    264,
+    372,
+    600
+   ],
+   "A3 A1 and col1 <- QV": [
+    471,
+    432,
+    353,
+    305,
+    184,
+    282,
+    365,
+    473,
+    806,
+    809
+   ]
+  },
+  "dev_ll": {
+   "C0 cached X14 (listed QB)": 0.622977,
+   "R0 served blend (col1 starter-keyed) [PRIMARY REF]": 0.623817,
+   "H3 drop col 1 (zeroed)": 0.629026,
+   "A1 R0, col7 <- LV [PRIMARY]": 0.623517,
+   "A2 R0 + LV (15th col)": 0.623517,
+   "A3 A1 and col1 <- QV": 0.625935
+  },
+  "shift_vs_harness_ll": {
+   "C0 cached X14 (listed QB)": 4e-05,
+   "R0 served blend (col1 starter-keyed) [PRIMARY REF]": -0.000106,
+   "H3 drop col 1 (zeroed)": -6.1e-05,
+   "A1 R0, col7 <- LV [PRIMARY]": 2.9e-05,
+   "A2 R0 + LV (15th col)": -0.000157,
+   "A3 A1 and col1 <- QV": -2.9e-05
+  },
+  "h3_drop_col1_vs_R0": {
+   "gain": -0.005208,
+   "ci95_game": [
+    -0.008857,
+    -0.001579
+   ]
+  },
+  "listed_vs_starter_col1": {
+   "gain": 0.000841,
+   "ci95_game": [
+    -6.5e-05,
+    0.001819
+   ]
+  },
+  "arms_vs_R0": {
+   "A1 R0, col7 <- LV [PRIMARY]": {
+    "dev_ll": 0.623517,
+    "ref_dev_ll": 0.623817,
+    "gain": 0.0003,
+    "ci95_game": [
+     -0.000964,
+     0.001558
+    ],
+    "ci95_season_block": [
+     -0.000983,
+     0.001465
+    ],
+    "p_boot_gain_le_0": 0.3148,
+    "seasons_better": "7/10",
+    "per_season_gain": {
+     "2006": 0.00126,
+     "2007": 6e-05,
+     "2008": 0.00296,
+     "2009": 0.00161,
+     "2010": -0.00255,
+     "2011": -0.00047,
+     "2012": -0.00367,
+     "2013": 0.00028,
+     "2014": 0.00107,
+     "2015": 0.00246
+    },
+    "clears_bar": false,
+    "season_block_lo_gt_0": false
+   },
+   "A2 R0 + LV (15th col)": {
+    "dev_ll": 0.623517,
+    "ref_dev_ll": 0.623817,
+    "gain": 0.0003,
+    "ci95_game": [
+     -0.000964,
+     0.001558
+    ],
+    "ci95_season_block": [
+     -0.000983,
+     0.001464
+    ],
+    "p_boot_gain_le_0": 0.3147,
+    "seasons_better": "7/10",
+    "per_season_gain": {
+     "2006": 0.00126,
+     "2007": 6e-05,
+     "2008": 0.00296,
+     "2009": 0.00161,
+     "2010": -0.00255,
+     "2011": -0.00047,
+     "2012": -0.00367,
+     "2013": 0.00028,
+     "2014": 0.00107,
+     "2015": 0.00246
+    },
+    "clears_bar": false,
+    "season_block_lo_gt_0": false
+   },
+   "A3 A1 and col1 <- QV": {
+    "dev_ll": 0.625935,
+    "ref_dev_ll": 0.623817,
+    "gain": -0.002117,
+    "ci95_game": [
+     -0.004799,
+     0.000528
+    ],
+    "ci95_season_block": [
+     -0.00387,
+     -0.000557
+    ],
+    "p_boot_gain_le_0": 0.9384,
+    "seasons_better": "1/10",
+    "per_season_gain": {
+     "2006": -0.00314,
+     "2007": -0.00104,
+     "2008": -0.00012,
+     "2009": -0.00088,
+     "2010": -0.00488,
+     "2011": -0.00326,
+     "2012": -0.00801,
+     "2013": -0.00184,
+     "2014": 0.00217,
+     "2015": -0.00016
+    },
+    "clears_bar": false,
+    "season_block_lo_gt_0": false
+   }
+  },
+  "A1_vs_A2_converged": -0.0
+ },
+ "contrasts": {
+  "A1_vs_A2": 0.000186,
+  "A3_vs_A1": {
+   "gain": -0.002475,
+   "ci95_game": [
+    -0.004623,
+    -0.000304
+   ],
+   "seasons_better": "1/10"
+  }
+ },
+ "corr_LV_with_cols_DEV": {
+  "c0": 0.736,
+  "c1": 0.75,
+  "c2": 0.768,
+  "c3": 0.014,
+  "c4": 0.216,
+  "c5": -0.011,
+  "c6": -0.081,
+  "c8": -0.134,
+  "c9": -0.062,
+  "c10": -0.069,
+  "c11": 0.335,
+  "c12": 0.765,
+  "c13": 0.304,
+  "c1_starter": 0.752
+ },
+ "corr_QV_DEV": {
+  "QV~c1_starter": 0.859,
+  "QV~c1_listed": 0.855,
+  "QV~LV": 0.87
+ },
+ "audit": {
+  "weights_asof": {
+   "design_train": "2000..s-1",
+   "folds": [
+    "1999",
+    "2000",
+    "2001",
+    "..."
+   ],
+   "w_QB_by_dev_fold": {
+    "2006": 0.715,
+    "2007": 0.69,
+    "2008": 0.707,
+    "2009": 0.671,
+    "2010": 0.677,
+    "2011": 0.68,
+    "2012": 0.697,
+    "2013": 0.697,
+    "2014": 0.715,
+    "2015": 0.709
+   }
+  },
+  "timing_probe": {
+   "lv": {
+    "n_team_games": 4700,
+    "r_prev_game_margin": 0.3776,
+    "r_this_game_margin": 0.2526,
+    "r_next_game_margin": 0.2288,
+    "this_minus_next_ci95": [
+     -0.0118,
+     0.0574
+    ]
+   },
+   "qv": {
+    "n_team_games": 4700,
+    "r_prev_game_margin": 0.3464,
+    "r_this_game_margin": 0.2457,
+    "r_next_game_margin": 0.2212,
+    "this_minus_next_ci95": [
+     -0.0113,
+     0.0596
+    ]
+   }
+  },
+  "starter_check": {
+   "dev_sides": 5340,
+   "agree_with_shipped_starter": 5330,
+   "disagree": 10,
+   "note": "compose takes the first dropback passer; the shipped walk requires a QB weekly line, so trick/fake-play first passers differ (QV of those sides is a non-QB)"
+  },
+  "rows_without_feature_row": [
+   "1999_01_BAL_STL",
+   "2000_03_SD_KC",
+   "2000_06_BUF_MIA"
+  ]
+ },
+ "verdict": {
+  "primary": "A1",
+  "gain": 0.000435,
+  "ci95_game": [
+   -0.000824,
+   0.001685
+  ],
+  "ci95_season_block": [
+   -0.000708,
+   0.0015
+  ],
+  "clears_bar": false,
+  "any_arm_clears": false
+ }
+}

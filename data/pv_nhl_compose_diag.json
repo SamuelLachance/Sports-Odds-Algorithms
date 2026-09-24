@@ -1,0 +1,363 @@
+{
+ "note": "post-hoc diagnostics AFTER the pre-registered screen; not candidates",
+ "D1_prior_weights_lv_gv": {
+  "gain": 0.00128,
+  "boot_ci_10k": [
+   4e-05,
+   0.00249
+  ],
+  "sig": "SIG",
+  "n_pos_folds": 5,
+  "late_dev_2015_18": {
+   "n": 3731,
+   "gain": 0.00263,
+   "boot_ci_10k": [
+    0.00099,
+    0.00424
+   ]
+  }
+ },
+ "D1_prior_weights_lv_plus_gv": {
+  "gain": 0.00141,
+  "boot_ci_10k": [
+   0.0002,
+   0.00261
+  ],
+  "sig": "SIG",
+  "n_pos_folds": 6,
+  "late_dev_2015_18": {
+   "n": 3731,
+   "gain": 0.0027,
+   "boot_ci_10k": [
+    0.00105,
+    0.00431
+   ]
+  }
+ },
+ "C1_reference": {
+  "gain": 0.00159,
+  "boot_ci_10k": [
+   0.00021,
+   0.00299
+  ],
+  "sig": "SIG",
+  "n_pos_folds": 6,
+  "late_dev_2015_18": {
+   "n": 3731,
+   "gain": 0.00238,
+   "boot_ci_10k": [
+    0.00044,
+    0.0043
+   ]
+  }
+ },
+ "D2_leave_one_out": {
+  "ev_shot": {
+   "gain": 0.00129,
+   "boot_ci_10k": [
+    -0.0,
+    0.00258
+   ],
+   "sig": "n.s.",
+   "n_pos_folds": 5,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.00159,
+    "boot_ci_10k": [
+     -0.00034,
+     0.00343
+    ]
+   }
+  },
+  "ev_fin": {
+   "gain": 0.00146,
+   "boot_ci_10k": [
+    0.00012,
+    0.00281
+   ],
+   "sig": "SIG",
+   "n_pos_folds": 6,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.00231,
+    "boot_ci_10k": [
+     0.00044,
+     0.00414
+    ]
+   }
+  },
+  "ev_a1": {
+   "gain": 0.00118,
+   "boot_ci_10k": [
+    -5e-05,
+    0.0024
+   ],
+   "sig": "n.s.",
+   "n_pos_folds": 5,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.00197,
+    "boot_ci_10k": [
+     0.00026,
+     0.0036
+    ]
+   }
+  },
+  "ev_a2": {
+   "gain": 0.00146,
+   "boot_ci_10k": [
+    0.00013,
+    0.00281
+   ],
+   "sig": "SIG",
+   "n_pos_folds": 6,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.0022,
+    "boot_ci_10k": [
+     0.00033,
+     0.00403
+    ]
+   }
+  },
+  "ev_def": {
+   "gain": 0.00058,
+   "boot_ci_10k": [
+    -0.00042,
+    0.00158
+   ],
+   "sig": "n.s.",
+   "n_pos_folds": 4,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.00176,
+    "boot_ci_10k": [
+     0.00054,
+     0.00294
+    ]
+   }
+  },
+  "pp_xg": {
+   "gain": 0.00136,
+   "boot_ci_10k": [
+    7e-05,
+    0.00266
+   ],
+   "sig": "SIG",
+   "n_pos_folds": 6,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.00196,
+    "boot_ci_10k": [
+     0.00015,
+     0.00375
+    ]
+   }
+  },
+  "pp_ast": {
+   "gain": 0.00174,
+   "boot_ci_10k": [
+    0.0003,
+    0.00319
+   ],
+   "sig": "SIG",
+   "n_pos_folds": 6,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.00258,
+    "boot_ci_10k": [
+     0.0005,
+     0.00463
+    ]
+   }
+  },
+  "duels": {
+   "gain": 0.00167,
+   "boot_ci_10k": [
+    0.00026,
+    0.0031
+   ],
+   "sig": "SIG",
+   "n_pos_folds": 6,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.00232,
+    "boot_ci_10k": [
+     0.00026,
+     0.00432
+    ]
+   }
+  }
+ },
+ "D3_single": {
+  "ev_shot": {
+   "gain": 9e-05,
+   "boot_ci_10k": [
+    -0.00041,
+    0.00058
+   ],
+   "sig": "n.s.",
+   "n_pos_folds": 5,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.00051,
+    "boot_ci_10k": [
+     -4e-05,
+     0.00105
+    ]
+   }
+  },
+  "ev_fin": {
+   "gain": 0.00011,
+   "boot_ci_10k": [
+    -0.00031,
+    0.00055
+   ],
+   "sig": "n.s.",
+   "n_pos_folds": 4,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": -1e-05,
+    "boot_ci_10k": [
+     -0.00067,
+     0.00065
+    ]
+   }
+  },
+  "ev_a1": {
+   "gain": 0.00067,
+   "boot_ci_10k": [
+    -0.00017,
+    0.00153
+   ],
+   "sig": "n.s.",
+   "n_pos_folds": 7,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.00046,
+    "boot_ci_10k": [
+     -0.00102,
+     0.00191
+    ]
+   }
+  },
+  "ev_a2": {
+   "gain": 0.0004,
+   "boot_ci_10k": [
+    -0.00034,
+    0.00114
+   ],
+   "sig": "n.s.",
+   "n_pos_folds": 5,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.00056,
+    "boot_ci_10k": [
+     -0.00047,
+     0.00157
+    ]
+   }
+  },
+  "ev_def": {
+   "gain": 0.0001,
+   "boot_ci_10k": [
+    -0.00041,
+    0.00062
+   ],
+   "sig": "n.s.",
+   "n_pos_folds": 5,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": -0.00022,
+    "boot_ci_10k": [
+     -0.00113,
+     0.00066
+    ]
+   }
+  },
+  "pp_xg": {
+   "gain": -4e-05,
+   "boot_ci_10k": [
+    -0.00056,
+    0.00047
+   ],
+   "sig": "n.s.",
+   "n_pos_folds": 5,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.00057,
+    "boot_ci_10k": [
+     7e-05,
+     0.00106
+    ]
+   }
+  },
+  "pp_ast": {
+   "gain": -2e-05,
+   "boot_ci_10k": [
+    -0.00035,
+    0.00031
+   ],
+   "sig": "n.s.",
+   "n_pos_folds": 5,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.00021,
+    "boot_ci_10k": [
+     1e-05,
+     0.00043
+    ]
+   }
+  },
+  "duels": {
+   "gain": -0.00014,
+   "boot_ci_10k": [
+    -0.00025,
+    -3e-05
+   ],
+   "sig": "SIG WORSE",
+   "n_pos_folds": 0,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": -0.00016,
+    "boot_ci_10k": [
+     -0.0003,
+     -1e-05
+    ]
+   }
+  },
+  "goalie": {
+   "gain": 8e-05,
+   "boot_ci_10k": [
+    -0.00055,
+    0.00071
+   ],
+   "sig": "n.s.",
+   "n_pos_folds": 4,
+   "late_dev_2015_18": {
+    "n": 3731,
+    "gain": 0.0008,
+    "boot_ci_10k": [
+     0.00016,
+     0.00143
+    ]
+   }
+  }
+ },
+ "D4_starter_change_nights": {
+  "n_non1": 4455,
+  "gain_non1": 0.00046,
+  "ci_non1": [
+   -0.00137,
+   0.00229
+  ],
+  "n_other": 3474,
+  "gain_other": 0.00304,
+  "ci_other": [
+   0.00095,
+   0.00518
+  ],
+  "definition": "a side starts a goalie other than the modal starter of its previous 10 games (strictly earlier)"
+ },
+ "seconds": 21.1
+}

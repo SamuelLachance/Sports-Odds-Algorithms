@@ -1,0 +1,1616 @@
+{
+ "dev": "2006-2015",
+ "n_qb_games": 6433,
+ "reliability": {
+  "raw EPA/db": {
+   "split_half_r": 0.543,
+   "split_half_ci": [
+    0.467,
+    0.612
+   ],
+   "spearman_brown_full_season": 0.704,
+   "n_qb_seasons": 366,
+   "yoy_r": 0.485,
+   "yoy_ci": [
+    0.378,
+    0.578
+   ],
+   "n_yoy_pairs": 227
+  },
+  "opp-adj EPA/db": {
+   "split_half_r": 0.561,
+   "split_half_ci": [
+    0.486,
+    0.627
+   ],
+   "spearman_brown_full_season": 0.719,
+   "n_qb_seasons": 366,
+   "yoy_r": 0.497,
+   "yoy_ci": [
+    0.392,
+    0.589
+   ],
+   "n_yoy_pairs": 227
+  },
+  "opp-adj success": {
+   "split_half_r": 0.572,
+   "split_half_ci": [
+    0.499,
+    0.638
+   ],
+   "spearman_brown_full_season": 0.728,
+   "n_qb_seasons": 366,
+   "yoy_r": 0.521,
+   "yoy_ci": [
+    0.419,
+    0.61
+   ],
+   "n_yoy_pairs": 227
+  },
+  "opp-adj sack rate": {
+   "split_half_r": 0.552,
+   "split_half_ci": [
+    0.476,
+    0.619
+   ],
+   "spearman_brown_full_season": 0.711,
+   "n_qb_seasons": 366,
+   "yoy_r": 0.474,
+   "yoy_ci": [
+    0.366,
+    0.569
+   ],
+   "n_yoy_pairs": 227
+  },
+  "INT rate": {
+   "split_half_r": 0.168,
+   "split_half_ci": [
+    0.067,
+    0.266
+   ],
+   "spearman_brown_full_season": 0.288,
+   "n_qb_seasons": 366,
+   "yoy_r": 0.069,
+   "yoy_ci": [
+    -0.062,
+    0.198
+   ],
+   "n_yoy_pairs": 227
+  },
+  "CPOE": {
+   "split_half_r": 0.444,
+   "split_half_ci": [
+    0.358,
+    0.523
+   ],
+   "spearman_brown_full_season": 0.615,
+   "n_qb_seasons": 366,
+   "yoy_r": 0.552,
+   "yoy_ci": [
+    0.454,
+    0.636
+   ],
+   "n_yoy_pairs": 227
+  },
+  "opp-adj CPOE": {
+   "split_half_r": 0.46,
+   "split_half_ci": [
+    0.376,
+    0.538
+   ],
+   "spearman_brown_full_season": 0.63,
+   "n_qb_seasons": 366,
+   "yoy_r": 0.556,
+   "yoy_ci": [
+    0.459,
+    0.64
+   ],
+   "n_yoy_pairs": 227
+  },
+  "shipped input (EPA incl. rush)/(att+sk+car)": {
+   "split_half_r": 0.542,
+   "split_half_ci": [
+    0.466,
+    0.611
+   ],
+   "spearman_brown_full_season": 0.703,
+   "n_qb_seasons": 364,
+   "yoy_r": 0.479,
+   "yoy_ci": [
+    0.372,
+    0.574
+   ],
+   "n_yoy_pairs": 227
+  },
+  "passing composite (season stat, 2015-fold weights)": {
+   "split_half_r": 0.579,
+   "split_half_ci": [
+    0.507,
+    0.643
+   ],
+   "spearman_brown_full_season": 0.734,
+   "n_qb_seasons": 366,
+   "yoy_r": 0.542,
+   "yoy_ci": [
+    0.443,
+    0.628
+   ],
+   "n_yoy_pairs": 227
+  }
+ },
+ "predictive_next_game_starters": {
+  "qb_epa": {
+   "passing_composite": {
+    "desc": "passing composite (opp-adj EPA+succ+sack+CPOE, walk-forward weights)",
+    "r": 0.292,
+    "r_opp_controlled": 0.2995,
+    "delta_r_vs_shipped_opp_controlled": 0.0254,
+    "delta_ci": [
+     0.011,
+     0.0406
+    ],
+    "n": 5340
+   },
+   "epa_q": {
+    "desc": "opp-adj EPA/db Kalman (QB x pass-defence duel)",
+    "r": 0.2899,
+    "r_opp_controlled": 0.2978,
+    "delta_r_vs_shipped_opp_controlled": 0.0237,
+    "delta_ci": [
+     0.0093,
+     0.0384
+    ],
+    "n": 5340
+   },
+   "epa_raw_q": {
+    "desc": "un-adjusted EPA/db Kalman (control)",
+    "r": 0.286,
+    "r_opp_controlled": 0.2938,
+    "delta_r_vs_shipped_opp_controlled": 0.0197,
+    "delta_ci": [
+     0.006,
+     0.034
+    ],
+    "n": 5340
+   },
+   "epax_q": {
+    "desc": "opp-adj EPA incl. designed QB runs",
+    "r": 0.2941,
+    "r_opp_controlled": 0.302,
+    "delta_r_vs_shipped_opp_controlled": 0.0279,
+    "delta_ci": [
+     0.0138,
+     0.0424
+    ],
+    "n": 5340
+   },
+   "passing_composite3": {
+    "desc": "passing composite, EPA part cast-stripped (QB x cast x defence filter)",
+    "r": 0.2794,
+    "r_opp_controlled": 0.2859,
+    "delta_r_vs_shipped_opp_controlled": 0.0118,
+    "delta_ci": [
+     -0.0038,
+     0.028
+    ],
+    "n": 5340
+   },
+   "epa3_q": {
+    "desc": "cast-stripped opp-adj EPA/db (3-state filter), QB part",
+    "r": 0.277,
+    "r_opp_controlled": 0.284,
+    "delta_r_vs_shipped_opp_controlled": 0.0099,
+    "delta_ci": [
+     -0.0056,
+     0.0258
+    ],
+    "n": 5340
+   },
+   "unit3": {
+    "desc": "3-state unit forecast: QB part + team cast part",
+    "r": 0.294,
+    "r_opp_controlled": 0.3018,
+    "delta_r_vs_shipped_opp_controlled": 0.0277,
+    "delta_ci": [
+     0.0134,
+     0.0423
+    ],
+    "n": 5340
+   },
+   "cpoe_q": {
+    "desc": "CPOE rating alone",
+    "r": 0.2624,
+    "r_opp_controlled": 0.2694,
+    "delta_r_vs_shipped_opp_controlled": -0.0047,
+    "delta_ci": [
+     -0.025,
+     0.0151
+    ],
+    "n": 5340
+   },
+   "sack_q": {
+    "desc": "sack-rate rating alone",
+    "r": -0.154,
+    "r_opp_controlled": -0.1567,
+    "delta_r_vs_shipped_opp_controlled": -0.4308,
+    "delta_ci": [
+     -0.4719,
+     -0.3893
+    ],
+    "n": 5340
+   },
+   "succ_q": {
+    "desc": "success rating alone",
+    "r": 0.2784,
+    "r_opp_controlled": 0.2848,
+    "delta_r_vs_shipped_opp_controlled": 0.0107,
+    "delta_ci": [
+     -0.007,
+     0.0284
+    ],
+    "n": 5340
+   },
+   "qbelo_starter": {
+    "desc": "SHIPPED QbElo (starter-keyed, as served)",
+    "r": 0.267,
+    "r_opp_controlled": 0.2741,
+    "delta_r_vs_shipped_opp_controlled": 0.0,
+    "delta_ci": [
+     0.0,
+     0.0
+    ],
+    "n": 5340
+   },
+   "qbelo_listed": {
+    "desc": "shipped QbElo (listed-QB walk, as cached in X14)",
+    "r": 0.268,
+    "r_opp_controlled": 0.2752,
+    "delta_r_vs_shipped_opp_controlled": 0.0011,
+    "delta_ci": [
+     0.0004,
+     0.0019
+    ],
+    "n": 5340
+   },
+   "_joint_regression_z_coefs": {
+    "composite": [
+     0.0714,
+     0.0581,
+     0.0861
+    ],
+    "shipped_qbelo_starter": [
+     0.0255,
+     0.0116,
+     0.0385
+    ],
+    "note": "coef per 1 SD of each rating, same regression, + opponent pass-D control; [point, lo, hi]"
+   }
+  },
+  "unit_epa": {
+   "passing_composite": {
+    "desc": "passing composite (opp-adj EPA+succ+sack+CPOE, walk-forward weights)",
+    "r": 0.2965,
+    "r_opp_controlled": 0.304,
+    "delta_r_vs_shipped_opp_controlled": 0.0234,
+    "delta_ci": [
+     0.0088,
+     0.0385
+    ],
+    "n": 5340
+   },
+   "epa_q": {
+    "desc": "opp-adj EPA/db Kalman (QB x pass-defence duel)",
+    "r": 0.2946,
+    "r_opp_controlled": 0.3024,
+    "delta_r_vs_shipped_opp_controlled": 0.0218,
+    "delta_ci": [
+     0.0074,
+     0.0365
+    ],
+    "n": 5340
+   },
+   "epa_raw_q": {
+    "desc": "un-adjusted EPA/db Kalman (control)",
+    "r": 0.2907,
+    "r_opp_controlled": 0.2983,
+    "delta_r_vs_shipped_opp_controlled": 0.0177,
+    "delta_ci": [
+     0.0038,
+     0.032
+    ],
+    "n": 5340
+   },
+   "epax_q": {
+    "desc": "opp-adj EPA incl. designed QB runs",
+    "r": 0.2989,
+    "r_opp_controlled": 0.3067,
+    "delta_r_vs_shipped_opp_controlled": 0.0261,
+    "delta_ci": [
+     0.0118,
+     0.0404
+    ],
+    "n": 5340
+   },
+   "passing_composite3": {
+    "desc": "passing composite, EPA part cast-stripped (QB x cast x defence filter)",
+    "r": 0.2829,
+    "r_opp_controlled": 0.2895,
+    "delta_r_vs_shipped_opp_controlled": 0.0089,
+    "delta_ci": [
+     -0.0065,
+     0.0255
+    ],
+    "n": 5340
+   },
+   "epa3_q": {
+    "desc": "cast-stripped opp-adj EPA/db (3-state filter), QB part",
+    "r": 0.2814,
+    "r_opp_controlled": 0.2884,
+    "delta_r_vs_shipped_opp_controlled": 0.0078,
+    "delta_ci": [
+     -0.0079,
+     0.0238
+    ],
+    "n": 5340
+   },
+   "unit3": {
+    "desc": "3-state unit forecast: QB part + team cast part",
+    "r": 0.2993,
+    "r_opp_controlled": 0.3069,
+    "delta_r_vs_shipped_opp_controlled": 0.0263,
+    "delta_ci": [
+     0.0121,
+     0.0409
+    ],
+    "n": 5340
+   },
+   "cpoe_q": {
+    "desc": "CPOE rating alone",
+    "r": 0.2656,
+    "r_opp_controlled": 0.2727,
+    "delta_r_vs_shipped_opp_controlled": -0.0079,
+    "delta_ci": [
+     -0.0283,
+     0.0121
+    ],
+    "n": 5340
+   },
+   "sack_q": {
+    "desc": "sack-rate rating alone",
+    "r": -0.1554,
+    "r_opp_controlled": -0.1582,
+    "delta_r_vs_shipped_opp_controlled": -0.4387,
+    "delta_ci": [
+     -0.481,
+     -0.3959
+    ],
+    "n": 5340
+   },
+   "succ_q": {
+    "desc": "success rating alone",
+    "r": 0.2828,
+    "r_opp_controlled": 0.2892,
+    "delta_r_vs_shipped_opp_controlled": 0.0086,
+    "delta_ci": [
+     -0.009,
+     0.0266
+    ],
+    "n": 5340
+   },
+   "qbelo_starter": {
+    "desc": "SHIPPED QbElo (starter-keyed, as served)",
+    "r": 0.2734,
+    "r_opp_controlled": 0.2806,
+    "delta_r_vs_shipped_opp_controlled": 0.0,
+    "delta_ci": [
+     0.0,
+     0.0
+    ],
+    "n": 5340
+   },
+   "qbelo_listed": {
+    "desc": "shipped QbElo (listed-QB walk, as cached in X14)",
+    "r": 0.2744,
+    "r_opp_controlled": 0.2818,
+    "delta_r_vs_shipped_opp_controlled": 0.0012,
+    "delta_ci": [
+     0.0004,
+     0.002
+    ],
+    "n": 5340
+   },
+   "_joint_regression_z_coefs": {
+    "composite": [
+     0.0684,
+     0.0558,
+     0.0823
+    ],
+    "shipped_qbelo_starter": [
+     0.0273,
+     0.0135,
+     0.0394
+    ],
+    "note": "coef per 1 SD of each rating, same regression, + opponent pass-D control; [point, lo, hi]"
+   }
+  },
+  "ppd": {
+   "passing_composite": {
+    "desc": "passing composite (opp-adj EPA+succ+sack+CPOE, walk-forward weights)",
+    "r": 0.3086,
+    "r_opp_controlled": 0.3173,
+    "delta_r_vs_shipped_opp_controlled": 0.0109,
+    "delta_ci": [
+     -0.0032,
+     0.0259
+    ],
+    "n": 5340
+   },
+   "epa_q": {
+    "desc": "opp-adj EPA/db Kalman (QB x pass-defence duel)",
+    "r": 0.307,
+    "r_opp_controlled": 0.316,
+    "delta_r_vs_shipped_opp_controlled": 0.0096,
+    "delta_ci": [
+     -0.0046,
+     0.0236
+    ],
+    "n": 5340
+   },
+   "epa_raw_q": {
+    "desc": "un-adjusted EPA/db Kalman (control)",
+    "r": 0.3037,
+    "r_opp_controlled": 0.3126,
+    "delta_r_vs_shipped_opp_controlled": 0.0062,
+    "delta_ci": [
+     -0.0075,
+     0.0197
+    ],
+    "n": 5340
+   },
+   "epax_q": {
+    "desc": "opp-adj EPA incl. designed QB runs",
+    "r": 0.31,
+    "r_opp_controlled": 0.3191,
+    "delta_r_vs_shipped_opp_controlled": 0.0126,
+    "delta_ci": [
+     -0.001,
+     0.0268
+    ],
+    "n": 5340
+   },
+   "passing_composite3": {
+    "desc": "passing composite, EPA part cast-stripped (QB x cast x defence filter)",
+    "r": 0.2966,
+    "r_opp_controlled": 0.3044,
+    "delta_r_vs_shipped_opp_controlled": -0.0021,
+    "delta_ci": [
+     -0.0176,
+     0.0143
+    ],
+    "n": 5340
+   },
+   "epa3_q": {
+    "desc": "cast-stripped opp-adj EPA/db (3-state filter), QB part",
+    "r": 0.2912,
+    "r_opp_controlled": 0.2993,
+    "delta_r_vs_shipped_opp_controlled": -0.0071,
+    "delta_ci": [
+     -0.0225,
+     0.0085
+    ],
+    "n": 5340
+   },
+   "unit3": {
+    "desc": "3-state unit forecast: QB part + team cast part",
+    "r": 0.312,
+    "r_opp_controlled": 0.3209,
+    "delta_r_vs_shipped_opp_controlled": 0.0144,
+    "delta_ci": [
+     0.0005,
+     0.0282
+    ],
+    "n": 5340
+   },
+   "cpoe_q": {
+    "desc": "CPOE rating alone",
+    "r": 0.2731,
+    "r_opp_controlled": 0.2815,
+    "delta_r_vs_shipped_opp_controlled": -0.0249,
+    "delta_ci": [
+     -0.0445,
+     -0.004
+    ],
+    "n": 5340
+   },
+   "sack_q": {
+    "desc": "sack-rate rating alone",
+    "r": -0.1664,
+    "r_opp_controlled": -0.1693,
+    "delta_r_vs_shipped_opp_controlled": -0.4757,
+    "delta_ci": [
+     -0.5174,
+     -0.4318
+    ],
+    "n": 5340
+   },
+   "succ_q": {
+    "desc": "success rating alone",
+    "r": 0.2955,
+    "r_opp_controlled": 0.3032,
+    "delta_r_vs_shipped_opp_controlled": -0.0033,
+    "delta_ci": [
+     -0.0207,
+     0.0145
+    ],
+    "n": 5340
+   },
+   "qbelo_starter": {
+    "desc": "SHIPPED QbElo (starter-keyed, as served)",
+    "r": 0.298,
+    "r_opp_controlled": 0.3065,
+    "delta_r_vs_shipped_opp_controlled": 0.0,
+    "delta_ci": [
+     0.0,
+     0.0
+    ],
+    "n": 5340
+   },
+   "qbelo_listed": {
+    "desc": "shipped QbElo (listed-QB walk, as cached in X14)",
+    "r": 0.2986,
+    "r_opp_controlled": 0.3071,
+    "delta_r_vs_shipped_opp_controlled": 0.0007,
+    "delta_ci": [
+     -0.0001,
+     0.0015
+    ],
+    "n": 5340
+   },
+   "_joint_regression_z_coefs": {
+    "composite": [
+     0.1763,
+     0.1381,
+     0.215
+    ],
+    "shipped_qbelo_starter": [
+     0.121,
+     0.0806,
+     0.1581
+    ],
+    "note": "coef per 1 SD of each rating, same regression, + opponent pass-D control; [point, lo, hi]"
+   }
+  },
+  "off_pts": {
+   "passing_composite": {
+    "desc": "passing composite (opp-adj EPA+succ+sack+CPOE, walk-forward weights)",
+    "r": 0.2773,
+    "r_opp_controlled": 0.2853,
+    "delta_r_vs_shipped_opp_controlled": 0.004,
+    "delta_ci": [
+     -0.0105,
+     0.0191
+    ],
+    "n": 5340
+   },
+   "epa_q": {
+    "desc": "opp-adj EPA/db Kalman (QB x pass-defence duel)",
+    "r": 0.2759,
+    "r_opp_controlled": 0.2843,
+    "delta_r_vs_shipped_opp_controlled": 0.003,
+    "delta_ci": [
+     -0.0113,
+     0.0177
+    ],
+    "n": 5340
+   },
+   "epa_raw_q": {
+    "desc": "un-adjusted EPA/db Kalman (control)",
+    "r": 0.2737,
+    "r_opp_controlled": 0.282,
+    "delta_r_vs_shipped_opp_controlled": 0.0006,
+    "delta_ci": [
+     -0.0134,
+     0.0147
+    ],
+    "n": 5340
+   },
+   "epax_q": {
+    "desc": "opp-adj EPA incl. designed QB runs",
+    "r": 0.278,
+    "r_opp_controlled": 0.2864,
+    "delta_r_vs_shipped_opp_controlled": 0.005,
+    "delta_ci": [
+     -0.009,
+     0.0198
+    ],
+    "n": 5340
+   },
+   "passing_composite3": {
+    "desc": "passing composite, EPA part cast-stripped (QB x cast x defence filter)",
+    "r": 0.2665,
+    "r_opp_controlled": 0.2736,
+    "delta_r_vs_shipped_opp_controlled": -0.0078,
+    "delta_ci": [
+     -0.0235,
+     0.009
+    ],
+    "n": 5340
+   },
+   "epa3_q": {
+    "desc": "cast-stripped opp-adj EPA/db (3-state filter), QB part",
+    "r": 0.2617,
+    "r_opp_controlled": 0.2693,
+    "delta_r_vs_shipped_opp_controlled": -0.0121,
+    "delta_ci": [
+     -0.0273,
+     0.0035
+    ],
+    "n": 5340
+   },
+   "unit3": {
+    "desc": "3-state unit forecast: QB part + team cast part",
+    "r": 0.2809,
+    "r_opp_controlled": 0.289,
+    "delta_r_vs_shipped_opp_controlled": 0.0077,
+    "delta_ci": [
+     -0.0065,
+     0.0221
+    ],
+    "n": 5340
+   },
+   "cpoe_q": {
+    "desc": "CPOE rating alone",
+    "r": 0.2419,
+    "r_opp_controlled": 0.2497,
+    "delta_r_vs_shipped_opp_controlled": -0.0317,
+    "delta_ci": [
+     -0.0521,
+     -0.0108
+    ],
+    "n": 5340
+   },
+   "sack_q": {
+    "desc": "sack-rate rating alone",
+    "r": -0.1595,
+    "r_opp_controlled": -0.1621,
+    "delta_r_vs_shipped_opp_controlled": -0.4434,
+    "delta_ci": [
+     -0.4852,
+     -0.4009
+    ],
+    "n": 5340
+   },
+   "succ_q": {
+    "desc": "success rating alone",
+    "r": 0.2637,
+    "r_opp_controlled": 0.2708,
+    "delta_r_vs_shipped_opp_controlled": -0.0106,
+    "delta_ci": [
+     -0.0284,
+     0.0077
+    ],
+    "n": 5340
+   },
+   "qbelo_starter": {
+    "desc": "SHIPPED QbElo (starter-keyed, as served)",
+    "r": 0.2735,
+    "r_opp_controlled": 0.2813,
+    "delta_r_vs_shipped_opp_controlled": 0.0,
+    "delta_ci": [
+     0.0,
+     0.0
+    ],
+    "n": 5340
+   },
+   "qbelo_listed": {
+    "desc": "shipped QbElo (listed-QB walk, as cached in X14)",
+    "r": 0.2741,
+    "r_opp_controlled": 0.282,
+    "delta_r_vs_shipped_opp_controlled": 0.0006,
+    "delta_ci": [
+     -0.0001,
+     0.0015
+    ],
+    "n": 5340
+   },
+   "_joint_regression_z_coefs": {
+    "composite": [
+     1.6066,
+     1.1816,
+     2.0239
+    ],
+    "shipped_qbelo_starter": [
+     1.3828,
+     0.9302,
+     1.8033
+    ],
+    "note": "coef per 1 SD of each rating, same regression, + opponent pass-D control; [point, lo, hi]"
+   }
+  },
+  "win": {
+   "passing_composite": {
+    "desc": "passing composite (opp-adj EPA+succ+sack+CPOE, walk-forward weights)",
+    "r": 0.1972,
+    "r_opp_controlled": 0.2049,
+    "delta_r_vs_shipped_opp_controlled": 0.0071,
+    "delta_ci": [
+     -0.0068,
+     0.0222
+    ],
+    "n": 5340
+   },
+   "epa_q": {
+    "desc": "opp-adj EPA/db Kalman (QB x pass-defence duel)",
+    "r": 0.1989,
+    "r_opp_controlled": 0.207,
+    "delta_r_vs_shipped_opp_controlled": 0.0092,
+    "delta_ci": [
+     -0.0039,
+     0.024
+    ],
+    "n": 5340
+   },
+   "epa_raw_q": {
+    "desc": "un-adjusted EPA/db Kalman (control)",
+    "r": 0.196,
+    "r_opp_controlled": 0.2039,
+    "delta_r_vs_shipped_opp_controlled": 0.0061,
+    "delta_ci": [
+     -0.0066,
+     0.0204
+    ],
+    "n": 5340
+   },
+   "epax_q": {
+    "desc": "opp-adj EPA incl. designed QB runs",
+    "r": 0.2032,
+    "r_opp_controlled": 0.2113,
+    "delta_r_vs_shipped_opp_controlled": 0.0135,
+    "delta_ci": [
+     0.0,
+     0.0281
+    ],
+    "n": 5340
+   },
+   "passing_composite3": {
+    "desc": "passing composite, EPA part cast-stripped (QB x cast x defence filter)",
+    "r": 0.1903,
+    "r_opp_controlled": 0.197,
+    "delta_r_vs_shipped_opp_controlled": -0.0007,
+    "delta_ci": [
+     -0.0164,
+     0.015
+    ],
+    "n": 5340
+   },
+   "epa3_q": {
+    "desc": "cast-stripped opp-adj EPA/db (3-state filter), QB part",
+    "r": 0.1911,
+    "r_opp_controlled": 0.1983,
+    "delta_r_vs_shipped_opp_controlled": 0.0005,
+    "delta_ci": [
+     -0.0141,
+     0.0165
+    ],
+    "n": 5340
+   },
+   "unit3": {
+    "desc": "3-state unit forecast: QB part + team cast part",
+    "r": 0.2032,
+    "r_opp_controlled": 0.211,
+    "delta_r_vs_shipped_opp_controlled": 0.0133,
+    "delta_ci": [
+     -0.0005,
+     0.0278
+    ],
+    "n": 5340
+   },
+   "cpoe_q": {
+    "desc": "CPOE rating alone",
+    "r": 0.1537,
+    "r_opp_controlled": 0.161,
+    "delta_r_vs_shipped_opp_controlled": -0.0367,
+    "delta_ci": [
+     -0.0574,
+     -0.0149
+    ],
+    "n": 5340
+   },
+   "sack_q": {
+    "desc": "sack-rate rating alone",
+    "r": -0.1121,
+    "r_opp_controlled": -0.1144,
+    "delta_r_vs_shipped_opp_controlled": -0.3122,
+    "delta_ci": [
+     -0.3542,
+     -0.2659
+    ],
+    "n": 5340
+   },
+   "succ_q": {
+    "desc": "success rating alone",
+    "r": 0.1791,
+    "r_opp_controlled": 0.1857,
+    "delta_r_vs_shipped_opp_controlled": -0.0121,
+    "delta_ci": [
+     -0.0288,
+     0.006
+    ],
+    "n": 5340
+   },
+   "qbelo_starter": {
+    "desc": "SHIPPED QbElo (starter-keyed, as served)",
+    "r": 0.1904,
+    "r_opp_controlled": 0.1978,
+    "delta_r_vs_shipped_opp_controlled": 0.0,
+    "delta_ci": [
+     0.0,
+     0.0
+    ],
+    "n": 5340
+   },
+   "qbelo_listed": {
+    "desc": "shipped QbElo (listed-QB walk, as cached in X14)",
+    "r": 0.1909,
+    "r_opp_controlled": 0.1984,
+    "delta_r_vs_shipped_opp_controlled": 0.0007,
+    "delta_ci": [
+     -0.0001,
+     0.0015
+    ],
+    "n": 5340
+   },
+   "_joint_regression_z_coefs": {
+    "composite": [
+     0.0649,
+     0.0427,
+     0.0887
+    ],
+    "shipped_qbelo_starter": [
+     0.0444,
+     0.0215,
+     0.0649
+    ],
+    "note": "coef per 1 SD of each rating, same regression, + opponent pass-D control; [point, lo, hi]"
+   }
+  }
+ },
+ "acid_test_new_team": {
+  "n_qb_games": 733,
+  "n_qbs": 73,
+  "note": "starter games in the QB's first season with a team he had never played for, >= 100 career dropbacks before joining; DEV 2006-2015",
+  "qb_epa": {
+   "r": {
+    "passing_composite": 0.2321,
+    "epa_q": 0.2321,
+    "epa_raw_q": 0.2313,
+    "epax_q": 0.2338,
+    "passing_composite3": 0.2318,
+    "epa3_q": 0.2352,
+    "unit3": 0.2454,
+    "cpoe_q": 0.2208,
+    "sack_q": -0.1609,
+    "succ_q": 0.2418,
+    "qbelo_starter": 0.2143,
+    "qbelo_listed": 0.217
+   },
+   "delta_vs_shipped_ci": {
+    "passing_composite": [
+     0.018,
+     -0.0222,
+     0.0568
+    ],
+    "passing_composite3": [
+     0.0176,
+     -0.0242,
+     0.0581
+    ],
+    "epa3_q": [
+     0.0211,
+     -0.0175,
+     0.0597
+    ],
+    "epa_q": [
+     0.0181,
+     -0.0236,
+     0.0581
+    ]
+   }
+  },
+  "ppd": {
+   "r": {
+    "passing_composite": 0.237,
+    "epa_q": 0.2329,
+    "epa_raw_q": 0.2318,
+    "epax_q": 0.2324,
+    "passing_composite3": 0.2369,
+    "epa3_q": 0.2413,
+    "unit3": 0.2465,
+    "cpoe_q": 0.2488,
+    "sack_q": -0.1571,
+    "succ_q": 0.2551,
+    "qbelo_starter": 0.2292,
+    "qbelo_listed": 0.2306
+   },
+   "delta_vs_shipped_ci": {
+    "passing_composite": [
+     0.0079,
+     -0.036,
+     0.0507
+    ],
+    "passing_composite3": [
+     0.0079,
+     -0.038,
+     0.0518
+    ],
+    "epa3_q": [
+     0.0119,
+     -0.0284,
+     0.0538
+    ],
+    "epa_q": [
+     0.0038,
+     -0.0396,
+     0.0457
+    ]
+   }
+  }
+ },
+ "per_season_[composite,shipped]": {
+  "2006": {
+   "qb_epa_r": [
+    0.2282,
+    0.1673
+   ],
+   "ppd_r": [
+    0.2525,
+    0.231
+   ],
+   "n": 534
+  },
+  "2007": {
+   "qb_epa_r": [
+    0.3087,
+    0.2556
+   ],
+   "ppd_r": [
+    0.3631,
+    0.3047
+   ],
+   "n": 534
+  },
+  "2008": {
+   "qb_epa_r": [
+    0.2575,
+    0.2786
+   ],
+   "ppd_r": [
+    0.2511,
+    0.2519
+   ],
+   "n": 534
+  },
+  "2009": {
+   "qb_epa_r": [
+    0.36,
+    0.3507
+   ],
+   "ppd_r": [
+    0.3213,
+    0.3239
+   ],
+   "n": 534
+  },
+  "2010": {
+   "qb_epa_r": [
+    0.2888,
+    0.2547
+   ],
+   "ppd_r": [
+    0.3218,
+    0.2789
+   ],
+   "n": 534
+  },
+  "2011": {
+   "qb_epa_r": [
+    0.4045,
+    0.3754
+   ],
+   "ppd_r": [
+    0.4225,
+    0.4473
+   ],
+   "n": 534
+  },
+  "2012": {
+   "qb_epa_r": [
+    0.2949,
+    0.2415
+   ],
+   "ppd_r": [
+    0.3238,
+    0.2926
+   ],
+   "n": 534
+  },
+  "2013": {
+   "qb_epa_r": [
+    0.3045,
+    0.2429
+   ],
+   "ppd_r": [
+    0.3034,
+    0.2778
+   ],
+   "n": 534
+  },
+  "2014": {
+   "qb_epa_r": [
+    0.269,
+    0.22
+   ],
+   "ppd_r": [
+    0.2978,
+    0.2597
+   ],
+   "n": 534
+  },
+  "2015": {
+   "qb_epa_r": [
+    0.1835,
+    0.2129
+   ],
+   "ppd_r": [
+    0.2082,
+    0.239
+   ],
+   "n": 534
+  }
+ },
+ "predictive_next_season": {
+  "n": 281,
+  "note": "QB-seasons 2007-2015 with >=200 db and any dropback in s-1",
+  "comp": {
+   "r_epa": 0.5487,
+   "r_oppadj_epa": 0.543,
+   "r_ppd_as_starter": 0.5219
+  },
+  "comp3": {
+   "r_epa": 0.5309,
+   "r_oppadj_epa": 0.5224,
+   "r_ppd_as_starter": 0.505
+  },
+  "epa_q": {
+   "r_epa": 0.5361,
+   "r_oppadj_epa": 0.5315,
+   "r_ppd_as_starter": 0.5054
+  },
+  "epa3_q": {
+   "r_epa": 0.515,
+   "r_oppadj_epa": 0.5088,
+   "r_ppd_as_starter": 0.4756
+  },
+  "epa_raw_q": {
+   "r_epa": 0.5292,
+   "r_oppadj_epa": 0.524,
+   "r_ppd_as_starter": 0.4955
+  },
+  "ship": {
+   "r_epa": 0.4565,
+   "r_oppadj_epa": 0.4288,
+   "r_ppd_as_starter": 0.4393
+  },
+  "ship_l": {
+   "r_epa": 0.4602,
+   "r_oppadj_epa": 0.433,
+   "r_ppd_as_starter": 0.4417
+  },
+  "delta_r_epa_comp_minus_ship_ci": [
+   0.0347,
+   0.1546
+  ]
+ },
+ "face_validity": {
+  "end_2015_top15": [
+   [
+    "R.Wilson",
+    0.1788,
+    -0.1572,
+    0.1842,
+    0.0507,
+    0.0104,
+    0.1138
+   ],
+   [
+    "C.Palmer",
+    0.1545,
+    -0.1592,
+    0.1652,
+    0.0323,
+    -0.0107,
+    0.1057
+   ],
+   [
+    "B.Roethlisberger",
+    0.1409,
+    -0.1756,
+    0.1212,
+    0.0503,
+    -0.0114,
+    0.1015
+   ],
+   [
+    "T.Romo",
+    0.121,
+    -0.2095,
+    0.114,
+    0.0395,
+    0.0036,
+    0.0821
+   ],
+   [
+    "A.Dalton",
+    0.1045,
+    -0.1637,
+    0.1094,
+    0.0218,
+    -0.0095,
+    0.062
+   ],
+   [
+    "T.Brady",
+    0.1036,
+    -0.1886,
+    0.1251,
+    0.0105,
+    -0.0107,
+    0.058
+   ],
+   [
+    "K.Cousins",
+    0.099,
+    -0.1572,
+    0.1057,
+    0.0188,
+    -0.0122,
+    0.0695
+   ],
+   [
+    "D.Brees",
+    0.0898,
+    -0.144,
+    0.0929,
+    0.0191,
+    -0.0121,
+    0.0573
+   ],
+   [
+    "C.Newton",
+    0.08,
+    -0.1418,
+    0.1121,
+    -0.0024,
+    0.0012,
+    0.0421
+   ],
+   [
+    "P.Rivers",
+    0.0744,
+    -0.1717,
+    0.047,
+    0.0409,
+    -0.0043,
+    0.0574
+   ],
+   [
+    "T.Taylor",
+    0.0622,
+    -0.1974,
+    0.0765,
+    0.0156,
+    0.0161,
+    0.0475
+   ],
+   [
+    "R.Fitzpatrick",
+    0.0588,
+    -0.1771,
+    0.0795,
+    -0.0042,
+    -0.019,
+    0.0406
+   ],
+   [
+    "M.Ryan",
+    0.039,
+    -0.1925,
+    0.0362,
+    0.0072,
+    -0.0107,
+    0.0294
+   ],
+   [
+    "A.Smith",
+    0.028,
+    -0.191,
+    0.0486,
+    -0.0034,
+    0.016,
+    0.0203
+   ],
+   [
+    "J.Winston",
+    0.025,
+    -0.169,
+    0.0481,
+    -0.0148,
+    -0.0128,
+    0.0111
+   ]
+  ],
+  "end_2015_bottom10": [
+   [
+    "N.Foles",
+    -0.1209,
+    -0.2737,
+    -0.1332,
+    -0.0262,
+    -0.0137,
+    -0.0751
+   ],
+   [
+    "A.Davis",
+    -0.1127,
+    -0.2891,
+    -0.1336,
+    -0.0107,
+    0.0209,
+    -0.084
+   ],
+   [
+    "D.Carr",
+    -0.0914,
+    -0.2405,
+    -0.0844,
+    -0.0344,
+    -0.0125,
+    -0.0703
+   ],
+   [
+    "B.Hoyer",
+    -0.0744,
+    -0.242,
+    -0.0568,
+    -0.0349,
+    0.0012,
+    -0.0565
+   ],
+   [
+    "B.Bortles",
+    -0.0728,
+    -0.1824,
+    -0.0464,
+    -0.0369,
+    0.0126,
+    -0.0586
+   ],
+   [
+    "M.Sanchez",
+    -0.0675,
+    -0.2219,
+    -0.05,
+    -0.0333,
+    0.0015,
+    -0.0568
+   ],
+   [
+    "C.Kaepernick",
+    -0.0643,
+    -0.2342,
+    -0.0398,
+    -0.0262,
+    0.025,
+    -0.0522
+   ],
+   [
+    "S.Bradford",
+    -0.0635,
+    -0.2168,
+    -0.0656,
+    -0.0171,
+    -0.0042,
+    -0.0454
+   ],
+   [
+    "G.Smith",
+    -0.062,
+    -0.2252,
+    -0.0427,
+    -0.0295,
+    0.0059,
+    -0.0513
+   ],
+   [
+    "M.Mariota",
+    -0.0474,
+    -0.2105,
+    -0.0424,
+    -0.0092,
+    0.0249,
+    -0.036
+   ]
+  ],
+  "note": "pre-game value at each QB's last 2015 game; >= 400 dropbacks in 2014-15; EPA/db units",
+  "biggest_disagreements_composite_minus_shipped": [
+   [
+    "R.Wilson",
+    0.1788,
+    -0.1572,
+    0.1842,
+    0.0507,
+    0.0104,
+    0.1138,
+    0.336
+   ],
+   [
+    "T.Romo",
+    0.121,
+    -0.2095,
+    0.114,
+    0.0395,
+    0.0036,
+    0.0821,
+    0.3306
+   ],
+   [
+    "B.Roethlisberger",
+    0.1409,
+    -0.1756,
+    0.1212,
+    0.0503,
+    -0.0114,
+    0.1015,
+    0.3164
+   ],
+   [
+    "C.Palmer",
+    0.1545,
+    -0.1592,
+    0.1652,
+    0.0323,
+    -0.0107,
+    0.1057,
+    0.3137
+   ],
+   [
+    "T.Brady",
+    0.1036,
+    -0.1886,
+    0.1251,
+    0.0105,
+    -0.0107,
+    0.058,
+    0.2922
+   ],
+   [
+    "A.Dalton",
+    0.1045,
+    -0.1637,
+    0.1094,
+    0.0218,
+    -0.0095,
+    0.062,
+    0.2682
+   ],
+   [
+    "T.Taylor",
+    0.0622,
+    -0.1974,
+    0.0765,
+    0.0156,
+    0.0161,
+    0.0475,
+    0.2595
+   ],
+   [
+    "K.Cousins",
+    0.099,
+    -0.1572,
+    0.1057,
+    0.0188,
+    -0.0122,
+    0.0695,
+    0.2562
+   ]
+  ],
+  "2007_top5": [
+   [
+    "T.Brady",
+    0.2589,
+    -0.1607,
+    0.2907,
+    0.0456,
+    -0.0218,
+    0.1755
+   ],
+   [
+    "P.Manning",
+    0.2163,
+    -0.1495,
+    0.2371,
+    0.0344,
+    -0.0206,
+    0.1536
+   ],
+   [
+    "T.Romo",
+    0.1526,
+    -0.1991,
+    0.1716,
+    0.0287,
+    -0.0116,
+    0.122
+   ],
+   [
+    "B.Favre",
+    0.131,
+    -0.1872,
+    0.1396,
+    -0.0027,
+    -0.031,
+    0.0927
+   ],
+   [
+    "D.Brees",
+    0.1287,
+    -0.1644,
+    0.1187,
+    0.0253,
+    -0.0323,
+    0.1065
+   ]
+  ],
+  "2007_bottom5": [
+   [
+    "K.Clemens",
+    -0.1493,
+    -0.253,
+    -0.161,
+    -0.0407,
+    0.0369,
+    -0.1371
+   ],
+   [
+    "T.Edwards",
+    -0.1446,
+    -0.2699,
+    -0.1808,
+    -0.0349,
+    -0.0068,
+    -0.1313
+   ],
+   [
+    "J.Harrington",
+    -0.0829,
+    -0.2458,
+    -0.0934,
+    -0.031,
+    0.0027,
+    -0.0598
+   ],
+   [
+    "K.Boller",
+    -0.0742,
+    -0.2468,
+    -0.0818,
+    -0.0026,
+    0.0065,
+    -0.0557
+   ],
+   [
+    "D.Huard",
+    -0.0698,
+    -0.274,
+    -0.0619,
+    -0.0091,
+    0.023,
+    -0.0626
+   ]
+  ],
+  "2011_top5": [
+   [
+    "D.Brees",
+    0.2752,
+    -0.0999,
+    0.2645,
+    0.0609,
+    -0.0249,
+    0.1699
+   ],
+   [
+    "A.Rodgers",
+    0.2747,
+    -0.1246,
+    0.2867,
+    0.0612,
+    0.0023,
+    0.1462
+   ],
+   [
+    "T.Brady",
+    0.2275,
+    -0.1408,
+    0.2437,
+    0.04,
+    -0.0127,
+    0.1198
+   ],
+   [
+    "P.Rivers",
+    0.1361,
+    -0.1688,
+    0.1256,
+    0.0398,
+    -0.0094,
+    0.0831
+   ],
+   [
+    "M.Ryan",
+    0.1278,
+    -0.155,
+    0.1197,
+    0.0113,
+    -0.0188,
+    0.0837
+   ]
+  ],
+  "2011_bottom5": [
+   [
+    "B.Gabbert",
+    -0.2647,
+    -0.2612,
+    -0.2506,
+    -0.073,
+    0.0208,
+    -0.2002
+   ],
+   [
+    "C.Painter",
+    -0.2187,
+    -0.2763,
+    -0.2107,
+    -0.0651,
+    0.0041,
+    -0.1762
+   ],
+   [
+    "S.Bradford",
+    -0.2015,
+    -0.2589,
+    -0.185,
+    -0.0527,
+    0.0154,
+    -0.1258
+   ],
+   [
+    "C.Ponder",
+    -0.1685,
+    -0.2392,
+    -0.1415,
+    -0.0426,
+    0.0273,
+    -0.1365
+   ],
+   [
+    "T.Tebow",
+    -0.1139,
+    -0.2662,
+    -0.0758,
+    -0.0546,
+    0.0238,
+    -0.1088
+   ]
+  ]
+ }
+}
