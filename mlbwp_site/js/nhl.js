@@ -6,11 +6,14 @@
    forecast is a SCHEDULED game with a labelled lean: no pick pill, no fair
    odds, and a played game grades the lean, never a pick. The tier is read off
    the row (siteTier), so a row the serve ever stamps PROJECTED gets MLB's
-   PICK/LEAN treatment with no change here. Player and lineup ratings (RAPM for
-   skaters, GSAx for goalies) are display metrics and never model inputs. */
+   PICK/LEAN treatment with no change here. Player and lineup ratings (player
+   value and on-ice RAPM for skaters, GSAx for goalies) are display metrics and
+   never model inputs. */
 
+// nhlSort null = the ladder's own default (player value for skaters); core's
+// legacy "net" would now open the ladder on the on-ice xG column
 if(state.nhlPos==null) Object.assign(state,{nhlPos:"all",nhlMin:0,nhlStd:null,nhlStdView:"div",
-  nhlTeamSort:"elo",nhlResN:14});
+  nhlTeamSort:"elo",nhlResN:14,nhlSort:null});
 
 /* ---------- small helpers ---------- */
 const NHL_POSL={C:"C",L:"LW",R:"RW",D:"D",G:"G"};
@@ -73,15 +76,107 @@ function nhlLine(p,key){const s=(p&&p.stats)||{}, k=key||s.main||(s.cur?"cur":(s
    tooltip is the payload's reason in words (never a red "bad" colour). */
 function nhlGb(p){ if(p&&p.rating!=null) return gb(p.rating);
   return `<span class="gb" title="Not rated: ${siteEsc((p&&p.nr)||"no rating")}"><span class="v" style="color:var(--faint)">NR</span></span>`;}
-/* Per-payload indexes: xG ranks and rated-player counts. */
+/* Per-payload indexes: xG ranks, rated-player counts, player-value ranks. */
 let nhlMemoKey=null, nhlMemoVal=null;
 function nhlIdx(){const n=state.nhl; if(nhlMemoKey===n&&nhlMemoVal) return nhlMemoVal;
   const T=n.teams||{}, cs=Object.keys(T), xgR={};
   cs.slice().sort((a,b)=>(T[b].xg||0)-(T[a].xg||0)).forEach((c,i)=>{xgR[c]=i+1;});
   const P=Object.values(n.players||{});
   const sk=P.filter(p=>p.grp!=="G"&&p.rating!=null), nF=sk.filter(p=>p.grp==="F").length;
-  nhlMemoVal={xgR,nSk:sk.length,nF,nD:sk.length-nF,nG:P.filter(p=>p.grp==="G"&&p.rating!=null).length,nT:cs.length};
+  // player value: rank within F / D among the rostered skaters who carry one
+  const pvRk={}, pvN={F:0,D:0}; let pvS=0;
+  ["F","D"].forEach(g=>{const v=P.filter(p=>p.grp===g&&nhlPv(p)).sort((a,b)=>b.pv.v-a.pv.v||String(a.name).localeCompare(String(b.name)));
+    pvN[g]=v.length; v.forEach((p,i)=>{pvRk[p.id]=i+1; pvS=Math.max(pvS,+p.pv.s||0);});});
+  nhlMemoVal={xgR,nSk:sk.length,nF,nD:sk.length-nF,nG:P.filter(p=>p.grp==="G"&&p.rating!=null).length,nT:cs.length,
+    pvRk,pvN,nPv:pvN.F+pvN.D,pvS};
   nhlMemoKey=n; return nhlMemoVal;}
+
+/* ---------- player value: a display rating, never a model input ----------
+   The validated player-value program (phase0/pv_nhl_*.py) rates each skater on
+   what he does himself - creation, finishing, assists, power play, faceoffs,
+   penalties, on-ice defence - walk-forward, opponent-adjusted where there is an
+   opponent, shrunk toward his position, composed in goals per 60. A static
+   snapshot as of the end of 2025-26 (phase0/nhl_site_player_value.py ->
+   data/nhl_site_pv.json -> players[pid].pv; team `pv_lu`). Its game-level test
+   was not significant, so the game model does not use it; the pages say so. */
+const NHL_PV_LABEL="Player value (finishing, creation, faceoffs, penalties, defence) &mdash; a display rating; the game model does not use it yet (forward test on 2026-27 pending)";
+const NHL_PV_K=[
+  ["cre","Creation","The chances he takes himself: individual 5v5 expected goals (ixG) per 60."],
+  ["fin","Finishing","Goals above what his shots were worth, per 60 at 5v5 &mdash; every shot rated against the goalie who faced it."],
+  ["a1","Primary assists","The last pass before a 5v5 goal, per 60."],
+  ["a2","Secondary assists","The pass before that, per 60 &mdash; noisier, so it counts for less."],
+  ["pp","Power play","His own power-play shooting (xG &times; finishing); PP assists add almost nothing once the rest is known."],
+  ["fo","Faceoffs","Head-to-head faceoff rating (taker vs taker), valued in goals by zone and strength."],
+  ["pen","Penalties","Penalties drawn minus penalties taken, valued in goals."],
+  ["def","Defence","On-ice 5v5 expected goals against, adjusted for teammates and opponents (RAPM)."]];
+const nhlPv=p=>(p&&p.grp!=="G"&&p.pv&&p.pv.v!=null&&isFinite(p.pv.v))?p.pv:null;
+const nhlOrd=q=>{const n=Math.round(q), t=n%100; return n+((t>=11&&t<=13)?"th":(["th","st","nd","rd"][n%10]||"th"));};
+const nhlPvSeas=()=>{const s=nhlIdx().pvS; return s?nhlSL(String(s)):"2025&ndash;26";};
+const nhlGrpW=g=>g==="D"?"defencemen":"forwards";
+/* The headline badge of a valued skater: his percentile within F / D. */
+function nhlPctB(q,title){ if(q==null||!isFinite(q)) return `<span class="gb lo"><span class="v" style="color:var(--faint)">NR</span></span>`;
+  return `<span class="gb ${gbTier(q)}"${title?` title="${title}"`:""}><span class="v">${nhlOrd(q)}</span>
+    <span class="meter"><i style="width:${Math.max(3,Math.min(100,q))}%"></i></span></span>`;}
+/* A skater's badge: player value when he has one, else the RAPM GlassBox / NR. */
+function nhlSkB(p){const v=nhlPv(p);
+  return v?nhlPctB(v.p,`Player value ${nhlSg(v.v,3)} goals/60: ${nhlOrd(v.p)} percentile among ${nhlGrpW(v.grp)} (display rating, not a model input)`):nhlGb(p);}
+/* Percentile with a small bar, for tables. */
+const nhlPq=q=>q==null||!isFinite(q)?`<span class="num sub">&mdash;</span>`
+  :`<span class="nhl-pq ${gbTier(q)}" title="${nhlOrd(q)} percentile"><i style="width:${Math.max(2,Math.min(100,q))}%"></i></span><span class="num">${q}</span>`;
+/* A component in its own units, in words. */
+function nhlPvNat(k,v){const f=(x,d)=>x==null||!isFinite(x)?"&mdash;":(+x).toFixed(d);
+  switch(k){
+    case "cre": return `${f(v.cre,2)} ixG/60`;
+    case "fin": return v.fin==null?"&mdash;":`${nhlSg(v.fin,3)} goals/60 vs expected &middot; ${f(v.fm,2)}&times; his xG`;
+    case "a1": return `${f(v.a1,2)} per 60`;
+    case "a2": return `${f(v.a2,2)} per 60`;
+    case "pp": return `${f(v.tpp,1)} PP min a game`;
+    case "fo": return v.fo?`wins ${f(100*v.fo[0],1)}% vs an average taker &middot; ${f(v.fo[1],0)} draws/60`:"rarely takes faceoffs";
+    case "pen": return v.pen?`draws ${f(v.pen[1],2)}, takes ${f(v.pen[2],2)} per 60`:"&mdash;";
+    case "def": return v.def==null?"no on-ice fit yet":(v.def>=0?`prevents ${f(v.def,3)} xG/60`:`allows ${f(-v.def,3)} xG/60 more`);
+  }
+  return "&mdash;";}
+/* Signed bar in goals (scale = the value that fills half the track). */
+function nhlGBar(label,v,scale,d){const w=Math.min(Math.abs(v||0)/(scale||0.3)*50,50), neg=(v||0)<0;
+  return `<div class="r"><span class="lab">${label}</span>
+    <div class="tr"><div class="f ${neg?"neg":""}" style="${neg?"right:50%":"left:50%"};width:${w}%"></div></div>
+    <span class="v ${neg?"neg":"pos"}">${nhlSg(v,d==null?3:d)}</span></div>`;}
+/* The component table of one skater (player page). */
+function nhlPvTable(v){
+  const rows=NHL_PV_K.map(([k,name,desc])=>`<tr><td class="a"><b>${name}</b><div class="nhl-pvd">${desc}</div></td>
+      <td class="a"><span class="nhl-pvn">${nhlPvNat(k,v)}</span></td>
+      <td>${nhlSgN((v.c||{})[k],3)}</td><td class="a nhl-pqc">${nhlPq((v.q||{})[k])}</td></tr>`).join("");
+  return `<div class="twrap"><table class="nhl-pvt"><thead><tr><th class="a">Component</th><th class="a">His rate</th>
+      <th title="his contribution to the total, goals per 60 of his ice time vs an average regular at his position">Goals/60</th>
+      <th class="a" title="within ${nhlGrpW(v.grp)}: 2025-26 regulars (20+ games)">Percentile</th></tr></thead>
+    <tbody>${rows}<tr class="nhl-pvtot"><td class="a"><b>Total value</b></td>
+      <td class="a"><span class="nhl-pvn">${nhlSg(v.g,3)} goals a game over ${v.toi!=null?(+v.toi).toFixed(1):"&mdash;"} min</span></td>
+      <td>${nhlSgN(v.v,3)}</td><td class="a nhl-pqc">${nhlPq(v.p)}</td></tr></tbody></table></div>`;}
+/* How it works, in a few lines (player, players and team pages). */
+function nhlPvHelp(){
+  return `<details class="nhl-help"><summary>How player value works</summary><div class="nhl-helpb">
+    <p><b>What it counts.</b> Only what a skater does himself, each piece in goals:</p>
+    <ul>${NHL_PV_K.map(([,name,desc])=>`<li><b>${name}</b> &mdash; ${desc}</li>`).join("")}</ul>
+    <p><b>How it is built.</b> Every piece is walk-forward (only games before the one rated), opponent-adjusted where there is an
+      opponent (shooter vs goalie, faceoff taker vs taker, on-ice RAPM), and shrunk toward his position's average until his own
+      games outweigh it. The pieces are added in goals per 60 of his ice time with weights fit on 2011-18 games and frozen since;
+      per game = per 60 &times; his usual minutes. 0 = an average ${nhlPvSeas()} regular at his position; percentiles are within
+      forwards or defencemen (regulars with 20+ games). The components add up to the total, up to rounding.</p>
+    <p><b>Checked on players.</b> The pieces repeat from one season to the next: faceoffs (r&nbsp;0.73), penalties drawn minus
+      taken (~0.5), finishing rated against the goalie (0.24, vs 0.20 for plain goals minus xG). Summed over a lineup and added
+      to the goalie's saving rating, the value predicted game goal differential better than the xG-only RAPM in each of six
+      seasons (2012-18); the skaters' value alone also beat RAPM over 2012-18 as a whole. For a forward's next season it beat
+      RAPM; for defencemen the two were even.</p>
+    <p><b>Not a model input.</b> Added to the game model, it improved log loss by only 0.00062 on the locked test seasons, which
+      is not significant (95% CI &minus;0.00066 to +0.00188), so no forecast on this site uses it. A forward test on the 2026-27
+      season is pre-registered; until it passes, this is a display rating. <b>On-ice xG impact</b> (RAPM, xG/60 at 5v5) stays on
+      every page next to it.</p>
+    <p><b>Snapshot.</b> As of the end of ${nhlPvSeas()}: each skater's rating going into his last game on file. It is not
+      updated during the season, so a player with no NHL game by then has no value. The ${nhlPvSeas()}
+      shift charts are missing for 505 of the 1,312 regular-season games and 20 playoff games (an NHL data gap), so the
+      minutes-based pieces skip those games.
+      <b>Goalies</b> keep GSAx: the program's opponent-adjusted saving rating did not prove more repeatable year to year than
+      plain GSAx, so it is not shown as an upgrade.</p></div></details>`;}
 
 /* ---------- policy: tier, call, grade ---------- */
 function nhlCall(g){
@@ -363,7 +458,7 @@ function nhlGamePage(id){
           <div class="sub" style="margin-top:10px;font-size:12px;color:var(--faint)">Neither starter is known to the model or to this page:
             NHL starters are confirmed on game-day morning. Listed by workload; the rating is goals saved above expected
             (GSAx), 50 = an average goalie.</div></div>
-        <div class="panel"><h3>Key skaters <span class="sub">GlassBox 5v5 RAPM &middot; display only</span></h3>
+        <div class="panel"><h3>Key skaters <span class="sub">${nhlIdx().nPv?"player value":"GlassBox 5v5 RAPM"} &middot; display only</span></h3>
           <div class="cols2 nhl-cols">${nhlKeySkaters(g.away)}${nhlKeySkaters(g.home)}</div></div>
       </div>
       <div style="display:flex;flex-direction:column;gap:14px">
@@ -405,6 +500,7 @@ function nhlH2H(g){
     +R("our Elo",A.elo,H.elo,v=>Math.round(v),"hi")
     +R("Elo rank",A.rank,H.rank,v=>"#"+v,"lo")
     +R("xG rating",A.xg,H.xg,v=>nhlSg(v,2),"hi")
+    +(A.pv_lu&&H.pv_lu&&A.pv_lu.n&&H.pv_lu.n?R("lineup value",A.pv_lu.tot,H.pv_lu.tot,v=>nhlSg(v,2),"hi"):"")
     +R("lineup GlassBox",A.glassbox,H.glassbox,v=>v.toFixed(0),"hi")
     +R("rest days",g.arest,g.hrest,v=>v>=5?"5+":v,"hi")
     +R("back-to-back",g.ab2b?"yes":"no",g.hb2b?"yes":"no")
@@ -412,7 +508,8 @@ function nhlH2H(g){
     +R("playoff odds",pa.po,ph.po,v=>nhlOdds(v),"hi");
   return `<table class="cmp">${rows}</table>
     <div class="sub" style="margin-top:8px;font-size:11.5px;color:var(--faint)">xG rating = expected-goal margin per game against
-      an average team. Lineup GlassBox = the skaters' RAPM ratings, display only. Projections: season simulation, EARLY tier.</div>`;
+      an average team. Lineup value = the skaters' summed player value in goals a game (as of the end of ${nhlPvSeas()}); lineup
+      GlassBox = their RAPM ratings. Both display only, never model inputs. Projections: season simulation, EARLY tier.</div>`;
 }
 function nhlSignals(g,c){
   const s=[], A=nhlTeam(g.away)||{}, H=nhlTeam(g.home)||{}, I=nhlIdx(), ct=g.ct||{}, was=nhlDone(g)?"was":"is";
@@ -452,6 +549,16 @@ function nhlGoalieCol(code,side){
 }
 function nhlKeySkaters(code){
   const t=nhlTeam(code)||{}, P=state.nhl.players||{};
+  if(nhlIdx().nPv){
+    // player value (display rating): the six most valuable per game at their usual minutes
+    const r=(t.roster||[]).map(id=>P[id]).filter(p=>p&&p.grp!=="G"&&nhlPv(p)).sort((a,b)=>b.pv.g-a.pv.g).slice(0,6);
+    return `<div><div style="font-weight:700;margin-bottom:6px">${nhlTL(code,nhlName(code))}</div>
+      ${r.length?`<div class="twrap"><table><thead><tr><th class="a">Skater</th><th title="player value, percentile within F / D">Value</th>
+        <th title="goals a game above an average regular at his position">/gm</th><th title="on-ice xG impact, 5v5 RAPM">On-ice xG</th></tr></thead><tbody>
+      ${r.map(p=>`<tr ${nhlRow(nhlH("player",p.id))}><td class="a"><span class="player-link">${siteEsc(p.name)}</span> <span class="sub">${nhlPosL(p)}</span></td>
+        <td>${nhlPctB(p.pv.p)}</td><td>${nhlSgN(p.pv.g,3)}</td><td>${nhlSgN(p.net,2,p.rating==null)}</td></tr>`).join("")}</tbody></table></div>`
+      :'<div class="sub">no valued skaters on the roster file</div>'}</div>`;
+  }
   const r=(t.roster||[]).map(id=>P[id]).filter(p=>p&&p.grp!=="G"&&p.rating!=null)
     .sort((a,b)=>b.rating-a.rating).slice(0,6);
   return `<div><div style="font-weight:700;margin-bottom:6px">${nhlTL(code,nhlName(code))}</div>
@@ -465,7 +572,9 @@ function nhlKeySkaters(code){
 function nhlTeams(){
   const n=state.nhl, T=n.teams||{}, P=n.proj||{};
   const S=state.nhlTeamSort||"elo";
-  const key={elo:c=>-(T[c].elo||0),gb:c=>-(T[c].glassbox==null?-1:T[c].glassbox),proj:c=>-((P[c]&&P[c].pts)||0)}[S]||(c=>-(T[c].elo||0));
+  const luv=c=>{const l=T[c].pv_lu; return l&&l.n?l.tot:null;};
+  const key={elo:c=>-(T[c].elo||0),gb:c=>-(T[c].glassbox==null?-1:T[c].glassbox),proj:c=>-((P[c]&&P[c].pts)||0),
+    pv:c=>-(luv(c)==null?-9:luv(c))}[S]||(c=>-(T[c].elo||0));
   const codes=Object.keys(T).sort((a,b)=>key(a)-key(b)), nT=codes.length;
   const card=c=>{const t=T[c], p=P[c], r=nhlRecOf(t);
     return `<div class="tcard" ${nhlRow(nhlH("team",c))}>
@@ -473,15 +582,18 @@ function nhlTeams(){
       <div class="stat"><span title="the model's Elo rating and its rank among the ${nT} teams">Elo <b>${Math.round(t.elo)}</b> #${t.rank} of ${nT}</span><span>xG <b>${nhlSg(t.xg,2)}</b></span>
         ${p?`<span>Proj <b>${p.pts.toFixed(0)}</b> pts</span>`:""}</div>
       <div class="stat"><span${r&&!r.cur?` title="${r.lbl} final record"`:""}>${r?(r.cur?"Rec":"Last season")+` <b>${nhlWLO(r.r)}</b>`:"Rec <b>&mdash;</b>"}</span>
-        <span>${siteEsc(t.div||"")}</span>${p?`<span>Playoffs <b>${nhlOdds(p.po,t.clinch)}</b></span>`:""}</div></div>`;};
+        <span>${siteEsc(t.div||"")}</span>${p?`<span>Playoffs <b>${nhlOdds(p.po,t.clinch)}</b></span>`:""}</div>
+      ${luv(c)!=null?`<div class="stat"><span title="summed player value of the lineup, goals a game above average regulars (display only)">Lineup value <b>${nhlSg(luv(c),2)}</b>/gm${t.pv_lu.rk?` #${t.pv_lu.rk}`:""}</span></div>`:""}</div>`;};
   $("#view").innerHTML=`<div class="controls"><div class="rail">${siteRail("nhl")}</div>
-      ${chipRow([["elo","Model Elo"],["gb","Lineup GlassBox"],["proj","Projected points"]],S,"tsort")}</div>
+      ${chipRow([["elo","Model Elo"],["gb","Lineup GlassBox"]].concat(codes.some(c=>luv(c)!=null)?[["pv","Lineup value"]]:[]).concat([["proj","Projected points"]]),S,"tsort")}</div>
     <div class="eyebrow">Database &middot; NHL</div><h1 class="pt">Teams</h1>
     <div class="sub" style="margin-bottom:14px"><b>Elo</b> is the model's team rating (1500 = average; results through
       ${nhlDateOnly(n.ratings_through)||"the last final"}, pulled 30% back toward average between seasons) and <b>xG</b> its
       expected-goal rating (xG margin per game vs an average team, updated on shot quality, never on results) &mdash; the two
       team inputs of the market-blind model. The badge is the <b>lineup GlassBox</b>: the 12 forwards and 6 defencemen with the
-      most ice time, rated 0-100 on 5v5 RAPM (50 = average) &mdash; a display metric, not a model input. <b>Proj</b> = mean points
+      most ice time, rated 0-100 on 5v5 RAPM (50 = average) &mdash; a display metric, not a model input. <b>Lineup value</b> = the same
+      lineup's summed player value (creation, finishing, assists, power play, faceoffs, penalties, defence) in goals a game above
+      average regulars, as of the end of ${nhlPvSeas()} &mdash; also display only. <b>Proj</b> = mean points
       in ${(n.proj_info&&n.proj_info.n_sims||20000).toLocaleString(LOC)} season simulations. Click a team.</div>
     <div class="tgrid">${codes.map(card).join("")}</div>`;
   siteWireRail();
@@ -491,6 +603,7 @@ function nhlTeamPage(code){
   const n=state.nhl, t=(n.teams||{})[code];
   if(!t) return siteNotFound("nhl","team",code);
   const P=n.players||{}, pr=(n.proj||{})[code], I=nhlIdx(), today=nflToday();
+  const pvOn=I.nPv>0, lu=t.pv_lu&&t.pv_lu.n?t.pv_lu:null;
   const cur=(t.gp||0)>0, r=cur?t:(t.prev||null), rl=cur?nhlSeasLbl():nhlPrevLbl();
   const tile=(k,v,cls,sub)=>`<div class="b"><div class="k">${k}</div><div class="v ${cls||""}">${v}${sub?` <span class="sub" style="font-size:12px">${sub}</span>`:""}</div></div>`;
   const perG=(x,gp)=>gp&&x!=null?(x/gp).toFixed(2):"-";
@@ -517,7 +630,10 @@ function nhlTeamPage(code){
   const use=t.use==="cur"?"cur":"prev", ul=use==="cur"?nhlSeasLbl():nhlPrevLbl();
   const usage=p=>{const L=nhlLine(p,use); if(!L||!L.ln.gp) return -1;
     return p.grp==="G"?(L.ln.toi_s||L.ln.gp*3600):(L.ln.toi_pg||0)*L.ln.gp;};
-  const bySk=(a,b)=>(a.rating==null)-(b.rating==null)||(b.rating||0)-(a.rating||0)||usage(b)-usage(a);
+  // skaters by player value (the headline), then on-ice RAPM, then ice time
+  const pvOf=p=>{const v=nhlPv(p); return v?v.v:null;};
+  const bySk=(a,b)=>(pvOf(a)==null)-(pvOf(b)==null)||(pvOf(b)||0)-(pvOf(a)||0)
+    ||(a.rating==null)-(b.rating==null)||(b.rating||0)-(a.rating||0)||usage(b)-usage(a);
   const F=roster.filter(p=>p.grp==="F").sort(bySk), D=roster.filter(p=>p.grp==="D").sort(bySk);
   const G=roster.filter(p=>p.grp==="G").sort((a,b)=>usage(b)-usage(a));
   const cell=(v,cls)=>`<td><span class="num ${cls||""}">${v==null?"-":v}</span></td>`;
@@ -528,7 +644,10 @@ function nhlTeamPage(code){
         <span style="font-weight:600">${siteEsc(p.name)}</span>${p.num!=null?` <span class="sub">#${p.num}</span>`:""}</td>
       ${cell(p.age)}<td><span class="num">${ln?ln.gp:"-"}</span>${tm(ln)}</td>
       ${cell(ln&&ln.g)}${cell(ln&&ln.a)}${cell(ln&&ln.p)}${cell(ln?nhlPM(ln.pm):null)}${cell(ln?nhlMMSS(ln.toi_pg):null)}
-      <td>${nhlGb(p)}</td><td>${nhlSgN(p.net,2,p.rating==null)}</td><td>${nhlSgN(p.off,2,p.rating==null)}</td><td>${nhlSgN(p.def,2,p.rating==null)}</td></tr>`;};
+      ${pvOn?(()=>{const v=nhlPv(p);
+        return `<td>${v?nhlPctB(v.p):`<span class="num sub" title="no NHL game on file through ${nhlPvSeas()}">&mdash;</span>`}</td>
+        <td>${nhlSgN(v&&v.v,3)}</td><td>${nhlSgN(v&&v.g,3)}</td><td>${nhlSgN(p.net,2,p.rating==null)}</td>`;})()
+      :`<td>${nhlGb(p)}</td><td>${nhlSgN(p.net,2,p.rating==null)}</td><td>${nhlSgN(p.off,2,p.rating==null)}</td><td>${nhlSgN(p.def,2,p.rating==null)}</td>`}</tr>`;};
   const gRow=p=>{const L=nhlLine(p,use), ln=L&&L.ln;
     return `<tr ${nhlRow(nhlH("player",p.id))}>
       <td class="a"><span class="num" style="color:var(--faint);display:inline-block;width:22px">G</span>
@@ -538,7 +657,9 @@ function nhlTeamPage(code){
       <td>${ln&&ln.gsax!=null?nhlSgN(ln.gsax,1):'<span class="num sub">-</span>'}</td>
       <td>${nhlGb(p)}</td><td>${p.gsax60!=null?nhlSgN(p.gsax60,3):'<span class="num sub">&mdash;</span>'}</td></tr>`;};
   const skHead=`<thead><tr><th class="a">Player</th><th>Age</th><th>GP</th><th>G</th><th>A</th><th>P</th><th>+/&minus;</th><th>TOI/GP</th>
-    <th>GlassBox</th><th title="5v5 xG/60, teammate- and opponent-adjusted">Net</th><th>Off</th><th>Def</th></tr></thead>`;
+    ${pvOn?`<th title="player value: percentile within forwards / defencemen">Value</th><th title="goals per 60 of his ice time vs an average regular at his position">/60</th>
+      <th title="goals a game at his usual ice time">/gm</th><th title="on-ice xG impact: 5v5 xG/60, teammate- and opponent-adjusted (RAPM)">On-ice xG</th>`
+    :`<th>GlassBox</th><th title="5v5 xG/60, teammate- and opponent-adjusted">Net</th><th>Off</th><th>Def</th>`}</tr></thead>`;
   const tbl=(title,rows,head)=>rows.length?`<div class="subh">${title}</div><div class="twrap"><table>${head}<tbody>${rows}</tbody></table></div>`:"";
   // schedule & forecasts: every game of the season, the lean for this team
   const games=(n.schedule||[]).filter(g=>g.home===code||g.away===code).sort(nhlCmp);
@@ -567,9 +688,30 @@ function nhlTeamPage(code){
         <div class="b"><div class="k">Points SD</div><div class="v">${pr.sd.toFixed(1)}</div></div></div>
       <div class="sub" style="margin-top:10px;font-size:12px">${siteEsc((n.proj_info&&n.proj_info.method)||"")} Team ratings only (no goalie or
         lineup input), so these are EARLY-tier projections, not picks.</div></div>`:"";
-  const lineup=t.glassbox!=null?`<div style="margin-left:auto;text-align:right"><div class="sub">Lineup GlassBox</div>${gb(t.glassbox)}
+  const nLu=Object.values(n.teams||{}).filter(x=>x.pv_lu&&x.pv_lu.n).length;
+  const lineup=lu?`<div style="margin-left:auto;text-align:right" title="summed player value of the 12 forwards and 6 defencemen with the most ice time: goals a game above a lineup of average regulars (display only, not a model input)">
+      <div class="sub">Lineup value</div><div class="nhl-luv"><span class="num ${lu.tot>0?"pos":(lu.tot<0?"neg":"")}">${nhlSg(lu.tot,2)}</span> <span class="sub">goals/gm</span></div>
+      <div class="sub" style="margin-top:4px">F ${nhlSg(lu.f,2)} &middot; D ${nhlSg(lu.d,2)} &middot; #${lu.rk||"-"} of ${nLu}
+        ${t.glassbox!=null?` &middot; GlassBox ${t.glassbox.toFixed(0)}`:""}</div></div>`
+    :(t.glassbox!=null?`<div style="margin-left:auto;text-align:right"><div class="sub">Lineup GlassBox</div>${gb(t.glassbox)}
       <div class="sub" style="margin-top:4px">F ${t.gb_f!=null?t.gb_f.toFixed(0):"-"} &middot; D ${t.gb_d!=null?t.gb_d.toFixed(0):"-"}
-        &middot; G ${t.gb_g!=null?t.gb_g.toFixed(0):"-"} &middot; #${t.gb_rank||"-"} of ${I.nT}</div></div>`:"";
+        &middot; G ${t.gb_g!=null?t.gb_g.toFixed(0):"-"} &middot; #${t.gb_rank||"-"} of ${I.nT}</div></div>`:"");
+  // lineup value: the same 18 skaters as the GlassBox lineup, split by component
+  const luK=lu&&lu.k||{}, luMax=Math.max(0.15,...NHL_PV_K.map(([k])=>Math.abs(luK[k]||0)));
+  const luPanel=lu?`<div class="panel" style="margin-top:14px"><h3>Lineup value <span class="sub">player value of the 12 F + 6 D with the most
+      ${t.use==="cur"?nhlSeasLbl():nhlPrevLbl()} ice time &middot; display only, not a model input</span></h3>
+      <div class="cols2 nhl-cols">
+        <div><div class="statgrid">
+          <div class="b" title="goals a game above a lineup of average regulars"><div class="k">Lineup</div><div class="v ${lu.tot>0?"pos":(lu.tot<0?"neg":"")}">${nhlSg(lu.tot,2)}</div></div>
+          <div class="b"><div class="k">Forwards</div><div class="v ${lu.f>0?"pos":(lu.f<0?"neg":"")}">${nhlSg(lu.f,2)}</div></div>
+          <div class="b"><div class="k">Defence</div><div class="v ${lu.d>0?"pos":(lu.d<0?"neg":"")}">${nhlSg(lu.d,2)}</div></div>
+          <div class="b"><div class="k">Rank</div><div class="v">#${lu.rk||"-"} <span class="sub" style="font-size:12px">of ${nLu}</span></div></div></div>
+          <div class="sub" style="margin-top:10px;font-size:12px">Goals a game above a lineup of average ${nhlPvSeas()} regulars: each skater's
+            value per 60 &times; his usual minutes, summed. ${lu.n} of ${lu.slots} lineup slots carry a value${lu.n<lu.slots?"; the rest (no NHL game on file) count as average":""}.
+            ${(lu.top||[]).length?`Biggest contributors: ${(lu.top||[]).map(id=>P[id]).filter(p=>nhlPv(p)).map(p=>`${nhlPL(p)} ${nhlSg(p.pv.g,2)}`).join(", ")}.`:""}</div></div>
+        <div><div class="barlab" style="font-size:10.5px;letter-spacing:.06em;text-transform:uppercase"><span>Where it comes from</span><span>goals a game</span></div>
+          <div class="why" style="margin-top:6px">${NHL_PV_K.map(([k,name])=>nhlGBar(name,luK[k]||0,luMax,2)).join("")}</div></div>
+      </div></div>`:"";
   const fill=t.fill||{}, filled=(fill.rapm||0)+(fill.prior||0);
   const rp=n.rapm||{};
   $("#view").innerHTML=`<a class="back" data-nhlback href="${nhlH("teams")}">&lsaquo; Teams</a>
@@ -584,33 +726,60 @@ function nhlTeamPage(code){
           <th title="${code}'s win probability">Win%</th><th></th></tr></thead><tbody>${sRows||'<tr><td class="sub" colspan="5">No games in this build.</td></tr>'}</tbody></table></div>
         <div class="sub" style="margin-top:8px;font-size:12px">Team ratings only &mdash; no goalie or lineup input &mdash; so every game is a
           labelled lean. <a class="tl" href="${nhlH("record")}">Track record</a></div></div></div>
+    ${luPanel}
     ${tbl("Forwards",F.map(skRow).join(""),skHead)}
     ${tbl("Defence",D.map(skRow).join(""),skHead)}
     ${tbl("Goaltending",G.map(gRow).join(""),`<thead><tr><th class="a">Player</th><th>Age</th><th>GP</th><th>GS</th><th>W-L-OT</th><th>SV%</th>
       <th>GAA</th><th>SO</th><th title="goals saved above expected, that season">GSAx</th><th>GlassBox</th><th title="rating window, per 60 minutes">GSAx/60</th></tr></thead>`)}
     <div class="sub" style="margin-top:12px;font-size:12px">Season columns: ${ul}${use==="prev"?" (the team has not played this season yet)":""}; a code
-      beside GP is the team the line was played for. GlassBox is a display metric, never a model input: skaters on 5v5 RAPM
-      (${siteEsc(rp.window||"")}), goalies on GSAx; Net/Off/Def in xG per 60 minutes. <b>NR</b> = not rated &mdash; hover for why.
+      beside GP is the team the line was played for. ${pvOn?`Skaters: <b>Value</b> = ${NHL_PV_LABEL}; percentile within forwards or
+      defencemen, <b>/60</b> and <b>/gm</b> in goals vs an average regular at his position, as of the end of ${nhlPvSeas()}.
+      <b>On-ice xG</b> = 5v5 RAPM (${siteEsc(rp.window||"")}), xG per 60 minutes. Goalies on GSAx (GlassBox 0-100).`
+      :`GlassBox is a display metric, never a model input: skaters on 5v5 RAPM
+      (${siteEsc(rp.window||"")}), goalies on GSAx; Net/Off/Def in xG per 60 minutes.`} <b>NR</b> = not rated &mdash; hover for why.
       ${t.glassbox!=null?`Lineup GlassBox: ${t.n_f+t.n_d} of 18 lineup slots carry a displayed rating${filled?`; ${fill.rapm?fill.rapm+" filled from the partial RAPM estimate":""}${fill.rapm&&fill.prior?", ":""}${fill.prior?fill.prior+" at the league-average prior of 50":""}`:""}.`:""}
-      ${rp.caveat?siteEsc(rp.caveat):""}</div>`;
+      ${rp.caveat?siteEsc(rp.caveat):""}</div>
+    ${pvOn?`<div style="margin-top:12px">${nhlPvHelp()}</div>`:""}`;
 }
 
 /* ---------- PLAYERS (index + ladder) ---------- */
+/* Distribution of player value (goals per 60 vs an average regular). Bins of
+   0.1 from at least -0.5 to +0.8, widened to the data so every value sits in a
+   bin whose label is true (no catch-all edge bins). */
+function nhlVHist(vals){const X=vals.filter(v=>v!=null&&isFinite(v));
+  const lo=Math.min(-0.5,Math.floor(Math.min(...X,0)*10)/10), hi=Math.max(0.8,Math.ceil(Math.max(...X,0)*10)/10);
+  const B=Math.max(1,Math.min(40,Math.round((hi-lo)*10))), w=(hi-lo)/B, c=new Array(B).fill(0);
+  X.forEach(v=>{c[Math.max(0,Math.min(B-1,Math.floor((v-lo)/w+1e-9)))]++;});
+  const m=Math.max(...c,1), z=Math.floor(-lo/w+1e-9), e=i=>nhlSg(lo+i*w,2);
+  return `<div style="display:flex;align-items:flex-end;gap:2px;height:56px;margin:6px 0 2px">
+    ${c.map((x,i)=>`<div style="flex:1;background:${i>=z?"var(--accent)":"var(--line-2)"};opacity:${x?1:.22};height:${Math.max(4,Math.round(100*x/m))}%;border-radius:2px" title="${e(i)} to ${e(i+1)} goals/60: ${x}"></div>`).join("")}
+  </div><div class="sub" style="display:flex;justify-content:space-between"><span>${nhlSg(lo,1)}</span><span>0 = average regular</span><span>${nhlSg(hi,1)} goals/60</span></div>`;}
 function nhlPlayers(){
   const n=state.nhl, P=Object.values(n.players||{}), I=nhlIdx(), rp=n.rapm||{}, gm=n.goalie_model||{};
   const pos=["all","F","C","L","R","D","G"].indexOf(state.nhlPos)>=0?state.nhlPos:"all", isG=pos==="G";
   const inPos=p=>pos==="all"?p.grp!=="G":((pos==="F"||pos==="D"||pos==="G")?p.grp===pos:p.pos===pos);
-  const pool=P.filter(inPos), rated=pool.filter(p=>p.rating!=null), unrated=pool.filter(p=>p.rating==null);
+  // skaters are ranked on player value when the snapshot is in the build;
+  // goalies (and a build without it) on the 0-100 GlassBox rating
+  const pvMode=!isG&&I.nPv>0, pvv=p=>nhlPv(p)||{}, pvL=nhlPvSeas();
+  const has=pvMode?(p=>!!nhlPv(p)):(p=>p.rating!=null);
+  const pool=P.filter(inPos), rated=pool.filter(has), unrated=pool.filter(p=>!has(p));
   const SORTS=isG?[["r","Rating"],["gsax","GSAx/60"],["gp","Most games"]]
+    :pvMode?[["v","Value /60"],["g","Value /game"],["r","On-ice xG (RAPM)"],["toi","Most 5v5 TOI"]]
     :[["r","Rating"],["off","Offense"],["def","Defense"],["toi","Most 5v5 TOI"]];
-  const sk=SORTS.some(s=>s[0]===state.nhlSort)?state.nhlSort:"r";
-  const val={r:p=>p.rating,off:p=>p.off,def:p=>p.def,toi:p=>p.toi,gsax:p=>p.gsax60,gp:p=>p.g_win&&p.g_win.gp}[sk];
-  const vol=p=>isG?((p.g_win&&p.g_win.gp)||0):(p.toi||0);
+  // the component columns sort from their headers
+  const ALL=SORTS.concat(pvMode?[["p","Value percentile"]].concat(NHL_PV_K.map(([k,name])=>["c_"+k,name]),[["net","On-ice xG"]]):[]);
+  const sk=ALL.some(s=>s[0]===state.nhlSort)?state.nhlSort:SORTS[0][0];
+  const val=sk.indexOf("c_")===0?(p=>(pvv(p).c||{})[sk.slice(2)])
+    :{v:p=>pvv(p).v,p:p=>pvv(p).p,g:p=>pvv(p).g,r:p=>p.rating,off:p=>p.off,def:p=>p.def,net:p=>p.net,toi:p=>p.toi,
+      gsax:p=>p.gsax60,gp:p=>p.g_win&&p.g_win.gp}[sk];
+  const vol=p=>isG?((p.g_win&&p.g_win.gp)||0):(pvMode?((+pvv(p).s===I.pvS?pvv(p).sgp:0)||0):(p.toi||0));
   const MINS=isG?[["0","All rated"],["50","50+ GP"],["150","150+ GP"],["nr",`Unrated (${unrated.length})`]]
+    :pvMode?[["0","All with a value"],["20",`20+ GP in ${pvL}`],["60",`60+ GP in ${pvL}`],["nr",`No value (${unrated.length})`]]
     :[["0","All rated"],["2000","2,000+ min"],["3500","3,500+ min"],["nr",`Unrated (${unrated.length})`]];
   const mn=MINS.some(m=>m[0]===String(state.nhlMin))?String(state.nhlMin):"0";
   const num=v=>v==null||!isFinite(v)?-1e9:v;
-  const ranked=rated.slice().sort((a,b)=>num(val(b))-num(val(a))||b.rating-a.rating);
+  const tie=pvMode?((a,b)=>num(pvv(b).v)-num(pvv(a).v)):((a,b)=>(b.rating||0)-(a.rating||0));
+  const ranked=rated.slice().sort((a,b)=>num(val(b))-num(val(a))||tie(a,b)||String(a.name).localeCompare(String(b.name)));
   const rk=new Map(ranked.map((p,i)=>[p.id,i+1]));
   const useOf=p=>{const L=nhlLine(p); return L?(L.ln.gp||0):0;};
   const shown=mn==="nr"?unrated.slice().sort((a,b)=>useOf(b)-useOf(a)||(b.toi||0)-(a.toi||0)):ranked.filter(p=>vol(p)>=+mn);
@@ -624,68 +793,105 @@ function nhlPlayers(){
     <td class="a">${nhlTL(p.team)}</td><td>${gb(p.rating)}</td>
     <td>${nhlSgN(p.net)}</td><td>${nhlSgN(p.off)}</td><td>${nhlSgN(p.def)}</td>
     <td><span class="num">${nhlInt(p.toi)}</span></td><td class="a sub">${season(p)}</td></tr>`;
+  const pvRow=p=>{const v=pvv(p), c=v.c||{}, q=v.q||{};
+    return `<tr ${nhlRow(nhlH("player",p.id))}><td><span class="num">${rk.get(p.id)}</span></td>
+    <td class="a"><span class="player-link">${siteEsc(p.name)}</span> <span class="sub">${nhlPosL(p)}</span></td>
+    <td class="a">${nhlTL(p.team)}</td><td>${nhlPctB(v.p)}</td><td>${nhlSgN(v.v,3)}</td><td>${nhlSgN(v.g,3)}</td>
+    ${NHL_PV_K.map(([k])=>`<td${q[k]!=null?` title="${nhlOrd(q[k])} percentile"`:""}>${nhlSgN(c[k],3)}</td>`).join("")}
+    <td>${nhlSgN(p.net,2,p.rating==null)}</td><td class="a sub">${season(p)}</td></tr>`;};
   const gRow=p=>`<tr ${nhlRow(nhlH("player",p.id))}><td><span class="num">${rk.get(p.id)}</span></td>
     <td class="a"><span class="player-link">${siteEsc(p.name)}</span> <span class="sub">G</span></td>
     <td class="a">${nhlTL(p.team)}</td><td>${gb(p.rating)}</td><td>${nhlSgN(p.gsax60,3)}</td>
     <td>${p.g_win?nhlSgN(p.g_win.gsax,1):"-"}</td><td><span class="num">${p.g_win?p.g_win.gp:"-"}</span></td>
     <td class="a sub">${season(p)}</td></tr>`;
+  const nrWhy=p=>pvMode?`no NHL game on file through ${pvL}: player value is a snapshot as of the end of ${pvL}, not updated during the season`:siteEsc(p.nr||"not rated");
   const nrRow=p=>`<tr ${nhlRow(nhlH("player",p.id))}>
     <td class="a"><span class="player-link">${siteEsc(p.name)}</span> <span class="sub">${nhlPosL(p)}</span></td>
-    <td class="a">${nhlTL(p.team)}</td><td class="a"><span class="nhl-nr">${siteEsc(p.nr||"not rated")}</span></td>
+    <td class="a">${nhlTL(p.team)}</td><td class="a"><span class="nhl-nr">${nrWhy(p)}</span></td>
     <td class="a sub">${season(p)}</td></tr>`;
-  const head=mn==="nr"?`<tr><th class="a">Player</th><th class="a">Team</th><th class="a">Why no rating</th><th class="a">Latest season</th></tr>`
+  const th=(k,label,title)=>`<th data-nsort="${k}" class="nhl-srt${sk===k?" on":""}"${title?` title="${title}"`:""}>${label}</th>`;
+  const SHORT={cre:"Cre",fin:"Fin",a1:"A1",a2:"A2",pp:"PP",fo:"FO",pen:"Pen",def:"Def"};
+  const head=mn==="nr"?`<tr><th class="a">Player</th><th class="a">Team</th><th class="a">Why no ${pvMode?"value":"rating"}</th><th class="a">Latest season</th></tr>`
     :isG?`<tr><th></th><th class="a">Goalie</th><th class="a">Team</th><th>GlassBox</th><th title="goals saved above expected per 60 minutes, rating window">GSAx/60</th>
       <th title="total GSAx over the rating window">GSAx</th><th title="games in the rating window">GP</th><th class="a">Latest season</th></tr>`
+    :pvMode?`<tr><th></th><th class="a">Skater</th><th class="a">Team</th>
+      ${th("p","Value","player value: percentile within forwards / defencemen (sorts by percentile)")}
+      ${th("v","/60","goals per 60 of his ice time vs an average regular at his position")}
+      ${th("g","/gm","goals a game at his usual ice time")}
+      ${NHL_PV_K.map(([k,name])=>th("c_"+k,SHORT[k],name+": goals/60 of his value (hover a cell for the percentile)")).join("")}
+      ${th("net","On-ice xG","on-ice xG impact: teammate- and opponent-adjusted 5v5 xG/60 (RAPM)")}<th class="a">Latest season</th></tr>`
     :`<tr><th></th><th class="a">Skater</th><th class="a">Team</th><th>GlassBox</th><th title="5v5 xG/60: offense + defense">Net</th>
       <th>Off</th><th>Def</th><th title="5v5 minutes in the rating window">5v5 min</th><th class="a">Latest season</th></tr>`;
-  const rows=shown.map(mn==="nr"?nrRow:(isG?gRow:skRow)).join("")
-    ||`<tr><td class="sub" colspan="9">No players match.</td></tr>`;
-  const gbKey=isG?"gb_g":(pos==="D"?"gb_d":(pos==="all"?"glassbox":"gb_f"));
-  const TT=Object.entries(n.teams||{}).map(([c,t])=>[c,t[gbKey]]).filter(x=>x[1]!=null).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const rows=shown.map(mn==="nr"?nrRow:(isG?gRow:(pvMode?pvRow:skRow))).join("")
+    ||`<tr><td class="sub" colspan="${pvMode&&mn!=="nr"?16:9}">No players match.</td></tr>`;
   const grpName={all:"lineups",F:"forward groups",C:"forward groups",L:"forward groups",R:"forward groups",D:"defence groups",G:"No. 1 goalies"}[pos];
   const posName={all:"skaters",F:"forwards",C:"centres",L:"left wings",R:"right wings",D:"defencemen",G:"goalies"}[pos];
-  $("#view").innerHTML=`<div class="controls"><div class="rail">${siteRail("nhl")}</div></div>
-    <div class="eyebrow">Database &middot; NHL</div><h1 class="pt">Players</h1>
-    <div class="sub" style="margin-bottom:10px">Every player on a current NHL roster (${P.length}). <b>Skaters</b> are rated on
+  let best;
+  if(pvMode){const lk=pos==="D"?"d":(pos==="all"?"tot":"f");
+    const TT=Object.entries(n.teams||{}).filter(([,t])=>t.pv_lu&&t.pv_lu.n&&t.pv_lu[lk]!=null).map(([c,t])=>[c,t.pv_lu[lk]])
+      .sort((a,b)=>b[1]-a[1]).slice(0,6);
+    best=`<div class="panel"><h3>Best team ${grpName} <span class="sub">summed player value &middot; goals a game &middot; display only</span></h3>
+      <div class="twrap"><table><tbody>${TT.map(([c,v],i)=>`<tr ${nhlRow(nhlH("team",c))}>
+        <td><span class="num">${i+1}</span></td><td class="a"><span class="ab" style="color:var(--accent)">${c}</span> <span class="sub">${nhlNick(c)}</span></td>
+        <td>${nhlSgN(v,2)}</td></tr>`).join("")||'<tr><td class="sub">No lineup values in this build.</td></tr>'}</tbody></table></div></div>`;
+  }else{const gbKey=isG?"gb_g":(pos==="D"?"gb_d":(pos==="all"?"glassbox":"gb_f"));
+    const TT=Object.entries(n.teams||{}).map(([c,t])=>[c,t[gbKey]]).filter(x=>x[1]!=null).sort((a,b)=>b[1]-a[1]).slice(0,6);
+    best=`<div class="panel"><h3>Best team ${grpName} <span class="sub">lineup GlassBox &middot; display only</span></h3>
+      <div class="twrap"><table><tbody>${TT.map(([c,v],i)=>`<tr ${nhlRow(nhlH("team",c))}>
+        <td><span class="num">${i+1}</span></td><td class="a"><span class="ab" style="color:var(--accent)">${c}</span> <span class="sub">${nhlNick(c)}</span></td>
+        <td>${gb(v)}</td></tr>`).join("")}</tbody></table></div></div>`;}
+  const dist=pvMode?`<div class="panel"><h3>Value distribution <span class="sub">${rated.length} ${posName} with a value</span></h3>${nhlVHist(rated.map(p=>pvv(p).v))}</div>`
+    :`<div class="panel"><h3>Rating distribution <span class="sub">${rated.length} rated ${posName}</span></h3>${histBars(rated.map(p=>p.rating))}</div>`;
+  const intro=pvMode?`Every player on a current NHL roster (${P.length}). <b>Skaters</b> are ranked on <b>player value</b>: what a
+      skater does himself &mdash; creation, finishing, primary and secondary assists, power play, faceoffs, penalties drawn minus
+      taken, and on-ice defence &mdash; each walk-forward and shrunk toward his position, added up in goals per 60 of his ice time
+      (0 = an average ${pvL} regular at his position; <b>/gm</b> = per game at his usual minutes; the badge is his percentile within
+      forwards or defencemen). Columns <b>Cre</b> to <b>Def</b> are each piece's share of the value; click a header to sort.
+      <b>On-ice xG</b> is the teammate- and opponent-adjusted 5v5 RAPM (${siteEsc(rp.window||"")}), kept next to it.
+      <b>Goalies</b> are rated on goals saved above expected (GSAx on MoneyPuck xG, ${siteEsc(gm.window||"")}, shrunk toward
+      average), 0-100 GlassBox scale. Click anyone.`
+    :`Every player on a current NHL roster (${P.length}). <b>Skaters</b> are rated on
       teammate- and opponent-adjusted 5v5 expected-goal impact (RAPM, xG per 60 minutes, ${siteEsc(rp.window||"")}; at least
       ${nhlInt(rp.min_toi||1000)} 5v5 minutes to be rated): <b>Off</b> = chances created, <b>Def</b> = chances suppressed (positive
       is better), <b>Net</b> = both. <b>Goalies</b> are rated on goals saved above expected (GSAx on MoneyPuck xG,
       ${siteEsc(gm.window||"")}, shrunk toward average). One 0-100 <b>GlassBox</b> scale: 50 = average, 15 points = 1 SD.
-      <b>Display metrics &mdash; the game model has no player input.</b> Click anyone.</div>
-    ${rp.caveat?`<div class="polnote warn" style="font-size:12px">${siteEsc(rp.caveat)}</div>`:""}
+      <b>Display metrics &mdash; the game model has no player input.</b> Click anyone.`;
+  $("#view").innerHTML=`<div class="controls"><div class="rail">${siteRail("nhl")}</div></div>
+    <div class="eyebrow">Database &middot; NHL</div><h1 class="pt">Players</h1>
+    <div class="sub" style="margin-bottom:10px">${intro}</div>
+    ${pvMode?`<div class="polnote" style="font-size:12px">${NHL_PV_LABEL}. As of the end of ${pvL}.</div>`:""}
+    ${pvMode?`<div style="margin:0 0 10px">${nhlPvHelp()}</div>`:""}
+    ${rp.caveat&&!pvMode?`<div class="polnote warn" style="font-size:12px">${siteEsc(rp.caveat)}</div>`:""}
     <input class="psearch" id="nhlq" placeholder="Search ${P.length} NHL players&hellip;" autocomplete="off">
     <div id="nhlres"></div>
-    <div class="grid" style="margin:8px 0 14px">
-      <div class="panel"><h3>Rating distribution <span class="sub">${rated.length} rated ${posName}</span></h3>${histBars(rated.map(p=>p.rating))}</div>
-      <div class="panel"><h3>Best team ${grpName} <span class="sub">lineup GlassBox &middot; display only</span></h3>
-        <div class="twrap"><table><tbody>${TT.map(([c,v],i)=>`<tr ${nhlRow(nhlH("team",c))}>
-          <td><span class="num">${i+1}</span></td><td class="a"><span class="ab" style="color:var(--accent)">${c}</span> <span class="sub">${nhlNick(c)}</span></td>
-          <td>${gb(v)}</td></tr>`).join("")}</tbody></table></div></div>
-    </div>
+    <div class="grid" style="margin:8px 0 14px">${dist}${best}</div>
     <div class="controls nhl-chips" style="margin-bottom:8px">
       ${chipRow([["all","All skaters"],["F","Forwards"],["C","C"],["L","LW"],["R","RW"],["D","Defence"],["G","Goalies"]],pos,"npos")}
-      ${mn==="nr"?"":chipRow(SORTS,sk,"nsort")}
+      ${mn==="nr"?"":chipRow(SORTS,SORTS.some(s=>s[0]===sk)?sk:"","nsort")}
       ${chipRow(MINS,mn,"nmin")}
     </div>
     <div class="sub" style="margin-bottom:6px"><b>${shown.length}</b> shown &middot; ${mn==="nr"
-      ?`${posName} on a roster without a displayed rating, with the reason`
-      :`${rated.length} rated ${posName}; # = rank by ${SORTS.find(s=>s[0]===sk)[1].toLowerCase()} among them`}</div>
-    <div class="twrap"><table><thead>${head}</thead><tbody>${rows}</tbody></table></div>`;
+      ?`${posName} on a roster without a ${pvMode?"player value":"displayed rating"}, with the reason`
+      :`${rated.length} ${pvMode?"":"rated "}${posName}${pvMode?" with a value":""}; # = rank by ${ALL.find(s=>s[0]===sk)[1].toLowerCase()} among them`}</div>
+    <div class="twrap"><table${pvMode&&mn!=="nr"?' class="nhl-pvl"':""}><thead>${head}</thead><tbody>${rows}</tbody></table></div>
+    ${pvMode&&rp.caveat?`<div class="sub" style="margin-top:8px;font-size:12px">On-ice xG: ${siteEsc(rp.caveat)}</div>`:""}`;
   siteWireRail();
   $("#view").querySelectorAll("[data-npos]").forEach(x=>x.onclick=()=>{
     const was=state.nhlPos==="G"; state.nhlPos=x.dataset.npos;
-    if(was!==(state.nhlPos==="G")){state.nhlMin=0; state.nhlSort="r";}
+    if(was!==(state.nhlPos==="G")){state.nhlMin=0; state.nhlSort=null;}
     nhlPlayers();});
   $("#view").querySelectorAll("[data-nsort]").forEach(x=>x.onclick=()=>{state.nhlSort=x.dataset.nsort;nhlPlayers();});
   $("#view").querySelectorAll("[data-nmin]").forEach(x=>x.onclick=()=>{state.nhlMin=x.dataset.nmin;nhlPlayers();});
   const q=$("#nhlq"), res=$("#nhlres");
+  const score=p=>nhlPv(p)?2+(p.pv.p||0)/1000:(p.rating!=null?1+p.rating/1000:0);
   if(q) q.oninput=()=>{const s=norm(q.value);
     if(s.length<2){res.innerHTML="";return;}
-    const hits=P.filter(p=>norm(p.name).includes(s)).sort((a,b)=>(b.rating!=null)-(a.rating!=null)||(b.rating||0)-(a.rating||0)).slice(0,20);
+    const hits=P.filter(p=>norm(p.name).includes(s)).sort((a,b)=>score(b)-score(a)).slice(0,20);
     res.innerHTML=hits.length?`<div class="twrap" style="margin-bottom:6px"><table><tbody>
-      ${hits.map(p=>`<tr ${nhlRow(nhlH("player",p.id))}>
+      ${hits.map(p=>{const v=nhlPv(p); return `<tr ${nhlRow(nhlH("player",p.id))}>
         <td class="a"><span class="player-link">${siteEsc(p.name)}</span> <span class="sub">${nhlPosL(p)} &middot; ${p.team}</span></td>
-        <td>${nhlGb(p)}</td><td class="a sub">${p.rating==null?siteEsc(p.nr||"not rated"):season(p)}</td></tr>`).join("")}
+        <td>${p.grp==="G"?nhlGb(p):nhlSkB(p)}</td><td class="a sub">${v?`${nhlSg(v.v,3)} goals/60 &middot; ${season(p)}`
+          :(p.rating==null?(p.grp!=="G"&&I.nPv?`no player value (no NHL game through ${pvL})`:siteEsc(p.nr||"not rated")):season(p))}</td></tr>`;}).join("")}
       </tbody></table></div>`:`<div class="sub" style="margin:6px 0 10px">No players match.</div>`;};
 }
 function nhlPlayerPage(id){
@@ -698,7 +904,7 @@ function nhlPlayerPage(id){
   const bio=[teamLink(p.team,nhlName(p.team),"nhl"),NHL_POSF[p.pos]||p.pos,p.num!=null?"#"+p.num:"",
     p.age!=null?"age "+p.age:"",p.shoots?(isG?"catches ":"shoots ")+p.shoots:"",[ht,p.wt?p.wt+" lb":""].filter(Boolean).join(", "),
     siteEsc(p.nat||"")].filter(Boolean).join(" &middot; ");
-  let rating, expl;
+  let rating, expl, pvPanel="", v=null;
   if(isG){
     const w=p.g_win;
     rating=(p.rating!=null?[box(`Rank of ${I.nG}`,"#"+p.rk,"","among rated goalies"),
@@ -706,22 +912,45 @@ function nhlPlayerPage(id){
       :[box("Rating","NR","sub")])
       .concat(w?[box("Games",w.gp),box("xGA",w.xga),box("GA",w.ga),box("GSAx",nhlSg(w.gsax,1),sgC(w.gsax,1),"expected goals against minus goals against, rating window")]:[])
       .concat(p.rel!=null?[box("Reliability",(+p.rel).toFixed(2),"","share of the estimate that is data rather than the league-average prior")]:[]).join("");
-    expl=`GlassBox goalie rating (0-100): ${siteEsc(gm.scale||"")}. Window ${siteEsc(gm.window||"")}; at least ${gm.min_gp||10} games to be rated.`;
+    expl=`GlassBox goalie rating (0-100): ${siteEsc(gm.scale||"")}. Window ${siteEsc(gm.window||"")}; at least ${gm.min_gp||10} games to be rated.
+      Goalies keep this GSAx rating: the player-value program's opponent-adjusted saving rating did not prove more repeatable
+      from one season to the next than plain GSAx, so it is not shown as an upgrade.`;
   }else{
     const F=p.grp==="F";
+    v=nhlPv(p);
     rating=(p.rating!=null?[box(`Rank of ${I.nSk}`,"#"+p.rk,"","among rated skaters, forwards and defencemen pooled"),
-        box(`${F?"F":"D"} rank of ${F?I.nF:I.nD}`,"#"+p.rk_pos,"",F?"among rated forwards":"among rated defencemen")]
+        box(`${F?"F":"D"} rank of ${F?I.nF:I.nD}`,"#"+p.rk_pos,"",F?"among rated forwards":"among rated defencemen"),
+        box("GlassBox",(+p.rating).toFixed(0),"","0-100 on this on-ice xG rating, 50 = average")]
       :[box("Rating","NR","sub")])
       .concat(p.net!=null?[box("Net xG/60",nhlSg(p.net,3),p.rating==null?"sub":sgC(p.net,3)),
         box("Offense",nhlSg(p.off,3),p.rating==null?"sub":sgC(p.off,3),"5v5 expected goals created per 60, vs average"),
         box("Defense",nhlSg(p.def,3),p.rating==null?"sub":sgC(p.def,3),"5v5 expected goals suppressed per 60, vs average (positive = fewer allowed)"),
         box("5v5 minutes",nhlInt(p.toi))]:[])
       .concat(p.rel!=null?[box("Reliability",(+p.rel).toFixed(2),"","share of the estimate that is data rather than the prior")]:[]).join("");
-    expl=`GlassBox skater rating (0-100): ${siteEsc(rp.scale||"")}. Window ${siteEsc(rp.window||"")}${rp.built?`, fit ${nhlDateOnly(rp.built)}`:""}; at least
-      ${nhlInt(rp.min_toi||1000)} 5v5 minutes to be rated.${rp.caveat?" "+siteEsc(rp.caveat):""}`;
+    expl=`On-ice xG impact (RAPM): teammate- and opponent-adjusted 5v5 expected goals per 60, ${siteEsc(rp.scale||"")}. Window
+      ${siteEsc(rp.window||"")}${rp.built?`, fit ${nhlDateOnly(rp.built)}`:""}; at least ${nhlInt(rp.min_toi||1000)} 5v5 minutes to be
+      rated. It sees only shot quality while he is on the ice.${rp.caveat?" "+siteEsc(rp.caveat):""}`;
+    const stale=v&&I.pvS&&+v.s<I.pvS;
+    pvPanel=v?`<div class="panel" style="margin-bottom:14px"><h3>Player value <span class="sub">display rating &middot; as of the end of ${nhlPvSeas()} &middot; not a model input</span></h3>
+        <div class="statgrid">
+          ${box("Value / 60",nhlSg(v.v,3),sgC(v.v,3),"goals per 60 minutes of his ice time, all situations, vs an average regular at his position")}
+          ${box("Value / game",nhlSg(v.g,3),sgC(v.g,3),"goals a game at his usual ice time, vs an average regular at his position")}
+          ${box("Percentile",v.p!=null?nhlOrd(v.p):"&mdash;","",`among ${nhlGrpW(v.grp)}: ${nhlPvSeas()} regulars (20+ games)`)}
+          ${box(`${v.grp==="D"?"D":"F"} rank`,I.pvRk[p.id]?`#${I.pvRk[p.id]} of ${I.pvN[v.grp]}`:"&mdash;","nhl-sm",`among rostered ${nhlGrpW(v.grp)} with a value`)}
+          ${box("Ice time",v.toi!=null?`${(+v.toi).toFixed(1)} min`:"&mdash;","nhl-sm",`expected minutes a game: ${v.t5!=null?(+v.t5).toFixed(1):"-"} at 5v5, ${v.tpp!=null?(+v.tpp).toFixed(1):"-"} on the power play`)}
+          ${box("Sample",`${nhlInt(v.gp)} games`,"nhl-sm","NHL games on file before this rating (2010-11 on, playoffs included); the less data, the closer to his position's average")}
+        </div>
+        ${stale?`<div class="polnote warn" style="font-size:12px;margin:10px 0 0">His last NHL game on file was ${nhlDateOnly(v.d)} (${nhlSL(String(v.s))}): this rating is from then.</div>`:""}
+        <div style="margin-top:12px">${nhlPvTable(v)}</div>
+        <div class="sub" style="margin-top:8px;font-size:12px">Rating going into his last game on file (${nhlDateOnly(v.d)}). Goals/60 = each
+          piece's share of his value; the pieces add up to the total. Percentiles are within ${nhlGrpW(v.grp)}; a faceoff percentile only for
+          regular faceoff takers. 0 = an average ${nhlPvSeas()} regular at his position.</div></div>`
+      :`<div class="panel" style="margin-bottom:14px"><h3>Player value <span class="sub">display rating &middot; not a model input</span></h3>
+        <div class="sub">${I.nPv?`No player value: no NHL game on file through ${nhlPvSeas()}. The ratings are a snapshot as of the
+          end of ${nhlPvSeas()} and are not updated during the season, so a player who debuts after it has none.`:"Player value is not in this build; the on-ice xG rating below is the skater rating shown."}</div></div>`;
   }
-  const nr=p.rating==null?`<div class="polnote" style="margin:0 0 14px">Not rated: ${siteEsc(p.nr||"no rating")}.${!isG&&p.net!=null
-    ?" The partial estimate below is greyed out &mdash; too little ice time to rank.":""}</div>`:"";
+  const nrTxt=`Not rated: ${siteEsc(p.nr||"no rating")}.${!isG&&p.net!=null?" The partial estimate below is greyed out &mdash; too little ice time to rank.":""}`;
+  const nr=p.rating==null&&isG?`<div class="polnote" style="margin:0 0 14px">${nrTxt}</div>`:"";
   const sk=[["GP","gp"],["G","g"],["A","a"],["P","p"],["+/&minus;","pm",nhlPM],["PPP","ppp"],["SOG","sog"],
     ["Sh%",null,ln=>ln.sog?(100*ln.g/ln.sog).toFixed(1):"-"],["PIM","pim"],["TOI/GP","toi_pg",nhlMMSS]];
   const gl=[["GP","gp"],["GS","gs"],["W-L-OT",null,nhlWLO,"nhl-sm"],["SV%","svp",nhlSv],["GAA","gaa",v=>(+v).toFixed(2)],["SO","so"],
@@ -734,13 +963,19 @@ function nhlPlayerPage(id){
   [["cur",nhlSeasLbl()],["prev",nhlPrevLbl()]].forEach(([k,l])=>{const ln=s[k]; if(!ln) return;
     panels.push(`<div class="panel"><h3>${l} season${ln.tm&&ln.tm!==p.team?` <span class="sub">with ${nhlTL(ln.tm)}</span>`:""}</h3>${grid(ln,isG?gl:sk)}</div>`);});
   if(s.career) panels.push(`<div class="panel"><h3>Career <span class="sub">NHL regular season</span></h3>${grid(s.career,car)}</div>`);
+  const lead=isG?`${expl} The game model has no player, lineup or goalie term. Market-blind.`
+    :`${I.nPv?NHL_PV_LABEL+". On-ice xG impact (RAPM) is shown below it.":"On-ice xG impact (RAPM) is a display rating."} The game model has no
+      player, lineup or goalie term. Market-blind.`;
   $("#view").innerHTML=`<a class="back" data-nhlback href="${nhlH("team",p.team)}">&lsaquo; ${nhlName(p.team)}</a>
     <div class="phead"><span class="nm">${siteEsc(p.name)}</span><span class="sub">${bio}</span>
-      <span style="margin-left:auto">${nhlGb(p)}</span></div>
-    <div class="sub" style="margin-bottom:14px">${expl} The game model has no player, lineup or goalie term. Market-blind.</div>
-    ${nr}
-    <div class="panel" style="margin-bottom:14px"><h3>${isG?"Goalie rating":"Skater rating"} <span class="sub">${isG?siteEsc(gm.window||""):siteEsc(rp.window||"")}</span></h3>
-      <div class="statgrid">${rating}</div></div>
+      <span style="margin-left:auto">${isG?nhlGb(p):nhlSkB(p)}</span></div>
+    <div class="sub" style="margin-bottom:14px">${lead}</div>
+    ${nr}${pvPanel}
+    <div class="panel" style="margin-bottom:14px"><h3>${isG?"Goalie rating":"On-ice xG impact (RAPM)"} <span class="sub">${isG?siteEsc(gm.window||""):siteEsc(rp.window||"")+" &middot; display only"}</span></h3>
+      ${!isG&&p.rating==null?`<div class="sub" style="margin-bottom:8px">${nrTxt}</div>`:""}
+      <div class="statgrid">${rating}</div>
+      ${isG?"":`<div class="sub" style="margin-top:10px;font-size:12px">${expl}</div>`}</div>
+    ${isG?"":`<div style="margin-bottom:14px">${nhlPvHelp()}</div>`}
     <div class="pgrid">${panels.join("")||'<div class="panel"><h3>Production</h3><div class="sub">No NHL regular-season line on file yet.</div></div>'}</div>`;
 }
 

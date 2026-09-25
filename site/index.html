@@ -382,9 +382,39 @@ tbody tr.nhl-cut{border-bottom:2px dashed var(--accent)}
 .nhl-chips .filters{flex-wrap:wrap}
 /* why a player has no rating, in words */
 .nhl-nr{display:inline-block;max-width:460px;white-space:normal;font-size:11.5px;color:var(--muted);line-height:1.4}
+/* player value (display rating): percentile bar, component table, help block */
+.nhl-pq{display:inline-block;width:42px;height:5px;border-radius:3px;background:var(--sunk);overflow:hidden;
+  position:relative;vertical-align:middle;margin-right:6px}
+.nhl-pq i{position:absolute;left:0;top:0;bottom:0;background:var(--away);border-radius:3px}
+.nhl-pq.hi i{background:var(--fav)} .nhl-pq.lo i{background:var(--home)}
+td.nhl-pqc{white-space:nowrap}
+.nhl-pvt td{vertical-align:top}
+.nhl-pvd{font-size:11.5px;color:var(--muted);font-weight:400;white-space:normal;max-width:380px;line-height:1.35;margin-top:2px}
+.nhl-pvn{font-size:12.5px;white-space:normal;display:inline-block;max-width:260px;line-height:1.35}
+tr.nhl-pvtot td{border-top:2px solid var(--line-2);background:var(--sunk)}
+.nhl-pvl th,.nhl-pvl td{padding:7px 7px}
+th.nhl-srt{cursor:pointer}
+th.nhl-srt.on{color:var(--accent)}
+.nhl-luv{font-family:var(--mono);font-size:20px;font-weight:700}
+details.nhl-help{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:0}
+details.nhl-help>summary{cursor:pointer;list-style:none;padding:11px 14px;font-size:12px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--muted);font-weight:700}
+details.nhl-help>summary::-webkit-details-marker{display:none}
+details.nhl-help>summary:before{content:"\25B8";display:inline-block;margin-right:8px;color:var(--faint)}
+details.nhl-help[open]>summary:before{transform:rotate(90deg)}
+.nhl-helpb{padding:0 14px 12px;font-size:12.5px;line-height:1.5;color:var(--muted)}
+.nhl-helpb p{margin:6px 0}
+.nhl-helpb ul{margin:4px 0 8px;padding-left:18px}
+.nhl-helpb li{margin:2px 0}
 @media(max-width:560px){
   .gc.nhl .side .who .sp .era{display:none}
   .nhl-nr{max-width:240px}
+  .nhl-pvd{max-width:140px}
+  .nhl-pvn{max-width:100px;font-size:12px}
+  /* the percentile number stays; its bar goes so the table fits a 375px phone */
+  .nhl-pvt .nhl-pq{display:none}
+  .nhl-pvt td:first-child{white-space:normal}
+  .nhl-pvt th,.nhl-pvt td{padding:7px 5px}
 }
 /* NFL-specific styles. Every rule is scoped to an nfl-* class or an NFL-only
    container and uses the core tokens; no new colours or fonts. */
@@ -448,6 +478,28 @@ tr.nfl-cut td{border-top:2px dashed var(--faint)}
 /* board: the model card reference table */
 .nfl-kv td{vertical-align:top;font-size:12.5px}
 .nfl-kv td:first-child{white-space:nowrap;width:1%}
+/* individual (own-play) measures: display ratings from the player-value
+   program, never model inputs. Player-page panel, roster/ladder cells, team units */
+.nfl-own .m{padding:9px 0 10px;border-top:1px solid var(--line)}
+.nfl-own .m:first-of-type{border-top:0;padding-top:0}
+.nfl-own .hd .t{font-size:12px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:var(--muted)}
+.nfl-own .r{margin-top:6px}
+.nfl-own .r .v{font-family:var(--mono);font-size:16px;color:var(--ink)}
+.nfl-ownbar{height:6px;max-width:320px;margin:5px 0 3px;background:var(--line);border-radius:3px;overflow:hidden}
+.nfl-ownbar i{display:block;height:100%;background:var(--accent)}
+.nfl-own .sec{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.45}
+.nfl-own .ex{font-size:11.5px;color:var(--faint);margin-top:5px;line-height:1.5}
+.nfl-use{font-size:11.5px;line-height:1.5;color:var(--muted);margin-top:10px;padding-top:8px;border-top:1px dashed var(--line-2)}
+.nfl-use b{color:var(--ink);font-weight:600}
+.nfl-pvc{white-space:nowrap}
+.nfl-pvc.lo{opacity:.6}
+.nfl-pvstale{font-style:italic}
+th.nfl-pvh{white-space:nowrap}
+/* the ladder's measure sort chips: their own row, wrapping, so a phone never
+   scrolls sideways (core .filters rows do not wrap) */
+.filters.nfl-pvsort{flex-wrap:wrap}
+/* the Line & front table's section rows wrap instead of widening the table */
+td.nfl-wrap{white-space:normal}
 </style>
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');}catch(e){document.documentElement.setAttribute('data-theme','dark');}</script>
 </head>
@@ -1448,11 +1500,14 @@ const nhlYear=()=>nhlSeasLbl();
    forecast is a SCHEDULED game with a labelled lean: no pick pill, no fair
    odds, and a played game grades the lean, never a pick. The tier is read off
    the row (siteTier), so a row the serve ever stamps PROJECTED gets MLB's
-   PICK/LEAN treatment with no change here. Player and lineup ratings (RAPM for
-   skaters, GSAx for goalies) are display metrics and never model inputs. */
+   PICK/LEAN treatment with no change here. Player and lineup ratings (player
+   value and on-ice RAPM for skaters, GSAx for goalies) are display metrics and
+   never model inputs. */
 
+// nhlSort null = the ladder's own default (player value for skaters); core's
+// legacy "net" would now open the ladder on the on-ice xG column
 if(state.nhlPos==null) Object.assign(state,{nhlPos:"all",nhlMin:0,nhlStd:null,nhlStdView:"div",
-  nhlTeamSort:"elo",nhlResN:14});
+  nhlTeamSort:"elo",nhlResN:14,nhlSort:null});
 
 /* ---------- small helpers ---------- */
 const NHL_POSL={C:"C",L:"LW",R:"RW",D:"D",G:"G"};
@@ -1515,15 +1570,107 @@ function nhlLine(p,key){const s=(p&&p.stats)||{}, k=key||s.main||(s.cur?"cur":(s
    tooltip is the payload's reason in words (never a red "bad" colour). */
 function nhlGb(p){ if(p&&p.rating!=null) return gb(p.rating);
   return `<span class="gb" title="Not rated: ${siteEsc((p&&p.nr)||"no rating")}"><span class="v" style="color:var(--faint)">NR</span></span>`;}
-/* Per-payload indexes: xG ranks and rated-player counts. */
+/* Per-payload indexes: xG ranks, rated-player counts, player-value ranks. */
 let nhlMemoKey=null, nhlMemoVal=null;
 function nhlIdx(){const n=state.nhl; if(nhlMemoKey===n&&nhlMemoVal) return nhlMemoVal;
   const T=n.teams||{}, cs=Object.keys(T), xgR={};
   cs.slice().sort((a,b)=>(T[b].xg||0)-(T[a].xg||0)).forEach((c,i)=>{xgR[c]=i+1;});
   const P=Object.values(n.players||{});
   const sk=P.filter(p=>p.grp!=="G"&&p.rating!=null), nF=sk.filter(p=>p.grp==="F").length;
-  nhlMemoVal={xgR,nSk:sk.length,nF,nD:sk.length-nF,nG:P.filter(p=>p.grp==="G"&&p.rating!=null).length,nT:cs.length};
+  // player value: rank within F / D among the rostered skaters who carry one
+  const pvRk={}, pvN={F:0,D:0}; let pvS=0;
+  ["F","D"].forEach(g=>{const v=P.filter(p=>p.grp===g&&nhlPv(p)).sort((a,b)=>b.pv.v-a.pv.v||String(a.name).localeCompare(String(b.name)));
+    pvN[g]=v.length; v.forEach((p,i)=>{pvRk[p.id]=i+1; pvS=Math.max(pvS,+p.pv.s||0);});});
+  nhlMemoVal={xgR,nSk:sk.length,nF,nD:sk.length-nF,nG:P.filter(p=>p.grp==="G"&&p.rating!=null).length,nT:cs.length,
+    pvRk,pvN,nPv:pvN.F+pvN.D,pvS};
   nhlMemoKey=n; return nhlMemoVal;}
+
+/* ---------- player value: a display rating, never a model input ----------
+   The validated player-value program (phase0/pv_nhl_*.py) rates each skater on
+   what he does himself - creation, finishing, assists, power play, faceoffs,
+   penalties, on-ice defence - walk-forward, opponent-adjusted where there is an
+   opponent, shrunk toward his position, composed in goals per 60. A static
+   snapshot as of the end of 2025-26 (phase0/nhl_site_player_value.py ->
+   data/nhl_site_pv.json -> players[pid].pv; team `pv_lu`). Its game-level test
+   was not significant, so the game model does not use it; the pages say so. */
+const NHL_PV_LABEL="Player value (finishing, creation, faceoffs, penalties, defence) &mdash; a display rating; the game model does not use it yet (forward test on 2026-27 pending)";
+const NHL_PV_K=[
+  ["cre","Creation","The chances he takes himself: individual 5v5 expected goals (ixG) per 60."],
+  ["fin","Finishing","Goals above what his shots were worth, per 60 at 5v5 &mdash; every shot rated against the goalie who faced it."],
+  ["a1","Primary assists","The last pass before a 5v5 goal, per 60."],
+  ["a2","Secondary assists","The pass before that, per 60 &mdash; noisier, so it counts for less."],
+  ["pp","Power play","His own power-play shooting (xG &times; finishing); PP assists add almost nothing once the rest is known."],
+  ["fo","Faceoffs","Head-to-head faceoff rating (taker vs taker), valued in goals by zone and strength."],
+  ["pen","Penalties","Penalties drawn minus penalties taken, valued in goals."],
+  ["def","Defence","On-ice 5v5 expected goals against, adjusted for teammates and opponents (RAPM)."]];
+const nhlPv=p=>(p&&p.grp!=="G"&&p.pv&&p.pv.v!=null&&isFinite(p.pv.v))?p.pv:null;
+const nhlOrd=q=>{const n=Math.round(q), t=n%100; return n+((t>=11&&t<=13)?"th":(["th","st","nd","rd"][n%10]||"th"));};
+const nhlPvSeas=()=>{const s=nhlIdx().pvS; return s?nhlSL(String(s)):"2025&ndash;26";};
+const nhlGrpW=g=>g==="D"?"defencemen":"forwards";
+/* The headline badge of a valued skater: his percentile within F / D. */
+function nhlPctB(q,title){ if(q==null||!isFinite(q)) return `<span class="gb lo"><span class="v" style="color:var(--faint)">NR</span></span>`;
+  return `<span class="gb ${gbTier(q)}"${title?` title="${title}"`:""}><span class="v">${nhlOrd(q)}</span>
+    <span class="meter"><i style="width:${Math.max(3,Math.min(100,q))}%"></i></span></span>`;}
+/* A skater's badge: player value when he has one, else the RAPM GlassBox / NR. */
+function nhlSkB(p){const v=nhlPv(p);
+  return v?nhlPctB(v.p,`Player value ${nhlSg(v.v,3)} goals/60: ${nhlOrd(v.p)} percentile among ${nhlGrpW(v.grp)} (display rating, not a model input)`):nhlGb(p);}
+/* Percentile with a small bar, for tables. */
+const nhlPq=q=>q==null||!isFinite(q)?`<span class="num sub">&mdash;</span>`
+  :`<span class="nhl-pq ${gbTier(q)}" title="${nhlOrd(q)} percentile"><i style="width:${Math.max(2,Math.min(100,q))}%"></i></span><span class="num">${q}</span>`;
+/* A component in its own units, in words. */
+function nhlPvNat(k,v){const f=(x,d)=>x==null||!isFinite(x)?"&mdash;":(+x).toFixed(d);
+  switch(k){
+    case "cre": return `${f(v.cre,2)} ixG/60`;
+    case "fin": return v.fin==null?"&mdash;":`${nhlSg(v.fin,3)} goals/60 vs expected &middot; ${f(v.fm,2)}&times; his xG`;
+    case "a1": return `${f(v.a1,2)} per 60`;
+    case "a2": return `${f(v.a2,2)} per 60`;
+    case "pp": return `${f(v.tpp,1)} PP min a game`;
+    case "fo": return v.fo?`wins ${f(100*v.fo[0],1)}% vs an average taker &middot; ${f(v.fo[1],0)} draws/60`:"rarely takes faceoffs";
+    case "pen": return v.pen?`draws ${f(v.pen[1],2)}, takes ${f(v.pen[2],2)} per 60`:"&mdash;";
+    case "def": return v.def==null?"no on-ice fit yet":(v.def>=0?`prevents ${f(v.def,3)} xG/60`:`allows ${f(-v.def,3)} xG/60 more`);
+  }
+  return "&mdash;";}
+/* Signed bar in goals (scale = the value that fills half the track). */
+function nhlGBar(label,v,scale,d){const w=Math.min(Math.abs(v||0)/(scale||0.3)*50,50), neg=(v||0)<0;
+  return `<div class="r"><span class="lab">${label}</span>
+    <div class="tr"><div class="f ${neg?"neg":""}" style="${neg?"right:50%":"left:50%"};width:${w}%"></div></div>
+    <span class="v ${neg?"neg":"pos"}">${nhlSg(v,d==null?3:d)}</span></div>`;}
+/* The component table of one skater (player page). */
+function nhlPvTable(v){
+  const rows=NHL_PV_K.map(([k,name,desc])=>`<tr><td class="a"><b>${name}</b><div class="nhl-pvd">${desc}</div></td>
+      <td class="a"><span class="nhl-pvn">${nhlPvNat(k,v)}</span></td>
+      <td>${nhlSgN((v.c||{})[k],3)}</td><td class="a nhl-pqc">${nhlPq((v.q||{})[k])}</td></tr>`).join("");
+  return `<div class="twrap"><table class="nhl-pvt"><thead><tr><th class="a">Component</th><th class="a">His rate</th>
+      <th title="his contribution to the total, goals per 60 of his ice time vs an average regular at his position">Goals/60</th>
+      <th class="a" title="within ${nhlGrpW(v.grp)}: 2025-26 regulars (20+ games)">Percentile</th></tr></thead>
+    <tbody>${rows}<tr class="nhl-pvtot"><td class="a"><b>Total value</b></td>
+      <td class="a"><span class="nhl-pvn">${nhlSg(v.g,3)} goals a game over ${v.toi!=null?(+v.toi).toFixed(1):"&mdash;"} min</span></td>
+      <td>${nhlSgN(v.v,3)}</td><td class="a nhl-pqc">${nhlPq(v.p)}</td></tr></tbody></table></div>`;}
+/* How it works, in a few lines (player, players and team pages). */
+function nhlPvHelp(){
+  return `<details class="nhl-help"><summary>How player value works</summary><div class="nhl-helpb">
+    <p><b>What it counts.</b> Only what a skater does himself, each piece in goals:</p>
+    <ul>${NHL_PV_K.map(([,name,desc])=>`<li><b>${name}</b> &mdash; ${desc}</li>`).join("")}</ul>
+    <p><b>How it is built.</b> Every piece is walk-forward (only games before the one rated), opponent-adjusted where there is an
+      opponent (shooter vs goalie, faceoff taker vs taker, on-ice RAPM), and shrunk toward his position's average until his own
+      games outweigh it. The pieces are added in goals per 60 of his ice time with weights fit on 2011-18 games and frozen since;
+      per game = per 60 &times; his usual minutes. 0 = an average ${nhlPvSeas()} regular at his position; percentiles are within
+      forwards or defencemen (regulars with 20+ games). The components add up to the total, up to rounding.</p>
+    <p><b>Checked on players.</b> The pieces repeat from one season to the next: faceoffs (r&nbsp;0.73), penalties drawn minus
+      taken (~0.5), finishing rated against the goalie (0.24, vs 0.20 for plain goals minus xG). Summed over a lineup and added
+      to the goalie's saving rating, the value predicted game goal differential better than the xG-only RAPM in each of six
+      seasons (2012-18); the skaters' value alone also beat RAPM over 2012-18 as a whole. For a forward's next season it beat
+      RAPM; for defencemen the two were even.</p>
+    <p><b>Not a model input.</b> Added to the game model, it improved log loss by only 0.00062 on the locked test seasons, which
+      is not significant (95% CI &minus;0.00066 to +0.00188), so no forecast on this site uses it. A forward test on the 2026-27
+      season is pre-registered; until it passes, this is a display rating. <b>On-ice xG impact</b> (RAPM, xG/60 at 5v5) stays on
+      every page next to it.</p>
+    <p><b>Snapshot.</b> As of the end of ${nhlPvSeas()}: each skater's rating going into his last game on file. It is not
+      updated during the season, so a player with no NHL game by then has no value. The ${nhlPvSeas()}
+      shift charts are missing for 505 of the 1,312 regular-season games and 20 playoff games (an NHL data gap), so the
+      minutes-based pieces skip those games.
+      <b>Goalies</b> keep GSAx: the program's opponent-adjusted saving rating did not prove more repeatable year to year than
+      plain GSAx, so it is not shown as an upgrade.</p></div></details>`;}
 
 /* ---------- policy: tier, call, grade ---------- */
 function nhlCall(g){
@@ -1805,7 +1952,7 @@ function nhlGamePage(id){
           <div class="sub" style="margin-top:10px;font-size:12px;color:var(--faint)">Neither starter is known to the model or to this page:
             NHL starters are confirmed on game-day morning. Listed by workload; the rating is goals saved above expected
             (GSAx), 50 = an average goalie.</div></div>
-        <div class="panel"><h3>Key skaters <span class="sub">GlassBox 5v5 RAPM &middot; display only</span></h3>
+        <div class="panel"><h3>Key skaters <span class="sub">${nhlIdx().nPv?"player value":"GlassBox 5v5 RAPM"} &middot; display only</span></h3>
           <div class="cols2 nhl-cols">${nhlKeySkaters(g.away)}${nhlKeySkaters(g.home)}</div></div>
       </div>
       <div style="display:flex;flex-direction:column;gap:14px">
@@ -1847,6 +1994,7 @@ function nhlH2H(g){
     +R("our Elo",A.elo,H.elo,v=>Math.round(v),"hi")
     +R("Elo rank",A.rank,H.rank,v=>"#"+v,"lo")
     +R("xG rating",A.xg,H.xg,v=>nhlSg(v,2),"hi")
+    +(A.pv_lu&&H.pv_lu&&A.pv_lu.n&&H.pv_lu.n?R("lineup value",A.pv_lu.tot,H.pv_lu.tot,v=>nhlSg(v,2),"hi"):"")
     +R("lineup GlassBox",A.glassbox,H.glassbox,v=>v.toFixed(0),"hi")
     +R("rest days",g.arest,g.hrest,v=>v>=5?"5+":v,"hi")
     +R("back-to-back",g.ab2b?"yes":"no",g.hb2b?"yes":"no")
@@ -1854,7 +2002,8 @@ function nhlH2H(g){
     +R("playoff odds",pa.po,ph.po,v=>nhlOdds(v),"hi");
   return `<table class="cmp">${rows}</table>
     <div class="sub" style="margin-top:8px;font-size:11.5px;color:var(--faint)">xG rating = expected-goal margin per game against
-      an average team. Lineup GlassBox = the skaters' RAPM ratings, display only. Projections: season simulation, EARLY tier.</div>`;
+      an average team. Lineup value = the skaters' summed player value in goals a game (as of the end of ${nhlPvSeas()}); lineup
+      GlassBox = their RAPM ratings. Both display only, never model inputs. Projections: season simulation, EARLY tier.</div>`;
 }
 function nhlSignals(g,c){
   const s=[], A=nhlTeam(g.away)||{}, H=nhlTeam(g.home)||{}, I=nhlIdx(), ct=g.ct||{}, was=nhlDone(g)?"was":"is";
@@ -1894,6 +2043,16 @@ function nhlGoalieCol(code,side){
 }
 function nhlKeySkaters(code){
   const t=nhlTeam(code)||{}, P=state.nhl.players||{};
+  if(nhlIdx().nPv){
+    // player value (display rating): the six most valuable per game at their usual minutes
+    const r=(t.roster||[]).map(id=>P[id]).filter(p=>p&&p.grp!=="G"&&nhlPv(p)).sort((a,b)=>b.pv.g-a.pv.g).slice(0,6);
+    return `<div><div style="font-weight:700;margin-bottom:6px">${nhlTL(code,nhlName(code))}</div>
+      ${r.length?`<div class="twrap"><table><thead><tr><th class="a">Skater</th><th title="player value, percentile within F / D">Value</th>
+        <th title="goals a game above an average regular at his position">/gm</th><th title="on-ice xG impact, 5v5 RAPM">On-ice xG</th></tr></thead><tbody>
+      ${r.map(p=>`<tr ${nhlRow(nhlH("player",p.id))}><td class="a"><span class="player-link">${siteEsc(p.name)}</span> <span class="sub">${nhlPosL(p)}</span></td>
+        <td>${nhlPctB(p.pv.p)}</td><td>${nhlSgN(p.pv.g,3)}</td><td>${nhlSgN(p.net,2,p.rating==null)}</td></tr>`).join("")}</tbody></table></div>`
+      :'<div class="sub">no valued skaters on the roster file</div>'}</div>`;
+  }
   const r=(t.roster||[]).map(id=>P[id]).filter(p=>p&&p.grp!=="G"&&p.rating!=null)
     .sort((a,b)=>b.rating-a.rating).slice(0,6);
   return `<div><div style="font-weight:700;margin-bottom:6px">${nhlTL(code,nhlName(code))}</div>
@@ -1907,7 +2066,9 @@ function nhlKeySkaters(code){
 function nhlTeams(){
   const n=state.nhl, T=n.teams||{}, P=n.proj||{};
   const S=state.nhlTeamSort||"elo";
-  const key={elo:c=>-(T[c].elo||0),gb:c=>-(T[c].glassbox==null?-1:T[c].glassbox),proj:c=>-((P[c]&&P[c].pts)||0)}[S]||(c=>-(T[c].elo||0));
+  const luv=c=>{const l=T[c].pv_lu; return l&&l.n?l.tot:null;};
+  const key={elo:c=>-(T[c].elo||0),gb:c=>-(T[c].glassbox==null?-1:T[c].glassbox),proj:c=>-((P[c]&&P[c].pts)||0),
+    pv:c=>-(luv(c)==null?-9:luv(c))}[S]||(c=>-(T[c].elo||0));
   const codes=Object.keys(T).sort((a,b)=>key(a)-key(b)), nT=codes.length;
   const card=c=>{const t=T[c], p=P[c], r=nhlRecOf(t);
     return `<div class="tcard" ${nhlRow(nhlH("team",c))}>
@@ -1915,15 +2076,18 @@ function nhlTeams(){
       <div class="stat"><span title="the model's Elo rating and its rank among the ${nT} teams">Elo <b>${Math.round(t.elo)}</b> #${t.rank} of ${nT}</span><span>xG <b>${nhlSg(t.xg,2)}</b></span>
         ${p?`<span>Proj <b>${p.pts.toFixed(0)}</b> pts</span>`:""}</div>
       <div class="stat"><span${r&&!r.cur?` title="${r.lbl} final record"`:""}>${r?(r.cur?"Rec":"Last season")+` <b>${nhlWLO(r.r)}</b>`:"Rec <b>&mdash;</b>"}</span>
-        <span>${siteEsc(t.div||"")}</span>${p?`<span>Playoffs <b>${nhlOdds(p.po,t.clinch)}</b></span>`:""}</div></div>`;};
+        <span>${siteEsc(t.div||"")}</span>${p?`<span>Playoffs <b>${nhlOdds(p.po,t.clinch)}</b></span>`:""}</div>
+      ${luv(c)!=null?`<div class="stat"><span title="summed player value of the lineup, goals a game above average regulars (display only)">Lineup value <b>${nhlSg(luv(c),2)}</b>/gm${t.pv_lu.rk?` #${t.pv_lu.rk}`:""}</span></div>`:""}</div>`;};
   $("#view").innerHTML=`<div class="controls"><div class="rail">${siteRail("nhl")}</div>
-      ${chipRow([["elo","Model Elo"],["gb","Lineup GlassBox"],["proj","Projected points"]],S,"tsort")}</div>
+      ${chipRow([["elo","Model Elo"],["gb","Lineup GlassBox"]].concat(codes.some(c=>luv(c)!=null)?[["pv","Lineup value"]]:[]).concat([["proj","Projected points"]]),S,"tsort")}</div>
     <div class="eyebrow">Database &middot; NHL</div><h1 class="pt">Teams</h1>
     <div class="sub" style="margin-bottom:14px"><b>Elo</b> is the model's team rating (1500 = average; results through
       ${nhlDateOnly(n.ratings_through)||"the last final"}, pulled 30% back toward average between seasons) and <b>xG</b> its
       expected-goal rating (xG margin per game vs an average team, updated on shot quality, never on results) &mdash; the two
       team inputs of the market-blind model. The badge is the <b>lineup GlassBox</b>: the 12 forwards and 6 defencemen with the
-      most ice time, rated 0-100 on 5v5 RAPM (50 = average) &mdash; a display metric, not a model input. <b>Proj</b> = mean points
+      most ice time, rated 0-100 on 5v5 RAPM (50 = average) &mdash; a display metric, not a model input. <b>Lineup value</b> = the same
+      lineup's summed player value (creation, finishing, assists, power play, faceoffs, penalties, defence) in goals a game above
+      average regulars, as of the end of ${nhlPvSeas()} &mdash; also display only. <b>Proj</b> = mean points
       in ${(n.proj_info&&n.proj_info.n_sims||20000).toLocaleString(LOC)} season simulations. Click a team.</div>
     <div class="tgrid">${codes.map(card).join("")}</div>`;
   siteWireRail();
@@ -1933,6 +2097,7 @@ function nhlTeamPage(code){
   const n=state.nhl, t=(n.teams||{})[code];
   if(!t) return siteNotFound("nhl","team",code);
   const P=n.players||{}, pr=(n.proj||{})[code], I=nhlIdx(), today=nflToday();
+  const pvOn=I.nPv>0, lu=t.pv_lu&&t.pv_lu.n?t.pv_lu:null;
   const cur=(t.gp||0)>0, r=cur?t:(t.prev||null), rl=cur?nhlSeasLbl():nhlPrevLbl();
   const tile=(k,v,cls,sub)=>`<div class="b"><div class="k">${k}</div><div class="v ${cls||""}">${v}${sub?` <span class="sub" style="font-size:12px">${sub}</span>`:""}</div></div>`;
   const perG=(x,gp)=>gp&&x!=null?(x/gp).toFixed(2):"-";
@@ -1959,7 +2124,10 @@ function nhlTeamPage(code){
   const use=t.use==="cur"?"cur":"prev", ul=use==="cur"?nhlSeasLbl():nhlPrevLbl();
   const usage=p=>{const L=nhlLine(p,use); if(!L||!L.ln.gp) return -1;
     return p.grp==="G"?(L.ln.toi_s||L.ln.gp*3600):(L.ln.toi_pg||0)*L.ln.gp;};
-  const bySk=(a,b)=>(a.rating==null)-(b.rating==null)||(b.rating||0)-(a.rating||0)||usage(b)-usage(a);
+  // skaters by player value (the headline), then on-ice RAPM, then ice time
+  const pvOf=p=>{const v=nhlPv(p); return v?v.v:null;};
+  const bySk=(a,b)=>(pvOf(a)==null)-(pvOf(b)==null)||(pvOf(b)||0)-(pvOf(a)||0)
+    ||(a.rating==null)-(b.rating==null)||(b.rating||0)-(a.rating||0)||usage(b)-usage(a);
   const F=roster.filter(p=>p.grp==="F").sort(bySk), D=roster.filter(p=>p.grp==="D").sort(bySk);
   const G=roster.filter(p=>p.grp==="G").sort((a,b)=>usage(b)-usage(a));
   const cell=(v,cls)=>`<td><span class="num ${cls||""}">${v==null?"-":v}</span></td>`;
@@ -1970,7 +2138,10 @@ function nhlTeamPage(code){
         <span style="font-weight:600">${siteEsc(p.name)}</span>${p.num!=null?` <span class="sub">#${p.num}</span>`:""}</td>
       ${cell(p.age)}<td><span class="num">${ln?ln.gp:"-"}</span>${tm(ln)}</td>
       ${cell(ln&&ln.g)}${cell(ln&&ln.a)}${cell(ln&&ln.p)}${cell(ln?nhlPM(ln.pm):null)}${cell(ln?nhlMMSS(ln.toi_pg):null)}
-      <td>${nhlGb(p)}</td><td>${nhlSgN(p.net,2,p.rating==null)}</td><td>${nhlSgN(p.off,2,p.rating==null)}</td><td>${nhlSgN(p.def,2,p.rating==null)}</td></tr>`;};
+      ${pvOn?(()=>{const v=nhlPv(p);
+        return `<td>${v?nhlPctB(v.p):`<span class="num sub" title="no NHL game on file through ${nhlPvSeas()}">&mdash;</span>`}</td>
+        <td>${nhlSgN(v&&v.v,3)}</td><td>${nhlSgN(v&&v.g,3)}</td><td>${nhlSgN(p.net,2,p.rating==null)}</td>`;})()
+      :`<td>${nhlGb(p)}</td><td>${nhlSgN(p.net,2,p.rating==null)}</td><td>${nhlSgN(p.off,2,p.rating==null)}</td><td>${nhlSgN(p.def,2,p.rating==null)}</td>`}</tr>`;};
   const gRow=p=>{const L=nhlLine(p,use), ln=L&&L.ln;
     return `<tr ${nhlRow(nhlH("player",p.id))}>
       <td class="a"><span class="num" style="color:var(--faint);display:inline-block;width:22px">G</span>
@@ -1980,7 +2151,9 @@ function nhlTeamPage(code){
       <td>${ln&&ln.gsax!=null?nhlSgN(ln.gsax,1):'<span class="num sub">-</span>'}</td>
       <td>${nhlGb(p)}</td><td>${p.gsax60!=null?nhlSgN(p.gsax60,3):'<span class="num sub">&mdash;</span>'}</td></tr>`;};
   const skHead=`<thead><tr><th class="a">Player</th><th>Age</th><th>GP</th><th>G</th><th>A</th><th>P</th><th>+/&minus;</th><th>TOI/GP</th>
-    <th>GlassBox</th><th title="5v5 xG/60, teammate- and opponent-adjusted">Net</th><th>Off</th><th>Def</th></tr></thead>`;
+    ${pvOn?`<th title="player value: percentile within forwards / defencemen">Value</th><th title="goals per 60 of his ice time vs an average regular at his position">/60</th>
+      <th title="goals a game at his usual ice time">/gm</th><th title="on-ice xG impact: 5v5 xG/60, teammate- and opponent-adjusted (RAPM)">On-ice xG</th>`
+    :`<th>GlassBox</th><th title="5v5 xG/60, teammate- and opponent-adjusted">Net</th><th>Off</th><th>Def</th>`}</tr></thead>`;
   const tbl=(title,rows,head)=>rows.length?`<div class="subh">${title}</div><div class="twrap"><table>${head}<tbody>${rows}</tbody></table></div>`:"";
   // schedule & forecasts: every game of the season, the lean for this team
   const games=(n.schedule||[]).filter(g=>g.home===code||g.away===code).sort(nhlCmp);
@@ -2009,9 +2182,30 @@ function nhlTeamPage(code){
         <div class="b"><div class="k">Points SD</div><div class="v">${pr.sd.toFixed(1)}</div></div></div>
       <div class="sub" style="margin-top:10px;font-size:12px">${siteEsc((n.proj_info&&n.proj_info.method)||"")} Team ratings only (no goalie or
         lineup input), so these are EARLY-tier projections, not picks.</div></div>`:"";
-  const lineup=t.glassbox!=null?`<div style="margin-left:auto;text-align:right"><div class="sub">Lineup GlassBox</div>${gb(t.glassbox)}
+  const nLu=Object.values(n.teams||{}).filter(x=>x.pv_lu&&x.pv_lu.n).length;
+  const lineup=lu?`<div style="margin-left:auto;text-align:right" title="summed player value of the 12 forwards and 6 defencemen with the most ice time: goals a game above a lineup of average regulars (display only, not a model input)">
+      <div class="sub">Lineup value</div><div class="nhl-luv"><span class="num ${lu.tot>0?"pos":(lu.tot<0?"neg":"")}">${nhlSg(lu.tot,2)}</span> <span class="sub">goals/gm</span></div>
+      <div class="sub" style="margin-top:4px">F ${nhlSg(lu.f,2)} &middot; D ${nhlSg(lu.d,2)} &middot; #${lu.rk||"-"} of ${nLu}
+        ${t.glassbox!=null?` &middot; GlassBox ${t.glassbox.toFixed(0)}`:""}</div></div>`
+    :(t.glassbox!=null?`<div style="margin-left:auto;text-align:right"><div class="sub">Lineup GlassBox</div>${gb(t.glassbox)}
       <div class="sub" style="margin-top:4px">F ${t.gb_f!=null?t.gb_f.toFixed(0):"-"} &middot; D ${t.gb_d!=null?t.gb_d.toFixed(0):"-"}
-        &middot; G ${t.gb_g!=null?t.gb_g.toFixed(0):"-"} &middot; #${t.gb_rank||"-"} of ${I.nT}</div></div>`:"";
+        &middot; G ${t.gb_g!=null?t.gb_g.toFixed(0):"-"} &middot; #${t.gb_rank||"-"} of ${I.nT}</div></div>`:"");
+  // lineup value: the same 18 skaters as the GlassBox lineup, split by component
+  const luK=lu&&lu.k||{}, luMax=Math.max(0.15,...NHL_PV_K.map(([k])=>Math.abs(luK[k]||0)));
+  const luPanel=lu?`<div class="panel" style="margin-top:14px"><h3>Lineup value <span class="sub">player value of the 12 F + 6 D with the most
+      ${t.use==="cur"?nhlSeasLbl():nhlPrevLbl()} ice time &middot; display only, not a model input</span></h3>
+      <div class="cols2 nhl-cols">
+        <div><div class="statgrid">
+          <div class="b" title="goals a game above a lineup of average regulars"><div class="k">Lineup</div><div class="v ${lu.tot>0?"pos":(lu.tot<0?"neg":"")}">${nhlSg(lu.tot,2)}</div></div>
+          <div class="b"><div class="k">Forwards</div><div class="v ${lu.f>0?"pos":(lu.f<0?"neg":"")}">${nhlSg(lu.f,2)}</div></div>
+          <div class="b"><div class="k">Defence</div><div class="v ${lu.d>0?"pos":(lu.d<0?"neg":"")}">${nhlSg(lu.d,2)}</div></div>
+          <div class="b"><div class="k">Rank</div><div class="v">#${lu.rk||"-"} <span class="sub" style="font-size:12px">of ${nLu}</span></div></div></div>
+          <div class="sub" style="margin-top:10px;font-size:12px">Goals a game above a lineup of average ${nhlPvSeas()} regulars: each skater's
+            value per 60 &times; his usual minutes, summed. ${lu.n} of ${lu.slots} lineup slots carry a value${lu.n<lu.slots?"; the rest (no NHL game on file) count as average":""}.
+            ${(lu.top||[]).length?`Biggest contributors: ${(lu.top||[]).map(id=>P[id]).filter(p=>nhlPv(p)).map(p=>`${nhlPL(p)} ${nhlSg(p.pv.g,2)}`).join(", ")}.`:""}</div></div>
+        <div><div class="barlab" style="font-size:10.5px;letter-spacing:.06em;text-transform:uppercase"><span>Where it comes from</span><span>goals a game</span></div>
+          <div class="why" style="margin-top:6px">${NHL_PV_K.map(([k,name])=>nhlGBar(name,luK[k]||0,luMax,2)).join("")}</div></div>
+      </div></div>`:"";
   const fill=t.fill||{}, filled=(fill.rapm||0)+(fill.prior||0);
   const rp=n.rapm||{};
   $("#view").innerHTML=`<a class="back" data-nhlback href="${nhlH("teams")}">&lsaquo; Teams</a>
@@ -2026,33 +2220,60 @@ function nhlTeamPage(code){
           <th title="${code}'s win probability">Win%</th><th></th></tr></thead><tbody>${sRows||'<tr><td class="sub" colspan="5">No games in this build.</td></tr>'}</tbody></table></div>
         <div class="sub" style="margin-top:8px;font-size:12px">Team ratings only &mdash; no goalie or lineup input &mdash; so every game is a
           labelled lean. <a class="tl" href="${nhlH("record")}">Track record</a></div></div></div>
+    ${luPanel}
     ${tbl("Forwards",F.map(skRow).join(""),skHead)}
     ${tbl("Defence",D.map(skRow).join(""),skHead)}
     ${tbl("Goaltending",G.map(gRow).join(""),`<thead><tr><th class="a">Player</th><th>Age</th><th>GP</th><th>GS</th><th>W-L-OT</th><th>SV%</th>
       <th>GAA</th><th>SO</th><th title="goals saved above expected, that season">GSAx</th><th>GlassBox</th><th title="rating window, per 60 minutes">GSAx/60</th></tr></thead>`)}
     <div class="sub" style="margin-top:12px;font-size:12px">Season columns: ${ul}${use==="prev"?" (the team has not played this season yet)":""}; a code
-      beside GP is the team the line was played for. GlassBox is a display metric, never a model input: skaters on 5v5 RAPM
-      (${siteEsc(rp.window||"")}), goalies on GSAx; Net/Off/Def in xG per 60 minutes. <b>NR</b> = not rated &mdash; hover for why.
+      beside GP is the team the line was played for. ${pvOn?`Skaters: <b>Value</b> = ${NHL_PV_LABEL}; percentile within forwards or
+      defencemen, <b>/60</b> and <b>/gm</b> in goals vs an average regular at his position, as of the end of ${nhlPvSeas()}.
+      <b>On-ice xG</b> = 5v5 RAPM (${siteEsc(rp.window||"")}), xG per 60 minutes. Goalies on GSAx (GlassBox 0-100).`
+      :`GlassBox is a display metric, never a model input: skaters on 5v5 RAPM
+      (${siteEsc(rp.window||"")}), goalies on GSAx; Net/Off/Def in xG per 60 minutes.`} <b>NR</b> = not rated &mdash; hover for why.
       ${t.glassbox!=null?`Lineup GlassBox: ${t.n_f+t.n_d} of 18 lineup slots carry a displayed rating${filled?`; ${fill.rapm?fill.rapm+" filled from the partial RAPM estimate":""}${fill.rapm&&fill.prior?", ":""}${fill.prior?fill.prior+" at the league-average prior of 50":""}`:""}.`:""}
-      ${rp.caveat?siteEsc(rp.caveat):""}</div>`;
+      ${rp.caveat?siteEsc(rp.caveat):""}</div>
+    ${pvOn?`<div style="margin-top:12px">${nhlPvHelp()}</div>`:""}`;
 }
 
 /* ---------- PLAYERS (index + ladder) ---------- */
+/* Distribution of player value (goals per 60 vs an average regular). Bins of
+   0.1 from at least -0.5 to +0.8, widened to the data so every value sits in a
+   bin whose label is true (no catch-all edge bins). */
+function nhlVHist(vals){const X=vals.filter(v=>v!=null&&isFinite(v));
+  const lo=Math.min(-0.5,Math.floor(Math.min(...X,0)*10)/10), hi=Math.max(0.8,Math.ceil(Math.max(...X,0)*10)/10);
+  const B=Math.max(1,Math.min(40,Math.round((hi-lo)*10))), w=(hi-lo)/B, c=new Array(B).fill(0);
+  X.forEach(v=>{c[Math.max(0,Math.min(B-1,Math.floor((v-lo)/w+1e-9)))]++;});
+  const m=Math.max(...c,1), z=Math.floor(-lo/w+1e-9), e=i=>nhlSg(lo+i*w,2);
+  return `<div style="display:flex;align-items:flex-end;gap:2px;height:56px;margin:6px 0 2px">
+    ${c.map((x,i)=>`<div style="flex:1;background:${i>=z?"var(--accent)":"var(--line-2)"};opacity:${x?1:.22};height:${Math.max(4,Math.round(100*x/m))}%;border-radius:2px" title="${e(i)} to ${e(i+1)} goals/60: ${x}"></div>`).join("")}
+  </div><div class="sub" style="display:flex;justify-content:space-between"><span>${nhlSg(lo,1)}</span><span>0 = average regular</span><span>${nhlSg(hi,1)} goals/60</span></div>`;}
 function nhlPlayers(){
   const n=state.nhl, P=Object.values(n.players||{}), I=nhlIdx(), rp=n.rapm||{}, gm=n.goalie_model||{};
   const pos=["all","F","C","L","R","D","G"].indexOf(state.nhlPos)>=0?state.nhlPos:"all", isG=pos==="G";
   const inPos=p=>pos==="all"?p.grp!=="G":((pos==="F"||pos==="D"||pos==="G")?p.grp===pos:p.pos===pos);
-  const pool=P.filter(inPos), rated=pool.filter(p=>p.rating!=null), unrated=pool.filter(p=>p.rating==null);
+  // skaters are ranked on player value when the snapshot is in the build;
+  // goalies (and a build without it) on the 0-100 GlassBox rating
+  const pvMode=!isG&&I.nPv>0, pvv=p=>nhlPv(p)||{}, pvL=nhlPvSeas();
+  const has=pvMode?(p=>!!nhlPv(p)):(p=>p.rating!=null);
+  const pool=P.filter(inPos), rated=pool.filter(has), unrated=pool.filter(p=>!has(p));
   const SORTS=isG?[["r","Rating"],["gsax","GSAx/60"],["gp","Most games"]]
+    :pvMode?[["v","Value /60"],["g","Value /game"],["r","On-ice xG (RAPM)"],["toi","Most 5v5 TOI"]]
     :[["r","Rating"],["off","Offense"],["def","Defense"],["toi","Most 5v5 TOI"]];
-  const sk=SORTS.some(s=>s[0]===state.nhlSort)?state.nhlSort:"r";
-  const val={r:p=>p.rating,off:p=>p.off,def:p=>p.def,toi:p=>p.toi,gsax:p=>p.gsax60,gp:p=>p.g_win&&p.g_win.gp}[sk];
-  const vol=p=>isG?((p.g_win&&p.g_win.gp)||0):(p.toi||0);
+  // the component columns sort from their headers
+  const ALL=SORTS.concat(pvMode?[["p","Value percentile"]].concat(NHL_PV_K.map(([k,name])=>["c_"+k,name]),[["net","On-ice xG"]]):[]);
+  const sk=ALL.some(s=>s[0]===state.nhlSort)?state.nhlSort:SORTS[0][0];
+  const val=sk.indexOf("c_")===0?(p=>(pvv(p).c||{})[sk.slice(2)])
+    :{v:p=>pvv(p).v,p:p=>pvv(p).p,g:p=>pvv(p).g,r:p=>p.rating,off:p=>p.off,def:p=>p.def,net:p=>p.net,toi:p=>p.toi,
+      gsax:p=>p.gsax60,gp:p=>p.g_win&&p.g_win.gp}[sk];
+  const vol=p=>isG?((p.g_win&&p.g_win.gp)||0):(pvMode?((+pvv(p).s===I.pvS?pvv(p).sgp:0)||0):(p.toi||0));
   const MINS=isG?[["0","All rated"],["50","50+ GP"],["150","150+ GP"],["nr",`Unrated (${unrated.length})`]]
+    :pvMode?[["0","All with a value"],["20",`20+ GP in ${pvL}`],["60",`60+ GP in ${pvL}`],["nr",`No value (${unrated.length})`]]
     :[["0","All rated"],["2000","2,000+ min"],["3500","3,500+ min"],["nr",`Unrated (${unrated.length})`]];
   const mn=MINS.some(m=>m[0]===String(state.nhlMin))?String(state.nhlMin):"0";
   const num=v=>v==null||!isFinite(v)?-1e9:v;
-  const ranked=rated.slice().sort((a,b)=>num(val(b))-num(val(a))||b.rating-a.rating);
+  const tie=pvMode?((a,b)=>num(pvv(b).v)-num(pvv(a).v)):((a,b)=>(b.rating||0)-(a.rating||0));
+  const ranked=rated.slice().sort((a,b)=>num(val(b))-num(val(a))||tie(a,b)||String(a.name).localeCompare(String(b.name)));
   const rk=new Map(ranked.map((p,i)=>[p.id,i+1]));
   const useOf=p=>{const L=nhlLine(p); return L?(L.ln.gp||0):0;};
   const shown=mn==="nr"?unrated.slice().sort((a,b)=>useOf(b)-useOf(a)||(b.toi||0)-(a.toi||0)):ranked.filter(p=>vol(p)>=+mn);
@@ -2066,68 +2287,105 @@ function nhlPlayers(){
     <td class="a">${nhlTL(p.team)}</td><td>${gb(p.rating)}</td>
     <td>${nhlSgN(p.net)}</td><td>${nhlSgN(p.off)}</td><td>${nhlSgN(p.def)}</td>
     <td><span class="num">${nhlInt(p.toi)}</span></td><td class="a sub">${season(p)}</td></tr>`;
+  const pvRow=p=>{const v=pvv(p), c=v.c||{}, q=v.q||{};
+    return `<tr ${nhlRow(nhlH("player",p.id))}><td><span class="num">${rk.get(p.id)}</span></td>
+    <td class="a"><span class="player-link">${siteEsc(p.name)}</span> <span class="sub">${nhlPosL(p)}</span></td>
+    <td class="a">${nhlTL(p.team)}</td><td>${nhlPctB(v.p)}</td><td>${nhlSgN(v.v,3)}</td><td>${nhlSgN(v.g,3)}</td>
+    ${NHL_PV_K.map(([k])=>`<td${q[k]!=null?` title="${nhlOrd(q[k])} percentile"`:""}>${nhlSgN(c[k],3)}</td>`).join("")}
+    <td>${nhlSgN(p.net,2,p.rating==null)}</td><td class="a sub">${season(p)}</td></tr>`;};
   const gRow=p=>`<tr ${nhlRow(nhlH("player",p.id))}><td><span class="num">${rk.get(p.id)}</span></td>
     <td class="a"><span class="player-link">${siteEsc(p.name)}</span> <span class="sub">G</span></td>
     <td class="a">${nhlTL(p.team)}</td><td>${gb(p.rating)}</td><td>${nhlSgN(p.gsax60,3)}</td>
     <td>${p.g_win?nhlSgN(p.g_win.gsax,1):"-"}</td><td><span class="num">${p.g_win?p.g_win.gp:"-"}</span></td>
     <td class="a sub">${season(p)}</td></tr>`;
+  const nrWhy=p=>pvMode?`no NHL game on file through ${pvL}: player value is a snapshot as of the end of ${pvL}, not updated during the season`:siteEsc(p.nr||"not rated");
   const nrRow=p=>`<tr ${nhlRow(nhlH("player",p.id))}>
     <td class="a"><span class="player-link">${siteEsc(p.name)}</span> <span class="sub">${nhlPosL(p)}</span></td>
-    <td class="a">${nhlTL(p.team)}</td><td class="a"><span class="nhl-nr">${siteEsc(p.nr||"not rated")}</span></td>
+    <td class="a">${nhlTL(p.team)}</td><td class="a"><span class="nhl-nr">${nrWhy(p)}</span></td>
     <td class="a sub">${season(p)}</td></tr>`;
-  const head=mn==="nr"?`<tr><th class="a">Player</th><th class="a">Team</th><th class="a">Why no rating</th><th class="a">Latest season</th></tr>`
+  const th=(k,label,title)=>`<th data-nsort="${k}" class="nhl-srt${sk===k?" on":""}"${title?` title="${title}"`:""}>${label}</th>`;
+  const SHORT={cre:"Cre",fin:"Fin",a1:"A1",a2:"A2",pp:"PP",fo:"FO",pen:"Pen",def:"Def"};
+  const head=mn==="nr"?`<tr><th class="a">Player</th><th class="a">Team</th><th class="a">Why no ${pvMode?"value":"rating"}</th><th class="a">Latest season</th></tr>`
     :isG?`<tr><th></th><th class="a">Goalie</th><th class="a">Team</th><th>GlassBox</th><th title="goals saved above expected per 60 minutes, rating window">GSAx/60</th>
       <th title="total GSAx over the rating window">GSAx</th><th title="games in the rating window">GP</th><th class="a">Latest season</th></tr>`
+    :pvMode?`<tr><th></th><th class="a">Skater</th><th class="a">Team</th>
+      ${th("p","Value","player value: percentile within forwards / defencemen (sorts by percentile)")}
+      ${th("v","/60","goals per 60 of his ice time vs an average regular at his position")}
+      ${th("g","/gm","goals a game at his usual ice time")}
+      ${NHL_PV_K.map(([k,name])=>th("c_"+k,SHORT[k],name+": goals/60 of his value (hover a cell for the percentile)")).join("")}
+      ${th("net","On-ice xG","on-ice xG impact: teammate- and opponent-adjusted 5v5 xG/60 (RAPM)")}<th class="a">Latest season</th></tr>`
     :`<tr><th></th><th class="a">Skater</th><th class="a">Team</th><th>GlassBox</th><th title="5v5 xG/60: offense + defense">Net</th>
       <th>Off</th><th>Def</th><th title="5v5 minutes in the rating window">5v5 min</th><th class="a">Latest season</th></tr>`;
-  const rows=shown.map(mn==="nr"?nrRow:(isG?gRow:skRow)).join("")
-    ||`<tr><td class="sub" colspan="9">No players match.</td></tr>`;
-  const gbKey=isG?"gb_g":(pos==="D"?"gb_d":(pos==="all"?"glassbox":"gb_f"));
-  const TT=Object.entries(n.teams||{}).map(([c,t])=>[c,t[gbKey]]).filter(x=>x[1]!=null).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const rows=shown.map(mn==="nr"?nrRow:(isG?gRow:(pvMode?pvRow:skRow))).join("")
+    ||`<tr><td class="sub" colspan="${pvMode&&mn!=="nr"?16:9}">No players match.</td></tr>`;
   const grpName={all:"lineups",F:"forward groups",C:"forward groups",L:"forward groups",R:"forward groups",D:"defence groups",G:"No. 1 goalies"}[pos];
   const posName={all:"skaters",F:"forwards",C:"centres",L:"left wings",R:"right wings",D:"defencemen",G:"goalies"}[pos];
-  $("#view").innerHTML=`<div class="controls"><div class="rail">${siteRail("nhl")}</div></div>
-    <div class="eyebrow">Database &middot; NHL</div><h1 class="pt">Players</h1>
-    <div class="sub" style="margin-bottom:10px">Every player on a current NHL roster (${P.length}). <b>Skaters</b> are rated on
+  let best;
+  if(pvMode){const lk=pos==="D"?"d":(pos==="all"?"tot":"f");
+    const TT=Object.entries(n.teams||{}).filter(([,t])=>t.pv_lu&&t.pv_lu.n&&t.pv_lu[lk]!=null).map(([c,t])=>[c,t.pv_lu[lk]])
+      .sort((a,b)=>b[1]-a[1]).slice(0,6);
+    best=`<div class="panel"><h3>Best team ${grpName} <span class="sub">summed player value &middot; goals a game &middot; display only</span></h3>
+      <div class="twrap"><table><tbody>${TT.map(([c,v],i)=>`<tr ${nhlRow(nhlH("team",c))}>
+        <td><span class="num">${i+1}</span></td><td class="a"><span class="ab" style="color:var(--accent)">${c}</span> <span class="sub">${nhlNick(c)}</span></td>
+        <td>${nhlSgN(v,2)}</td></tr>`).join("")||'<tr><td class="sub">No lineup values in this build.</td></tr>'}</tbody></table></div></div>`;
+  }else{const gbKey=isG?"gb_g":(pos==="D"?"gb_d":(pos==="all"?"glassbox":"gb_f"));
+    const TT=Object.entries(n.teams||{}).map(([c,t])=>[c,t[gbKey]]).filter(x=>x[1]!=null).sort((a,b)=>b[1]-a[1]).slice(0,6);
+    best=`<div class="panel"><h3>Best team ${grpName} <span class="sub">lineup GlassBox &middot; display only</span></h3>
+      <div class="twrap"><table><tbody>${TT.map(([c,v],i)=>`<tr ${nhlRow(nhlH("team",c))}>
+        <td><span class="num">${i+1}</span></td><td class="a"><span class="ab" style="color:var(--accent)">${c}</span> <span class="sub">${nhlNick(c)}</span></td>
+        <td>${gb(v)}</td></tr>`).join("")}</tbody></table></div></div>`;}
+  const dist=pvMode?`<div class="panel"><h3>Value distribution <span class="sub">${rated.length} ${posName} with a value</span></h3>${nhlVHist(rated.map(p=>pvv(p).v))}</div>`
+    :`<div class="panel"><h3>Rating distribution <span class="sub">${rated.length} rated ${posName}</span></h3>${histBars(rated.map(p=>p.rating))}</div>`;
+  const intro=pvMode?`Every player on a current NHL roster (${P.length}). <b>Skaters</b> are ranked on <b>player value</b>: what a
+      skater does himself &mdash; creation, finishing, primary and secondary assists, power play, faceoffs, penalties drawn minus
+      taken, and on-ice defence &mdash; each walk-forward and shrunk toward his position, added up in goals per 60 of his ice time
+      (0 = an average ${pvL} regular at his position; <b>/gm</b> = per game at his usual minutes; the badge is his percentile within
+      forwards or defencemen). Columns <b>Cre</b> to <b>Def</b> are each piece's share of the value; click a header to sort.
+      <b>On-ice xG</b> is the teammate- and opponent-adjusted 5v5 RAPM (${siteEsc(rp.window||"")}), kept next to it.
+      <b>Goalies</b> are rated on goals saved above expected (GSAx on MoneyPuck xG, ${siteEsc(gm.window||"")}, shrunk toward
+      average), 0-100 GlassBox scale. Click anyone.`
+    :`Every player on a current NHL roster (${P.length}). <b>Skaters</b> are rated on
       teammate- and opponent-adjusted 5v5 expected-goal impact (RAPM, xG per 60 minutes, ${siteEsc(rp.window||"")}; at least
       ${nhlInt(rp.min_toi||1000)} 5v5 minutes to be rated): <b>Off</b> = chances created, <b>Def</b> = chances suppressed (positive
       is better), <b>Net</b> = both. <b>Goalies</b> are rated on goals saved above expected (GSAx on MoneyPuck xG,
       ${siteEsc(gm.window||"")}, shrunk toward average). One 0-100 <b>GlassBox</b> scale: 50 = average, 15 points = 1 SD.
-      <b>Display metrics &mdash; the game model has no player input.</b> Click anyone.</div>
-    ${rp.caveat?`<div class="polnote warn" style="font-size:12px">${siteEsc(rp.caveat)}</div>`:""}
+      <b>Display metrics &mdash; the game model has no player input.</b> Click anyone.`;
+  $("#view").innerHTML=`<div class="controls"><div class="rail">${siteRail("nhl")}</div></div>
+    <div class="eyebrow">Database &middot; NHL</div><h1 class="pt">Players</h1>
+    <div class="sub" style="margin-bottom:10px">${intro}</div>
+    ${pvMode?`<div class="polnote" style="font-size:12px">${NHL_PV_LABEL}. As of the end of ${pvL}.</div>`:""}
+    ${pvMode?`<div style="margin:0 0 10px">${nhlPvHelp()}</div>`:""}
+    ${rp.caveat&&!pvMode?`<div class="polnote warn" style="font-size:12px">${siteEsc(rp.caveat)}</div>`:""}
     <input class="psearch" id="nhlq" placeholder="Search ${P.length} NHL players&hellip;" autocomplete="off">
     <div id="nhlres"></div>
-    <div class="grid" style="margin:8px 0 14px">
-      <div class="panel"><h3>Rating distribution <span class="sub">${rated.length} rated ${posName}</span></h3>${histBars(rated.map(p=>p.rating))}</div>
-      <div class="panel"><h3>Best team ${grpName} <span class="sub">lineup GlassBox &middot; display only</span></h3>
-        <div class="twrap"><table><tbody>${TT.map(([c,v],i)=>`<tr ${nhlRow(nhlH("team",c))}>
-          <td><span class="num">${i+1}</span></td><td class="a"><span class="ab" style="color:var(--accent)">${c}</span> <span class="sub">${nhlNick(c)}</span></td>
-          <td>${gb(v)}</td></tr>`).join("")}</tbody></table></div></div>
-    </div>
+    <div class="grid" style="margin:8px 0 14px">${dist}${best}</div>
     <div class="controls nhl-chips" style="margin-bottom:8px">
       ${chipRow([["all","All skaters"],["F","Forwards"],["C","C"],["L","LW"],["R","RW"],["D","Defence"],["G","Goalies"]],pos,"npos")}
-      ${mn==="nr"?"":chipRow(SORTS,sk,"nsort")}
+      ${mn==="nr"?"":chipRow(SORTS,SORTS.some(s=>s[0]===sk)?sk:"","nsort")}
       ${chipRow(MINS,mn,"nmin")}
     </div>
     <div class="sub" style="margin-bottom:6px"><b>${shown.length}</b> shown &middot; ${mn==="nr"
-      ?`${posName} on a roster without a displayed rating, with the reason`
-      :`${rated.length} rated ${posName}; # = rank by ${SORTS.find(s=>s[0]===sk)[1].toLowerCase()} among them`}</div>
-    <div class="twrap"><table><thead>${head}</thead><tbody>${rows}</tbody></table></div>`;
+      ?`${posName} on a roster without a ${pvMode?"player value":"displayed rating"}, with the reason`
+      :`${rated.length} ${pvMode?"":"rated "}${posName}${pvMode?" with a value":""}; # = rank by ${ALL.find(s=>s[0]===sk)[1].toLowerCase()} among them`}</div>
+    <div class="twrap"><table${pvMode&&mn!=="nr"?' class="nhl-pvl"':""}><thead>${head}</thead><tbody>${rows}</tbody></table></div>
+    ${pvMode&&rp.caveat?`<div class="sub" style="margin-top:8px;font-size:12px">On-ice xG: ${siteEsc(rp.caveat)}</div>`:""}`;
   siteWireRail();
   $("#view").querySelectorAll("[data-npos]").forEach(x=>x.onclick=()=>{
     const was=state.nhlPos==="G"; state.nhlPos=x.dataset.npos;
-    if(was!==(state.nhlPos==="G")){state.nhlMin=0; state.nhlSort="r";}
+    if(was!==(state.nhlPos==="G")){state.nhlMin=0; state.nhlSort=null;}
     nhlPlayers();});
   $("#view").querySelectorAll("[data-nsort]").forEach(x=>x.onclick=()=>{state.nhlSort=x.dataset.nsort;nhlPlayers();});
   $("#view").querySelectorAll("[data-nmin]").forEach(x=>x.onclick=()=>{state.nhlMin=x.dataset.nmin;nhlPlayers();});
   const q=$("#nhlq"), res=$("#nhlres");
+  const score=p=>nhlPv(p)?2+(p.pv.p||0)/1000:(p.rating!=null?1+p.rating/1000:0);
   if(q) q.oninput=()=>{const s=norm(q.value);
     if(s.length<2){res.innerHTML="";return;}
-    const hits=P.filter(p=>norm(p.name).includes(s)).sort((a,b)=>(b.rating!=null)-(a.rating!=null)||(b.rating||0)-(a.rating||0)).slice(0,20);
+    const hits=P.filter(p=>norm(p.name).includes(s)).sort((a,b)=>score(b)-score(a)).slice(0,20);
     res.innerHTML=hits.length?`<div class="twrap" style="margin-bottom:6px"><table><tbody>
-      ${hits.map(p=>`<tr ${nhlRow(nhlH("player",p.id))}>
+      ${hits.map(p=>{const v=nhlPv(p); return `<tr ${nhlRow(nhlH("player",p.id))}>
         <td class="a"><span class="player-link">${siteEsc(p.name)}</span> <span class="sub">${nhlPosL(p)} &middot; ${p.team}</span></td>
-        <td>${nhlGb(p)}</td><td class="a sub">${p.rating==null?siteEsc(p.nr||"not rated"):season(p)}</td></tr>`).join("")}
+        <td>${p.grp==="G"?nhlGb(p):nhlSkB(p)}</td><td class="a sub">${v?`${nhlSg(v.v,3)} goals/60 &middot; ${season(p)}`
+          :(p.rating==null?(p.grp!=="G"&&I.nPv?`no player value (no NHL game through ${pvL})`:siteEsc(p.nr||"not rated")):season(p))}</td></tr>`;}).join("")}
       </tbody></table></div>`:`<div class="sub" style="margin:6px 0 10px">No players match.</div>`;};
 }
 function nhlPlayerPage(id){
@@ -2140,7 +2398,7 @@ function nhlPlayerPage(id){
   const bio=[teamLink(p.team,nhlName(p.team),"nhl"),NHL_POSF[p.pos]||p.pos,p.num!=null?"#"+p.num:"",
     p.age!=null?"age "+p.age:"",p.shoots?(isG?"catches ":"shoots ")+p.shoots:"",[ht,p.wt?p.wt+" lb":""].filter(Boolean).join(", "),
     siteEsc(p.nat||"")].filter(Boolean).join(" &middot; ");
-  let rating, expl;
+  let rating, expl, pvPanel="", v=null;
   if(isG){
     const w=p.g_win;
     rating=(p.rating!=null?[box(`Rank of ${I.nG}`,"#"+p.rk,"","among rated goalies"),
@@ -2148,22 +2406,45 @@ function nhlPlayerPage(id){
       :[box("Rating","NR","sub")])
       .concat(w?[box("Games",w.gp),box("xGA",w.xga),box("GA",w.ga),box("GSAx",nhlSg(w.gsax,1),sgC(w.gsax,1),"expected goals against minus goals against, rating window")]:[])
       .concat(p.rel!=null?[box("Reliability",(+p.rel).toFixed(2),"","share of the estimate that is data rather than the league-average prior")]:[]).join("");
-    expl=`GlassBox goalie rating (0-100): ${siteEsc(gm.scale||"")}. Window ${siteEsc(gm.window||"")}; at least ${gm.min_gp||10} games to be rated.`;
+    expl=`GlassBox goalie rating (0-100): ${siteEsc(gm.scale||"")}. Window ${siteEsc(gm.window||"")}; at least ${gm.min_gp||10} games to be rated.
+      Goalies keep this GSAx rating: the player-value program's opponent-adjusted saving rating did not prove more repeatable
+      from one season to the next than plain GSAx, so it is not shown as an upgrade.`;
   }else{
     const F=p.grp==="F";
+    v=nhlPv(p);
     rating=(p.rating!=null?[box(`Rank of ${I.nSk}`,"#"+p.rk,"","among rated skaters, forwards and defencemen pooled"),
-        box(`${F?"F":"D"} rank of ${F?I.nF:I.nD}`,"#"+p.rk_pos,"",F?"among rated forwards":"among rated defencemen")]
+        box(`${F?"F":"D"} rank of ${F?I.nF:I.nD}`,"#"+p.rk_pos,"",F?"among rated forwards":"among rated defencemen"),
+        box("GlassBox",(+p.rating).toFixed(0),"","0-100 on this on-ice xG rating, 50 = average")]
       :[box("Rating","NR","sub")])
       .concat(p.net!=null?[box("Net xG/60",nhlSg(p.net,3),p.rating==null?"sub":sgC(p.net,3)),
         box("Offense",nhlSg(p.off,3),p.rating==null?"sub":sgC(p.off,3),"5v5 expected goals created per 60, vs average"),
         box("Defense",nhlSg(p.def,3),p.rating==null?"sub":sgC(p.def,3),"5v5 expected goals suppressed per 60, vs average (positive = fewer allowed)"),
         box("5v5 minutes",nhlInt(p.toi))]:[])
       .concat(p.rel!=null?[box("Reliability",(+p.rel).toFixed(2),"","share of the estimate that is data rather than the prior")]:[]).join("");
-    expl=`GlassBox skater rating (0-100): ${siteEsc(rp.scale||"")}. Window ${siteEsc(rp.window||"")}${rp.built?`, fit ${nhlDateOnly(rp.built)}`:""}; at least
-      ${nhlInt(rp.min_toi||1000)} 5v5 minutes to be rated.${rp.caveat?" "+siteEsc(rp.caveat):""}`;
+    expl=`On-ice xG impact (RAPM): teammate- and opponent-adjusted 5v5 expected goals per 60, ${siteEsc(rp.scale||"")}. Window
+      ${siteEsc(rp.window||"")}${rp.built?`, fit ${nhlDateOnly(rp.built)}`:""}; at least ${nhlInt(rp.min_toi||1000)} 5v5 minutes to be
+      rated. It sees only shot quality while he is on the ice.${rp.caveat?" "+siteEsc(rp.caveat):""}`;
+    const stale=v&&I.pvS&&+v.s<I.pvS;
+    pvPanel=v?`<div class="panel" style="margin-bottom:14px"><h3>Player value <span class="sub">display rating &middot; as of the end of ${nhlPvSeas()} &middot; not a model input</span></h3>
+        <div class="statgrid">
+          ${box("Value / 60",nhlSg(v.v,3),sgC(v.v,3),"goals per 60 minutes of his ice time, all situations, vs an average regular at his position")}
+          ${box("Value / game",nhlSg(v.g,3),sgC(v.g,3),"goals a game at his usual ice time, vs an average regular at his position")}
+          ${box("Percentile",v.p!=null?nhlOrd(v.p):"&mdash;","",`among ${nhlGrpW(v.grp)}: ${nhlPvSeas()} regulars (20+ games)`)}
+          ${box(`${v.grp==="D"?"D":"F"} rank`,I.pvRk[p.id]?`#${I.pvRk[p.id]} of ${I.pvN[v.grp]}`:"&mdash;","nhl-sm",`among rostered ${nhlGrpW(v.grp)} with a value`)}
+          ${box("Ice time",v.toi!=null?`${(+v.toi).toFixed(1)} min`:"&mdash;","nhl-sm",`expected minutes a game: ${v.t5!=null?(+v.t5).toFixed(1):"-"} at 5v5, ${v.tpp!=null?(+v.tpp).toFixed(1):"-"} on the power play`)}
+          ${box("Sample",`${nhlInt(v.gp)} games`,"nhl-sm","NHL games on file before this rating (2010-11 on, playoffs included); the less data, the closer to his position's average")}
+        </div>
+        ${stale?`<div class="polnote warn" style="font-size:12px;margin:10px 0 0">His last NHL game on file was ${nhlDateOnly(v.d)} (${nhlSL(String(v.s))}): this rating is from then.</div>`:""}
+        <div style="margin-top:12px">${nhlPvTable(v)}</div>
+        <div class="sub" style="margin-top:8px;font-size:12px">Rating going into his last game on file (${nhlDateOnly(v.d)}). Goals/60 = each
+          piece's share of his value; the pieces add up to the total. Percentiles are within ${nhlGrpW(v.grp)}; a faceoff percentile only for
+          regular faceoff takers. 0 = an average ${nhlPvSeas()} regular at his position.</div></div>`
+      :`<div class="panel" style="margin-bottom:14px"><h3>Player value <span class="sub">display rating &middot; not a model input</span></h3>
+        <div class="sub">${I.nPv?`No player value: no NHL game on file through ${nhlPvSeas()}. The ratings are a snapshot as of the
+          end of ${nhlPvSeas()} and are not updated during the season, so a player who debuts after it has none.`:"Player value is not in this build; the on-ice xG rating below is the skater rating shown."}</div></div>`;
   }
-  const nr=p.rating==null?`<div class="polnote" style="margin:0 0 14px">Not rated: ${siteEsc(p.nr||"no rating")}.${!isG&&p.net!=null
-    ?" The partial estimate below is greyed out &mdash; too little ice time to rank.":""}</div>`:"";
+  const nrTxt=`Not rated: ${siteEsc(p.nr||"no rating")}.${!isG&&p.net!=null?" The partial estimate below is greyed out &mdash; too little ice time to rank.":""}`;
+  const nr=p.rating==null&&isG?`<div class="polnote" style="margin:0 0 14px">${nrTxt}</div>`:"";
   const sk=[["GP","gp"],["G","g"],["A","a"],["P","p"],["+/&minus;","pm",nhlPM],["PPP","ppp"],["SOG","sog"],
     ["Sh%",null,ln=>ln.sog?(100*ln.g/ln.sog).toFixed(1):"-"],["PIM","pim"],["TOI/GP","toi_pg",nhlMMSS]];
   const gl=[["GP","gp"],["GS","gs"],["W-L-OT",null,nhlWLO,"nhl-sm"],["SV%","svp",nhlSv],["GAA","gaa",v=>(+v).toFixed(2)],["SO","so"],
@@ -2176,13 +2457,19 @@ function nhlPlayerPage(id){
   [["cur",nhlSeasLbl()],["prev",nhlPrevLbl()]].forEach(([k,l])=>{const ln=s[k]; if(!ln) return;
     panels.push(`<div class="panel"><h3>${l} season${ln.tm&&ln.tm!==p.team?` <span class="sub">with ${nhlTL(ln.tm)}</span>`:""}</h3>${grid(ln,isG?gl:sk)}</div>`);});
   if(s.career) panels.push(`<div class="panel"><h3>Career <span class="sub">NHL regular season</span></h3>${grid(s.career,car)}</div>`);
+  const lead=isG?`${expl} The game model has no player, lineup or goalie term. Market-blind.`
+    :`${I.nPv?NHL_PV_LABEL+". On-ice xG impact (RAPM) is shown below it.":"On-ice xG impact (RAPM) is a display rating."} The game model has no
+      player, lineup or goalie term. Market-blind.`;
   $("#view").innerHTML=`<a class="back" data-nhlback href="${nhlH("team",p.team)}">&lsaquo; ${nhlName(p.team)}</a>
     <div class="phead"><span class="nm">${siteEsc(p.name)}</span><span class="sub">${bio}</span>
-      <span style="margin-left:auto">${nhlGb(p)}</span></div>
-    <div class="sub" style="margin-bottom:14px">${expl} The game model has no player, lineup or goalie term. Market-blind.</div>
-    ${nr}
-    <div class="panel" style="margin-bottom:14px"><h3>${isG?"Goalie rating":"Skater rating"} <span class="sub">${isG?siteEsc(gm.window||""):siteEsc(rp.window||"")}</span></h3>
-      <div class="statgrid">${rating}</div></div>
+      <span style="margin-left:auto">${isG?nhlGb(p):nhlSkB(p)}</span></div>
+    <div class="sub" style="margin-bottom:14px">${lead}</div>
+    ${nr}${pvPanel}
+    <div class="panel" style="margin-bottom:14px"><h3>${isG?"Goalie rating":"On-ice xG impact (RAPM)"} <span class="sub">${isG?siteEsc(gm.window||""):siteEsc(rp.window||"")+" &middot; display only"}</span></h3>
+      ${!isG&&p.rating==null?`<div class="sub" style="margin-bottom:8px">${nrTxt}</div>`:""}
+      <div class="statgrid">${rating}</div>
+      ${isG?"":`<div class="sub" style="margin-top:10px;font-size:12px">${expl}</div>`}</div>
+    ${isG?"":`<div style="margin-bottom:14px">${nhlPvHelp()}</div>`}
     <div class="pgrid">${panels.join("")||'<div class="panel"><h3>Production</h3><div class="sub">No NHL regular-season line on file yet.</div></div>'}</div>`;
 }
 
@@ -2509,6 +2796,156 @@ function nflFrozenNote(){
   return r.through_season&&r.through_season<n.season
     ?`Player ratings are frozen at the end of ${r.through_season} until ${n.season} snap participation data is published;
       rosters, depth charts, injuries, records and stats are current.`:"";
+}
+
+/* ---------- individual measures (player-value program): DISPLAY ONLY ----------
+   players[id].pv holds measures of the plays a player individually controls
+   (phase0/nfl_site_player_value.py): rated one-on-one against the opponent,
+   walk-forward, shrunk toward his position, every setting frozen on DEV seasons
+   (data through 2015). Each ranked measure carries a percentile (p_<key>) among the QUALIFIED
+   players of his position family (q = 1 when his own sample qualifies). The game
+   model does not use any of it: at game level it did not improve the forecasts,
+   and every surface that shows a measure says so (NFL_PV_USE). Offensive linemen
+   get no individual number: play-by-play never records which lineman lost a rep. */
+const NFL_PV_USE="Display rating; the game model does not use it (it did not improve game predictions).";
+const NFL_PVF={QB:["qb"],RB:["rush","rec"],WR:["rec"],TE:["rec"],DL:["front"],LB:["front","cov"],DB:["cov"]};
+const nflPvSg=(v,d)=>{if(v==null) return "-"; const s=Math.abs(+v).toFixed(d);
+  return (+s===0?"":(+v>0?"+":"&minus;"))+s;};
+const nflPvN=(v,d)=>v==null?"-":(+v).toFixed(d);
+const nflPvSh=v=>v==null?"-":Math.round(v*100)+"%";
+const nflOrd=k=>k+((k%100>=11&&k%100<=13)?"th":({1:"st",2:"nd",3:"rd"}[k%10]||"th"));
+const nflPvWord=p=>p>=90?"top 10%":(p>=70?"above average":(p>=30?"about average":(p>=10?"below average":"bottom 10%")));
+const nflPvS=()=>{const t=(state.nfl.pv_meta||{}).through||{}; return t.season||nflSS();};
+/* The snapshot's through-date ("2026 week 2"). It is rebuilt by hand, the rest of the
+   payload every week, so a note says so when it trails the standings by more than
+   two weeks (or a season began after it). */
+const nflPvThru=()=>{const t=(state.nfl.pv_meta||{}).through||{};
+  return t.season?`${t.season}${t.week?" week "+t.week:""}`:"";};
+function nflPvLag(){
+  const n=state.nfl, t=(n.pv_meta||{}).through||{}, st=n.standings_through||{}, rs=nflRS();
+  if(!t.season||!st.w||t.season>rs) return 0;
+  return t.season<rs?st.w:Math.max(0,st.w-(t.week||0));
+}
+function nflPvStale(){
+  const th=nflPvThru(), st=state.nfl.standings_through||{};
+  return th&&nflPvLag()>2?` <span class="nfl-pvstale">Not yet updated past ${th}: results on this page run through
+    ${nflRS()} week ${st.w}.</span>`:"";
+}
+const nflPvAsOf=()=>{const th=nflPvThru(); return th?` Values through ${th}.${nflPvStale()}`:"";};
+/* block -> [title, ranked measures [[key, what it is, formatter]], secondary line, sample line, what it measures] */
+const NFL_PVM={
+  qb:["Passing value",[["v","EPA per dropback vs an average passer",b=>nflPvSg(b.v,3)]],
+    b=>`opponent-adjusted EPA/dropback ${nflPvSg(b.epa,3)} &middot; completion % over expected ${nflPvSg(b.cpoe,1)} pts
+      &middot; sack rate ${nflPvSg(b.sack,1)} pts vs average (+ = takes more sacks)`,
+    (b,s)=>`${nflNum(b.db||0)} dropbacks in ${s}, ${nflNum(b.dbp||0)} in ${s-1}, ${nflNum(b.dbc||0)} career`,
+    `His own dropbacks only &mdash; EPA, success, sacks taken and completion % over expected &mdash; each rated one-on-one against
+      the pass defence he faced, then combined with weights fitted on 2007-2014 seasons.`],
+  rec:["Target value",[["v","EPA per target vs average",b=>nflPvSg(b.v,3)]],
+    b=>`opportunity ${nflPvSg(b.xy,2)} yds/target (the quality of the targets he earns) &middot; execution ${nflPvSg(b.ye,2)}
+      yds/target over expected &middot; target share ${nflPvSh(b.ts)}`,
+    (b,s)=>`${nflNum(b.t||0)} targets in ${s}, ${nflNum(b.tp||0)} in ${s-1}, ${nflNum(b.tc||0)} career`,
+    `Every target thrown his way, measured against what an average receiver gets from the same throw (depth, down, distance,
+      field) and adjusted for his quarterback and the defence. Target share = his share of the team's targets in games he played.`],
+  rush:["Rushing value",[["v","EPA per carry over expected",b=>nflPvSg(b.v,3)]],
+    b=>`${nflPvSg(b.ry,2)} rush yards over expected per carry &middot; carry share ${nflPvSh(b.cs)}`,
+    (b,s)=>`${nflNum(b.c||0)} designed carries in ${s}, ${nflNum(b.cp||0)} in ${s-1}, ${nflNum(b.cc||0)} career`,
+    `Designed runs against the expectation for the down, distance, field position and run direction, adjusted for his blocking
+      unit and the run defence. Most rushing success belongs to the blockers and the defence: the rusher's own part is small
+      and moves a lot from year to year.`],
+  front:["Pass rush &amp; run defence",[["pr","sacks + QB hits per 100 opponent dropbacks",b=>nflPvN(b.pr,1)],
+      ["st","run stops per 100 designed runs",b=>nflPvN(b.st,1)]],
+    b=>`sacks ${nflPvN(b.sk,1)} per 100 dropbacks &middot; ${nflPvSh(b.sh)} of an average defence's pressure`,
+    (b,s)=>`credited in ${b.g||0} games in ${s}, ${b.gp||0} in ${s-1}`,
+    `Only plays credited to him: sacks, QB hits and tackles on runs that failed. Rated against the line and quarterback he
+      faced and the home scorer (who logs hits); exposure is his team's dropbacks and runs in games he played &mdash; public
+      play-by-play has no snap-by-snap pass-rush count.`],
+  cov:["Coverage",[["ball","passes defensed + INTs per 100 opponent attempts",b=>nflPvN(b.ball,1)],
+      ["ept","EPA saved per target he is credited on",b=>nflPvSg(b.ept,3)]],
+    b=>`ball production ${nflPvN(b.x,2)}&times; the position average &middot; credited on ${nflPvN(b.ar,1)} targets per 100 attempts`,
+    (b,s)=>`credited in ${b.g||0} games in ${s}, ${b.gp||0} in ${s-1}`,
+    `Only what play-by-play credits to him &mdash; interceptions, passes defensed, the tackle after a catch, coverage penalties
+      &mdash; adjusted for the quarterback he faced. It cannot see who was covering on most completions, or targets never thrown
+      his way.`]
+};
+/* one measure as a percentile phrase */
+function nflPvRank(p,blk,m){
+  const b=(p.pv||{})[blk]; if(!b) return "";
+  const pk=b["p_"+m], grp=NFL_PL[p.fam]||"players";
+  if(pk==null) return `<span class="sub">not ranked (too few qualified ${grp})</span>`;
+  return `<b>${nflOrd(pk)}</b> percentile among qualified ${grp} &middot; <b>${nflPvWord(pk)}</b>${b.q?"":
+    ` <span class="chip nfl-q" title="below the sample needed to qualify; ranked against qualified ${grp}">small sample</span>`}`;
+}
+/* the player page panel */
+function nflPvPanel(p){
+  const n=state.nfl, M=n.pv_meta;
+  if(!M) return "";                          // a payload without the display layer
+  const s=nflPvS(), thr=M.through||{};
+  const use=`<div class="nfl-use"><b>${NFL_PV_USE}</b> Values through ${thr.season||s}${thr.week?" week "+thr.week:""}, as of his next
+    game; every setting frozen on DEV seasons (data through 2015).${nflPvStale()}</div>`;
+  if(p.fam==="OL") return `<div class="panel nfl-own"><h3>Individual measure <span class="sub">none for linemen</span></h3>
+    <div class="sub">Public play-by-play never records which lineman lost a rep, so no honest individual blocking number can be
+      built from it. The line is measured as a unit, quarterback included: see the ${nflTL(p.team)} protection numbers on the team page.</div></div>`;
+  const want=NFL_PVF[p.fam];
+  if(!want) return "";                       // specialists
+  const pv=p.pv||{}, have=want.filter(k=>pv[k]);
+  if(!have.length) return `<div class="panel nfl-own"><h3>Individual measure</h3>
+    <div class="sub">No credited plays in ${s-1}-${s} to rate yet.</div>${use}</div>`;
+  const body=have.map(k=>{const D=NFL_PVM[k], b=pv[k];
+    return `<div class="m"><div class="hd"><span class="t">${D[0]}</span></div>
+      ${D[1].map(([m,what,f])=>{const pk=b["p_"+m];
+        return `<div class="r"><b class="v">${f(b)}</b> <span class="sub">${what}</span>
+          ${pk!=null?`<div class="nfl-ownbar" title="${nflOrd(pk)} percentile"><i style="width:${Math.max(2,pk)}%"></i></div>`:""}
+          <div class="sub">${nflPvRank(p,k,m)}</div></div>`;}).join("")}
+      <div class="sec">${D[2](b)}</div><div class="sec">${D[3](b,s)}</div>
+      <div class="ex">${D[4]}</div></div>`;}).join("");
+  return `<div class="panel nfl-own"><h3>Individual measures <span class="sub">plays he controls &middot; display only</span></h3>
+    ${body}${use}</div>`;
+}
+/* the headline measure in one short cell (roster tables): the family's first ladder
+   measure the player has (NFL_PV_LADDER order: LB = run stops, not pass rush), named
+   in the cell so a mixed Defense table reads "93rd stops", "99th pressure", "98th ball" */
+const NFL_PV_SHORT={"qb.v":"pass","rush.v":"rush","rec.v":"target","front.pr":"pressure","front.st":"stops","cov.ball":"ball"};
+const NFL_PV_TIPX={"rush.v":" A rusher's own part of rushing results is small and moves a lot from year to year."};
+function nflPvCell(p){
+  const pv=p.pv||{};
+  const hit=(NFL_PV_LADDER[p.fam]||[]).find(([k,m])=>NFL_PV_SHORT[k+"."+m]&&pv[k]&&pv[k][m]!=null);
+  if(!hit) return `<span class="sub">-</span>`;
+  const [k,m]=hit, D=NFL_PVM[k], [,what,f]=D[1].find(x=>x[0]===m), b=pv[k], pk=b["p_"+m];
+  const tip=`${D[0].replace("&amp;","&")}: ${f(b).replace("&minus;","-")} ${what}${pk!=null?", "+nflOrd(pk)+" percentile":""}${b.q?"":" (small sample)"}.`
+    +`${NFL_PV_TIPX[k+"."+m]||""}${nflPvThru()?" Values through "+nflPvThru()+".":""} ${NFL_PV_USE}`;
+  return `<span class="nfl-pvc${b.q?"":" lo"}" title="${siteEsc(tip)}"><span class="num">${pk!=null?nflOrd(pk):f(b)}</span>
+    <span class="sub">${NFL_PV_SHORT[k+"."+m]}</span></span>`;
+}
+/* team page: the units play-by-play cannot split into players */
+function nflPvUnits(t){
+  const u=t.pv; if(!u||!state.nfl.pv_meta) return "";
+  const cls=(v,lowGood)=>Math.abs(v-1)<0.005?"":((lowGood?v<1:v>1)?"pos":"neg");
+  const rk=u.rk||{}, x=(k,lbl,lowGood)=>u[k]==null?"":`<tr><td class="a">${lbl}</td>
+      <td><span class="num ${cls(+u[k],lowGood)}">${(+u[k]).toFixed(2)}&times;</span></td>
+      <td><span class="sub">#${rk[k]||"-"} of 32</span></td></tr>`;
+  return `<div class="panel nfl-own"><h3>Line &amp; front <span class="sub">unit numbers &middot; display only</span></h3>
+    <div class="twrap"><table><tbody>
+      <tr><td class="a nfl-wrap" colspan="3"><span class="sub">Protection &mdash; the offence's line and quarterback together</span></td></tr>
+      ${x("O_sk","Sacks allowed",true)}${x("O_pr","Sacks + hits allowed",true)}${x("O_st","Run stops allowed",true)}
+      <tr><td class="a nfl-wrap" colspan="3"><span class="sub">Defensive front</span></td></tr>
+      ${x("D_pr","Sacks + hits",false)}${x("D_sk","Sacks",false)}${x("D_st","Run stops",false)}
+    </tbody></table></div>
+    <div class="sub" style="margin-top:6px">1.00&times; = league average per play, adjusted for the opponent and the home scorer; rank 1 = best.
+      Public play-by-play never records which lineman lost a rep, so the line is measured as a unit, quarterback included.${nflPvAsOf()}</div>
+    <div class="nfl-use"><b>${NFL_PV_USE}</b></div></div>`;
+}
+/* position ladders: which measures, and their column headers */
+const NFL_PV_LADDER={QB:[["qb","v"]],RB:[["rush","v"],["rec","v"]],WR:[["rec","v"],["rec","ts"]],TE:[["rec","v"],["rec","ts"]],
+  DL:[["front","pr"],["front","st"]],LB:[["front","st"],["front","pr"],["cov","ball"]],DB:[["cov","ball"],["cov","ept"]]};
+const NFL_PV_HDR={"qb.v":"Pass value","rec.v":"Target value","rec.ts":"Tgt share","rush.v":"Rush value",
+  "front.pr":"Pressure/100","front.st":"Stops/100","cov.ball":"Ball/100","cov.ept":"EPA/tgt"};
+const nflPvVal=(p,blk,m)=>{const b=(p.pv||{})[blk]; return b&&b[m]!=null?+b[m]:null;};
+function nflPvLadderCell(p,blk,m){
+  const b=(p.pv||{})[blk]; if(!b||b[m]==null) return `<td><span class="sub">-</span></td>`;
+  const D=NFL_PVM[blk], ms=D[1].find(x=>x[0]===m), pk=b["p_"+m];
+  const v=m==="ts"?nflPvSh(b.ts):ms[2](b);
+  return `<td title="${siteEsc((ms?ms[1]:"target share")+(pk!=null?", "+nflOrd(pk)+" percentile":"")+(b.q?"":" (small sample)"))}">
+    <span class="num">${v}</span>${pk!=null?` <span class="sub nfl-pvc${b.q?"":" lo"}">${nflOrd(pk)}</span>`:""}</td>`;
 }
 
 /* ---------- NFL BOARD ---------- */
@@ -2925,6 +3362,8 @@ const NFL_COLS={
 function nflRosterTable(title,players,st){
   if(!players.length) return "";
   const cols=NFL_COLS[title]||[], stSh=title==="Special teams";
+  // individual-measure percentile (display only); none for linemen or specialists
+  const pvCol=!!state.nfl.pv_meta&&(title==="Offense"||title==="Defense");
   const cell=(p,[,k,fams])=>{const s=p.stats||{};
     if(!s.g) return `<td><span class="sub">-</span></td>`;
     let v=typeof k==="function"?k(s):s[k];
@@ -2935,13 +3374,16 @@ function nflRosterTable(title,players,st){
       <td class="a"><span class="num" style="color:var(--faint)">${p.pos}</span></td>
       <td class="a"><span class="player-link" style="font-weight:600">${siteEsc(p.name)}</span>${p.num!=null?` <span class="sub">#${p.num}</span>`:""} ${nflStatusChip(p)}</td>
       <td${p.rating&&!stSh?` title="TrueSkill &mu; ${p.rating.mu.toFixed(1)} &plusmn; ${p.rating.sigma.toFixed(1)}, ${nflNum(Math.round(p.rating.n_eff))} plays rated, grade ${p.rating.tier===NFL_NOGRADE?"none":siteEsc(p.rating.tier)}"`:""}>${stSh?'<span class="sub" title="specialists are outside the 11v11 rating model">n/a</span>':(p.rating?gb(p.rating.r):gb(null))}</td>
+      ${pvCol?`<td>${nflPvCell(p)}</td>`:""}
       <td><span class="num">${sh!=null&&(p.stats||{}).g?Math.round(sh*100)+"%":"-"}</span></td>
       <td><span class="num">${(p.stats||{}).g||"-"}</span></td>
       ${cols.map(c=>cell(p,c)).join("")}</tr>`;}).join("");
   return `<div class="subh">${title} <span class="sub" style="font-family:var(--sans);font-size:13px;font-weight:400">${players.length}</span></div>
-    <div class="twrap"><table><thead><tr><th class="a">Pos</th><th class="a">Player</th><th>GlassBox</th><th>${stSh?"ST snap %":"Snap %"}</th><th>G</th>
+    <div class="twrap"><table><thead><tr><th class="a">Pos</th><th class="a">Player</th><th>GlassBox</th>${pvCol
+      ?`<th title="percentile of his headline individual measure (named in the cell) among qualified players at his position${nflPvThru()?"; values through "+nflPvThru():""}. ${NFL_PV_USE}">Own play</th>`:""}<th>${stSh?"ST snap %":"Snap %"}</th><th>G</th>
       ${cols.map(c=>`<th>${c[0]}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div>
-    ${title==="Offensive line"?`<div class="sub" style="margin-top:4px">Linemen have no box-score line; the rating is their measure.</div>`:""}`;
+    ${title==="Offensive line"?`<div class="sub" style="margin-top:4px">Linemen have no box-score line; the rating is their measure.${state.nfl.pv_meta
+      ?" Public play-by-play never records which lineman lost a rep, so there is no individual blocking measure: the line's unit numbers are in the Line &amp; front panel above.":""}</div>`:""}`;
 }
 function nflSortRoster(P){
   const fo=f=>{const i=NFL_FAMS.indexOf(f); return i<0?99:i;};
@@ -3026,9 +3468,12 @@ function nflTeamPage(code){
     </div>
     <div class="sub" style="margin:-6px 0 14px">EPA units per play vs league &times;100: pass off ${nflS1(t.off_pass)} &middot; run off ${nflS1(t.off_run)}
       &middot; pass def ${nflS1(t.def_pass)} &middot; run def ${nflS1(t.def_run)} (+ = good). Data: ${nflFreshLine()}</div>
-    <div class="grid">${t.lineup?nflLineupPanel(code,t,{}):""}${injPanel}</div>
+    <div class="grid">${t.lineup?nflLineupPanel(code,t,{}):""}${injPanel}${nflPvUnits(t)}</div>
     ${schTbl}
     <div class="subh" style="margin-top:22px">Roster <span class="sub" style="font-family:var(--sans);font-size:13px;font-weight:400">&middot; ${P.length} active &middot; stats are the ${st} regular season</span></div>
+    ${n.pv_meta?`<div class="sub" style="margin:-4px 0 6px">Own play = percentile of the player's headline individual measure (the plays he
+      controls, opponent-adjusted; named in the cell) among qualified players at his position; open a player for the numbers.${nflPvAsOf()}
+      <b>${NFL_PV_USE}</b></div>`:""}
     ${roster}
     <div style="margin-top:6px">${listTbl(t.reserve,"Reserve lists","injured reserve, PUP, exempt")}${listTbl(t.practice,"Practice squad","not on the active roster")}</div>`;
 }
@@ -3109,6 +3554,7 @@ function nflPlayerPage(id){
     ${status}
     <div class="pgrid">
       ${ratingPanel}
+      ${nflPvPanel(p)}
       ${panel(`${st} season`,(cur?cur+olNote:`<div class="sub">No ${st} regular-season snaps yet.</div>`)+snaps)}
       ${panel(`${sp} season`,prv?prv+olNote:"",`No ${sp} regular-season snaps.`)}
       ${car?panel(`Career <span class="sub">regular season</span>`,car):""}
@@ -3202,6 +3648,8 @@ function nflPosPage(key){
   all.forEach(p=>{const w=Math.max(p.snap_share||0,0.05);
     (rooms[p.team]=rooms[p.team]||[0,0]); rooms[p.team][0]+=w*p.rating.r; rooms[p.team][1]+=w;});
   const best=Object.entries(rooms).map(([t,[s,w]])=>[t,s/w]).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  // individual-measure columns (display only), sortable like the rating columns
+  const pvC=n.pv_meta?(NFL_PV_LADDER[key]||[]):[];
   const row=(p,i)=>{const r=p.rating;
     return `<tr ${nflRow(nflH("player",p.id))}>
     <td><span class="num">${i+1}</span></td>
@@ -3212,6 +3660,7 @@ function nflPosPage(key){
     <td><span class="num">${(r.mu-3*r.sigma).toFixed(1)}</span></td>
     <td><span class="num">${nflNum(Math.round(r.n_eff))}</span></td>
     <td><span class="num">${r.tier===NFL_NOGRADE?"&ndash;":siteEsc(r.tier)}</span></td>
+    ${pvC.map(([b,m])=>nflPvLadderCell(p,b,m)).join("")}
     <td class="a"><span class="sub">${nflStatShort(p)}</span></td></tr>`;};
   const renderBody=()=>{
     const qy=norm(($("#posq")||{}).value||"");
@@ -3219,16 +3668,26 @@ function nflPosPage(key){
     if(qy.length>=2) P=P.filter(p=>norm(p.name).includes(qy));
     const S={r:(a,b)=>b.rating.r-a.rating.r, mu:(a,b)=>b.rating.mu-a.rating.mu,
              sig:(a,b)=>a.rating.sigma-b.rating.sigma, n:(a,b)=>b.rating.n_eff-a.rating.n_eff};
+    // an individual measure: higher first, players without one last (stable by rating)
+    pvC.forEach(([b,m])=>{const g=p=>{const v=nflPvVal(p,b,m); return v==null?-Infinity:v;};
+      S["pv_"+b+"_"+m]=(x,y)=>(g(y)-g(x))||(y.rating.r-x.rating.r);});
     P.sort(S[state.posSort]||S.r);
-    $("#posbody").innerHTML=P.map(row).join("")||`<tr><td class="sub" colspan="9">No players match.</td></tr>`;
+    $("#posbody").innerHTML=P.map(row).join("")||`<tr><td class="sub" colspan="${9+pvC.length}">No players match.</td></tr>`;
     $("#posn").textContent=P.length;
   };
+  const pvNote=!n.pv_meta?"":(key==="OL"
+    ?`<div class="sub" style="margin-bottom:10px">No individual blocking measure: public play-by-play never records which lineman lost a rep.
+      Each line is measured as a unit, quarterback included, in the Line &amp; front panel of its team page.</div>`
+    :`<div class="sub" style="margin-bottom:10px">${pvC.map(([b,m])=>`<b>${NFL_PV_HDR[b+"."+m]}</b>`).join(", ")}: individual measures of the
+      plays a ${NFL_ONE[key]} controls, opponent-adjusted, with the percentile among qualified players at his position (open a player
+      for what each one counts).${nflPvAsOf()} <b>${NFL_PV_USE}</b></div>`);
   $("#view").innerHTML=`<a class="back" href="${nflH("players")}">&lsaquo; Players</a>
     <div class="eyebrow">TrueSkill ladder &middot; NFL</div><h1 class="pt">${NFL_GN[key]}</h1>
     <div class="sub" style="margin-bottom:10px"><b>${all.length}</b> rated ${NFL_PL[key]} &middot; league &mu; ${mMu.toFixed(1)}, avg &sigma; ${mSig.toFixed(2)}
       &middot; ratings are &mu;&thinsp;&minus;&thinsp;3&sigma; scored within this position (50 = an average ${NFL_ONE[key]}); the floor is what the
       engine will vouch for. The rating group is the player's nflverse position, so a roster DE can sit among linebackers.
       ${nflGradeLegend()}. Stat line = ${st} regular season. ${nflFrozenNote()}</div>
+    ${pvNote}
     <div class="grid" style="margin-bottom:14px">
       <div class="panel"><h3>Rating distribution</h3>${histBars(all.map(p=>p.rating.r))}</div>
       <div class="panel"><h3>Best ${key} rooms <span class="sub">snap-weighted team average</span></h3>
@@ -3238,13 +3697,16 @@ function nflPosPage(key){
     </div>
     <div class="controls" style="margin-bottom:10px">
       ${chipRow([["r","Rating"],["mu","Raw &mu;"],["sig","Most certain"],["n","Most plays"]],state.posSort,"psort")}
+      ${pvC.length?chipRow(pvC.map(([b,m])=>["pv_"+b+"_"+m,NFL_PV_HDR[b+"."+m]]),state.posSort,"psort")
+        .replace('class="filters"','class="filters nfl-pvsort" title="sort by an individual measure (display only)"'):""}
       ${chipRow(mins,state.posMin,"pmin")}
       ${subs.length>1?chipRow([["","All pos"]].concat(subs.map(s=>[s,`${s} ${posCount[s]}`])),state.nflPosSub,"psub"):""}
       <input class="psearch" id="posq" placeholder="Filter by name&hellip;" autocomplete="off" style="max-width:220px;margin:0">
     </div>
     <div class="sub" style="margin-bottom:6px"><span id="posn">${all.length}</span> shown</div>
     <div class="twrap"><table>
-      <thead><tr><th></th><th class="a">Player</th><th class="a">Team</th><th>Rating</th><th class="nocase">&mu;&thinsp;&plusmn;&thinsp;&sigma;</th><th class="nocase">&mu;&minus;3&sigma;</th><th>Plays</th><th>Grade</th><th class="a">${st} season</th></tr></thead>
+      <thead><tr><th></th><th class="a">Player</th><th class="a">Team</th><th>Rating</th><th class="nocase">&mu;&thinsp;&plusmn;&thinsp;&sigma;</th><th class="nocase">&mu;&minus;3&sigma;</th><th>Plays</th><th>Grade</th>${pvC.map(([b,m])=>
+        `<th class="nfl-pvh" title="individual measure (display only; the game model does not use it)">${NFL_PV_HDR[b+"."+m]}</th>`).join("")}<th class="a">${st} season</th></tr></thead>
       <tbody id="posbody"></tbody></table></div>`;
   renderBody();
   $("#view").querySelectorAll("[data-psort]").forEach(x=>x.onclick=()=>{state.posSort=x.dataset.psort;nflPosPage(key);});

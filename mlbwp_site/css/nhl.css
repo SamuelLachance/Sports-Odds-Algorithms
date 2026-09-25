@@ -18,7 +18,37 @@ tbody tr.nhl-cut{border-bottom:2px dashed var(--accent)}
 .nhl-chips .filters{flex-wrap:wrap}
 /* why a player has no rating, in words */
 .nhl-nr{display:inline-block;max-width:460px;white-space:normal;font-size:11.5px;color:var(--muted);line-height:1.4}
+/* player value (display rating): percentile bar, component table, help block */
+.nhl-pq{display:inline-block;width:42px;height:5px;border-radius:3px;background:var(--sunk);overflow:hidden;
+  position:relative;vertical-align:middle;margin-right:6px}
+.nhl-pq i{position:absolute;left:0;top:0;bottom:0;background:var(--away);border-radius:3px}
+.nhl-pq.hi i{background:var(--fav)} .nhl-pq.lo i{background:var(--home)}
+td.nhl-pqc{white-space:nowrap}
+.nhl-pvt td{vertical-align:top}
+.nhl-pvd{font-size:11.5px;color:var(--muted);font-weight:400;white-space:normal;max-width:380px;line-height:1.35;margin-top:2px}
+.nhl-pvn{font-size:12.5px;white-space:normal;display:inline-block;max-width:260px;line-height:1.35}
+tr.nhl-pvtot td{border-top:2px solid var(--line-2);background:var(--sunk)}
+.nhl-pvl th,.nhl-pvl td{padding:7px 7px}
+th.nhl-srt{cursor:pointer}
+th.nhl-srt.on{color:var(--accent)}
+.nhl-luv{font-family:var(--mono);font-size:20px;font-weight:700}
+details.nhl-help{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:0}
+details.nhl-help>summary{cursor:pointer;list-style:none;padding:11px 14px;font-size:12px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--muted);font-weight:700}
+details.nhl-help>summary::-webkit-details-marker{display:none}
+details.nhl-help>summary:before{content:"\25B8";display:inline-block;margin-right:8px;color:var(--faint)}
+details.nhl-help[open]>summary:before{transform:rotate(90deg)}
+.nhl-helpb{padding:0 14px 12px;font-size:12.5px;line-height:1.5;color:var(--muted)}
+.nhl-helpb p{margin:6px 0}
+.nhl-helpb ul{margin:4px 0 8px;padding-left:18px}
+.nhl-helpb li{margin:2px 0}
 @media(max-width:560px){
   .gc.nhl .side .who .sp .era{display:none}
   .nhl-nr{max-width:240px}
+  .nhl-pvd{max-width:140px}
+  .nhl-pvn{max-width:100px;font-size:12px}
+  /* the percentile number stays; its bar goes so the table fits a 375px phone */
+  .nhl-pvt .nhl-pq{display:none}
+  .nhl-pvt td:first-child{white-space:normal}
+  .nhl-pvt th,.nhl-pvt td{padding:7px 5px}
 }
