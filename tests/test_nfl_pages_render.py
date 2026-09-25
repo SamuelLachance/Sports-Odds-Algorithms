@@ -22,6 +22,7 @@ import math
 import re
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -82,6 +83,46 @@ __JS__
   S.forEach(g=>R("syn_game_"+key(g),()=>nflGamePage(key(g))));
   R("syn_season2",()=>nflSeason("2")); R("syn_season9",()=>nflSeason("9")); R("syn_season3",()=>nflSeason("3"));
   R("syn_team",()=>nflTeamPage("AAA")); R("syn_team_bbb",()=>nflTeamPage("BBB"));
+  // ---------- synthetic individual measures (players[].pv, display only) ----------
+  (function(){
+    const base=state.nfl, rt=(b,r)=>({r:r,tier:"B",n_eff:900,bucket:b,mu:25,sigma:1.2});
+    const P=(id,pos,fam,b,r,pv)=>({id:id,name:id+" Name",team:"AAA",pos:pos,fam:fam,status:"ACT",rating:b?rt(b,r):null,
+      snap_share:0.9,snap_g:2,stats:{g:2},...(pv?{pv:pv}:{})});
+    const pl={
+      Q1:P("Q1","QB","QB","QB",62,{qb:{v:0.134,epa:0.146,cpoe:2.9,sack:-0.2,db:70,dbp:632,dbc:4000,q:1,p_v:97}}),
+      Q2:P("Q2","QB","QB","QB",40,{qb:{v:-0.05,epa:-0.04,cpoe:-1.1,sack:0.4,db:3,dbp:20,dbc:23,q:0,p_v:12}}),
+      R1:P("R1","RB","RB","RB",55,{rush:{v:0.014,ry:0.19,cs:0.28,c:22,cp:171,cc:193,q:1,p_v:88},rec:{v:0.02,xy:-0.5,ye:0.3,ts:0.08,t:5,tp:40,tc:45,q:1,p_v:51}}),
+      W1:P("W1","WR","WR","WR",70,{rec:{v:0.189,xy:0.84,ye:0.65,ts:0.27,t:22,tp:189,tc:211,q:1,p_v:99}}),
+      L1:P("L1","T","OL","OL",50,null),
+      D1:P("D1","DE","DL","DL",66,{front:{pr:5.57,sk:2.3,st:4.2,sh:0.35,g:2,gp:17,q:1,p_pr:99,p_st:61}}),
+      B1:P("B1","CB","DB","DB",58,{cov:{ball:2.3,x:1.66,ept:0.14,ar:10.3,g:2,gp:18,q:1,p_ball:98,p_ept:80}}),
+      M1:P("M1","LB","LB","LB",52,{front:{pr:1.1,sk:0.4,st:8.4,sh:0.07,g:2,gp:17,q:1,p_pr:25,p_st:93},cov:{ball:0.9,x:1.1,ept:0.02,ar:6.1,g:2,gp:17,q:1}}),
+      N1:P("N1","LB","LB","LB",45,null),
+      K1:P("K1","K","K",null,0,null)};
+    const tm={...base.teams.AAA,roster:Object.keys(pl),
+      pv:{O_sk:0.8,O_pr:0.854,O_st:0.928,D_sk:1.19,D_pr:1.23,D_st:1.05,rk:{O_sk:1,O_pr:3,O_st:5,D_sk:2,D_pr:1,D_st:4}}};
+    state.nfl={...base,players:pl,teams:{...base.teams,AAA:tm},
+      pv_meta:{through:{season:2026,week:2},model_use:"display rating",pool:{}}};
+    Object.keys(pl).forEach(id=>R("syn_pv_player_"+id,()=>nflPlayerPage(id)));
+    R("syn_pv_team",()=>nflTeamPage("AAA"));
+    ["QB","RB","WR","OL","DL","LB","DB"].forEach(k=>{state.posMin=0; state.posSort="r"; R("syn_pv_pos_"+k,()=>nflPosPage(k));});
+    state.posSort="pv_qb_v"; R("syn_pv_pos_QB_sorted",()=>nflPosPage("QB"));
+    state.posSort="r";
+    // the snapshot trails the standings (rebuilt by hand): a note says so; within 2 weeks it does not
+    const thisSeason=state.nfl;
+    state.nfl={...thisSeason,standings_through:{w:6,d:plus(-3),n:4}};
+    R("syn_pv_stale_player",()=>nflPlayerPage("Q1")); R("syn_pv_stale_team",()=>nflTeamPage("AAA"));
+    state.posMin=0; R("syn_pv_stale_pos",()=>nflPosPage("QB"));
+    state.nfl={...thisSeason,standings_through:{w:4,d:plus(-3),n:4}}; R("syn_pv_lag2_player",()=>nflPlayerPage("Q1"));
+    state.nfl={...thisSeason,standings_through:{w:3,d:plus(-3),n:4},pv_meta:{...thisSeason.pv_meta,through:{season:2025,week:22}}};
+    R("syn_pv_lastseason_player",()=>nflPlayerPage("Q1"));
+    state.nfl=thisSeason;
+    // a payload WITHOUT the display layer shows none of it
+    state.nfl={...base,players:{Q1:{...pl.Q1}},teams:{...base.teams,AAA:{...tm,roster:["Q1"]}}};
+    R("syn_nopv_player",()=>nflPlayerPage("Q1")); R("syn_nopv_team",()=>nflTeamPage("AAA"));
+    state.posMin=0; R("syn_nopv_pos",()=>nflPosPage("QB"));
+    state.nfl=base;
+  })();
   // ---------- the shipped payload ----------
   const n=rd("nfl.json");
   if(n&&n.schedule&&n.schedule.length){
@@ -111,9 +152,53 @@ __JS__
         hitmiss:/chip (hit|miss)"/.test(a)};});
     out.bad=bad; out.mutated=JSON.stringify(n.schedule)!==before;
   }
+  // ---------- the shipped payload + the player-value snapshot, merged the way the chain merges it ----------
+  const PV=__PVDATA__;
+  if(PV){
+    const m=JSON.parse(fs.readFileSync(PV,"utf8")); state.nfl=m;
+    const before=JSON.stringify(m.players)+JSON.stringify(m.teams), bad=[], sample={};
+    const posbody=()=>document.querySelector("#posbody").innerHTML;
+    const chk=(k,h)=>{if(/^THREW/.test(h)||/\b(undefined|NaN|null|Infinity)\b/.test(txt(h))) bad.push(k+": "+String(h).slice(0,300));};
+    Object.keys(m.players).forEach(id=>{R("pp",()=>nflPlayerPage(id)); chk("pv_player_"+id,out.pp);
+      const p=m.players[id], k=p.fam+(p.pv?"":"_none");
+      if(!sample[k]&&(!p.pv||Object.values(p.pv).every(b=>b.q))) sample[k]=out.pp;});
+    ["QB","RB","WR","TE","OL","DL","LB","DB"].forEach(k=>{state.posMin=0; state.posSort="r"; R("pos",()=>nflPosPage(k));
+      chk("pv_pos_"+k,out.pos); chk("pv_posbody_"+k,posbody()); sample["pos_"+k]=out.pos;});
+    Object.keys(m.teams).forEach(c=>{R("tp",()=>nflTeamPage(c)); chk("pv_team_"+c,out.tp); if(!sample.team) sample.team=out.tp;});
+    // sorting a ladder by an individual measure puts the best value first
+    state.posSort="pv_qb_v"; state.posMin=0; R("pos",()=>nflPosPage("QB"));
+    const qbs=Object.values(m.players).filter(p=>p.rating&&p.rating.bucket==="QB"&&p.pv&&p.pv.qb).sort((a,b)=>b.pv.qb.v-a.pv.qb.v);
+    const lbcell=Object.values(m.players).filter(p=>p.fam==="LB"&&p.pv&&p.pv.front&&p.pv.front.st!=null)
+      .filter(p=>!/<span class="sub">stops<\/span>/.test(nflPvCell(p))).map(p=>p.name);
+    out.pv={bad:bad, sample:sample, mutated:JSON.stringify(m.players)+JSON.stringify(m.teams)!==before, lbcell:lbcell,
+      sorted_first:(/player-link">([^<]+)</.exec(posbody())||[])[1]||null, sorted_expect:qbs.length?siteEsc(qbs[0].name):null,
+      n_pv:Object.values(m.players).filter(p=>p.pv).length};
+    state.posSort="r";
+  }
   console.log(JSON.stringify(out));
 })();
 """
+
+
+PV_SNAPSHOT = ROOT / "data" / "nfl_site_pv.json"
+
+
+def _merged_payload(tmp: Path) -> str | None:
+    """The shipped payload with the player-value snapshot merged in by the chain's own
+    merge (phase0/nfl_site_player_value.py), written to a temp file: the live
+    site/data/nfl.json is never modified here."""
+    live = DATA / "nfl.json"
+    if not (live.is_file() and PV_SNAPSHOT.is_file()):
+        return None
+    sys.path.insert(0, str(ROOT / "phase0"))
+    import nfl_site_player_value as PVS
+    payload = json.loads(live.read_text(encoding="utf-8"))
+    if not payload.get("players") or not payload.get("teams"):
+        return None
+    PVS.merge(payload, PVS.load_snapshot(str(PV_SNAPSHOT)))
+    out = tmp / "nfl_pv.json"
+    out.write_text(json.dumps(payload), encoding="utf-8")
+    return str(out).replace("\\", "/")
 
 
 @pytest.fixture(scope="module")
@@ -121,8 +206,10 @@ def page(tmp_path_factory):
     node = shutil.which("node")
     if not node:
         pytest.skip("node is not installed")
-    p = tmp_path_factory.mktemp("js") / "nfl_pages.js"
+    tmp = tmp_path_factory.mktemp("js")
+    p = tmp / "nfl_pages.js"
     src = HARNESS.replace("__DATA__", json.dumps(str(DATA).replace("\\", "/")))
+    src = src.replace("__PVDATA__", json.dumps(_merged_payload(tmp)))
     p.write_text(src.replace("__JS__", JS.replace("\nboot();", "\n")), encoding="utf-8")
     r = subprocess.run([node, str(p)], capture_output=True, text=True, timeout=600,
                        encoding="utf-8")
@@ -329,3 +416,158 @@ def test_one_team_label_and_honest_copy():
     assert "t.abbr" not in src, "teams are labelled by their code everywhere (LA, not LAR on some pages)"
     assert "it means 75%" not in src, "the calibration table does not support that claim"
     assert '"current depth chart":' not in src    # the lineup panel already prints 'depth chart <date>'
+
+
+# ------------------------------------------------------------- individual measures (display only)
+PV_USE = "Display rating; the game model does not use it (it did not improve game predictions)."
+
+
+def test_pv_player_page_shows_measure_percentile_and_label(page):
+    qb = page["syn_pv_player_Q1"]
+    assert "Individual measures" in qb and "Passing value" in qb
+    assert "+0.134" in qb and "97th</b> percentile among qualified quarterbacks" in qb
+    assert "top 10%" in qb and PV_USE in qb                       # plain label + the model-use line
+    assert "2026 week 2" in qb                                     # through-date from pv_meta
+    assert "frozen on DEV seasons (data through 2015)" in qb and "2006-2015" not in qb
+    assert "Not yet updated" not in qb                             # the snapshot is current
+    small = page["syn_pv_player_Q2"]
+    assert "small sample" in small and "bottom 10%" not in small   # 12th: below average, flagged
+    assert "below average" in small
+    rb = page["syn_pv_player_R1"]
+    assert "Rushing value" in rb and "Target value" in rb and "small, unstable" not in rb
+    assert "rusher's own part is small" in rb                      # the honest caveat
+    dl = page["syn_pv_player_D1"]
+    assert "Pass rush &amp; run defence" in dl and "5.6" in dl and "sacks + QB hits per 100 opponent dropbacks" in dl
+    db = page["syn_pv_player_B1"]
+    assert "Coverage" in db and "cannot see who was covering" in db
+    lb = page["syn_pv_player_M1"]
+    assert "Pass rush" in lb and "Coverage" in lb
+    assert "not ranked" in lb                                      # a measure without a percentile says so
+
+
+def test_pv_offensive_line_is_honest(page):
+    ol = page["syn_pv_player_L1"]
+    assert "never records which lineman lost a rep" in ol
+    assert "Passing value" not in ol and "percentile among" not in ol
+    assert "#/nfl/team/AAA" in ol                                  # points to the unit numbers
+    assert "Individual" not in page["syn_pv_player_K1"]            # specialists: no panel
+    assert "No credited plays" in page["syn_pv_player_N1"]
+
+
+def test_pv_team_page_units_and_roster_column(page):
+    tm = page["syn_pv_team"]
+    assert "Line &amp; front" in tm and "Sacks allowed" in tm and "0.80&times;" in tm and "#1 of 32" in tm
+    assert "quarterback included" in tm and PV_USE in tm
+    assert ">Own play<" in tm and ">97th<" in tm                   # roster column: headline percentile
+    assert "no individual blocking measure" in tm
+    assert "Values through 2026 week 2." in tm                     # roster and unit notes carry the date
+
+
+def _own_play(tm, pid):
+    """The roster 'Own play' cell of one player's row."""
+    row = re.search(r'#/nfl/player/' + pid + r"'\"[^>]*>(.*?)</tr>", tm, re.S)
+    assert row, pid
+    cell = re.search(r'<span class="nfl-pvc[^"]*" title="[^"]*"><span class="num">([^<]+)</span>'
+                     r'\s*<span class="sub">([^<]+)</span>', row.group(1))
+    return cell.groups() if cell else None
+
+
+def test_pv_roster_headline_follows_the_ladder_and_is_named(page):
+    """The roster cell shows the family's first ladder measure, named: an off-ball
+    linebacker is read on run stops (93rd), not on his pass-rush rate (25th)."""
+    tm = page["syn_pv_team"]
+    assert _own_play(tm, "M1") == ("93rd", "stops")
+    assert _own_play(tm, "D1") == ("99th", "pressure")
+    assert _own_play(tm, "B1") == ("98th", "ball")
+    assert _own_play(tm, "Q1") == ("97th", "pass")
+    assert _own_play(tm, "W1") == ("99th", "target")
+    assert _own_play(tm, "R1") == ("88th", "rush")
+    assert "moves a lot from year to year" in tm                   # the RB headline's caveat (tooltip)
+    assert _own_play(tm, "L1") is None                              # linemen: no individual number
+
+
+def test_pv_line_front_section_rows_wrap(page):
+    """At phone width the colspan section labels must wrap, not widen the table and
+    push the rank column out of its panel."""
+    tm = page["syn_pv_team"]
+    assert '<td class="a nfl-wrap" colspan="3"><span class="sub">Protection' in tm
+    assert '<td class="a nfl-wrap" colspan="3"><span class="sub">Defensive front' in tm
+    css = (ROOT / "mlbwp_site" / "css" / "nfl.css").read_text(encoding="utf-8")
+    assert "td.nfl-wrap{white-space:normal}" in css
+
+
+def test_pv_stale_snapshot_is_flagged(page):
+    """The snapshot is rebuilt by hand: when it trails the standings by more than two
+    weeks (or a season started after it) the player panel, ladder and roster say so."""
+    for k in ("syn_pv_stale_player", "syn_pv_stale_team", "syn_pv_stale_pos"):
+        assert "Not yet updated past 2026 week 2: results on this page run through" in page[k], k
+        assert "2026 week 6" in page[k], k
+    assert "Not yet updated" not in page["syn_pv_lag2_player"]     # two weeks behind: fine
+    last = page["syn_pv_lastseason_player"]
+    assert "Values through 2025 week 22" in last and "Not yet updated past 2025 week 22" in last
+
+
+def test_pv_ladders_show_sortable_columns(page):
+    qb = page["syn_pv_pos_QB"]
+    assert ">Pass value</th>" in qb and 'data-psort="pv_qb_v"' in qb and PV_USE in qb
+    assert 'data-psort="pv_front_pr"' in page["syn_pv_pos_DL"] and ">Stops/100</th>" in page["syn_pv_pos_DL"]
+    assert 'data-psort="pv_cov_ball"' in page["syn_pv_pos_DB"] and ">EPA/tgt</th>" in page["syn_pv_pos_DB"]
+    ol = page["syn_pv_pos_OL"]
+    assert "No individual blocking measure" in ol and "pv_" not in ol
+    assert 'class="filt on" data-psort="pv_qb_v"' in page["syn_pv_pos_QB_sorted"]
+    assert "Values through 2026 week 2." in qb
+
+
+def _chip_rows(h):
+    return re.findall(r'<div class="(filters[^"]*)"[^>]*>(.*?)</div>', h, re.S)
+
+
+def test_pv_ladder_measure_chips_have_their_own_wrapping_row(page):
+    """Phone width: the core .filters row does not wrap, so appending the measure
+    chips to the rating chips pushed the LB ladder to 555px at a 375px viewport. The
+    measure chips sit in their own row, which wraps."""
+    for k in ("QB", "RB", "WR", "DL", "LB", "DB"):
+        rows = _chip_rows(page["syn_pv_pos_" + k])
+        rating = [body for cls, body in rows if 'data-psort="r"' in body]
+        assert len(rating) == 1 and "pv_" not in rating[0], k
+        pvrow = [(cls, body) for cls, body in rows if "pv_" in body]
+        assert len(pvrow) == 1 and "nfl-pvsort" in pvrow[0][0], k
+        assert 'data-psort="r"' not in pvrow[0][1], k
+    lb = [body for cls, body in _chip_rows(page["syn_pv_pos_LB"]) if "pv_" in body][0]
+    assert lb.count("data-psort=") == 3
+    css = (ROOT / "mlbwp_site" / "css" / "nfl.css").read_text(encoding="utf-8")
+    assert ".filters.nfl-pvsort{flex-wrap:wrap}" in css
+    assert not any("pv_" in body for _, body in _chip_rows(page["syn_nopv_pos"]))
+
+
+def test_pv_absent_payload_shows_nothing(page):
+    for k in ("syn_nopv_player", "syn_nopv_team", "syn_nopv_pos"):
+        h = page[k]
+        assert "Individual measure" not in h and "Own play" not in h and "pv_qb_v" not in h, k
+        assert PV_USE not in h, k
+
+
+def _pv(page):
+    if not page.get("pv"):
+        pytest.skip("site/data/nfl.json or data/nfl_site_pv.json not built")
+    return page["pv"]
+
+
+def test_pv_merged_payload_renders_clean(page):
+    pv = _pv(page)
+    assert not pv["bad"], pv["bad"][:5]
+    assert not pv["mutated"], "rendering changed the payload"
+    assert pv["n_pv"] > 1000
+
+
+def test_pv_merged_payload_pages(page):
+    pv = _pv(page)
+    s = pv["sample"]
+    assert "Passing value" in s["QB"] and PV_USE in s["QB"] and "percentile among qualified quarterbacks" in s["QB"]
+    assert "Target value" in s["WR"] and "Rushing value" in s["RB"]
+    assert "Pass rush" in s["DL"] and "Coverage" in s["DB"]
+    assert "never records which lineman lost a rep" in s["OL_none"]
+    assert "Line &amp; front" in s["team"] and ">Own play<" in s["team"]
+    assert ">Pass value</th>" in s["pos_QB"] and "No individual blocking measure" in s["pos_OL"]
+    assert pv["sorted_first"] == pv["sorted_expect"], "sorting by the measure must put the best first"
+    assert not pv["lbcell"], pv["lbcell"][:5]                      # linebackers' roster headline = run stops

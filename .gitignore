@@ -56,3 +56,10 @@ data/pv_nhl_pbp/
 data/pv_nfl_pbp*/
 data/pv_*.pkl
 data/pv_nfl_events_parts/
+
+# NHL HTML shift-report caches and the local backfill (merge path: phase0/nhl_shifts_html.py merge)
+data/nhl_shifts_html_cache/
+data/nhl_shifts_html_backfill.csv
+data/nhl_shifts_html_gap_api_recheck.csv
+data/nhl_shifts_html_gap_api_recheck.csv.empty.json
+data/nhl_shifts_html_validation_api.csv

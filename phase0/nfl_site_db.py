@@ -474,6 +474,16 @@ payload["stats_prev_season"] = PREV_SEASON
 payload["roster_week"] = max(latest_wk.values()) if latest_wk else None
 payload["player_board_season"] = int(sfile("data/nfl_player_board_{}.csv")[-8:-4])
 payload["status_labels"] = STATUS_LABELS
+# Individual player measures (player-value program) for DISPLAY: the committed
+# snapshot data/nfl_site_pv.json onto players[].pv / teams[].pv / pv_meta
+# (phase0/nfl_site_player_value.py). The game model never reads them. Stdlib
+# only, so CI-safe; a display extra must not stop a serve, so a failure is loud
+# but not fatal (the payload then carries no pv).
+try:
+    import nfl_site_player_value as PVS  # noqa: E402
+    print(f"player-value display: {PVS.merge(payload)} players given a pv block")
+except Exception as ex:  # noqa: BLE001
+    print(f"player-value display SKIPPED ({type(ex).__name__}: {ex})", flush=True)
 NP.dump_atomic(payload, PAYLOAD, separators=(",", ":"))
 n_status = defaultdict(int)
 for p in players.values():

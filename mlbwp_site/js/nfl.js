@@ -194,6 +194,156 @@ function nflFrozenNote(){
       rosters, depth charts, injuries, records and stats are current.`:"";
 }
 
+/* ---------- individual measures (player-value program): DISPLAY ONLY ----------
+   players[id].pv holds measures of the plays a player individually controls
+   (phase0/nfl_site_player_value.py): rated one-on-one against the opponent,
+   walk-forward, shrunk toward his position, every setting frozen on DEV seasons
+   (data through 2015). Each ranked measure carries a percentile (p_<key>) among the QUALIFIED
+   players of his position family (q = 1 when his own sample qualifies). The game
+   model does not use any of it: at game level it did not improve the forecasts,
+   and every surface that shows a measure says so (NFL_PV_USE). Offensive linemen
+   get no individual number: play-by-play never records which lineman lost a rep. */
+const NFL_PV_USE="Display rating; the game model does not use it (it did not improve game predictions).";
+const NFL_PVF={QB:["qb"],RB:["rush","rec"],WR:["rec"],TE:["rec"],DL:["front"],LB:["front","cov"],DB:["cov"]};
+const nflPvSg=(v,d)=>{if(v==null) return "-"; const s=Math.abs(+v).toFixed(d);
+  return (+s===0?"":(+v>0?"+":"&minus;"))+s;};
+const nflPvN=(v,d)=>v==null?"-":(+v).toFixed(d);
+const nflPvSh=v=>v==null?"-":Math.round(v*100)+"%";
+const nflOrd=k=>k+((k%100>=11&&k%100<=13)?"th":({1:"st",2:"nd",3:"rd"}[k%10]||"th"));
+const nflPvWord=p=>p>=90?"top 10%":(p>=70?"above average":(p>=30?"about average":(p>=10?"below average":"bottom 10%")));
+const nflPvS=()=>{const t=(state.nfl.pv_meta||{}).through||{}; return t.season||nflSS();};
+/* The snapshot's through-date ("2026 week 2"). It is rebuilt by hand, the rest of the
+   payload every week, so a note says so when it trails the standings by more than
+   two weeks (or a season began after it). */
+const nflPvThru=()=>{const t=(state.nfl.pv_meta||{}).through||{};
+  return t.season?`${t.season}${t.week?" week "+t.week:""}`:"";};
+function nflPvLag(){
+  const n=state.nfl, t=(n.pv_meta||{}).through||{}, st=n.standings_through||{}, rs=nflRS();
+  if(!t.season||!st.w||t.season>rs) return 0;
+  return t.season<rs?st.w:Math.max(0,st.w-(t.week||0));
+}
+function nflPvStale(){
+  const th=nflPvThru(), st=state.nfl.standings_through||{};
+  return th&&nflPvLag()>2?` <span class="nfl-pvstale">Not yet updated past ${th}: results on this page run through
+    ${nflRS()} week ${st.w}.</span>`:"";
+}
+const nflPvAsOf=()=>{const th=nflPvThru(); return th?` Values through ${th}.${nflPvStale()}`:"";};
+/* block -> [title, ranked measures [[key, what it is, formatter]], secondary line, sample line, what it measures] */
+const NFL_PVM={
+  qb:["Passing value",[["v","EPA per dropback vs an average passer",b=>nflPvSg(b.v,3)]],
+    b=>`opponent-adjusted EPA/dropback ${nflPvSg(b.epa,3)} &middot; completion % over expected ${nflPvSg(b.cpoe,1)} pts
+      &middot; sack rate ${nflPvSg(b.sack,1)} pts vs average (+ = takes more sacks)`,
+    (b,s)=>`${nflNum(b.db||0)} dropbacks in ${s}, ${nflNum(b.dbp||0)} in ${s-1}, ${nflNum(b.dbc||0)} career`,
+    `His own dropbacks only &mdash; EPA, success, sacks taken and completion % over expected &mdash; each rated one-on-one against
+      the pass defence he faced, then combined with weights fitted on 2007-2014 seasons.`],
+  rec:["Target value",[["v","EPA per target vs average",b=>nflPvSg(b.v,3)]],
+    b=>`opportunity ${nflPvSg(b.xy,2)} yds/target (the quality of the targets he earns) &middot; execution ${nflPvSg(b.ye,2)}
+      yds/target over expected &middot; target share ${nflPvSh(b.ts)}`,
+    (b,s)=>`${nflNum(b.t||0)} targets in ${s}, ${nflNum(b.tp||0)} in ${s-1}, ${nflNum(b.tc||0)} career`,
+    `Every target thrown his way, measured against what an average receiver gets from the same throw (depth, down, distance,
+      field) and adjusted for his quarterback and the defence. Target share = his share of the team's targets in games he played.`],
+  rush:["Rushing value",[["v","EPA per carry over expected",b=>nflPvSg(b.v,3)]],
+    b=>`${nflPvSg(b.ry,2)} rush yards over expected per carry &middot; carry share ${nflPvSh(b.cs)}`,
+    (b,s)=>`${nflNum(b.c||0)} designed carries in ${s}, ${nflNum(b.cp||0)} in ${s-1}, ${nflNum(b.cc||0)} career`,
+    `Designed runs against the expectation for the down, distance, field position and run direction, adjusted for his blocking
+      unit and the run defence. Most rushing success belongs to the blockers and the defence: the rusher's own part is small
+      and moves a lot from year to year.`],
+  front:["Pass rush &amp; run defence",[["pr","sacks + QB hits per 100 opponent dropbacks",b=>nflPvN(b.pr,1)],
+      ["st","run stops per 100 designed runs",b=>nflPvN(b.st,1)]],
+    b=>`sacks ${nflPvN(b.sk,1)} per 100 dropbacks &middot; ${nflPvSh(b.sh)} of an average defence's pressure`,
+    (b,s)=>`credited in ${b.g||0} games in ${s}, ${b.gp||0} in ${s-1}`,
+    `Only plays credited to him: sacks, QB hits and tackles on runs that failed. Rated against the line and quarterback he
+      faced and the home scorer (who logs hits); exposure is his team's dropbacks and runs in games he played &mdash; public
+      play-by-play has no snap-by-snap pass-rush count.`],
+  cov:["Coverage",[["ball","passes defensed + INTs per 100 opponent attempts",b=>nflPvN(b.ball,1)],
+      ["ept","EPA saved per target he is credited on",b=>nflPvSg(b.ept,3)]],
+    b=>`ball production ${nflPvN(b.x,2)}&times; the position average &middot; credited on ${nflPvN(b.ar,1)} targets per 100 attempts`,
+    (b,s)=>`credited in ${b.g||0} games in ${s}, ${b.gp||0} in ${s-1}`,
+    `Only what play-by-play credits to him &mdash; interceptions, passes defensed, the tackle after a catch, coverage penalties
+      &mdash; adjusted for the quarterback he faced. It cannot see who was covering on most completions, or targets never thrown
+      his way.`]
+};
+/* one measure as a percentile phrase */
+function nflPvRank(p,blk,m){
+  const b=(p.pv||{})[blk]; if(!b) return "";
+  const pk=b["p_"+m], grp=NFL_PL[p.fam]||"players";
+  if(pk==null) return `<span class="sub">not ranked (too few qualified ${grp})</span>`;
+  return `<b>${nflOrd(pk)}</b> percentile among qualified ${grp} &middot; <b>${nflPvWord(pk)}</b>${b.q?"":
+    ` <span class="chip nfl-q" title="below the sample needed to qualify; ranked against qualified ${grp}">small sample</span>`}`;
+}
+/* the player page panel */
+function nflPvPanel(p){
+  const n=state.nfl, M=n.pv_meta;
+  if(!M) return "";                          // a payload without the display layer
+  const s=nflPvS(), thr=M.through||{};
+  const use=`<div class="nfl-use"><b>${NFL_PV_USE}</b> Values through ${thr.season||s}${thr.week?" week "+thr.week:""}, as of his next
+    game; every setting frozen on DEV seasons (data through 2015).${nflPvStale()}</div>`;
+  if(p.fam==="OL") return `<div class="panel nfl-own"><h3>Individual measure <span class="sub">none for linemen</span></h3>
+    <div class="sub">Public play-by-play never records which lineman lost a rep, so no honest individual blocking number can be
+      built from it. The line is measured as a unit, quarterback included: see the ${nflTL(p.team)} protection numbers on the team page.</div></div>`;
+  const want=NFL_PVF[p.fam];
+  if(!want) return "";                       // specialists
+  const pv=p.pv||{}, have=want.filter(k=>pv[k]);
+  if(!have.length) return `<div class="panel nfl-own"><h3>Individual measure</h3>
+    <div class="sub">No credited plays in ${s-1}-${s} to rate yet.</div>${use}</div>`;
+  const body=have.map(k=>{const D=NFL_PVM[k], b=pv[k];
+    return `<div class="m"><div class="hd"><span class="t">${D[0]}</span></div>
+      ${D[1].map(([m,what,f])=>{const pk=b["p_"+m];
+        return `<div class="r"><b class="v">${f(b)}</b> <span class="sub">${what}</span>
+          ${pk!=null?`<div class="nfl-ownbar" title="${nflOrd(pk)} percentile"><i style="width:${Math.max(2,pk)}%"></i></div>`:""}
+          <div class="sub">${nflPvRank(p,k,m)}</div></div>`;}).join("")}
+      <div class="sec">${D[2](b)}</div><div class="sec">${D[3](b,s)}</div>
+      <div class="ex">${D[4]}</div></div>`;}).join("");
+  return `<div class="panel nfl-own"><h3>Individual measures <span class="sub">plays he controls &middot; display only</span></h3>
+    ${body}${use}</div>`;
+}
+/* the headline measure in one short cell (roster tables): the family's first ladder
+   measure the player has (NFL_PV_LADDER order: LB = run stops, not pass rush), named
+   in the cell so a mixed Defense table reads "93rd stops", "99th pressure", "98th ball" */
+const NFL_PV_SHORT={"qb.v":"pass","rush.v":"rush","rec.v":"target","front.pr":"pressure","front.st":"stops","cov.ball":"ball"};
+const NFL_PV_TIPX={"rush.v":" A rusher's own part of rushing results is small and moves a lot from year to year."};
+function nflPvCell(p){
+  const pv=p.pv||{};
+  const hit=(NFL_PV_LADDER[p.fam]||[]).find(([k,m])=>NFL_PV_SHORT[k+"."+m]&&pv[k]&&pv[k][m]!=null);
+  if(!hit) return `<span class="sub">-</span>`;
+  const [k,m]=hit, D=NFL_PVM[k], [,what,f]=D[1].find(x=>x[0]===m), b=pv[k], pk=b["p_"+m];
+  const tip=`${D[0].replace("&amp;","&")}: ${f(b).replace("&minus;","-")} ${what}${pk!=null?", "+nflOrd(pk)+" percentile":""}${b.q?"":" (small sample)"}.`
+    +`${NFL_PV_TIPX[k+"."+m]||""}${nflPvThru()?" Values through "+nflPvThru()+".":""} ${NFL_PV_USE}`;
+  return `<span class="nfl-pvc${b.q?"":" lo"}" title="${siteEsc(tip)}"><span class="num">${pk!=null?nflOrd(pk):f(b)}</span>
+    <span class="sub">${NFL_PV_SHORT[k+"."+m]}</span></span>`;
+}
+/* team page: the units play-by-play cannot split into players */
+function nflPvUnits(t){
+  const u=t.pv; if(!u||!state.nfl.pv_meta) return "";
+  const cls=(v,lowGood)=>Math.abs(v-1)<0.005?"":((lowGood?v<1:v>1)?"pos":"neg");
+  const rk=u.rk||{}, x=(k,lbl,lowGood)=>u[k]==null?"":`<tr><td class="a">${lbl}</td>
+      <td><span class="num ${cls(+u[k],lowGood)}">${(+u[k]).toFixed(2)}&times;</span></td>
+      <td><span class="sub">#${rk[k]||"-"} of 32</span></td></tr>`;
+  return `<div class="panel nfl-own"><h3>Line &amp; front <span class="sub">unit numbers &middot; display only</span></h3>
+    <div class="twrap"><table><tbody>
+      <tr><td class="a nfl-wrap" colspan="3"><span class="sub">Protection &mdash; the offence's line and quarterback together</span></td></tr>
+      ${x("O_sk","Sacks allowed",true)}${x("O_pr","Sacks + hits allowed",true)}${x("O_st","Run stops allowed",true)}
+      <tr><td class="a nfl-wrap" colspan="3"><span class="sub">Defensive front</span></td></tr>
+      ${x("D_pr","Sacks + hits",false)}${x("D_sk","Sacks",false)}${x("D_st","Run stops",false)}
+    </tbody></table></div>
+    <div class="sub" style="margin-top:6px">1.00&times; = league average per play, adjusted for the opponent and the home scorer; rank 1 = best.
+      Public play-by-play never records which lineman lost a rep, so the line is measured as a unit, quarterback included.${nflPvAsOf()}</div>
+    <div class="nfl-use"><b>${NFL_PV_USE}</b></div></div>`;
+}
+/* position ladders: which measures, and their column headers */
+const NFL_PV_LADDER={QB:[["qb","v"]],RB:[["rush","v"],["rec","v"]],WR:[["rec","v"],["rec","ts"]],TE:[["rec","v"],["rec","ts"]],
+  DL:[["front","pr"],["front","st"]],LB:[["front","st"],["front","pr"],["cov","ball"]],DB:[["cov","ball"],["cov","ept"]]};
+const NFL_PV_HDR={"qb.v":"Pass value","rec.v":"Target value","rec.ts":"Tgt share","rush.v":"Rush value",
+  "front.pr":"Pressure/100","front.st":"Stops/100","cov.ball":"Ball/100","cov.ept":"EPA/tgt"};
+const nflPvVal=(p,blk,m)=>{const b=(p.pv||{})[blk]; return b&&b[m]!=null?+b[m]:null;};
+function nflPvLadderCell(p,blk,m){
+  const b=(p.pv||{})[blk]; if(!b||b[m]==null) return `<td><span class="sub">-</span></td>`;
+  const D=NFL_PVM[blk], ms=D[1].find(x=>x[0]===m), pk=b["p_"+m];
+  const v=m==="ts"?nflPvSh(b.ts):ms[2](b);
+  return `<td title="${siteEsc((ms?ms[1]:"target share")+(pk!=null?", "+nflOrd(pk)+" percentile":"")+(b.q?"":" (small sample)"))}">
+    <span class="num">${v}</span>${pk!=null?` <span class="sub nfl-pvc${b.q?"":" lo"}">${nflOrd(pk)}</span>`:""}</td>`;
+}
+
 /* ---------- NFL BOARD ---------- */
 const NFL_EDGE_LBL={elo:"team",qb:"QB",units:"units",roster:"roster",ts:"players",hfa:"HFA",sched:"rest",luck:"luck",abs:"abs",avail:"inj"};
 /* The card's edge strip: the exact breakdown (cx) of the live-model number,
@@ -608,6 +758,8 @@ const NFL_COLS={
 function nflRosterTable(title,players,st){
   if(!players.length) return "";
   const cols=NFL_COLS[title]||[], stSh=title==="Special teams";
+  // individual-measure percentile (display only); none for linemen or specialists
+  const pvCol=!!state.nfl.pv_meta&&(title==="Offense"||title==="Defense");
   const cell=(p,[,k,fams])=>{const s=p.stats||{};
     if(!s.g) return `<td><span class="sub">-</span></td>`;
     let v=typeof k==="function"?k(s):s[k];
@@ -618,13 +770,16 @@ function nflRosterTable(title,players,st){
       <td class="a"><span class="num" style="color:var(--faint)">${p.pos}</span></td>
       <td class="a"><span class="player-link" style="font-weight:600">${siteEsc(p.name)}</span>${p.num!=null?` <span class="sub">#${p.num}</span>`:""} ${nflStatusChip(p)}</td>
       <td${p.rating&&!stSh?` title="TrueSkill &mu; ${p.rating.mu.toFixed(1)} &plusmn; ${p.rating.sigma.toFixed(1)}, ${nflNum(Math.round(p.rating.n_eff))} plays rated, grade ${p.rating.tier===NFL_NOGRADE?"none":siteEsc(p.rating.tier)}"`:""}>${stSh?'<span class="sub" title="specialists are outside the 11v11 rating model">n/a</span>':(p.rating?gb(p.rating.r):gb(null))}</td>
+      ${pvCol?`<td>${nflPvCell(p)}</td>`:""}
       <td><span class="num">${sh!=null&&(p.stats||{}).g?Math.round(sh*100)+"%":"-"}</span></td>
       <td><span class="num">${(p.stats||{}).g||"-"}</span></td>
       ${cols.map(c=>cell(p,c)).join("")}</tr>`;}).join("");
   return `<div class="subh">${title} <span class="sub" style="font-family:var(--sans);font-size:13px;font-weight:400">${players.length}</span></div>
-    <div class="twrap"><table><thead><tr><th class="a">Pos</th><th class="a">Player</th><th>GlassBox</th><th>${stSh?"ST snap %":"Snap %"}</th><th>G</th>
+    <div class="twrap"><table><thead><tr><th class="a">Pos</th><th class="a">Player</th><th>GlassBox</th>${pvCol
+      ?`<th title="percentile of his headline individual measure (named in the cell) among qualified players at his position${nflPvThru()?"; values through "+nflPvThru():""}. ${NFL_PV_USE}">Own play</th>`:""}<th>${stSh?"ST snap %":"Snap %"}</th><th>G</th>
       ${cols.map(c=>`<th>${c[0]}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div>
-    ${title==="Offensive line"?`<div class="sub" style="margin-top:4px">Linemen have no box-score line; the rating is their measure.</div>`:""}`;
+    ${title==="Offensive line"?`<div class="sub" style="margin-top:4px">Linemen have no box-score line; the rating is their measure.${state.nfl.pv_meta
+      ?" Public play-by-play never records which lineman lost a rep, so there is no individual blocking measure: the line's unit numbers are in the Line &amp; front panel above.":""}</div>`:""}`;
 }
 function nflSortRoster(P){
   const fo=f=>{const i=NFL_FAMS.indexOf(f); return i<0?99:i;};
@@ -709,9 +864,12 @@ function nflTeamPage(code){
     </div>
     <div class="sub" style="margin:-6px 0 14px">EPA units per play vs league &times;100: pass off ${nflS1(t.off_pass)} &middot; run off ${nflS1(t.off_run)}
       &middot; pass def ${nflS1(t.def_pass)} &middot; run def ${nflS1(t.def_run)} (+ = good). Data: ${nflFreshLine()}</div>
-    <div class="grid">${t.lineup?nflLineupPanel(code,t,{}):""}${injPanel}</div>
+    <div class="grid">${t.lineup?nflLineupPanel(code,t,{}):""}${injPanel}${nflPvUnits(t)}</div>
     ${schTbl}
     <div class="subh" style="margin-top:22px">Roster <span class="sub" style="font-family:var(--sans);font-size:13px;font-weight:400">&middot; ${P.length} active &middot; stats are the ${st} regular season</span></div>
+    ${n.pv_meta?`<div class="sub" style="margin:-4px 0 6px">Own play = percentile of the player's headline individual measure (the plays he
+      controls, opponent-adjusted; named in the cell) among qualified players at his position; open a player for the numbers.${nflPvAsOf()}
+      <b>${NFL_PV_USE}</b></div>`:""}
     ${roster}
     <div style="margin-top:6px">${listTbl(t.reserve,"Reserve lists","injured reserve, PUP, exempt")}${listTbl(t.practice,"Practice squad","not on the active roster")}</div>`;
 }
@@ -792,6 +950,7 @@ function nflPlayerPage(id){
     ${status}
     <div class="pgrid">
       ${ratingPanel}
+      ${nflPvPanel(p)}
       ${panel(`${st} season`,(cur?cur+olNote:`<div class="sub">No ${st} regular-season snaps yet.</div>`)+snaps)}
       ${panel(`${sp} season`,prv?prv+olNote:"",`No ${sp} regular-season snaps.`)}
       ${car?panel(`Career <span class="sub">regular season</span>`,car):""}
@@ -885,6 +1044,8 @@ function nflPosPage(key){
   all.forEach(p=>{const w=Math.max(p.snap_share||0,0.05);
     (rooms[p.team]=rooms[p.team]||[0,0]); rooms[p.team][0]+=w*p.rating.r; rooms[p.team][1]+=w;});
   const best=Object.entries(rooms).map(([t,[s,w]])=>[t,s/w]).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  // individual-measure columns (display only), sortable like the rating columns
+  const pvC=n.pv_meta?(NFL_PV_LADDER[key]||[]):[];
   const row=(p,i)=>{const r=p.rating;
     return `<tr ${nflRow(nflH("player",p.id))}>
     <td><span class="num">${i+1}</span></td>
@@ -895,6 +1056,7 @@ function nflPosPage(key){
     <td><span class="num">${(r.mu-3*r.sigma).toFixed(1)}</span></td>
     <td><span class="num">${nflNum(Math.round(r.n_eff))}</span></td>
     <td><span class="num">${r.tier===NFL_NOGRADE?"&ndash;":siteEsc(r.tier)}</span></td>
+    ${pvC.map(([b,m])=>nflPvLadderCell(p,b,m)).join("")}
     <td class="a"><span class="sub">${nflStatShort(p)}</span></td></tr>`;};
   const renderBody=()=>{
     const qy=norm(($("#posq")||{}).value||"");
@@ -902,16 +1064,26 @@ function nflPosPage(key){
     if(qy.length>=2) P=P.filter(p=>norm(p.name).includes(qy));
     const S={r:(a,b)=>b.rating.r-a.rating.r, mu:(a,b)=>b.rating.mu-a.rating.mu,
              sig:(a,b)=>a.rating.sigma-b.rating.sigma, n:(a,b)=>b.rating.n_eff-a.rating.n_eff};
+    // an individual measure: higher first, players without one last (stable by rating)
+    pvC.forEach(([b,m])=>{const g=p=>{const v=nflPvVal(p,b,m); return v==null?-Infinity:v;};
+      S["pv_"+b+"_"+m]=(x,y)=>(g(y)-g(x))||(y.rating.r-x.rating.r);});
     P.sort(S[state.posSort]||S.r);
-    $("#posbody").innerHTML=P.map(row).join("")||`<tr><td class="sub" colspan="9">No players match.</td></tr>`;
+    $("#posbody").innerHTML=P.map(row).join("")||`<tr><td class="sub" colspan="${9+pvC.length}">No players match.</td></tr>`;
     $("#posn").textContent=P.length;
   };
+  const pvNote=!n.pv_meta?"":(key==="OL"
+    ?`<div class="sub" style="margin-bottom:10px">No individual blocking measure: public play-by-play never records which lineman lost a rep.
+      Each line is measured as a unit, quarterback included, in the Line &amp; front panel of its team page.</div>`
+    :`<div class="sub" style="margin-bottom:10px">${pvC.map(([b,m])=>`<b>${NFL_PV_HDR[b+"."+m]}</b>`).join(", ")}: individual measures of the
+      plays a ${NFL_ONE[key]} controls, opponent-adjusted, with the percentile among qualified players at his position (open a player
+      for what each one counts).${nflPvAsOf()} <b>${NFL_PV_USE}</b></div>`);
   $("#view").innerHTML=`<a class="back" href="${nflH("players")}">&lsaquo; Players</a>
     <div class="eyebrow">TrueSkill ladder &middot; NFL</div><h1 class="pt">${NFL_GN[key]}</h1>
     <div class="sub" style="margin-bottom:10px"><b>${all.length}</b> rated ${NFL_PL[key]} &middot; league &mu; ${mMu.toFixed(1)}, avg &sigma; ${mSig.toFixed(2)}
       &middot; ratings are &mu;&thinsp;&minus;&thinsp;3&sigma; scored within this position (50 = an average ${NFL_ONE[key]}); the floor is what the
       engine will vouch for. The rating group is the player's nflverse position, so a roster DE can sit among linebackers.
       ${nflGradeLegend()}. Stat line = ${st} regular season. ${nflFrozenNote()}</div>
+    ${pvNote}
     <div class="grid" style="margin-bottom:14px">
       <div class="panel"><h3>Rating distribution</h3>${histBars(all.map(p=>p.rating.r))}</div>
       <div class="panel"><h3>Best ${key} rooms <span class="sub">snap-weighted team average</span></h3>
@@ -921,13 +1093,16 @@ function nflPosPage(key){
     </div>
     <div class="controls" style="margin-bottom:10px">
       ${chipRow([["r","Rating"],["mu","Raw &mu;"],["sig","Most certain"],["n","Most plays"]],state.posSort,"psort")}
+      ${pvC.length?chipRow(pvC.map(([b,m])=>["pv_"+b+"_"+m,NFL_PV_HDR[b+"."+m]]),state.posSort,"psort")
+        .replace('class="filters"','class="filters nfl-pvsort" title="sort by an individual measure (display only)"'):""}
       ${chipRow(mins,state.posMin,"pmin")}
       ${subs.length>1?chipRow([["","All pos"]].concat(subs.map(s=>[s,`${s} ${posCount[s]}`])),state.nflPosSub,"psub"):""}
       <input class="psearch" id="posq" placeholder="Filter by name&hellip;" autocomplete="off" style="max-width:220px;margin:0">
     </div>
     <div class="sub" style="margin-bottom:6px"><span id="posn">${all.length}</span> shown</div>
     <div class="twrap"><table>
-      <thead><tr><th></th><th class="a">Player</th><th class="a">Team</th><th>Rating</th><th class="nocase">&mu;&thinsp;&plusmn;&thinsp;&sigma;</th><th class="nocase">&mu;&minus;3&sigma;</th><th>Plays</th><th>Grade</th><th class="a">${st} season</th></tr></thead>
+      <thead><tr><th></th><th class="a">Player</th><th class="a">Team</th><th>Rating</th><th class="nocase">&mu;&thinsp;&plusmn;&thinsp;&sigma;</th><th class="nocase">&mu;&minus;3&sigma;</th><th>Plays</th><th>Grade</th>${pvC.map(([b,m])=>
+        `<th class="nfl-pvh" title="individual measure (display only; the game model does not use it)">${NFL_PV_HDR[b+"."+m]}</th>`).join("")}<th class="a">${st} season</th></tr></thead>
       <tbody id="posbody"></tbody></table></div>`;
   renderBody();
   $("#view").querySelectorAll("[data-psort]").forEach(x=>x.onclick=()=>{state.posSort=x.dataset.psort;nflPosPage(key);});

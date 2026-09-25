@@ -1,0 +1,25 @@
+{
+ "runs": {
+  "coverage": {
+   "through_season": 2026
+  },
+  "front": {
+   "through_season": 2026
+  },
+  "passing": {
+   "through_season": 2026,
+   "weights_fold": "2015"
+  },
+  "receiving_rushing": {
+   "through_season": 2026
+  }
+ },
+ "sources": {
+  "pv_nfl_coverage.py": "79e41a59c79811e26df670535d99f85fce47a00f33eb47df2611d71a4cde3aad",
+  "pv_nfl_pass_rush_and_front.py": "1d7e68a2ef5c6814250013ac1e7a3b21c83c96036fec48a3be631a8e0b96a7c7",
+  "pv_nfl_pass_rush_and_front_credits.py": "0d4fbc3ca05acaea8ddc93440eac654843fd2850f3ee1913b4add00aae2ceb96",
+  "pv_nfl_passing_build.py": "74e2bad517c64ec43ba6cec32e6fc19b05fa26a14b7db4e94cbd4fd29f5fc809",
+  "pv_nfl_receiving_rushing_build.py": "9f0a1c53a4de8ca5bfd583affeba67ca73e2018e26901e5eb5fd6ade6ba49f73",
+  "pv_nfl_receiving_rushing_xmodels.py": "1225195998b0de2b5fd9d6d480cf7be3fb66994ac9fcab2d37d8bc646ad33116"
+ }
+}
