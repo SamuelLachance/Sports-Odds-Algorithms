@@ -263,7 +263,8 @@ def test_game_page_and_cards_show_home_ice_on_its_own(tmp_path):
     assert ">Home ice<" in out["game"] and "Home ice is " in out["game"]
     assert "Team Elo includes" not in out["game"]
     assert re.search(r'<span class="[pn]">home [+&]', out["board"])
-    assert re.search(r"Elo <b>\d+</b> #\d+ of 32", out["teams"])
+    # the teams index shows Elo only as the results half of team strength
+    assert re.search(r"Results: Elo <b>\d+</b> \(#\d+\)", out["teams"])
 
 
 def test_a_playoff_slate_fills_the_board(tmp_path):

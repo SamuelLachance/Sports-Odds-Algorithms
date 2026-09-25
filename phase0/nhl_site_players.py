@@ -7,15 +7,16 @@ Who appears: exactly the players on a current NHL roster
 (data/nhl_player_names.json, `on_roster: true`, see phase0/nhl_names.py). A
 player who left every roster is not shown as anybody's team member.
 
-Skaters keep the teammate-adjusted RAPM rating (data/nhl_rapm2_ratings.json,
-xG/60 at 5v5, 0-100 scale, 50 = average) once they have MIN_TOI 5v5 minutes in
-the shift data the ratings were fit on; under that, or with no minutes at all,
-`rating` is null and `nr` says why in words. The shift data on file is not
-complete for every season (2025-26: 807 of 1,312 regular-season games), so the
-coverage of each fit season is recorded next to the ratings (rapm_meta) and a
-reason names it whenever the player played in an incomplete season - a
-full-season rookie is short of the floor because games are missing, not
-because he barely played.
+Skaters carry the teammate-adjusted on-ice RAPM (data/nhl_rapm2_ratings.json,
+xG/60 at 5v5: off / def / net) and, for payload compatibility, its 0-100 `rating`
+(50 = average) once they have MIN_TOI 5v5 minutes in the shift data the ratings
+were fit on; under that, or with no minutes at all, `rating` is null and `nr`
+says why in words. The pages no longer show that 0-100 number for skaters (it
+tracked production poorly: vs points per game, Spearman ~0.2 for forwards): the
+skater headline is player value (below), and off / def / net are shown only as a
+secondary "on-ice 5v5 xG impact" stat, in xG/60. The coverage of each fit season
+is recorded next to the ratings (rapm_meta) and a reason names it whenever the
+player played in a season whose shift data on file is incomplete.
 
 Units: `toi` on a player is 5v5 MINUTES in that shift data (RAPM). Season lines
 carry `toi_pg` (skaters, seconds per game) and `toi_s` (goalies, total
@@ -44,12 +45,26 @@ Skaters also carry `pv`, the player-value snapshot (data/nhl_site_pv.json, built
 locally by phase0/nhl_site_player_value.py from the validated player-value
 program): finishing, creation, assists, power play, faceoffs, penalties and
 defence, each walk-forward and shrunk, composed into goals per 60 / per game with
-a percentile within F / D. It is a DISPLAY rating - the game model does not use
-it (its game-level test was not significant; a forward test on 2026-27 is
-pre-registered). A static snapshot "as of the end of 2025-26": the serve only
-reads the JSON (stdlib), and a missing or unreadable file leaves `pv` null, so
-the pages fall back to the RAPM rating. team_blocks adds `pv_lu`, the summed
-value of the same 18-skater lineup the GlassBox rating uses.
+a percentile within F / D, an offence part (`o`, `qo`) and a provisional flag
+(`prov`, few NHL games on file). It is the skater HEADLINE on the pages and a
+DISPLAY rating - the game model does not use it (its game-level test was not
+significant; a forward test on 2026-27 is pre-registered). A static snapshot "as
+of the end of 2025-26": the serve only reads the JSON (stdlib), and a missing or
+unreadable file leaves `pv` null (the pages then say "no player value" and show
+the on-ice xG stat). The snapshot's display meta (as-of, shift-chart coverage,
+the display weight of defence, its reliability) reaches the payload as
+rapm["pv"] (rapm_meta), the skater-rating provenance block the serve already
+forwards.
+
+TEAM NUMBERS. The team rating on the pages is the MODEL's own strength (Elo +
+xG, computed in the front end from the payload's elo / xg). team_blocks adds
+display-only roster context: `pv_lu`, the summed player value of the 12 F + 6 D
+with the most ice time ("skater lineup value"; skaters only, no goaltending,
+never a forecast input), with `chg` = that minus the team's actual 2025-26
+lineup valued the same way (snapshot teams[code].lu_prev: the offseason roster
+change), and `top`, the key skaters by value per game. The lineup GlassBox
+fields (glassbox, gb_f, gb_d, gb_g, gb_rank - a minutes-weighted mean of the
+0-100 RAPM rating) stay in the payload for its contract but no page reads them.
 """
 from __future__ import annotations
 
@@ -239,7 +254,21 @@ def shift_coverage(seasons, shifts_path: str = SHIFTS, spine_path: str = SPINE) 
 
 def rapm_meta(spine_seasons, ratings_path: str = RAPM, meta_path: str = RAPM_META,
               cur_season: int | None = None, shifts_path: str = SHIFTS,
-              spine_path: str = SPINE, warn=print) -> dict:
+              spine_path: str = SPINE, warn=print, pv_path: str = PV) -> dict:
+    """The skater-rating provenance block (payload["rapm"]): the RAPM window, build
+    date and shift coverage (_rapm_meta), plus `pv` = the player-value snapshot's
+    display meta (pv_meta) - the serve forwards this block whole, so it is how the
+    snapshot's as-of date, shift-chart coverage and display weights reach the pages
+    without a change to the pinned serve."""
+    out = _rapm_meta(spine_seasons, ratings_path, meta_path, cur_season, shifts_path,
+                     spine_path, warn)
+    out["pv"] = pv_meta(pv_path)
+    return out
+
+
+def _rapm_meta(spine_seasons, ratings_path: str = RAPM, meta_path: str = RAPM_META,
+               cur_season: int | None = None, shifts_path: str = SHIFTS,
+               spine_path: str = SPINE, warn=print) -> dict:
     """Which seasons the committed RAPM ratings were fit on, when, and how much
     of each season's shift data they saw.
 
@@ -338,7 +367,8 @@ def coverage_caveat(coverage: dict | None, seasons=None) -> str | None:
 # ------------------------------------------------------------- player value --
 def load_pv(path: str = PV, warn=print) -> dict:
     """pid -> player-value block from the static snapshot, or {} when the file is
-    absent or unreadable (CI keeps serving; the pages fall back to RAPM). The
+    absent or unreadable (CI keeps serving; skater pages then say "no player
+    value" and keep the on-ice xG stat). The
     snapshot is built locally (phase0/nhl_site_player_value.py, from gitignored
     parquets) and CI only reads it, so a missing file is logged loudly rather
     than letting the feature disappear in silence."""
@@ -358,6 +388,38 @@ def load_pv(path: str = PV, warn=print) -> dict:
         return gone("has no players block")
     out = {str(k): v for k, v in pl.items() if isinstance(v, dict) and v.get("v") is not None}
     return out or gone("has no valued skater")
+
+
+PV_META_KEYS = ("asof", "season", "built", "source_run", "shift_gap", "shift_gap_counts",
+                "display_weights", "def_reliability", "prov_gp", "display_note")
+
+
+def _pv_file(path: str) -> dict | None:
+    try:
+        with open(path, encoding="utf-8") as fh:
+            d = json.load(fh)
+    except (OSError, json.JSONDecodeError):
+        return None
+    return d if isinstance(d, dict) else None
+
+
+def pv_meta(path: str = PV) -> dict | None:
+    """The display subset of the snapshot's meta, plus `fit_w_def` (the frozen
+    game-fit weight of defence the display replaces), or None without a snapshot."""
+    d = _pv_file(path)
+    m = (d or {}).get("meta")
+    if not isinstance(m, dict):
+        return None
+    out = {k: m.get(k) for k in PV_META_KEYS}
+    out["fit_w_def"] = (m.get("weights") or {}).get("ev_def")
+    return out
+
+
+def load_pv_teams(path: str = PV) -> dict:
+    """code -> the snapshot's team block (teams[code].lu_prev: the team's actual
+    2025-26 lineup valued at the snapshot), or {} when absent. Display only."""
+    t = (_pv_file(path) or {}).get("teams")
+    return {str(k): v for k, v in t.items() if isinstance(v, dict)} if isinstance(t, dict) else {}
 
 
 def pv_lineup(fwd: list, dmen: list) -> dict | None:
@@ -545,23 +607,46 @@ def lineup_value(p: dict, rapm: dict | None) -> tuple[float, str]:
     return PRIOR_RATING, "prior"
 
 
-def team_blocks(players: dict, teams, rapm: dict | None = None) -> dict:
-    """Per team: ordered roster ids, goalies, top-5 skaters, the GLASSBOX
-    lineup rating and the lineup's player value `pv_lu` (pv_lineup; `rk` among
-    the teams whose lineup carries any value) - display only, not model inputs.
+def top_skaters(ps: list, k: int = 5) -> list:
+    """Key skaters of a roster: by player value per game (pv.g) when any skater
+    carries a value - valued skaters first, then the remaining RAPM-rated ones by
+    net on-ice xG; else by net on-ice xG (RAPM) alone, as before the snapshot."""
+    sk = [p for p in ps if p["grp"] != "G"]
+    pvd = [p for p in sk if (p.get("pv") or {}).get("g") is not None]
+    have = {p["id"] for p in pvd}
+    rated = [p for p in sk if p.get("net") is not None and p.get("rating") is not None
+             and p["id"] not in have]
+    out = sorted(pvd, key=lambda p: (-float(p["pv"]["g"]), p.get("name") or ""))
+    out += sorted(rated, key=lambda p: -p["net"])
+    return [p["id"] for p in out[:k]]
+
+
+def team_blocks(players: dict, teams, rapm: dict | None = None,
+                pv_teams: dict | None = None) -> dict:
+    """Per team: ordered roster ids, goalies, the key skaters `top`
+    (top_skaters: by player value per game), the skater lineup value `pv_lu`
+    and the legacy lineup GlassBox fields - all display only, never model inputs.
 
     Lineup = the 12 forwards and 6 defencemen with the most ice time THIS
     season once the team has played (last season before that - one season
-    for the whole team, so the two are never mixed). EVERY lineup slot counts
-    (lineup_value): a displayed rating, else the player's shrunk RAPM rating
-    under the display floor, else the league-average prior 50 - so a team of
-    rookies is rated on its whole lineup, not on the few veterans who clear
-    the floor, and teams are comparable. gb_f / gb_d = mean over the slots;
-    glassbox = mean over all 18; n_f / n_d = slots with a DISPLAYED rating;
-    `cov` = their share of the slots; `fill` = slots filled from the RAPM file
-    and from the prior. gb_g = the most-used goalie's rating. `use` says which
-    season chose the lineup.
+    for the whole team, so the two are never mixed). `use` says which season
+    chose the lineup.
+
+    pv_lu (pv_lineup) = the lineup's summed player value, goals a game above a
+    lineup of average regulars; `rk` among the teams whose lineup carries any
+    value (kept in the payload; the pages show no lineup rank). With the
+    snapshot's teams block (pv_teams, default load_pv_teams()): `prev` = the
+    team's ACTUAL 2025-26 lineup valued the same way and `chg` = tot - prev, the
+    offseason roster change.
+
+    Legacy lineup GlassBox (payload contract only, no page reads it): EVERY
+    lineup slot counts (lineup_value): a displayed RAPM rating, else the shrunk
+    RAPM rating under the display floor, else the league-average prior 50.
+    gb_f / gb_d = mean over the slots; glassbox = mean over all 18; n_f / n_d =
+    slots with a displayed rating; `cov` = their share; `fill` = slots filled
+    from the RAPM file and from the prior; gb_g = the most-used goalie's rating.
     """
+    pv_teams = load_pv_teams() if pv_teams is None else pv_teams
     by = defaultdict(list)
     for pid, p in players.items():
         by[p["team"]].append(p)
@@ -582,12 +667,15 @@ def team_blocks(players: dict, teams, rapm: dict | None = None) -> dict:
         srcs = [s for _, s in fs + ds]
         n_f = sum(1 for _, s in fs if s == "rated")
         n_d = sum(1 for _, s in ds if s == "rated")
-        rated_sk = [p for p in ps if p["grp"] != "G" and p["net"] is not None
-                    and p["rating"] is not None]
+        lu = pv_lineup(f[:12], d[:6])
+        prev = (pv_teams.get(t) or {}).get("lu_prev")
+        if lu is not None and lu["n"] and isinstance(prev, (int, float)):
+            lu["prev"] = round(float(prev), 3)
+            lu["chg"] = round(lu["tot"] - float(prev), 3)
         out[t] = {
             "roster": [p["id"] for p in f + d + g],
             "goalies": [p["id"] for p in g],
-            "top": [p["id"] for p in sorted(rated_sk, key=lambda p: -p["net"])[:5]],
+            "top": top_skaters(ps),
             "glassbox": round(sum(allr) / len(allr), 1) if allr else None,
             "gb_f": round(sum(fr) / len(fr), 1) if fr else None,
             "gb_d": round(sum(dr) / len(dr), 1) if dr else None,
@@ -597,7 +685,7 @@ def team_blocks(players: dict, teams, rapm: dict | None = None) -> dict:
             "cov": round((n_f + n_d) / len(allr), 3) if allr else None,
             "fill": {"rapm": srcs.count("rapm"), "prior": srcs.count("prior")},
             "use": key,
-            "pv_lu": pv_lineup(f[:12], d[:6]),
+            "pv_lu": lu,
         }
     ranked = sorted((t for t in out if out[t]["glassbox"] is not None),
                     key=lambda t: -out[t]["glassbox"])

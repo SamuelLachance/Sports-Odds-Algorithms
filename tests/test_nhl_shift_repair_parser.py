@@ -255,6 +255,17 @@ def test_throttle_spaces_requests_at_most_two_per_second():
 
 # ------------------------------------------------------------------- real data (local)
 
+def _gap_scope():
+    """The gap games the backfill was built for: those still without a shift chart
+    (data/pv_nhl_full_noshift_games.csv) plus those already merged into
+    data/nhl_shifts.csv (data/nhl_shifts_html_merged.csv, the 2026-09 repair)."""
+    scope = set(H.gap_games())
+    if os.path.exists(H.MERGED_CSV):
+        with open(H.MERGED_CSV, encoding="utf-8") as fh:
+            scope |= {int(r["gid"]) for r in csv.DictReader(fh)}
+    return scope
+
+
 @pytest.mark.skipif(not os.path.exists(H.BACKFILL_CSV), reason="backfill not built locally")
 def test_backfill_file_schema_and_scope():
     with open(H.BACKFILL_CSV, encoding="utf-8") as fh:
@@ -264,12 +275,13 @@ def test_backfill_file_schema_and_scope():
         for r in rd:
             gids.add(int(r[0]))
             assert int(r[3]) >= 1 and 0 <= int(r[4]) <= 1200 and 0 <= int(r[5]) <= 1200
-    assert gids <= set(H.gap_games())
+    scope = _gap_scope()
+    assert gids <= scope
     with open(H.BACKFILL_GAMES, encoding="utf-8") as fh:
         led = list(csv.DictReader(fh))
     ok = {int(r["gid"]) for r in led if r["status"] == "ok"}
     assert ok == gids
-    assert {int(r["gid"]) for r in led} == set(H.gap_games())
+    assert {int(r["gid"]) for r in led} == scope
 
 
 @pytest.mark.skipif(not os.path.exists(H.VALIDATION_JSON), reason="validation not run locally")
