@@ -12,7 +12,8 @@ site/data/nhl.json players[pid].pv and teams[code].pv_lu. Pinned here:
     for faceoff takers, the label says it is not a model input, no market field;
   * the merge: skaters (never goalies) get their block, a missing or corrupt
     snapshot degrades to no value (CI keeps serving), the lineup value sums the
-    same 18 skaters the GlassBox lineup uses and ranks the teams;
+    12 F + 6 D with the most ice time and ranks the teams (payload only: the pages
+    show no lineup rank);
   * the forward test stays valid: no file pinned by
     data/pv_nhl_forward_prereg_2026_27.json was modified (nhl_serve.py included -
     the merge lives in nhl_site_players.py for that reason).
@@ -89,6 +90,8 @@ def test_snapshot_meta_says_display_only(snap):
         if (ROOT / "data" / PV.SRC_W).is_file() else None
     if frozen:
         assert m["weights"] == {k: round(v, 4) for k, v in frozen.items()}
+    # the one display-only change: defence at 1 goal per xG prevented (fit: 1.9008)
+    assert m["display_weights"] == {"ev_def": 1.0}
 
 
 def test_every_skater_block_is_consistent(snap):

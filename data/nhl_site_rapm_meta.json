@@ -1,12 +1,12 @@
 {
- "sha256": "5ac068e421f0e5934f2a3d88b68e2bb956e7c8b313bf30681887efe4e96c63dc",
+ "sha256": "861edd18b3170923226b3e42cdc0fd2534b922fd427858a70d28bf20e5f8230a",
  "fit_seasons": [
   20222023,
   20232024,
   20242025,
   20252026
  ],
- "built": "2026-07-31",
+ "built": "2026-09-25",
  "coverage": {
   "20222023": {
    "with_shifts": 1312,
@@ -17,11 +17,11 @@
    "games": 1312
   },
   "20242025": {
-   "with_shifts": 1255,
+   "with_shifts": 1312,
    "games": 1312
   },
   "20252026": {
-   "with_shifts": 807,
+   "with_shifts": 1312,
    "games": 1312
   }
  }

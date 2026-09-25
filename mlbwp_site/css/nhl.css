@@ -31,10 +31,60 @@ tr.nhl-pvtot td{border-top:2px solid var(--line-2);background:var(--sunk)}
 .nhl-pvl th,.nhl-pvl td{padding:7px 7px}
 th.nhl-srt{cursor:pointer}
 th.nhl-srt.on{color:var(--accent)}
-.nhl-luv{font-family:var(--mono);font-size:20px;font-weight:700}
 details.nhl-help{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:0}
 details.nhl-help>summary{cursor:pointer;list-style:none;padding:11px 14px;font-size:12px;letter-spacing:.06em;
   text-transform:uppercase;color:var(--muted);font-weight:700}
+/* team strength: the one team number (win% vs an average team, rank) */
+.nhl-str{display:inline-flex;align-items:baseline;gap:5px;font-family:var(--mono);font-weight:700;white-space:nowrap;
+  padding:2px 7px;border-radius:7px;border:1px solid var(--line-2);background:var(--sunk)}
+.nhl-str .w{font-size:14px}
+.nhl-str .rk{font-size:11px;color:var(--muted);font-weight:600}
+.nhl-str.hi .w{color:var(--fav)} .nhl-str.mid .w{color:var(--ink)} .nhl-str.lo .w{color:var(--home)}
+.nhl-str.hi{border-color:var(--fav)} .nhl-str.lo{border-color:var(--home)}
+.tcard .h .nhl-str{flex:none}
+.nhl-strh{margin-left:auto;text-align:right;min-width:230px;max-width:320px}
+.nhl-strbig{font-family:var(--mono);font-weight:700;line-height:1.1;margin:2px 0}
+.nhl-strbig .num{font-size:28px}
+.nhl-strbig .rk{font-size:14px;color:var(--muted);font-weight:600}
+.nhl-strbig.hi .num{color:var(--fav)} .nhl-strbig.mid .num{color:var(--ink)} .nhl-strbig.lo .num{color:var(--home)}
+.nhl-strsub{font-size:11.5px;line-height:1.35}
+.nhl-halves{margin-top:6px;display:flex;flex-direction:column;gap:4px}
+.nhl-half{display:grid;grid-template-columns:auto 72px 44px;align-items:center;gap:7px;font-size:11.5px;justify-content:end}
+.nhl-half .lab{color:var(--muted);text-align:right}
+.nhl-half .tr{height:8px;background:var(--sunk);border-radius:4px;position:relative;overflow:hidden;display:block}
+.nhl-half .tr .f{position:absolute;top:0;bottom:0;background:var(--fav);display:block}
+.nhl-half .tr .f.neg{background:var(--home)}
+.nhl-half .v{font-family:var(--mono);font-weight:600;text-align:right}
+/* the forecast built up from strength: neutral edge + home ice + schedule */
+.nhl-edgeline{margin-top:10px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel-2);
+  font-size:12.5px;line-height:1.5;color:var(--muted)}
+.nhl-edgeline b{color:var(--ink);font-family:var(--mono)}
+/* skater header: value percentile + words; offence / defence twin bars */
+.nhl-phv{margin-left:auto;display:inline-flex;align-items:center;gap:10px}
+.nhl-phl{font-size:12px;color:var(--muted);line-height:1.4;text-align:right}
+.nhl-phl b{color:var(--ink)}
+.nhl-under{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;margin:2px 0 12px}
+.nhl-od{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1 1 380px;max-width:560px}
+.nhl-od .r{display:grid;grid-template-columns:132px 1fr 42px 110px;align-items:center;gap:8px;font-size:12.5px}
+.nhl-od .lab{color:var(--muted)}
+.nhl-odb{display:block;height:9px;border-radius:5px;background:var(--sunk);position:relative;overflow:hidden}
+.nhl-odb i{position:absolute;left:0;top:0;bottom:0;border-radius:5px;background:var(--away)}
+.nhl-odb.hi i{background:var(--fav)} .nhl-odb.lo i{background:var(--home)}
+.nhl-odq{font-weight:700;text-align:right}
+.nhl-ods{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.nhl-odn{grid-column:2 / 5;color:var(--faint);font-size:12px;font-style:italic}
+/* "Provisional: N NHL games" */
+.nhl-prov{display:inline-block;font-size:11px;font-weight:600;color:var(--warn);border:1px dashed var(--warn);
+  border-radius:6px;padding:1px 7px;white-space:nowrap}
+.nhl-prov.sm{font-size:9.5px;padding:0 5px;border-radius:5px;vertical-align:1px}
+/* team page roster panel: display-only context, not a rating */
+.nhl-rline{font-size:13px;color:var(--muted);margin:4px 0 6px;line-height:1.45}
+.nhl-rline .k{color:var(--ink);font-weight:600;margin-right:4px}
+.nhl-rline b.num{font-size:15px}
+.nhl-lutot b.num{font-size:18px}
+.nhl-lusplit{margin:6px 0 8px;max-width:260px}
+.nhl-rosterh{margin-top:14px}
+.nhl-rcmp{margin-top:2px}
 details.nhl-help>summary::-webkit-details-marker{display:none}
 details.nhl-help>summary:before{content:"\25B8";display:inline-block;margin-right:8px;color:var(--faint)}
 details.nhl-help[open]>summary:before{transform:rotate(90deg)}
@@ -51,4 +101,14 @@ details.nhl-help[open]>summary:before{transform:rotate(90deg)}
   .nhl-pvt .nhl-pq{display:none}
   .nhl-pvt td:first-child{white-space:normal}
   .nhl-pvt th,.nhl-pvt td{padding:7px 5px}
+  /* the strength block drops under the team name; the twin bars shed the goals column */
+  .nhl-strh{margin-left:0;text-align:left;min-width:0;max-width:none;width:100%}
+  .nhl-half{justify-content:start}
+  .nhl-half .lab{text-align:left}
+  .nhl-phv{margin-left:0}
+  .nhl-phl{text-align:left}
+  .nhl-od{flex-basis:100%}
+  .nhl-od .r{grid-template-columns:104px 1fr 40px}
+  .nhl-ods{display:none}
+  .nhl-odn{grid-column:2 / 4}
 }

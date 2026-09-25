@@ -10,13 +10,16 @@ snapshot (the serve's degrade path):
     minimum renders with nothing thrown and no undefined / NaN / null;
   * a valued skater's page leads with player value - the percentile badge in the
     header, the eight components, the display-only label, the help block - and
-    keeps on-ice xG impact (RAPM) below it; a skater without a value says why;
-    a goalie keeps GSAx and says honestly why saving is not shown as an upgrade;
+    keeps the on-ice 5v5 xG impact (RAPM) below it as a secondary stat, in
+    xG/60 only; a skater without a value says why; a goalie keeps GSAx and says
+    honestly why saving is not shown as an upgrade;
   * the players index ranks by value by default, and every sortable column
-    really sorts; the team page carries the lineup-value summary and a Value
-    column; the label 'the game model does not use it yet (forward test on
-    2026-27 pending)' is on the player, players and team pages;
-  * without the snapshot every page falls back to the RAPM GlassBox, cleanly.
+    really sorts; the team page carries the skater lineup value in its
+    display-only Roster panel and a Value column; the label 'the game model does
+    not use it yet (forward test on 2026-27 pending)' is on the player, players
+    and team pages;
+  * without the snapshot every page still renders cleanly - skaters on their
+    on-ice xG (never a 0-100 number), no lineup value, no lineup GlassBox.
 Skipped when Node is absent.
 """
 from __future__ import annotations
@@ -68,7 +71,7 @@ BODY = r"""
   for(const [id,p] of Object.entries(n.players)){const h=T("player:"+id,()=>nhlPlayerPage(id));
     const head=(/<div class="phead">([\s\S]*?)<\/div>/.exec(h)||[])[1]||"";
     R.players[id]={label:h.includes(A.label), pvPanel:/<h3>Player value /.test(h),
-      rapm:h.includes("On-ice xG impact (RAPM)"), help:h.includes("How player value works"),
+      rapm:h.includes("On-ice 5v5 xG impact (RAPM"), help:h.includes("How player value works"),
       goalieNote:h.includes("did not prove more repeatable"), gsax:/GSAx/.test(h),
       comps:COMPS.filter(x=>h.includes("<b>"+x+"</b>")).length,
       headPct:/<span class="v">\d+(st|nd|rd|th)<\/span>/.test(head), headNR:/>NR</.test(head),
@@ -87,10 +90,10 @@ BODY = r"""
   state.nhlSort=null; state.nhlMin="nr"; R.nr=T("players:nr",()=>nhlPlayers()); state.nhlMin="0";
   R.teams={};
   for(const c of Object.keys(n.teams)){const h=T("team:"+c,()=>nhlTeamPage(c));
-    R.teams[c]={lu:h.includes("<h3>Lineup value"), label:h.includes(A.label), valCol:/<th[^>]*>Value<\/th>/.test(h),
-      gbHead:h.includes(">Lineup GlassBox<"), help:h.includes("How player value works")};}
+    R.teams[c]={lu:h.includes("Skater lineup value"), label:h.includes(A.label), valCol:/<th[^>]*>Value<\/th>/.test(h),
+      gbHead:/GlassBox/i.test(h), help:h.includes("How player value works")};}
   R.tindex={};
-  for(const s of ["elo","gb","pv","proj"]){state.nhlTeamSort=s; R.tindex[s]=T("teams:"+s,()=>nhlTeams());}
+  for(const s of ["str","proj","elo","xg"]){state.nhlTeamSort=s; R.tindex[s]=T("teams:"+s,()=>nhlTeams());}
   R.game=T("game:first",()=>nhlGamePage(String(n.schedule[0].id)));
   console.log(JSON.stringify(out));
 })();
@@ -211,8 +214,8 @@ def test_players_index_ranks_by_value_and_every_column_sorts(served):
     order = out["r"]["order"]
     lad = out["r"]["ladder"]
     assert LABEL in lad and "How player value works" in lad
-    for h in (">Value<", ">/60<", ">/gm<", ">Cre<", ">Fin<", ">A1<", ">A2<", ">PP<", ">FO<",
-              ">Pen<", ">Def<", ">On-ice xG<"):
+    for h in (">Value<", ">Offence<", ">Defence<", ">/60<", ">/gm<", ">Cre<", ">Fin<", ">A1<", ">A2<",
+              ">PP<", ">FO<", ">Pen<", ">Def<", ">On-ice xG (RAPM)<"):
         assert h in lad, h
     n_valued = sum(1 for p in n["players"].values() if p["grp"] != "G" and p.get("pv"))
     assert order["def"] == order["v"] and len(order["v"]) == n_valued       # value is the default
@@ -234,10 +237,14 @@ def test_players_index_ranks_by_value_and_every_column_sorts(served):
 
 
 def test_team_pages_carry_the_lineup_value(served):
+    """The skater lineup value lives on each team page (display-only Roster
+    panel) and in the game page's separate roster block - never on the teams
+    index, which carries the one team number (team strength)."""
     n, out = served
     for c, r in out["r"]["teams"].items():
-        assert r["lu"] and r["label"] and r["valCol"] and r["help"], c
-    assert ">Lineup value <" in out["r"]["tindex"]["pv"] or "Lineup value <b>" in out["r"]["tindex"]["pv"]
+        assert r["lu"] and r["label"] and r["valCol"] and r["help"] and not r["gbHead"], c
+    for s, h in out["r"]["tindex"].items():
+        assert "ineup value" not in h and "GlassBox" not in h, s
     assert "Key skaters <span class=\"sub\">player value" in out["r"]["game"]
     assert "lineup value" in out["r"]["game"]
 
@@ -248,7 +255,10 @@ def test_in_season_pages_keep_the_value(season):
     assert valued and all(out["r"]["players"][pid]["pvPanel"] for pid in valued)
 
 
-def test_without_the_snapshot_the_pages_fall_back_to_rapm(bare):
+def test_without_the_snapshot_the_pages_fall_back_to_on_ice_xg(bare):
+    """The degrade path (no snapshot in a CI serve): skaters are listed on their
+    on-ice xG in xG/60 - no 0-100 skater number, no lineup value, no lineup
+    GlassBox anywhere."""
     n, out = bare
     r = out["r"]
     for pid, p in n["players"].items():
@@ -256,10 +266,12 @@ def test_without_the_snapshot_the_pages_fall_back_to_rapm(bare):
             assert not r["players"][pid]["pvPanel"] or r["players"][pid]["noValue"], pid
             assert not r["players"][pid]["headPct"], pid
     lad = r["ladder"]
-    assert LABEL not in lad and ">GlassBox<" in lad and "How player value works" not in lad
+    assert LABEL not in lad and "GlassBox" not in lad and "How player value works" not in lad
+    assert ">On-ice xG (net)<" in lad
     for c, t in r["teams"].items():
-        assert not t["lu"] and t["gbHead"] == (n["teams"][c].get("glassbox") is not None), c
-    assert "Lineup value <b>" not in r["tindex"]["elo"]
+        assert not t["lu"] and not t["gbHead"], c
+    for s, h in r["tindex"].items():
+        assert "ineup value" not in h and "GlassBox" not in h, s
 
 
 def test_each_sort_lights_exactly_its_own_header(served):

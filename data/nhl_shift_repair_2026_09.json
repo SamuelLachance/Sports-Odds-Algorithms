@@ -1,0 +1,686 @@
+{
+ "written": "2026-09-25T02:46:04Z",
+ "date": "2026-09-25",
+ "what": "Repair of the NHL shift-chart source for the 582 spine games that had no shift chart when data/nhl_shifts.csv was pulled (57 in April 2024-25, 505 regular-season + 20 playoff in 2025-26), then the pinned player-value pipeline re-run on the repaired data into NEW files. Allowed by data/pv_nhl_forward_prereg_2026_27.json data_rule (repairing the shift-chart source before evaluation); no pinned file was edited or regenerated.",
+ "source_summary": "525 games from the repopulated NHL shift-chart API and 57 from the official HTML time-on-ice reports",
+ "statement": "no outcome or TEST metric computed",
+ "games_filled": {
+  "20242025|regular|html_backfill": 57,
+  "20252026|regular|api_refill": 505,
+  "20252026|playoff|api_refill": 20
+ },
+ "games_filled_total": 582,
+ "api_vs_html_check": {
+  "games_with_both_sources": 525,
+  "every_player_toi_and_shift_count_identical": 525,
+  "disagree": [],
+  "note": "where both exist the API rows are used; the HTML parse differs from them only in 23 zero-length goal rows, which carry no minutes"
+ },
+ "per_game_provenance": "data/nhl_shifts_html_merged.csv (gid, rows, source, merged_utc)",
+ "nhl_shifts_csv": {
+  "shifts_rows_before": 15704141,
+  "shifts_rows_after": 16146325,
+  "games_inserted": 582,
+  "rows_inserted": 442184,
+  "skip_already_present": 0,
+  "existing_file_order_breaks": 0,
+  "inserted_in_spine_order": true,
+  "original_rows_byte_identical_after_removing_inserted_games": true,
+  "sha256_before": "25d6d1456a42d630d4ebbaf6526a379ef05fe007991647341bb1afa3314a0ca3",
+  "sha256_after": "366dbd68ed46067aae5dcdfa886f600a7adca7ddf547cf9bbbf564ebea1c1d32",
+  "coverage_after": {
+   "20232024|regular": "1312/1312",
+   "20232024|playoff": "88/88",
+   "20242025|regular": "1312/1312",
+   "20242025|playoff": "86/86",
+   "20252026|regular": "1312/1312",
+   "20252026|playoff": "82/82"
+  },
+  "spine_games_through_2025_26_without_shift_rows": 0,
+  "method": "phase0/nhl_shifts_html.merge() (dry run reviewed, then apply) with a combined fill: the shift API's own rows for the 525 gap games it now serves (data/nhl_shifts_html_gap_api_recheck.csv) and the HTML time-on-ice backfill (data/nhl_shifts_html_backfill.csv) for the 57 it does not; per-game provenance appended to data/nhl_shifts_html_merged.csv"
+ },
+ "backup": {
+  "folder": "C:\\Users\\Admin\\AppData\\Local\\Temp\\claude\\C--Users-Admin-Projects-Sports-Odds-Algorithms\\c82ef32b-d2a5-4470-9d81-a522f1e0284f\\scratchpad\\rtg0924\\backup (local scratch)",
+  "files": [
+   "5ac068e421f0e5934f2a3d88b68e2bb956e7c8b313bf30681887efe4e96c63dc *nhl_rapm2_ratings.json",
+   "25d6d1456a42d630d4ebbaf6526a379ef05fe007991647341bb1afa3314a0ca3 *nhl_shifts.csv",
+   "95a165e3eec2ca4075c65ccf9a47c0bb3d89838ef7fc463993b9804aa0077d6e *nhl_site_rapm_meta.json",
+   "324522d46f9e1a9c2f5815e3193cb156994f77ab15a5de74d7012ba30737b1e0 *pv_nhl_event_games.csv",
+   "fddf8088ab72c454fb4ce42be0a384d8558a3c49d5bdf2a4f432cdd6135bf303 *pv_nhl_events.csv",
+   "5390baf852a8699481f7512941cda75049b773056d84469db784e3d510a201ea *pv_nhl_events.parquet",
+   "cfe1e7d9235d78c1426a3681d06284d188bf475858dfe7d1fd35d4d91c932e5c *pv_nhl_full_noshift_games.csv",
+   "ac8c53304c0244005af62a99f3eda275720222c6cc35ced339ed3c2b21f4160d *pv_nhl_players.csv",
+   "b2b0bf1f92d12bd5880c31289172d04c52ee5021dba39b541b93de17fb70dd2e *pv_nhl_rosters.csv"
+  ]
+ },
+ "rosters_toi_refill": {
+  "pv_nhl_events.csv": {
+   "before": "fddf8088ab72c454fb4ce42be0a384d8558a3c49d5bdf2a4f432cdd6135bf303",
+   "after": "fddf8088ab72c454fb4ce42be0a384d8558a3c49d5bdf2a4f432cdd6135bf303",
+   "identical": true
+  },
+  "pv_nhl_rosters.csv": {
+   "before": "b2b0bf1f92d12bd5880c31289172d04c52ee5021dba39b541b93de17fb70dd2e",
+   "after": "e57884e4118b838500c1b9799312fe81cd487b96bfe9247afee292e170a4e490",
+   "identical": false
+  },
+  "pv_nhl_players.csv": {
+   "before": "ac8c53304c0244005af62a99f3eda275720222c6cc35ced339ed3c2b21f4160d",
+   "after": "ac8c53304c0244005af62a99f3eda275720222c6cc35ced339ed3c2b21f4160d",
+   "identical": true
+  },
+  "pv_nhl_event_games.csv": {
+   "before": "324522d46f9e1a9c2f5815e3193cb156994f77ab15a5de74d7012ba30737b1e0",
+   "after": "324522d46f9e1a9c2f5815e3193cb156994f77ab15a5de74d7012ba30737b1e0",
+   "identical": true
+  },
+  "pv_nhl_events.parquet": {
+   "before": "5390baf852a8699481f7512941cda75049b773056d84469db784e3d510a201ea",
+   "after": "5390baf852a8699481f7512941cda75049b773056d84469db784e3d510a201ea",
+   "identical": true
+  },
+  "rosters": {
+   "rows": 823538,
+   "columns_changed": [
+    "toi_s"
+   ],
+   "toi_s_rows_changed": 23276,
+   "changed_rows_all_in_gap_games": true,
+   "changed_rows_were_blank": true,
+   "gap_games_changed": 582,
+   "blank_toi_games_before": 582,
+   "blank_toi_games_after": 0
+  }
+ },
+ "noshift_games_after": 0,
+ "stale_creation_shift_cache": {
+  "file": "data/pv_nhl_full_creation_shifts.parquet",
+  "sha256": "62b20018658f1cc2f850fbe5b201755b7803294a46f6e3c95f1f7e13b7e2695e",
+  "action": "moved out of data/ into the local scratch backup before the re-run (not deleted): a cache of the pre-repair shift file that pv_nhl_full_creation.py would otherwise reuse silently, keeping the gap; the next creation build rebuilds it from data/nhl_shifts.csv"
+ },
+ "pipeline_rerun": {
+  "where": "an isolated copy of the repository's phase0/ (pinned code, 47/47 sha256 verified in the copy) and of data/pv_nhl_*, data/nhl_*, data/bt_nhl_* after the source repair, in a local scratch folder: the pipeline's fixed output paths therefore wrote into the copy, and NO file in the repository's data/ written by an earlier run (records of the TEST result, inputs of the pre-registration) was overwritten",
+  "commands": [
+   "python phase0/pv_nhl_full_creation.py build",
+   "python phase0/pv_nhl_full_creation.py rate",
+   "python phase0/pv_nhl_full_defense_onice.py split",
+   "python phase0/pv_nhl_fix_rebuild.py full_stints",
+   "OPENBLAS_NUM_THREADS=1 python phase0/pv_nhl_fix_rebuild.py full_fit",
+   "python phase0/pv_nhl_fix_rebuild.py full_values",
+   "python phase0/pv_nhl_fix_rebuild.py full_duels",
+   "python phase0/pv_nhl_fix_rebuild.py full_compose",
+   "python phase0/pv_nhl_fix_rebuild.py verify"
+  ],
+  "protocol_note": "each stage as its own process, single-thread BLAS for the fit stage only: the protocol of the original run (its chain script; data/pv_nhl_fix_logs/chain.log). Two earlier attempts were discarded: all stages chained in one process, and OPENBLAS_NUM_THREADS=1 on every stage. Both stopped at full_duels' DEV check (single-thread BLAS moves the DEV duel goal values by ~1e-9 and the check is bitwise).",
+  "split_games": {
+   "20242025": 1312,
+   "20252026": 1312
+  },
+  "verify": {
+   "ALL_CHECKS_PASS": false,
+   "failing_gated_check": "compose_skater_games.bitwise",
+   "why": "dtype only: toi_s is float32 in the DEV file and int64 in the repaired full run (the gap-era input carried missing roster TOI, which forced a float column); the DEV rows' toi_s VALUES are identical and every other DEV column is bitwise equal",
+   "detail": {
+    "toi_s_dtype_dev": "float32",
+    "toi_s_dtype_full": "int64",
+    "toi_s_nan_full_after_repair": 0,
+    "toi_s_nan_full_before_repair": 0,
+    "dev_rows_toi_s_values_equal": true,
+    "dev_rows_all_other_columns_bitwise": true
+   },
+   "other_gated_checks_all_pass": true,
+   "dev_game_features_slice_sha256_matches_dev_file": true,
+   "fits_full_vs_dev_bit_identical": true,
+   "weights_dev_seasons_equal": true,
+   "informational_not_gated": {
+    "stints_test_structure_unchanged": {
+     "20182019": {
+      "non_xg_arrays_identical": true,
+      "toi5_identical": true
+     },
+     "20192020": {
+      "non_xg_arrays_identical": true,
+      "toi5_identical": true
+     },
+     "20202021": {
+      "non_xg_arrays_identical": true,
+      "toi5_identical": true
+     },
+     "20212022": {
+      "non_xg_arrays_identical": true,
+      "toi5_identical": true
+     },
+     "20222023": {
+      "non_xg_arrays_identical": true,
+      "toi5_identical": true
+     },
+     "20232024": {
+      "non_xg_arrays_identical": true,
+      "toi5_identical": true
+     },
+     "20242025": {
+      "non_xg_arrays_identical": false,
+      "toi5_identical": false
+     },
+     "20252026": {
+      "non_xg_arrays_identical": false,
+      "toi5_identical": false
+     }
+    },
+    "note": "TEST 2024-25 / 2025-26 stints change by construction: they now include the repaired games"
+   },
+   "record": "data/pv_nhl_shiftfix_rebuild.json (the re-run's verify output); data/pv_nhl_fix_rebuild.json, the original run's record, is unchanged"
+  },
+  "compose_weights": {
+   "file": "data/pv_nhl_fix_full_compose_weights.json",
+   "sha256": "7de10a226ccf26ac8c6950950357bed141f65a0769d78de2c51a9603c5589f7a",
+   "rerun_output_byte_identical": true
+  },
+  "new_files_in_data": {
+   "data/pv_nhl_shiftfix_full_compose_player_values.parquet": {
+    "from_rerun": "data/pv_nhl_fix_full_compose_player_values.parquet",
+    "sha256": "9d2b228d075eaf75f152cdffe57001fe51d1d4f317810659ec4ec8a6e26ad52e"
+   },
+   "data/pv_nhl_shiftfix_full_compose_skater_games.parquet": {
+    "from_rerun": "data/pv_nhl_fix_full_compose_skater_games.parquet",
+    "sha256": "299f2df9ecb2b99fe85c7b6d414f02f44ff7533f78101dd52483f53f45344957"
+   },
+   "data/pv_nhl_shiftfix_full_discrete_duels.csv": {
+    "from_rerun": "data/pv_nhl_fix_full_discrete_duels.csv",
+    "sha256": "3a2745800739f0b6ad7462f2af7c1d27d9a684abba7195b6e4cc7fdaec105d59"
+   }
+  },
+  "outputs_changed_by_the_rerun_old_vs_new_sha256": {
+   "data/pv_nhl_fix_full_compose_game_features.csv": {
+    "old_sha256": "be502f8fa3abe81c400f4907604535e6a70e923f6c6d0cdadb10e98e801b1902",
+    "new_sha256": "dcdb44714b8b08b0932f00b427e7db70834d6b9651991ecea9b81f8fb24c9141"
+   },
+   "data/pv_nhl_fix_full_compose_player_values.parquet": {
+    "old_sha256": "03fcc8869df85bb1395465e1514ff3146ddbddcfc431217f857598d6236f0eb5",
+    "new_sha256": "9d2b228d075eaf75f152cdffe57001fe51d1d4f317810659ec4ec8a6e26ad52e"
+   },
+   "data/pv_nhl_fix_full_compose_skater_games.parquet": {
+    "old_sha256": "371cbc0039cf5eec1b0d650c9090ab096e4d27fbbfb182800f5d4cc9d65ee6c8",
+    "new_sha256": "299f2df9ecb2b99fe85c7b6d414f02f44ff7533f78101dd52483f53f45344957"
+   },
+   "data/pv_nhl_fix_full_defense_onice_fit_m20251101_20252026.npz": {
+    "old_sha256": "e59723cc8e6c19c03040428bbb4599504f0803b13c85cd8412f468cdf7291ce6",
+    "new_sha256": "708b881e460dd6b96fd91f99567582b1743748e7e990b7560788edb48196390d"
+   },
+   "data/pv_nhl_fix_full_defense_onice_fit_m20251201_20252026.npz": {
+    "old_sha256": "df548543a50fc0b0978649472be25e15a27a8da4ec2dbea76bb66f8030c2f44f",
+    "new_sha256": "079c8f7f5bd6faa80ced2aee599332491d043f256c0ed778f5257e136a1a8e2f"
+   },
+   "data/pv_nhl_fix_full_defense_onice_fit_m20260101_20252026.npz": {
+    "old_sha256": "4f8f7abdfc3aacb4510e2ae35876e3eacb144eb610613f474375ca639cd78ca9",
+    "new_sha256": "391a7300b148f2a004fd2731aea2a030f60726d0a0a0458234a1a02a840953aa"
+   },
+   "data/pv_nhl_fix_full_defense_onice_fit_m20260201_20252026.npz": {
+    "old_sha256": "765c037b836d3dab5a53296f871152c96d82418aec4b9f205289e1833233f97e",
+    "new_sha256": "2e4539c6003cba42e810499a2e4a564338d47dc6fe7f8136003e9352dc2b6470"
+   },
+   "data/pv_nhl_fix_full_defense_onice_fit_m20260301_20252026.npz": {
+    "old_sha256": "3d29e305a57c5120de3521d766bb77623e81ee199700955410ab912784ca2e2a",
+    "new_sha256": "f2ef1f6aedd1c6688a1e67a9f00c4b92204595deca61d61d1b92c3ee747d9a82"
+   },
+   "data/pv_nhl_fix_full_defense_onice_fit_m20260401_20252026.npz": {
+    "old_sha256": "db366c35b844eef2cd4f91a98babb282512442f61652cb0d1ed342956a81555d",
+    "new_sha256": "02e64e50659b04760158e5e66f9738c1048b0ecf5cd5a5231be1a533fdfb8812"
+   },
+   "data/pv_nhl_fix_full_defense_onice_fit_pre_20252026.npz": {
+    "old_sha256": "a6f11ed6a9498be81dae5ea9d79d0d7956f8352113f95b0c37b2d97ed859aa8b",
+    "new_sha256": "b129f0406abf14e3052c5db4b7e88fe9ae68e6925a3ccf78c7dcb50d459a5c65"
+   },
+   "data/pv_nhl_fix_full_defense_onice_fits_wf.json": {
+    "old_sha256": "4fd5aa1a79a90c88d3191a66df2042c8b704ccd220f236b5a6ed38abe8774b79",
+    "new_sha256": "aeb06b6ac3d8bc00fae64ae0646e0b3f5752479dff4b02314f2db79c1a8803c3"
+   },
+   "data/pv_nhl_fix_full_defense_onice_st_20102011_qa.json": {
+    "old_sha256": "5cc4f14bed1dd7ee8aa4b2a2258aa9fb55c88f67ac4fbcc60838c1d4243dbef2",
+    "new_sha256": "6d8655651e98c3064a98d2022a397c1a230c106f865c1bc585efc4320a19cd21"
+   },
+   "data/pv_nhl_fix_full_defense_onice_st_20112012_qa.json": {
+    "old_sha256": "79e7b3ea2c3b39a54510ff8e6e52e291ca0acf2a53ec47df6f41661e64ecb0bc",
+    "new_sha256": "b3171ce8a77956f4777435adec016cad19e07c4a192b9a490e5c1f51b8c29313"
+   },
+   "data/pv_nhl_fix_full_defense_onice_st_20122013_qa.json": {
+    "old_sha256": "f4555f8de7e77a45dd866ba37251152625cc7f565f3e7f5a09023dc81bc6442b",
+    "new_sha256": "7b736d6b448abcda1c25bef02af38838ccababd4738fda46701b30fc8d9dbe57"
+   },
+   "data/pv_nhl_fix_full_defense_onice_st_20132014_qa.json": {
+    "old_sha256": "75550d35cb3dd587ad406fe0be3a022de584328cd4a37f5b3bbc964df14e0367",
+    "new_sha256": "8f9adad68a06e45640791342ae8a3ccbde8c51e45a2106fc9c23316dc747f29f"
+   },
+   "data/pv_nhl_fix_full_defense_onice_st_20142015_qa.json": {
+    "old_sha256": "190e9f1a1f2ef73267f26ff42d5193d9c7b0ddda6e4ac42417a6077a50efa22b",
+    "new_sha256": "c6b2deb4591ac96222f64e3df1073373884da8e7532a4d338eae3e0239fc4411"
+   },
+   "data/pv_nhl_fix_full_defense_onice_st_20152016_qa.json": {
+    "old_sha256": "6a02ab89f3df475d974701cbca0e4f09a3a76368861bc3b0a04392fd35616008",
+    "new_sha256": "c861750599b2f2a359c63eef3bd5ae21c78a5f51de2e3d5e8efd0fb52709c133"
+   },
+   "data/pv_nhl_fix_full_defense_onice_st_20162017_qa.json": {
+    "old_sha256": "1a153d2c2461c561ca2415483456ce866c7068d9117dcb1b354775ecf478c677",
+    "new_sha256": "940cde9b8939a85f9e5e8f917fa514fa5d371e01ca9bbbbc013302c5dba48662"
+   },
+   "data/pv_nhl_fix_full_defense_onice_st_20172018_qa.json": {
+    "old_sha256": "1aba454dc79dd9d22ac48cf05a9c40a64f0718808f608313450a71480f0ebf97",
+    "new_sha256": "dc26aeb3bc8487374931faea9fa9f9a88e2fcf6ac96494c76a66a26f420ee1bd"
+   },
+   "data/pv_nhl_fix_full_defense_onice_st_20182019_qa.json": {
+    "old_sha256": "ca125dcef97eed42444c724d6bc3f216b33895ff0a42202807cbf2c2839c879f",
+    "new_sha256": "99c80bb2d4bd796c9b9a2901a352a9f2ae753aa0d1f22b24301b300b4888086c"
+   },
+   "data/pv_nhl_fix_full_defense_onice_st_20192020_qa.json": {
+    "old_sha256": "50538d0f5e097fc3dce44db0f8411a40e03bd5a34dad4db76faac57f950b592a",
+    "new_sha256": "59a10e88b03fa2c815e5cef2bd4bfafb7deaa2bce13d051d44545cba7d090545"
+   },
+   "data/pv_nhl_fix_full_defense_onice_st_20202021_qa.json": {
+    "old_sha256": "03fcbbb1853519fee0b8281bf7f981618df6e3e2dc3902dada9c4cf1fdba643f",
+    "new_sha256": "11f285973b1e87357eef955b53ad41d8c8bd3960451223de9daefc63d2387538"
+   },
+   "data/pv_nhl_fix_full_defense_onice_st_20212022_qa.json": {
+    "old_sha256": "5fadf0e3261e4563e09c750f0dcda5db7f01a7d4790374410e4e85703d609e8b",
+    "new_sha256": "811819ecb2e08657d96e8b39e8ef56ab4c82f5c06dfe14a0037a8b0b8bde7a4e"
+   },
+   "data/pv_nhl_fix_full_defense_onice_st_20222023_qa.json": {
+    "old_sha256": "999c1f21d9f6a33d492e64bb6bf8a9b9ff02d30470a616e05120e7099c10dda1",
+    "new_sha256": "271473cf778cba2bcf1a0eb8d4a40a0b7e42996141ec6053f6a2dafde9a86448"
+   },
+   "data/pv_nhl_fix_full_defense_onice_st_20232024_qa.json": {
+    "old_sha256": "7a112e30a6dbde42893b9e63cdadacc6b42c238519d49fd84a24e152753ad696",
+    "new_sha256": "b6e2d0ab68a62ae8e4496cd82fa68ad056ca4abc5b560b4957cb6194f8a992df"
+   },
+   "data/pv_nhl_fix_full_defense_onice_st_20242025.npz": {
+    "old_sha256": "a00a287a38be3731506c6a8a5b325e4d19f1efcb1c896dea9ed3f0fd18a65300",
+    "new_sha256": "1da986ab2200768643817fd40994988c2613bac5127ff5cdebc15414f73b7f5c"
+   },
+   "data/pv_nhl_fix_full_defense_onice_st_20242025_qa.json": {
+    "old_sha256": "da3e13e5cd7087cb416f3bfcea267098de91f867c2aa7ad8ca80390013790bab",
+    "new_sha256": "491f3a61e3ba916333eeb788be0449223ead2ec441787eb40bc7ac00bff46149"
+   },
+   "data/pv_nhl_fix_full_defense_onice_st_20252026.npz": {
+    "old_sha256": "0722f329f953c70831f50dcff933cade8b8987f5bdd8c47317866099f43b28a3",
+    "new_sha256": "14e389c6a732561f30188cd6a6b9f171cc6ea7c1814cb48e404f9794d9b1d661"
+   },
+   "data/pv_nhl_fix_full_defense_onice_st_20252026_qa.json": {
+    "old_sha256": "dc6bbaa10de702532d3aa703715296d3487d37229f3e488c5cfd192d6adbd09b",
+    "new_sha256": "2fd8f8186d91596be56da6d0fdebcab7e5362888ecaed31735bfbf462e2ea384"
+   },
+   "data/pv_nhl_fix_full_defense_onice_st_qa.json": {
+    "old_sha256": "13f1b25574e5bd4c027f6edf20d118fec49b771d34a7a3ca37693ed1663d3ab0",
+    "new_sha256": "83ed3188fb6e659aca1aadfe9a55874aca073bde6b892025fe4256398e6f9fc1"
+   },
+   "data/pv_nhl_fix_full_defense_onice_team.csv": {
+    "old_sha256": "626fcb9bc9cbb1d10a4796eb5fe3edc12f79e1d41f685ae244971ff163ce3098",
+    "new_sha256": "903ac77e3d3f9a858d65aa47ff4127528fd0ca419234cd2d6f695ccef437d7b8"
+   },
+   "data/pv_nhl_fix_full_defense_onice_toi5_20242025.csv": {
+    "old_sha256": "dd0dfaf7e69949ae640980dba4033934b183b29a118ec44e5746f4f515c4601d",
+    "new_sha256": "c25e6049614cfda9ff8b9471549153abc95a27ddb15b31cc544fb323e523c2c6"
+   },
+   "data/pv_nhl_fix_full_defense_onice_toi5_20252026.csv": {
+    "old_sha256": "9f9deb10bf2009bca4ae4557e027dd6e61fd1cf0e1bb22d58ff47bb63295eb47",
+    "new_sha256": "bdc2e21b379c5802d20b526b7ea6349a8ceca876568b44c813e0b2fc8e4cb363"
+   },
+   "data/pv_nhl_fix_full_defense_onice_values.csv": {
+    "old_sha256": "81b7125605ef8a6e44abe02aca29a5b885f4b1ef5c8ebf4f3246dcfd42ec7b14",
+    "new_sha256": "4ce5990db117712892653222db580e4c1fabc186110f83f2c53b9640185c98bf"
+   },
+   "data/pv_nhl_fix_full_discrete_duels.csv": {
+    "old_sha256": "3d495869b2ba263e23f976bde77452cccf0853780fa52a982553c1fb8fd0d4af",
+    "new_sha256": "3a2745800739f0b6ad7462f2af7c1d27d9a684abba7195b6e4cc7fdaec105d59"
+   },
+   "data/pv_nhl_fix_full_discrete_duels_build_meta.json": {
+    "old_sha256": "9f2ceac89cb0215202cd62232836d337862fdab60ae741f53d3d5cd065e4af98",
+    "new_sha256": "29ecee34bd6e4999d73ce2ca9eafa53de25ef6fbbb677fd74487220c33767ec0"
+   },
+   "data/pv_nhl_fix_full_serve_lv_last.csv": {
+    "old_sha256": "61f7559f9b3803927c4a76efcd1dc4079fa39c0d78e72abf8603dbc6ca873a2c",
+    "new_sha256": "a0d66b37152c2b399f127c85ff26c1c19ddc5f7b0c05550aabbde917009c2cd5"
+   },
+   "data/pv_nhl_fix_rebuild.json": {
+    "old_sha256": "c4c12cf15d68a4b546ee8f6a27086f27f47dd60df4d94a89c9e0de1a150660ca",
+    "new_sha256": "52f73a4dd5ccee7e092af0a483c0f7af0beb2b62a0b0dc283437498a236f8583"
+   },
+   "data/pv_nhl_full_creation_build_qa.json": {
+    "old_sha256": "502830dbcd5c550498e5841e32712b2573945e5578e490f8ebfae9fe618d93e6",
+    "new_sha256": "e2114314cada3792da69e1319e69f060f5036f0d75332ed6f4343828ace3ea82"
+   },
+   "data/pv_nhl_full_creation_pg.parquet": {
+    "old_sha256": "76cf8fb115fd5dc612ae05d74b96357a1a4c86b42b3d19fa2b900a41a0bdb780",
+    "new_sha256": "b93370867702b26057d4a4d6cee13bf08a4ff2a35378c9ed2b8c30ed62ef8e89"
+   },
+   "data/pv_nhl_full_creation_shifts.parquet": {
+    "old_sha256": null,
+    "new_sha256": "0bb4fb9df9fdb2f31dc837065ee00a6ae808e99faf745c7a0cb1bfb89b604b51"
+   },
+   "data/pv_nhl_full_creation_wf.parquet": {
+    "old_sha256": "e68e901db197319a862ea931de6b533a67d28280ae5616c51045402c682e8479",
+    "new_sha256": "b8d0a8600579e0edd88190fb799ab78d49fdc35230e8f573c0a0854195cc4efa"
+   },
+   "data/pv_nhl_full_defense_onice_split_check.json": {
+    "old_sha256": "ed76a137530d3d61047a291898247a20e5e5bd12afac39e9b1e45ee9990920c8",
+    "new_sha256": "e21b1487ad939ed61a923e490f60fb5fa31e025f5a583b81fe3a4cb61de648f5"
+   },
+   "data/pv_nhl_full_rapmel_sh_20242025.npy": {
+    "old_sha256": "42bd56fea3e18426e33bce61c1567578e68d67fb17cbefc6e231bb6186981ef1",
+    "new_sha256": "0406bc4cedc5a909ce2a3c1e2a3fe5caa219632bf41143e50ce887840c1c7628"
+   },
+   "data/pv_nhl_full_rapmel_sh_20252026.npy": {
+    "old_sha256": "04853cb2ff6da0fd412a494612a54a7e525d6dce8e56dfdd0d4c7da84d9aba70",
+    "new_sha256": "d77a892cc65e23e522a16887504c4079b20ec5292a4d434d0c888f14361546eb"
+   }
+  },
+  "old_outputs_in_data_unchanged": {
+   "data/pv_nhl_fix_full_compose_player_values.parquet": "03fcc8869df85bb1395465e1514ff3146ddbddcfc431217f857598d6236f0eb5",
+   "data/pv_nhl_fix_full_compose_skater_games.parquet": "371cbc0039cf5eec1b0d650c9090ab096e4d27fbbfb182800f5d4cc9d65ee6c8",
+   "data/pv_nhl_fix_full_discrete_duels.csv": "3d495869b2ba263e23f976bde77452cccf0853780fa52a982553c1fb8fd0d4af",
+   "data/pv_nhl_fix_full_compose_game_features.csv": "be502f8fa3abe81c400f4907604535e6a70e923f6c6d0cdadb10e98e801b1902",
+   "data/pv_nhl_fix_rebuild.json": "c4c12cf15d68a4b546ee8f6a27086f27f47dd60df4d94a89c9e0de1a150660ca"
+  }
+ },
+ "pins": {
+  "stages_checked": [
+   "baseline (before any change)",
+   "after the display change (step A)",
+   "after the shift merge",
+   "after the roster TOI refill + missing-shift list rebuild",
+   "in the re-run copy before and after the pipeline",
+   "after the snapshot, RAPM refit, serve and site build"
+  ],
+  "result": "47/47 sha256 pins match at every stage (41 code + 6 params files of data/pv_nhl_forward_prereg_2026_27.json)",
+  "test_ledger": {
+   "file": "data/nhl_test_ledger.csv",
+   "sha256": "ca857d93d312fa029e17c790c902f03a9255722cfeb13fe7aa1cab4ae13957a6",
+   "unchanged": true
+  },
+  "hp_ledger": {
+   "file": "data/nhl_hp_ledger.json",
+   "sha256": "3dbbf4c3c65c373bba7813135092fe1b9cd28ecc477f75beb1323127b1606396",
+   "unchanged": true,
+   "how": "nhl_serve.py run unmodified with nhl_hp_freeze.save replaced by a no-op in the process"
+  }
+ },
+ "payload": {
+  "schedule_rows_compared": 1344,
+  "hp_or_ct_differ_vs_pre_repair": 0,
+  "team_elo_xg_rank_differ": 0,
+  "season_projection_differs": 0,
+  "note": "the game model reads no shifts; played-game forecasts and ledgers untouched"
+ },
+ "rapm2": {
+  "refit": "python phase0/nhl_rapm2.py (unpinned; 2m49s)",
+  "window": "2022-23 to 2025-26",
+  "coverage": {
+   "20222023": {
+    "with_shifts": 1312,
+    "games": 1312
+   },
+   "20232024": {
+    "with_shifts": 1312,
+    "games": 1312
+   },
+   "20242025": {
+    "with_shifts": 1312,
+    "games": 1312
+   },
+   "20252026": {
+    "with_shifts": 1312,
+    "games": 1312
+   }
+  },
+  "ratings_sha256": "861edd18b3170923226b3e42cdc0fd2534b922fd427858a70d28bf20e5f8230a",
+  "ratings_before": 1303,
+  "ratings_after": 1318,
+  "rostered_rated_before": 555,
+  "rostered_rated_after": 586
+ },
+ "snapshot": {
+  "file": "data/nhl_site_pv.json",
+  "sha256_before_repair": "16127f04fb0566dde9756ce9c13006408403b4c3d73a574ed245eaa6df3abdb1",
+  "sha256_after_repair": "e712d13e5d88b9bb2cb2cf369075500ba56d6c618184ab03ed277a209273a923",
+  "source_run": "shiftfix",
+  "moves_over_2025_26_regulars": {
+   "regulars": 715,
+   "median_abs_dp": 4,
+   "mean_abs_dp": 6.06,
+   "p90_abs_dp": 14,
+   "max_abs_dp": 53
+  },
+  "examples": {
+   "Connor Bedard": {
+    "p": [
+     35,
+     54
+    ],
+    "qo": [
+     76,
+     88
+    ],
+    "o": [
+     0.111,
+     0.213
+    ],
+    "def": [
+     -0.218,
+     -0.222
+    ],
+    "qdef": [
+     1,
+     1
+    ],
+    "prov": 0
+   },
+   "Victor Hedman": {
+    "p": [
+     84,
+     84
+    ],
+    "qo": [
+     98,
+     97
+    ],
+    "o": [
+     0.221,
+     0.232
+    ],
+    "def": [
+     -0.122,
+     -0.135
+    ],
+    "qdef": [
+     6,
+     2
+    ],
+    "prov": 0
+   },
+   "Alex Ovechkin": {
+    "p": [
+     80,
+     81
+    ],
+    "qo": [
+     96,
+     96
+    ],
+    "o": [
+     0.362,
+     0.376
+    ],
+    "def": [
+     -0.206,
+     -0.215
+    ],
+    "qdef": [
+     1,
+     1
+    ],
+    "prov": 0
+   },
+   "Zayne Parekh": {
+    "p": [
+     9,
+     48
+    ],
+    "qo": [
+     62,
+     53
+    ],
+    "o": [
+     -0.003,
+     -0.021
+    ],
+    "def": [
+     -0.172,
+     -0.04
+    ],
+    "qdef": [
+     1,
+     25
+    ],
+    "prov": 1
+   },
+   "Matthew Schaefer": {
+    "p": [
+     90,
+     91
+    ],
+    "qo": [
+     94,
+     88
+    ],
+    "o": [
+     0.161,
+     0.125
+    ],
+    "def": [
+     -0.074,
+     -0.027
+    ],
+    "qdef": [
+     12,
+     33
+    ],
+    "prov": 1
+   },
+   "Ivan Demidov": {
+    "p": [
+     48,
+     53
+    ],
+    "qo": [
+     53,
+     57
+    ],
+    "o": [
+     -0.045,
+     -0.028
+    ],
+    "def": [
+     -0.002,
+     0.003
+    ],
+    "qdef": [
+     45,
+     47
+    ],
+    "prov": 0
+   },
+   "Macklin Celebrini": {
+    "p": [
+     93,
+     94
+    ],
+    "qo": [
+     94,
+     95
+    ],
+    "o": [
+     0.329,
+     0.351
+    ],
+    "def": [
+     -0.013,
+     -0.048
+    ],
+    "qdef": [
+     38,
+     18
+    ],
+    "prov": 0
+   },
+   "Connor McDavid": {
+    "p": [
+     99,
+     99
+    ],
+    "qo": [
+     99,
+     99
+    ],
+    "o": [
+     0.665,
+     0.617
+    ],
+    "def": [
+     0.002,
+     -0.01
+    ],
+    "qdef": [
+     49,
+     38
+    ],
+    "prov": 0
+   },
+   "Cale Makar": {
+    "p": [
+     99,
+     99
+    ],
+    "qo": [
+     99,
+     99
+    ],
+    "o": [
+     0.434,
+     0.409
+    ],
+    "def": [
+     0.022,
+     0.026
+    ],
+    "qdef": [
+     62,
+     69
+    ],
+    "prov": 0
+   }
+  },
+  "face_validity_after_repair_descriptive": {
+   "population": "skaters valued on their 2025-26 state with 40+ 2025-26 games (F 382, D 191)",
+   "F": {
+    "value_vs_points_per_gp": 0.774,
+    "value_vs_toi_per_gp": 0.658,
+    "offence_pct_vs_points_per_gp": 0.836
+   },
+   "D": {
+    "value_vs_points_per_gp": 0.635,
+    "value_vs_toi_per_gp": 0.513,
+    "offence_pct_vs_points_per_gp": 0.828
+   },
+   "statistic": "Spearman"
+  },
+  "as_played_lineup_value_vs_2025_26_team_xgd_per_game": {
+   "pearson_r_before_repair": 0.795,
+   "pearson_r_after_repair": 0.833,
+   "target": 0.8,
+   "definition": "snapshot teams.lu_prev (12 F + 6 D with the most 2025-26 regular-season TOI, display value) vs (xGF - xGA) / GP, 32 teams; recorded, not gated"
+  }
+ },
+ "next_nhl_weekly": {
+  "spine_games_through_2025_26_without_shift_rows": 0,
+  "consequence": "phase0/nhl_pull_shifts.py (nhl_weekly step 2) skips every game already present, so it will not re-append the 525 API games"
+ },
+ "git": "no commits"
+}
