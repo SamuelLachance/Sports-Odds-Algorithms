@@ -5700,7 +5700,7 @@
      "sp": 1,
      "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-26T19:10"
+     "rec": "2026-09-26T22:38"
     },
     {
      "d": "2026-09-26",
@@ -5712,7 +5712,7 @@
      "sp": 1,
      "spp": 0,
      "tier": "CONFIRMED",
-     "rec": "2026-09-26T19:10"
+     "rec": "2026-09-26T22:38"
     },
     {
      "d": "2026-09-26",
@@ -5730,13 +5730,13 @@
      "d": "2026-09-26",
      "away": "CLE",
      "home": "KC",
-     "p": 0.5192,
+     "p": 0.5196,
      "pick": "KC",
      "lean": 1,
      "sp": 1,
      "spp": 0,
-     "tier": "PROJECTED",
-     "rec": "2026-09-26T19:10"
+     "tier": "CONFIRMED",
+     "rec": "2026-09-26T22:38"
     },
     {
      "d": "2026-09-26",
@@ -5748,19 +5748,19 @@
      "sp": 1,
      "spp": 0,
      "tier": "CONFIRMED",
-     "rec": "2026-09-26T19:10"
+     "rec": "2026-09-26T19:37"
     },
     {
      "d": "2026-09-26",
      "away": "STL",
      "home": "MIL",
-     "p": 0.713,
+     "p": 0.7076,
      "pick": "MIL",
      "lean": 0,
      "sp": 1,
      "spp": 0,
-     "tier": "PROJECTED",
-     "rec": "2026-09-26T19:10"
+     "tier": "CONFIRMED",
+     "rec": "2026-09-26T22:38"
     },
     {
      "d": "2026-09-26",
@@ -5772,31 +5772,31 @@
      "sp": 1,
      "spp": 0,
      "tier": "CONFIRMED",
-     "rec": "2026-09-26T19:10"
+     "rec": "2026-09-26T19:37"
     },
     {
      "d": "2026-09-26",
      "away": "TB",
      "home": "PHI",
-     "p": 0.4835,
-     "pick": "TB",
-     "lean": 1,
+     "p": 0.5559,
+     "pick": "PHI",
+     "lean": 0,
      "sp": 1,
-     "spp": 1,
-     "tier": "PROJECTED",
-     "rec": "2026-09-26T19:10"
+     "spp": 0,
+     "tier": "CONFIRMED",
+     "rec": "2026-09-26T22:38"
     },
     {
      "d": "2026-09-26",
      "away": "AZ",
      "home": "SD",
-     "p": 0.5984,
+     "p": 0.5951,
      "pick": "SD",
      "lean": 0,
      "sp": 1,
      "spp": 1,
-     "tier": "PROJECTED",
-     "rec": "2026-09-26T19:10"
+     "tier": "CONFIRMED",
+     "rec": "2026-09-26T22:38"
     },
     {
      "d": "2026-09-26",
@@ -5808,7 +5808,7 @@
      "sp": 1,
      "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-26T19:10"
+     "rec": "2026-09-26T22:38"
     },
     {
      "d": "2026-09-26",
@@ -5820,7 +5820,7 @@
      "sp": 1,
      "spp": 0,
      "tier": "CONFIRMED",
-     "rec": "2026-09-26T19:10"
+     "rec": "2026-09-26T19:37"
     },
     {
      "d": "2026-09-26",
@@ -5856,7 +5856,7 @@
      "sp": 1,
      "spp": 1,
      "tier": "PROJECTED",
-     "rec": "2026-09-26T19:10"
+     "rec": "2026-09-26T22:38"
     },
     {
      "d": "2026-09-27",
@@ -5868,7 +5868,7 @@
      "sp": 1,
      "spp": 1,
      "tier": "PROJECTED",
-     "rec": "2026-09-26T19:10"
+     "rec": "2026-09-26T22:38"
     },
     {
      "d": "2026-09-27",
@@ -5880,7 +5880,7 @@
      "sp": 1,
      "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-26T19:10"
+     "rec": "2026-09-26T22:38"
     },
     {
      "d": "2026-09-27",
@@ -5892,7 +5892,7 @@
      "sp": 1,
      "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-26T19:10"
+     "rec": "2026-09-26T22:38"
     },
     {
      "d": "2026-09-27",
@@ -5904,7 +5904,7 @@
      "sp": 1,
      "spp": 1,
      "tier": "PROJECTED",
-     "rec": "2026-09-26T19:10"
+     "rec": "2026-09-26T22:38"
     },
     {
      "d": "2026-09-27",
@@ -5916,7 +5916,7 @@
      "sp": 1,
      "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-26T19:10"
+     "rec": "2026-09-26T22:38"
     },
     {
      "d": "2026-09-27",
@@ -5928,7 +5928,7 @@
      "sp": 1,
      "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-26T19:10"
+     "rec": "2026-09-26T22:38"
     },
     {
      "d": "2026-09-27",
@@ -5940,7 +5940,7 @@
      "sp": 1,
      "spp": 1,
      "tier": "PROJECTED",
-     "rec": "2026-09-26T19:10"
+     "rec": "2026-09-26T22:38"
     },
     {
      "d": "2026-09-27",
@@ -5952,7 +5952,7 @@
      "sp": 1,
      "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-26T19:10"
+     "rec": "2026-09-26T22:38"
     },
     {
      "d": "2026-09-27",
@@ -5964,7 +5964,7 @@
      "sp": 1,
      "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-26T19:10"
+     "rec": "2026-09-26T22:38"
     },
     {
      "d": "2026-09-27",
@@ -5976,7 +5976,7 @@
      "sp": 1,
      "spp": 1,
      "tier": "PROJECTED",
-     "rec": "2026-09-26T19:10"
+     "rec": "2026-09-26T22:38"
     },
     {
      "d": "2026-09-27",
@@ -5988,7 +5988,7 @@
      "sp": 1,
      "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-26T19:10"
+     "rec": "2026-09-26T22:38"
     },
     {
      "d": "2026-09-27",
@@ -6000,19 +6000,19 @@
      "sp": 1,
      "spp": 1,
      "tier": "PROJECTED",
-     "rec": "2026-09-26T19:10"
+     "rec": "2026-09-26T22:38"
     },
     {
      "d": "2026-09-27",
      "away": "CIN",
      "home": "TOR",
-     "p": 0.5338,
+     "p": 0.5743,
      "pick": "TOR",
-     "lean": 1,
+     "lean": 0,
      "sp": 1,
-     "spp": 1,
+     "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-26T19:10"
+     "rec": "2026-09-26T22:38"
     },
     {
      "d": "2026-09-27",
@@ -6024,13 +6024,13 @@
      "sp": 1,
      "spp": 0,
      "tier": "PROJECTED",
-     "rec": "2026-09-26T19:10"
+     "rec": "2026-09-26T22:38"
     }
    ],
    "scheduled": [],
    "n_pending": 28,
    "n_scheduled": 0,
-   "n_lean": 12
+   "n_lean": 10
   },
   "bets": {
    "updated": "2026-09-26T22:11:54Z",
@@ -7785,7 +7785,7 @@
      "game_pk": 822678,
      "date": "2026-09-26",
      "start_utc": "2026-09-26T16:35:00Z",
-     "state": "Live",
+     "state": "Final",
      "home": "WAS",
      "away": "NYN",
      "away_abbr": "NYM",
@@ -7828,7 +7828,7 @@
      "game_pk": 824219,
      "date": "2026-09-26",
      "start_utc": "2026-09-26T17:10:00Z",
-     "state": "Live",
+     "state": "Final",
      "home": "DET",
      "away": "PIT",
      "away_abbr": "PIT",
@@ -7871,7 +7871,7 @@
      "game_pk": 822759,
      "date": "2026-09-26",
      "start_utc": "2026-09-26T19:07:00Z",
-     "state": "Live",
+     "state": "Final",
      "home": "TOR",
      "away": "CIN",
      "away_abbr": "CIN",
@@ -7914,7 +7914,7 @@
      "game_pk": 823165,
      "date": "2026-09-26",
      "start_utc": "2026-09-26T20:05:00Z",
-     "state": "Preview",
+     "state": "Live",
      "home": "SFN",
      "away": "LAN",
      "away_abbr": "LAD",
@@ -7957,7 +7957,7 @@
      "game_pk": 823653,
      "date": "2026-09-26",
      "start_utc": "2026-09-26T20:10:00Z",
-     "state": "Preview",
+     "state": "Live",
      "home": "MIN",
      "away": "TEX",
      "away_abbr": "TEX",
@@ -8000,7 +8000,7 @@
      "game_pk": 823813,
      "date": "2026-09-26",
      "start_utc": "2026-09-26T20:10:00Z",
-     "state": "Preview",
+     "state": "Live",
      "home": "MIA",
      "away": "ATL",
      "away_abbr": "ATL",
@@ -8056,10 +8056,10 @@
      "home_sp_proj": false,
      "pitcher_known": true,
      "sp_projected": false,
-     "lineup_source": "projected",
-     "home_win_prob": 0.5192,
+     "lineup_source": "official",
+     "home_win_prob": 0.5196,
      "pick": "KC",
-     "pick_prob": 0.5192,
+     "pick_prob": 0.5196,
      "edge": {
       "team": -7.1,
       "home_field": 5.1,
@@ -8067,33 +8067,33 @@
       "away_pitcher": -1.3,
       "bullpen": -0.6,
       "siera": 0.1,
-      "lineup": 2.3,
-      "power": 1.6,
-      "baserun": 1.6
+      "lineup": 2.4,
+      "power": 1.4,
+      "baserun": 1.7
      },
      "tier": "lineup",
      "recal_prob": 0.4691,
-     "ts_edge": 1.621,
+     "ts_edge": 1.712,
      "bullpen_edge": -1.223,
      "home_bp_fip": 1.84,
      "away_bp_fip": 0.617,
-     "power_edge": 0.0153,
-     "baserun_edge": 0.0021,
+     "power_edge": 0.0139,
+     "baserun_edge": 0.0023,
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
       "home_dec": 1.95,
       "away_dec": 1.88,
-      "home_best": 2.04,
+      "home_best": 1.97,
       "away_best": 1.94,
       "books": 11,
-      "ts": "2026-09-26T22:11:54.506535+00:00"
+      "ts": "2026-09-26T22:38:57.595231+00:00"
      },
      "value": {
       "side": "home",
       "team": "KC",
-      "ev_open": 0.0903,
-      "ev_cur": 0.0124,
+      "ev_open": 0.0912,
+      "ev_cur": 0.0132,
       "open_dec": 2.1,
       "cur_dec": 1.95,
       "available": true,
@@ -8146,9 +8146,9 @@
       "home_dec": 1.41,
       "away_dec": 3.05,
       "home_best": 1.43,
-      "away_best": 3.15,
+      "away_best": 3.16,
       "books": 11,
-      "ts": "2026-09-26T22:11:54.506535+00:00"
+      "ts": "2026-09-26T22:38:57.595231+00:00"
      }
     },
     {
@@ -8168,10 +8168,10 @@
      "home_sp_proj": false,
      "pitcher_known": true,
      "sp_projected": false,
-     "lineup_source": "projected",
-     "home_win_prob": 0.713,
+     "lineup_source": "official",
+     "home_win_prob": 0.7076,
      "pick": "MIL",
-     "pick_prob": 0.713,
+     "pick_prob": 0.7076,
      "edge": {
       "team": 12.4,
       "home_field": 4.4,
@@ -8179,18 +8179,18 @@
       "away_pitcher": -0.0,
       "bullpen": -1.9,
       "siera": 1.0,
-      "lineup": -0.6,
-      "power": 1.6,
-      "baserun": 2.0
+      "lineup": -0.5,
+      "power": 0.4,
+      "baserun": 2.5
      },
      "tier": "lineup",
      "recal_prob": 0.6931,
-     "ts_edge": 4.275,
+     "ts_edge": 4.462,
      "bullpen_edge": 0.491,
      "home_bp_fip": 0.647,
      "away_bp_fip": 1.138,
-     "power_edge": 0.0177,
-     "baserun_edge": 0.0033,
+     "power_edge": 0.0047,
+     "baserun_edge": 0.004,
      "home_pitcher_matched": true,
      "away_pitcher_matched": false,
      "mkt": {
@@ -8199,13 +8199,13 @@
       "home_best": 1.65,
       "away_best": 2.41,
       "books": 11,
-      "ts": "2026-09-26T22:11:54.506535+00:00"
+      "ts": "2026-09-26T22:38:57.595231+00:00"
      },
      "value": {
       "side": "home",
       "team": "MIL",
-      "ev_open": 0.0909,
-      "ev_cur": 0.1551,
+      "ev_open": 0.0826,
+      "ev_cur": 0.1463,
       "open_dec": 1.53,
       "cur_dec": 1.62,
       "available": true,
@@ -8224,35 +8224,35 @@
      "away_name": "Tampa Bay Rays",
      "home_name": "Philadelphia Phillies",
      "away_sp": "Griffin Jax",
-     "home_sp": "Tim Mayza",
+     "home_sp": "Aaron Nola",
      "away_sp_proj": false,
-     "home_sp_proj": true,
+     "home_sp_proj": false,
      "pitcher_known": true,
-     "sp_projected": true,
-     "lineup_source": "projected",
-     "home_win_prob": 0.4835,
-     "pick": "TB",
-     "pick_prob": 0.5165,
+     "sp_projected": false,
+     "lineup_source": "official",
+     "home_win_prob": 0.5559,
+     "pick": "PHI",
+     "pick_prob": 0.5559,
      "edge": {
       "team": -3.5,
-      "home_field": 5.1,
-      "home_pitcher": 0.0,
+      "home_field": 5.2,
+      "home_pitcher": 3.8,
       "away_pitcher": -3.6,
-      "bullpen": 1.9,
-      "siera": -2.0,
-      "lineup": -2.0,
-      "power": 1.3,
-      "baserun": 2.3
+      "bullpen": 1.2,
+      "siera": -0.1,
+      "lineup": 1.1,
+      "power": 1.6,
+      "baserun": 1.3
      },
      "tier": "lineup",
-     "recal_prob": 0.4681,
-     "ts_edge": -5.046,
+     "recal_prob": 0.5057,
+     "ts_edge": 0.088,
      "bullpen_edge": 0.363,
      "home_bp_fip": 0.845,
      "away_bp_fip": 1.208,
-     "power_edge": 0.0131,
-     "baserun_edge": 0.0031,
-     "home_pitcher_matched": false,
+     "power_edge": 0.0155,
+     "baserun_edge": 0.0018,
+     "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
       "home_dec": 1.81,
@@ -8260,7 +8260,17 @@
       "home_best": 1.85,
       "away_best": 2.12,
       "books": 11,
-      "ts": "2026-09-26T22:11:54.506535+00:00"
+      "ts": "2026-09-26T22:38:57.595231+00:00"
+     },
+     "value": {
+      "side": "home",
+      "team": "PHI",
+      "ev_open": 0.084,
+      "ev_cur": 0.0062,
+      "open_dec": 1.95,
+      "cur_dec": 1.81,
+      "available": true,
+      "books": 11
      }
     },
     {
@@ -8280,10 +8290,10 @@
      "home_sp_proj": false,
      "pitcher_known": true,
      "sp_projected": true,
-     "lineup_source": "projected",
-     "home_win_prob": 0.5984,
+     "lineup_source": "official",
+     "home_win_prob": 0.5951,
      "pick": "SD",
-     "pick_prob": 0.5984,
+     "pick_prob": 0.5951,
      "edge": {
       "team": 3.4,
       "home_field": 5.0,
@@ -8291,27 +8301,27 @@
       "away_pitcher": -0.0,
       "bullpen": -0.4,
       "siera": 0.1,
-      "lineup": 2.4,
-      "power": -0.4,
-      "baserun": -0.5
+      "lineup": 2.3,
+      "power": 0.3,
+      "baserun": -1.4
      },
      "tier": "lineup",
      "recal_prob": 0.5861,
-     "ts_edge": 4.949,
+     "ts_edge": 4.733,
      "bullpen_edge": 0.293,
      "home_bp_fip": 0.586,
      "away_bp_fip": 0.879,
-     "power_edge": -0.004,
-     "baserun_edge": -0.0006,
+     "power_edge": 0.0032,
+     "baserun_edge": -0.0019,
      "home_pitcher_matched": true,
      "away_pitcher_matched": false,
      "mkt": {
       "home_dec": 1.83,
       "away_dec": 2.05,
       "home_best": 1.85,
-      "away_best": 2.08,
+      "away_best": 2.09,
       "books": 11,
-      "ts": "2026-09-26T22:11:54.506535+00:00"
+      "ts": "2026-09-26T22:38:57.595231+00:00"
      }
     },
     {
@@ -8358,11 +8368,11 @@
      "away_pitcher_matched": true,
      "mkt": {
       "home_dec": 2.35,
-      "away_dec": 1.63,
+      "away_dec": 1.64,
       "home_best": 2.41,
       "away_best": 1.65,
       "books": 11,
-      "ts": "2026-09-26T22:11:54.506535+00:00"
+      "ts": "2026-09-26T22:38:57.595231+00:00"
      }
     },
     {
@@ -8413,7 +8423,7 @@
       "home_best": 1.67,
       "away_best": 2.38,
       "books": 11,
-      "ts": "2026-09-26T22:11:54.506535+00:00"
+      "ts": "2026-09-26T22:38:57.595231+00:00"
      },
      "value": {
       "side": "away",
@@ -8424,6 +8434,108 @@
       "cur_dec": 2.36,
       "available": true,
       "books": 11
+     }
+    },
+    {
+     "game_pk": 822679,
+     "date": "2026-09-27",
+     "start_utc": "2026-09-27T17:05:00Z",
+     "state": "Preview",
+     "home": "WAS",
+     "away": "NYN",
+     "away_abbr": "NYM",
+     "home_abbr": "WSH",
+     "away_name": "New York Mets",
+     "home_name": "Washington Nationals",
+     "away_sp": "Sean Manaea",
+     "home_sp": "DJ Herz",
+     "away_sp_proj": false,
+     "home_sp_proj": false,
+     "pitcher_known": true,
+     "sp_projected": false,
+     "lineup_source": "projected",
+     "home_win_prob": 0.4984,
+     "pick": "NYM",
+     "pick_prob": 0.5016,
+     "edge": {
+      "team": -1.4,
+      "home_field": 5.2,
+      "home_pitcher": 2.1,
+      "away_pitcher": -2.4,
+      "bullpen": -1.1,
+      "siera": -0.4,
+      "lineup": 0.1,
+      "power": -2.5,
+      "baserun": 1.6
+     },
+     "tier": "lineup",
+     "recal_prob": 0.5214,
+     "ts_edge": 0.333,
+     "bullpen_edge": -0.936,
+     "home_bp_fip": 1.788,
+     "away_bp_fip": 0.852,
+     "power_edge": -0.0238,
+     "baserun_edge": 0.0021,
+     "home_pitcher_matched": true,
+     "away_pitcher_matched": true,
+     "mkt": {
+      "home_dec": 1.95,
+      "away_dec": 1.915,
+      "home_best": 2.02,
+      "away_best": 1.95,
+      "books": 8,
+      "ts": "2026-09-26T22:38:57.595231+00:00"
+     }
+    },
+    {
+     "game_pk": 823490,
+     "date": "2026-09-27",
+     "start_utc": "2026-09-27T17:05:00Z",
+     "state": "Preview",
+     "home": "NYA",
+     "away": "BAL",
+     "away_abbr": "BAL",
+     "home_abbr": "NYY",
+     "away_name": "Baltimore Orioles",
+     "home_name": "New York Yankees",
+     "away_sp": "Shane Baz",
+     "home_sp": "Elmer Rodr\u00edguez",
+     "away_sp_proj": false,
+     "home_sp_proj": false,
+     "pitcher_known": true,
+     "sp_projected": false,
+     "lineup_source": "projected",
+     "home_win_prob": 0.5197,
+     "pick": "NYY",
+     "pick_prob": 0.5197,
+     "edge": {
+      "team": 6.7,
+      "home_field": 5.0,
+      "home_pitcher": 0.0,
+      "away_pitcher": -1.8,
+      "bullpen": -1.1,
+      "siera": -0.5,
+      "lineup": -4.8,
+      "power": 0.1,
+      "baserun": -0.5
+     },
+     "tier": "lineup",
+     "recal_prob": 0.5885,
+     "ts_edge": -4.756,
+     "bullpen_edge": -0.162,
+     "home_bp_fip": 0.835,
+     "away_bp_fip": 0.672,
+     "power_edge": 0.0011,
+     "baserun_edge": -0.0007,
+     "home_pitcher_matched": false,
+     "away_pitcher_matched": true,
+     "mkt": {
+      "home_dec": 1.72,
+      "away_dec": 2.18,
+      "home_best": 1.74,
+      "away_best": 2.22,
+      "books": 7,
+      "ts": "2026-09-26T22:38:57.595231+00:00"
      }
     },
     {
@@ -8468,57 +8580,6 @@
      "baserun_edge": 0.0016,
      "home_pitcher_matched": false,
      "away_pitcher_matched": true
-    },
-    {
-     "game_pk": 822679,
-     "date": "2026-09-27",
-     "start_utc": "2026-09-27T19:05:00Z",
-     "state": "Preview",
-     "home": "WAS",
-     "away": "NYN",
-     "away_abbr": "NYM",
-     "home_abbr": "WSH",
-     "away_name": "New York Mets",
-     "home_name": "Washington Nationals",
-     "away_sp": "Sean Manaea",
-     "home_sp": "DJ Herz",
-     "away_sp_proj": false,
-     "home_sp_proj": false,
-     "pitcher_known": true,
-     "sp_projected": false,
-     "lineup_source": "projected",
-     "home_win_prob": 0.4984,
-     "pick": "NYM",
-     "pick_prob": 0.5016,
-     "edge": {
-      "team": -1.4,
-      "home_field": 5.2,
-      "home_pitcher": 2.1,
-      "away_pitcher": -2.4,
-      "bullpen": -1.1,
-      "siera": -0.4,
-      "lineup": 0.1,
-      "power": -2.5,
-      "baserun": 1.6
-     },
-     "tier": "lineup",
-     "recal_prob": 0.5214,
-     "ts_edge": 0.333,
-     "bullpen_edge": -0.936,
-     "home_bp_fip": 1.788,
-     "away_bp_fip": 0.852,
-     "power_edge": -0.0238,
-     "baserun_edge": 0.0021,
-     "home_pitcher_matched": true,
-     "away_pitcher_matched": true,
-     "mkt": {
-      "home_dec": 1.92,
-      "away_dec": 1.915,
-      "home_best": 1.95,
-      "away_best": 1.95,
-      "books": 6,
-      "ts": "2026-09-26T22:11:54.506535+00:00"
-     }
     },
     {
      "game_pk": 824948,
@@ -8650,11 +8711,11 @@
      "away_pitcher_matched": true,
      "mkt": {
       "home_dec": 1.77,
-      "away_dec": 2.11,
+      "away_dec": 2.12,
       "home_best": 1.8,
-      "away_best": 2.13,
-      "books": 6,
-      "ts": "2026-09-26T22:11:54.506535+00:00"
+      "away_best": 2.14,
+      "books": 7,
+      "ts": "2026-09-26T22:38:57.595231+00:00"
      },
      "value": {
       "side": "home",
@@ -8664,7 +8725,7 @@
       "open_dec": 1.77,
       "cur_dec": 1.77,
       "available": true,
-      "books": 6
+      "books": 7
      }
     },
     {
@@ -8679,35 +8740,35 @@
      "away_name": "Cincinnati Reds",
      "home_name": "Toronto Blue Jays",
      "away_sp": "Brandon Williamson",
-     "home_sp": "Braydon Fisher",
+     "home_sp": "Max Scherzer",
      "away_sp_proj": false,
-     "home_sp_proj": true,
+     "home_sp_proj": false,
      "pitcher_known": true,
-     "sp_projected": true,
+     "sp_projected": false,
      "lineup_source": "projected",
-     "home_win_prob": 0.5338,
+     "home_win_prob": 0.5743,
      "pick": "TOR",
-     "pick_prob": 0.5338,
+     "pick_prob": 0.5743,
      "edge": {
       "team": 2.7,
-      "home_field": 5.1,
-      "home_pitcher": 0.0,
+      "home_field": 5.0,
+      "home_pitcher": 0.4,
       "away_pitcher": 0.6,
       "bullpen": 0.6,
-      "siera": 0.7,
-      "lineup": -3.3,
+      "siera": 1.2,
+      "lineup": -0.2,
       "power": -2.0,
       "baserun": 0.3
      },
      "tier": "lineup",
-     "recal_prob": 0.5711,
-     "ts_edge": -4.364,
+     "recal_prob": 0.5755,
+     "ts_edge": 0.108,
      "bullpen_edge": 0.806,
      "home_bp_fip": 0.855,
      "away_bp_fip": 1.66,
      "power_edge": -0.0199,
      "baserun_edge": 0.0005,
-     "home_pitcher_matched": false,
+     "home_pitcher_matched": true,
      "away_pitcher_matched": true
     },
     {
@@ -8797,11 +8858,11 @@
      "away_pitcher_matched": true,
      "mkt": {
       "home_dec": 2.15,
-      "away_dec": 1.745,
+      "away_dec": 1.75,
       "home_best": 2.18,
       "away_best": 1.77,
-      "books": 6,
-      "ts": "2026-09-26T22:11:54.506535+00:00"
+      "books": 7,
+      "ts": "2026-09-26T22:38:57.595231+00:00"
      }
     },
     {
@@ -8890,12 +8951,12 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": true,
      "mkt": {
-      "home_dec": 1.565,
-      "away_dec": 2.5,
+      "home_dec": 1.56,
+      "away_dec": 2.54,
       "home_best": 1.58,
-      "away_best": 2.54,
-      "books": 6,
-      "ts": "2026-09-26T22:11:54.506535+00:00"
+      "away_best": 2.68,
+      "books": 7,
+      "ts": "2026-09-26T22:38:57.595231+00:00"
      }
     },
     {
@@ -8989,7 +9050,7 @@
       "home_best": 1.48,
       "away_best": 2.89,
       "books": 6,
-      "ts": "2026-09-26T22:11:54.506535+00:00"
+      "ts": "2026-09-26T22:38:57.595231+00:00"
      },
      "value": {
       "side": "away",
@@ -9045,12 +9106,12 @@
      "home_pitcher_matched": true,
      "away_pitcher_matched": false,
      "mkt": {
-      "home_dec": 1.91,
-      "away_dec": 1.92,
+      "home_dec": 1.93,
+      "away_dec": 1.935,
       "home_best": 1.95,
       "away_best": 1.95,
-      "books": 5,
-      "ts": "2026-09-26T22:11:54.506535+00:00"
+      "books": 6,
+      "ts": "2026-09-26T22:38:57.595231+00:00"
      }
     },
     {
@@ -9097,11 +9158,11 @@
      "away_pitcher_matched": true,
      "mkt": {
       "home_dec": 1.43,
-      "away_dec": 2.96,
+      "away_dec": 2.97,
       "home_best": 1.45,
-      "away_best": 3.0,
-      "books": 6,
-      "ts": "2026-09-26T22:11:54.506535+00:00"
+      "away_best": 3.1,
+      "books": 7,
+      "ts": "2026-09-26T22:38:57.595231+00:00"
      },
      "value": {
       "side": "home",
@@ -9111,58 +9172,7 @@
       "open_dec": 1.43,
       "cur_dec": 1.43,
       "available": true,
-      "books": 6
-     }
-    },
-    {
-     "game_pk": 823490,
-     "date": "2026-09-27",
-     "start_utc": "2026-09-27T19:20:00Z",
-     "state": "Preview",
-     "home": "NYA",
-     "away": "BAL",
-     "away_abbr": "BAL",
-     "home_abbr": "NYY",
-     "away_name": "Baltimore Orioles",
-     "home_name": "New York Yankees",
-     "away_sp": "Shane Baz",
-     "home_sp": "Elmer Rodr\u00edguez",
-     "away_sp_proj": false,
-     "home_sp_proj": false,
-     "pitcher_known": true,
-     "sp_projected": false,
-     "lineup_source": "projected",
-     "home_win_prob": 0.5197,
-     "pick": "NYY",
-     "pick_prob": 0.5197,
-     "edge": {
-      "team": 6.7,
-      "home_field": 5.0,
-      "home_pitcher": 0.0,
-      "away_pitcher": -1.8,
-      "bullpen": -1.1,
-      "siera": -0.5,
-      "lineup": -4.8,
-      "power": 0.1,
-      "baserun": -0.5
-     },
-     "tier": "lineup",
-     "recal_prob": 0.5885,
-     "ts_edge": -4.756,
-     "bullpen_edge": -0.162,
-     "home_bp_fip": 0.835,
-     "away_bp_fip": 0.672,
-     "power_edge": 0.0011,
-     "baserun_edge": -0.0007,
-     "home_pitcher_matched": false,
-     "away_pitcher_matched": true,
-     "mkt": {
-      "home_dec": 1.71,
-      "away_dec": 2.18,
-      "home_best": 1.74,
-      "away_best": 2.22,
-      "books": 5,
-      "ts": "2026-09-26T22:11:54.506535+00:00"
+      "books": 7
      }
     }
    ]
@@ -9188,5 +9198,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-09-26T22:11:54.506535+00:00"
+ "value_updated": "2026-09-26T22:38:57.595231+00:00"
 }
