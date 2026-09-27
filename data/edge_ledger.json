@@ -5649,14 +5649,14 @@
    "open_dec": 2.14,
    "p_home": 0.593,
    "p_model": 0.593,
-   "roi": null,
+   "roi": 1.12,
    "side": "home",
    "start_utc": "2026-09-27T17:00:00Z",
    "team": "PIT",
    "ts_close": "2026-09-27T17:16:29Z",
    "ts_last_pregame": "2026-09-27T12:26:11Z",
    "ts_record": "2026-09-20T05:23:49Z",
-   "y": null
+   "y": 1
   },
   "nfl|2026-09-27|KC@MIA": {
    "away": "KC",
@@ -5683,14 +5683,14 @@
    "open_dec": 4.5,
    "p_home": 0.348,
    "p_model": 0.348,
-   "roi": null,
+   "roi": -1.0,
    "side": "home",
    "start_utc": "2026-09-27T17:00:00Z",
    "team": "MIA",
    "ts_close": "2026-09-27T17:16:29Z",
    "ts_last_pregame": "2026-09-27T12:26:11Z",
    "ts_record": "2026-09-20T05:23:49Z",
-   "y": null
+   "y": 0
   },
   "nfl|2026-09-27|LAC@BUF": {
    "away": "LAC",
@@ -5717,14 +5717,14 @@
    "open_dec": 1.46,
    "p_home": 0.786,
    "p_model": 0.786,
-   "roi": null,
+   "roi": 0.29,
    "side": "home",
    "start_utc": "2026-09-27T17:00:00Z",
    "team": "BUF",
    "ts_close": "2026-09-27T17:16:29Z",
    "ts_last_pregame": "2026-09-27T12:26:11Z",
    "ts_record": "2026-09-24T15:14:57Z",
-   "y": null
+   "y": 1
   },
   "nfl|2026-09-27|MIN@TB": {
    "away": "MIN",
@@ -5785,14 +5785,14 @@
    "open_dec": 1.74,
    "p_home": 0.286,
    "p_model": 0.714,
-   "roi": null,
+   "roi": -1.0,
    "side": "away",
    "start_utc": "2026-09-27T17:00:00Z",
    "team": "SEA",
    "ts_close": "2026-09-27T17:16:29Z",
    "ts_last_pregame": "2026-09-27T12:26:11Z",
    "ts_record": "2026-09-20T05:23:49Z",
-   "y": null
+   "y": 0
   },
   "nfl|2026-09-27|TEN@NYG": {
    "away": "TEN",
@@ -5819,14 +5819,14 @@
    "open_dec": 3.2,
    "p_home": 0.634,
    "p_model": 0.366,
-   "roi": null,
+   "roi": -1.0,
    "side": "away",
    "start_utc": "2026-09-27T17:00:00Z",
    "team": "TEN",
    "ts_close": "2026-09-27T17:16:29Z",
    "ts_last_pregame": "2026-09-27T12:26:11Z",
    "ts_record": "2026-09-20T05:23:49Z",
-   "y": null
+   "y": 0
   },
   "nfl|2026-09-28|PHI@CHI": {
    "away": "PHI",
@@ -5849,7 +5849,7 @@
    "last_pregame_dec": 2.7,
    "league": "nfl",
    "n_missed": 0,
-   "n_obs": 39,
+   "n_obs": 40,
    "open_dec": 1.85,
    "p_home": 0.607,
    "p_model": 0.607,
@@ -5858,7 +5858,7 @@
    "start_utc": "2026-09-29T00:15:00Z",
    "team": "CHI",
    "ts_close": null,
-   "ts_last_pregame": "2026-09-27T20:13:20Z",
+   "ts_last_pregame": "2026-09-27T23:08:00Z",
    "ts_record": "2026-09-21T05:10:08Z",
    "y": null
   },
@@ -5880,10 +5880,10 @@
    "imp_at_record": 0.589971,
    "imp_close": null,
    "key": "nfl|2026-10-01|PIT@CLE",
-   "last_pregame_dec": 1.69,
+   "last_pregame_dec": 1.685,
    "league": "nfl",
    "n_missed": 2,
-   "n_obs": 20,
+   "n_obs": 21,
    "open_dec": 1.715,
    "p_home": 0.318,
    "p_model": 0.682,
@@ -5892,7 +5892,7 @@
    "start_utc": "2026-10-02T00:15:00Z",
    "team": "PIT",
    "ts_close": null,
-   "ts_last_pregame": "2026-09-27T12:26:11Z",
+   "ts_last_pregame": "2026-09-27T23:08:00Z",
    "ts_record": "2026-09-24T05:05:14Z",
    "y": null
   },
@@ -5914,10 +5914,10 @@
    "imp_at_record": 0.564972,
    "imp_close": null,
    "key": "nhl|2026020001",
-   "last_pregame_dec": 1.78,
+   "last_pregame_dec": 1.8,
    "league": "nhl",
    "n_missed": 0,
-   "n_obs": 34,
+   "n_obs": 35,
    "open_dec": 1.77,
    "p_home": 0.697,
    "p_model": 0.697,
@@ -5926,7 +5926,7 @@
    "start_utc": "2026-09-29T21:00:00Z",
    "team": "CAR",
    "ts_close": null,
-   "ts_last_pregame": "2026-09-27T20:13:20Z",
+   "ts_last_pregame": "2026-09-27T23:08:00Z",
    "ts_record": "2026-09-22T04:38:38Z",
    "y": null
   },
@@ -5951,7 +5951,7 @@
    "last_pregame_dec": 1.95,
    "league": "nhl",
    "n_missed": 0,
-   "n_obs": 34,
+   "n_obs": 35,
    "open_dec": 1.95,
    "p_home": 0.3649,
    "p_model": 0.6351,
@@ -5960,7 +5960,7 @@
    "start_utc": "2026-09-29T23:00:00Z",
    "team": "MTL",
    "ts_close": null,
-   "ts_last_pregame": "2026-09-27T20:13:20Z",
+   "ts_last_pregame": "2026-09-27T23:08:00Z",
    "ts_record": "2026-09-22T04:38:38Z",
    "y": null
   },
@@ -5985,7 +5985,7 @@
    "last_pregame_dec": 1.95,
    "league": "nhl",
    "n_missed": 0,
-   "n_obs": 28,
+   "n_obs": 29,
    "open_dec": 1.91,
    "p_home": 0.4108,
    "p_model": 0.5892,
@@ -5994,11 +5994,11 @@
    "start_utc": "2026-09-30T23:30:00Z",
    "team": "NYI",
    "ts_close": null,
-   "ts_last_pregame": "2026-09-27T20:13:20Z",
+   "ts_last_pregame": "2026-09-27T23:08:00Z",
    "ts_record": "2026-09-23T04:06:33Z",
    "y": null
   }
  },
- "updated": "2026-09-27T20:13:20Z",
+ "updated": "2026-09-27T23:08:00Z",
  "v": 1
 }
