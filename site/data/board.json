@@ -5877,11 +5877,11 @@
    "n_lean": 5
   },
   "bets": {
-   "updated": "2026-09-27T17:16:29Z",
+   "updated": "2026-09-27T20:13:20Z",
    "stake": 1.0,
    "overall": {
-    "n_open": 7,
-    "n_awaiting": 10,
+    "n_open": 5,
+    "n_awaiting": 12,
     "n_overdue": 0,
     "n_void": 0,
     "settled": {
@@ -7231,8 +7231,8 @@
      }
     },
     "nfl": {
-     "n_open": 4,
-     "n_awaiting": 5,
+     "n_open": 2,
+     "n_awaiting": 7,
      "n_overdue": 0,
      "n_void": 0,
      "settled": {
@@ -7363,7 +7363,7 @@
      "side": "away",
      "dec": 4.65,
      "ev": 0.08345,
-     "status": "open",
+     "status": "awaiting",
      "start_utc": "2026-09-27T20:05:00Z",
      "tier": "EARLY",
      "model_ts": "2026-07-30T23:57:40Z",
@@ -7408,7 +7408,7 @@
      "side": "home",
      "dec": 1.83,
      "ev": 0.11996,
-     "status": "open",
+     "status": "awaiting",
      "start_utc": "2026-09-27T20:05:00Z",
      "tier": "EARLY",
      "model_ts": "2026-07-30T23:57:40Z",
@@ -8288,5 +8288,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-09-27T19:43:33.696781+00:00"
+ "value_updated": "2026-09-27T20:13:19.527623+00:00"
 }
