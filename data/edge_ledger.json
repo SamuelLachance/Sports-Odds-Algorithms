@@ -1154,7 +1154,7 @@
    "open_dec": 2.065,
    "p_home": 0.6098,
    "p_model": 0.6098,
-   "roi": null,
+   "roi": 1.065,
    "side": "home",
    "start_utc": "2026-09-27T19:10:00Z",
    "team": "SD",
@@ -1162,7 +1162,7 @@
    "ts_close": "2026-09-27T20:13:20Z",
    "ts_last_pregame": "2026-09-27T17:16:29Z",
    "ts_record": "2026-09-27T06:25:16Z",
-   "y": null
+   "y": 1
   },
   "mlb|823247": {
    "away": "MIA",
@@ -1462,7 +1462,7 @@
    "open_dec": 1.77,
    "p_home": 0.6308,
    "p_model": 0.6308,
-   "roi": null,
+   "roi": 0.77,
    "side": "home",
    "start_utc": "2026-09-27T19:05:00Z",
    "team": "PHI",
@@ -1470,7 +1470,7 @@
    "ts_close": "2026-09-27T20:13:20Z",
    "ts_last_pregame": "2026-09-27T17:16:29Z",
    "ts_record": "2026-09-26T22:11:54Z",
-   "y": null
+   "y": 1
   },
   "mlb|823414": {
    "away": "HOU",
@@ -2012,7 +2012,7 @@
    "open_dec": 1.43,
    "p_home": 0.7592,
    "p_model": 0.7592,
-   "roi": null,
+   "roi": 0.43,
    "side": "home",
    "start_utc": "2026-09-27T19:10:00Z",
    "team": "MIL",
@@ -2020,7 +2020,7 @@
    "ts_close": "2026-09-27T20:13:20Z",
    "ts_last_pregame": "2026-09-27T17:16:29Z",
    "ts_record": "2026-09-26T22:11:54Z",
-   "y": null
+   "y": 1
   },
   "mlb|823733": {
    "away": "SLN",
@@ -3844,7 +3844,7 @@
    "open_dec": 2.805,
    "p_home": 0.6093,
    "p_model": 0.3907,
-   "roi": null,
+   "roi": -1.0,
    "side": "away",
    "start_utc": "2026-09-27T19:10:00Z",
    "team": "COL",
@@ -3852,7 +3852,7 @@
    "ts_close": "2026-09-27T20:13:20Z",
    "ts_last_pregame": "2026-09-27T17:16:29Z",
    "ts_record": "2026-09-26T22:11:54Z",
-   "y": null
+   "y": 0
   },
   "mlb|824552": {
    "away": "MIN",
@@ -4796,7 +4796,7 @@
    "open_dec": 2.5,
    "p_home": 0.4462,
    "p_model": 0.4462,
-   "roi": null,
+   "roi": -1.0,
    "side": "home",
    "start_utc": "2026-09-27T19:05:00Z",
    "team": "ATH",
@@ -4804,7 +4804,7 @@
    "ts_close": "2026-09-27T20:13:20Z",
    "ts_last_pregame": "2026-09-27T17:16:29Z",
    "ts_record": "2026-09-27T12:26:11Z",
-   "y": null
+   "y": 0
   },
   "mlb|824949": {
    "away": "HOU",
@@ -5615,14 +5615,14 @@
    "open_dec": 4.65,
    "p_home": 0.767,
    "p_model": 0.233,
-   "roi": null,
+   "roi": -1.0,
    "side": "away",
    "start_utc": "2026-09-27T20:05:00Z",
    "team": "ARI",
    "ts_close": "2026-09-27T20:13:20Z",
    "ts_last_pregame": "2026-09-27T17:16:29Z",
    "ts_record": "2026-09-20T05:23:49Z",
-   "y": null
+   "y": 0
   },
   "nfl|2026-09-27|CIN@PIT": {
    "away": "CIN",
@@ -5751,14 +5751,14 @@
    "open_dec": 1.83,
    "p_home": 0.612,
    "p_model": 0.612,
-   "roi": null,
+   "roi": -1.0,
    "side": "home",
    "start_utc": "2026-09-27T20:05:00Z",
    "team": "TB",
    "ts_close": "2026-09-27T20:13:20Z",
    "ts_last_pregame": "2026-09-27T17:16:29Z",
    "ts_record": "2026-09-20T05:23:49Z",
-   "y": null
+   "y": 0
   },
   "nfl|2026-09-27|SEA@WAS": {
    "away": "SEA",
@@ -5849,7 +5849,7 @@
    "last_pregame_dec": 2.7,
    "league": "nfl",
    "n_missed": 0,
-   "n_obs": 41,
+   "n_obs": 42,
    "open_dec": 1.85,
    "p_home": 0.607,
    "p_model": 0.607,
@@ -5858,7 +5858,7 @@
    "start_utc": "2026-09-29T00:15:00Z",
    "team": "CHI",
    "ts_close": null,
-   "ts_last_pregame": "2026-09-28T01:45:24Z",
+   "ts_last_pregame": "2026-09-28T08:27:47Z",
    "ts_record": "2026-09-21T05:10:08Z",
    "y": null
   },
@@ -5880,10 +5880,10 @@
    "imp_at_record": 0.589971,
    "imp_close": null,
    "key": "nfl|2026-10-01|PIT@CLE",
-   "last_pregame_dec": 1.7,
+   "last_pregame_dec": 1.71,
    "league": "nfl",
    "n_missed": 2,
-   "n_obs": 22,
+   "n_obs": 23,
    "open_dec": 1.715,
    "p_home": 0.318,
    "p_model": 0.682,
@@ -5892,7 +5892,7 @@
    "start_utc": "2026-10-02T00:15:00Z",
    "team": "PIT",
    "ts_close": null,
-   "ts_last_pregame": "2026-09-28T01:45:24Z",
+   "ts_last_pregame": "2026-09-28T08:27:47Z",
    "ts_record": "2026-09-24T05:05:14Z",
    "y": null
   },
@@ -5917,7 +5917,7 @@
    "last_pregame_dec": 1.8,
    "league": "nhl",
    "n_missed": 0,
-   "n_obs": 36,
+   "n_obs": 37,
    "open_dec": 1.77,
    "p_home": 0.697,
    "p_model": 0.697,
@@ -5926,7 +5926,7 @@
    "start_utc": "2026-09-29T21:00:00Z",
    "team": "CAR",
    "ts_close": null,
-   "ts_last_pregame": "2026-09-28T01:45:24Z",
+   "ts_last_pregame": "2026-09-28T08:27:47Z",
    "ts_record": "2026-09-22T04:38:38Z",
    "y": null
   },
@@ -5951,7 +5951,7 @@
    "last_pregame_dec": 1.95,
    "league": "nhl",
    "n_missed": 0,
-   "n_obs": 36,
+   "n_obs": 37,
    "open_dec": 1.95,
    "p_home": 0.3649,
    "p_model": 0.6351,
@@ -5960,7 +5960,7 @@
    "start_utc": "2026-09-29T23:00:00Z",
    "team": "MTL",
    "ts_close": null,
-   "ts_last_pregame": "2026-09-28T01:45:24Z",
+   "ts_last_pregame": "2026-09-28T08:27:47Z",
    "ts_record": "2026-09-22T04:38:38Z",
    "y": null
   },
@@ -5985,7 +5985,7 @@
    "last_pregame_dec": 1.95,
    "league": "nhl",
    "n_missed": 0,
-   "n_obs": 30,
+   "n_obs": 31,
    "open_dec": 1.91,
    "p_home": 0.4108,
    "p_model": 0.5892,
@@ -5994,11 +5994,11 @@
    "start_utc": "2026-09-30T23:30:00Z",
    "team": "NYI",
    "ts_close": null,
-   "ts_last_pregame": "2026-09-28T01:45:24Z",
+   "ts_last_pregame": "2026-09-28T08:27:47Z",
    "ts_record": "2026-09-23T04:06:33Z",
    "y": null
   }
  },
- "updated": "2026-09-28T01:45:24Z",
+ "updated": "2026-09-28T08:27:47Z",
  "v": 1
 }
