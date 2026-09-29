@@ -5712,8 +5712,8 @@
    "updated": "2026-09-29T20:13:06Z",
    "stake": 1.0,
    "overall": {
-    "n_open": 7,
-    "n_awaiting": 0,
+    "n_open": 5,
+    "n_awaiting": 2,
     "n_overdue": 0,
     "n_void": 0,
     "settled": {
@@ -7266,8 +7266,8 @@
      }
     },
     "nhl": {
-     "n_open": 3,
-     "n_awaiting": 0,
+     "n_open": 1,
+     "n_awaiting": 2,
      "n_overdue": 0,
      "n_void": 0,
      "settled": null,
@@ -7299,7 +7299,7 @@
      "side": "home",
      "dec": 1.77,
      "ev": 0.23369,
-     "status": "open",
+     "status": "awaiting",
      "start_utc": "2026-09-29T21:00:00Z",
      "tier": "EARLY",
      "model_ts": "2026-09-21T16:12:17Z",
@@ -7314,7 +7314,7 @@
      "side": "away",
      "dec": 1.95,
      "ev": 0.238445,
-     "status": "open",
+     "status": "awaiting",
      "start_utc": "2026-09-29T23:00:00Z",
      "tier": "EARLY",
      "model_ts": "2026-09-21T16:12:17Z",
@@ -7428,5 +7428,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-09-29T20:13:05.807128+00:00"
+ "value_updated": "2026-09-29T23:37:33.024552+00:00"
 }

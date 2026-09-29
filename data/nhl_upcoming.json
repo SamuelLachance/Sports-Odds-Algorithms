@@ -7,7 +7,7 @@
 "home": "CAR",
 "away": "FLA",
 "t": "2026-09-29T21:00:00Z",
-"state": "FUT"
+"state": "LIVE"
 },
 {
 "id": 2026020002,
@@ -17,7 +17,7 @@
 "home": "TOR",
 "away": "MTL",
 "t": "2026-09-29T23:00:00Z",
-"state": "FUT"
+"state": "LIVE"
 },
 {
 "id": 2026020003,
@@ -27,7 +27,7 @@
 "home": "BOS",
 "away": "NYR",
 "t": "2026-09-30T00:00:00Z",
-"state": "FUT"
+"state": "PRE"
 },
 {
 "id": 2026020004,
