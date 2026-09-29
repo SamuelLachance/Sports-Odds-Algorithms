@@ -5709,21 +5709,21 @@
    "n_lean": 1
   },
   "bets": {
-   "updated": "2026-09-29T08:43:37Z",
+   "updated": "2026-09-29T15:32:59Z",
    "stake": 1.0,
    "overall": {
-    "n_open": 4,
-    "n_awaiting": 1,
+    "n_open": 7,
+    "n_awaiting": 0,
     "n_overdue": 0,
     "n_void": 0,
     "settled": {
-     "n": 171,
-     "w": 86,
+     "n": 172,
+     "w": 87,
      "l": 85,
-     "staked": 171.0,
-     "net": -0.42,
-     "roi": -0.0025,
-     "avg_dec": 2.117
+     "staked": 172.0,
+     "net": 1.22,
+     "roi": 0.0071,
+     "avg_dec": 2.12
     },
     "by_tier": {
      "CONFIRMED": {
@@ -5741,11 +5741,11 @@
       "roi": -0.1868
      },
      "EARLY": {
-      "n": 20,
-      "w": 7,
+      "n": 21,
+      "w": 8,
       "l": 13,
-      "net": 2.53,
-      "roi": 0.1265
+      "net": 4.17,
+      "roi": 0.1986
      },
      "UNKNOWN": {
       "n": 136,
@@ -5764,9 +5764,9 @@
      },
      {
       "k": "2026-09",
-      "n": 110,
-      "net": 6.5,
-      "cum": -0.42
+      "n": 111,
+      "net": 8.14,
+      "cum": 1.22
      }
     ],
     "curve": [
@@ -6453,12 +6453,16 @@
      [
       "2026-09-27",
       -0.42
+     ],
+     [
+      "2026-09-28",
+      1.22
      ]
     ],
     "stale_model": {
      "n": 25,
-     "n_settled": 20,
-     "net": 2.53,
+     "n_settled": 21,
+     "net": 4.17,
      "builds": [
       "2026-07-30",
       "2026-09-21"
@@ -7131,34 +7135,34 @@
      }
     },
     "nfl": {
-     "n_open": 1,
-     "n_awaiting": 1,
+     "n_open": 4,
+     "n_awaiting": 0,
      "n_overdue": 0,
      "n_void": 0,
      "settled": {
-      "n": 20,
-      "w": 7,
+      "n": 21,
+      "w": 8,
       "l": 13,
-      "staked": 20.0,
-      "net": 2.53,
-      "roi": 0.1265,
-      "avg_dec": 3.199
+      "staked": 21.0,
+      "net": 4.17,
+      "roi": 0.1986,
+      "avg_dec": 3.173
      },
      "by_tier": {
       "EARLY": {
-       "n": 20,
-       "w": 7,
+       "n": 21,
+       "w": 8,
        "l": 13,
-       "net": 2.53,
-       "roi": 0.1265
+       "net": 4.17,
+       "roi": 0.1986
       }
      },
      "by_month": [
       {
        "k": "2026-09",
-       "n": 20,
-       "net": 2.53,
-       "cum": 2.53
+       "n": 21,
+       "net": 4.17,
+       "cum": 4.17
       }
      ],
      "curve": [
@@ -7241,12 +7245,16 @@
       [
        "2026-09-27",
        2.53
+      ],
+      [
+       "2026-09-28",
+       4.17
       ]
      ],
      "stale_model": {
       "n": 22,
-      "n_settled": 20,
-      "net": 2.53,
+      "n_settled": 21,
+      "net": 4.17,
       "builds": [
        "2026-07-30"
       ]
@@ -7282,21 +7290,6 @@
     }
    },
    "pending": [
-    {
-     "league": "nfl",
-     "d": "2026-09-28",
-     "away": "PHI",
-     "home": "CHI",
-     "team": "CHI",
-     "side": "home",
-     "dec": 2.64,
-     "ev": 0.60248,
-     "status": "awaiting",
-     "start_utc": "2026-09-29T00:15:00Z",
-     "tier": "EARLY",
-     "model_ts": "2026-07-30T23:57:40Z",
-     "stale_model": true
-    },
     {
      "league": "nhl",
      "d": "2026-09-29",
@@ -7356,6 +7349,51 @@
      "tier": "EARLY",
      "model_ts": "2026-07-30T23:57:40Z",
      "stale_model": true
+    },
+    {
+     "league": "nfl",
+     "d": "2026-10-04",
+     "away": "GB",
+     "home": "TB",
+     "team": "TB",
+     "side": "home",
+     "dec": 2.62,
+     "ev": 0.56152,
+     "status": "open",
+     "start_utc": "2026-10-04T17:00:00Z",
+     "tier": "PROJECTED",
+     "model_ts": "2026-09-29T15:13:49Z",
+     "stale_model": false
+    },
+    {
+     "league": "nfl",
+     "d": "2026-10-04",
+     "away": "MIA",
+     "home": "MIN",
+     "team": "MIA",
+     "side": "away",
+     "dec": 5.725,
+     "ev": 0.185075,
+     "status": "open",
+     "start_utc": "2026-10-04T20:05:00Z",
+     "tier": "PROJECTED",
+     "model_ts": "2026-09-29T15:13:49Z",
+     "stale_model": false
+    },
+    {
+     "league": "nfl",
+     "d": "2026-10-04",
+     "away": "TEN",
+     "home": "BAL",
+     "team": "TEN",
+     "side": "away",
+     "dec": 6.0,
+     "ev": 0.362,
+     "status": "open",
+     "start_utc": "2026-10-04T17:00:00Z",
+     "tier": "PROJECTED",
+     "model_ts": "2026-09-29T15:13:49Z",
+     "stale_model": false
     }
    ],
    "voids": []
@@ -7390,5 +7428,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-09-29T10:35:53.619558+00:00"
+ "value_updated": "2026-09-29T15:32:59.414288+00:00"
 }
