@@ -5883,7 +5883,7 @@
    "last_pregame_dec": 1.67,
    "league": "nfl",
    "n_missed": 2,
-   "n_obs": 36,
+   "n_obs": 37,
    "open_dec": 1.715,
    "p_home": 0.318,
    "p_model": 0.682,
@@ -5892,7 +5892,7 @@
    "start_utc": "2026-10-02T00:15:00Z",
    "team": "PIT",
    "ts_close": null,
-   "ts_last_pregame": "2026-10-01T06:34:05Z",
+   "ts_last_pregame": "2026-10-01T13:53:15Z",
    "ts_record": "2026-09-24T05:05:14Z",
    "y": null
   },
@@ -5918,7 +5918,7 @@
    "league": "nfl",
    "model_ts": "2026-09-29T15:13:49Z",
    "n_missed": 0,
-   "n_obs": 9,
+   "n_obs": 10,
    "open_dec": 1.965,
    "p_home": 0.596,
    "p_model": 0.596,
@@ -5928,7 +5928,7 @@
    "team": "TB",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-10-01T06:34:05Z",
+   "ts_last_pregame": "2026-10-01T13:53:15Z",
    "ts_record": "2026-09-29T15:32:59Z",
    "y": null
   },
@@ -5950,11 +5950,11 @@
    "imp_at_record": 0.174672,
    "imp_close": null,
    "key": "nfl|2026-10-04|MIA@MIN",
-   "last_pregame_dec": 5.5,
+   "last_pregame_dec": 5.55,
    "league": "nfl",
    "model_ts": "2026-09-29T15:13:49Z",
    "n_missed": 0,
-   "n_obs": 9,
+   "n_obs": 10,
    "open_dec": 5.45,
    "p_home": 0.793,
    "p_model": 0.207,
@@ -5964,7 +5964,7 @@
    "team": "MIA",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-10-01T06:34:05Z",
+   "ts_last_pregame": "2026-10-01T13:53:15Z",
    "ts_record": "2026-09-29T15:32:59Z",
    "y": null
   },
@@ -5990,7 +5990,7 @@
    "league": "nfl",
    "model_ts": "2026-09-29T15:13:49Z",
    "n_missed": 0,
-   "n_obs": 9,
+   "n_obs": 10,
    "open_dec": 5.55,
    "p_home": 0.773,
    "p_model": 0.227,
@@ -6000,7 +6000,7 @@
    "team": "TEN",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-10-01T06:34:05Z",
+   "ts_last_pregame": "2026-10-01T13:53:15Z",
    "ts_record": "2026-09-29T15:32:59Z",
    "y": null
   },
@@ -6107,6 +6107,6 @@
    "y": 0
   }
  },
- "updated": "2026-10-01T06:34:05Z",
+ "updated": "2026-10-01T13:53:15Z",
  "v": 1
 }
