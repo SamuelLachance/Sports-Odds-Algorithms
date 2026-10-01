@@ -5709,11 +5709,11 @@
    "n_lean": 1
   },
   "bets": {
-   "updated": "2026-09-30T21:19:39Z",
+   "updated": "2026-10-01T00:38:39Z",
    "stake": 1.0,
    "overall": {
-    "n_open": 5,
-    "n_awaiting": 0,
+    "n_open": 4,
+    "n_awaiting": 1,
     "n_overdue": 0,
     "n_void": 0,
     "settled": {
@@ -7274,8 +7274,8 @@
      }
     },
     "nhl": {
-     "n_open": 1,
-     "n_awaiting": 0,
+     "n_open": 0,
+     "n_awaiting": 1,
      "n_overdue": 0,
      "n_void": 0,
      "settled": {
@@ -7339,7 +7339,7 @@
      "side": "away",
      "dec": 1.91,
      "ev": 0.125372,
-     "status": "open",
+     "status": "awaiting",
      "start_utc": "2026-09-30T23:30:00Z",
      "tier": "EARLY",
      "model_ts": "2026-09-21T16:12:17Z",
@@ -7438,5 +7438,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-09-30T21:19:39.595631+00:00"
+ "value_updated": "2026-10-01T00:38:38.426782+00:00"
 }
