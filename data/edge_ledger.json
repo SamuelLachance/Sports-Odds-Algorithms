@@ -5867,10 +5867,10 @@
    "best_dec_at_record": 1.75,
    "books": 6,
    "clv_censored": true,
-   "clv_pts": null,
+   "clv_pts": 0.008831,
    "d": "2026-10-01",
    "dec_at_record": 1.695,
-   "dec_close": null,
+   "dec_close": 1.67,
    "ev_at_record": 0.15599,
    "ev_best_at_record": 0.1935,
    "ev_cur": 0.156,
@@ -5878,7 +5878,7 @@
    "gid": null,
    "home": "CLE",
    "imp_at_record": 0.589971,
-   "imp_close": null,
+   "imp_close": 0.598802,
    "key": "nfl|2026-10-01|PIT@CLE",
    "last_pregame_dec": 1.67,
    "league": "nfl",
@@ -5891,7 +5891,7 @@
    "side": "away",
    "start_utc": "2026-10-02T00:15:00Z",
    "team": "PIT",
-   "ts_close": null,
+   "ts_close": "2026-10-02T02:34:11Z",
    "ts_last_pregame": "2026-10-01T23:24:19Z",
    "ts_record": "2026-09-24T05:05:14Z",
    "y": null
@@ -5918,7 +5918,7 @@
    "league": "nfl",
    "model_ts": "2026-09-29T15:13:49Z",
    "n_missed": 0,
-   "n_obs": 12,
+   "n_obs": 13,
    "open_dec": 1.965,
    "p_home": 0.596,
    "p_model": 0.596,
@@ -5928,7 +5928,7 @@
    "team": "TB",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-10-01T23:24:19Z",
+   "ts_last_pregame": "2026-10-02T02:34:11Z",
    "ts_record": "2026-09-29T15:32:59Z",
    "y": null
   },
@@ -5954,7 +5954,7 @@
    "league": "nfl",
    "model_ts": "2026-09-29T15:13:49Z",
    "n_missed": 0,
-   "n_obs": 12,
+   "n_obs": 13,
    "open_dec": 5.45,
    "p_home": 0.793,
    "p_model": 0.207,
@@ -5964,7 +5964,7 @@
    "team": "MIA",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-10-01T23:24:19Z",
+   "ts_last_pregame": "2026-10-02T02:34:11Z",
    "ts_record": "2026-09-29T15:32:59Z",
    "y": null
   },
@@ -5990,7 +5990,7 @@
    "league": "nfl",
    "model_ts": "2026-09-29T15:13:49Z",
    "n_missed": 0,
-   "n_obs": 12,
+   "n_obs": 13,
    "open_dec": 5.55,
    "p_home": 0.773,
    "p_model": 0.227,
@@ -6000,7 +6000,7 @@
    "team": "TEN",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-10-01T23:24:19Z",
+   "ts_last_pregame": "2026-10-02T02:34:11Z",
    "ts_record": "2026-09-29T15:32:59Z",
    "y": null
   },
@@ -6107,6 +6107,6 @@
    "y": 0
   }
  },
- "updated": "2026-10-01T23:24:19Z",
+ "updated": "2026-10-02T02:34:11Z",
  "v": 1
 }
