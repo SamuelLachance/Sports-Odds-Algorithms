@@ -5709,10 +5709,10 @@
    "n_lean": 1
   },
   "bets": {
-   "updated": "2026-10-02T20:31:29Z",
+   "updated": "2026-10-02T23:59:06Z",
    "stake": 1.0,
    "overall": {
-    "n_open": 3,
+    "n_open": 6,
     "n_awaiting": 0,
     "n_overdue": 0,
     "n_void": 0,
@@ -7157,7 +7157,7 @@
      }
     },
     "nfl": {
-     "n_open": 3,
+     "n_open": 6,
      "n_awaiting": 0,
      "n_overdue": 0,
      "n_void": 0,
@@ -7402,6 +7402,51 @@
      "tier": "PROJECTED",
      "model_ts": "2026-09-29T15:13:49Z",
      "stale_model": false
+    },
+    {
+     "league": "nfl",
+     "d": "2026-10-04",
+     "away": "KC",
+     "home": "LV",
+     "team": "LV",
+     "side": "home",
+     "dec": 2.8,
+     "ev": 0.0304,
+     "status": "open",
+     "start_utc": "2026-10-04T20:25:00Z",
+     "tier": "PROJECTED",
+     "model_ts": "2026-10-02T23:28:09Z",
+     "stale_model": false
+    },
+    {
+     "league": "nfl",
+     "d": "2026-10-04",
+     "away": "NE",
+     "home": "BUF",
+     "team": "BUF",
+     "side": "home",
+     "dec": 1.31,
+     "ev": 0.02573,
+     "status": "open",
+     "start_utc": "2026-10-04T17:00:00Z",
+     "tier": "PROJECTED",
+     "model_ts": "2026-10-02T23:28:09Z",
+     "stale_model": false
+    },
+    {
+     "league": "nfl",
+     "d": "2026-10-08",
+     "away": "TB",
+     "home": "DAL",
+     "team": "TB",
+     "side": "away",
+     "dec": 5.0,
+     "ev": 1.445,
+     "status": "open",
+     "start_utc": "2026-10-09T00:15:00Z",
+     "tier": "PROJECTED",
+     "model_ts": "2026-10-02T23:28:09Z",
+     "stale_model": false
     }
    ],
    "voids": []
@@ -7436,5 +7481,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-10-02T20:37:29.639026+00:00"
+ "value_updated": "2026-10-02T23:59:06.386862+00:00"
 }
