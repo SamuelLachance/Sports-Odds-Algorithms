@@ -7,7 +7,7 @@
 "home": "BUF",
 "away": "CHI",
 "t": "2026-10-03T23:00:00Z",
-"state": "FUT"
+"state": "PRE"
 },
 {
 "id": 2026020023,
@@ -17,7 +17,7 @@
 "home": "TOR",
 "away": "OTT",
 "t": "2026-10-03T23:00:00Z",
-"state": "FUT"
+"state": "PRE"
 },
 {
 "id": 2026020024,
@@ -27,7 +27,7 @@
 "home": "TBL",
 "away": "WSH",
 "t": "2026-10-03T23:00:00Z",
-"state": "FUT"
+"state": "PRE"
 },
 {
 "id": 2026020025,
@@ -37,7 +37,7 @@
 "home": "PHI",
 "away": "CAR",
 "t": "2026-10-03T23:00:00Z",
-"state": "FUT"
+"state": "PRE"
 },
 {
 "id": 2026020026,
@@ -47,7 +47,7 @@
 "home": "PIT",
 "away": "MTL",
 "t": "2026-10-03T23:00:00Z",
-"state": "FUT"
+"state": "PRE"
 },
 {
 "id": 2026020027,
@@ -57,7 +57,7 @@
 "home": "CBJ",
 "away": "UTA",
 "t": "2026-10-03T23:00:00Z",
-"state": "FUT"
+"state": "PRE"
 },
 {
 "id": 2026020028,
@@ -67,7 +67,7 @@
 "home": "EDM",
 "away": "SEA",
 "t": "2026-10-03T23:00:00Z",
-"state": "FUT"
+"state": "PRE"
 },
 {
 "id": 2026020029,
