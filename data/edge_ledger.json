@@ -5918,7 +5918,7 @@
    "league": "nfl",
    "model_ts": "2026-09-29T15:13:49Z",
    "n_missed": 0,
-   "n_obs": 21,
+   "n_obs": 22,
    "open_dec": 1.965,
    "p_home": 0.596,
    "p_model": 0.596,
@@ -5928,7 +5928,7 @@
    "team": "TB",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-10-03T18:35:35Z",
+   "ts_last_pregame": "2026-10-03T21:45:10Z",
    "ts_record": "2026-09-29T15:32:59Z",
    "y": null
   },
@@ -5954,7 +5954,7 @@
    "league": "nfl",
    "model_ts": "2026-10-02T23:28:09Z",
    "n_missed": 0,
-   "n_obs": 5,
+   "n_obs": 6,
    "open_dec": 3.025,
    "p_home": 0.368,
    "p_model": 0.368,
@@ -5964,7 +5964,7 @@
    "team": "LV",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-10-03T18:35:35Z",
+   "ts_last_pregame": "2026-10-03T21:45:10Z",
    "ts_record": "2026-10-02T23:59:06Z",
    "y": null
   },
@@ -5990,7 +5990,7 @@
    "league": "nfl",
    "model_ts": "2026-09-29T15:13:49Z",
    "n_missed": 0,
-   "n_obs": 21,
+   "n_obs": 22,
    "open_dec": 5.45,
    "p_home": 0.793,
    "p_model": 0.207,
@@ -6000,7 +6000,7 @@
    "team": "MIA",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-10-03T18:35:35Z",
+   "ts_last_pregame": "2026-10-03T21:45:10Z",
    "ts_record": "2026-09-29T15:32:59Z",
    "y": null
   },
@@ -6026,7 +6026,7 @@
    "league": "nfl",
    "model_ts": "2026-10-02T23:28:09Z",
    "n_missed": 0,
-   "n_obs": 5,
+   "n_obs": 6,
    "open_dec": 1.38,
    "p_home": 0.783,
    "p_model": 0.783,
@@ -6036,7 +6036,7 @@
    "team": "BUF",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-10-03T18:35:35Z",
+   "ts_last_pregame": "2026-10-03T21:45:10Z",
    "ts_record": "2026-10-02T23:59:06Z",
    "y": null
   },
@@ -6062,7 +6062,7 @@
    "league": "nfl",
    "model_ts": "2026-09-29T15:13:49Z",
    "n_missed": 0,
-   "n_obs": 21,
+   "n_obs": 22,
    "open_dec": 5.55,
    "p_home": 0.773,
    "p_model": 0.227,
@@ -6072,7 +6072,7 @@
    "team": "TEN",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-10-03T18:35:35Z",
+   "ts_last_pregame": "2026-10-03T21:45:10Z",
    "ts_record": "2026-09-29T15:32:59Z",
    "y": null
   },
@@ -6098,7 +6098,7 @@
    "league": "nfl",
    "model_ts": "2026-10-02T23:28:09Z",
    "n_missed": 0,
-   "n_obs": 5,
+   "n_obs": 6,
    "open_dec": 5.0,
    "p_home": 0.511,
    "p_model": 0.489,
@@ -6108,7 +6108,7 @@
    "team": "TB",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-10-03T18:35:35Z",
+   "ts_last_pregame": "2026-10-03T21:45:10Z",
    "ts_record": "2026-10-02T23:59:06Z",
    "y": null
   },
@@ -6215,6 +6215,6 @@
    "y": 0
   }
  },
- "updated": "2026-10-03T18:35:35Z",
+ "updated": "2026-10-03T21:45:10Z",
  "v": 1
 }
