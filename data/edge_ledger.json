@@ -6094,11 +6094,11 @@
    "imp_at_record": 0.2,
    "imp_close": null,
    "key": "nfl|2026-10-08|TB@DAL",
-   "last_pregame_dec": 4.83,
+   "last_pregame_dec": 4.6,
    "league": "nfl",
    "model_ts": "2026-10-02T23:28:09Z",
    "n_missed": 1,
-   "n_obs": 15,
+   "n_obs": 16,
    "open_dec": 5.0,
    "p_home": 0.511,
    "p_model": 0.489,
@@ -6108,7 +6108,7 @@
    "team": "TB",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-10-06T00:19:21Z",
+   "ts_last_pregame": "2026-10-06T06:35:49Z",
    "ts_record": "2026-10-02T23:59:06Z",
    "y": null
   },
@@ -6215,6 +6215,6 @@
    "y": 0
   }
  },
- "updated": "2026-10-06T00:19:21Z",
+ "updated": "2026-10-06T06:35:49Z",
  "v": 1
 }
