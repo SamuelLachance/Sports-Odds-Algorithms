@@ -5709,10 +5709,10 @@
    "n_lean": 1
   },
   "bets": {
-   "updated": "2026-10-06T13:37:14Z",
+   "updated": "2026-10-06T19:04:44Z",
    "stake": 1.0,
    "overall": {
-    "n_open": 1,
+    "n_open": 7,
     "n_awaiting": 0,
     "n_overdue": 0,
     "n_void": 0,
@@ -7177,7 +7177,7 @@
      }
     },
     "nfl": {
-     "n_open": 1,
+     "n_open": 7,
      "n_awaiting": 0,
      "n_overdue": 0,
      "n_void": 0,
@@ -7419,6 +7419,96 @@
      "tier": "PROJECTED",
      "model_ts": "2026-10-02T23:28:09Z",
      "stale_model": false
+    },
+    {
+     "league": "nfl",
+     "d": "2026-10-11",
+     "away": "CIN",
+     "home": "MIA",
+     "team": "MIA",
+     "side": "home",
+     "dec": 4.0,
+     "ev": 0.3,
+     "status": "open",
+     "start_utc": "2026-10-11T17:00:00Z",
+     "tier": "PROJECTED",
+     "model_ts": "2026-10-06T15:34:47Z",
+     "stale_model": false
+    },
+    {
+     "league": "nfl",
+     "d": "2026-10-11",
+     "away": "CLE",
+     "home": "NYJ",
+     "team": "CLE",
+     "side": "away",
+     "dec": 2.1,
+     "ev": 0.1802,
+     "status": "open",
+     "start_utc": "2026-10-11T17:00:00Z",
+     "tier": "PROJECTED",
+     "model_ts": "2026-10-06T15:34:47Z",
+     "stale_model": false
+    },
+    {
+     "league": "nfl",
+     "d": "2026-10-11",
+     "away": "HOU",
+     "home": "TEN",
+     "team": "TEN",
+     "side": "home",
+     "dec": 3.8,
+     "ev": 0.4516,
+     "status": "open",
+     "start_utc": "2026-10-11T17:00:00Z",
+     "tier": "PROJECTED",
+     "model_ts": "2026-10-06T15:34:47Z",
+     "stale_model": false
+    },
+    {
+     "league": "nfl",
+     "d": "2026-10-11",
+     "away": "IND",
+     "home": "PIT",
+     "team": "PIT",
+     "side": "home",
+     "dec": 1.69,
+     "ev": 0.09005,
+     "status": "open",
+     "start_utc": "2026-10-11T17:00:00Z",
+     "tier": "PROJECTED",
+     "model_ts": "2026-10-06T15:34:47Z",
+     "stale_model": false
+    },
+    {
+     "league": "nfl",
+     "d": "2026-10-11",
+     "away": "NYG",
+     "home": "WAS",
+     "team": "NYG",
+     "side": "away",
+     "dec": 2.55,
+     "ev": 0.26225,
+     "status": "open",
+     "start_utc": "2026-10-11T17:00:00Z",
+     "tier": "PROJECTED",
+     "model_ts": "2026-10-06T15:34:47Z",
+     "stale_model": false
+    },
+    {
+     "league": "nfl",
+     "d": "2026-10-11",
+     "away": "SF",
+     "home": "SEA",
+     "team": "SF",
+     "side": "away",
+     "dec": 2.32,
+     "ev": 0.11128,
+     "status": "open",
+     "start_utc": "2026-10-11T20:25:00Z",
+     "tier": "PROJECTED",
+     "model_ts": "2026-10-06T15:34:47Z",
+     "stale_model": false
     }
    ],
    "voids": []
@@ -7453,5 +7543,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-10-06T18:16:02.041931+00:00"
+ "value_updated": "2026-10-06T19:04:44.357986+00:00"
 }
