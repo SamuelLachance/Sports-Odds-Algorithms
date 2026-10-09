@@ -5709,10 +5709,10 @@
    "n_lean": 1
   },
   "bets": {
-   "updated": "2026-10-09T19:45:07Z",
+   "updated": "2026-10-09T23:53:46Z",
    "stake": 1.0,
    "overall": {
-    "n_open": 6,
+    "n_open": 7,
     "n_awaiting": 0,
     "n_overdue": 0,
     "n_void": 0,
@@ -7181,7 +7181,7 @@
      }
     },
     "nfl": {
-     "n_open": 6,
+     "n_open": 7,
      "n_awaiting": 0,
      "n_overdue": 0,
      "n_void": 0,
@@ -7502,6 +7502,21 @@
      "tier": "PROJECTED",
      "model_ts": "2026-10-06T15:34:47Z",
      "stale_model": false
+    },
+    {
+     "league": "nfl",
+     "d": "2026-10-15",
+     "away": "SEA",
+     "home": "DEN",
+     "team": "DEN",
+     "side": "home",
+     "dec": 2.12,
+     "ev": 0.08332,
+     "status": "open",
+     "start_utc": "2026-10-16T00:15:00Z",
+     "tier": "PROJECTED",
+     "model_ts": "2026-10-09T23:43:29Z",
+     "stale_model": false
     }
    ],
    "voids": []
@@ -7536,5 +7551,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-10-09T20:46:14.627901+00:00"
+ "value_updated": "2026-10-09T23:53:46.140448+00:00"
 }
