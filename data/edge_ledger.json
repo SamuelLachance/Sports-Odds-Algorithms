@@ -6138,7 +6138,7 @@
    "open_dec": 4.9,
    "p_home": 0.325,
    "p_model": 0.325,
-   "roi": null,
+   "roi": -1.0,
    "side": "home",
    "start_utc": "2026-10-11T17:00:00Z",
    "team": "MIA",
@@ -6146,7 +6146,7 @@
    "ts_close": "2026-10-11T20:03:41Z",
    "ts_last_pregame": "2026-10-11T15:48:13Z",
    "ts_record": "2026-10-06T19:04:44Z",
-   "y": null
+   "y": 0
   },
   "nfl|2026-10-11|CLE@NYJ": {
    "away": "CLE",
@@ -6174,7 +6174,7 @@
    "open_dec": 2.17,
    "p_home": 0.438,
    "p_model": 0.562,
-   "roi": null,
+   "roi": -1.0,
    "side": "away",
    "start_utc": "2026-10-11T17:00:00Z",
    "team": "CLE",
@@ -6182,7 +6182,7 @@
    "ts_close": "2026-10-11T20:03:41Z",
    "ts_last_pregame": "2026-10-11T15:48:13Z",
    "ts_record": "2026-10-06T19:04:44Z",
-   "y": null
+   "y": 0
   },
   "nfl|2026-10-11|HOU@TEN": {
    "away": "HOU",
@@ -6246,7 +6246,7 @@
    "open_dec": 1.73,
    "p_home": 0.645,
    "p_model": 0.645,
-   "roi": null,
+   "roi": 0.69,
    "side": "home",
    "start_utc": "2026-10-11T17:00:00Z",
    "team": "PIT",
@@ -6254,7 +6254,7 @@
    "ts_close": "2026-10-11T20:03:41Z",
    "ts_last_pregame": "2026-10-11T15:48:13Z",
    "ts_record": "2026-10-06T19:04:44Z",
-   "y": null
+   "y": 1
   },
   "nfl|2026-10-11|NYG@WAS": {
    "away": "NYG",
@@ -6290,6 +6290,7 @@
    "ts_close": "2026-10-11T20:03:41Z",
    "ts_last_pregame": "2026-10-11T15:48:13Z",
    "ts_record": "2026-10-06T19:04:44Z",
+   "void_reason": "tie: a two-way moneyline pushes (stake returned)",
    "y": null
   },
   "nfl|2026-10-11|SF@SEA": {
@@ -6318,7 +6319,7 @@
    "open_dec": 2.56,
    "p_home": 0.521,
    "p_model": 0.479,
-   "roi": null,
+   "roi": 1.32,
    "side": "away",
    "start_utc": "2026-10-11T20:25:00Z",
    "team": "SF",
@@ -6326,7 +6327,7 @@
    "ts_close": "2026-10-11T23:44:33Z",
    "ts_last_pregame": "2026-10-11T20:03:41Z",
    "ts_record": "2026-10-06T19:04:44Z",
-   "y": null
+   "y": 1
   },
   "nfl|2026-10-15|SEA@DEN": {
    "away": "SEA",
@@ -6346,11 +6347,11 @@
    "imp_at_record": 0.471698,
    "imp_close": null,
    "key": "nfl|2026-10-15|SEA@DEN",
-   "last_pregame_dec": 2.35,
+   "last_pregame_dec": 2.31,
    "league": "nfl",
    "model_ts": "2026-10-09T23:43:29Z",
    "n_missed": 1,
-   "n_obs": 11,
+   "n_obs": 12,
    "open_dec": 2.12,
    "p_home": 0.511,
    "p_model": 0.511,
@@ -6360,7 +6361,7 @@
    "team": "DEN",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-10-12T05:15:13Z",
+   "ts_last_pregame": "2026-10-12T13:17:56Z",
    "ts_record": "2026-10-09T23:53:46Z",
    "y": null
   },
@@ -6467,6 +6468,6 @@
    "y": 0
   }
  },
- "updated": "2026-10-12T05:15:13Z",
+ "updated": "2026-10-12T13:17:56Z",
  "v": 1
 }
