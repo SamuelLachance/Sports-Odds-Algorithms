@@ -6346,11 +6346,11 @@
    "imp_at_record": 0.471698,
    "imp_close": null,
    "key": "nfl|2026-10-15|SEA@DEN",
-   "last_pregame_dec": 2.205,
+   "last_pregame_dec": 2.35,
    "league": "nfl",
    "model_ts": "2026-10-09T23:43:29Z",
    "n_missed": 1,
-   "n_obs": 10,
+   "n_obs": 11,
    "open_dec": 2.12,
    "p_home": 0.511,
    "p_model": 0.511,
@@ -6360,7 +6360,7 @@
    "team": "DEN",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-10-11T23:44:33Z",
+   "ts_last_pregame": "2026-10-12T05:15:13Z",
    "ts_record": "2026-10-09T23:53:46Z",
    "y": null
   },
@@ -6467,6 +6467,6 @@
    "y": 0
   }
  },
- "updated": "2026-10-11T23:44:33Z",
+ "updated": "2026-10-12T05:15:13Z",
  "v": 1
 }
