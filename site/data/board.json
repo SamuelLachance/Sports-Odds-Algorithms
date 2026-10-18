@@ -5709,11 +5709,11 @@
    "n_lean": 1
   },
   "bets": {
-   "updated": "2026-10-18T13:51:12Z",
+   "updated": "2026-10-18T17:10:43Z",
    "stake": 1.0,
    "overall": {
-    "n_open": 7,
-    "n_awaiting": 1,
+    "n_open": 3,
+    "n_awaiting": 5,
     "n_overdue": 0,
     "n_void": 1,
     "settled": {
@@ -7205,8 +7205,8 @@
      }
     },
     "nfl": {
-     "n_open": 7,
-     "n_awaiting": 1,
+     "n_open": 3,
+     "n_awaiting": 5,
      "n_overdue": 0,
      "n_void": 1,
      "settled": {
@@ -7470,7 +7470,7 @@
      "side": "away",
      "dec": 1.95,
      "ev": 0.0257,
-     "status": "open",
+     "status": "awaiting",
      "start_utc": "2026-10-18T17:00:00Z",
      "tier": "PROJECTED",
      "model_ts": "2026-10-13T16:36:46Z",
@@ -7515,7 +7515,7 @@
      "side": "home",
      "dec": 1.95,
      "ev": 0.28895,
-     "status": "open",
+     "status": "awaiting",
      "start_utc": "2026-10-18T17:00:00Z",
      "tier": "PROJECTED",
      "model_ts": "2026-10-13T16:36:46Z",
@@ -7530,7 +7530,7 @@
      "side": "home",
      "dec": 2.15,
      "ev": 0.09865,
-     "status": "open",
+     "status": "awaiting",
      "start_utc": "2026-10-18T17:00:00Z",
      "tier": "PROJECTED",
      "model_ts": "2026-10-13T16:36:46Z",
@@ -7545,7 +7545,7 @@
      "side": "away",
      "dec": 1.59,
      "ev": 0.03032,
-     "status": "open",
+     "status": "awaiting",
      "start_utc": "2026-10-18T17:00:00Z",
      "tier": "PROJECTED",
      "model_ts": "2026-10-16T22:22:13Z",
@@ -7623,5 +7623,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-10-18T13:51:12.371327+00:00"
+ "value_updated": "2026-10-18T17:10:43.538439+00:00"
 }
