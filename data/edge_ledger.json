@@ -6455,11 +6455,11 @@
    "imp_at_record": 0.549451,
    "imp_close": null,
    "key": "nfl|2026-10-18|DAL@GB",
-   "last_pregame_dec": 1.87,
+   "last_pregame_dec": 1.89,
    "league": "nfl",
    "model_ts": "2026-10-13T16:36:46Z",
    "n_missed": 0,
-   "n_obs": 32,
+   "n_obs": 33,
    "open_dec": 2.16,
    "p_home": 0.627,
    "p_model": 0.627,
@@ -6469,7 +6469,7 @@
    "team": "GB",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-10-18T17:10:43Z",
+   "ts_last_pregame": "2026-10-18T19:28:40Z",
    "ts_record": "2026-10-13T17:40:34Z",
    "y": null
   },
@@ -6499,7 +6499,7 @@
    "open_dec": 1.94,
    "p_home": 0.618,
    "p_model": 0.618,
-   "roi": null,
+   "roi": -1.0,
    "side": "home",
    "start_utc": "2026-10-18T13:30:00Z",
    "team": "JAX",
@@ -6507,7 +6507,7 @@
    "ts_close": "2026-10-18T13:51:12Z",
    "ts_last_pregame": "2026-10-18T09:53:02Z",
    "ts_record": "2026-10-13T17:40:34Z",
-   "y": null
+   "y": 0
   },
   "nfl|2026-10-18|NO@NYG": {
    "away": "NO",
@@ -6603,7 +6603,7 @@
    "league": "nfl",
    "model_ts": "2026-10-13T16:36:46Z",
    "n_missed": 0,
-   "n_obs": 32,
+   "n_obs": 33,
    "open_dec": 4.2,
    "p_home": 0.732,
    "p_model": 0.268,
@@ -6613,7 +6613,7 @@
    "team": "WAS",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-10-18T17:10:43Z",
+   "ts_last_pregame": "2026-10-18T19:28:40Z",
    "ts_record": "2026-10-13T17:40:34Z",
    "y": null
   },
@@ -6621,7 +6621,7 @@
    "away": "NE",
    "best_dec_at_record": 2.1,
    "books": 4,
-   "clv_censored": false,
+   "clv_censored": true,
    "clv_pts": null,
    "d": "2026-10-22",
    "dec_at_record": 2.09,
@@ -6638,7 +6638,7 @@
    "last_pregame_dec": 2.05,
    "league": "nfl",
    "model_ts": "2026-10-16T22:22:13Z",
-   "n_missed": 0,
+   "n_missed": 1,
    "n_obs": 13,
    "open_dec": 2.09,
    "p_home": 0.476,
@@ -6756,6 +6756,6 @@
    "y": 0
   }
  },
- "updated": "2026-10-18T17:10:43Z",
+ "updated": "2026-10-18T19:28:40Z",
  "v": 1
 }
