@@ -6391,7 +6391,7 @@
    "open_dec": 1.74,
    "p_home": 0.352,
    "p_model": 0.648,
-   "roi": null,
+   "roi": -1.0,
    "side": "away",
    "start_utc": "2026-10-18T17:00:00Z",
    "team": "BAL",
@@ -6399,7 +6399,7 @@
    "ts_close": "2026-10-18T17:10:43Z",
    "ts_last_pregame": "2026-10-18T13:51:12Z",
    "ts_record": "2026-10-16T23:51:48Z",
-   "y": null
+   "y": 0
   },
   "nfl|2026-10-18|CAR@PHI": {
    "away": "CAR",
@@ -6427,7 +6427,7 @@
    "open_dec": 2.08,
    "p_home": 0.474,
    "p_model": 0.526,
-   "roi": null,
+   "roi": 0.95,
    "side": "away",
    "start_utc": "2026-10-18T17:00:00Z",
    "team": "CAR",
@@ -6435,7 +6435,7 @@
    "ts_close": "2026-10-18T17:10:43Z",
    "ts_last_pregame": "2026-10-18T13:51:12Z",
    "ts_record": "2026-10-13T17:40:34Z",
-   "y": null
+   "y": 1
   },
   "nfl|2026-10-18|DAL@GB": {
    "away": "DAL",
@@ -6455,11 +6455,11 @@
    "imp_at_record": 0.549451,
    "imp_close": null,
    "key": "nfl|2026-10-18|DAL@GB",
-   "last_pregame_dec": 1.93,
+   "last_pregame_dec": 1.95,
    "league": "nfl",
    "model_ts": "2026-10-13T16:36:46Z",
    "n_missed": 0,
-   "n_obs": 34,
+   "n_obs": 35,
    "open_dec": 2.16,
    "p_home": 0.627,
    "p_model": 0.627,
@@ -6469,7 +6469,7 @@
    "team": "GB",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-10-18T21:51:54Z",
+   "ts_last_pregame": "2026-10-19T00:00:20Z",
    "ts_record": "2026-10-13T17:40:34Z",
    "y": null
   },
@@ -6535,7 +6535,7 @@
    "open_dec": 2.0,
    "p_home": 0.661,
    "p_model": 0.661,
-   "roi": null,
+   "roi": -1.0,
    "side": "home",
    "start_utc": "2026-10-18T17:00:00Z",
    "team": "NYG",
@@ -6543,7 +6543,7 @@
    "ts_close": "2026-10-18T17:10:43Z",
    "ts_last_pregame": "2026-10-18T13:51:12Z",
    "ts_record": "2026-10-13T17:40:34Z",
-   "y": null
+   "y": 0
   },
   "nfl|2026-10-18|PIT@TB": {
    "away": "PIT",
@@ -6571,7 +6571,7 @@
    "open_dec": 2.23,
    "p_home": 0.511,
    "p_model": 0.511,
-   "roi": null,
+   "roi": -1.0,
    "side": "home",
    "start_utc": "2026-10-18T17:00:00Z",
    "team": "TB",
@@ -6579,7 +6579,7 @@
    "ts_close": "2026-10-18T17:10:43Z",
    "ts_last_pregame": "2026-10-18T13:51:12Z",
    "ts_record": "2026-10-13T17:40:34Z",
-   "y": null
+   "y": 0
   },
   "nfl|2026-10-19|WAS@SF": {
    "away": "WAS",
@@ -6603,7 +6603,7 @@
    "league": "nfl",
    "model_ts": "2026-10-13T16:36:46Z",
    "n_missed": 0,
-   "n_obs": 34,
+   "n_obs": 35,
    "open_dec": 4.2,
    "p_home": 0.732,
    "p_model": 0.268,
@@ -6613,7 +6613,7 @@
    "team": "WAS",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-10-18T21:51:54Z",
+   "ts_last_pregame": "2026-10-19T00:00:20Z",
    "ts_record": "2026-10-13T17:40:34Z",
    "y": null
   },
@@ -6635,11 +6635,11 @@
    "imp_at_record": 0.478469,
    "imp_close": null,
    "key": "nfl|2026-10-22|NE@CHI",
-   "last_pregame_dec": 2.05,
+   "last_pregame_dec": 2.24,
    "league": "nfl",
    "model_ts": "2026-10-16T22:22:13Z",
    "n_missed": 2,
-   "n_obs": 13,
+   "n_obs": 14,
    "open_dec": 2.09,
    "p_home": 0.476,
    "p_model": 0.524,
@@ -6649,7 +6649,7 @@
    "team": "NE",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-10-18T17:10:43Z",
+   "ts_last_pregame": "2026-10-19T00:00:20Z",
    "ts_record": "2026-10-16T23:51:48Z",
    "y": null
   },
@@ -6756,6 +6756,6 @@
    "y": 0
   }
  },
- "updated": "2026-10-18T21:51:54Z",
+ "updated": "2026-10-19T00:00:20Z",
  "v": 1
 }
