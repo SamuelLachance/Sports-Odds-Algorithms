@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-18",
+ "generated": "2026-10-19",
  "model": "fip-pitcher-elo",
  "version": "1.0",
  "current_through": "2026-09-27",
@@ -5712,8 +5712,8 @@
    "updated": "2026-10-19T00:00:20Z",
    "stake": 1.0,
    "overall": {
-    "n_open": 3,
-    "n_awaiting": 0,
+    "n_open": 2,
+    "n_awaiting": 1,
     "n_overdue": 0,
     "n_void": 1,
     "settled": {
@@ -7225,8 +7225,8 @@
      }
     },
     "nfl": {
-     "n_open": 3,
-     "n_awaiting": 0,
+     "n_open": 2,
+     "n_awaiting": 1,
      "n_overdue": 0,
      "n_void": 1,
      "settled": {
@@ -7510,7 +7510,7 @@
      "side": "home",
      "dec": 1.82,
      "ev": 0.14114,
-     "status": "open",
+     "status": "awaiting",
      "start_utc": "2026-10-19T00:20:00Z",
      "tier": "PROJECTED",
      "model_ts": "2026-10-13T16:36:46Z",
@@ -7588,5 +7588,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-10-19T00:00:20.189166+00:00"
+ "value_updated": "2026-10-19T04:20:49.206473+00:00"
 }
