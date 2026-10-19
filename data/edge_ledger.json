@@ -6599,11 +6599,11 @@
    "imp_at_record": 0.242424,
    "imp_close": null,
    "key": "nfl|2026-10-19|WAS@SF",
-   "last_pregame_dec": 4.3,
+   "last_pregame_dec": 4.24,
    "league": "nfl",
    "model_ts": "2026-10-13T16:36:46Z",
    "n_missed": 0,
-   "n_obs": 38,
+   "n_obs": 39,
    "open_dec": 4.2,
    "p_home": 0.732,
    "p_model": 0.268,
@@ -6613,7 +6613,7 @@
    "team": "WAS",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-10-19T17:09:40Z",
+   "ts_last_pregame": "2026-10-19T21:35:36Z",
    "ts_record": "2026-10-13T17:40:34Z",
    "y": null
   },
@@ -6639,7 +6639,7 @@
    "league": "nfl",
    "model_ts": "2026-10-16T22:22:13Z",
    "n_missed": 2,
-   "n_obs": 17,
+   "n_obs": 18,
    "open_dec": 2.09,
    "p_home": 0.476,
    "p_model": 0.524,
@@ -6649,7 +6649,7 @@
    "team": "NE",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-10-19T17:09:40Z",
+   "ts_last_pregame": "2026-10-19T21:35:36Z",
    "ts_record": "2026-10-16T23:51:48Z",
    "y": null
   },
@@ -6756,6 +6756,6 @@
    "y": 0
   }
  },
- "updated": "2026-10-19T17:09:40Z",
+ "updated": "2026-10-19T21:35:36Z",
  "v": 1
 }
