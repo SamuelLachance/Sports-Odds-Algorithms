@@ -6607,7 +6607,7 @@
    "open_dec": 4.2,
    "p_home": 0.732,
    "p_model": 0.268,
-   "roi": null,
+   "roi": -1.0,
    "side": "away",
    "start_utc": "2026-10-20T00:15:00Z",
    "team": "WAS",
@@ -6615,7 +6615,7 @@
    "ts_close": "2026-10-20T00:38:42Z",
    "ts_last_pregame": "2026-10-19T21:35:36Z",
    "ts_record": "2026-10-13T17:40:34Z",
-   "y": null
+   "y": 0
   },
   "nfl|2026-10-22|NE@CHI": {
    "away": "NE",
@@ -6639,7 +6639,7 @@
    "league": "nfl",
    "model_ts": "2026-10-16T22:22:13Z",
    "n_missed": 2,
-   "n_obs": 19,
+   "n_obs": 20,
    "open_dec": 2.09,
    "p_home": 0.476,
    "p_model": 0.524,
@@ -6649,7 +6649,7 @@
    "team": "NE",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-10-20T00:38:42Z",
+   "ts_last_pregame": "2026-10-20T05:20:08Z",
    "ts_record": "2026-10-16T23:51:48Z",
    "y": null
   },
@@ -6756,6 +6756,6 @@
    "y": 0
   }
  },
- "updated": "2026-10-20T00:38:42Z",
+ "updated": "2026-10-20T05:20:08Z",
  "v": 1
 }
