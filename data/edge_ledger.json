@@ -6639,7 +6639,7 @@
    "league": "nfl",
    "model_ts": "2026-10-16T22:22:13Z",
    "n_missed": 2,
-   "n_obs": 20,
+   "n_obs": 21,
    "open_dec": 2.09,
    "p_home": 0.476,
    "p_model": 0.524,
@@ -6649,7 +6649,7 @@
    "team": "NE",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-10-20T05:20:08Z",
+   "ts_last_pregame": "2026-10-20T10:14:03Z",
    "ts_record": "2026-10-16T23:51:48Z",
    "y": null
   },
@@ -6756,6 +6756,6 @@
    "y": 0
   }
  },
- "updated": "2026-10-20T05:20:08Z",
+ "updated": "2026-10-20T10:14:03Z",
  "v": 1
 }
