@@ -7,7 +7,7 @@
 "home": "BOS",
 "away": "NSH",
 "t": "2026-10-22T23:00:00Z",
-"state": "FUT"
+"state": "LIVE"
 },
 {
 "id": 2026020155,
@@ -17,7 +17,7 @@
 "home": "TOR",
 "away": "NYR",
 "t": "2026-10-22T23:00:00Z",
-"state": "FUT"
+"state": "LIVE"
 },
 {
 "id": 2026020156,
@@ -27,7 +27,7 @@
 "home": "OTT",
 "away": "SJS",
 "t": "2026-10-22T23:00:00Z",
-"state": "FUT"
+"state": "LIVE"
 },
 {
 "id": 2026020157,
@@ -37,7 +37,7 @@
 "home": "NJD",
 "away": "ANA",
 "t": "2026-10-22T23:00:00Z",
-"state": "FUT"
+"state": "LIVE"
 },
 {
 "id": 2026020158,
@@ -47,7 +47,7 @@
 "home": "PIT",
 "away": "FLA",
 "t": "2026-10-22T23:00:00Z",
-"state": "FUT"
+"state": "LIVE"
 },
 {
 "id": 2026020159,
@@ -57,7 +57,7 @@
 "home": "NYI",
 "away": "LAK",
 "t": "2026-10-22T23:30:00Z",
-"state": "FUT"
+"state": "PRE"
 },
 {
 "id": 2026020160,
