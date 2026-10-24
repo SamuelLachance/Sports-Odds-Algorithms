@@ -5709,10 +5709,10 @@
    "n_lean": 1
   },
   "bets": {
-   "updated": "2026-10-23T22:37:25Z",
+   "updated": "2026-10-24T01:06:52Z",
    "stake": 1.0,
    "overall": {
-    "n_open": 7,
+    "n_open": 8,
     "n_awaiting": 0,
     "n_overdue": 0,
     "n_void": 1,
@@ -7237,7 +7237,7 @@
      }
     },
     "nfl": {
-     "n_open": 7,
+     "n_open": 8,
      "n_awaiting": 0,
      "n_overdue": 0,
      "n_void": 1,
@@ -7629,6 +7629,21 @@
      "tier": "PROJECTED",
      "model_ts": "2026-10-20T13:58:58Z",
      "stale_model": false
+    },
+    {
+     "league": "nfl",
+     "d": "2026-10-25",
+     "away": "SF",
+     "home": "ATL",
+     "team": "SF",
+     "side": "away",
+     "dec": 1.68,
+     "ev": 0.26168,
+     "status": "open",
+     "start_utc": "2026-10-25T17:00:00Z",
+     "tier": "PROJECTED",
+     "model_ts": "2026-10-23T22:47:00Z",
+     "stale_model": false
     }
    ],
    "voids": [
@@ -7672,5 +7687,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-10-23T23:02:37.832982+00:00"
+ "value_updated": "2026-10-24T01:06:51.500882+00:00"
 }
