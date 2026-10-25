@@ -6679,7 +6679,7 @@
    "open_dec": 2.58,
    "p_home": 0.539,
    "p_model": 0.461,
-   "roi": null,
+   "roi": 1.25,
    "side": "away",
    "start_utc": "2026-10-25T17:00:00Z",
    "team": "CIN",
@@ -6687,7 +6687,7 @@
    "ts_close": "2026-10-25T17:41:07Z",
    "ts_last_pregame": "2026-10-25T14:12:17Z",
    "ts_record": "2026-10-20T15:11:21Z",
-   "y": null
+   "y": 1
   },
   "nfl|2026-10-25|DEN@ARI": {
    "away": "DEN",
@@ -6747,7 +6747,7 @@
    "league": "nfl",
    "model_ts": "2026-10-20T13:58:58Z",
    "n_missed": 0,
-   "n_obs": 33,
+   "n_obs": 34,
    "open_dec": 2.205,
    "p_home": 0.432,
    "p_model": 0.568,
@@ -6757,7 +6757,7 @@
    "team": "KC",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-10-25T20:37:27Z",
+   "ts_last_pregame": "2026-10-25T22:48:27Z",
    "ts_record": "2026-10-20T15:11:21Z",
    "y": null
   },
@@ -6823,7 +6823,7 @@
    "open_dec": 2.845,
    "p_home": 0.577,
    "p_model": 0.423,
-   "roi": null,
+   "roi": 1.92,
    "side": "away",
    "start_utc": "2026-10-25T17:00:00Z",
    "team": "MIA",
@@ -6831,7 +6831,7 @@
    "ts_close": "2026-10-25T17:41:07Z",
    "ts_last_pregame": "2026-10-25T14:12:17Z",
    "ts_record": "2026-10-20T15:11:21Z",
-   "y": null
+   "y": 1
   },
   "nfl|2026-10-25|NYG@HOU": {
    "away": "NYG",
@@ -6859,7 +6859,7 @@
    "open_dec": 4.175,
    "p_home": 0.681,
    "p_model": 0.319,
-   "roi": null,
+   "roi": 3.6,
    "side": "away",
    "start_utc": "2026-10-25T17:00:00Z",
    "team": "NYG",
@@ -6867,7 +6867,7 @@
    "ts_close": "2026-10-25T17:41:07Z",
    "ts_last_pregame": "2026-10-25T14:12:17Z",
    "ts_record": "2026-10-20T15:11:21Z",
-   "y": null
+   "y": 1
   },
   "nfl|2026-10-25|PIT@NO": {
    "away": "PIT",
@@ -6931,7 +6931,7 @@
    "open_dec": 1.44,
    "p_home": 0.249,
    "p_model": 0.751,
-   "roi": null,
+   "roi": -1.0,
    "side": "away",
    "start_utc": "2026-10-25T17:00:00Z",
    "team": "SF",
@@ -6939,7 +6939,7 @@
    "ts_close": "2026-10-25T17:41:07Z",
    "ts_last_pregame": "2026-10-25T14:12:17Z",
    "ts_record": "2026-10-24T01:06:52Z",
-   "y": null
+   "y": 0
   },
   "nhl|2026020001": {
    "away": "FLA",
@@ -7044,6 +7044,6 @@
    "y": 0
   }
  },
- "updated": "2026-10-25T20:37:27Z",
+ "updated": "2026-10-25T22:48:27Z",
  "v": 1
 }

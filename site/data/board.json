@@ -5709,21 +5709,21 @@
    "n_lean": 1
   },
   "bets": {
-   "updated": "2026-10-25T20:37:27Z",
+   "updated": "2026-10-25T22:48:27Z",
    "stake": 1.0,
    "overall": {
     "n_open": 1,
-    "n_awaiting": 6,
+    "n_awaiting": 2,
     "n_overdue": 0,
     "n_void": 1,
     "settled": {
-     "n": 197,
-     "w": 95,
-     "l": 102,
-     "staked": 197.0,
-     "net": -5.37,
-     "roi": -0.0273,
-     "avg_dec": 2.185
+     "n": 201,
+     "w": 98,
+     "l": 103,
+     "staked": 201.0,
+     "net": 0.4,
+     "roi": 0.002,
+     "avg_dec": 2.199
     },
     "by_tier": {
      "CONFIRMED": {
@@ -5734,11 +5734,11 @@
       "roi": 1.0
      },
      "PROJECTED": {
-      "n": 35,
-      "w": 13,
-      "l": 22,
-      "net": -7.155,
-      "roi": -0.2044
+      "n": 39,
+      "w": 16,
+      "l": 23,
+      "net": -1.385,
+      "roi": -0.0355
      },
      "EARLY": {
       "n": 25,
@@ -5770,9 +5770,9 @@
      },
      {
       "k": "2026-10",
-      "n": 22,
-      "net": -5.54,
-      "cum": -5.37
+      "n": 26,
+      "net": 0.23,
+      "cum": 0.4
      }
     ],
     "curve": [
@@ -6562,7 +6562,23 @@
      ],
      [
       "2026-10-25",
-      -5.37
+      -4.68
+     ],
+     [
+      "2026-10-25",
+      -2.76
+     ],
+     [
+      "2026-10-25",
+      0.84
+     ],
+     [
+      "2026-10-25",
+      1.4
+     ],
+     [
+      "2026-10-25",
+      0.4
      ]
     ],
     "stale_model": {
@@ -7242,25 +7258,25 @@
     },
     "nfl": {
      "n_open": 1,
-     "n_awaiting": 6,
+     "n_awaiting": 2,
      "n_overdue": 0,
      "n_void": 1,
      "settled": {
-      "n": 43,
-      "w": 15,
-      "l": 28,
-      "staked": 43.0,
-      "net": -1.37,
-      "roi": -0.0319,
-      "avg_dec": 2.947
+      "n": 47,
+      "w": 18,
+      "l": 29,
+      "staked": 47.0,
+      "net": 4.4,
+      "roi": 0.0936,
+      "avg_dec": 2.94
      },
      "by_tier": {
       "PROJECTED": {
-       "n": 21,
-       "w": 7,
-       "l": 14,
-       "net": -4.54,
-       "roi": -0.2162
+       "n": 25,
+       "w": 10,
+       "l": 15,
+       "net": 1.23,
+       "roi": 0.0492
       },
       "EARLY": {
        "n": 22,
@@ -7279,9 +7295,9 @@
       },
       {
        "k": "2026-10",
-       "n": 22,
-       "net": -5.54,
-       "cum": -1.37
+       "n": 26,
+       "net": 0.23,
+       "cum": 4.4
       }
      ],
      "curve": [
@@ -7455,7 +7471,23 @@
       ],
       [
        "2026-10-25",
-       -1.37
+       -0.68
+      ],
+      [
+       "2026-10-25",
+       1.24
+      ],
+      [
+       "2026-10-25",
+       4.84
+      ],
+      [
+       "2026-10-25",
+       5.4
+      ],
+      [
+       "2026-10-25",
+       4.4
       ]
      ],
      "stale_model": {
@@ -7536,21 +7568,6 @@
     {
      "league": "nfl",
      "d": "2026-10-25",
-     "away": "CIN",
-     "home": "BAL",
-     "team": "CIN",
-     "side": "away",
-     "dec": 2.25,
-     "ev": 0.03725,
-     "status": "awaiting",
-     "start_utc": "2026-10-25T17:00:00Z",
-     "tier": "PROJECTED",
-     "model_ts": "2026-10-20T13:58:58Z",
-     "stale_model": false
-    },
-    {
-     "league": "nfl",
-     "d": "2026-10-25",
      "away": "DEN",
      "home": "ARI",
      "team": "ARI",
@@ -7591,51 +7608,6 @@
      "start_utc": "2026-10-25T20:25:00Z",
      "tier": "PROJECTED",
      "model_ts": "2026-10-20T13:58:58Z",
-     "stale_model": false
-    },
-    {
-     "league": "nfl",
-     "d": "2026-10-25",
-     "away": "MIA",
-     "home": "NYJ",
-     "team": "MIA",
-     "side": "away",
-     "dec": 2.92,
-     "ev": 0.23516,
-     "status": "awaiting",
-     "start_utc": "2026-10-25T17:00:00Z",
-     "tier": "PROJECTED",
-     "model_ts": "2026-10-20T13:58:58Z",
-     "stale_model": false
-    },
-    {
-     "league": "nfl",
-     "d": "2026-10-25",
-     "away": "NYG",
-     "home": "HOU",
-     "team": "NYG",
-     "side": "away",
-     "dec": 4.6,
-     "ev": 0.4674,
-     "status": "awaiting",
-     "start_utc": "2026-10-25T17:00:00Z",
-     "tier": "PROJECTED",
-     "model_ts": "2026-10-20T13:58:58Z",
-     "stale_model": false
-    },
-    {
-     "league": "nfl",
-     "d": "2026-10-25",
-     "away": "SF",
-     "home": "ATL",
-     "team": "SF",
-     "side": "away",
-     "dec": 1.68,
-     "ev": 0.26168,
-     "status": "awaiting",
-     "start_utc": "2026-10-25T17:00:00Z",
-     "tier": "PROJECTED",
-     "model_ts": "2026-10-23T22:47:00Z",
      "stale_model": false
     }
    ],
@@ -7680,5 +7652,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-10-25T22:27:06.837416+00:00"
+ "value_updated": "2026-10-25T22:48:27.237497+00:00"
 }
