@@ -6715,7 +6715,7 @@
    "open_dec": 2.925,
    "p_home": 0.375,
    "p_model": 0.375,
-   "roi": null,
+   "roi": -1.0,
    "side": "home",
    "start_utc": "2026-10-25T20:05:00Z",
    "team": "ARI",
@@ -6723,7 +6723,7 @@
    "ts_close": "2026-10-25T20:37:27Z",
    "ts_last_pregame": "2026-10-25T17:41:07Z",
    "ts_record": "2026-10-20T15:11:21Z",
-   "y": null
+   "y": 0
   },
   "nfl|2026-10-25|KC@SEA": {
    "away": "KC",
@@ -6751,7 +6751,7 @@
    "open_dec": 2.205,
    "p_home": 0.432,
    "p_model": 0.568,
-   "roi": null,
+   "roi": -1.0,
    "side": "away",
    "start_utc": "2026-10-26T00:20:00Z",
    "team": "KC",
@@ -6759,7 +6759,7 @@
    "ts_close": "2026-10-26T01:03:25Z",
    "ts_last_pregame": "2026-10-25T22:48:27Z",
    "ts_record": "2026-10-20T15:11:21Z",
-   "y": null
+   "y": 0
   },
   "nfl|2026-10-25|LA@LV": {
    "away": "LA",
@@ -6787,7 +6787,7 @@
    "open_dec": 3.575,
    "p_home": 0.368,
    "p_model": 0.368,
-   "roi": null,
+   "roi": -1.0,
    "side": "home",
    "start_utc": "2026-10-25T20:25:00Z",
    "team": "LV",
@@ -6795,7 +6795,7 @@
    "ts_close": "2026-10-25T20:37:27Z",
    "ts_last_pregame": "2026-10-25T17:41:07Z",
    "ts_record": "2026-10-20T15:11:21Z",
-   "y": null
+   "y": 0
   },
   "nfl|2026-10-25|MIA@NYJ": {
    "away": "MIA",
@@ -7044,6 +7044,6 @@
    "y": 0
   }
  },
- "updated": "2026-10-26T01:03:25Z",
+ "updated": "2026-10-26T06:24:45Z",
  "v": 1
 }
