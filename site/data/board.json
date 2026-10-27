@@ -5709,10 +5709,10 @@
    "n_lean": 1
   },
   "bets": {
-   "updated": "2026-10-27T14:39:25Z",
+   "updated": "2026-10-27T19:40:06Z",
    "stake": 1.0,
    "overall": {
-    "n_open": 0,
+    "n_open": 5,
     "n_awaiting": 0,
     "n_overdue": 0,
     "n_void": 1,
@@ -7269,7 +7269,7 @@
      }
     },
     "nfl": {
-     "n_open": 0,
+     "n_open": 5,
      "n_awaiting": 0,
      "n_overdue": 0,
      "n_void": 1,
@@ -7588,7 +7588,83 @@
      }
     }
    },
-   "pending": [],
+   "pending": [
+    {
+     "league": "nfl",
+     "d": "2026-11-01",
+     "away": "ARI",
+     "home": "DAL",
+     "team": "ARI",
+     "side": "away",
+     "dec": 3.5,
+     "ev": 0.127,
+     "status": "open",
+     "start_utc": "2026-11-01T18:00:00Z",
+     "tier": "PROJECTED",
+     "model_ts": "2026-10-27T15:01:49Z",
+     "stale_model": false
+    },
+    {
+     "league": "nfl",
+     "d": "2026-11-01",
+     "away": "ATL",
+     "home": "TB",
+     "team": "TB",
+     "side": "home",
+     "dec": 1.74,
+     "ev": 0.22844,
+     "status": "open",
+     "start_utc": "2026-11-01T18:00:00Z",
+     "tier": "PROJECTED",
+     "model_ts": "2026-10-27T15:01:49Z",
+     "stale_model": false
+    },
+    {
+     "league": "nfl",
+     "d": "2026-11-01",
+     "away": "BAL",
+     "home": "BUF",
+     "team": "BUF",
+     "side": "home",
+     "dec": 1.54,
+     "ev": 0.21968,
+     "status": "open",
+     "start_utc": "2026-11-01T18:00:00Z",
+     "tier": "PROJECTED",
+     "model_ts": "2026-10-27T15:01:49Z",
+     "stale_model": false
+    },
+    {
+     "league": "nfl",
+     "d": "2026-11-01",
+     "away": "NE",
+     "home": "MIA",
+     "team": "MIA",
+     "side": "home",
+     "dec": 3.75,
+     "ev": 0.17,
+     "status": "open",
+     "start_utc": "2026-11-01T21:25:00Z",
+     "tier": "PROJECTED",
+     "model_ts": "2026-10-27T15:01:49Z",
+     "stale_model": false
+    },
+    {
+     "league": "nfl",
+     "d": "2026-11-02",
+     "away": "CHI",
+     "home": "SEA",
+     "team": "CHI",
+     "side": "away",
+     "dec": 2.455,
+     "ev": 0.161215,
+     "status": "open",
+     "start_utc": "2026-11-03T01:15:00Z",
+     "tier": "PROJECTED",
+     "model_ts": "2026-10-27T15:01:49Z",
+     "stale_model": false
+    }
+   ],
    "voids": [
     {
      "league": "nfl",
@@ -7630,5 +7706,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-10-27T14:39:24.887368+00:00"
+ "value_updated": "2026-10-27T19:40:06.409307+00:00"
 }
