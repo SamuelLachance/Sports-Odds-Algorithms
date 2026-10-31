@@ -5709,10 +5709,10 @@
    "n_lean": 1
   },
   "bets": {
-   "updated": "2026-10-30T21:01:57Z",
+   "updated": "2026-10-31T00:52:34Z",
    "stake": 1.0,
    "overall": {
-    "n_open": 5,
+    "n_open": 6,
     "n_awaiting": 0,
     "n_overdue": 0,
     "n_void": 1,
@@ -7273,7 +7273,7 @@
      }
     },
     "nfl": {
-     "n_open": 5,
+     "n_open": 6,
      "n_awaiting": 0,
      "n_overdue": 0,
      "n_void": 1,
@@ -7671,6 +7671,21 @@
      "tier": "PROJECTED",
      "model_ts": "2026-10-27T15:01:49Z",
      "stale_model": false
+    },
+    {
+     "league": "nfl",
+     "d": "2026-11-05",
+     "away": "JAX",
+     "home": "BAL",
+     "team": "JAX",
+     "side": "away",
+     "dec": 2.3,
+     "ev": 0.15,
+     "status": "open",
+     "start_utc": "2026-11-06T01:15:00Z",
+     "tier": "PROJECTED",
+     "model_ts": "2026-10-30T23:25:31Z",
+     "stale_model": false
     }
    ],
    "voids": [
@@ -7714,5 +7729,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-10-30T21:01:56.659525+00:00"
+ "value_updated": "2026-10-31T00:52:34.545261+00:00"
 }
