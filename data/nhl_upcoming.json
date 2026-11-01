@@ -7,7 +7,7 @@
 "home": "CAR",
 "away": "WPG",
 "t": "2026-11-01T18:00:00Z",
-"state": "FUT"
+"state": "LIVE"
 },
 {
 "id": 2026020228,
@@ -17,7 +17,7 @@
 "home": "WSH",
 "away": "MIN",
 "t": "2026-11-01T20:30:00Z",
-"state": "FUT"
+"state": "PRE"
 },
 {
 "id": 2026020229,
