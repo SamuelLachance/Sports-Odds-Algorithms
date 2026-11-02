@@ -7143,7 +7143,7 @@
    "league": "nfl",
    "model_ts": "2026-10-27T15:01:49Z",
    "n_missed": 0,
-   "n_obs": 25,
+   "n_obs": 26,
    "open_dec": 2.375,
    "p_home": 0.527,
    "p_model": 0.473,
@@ -7153,7 +7153,7 @@
    "team": "CHI",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-11-01T22:38:05Z",
+   "ts_last_pregame": "2026-11-02T01:49:52Z",
    "ts_record": "2026-10-27T19:40:06Z",
    "y": null
   },
@@ -7175,11 +7175,11 @@
    "imp_at_record": 0.434783,
    "imp_close": null,
    "key": "nfl|2026-11-05|JAX@BAL",
-   "last_pregame_dec": 2.28,
+   "last_pregame_dec": 1.24,
    "league": "nfl",
    "model_ts": "2026-10-30T23:25:31Z",
    "n_missed": 2,
-   "n_obs": 8,
+   "n_obs": 9,
    "open_dec": 2.175,
    "p_home": 0.5,
    "p_model": 0.5,
@@ -7189,7 +7189,7 @@
    "team": "JAX",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-11-01T13:46:53Z",
+   "ts_last_pregame": "2026-11-02T01:49:52Z",
    "ts_record": "2026-10-31T00:52:34Z",
    "y": null
   },
@@ -7296,6 +7296,6 @@
    "y": 0
   }
  },
- "updated": "2026-11-01T22:38:05Z",
+ "updated": "2026-11-02T01:49:52Z",
  "v": 1
 }
