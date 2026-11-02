@@ -5709,21 +5709,21 @@
    "n_lean": 1
   },
   "bets": {
-   "updated": "2026-11-02T01:49:52Z",
+   "updated": "2026-11-02T09:06:20Z",
    "stake": 1.0,
    "overall": {
     "n_open": 2,
-    "n_awaiting": 4,
+    "n_awaiting": 0,
     "n_overdue": 0,
     "n_void": 1,
     "settled": {
-     "n": 205,
-     "w": 99,
-     "l": 106,
-     "staked": 205.0,
-     "net": -2.07,
-     "roi": -0.0101,
-     "avg_dec": 2.201
+     "n": 209,
+     "w": 102,
+     "l": 107,
+     "staked": 209.0,
+     "net": 0.71,
+     "roi": 0.0034,
+     "avg_dec": 2.209
     },
     "by_tier": {
      "CONFIRMED": {
@@ -5734,11 +5734,11 @@
       "roi": 1.0
      },
      "PROJECTED": {
-      "n": 43,
-      "w": 17,
-      "l": 26,
-      "net": -3.855,
-      "roi": -0.0897
+      "n": 47,
+      "w": 20,
+      "l": 27,
+      "net": -1.075,
+      "roi": -0.0229
      },
      "EARLY": {
       "n": 25,
@@ -5773,6 +5773,12 @@
       "n": 30,
       "net": -2.24,
       "cum": -2.07
+     },
+     {
+      "k": "2026-11",
+      "n": 4,
+      "net": 2.78,
+      "cum": 0.71
      }
     ],
     "curve": [
@@ -6595,6 +6601,22 @@
      [
       "2026-10-29",
       -2.07
+     ],
+     [
+      "2026-11-01",
+      0.43
+     ],
+     [
+      "2026-11-01",
+      1.17
+     ],
+     [
+      "2026-11-01",
+      1.71
+     ],
+     [
+      "2026-11-01",
+      0.71
      ]
     ],
     "stale_model": {
@@ -7274,25 +7296,25 @@
     },
     "nfl": {
      "n_open": 2,
-     "n_awaiting": 4,
+     "n_awaiting": 0,
      "n_overdue": 0,
      "n_void": 1,
      "settled": {
-      "n": 51,
-      "w": 19,
-      "l": 32,
-      "staked": 51.0,
-      "net": 1.93,
-      "roi": 0.0378,
-      "avg_dec": 2.891
+      "n": 55,
+      "w": 22,
+      "l": 33,
+      "staked": 55.0,
+      "net": 4.71,
+      "roi": 0.0856,
+      "avg_dec": 2.873
      },
      "by_tier": {
       "PROJECTED": {
-       "n": 29,
-       "w": 11,
-       "l": 18,
-       "net": -1.24,
-       "roi": -0.0428
+       "n": 33,
+       "w": 14,
+       "l": 19,
+       "net": 1.54,
+       "roi": 0.0467
       },
       "EARLY": {
        "n": 22,
@@ -7314,6 +7336,12 @@
        "n": 30,
        "net": -2.24,
        "cum": 1.93
+      },
+      {
+       "k": "2026-11",
+       "n": 4,
+       "net": 2.78,
+       "cum": 4.71
       }
      ],
      "curve": [
@@ -7520,6 +7548,22 @@
       [
        "2026-10-29",
        1.93
+      ],
+      [
+       "2026-11-01",
+       4.43
+      ],
+      [
+       "2026-11-01",
+       5.17
+      ],
+      [
+       "2026-11-01",
+       5.71
+      ],
+      [
+       "2026-11-01",
+       4.71
       ]
      ],
      "stale_model": {
@@ -7599,66 +7643,6 @@
    "pending": [
     {
      "league": "nfl",
-     "d": "2026-11-01",
-     "away": "ARI",
-     "home": "DAL",
-     "team": "ARI",
-     "side": "away",
-     "dec": 3.5,
-     "ev": 0.127,
-     "status": "awaiting",
-     "start_utc": "2026-11-01T18:00:00Z",
-     "tier": "PROJECTED",
-     "model_ts": "2026-10-27T15:01:49Z",
-     "stale_model": false
-    },
-    {
-     "league": "nfl",
-     "d": "2026-11-01",
-     "away": "ATL",
-     "home": "TB",
-     "team": "TB",
-     "side": "home",
-     "dec": 1.74,
-     "ev": 0.22844,
-     "status": "awaiting",
-     "start_utc": "2026-11-01T18:00:00Z",
-     "tier": "PROJECTED",
-     "model_ts": "2026-10-27T15:01:49Z",
-     "stale_model": false
-    },
-    {
-     "league": "nfl",
-     "d": "2026-11-01",
-     "away": "BAL",
-     "home": "BUF",
-     "team": "BUF",
-     "side": "home",
-     "dec": 1.54,
-     "ev": 0.21968,
-     "status": "awaiting",
-     "start_utc": "2026-11-01T18:00:00Z",
-     "tier": "PROJECTED",
-     "model_ts": "2026-10-27T15:01:49Z",
-     "stale_model": false
-    },
-    {
-     "league": "nfl",
-     "d": "2026-11-01",
-     "away": "NE",
-     "home": "MIA",
-     "team": "MIA",
-     "side": "home",
-     "dec": 3.75,
-     "ev": 0.17,
-     "status": "awaiting",
-     "start_utc": "2026-11-01T21:25:00Z",
-     "tier": "PROJECTED",
-     "model_ts": "2026-10-27T15:01:49Z",
-     "stale_model": false
-    },
-    {
-     "league": "nfl",
      "d": "2026-11-02",
      "away": "CHI",
      "home": "SEA",
@@ -7729,5 +7713,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-11-02T05:41:32.767145+00:00"
+ "value_updated": "2026-11-02T09:06:20.298510+00:00"
 }
