@@ -7175,11 +7175,11 @@
    "imp_at_record": 0.434783,
    "imp_close": null,
    "key": "nfl|2026-11-05|JAX@BAL",
-   "last_pregame_dec": 1.2,
+   "last_pregame_dec": 1.21,
    "league": "nfl",
    "model_ts": "2026-10-30T23:25:31Z",
    "n_missed": 2,
-   "n_obs": 12,
+   "n_obs": 13,
    "open_dec": 2.175,
    "p_home": 0.5,
    "p_model": 0.5,
@@ -7189,7 +7189,7 @@
    "team": "JAX",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-11-03T01:46:40Z",
+   "ts_last_pregame": "2026-11-03T09:14:13Z",
    "ts_record": "2026-10-31T00:52:34Z",
    "y": null
   },
@@ -7296,6 +7296,6 @@
    "y": 0
   }
  },
- "updated": "2026-11-03T01:46:40Z",
+ "updated": "2026-11-03T09:14:13Z",
  "v": 1
 }
