@@ -7126,10 +7126,10 @@
    "best_dec_at_record": 2.51,
    "books": 10,
    "clv_censored": false,
-   "clv_pts": null,
+   "clv_pts": -0.005726,
    "d": "2026-11-02",
    "dec_at_record": 2.455,
-   "dec_close": null,
+   "dec_close": 2.49,
    "ev_at_record": 0.161215,
    "ev_best_at_record": 0.18723,
    "ev_cur": 0.1612,
@@ -7137,7 +7137,7 @@
    "gid": null,
    "home": "SEA",
    "imp_at_record": 0.407332,
-   "imp_close": null,
+   "imp_close": 0.401606,
    "key": "nfl|2026-11-02|CHI@SEA",
    "last_pregame_dec": 2.49,
    "league": "nfl",
@@ -7152,7 +7152,7 @@
    "start_utc": "2026-11-03T01:15:00Z",
    "team": "CHI",
    "tier": "PROJECTED",
-   "ts_close": null,
+   "ts_close": "2026-11-03T01:46:40Z",
    "ts_last_pregame": "2026-11-02T19:35:53Z",
    "ts_record": "2026-10-27T19:40:06Z",
    "y": null
@@ -7175,11 +7175,11 @@
    "imp_at_record": 0.434783,
    "imp_close": null,
    "key": "nfl|2026-11-05|JAX@BAL",
-   "last_pregame_dec": 1.225,
+   "last_pregame_dec": 1.2,
    "league": "nfl",
    "model_ts": "2026-10-30T23:25:31Z",
    "n_missed": 2,
-   "n_obs": 11,
+   "n_obs": 12,
    "open_dec": 2.175,
    "p_home": 0.5,
    "p_model": 0.5,
@@ -7189,7 +7189,7 @@
    "team": "JAX",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-11-02T19:35:53Z",
+   "ts_last_pregame": "2026-11-03T01:46:40Z",
    "ts_record": "2026-10-31T00:52:34Z",
    "y": null
   },
@@ -7296,6 +7296,6 @@
    "y": 0
   }
  },
- "updated": "2026-11-02T19:35:53Z",
+ "updated": "2026-11-03T01:46:40Z",
  "v": 1
 }
