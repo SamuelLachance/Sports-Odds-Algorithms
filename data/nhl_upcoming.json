@@ -7,7 +7,7 @@
 "home": "TOR",
 "away": "UTA",
 "t": "2026-11-04T00:00:00Z",
-"state": "FUT"
+"state": "LIVE"
 },
 {
 "id": 2026020237,
@@ -17,7 +17,7 @@
 "home": "MTL",
 "away": "WPG",
 "t": "2026-11-04T00:00:00Z",
-"state": "FUT"
+"state": "LIVE"
 },
 {
 "id": 2026020238,
@@ -27,7 +27,7 @@
 "home": "TBL",
 "away": "DET",
 "t": "2026-11-04T00:00:00Z",
-"state": "FUT"
+"state": "LIVE"
 },
 {
 "id": 2026020239,
@@ -37,7 +37,7 @@
 "home": "NJD",
 "away": "EDM",
 "t": "2026-11-04T00:30:00Z",
-"state": "FUT"
+"state": "PRE"
 },
 {
 "id": 2026020240,
@@ -47,7 +47,7 @@
 "home": "NYR",
 "away": "STL",
 "t": "2026-11-04T00:00:00Z",
-"state": "FUT"
+"state": "LIVE"
 },
 {
 "id": 2026020241,
@@ -57,7 +57,7 @@
 "home": "PHI",
 "away": "MIN",
 "t": "2026-11-04T00:00:00Z",
-"state": "FUT"
+"state": "LIVE"
 },
 {
 "id": 2026020242,
@@ -67,7 +67,7 @@
 "home": "PIT",
 "away": "VGK",
 "t": "2026-11-04T00:00:00Z",
-"state": "FUT"
+"state": "LIVE"
 },
 {
 "id": 2026020243,
@@ -77,7 +77,7 @@
 "home": "WSH",
 "away": "DAL",
 "t": "2026-11-04T00:00:00Z",
-"state": "FUT"
+"state": "LIVE"
 },
 {
 "id": 2026020244,
@@ -87,7 +87,7 @@
 "home": "CBJ",
 "away": "COL",
 "t": "2026-11-04T00:00:00Z",
-"state": "FUT"
+"state": "LIVE"
 },
 {
 "id": 2026020245,
@@ -97,7 +97,7 @@
 "home": "NSH",
 "away": "CAR",
 "t": "2026-11-04T01:00:00Z",
-"state": "FUT"
+"state": "PRE"
 },
 {
 "id": 2026020246,
