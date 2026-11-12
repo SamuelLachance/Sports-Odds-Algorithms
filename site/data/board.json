@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-11",
+ "generated": "2026-11-12",
  "model": "fip-pitcher-elo",
  "version": "1.0",
  "current_through": "2026-09-27",
@@ -7883,5 +7883,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-11-12T11:29:29.930750+00:00"
+ "value_updated": "2026-11-12T12:29:53.075723+00:00"
 }
