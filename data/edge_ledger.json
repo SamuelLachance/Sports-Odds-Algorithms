@@ -7755,7 +7755,7 @@
    "league": "nfl",
    "model_ts": "2026-11-10T16:42:37Z",
    "n_missed": 0,
-   "n_obs": 23,
+   "n_obs": 24,
    "open_dec": 1.97,
    "p_home": 0.701,
    "p_model": 0.701,
@@ -7765,7 +7765,7 @@
    "team": "BAL",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-11-16T15:17:23Z",
+   "ts_last_pregame": "2026-11-16T23:46:22Z",
    "ts_record": "2026-11-10T20:35:59Z",
    "y": null
   },
@@ -7872,6 +7872,6 @@
    "y": 0
   }
  },
- "updated": "2026-11-16T15:17:23Z",
+ "updated": "2026-11-16T23:46:22Z",
  "v": 1
 }
