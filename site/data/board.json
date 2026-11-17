@@ -5709,10 +5709,10 @@
    "n_lean": 1
   },
   "bets": {
-   "updated": "2026-11-17T16:58:15Z",
+   "updated": "2026-11-17T23:48:30Z",
    "stake": 1.0,
    "overall": {
-    "n_open": 0,
+    "n_open": 4,
     "n_awaiting": 0,
     "n_overdue": 0,
     "n_void": 1,
@@ -7367,7 +7367,7 @@
      }
     },
     "nfl": {
-     "n_open": 0,
+     "n_open": 4,
      "n_awaiting": 0,
      "n_overdue": 0,
      "n_void": 1,
@@ -7784,7 +7784,68 @@
      }
     }
    },
-   "pending": [],
+   "pending": [
+    {
+     "league": "nfl",
+     "d": "2026-11-19",
+     "away": "IND",
+     "home": "HOU",
+     "team": "IND",
+     "side": "away",
+     "dec": 6.185,
+     "ev": 0.52151,
+     "status": "open",
+     "start_utc": "2026-11-20T01:15:00Z",
+     "tier": "PROJECTED",
+     "model_ts": "2026-11-17T18:01:07Z",
+     "stale_model": false
+    },
+    {
+     "league": "nfl",
+     "d": "2026-11-22",
+     "away": "JAX",
+     "home": "NYG",
+     "team": "NYG",
+     "side": "home",
+     "dec": 3.19,
+     "ev": 0.23453,
+     "status": "open",
+     "start_utc": "2026-11-22T18:00:00Z",
+     "tier": "PROJECTED",
+     "model_ts": "2026-11-17T18:01:07Z",
+     "stale_model": false
+    },
+    {
+     "league": "nfl",
+     "d": "2026-11-22",
+     "away": "PIT",
+     "home": "PHI",
+     "team": "PIT",
+     "side": "away",
+     "dec": 1.455,
+     "ev": 0.05633,
+     "status": "open",
+     "start_utc": "2026-11-22T21:25:00Z",
+     "tier": "PROJECTED",
+     "model_ts": "2026-11-17T18:01:07Z",
+     "stale_model": false
+    },
+    {
+     "league": "nfl",
+     "d": "2026-11-22",
+     "away": "TEN",
+     "home": "DAL",
+     "team": "TEN",
+     "side": "away",
+     "dec": 4.2,
+     "ev": 0.4028,
+     "status": "open",
+     "start_utc": "2026-11-22T18:00:00Z",
+     "tier": "PROJECTED",
+     "model_ts": "2026-11-17T18:01:07Z",
+     "stale_model": false
+    }
+   ],
    "voids": [
     {
      "league": "nfl",
@@ -7826,5 +7887,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-11-17T23:28:35.629269+00:00"
+ "value_updated": "2026-11-17T23:48:29.713665+00:00"
 }
