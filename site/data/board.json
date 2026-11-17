@@ -5712,8 +5712,8 @@
    "updated": "2026-11-16T23:46:22Z",
    "stake": 1.0,
    "overall": {
-    "n_open": 1,
-    "n_awaiting": 0,
+    "n_open": 0,
+    "n_awaiting": 1,
     "n_overdue": 0,
     "n_void": 1,
     "settled": {
@@ -7363,8 +7363,8 @@
      }
     },
     "nfl": {
-     "n_open": 1,
-     "n_awaiting": 0,
+     "n_open": 0,
+     "n_awaiting": 1,
      "n_overdue": 0,
      "n_void": 1,
      "settled": {
@@ -7786,7 +7786,7 @@
      "side": "home",
      "dec": 1.43,
      "ev": 0.00243,
-     "status": "open",
+     "status": "awaiting",
      "start_utc": "2026-11-17T01:15:00Z",
      "tier": "PROJECTED",
      "model_ts": "2026-11-10T16:42:37Z",
@@ -7834,5 +7834,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-11-16T23:46:21.786569+00:00"
+ "value_updated": "2026-11-17T02:53:22.534460+00:00"
 }
