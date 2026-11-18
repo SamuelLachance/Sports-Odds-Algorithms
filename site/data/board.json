@@ -5709,10 +5709,10 @@
    "n_lean": 1
   },
   "bets": {
-   "updated": "2026-11-18T16:17:51Z",
+   "updated": "2026-11-18T22:58:40Z",
    "stake": 1.0,
    "overall": {
-    "n_open": 4,
+    "n_open": 5,
     "n_awaiting": 0,
     "n_overdue": 0,
     "n_void": 1,
@@ -7367,7 +7367,7 @@
      }
     },
     "nfl": {
-     "n_open": 4,
+     "n_open": 5,
      "n_awaiting": 0,
      "n_overdue": 0,
      "n_void": 1,
@@ -7844,6 +7844,21 @@
      "tier": "PROJECTED",
      "model_ts": "2026-11-17T18:01:07Z",
      "stale_model": false
+    },
+    {
+     "league": "nfl",
+     "d": "2026-11-22",
+     "away": "NYJ",
+     "home": "LAC",
+     "team": "LAC",
+     "side": "home",
+     "dec": 1.62,
+     "ev": 0.0287,
+     "status": "open",
+     "start_utc": "2026-11-22T21:05:00Z",
+     "tier": "PROJECTED",
+     "model_ts": "2026-11-17T18:01:07Z",
+     "stale_model": false
     }
    ],
    "voids": [
@@ -7887,5 +7902,5 @@
    "active": false
   }
  ],
- "value_updated": "2026-11-18T17:10:08.973568+00:00"
+ "value_updated": "2026-11-18T22:58:40.170923+00:00"
 }
