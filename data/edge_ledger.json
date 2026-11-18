@@ -7787,11 +7787,11 @@
    "imp_at_record": 0.161681,
    "imp_close": null,
    "key": "nfl|2026-11-19|IND@HOU",
-   "last_pregame_dec": 6.185,
+   "last_pregame_dec": 6.25,
    "league": "nfl",
    "model_ts": "2026-11-17T18:01:07Z",
    "n_missed": 0,
-   "n_obs": 1,
+   "n_obs": 2,
    "open_dec": 4.625,
    "p_home": 0.754,
    "p_model": 0.246,
@@ -7801,7 +7801,7 @@
    "team": "IND",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-11-17T23:48:30Z",
+   "ts_last_pregame": "2026-11-18T06:44:07Z",
    "ts_record": "2026-11-17T23:48:30Z",
    "y": null
   },
@@ -7827,7 +7827,7 @@
    "league": "nfl",
    "model_ts": "2026-11-17T18:01:07Z",
    "n_missed": 0,
-   "n_obs": 1,
+   "n_obs": 2,
    "open_dec": 3.025,
    "p_home": 0.387,
    "p_model": 0.387,
@@ -7837,7 +7837,7 @@
    "team": "NYG",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-11-17T23:48:30Z",
+   "ts_last_pregame": "2026-11-18T06:44:07Z",
    "ts_record": "2026-11-17T23:48:30Z",
    "y": null
   },
@@ -7863,7 +7863,7 @@
    "league": "nfl",
    "model_ts": "2026-11-17T18:01:07Z",
    "n_missed": 0,
-   "n_obs": 1,
+   "n_obs": 2,
    "open_dec": 1.49,
    "p_home": 0.274,
    "p_model": 0.726,
@@ -7873,7 +7873,7 @@
    "team": "PIT",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-11-17T23:48:30Z",
+   "ts_last_pregame": "2026-11-18T06:44:07Z",
    "ts_record": "2026-11-17T23:48:30Z",
    "y": null
   },
@@ -7899,7 +7899,7 @@
    "league": "nfl",
    "model_ts": "2026-11-17T18:01:07Z",
    "n_missed": 0,
-   "n_obs": 1,
+   "n_obs": 2,
    "open_dec": 4.55,
    "p_home": 0.666,
    "p_model": 0.334,
@@ -7909,7 +7909,7 @@
    "team": "TEN",
    "tier": "PROJECTED",
    "ts_close": null,
-   "ts_last_pregame": "2026-11-17T23:48:30Z",
+   "ts_last_pregame": "2026-11-18T06:44:07Z",
    "ts_record": "2026-11-17T23:48:30Z",
    "y": null
   },
@@ -8016,6 +8016,6 @@
    "y": 0
   }
  },
- "updated": "2026-11-17T23:48:30Z",
+ "updated": "2026-11-18T06:44:07Z",
  "v": 1
 }
