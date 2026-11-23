@@ -7867,7 +7867,7 @@
    "open_dec": 1.8,
    "p_home": 0.635,
    "p_model": 0.635,
-   "roi": null,
+   "roi": -1.0,
    "side": "home",
    "start_utc": "2026-11-22T21:05:00Z",
    "team": "LAC",
@@ -7875,7 +7875,7 @@
    "ts_close": "2026-11-22T22:47:34Z",
    "ts_last_pregame": "2026-11-18T22:58:40Z",
    "ts_record": "2026-11-18T22:58:40Z",
-   "y": null
+   "y": 0
   },
   "nfl|2026-11-22|PIT@PHI": {
    "away": "PIT",
@@ -7903,7 +7903,7 @@
    "open_dec": 1.49,
    "p_home": 0.274,
    "p_model": 0.726,
-   "roi": null,
+   "roi": -1.0,
    "side": "away",
    "start_utc": "2026-11-22T21:25:00Z",
    "team": "PIT",
@@ -7911,7 +7911,7 @@
    "ts_close": "2026-11-22T22:47:34Z",
    "ts_last_pregame": "2026-11-18T22:58:40Z",
    "ts_record": "2026-11-17T23:48:30Z",
-   "y": null
+   "y": 0
   },
   "nfl|2026-11-22|TEN@DAL": {
    "away": "TEN",
@@ -7939,7 +7939,7 @@
    "open_dec": 4.55,
    "p_home": 0.666,
    "p_model": 0.334,
-   "roi": null,
+   "roi": -1.0,
    "side": "away",
    "start_utc": "2026-11-22T18:00:00Z",
    "team": "TEN",
@@ -7947,7 +7947,7 @@
    "ts_close": "2026-11-22T22:47:34Z",
    "ts_last_pregame": "2026-11-18T22:58:40Z",
    "ts_record": "2026-11-17T23:48:30Z",
-   "y": null
+   "y": 0
   },
   "nhl|2026020001": {
    "away": "FLA",
@@ -8052,6 +8052,6 @@
    "y": 0
   }
  },
- "updated": "2026-11-22T22:47:34Z",
+ "updated": "2026-11-23T03:36:27Z",
  "v": 1
 }
